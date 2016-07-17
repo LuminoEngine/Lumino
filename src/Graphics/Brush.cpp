@@ -46,7 +46,7 @@ ColorBrush::ColorBrush(const Color32& color)
 }
 
 //------------------------------------------------------------------------------
-ColorBrush::ColorBrush(const ColorF& color)
+ColorBrush::ColorBrush(const Color& color)
 	: m_color(color)
 {
 }

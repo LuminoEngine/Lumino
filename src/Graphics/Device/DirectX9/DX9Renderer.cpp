@@ -266,7 +266,7 @@ void DX9Renderer::SetIndexBuffer(IIndexBuffer* indexBuffer)
 }
 
 //------------------------------------------------------------------------------
-void DX9Renderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
+void DX9Renderer::Clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	IRenderer::FlushStates();
 	//TryBeginScene();

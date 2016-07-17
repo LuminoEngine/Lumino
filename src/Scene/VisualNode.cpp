@@ -1,6 +1,6 @@
 ﻿/*
 	[2016/5/10] マテリアル set に対する get は定義しない。
-		Color を渡す set に対する get が ColorF としなければならないのがイヤなのが元だが・・・。
+		Color を渡す set に対する get が Color としなければならないのがイヤなのが元だが・・・。
 		まぁ、GetMainMaterial() から取り出せるし。
 */
 #include "../Internal.h"
@@ -47,24 +47,24 @@ void VisualNode::SetOpacity(float opacity, int subsetIndex)
 	LN_CHECK_STATE(m_materialList.GetMainMaterial() != nullptr);	// TODO: サブマテリアルの設定
 	m_materialList.GetMainMaterial()->SetOpacity(opacity);
 }
-void VisualNode::SetColorScale(const ColorF& color, int subsetIndex)
+void VisualNode::SetColorScale(const Color& color, int subsetIndex)
 {
 	LN_CHECK_STATE(m_materialList.GetMainMaterial() != nullptr);	// TODO: サブマテリアルの設定
 	m_materialList.GetMainMaterial()->SetColorScale(color.To32BitColor());
 }
 void VisualNode::SetColorScale(float r, float g, float b, float a, int subsetIndex)
 {
-	SetColorScale(ColorF(r, g, b, a));
+	SetColorScale(Color(r, g, b, a));
 }
 void VisualNode::SetColor(const Color32& color)
 {
-	SetColorScale(ColorF(color));
+	SetColorScale(Color(color));
 }
 void VisualNode::SetColor(int r, int g, int b, int a)
 {
 	SetColor(Color32(r, g, b, a));
 }
-void VisualNode::SetBlendColor(const ColorF& color, int subsetIndex)
+void VisualNode::SetBlendColor(const Color& color, int subsetIndex)
 {
 	LN_CHECK_STATE(m_materialList.GetMainMaterial() != nullptr);	// TODO: サブマテリアルの設定
 	m_materialList.GetMainMaterial()->SetBlendColor(color.To32BitColor());

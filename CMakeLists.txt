@@ -186,6 +186,7 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/GraphicsResourceObject.h
 	include/Lumino/Graphics/IndexBuffer.h
 	include/Lumino/Graphics/Material.h
+	include/Lumino/Graphics/Mesh.h
 	include/Lumino/Graphics/Renderer.h
 	include/Lumino/Graphics/RenderState.h
 	include/Lumino/Graphics/SamplerState.h
@@ -224,6 +225,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/GraphicsManager.h
 	src/Graphics/IndexBuffer.cpp
 	src/Graphics/Internal.h
+	src/Graphics/Mesh.cpp
 	src/Graphics/PainterEngine.cpp
 	src/Graphics/PainterEngine.h
 	src/Graphics/PngFile.h
@@ -355,6 +357,7 @@ set(LN_SOURCES_Scene
 	include/Lumino/Scene/Sprite.h
 	include/Lumino/Scene/SpriteModelObject.h
 	include/Lumino/Scene/SpriteParticle.h
+	include/Lumino/Scene/StaticMesh.h
 	include/Lumino/Scene/TileMap.h
 	include/Lumino/Scene/VisualNode.h
 	include/Lumino/Scene/MME/MMESceneObject.h
@@ -384,6 +387,7 @@ set(LN_SOURCES_Scene
 	src/Scene/Sprite.cpp
 	src/Scene/SpriteModelObject.cpp
 	src/Scene/SpriteParticle.cpp
+	src/Scene/StaticMesh.cpp
 	src/Scene/TileMap.cpp
 	src/Scene/VisualNode.cpp
 	external/ssbpLib/ssShader_frag.h

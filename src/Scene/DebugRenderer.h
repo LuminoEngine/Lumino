@@ -22,7 +22,7 @@ public:
 
 	virtual void DrawLine(const Vector3& from, const Vector3& to, const Vector3& fromColor, const Vector3& toColor)
 	{
-		m_context->DrawLinePrimitive(from, ColorF(fromColor, 1.0f), to, ColorF(toColor, 1.0f));
+		m_context->DrawLinePrimitive(from, Color(fromColor, 1.0f), to, Color(toColor, 1.0f));
 	}
 
 private:

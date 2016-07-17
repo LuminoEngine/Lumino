@@ -30,7 +30,7 @@ class SamplerState;
 class ShaderValue;
 
 class Color32;
-class ColorF;
+class Color;
 
 class GraphicsResourceObject;
 class VertexBuffer;

@@ -105,14 +105,14 @@ struct PainterEngineState
 {
 	BrushData	Brush;
 	float		Opacity;
-	ColorF		ForeColor;		///< 乗算する色。SolidColorBrush の時はその色になる。それと Opacity の乗算結果。
+	Color		ForeColor;		///< 乗算する色。SolidColorBrush の時はその色になる。それと Opacity の乗算結果。
 	ToneF		Tone;
 
 	// Painter 側で作り、PainterEngineState をコマンドリストに乗せるときに使う。
 	void Create(const Details::PainterState& state)
 	{
 		// ブラシデータ
-		ForeColor = ColorF::White;
+		ForeColor = Color::White;
 		ln::Brush* brush = state.Brush;
 		if (brush == NULL)
 		{
@@ -124,7 +124,7 @@ struct PainterEngineState
 			if (Brush.Type == BrushType_SolidColor)
 			{
 				auto t = static_cast<ColorBrush*>(brush);
-				const ColorF& c = t->GetColor();
+				const Color& c = t->GetColor();
 				Brush.SolidColorBrush.Color[0] = ForeColor.r = c.r;		// TODO: POD 型をまとめて定義したほうがいい気がする
 				Brush.SolidColorBrush.Color[1] = ForeColor.g = c.g;
 				Brush.SolidColorBrush.Color[2] = ForeColor.b = c.b;
@@ -175,7 +175,7 @@ struct PainterEngineState
 		ReleaseObjects();
 
 		// ブラシデータ
-		ForeColor = ColorF::White;
+		ForeColor = Color::White;
 		memcpy(&Brush, &state.Brush, sizeof(Brush));
 		if (Brush.Type == BrushType_SolidColor) {
 			ForeColor.r = Brush.SolidColorBrush.Color[0];

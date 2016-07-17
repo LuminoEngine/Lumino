@@ -267,9 +267,9 @@ void SpriteRenderer::DrawRequest2D(
 	const Vector2& size,
 	Texture* texture,
 	const RectF& srcRect,
-	const ColorF* colorTable)
+	const Color* colorTable)
 {
-	const ColorF defaultColor[] = { ColorF::White, ColorF::White, ColorF::White, ColorF::White };
+	const Color defaultColor[] = { Color::White, Color::White, Color::White, Color::White };
 	if (colorTable == NULL) {
 		colorTable = defaultColor;
 	}
@@ -285,9 +285,9 @@ void SpriteRenderer::DrawRequest2D(
 	const Vector2& size,
 	Texture* texture,
 	const RectF& srcRect,
-	const ColorF& color)
+	const Color& color)
 {
-	const ColorF colorTable[] = { color, color, color, color };
+	const Color colorTable[] = { color, color, color, color };
 	LN_CALL_COMMAND(
 		DrawRequest2D, SpriteRendererImpl::DrawRequest2DCommand,
 		position, center, size, (texture != NULL) ? texture->GetDeviceObject() : NULL, srcRect, colorTable);
@@ -300,10 +300,10 @@ void SpriteRenderer::DrawRequest3D(
 	const Vector2& size,
 	Texture* texture,
 	const RectF& srcRect,
-	const ColorF* colorTable,
+	const Color* colorTable,
 	AxisDirection front)
 {
-	const ColorF defaultColor[] = { ColorF::White, ColorF::White, ColorF::White, ColorF::White };
+	const Color defaultColor[] = { Color::White, Color::White, Color::White, Color::White };
 	if (colorTable == NULL) {
 		colorTable = defaultColor;
 	}
@@ -319,10 +319,10 @@ void SpriteRenderer::DrawRequest3D(
 	const Vector2& size,
 	Texture* texture,
 	const RectF& srcRect,
-	const ColorF& color,
+	const Color& color,
 	AxisDirection front)
 {
-	ColorF colors[] = { color, color, color, color };
+	Color colors[] = { color, color, color, color };
 	DrawRequest3D(position, center, size, texture, srcRect, colors, front);
 }
 
@@ -534,7 +534,7 @@ void SpriteRendererImpl::DrawRequest2D(
 	const Vector2& size,
 	Driver::ITexture* texture,
 	const RectF& srcRect,
-	const ColorF* colorTable)
+	const Color* colorTable)
 {
 	DrawRequest3DInternal(
 		position,
@@ -554,7 +554,7 @@ void SpriteRendererImpl::DrawRequest3D(
 	const Vector2& size,
 	Driver::ITexture* texture,
 	const RectF& srcRect,
-	const ColorF* colorTable,
+	const Color* colorTable,
 	AxisDirection front)
 {
 	DrawRequest3DInternal(position, center, size, texture, srcRect, colorTable, front, true);
@@ -567,7 +567,7 @@ void SpriteRendererImpl::DrawRequest3DInternal(
     const Vector2& size,
 	Driver::ITexture* texture,
     const RectF& srcRect,
-	const ColorF* colorTable,
+	const Color* colorTable,
 	AxisDirection front,
 	bool is3D)
 {
@@ -701,10 +701,10 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 	}
 	else
 	{
-		sprite.Vertices[0].Color = ColorF::White;
-		sprite.Vertices[1].Color = ColorF::White;
-		sprite.Vertices[2].Color = ColorF::White;
-		sprite.Vertices[3].Color = ColorF::White;
+		sprite.Vertices[0].Color = Color::White;
+		sprite.Vertices[1].Color = Color::White;
+		sprite.Vertices[2].Color = Color::White;
+		sprite.Vertices[3].Color = Color::White;
 	}
 
 	// テクスチャ

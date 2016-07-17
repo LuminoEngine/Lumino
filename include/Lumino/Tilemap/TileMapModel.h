@@ -5,6 +5,8 @@
 #include "TileSet.h"
 
 LN_NAMESPACE_BEGIN
+class TileMapModel;
+using TileMapModelPtr = RefPtr<TileMapModel>;
 
 /**
 	@brief	
@@ -13,10 +15,13 @@ class TileMapModel
 	: public tr::ReflectionObject
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+
+public:
+	static TileMapModelPtr Create();
+
 public:
 	TileMapModel();
 	virtual ~TileMapModel();
-	void CreateCore();
 
 
 	TileSet* GetTileSet();

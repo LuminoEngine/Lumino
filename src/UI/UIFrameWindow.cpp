@@ -39,7 +39,7 @@ void UIViewportLayer::Render(RenderTarget* renderTarget)
 	GraphicsContext* g = m_view->GetOwnerContext()->GetManager()->GetGraphicsManager()->GetGraphicsContext();
 
 
-	g->Clear(ClearFlags::Depth, ColorF::White);	// TODO
+	g->Clear(ClearFlags::Depth, Color::White);	// TODO
 	g->Set2DRenderingMode(-1, 1);	// TODO
 
 	// TODO: このへんで、このウィンドウが持っている SwapChain のバックバッファを g にセットする
@@ -106,7 +106,7 @@ void UIFrameWindow::BeginRendering()
 	GraphicsContext* g = m_manager->GetGraphicsManager()->GetGraphicsContext();
 	g->SetRenderTarget(0, m_swapChain->GetBackBuffer());
 	g->SetDepthBuffer(m_swapChain->GetBackBufferDepth());
-	g->Clear(ClearFlags::All, ColorF::Black);
+	g->Clear(ClearFlags::All, Color::Black);
 }
 
 //------------------------------------------------------------------------------

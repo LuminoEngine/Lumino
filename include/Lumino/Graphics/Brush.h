@@ -51,18 +51,18 @@ public:
 
 public:
 	ColorBrush(const Color32& color);
-	ColorBrush(const ColorF& color);
+	ColorBrush(const Color& color);
 	ColorBrush(float r, float g, float b, float a);
 	virtual ~ColorBrush();
 
 public:
-	void SetColor(const ColorF& color) { m_color = color; }
-	const ColorF& GetColor() const { return m_color; }
+	void SetColor(const Color& color) { m_color = color; }
+	const Color& GetColor() const { return m_color; }
 
 	virtual BrushType GetType() const { return BrushType_SolidColor; }
 
 private:
-	ColorF	m_color;
+	Color	m_color;
 };
 
 /// Bitmap はソフト的な描画処理を行うため、BitmapBrush という名前はつかわない

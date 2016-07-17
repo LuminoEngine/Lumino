@@ -82,7 +82,7 @@ public:
 	virtual void SetAntiAlias(bool enabled) { m_fontData.IsAntiAlias = enabled; m_modified = true; }
 	virtual bool IsAntiAlias() const { return m_fontData.IsAntiAlias; }
 
-	virtual Font* Copy() const;
+	virtual FontPtr Copy() const;
 	virtual int GetLineSpacing() { UpdateFont(); return m_lineHeight; }
 	//virtual Size GetTextSize(const char* text, int length);	// TODO: GetTextSize もいらなそう。UTF32 のだけあればいいかも？
 	//virtual Size GetTextSize(const wchar_t* text, int length);

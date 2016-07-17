@@ -22,7 +22,7 @@ LN_NAMESPACE_SCENE_BEGIN
 struct SpriteParticleVertex
 {
 	Vector3		position;
-	ColorF		color;
+	Color		color;
 	Vector2		texUV;
 
 	static VertexElement* Elements()
@@ -204,7 +204,7 @@ void SpriteParticleModel::SpawnParticle(detail::ParticleData* data, float spawnT
 	data->sizeAccel = MakeRandom(data, m_minSizeAccel, m_maxSizeAccel, m_sizeAccelRandomSource);
 
 	// TODO
-	data->color = ColorF::White;
+	data->color = Color::White;
 }
 
 //------------------------------------------------------------------------------

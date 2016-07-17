@@ -113,7 +113,7 @@ public:
 	float	BlendWeights[4];	///< ボーンブレンド率
 	float	BlendIndices[4];	///< ボーンインデックス
 	Vector3	Normal;				///< 法線
-	ColorF	Color;				///< 頂点カラー (ライブラリ独自仕様)
+	Color	Color;				///< 頂点カラー (ライブラリ独自仕様)
 	Vector2	TexUV;				///< テクスチャUV
 
 	Vector4	AdditionalUV[4];	///< 追加UV

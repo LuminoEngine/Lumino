@@ -687,28 +687,28 @@ void GraphicsContext::PopState()
 }
 
 //------------------------------------------------------------------------------
-void GraphicsContext::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
+void GraphicsContext::Clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	OnDrawing(GetCommonRenderer());
 	GetCommonRenderer()->Clear(flags, color, z, stencil);
 }
 
 //------------------------------------------------------------------------------
-void GraphicsContext::MoveTo(const Vector3& point, const ColorF& color)
+void GraphicsContext::MoveTo(const Vector3& point, const Color& color)
 {
 	OnDrawing(m_geometryRenderer);
 	m_geometryRenderer->MoveTo(point, color);
 }
 
 //------------------------------------------------------------------------------
-void GraphicsContext::LineTo(const Vector3& point, const ColorF& color)
+void GraphicsContext::LineTo(const Vector3& point, const Color& color)
 {
 	OnDrawing(m_geometryRenderer);
 	m_geometryRenderer->LineTo(point, color);
 }
 
 //------------------------------------------------------------------------------
-void GraphicsContext::BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const Vector3& endPt, const ColorF& color)
+void GraphicsContext::BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const Vector3& endPt, const Color& color)
 {
 	OnDrawing(m_geometryRenderer);
 	m_geometryRenderer->BezierCurveTo(cp1, cp2, endPt, color);
@@ -722,14 +722,14 @@ void GraphicsContext::ClosePath()
 }
 
 //------------------------------------------------------------------------------
-//void GraphicsContext::DrawPoint(const Vector3& point, const ColorF& color)
+//void GraphicsContext::DrawPoint(const Vector3& point, const Color& color)
 //{
 //	OnDrawing(m_geometryRenderer);
 //	m_geometryRenderer->DrawPoint(point, color);
 //}
 
 //------------------------------------------------------------------------------
-void GraphicsContext::DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color)
+void GraphicsContext::DrawTriangle(const Vector3& p1, const Color& p1Color, const Vector3& p2, const Color& p2Color, const Vector3& p3, const Color& p3Color)
 {
 	OnDrawing(m_geometryRenderer);
 	m_geometryRenderer->DrawTriangle(p1, p1Color, p2, p2Color, p3, p3Color);
@@ -758,7 +758,7 @@ void GraphicsContext::DrawEllipse(const Vector3& center, const Vector2& radius)
 }
 
 //------------------------------------------------------------------------------
-void GraphicsContext::DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const ColorF& color)
+void GraphicsContext::DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const Color& color)
 {
 	OnDrawing(m_geometryRenderer);
 	m_geometryRenderer->DrawTexture(rect, texture, srcRect, color);
@@ -793,7 +793,7 @@ void GraphicsContext::DrawPrimitiveIndexed(VertexBuffer* vertexBuffer, IndexBuff
 }
 
 //------------------------------------------------------------------------------
-void GraphicsContext::DrawLinePrimitive(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor)
+void GraphicsContext::DrawLinePrimitive(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor)
 {
 	OnDrawing(m_primitiveRenderer);
 	m_primitiveRenderer->DrawLine(from, fromColor, to, toColor);
@@ -801,10 +801,10 @@ void GraphicsContext::DrawLinePrimitive(const Vector3& from, const ColorF& fromC
 
 //------------------------------------------------------------------------------
 void GraphicsContext::DrawSquarePrimitive(
-	const Vector3& position1, const Vector2& uv1, const ColorF& color1,
-	const Vector3& position2, const Vector2& uv2, const ColorF& color2,
-	const Vector3& position3, const Vector2& uv3, const ColorF& color3,
-	const Vector3& position4, const Vector2& uv4, const ColorF& color4)
+	const Vector3& position1, const Vector2& uv1, const Color& color1,
+	const Vector3& position2, const Vector2& uv2, const Color& color2,
+	const Vector3& position3, const Vector2& uv3, const Color& color3,
+	const Vector3& position4, const Vector2& uv4, const Color& color4)
 {
 	OnDrawing(m_primitiveRenderer);
 	m_primitiveRenderer->DrawSquare(

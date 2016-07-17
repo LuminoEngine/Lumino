@@ -15,7 +15,7 @@ TEST_F(Test_Graphics_GraphicsContext, DrawRectangle)
 	// <Test>
 	{
 		auto* g = Engine::BeginRendering();
-		g->Clear(ClearFlags::All, ColorF::Gray);
+		g->Clear(ClearFlags::All, Color::Gray);
 		g->SetBrush(ColorBrush::Red);
 		g->DrawRectangle(RectF(10, 20, 30, 40));
 		Engine::EndRendering();
@@ -27,7 +27,7 @@ TEST_F(Test_Graphics_GraphicsContext, DrawRectangle)
 		auto brush = TextureBrush::Create(LN_LOCALFILE("TestData/img1_BYTE_R8G8B8A8_20x20.png"));
 
 		auto* g = Engine::BeginRendering();
-		g->Clear(ClearFlags::All, ColorF::White);
+		g->Clear(ClearFlags::All, Color::White);
 		g->SetBrush(brush);
 		g->DrawRectangle(RectF(10, 20, 30, 40));
 		Engine::EndRendering();
@@ -42,7 +42,7 @@ TEST_F(Test_Graphics_GraphicsContext, DrawRectangle)
 		brush1->SetBorderThickness(ThicknessF(8, 8, 8, 8));
 
 		auto* g = Engine::BeginRendering();
-		g->Clear(ClearFlags::All, ColorF::Gray);
+		g->Clear(ClearFlags::All, Color::Gray);
 		g->SetBrush(brush1);
 		g->DrawRectangle(RectF(0, 0, 83, 83));
 		Engine::EndRendering();
@@ -63,7 +63,7 @@ TEST_F(Test_Graphics_GraphicsContext, FrameTextureBrush)
 
 	auto* g = Engine::BeginRendering();
 
-	g->Clear(ClearFlags::All, ColorF::Gray);
+	g->Clear(ClearFlags::All, Color::Gray);
 	g->SetBrush(brush1);
 	g->DrawRectangle(Rect(0, 0, 83, 83));
 
@@ -78,7 +78,7 @@ TEST_F(Test_Graphics_GraphicsContext, DrawText1)
 	auto* g = Engine::BeginRendering();
 
 	g->Set2DRenderingMode();
-	g->Clear(ClearFlags::All, ColorF::Gray);
+	g->Clear(ClearFlags::All, Color::Gray);
 	g->SetBrush(ColorBrush::Red);
 	g->DrawText(_T("DrawText"), PointF(10, 10));
 
@@ -98,7 +98,7 @@ TEST_F(Test_Graphics_GraphicsContext, DrawText_UserFont)
 	auto* g = Engine::BeginRendering();
 
 	g->Set2DRenderingMode();
-	g->Clear(ClearFlags::All, ColorF::Gray);
+	g->Clear(ClearFlags::All, Color::Gray);
 	g->SetBrush(ColorBrush::Red);
 	g->SetFont(font);
 	g->DrawText(_T("DrawText"), PointF(10, 10));

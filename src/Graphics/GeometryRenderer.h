@@ -49,9 +49,9 @@ public:
 	void SetTone(const ToneF& tone);
 	void SetFont(Font* font);
 
-	void MoveTo(const Vector3& point, const ColorF& color);
-	void LineTo(const Vector3& point, const ColorF& color);
-	void BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const Vector3& endPt, const ColorF& color);
+	void MoveTo(const Vector3& point, const Color& color);
+	void LineTo(const Vector3& point, const Color& color);
+	void BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const Vector3& endPt, const Color& color);
 	void ClosePath();
 
 	//void DrawPoint(const Vector3& point, const ColorF& color);
@@ -59,10 +59,10 @@ public:
 	/**
 		@brief		直線を描画します。
 	*/
-	void DrawLine(const Vector3& from, const Vector3& to, const ColorF& fromColor, const ColorF& toColor);
-	void DrawLine(const Vector3& from, const Vector3& to, const ColorF& color);
+	void DrawLine(const Vector3& from, const Vector3& to, const Color& fromColor, const Color& toColor);
+	void DrawLine(const Vector3& from, const Vector3& to, const Color& color);
 
-	void DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color);
+	void DrawTriangle(const Vector3& p1, const Color& p1Color, const Vector3& p2, const Color& p2Color, const Vector3& p3, const Color& p3Color);
 
 	/**
 		@brief		矩形を描画します。
@@ -71,7 +71,7 @@ public:
 
 	void DrawEllipse(const Vector3& center, const Vector2& radius);
 
-	void DrawTexture(const RectF& rect, Texture* texture, const Rect& secRect, const ColorF& color);
+	void DrawTexture(const RectF& rect, Texture* texture, const Rect& secRect, const Color& color);
 
 	//void Flush();
 	virtual void Flush() override;

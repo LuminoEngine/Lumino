@@ -40,7 +40,7 @@ const Rect& Renderer::GetViewport() { return GetRenderer()->GetViewport(); }
 //void Renderer::SetVertexBuffer(VertexBuffer* vertexBuffer) { GetRenderer()->SetVertexBuffer(vertexBuffer); }
 //void Renderer::SetIndexBuffer(IndexBuffer* indexBuffer) { GetRenderer()->SetIndexBuffer(indexBuffer); }
 // TODO: Get はいらない？
-void Renderer::Clear(ClearFlags flags, const ColorF& color, float zf, uint8_t stencil) { GetRenderer()->Clear(flags, color, zf, stencil); }
+void Renderer::Clear(ClearFlags flags, const Color& color, float zf, uint8_t stencil) { GetRenderer()->Clear(flags, color, zf, stencil); }
 void Renderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) { GetRenderer()->DrawPrimitive(primitive, startVertex, primitiveCount); }
 void Renderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) { GetRenderer()->DrawPrimitiveIndexed(primitive, startIndex, primitiveCount); }
 #endif
@@ -289,13 +289,13 @@ void Renderer::SetShaderPass(ShaderPass* pass)
 }
 
 //------------------------------------------------------------------------------
-void Renderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
+void Renderer::Clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	LN_ENQUEUE_RENDER_COMMAND_5(
 		Clear, m_manager,
 		Driver::IRenderer*, m_internal,
 		ClearFlags, flags,
-		ColorF, color, 
+		Color, color, 
 		float, z, 
 		uint8_t, stencil,
 		{

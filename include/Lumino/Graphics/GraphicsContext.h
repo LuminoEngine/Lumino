@@ -159,18 +159,18 @@ public:
 
 	/** @} */
 
-	void Clear(ClearFlags flags, const ColorF& color, float z = 1.0f, uint8_t stencil = 0x00);
+	void Clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
 
-	void MoveTo(const Vector3& point, const ColorF& color);
-	void LineTo(const Vector3& point, const ColorF& color);
-	void BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const Vector3& endPt, const ColorF& color);
+	void MoveTo(const Vector3& point, const Color& color);
+	void LineTo(const Vector3& point, const Color& color);
+	void BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const Vector3& endPt, const Color& color);
 	void ClosePath();
 
 	//void DrawPoint(const Vector3& point, const ColorF& color);
-	void DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color);
+	void DrawTriangle(const Vector3& p1, const Color& p1Color, const Vector3& p2, const Color& p2Color, const Vector3& p3, const Color& p3Color);
 	void DrawRectangle(const RectF& rect);
 	void DrawEllipse(const Vector3& center, const Vector2& radius);
-	void DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const ColorF& color);
+	void DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const Color& color);
 	
 
 	void DrawText(const StringRef& text, const PointF& position);
@@ -190,13 +190,13 @@ public:
 
 
 
-	void DrawLinePrimitive(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor);
+	void DrawLinePrimitive(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor);
 
 	void DrawSquarePrimitive(
-		const Vector3& position1, const Vector2& uv1, const ColorF& color1,
-		const Vector3& position2, const Vector2& uv2, const ColorF& color2,
-		const Vector3& position3, const Vector2& uv3, const ColorF& color3,
-		const Vector3& position4, const Vector2& uv4, const ColorF& color4);
+		const Vector3& position1, const Vector2& uv1, const Color& color1,
+		const Vector3& position2, const Vector2& uv2, const Color& color2,
+		const Vector3& position3, const Vector2& uv3, const Color& color3,
+		const Vector3& position4, const Vector2& uv4, const Color& color4);
 
 	void Flush();
 

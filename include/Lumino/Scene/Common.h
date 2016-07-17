@@ -27,8 +27,8 @@ class Sprite3D;
 typedef RefPtr<Sprite3D>	Sprite3DPtr;
 class Sprite2D;
 typedef RefPtr<Sprite2D>	Sprite2DPtr;
-class TileMapNode;
-typedef RefPtr<TileMapNode>	TileMapNodePtr;
+class TileMap;
+typedef RefPtr<TileMap>		TileMapPtr;
 
 class MMEShader;
 class MMEShaderTechnique;

@@ -1,6 +1,6 @@
 ﻿/*
 	[2015/12/1]
-		Scene の TileMapNode 側で SpriteRenderer 使うか頂点バッファに直接書き込むか決めたいので、
+		Scene の TileMap 側で SpriteRenderer 使うか頂点バッファに直接書き込むか決めたいので、
 		仮想クラスとしておく。
 */
 #include "../Internal.h"

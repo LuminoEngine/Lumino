@@ -218,7 +218,7 @@ public:
 	//virtual void SetIndexBuffer(IIndexBuffer* indexBuffer) = 0;
 
 	/// 設定されている各種バッファをクリアする
-	virtual void Clear(ClearFlags flags, const ColorF& color, float z = 1.0f, uint8_t stencil = 0x00) = 0;
+	virtual void Clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00) = 0;
 
 	/// プリミティブ描画
 	virtual void DrawPrimitive(IVertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount) = 0;

@@ -69,7 +69,7 @@ struct GeometryData
 		} rectangle;
 	};
 
-	void ExpandFill_Rectangle(CacheBuffer<DrawingBasicVertex>* vb, CacheBuffer<uint16_t>* ib, const ColorF& color, VertexExpandResult* outResult);
+	void ExpandFill_Rectangle(CacheBuffer<DrawingBasicVertex>* vb, CacheBuffer<uint16_t>* ib, const Color& color, VertexExpandResult* outResult);
 	void ExpandUV_Stretch(DrawingBasicVertex* begin, DrawingBasicVertex* end, const RectF& srcPixelRect, const RectF& srcUVRect, const Vector2& posMin, const Vector2& posMax);
 	void ExpandUV_Tilling(DrawingBasicVertex* begin, DrawingBasicVertex* end, const RectF& srcPixelRect, const RectF& srcUVRect, const Vector2& posMin, const Vector2& posMax);
 
@@ -92,7 +92,7 @@ struct GeometryData
 
 
 //------------------------------------------------------------------------------
-void GeometryData::ExpandFill_Rectangle(CacheBuffer<DrawingBasicVertex>* vb, CacheBuffer<uint16_t>* ib, const ColorF& color, VertexExpandResult* outResult)
+void GeometryData::ExpandFill_Rectangle(CacheBuffer<DrawingBasicVertex>* vb, CacheBuffer<uint16_t>* ib, const Color& color, VertexExpandResult* outResult)
 {
 	RectF* rect = (RectF*)&rectangle;
 
@@ -364,13 +364,13 @@ struct DrawingCommands_MoveTo
 {
 	DrawingCommandType	type;
 	Vector3				point;
-	ColorF				color;
+	Color				color;
 };
 struct DrawingCommands_LineTo
 {
 	DrawingCommandType	type;
 	Vector3				point;
-	ColorF				color;
+	Color				color;
 };
 struct DrawingCommands_BezierCurveTo
 {
@@ -378,21 +378,21 @@ struct DrawingCommands_BezierCurveTo
 	Vector3				cp1;
 	Vector3				cp2;
 	Vector3				endPoint;
-	ColorF				color;
+	Color				color;
 };
 struct DrawingCommands_DrawPoint
 {
 	DrawingCommandType	type;
 	Vector3				point;
-	ColorF				color;
+	Color				color;
 };
 struct DrawingCommands_DrawLine
 {
 	DrawingCommandType	type;
 	Vector3				from;
 	Vector3				to;
-	ColorF				fromColor;
-	ColorF				toColor;
+	Color				fromColor;
+	Color				toColor;
 };
 struct DrawingCommands_DrawTriangle
 {
@@ -400,9 +400,9 @@ struct DrawingCommands_DrawTriangle
 	Vector3				p1;
 	Vector3				p2;
 	Vector3				p3;
-	ColorF				p1Color;
-	ColorF				p2Color;
-	ColorF				p3Color;
+	Color				p1Color;
+	Color				p2Color;
+	Color				p3Color;
 };
 struct DrawingCommands_DrawRectangle
 {
@@ -475,7 +475,7 @@ public:
 				if (Type == BrushType_SolidColor)
 				{
 					auto t = static_cast<ColorBrush*>(brush);
-					const ColorF& c = t->GetColor();
+					const Color& c = t->GetColor();
 					SolidColorBrush.Color[0] = c.r;		// TODO: POD 型をまとめて定義したほうがいい気がする
 					SolidColorBrush.Color[1] = c.g;
 					SolidColorBrush.Color[2] = c.b;
@@ -578,12 +578,12 @@ public:
 		BrushData	Brush;
 		PenData		pen;
 		float		Opacity;
-		ColorF		ForeColor;		///< 乗算する色。SolidColorBrush の時はその色になる。それと Opacity の乗算結果。
+		Color		ForeColor;		///< 乗算する色。SolidColorBrush の時はその色になる。それと Opacity の乗算結果。
 		ToneF		Tone;
 
 		DrawingState()
 			: drawingClass(detail::DrawingClass::PointList)
-			, ForeColor(ColorF::White)
+			, ForeColor(Color::White)
 			, Opacity(1.0f)
 		{
 			pen.brush.Type = BrushType_Unknown;
@@ -728,7 +728,7 @@ private:
 	struct BasePoint
 	{
 		Vector3			point;
-		ColorF			color;
+		Color			color;
 		Vector3			dir;			// 次の点への向き
 		float			len;			// 次の点との距離
 		Vector3			extrusionDir;	// 押し出し方向 (dirに対する左方向。符号を反転すると右方向への押し出し量になる)
@@ -740,7 +740,7 @@ private:
 		//Vector3			distance;	// 次の点との距離
 		//Vector3			left;		// 左方向。つまり、ストロークの押し出し方向
 		//float			len;
-		BasePoint(const Vector3& p, const ColorF& c) : point(p), color(c) {}
+		BasePoint(const Vector3& p, const Color& c) : point(p), color(c) {}
 	};
 
 	struct Path
@@ -757,23 +757,23 @@ private:
 
 	void AddPath(PathType type);
 	Path* GetCurrentPath();
-	void AddBasePoint(const Vector3& point, const ColorF& color);
-	void AddBasePoint(const Vector3& point, const ColorF& color, const Vector2& userUV, bool userUVUsed);
-	//void AddPathPoint(PathPointAttr attr, const Vector3& point, const ColorF& color);
-	void EndPath(const Vector3* lastPoint, const ColorF* lastColor, bool pathClose);
+	void AddBasePoint(const Vector3& point, const Color& color);
+	void AddBasePoint(const Vector3& point, const Color& color, const Vector2& userUV, bool userUVUsed);
+	//void AddPathPoint(PathPointAttr attr, const Vector3& point, const Color& color);
+	void EndPath(const Vector3* lastPoint, const Color* lastColor, bool pathClose);
 
 
 	void ExpandPoints();
 
 	void ExpandFill();
 
-	//void PutMoveTo(const Vector3& pt, const ColorF& color);
-	//void PutLineTo(const Vector3& pt, const ColorF& color);
+	//void PutMoveTo(const Vector3& pt, const Color& color);
+	//void PutLineTo(const Vector3& pt, const Color& color);
 
 	void ExpandStroke(bool vertexOnly);
 	void MakeJoint_Bevel(const BasePoint* p0, const BasePoint* p1);
 
-	void AddVertex(const Vector3& point, const ColorF& color);
+	void AddVertex(const Vector3& point, const Color& color);
 
 	static float Normalize(float *x, float* y)
 	{
@@ -900,7 +900,7 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size, d
 	m_currentState.drawingClass = drawingClass;
 
 	const Vector3* lastPoint = nullptr;
-	const ColorF* lastColor = nullptr;
+	const Color* lastColor = nullptr;
 	m_pathCreating = false;
 
 	while (pos < end)
@@ -951,7 +951,7 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size, d
 									BezierCurve(lastPoint->x, cmd->cp1.x, cmd->cp2.x, cmd->endPoint.x, t),
 									BezierCurve(lastPoint->y, cmd->cp1.y, cmd->cp2.y, cmd->endPoint.y, t),
 									cmd->endPoint.z),	// TODO
-								ColorF::Lerp(*lastColor, cmd->color, t));
+								Color::Lerp(*lastColor, cmd->color, t));
 						}
 						lastPoint = &cmd->endPoint;
 						lastColor = &cmd->color;
@@ -1056,7 +1056,7 @@ void DrawingContextImpl::Flush()
 	m_shader3D.varWorldMatrix->SetMatrix(Matrix::Identity);
 	m_shader3D.varViewProjMatrix->SetMatrix(m_view * m_proj);
 
-	//renderer->Clear(ClearFlags::Depth, ColorF::White, 1.0f);
+	//renderer->Clear(ClearFlags::Depth, Color::White, 1.0f);
 
 	if (m_shader3D.varPixelStep != nullptr)
 	{
@@ -1122,9 +1122,9 @@ void DrawingContextImpl::ExpandGeometriesFill()
 	m_vertexCache.Clear();
 	m_indexCache.Clear();
 
-	ColorF fillColor = ColorF::White;
+	Color fillColor = Color::White;
 	if (m_currentState.Brush.Type == BrushType_SolidColor)
-		fillColor = *((ColorF*)m_currentState.Brush.SolidColorBrush.Color);
+		fillColor = *((Color*)m_currentState.Brush.SolidColorBrush.Color);
 
 	RectF srcPixelRect = RectF::Zero;
 	RectF srcUVRect = RectF::Zero;
@@ -1196,7 +1196,7 @@ void DrawingContextImpl::AddPath(PathType type)
 }
 
 //------------------------------------------------------------------------------
-//void DrawingContextImpl::AddPathPoint(PathPointAttr attr, const Vector3& point, const ColorF& color)
+//void DrawingContextImpl::AddPathPoint(PathPointAttr attr, const Vector3& point, const Color& color)
 //{
 //	PathPoint pt;
 //	pt.attr = attr;
@@ -1207,7 +1207,7 @@ void DrawingContextImpl::AddPath(PathType type)
 //}
 
 //------------------------------------------------------------------------------
-void DrawingContextImpl::AddBasePoint(const Vector3& point, const ColorF& color)
+void DrawingContextImpl::AddBasePoint(const Vector3& point, const Color& color)
 {
 	BasePoint pt(point, color);
 	pt.color.r *= m_currentState.ForeColor.r;
@@ -1219,7 +1219,7 @@ void DrawingContextImpl::AddBasePoint(const Vector3& point, const ColorF& color)
 }
 
 //------------------------------------------------------------------------------
-void DrawingContextImpl::AddBasePoint(const Vector3& point, const ColorF& color, const Vector2& userUV, bool userUVUsed)
+void DrawingContextImpl::AddBasePoint(const Vector3& point, const Color& color, const Vector2& userUV, bool userUVUsed)
 {
 	BasePoint pt(point, color);
 	pt.color.r *= m_currentState.ForeColor.r;
@@ -1233,7 +1233,7 @@ void DrawingContextImpl::AddBasePoint(const Vector3& point, const ColorF& color,
 }
 
 //------------------------------------------------------------------------------
-void DrawingContextImpl::EndPath(const Vector3* lastPoint, const ColorF* lastColor, bool pathClose)
+void DrawingContextImpl::EndPath(const Vector3* lastPoint, const Color* lastColor, bool pathClose)
 {
 	if (m_pathCreating)
 	{
@@ -1288,7 +1288,7 @@ DrawingContextImpl::Path* DrawingContextImpl::GetCurrentPath()
 ////------------------------------------------------------------------------------
 ////
 ////------------------------------------------------------------------------------
-//void DrawingContextImpl::PutMoveTo(const Vector3& pt, const ColorF& color)
+//void DrawingContextImpl::PutMoveTo(const Vector3& pt, const Color& color)
 //{
 //	AddPathPoint(PathPointAttr::MoveTo, pt, color);
 //}
@@ -1296,7 +1296,7 @@ DrawingContextImpl::Path* DrawingContextImpl::GetCurrentPath()
 ////------------------------------------------------------------------------------
 ////
 ////------------------------------------------------------------------------------
-//void DrawingContextImpl::PutLineTo(const Vector3& pt, const ColorF& color)
+//void DrawingContextImpl::PutLineTo(const Vector3& pt, const Color& color)
 //{
 //	AddPathPoint(PathPointAttr::LineTo, pt, color);
 //}
@@ -1655,7 +1655,7 @@ void DrawingContextImpl::MakeJoint_Bevel(const BasePoint* p0, const BasePoint* p
 ////------------------------------------------------------------------------------
 ////
 ////------------------------------------------------------------------------------
-//void DrawingContextImpl::AddVertex(const Vector3& point, const ColorF& color)
+//void DrawingContextImpl::AddVertex(const Vector3& point, const Color& color)
 //{
 //	DrawingBasicVertex v;
 //	v.Position = point;
@@ -1779,7 +1779,7 @@ void GeometryRenderer::SetFont(Font* font)
 }
 
 //------------------------------------------------------------------------------
-void GeometryRenderer::MoveTo(const Vector3& point, const ColorF& color)
+void GeometryRenderer::MoveTo(const Vector3& point, const Color& color)
 {
 	SetDrawingClassInternal(detail::DrawingClass::PathStroke);
 	DrawingCommands_MoveTo cmd;
@@ -1791,7 +1791,7 @@ void GeometryRenderer::MoveTo(const Vector3& point, const ColorF& color)
 }
 
 //------------------------------------------------------------------------------
-void GeometryRenderer::LineTo(const Vector3& point, const ColorF& color)
+void GeometryRenderer::LineTo(const Vector3& point, const Color& color)
 {
 	SetDrawingClassInternal(detail::DrawingClass::PathStroke);
 	DrawingCommands_LineTo cmd;
@@ -1803,7 +1803,7 @@ void GeometryRenderer::LineTo(const Vector3& point, const ColorF& color)
 }
 
 //------------------------------------------------------------------------------
-void GeometryRenderer::BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const Vector3& endPt, const ColorF& color)
+void GeometryRenderer::BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const Vector3& endPt, const Color& color)
 {
 	SetDrawingClassInternal(detail::DrawingClass::PathStroke);
 	DrawingCommands_BezierCurveTo cmd;
@@ -1827,7 +1827,7 @@ void GeometryRenderer::ClosePath()
 }
 
 //------------------------------------------------------------------------------
-//void GeometryRenderer::DrawPoint(const Vector3& point, const ColorF& color)
+//void GeometryRenderer::DrawPoint(const Vector3& point, const Color& color)
 //{
 //	SetDrawingClassInternal(detail::DrawingClass::PointList);
 //	DrawingCommands_DrawPoint cmd;
@@ -1839,7 +1839,7 @@ void GeometryRenderer::ClosePath()
 //}
 //
 //------------------------------------------------------------------------------
-void GeometryRenderer::DrawLine(const Vector3& from, const Vector3& to, const ColorF& fromColor, const ColorF& toColor)
+void GeometryRenderer::DrawLine(const Vector3& from, const Vector3& to, const Color& fromColor, const Color& toColor)
 {
 	SetDrawingClassInternal(detail::DrawingClass::LineList);
 	//CheckFlush();
@@ -1855,13 +1855,13 @@ void GeometryRenderer::DrawLine(const Vector3& from, const Vector3& to, const Co
 }
 
 //------------------------------------------------------------------------------
-void GeometryRenderer::DrawLine(const Vector3& from, const Vector3& to, const ColorF& color)
+void GeometryRenderer::DrawLine(const Vector3& from, const Vector3& to, const Color& color)
 {
 	DrawLine(from, to, color, color);
 }
 
 //------------------------------------------------------------------------------
-void GeometryRenderer::DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color)
+void GeometryRenderer::DrawTriangle(const Vector3& p1, const Color& p1Color, const Vector3& p2, const Color& p2Color, const Vector3& p3, const Color& p3Color)
 {
 	SetDrawingClassInternal(detail::DrawingClass::TriangleList);
 	DrawingCommands_DrawTriangle cmd;
@@ -1892,7 +1892,7 @@ void GeometryRenderer::DrawEllipse(const Vector3& center, const Vector2& radius)
 }
 
 //------------------------------------------------------------------------------
-void GeometryRenderer::DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const ColorF& color)
+void GeometryRenderer::DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const Color& color)
 {
 	bool flish = false;
 	if (texture != m_internalTextureBrush->GetTexture())

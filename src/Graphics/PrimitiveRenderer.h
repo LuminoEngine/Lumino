@@ -24,7 +24,7 @@ public:
 	{
 		Vector3 pos[4];
 		Vector2 uv[4];
-		ColorF color[4];
+		Color color[4];
 	};
 
 	PrimitiveRendererCore();
@@ -32,13 +32,13 @@ public:
 	void Initialize(GraphicsManager* manager);
 
 	void SetState(const Matrix& world, const Matrix& viewProj, const Size& viewPixelSize, bool useInternalShader, PrimitiveRendererMode mode, Driver::IShader* userShader, Driver::ITexture* texture);
-	void DrawLine(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor);
+	void DrawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor);
 	void DrawSquare(const DrawSquareData& data);
 	void Blt(Driver::ITexture* source, Driver::ITexture* dest, const Matrix& transform, Driver::IShader* shader = nullptr);
 	void Flush();
 
 private:
-	void AddVertex(const Vector3& pos, const Vector2& uv, const ColorF& color);
+	void AddVertex(const Vector3& pos, const Vector2& uv, const Color& color);
 	int GetCurrentVertexCount() const { return m_vertexCacheUsed / m_vertexStride; }
 
 	// TODO 頂点宣言とかは外部からもらうようにしたい
@@ -120,13 +120,13 @@ public:
 	void SetUserShader(Shader* shader);
 	void SetTexture(Texture* texture);
 
-	void DrawLine(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor);
+	void DrawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor);
 
 	void DrawSquare(
-		const Vector3& position1, const Vector2& uv1, const ColorF& color1,
-		const Vector3& position2, const Vector2& uv2, const ColorF& color2,
-		const Vector3& position3, const Vector2& uv3, const ColorF& color3,
-		const Vector3& position4, const Vector2& uv4, const ColorF& color4);
+		const Vector3& position1, const Vector2& uv1, const Color& color1,
+		const Vector3& position2, const Vector2& uv2, const Color& color2,
+		const Vector3& position3, const Vector2& uv3, const Color& color3,
+		const Vector3& position4, const Vector2& uv4, const Color& color4);
 
 	void DrawRectangle(const RectF& rect);
 

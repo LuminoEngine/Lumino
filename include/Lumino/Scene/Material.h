@@ -14,9 +14,9 @@ public:
 	void SetOpacity(float opacity) { m_opacity = opacity; }
 	float GetOpacity() const { return m_opacity; }
 	void SetColorScale(const Color32& color) { m_colorScale = color; }
-	const ColorF& GetColorScale() const { return m_colorScale; }
+	const Color& GetColorScale() const { return m_colorScale; }
 	void SetBlendColor(const Color32& color) { m_blendColor = color; }
-	const ColorF& GetBlendColor() const { return m_blendColor; }
+	const Color& GetBlendColor() const { return m_blendColor; }
 	void SetTone(const ToneF& tone) { m_tone = tone; }
 	const ToneF& GetTone() const { return m_tone; }
 	void SetTexture(Texture* texture);
@@ -41,8 +41,8 @@ LN_INTERNAL_ACCESS:
 private:
 	int			m_materialTypeId;
 	float		m_opacity;
-	ColorF		m_colorScale;
-	ColorF		m_blendColor;
+	Color		m_colorScale;
+	Color		m_blendColor;
 	ToneF		m_tone;
 	Texture*	m_texture;
 	Matrix		m_uvTransform;	// TODO: Unity のように offset,scale で持ったほうがメモリ効率いい。
@@ -57,8 +57,8 @@ static const int MmdMaterialTypeId = 12345;
 struct MaterialInstance
 {
 	Material2*	m_owner;
-	ColorF		m_colorScale;	// 乗算結合済み (opacity 込み)
-	ColorF		m_blendColor;	// 加算結合済み
+	Color		m_colorScale;	// 乗算結合済み (opacity 込み)
+	Color		m_blendColor;	// 加算結合済み
 	ToneF		m_tone;			// 加算結合済み
 	Shader*		m_shader;
 

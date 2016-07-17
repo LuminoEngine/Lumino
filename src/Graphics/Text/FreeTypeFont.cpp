@@ -155,13 +155,12 @@ FreeTypeFont::~FreeTypeFont()
 }
 
 //------------------------------------------------------------------------------
-Font* FreeTypeFont::Copy() const
+FontPtr FreeTypeFont::Copy() const
 {
 	RefPtr<FreeTypeFont> font(LN_NEW FreeTypeFont(m_manager), false);
 	font->m_fontData = m_fontData;
 	font->m_modified = true;
-	font.SafeAddRef();
-	return font;
+	return FontPtr::StaticCast(font);
 }
 
 #if 0

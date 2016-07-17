@@ -73,7 +73,7 @@ public:
 		const Vector2& size,
 		Texture* texture,
 		const RectF& srcRect,		// TODO: Rect のほうがピクセル単位であることがわかりやすい
-		const ColorF* colorTable);
+		const Color* colorTable);
 
 	/**
 		@brief		スプライトの描画を要求します。
@@ -90,7 +90,7 @@ public:
 		const Vector2& size,
 		Texture* texture,
 		const RectF& srcRect,
-		const ColorF& color);
+		const Color& color);
 
 	/**
 		@brief		スプライトの描画を要求します。
@@ -108,7 +108,7 @@ public:
 		const Vector2& size,
 		Texture* texture,
 		const RectF& srcRect,
-		const ColorF* colorTable,
+		const Color* colorTable,
 		AxisDirection front);
 
 	void DrawRequest3D(
@@ -117,7 +117,7 @@ public:
 		const Vector2& size,
 		Texture* texture,
 		const RectF& srcRect,
-		const ColorF& color,
+		const Color& color,
 		AxisDirection front);
 
 	/**

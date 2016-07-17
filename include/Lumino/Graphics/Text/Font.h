@@ -122,7 +122,7 @@ public:
 	virtual bool IsAntiAlias() const = 0;
 
 	/// このフォントのコピーを作成する
-	virtual Font* Copy() const = 0;
+	virtual FontPtr Copy() const = 0;
 
 	/** 次の行のベースラインまでの長さを返します。*/
 	virtual int GetLineSpacing() = 0;

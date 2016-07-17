@@ -183,7 +183,7 @@ namespace ss
 				ln::Vector2(state.rect.size.width, state.rect.size.height),
 				(ln::Texture2D*)state.texture.handle,
 				ln::RectF(state.rect.origin.x, state.rect.origin.y, state.rect.size.width, state.rect.size.height),
-				ln::ColorF::White);
+				ln::Color::White);
 		}
 		else
 		{
@@ -193,7 +193,7 @@ namespace ss
 				ln::Vector2(state.rect.size.width, state.rect.size.height),
 				(ln::Texture2D*)state.texture.handle,
 				ln::RectF(state.rect.origin.x, state.rect.origin.y, state.rect.size.width, state.rect.size.height),
-				ln::ColorF::White,
+				ln::Color::White,
 				ln::AxisDirection_RZ);
 		}
 

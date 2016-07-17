@@ -67,7 +67,7 @@ private:
 	CacheBuffer<Vertex>		m_vertexCache;
 	CacheBuffer<uint16_t>	m_indexCache;
 
-	ColorF					m_foreColor;
+	Color					m_foreColor;
 	ToneF					m_tone;
 	//Driver::ITexture*		m_foreTexture;
 	//Driver::ITexture*		m_glyphsMaskTexture;

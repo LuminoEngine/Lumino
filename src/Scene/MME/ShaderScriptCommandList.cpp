@@ -383,7 +383,7 @@ int ShaderScriptCommandList::InternalExecute(DrawParams& params, int pc, int cur
 		}
 		case COMMAND_ClearDepth:
 		{
-			params.Params->GetRenderer()->Clear(ClearFlags::Depth, ColorF::Transparency, m_clearDepth);
+			params.Params->GetRenderer()->Clear(ClearFlags::Depth, Color::Transparency, m_clearDepth);
 			break;
 		}
 		case COMMAND_ScriptExternal_Color:
@@ -438,10 +438,10 @@ int ShaderScriptCommandList::InternalExecute(DrawParams& params, int pc, int cur
 			}
 
 			params.Params->BeginGraphicsContext()->DrawSquarePrimitive(
-				Vector3(-1.0f, 1.0f, 0.0f), Vector2(0.0f, 0.0f), ColorF::White,		// 左上
-				Vector3(1.0f, 1.0f, 0.0f), Vector2(1.0f, 0.0f), ColorF::White,		// 右上
-				Vector3(1.0f, -1.0f, 0.0f), Vector2(1.0f, 1.0f), ColorF::White,		// 右下
-				Vector3(-1.0f, -1.0f, 0.0f), Vector2(0.0f, 1.0f), ColorF::White);	// 左下
+				Vector3(-1.0f, 1.0f, 0.0f), Vector2(0.0f, 0.0f), Color::White,		// 左上
+				Vector3(1.0f, 1.0f, 0.0f), Vector2(1.0f, 0.0f), Color::White,		// 右上
+				Vector3(1.0f, -1.0f, 0.0f), Vector2(1.0f, 1.0f), Color::White,		// 右下
+				Vector3(-1.0f, -1.0f, 0.0f), Vector2(0.0f, 1.0f), Color::White);	// 左下
 			break;
 		}
 		}

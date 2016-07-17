@@ -128,11 +128,10 @@ void BitmapFont::getTextSize(const wchar_t* text, int len, Geometry::Rect* rect)
 #endif
 
 //------------------------------------------------------------------------------
-Font* BitmapFont::Copy() const
+FontPtr BitmapFont::Copy() const
 {
 	RefPtr<BitmapFont> font(LN_NEW BitmapFont(m_manager, m_fontBitmap), false);
-	font.SafeAddRef();
-	return font;
+	return FontPtr::StaticCast(font);
 }
 
 //------------------------------------------------------------------------------

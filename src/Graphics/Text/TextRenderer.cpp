@@ -264,7 +264,7 @@ void TextRendererCore::InternalDrawRectangle(const RectF& rect, const RectF& src
 	m_indexCache.Add(i + 3);
 
 	Vertex v;
-	v.color = ColorF::White;	// TODO
+	v.color = Color::White;	// TODO
 	v.position.Set(rect.GetLeft(), rect.GetTop(), 0);	v.uv.Set(lu, tv);	// 左上
 	m_vertexCache.Add(v);
 	v.position.Set(rect.GetLeft(), rect.GetBottom(), 0); v.uv.Set(lu, bv);	// 左下

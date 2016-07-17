@@ -22,21 +22,21 @@ LN_INTERNAL_ACCESS:
 	virtual ~MmdMaterial();
 
 public:	// TODO:
-	ColorF		m_diffuse;			// 物体の色
-	ColorF		m_ambient;			// 環境光
-	ColorF		m_specular;			// 光沢
-	ColorF		m_emissive;			// 物体の発光色 ( 光源の影響を受けない色 )
+	Color		m_diffuse;			// 物体の色
+	Color		m_ambient;			// 環境光
+	Color		m_specular;			// 光沢
+	Color		m_emissive;			// 物体の発光色 ( 光源の影響を受けない色 )
 	float		m_power;			// 光沢の強さ
 
 	Texture*	m_toonTexture;
 	Texture*	m_sphereTexture;
 
-	ColorF						ToonColor;			///< [PMD] トゥーンカラー
-	ColorF						EdgeColor;			///< [PMX] エッジカラー
+	Color						ToonColor;			///< [PMD] トゥーンカラー
+	Color						EdgeColor;			///< [PMX] エッジカラー
 	float						EdgeSize;			///< [PMX] エッジサイズ
-	ColorF						TextureCoe;			///< [PMX] テクスチャ係数
-	ColorF						SphereTextureCoe;	///< [PMX] スフィアテクスチャ係数
-	ColorF						ToonTextureCoe;		///< [PMX] Toonテクスチャ係数
+	Color						TextureCoe;			///< [PMX] テクスチャ係数
+	Color						SphereTextureCoe;	///< [PMX] スフィアテクスチャ係数
+	Color						ToonTextureCoe;		///< [PMX] Toonテクスチャ係数
 	uint32_t					DrawingFlags;		///< [PMX] 描画オプション (MMDDrawingFlags の組み合わせ)
 	int/*Material::SphereMode*/		SphereMode;			///< [PMX] スフィアテクスチャの合成モード
 };

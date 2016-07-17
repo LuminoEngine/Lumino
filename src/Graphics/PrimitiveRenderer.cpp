@@ -55,11 +55,11 @@ struct PrimitiveRendererCore_DrawLine : public RenderingCommand
 {
 	PrimitiveRendererCore* m_core;
 	Vector3 m_from;
-	ColorF m_fromColor;
+	Color m_fromColor;
 	Vector3 m_to;
-	ColorF m_toColor;
+	Color m_toColor;
 
-	void Create(PrimitiveRendererCore* core, const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor)
+	void Create(PrimitiveRendererCore* core, const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor)
 	{
 		m_core = core;
 		m_from = from;
@@ -189,10 +189,10 @@ void PrimitiveRendererCore::Initialize(GraphicsManager* manager)
 
 	// Blt 用頂点バッファ
 	Vertex tv[4];
-	tv[0].position.Set(-1,  1, 0); tv[0].color = ColorF::White; tv[0].uv.Set(0, 0);	// 左上
-	tv[1].position.Set(-1, -1, 0); tv[1].color = ColorF::White; tv[1].uv.Set(0, 1);	// 左下
-	tv[2].position.Set( 1,  1, 0); tv[2].color = ColorF::White; tv[2].uv.Set(1, 0);	// 右上
-	tv[3].position.Set( 1, -1, 0); tv[3].color = ColorF::White; tv[3].uv.Set(1, 1);	// 右下
+	tv[0].position.Set(-1,  1, 0); tv[0].color = Color::White; tv[0].uv.Set(0, 0);	// 左上
+	tv[1].position.Set(-1, -1, 0); tv[1].color = Color::White; tv[1].uv.Set(0, 1);	// 左下
+	tv[2].position.Set( 1,  1, 0); tv[2].color = Color::White; tv[2].uv.Set(1, 0);	// 右上
+	tv[3].position.Set( 1, -1, 0); tv[3].color = Color::White; tv[3].uv.Set(1, 1);	// 右下
 	m_vertexBufferForBlt = device->CreateVertexBuffer(Vertex::Elements(), Vertex::ElementCount, 4, tv, DeviceResourceUsage_Static);
 
 	// Blt 用デフォルトシェーダ
@@ -228,7 +228,7 @@ void PrimitiveRendererCore::SetState(const Matrix& world, const Matrix& viewProj
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRendererCore::DrawLine(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor)
+void PrimitiveRendererCore::DrawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor)
 {
 	AddVertex(from, Vector2::Zero, fromColor);
 	AddVertex(to, Vector2::Zero, toColor);
@@ -358,7 +358,7 @@ void PrimitiveRendererCore::Flush()
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRendererCore::AddVertex(const Vector3& pos, const Vector2& uv, const ColorF& color)
+void PrimitiveRendererCore::AddVertex(const Vector3& pos, const Vector2& uv, const Color& color)
 {
 	uint32_t size = sizeof(Vertex);
 	if (m_vertexCacheUsed + size >= m_vertexCache.GetSize()) {
@@ -451,7 +451,7 @@ void PrimitiveRenderer::SetTexture(Texture* texture)
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRenderer::DrawLine(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor)
+void PrimitiveRenderer::DrawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor)
 {
 	SetPrimitiveRendererMode(PrimitiveRendererMode::LineList);
 	CheckUpdateState();
@@ -461,10 +461,10 @@ void PrimitiveRenderer::DrawLine(const Vector3& from, const ColorF& fromColor, c
 
 //------------------------------------------------------------------------------
 void PrimitiveRenderer::DrawSquare(
-	const Vector3& position1, const Vector2& uv1, const ColorF& color1,
-	const Vector3& position2, const Vector2& uv2, const ColorF& color2,
-	const Vector3& position3, const Vector2& uv3, const ColorF& color3,
-	const Vector3& position4, const Vector2& uv4, const ColorF& color4)
+	const Vector3& position1, const Vector2& uv1, const Color& color1,
+	const Vector3& position2, const Vector2& uv2, const Color& color2,
+	const Vector3& position3, const Vector2& uv3, const Color& color3,
+	const Vector3& position4, const Vector2& uv4, const Color& color4)
 {
 	SetPrimitiveRendererMode(PrimitiveRendererMode::TriangleList);
 	CheckUpdateState();
@@ -485,10 +485,10 @@ void PrimitiveRenderer::DrawRectangle(const RectF& rect)
 	float r = rect.GetRight();
 	float b = rect.GetBottom();
 	DrawSquare(
-		Vector3(l, t, 0), Vector2(0, 0), ColorF::White,
-		Vector3(l, b, 0), Vector2(0, 1), ColorF::White,
-		Vector3(r, t, 0), Vector2(1, 0), ColorF::White,
-		Vector3(r, b, 0), Vector2(1, 1), ColorF::White);
+		Vector3(l, t, 0), Vector2(0, 0), Color::White,
+		Vector3(l, b, 0), Vector2(0, 1), Color::White,
+		Vector3(r, t, 0), Vector2(1, 0), Color::White,
+		Vector3(r, b, 0), Vector2(1, 1), Color::White);
 }
 
 //------------------------------------------------------------------------------

@@ -34,7 +34,7 @@ public:
 
 	/** メインマテリアルのカラースケールを設定します。(default: )*/
 	/// 乗算色の設定TODO: Color32
-	void SetColorScale(const ColorF& color, int subsetIndex = -1);
+	void SetColorScale(const Color& color, int subsetIndex = -1);
 	void SetColorScale(float r, float g, float b, float a = 1.0f, int subsetIndex = -1);
 
 
@@ -42,7 +42,7 @@ public:
 	void SetColor(int r, int g, int b, int a = 255);
 
 	/// ブレンドカラーの設定 TODO: Color32
-	void SetBlendColor(const ColorF& color, int subsetIndex = -1);
+	void SetBlendColor(const Color& color, int subsetIndex = -1);
 
 	/// 色調の設定 TODO: Tone32
 	void SetTone(const ToneF& tone, int subsetIndex = -1);

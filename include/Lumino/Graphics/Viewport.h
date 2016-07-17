@@ -76,7 +76,7 @@ public:
 
 	const Size& GetSize() const;
 
-	void SetBackgroundColor(const Color32& color);
+	void SetBackgroundColor(const Color& color);
 
 	ObjectList<ViewportLayer*>* GetLayers() const { return m_viewportLayerList; }
 
@@ -103,7 +103,7 @@ private:
 	RenderTarget*				m_renderTarget;
 
 	RefPtr<ViewportLayerList>	m_viewportLayerList;
-	ColorF						m_backgroundColor;
+	Color						m_backgroundColor;
 	RenderTarget*				m_primaryLayerTarget;
 	RenderTarget*				m_secondaryLayerTarget;
 };

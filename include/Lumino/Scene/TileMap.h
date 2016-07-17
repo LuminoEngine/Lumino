@@ -11,7 +11,7 @@ class TileMapRenderer;
 /**
 	@brief	
 */
-class TileMapNode
+class TileMap
 	: public VisualNode
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
@@ -20,19 +20,19 @@ public:
 	/**
 		@brief		
 	*/
-	static TileMapNode* Create();
+	static TileMapPtr Create();
 
 	/**
 		@brief
 	*/
-	static TileMapNode* Create3D();
+	static TileMapPtr Create3D();
 
 public:
 	void SetTileMap(TileMapModel* tileMap);
 
 protected:
-	TileMapNode();
-	virtual ~TileMapNode();
+	TileMap();
+	virtual ~TileMap();
 	void Create3DCore(SceneGraph* owner);
 	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex);
 

@@ -28,7 +28,7 @@ public:
 	virtual bool IsItalic() const { return false; }
 	virtual void SetAntiAlias(bool enabled) { LN_THROW(0, InvalidOperationException); }
 	virtual bool IsAntiAlias() const { return false; }
-	virtual Font* Copy() const;
+	virtual FontPtr Copy() const;
 	virtual int GetLineSpacing() { return m_charHeight; }
 	virtual FontGlyphLocation* AdvanceKerning(UTF32 utf32code, int strokeSize, FontGlyphLocation* prevData);
 	virtual FontGlyphBitmap* LookupGlyphBitmap(UTF32 utf32code, int strokeSize);

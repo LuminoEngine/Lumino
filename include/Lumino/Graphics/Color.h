@@ -6,7 +6,7 @@ class Vector3;
 class Vector4;
 
 LN_NAMESPACE_GRAPHICS_BEGIN
-class ColorF;
+class Color;
 	
 /**
 	@brief	各要素を 0～255 の範囲で表す RGBA カラーを定義します。
@@ -202,7 +202,7 @@ public:
 /**
 	@brief	各要素を 0.0～1.0 の範囲で表す RGBA カラーを定義します。
 */
-class ColorF
+class Color
 {
 public:
 	float	r;		///< 赤成分 (0.0～1.0)
@@ -211,47 +211,47 @@ public:
 	float	a;		///< アルファ成分 (0.0～1.0)
 
 public:
-	static const ColorF Transparency;			///< 透明 (0.0, 0.0, 0.0, 0.0)
-	static const ColorF TransparencyWhite;		///< 白透明 (1.0, 1.0, 1.0, 0.0)
-	static const ColorF White;					///< 白 (1.0, 1.0, 1.0, 1.0)
-	static const ColorF Black;					///< 黒 (0.0, 0.0, 0.0, 1.0)
-	static const ColorF Gray;					///< 灰色 (0.5, 0.5, 0.5, 1.0)
-	static const ColorF Red;					///< 赤 (1.0, 0.0, 0.0, 1.0)
-	static const ColorF Green;					///< 緑 (0.0, 1.0, 0.0, 1.0)
-	static const ColorF Blue;					///< 青 (0.0, 0.0, 1.0, 1.0)
-	static const ColorF DimGray;				///< 濃い灰色
+	static const Color Transparency;			///< 透明 (0.0, 0.0, 0.0, 0.0)
+	static const Color TransparencyWhite;		///< 白透明 (1.0, 1.0, 1.0, 0.0)
+	static const Color White;					///< 白 (1.0, 1.0, 1.0, 1.0)
+	static const Color Black;					///< 黒 (0.0, 0.0, 0.0, 1.0)
+	static const Color Gray;					///< 灰色 (0.5, 0.5, 0.5, 1.0)
+	static const Color Red;					///< 赤 (1.0, 0.0, 0.0, 1.0)
+	static const Color Green;					///< 緑 (0.0, 1.0, 0.0, 1.0)
+	static const Color Blue;					///< 青 (0.0, 0.0, 1.0, 1.0)
+	static const Color DimGray;				///< 濃い灰色
 
 public:
 
 	/**
 		@brief	すべての要素を 0.0 で初期化します。
 	*/
-	ColorF() { r = 0.0; g = 0.0; b = 0.0; a = 0.0; }
+	Color() { r = 0.0; g = 0.0; b = 0.0; a = 0.0; }
 
 	/**
 		@brief	各要素を指定して初期化します。
 	*/
-	ColorF(float r_, float g_, float b_, float a_ = 1.0f) { r = r_; g = g_; b = b_; a = a_; }
+	Color(float r_, float g_, float b_, float a_ = 1.0f) { r = r_; g = g_; b = b_; a = a_; }
 
 	/**
 		@brief	指定した ColorF をコピーして初期化します。
 	*/
-	ColorF(const ColorF& color) { r = color.r; g = color.g; b = color.b; a = color.a; }
+	Color(const Color& color) { r = color.r; g = color.g; b = color.b; a = color.a; }
 
 	/**
 		@brief	Color32 を変換して設定します。
 	*/
-	ColorF(const Color32& color);
+	Color(const Color32& color);
 
 	/**
 		@brief	指定した Vector3 とアルファ値をコピーして初期化します。
 	*/
-	ColorF(const Vector3& vec, float a);
+	Color(const Vector3& vec, float a);
 
 	/**
 		@brief	指定した Vector4 をコピーして初期化します。
 	*/
-	ColorF(const Vector4& vec);
+	Color(const Vector4& vec);
 
 public:
 	
@@ -263,14 +263,14 @@ public:
 	/**
 		@brief	この色に指定した色を加算します。0.0～1.0 を超える場合はクランプします。
 	*/
-	void AddClamp(const ColorF& color);
+	void AddClamp(const Color& color);
 
 	/**
 		@brief	この色に指定した色を乗算します。0.0～1.0 を超える場合はクランプします。
 	*/
-	void MultiplyClamp(const ColorF& color);
+	void MultiplyClamp(const Color& color);
 
-	static ColorF Lerp(const ColorF& color1, const ColorF& color2, float t);
+	static Color Lerp(const Color& color1, const Color& color2, float t);
 
 	//----------------------------------------------------------------------
 	///**
@@ -294,6 +294,8 @@ public:
 	//void dump(const char* str_ = NULL) const;
 
 	Color32 To32BitColor() const;
+
+	static Color FromString(const StringRef& str);
 
 public:
 	//ColorF& operator = (const ColorF& src) { r = src.r; g = src.g; b = src.b; a = src.a; return *this; }
@@ -430,7 +432,7 @@ public:
 	/**
 		@brief	ColorF 型に変換します。
 	*/
-	ColorF ToColorF() const;
+	Color ToColorF() const;
 
 public:
 	bool operator == (const Color32& color) const { return (memcmp(this, &color, sizeof(Color32)) == 0); }

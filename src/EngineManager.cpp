@@ -150,6 +150,12 @@ void EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType renderingTyp
 }
 
 //------------------------------------------------------------------------------
+void EngineSettings::SetFpuPreserveEnabled(bool enabled)
+{
+	detail::EngineSettings::instance.fpuPreserveEnabled = enabled;
+}
+
+//------------------------------------------------------------------------------
 void EngineSettings::SetDirectMusicMode(DirectMusicMode mode)
 {
 	detail::EngineSettings::instance.directMusicMode = mode;
@@ -709,7 +715,7 @@ void EngineManager::Render()
 		if (m_diagViewer != nullptr && m_diagViewer->IsVisible())
 		{
 			// TODO: このあたりも GetMainWindow()->Render() の中に持っていくべき？
-			g->Clear(ClearFlags::Depth, ColorF::White);	// TODO
+			g->Clear(ClearFlags::Depth, Color::White);	// TODO
 			g->Set2DRenderingMode(-1, 1);	// TODO
 			m_diagViewer->Render(g, Vector2(640, 480));	//TODO
 		}

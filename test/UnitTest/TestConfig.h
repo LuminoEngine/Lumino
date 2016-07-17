@@ -62,7 +62,7 @@ class PosColorVertex
 {
 public:
 	Vector3		Position;
-	ColorF		Color;
+	Color		Color;
 
 	static VertexElement* GetLayout()
 	{

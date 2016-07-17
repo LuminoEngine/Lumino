@@ -147,7 +147,7 @@ void PainterEngine::Begin()
 	GetCurrentState().ReleaseObjects();
 	GetCurrentState().Brush.Type = BrushType_Unknown;
 	GetCurrentState().Opacity = 1.0f;
-	GetCurrentState().ForeColor = ColorF::Black;
+	GetCurrentState().ForeColor = Color::Black;
 	m_currentInternalGlyphMask = m_dummyTexture;
 }
 

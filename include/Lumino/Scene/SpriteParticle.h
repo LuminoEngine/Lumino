@@ -23,7 +23,7 @@ struct ParticleData
 	float		sizeAccel;
 
 	Quaternion	rotation;
-	ColorF		color;
+	Color		color;
 	float		spawnTime = -1.f;	// 負値の場合は非アクティブ
 	float		endTime = 0.f;
 	float		lastTime = 0.0f;

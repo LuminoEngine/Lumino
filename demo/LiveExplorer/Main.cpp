@@ -204,14 +204,15 @@ int main()
 		return 0;
 		//printf("%d\n", g_ptr->t1->value);
 #endif
-#if 0
-		StreamReader reader(_T("C:/Proj/Lumino/src/Graphics/Resource/DotNetColors.txt"));
+#if 1
+		StreamReader reader(_T("D:/Proj/Volkoff/External/Lumino/src/Graphics/Resource/DotNetColors.txt"));
 		StreamWriter file1(_T("decls.txt"));
 		StreamWriter file2(_T("defs.txt"));
 		String line;
 		while (reader.ReadLine(&line))
 		{
 			auto tokens = line.Split(_T(" "), StringSplitOptions::RemoveEmptyEntries);
+			//Color32 c = Color32::FromString(tokens[1]);
 			Color c = Color::FromString(tokens[1]);
 			file1.WriteLine(_T("static const Color {0,-22} /** ({1}, {2}, {3}) */"), tokens[0] + _T(";"), c.r, c.g, c.b);
 			file2.WriteLine(_T("Color Color::{0}({1}, {2}, {3});"), tokens[0], c.r, c.g, c.b);
@@ -497,7 +498,7 @@ int main()
 
 #endif
 #if 0
-		RefPtr<TileMapNode> tilemapNode(TileMapNode::Create3D(), false);
+		RefPtr<TileMap> tilemapNode(TileMap::Create3D(), false);
 		//tilemapNode->SetTileMap(tilemap);
 
 		RefPtr<Physics::Collider> collider2(Physics::PlaneCollider::Create(), false);

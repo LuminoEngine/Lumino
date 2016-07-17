@@ -154,7 +154,7 @@ Viewport::Viewport()
 	: m_manager(nullptr)
 	, m_renderTarget(nullptr)
 	, m_viewportLayerList(RefPtr<ViewportLayerList>::MakeRef())
-	, m_backgroundColor(ColorF::White)
+	, m_backgroundColor(Color::White)
 	, m_primaryLayerTarget(nullptr)
 	, m_secondaryLayerTarget(nullptr)
 {
@@ -182,7 +182,7 @@ const Size& Viewport::GetSize() const
 }
 
 //------------------------------------------------------------------------------
-void Viewport::SetBackgroundColor(const Color32& color)
+void Viewport::SetBackgroundColor(const Color& color)
 {
 	m_backgroundColor = color;
 }

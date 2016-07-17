@@ -36,10 +36,10 @@ public:
 	};
 
 public:
-	ColorF						Diffuse;			///< 物体の色
-	ColorF						Ambient;			///< 環境光
-	ColorF						Specular;			///< 光沢
-	ColorF						Emissive;			///< 物体の発光色 ( 光源の影響を受けない色 )
+	Color						Diffuse;			///< 物体の色
+	Color						Ambient;			///< 環境光
+	Color						Specular;			///< 光沢
+	Color						Emissive;			///< 物体の発光色 ( 光源の影響を受けない色 )
 	float						Power;				///< 光沢の強さ
 
 	RefPtr<Shader>				Shader;				///< シェーダ
@@ -47,12 +47,12 @@ public:
 	RefPtr<ln::Texture>			ToonTexture;		///< [PMD] トゥーンテクスチャ (getToonTexture() setToonTexture()でアクセスする)
 	RefPtr<ln::Texture>			SphereTexture;		///< [PMD] スフィアテクスチャ (getSphereTexture() setSphereTexture()でアクセスする)
 
-	ColorF						ToonColor;			///< [PMD] トゥーンカラー
-	ColorF						EdgeColor;			///< [PMX] エッジカラー
+	Color						ToonColor;			///< [PMD] トゥーンカラー
+	Color						EdgeColor;			///< [PMX] エッジカラー
 	float						EdgeSize;			///< [PMX] エッジサイズ
-	ColorF						TextureCoe;			///< [PMX] テクスチャ係数
-	ColorF						SphereTextureCoe;	///< [PMX] スフィアテクスチャ係数
-	ColorF						ToonTextureCoe;		///< [PMX] Toonテクスチャ係数
+	Color						TextureCoe;			///< [PMX] テクスチャ係数
+	Color						SphereTextureCoe;	///< [PMX] スフィアテクスチャ係数
+	Color						ToonTextureCoe;		///< [PMX] Toonテクスチャ係数
 	uint32_t					DrawingFlags;		///< [PMX] 描画オプション (MMDDrawingFlags の組み合わせ)
 	SphereMode					SphereMode;			///< [PMX] スフィアテクスチャの合成モード
 

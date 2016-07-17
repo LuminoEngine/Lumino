@@ -712,7 +712,7 @@ ModelCore* XFileLoader::Load(ModelManager* manager, Stream* stream, const PathNa
 							(dx_vertices[i].Color >> 16) & 0xFF,
 							(dx_vertices[i].Color >> 8) & 0xFF,
 							(dx_vertices[i].Color) & 0xFF);
-						vertices[vi].Color = ColorF(c);
+						vertices[vi].Color = Color(c);
 						memset(vertices[vi].BlendIndices, 0, sizeof(vertices[vi].BlendIndices));
 						memset(vertices[vi].BlendWeights, 0, sizeof(vertices[vi].BlendWeights));
 					}

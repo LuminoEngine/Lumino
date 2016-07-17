@@ -225,12 +225,12 @@ private:
 	CommandListArray			m_childCommandListArray;
 	ShaderScriptCommandList*		m_parentList;					///< Pass の場合、親テクニックのコマンドリストを指す
 	int							m_scriptExternalColorPosition;	///< ScriptExternal=Color のある要素番号
-	ColorF			m_clearColor;					///< "ClearSetColor=" で設定された値
+	Color				m_clearColor;					///< "ClearSetColor=" で設定された値
 	float						m_clearDepth;					///< "ClearSetDepth=" で設定された値
 
 	Texture*			m_oldRenderTarget[Renderer::MaxMultiRenderTargets];
 	Texture*			m_oldDepthBuffer;
-	ColorF			m_oldClearColor;
+	Color				m_oldClearColor;
 	float						m_oldClearDepth;
 
 };

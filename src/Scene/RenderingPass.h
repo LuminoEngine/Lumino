@@ -83,7 +83,7 @@ protected:
 	RefPtr<Texture>				m_depthBuffer;			///< このパスの描画先となる深度バッファ (NULL可)
 	RefPtr<MMEShader>			m_defaultShader;		///< このパスの描画でデフォルトとして使用されるシェーダ (シェーダを持っていない VisualNode に対して使われる)
 	PriorityParamsEntryList		m_priorityEntryList;	///< このパスで優先的に使用されるシェーダ (シェーダを持っている VisualNode に対しても強制的にこちらを使う)
-	Nullable<ColorF>			m_clearColor;			///< パス開始時にレンダリングターゲットをクリアする色
+	Nullable<Color>				m_clearColor;			///< パス開始時にレンダリングターゲットをクリアする色
 	Nullable<float>				m_clearDepth;			///< パス開始時に深度バッファをクリアするZ値
 };
 

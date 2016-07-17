@@ -161,7 +161,7 @@ const Color32 Color32::Yellow(255, 255, 0);
 const Color32 Color32::YellowGreen(154, 205, 50);
 
 //------------------------------------------------------------------------------
-//Color32::Color32(const ColorF& colorF)
+//Color32::Color32(const Color& colorF)
 //{
 //	r = static_cast<uint8_t>(colorF.r * 255);
 //	g = static_cast<uint8_t>(colorF.g * 255);
@@ -273,17 +273,17 @@ Color32 Color32::FromString(const StringRef& str)
 }
 
 //==============================================================================
-// ColorF
+// Color
 //==============================================================================
-const ColorF ColorF::Transparency = ColorF(0.0, 0.0, 0.0, 0.0);
-const ColorF ColorF::TransparencyWhite = ColorF(1.0, 1.0, 1.0, 0.0);
-const ColorF ColorF::Black = ColorF(0.0, 0.0, 0.0, 1.0);
-const ColorF ColorF::White = ColorF(1.0, 1.0, 1.0, 1.0);
-const ColorF ColorF::Gray = ColorF(0.5, 0.5, 0.5, 1.0);
-const ColorF ColorF::Red = ColorF(1.0, 0.0, 0.0, 1.0);
-const ColorF ColorF::Green = ColorF(0.0, 1.0, 0.0, 1.0);
-const ColorF ColorF::Blue = ColorF(0.0, 0.0, 1.0, 1.0);
-const ColorF ColorF::DimGray = ColorF(0.25, 0.25, 0.25, 1.0);
+const Color Color::Transparency = Color(0.0, 0.0, 0.0, 0.0);
+const Color Color::TransparencyWhite = Color(1.0, 1.0, 1.0, 0.0);
+const Color Color::Black = Color(0.0, 0.0, 0.0, 1.0);
+const Color Color::White = Color(1.0, 1.0, 1.0, 1.0);
+const Color Color::Gray = Color(0.5, 0.5, 0.5, 1.0);
+const Color Color::Red = Color(1.0, 0.0, 0.0, 1.0);
+const Color Color::Green = Color(0.0, 1.0, 0.0, 1.0);
+const Color Color::Blue = Color(0.0, 0.0, 1.0, 1.0);
+const Color Color::DimGray = Color(0.25, 0.25, 0.25, 1.0);
 
 static const float g_color255Table[256] =
 {
@@ -306,7 +306,7 @@ static const float g_color255Table[256] =
 };
 
 //------------------------------------------------------------------------------
-ColorF::ColorF(const Color32& color)
+Color::Color(const Color32& color)
 {
 	r = g_color255Table[color.r];
 	g = g_color255Table[color.g];
@@ -314,19 +314,19 @@ ColorF::ColorF(const Color32& color)
 	a = g_color255Table[color.a];
 }
 //------------------------------------------------------------------------------
-ColorF::ColorF(const Vector3& vec, float a_)
+Color::Color(const Vector3& vec, float a_)
 {
 	r = vec.x; g = vec.y; b = vec.z; a = a_;
 }
 
 //------------------------------------------------------------------------------
-ColorF::ColorF(const Vector4& vec)
+Color::Color(const Vector4& vec)
 {
 	r = vec.x; g = vec.y; b = vec.z; a = vec.w;
 }
 
 //------------------------------------------------------------------------------
-void ColorF::AddClamp(const ColorF& color)
+void Color::AddClamp(const Color& color)
 {
 	r = Math::Clamp(r + color.r, 0.0f, 1.0f);
 	g = Math::Clamp(g + color.g, 0.0f, 1.0f);
@@ -335,7 +335,7 @@ void ColorF::AddClamp(const ColorF& color)
 }
 
 //------------------------------------------------------------------------------
-void ColorF::MultiplyClamp(const ColorF& color)
+void Color::MultiplyClamp(const Color& color)
 {
 	r = Math::Clamp(r * color.r, 0.0f, 1.0f);
 	g = Math::Clamp(g * color.g, 0.0f, 1.0f);
@@ -344,7 +344,7 @@ void ColorF::MultiplyClamp(const ColorF& color)
 }
 
 //------------------------------------------------------------------------------
-Color32 ColorF::To32BitColor() const
+Color32 Color::To32BitColor() const
 {
 	return Color32(
 		static_cast<uint8_t>(r * 255),
@@ -354,11 +354,18 @@ Color32 ColorF::To32BitColor() const
 }
 
 //------------------------------------------------------------------------------
+Color Color::FromString(const StringRef& str)
+{
+	Color32 c = Color32::FromString(str);
+	return Color(c);
+}
+
+//------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-ColorF ColorF::Lerp(const ColorF& color1, const ColorF& color2, float t)
+Color Color::Lerp(const Color& color1, const Color& color2, float t)
 {
-	return ColorF(
+	return Color(
 		Math::Lerp(color1.r, color2.r, t),
 		Math::Lerp(color1.g, color2.g, t),
 		Math::Lerp(color1.b, color2.b, t),
@@ -413,10 +420,10 @@ Color32 HSVColor::ToColor() const
 }
 
 //------------------------------------------------------------------------------
-ColorF HSVColor::ToColorF() const
+Color HSVColor::ToColorF() const
 {
 	Color32 c = ToColor();
-	return ColorF(c);
+	return Color(c);
 }
 
 

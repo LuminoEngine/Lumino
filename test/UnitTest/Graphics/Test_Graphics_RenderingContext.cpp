@@ -22,7 +22,7 @@ TEST_F(Test_Graphics_RenderingContext, Clear)
 {
 	Engine::BeginRendering();
 	auto* r = GraphicsContext::GetContext();
-	r->Clear(ClearFlags::Color, ColorF::Red);
+	r->Clear(ClearFlags::Color, Color::Red);
 	Engine::EndRendering();
 	ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/Test_Graphics_RenderingContext2.png")));
 	//TestEnv::SaveScreenShot(LN_TEMPFILE("test.png"));
@@ -34,9 +34,9 @@ TEST_F(Test_Graphics_RenderingContext, PosColorVertex)
 	// 反時計回りを表とする
 	PosColorVertex vertices[] =
 	{
-		{ Vector3(-1.0f, -1.0f, 0.0f), ColorF::Blue },	// 左下 青
-		{ Vector3(1.0f, -1.0f, 0.0f), ColorF::Green },	// 右下 緑
-		{ Vector3(0.0f, 1.0f, 1.0f), ColorF::Red },		// 頂点 赤
+		{ Vector3(-1.0f, -1.0f, 0.0f), Color::Blue },	// 左下 青
+		{ Vector3(1.0f, -1.0f, 0.0f), Color::Green },	// 右下 緑
+		{ Vector3(0.0f, 1.0f, 1.0f), Color::Red },		// 頂点 赤
 	};
 	RefPtr<VertexBuffer> vb(VertexBuffer::Create(
 		PosColorVertex::GetLayout(), PosColorVertex::LayoutCount, LN_ARRAY_SIZE_OF(vertices), vertices), false);
@@ -59,7 +59,7 @@ TEST_F(Test_Graphics_RenderingContext, PosColorVertex)
 				auto* r = GraphicsContext::GetContext();
 				r->SetVertexBuffer(vb);
 				r->SetDepthBuffer(nullptr);
-				r->Clear(ClearFlags::All, ColorF::Gray);
+				r->Clear(ClearFlags::All, Color::Gray);
 				r->SetShaderPass(m_shader->GetTechniques()[0]->GetPasses()[0]);
 				r->DrawPrimitive(PrimitiveType_TriangleList, 0, 1);
 
@@ -67,7 +67,7 @@ TEST_F(Test_Graphics_RenderingContext, PosColorVertex)
 				auto* r2 = GraphicsManager::Instance->GetRenderer();
 				r2->SetVertexBuffer(vb);
 				r2->SetDepthBuffer(nullptr);
-				r2->Clear(ClearFlags::All, ColorF::Gray);
+				r2->Clear(ClearFlags::All, Color::Gray);
 				////r->SetShaderPass(m_shader->GetTechniques()[0]->GetPasses()[0]);
 				m_shader->GetTechniques()[0]->GetPasses()[0]->Apply();
 				r2->DrawPrimitive(PrimitiveType_TriangleList, 0, 1);

@@ -40,7 +40,7 @@ public:
 		const Vector2& size,
 		Driver::ITexture* texture,
 		const RectF& srcRect,
-		const ColorF* colorTable);
+		const Color* colorTable);
 
 	/// 描画リクエスト
 	void DrawRequest3D(
@@ -49,7 +49,7 @@ public:
         const Vector2& size,
 		Driver::ITexture* texture,
 		const RectF& srcRect,
-		const ColorF* colorTable,    // 4 頂点分。NULL の場合は白
+		const Color* colorTable,    // 4 頂点分。NULL の場合は白
 		AxisDirection front);
 
 	/// バッチ処理されているスプライトの描画
@@ -69,7 +69,7 @@ private:
 		const Vector2& size,
 		Driver::ITexture* texture,
 		const RectF& srcRect,
-		const ColorF* colorTable,
+		const Color* colorTable,
 		AxisDirection front,
 		bool is3D);
 
@@ -77,7 +77,7 @@ private:
 	struct BatchSpriteVertex
 	{
 		Vector3		Position;   ///< 座標
-		ColorF		Color;      ///< 頂点カラー
+		Color		Color;      ///< 頂点カラー
 		Vector2		TexUV;      ///< テクスチャ座標
 
 		/// 頂点レイアウト
@@ -242,7 +242,7 @@ public:
 		Vector2 m_size;
 		Driver::ITexture* m_texture;
 		RectF m_srcRect;
-		ColorF m_colorTable[4];
+		Color m_colorTable[4];
 
 		void Create(
 			SpriteRendererImpl* renderer, 
@@ -251,7 +251,7 @@ public:
 			const Vector2& size,
 			Driver::ITexture* texture,
 			const RectF& srcRect,
-			const ColorF* colorTable)
+			const Color* colorTable)
 		{
 			m_renderer = renderer;
 			m_position = position;
@@ -259,7 +259,7 @@ public:
 			m_size = size;
 			m_texture = texture;
 			m_srcRect = srcRect;
-			memcpy(m_colorTable, colorTable, sizeof(ColorF) * 4);
+			memcpy(m_colorTable, colorTable, sizeof(Color) * 4);
 			MarkGC(m_renderer);
 			MarkGC(m_texture);
 		}
@@ -277,7 +277,7 @@ public:
 		Vector2 m_size;
 		Driver::ITexture* m_texture;
 		RectF m_srcRect;
-		ColorF m_colorTable[4];
+		Color m_colorTable[4];
 		AxisDirection m_front;
 
 		void Create(
@@ -287,7 +287,7 @@ public:
 			const Vector2& size,
 			Driver::ITexture* texture,
 			const RectF& srcRect,
-			const ColorF* colorTable,
+			const Color* colorTable,
 			AxisDirection front)
 		{
 			m_renderer = renderer;
@@ -296,7 +296,7 @@ public:
 			m_size = size;
 			m_texture = texture;
 			m_srcRect = srcRect;
-			memcpy(m_colorTable, colorTable, sizeof(ColorF) * 4);
+			memcpy(m_colorTable, colorTable, sizeof(Color) * 4);
 			m_front = front;
 			MarkGC(m_renderer);
 			MarkGC(m_texture);

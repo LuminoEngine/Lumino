@@ -29,15 +29,15 @@ void Graphics::SetOpacity(float opacity)
 {
 	GraphicsManager::GetInstance()->GetGraphicsContext()->SetOpacity(opacity);
 }
-void Graphics::MoveTo(const Vector3& point, const ColorF& color)
+void Graphics::MoveTo(const Vector3& point, const Color& color)
 {
 	GraphicsManager::GetInstance()->GetGraphicsContext()->MoveTo(point, color);
 }
-void Graphics::LineTo(const Vector3& point, const ColorF& color)
+void Graphics::LineTo(const Vector3& point, const Color& color)
 {
 	GraphicsManager::GetInstance()->GetGraphicsContext()->LineTo(point, color);
 }
-void Graphics::BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const Vector3& endPt, const ColorF& color)
+void Graphics::BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const Vector3& endPt, const Color& color)
 {
 	GraphicsManager::GetInstance()->GetGraphicsContext()->BezierCurveTo(cp1, cp2, endPt, color);
 }
@@ -45,11 +45,11 @@ void Graphics::ClosePath()
 {
 	GraphicsManager::GetInstance()->GetGraphicsContext()->ClosePath();
 }
-//void Graphics::DrawPoint(const Vector3& point, const ColorF& color)
+//void Graphics::DrawPoint(const Vector3& point, const Color& color)
 //{
 //	GraphicsManager::GetInstance()->GetGraphicsContext()->DrawPoint(point, color);
 //}
-void Graphics::DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color)
+void Graphics::DrawTriangle(const Vector3& p1, const Color& p1Color, const Vector3& p2, const Color& p2Color, const Vector3& p3, const Color& p3Color)
 {
 	GraphicsManager::GetInstance()->GetGraphicsContext()->DrawTriangle(p1, p1Color, p2, p2Color, p3, p3Color);
 }
@@ -62,7 +62,7 @@ void Graphics::DrawEllipse(const Vector3& center, const Vector2& radius)
 	GraphicsManager::GetInstance()->GetGraphicsContext()->DrawEllipse(center, radius);
 
 }
-void Graphics::DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const ColorF& color)
+void Graphics::DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const Color& color)
 {
 	GraphicsManager::GetInstance()->GetGraphicsContext()->DrawTexture(rect, texture, srcRect, color);
 }

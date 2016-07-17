@@ -170,7 +170,7 @@ void GLRenderer::SetIndexBuffer(IIndexBuffer* indexBuffer)
 }
 
 //------------------------------------------------------------------------------
-void GLRenderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
+void GLRenderer::Clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	IRenderer::FlushStates();
 
