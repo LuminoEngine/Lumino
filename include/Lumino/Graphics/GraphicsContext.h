@@ -7,6 +7,7 @@
 
 LN_NAMESPACE_BEGIN
 class GraphicsContext;
+class StaticMeshModel;
 class SpriteRenderer;
 namespace detail { class TextRenderer; }
 namespace detail { class PrimitiveRenderer; }
@@ -237,6 +238,9 @@ public:
 
 	// このクラスが管理するステート。VertexBuffer などは描画時に各種 RendererCore 内で変更されるからちょっと考える必要がありそう。
 	//Shader*						m_shader;
+
+LN_INTERNAL_ACCESS:
+	void DrawMesh(StaticMeshModel* mesh);
 
 protected:
 	virtual void OnStateFlushRequested();

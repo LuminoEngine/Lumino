@@ -14,6 +14,7 @@ namespace Driver
 {
 class ISwapChain;
 class IRenderer;
+class IVertexDeclaration;
 class IVertexBuffer;
 class IIndexBuffer;
 class ITexture;
@@ -77,6 +78,8 @@ public:
 	
 	/// 描画インターフェイスの取得
 	virtual IRenderer* GetRenderer() = 0;
+
+	virtual IVertexDeclaration* CreateVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;
 
 	/// 頂点バッファの作成
 	virtual IVertexBuffer* CreateVertexBuffer(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage) = 0;
@@ -211,33 +214,49 @@ public:
 	/// ビューポート矩形の取得
 	//virtual const Rect& GetViewport() = 0;
 
-	///// 頂点バッファの設定
-	//virtual void SetVertexBuffer(IVertexBuffer* vertexBuffer) = 0;
+	void SetVertexDeclaration(IVertexDeclaration* vertexDeclaration);
 
-	///// インデックスバッファの設定
-	//virtual void SetIndexBuffer(IIndexBuffer* indexBuffer) = 0;
+	/// 頂点バッファの設定
+	void SetVertexBuffer(int streamIndex, IVertexBuffer* vertexBuffer);
+
+	/// インデックスバッファの設定
+	void SetIndexBuffer(IIndexBuffer* indexBuffer);
 
 	/// 設定されている各種バッファをクリアする
 	virtual void Clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00) = 0;
 
 	/// プリミティブ描画
-	virtual void DrawPrimitive(IVertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount) = 0;
+	virtual void DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) = 0;
 
 	/// プリミティブ描画 (インデックス付き。頂点、インデックスの両方のバッファのdynamic、static が一致している必要がある)
-	virtual void DrawPrimitiveIndexed(IVertexBuffer* vertexBuffer, IIndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount) = 0;
+	virtual void DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) = 0;
 
 protected:
-	virtual ~IRenderer() {}
+	IRenderer();
+	virtual ~IRenderer();
 
 	void FlushStates();
 	virtual	void OnUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset) = 0;
 	virtual	void OnUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset) = 0;
+	virtual void OnUpdatePrimitiveData(IVertexDeclaration* decls, const Array<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer) = 0;
 
 protected:	// TODO: private
-	RenderState				m_requestedRenderState;
-	RenderState				m_currentRenderState;
-	DepthStencilState		m_requestedDepthStencilState;
-	DepthStencilState		m_currentDepthStencilState;
+	enum ModifiedFlags
+	{
+		Modified_None				= 0x0000,
+		Modified_VertexDeclaration	= 0x0001,
+		Modified_VertexBuffer		= 0x0002,
+		Modified_IndexBuffer		= 0x0004,
+	};
+
+	uint32_t						m_modifiedFlags;
+	RenderState						m_requestedRenderState;
+	RenderState						m_currentRenderState;
+	DepthStencilState				m_requestedDepthStencilState;
+	DepthStencilState				m_currentDepthStencilState;
+	RefPtr<IVertexDeclaration>		m_currentVertexDeclaration;
+	Array<RefPtr<IVertexBuffer>>	m_currentVertexBuffers;
+	RefPtr<IIndexBuffer>			m_currentIndexBuffer;
 };
 
 /**

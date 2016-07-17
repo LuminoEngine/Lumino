@@ -44,15 +44,14 @@ public:
 	//virtual ITexture* GetDepthBuffer();
 	virtual void SetViewport(const Rect& rect);
 	//virtual const Rect& GetViewport();
-	virtual void SetVertexBuffer(IVertexBuffer* vertexBuffer);
-	virtual void SetIndexBuffer(IIndexBuffer* indexBuffer);
 	virtual void Clear(ClearFlags flags, const Color& color, float z, uint8_t stencil);
-	virtual void DrawPrimitive(IVertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount);
-	virtual void DrawPrimitiveIndexed(IVertexBuffer* vertexBuffer, IIndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount);
+	virtual void DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount);
+	virtual void DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount);
 
 protected:
 	virtual	void OnUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset) override;
 	virtual	void OnUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset) override;
+	virtual void OnUpdatePrimitiveData(IVertexDeclaration* decls, const Array<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer) override;
 
 	void UpdateFrameBuffer();
 	void UpdateVAO();

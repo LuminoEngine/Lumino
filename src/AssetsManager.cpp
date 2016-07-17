@@ -80,7 +80,7 @@ FontPtr AssetsManager::LoadFont(const StringRef& name, int size, bool isBold, bo
 	FontPtr ref;
 	if (name.IsEmpty())
 	{
-		ref.Attach(m_engineManager->GetGraphicsManager()->GetFontManager()->GetDefaultFont()->Copy(), false);
+		ref = m_engineManager->GetGraphicsManager()->GetFontManager()->GetDefaultFont()->Copy();
 	}
 	else
 	{

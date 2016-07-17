@@ -81,7 +81,7 @@ void TestEnv::SetUp()
 	EngineSettings settings;
 	EngineSettings::SetMainWindowSize(Size(160, 120));
 	EngineSettings::SetMainBackBufferSize(Size(160, 120));
-	EngineSettings::SetGraphicsAPI(GraphicsAPI::DirectX9);
+	EngineSettings::SetGraphicsAPI(GraphicsAPI::DirectX9);//GraphicsAPI::OpenGL);//
 	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Immediate);
 	//settings.graphicsAPI = GraphicsAPI::DirectX9; //GraphicsAPI::OpenGL;//
 	//settings.renderingType = GraphicsRenderingType::Immediate; //RenderingType::Deferred;//

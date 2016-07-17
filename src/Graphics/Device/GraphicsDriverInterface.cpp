@@ -12,6 +12,57 @@ namespace Driver
 //==============================================================================
 
 //------------------------------------------------------------------------------
+IRenderer::IRenderer()
+	: m_modifiedFlags(Modified_None)
+	, m_requestedRenderState()
+	, m_currentRenderState()
+	, m_requestedDepthStencilState()
+	, m_currentDepthStencilState()
+	, m_currentVertexDeclaration()
+	, m_currentVertexBuffers()
+	, m_currentIndexBuffer()
+{
+}
+
+//------------------------------------------------------------------------------
+IRenderer::~IRenderer()
+{
+}
+
+//------------------------------------------------------------------------------
+void IRenderer::SetVertexDeclaration(IVertexDeclaration* vertexDeclaration)
+{
+	if (m_currentVertexDeclaration != vertexDeclaration)
+	{
+		m_currentVertexDeclaration = vertexDeclaration;
+		m_modifiedFlags |= Modified_VertexDeclaration;
+	}
+}
+
+//------------------------------------------------------------------------------
+void IRenderer::SetVertexBuffer(int streamIndex, IVertexBuffer* vertexBuffer)
+{
+	if (m_currentVertexBuffers.GetCount() <= streamIndex)
+		m_currentVertexBuffers.Resize(streamIndex + 1);		// 配列が小さいので増やす
+
+	if (m_currentVertexBuffers[streamIndex] != vertexBuffer)
+	{
+		m_currentVertexBuffers[streamIndex] = vertexBuffer;
+		m_modifiedFlags |= Modified_VertexBuffer;
+	}
+}
+
+//------------------------------------------------------------------------------
+void IRenderer::SetIndexBuffer(IIndexBuffer* indexBuffer)
+{
+	if (m_currentIndexBuffer != indexBuffer)
+	{
+		m_currentIndexBuffer = indexBuffer;
+		m_modifiedFlags |= Modified_IndexBuffer;
+	}
+}
+
+//------------------------------------------------------------------------------
 void IRenderer::FlushStates()
 {
 	if (!m_requestedRenderState.Equals(m_currentRenderState))
@@ -23,6 +74,13 @@ void IRenderer::FlushStates()
 	{
 		OnUpdateDepthStencilState(m_requestedDepthStencilState, m_currentDepthStencilState, false);
 		m_currentDepthStencilState = m_requestedDepthStencilState;
+	}
+
+	// VertexBuffer
+	if (m_modifiedFlags & Modified_VertexBuffer ||
+		m_modifiedFlags & Modified_IndexBuffer)
+	{
+		OnUpdatePrimitiveData(m_currentVertexDeclaration, m_currentVertexBuffers, m_currentIndexBuffer);
 	}
 }
 

@@ -196,6 +196,7 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/Texture.h
 	include/Lumino/Graphics/Utils.h
 	include/Lumino/Graphics/VertexBuffer.h
+	include/Lumino/Graphics/VertexDeclaration.h
 	include/Lumino/Graphics/Viewport.h
 	include/Lumino/Graphics/ImageEffect/ImageEffect.h
 	include/Lumino/Graphics/ImageEffect/BlurImageEffect.h
@@ -226,6 +227,8 @@ set(LN_SOURCES_Graphics
 	src/Graphics/IndexBuffer.cpp
 	src/Graphics/Internal.h
 	src/Graphics/Mesh.cpp
+	src/Graphics/MeshRendererProxy.cpp
+	src/Graphics/MeshRendererProxy.h
 	src/Graphics/PainterEngine.cpp
 	src/Graphics/PainterEngine.h
 	src/Graphics/PngFile.h
@@ -250,6 +253,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/Texture.cpp
 	src/Graphics/Utils.cpp
 	src/Graphics/VertexBuffer.cpp
+	src/Graphics/VertexDeclaration.cpp
 	src/Graphics/Viewport.cpp
 	src/Graphics/ImageEffect/ImageEffect.cpp
 	src/Graphics/ImageEffect/BlurImageEffect.cpp

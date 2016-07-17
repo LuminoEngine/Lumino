@@ -874,6 +874,12 @@ void GraphicsContext::BltInternal(Texture* source, RenderTarget* dest, const Mat
 }
 
 //------------------------------------------------------------------------------
+void GraphicsContext::DrawMesh(StaticMeshModel* mesh)
+{
+
+}
+
+//------------------------------------------------------------------------------
 void GraphicsContext::OnStateFlushRequested()
 {
 	m_ploxy->FlushState(GetContextState());

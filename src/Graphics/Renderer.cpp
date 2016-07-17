@@ -317,7 +317,8 @@ void Renderer::DrawPrimitive(VertexBuffer* vertexBuffer, PrimitiveType primitive
 		int, startVertex,
 		int, primitiveCount,
 		{
-			m_internal->DrawPrimitive(vb, primitive, startVertex, primitiveCount);
+			m_internal->SetVertexBuffer(0, vb);
+			m_internal->DrawPrimitive(primitive, startVertex, primitiveCount);
 		});
 
 	//LN_CALL_RENDERER_COMMAND(DrawPrimitive, DrawPrimitiveCommand, primitive, startVertex, primitiveCount);
@@ -337,7 +338,9 @@ void Renderer::DrawPrimitiveIndexed(VertexBuffer* vertexBuffer, IndexBuffer* ind
 		int, startIndex,
 		int, primitiveCount,
 		{
-			m_internal->DrawPrimitiveIndexed(vb, ib, primitive, startIndex, primitiveCount);
+			m_internal->SetVertexBuffer(0, vb);
+			m_internal->SetIndexBuffer(ib);
+			m_internal->DrawPrimitiveIndexed(primitive, startIndex, primitiveCount);
 		});
 	//LN_CALL_RENDERER_COMMAND(DrawPrimitiveIndexed, DrawPrimitiveIndexedCommand, primitive, startIndex, primitiveCount);
 }

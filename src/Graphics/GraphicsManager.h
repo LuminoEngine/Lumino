@@ -132,7 +132,7 @@ public:	// TODO
 	//friend class Application;
 
 
-LN_INTERNAL_ACCESS:
+public:
 	void AddResourceObject(GraphicsResourceObject* obj) { m_resourceObjectList.Add(obj); }
 	void RemoveResourceObject(GraphicsResourceObject* obj) { m_resourceObjectList.Remove(obj); }
 	Driver::IGraphicsDevice* GetGraphicsDevice() { return m_graphicsDevice; }

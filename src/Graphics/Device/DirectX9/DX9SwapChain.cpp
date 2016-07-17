@@ -112,7 +112,7 @@ void DX9SwapChain::Resize(const Size& size)
 }
 
 //------------------------------------------------------------------------------
-void DX9SwapChain::Present(ITexture* colorBuffer)
+void DX9SwapChain::Present(ITexture* /*colorBuffer*/)
 {
 	if (m_graphicsDevice->GetDeviceState() != DeviceState_Enabled) {
 		return;

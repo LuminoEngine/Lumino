@@ -1014,7 +1014,9 @@ void SpriteRendererImpl::Flush()
 		r->SetRenderState(m_renderStateList[itr->RenderStateIndex]);
 		m_shader.varTexture->SetTexture(itr->Texture);
 		pass->Apply();
-		r->DrawPrimitiveIndexed(m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, itr->StartIndex, itr->PrimitiveNum);
+		r->SetVertexBuffer(0, m_vertexBuffer);
+		r->SetIndexBuffer(m_indexBuffer);
+		r->DrawPrimitiveIndexed(PrimitiveType_TriangleList, itr->StartIndex, itr->PrimitiveNum);
 	}
 
 	//-----------------------------------------------------

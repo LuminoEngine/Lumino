@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include "../Internal.h"
-#include <Lumino/Scene/MeshModelObject.h>
+#include <Lumino/Scene/StaticMesh.h>
 #include "MME/MMEShader.h"
 #include <Lumino/Scene/SceneGraph.h>
 #include "SceneGraphManager.h"
@@ -9,29 +9,29 @@
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
-// MeshModelObject
+// StaticMesh
 //==============================================================================
-
+#if 0
 //------------------------------------------------------------------------------
-RefPtr<MeshModelObject> MeshModelObject::Create(const StringRef& filePath)
+RefPtr<StaticMesh> StaticMesh::Create(const StringRef& filePath)
 {
-	RefPtr<MeshModelObject> obj(LN_NEW MeshModelObject(), false);
+	RefPtr<StaticMesh> obj(LN_NEW StaticMesh(), false);
 	obj->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), filePath);	// tODO: 3Dだけ？
 	return obj;
 }
 
 //------------------------------------------------------------------------------
-MeshModelObject::MeshModelObject()
+StaticMesh::StaticMesh()
 {
 }
 
 //------------------------------------------------------------------------------
-MeshModelObject::~MeshModelObject()
+StaticMesh::~StaticMesh()
 {
 }
 
 //------------------------------------------------------------------------------
-void MeshModelObject::Initialize(SceneGraph* owner, const StringRef& filePath)
+void StaticMesh::Initialize(SceneGraph* owner, const StringRef& filePath)
 {
 	m_model.Attach(LN_NEW Model(), false);
 	m_model->Create(owner->GetManager()->GetModelManager(), filePath);
@@ -49,7 +49,7 @@ void MeshModelObject::Initialize(SceneGraph* owner, const StringRef& filePath)
 }
 
 //------------------------------------------------------------------------------
-void MeshModelObject::OnUpdateFrame(float elapsedTime)
+void StaticMesh::OnUpdateFrame(float elapsedTime)
 {
 	//m_model->GetAnimator()->AdvanceTime((double)elapsedTime);
 	//m_model->UpdateBoneTransformHierarchy();
@@ -57,7 +57,7 @@ void MeshModelObject::OnUpdateFrame(float elapsedTime)
 }
 
 //------------------------------------------------------------------------------
-void MeshModelObject::UpdateNodeRenderingParams(MMEShader* priorityShader)
+void StaticMesh::UpdateNodeRenderingParams(MMEShader* priorityShader)
 {
 	//Shader* core = priorityShader->GetCoreShader();
 	//ShaderVariable* v;
@@ -77,9 +77,9 @@ void MeshModelObject::UpdateNodeRenderingParams(MMEShader* priorityShader)
 }
 
 //------------------------------------------------------------------------------
-void MeshModelObject::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
+void StaticMesh::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 {
 	m_model->DrawSubset(subsetIndex);
 }
-
+#endif
 LN_NAMESPACE_END

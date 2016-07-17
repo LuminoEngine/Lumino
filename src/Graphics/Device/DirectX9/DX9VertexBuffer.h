@@ -67,6 +67,10 @@ public:
 
 	IDirect3DVertexDeclaration9* GetDxVertexDeclaration() const { return m_vertexDecl; }
 
+	// IDeviceObject interface
+	virtual void OnLostDevice() override {};
+	virtual void OnResetDevice() override {};
+
 private:
 	IDirect3DVertexDeclaration9*	m_vertexDecl;
 };

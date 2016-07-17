@@ -62,6 +62,14 @@ void GLGraphicsDevice::Finalize()	// 仮想関数呼び出しが必要なので�
 }
 
 //------------------------------------------------------------------------------
+RefPtr<IVertexDeclaration> GLGraphicsDevice::CreateVertexDeclarationImplement(const VertexElement* elements, int elementsCount)
+{
+	RefPtr<GLVertexDeclaration> obj(LN_NEW GLVertexDeclaration(), false);
+	obj->Initialize(elements, elementsCount);
+	return RefPtr<IVertexDeclaration>::StaticCast(obj);
+}
+
+//------------------------------------------------------------------------------
 RefPtr<IVertexBuffer> GLGraphicsDevice::CreateVertexBufferImplement(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
 {
 	RefPtr<GLVertexBuffer> obj(LN_NEW GLVertexBuffer(), false);

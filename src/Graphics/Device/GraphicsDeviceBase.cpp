@@ -106,6 +106,15 @@ void GraphicsDeviceBase::DetachRenderingThread()
 }
 
 //------------------------------------------------------------------------------
+IVertexDeclaration* GraphicsDeviceBase::CreateVertexDeclaration(const VertexElement* elements, int elementsCount)
+{
+	ScopedAccessContext lock(this);
+	auto obj = CreateVertexDeclarationImplement(elements, elementsCount);
+	AddDeviceResource(obj);
+	return obj.DetachMove();
+}
+
+//------------------------------------------------------------------------------
 IVertexBuffer* GraphicsDeviceBase::CreateVertexBuffer(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
 {
 	ScopedAccessContext lock(this);

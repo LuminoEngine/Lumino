@@ -344,6 +344,7 @@ namespace Driver
 	class IGraphicsDevice;
 	class ISwapChain;
 	class IRenderer;
+	class IVertexDeclaration;
 	class IVertexBuffer;
 	class IIndexBuffer;
 	class ITexture;

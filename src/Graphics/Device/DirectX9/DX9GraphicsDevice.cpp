@@ -124,6 +124,14 @@ ISwapChain* DX9GraphicsDevice::GetDefaultSwapChain()
 }
 
 //------------------------------------------------------------------------------
+RefPtr<IVertexDeclaration> DX9GraphicsDevice::CreateVertexDeclarationImplement(const VertexElement* elements, int elementsCount)
+{
+	RefPtr<DX9VertexDeclaration> obj(LN_NEW DX9VertexDeclaration(), false);
+	obj->Initialize(this, elements, elementsCount);
+	return RefPtr<IVertexDeclaration>::StaticCast(obj);
+}
+
+//------------------------------------------------------------------------------
 RefPtr<IVertexBuffer> DX9GraphicsDevice::CreateVertexBufferImplement(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
 {
 	RefPtr<DX9VertexBuffer> obj(LN_NEW DX9VertexBuffer(), false);

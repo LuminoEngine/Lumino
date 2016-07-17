@@ -52,18 +52,12 @@ DX9Renderer::~DX9Renderer()
 //------------------------------------------------------------------------------
 void DX9Renderer::SetCurrentShaderPass(DX9ShaderPass* pass)
 {
-	//if (m_currentShaderPass != NULL && m_currentShaderPass != pass) {
-	//	m_currentShaderPass->EndPass();
-	//}
 	LN_REFOBJ_SET(m_currentShaderPass, pass);	// TODO: DX9Shader の参照カウントも増やさないとまずいかも
 }
 
 //------------------------------------------------------------------------------
 void DX9Renderer::OnLostDevice()
 {
-	//TryEndScene();
-
-
 }
 
 //------------------------------------------------------------------------------
@@ -116,7 +110,7 @@ void DX9Renderer::EnterRenderState()
 	}
 	InternalSetDepthBuffer(m_currentDepthBuffer, true);
 	InternalSetViewport(m_currentViewportRect, true);
-	InternalSetVertexBuffer(m_currentVertexBuffer, true);
+	InternalSetVertexBuffer(0, m_currentVertexBuffer, true);
 	InternalSetIndexBuffer(m_currentIndexBuffer, true);
 }
 
@@ -128,26 +122,6 @@ void DX9Renderer::LeaveRenderState()
 		m_currentShaderPass->EndPass();
 	}
 	LN_SAFE_RELEASE(m_currentShaderPass);
-
-
-
-
-
-	////InternalSetRenderState(NULL, true);
-	////InternalSetDepthStencilState(NULL, true);
-	//for (int i = 0; i < MaxMultiRenderTargets; ++i)
-	//{
-	//	//if (i != 0 || m_currentRenderTargets[i] != NULL) {	// 0 に NULL を指定することはできない。なのでやむを得ず何もしない
-	//		//InternalSetRenderTarget(i, NULL, true);
-	//	//}
-	//}
-	//InternalSetDepthBuffer(NULL, true);
-	////InternalSetViewport(NULL, true);
-	//InternalSetVertexBuffer(NULL, true);
-	//InternalSetIndexBuffer(NULL, true);
-
-
-
 
 	// ステートを復元する
 	if (m_restorationStates)
@@ -215,7 +189,6 @@ void DX9Renderer::End()
 //------------------------------------------------------------------------------
 void DX9Renderer::SetRenderTarget(int index, ITexture* texture)
 {
-	//TryBeginScene();
 	InternalSetRenderTarget(index, texture, false);
 }
 
@@ -228,41 +201,13 @@ ITexture* DX9Renderer::GetRenderTarget(int index)
 //------------------------------------------------------------------------------
 void DX9Renderer::SetDepthBuffer(ITexture* texture)
 {
-	//TryBeginScene();
 	InternalSetDepthBuffer(texture, false);
 }
 
 //------------------------------------------------------------------------------
-//ITexture* DX9Renderer::GetDepthBuffer()
-//{
-//	return m_currentDepthBuffer;
-//}
-
-//------------------------------------------------------------------------------
 void DX9Renderer::SetViewport(const Rect& rect)
 {
-	//TryBeginScene();
 	InternalSetViewport(rect, false);
-}
-
-//------------------------------------------------------------------------------
-//const Rect& DX9Renderer::GetViewport()
-//{
-//	return m_currentViewportRect;
-//}
-
-//------------------------------------------------------------------------------
-void DX9Renderer::SetVertexBuffer(IVertexBuffer* vertexBuffer)
-{
-	//TryBeginScene();
-	InternalSetVertexBuffer(vertexBuffer, false);
-}
-
-//------------------------------------------------------------------------------
-void DX9Renderer::SetIndexBuffer(IIndexBuffer* indexBuffer)
-{
-	//TryBeginScene();
-	InternalSetIndexBuffer(indexBuffer, false);
 }
 
 //------------------------------------------------------------------------------
@@ -291,20 +236,12 @@ void DX9Renderer::Clear(ClearFlags flags, const Color& color, float z, uint8_t s
 	c.a = static_cast<uint8_t>(color.a * 255);
 	D3DCOLOR dxc = D3DCOLOR_ARGB(c.a, c.r, c.g, c.b);
 	LN_COMCALL(m_dxDevice->Clear(0, NULL, flag, dxc, z, stencil));
-
-	IDirect3DSurface9* ff;
-	m_dxDevice->GetDepthStencilSurface(&ff);
-	ff->Release();
 }
 
 //------------------------------------------------------------------------------
-void DX9Renderer::DrawPrimitive(IVertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount)
+void DX9Renderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
 {
 	IRenderer::FlushStates();
-
-	// TODO
-	SetVertexBuffer(vertexBuffer);
-	//TryBeginScene();
 
 	D3DPRIMITIVETYPE dx_prim = D3DPT_TRIANGLELIST;
 	switch (primitive)
@@ -336,14 +273,9 @@ void DX9Renderer::DrawPrimitive(IVertexBuffer* vertexBuffer, PrimitiveType primi
 }
 
 //------------------------------------------------------------------------------
-void DX9Renderer::DrawPrimitiveIndexed(IVertexBuffer* vertexBuffer, IIndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount)
+void DX9Renderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
 {
 	IRenderer::FlushStates();
-
-	// TODO
-	SetVertexBuffer(vertexBuffer);
-	SetIndexBuffer(indexBuffer);
-	//TryBeginScene();
 
 	D3DPRIMITIVETYPE dx_prim = D3DPT_TRIANGLELIST;
 	switch (primitive)
@@ -558,6 +490,19 @@ void DX9Renderer::OnUpdateDepthStencilState(const DepthStencilState& newState, c
 }
 
 //------------------------------------------------------------------------------
+void DX9Renderer::OnUpdatePrimitiveData(IVertexDeclaration* decls, const Array<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer)
+{
+	// VertexBuffer
+	for (int i = 0; i < vertexBuufers.GetCount(); ++i)
+	{
+		InternalSetVertexBuffer(i, vertexBuufers[0], false);
+	}
+
+	// IndexBuffer
+	InternalSetIndexBuffer(indexBuffer, false);
+}
+
+//------------------------------------------------------------------------------
 void DX9Renderer::InternalSetRenderTarget(int index, ITexture* texture, bool reset)
 {
 	if (m_currentRenderTargets[index] != texture || reset)
@@ -609,26 +554,23 @@ void DX9Renderer::InternalSetViewport(const Rect& rect, bool reset)
 
 	LN_COMCALL(m_dxDevice->SetViewport(&viewport));
 	m_currentViewportRect = rect;
-
-
-
-	//RECT rc = { 0, 0, rect.Width, rect.Height };
-	//m_dxDevice->SetScissorRect(&rc);
 }
 
 //------------------------------------------------------------------------------
-void DX9Renderer::InternalSetVertexBuffer(IVertexBuffer* vertexBuffer, bool reset)
+void DX9Renderer::InternalSetVertexBuffer(int streamIndex, IVertexBuffer* vertexBuffer, bool reset)
 {
 	if (m_currentVertexBuffer != vertexBuffer || reset)
 	{
 		DX9VertexBuffer* vb = static_cast<DX9VertexBuffer*>(vertexBuffer);
-		if (vb != NULL) {
+		if (vb != nullptr)
+		{
 			LN_COMCALL(m_dxDevice->SetVertexDeclaration(vb->GetDxVertexDeclaration()));
-			LN_COMCALL(m_dxDevice->SetStreamSource(0, vb->GetDxVertexBuffer(), 0, vb->GetVertexStride()));
+			LN_COMCALL(m_dxDevice->SetStreamSource(streamIndex, vb->GetDxVertexBuffer(), 0, vb->GetVertexStride()));
 		}
-		else {
+		else
+		{
 			LN_COMCALL(m_dxDevice->SetVertexDeclaration(NULL));
-			LN_COMCALL(m_dxDevice->SetStreamSource(0, NULL, 0, 0));
+			LN_COMCALL(m_dxDevice->SetStreamSource(streamIndex, NULL, 0, 0));
 		}
 		LN_REFOBJ_SET(m_currentVertexBuffer, vb);
 	}

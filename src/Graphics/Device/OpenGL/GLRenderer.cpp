@@ -158,18 +158,6 @@ void GLRenderer::SetViewport(const Rect& rect)
 //}
 
 //------------------------------------------------------------------------------
-void GLRenderer::SetVertexBuffer(IVertexBuffer* vertexBuffer)
-{
-	LN_REFOBJ_SET(m_currentVertexBuffer, static_cast<GLVertexBuffer*>(vertexBuffer));
-}
-
-//------------------------------------------------------------------------------
-void GLRenderer::SetIndexBuffer(IIndexBuffer* indexBuffer)
-{
-	LN_REFOBJ_SET(m_currentIndexBuffer, static_cast<GLIndexBuffer*>(indexBuffer));
-}
-
-//------------------------------------------------------------------------------
 void GLRenderer::Clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	IRenderer::FlushStates();
@@ -208,12 +196,9 @@ void GLRenderer::Clear(ClearFlags flags, const Color& color, float z, uint8_t st
 }
 
 //------------------------------------------------------------------------------
-void GLRenderer::DrawPrimitive(IVertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount)
+void GLRenderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
 {
 	IRenderer::FlushStates();
-
-	// TODO
-	SetVertexBuffer(vertexBuffer);
 
 	if (m_currentVertexBuffer == NULL) {
 		LN_THROW(0, InvalidOperationException);
@@ -253,13 +238,9 @@ void GLRenderer::DrawPrimitive(IVertexBuffer* vertexBuffer, PrimitiveType primit
 }
 
 //------------------------------------------------------------------------------
-void GLRenderer::DrawPrimitiveIndexed(IVertexBuffer* vertexBuffer, IIndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount)
+void GLRenderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
 {
 	IRenderer::FlushStates();
-
-	// TODO
-	SetVertexBuffer(vertexBuffer);
-	SetIndexBuffer(indexBuffer);
 
 	if (m_currentVertexBuffer == NULL ||
 		m_currentIndexBuffer == NULL ||
@@ -473,6 +454,13 @@ void GLRenderer::OnUpdateDepthStencilState(const DepthStencilState& newState, co
 }
 
 //------------------------------------------------------------------------------
+void GLRenderer::OnUpdatePrimitiveData(IVertexDeclaration* decls, const Array<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer)
+{
+	LN_REFOBJ_SET(m_currentVertexBuffer, static_cast<GLVertexBuffer*>(vertexBuufers[0].Get()));
+	LN_REFOBJ_SET(m_currentIndexBuffer, static_cast<GLIndexBuffer*>(indexBuffer));
+}
+
+//------------------------------------------------------------------------------
 void GLRenderer::UpdateFrameBuffer()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer); LN_CHECK_GLERROR();
@@ -556,7 +544,7 @@ void GLRenderer::UpdateVertexAttribPointer()
 
 	// シェーダの頂点属性の更新
 	const Array<LNGLVertexElement>& elements = m_currentVertexBuffer->GetVertexElements();
-	LN_FOREACH(const LNGLVertexElement& elm, elements)
+	for (const LNGLVertexElement& elm : elements)
 	{
 		int index = m_currentShaderPass->GetUsageAttributeIndex(elm.Usage, elm.UsageIndex);
 		if (index == -1) {
@@ -564,7 +552,7 @@ void GLRenderer::UpdateVertexAttribPointer()
 		}
 
 		glVertexAttribPointer(
-			index,
+			index,			// 属性インデックス。glGetAttribLocation() で得られる、attribute 変数の location。
 			elm.Size,
 			elm.Type,
 			elm.Normalized,

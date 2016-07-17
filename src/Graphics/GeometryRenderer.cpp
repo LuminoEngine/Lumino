@@ -1091,7 +1091,9 @@ void DrawingContextImpl::Flush()
 		m_shader3D.varTexture->SetTexture(m_currentState.Brush.SelectTexutre(m_manager->GetDummyTexture()));
 		m_shader3D.varGlyphMaskSampler->SetTexture(m_manager->GetDummyTexture());
 		m_shader3D.passP0->Apply();
-		renderer->DrawPrimitiveIndexed(m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
+		renderer->SetVertexBuffer(0, m_vertexBuffer);
+		renderer->SetIndexBuffer(m_indexBuffer);
+		renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
 	}
 
 #if 0

@@ -82,6 +82,10 @@ public:
 	// 頂点宣言の型から LNGLVertexElement 用のデータを作る
 	static void ConvertDeclTypeLNToGL(VertexElementType type, GLenum* gl_type, GLint* size, GLboolean* normalized);
 
+	// IDeviceObject interface
+	virtual void OnLostDevice() override {};
+	virtual void OnResetDevice() override {};
+
 private:
 	Array<LNGLVertexElement>	m_vertexElements;
 };
