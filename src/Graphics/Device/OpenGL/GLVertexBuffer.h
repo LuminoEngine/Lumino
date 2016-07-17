@@ -21,7 +21,7 @@ struct LNGLVertexElement
 	size_t				ByteOffset;		///< 先頭からのバイト数
 };
 
-/// OpenGL 用の IVertexBuffer の実装
+// OpenGL 用の IVertexBuffer の実装
 class GLVertexBuffer
 	: public IVertexBuffer
 {
@@ -39,17 +39,7 @@ public:
 	/// 頂点宣言の取得
 	const Array<LNGLVertexElement>& GetVertexElements() const { return m_vertexElements; }
 
-	/// 頂点宣言から GL 用の頂点宣言を生成する
-	static void CreateGLVertexElements(const VertexElement* vertexElements, int elementsCount, Array<LNGLVertexElement>* outList);
 
-	/// 頂点宣言から頂点1つ分のデータサイズ (バイト数) を求める
-	static int GetVertexSize(const VertexElement* vertexElements, int elementsCount, int streamIndex);
-
-	/// 頂点宣言の型のサイズ (バイト数) を求める
-	static int GetVertexElementTypeSize(VertexElementType type);
-
-	/// 頂点宣言の型から LNGLVertexElement 用のデータを作る
-	static void ConvertDeclTypeLNToGL(VertexElementType type, GLenum* gl_type, GLint* size, GLboolean* normalized);
 
 public:
 	virtual size_t GetByteCount() const { return m_byteCount; }
@@ -62,11 +52,38 @@ public:
 
 private:
 	Array<LNGLVertexElement>	m_vertexElements;
-	GLuint				m_glVertexBuffer;
-	size_t				m_byteCount;
-	byte_t*				m_data;
-	GLenum				m_usage;
-	DeviceResourceUsage	m_format;
+	GLuint					m_glVertexBuffer;
+	size_t					m_byteCount;
+	byte_t*					m_data;
+	GLenum					m_usage;
+	DeviceResourceUsage		m_format;
+};
+
+// OpenGL 用の IVertexDeclaration の実装
+class GLVertexDeclaration
+	: public IVertexDeclaration
+{
+public:
+	GLVertexDeclaration();
+	virtual ~GLVertexDeclaration();
+	void Initialize(const VertexElement* elements, int elementsCount);
+
+	const Array<LNGLVertexElement>& GetVertexElements() const { return m_vertexElements; }
+
+	// 頂点宣言から GL 用の頂点宣言を生成する
+	static void CreateGLVertexElements(const VertexElement* vertexElements, int elementsCount, Array<LNGLVertexElement>* outList);
+
+	// 頂点宣言から頂点1つ分のデータサイズ (バイト数) を求める
+	static int GetVertexSize(const VertexElement* vertexElements, int elementsCount, int streamIndex);
+
+	// 頂点宣言の型のサイズ (バイト数) を求める
+	static int GetVertexElementTypeSize(VertexElementType type);
+
+	// 頂点宣言の型から LNGLVertexElement 用のデータを作る
+	static void ConvertDeclTypeLNToGL(VertexElementType type, GLenum* gl_type, GLint* size, GLboolean* normalized);
+
+private:
+	Array<LNGLVertexElement>	m_vertexElements;
 };
 
 } // namespace Driver

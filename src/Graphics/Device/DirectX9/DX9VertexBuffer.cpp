@@ -52,6 +52,7 @@ void DX9VertexBuffer::Create(DX9GraphicsDevice* device, const VertexElement* ele
 	//}
 	//LN_THROW_Argument((elem_size != 0), "elements size is 0.");
 
+#if 1	/* TODO: 移動した。あとで削除 */
 	// D3DVERTEXELEMENT9 を作成して、elements から DirectX用の頂点宣言を作る
 	D3DVERTEXELEMENT9* dxelem = LN_NEW D3DVERTEXELEMENT9[elementsCount + 1];
 	uint8_t offset = 0;
@@ -80,6 +81,7 @@ void DX9VertexBuffer::Create(DX9GraphicsDevice* device, const VertexElement* ele
 
 	// 頂点ひとつ分のサイズ
 	m_vertexStride = offset;
+#endif
 
 	if (usage == DeviceResourceUsage_Dynamic)
 	{
@@ -149,6 +151,59 @@ void DX9VertexBuffer::OnLostDevice()
 //------------------------------------------------------------------------------
 void DX9VertexBuffer::OnResetDevice()
 {
+}
+
+
+//==============================================================================
+// DX9VertexDeclaration
+//==============================================================================
+
+//------------------------------------------------------------------------------
+DX9VertexDeclaration::DX9VertexDeclaration()
+	: m_vertexDecl(nullptr)
+{
+}
+
+//------------------------------------------------------------------------------
+DX9VertexDeclaration::~DX9VertexDeclaration()
+{
+	LN_SAFE_RELEASE(m_vertexDecl);
+}
+
+//------------------------------------------------------------------------------
+void DX9VertexDeclaration::Initialize(DX9GraphicsDevice* device, const VertexElement* elements, int elementsCount)
+{
+	LN_CHECK_ARG(device != nullptr);
+	LN_CHECK_ARG(elements != nullptr);
+	LN_CHECK_ARG(elementsCount >= 0);
+
+	IDirect3DDevice9* dxDevice = device->GetIDirect3DDevice9();
+
+	// D3DVERTEXELEMENT9 を作成して、elements から DirectX用の頂点宣言を作る
+	D3DVERTEXELEMENT9* dxelem = LN_NEW D3DVERTEXELEMENT9[elementsCount + 1];
+	uint8_t offset = 0;
+	uint8_t to;
+	for (int i = 0; i < elementsCount; ++i)
+	{
+		dxelem[i].Stream = 0;
+		dxelem[i].Offset = offset;
+		dxelem[i].Method = D3DDECLMETHOD_DEFAULT;
+		dxelem[i].UsageIndex = elements[i].UsageIndex;
+
+		DX9Module::TranslateElementLNToDX(&elements[i], &dxelem[i].Type, &to, &dxelem[i].Usage);
+		offset += to;
+	}
+	// 最後の要素を示す値で埋める
+	dxelem[elementsCount].Stream = 0xff;
+	dxelem[elementsCount].Offset = 0;
+	dxelem[elementsCount].Type = D3DDECLTYPE_UNUSED;
+	dxelem[elementsCount].Method = 0;
+	dxelem[elementsCount].Usage = 0;
+	dxelem[elementsCount].UsageIndex = 0;
+
+	// 頂点宣言作成
+	LN_COMCALL(dxDevice->CreateVertexDeclaration(dxelem, &m_vertexDecl));
+	LN_SAFE_DELETE(dxelem);		// 一時バッファはもういらない
 }
 
 } // namespace Driver

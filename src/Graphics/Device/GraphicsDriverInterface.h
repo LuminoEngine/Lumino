@@ -240,6 +240,16 @@ protected:	// TODO: private
 	DepthStencilState		m_currentDepthStencilState;
 };
 
+/**
+	@brief	頂点宣言
+*/
+class IVertexDeclaration
+	: public IDeviceObject
+{
+protected:
+	virtual ~IVertexDeclaration() = default;
+};
+
 /// 頂点バッファのインターフェイス
 class IVertexBuffer
 	: public IDeviceObject

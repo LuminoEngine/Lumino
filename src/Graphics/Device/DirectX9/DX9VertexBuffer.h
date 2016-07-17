@@ -8,6 +8,7 @@ namespace Driver
 {
 class DX9GraphicsDevice;
 
+// DirectX9 用の IVertexBuffer の実装
 class DX9VertexBuffer
 	: public IVertexBuffer
 {
@@ -53,6 +54,21 @@ private:
 	IDirect3DVertexDeclaration9*	m_vertexDecl;		///< 頂点宣言
 	int								m_vertexCount;		///< 頂点の数
 	int								m_vertexStride;	    ///< 頂点ひとつ分のサイズ
+};
+
+// DirectX9 用の IVertexDeclaration の実装
+class DX9VertexDeclaration
+	: public IVertexDeclaration
+{
+public:
+	DX9VertexDeclaration();
+	virtual ~DX9VertexDeclaration();
+	void Initialize(DX9GraphicsDevice* device, const VertexElement* elements, int elementsCount);
+
+	IDirect3DVertexDeclaration9* GetDxVertexDeclaration() const { return m_vertexDecl; }
+
+private:
+	IDirect3DVertexDeclaration9*	m_vertexDecl;
 };
 
 } // namespace Driver
