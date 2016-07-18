@@ -116,7 +116,6 @@ void DX9VertexBuffer::OnResetDevice()
 //------------------------------------------------------------------------------
 DX9VertexDeclaration::DX9VertexDeclaration()
 	: m_vertexDecl(nullptr)
-	, m_vertexStride(0)
 {
 }
 
@@ -132,23 +131,25 @@ void DX9VertexDeclaration::Initialize(DX9GraphicsDevice* device, const VertexEle
 	LN_CHECK_ARG(device != nullptr);
 	LN_CHECK_ARG(elements != nullptr);
 	LN_CHECK_ARG(elementsCount >= 0);
+	memset(m_vertexStrides, 0, sizeof(m_vertexStrides));
 
 	IDirect3DDevice9* dxDevice = device->GetIDirect3DDevice9();
 
 	// D3DVERTEXELEMENT9 を作成して、elements から DirectX用の頂点宣言を作る
 	D3DVERTEXELEMENT9* dxelem = LN_NEW D3DVERTEXELEMENT9[elementsCount + 1];
-	uint8_t offset = 0;
 	uint8_t to;
 	for (int i = 0; i < elementsCount; ++i)
 	{
-		dxelem[i].Stream = 0;
-		dxelem[i].Offset = offset;
+		int si = elements[i].StreamIndex;
+		dxelem[i].Stream = si;
+		dxelem[i].Offset = m_vertexStrides[si];
 		dxelem[i].Method = D3DDECLMETHOD_DEFAULT;
 		dxelem[i].UsageIndex = elements[i].UsageIndex;
 
 		DX9Module::TranslateElementLNToDX(&elements[i], &dxelem[i].Type, &to, &dxelem[i].Usage);
-		offset += to;
+		m_vertexStrides[elements[i].StreamIndex] += to;
 	}
+
 	// 最後の要素を示す値で埋める
 	dxelem[elementsCount].Stream = 0xff;
 	dxelem[elementsCount].Offset = 0;
@@ -160,9 +161,6 @@ void DX9VertexDeclaration::Initialize(DX9GraphicsDevice* device, const VertexEle
 	// 頂点宣言作成
 	LN_COMCALL(dxDevice->CreateVertexDeclaration(dxelem, &m_vertexDecl));
 	LN_SAFE_DELETE(dxelem);		// 一時バッファはもういらない
-
-	// 頂点1つ分のサイズ
-	m_vertexStride = offset;
 }
 
 } // namespace Driver

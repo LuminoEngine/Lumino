@@ -269,8 +269,8 @@ void DX9Renderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, 
 
 	DX9VertexDeclaration* decl = static_cast<DX9VertexDeclaration*>(m_currentVertexDeclaration.Get());
 
-	// TODO: decl->GetVertexStride() も stream index を考慮したい
-	size_t vertexCount = m_currentVertexBuffers[0]->GetByteCount() / decl->GetVertexStride();
+	// TODO: とりあえず 0 番ストリームで頂点数を計る
+	size_t vertexCount = m_currentVertexBuffers[0]->GetByteCount() / decl->GetVertexStride(0);
 
 	D3DPRIMITIVETYPE dx_prim = D3DPT_TRIANGLELIST;
 	switch (primitive)
@@ -459,7 +459,7 @@ void DX9Renderer::OnUpdatePrimitiveData(IVertexDeclaration* decls, const Array<R
 		if (vb != nullptr)
 		{
 			LN_COMCALL(m_dxDevice->SetVertexDeclaration(dx9Decls->GetDxVertexDeclaration()));
-			LN_COMCALL(m_dxDevice->SetStreamSource(i, vb->GetDxVertexBuffer(), 0, dx9Decls->GetVertexStride()));
+			LN_COMCALL(m_dxDevice->SetStreamSource(i, vb->GetDxVertexBuffer(), 0, dx9Decls->GetVertexStride(i)));
 		}
 		else
 		{

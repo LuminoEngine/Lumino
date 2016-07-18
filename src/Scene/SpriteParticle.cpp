@@ -127,7 +127,8 @@ void SpriteParticleModel::Commit()
 
 	m_vertexBuffer = LN_NEW VertexBuffer();
 	m_vertexBuffer->Initialize(m_manager, sizeof(SpriteParticleVertex) * m_maxParticles * 4, nullptr, DeviceResourceUsage_Dynamic);
-	m_indexBuffer = LN_NEW IndexBuffer(m_manager, m_maxParticles * 6, nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic);
+	m_indexBuffer = LN_NEW IndexBuffer();
+	m_indexBuffer->Initialize(m_manager, m_maxParticles * 6, nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic);
 }
 
 //------------------------------------------------------------------------------

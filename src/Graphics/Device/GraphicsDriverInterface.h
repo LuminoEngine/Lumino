@@ -12,6 +12,8 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 
 namespace Driver
 {
+static const int MaxVertexStreams = 16;
+
 class ISwapChain;
 class IRenderer;
 class IVertexDeclaration;

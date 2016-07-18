@@ -19,6 +19,7 @@ set(LN_TEST_SOURCES
 	#UnitTest/Graphics/Test_Graphics_Renderer.cpp
 	#UnitTest/Graphics/Test_Graphics_Shader.cpp
 	#UnitTest/Graphics/Test_Graphics_SpriteRenderer.cpp
+	UnitTest/Graphics/Test_Graphics_StaticMesh.cpp
 	UnitTest/Graphics/Test_Graphics_Texture.cpp
 	#UnitTest/Graphics/Test_Graphics_VertexBuffer.cpp
 	UnitTest/Scene/Test_Scene_Sprite.cpp

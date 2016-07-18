@@ -32,7 +32,7 @@ LN_INTERNAL_ACCESS:
 	void Initialize(GraphicsManager* manager);
 	void Initialize(GraphicsManager* manager, const VertexElement* elements, int count);
 	void TryUpdateResource();
-	Driver::IVertexDeclaration* GetDeviceObject() const { return m_deviceObj; }
+	Driver::IVertexDeclaration* GetDeviceObject();
 
 	// GraphicsResourceObject interface
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);

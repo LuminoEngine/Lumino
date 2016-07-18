@@ -210,7 +210,8 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 		m_vertexDeclaration->Initialize(m_graphicsManager, TileMapVertex::Elements(), TileMapVertex::ElementCount);
 		m_vertexBuffer = LN_NEW VertexBuffer();
 		m_vertexBuffer->Initialize(m_graphicsManager, sizeof(TileMapVertex) * tileCount * 4, nullptr, DeviceResourceUsage_Dynamic);
-		m_indexBuffer = LN_NEW IndexBuffer(m_graphicsManager, tileCount * 6, nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic);
+		m_indexBuffer = LN_NEW IndexBuffer();
+		m_indexBuffer->Initialize(m_graphicsManager, tileCount * 6, nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic);
 
 		// インデックスバッファは途中で変わらないので先に埋めておく
 		ByteBuffer* buf = m_indexBuffer->Lock();

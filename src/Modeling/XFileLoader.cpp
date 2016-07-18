@@ -671,13 +671,13 @@ ModelCore* XFileLoader::Load(ModelManager* manager, Stream* stream, const PathNa
 			dx_mesh_containers[0]->MeshData.pMesh->GetIndexBuffer(&dx_indexbuffer);
 			dx_indexbuffer->GetDesc(&dx_indexbuffer_desc);
 			dx_indexbuffer->Release();
-			core->IndexBuffer.Attach(LN_NEW IndexBuffer(
+			core->IndexBuffer.Attach(LN_NEW IndexBuffer());
+			core->IndexBuffer->Initialize(
 				manager->GetGraphicsManager(),
 				all_index_num,
 				nullptr,
 				(dx_indexbuffer_desc.Format == D3DFMT_INDEX16) ? IndexBufferFormat_UInt16 : IndexBufferFormat_UInt32,
-				(isDynamic) ? DeviceResourceUsage_Dynamic : DeviceResourceUsage_Static));
-
+				(isDynamic) ? DeviceResourceUsage_Dynamic : DeviceResourceUsage_Static);
 
 			//// ソフトウェアスキニング用
 			//if (flags_ & ModelCreateFlag_SoftwareSkinning)

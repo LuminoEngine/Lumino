@@ -44,7 +44,7 @@ public:
 	void Initialize(DX9GraphicsDevice* device, const VertexElement* elements, int elementsCount);
 
 	IDirect3DVertexDeclaration9* GetDxVertexDeclaration() const { return m_vertexDecl; }
-	int GetVertexStride() const { return m_vertexStride; }
+	int GetVertexStride(int streamIndex) const { return m_vertexStrides[streamIndex]; }
 
 
 	// IDeviceObject interface
@@ -53,7 +53,7 @@ public:
 
 private:
 	IDirect3DVertexDeclaration9*	m_vertexDecl;
-	int								m_vertexStride;
+	int								m_vertexStrides[MaxVertexStreams];
 };
 
 } // namespace Driver

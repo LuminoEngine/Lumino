@@ -182,6 +182,7 @@
 #include "GeometryRenderer.h"
 #include "RendererImpl.h"
 #include "FrameRectRenderer.h"
+#include "MeshRendererProxy.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -233,6 +234,7 @@ GraphicsContext::GraphicsContext()
 	, m_spriteRenderer(nullptr)
 	, m_textRenderer(nullptr)
 	, m_frameRectRenderer(nullptr)
+	, m_meshRendererProxy(nullptr)
 
 
 	, m_manager(nullptr)
@@ -243,6 +245,7 @@ GraphicsContext::GraphicsContext()
 //------------------------------------------------------------------------------
 GraphicsContext::~GraphicsContext()
 {
+	LN_SAFE_RELEASE(m_meshRendererProxy);
 	LN_SAFE_RELEASE(m_frameRectRenderer);
 	LN_SAFE_RELEASE(m_textRenderer);
 	LN_SAFE_RELEASE(m_spriteRenderer);
@@ -283,6 +286,9 @@ void GraphicsContext::Initialize(GraphicsManager* manager)
 
 	m_frameRectRenderer = LN_NEW detail::FrameRectRenderer();
 	m_frameRectRenderer->Initialize(manager);
+
+	m_meshRendererProxy = LN_NEW detail::MeshRendererProxy();
+	m_meshRendererProxy->Initialize(manager);
 }
 
 
@@ -649,8 +655,10 @@ void GraphicsContext::SetViewProjectionTransform(const Matrix& view, const Matri
 //------------------------------------------------------------------------------
 void GraphicsContext::SetTransform(const Matrix& matrix)
 {
+	// TODO: ここは viewproj と同じように OnFlushState でしなくていいんだっけ？
 	m_geometryRenderer->SetTransform(matrix);
 	m_textRenderer->SetTransform(matrix);
+	m_meshRendererProxy->SetTransform(matrix);
 }
 
 //------------------------------------------------------------------------------
@@ -876,7 +884,8 @@ void GraphicsContext::BltInternal(Texture* source, RenderTarget* dest, const Mat
 //------------------------------------------------------------------------------
 void GraphicsContext::DrawMesh(StaticMeshModel* mesh)
 {
-
+	OnDrawing(m_meshRendererProxy);
+	m_meshRendererProxy->DrawMesh(mesh);
 }
 
 //------------------------------------------------------------------------------
@@ -893,6 +902,7 @@ void GraphicsContext::OnStateFlushRequested()
 	m_spriteRenderer->SetViewPixelSize(size);
 	m_textRenderer->SetViewProjMatrix(viewProj);
 	m_textRenderer->SetViewPixelSize(size);
+	m_meshRendererProxy->SetViewProjMatrix(viewProj);
 
 	if (m_state.GetFillBrush() != nullptr &&
 		m_state.GetFillBrush()->GetType() == BrushType_FrameTexture)

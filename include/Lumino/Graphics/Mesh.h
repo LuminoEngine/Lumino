@@ -1,6 +1,7 @@
 
 #pragma once
 #include <Lumino/Graphics/Common.h>
+#include "Vertex.h"
 
 LN_NAMESPACE_BEGIN
 class VertexDeclaration;
@@ -60,12 +61,11 @@ LN_INTERNAL_ACCESS:
 	void Draw(GraphicsContext* g);
 
 	 
-
+	GraphicsManager*			m_manager;
 	RefPtr<VertexDeclaration>	m_vertexDeclaration;
-	RefPtr<VertexBuffer>		m_positionVertexBuffer;
-	RefPtr<VertexBuffer>		m_textureUVVertexBuffer;
-	RefPtr<VertexBuffer>		m_colorVertexBuffer;
+	RefPtr<VertexBuffer>		m_vertexBuffer;
 	RefPtr<IndexBuffer>			m_indexBuffer;
+	int							m_triangleCount;
 };
 
 LN_NAMESPACE_END

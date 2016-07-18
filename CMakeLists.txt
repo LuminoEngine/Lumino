@@ -195,6 +195,7 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/SwapChain.h
 	include/Lumino/Graphics/Texture.h
 	include/Lumino/Graphics/Utils.h
+	include/Lumino/Graphics/Vertex.h
 	include/Lumino/Graphics/VertexBuffer.h
 	include/Lumino/Graphics/VertexDeclaration.h
 	include/Lumino/Graphics/Viewport.h

@@ -21,7 +21,7 @@ public:
 		@param[in]	format			: インデックスバッファのフォーマット
 		@param[in]	usage			: インデックスバッファリソースの使用方法
 	*/
-	static IndexBuffer* Create(int indexCount, const void* initialData = NULL, IndexBufferFormat format = IndexBufferFormat_UInt16, DeviceResourceUsage usage = DeviceResourceUsage_Static);
+	//static IndexBuffer* Create(int indexCount, const void* initialData = NULL, IndexBufferFormat format = IndexBufferFormat_UInt16, DeviceResourceUsage usage = DeviceResourceUsage_Static);
 	
 	/**
 		@brief		インデックスバッファを作成します。
@@ -32,7 +32,7 @@ public:
 		@param[in]	usage			: インデックスバッファリソースの使用方法
 		@details	この関数はデフォルト以外の GraphicsManager を指定して作成する場合に使用します。
 	*/
-	static IndexBuffer* Create(GraphicsManager* manager, int indexCount, const void* initialData = NULL, IndexBufferFormat format = IndexBufferFormat_UInt16, DeviceResourceUsage usage = DeviceResourceUsage_Static);
+	//static IndexBuffer* Create(GraphicsManager* manager, int indexCount, const void* initialData = NULL, IndexBufferFormat format = IndexBufferFormat_UInt16, DeviceResourceUsage usage = DeviceResourceUsage_Static);
 
 public:
 
@@ -60,10 +60,14 @@ public:
 	//void SetSubData(uint32_t offsetBytes, void* data, uint32_t dataBytes);
 
 LN_INTERNAL_ACCESS:
-	IndexBuffer(GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage);
+	IndexBuffer();
 	virtual ~IndexBuffer();
-	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
+	void Initialize(GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage);
+
 	Driver::IIndexBuffer* GetDeviceObject() const { return m_deviceObj; }
+
+	// GraphicsResourceObject interface
+	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 private:
 	Driver::IIndexBuffer*	m_deviceObj;

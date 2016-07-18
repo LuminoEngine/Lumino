@@ -10,6 +10,8 @@ class StaticMeshModel;
 namespace detail
 {
 
+// いまのところ、streamIndex の仕組みをユーザーに公開しないために用意している。
+// メッシュが使う streamIndex 関係の処理は全部この中。
 class MeshRendererProxy
 	: public RefObject
 	, public detail::IRendererPloxy
@@ -24,9 +26,22 @@ public:
 
 	void DrawMesh(StaticMeshModel* mesh);
 
+protected:
+	virtual void Flush() override {}
+	virtual void OnActivated() override {}
+	virtual void OnDeactivated() override {}
+
 private:
-	void FlushStateImpl(const Matrix& world, const Matrix& viewProj);
-	void DrawMeshImpl(StaticMeshModel* mesh);
+	struct DrawMeshCommandData
+	{
+		RefPtr<Driver::IVertexDeclaration>	vertexDeclaration;
+		RefPtr<Driver::IVertexBuffer>		vertexBuffers[Driver::MaxVertexStreams];
+		RefPtr<Driver::IIndexBuffer>		indexBuffer;
+		int									triangleCount;
+	};
+
+	void FlushStateImpl(const Matrix& world, const Matrix& viewProj);	// Threading
+	void DrawMeshImpl(const DrawMeshCommandData& data);					// Threading
 
 	GraphicsManager*		m_manager;
 	Driver::IRenderer*		m_renderer;

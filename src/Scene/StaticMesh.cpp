@@ -4,6 +4,7 @@
 #include <Lumino/Scene/StaticMesh.h>
 #include "MME/MMEShader.h"
 #include <Lumino/Scene/SceneGraph.h>
+#include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include "SceneGraphManager.h"
 
 LN_NAMESPACE_BEGIN
@@ -17,6 +18,9 @@ StaticMeshPtr StaticMesh::CreateBox(const Vector3& size)
 {
 	auto ptr = StaticMeshPtr::MakeRef();
 	ptr->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph());
+	ptr->m_mesh = RefPtr<StaticMeshModel>::MakeRef();
+	ptr->m_mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager());
+	ptr->m_mesh->CreateBox(size);
 	return ptr;
 }
 
@@ -42,7 +46,7 @@ void StaticMesh::Initialize(SceneGraph* owner)
 //------------------------------------------------------------------------------
 void StaticMesh::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 {
-	//m_model->DrawSubset(subsetIndex);
+	dc->BeginGraphicsContext()->DrawMesh(m_mesh);
 }
 
 LN_NAMESPACE_END

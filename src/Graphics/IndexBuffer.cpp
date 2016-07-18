@@ -8,35 +8,28 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
-//------------------------------------------------------------------------------
-IndexBuffer* IndexBuffer::Create(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
-{
-	return Create(GraphicsManager::GetInstance(), indexCount, initialData, format, usage);
-}
+////------------------------------------------------------------------------------
+//IndexBuffer* IndexBuffer::Create(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
+//{
+//	return Create(GraphicsManager::GetInstance(), indexCount, initialData, format, usage);
+//}
+//
+////------------------------------------------------------------------------------
+//IndexBuffer* IndexBuffer::Create(GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
+//{
+//	LN_THROW(manager != NULL, ArgumentException);
+//	return LN_NEW IndexBuffer(manager, indexCount, initialData, format, usage);
+//}
 
 //------------------------------------------------------------------------------
-IndexBuffer* IndexBuffer::Create(GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
-{
-	LN_THROW(manager != NULL, ArgumentException);
-	return LN_NEW IndexBuffer(manager, indexCount, initialData, format, usage);
-}
-
-//------------------------------------------------------------------------------
-IndexBuffer::IndexBuffer(GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
-	: m_deviceObj(NULL)
-	, m_indexCount(indexCount)
-	, m_format(format)
-	, m_usage(usage)
+IndexBuffer::IndexBuffer()
+	: m_deviceObj(nullptr)
+	, m_indexCount(0)
+	, m_format(IndexBufferFormat_UInt16)
+	, m_usage(DeviceResourceUsage_Static)
 	, m_pool(GraphicsResourcePool::Managed)	// TODO
 	, m_initialUpdate(true)
 {
-	LN_SAFE_ADDREF(m_deviceObj);
-	GraphicsResourceObject::Initialize(manager);
-
-	int stride = (format == IndexBufferFormat_UInt16) ? 2 : 4;
-	m_data = ByteBuffer(stride * indexCount);
-
-	m_deviceObj = m_manager->GetGraphicsDevice()->CreateIndexBuffer(m_indexCount, initialData, m_format, m_usage);
 	
 }
 
@@ -44,6 +37,21 @@ IndexBuffer::IndexBuffer(GraphicsManager* manager, int indexCount, const void* i
 IndexBuffer::~IndexBuffer()
 {
 	LN_SAFE_RELEASE(m_deviceObj);
+}
+
+//------------------------------------------------------------------------------
+void IndexBuffer::Initialize(GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
+{
+	m_indexCount = indexCount;
+	m_format = format;
+	m_usage = usage;
+
+	GraphicsResourceObject::Initialize(manager);
+
+	int stride = (format == IndexBufferFormat_UInt16) ? 2 : 4;
+	m_data = ByteBuffer(stride * indexCount);
+
+	m_deviceObj = m_manager->GetGraphicsDevice()->CreateIndexBuffer(m_indexCount, initialData, m_format, m_usage);
 }
 
 //------------------------------------------------------------------------------

@@ -13,6 +13,7 @@ namespace detail { class TextRenderer; }
 namespace detail { class PrimitiveRenderer; }
 namespace detail { class GeometryRenderer; }
 namespace detail { class FrameRectRenderer; }
+namespace detail { class MeshRendererProxy; }
 
 namespace detail
 {
@@ -235,6 +236,7 @@ public:
 	SpriteRenderer*				m_spriteRenderer;
 	detail::TextRenderer*		m_textRenderer;
 	detail::FrameRectRenderer*	m_frameRectRenderer;
+	detail::MeshRendererProxy*	m_meshRendererProxy;
 
 	// このクラスが管理するステート。VertexBuffer などは描画時に各種 RendererCore 内で変更されるからちょっと考える必要がありそう。
 	//Shader*						m_shader;

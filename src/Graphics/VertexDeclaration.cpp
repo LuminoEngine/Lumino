@@ -75,6 +75,13 @@ void VertexDeclaration::TryUpdateResource()
 }
 
 //------------------------------------------------------------------------------
+Driver::IVertexDeclaration* VertexDeclaration::GetDeviceObject()
+{
+	TryUpdateResource();
+	return m_deviceObj;
+}
+
+//------------------------------------------------------------------------------
 void VertexDeclaration::OnChangeDevice(Driver::IGraphicsDevice* device)
 {
 	if (device == nullptr)
