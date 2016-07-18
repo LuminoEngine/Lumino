@@ -353,7 +353,7 @@ void ShaderValue::SetString(const String& s)
 }
 
 //------------------------------------------------------------------------------
-int ShaderValue::GetArrayLength()
+int ShaderValue::GetArrayLength() const
 {
 	if (m_type == ShaderVariableType_VectorArray) {
 		//return m_value.ByteCount / sizeof(Vector4);

@@ -9,6 +9,7 @@ LN_NAMESPACE_BEGIN
 class GraphicsContext;
 class StaticMeshModel;
 class SpriteRenderer;
+class Material3;
 namespace detail { class TextRenderer; }
 namespace detail { class PrimitiveRenderer; }
 namespace detail { class GeometryRenderer; }
@@ -242,7 +243,7 @@ public:
 	//Shader*						m_shader;
 
 LN_INTERNAL_ACCESS:
-	void DrawMesh(StaticMeshModel* mesh);
+	void DrawMesh(StaticMeshModel* mesh, Material3* material);
 
 protected:
 	virtual void OnStateFlushRequested();

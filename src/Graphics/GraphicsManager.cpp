@@ -718,6 +718,7 @@
 #include "Text/BitmapTextRenderer.h"
 #include <Lumino/Graphics/Viewport.h>
 #include <Lumino/Graphics/GraphicsContext.h>
+#include <Lumino/Graphics/Shader.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -1144,6 +1145,141 @@ Font* GraphicsManager::FontData::CreateFontFromData(FontManager* m) const
 	font->SetAntiAlias(IsAntiAlias);
 	return font;
 }
+
+
+namespace detail
+{
+
+//==============================================================================
+// ShaderVariableCommitSerializeHelper
+//==============================================================================
+//------------------------------------------------------------------------------
+ShaderVariableCommitSerializeHelper::ShaderVariableCommitSerializeHelper()
+{
+	m_writerBuffer = MemoryStream::Create();
+	m_writer = RefPtr<BinaryWriter>::MakeRef(m_writerBuffer);
+}
+
+//------------------------------------------------------------------------------
+void ShaderVariableCommitSerializeHelper::BeginSerialize()
+{
+	m_writer->Seek(0, SeekOrigin_Begin);
+}
+
+//------------------------------------------------------------------------------
+void ShaderVariableCommitSerializeHelper::WriteValue(Driver::IShaderVariable* targetVariable, const ShaderValue& value)
+{
+	m_writer->WriteInt8(value.GetType());
+	m_writer->WriteUInt64((intptr_t)targetVariable);
+
+	switch (value.GetType())
+	{
+	case ShaderVariableType_Bool:
+		m_writer->WriteUInt8(value.GetBool() ? 1 : 0);
+		break;
+	case ShaderVariableType_Int:
+		m_writer->WriteInt32(value.GetInt());
+		break;
+	case ShaderVariableType_Float:
+		m_writer->WriteFloat(value.GetFloat());
+		break;
+	case ShaderVariableType_Vector:
+		m_writer->Write(&value.GetVector(), sizeof(Vector4));
+		break;
+	case ShaderVariableType_VectorArray:
+		m_writer->WriteUInt8(value.GetArrayLength());
+		m_writer->Write(value.GetVectorArray(), sizeof(Vector4) * value.GetArrayLength());
+		break;
+	case ShaderVariableType_Matrix:
+		m_writer->Write(&value.GetMatrix(), sizeof(Matrix));
+		break;
+	case ShaderVariableType_MatrixArray:
+		m_writer->WriteUInt8(value.GetArrayLength());
+		m_writer->Write(value.GetMatrixArray(), sizeof(Matrix) * value.GetArrayLength());
+		break;
+	case ShaderVariableType_DeviceTexture:
+		m_writer->WriteUInt64((intptr_t)value.GetDeviceTexture());
+		break;
+	default:
+		LN_THROW(0, ArgumentException);
+		break;
+	}
+}
+
+//------------------------------------------------------------------------------
+void* ShaderVariableCommitSerializeHelper::GetSerializeData()
+{
+	return m_writerBuffer->GetBuffer();
+}
+
+//------------------------------------------------------------------------------
+size_t ShaderVariableCommitSerializeHelper::GetSerializeDataLength()
+{
+	return m_writerBuffer->GetPosition();
+}
+
+//------------------------------------------------------------------------------
+void ShaderVariableCommitSerializeHelper::Deserialize(const void* data, size_t length)
+{
+	const byte_t* raw = (const byte_t*)data;
+	MemoryStream buffer(data, length);
+	BinaryReader reader(&buffer);
+
+	while (!reader.IsEOF())
+	{
+		uint8_t type = reader.ReadInt8();
+		Driver::IShaderVariable* variable = (Driver::IShaderVariable*)reader.ReadUInt64();
+
+		switch (type)
+		{
+		case ShaderVariableType_Bool:
+			variable->SetBool(reader.ReadUInt8() != 0);
+			break;
+		case ShaderVariableType_Int:
+			variable->SetInt(reader.ReadInt32());
+			break;
+		case ShaderVariableType_Float:
+			variable->SetFloat(reader.ReadFloat());
+			break;
+		case ShaderVariableType_Vector:
+		{
+			Vector4 v;
+			reader.Read(&v, sizeof(Vector4));
+			variable->SetVector(v);
+			break;
+		}
+		case ShaderVariableType_VectorArray:
+		{
+			size_t size = reader.ReadUInt8();
+			variable->SetVectorArray((const Vector4*)&raw[buffer.GetPosition()], size);
+			reader.Seek(sizeof(Vector4) * size);
+			break;
+		}
+		case ShaderVariableType_Matrix:
+		{
+			Matrix v;
+			reader.Read(&v, sizeof(Matrix));
+			variable->SetMatrix(v);
+			break;
+		}
+		case ShaderVariableType_MatrixArray:
+		{
+			size_t size = reader.ReadUInt8();
+			variable->SetMatrixArray((const Matrix*)&raw[buffer.GetPosition()], size);
+			reader.Seek(sizeof(Matrix) * size);
+			break;
+		}
+		case ShaderVariableType_DeviceTexture:
+			variable->SetTexture((Driver::ITexture*)reader.ReadUInt64());
+			break;
+		default:
+			LN_THROW(0, InvalidOperationException);
+			break;
+		}
+	}
+}
+
+} // namespace detail 
 
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

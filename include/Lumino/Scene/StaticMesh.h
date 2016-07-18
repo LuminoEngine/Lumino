@@ -24,6 +24,7 @@ LN_INTERNAL_ACCESS:
 
 private:
 	RefPtr<StaticMeshModel>	m_mesh;
+	RefPtr<Material3>		m_material;
 };
 
 LN_NAMESPACE_END

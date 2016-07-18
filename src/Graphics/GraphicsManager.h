@@ -21,6 +21,28 @@ class SwapChain;
 namespace detail
 {
 	class TextRendererCore;
+
+// ShaderVariable からコミットするルートと、Material からコミットするルートがある。
+// ShaderVariableCommitSerializeHelper は、その同じような処理をまとめたクラス。
+// Material は ShaderVariable を参照するが、Material から ShaderVariable に値をセットしたくない。
+// ShaderVariable はユーザーに見えるので、知らないうちに値が変わっている、ということが発生してしまう。
+class ShaderVariableCommitSerializeHelper
+{
+public:
+	ShaderVariableCommitSerializeHelper();
+
+	void BeginSerialize();
+	void WriteValue(Driver::IShaderVariable* targetVariable, const ShaderValue& value);
+	void* GetSerializeData();
+	size_t GetSerializeDataLength();
+
+	void Deserialize(const void* data, size_t length);
+
+private:
+	MemoryStreamPtr			m_writerBuffer;
+	RefPtr<BinaryWriter>	m_writer;
+};
+
 }
 
 class IDeviceResetListener
@@ -142,6 +164,7 @@ public:
 	PainterEngine* GetPainterEngine() { return m_painterEngine; }
 	detail::TextRendererCore* GetTextRendererCore() { return m_textRendererCore; }
 	Driver::ITexture* GetDummyTexture() { return m_dummyTexture; }
+	detail::ShaderVariableCommitSerializeHelper* GetShaderVariableCommitSerializeHelper() { return &m_shaderVariableCommitSerializeHelper; }
 
 private:
 	detail::AnimationManager*		m_animationManager;
@@ -163,6 +186,7 @@ private:
 	detail::TextRendererCore*		m_textRendererCore;
 	PainterEngine*					m_painterEngine;
 	BitmapTextRenderer*				m_bitmapTextRenderer;
+	detail::ShaderVariableCommitSerializeHelper	m_shaderVariableCommitSerializeHelper;
 
 	Driver::ITexture*				m_dummyTexture;
 	bool							m_platformTextureLoading;

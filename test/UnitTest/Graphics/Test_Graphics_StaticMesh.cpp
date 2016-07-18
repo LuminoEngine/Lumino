@@ -14,8 +14,8 @@ TEST_F(Test_Graphics_StaticMesh, Box)
 	auto box = StaticMesh::CreateBox(Vector3(1, 2, 3));
 
 
-	//auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
-	//Camera::GetDefault3DCamera()->SetCameraBehavior(cb);
+	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
+	Camera::GetDefault3DCamera()->SetCameraBehavior(cb);
 
 	while (Engine::UpdateFrame());
 }

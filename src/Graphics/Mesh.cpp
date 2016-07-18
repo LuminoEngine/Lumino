@@ -103,6 +103,8 @@ Material3::~Material3()
 //------------------------------------------------------------------------------
 void Material3::SetShader(Shader* shader)
 {
+	m_shader = shader;
+	LinkVariables();
 }
 
 //------------------------------------------------------------------------------
@@ -133,6 +135,35 @@ void Material3::SetMatrixParameter(const StringRef& name, const Matrix& value)
 void Material3::SetTextureParameter(const StringRef& name, Texture* value)
 {
 	FindShaderValue(name)->SetDeviceTexture((value) ? value->GetDeviceObject() : nullptr);
+}
+
+//------------------------------------------------------------------------------
+void Material3::LinkVariables()
+{
+	m_valueList.Clear();
+	m_linkedVariableList.Clear();
+
+	if (m_shader != nullptr)
+	{
+		for (ShaderVariable* v : m_shader->GetVariables())
+		{
+			if (v->GetType() != ShaderVariableType_Unknown &&
+				v->GetType() != ShaderVariableType_String)
+			{
+				// Unknown と String 型は無視。String 型は読み取り専用で、Material としては持っておく必要ない。
+			}
+			else
+			{
+				// 名前と値の対応表
+				auto var = std::make_shared<ShaderValue>(v->GetShaderValue());	// 初期値
+				m_valueList.Add(v->GetName(), var);
+
+				// 変数と値のペア
+				ValuePair pair = { v, var };
+				m_linkedVariableList.Add(pair);
+			}
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -187,7 +218,7 @@ void StaticMeshModel::CreateBox(const Vector3& size)
 
 	m_vertexDeclaration->AddVertexElement(0, VertexElementType_Float3, VertexElementUsage_Position, 0);
 	m_vertexDeclaration->AddVertexElement(0, VertexElementType_Float2, VertexElementUsage_TexCoord, 0);
-	m_vertexDeclaration->AddVertexElement(0, VertexElementType_Float4, VertexElementUsage_Normal, 0);
+	m_vertexDeclaration->AddVertexElement(0, VertexElementType_Float3, VertexElementUsage_Normal, 0);
 	m_vertexDeclaration->AddVertexElement(0, VertexElementType_Float4, VertexElementUsage_Color, 0);
 
 	ScopedVertexBufferLock lock1(m_vertexBuffer);

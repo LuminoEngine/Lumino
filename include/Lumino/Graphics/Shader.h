@@ -152,7 +152,7 @@ public:
 	void SetString(const String& str);
 	const TCHAR* GetString() const { return m_value.String; }
 
-	int GetArrayLength();
+	int GetArrayLength() const;
 	byte_t* GetDataBuffer() { return m_value.Buffer; }	// 初期値格納用
 
 private:
@@ -257,6 +257,8 @@ LN_INTERNAL_ACCESS:
 	void ChangeDevice(Driver::IShaderVariable* obj);
 	void SetModified();
 	void TryCommitChanges();
+	Driver::IShaderVariable* GetDeviceObject() const { return m_deviceObj; }
+	const ShaderValue& GetShaderValue() const { return m_value; }
 
 private:
 	friend class Shader;

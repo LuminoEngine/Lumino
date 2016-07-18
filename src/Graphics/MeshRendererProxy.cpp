@@ -4,6 +4,7 @@
 #include <Lumino/Graphics/VertexDeclaration.h>
 #include <Lumino/Graphics/VertexBuffer.h>
 #include <Lumino/Graphics/IndexBuffer.h>
+#include <Lumino/Graphics/Shader.h>
 #include <Lumino/Graphics/Mesh.h>
 #include "Device/GraphicsDriverInterface.h"
 #include "RenderingCommand.h"
@@ -71,7 +72,7 @@ void MeshRendererProxy::SetViewProjMatrix(const Matrix& matrix)
 }
 
 //------------------------------------------------------------------------------
-void MeshRendererProxy::DrawMesh(StaticMeshModel* mesh)
+void MeshRendererProxy::DrawMesh(StaticMeshModel* mesh, Material3* material)
 {
 	LN_CHECK_ARG(mesh != nullptr);
 	auto* _this = this;
@@ -88,18 +89,29 @@ void MeshRendererProxy::DrawMesh(StaticMeshModel* mesh)
 			});
 		m_stateModified = false;
 	}
+	
+	auto* serializer = m_manager->GetShaderVariableCommitSerializeHelper();
+	auto& linkedVariableList = material->GetLinkedVariableList();
+	serializer->BeginSerialize();
+	for (auto& pair : linkedVariableList)
+	{
+		serializer->WriteValue(pair.variable->GetDeviceObject(), *pair.value);
+	}
+	RenderBulkData variablesData(serializer->GetSerializeData(), serializer->GetSerializeDataLength());
+	
 
 	DrawMeshCommandData data;
 	data.vertexDeclaration = mesh->m_vertexDeclaration->GetDeviceObject();
 	data.vertexBuffers[0] = mesh->m_vertexBuffer->GetDeviceObject();		// TODO: まだ1つだけ
 	data.indexBuffer = mesh->m_indexBuffer->GetDeviceObject();
 	data.triangleCount = mesh->m_triangleCount;
-	LN_ENQUEUE_RENDER_COMMAND_2(
+	LN_ENQUEUE_RENDER_COMMAND_3(
 		FlushState, m_manager,
 		MeshRendererProxy*, _this,
 		DrawMeshCommandData, data,
+		RenderBulkData, variablesData,
 		{
-			_this->DrawMeshImpl(data);
+			_this->DrawMeshImpl(data, variablesData);
 		});
 }
 
@@ -111,8 +123,11 @@ void MeshRendererProxy::FlushStateImpl(const Matrix& world, const Matrix& viewPr
 }
 
 //------------------------------------------------------------------------------
-void MeshRendererProxy::DrawMeshImpl(const DrawMeshCommandData& data)
+void MeshRendererProxy::DrawMeshImpl(const DrawMeshCommandData& data, const RenderBulkData& variablesData)
 {
+	auto* deserializer = m_manager->GetShaderVariableCommitSerializeHelper();
+	deserializer->Deserialize(variablesData.GetData(), variablesData.GetSize());
+
 	m_shader.pass->Apply();
 
 	m_renderer->SetVertexDeclaration(data.vertexDeclaration);

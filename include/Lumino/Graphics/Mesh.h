@@ -35,12 +35,24 @@ protected:
 	Material3();
 	virtual ~Material3();
 
+LN_INTERNAL_ACCESS:
+	using ShaderValuePtr = std::shared_ptr<ShaderValue>;
+
+	struct ValuePair
+	{
+		ShaderVariable*	variable;
+		ShaderValuePtr	value;
+	};
+
+	const Array<ValuePair>& GetLinkedVariableList() { return m_linkedVariableList; }
+
 private:
+	void LinkVariables();
 	ShaderValue* FindShaderValue(const StringRef& name);
 
-	using ShaderValuePtr = std::shared_ptr<ShaderValue>;
-	Shader*								m_shader;
+	RefPtr<Shader>						m_shader;
 	SortedArray<String, ShaderValuePtr>	m_valueList;
+	Array<ValuePair>					m_linkedVariableList;
 };
 
 /**

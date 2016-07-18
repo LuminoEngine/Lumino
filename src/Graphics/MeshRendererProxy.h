@@ -6,6 +6,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class StaticMeshModel;
+class Material3;
 
 namespace detail
 {
@@ -24,7 +25,7 @@ public:
 	void SetTransform(const Matrix& matrix);
 	void SetViewProjMatrix(const Matrix& matrix);
 
-	void DrawMesh(StaticMeshModel* mesh);
+	void DrawMesh(StaticMeshModel* mesh, Material3* material);
 
 protected:
 	virtual void Flush() override {}
@@ -41,7 +42,7 @@ private:
 	};
 
 	void FlushStateImpl(const Matrix& world, const Matrix& viewProj);	// Threading
-	void DrawMeshImpl(const DrawMeshCommandData& data);					// Threading
+	void DrawMeshImpl(const DrawMeshCommandData& data, const RenderBulkData& variablesData);	// Threading
 
 	GraphicsManager*		m_manager;
 	Driver::IRenderer*		m_renderer;

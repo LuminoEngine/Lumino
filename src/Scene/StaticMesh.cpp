@@ -39,6 +39,10 @@ void StaticMesh::Initialize(SceneGraph* owner)
 {
 	VisualNode::Initialize(owner, 1/*m_model->GetSubsetCount()*/);
 
+
+	m_material = RefPtr<Material3>::MakeRef();
+
+
 	owner->GetManager()->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
 	SetAutoRemove(true);
 }
@@ -46,7 +50,7 @@ void StaticMesh::Initialize(SceneGraph* owner)
 //------------------------------------------------------------------------------
 void StaticMesh::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 {
-	dc->BeginGraphicsContext()->DrawMesh(m_mesh);
+	dc->BeginGraphicsContext()->DrawMesh(m_mesh, m_material);
 }
 
 LN_NAMESPACE_END
