@@ -31,6 +31,7 @@ TEST_F(Test_Graphics_RenderingContext, Clear)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_RenderingContext, PosColorVertex)
 {
+#if 0
 	// 反時計回りを表とする
 	PosColorVertex vertices[] =
 	{
@@ -49,7 +50,7 @@ TEST_F(Test_Graphics_RenderingContext, PosColorVertex)
 
 	ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/Test_Graphics_RenderingContext1.png")));
 	//TestEnv::SaveScreenShot(LN_TEMPFILE("test1.png"));
-
+#endif
 #if 0
 	{
 		do

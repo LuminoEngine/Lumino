@@ -1,8 +1,10 @@
 ﻿
 #include "../Internal.h"
+#include <Lumino/Graphics/VertexDeclaration.h>
 #include <Lumino/Graphics/Utils.h>
 #include "../Graphics/GraphicsManager.h"
 #include "../Graphics/RendererImpl.h"
+#include "../Graphics/Device/GraphicsDriverInterface.h"
 #include "ModelManager.h"
 #include "ModelBone.h"
 #include "Model.h"
@@ -148,6 +150,7 @@ void Model::DrawSubset(int subsetIndex)
 
 	Details::Renderer* r = m_manager->GetGraphicsManager()->GetRenderer();
 	r->DrawPrimitiveIndexed(
+		m_modelCore->vertexDeclaration,
 		m_modelCore->VertexBuffer,
 		m_modelCore->IndexBuffer,
 		PrimitiveType_TriangleList,

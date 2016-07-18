@@ -6,6 +6,73 @@
 
 LN_NAMESPACE_BEGIN
 
+class BoxMeshFactory
+{
+public:
+	BoxMeshFactory(const Vector3& size)
+	{
+		m_size = size;
+	}
+
+	int GetVertexCount() const
+	{
+		return 8;
+	}
+
+	int GetIndexCount() const
+	{
+		return 36;
+	}
+
+	void Generate(Vector3* outPoints, uint16_t* outIndices)
+	{
+		Vector3 minPos = -(m_size / 2);
+		Vector3 maxPos = (m_size / 2);
+
+		// 手前 (Z-)
+		outPoints[0].Set(minPos.x, maxPos.y, minPos.z);	// 左上
+		outPoints[1].Set(minPos.x, minPos.y, minPos.z);	// 左下
+		outPoints[2].Set(maxPos.x, maxPos.y, minPos.z);	// 右上
+		outPoints[3].Set(maxPos.x, minPos.y, minPos.z);	// 右下
+		// 奥 (Z+)
+		outPoints[4].Set(minPos.x, maxPos.y, maxPos.z);	// 左上
+		outPoints[5].Set(minPos.x, minPos.y, maxPos.z);	// 左下
+		outPoints[6].Set(maxPos.x, maxPos.y, maxPos.z);	// 右上
+		outPoints[7].Set(maxPos.x, minPos.y, maxPos.z);	// 右下
+
+		uint16_t indices[] =
+		{
+			// near
+			0, 1, 2,
+			2, 1, 3,
+			// far
+			6, 7, 4,
+			4, 7, 5,
+			// left
+			4, 5, 0,
+			0, 5, 1,
+			// right
+			2, 3, 6,
+			6, 3, 7,
+			// top
+			4, 0, 6,
+			6, 0, 2,
+			// bottom (Z- が面として上方向)
+			1, 5, 3,
+			3, 5, 7,
+		};
+		memcpy(outIndices, indices, sizeof(indices));
+	}
+
+private:
+	Vector3	m_size;
+};
+
+
+
+
+
+
 //==============================================================================
 // Material
 //==============================================================================
@@ -96,6 +163,14 @@ StaticMeshModel::~StaticMeshModel()
 void StaticMeshModel::Initialize(GraphicsManager* manager)
 {
 	LN_CHECK_ARG(manager != nullptr);
+}
+
+//------------------------------------------------------------------------------
+void StaticMeshModel::CreateBox(const Vector3& size)
+{
+	BoxMeshFactory factory(size);
+
+
 }
 
 //------------------------------------------------------------------------------

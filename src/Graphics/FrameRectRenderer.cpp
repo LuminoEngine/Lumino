@@ -137,6 +137,7 @@ void FrameRectRendererCore::Draw(const RectF& rect)
 		m_shader.varTexture->SetTexture(srcTexture);
 		m_shader.varGlyphMaskSampler->SetTexture(m_manager->GetDummyTexture());
 		m_shader.pass->Apply();
+		m_renderer->SetVertexDeclaration(m_vertexDeclaration);
 		m_renderer->SetVertexBuffer(0, m_vertexBuffer);
 		m_renderer->SetIndexBuffer(m_indexBuffer);
 		m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
@@ -154,7 +155,8 @@ void FrameRectRendererCore::RequestBuffers(int faceCount)
 	LN_SAFE_RELEASE(m_indexBuffer);
 
 	auto* device = m_manager->GetGraphicsDevice();
-	m_vertexBuffer = device->CreateVertexBuffer(Vertex::Elements(), Vertex::ElementCount, faceCount * 4, nullptr, DeviceResourceUsage_Dynamic);
+	m_vertexDeclaration.Attach(device->CreateVertexDeclaration(Vertex::Elements(), Vertex::ElementCount), false);
+	m_vertexBuffer = device->CreateVertexBuffer(sizeof(Vertex) * faceCount * 4, nullptr, DeviceResourceUsage_Dynamic);
 	m_indexBuffer = device->CreateIndexBuffer(faceCount * 6, nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic);
 }
 

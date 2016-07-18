@@ -66,10 +66,12 @@ void PainterEngine::CreateInternal()
 
 	const int DefaultFaceCount = 1024;
 
+	m_vertexDeclaration.Attach(
+		device->CreateVertexDeclaration(PainterVertex::Elements(), PainterVertex::ElementCount));
 	m_vertexBuffer.Attach(device->CreateVertexBuffer(
-		PainterVertex::Elements(), PainterVertex::ElementCount, DefaultFaceCount * 4, NULL, DeviceResourceUsage_Dynamic));
+		sizeof(PainterVertex) * DefaultFaceCount * 4, nullptr, DeviceResourceUsage_Dynamic));
 	m_indexBuffer.Attach(device->CreateIndexBuffer(
-		DefaultFaceCount * 6, NULL, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic));
+		DefaultFaceCount * 6, nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic));
 
 	m_vertexCache.Reserve(1024);
 	m_indexCache.Reserve(1024);
@@ -184,6 +186,7 @@ void PainterEngine::Flush()
 	m_shader.varTexture->SetTexture(srcTexture);
 	m_shader.varGlyphMaskSampler->SetTexture(m_currentInternalGlyphMask);
 	m_shader.Pass->Apply();
+	m_renderer->SetVertexDeclaration(m_vertexDeclaration);
 	m_renderer->SetVertexBuffer(0, m_vertexBuffer);
 	m_renderer->SetIndexBuffer(m_indexBuffer);
 	m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);

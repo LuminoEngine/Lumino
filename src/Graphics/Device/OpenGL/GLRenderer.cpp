@@ -542,8 +542,10 @@ void GLRenderer::UpdateVertexAttribPointer()
 {
 	if (m_currentShaderPass == nullptr) return;
 
+	GLVertexDeclaration* glDecls = static_cast<GLVertexDeclaration*>(m_currentVertexDeclaration.Get());
+
 	// シェーダの頂点属性の更新
-	const Array<LNGLVertexElement>& elements = m_currentVertexBuffer->GetVertexElements();
+	const Array<LNGLVertexElement>& elements = glDecls->GetVertexElements();
 	for (const LNGLVertexElement& elm : elements)
 	{
 		int index = m_currentShaderPass->GetUsageAttributeIndex(elm.Usage, elm.UsageIndex);

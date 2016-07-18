@@ -31,15 +31,10 @@ public:
 
 public:
 	/// オブジェクト作成
-	void Create(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* initialData, DeviceResourceUsage usage);
+	void Create(size_t bufferSize, const void* initialData, DeviceResourceUsage usage);
 
 	/// 頂点バッファオブジェクトの取得
 	GLuint GetGLVertexBuffer() const { return m_glVertexBuffer; }
-
-	/// 頂点宣言の取得
-	const Array<LNGLVertexElement>& GetVertexElements() const { return m_vertexElements; }
-
-
 
 public:
 	virtual size_t GetByteCount() const { return m_byteCount; }
@@ -51,7 +46,6 @@ public:
 	virtual void OnResetDevice();
 
 private:
-	Array<LNGLVertexElement>	m_vertexElements;
 	GLuint					m_glVertexBuffer;
 	size_t					m_byteCount;
 	byte_t*					m_data;

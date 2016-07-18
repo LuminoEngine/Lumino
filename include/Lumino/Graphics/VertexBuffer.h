@@ -22,7 +22,7 @@ public:
 		@param[in]	data			: 作成と同時に書き込む初期データ (必要なければ NULL)
 		@param[in]	usage			: 頂点バッファリソースの使用方法
 	*/
-	static VertexBuffer* Create(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data = NULL, DeviceResourceUsage usage = DeviceResourceUsage_Static);
+	//static VertexBuffer* Create(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data = NULL, DeviceResourceUsage usage = DeviceResourceUsage_Static);
 
 	/**
 		@brief		頂点バッファを作成します。
@@ -34,11 +34,11 @@ public:
 		@param[in]	usage			: 頂点バッファリソースの使用方法
 		@details	この関数はデフォルト以外の GraphicsManager を指定して作成する場合に使用します。
 	*/
-	static VertexBuffer* Create(GraphicsManager* manager, const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data = NULL, DeviceResourceUsage usage = DeviceResourceUsage_Static);
+	//static VertexBuffer* Create(GraphicsManager* manager, const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data = NULL, DeviceResourceUsage usage = DeviceResourceUsage_Static);
 	
 public:
 
-	int GetVertexCount() const { return m_vertexCount; }
+	size_t GetBufferSize() const { return m_bufferSize; }
 
 	/**
 		@brief		リソースをロックします。
@@ -52,16 +52,18 @@ public:
 	void Unlock();
 
 LN_INTERNAL_ACCESS:
-	VertexBuffer(GraphicsManager* manager, const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage);
+	VertexBuffer();
 	virtual ~VertexBuffer();
-	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
+	void Initialize(GraphicsManager* manager, size_t bufferSize, const void* data, DeviceResourceUsage usage);
 	Driver::IVertexBuffer* GetDeviceObject() const { return m_deviceObj; }
+
+	// GraphicsResourceObject interface
+	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 private:	// TODO
 	friend struct SetVertexBufferCommand;
 	Driver::IVertexBuffer*	m_deviceObj;
-	Array<VertexElement>	m_vertexElements;
-	int						m_vertexCount;
+	size_t					m_bufferSize;
 	DeviceResourceUsage		m_usage;
 	GraphicsResourcePool	m_pool;
 	ByteBuffer				m_lockedBuffer;

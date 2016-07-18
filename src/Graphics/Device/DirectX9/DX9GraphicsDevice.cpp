@@ -132,10 +132,10 @@ RefPtr<IVertexDeclaration> DX9GraphicsDevice::CreateVertexDeclarationImplement(c
 }
 
 //------------------------------------------------------------------------------
-RefPtr<IVertexBuffer> DX9GraphicsDevice::CreateVertexBufferImplement(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
+RefPtr<IVertexBuffer> DX9GraphicsDevice::CreateVertexBufferImplement(size_t bufferSize, const void* data, DeviceResourceUsage usage)
 {
 	RefPtr<DX9VertexBuffer> obj(LN_NEW DX9VertexBuffer(), false);
-	obj->Create(this, vertexElements, elementsCount, vertexCount, data, usage);
+	obj->Create(this, bufferSize, data, usage);
 	return obj;
 }
 

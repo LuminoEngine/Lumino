@@ -44,6 +44,7 @@ private:
 
 	GraphicsManager*	m_graphicsManager;
 	GraphicsContext*	m_graphicsContext;
+	RefPtr<VertexDeclaration>	m_vertexDeclaration;
 	VertexBuffer*		m_vertexBuffer;
 	IndexBuffer*		m_indexBuffer;
 	Matrix				m_viewProj;

@@ -2,6 +2,7 @@
 #pragma once
 #include "../Internal.h"
 #include "GraphicsManager.h"
+#include <Lumino/Graphics/VertexDeclaration.h>
 #include <Lumino/Graphics/Renderer.h>
 #include <Lumino/Graphics/SwapChain.h>
 #include <Lumino/Graphics/Shader.h>
@@ -306,17 +307,20 @@ void Renderer::Clear(ClearFlags flags, const Color& color, float z, uint8_t sten
 }
 
 //------------------------------------------------------------------------------
-void Renderer::DrawPrimitive(VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount)
+void Renderer::DrawPrimitive(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount)
 {
+	Driver::IVertexDeclaration* decl = (vertexDeclaration != nullptr) ? vertexDeclaration->GetDeviceObject() : nullptr;
 	Driver::IVertexBuffer* vb = (vertexBuffer != nullptr) ? vertexBuffer->GetDeviceObject() : nullptr;
-	LN_ENQUEUE_RENDER_COMMAND_5(
+	LN_ENQUEUE_RENDER_COMMAND_6(
 		DrawPrimitive, m_manager,
 		Driver::IRenderer*, m_internal,
+		Driver::IVertexDeclaration*, decl,
 		Driver::IVertexBuffer*, vb,
 		PrimitiveType, primitive,
 		int, startVertex,
 		int, primitiveCount,
 		{
+			m_internal->SetVertexDeclaration(decl);
 			m_internal->SetVertexBuffer(0, vb);
 			m_internal->DrawPrimitive(primitive, startVertex, primitiveCount);
 		});
@@ -325,19 +329,22 @@ void Renderer::DrawPrimitive(VertexBuffer* vertexBuffer, PrimitiveType primitive
 }
 
 //------------------------------------------------------------------------------
-void Renderer::DrawPrimitiveIndexed(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount)
+void Renderer::DrawPrimitiveIndexed(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount)
 {
+	Driver::IVertexDeclaration* decl = (vertexDeclaration != nullptr) ? vertexDeclaration->GetDeviceObject() : nullptr;
 	Driver::IVertexBuffer* vb = (vertexBuffer != nullptr) ? vertexBuffer->GetDeviceObject() : nullptr;
 	Driver::IIndexBuffer* ib = (indexBuffer != nullptr) ? indexBuffer->GetDeviceObject() : nullptr;
-	LN_ENQUEUE_RENDER_COMMAND_6(
+	LN_ENQUEUE_RENDER_COMMAND_7(
 		DrawPrimitiveIndexed, m_manager,
 		Driver::IRenderer*, m_internal,
+		Driver::IVertexDeclaration*, decl,
 		Driver::IVertexBuffer*, vb,
 		Driver::IIndexBuffer*, ib,
 		PrimitiveType, primitive,
 		int, startIndex,
 		int, primitiveCount,
 		{
+			m_internal->SetVertexDeclaration(decl);
 			m_internal->SetVertexBuffer(0, vb);
 			m_internal->SetIndexBuffer(ib);
 			m_internal->DrawPrimitiveIndexed(primitive, startIndex, primitiveCount);

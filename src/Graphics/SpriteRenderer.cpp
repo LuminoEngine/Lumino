@@ -400,9 +400,8 @@ void SpriteRendererImpl::CreateInternal()
 
 	//-----------------------------------------------------
 	// 頂点バッファとインデックスバッファ
-
-	m_vertexBuffer.Attach(device->CreateVertexBuffer(
-		BatchSpriteVertex::Elements(), BatchSpriteVertex::ElementCount, m_maxSprites * 4, NULL, DeviceResourceUsage_Dynamic));
+	m_vertexDeclaration.Attach(device->CreateVertexDeclaration(BatchSpriteVertex::Elements(), BatchSpriteVertex::ElementCount));
+	m_vertexBuffer.Attach(device->CreateVertexBuffer(sizeof(BatchSpriteVertex) * m_maxSprites * 4, NULL, DeviceResourceUsage_Dynamic));
 
 #if 1
 	ByteBuffer indexBuf(sizeof(uint16_t) * m_maxSprites * 6, false);
@@ -1014,6 +1013,7 @@ void SpriteRendererImpl::Flush()
 		r->SetRenderState(m_renderStateList[itr->RenderStateIndex]);
 		m_shader.varTexture->SetTexture(itr->Texture);
 		pass->Apply();
+		r->SetVertexDeclaration(m_vertexDeclaration);
 		r->SetVertexBuffer(0, m_vertexBuffer);
 		r->SetIndexBuffer(m_indexBuffer);
 		r->DrawPrimitiveIndexed(PrimitiveType_TriangleList, itr->StartIndex, itr->PrimitiveNum);

@@ -14,9 +14,9 @@ class StaticMesh
 	: public VisualNode
 {
 public:
-	static StaticMeshPtr CreateSphere();
+	static StaticMeshPtr CreateBox(const Vector3& size);
 
-protected:
+LN_INTERNAL_ACCESS:
 	StaticMesh();
 	virtual ~StaticMesh();
 	void Initialize(SceneGraph* ownerSceneGraph);

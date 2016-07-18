@@ -33,6 +33,7 @@ class Color32;
 class Color;
 
 class GraphicsResourceObject;
+class VertexDeclaration;
 class VertexBuffer;
 class IndexBuffer;
 class Texture;

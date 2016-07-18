@@ -20,7 +20,6 @@ DX9Renderer::DX9Renderer(DX9GraphicsDevice* device)
 	: m_owner(device)
 	, m_dxDevice(NULL)
 	, m_currentViewportRect()
-	, m_currentVertexBuffer(NULL)
 	, m_currentIndexBuffer(NULL)
 	, m_currentDepthBuffer(NULL)
 	, m_currentShaderPass(NULL)
@@ -41,7 +40,6 @@ DX9Renderer::DX9Renderer(DX9GraphicsDevice* device)
 //------------------------------------------------------------------------------
 DX9Renderer::~DX9Renderer()
 {
-	LN_SAFE_RELEASE(m_currentVertexBuffer);
 	LN_SAFE_RELEASE(m_currentIndexBuffer);
 	LN_SAFE_RELEASE(m_currentDepthBuffer);
 	for (int i = 0; i < MaxMultiRenderTargets; ++i) {
@@ -110,8 +108,10 @@ void DX9Renderer::EnterRenderState()
 	}
 	InternalSetDepthBuffer(m_currentDepthBuffer, true);
 	InternalSetViewport(m_currentViewportRect, true);
-	InternalSetVertexBuffer(0, m_currentVertexBuffer, true);
+//	InternalSetVertexBuffer(0, m_currentVertexBuffer, true);
 	InternalSetIndexBuffer(m_currentIndexBuffer, true);
+
+	// TODO: ↑Luminoが管理するステートの設定はIRendererにもってく
 }
 
 //------------------------------------------------------------------------------
@@ -243,6 +243,8 @@ void DX9Renderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int pr
 {
 	IRenderer::FlushStates();
 
+	DX9VertexDeclaration* decl = static_cast<DX9VertexDeclaration*>(m_currentVertexDeclaration.Get());
+
 	D3DPRIMITIVETYPE dx_prim = D3DPT_TRIANGLELIST;
 	switch (primitive)
 	{
@@ -257,25 +259,18 @@ void DX9Renderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int pr
 		dx_prim = D3DPT_POINTLIST; break;
 	}
 
-	// 動的な頂点バッファとして作成している場合は DrawPrimitiveUP で描画する
-	if (m_currentVertexBuffer->GetUsage() == DeviceResourceUsage_Dynamic)
-	{
-		const byte_t* vertices = (const byte_t*)m_currentVertexBuffer->Lock();
-		int stride = m_currentVertexBuffer->GetVertexStride();
-		vertices += stride * startVertex;
-
-		LN_COMCALL(m_dxDevice->DrawPrimitiveUP(dx_prim, primitiveCount, vertices, stride));
-	}
-	else
-	{
-		LN_COMCALL(m_dxDevice->DrawPrimitive(dx_prim, startVertex, primitiveCount));
-	}
+	LN_COMCALL(m_dxDevice->DrawPrimitive(dx_prim, startVertex, primitiveCount));
 }
 
 //------------------------------------------------------------------------------
 void DX9Renderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
 {
 	IRenderer::FlushStates();
+
+	DX9VertexDeclaration* decl = static_cast<DX9VertexDeclaration*>(m_currentVertexDeclaration.Get());
+
+	// TODO: decl->GetVertexStride() も stream index を考慮したい
+	size_t vertexCount = m_currentVertexBuffers[0]->GetByteCount() / decl->GetVertexStride();
 
 	D3DPRIMITIVETYPE dx_prim = D3DPT_TRIANGLELIST;
 	switch (primitive)
@@ -291,52 +286,14 @@ void DX9Renderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, 
 		dx_prim = D3DPT_POINTLIST; break;
 	}
 
-	bool vd = (m_currentVertexBuffer->GetUsage() == DeviceResourceUsage_Dynamic);
-	bool id = (m_currentIndexBuffer->GetUsage() == DeviceResourceUsage_Dynamic);
-
-	// 両方が dynamic
-	if (vd && id)
-	{
-		D3DFORMAT ib_fmt;
-		const void* index_data;
-		if (m_currentIndexBuffer->GetFormat() == IndexBufferFormat_UInt16)
-		{
-			ib_fmt = D3DFMT_INDEX16;
-			index_data = &((uint16_t*)m_currentIndexBuffer->GetDynamicData())[startIndex];
-		}
-		else
-		{
-			ib_fmt = D3DFMT_INDEX32;
-			index_data = &((uint32_t*)m_currentIndexBuffer->GetDynamicData())[startIndex];
-		}
-
-		LN_COMCALL(
-			m_dxDevice->DrawIndexedPrimitiveUP(
-			dx_prim,
-			0,
-			m_currentVertexBuffer->GetVertexCount(),
-			primitiveCount,
-			index_data,
-			ib_fmt,
-			m_currentVertexBuffer->Lock(),
-			m_currentVertexBuffer->GetVertexStride()));
-		// ※ DrawIndexedPrimitiveUP の中で強制停止する場合、インデックスバッファの配列外参照しているかもしれない。
-	}
-	// 両方が static
-	else if (!vd && !id)
-	{
-		LN_COMCALL(
-			m_dxDevice->DrawIndexedPrimitive(
+	LN_COMCALL(
+		m_dxDevice->DrawIndexedPrimitive(
 			dx_prim,
 			0,
 			0,
-			m_currentVertexBuffer->GetVertexCount(),
+			vertexCount,
 			startIndex,
 			primitiveCount));
-	}
-	else {
-		LN_THROW(0, InvalidOperationException)
-	}
 }
 
 //------------------------------------------------------------------------------
@@ -492,10 +449,23 @@ void DX9Renderer::OnUpdateDepthStencilState(const DepthStencilState& newState, c
 //------------------------------------------------------------------------------
 void DX9Renderer::OnUpdatePrimitiveData(IVertexDeclaration* decls, const Array<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer)
 {
+	LN_CHECK_STATE(m_currentVertexDeclaration != nullptr);
+	DX9VertexDeclaration* dx9Decls = static_cast<DX9VertexDeclaration*>(decls);
+
 	// VertexBuffer
 	for (int i = 0; i < vertexBuufers.GetCount(); ++i)
 	{
-		InternalSetVertexBuffer(i, vertexBuufers[0], false);
+		DX9VertexBuffer* vb = static_cast<DX9VertexBuffer*>(vertexBuufers[i].Get());
+		if (vb != nullptr)
+		{
+			LN_COMCALL(m_dxDevice->SetVertexDeclaration(dx9Decls->GetDxVertexDeclaration()));
+			LN_COMCALL(m_dxDevice->SetStreamSource(i, vb->GetDxVertexBuffer(), 0, dx9Decls->GetVertexStride()));
+		}
+		else
+		{
+			LN_COMCALL(m_dxDevice->SetVertexDeclaration(NULL));
+			LN_COMCALL(m_dxDevice->SetStreamSource(i, NULL, 0, 0));
+		}
 	}
 
 	// IndexBuffer
@@ -554,26 +524,6 @@ void DX9Renderer::InternalSetViewport(const Rect& rect, bool reset)
 
 	LN_COMCALL(m_dxDevice->SetViewport(&viewport));
 	m_currentViewportRect = rect;
-}
-
-//------------------------------------------------------------------------------
-void DX9Renderer::InternalSetVertexBuffer(int streamIndex, IVertexBuffer* vertexBuffer, bool reset)
-{
-	if (m_currentVertexBuffer != vertexBuffer || reset)
-	{
-		DX9VertexBuffer* vb = static_cast<DX9VertexBuffer*>(vertexBuffer);
-		if (vb != nullptr)
-		{
-			LN_COMCALL(m_dxDevice->SetVertexDeclaration(vb->GetDxVertexDeclaration()));
-			LN_COMCALL(m_dxDevice->SetStreamSource(streamIndex, vb->GetDxVertexBuffer(), 0, vb->GetVertexStride()));
-		}
-		else
-		{
-			LN_COMCALL(m_dxDevice->SetVertexDeclaration(NULL));
-			LN_COMCALL(m_dxDevice->SetStreamSource(streamIndex, NULL, 0, 0));
-		}
-		LN_REFOBJ_SET(m_currentVertexBuffer, vb);
-	}
 }
 
 //------------------------------------------------------------------------------

@@ -82,7 +82,7 @@ public:
 	virtual IVertexDeclaration* CreateVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;
 
 	/// 頂点バッファの作成
-	virtual IVertexBuffer* CreateVertexBuffer(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage) = 0;
+	virtual IVertexBuffer* CreateVertexBuffer(size_t bufferSize, const void* data, DeviceResourceUsage usage) = 0;
 
 	/// インデックスバッファの作成 (initialData を受け取るようにすれば、後で Lock 用にメモリ確保する必要がなくなる)
 	virtual IIndexBuffer* CreateIndexBuffer(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage) = 0;

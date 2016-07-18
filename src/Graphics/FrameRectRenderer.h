@@ -59,8 +59,9 @@ private:
 
 	GraphicsManager*			m_manager;
 	Driver::IRenderer*			m_renderer;
+	RefPtr<Driver::IVertexDeclaration>	m_vertexDeclaration;
 	Driver::IVertexBuffer*		m_vertexBuffer;
-	Driver::IIndexBuffer*		m_indexBuffer;;
+	Driver::IIndexBuffer*		m_indexBuffer;
 	CacheBuffer<Vertex>			m_vertexCache;
 	CacheBuffer<uint16_t>		m_indexCache;
 	FrameRectRendererState		m_state;

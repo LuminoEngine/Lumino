@@ -124,6 +124,7 @@ private:
 	typedef Array<RenderState>		RenderStateList;
 	typedef Array<Attribute>		AttributeList;
 
+	RefPtr<Driver::IVertexDeclaration>	m_vertexDeclaration;
 	RefPtr<Driver::IVertexBuffer>	m_vertexBuffer;
 	RefPtr<Driver::IIndexBuffer>	m_indexBuffer;
     int								m_maxSprites;

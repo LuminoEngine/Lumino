@@ -55,14 +55,13 @@ private:
 	void InternalSetRenderTarget(int index, ITexture* texture, bool reset);
 	void InternalSetDepthBuffer(ITexture* texture, bool reset);
 	void InternalSetViewport(const Rect& rect, bool reset);
-	void InternalSetVertexBuffer(int streamIndex, IVertexBuffer* vertexBuffer, bool reset);
 	void InternalSetIndexBuffer(IIndexBuffer* indexBuffer, bool reset);
 
 private:
 	DX9GraphicsDevice*		m_owner;
 	IDirect3DDevice9*		m_dxDevice;
 	Rect					m_currentViewportRect;
-	DX9VertexBuffer*		m_currentVertexBuffer;
+	//DX9VertexBuffer*		m_currentVertexBuffer;
 	DX9IndexBuffer*			m_currentIndexBuffer;
 	DX9RenderTargetTexture*	m_currentRenderTargets[MaxMultiRenderTargets];
 	DX9DepthBuffer*			m_currentDepthBuffer;

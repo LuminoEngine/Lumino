@@ -548,6 +548,50 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 	}; \
 	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2, param3, param4, param5, param6);
 
+#define LN_ENQUEUE_RENDER_COMMAND_7(name, manager, type1, param1, type2, param2, type3, param3, type4, param4, type5, param5, type6, param6, type7, param7, code) \
+	class RenderCommand_##name : public RenderingCommand \
+	{ \
+	public: \
+		type1 param1; \
+		type2 param2; \
+		type3 param3; \
+		type4 param4; \
+		type5 param5; \
+		type6 param6; \
+		type7 param7; \
+		RenderCommand_##name( \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type1, in_##param1), \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type2, in_##param2), \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type3, in_##param3), \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type4, in_##param4), \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type5, in_##param5), \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type6, in_##param6), \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type7, in_##param7)) \
+			: param1(in_##param1) \
+			, param2(in_##param2) \
+			, param3(in_##param3) \
+			, param4(in_##param4) \
+			, param5(in_##param5) \
+			, param6(in_##param6) \
+			, param7(in_##param7) \
+		{} \
+		void OnEnqueued(RenderingCommandList* commandList) \
+		{ \
+			RenderingCommand::MarkBulkData(commandList, param1); \
+			RenderingCommand::MarkBulkData(commandList, param2); \
+			RenderingCommand::MarkBulkData(commandList, param3); \
+			RenderingCommand::MarkBulkData(commandList, param4); \
+			RenderingCommand::MarkBulkData(commandList, param5); \
+			RenderingCommand::MarkBulkData(commandList, param6); \
+			RenderingCommand::MarkBulkData(commandList, param7); \
+		} \
+		virtual void Execute() override \
+		{ \
+			code; \
+		} \
+	}; \
+	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2, param3, param4, param5, param6, param7);
+
 #define LN_ENQUEUE_RENDER_COMMAND_8(name, manager, type1, param1, type2, param2, type3, param3, type4, param4, type5, param5, type6, param6, type7, param7, type8, param8, code) \
 	class RenderCommand_##name : public RenderingCommand \
 	{ \

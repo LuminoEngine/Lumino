@@ -8,12 +8,14 @@
 #include "Internal.h"
 #include <math.h>
 #include "../Graphics/GraphicsManager.h"	// TODO:
+#include <Lumino/Graphics/VertexDeclaration.h>
 #include <Lumino/Graphics/VertexBuffer.h>	// TODO:
 #include <Lumino/Graphics/IndexBuffer.h>	// TODO:
 #include <Lumino/Graphics/GraphicsContext.h>	// TODO:
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/SpriteParticle.h>
+#include "../Graphics/Device/GraphicsDriverInterface.h"
 #include "SceneGraphManager.h"
 
 LN_NAMESPACE_BEGIN
@@ -120,7 +122,11 @@ void SpriteParticleModel::Commit()
 	// 瞬間最大パーティクル数
 	//m_maxParticleCount = (int)ceil(m_maxLifeTime * (float)m_spawnRate);
 
-	m_vertexBuffer = LN_NEW VertexBuffer(m_manager, SpriteParticleVertex::Elements(), SpriteParticleVertex::ElementCount, m_maxParticles * 4, nullptr, DeviceResourceUsage_Dynamic);
+	m_vertexDeclaration = RefPtr<VertexDeclaration>::MakeRef();
+	m_vertexDeclaration->Initialize(m_manager, SpriteParticleVertex::Elements(), SpriteParticleVertex::ElementCount);
+
+	m_vertexBuffer = LN_NEW VertexBuffer();
+	m_vertexBuffer->Initialize(m_manager, sizeof(SpriteParticleVertex) * m_maxParticles * 4, nullptr, DeviceResourceUsage_Dynamic);
 	m_indexBuffer = LN_NEW IndexBuffer(m_manager, m_maxParticles * 6, nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic);
 }
 
@@ -474,7 +480,7 @@ void SpriteParticleModel::Render(GraphicsContext* context, std::shared_ptr<detai
 		m_vertexBuffer->Unlock();
 		m_indexBuffer->Unlock();
 
-		context->DrawPrimitiveIndexed(m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, iData * 2);
+		context->DrawPrimitiveIndexed(m_vertexDeclaration, m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, iData * 2);
 
 		instance->m_activeCount = iData;
 	}

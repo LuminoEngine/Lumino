@@ -162,7 +162,8 @@ void PrimitiveRendererCore::Initialize(GraphicsManager* manager)
 
 	auto* device = m_manager->GetGraphicsDevice();
 	m_renderer = device->GetRenderer();
-	m_vertexBuffer = device->CreateVertexBuffer(Vertex::Elements(), Vertex::ElementCount, DefaultFaceCount * 4, nullptr, DeviceResourceUsage_Dynamic);
+	m_vertexDeclaration.Attach(device->CreateVertexDeclaration(Vertex::Elements(), Vertex::ElementCount));
+	m_vertexBuffer = device->CreateVertexBuffer(sizeof(Vertex) * DefaultFaceCount * 4, nullptr, DeviceResourceUsage_Dynamic);
 	m_indexBuffer = device->CreateIndexBuffer(DefaultFaceCount * 6, nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic);
 
 	m_vertexCache.Resize(DefaultFaceCount * 4);
@@ -193,7 +194,8 @@ void PrimitiveRendererCore::Initialize(GraphicsManager* manager)
 	tv[1].position.Set(-1, -1, 0); tv[1].color = Color::White; tv[1].uv.Set(0, 1);	// 左下
 	tv[2].position.Set( 1,  1, 0); tv[2].color = Color::White; tv[2].uv.Set(1, 0);	// 右上
 	tv[3].position.Set( 1, -1, 0); tv[3].color = Color::White; tv[3].uv.Set(1, 1);	// 右下
-	m_vertexBufferForBlt = device->CreateVertexBuffer(Vertex::Elements(), Vertex::ElementCount, 4, tv, DeviceResourceUsage_Static);
+	m_vertexDeclarationForBlt.Attach(device->CreateVertexDeclaration(Vertex::Elements(), Vertex::ElementCount));
+	m_vertexBufferForBlt = device->CreateVertexBuffer(sizeof(Vertex) * 4, tv, DeviceResourceUsage_Static);
 
 	// Blt 用デフォルトシェーダ
 	//m_shaderForBlt.shader = device->CreateShader(g_PrimitiveRendererForBlt_fx_Data, g_PrimitiveRendererForBlt_fx_Len, &r);
@@ -283,6 +285,8 @@ void PrimitiveRendererCore::Blt(Driver::ITexture* source, Driver::ITexture* dest
 		for (int iPass = 0; iPass < passCount; ++iPass)
 		{
 			tech->GetPass(iPass)->Apply();
+			m_renderer->SetVertexDeclaration(m_vertexDeclaration);
+			m_renderer->SetVertexDeclaration(m_vertexDeclarationForBlt);
 			m_renderer->SetVertexBuffer(0, m_vertexBufferForBlt);
 			m_renderer->DrawPrimitive(PrimitiveType_TriangleStrip, 0, 2);
 		}
@@ -313,12 +317,14 @@ void PrimitiveRendererCore::Flush()
 
 				if (m_mode == PrimitiveRendererMode::TriangleList)
 				{
+					m_renderer->SetVertexDeclaration(m_vertexDeclaration);
 					m_renderer->SetVertexBuffer(0, m_vertexBuffer);
 					m_renderer->SetIndexBuffer(m_indexBuffer);
 					m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
 				}
 				else if (m_mode == PrimitiveRendererMode::LineList)
 				{
+					m_renderer->SetVertexDeclaration(m_vertexDeclaration);
 					m_renderer->SetVertexBuffer(0, m_vertexBuffer);
 					m_renderer->DrawPrimitive(PrimitiveType_LineList, 0, GetCurrentVertexCount() / 2);
 				}
@@ -348,12 +354,14 @@ void PrimitiveRendererCore::Flush()
 
 		if (m_mode == PrimitiveRendererMode::TriangleList)
 		{
+			m_renderer->SetVertexDeclaration(m_vertexDeclaration);
 			m_renderer->SetVertexBuffer(0, m_vertexBuffer);
 			m_renderer->SetIndexBuffer(m_indexBuffer);
 			m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
 		}
 		else if (m_mode == PrimitiveRendererMode::LineList)
 		{
+			m_renderer->SetVertexDeclaration(m_vertexDeclaration);
 			m_renderer->SetVertexBuffer(0, m_vertexBuffer);
 			m_renderer->DrawPrimitive(PrimitiveType_LineList, 0, GetCurrentVertexCount() / 2);
 		}

@@ -51,13 +51,15 @@ class StaticMeshModel
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
-private:
+LN_INTERNAL_ACCESS:
 	StaticMeshModel();
 	virtual ~StaticMeshModel();
 	void Initialize(GraphicsManager* manager);
+	void CreateBox(const Vector3& size);
 
-LN_INTERNAL_ACCESS:
 	void Draw(GraphicsContext* g);
+
+	 
 
 	RefPtr<VertexDeclaration>	m_vertexDeclaration;
 	RefPtr<VertexBuffer>		m_positionVertexBuffer;

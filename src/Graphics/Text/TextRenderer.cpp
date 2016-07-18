@@ -141,7 +141,8 @@ void TextRendererCore::Initialize(GraphicsManager* manager)
 
 	auto* device = m_manager->GetGraphicsDevice();
 	m_renderer = device->GetRenderer();
-	m_vertexBuffer = device->CreateVertexBuffer(Vertex::Elements(), Vertex::ElementCount, DefaultFaceCount * 4, nullptr, DeviceResourceUsage_Dynamic);
+	m_vertexDeclaration.Attach(device->CreateVertexDeclaration(Vertex::Elements(), Vertex::ElementCount));
+	m_vertexBuffer = device->CreateVertexBuffer(sizeof(Vertex) * DefaultFaceCount * 4, nullptr, DeviceResourceUsage_Dynamic);
 	m_indexBuffer = device->CreateIndexBuffer(DefaultFaceCount * 6, nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic);
 
 	m_vertexCache.Reserve(DefaultFaceCount * 4);
@@ -235,6 +236,7 @@ void TextRendererCore::Flush(Internal::FontGlyphTextureCache* cache)
 	m_shader.varTexture->SetTexture(cache->GetGlyphsFillTexture());
 	//m_shader.varGlyphMaskSampler->SetTexture(m_glyphsMaskTexture);
 	m_shader.pass->Apply();
+	m_renderer->SetVertexDeclaration(m_vertexDeclaration);
 	m_renderer->SetVertexBuffer(0, m_vertexBuffer);
 	m_renderer->SetIndexBuffer(m_indexBuffer);
 	m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);

@@ -40,6 +40,17 @@ void VertexDeclaration::Initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
+void VertexDeclaration::Initialize(GraphicsManager* manager, const VertexElement* elements, int count)
+{
+	GraphicsResourceObject::Initialize(manager);
+
+	for (int i = 0; i < count; ++i)
+	{
+		m_vertexElements.Add(elements[i]);
+	}
+}
+
+//------------------------------------------------------------------------------
 void VertexDeclaration::AddVertexElement(int streamIndex, VertexElementType type, VertexElementUsage usage, int usageIndex)
 {
 	LN_CHECK_ARG(streamIndex >= 0);
@@ -58,6 +69,24 @@ void VertexDeclaration::TryUpdateResource()
 {
 	if (m_modified)
 	{
+		m_deviceObj.Attach(m_manager->GetGraphicsDevice()->CreateVertexDeclaration(&m_vertexElements[0], m_vertexElements.GetCount()), false);
+		m_modified = false;
+	}
+}
+
+//------------------------------------------------------------------------------
+void VertexDeclaration::OnChangeDevice(Driver::IGraphicsDevice* device)
+{
+	if (device == nullptr)
+	{
+		// 破棄
+		m_deviceObj.SafeRelease();
+	}
+	else
+	{
+		assert(m_deviceObj == NULL);
+
+		// 作り直す
 		m_deviceObj.Attach(m_manager->GetGraphicsDevice()->CreateVertexDeclaration(&m_vertexElements[0], m_vertexElements.GetCount()), false);
 		m_modified = false;
 	}

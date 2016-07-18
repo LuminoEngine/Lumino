@@ -115,10 +115,10 @@ IVertexDeclaration* GraphicsDeviceBase::CreateVertexDeclaration(const VertexElem
 }
 
 //------------------------------------------------------------------------------
-IVertexBuffer* GraphicsDeviceBase::CreateVertexBuffer(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
+IVertexBuffer* GraphicsDeviceBase::CreateVertexBuffer(size_t bufferSize, const void* data, DeviceResourceUsage usage)
 {
 	ScopedAccessContext lock(this);
-	auto obj = CreateVertexBufferImplement(vertexElements, elementsCount, vertexCount, data, usage);
+	auto obj = CreateVertexBufferImplement(bufferSize, data, usage);
 	AddDeviceResource(obj);
 	return obj.DetachMove();
 }

@@ -70,10 +70,10 @@ RefPtr<IVertexDeclaration> GLGraphicsDevice::CreateVertexDeclarationImplement(co
 }
 
 //------------------------------------------------------------------------------
-RefPtr<IVertexBuffer> GLGraphicsDevice::CreateVertexBufferImplement(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
+RefPtr<IVertexBuffer> GLGraphicsDevice::CreateVertexBufferImplement(size_t bufferSize, const void* data, DeviceResourceUsage usage)
 {
 	RefPtr<GLVertexBuffer> obj(LN_NEW GLVertexBuffer(), false);
-	obj->Create(vertexElements, elementsCount, vertexCount, data, usage);
+	obj->Create(bufferSize, data, usage);
     return RefPtr<IVertexBuffer>::StaticCast(obj);
 }
 

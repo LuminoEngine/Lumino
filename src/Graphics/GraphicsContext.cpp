@@ -779,17 +779,17 @@ void GraphicsContext::DrawText(const StringRef& text, const RectF& rect, StringF
 }
 
 //------------------------------------------------------------------------------
-void GraphicsContext::DrawPrimitive(VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount)
+void GraphicsContext::DrawPrimitive(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount)
 {
 	OnDrawing(GetCommonRenderer());
-	GetCommonRenderer()->DrawPrimitive(vertexBuffer, primitive, startVertex, primitiveCount);
+	GetCommonRenderer()->DrawPrimitive(vertexDeclaration, vertexBuffer, primitive, startVertex, primitiveCount);
 }
 
 //------------------------------------------------------------------------------
-void GraphicsContext::DrawPrimitiveIndexed(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount)
+void GraphicsContext::DrawPrimitiveIndexed(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount)
 {
 	OnDrawing(GetCommonRenderer());
-	GetCommonRenderer()->DrawPrimitiveIndexed(vertexBuffer, indexBuffer, primitive, startIndex, primitiveCount);
+	GetCommonRenderer()->DrawPrimitiveIndexed(vertexDeclaration, vertexBuffer, indexBuffer, primitive, startIndex, primitiveCount);
 }
 
 //------------------------------------------------------------------------------

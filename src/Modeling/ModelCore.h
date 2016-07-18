@@ -291,6 +291,7 @@ public:
 	//String				Comment;			///< コメント
 	//String				EnglishComment;		///< コメント英
 
+	RefPtr<VertexDeclaration>	vertexDeclaration;
 	RefPtr<VertexBuffer>	VertexBuffer;///< 頂点バッファ
 	RefPtr<IndexBuffer>	IndexBuffer;///< インデックスバッファ
 

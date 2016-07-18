@@ -65,8 +65,10 @@ private:
 
 	GraphicsManager*		m_manager;
 	Driver::IRenderer*		m_renderer;
+	RefPtr<Driver::IVertexDeclaration>	m_vertexDeclaration;
 	Driver::IVertexBuffer*	m_vertexBuffer;
 	Driver::IIndexBuffer*	m_indexBuffer;
+	RefPtr<Driver::IVertexDeclaration>	m_vertexDeclarationForBlt;
 	Driver::IVertexBuffer*	m_vertexBufferForBlt;
 	ByteBuffer				m_vertexCache;
 	size_t					m_vertexCacheUsed;

@@ -30,13 +30,10 @@ GLVertexBuffer::~GLVertexBuffer()
 }
 
 //------------------------------------------------------------------------------
-void GLVertexBuffer::Create(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* initialData, DeviceResourceUsage usage)
+void GLVertexBuffer::Create(size_t bufferSize, const void* initialData, DeviceResourceUsage usage)
 {
-	// 頂点宣言作成
-	GLVertexDeclaration::CreateGLVertexElements(vertexElements, elementsCount, &m_vertexElements);
-
 	m_format = usage;
-	m_byteCount = vertexCount * m_vertexElements[0].Stride;	// OpenGL の API に渡す都合上、Stride はすべて頂点1つ分のサイズが入っている
+	m_byteCount = bufferSize;
 	m_data = LN_NEW byte_t[m_byteCount];
 	if (initialData) {
 		memcpy_s(m_data, m_byteCount, initialData, m_byteCount);

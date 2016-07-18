@@ -1,5 +1,6 @@
 ﻿
 #include "../Internal.h"
+#include <Lumino/Graphics/VertexDeclaration.h>
 #include "../Graphics/GraphicsManager.h"
 #include "../Graphics/Device/DirectX9/DX9Module.h"
 #include "../Graphics/Device/DirectX9/DX9GraphicsDevice.h"
@@ -654,12 +655,15 @@ ModelCore* XFileLoader::Load(ModelManager* manager, Stream* stream, const PathNa
 			// 頂点バッファ、インデックスバッファ作成
 
 			// 頂点バッファ作成
-			core->VertexBuffer.Attach(LN_NEW VertexBuffer(
-				manager->GetGraphicsManager(), PMX_Vertex::Elements(),
-				PMX_Vertex::ElementCount,
-				all_vertex_num,
+			core->vertexDeclaration = RefPtr<VertexDeclaration>::MakeRef();
+			core->vertexDeclaration->Initialize(manager->GetGraphicsManager(), PMX_Vertex::Elements(), PMX_Vertex::ElementCount);
+
+			core->VertexBuffer.Attach(LN_NEW VertexBuffer());
+			core->VertexBuffer->Initialize(
+				manager->GetGraphicsManager(),
+				sizeof(PMX_Vertex) * all_vertex_num,
 				nullptr,
-				(isDynamic) ? DeviceResourceUsage_Dynamic : DeviceResourceUsage_Static));
+				(isDynamic) ? DeviceResourceUsage_Dynamic : DeviceResourceUsage_Static);
 
 			// インデックスバッファ作成
 			IDirect3DIndexBuffer9* dx_indexbuffer;

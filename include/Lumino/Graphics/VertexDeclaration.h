@@ -30,6 +30,7 @@ LN_INTERNAL_ACCESS:
 	VertexDeclaration();
 	virtual ~VertexDeclaration();
 	void Initialize(GraphicsManager* manager);
+	void Initialize(GraphicsManager* manager, const VertexElement* elements, int count);
 	void TryUpdateResource();
 	Driver::IVertexDeclaration* GetDeviceObject() const { return m_deviceObj; }
 
@@ -37,7 +38,7 @@ LN_INTERNAL_ACCESS:
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 private:
-	RefPtr<Driver::IVertexDeclaration>	m_deviceObj;
+	RefPtr<Driver::IVertexDeclaration>	m_deviceObj;		// TODO: これは RefPtr にしたくない。Driver 系の include が必要になってしまう。
 	Array<VertexElement>				m_vertexElements;
 	bool								m_modified;
 };

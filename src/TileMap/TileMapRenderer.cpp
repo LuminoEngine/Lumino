@@ -6,12 +6,14 @@
 #include "../Internal.h"
 #include <Lumino/Graphics/SpriteRenderer.h>
 #include <Lumino/Graphics/Texture.h>
+#include <Lumino/Graphics/VertexDeclaration.h>
 #include <Lumino/Graphics/VertexBuffer.h>
 #include <Lumino/Graphics/IndexBuffer.h>
 #include <Lumino/Graphics/Shader.h>
 #include <Lumino/Graphics/GraphicsContext.h>
 #include <Lumino/TileMap/TileMapRenderer.h>
 #include <Lumino/TileMap/TileMapModel.h>
+#include "../Graphics/Device/GraphicsDriverInterface.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -196,7 +198,7 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 	int allocedTileCount = 0;
 	if (m_vertexBuffer != nullptr && m_indexBuffer != nullptr)
 	{
-		allocedTileCount = m_vertexBuffer->GetVertexCount() / 4;
+		allocedTileCount = m_vertexBuffer->GetBufferSize() / sizeof(TileMapVertex) / 4;
 	}
 
 	int tileCount = (renderRange.right - renderRange.left) * (renderRange.bottom - renderRange.top);
@@ -204,7 +206,10 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 	{
 		LN_SAFE_RELEASE(m_vertexBuffer);
 		LN_SAFE_RELEASE(m_indexBuffer);
-		m_vertexBuffer = LN_NEW VertexBuffer(m_graphicsManager, TileMapVertex::Elements(), TileMapVertex::ElementCount, tileCount * 4, nullptr, DeviceResourceUsage_Dynamic);
+		m_vertexDeclaration = RefPtr<VertexDeclaration>::MakeRef();
+		m_vertexDeclaration->Initialize(m_graphicsManager, TileMapVertex::Elements(), TileMapVertex::ElementCount);
+		m_vertexBuffer = LN_NEW VertexBuffer();
+		m_vertexBuffer->Initialize(m_graphicsManager, sizeof(TileMapVertex) * tileCount * 4, nullptr, DeviceResourceUsage_Dynamic);
 		m_indexBuffer = LN_NEW IndexBuffer(m_graphicsManager, tileCount * 6, nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic);
 
 		// インデックスバッファは途中で変わらないので先に埋めておく
@@ -325,7 +330,7 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 	//m_renderingContext->SetRenderState(s);
 
 	m_graphicsContext->SetShaderPass(m_shader.pass);
-	m_graphicsContext->DrawPrimitiveIndexed(m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, plotCount / 2);
+	m_graphicsContext->DrawPrimitiveIndexed(m_vertexDeclaration, m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, plotCount / 2);
 
 	//printf("%p\n", m_shader.pass);
 	//m_renderingContext->SetVertexBuffer(nullptr);

@@ -123,6 +123,7 @@ public:	// TODO:
 	float MakeRandom(detail::ParticleData* data, float minValue, float maxValue, ParticleRandomSource source);
 	
 	GraphicsManager*	m_manager;
+	RefPtr<VertexDeclaration>	m_vertexDeclaration;
 	VertexBuffer*		m_vertexBuffer;	// TODO: このあたりは Manager に置いて、全体で共有した方がメモリ効率よい
 	IndexBuffer*		m_indexBuffer;
 	Texture*			m_texture;

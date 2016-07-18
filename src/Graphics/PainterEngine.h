@@ -303,10 +303,11 @@ private:
 	Driver::IRenderer*				m_renderer;
 	CacheBuffer<PainterVertex>		m_vertexCache;
 	CacheBuffer<uint16_t>			m_indexCache;
-	RefPtr<Driver::IVertexBuffer>	m_vertexBuffer;
-	RefPtr<Driver::IIndexBuffer>	m_indexBuffer;
-	RefPtr<Driver::ITexture>		m_dummyTexture;
-	Matrix							m_baseTransform;
+	RefPtr<Driver::IVertexDeclaration>	m_vertexDeclaration;
+	RefPtr<Driver::IVertexBuffer>		m_vertexBuffer;
+	RefPtr<Driver::IIndexBuffer>		m_indexBuffer;
+	RefPtr<Driver::ITexture>			m_dummyTexture;
+	Matrix								m_baseTransform;
 
 	Stack<PainterEngineSection>		m_sectionStack;
 

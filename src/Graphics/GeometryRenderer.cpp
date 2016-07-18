@@ -787,6 +787,7 @@ private:
 	}
 
 	GraphicsManager*		m_manager;
+	RefPtr<Driver::IVertexDeclaration>	m_vertexDeclaration;
 	Driver::IVertexBuffer*	m_vertexBuffer;
 	Driver::IIndexBuffer*	m_indexBuffer;
 	Matrix					m_view;
@@ -838,8 +839,9 @@ DrawingContextImpl::DrawingContextImpl(GraphicsManager* manager)
 
 	const int DefaultFaceCount = 1024;
 
-	m_vertexBuffer = device->CreateVertexBuffer(DrawingBasicVertex::Elements(), DrawingBasicVertex::ElementCount, DefaultFaceCount * 4, NULL, DeviceResourceUsage_Dynamic);
-	m_indexBuffer = device->CreateIndexBuffer(DefaultFaceCount * 6, NULL, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic);
+	m_vertexDeclaration.Attach(device->CreateVertexDeclaration(DrawingBasicVertex::Elements(), DrawingBasicVertex::ElementCount));
+	m_vertexBuffer = device->CreateVertexBuffer(sizeof(DrawingBasicVertex) * DefaultFaceCount * 4, nullptr, DeviceResourceUsage_Dynamic);
+	m_indexBuffer = device->CreateIndexBuffer(DefaultFaceCount * 6, nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic);
 
 	//-----------------------------------------------------
 	// シェーダ (DrawingContext3D)
@@ -1091,6 +1093,7 @@ void DrawingContextImpl::Flush()
 		m_shader3D.varTexture->SetTexture(m_currentState.Brush.SelectTexutre(m_manager->GetDummyTexture()));
 		m_shader3D.varGlyphMaskSampler->SetTexture(m_manager->GetDummyTexture());
 		m_shader3D.passP0->Apply();
+		renderer->SetVertexDeclaration(m_vertexDeclaration);
 		renderer->SetVertexBuffer(0, m_vertexBuffer);
 		renderer->SetIndexBuffer(m_indexBuffer);
 		renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
