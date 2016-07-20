@@ -405,11 +405,11 @@ void MMEShader::UpdateNodeParams(SceneNode* node, Camera* affectCamera, const Li
 }
 
 //------------------------------------------------------------------------------
-void MMEShader::UpdateSubsetParams(const detail::MaterialInstance& material)
+void MMEShader::UpdateSubsetParams(detail::MaterialInstance* material)
 {
-	LN_CHECK_ARG(material.m_owner->GetMaterialTypeId() == detail::MmdMaterialTypeId);
+	LN_CHECK_ARG(material->m_owner->GetMaterialTypeId() == detail::MmdMaterialTypeId);
 
-	MmdMaterial* ownerMaterial = static_cast<MmdMaterial*>(material.m_owner);
+	MmdMaterialInstance* ownerMaterial = static_cast<MmdMaterialInstance*>(material);
 
 	ShaderVariable* var;
 	LN_FOREACH(MMEShaderVariable* sv, m_mmeShaderVariableList)
@@ -449,16 +449,16 @@ void MMEShader::UpdateSubsetParams(const detail::MaterialInstance& material)
 				var->SetFloat(1);	// TODO: 廃止予定
 				break;
 			case LN_VARREQ_COLOR_SCALE:
-				var->SetVector(material.m_colorScale);
+				var->SetVector(material->m_colorScale);
 				break;
 			case LN_VARREQ_BLEND_COLOR:
-				var->SetVector(material.m_blendColor);
+				var->SetVector(material->m_blendColor);
 				break;
 			case LN_VARREQ_TONE:
-				var->SetVector(material.m_tone);
+				var->SetVector(material->m_tone);
 				break;
 			case LN_VARREQ_UVTRANSFORM:
-				var->SetMatrix(material.GetUVTransform());
+				var->SetMatrix(material->GetUVTransform());
 				break;
 		}
 	}

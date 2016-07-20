@@ -30,9 +30,6 @@ LN_INTERNAL_ACCESS:
 	virtual ~MMDSceneGraph();
 	void CreateCore(SceneGraphManager* manager);
 
-	//virtual Material2* GetDefaultMaterial() override;
-	//virtual Material2* CreateMaterial() override;
-
 private:
 	//Material2*		m_defaultMaterial;
 	SceneNode*		m_defaultRoot;

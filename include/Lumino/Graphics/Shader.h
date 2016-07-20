@@ -146,8 +146,8 @@ public:
 	const Matrix* GetMatrixArray() const { return m_value.MatrixArray; }
 	void SetDeviceTexture(Driver::ITexture* texture);
 	Driver::ITexture* GetDeviceTexture() const { return m_value.DeviceTexture; }
-	//void SetManagedTexture(Texture* texture);
-	//Texture* GetManagedTexture() const { return m_value.ManagedTexture; }
+	void SetManagedTexture(Texture* texture);
+	Texture* GetManagedTexture() const { return m_value.ManagedTexture; }
 	void SetString(const char* str);
 	void SetString(const String& str);
 	const TCHAR* GetString() const { return m_value.String; }
@@ -179,7 +179,7 @@ private:
 			ln::Matrix*	Matrix;
 			ln::Matrix*	MatrixArray;
 			Driver::ITexture*	DeviceTexture;
-			Texture*			ManagedTexture;	// TODO: 必要ない。ShaderVariable クラス側で持つようにした
+			Texture*			ManagedTexture;
 			TCHAR*			String;
 
 			byte_t*			Buffer;		// ↑のポインタ型の実態 (ITexture*以外)

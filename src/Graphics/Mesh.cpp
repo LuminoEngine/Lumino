@@ -92,6 +92,7 @@ MaterialPtr Material3::Create()
 Material3::Material3()
 	: m_shader(nullptr)
 	, m_valueList()
+	, m_modifiedForMaterialInstance(false)
 {
 }
 
@@ -105,36 +106,42 @@ void Material3::SetShader(Shader* shader)
 {
 	m_shader = shader;
 	LinkVariables();
+	m_modifiedForMaterialInstance = true;
 }
 
 //------------------------------------------------------------------------------
 void Material3::SetIntParameter(const StringRef& name, int value)
 {
 	FindShaderValue(name)->SetInt(value);
+	m_modifiedForMaterialInstance = true;
 }
 
 //------------------------------------------------------------------------------
 void Material3::SetFloatParameter(const StringRef& name, float value)
 {
 	FindShaderValue(name)->SetFloat(value);
+	m_modifiedForMaterialInstance = true;
 }
 
 //------------------------------------------------------------------------------
 void Material3::SetVectorParameter(const StringRef& name, const Vector4& value)
 {
 	FindShaderValue(name)->SetVector(value);
+	m_modifiedForMaterialInstance = true;
 }
 
 //------------------------------------------------------------------------------
 void Material3::SetMatrixParameter(const StringRef& name, const Matrix& value)
 {
 	FindShaderValue(name)->SetMatrix(value);
+	m_modifiedForMaterialInstance = true;
 }
 
 //------------------------------------------------------------------------------
 void Material3::SetTextureParameter(const StringRef& name, Texture* value)
 {
-	FindShaderValue(name)->SetDeviceTexture((value) ? value->GetDeviceObject() : nullptr);
+	FindShaderValue(name)->SetManagedTexture(value);
+	m_modifiedForMaterialInstance = true;
 }
 
 //------------------------------------------------------------------------------
@@ -177,6 +184,18 @@ ShaderValue* Material3::FindShaderValue(const StringRef& name)
 	}
 	return v.get();
 }
+
+//------------------------------------------------------------------------------
+ShaderValue* Material3::FindShaderValueConst(const StringRef& name) const
+{
+	ShaderValuePtr v;
+	if (!m_valueList.TryGetValue(name, &v))
+	{
+		return nullptr;
+	}
+	return v.get();
+}
+
 
 //==============================================================================
 // StaticMeshModel

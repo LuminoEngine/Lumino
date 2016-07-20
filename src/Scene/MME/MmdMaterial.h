@@ -8,18 +8,20 @@ LN_NAMESPACE_BEGIN
 /**
 	@brief
 */
-class MmdMaterial
-	: public Material2
+class MmdMaterialInstance
+	: public detail::MaterialInstance
 {
 public:
-	void SetToonTexture(Texture* texture);
-	Texture* GetToonTexture() const { return m_toonTexture; }
-	void SetSphereTexture(Texture* texture);
-	Texture* GetSphereTexture() const { return m_sphereTexture; }
-	
+	//void SetToonTexture(Texture* texture);
+	//Texture* GetToonTexture() const { return m_toonTexture; }
+	//void SetSphereTexture(Texture* texture);
+	//Texture* GetSphereTexture() const { return m_sphereTexture; }
+
+	virtual void OnCombine(Material3* owner, Material3* parent) override;
+
 LN_INTERNAL_ACCESS:
-	MmdMaterial();
-	virtual ~MmdMaterial();
+	MmdMaterialInstance();
+	virtual ~MmdMaterialInstance();
 
 public:	// TODO:
 	Color		m_diffuse;			// 物体の色
@@ -28,8 +30,8 @@ public:	// TODO:
 	Color		m_emissive;			// 物体の発光色 ( 光源の影響を受けない色 )
 	float		m_power;			// 光沢の強さ
 
-	Texture*	m_toonTexture;
-	Texture*	m_sphereTexture;
+	RefPtr<Texture>	m_toonTexture;
+	RefPtr<Texture>	m_sphereTexture;
 
 	Color						ToonColor;			///< [PMD] トゥーンカラー
 	Color						EdgeColor;			///< [PMX] エッジカラー

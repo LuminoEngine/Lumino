@@ -53,19 +53,17 @@ void MMERenderingPass::RenderSubset(SceneGraphRenderingContext* dc, VisualNode* 
 	visualNode->UpdateNodeRenderingParams(priorityParams.Shader);
 
 	//const Material& material = visualNode->GetVisualNodeParams().GetCombinedSubsetParams(subset).Material;
-	const detail::MaterialInstance* materialInstance = visualNode->GetMaterialList().GetMaterialInstance(subset);
+	detail::MaterialInstance* materialInstance = visualNode->GetMaterialList().GetMaterialInstance(subset);
 	bool useTexture = materialInstance->m_owner->GetTexture() != nullptr;
 	bool useSphereTexture = false;
 	bool useToonTexture = false;
 	if (materialInstance->m_owner->GetMaterialTypeId() == detail::MmdMaterialTypeId)
 	{
-		MmdMaterial* mmdMat = static_cast<MmdMaterial*>(materialInstance->m_owner);
-		useSphereTexture = mmdMat->GetSphereTexture() != nullptr;
-		useToonTexture = mmdMat->GetToonTexture() != nullptr;
+		MmdMaterialInstance* mmdMat = static_cast<MmdMaterialInstance*>(materialInstance);
+		useSphereTexture = mmdMat->m_sphereTexture != nullptr;
+		useToonTexture = mmdMat->m_toonTexture != nullptr;
 	}
 
-		
-	Material2* material = materialInstance->m_owner;
 
 	// テクニックの検索
 	MMEShaderTechnique* tech = priorityParams.Shader->FindTechnique(

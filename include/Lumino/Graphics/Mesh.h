@@ -3,6 +3,8 @@
 #include <Lumino/Graphics/Common.h>
 #include "Vertex.h"
 
+#include "Shader.h"	// TODO: for Material
+
 LN_NAMESPACE_BEGIN
 class VertexDeclaration;
 class StaticMeshModel;
@@ -46,13 +48,29 @@ LN_INTERNAL_ACCESS:
 
 	const Array<ValuePair>& GetLinkedVariableList() { return m_linkedVariableList; }
 
+public:	// TODO:
+	float GetOpacity() const { auto* v = FindShaderValueConst(_T("Opacity")); return (v) ? v->GetFloat() : 1.0f; }
+	Color GetColorScale() const { auto* v = FindShaderValueConst(_T("ColorScale")); return (v) ? Color(v->GetVector()) : Color::White; }
+	Color GetBlendColor() const { auto* v = FindShaderValueConst(_T("BlendColor")); return (v) ? Color(v->GetVector()) : Color::Transparency; }
+	ToneF GetTone() const { auto* v = FindShaderValueConst(_T("Tone")); return (v) ? ToneF(v->GetVector()) : ToneF(); }
+	Matrix GetUVTransform() const { auto* v = FindShaderValueConst(_T("UVTransform")); return (v) ? v->GetMatrix() : Matrix::Identity; }
+
+	Color GetColor(const StringRef& name, const Color& defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? Color(v->GetVector()) : defaultValue; }
+	float GetFloat(const StringRef& name, float defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? v->GetFloat() : defaultValue; }
+	Texture* GetTexture(const StringRef& name, Texture* defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? v->GetManagedTexture() : defaultValue; }
+	int GetInt(const StringRef& name, int defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? v->GetInt() : defaultValue; }
+
 private:
 	void LinkVariables();
 	ShaderValue* FindShaderValue(const StringRef& name);
+	ShaderValue* FindShaderValueConst(const StringRef& name) const;
 
 	RefPtr<Shader>						m_shader;
 	SortedArray<String, ShaderValuePtr>	m_valueList;
 	Array<ValuePair>					m_linkedVariableList;
+
+LN_INTERNAL_ACCESS:
+	bool								m_modifiedForMaterialInstance;
 };
 
 /**

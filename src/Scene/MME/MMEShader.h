@@ -5,7 +5,7 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
-namespace detail { struct MaterialInstance; }
+namespace detail { class MaterialInstance; }
 class IMMESceneObject;
 class MMEShaderErrorInfo;
 class MMEShaderVariable;
@@ -39,7 +39,7 @@ public:
 	void UpdateNodeParams(SceneNode* node, Camera* affectCamera, const LightNodeList& affectLightList);
 
 	/// Subset 単位で必要なパラメータを設定する
-	void UpdateSubsetParams(const detail::MaterialInstance& material);
+	void UpdateSubsetParams(detail::MaterialInstance* material);
 
 	/// CONTROLLOBJECT 設定 (obj は NULL 可能。存在しなければ bool 型変数に false を設定するため)
 	static void SetControllObjectParam(MMEShaderVariable* sv, const IMMESceneObject* obj);

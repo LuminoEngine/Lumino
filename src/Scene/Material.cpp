@@ -99,41 +99,55 @@
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
-// Material
-//==============================================================================
+//// Material
+////==============================================================================
+//
+////------------------------------------------------------------------------------
+//Material2::Material2(int materialTypeId)
+//	: m_materialTypeId(materialTypeId)
+//	, m_opacity(1.0f)
+//	, m_colorScale(1, 1, 1, 1)
+//	, m_blendColor(0, 0, 0, 0)
+//	, m_tone()
+//	, m_texture(nullptr)
+//	, m_shader(nullptr)
+//{
+//}
+//
+////------------------------------------------------------------------------------
+//Material2::~Material2()
+//{
+//	LN_SAFE_RELEASE(m_texture);
+//	LN_SAFE_RELEASE(m_shader);
+//}
+//
+////------------------------------------------------------------------------------
+//void Material2::SetTexture(Texture* texture)
+//{
+//	LN_REFOBJ_SET(m_texture, texture);
+//}
+//
+////------------------------------------------------------------------------------
+//void Material2::SetShader(Shader* shader)
+//{
+//	LN_REFOBJ_SET(m_shader, shader);
+//}
 
-//------------------------------------------------------------------------------
-Material2::Material2(int materialTypeId)
-	: m_materialTypeId(materialTypeId)
-	, m_opacity(1.0f)
-	, m_colorScale(1, 1, 1, 1)
-	, m_blendColor(0, 0, 0, 0)
-	, m_tone()
-	, m_texture(nullptr)
-	, m_shader(nullptr)
+namespace detail
 {
+
+void MaterialInstance::Combine(Material3* owner, Material3* parent)
+{
+	if (m_owner == nullptr || m_owner->m_modifiedForMaterialInstance)
+	{
+		// set
+		m_owner = owner;
+		OnCombine(owner, parent);
+		m_owner->m_modifiedForMaterialInstance = false;
+	}
 }
 
-//------------------------------------------------------------------------------
-Material2::~Material2()
-{
-	LN_SAFE_RELEASE(m_texture);
-	LN_SAFE_RELEASE(m_shader);
 }
-
-//------------------------------------------------------------------------------
-void Material2::SetTexture(Texture* texture)
-{
-	LN_REFOBJ_SET(m_texture, texture);
-}
-
-//------------------------------------------------------------------------------
-void Material2::SetShader(Shader* shader)
-{
-	LN_REFOBJ_SET(m_shader, shader);
-}
-
-
 
 //==============================================================================
 // MaterialList2
@@ -155,13 +169,13 @@ void MaterialList2::Initialize(int subMaterialCount, bool createMainMaterial)
 	Resize(subMaterialCount);
 	for (int i = 0; i < subMaterialCount; ++i)
 	{
-		auto m = RefPtr<MmdMaterial>::MakeRef();	// TODO
+		auto m = RefPtr<Material3>::MakeRef();	// TODO
 		SetAt(i, m);
 	}
 
 	if (createMainMaterial)
 	{
-		m_mainMaterial = RefPtr<MmdMaterial>::MakeRef();	// TODO
+		m_mainMaterial = RefPtr<Material3>::MakeRef();	// TODO
 	}
 }
 
@@ -169,7 +183,7 @@ void MaterialList2::Initialize(int subMaterialCount, bool createMainMaterial)
 void MaterialList2::UpdateMaterialInstances()
 {
 	// m_mainMaterial は親として使える？
-	Material2* parent = nullptr;
+	Material3* parent = nullptr;
 	if (m_mainMaterial != nullptr)
 	{
 		parent = m_mainMaterial;
@@ -179,7 +193,15 @@ void MaterialList2::UpdateMaterialInstances()
 	int subCount = GetCount();
 	if (m_instanceList.GetCount() != subCount)
 	{
+		int d = subCount - m_instanceList.GetCount();
 		m_instanceList.Resize(subCount);
+		if (d > 0)
+		{
+			for (int i = 0; i < d; ++i)
+			{
+				m_instanceList.Add(RefPtr<detail::MaterialInstance>::MakeRef());
+			}
+		}
 	}
 
 	// m_instanceList の内容を作っていく
@@ -187,14 +209,14 @@ void MaterialList2::UpdateMaterialInstances()
 	{
 		for (int i = 0; i < subCount; ++i)
 		{
-			m_instanceList[i].Combine(GetAt(i), parent);
+			m_instanceList[i]->Combine(GetAt(i), parent);
 		}
 	}
 	else if (parent != nullptr)
 	{
 		// parent はあるけど SubMaterial が1つも無い。parent を使う。
 		if (m_instanceList.GetCount() != 1) m_instanceList.Resize(1);
-		m_instanceList[0].Combine(parent, nullptr);
+		m_instanceList[0]->Combine(parent, nullptr);
 	}
 	else
 	{

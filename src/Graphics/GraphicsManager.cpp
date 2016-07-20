@@ -1200,6 +1200,9 @@ void ShaderVariableCommitSerializeHelper::WriteValue(Driver::IShaderVariable* ta
 	case ShaderVariableType_DeviceTexture:
 		m_writer->WriteUInt64((intptr_t)value.GetDeviceTexture());
 		break;
+	case ShaderVariableType_ManagedTexture:
+		m_writer->WriteUInt64((intptr_t)((value.GetManagedTexture()) ? value.GetManagedTexture()->GetDeviceObject() : nullptr));
+		break;
 	default:
 		LN_THROW(0, ArgumentException);
 		break;
@@ -1270,6 +1273,7 @@ void ShaderVariableCommitSerializeHelper::Deserialize(const void* data, size_t l
 			break;
 		}
 		case ShaderVariableType_DeviceTexture:
+		case ShaderVariableType_ManagedTexture:
 			variable->SetTexture((Driver::ITexture*)reader.ReadUInt64());
 			break;
 		default:

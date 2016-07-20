@@ -215,7 +215,7 @@ void VisualNode::DrawSubsetInternal(SceneGraphRenderingContext* dc, int subsetIn
 {
 	// シェーダのサブセット単位のデータを更新する
 	if (shader != nullptr) {
-		shader->UpdateSubsetParams(*m_materialList.GetMaterialInstance(subsetIndex));
+		shader->UpdateSubsetParams(m_materialList.GetMaterialInstance(subsetIndex));
 	}
 
 	// パス開始

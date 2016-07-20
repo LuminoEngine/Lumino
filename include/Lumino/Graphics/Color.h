@@ -336,6 +336,8 @@ public:
 	*/
 	ToneF(float r_, float g_, float b_, float gs_) { r = r_; g = g_; b = b_; gray = gs_; }
 
+	ToneF(const Vector4& vec) { r = vec.x; g = vec.y; b = vec.z; gray = vec.w; }
+
 public:
 
 	/**
