@@ -54,12 +54,13 @@ void MMERenderingPass::RenderSubset(SceneGraphRenderingContext* dc, VisualNode* 
 
 	//const Material& material = visualNode->GetVisualNodeParams().GetCombinedSubsetParams(subset).Material;
 	detail::MaterialInstance* materialInstance = visualNode->GetMaterialList().GetMaterialInstance(subset);
-	bool useTexture = materialInstance->m_owner->GetTexture() != nullptr;
+	bool useTexture = false;
 	bool useSphereTexture = false;
 	bool useToonTexture = false;
-	if (materialInstance->m_owner->GetMaterialTypeId() == detail::MmdMaterialTypeId)
+	if (materialInstance->GetMaterialTypeId() == detail::MmdMaterialTypeId)
 	{
 		MmdMaterialInstance* mmdMat = static_cast<MmdMaterialInstance*>(materialInstance);
+		useTexture = mmdMat->m_materialTexture != nullptr;
 		useSphereTexture = mmdMat->m_sphereTexture != nullptr;
 		useToonTexture = mmdMat->m_toonTexture != nullptr;
 	}

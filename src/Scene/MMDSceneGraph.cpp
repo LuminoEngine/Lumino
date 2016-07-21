@@ -102,6 +102,11 @@ void MMDSceneGraph::UpdateFrame(float elapsedTime)
 //	return true;
 //}
 
+//------------------------------------------------------------------------------
+detail::MaterialInstance* MMDSceneGraph::CreateMaterialInstance()
+{
+	return LN_NEW MmdMaterialInstance();
+}
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END

@@ -24,6 +24,7 @@ public:
 	virtual Array<RenderingPass*>* GetRenderingPasses() override { return &m_mmdRenderingPasses; }
 
 	//virtual bool InjectMouseWheel(int delta) override;
+	virtual detail::MaterialInstance* CreateMaterialInstance() override;
 
 LN_INTERNAL_ACCESS:
 	MMDSceneGraph();

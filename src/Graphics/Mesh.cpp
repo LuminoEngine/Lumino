@@ -145,6 +145,12 @@ void Material3::SetTextureParameter(const StringRef& name, Texture* value)
 }
 
 //------------------------------------------------------------------------------
+void Material3::SetColorParameter(const StringRef& name, const Color& value)
+{
+	SetVectorParameter(name, value);
+}
+
+//------------------------------------------------------------------------------
 void Material3::LinkVariables()
 {
 	m_valueList.Clear();

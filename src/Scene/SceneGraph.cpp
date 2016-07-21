@@ -286,6 +286,12 @@ bool SceneGraph::InjectMouseWheel(int delta)
 	return false;
 }
 
+//------------------------------------------------------------------------------
+detail::MaterialInstance* SceneGraph::CreateMaterialInstance()
+{
+	return LN_NEW detail::MaterialInstance(detail::NormalMaterialTypeId);
+}
+
 //==============================================================================
 // Basic2DSceneGraph
 //==============================================================================

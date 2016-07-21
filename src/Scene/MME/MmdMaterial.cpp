@@ -11,7 +11,7 @@ LN_NAMESPACE_BEGIN
 
 //------------------------------------------------------------------------------
 MmdMaterialInstance::MmdMaterialInstance()
-	: Material2(detail::MmdMaterialTypeId)
+	: detail::MaterialInstance(detail::MmdMaterialTypeId)
 	, m_toonTexture(nullptr)
 	, m_sphereTexture(nullptr)
 
@@ -44,6 +44,7 @@ void MmdMaterialInstance::OnCombine(Material3* owner, Material3* parent)
 	m_emissive = owner->GetColor(_T("Emissive"), Color(0.0f, 0.0f, 0.0f, 0.0f));
 	m_power = owner->GetFloat(_T("Power"), 50.0f);
 
+	m_materialTexture = owner->GetMaterialTexture();
 	m_toonTexture = owner->GetTexture(_T("ToonTexture"), nullptr);
 	m_sphereTexture = owner->GetTexture(_T("SphereTexture"), nullptr);
 

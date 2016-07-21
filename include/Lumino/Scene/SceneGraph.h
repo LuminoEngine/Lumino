@@ -6,6 +6,7 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
+namespace detail { class MaterialInstance; }
 
 class LayerList
 	: public RefObjectList
@@ -57,6 +58,7 @@ public:
 	virtual SceneNode* GetRootNode() = 0;
 	virtual Camera* GetMainCamera() = 0;
 	virtual Array<RenderingPass*>* GetRenderingPasses() = 0;
+	virtual detail::MaterialInstance* CreateMaterialInstance();
 
 protected:
 	SceneGraph();

@@ -10,12 +10,19 @@ class IMMESceneObject;
 class MMEShaderErrorInfo;
 class MMEShaderVariable;
 class MMEShaderTechnique;
+class MMEShader;
+using MMEShaderPtr = RefPtr<MMEShader>;
 	
 /// MMEShader
 class MMEShader
 	: public Shader
 {
 public:
+	static MMEShaderPtr Create(const StringRef& filePath);
+
+public:
+
+
 	static const int MaxAffectLights = 4;	///< 影響を受けるライトの最大数 (MMM は 3)
 
 	/// 作成

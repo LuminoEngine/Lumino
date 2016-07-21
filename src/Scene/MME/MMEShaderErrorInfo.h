@@ -33,6 +33,8 @@ public:
 	void AddError(MMEShaderError errorCode);
 	void AddError(MMEShaderError errorCode, const String& message);
 
+	bool HasError() const { return !m_errorList.IsEmpty(); }
+
 private:
 	Array<MMEShaderErrorObject>	m_errorList;
 };

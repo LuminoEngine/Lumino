@@ -32,6 +32,7 @@ public:
 	void SetVectorParameter(const StringRef& name, const Vector4& value);
 	void SetMatrixParameter(const StringRef& name, const Matrix& value);
 	void SetTextureParameter(const StringRef& name, Texture* value);
+	void SetColorParameter(const StringRef& name, const Color& value);
 	
 protected:
 	Material3();
@@ -49,10 +50,22 @@ LN_INTERNAL_ACCESS:
 	const Array<ValuePair>& GetLinkedVariableList() { return m_linkedVariableList; }
 
 public:	// TODO:
+
+	void SetMaterialTexture(Texture* v) { FindShaderValue(_T("MaterialTexture"))->SetManagedTexture(v); }
+	Texture* GetMaterialTexture() const { return GetTexture(_T("MaterialTexture"), nullptr); }
+
+	void SetOpacity(float v) { SetFloatParameter(_T("Opacity"), v); }
 	float GetOpacity() const { auto* v = FindShaderValueConst(_T("Opacity")); return (v) ? v->GetFloat() : 1.0f; }
+
+	void SetColorScale(const Color& v) { SetColorParameter(_T("ColorScale"), v); }
 	Color GetColorScale() const { auto* v = FindShaderValueConst(_T("ColorScale")); return (v) ? Color(v->GetVector()) : Color::White; }
+
+	void SetBlendColor(const Color& v) { SetColorParameter(_T("BlendColor"), v); }
 	Color GetBlendColor() const { auto* v = FindShaderValueConst(_T("BlendColor")); return (v) ? Color(v->GetVector()) : Color::Transparency; }
+
+	void SetTone(const ToneF& v) { SetVectorParameter(_T("Tone"), v); }
 	ToneF GetTone() const { auto* v = FindShaderValueConst(_T("Tone")); return (v) ? ToneF(v->GetVector()) : ToneF(); }
+
 	Matrix GetUVTransform() const { auto* v = FindShaderValueConst(_T("UVTransform")); return (v) ? v->GetMatrix() : Matrix::Identity; }
 
 	Color GetColor(const StringRef& name, const Color& defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? Color(v->GetVector()) : defaultValue; }

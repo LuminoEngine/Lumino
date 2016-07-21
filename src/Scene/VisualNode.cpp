@@ -84,7 +84,7 @@ void VisualNode::SetShader(Shader* shader, int subsetIndex)
 void VisualNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 {
 	// TODO: 描画関係のデータは UpdateFrame でやるべきではないような気もする。
-	m_materialList.UpdateMaterialInstances();
+	m_materialList.UpdateMaterialInstances(m_ownerSceneGraph);
 
 	SceneNode::UpdateFrameHierarchy(parent, deltaTime);
 }

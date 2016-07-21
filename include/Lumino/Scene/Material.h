@@ -4,6 +4,7 @@
 #include "../Graphics/Mesh.h"	// TODO:
 
 LN_NAMESPACE_BEGIN
+class SceneGraph;
 
 /**
 	@brief
@@ -53,12 +54,20 @@ LN_NAMESPACE_BEGIN
 namespace detail
 {
 
+static const int NormalMaterialTypeId = 0;
 static const int MmdMaterialTypeId = 12345;
 
 class MaterialInstance
 	: public RefObject
 {
 public:
+	MaterialInstance(int materialTypeId);
+	virtual ~MaterialInstance();
+
+	int			m_materialTypeId;
+
+	int GetMaterialTypeId() const { return m_materialTypeId; }
+
 	Material3*	m_owner;
 	Color		m_colorScale;	// 乗算結合済み (opacity 込み)
 	Color		m_blendColor;	// 加算結合済み
@@ -125,7 +134,7 @@ LN_INTERNAL_ACCESS:
 	MaterialList2();
 	virtual ~MaterialList2();
 	void Initialize(int subMaterialCount, bool createMainMaterial);
-	void UpdateMaterialInstances();
+	void UpdateMaterialInstances(SceneGraph* sceneGraph);
 	int GetMaterialInstanceCount() const { return m_instanceList.GetCount(); }
 	detail::MaterialInstance* GetMaterialInstance(int index) { return m_instanceList[index]; }
 	

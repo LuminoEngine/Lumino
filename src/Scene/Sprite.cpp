@@ -81,7 +81,7 @@ void Sprite::Initialize(SceneGraph* owner, SpriteCoord spriteCoord)
 //------------------------------------------------------------------------------
 void Sprite::SetTexture(Texture* texture)
 {
-	m_materialList.GetAt(0)->SetTexture(texture);
+	m_materialList.GetAt(0)->SetMaterialTexture(texture);
 	UpdateTexUV();
 	UpdateVertexData();
 }
@@ -89,7 +89,7 @@ void Sprite::SetTexture(Texture* texture)
 //------------------------------------------------------------------------------
 Texture* Sprite::GetTexture() const
 {
-	return m_materialList.GetAt(0)->GetTexture();
+	return m_materialList.GetAt(0)->GetMaterialTexture();
 }
 
 //------------------------------------------------------------------------------

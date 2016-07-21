@@ -94,6 +94,7 @@
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Shader.h>
 #include <Lumino/Scene/Material.h>
+#include <Lumino/Scene/SceneGraph.h>
 #include "MME/MmdMaterial.h"	// TODO
 
 LN_NAMESPACE_BEGIN
@@ -136,9 +137,20 @@ LN_NAMESPACE_BEGIN
 namespace detail
 {
 
+MaterialInstance::MaterialInstance(int materialTypeId)
+	: m_materialTypeId(materialTypeId)
+{
+
+}
+
+MaterialInstance::~MaterialInstance()
+{
+
+}
+
 void MaterialInstance::Combine(Material3* owner, Material3* parent)
 {
-	if (m_owner == nullptr || m_owner->m_modifiedForMaterialInstance)
+	if (m_owner == nullptr || owner != m_owner || m_owner->m_modifiedForMaterialInstance)
 	{
 		// set
 		m_owner = owner;
@@ -180,7 +192,7 @@ void MaterialList2::Initialize(int subMaterialCount, bool createMainMaterial)
 }
 
 //------------------------------------------------------------------------------
-void MaterialList2::UpdateMaterialInstances()
+void MaterialList2::UpdateMaterialInstances(SceneGraph* sceneGraph)
 {
 	// m_mainMaterial ‚Íe‚Æ‚µ‚Äg‚¦‚éH
 	Material3* parent = nullptr;
@@ -199,7 +211,7 @@ void MaterialList2::UpdateMaterialInstances()
 		{
 			for (int i = 0; i < d; ++i)
 			{
-				m_instanceList.Add(RefPtr<detail::MaterialInstance>::MakeRef());
+				m_instanceList.Add(sceneGraph->CreateMaterialInstance());
 			}
 		}
 	}

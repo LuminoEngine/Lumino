@@ -30,6 +30,7 @@ public:	// TODO:
 	Color		m_emissive;			// •¨‘Ì‚Ì”­ŒõF ( ŒõŒ¹‚Ì‰e‹¿‚ğó‚¯‚È‚¢F )
 	float		m_power;			// Œõ‘ò‚Ì‹­‚³
 
+	RefPtr<Texture>	m_materialTexture;
 	RefPtr<Texture>	m_toonTexture;
 	RefPtr<Texture>	m_sphereTexture;
 

@@ -8,6 +8,7 @@
 #include "MMEShaderBuilder.h"
 #include "MMEShaderTechnique.h"
 #include "MMEShader.h"
+#include "MMEShaderErrorInfo.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
@@ -21,6 +22,16 @@ static const unsigned char MMM_EffectHeader_Data[] =
 #include "../Resource/MMM_EffectHeader.fxh.h"
 };
 static const size_t MMM_EffectHeader_Data_Len = LN_ARRAY_SIZE_OF(MMM_EffectHeader_Data) - 1;
+
+//------------------------------------------------------------------------------
+MMEShaderPtr MMEShader::Create(const StringRef& filePath)
+{
+	ByteBuffer code = FileSystem::ReadAllBytes(filePath.GetBegin());	// TODO: range
+	MMEShaderErrorInfo errorInfo;
+	MMEShaderPtr ptr(MMEShader::Create((const char*)code.GetConstData(), code.GetSize(), &errorInfo, SceneGraphManager::Instance), false);
+	LN_THROW(!errorInfo.HasError(), InvalidOperationException);	// TODO: ちゃんとメッセージ出したりとか
+	return ptr;
+}
 
 //------------------------------------------------------------------------------
 MMEShader* MMEShader::Create(const char* code, int codeLength, MMEShaderErrorInfo* errorInfo, SceneGraphManager* manager)
@@ -407,7 +418,7 @@ void MMEShader::UpdateNodeParams(SceneNode* node, Camera* affectCamera, const Li
 //------------------------------------------------------------------------------
 void MMEShader::UpdateSubsetParams(detail::MaterialInstance* material)
 {
-	LN_CHECK_ARG(material->m_owner->GetMaterialTypeId() == detail::MmdMaterialTypeId);
+	LN_CHECK_ARG(material->GetMaterialTypeId() == detail::MmdMaterialTypeId);
 
 	MmdMaterialInstance* ownerMaterial = static_cast<MmdMaterialInstance*>(material);
 
@@ -440,7 +451,7 @@ void MMEShader::UpdateSubsetParams(detail::MaterialInstance* material)
 				var->SetVector(ownerMaterial->EdgeColor);
 				break;
 			case MME_VARREQ_OBJECT_MATERIALTEXTURE:
-				var->SetTexture((ownerMaterial->GetTexture() != nullptr) ? ownerMaterial->GetTexture() : m_manager->GetDummyTexture());	// テクスチャがなければダミーを設定
+				var->SetTexture((ownerMaterial->m_materialTexture != nullptr) ? ownerMaterial->m_materialTexture : m_manager->GetDummyTexture());	// テクスチャがなければダミーを設定
 				break;
 			case MME_VARREQ_OBJECT_MATERIALSPHEREMAP:
 				var->SetTexture((ownerMaterial->m_sphereTexture != nullptr) ? ownerMaterial->m_sphereTexture : m_manager->GetDummyTexture());	// テクスチャがなければダミーを設定
