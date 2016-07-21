@@ -34,14 +34,24 @@ public:
 
 		// 手前 (Z-)
 		outVertices[0].position.Set(minPos.x, maxPos.y, minPos.z);	// 左上
+		outVertices[0].uv.Set(0.0f, 0.0f);
 		outVertices[1].position.Set(minPos.x, minPos.y, minPos.z);	// 左下
+		outVertices[1].uv.Set(0.0f, 1.0f);
 		outVertices[2].position.Set(maxPos.x, maxPos.y, minPos.z);	// 右上
+		outVertices[2].uv.Set(1.0f, 0.0f);
 		outVertices[3].position.Set(maxPos.x, minPos.y, minPos.z);	// 右下
+		outVertices[3].uv.Set(1.0f, 1.0f);
 		// 奥 (Z+)
 		outVertices[4].position.Set(minPos.x, maxPos.y, maxPos.z);	// 左上
+		outVertices[4].uv.Set(1.0f, 0.0f);
 		outVertices[5].position.Set(minPos.x, minPos.y, maxPos.z);	// 左下
+		outVertices[5].uv.Set(1.0f, 1.0f);
 		outVertices[6].position.Set(maxPos.x, maxPos.y, maxPos.z);	// 右上
+		outVertices[6].uv.Set(0.0f, 0.0f);
 		outVertices[7].position.Set(maxPos.x, minPos.y, maxPos.z);	// 右下
+		outVertices[7].uv.Set(0.0f, 1.0f);
+
+		for (int i = 0; i < 8; ++i) outVertices[i].color = Color::White;
 
 		uint16_t indices[] =
 		{

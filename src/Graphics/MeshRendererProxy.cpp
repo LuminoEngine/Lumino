@@ -72,7 +72,7 @@ void MeshRendererProxy::SetViewProjMatrix(const Matrix& matrix)
 }
 
 //------------------------------------------------------------------------------
-void MeshRendererProxy::DrawMesh(StaticMeshModel* mesh, Material3* material)
+void MeshRendererProxy::DrawMesh(StaticMeshModel* mesh)
 {
 	LN_CHECK_ARG(mesh != nullptr);
 	auto* _this = this;
@@ -90,14 +90,6 @@ void MeshRendererProxy::DrawMesh(StaticMeshModel* mesh, Material3* material)
 		m_stateModified = false;
 	}
 	
-	auto* serializer = m_manager->GetShaderVariableCommitSerializeHelper();
-	auto& linkedVariableList = material->GetLinkedVariableList();
-	serializer->BeginSerialize();
-	for (auto& pair : linkedVariableList)
-	{
-		serializer->WriteValue(pair.variable->GetDeviceObject(), *pair.value);
-	}
-	RenderBulkData variablesData(serializer->GetSerializeData(), serializer->GetSerializeDataLength());
 	
 
 	DrawMeshCommandData data;
@@ -105,13 +97,12 @@ void MeshRendererProxy::DrawMesh(StaticMeshModel* mesh, Material3* material)
 	data.vertexBuffers[0] = mesh->m_vertexBuffer->GetDeviceObject();		// TODO: まだ1つだけ
 	data.indexBuffer = mesh->m_indexBuffer->GetDeviceObject();
 	data.triangleCount = mesh->m_triangleCount;
-	LN_ENQUEUE_RENDER_COMMAND_3(
+	LN_ENQUEUE_RENDER_COMMAND_2(
 		FlushState, m_manager,
 		MeshRendererProxy*, _this,
 		DrawMeshCommandData, data,
-		RenderBulkData, variablesData,
 		{
-			_this->DrawMeshImpl(data, variablesData);
+			_this->DrawMeshImpl(data);
 		});
 }
 
@@ -123,12 +114,12 @@ void MeshRendererProxy::FlushStateImpl(const Matrix& world, const Matrix& viewPr
 }
 
 //------------------------------------------------------------------------------
-void MeshRendererProxy::DrawMeshImpl(const DrawMeshCommandData& data, const RenderBulkData& variablesData)
+void MeshRendererProxy::DrawMeshImpl(const DrawMeshCommandData& data)
 {
-	auto* deserializer = m_manager->GetShaderVariableCommitSerializeHelper();
-	deserializer->Deserialize(variablesData.GetData(), variablesData.GetSize());
+	//auto* deserializer = m_manager->GetShaderVariableCommitSerializeHelper();
+	//deserializer->Deserialize(variablesData.GetData(), variablesData.GetSize());
 
-	m_shader.pass->Apply();
+	//m_shader.pass->Apply();
 
 	m_renderer->SetVertexDeclaration(data.vertexDeclaration);
 	m_renderer->SetVertexBuffer(0, data.vertexBuffers[0]);		// TODO: まだ1つだけ

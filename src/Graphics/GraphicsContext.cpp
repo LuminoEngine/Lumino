@@ -882,10 +882,10 @@ void GraphicsContext::BltInternal(Texture* source, RenderTarget* dest, const Mat
 }
 
 //------------------------------------------------------------------------------
-void GraphicsContext::DrawMesh(StaticMeshModel* mesh, Material3* material)
+void GraphicsContext::DrawMesh(StaticMeshModel* mesh)
 {
 	OnDrawing(m_meshRendererProxy);
-	m_meshRendererProxy->DrawMesh(mesh, material);
+	m_meshRendererProxy->DrawMesh(mesh);
 }
 
 //------------------------------------------------------------------------------

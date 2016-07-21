@@ -53,7 +53,7 @@ void MMERenderingPass::RenderSubset(SceneGraphRenderingContext* dc, VisualNode* 
 	visualNode->UpdateNodeRenderingParams(priorityParams.Shader);
 
 	//const Material& material = visualNode->GetVisualNodeParams().GetCombinedSubsetParams(subset).Material;
-	detail::MaterialInstance* materialInstance = visualNode->GetMaterialList().GetMaterialInstance(subset);
+	detail::MaterialInstance* materialInstance = visualNode->GetMaterialList()->GetMaterialInstance(subset);
 	bool useTexture = false;
 	bool useSphereTexture = false;
 	bool useToonTexture = false;
@@ -165,7 +165,7 @@ void MMERenderingPass::SelectPriorityParams(SceneNode* node, int subsetIndex, Re
 		{
 			// 優先パラメータ未設定。 (OFFSCREENRENDERTARGET ではない)
 			// ノードの持っているシェーダを返す。
-			outParams->Shader = dynamic_cast<MMEShader*>(static_cast<VisualNode*>(node)->GetMaterialList().GetMaterialInstance(subsetIndex)->m_shader);
+			outParams->Shader = dynamic_cast<MMEShader*>(static_cast<VisualNode*>(node)->GetMaterialList()->GetMaterialInstance(subsetIndex)->m_shader);
 			// TODO: ↑dynamic_cast はやめたいが・・・
 		}
 

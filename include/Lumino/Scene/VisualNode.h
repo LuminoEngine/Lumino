@@ -26,7 +26,10 @@ public:
 	/** @name Main material utilities. */
 	/** @{ */
 
+	// TODO: Main は普通のマテリアルとは別にしたほうがいい気がする。BlendColor, Tone, Etc...
+	Material3* GetMaterial() const;
 
+	tr::ReflectionObjectList<Material3*>* GetMaterials() const { return m_materialList; }
 
 	/** メインマテリアルの不透明度を設定します。(default: 1.0)*/
 	void SetOpacity(float opacity, int subsetIndex = -1);
@@ -122,7 +125,7 @@ protected:
 	void Initialize(SceneGraph* owner, int subsetCount);
 
 LN_INTERNAL_ACCESS:
-	MaterialList2& GetMaterialList() { return m_materialList; }
+	MaterialList2* GetMaterialList() { return m_materialList; }
 	//const detail::VisualNodeRenderState& GetVisualNodeRenderState() const { return m_renderState; }
 	Shader* GetPrimaryShader() const;
 	void Render(SceneGraphRenderingContext* dc);
@@ -131,7 +134,7 @@ protected:
 	int						m_subsetCount;
 
 	friend class RenderingPass;
-	MaterialList2					m_materialList;
+	RefPtr<MaterialList2>					m_materialList;
 	detail::VisualNodeRenderState	m_renderState;
 	bool					m_isVisible;
 

@@ -205,13 +205,14 @@ void MaterialList2::UpdateMaterialInstances(SceneGraph* sceneGraph)
 	int subCount = GetCount();
 	if (m_instanceList.GetCount() != subCount)
 	{
-		int d = subCount - m_instanceList.GetCount();
+		int oldCount = m_instanceList.GetCount();
+		int d = subCount - oldCount;
 		m_instanceList.Resize(subCount);
 		if (d > 0)
 		{
 			for (int i = 0; i < d; ++i)
 			{
-				m_instanceList.Add(sceneGraph->CreateMaterialInstance());
+				m_instanceList[oldCount + i] = RefPtr<detail::MaterialInstance>(sceneGraph->CreateMaterialInstance(), false);
 			}
 		}
 	}

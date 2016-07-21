@@ -16,7 +16,11 @@ TEST_F(Test_Scene_StaticMesh, Box)
 
 	auto mesh = StaticMesh::CreateBox(Vector3(3, 2, 1));
 
-	mesh->getmat
+	mesh->GetMaterials()->GetAt(0)->SetShader(shader);
+	mesh->GetMaterials()->GetAt(0)->SetTextureParameter(_T("MaterialTexture"), Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png")));
+
+	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
+	Camera::GetDefault3DCamera()->SetCameraBehavior(cb);
 
 	while (Engine::UpdateFrame());
 }

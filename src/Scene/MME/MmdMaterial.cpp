@@ -38,6 +38,8 @@ MmdMaterialInstance::~MmdMaterialInstance()
 //------------------------------------------------------------------------------
 void MmdMaterialInstance::OnCombine(Material3* owner, Material3* parent)
 {
+	MaterialInstance::OnCombine(owner, parent);
+
 	m_diffuse = owner->GetColor(_T("Diffuse"), Color(1.0f, 1.0f, 1.0f, 1.0f));
 	m_ambient = owner->GetColor(_T("Ambient"), Color(0.0f, 0.0f, 0.0f, 0.0f));
 	m_specular = owner->GetColor(_T("Specular"), Color(0.5f, 0.5f, 0.5f, 0.5f));

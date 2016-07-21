@@ -50,7 +50,7 @@ void StaticMesh::Initialize(SceneGraph* owner)
 //------------------------------------------------------------------------------
 void StaticMesh::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 {
-	dc->BeginGraphicsContext()->DrawMesh(m_mesh, m_material);
+	dc->BeginGraphicsContext()->DrawMesh(m_mesh/*, m_material*/);
 }
 
 LN_NAMESPACE_END

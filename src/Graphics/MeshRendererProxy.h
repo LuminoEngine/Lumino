@@ -25,7 +25,7 @@ public:
 	void SetTransform(const Matrix& matrix);
 	void SetViewProjMatrix(const Matrix& matrix);
 
-	void DrawMesh(StaticMeshModel* mesh, Material3* material);
+	void DrawMesh(StaticMeshModel* mesh);
 
 protected:
 	virtual void Flush() override {}
@@ -42,7 +42,7 @@ private:
 	};
 
 	void FlushStateImpl(const Matrix& world, const Matrix& viewProj);	// Threading
-	void DrawMeshImpl(const DrawMeshCommandData& data, const RenderBulkData& variablesData);	// Threading
+	void DrawMeshImpl(const DrawMeshCommandData& data);	// Threading
 
 	GraphicsManager*		m_manager;
 	Driver::IRenderer*		m_renderer;

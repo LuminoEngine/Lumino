@@ -243,7 +243,7 @@ public:
 	//Shader*						m_shader;
 
 LN_INTERNAL_ACCESS:
-	void DrawMesh(StaticMeshModel* mesh, Material3* material);
+	void DrawMesh(StaticMeshModel* mesh);
 
 protected:
 	virtual void OnStateFlushRequested();

@@ -4,6 +4,7 @@
 #include "MME/MMEShaderErrorInfo.h"
 #include "MME/MMEShader.h"
 #include "MME/MMERenderingPass.h"
+#include "MME/MmdMaterial.h"	// TODO
 #include "SceneGraphManager.h"
 #include "RenderingPass.h"
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
@@ -289,7 +290,9 @@ bool SceneGraph::InjectMouseWheel(int delta)
 //------------------------------------------------------------------------------
 detail::MaterialInstance* SceneGraph::CreateMaterialInstance()
 {
-	return LN_NEW detail::MaterialInstance(detail::NormalMaterialTypeId);
+	// TODO: いまは Mmd じゃないと動かない・・・
+	return LN_NEW MmdMaterialInstance();
+	//return LN_NEW detail::MaterialInstance(detail::NormalMaterialTypeId);
 }
 
 //==============================================================================
