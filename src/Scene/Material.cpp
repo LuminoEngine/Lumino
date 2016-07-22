@@ -1,95 +1,4 @@
-/*
-	[2015/5/11] SceneGraph ‚É‡‚í‚¹‚½í—Ş‚Ì Material ‚Í‚Ç‚¤•\Œ»‚·‚éH
-
-		- ƒRƒ“ƒ|[ƒlƒ“ƒg
-		’l‚Ì get ‚ª•¶š—ñŒŸõ‚É‚È‚éB–ˆƒtƒŒ[ƒ€‚»‚ê‚Í‚¿‚å‚Á‚ÆEEEB
-		ƒ†[ƒU[‚ª’l‚ÉƒAƒNƒZƒX‚·‚é‚Æ‚«‚à•¶š—ñ‚ÅƒvƒƒpƒeƒB–¼‚ğw’è‚·‚éBƒ^ƒCƒvƒZ[ƒt‚¶‚á‚È‚¢B
-
-		- Œp³
-			“à•”“I‚É‚Í‚±‚ê‚Ås‚±‚¤‚©EEEB
-
-			‚à‚µUnity‚İ‚½‚¢‚ÈƒGƒfƒBƒ^‚©‚ç“ü—Í‚·‚é‚È‚ç
-			- ƒIƒuƒWƒFƒNƒg‚ÉƒRƒ“ƒ|[ƒlƒ“ƒg‚Æ‚µ‚Ä’Ç‰Á‚·‚éƒ}ƒeƒŠƒAƒ‹‚Í‚ ‚­‚Ü‚Åƒf[ƒ^ƒ‚ƒfƒ‹ƒNƒ‰ƒX‚Æ‚È‚éB
-			- Forward—pƒ}ƒeƒŠƒAƒ‹AMMD—pƒ}ƒeƒŠƒAƒ‹A‚È‚ÇB‚±‚¢‚Â‚ç‚ÍŠî–{“I‚É’l‚ğ map ‚Å‚ÂB
-			- Node ‚ğì‚é‚Æ‚«A‚»‚Ìƒf[ƒ^ƒ‚ƒfƒ‹‚©‚çAŒ»İ‚Ì Scene í—Ş‚É‡‚í‚¹‚½ Material ƒNƒ‰ƒX‚ğì‚éB
-			  ‚±‚Ì Material ƒNƒ‰ƒX‚É‚ÍŠî–{“I‚É‚Ç‚ñ‚Èƒf[ƒ^ƒ‚ƒfƒ‹ƒNƒ‰ƒX‚ğ“ü—Í‚µ‚Ä‚à‚æ‚¢‚±‚Æ‚É‚·‚éB
-
-			‚È‚¨AScene ‚Æ Material ‚ª‘Î‰‚·‚é“s‡ãANode ‚Íì¬‚É•K‚¸‰½‚ç‚©‚Ì SceneGraph ‚É‘®‚·‚é‚±‚Æ‚É‚È‚éB
-
-
-	[2016/5/9] 
-		- ‚±‚ê‚Ü‚Å‚ÌƒŒƒKƒV[‚ÈƒvƒƒpƒeƒB (Diffuse/Ambient/Emissive/Speculer ‚È‚Ç)
-		- ’x‰„ƒVƒF[ƒfƒBƒ“ƒO“Á—L‚ÌƒvƒƒpƒeƒB
-		- Lumino “Á—L‚ÌƒQ[ƒ€Œü‚¯ƒvƒƒpƒeƒB (BlendColor/Tone ‚È‚Ç)
-		- MMD “Á—L‚ÌƒvƒƒpƒeƒB (ƒXƒtƒBƒAƒ}ƒbƒv ‚È‚Ç)
-		
-		
-		
-		ƒVƒF[ƒ_‚Ì‚Â‚¢‚­‚Â‚©‚ÌƒvƒƒpƒeƒB (å‚ÉƒZƒ}ƒ“ƒeƒBƒNƒX‚Æ‚©‚Â‚¢‚Ä‚é‚à‚Ì) ‚ÍA
-		SceneGraph ‚©‚ç’l‚ğ‚Æ‚Á‚Ä‚­‚éB
-		
-		Šî–{“I‚É‚Íu‚Ç‚ñ‚ÈƒvƒƒpƒeƒB‚ª•K—v‚©Hv‚Íƒ}ƒeƒŠƒAƒ‹‘¤‚Å‚Í‚È‚­AƒVƒF[ƒ_‘¤‚©‚ç
-		ƒZƒ}ƒ“ƒeƒBƒNƒX‚È‚Ç‚Åw’è‚·‚é‚±‚Æ‚É‚È‚éB
-		
-		MMD —pƒV[ƒ“‚ğg‚Á‚Ä‚¢‚éê‡‚È‚Ç‚ÍAƒvƒƒpƒeƒB‚ğC++‘¤‚ÅŠo‚¦‚Ä‚¨‚­•K—v‚ª‚ ‚éB
-		ƒVƒF[ƒ_ƒvƒƒpƒeƒB‚ÉŠo‚¦‚Ä‚¨‚­A‚¾‚ÆAƒVƒF[ƒ_‚ğØ‚è‘Ö‚¦‚½‚Æ‚«‚É Diffuse ’l‚È‚Ç‚ª¸‚í‚ê‚éB
-		
-		‚¢‚Ü‚Ü‚Åg‚Á‚Ä‚¢‚½ SceneShader ‚ª Material ‚Ì–ğŠ„‚Æ‚È‚éB
-		
-		BlendColor/Tone ‚È‚Ç‚Í‘S‚Ä‚Ìƒ}ƒeƒŠƒAƒ‹‚É‰e‹¿‚·‚éB
-		
-		
-		
-		
-		ƒZƒ}ƒ“ƒeƒBƒNƒX
-		
-		SetVector("_Color", "DIFFUSE", color);
-		‚Æ‚©‚É‚·‚éê‡A‚«‚Á‚Æ map ‚É•Ï”–¼‚Æ’l‚ğŠo‚¦‚Ä‚¨‚­•K—v‚ª‚ ‚éB
-		‚Å‚àAƒVƒF[ƒ_‘¤‚ªƒZƒ}ƒ“ƒeƒBƒNƒX‚Å—v‹‚µ‚Ä‚¢‚éê‡A‚Ç‚ñ‚ÈƒZƒ}ƒ“ƒeƒBƒNƒX‚É‚à‘Î‰‚Å‚«‚é‚æ‚¤‚É
-		—lX‚È’l‚ğ map —‚¢‚ê‚Ä‚¨‚©‚È‚¯‚ê‚Î‚È‚ç‚È‚¢B(“Á‚É•ÏŠ·s—ñ‚ª‘½‚¢Bworld, view, proj ‚Ì“]’uA‹tA‚È‚Ç)
-		‚±‚ê‚Ü‚Å‚Ç‚¨‚èAApply ‚·‚é‚Æ‚«‚ ‚½‚è‚Å‘S•Ï”‚ğ‚È‚ß‚ÄA•Ï”‚ªƒZƒ}ƒ“ƒeƒBƒNƒX‚Å—v‹‚µ‚Ä‚¢‚é’l‚ğ
-		SceneGraph ‚È‚è Node ‚È‚è Material ‚È‚è‚©‚çæ‚èo‚·‚Ì‚ªƒƒ‚ƒŠŒø—¦“I‚É‚æ‚¢B
-		
-		
-		“Á—L‚ÌƒvƒƒpƒeƒB‚ğ‚Âƒ}ƒeƒŠƒAƒ‹‚Í”h¶ƒNƒ‰ƒX‚É‚·‚éH
-		‘S‚Ä1‚Â‚Ìƒ}ƒeƒŠƒAƒ‹ƒNƒ‰ƒX‚É‚½‚¹‚é‚Æ–³‘Ê‚ª‘½‚·‚¬‚éB
-		‚Ü‚½Aƒƒ“ƒo•Ï”‚É‚½‚¹‚¸ map ŠÇ—‚É‚·‚é‚Æİ’è‘¤‚ªƒZƒ}ƒ“ƒeƒBƒNƒX–¼‚È‚Ç‚Ìƒ‹[ƒ‹‚ğç‚é•K—v‚ª‚ ‚éBŠÇ—‚à­‚µ•¡GB
-		‚Ü‚¸‚Í”h¶ƒNƒ‰ƒX‚Æ‚µ‚Äì‚Á‚Ä‚İ‚éB
-		
-		
-		SubMaterial ‚Í•K‚¸1‚ÂˆÈã‚Â‚­‚é‚×‚«H
-			‚»‚à‚»‚àA
-			- SubMaterial ‚Í 3Dƒ‚ƒfƒ‹‚É‚­‚Á‚Â‚¢‚Ä Asset ‚©‚çƒ[ƒh‚³‚ê‚é‹¤—Lƒ}ƒeƒŠƒAƒ‹BŠî–{“I‚É StaticB
-			- MainMaterial ‚Í Node ‚É‚­‚Á‚Â‚­ƒ‹[ƒg‚Ìƒ}ƒeƒŠƒAƒ‹BŠî–{“I‚É DynamicB
-			‚Æ®—‚·‚é‚Ù‚¤‚ª‚í‚©‚è‚â‚·‚¢B
-			‚»‚¤‚·‚é‚ÆASub[0] = Main ‚É‚µ‚æ‚¤‚Æ‚·‚é‚Ì‚ÍŠÔˆá‚¢‚È‹C‚ª‚·‚éB
-			
-			SubMaterial 1ŒÂˆÈãAMainMaterial –³‚µ ¨ Š®‘S‚ÈstaticƒƒbƒVƒ…B
-			SubMaterial 0ŒÂAMainMaterial —L‚è ¨ Asset g‚í‚¸AƒR[ƒhã‚Å Sprite::Create() ‚Æ‚©‚µ‚½ê‡B
-			SubMaterial 0ŒÂAMainMaterial –³‚µA‚Æ‚¢‚¤ƒpƒ^[ƒ“‚à‚ ‚è‚¦‚éB‚»‚Ìê‡‚ÍƒfƒtƒHƒ‹ƒg‚Ìƒ}ƒeƒŠƒAƒ‹‚ğg‚¤‚æ‚¤‚É‚·‚éB
-			
-			
-		Color ‚Í uint ‚È‚Ì‚É opacity ‚Í float?
-			WPF ‚Í‚±‚ñ‚È‚©‚ñ‚¶B
-		
-		
-		
-		
-		UE4 - UMaterial
-		https://docs.unrealengine.com/latest/INT/API/Runtime/Engine/Materials/UMaterial/index.html
-		
-		Uity - Material
-		http://docs.unity3d.com/ja/current/ScriptReference/Material.html
-		
-	
-	RenderState ‚Í Node ‚É‚½‚¹‚é‚×‚«‚© Material ‚É‚½‚¹‚é‚×‚«‚©
-		- Unity ¨ Shader‚ÌPass‚©‚ç
-		- Ogre ¨ Material
-		
-		Material ‚É‚½‚¹‚éê‡Au‚Á‚Ä‚¢‚È‚¢v‚Æ‚¢‚¤î•ñ‚à•K—vB
-		‚Ù‚Æ‚ñ‚Ç‚Ìê‡‚Í Node ‚É‚½‚¹‚Ä‚¨‚¯‚Î—p‚Í‘«‚è‚éB
-*/
-
+ï»¿
 #include "Internal.h"
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Shader.h>
@@ -194,14 +103,14 @@ void MaterialList2::Initialize(int subMaterialCount, bool createMainMaterial)
 //------------------------------------------------------------------------------
 void MaterialList2::UpdateMaterialInstances(SceneGraph* sceneGraph)
 {
-	// m_mainMaterial ‚Íe‚Æ‚µ‚Äg‚¦‚éH
+	// m_mainMaterial ã¯è¦ªã¨ã—ã¦ä½¿ãˆã‚‹ï¼Ÿ
 	Material3* parent = nullptr;
 	if (m_mainMaterial != nullptr)
 	{
 		parent = m_mainMaterial;
 	}
 
-	// m_instanceList ‚ÌƒTƒCƒY‚ğ‚»‚ë‚¦‚é
+	// m_instanceList ã®ã‚µã‚¤ã‚ºã‚’ãã‚ãˆã‚‹
 	int subCount = GetCount();
 	if (m_instanceList.GetCount() != subCount)
 	{
@@ -217,7 +126,7 @@ void MaterialList2::UpdateMaterialInstances(SceneGraph* sceneGraph)
 		}
 	}
 
-	// m_instanceList ‚Ì“à—e‚ğì‚Á‚Ä‚¢‚­
+	// m_instanceList ã®å†…å®¹ã‚’ä½œã£ã¦ã„ã
 	if (subCount > 0)
 	{
 		for (int i = 0; i < subCount; ++i)
@@ -227,13 +136,13 @@ void MaterialList2::UpdateMaterialInstances(SceneGraph* sceneGraph)
 	}
 	else if (parent != nullptr)
 	{
-		// parent ‚Í‚ ‚é‚¯‚Ç SubMaterial ‚ª1‚Â‚à–³‚¢Bparent ‚ğg‚¤B
+		// parent ã¯ã‚ã‚‹ã‘ã© SubMaterial ãŒ1ã¤ã‚‚ç„¡ã„ã€‚parent ã‚’ä½¿ã†ã€‚
 		if (m_instanceList.GetCount() != 1) m_instanceList.Resize(1);
 		m_instanceList[0]->Combine(parent, nullptr);
 	}
 	else
 	{
-		// parent ‚à SubMaterial ‚à–³‚¢BƒfƒtƒHƒ‹ƒg‚Ì‚ğg‚¤B
+		// parent ã‚‚ SubMaterial ã‚‚ç„¡ã„ã€‚ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ã‚’ä½¿ã†ã€‚
 		if (m_instanceList.GetCount() != 1) m_instanceList.Resize(1);
 		LN_NOTIMPLEMENTED();
 		//m_instanceList[0].Combine(parent, nullptr);

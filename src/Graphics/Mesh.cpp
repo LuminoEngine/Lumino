@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Internal.h"
 #include "Device/ShaderVariableBase.h"
 #include <Lumino/Graphics/Texture.h>
@@ -32,23 +32,23 @@ public:
 		Vector3 minPos = -(m_size / 2);
 		Vector3 maxPos = (m_size / 2);
 
-		// è‘O (Z-)
-		outVertices[0].position.Set(minPos.x, maxPos.y, minPos.z);	// ¶ã
+		// æ‰‹å‰ (Z-)
+		outVertices[0].position.Set(minPos.x, maxPos.y, minPos.z);	// å·¦ä¸Š
 		outVertices[0].uv.Set(0.0f, 0.0f);
-		outVertices[1].position.Set(minPos.x, minPos.y, minPos.z);	// ¶‰º
+		outVertices[1].position.Set(minPos.x, minPos.y, minPos.z);	// å·¦ä¸‹
 		outVertices[1].uv.Set(0.0f, 1.0f);
-		outVertices[2].position.Set(maxPos.x, maxPos.y, minPos.z);	// ‰Eã
+		outVertices[2].position.Set(maxPos.x, maxPos.y, minPos.z);	// å³ä¸Š
 		outVertices[2].uv.Set(1.0f, 0.0f);
-		outVertices[3].position.Set(maxPos.x, minPos.y, minPos.z);	// ‰E‰º
+		outVertices[3].position.Set(maxPos.x, minPos.y, minPos.z);	// å³ä¸‹
 		outVertices[3].uv.Set(1.0f, 1.0f);
-		// ‰œ (Z+)
-		outVertices[4].position.Set(minPos.x, maxPos.y, maxPos.z);	// ¶ã
+		// å¥¥ (Z+)
+		outVertices[4].position.Set(minPos.x, maxPos.y, maxPos.z);	// å·¦ä¸Š
 		outVertices[4].uv.Set(1.0f, 0.0f);
-		outVertices[5].position.Set(minPos.x, minPos.y, maxPos.z);	// ¶‰º
+		outVertices[5].position.Set(minPos.x, minPos.y, maxPos.z);	// å·¦ä¸‹
 		outVertices[5].uv.Set(1.0f, 1.0f);
-		outVertices[6].position.Set(maxPos.x, maxPos.y, maxPos.z);	// ‰Eã
+		outVertices[6].position.Set(maxPos.x, maxPos.y, maxPos.z);	// å³ä¸Š
 		outVertices[6].uv.Set(0.0f, 0.0f);
-		outVertices[7].position.Set(maxPos.x, minPos.y, maxPos.z);	// ‰E‰º
+		outVertices[7].position.Set(maxPos.x, minPos.y, maxPos.z);	// å³ä¸‹
 		outVertices[7].uv.Set(0.0f, 1.0f);
 
 		for (int i = 0; i < 8; ++i) outVertices[i].color = Color::White;
@@ -70,7 +70,7 @@ public:
 			// top
 			4, 0, 6,
 			6, 0, 2,
-			// bottom (Z- ‚ª–Ê‚Æ‚µ‚Äã•ûŒü)
+			// bottom (Z- ãŒé¢ã¨ã—ã¦ä¸Šæ–¹å‘)
 			1, 5, 3,
 			3, 5, 7,
 		};
@@ -81,6 +81,95 @@ private:
 	Vector3	m_size;
 };
 
+
+
+class TexUVBoxMeshFactory
+{
+public:
+	TexUVBoxMeshFactory(const Vector3& size)
+	{
+		m_size = size;
+	}
+
+	int GetVertexCount() const
+	{
+		return 24;
+	}
+
+	int GetIndexCount() const
+	{
+		return 36;
+	}
+
+	static void SetV(Vertex* vertex, float x, float y, float z, float u, float v)
+	{
+		vertex->position.Set(x, y, z);
+		vertex->uv.Set(u, v);
+		vertex->color = Color::White;
+	}
+	static void SetI(uint16_t* index, uint16_t begin)
+	{
+		index[0] = begin + 0;
+		index[1] = begin + 1;
+		index[2] = begin + 2;
+		index[3] = begin + 2;
+		index[4] = begin + 1;
+		index[5] = begin + 3;
+	}
+
+	void Generate(Vertex* outVertices, uint16_t* outIndices)
+	{
+		Vector3 minPos = -(m_size / 2);
+		Vector3 maxPos = (m_size / 2);
+		Vertex* v = outVertices;
+		uint16_t* i = outIndices;
+
+		// æ‰‹å‰ (Z-)
+		SetV(v, minPos.x, maxPos.y, minPos.z, 0.0f, 0.0f); ++v;	// â”
+		SetV(v, minPos.x, minPos.y, minPos.z, 0.0f, 1.0f); ++v;	// â”—
+		SetV(v, maxPos.x, maxPos.y, minPos.z, 1.0f, 0.0f); ++v;	// â”“
+		SetV(v, maxPos.x, minPos.y, minPos.z, 1.0f, 1.0f); ++v;	// â”›
+		SetI(i, 0); i += 6;
+
+		// å¥¥ (Z+)
+		SetV(v, maxPos.x, maxPos.y, maxPos.z, 0.0f, 0.0f); ++v;	// â”
+		SetV(v, maxPos.x, minPos.y, maxPos.z, 0.0f, 1.0f); ++v;	// â”—
+		SetV(v, minPos.x, maxPos.y, maxPos.z, 1.0f, 0.0f); ++v;	// â”“
+		SetV(v, minPos.x, minPos.y, maxPos.z, 1.0f, 1.0f); ++v;	// â”›
+		SetI(i, 4); i += 6;
+
+		// å·¦ (X-)
+		SetV(v, minPos.x, maxPos.y, maxPos.z, 0.0f, 0.0f); ++v;	// â”
+		SetV(v, minPos.x, minPos.y, maxPos.z, 0.0f, 1.0f); ++v;	// â”—
+		SetV(v, minPos.x, maxPos.y, minPos.z, 1.0f, 0.0f); ++v;	// â”“
+		SetV(v, minPos.x, minPos.y, minPos.z, 1.0f, 1.0f); ++v;	// â”›
+		SetI(i, 8); i += 6;
+
+		// å³ (X+)
+		SetV(v, maxPos.x, maxPos.y, minPos.z, 0.0f, 0.0f); ++v;	// â”
+		SetV(v, maxPos.x, minPos.y, minPos.z, 0.0f, 1.0f); ++v;	// â”—
+		SetV(v, maxPos.x, maxPos.y, maxPos.z, 1.0f, 0.0f); ++v;	// â”“
+		SetV(v, maxPos.x, minPos.y, maxPos.z, 1.0f, 1.0f); ++v;	// â”›
+		SetI(i, 12); i += 6;
+
+		// ä¸‹ (Y-)(Z- ãŒUVã®ä¸Šæ–¹å‘)
+		SetV(v, minPos.x, minPos.y, minPos.z, 0.0f, 0.0f); ++v;	// â”
+		SetV(v, minPos.x, minPos.y, maxPos.z, 0.0f, 1.0f); ++v;	// â”—
+		SetV(v, maxPos.x, minPos.y, minPos.z, 1.0f, 0.0f); ++v;	// â”“
+		SetV(v, maxPos.x, minPos.y, maxPos.z, 1.0f, 1.0f); ++v;	// â”›
+		SetI(i, 16); i += 6;
+
+		// ä¸Š (Y+)(Z+ ãŒUVã®ä¸Šæ–¹å‘)
+		SetV(v, minPos.x, maxPos.y, maxPos.z, 0.0f, 0.0f); ++v;	// â”
+		SetV(v, minPos.x, maxPos.y, minPos.z, 0.0f, 1.0f); ++v;	// â”—
+		SetV(v, maxPos.x, maxPos.y, maxPos.z, 1.0f, 0.0f); ++v;	// â”“
+		SetV(v, maxPos.x, maxPos.y, minPos.z, 1.0f, 1.0f); ++v;	// â”›
+		SetI(i, 20);
+	}
+
+private:
+	Vector3	m_size;
+};
 
 
 
@@ -173,15 +262,15 @@ void Material3::LinkVariables()
 			if (v->GetType() != ShaderVariableType_Unknown &&
 				v->GetType() != ShaderVariableType_String)
 			{
-				// Unknown ‚Æ String Œ^‚Í–³‹BString Œ^‚Í“Ç‚İæ‚èê—p‚ÅAMaterial ‚Æ‚µ‚Ä‚Í‚Á‚Ä‚¨‚­•K—v‚È‚¢B
+				// Unknown ã¨ String å‹ã¯ç„¡è¦–ã€‚String å‹ã¯èª­ã¿å–ã‚Šå°‚ç”¨ã§ã€Material ã¨ã—ã¦ã¯æŒã£ã¦ãŠãå¿…è¦ãªã„ã€‚
 			}
 			else
 			{
-				// –¼‘O‚Æ’l‚Ì‘Î‰•\
-				auto var = std::make_shared<ShaderValue>(v->GetShaderValue());	// ‰Šú’l
+				// åå‰ã¨å€¤ã®å¯¾å¿œè¡¨
+				auto var = std::make_shared<ShaderValue>(v->GetShaderValue());	// åˆæœŸå€¤
 				m_valueList.Add(v->GetName(), var);
 
-				// •Ï”‚Æ’l‚ÌƒyƒA
+				// å¤‰æ•°ã¨å€¤ã®ãƒšã‚¢
 				ValuePair pair = { v, var };
 				m_linkedVariableList.Add(pair);
 			}
@@ -243,7 +332,7 @@ void StaticMeshModel::Initialize(GraphicsManager* manager)
 //------------------------------------------------------------------------------
 void StaticMeshModel::CreateBox(const Vector3& size)
 {
-	BoxMeshFactory factory(size);
+	TexUVBoxMeshFactory factory(size);
 	m_vertexDeclaration = RefPtr<VertexDeclaration>::MakeRef();
 	m_vertexDeclaration->Initialize(m_manager);
 	m_vertexBuffer = RefPtr<VertexBuffer>::MakeRef();

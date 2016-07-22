@@ -261,9 +261,7 @@ protected:	// TODO: private
 	RefPtr<IIndexBuffer>			m_currentIndexBuffer;
 };
 
-/**
-	@brief	頂点宣言
-*/
+/// 頂点宣言
 class IVertexDeclaration
 	: public IDeviceObject
 {

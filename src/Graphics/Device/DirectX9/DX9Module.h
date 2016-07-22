@@ -155,9 +155,6 @@ public:
 	/// D3DFORMAT から TextureFormat に変換
 	static TextureFormat TranslateFormatDxToLN(D3DFORMAT dx_format);
 
-	/// X ファイルからライブラリ用のオブジェクトを作成する
-	//static LNRESULT createMeshFromXInMemory( const void* data_, lnU32 size_, IGraphicsDevice* device_, Material** materials_, char** tex_names_, lnU32* material_num_, IVertexBuffer** vb_, IIndexBuffer** ib_ );
-
 	/// デバッグ用。IUnknown の参照カウントの確認
 	static int GetReferenceCount( IUnknown* obj )
 	{
