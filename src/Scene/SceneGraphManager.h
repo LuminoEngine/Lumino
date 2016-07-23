@@ -78,7 +78,7 @@ public:	// internal
 	GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
 	detail::EffectManager* GetEffectManager() { return m_effectManager; }
 	detail::ModelManager* GetModelManager() { return m_modelManager; }
-	Texture2D* GetDummyTexture() { return m_dummyTexture; }
+	Texture2D* GetDummyWhiteTexture() { return m_dummyWhiteTexture; }
 
 	void OnNodeRename(SceneNode* node, const String& oldName, const String& newName);
 
@@ -103,7 +103,7 @@ private:
 	RefPtr<GraphicsManager>	m_graphicsManager;
 	detail::EffectManager*				m_effectManager;
 	detail::ModelManager*				m_modelManager;
-	RefPtr<Texture2D>			m_dummyTexture;
+	RefPtr<Texture2D>			m_dummyWhiteTexture;
 
 	SceneGraphRenderingContext*		m_renderingContext;
 

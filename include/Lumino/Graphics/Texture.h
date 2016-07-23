@@ -88,6 +88,7 @@ public:
 		@param[in]	format		: テクスチャのピクセルフォーマット
 	*/
 	static Texture2DPtr Create(int width, int height, TextureFormat format = TextureFormat::R8G8B8A8, int mipLevels = 1);
+	// TODO: mipMap は unity のように、有無だけで指定したい
 	
 	/**
 		@brief		指定したサイズのテクスチャを作成します。

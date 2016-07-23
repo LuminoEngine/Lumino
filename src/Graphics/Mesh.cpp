@@ -172,13 +172,31 @@ private:
 };
 
 
+//==============================================================================
+// MaterialList3
+//==============================================================================
 
+//------------------------------------------------------------------------------
+MaterialList3::MaterialList3()
+{
+}
 
+//------------------------------------------------------------------------------
+MaterialList3::~MaterialList3()
+{
+}
 
 //==============================================================================
 // Material
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Material3, Object);
+
+const String Material3::DiffuseParameter(_T("Diffuse"));
+const String Material3::AmbientParameter(_T("Ambient"));
+const String Material3::SpecularParameter(_T("Specular"));
+const String Material3::EmissiveParameter(_T("Emissive"));
+const String Material3::PowerParameter(_T("Power"));
+const String Material3::MaterialTextureParameter(_T("MaterialTexture"));
 
 //------------------------------------------------------------------------------
 MaterialPtr Material3::Create()
@@ -250,8 +268,15 @@ void Material3::SetColorParameter(const StringRef& name, const Color& value)
 }
 
 //------------------------------------------------------------------------------
+void Material3::SetColorParameter(const StringRef& name, float r, float g, float b, float a)
+{
+	SetColorParameter(name, Color(r, g, b, a));
+}
+
+//------------------------------------------------------------------------------
 void Material3::LinkVariables()
 {
+#if 0
 	m_valueList.Clear();
 	m_linkedVariableList.Clear();
 
@@ -276,6 +301,7 @@ void Material3::LinkVariables()
 			}
 		}
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -313,7 +339,8 @@ StaticMeshModel::StaticMeshModel()
 	, m_vertexDeclaration()
 	, m_vertexBuffer()
 	, m_indexBuffer()
-	, m_triangleCount(0)
+	, m_materials()
+	, m_attributes()
 {
 }
 
@@ -327,6 +354,8 @@ void StaticMeshModel::Initialize(GraphicsManager* manager)
 {
 	LN_CHECK_ARG(manager != nullptr);
 	m_manager = manager;
+
+	m_materials = RefPtr<MaterialList3>::MakeRef();
 }
 
 //------------------------------------------------------------------------------
@@ -349,7 +378,26 @@ void StaticMeshModel::CreateBox(const Vector3& size)
 	ScopedIndexBufferLock lock2(m_indexBuffer);
 	factory.Generate((Vertex*)lock1.GetData(), (uint16_t*)lock2.GetData());
 
-	m_triangleCount = factory.GetIndexCount() / 3;
+	SetMaterialCount(1);
+	m_attributes[0].MaterialIndex = 0;
+	m_attributes[0].StartIndex = 0;
+	m_attributes[0].PrimitiveNum = factory.GetIndexCount() / 3;
+}
+
+//------------------------------------------------------------------------------
+void StaticMeshModel::SetMaterialCount(int count)
+{
+	int oldCount = m_materials->GetCount();
+	m_materials->Resize(count);
+	m_attributes.Resize(count);
+	if (oldCount < count)
+	{
+		for (int i = oldCount; i < count; ++i)
+		{
+			auto m = RefPtr<Material3>::MakeRef();
+			m_materials->SetAt(i, m);
+		}
+	}
 }
 
 //------------------------------------------------------------------------------

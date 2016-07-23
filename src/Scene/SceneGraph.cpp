@@ -108,7 +108,8 @@ void SceneGraph::Render(Texture* renderTarget, Camera* camera)
 	m_leftMouseState.ToVector4(viewSize, &sceneParams.LeftMouseDown);
 	m_rightMouseState.ToVector4(viewSize, &sceneParams.MiddleMouseDown);
 	m_middleMouseState.ToVector4(viewSize, &sceneParams.RightMouseDown);
-	LN_FOREACH(MMEShader* shader, *m_manager->GetShaderList()) {
+	for (MMEShader* shader : *m_manager->GetShaderList())
+	{
 		shader->UpdateSceneParams(sceneParams, m_manager);
 	}
 	
@@ -124,7 +125,7 @@ void SceneGraph::Render(Texture* renderTarget, Camera* camera)
 		//		TODO: とりあえず全シェーダ更新している。そんなにたくさんのシェーダは使わないだろうという想定。
 		//		もちろん数が増えてくればこの辺がパフォーマンス的にクリティカルになる。
 		//		改善案はあるが、とりあえず。(SceneGraphManaer.cpp 参照)
-		LN_FOREACH(MMEShader* shader, *m_manager->GetShaderList()) {
+		for (MMEShader* shader : *m_manager->GetShaderList()) {
 			shader->UpdateCameraParams(camera, viewSize);
 		}
 
@@ -132,7 +133,7 @@ void SceneGraph::Render(Texture* renderTarget, Camera* camera)
 		GetRootNode()->UpdateViewFlustumHierarchy(camera, &m_renderingNodeList, &m_renderingLightList);
 
 		// ライト行列の更新
-		LN_FOREACH(Light* light, m_renderingLightList) {
+		for (Light* light : m_renderingLightList) {
 			light->UpdateMatrices(viewSize);
 		}
 
@@ -145,6 +146,7 @@ void SceneGraph::Render(Texture* renderTarget, Camera* camera)
 		//RenderingParams params;
 		SceneGraphRenderingContext* dc = m_manager->GetRenderingContext();
 		dc->CurrentCamera = camera;
+		dc->renderingLightList = &m_renderingLightList;
 		dc->BeginGraphicsContext()->SetViewProjectionTransform(camera->GetViewMatrix(), camera->GetProjectionMatrix());
 		dc->BeginGraphicsContext()->SetRenderTarget(0, renderTarget);
 		for (RenderingPass* pass : *GetRenderingPasses())

@@ -25,7 +25,7 @@ public:
 	void SetTransform(const Matrix& matrix);
 	void SetViewProjMatrix(const Matrix& matrix);
 
-	void DrawMesh(StaticMeshModel* mesh);
+	void DrawMesh(StaticMeshModel* mesh, int startIndex, int triangleCount);
 
 protected:
 	virtual void Flush() override {}
@@ -38,6 +38,7 @@ private:
 		RefPtr<Driver::IVertexDeclaration>	vertexDeclaration;
 		RefPtr<Driver::IVertexBuffer>		vertexBuffers[Driver::MaxVertexStreams];
 		RefPtr<Driver::IIndexBuffer>		indexBuffer;
+		int									startIndex;
 		int									triangleCount;
 	};
 

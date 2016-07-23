@@ -163,7 +163,9 @@ public:
 	RenderingCommandList* GetPrimaryRenderingCommandList();
 	PainterEngine* GetPainterEngine() { return m_painterEngine; }
 	detail::TextRendererCore* GetTextRendererCore() { return m_textRendererCore; }
-	Driver::ITexture* GetDummyTexture() { return m_dummyTexture; }
+	Driver::ITexture* GetDummyDeviceTexture() { return m_dummyDeviceTexture; }
+	const RefPtr<Texture2D>& GetDummyWhiteTexture() { return m_dymmyWhiteTexture; }
+	VertexDeclaration* GetDefaultVertexDeclaration() const { return m_defaultVertexDeclaration; }
 	detail::ShaderVariableCommitSerializeHelper* GetShaderVariableCommitSerializeHelper() { return &m_shaderVariableCommitSerializeHelper; }
 
 private:
@@ -188,7 +190,9 @@ private:
 	BitmapTextRenderer*				m_bitmapTextRenderer;
 	detail::ShaderVariableCommitSerializeHelper	m_shaderVariableCommitSerializeHelper;
 
-	Driver::ITexture*				m_dummyTexture;
+	Driver::ITexture*				m_dummyDeviceTexture;
+	RefPtr<Texture2D>				m_dymmyWhiteTexture;
+	VertexDeclaration*				m_defaultVertexDeclaration;
 	bool							m_platformTextureLoading;
 };
 

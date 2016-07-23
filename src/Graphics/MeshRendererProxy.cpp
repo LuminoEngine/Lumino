@@ -72,7 +72,7 @@ void MeshRendererProxy::SetViewProjMatrix(const Matrix& matrix)
 }
 
 //------------------------------------------------------------------------------
-void MeshRendererProxy::DrawMesh(StaticMeshModel* mesh)
+void MeshRendererProxy::DrawMesh(StaticMeshModel* mesh, int startIndex, int triangleCount)
 {
 	LN_CHECK_ARG(mesh != nullptr);
 	auto* _this = this;
@@ -96,7 +96,8 @@ void MeshRendererProxy::DrawMesh(StaticMeshModel* mesh)
 	data.vertexDeclaration = mesh->m_vertexDeclaration->GetDeviceObject();
 	data.vertexBuffers[0] = mesh->m_vertexBuffer->GetDeviceObject();		// TODO: まだ1つだけ
 	data.indexBuffer = mesh->m_indexBuffer->GetDeviceObject();
-	data.triangleCount = mesh->m_triangleCount;
+	data.startIndex = startIndex;
+	data.triangleCount = triangleCount;
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		FlushState, m_manager,
 		MeshRendererProxy*, _this,
@@ -124,7 +125,7 @@ void MeshRendererProxy::DrawMeshImpl(const DrawMeshCommandData& data)
 	m_renderer->SetVertexDeclaration(data.vertexDeclaration);
 	m_renderer->SetVertexBuffer(0, data.vertexBuffers[0]);		// TODO: まだ1つだけ
 	m_renderer->SetIndexBuffer(data.indexBuffer);
-	m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, data.triangleCount);
+	m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, data.startIndex, data.triangleCount);
 }
 
 } // namespace detail

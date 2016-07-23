@@ -333,12 +333,6 @@ set(LN_SOURCES_TileMap
 
 set(LN_SOURCES_Modeling
 	src/Modeling/Common.h
-	src/Modeling/Model.cpp
-	src/Modeling/Model.h
-	src/Modeling/ModelBone.cpp
-	src/Modeling/ModelBone.h
-	src/Modeling/ModelCore.cpp
-	src/Modeling/ModelCore.h
 	src/Modeling/ModelManager.cpp
 	src/Modeling/ModelManager.h
 )

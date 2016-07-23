@@ -38,6 +38,8 @@ SceneGraphManager::SceneGraphManager(const ConfigData& configData)
 	, m_default2DCameraViewportLayer(nullptr)
 	, m_mainViewport(configData.mainViewport)
 {
+	m_dummyWhiteTexture = m_graphicsManager->GetDummyWhiteTexture();
+
 	// RenderingPass に割り当てる ID
 	for (int i = 0; i < RenderingPass::MaxRenderingPass; ++i) {
 		m_renderingPassIDStack.Push(i);

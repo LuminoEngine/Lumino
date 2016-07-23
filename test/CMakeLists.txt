@@ -22,6 +22,7 @@ set(LN_TEST_SOURCES
 	UnitTest/Graphics/Test_Graphics_StaticMesh.cpp
 	UnitTest/Graphics/Test_Graphics_Texture.cpp
 	#UnitTest/Graphics/Test_Graphics_VertexBuffer.cpp
+	UnitTest/Graphics/Test_Graphics_XFile.cpp
 	UnitTest/Scene/Test_Scene_Sprite.cpp
 	UnitTest/Scene/Test_Scene_SpriteParticle.cpp
 	UnitTest/Scene/Test_Scene_StaticMesh.cpp

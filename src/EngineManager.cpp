@@ -502,12 +502,12 @@ void EngineManager::InitializeModelManager()
 		InitializeGraphicsManager();
 		InitializePhysicsManager();
 
-		detail::ModelManager::Settings data;
-		data.FileManager = m_fileManager;
-		data.PhysicsManager = m_physicsManager;
-		data.GraphicsManager = m_graphicsManager;
-		data.ModelCoreCacheSize = 32;
-		data.ModelCoreCacheMemorySize = 0;
+		detail::ModelManager::ConfigData data;
+		data.fileManager = m_fileManager;
+		data.physicsManager = m_physicsManager;
+		data.graphicsManager = m_graphicsManager;
+		data.modelCoreCacheSize = 32;
+		data.modelCoreCacheMemorySize = 0;
 		m_modelManager = LN_NEW detail::ModelManager();
 		m_modelManager->Initialize(data);
 	}

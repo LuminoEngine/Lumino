@@ -4,6 +4,17 @@
 
 LN_NAMESPACE_BEGIN
 
+
+/// モデル生成オプション
+LN_ENUM_FLAGS(ModelCreationFlag)
+{
+	None = 0x0000,
+	IgnoreTextureNotFound = 0x04,		///< マテリアルに含まれるテクスチャファイルが見つからなくても無視する
+	//ModelCreateFlag_CopyMaterials = 0x08,		///< マテリアルを共有せずにコピーする
+};
+LN_ENUM_FLAGS_DECLARE(ModelCreationFlag)
+
+#if 0
 class ModelCore;
 class ModelBoneCore;
 class ModelIKCore;
@@ -30,23 +41,6 @@ enum ModelFormat
 	ModelFormat_PMX,
 };
 
-/// モデル生成オプション
-LN_ENUM_FLAGS(ModelCreationFlag)
-{
-	None = 0x0000,
-	IgnoreTextureNotFound = 0x04,		///< マテリアルに含まれるテクスチャファイルが見つからなくても無視する
-	//ModelCreateFlag_CopyMaterials = 0x08,		///< マテリアルを共有せずにコピーする
-};
-LN_ENUM_FLAGS_DECLARE(ModelCreationFlag)
-
-/// メッシュの属性
-struct MeshAttribute
-{
-	int		MaterialIndex;  ///< 対応するマテリアル番号
-	int		StartIndex;     ///< 開始インデックス
-	int		PrimitiveNum;   ///< 描画プリミティブ数 (三角形の数)
-};
-typedef Array<MeshAttribute>		MeshAttributeList;
 
 /// 材質の描画オプション
 enum MMDDrawingFlags
@@ -155,5 +149,7 @@ namespace detail
 {
 	class ModelManager;
 }
+#endif
+
 LN_NAMESPACE_END
 

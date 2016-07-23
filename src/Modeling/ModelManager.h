@@ -1,58 +1,43 @@
 ﻿
 #pragma once
 #include <array>
-//#include <Lumino/Base/Cache.h>
-//#include <Lumino/IO/FileManager.h>
-//#include <Lumino/Graphics/GraphicsManager.h>
-//#include <Lumino/Graphics/Texture.h>
-//#include "../Animation/AnimationClip.h"
-//#include <Lumino/Physics/PhysicsManager.h>
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
 class FileManager;
 namespace Physics { class PhysicsManager; }
+class StaticMeshModel;
+
 namespace detail
 {
 
-///
 class ModelManager
 	: public RefObject
 {
 public:
 
-	/// 初期化データ
-	struct Settings
+	struct ConfigData
 	{
-		FileManager*		FileManager;
-		Physics::PhysicsManager*	PhysicsManager;
-		GraphicsManager*			GraphicsManager;
-		int							ModelCoreCacheSize;
-		int							ModelCoreCacheMemorySize;
-
-		Settings()
-			: FileManager(NULL)
-			, PhysicsManager(NULL)
-			, GraphicsManager(NULL)
-			, ModelCoreCacheSize(32)
-			, ModelCoreCacheMemorySize(0)
-		{}
+		FileManager*				fileManager = nullptr;
+		Physics::PhysicsManager*	physicsManager = nullptr;
+		GraphicsManager*			graphicsManager = nullptr;
+		int							modelCoreCacheSize = 32;
+		int							modelCoreCacheMemorySize = 0;
 	};
 
 public:
 	ModelManager();
 	virtual ~ModelManager();
 
-public:
-	void Initialize(const Settings& configData);
+	void Initialize(const ConfigData& configData);
 	void Finalize();
 	Physics::PhysicsManager* GetPhysicsManager() { return m_physicsManager; }
 	GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
 	Texture2D* GetMMDDefaultToonTexture(int index);
 
-	Texture* CreateTexture(const PathName& parentDir, const StringRef& filePath, ModelCreationFlag flags);
+	RefPtr<Texture> CreateTexture(const PathName& parentDir, const StringRef& filePath, ModelCreationFlag flags);
 	
-	ModelCore* CreateModelCore(const PathName& filePath);
+	RefPtr<StaticMeshModel> CreateModelCore(const PathName& filePath);
 	//Animation::AnimationClip* CreateMotion(const PathName& filePath);
 
 private:

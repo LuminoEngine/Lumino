@@ -14,18 +14,28 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
+StaticMeshPtr StaticMesh::Create(const StringRef& filePath)
+{
+	auto ptr = StaticMeshPtr::MakeRef();
+	auto mesh = SceneGraphManager::Instance->GetModelManager()->CreateModelCore(filePath);
+	ptr->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), mesh);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
 StaticMeshPtr StaticMesh::CreateBox(const Vector3& size)
 {
 	auto ptr = StaticMeshPtr::MakeRef();
-	ptr->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph());
-	ptr->m_mesh = RefPtr<StaticMeshModel>::MakeRef();
-	ptr->m_mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager());
-	ptr->m_mesh->CreateBox(size);
+	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
+	mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager());
+	mesh->CreateBox(size);
+	ptr->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), mesh);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
 StaticMesh::StaticMesh()
+	: m_mesh()
 {
 }
 
@@ -35,12 +45,14 @@ StaticMesh::~StaticMesh()
 }
 
 //------------------------------------------------------------------------------
-void StaticMesh::Initialize(SceneGraph* owner)
+void StaticMesh::Initialize(SceneGraph* owner, StaticMeshModel* meshModel)
 {
-	VisualNode::Initialize(owner, 1/*m_model->GetSubsetCount()*/);
+	LN_CHECK_ARG(meshModel != nullptr);
+	m_mesh = meshModel;
 
+	VisualNode::Initialize(owner, m_mesh->GetSubsetCount());
 
-	m_material = RefPtr<Material3>::MakeRef();
+	m_materialList->CopyShared(m_mesh->m_materials);
 
 
 	owner->GetManager()->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
@@ -50,7 +62,7 @@ void StaticMesh::Initialize(SceneGraph* owner)
 //------------------------------------------------------------------------------
 void StaticMesh::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 {
-	dc->BeginGraphicsContext()->DrawMesh(m_mesh/*, m_material*/);
+	dc->BeginGraphicsContext()->DrawMesh(m_mesh, m_mesh->m_attributes[subsetIndex].StartIndex, m_mesh->m_attributes[subsetIndex].PrimitiveNum);
 }
 
 LN_NAMESPACE_END

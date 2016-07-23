@@ -127,22 +127,25 @@ void VisualNode::UpdateAffectLights(LightNodeList* renderingLightList, int maxCo
 	m_affectLightList.Resize(maxCount);
 
 	// ソート基準値の計算
-	LN_FOREACH(Light* light, *renderingLightList) {
+	for (Light* light : *renderingLightList)
+	{
 		light->m_tmpDistance = (light->m_combinedGlobalMatrix.GetPosition() - m_combinedGlobalMatrix.GetPosition()).GetLengthSquared();
 	}
 
 	// ソート
 	std::stable_sort(renderingLightList->begin(), renderingLightList->end(), CmpLightSort);
 
-	// 出力 (足りない分は NULL で埋める)
+	// 出力 (足りない分は nullptr で埋める)
 	int mn = renderingLightList->GetCount();
 	int n = maxCount;
 	int i = 0;
-	for (; i < mn; ++i) {
+	for (; i < mn; ++i)
+	{
 		m_affectLightList[i] = renderingLightList->GetAt(i);
 	}
-	for (; i < n; ++i) {
-		m_affectLightList[i] = NULL;
+	for (; i < n; ++i)
+	{
+		m_affectLightList[i] = nullptr;
 	}
 }
 bool VisualNode::CmpLightSort(const Light* left, const Light* right)

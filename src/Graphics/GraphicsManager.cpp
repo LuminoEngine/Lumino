@@ -719,6 +719,7 @@
 #include <Lumino/Graphics/Viewport.h>
 #include <Lumino/Graphics/GraphicsContext.h>
 #include <Lumino/Graphics/Shader.h>
+#include <Lumino/Graphics/VertexDeclaration.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -781,7 +782,8 @@ GraphicsManager::GraphicsManager()
 	, m_graphicsDevice(nullptr)
 	, m_mainSwapChain(nullptr)
 	, m_renderingType(GraphicsRenderingType::Immediate)
-	, m_dummyTexture(nullptr)
+	, m_dummyDeviceTexture(nullptr)
+	, m_dymmyWhiteTexture(nullptr)
 	, m_renderer(nullptr)
 	, m_renderingThread(nullptr)
 	, m_activeContext(nullptr)
@@ -798,10 +800,12 @@ GraphicsManager::~GraphicsManager()
 	if (m_glyphTextureCache != nullptr) {
 		m_glyphTextureCache->Finalize();
 	}
+	LN_SAFE_RELEASE(m_defaultVertexDeclaration);
 	LN_SAFE_RELEASE(m_bitmapTextRenderer);
 	LN_SAFE_RELEASE(m_textRendererCore);
 	LN_SAFE_RELEASE(m_painterEngine);
-	LN_SAFE_RELEASE(m_dummyTexture);
+	m_dymmyWhiteTexture.SafeRelease();
+	LN_SAFE_RELEASE(m_dummyDeviceTexture);
 	LN_SAFE_RELEASE(m_mainSwapChain);
 	LN_SAFE_RELEASE(m_renderer);
 	LN_SAFE_RELEASE(m_fileManager);
@@ -921,6 +925,13 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 	m_bitmapTextRenderer = LN_NEW BitmapTextRenderer();
 	m_bitmapTextRenderer->Initialize(this);
 
+	m_defaultVertexDeclaration = LN_NEW VertexDeclaration();
+	m_defaultVertexDeclaration->Initialize(this);
+	m_defaultVertexDeclaration->AddVertexElement(0, VertexElementType_Float3, VertexElementUsage_Position, 0);
+	m_defaultVertexDeclaration->AddVertexElement(0, VertexElementType_Float2, VertexElementUsage_TexCoord, 0);
+	m_defaultVertexDeclaration->AddVertexElement(0, VertexElementType_Float3, VertexElementUsage_Normal, 0);
+	m_defaultVertexDeclaration->AddVertexElement(0, VertexElementType_Float4, VertexElementUsage_Color, 0);
+
 	if (m_renderingType == GraphicsRenderingType::Threaded)
 	{
 		// 描画スレッドを立ち上げる
@@ -933,6 +944,11 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 	{
 		g_GraphicsManagerInstance = this;
 	}
+
+
+	m_dymmyWhiteTexture = RefPtr<Texture2D>::MakeRef();
+	m_dymmyWhiteTexture->Initialize(this, Size(32, 32), TextureFormat::R8G8B8A8, 1);
+	m_dymmyWhiteTexture->Clear(Color32::White);
 }
 
 
@@ -1003,7 +1019,7 @@ void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
 		}
 
 		// 色々解放
-		LN_SAFE_RELEASE(m_dummyTexture);
+		LN_SAFE_RELEASE(m_dummyDeviceTexture);
 
 		if (m_graphicsDevice != NULL)
 		{
@@ -1025,12 +1041,12 @@ void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
 		}
 
 		// ダミーテクスチャ
-		m_dummyTexture = m_graphicsDevice->CreateTexture(Size(32, 32), 1, TextureFormat::R8G8B8A8, NULL);
+		m_dummyDeviceTexture = m_graphicsDevice->CreateTexture(Size(32, 32), 1, TextureFormat::R8G8B8A8, NULL);
 		{
 			Driver::IGraphicsDevice::ScopedLockContext lock(m_graphicsDevice);
-			BitmapPainter painter(m_dummyTexture->Lock());
+			BitmapPainter painter(m_dummyDeviceTexture->Lock());
 			painter.Clear(Color32::White);
-			m_dummyTexture->Unlock();
+			m_dummyDeviceTexture->Unlock();
 		}
 
 		// 全オブジェクトに通知

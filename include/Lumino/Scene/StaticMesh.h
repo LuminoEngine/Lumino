@@ -14,17 +14,18 @@ class StaticMesh
 	: public VisualNode
 {
 public:
+	static StaticMeshPtr Create(const StringRef& filePath);
+
 	static StaticMeshPtr CreateBox(const Vector3& size);
 
 LN_INTERNAL_ACCESS:
 	StaticMesh();
 	virtual ~StaticMesh();
-	void Initialize(SceneGraph* ownerSceneGraph);
+	void Initialize(SceneGraph* ownerSceneGraph, StaticMeshModel* meshModel);
 	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
 
 private:
 	RefPtr<StaticMeshModel>	m_mesh;
-	RefPtr<Material3>		m_material;
 };
 
 LN_NAMESPACE_END

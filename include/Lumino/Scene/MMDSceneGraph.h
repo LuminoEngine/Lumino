@@ -38,6 +38,8 @@ private:
 	//SceneNode*		m_default2DRoot;
 
 	Camera*			m_default3DCamera;
+
+
 	//Camera*			m_default2DCamera;
 	EffectBatchRendererNode*	m_effectBatchRendererNode;
 

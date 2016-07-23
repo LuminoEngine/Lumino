@@ -48,6 +48,9 @@ void MMERenderingPass::RenderSubset(SceneGraphRenderingContext* dc, VisualNode* 
 	}
 	dc->Shader = priorityParams.Shader;
 
+	// ノードに影響するライトを列挙する
+	visualNode->UpdateAffectLights(dc->renderingLightList, dc->Shader->GetRequiredLightCount());
+
 	// ノード単位データを更新する
 	priorityParams.Shader->UpdateNodeParams(visualNode, dc->CurrentCamera, *visualNode->GetAffectLightList());
 	visualNode->UpdateNodeRenderingParams(priorityParams.Shader);

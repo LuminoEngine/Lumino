@@ -739,7 +739,7 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 		sprite.Vertices[2].TexUV.y = 1;
 		sprite.Vertices[3].TexUV.x = 1;
 		sprite.Vertices[3].TexUV.y = 1;
-		sprite.Texture = m_manager->GetDummyTexture();
+		sprite.Texture = m_manager->GetDummyDeviceTexture();
 	}
 
 	// カメラからの距離をソート用Z値にする場合

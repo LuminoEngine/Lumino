@@ -1,11 +1,13 @@
 ﻿
 #include "../Internal.h"
 #include <Lumino/Graphics/VertexDeclaration.h>
+#include <Lumino/Graphics/VertexBuffer.h>
+#include <Lumino/Graphics/IndexBuffer.h>
+#include <Lumino/Graphics/Mesh.h>
 #include "../Graphics/GraphicsManager.h"
 #include "../Graphics/Device/DirectX9/DX9Module.h"
 #include "../Graphics/Device/DirectX9/DX9GraphicsDevice.h"
 #include "ModelManager.h"
-#include "ModelCore.h"
 #include "XFileLoader.h"
 
 LN_NAMESPACE_BEGIN
@@ -100,20 +102,20 @@ HRESULT AllocateHierarchy::CreateMeshContainer(
 
     // メッシュに法線・頂点色があるか調べて、無ければ追加する
     mesh_container->MeshData.Type = D3DXMESHTYPE_MESH;
-	bool converted;
-    ID3DXMesh* new_mesh;
-	hr = _checkMeshFormat( dx_mesh, &converted, &new_mesh );
-	if ( FAILED( hr ) ) goto ERR_EXIT;
-	// 法線または頂点色が追加されなかった場合
-	if ( !converted )
-	{
+	//bool converted;
+ //   ID3DXMesh* new_mesh;
+	//hr = _checkMeshFormat( dx_mesh, &converted, &new_mesh );
+	//if ( FAILED( hr ) ) goto ERR_EXIT;
+	//// 法線または頂点色が追加されなかった場合
+	//if ( !converted )
+	//{
         mesh_container->MeshData.pMesh = dx_mesh;
 		dx_mesh->AddRef();
-	}
-    else
-    {
-        mesh_container->MeshData.pMesh = new_mesh;
-    }
+	//}
+ //   else
+ //   {
+ //       mesh_container->MeshData.pMesh = new_mesh;
+ //   }
 		
     // 引数で受け取ったマテリアルの情報をメッシュコンテナに格納
 	hr = _registMaterialData( dx_mesh->GetNumFaces(), adjacency_, material_num_, dx_materials, mesh_container );
@@ -200,55 +202,6 @@ HRESULT AllocateHierarchy::_allocateName( const char* name_, char** out_name_ )
 	{
 		*out_name_ = NULL;
 	}
-	return S_OK;
-}
-
-//------------------------------------------------------------------------------
-// メッシュに法線・頂点色があるかどうか調べて、無ければメッシュを作りなおす
-//------------------------------------------------------------------------------
-HRESULT AllocateHierarchy::_checkMeshFormat( ID3DXMesh* dx_mesh_, bool* converted_, ID3DXMesh** out_mesh_ )
-{
-	//ID3DXMesh* dx_mesh = *dx_mesh_;
-    *out_mesh_ = NULL;
-	DWORD fvf = 0;
-	*converted_ = false;
-
-    // 法線
-	if ( ( dx_mesh_->GetFVF() & D3DFVF_NORMAL ) == 0 )
-	{
-		fvf |= D3DFVF_NORMAL;
-	}
-    // 頂点カラー
-	if ( ( dx_mesh_->GetFVF() & D3DFVF_DIFFUSE ) == 0 )
-	{
-		fvf |= D3DFVF_DIFFUSE;
-	}
-    // テクスチャ座標
-	if ( ( dx_mesh_->GetFVF() & D3DFVF_TEX1 ) == 0 )
-	{
-		fvf |= D3DFVF_TEX1;
-	}
-
-	// 追加する FVF がある場合
-	if ( fvf != 0 )
-	{
-		// デバイスへのポインタを取得
-		IDirect3DDevice9* dx_device;
-		dx_mesh_->GetDevice( &dx_device );
-
-		// 法線付きのメッシュを複製する
-		HRESULT hr = dx_mesh_->CloneMeshFVF(
-			dx_mesh_->GetOptions(), dx_mesh_->GetFVF() | fvf, 
-			dx_device, out_mesh_ );
-		if ( FAILED( hr  ) ) return hr;
-
-		// 法線を計算する
-		//DirectX9::DX9Module::getInstance()->D3DXComputeNormals( *out_mesh_, NULL );
-
-		*converted_ = true;
-		dx_device->Release();
-	}
-
 	return S_OK;
 }
 
@@ -580,12 +533,23 @@ ERR_EXIT:
 	return hr;
 }
 
+
+//------------------------------------------------------------------------------
+template<typename TIndex>
+static void FlipTriangleFronts(TIndex* indices, int count)
+{
+	for (int i = 0; i < count; i += 3)
+	{
+		std::swap(indices[i + 1], indices[i + 2]);
+	}
+}
+
 //==============================================================================
 // XFileLoader
 //==============================================================================
 
 //------------------------------------------------------------------------------
-ModelCore* XFileLoader::Load(ModelManager* manager, Stream* stream, const PathName& parentDir, bool isDynamic, ModelCreationFlag flags)
+RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream, const PathName& parentDir, bool isDynamic, ModelCreationFlag flags)
 {
 	Driver::DX9GraphicsDevice* device = dynamic_cast<Driver::DX9GraphicsDevice*>(manager->GetGraphicsManager()->GetGraphicsDevice());
 	LN_THROW(device != nullptr, ArgumentException);
@@ -625,7 +589,8 @@ ModelCore* XFileLoader::Load(ModelManager* manager, Stream* stream, const PathNa
 
 	try
 	{
-		RefPtr<ModelCore> core(LN_NEW ModelCore(), false);
+		auto mesh = StaticMeshModelPtr::MakeRef();
+		mesh->Initialize(manager->GetGraphicsManager());
 
 		// スキンメッシュではない場合
 		if (!dx_anim_controller)
@@ -642,129 +607,105 @@ ModelCore* XFileLoader::Load(ModelManager* manager, Stream* stream, const PathNa
 			for (DerivedD3DXMeshContainer* c : dx_mesh_containers)
 			{
 				// とりあえずこのフォーマットでのみ受け付ける
-				static const DWORD fvf = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1;
-				if (c->MeshData.pMesh->GetFVF() == fvf)
-				{
-					all_vertex_num += c->MeshData.pMesh->GetNumVertices();
-					all_index_num += c->MeshData.pMesh->GetNumFaces() * 3;
-				}
+				all_vertex_num += c->MeshData.pMesh->GetNumVertices();
+				all_index_num += c->MeshData.pMesh->GetNumFaces() * 3;
 			}
 			LN_THROW(all_vertex_num > 0, InvalidFormatException, "XFile error: fvf invalid.");
 
 			//-----------------------------------------------------
 			// 頂点バッファ、インデックスバッファ作成
 
-			// 頂点バッファ作成
-			core->vertexDeclaration = RefPtr<VertexDeclaration>::MakeRef();
-			core->vertexDeclaration->Initialize(manager->GetGraphicsManager(), PMX_Vertex::Elements(), PMX_Vertex::ElementCount);
+			// VertexDeclaration
+			mesh->m_vertexDeclaration = manager->GetGraphicsManager()->GetDefaultVertexDeclaration();
 
-			core->VertexBuffer.Attach(LN_NEW VertexBuffer());
-			core->VertexBuffer->Initialize(
+			// VertexBuffer
+			mesh->m_vertexBuffer.Attach(LN_NEW VertexBuffer());
+			mesh->m_vertexBuffer->Initialize(
 				manager->GetGraphicsManager(),
-				sizeof(PMX_Vertex) * all_vertex_num,
+				sizeof(Vertex) * all_vertex_num,
 				nullptr,
 				(isDynamic) ? DeviceResourceUsage_Dynamic : DeviceResourceUsage_Static);
 
-			// インデックスバッファ作成
+			// IndexBuffer
 			IDirect3DIndexBuffer9* dx_indexbuffer;
 			D3DINDEXBUFFER_DESC dx_indexbuffer_desc;
 			dx_mesh_containers[0]->MeshData.pMesh->GetIndexBuffer(&dx_indexbuffer);
 			dx_indexbuffer->GetDesc(&dx_indexbuffer_desc);
 			dx_indexbuffer->Release();
-			core->IndexBuffer.Attach(LN_NEW IndexBuffer());
-			core->IndexBuffer->Initialize(
+			mesh->m_indexBuffer.Attach(LN_NEW IndexBuffer());
+			mesh->m_indexBuffer->Initialize(
 				manager->GetGraphicsManager(),
 				all_index_num,
 				nullptr,
 				(dx_indexbuffer_desc.Format == D3DFMT_INDEX16) ? IndexBufferFormat_UInt16 : IndexBufferFormat_UInt32,
 				(isDynamic) ? DeviceResourceUsage_Dynamic : DeviceResourceUsage_Static);
 
-			//// ソフトウェアスキニング用
-			//if (flags_ & ModelCreateFlag_SoftwareSkinning)
-			//{
-			//	mOrgVertexPositions = LN_NEW LVector3[all_vertex_num];
-			//	mOrgVertexNormals = LN_NEW LVector3[all_vertex_num];
-			//}
-
 			// 書き込み開始
-			ScopedVertexBufferLock lockVertexBuffer(core->VertexBuffer);
-			ScopedIndexBufferLock lockIndexBuffer(core->IndexBuffer);
-			PMX_Vertex* vertices = (PMX_Vertex*)lockVertexBuffer.GetData();
+			ScopedVertexBufferLock lockVertexBuffer(mesh->m_vertexBuffer);
+			ScopedIndexBufferLock lockIndexBuffer(mesh->m_indexBuffer);
+			Vertex* vertices = (Vertex*)lockVertexBuffer.GetData();
 			void* indices = lockIndexBuffer.GetData();
 
-			uint32_t vi = 0;
-			//uint32_t ii = 0;
-			//DerivedD3DXMeshContainerArray& dx_mesh_containers = allocate_hierarchy.getDerivedD3DXMeshContainerArray();
 			for (DerivedD3DXMeshContainer* c : dx_mesh_containers)	// TODO: 現在1つしか想定していない
-			{
-				// とりあえずこのフォーマットでのみ受け付ける
-				static const DWORD fvf = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1;
-				if (c->MeshData.pMesh->GetFVF() == fvf)
+		{
+				// 頂点読み取り開始
+				void* dx_vertices;
+				c->MeshData.pMesh->LockVertexBuffer(0, (void**)&dx_vertices);
+				uint32_t vertexCount = c->MeshData.pMesh->GetNumVertices();
+				switch (c->MeshData.pMesh->GetFVF())
 				{
-					// 頂点読み取り開始
-					BasicXFileVertex* dx_vertices;
-					c->MeshData.pMesh->LockVertexBuffer(0, (void**)&dx_vertices);
-
-					uint32_t v_num = c->MeshData.pMesh->GetNumVertices();
-					for (uint32_t i = 0; i < v_num; ++i, ++vi)
-					{
-						vertices[vi].Position = dx_vertices[i].Position;
-						vertices[vi].Normal = dx_vertices[i].Normal;
-						vertices[vi].TexUV = dx_vertices[i].TexUV;
-						Color32 c(
-							(dx_vertices[i].Color >> 24) & 0xFF,
-							(dx_vertices[i].Color >> 16) & 0xFF,
-							(dx_vertices[i].Color >> 8) & 0xFF,
-							(dx_vertices[i].Color) & 0xFF);
-						vertices[vi].Color = Color(c);
-						memset(vertices[vi].BlendIndices, 0, sizeof(vertices[vi].BlendIndices));
-						memset(vertices[vi].BlendWeights, 0, sizeof(vertices[vi].BlendWeights));
-					}
-
-					// 頂点読み取り終了
-					c->MeshData.pMesh->UnlockVertexBuffer();
-
-					// インデックス読み取り開始
-					void* dx_indices;
-					c->MeshData.pMesh->LockIndexBuffer(0, (void**)&dx_indices);
-					uint32_t i_num = c->MeshData.pMesh->GetNumFaces() * 3;
-
-					// TODO: 複数メッシュコンテナ対応させるなら考えないとダメ
-					memcpy(indices, dx_indices, core->IndexBuffer->GetIndexStride() * i_num);
-					//memcpy(&indices[ii], dx_indices, mIndexBuffer->getIndexStride() * i_num);
-					//ii += i_num;
-
-					//for ( uint32_t i = 0; i < i_num; ++i )
-					//{
-					//	//_p(indices[i]);
-					//	//indices[ ii ] = dx_indices[ i ];
-					//}
-
-
-					// インデックス読み取り終了
-					c->MeshData.pMesh->UnlockIndexBuffer();
+				case D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1:
+					ConvertVertex_Pos_Normal_UV(vertices, (XFileVertex_Pos_Normal_UV*)dx_vertices, vertexCount);
+					break;
+				case D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1:
+					ConvertVertex_Pos_Normal_Color_UV(vertices, (XFileVertex_Pos_Normal_Color_UV*)dx_vertices, vertexCount);
+					break;
+				default:
+					break;
 				}
+					
+
+
+
+				// 頂点読み取り終了
+				c->MeshData.pMesh->UnlockVertexBuffer();
+
+				// インデックス読み取り開始
+				void* dx_indices;
+				c->MeshData.pMesh->LockIndexBuffer(0, (void**)&dx_indices);
+				uint32_t i_num = c->MeshData.pMesh->GetNumFaces() * 3;
+
+				// TODO: 複数メッシュコンテナ対応させるなら考えないとダメ
+				memcpy(indices, dx_indices, mesh->m_indexBuffer->GetIndexStride() * i_num);
+
+				// インデックス読み取り終了
+				c->MeshData.pMesh->UnlockIndexBuffer();
 			}
 
+			// Lumino と X ファイルでは面の正面方向が違う。反転する。
+			if ((dx_indexbuffer_desc.Format == D3DFMT_INDEX16))
+				FlipTriangleFronts<uint16_t>((uint16_t*)indices, all_index_num);
+			else
+				FlipTriangleFronts<uint32_t>((uint32_t*)indices, all_index_num);
+
 			// 書き込み終了
-			core->VertexBuffer->Unlock();
-			core->IndexBuffer->Unlock();
+			mesh->m_vertexBuffer->Unlock();
+			mesh->m_indexBuffer->Unlock();
 
 			//-----------------------------------------------------
 			// マテリアル、属性
 
 			// マテリアル数取得
 			uint32_t attr_num = allocate_hierarchy.getAllMaterialNum();
+			mesh->SetMaterialCount(attr_num);
 
 			// マテリアル、属性配列
-			MaterialList& materials = core->Material.Materials;
-			MeshAttributeList& attributes = core->Material.Attributes;
-			materials.Resize(attr_num);
-			attributes.Resize(attr_num);
+			MaterialList3* materials = mesh->m_materials;
+			MeshAttributeList& attributes = mesh->m_attributes;
 			uint32_t mi = 0;
 			for (DerivedD3DXMeshContainer* c : dx_mesh_containers)
 			{
-				static const DWORD fvf = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1;
+				static const DWORD fvf = D3DFVF_XYZ | D3DFVF_NORMAL/* | D3DFVF_DIFFUSE*/ | D3DFVF_TEX1;
 				if (c->MeshData.pMesh->GetFVF() == fvf)
 				{
 					// 属性テーブルを取得する
@@ -776,12 +717,14 @@ ModelCore* XFileLoader::Load(ModelManager* manager, Stream* stream, const PathNa
 
 					for (uint32_t i = 0; i < c->NumMaterials; ++i, ++mi)
 					{
-						DxMaterialToLnMaterial(c->pMaterials[i].MatD3D, &materials[mi]);
+						DxMaterialToLnMaterial(c->pMaterials[i].MatD3D, materials->GetAt(mi));
 
 						// テクスチャ名がある場合はテクスチャ作成
 						if (!c->TextureNames.IsEmpty() && !c->TextureNames[i].IsEmpty())
 						{
-							materials[mi].Texture.Attach(manager->CreateTexture(parentDir, c->TextureNames[i], flags), false);
+							materials->GetAt(mi)->SetTextureParameter(
+								Material3::MaterialTextureParameter,
+								manager->CreateTexture(parentDir, c->TextureNames[i], flags));
 						}
 
 						// 属性
@@ -790,10 +733,14 @@ ModelCore* XFileLoader::Load(ModelManager* manager, Stream* stream, const PathNa
 						attributes[mi].PrimitiveNum = dx_attrib_table[i].FaceCount;
 					}
 				}
+				else
+				{
+					LN_NOTIMPLEMENTED();
+				}
 			}
 		}
 
-		return core.DetachMove();
+		return mesh;
 	}
 	catch (Exception&)
 	{
@@ -865,25 +812,68 @@ ModelCore* XFileLoader::Load(ModelManager* manager, Stream* stream, const PathNa
 }
 
 //------------------------------------------------------------------------------
-void XFileLoader::DxMaterialToLnMaterial(const D3DMATERIAL9& dx_material, Material* material)
+void XFileLoader::DxMaterialToLnMaterial(const D3DMATERIAL9& dx_material, Material3* material)
 {
-	material->Diffuse.a = dx_material.Diffuse.r;
-	material->Diffuse.g = dx_material.Diffuse.g;
-	material->Diffuse.b = dx_material.Diffuse.b;
-	material->Diffuse.a = dx_material.Diffuse.a;
-	material->Ambient.a = dx_material.Ambient.r;
-	material->Ambient.g = dx_material.Ambient.g;
-	material->Ambient.b = dx_material.Ambient.b;
-	material->Ambient.a = dx_material.Ambient.a;
-	material->Specular.a = dx_material.Specular.r;
-	material->Specular.g = dx_material.Specular.g;
-	material->Specular.b = dx_material.Specular.b;
-	material->Specular.a = dx_material.Specular.a;
-	material->Emissive.a = dx_material.Emissive.r;
-	material->Emissive.g = dx_material.Emissive.g;
-	material->Emissive.b = dx_material.Emissive.b;
-	material->Emissive.a = dx_material.Emissive.a;
-	material->Power = dx_material.Power;
+	material->SetColorParameter(
+		Material3::DiffuseParameter,
+		dx_material.Diffuse.r,
+		dx_material.Diffuse.g,
+		dx_material.Diffuse.b,
+		dx_material.Diffuse.a);
+
+	material->SetColorParameter(
+		Material3::AmbientParameter,
+		dx_material.Ambient.r,
+		dx_material.Ambient.g,
+		dx_material.Ambient.b,
+		dx_material.Ambient.a);
+
+	material->SetColorParameter(
+		Material3::SpecularParameter,
+		dx_material.Specular.r,
+		dx_material.Specular.g,
+		dx_material.Specular.b,
+		dx_material.Specular.a);
+
+	material->SetColorParameter(
+		Material3::EmissiveParameter,
+		dx_material.Emissive.r,
+		dx_material.Emissive.g,
+		dx_material.Emissive.b,
+		dx_material.Emissive.a);
+
+	material->SetFloatParameter(
+		Material3::PowerParameter,
+		dx_material.Power);
+}
+
+//------------------------------------------------------------------------------
+void XFileLoader::ConvertVertex_Pos_Normal_UV(Vertex* lnVB, XFileVertex_Pos_Normal_UV* dxVB, uint32_t count)
+{
+	for (uint32_t i = 0; i < count; ++i)
+	{
+		lnVB[i].position = dxVB[i].position;
+		lnVB[i].normal = dxVB[i].normal;
+		lnVB[i].uv = dxVB[i].uv;
+		lnVB[i].color = Color::White;
+	}
+}
+
+//------------------------------------------------------------------------------
+void XFileLoader::ConvertVertex_Pos_Normal_Color_UV(Vertex* lnVB, XFileVertex_Pos_Normal_Color_UV* dxVB, uint32_t count)
+{
+	for (uint32_t i = 0; i < count; ++i)
+	{
+		lnVB[i].position = dxVB[i].position;
+		lnVB[i].normal = dxVB[i].normal;
+		lnVB[i].uv = dxVB[i].uv;
+		Color32 c(
+			(dxVB[i].color >> 24) & 0xFF,
+			(dxVB[i].color >> 16) & 0xFF,
+			(dxVB[i].color >> 8) & 0xFF,
+			(dxVB[i].color) & 0xFF);
+		lnVB[i].color = Color(c);
+	}
 }
 
 } // namespace detail

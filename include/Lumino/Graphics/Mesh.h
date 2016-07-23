@@ -13,6 +13,15 @@ using StaticMeshModelPtr = RefPtr<StaticMeshModel>;
 using MaterialPtr = RefPtr<Material3>;
 
 
+/// メッシュの属性
+struct MeshAttribute
+{
+	int		MaterialIndex;  ///< 対応するマテリアル番号
+	int		StartIndex;     ///< 開始インデックス
+	int		PrimitiveNum;   ///< 描画プリミティブ数 (三角形の数)
+};
+typedef Array<MeshAttribute>		MeshAttributeList;
+
 /**
 	@brief
 */
@@ -20,6 +29,14 @@ class Material3	// TODO: Scene の Material のベースクラスにしたい
 	: public Object
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+	static const String DiffuseParameter;
+	static const String AmbientParameter;
+	static const String SpecularParameter;
+	static const String EmissiveParameter;
+	static const String PowerParameter;
+	static const String MaterialTextureParameter;
+
 public:
 	static MaterialPtr Create();
 
@@ -33,6 +50,7 @@ public:
 	void SetMatrixParameter(const StringRef& name, const Matrix& value);
 	void SetTextureParameter(const StringRef& name, Texture* value);
 	void SetColorParameter(const StringRef& name, const Color& value);
+	void SetColorParameter(const StringRef& name, float r, float g, float b, float a);
 	
 protected:
 	Material3();
@@ -89,11 +107,25 @@ LN_INTERNAL_ACCESS:
 /**
 	@brief
 */
+class MaterialList3
+	: public tr::ReflectionObjectList<Material3*>	// SubMaterials (0 の場合もある)
+{
+LN_INTERNAL_ACCESS:
+	MaterialList3();
+	virtual ~MaterialList3();
+};
+
+/**
+	@brief
+*/
 class StaticMeshModel
 	: public Object
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
+
+	void SetMaterialCount(int count);
+
 
 LN_INTERNAL_ACCESS:
 	StaticMeshModel();
@@ -101,6 +133,7 @@ LN_INTERNAL_ACCESS:
 	void Initialize(GraphicsManager* manager);
 	void CreateBox(const Vector3& size);
 
+	int GetSubsetCount() const { return m_attributes.GetCount(); }
 	void Draw(GraphicsContext* g);
 
 	 
@@ -108,7 +141,9 @@ LN_INTERNAL_ACCESS:
 	RefPtr<VertexDeclaration>	m_vertexDeclaration;
 	RefPtr<VertexBuffer>		m_vertexBuffer;
 	RefPtr<IndexBuffer>			m_indexBuffer;
-	int							m_triangleCount;
+
+	RefPtr<MaterialList3>		m_materials;
+	MeshAttributeList			m_attributes;
 };
 
 LN_NAMESPACE_END

@@ -92,7 +92,7 @@ void FrameRectRendererCore::Draw(const RectF& rect)
 
 	FrameTextureBrush* brush = m_state.brush;
 	Driver::ITexture* srcTexture = brush->GetTexture()->GetDeviceObject();
-	if (srcTexture == nullptr) srcTexture = m_manager->GetDummyTexture();
+	if (srcTexture == nullptr) srcTexture = m_manager->GetDummyDeviceTexture();
 
 
 	// ˜g
@@ -135,7 +135,7 @@ void FrameRectRendererCore::Draw(const RectF& rect)
 		m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
 		m_shader.varTone->SetVector(ToneF());
 		m_shader.varTexture->SetTexture(srcTexture);
-		m_shader.varGlyphMaskSampler->SetTexture(m_manager->GetDummyTexture());
+		m_shader.varGlyphMaskSampler->SetTexture(m_manager->GetDummyDeviceTexture());
 		m_shader.pass->Apply();
 		m_renderer->SetVertexDeclaration(m_vertexDeclaration);
 		m_renderer->SetVertexBuffer(0, m_vertexBuffer);

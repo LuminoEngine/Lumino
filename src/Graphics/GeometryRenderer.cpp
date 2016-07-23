@@ -1090,8 +1090,8 @@ void DrawingContextImpl::Flush()
 		m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
 		m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
 
-		m_shader3D.varTexture->SetTexture(m_currentState.Brush.SelectTexutre(m_manager->GetDummyTexture()));
-		m_shader3D.varGlyphMaskSampler->SetTexture(m_manager->GetDummyTexture());
+		m_shader3D.varTexture->SetTexture(m_currentState.Brush.SelectTexutre(m_manager->GetDummyDeviceTexture()));
+		m_shader3D.varGlyphMaskSampler->SetTexture(m_manager->GetDummyDeviceTexture());
 		m_shader3D.passP0->Apply();
 		renderer->SetVertexDeclaration(m_vertexDeclaration);
 		renderer->SetVertexBuffer(0, m_vertexBuffer);
@@ -1135,7 +1135,7 @@ void DrawingContextImpl::ExpandGeometriesFill()
 	RectF srcUVRect = RectF::Zero;
 	bool isImageBorder = false;
 	ThicknessF imageBorderThickness;
-	Driver::ITexture* texture = m_manager->GetDummyTexture();
+	Driver::ITexture* texture = m_manager->GetDummyDeviceTexture();
 	if (m_currentState.Brush.Type == BrushType_Texture)
 	{
 		const Size& size = m_currentState.Brush.TextureBrush.Texture->GetRealSize();

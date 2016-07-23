@@ -110,7 +110,7 @@
 #include "../Internal.h"
 #include <Lumino/IO/FileManager.h>
 #include <Lumino/Graphics/Texture.h>
-#include "ModelCore.h"
+//#include "ModelCore.h"
 #if defined(LN_OS_WIN32)
 #include "XFileLoader.h"
 #endif
@@ -197,11 +197,11 @@ ModelManager::~ModelManager()
 }
 
 //------------------------------------------------------------------------------
-void ModelManager::Initialize(const Settings& configData)
+void ModelManager::Initialize(const ConfigData& configData)
 {
-	m_fileManager = configData.FileManager;
-	m_physicsManager = configData.PhysicsManager;
-	m_graphicsManager = configData.GraphicsManager;
+	m_fileManager = configData.fileManager;
+	m_physicsManager = configData.physicsManager;
+	m_graphicsManager = configData.graphicsManager;
 
 	MemoryStream data1(toon01Data, toon01DataLen);
 	m_mmdDefaultToonTexture[0] = LN_NEW Texture2D();
@@ -251,7 +251,7 @@ Texture2D* ModelManager::GetMMDDefaultToonTexture(int index)
 }
 
 //------------------------------------------------------------------------------
-ModelCore* ModelManager::CreateModelCore(const PathName& filePath)
+RefPtr<StaticMeshModel> ModelManager::CreateModelCore(const PathName& filePath)
 {
 #if defined(LN_OS_WIN32)
 	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath), false);
@@ -260,11 +260,11 @@ ModelCore* ModelManager::CreateModelCore(const PathName& filePath)
 	//RefPtr<ModelCore> modelCore(loader.Load(this, stream, filePath.GetParent(), true));
 	
 	XFileLoader loader;
-	RefPtr<ModelCore> modelCore(loader.Load(this, stream, filePath.GetParent(), true, ModelCreationFlag::None), false);
+	RefPtr<StaticMeshModel> mesh = loader.Load(this, stream, filePath.GetParent(), true, ModelCreationFlag::None);
 
-	modelCore->RefreshInitialValues();
-	modelCore.SafeAddRef();
-	return modelCore;
+	//modelCore->RefreshInitialValues();
+	//modelCore.SafeAddRef();
+	return mesh;
 #else
     LN_NOTIMPLEMENTED();
     return nullptr;
@@ -297,7 +297,7 @@ Animation::AnimationClip* ModelManager::CreateMotion(const PathName& filePath)
 #endif
 
 //------------------------------------------------------------------------------
-Texture* ModelManager::CreateTexture(const PathName& parentDir, const StringRef& filePath, ModelCreationFlag flags)
+RefPtr<Texture> ModelManager::CreateTexture(const PathName& parentDir, const StringRef& filePath, ModelCreationFlag flags)
 {
 	PathName path(parentDir, filePath.GetBegin());	// TODO GetBegin
 
@@ -305,14 +305,14 @@ Texture* ModelManager::CreateTexture(const PathName& parentDir, const StringRef&
 	if (flags.TestFlag(ModelCreationFlag::IgnoreTextureNotFound))
 	{
 		if (!m_fileManager->ExistsFile(path)) {	// TODO: PathName へ変換するときメモリ確保が走る
-			return NULL;
+			return nullptr;
 		}
 	}
 
 	// TODO: キャッシュが効かない
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
 	tex->Initialize(m_graphicsManager, path, TextureFormat::B8G8R8A8, 1);
-	return tex.DetachMove();
+	return tex;
 }
 
 } // namespace detail

@@ -451,10 +451,10 @@ void MMEShader::UpdateSubsetParams(detail::MaterialInstance* material)
 				var->SetVector(ownerMaterial->EdgeColor);
 				break;
 			case MME_VARREQ_OBJECT_MATERIALTEXTURE:
-				var->SetTexture((ownerMaterial->m_materialTexture != nullptr) ? ownerMaterial->m_materialTexture : m_manager->GetDummyTexture());	// テクスチャがなければダミーを設定
+				var->SetTexture((ownerMaterial->m_materialTexture != nullptr) ? ownerMaterial->m_materialTexture : m_manager->GetDummyWhiteTexture());	// テクスチャがなければダミーを設定
 				break;
 			case MME_VARREQ_OBJECT_MATERIALSPHEREMAP:
-				var->SetTexture((ownerMaterial->m_sphereTexture != nullptr) ? ownerMaterial->m_sphereTexture : m_manager->GetDummyTexture());	// テクスチャがなければダミーを設定
+				var->SetTexture((ownerMaterial->m_sphereTexture != nullptr) ? ownerMaterial->m_sphereTexture : m_manager->GetDummyWhiteTexture());	// テクスチャがなければダミーを設定
 				break;
 			case LN_VARREQ_OPACITY:
 				var->SetFloat(1);	// TODO: 廃止予定

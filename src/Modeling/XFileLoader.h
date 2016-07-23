@@ -2,22 +2,33 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <Lumino/Graphics/Vertex.h>
 #include "Common.h"
 #include "../Graphics/Device/DirectX9/DX9Module.h"
 
 LN_NAMESPACE_BEGIN
+class StaticMeshModel;
+class Material3;
+
+
 namespace detail
 {
 class ModelManager;
 
-struct BasicXFileVertex
-{
-public:
 
-    Vector3		Position;	// 座標
-    Vector3		Normal;		// 法線
-    uint32_t	Color;		// 頂点カラー
-    Vector2		TexUV;		// テクスチャ座標
+struct XFileVertex_Pos_Normal_UV
+{
+	Vector3		position;
+	Vector3		normal;
+	Vector2		uv;
+};
+
+struct XFileVertex_Pos_Normal_Color_UV
+{
+	Vector3		position;
+	Vector3		normal;
+	uint32_t	color;
+	Vector2		uv;
 };
 
 struct DerivedD3DXFrame
@@ -134,9 +145,6 @@ private:
 
 	/// メモリを確保して文字列を格納する (フレーム等の名前格納用)
 	HRESULT _allocateName( const char* name_, char** out_name_ );
-
-	/// メッシュに法線・頂点色があるかどうか調べて、無ければメッシュを作りなおす
-	HRESULT _checkMeshFormat( ID3DXMesh* dx_mesh_, bool* converted_, ID3DXMesh** out_mesh_ );
 	
 	/// マテリアル情報・隣接情報をコンテナに登録する
 	HRESULT _registMaterialData(
@@ -164,8 +172,11 @@ private:
 class XFileLoader
 {
 public:
-	ModelCore* Load(ModelManager* manager, Stream* stream, const PathName& parentDir, bool isDynamic, ModelCreationFlag flags);
-	void DxMaterialToLnMaterial(const D3DMATERIAL9& dx_material, Material* material);
+	RefPtr<StaticMeshModel> Load(ModelManager* manager, Stream* stream, const PathName& parentDir, bool isDynamic, ModelCreationFlag flags);
+	static void DxMaterialToLnMaterial(const D3DMATERIAL9& dx_material, Material3* material);
+
+	static void ConvertVertex_Pos_Normal_UV(Vertex* lnVB, XFileVertex_Pos_Normal_UV* dxVB, uint32_t count);
+	static void ConvertVertex_Pos_Normal_Color_UV(Vertex* lnVB, XFileVertex_Pos_Normal_Color_UV* dxVB, uint32_t count);
 };
 
 } // namespace detail

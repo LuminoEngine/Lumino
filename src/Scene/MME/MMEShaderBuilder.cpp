@@ -745,7 +745,7 @@ ShaderVariable* MMEShaderBuilder::GetAnnotationByName(ShaderVariable* var, const
 {
 	LN_FOREACH(ShaderVariable* anno, var->GetAnnotations())
 	{
-		if (anno->GetName().Compare(name, -1, CaseSensitivity::CaseInsensitive)) {
+		if (anno->GetName().Compare(name, -1, CaseSensitivity::CaseInsensitive) == 0) {
 			return anno;
 		}
 	}

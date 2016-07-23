@@ -101,6 +101,18 @@ void MaterialList2::Initialize(int subMaterialCount, bool createMainMaterial)
 }
 
 //------------------------------------------------------------------------------
+void MaterialList2::CopyShared(MaterialList3* srcList)
+{
+	LN_CHECK_ARG(srcList != nullptr);
+
+	Resize(srcList->GetCount());
+	for (int i = 0; i < srcList->GetCount(); ++i)
+	{
+		SetAt(i, srcList->GetAt(i));
+	}
+}
+
+//------------------------------------------------------------------------------
 void MaterialList2::UpdateMaterialInstances(SceneGraph* sceneGraph)
 {
 	// m_mainMaterial は親として使える？

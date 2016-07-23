@@ -122,7 +122,7 @@ public:
 protected:
 	VisualNode();
 	virtual ~VisualNode();
-	void Initialize(SceneGraph* owner, int subsetCount);
+	void Initialize(SceneGraph* owner, int subsetCount);	// TODO: ここでサブセット数渡す必要はないかな
 
 LN_INTERNAL_ACCESS:
 	MaterialList2* GetMaterialList() { return m_materialList; }

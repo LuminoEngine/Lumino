@@ -338,7 +338,7 @@ void PrimitiveRendererCore::Flush()
 		{
 			Driver::ITexture* srcTexture = m_foreTexture;
 			if (srcTexture == nullptr) {
-				srcTexture = m_manager->GetDummyTexture();
+				srcTexture = m_manager->GetDummyDeviceTexture();
 			}
 
 			if (m_shader.varPixelStep != nullptr)	// これは DX9 だけ
