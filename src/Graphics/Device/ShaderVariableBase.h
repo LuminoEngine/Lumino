@@ -42,10 +42,12 @@ public:
 	virtual int GetArrayElements() const { return m_desc.Elements; }
 	virtual void SetBool(bool value);
 	virtual bool GetBool();
+	virtual void SetBoolArray(const bool* values, int count);
 	virtual void SetInt(int value);
 	virtual int GetInt();
 	virtual void SetFloat(float value);
 	virtual float GetFloat();
+	virtual void SetFloatArray(const float* values, int count);
 	virtual void SetVector(const Vector4& vec);
 	virtual const Vector4& GetVector();
 	virtual void SetVectorArray(const Vector4* vectors, int count);

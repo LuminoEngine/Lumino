@@ -50,6 +50,12 @@ public:
 	/// スポットライトのコーン角度の取得 (ラジアン単位)
 	float GetSpotAngle() const { return m_spotAngle; }
 
+	/// [Advanced]
+	void SetShadowZFar(float z) { m_shadowZFar = z; }
+
+	/// [Advanced]
+	float GetShadowZFar() const { return m_shadowZFar; }
+
 public:	// internal
 
 	/// 各行列を更新する (SceneNode::UpdateFrameHierarchy() の後で呼び出すこと)
@@ -59,6 +65,7 @@ public:	// internal
 	const Vector4& GetDirectionInternal() const { return m_direction; }
 
 	// 行列の取得 (シェーダ設定用。UpdateMatrices() の後で呼び出すこと)
+	const Matrix& GetWorldViewProj() const { return m_worldViewProjMatrix; }
 	const Matrix& GetViewMatrix() const { return m_viewMatrix; }
 	const Matrix& GetProjectionMatrix() const { return m_projMatrix; }
 	const Matrix& GetViewProjectionMatrix() const { return m_viewProjMatrix; }
@@ -84,6 +91,7 @@ private:
 	Color	m_specular;			///< スペキュラカラー
 	bool				m_enabled;			///< 有効状態
 	float				m_spotAngle;		///< コーン角度 (ラジアン単位)
+	float				m_shadowZFar;
 
 	Matrix				m_viewMatrix;		///< ビュー行列
 	Matrix				m_projMatrix;		///< プロジェクション行列
@@ -92,6 +100,7 @@ private:
 
 	// 以下はシェーダ変数への設定用。ライトは個々のノードに比べて参照される回数が多いので
 	// 必要になるたびに計算するのではなく、あらかじめ計算しておく。
+	Matrix				m_worldViewProjMatrix;
 	Matrix				m_viewMatrixI;		///< ビュー行列 (Inverse)
 	Matrix				m_projMatrixI;		///< プロジェクション行列 (Inverse)
 	Matrix				m_viewProjMatrixI;	///< ビュー行列とプロジェクション行列の積 (Inverse)

@@ -118,6 +118,7 @@ LN_INTERNAL_ACCESS:
 
 
 // TODO: Driver でも使っている。初期値を保持するため。
+// Material でも使っている。こちらは ManagedTexture を使う。
 class ShaderValue
 {
 public:
@@ -134,8 +135,12 @@ public:
 	bool GetBool() const { return m_value.BoolVal; }
 	void SetInt(int value);
 	int GetInt() const { return m_value.Int; }
+	void SetBoolArray(const bool* values, int count);
+	const bool* GetBoolArray() const { return m_value.BoolArray; }
 	void SetFloat(float value);
 	float GetFloat() const { return m_value.Float; }
+	void SetFloatArray(const float* values, int count);
+	const float* GetFloatArray() const { return m_value.FloatArray; }
 	void SetVector(const Vector4& vec);
 	const Vector4& GetVector() const { return *m_value.Vector; }
 	void SetVectorArray(const Vector4* vectors, int count);
@@ -160,6 +165,8 @@ private:
 	static bool IsBufferCopyType(ShaderVariableType type)
 	{
 		return
+			type == ShaderVariableType_BoolArray ||
+			type == ShaderVariableType_FloatArray ||
 			type == ShaderVariableType_Vector ||
 			type == ShaderVariableType_VectorArray ||
 			type == ShaderVariableType_Matrix ||
@@ -172,8 +179,10 @@ private:
 		union
 		{
 			bool			BoolVal;
+			bool*			BoolArray;
 			int				Int;
 			float			Float;
+			float*			FloatArray;
 			Vector4*		Vector;
 			Vector4*		VectorArray;
 			ln::Matrix*	Matrix;
@@ -224,10 +233,12 @@ public:
 
 	void SetBool(bool value);
 	bool GetBool() const;
+	void SetBoolArray(const bool* values, int count);
 	void SetInt(int value);
 	int GetInt() const;
 	void SetFloat(float value);
 	float GetFloat() const;
+	void SetFloatArray(const float* values, int count);
 	void SetVector(const Vector4& value);
 	const Vector4& GetVector() const;
 	void SetVectorArray(const Vector4* values, int count);

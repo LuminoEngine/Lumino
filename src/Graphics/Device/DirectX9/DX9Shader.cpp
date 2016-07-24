@@ -280,35 +280,19 @@ void D3DXParamDescToLNParamDesc(
 	}
 
 	// 変数クラス
-	if (dx_desc_.Class == D3DXPC_VECTOR ||
-		dx_desc_.Class == D3DXPC_MATRIX_ROWS ||
-		dx_desc_.Class == D3DXPC_MATRIX_COLUMNS)
+	if (dx_desc_.Type == D3DXPT_FLOAT)
 	{
-		if (dx_desc_.Type == D3DXPT_FLOAT) {
-			// 本ライブラリでは Vector と Matrix は float 型しかサポートしていない
-			*type = ShaderVariableType_Unknown;
+		if (dx_desc_.Class == D3DXPC_VECTOR)
+		{
+			*type = ShaderVariableType_Vector;
+		}
+		else if (
+			dx_desc_.Class == D3DXPC_MATRIX_ROWS ||
+			dx_desc_.Class == D3DXPC_MATRIX_COLUMNS)
+		{
+			*type = ShaderVariableType_Matrix;
 		}
 	}
-	//switch (dx_desc_.Class)
-	//{
-	//case D3DXPC_SCALAR:
-	//	break;
-	//case D3DXPC_VECTOR:
-	//	*ln_class_ = LN_SVC_VECTOR;
-	//	break;
-	//case D3DXPC_MATRIX_ROWS:
-	//	*ln_class_ = LN_SVC_MATRIX;
-	//	break;
-	//case D3DXPC_MATRIX_COLUMNS:
-	//	*ln_class_ = LN_SVC_MATRIX;
-	//	break;
-	//case D3DXPC_OBJECT:
-	//	break;
-	//case D3DXPC_STRUCT:
-	//	break;
-	//default:
-	//	break;
-	//}
 }
 
 //------------------------------------------------------------------------------
@@ -323,6 +307,17 @@ void DX9ShaderVariable::GetValue(ID3DXEffect* dxEffect, D3DXHANDLE handle, Shade
 		outValue->SetBool(b != FALSE);
 		break;
 	}
+	case ShaderVariableType_BoolArray:
+	{
+		Array<BOOL> tmp1;
+		std::vector<bool> tmp2;	// TODO: Array<bool> がつかえないので
+		tmp1.Resize(desc.Elements);
+		tmp2.resize(desc.Elements);
+		LN_COMCALL(dxEffect->GetBoolArray(handle, (BOOL*)&tmp1[0], desc.Elements));
+		for (int i = 0; i < desc.Elements; ++i) tmp2[i] = (tmp1[i] != FALSE);
+		outValue->SetBoolArray((bool*)&tmp2[0], desc.Elements);	
+		break;
+	}
 	case ShaderVariableType_Int:
 	{
 		INT v;
@@ -335,6 +330,12 @@ void DX9ShaderVariable::GetValue(ID3DXEffect* dxEffect, D3DXHANDLE handle, Shade
 		FLOAT v;
 		LN_COMCALL(dxEffect->GetFloat(handle, &v));
 		outValue->SetFloat(v);
+		break;
+	}
+	case ShaderVariableType_FloatArray:
+	{
+		outValue->SetFloatArray(NULL, desc.Elements);	// reserve
+		LN_COMCALL(dxEffect->GetFloatArray(handle, (FLOAT*)outValue->GetDataBuffer(), desc.Elements));
 		break;
 	}
 	case ShaderVariableType_Vector:
@@ -365,7 +366,8 @@ void DX9ShaderVariable::GetValue(ID3DXEffect* dxEffect, D3DXHANDLE handle, Shade
 	}
 	case ShaderVariableType_DeviceTexture:
 	{
-		// Texture 型の初期値は NULL
+		// Texture 型の初期値は NULL。変数の型をセットするため、明示的にセットしておく。
+		outValue->SetDeviceTexture(NULL);
 		break;
 	}
 	case ShaderVariableType_String:
@@ -399,13 +401,17 @@ DX9ShaderVariable::DX9ShaderVariable(DX9Shader* owner, D3DXHANDLE handle)
 	desc.Elements = dxDesc.Elements;
 	desc.Shared = (dxDesc.Flags & D3DX_PARAMETER_SHARED);
 
-	// Vector と Matrix は配列要素数があれば VectorArray, MatrixArray になる
-	if (desc.Type == ShaderVariableType_Vector ||
+	// 配列要素数があれば Array になる
+	if (desc.Type == ShaderVariableType_Bool ||
+		desc.Type == ShaderVariableType_Float ||
+		desc.Type == ShaderVariableType_Vector ||
 		desc.Type == ShaderVariableType_Matrix)
 	{
 		if (desc.Elements > 0)
 		{
-			if (desc.Type == ShaderVariableType_Vector)			desc.Type = ShaderVariableType_VectorArray;
+			if (desc.Type == ShaderVariableType_Bool)			desc.Type = ShaderVariableType_BoolArray;
+			else if (desc.Type == ShaderVariableType_Float)		desc.Type = ShaderVariableType_FloatArray;
+			else if (desc.Type == ShaderVariableType_Vector)	desc.Type = ShaderVariableType_VectorArray;
 			else if (desc.Type == ShaderVariableType_Matrix)	desc.Type = ShaderVariableType_MatrixArray;
 		}
 	}
@@ -449,6 +455,21 @@ void DX9ShaderVariable::SetBool(bool value)
 }
 
 //------------------------------------------------------------------------------
+void DX9ShaderVariable::SetBoolArray(const bool* values, int count)
+{
+	if (count > 0)
+	{
+		m_temp.Resize(count);
+		for (int i = 0; i < count; ++i)
+		{
+			m_temp[i] = values[i];
+		}
+		LN_COMCALL(m_dxEffect->SetBoolArray(m_handle, &m_temp[0], count));
+	}
+	ShaderVariableBase::SetBoolArray(values, count);
+}
+
+//------------------------------------------------------------------------------
 void DX9ShaderVariable::SetInt(int value)
 {
 	LN_COMCALL(m_dxEffect->SetInt(m_handle, value));
@@ -460,6 +481,13 @@ void DX9ShaderVariable::SetFloat(float value)
 {
 	LN_COMCALL(m_dxEffect->SetFloat(m_handle, value));
 	ShaderVariableBase::SetFloat(value);
+}
+
+//------------------------------------------------------------------------------
+void DX9ShaderVariable::SetFloatArray(const float* values, int count)
+{
+	LN_COMCALL(m_dxEffect->SetFloatArray(m_handle, values, count));
+	ShaderVariableBase::SetFloatArray(values, count);
 }
 
 //------------------------------------------------------------------------------
@@ -497,7 +525,7 @@ void DX9ShaderVariable::SetTexture(ITexture* texture)
 		LN_COMCALL(m_dxEffect->SetTexture(m_handle, static_cast<DX9TextureBase*>(texture)->GetIDirect3DTexture9()));
 	}
 	else {
-		LN_COMCALL(m_dxEffect->SetTexture(m_handle, NULL));
+		m_dxEffect->SetTexture(m_handle, NULL);
 	}
 	ShaderVariableBase::SetTexture(texture);
 }

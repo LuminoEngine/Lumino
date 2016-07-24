@@ -38,6 +38,7 @@ private:
 	//SceneNode*		m_default2DRoot;
 
 	Camera*			m_default3DCamera;
+	Light*			m_defaultLight;
 
 
 	//Camera*			m_default2DCamera;

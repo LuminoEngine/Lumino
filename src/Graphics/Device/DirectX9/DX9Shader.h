@@ -47,21 +47,6 @@ private:
 	Array<DX9ShaderVariable*>		m_variables;
 	Array<DX9ShaderVariable*>		m_textureVariables;	// GetSamplerState の検索を早くするため、テクスチャ型のものはここに覚えておく
 	Array<DX9ShaderTechnique*>		m_techniques;
-
-
-
-	//DX9GraphicsDevice*		mGraphicsDevice;
- //   ID3DXEffect*            mDxEffect;
- //   LNShaderCompileResult   mCompileResult;
- //   lnRefString             mCompileErrors;
-	//int						mVariableCount;			///< パラメータの数
- //   int						mTechniqueCount;		///< テクニックの数
-
-	//DX9ShaderTechniqueArray	mShaderTechniqueArray;
- //   DX9ShaderTechniqueMap	mShaderTechniqueMap;
- //   DX9ShaderVariableArray	mShaderVariableArray;
- //   DX9ShaderVariableMap	mShaderVariableMap;
- //   DX9ShaderVariableArray	mTextureVariableArray;  ///< (サンプラステート実装のための検索対象)
 };
 
 /// シェーダ変数
@@ -77,8 +62,10 @@ public:
 
 public:
 	virtual void SetBool(bool value);
+	virtual void SetBoolArray(const bool* values, int count);
 	virtual void SetInt(int value);
 	virtual void SetFloat(float value);
+	virtual void SetFloatArray(const float* values, int count);
 	virtual void SetVector(const Vector4& vec);
 	virtual void SetVectorArray(const Vector4* vectors, int count);
 	virtual void SetMatrix(const Matrix& matrix);
@@ -91,6 +78,7 @@ private:
 	ID3DXEffect*					m_dxEffect;
 	D3DXHANDLE						m_handle;
 	Array<DX9ShaderAnnotation*>		m_annotations;
+	Array<BOOL>						m_temp;
 };
 
 /// アノテーション

@@ -32,8 +32,6 @@ void ShaderVariableBase::Initialize(ShaderVariableTypeDesc desc, const String& n
 }
 
 //------------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------;
 void ShaderVariableBase::SetBool(bool value)
 {
 	m_value.SetBool(value);
@@ -44,6 +42,13 @@ void ShaderVariableBase::SetBool(bool value)
 bool ShaderVariableBase::GetBool()
 {
 	return m_value.GetBool();
+}
+
+//------------------------------------------------------------------------------
+void ShaderVariableBase::SetBoolArray(const bool* values, int count)
+{
+	m_value.SetBoolArray(values, count);
+	m_modifid = true;
 }
 
 //------------------------------------------------------------------------------
@@ -70,6 +75,13 @@ void ShaderVariableBase::SetFloat(float value)
 float ShaderVariableBase::GetFloat()
 {
 	return m_value.GetFloat();
+}
+
+//------------------------------------------------------------------------------
+void ShaderVariableBase::SetFloatArray(const float* values, int count)
+{
+	m_value.SetFloatArray(values, count);
+	m_modifid = true;
 }
 
 //------------------------------------------------------------------------------

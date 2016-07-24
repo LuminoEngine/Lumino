@@ -78,11 +78,11 @@ static LNVerNameDesc g_MMESemanticTable[ MME_MAX_SEMANTICS ] =
     { _T( "STANDARDSGLOBAL" ),          NULL },
 
 	// MMM
-	//{ _T("LIGHTWVPMATRICES"),	NULL },
-	//{ _T("LIGHTPOSITIONS"),		NULL },
-	//{ _T("LIGHTDIRECTIONS"),	NULL },
-	//{ _T("LIGHTENABLES"),		NULL },
-	//{ _T("LIGHTZFARS"),			NULL },
+	{ _T("LIGHTWVPMATRICES"),	NULL },
+	{ _T("LIGHTPOSITIONS"),		NULL },
+	{ _T("LIGHTDIRECTIONS"),	NULL },
+	{ _T("LIGHTENABLES"),		NULL },
+	{ _T("LIGHTZFARS"),			NULL },
 
     // 以下は独自仕様
     //{ _T( "ORTHOGRAPHIC" ),    _T( "gMatrix_wt" ) },
@@ -231,404 +231,412 @@ void MMEShaderBuilder::CheckVariableRequest(
 	//MMESemanticsMap::const_iterator end = semantics_map_.end();
 	//const LNShaderVariableTypeDesc& var_desc = var->getTypeDesc();  // 変数の型情報
 
-
-	//name = var->getSemanticName();
 	int r;
 
 	switch (GetMMESemanticBySemanticName(var->GetSemanticName()))
 	{
 		/////////////////////////////////////// 変換行列
-	case MME_SEMANTIC_WORLD:
-		req = MME_VARREQ_MATRIX_World;
-		break;
-	case MME_SEMANTIC_VIEW:
-		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_View : MME_VARREQ_MATRIX_LIGHT_View;
-		break;
-	case MME_SEMANTIC_PROJECTION:
-		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_Proj : MME_VARREQ_MATRIX_LIGHT_Proj;
-		break;
-	case MME_SEMANTIC_WORLDVIEW:
-		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_WorldView : MME_VARREQ_MATRIX_LIGHT_WorldView;
-		break;
-	case MME_SEMANTIC_VIEWPROJECTION:
-		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_ViewProj : MME_VARREQ_MATRIX_LIGHT_ViewProj;
-		break;
-	case MME_SEMANTIC_WORLDVIEWPROJECTION:
-		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_WorldViewProj : MME_VARREQ_MATRIX_LIGHT_WorldViewProj;
-		break;
+		case MME_SEMANTIC_WORLD:
+			req = MME_VARREQ_MATRIX_World;
+			break;
+		case MME_SEMANTIC_VIEW:
+			req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_View : MME_VARREQ_MATRIX_LIGHT_View;
+			break;
+		case MME_SEMANTIC_PROJECTION:
+			req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_Proj : MME_VARREQ_MATRIX_LIGHT_Proj;
+			break;
+		case MME_SEMANTIC_WORLDVIEW:
+			req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_WorldView : MME_VARREQ_MATRIX_LIGHT_WorldView;
+			break;
+		case MME_SEMANTIC_VIEWPROJECTION:
+			req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_ViewProj : MME_VARREQ_MATRIX_LIGHT_ViewProj;
+			break;
+		case MME_SEMANTIC_WORLDVIEWPROJECTION:
+			req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_WorldViewProj : MME_VARREQ_MATRIX_LIGHT_WorldViewProj;
+			break;
 
 		///////////////////////////////////////  逆行列
-	case MME_SEMANTIC_WORLD_I:
-		req = MME_VARREQ_MATRIX_World_I;
-		break;
-	case MME_SEMANTIC_VIEW_I:
-		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_View_I : MME_VARREQ_MATRIX_LIGHT_View_I;
-		break;
-	case MME_SEMANTIC_PROJECTION_I:
-		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_Proj_I : MME_VARREQ_MATRIX_LIGHT_Proj_I;
-		break;
-	case MME_SEMANTIC_WORLDVIEW_I:
-		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_WorldView_I : MME_VARREQ_MATRIX_LIGHT_WorldView_I;
-		break;
-	case MME_SEMANTIC_VIEWPROJECTION_I:
-		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_ViewProj_I : MME_VARREQ_MATRIX_LIGHT_ViewProj_I;
-		break;
-	case MME_SEMANTIC_WORLDVIEWPROJECTION_I:
-		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_WorldViewProj_I : MME_VARREQ_MATRIX_LIGHT_WorldViewProj_I;
-		break;
+		case MME_SEMANTIC_WORLD_I:
+			req = MME_VARREQ_MATRIX_World_I;
+			break;
+		case MME_SEMANTIC_VIEW_I:
+			req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_View_I : MME_VARREQ_MATRIX_LIGHT_View_I;
+			break;
+		case MME_SEMANTIC_PROJECTION_I:
+			req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_Proj_I : MME_VARREQ_MATRIX_LIGHT_Proj_I;
+			break;
+		case MME_SEMANTIC_WORLDVIEW_I:
+			req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_WorldView_I : MME_VARREQ_MATRIX_LIGHT_WorldView_I;
+			break;
+		case MME_SEMANTIC_VIEWPROJECTION_I:
+			req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_ViewProj_I : MME_VARREQ_MATRIX_LIGHT_ViewProj_I;
+			break;
+		case MME_SEMANTIC_WORLDVIEWPROJECTION_I:
+			req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_WorldViewProj_I : MME_VARREQ_MATRIX_LIGHT_WorldViewProj_I;
+			break;
 
 		///////////////////////////////////////  転置行列
-	case MME_SEMANTIC_WORLD_T:
-		req = MME_VARREQ_MATRIX_World_T;
-		break;
-	case MME_SEMANTIC_VIEW_T:
-		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_View_T : MME_VARREQ_MATRIX_LIGHT_View_T;
-		break;
-	case MME_SEMANTIC_PROJECTION_T:
-		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_Proj_T : MME_VARREQ_MATRIX_LIGHT_Proj_T;
-		break;
-	case MME_SEMANTIC_WORLDVIEW_T:
-		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_WorldView_T : MME_VARREQ_MATRIX_LIGHT_WorldView_T;
-		break;
-	case MME_SEMANTIC_VIEWPROJECTION_T:
-		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_ViewProj_T : MME_VARREQ_MATRIX_LIGHT_ViewProj_T;
-		break;
-	case MME_SEMANTIC_WORLDVIEWPROJECTION_T:
-		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_WorldViewProj_T : MME_VARREQ_MATRIX_LIGHT_WorldViewProj_T;
-		break;
+		case MME_SEMANTIC_WORLD_T:
+			req = MME_VARREQ_MATRIX_World_T;
+			break;
+		case MME_SEMANTIC_VIEW_T:
+			req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_View_T : MME_VARREQ_MATRIX_LIGHT_View_T;
+			break;
+		case MME_SEMANTIC_PROJECTION_T:
+			req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_Proj_T : MME_VARREQ_MATRIX_LIGHT_Proj_T;
+			break;
+		case MME_SEMANTIC_WORLDVIEW_T:
+			req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_WorldView_T : MME_VARREQ_MATRIX_LIGHT_WorldView_T;
+			break;
+		case MME_SEMANTIC_VIEWPROJECTION_T:
+			req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_ViewProj_T : MME_VARREQ_MATRIX_LIGHT_ViewProj_T;
+			break;
+		case MME_SEMANTIC_WORLDVIEWPROJECTION_T:
+			req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_WorldViewProj_T : MME_VARREQ_MATRIX_LIGHT_WorldViewProj_T;
+			break;
 
 		///////////////////////////////////////  逆行列×転置行列
-	case MME_SEMANTIC_WORLD_IT:
-		req = MME_VARREQ_MATRIX_World_IT;
-		break;
-	case MME_SEMANTIC_VIEW_IT:
-		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_View_IT : MME_VARREQ_MATRIX_LIGHT_View_IT;
-		break;
-	case MME_SEMANTIC_PROJECTION_IT:
-		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_Proj_IT : MME_VARREQ_MATRIX_LIGHT_Proj_IT;
-		break;
-	case MME_SEMANTIC_WORLDVIEW_IT:
-		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_WorldView_IT : MME_VARREQ_MATRIX_LIGHT_WorldView_IT;
-		break;
-	case MME_SEMANTIC_VIEWPROJECTION_IT:
-		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_ViewProj_IT : MME_VARREQ_MATRIX_LIGHT_ViewProj_IT;
-		break;
-	case MME_SEMANTIC_WORLDVIEWPROJECTION_IT:
-		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_WorldViewProj_IT : MME_VARREQ_MATRIX_LIGHT_WorldViewProj_IT;
-		break;
+		case MME_SEMANTIC_WORLD_IT:
+			req = MME_VARREQ_MATRIX_World_IT;
+			break;
+		case MME_SEMANTIC_VIEW_IT:
+			req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_View_IT : MME_VARREQ_MATRIX_LIGHT_View_IT;
+			break;
+		case MME_SEMANTIC_PROJECTION_IT:
+			req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_Proj_IT : MME_VARREQ_MATRIX_LIGHT_Proj_IT;
+			break;
+		case MME_SEMANTIC_WORLDVIEW_IT:
+			req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_WorldView_IT : MME_VARREQ_MATRIX_LIGHT_WorldView_IT;
+			break;
+		case MME_SEMANTIC_VIEWPROJECTION_IT:
+			req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_ViewProj_IT : MME_VARREQ_MATRIX_LIGHT_ViewProj_IT;
+			break;
+		case MME_SEMANTIC_WORLDVIEWPROJECTION_IT:
+			req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_WorldViewProj_IT : MME_VARREQ_MATRIX_LIGHT_WorldViewProj_IT;
+			break;
 
 		/////////////////////////////////////// 色
-	case MME_SEMANTIC_DIFFUSE:
-		r = CheckAnnotationGeometryOrLight(var);
-		if (r != 0) {
-			req = (r == 1) ? MME_VARREQ_OBJECT_DIFFUSE : MME_VARREQ_LIGHT_DIFFUSE;
-		}
-		break;
+		case MME_SEMANTIC_DIFFUSE:
+			r = CheckAnnotationGeometryOrLight(var);
+			if (r != 0) {
+				req = (r == 1) ? MME_VARREQ_OBJECT_DIFFUSE : MME_VARREQ_LIGHT_DIFFUSE;
+			}
+			break;
 
-	case MME_SEMANTIC_AMBIENT:
-		r = CheckAnnotationGeometryOrLight(var);
-		if (r != 0) {
-			req = (r == 1) ? MME_VARREQ_OBJECT_AMBIENT : MME_VARREQ_LIGHT_AMBIENT;
-		}
-		break;
+		case MME_SEMANTIC_AMBIENT:
+			r = CheckAnnotationGeometryOrLight(var);
+			if (r != 0) {
+				req = (r == 1) ? MME_VARREQ_OBJECT_AMBIENT : MME_VARREQ_LIGHT_AMBIENT;
+			}
+			break;
 
-	case MME_SEMANTIC_EMISSIVE:
-		req = MME_VARREQ_OBJECT_EMISSIVE;
-		break;
+		case MME_SEMANTIC_EMISSIVE:
+			req = MME_VARREQ_OBJECT_EMISSIVE;
+			break;
 
-	case MME_SEMANTIC_SPECULAR:
-		r = CheckAnnotationGeometryOrLight(var);
-		if (r != 0) {
-			req = (r == 1) ? MME_VARREQ_OBJECT_SPECULAR : MME_VARREQ_LIGHT_SPECULAR;
-		}
-		break;
+		case MME_SEMANTIC_SPECULAR:
+			r = CheckAnnotationGeometryOrLight(var);
+			if (r != 0) {
+				req = (r == 1) ? MME_VARREQ_OBJECT_SPECULAR : MME_VARREQ_LIGHT_SPECULAR;
+			}
+			break;
 
-	case MME_SEMANTIC_SPECULARPOWER:
-		req = MME_VARREQ_OBJECT_SPECULARPOWER;
-		break;
+		case MME_SEMANTIC_SPECULARPOWER:
+			req = MME_VARREQ_OBJECT_SPECULARPOWER;
+			break;
 
-	case MME_SEMANTIC_TOONCOLOR:
-		req = MME_VARREQ_OBJECT_TOONCOLOR;
-		break;
+		case MME_SEMANTIC_TOONCOLOR:
+			req = MME_VARREQ_OBJECT_TOONCOLOR;
+			break;
 
-	case MME_SEMANTIC_EDGECOLOR:
-		req = MME_VARREQ_OBJECT_EDGECOLOR;
-		break;
+		case MME_SEMANTIC_EDGECOLOR:
+			req = MME_VARREQ_OBJECT_EDGECOLOR;
+			break;
 
 		/////////////////////////////////////// 位置・向き
-	case MME_SEMANTIC_POSITION:
-		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_CAMERA_POSITION : MME_VARREQ_LIGHT_POSITION;
-		break;
+		case MME_SEMANTIC_POSITION:
+			req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_CAMERA_POSITION : MME_VARREQ_LIGHT_POSITION;
+			break;
 
-	case MME_SEMANTIC_DIRECTION:
-		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_CAMERA_DIRECTION : MME_VARREQ_LIGHT_DIRECTION;
-		break;
+		case MME_SEMANTIC_DIRECTION:
+			req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_CAMERA_DIRECTION : MME_VARREQ_LIGHT_DIRECTION;
+			break;
 
-		/////////////////////////////////////// マテリアルのテクスチャ
-	case MME_SEMANTIC_MATERIALTEXTURE:
-		req = MME_VARREQ_OBJECT_MATERIALTEXTURE;
-		break;
+			/////////////////////////////////////// マテリアルのテクスチャ
+		case MME_SEMANTIC_MATERIALTEXTURE:
+			req = MME_VARREQ_OBJECT_MATERIALTEXTURE;
+			break;
 
-	case MME_SEMANTIC_MATERIALSPHEREMAP:
-		req = MME_VARREQ_OBJECT_MATERIALSPHEREMAP;
-		break;
+		case MME_SEMANTIC_MATERIALSPHEREMAP:
+			req = MME_VARREQ_OBJECT_MATERIALSPHEREMAP;
+			break;
 
 		/////////////////////////////////////// misc
-	case MME_SEMANTIC_VIEWPORTPIXELSIZE:
-		req = MME_VARREQ_VIEWPORTPIXELSIZE;
-		break;
+		case MME_SEMANTIC_VIEWPORTPIXELSIZE:
+			req = MME_VARREQ_VIEWPORTPIXELSIZE;
+			break;
 
-	case MME_SEMANTIC_TIME:
-		req = MME_VARREQ_TIME;
-		break;
+		case MME_SEMANTIC_TIME:
+			req = MME_VARREQ_TIME;
+			break;
 
-	case MME_SEMANTIC_ELAPSEDTIME:
-		req = MME_VARREQ_ELAPSEDTIME;
-		break;
+		case MME_SEMANTIC_ELAPSEDTIME:
+			req = MME_VARREQ_ELAPSEDTIME;
+			break;
 
 		/////////////////////////////////////// マウス
-	case MME_SEMANTIC_MOUSEPOSITION:
-		req = MME_VARREQ_MOUSEPOSITION;
-		break;
-	case MME_SEMANTIC_LEFTMOUSEDOWN:
-		req = MME_VARREQ_LEFTMOUSEDOWN;
-		break;
-	case MME_SEMANTIC_MIDDLEMOUSEDOWN:
-		req = MME_VARREQ_MIDDLEMOUSEDOWN;
-		break;
-	case MME_SEMANTIC_RIGHTMOUSEDOWN:
-		req = MME_VARREQ_RIGHTMOUSEDOWN;
-		break;
+		case MME_SEMANTIC_MOUSEPOSITION:
+			req = MME_VARREQ_MOUSEPOSITION;
+			break;
+		case MME_SEMANTIC_LEFTMOUSEDOWN:
+			req = MME_VARREQ_LEFTMOUSEDOWN;
+			break;
+		case MME_SEMANTIC_MIDDLEMOUSEDOWN:
+			req = MME_VARREQ_MIDDLEMOUSEDOWN;
+			break;
+		case MME_SEMANTIC_RIGHTMOUSEDOWN:
+			req = MME_VARREQ_RIGHTMOUSEDOWN;
+			break;
 
 		/////////////////////////////////////// CONTROLOBJECT
-	case MME_SEMANTIC_CONTROLOBJECT:
-	{
-		ShaderVariable* name_anno = GetAnnotationByName(var, _T("name"));
-		if (!name_anno) { // TODO: error name は必須
-			break;
-		}
-		// 操作対象の名前として覚えておく
-		sv->ObjectName = name_anno->GetString();
-
-		// "item" をチェック
-		ShaderVariable* anno = GetAnnotationByName(var, _T("item"));
-		if (anno)
+		case MME_SEMANTIC_CONTROLOBJECT:
 		{
-			const TCHAR* item = anno->GetString();
-			if (item)
+			ShaderVariable* name_anno = GetAnnotationByName(var, _T("name"));
+			if (!name_anno) { // TODO: error name は必須
+				break;
+			}
+			// 操作対象の名前として覚えておく
+			sv->ObjectName = name_anno->GetString();
+
+			// "item" をチェック
+			ShaderVariable* anno = GetAnnotationByName(var, _T("item"));
+			if (anno)
 			{
-				if (StringTraits::tcsicmp(item, _T("X")) == 0)
+				const TCHAR* item = anno->GetString();
+				if (item)
 				{
-					req = MME_VARREQ_CONTROLOBJECT_X;
-				}
-				else if (StringTraits::tcsicmp(item, _T("Y")) == 0)
+					if (StringTraits::tcsicmp(item, _T("X")) == 0)
+					{
+						req = MME_VARREQ_CONTROLOBJECT_X;
+					}
+					else if (StringTraits::tcsicmp(item, _T("Y")) == 0)
+					{
+						req = MME_VARREQ_CONTROLOBJECT_Y;
+					}
+					else if (StringTraits::tcsicmp(item, _T("Y")) == 0)
+					{
+						req = MME_VARREQ_CONTROLOBJECT_Z;
+					}
+					else if (StringTraits::tcsicmp(item, _T("XYZ")) == 0)
+					{
+						req = MME_VARREQ_CONTROLOBJECT_XYZ;
+					}
+					else if (StringTraits::tcsicmp(item, _T("Rx")) == 0)
+					{
+						req = MME_VARREQ_CONTROLOBJECT_Rx;
+					}
+					else if (StringTraits::tcsicmp(item, _T("Ry")) == 0)
+					{
+						req = MME_VARREQ_CONTROLOBJECT_Ry;
+					}
+					else if (StringTraits::tcsicmp(item, _T("Rz")) == 0)
+					{
+						req = MME_VARREQ_CONTROLOBJECT_Rz;
+					}
+					else if (StringTraits::tcsicmp(item, _T("Rxyz")) == 0)
+					{
+						req = MME_VARREQ_CONTROLOBJECT_Rxyz;
+					}
+					else if (StringTraits::tcsicmp(item, _T("Si")) == 0)
+					{
+						req = MME_VARREQ_CONTROLOBJECT_Si;
+					}
+					else if (StringTraits::tcsicmp(item, _T("Tr")) == 0)
+					{
+						req = MME_VARREQ_CONTROLOBJECT_Tr;
+					}
+					else if (var->GetType() == ShaderVariableType_Float)
+					{
+						// 型が float の場合は表情
+						req = MME_VARREQ_CONTROLOBJECT_MorphBlend;
+						sv->ItemName = item;	// 操作対象の名前として覚えておく
+					}
+					else if (var->GetType() == ShaderVariableType_Vector && var->GetColumns() >= 3)
+					{
+						// float3 4 の場合はボーン位置
+						req = MME_VARREQ_CONTROLOBJECT_BoneOffset;
+						sv->ItemName = item;
+					}
+					else if (var->GetType() == ShaderVariableType_Matrix && var->GetRows() == 4 && var->GetColumns() == 4)
+					{
+						// matrix4x4 の場合はボーン行列
+						req = MME_VARREQ_CONTROLOBJECT_BoneMatrix;
+						sv->ItemName = item;
+					}
+				} // if ( item )
+			} // if ( anno )
+
+			// ここまででまだ req が決まってない場合
+			if (req == MME_VARREQ_NONE)
+			{
+				// 型が bool の場合
+				if (var->GetType() == ShaderVariableType_Bool)
 				{
-					req = MME_VARREQ_CONTROLOBJECT_Y;
+					req = MME_VARREQ_CONTROLOBJECT_Visible;
 				}
-				else if (StringTraits::tcsicmp(item, _T("Y")) == 0)
-				{
-					req = MME_VARREQ_CONTROLOBJECT_Z;
-				}
-				else if (StringTraits::tcsicmp(item, _T("XYZ")) == 0)
-				{
-					req = MME_VARREQ_CONTROLOBJECT_XYZ;
-				}
-				else if (StringTraits::tcsicmp(item, _T("Rx")) == 0)
-				{
-					req = MME_VARREQ_CONTROLOBJECT_Rx;
-				}
-				else if (StringTraits::tcsicmp(item, _T("Ry")) == 0)
-				{
-					req = MME_VARREQ_CONTROLOBJECT_Ry;
-				}
-				else if (StringTraits::tcsicmp(item, _T("Rz")) == 0)
-				{
-					req = MME_VARREQ_CONTROLOBJECT_Rz;
-				}
-				else if (StringTraits::tcsicmp(item, _T("Rxyz")) == 0)
-				{
-					req = MME_VARREQ_CONTROLOBJECT_Rxyz;
-				}
-				else if (StringTraits::tcsicmp(item, _T("Si")) == 0)
-				{
-					req = MME_VARREQ_CONTROLOBJECT_Si;
-				}
-				else if (StringTraits::tcsicmp(item, _T("Tr")) == 0)
-				{
-					req = MME_VARREQ_CONTROLOBJECT_Tr;
-				}
+				// float の場合は拡大率
 				else if (var->GetType() == ShaderVariableType_Float)
 				{
-					// 型が float の場合は表情
-					req = MME_VARREQ_CONTROLOBJECT_MorphBlend;
-					sv->ItemName = item;	// 操作対象の名前として覚えておく
+					req = MME_VARREQ_CONTROLOBJECT_Scale;
 				}
+				// float3 or 4 の場合は位置
 				else if (var->GetType() == ShaderVariableType_Vector && var->GetColumns() >= 3)
 				{
-					// float3 4 の場合はボーン位置
-					req = MME_VARREQ_CONTROLOBJECT_BoneOffset;
-					sv->ItemName = item;
+					req = MME_VARREQ_CONTROLOBJECT_Position;
 				}
+				// matrix4x4 の場合はワールド行列
 				else if (var->GetType() == ShaderVariableType_Matrix && var->GetRows() == 4 && var->GetColumns() == 4)
 				{
-					// matrix4x4 の場合はボーン行列
-					req = MME_VARREQ_CONTROLOBJECT_BoneMatrix;
-					sv->ItemName = item;
+					req = MME_VARREQ_CONTROLOBJECT_World;
 				}
-			} // if ( item )
-		} // if ( anno )
 
-		// ここまででまだ req が決まってない場合
-		if (req == MME_VARREQ_NONE)
-		{
-			// 型が bool の場合
-			if (var->GetType() == ShaderVariableType_Bool)
-			{
-				req = MME_VARREQ_CONTROLOBJECT_Visible;
-			}
-			// float の場合は拡大率
-			else if (var->GetType() == ShaderVariableType_Float)
-			{
-				req = MME_VARREQ_CONTROLOBJECT_Scale;
-			}
-			// float3 or 4 の場合は位置
-			else if (var->GetType() == ShaderVariableType_Vector && var->GetColumns() >= 3)
-			{
-				req = MME_VARREQ_CONTROLOBJECT_Position;
-			}
-			// matrix4x4 の場合はワールド行列
-			else if (var->GetType() == ShaderVariableType_Matrix && var->GetRows() == 4 && var->GetColumns() == 4)
-			{
-				req = MME_VARREQ_CONTROLOBJECT_World;
 			}
 
+			// ここまでで要求項目が見つかっていたら、有効な CONTROLOBJECT
+			if (req != MME_VARREQ_NONE) {
+				*is_controllobject = true;
+			}
+			else {
+				//TODO: 認識できない CONTROLOBJECT
+			}
+
+			break;
 		}
-
-		// ここまでで要求項目が見つかっていたら、有効な CONTROLOBJECT
-		if (req != MME_VARREQ_NONE) {
-			*is_controllobject = true;
-		}
-		else {
-			//TODO: 認識できない CONTROLOBJECT
-		}
-
-		break;
-	}
 
 
 		/////////////////////////////////////// テクスチャ関連
-	case MME_SEMANTIC_RENDERCOLORTARGET:
-		req = MME_VARREQ_RENDERCOLORTARGET;
-		break;
-	case MME_SEMANTIC_RENDERDEPTHSTENCILTARGET:
-		req = MME_VARREQ_RENDERDEPTHSTENCILTARGET;
-		break;
-	case MME_SEMANTIC_ANIMATEDTEXTURE:
-		printf("ANIMATEDTEXTURE セマンティクスは未対応です。\n");	// TODO:
-		req = MME_VARREQ_ANIMATEDTEXTURE;
-		break;
-	case MME_SEMANTIC_OFFSCREENRENDERTARGET:
-		req = MME_VARREQ_OFFSCREENRENDERTARGET;
-		break;
-	case MME_SEMANTIC_TEXTUREVALUE:
-		printf("TEXTUREVALUE セマンティクスは未対応です。\n");	// TODO:
-		req = MME_VARREQ_TEXTUREVALUE;
-		break;
+		case MME_SEMANTIC_RENDERCOLORTARGET:
+			req = MME_VARREQ_RENDERCOLORTARGET;
+			break;
+		case MME_SEMANTIC_RENDERDEPTHSTENCILTARGET:
+			req = MME_VARREQ_RENDERDEPTHSTENCILTARGET;
+			break;
+		case MME_SEMANTIC_ANIMATEDTEXTURE:
+			printf("ANIMATEDTEXTURE セマンティクスは未対応です。\n");	// TODO:
+			req = MME_VARREQ_ANIMATEDTEXTURE;
+			break;
+		case MME_SEMANTIC_OFFSCREENRENDERTARGET:
+			req = MME_VARREQ_OFFSCREENRENDERTARGET;
+			break;
+		case MME_SEMANTIC_TEXTUREVALUE:
+			printf("TEXTUREVALUE セマンティクスは未対応です。\n");	// TODO:
+			req = MME_VARREQ_TEXTUREVALUE;
+			break;
 
 		/////////////////////////////////////// STANDARDSGLOBAL
-	case MME_SEMANTIC_STANDARDSGLOBAL:
-	{
-		req = MME_VARREQ_STANDARDSGLOBAL;
-
-		const TCHAR* scriptClassName = NULL;
-		const TCHAR* scriptOrderName = NULL;
-		const TCHAR* script = NULL;
-
-		ShaderVariable* anno = NULL;
-		anno = GetAnnotationByName(var, _T("ScriptClass"));
-		if (anno) {
-			scriptClassName = anno->GetString();
-		}
-		anno = GetAnnotationByName(var, _T("ScriptOrder"));
-		if (anno) {
-			scriptOrderName = anno->GetString();
-		}
-		anno = GetAnnotationByName(var, _T("Script"));
-		if (anno) {
-			script = anno->GetString();
-		}
-
-		*script_output = MME_SCROUT_color;
-		*script_class = MME_SCRCLS_object;
-		*script_order = MME_SCRORDER_standard;
-
-		// ↑でデフォルト値として代入してるのでコメントアウト
-		//if ( stricmp( script_class, "object" ) ) { MME_SCRCLS_object; }
-		if (StringTraits::tcsicmp(scriptClassName, _T("scene")) == 0)       {
-			*script_class = MME_SCRCLS_scene;
-		}
-		else if (StringTraits::tcsicmp(scriptClassName, _T("sceneorobject")) == 0) {
-			*script_class = MME_SCRCLS_sceneorobject;
-		}
-
-		//if ( stricmp( script_order, "object" ) ) { MME_SCRORDER_standard; }
-		if (StringTraits::tcsicmp(scriptOrderName, _T("preprocess")) == 0)    {
-			*script_order = MME_SCRORDER_preprocess;
-		}
-		else if (StringTraits::tcsicmp(scriptOrderName, _T("postprocess")) == 0)   {
-			*script_order = MME_SCRORDER_postprocess;
-		}
-
-
-		if (script)
+		case MME_SEMANTIC_STANDARDSGLOBAL:
 		{
-			printf("STANDARDSGLOBAL の Script アノテーションは未対応です。\n");	// TODO:
-			// Script では使用するテクニックの検索順序を指定する
+			req = MME_VARREQ_STANDARDSGLOBAL;
 
-			LN_THROW(0, NotImplementedException);
+			const TCHAR* scriptClassName = NULL;
+			const TCHAR* scriptOrderName = NULL;
+			const TCHAR* script = NULL;
+
+			ShaderVariable* anno = NULL;
+			anno = GetAnnotationByName(var, _T("ScriptClass"));
+			if (anno) {
+				scriptClassName = anno->GetString();
+			}
+			anno = GetAnnotationByName(var, _T("ScriptOrder"));
+			if (anno) {
+				scriptOrderName = anno->GetString();
+			}
+			anno = GetAnnotationByName(var, _T("Script"));
+			if (anno) {
+				script = anno->GetString();
+			}
+
+			*script_output = MME_SCROUT_color;
+			*script_class = MME_SCRCLS_object;
+			*script_order = MME_SCRORDER_standard;
+
+			// ↑でデフォルト値として代入してるのでコメントアウト
+			//if ( stricmp( script_class, "object" ) ) { MME_SCRCLS_object; }
+			if (StringTraits::tcsicmp(scriptClassName, _T("scene")) == 0)       {
+				*script_class = MME_SCRCLS_scene;
+			}
+			else if (StringTraits::tcsicmp(scriptClassName, _T("sceneorobject")) == 0) {
+				*script_class = MME_SCRCLS_sceneorobject;
+			}
+
+			//if ( stricmp( script_order, "object" ) ) { MME_SCRORDER_standard; }
+			if (StringTraits::tcsicmp(scriptOrderName, _T("preprocess")) == 0)    {
+				*script_order = MME_SCRORDER_preprocess;
+			}
+			else if (StringTraits::tcsicmp(scriptOrderName, _T("postprocess")) == 0)   {
+				*script_order = MME_SCRORDER_postprocess;
+			}
+
+
+			if (script)
+			{
+				printf("STANDARDSGLOBAL の Script アノテーションは未対応です。\n");	// TODO:
+				// Script では使用するテクニックの検索順序を指定する
+
+				LN_THROW(0, NotImplementedException);
+			}
+
+			break;
 		}
-
-		break;
-	}
+		/////////////////////////////////////// MMM
+		case MME_SEMANTIC_LIGHTENABLES:
+			req = MME_VARREQ_LIGHTENABLES;
+			sv->LightNum = var->GetArrayElements();
+			break;
+		case MME_SEMANTIC_LIGHTWVPMATRICES:
+			req = MME_VARREQ_LIGHTWVPMATRICES;
+			sv->LightNum = var->GetArrayElements();
+			break;
+		case MME_SEMANTIC_LIGHTDIRECTIONS:
+			req = MME_VARREQ_LIGHTDIRECTIONS;
+			sv->LightNum = var->GetArrayElements();
+			break;
+		case MME_SEMANTIC_LIGHTPOSITIONS:
+			req = MME_VARREQ_LIGHTPOSITIONS;
+			sv->LightNum = var->GetArrayElements();
+			break;
+		case MME_SEMANTIC_LIGHTZFARS:
+			req = MME_VARREQ_LIGHTZFARS;
+			sv->LightNum = var->GetArrayElements();
+			break;
 
 		/////////////////////////////////////// 独自仕様部分
-		/*
-		case LN_SEMANTIC_ORTHOGRAPHIC:
+		
+		case LN_SEMANTIC_OPACITY:
 		{
-		req = ( CheckAnnotationCameraOrLight( var ) ) ? LN_VARREQ_MATRIX_CAMERA_ORTHOGRAPHIC : LN_VARREQ_MATRIX_LIGHT_ORTHOGRAPHIC;
-		break;
+			req = LN_VARREQ_OPACITY;
+			break;
 		}
-		*/
-	//case LN_SEMANTIC_PROJECTION2D:
-	//{
-	//	req = LN_VARREQ_MATRIX_PROJECTION2D;
-	//	break;
-	//}
-	case LN_SEMANTIC_OPACITY:
-	{
-		req = LN_VARREQ_OPACITY;
-		break;
-	}
-	case LN_SEMANTIC_COLOR_SCALE:
-	{
-		req = LN_VARREQ_COLOR_SCALE;
-		break;
-	}
-	case LN_SEMANTIC_BLEND_COLOR:
-	{
-		req = LN_VARREQ_BLEND_COLOR;
-		break;
-	}
-	case LN_SEMANTIC_TONE:
-	{
-		req = LN_VARREQ_TONE;
-		break;
-	}
-	case LN_SEMANTIC_UVTRANSFORM:
-	{
-		req = LN_VARREQ_UVTRANSFORM;
-		break;
-	}
+		case LN_SEMANTIC_COLOR_SCALE:
+		{
+			req = LN_VARREQ_COLOR_SCALE;
+			break;
+		}
+		case LN_SEMANTIC_BLEND_COLOR:
+		{
+			req = LN_VARREQ_BLEND_COLOR;
+			break;
+		}
+		case LN_SEMANTIC_TONE:
+		{
+			req = LN_VARREQ_TONE;
+			break;
+		}
+		case LN_SEMANTIC_UVTRANSFORM:
+		{
+			req = LN_VARREQ_UVTRANSFORM;
+			break;
+		}
 	} // switch
 
 

@@ -216,8 +216,10 @@ enum ShaderVariableType
 {
 	ShaderVariableType_Unknown = 0,
 	ShaderVariableType_Bool,
+	ShaderVariableType_BoolArray,
 	ShaderVariableType_Int,
 	ShaderVariableType_Float,
+	ShaderVariableType_FloatArray,
 	ShaderVariableType_Vector,				///< Vector2～4
 	ShaderVariableType_VectorArray,
 	ShaderVariableType_Matrix,

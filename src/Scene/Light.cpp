@@ -18,6 +18,7 @@ Light::Light()
 	, m_specular(1.0f, 1.0f, 1.0f, 1.0f)
 	, m_enabled(true)
 	, m_spotAngle(Math::PI * 0.25f)
+	, m_shadowZFar(1000.0f)
 	, m_viewMatrix(Matrix::Identity)
 	, m_projMatrix(Matrix::Identity)
 	, m_viewProjMatrix(Matrix::Identity)
@@ -54,6 +55,7 @@ void Light::UpdateMatrices(const SizeF& viewSize)
 	// https://sites.google.com/site/mmereference/home/Annotations-and-Semantics-of-the-parameter/2-1-geometry-translation
 	m_projMatrix = Matrix::MakePerspectiveFovLH(Math::PI / 4.0f, viewSize.width / viewSize.height, 0.01f, 1000.0f);
 
+	m_worldViewProjMatrix = GetMatrix() * m_viewMatrix * m_projMatrix;
 	m_viewProjMatrix = m_viewMatrix * m_projMatrix;
 
 	m_direction = Vector4(direction, 0.0f);

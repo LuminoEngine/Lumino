@@ -81,6 +81,9 @@ private:
 	uint32_t					m_worldMatrixCalcMask;		///< MMEWorldMatrixCalcFlags の組み合わせ (もしかしたら使わないかも)
 	int							m_requiredLightCount;		///< このシェーダが必要としているライトの数 (ライトを要求する変数のうち、一番多い要素数)
 	MMEShaderTechniqueList		m_mmeShaderTechniqueList;
+
+	MemoryStream				m_tempBuffer;
+	BinaryWriter				m_tempBufferWriter;
 };
 
 LN_NAMESPACE_SCENE_END

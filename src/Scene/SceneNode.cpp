@@ -159,27 +159,6 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 			++i;
 		}
 	}
-	
-	//LN_FOREACH(SceneNode* child, *m_children) {
-	//	child->UpdateFrameHierarchy(this, deltaTime);
-	//}
-	//SceneNodeRefList::iterator itr = m_children->begin();
-	//SceneNodeRefList::iterator end = m_children->end();
-	//for (; itr != end; )
-	//{
-	//	(*itr)->UpdateFrameHierarchy(this, deltaTime);
-
-	//	if ((*itr)->IsAutoRemove() && (*itr)->GetReferenceCount() == 1)
-	//	{
-	//		itr = m_allNodes.erase(itr);
-	//		end = m_allNodes.end();
-	//		(*itr)->Release();
-	//	}
-	//	else
-	//	{
-	//		++itr;
-	//	}
-	//}
 }
 
 //------------------------------------------------------------------------------

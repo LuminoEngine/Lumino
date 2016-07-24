@@ -165,10 +165,24 @@ void Shader::TryCommitChanges()
 		}
 	}
 
+	auto* serializer = GetManager()->GetShaderVariableCommitSerializeHelper();
+	serializer->BeginSerialize();
 	for (ShaderVariable* v : GetVariables())
 	{
-		v->TryCommitChanges();
+		serializer->WriteValue(v->GetDeviceObject(), v->m_value);
 	}
+
+	RenderBulkData varsData(serializer->GetSerializeData(), serializer->GetSerializeDataLength());
+
+	GraphicsManager* manager = GetManager();
+	LN_ENQUEUE_RENDER_COMMAND_2(
+		CommitChanges, GetManager(),
+		GraphicsManager*, manager,
+		RenderBulkData, varsData,
+		{
+			auto* serializer = manager->GetShaderVariableCommitSerializeHelper();
+			serializer->Deserialize(varsData.GetData(), varsData.GetSize());
+		});
 }
 
 //------------------------------------------------------------------------------
@@ -277,10 +291,30 @@ void ShaderValue::SetInt(int value)
 }
 
 //------------------------------------------------------------------------------
+void ShaderValue::SetBoolArray(const bool* values, int count)
+{
+	m_type = ShaderVariableType_BoolArray;
+	AllocValueBuffer(sizeof(bool) * count);
+	if (values != NULL) {
+		memcpy(m_value.BoolArray, values, sizeof(bool) * count);
+	}
+}
+
+//------------------------------------------------------------------------------
 void ShaderValue::SetFloat(float value)
 {
 	m_type = ShaderVariableType_Float;
 	m_value.Float = value;
+}
+
+//------------------------------------------------------------------------------
+void ShaderValue::SetFloatArray(const float* values, int count)
+{
+	m_type = ShaderVariableType_FloatArray;
+	AllocValueBuffer(sizeof(float) * count);
+	if (values != NULL) {
+		memcpy(m_value.FloatArray, values, sizeof(float) * count);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -357,12 +391,16 @@ void ShaderValue::SetString(const String& s)
 //------------------------------------------------------------------------------
 int ShaderValue::GetArrayLength() const
 {
+	if (m_type == ShaderVariableType_BoolArray) {
+		return m_buffer.GetSize() / sizeof(bool);
+	}
+	if (m_type == ShaderVariableType_FloatArray) {
+		return m_buffer.GetSize() / sizeof(float);
+	}
 	if (m_type == ShaderVariableType_VectorArray) {
-		//return m_value.ByteCount / sizeof(Vector4);
 		return m_buffer.GetSize() / sizeof(Vector4);
 	}
 	if (m_type == ShaderVariableType_MatrixArray) {
-		//return m_value.ByteCount / sizeof(Matrix);
 		return m_buffer.GetSize() / sizeof(Matrix);
 	}
 	return 0;
@@ -518,6 +556,14 @@ void ShaderVariable::SetInt(int value)
 }
 
 //------------------------------------------------------------------------------
+void ShaderVariable::SetBoolArray(const bool* values, int count)
+{
+	// TODO: != チェックした方がパフォーマンス良い？
+	SetModified();
+	m_value.SetBoolArray(values, count);
+}
+
+//------------------------------------------------------------------------------
 int ShaderVariable::GetInt() const
 {
 	return m_value.GetInt();
@@ -537,6 +583,14 @@ void ShaderVariable::SetFloat(float value)
 float ShaderVariable::GetFloat() const
 {
 	return m_value.GetFloat();
+}
+
+//------------------------------------------------------------------------------
+void ShaderVariable::SetFloatArray(const float* values, int count)
+{
+	// TODO: != チェックした方がパフォーマンス良い？
+	SetModified();
+	m_value.SetFloatArray(values, count);
 }
 
 //------------------------------------------------------------------------------
@@ -700,40 +754,42 @@ void ShaderVariable::SetModified()
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariable::TryCommitChanges()
-{
-	if (m_modified)
-	{
-		switch (m_value.GetType())
-		{
-			case ShaderVariableType_Bool:
-				LN_CALL_SHADER_COMMAND(SetBool, SetShaderVariableCommand, m_value.GetBool());
-				break;
-			case ShaderVariableType_Int:
-				LN_CALL_SHADER_COMMAND(SetInt, SetShaderVariableCommand, m_value.GetInt());
-				break;
-			case ShaderVariableType_Float:
-				LN_CALL_SHADER_COMMAND(SetFloat, SetShaderVariableCommand, m_value.GetFloat());
-				break;
-			case ShaderVariableType_Vector:
-				LN_CALL_SHADER_COMMAND(SetVector, SetShaderVariableCommand, m_value.GetVector());
-				break;
-			case ShaderVariableType_VectorArray:
-				LN_CALL_SHADER_COMMAND(SetVectorArray, SetShaderVariableCommand, m_value.GetVectorArray(), m_value.GetArrayLength());
-				break;
-			case ShaderVariableType_Matrix:
-				LN_CALL_SHADER_COMMAND(SetMatrix, SetShaderVariableCommand, m_value.GetMatrix());
-				break;
-			case ShaderVariableType_MatrixArray:
-				LN_CALL_SHADER_COMMAND(SetMatrixArray, SetShaderVariableCommand, m_value.GetMatrixArray(), m_value.GetArrayLength());
-				break;
-			case ShaderVariableType_DeviceTexture:
-				LN_CALL_SHADER_COMMAND(SetTexture, SetShaderVariableCommand, m_value.GetDeviceTexture());
-				break;
-		}
-		m_modified = false;
-	}
-}
+//void ShaderVariable::TryCommitChanges()
+//{
+//	if (m_modified)
+//	{
+//		
+//
+//		switch (m_value.GetType())
+//		{
+//			case ShaderVariableType_Bool:
+//				LN_CALL_SHADER_COMMAND(SetBool, SetShaderVariableCommand, m_value.GetBool());
+//				break;
+//			case ShaderVariableType_Int:
+//				LN_CALL_SHADER_COMMAND(SetInt, SetShaderVariableCommand, m_value.GetInt());
+//				break;
+//			case ShaderVariableType_Float:
+//				LN_CALL_SHADER_COMMAND(SetFloat, SetShaderVariableCommand, m_value.GetFloat());
+//				break;
+//			case ShaderVariableType_Vector:
+//				LN_CALL_SHADER_COMMAND(SetVector, SetShaderVariableCommand, m_value.GetVector());
+//				break;
+//			case ShaderVariableType_VectorArray:
+//				LN_CALL_SHADER_COMMAND(SetVectorArray, SetShaderVariableCommand, m_value.GetVectorArray(), m_value.GetArrayLength());
+//				break;
+//			case ShaderVariableType_Matrix:
+//				LN_CALL_SHADER_COMMAND(SetMatrix, SetShaderVariableCommand, m_value.GetMatrix());
+//				break;
+//			case ShaderVariableType_MatrixArray:
+//				LN_CALL_SHADER_COMMAND(SetMatrixArray, SetShaderVariableCommand, m_value.GetMatrixArray(), m_value.GetArrayLength());
+//				break;
+//			case ShaderVariableType_DeviceTexture:
+//				LN_CALL_SHADER_COMMAND(SetTexture, SetShaderVariableCommand, m_value.GetDeviceTexture());
+//				break;
+//		}
+//		m_modified = false;
+//	}
+//}
 
 //==============================================================================
 // ShaderTechnique

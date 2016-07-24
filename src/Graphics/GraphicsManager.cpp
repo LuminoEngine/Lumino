@@ -1193,11 +1193,19 @@ void ShaderVariableCommitSerializeHelper::WriteValue(Driver::IShaderVariable* ta
 	case ShaderVariableType_Bool:
 		m_writer->WriteUInt8(value.GetBool() ? 1 : 0);
 		break;
+	case ShaderVariableType_BoolArray:
+		m_writer->WriteUInt8(value.GetArrayLength());
+		m_writer->Write(value.GetBoolArray(), sizeof(bool) * value.GetArrayLength());
+		break;
 	case ShaderVariableType_Int:
 		m_writer->WriteInt32(value.GetInt());
 		break;
 	case ShaderVariableType_Float:
 		m_writer->WriteFloat(value.GetFloat());
+		break;
+	case ShaderVariableType_FloatArray:
+		m_writer->WriteUInt8(value.GetArrayLength());
+		m_writer->Write(value.GetFloatArray(), sizeof(float) * value.GetArrayLength());
 		break;
 	case ShaderVariableType_Vector:
 		m_writer->Write(&value.GetVector(), sizeof(Vector4));
@@ -1251,50 +1259,70 @@ void ShaderVariableCommitSerializeHelper::Deserialize(const void* data, size_t l
 
 		switch (type)
 		{
-		case ShaderVariableType_Bool:
-			variable->SetBool(reader.ReadUInt8() != 0);
-			break;
-		case ShaderVariableType_Int:
-			variable->SetInt(reader.ReadInt32());
-			break;
-		case ShaderVariableType_Float:
-			variable->SetFloat(reader.ReadFloat());
-			break;
-		case ShaderVariableType_Vector:
-		{
-			Vector4 v;
-			reader.Read(&v, sizeof(Vector4));
-			variable->SetVector(v);
-			break;
-		}
-		case ShaderVariableType_VectorArray:
-		{
-			size_t size = reader.ReadUInt8();
-			variable->SetVectorArray((const Vector4*)&raw[buffer.GetPosition()], size);
-			reader.Seek(sizeof(Vector4) * size);
-			break;
-		}
-		case ShaderVariableType_Matrix:
-		{
-			Matrix v;
-			reader.Read(&v, sizeof(Matrix));
-			variable->SetMatrix(v);
-			break;
-		}
-		case ShaderVariableType_MatrixArray:
-		{
-			size_t size = reader.ReadUInt8();
-			variable->SetMatrixArray((const Matrix*)&raw[buffer.GetPosition()], size);
-			reader.Seek(sizeof(Matrix) * size);
-			break;
-		}
-		case ShaderVariableType_DeviceTexture:
-		case ShaderVariableType_ManagedTexture:
-			variable->SetTexture((Driver::ITexture*)reader.ReadUInt64());
-			break;
-		default:
-			LN_THROW(0, InvalidOperationException);
-			break;
+			case ShaderVariableType_Bool:
+			{
+				variable->SetBool(reader.ReadUInt8() != 0);
+				break;
+			}
+			case ShaderVariableType_BoolArray:
+			{
+				size_t size = reader.ReadUInt8();
+				variable->SetBoolArray((const bool*)&raw[buffer.GetPosition()], size);
+				reader.Seek(sizeof(bool) * size);
+				break;
+			}
+			case ShaderVariableType_Int:
+			{
+				variable->SetInt(reader.ReadInt32());
+				break;
+			}
+			case ShaderVariableType_Float:
+			{
+				variable->SetFloat(reader.ReadFloat());
+				break;
+			}
+			case ShaderVariableType_FloatArray:
+			{
+				size_t size = reader.ReadUInt8();
+				variable->SetFloatArray((const float*)&raw[buffer.GetPosition()], size);
+				reader.Seek(sizeof(float) * size);
+				break;
+			}
+			case ShaderVariableType_Vector:
+			{
+				Vector4 v;
+				reader.Read(&v, sizeof(Vector4));
+				variable->SetVector(v);
+				break;
+			}
+			case ShaderVariableType_VectorArray:
+			{
+				size_t size = reader.ReadUInt8();
+				variable->SetVectorArray((const Vector4*)&raw[buffer.GetPosition()], size);
+				reader.Seek(sizeof(Vector4) * size);
+				break;
+			}
+			case ShaderVariableType_Matrix:
+			{
+				Matrix v;
+				reader.Read(&v, sizeof(Matrix));
+				variable->SetMatrix(v);
+				break;
+			}
+			case ShaderVariableType_MatrixArray:
+			{
+				size_t size = reader.ReadUInt8();
+				variable->SetMatrixArray((const Matrix*)&raw[buffer.GetPosition()], size);
+				reader.Seek(sizeof(Matrix) * size);
+				break;
+			}
+			case ShaderVariableType_DeviceTexture:
+			case ShaderVariableType_ManagedTexture:
+				variable->SetTexture((Driver::ITexture*)reader.ReadUInt64());
+				break;
+			default:
+				LN_THROW(0, InvalidOperationException);
+				break;
 		}
 	}
 }

@@ -4,6 +4,7 @@
 #include "MME/MMEShaderErrorInfo.h"
 #include "MME/MMEShader.h"
 #include "MME/MMERenderingPass.h"
+#include <Lumino/Scene/Light.h>
 #include <Lumino/Scene/MMDSceneGraph.h>
 #include "InfomationRenderingPass.h"
 #include "EffectBatchRendererNode.h"
@@ -39,9 +40,10 @@ MMDSceneGraph::~MMDSceneGraph()
 		LN_SAFE_RELEASE(m_mmdRenderingPasses[i]);
 	}
 
+	LN_SAFE_RELEASE(m_defaultLight);
+	LN_SAFE_RELEASE(m_default3DCamera);
 	LN_SAFE_RELEASE(m_effectBatchRendererNode);
 	LN_SAFE_RELEASE(m_defaultRoot);
-	LN_SAFE_RELEASE(m_default3DCamera);
 	//LN_SAFE_RELEASE(m_defaultMaterial);
 }
 
@@ -67,6 +69,9 @@ void MMDSceneGraph::CreateCore(SceneGraphManager* manager)
 	m_default3DCamera->Initialize(this, CameraProjection_3D);
 	m_defaultRoot->AddChild(m_default3DCamera);
 
+	m_defaultLight = LN_NEW Light();
+	m_defaultLight->Initialize(this, LightType_Directional);
+	m_defaultRoot->AddChild(m_defaultLight);
 
 	//GetLayerList()->Add(m_default3DLayer);
 	//GetLayerList()->Add(m_default2DLayer);

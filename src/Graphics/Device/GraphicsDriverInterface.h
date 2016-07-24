@@ -434,6 +434,8 @@ public:
 	/// ブール値の取得
 	//virtual bool GetBool() = 0;
 
+	virtual void SetBoolArray(const bool* values, int count) = 0;
+
 	/// 整数値の設定
 	virtual void SetInt(int value) = 0;
 
@@ -445,6 +447,8 @@ public:
 
 	/// 実数値の取得
 	//virtual float GetFloat() = 0;
+
+	virtual void SetFloatArray(const float* values, int count) = 0;
 
 	/// ベクトルの設定
 	virtual void SetVector(const Vector4& vec) = 0;

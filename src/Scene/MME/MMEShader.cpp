@@ -67,6 +67,8 @@ MMEShader::MMEShader(SceneGraphManager* manager)
 	, m_worldMatrixCalcMask(0)
 	, m_requiredLightCount(0)
 	, m_mmeShaderTechniqueList()
+	, m_tempBuffer()
+	, m_tempBufferWriter(&m_tempBuffer)
 {
 	LN_REFOBJ_SET(m_manager, manager);
 	m_manager->AddShader(this);
@@ -410,6 +412,61 @@ void MMEShader::UpdateNodeParams(SceneNode* node, Camera* affectCamera, const Li
 				if (GetGeometryTransform(node, affectCamera, affectLightList, sv->Request, 0, &mat)) {
 					sv->Variable->SetMatrix(mat);
 				}
+			}
+		}
+		else
+		{
+			switch (sv->Request)
+			{
+				/////////////////////////////////////// MMM
+				case MME_VARREQ_LIGHTENABLES:
+					m_tempBufferWriter.Seek(0, SeekOrigin_Begin);
+					for (Light* light : affectLightList)
+					{
+						// TODO: WriteBool() がほしい
+						m_tempBufferWriter.WriteUInt8((light) ? light->IsEnabled() : false);
+					}
+					sv->Variable->SetBoolArray((const bool*)m_tempBuffer.GetBuffer(), affectLightList.GetCount());
+					break;
+				case MME_VARREQ_LIGHTWVPMATRICES:
+					m_tempBufferWriter.Seek(0, SeekOrigin_Begin);
+					for (Light* light : affectLightList)
+					{
+						auto& m = (light) ? light->GetWorldViewProj() : Matrix::Identity;
+						m_tempBufferWriter.Write(&m, sizeof(Matrix));
+					}
+					sv->Variable->SetMatrixArray((const Matrix*)m_tempBuffer.GetBuffer(), affectLightList.GetCount());
+					break;
+				case MME_VARREQ_LIGHTDIRECTIONS:
+					m_tempBufferWriter.Seek(0, SeekOrigin_Begin);
+					for (Light* light : affectLightList)
+					{
+						// TODO: Vector4::Zero がほしい
+						auto& v = (light) ? Vector4(light->GetMatrix().GetFront(), 0) : Vector4(0, 0, 0, 0);
+						m_tempBufferWriter.Write(&v, sizeof(Vector4));
+					}
+					sv->Variable->SetVectorArray((const Vector4*)m_tempBuffer.GetBuffer(), affectLightList.GetCount());
+					break;
+				case MME_VARREQ_LIGHTPOSITIONS:
+					m_tempBufferWriter.Seek(0, SeekOrigin_Begin);
+					for (Light* light : affectLightList)
+					{
+						// TODO: Vector4::Zero がほしい
+						auto& v = (light) ? Vector4(light->GetMatrix().GetPosition(), 0) : Vector4(0, 0, 0, 0);
+						m_tempBufferWriter.Write(&v, sizeof(Vector4));
+					}
+					sv->Variable->SetVectorArray((const Vector4*)m_tempBuffer.GetBuffer(), affectLightList.GetCount());
+					break;
+				case MME_VARREQ_LIGHTZFARS:
+					m_tempBufferWriter.Seek(0, SeekOrigin_Begin);
+					for (Light* light : affectLightList)
+					{
+						m_tempBufferWriter.WriteFloat((light) ? light->GetShadowZFar() : 0.0f);
+					}
+					sv->Variable->SetFloatArray((const float*)m_tempBuffer.GetBuffer(), affectLightList.GetCount());
+					break;
+				default:
+					break;
 			}
 		}
 	}

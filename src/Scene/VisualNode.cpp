@@ -136,14 +136,13 @@ void VisualNode::UpdateAffectLights(LightNodeList* renderingLightList, int maxCo
 	std::stable_sort(renderingLightList->begin(), renderingLightList->end(), CmpLightSort);
 
 	// 出力 (足りない分は nullptr で埋める)
-	int mn = renderingLightList->GetCount();
-	int n = maxCount;
+	int req = std::min(m_affectLightList.GetCount(), renderingLightList->GetCount());
 	int i = 0;
-	for (; i < mn; ++i)
+	for (; i < req; ++i)
 	{
 		m_affectLightList[i] = renderingLightList->GetAt(i);
 	}
-	for (; i < n; ++i)
+	for (; i < m_affectLightList.GetCount(); ++i)
 	{
 		m_affectLightList[i] = nullptr;
 	}

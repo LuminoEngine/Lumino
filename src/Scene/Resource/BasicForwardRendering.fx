@@ -1,4 +1,6 @@
 
+static const int MMM_LightCount = 3;
+
 struct LN_VS_INPUT
 {
 	float3	Pos		: POSITION;		// 位置
@@ -14,6 +16,13 @@ float4x4	WorldViewProjMatrix	: WORLDVIEWPROJECTION;
 float4x4	WorldMatrix			: WORLD;
 float4x4	ViewMatrix			: VIEW;
 float4x4	ProjMatrix			: PROJECTION;
+
+//ライト関連
+bool		LightEnables[MMM_LightCount]		: LIGHTENABLES;		// 有効フラグ
+float4x4	LightWVPMatrices[MMM_LightCount]	: LIGHTWVPMATRICES;	// 座標変換行列
+float3		LightDirection[MMM_LightCount]		: LIGHTDIRECTIONS;	// 方向
+float3		LightPositions[MMM_LightCount]		: LIGHTPOSITIONS;	// ライト位置
+float		LightZFars[MMM_LightCount]			: LIGHTZFARS;		// ライトzFar値
 
 // マテリアル色
 float4		MaterialDiffuse		: DIFFUSE  <string Object = "Geometry";>;
@@ -66,7 +75,7 @@ float4 Basic_PS(VS_OUTPUT input) : COLOR0
 	float4 color;
 	
 	float4 texColor = tex2D(ObjTexSampler, input.Tex);
-	color = input.Color * texColor;//MaterialDiffuse;//input.Color * texColor;
+	color = float4(LightDirection[0], 1);//input.Color * texColor;//MaterialDiffuse;//input.Color * texColor;
 	
 	return color;
 }
