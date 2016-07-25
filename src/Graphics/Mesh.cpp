@@ -171,6 +171,128 @@ private:
 	Vector3	m_size;
 };
 
+// top と bottom は TriangleFan
+class SphereMeshFactory
+{
+public:
+	SphereMeshFactory(float radius, int slices, int stacks)
+		: m_radius(radius)
+		, m_slices(slices)
+		, m_stacks(stacks)
+	{
+		assert(m_radius > 0.0f);
+		assert(m_slices >= 2);
+		assert(m_stacks >= 2);
+		MakeSinCosTable();
+	}
+
+	int GetVertexCount() const
+	{
+		return 2 + m_slices * (m_stacks - 1);	// (top と bottom の 2 点) + リングの頂点数 * 重ねる数
+	}
+
+	int GetIndexCount() const
+	{
+		return 2 * m_slices + (m_stacks - 2) * (2 * m_slices);
+	}
+
+	typedef uint16_t Face[3];
+
+	struct SinCos
+	{
+		float	sin;
+		float	cos;
+	};
+
+	void Generate(Vertex* vertices, uint16_t* outIndices)
+	{
+		Face* faces = (Face*)outIndices;
+
+		float theta_step = Math::PI / m_stacks;
+		float theta = theta_step;	// XY 平面上の step
+
+		int vertex = 0;
+		int face = 0;
+
+		// top
+		vertices[vertex].normal.x = 0.0f;
+		vertices[vertex].normal.y = 0.0f;
+		vertices[vertex].normal.z = 1.0f;
+		vertices[vertex].position.x = 0.0f;
+		vertices[vertex].position.y = 0.0f;
+		vertices[vertex].position.z = m_radius;
+		vertex++;
+
+		// top faces (triangle fan)
+		for (int iSlice = 0; iSlice < m_slices; ++iSlice)
+		{
+			faces[face][0] = 0;
+			faces[face][1] = iSlice + 1;
+			faces[face][2] = iSlice;
+			face++;
+		}
+
+		// rings
+		for (int iStack = 0; iStack < m_stacks - 1; ++iStack)
+		{
+			float sin_theta = sinf(theta);
+			float cos_theta = cosf(theta);
+
+			for (int iSlice = 0; iSlice < m_slices; ++iSlice)
+			{
+				// vertex
+				vertices[vertex].normal.x = sin_theta * m_sincosTable[iSlice].cos;
+				vertices[vertex].normal.y = sin_theta * m_sincosTable[iSlice].sin;
+				vertices[vertex].normal.z = cos_theta;
+				vertices[vertex].position.x = m_radius * sin_theta * m_sincosTable[iSlice].cos;
+				vertices[vertex].position.y = m_radius * sin_theta * m_sincosTable[iSlice].sin;
+				vertices[vertex].position.z = m_radius * cos_theta;
+				vertex++;
+
+				// faces
+				if (iSlice > 0)
+				{
+					faces[face][0] = vertex_index(m_slices, iSlice - 1, iStack - 1);
+					faces[face][1] = vertex_index(m_slices, iSlice, iStack - 1);
+					faces[face][2] = vertex_index(m_slices, iSlice - 1, iStack);
+					face++;
+
+					faces[face][0] = vertex_index(m_slices, iSlice, iStack - 1);
+					faces[face][1] = vertex_index(m_slices, iSlice, iStack);
+					faces[face][2] = vertex_index(m_slices, iSlice - 1, iStack);
+					face++;
+				}
+			}
+		}
+	}
+
+	static uint16_t vertex_index(UINT slices, int slice, int stack)
+	{
+		return stack*slices + slice + 1;
+	}
+
+	void MakeSinCosTable()
+	{
+		float phi_start = Math::PI / 2.0f;
+		float phi_step = -2.0f * Math::PI / m_slices;
+		m_sincosTable.Resize(m_slices);
+
+		float angle = phi_start;
+		for (int i = 0; i < m_slices; ++i)
+		{
+			m_sincosTable[i].sin = std::sinf(angle);
+			m_sincosTable[i].cos = std::cosf(angle);
+			angle += phi_step;
+		}
+	}
+
+private:
+	float	m_radius;
+	int		m_slices;
+	int		m_stacks;
+
+	Array<SinCos>	m_sincosTable;
+};
 
 //==============================================================================
 // MaterialList3

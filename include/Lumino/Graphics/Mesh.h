@@ -132,6 +132,7 @@ LN_INTERNAL_ACCESS:
 	virtual ~StaticMeshModel();
 	void Initialize(GraphicsManager* manager);
 	void CreateBox(const Vector3& size);
+	void CreateSphere(float radius, int slices, int stacks);
 
 	int GetSubsetCount() const { return m_attributes.GetCount(); }
 	void Draw(GraphicsContext* g);
