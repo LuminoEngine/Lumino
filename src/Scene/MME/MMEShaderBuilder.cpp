@@ -78,11 +78,14 @@ static LNVerNameDesc g_MMESemanticTable[ MME_MAX_SEMANTICS ] =
     { _T( "STANDARDSGLOBAL" ),          NULL },
 
 	// MMM
-	{ _T("LIGHTWVPMATRICES"),	NULL },
-	{ _T("LIGHTPOSITIONS"),		NULL },
-	{ _T("LIGHTDIRECTIONS"),	NULL },
-	{ _T("LIGHTENABLES"),		NULL },
-	{ _T("LIGHTZFARS"),			NULL },
+	{ _T("LIGHTENABLES"),				NULL },
+	{ _T("LIGHTWVPMATRICES"),			NULL },
+	{ _T("LIGHTDIRECTIONS"),			NULL },
+	{ _T("LIGHTPOSITIONS"),				NULL },
+	{ _T("LIGHTZFARS"),					NULL },
+	{ _T("LIGHTDIFFUSECOLORS"),			NULL },
+	{ _T("LIGHTAMBIENTCOLORS"),			NULL },
+	{ _T("LIGHTSPECULARCOLORS"),		NULL },
 
     // 以下は独自仕様
     //{ _T( "ORTHOGRAPHIC" ),    _T( "gMatrix_wt" ) },
@@ -607,6 +610,18 @@ void MMEShaderBuilder::CheckVariableRequest(
 			break;
 		case MME_SEMANTIC_LIGHTZFARS:
 			req = MME_VARREQ_LIGHTZFARS;
+			sv->LightNum = var->GetArrayElements();
+			break;
+		case MME_SEMANTIC_LIGHTDIFFUSECOLORS:
+			req = MME_VARREQ_LIGHTDIFFUSECOLORS;
+			sv->LightNum = var->GetArrayElements();
+			break;
+		case MME_SEMANTIC_LIGHTAMBIENTCOLORS:
+			req = MME_VARREQ_LIGHTAMBIENTCOLORS;
+			sv->LightNum = var->GetArrayElements();
+			break;
+		case MME_SEMANTIC_LIGHTSPECULARCOLORS:
+			req = MME_VARREQ_LIGHTSPECULARCOLORS;
 			sv->LightNum = var->GetArrayElements();
 			break;
 

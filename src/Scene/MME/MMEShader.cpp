@@ -465,6 +465,33 @@ void MMEShader::UpdateNodeParams(SceneNode* node, Camera* affectCamera, const Li
 					}
 					sv->Variable->SetFloatArray((const float*)m_tempBuffer.GetBuffer(), affectLightList.GetCount());
 					break;
+				case MME_VARREQ_LIGHTDIFFUSECOLORS:
+					m_tempBufferWriter.Seek(0, SeekOrigin_Begin);
+					for (Light* light : affectLightList)
+					{
+						auto& v = (light) ? light->GetDiffuseColor() : Color::Black;
+						m_tempBufferWriter.Write(&v, sizeof(Color));
+					}
+					sv->Variable->SetVectorArray((const Vector4*)m_tempBuffer.GetBuffer(), affectLightList.GetCount());
+					break;
+				case MME_VARREQ_LIGHTAMBIENTCOLORS:
+					m_tempBufferWriter.Seek(0, SeekOrigin_Begin);
+					for (Light* light : affectLightList)
+					{
+						auto& v = (light) ? light->GetAmbientColor() : Color::Transparency;		// TODO: デフォルト値は？
+						m_tempBufferWriter.Write(&v, sizeof(Color));
+					}
+					sv->Variable->SetVectorArray((const Vector4*)m_tempBuffer.GetBuffer(), affectLightList.GetCount());
+					break;
+				case MME_VARREQ_LIGHTSPECULARCOLORS:
+					m_tempBufferWriter.Seek(0, SeekOrigin_Begin);
+					for (Light* light : affectLightList)
+					{
+						auto& v = (light) ? light->GetSpecularColor() : Color::Black;		// TODO: デフォルト値は？
+						m_tempBufferWriter.Write(&v, sizeof(Color));
+					}
+					sv->Variable->SetVectorArray((const Vector4*)m_tempBuffer.GetBuffer(), affectLightList.GetCount());
+					break;
 				default:
 					break;
 			}
