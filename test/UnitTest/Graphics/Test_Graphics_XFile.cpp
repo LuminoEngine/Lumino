@@ -19,7 +19,7 @@ TEST_F(Test_Graphics_XFile, Basic)
 	//auto mesh = StaticMesh::Create(_T("D:/tmp/box1.x"));
 	auto mesh = StaticMesh::CreateSphere(2, 32, 16);
 	mesh->SetShader(shader);
-	mesh->GetMaterials()->GetAt(0)->SetTextureParameter(Material3::MaterialTextureParameter, tex);
+	mesh->GetMaterials()->GetAt(0)->SetTextureParameter(Material::MaterialTextureParameter, tex);
 
 	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
 	Camera::GetDefault3DCamera()->SetCameraBehavior(cb);

@@ -2,12 +2,14 @@
 #pragma once
 #include "Common.h"
 #include "Detail.h"
+#include <Lumino/Graphics/Color.h>
 #include <Lumino/Graphics/Texture.h>
+#include <Lumino/Graphics/Material.h>
 #include "SceneNode.h"
-#include "Material.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
+class MaterialList2;
 
 /// VisualNode
 class VisualNode
@@ -27,9 +29,9 @@ public:
 	/** @{ */
 
 	// TODO: Main は普通のマテリアルとは別にしたほうがいい気がする。BlendColor, Tone, Etc...
-	Material3* GetMaterial() const;
+	Material* GetMaterial() const;
 
-	tr::ReflectionObjectList<Material3*>* GetMaterials() const { return m_materialList; }
+	tr::ReflectionObjectList<Material*>* GetMaterials() const;
 
 	/** メインマテリアルの不透明度を設定します。(default: 1.0)*/
 	void SetOpacity(float opacity, int subsetIndex = -1);
@@ -139,6 +141,62 @@ protected:
 	bool					m_isVisible;
 
 	LightNodeList			m_affectLightList;
+};
+
+
+namespace detail
+{
+
+static const int NormalMaterialTypeId = 0;
+static const int MmdMaterialTypeId = 12345;
+
+class MaterialInstance
+	: public RefObject
+{
+public:
+	MaterialInstance(int materialTypeId);
+	virtual ~MaterialInstance();
+
+	int			m_materialTypeId;
+
+	int GetMaterialTypeId() const { return m_materialTypeId; }
+
+	Material*	m_owner;
+	Color		m_colorScale;	// 乗算結合済み (opacity 込み)
+	Color		m_blendColor;	// 加算結合済み
+	ToneF		m_tone;			// 加算結合済み
+	Shader*		m_shader;
+
+	void Combine(Material* owner, Material* parent);
+
+	virtual void OnCombine(Material* owner, Material* parent);
+
+	const Matrix& GetUVTransform() const;
+};
+
+} // namespace detail
+
+/**
+	@brief
+*/
+class MaterialList2
+	: public tr::ReflectionObjectList<Material*>	// SubMaterials (0 の場合もある)
+{
+public:
+	Material* GetMainMaterial() const;
+	
+LN_INTERNAL_ACCESS:
+	MaterialList2();
+	virtual ~MaterialList2();
+	void Initialize(int subMaterialCount, bool createMainMaterial);
+	void CopyShared(MaterialList* srcList, bool createMainMaterial);
+	void UpdateMaterialInstances(SceneGraph* sceneGraph);
+	int GetMaterialInstanceCount() const { return m_instanceList.GetCount(); }
+	detail::MaterialInstance* GetMaterialInstance(int index) { return m_instanceList[index]; }
+	
+private:
+	RefPtr<Material>				m_mainMaterial;
+	Array<RefPtr<detail::MaterialInstance>>	m_instanceList;
 };
 
 LN_NAMESPACE_SCENE_END

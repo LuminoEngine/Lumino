@@ -24,7 +24,7 @@ MmdMaterialInstance::MmdMaterialInstance()
 	ToonColor.Set(1.0f, 1.0f, 1.0f, 1.0f);
 	EdgeColor.Set(0.0f, 0.0f, 0.0f, 1.0f);
 	EdgeSize = 0.0f;
-	SphereMode = Material::SphereMode_Disable;
+	SphereMode = MmdSphereMode::Disable;
 	DrawingFlags = 0;
 }
 
@@ -36,7 +36,7 @@ MmdMaterialInstance::~MmdMaterialInstance()
 }
 
 //------------------------------------------------------------------------------
-void MmdMaterialInstance::OnCombine(Material3* owner, Material3* parent)
+void MmdMaterialInstance::OnCombine(Material* owner, Material* parent)
 {
 	MaterialInstance::OnCombine(owner, parent);
 
@@ -57,7 +57,7 @@ void MmdMaterialInstance::OnCombine(Material3* owner, Material3* parent)
 	SphereTextureCoe = owner->GetColor(_T("SphereTextureCoe"), Color(1.0f, 1.0f, 1.0f, 1.0f));
 	ToonTextureCoe = owner->GetColor(_T("ToonTextureCoe"), Color(1.0f, 1.0f, 1.0f, 1.0f));
 	DrawingFlags = owner->GetInt(_T("DrawingFlags"), 0);
-	SphereMode = owner->GetInt(_T("SphereMode"), 0);
+	SphereMode = (MmdSphereMode)owner->GetInt(_T("SphereMode"), (int)MmdSphereMode::Disable);
 }
 
 ////------------------------------------------------------------------------------

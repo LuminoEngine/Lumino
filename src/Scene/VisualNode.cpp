@@ -1,8 +1,4 @@
-﻿/*
-	[2016/5/10] マテリアル set に対する get は定義しない。
-		Color を渡す set に対する get が Color としなければならないのがイヤなのが元だが・・・。
-		まぁ、GetMainMaterial() から取り出せるし。
-*/
+﻿
 #include "../Internal.h"
 #include "MME/MMEShaderTechnique.h"
 #include "MME/MMEShader.h"
@@ -11,11 +7,181 @@
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/Light.h>
 #include <Lumino/Scene/VisualNode.h>
+#include <Lumino/Scene/SceneGraph.h>
 #include "../EngineDiagCore.h"
 #include "SceneGraphManager.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
+namespace detail
+{
+
+//==============================================================================
+// MaterialInstance
+//==============================================================================
+
+//------------------------------------------------------------------------------
+MaterialInstance::MaterialInstance(int materialTypeId)
+	: m_materialTypeId(materialTypeId)
+{
+
+}
+
+//------------------------------------------------------------------------------
+MaterialInstance::~MaterialInstance()
+{
+
+}
+
+//------------------------------------------------------------------------------
+void MaterialInstance::Combine(Material* owner, Material* parent)
+{
+	if (m_owner == nullptr || owner != m_owner || m_owner->m_modifiedForMaterialInstance)
+	{
+		// set
+		m_owner = owner;
+		OnCombine(owner, parent);
+		m_owner->m_modifiedForMaterialInstance = false;
+	}
+}
+
+//------------------------------------------------------------------------------
+void MaterialInstance::OnCombine(Material* owner, Material* parent)
+{
+	m_colorScale = m_owner->GetColorScale();
+	m_colorScale.a *= m_owner->GetOpacity();
+	m_blendColor = m_owner->GetBlendColor();
+	m_tone = m_owner->GetTone();
+	m_shader = m_owner->GetShader();
+
+	// combine
+	if (parent != nullptr)
+	{
+		m_colorScale.MultiplyClamp(parent->GetColorScale());
+		m_colorScale.a *= parent->GetOpacity();
+		m_blendColor.AddClamp(parent->GetBlendColor());
+		m_tone.AddClamp(parent->GetTone());
+		if (m_shader == nullptr) {
+			m_shader = parent->GetShader();
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+const Matrix& MaterialInstance::GetUVTransform() const
+{
+	return m_owner->GetUVTransform();
+}
+
+} // namespace detail
+
+//==============================================================================
+// MaterialList2
+//==============================================================================
+
+//------------------------------------------------------------------------------
+MaterialList2::MaterialList2()
+{
+}
+
+//------------------------------------------------------------------------------
+MaterialList2::~MaterialList2()
+{
+}
+
+//------------------------------------------------------------------------------
+void MaterialList2::Initialize(int subMaterialCount, bool createMainMaterial)
+{
+	Resize(subMaterialCount);
+	for (int i = 0; i < subMaterialCount; ++i)
+	{
+		auto m = RefPtr<Material>::MakeRef();	// TODO
+		SetAt(i, m);
+	}
+
+	if (createMainMaterial)
+	{
+		m_mainMaterial = RefPtr<Material>::MakeRef();	// TODO
+	}
+}
+
+//------------------------------------------------------------------------------
+void MaterialList2::CopyShared(MaterialList* srcList, bool createMainMaterial)
+{
+	LN_CHECK_ARG(srcList != nullptr);
+
+	Resize(srcList->GetCount());
+	for (int i = 0; i < srcList->GetCount(); ++i)
+	{
+		SetAt(i, srcList->GetAt(i));
+	}
+
+
+	if (createMainMaterial)
+	{
+		m_mainMaterial = RefPtr<Material>::MakeRef();
+	}
+	else if (GetCount() > 0)
+	{
+		m_mainMaterial = GetAt(0);
+	}
+}
+
+//------------------------------------------------------------------------------
+Material* MaterialList2::GetMainMaterial() const
+{
+	return m_mainMaterial;
+}
+
+//------------------------------------------------------------------------------
+void MaterialList2::UpdateMaterialInstances(SceneGraph* sceneGraph)
+{
+	// m_mainMaterial は親として使える？
+	Material* parent = nullptr;
+	if (m_mainMaterial != nullptr)
+	{
+		parent = m_mainMaterial;
+	}
+
+	// m_instanceList のサイズをそろえる
+	int subCount = GetCount();
+	if (m_instanceList.GetCount() != subCount)
+	{
+		int oldCount = m_instanceList.GetCount();
+		int d = subCount - oldCount;
+		m_instanceList.Resize(subCount);
+		if (d > 0)
+		{
+			for (int i = 0; i < d; ++i)
+			{
+				m_instanceList[oldCount + i] = RefPtr<detail::MaterialInstance>(sceneGraph->CreateMaterialInstance(), false);
+			}
+		}
+	}
+
+	// m_instanceList の内容を作っていく
+	if (subCount > 0)
+	{
+		for (int i = 0; i < subCount; ++i)
+		{
+			m_instanceList[i]->Combine(GetAt(i), parent);
+		}
+	}
+	else if (parent != nullptr)
+	{
+		// parent はあるけど SubMaterial が1つも無い。parent を使う。
+		if (m_instanceList.GetCount() != 1) m_instanceList.Resize(1);
+		m_instanceList[0]->Combine(parent, nullptr);
+	}
+	else
+	{
+		// parent も SubMaterial も無い。デフォルトのを使う。
+		if (m_instanceList.GetCount() != 1) m_instanceList.Resize(1);
+		LN_NOTIMPLEMENTED();
+		//m_instanceList[0].Combine(parent, nullptr);
+	}
+}
+
 
 //==============================================================================
 // VisualNode
@@ -43,9 +209,15 @@ void VisualNode::Initialize(SceneGraph* owner, int subsetCount)
 }
 
 //------------------------------------------------------------------------------
-Material3* VisualNode::GetMaterial() const
+Material* VisualNode::GetMaterial() const
 {
 	return m_materialList->GetMainMaterial();
+}
+
+//------------------------------------------------------------------------------
+tr::ReflectionObjectList<Material*>* VisualNode::GetMaterials() const
+{
+	return m_materialList;
 }
 
 //------------------------------------------------------------------------------

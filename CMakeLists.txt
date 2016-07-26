@@ -227,6 +227,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/GraphicsManager.h
 	src/Graphics/IndexBuffer.cpp
 	src/Graphics/Internal.h
+	src/Graphics/Material.cpp
 	src/Graphics/Mesh.cpp
 	src/Graphics/MeshRendererProxy.cpp
 	src/Graphics/MeshRendererProxy.h
@@ -346,9 +347,7 @@ set(LN_SOURCES_Scene
 	include/Lumino/Scene/Grid.h
 	include/Lumino/Scene/Layer.h
 	include/Lumino/Scene/Light.h
-	include/Lumino/Scene/Material.h
 	include/Lumino/Scene/MeshModelObject.h
-	include/Lumino/Scene/Material.h
 	include/Lumino/Scene/MMDSceneGraph.h
 	include/Lumino/Scene/SceneGraph.h
 	include/Lumino/Scene/SceneGraphRenderingContext.h
@@ -372,7 +371,6 @@ set(LN_SOURCES_Scene
 	src/Scene/InfomationRenderingPass.h
 	src/Scene/Layer.cpp
 	src/Scene/Light.cpp
-	src/Scene/Material.cpp
 	src/Scene/MeshModelObject.cpp
 	src/Scene/MMDSceneGraph.cpp
 	src/Scene/RenderingPass.cpp

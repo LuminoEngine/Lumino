@@ -1,80 +1,107 @@
 ﻿
 #pragma once
-
 #include "Color.h"
 #include "Texture.h"
 #include "Shader.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
+class Material;
+using MaterialPtr = RefPtr<Material>;
 
-// TODO: MMD 用のデータがいくつか含まれているので、そちらは ModelMaterial に移動したい。
 /**
-	@brief	マテリアルのクラスです。
+	@brief
 */
 class Material
+	: public Object
 {
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
+	static const String DiffuseParameter;
+	static const String AmbientParameter;
+	static const String SpecularParameter;
+	static const String EmissiveParameter;
+	static const String PowerParameter;
+	static const String MaterialTextureParameter;
 
-	/// 描画オプション
-	enum DrawingFlags
+public:
+	static MaterialPtr Create();
+
+public:
+	void SetShader(Shader* shader);
+	Shader* GetShader() const { return m_shader; }
+	
+	void SetIntParameter(const StringRef& name, int value);
+	void SetFloatParameter(const StringRef& name, float value);
+	void SetVectorParameter(const StringRef& name, const Vector4& value);
+	void SetMatrixParameter(const StringRef& name, const Matrix& value);
+	void SetTextureParameter(const StringRef& name, Texture* value);
+	void SetColorParameter(const StringRef& name, const Color& value);
+	void SetColorParameter(const StringRef& name, float r, float g, float b, float a);
+	
+protected:
+	Material();
+	virtual ~Material();
+
+LN_INTERNAL_ACCESS:
+	using ShaderValuePtr = std::shared_ptr<ShaderValue>;
+
+	struct ValuePair
 	{
-		DrawingFlag_CullingDouble = 0x01,	///< 両面描画
-		DrawingFlag_GroundShadow = 0x02,	///< 地面影
-		DrawingFlag_SelfShadowMap = 0x04,	///< セルフシャドウマップへの描画
-		DrawingFlag_SelfShadow = 0x08,		///< セルフシャドウの描画
-		DrawingFlag_Edge = 0x10,			///< エッジ描画
+		ShaderVariable*	variable;
+		ShaderValuePtr	value;
 	};
 
-	/// スフィアテクスチャの合成モード
-	enum SphereMode
-	{
-		SphereMode_Disable = 0,				///< 無効
-		SphereMode_Mul = 1,					///< 乗算(sph)
-		SphereMode_Add = 2,					///< 加算(spa)
-		SphereMode_SubTexture = 3,			///< サブテクスチャ(追加UV1のx,yをUV参照して通常テクスチャ描画を行う)
-	};
+	const Array<ValuePair>& GetLinkedVariableList() { return m_linkedVariableList; }
 
-public:
-	Color						Diffuse;			///< 物体の色
-	Color						Ambient;			///< 環境光
-	Color						Specular;			///< 光沢
-	Color						Emissive;			///< 物体の発光色 ( 光源の影響を受けない色 )
-	float						Power;				///< 光沢の強さ
+public:	// TODO:
 
-	RefPtr<Shader>				Shader;				///< シェーダ
-	RefPtr<ln::Texture>			Texture;			///< テクスチャ
-	RefPtr<ln::Texture>			ToonTexture;		///< [PMD] トゥーンテクスチャ (getToonTexture() setToonTexture()でアクセスする)
-	RefPtr<ln::Texture>			SphereTexture;		///< [PMD] スフィアテクスチャ (getSphereTexture() setSphereTexture()でアクセスする)
+	void SetMaterialTexture(Texture* v) { FindShaderValue(_T("MaterialTexture"))->SetManagedTexture(v); }
+	Texture* GetMaterialTexture() const { return GetTexture(_T("MaterialTexture"), nullptr); }
 
-	Color						ToonColor;			///< [PMD] トゥーンカラー
-	Color						EdgeColor;			///< [PMX] エッジカラー
-	float						EdgeSize;			///< [PMX] エッジサイズ
-	Color						TextureCoe;			///< [PMX] テクスチャ係数
-	Color						SphereTextureCoe;	///< [PMX] スフィアテクスチャ係数
-	Color						ToonTextureCoe;		///< [PMX] Toonテクスチャ係数
-	uint32_t					DrawingFlags;		///< [PMX] 描画オプション (MMDDrawingFlags の組み合わせ)
-	SphereMode					SphereMode;			///< [PMX] スフィアテクスチャの合成モード
+	void SetOpacity(float v) { SetFloatParameter(_T("Opacity"), v); }
+	float GetOpacity() const { auto* v = FindShaderValueConst(_T("Opacity")); return (v) ? v->GetFloat() : 1.0f; }
 
-public:
+	void SetColorScale(const Color& v) { SetColorParameter(_T("ColorScale"), v); }
+	Color GetColorScale() const { auto* v = FindShaderValueConst(_T("ColorScale")); return (v) ? Color(v->GetVector()) : Color::White; }
 
-	/**
-		@brief		マテリアルを初期化します。
-	*/
-	Material()
-	{
-		Diffuse.Set(1.0f, 1.0f, 1.0f, 1.0f);
-		Ambient.Set(0.0f, 0.0f, 0.0f, 0.0f);
-		Specular.Set(0.5f, 0.5f, 0.5f, 0.5f);
-		Emissive.Set(0.0f, 0.0f, 0.0f, 0.0f);
-		Power = 50.0f;
-		ToonColor.Set(1.0f, 1.0f, 1.0f, 1.0f);
-		EdgeColor.Set(0.0f, 0.0f, 0.0f, 1.0f);
-		EdgeSize = 0.0f;
-		SphereMode = SphereMode_Disable;
-		DrawingFlags = 0;
-	}
+	void SetBlendColor(const Color& v) { SetColorParameter(_T("BlendColor"), v); }
+	Color GetBlendColor() const { auto* v = FindShaderValueConst(_T("BlendColor")); return (v) ? Color(v->GetVector()) : Color::Transparency; }
+
+	void SetTone(const ToneF& v) { SetVectorParameter(_T("Tone"), v); }
+	ToneF GetTone() const { auto* v = FindShaderValueConst(_T("Tone")); return (v) ? ToneF(v->GetVector()) : ToneF(); }
+
+	Matrix GetUVTransform() const { auto* v = FindShaderValueConst(_T("UVTransform")); return (v) ? v->GetMatrix() : Matrix::Identity; }
+
+	Color GetColor(const StringRef& name, const Color& defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? Color(v->GetVector()) : defaultValue; }
+	float GetFloat(const StringRef& name, float defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? v->GetFloat() : defaultValue; }
+	Texture* GetTexture(const StringRef& name, Texture* defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? v->GetManagedTexture() : defaultValue; }
+	int GetInt(const StringRef& name, int defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? v->GetInt() : defaultValue; }
+
+private:
+	void LinkVariables();
+	ShaderValue* FindShaderValue(const StringRef& name);
+	ShaderValue* FindShaderValueConst(const StringRef& name) const;
+
+	RefPtr<Shader>						m_shader;
+	SortedArray<String, ShaderValuePtr>	m_valueList;
+	Array<ValuePair>					m_linkedVariableList;
+
+LN_INTERNAL_ACCESS:
+	bool								m_modifiedForMaterialInstance;
 };
+
+/**
+	@brief
+*/
+class MaterialList
+	: public tr::ReflectionObjectList<Material*>	// SubMaterials (0 の場合もある)
+{
+LN_INTERNAL_ACCESS:
+	MaterialList();
+	virtual ~MaterialList();
+};
+
 
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

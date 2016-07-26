@@ -391,162 +391,6 @@ private:
 };
 
 //==============================================================================
-// MaterialList3
-//==============================================================================
-
-//------------------------------------------------------------------------------
-MaterialList3::MaterialList3()
-{
-}
-
-//------------------------------------------------------------------------------
-MaterialList3::~MaterialList3()
-{
-}
-
-//==============================================================================
-// Material
-//==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Material3, Object);
-
-const String Material3::DiffuseParameter(_T("Diffuse"));
-const String Material3::AmbientParameter(_T("Ambient"));
-const String Material3::SpecularParameter(_T("Specular"));
-const String Material3::EmissiveParameter(_T("Emissive"));
-const String Material3::PowerParameter(_T("Power"));
-const String Material3::MaterialTextureParameter(_T("MaterialTexture"));
-
-//------------------------------------------------------------------------------
-MaterialPtr Material3::Create()
-{
-	auto ptr = MaterialPtr::MakeRef();
-	return ptr;
-}
-
-//------------------------------------------------------------------------------
-Material3::Material3()
-	: m_shader(nullptr)
-	, m_valueList()
-	, m_modifiedForMaterialInstance(false)
-{
-}
-
-//------------------------------------------------------------------------------
-Material3::~Material3()
-{
-}
-
-//------------------------------------------------------------------------------
-void Material3::SetShader(Shader* shader)
-{
-	m_shader = shader;
-	LinkVariables();
-	m_modifiedForMaterialInstance = true;
-}
-
-//------------------------------------------------------------------------------
-void Material3::SetIntParameter(const StringRef& name, int value)
-{
-	FindShaderValue(name)->SetInt(value);
-	m_modifiedForMaterialInstance = true;
-}
-
-//------------------------------------------------------------------------------
-void Material3::SetFloatParameter(const StringRef& name, float value)
-{
-	FindShaderValue(name)->SetFloat(value);
-	m_modifiedForMaterialInstance = true;
-}
-
-//------------------------------------------------------------------------------
-void Material3::SetVectorParameter(const StringRef& name, const Vector4& value)
-{
-	FindShaderValue(name)->SetVector(value);
-	m_modifiedForMaterialInstance = true;
-}
-
-//------------------------------------------------------------------------------
-void Material3::SetMatrixParameter(const StringRef& name, const Matrix& value)
-{
-	FindShaderValue(name)->SetMatrix(value);
-	m_modifiedForMaterialInstance = true;
-}
-
-//------------------------------------------------------------------------------
-void Material3::SetTextureParameter(const StringRef& name, Texture* value)
-{
-	FindShaderValue(name)->SetManagedTexture(value);
-	m_modifiedForMaterialInstance = true;
-}
-
-//------------------------------------------------------------------------------
-void Material3::SetColorParameter(const StringRef& name, const Color& value)
-{
-	SetVectorParameter(name, value);
-}
-
-//------------------------------------------------------------------------------
-void Material3::SetColorParameter(const StringRef& name, float r, float g, float b, float a)
-{
-	SetColorParameter(name, Color(r, g, b, a));
-}
-
-//------------------------------------------------------------------------------
-void Material3::LinkVariables()
-{
-#if 0
-	m_valueList.Clear();
-	m_linkedVariableList.Clear();
-
-	if (m_shader != nullptr)
-	{
-		for (ShaderVariable* v : m_shader->GetVariables())
-		{
-			if (v->GetType() != ShaderVariableType_Unknown &&
-				v->GetType() != ShaderVariableType_String)
-			{
-				// Unknown と String 型は無視。String 型は読み取り専用で、Material としては持っておく必要ない。
-			}
-			else
-			{
-				// 名前と値の対応表
-				auto var = std::make_shared<ShaderValue>(v->GetShaderValue());	// 初期値
-				m_valueList.Add(v->GetName(), var);
-
-				// 変数と値のペア
-				ValuePair pair = { v, var };
-				m_linkedVariableList.Add(pair);
-			}
-		}
-	}
-#endif
-}
-
-//------------------------------------------------------------------------------
-ShaderValue* Material3::FindShaderValue(const StringRef& name)
-{
-	ShaderValuePtr v;
-	if (!m_valueList.TryGetValue(name, &v))
-	{
-		v = std::make_shared<ShaderValue>();
-		m_valueList.Add(name, v);
-	}
-	return v.get();
-}
-
-//------------------------------------------------------------------------------
-ShaderValue* Material3::FindShaderValueConst(const StringRef& name) const
-{
-	ShaderValuePtr v;
-	if (!m_valueList.TryGetValue(name, &v))
-	{
-		return nullptr;
-	}
-	return v.get();
-}
-
-
-//==============================================================================
 // StaticMeshModel
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(StaticMeshModel, Object);
@@ -573,7 +417,7 @@ void StaticMeshModel::Initialize(GraphicsManager* manager)
 	LN_CHECK_ARG(manager != nullptr);
 	m_manager = manager;
 
-	m_materials = RefPtr<MaterialList3>::MakeRef();
+	m_materials = RefPtr<MaterialList>::MakeRef();
 }
 
 //------------------------------------------------------------------------------
@@ -628,7 +472,7 @@ void StaticMeshModel::SetMaterialCount(int count)
 	{
 		for (int i = oldCount; i < count; ++i)
 		{
-			auto m = RefPtr<Material3>::MakeRef();
+			auto m = RefPtr<Material>::MakeRef();
 			m_materials->SetAt(i, m);
 		}
 	}

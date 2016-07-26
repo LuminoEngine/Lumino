@@ -8,8 +8,7 @@
 
 LN_NAMESPACE_BEGIN
 class StaticMeshModel;
-class Material3;
-
+class Material;
 
 namespace detail
 {
@@ -173,7 +172,7 @@ class XFileLoader
 {
 public:
 	RefPtr<StaticMeshModel> Load(ModelManager* manager, Stream* stream, const PathName& parentDir, bool isDynamic, ModelCreationFlag flags);
-	static void DxMaterialToLnMaterial(const D3DMATERIAL9& dx_material, Material3* material);
+	static void DxMaterialToLnMaterial(const D3DMATERIAL9& dx_material, Material* material);
 
 	static void ConvertVertex_Pos_Normal_UV(Vertex* lnVB, XFileVertex_Pos_Normal_UV* dxVB, uint32_t count);
 	static void ConvertVertex_Pos_Normal_Color_UV(Vertex* lnVB, XFileVertex_Pos_Normal_Color_UV* dxVB, uint32_t count);

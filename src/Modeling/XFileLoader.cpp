@@ -700,7 +700,7 @@ RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream,
 			mesh->SetMaterialCount(attr_num);
 
 			// マテリアル、属性配列
-			MaterialList3* materials = mesh->m_materials;
+			MaterialList* materials = mesh->m_materials;
 			MeshAttributeList& attributes = mesh->m_attributes;
 			uint32_t mi = 0;
 			for (DerivedD3DXMeshContainer* c : dx_mesh_containers)
@@ -723,7 +723,7 @@ RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream,
 						if (!c->TextureNames.IsEmpty() && !c->TextureNames[i].IsEmpty())
 						{
 							materials->GetAt(mi)->SetTextureParameter(
-								Material3::MaterialTextureParameter,
+								Material::MaterialTextureParameter,
 								manager->CreateTexture(parentDir, c->TextureNames[i], flags));
 						}
 
@@ -812,38 +812,38 @@ RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream,
 }
 
 //------------------------------------------------------------------------------
-void XFileLoader::DxMaterialToLnMaterial(const D3DMATERIAL9& dx_material, Material3* material)
+void XFileLoader::DxMaterialToLnMaterial(const D3DMATERIAL9& dx_material, Material* material)
 {
 	material->SetColorParameter(
-		Material3::DiffuseParameter,
+		Material::DiffuseParameter,
 		dx_material.Diffuse.r,
 		dx_material.Diffuse.g,
 		dx_material.Diffuse.b,
 		dx_material.Diffuse.a);
 
 	material->SetColorParameter(
-		Material3::AmbientParameter,
+		Material::AmbientParameter,
 		dx_material.Ambient.r,
 		dx_material.Ambient.g,
 		dx_material.Ambient.b,
 		dx_material.Ambient.a);
 
 	material->SetColorParameter(
-		Material3::SpecularParameter,
+		Material::SpecularParameter,
 		dx_material.Specular.r,
 		dx_material.Specular.g,
 		dx_material.Specular.b,
 		dx_material.Specular.a);
 
 	material->SetColorParameter(
-		Material3::EmissiveParameter,
+		Material::EmissiveParameter,
 		dx_material.Emissive.r,
 		dx_material.Emissive.g,
 		dx_material.Emissive.b,
 		dx_material.Emissive.a);
 
 	material->SetFloatParameter(
-		Material3::PowerParameter,
+		Material::PowerParameter,
 		dx_material.Power);
 }
 

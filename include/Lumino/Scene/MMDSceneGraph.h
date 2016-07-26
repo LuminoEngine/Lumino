@@ -32,7 +32,6 @@ LN_INTERNAL_ACCESS:
 	void CreateCore(SceneGraphManager* manager);
 
 private:
-	//Material2*		m_defaultMaterial;
 	SceneNode*		m_defaultRoot;
 	//SceneNode*		m_default3DRoot;
 	//SceneNode*		m_default2DRoot;

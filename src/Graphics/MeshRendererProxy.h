@@ -6,7 +6,6 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class StaticMeshModel;
-class Material3;
 
 namespace detail
 {
