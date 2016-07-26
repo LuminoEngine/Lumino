@@ -6,6 +6,7 @@
 #include <Lumino/Graphics/VertexBuffer.h>
 #include <Lumino/Graphics/IndexBuffer.h>
 #include <Lumino/Graphics/Mesh.h>
+#include "GraphicsManager.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -175,28 +176,44 @@ private:
 class SphereMeshFactory
 {
 public:
-	SphereMeshFactory(float radius, int slices, int stacks)
-		: m_radius(radius)
-		, m_slices(slices)
-		, m_stacks(stacks)
+	SphereMeshFactory()
+		: m_radius(0)
+		, m_slices(0)
+		, m_stacks(0)
 	{
-		assert(m_radius > 0.0f);
-		assert(m_slices >= 2);
-		assert(m_stacks >= 2);
+	}
+	SphereMeshFactory(float radius, int slices, int stacks)
+	{
+		Initialize(radius, slices, stacks);
+	}
+
+	void Initialize(float radius, int slices, int stacks)
+	{
+		//if (LN_CHECKEQ_ARG(radius <= 0.0f)) return;
+		//if (LN_CHECKEQ_ARG(slices <= 1)) return;
+		//if (LN_CHECKEQ_ARG(stacks <= 1)) return;
+		m_radius = radius;
+		m_slices = slices;
+		m_stacks = stacks;
 		MakeSinCosTable();
 	}
 
+	// Squashed
+
 	int GetVertexCount() const
 	{
-		return 2 + m_slices * (m_stacks - 1);	// (top と bottom の 2 点) + リングの頂点数 * 重ねる数
+		return (m_slices + 1) * (m_stacks + 1);
+		//return 2 + m_slices * (m_stacks - 1);	// (top と bottom の 2 点) + リングの頂点数 * 重ねる数
 	}
 
 	int GetIndexCount() const
 	{
-		return 2 * m_slices + (m_stacks - 2) * (2 * m_slices);
+		return m_slices * m_stacks * 6;
+		//return 2 * m_slices + (m_stacks - 2) * (2 * m_slices);
 	}
 
-	typedef uint16_t Face[3];
+	//typedef uint16_t Face[3];
+	//typedef uint16_t QuadFace[6];
 
 	struct SinCos
 	{
@@ -204,8 +221,84 @@ public:
 		float	cos;
 	};
 
-	void Generate(Vertex* vertices, uint16_t* outIndices)
+	void Generate(Vertex* outVertices, uint16_t* outIndices)
 	{
+		Vertex* v = outVertices;
+		uint16_t* i = (uint16_t*)outIndices;
+
+		float stackUVStep = 1.0f / (m_stacks + 1);
+		float stackUV = 0.0f;
+
+		float sliceUVStep = 1.0f / (m_slices + 1);
+
+		// XY 平面上の step
+		float theta_step = Math::PI / m_stacks;
+		float theta = 0.0f;//theta_step;
+
+		// Z+ を起点とし、X- 方向へ回っていく
+
+		// rings (Vertex)
+		for (int iStack = 0; iStack < m_stacks + 1; ++iStack)
+		{
+			float sin_theta = sinf(theta);
+			float cos_theta = cosf(theta);
+			float sliceUV = 0.0f;
+
+			for (int iSlice = 0; iSlice < m_slices + 1; ++iSlice)
+			{
+				// top
+				if (iStack == 0)
+				{
+					v->normal.x = 0.0f;
+					v->normal.y = 1.0f;
+					v->normal.z = 0.0f;
+				}
+				// bottom
+				else if (iStack == m_stacks)
+				{
+					v->normal.x = 0.0f;
+					v->normal.y = -1.0f;
+					v->normal.z = 0.0f;
+				}
+				// between
+				else
+				{
+					v->normal.x = sin_theta * m_sincosTable[iSlice].cos;
+					v->normal.y = cos_theta;
+					v->normal.z = sin_theta * m_sincosTable[iSlice].sin;
+				}
+				v->position = v->normal * m_radius;
+				v->uv.x = sliceUV;
+				v->uv.y = stackUV;
+				++v;
+
+				sliceUV += sliceUVStep;
+			}
+
+			stackUV += stackUVStep;
+			theta += theta_step;
+		}
+
+		// faces
+		for (int iStack = 0; iStack < m_stacks; ++iStack)
+		{
+			for (int iSlice = 0; iSlice < m_slices; ++iSlice)
+			{
+				int p1 = (iSlice + 0) + (iStack + 0) * (m_slices + 1);	// ┏
+				int p2 = (iSlice + 0) + (iStack + 1) * (m_slices + 1);	// ┗
+				int p3 = (iSlice + 1) + (iStack + 0) * (m_slices + 1);	// ┓
+				int p4 = (iSlice + 1) + (iStack + 1) * (m_slices + 1);	// ┛
+				i[0] = p1;
+				i[1] = p2;
+				i[2] = p3;
+				i[3] = p3;
+				i[4] = p2;
+				i[5] = p4;
+				i += 6;
+			}
+		}
+
+#if 0
 		Face* faces = (Face*)outIndices;
 
 		float theta_step = Math::PI / m_stacks;
@@ -264,6 +357,7 @@ public:
 				}
 			}
 		}
+#endif
 	}
 
 	static uint16_t vertex_index(UINT slices, int slice, int stack)
@@ -275,15 +369,17 @@ public:
 	{
 		float phi_start = Math::PI / 2.0f;
 		float phi_step = -2.0f * Math::PI / m_slices;
-		m_sincosTable.Resize(m_slices);
+		m_sincosTable.Resize(m_slices + 1);
 
 		float angle = phi_start;
 		for (int i = 0; i < m_slices; ++i)
 		{
 			m_sincosTable[i].sin = std::sinf(angle);
 			m_sincosTable[i].cos = std::cosf(angle);
-			angle += phi_step;
+			angle -= phi_step;
 		}
+
+		m_sincosTable[m_slices] = m_sincosTable[0];
 	}
 
 private:
@@ -484,17 +580,33 @@ void StaticMeshModel::Initialize(GraphicsManager* manager)
 void StaticMeshModel::CreateBox(const Vector3& size)
 {
 	TexUVBoxMeshFactory factory(size);
-	m_vertexDeclaration = RefPtr<VertexDeclaration>::MakeRef();
-	m_vertexDeclaration->Initialize(m_manager);
+	m_vertexDeclaration = m_manager->GetDefaultVertexDeclaration();
+
 	m_vertexBuffer = RefPtr<VertexBuffer>::MakeRef();
-	m_vertexBuffer->Initialize(m_manager, sizeof(Vertex) * factory.GetVertexCount(), nullptr, DeviceResourceUsage_Static);
 	m_indexBuffer = RefPtr<IndexBuffer>::MakeRef();
+	m_vertexBuffer->Initialize(m_manager, sizeof(Vertex) * factory.GetVertexCount(), nullptr, DeviceResourceUsage_Static);
 	m_indexBuffer->Initialize(m_manager, factory.GetIndexCount(), nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Static);
 
-	m_vertexDeclaration->AddVertexElement(0, VertexElementType_Float3, VertexElementUsage_Position, 0);
-	m_vertexDeclaration->AddVertexElement(0, VertexElementType_Float2, VertexElementUsage_TexCoord, 0);
-	m_vertexDeclaration->AddVertexElement(0, VertexElementType_Float3, VertexElementUsage_Normal, 0);
-	m_vertexDeclaration->AddVertexElement(0, VertexElementType_Float4, VertexElementUsage_Color, 0);
+	ScopedVertexBufferLock lock1(m_vertexBuffer);
+	ScopedIndexBufferLock lock2(m_indexBuffer);
+	factory.Generate((Vertex*)lock1.GetData(), (uint16_t*)lock2.GetData());
+
+	SetMaterialCount(1);
+	m_attributes[0].MaterialIndex = 0;
+	m_attributes[0].StartIndex = 0;
+	m_attributes[0].PrimitiveNum = factory.GetIndexCount() / 3;
+}
+
+//------------------------------------------------------------------------------
+void StaticMeshModel::CreateSphere(float radius, int slices, int stacks)
+{
+	SphereMeshFactory factory(radius, slices, stacks);
+	m_vertexDeclaration = m_manager->GetDefaultVertexDeclaration();
+
+	m_vertexBuffer = RefPtr<VertexBuffer>::MakeRef();
+	m_indexBuffer = RefPtr<IndexBuffer>::MakeRef();
+	m_vertexBuffer->Initialize(m_manager, sizeof(Vertex) * factory.GetVertexCount(), nullptr, DeviceResourceUsage_Static);
+	m_indexBuffer->Initialize(m_manager, factory.GetIndexCount(), nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Static);
 
 	ScopedVertexBufferLock lock1(m_vertexBuffer);
 	ScopedIndexBufferLock lock2(m_indexBuffer);

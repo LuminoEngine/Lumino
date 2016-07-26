@@ -134,7 +134,7 @@ LN_INTERNAL_ACCESS:
 	MaterialList2();
 	virtual ~MaterialList2();
 	void Initialize(int subMaterialCount, bool createMainMaterial);
-	void CopyShared(MaterialList3* srcList);
+	void CopyShared(MaterialList3* srcList, bool createMainMaterial);
 	void UpdateMaterialInstances(SceneGraph* sceneGraph);
 	int GetMaterialInstanceCount() const { return m_instanceList.GetCount(); }
 	detail::MaterialInstance* GetMaterialInstance(int index) { return m_instanceList[index]; }

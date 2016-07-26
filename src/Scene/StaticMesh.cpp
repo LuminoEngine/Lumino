@@ -34,6 +34,17 @@ StaticMeshPtr StaticMesh::CreateBox(const Vector3& size)
 }
 
 //------------------------------------------------------------------------------
+StaticMeshPtr StaticMesh::CreateSphere(float radius, int slices, int stacks)
+{
+	auto ptr = StaticMeshPtr::MakeRef();
+	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
+	mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager());
+	mesh->CreateSphere(radius, slices, stacks);
+	ptr->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), mesh);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
 StaticMesh::StaticMesh()
 	: m_mesh()
 {
@@ -52,7 +63,7 @@ void StaticMesh::Initialize(SceneGraph* owner, StaticMeshModel* meshModel)
 
 	VisualNode::Initialize(owner, m_mesh->GetSubsetCount());
 
-	m_materialList->CopyShared(m_mesh->m_materials);
+	m_materialList->CopyShared(m_mesh->m_materials, true);
 
 
 	owner->GetManager()->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);

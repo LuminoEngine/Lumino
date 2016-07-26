@@ -101,7 +101,7 @@ void MaterialList2::Initialize(int subMaterialCount, bool createMainMaterial)
 }
 
 //------------------------------------------------------------------------------
-void MaterialList2::CopyShared(MaterialList3* srcList)
+void MaterialList2::CopyShared(MaterialList3* srcList, bool createMainMaterial)
 {
 	LN_CHECK_ARG(srcList != nullptr);
 
@@ -109,6 +109,16 @@ void MaterialList2::CopyShared(MaterialList3* srcList)
 	for (int i = 0; i < srcList->GetCount(); ++i)
 	{
 		SetAt(i, srcList->GetAt(i));
+	}
+
+
+	if (createMainMaterial)
+	{
+		m_mainMaterial = RefPtr<Material3>::MakeRef();
+	}
+	else if (GetCount() > 0)
+	{
+		m_mainMaterial = GetAt(0);
 	}
 }
 

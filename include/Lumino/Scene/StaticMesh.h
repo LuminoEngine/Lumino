@@ -18,6 +18,8 @@ public:
 
 	static StaticMeshPtr CreateBox(const Vector3& size);
 
+	static StaticMeshPtr CreateSphere(float radius, int slices, int stacks);
+
 LN_INTERNAL_ACCESS:
 	StaticMesh();
 	virtual ~StaticMesh();

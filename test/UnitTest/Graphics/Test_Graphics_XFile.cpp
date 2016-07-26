@@ -13,14 +13,13 @@ protected:
 TEST_F(Test_Graphics_XFile, Basic)
 {
 	auto shader = MMEShader::Create(LN_LOCALFILE("../../../src/Scene/Resource/BasicForwardRendering.fx"));
+	auto tex = Texture2D::Create(LN_LOCALFILE("TestData/img2.png"));
 
-	auto mesh = StaticMesh::Create(LN_LOCALFILE("TestData/Box_1.x"));
+	//auto mesh = StaticMesh::Create(LN_LOCALFILE("TestData/Box_1.x"));
 	//auto mesh = StaticMesh::Create(_T("D:/tmp/box1.x"));
-
-	for (auto* m : *mesh->GetMaterials())
-	{
-		m->SetShader(shader);
-	}
+	auto mesh = StaticMesh::CreateSphere(2, 32, 16);
+	mesh->SetShader(shader);
+	mesh->GetMaterials()->GetAt(0)->SetTextureParameter(Material3::MaterialTextureParameter, tex);
 
 	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
 	Camera::GetDefault3DCamera()->SetCameraBehavior(cb);
