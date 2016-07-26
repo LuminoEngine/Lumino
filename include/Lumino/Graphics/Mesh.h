@@ -36,6 +36,7 @@ LN_INTERNAL_ACCESS:
 	void Initialize(GraphicsManager* manager);
 	void CreateBox(const Vector3& size);
 	void CreateSphere(float radius, int slices, int stacks);
+	void CreateScreenPlane();
 
 	int GetSubsetCount() const { return m_attributes.GetCount(); }
 	void Draw(GraphicsContext* g);

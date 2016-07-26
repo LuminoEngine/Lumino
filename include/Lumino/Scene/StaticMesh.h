@@ -20,6 +20,8 @@ public:
 
 	static StaticMeshPtr CreateSphere(float radius, int slices, int stacks);
 
+	static StaticMeshPtr CreateScreenPlane();
+
 LN_INTERNAL_ACCESS:
 	StaticMesh();
 	virtual ~StaticMesh();

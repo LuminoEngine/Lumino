@@ -10,6 +10,53 @@
 
 LN_NAMESPACE_BEGIN
 
+class PlaneMeshFactory
+{
+public:
+	PlaneMeshFactory(const Vector2& size)
+	{
+		m_size = size;
+	}
+
+	int GetVertexCount() const
+	{
+		return 4;
+	}
+
+	int GetIndexCount() const
+	{
+		return 6;
+	}
+
+	void Generate(Vertex* outVertices, uint16_t* outIndices)
+	{
+		Vector2 half = m_size / 2;
+		outVertices[0].position.Set(-half.x, half.y, 0);
+		outVertices[0].normal.Set(0.0f, 0.0f, -1.0f);
+		outVertices[0].uv.Set(0.0f, 0.0f);
+		outVertices[1].position.Set(-half.x, -half.y, 0);
+		outVertices[1].normal.Set(0.0f, 0.0f, -1.0f);
+		outVertices[1].uv.Set(0.0f, 1.0f);
+		outVertices[2].position.Set(half.x, half.y, 0);
+		outVertices[2].normal.Set(0.0f, 0.0f, -1.0f);
+		outVertices[2].uv.Set(1.0f, 0.0f);
+		outVertices[3].position.Set(half.x, -half.y, 0);
+		outVertices[3].normal.Set(0.0f, 0.0f, -1.0f);
+		outVertices[3].uv.Set(1.0f, 1.0f);
+
+		outIndices[0] = 0;
+		outIndices[1] = 1;
+		outIndices[2] = 2;
+		outIndices[3] = 2;
+		outIndices[4] = 1;
+		outIndices[5] = 3;
+	}
+
+private:
+	Vector2	m_size;
+};
+
+
 class BoxMeshFactory
 {
 public:
@@ -445,6 +492,27 @@ void StaticMeshModel::CreateBox(const Vector3& size)
 void StaticMeshModel::CreateSphere(float radius, int slices, int stacks)
 {
 	SphereMeshFactory factory(radius, slices, stacks);
+	m_vertexDeclaration = m_manager->GetDefaultVertexDeclaration();
+
+	m_vertexBuffer = RefPtr<VertexBuffer>::MakeRef();
+	m_indexBuffer = RefPtr<IndexBuffer>::MakeRef();
+	m_vertexBuffer->Initialize(m_manager, sizeof(Vertex) * factory.GetVertexCount(), nullptr, DeviceResourceUsage_Static);
+	m_indexBuffer->Initialize(m_manager, factory.GetIndexCount(), nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Static);
+
+	ScopedVertexBufferLock lock1(m_vertexBuffer);
+	ScopedIndexBufferLock lock2(m_indexBuffer);
+	factory.Generate((Vertex*)lock1.GetData(), (uint16_t*)lock2.GetData());
+
+	SetMaterialCount(1);
+	m_attributes[0].MaterialIndex = 0;
+	m_attributes[0].StartIndex = 0;
+	m_attributes[0].PrimitiveNum = factory.GetIndexCount() / 3;
+}
+
+//------------------------------------------------------------------------------
+void StaticMeshModel::CreateScreenPlane()
+{
+	PlaneMeshFactory factory(Vector2(2.0f, 2.0f));
 	m_vertexDeclaration = m_manager->GetDefaultVertexDeclaration();
 
 	m_vertexBuffer = RefPtr<VertexBuffer>::MakeRef();

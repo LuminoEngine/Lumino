@@ -45,6 +45,17 @@ StaticMeshPtr StaticMesh::CreateSphere(float radius, int slices, int stacks)
 }
 
 //------------------------------------------------------------------------------
+StaticMeshPtr StaticMesh::CreateScreenPlane()
+{
+	auto ptr = StaticMeshPtr::MakeRef();
+	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
+	mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager());
+	mesh->CreateScreenPlane();
+	ptr->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), mesh);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
 StaticMesh::StaticMesh()
 	: m_mesh()
 {
