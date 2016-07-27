@@ -584,6 +584,12 @@ void StaticMeshModel::SetMaterialCount(int count)
 }
 
 //------------------------------------------------------------------------------
+Material* StaticMeshModel::GetMaterial(int index) const
+{
+	return m_materials->GetAt(index);
+}
+
+//------------------------------------------------------------------------------
 void StaticMeshModel::SetPosition(int index, const Vector3& position)
 {
 	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;

@@ -1,5 +1,6 @@
 ﻿
 #include "../../Internal.h"
+#include <Lumino/Graphics/Mesh.h>
 #include <Lumino/Graphics/GraphicsContext.h>
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/VisualNode.h>
@@ -7,6 +8,7 @@
 #include "MMEShaderTechnique.h"
 #include "MMERenderingPass.h"
 #include "MmdMaterial.h"
+#include "../SceneGraphManager.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
@@ -22,6 +24,10 @@ MMERenderingPass::MMERenderingPass(SceneGraphManager* manager, MMDPass mmdPass, 
 	, m_ownerShader(nullptr)
 {
 	LN_REFOBJ_SET(m_ownerShader, ownerShader);
+
+	m_gridMesh = RefPtr<StaticMeshModel>::MakeRef();
+	m_gridMesh->Initialize(manager->GetGraphicsManager());
+	m_gridMesh->CreateSquarePlane(Vector2(1, 1), Vector3::UnitY, MeshCreationFlags::DynamicBuffers);
 }
 
 //------------------------------------------------------------------------------
@@ -192,6 +198,12 @@ void MMERenderingPass::SelectPriorityParams(SceneNode* node, int subsetIndex, Re
 	// 描画を行わないダミーパスと考えることもできるが、そんなの何に使うのか。
 	// とりあえず現状では想定外である。
 	LN_THROW(outParams->Shader != NULL, InvalidOperationException);
+}
+
+//------------------------------------------------------------------------------
+void MMERenderingPass::PostRender(SceneGraphRenderingContext* dc)
+{
+
 }
 
 LN_NAMESPACE_SCENE_END

@@ -37,6 +37,8 @@ public:
 
 	void SetMaterialCount(int count);
 
+	Material* GetMaterial(int index) const;
+
 	void SetPosition(int index, const Vector3& position);
 	void SetUV(int index, const Vector2& uv);
 	const Vector3& GetPosition(int index);
