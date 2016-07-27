@@ -14,9 +14,10 @@ class Camera
 	: public SceneNode
 {
 public:
-	static Camera* GetDefault2DCamera();
+	static Camera* GetMain3DCamera();
 
-	static Camera* GetDefault3DCamera();
+	static Camera* GetMain2DCamera();
+
 
 public:
 

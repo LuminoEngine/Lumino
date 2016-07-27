@@ -56,6 +56,60 @@ private:
 	Vector2	m_size;
 };
 
+class PlaneMeshFactory2
+{
+public:
+	PlaneMeshFactory2(const Vector2& size, const Vector3& front)
+		: m_size(size)
+		, m_front(front)
+	{}
+
+	int GetVertexCount() const { return 4; }
+	int GetIndexCount() const { return 6; }
+
+	void Generate(Vertex* outVertices, uint16_t* outIndices)
+	{
+		Vector2 half = m_size / 2;
+		if (m_front == Vector3::UnitY)
+		{
+			outVertices[0].position.Set(-half.x, 0, half.y);
+			outVertices[1].position.Set(-half.x, 0, -half.y);
+			outVertices[2].position.Set(half.x, 0, half.y);
+			outVertices[3].position.Set(half.x, 0, -half.y);
+		}
+		else if(m_front == -Vector3::UnitY)
+		{
+			outVertices[0].position.Set(half.x, 0, half.y);
+			outVertices[1].position.Set(half.x, 0, -half.y);
+			outVertices[2].position.Set(-half.x, 0, half.y);
+			outVertices[3].position.Set(-half.x, 0, -half.y);
+		}
+		else
+		{
+			LN_NOTIMPLEMENTED();
+		}
+
+		outVertices[0].normal = m_front;
+		outVertices[0].uv.Set(0.0f, 0.0f);
+		outVertices[1].normal.Set(0.0f, 0.0f, -1.0f);
+		outVertices[1].uv.Set(0.0f, 1.0f);
+		outVertices[2].normal.Set(0.0f, 0.0f, -1.0f);
+		outVertices[2].uv.Set(1.0f, 0.0f);
+		outVertices[3].normal.Set(0.0f, 0.0f, -1.0f);
+		outVertices[3].uv.Set(1.0f, 1.0f);
+
+		outIndices[0] = 0;
+		outIndices[1] = 1;
+		outIndices[2] = 2;
+		outIndices[3] = 2;
+		outIndices[4] = 1;
+		outIndices[5] = 3;
+	}
+
+private:
+	Vector2	m_size;
+	Vector3	m_front;
+};
 
 class BoxMeshFactory
 {
@@ -448,6 +502,8 @@ StaticMeshModel::StaticMeshModel()
 	, m_vertexDeclaration()
 	, m_vertexBuffer()
 	, m_indexBuffer()
+	, m_vertexCount(0)
+	, m_lockedVertexBuffer(nullptr)
 	, m_materials()
 	, m_attributes()
 {
@@ -471,63 +527,44 @@ void StaticMeshModel::Initialize(GraphicsManager* manager)
 void StaticMeshModel::CreateBox(const Vector3& size)
 {
 	TexUVBoxMeshFactory factory(size);
-	m_vertexDeclaration = m_manager->GetDefaultVertexDeclaration();
-
-	m_vertexBuffer = RefPtr<VertexBuffer>::MakeRef();
-	m_indexBuffer = RefPtr<IndexBuffer>::MakeRef();
-	m_vertexBuffer->Initialize(m_manager, sizeof(Vertex) * factory.GetVertexCount(), nullptr, DeviceResourceUsage_Static);
-	m_indexBuffer->Initialize(m_manager, factory.GetIndexCount(), nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Static);
+	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), 1, MeshCreationFlags::None);
 
 	ScopedVertexBufferLock lock1(m_vertexBuffer);
 	ScopedIndexBufferLock lock2(m_indexBuffer);
 	factory.Generate((Vertex*)lock1.GetData(), (uint16_t*)lock2.GetData());
-
-	SetMaterialCount(1);
-	m_attributes[0].MaterialIndex = 0;
-	m_attributes[0].StartIndex = 0;
-	m_attributes[0].PrimitiveNum = factory.GetIndexCount() / 3;
 }
 
 //------------------------------------------------------------------------------
 void StaticMeshModel::CreateSphere(float radius, int slices, int stacks)
 {
 	SphereMeshFactory factory(radius, slices, stacks);
-	m_vertexDeclaration = m_manager->GetDefaultVertexDeclaration();
-
-	m_vertexBuffer = RefPtr<VertexBuffer>::MakeRef();
-	m_indexBuffer = RefPtr<IndexBuffer>::MakeRef();
-	m_vertexBuffer->Initialize(m_manager, sizeof(Vertex) * factory.GetVertexCount(), nullptr, DeviceResourceUsage_Static);
-	m_indexBuffer->Initialize(m_manager, factory.GetIndexCount(), nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Static);
+	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), 1, MeshCreationFlags::None);
 
 	ScopedVertexBufferLock lock1(m_vertexBuffer);
 	ScopedIndexBufferLock lock2(m_indexBuffer);
 	factory.Generate((Vertex*)lock1.GetData(), (uint16_t*)lock2.GetData());
+}
 
-	SetMaterialCount(1);
-	m_attributes[0].MaterialIndex = 0;
-	m_attributes[0].StartIndex = 0;
-	m_attributes[0].PrimitiveNum = factory.GetIndexCount() / 3;
+//------------------------------------------------------------------------------
+void StaticMeshModel::CreateSquarePlane(const Vector2& size, const Vector3& front, MeshCreationFlags flags)
+{
+	PlaneMeshFactory2 factory(size, front);
+	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), 1, flags);
+
+	ScopedVertexBufferLock lock1(m_vertexBuffer);
+	ScopedIndexBufferLock lock2(m_indexBuffer);
+	factory.Generate((Vertex*)lock1.GetData(), (uint16_t*)lock2.GetData());
 }
 
 //------------------------------------------------------------------------------
 void StaticMeshModel::CreateScreenPlane()
 {
 	PlaneMeshFactory factory(Vector2(2.0f, 2.0f));
-	m_vertexDeclaration = m_manager->GetDefaultVertexDeclaration();
-
-	m_vertexBuffer = RefPtr<VertexBuffer>::MakeRef();
-	m_indexBuffer = RefPtr<IndexBuffer>::MakeRef();
-	m_vertexBuffer->Initialize(m_manager, sizeof(Vertex) * factory.GetVertexCount(), nullptr, DeviceResourceUsage_Static);
-	m_indexBuffer->Initialize(m_manager, factory.GetIndexCount(), nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Static);
+	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), 1, MeshCreationFlags::None);
 
 	ScopedVertexBufferLock lock1(m_vertexBuffer);
 	ScopedIndexBufferLock lock2(m_indexBuffer);
 	factory.Generate((Vertex*)lock1.GetData(), (uint16_t*)lock2.GetData());
-
-	SetMaterialCount(1);
-	m_attributes[0].MaterialIndex = 0;
-	m_attributes[0].StartIndex = 0;
-	m_attributes[0].PrimitiveNum = factory.GetIndexCount() / 3;
 }
 
 //------------------------------------------------------------------------------
@@ -547,9 +584,71 @@ void StaticMeshModel::SetMaterialCount(int count)
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::Draw(GraphicsContext* g)
+void StaticMeshModel::SetPosition(int index, const Vector3& position)
 {
+	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
+	TryLockBuffers();
+	m_lockedVertexBuffer[index].position = position;
+}
 
+//------------------------------------------------------------------------------
+void StaticMeshModel::SetUV(int index, const Vector2& uv)
+{
+	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
+	TryLockBuffers();
+	m_lockedVertexBuffer[index].uv = uv;
+}
+
+//------------------------------------------------------------------------------
+const Vector3& StaticMeshModel::GetPosition(int index)
+{
+	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return Vector3::Zero;
+	TryLockBuffers();
+	return m_lockedVertexBuffer[index].position;
+}
+
+//------------------------------------------------------------------------------
+void StaticMeshModel::TryLockBuffers()
+{
+	if (m_lockedVertexBuffer == nullptr)
+	{
+		ByteBuffer* buf = m_vertexBuffer->Lock();
+		m_lockedVertexBuffer = (Vertex*)buf->GetData();
+	}
+}
+
+//------------------------------------------------------------------------------
+void StaticMeshModel::CommitRenderData(VertexDeclaration** decls, VertexBuffer** vb, IndexBuffer** ib)
+{
+	if (m_lockedVertexBuffer != nullptr)
+	{
+		//m_lockedVertexBuffer = m_vertexBuffer->Lock();
+		m_vertexBuffer->Unlock();
+		m_lockedVertexBuffer = nullptr;
+	}
+
+	if (decls != nullptr) *decls = m_vertexDeclaration;
+	if (vb != nullptr) *vb = m_vertexBuffer;
+	if (ib != nullptr) *ib = m_indexBuffer;
+}
+
+//------------------------------------------------------------------------------
+void StaticMeshModel::CreateBuffers(int vertexCount, int indexCount, int attributeCount, MeshCreationFlags flags)
+{
+	m_vertexDeclaration = m_manager->GetDefaultVertexDeclaration();
+
+	DeviceResourceUsage usage = (flags.TestFlag(MeshCreationFlags::DynamicBuffers)) ? DeviceResourceUsage_Static : DeviceResourceUsage_Dynamic;
+	m_vertexBuffer = RefPtr<VertexBuffer>::MakeRef();
+	m_indexBuffer = RefPtr<IndexBuffer>::MakeRef();
+	m_vertexBuffer->Initialize(m_manager, sizeof(Vertex) * vertexCount, nullptr, usage);
+	m_indexBuffer->Initialize(m_manager, indexCount, nullptr, IndexBufferFormat_UInt16, usage);
+
+	SetMaterialCount(1);
+	m_attributes[0].MaterialIndex = 0;
+	m_attributes[0].StartIndex = 0;
+	m_attributes[0].PrimitiveNum = indexCount / 3;
+
+	m_vertexCount = vertexCount;
 }
 
 LN_NAMESPACE_END

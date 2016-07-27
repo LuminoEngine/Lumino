@@ -82,7 +82,7 @@ TEST_F(Test_Scene_SpriteParticle, Billboard)
 	auto particle1 = SpriteParticle::Create3D(m);
 
 	// 斜め上から見下ろす
-	Camera::GetDefault3DCamera()->SetPosition(20, 20, -20.0f);
+	Camera::GetMain3DCamera()->SetPosition(20, 20, -20.0f);
 
 	Engine::UpdateFrame();
 
@@ -101,7 +101,7 @@ TEST_F(Test_Scene_SpriteParticle, MovementDirection)
 	auto particle1 = SpriteParticle::Create3D(m);
 
 	// 斜め上から見下ろす
-	Camera::GetDefault3DCamera()->SetPosition(20, 20, -20.0f);
+	Camera::GetMain3DCamera()->SetPosition(20, 20, -20.0f);
 
 	for (int i = 0; i < 60; ++i) { Engine::UpdateFrame(); }
 
@@ -121,7 +121,7 @@ TEST_F(Test_Scene_SpriteParticle, MaxParticles)
 	m->SetMaxParticles(1);
 	auto particle1 = SpriteParticle::Create3D(m);
 
-	Camera::GetDefault3DCamera()->SetPosition(0, 0, -20.0f);
+	Camera::GetMain3DCamera()->SetPosition(0, 0, -20.0f);
 
 	// 同時表示数は1個。また、繰り返しても配列外アクセスとかしないこと。
 	for (int i = 0; i < 60; ++i) { Engine::UpdateFrame(); }

@@ -3,47 +3,53 @@ static const int MMM_LightCount = 3;
 
 struct LN_VS_INPUT
 {
-	float3	Pos		: POSITION;		// ˆÊ’u
-	float2	Tex		: TEXCOORD0;	// ƒeƒNƒXƒ`ƒƒÀ•W
-	float3	Normal	: NORMAL0;//TEXCOORD1;	// –@ü
-	float4	Color	: COLOR0;		// ’¸“_F
+	float3	Pos		: POSITION;		// ä½ç½®
+	float2	Tex		: TEXCOORD0;	// ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
+	float3	Normal	: NORMAL0;//TEXCOORD1;	// æ³•ç·š
+	float4	Color	: COLOR0;		// é ‚ç‚¹è‰²
 };
 
 //------------------------------------------------------------------------------
 
-// À•W•ÏŠ·s—ñ
-float4x4	WorldViewProjMatrix	: WORLDVIEWPROJECTIONINVERSE;
+// åº§æ¨™å¤‰æ›è¡Œåˆ—
+float4x4	WorldViewProjMatrix	: WORLDVIEWPROJECTION;
+float4x4	ViewProjMatrix	: VIEWPROJECTIONINVERSE;
 float4x4	WorldMatrix			: WORLD;
 float4x4	ViewMatrix			: VIEW;
 float4x4	ProjMatrix			: PROJECTION;
 
-// ƒIƒuƒWƒFƒNƒg‚ÌƒeƒNƒXƒ`ƒƒ
+// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒ†ã‚¯ã‚¹ãƒãƒ£
 texture		ObjectTexture		: MATERIALTEXTURE;
 sampler		ObjTexSampler		= sampler_state
 {
-	texture = <ObjectTexture>;
-	MINFILTER = LINEAR;
-	MAGFILTER = LINEAR;
+	texture = <ObjectTexture>;	// ã‚µã‚¤ã‚ºã¯ã€é€Ÿåº¦ã¨å“è³ªã®ãƒãƒ©ãƒ³ã‚¹çš„ã« 512px ãŒã¡ã‚‡ã†ã©ã„ã„ã€‚
+	MINFILTER = ANISOTROPIC;	// NONE,POINT ã ã¨ã€MipMap ã®å¢ƒç•Œã«ã‚·ãƒ£ã‚®ã®ã‚ˆã†ãªã‚‚ã®ãŒè¦‹ãˆã‚‹ã€‚LINEAR ã ã¨è¿‘æ™¯ã§ã‚‚ãƒœã‚±ã™ãã‚‹ã€‚
+	MAGFILTER = LINEAR;			// ANISOTROPIC ã§ã‚‚å¤‰ã‚ã‚‰ãªã„ã€‚LINEAR ã§è‰¯ã„ã®ã§ã¯ã€‚
+	MIPFILTER = LINEAR;			// ANISOTROPIC ã§ã‚‚å¤‰ã‚ã‚‰ãªã„ã€‚LINEAR ã§è‰¯ã„ã®ã§ã¯ã€‚
+	MAXANISOTROPY = 16;
 };
 
 struct VS_OUTPUT
 {
-	float4	Pos		: POSITION;		// ˆÊ’u
-	float2	Tex		: TEXCOORD0;	// ƒeƒNƒXƒ`ƒƒÀ•W
+	float4	Pos		: POSITION;		// ä½ç½®
+	float2	Tex		: TEXCOORD0;	// ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
+	float2	TexSc		: TEXCOORD1;	// ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 };
 
 //------------------------------------------------------------------------------
-// ’¸“_ƒVƒF[ƒ_
+// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€
 VS_OUTPUT Basic_VS(LN_VS_INPUT input)
 {
 	VS_OUTPUT output;
 	
-	// ’¸“_ˆÊ’u‚ğƒXƒNƒŠ[ƒ“‹óŠÔ‚É•ÏŠ·
-	output.Pos = float4(input.Pos, 1.0);
+	// é ‚ç‚¹ä½ç½®ã‚’ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ç©ºé–“ã«å¤‰æ›
+	output.Pos = mul(float4(input.Pos, 1.0), WorldViewProjMatrix);
 	
-	// ƒeƒNƒXƒ`ƒƒÀ•W
-	output.Tex = input.Pos.xy;//input.Tex;
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
+	output.Tex.x = input.Pos.x;
+	output.Tex.y = input.Pos.z;
 	
+	output.TexSc = input.Tex;
 	return output;
 }
 
@@ -65,18 +71,23 @@ static float3 camPos = float3(0, 0, 0);
 
 float3 CameraPosition : POSITION  < string Object = "Camera"; >;
 
+static float2 pixelStep = float2(2.0 / 160.0, 2.0 / 120.0);
+
 //------------------------------------------------------------------------------
-// ƒsƒNƒZƒ‹ƒVƒF[ƒ_
+// ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€
 float4 Basic_PS(VS_OUTPUT input) : COLOR0
 {
 	//float4 color;
 	
-	//float4 texColor = tex2D(ObjTexSampler, input.Tex);
+	float4 texColor = tex2D(ObjTexSampler, input.Tex);
+	float4 texColor2 = tex2D(ObjTexSampler, input.Tex / 10.0);
+	//texColor.a = 1.0;
+	return texColor + texColor2;
 	//color = texColor;
-	
-	float4 ray1 = mul(float4(input.Tex, 0, 0), WorldViewProjMatrix);
+	/*
+	float4 ray1 = mul(float4(input.TexSc, 0, 0), ViewProjMatrix);
 	float3 ray = ray1.xyz;// / ray1.w;
-	ray *= 100;
+	ray *= 1000;	// zfar é™ç•Œ
 	
 	float3 direction = ray - CameraPosition;
 	
@@ -85,17 +96,36 @@ float4 Basic_PS(VS_OUTPUT input) : COLOR0
 	
 	float t = (plane_d + dot(plane_normal, CameraPosition)) / dt;
 	float3 pt = CameraPosition - (t * direction);
+	*/
 	
-	float2 uv = fmod(pt.xz, 1.0);
-	float c = step(0.9, max(uv.x, uv.y));
+	//float2 uv = fmod(pt.xz, 1.0);
+	//float c = step(0.9, max(uv.x, uv.y));
 	
 	
 	//grid(float3(input.Tex, 0.0));
-	return float4(c, 0, 0, 1);
+	//return float4(c, 0, 0, 1);
+	
+	/*
+	float2 coord = input.Tex;
+	float2 grid = abs(frac(coord - 0.5) - 0.5) / fwidth(coord);
+	float li = min(grid.x, grid.y);
+	float u = 1.0 - min(li, 1.0);
+	return float4(u, u, u, 1.0);
+	*/
+	/*
+	float2 unit1 = abs(fmod(input.Tex, 1.0));
+	float2 base = floor(unit1);
+	float2 diff = unit1 - base;
+	
+	float c = 0.0;
+	if (unit2.x <= unit1.x || unit2.y <= unit1.y) c = 1.0;
+	
+	return float4(ray1.xyz, 1);
+	*/
 }
 
 //------------------------------------------------------------------------------
-// •`‰æƒeƒNƒjƒbƒN
+// æç”»ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯
 technique MainTec0
 {
 	pass P0

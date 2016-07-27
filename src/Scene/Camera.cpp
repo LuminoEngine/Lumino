@@ -12,15 +12,15 @@ LN_NAMESPACE_SCENE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-Camera* Camera::GetDefault2DCamera()
+Camera* Camera::GetMain3DCamera()
 {
-	return SceneGraphManager::Instance->GetDefault2DSceneGraph()->GetMainCamera();
+	return SceneGraphManager::Instance->GetDefault3DSceneGraph()->GetMainCamera();
 }
 
 //------------------------------------------------------------------------------
-Camera* Camera::GetDefault3DCamera()
+Camera* Camera::GetMain2DCamera()
 {
-	return SceneGraphManager::Instance->GetDefault3DSceneGraph()->GetMainCamera();
+	return SceneGraphManager::Instance->GetDefault2DSceneGraph()->GetMainCamera();
 }
 
 //------------------------------------------------------------------------------

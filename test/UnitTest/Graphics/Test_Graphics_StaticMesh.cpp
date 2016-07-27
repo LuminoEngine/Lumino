@@ -15,7 +15,7 @@ TEST_F(Test_Graphics_StaticMesh, Box)
 
 
 	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
-	Camera::GetDefault3DCamera()->SetCameraBehavior(cb);
+	Camera::GetMain3DCamera()->SetCameraBehavior(cb);
 
 	while (Engine::UpdateFrame());
 }

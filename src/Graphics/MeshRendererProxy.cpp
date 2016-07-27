@@ -90,12 +90,15 @@ void MeshRendererProxy::DrawMesh(StaticMeshModel* mesh, int startIndex, int tria
 		m_stateModified = false;
 	}
 	
-	
+	VertexDeclaration* decls;
+	VertexBuffer* vb;
+	IndexBuffer* ib;
+	mesh->CommitRenderData(&decls, &vb, &ib);
 
 	DrawMeshCommandData data;
-	data.vertexDeclaration = mesh->m_vertexDeclaration->GetDeviceObject();
-	data.vertexBuffers[0] = mesh->m_vertexBuffer->GetDeviceObject();		// TODO: まだ1つだけ
-	data.indexBuffer = mesh->m_indexBuffer->GetDeviceObject();
+	data.vertexDeclaration = decls->GetDeviceObject();
+	data.vertexBuffers[0] = vb->GetDeviceObject();		// TODO: まだ1つだけ
+	data.indexBuffer = ib->GetDeviceObject();
 	data.startIndex = startIndex;
 	data.triangleCount = triangleCount;
 	LN_ENQUEUE_RENDER_COMMAND_2(

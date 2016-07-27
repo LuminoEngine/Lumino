@@ -42,6 +42,12 @@ MaterialPtr Material::Create()
 Material::Material()
 	: m_shader(nullptr)
 	, m_valueList()
+	, m_blendMode(BlendMode::Normal)
+	, m_culling(CullingMode::Back)
+	, m_fill(FillMode_Solid)
+	, m_alphaTest(true)
+	, m_depthTestEnabled(true)
+	, m_depthWriteEnabled(true)
 	, m_modifiedForMaterialInstance(false)
 {
 }
@@ -104,6 +110,26 @@ void Material::SetColorParameter(const StringRef& name, const Color& value)
 void Material::SetColorParameter(const StringRef& name, float r, float g, float b, float a)
 {
 	SetColorParameter(name, Color(r, g, b, a));
+}
+
+//------------------------------------------------------------------------------
+void Material::SetBlendMode(BlendMode mode)
+{
+}
+
+//------------------------------------------------------------------------------
+void Material::SetCullingMode(CullingMode mode)
+{
+}
+
+//------------------------------------------------------------------------------
+void Material::SetFillMode(FillMode mode)
+{
+}
+
+//------------------------------------------------------------------------------
+void Material::SetAlphaTestEnabled(bool enabled)
+{
 }
 
 //------------------------------------------------------------------------------

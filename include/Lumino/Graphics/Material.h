@@ -3,6 +3,7 @@
 #include "Color.h"
 #include "Texture.h"
 #include "Shader.h"
+#include "RenderState.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -38,7 +39,27 @@ public:
 	void SetTextureParameter(const StringRef& name, Texture* value);
 	void SetColorParameter(const StringRef& name, const Color& value);
 	void SetColorParameter(const StringRef& name, float r, float g, float b, float a);
-	
+
+	//--------------------------------------------------------------------------
+	/** @name RenderState */
+	/** @{ */
+
+	void SetBlendMode(BlendMode mode);
+	void SetCullingMode(CullingMode mode);
+	void SetFillMode(FillMode mode);
+	void SetAlphaTestEnabled(bool enabled);
+
+	/** @} */
+
+	//--------------------------------------------------------------------------
+	/** @name DepthStencilState */
+	/** @{ */
+
+	void SetDepthTestEnabled(bool enabled);
+	void SetDepthWriteEnabled(bool enabled);
+
+	/** @} */
+
 protected:
 	Material();
 	virtual ~Material();
@@ -86,6 +107,13 @@ private:
 	RefPtr<Shader>						m_shader;
 	SortedArray<String, ShaderValuePtr>	m_valueList;
 	Array<ValuePair>					m_linkedVariableList;
+	
+	BlendMode							m_blendMode;
+	CullingMode							m_culling;
+	FillMode							m_fill;
+	bool								m_alphaTest;
+	bool								m_depthTestEnabled;
+	bool								m_depthWriteEnabled;
 
 LN_INTERNAL_ACCESS:
 	bool								m_modifiedForMaterialInstance;

@@ -709,6 +709,7 @@ void DX9ShaderPass::EndPass()
 //------------------------------------------------------------------------------
 void DX9ShaderPass::CommitSamplerStatus()
 {
+#if 0
 	IDirect3DDevice9* dxDevice = m_owner->GetGraphicsDevice()->GetIDirect3DDevice9();
 	IDirect3DBaseTexture9* dxTexture;
 	for (int index : m_samplerIndices)
@@ -745,6 +746,7 @@ void DX9ShaderPass::CommitSamplerStatus()
 			dxTexture->Release();
 		}
 	}
+#endif
 }
 
 } // namespace Driver

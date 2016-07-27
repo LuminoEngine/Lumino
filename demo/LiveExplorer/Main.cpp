@@ -303,7 +303,7 @@ int main()
 
 
 		auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
-		Camera::GetDefault3DCamera()->SetCameraBehavior(cb);
+		Camera::GetMain3DCamera()->SetCameraBehavior(cb);
 
 		//auto grid1 = Grid::Create3D();
 

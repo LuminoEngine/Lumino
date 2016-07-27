@@ -20,7 +20,7 @@ TEST_F(Test_Scene_StaticMesh, Box)
 	mesh->GetMaterials()->GetAt(0)->SetTextureParameter(_T("MaterialTexture"), Texture2D::Create(LN_LOCALFILE("../Graphics/TestData/img2.png")));
 
 	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
-	Camera::GetDefault3DCamera()->SetCameraBehavior(cb);
+	Camera::GetMain3DCamera()->SetCameraBehavior(cb);
 
 	while (Engine::UpdateFrame());
 }
