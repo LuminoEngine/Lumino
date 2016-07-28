@@ -744,11 +744,8 @@ void ShaderVariable::ChangeDevice(Driver::IShaderVariable* obj)
 //------------------------------------------------------------------------------
 void ShaderVariable::SetModified()
 {
-	GraphicsContext* activeContext = m_owner->GetManager()->GetActiveContext();
-	if (activeContext->GetShaderPass() != nullptr && activeContext->GetShaderPass()->GetOwnerShader() == m_owner)
-	{
-		activeContext->OnStateChanging();
-	}
+	detail::ContextInterface* activeContext = m_owner->GetManager()->GetActiveContext();
+	if (activeContext != nullptr) activeContext->OnShaderVariableModified(this);
 	m_owner->SetModifiedVariables(true);
 	m_modified = true;
 }

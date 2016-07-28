@@ -13,10 +13,13 @@ class FileManager;
 LN_NAMESPACE_GRAPHICS_BEGIN
 class RenderingThread;
 class GraphicsContext;
+class RenderingContext;
+class DrawingContext;
 class PainterEngine;
 class TextRenderer;
 class BitmapTextRenderer;
 class SwapChain;
+namespace detail { class ContextInterface; }
 
 namespace detail
 {
@@ -105,9 +108,9 @@ public:
 
 	/** 関連付けられている FontManager を取得します。*/
 	FontManager* GetFontManager() const { return m_fontManager; }
-
-	GraphicsContext* GetGraphicsContext() const { return m_graphicsContext; }
-
+	
+	RenderingContext* GetRenderingContext() const { return m_renderingContext; }
+	DrawingContext* GetDrawingContext() const { return m_drawingContext; }\
 
 	BitmapTextRenderer* GetBitmapTextRenderer() const { return m_bitmapTextRenderer; }
 
@@ -121,8 +124,8 @@ public:
 
 	void ChangeDevice(Driver::IGraphicsDevice* device);
 
-	void SwitchActiveContext(GraphicsContext* context);
-	GraphicsContext* GetActiveContext() const { return m_activeContext; }
+	void SwitchActiveContext(detail::ContextInterface* context);
+	detail::ContextInterface* GetActiveContext() const { return m_activeContext; }
 
 public:	// TODO: internal
 	struct FontData
@@ -183,8 +186,11 @@ private:
 	Details::Renderer*				m_renderer;
 	RenderingThread*				m_renderingThread;
 
-	GraphicsContext*				m_activeContext;
-	GraphicsContext*				m_graphicsContext;
+	detail::ContextInterface*		m_activeContext;
+	RenderingContext*				m_renderingContext;
+	DrawingContext*					m_drawingContext;
+
+
 	detail::TextRendererCore*		m_textRendererCore;
 	PainterEngine*					m_painterEngine;
 	BitmapTextRenderer*				m_bitmapTextRenderer;

@@ -9,6 +9,7 @@ protected:
 
 };
 
+#if 0
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_GraphicsContext, DrawRectangle)
 {
@@ -108,3 +109,4 @@ TEST_F(Test_Graphics_GraphicsContext, DrawText_UserFont)
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_GraphicsContext.DrawText_UserFont.png")));
 }
 
+#endif

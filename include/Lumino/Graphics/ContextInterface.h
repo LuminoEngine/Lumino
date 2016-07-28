@@ -80,6 +80,69 @@ public:
 	virtual void OnDeactivated() = 0;
 };
 
+
+struct BasicContextState
+{
+	static const int MaxMultiRenderTargets = 4;	// TODO
+
+	RenderState				renderState;
+	DepthStencilState		depthStencilState;
+	RefPtr<Texture>			depthBuffer;
+	Rect					viewport;
+
+	void SetRenderTarget(int index, Texture* texture);
+	Texture* GetRenderTarget(int index) const;
+	void SetShaderPass(ShaderPass* pass);
+	ShaderPass* GetShaderPass() const { return m_shaderPass; }
+
+	bool Equals(const BasicContextState& s) const;
+
+private:
+	RefPtr<Texture>			m_renderTargets[MaxMultiRenderTargets];
+	RefPtr<Shader>			m_ownerShader;
+	ShaderPass*				m_shaderPass = nullptr;
+};
+
+
+
+class ContextInterface
+	: public RefObject
+{
+protected:
+	ContextInterface();
+	virtual ~ContextInterface();
+	void Initialize(GraphicsManager* manager);
+
+	void NorityStateChanging();
+	void NorityStartDrawing(detail::IRendererPloxy* rendererPloxy);
+	void FlushImplemented();
+
+	// call by GraphicsManager
+	void OnActivated();
+	void OnDeactivated();
+
+	virtual void OnStateFlush();
+	virtual void OnPrimitiveFlush();
+
+	// call by ShaderVariable::SetModified()
+	virtual void OnShaderVariableModified(ShaderVariable* var);
+
+	void SetBasicContextState(const BasicContextState& state);
+	Details::Renderer* GetBaseRenderer() const { return m_baseRenderer; }
+
+private:
+	void SwitchActiveRendererPloxy(detail::IRendererPloxy* rendererPloxy);
+
+	GraphicsManager*		m_manager;
+	Details::Renderer*		m_baseRenderer;
+	detail::IRendererPloxy*	m_activeRendererPloxy;
+	bool					m_stateChanged;
+
+	friend class GraphicsManager;
+	friend class ShaderVariable;
+};
+
+
 } // namespace detail
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

@@ -3,7 +3,7 @@
 #include "EngineDiagCore.h"
 
 LN_NAMESPACE_BEGIN
-class GraphicsContext;
+class DrawingContext;
 
 class EngineDiagViewer
 	: public Object
@@ -16,7 +16,7 @@ public:
 	void SetVisible(bool visible) { m_isVisible = visible; }
 	bool IsVisible() const { return m_isVisible; }
 	void UpdateFrame();
-	void Render(GraphicsContext* g, const Vector2& viewSize);
+	void Render(DrawingContext* g, const Vector2& viewSize);
 	
 private:
 	EngineDiagCore*	m_diagCore;

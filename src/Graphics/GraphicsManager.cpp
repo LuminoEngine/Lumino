@@ -720,6 +720,8 @@
 #include <Lumino/Graphics/GraphicsContext.h>
 #include <Lumino/Graphics/Shader.h>
 #include <Lumino/Graphics/VertexDeclaration.h>
+#include <Lumino/Graphics/RenderingContext.h>
+#include <Lumino/Graphics/DrawingContext.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -787,7 +789,8 @@ GraphicsManager::GraphicsManager()
 	, m_renderer(nullptr)
 	, m_renderingThread(nullptr)
 	, m_activeContext(nullptr)
-	, m_graphicsContext(nullptr)
+	, m_renderingContext(nullptr)
+	, m_drawingContext(nullptr)
 	, m_painterEngine(nullptr)
 	, m_textRendererCore(nullptr)
 	, m_bitmapTextRenderer(nullptr)
@@ -916,8 +919,14 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 	m_textRendererCore = LN_NEW detail::TextRendererCore();
 	m_textRendererCore->Initialize(this);
 
-	m_graphicsContext = LN_NEW GraphicsContext();
-	m_graphicsContext->Initialize(this);
+	//m_graphicsContext = LN_NEW GraphicsContext();
+	//m_graphicsContext->Initialize(this);
+
+	m_renderingContext = LN_NEW RenderingContext();
+	m_renderingContext->Initialize(this);
+
+	m_drawingContext = LN_NEW DrawingContext();
+	m_drawingContext->Initialize(this);
 
 	// TextRendererCache
 	m_glyphTextureCache = RefPtr<CacheManager>::MakeRef(512, 0);
@@ -967,7 +976,8 @@ void GraphicsManager::Finalize()
 		obj->Finalize();
 	}
 
-	LN_SAFE_RELEASE(m_graphicsContext);
+	LN_SAFE_RELEASE(m_drawingContext);
+	LN_SAFE_RELEASE(m_renderingContext);
 }
 
 //------------------------------------------------------------------------------
@@ -1057,7 +1067,7 @@ void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
 }
 
 //------------------------------------------------------------------------------
-void GraphicsManager::SwitchActiveContext(GraphicsContext* context)
+void GraphicsManager::SwitchActiveContext(detail::ContextInterface* context)
 {
 	if (context != m_activeContext)
 	{

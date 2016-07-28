@@ -1,5 +1,7 @@
 ﻿
 #pragma once
+
+#if 0
 #include <stack>
 #include "Common.h"
 #include "ContextInterface.h"
@@ -274,3 +276,5 @@ private:
 };
 
 LN_NAMESPACE_END
+
+#endif

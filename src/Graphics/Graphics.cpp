@@ -15,7 +15,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //==============================================================================
 // Graphics
 //==============================================================================
-
+#if 0
 //------------------------------------------------------------------------------
 void Graphics::Set2DRenderingMode(float minZ, float maxZ)
 {
@@ -74,7 +74,7 @@ void Graphics::Flush()
 {
 	GraphicsManager::GetInstance()->GetGraphicsContext()->Flush();
 }
-
+#endif
 
 //------------------------------------------------------------------------------
 void Graphics::ChangeDirectX9Device(void* id3d9device)

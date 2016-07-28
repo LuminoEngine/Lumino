@@ -179,6 +179,7 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/Color.h
 	include/Lumino/Graphics/Common.h
 	include/Lumino/Graphics/ContextInterface.h
+	include/Lumino/Graphics/DrawingContext.h
 	include/Lumino/Graphics/FrameCapturer.h
 	include/Lumino/Graphics/Graphics.h
 	include/Lumino/Graphics/GraphicsContext.h
@@ -188,6 +189,7 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/Material.h
 	include/Lumino/Graphics/Mesh.h
 	include/Lumino/Graphics/Renderer.h
+	include/Lumino/Graphics/RenderingContext.h
 	include/Lumino/Graphics/RenderState.h
 	include/Lumino/Graphics/SamplerState.h
 	include/Lumino/Graphics/Shader.h
@@ -213,6 +215,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/Brush.cpp
 	src/Graphics/Color.cpp
 	src/Graphics/ContextInterface.cpp
+	src/Graphics/DrawingContext.cpp
 	src/Graphics/FrameCapturer.cpp
 	src/Graphics/FrameRectRenderer.cpp
 	src/Graphics/FrameRectRenderer.h
@@ -242,6 +245,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/RendererImpl.h
 	src/Graphics/RenderingCommand.cpp
 	src/Graphics/RenderingCommand.h
+	src/Graphics/RenderingContext.cpp
 	src/Graphics/RenderingThread.cpp
 	src/Graphics/RenderingThread.h
 	src/Graphics/RenderState.cpp

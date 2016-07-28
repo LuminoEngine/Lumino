@@ -84,6 +84,7 @@ OpenSceneGraph もたぶんそう。
 #include "Graphics/RenderingThread.h"
 #include "Graphics/GraphicsManager.h"
 #include <Lumino/Graphics/GraphicsContext.h>
+#include <Lumino/Graphics/DrawingContext.h>
 #include "Scene/SceneGraphManager.h"
 #include <Lumino/Scene/SceneGraph.h>
 #include "Effect/EffectManager.h"
@@ -682,7 +683,7 @@ GraphicsContext* EngineManager::BeginRendering()
 	m_uiManager->GetMainWindow()->BeginRendering();
 
 	m_frameRenderd = true;
-	GraphicsContext* g = m_graphicsManager->GetGraphicsContext();
+	DrawingContext* g = m_graphicsManager->GetDrawingContext();
 	g->Set2DRenderingMode();
 	return g;
 }
@@ -700,7 +701,7 @@ void EngineManager::Render()
 {
 	if (m_graphicsManager != nullptr)
 	{
-		GraphicsContext* g = m_graphicsManager->GetGraphicsContext();
+		DrawingContext* g = m_graphicsManager->GetDrawingContext();
 		g->PushState();
 
 		EngineDiagCore::Instance.ResetVisualNodeDrawCount();	// TODO: GameMode のみ？

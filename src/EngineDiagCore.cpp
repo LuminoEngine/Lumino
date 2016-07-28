@@ -2,7 +2,7 @@
 #include "Internal.h"
 #include <Lumino/Platform/PlatformWindow.h>
 #include <Lumino/Graphics/Text/Font.h>
-#include <Lumino/Graphics/GraphicsContext.h>
+#include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/EngineDiag.h>
 #include "Graphics/GraphicsManager.h"
 #include "EngineManager.h"
@@ -105,7 +105,7 @@ void EngineDiagViewer::UpdateFrame()
 }
 
 //------------------------------------------------------------------------------
-void EngineDiagViewer::Render(GraphicsContext* g, const Vector2& viewSize)
+void EngineDiagViewer::Render(DrawingContext* g, const Vector2& viewSize)
 {
 	PointF location(m_windowRect.x, m_windowRect.y);
 	g->SetOpacity(0.5f);

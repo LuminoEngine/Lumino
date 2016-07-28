@@ -151,6 +151,10 @@ public:
 	// ・・・らしい。要確認。
 
 	bool Equals(const DepthStencilState& state) const;
+
+
+	bool operator == (const DepthStencilState& state) const { return Equals(state); }
+	bool operator != (const DepthStencilState& state) const { return !Equals(state); }
 };
 
 LN_NAMESPACE_GRAPHICS_END
