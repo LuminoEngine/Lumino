@@ -86,6 +86,5 @@ TEST_F(Test_Graphics_XFile, Basic)
 		model->SetUV(1, Vector2(-1.0f, -1.0f));
 		model->SetUV(2, Vector2(1.0f, 1.0f));
 		model->SetUV(3, Vector2(1.0f, -1.0f));
-		printf("");
 	}
 }

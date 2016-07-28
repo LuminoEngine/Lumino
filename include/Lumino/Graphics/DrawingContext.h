@@ -18,6 +18,10 @@ public:
 	void Set2DRenderingMode(float minZ = 0.0f, float maxZ = 1.0f);
 	void SetViewProjectionTransform(const Matrix& view, const Matrix& proj);
 
+	void SetRenderTarget(int index, Texture* texture);
+	void SetDepthBuffer(Texture* depthBuffer);
+
+
 	void SetTransform(const Matrix& matrix);
 	void SetOpacity(float opacity);	// 0~1
 	void SetBrush(Brush* brush);

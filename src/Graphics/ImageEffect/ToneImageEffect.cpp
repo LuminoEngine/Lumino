@@ -2,7 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Shader.h>
-#include <Lumino/Graphics/GraphicsContext.h>
+#include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Graphics/ImageEffect/ToneImageEffect.h>
 #include "../../Animation/AnimationManager.h"
 #include "../GraphicsManager.h"
@@ -67,13 +67,13 @@ void ToneImageEffect::ChangeTone(const ToneF& tone, double time)
 }
 
 //------------------------------------------------------------------------------
-void ToneImageEffect::OnRender(GraphicsContext* graphicsContext, RenderTarget* source, RenderTarget* destination)
+void ToneImageEffect::OnRender(RenderingContext* context, RenderTarget* source, RenderTarget* destination)
 {
 	if (m_tone != ToneF::Zero)
 	{
 		m_shader.varTone->SetVector(m_tone);
 		m_shader.varScreenTexture->SetTexture(source);
-		graphicsContext->Blt(nullptr, destination, m_shader.shader);
+		context->Blt(nullptr, destination, m_shader.shader);
 	}
 }
 

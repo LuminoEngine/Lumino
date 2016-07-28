@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.h"
 #include <math.h>
-#include <Lumino/Graphics/GraphicsContext.h>
+#include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/UI/UIEventArgs.h>
 #include <Lumino/UI/UIElement.h>
 #include <Lumino/UI/UIContext.h>
@@ -227,7 +227,7 @@ void UIElement::OnLayoutUpdated()
 }
 
 //------------------------------------------------------------------------------
-void UIElement::OnRender(GraphicsContext* g)
+void UIElement::OnRender(DrawingContext* g)
 {
 	if (m_background != nullptr)
 	{
@@ -495,7 +495,7 @@ void UIElement::UpdateTransformHierarchy()
 }
 
 //------------------------------------------------------------------------------
-void UIElement::Render(GraphicsContext* g)
+void UIElement::Render(DrawingContext* g)
 {
 	//g->DrawRectangle(m_finalGlobalRect, Color(255,0,0,200));
 

@@ -82,7 +82,7 @@
 #include "Internal.h"
 #include "GraphicsManager.h"
 #include "../UI/UIManager.h"
-#include <Lumino/Graphics/GraphicsContext.h>
+#include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Graphics/Viewport.h>
 #include <Lumino/UI/UIFrameWindow.h>
 
@@ -114,11 +114,11 @@ const Size& ViewportLayer::GetViewportSize() const
 }
 
 //------------------------------------------------------------------------------
-void ViewportLayer::PostRender(GraphicsContext* graphicsContext, RenderTarget** primaryLayerTarget, RenderTarget** secondaryLayerTarget)
+void ViewportLayer::PostRender(RenderingContext* context, RenderTarget** primaryLayerTarget, RenderTarget** secondaryLayerTarget)
 {
 	for (ImageEffect* e : *m_imageEffects)
 	{
-		e->OnRender(graphicsContext, *primaryLayerTarget, *secondaryLayerTarget);
+		e->OnRender(context, *primaryLayerTarget, *secondaryLayerTarget);
 		std::swap(*primaryLayerTarget, *secondaryLayerTarget);
 	}
 }
@@ -192,7 +192,7 @@ void Viewport::Render()
 {
 	TryRemakeLayerTargets();
 
-	GraphicsContext* context = m_manager->GetGraphicsContext();
+	RenderingContext* context = m_manager->GetRenderingContext();
 	context->SetRenderTarget(0, m_primaryLayerTarget);
 	context->Clear(ClearFlags::All, m_backgroundColor, 1.0f, 0x00);
 

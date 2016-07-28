@@ -17,6 +17,7 @@ protected:
 
 };
 
+#if 0
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_RenderingContext, Clear)
 {
@@ -107,3 +108,5 @@ TEST_F(Test_Graphics_RenderingContext, Blt)
 
 	ASSERT_TRUE(TestEnv::EqualsTexture(t2, LN_LOCALFILE("TestData/Test_Graphics_RenderingContext1.png")));
 }
+
+#endif

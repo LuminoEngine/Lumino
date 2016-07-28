@@ -11,8 +11,8 @@ LN_NAMESPACE_SCENE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-SceneGraphRenderingContext::SceneGraphRenderingContext(GraphicsContext* graphicsContext)
-	: m_graphicsContext(graphicsContext)
+SceneGraphRenderingContext::SceneGraphRenderingContext(RenderingContext* context)
+	: m_context(context)
 {
 }
 
@@ -23,7 +23,7 @@ SceneGraphRenderingContext::~SceneGraphRenderingContext()
 
 void SceneGraphRenderingContext::Flush()
 {
-	return m_graphicsContext->Flush();
+	return m_context->Flush();
 }
 
 LN_NAMESPACE_SCENE_END

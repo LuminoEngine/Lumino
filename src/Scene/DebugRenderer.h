@@ -1,8 +1,7 @@
 ﻿
 #pragma once
 #include <Lumino/Graphics/Color.h>
-//#include <Lumino/Graphics/DrawingContext.h>
-#include <Lumino/Graphics/GraphicsContext.h>
+#include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Physics/IDebugRenderer.h>
 #include <Lumino/Scene/Common.h>
 
@@ -13,7 +12,7 @@ class DebugRenderer
 	: public Physics::IDebugRenderer
 {
 public:
-	DebugRenderer(GraphicsContext* context)
+	DebugRenderer(RenderingContext* context)
 		: m_context(context)
 	{
 	}
@@ -26,7 +25,7 @@ public:
 	}
 
 private:
-	GraphicsContext*		m_context;
+	RenderingContext*		m_context;
 };
 
 LN_NAMESPACE_SCENE_END

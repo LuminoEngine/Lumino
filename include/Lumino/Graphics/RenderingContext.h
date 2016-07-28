@@ -7,6 +7,7 @@
 LN_NAMESPACE_BEGIN
 class StaticMeshModel;
 namespace detail { class PrimitiveRenderer; }
+namespace detail { class MeshRendererProxy; }
 
 class RenderingContext
 	: public detail::ContextInterface
@@ -174,6 +175,7 @@ private:
 	class RenderStateBlock2;
 
 	detail::PrimitiveRenderer*				m_primitiveRenderer;
+	detail::MeshRendererProxy*				m_meshRendererProxy;
 	detail::BasicContextState				m_state;
 	std::stack<detail::BasicContextState>	m_stateStack;
 };

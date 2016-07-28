@@ -3,8 +3,7 @@
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
-class GraphicsManager;
-class SpriteRenderer;
+class RenderingContext;
 
 /**
 	@brief	
@@ -14,18 +13,18 @@ class TileMapRenderer
 {
 public:
 	void SetTransform(const Matrix& world, const Matrix& viewProj);
-	void Draw(GraphicsContext* context, SpriteRenderer* spriteRenderer, TileMapModel* tileMap, const RectF& boundingRect, const ViewFrustum& cameraFrustum);
+	void Draw(RenderingContext* context, TileMapModel* tileMap, const RectF& boundingRect, const ViewFrustum& cameraFrustum);
 
 protected:
 	void Begin();
 
 	void End();
 
-	void DrawTile(
-		const Vector3& position,
-		const Vector2& size,
-		Texture* texture,
-		const Rect& srcRect);
+	//void DrawTile(
+	//	const Vector3& position,
+	//	const Vector2& size,
+	//	Texture* texture,
+	//	const Rect& srcRect);
 
 public:
 	TileMapRenderer(GraphicsManager* manager);
@@ -43,13 +42,13 @@ private:
 	void DrawLayer(TileLayer* layer, const RectF& boundingRect, TileSet* tileSet, const BoundingRect& renderRange);
 
 	GraphicsManager*	m_graphicsManager;
-	GraphicsContext*	m_graphicsContext;
+	RenderingContext*	m_context;
 	RefPtr<VertexDeclaration>	m_vertexDeclaration;
 	VertexBuffer*		m_vertexBuffer;
 	IndexBuffer*		m_indexBuffer;
 	Matrix				m_viewProj;
 
-	SpriteRenderer*	m_spriteRenderer;
+	//SpriteRenderer*	m_spriteRenderer;
 
 
 	struct

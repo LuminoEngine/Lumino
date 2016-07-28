@@ -75,7 +75,7 @@ void TileMap::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 		
 		// TODO: WorldMatrix
 		m_renderer->SetTransform(Matrix::Identity, dc->CurrentCamera->GetViewProjectionMatrix());
-		m_renderer->Draw(dc->BeginGraphicsContext(), dc->BeginGraphicsContext()->GetSpriteRenderer(), m_tileMap, RectF(0,0,3200,2400), dc->CurrentCamera->GetViewFrustum());
+		m_renderer->Draw(dc->BeginGraphicsContext(), m_tileMap, RectF(0,0,3200,2400), dc->CurrentCamera->GetViewFrustum());
 	}
 
 	//dc->ResetState();

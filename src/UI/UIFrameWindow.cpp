@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.h"
 #include <Lumino/Platform/PlatformWindow.h>
-#include <Lumino/Graphics/GraphicsContext.h>
+#include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/Graphics/SwapChain.h>
 #include <Lumino/Graphics/Viewport.h>
 #include <Lumino/UI/UIContext.h>
@@ -36,7 +36,7 @@ UIViewportLayer::~UIViewportLayer()
 //------------------------------------------------------------------------------
 void UIViewportLayer::Render(RenderTarget* renderTarget)
 {
-	GraphicsContext* g = m_view->GetOwnerContext()->GetManager()->GetGraphicsManager()->GetGraphicsContext();
+	DrawingContext* g = m_view->GetOwnerContext()->GetManager()->GetGraphicsManager()->GetDrawingContext();
 
 
 	g->Clear(ClearFlags::Depth, Color::White);	// TODO
@@ -103,7 +103,7 @@ void UIFrameWindow::BeginRendering()
 	Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
 	renderer->Begin();
 
-	GraphicsContext* g = m_manager->GetGraphicsManager()->GetGraphicsContext();
+	DrawingContext* g = m_manager->GetGraphicsManager()->GetDrawingContext();
 	g->SetRenderTarget(0, m_swapChain->GetBackBuffer());
 	g->SetDepthBuffer(m_swapChain->GetBackBufferDepth());
 	g->Clear(ClearFlags::All, Color::Black);

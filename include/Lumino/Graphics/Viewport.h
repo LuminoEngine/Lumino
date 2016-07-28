@@ -44,7 +44,7 @@ protected:
 	virtual void Render(RenderTarget* renderTarget) = 0;
 
 	/// 後描画
-	void PostRender(GraphicsContext* graphicsContext, RenderTarget** primaryLayerTarget, RenderTarget** secondaryLayerTarget);
+	void PostRender(RenderingContext* context, RenderTarget** primaryLayerTarget, RenderTarget** secondaryLayerTarget);
 
 private:
 	Viewport*				m_owner;

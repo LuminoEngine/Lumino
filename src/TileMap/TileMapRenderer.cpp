@@ -10,7 +10,7 @@
 #include <Lumino/Graphics/VertexBuffer.h>
 #include <Lumino/Graphics/IndexBuffer.h>
 #include <Lumino/Graphics/Shader.h>
-#include <Lumino/Graphics/GraphicsContext.h>
+#include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/TileMap/TileMapRenderer.h>
 #include <Lumino/TileMap/TileMapModel.h>
 #include "../Graphics/Device/GraphicsDriverInterface.h"
@@ -76,11 +76,11 @@ void TileMapRenderer::SetTransform(const Matrix& world, const Matrix& viewProj)
 }
 
 //------------------------------------------------------------------------------
-void TileMapRenderer::Draw(GraphicsContext* context, SpriteRenderer* spriteRenderer, TileMapModel* tileMap, const RectF& boundingRect, const ViewFrustum& cameraFrustum)
+void TileMapRenderer::Draw(RenderingContext* context, TileMapModel* tileMap, const RectF& boundingRect, const ViewFrustum& cameraFrustum)
 {
 	LN_CHECK_ARG(tileMap != nullptr);
-	m_graphicsContext = context;
-	m_spriteRenderer = spriteRenderer;
+	m_context = context;
+	//m_spriteRenderer = spriteRenderer;
 
 	// TODO: 原点と正面方向
 	Plane plane(Vector3(0, 0, 0), Vector3(0, 0, -1));
@@ -176,18 +176,18 @@ void TileMapRenderer::Begin()
 //------------------------------------------------------------------------------
 void TileMapRenderer::End()
 {
-	m_spriteRenderer->Flush();
+	//m_spriteRenderer->Flush();
 }
 
 //------------------------------------------------------------------------------
-void TileMapRenderer::DrawTile(
-	const Vector3& position,
-	const Vector2& size,
-	Texture* texture,
-	const Rect& srcRect)
-{
-	m_spriteRenderer->DrawRequest2D(position, Vector3::Zero, size, texture, srcRect, nullptr);
-}
+//void TileMapRenderer::DrawTile(
+//	const Vector3& position,
+//	const Vector2& size,
+//	Texture* texture,
+//	const Rect& srcRect)
+//{
+//	m_spriteRenderer->DrawRequest2D(position, Vector3::Zero, size, texture, srcRect, nullptr);
+//}
 
 //------------------------------------------------------------------------------
 void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, TileSet* tileSet, const BoundingRect& renderRange)
@@ -330,8 +330,8 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 	//s.Culling = CullingMode_None;
 	//m_renderingContext->SetRenderState(s);
 
-	m_graphicsContext->SetShaderPass(m_shader.pass);
-	m_graphicsContext->DrawPrimitiveIndexed(m_vertexDeclaration, m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, plotCount / 2);
+	m_context->SetShaderPass(m_shader.pass);
+	m_context->DrawPrimitiveIndexed(m_vertexDeclaration, m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, plotCount / 2);
 
 	//printf("%p\n", m_shader.pass);
 	//m_renderingContext->SetVertexBuffer(nullptr);

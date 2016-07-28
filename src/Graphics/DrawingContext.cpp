@@ -15,18 +15,33 @@ LN_NAMESPACE_BEGIN
 
 //------------------------------------------------------------------------------
 DrawingContext::DrawingContext()
+	: m_geometryRenderer(nullptr)
+	, m_textRenderer(nullptr)
+	, m_frameRectRenderer(nullptr)
 {
 }
 
 //------------------------------------------------------------------------------
 DrawingContext::~DrawingContext()
 {
+	LN_SAFE_RELEASE(m_frameRectRenderer);
+	LN_SAFE_RELEASE(m_textRenderer);
+	LN_SAFE_RELEASE(m_geometryRenderer);
 }
 
 //------------------------------------------------------------------------------
 void DrawingContext::Initialize(GraphicsManager* manager)
 {
 	detail::ContextInterface::Initialize(manager);
+
+	m_geometryRenderer = LN_NEW detail::GeometryRenderer();
+	m_geometryRenderer->Initialize(manager);
+
+	m_textRenderer = LN_NEW detail::TextRenderer();
+	m_textRenderer->Initialize(manager);
+
+	m_frameRectRenderer = LN_NEW detail::FrameRectRenderer();
+	m_frameRectRenderer->Initialize(manager);
 }
 
 //------------------------------------------------------------------------------
@@ -44,6 +59,25 @@ void DrawingContext::SetViewProjectionTransform(const Matrix& view, const Matrix
 	NorityStateChanging();
 	m_state.viewTransform = view;
 	m_state.projectionTransform = proj;
+}
+//------------------------------------------------------------------------------
+void DrawingContext::SetRenderTarget(int index, Texture* texture)
+{
+	if (texture != m_state.GetRenderTarget(index))
+	{
+		NorityStateChanging();
+		m_state.SetRenderTarget(index, texture);
+	}
+}
+
+//------------------------------------------------------------------------------
+void DrawingContext::SetDepthBuffer(Texture* depthBuffer)
+{
+	if (m_state.depthBuffer != depthBuffer)
+	{
+		NorityStateChanging();
+		m_state.depthBuffer = depthBuffer;
+	}
 }
 
 //------------------------------------------------------------------------------

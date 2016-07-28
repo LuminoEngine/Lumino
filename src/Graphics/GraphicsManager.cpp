@@ -1252,7 +1252,7 @@ void* ShaderVariableCommitSerializeHelper::GetSerializeData()
 //------------------------------------------------------------------------------
 size_t ShaderVariableCommitSerializeHelper::GetSerializeDataLength()
 {
-	return m_writerBuffer->GetPosition();
+	return (size_t)m_writerBuffer->GetPosition();
 }
 
 //------------------------------------------------------------------------------

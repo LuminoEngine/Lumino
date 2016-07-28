@@ -2,7 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Shader.h>
-#include <Lumino/Graphics/GraphicsContext.h>
+#include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Graphics/ImageEffect/ScreenMotionBlurImageEffect.h>
 #include "../../Animation/AnimationManager.h"
 #include "../GraphicsManager.h"
@@ -79,11 +79,11 @@ void ScreenMotionBlurImageEffect::SetBlurStatus(float amount, const Vector2& cen
 }
 
 //------------------------------------------------------------------------------
-void ScreenMotionBlurImageEffect::OnRender(GraphicsContext* graphicsContext, RenderTarget* source, RenderTarget* destination)
+void ScreenMotionBlurImageEffect::OnRender(RenderingContext* context, RenderTarget* source, RenderTarget* destination)
 {
 	if (m_amount == 0.0)
 	{
-		graphicsContext->Blt(source, destination);
+		context->Blt(source, destination);
 		return;
 	}
 
@@ -94,7 +94,7 @@ void ScreenMotionBlurImageEffect::OnRender(GraphicsContext* graphicsContext, Ren
 	{
 		m_accumTexture = LN_NEW RenderTarget();
 		m_accumTexture->CreateImpl(m_manager, sourceSize, 1, TextureFormat::R8G8B8X8);
-		graphicsContext->Blt(source, m_accumTexture);
+		context->Blt(source, m_accumTexture);
 	}
 
 #if 1
@@ -108,11 +108,11 @@ void ScreenMotionBlurImageEffect::OnRender(GraphicsContext* graphicsContext, Ren
 	m_shader.varBlurColor->SetVector(Vector4(1, 1, 1, 1));
 	m_shader.varBlurMatrix->SetMatrix(blurMatrix);
 	m_shader.varSecondaryTexture->SetTexture(m_accumTexture);
-	graphicsContext->Blt(nullptr, source, m_shader.shader);
+	context->Blt(nullptr, source, m_shader.shader);
 
-	graphicsContext->Blt(source, m_accumTexture);
+	context->Blt(source, m_accumTexture);
 
-	graphicsContext->Blt(m_accumTexture, destination);
+	context->Blt(m_accumTexture, destination);
 #endif
 #if 0
 	Matrix m;

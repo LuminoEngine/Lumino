@@ -7,7 +7,7 @@
 #include "UIEvent.h"
 
 LN_NAMESPACE_BEGIN
-class GraphicsContext;
+class DrawingContext;
 class UIStylePropertyTable;
 
 /**
@@ -158,7 +158,7 @@ protected:
 	/**
 		@brief	この要素の描画を行います。
 	*/
-	virtual void OnRender(GraphicsContext* g);
+	virtual void OnRender(DrawingContext* g);
 
 	virtual void OnMouseMove(UIMouseEventArgs* e);
 	virtual void OnMouseDown(UIMouseEventArgs* e);
@@ -183,7 +183,7 @@ LN_INTERNAL_ACCESS:
 	virtual bool OnEvent(detail::UIInternalEventType type, UIEventArgs* args);
 	void UpdateLayout();
 	void UpdateTransformHierarchy();
-	void Render(GraphicsContext* g);
+	void Render(DrawingContext* g);
 
 private:
 	void UpdateLocalStyleAndApplyProperties(UIStylePropertyTable* parentStyle, UIStylePropertyTable* currentStateStyle);

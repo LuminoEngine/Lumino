@@ -26,7 +26,7 @@ public:
 
 LN_INTERNAL_ACCESS:
 	void UpdateLayout(const SizeF& viewSize);
-	void Render(GraphicsContext* g);
+	void Render(DrawingContext* g);
 	
 	const SizeF& GetViewPixelSize() const { return m_viewPixelSize; }
 	bool UpdateMouseHover(const PointF& mousePos);

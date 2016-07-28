@@ -651,7 +651,7 @@ bool EngineManager::UpdateFrame()
 }
 
 //------------------------------------------------------------------------------
-GraphicsContext* EngineManager::BeginRendering()
+bool EngineManager::BeginRendering()
 {
 	m_frameRenderingSkip = true;
 	if (m_graphicsManager == nullptr || m_uiManager == nullptr) return nullptr;
@@ -685,7 +685,7 @@ GraphicsContext* EngineManager::BeginRendering()
 	m_frameRenderd = true;
 	DrawingContext* g = m_graphicsManager->GetDrawingContext();
 	g->Set2DRenderingMode();
-	return g;
+	return true;
 }
 
 //------------------------------------------------------------------------------

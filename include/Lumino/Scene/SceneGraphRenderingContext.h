@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include "Common.h"
-#include "../Graphics/GraphicsContext.h"
+#include "../Graphics/RenderingContext.h"
 
 LN_NAMESPACE_BEGIN
 class SpriteRenderer;
@@ -20,18 +20,18 @@ LN_INTERNAL_ACCESS:
 	MMEShader*					Shader;				// 本当に必要なシェーダ (VisualNode::Render() 以下で使用可能)
 
 public:
-	GraphicsContext* BeginGraphicsContext() { return m_graphicsContext; }
+	RenderingContext* BeginGraphicsContext() { return m_context; }
 	void Flush();
 
-	Details::Renderer* GetRenderer() { return m_graphicsContext->Renderer; }
+	//Details::Renderer* GetRenderer() { return m_context->; }
 
 protected:
 	friend class SceneGraphManager;
-	SceneGraphRenderingContext(GraphicsContext* graphicsContext);
+	SceneGraphRenderingContext(RenderingContext* context);
 	virtual ~SceneGraphRenderingContext();
 
 private:
-	GraphicsContext*	m_graphicsContext;
+	RenderingContext*	m_context;
 };
 
 LN_NAMESPACE_SCENE_END

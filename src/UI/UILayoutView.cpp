@@ -55,7 +55,7 @@ void UILayoutView::UpdateLayout(const SizeF& viewSize)
 }
 
 //------------------------------------------------------------------------------
-void UILayoutView::Render(GraphicsContext* g)
+void UILayoutView::Render(DrawingContext* g)
 {
 	if (m_rootElement != nullptr)
 	{

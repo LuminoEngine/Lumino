@@ -429,7 +429,7 @@ Shader* VisualNode::GetPrimaryShader() const
 void VisualNode::Render(SceneGraphRenderingContext* dc)
 {
 	// レンダリングステートの設定
-	GraphicsContext* r = dc->BeginGraphicsContext();
+	RenderingContext* r = dc->BeginGraphicsContext();
 	r->ResetStates();
 	r->SetBlendMode(m_renderState.blendMode);
 	r->SetCullingMode(m_renderState.cullingMode);

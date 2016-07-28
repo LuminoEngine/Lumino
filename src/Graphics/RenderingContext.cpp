@@ -38,12 +38,14 @@ private:
 //------------------------------------------------------------------------------
 RenderingContext::RenderingContext()
 	: m_primitiveRenderer(nullptr)
+	, m_meshRendererProxy(nullptr)
 {
 }
 
 //------------------------------------------------------------------------------
 RenderingContext::~RenderingContext()
 {
+	LN_SAFE_RELEASE(m_meshRendererProxy);
 	LN_SAFE_RELEASE(m_primitiveRenderer);
 }
 
@@ -55,6 +57,9 @@ void RenderingContext::Initialize(GraphicsManager* manager)
 	m_primitiveRenderer = LN_NEW detail::PrimitiveRenderer();
 	m_primitiveRenderer->Initialize(manager);
 	m_primitiveRenderer->SetUseInternalShader(true);	// TODO
+
+	m_meshRendererProxy = LN_NEW detail::MeshRendererProxy();
+	m_meshRendererProxy->Initialize(manager);
 }
 
 
@@ -338,7 +343,7 @@ void RenderingContext::SetDepthBuffer(Texture* depthBuffer)
 	if (m_state.depthBuffer != depthBuffer)
 	{
 		NorityStateChanging();
-		LN_REFOBJ_SET(m_state.depthBuffer, depthBuffer);
+		m_state.depthBuffer = depthBuffer;
 	}
 }
 
@@ -409,6 +414,13 @@ void RenderingContext::PopState()
 
 
 
+
+//------------------------------------------------------------------------------
+void RenderingContext::Clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
+{
+	NorityStartDrawing(GetBaseRenderer());
+	GetBaseRenderer()->Clear(flags, color, z, stencil);
+}
 
 //------------------------------------------------------------------------------
 void RenderingContext::DrawPrimitive(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount)
@@ -489,10 +501,20 @@ void RenderingContext::BltInternal(Texture* source, RenderTarget* dest, const Ma
 }
 
 //------------------------------------------------------------------------------
+void RenderingContext::DrawMesh(StaticMeshModel* mesh, int startIndex, int triangleCount)
+{
+	NorityStartDrawing(m_meshRendererProxy);
+	m_meshRendererProxy->DrawMesh(mesh, startIndex, triangleCount);
+}
+
+//------------------------------------------------------------------------------
 void RenderingContext::OnStateFlush()
 {
 	ContextInterface::OnStateFlush();
 	SetBasicContextState(m_state);
+
+	auto* pass = m_state.GetShaderPass();
+	if (pass != nullptr) GetBaseRenderer()->SetShaderPass(pass);
 
 	const Size& size = m_state.GetRenderTarget(0)->GetSize();
 	m_primitiveRenderer->SetViewPixelSize(size);

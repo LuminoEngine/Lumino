@@ -302,7 +302,7 @@ void ContextInterface::SetBasicContextState(const BasicContextState& state)
 {
 	m_baseRenderer->SetRenderState(state.renderState);
 	m_baseRenderer->SetDepthStencilState(state.depthStencilState);
-	for (int i = 0; i < Driver::MaxVertexStreams; ++i)
+	for (int i = 0; i < BasicContextState::MaxMultiRenderTargets; ++i)
 		m_baseRenderer->SetRenderTarget(i, state.GetRenderTarget(i));
 	m_baseRenderer->SetDepthBuffer(state.depthBuffer);
 	m_baseRenderer->SetViewport(state.viewport);

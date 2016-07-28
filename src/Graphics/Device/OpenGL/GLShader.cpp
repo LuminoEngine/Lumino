@@ -997,7 +997,7 @@ void GLShaderAnnotation::Initialize(const String& type, const String& name, cons
 		{
 			desc.Type = ShaderVariableType_Float;
 			ShaderVariableBase::Initialize(desc, name, String::GetEmpty());
-			ShaderVariableBase::SetFloat(StringTraits::ToDouble(value.c_str(), value.GetLength()));
+			ShaderVariableBase::SetFloat((float)StringTraits::ToDouble(value.c_str(), value.GetLength()));
 		}
 		else if (type.GetLength() == 6)
 		{

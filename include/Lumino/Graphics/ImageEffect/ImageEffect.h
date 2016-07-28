@@ -5,6 +5,7 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
+class RenderingContext;
 
 /**
 	@brief
@@ -20,7 +21,7 @@ protected:
 	virtual ~ImageEffect();
 	void Initialize(GraphicsManager* manager);
 
-	virtual void OnRender(GraphicsContext* graphicsContext, RenderTarget* source, RenderTarget* destination) = 0;
+	virtual void OnRender(RenderingContext* context, RenderTarget* source, RenderTarget* destination) = 0;
 
 	friend class ViewportLayer;
 

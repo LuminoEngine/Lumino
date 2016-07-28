@@ -28,7 +28,7 @@ protected:
 	ToneImageEffect();
 	virtual ~ToneImageEffect();
 	void Initialize(GraphicsManager* manager);
-	virtual void OnRender(GraphicsContext* graphicsContext, RenderTarget* source, RenderTarget* destination) override;
+	virtual void OnRender(RenderingContext* context, RenderTarget* source, RenderTarget* destination) override;
 
 private:
 	ToneF m_tone;

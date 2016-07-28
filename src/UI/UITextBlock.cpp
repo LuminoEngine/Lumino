@@ -1,6 +1,6 @@
 
 #include "Internal.h"
-#include <Lumino/Graphics/GraphicsContext.h>
+#include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/UI/UITextBlock.h>
 #include "UIManager.h"
 
@@ -57,7 +57,7 @@ SizeF UITextBlock::MeasureOverride(const SizeF& availableSize)
 }
 
 //------------------------------------------------------------------------------
-void UITextBlock::OnRender(GraphicsContext* g)
+void UITextBlock::OnRender(DrawingContext* g)
 {
 	g->SetBrush(ColorBrush::Blue);
 	g->SetFont(GetActiveFont());
