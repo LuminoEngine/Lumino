@@ -112,6 +112,7 @@ protected:
 	ContextInterface();
 	virtual ~ContextInterface();
 	void Initialize(GraphicsManager* manager);
+	GraphicsManager* GetManager() const { return m_manager; }
 
 	void NorityStateChanging();
 	void NorityStartDrawing(detail::IRendererPloxy* rendererPloxy);

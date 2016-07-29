@@ -4,6 +4,7 @@
 #include "EngineSettings.h"
 
 LN_NAMESPACE_BEGIN
+class DrawingContext;
 
 /**
 	@brief		アプリケーション全体にかかわる処理を行います。
@@ -32,6 +33,7 @@ public:
 	static bool BeginRendering();
 	static void EndRendering();
 	static void Render();
+	static DrawingContext* GetMainDrawingContext();
 	static void Exit();
 	static void SetFixedDeltaTime(float deltaTime);
 

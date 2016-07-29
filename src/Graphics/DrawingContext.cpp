@@ -4,6 +4,7 @@
 #include <Lumino/Graphics/Shader.h>
 #include "RendererImpl.h"
 #include "Text/TextRenderer.h"
+#include "Text/FontManager.h"
 #include "GeometryRenderer.h"
 #include "FrameRectRenderer.h"
 
@@ -253,7 +254,7 @@ void DrawingContext::OnStateFlush()
 
 	m_geometryRenderer->SetBrush(m_state.fillBrush);
 
-	m_textRenderer->SetFont(m_state.font);
+	m_textRenderer->SetFont((m_state.font != nullptr) ? m_state.font : GetManager()->GetFontManager()->GetDefaultFont());
 
 
 

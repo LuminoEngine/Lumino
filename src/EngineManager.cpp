@@ -83,7 +83,6 @@ OpenSceneGraph もたぶんそう。
 #include "Graphics/RendererImpl.h"
 #include "Graphics/RenderingThread.h"
 #include "Graphics/GraphicsManager.h"
-#include <Lumino/Graphics/GraphicsContext.h>
 #include <Lumino/Graphics/DrawingContext.h>
 #include "Scene/SceneGraphManager.h"
 #include <Lumino/Scene/SceneGraph.h>

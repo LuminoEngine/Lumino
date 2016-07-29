@@ -4,7 +4,6 @@
 #include "../../src/Modeling/ModelManager.h"
 #include "../../src/Graphics/GraphicsManager.h"
 #include <Lumino/Tilemap/TileMapModel.h>
-#include <Lumino/Graphics/GraphicsContext.h>
 #include <Lumino/Scene/TileMap.h>
 #include <Lumino/Scene/MeshModelObject.h>
 #include <Lumino/Scene/SpriteModelObject.h>

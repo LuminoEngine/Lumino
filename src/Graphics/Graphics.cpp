@@ -1,7 +1,6 @@
 ﻿
 #include "../Internal.h"
 #include "GraphicsManager.h"
-#include <Lumino/Graphics/GraphicsContext.h>
 #include <Lumino/Graphics/Graphics.h>
 
 #if defined(LN_OS_WIN32)

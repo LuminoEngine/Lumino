@@ -1,4 +1,5 @@
 ﻿#include <TestConfig.h>
+#include <Lumino/Graphics/DrawingContext.h>
 #include "../../src/Graphics/RendererImpl.h"
 
 class Test_Graphics_GraphicsContext : public ::testing::Test
@@ -9,13 +10,13 @@ protected:
 
 };
 
-#if 0
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_GraphicsContext, DrawRectangle)
 {
 	// <Test>
 	{
-		auto* g = Engine::BeginRendering();
+		Engine::BeginRendering();
+		auto* g = Engine::GetMainDrawingContext();
 		g->Clear(ClearFlags::All, Color::Gray);
 		g->SetBrush(ColorBrush::Red);
 		g->DrawRectangle(RectF(10, 20, 30, 40));
@@ -27,7 +28,8 @@ TEST_F(Test_Graphics_GraphicsContext, DrawRectangle)
 	{
 		auto brush = TextureBrush::Create(LN_LOCALFILE("TestData/img1_BYTE_R8G8B8A8_20x20.png"));
 
-		auto* g = Engine::BeginRendering();
+		Engine::BeginRendering();
+		auto* g = Engine::GetMainDrawingContext();
 		g->Clear(ClearFlags::All, Color::White);
 		g->SetBrush(brush);
 		g->DrawRectangle(RectF(10, 20, 30, 40));
@@ -42,7 +44,8 @@ TEST_F(Test_Graphics_GraphicsContext, DrawRectangle)
 		brush1->SetImageDrawMode(BrushImageDrawMode::BorderFrame);
 		brush1->SetBorderThickness(ThicknessF(8, 8, 8, 8));
 
-		auto* g = Engine::BeginRendering();
+		Engine::BeginRendering();
+		auto* g = Engine::GetMainDrawingContext();
 		g->Clear(ClearFlags::All, Color::Gray);
 		g->SetBrush(brush1);
 		g->DrawRectangle(RectF(0, 0, 83, 83));
@@ -62,8 +65,8 @@ TEST_F(Test_Graphics_GraphicsContext, FrameTextureBrush)
 	brush1->SetThickness(8);
 
 
-	auto* g = Engine::BeginRendering();
-
+	Engine::BeginRendering();
+	auto* g = Engine::GetMainDrawingContext();
 	g->Clear(ClearFlags::All, Color::Gray);
 	g->SetBrush(brush1);
 	g->DrawRectangle(Rect(0, 0, 83, 83));
@@ -76,8 +79,8 @@ TEST_F(Test_Graphics_GraphicsContext, FrameTextureBrush)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_GraphicsContext, DrawText1)
 {
-	auto* g = Engine::BeginRendering();
-
+	Engine::BeginRendering();
+	auto* g = Engine::GetMainDrawingContext();
 	g->Set2DRenderingMode();
 	g->Clear(ClearFlags::All, Color::Gray);
 	g->SetBrush(ColorBrush::Red);
@@ -96,8 +99,8 @@ TEST_F(Test_Graphics_GraphicsContext, DrawText_UserFont)
 	auto font = Font::Create();
 	font->SetName(_T("VL Gothic"));
 
-	auto* g = Engine::BeginRendering();
-
+	Engine::BeginRendering();
+	auto* g = Engine::GetMainDrawingContext();
 	g->Set2DRenderingMode();
 	g->Clear(ClearFlags::All, Color::Gray);
 	g->SetBrush(ColorBrush::Red);
@@ -109,4 +112,3 @@ TEST_F(Test_Graphics_GraphicsContext, DrawText_UserFont)
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_GraphicsContext.DrawText_UserFont.png")));
 }
 
-#endif

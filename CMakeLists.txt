@@ -182,7 +182,6 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/DrawingContext.h
 	include/Lumino/Graphics/FrameCapturer.h
 	include/Lumino/Graphics/Graphics.h
-	include/Lumino/Graphics/GraphicsContext.h
 	include/Lumino/Graphics/GraphicsException.h
 	include/Lumino/Graphics/GraphicsResourceObject.h
 	include/Lumino/Graphics/IndexBuffer.h
@@ -224,7 +223,6 @@ set(LN_SOURCES_Graphics
 	src/Graphics/GeometryRenderer.cpp
 	src/Graphics/GeometryRenderer.h
 	src/Graphics/Graphics.cpp
-	src/Graphics/GraphicsContext.cpp
 	src/Graphics/GraphicsException.cpp
 	src/Graphics/GraphicsManager.cpp
 	src/Graphics/GraphicsManager.h
