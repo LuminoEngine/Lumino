@@ -83,5 +83,22 @@ uint32_t BitmapPainter::GetColorByteSec(const Color32& color, PixelFormat format
 	LN_THROW(0, InvalidFormatException);
 }
 
+
+//==============================================================================
+// BitmapFilter
+//==============================================================================
+
+//------------------------------------------------------------------------------
+void BitmapFilter::FlipVertical(Bitmap* dst, const Bitmap* src)
+{
+	for (int y = 0; y < dst->GetSize().height; ++y)
+	{
+		for (int x = 0; x < dst->GetSize().width; ++x)
+		{
+			dst->SetPixel(x, y, src->GetPixel(x, src->GetSize().height - y - 1));
+		}
+	}
+}
+
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

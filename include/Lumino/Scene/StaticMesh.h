@@ -18,9 +18,9 @@ public:
 
 	static StaticMeshPtr CreateBox(const Vector3& size);
 
-	static StaticMeshPtr CreateSphere(float radius, int slices, int stacks);
+	static StaticMeshPtr CreateSphere(float radius, int slices, int stacks, MeshCreationFlags = MeshCreationFlags::None);
 
-	static StaticMeshPtr CreateSquarePlane(const Vector2& size, const Vector3& front, MeshCreationFlags flags);
+	static StaticMeshPtr CreateSquarePlane(const Vector2& size, const Vector3& front, MeshCreationFlags flags = MeshCreationFlags::None);
 
 	static StaticMeshPtr CreateScreenPlane();
 

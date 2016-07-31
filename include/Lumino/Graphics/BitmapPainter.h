@@ -42,5 +42,11 @@ public:
 
 };
 
+class BitmapFilter
+{
+public:
+	void FlipVertical(Bitmap* dst, const Bitmap* src);
+};
+
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

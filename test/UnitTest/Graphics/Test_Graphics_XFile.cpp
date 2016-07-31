@@ -24,8 +24,13 @@ TEST_F(Test_Graphics_XFile, Basic)
 	mesh->SetShader(shader);
 	mesh->GetMaterials()->GetAt(0)->SetTextureParameter(Material::MaterialTextureParameter, tex);
 
+
 	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
 	Camera::GetMain3DCamera()->SetCameraBehavior(cb);
+
+
+	//auto sprite = Sprite3D::Create(1, 1);
+	//sprite->SetTexture(tex);
 
 	//while (Engine::UpdateFrame());
 

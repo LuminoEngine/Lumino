@@ -14,6 +14,7 @@ LN_ENUM_FLAGS(MeshCreationFlags)
 {
 	None					= 0x0000,
 	DynamicBuffers			= 0x0001,	/**< 頂点バッファ及びインデックスバッファの作成に ResourceUsage::Dynamic を使用する。*/
+	ReverseFaces			= 0x0002,	/**< 面方向を反転する。*/
 };
 LN_ENUM_FLAGS_DECLARE(MeshCreationFlags);
 
@@ -43,12 +44,14 @@ public:
 	void SetUV(int index, const Vector2& uv);
 	const Vector3& GetPosition(int index);
 
+	//void FlipFaces();
+
 LN_INTERNAL_ACCESS:
 	StaticMeshModel();
 	virtual ~StaticMeshModel();
 	void Initialize(GraphicsManager* manager);
 	void CreateBox(const Vector3& size);
-	void CreateSphere(float radius, int slices, int stacks);
+	void CreateSphere(float radius, int slices, int stacks, MeshCreationFlags flags);
 	void CreateSquarePlane(const Vector2& size, const Vector3& front, MeshCreationFlags flags);
 	void CreateScreenPlane();
 
@@ -60,6 +63,7 @@ LN_INTERNAL_ACCESS:
 
 private:
 	void CreateBuffers(int vertexCount, int indexCount, int attributeCount, MeshCreationFlags flags);
+	void PostGenerated(Vertex* vb, void* ib, MeshCreationFlags flags);
 
 LN_INTERNAL_ACCESS:	// TODO:
 	GraphicsManager*			m_manager;
@@ -67,7 +71,9 @@ LN_INTERNAL_ACCESS:	// TODO:
 	RefPtr<VertexBuffer>		m_vertexBuffer;
 	RefPtr<IndexBuffer>			m_indexBuffer;
 	int							m_vertexCount;
+	int							m_indexCount;
 	Vertex*						m_lockedVertexBuffer;
+	void*						m_lockedIndexBuffer;
 
 	RefPtr<MaterialList>		m_materials;
 	MeshAttributeList			m_attributes;

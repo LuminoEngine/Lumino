@@ -187,6 +187,7 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/IndexBuffer.h
 	include/Lumino/Graphics/Material.h
 	include/Lumino/Graphics/Mesh.h
+	include/Lumino/Graphics/PerlinNoise.h
 	include/Lumino/Graphics/Renderer.h
 	include/Lumino/Graphics/RenderingContext.h
 	include/Lumino/Graphics/RenderState.h
@@ -234,6 +235,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/MeshRendererProxy.h
 	src/Graphics/PainterEngine.cpp
 	src/Graphics/PainterEngine.h
+	src/Graphics/PerlinNoise.cpp
 	src/Graphics/PngFile.h
 	src/Graphics/PrimitiveRenderer.cpp
 	src/Graphics/PrimitiveRenderer.h
@@ -354,6 +356,7 @@ set(LN_SOURCES_Scene
 	include/Lumino/Scene/SceneGraph.h
 	include/Lumino/Scene/SceneGraphRenderingContext.h
 	include/Lumino/Scene/SceneNode.h
+	include/Lumino/Scene/SceneTR.h
 	include/Lumino/Scene/Sprite.h
 	include/Lumino/Scene/SpriteModelObject.h
 	include/Lumino/Scene/SpriteParticle.h
@@ -383,6 +386,7 @@ set(LN_SOURCES_Scene
 	src/Scene/SceneGraphRenderingContext.cpp
 	src/Scene/SceneHelper.h
 	src/Scene/SceneNode.cpp
+	src/Scene/SceneTR.cpp
 	src/Scene/Sprite.cpp
 	src/Scene/SpriteModelObject.cpp
 	src/Scene/SpriteParticle.cpp

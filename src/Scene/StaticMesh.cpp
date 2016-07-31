@@ -34,12 +34,12 @@ StaticMeshPtr StaticMesh::CreateBox(const Vector3& size)
 }
 
 //------------------------------------------------------------------------------
-StaticMeshPtr StaticMesh::CreateSphere(float radius, int slices, int stacks)
+StaticMeshPtr StaticMesh::CreateSphere(float radius, int slices, int stacks, MeshCreationFlags flags)
 {
 	auto ptr = StaticMeshPtr::MakeRef();
 	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
 	mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager());
-	mesh->CreateSphere(radius, slices, stacks);
+	mesh->CreateSphere(radius, slices, stacks, flags);
 	ptr->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), mesh);
 	return ptr;
 }

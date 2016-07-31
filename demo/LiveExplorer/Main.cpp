@@ -9,7 +9,12 @@
 #include <Lumino/Scene/SpriteModelObject.h>
 #include <Lumino/Testing/TestUtils.h>
 //#include <Lumino/Platform/Win32/Win32PlatformWindow.h>
+#include "../../../src/Scene/MME/MMEShader.h"
 
+#include <Lumino/Graphics/PerlinNoise.h>
+#include <Lumino/Graphics/BitmapPainter.h>
+#include <Lumino/Scene/StaticMesh.h>
+#include <Lumino/Scene/SceneTR.h>
 #include <thread>
 
 
@@ -140,6 +145,8 @@ void Thread2()
 //}
 
 
+
+
 int main()
 {
 
@@ -203,7 +210,7 @@ int main()
 		return 0;
 		//printf("%d\n", g_ptr->t1->value);
 #endif
-#if 1
+#if 0
 		StreamReader reader(_T("D:/Proj/Volkoff/External/Lumino/src/Graphics/Resource/DotNetColors.txt"));
 		StreamWriter file1(_T("decls.txt"));
 		StreamWriter file2(_T("defs.txt"));
@@ -282,10 +289,136 @@ int main()
 		Engine::Initialize();
 
 
-		auto tex = Assets::LoadTexture(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/0129.png"));
-		auto sp1 = Sprite2D::Create(tex);
-		sp1->SetVisible(false);
+		//auto tex = Assets::LoadTexture(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/0129.png"));
 
+		auto noiseTex1 = Texture2D::Create(Size(256, 256));
+
+		auto tex = Texture2D::Create(Size(256, 256));
+		auto sp1 = Sprite2D::Create(noiseTex1);
+		//sp1->SetVisible(false);
+
+		PerlinNoise noise;
+		double frequency = 8;
+		const double fx = tex->GetWidth() / frequency;
+		const double fy = tex->GetHeight() / frequency;
+		int octaves = 1;	// 粗さ
+
+		Bitmap bmp1(Size(256, 256), PixelFormat::R8G8B8A8);
+		for (int y = 0; y < bmp1.GetSize().height; ++y)
+		{
+			for (int x = 0; x < bmp1.GetSize().width; ++x)
+			{
+				double n = noise.OctaveNoise(x / fx, y / fy, octaves);
+				//double n = noise.Noise(x/fx, y / fy);
+
+				if (n < 0)
+				{
+					double n1 = noise.Noise(1, 98);
+					double n2 = noise.Noise(200, 400);
+					double n3 = noise.Noise(0.1f, 0.98f);
+					double n4 = noise.Noise(3.1f, 5.98f);
+					double n5 = noise.Noise(0.09999990f, 0.98000002f);
+					double n6 = noise.Noise(0.0999999046f, 0.980000019f);
+				}
+
+				
+
+				n = Math::Clamp(n*0.5 + 0.5, 0.0, 1.0);
+				n *= n;
+
+				unsigned char gray = static_cast<unsigned char>(n*255.99);
+				//gray = 255 - gray;
+
+				bmp1.SetPixel(x, y, Color32(gray, gray, gray, 255));
+				//bmp1.SetPixel(x, y, Color32(255, 255, 255, gray));
+			}
+		}
+		Bitmap* nbmp = noiseTex1->Lock();
+		nbmp->BitBlt(0, 0, &bmp1, Rect(0, 0, 256, 256), Color32::White, false);
+		noiseTex1->Unlock();
+
+		int src_w = bmp1.GetSize().width;
+		int src_h = bmp1.GetSize().height;
+		Bitmap dst1(Size(512, 256), PixelFormat::R8G8B8A8);
+		{
+			// http://sssiii.seesaa.net/article/411311322.html?seesaa_related=related_article
+			// rの最大値を計算（定数でも可）
+			float halfW = bmp1.GetSize().width / 2.0f;
+			float halfH = bmp1.GetSize().height / 2.0f;
+			float r_max = sqrt(halfW*halfW + halfH*halfH);
+			// x,y座標からr,Θ座標を計算
+			float r, theta;
+			int xa, ya;
+			int dst_w = dst1.GetSize().width;
+			int dst_h = dst1.GetSize().height;
+			for (int yb = 0; yb < dst_h; yb++)
+			{
+				int half_dst_h = (dst_h / 2);
+				int ny = yb - half_dst_h;
+				for (int xb = 0; xb < dst_w; xb++)
+				{
+
+					//float lambda = (xb / (float)(dst_w - 1))*2.0*Math::PI;
+					float theta = (ny / (float)(half_dst_h - 1))*(Math::PI/2);	// -90度～90度
+					float ry = (1.0f / Math::PI) * tan(Math::Clamp(theta*0.75f, -Math::PI / 2, Math::PI / 2));//tan(log(Math::PI / 4 + theta));//cos(log(theta));//
+					int ya = (ry * half_dst_h) + half_dst_h;
+					int xa = xb;
+
+					if (0 <= xa && xa <= src_w - 1 && 0 <= ya && ya <= src_h - 1)
+					{
+						Color32 c = bmp1.GetPixel(xa, ya);
+						dst1.SetPixel(xb, yb, c);
+					}
+					else
+					{
+						dst1.SetPixel(xb, yb, Color32::Red);
+					}
+#if 0
+					// x, y座標をr, Θ座標に変換
+					r = (1.0 - yb / (float)(dst_h - 1))*r_max;
+					theta = (xb / (float)(dst_w - 1))*2.0*Math::PI - Math::PI;
+					// r,Θから原画像のx,y座標を計算
+					xa = (int)(r*cos(theta) + halfW);
+					ya = (int)(r*sin(theta) + halfH);
+					// 色のコピー
+					if (0 <= xa && xa <= src_w - 1 && 0 <= ya && ya <= src_h - 1)
+					{
+						Color32 c = bmp1.GetPixel(xa, ya);
+						dst1.SetPixel(xb, yb, c);
+					}
+					else
+					{
+						dst1.SetPixel(xb, yb, Color32::Red);
+					}
+#endif
+				}
+			}
+		}
+
+
+		//Bitmap dst1flip(Size(256, 256), PixelFormat::R8G8B8A8);
+		//BitmapFilter filter;
+		//filter.FlipVertical(&dst1flip, &dst1);
+
+		Bitmap* bmp = tex->Lock();
+		//bmp->BitBlt(0, 0, &dst1flip, Rect(0, 0, 256, 128), Color32::White, false);
+		bmp->BitBlt(0, 0, &dst1, Rect(0, 0, 256, 256), Color32::White, false);
+		//bmp->BitBlt(0, 0, &bmp1, Rect(0, 0, 256, 256), Color32::White, false);
+		tex->Unlock();
+
+		auto shader = MMEShader::Create("D:/Proj/Volkoff/External/Lumino/src/Scene/Resource/BasicForwardRendering.fx");
+		auto mesh = StaticMesh::CreateSphere(20, 32, 16, MeshCreationFlags::ReverseFaces);
+		mesh->SetShader(shader);
+		mesh->GetMaterials()->GetAt(0)->SetTextureParameter(Material::MaterialTextureParameter, tex);
+		mesh->GetMaterials()->GetAt(0)->SetColorParameter(Material::EmissiveParameter, Color::White);
+
+
+
+		auto shader2 = MMEShader::Create("D:/Proj/Volkoff/External/Lumino/src/Scene/Resource/Cloud.fx");
+		auto plane = StaticMesh::CreateSquarePlane(Vector2(100, 100), Vector3::UnitY);
+		plane->SetShader(shader2);
+		plane->GetMaterials()->GetAt(0)->SetTextureParameter(Material::MaterialTextureParameter, noiseTex1);
+		plane->GetMaterials()->GetAt(0)->SetColorParameter(Material::EmissiveParameter, Color::White);
 
 		//auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
 		////auto textBlock1 = UITextBlock::Create();
@@ -399,7 +532,7 @@ int main()
 
 			//printf("%d\n", t.GetElapsedTime());
 
-			sp1->SetAngles(0, 0, fc);
+			//sp1->SetAngles(0, 0, fc);
 
 			fc += 0.01;
 

@@ -91,11 +91,11 @@ public:
 
 		outVertices[0].normal = m_front;
 		outVertices[0].uv.Set(0.0f, 0.0f);
-		outVertices[1].normal.Set(0.0f, 0.0f, -1.0f);
+		outVertices[1].normal = m_front;
 		outVertices[1].uv.Set(0.0f, 1.0f);
-		outVertices[2].normal.Set(0.0f, 0.0f, -1.0f);
+		outVertices[2].normal = m_front;
 		outVertices[2].uv.Set(1.0f, 0.0f);
-		outVertices[3].normal.Set(0.0f, 0.0f, -1.0f);
+		outVertices[3].normal = m_front;
 		outVertices[3].uv.Set(1.0f, 1.0f);
 
 		outIndices[0] = 0;
@@ -503,7 +503,9 @@ StaticMeshModel::StaticMeshModel()
 	, m_vertexBuffer()
 	, m_indexBuffer()
 	, m_vertexCount(0)
+	, m_indexCount(0)
 	, m_lockedVertexBuffer(nullptr)
+	, m_lockedIndexBuffer(nullptr)
 	, m_materials()
 	, m_attributes()
 {
@@ -535,7 +537,7 @@ void StaticMeshModel::CreateBox(const Vector3& size)
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::CreateSphere(float radius, int slices, int stacks)
+void StaticMeshModel::CreateSphere(float radius, int slices, int stacks, MeshCreationFlags flags)
 {
 	SphereMeshFactory factory(radius, slices, stacks);
 	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), 1, MeshCreationFlags::None);
@@ -543,6 +545,7 @@ void StaticMeshModel::CreateSphere(float radius, int slices, int stacks)
 	ScopedVertexBufferLock lock1(m_vertexBuffer);
 	ScopedIndexBufferLock lock2(m_indexBuffer);
 	factory.Generate((Vertex*)lock1.GetData(), (uint16_t*)lock2.GetData());
+	PostGenerated((Vertex*)lock1.GetData(), lock2.GetData(), flags);
 }
 
 //------------------------------------------------------------------------------
@@ -554,6 +557,7 @@ void StaticMeshModel::CreateSquarePlane(const Vector2& size, const Vector3& fron
 	ScopedVertexBufferLock lock1(m_vertexBuffer);
 	ScopedIndexBufferLock lock2(m_indexBuffer);
 	factory.Generate((Vertex*)lock1.GetData(), (uint16_t*)lock2.GetData());
+	PostGenerated((Vertex*)lock1.GetData(), lock2.GetData(), flags);
 }
 
 //------------------------------------------------------------------------------
@@ -621,6 +625,11 @@ void StaticMeshModel::TryLockBuffers()
 		ByteBuffer* buf = m_vertexBuffer->Lock();
 		m_lockedVertexBuffer = (Vertex*)buf->GetData();
 	}
+	if (m_lockedIndexBuffer == nullptr)
+	{
+		ByteBuffer* buf = m_indexBuffer->Lock();
+		m_lockedIndexBuffer = buf->GetData();
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -628,10 +637,15 @@ void StaticMeshModel::CommitRenderData(VertexDeclaration** decls, VertexBuffer**
 {
 	if (m_lockedVertexBuffer != nullptr)
 	{
-		//m_lockedVertexBuffer = m_vertexBuffer->Lock();
 		m_vertexBuffer->Unlock();
 		m_lockedVertexBuffer = nullptr;
 	}
+	if (m_lockedIndexBuffer != nullptr)
+	{
+		m_indexBuffer->Unlock();
+		m_lockedIndexBuffer = nullptr;
+	}
+
 
 	if (decls != nullptr) *decls = m_vertexDeclaration;
 	if (vb != nullptr) *vb = m_vertexBuffer;
@@ -655,6 +669,37 @@ void StaticMeshModel::CreateBuffers(int vertexCount, int indexCount, int attribu
 	m_attributes[0].PrimitiveNum = indexCount / 3;
 
 	m_vertexCount = vertexCount;
+	m_indexCount = indexCount;
+}
+
+//------------------------------------------------------------------------------
+void StaticMeshModel::PostGenerated(Vertex* vb, void* ib, MeshCreationFlags flags)
+{
+	for (int i = 0; i < m_vertexCount; ++i)
+	{
+		vb[i].color = Color::White;
+	}
+
+	if (flags.TestFlag(MeshCreationFlags::ReverseFaces))
+	{
+		if (m_indexBuffer->GetIndexStride() == 2)
+		{
+			for (int i = 0; i < m_vertexCount; ++i)
+			{
+				vb[i].normal *= -1.0f;
+			}
+
+			uint16_t* indices = (uint16_t*)ib;
+			for (int i = 0; i < m_indexCount; i += 3)
+			{
+				std::swap(indices[i + 1], indices[i + 2]);
+			}
+		}
+		else
+		{
+			LN_NOTIMPLEMENTED();
+		}
+	}
 }
 
 LN_NAMESPACE_END
