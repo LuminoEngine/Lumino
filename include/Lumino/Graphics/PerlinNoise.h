@@ -17,16 +17,22 @@ public:
 
 	/**
 		@brief		指定したシード値を使用してインスタンスを初期化します。
-		@param[in]	seed	: シード値
+		@param[in]	seed		: シード値
 	*/
 	PerlinNoise(int seed);
 	
 	/**
 		@brief		シード値を変更します。
-		@param[in]	seed	: シード値
+		@param[in]	seed		: シード値
 	*/
 	void SetSeed(int seed);
 	
+	/**
+		@brief		タイル状にノイズを並べて表示するための繰り返し間隔を設定します。
+		@param[in]	repeat		: サンプリングの周波数
+	*/
+	void SetTiledRepeatFrequency(float repeat);
+
 	/**
 		@brief		1D ノイズ値を生成します。
 		@param[in]	x			: サンプリング位置の X 座標
@@ -64,12 +70,13 @@ private:
 	float NoiseNormal(float x, float y, float z) const;
 	float OctaveNoiseNormal(float x, float y, float z, int octaves) const;
 	float Fade(float t) const;
-	float Lerp(float t, float a, float b) const;
+	float Lerp(float a, float b, float t) const;
 	float Grad(int hash, float x, float y, float z) const;
+	int Increment(int num) const;
 
 	int p[512];
+	int m_repeat;
 };
-
 
 LN_NAMESPACE_END
 

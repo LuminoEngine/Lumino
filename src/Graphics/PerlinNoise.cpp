@@ -12,12 +12,14 @@ static const float persistence = 0.5f;
 
 //------------------------------------------------------------------------------
 PerlinNoise::PerlinNoise()
+	: m_repeat(0)
 {
 	SetSeed((int)::time(NULL));
 }
 
 //------------------------------------------------------------------------------
 PerlinNoise::PerlinNoise(int seed)
+	: m_repeat(0)
 {
 	SetSeed(seed);
 }
@@ -36,52 +38,80 @@ void PerlinNoise::SetSeed(int seed)
 }
 
 //------------------------------------------------------------------------------
+void PerlinNoise::SetTiledRepeatFrequency(float repeat)
+{
+	m_repeat = repeat;
+}
+
+//------------------------------------------------------------------------------
 float PerlinNoise::Noise1D(float x, int octaves, float minValue, float maxValue) const
 {
 	float v = OctaveNoiseNormal(x, 0, 0, octaves);
-	return Math::Clamp((v * 0.5f + 0.5f) * (maxValue - minValue) + minValue, minValue, maxValue);
+	return Math::Clamp(((v + 1.0f) / 2.0f) * (maxValue - minValue) + minValue, minValue, maxValue);
 }
 
 //------------------------------------------------------------------------------
 float PerlinNoise::Noise2D(float x, float y, int octaves, float minValue, float maxValue) const
 {
 	float v = OctaveNoiseNormal(x, y, 0, octaves);
-	return Math::Clamp((v * 0.5f + 0.5f) * (maxValue - minValue) + minValue, minValue, maxValue);
+	return Math::Clamp(((v + 1.0f) / 2.0f)  * (maxValue - minValue) + minValue, minValue, maxValue);
 }
 
 //------------------------------------------------------------------------------
 float PerlinNoise::Noise3D(float x, float y, float z, int octaves, float minValue, float maxValue) const
 {
 	float v = OctaveNoiseNormal(x, y, z, octaves);
-	return Math::Clamp((v * 0.5f + 0.5f) * (maxValue - minValue) + minValue, minValue, maxValue);
+	return Math::Clamp(((v + 1.0f) / 2.0f)  * (maxValue - minValue) + minValue, minValue, maxValue);
 }
 
 //------------------------------------------------------------------------------
 float PerlinNoise::NoiseNormal(float x, float y, float z) const
 {
-	int X = ((int)x) & 255;
-	int Y = ((int)y) & 255;
-	int Z = ((int)z) & 255;
+	if (m_repeat > 0)
+	{
+		x = fmod(x, m_repeat);
+		y = fmod(y, m_repeat);
+		z = fmod(z, m_repeat);
+	}
 
-	x = x - (int)x;
-	y = y - (int)y;
-	z = z - (int)z;
+	int xi = (int)x & 255;
+	int yi = (int)y & 255;
+	int zi = (int)z & 255;
+	float xf = x - (int)x;
+	float yf = y - (int)y;
+	float zf = z - (int)z;
+	float u = Fade(xf);
+	float v = Fade(yf);
+	float w = Fade(zf);
 
-	float u = Fade(x);
-	float v = Fade(y);
-	float w = Fade(z);
+	int aaa, aba, aab, abb, baa, bba, bab, bbb;
+	aaa = p[p[p[xi] + yi] + zi];
+	aba = p[p[p[xi] + Increment(yi)] + zi];
+	aab = p[p[p[xi] + yi] + Increment(zi)];
+	abb = p[p[p[xi] + Increment(yi)] + Increment(zi)];
+	baa = p[p[p[Increment(xi)] + yi] + zi];
+	bba = p[p[p[Increment(xi)] + Increment(yi)] + zi];
+	bab = p[p[p[Increment(xi)] + yi] + Increment(zi)];
+	bbb = p[p[p[Increment(xi)] + Increment(yi)] + Increment(zi)];
 
-	int A = p[X] + Y, AA = p[A] + Z, AB = p[A + 1] + Z;
-	int B = p[X + 1] + Y, BA = p[B] + Z, BB = p[B + 1] + Z;
+	float x1, x2, y1, y2;
+	x1 = Lerp(Grad(aaa, xf, yf, zf),
+		Grad(baa, xf - 1, yf, zf),
+		u);
+	x2 = Lerp(Grad(aba, xf, yf - 1, zf),
+		Grad(bba, xf - 1, yf - 1, zf),
+		u);
+	y1 = Lerp(x1, x2, v);
 
-	return Lerp(w, Lerp(v, Lerp(u, Grad(p[AA], x, y, z),
-		Grad(p[BA], x - 1, y, z)),
-		Lerp(u, Grad(p[AB], x, y - 1, z),
-			Grad(p[BB], x - 1, y - 1, z))),
-		Lerp(v, Lerp(u, Grad(p[AA + 1], x, y, z - 1),
-			Grad(p[BA + 1], x - 1, y, z - 1)),
-			Lerp(u, Grad(p[AB + 1], x, y - 1, z - 1),
-				Grad(p[BB + 1], x - 1, y - 1, z - 1))));
+	x1 = Lerp(Grad(aab, xf, yf, zf - 1),
+		Grad(bab, xf - 1, yf, zf - 1),
+		u);
+	x2 = Lerp(Grad(abb, xf, yf - 1, zf - 1),
+		Grad(bbb, xf - 1, yf - 1, zf - 1),
+		u);
+	y2 = Lerp(x1, x2, v);
+
+	return Lerp(y1, y2, w);	// -1.0 .. 1.0
 }
 
 //------------------------------------------------------------------------------
@@ -96,7 +126,7 @@ float PerlinNoise::OctaveNoiseNormal(float x, float y, float z, int octaves) con
 		amplitude *= persistence;
 		frequency *= 2.0;
 	}
-	return result;
+	return result;	// -1.0 .. 1.0
 }
 
 //------------------------------------------------------------------------------
@@ -106,7 +136,7 @@ float PerlinNoise::Fade(float t) const
 }
 
 //------------------------------------------------------------------------------
-float PerlinNoise::Lerp(float t, float a, float b) const
+float PerlinNoise::Lerp(float a, float b, float t) const
 {
 	return a + t * (b - a);
 }
@@ -118,6 +148,14 @@ float PerlinNoise::Grad(int hash, float x, float y, float z) const
 	float u = (h < 8) ? x : y;
 	float v = (h < 4) ? y : (h == 12 || h == 14 ? x : z);
 	return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
+}
+
+//------------------------------------------------------------------------------
+int PerlinNoise::Increment(int num) const
+{
+	num++;
+	if (m_repeat > 0) num %= m_repeat;
+	return num;
 }
 
 LN_NAMESPACE_END

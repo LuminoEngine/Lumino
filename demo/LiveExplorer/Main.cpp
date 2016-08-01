@@ -298,10 +298,11 @@ int main()
 		//sp1->SetVisible(false);
 
 		PerlinNoise noise;
-		double frequency = 8;
+		noise.SetTiledRepeatFrequency(0);
+		double frequency = 16;
 		const double fx = tex->GetWidth() / frequency;
 		const double fy = tex->GetHeight() / frequency;
-		int octaves = 1;	// 粗さ
+		int octaves = 8;	// 粗さ
 
 		Bitmap bmp1(Size(256, 256), PixelFormat::R8G8B8A8);
 		for (int y = 0; y < bmp1.GetSize().height; ++y)
@@ -309,6 +310,7 @@ int main()
 			for (int x = 0; x < bmp1.GetSize().width; ++x)
 			{
 				double n = noise.Noise2D(x / fx, y / fy, octaves);
+				//double n = noise.OctavePerlin(x / fx, y / fy, 0, octaves, 0.5f);
 				//double n = noise.Noise(x/fx, y / fy);
 
 				//if (n < 0)
