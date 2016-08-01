@@ -810,7 +810,6 @@ set(LN_INCLUDE_DIRECTORIES
 	${PROJECT_SOURCE_DIR}/include
 	${PROJECT_SOURCE_DIR}/external
 	${PROJECT_SOURCE_DIR}/external/Lumino.Core/include
-	${PROJECT_SOURCE_DIR}/external/Lumino.Math/include
 	${PROJECT_SOURCE_DIR}/external/libpng
 	${PROJECT_SOURCE_DIR}/external/bullet-2.82
 	${PROJECT_SOURCE_DIR}/external/freetype-2.6/include
@@ -827,10 +826,7 @@ include_directories(${LN_INCLUDE_DIRECTORIES} ${LN_PLATFORM_INCLUDE_DIRS})
 
 add_subdirectory(external/Lumino.Core)
 link_libraries(LuminoCore_Static)
-
-add_subdirectory(external/Lumino.Math)
-link_libraries(LuminoMath_Static)
-set_target_properties(LuminoMath_Static PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
+link_libraries(LuminoMath)
 
 # Make postfix.
 ln_make_postfix(LN_LIB_POSTFIX)

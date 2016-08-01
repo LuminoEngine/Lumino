@@ -406,7 +406,7 @@ int main()
 		//bmp->BitBlt(0, 0, &bmp1, Rect(0, 0, 256, 256), Color32::White, false);
 		tex->Unlock();
 
-		auto shader = MMEShader::Create("D:/Proj/Volkoff/External/Lumino/src/Scene/Resource/BasicForwardRendering.fx");
+		auto shader = MMEShader::Create(_T("D:/Proj/Volkoff/External/Lumino/src/Scene/Resource/BasicForwardRendering.fx"));
 		auto mesh = StaticMesh::CreateSphere(20, 32, 16, MeshCreationFlags::ReverseFaces);
 		mesh->SetShader(shader);
 		mesh->GetMaterials()->GetAt(0)->SetTextureParameter(Material::MaterialTextureParameter, tex);
@@ -414,7 +414,7 @@ int main()
 
 
 
-		auto shader2 = MMEShader::Create("D:/Proj/Volkoff/External/Lumino/src/Scene/Resource/Cloud.fx");
+		auto shader2 = MMEShader::Create(_T("D:/Proj/Volkoff/External/Lumino/src/Scene/Resource/Cloud.fx"));
 		auto plane = StaticMesh::CreateSquarePlane(Vector2(100, 100), Vector3::UnitY);
 		plane->SetShader(shader2);
 		plane->GetMaterials()->GetAt(0)->SetTextureParameter(Material::MaterialTextureParameter, noiseTex1);
