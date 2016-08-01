@@ -1,27 +1,68 @@
-
+﻿
 #pragma once
 
 LN_NAMESPACE_BEGIN
 
+/**
+	@brief	パーリンノイズ(Perlin noise) を生成するためのクラスです。
+*/
 class PerlinNoise
 {
 public:
 
-	PerlinNoise(unsigned int seed = 1);
+	/**
+		@brief		現在の時間に応じて決定されるシード値を使用してインスタンスを初期化します。
+	*/
+	PerlinNoise();
 
-	float Noise(float x) const;
+	/**
+		@brief		指定したシード値を使用してインスタンスを初期化します。
+		@param[in]	seed	: シード値
+	*/
+	PerlinNoise(int seed);
+	
+	/**
+		@brief		シード値を変更します。
+		@param[in]	seed	: シード値
+	*/
+	void SetSeed(int seed);
+	
+	/**
+		@brief		1D ノイズ値を生成します。
+		@param[in]	x			: サンプリング位置の X 座標
+		@param[in]	octaves		: オクターブの合成レベル
+		@param[in]	minValue	: 下限値
+		@param[in]	maxValue	: 上限値
+		@return		minValue 以上 maxValue 以下の値
+	*/
+	float Noise1D(float x, int octaves = 1, float minValue = 0.0f, float maxValue = 1.0f) const;
 
-	float Noise(float x, float y) const;
+	/**
+		@brief		2D ノイズ値を生成します。
+		@param[in]	x			: サンプリング位置の X 座標
+		@param[in]	y			: サンプリング位置の Y 座標
+		@param[in]	octaves		: オクターブの合成レベル
+		@param[in]	minValue	: 下限値
+		@param[in]	maxValue	: 上限値
+		@return		minValue 以上 maxValue 以下の値
+	*/
+	float Noise2D(float x, float y, int octaves = 1, float minValue = 0.0f, float maxValue = 1.0f) const;
 
-	float Noise(float x, float y, float z) const;
-
-	float OctaveNoise(float x, int octaves) const;
-
-	float OctaveNoise(float x, float y, int octaves) const;
-
-	float OctaveNoise(float x, float y, float z, int octaves) const;
+	/**
+		@brief		3D ノイズ値を生成します。
+		@param[in]	x			: サンプリング位置の X 座標
+		@param[in]	y			: サンプリング位置の Y 座標
+		@param[in]	z			: サンプリング位置の Z 座標
+		@param[in]	octaves		: オクターブの合成レベル
+		@param[in]	minValue	: 下限値
+		@param[in]	maxValue	: 上限値
+		@return		minValue 以上 maxValue 以下の値
+	*/
+	float Noise3D(float x, float y, float z, int octaves = 1, float minValue = 0.0f, float maxValue = 1.0f) const;
 
 private:
+	float NoiseNormal(float x, float y, float z) const;
+	float OctaveNoiseNormal(float x, float y, float z, int octaves) const;
 	float Fade(float t) const;
 	float Lerp(float t, float a, float b) const;
 	float Grad(int hash, float x, float y, float z) const;

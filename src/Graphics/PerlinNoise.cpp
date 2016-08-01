@@ -1,4 +1,4 @@
-#include <cmath>
+ï»¿#include <cmath>
 #include <array>
 #include <numeric>
 #include <random>
@@ -6,18 +6,26 @@
 #include "Internal.h"
 #include <Lumino/Graphics/PerlinNoise.h>
 
-// http://mrl.nyu.edu/~perlin/Noise/
-
 LN_NAMESPACE_BEGIN
 
 static const float persistence = 0.5f;
 
 //------------------------------------------------------------------------------
-PerlinNoise::PerlinNoise(unsigned int seed)
+PerlinNoise::PerlinNoise()
 {
-	if (seed == 0) seed = std::mt19937::default_seed;
+	SetSeed((int)::time(NULL));
+}
 
-	// p[0..255] ‚ğ–„‚ß‚ÄƒVƒƒƒbƒtƒ‹
+//------------------------------------------------------------------------------
+PerlinNoise::PerlinNoise(int seed)
+{
+	SetSeed(seed);
+}
+
+//------------------------------------------------------------------------------
+void PerlinNoise::SetSeed(int seed)
+{
+	// p[0..255] ã‚’åŸ‹ã‚ã¦ã‚·ãƒ£ãƒƒãƒ•ãƒ«
 	for (int i = 0; i < 256; ++i) p[i] = i;
 	std::shuffle(std::begin(p), std::begin(p) + 256, std::mt19937(seed));
 
@@ -28,19 +36,28 @@ PerlinNoise::PerlinNoise(unsigned int seed)
 }
 
 //------------------------------------------------------------------------------
-float PerlinNoise::Noise(float x) const
+float PerlinNoise::Noise1D(float x, int octaves, float minValue, float maxValue) const
 {
-	return Noise(x, 0.0, 0.0);
+	float v = OctaveNoiseNormal(x, 0, 0, octaves);
+	return Math::Clamp((v * 0.5f + 0.5f) * (maxValue - minValue) + minValue, minValue, maxValue);
 }
 
 //------------------------------------------------------------------------------
-float PerlinNoise::Noise(float x, float y) const
+float PerlinNoise::Noise2D(float x, float y, int octaves, float minValue, float maxValue) const
 {
-	return Noise(x, y, 0.0);
+	float v = OctaveNoiseNormal(x, y, 0, octaves);
+	return Math::Clamp((v * 0.5f + 0.5f) * (maxValue - minValue) + minValue, minValue, maxValue);
 }
 
 //------------------------------------------------------------------------------
-float PerlinNoise::Noise(float x, float y, float z) const
+float PerlinNoise::Noise3D(float x, float y, float z, int octaves, float minValue, float maxValue) const
+{
+	float v = OctaveNoiseNormal(x, y, z, octaves);
+	return Math::Clamp((v * 0.5f + 0.5f) * (maxValue - minValue) + minValue, minValue, maxValue);
+}
+
+//------------------------------------------------------------------------------
+float PerlinNoise::NoiseNormal(float x, float y, float z) const
 {
 	int X = ((int)x) & 255;
 	int Y = ((int)y) & 255;
@@ -68,44 +85,14 @@ float PerlinNoise::Noise(float x, float y, float z) const
 }
 
 //------------------------------------------------------------------------------
-float PerlinNoise::OctaveNoise(float x, int octaves) const
+float PerlinNoise::OctaveNoiseNormal(float x, float y, float z, int octaves) const
 {
 	float result = 0.0;
 	float frequency = 1.0;
 	float amplitude = 1.0;
 	for (int i = 0; i < octaves; ++i)
 	{
-		result += Noise(x * frequency) * amplitude;
-		amplitude *= persistence;
-		frequency *= 2.0;
-	}
-	return result;
-}
-
-//------------------------------------------------------------------------------
-float PerlinNoise::OctaveNoise(float x, float y, int octaves) const
-{
-	float result = 0.0;
-	float frequency = 1.0;
-	float amplitude = 1.0;
-	for (int i = 0; i < octaves; ++i)
-	{
-		result += Noise(x * frequency, y * frequency) * amplitude;
-		amplitude *= persistence;
-		frequency *= 2.0;
-	}
-	return result;
-}
-
-//------------------------------------------------------------------------------
-float PerlinNoise::OctaveNoise(float x, float y, float z, int octaves) const
-{
-	float result = 0.0;
-	float frequency = 1.0;
-	float amplitude = 1.0;
-	for (int i = 0; i < octaves; ++i)
-	{
-		result += Noise(x * frequency, y * frequency, z * frequency) * amplitude;
+		result += NoiseNormal(x * frequency, y * frequency, z * frequency) * amplitude;
 		amplitude *= persistence;
 		frequency *= 2.0;
 	}

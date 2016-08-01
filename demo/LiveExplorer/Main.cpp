@@ -308,23 +308,23 @@ int main()
 		{
 			for (int x = 0; x < bmp1.GetSize().width; ++x)
 			{
-				double n = noise.OctaveNoise(x / fx, y / fy, octaves);
+				double n = noise.Noise2D(x / fx, y / fy, octaves);
 				//double n = noise.Noise(x/fx, y / fy);
 
-				if (n < 0)
-				{
-					double n1 = noise.Noise(1, 98);
-					double n2 = noise.Noise(200, 400);
-					double n3 = noise.Noise(0.1f, 0.98f);
-					double n4 = noise.Noise(3.1f, 5.98f);
-					double n5 = noise.Noise(0.09999990f, 0.98000002f);
-					double n6 = noise.Noise(0.0999999046f, 0.980000019f);
-				}
+				//if (n < 0)
+				//{
+				//	double n1 = noise.Noise(1, 98);
+				//	double n2 = noise.Noise(200, 400);
+				//	double n3 = noise.Noise(0.1f, 0.98f);
+				//	double n4 = noise.Noise(3.1f, 5.98f);
+				//	double n5 = noise.Noise(0.09999990f, 0.98000002f);
+				//	double n6 = noise.Noise(0.0999999046f, 0.980000019f);
+				//}
 
 				
 
-				n = Math::Clamp(n*0.5 + 0.5, 0.0, 1.0);
-				n *= n;
+				//n = Math::Clamp(n*0.5 + 0.5, 0.0, 1.0);
+				//n *= n;
 
 				unsigned char gray = static_cast<unsigned char>(n*255.99);
 				//gray = 255 - gray;
