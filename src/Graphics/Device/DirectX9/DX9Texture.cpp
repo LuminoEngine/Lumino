@@ -215,6 +215,76 @@ void DX9Texture::Unlock()
 }
 
 //==============================================================================
+// DX9Texture3D
+//==============================================================================
+//------------------------------------------------------------------------------
+DX9Texture3D::DX9Texture3D(DX9GraphicsDevice* device)
+	: DX9TextureBase(device)
+	, m_dxTexture(nullptr)
+	, m_format(TextureFormat::Unknown)
+	, m_size(0, 0)
+	, m_depth(0)
+	, m_realSize(0, 0)
+	, m_lockedBitmap()
+{
+}
+
+//------------------------------------------------------------------------------
+DX9Texture3D::~DX9Texture3D()
+{
+	LN_SAFE_RELEASE(m_dxTexture);
+}
+
+//------------------------------------------------------------------------------
+void DX9Texture3D::Initialize(int width, int height, int depth, TextureFormat format, uint32_t levels)
+{
+	IDirect3DDevice9* d3d9Device = m_graphicsDevice->GetIDirect3DDevice9();
+
+	// 実際に作成されるべきテクスチャの情報を取得する
+	UINT w = m_size.width;
+	UINT h = m_size.height;
+	UINT d = depth;
+	UINT miplevels = levels;
+	D3DFORMAT dxFormat = DX9Module::TranslateLNFormatToDxFormat(format);
+	LN_COMCALL(DX9Module::D3DXCheckVolumeTextureRequirements(
+		d3d9Device,
+		&w, &h, &d,
+		&miplevels,
+		0,
+		&dxFormat,
+		D3DPOOL_MANAGED));
+
+	// テクスチャ作成
+	LN_COMCALL(d3d9Device->CreateVolumeTexture(
+		w, h, d,
+		miplevels,
+		0,
+		dxFormat,
+		D3DPOOL_DEFAULT,
+		&m_dxTexture,
+		NULL));
+}
+
+//------------------------------------------------------------------------------
+void DX9Texture3D::SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize)
+{
+	LN_NOTIMPLEMENTED();
+}
+
+//------------------------------------------------------------------------------
+Bitmap* DX9Texture3D::Lock()
+{
+	LN_NOTIMPLEMENTED();
+	return nullptr;
+}
+
+//------------------------------------------------------------------------------
+void DX9Texture3D::Unlock()
+{
+	LN_NOTIMPLEMENTED();
+}
+
+//==============================================================================
 // DX9RenderTargetTexture
 //==============================================================================
 

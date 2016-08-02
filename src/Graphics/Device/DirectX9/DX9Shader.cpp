@@ -235,7 +235,7 @@ const SamplerState* DX9Shader::FindSamplerState(IDirect3DBaseTexture9* dxTexture
 	for (DX9ShaderVariable* v : m_textureVariables)
 	{
 		DX9TextureBase* tex = static_cast<DX9TextureBase*>(v->GetTexture());
-		if (tex != nullptr && tex->GetIDirect3DTexture9() == dxTexture)
+		if (tex != nullptr && tex->GetIDirect3DBaseTexture9() == dxTexture)
 		{
 			return &tex->GetSamplerState();
 		}
@@ -522,7 +522,7 @@ void DX9ShaderVariable::SetMatrixArray(const Matrix* matrices, int count)
 void DX9ShaderVariable::SetTexture(ITexture* texture)
 {
 	if (texture != NULL) {
-		LN_COMCALL(m_dxEffect->SetTexture(m_handle, static_cast<DX9TextureBase*>(texture)->GetIDirect3DTexture9()));
+		LN_COMCALL(m_dxEffect->SetTexture(m_handle, static_cast<DX9TextureBase*>(texture)->GetIDirect3DBaseTexture9()));
 	}
 	else {
 		m_dxEffect->SetTexture(m_handle, NULL);

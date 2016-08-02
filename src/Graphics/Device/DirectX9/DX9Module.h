@@ -45,6 +45,16 @@ public:
 		D3DFORMAT *pFormat,
 		D3DPOOL Pool);
 
+	typedef HRESULT(WINAPI *MD_D3DXCheckVolumeTextureRequirements)(
+		LPDIRECT3DDEVICE9 pDevice,
+		UINT *pWidth,
+		UINT *pHeight,
+		UINT *pDepth,
+		UINT *pNumMipLevels,
+		DWORD Usage,
+		D3DFORMAT *pFormat,
+		D3DPOOL Pool);
+
 	typedef HRESULT(WINAPI *MD_D3DXCreateEffect)(
 		LPDIRECT3DDEVICE9 pDevice,
 		LPCVOID pSrcData,
@@ -115,6 +125,7 @@ public:
 	static MD_D3DXCreateTextureFromFileInMemoryEx	D3DXCreateTextureFromFileInMemoryEx;
 	static MD_D3DXGetImageInfoFromFileInMemory		D3DXGetImageInfoFromFileInMemory;
 	static MD_D3DXCheckTextureRequirements			D3DXCheckTextureRequirements;
+	static MD_D3DXCheckVolumeTextureRequirements	D3DXCheckVolumeTextureRequirements;
 	static MD_D3DXCreateEffect						D3DXCreateEffect;
 	static MD_D3DXLoadMeshFromXInMemory				D3DXLoadMeshFromXInMemory;
 	//static MD_D3DXCreateFontIndirectW				D3DXCreateFontIndirectW;

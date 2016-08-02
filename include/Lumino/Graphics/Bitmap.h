@@ -57,6 +57,7 @@ public:
 		@brief		
 	*/
 	Bitmap(void* buffer, const Size& size, PixelFormat format);	// 参照モード
+	Bitmap(void* buffer, int width, int height, int depth, PixelFormat format);	// 参照モード
 	//Bitmap(void* buffer, const Size& size, PixelFormat format, int pitch, bool upFlow);	// 参照モード
 
 
@@ -114,29 +115,12 @@ public:
 
 
 	// 4Byte フォーマットのみ可
-	void SetPixel(int x, int y, const Color32& color);
+	void SetPixel(int x, int y, const Color32& color) { SetPixel(x, y, 0, color); }
+
+	void SetPixel(int x, int y, int z, const Color32& color);
 
 	// テスト用
-	Color32 GetPixel(int x, int y) const
-	{
-		struct U32
-		{
-			byte_t	D[4];
-		};
-
-		if (m_upFlow) {
-			y = m_size.height - 1 - y;
-		}
-
-		const U32* buf = &((const U32*)m_bitmapData.GetConstData())[y * m_size.width + x];
-		if (m_format == PixelFormat::B8G8R8A8 || m_format == PixelFormat::B8G8R8X8)
-		{
-			return Color32(buf->D[2], buf->D[1], buf->D[0], buf->D[3]);
-		}
-		else {
-			return *((const Color32*)buf);
-		}
-	}
+	Color32 GetPixel(int x, int y) const;
 
 	size_t GetSerializeSize() const;
 	size_t GetSerializeSize(const Rect& rect) const;
@@ -187,11 +171,12 @@ private:
 
 private:
 	friend class FreeTypeFont;
-	ByteBuffer		m_bitmapData;	///< ビットマップデータ本体
-	Size			m_size;			///< サイズ (ピクセル数単位)
-	int				m_pitch;		///< フォーマット A1 時の、row バイト数。(FreeTypeからだと、必ず width / 8 + 1 にならないので)
-	PixelFormat		m_format;		///< ピクセルフォーマット
-	bool			m_upFlow;		///< 上下逆のイメージの場合は true になる
+	ByteBuffer		m_bitmapData;	// ビットマップデータ本体
+	Size			m_size;			// サイズ (ピクセル数単位)
+	int				m_depth;		// 深度 (Z座標)
+	int				m_pitch;		// フォーマット A1 時の、row バイト数。(FreeTypeからだと、必ず width / 8 + 1 にならないので)
+	PixelFormat		m_format;		// ピクセルフォーマット
+	bool			m_upFlow;		// 上下逆のイメージの場合は true になる
 
 
 

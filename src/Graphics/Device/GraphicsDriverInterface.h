@@ -375,6 +375,24 @@ public:
 	};
 };
 
+//class ITexture2D
+//	: public ITexture
+//{
+//public:
+//
+//protected:
+//	virtual ~ITexture2D();
+//};
+//
+//class ITexture3D
+//	: public ITexture
+//{
+//public:
+//
+//protected:
+//	virtual ~ITexture3D();
+//};
+
 /// シェーダプログラムのインターフェイス
 class IShader
 	: public IDeviceObject

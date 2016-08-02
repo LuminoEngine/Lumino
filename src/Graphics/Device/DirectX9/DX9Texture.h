@@ -18,13 +18,18 @@ public:
 	DX9TextureBase(DX9GraphicsDevice* device);
 	virtual ~DX9TextureBase();
 
+	const SamplerState& GetSamplerState() const { return m_samplerState; }
+
 public:
-	virtual IDirect3DTexture9* GetIDirect3DTexture9() = 0;
+	// ITexture interface
+	virtual void SetSamplerState(const SamplerState& state) { m_samplerState = state; }
+
+	virtual IDirect3DBaseTexture9* GetIDirect3DBaseTexture9() = 0;
 	virtual IDirect3DSurface9* GetIDirect3DSurface9() = 0;
-	virtual const SamplerState& GetSamplerState() const { LN_THROW(0, InvalidOperationException); };
 
 protected:
 	DX9GraphicsDevice*	m_graphicsDevice;
+	SamplerState		m_samplerState;
 };
 
 /// 普通のテクスチャ
@@ -41,24 +46,22 @@ public:
 	virtual ~DX9Texture();
 
 public:
-	// override IDeviceObject
+	// IDeviceObject interface
 	virtual void OnLostDevice() {}
 	virtual void OnResetDevice() {}
 
-	// override ITexture
+	// ITexture interface
 	virtual TextureType GetTextureType() const { return TextureType_Normal; }
 	virtual TextureFormat GetTextureFormat() const { return m_format; }
 	virtual const Size& GetSize() const { return m_size; }
 	virtual const Size& GetRealSize() const { return m_realSize; }
-	virtual void SetSamplerState(const SamplerState& state) { m_samplerState = state; }
 	virtual void SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize);
 	virtual Bitmap* Lock();
 	virtual void Unlock();
 
-	// override GLTextureBase
-	virtual IDirect3DTexture9* GetIDirect3DTexture9() { return m_dxTexture; }
+	// DX9TextureBase interface
+	virtual IDirect3DBaseTexture9* GetIDirect3DBaseTexture9() { return m_dxTexture; }
 	virtual IDirect3DSurface9* GetIDirect3DSurface9() { return m_dxSurface; }
-	virtual const SamplerState& GetSamplerState() const { return m_samplerState; }
 
 private:
 	IDirect3DTexture9*		m_dxTexture;	///< Direct3DTexture 本体
@@ -66,9 +69,41 @@ private:
 	TextureFormat			m_format;
 	Size					m_size;
 	Size					m_realSize;
-	SamplerState			m_samplerState;
-	//ByteBuffer				m_lockedBuffer;
-	RefPtr<Bitmap>	m_lockedBitmap;
+	RefPtr<Bitmap>			m_lockedBitmap;
+};
+
+class DX9Texture3D
+	: public DX9TextureBase
+{
+public:
+	DX9Texture3D(DX9GraphicsDevice* device);
+	virtual ~DX9Texture3D();
+	void Initialize(int width, int height, int depth, TextureFormat format, uint32_t levels);
+
+	// IDeviceObject interface
+	virtual void OnLostDevice() {}
+	virtual void OnResetDevice() {}
+
+	// ITexture interface
+	virtual TextureType GetTextureType() const { return TextureType_Normal; }
+	virtual TextureFormat GetTextureFormat() const { return m_format; }
+	virtual const Size& GetSize() const { return m_size; }
+	virtual const Size& GetRealSize() const { return m_realSize; }
+	virtual void SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize);
+	virtual Bitmap* Lock();
+	virtual void Unlock();
+
+	// DX9TextureBase interface
+	virtual IDirect3DBaseTexture9* GetIDirect3DBaseTexture9() { return m_dxTexture; }
+	virtual IDirect3DSurface9* GetIDirect3DSurface9() { return nullptr; }
+
+private:
+	IDirect3DVolumeTexture9*	m_dxTexture;
+	TextureFormat				m_format;
+	Size						m_size;
+	int							m_depth;
+	Size						m_realSize;
+	RefPtr<Bitmap>				m_lockedBitmap;
 };
 
 /// レンダーターゲットテクスチャ
@@ -80,24 +115,22 @@ public:
 	virtual ~DX9RenderTargetTexture();
 
 public:
-	// override IDeviceObject
+	// IDeviceObject interface
 	virtual void OnLostDevice();
 	virtual void OnResetDevice();
 
-	// override ITexture
+	// ITexture interface
 	virtual TextureType GetTextureType() const { return TextureType_RenderTarget; }
 	virtual TextureFormat GetTextureFormat() const { return m_format; }
 	virtual const Size& GetSize() const { return m_size; }
 	virtual const Size& GetRealSize() const { return m_realSize; }
-	virtual void SetSamplerState(const SamplerState& state) { m_samplerState = state; }
 	virtual void SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
 	virtual Bitmap* Lock();
 	virtual void Unlock();
 
-	// override GLTextureBase
-	virtual IDirect3DTexture9* GetIDirect3DTexture9() { return m_dxTexture; }
+	// DX9TextureBase interface
+	virtual IDirect3DBaseTexture9* GetIDirect3DBaseTexture9() { return m_dxTexture; }
 	virtual IDirect3DSurface9* GetIDirect3DSurface9() { return m_dxSurface; }
-	virtual const SamplerState& GetSamplerState() const { return m_samplerState; }
 
 	static void LockRenderTarget(IDirect3DDevice9* dxDevice, IDirect3DSurface9* dxSurface, TextureFormat format, const Size& realSize, IDirect3DSurface9** outLockedSystemSurface, ByteBuffer* outLockedBuffer, Bitmap** outLockedBitmap);
 	static void UnlockRenderTarget(IDirect3DSurface9** lockedSystemSurface, ByteBuffer* lockedBuffer, Bitmap** lockedBitmap);
@@ -109,7 +142,6 @@ private:
 	Size					m_size;
 	Size					m_realSize;
 	int						m_mipLevels;
-	SamplerState			m_samplerState;
 
 	IDirect3DSurface9*		m_lockedSystemSurface;
 	ByteBuffer				m_lockedBuffer;
@@ -125,11 +157,11 @@ public:
 	virtual ~DX9DepthBuffer();
 
 public:
-	// override IDeviceObject
+	// IDeviceObject interface
 	virtual void OnLostDevice();
 	virtual void OnResetDevice();
 
-	// override ITexture
+	// ITexture interface
 	virtual TextureType GetTextureType() const { return TextureType_DepthBuffer; }
 	virtual TextureFormat GetTextureFormat() const { return m_format; }
 	virtual const Size& GetSize() const { return m_size; }
@@ -139,8 +171,8 @@ public:
 	virtual Bitmap* Lock() { LN_THROW(0, InvalidOperationException); }
 	virtual void Unlock() { LN_THROW(0, InvalidOperationException); }
 
-	// override GLTextureBase
-	virtual IDirect3DTexture9* GetIDirect3DTexture9() { return NULL; }
+	// DX9TextureBase interface
+	virtual IDirect3DBaseTexture9* GetIDirect3DBaseTexture9() { return NULL; }
 	virtual IDirect3DSurface9* GetIDirect3DSurface9() { return m_dxSurface; }
 
 private:
@@ -165,11 +197,11 @@ public:
 	void Reset(IDirect3DSurface9* backBufferSurface);
 
 public:
-	// override IDeviceObject
+	// IDeviceObject interface
 	virtual void OnLostDevice() {}
 	virtual void OnResetDevice() {}
 
-	// override ITexture
+	// ITexture interface
 	virtual TextureType GetTextureType() const { return TextureType_RenderTarget; }
 	virtual TextureFormat GetTextureFormat() const { return m_format; }
 	virtual const Size& GetSize() const { return m_realSize; }
@@ -179,8 +211,8 @@ public:
 	virtual Bitmap* Lock();
 	virtual void Unlock();
 
-	// override GLTextureBase
-	virtual IDirect3DTexture9* GetIDirect3DTexture9() { return NULL; }
+	// DX9TextureBase interface
+	virtual IDirect3DBaseTexture9* GetIDirect3DBaseTexture9() { return NULL; }
 	virtual IDirect3DSurface9* GetIDirect3DSurface9() { return m_dxSurface; }
 
 private:

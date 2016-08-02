@@ -16,6 +16,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 Bitmap::Bitmap()
 	: m_bitmapData()
 	, m_size()
+	, m_depth(0)
 	, m_pitch(0)
 	, m_format(PixelFormat::Unknown)
 	, m_upFlow(false)
@@ -27,6 +28,7 @@ Bitmap::Bitmap(const Size& size, PixelFormat format, bool upFlow)
 {
 	Init();
 	m_size = size;
+	m_depth = 1;
 	m_format = format;
 	m_bitmapData = ByteBuffer(GetPixelFormatByteCount(format, size));
 	m_upFlow = upFlow;
@@ -43,6 +45,7 @@ Bitmap::Bitmap(Stream* stream)
 		LN_THROW(0, InvalidFormatException);
 	}
 	m_size = pngFile.m_size;
+	m_depth = 1;
 	m_format = pngFile.m_format;
 	m_bitmapData = pngFile.m_bitmapData;
 }
@@ -59,6 +62,7 @@ Bitmap::Bitmap(const TCHAR* filePath)
 		LN_THROW(0, InvalidFormatException);
 	}
 	m_size = pngFile.m_size;
+	m_depth = 1;
 	m_format = pngFile.m_format;
 	m_bitmapData = pngFile.m_bitmapData;
 }
@@ -68,6 +72,7 @@ Bitmap::Bitmap(ByteBuffer buffer, const Size& size, PixelFormat format)
 {
 	Init();
 	m_size = size;
+	m_depth = 1;
 	m_format = format;
 	m_bitmapData = buffer;
 }
@@ -75,6 +80,7 @@ Bitmap::Bitmap(const ByteBuffer& buffer, const Size& size, PixelFormat format, b
 {
 	Init();
 	m_size = size;
+	m_depth = 1;
 	m_format = format;
 	m_bitmapData = buffer;
 	m_upFlow = upFlow;
@@ -85,6 +91,17 @@ Bitmap::Bitmap(void* buffer, const Size& size, PixelFormat format)
 {
 	Init();
 	m_size = size;
+	m_depth = 1;
+	m_format = format;
+	m_bitmapData.Attach(buffer, GetPixelFormatByteCount(m_format, m_size));
+}
+
+//------------------------------------------------------------------------------
+Bitmap::Bitmap(void* buffer, int width, int height, int depth, PixelFormat format)
+{
+	Init();
+	m_size.Set(width, height);
+	m_depth = 1;
 	m_format = format;
 	m_bitmapData.Attach(buffer, GetPixelFormatByteCount(m_format, m_size));
 }
@@ -234,10 +251,11 @@ size_t Bitmap::GetByteCount() const
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::SetPixel(int x, int y, const Color32& color)
+void Bitmap::SetPixel(int x, int y, int z, const Color32& color)
 {
 	LN_CHECK_ARG(0 <= x && x < m_size.width);
 	LN_CHECK_ARG(0 <= y && y < m_size.height);
+	LN_CHECK_ARG(0 <= z && z < m_depth);
 	LN_CHECK_STATE(
 		m_format == PixelFormat::B8G8R8A8 ||
 		m_format == PixelFormat::B8G8R8X8 ||
@@ -254,7 +272,7 @@ void Bitmap::SetPixel(int x, int y, const Color32& color)
 		y = m_size.height - 1 - y;
 	}
 
-	U32* buf = &((U32*)m_bitmapData.GetConstData())[y * m_size.width + x];
+	U32* buf = &((U32*)m_bitmapData.GetConstData())[z * (m_size.width * m_size.height) + y * m_size.width + x];
 	if (m_format == PixelFormat::B8G8R8A8 || m_format == PixelFormat::B8G8R8X8)
 	{
 		buf->D[2] = color.r;
@@ -268,6 +286,49 @@ void Bitmap::SetPixel(int x, int y, const Color32& color)
 		buf->D[1] = color.g;
 		buf->D[2] = color.b;
 		buf->D[3] = color.a;
+	}
+}
+
+//------------------------------------------------------------------------------
+//void Bitmap::SetPixel3D(int x, int y, int z, const Color32& color)
+//{
+//	LN_CHECK_ARG(0 <= x && x < m_size.width);
+//	LN_CHECK_ARG(0 <= y && y < m_size.height);
+//	LN_CHECK_ARG(0 <= z && z < m_depth);
+//	LN_CHECK_STATE(
+//		m_format == PixelFormat::B8G8R8A8 ||
+//		m_format == PixelFormat::B8G8R8X8 ||
+//		m_format == PixelFormat::R8G8B8A8 ||
+//		m_format == PixelFormat::R8G8B8X8);
+//
+//	if (m_upFlow)
+//	{
+//		y = m_size.height - 1 - y;
+//	}
+//
+//}
+
+//------------------------------------------------------------------------------
+Color32 Bitmap::GetPixel(int x, int y) const
+{
+	struct U32
+	{
+		byte_t	D[4];
+	};
+
+	if (m_upFlow) {
+		y = m_size.height - 1 - y;
+	}
+
+	const U32* buf = &((const U32*)m_bitmapData.GetConstData())[y * m_size.width + x];
+	if (m_format == PixelFormat::B8G8R8A8 || m_format == PixelFormat::B8G8R8X8)
+	{
+		return Color32(buf->D[2], buf->D[1], buf->D[0], buf->D[3]);
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+		return *((const Color32*)buf);
 	}
 }
 

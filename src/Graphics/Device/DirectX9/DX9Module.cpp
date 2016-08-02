@@ -13,6 +13,7 @@ DX9Module::MD_Direct3DCreate9						DX9Module::Direct3DCreate9 = NULL;
 DX9Module::MD_D3DXCreateTextureFromFileInMemoryEx	DX9Module::D3DXCreateTextureFromFileInMemoryEx = NULL;
 DX9Module::MD_D3DXGetImageInfoFromFileInMemory		DX9Module::D3DXGetImageInfoFromFileInMemory = NULL;
 DX9Module::MD_D3DXCheckTextureRequirements			DX9Module::D3DXCheckTextureRequirements = NULL;
+DX9Module::MD_D3DXCheckVolumeTextureRequirements	DX9Module::D3DXCheckVolumeTextureRequirements = NULL;
 DX9Module::MD_D3DXCreateEffect						DX9Module::D3DXCreateEffect = NULL;
 DX9Module::MD_D3DXLoadMeshFromXInMemory				DX9Module::D3DXLoadMeshFromXInMemory = NULL;
 //DX9Module::MD_D3DXCreateFontIndirect				DX9Module::D3DXCreateFontIndirect = NULL;
@@ -50,6 +51,7 @@ void DX9Module::Initialize()
 		D3DXCreateTextureFromFileInMemoryEx = reinterpret_cast< MD_D3DXCreateTextureFromFileInMemoryEx >(m_D3Dx9Module.GetProcAddress("D3DXCreateTextureFromFileInMemoryEx"));
 		D3DXGetImageInfoFromFileInMemory = reinterpret_cast< MD_D3DXGetImageInfoFromFileInMemory >(m_D3Dx9Module.GetProcAddress("D3DXGetImageInfoFromFileInMemory"));
 		D3DXCheckTextureRequirements = reinterpret_cast< MD_D3DXCheckTextureRequirements >(m_D3Dx9Module.GetProcAddress("D3DXCheckTextureRequirements"));
+		D3DXCheckVolumeTextureRequirements = reinterpret_cast< MD_D3DXCheckVolumeTextureRequirements >(m_D3Dx9Module.GetProcAddress("D3DXCheckVolumeTextureRequirements"));
 		D3DXCreateEffect = reinterpret_cast< MD_D3DXCreateEffect >(m_D3Dx9Module.GetProcAddress("D3DXCreateEffect"));
 		D3DXLoadMeshFromXInMemory = reinterpret_cast< MD_D3DXLoadMeshFromXInMemory >(m_D3Dx9Module.GetProcAddress("D3DXLoadMeshFromXInMemory"));
 		//D3DXCreateFontIndirectW = reinterpret_cast< MD_D3DXCreateFontIndirect >(m_D3Dx9Module.GetProcAddress("D3DXCreateFontIndirectW"));
