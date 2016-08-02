@@ -186,6 +186,12 @@ void DX9Texture::SetSubData(const Point& point, const void* data, size_t dataByt
 }
 
 //------------------------------------------------------------------------------
+void DX9Texture::SetSubData3D(const Box32& box, const void* data, size_t dataBytes)
+{
+	LN_THROW(0, InvalidOperationException);
+}
+
+//------------------------------------------------------------------------------
 Bitmap* DX9Texture::Lock()
 {
 	DWORD flags = 0;//D3DLOCK_READONLY;
@@ -240,6 +246,9 @@ void DX9Texture3D::Initialize(int width, int height, int depth, TextureFormat fo
 {
 	IDirect3DDevice9* d3d9Device = m_graphicsDevice->GetIDirect3DDevice9();
 
+	m_size.Set(width, height);
+	m_format = format;
+
 	// 実際に作成されるべきテクスチャの情報を取得する
 	UINT w = m_size.width;
 	UINT h = m_size.height;
@@ -253,6 +262,8 @@ void DX9Texture3D::Initialize(int width, int height, int depth, TextureFormat fo
 		0,
 		&dxFormat,
 		D3DPOOL_MANAGED));
+	m_realSize.Set(w, h);
+	m_depth = d;
 
 	// テクスチャ作成
 	LN_COMCALL(d3d9Device->CreateVolumeTexture(
@@ -260,7 +271,7 @@ void DX9Texture3D::Initialize(int width, int height, int depth, TextureFormat fo
 		miplevels,
 		0,
 		dxFormat,
-		D3DPOOL_DEFAULT,
+		D3DPOOL_MANAGED,
 		&m_dxTexture,
 		NULL));
 }
@@ -268,7 +279,35 @@ void DX9Texture3D::Initialize(int width, int height, int depth, TextureFormat fo
 //------------------------------------------------------------------------------
 void DX9Texture3D::SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize)
 {
-	LN_NOTIMPLEMENTED();
+	LN_THROW(0, InvalidOperationException);
+}
+
+//------------------------------------------------------------------------------
+void DX9Texture3D::SetSubData3D(const Box32& box, const void* data, size_t dataBytes)
+{
+	if (LN_CHECKEQ_ARG(data == nullptr)) return;
+	if (dataBytes == 0) return;
+
+	D3DBOX d3dBox;
+	D3DBOX* pD3DBox = NULL;
+	if (box.width > 0 && box.height > 0 && box.depth > 0)
+	{
+		d3dBox.Left = box.x;
+		d3dBox.Top = box.y;
+		d3dBox.Front = box.z;
+		d3dBox.Right = box.x + box.width;
+		d3dBox.Bottom = box.y + box.height;
+		d3dBox.Back = box.z + box.depth;
+		pD3DBox = &d3dBox;
+	}
+
+	// TODO: level
+	D3DLOCKED_BOX lockedVolume;
+	LN_COMCALL(m_dxTexture->LockBox(0, &lockedVolume, pD3DBox, 0));
+
+	memcpy(lockedVolume.pBits, data, dataBytes);
+
+	LN_COMCALL(m_dxTexture->UnlockBox(0));
 }
 
 //------------------------------------------------------------------------------
@@ -394,6 +433,12 @@ void DX9RenderTargetTexture::OnResetDevice()
 }
 
 //------------------------------------------------------------------------------
+void DX9RenderTargetTexture::SetSubData3D(const Box32& box, const void* data, size_t dataBytes)
+{
+	LN_THROW(0, InvalidOperationException);
+}
+
+//------------------------------------------------------------------------------
 Bitmap* DX9RenderTargetTexture::Lock()
 {
 	IDirect3DDevice9* dxDevice = m_graphicsDevice->GetIDirect3DDevice9();
@@ -458,6 +503,12 @@ DX9DepthBuffer::DX9DepthBuffer(DX9GraphicsDevice* device, const Size& size, Text
 	, m_realSize(size)
 {
 	OnResetDevice();
+}
+
+//------------------------------------------------------------------------------
+void DX9DepthBuffer::SetSubData3D(const Box32& box, const void* data, size_t dataBytes)
+{
+	LN_THROW(0, InvalidOperationException);
 }
 
 //------------------------------------------------------------------------------
@@ -529,6 +580,12 @@ void DX9BackBufferTexture::Reset(IDirect3DSurface9* backBufferSurface)
 		m_realSize.Set(desc.Width, desc.Height);
 		m_format = DX9Module::TranslateFormatDxToLN(desc.Format);
 	}
+}
+
+//------------------------------------------------------------------------------
+void DX9BackBufferTexture::SetSubData3D(const Box32& box, const void* data, size_t dataBytes)
+{
+	LN_THROW(0, InvalidOperationException);
 }
 
 //------------------------------------------------------------------------------

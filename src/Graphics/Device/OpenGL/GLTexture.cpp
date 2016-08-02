@@ -169,6 +169,12 @@ void GLTexture::SetSubData(const Point& point, const void* data, size_t dataByte
 }
 
 //------------------------------------------------------------------------------
+void GLTexture::SetSubData3D(const Box32& box, const void* data, size_t dataBytes)
+{
+	LN_THROW(0, InvalidOperationException);
+}
+
+//------------------------------------------------------------------------------
 Bitmap* GLTexture::Lock()
 {
 	m_lockedTexture.Attach(LN_NEW Bitmap(m_size, Utils::TranslatePixelFormat(m_format)));
@@ -251,6 +257,12 @@ void GLRenderTargetTexture::OnResetDevice()
 }
 
 //------------------------------------------------------------------------------
+void GLRenderTargetTexture::SetSubData3D(const Box32& box, const void* data, size_t dataBytes)
+{
+	LN_THROW(0, InvalidOperationException);
+}
+
+//------------------------------------------------------------------------------
 Bitmap* GLRenderTargetTexture::Lock()
 {
 	// ビットマップデータは上下逆になっていて、[0] は (0, height-1) を指す
@@ -290,6 +302,12 @@ GLDepthBuffer::~GLDepthBuffer()
 }
 
 //------------------------------------------------------------------------------
+void GLDepthBuffer::SetSubData3D(const Box32& box, const void* data, size_t dataBytes)
+{
+	LN_THROW(0, InvalidOperationException);
+}
+
+//------------------------------------------------------------------------------
 void GLDepthBuffer::OnLostDevice()
 {
 	if (m_glBuffer != 0) {
@@ -312,48 +330,6 @@ void GLDepthBuffer::OnResetDevice()
 		glBindRenderbuffer(GL_RENDERBUFFER, 0);
 	}
 }
-
-#if 0
-//==============================================================================
-// GLBackbufferRenderTarget
-//==============================================================================
-//------------------------------------------------------------------------------
-GLBackbufferRenderTarget::GLBackbufferRenderTarget()
-	: m_glRenderBuffer(0)
-{
-}
-
-//------------------------------------------------------------------------------
-GLBackbufferRenderTarget::~GLBackbufferRenderTarget()
-{
-	if (m_glRenderBuffer != 0) {
-		glDeleteRenderbuffers(1, &m_glRenderBuffer);
-		m_glRenderBuffer = 0;
-	}
-	// 0 の場合はデフォルトのバックバッファを示しているので、自分で開放する必要はない
-}
-
-//------------------------------------------------------------------------------
-void GLBackbufferRenderTarget::Reset(GLuint renderBuffer)
-{
-	m_glRenderBuffer = renderBuffer;
-}
-
-//------------------------------------------------------------------------------
-void GLBackbufferRenderTarget::OnLostDevice()
-{
-	if (m_glRenderBuffer != 0) {
-		glDeleteRenderbuffers(1, &m_glRenderBuffer);
-		m_glRenderBuffer = 0;
-	}
-}
-
-//------------------------------------------------------------------------------
-void GLBackbufferRenderTarget::OnResetDevice()
-{
-	// SwapChain からもらうものなのでここでは何もできない
-}
-#endif
 
 } // namespace Driver
 LN_NAMESPACE_GRAPHICS_END

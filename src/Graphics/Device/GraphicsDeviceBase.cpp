@@ -142,6 +142,15 @@ ITexture* GraphicsDeviceBase::CreateTexture(const Size& size, uint32_t mipLevels
 }
 
 //------------------------------------------------------------------------------
+ITexture* GraphicsDeviceBase::CreateTexture3D(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, const void* initialData)
+{
+	ScopedAccessContext lock(this);
+	auto obj = CreateTexture3DImplement(width, height, depth, mipLevels, format, initialData);
+	AddDeviceResource(obj);
+	return obj.DetachMove();
+}
+
+//------------------------------------------------------------------------------
 ITexture* GraphicsDeviceBase::CreateTexturePlatformLoading(Stream* stream, uint32_t mipLevels, TextureFormat format)
 {
 	ScopedAccessContext lock(this);

@@ -378,5 +378,39 @@ public:
 	bool operator != (const RectF& obj) const { return !operator==(obj); }
 };
 
+class Box32
+{
+public:
+	static const Box32 Zero;
+
+public:
+	int		x;
+	int		y;
+	int		z;
+	int		width;
+	int		height;
+	int		depth;
+
+public:
+	Box32()
+		: x(0)
+		, y(0)
+		, z(0)
+		, width(0)
+		, height(0)
+		, depth(0)
+	{
+	}
+
+	Box32(int x_, int y_, int z_, int width_, int height_, int depth_)
+		: x(x_)
+		, y(y_)
+		, z(z_)
+		, width(width_)
+		, height(height_)
+		, depth(depth_)
+	{
+	}
+};
 
 LN_NAMESPACE_END

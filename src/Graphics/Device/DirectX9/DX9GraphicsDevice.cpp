@@ -151,7 +151,7 @@ RefPtr<IIndexBuffer> DX9GraphicsDevice::CreateIndexBufferImplement(int indexCoun
 RefPtr<ITexture> DX9GraphicsDevice::CreateTextureImplement(const Size& size, uint32_t mipLevels, TextureFormat format, const void* initialData)
 {
 	RefPtr<DX9Texture> obj(LN_NEW DX9Texture(this, size, format, mipLevels), false);
-	if (initialData != NULL) {
+	if (initialData != nullptr) {
 		obj->SetSubData(Point(0, 0), initialData, Utils::GetTextureFormatByteCount(format) * size.width * size.height, size);
 	}
 	return obj;
@@ -165,6 +165,17 @@ RefPtr<ITexture> DX9GraphicsDevice::CreateTexturePlatformLoadingImplement(Stream
 	stream->Read(buffer.GetData(), buffer.GetSize());
 
 	RefPtr<DX9Texture> obj(LN_NEW DX9Texture(this, buffer.GetData(), buffer.GetSize(), Color32::Transparency, mipLevels, format), false);
+	return obj;
+}
+
+//------------------------------------------------------------------------------
+RefPtr<ITexture> DX9GraphicsDevice::CreateTexture3DImplement(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, const void* initialData)
+{
+	RefPtr<DX9Texture3D> obj(LN_NEW DX9Texture3D(this), false);
+	obj->Initialize(width, height, depth, format, mipLevels);
+	if (initialData != nullptr) {
+		obj->SetSubData3D(Box32::Zero, initialData, Utils::GetTextureFormatByteCount(format) * width * height * depth);
+	}
 	return obj;
 }
 

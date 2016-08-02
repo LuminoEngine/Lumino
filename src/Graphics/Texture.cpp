@@ -243,7 +243,7 @@ void Texture2D::Initialize(GraphicsManager* manager, Stream* stream, TextureForm
 
 	if (m_manager->IsPlatformTextureLoading())
 	{
-		m_deviceObj = GraphicsManager::GetInstance()->GetGraphicsDevice()->CreateTexturePlatformLoading(stream, mipLevels, format);
+		m_deviceObj = manager->GetGraphicsDevice()->CreateTexturePlatformLoading(stream, mipLevels, format);
 		if (m_deviceObj != NULL)
 		{
 			m_primarySurface = LN_NEW Bitmap(m_deviceObj->GetSize(), Utils::TranslatePixelFormat(format));
@@ -255,7 +255,7 @@ void Texture2D::Initialize(GraphicsManager* manager, Stream* stream, TextureForm
 	if (m_deviceObj == NULL)
 	{
 		m_primarySurface = LN_NEW Bitmap(stream);
-		m_deviceObj = GraphicsManager::GetInstance()->GetGraphicsDevice()->CreateTexture(m_primarySurface->GetSize(), mipLevels, format, m_primarySurface->GetBitmapBuffer()->GetConstData());
+		m_deviceObj = manager->GetGraphicsDevice()->CreateTexture(m_primarySurface->GetSize(), mipLevels, format, m_primarySurface->GetBitmapBuffer()->GetConstData());
 	}
 
 #if 0
@@ -421,6 +421,57 @@ void Texture2D::OnChangeDevice(Driver::IGraphicsDevice* device)
 	}
 }
 
+
+//==============================================================================
+// Texture3D
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Texture3D, Texture);
+
+//------------------------------------------------------------------------------
+Texture3DPtr Texture3D::Create(int width, int height, int depth, TextureFormat format, int mipLevels)
+{
+	auto ptr = Texture3DPtr::MakeRef();
+	ptr->Initialize(GraphicsManager::GetInstance(), width, height, depth, format, mipLevels);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
+Texture3D::Texture3D()
+	: m_depth(0)
+	, m_mipLevels(0)
+{
+}
+
+//------------------------------------------------------------------------------
+Texture3D::~Texture3D()
+{
+}
+
+//------------------------------------------------------------------------------
+void Texture3D::Initialize(GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels)
+{
+	GraphicsResourceObject::Initialize(manager);
+	m_size.width = width;
+	m_size.height = height;
+	m_depth = depth;
+	m_format = format;
+	m_mipLevels = mipLevels;
+	m_deviceObj = manager->GetGraphicsDevice()->CreateTexture3D(m_size.width, m_size.height, m_depth, m_mipLevels, m_format, nullptr);
+}
+
+//------------------------------------------------------------------------------
+void Texture3D::OnChangeDevice(Driver::IGraphicsDevice* device)
+{
+	if (device == nullptr)
+	{
+		LN_SAFE_RELEASE(m_deviceObj);
+	}
+	else
+	{
+		// TODO: 内容の復元
+		m_deviceObj = device->CreateTexture3D(m_size.width, m_size.height, m_depth, m_mipLevels, m_format, nullptr);
+	}
+}
 
 //==============================================================================
 // RenderTarget

@@ -101,7 +101,7 @@ Bitmap::Bitmap(void* buffer, int width, int height, int depth, PixelFormat forma
 {
 	Init();
 	m_size.Set(width, height);
-	m_depth = 1;
+	m_depth = depth;
 	m_format = format;
 	m_bitmapData.Attach(buffer, GetPixelFormatByteCount(m_format, m_size));
 }
@@ -327,7 +327,6 @@ Color32 Bitmap::GetPixel(int x, int y) const
 	}
 	else
 	{
-		LN_NOTIMPLEMENTED();
 		return *((const Color32*)buf);
 	}
 }

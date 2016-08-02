@@ -3,6 +3,7 @@
 #include "../../src/EngineManager.h"
 #include "../../src/Modeling/ModelManager.h"
 #include "../../src/Graphics/GraphicsManager.h"
+#include "../../src/Graphics/Device/GraphicsDriverInterface.h"
 #include <Lumino/Tilemap/TileMapModel.h>
 #include <Lumino/Scene/TileMap.h>
 #include <Lumino/Scene/MeshModelObject.h>
@@ -10,6 +11,7 @@
 #include <Lumino/Testing/TestUtils.h>
 //#include <Lumino/Platform/Win32/Win32PlatformWindow.h>
 #include "../../../src/Scene/MME/MMEShader.h"
+
 
 #include <Lumino/Graphics/PerlinNoise.h>
 #include <Lumino/Graphics/BitmapPainter.h>
@@ -415,12 +417,40 @@ int main()
 		mesh->GetMaterials()->GetAt(0)->SetColorParameter(Material::EmissiveParameter, Color::White);
 
 
-
 		auto shader2 = MMEShader::Create(_T("D:/Proj/Volkoff/External/Lumino/src/Scene/Resource/Cloud.fx"));
 		auto plane = StaticMesh::CreateSquarePlane(Vector2(100, 100), Vector3::UnitY);
 		plane->SetShader(shader2);
 		plane->GetMaterials()->GetAt(0)->SetTextureParameter(Material::MaterialTextureParameter, noiseTex1);
 		plane->GetMaterials()->GetAt(0)->SetColorParameter(Material::EmissiveParameter, Color::White);
+
+
+
+		ByteBuffer bmp3dBuf(4 * 8 * 8 * 8);
+		Bitmap bmp3d(bmp3dBuf.GetData(), 8, 8, 8, PixelFormat::R8G8B8A8);
+		for (int z = 0; z < 8; ++z)
+		{
+			for (int y= 0; y < 8; ++y)
+			{
+				for (int x = 0; x < 8; ++x)
+				{
+					int a = 255;
+					//if (z >= 5) a = 0;
+					//if (y >= 6) a = 0;
+					//if (x >= 7) a = 0;
+					bmp3d.SetPixel(x, y, z, Color32(x * 32, y * 32, z * 32, a));
+				}
+			}
+		}
+		auto tex3D = Texture3D::Create(8, 8, 8, TextureFormat::R8G8B8A8);
+		tex3D->GetDeviceObject()->SetSubData3D(Box32::Zero, bmp3dBuf.GetData(), bmp3dBuf.GetSize());
+
+		auto shader3 = MMEShader::Create(_T("D:/Proj/Volkoff/External/Lumino/src/Scene/Resource/Tex3DTest.fx"));
+		auto mesh2 = StaticMesh::CreateBox(Vector3(1, 1, 1));
+		mesh2->SetShader(shader3);
+		mesh2->GetMaterials()->GetAt(0)->SetTextureParameter(Material::MaterialTextureParameter, tex3D);
+		mesh2->GetMaterials()->GetAt(0)->SetColorParameter(Material::EmissiveParameter, Color::White);
+	
+
 
 		//auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
 		////auto textBlock1 = UITextBlock::Create();

@@ -96,6 +96,8 @@ public:
 	/// テクスチャの作成 (環境依存の画像ファイル読み込み)
 	virtual ITexture* CreateTexturePlatformLoading(Stream* stream, uint32_t mipLevels, TextureFormat format) = 0;
 
+	virtual ITexture* CreateTexture3D(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, const void* initialData) = 0;
+
 	/// レンダーターゲットテクスチャの作成
 	virtual ITexture* CreateRenderTarget(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format) = 0;
 
@@ -343,6 +345,7 @@ public:
 	/// データ転送 (TODO:部分更新は未実装…)
 	virtual void SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize) = 0;
 
+	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes) = 0;
 	/// ロック
 	virtual Bitmap* Lock() = 0;
 

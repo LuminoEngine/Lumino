@@ -47,6 +47,7 @@ public:
 	virtual const Size& GetRealSize() const { return m_realSize; }
 	virtual void SetSamplerState(const SamplerState& state);
 	virtual void SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize);
+	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes);
 	virtual Bitmap* Lock();
 	virtual void Unlock();
 
@@ -85,6 +86,7 @@ public:
 	virtual const Size& GetRealSize() const { return m_realSize; }
 	virtual void SetSamplerState(const SamplerState& state) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
+	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes);
 	virtual Bitmap* Lock();
 	virtual void Unlock();
 
@@ -122,6 +124,7 @@ public:
 	virtual const Size& GetRealSize() const { return m_realSize; }
 	virtual void SetSamplerState(const SamplerState& state) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
+	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes);
 	virtual Bitmap* Lock() { LN_THROW(0, InvalidOperationException); return NULL; }
 	virtual void Unlock() { LN_THROW(0, InvalidOperationException); }
 
@@ -134,43 +137,6 @@ private:
 	Size			m_size;
 	Size			m_realSize;
 };
-
-#if 0
-/// バックバッファのレンダーターゲット
-class GLBackbufferRenderTarget
-	: public GLTextureBase
-{
-public:
-	GLBackbufferRenderTarget();
-	virtual ~GLBackbufferRenderTarget();
-
-	/// renderBuffer は SwapChain からセットされる。0 の場合は Main の Context のバックバッファを示す
-	void Reset(GLuint renderBuffer);
-
-public:
-	// override IDeviceObject
-	virtual void OnLostDevice();
-	virtual void OnResetDevice();
-
-	// override ITexture
-	virtual TextureType GetTextureType() const { return TextureType_BackBuffer; }
-	virtual TextureFormat GetTextureFormat() const { return m_format; }
-	virtual const Size& GetSize() const { return m_size; }
-	virtual const Size& GetRealSize() const { return m_realSize; }
-	virtual void SetSamplerState(const SamplerState& state) { LN_THROW(0, InvalidOperationException); }
-	virtual Bitmap* Lock() { LN_THROW(0, InvalidOperationException); return NULL; }
-	virtual void Unlock() { LN_THROW(0, InvalidOperationException); }
-
-	// override GLTextureBase
-	virtual GLuint GetGLTexture() { return m_glRenderBuffer; }
-
-private:
-	GLuint			m_glRenderBuffer;
-	TextureFormat	m_format;
-	Size			m_size;
-	Size			m_realSize;
-};
-#endif
 
 } // namespace Driver
 LN_NAMESPACE_GRAPHICS_END

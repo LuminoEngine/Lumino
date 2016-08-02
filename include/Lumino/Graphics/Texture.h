@@ -10,7 +10,9 @@ namespace detail { class RenderTargetTextureCache; }
 class Bitmap;
 
 class Texture;
+class Texture3D;
 using TexturePtr = RefPtr<Texture>;
+using Texture3DPtr = RefPtr<Texture3D>;
 
 /**
 	@brief		テクスチャのクラスです。
@@ -147,12 +149,7 @@ public:
 	//Device::ITexture* GetDeviceObject() const { return m_deviceObj; }
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	//static Texture2DPtr CreateInternal(const StringRef& filePath, TextureFormat format, int mipLevels);
 	Texture2D();
-	//Texture(GraphicsManager* manager, const Size& size, TextureFormat format, int mipLevels, Bitmap* primarySurface);
-	//Texture(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels);
-	////Texture(GraphicsManager* manager, Driver::ITexture* deviceObj, Bitmap* primarySurface = NULL);
-	//Texture(GraphicsManager* manager, bool isDefaultBackBuffer);
 	virtual ~Texture2D();
 	void FlushPrimarySurface();
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
@@ -176,6 +173,52 @@ protected:
 	friend class Helper;
 };
 
+/**
+	@brief		
+*/
+class Texture3D
+	: public Texture
+	, public ICacheObject
+{
+	LN_CACHE_OBJECT_DECL;
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+
+	/**
+		@brief		指定したサイズの 3D テクスチャを作成します。
+		@param[in]	width		: テクスチャの幅 (ピクセル単位)
+		@param[in]	height		: テクスチャの高さ (ピクセル単位)
+		@param[in]	depth		: テクスチャの奥行き (ピクセル単位)
+		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
+		@param[in]	format		: テクスチャのピクセルフォーマット
+	*/
+	static Texture3DPtr Create(int width, int height, int depth, TextureFormat format = TextureFormat::R8G8B8A8, int mipLevels = 1);
+	// TODO: mipMap は unity のように、有無だけで指定したい
+
+public:
+
+	//void Clear(const Color32& color);
+
+	/*
+		@brief		
+	*/
+	//void SetSubData(const Point& offset, Bitmap* bitmap);
+
+LN_INTERNAL_ACCESS:
+	Texture3D();
+	virtual ~Texture3D();
+
+	void Initialize(GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels);
+public:	// TODO
+	Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }
+
+protected:
+	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
+
+private:
+	int		m_depth;
+	int		m_mipLevels;
+};
 
 /**
 	@brief		レンダリングターゲットのクラスです。
@@ -219,7 +262,7 @@ private:
 	@brief		深度バッファのクラスです。
 */
 class DepthBuffer
-	: public Texture
+	: public Texture	// TODO: 震度バッファはテクスチャ扱いしないほうがいい
 {
 public:
 

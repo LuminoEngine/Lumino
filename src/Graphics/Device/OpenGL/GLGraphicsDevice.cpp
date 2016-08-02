@@ -96,11 +96,11 @@ RefPtr<ITexture> GLGraphicsDevice::CreateTextureImplement(const Size& size, uint
 }
 
 //------------------------------------------------------------------------------
-//ITexture* GLGraphicsDevice::CreateTexture(const Graphics::Bitmap* bitmap, uint32_t mipLevels, TextureFormat format)
-//{
-//	LN_THROW(0, NotImplementedException);
-//	return 0;
-//}
+RefPtr<ITexture> GLGraphicsDevice::CreateTexture3DImplement(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, const void* initialData)
+{
+	LN_NOTIMPLEMENTED();
+	return nullptr;
+}
 
 //------------------------------------------------------------------------------
 RefPtr<ITexture> GLGraphicsDevice::CreateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format)

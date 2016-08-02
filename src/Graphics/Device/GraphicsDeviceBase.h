@@ -36,6 +36,7 @@ public:
 	virtual IVertexBuffer* CreateVertexBuffer(size_t bufferSize, const void* data, DeviceResourceUsage usage) override;
 	virtual IIndexBuffer* CreateIndexBuffer(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage) override;
 	virtual ITexture* CreateTexture(const Size& size, uint32_t mipLevels, TextureFormat format, const void* initialData) override;
+	virtual ITexture* CreateTexture3D(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, const void* initialData) override;
 	virtual ITexture* CreateTexturePlatformLoading(Stream* stream, uint32_t mipLevels, TextureFormat format) override;
 	virtual ITexture* CreateRenderTarget(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format) override;
 	virtual ITexture* CreateDepthBuffer(uint32_t width, uint32_t height, TextureFormat format) override;
@@ -48,6 +49,7 @@ protected:
 	virtual RefPtr<IIndexBuffer> CreateIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage) = 0;
 	virtual RefPtr<ITexture> CreateTextureImplement(const Size& size, uint32_t mipLevels, TextureFormat format, const void* initialData) = 0;
 	virtual RefPtr<ITexture> CreateTexturePlatformLoadingImplement(Stream* stream, uint32_t mipLevels, TextureFormat format) = 0;
+	virtual RefPtr<ITexture> CreateTexture3DImplement(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, const void* initialData) = 0;
 	virtual RefPtr<ITexture> CreateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format) = 0;
 	virtual RefPtr<ITexture> CreateDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format) = 0;
 	virtual RefPtr<IShader> CreateShaderImplement(const void* textData, size_t size, ShaderCompileResult* result) = 0;
