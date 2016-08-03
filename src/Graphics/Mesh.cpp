@@ -327,10 +327,10 @@ public:
 		Vertex* v = outVertices;
 		uint16_t* i = (uint16_t*)outIndices;
 
-		float stackUVStep = 1.0f / (m_stacks + 1);
+		float stackUVStep = 1.0f / m_stacks;
 		float stackUV = 0.0f;
 
-		float sliceUVStep = 1.0f / (m_slices + 1);
+		float sliceUVStep = 1.0f / m_slices;
 
 		// XY 平面上の step
 		float theta_step = Math::PI / m_stacks;

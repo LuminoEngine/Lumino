@@ -185,23 +185,26 @@ public:
 	static Texture3DPtr Create(int width, int height, int depth, TextureFormat format = TextureFormat::R8G8B8A8, int mipLevels = 1, ResourceUsage usage = ResourceUsage::Static);
 
 public:
-
+	
+	/**
+		@brief		テクスチャの奥行きを取得します。
+	*/
 	int GetDepth() const;
 
 	void SetPixel32(int x, int y, int z, const Color32& color);
 
-LN_INTERNAL_ACCESS:
+LN_PROTECTED_INTERNAL_ACCESS:
 	Texture3D();
 	virtual ~Texture3D();
-
 	void Initialize(GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage);
-public:	// TODO
-	void TryLock();
-	Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }
 
 protected:
 	virtual void ApplyModifies() override;
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device) override;
+
+private:
+	void TryLock();
+	Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }
 
 private:
 	int				m_depth;

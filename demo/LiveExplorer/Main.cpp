@@ -288,8 +288,8 @@ int main()
 		EngineSettings::SetGraphicsAPI(GraphicsAPI::DirectX9);
 		EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Immediate);
 		EngineSettings::SetDirectMusicMode(DirectMusicMode::Normal);
-		EngineSettings::SetMainWindowSize(160, 120);
-		EngineSettings::SetMainBackBufferSize(160, 120);
+		//EngineSettings::SetMainWindowSize(160, 120);
+		//EngineSettings::SetMainBackBufferSize(160, 120);
 		Engine::Initialize();
 
 
@@ -299,11 +299,11 @@ int main()
 
 		auto tex = Texture2D::Create(SizeI(256, 256));
 		auto sp1 = Sprite2D::Create(noiseTex1);
-		sp1->SetVisible(false);
+		//sp1->SetVisible(false);
 
 		PerlinNoise noise;
-		noise.SetTiledRepeatFrequency(0);
-		double frequency = 16;
+		noise.SetTiledRepeatFrequency(4);
+		double frequency = 4;
 		const double fx = tex->GetWidth() / frequency;
 		const double fy = tex->GetHeight() / frequency;
 		int octaves = 8;	// 粗さ
@@ -331,6 +331,11 @@ int main()
 
 				//n = Math::Clamp(n*0.5 + 0.5, 0.0, 1.0);
 				//n *= n;
+
+				float weight = (2.0f * y / bmp1.GetSize().height);
+				//weight -= 1.0f;
+				n = Math::Clamp01(n * weight);
+				n *= n;
 
 				unsigned char gray = static_cast<unsigned char>(n*255.99);
 				//gray = 255 - gray;
@@ -412,62 +417,21 @@ int main()
 		//bmp->BitBlt(0, 0, &bmp1, Rect(0, 0, 256, 256), Color32::White, false);
 		tex->Unlock();
 
-		auto shader = MMEShader::Create(_T("C:/Proj/Lumino/src/Scene/Resource/BasicForwardRendering.fx"));
+		auto shader = MMEShader::Create(_T("D:/Proj/Volkoff/External/Lumino/src/Scene/Resource/BasicForwardRendering.fx"));
 		auto mesh = StaticMesh::CreateSphere(20, 32, 16, MeshCreationFlags::ReverseFaces);
 		mesh->SetShader(shader);
-		mesh->GetMaterials()->GetAt(0)->SetTextureParameter(Material::MaterialTextureParameter, tex);
+		mesh->GetMaterials()->GetAt(0)->SetTextureParameter(Material::MaterialTextureParameter, noiseTex1);
 		mesh->GetMaterials()->GetAt(0)->SetColorParameter(Material::EmissiveParameter, Color::White);
-		mesh->SetVisible(false);
+		
 
 
-		auto shader2 = MMEShader::Create(_T("C:/Proj/Lumino/src/Scene/Resource/Cloud.fx"));
-		auto plane = StaticMesh::CreateSquarePlane(Vector2(100, 100), Vector3::UnitY);
-		plane->SetShader(shader2);
-		plane->GetMaterials()->GetAt(0)->SetTextureParameter(Material::MaterialTextureParameter, noiseTex1);
-		plane->GetMaterials()->GetAt(0)->SetColorParameter(Material::EmissiveParameter, Color::White);
-		plane->SetVisible(false);
+		//auto shader2 = MMEShader::Create(_T("C:/Proj/Lumino/src/Scene/Resource/Cloud.fx"));
+		//auto plane = StaticMesh::CreateSquarePlane(Vector2(100, 100), Vector3::UnitY);
+		//plane->SetShader(shader2);
+		//plane->GetMaterials()->GetAt(0)->SetTextureParameter(Material::MaterialTextureParameter, noiseTex1);
+		//plane->GetMaterials()->GetAt(0)->SetColorParameter(Material::EmissiveParameter, Color::White);
+		//plane->SetVisible(false);
 
-
-
-		//ByteBuffer bmp3dBuf(4 * 8 * 8 * 8);
-		//Bitmap bmp3d(bmp3dBuf.GetData(), 8, 8, 8, PixelFormat::R8G8B8A8);
-		auto tex3D = Texture3D::Create(8, 8, 8, TextureFormat::R8G8B8A8);
-		for (int z = 0; z < 8; ++z)
-		{
-			for (int y= 0; y < 8; ++y)
-			{
-				for (int x = 0; x < 8; ++x)
-				{
-					int a = 255;
-					if (z >= 5) a = 0;
-					if (y >= 6) a = 0;
-					if (x >= 7) a = 0;
-					tex3D->SetPixel32(x, y, z, Color32(x * 32, y * 32, z * 32, a));
-				}
-			}
-		}
-		//tex3D->GetDeviceObject()->SetSubData3D(Box32::Zero, bmp3dBuf.GetData(), bmp3dBuf.GetSize());
-
-		auto shader3 = MMEShader::Create(_T("C:/Proj/Lumino/src/Scene/Resource/Tex3DTest.fx"));
-		auto mesh2 = StaticMesh::CreateBox(Vector3(1, 1, 1));
-		mesh2->SetShader(shader3);
-		mesh2->GetMaterials()->GetAt(0)->SetTextureParameter(Material::MaterialTextureParameter, tex3D);
-		mesh2->GetMaterials()->GetAt(0)->SetColorParameter(Material::EmissiveParameter, Color::White);
-		//mesh2->SetCullingMode(CullingMode::None);
-
-
-		//auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
-		////auto textBlock1 = UITextBlock::Create();
-		////uiRoot->AddChild(textBlock1);
-		//auto button1 = UIButton::Create();
-		//button1->SetText(_T("Lumino"));
-		//uiRoot->AddChild(button1);
-
-
-		//GameAudio::PlayBGM(_T("D:/tmp/GrandSky.mp3"), 1.0f, 0.95f);
-		//auto sound1 = Sound::Create(_T("D:/tmp/ZIGG-ZAGG.mp3"));
-		//sound1->SetPitch(1.2f);
-		//sound1->Play();
 
 
 		auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();

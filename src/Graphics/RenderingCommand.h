@@ -994,43 +994,6 @@ struct SetSubDataTextureCommand : public RenderingCommand
 };
 
 //==============================================================================
-//struct Texture_SetSubDataBitmapCommand : public RenderingCommand	// TODO: Bitmap を中で再構築する必要はない。
-//{
-//	//RefPtr<Device::ITexture> m_targetTexture;
-//	Device::ITexture* m_targetTexture;
-//	Point m_offset;
-//
-//	size_t m_bmpDataIndex;
-//	Size m_size;
-//	int m_pitch;
-//	PixelFormat m_format;
-//	bool m_upFlow;
-//
-//	void Create(Device::ITexture* texture, const Point& offset, Bitmap* bmp)
-//	{
-//		m_targetTexture = texture;
-//		m_offset = offset;
-//		m_bmpDataIndex = AllocExtData(bmp->GetBitmapBuffer()->GetSize(), bmp->GetBitmapBuffer()->GetConstData());
-//		m_size = bmp->GetSize();
-//		m_pitch = bmp->GetPitch();
-//		m_format = bmp->GetPixelFormat();
-//		m_upFlow = bmp->IsUpFlow();
-//		MarkGC(m_targetTexture);
-//	}
-//
-//	void Execute()
-//	{
-//		if (m_format == Utils::TranslatePixelFormat(m_targetTexture->GetTextureFormat()))
-//		{
-//			m_targetTexture->SetSubData(m_offset, GetExtData(m_bmpDataIndex), m_size);
-//		}
-//		else {
-//			LN_THROW(0, NotImplementedException);
-//		}
-//	}
-//};
-//
-//==============================================================================
 struct ReadLockTextureCommand : public RenderingCommand
 {
 	Texture*	m_targetTexture;
