@@ -1,9 +1,8 @@
 ﻿
 #pragma once
 #include "Common.h"
-#include "../Base/Thickness.h"
 #include "../Graphics/Text/Font.h"
-#include "Texture.h"
+//#include "Texture.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -80,8 +79,8 @@ public:
 public:
 	void Create(const TCHAR* filePath, GraphicsManager* manager);
 	void Create(Texture* texture);
-	void SetTexture(Texture* texture) { m_texture = texture; }
-	Texture* GetTexture() { return m_texture; }
+	void SetTexture(Texture* texture);
+	Texture* GetTexture() const;
 
 	void SetSourceRect(const Rect& rect) { m_srcRect = rect; }
 	const Rect& GetSourceRect() const { return m_srcRect; }
@@ -116,8 +115,8 @@ public:
 	static FrameTextureBrushPtr Create(Texture* texture);
 
 public:
-	void SetTexture(Texture* texture) { m_texture = texture; }
-	Texture* GetTexture() { return m_texture; }
+	void SetTexture(Texture* texture);
+	Texture* GetTexture() const;
 
 	void SetSourceRect(const Rect& rect) { m_srcRect = rect; }
 	const Rect& GetSourceRect() const { return m_srcRect; }

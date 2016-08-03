@@ -38,7 +38,7 @@ RenderBulkData::RenderBulkData()
 }
 
 //------------------------------------------------------------------------------
-RenderBulkData::RenderBulkData(void* srcData, size_t size)
+RenderBulkData::RenderBulkData(const void* srcData, size_t size)
 	: m_srcData(srcData)
 	, m_size(size)
 	, m_commandList(nullptr)
@@ -47,7 +47,7 @@ RenderBulkData::RenderBulkData(void* srcData, size_t size)
 }
 
 //------------------------------------------------------------------------------
-void* RenderBulkData::GetData() const
+const void* RenderBulkData::GetData() const
 {
 	if (m_dataHandle)
 	{
@@ -60,20 +60,21 @@ void* RenderBulkData::GetData() const
 }
 
 //------------------------------------------------------------------------------
-void RenderBulkData::Alloc(RenderingCommandList* commandList, size_t size)
+void* RenderBulkData::Alloc(RenderingCommandList* commandList, size_t size)
 {
 	m_size = size;
-	Alloc(commandList);
+	return Alloc(commandList);
 }
 
 //------------------------------------------------------------------------------
-void RenderBulkData::Alloc(RenderingCommandList* commandList)
+void* RenderBulkData::Alloc(RenderingCommandList* commandList)
 {
 	if (m_dataHandle == 0)
 	{
 		m_commandList = commandList;
 		m_dataHandle = m_commandList->AllocExtData(m_size, m_srcData);
 	}
+	return m_commandList->GetExtData(m_dataHandle);
 }
 
 

@@ -19,7 +19,7 @@ DX9IndexBuffer::DX9IndexBuffer()
 	, m_indexBuffer(NULL)
 	, m_indexCount(0)
 	, m_indexStride(0)
-	, m_usage(DeviceResourceUsage_Static)
+	, m_usage(ResourceUsage::Static)
 {
 }
 
@@ -31,7 +31,7 @@ DX9IndexBuffer::~DX9IndexBuffer()
 }
 
 //------------------------------------------------------------------------------
-void DX9IndexBuffer::Create(DX9GraphicsDevice* device, int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
+void DX9IndexBuffer::Create(DX9GraphicsDevice* device, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
 {
 	LN_REFOBJ_SET(m_graphicsDevice, device);
 	m_format = format;
@@ -65,7 +65,7 @@ void DX9IndexBuffer::SetSubData(uint32_t offsetBytes, const void* data, uint32_t
 void DX9IndexBuffer::Lock(void** lockedBuffer, size_t* lockedSize)
 {
 	DWORD flags = 0;
-	if (m_usage == DeviceResourceUsage_Dynamic)
+	if (m_usage == ResourceUsage::Dynamic)
 	{
 		flags = D3DLOCK_DISCARD;
 	}
@@ -83,7 +83,7 @@ void DX9IndexBuffer::Unlock()
 //------------------------------------------------------------------------------
 void DX9IndexBuffer::OnLostDevice()
 {
-	if (m_usage == DeviceResourceUsage_Dynamic)
+	if (m_usage == ResourceUsage::Dynamic)
 	{
 		LN_SAFE_RELEASE(m_indexBuffer);
 	}
@@ -96,7 +96,7 @@ void DX9IndexBuffer::OnResetDevice()
 	{
 		D3DPOOL pool = D3DPOOL_MANAGED;
 		DWORD dxUsage = D3DUSAGE_WRITEONLY;
-		if (m_usage == DeviceResourceUsage_Dynamic)
+		if (m_usage == ResourceUsage::Dynamic)
 		{
 			pool = D3DPOOL_DEFAULT;
 			dxUsage |= D3DUSAGE_DYNAMIC;

@@ -18,7 +18,7 @@ protected:
 //------------------------------------------------------------------------------
 TEST_F(Test_Base_Size, Constants)
 {
-	ASSERT_EQ_SIZE(0, 0, Size::Zero);
+	ASSERT_EQ_SIZE(0, 0, SizeI::Zero);
 
 	ASSERT_EQ_SIZE(0, 0, SizeF::Zero);
 }
@@ -26,9 +26,9 @@ TEST_F(Test_Base_Size, Constants)
 //------------------------------------------------------------------------------
 TEST_F(Test_Base_Size, Basic)
 {
-	Size s1;
+	SizeI s1;
 	ASSERT_EQ_SIZE(0, 0, s1);
-	Size s2(1, 2);
+	SizeI s2(1, 2);
 	ASSERT_EQ_SIZE(1, 2, s2);
 
 	s2.Set(3, 4);
@@ -37,7 +37,7 @@ TEST_F(Test_Base_Size, Basic)
 	ASSERT_TRUE(s1.IsZero());
 	ASSERT_FALSE(s2.IsZero());
 
-	Size s3(3, 4);
+	SizeI s3(3, 4);
 	ASSERT_TRUE(s2 == s3);
 	ASSERT_FALSE(s1 == s2);
 	ASSERT_FALSE(s2 != s3);

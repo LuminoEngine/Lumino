@@ -17,14 +17,14 @@ public:
 
 public:
 	/// オブジェクト作成
-	void Create(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage);
+	void Create(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage);
 
 	/// 頂点バッファオブジェクトの取得
 	GLuint GetIndexBufferObject() const { return m_indexBufferObject; }
 
 public:
 	virtual IndexBufferFormat GetFormat() const { return m_format; }
-	virtual DeviceResourceUsage GetUsage() const { return m_usage; }
+	virtual ResourceUsage GetUsage() const { return m_usage; }
 	virtual void SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes);
 	virtual void Lock(void** lockedBuffer, size_t* lockedSize);
 	virtual void Unlock();
@@ -35,7 +35,7 @@ private:
 	GLuint              m_indexBufferObject;
 	size_t				m_byteCount;
 	IndexBufferFormat	m_format;
-	DeviceResourceUsage	m_usage;
+	ResourceUsage		m_usage;
 	bool				m_inited;
 };
 

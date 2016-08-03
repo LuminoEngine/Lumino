@@ -18,7 +18,7 @@ DX9VertexBuffer::DX9VertexBuffer()
 	: m_graphicsDevice(nullptr)
 	, m_vertexBuffer(nullptr)
 	, m_bufferSize(0)
-	, m_usage(DeviceResourceUsage_Static)
+	, m_usage(ResourceUsage::Static)
 {
 }
 
@@ -30,7 +30,7 @@ DX9VertexBuffer::~DX9VertexBuffer()
 }
 
 //------------------------------------------------------------------------------
-void DX9VertexBuffer::Create(DX9GraphicsDevice* device, size_t bufferSize, const void* initialData, DeviceResourceUsage usage)
+void DX9VertexBuffer::Create(DX9GraphicsDevice* device, size_t bufferSize, const void* initialData, ResourceUsage usage)
 {
 	LN_REFOBJ_SET(m_graphicsDevice, device);
 	m_bufferSize = bufferSize;
@@ -59,7 +59,7 @@ void DX9VertexBuffer::SetSubData(uint32_t offsetBytes, const void* data, uint32_
 void* DX9VertexBuffer::Lock()
 {
 	DWORD flags = 0;
-	if (m_usage == DeviceResourceUsage_Dynamic)
+	if (m_usage == ResourceUsage::Dynamic)
 	{
 		flags = D3DLOCK_DISCARD;
 	}
@@ -78,7 +78,7 @@ void DX9VertexBuffer::Unlock()
 //------------------------------------------------------------------------------
 void DX9VertexBuffer::OnLostDevice()
 {
-	if (m_usage == DeviceResourceUsage_Dynamic)
+	if (m_usage == ResourceUsage::Dynamic)
 	{
 		LN_SAFE_RELEASE(m_vertexBuffer);
 	}
@@ -93,7 +93,7 @@ void DX9VertexBuffer::OnResetDevice()
 
 		D3DPOOL pool = D3DPOOL_MANAGED;
 		DWORD dxUsage = D3DUSAGE_WRITEONLY;
-		if (m_usage == DeviceResourceUsage_Dynamic)
+		if (m_usage == ResourceUsage::Dynamic)
 		{
 			pool = D3DPOOL_DEFAULT;
 			dxUsage |= D3DUSAGE_DYNAMIC;

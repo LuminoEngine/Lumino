@@ -16,7 +16,7 @@ public:
 	DX9VertexBuffer();
 	virtual ~DX9VertexBuffer();
 
-	void Create(DX9GraphicsDevice* device, size_t bufferSize, const void* initialData, DeviceResourceUsage usage);
+	void Create(DX9GraphicsDevice* device, size_t bufferSize, const void* initialData, ResourceUsage usage);
 	IDirect3DVertexBuffer9* GetDxVertexBuffer() { return m_vertexBuffer; }
 
 	// IVertexBuffer interface
@@ -31,7 +31,7 @@ private:
 	DX9GraphicsDevice*			m_graphicsDevice;
 	IDirect3DVertexBuffer9*		m_vertexBuffer;	
 	size_t						m_bufferSize;
-	DeviceResourceUsage			m_usage;
+	ResourceUsage				m_usage;
 };
 
 // DirectX9 用の IVertexDeclaration の実装

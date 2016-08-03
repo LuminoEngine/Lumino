@@ -54,7 +54,7 @@ public:
 LN_INTERNAL_ACCESS:
 	VertexBuffer();
 	virtual ~VertexBuffer();
-	void Initialize(GraphicsManager* manager, size_t bufferSize, const void* data, DeviceResourceUsage usage);
+	void Initialize(GraphicsManager* manager, size_t bufferSize, const void* data, ResourceUsage usage);
 	Driver::IVertexBuffer* GetDeviceObject() const { return m_deviceObj; }
 
 	// GraphicsResourceObject interface
@@ -64,7 +64,7 @@ private:	// TODO
 	friend struct SetVertexBufferCommand;
 	Driver::IVertexBuffer*	m_deviceObj;
 	size_t					m_bufferSize;
-	DeviceResourceUsage		m_usage;
+	ResourceUsage			m_usage;
 	GraphicsResourcePool	m_pool;
 	ByteBuffer				m_lockedBuffer;
 	bool					m_initialUpdate;

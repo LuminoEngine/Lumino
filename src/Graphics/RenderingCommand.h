@@ -3,11 +3,10 @@
 
 #include <vector>
 #include <Lumino/Base/Delegate.h>
-#include <Lumino/Base/Rect.h>
+#include <Lumino/Base/GeometryStructs.h>
 #include "Device/GraphicsDriverInterface.h"
 #include <Lumino/Graphics/RenderState.h>
 #include <Lumino/Graphics/SamplerState.h>
-
 #include <Lumino/Graphics/SwapChain.h>
 #include <Lumino/Graphics/VertexBuffer.h>
 #include <Lumino/Graphics/IndexBuffer.h>
@@ -115,17 +114,18 @@ class RenderBulkData
 {
 public:
 	RenderBulkData();
-	RenderBulkData(void* srcData, size_t size);
-	void* GetData() const;
+	RenderBulkData(const void* srcData, size_t size);
+	const void* GetData() const;
 	size_t GetSize() const { return m_size; }
 
-	void Alloc(RenderingCommandList* commandList, size_t size);
+	// 確保したメモリは書き込み可能ポインタとして返される。
+	void* Alloc(RenderingCommandList* commandList, size_t size);
 
 	// TODO: internal
-	void Alloc(RenderingCommandList* commandList);
+	void* Alloc(RenderingCommandList* commandList);
 
 private:
-	void*					m_srcData;
+	const void*				m_srcData;
 	size_t					m_size;
 	RenderingCommandList*	m_commandList;
 	size_t					m_dataHandle;
@@ -974,10 +974,10 @@ struct SetSubDataTextureCommand : public RenderingCommand
 	Point					m_offset;
 	DataHandle				m_bmpDataIndex;
 	size_t					m_dataSize;
-	Size					m_bmpSize;
+	SizeI					m_bmpSize;
 	// ↑エラーチェックは Texture で行い、フォーマットは既に決まっていることを前提とするため、コマンドに乗せるデータはこれだけでOK。
 
-	void Create(Driver::ITexture* texture, const Point& offset, const void* data, size_t dataSize, const Size& bmpSize)
+	void Create(Driver::ITexture* texture, const Point& offset, const void* data, size_t dataSize, const SizeI& bmpSize)
 	{
 		m_targetTexture = texture;
 		m_offset = offset;

@@ -35,7 +35,7 @@ DX9TextureBase::~DX9TextureBase()
 //==============================================================================
 
 //------------------------------------------------------------------------------
-DX9Texture::DX9Texture(DX9GraphicsDevice* device, const Size& size, TextureFormat format, uint32_t levels)
+DX9Texture::DX9Texture(DX9GraphicsDevice* device, const SizeI& size, TextureFormat format, uint32_t levels)
 	: DX9TextureBase(device)
 	, m_dxTexture(NULL)
 	, m_dxSurface(NULL)
@@ -157,7 +157,7 @@ DX9Texture::~DX9Texture()
 }
 
 //------------------------------------------------------------------------------
-void DX9Texture::SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize)
+void DX9Texture::SetSubData(const Point& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize)
 {
 	RECT lockRect = { point.x, point.y, point.x + dataBitmapSize.width, point.y + dataBitmapSize.height };
 	if (lockRect.left < 0) lockRect.left = 0;
@@ -203,7 +203,7 @@ Bitmap* DX9Texture::Lock()
 
 	// Lock したバッファを参照する Bitmap を作成して返す
 	PixelFormat pixelFormat = Utils::TranslatePixelFormat(m_format);
-	size_t size = Bitmap::GetPixelFormatByteCount(pixelFormat, m_realSize);
+	size_t size = Bitmap::GetPixelFormatByteCount(pixelFormat, m_realSize, 1);
 	//m_lockedBuffer =  ByteBuffer(lockedRect.pBits, size, true);
 	m_lockedBitmap.Attach(LN_NEW Bitmap(lockedRect.pBits, m_realSize, pixelFormat));
 
@@ -277,7 +277,7 @@ void DX9Texture3D::Initialize(int width, int height, int depth, TextureFormat fo
 }
 
 //------------------------------------------------------------------------------
-void DX9Texture3D::SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize)
+void DX9Texture3D::SetSubData(const Point& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize)
 {
 	LN_THROW(0, InvalidOperationException);
 }
@@ -328,7 +328,7 @@ void DX9Texture3D::Unlock()
 //==============================================================================
 
 //------------------------------------------------------------------------------
-DX9RenderTargetTexture::DX9RenderTargetTexture(DX9GraphicsDevice* device, const Size& size, TextureFormat format, int mipLevels)
+DX9RenderTargetTexture::DX9RenderTargetTexture(DX9GraphicsDevice* device, const SizeI& size, TextureFormat format, int mipLevels)
 	: DX9TextureBase(device)
 	, m_dxTexture(nullptr)
 	, m_dxSurface(nullptr)
@@ -453,7 +453,7 @@ void DX9RenderTargetTexture::Unlock()
 }
 
 //------------------------------------------------------------------------------
-void DX9RenderTargetTexture::LockRenderTarget(IDirect3DDevice9* dxDevice, IDirect3DSurface9* dxSurface, TextureFormat format, const Size& realSize, IDirect3DSurface9** outLockedSystemSurface, ByteBuffer* outLockedBuffer, Bitmap** outLockedBitmap)
+void DX9RenderTargetTexture::LockRenderTarget(IDirect3DDevice9* dxDevice, IDirect3DSurface9* dxSurface, TextureFormat format, const SizeI& realSize, IDirect3DSurface9** outLockedSystemSurface, ByteBuffer* outLockedBuffer, Bitmap** outLockedBitmap)
 {
 	D3DSURFACE_DESC desc;
 	LN_COMCALL(dxSurface->GetDesc(&desc));
@@ -473,7 +473,7 @@ void DX9RenderTargetTexture::LockRenderTarget(IDirect3DDevice9* dxDevice, IDirec
 	// Lock したバッファを参照する Bitmap を作成して返す。
 	// 取得できるビットマップデータの [0] は (0, 0)
 	PixelFormat pixelFormat = Utils::TranslatePixelFormat(format);
-	size_t size = Bitmap::GetPixelFormatByteCount(pixelFormat, realSize);
+	size_t size = Bitmap::GetPixelFormatByteCount(pixelFormat, realSize, 1);
 	*outLockedBuffer = ByteBuffer(lockedRect.pBits, size, true);
 	*outLockedBitmap = LN_NEW Bitmap(*outLockedBuffer, realSize, pixelFormat, false);
 }
@@ -495,7 +495,7 @@ void DX9RenderTargetTexture::UnlockRenderTarget(IDirect3DSurface9** lockedSystem
 //==============================================================================
 
 //------------------------------------------------------------------------------
-DX9DepthBuffer::DX9DepthBuffer(DX9GraphicsDevice* device, const Size& size, TextureFormat format)
+DX9DepthBuffer::DX9DepthBuffer(DX9GraphicsDevice* device, const SizeI& size, TextureFormat format)
 	: DX9TextureBase(device)
 	, m_dxSurface(NULL)
 	, m_format(format)

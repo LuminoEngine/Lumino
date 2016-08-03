@@ -267,7 +267,7 @@ public:
 LN_INTERNAL_ACCESS:
 	void ChangeDevice(Driver::IShaderVariable* obj);
 	void SetModified();
-	void TryCommitChanges();
+	void OnCommitChanges();
 	Shader* GetOwnerShader() const { return m_owner; }
 	Driver::IShaderVariable* GetDeviceObject() const { return m_deviceObj; }
 	const ShaderValue& GetShaderValue() const { return m_value; }

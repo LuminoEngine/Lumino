@@ -84,19 +84,19 @@ public:
 	virtual IVertexDeclaration* CreateVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;
 
 	/// 頂点バッファの作成
-	virtual IVertexBuffer* CreateVertexBuffer(size_t bufferSize, const void* data, DeviceResourceUsage usage) = 0;
+	virtual IVertexBuffer* CreateVertexBuffer(size_t bufferSize, const void* data, ResourceUsage usage) = 0;
 
 	/// インデックスバッファの作成 (initialData を受け取るようにすれば、後で Lock 用にメモリ確保する必要がなくなる)
-	virtual IIndexBuffer* CreateIndexBuffer(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage) = 0;
+	virtual IIndexBuffer* CreateIndexBuffer(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage) = 0;
 
 	/// テクスチャの作成
 	/// initialData : 初期データまたは NULL
-	virtual ITexture* CreateTexture(const Size& size, uint32_t mipLevels, TextureFormat format, const void* initialData) = 0;
+	virtual ITexture* CreateTexture(const SizeI& size, uint32_t mipLevels, TextureFormat format, const void* initialData) = 0;
 
 	/// テクスチャの作成 (環境依存の画像ファイル読み込み)
 	virtual ITexture* CreateTexturePlatformLoading(Stream* stream, uint32_t mipLevels, TextureFormat format) = 0;
 
-	virtual ITexture* CreateTexture3D(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, const void* initialData) = 0;
+	virtual ITexture* CreateTexture3D(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, ResourceUsage usage, const void* initialData) = 0;
 
 	/// レンダーターゲットテクスチャの作成
 	virtual ITexture* CreateRenderTarget(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format) = 0;
@@ -166,7 +166,7 @@ public:
 	virtual ITexture* GetBackBuffer() = 0;
 
 	/// バックバッファサイズを変更する
-	virtual void Resize(const Size& size) = 0;
+	virtual void Resize(const SizeI& size) = 0;
 
 	/// バックバッファの内容をウィンドウへ転送する
 	///		colorBuffer を本物のバックバッファへ一度コピーしてからウィンドウに Swap する。
@@ -306,7 +306,7 @@ public:
 	virtual IndexBufferFormat GetFormat() const = 0;
 
 	/// リソースの使用方法の取得
-	virtual DeviceResourceUsage GetUsage() const = 0;
+	virtual ResourceUsage GetUsage() const = 0;
 
 	/// データを転送する
 	virtual void SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes) = 0;
@@ -334,16 +334,16 @@ public:
 	virtual TextureFormat GetTextureFormat() const = 0;
 
 	/// サイズの取得
-    virtual const Size& GetSize() const = 0;
+    virtual const SizeI& GetSize() const = 0;
 
 	/// 実際のサイズの取得 (デバイス依存により2のべき乗倍に拡張されたサイズ)
-	virtual const Size& GetRealSize() const = 0;
+	virtual const SizeI& GetRealSize() const = 0;
 
 	/// サンプラステートの設定
 	virtual void SetSamplerState(const SamplerState& state) = 0;
 
 	/// データ転送 (TODO:部分更新は未実装…)
-	virtual void SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize) = 0;
+	virtual void SetSubData(const Point& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) = 0;
 
 	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes) = 0;
 	/// ロック

@@ -20,7 +20,7 @@ class CapturerContext
 {
 public:
 	virtual ~CapturerContext() = default;
-	virtual void Open(const PathName& filePath, const Size& size) = 0;
+	virtual void Open(const PathName& filePath, const SizeI& size) = 0;
 	virtual void Close() = 0;
 	virtual void AddFrame(Bitmap* bitmap, int delayMS) = 0;
 };
@@ -49,7 +49,7 @@ public:
 		Close();
 	}
 
-	virtual void Open(const PathName& filePath, const Size& size) override
+	virtual void Open(const PathName& filePath, const SizeI& size) override
 	{
 		m_imageSize = size;
 		m_framePixels.Resize(size.width * size.height * 4);	// 4 component. RGBX format, where X is unused
@@ -88,7 +88,7 @@ public:
 		if (m_task == nullptr || m_task->IsCompleted())
 		{
 			// Task の中で jo_gif で減色を行うため、ピクセルフォーマットを変換しつつ作業領域にビットマップデータを取り出す
-			const Size& bmpSize = bitmap->GetSize();
+			const SizeI& bmpSize = bitmap->GetSize();
 			RGBX* framePixels = (RGBX*)m_framePixels.GetData();
 			for (int y = 0; y < m_imageSize.height; ++y)
 			{
@@ -178,7 +178,7 @@ private:
 	std::shared_ptr<ColorMapObject>	m_lastPalette;
 
 	jo_gif_t						m_joGif;
-	Size							m_imageSize;
+	SizeI							m_imageSize;
 	ByteBuffer						m_framePixels;
 	RefPtr<BinaryWriter>			m_writer;
 	int								m_frameCount;
@@ -206,7 +206,7 @@ public:
 		Close();
 	}
 
-	virtual void Open(const PathName& filePath, const Size& size) override
+	virtual void Open(const PathName& filePath, const SizeI& size) override
 	{
 		m_imageSize = size;
 		m_line.Alloc(sizeof(GifPixelType) * m_imageSize.width);
@@ -254,7 +254,7 @@ public:
 		// Image Descriptor
 		EGifPutImageDesc(m_gif, 0, 0, m_imageSize.width, m_imageSize.height, false, nullptr);
 
-		const Size& bmpSize = bitmap->GetSize();
+		const SizeI& bmpSize = bitmap->GetSize();
 		GifPixelType* line = (GifPixelType*)m_line.GetData();
 		for (int y = 0; y < m_imageSize.height; ++y)
 		{
@@ -288,7 +288,7 @@ public:
 private:
 	GifFileType*	m_gif;
 	ColorMapObject*	m_globalPalette;
-	Size			m_imageSize;
+	SizeI			m_imageSize;
 	ByteBuffer		m_line;
 };
 

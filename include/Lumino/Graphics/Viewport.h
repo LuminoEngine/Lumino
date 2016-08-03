@@ -25,7 +25,7 @@ class ViewportLayer
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	const Size& GetViewportSize() const;
+	const SizeI& GetViewportSize() const;
 	ImageEffectList* GetImageEffects() const { return m_imageEffects; }
 
 	void SetZIndex(int zIndex) { m_zIndex = zIndex; }
@@ -74,7 +74,7 @@ public:
 
 	static Viewport* GetMainWindowViewport();
 
-	const Size& GetSize() const;
+	const SizeI& GetSize() const;
 
 	void SetBackgroundColor(const Color& color);
 
@@ -97,7 +97,7 @@ LN_INTERNAL_ACCESS:	// TODO: いまはとりあえず内部用途
 
 private:
 	void TryRemakeLayerTargets();
-	void MakeViewBoxTransform(const Size& dstSize, const Size& srcSize, Matrix* mat);
+	void MakeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, Matrix* mat);
 
 	GraphicsManager*			m_manager;
 	RenderTarget*				m_renderTarget;

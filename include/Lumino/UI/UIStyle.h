@@ -3,7 +3,7 @@
 #include "../Animation/Common.h"
 #include "Common.h"
 #include "Detail.h"
-#include "../Base/Thickness.h"
+#include "../Base/GeometryStructs.h"
 
 LN_NAMESPACE_BEGIN
 class UIStyle;

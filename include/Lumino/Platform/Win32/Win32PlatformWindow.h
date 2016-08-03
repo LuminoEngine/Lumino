@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include <Lumino/Base/String.h>
-#include <Lumino/Base/Size.h>
+#include "../../Base/GeometryStructs.h"
 #include "../Common.h"
 #include "../PlatformWindow.h"
 
@@ -82,7 +82,7 @@ public:
 
 private:
 	String		mTitleText;				// ウィンドウタイトルの文字列  
-	Size		m_originalClientSize;	// initialize() または setSize() で設定されたクライアント領域のサイズ
+	SizeI		m_originalClientSize;	// initialize() または setSize() で設定されたクライアント領域のサイズ
 	HWND		mWindowHandle;			// ウィンドウハンドル
 	RECT		mWindowRect;			// ウィンドウ領域
 	HACCEL		mAccelerators;			// アクセラレータ (Alt+Enter の警告音対策のために使ってる)
@@ -114,7 +114,7 @@ public:
 private:
 	HWND			m_hWnd;
 	String			m_titleText;
-	mutable Size	m_clientSize;
+	mutable SizeI	m_clientSize;
 };
 
 LN_NAMESPACE_END

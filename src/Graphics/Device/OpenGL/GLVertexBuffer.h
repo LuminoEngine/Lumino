@@ -31,7 +31,7 @@ public:
 
 public:
 	/// オブジェクト作成
-	void Create(size_t bufferSize, const void* initialData, DeviceResourceUsage usage);
+	void Create(size_t bufferSize, const void* initialData, ResourceUsage usage);
 
 	/// 頂点バッファオブジェクトの取得
 	GLuint GetGLVertexBuffer() const { return m_glVertexBuffer; }
@@ -50,7 +50,7 @@ private:
 	size_t					m_byteCount;
 	byte_t*					m_data;
 	GLenum					m_usage;
-	DeviceResourceUsage		m_format;
+	ResourceUsage			m_format;
 };
 
 // OpenGL 用の IVertexDeclaration の実装

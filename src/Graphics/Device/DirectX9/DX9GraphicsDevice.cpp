@@ -132,7 +132,7 @@ RefPtr<IVertexDeclaration> DX9GraphicsDevice::CreateVertexDeclarationImplement(c
 }
 
 //------------------------------------------------------------------------------
-RefPtr<IVertexBuffer> DX9GraphicsDevice::CreateVertexBufferImplement(size_t bufferSize, const void* data, DeviceResourceUsage usage)
+RefPtr<IVertexBuffer> DX9GraphicsDevice::CreateVertexBufferImplement(size_t bufferSize, const void* data, ResourceUsage usage)
 {
 	RefPtr<DX9VertexBuffer> obj(LN_NEW DX9VertexBuffer(), false);
 	obj->Create(this, bufferSize, data, usage);
@@ -140,7 +140,7 @@ RefPtr<IVertexBuffer> DX9GraphicsDevice::CreateVertexBufferImplement(size_t buff
 }
 
 //------------------------------------------------------------------------------
-RefPtr<IIndexBuffer> DX9GraphicsDevice::CreateIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
+RefPtr<IIndexBuffer> DX9GraphicsDevice::CreateIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
 {
 	RefPtr<DX9IndexBuffer> obj(LN_NEW DX9IndexBuffer(), false);
 	obj->Create(this, indexCount, initialData, format, usage);
@@ -148,7 +148,7 @@ RefPtr<IIndexBuffer> DX9GraphicsDevice::CreateIndexBufferImplement(int indexCoun
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ITexture> DX9GraphicsDevice::CreateTextureImplement(const Size& size, uint32_t mipLevels, TextureFormat format, const void* initialData)
+RefPtr<ITexture> DX9GraphicsDevice::CreateTextureImplement(const SizeI& size, uint32_t mipLevels, TextureFormat format, const void* initialData)
 {
 	RefPtr<DX9Texture> obj(LN_NEW DX9Texture(this, size, format, mipLevels), false);
 	if (initialData != nullptr) {
@@ -169,7 +169,7 @@ RefPtr<ITexture> DX9GraphicsDevice::CreateTexturePlatformLoadingImplement(Stream
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ITexture> DX9GraphicsDevice::CreateTexture3DImplement(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, const void* initialData)
+RefPtr<ITexture> DX9GraphicsDevice::CreateTexture3DImplement(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, ResourceUsage usage, const void* initialData)
 {
 	RefPtr<DX9Texture3D> obj(LN_NEW DX9Texture3D(this), false);
 	obj->Initialize(width, height, depth, format, mipLevels);
@@ -182,14 +182,14 @@ RefPtr<ITexture> DX9GraphicsDevice::CreateTexture3DImplement(int width, int heig
 //------------------------------------------------------------------------------
 RefPtr<ITexture> DX9GraphicsDevice::CreateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format)
 {
-	RefPtr<DX9RenderTargetTexture> obj(LN_NEW DX9RenderTargetTexture(this, Size(width, height), format, mipLevels), false);
+	RefPtr<DX9RenderTargetTexture> obj(LN_NEW DX9RenderTargetTexture(this, SizeI(width, height), format, mipLevels), false);
 	return obj;
 }
 
 //------------------------------------------------------------------------------
 RefPtr<ITexture> DX9GraphicsDevice::CreateDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format)
 {
-	RefPtr<DX9DepthBuffer> obj(LN_NEW DX9DepthBuffer(this, Size(width, height), format), false);
+	RefPtr<DX9DepthBuffer> obj(LN_NEW DX9DepthBuffer(this, SizeI(width, height), format), false);
 	return obj;
 }
 
@@ -398,7 +398,7 @@ void DX9GraphicsDevice::ResetDevice(bool fullscreen)
 }
 
 //------------------------------------------------------------------------------
-void DX9GraphicsDevice::SetPresentParameters(const Size& backbufferSize, bool fullscreen)
+void DX9GraphicsDevice::SetPresentParameters(const SizeI& backbufferSize, bool fullscreen)
 {
 	// フルスクリーンモードの場合
 	if (fullscreen == true)

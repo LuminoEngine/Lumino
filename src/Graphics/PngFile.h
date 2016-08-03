@@ -3,13 +3,11 @@
 // 参考；
 // https://svn.gov.pt/projects/ccidadao/repository/middleware-offline/trunk/_src/eidmw/FreeImagePTEiD/Source/FreeImage/PluginPNG.cpp
 //
-//#include "../../external/libpng/pngstruct.h"
 #include "../../external/libpng/png.h"
-//#include "../../external/libpng/pnginfo.h"
 #include <Lumino/Base/ByteBuffer.h>
-#include <Lumino/Base/Rect.h>
 #include <Lumino/IO/Stream.h>
-#include "../../include/Lumino/Graphics/Bitmap.h"
+#include <Lumino/Base/GeometryStructs.h>
+#include <Lumino/Graphics/Bitmap.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -36,7 +34,7 @@ public:
 
 
 public:
-	Size		m_size;
+	SizeI		m_size;
 	//int						mWidth;
 	//int						mHeight;
 	ByteBuffer	m_bitmapData;
@@ -218,7 +216,7 @@ public:
 	}
 
 	/// 保存 (bitmapData のフォーマットは PixelFormat_BYTE_R8G8B8A8 であること)
-	void Save(const TCHAR* filePath, const ByteBuffer& bitmapData, const Size& size, bool upFlow)
+	void Save(const TCHAR* filePath, const ByteBuffer& bitmapData, const SizeI& size, bool upFlow)
 	{
 		FILE *fp;
 		_tfopen_s(&fp, filePath, _T("wb"));

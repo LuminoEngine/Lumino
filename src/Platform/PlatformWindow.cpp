@@ -41,7 +41,7 @@ PlatformWindow::~PlatformWindow()
 }
 
 //------------------------------------------------------------------------------
-void PlatformWindow::Initialize(const Size& clientSize)
+void PlatformWindow::Initialize(const SizeI& clientSize)
 {
 	m_clientSize = clientSize;
 }

@@ -90,14 +90,14 @@ void Camera::SetCameraBehavior(CameraBehavior* behavior)
 //------------------------------------------------------------------------------
 Vector3 Camera::WorldToViewportPoint(const Vector3& position) const
 {
-	const Size& size = m_ownerLayer->GetViewportSize();
+	const SizeI& size = m_ownerLayer->GetViewportSize();
 	return Vector3::Project(position, m_viewProjMatrix, 0.0f, 0.0f, (float)size.width, (float)size.height, m_nearClip, m_farClip);
 }
 
 //------------------------------------------------------------------------------
 Vector3 Camera::ViewportToWorldPoint(const Vector3& position) const
 {
-	const Size& size = m_ownerLayer->GetViewportSize();
+	const SizeI& size = m_ownerLayer->GetViewportSize();
 	//return Vector3::Unproject(position, m_viewProjMatrix, 0, 0, size.Width, size.Height, m_nearClip, m_farClip);
 	Vector3 v;
 	v.x = (((position.x - 0) / size.width) * 2.0f) - 1.0f;

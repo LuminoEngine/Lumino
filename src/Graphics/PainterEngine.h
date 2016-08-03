@@ -2,6 +2,7 @@
 #pragma once
 #include <Lumino/Graphics/Common.h>
 #include "GraphicsManager.h"
+#include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Brush.h>
 #include "Device/GraphicsDriverInterface.h"
 
@@ -249,7 +250,7 @@ public:
 
 	//void PushTransform(const Matrix& matrix);
 	void SetViewProjMatrix(const Matrix& matrix);
-	void SetViewPixelSize(const Size& size);
+	void SetViewPixelSize(const SizeI& size);
 
 	void SetState(const PainterEngineState& state);
 

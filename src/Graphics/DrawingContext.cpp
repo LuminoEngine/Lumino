@@ -49,7 +49,7 @@ void DrawingContext::Initialize(GraphicsManager* manager)
 void DrawingContext::Set2DRenderingMode(float minZ, float maxZ)
 {
 	NorityStateChanging();
-	const Size& size = m_state.GetRenderTarget(0)->GetSize();
+	const SizeI& size = m_state.GetRenderTarget(0)->GetSize();
 	m_state.viewTransform = Matrix::Identity;
 	m_state.projectionTransform = Matrix::MakePerspective2DLH((float)size.width, (float)size.height, minZ, maxZ);
 }
@@ -261,7 +261,7 @@ void DrawingContext::OnStateFlush()
 
 
 
-	const Size& size = m_state.GetRenderTarget(0)->GetSize();
+	const SizeI& size = m_state.GetRenderTarget(0)->GetSize();
 	Matrix viewProj = m_state.viewTransform * m_state.projectionTransform;
 
 	m_geometryRenderer->SetViewProjection(m_state.viewTransform, m_state.projectionTransform, size);

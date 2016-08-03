@@ -2,6 +2,7 @@
 #include "Internal.h"
 #include "GraphicsManager.h"
 #include <Lumino/Graphics/RenderingContext.h>
+#include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Shader.h>
 #include "RendererImpl.h"
 #include "PrimitiveRenderer.h"
@@ -516,7 +517,7 @@ void RenderingContext::OnStateFlush()
 	auto* pass = m_state.GetShaderPass();
 	if (pass != nullptr) GetBaseRenderer()->SetShaderPass(pass);
 
-	const Size& size = m_state.GetRenderTarget(0)->GetSize();
+	const SizeI& size = m_state.GetRenderTarget(0)->GetSize();
 	m_primitiveRenderer->SetViewPixelSize(size);
 	m_primitiveRenderer->SetUseInternalShader(GetShaderPass() == nullptr);
 }

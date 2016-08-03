@@ -31,7 +31,7 @@ class GLTexture
 	: public GLTextureBase
 {
 public:
-	GLTexture(const Size& size, TextureFormat format, uint32_t mipLevels);
+	GLTexture(const SizeI& size, TextureFormat format, uint32_t mipLevels);
 	//GLTexture(const Bitmap* bitmap, TextureFormat format, uint32_t mipLevels);
 	virtual ~GLTexture();
 
@@ -43,10 +43,10 @@ public:
 	// override ITexture
 	virtual TextureType GetTextureType() const { return TextureType_Normal; }
 	virtual TextureFormat GetTextureFormat() const { return m_format; }
-	virtual const Size& GetSize() const { return m_size; }
-	virtual const Size& GetRealSize() const { return m_realSize; }
+	virtual const SizeI& GetSize() const { return m_size; }
+	virtual const SizeI& GetRealSize() const { return m_realSize; }
 	virtual void SetSamplerState(const SamplerState& state);
-	virtual void SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize);
+	virtual void SetSubData(const Point& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize);
 	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes);
 	virtual Bitmap* Lock();
 	virtual void Unlock();
@@ -57,8 +57,8 @@ public:
 private:
 	GLuint				m_glTexture;
 	TextureFormat		m_format;
-	Size				m_size;
-	Size				m_realSize;
+	SizeI				m_size;
+	SizeI				m_realSize;
 	int					m_mipLevels;
 	GLenum				m_pixelFormat;
 	GLenum				m_elementType;
@@ -71,7 +71,7 @@ class GLRenderTargetTexture
 	: public GLTextureBase
 {
 public:
-	GLRenderTargetTexture(const Size& size, TextureFormat format, int mipLevels);
+	GLRenderTargetTexture(const SizeI& size, TextureFormat format, int mipLevels);
 	virtual ~GLRenderTargetTexture();
 
 public:
@@ -82,10 +82,10 @@ public:
 	// override ITexture
 	virtual TextureType GetTextureType() const { return TextureType_RenderTarget; }
 	virtual TextureFormat GetTextureFormat() const { return m_format; }
-	virtual const Size& GetSize() const { return m_size; }
-	virtual const Size& GetRealSize() const { return m_realSize; }
+	virtual const SizeI& GetSize() const { return m_size; }
+	virtual const SizeI& GetRealSize() const { return m_realSize; }
 	virtual void SetSamplerState(const SamplerState& state) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
+	virtual void SetSubData(const Point& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes);
 	virtual Bitmap* Lock();
 	virtual void Unlock();
@@ -96,8 +96,8 @@ public:
 private:
 	GLuint				m_glTexture;
 	TextureFormat		m_format;
-	Size				m_size;
-	Size				m_realSize;
+	SizeI				m_size;
+	SizeI				m_realSize;
 	int					m_mipLevels;
 	GLenum				m_pixelFormat;
 	GLenum				m_elementType;
@@ -109,7 +109,7 @@ class GLDepthBuffer
 	: public GLTextureBase
 {
 public:
-	GLDepthBuffer(const Size& size, TextureFormat format);
+	GLDepthBuffer(const SizeI& size, TextureFormat format);
 	virtual ~GLDepthBuffer();
 
 public:
@@ -120,10 +120,10 @@ public:
 	// override ITexture
 	virtual TextureType GetTextureType() const { return TextureType_DepthBuffer; }
 	virtual TextureFormat GetTextureFormat() const { return m_format; }
-	virtual const Size& GetSize() const { return m_size; }
-	virtual const Size& GetRealSize() const { return m_realSize; }
+	virtual const SizeI& GetSize() const { return m_size; }
+	virtual const SizeI& GetRealSize() const { return m_realSize; }
 	virtual void SetSamplerState(const SamplerState& state) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
+	virtual void SetSubData(const Point& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes);
 	virtual Bitmap* Lock() { LN_THROW(0, InvalidOperationException); return NULL; }
 	virtual void Unlock() { LN_THROW(0, InvalidOperationException); }
@@ -134,8 +134,8 @@ public:
 private:
 	GLuint			m_glBuffer;
 	TextureFormat	m_format;
-	Size			m_size;
-	Size			m_realSize;
+	SizeI			m_size;
+	SizeI			m_realSize;
 };
 
 } // namespace Driver

@@ -175,7 +175,7 @@ LRESULT CALLBACK Win32WindowManager::StaticWndProc(HWND hwnd, UINT msg, WPARAM w
 }
 
 //------------------------------------------------------------------------------
-void Win32WindowManager::SetWindowClientSize(HWND hWnd, const Size& clientSize)
+void Win32WindowManager::SetWindowClientSize(HWND hWnd, const SizeI& clientSize)
 {
 	RECT rw, rc;
 	::GetWindowRect(hWnd, &rw);

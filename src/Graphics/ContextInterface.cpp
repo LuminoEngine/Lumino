@@ -55,7 +55,7 @@ void ContextState::SetRenderTarget(int index, Texture* texture)
 
 		if (index == 0)
 		{
-			const Size& size = texture->GetSize();
+			auto& size = texture->GetSize();
 			viewport.Set(0, 0, size.width, size.height);
 		}
 
@@ -144,7 +144,7 @@ void BasicContextState::SetRenderTarget(int index, Texture* texture)
 
 		if (index == 0)
 		{
-			const Size& size = texture->GetSize();
+			auto& size = texture->GetSize();
 			viewport.Set(0, 0, size.width, size.height);
 		}
 	}

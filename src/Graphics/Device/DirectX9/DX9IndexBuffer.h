@@ -18,14 +18,14 @@ public:
 public:
 
 	/// 作成
-	void Create(DX9GraphicsDevice* device, int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage);
+	void Create(DX9GraphicsDevice* device, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage);
 
 	/// IDirect3DIndexBuffer9 へのポインタ取得
 	IDirect3DIndexBuffer9* GetDxIndexBuffer() const { return m_indexBuffer; }
 
 public:
 	virtual IndexBufferFormat GetFormat() const { return m_format; }
-	virtual DeviceResourceUsage GetUsage() const { return m_usage; }
+	virtual ResourceUsage GetUsage() const { return m_usage; }
 	virtual void SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes);
 	virtual void Lock(void** lockedBuffer, size_t* lockedSize);
 	virtual void Unlock();
@@ -38,7 +38,7 @@ private:
 	IDirect3DIndexBuffer9*	m_indexBuffer;
 	uint32_t				m_indexCount;
 	uint32_t				m_indexStride;
-	DeviceResourceUsage		m_usage;
+	ResourceUsage			m_usage;
 };
 
 } // namespace Driver

@@ -39,8 +39,8 @@ struct TextRendererCore_SetStateCommand : public RenderingCommand
 	TextRendererCore*	m_core;
 	Matrix				m_transform;
 	Matrix				m_viewProj;
-	Size				m_viewPixelSize;
-	void Create(TextRendererCore* core, const Matrix& world, const Matrix& viewProj, const Size& viewPixelSize)
+	SizeI				m_viewPixelSize;
+	void Create(TextRendererCore* core, const Matrix& world, const Matrix& viewProj, const SizeI& viewPixelSize)
 	{
 		m_core = core;
 		m_transform = world;
@@ -142,8 +142,8 @@ void TextRendererCore::Initialize(GraphicsManager* manager)
 	auto* device = m_manager->GetGraphicsDevice();
 	m_renderer = device->GetRenderer();
 	m_vertexDeclaration.Attach(device->CreateVertexDeclaration(Vertex::Elements(), Vertex::ElementCount));
-	m_vertexBuffer = device->CreateVertexBuffer(sizeof(Vertex) * DefaultFaceCount * 4, nullptr, DeviceResourceUsage_Dynamic);
-	m_indexBuffer = device->CreateIndexBuffer(DefaultFaceCount * 6, nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic);
+	m_vertexBuffer = device->CreateVertexBuffer(sizeof(Vertex) * DefaultFaceCount * 4, nullptr, ResourceUsage::Dynamic);
+	m_indexBuffer = device->CreateIndexBuffer(DefaultFaceCount * 6, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 
 	m_vertexCache.Reserve(DefaultFaceCount * 4);
 	m_indexCache.Reserve(DefaultFaceCount * 6);
@@ -162,7 +162,7 @@ void TextRendererCore::Initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void TextRendererCore::SetState(const Matrix& world, const Matrix& viewProj, const Size& viewPixelSize)
+void TextRendererCore::SetState(const Matrix& world, const Matrix& viewProj, const SizeI& viewPixelSize)
 {
 	m_shader.varWorldMatrix->SetMatrix(world);
 	m_shader.varViewProjMatrix->SetMatrix(viewProj);
@@ -322,7 +322,7 @@ void TextRenderer::SetViewProjMatrix(const Matrix& matrix)
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::SetViewPixelSize(const Size& size)
+void TextRenderer::SetViewPixelSize(const SizeI& size)
 {
 	m_viewPixelSize = size;
 	m_stateModified = true;
@@ -658,13 +658,13 @@ void TextRenderer::DrawLineHorizontal(const UTF32* text, int length, const Rect&
 	if (m_textAlignment == TextAlignment_Center)
 	{
 		// 中央揃え
-		Size size = m_font->GetTextSize(text, length);
+		SizeI size = m_font->GetTextSize(text, length);
 		drawArea.X += (drawArea.Width - size.Width) / 2;
 	}
 	else if (m_textAlignment == TextAlignment_Right)
 	{
 		// 右揃え
-		Size size = m_font->GetTextSize(text, length);
+		SizeI size = m_font->GetTextSize(text, length);
 		drawArea.X = (drawArea.X + drawArea.Width) - size.Width;
 	}
 	else if (m_textAlignment == TextAlignment_Justify)

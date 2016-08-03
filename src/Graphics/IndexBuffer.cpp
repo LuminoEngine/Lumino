@@ -26,7 +26,7 @@ IndexBuffer::IndexBuffer()
 	: m_deviceObj(nullptr)
 	, m_indexCount(0)
 	, m_format(IndexBufferFormat_UInt16)
-	, m_usage(DeviceResourceUsage_Static)
+	, m_usage(ResourceUsage::Static)
 	, m_pool(GraphicsResourcePool::Managed)	// TODO
 	, m_initialUpdate(true)
 {
@@ -40,7 +40,7 @@ IndexBuffer::~IndexBuffer()
 }
 
 //------------------------------------------------------------------------------
-void IndexBuffer::Initialize(GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
+void IndexBuffer::Initialize(GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
 {
 	m_indexCount = indexCount;
 	m_format = format;

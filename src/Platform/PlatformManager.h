@@ -1,11 +1,11 @@
 ﻿
 #pragma once
 #include <Lumino/Base/RefObject.h>
-#include <Lumino/Base/Size.h>
 #include <Lumino/Base/String.h>
 #include <Lumino/Base/Array.h>
 #include <Lumino/Threading/Thread.h>
 #include <Lumino/Platform/Common.h>
+#include <Lumino/Base/GeometryStructs.h>
 
 LN_NAMESPACE_BEGIN
 
@@ -13,7 +13,7 @@ LN_NAMESPACE_BEGIN
 struct WindowCreationSettings
 {
 	String	title;							// ウィンドウタイトル
-	Size	clientSize = Size(640, 480);	// クライアント領域のピクセルサイズ
+	SizeI	clientSize = SizeI(640, 480);	// クライアント領域のピクセルサイズ
 	bool	fullscreen = false;				// フルスクリーンモードで作成するかどうか
 	bool	resizable = true;				// 可変ウィンドウとして作成するかどうか
 	void*	userWindow = nullptr;

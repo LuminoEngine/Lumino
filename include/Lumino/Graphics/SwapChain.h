@@ -33,7 +33,7 @@ public:
 		@brief	バックバッファのサイズを変更します。
 		TODO: 公開しない。サイズ変更は Viewport から。
 	*/
-	void Resize(const Size& newSize);
+	void Resize(const SizeI& newSize);
 
 	/**
 		@brief	バックバッファのレンダリング結果をフロントバッファに転送します。

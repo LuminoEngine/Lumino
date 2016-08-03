@@ -36,7 +36,7 @@ Texture::~Texture()
 }
 
 //------------------------------------------------------------------------------
-const Size& Texture::GetSize() const
+const SizeI& Texture::GetSize() const
 {
 	return m_deviceObj->GetSize();
 }
@@ -54,7 +54,7 @@ int Texture::GetHeight() const
 }
 
 //------------------------------------------------------------------------------
-const Size& Texture::GetRealSize() const
+const SizeI& Texture::GetRealSize() const
 {
 	return m_deviceObj->GetRealSize();
 }
@@ -153,11 +153,11 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Texture2D, Texture);
 //------------------------------------------------------------------------------
 Texture2DPtr Texture2D::Create(int width, int height, TextureFormat format, int mipLevels)
 {
-	return Create(Size(width, height), format, mipLevels);
+	return Create(SizeI(width, height), format, mipLevels);
 }
 
 //------------------------------------------------------------------------------
-Texture2DPtr Texture2D::Create(const Size& size, TextureFormat format, int mipLevels)
+Texture2DPtr Texture2D::Create(const SizeI& size, TextureFormat format, int mipLevels)
 {
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
 	tex->Initialize(GraphicsManager::GetInstance(), size, format, mipLevels);
@@ -210,7 +210,7 @@ Texture2D::Texture2D()
 }
 
 //------------------------------------------------------------------------------
-void Texture2D::Initialize(GraphicsManager* manager, const Size& size, TextureFormat format, int mipLevels)
+void Texture2D::Initialize(GraphicsManager* manager, const SizeI& size, TextureFormat format, int mipLevels)
 {
 	GraphicsResourceObject::Initialize(manager);
 
@@ -311,7 +311,7 @@ void Texture2D::Blt(int x, int y, Texture* srcTexture, const Rect& srcRect)
 void Texture2D::Blt(int x, int y, Bitmap* srcBitmap/*, const Rect& srcRect*/)
 {
 	Point point(x, y);
-	Size srcSize = srcBitmap->GetSize();
+	SizeI srcSize = srcBitmap->GetSize();
 	//// TODO: この Blt は基本的にフォントビットマップの転送に使うので、このままだと非常に効率が悪い。が、とりあえずまずは動くものを。
 	//ScopedTextureLock lock1(this);
 	//lock1.GetBitmap()->BitBlt(x, y, srcBitmap, srcRect, Color::White, true);
@@ -337,9 +337,9 @@ void Texture2D::Blt(int x, int y, Bitmap* srcBitmap/*, const Rect& srcRect*/)
 	//srcBitmap->SerializeProperty(bmpPropData.GetData());
 
 	RenderBulkData bmpRawData;
-	bmpRawData.Alloc(cmdList, Bitmap::GetPixelFormatByteCount(m_primarySurface->GetPixelFormat(), srcBitmap->GetSize()));
+	void* bmpRawDataBuf = bmpRawData.Alloc(cmdList, Bitmap::GetPixelFormatByteCount(m_primarySurface->GetPixelFormat(), srcBitmap->GetSize(), 1));
 
-	Bitmap bmpTmp(bmpRawData.GetData(), srcBitmap->GetSize(), m_primarySurface->GetPixelFormat());
+	Bitmap bmpTmp(bmpRawDataBuf, srcBitmap->GetSize(), m_primarySurface->GetPixelFormat());
 	bmpTmp.BitBlt(0, 0, srcBitmap, Rect(0, 0, srcBitmap->GetSize()), Color32::White, false);
 
 	Driver::ITexture* deviceTexture = m_deviceObj;
@@ -347,7 +347,7 @@ void Texture2D::Blt(int x, int y, Bitmap* srcBitmap/*, const Rect& srcRect*/)
 	LN_ENQUEUE_RENDER_COMMAND_4(
 		Texture2D_Blt_Bitmap, m_manager,
 		Point, point,
-		Size, srcSize,
+		SizeI, srcSize,
 		//RenderBulkData, bmpPropData,
 		RenderBulkData, bmpRawData,
 		RefPtr<Driver::ITexture>, deviceTexture,
@@ -428,10 +428,10 @@ void Texture2D::OnChangeDevice(Driver::IGraphicsDevice* device)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Texture3D, Texture);
 
 //------------------------------------------------------------------------------
-Texture3DPtr Texture3D::Create(int width, int height, int depth, TextureFormat format, int mipLevels)
+Texture3DPtr Texture3D::Create(int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage)
 {
 	auto ptr = Texture3DPtr::MakeRef();
-	ptr->Initialize(GraphicsManager::GetInstance(), width, height, depth, format, mipLevels);
+	ptr->Initialize(GraphicsManager::GetInstance(), width, height, depth, format, mipLevels, usage);
 	return ptr;
 }
 
@@ -439,6 +439,8 @@ Texture3DPtr Texture3D::Create(int width, int height, int depth, TextureFormat f
 Texture3D::Texture3D()
 	: m_depth(0)
 	, m_mipLevels(0)
+	, m_locked(false)
+	, m_initialData(false)
 {
 }
 
@@ -448,7 +450,7 @@ Texture3D::~Texture3D()
 }
 
 //------------------------------------------------------------------------------
-void Texture3D::Initialize(GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels)
+void Texture3D::Initialize(GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage)
 {
 	GraphicsResourceObject::Initialize(manager);
 	m_size.width = width;
@@ -456,7 +458,73 @@ void Texture3D::Initialize(GraphicsManager* manager, int width, int height, int 
 	m_depth = depth;
 	m_format = format;
 	m_mipLevels = mipLevels;
-	m_deviceObj = manager->GetGraphicsDevice()->CreateTexture3D(m_size.width, m_size.height, m_depth, m_mipLevels, m_format, nullptr);
+	m_usage = usage;
+	m_deviceObj = manager->GetGraphicsDevice()->CreateTexture3D(m_size.width, m_size.height, m_depth, m_mipLevels, m_format, m_usage, nullptr);
+	m_initialData = true;
+
+	if (m_usage == ResourceUsage::Dynamic)
+	{
+		m_primarySurface = RefPtr<Bitmap>::MakeRef(m_size.width, m_size.height, m_depth, Utils::TranslatePixelFormat(m_format));
+	}
+}
+
+//------------------------------------------------------------------------------
+int Texture3D::GetDepth() const
+{
+	return m_depth;
+}
+
+//------------------------------------------------------------------------------
+void Texture3D::SetPixel32(int x, int y, int z, const Color32& color)
+{
+	TryLock();
+	m_primarySurface->SetPixel(x, y, z, color);
+}
+
+//------------------------------------------------------------------------------
+void Texture3D::TryLock()
+{
+	if (!m_locked)
+	{
+		if (m_usage == ResourceUsage::Static)
+		{
+			m_primarySurface = RefPtr<Bitmap>::MakeRef(m_size.width, m_size.height, m_depth, Utils::TranslatePixelFormat(m_format));
+		}
+		m_locked = true;
+	}
+}
+
+//------------------------------------------------------------------------------
+void Texture3D::ApplyModifies()
+{
+	if (m_locked)
+	{
+		ByteBuffer* bmpData = m_primarySurface->GetBitmapBuffer();
+		if (m_initialData)
+		{
+			// まだ1度もコマンドリストに入れられていなければ直接転送できる
+			m_deviceObj->SetSubData3D(Box32::Zero, bmpData->GetConstData(), bmpData->GetSize());
+		}
+		else
+		{
+			RenderBulkData bmpRawData(bmpData->GetConstData(), bmpData->GetSize());
+			Driver::ITexture* deviceTexture = m_deviceObj;
+			LN_ENQUEUE_RENDER_COMMAND_2(
+				Texture3D_ApplyModifies, m_manager,
+				RenderBulkData, bmpRawData,
+				RefPtr<Driver::ITexture>, deviceTexture,
+				{
+					deviceTexture->SetSubData3D(Box32::Zero, bmpRawData.GetData(), bmpRawData.GetSize());
+				});
+		}
+		m_initialData = false;
+		m_locked = false;
+
+		if (m_usage == ResourceUsage::Static)
+		{
+			m_primarySurface.SafeRelease();
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -469,7 +537,7 @@ void Texture3D::OnChangeDevice(Driver::IGraphicsDevice* device)
 	else
 	{
 		// TODO: 内容の復元
-		m_deviceObj = device->CreateTexture3D(m_size.width, m_size.height, m_depth, m_mipLevels, m_format, nullptr);
+		m_deviceObj = device->CreateTexture3D(m_size.width, m_size.height, m_depth, m_mipLevels, m_format, m_usage, nullptr);
 	}
 }
 
@@ -478,7 +546,7 @@ void Texture3D::OnChangeDevice(Driver::IGraphicsDevice* device)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RenderTargetPtr RenderTarget::Create(const Size& size, TextureFormat format, int mipLevels)
+RenderTargetPtr RenderTarget::Create(const SizeI& size, TextureFormat format, int mipLevels)
 {
 	RefPtr<RenderTarget> tex(LN_NEW RenderTarget(), false);
 	tex->CreateImpl(GraphicsManager::GetInstance(), size, mipLevels, format);
@@ -495,7 +563,7 @@ RenderTarget::RenderTarget()
 }
 
 //------------------------------------------------------------------------------
-void RenderTarget::CreateImpl(GraphicsManager* manager, const Size& size, int mipLevels, TextureFormat format)
+void RenderTarget::CreateImpl(GraphicsManager* manager, const SizeI& size, int mipLevels, TextureFormat format)
 {
 	GraphicsResourceObject::Initialize(manager);
 
@@ -551,7 +619,7 @@ void RenderTarget::OnChangeDevice(Driver::IGraphicsDevice* device)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-Texture* DepthBuffer::Create(const Size& size, TextureFormat format)
+Texture* DepthBuffer::Create(const SizeI& size, TextureFormat format)
 {
 	RefPtr<DepthBuffer> tex(LN_NEW DepthBuffer(), false);
 	tex->CreateImpl(GraphicsManager::GetInstance(), size, format);
@@ -565,7 +633,7 @@ DepthBuffer::DepthBuffer()
 }
 
 //------------------------------------------------------------------------------
-void DepthBuffer::CreateImpl(GraphicsManager* manager, const Size& size, TextureFormat format)
+void DepthBuffer::CreateImpl(GraphicsManager* manager, const SizeI& size, TextureFormat format)
 {
 	GraphicsResourceObject::Initialize(manager);
 	m_size = size;
@@ -579,7 +647,7 @@ DepthBuffer::~DepthBuffer()
 }
 
 //------------------------------------------------------------------------------
-void DepthBuffer::Resize(const Size& newSize)
+void DepthBuffer::Resize(const SizeI& newSize)
 {
 	m_size = newSize;
 	RefreshDeviceResource();

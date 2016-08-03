@@ -109,7 +109,7 @@ void GLSwapChain::OnResetDevice()
 }
 
 //------------------------------------------------------------------------------
-void GLSwapChain::Resize(const Size& size)
+void GLSwapChain::Resize(const SizeI& size)
 {
 	LN_THROW(0, NotImplementedException);
 }

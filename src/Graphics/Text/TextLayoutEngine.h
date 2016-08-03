@@ -65,7 +65,7 @@ protected:
 
 private:
 	void LayoutTextHorizontal(const UTF32* text, int length);
-	void LayoutLineHorizontal(const UTF32* text, int length, const Rect& lineArea, Size* outLineSize);
+	void LayoutLineHorizontal(const UTF32* text, int length, const Rect& lineArea, SizeI* outLineSize);
 
 private:
 	RefPtr<Font>		m_font;

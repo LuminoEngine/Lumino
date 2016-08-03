@@ -16,7 +16,7 @@ struct TextLayoutResultItem
 
 struct TextLayoutResult
 {
-	Size						AreaSize;
+	SizeI						AreaSize;
 	Array<TextLayoutResultItem>	Items;
 };
 
@@ -32,7 +32,7 @@ public:
 	void SetText(const StringRef& text);
 	void SetTextAlignment(TextAlignment align);	// TODO: Run に持たせるべき？
 	//int GetStrokeSize() const;
-	const Size& GetRenderSize();
+	const SizeI& GetRenderSize();
 
 LN_INTERNAL_ACCESS:
 	GlyphRun();

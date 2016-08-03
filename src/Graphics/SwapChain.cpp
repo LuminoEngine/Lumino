@@ -79,7 +79,7 @@ void SwapChain::PostInitialize()
 }
 
 //------------------------------------------------------------------------------
-void SwapChain::Resize(const Size& newSize)
+void SwapChain::Resize(const SizeI& newSize)
 {
 	m_deviceObj->Resize(newSize);
 	// ※ここではまだ深度バッファはリサイズしない。Present を終えた後に行う。

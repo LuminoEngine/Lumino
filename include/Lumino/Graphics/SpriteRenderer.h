@@ -42,7 +42,7 @@ public:
 	/**
 		@brief		描画先のビューサイズを設定します。
 	*/
-	void SetViewPixelSize(const Size& size);
+	void SetViewPixelSize(const SizeI& size);
 
 	/**
 		@brief		レンダリングステートを設定します。

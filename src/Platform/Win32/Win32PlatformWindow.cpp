@@ -545,7 +545,7 @@ void Win32NativeWindow::Initilaize(
 	bool resizable)
 {
 	LN_CHECK_ARG(windowManager != nullptr);
-	PlatformWindow::Initialize(Size(width, height));
+	PlatformWindow::Initialize(SizeI(width, height));
 
 	mTitleText = windowTitle;
 	// 初期化時のサイズ記憶
@@ -589,7 +589,7 @@ void Win32NativeWindow::Initilaize(
 	LN_THROW(mAccelerators, Win32Exception, GetLastError());
 
 	// ウィンドウサイズをクライアント領域サイズから再設定
-	Win32WindowManager::SetWindowClientSize(mWindowHandle, Size(width, height));
+	Win32WindowManager::SetWindowClientSize(mWindowHandle, SizeI(width, height));
 	Win32WindowManager::AbjustLocationCentering(mWindowHandle);
 
 	// WM_PAINTが呼ばれないようにする

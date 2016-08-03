@@ -107,7 +107,7 @@ ViewportLayer::~ViewportLayer()
 }
 
 //------------------------------------------------------------------------------
-const Size& ViewportLayer::GetViewportSize() const
+const SizeI& ViewportLayer::GetViewportSize() const
 {
 	LN_CHECK_STATE(m_owner != nullptr);
 	return m_owner->GetSize();
@@ -176,7 +176,7 @@ void Viewport::Initialize(GraphicsManager* manager, RenderTarget* renderTarget)
 }
 
 //------------------------------------------------------------------------------
-const Size& Viewport::GetSize() const
+const SizeI& Viewport::GetSize() const
 {
 	return m_renderTarget->GetSize();
 }
@@ -228,7 +228,7 @@ void Viewport::TryRemakeLayerTargets()
 }
 
 //------------------------------------------------------------------------------
-void Viewport::MakeViewBoxTransform(const Size& dstSize, const Size& srcSize, Matrix* mat)
+void Viewport::MakeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, Matrix* mat)
 {
 	//LSize backbufferSize = mWindowSize;
 	//if (isLetterBox()) {

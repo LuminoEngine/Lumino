@@ -705,8 +705,8 @@ void FreeTypeFont::UpdateFont()
 		UpdateImageFlags();
 
 		// グリフ格納用ビットマップ (仮確保)
-		m_glyphBitmap.Attach(LN_NEW Bitmap(Size(m_fontData.Size, m_fontData.Size), PixelFormat::A8));
-		m_outlineBitmap.Attach(LN_NEW Bitmap(Size(m_fontData.Size, m_fontData.Size), PixelFormat::A8));
+		m_glyphBitmap.Attach(LN_NEW Bitmap(SizeI(m_fontData.Size, m_fontData.Size), PixelFormat::A8));
+		m_outlineBitmap.Attach(LN_NEW Bitmap(SizeI(m_fontData.Size, m_fontData.Size), PixelFormat::A8));
 
 		// ラスタライズで使用する
 		//mPixelList = LN_NEW PixelData[m_fontSize * m_fontSize * 4];
@@ -799,7 +799,7 @@ void FreeTypeFont::RefreshBitmap(Bitmap* bitmap, FT_Bitmap* ftBitmap)
 	// ビットマップデータを参照モードでセットする
 	bitmap->m_bitmapData.Attach(
 		ftBitmap->buffer,
-		Bitmap::GetPixelFormatByteCount(bitmap->m_format, bitmap->m_size));
+		Bitmap::GetPixelFormatByteCount(bitmap->m_format, bitmap->m_size, 1));
 }
 
 #if 0

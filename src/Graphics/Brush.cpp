@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.h"
+#include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Brush.h>
 
 LN_NAMESPACE_BEGIN
@@ -100,6 +101,18 @@ void TextureBrush::Create(Texture* texture)
 }
 
 
+//------------------------------------------------------------------------------
+void TextureBrush::SetTexture(Texture* texture)
+{
+	m_texture = texture;
+}
+
+//------------------------------------------------------------------------------
+Texture* TextureBrush::GetTexture() const
+{
+	return m_texture;
+}
+
 //==============================================================================
 // FrameTextureBrush
 //==============================================================================
@@ -133,6 +146,18 @@ FrameTextureBrush::FrameTextureBrush()
 //------------------------------------------------------------------------------
 FrameTextureBrush::~FrameTextureBrush()
 {
+}
+
+//------------------------------------------------------------------------------
+void FrameTextureBrush::SetTexture(Texture* texture)
+{
+	m_texture = texture;
+}
+
+//------------------------------------------------------------------------------
+Texture* FrameTextureBrush::GetTexture() const
+{
+	return m_texture;
 }
 
 LN_NAMESPACE_GRAPHICS_END

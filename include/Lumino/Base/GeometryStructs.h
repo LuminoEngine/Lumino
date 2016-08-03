@@ -1,9 +1,176 @@
-﻿
+﻿/**
+	@file	Point.h
+*/
 #pragma once
-#include "Point.h"
-#include "Size.h"
 
 LN_NAMESPACE_BEGIN
+
+/**
+	@brief	2次元上の点を表すクラスです。
+*/
+class Point
+{
+public:
+	static const Point	Zero;	///< Point(0, 0)
+
+public:
+	int		x;		///< X 座標
+	int		y;		///< Y 座標
+
+public:
+
+	/**
+		@brief	すべての要素を 0 で初期化します。
+	*/
+	Point() { Set(0, 0); }
+	
+	/**
+		@brief	座標を指定して初期化します。
+	*/
+	Point(int x, int y) { Set(x, y); }
+
+public:
+	
+	/**
+		@brief	各要素を設定します。
+	*/
+	void Set(int x_, int y_) { x = x_; y = y_; }
+
+	/**
+		@brief	要素がすべて 0 かを判定します。
+	*/
+	bool IsZero() const { return (x == 0 && y == 0); }
+
+public:
+	bool operator == (const Point& obj) const { return (x == obj.x && y == obj.y); }
+	bool operator != (const Point& obj) const { return !operator==(obj); }
+};
+
+/**
+	@brief	2次元上の点を表すクラスです。(浮動小数点形式)
+*/
+class PointF
+{
+public:
+	static const PointF	Zero;	///< PointF(0, 0)
+
+public:
+	float	x;		///< X 座標
+	float	y;		///< Y 座標
+
+public:
+
+	/**
+		@brief	すべての要素を 0 で初期化します。
+	*/
+	PointF() { Set(0, 0); }
+	
+	/**
+		@brief	座標を指定して初期化します。
+	*/
+	PointF(float x, float y) { Set(x, y); }
+
+public:
+	
+	/**
+		@brief	各要素を設定します。
+	*/
+	void Set(float x_, float y_) { x = x_; y = y_; }
+
+	/**
+		@brief	要素がすべて 0 かを判定します。
+	*/
+	bool IsZero() const { return (x == 0.0f && y == 0.0f); }
+
+public:
+	bool operator == (const PointF& obj) const { return (x == obj.x && y == obj.y); }
+	bool operator != (const PointF& obj) const { return !operator==(obj); }
+};
+
+
+/**
+	@brief		2次元上のオブジェクトサイズを表すクラスです。
+*/
+class SizeI
+{
+public:
+	static const SizeI	Zero;	/**< Size(0, 0)	*/
+
+public:
+	int		width;				/**< X 方向の大きさ*/
+	int		height;				/**< Y 方向の大きさ*/
+
+public:
+
+	/** すべての要素を 0 で初期化します。*/
+	SizeI() { Set(0, 0); }
+	
+	/** 幅と高さを指定して初期化します。*/
+	SizeI(int w, int h) { Set(w, h); }
+
+public:
+	
+	/** 各要素を設定します。*/
+	void Set(int w, int h) { width = w; height = h; }
+
+	/** 要素がすべて 0 かを判定します。*/
+	bool IsZero() const { return (width == 0 && height == 0); }
+
+	/** いずれかの要素が 0 かを判定します。*/
+	bool IsAnyZero() const { return (width == 0 || height == 0); }
+
+public:
+	bool operator == (const SizeI& obj) const { return (width == obj.width && height == obj.height); }
+	bool operator != (const SizeI& obj) const { return !operator==(obj); }
+};
+
+/**
+	@brief		2次元上のオブジェクトサイズを表すクラスです。(浮動小数点形式)
+*/
+class SizeF
+{
+public:
+	static const SizeF	Zero;	///< SizeF(0, 0)
+	static const SizeF	NaN;	///< SizeF(NaN, NaN)
+
+public:
+	float	width;				///< X 方向の大きさ
+	float	height;				///< Y 方向の大きさ
+
+public:
+
+	/**
+		@brief	すべての要素を 0 で初期化します。
+	*/
+	SizeF() { Set(0, 0); }
+	
+	/**
+		@brief	幅と高さを指定して初期化します。
+	*/
+	SizeF(float w, float h) { Set(w, h); }
+
+public:
+	
+	/**
+		@brief	各要素を設定します。
+	*/
+	void Set(float w, float h) { width = w; height = h; }
+
+	/**
+		@brief	要素がすべて 0 かを判定します。
+	*/
+	bool IsZero() const { return (width == 0.0f && height == 0.0f); }
+
+	/**
+		@brief	いずれかの要素が 0 かを判定します。
+	*/
+	bool IsAnyZero() const { return (width == 0.0f || height == 0.0f); }
+
+public:
+	bool operator == (const SizeF& obj) const { return (width == obj.width && height == obj.height); }
+	bool operator != (const SizeF& obj) const { return !operator==(obj); }
+};
+
 
 /**
 	@brief		2次元の矩形を表すクラスです。
@@ -35,12 +202,12 @@ public:
 	/**
 		@brief	位置とサイズを指定して初期化します。
 	*/
-	Rect(const Point& point, const Size& size) { Set(point.x, point.y, size.width, size.height); }
+	Rect(const Point& point, const SizeI& size) { Set(point.x, point.y, size.width, size.height); }
 
 	/**
 		@brief	位置とサイズを指定して初期化します。
 	*/
-	Rect(int x, int y, const Size& size) { Set(x, y, size.width, size.height); }
+	Rect(int x, int y, const SizeI& size) { Set(x, y, size.width, size.height); }
 
 	/**
 		@brief	位置とサイズを指定して初期化します。
@@ -62,7 +229,7 @@ public:
 	/**
 		@brief	各要素を設定します。
 	*/
-	void Set(int x_, int y_, const Size& size) { x = x_; y = y_; width = size.width; height = size.height; }
+	void Set(int x_, int y_, const SizeI& size) { x = x_; y = y_; width = size.width; height = size.height; }
 
 	/**
 		@brief	左辺の x 軸の値を取得します。
@@ -117,12 +284,12 @@ public:
 	/**
 		@brief	幅と高さを設定します。
 	*/
-	void SetSize(const Size& size) { width = size.width; height = size.height; }
+	void SetSize(const SizeI& size) { width = size.width; height = size.height; }
 	
 	/**
 		@brief	幅と高さを取得します。
 	*/
-	Size GetSize() const { return Size(width, height); }
+	SizeI GetSize() const { return SizeI(width, height); }
 
 	/**
 		@brief	幅または高さを持たないかを判定します。
@@ -411,6 +578,53 @@ public:
 		, depth(depth_)
 	{
 	}
+};
+
+
+/**
+	@brief		四角形の枠の太さを表すクラスです。(浮動小数点形式)
+*/
+class ThicknessF
+{
+public:
+	static const ThicknessF	Zero;	///< ThicknessF(0, 0, 0, 0)
+
+public:
+	float		Left;		/**< 四角形の左辺の幅 */
+	float		Top;		/**< 四角形の上辺の幅 */
+	float		Right;		/**< 四角形の右辺の幅 */
+	float		Bottom;		/**< 四角形の底辺の幅 */
+
+public:
+
+	/**
+		@brief	すべての要素を 0 で初期化します。
+	*/
+	ThicknessF() { Set(0, 0, 0, 0); }
+	
+	/**
+		@brief	左右共通の幅及び上下共通の幅を指定して初期化します。
+	*/
+	ThicknessF(float leftAndRight, float topAndbottom) { Set(leftAndRight, topAndbottom, leftAndRight, topAndbottom); }
+	
+	/**
+		@brief	各辺の幅を指定して初期化します。
+	*/
+	ThicknessF(float left, float top, float right, float bottom) { Set(left, top, right, bottom); }
+
+public:
+	
+	/**
+		@brief	各要素を設定します。
+	*/
+	void Set(float left, float top, float right, float bottom) { Left = left; Top = top; Right = right; Bottom = bottom; }
+
+	void ToArray(float* buf) const { buf[0] = Left; buf[1] = Top; buf[2] = Right; buf[3] = Bottom; }
+	static ThicknessF FromArray(const float* buf) { return ThicknessF(buf[0], buf[1], buf[2], buf[3]); }
+
+public:
+	bool operator == (const ThicknessF& obj) const { return (Left == obj.Left && Top == obj.Top && Right == obj.Right && Bottom == obj.Bottom); }
+	bool operator != (const ThicknessF& obj) const { return !operator==(obj); }
 };
 
 LN_NAMESPACE_END

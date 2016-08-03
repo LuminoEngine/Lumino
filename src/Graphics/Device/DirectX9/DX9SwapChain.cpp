@@ -36,7 +36,7 @@ DX9SwapChain::~DX9SwapChain()
 }
 
 //------------------------------------------------------------------------------
-void DX9SwapChain::InitializeDefault(DX9GraphicsDevice* device, PlatformWindow* window, const Size& backBufferSize)
+void DX9SwapChain::InitializeDefault(DX9GraphicsDevice* device, PlatformWindow* window, const SizeI& backBufferSize)
 {
 	LN_REFOBJ_SET(m_graphicsDevice, device);
 	LN_REFOBJ_SET(m_targetWindow, window);
@@ -50,7 +50,7 @@ void DX9SwapChain::InitializeDefault(DX9GraphicsDevice* device, PlatformWindow* 
 }
 
 //------------------------------------------------------------------------------
-void DX9SwapChain::InitializeSub(DX9GraphicsDevice* device, PlatformWindow* window, const Size& backBufferSize)
+void DX9SwapChain::InitializeSub(DX9GraphicsDevice* device, PlatformWindow* window, const SizeI& backBufferSize)
 {
 	InitializeDefault(device, window, backBufferSize);
 	m_isDefault = false;
@@ -101,7 +101,7 @@ void DX9SwapChain::OnResetDevice()
 }
 
 //------------------------------------------------------------------------------
-void DX9SwapChain::Resize(const Size& size)
+void DX9SwapChain::Resize(const SizeI& size)
 {
 	m_backBufferSize = size;
 

@@ -45,7 +45,7 @@ public:
 	static LRESULT CALLBACK StaticWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 	/// クライアント領域のサイズが指定した大きさになるようにウィンドウサイズを調整する
-	static void SetWindowClientSize(HWND hWnd, const Size& clientSize);
+	static void SetWindowClientSize(HWND hWnd, const SizeI& clientSize);
 
 	/// ウィンドウをスクリーンの中央に移動する
 	static void AbjustLocationCentering(HWND hWnd);

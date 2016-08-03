@@ -57,7 +57,7 @@ private:
 	void UpdateVertexData();
 
 	/// ピクセル単位の転送矩形をテクスチャUVの矩形 (0.0～1.0) に変換する
-	static void NormalizeSrcRect(const Rect& srcRect, const Size& textureSize, float* l, float* t, float* r, float* b);
+	static void NormalizeSrcRect(const Rect& srcRect, const SizeI& textureSize, float* l, float* t, float* r, float* b);
 
 protected:
 	Sprite();

@@ -224,7 +224,7 @@ void Sprite::UpdateVertexData()
 }
 
 //------------------------------------------------------------------------------
-void Sprite::NormalizeSrcRect(const Rect& srcRect, const Size& textureSize, float* l, float* t, float* r, float* b)
+void Sprite::NormalizeSrcRect(const Rect& srcRect, const SizeI& textureSize, float* l, float* t, float* r, float* b)
 {
 	float tex_rw = 1.0f / textureSize.width;
 	float tex_rh = 1.0f / textureSize.height;

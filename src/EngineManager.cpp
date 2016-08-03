@@ -106,23 +106,23 @@ LN_NAMESPACE_BEGIN
 detail::EngineSettings detail::EngineSettings::instance;
 
 //------------------------------------------------------------------------------
-void EngineSettings::SetMainWindowSize(const Size& size)
+void EngineSettings::SetMainWindowSize(const SizeI& size)
 {
 	detail::EngineSettings::instance.mainWindowSize = size;
 }
 void EngineSettings::SetMainWindowSize(int width, int height)
 {
-	detail::EngineSettings::instance.mainWindowSize = Size(width, height);
+	detail::EngineSettings::instance.mainWindowSize.Set(width, height);
 }
 
 //------------------------------------------------------------------------------
-void EngineSettings::SetMainBackBufferSize(const Size& size)
+void EngineSettings::SetMainBackBufferSize(const SizeI& size)
 {
 	detail::EngineSettings::instance.mainBackBufferSize = size;
 }
 void EngineSettings::SetMainBackBufferSize(int width, int height)
 {
-	detail::EngineSettings::instance.mainBackBufferSize = Size(width, height);
+	detail::EngineSettings::instance.mainBackBufferSize.Set(width, height);
 }
 
 //------------------------------------------------------------------------------
@@ -623,7 +623,7 @@ bool EngineManager::UpdateFrame()
 
 		{	// プロファイリング範囲
 			ScopedProfilerSection prof(Profiler::Group_MainThread, Profiler::Section_MainThread_GUILayput);
-			const Size& size = m_graphicsManager->GetMainSwapChain()->GetBackBuffer()->GetSize();
+			const SizeI& size = m_graphicsManager->GetMainSwapChain()->GetBackBuffer()->GetSize();
 			m_uiManager->GetMainWindow()->UpdateLayout(SizeF(static_cast<float>(size.width), static_cast<float>(size.height)));
 		}
 	}
@@ -821,7 +821,7 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 	case PlatformEventType::WindowSizeChanged:
 		if (m_graphicsManager != nullptr)
 		{
-			m_graphicsManager->GetMainSwapChain()->Resize(Size(e.size.width, e.size.height));
+			m_graphicsManager->GetMainSwapChain()->Resize(SizeI(e.size.width, e.size.height));
 		}
 		//if (uiView != nullptr)
 		//{

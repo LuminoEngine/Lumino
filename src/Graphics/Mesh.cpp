@@ -657,7 +657,7 @@ void StaticMeshModel::CreateBuffers(int vertexCount, int indexCount, int attribu
 {
 	m_vertexDeclaration = m_manager->GetDefaultVertexDeclaration();
 
-	DeviceResourceUsage usage = (flags.TestFlag(MeshCreationFlags::DynamicBuffers)) ? DeviceResourceUsage_Static : DeviceResourceUsage_Dynamic;
+	ResourceUsage usage = (flags.TestFlag(MeshCreationFlags::DynamicBuffers)) ? ResourceUsage::Static : ResourceUsage::Dynamic;
 	m_vertexBuffer = RefPtr<VertexBuffer>::MakeRef();
 	m_indexBuffer = RefPtr<IndexBuffer>::MakeRef();
 	m_vertexBuffer->Initialize(m_manager, sizeof(Vertex) * vertexCount, nullptr, usage);

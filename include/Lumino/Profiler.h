@@ -87,10 +87,10 @@ public:
 	void SetMainFPSCapacity(float fps) { m_mainFPSCapacity = fps; }
 
 	/// メインウィンドウのサイズ
-	void SetMainWindowSize(const Size& size) { m_mainWindowSize = size; }
+	void SetMainWindowSize(const SizeI& size) { m_mainWindowSize = size; }
 
 	/// メインバックバッファのサイズ
-	void SetMainBackBufferSize(const Size& size) { m_mainBackbufferSize = size; }
+	void SetMainBackBufferSize(const SizeI& size) { m_mainBackbufferSize = size; }
 
 
 	void Commit();
@@ -98,21 +98,21 @@ public:
 	const Array<CommitedGroup>& GetCommitedGroups() const { return m_commitedGroups; }
 	float GetCommitedMainFPS() const { return m_commitedMainFPS; }
 	float GetCommitedMainFPSCapacity() const { return m_commitedMainFPSCapacity; }
-	const Size&  GetCommitedMainWindowSize() const { return m_commitedMainWindowSize; }
-	const Size&  GetCommitedMainBackbufferSize() const { return m_commitedMainBackbufferSize; }
+	const SizeI& GetCommitedMainWindowSize() const { return m_commitedMainWindowSize; }
+	const SizeI& GetCommitedMainBackbufferSize() const { return m_commitedMainBackbufferSize; }
 
 private:
 	Array< std::shared_ptr<Group> >			m_groups;
 	float					m_mainFPS;
 	float					m_mainFPSCapacity;
-	Size					m_mainWindowSize;
-	Size					m_mainBackbufferSize;
+	SizeI					m_mainWindowSize;
+	SizeI					m_mainBackbufferSize;
 
 	Array<CommitedGroup>	m_commitedGroups;
 	float					m_commitedMainFPS;
 	float					m_commitedMainFPSCapacity;
-	Size					m_commitedMainWindowSize;
-	Size					m_commitedMainBackbufferSize;
+	SizeI					m_commitedMainWindowSize;
+	SizeI					m_commitedMainBackbufferSize;
 
 	Mutex					m_commitMutex;
 	bool					m_enabled;

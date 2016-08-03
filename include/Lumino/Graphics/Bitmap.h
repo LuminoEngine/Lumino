@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include <Lumino/Base/ByteBuffer.h>
-#include <Lumino/Base/Rect.h>
+#include "../Base/GeometryStructs.h"
 #include "Color.h"
 
 LN_NAMESPACE_BEGIN
@@ -37,7 +37,8 @@ public:
 		@param[in]	format		: ピクセルフォーマット
 		@param[in]	upFlow		: 上下逆のイメージとして扱う場合は true
 	*/
-	Bitmap(const Size& size, PixelFormat format, bool upFlow = false);
+	Bitmap(const SizeI& size, PixelFormat format, bool upFlow = false);
+	Bitmap(int width, int height, int depth, PixelFormat format, bool upFlow = false);
 
 	Bitmap(Stream* stream);
 	
@@ -50,13 +51,13 @@ public:
 	/**
 		@brief		指定した ByteBuffer を参照する Bitmap を作成します。
 	*/
-	Bitmap(ByteBuffer buffer, const Size& size, PixelFormat format);
-	Bitmap(const ByteBuffer& buffer, const Size& size, PixelFormat format, bool upFlow);
+	Bitmap(ByteBuffer buffer, const SizeI& size, PixelFormat format);
+	Bitmap(const ByteBuffer& buffer, const SizeI& size, PixelFormat format, bool upFlow);
 
 	/**
 		@brief		
 	*/
-	Bitmap(void* buffer, const Size& size, PixelFormat format);	// 参照モード
+	Bitmap(void* buffer, const SizeI& size, PixelFormat format);	// 参照モード
 	Bitmap(void* buffer, int width, int height, int depth, PixelFormat format);	// 参照モード
 	//Bitmap(void* buffer, const Size& size, PixelFormat format, int pitch, bool upFlow);	// 参照モード
 
@@ -73,7 +74,7 @@ public:
 	ByteBuffer* GetBitmapBuffer() { return &m_bitmapData; }
 	
 	/// ビットマップサイズの取得 (ピクセル数単位)
-	const Size& GetSize() const { return m_size; }
+	const SizeI& GetSize() const { return m_size; }
 
 	/// ピクセルフォーマットの取得
 	PixelFormat GetPixelFormat() const { return m_format; }
@@ -107,7 +108,7 @@ public:
 	int GetPitch() const { return m_pitch; }
 	bool IsUpFlow() const { return m_upFlow; }
 
-	void SetSize(const Size& size) { m_size = size; }
+	void SetSize(const SizeI& size) { m_size = size; }
 
 	void CopyRawData(const void* data, size_t byteCount);
 	size_t GetByteCount() const;
@@ -139,7 +140,7 @@ public:
 	static int GetPixelFormatByteCount(PixelFormat format);
 
 	/// フォーマット毎のバイト数を求める
-	static int GetPixelFormatByteCount(PixelFormat format, const Size& size);
+	static int GetPixelFormatByteCount(PixelFormat format, const SizeI& size, int depth);
 
 private:
 	typedef uint32_t ClColor;	// ビット演算で表現する
@@ -172,7 +173,7 @@ private:
 private:
 	friend class FreeTypeFont;
 	ByteBuffer		m_bitmapData;	// ビットマップデータ本体
-	Size			m_size;			// サイズ (ピクセル数単位)
+	SizeI			m_size;			// サイズ (ピクセル数単位)
 	int				m_depth;		// 深度 (Z座標)
 	int				m_pitch;		// フォーマット A1 時の、row バイト数。(FreeTypeからだと、必ず width / 8 + 1 にならないので)
 	PixelFormat		m_format;		// ピクセルフォーマット

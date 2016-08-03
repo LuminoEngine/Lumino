@@ -26,12 +26,12 @@ struct PrimitiveRendererCore_SetStateCommand : public RenderingCommand
 	PrimitiveRendererCore*	m_core;
 	Matrix					m_transform;
 	Matrix					m_viewProj;
-	Size					m_viewPixelSize;
+	SizeI					m_viewPixelSize;
 	bool					m_useInternalShader;
 	PrimitiveRendererMode	m_mode;
 	Driver::IShader*		m_userShader;
 	Driver::ITexture*		m_foreTexture;
-	void Create(PrimitiveRendererCore* core, const Matrix& world, const Matrix& viewProj, const Size& viewPixelSize, bool useInternalShader, PrimitiveRendererMode mode, Driver::IShader* userShader, Driver::ITexture* foreTexture)
+	void Create(PrimitiveRendererCore* core, const Matrix& world, const Matrix& viewProj, const SizeI& viewPixelSize, bool useInternalShader, PrimitiveRendererMode mode, Driver::IShader* userShader, Driver::ITexture* foreTexture)
 	{
 		m_core = core;
 		m_transform = world;
@@ -163,8 +163,8 @@ void PrimitiveRendererCore::Initialize(GraphicsManager* manager)
 	auto* device = m_manager->GetGraphicsDevice();
 	m_renderer = device->GetRenderer();
 	m_vertexDeclaration.Attach(device->CreateVertexDeclaration(Vertex::Elements(), Vertex::ElementCount));
-	m_vertexBuffer = device->CreateVertexBuffer(sizeof(Vertex) * DefaultFaceCount * 4, nullptr, DeviceResourceUsage_Dynamic);
-	m_indexBuffer = device->CreateIndexBuffer(DefaultFaceCount * 6, nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic);
+	m_vertexBuffer = device->CreateVertexBuffer(sizeof(Vertex) * DefaultFaceCount * 4, nullptr, ResourceUsage::Dynamic);
+	m_indexBuffer = device->CreateIndexBuffer(DefaultFaceCount * 6, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 
 	m_vertexCache.Resize(DefaultFaceCount * 4);
 	m_vertexCacheUsed = 0;
@@ -195,7 +195,7 @@ void PrimitiveRendererCore::Initialize(GraphicsManager* manager)
 	tv[2].position.Set( 1,  1, 0); tv[2].color = Color::White; tv[2].uv.Set(1, 0);	// 右上
 	tv[3].position.Set( 1, -1, 0); tv[3].color = Color::White; tv[3].uv.Set(1, 1);	// 右下
 	m_vertexDeclarationForBlt.Attach(device->CreateVertexDeclaration(Vertex::Elements(), Vertex::ElementCount));
-	m_vertexBufferForBlt = device->CreateVertexBuffer(sizeof(Vertex) * 4, tv, DeviceResourceUsage_Static);
+	m_vertexBufferForBlt = device->CreateVertexBuffer(sizeof(Vertex) * 4, tv, ResourceUsage::Static);
 
 	// Blt 用デフォルトシェーダ
 	//m_shaderForBlt.shader = device->CreateShader(g_PrimitiveRendererForBlt_fx_Data, g_PrimitiveRendererForBlt_fx_Len, &r);
@@ -209,7 +209,7 @@ void PrimitiveRendererCore::Initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRendererCore::SetState(const Matrix& world, const Matrix& viewProj, const Size& viewPixelSize, bool useInternalShader, PrimitiveRendererMode mode, Driver::IShader* userShader, Driver::ITexture* texture)
+void PrimitiveRendererCore::SetState(const Matrix& world, const Matrix& viewProj, const SizeI& viewPixelSize, bool useInternalShader, PrimitiveRendererMode mode, Driver::IShader* userShader, Driver::ITexture* texture)
 {
 	float vw = (viewPixelSize.width != 0.0) ? (0.5f / viewPixelSize.width) : 0.0f;
 	float vh = (viewPixelSize.height != 0.0) ? (0.5f / viewPixelSize.height) : 0.0f;
@@ -438,7 +438,7 @@ void PrimitiveRenderer::SetViewProjMatrix(const Matrix& matrix)
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRenderer::SetViewPixelSize(const Size& size)
+void PrimitiveRenderer::SetViewPixelSize(const SizeI& size)
 {
 	m_viewPixelSize = size;
 	m_stateModified = true;

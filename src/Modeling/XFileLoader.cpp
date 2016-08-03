@@ -624,7 +624,7 @@ RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream,
 				manager->GetGraphicsManager(),
 				sizeof(Vertex) * all_vertex_num,
 				nullptr,
-				(isDynamic) ? DeviceResourceUsage_Dynamic : DeviceResourceUsage_Static);
+				(isDynamic) ? ResourceUsage::Dynamic : ResourceUsage::Static);
 
 			// IndexBuffer
 			IDirect3DIndexBuffer9* dx_indexbuffer;
@@ -638,7 +638,7 @@ RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream,
 				all_index_num,
 				nullptr,
 				(dx_indexbuffer_desc.Format == D3DFMT_INDEX16) ? IndexBufferFormat_UInt16 : IndexBufferFormat_UInt32,
-				(isDynamic) ? DeviceResourceUsage_Dynamic : DeviceResourceUsage_Static);
+				(isDynamic) ? ResourceUsage::Dynamic : ResourceUsage::Static);
 
 			// 書き込み開始
 			ScopedVertexBufferLock lockVertexBuffer(mesh->m_vertexBuffer);

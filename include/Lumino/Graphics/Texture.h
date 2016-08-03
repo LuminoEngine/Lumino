@@ -24,12 +24,6 @@ class Texture
 public:
 
 	/**
-		@brief		テクスチャのサイズを取得します。
-		@return		テクスチャのサイズ (ピクセル単位)
-	*/
-	const Size& GetSize() const;
-
-	/**
 		@brief		テクスチャの幅を取得します。
 		@return		テクスチャの幅 (ピクセル単位)
 	*/
@@ -40,12 +34,6 @@ public:
 		@return		テクスチャの高さ (ピクセル単位)
 	*/
 	int GetHeight() const;
-
-	/**
-		@brief		テクスチャの実サイズを取得します。
-		@return		テクスチャの実サイズ (ピクセル単位)
-	*/
-	const Size& GetRealSize() const;
 
 	/**
 		@brief		テクスチャのピクセルフォーマットを取得します。
@@ -61,12 +49,14 @@ protected:
 
 LN_INTERNAL_ACCESS:
 	Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }
+	const SizeI& GetSize() const;
+	const SizeI& GetRealSize() const;
 
 protected:
 	friend struct ReadLockTextureCommand;
 	friend struct ReadUnlockTextureCommand;
 	Driver::ITexture*	m_deviceObj;
-	Size				m_size;
+	SizeI				m_size;
 	TextureFormat		m_format;
 	Bitmap*				m_primarySurface;
 };
@@ -98,7 +88,7 @@ public:
 		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
 		@param[in]	format		: テクスチャのピクセルフォーマット
 	*/
-	static Texture2DPtr Create(const Size& size, TextureFormat format = TextureFormat::R8G8B8A8, int mipLevels = 1);
+	static Texture2DPtr Create(const SizeI& size, TextureFormat format = TextureFormat::R8G8B8A8, int mipLevels = 1);
 
 	/**
 		@brief		ファイルからテクスチャを作成します。
@@ -155,7 +145,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 LN_INTERNAL_ACCESS:
-	void Initialize(GraphicsManager* manager, const Size& size, TextureFormat format, int mipLevels);
+	void Initialize(GraphicsManager* manager, const SizeI& size, TextureFormat format, int mipLevels);
 	void Initialize(GraphicsManager* manager, const StringRef& filePath, TextureFormat format, int mipLevels);
 	void Initialize(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels);
 	void Initialize(GraphicsManager* manager, bool isDefaultBackBuffer);
@@ -192,32 +182,34 @@ public:
 		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
 		@param[in]	format		: テクスチャのピクセルフォーマット
 	*/
-	static Texture3DPtr Create(int width, int height, int depth, TextureFormat format = TextureFormat::R8G8B8A8, int mipLevels = 1);
-	// TODO: mipMap は unity のように、有無だけで指定したい
+	static Texture3DPtr Create(int width, int height, int depth, TextureFormat format = TextureFormat::R8G8B8A8, int mipLevels = 1, ResourceUsage usage = ResourceUsage::Static);
 
 public:
 
-	//void Clear(const Color32& color);
+	int GetDepth() const;
 
-	/*
-		@brief		
-	*/
-	//void SetSubData(const Point& offset, Bitmap* bitmap);
+	void SetPixel32(int x, int y, int z, const Color32& color);
 
 LN_INTERNAL_ACCESS:
 	Texture3D();
 	virtual ~Texture3D();
 
-	void Initialize(GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels);
+	void Initialize(GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage);
 public:	// TODO
+	void TryLock();
 	Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }
 
 protected:
-	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
+	virtual void ApplyModifies() override;
+	virtual void OnChangeDevice(Driver::IGraphicsDevice* device) override;
 
 private:
-	int		m_depth;
-	int		m_mipLevels;
+	int				m_depth;
+	int				m_mipLevels;
+	ResourceUsage	m_usage;
+	RefPtr<Bitmap>	m_primarySurface;
+	bool			m_locked;
+	bool			m_initialData;
 };
 
 /**
@@ -234,11 +226,11 @@ public:
 		@param[in]	format		: テクスチャのピクセルフォーマット
 		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
 	*/
-	static RenderTargetPtr Create(const Size& size, TextureFormat format = TextureFormat::R8G8B8A8, int mipLevels = 1);
+	static RenderTargetPtr Create(const SizeI& size, TextureFormat format = TextureFormat::R8G8B8A8, int mipLevels = 1);
 
 LN_INTERNAL_ACCESS:
 	RenderTarget();
-	void CreateImpl(GraphicsManager* manager, const Size& size, int mipLevels, TextureFormat format);
+	void CreateImpl(GraphicsManager* manager, const SizeI& size, int mipLevels, TextureFormat format);
 	void CreateCore(GraphicsManager* manager, bool isDefaultBackBuffer);
 	void AttachDefaultBackBuffer(Driver::ITexture* deviceObj);
 	void DetachDefaultBackBuffer();
@@ -271,13 +263,13 @@ public:
 		@param[in]	size		: テクスチャのサイズ (ピクセル単位)
 		@param[in]	format		: ピクセルフォーマット
 	*/
-	static Texture* Create(const Size& size, TextureFormat format = TextureFormat::D24S8);
+	static Texture* Create(const SizeI& size, TextureFormat format = TextureFormat::D24S8);
 
-	void Resize(const Size& newSize);
+	void Resize(const SizeI& newSize);
 
 LN_INTERNAL_ACCESS:
 	DepthBuffer();
-	void CreateImpl(GraphicsManager* manager, const Size& size, TextureFormat format);
+	void CreateImpl(GraphicsManager* manager, const SizeI& size, TextureFormat format);
 
 protected:
 	virtual ~DepthBuffer();

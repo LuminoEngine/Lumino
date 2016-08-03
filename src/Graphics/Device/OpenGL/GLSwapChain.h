@@ -21,7 +21,7 @@ public:
 
 public:
 	virtual ITexture* GetBackBuffer() override { return m_renderTarget; }
-	virtual void Resize(const Size& size) override;
+	virtual void Resize(const SizeI& size) override;
 	virtual void Present(ITexture* colorBuffer) override;
 	virtual void OnLostDevice() override;
 	virtual void OnResetDevice() override;

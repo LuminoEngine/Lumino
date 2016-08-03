@@ -17,7 +17,7 @@ GLIndexBuffer::GLIndexBuffer()
 	: m_indexBufferObject(0)
 	, m_byteCount(0)
 	, m_format(IndexBufferFormat_UInt16)
-	, m_usage(DeviceResourceUsage_Static)
+	, m_usage(ResourceUsage::Static)
 	, m_inited(false)
 {
 }
@@ -29,7 +29,7 @@ GLIndexBuffer::~GLIndexBuffer()
 }
 
 //------------------------------------------------------------------------------
-void GLIndexBuffer::Create(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
+void GLIndexBuffer::Create(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
 {
 	m_format = format;
 	int stride = (format == IndexBufferFormat_UInt16) ? 2 : 4;
@@ -71,7 +71,7 @@ void GLIndexBuffer::OnLostDevice()
 //------------------------------------------------------------------------------
 void GLIndexBuffer::OnResetDevice()
 {
-	GLenum gl_usage = (m_usage == DeviceResourceUsage_Static) ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
+	GLenum gl_usage = (m_usage == ResourceUsage::Static) ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
 	glGenBuffers(1, &m_indexBufferObject); LN_CHECK_GLERROR();
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBufferObject); LN_CHECK_GLERROR();
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_byteCount, NULL, gl_usage);  LN_CHECK_GLERROR();

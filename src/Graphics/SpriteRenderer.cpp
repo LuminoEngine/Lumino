@@ -243,7 +243,7 @@ void SpriteRenderer::SetViewProjMatrix(const Matrix& view, const Matrix& proj)
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderer::SetViewPixelSize(const Size& size)
+void SpriteRenderer::SetViewPixelSize(const SizeI& size)
 {
 	LN_CALL_COMMAND(SetViewPixelSize, SpriteRendererImpl::SetViewPixelSizeCommand, size);
 }
@@ -401,7 +401,7 @@ void SpriteRendererImpl::CreateInternal()
 	//-----------------------------------------------------
 	// 頂点バッファとインデックスバッファ
 	m_vertexDeclaration.Attach(device->CreateVertexDeclaration(BatchSpriteVertex::Elements(), BatchSpriteVertex::ElementCount));
-	m_vertexBuffer.Attach(device->CreateVertexBuffer(sizeof(BatchSpriteVertex) * m_maxSprites * 4, NULL, DeviceResourceUsage_Dynamic));
+	m_vertexBuffer.Attach(device->CreateVertexBuffer(sizeof(BatchSpriteVertex) * m_maxSprites * 4, NULL, ResourceUsage::Dynamic));
 
 #if 1
 	ByteBuffer indexBuf(sizeof(uint16_t) * m_maxSprites * 6, false);
@@ -420,7 +420,7 @@ void SpriteRendererImpl::CreateInternal()
 		ib[i2 + 5] = idx + 3;
 	}
 	m_indexBuffer.Attach(device->CreateIndexBuffer(
-		m_maxSprites * 6, ib, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic));
+		m_maxSprites * 6, ib, IndexBufferFormat_UInt16, ResourceUsage::Dynamic));
 #else
 	m_indexBuffer.Attach(device->CreateIndexBuffer(
 		m_maxSprites * 6, NULL, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic));
@@ -496,7 +496,7 @@ void SpriteRendererImpl::SetViewProjMatrix(const Matrix& view, const Matrix& pro
 }
 
 //------------------------------------------------------------------------------
-void SpriteRendererImpl::SetViewPixelSize(const Size& size)
+void SpriteRendererImpl::SetViewPixelSize(const SizeI& size)
 {
 	m_viewPixelSize.Set((float)size.width, (float)size.height);
 }
@@ -710,7 +710,7 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 	if (texture != NULL)
 	{
 		// テクスチャ座標
-		const Size& texSize = texture->GetRealSize();
+		const SizeI& texSize = texture->GetRealSize();
 		Vector2 texSizeInv(1.0f / texSize.width, 1.0f / texSize.height);
 		RectF sr(srcRect);
 		float l = sr.x * texSizeInv.x;

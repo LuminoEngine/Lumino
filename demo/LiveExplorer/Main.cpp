@@ -288,16 +288,18 @@ int main()
 		EngineSettings::SetGraphicsAPI(GraphicsAPI::DirectX9);
 		EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Immediate);
 		EngineSettings::SetDirectMusicMode(DirectMusicMode::Normal);
+		EngineSettings::SetMainWindowSize(160, 120);
+		EngineSettings::SetMainBackBufferSize(160, 120);
 		Engine::Initialize();
 
 
 		//auto tex = Assets::LoadTexture(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/0129.png"));
 
-		auto noiseTex1 = Texture2D::Create(Size(256, 256));
+		auto noiseTex1 = Texture2D::Create(SizeI(256, 256));
 
-		auto tex = Texture2D::Create(Size(256, 256));
+		auto tex = Texture2D::Create(SizeI(256, 256));
 		auto sp1 = Sprite2D::Create(noiseTex1);
-		//sp1->SetVisible(false);
+		sp1->SetVisible(false);
 
 		PerlinNoise noise;
 		noise.SetTiledRepeatFrequency(0);
@@ -306,7 +308,7 @@ int main()
 		const double fy = tex->GetHeight() / frequency;
 		int octaves = 8;	// 粗さ
 
-		Bitmap bmp1(Size(256, 256), PixelFormat::R8G8B8A8);
+		Bitmap bmp1(SizeI(256, 256), PixelFormat::R8G8B8A8);
 		for (int y = 0; y < bmp1.GetSize().height; ++y)
 		{
 			for (int x = 0; x < bmp1.GetSize().width; ++x)
@@ -343,7 +345,7 @@ int main()
 
 		int src_w = bmp1.GetSize().width;
 		int src_h = bmp1.GetSize().height;
-		Bitmap dst1(Size(512, 256), PixelFormat::R8G8B8A8);
+		Bitmap dst1(SizeI(512, 256), PixelFormat::R8G8B8A8);
 		{
 			// http://sssiii.seesaa.net/article/411311322.html?seesaa_related=related_article
 			// rの最大値を計算（定数でも可）
@@ -400,7 +402,7 @@ int main()
 		}
 
 
-		//Bitmap dst1flip(Size(256, 256), PixelFormat::R8G8B8A8);
+		//Bitmap dst1flip(SizeI(256, 256), PixelFormat::R8G8B8A8);
 		//BitmapFilter filter;
 		//filter.FlipVertical(&dst1flip, &dst1);
 
@@ -410,23 +412,26 @@ int main()
 		//bmp->BitBlt(0, 0, &bmp1, Rect(0, 0, 256, 256), Color32::White, false);
 		tex->Unlock();
 
-		auto shader = MMEShader::Create(_T("D:/Proj/Volkoff/External/Lumino/src/Scene/Resource/BasicForwardRendering.fx"));
+		auto shader = MMEShader::Create(_T("C:/Proj/Lumino/src/Scene/Resource/BasicForwardRendering.fx"));
 		auto mesh = StaticMesh::CreateSphere(20, 32, 16, MeshCreationFlags::ReverseFaces);
 		mesh->SetShader(shader);
 		mesh->GetMaterials()->GetAt(0)->SetTextureParameter(Material::MaterialTextureParameter, tex);
 		mesh->GetMaterials()->GetAt(0)->SetColorParameter(Material::EmissiveParameter, Color::White);
+		mesh->SetVisible(false);
 
 
-		auto shader2 = MMEShader::Create(_T("D:/Proj/Volkoff/External/Lumino/src/Scene/Resource/Cloud.fx"));
+		auto shader2 = MMEShader::Create(_T("C:/Proj/Lumino/src/Scene/Resource/Cloud.fx"));
 		auto plane = StaticMesh::CreateSquarePlane(Vector2(100, 100), Vector3::UnitY);
 		plane->SetShader(shader2);
 		plane->GetMaterials()->GetAt(0)->SetTextureParameter(Material::MaterialTextureParameter, noiseTex1);
 		plane->GetMaterials()->GetAt(0)->SetColorParameter(Material::EmissiveParameter, Color::White);
+		plane->SetVisible(false);
 
 
 
-		ByteBuffer bmp3dBuf(4 * 8 * 8 * 8);
-		Bitmap bmp3d(bmp3dBuf.GetData(), 8, 8, 8, PixelFormat::R8G8B8A8);
+		//ByteBuffer bmp3dBuf(4 * 8 * 8 * 8);
+		//Bitmap bmp3d(bmp3dBuf.GetData(), 8, 8, 8, PixelFormat::R8G8B8A8);
+		auto tex3D = Texture3D::Create(8, 8, 8, TextureFormat::R8G8B8A8);
 		for (int z = 0; z < 8; ++z)
 		{
 			for (int y= 0; y < 8; ++y)
@@ -434,22 +439,21 @@ int main()
 				for (int x = 0; x < 8; ++x)
 				{
 					int a = 255;
-					//if (z >= 5) a = 0;
-					//if (y >= 6) a = 0;
-					//if (x >= 7) a = 0;
-					bmp3d.SetPixel(x, y, z, Color32(x * 32, y * 32, z * 32, a));
+					if (z >= 5) a = 0;
+					if (y >= 6) a = 0;
+					if (x >= 7) a = 0;
+					tex3D->SetPixel32(x, y, z, Color32(x * 32, y * 32, z * 32, a));
 				}
 			}
 		}
-		auto tex3D = Texture3D::Create(8, 8, 8, TextureFormat::R8G8B8A8);
-		tex3D->GetDeviceObject()->SetSubData3D(Box32::Zero, bmp3dBuf.GetData(), bmp3dBuf.GetSize());
+		//tex3D->GetDeviceObject()->SetSubData3D(Box32::Zero, bmp3dBuf.GetData(), bmp3dBuf.GetSize());
 
-		auto shader3 = MMEShader::Create(_T("D:/Proj/Volkoff/External/Lumino/src/Scene/Resource/Tex3DTest.fx"));
+		auto shader3 = MMEShader::Create(_T("C:/Proj/Lumino/src/Scene/Resource/Tex3DTest.fx"));
 		auto mesh2 = StaticMesh::CreateBox(Vector3(1, 1, 1));
 		mesh2->SetShader(shader3);
 		mesh2->GetMaterials()->GetAt(0)->SetTextureParameter(Material::MaterialTextureParameter, tex3D);
 		mesh2->GetMaterials()->GetAt(0)->SetColorParameter(Material::EmissiveParameter, Color::White);
-	
+		//mesh2->SetCullingMode(CullingMode::None);
 
 
 		//auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
@@ -529,7 +533,7 @@ int main()
 		//auto t2 = RenderTarget::Create(t1->GetSize());
 
 
-		//auto s = Shader::Create(_T("D:/Proj/Volkoff/External/Lumino/src/Scene/Resource/SSBasic2D.fx"));
+		//auto s = Shader::Create(_T("C:/Proj/Lumino/src/Scene/Resource/SSBasic2D.fx"));
 		//auto s = Shader::Create(LN_LOCALFILE("../Media/TestShader1.fx"));
 
 
@@ -653,7 +657,7 @@ int main()
 		RefPtr<TileMap> tilemap(LN_NEW TileMap(), false);
 		RefPtr<TileSet> tileset(LN_NEW TileSet(), false);
 		tileset->SetImageSource(tex2);
-		tileset->SetTileSize(Size(32, 32));
+		tileset->SetTileSize(SizeI(32, 32));
 		tilemap->SetTileSet(tileset);
 		RefPtr<TileLayer> tileLayer(LN_NEW TileLayer(), false);
 		tileLayer->Resize(20,15);

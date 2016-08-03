@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include <Lumino/Graphics/Common.h>
-#include <Lumino/Base/Rect.h>
+#include <Lumino/Base/GeometryStructs.h>
 #include <Lumino/Math/Matrix.h>
 #include <Lumino/Graphics/Brush.h>
 
@@ -40,7 +40,7 @@ class GeometryRenderer
 {
 public:
 
-	void SetViewProjection(const Matrix& view, const Matrix& proj, const Size& viewPixelSize);
+	void SetViewProjection(const Matrix& view, const Matrix& proj, const SizeI& viewPixelSize);
 
 	void SetTransform(const Matrix& matrix);
 	void SetBrush(Brush* brush);

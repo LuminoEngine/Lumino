@@ -62,7 +62,7 @@ void GLTextureBase::SetGLSamplerState(const SamplerState& state)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-GLTexture::GLTexture(const Size& size, TextureFormat format, uint32_t mipLevels)
+GLTexture::GLTexture(const SizeI& size, TextureFormat format, uint32_t mipLevels)
 	: m_glTexture(0)
 	, m_format(format)
 	, m_size(size)
@@ -129,7 +129,7 @@ void GLTexture::SetSamplerState(const SamplerState& state)
 }
 
 //------------------------------------------------------------------------------
-void GLTexture::SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize)
+void GLTexture::SetSubData(const Point& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize)
 {
 	//LN_THROW(point.IsZero(), NotImplementedException);
 
@@ -194,7 +194,7 @@ void GLTexture::Unlock()
 //==============================================================================
 
 //------------------------------------------------------------------------------
-GLRenderTargetTexture::GLRenderTargetTexture(const Size& size, TextureFormat format, int mipLevels)
+GLRenderTargetTexture::GLRenderTargetTexture(const SizeI& size, TextureFormat format, int mipLevels)
 	: m_glTexture(0)
 	, m_format(format)
 	, m_size(size)
@@ -286,7 +286,7 @@ void GLRenderTargetTexture::Unlock()
 //==============================================================================
 
 //------------------------------------------------------------------------------
-GLDepthBuffer::GLDepthBuffer(const Size& size, TextureFormat format)
+GLDepthBuffer::GLDepthBuffer(const SizeI& size, TextureFormat format)
 	: m_glBuffer(0)
 	, m_format(format)
 	, m_size(size)

@@ -31,7 +31,7 @@ public:
 	~PrimitiveRendererCore();
 	void Initialize(GraphicsManager* manager);
 
-	void SetState(const Matrix& world, const Matrix& viewProj, const Size& viewPixelSize, bool useInternalShader, PrimitiveRendererMode mode, Driver::IShader* userShader, Driver::ITexture* texture);
+	void SetState(const Matrix& world, const Matrix& viewProj, const SizeI& viewPixelSize, bool useInternalShader, PrimitiveRendererMode mode, Driver::IShader* userShader, Driver::ITexture* texture);
 	void DrawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor);
 	void DrawSquare(const DrawSquareData& data);
 	void Blt(Driver::ITexture* source, Driver::ITexture* dest, const Matrix& transform, Driver::IShader* shader = nullptr);
@@ -117,7 +117,7 @@ public:
 
 	void SetTransform(const Matrix& matrix);
 	void SetViewProjMatrix(const Matrix& matrix);
-	void SetViewPixelSize(const Size& size);
+	void SetViewPixelSize(const SizeI& size);
 	void SetUseInternalShader(bool useInternalShader);	// TODO: いらないかも
 	void SetUserShader(Shader* shader);
 	void SetTexture(Texture* texture);
@@ -146,7 +146,7 @@ private:
 	PrimitiveRendererCore*	m_core;
 	Matrix					m_transform;
 	Matrix					m_viewProj;
-	Size					m_viewPixelSize;
+	SizeI					m_viewPixelSize;
 	Texture*				m_texture;
 	Shader*					m_userShader;
 	PrimitiveRendererMode	m_mode;

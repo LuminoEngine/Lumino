@@ -70,7 +70,7 @@ RefPtr<IVertexDeclaration> GLGraphicsDevice::CreateVertexDeclarationImplement(co
 }
 
 //------------------------------------------------------------------------------
-RefPtr<IVertexBuffer> GLGraphicsDevice::CreateVertexBufferImplement(size_t bufferSize, const void* data, DeviceResourceUsage usage)
+RefPtr<IVertexBuffer> GLGraphicsDevice::CreateVertexBufferImplement(size_t bufferSize, const void* data, ResourceUsage usage)
 {
 	RefPtr<GLVertexBuffer> obj(LN_NEW GLVertexBuffer(), false);
 	obj->Create(bufferSize, data, usage);
@@ -78,7 +78,7 @@ RefPtr<IVertexBuffer> GLGraphicsDevice::CreateVertexBufferImplement(size_t buffe
 }
 
 //------------------------------------------------------------------------------
-RefPtr<IIndexBuffer> GLGraphicsDevice::CreateIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
+RefPtr<IIndexBuffer> GLGraphicsDevice::CreateIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
 {
 	RefPtr<GLIndexBuffer> obj(LN_NEW GLIndexBuffer(), false);
     obj->Create(indexCount, initialData, format, usage);
@@ -86,7 +86,7 @@ RefPtr<IIndexBuffer> GLGraphicsDevice::CreateIndexBufferImplement(int indexCount
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ITexture> GLGraphicsDevice::CreateTextureImplement(const Size& size, uint32_t mipLevels, TextureFormat format, const void* initialData)
+RefPtr<ITexture> GLGraphicsDevice::CreateTextureImplement(const SizeI& size, uint32_t mipLevels, TextureFormat format, const void* initialData)
 {
 	RefPtr<GLTexture> obj(LN_NEW GLTexture(size, format, mipLevels), false);
 	if (initialData != nullptr) {
@@ -96,7 +96,7 @@ RefPtr<ITexture> GLGraphicsDevice::CreateTextureImplement(const Size& size, uint
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ITexture> GLGraphicsDevice::CreateTexture3DImplement(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, const void* initialData)
+RefPtr<ITexture> GLGraphicsDevice::CreateTexture3DImplement(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, ResourceUsage usage, const void* initialData)
 {
 	LN_NOTIMPLEMENTED();
 	return nullptr;
@@ -105,14 +105,14 @@ RefPtr<ITexture> GLGraphicsDevice::CreateTexture3DImplement(int width, int heigh
 //------------------------------------------------------------------------------
 RefPtr<ITexture> GLGraphicsDevice::CreateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format)
 {
-	RefPtr<GLRenderTargetTexture> obj(LN_NEW GLRenderTargetTexture(Size(width, height), format, mipLevels), false);
+	RefPtr<GLRenderTargetTexture> obj(LN_NEW GLRenderTargetTexture(SizeI(width, height), format, mipLevels), false);
     return RefPtr<ITexture>::StaticCast(obj);
 }
 
 //------------------------------------------------------------------------------
 RefPtr<ITexture> GLGraphicsDevice::CreateDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format)
 {
-	RefPtr<GLDepthBuffer> obj(LN_NEW GLDepthBuffer(Size(width, height), format), false);
+	RefPtr<GLDepthBuffer> obj(LN_NEW GLDepthBuffer(SizeI(width, height), format), false);
     return RefPtr<ITexture>::StaticCast(obj);
 }
 

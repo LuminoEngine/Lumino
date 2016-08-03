@@ -84,7 +84,7 @@ void GlyphRun::SetTextAlignment(TextAlignment align)
 //}
 
 //------------------------------------------------------------------------------
-const Size& GlyphRun::GetRenderSize()
+const SizeI& GlyphRun::GetRenderSize()
 {
 	// RenderSize だけ更新する
 	if (m_modifiedRenderSize)
@@ -103,7 +103,7 @@ void GlyphRun::UpdateTextLayoutItem()
 {
 	if (m_modifiedItems)
 	{
-		m_glyphData.AreaSize = Size::Zero;
+		m_glyphData.AreaSize = SizeI::Zero;
 		m_glyphData.Items.Clear();
 		if (m_layoutEngine->GetFont() != nullptr && m_utf32Text.GetLength() > 0)
 		{

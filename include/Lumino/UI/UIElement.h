@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include "../Base/Thickness.h"
+#include "../Base/GeometryStructs.h"
 #include "Common.h"
 #include "Detail.h"
 #include "UITypeInfo.h"

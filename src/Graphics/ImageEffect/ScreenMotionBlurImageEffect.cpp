@@ -87,7 +87,7 @@ void ScreenMotionBlurImageEffect::OnRender(RenderingContext* context, RenderTarg
 		return;
 	}
 
-	const Size& sourceSize = source->GetSize();
+	const SizeI& sourceSize = source->GetSize();
 
 	// m_accumTexture と source のサイズが異なる場合は作り直す
 	if (m_accumTexture == nullptr || m_accumTexture->GetSize() != sourceSize)

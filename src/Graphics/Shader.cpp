@@ -156,7 +156,7 @@ void Shader::TryCommitChanges()
 	if (m_viewportPixelSize != nullptr)
 	{
 		Texture* tex = GetManager()->GetRenderer()->GetRenderTarget(0);
-		const Size& size = tex->GetRealSize();
+		const SizeI& size = tex->GetRealSize();
 		float w = (float)size.width;
 		float h = (float)size.height;
 		const Vector4& vec = m_viewportPixelSize->GetVector();
@@ -169,6 +169,7 @@ void Shader::TryCommitChanges()
 	serializer->BeginSerialize();
 	for (ShaderVariable* v : GetVariables())
 	{
+		v->OnCommitChanges();
 		serializer->WriteValue(v->GetDeviceObject(), v->m_value);
 	}
 
@@ -656,6 +657,11 @@ const Matrix* ShaderVariable::GetMatrixArray() const
 //------------------------------------------------------------------------------
 void ShaderVariable::SetTexture(Texture* texture)
 {
+	//if (m_value.GetType() != ShaderVariableType_ManagedTexture || texture != m_value.GetManagedTexture())
+	//{
+	//	SetModified();
+	//	m_value.SetManagedTexture();
+	//}
 	bool modified = false;
 	if (m_value.GetType() == ShaderVariableType_DeviceTexture)
 	{
@@ -751,6 +757,19 @@ void ShaderVariable::SetModified()
 }
 
 //------------------------------------------------------------------------------
+void ShaderVariable::OnCommitChanges()
+{
+	if (m_modified)
+	{
+		m_modified = false;
+	}
+
+	if (m_textureValue != nullptr)
+	{
+		m_textureValue->ApplyModifies();
+	}
+}
+
 //void ShaderVariable::TryCommitChanges()
 //{
 //	if (m_modified)

@@ -29,7 +29,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 VertexBuffer::VertexBuffer()
 	: m_deviceObj(nullptr)
 	, m_bufferSize(0)
-	, m_usage(DeviceResourceUsage_Static)
+	, m_usage(ResourceUsage::Static)
 	, m_pool(GraphicsResourcePool::Managed)	// TODO
 	, m_initialUpdate(true)
 {
@@ -42,7 +42,7 @@ VertexBuffer::~VertexBuffer()
 }
 
 //------------------------------------------------------------------------------
-void VertexBuffer::Initialize(GraphicsManager* manager, size_t bufferSize, const void* data, DeviceResourceUsage usage)
+void VertexBuffer::Initialize(GraphicsManager* manager, size_t bufferSize, const void* data, ResourceUsage usage)
 {
 	GraphicsResourceObject::Initialize(manager);
 

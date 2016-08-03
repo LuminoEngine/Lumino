@@ -1,7 +1,6 @@
 ﻿
 #pragma once
 #include <Lumino/Base/RefObject.h>
-#include <Lumino/Base/Size.h>
 #include <Lumino/Base/String.h>
 #include <Lumino/Base/Array.h>
 #include <Lumino/Threading/Thread.h>
@@ -59,10 +58,10 @@ public:
 public:
 
 	/** メインウィンドウのクライアント領域の幅と高さです。(初期値:640x480) */
-	Size mainWindowSize = Size(640, 480);
+	SizeI mainWindowSize = SizeI(640, 480);
 
 	/** メインウィンドウに対して作成されるバックバッファのサイズです。(初期値:640x480) */
-	Size mainBackBufferSize = Size(640, 480);
+	SizeI mainBackBufferSize = SizeI(640, 480);
 
 	/** メインウィンドウのタイトル文字列です。*/
 	String mainWindowTitle = _T("");

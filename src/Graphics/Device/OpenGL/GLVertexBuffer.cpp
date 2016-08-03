@@ -18,7 +18,7 @@ GLVertexBuffer::GLVertexBuffer()
 	, m_byteCount(0)
 	, m_data(NULL)
 	, m_usage(0)
-	, m_format(DeviceResourceUsage_Static)
+	, m_format(ResourceUsage::Static)
 {
 }
 
@@ -30,7 +30,7 @@ GLVertexBuffer::~GLVertexBuffer()
 }
 
 //------------------------------------------------------------------------------
-void GLVertexBuffer::Create(size_t bufferSize, const void* initialData, DeviceResourceUsage usage)
+void GLVertexBuffer::Create(size_t bufferSize, const void* initialData, ResourceUsage usage)
 {
 	m_format = usage;
 	m_byteCount = bufferSize;
@@ -42,7 +42,7 @@ void GLVertexBuffer::Create(size_t bufferSize, const void* initialData, DeviceRe
 		memset(m_data, 0, m_byteCount);
 	}
 
-	if (m_format == DeviceResourceUsage_Dynamic) {
+	if (m_format == ResourceUsage::Dynamic) {
 		m_usage = GL_DYNAMIC_DRAW;
 	}
 	else {

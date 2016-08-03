@@ -35,7 +35,7 @@ RenderTargetTextureCache::~RenderTargetTextureCache()
 }
 
 //------------------------------------------------------------------------------
-RefPtr<RenderTarget> RenderTargetTextureCache::RequestRenderTarget(const Size& size, TextureFormat format, int mipLevel)
+RefPtr<RenderTarget> RenderTargetTextureCache::RequestRenderTarget(const SizeI& size, TextureFormat format, int mipLevel)
 {
 	LN_NOTIMPLEMENTED();
 

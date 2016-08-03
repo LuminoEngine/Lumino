@@ -5,13 +5,13 @@
 #include <Lumino/Base/Typedef.h>
 #include <Lumino/Base/Array.h>
 #include <Lumino/Base/RefObject.h>
-#include <Lumino/Base/Rect.h>
 #include <Lumino/Base/String.h>
 #include <Lumino/Base/EnumExtension.h>
 #include <Lumino/Reflection/ReflectionObject.h>
 #include <Lumino/Reflection/Property.h>
 #include <LuminoMath.h>
 #include "../Common.h"
+#include "../Base/GeometryStructs.h"
 
 #define LN_NAMESPACE_GRAPHICS_BEGIN		//namespace Graphics {
 #define LN_NAMESPACE_GRAPHICS_END		//}
@@ -149,11 +149,11 @@ struct VertexElement
 	uint8_t				UsageIndex;     ///< (OpenGL で許可しているのは TEXCOORD0～8、PSIZE15 のみ。それ以外は 0)
 };
 
-/// デバイスリソースの使用方法
-enum DeviceResourceUsage
+/**< リソースの使用方法 */
+enum class ResourceUsage
 {
-	DeviceResourceUsage_Static = 0,		///< 頻繁に更新を行わないリソース
-	DeviceResourceUsage_Dynamic,		///< 頻繁に更新を行うリソース
+	Static = 0,			/**< 頻繁に更新を行わないリソース */
+	Dynamic,			/**< 頻繁に更新を行うリソース */
 };
 
 /// インデックスバッファのフォーマット

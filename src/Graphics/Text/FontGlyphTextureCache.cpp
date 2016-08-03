@@ -52,10 +52,10 @@ void FontGlyphTextureCache::Initialize(GraphicsManager* manager, Font* font)
 	int w = m_glyphWidthCount * m_font->GetLineSpacing();	//TODO ビットマップが収まるサイズは要チェック
 
 	// キャッシュ用テクスチャ作成
-	//m_glyphsFillTexture = m_manager->GetGraphicsDevice()->CreateTexture(Size(w, w), 1, TextureFormat::R8G8B8A8, nullptr);
-	//m_glyphsFillTexture = Texture2D::Create(Size(w, w), TextureFormat_R8G8B8A8, 1);	// TODO: GraphicsManager?
+	//m_glyphsFillTexture = m_manager->GetGraphicsDevice()->CreateTexture(SizeI(w, w), 1, TextureFormat::R8G8B8A8, nullptr);
+	//m_glyphsFillTexture = Texture2D::Create(SizeI(w, w), TextureFormat_R8G8B8A8, 1);	// TODO: GraphicsManager?
 	m_fillGlyphsTexture = LN_NEW Texture2D();
-	m_fillGlyphsTexture->Initialize(m_manager, Size(w, w), TextureFormat::R8G8B8A8, 1);
+	m_fillGlyphsTexture->Initialize(m_manager, SizeI(w, w), TextureFormat::R8G8B8A8, 1);
 
 	// 検索に使う情報をリセット
 	m_curPrimUsedFlags.resize(m_maxCacheGlyphs);
@@ -194,7 +194,7 @@ void FontGlyphTextureCache::OnFlush()
 }
 
 //------------------------------------------------------------------------------
-const Size& FontGlyphTextureCache::GetGlyphsTextureSize() const
+const SizeI& FontGlyphTextureCache::GetGlyphsTextureSize() const
 {
 	return m_fillGlyphsTexture->GetRealSize();
 }
@@ -227,9 +227,9 @@ FontGlyphTextureCache::FontGlyphTextureCache(GraphicsManager* manager, Font* fon
 	int w = m_glyphWidthCount * m_font->GetLineSpacing();	//TODO ビットマップが収まるサイズは要チェック
 
 	// キャッシュ用テクスチャ作成
-	m_glyphCacheTexture = Texture2D::Create(Size(w, w), TextureFormat_R8G8B8A8, 1);	// TODO: GraphicsManager?
+	m_glyphCacheTexture = Texture2D::Create(SizeI(w, w), TextureFormat_R8G8B8A8, 1);	// TODO: GraphicsManager?
 	//Driver::IGraphicsDevice* device = m_spriteRenderer->GetManager()->GetGraphicsDevice()->GetDeviceObject();
-	//m_glyphCacheTexture.Attach(device->CreateTexture(Size(w, w), 1, TextureFormat_R8G8B8A8));
+	//m_glyphCacheTexture.Attach(device->CreateTexture(SizeI(w, w), 1, TextureFormat_R8G8B8A8));
 
 
 	//Device::IGraphicsDevice::ScopedLockContext lock(m_spriteRenderer->GetManager()->GetGraphicsDevice()->GetDeviceObject());
@@ -259,7 +259,7 @@ void FontGlyphTextureCache::LookupGlyph(UTF32 ch, int strokeThickness, Texture**
 		srcRect->Set(
 			((info.Index % m_glyphWidthCount) * m_glyphMaxBitmapSize.Width),
 			((info.Index / m_glyphWidthCount) * m_glyphMaxBitmapSize.Height),
-			info.Size.Width, info.Size.Height);
+			info.SizeI.Width, info.SizeI.Height);
 	}
 	else
 	{
@@ -309,13 +309,13 @@ void FontGlyphTextureCache::LookupGlyph(UTF32 ch, int strokeThickness, Texture**
 		// キャッシュマップに登録
 		CachedGlyphInfo info;
 		info.Index = cacheIndex;
-		info.Size = glyphBitmap->GlyphBitmap->GetSize();
+		info.SizeI = glyphBitmap->GlyphBitmap->GetSize();
 		m_cachedGlyphInfoMap[ch] = info;
 
 		srcRect->Set(
 			((info.Index % m_glyphWidthCount) * m_glyphMaxBitmapSize.Width),
 			((info.Index / m_glyphWidthCount) * m_glyphMaxBitmapSize.Height),
-			info.Size.Width, info.Size.Height);
+			info.SizeI.Width, info.SizeI.Height);
 	}
 }
 
@@ -356,7 +356,7 @@ namespace detail
 	//	struct CachedGlyphInfo
 	//	{
 	//		int		Index;
-	//		Size	Size;
+	//		SizeI	SizeI;
 	//	};
 
 	//	typedef std::map<UTF32, CachedGlyphInfo> CachedGlyphInfoMap;
@@ -451,7 +451,7 @@ void TextRendererImplemented::DrawChar(UTF32 ch, const Rect& area)
 		// キャッシュマップに登録
 		CachedGlyphInfo e;
 		e.Index = cacheIndex;
-		e.Size = glyhp->GlyphBitmap->GetSize();
+		e.SizeI = glyhp->GlyphBitmap->GetSize();
 		m_cachedGlyphInfoMap[ch] = e;
 
 		// 描画
@@ -471,13 +471,13 @@ void TextRendererImplemented::DrawSprite(const CachedGlyphInfo& info, int x, int
 	RectF srcRect(
 		(float)((info.Index % m_glyphWidthCount) * m_glyphMaxBitmapSize.Width),
 		(float)((info.Index / m_glyphWidthCount) * m_glyphMaxBitmapSize.Height),
-		(float)info.Size.Width, (float)info.Size.Height);
+		(float)info.SizeI.Width, (float)info.SizeI.Height);
 
 	const ColorF c[4] = { ColorF::White, ColorF::White, ColorF::White, ColorF::White };
 	m_spriteRenderer->DrawRequest2D(
 		Vector3(x, y, 0),
 		Vector3::Zero,
-		Vector2((float)info.Size.Width, (float)info.Size.Height),
+		Vector2((float)info.SizeI.Width, (float)info.SizeI.Height),
 		m_glyphCacheTexture,
 		srcRect,
 		c);
@@ -496,7 +496,7 @@ void TextRendererImplemented::Reset()
 
 	// キャッシュ用テクスチャ作成
 	Device::IGraphicsDevice* device = m_spriteRenderer->GetManager()->GetGraphicsDevice();
-	m_glyphCacheTexture.Attach(device->CreateTexture(Size(w, w), 1, TextureFormat_R8G8B8A8));
+	m_glyphCacheTexture.Attach(device->CreateTexture(SizeI(w, w), 1, TextureFormat_R8G8B8A8));
 
 	// 空きキャッシュインデックス作成
 	for (int i = 0; i < maxCharacters; i++) {
@@ -552,7 +552,7 @@ void TextRenderer::SetTransform(const Matrix& matrix)
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::SetViewProjection(const Matrix& view, const Matrix& proj, const Size& viewPixelSize)
+void TextRenderer::SetViewProjection(const Matrix& view, const Matrix& proj, const SizeI& viewPixelSize)
 {
 	m_spriteRenderer->SetViewProjMatrix(view, proj);
 	m_spriteRenderer->SetViewPixelSize(viewPixelSize);
@@ -665,7 +665,7 @@ void TextRenderer::DrawChar(UTF32 ch)
 		// キャッシュマップに登録
 		CachedGlyphInfo e;
 		e.Index = cacheIndex;
-		e.Size = glyphBitmap->GlyphBitmap->GetSize();
+		e.SizeI = glyphBitmap->GlyphBitmap->GetSize();
 		m_cachedGlyphInfoMap[ch] = e;
 
 		// 描画
@@ -679,13 +679,13 @@ void TextRenderer::DrawSprite(const CachedGlyphInfo& info, const Point& point)
 	RectF srcRect(
 		(float)((info.Index % m_glyphWidthCount) * m_glyphMaxBitmapSize.Width),
 		(float)((info.Index / m_glyphWidthCount) * m_glyphMaxBitmapSize.Height),
-		(float)info.Size.Width, (float)info.Size.Height);
+		(float)info.SizeI.Width, (float)info.SizeI.Height);
 
 	const ColorF c[4] = { ColorF::White, ColorF::White, ColorF::White, ColorF::White };
 	m_spriteRenderer->DrawRequest2D(
 		Vector3(point.X, point.Y, 0),
 		Vector3::Zero,
-		Vector2(info.Size.Width, info.Size.Height),
+		Vector2(info.SizeI.Width, info.SizeI.Height),
 		m_glyphCacheTexture,
 		srcRect,
 		c);
@@ -705,9 +705,9 @@ void TextRenderer::CheckResetCache()
 		int w = m_glyphWidthCount * m_font->GetLineHeight();	//TODO ビットマップが収まるサイズは要チェック
 
 		// キャッシュ用テクスチャ作成
-		m_glyphCacheTexture.Attach(Texture::Create(Size(w, w), TextureFormat_R8G8B8A8, 1, m_spriteRenderer->GetManager()));
+		m_glyphCacheTexture.Attach(Texture::Create(SizeI(w, w), TextureFormat_R8G8B8A8, 1, m_spriteRenderer->GetManager()));
 		//Device::IGraphicsDevice* device = m_spriteRenderer->GetManager()->GetGraphicsDevice()->GetDeviceObject();
-		//m_glyphCacheTexture.Attach(device->CreateTexture(Size(w, w), 1, TextureFormat_R8G8B8A8));
+		//m_glyphCacheTexture.Attach(device->CreateTexture(SizeI(w, w), 1, TextureFormat_R8G8B8A8));
 
 
 		//Device::IGraphicsDevice::ScopedLockContext lock(m_spriteRenderer->GetManager()->GetGraphicsDevice()->GetDeviceObject());

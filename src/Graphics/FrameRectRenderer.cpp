@@ -127,7 +127,7 @@ void FrameRectRendererCore::Draw(const RectF& rect)
 
 		if (m_indexCache.GetCount() == 0) { return; }
 
-		const Size& viewPixelSize = m_renderer->GetRenderTarget(0)->GetSize();
+		const SizeI& viewPixelSize = m_renderer->GetRenderTarget(0)->GetSize();
 		m_shader.varViewportSize->SetVector(Vector4((float)viewPixelSize.width, (float)viewPixelSize.height, 0, 0));
 
 		// •`‰æ‚·‚é
@@ -156,8 +156,8 @@ void FrameRectRendererCore::RequestBuffers(int faceCount)
 
 	auto* device = m_manager->GetGraphicsDevice();
 	m_vertexDeclaration.Attach(device->CreateVertexDeclaration(Vertex::Elements(), Vertex::ElementCount), false);
-	m_vertexBuffer = device->CreateVertexBuffer(sizeof(Vertex) * faceCount * 4, nullptr, DeviceResourceUsage_Dynamic);
-	m_indexBuffer = device->CreateIndexBuffer(faceCount * 6, nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic);
+	m_vertexBuffer = device->CreateVertexBuffer(sizeof(Vertex) * faceCount * 4, nullptr, ResourceUsage::Dynamic);
+	m_indexBuffer = device->CreateIndexBuffer(faceCount * 6, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 }
 
 //------------------------------------------------------------------------------

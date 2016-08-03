@@ -13,7 +13,7 @@ struct FontGlyphLocation
 	Point	BitmapTopLeftPosition;			///< ビットマップを転送するべき座標
 	Point	OutlineBitmapTopLeftPosition;	///< アウトライン用ビットマップを転送するべき座標
 	Point	OuterTopLeftPosition;			///< アウトライン有効時は OutlineBitmapTopLeftPosition、無効時は BitmapTopLeftPosition と同じ値になる
-	Size	BitmapSize;						///< ビットマップグリフのピクセルサイズ
+	SizeI	BitmapSize;						///< ビットマップグリフのピクセルサイズ
 };
 
 struct FontGlyphBitmap
@@ -127,7 +127,7 @@ public:
 	/** 次の行のベースラインまでの長さを返します。*/
 	virtual int GetLineSpacing() = 0;
 
-	virtual Size GetGlyphMaxSize() { return Size(GetLineSpacing(), GetLineSpacing()); }
+	virtual SizeI GetGlyphMaxSize() { return SizeI(GetLineSpacing(), GetLineSpacing()); }
 
 	/// 文字列を描画したときのサイズ (ピクセル単位) の取得 (length = -1 で \0 まで)
 	//virtual Size GetTextSize(const char* text, int length) = 0;
@@ -135,7 +135,7 @@ public:
 	//virtual Size GetTextSize(const UTF32* text, int length) = 0;
 
 	/** (高さは次の行のベースラインまでの長さ) */
-	Size GetTextSize(const StringRef& text);
+	SizeI GetTextSize(const StringRef& text);
 
 	virtual FontGlyphLocation* AdvanceKerning(UTF32 utf32code, int strokeSize, FontGlyphLocation* prevData) = 0;
 	virtual FontGlyphBitmap* LookupGlyphBitmap(UTF32 utf32code, int strokeSize) = 0;

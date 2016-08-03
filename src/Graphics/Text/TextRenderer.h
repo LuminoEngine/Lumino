@@ -31,7 +31,7 @@ public:
 	~TextRendererCore();
 	void Initialize(GraphicsManager* manager);
 
-	void SetState(const Matrix& world, const Matrix& viewProj, const Size& viewPixelSize);
+	void SetState(const Matrix& world, const Matrix& viewProj, const SizeI& viewPixelSize);
 	void DrawGlyphRun(const PointF& position, const GlyphRunData* dataList, int dataCount, Internal::FontGlyphTextureCache* cache, RenderingCommandList* cmdList/*Driver::ITexture* glyphsTexture, Driver::ITexture* strokesTexture*//*, const ColorF& foreColor, const ColorF& strokeColor*/);
 	void Flush(Internal::FontGlyphTextureCache* cache);
 
@@ -103,7 +103,7 @@ public:
 
 	void SetTransform(const Matrix& matrix);
 	void SetViewProjMatrix(const Matrix& matrix);
-	void SetViewPixelSize(const Size& size);
+	void SetViewPixelSize(const SizeI& size);
 	void SetFont(Font* font);
 
 	void DrawGlyphRun(const Point& position, GlyphRun* glyphRun);
@@ -129,7 +129,7 @@ private:
 
 	Matrix				m_transform;
 	Matrix				m_viewProj;
-	Size				m_viewPixelSize;
+	SizeI				m_viewPixelSize;
 	Font*				m_font;
 	bool				m_stateModified;
 	bool				m_flushRequested;

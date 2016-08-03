@@ -1,9 +1,9 @@
 ﻿
 #pragma once
 #include <Lumino/Base/RefObject.h>
-#include <Lumino/Base/Size.h>
 #include <Lumino/Base/SortedArray.h>
 #include <Lumino/Reflection/ReflectionObject.h>
+#include "../Base/GeometryStructs.h"
 #include "Common.h"
 #include "EventListener.h"
 
@@ -30,7 +30,7 @@ public:
 	/**
 		@brief		クライアント領域のサイズを取得します。
 	*/
-	Size GetSize() const { return m_clientSize; }
+	SizeI GetSize() const { return m_clientSize; }
 
 	virtual void SetVisible(bool visible) = 0;
 
@@ -73,7 +73,7 @@ public:
 protected:
 	PlatformWindow(WindowManagerBase* windowManager);
 	virtual ~PlatformWindow();
-	void Initialize(const Size& clientSize);
+	void Initialize(const SizeI& clientSize);
     
 LN_INTERNAL_ACCESS:
 	bool SendPlatformEvent(const PlatformEventArgs& e);
@@ -95,7 +95,7 @@ LN_INTERNAL_ACCESS:
 	detail::MouseCursorVisibility* m_mouseCursorVisibility;
 
 private:
-	Size	m_clientSize;
+	SizeI	m_clientSize;
 	bool	m_isActive;
 };
 

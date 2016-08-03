@@ -69,7 +69,7 @@ public:
 		GraphicsAPI					graphicsAPI = GraphicsAPI::DirectX9;				// レンダリングに使用する API の種類
 		GraphicsRenderingType		renderingType = GraphicsRenderingType::Threaded;
 		PlatformWindow*				mainWindow = nullptr;								// アプリケーションのメインウィンドウ
-		Size						backBufferSize = Size(640, 480);					// バックバッファのサイズ
+		SizeI						backBufferSize = SizeI(640, 480);					// バックバッファのサイズ
 		detail::AnimationManager*	animationManager = nullptr;
 		FileManager*				fileManager = nullptr;								// FileManager
 		bool						platformTextureLoading = false;						// 画像リソースの読み込みにプラットフォーム固有の機能を使用するか

@@ -115,7 +115,7 @@ IVertexDeclaration* GraphicsDeviceBase::CreateVertexDeclaration(const VertexElem
 }
 
 //------------------------------------------------------------------------------
-IVertexBuffer* GraphicsDeviceBase::CreateVertexBuffer(size_t bufferSize, const void* data, DeviceResourceUsage usage)
+IVertexBuffer* GraphicsDeviceBase::CreateVertexBuffer(size_t bufferSize, const void* data, ResourceUsage usage)
 {
 	ScopedAccessContext lock(this);
 	auto obj = CreateVertexBufferImplement(bufferSize, data, usage);
@@ -124,7 +124,7 @@ IVertexBuffer* GraphicsDeviceBase::CreateVertexBuffer(size_t bufferSize, const v
 }
 
 //------------------------------------------------------------------------------
-IIndexBuffer* GraphicsDeviceBase::CreateIndexBuffer(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
+IIndexBuffer* GraphicsDeviceBase::CreateIndexBuffer(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
 {
 	ScopedAccessContext lock(this);
 	auto obj = CreateIndexBufferImplement(indexCount, initialData, format, usage);
@@ -133,7 +133,7 @@ IIndexBuffer* GraphicsDeviceBase::CreateIndexBuffer(int indexCount, const void* 
 }
 
 //------------------------------------------------------------------------------
-ITexture* GraphicsDeviceBase::CreateTexture(const Size& size, uint32_t mipLevels, TextureFormat format, const void* initialData)
+ITexture* GraphicsDeviceBase::CreateTexture(const SizeI& size, uint32_t mipLevels, TextureFormat format, const void* initialData)
 {
 	ScopedAccessContext lock(this);
 	auto obj = CreateTextureImplement(size, mipLevels, format, initialData);
@@ -142,10 +142,10 @@ ITexture* GraphicsDeviceBase::CreateTexture(const Size& size, uint32_t mipLevels
 }
 
 //------------------------------------------------------------------------------
-ITexture* GraphicsDeviceBase::CreateTexture3D(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, const void* initialData)
+ITexture* GraphicsDeviceBase::CreateTexture3D(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, ResourceUsage usage, const void* initialData)
 {
 	ScopedAccessContext lock(this);
-	auto obj = CreateTexture3DImplement(width, height, depth, mipLevels, format, initialData);
+	auto obj = CreateTexture3DImplement(width, height, depth, mipLevels, format, usage, initialData);
 	AddDeviceResource(obj);
 	return obj.DetachMove();
 }

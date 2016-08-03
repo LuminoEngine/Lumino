@@ -24,8 +24,8 @@ public:
 	void SetImageSource(Texture* texture);
 	Texture* GetImageSource() const;
 
-	void SetTileSize(const Size& tileSize) { m_tileSize = tileSize; }
-	const Size& GetTileSize() const { return m_tileSize; }
+	void SetTileSize(const SizeI& tileSize) { m_tileSize = tileSize; }
+	const SizeI& GetTileSize() const { return m_tileSize; }
 
 	
 	
@@ -43,7 +43,7 @@ private:
 	};
 	
 	Texture*	m_imageSource;
-	Size		m_tileSize;
+	SizeI		m_tileSize;
 	int			m_tileCountH;
 	//PathName	m_imageFilePath;
 };

@@ -57,7 +57,7 @@ void TextLayoutEngine::LayoutText(const UTF32* text, int length, LayoutTextOptio
 //------------------------------------------------------------------------------
 void TextLayoutEngine::LayoutTextHorizontal(const UTF32* text, int length)
 {
-	m_result->AreaSize = Size::Zero;
+	m_result->AreaSize = SizeI::Zero;
 
 	if (m_layoutTextOptions == LayoutTextOptions::All)
 	{
@@ -65,7 +65,7 @@ void TextLayoutEngine::LayoutTextHorizontal(const UTF32* text, int length)
 	}
 
 	Rect rc = m_drawingArea;
-	Size lineSize;
+	SizeI lineSize;
 	int begin = 0;	// 1行の開始位置
 	int i = 0;
 	for (; i < length; ++i)
@@ -121,7 +121,7 @@ void TextLayoutEngine::LayoutTextHorizontal(const UTF32* text, int length)
 //------------------------------------------------------------------------------
 // lineArea : 行を描画できる領域。Y は左上の Y 座標。Bottom は描画領域の下端。
 //------------------------------------------------------------------------------
-void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const Rect& lineArea, Size* outLineSize)
+void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const Rect& lineArea, SizeI* outLineSize)
 {
 	outLineSize->Set(0, 0);
 

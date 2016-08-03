@@ -25,7 +25,7 @@ public:
 	void SetViewProjMatrix(const Matrix& view, const Matrix& proj);
 
 	/// ビューサイズの設定
-	void SetViewPixelSize(const Size& size);
+	void SetViewPixelSize(const SizeI& size);
 
 	/// レンダリングスレートの設定
 	void SetRenderState(const RenderState& state);
@@ -191,9 +191,9 @@ public:
 	struct SetViewPixelSizeCommand : public RenderingCommand
 	{
 		SpriteRendererImpl*	m_renderer;
-		Size	m_size;
+		SizeI	m_size;
 
-		void Create(SpriteRendererImpl* renderer, const Size& size)
+		void Create(SpriteRendererImpl* renderer, const SizeI& size)
 		{
 			m_renderer = renderer;
 			m_size = size;

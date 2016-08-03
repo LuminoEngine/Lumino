@@ -24,13 +24,24 @@ Bitmap::Bitmap()
 }
 
 //------------------------------------------------------------------------------
-Bitmap::Bitmap(const Size& size, PixelFormat format, bool upFlow)
+Bitmap::Bitmap(const SizeI& size, PixelFormat format, bool upFlow)
 {
 	Init();
 	m_size = size;
 	m_depth = 1;
 	m_format = format;
-	m_bitmapData = ByteBuffer(GetPixelFormatByteCount(format, size));
+	m_bitmapData = ByteBuffer(GetPixelFormatByteCount(m_format, m_size, m_depth));
+	m_upFlow = upFlow;
+}
+
+//------------------------------------------------------------------------------
+Bitmap::Bitmap(int width, int height, int depth, PixelFormat format, bool upFlow)
+{
+	Init();
+	m_size.Set(width, height);
+	m_depth = depth;
+	m_format = format;
+	m_bitmapData = ByteBuffer(GetPixelFormatByteCount(m_format, m_size, m_depth));
 	m_upFlow = upFlow;
 }
 
@@ -68,7 +79,7 @@ Bitmap::Bitmap(const TCHAR* filePath)
 }
 
 //------------------------------------------------------------------------------
-Bitmap::Bitmap(ByteBuffer buffer, const Size& size, PixelFormat format)
+Bitmap::Bitmap(ByteBuffer buffer, const SizeI& size, PixelFormat format)
 {
 	Init();
 	m_size = size;
@@ -76,7 +87,7 @@ Bitmap::Bitmap(ByteBuffer buffer, const Size& size, PixelFormat format)
 	m_format = format;
 	m_bitmapData = buffer;
 }
-Bitmap::Bitmap(const ByteBuffer& buffer, const Size& size, PixelFormat format, bool upFlow)
+Bitmap::Bitmap(const ByteBuffer& buffer, const SizeI& size, PixelFormat format, bool upFlow)
 {
 	Init();
 	m_size = size;
@@ -87,13 +98,13 @@ Bitmap::Bitmap(const ByteBuffer& buffer, const Size& size, PixelFormat format, b
 }
 
 //------------------------------------------------------------------------------
-Bitmap::Bitmap(void* buffer, const Size& size, PixelFormat format)
+Bitmap::Bitmap(void* buffer, const SizeI& size, PixelFormat format)
 {
 	Init();
 	m_size = size;
 	m_depth = 1;
 	m_format = format;
-	m_bitmapData.Attach(buffer, GetPixelFormatByteCount(m_format, m_size));
+	m_bitmapData.Attach(buffer, GetPixelFormatByteCount(m_format, m_size, m_depth));
 }
 
 //------------------------------------------------------------------------------
@@ -103,7 +114,7 @@ Bitmap::Bitmap(void* buffer, int width, int height, int depth, PixelFormat forma
 	m_size.Set(width, height);
 	m_depth = depth;
 	m_format = format;
-	m_bitmapData.Attach(buffer, GetPixelFormatByteCount(m_format, m_size));
+	m_bitmapData.Attach(buffer, GetPixelFormatByteCount(m_format, m_size, m_depth));
 }
 
 //------------------------------------------------------------------------------
@@ -353,7 +364,7 @@ size_t Bitmap::GetSerializeSize(const Rect& rect) const
 	return
 		GetPropertySerializeSize() +
 		sizeof(size_t) +
-		GetPixelFormatByteCount(m_format, clipRect.GetSize());
+		GetPixelFormatByteCount(m_format, clipRect.GetSize(), m_depth);
 }
 
 //------------------------------------------------------------------------------
@@ -361,6 +372,7 @@ size_t Bitmap::GetPropertySerializeSize() const
 {
 	return
 		sizeof(m_size) +
+		sizeof(m_depth) +
 		sizeof(m_pitch) +
 		sizeof(m_format) +
 		sizeof(m_upFlow);
@@ -377,7 +389,7 @@ void Bitmap::Serialize(void* buffer)
 	//memcpy(b, m_bitmapData.GetConstData(), m_bitmapData.GetSize());
 	//b += m_bitmapData.GetSize();
 
-	//*((Size*)b) = m_size;
+	//*((SizeI*)b) = m_size;
 	//b += sizeof(m_size);
 
 	//*((int*)b) = m_pitch;
@@ -399,8 +411,11 @@ void Bitmap::Serialize(void* buffer, const Rect& rect)
 	
 	byte_t* b = (byte_t*)buffer;
 
-	*((Size*)b) = m_size;
+	*((SizeI*)b) = m_size;
 	b += sizeof(m_size);
+
+	*((int*)b) = m_depth;
+	b += sizeof(m_depth);
 
 	*((int*)b) = m_pitch;
 	b += sizeof(m_pitch);
@@ -411,7 +426,7 @@ void Bitmap::Serialize(void* buffer, const Rect& rect)
 	*((bool*)b) = m_upFlow;
 	b += sizeof(m_upFlow);
 	
-	*((size_t*)b) = GetPixelFormatByteCount(m_format, clipRect.GetSize());
+	*((size_t*)b) = GetPixelFormatByteCount(m_format, clipRect.GetSize(), m_depth);
 	b += sizeof(size_t);
 	
 	size_t pixelSize = GetPixelFormatByteCount(m_format);
@@ -430,8 +445,11 @@ void Bitmap::SerializeProperty(void* buffer)
 {
 	byte_t* b = (byte_t*)buffer;
 
-	*((Size*)b) = m_size;
+	*((SizeI*)b) = m_size;
 	b += sizeof(m_size);
+
+	*((int*)b) = m_depth;
+	b += sizeof(m_depth);
 
 	*((int*)b) = m_pitch;
 	b += sizeof(m_pitch);
@@ -448,8 +466,11 @@ void Bitmap::Deserialize(void* buffer, bool refMode)
 {
 	byte_t* b = (byte_t*)buffer;
 
-	m_size = *((Size*)b);
+	m_size = *((SizeI*)b);
 	b += sizeof(m_size);
+
+	*((int*)b) = m_depth;
+	b += sizeof(m_depth);
 
 	m_pitch = *((int*)b);
 	b += sizeof(m_pitch);
@@ -480,7 +501,7 @@ void Bitmap::DeserializePropertyAndRawData(const void* propData, void* rawData, 
 {
 	const byte_t* b = (const byte_t*)propData;
 
-	m_size = *((Size*)b);
+	m_size = *((SizeI*)b);
 	b += sizeof(m_size);
 
 	m_pitch = *((int*)b);
@@ -521,10 +542,10 @@ int Bitmap::GetPixelFormatByteCount(PixelFormat format)
 }
 
 //------------------------------------------------------------------------------
-int Bitmap::GetPixelFormatByteCount(PixelFormat format, const Size& size)
+int Bitmap::GetPixelFormatByteCount(PixelFormat format, const SizeI& size, int depth)
 {
 	int c = GetPixelFormatByteCount(format);
-	return c * size.width * size.height;
+	return c * size.width * size.height * depth;
 }
 
 //------------------------------------------------------------------------------

@@ -840,8 +840,8 @@ DrawingContextImpl::DrawingContextImpl(GraphicsManager* manager)
 	const int DefaultFaceCount = 1024;
 
 	m_vertexDeclaration.Attach(device->CreateVertexDeclaration(DrawingBasicVertex::Elements(), DrawingBasicVertex::ElementCount));
-	m_vertexBuffer = device->CreateVertexBuffer(sizeof(DrawingBasicVertex) * DefaultFaceCount * 4, nullptr, DeviceResourceUsage_Dynamic);
-	m_indexBuffer = device->CreateIndexBuffer(DefaultFaceCount * 6, nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic);
+	m_vertexBuffer = device->CreateVertexBuffer(sizeof(DrawingBasicVertex) * DefaultFaceCount * 4, nullptr, ResourceUsage::Dynamic);
+	m_indexBuffer = device->CreateIndexBuffer(DefaultFaceCount * 6, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 
 	//-----------------------------------------------------
 	// シェーダ (DrawingContext3D)
@@ -1062,7 +1062,7 @@ void DrawingContextImpl::Flush()
 
 	if (m_shader3D.varPixelStep != nullptr)
 	{
-		const Size& size = m_manager->GetRenderer()->GetRenderTarget(0)->GetSize();
+		const SizeI& size = m_manager->GetRenderer()->GetRenderTarget(0)->GetSize();
 		m_shader3D.varPixelStep->SetVector(Vector4(0.5f / size.width, 0.5f / size.height, 0, 0));
 	}
 
@@ -1138,7 +1138,7 @@ void DrawingContextImpl::ExpandGeometriesFill()
 	Driver::ITexture* texture = m_manager->GetDummyDeviceTexture();
 	if (m_currentState.Brush.Type == BrushType_Texture)
 	{
-		const Size& size = m_currentState.Brush.TextureBrush.Texture->GetRealSize();
+		const SizeI& size = m_currentState.Brush.TextureBrush.Texture->GetRealSize();
 		int* rc = m_currentState.Brush.TextureBrush.SourceRect;
 		srcPixelRect.x = rc[0];
 		srcPixelRect.y = rc[1];
@@ -1704,7 +1704,7 @@ void GeometryRenderer::Initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void GeometryRenderer::SetViewProjection(const Matrix& view, const Matrix& proj, const Size& viewPixelSize)
+void GeometryRenderer::SetViewProjection(const Matrix& view, const Matrix& proj, const SizeI& viewPixelSize)
 {
 	m_uvParPixel.x = 1.0f / viewPixelSize.width;
 	m_uvParPixel.y = 1.0f / viewPixelSize.height;

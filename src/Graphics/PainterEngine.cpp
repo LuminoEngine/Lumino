@@ -69,9 +69,9 @@ void PainterEngine::CreateInternal()
 	m_vertexDeclaration.Attach(
 		device->CreateVertexDeclaration(PainterVertex::Elements(), PainterVertex::ElementCount));
 	m_vertexBuffer.Attach(device->CreateVertexBuffer(
-		sizeof(PainterVertex) * DefaultFaceCount * 4, nullptr, DeviceResourceUsage_Dynamic));
+		sizeof(PainterVertex) * DefaultFaceCount * 4, nullptr, ResourceUsage::Dynamic));
 	m_indexBuffer.Attach(device->CreateIndexBuffer(
-		DefaultFaceCount * 6, nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic));
+		DefaultFaceCount * 6, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic));
 
 	m_vertexCache.Reserve(1024);
 	m_indexCache.Reserve(1024);
@@ -99,7 +99,7 @@ void PainterEngine::CreateInternal()
 	//-----------------------------------------------------
 	// ダミーテクスチャ
 
-	m_dummyTexture.Attach(device->CreateTexture(Size(32, 32), 1, TextureFormat::R8G8B8A8, NULL), false);
+	m_dummyTexture.Attach(device->CreateTexture(SizeI(32, 32), 1, TextureFormat::R8G8B8A8, NULL), false);
 	Driver::IGraphicsDevice::ScopedLockContext lock(device);
 	BitmapPainter painter(m_dummyTexture->Lock());
 	painter.Clear(Color32::White);
@@ -210,7 +210,7 @@ void PainterEngine::SetViewProjMatrix(const Matrix& matrix)
 }
 
 //------------------------------------------------------------------------------
-//void PainterEngine::SetViewPixelSize(const Size& size)
+//void PainterEngine::SetViewPixelSize(const SizeI& size)
 //{
 //	if (m_shader.varViewportSize != NULL) {
 //		m_shader.varViewportSize->SetVector(Vector4((float)size.Width, (float)size.Height, 0, 0));

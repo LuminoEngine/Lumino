@@ -20,7 +20,7 @@ TEST_F(Test_Base_Rect, Basic)
 	ASSERT_EQ_RECT(0, 0, 0, 0, rc1);
 	Rect rc2(1, 2, 3, 4);
 	ASSERT_EQ_RECT(1, 2, 3, 4, rc2);
-	Rect rc3(Point(5, 6), Size(7, 8));
+	Rect rc3(Point(5, 6), SizeI(7, 8));
 	ASSERT_EQ_RECT(5, 6, 7, 8, rc3);
 	Rect rc4(rc3);
 	ASSERT_EQ_RECT(5, 6, 7, 8, rc4);
@@ -38,8 +38,8 @@ TEST_F(Test_Base_Rect, Basic)
 	rc3.SetLocation(Point(10, 20));
 	ASSERT_EQ(Point(10, 20), rc3.GetLocation());
 
-	rc3.SetSize(Size(30, 40));
-	ASSERT_EQ(Size(30, 40), rc3.GetSize());
+	rc3.SetSize(SizeI(30, 40));
+	ASSERT_EQ(SizeI(30, 40), rc3.GetSize());
 
 	Rect rc5(0, 0, -1, -2);
 	ASSERT_TRUE(rc5.IsEmpty());

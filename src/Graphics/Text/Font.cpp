@@ -31,7 +31,7 @@ Font::~Font()
 }
 
 //------------------------------------------------------------------------------
-Size Font::GetTextSize(const StringRef& text)
+SizeI Font::GetTextSize(const StringRef& text)
 {
 	auto* r = GetManager()->GetGraphicsManager()->GetBitmapTextRenderer();
 	auto* gr = r->GetTempGlyphRun();

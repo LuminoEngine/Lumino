@@ -49,7 +49,7 @@ public:
 	// メインスレッドで Flush したときにはこれを呼ぶ
 	void OnFlush();
 
-	const Size& GetGlyphsTextureSize() const;
+	const SizeI& GetGlyphsTextureSize() const;
 
 	TextLayoutEngine* GetTextLayoutEngine() { return &m_layoutEngine; }
 	void Measure(const UTF32* text, int length, TextLayoutResult* outResult);	// ユーティリティ
@@ -60,7 +60,7 @@ private:
 	struct CachedGlyphInfo
 	{
 		int		index;
-		Size	size;
+		SizeI	size;
 	};
 
 	typedef std::map<UTF32, CachedGlyphInfo>	CachedGlyphInfoMap;
@@ -68,7 +68,7 @@ private:
 	GraphicsManager*		m_manager;
 	RefPtr<Font>			m_font;
 	int						m_maxCacheGlyphs;		// キャッシュできる最大文字数
-	Size					m_glyphMaxBitmapSize;	// 現在のフォントの1文字分のビットマップの最大サイズ
+	SizeI					m_glyphMaxBitmapSize;	// 現在のフォントの1文字分のビットマップの最大サイズ
 	int						m_glyphWidthCount;
 	Stack<int>				m_indexStack;			// 空きキャッシュインデックス
 	CachedGlyphInfoMap		m_cachedGlyphInfoMap;

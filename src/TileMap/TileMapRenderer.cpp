@@ -114,7 +114,7 @@ void TileMapRenderer::Draw(RenderingContext* context, TileMapModel* tileMap, con
 	// TODO: ローカル座標→タイルマップ配列インデックスへの座標変換
 
 	// TODO: ↓いまのところ 3d 用
-	const Size& tileSize = tileMap->GetTileSet()->GetTileSize();
+	const SizeI& tileSize = tileMap->GetTileSet()->GetTileSize();
 
 	// テーブル配列のどこの範囲を描画したい？
 	BoundingRect renderRange =
@@ -152,7 +152,7 @@ void TileMapRenderer::Draw(RenderingContext* context, TileMapModel* tileMap, con
 		// TODO:
 		if (1)
 		{
-			const Size& size = layer->GetSize();
+			const SizeI& size = layer->GetSize();
 			if (clipd.left < 0) clipd.left = 0;
 			if (clipd.top < 0) clipd.top = 0;
 			if (clipd.right > size.width) clipd.right = size.width;		// 描画したいところ +1
@@ -209,9 +209,9 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 		m_vertexDeclaration = RefPtr<VertexDeclaration>::MakeRef();
 		m_vertexDeclaration->Initialize(m_graphicsManager, TileMapVertex::Elements(), TileMapVertex::ElementCount);
 		m_vertexBuffer = LN_NEW VertexBuffer();
-		m_vertexBuffer->Initialize(m_graphicsManager, sizeof(TileMapVertex) * tileCount * 4, nullptr, DeviceResourceUsage_Dynamic);
+		m_vertexBuffer->Initialize(m_graphicsManager, sizeof(TileMapVertex) * tileCount * 4, nullptr, ResourceUsage::Dynamic);
 		m_indexBuffer = LN_NEW IndexBuffer();
-		m_indexBuffer->Initialize(m_graphicsManager, tileCount * 6, nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic);
+		m_indexBuffer->Initialize(m_graphicsManager, tileCount * 6, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 
 		// インデックスバッファは途中で変わらないので先に埋めておく
 		ByteBuffer* buf = m_indexBuffer->Lock();
@@ -235,7 +235,7 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 
 
 
-	const Size& tileSize = tileSet->GetTileSize();
+	const SizeI& tileSize = tileSet->GetTileSize();
 
 	// boundingRect 全体を埋めるように描画するべきセル範囲を決める
 	//int ox = boundingRect.X / tileSize.Width;
@@ -252,7 +252,7 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 	Vector2 size;
 	Texture* texture;
 	Rect srcRect;
-	const Size& layerSize = layer->GetSize();
+	const SizeI& layerSize = layer->GetSize();
 
 	ByteBuffer* buf = m_vertexBuffer->Lock();
 	TileMapVertex* vb = (TileMapVertex*)buf->GetData();
@@ -352,7 +352,7 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 //	: m_spriteRenderer(nullptr)
 //{
 //	m_spriteRenderer = SpriteRenderer::Create(MaxSpriteCount, manager);
-//	m_spriteRenderer->SetViewPixelSize(Size(640, 480));	// TODO
+//	m_spriteRenderer->SetViewPixelSize(SizeI(640, 480));	// TODO
 //}
 //
 ////------------------------------------------------------------------------------
