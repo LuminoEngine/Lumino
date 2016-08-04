@@ -179,7 +179,7 @@ void RenderingContext::SetBlendMode(BlendMode mode)
 		//	m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 1);
 		//	break;
 	default:
-		LN_CHECK_ARG(0);
+		assert(0);
 		break;
 	}
 }

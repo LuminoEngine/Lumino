@@ -30,7 +30,7 @@ LN_TYPE_INFO_IMPL(ln::Texture2D, LNTexture2D);
 //------------------------------------------------------------------------------
 LNResult LNTexture2D_Create(int width, int height, LNTextureFormat format, LNBool mipmap, LN_OUT LN_HANDLE(LNTexture2D)* outTexture2D)
 {
-	LN_CHECK_ARG(outTexture2D != nullptr);
+	LN_CHECK_ARG_RETURN(outTexture2D != nullptr);
 	LN_FUNC_TRY_BEGIN;
 	auto ptr = RefPtr<LNWITexture2D>::MakeRef();
 	ptr->Initialize(LFManager::Engine->GetGraphicsManager(), SizeI(width, height), (TextureFormat)format, (mipmap) ? 0 : 1);
@@ -79,7 +79,7 @@ LN_TYPE_INFO_IMPL(ln::Viewport, LNViewport);
 //------------------------------------------------------------------------------
 LNResult LNViewport_GetMainViewport(LN_OUT LN_HANDLE(LNViewport)* outViewport)
 {
-	LN_CHECK_ARG(outViewport != nullptr);
+	LN_CHECK_ARG_RETURN(outViewport != nullptr);
 	LN_FUNC_TRY_BEGIN;
 	*outViewport = TO_HANDLE_ADDREF(ln::Viewport::GetMainWindowViewport());
 	LN_FUNC_TRY_END_RETURN;
@@ -89,7 +89,7 @@ LNResult LNViewport_GetMainViewport(LN_OUT LN_HANDLE(LNViewport)* outViewport)
 LNResult LNViewport_GetLayers(LN_HANDLE(LNViewport) viewport, LN_OUT LN_GENERIC_HANDLE(LNObjectList, LNViewportLayer)* outList)
 {
 	LN_CHECK_ARG_HANDLE(viewport);
-	LN_CHECK_ARG(outList != nullptr);
+	LN_CHECK_ARG_RETURN(outList != nullptr);
 	LN_FUNC_TRY_BEGIN;
 	*outList = TO_HANDLE_ADDREF(TO_REFOBJ(ln::Viewport, viewport)->GetLayers());
 	LN_FUNC_TRY_END_RETURN;

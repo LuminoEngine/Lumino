@@ -519,7 +519,7 @@ StaticMeshModel::~StaticMeshModel()
 //------------------------------------------------------------------------------
 void StaticMeshModel::Initialize(GraphicsManager* manager)
 {
-	LN_CHECK_ARG(manager != nullptr);
+	if (LN_CHECKEQ_ARG(manager == nullptr)) return;
 	m_manager = manager;
 
 	m_materials = RefPtr<MaterialList>::MakeRef();

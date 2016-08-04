@@ -42,9 +42,9 @@ UIManager::~UIManager()
 //------------------------------------------------------------------------------
 void UIManager::Initialize(const Settings& settings)
 {
-	LN_CHECK_ARG(settings.graphicsManager != nullptr);
-	LN_CHECK_ARG(settings.assetsManager != nullptr);
-	LN_CHECK_ARG(settings.mainWindow != nullptr);
+	if (LN_CHECKEQ_ARG(settings.graphicsManager == nullptr)) return;
+	if (LN_CHECKEQ_ARG(settings.assetsManager == nullptr)) return;
+	if (LN_CHECKEQ_ARG(settings.mainWindow == nullptr)) return;
 
 	m_eventArgsPool = LN_NEW EventArgsPool();
 	m_platformManager = settings.platformManager;

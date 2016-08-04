@@ -378,7 +378,7 @@ void Texture2D::LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const Rect& rec
 //------------------------------------------------------------------------------
 void Texture2D::SetSubData(const Point& offset, Bitmap* bitmap)
 {
-	LN_CHECK_ARG(bitmap != NULL);
+	if (LN_CHECKEQ_ARG(bitmap == nullptr)) return;
 
 	// TODO: 現状、ピクセルフォーマットが一致していることが前提
 	if (bitmap->GetPixelFormat() != Utils::TranslatePixelFormat(m_deviceObj->GetTextureFormat())) {

@@ -251,7 +251,7 @@ void Bitmap::ConvertToDownFlow()
 //------------------------------------------------------------------------------
 void Bitmap::CopyRawData(const void* data, size_t byteCount)
 {
-	LN_CHECK_ARG(m_bitmapData.GetSize() <= byteCount);
+	if (LN_CHECKEQ_ARG(m_bitmapData.GetSize() > byteCount)) return;
 	m_bitmapData.Copy(data, byteCount);
 }
 
@@ -264,14 +264,14 @@ size_t Bitmap::GetByteCount() const
 //------------------------------------------------------------------------------
 void Bitmap::SetPixel(int x, int y, int z, const Color32& color)
 {
-	LN_CHECK_ARG(0 <= x && x < m_size.width);
-	LN_CHECK_ARG(0 <= y && y < m_size.height);
-	LN_CHECK_ARG(0 <= z && z < m_depth);
-	LN_CHECK_STATE(
-		m_format == PixelFormat::B8G8R8A8 ||
-		m_format == PixelFormat::B8G8R8X8 ||
-		m_format == PixelFormat::R8G8B8A8 ||
-		m_format == PixelFormat::R8G8B8X8);
+	if (LN_CHECKEQ_OUTRANGE(x, 0, m_size.width)) return;
+	if (LN_CHECKEQ_OUTRANGE(y, 0, m_size.height)) return;
+	if (LN_CHECKEQ_OUTRANGE(z, 0, m_depth)) return;
+	if (LN_CHECKEQ_STATE(
+		m_format != PixelFormat::B8G8R8A8 &&
+		m_format != PixelFormat::B8G8R8X8 &&
+		m_format != PixelFormat::R8G8B8A8 &&
+		m_format != PixelFormat::R8G8B8X8)) return;
 
 	struct U32
 	{
@@ -299,25 +299,6 @@ void Bitmap::SetPixel(int x, int y, int z, const Color32& color)
 		buf->D[3] = color.a;
 	}
 }
-
-//------------------------------------------------------------------------------
-//void Bitmap::SetPixel3D(int x, int y, int z, const Color32& color)
-//{
-//	LN_CHECK_ARG(0 <= x && x < m_size.width);
-//	LN_CHECK_ARG(0 <= y && y < m_size.height);
-//	LN_CHECK_ARG(0 <= z && z < m_depth);
-//	LN_CHECK_STATE(
-//		m_format == PixelFormat::B8G8R8A8 ||
-//		m_format == PixelFormat::B8G8R8X8 ||
-//		m_format == PixelFormat::R8G8B8A8 ||
-//		m_format == PixelFormat::R8G8B8X8);
-//
-//	if (m_upFlow)
-//	{
-//		y = m_size.height - 1 - y;
-//	}
-//
-//}
 
 //------------------------------------------------------------------------------
 Color32 Bitmap::GetPixel(int x, int y) const

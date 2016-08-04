@@ -40,7 +40,7 @@ EngineDiagCore::~EngineDiagCore()
 //------------------------------------------------------------------------------
 void EngineDiagCore::Initialize(EngineManager* manager)
 {
-	LN_CHECK_ARG(manager != nullptr);
+	if (LN_CHECKEQ_ARG(manager == nullptr)) return;
 	m_manager = manager;
 }
 
@@ -86,8 +86,8 @@ EngineDiagViewer::~EngineDiagViewer()
 //------------------------------------------------------------------------------
 void EngineDiagViewer::Initialize(EngineManager* manager, EngineDiagCore* diagCore)
 {
-	LN_CHECK_ARG(manager != nullptr);
-	LN_CHECK_STATE(m_font == nullptr);
+	if (LN_CHECKEQ_ARG(manager == nullptr)) return;
+	if (LN_CHECKEQ_ARG(m_font != nullptr)) return;
 	m_diagCore = diagCore;
 	m_mainWindow = manager->GetPlatformManager()->GetMainWindow();
 	m_originalMainWindowTitle = m_mainWindow->GetTitleText();

@@ -29,7 +29,7 @@ BitmapTextRenderer::~BitmapTextRenderer()
 //------------------------------------------------------------------------------
 void BitmapTextRenderer::Initialize(GraphicsManager* manager)
 {
-	LN_CHECK_ARG(manager != nullptr);
+	if (LN_CHECKEQ_ARG(manager == nullptr)) return;
 	m_manager = manager;
 
 	m_tmpGlyphRun = LN_NEW GlyphRun();
@@ -39,8 +39,8 @@ void BitmapTextRenderer::Initialize(GraphicsManager* manager)
 //------------------------------------------------------------------------------
 void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const Color32& fillColor, const Color32& strokeColor, int strokeThickness)
 {
-	LN_CHECK_ARG(target != nullptr);
-	LN_CHECK_ARG(glyphRun != nullptr);
+	if (LN_CHECKEQ_ARG(target == nullptr)) return;
+	if (LN_CHECKEQ_ARG(glyphRun == nullptr)) return;
 
 	Font* font = glyphRun->GetFont();
 

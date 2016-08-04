@@ -215,7 +215,7 @@ UIStyleTable::~UIStyleTable()
 //------------------------------------------------------------------------------
 void UIStyleTable::AddStyle(const String& targetName, UIStyle* style)
 {
-	LN_CHECK_ARG(style != nullptr);
+	if (LN_CHECKEQ_ARG(style == nullptr)) return;
 
 	StyleKey k{ targetName };
 	m_table.Add(k, style);

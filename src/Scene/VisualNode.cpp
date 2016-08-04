@@ -108,7 +108,7 @@ void MaterialList2::Initialize(int subMaterialCount, bool createMainMaterial)
 //------------------------------------------------------------------------------
 void MaterialList2::CopyShared(MaterialList* srcList, bool createMainMaterial)
 {
-	LN_CHECK_ARG(srcList != nullptr);
+	if (LN_CHECKEQ_ARG(srcList == nullptr)) return;
 
 	Resize(srcList->GetCount());
 	for (int i = 0; i < srcList->GetCount(); ++i)

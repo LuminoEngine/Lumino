@@ -34,7 +34,7 @@ MeshRendererProxy::~MeshRendererProxy()
 //------------------------------------------------------------------------------
 void MeshRendererProxy::Initialize(GraphicsManager* manager)
 {
-	LN_CHECK_ARG(manager != nullptr);
+	if (LN_CHECKEQ_ARG(manager == nullptr)) return;
 	m_manager = manager;
 
 	Driver::IGraphicsDevice* device = m_manager->GetGraphicsDevice();
@@ -74,7 +74,7 @@ void MeshRendererProxy::SetViewProjMatrix(const Matrix& matrix)
 //------------------------------------------------------------------------------
 void MeshRendererProxy::DrawMesh(StaticMeshModel* mesh, int startIndex, int triangleCount)
 {
-	LN_CHECK_ARG(mesh != nullptr);
+	if (LN_CHECKEQ_ARG(mesh == nullptr)) return;
 	auto* _this = this;
 
 	if (m_stateModified)

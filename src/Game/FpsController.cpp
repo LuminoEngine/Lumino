@@ -62,7 +62,7 @@ FpsController::~FpsController()
 //------------------------------------------------------------------------------
 void FpsController::SetFrameRate(int frameRate)
 {
-	LN_CHECK_ARG(frameRate > 0);
+	if (LN_CHECKEQ_ARG(frameRate < 0)) return;
 
 	m_frameRate = frameRate;
 	m_frameRateRec = 1.0f / m_frameRate;
