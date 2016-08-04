@@ -206,6 +206,10 @@ Texture2DPtr Texture2D::Create(const void* data, size_t size, TextureFormat form
 //------------------------------------------------------------------------------
 Texture2D::Texture2D()
 	: m_isPlatformLoaded(false)
+	, m_usage(ResourceUsage::Static)
+	, m_primarySurface()
+	, m_locked(false)
+	, m_initializing(false)
 {
 }
 
@@ -290,6 +294,52 @@ void Texture2D::Initialize(GraphicsManager* manager, Stream* stream, TextureForm
 Texture2D::~Texture2D()
 {
 	LN_SAFE_RELEASE(m_primarySurface);
+}
+
+//------------------------------------------------------------------------------
+void Texture2D::TryLock()
+{
+	if (!m_locked)
+	{
+		if (m_usage == ResourceUsage::Static)
+		{
+			m_primarySurface = RefPtr<Bitmap>::MakeRef(m_size, Utils::TranslatePixelFormat(m_format));
+		}
+		m_locked = true;
+	}
+}
+
+//------------------------------------------------------------------------------
+void Texture2D::ApplyModifies()
+{
+	if (m_locked)
+	{
+		ByteBuffer* bmpData = m_primarySurface->GetBitmapBuffer();
+		if (m_initializing)
+		{
+			// まだ1度もコマンドリストに入れられていなければ直接転送できる
+			//m_deviceObj->SetSubData3D(Box32::Zero, bmpData->GetConstData(), bmpData->GetSize());
+		}
+		else
+		{
+			RenderBulkData bmpRawData(bmpData->GetConstData(), bmpData->GetSize());
+			Driver::ITexture* deviceTexture = m_deviceObj;
+			//LN_ENQUEUE_RENDER_COMMAND_2(
+			//	Texture3D_ApplyModifies, m_manager,
+			//	RenderBulkData, bmpRawData,
+			//	RefPtr<Driver::ITexture>, deviceTexture,
+			//	{
+			//		deviceTexture->SetSubData3D(Box32::Zero, bmpRawData.GetData(), bmpRawData.GetSize());
+			//	});
+		}
+		m_initializing = false;
+		m_locked = false;
+
+		if (m_usage == ResourceUsage::Static)
+		{
+			m_primarySurface.SafeRelease();
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -440,7 +490,7 @@ Texture3D::Texture3D()
 	: m_depth(0)
 	, m_mipLevels(0)
 	, m_locked(false)
-	, m_initialData(false)
+	, m_initializing(false)
 {
 }
 
@@ -460,7 +510,7 @@ void Texture3D::Initialize(GraphicsManager* manager, int width, int height, int 
 	m_mipLevels = mipLevels;
 	m_usage = usage;
 	m_deviceObj = manager->GetGraphicsDevice()->CreateTexture3D(m_size.width, m_size.height, m_depth, m_mipLevels, m_format, m_usage, nullptr);
-	m_initialData = true;
+	m_initializing = true;
 
 	if (m_usage == ResourceUsage::Dynamic)
 	{
@@ -500,7 +550,7 @@ void Texture3D::ApplyModifies()
 	if (m_locked)
 	{
 		ByteBuffer* bmpData = m_primarySurface->GetBitmapBuffer();
-		if (m_initialData)
+		if (m_initializing)
 		{
 			// まだ1度もコマンドリストに入れられていなければ直接転送できる
 			m_deviceObj->SetSubData3D(Box32::Zero, bmpData->GetConstData(), bmpData->GetSize());
@@ -517,7 +567,7 @@ void Texture3D::ApplyModifies()
 					deviceTexture->SetSubData3D(Box32::Zero, bmpRawData.GetData(), bmpRawData.GetSize());
 				});
 		}
-		m_initialData = false;
+		m_initializing = false;
 		m_locked = false;
 
 		if (m_usage == ResourceUsage::Static)

@@ -149,16 +149,23 @@ LN_INTERNAL_ACCESS:
 	void Initialize(GraphicsManager* manager, const StringRef& filePath, TextureFormat format, int mipLevels);
 	void Initialize(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels);
 	void Initialize(GraphicsManager* manager, bool isDefaultBackBuffer);
+	void TryLock();
 	Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }
 
 protected:
+	virtual void ApplyModifies() override;
+
 	friend struct SetRenderTargetCommand;	// TODO
 	friend struct SetDepthBufferCommand;
 	friend struct PresentCommand;	// TODO
 	friend class ShaderVariable;
-	int					m_mipLevels;
-	bool				m_isPlatformLoaded;
-	//bool				m_primarySurfaceModified;
+	int				m_mipLevels;
+	bool			m_isPlatformLoaded;
+
+	ResourceUsage	m_usage;
+	RefPtr<Bitmap>	m_primarySurface;
+	bool			m_locked;
+	bool			m_initializing;
 
 	friend class Helper;
 };
@@ -202,7 +209,7 @@ protected:
 	virtual void ApplyModifies() override;
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device) override;
 
-private:
+LN_INTERNAL_ACCESS:
 	void TryLock();
 	Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }
 
@@ -212,7 +219,7 @@ private:
 	ResourceUsage	m_usage;
 	RefPtr<Bitmap>	m_primarySurface;
 	bool			m_locked;
-	bool			m_initialData;
+	bool			m_initializing;
 };
 
 /**
