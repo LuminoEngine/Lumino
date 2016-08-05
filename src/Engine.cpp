@@ -60,6 +60,12 @@ void Engine::Render()
 }
 
 //------------------------------------------------------------------------------
+RenderingContext* Engine::GetMainRenderingContext()
+{
+	return EngineManager::Instance->GetGraphicsManager()->GetRenderingContext();
+}
+
+//------------------------------------------------------------------------------
 DrawingContext* Engine::GetMainDrawingContext()
 {
 	return EngineManager::Instance->GetGraphicsManager()->GetDrawingContext();

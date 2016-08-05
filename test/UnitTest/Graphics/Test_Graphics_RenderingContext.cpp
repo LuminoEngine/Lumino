@@ -1,21 +1,25 @@
 ﻿#include <TestConfig.h>
+#include <Lumino/Graphics/RenderingContext.h>
 #include "../../src/Graphics/RendererImpl.h"
 
 class Test_Graphics_RenderingContext : public ::testing::Test
 {
 protected:
-	RefPtr<Shader> m_shader;
-
-	virtual void SetUp()
-	{
-		//ByteBuffer code = FileSystem::ReadAllBytes(LOCALFILE("TestData/PosColor.lnsl"));
-		//m_shader.Attach(Shader::Create((char*)code.GetData(), code.GetSize()));
-
-		m_shader = Shader::Create(LN_LOCALFILE("TestData/PosColor.lnsl"));
-	}
+	virtual void SetUp() {}
 	virtual void TearDown() {}
 
 };
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_RenderingContext, Clear)
+{
+	Engine::BeginRendering();
+	auto* r = Engine::GetMainRenderingContext();
+	r->Clear(ClearFlags::Color, Color::Red);
+	Engine::EndRendering();
+	ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/Test_Graphics_RenderingContext2.png")));
+	//TestEnv::SaveScreenShot(LN_TEMPFILE("test.png"));
+}
 
 #if 0
 //------------------------------------------------------------------------------
