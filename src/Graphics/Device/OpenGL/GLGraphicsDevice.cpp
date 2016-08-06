@@ -86,9 +86,9 @@ RefPtr<IIndexBuffer> GLGraphicsDevice::CreateIndexBufferImplement(int indexCount
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ITexture> GLGraphicsDevice::CreateTextureImplement(const SizeI& size, uint32_t mipLevels, TextureFormat format, const void* initialData)
+RefPtr<ITexture> GLGraphicsDevice::CreateTextureImplement(const SizeI& size, bool mipmap, TextureFormat format, const void* initialData)
 {
-	RefPtr<GLTexture> obj(LN_NEW GLTexture(size, format, mipLevels), false);
+	RefPtr<GLTexture> obj(LN_NEW GLTexture(size, format, mipmap), false);
 	if (initialData != nullptr) {
 		obj->SetSubData(Point(0, 0), initialData, Utils::GetTextureFormatByteCount(format) * size.width * size.height, size);
     }

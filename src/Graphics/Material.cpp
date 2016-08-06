@@ -48,6 +48,7 @@ Material::Material()
 	, m_alphaTest(true)
 	, m_depthTestEnabled(true)
 	, m_depthWriteEnabled(true)
+	, m_shaderModified(false)
 	, m_modifiedForMaterialInstance(false)
 {
 }
@@ -61,7 +62,7 @@ Material::~Material()
 void Material::SetShader(Shader* shader)
 {
 	m_shader = shader;
-	LinkVariables();
+	m_shaderModified = true;
 	m_modifiedForMaterialInstance = true;
 }
 
@@ -135,32 +136,35 @@ void Material::SetAlphaTestEnabled(bool enabled)
 //------------------------------------------------------------------------------
 void Material::LinkVariables()
 {
-#if 0
-	m_valueList.Clear();
 	m_linkedVariableList.Clear();
 
 	if (m_shader != nullptr)
 	{
 		for (ShaderVariable* v : m_shader->GetVariables())
 		{
-			if (v->GetType() != ShaderVariableType_Unknown &&
-				v->GetType() != ShaderVariableType_String)
+			if (v->GetType() == ShaderVariableType_Unknown ||
+				v->GetType() == ShaderVariableType_String)
 			{
 				// Unknown と String 型は無視。String 型は読み取り専用で、Material としては持っておく必要ない。
 			}
 			else
 			{
-				// 名前と値の対応表
-				auto var = std::make_shared<ShaderValue>(v->GetShaderValue());	// 初期値
-				m_valueList.Add(v->GetName(), var);
+				// このマテリアルの値として、シェーダ変数値を保持する変数を作る
+				ShaderValuePtr valuePtr;
+				if (!m_valueList.TryGetValue(v->GetName(), &valuePtr))
+				{
+					valuePtr = std::make_shared<ShaderValue>(v->GetShaderValue());	// 初期値
+					m_valueList.Add(v->GetName(), valuePtr);
+				}
 
 				// 変数と値のペア
-				ValuePair pair = { v, var };
+				ValuePair pair = { v, valuePtr };
 				m_linkedVariableList.Add(pair);
 			}
 		}
 	}
-#endif
+
+	// TODO: シェーダが変更されたことで不要となるものを m_valueList から除外したほうがいいかも
 }
 
 //------------------------------------------------------------------------------
@@ -184,6 +188,21 @@ ShaderValue* Material::FindShaderValueConst(const StringRef& name) const
 		return nullptr;
 	}
 	return v.get();
+}
+
+//------------------------------------------------------------------------------
+void Material::ApplyToShaderVariables()
+{
+	if (m_shaderModified)
+	{
+		LinkVariables();
+		m_shaderModified = false;
+	}
+
+	for (auto& pair : m_linkedVariableList)
+	{
+		pair.variable->SetShaderValue(*pair.value);
+	}
 }
 
 LN_NAMESPACE_END

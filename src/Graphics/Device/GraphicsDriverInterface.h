@@ -91,10 +91,10 @@ public:
 
 	/// テクスチャの作成
 	/// initialData : 初期データまたは NULL
-	virtual ITexture* CreateTexture(const SizeI& size, uint32_t mipLevels, TextureFormat format, const void* initialData) = 0;
+	virtual ITexture* CreateTexture(const SizeI& size, bool mipmap, TextureFormat format, const void* initialData) = 0;
 
 	/// テクスチャの作成 (環境依存の画像ファイル読み込み)
-	virtual ITexture* CreateTexturePlatformLoading(Stream* stream, uint32_t mipLevels, TextureFormat format) = 0;
+	virtual ITexture* CreateTexturePlatformLoading(Stream* stream, bool mipmap, TextureFormat format) = 0;
 
 	virtual ITexture* CreateTexture3D(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, ResourceUsage usage, const void* initialData) = 0;
 

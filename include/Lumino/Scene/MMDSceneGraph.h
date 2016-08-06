@@ -43,13 +43,10 @@ private:
 	//Camera*			m_default2DCamera;
 	EffectBatchRendererNode*	m_effectBatchRendererNode;
 
-	//DrawingLayer*	m_default3DLayer;
-	//DrawingLayer*	m_default2DLayer;
-	//std::array<RenderingPass*, MMD_PASS_Max>	m_mmdRenderingPasses;
-
 
 
 	Array<RenderingPass*>	m_mmdRenderingPasses;
+
 };
 
 LN_NAMESPACE_SCENE_END

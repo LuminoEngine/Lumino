@@ -455,7 +455,7 @@ int main()
 		//m->SetPositionRange(Vector3(-10, 10, -10), Vector3(10, 10, 10));
 		m->SetVelocity(Vector3(0, -3, 0));
 		//m->SetAccel(Vector3(0, -8, 0));
-		m->SetTexture(Texture2D::Create(LN_LOCALFILE("../Media/Spark1.png")));
+		m->SetTexture(Texture2D::Create(LN_LOCALFILE("../Media/Spark1.png"), TextureFormat::R8G8B8A8, false));
 		auto particle1 = SpriteParticle::Create3D(m);
 		particle1->SetBlendMode(BlendMode::Subtract);
 		particle1->SetPosition(2, 0, 0);

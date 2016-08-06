@@ -4,6 +4,7 @@
 #include "MME/MMEShaderErrorInfo.h"
 #include "MME/MMEShader.h"
 #include "MME/MMERenderingPass.h"
+#include <Lumino/Graphics/Mesh.h>
 #include <Lumino/Scene/Light.h>
 #include <Lumino/Scene/MMDSceneGraph.h>
 #include "InfomationRenderingPass.h"
@@ -91,6 +92,7 @@ void MMDSceneGraph::CreateCore(SceneGraphManager* manager)
 	MMEShaderErrorInfo result;
 	RefPtr<MMEShader> defaultShader(MMEShader::Create((const char*)g_SSNoLighting_Data, g_SSNoLighting_Data_Len, &result, GetManager()), false);
 	m_mmdRenderingPasses[MMD_PASS_object]->SetDefaultShader(defaultShader);
+
 }
 
 //------------------------------------------------------------------------------

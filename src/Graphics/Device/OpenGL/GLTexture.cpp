@@ -62,12 +62,12 @@ void GLTextureBase::SetGLSamplerState(const SamplerState& state)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-GLTexture::GLTexture(const SizeI& size, TextureFormat format, uint32_t mipLevels)
+GLTexture::GLTexture(const SizeI& size, TextureFormat format, bool mipmap)
 	: m_glTexture(0)
 	, m_format(format)
 	, m_size(size)
 	, m_realSize(size)
-	, m_mipLevels(mipLevels)
+	, m_mipmap(mipmap)
 	, m_pixelFormat(GL_NONE)
 	, m_elementType(GL_NONE)
 {
@@ -102,7 +102,7 @@ void GLTexture::OnResetDevice()
 	// http://marina.sys.wakayama-u.ac.jp/~tokoi/?date=20040914
 
 	// ミップレベル決定
-	GLint levels = (m_mipLevels == 0) ? 4 : m_mipLevels - 1;	// TODO:DirectX だと 0 の場合は全レベル作成するけど、今ちょっと計算めんどうなので 
+	GLint levels = (m_mipmap) ? 4 : 0;	// TODO:DirectX だと 0 の場合は全レベル作成するけど、今ちょっと計算めんどうなので 
 	
 	// テクスチャフォーマット選択
 	GLenum internalFormat, pixelFormat, elementType;

@@ -38,10 +38,10 @@ class DX9Texture
 {
 public:
 	/// テクスチャ作成 (level : ミップマップレベル ( 0 で全て作成 ))
-	DX9Texture(DX9GraphicsDevice* device, const SizeI& size, TextureFormat format, uint32_t levels);
+	DX9Texture(DX9GraphicsDevice* device, const SizeI& size, TextureFormat format, bool mipmap);
 
 	/// テクスチャ作成 (メモリに展開された画像データから)
-	DX9Texture(DX9GraphicsDevice* device, const void* data, uint32_t size, const Color32& colorKey, uint32_t levels, TextureFormat format);
+	DX9Texture(DX9GraphicsDevice* device, const void* data, uint32_t size, const Color32& colorKey, bool mipmap, TextureFormat format);
 
 	virtual ~DX9Texture();
 

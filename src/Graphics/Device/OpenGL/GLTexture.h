@@ -31,7 +31,7 @@ class GLTexture
 	: public GLTextureBase
 {
 public:
-	GLTexture(const SizeI& size, TextureFormat format, uint32_t mipLevels);
+	GLTexture(const SizeI& size, TextureFormat format, bool mipmap);
 	//GLTexture(const Bitmap* bitmap, TextureFormat format, uint32_t mipLevels);
 	virtual ~GLTexture();
 
@@ -59,7 +59,7 @@ private:
 	TextureFormat		m_format;
 	SizeI				m_size;
 	SizeI				m_realSize;
-	int					m_mipLevels;
+	bool				m_mipmap;
 	GLenum				m_pixelFormat;
 	GLenum				m_elementType;
 	SamplerState		m_samplerState;

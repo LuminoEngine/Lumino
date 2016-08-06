@@ -4,6 +4,7 @@
 #include <Lumino/Graphics/GraphicsContext.h>
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/VisualNode.h>
+#include <Lumino/Scene/Camera.h>
 #include "ShaderScriptCommandList.h"
 #include "MMEShaderTechnique.h"
 #include "MMERenderingPass.h"
@@ -25,9 +26,31 @@ MMERenderingPass::MMERenderingPass(SceneGraphManager* manager, MMDPass mmdPass, 
 {
 	LN_REFOBJ_SET(m_ownerShader, ownerShader);
 
-	m_gridMesh = RefPtr<StaticMeshModel>::MakeRef();
-	m_gridMesh->Initialize(manager->GetGraphicsManager());
-	m_gridMesh->CreateSquarePlane(Vector2(1, 1), Vector3::UnitY, MeshCreationFlags::DynamicBuffers);
+	m_gridPlane = RefPtr<StaticMeshModel>::MakeRef();
+	m_gridPlane->Initialize(manager->GetGraphicsManager());
+	m_gridPlane->CreateSquarePlane(Vector2(1, 1), Vector3::UnitY, MeshCreationFlags::DynamicBuffers);
+
+	auto shader = RefPtr<Shader>::MakeRef();
+	shader->Initialize(manager->GetGraphicsManager(), _T("D:/Proj/Volkoff/External/Lumino/test/UnitTest/Graphics/TestData/Grid.fx"));
+	m_gridPlane->GetMaterial(0)->SetShader(shader);
+
+	SizeI gridTexSize(512, 512);
+	auto gridTex = RefPtr<Texture2D>::MakeRef();
+	//gridTex->Initialize(manager->GetGraphicsManager(), _T("D:/Proj/Volkoff/External/Lumino/test/UnitTest/Graphics/TestData/Grid1.png"), TextureFormat::R8G8B8A8, 4);
+	gridTex->Initialize(manager->GetGraphicsManager(), gridTexSize, TextureFormat::R8G8B8A8, true);
+	//
+	for (int x = 0; x < gridTexSize.width; ++x)
+	{
+		gridTex->SetPixel(x, 0, Color(0, 0, 0, 0.5));
+		gridTex->SetPixel(x, 511, Color(0, 0, 0, 0.5));
+	}
+	for (int y = 0; y < gridTexSize.height; ++y)
+	{
+		gridTex->SetPixel(0, y, Color(0, 0, 0, 0.5));
+		gridTex->SetPixel(511, y, Color(0, 0, 0, 0.5));
+	}
+
+	m_gridPlane->GetMaterial(0)->SetTextureParameter(_T("ObjectTexture"), gridTex);
 }
 
 //------------------------------------------------------------------------------
@@ -203,7 +226,77 @@ void MMERenderingPass::SelectPriorityParams(SceneNode* node, int subsetIndex, Re
 //------------------------------------------------------------------------------
 void MMERenderingPass::PostRender(SceneGraphRenderingContext* dc)
 {
+	AdjustGridMesh(dc->CurrentCamera);
 
+	m_gridPlane->GetMaterial(0)->SetMatrixParameter(_T("WorldViewProjMatrix"), dc->CurrentCamera->GetViewProjectionMatrix());
+
+	auto* r = dc->BeginGraphicsContext();
+	r->ResetStates();
+	r->SetBlendMode(BlendMode::Alpha);
+	r->DrawMesh(
+		m_gridPlane,
+		m_gridPlane->m_attributes[0].StartIndex,
+		m_gridPlane->m_attributes[0].PrimitiveNum,
+		m_gridPlane->GetMaterial(0));
+}
+
+//------------------------------------------------------------------------------
+void MMERenderingPass::AdjustGridMesh(Camera* camera)
+{
+	struct Line
+	{
+		Vector3	from;
+		Vector3	to;
+	};
+
+	auto& vf = camera->GetViewFrustum();
+	Vector3 points[8];
+	vf.GetCornerPoints(points);
+
+	Line lines[12] =
+	{
+		{ points[0], points[1] },
+		{ points[1], points[2] },
+		{ points[2], points[3] },
+		{ points[3], points[0] },
+
+		{ points[0], points[4] },
+		{ points[1], points[5] },
+		{ points[2], points[6] },
+		{ points[3], points[7] },
+
+		{ points[4], points[5] },
+		{ points[5], points[6] },
+		{ points[6], points[7] },
+		{ points[7], points[4] },
+	};
+
+	Plane plane(0, 1, 0, 0);
+	Array<Vector3> hits;
+	for (Line& li : lines)
+	{
+		Vector3 pt;
+		if (plane.Intersects(li.from, li.to, &pt))
+		{
+			hits.Add(pt);
+		}
+	}
+
+	Vector3 minPos, maxPos;
+	for (Vector3& p : hits)
+	{
+		minPos = Vector3::Min(p, minPos);
+		maxPos = Vector3::Max(p, maxPos);
+	}
+
+	m_gridPlane->SetPosition(0, Vector3(minPos.x, 0, maxPos.z));
+	m_gridPlane->SetPosition(1, Vector3(minPos.x, 0, minPos.z));
+	m_gridPlane->SetPosition(2, Vector3(maxPos.x, 0, maxPos.z));
+	m_gridPlane->SetPosition(3, Vector3(maxPos.x, 0, minPos.z));
+	m_gridPlane->SetUV(0, Vector2(-1.0f, 1.0f));
+	m_gridPlane->SetUV(1, Vector2(-1.0f, -1.0f));
+	m_gridPlane->SetUV(2, Vector2(1.0f, 1.0f));
+	m_gridPlane->SetUV(3, Vector2(1.0f, -1.0f));
 }
 
 LN_NAMESPACE_SCENE_END

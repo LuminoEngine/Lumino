@@ -4,6 +4,7 @@
 #include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Shader.h>
+#include <Lumino/Graphics/Material.h>
 #include "RendererImpl.h"
 #include "PrimitiveRenderer.h"
 #include "MeshRendererProxy.h"
@@ -506,6 +507,23 @@ void RenderingContext::DrawMesh(StaticMeshModel* mesh, int startIndex, int trian
 {
 	NorityStartDrawing(m_meshRendererProxy);
 	m_meshRendererProxy->DrawMesh(mesh, startIndex, triangleCount);
+}
+
+//------------------------------------------------------------------------------
+void RenderingContext::DrawMesh(StaticMeshModel* mesh, int startIndex, int triangleCount, Material* material)
+{
+	material->ApplyToShaderVariables();
+
+	// TODO: とりあえず 0 番テクニックの全パスで描画する
+	// Scene のほうで使っている Script も考慮したカスタマイズをしたい場合、
+	// RenderingContext を派生させるのがいいと思う。
+	Shader* shader = material->GetShader();
+	ShaderTechnique* tech = shader->GetTechniques()[0];
+	for (auto* pass : tech->GetPasses())
+	{
+		SetShaderPass(pass);
+		DrawMesh(mesh, startIndex, triangleCount);
+	}
 }
 
 //------------------------------------------------------------------------------

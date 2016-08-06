@@ -133,10 +133,19 @@ IIndexBuffer* GraphicsDeviceBase::CreateIndexBuffer(int indexCount, const void* 
 }
 
 //------------------------------------------------------------------------------
-ITexture* GraphicsDeviceBase::CreateTexture(const SizeI& size, uint32_t mipLevels, TextureFormat format, const void* initialData)
+ITexture* GraphicsDeviceBase::CreateTexture(const SizeI& size, bool mipmap, TextureFormat format, const void* initialData)
 {
 	ScopedAccessContext lock(this);
-	auto obj = CreateTextureImplement(size, mipLevels, format, initialData);
+	auto obj = CreateTextureImplement(size, mipmap, format, initialData);
+	AddDeviceResource(obj);
+	return obj.DetachMove();
+}
+
+//------------------------------------------------------------------------------
+ITexture* GraphicsDeviceBase::CreateTexturePlatformLoading(Stream* stream, bool mipmap, TextureFormat format)
+{
+	ScopedAccessContext lock(this);
+	auto obj = CreateTexturePlatformLoadingImplement(stream, mipmap, format);
 	AddDeviceResource(obj);
 	return obj.DetachMove();
 }
@@ -146,15 +155,6 @@ ITexture* GraphicsDeviceBase::CreateTexture3D(int width, int height, int depth, 
 {
 	ScopedAccessContext lock(this);
 	auto obj = CreateTexture3DImplement(width, height, depth, mipLevels, format, usage, initialData);
-	AddDeviceResource(obj);
-	return obj.DetachMove();
-}
-
-//------------------------------------------------------------------------------
-ITexture* GraphicsDeviceBase::CreateTexturePlatformLoading(Stream* stream, uint32_t mipLevels, TextureFormat format)
-{
-	ScopedAccessContext lock(this);
-	auto obj = CreateTexturePlatformLoadingImplement(stream, mipLevels, format);
 	AddDeviceResource(obj);
 	return obj.DetachMove();
 }

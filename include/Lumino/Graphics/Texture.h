@@ -76,50 +76,50 @@ public:
 		@brief		指定したサイズのテクスチャを作成します。
 		@param[in]	width		: テクスチャの幅 (ピクセル単位)
 		@param[in]	height		: テクスチャの高さ (ピクセル単位)
-		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
 		@param[in]	format		: テクスチャのピクセルフォーマット
+		@param[in]	mipmap		: ミップマップの有無
 	*/
-	static Texture2DPtr Create(int width, int height, TextureFormat format = TextureFormat::R8G8B8A8, int mipLevels = 1);
+	static Texture2DPtr Create(int width, int height, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = true);
 	// TODO: mipMap は unity のように、有無だけで指定したい
 	
 	/**
 		@brief		指定したサイズのテクスチャを作成します。
 		@param[in]	size		: テクスチャサイズ (ピクセル単位)
-		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
 		@param[in]	format		: テクスチャのピクセルフォーマット
+		@param[in]	mipmap		: ミップマップの有無
 	*/
-	static Texture2DPtr Create(const SizeI& size, TextureFormat format = TextureFormat::R8G8B8A8, int mipLevels = 1);
+	static Texture2DPtr Create(const SizeI& size, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = true);
 
 	/**
 		@brief		ファイルからテクスチャを作成します。
 		@param[in]	filePath	: ファイルパス
-		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
 		@param[in]	format		: テクスチャのピクセルフォーマット
+		@param[in]	mipmap		: ミップマップの有無
 	*/
-	static Texture2DPtr Create(const StringRef& filePath, TextureFormat format = TextureFormat::R8G8B8A8, int mipLevels = 1);
+	static Texture2DPtr Create(const StringRef& filePath, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = true);
 
 	/**
 		@brief		画像ファイルデータのストリームを指定してテクスチャを作成します。
 		@param[in]	stream		: 画像ファイルデータのストリーム
-		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
 		@param[in]	format		: テクスチャのピクセルフォーマット
+		@param[in]	mipmap		: ミップマップの有無
 	*/
-	static Texture2DPtr Create(Stream* stream, TextureFormat format = TextureFormat::R8G8B8A8, int mipLevels = 1);
+	static Texture2DPtr Create(Stream* stream, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = true);
 
 	/**
 		@brief		メモリ上に展開された画像ファイルデータからテクスチャを作成します。
 		@param[in]	data		: 画像ファイルデータの先頭アドレス
 		@param[in]	size		: データのバイト数
-		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
 		@param[in]	format		: テクスチャのピクセルフォーマット
+		@param[in]	mipmap		: ミップマップの有無
 	*/
-	static Texture2DPtr Create(const void* data, size_t size, TextureFormat format = TextureFormat::R8G8B8A8, int mipLevels = 1);
+	static Texture2DPtr Create(const void* data, size_t size, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = true);
 
 public:
 
 	void Clear(const Color32& color);
 
-	void SetPixel(int x, int y, int z, const Color& color);
+	void SetPixel(int x, int y, const Color& color);
 
 	void Blt(int x, int y, Texture* srcTexture, const Rect& srcRect);	// TODO: アルファブレンド有無
 	
@@ -147,9 +147,9 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 LN_INTERNAL_ACCESS:
-	void Initialize(GraphicsManager* manager, const SizeI& size, TextureFormat format, int mipLevels);
-	void Initialize(GraphicsManager* manager, const StringRef& filePath, TextureFormat format, int mipLevels);
-	void Initialize(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels);
+	void Initialize(GraphicsManager* manager, const SizeI& size, TextureFormat format, bool mipmap);
+	void Initialize(GraphicsManager* manager, const StringRef& filePath, TextureFormat format, bool mipmap);
+	void Initialize(GraphicsManager* manager, Stream* stream, TextureFormat format, bool mipmap);
 	void Initialize(GraphicsManager* manager, bool isDefaultBackBuffer);
 	void TryLock();
 	Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }
@@ -161,11 +161,11 @@ protected:
 	friend struct SetDepthBufferCommand;
 	friend struct PresentCommand;	// TODO
 	friend class ShaderVariable;
-	int				m_mipLevels;
+	bool			m_mipmap;
 	bool			m_isPlatformLoaded;
 
 	ResourceUsage	m_usage;
-	RefPtr<Bitmap>	m_primarySurface;
+	RefPtr<Bitmap>	m_primarySurface2;
 	bool			m_locked;
 	bool			m_initializing;
 

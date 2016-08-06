@@ -103,6 +103,7 @@ private:
 	void LinkVariables();
 	ShaderValue* FindShaderValue(const StringRef& name);
 	ShaderValue* FindShaderValueConst(const StringRef& name) const;
+	void ApplyToShaderVariables();
 
 	RefPtr<Shader>						m_shader;
 	SortedArray<String, ShaderValuePtr>	m_valueList;
@@ -114,6 +115,10 @@ private:
 	bool								m_alphaTest;
 	bool								m_depthTestEnabled;
 	bool								m_depthWriteEnabled;
+
+	bool								m_shaderModified;
+
+	friend class RenderingContext;
 
 LN_INTERNAL_ACCESS:
 	bool								m_modifiedForMaterialInstance;

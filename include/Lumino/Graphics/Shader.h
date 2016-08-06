@@ -160,6 +160,8 @@ public:
 	int GetArrayLength() const;
 	byte_t* GetDataBuffer() { return m_value.Buffer; }	// 初期値格納用
 
+	bool Equals(const ShaderValue& value) const;
+
 private:
 
 	static bool IsBufferCopyType(ShaderVariableType type)
@@ -270,6 +272,7 @@ LN_INTERNAL_ACCESS:
 	void OnCommitChanges();
 	Shader* GetOwnerShader() const { return m_owner; }
 	Driver::IShaderVariable* GetDeviceObject() const { return m_deviceObj; }
+	void SetShaderValue(const ShaderValue& value);
 	const ShaderValue& GetShaderValue() const { return m_value; }
 
 private:

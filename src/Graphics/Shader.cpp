@@ -390,6 +390,44 @@ void ShaderValue::SetString(const String& s)
 }
 
 //------------------------------------------------------------------------------
+bool ShaderValue::Equals(const ShaderValue& value) const
+{
+	if (m_type != value.m_type) return false;
+
+	switch (m_type)
+	{
+		case ShaderVariableType_Bool:
+			return m_value.BoolVal == value.m_value.BoolVal;
+		case ShaderVariableType_BoolArray:
+			return m_buffer.Equals(value.m_buffer);
+		case ShaderVariableType_Int:
+			return m_value.Int == value.m_value.Int;
+		case ShaderVariableType_Float:
+			return m_value.Float == value.m_value.Float;
+		case ShaderVariableType_FloatArray:
+			return m_buffer.Equals(value.m_buffer);
+		case ShaderVariableType_Vector:
+			return m_value.Vector == value.m_value.Vector;
+		case ShaderVariableType_VectorArray:
+			return m_buffer.Equals(value.m_buffer);
+		case ShaderVariableType_Matrix:
+			return m_value.Matrix == value.m_value.Matrix;
+		case ShaderVariableType_MatrixArray:
+			return m_buffer.Equals(value.m_buffer);
+		case ShaderVariableType_DeviceTexture:
+			return m_value.DeviceTexture == value.m_value.DeviceTexture;
+		case ShaderVariableType_ManagedTexture:
+			return m_value.ManagedTexture == value.m_value.ManagedTexture;
+		case ShaderVariableType_String:
+			return StringTraits::Compare(m_value.String, m_value.String, -1) == 0;
+		default:
+			assert(0);
+			break;
+	}
+	return false;
+}
+
+//------------------------------------------------------------------------------
 int ShaderValue::GetArrayLength() const
 {
 	if (m_type == ShaderVariableType_BoolArray) {
@@ -711,6 +749,24 @@ const TCHAR* ShaderVariable::GetString() const
 }
 
 //------------------------------------------------------------------------------
+void ShaderVariable::SetShaderValue(const ShaderValue& value)
+{
+	if (value.GetType() == ShaderVariableType_ManagedTexture)
+	{
+		// テクスチャ型の場合はちょっと特殊
+		SetTexture(value.GetManagedTexture());
+	}
+	else
+	{
+		if (!m_value.Equals(value))
+		{
+			SetModified();
+			m_value = value;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
 const Array<ShaderVariable*>& ShaderVariable::GetAnnotations() const
 {
 	return m_annotations;
@@ -724,13 +780,13 @@ ShaderVariable* ShaderVariable::FindAnnotation(const TCHAR* name, CaseSensitivit
 			return anno;
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 //------------------------------------------------------------------------------
 void ShaderVariable::ChangeDevice(Driver::IShaderVariable* obj)
 {
-	if (obj == NULL) {
+	if (obj == nullptr) {
 	}
 	else
 	{
@@ -770,42 +826,6 @@ void ShaderVariable::OnCommitChanges()
 	}
 }
 
-//void ShaderVariable::TryCommitChanges()
-//{
-//	if (m_modified)
-//	{
-//		
-//
-//		switch (m_value.GetType())
-//		{
-//			case ShaderVariableType_Bool:
-//				LN_CALL_SHADER_COMMAND(SetBool, SetShaderVariableCommand, m_value.GetBool());
-//				break;
-//			case ShaderVariableType_Int:
-//				LN_CALL_SHADER_COMMAND(SetInt, SetShaderVariableCommand, m_value.GetInt());
-//				break;
-//			case ShaderVariableType_Float:
-//				LN_CALL_SHADER_COMMAND(SetFloat, SetShaderVariableCommand, m_value.GetFloat());
-//				break;
-//			case ShaderVariableType_Vector:
-//				LN_CALL_SHADER_COMMAND(SetVector, SetShaderVariableCommand, m_value.GetVector());
-//				break;
-//			case ShaderVariableType_VectorArray:
-//				LN_CALL_SHADER_COMMAND(SetVectorArray, SetShaderVariableCommand, m_value.GetVectorArray(), m_value.GetArrayLength());
-//				break;
-//			case ShaderVariableType_Matrix:
-//				LN_CALL_SHADER_COMMAND(SetMatrix, SetShaderVariableCommand, m_value.GetMatrix());
-//				break;
-//			case ShaderVariableType_MatrixArray:
-//				LN_CALL_SHADER_COMMAND(SetMatrixArray, SetShaderVariableCommand, m_value.GetMatrixArray(), m_value.GetArrayLength());
-//				break;
-//			case ShaderVariableType_DeviceTexture:
-//				LN_CALL_SHADER_COMMAND(SetTexture, SetShaderVariableCommand, m_value.GetDeviceTexture());
-//				break;
-//		}
-//		m_modified = false;
-//	}
-//}
 
 //==============================================================================
 // ShaderTechnique

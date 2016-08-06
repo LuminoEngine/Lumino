@@ -5,6 +5,7 @@
 #include "ContextInterface.h"
 
 LN_NAMESPACE_BEGIN
+class Material;
 class StaticMeshModel;
 namespace detail { class PrimitiveRenderer; }
 namespace detail { class MeshRendererProxy; }
@@ -163,6 +164,7 @@ LN_INTERNAL_ACCESS:
 	virtual ~RenderingContext();
 	void Initialize(GraphicsManager* manager);
 	void DrawMesh(StaticMeshModel* mesh, int startIndex, int triangleCount);
+	void DrawMesh(StaticMeshModel* mesh, int startIndex, int triangleCount, Material* material);
 
 protected:
 	virtual void OnStateFlush() override;
