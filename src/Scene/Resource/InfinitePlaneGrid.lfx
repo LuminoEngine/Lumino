@@ -1,20 +1,14 @@
-
-struct LN_VS_INPUT
-{
-	float3	Pos		: POSITION;		// 位置
-	float2	Tex		: TEXCOORD0;	// テクスチャ座標
-	float3	Normal	: NORMAL0;//TEXCOORD1;	// 法線
-	float4	Color	: COLOR0;		// 頂点色
-};
-
-//------------------------------------------------------------------------------
+//=============================================================================
+// HLSL:DX9
+//=============================================================================
+#ifdef LN_HLSL_DX9
 
 // 座標変換行列
-float4x4	WorldViewProjMatrix	: WORLDVIEWPROJECTION;
+float4x4	WorldViewProjMatrix;
 
 // オブジェクトのテクスチャ
-texture		ObjectTexture		: MATERIALTEXTURE;
-sampler		ObjTexSampler		= sampler_state
+texture ObjectTexture;
+sampler ObjTexSampler = sampler_state
 {
 	texture = <ObjectTexture>;	// サイズは、速度と品質のバランス的に 512px がちょうどいい。
 	MINFILTER = ANISOTROPIC;	// NONE,POINT だと、MipMap の境界にシャギのようなものが見える。LINEAR だと近景でもボケすぎる。
@@ -30,23 +24,21 @@ struct VS_OUTPUT
 };
 
 //------------------------------------------------------------------------------
-// 頂点シェーダ
-VS_OUTPUT Basic_VS(LN_VS_INPUT input)
+VS_OUTPUT Basic_VS(float3 Pos : POSITION)
 {
 	VS_OUTPUT output;
 	
 	// 頂点位置をスクリーン空間に変換
-	output.Pos = mul(float4(input.Pos, 1.0), WorldViewProjMatrix);
+	output.Pos = mul(float4(Pos, 1.0), WorldViewProjMatrix);
 	
 	// テクスチャ座標
-	output.Tex.x = input.Pos.x;
-	output.Tex.y = input.Pos.z;
+	output.Tex.x = Pos.x;
+	output.Tex.y = Pos.z;
 	
 	return output;
 }
 
 //------------------------------------------------------------------------------
-// ピクセルシェーダ
 float4 Basic_PS(VS_OUTPUT input) : COLOR0
 {
 	float4 texColor = tex2D(ObjTexSampler, input.Tex);
@@ -55,7 +47,6 @@ float4 Basic_PS(VS_OUTPUT input) : COLOR0
 }
 
 //------------------------------------------------------------------------------
-// 描画テクニック
 technique MainTec0
 {
 	pass P0
@@ -65,3 +56,37 @@ technique MainTec0
 	}
 }
 
+#endif
+
+//=============================================================================
+// GLSL
+//=============================================================================
+#ifdef LN_GLSL_VERTEX_Main
+
+uniform mat4	WorldViewProjMatrix;
+
+attribute vec3	ln_Vertex0;
+
+varying vec2	v_TexUV;
+
+void main()
+{
+	gl_Position = WorldViewProjMatrix * vec4(ln_Vertex0, 1.0);
+	v_TexUV.z = ln_Vertex0.x;
+	v_TexUV.y = ln_Vertex0.z;
+}
+
+#endif
+#ifdef LN_GLSL_FRAGMENT_Main
+
+uniform sampler2D	ObjectTexture;
+
+varying vec2		v_TexUV;
+
+void main()
+{
+	vec4 texColor = texture2D(ObjTexSampler, v_TexUV);
+	vec4 texColor2 = texture2D(ObjTexSampler, v_TexUV / 10.0);
+	gl_FragColor = texColor + texColor2;
+}
+#endif

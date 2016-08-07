@@ -25,32 +25,7 @@ MMERenderingPass::MMERenderingPass(SceneGraphManager* manager, MMDPass mmdPass, 
 	, m_ownerShader(nullptr)
 {
 	LN_REFOBJ_SET(m_ownerShader, ownerShader);
-
-	m_gridPlane = RefPtr<StaticMeshModel>::MakeRef();
-	m_gridPlane->Initialize(manager->GetGraphicsManager());
-	m_gridPlane->CreateSquarePlane(Vector2(1, 1), Vector3::UnitY, MeshCreationFlags::DynamicBuffers);
-
-	auto shader = RefPtr<Shader>::MakeRef();
-	shader->Initialize(manager->GetGraphicsManager(), _T("D:/Proj/Volkoff/External/Lumino/test/UnitTest/Graphics/TestData/Grid.fx"));
-	m_gridPlane->GetMaterial(0)->SetShader(shader);
-
-	SizeI gridTexSize(512, 512);
-	auto gridTex = RefPtr<Texture2D>::MakeRef();
-	//gridTex->Initialize(manager->GetGraphicsManager(), _T("D:/Proj/Volkoff/External/Lumino/test/UnitTest/Graphics/TestData/Grid1.png"), TextureFormat::R8G8B8A8, 4);
-	gridTex->Initialize(manager->GetGraphicsManager(), gridTexSize, TextureFormat::R8G8B8A8, true);
-	//
-	for (int x = 0; x < gridTexSize.width; ++x)
-	{
-		gridTex->SetPixel(x, 0, Color(0, 0, 0, 0.5));
-		gridTex->SetPixel(x, 511, Color(0, 0, 0, 0.5));
-	}
-	for (int y = 0; y < gridTexSize.height; ++y)
-	{
-		gridTex->SetPixel(0, y, Color(0, 0, 0, 0.5));
-		gridTex->SetPixel(511, y, Color(0, 0, 0, 0.5));
-	}
-
-	m_gridPlane->GetMaterial(0)->SetTextureParameter(_T("ObjectTexture"), gridTex);
+	CreateGridContents();
 }
 
 //------------------------------------------------------------------------------
@@ -241,8 +216,51 @@ void MMERenderingPass::PostRender(SceneGraphRenderingContext* dc)
 }
 
 //------------------------------------------------------------------------------
+void MMERenderingPass::CreateGridContents()
+{
+	GraphicsManager* gm = GetManager()->GetGraphicsManager();
+
+	// 適当な四角形メッシュ
+	m_gridPlane = RefPtr<StaticMeshModel>::MakeRef();
+	m_gridPlane->Initialize(gm);
+	m_gridPlane->CreateSquarePlane(Vector2(1, 1), Vector3::UnitY, MeshCreationFlags::DynamicBuffers);
+
+	// シェーダ (DrawingContext3D)
+	static const byte_t shaderCode[] =
+	{
+#include "../Resource/InfinitePlaneGrid.lfx.h"
+	};
+	static const size_t shaderCodeLen = LN_ARRAY_SIZE_OF(shaderCode);
+	auto shader = RefPtr<Shader>::MakeRef();
+	shader->Initialize(gm, shaderCode, shaderCodeLen);
+	m_gridPlane->GetMaterial(0)->SetShader(shader);
+
+	// 四方の辺に黒線を引いたテクスチャを作り、マテリアルにセットしておく
+	SizeI gridTexSize(512, 512);
+	auto gridTex = RefPtr<Texture2D>::MakeRef();
+	gridTex->Initialize(gm, gridTexSize, TextureFormat::R8G8B8A8, true);
+	for (int x = 0; x < gridTexSize.width; ++x)
+	{
+		gridTex->SetPixel(x, 0, Color(0, 0, 0, 0.5));
+		gridTex->SetPixel(x, gridTexSize.width - 1, Color(0, 0, 0, 0.5));
+	}
+	for (int y = 0; y < gridTexSize.height; ++y)
+	{
+		gridTex->SetPixel(0, y, Color(0, 0, 0, 0.5));
+		gridTex->SetPixel(gridTexSize.height - 1, y, Color(0, 0, 0, 0.5));
+	}
+	m_gridPlane->GetMaterial(0)->SetTextureParameter(_T("ObjectTexture"), gridTex);
+}
+
+//------------------------------------------------------------------------------
 void MMERenderingPass::AdjustGridMesh(Camera* camera)
 {
+	/*
+		カメラの視錐台と、グリッドを描画したい平面との衝突点から、四角形メッシュを作る。
+		これで視界に映る平面全体をカバーするメッシュができる。
+		あとはシェーダで、頂点の位置を利用してグリッドテクスチャをサンプリングする。
+	*/
+
 	struct Line
 	{
 		Vector3	from;

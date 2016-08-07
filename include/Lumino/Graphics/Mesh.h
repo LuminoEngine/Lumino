@@ -30,6 +30,22 @@ typedef Array<MeshAttribute>		MeshAttributeList;
 /**
 	@brief
 */
+class MeshResource
+	: public Object
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+
+LN_INTERNAL_ACCESS:
+	MeshResource();
+	virtual ~MeshResource();
+	void Initialize(GraphicsManager* manager);
+};
+
+
+/**
+	@brief
+*/
 class StaticMeshModel
 	: public Object
 {

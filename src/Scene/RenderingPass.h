@@ -64,6 +64,8 @@ public:
 
 	virtual void PostRender(SceneGraphRenderingContext* dc) {}
 
+LN_INTERNAL_ACCESS:
+	SceneGraphManager* GetManager() const { return m_manager; }
 
 protected:
 
