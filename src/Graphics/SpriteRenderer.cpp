@@ -345,7 +345,7 @@ void SpriteRenderer::Flush()
 	
 static const byte_t g_SpriteRenderer_fx_Data[] =
 {
-#include "Resource/SpriteRenderer.fx.h"
+#include "Resource/SpriteRenderer.lfx.h"
 };
 static const size_t g_SpriteRenderer_fx_Len = LN_ARRAY_SIZE_OF(g_SpriteRenderer_fx_Data);
 

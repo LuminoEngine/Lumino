@@ -17,7 +17,9 @@ LN_NAMESPACE_BEGIN
 StaticMeshPtr StaticMesh::Create(const StringRef& filePath)
 {
 	auto ptr = StaticMeshPtr::MakeRef();
-	auto mesh = SceneGraphManager::Instance->GetModelManager()->CreateModelCore(filePath);
+	auto meshResource = SceneGraphManager::Instance->GetModelManager()->CreateModelCore(filePath);
+	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
+	mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager(), meshResource);
 	ptr->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), mesh);
 	return ptr;
 }
@@ -27,8 +29,7 @@ StaticMeshPtr StaticMesh::CreateBox(const Vector3& size)
 {
 	auto ptr = StaticMeshPtr::MakeRef();
 	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
-	mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager());
-	mesh->CreateBox(size);
+	mesh->InitializeBox(SceneGraphManager::Instance->GetGraphicsManager(), size);
 	ptr->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), mesh);
 	return ptr;
 }
@@ -38,8 +39,7 @@ StaticMeshPtr StaticMesh::CreateSphere(float radius, int slices, int stacks, Mes
 {
 	auto ptr = StaticMeshPtr::MakeRef();
 	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
-	mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager());
-	mesh->CreateSphere(radius, slices, stacks, flags);
+	mesh->InitializeSphere(SceneGraphManager::Instance->GetGraphicsManager(), radius, slices, stacks, flags);
 	ptr->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), mesh);
 	return ptr;
 }
@@ -49,8 +49,7 @@ StaticMeshPtr StaticMesh::CreateSquarePlane(const Vector2& size, const Vector3& 
 {
 	auto ptr = StaticMeshPtr::MakeRef();
 	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
-	mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager());
-	mesh->CreateSquarePlane(size, front, flags);
+	mesh->InitializeSquarePlane(SceneGraphManager::Instance->GetGraphicsManager(), size, front, flags);
 	ptr->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), mesh);
 	return ptr;
 }
@@ -60,8 +59,7 @@ StaticMeshPtr StaticMesh::CreateScreenPlane()
 {
 	auto ptr = StaticMeshPtr::MakeRef();
 	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
-	mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager());
-	mesh->CreateScreenPlane();
+	mesh->InitializeScreenPlane(SceneGraphManager::Instance->GetGraphicsManager());
 	ptr->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), mesh);
 	return ptr;
 }
@@ -95,7 +93,7 @@ void StaticMesh::Initialize(SceneGraph* owner, StaticMeshModel* meshModel)
 //------------------------------------------------------------------------------
 void StaticMesh::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 {
-	dc->BeginGraphicsContext()->DrawMesh(m_mesh, m_mesh->m_attributes[subsetIndex].StartIndex, m_mesh->m_attributes[subsetIndex].PrimitiveNum);
+	dc->BeginGraphicsContext()->DrawMesh(m_mesh, subsetIndex);
 }
 
 LN_NAMESPACE_END

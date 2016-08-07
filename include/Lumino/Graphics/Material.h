@@ -75,6 +75,8 @@ LN_INTERNAL_ACCESS:
 
 	const Array<ValuePair>& GetLinkedVariableList() { return m_linkedVariableList; }
 
+	RefPtr<Material> Copy() const;
+
 public:	// TODO:
 
 	void SetMaterialTexture(Texture* v) { FindShaderValue(_T("MaterialTexture"))->SetManagedTexture(v); }

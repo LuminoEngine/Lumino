@@ -492,12 +492,12 @@ private:
 };
 
 //==============================================================================
-// StaticMeshModel
+// MeshResource
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(StaticMeshModel, Object);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(MeshResource, Object);
 
 //------------------------------------------------------------------------------
-StaticMeshModel::StaticMeshModel()
+MeshResource::MeshResource()
 	: m_manager(nullptr)
 	, m_vertexDeclaration()
 	, m_vertexBuffer()
@@ -512,12 +512,12 @@ StaticMeshModel::StaticMeshModel()
 }
 
 //------------------------------------------------------------------------------
-StaticMeshModel::~StaticMeshModel()
+MeshResource::~MeshResource()
 {
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::Initialize(GraphicsManager* manager)
+void MeshResource::Initialize(GraphicsManager* manager)
 {
 	if (LN_CHECKEQ_ARG(manager == nullptr)) return;
 	m_manager = manager;
@@ -526,7 +526,7 @@ void StaticMeshModel::Initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::CreateBox(const Vector3& size)
+void MeshResource::CreateBox(const Vector3& size)
 {
 	TexUVBoxMeshFactory factory(size);
 	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), 1, MeshCreationFlags::None);
@@ -537,7 +537,7 @@ void StaticMeshModel::CreateBox(const Vector3& size)
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::CreateSphere(float radius, int slices, int stacks, MeshCreationFlags flags)
+void MeshResource::CreateSphere(float radius, int slices, int stacks, MeshCreationFlags flags)
 {
 	SphereMeshFactory factory(radius, slices, stacks);
 	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), 1, MeshCreationFlags::None);
@@ -549,7 +549,7 @@ void StaticMeshModel::CreateSphere(float radius, int slices, int stacks, MeshCre
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::CreateSquarePlane(const Vector2& size, const Vector3& front, MeshCreationFlags flags)
+void MeshResource::CreateSquarePlane(const Vector2& size, const Vector3& front, MeshCreationFlags flags)
 {
 	PlaneMeshFactory2 factory(size, front);
 	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), 1, flags);
@@ -561,7 +561,7 @@ void StaticMeshModel::CreateSquarePlane(const Vector2& size, const Vector3& fron
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::CreateScreenPlane()
+void MeshResource::CreateScreenPlane()
 {
 	PlaneMeshFactory factory(Vector2(2.0f, 2.0f));
 	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), 1, MeshCreationFlags::None);
@@ -572,7 +572,7 @@ void StaticMeshModel::CreateScreenPlane()
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::SetMaterialCount(int count)
+void MeshResource::SetMaterialCount(int count)
 {
 	int oldCount = m_materials->GetCount();
 	m_materials->Resize(count);
@@ -588,13 +588,13 @@ void StaticMeshModel::SetMaterialCount(int count)
 }
 
 //------------------------------------------------------------------------------
-Material* StaticMeshModel::GetMaterial(int index) const
+Material* MeshResource::GetMaterial(int index) const
 {
 	return m_materials->GetAt(index);
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::SetPosition(int index, const Vector3& position)
+void MeshResource::SetPosition(int index, const Vector3& position)
 {
 	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
 	TryLockBuffers();
@@ -602,7 +602,7 @@ void StaticMeshModel::SetPosition(int index, const Vector3& position)
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::SetUV(int index, const Vector2& uv)
+void MeshResource::SetUV(int index, const Vector2& uv)
 {
 	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
 	TryLockBuffers();
@@ -610,7 +610,7 @@ void StaticMeshModel::SetUV(int index, const Vector2& uv)
 }
 
 //------------------------------------------------------------------------------
-const Vector3& StaticMeshModel::GetPosition(int index)
+const Vector3& MeshResource::GetPosition(int index)
 {
 	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return Vector3::Zero;
 	TryLockBuffers();
@@ -618,7 +618,7 @@ const Vector3& StaticMeshModel::GetPosition(int index)
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::TryLockBuffers()
+void MeshResource::TryLockBuffers()
 {
 	if (m_lockedVertexBuffer == nullptr)
 	{
@@ -633,7 +633,7 @@ void StaticMeshModel::TryLockBuffers()
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::CommitRenderData(VertexDeclaration** decls, VertexBuffer** vb, IndexBuffer** ib)
+void MeshResource::CommitRenderData(VertexDeclaration** decls, VertexBuffer** vb, IndexBuffer** ib)
 {
 	if (m_lockedVertexBuffer != nullptr)
 	{
@@ -653,7 +653,7 @@ void StaticMeshModel::CommitRenderData(VertexDeclaration** decls, VertexBuffer**
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::CreateBuffers(int vertexCount, int indexCount, int attributeCount, MeshCreationFlags flags)
+void MeshResource::CreateBuffers(int vertexCount, int indexCount, int attributeCount, MeshCreationFlags flags)
 {
 	m_vertexDeclaration = m_manager->GetDefaultVertexDeclaration();
 
@@ -673,7 +673,7 @@ void StaticMeshModel::CreateBuffers(int vertexCount, int indexCount, int attribu
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::PostGenerated(Vertex* vb, void* ib, MeshCreationFlags flags)
+void MeshResource::PostGenerated(Vertex* vb, void* ib, MeshCreationFlags flags)
 {
 	for (int i = 0; i < m_vertexCount; ++i)
 	{
@@ -700,6 +700,83 @@ void StaticMeshModel::PostGenerated(Vertex* vb, void* ib, MeshCreationFlags flag
 			LN_NOTIMPLEMENTED();
 		}
 	}
+}
+
+//==============================================================================
+// StaticMeshModel
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(StaticMeshModel, Object);
+
+//------------------------------------------------------------------------------
+StaticMeshModel::StaticMeshModel()
+{
+}
+
+//------------------------------------------------------------------------------
+StaticMeshModel::~StaticMeshModel()
+{
+}
+
+//------------------------------------------------------------------------------
+void StaticMeshModel::Initialize(GraphicsManager* manager, MeshResource* sharingMesh)
+{
+	if (LN_CHECKEQ_ARG(manager == nullptr)) return;
+	if (LN_CHECKEQ_ARG(sharingMesh == nullptr)) return;
+
+	// メッシュ(バッファ類)は共有する
+	m_meshResource = sharingMesh;
+
+	// マテリアルはコピーする
+	// TODO: コピー有無のフラグがあったほうがいいかも？
+	int count = m_meshResource->m_materials->GetCount();
+	m_materials = RefPtr<MaterialList>::MakeRef();
+	m_materials->Resize(count);
+	for (int i = 0; i < count; ++i)
+	{
+		m_materials->SetAt(i, m_meshResource->m_materials->GetAt(i)->Copy());
+	}
+}
+
+//------------------------------------------------------------------------------
+void StaticMeshModel::InitializeBox(GraphicsManager* manager, const Vector3& size)
+{
+	auto res = RefPtr<MeshResource>::MakeRef();
+	res->Initialize(manager);
+	res->CreateBox(size);
+	Initialize(manager, res);
+}
+
+//------------------------------------------------------------------------------
+void StaticMeshModel::InitializeSphere(GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags)
+{
+	auto res = RefPtr<MeshResource>::MakeRef();
+	res->Initialize(manager);
+	res->CreateSphere(radius, slices, stacks, flags);
+	Initialize(manager, res);
+}
+
+//------------------------------------------------------------------------------
+void StaticMeshModel::InitializeSquarePlane(GraphicsManager* manager, const Vector2& size, const Vector3& front, MeshCreationFlags flags)
+{
+	auto res = RefPtr<MeshResource>::MakeRef();
+	res->Initialize(manager);
+	res->CreateSquarePlane(size, front, flags);
+	Initialize(manager, res);
+}
+
+//------------------------------------------------------------------------------
+void StaticMeshModel::InitializeScreenPlane(GraphicsManager* manager)
+{
+	auto res = RefPtr<MeshResource>::MakeRef();
+	res->Initialize(manager);
+	res->CreateScreenPlane();
+	Initialize(manager, res);
+}
+
+//------------------------------------------------------------------------------
+int StaticMeshModel::GetSubsetCount() const
+{
+	return m_meshResource->GetSubsetCount();
 }
 
 LN_NAMESPACE_END

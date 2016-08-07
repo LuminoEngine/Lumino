@@ -6,6 +6,7 @@
 
 LN_NAMESPACE_BEGIN
 class Material;
+class MeshResource;
 class StaticMeshModel;
 namespace detail { class PrimitiveRenderer; }
 namespace detail { class MeshRendererProxy; }
@@ -163,7 +164,9 @@ LN_INTERNAL_ACCESS:
 	RenderingContext();
 	virtual ~RenderingContext();
 	void Initialize(GraphicsManager* manager);
-	void DrawMesh(StaticMeshModel* mesh, int startIndex, int triangleCount);
+	void DrawMesh(MeshResource* mesh, int startIndex, int triangleCount);
+	void DrawMesh(StaticMeshModel* mesh, int subset);
+	void DrawMesh(MeshResource* mesh, int startIndex, int triangleCount, Material* material);
 	void DrawMesh(StaticMeshModel* mesh, int startIndex, int triangleCount, Material* material);
 
 protected:

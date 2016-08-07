@@ -5,6 +5,7 @@
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Shader.h>
 #include <Lumino/Graphics/Material.h>
+#include <Lumino/Graphics/Mesh.h>
 #include "RendererImpl.h"
 #include "PrimitiveRenderer.h"
 #include "MeshRendererProxy.h"
@@ -503,14 +504,20 @@ void RenderingContext::BltInternal(Texture* source, RenderTarget* dest, const Ma
 }
 
 //------------------------------------------------------------------------------
-void RenderingContext::DrawMesh(StaticMeshModel* mesh, int startIndex, int triangleCount)
+void RenderingContext::DrawMesh(MeshResource* mesh, int startIndex, int triangleCount)
 {
 	NorityStartDrawing(m_meshRendererProxy);
 	m_meshRendererProxy->DrawMesh(mesh, startIndex, triangleCount);
 }
 
 //------------------------------------------------------------------------------
-void RenderingContext::DrawMesh(StaticMeshModel* mesh, int startIndex, int triangleCount, Material* material)
+void RenderingContext::DrawMesh(StaticMeshModel* mesh, int subset)
+{
+	DrawMesh(mesh->m_meshResource, mesh->m_meshResource->m_attributes[subset].StartIndex, mesh->m_meshResource->m_attributes[subset].PrimitiveNum);
+}
+
+//------------------------------------------------------------------------------
+void RenderingContext::DrawMesh(MeshResource* mesh, int startIndex, int triangleCount, Material* material)
 {
 	material->ApplyToShaderVariables();
 
@@ -524,6 +531,12 @@ void RenderingContext::DrawMesh(StaticMeshModel* mesh, int startIndex, int trian
 		SetShaderPass(pass);
 		DrawMesh(mesh, startIndex, triangleCount);
 	}
+}
+
+//------------------------------------------------------------------------------
+void RenderingContext::DrawMesh(StaticMeshModel* mesh, int startIndex, int triangleCount, Material* material)
+{
+	DrawMesh(mesh->m_meshResource, startIndex, triangleCount, material);
 }
 
 //------------------------------------------------------------------------------

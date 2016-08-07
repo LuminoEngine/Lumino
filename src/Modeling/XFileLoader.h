@@ -7,7 +7,7 @@
 #include "../Graphics/Device/DirectX9/DX9Module.h"
 
 LN_NAMESPACE_BEGIN
-class StaticMeshModel;
+class MeshResource;
 class Material;
 
 namespace detail
@@ -171,7 +171,7 @@ private:
 class XFileLoader
 {
 public:
-	RefPtr<StaticMeshModel> Load(ModelManager* manager, Stream* stream, const PathName& parentDir, bool isDynamic, ModelCreationFlag flags);
+	RefPtr<MeshResource> Load(ModelManager* manager, Stream* stream, const PathName& parentDir, bool isDynamic, ModelCreationFlag flags);
 	static void DxMaterialToLnMaterial(const D3DMATERIAL9& dx_material, Material* material);
 
 	static void ConvertVertex_Pos_Normal_UV(Vertex* lnVB, XFileVertex_Pos_Normal_UV* dxVB, uint32_t count);

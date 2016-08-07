@@ -5,7 +5,7 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
-class StaticMeshModel;
+class MeshResource;
 
 namespace detail
 {
@@ -24,7 +24,7 @@ public:
 	void SetTransform(const Matrix& matrix);
 	void SetViewProjMatrix(const Matrix& matrix);
 
-	void DrawMesh(StaticMeshModel* mesh, int startIndex, int triangleCount);
+	void DrawMesh(MeshResource* mesh, int startIndex, int triangleCount);
 
 protected:
 	virtual void Flush() override {}

@@ -79,7 +79,7 @@ public:
 		@param[in]	format		: テクスチャのピクセルフォーマット
 		@param[in]	mipmap		: ミップマップの有無
 	*/
-	static Texture2DPtr Create(int width, int height, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = true);
+	static Texture2DPtr Create(int width, int height, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
 	// TODO: mipMap は unity のように、有無だけで指定したい
 	
 	/**
@@ -88,7 +88,7 @@ public:
 		@param[in]	format		: テクスチャのピクセルフォーマット
 		@param[in]	mipmap		: ミップマップの有無
 	*/
-	static Texture2DPtr Create(const SizeI& size, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = true);
+	static Texture2DPtr Create(const SizeI& size, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
 
 	/**
 		@brief		ファイルからテクスチャを作成します。
@@ -96,7 +96,7 @@ public:
 		@param[in]	format		: テクスチャのピクセルフォーマット
 		@param[in]	mipmap		: ミップマップの有無
 	*/
-	static Texture2DPtr Create(const StringRef& filePath, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = true);
+	static Texture2DPtr Create(const StringRef& filePath, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
 
 	/**
 		@brief		画像ファイルデータのストリームを指定してテクスチャを作成します。
@@ -104,7 +104,7 @@ public:
 		@param[in]	format		: テクスチャのピクセルフォーマット
 		@param[in]	mipmap		: ミップマップの有無
 	*/
-	static Texture2DPtr Create(Stream* stream, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = true);
+	static Texture2DPtr Create(Stream* stream, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
 
 	/**
 		@brief		メモリ上に展開された画像ファイルデータからテクスチャを作成します。
@@ -113,7 +113,7 @@ public:
 		@param[in]	format		: テクスチャのピクセルフォーマット
 		@param[in]	mipmap		: ミップマップの有無
 	*/
-	static Texture2DPtr Create(const void* data, size_t size, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = true);
+	static Texture2DPtr Create(const void* data, size_t size, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
 
 public:
 

@@ -13,6 +13,7 @@ sampler2D	g_texSampler = sampler_state
     texture = <g_texture>;
     MINFILTER = NONE;
     MAGFILTER = NONE;
+    MIPFILTER = LINEAR;
 };
 
 struct VSOutput
@@ -91,4 +92,3 @@ void main()
 }
 
 #endif
-

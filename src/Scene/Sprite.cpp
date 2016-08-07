@@ -264,7 +264,7 @@ Sprite2DPtr Sprite2D::Create()
 //------------------------------------------------------------------------------
 Sprite2DPtr Sprite2D::Create(const StringRef& filePath)
 {
-	auto tex = Texture2D::Create(filePath);
+	auto tex = Texture2D::Create(filePath);	// TODO: from asset
 	return Create(tex);
 }
 

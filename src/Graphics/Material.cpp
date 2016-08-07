@@ -59,6 +59,30 @@ Material::~Material()
 }
 
 //------------------------------------------------------------------------------
+RefPtr<Material> Material::Copy() const
+{
+	auto m = RefPtr<Material>::MakeRef();
+	m->m_shader = m_shader;
+	m->m_valueList = m_valueList;
+	m->m_linkedVariableList = m_linkedVariableList;
+
+	m->m_blendMode = m_blendMode;
+	m->m_culling = m_culling;
+	m->m_fill = m_fill;
+	m->m_alphaTest = m_alphaTest;
+	m->m_depthTestEnabled = m_depthTestEnabled;
+	m->m_depthWriteEnabled = m_depthWriteEnabled;
+
+	// 遅延評価のための変更フラグはそのまま維持。コピー時は評価しない。
+	// コピー先が本当に必要になったタイミングで評価されるようにする。
+	m->m_shaderModified = m_shaderModified;
+
+	m->m_modifiedForMaterialInstance = m_shaderModified;
+
+	return m;
+}
+
+//------------------------------------------------------------------------------
 void Material::SetShader(Shader* shader)
 {
 	m_shader = shader;

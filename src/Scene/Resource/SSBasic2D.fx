@@ -23,6 +23,7 @@ sampler2D gTexSampler = sampler_state
     texture = < gMaterialTexture >;
     MINFILTER = NONE;
     MAGFILTER = NONE;
+    MIPFILTER = LINEAR;
 };
 
 struct VS_OUTPUT 

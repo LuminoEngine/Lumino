@@ -18,6 +18,13 @@ class DX9Shader
 public:
 	static const char*		Macro_LN_HLSL_DX9;		///< "LN_HLSL_DX9"
 
+	struct TextureVarInfo
+	{
+		DX9ShaderVariable*			variable;
+		IDirect3DTexture9*			key;
+		IDirect3DBaseTexture9*		originalTexture;
+	};
+
 public:
 	DX9Shader(DX9GraphicsDevice* device, ID3DXEffect* dxEffect);
 	virtual ~DX9Shader();
@@ -29,9 +36,9 @@ public:
 	DX9GraphicsDevice* GetGraphicsDevice() { return m_device; }
 	ID3DXEffect* GetID3DXEffect() { return m_dxEffect; }
 
-	const SamplerState* FindSamplerState(IDirect3DBaseTexture9* dxTexture) const;
+	//const SamplerState* FindSamplerState(IDirect3DBaseTexture9* dxTexture) const;
+	Array<TextureVarInfo>* GetTextureVarInfoList() { return &m_textureVariables; }
 
-public:
 	// override IShader
 	virtual int GetVariableCount() const { return m_variables.GetCount(); }
 	virtual IShaderVariable* GetVariable(int index) const;
@@ -39,13 +46,13 @@ public:
 	virtual IShaderTechnique* GetTechnique(int index) const;
 	virtual void OnLostDevice();
 	virtual void OnResetDevice();
-	
 
 private:
+
 	DX9GraphicsDevice*				m_device;
 	ID3DXEffect*					m_dxEffect;
 	Array<DX9ShaderVariable*>		m_variables;
-	Array<DX9ShaderVariable*>		m_textureVariables;	// GetSamplerState の検索を早くするため、テクスチャ型のものはここに覚えておく
+	Array<TextureVarInfo>			m_textureVariables;		// texture 型変数と sampler 型変数のペアを探すために使用する
 	Array<DX9ShaderTechnique*>		m_techniques;
 };
 
@@ -56,6 +63,9 @@ class DX9ShaderVariable
 public:
 	DX9ShaderVariable(DX9Shader* owner, D3DXHANDLE handle);
 	virtual ~DX9ShaderVariable();
+
+	D3DXHANDLE GetHandle() const { return m_handle; }
+	DX9TextureBase* GetDX9TextureBase() const { return m_texture; }
 
 	/// 初期値の読み取り用
 	static void GetValue(ID3DXEffect* dxEffect, D3DXHANDLE handle, ShaderVariableTypeDesc desc, ShaderValue* outValue);
@@ -79,6 +89,7 @@ private:
 	D3DXHANDLE						m_handle;
 	Array<DX9ShaderAnnotation*>		m_annotations;
 	Array<BOOL>						m_temp;
+	DX9TextureBase*					m_texture;
 };
 
 /// アノテーション
@@ -145,6 +156,12 @@ public:
 	void CommitSamplerStatus();
 
 private:
+	struct SamplerLink
+	{
+		int					samplerIndex;
+		DX9ShaderVariable*	variable;
+	};
+
 	DX9Shader*						m_owner;
 	DX9Renderer*					m_renderer;
 	ID3DXEffect*					m_dxEffect;
@@ -153,7 +170,8 @@ private:
 	int								m_passIndex;
 	String							m_name;
 	Array<DX9ShaderAnnotation*>		m_annotations;
-	Array<int>						m_samplerIndices;
+	Array<SamplerLink>				m_samplerLinkList;
+	bool							m_resolvedSamplerLink;
 };
 
 } // namespace Driver

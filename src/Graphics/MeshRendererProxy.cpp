@@ -72,7 +72,7 @@ void MeshRendererProxy::SetViewProjMatrix(const Matrix& matrix)
 }
 
 //------------------------------------------------------------------------------
-void MeshRendererProxy::DrawMesh(StaticMeshModel* mesh, int startIndex, int triangleCount)
+void MeshRendererProxy::DrawMesh(MeshResource* mesh, int startIndex, int triangleCount)
 {
 	if (LN_CHECKEQ_ARG(mesh == nullptr)) return;
 	auto* _this = this;

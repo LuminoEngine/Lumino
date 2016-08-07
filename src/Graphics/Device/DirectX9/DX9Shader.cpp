@@ -170,10 +170,18 @@ DX9Shader::DX9Shader(DX9GraphicsDevice* device, ID3DXEffect* dxEffect)
 		if (!handle) break;
 
 		auto* v = LN_NEW DX9ShaderVariable(this, handle);
-		m_variables.Add(v);
-		if (v->GetType() == ShaderVariableType_DeviceTexture)
+		if (v->GetType() == ShaderVariableType_Unknown)
 		{
-			m_textureVariables.Add(v);
+			LN_SAFE_RELEASE(v);
+		}
+		else
+		{
+			m_variables.Add(v);
+			if (v->GetType() == ShaderVariableType_DeviceTexture)
+			{
+				TextureVarInfo info = { v, device->GetDummyTextures()[m_textureVariables.GetCount()], nullptr };
+				m_textureVariables.Add(info);
+			}
 		}
 
 		++idx;
@@ -230,18 +238,18 @@ void DX9Shader::OnResetDevice()
 }
 
 //------------------------------------------------------------------------------
-const SamplerState* DX9Shader::FindSamplerState(IDirect3DBaseTexture9* dxTexture) const
-{
-	for (DX9ShaderVariable* v : m_textureVariables)
-	{
-		DX9TextureBase* tex = static_cast<DX9TextureBase*>(v->GetTexture());
-		if (tex != nullptr && tex->GetIDirect3DBaseTexture9() == dxTexture)
-		{
-			return &tex->GetSamplerState();
-		}
-	}
-	return nullptr;
-}
+//const SamplerState* DX9Shader::FindSamplerState(IDirect3DBaseTexture9* dxTexture) const
+//{
+//	for (DX9ShaderVariable* v : m_textureVariables)
+//	{
+//		DX9TextureBase* tex = static_cast<DX9TextureBase*>(v->GetTexture());
+//		if (tex != nullptr && tex->GetIDirect3DBaseTexture9() == dxTexture)
+//		{
+//			return &tex->GetSamplerState();
+//		}
+//	}
+//	return nullptr;
+//}
 
 //==============================================================================
 // DX9Shader
@@ -266,11 +274,11 @@ void D3DXParamDescToLNParamDesc(
 	case D3DXPT_TEXTURE2D:		*type = ShaderVariableType_DeviceTexture; break;
 	case D3DXPT_TEXTURE3D:		*type = ShaderVariableType_DeviceTexture; break;
 	case D3DXPT_TEXTURECUBE:	*type = ShaderVariableType_DeviceTexture; break;
-	case D3DXPT_SAMPLER:		*type = ShaderVariableType_DeviceTexture; break;
-	case D3DXPT_SAMPLER1D:		*type = ShaderVariableType_DeviceTexture; break;
-	case D3DXPT_SAMPLER2D:		*type = ShaderVariableType_DeviceTexture; break;
-	case D3DXPT_SAMPLER3D:		*type = ShaderVariableType_DeviceTexture; break;
-	case D3DXPT_SAMPLERCUBE:	*type = ShaderVariableType_DeviceTexture; break;
+	case D3DXPT_SAMPLER:		*type = ShaderVariableType_Unknown; break;
+	case D3DXPT_SAMPLER1D:		*type = ShaderVariableType_Unknown; break;
+	case D3DXPT_SAMPLER2D:		*type = ShaderVariableType_Unknown; break;
+	case D3DXPT_SAMPLER3D:		*type = ShaderVariableType_Unknown; break;
+	case D3DXPT_SAMPLERCUBE:	*type = ShaderVariableType_Unknown; break;
 	case D3DXPT_PIXELSHADER:	*type = ShaderVariableType_Unknown; break;
 	case D3DXPT_VERTEXSHADER:	*type = ShaderVariableType_Unknown; break;
 	case D3DXPT_PIXELFRAGMENT:	*type = ShaderVariableType_Unknown; break;
@@ -528,6 +536,8 @@ void DX9ShaderVariable::SetTexture(ITexture* texture)
 		m_dxEffect->SetTexture(m_handle, NULL);
 	}
 	ShaderVariableBase::SetTexture(texture);
+
+	m_texture = static_cast<DX9TextureBase*>(texture);
 }
 
 //------------------------------------------------------------------------------
@@ -615,6 +625,7 @@ DX9ShaderPass::DX9ShaderPass(DX9Shader* owner, D3DXHANDLE handle, int passIndex,
 	, m_passIndex(passIndex)
 	, m_name()
 	, m_annotations()
+	, m_resolvedSamplerLink(false)
 {
 	D3DXPASS_DESC desc;
 	m_dxEffect->GetPassDesc(m_handle, &desc);
@@ -640,7 +651,8 @@ DX9ShaderPass::DX9ShaderPass(DX9Shader* owner, D3DXHANDLE handle, int passIndex,
 		constantTablePS->GetConstantDesc(handle, &cd, NULL);
 		if (cd.RegisterSet == D3DXRS_SAMPLER)
 		{
-			m_samplerIndices.Add(constantTablePS->GetSamplerIndex(handle));
+			SamplerLink link = { (int)constantTablePS->GetSamplerIndex(handle), nullptr };
+			m_samplerLinkList.Add(link);
 		}
 		//printf("%s\n", cd.Name);	// これでサンプラ変数が取れる
 	}
@@ -649,7 +661,7 @@ DX9ShaderPass::DX9ShaderPass(DX9Shader* owner, D3DXHANDLE handle, int passIndex,
 #if 0
 	printf("----------------\n");
 	LPD3DXCONSTANTTABLE constantTable;
-	//D3DXGetShaderConstantTable(desc.pVertexShaderFunction, &constantTable);
+	D3DXGetShaderConstantTable(desc.pVertexShaderFunction, &constantTable);
 	
 
 	D3DXCONSTANTTABLE_DESC constDesc;
@@ -680,6 +692,7 @@ DX9ShaderPass::~DX9ShaderPass()
 void DX9ShaderPass::Apply()
 {
 //	m_renderer->TryBeginScene();
+	CommitSamplerStatus();
 
 	auto* current = m_renderer->GetCurrentShaderPass();
 	if (current == this) {
@@ -696,7 +709,7 @@ void DX9ShaderPass::Apply()
 		LN_COMCALL(m_dxEffect->BeginPass(m_passIndex));
 		m_renderer->SetCurrentShaderPass(this);		// 前の Pass の EndPass() が呼ばれる
 	}
-	CommitSamplerStatus();
+	
 }
 
 //------------------------------------------------------------------------------
@@ -709,17 +722,65 @@ void DX9ShaderPass::EndPass()
 //------------------------------------------------------------------------------
 void DX9ShaderPass::CommitSamplerStatus()
 {
-#if 0
 	IDirect3DDevice9* dxDevice = m_owner->GetGraphicsDevice()->GetIDirect3DDevice9();
-	IDirect3DBaseTexture9* dxTexture;
-	for (int index : m_samplerIndices)
+
+	// 最初の1回だけ、このパス内で、サンプラインデックスに対応する DX9ShaderVariable を探す。
+	// 描画スレッドを使っている場合は初期化時に行うことはできないため、ここで行っている。
+	if (!m_resolvedSamplerLink)
 	{
-		dxDevice->GetTexture(index, &dxTexture);
-		if (dxTexture != nullptr)
+		auto* infoList = m_owner->GetTextureVarInfoList();
+
+		// 元のテクスチャを覚えておき、検索用のダミーをセット
+		for (auto& info : *infoList)
 		{
-			const SamplerState* ss = m_owner->FindSamplerState(dxTexture);
-			if (ss != nullptr)
+			LN_COMCALL(m_dxEffect->GetTexture(info.variable->GetHandle(), &info.originalTexture));
+			LN_COMCALL(m_dxEffect->SetTexture(info.variable->GetHandle(), info.key));
+		}
+
+		LN_COMCALL(m_dxEffect->SetTechnique(m_technique));
+		UINT dummy;
+		LN_COMCALL(m_dxEffect->Begin(&dummy, D3DXFX_DONOTSAVESTATE | D3DXFX_DONOTSAVESHADERSTATE));
+		LN_COMCALL(m_dxEffect->BeginPass(m_passIndex));
+
+		for (int i = 0; i < m_samplerLinkList.GetCount(); ++i)
+		{
+			SamplerLink* info = &m_samplerLinkList[i];
+			IDirect3DBaseTexture9* key;
+			dxDevice->GetTexture(info->samplerIndex, &key);
+			for (int iVarInfo = 0; iVarInfo < infoList->GetCount(); ++iVarInfo)
 			{
+				if (infoList->GetAt(iVarInfo).key == key)
+				{
+					info->variable = infoList->GetAt(iVarInfo).variable;
+					break;
+				}
+			}
+		}
+
+		m_dxEffect->EndPass();
+		m_dxEffect->End();
+
+		// 元のテクスチャに戻す
+		for (auto& info : *infoList)
+		{
+			m_dxEffect->SetTexture(info.variable->GetHandle(), info.originalTexture);
+			LN_SAFE_RELEASE(info.originalTexture);
+		}
+
+		m_resolvedSamplerLink = true;
+	}
+
+	// サンプラステートの設定
+	for (SamplerLink& info : m_samplerLinkList)
+	{
+		if (info.variable != nullptr)
+		{
+			DX9TextureBase* tex = info.variable->GetDX9TextureBase();
+			if (tex != nullptr)
+			{
+				const SamplerState& ss = tex->GetSamplerState();
+				int index = info.samplerIndex;
+
 				// フィルタモード
 				{
 					D3DTEXTUREFILTERTYPE table[] =
@@ -727,9 +788,9 @@ void DX9ShaderPass::CommitSamplerStatus()
 						D3DTEXF_POINT,	// TextureFilterMode_Point
 						D3DTEXF_LINEAR,	// TextureFilterMode_Linear
 					};
-					dxDevice->SetSamplerState(index, D3DSAMP_MAGFILTER, table[ss->FilterMode]);
-					dxDevice->SetSamplerState(index, D3DSAMP_MINFILTER, table[ss->FilterMode]);
-					dxDevice->SetSamplerState(index, D3DSAMP_MIPFILTER, table[ss->FilterMode]);
+					dxDevice->SetSamplerState(index, D3DSAMP_MAGFILTER, table[ss.FilterMode]);
+					dxDevice->SetSamplerState(index, D3DSAMP_MINFILTER, table[ss.FilterMode]);
+					dxDevice->SetSamplerState(index, D3DSAMP_MIPFILTER, table[ss.FilterMode]);
 				}
 				// ラップモード
 				{
@@ -738,15 +799,13 @@ void DX9ShaderPass::CommitSamplerStatus()
 						D3DTADDRESS_WRAP,	// TextureWrapMode_Repeat
 						D3DTADDRESS_CLAMP,	// TextureWrapMode_Clamp
 					};
-					dxDevice->SetSamplerState(index, D3DSAMP_ADDRESSU, table[ss->FilterMode]);
-					dxDevice->SetSamplerState(index, D3DSAMP_ADDRESSV, table[ss->FilterMode]);
-					dxDevice->SetSamplerState(index, D3DSAMP_ADDRESSW, table[ss->FilterMode]);
+					dxDevice->SetSamplerState(index, D3DSAMP_ADDRESSU, table[ss.FilterMode]);
+					dxDevice->SetSamplerState(index, D3DSAMP_ADDRESSV, table[ss.FilterMode]);
+					dxDevice->SetSamplerState(index, D3DSAMP_ADDRESSW, table[ss.FilterMode]);
 				}
 			}
-			dxTexture->Release();
 		}
 	}
-#endif
 }
 
 } // namespace Driver

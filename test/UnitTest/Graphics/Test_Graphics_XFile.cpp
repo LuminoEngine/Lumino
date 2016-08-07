@@ -42,54 +42,5 @@ TEST_F(Test_Graphics_XFile, Basic)
 
 	while (Engine::UpdateFrame())
 	{
-		auto& vf = Camera::GetMain3DCamera()->GetViewFrustum();
-		Vector3 points[8];
-		vf.GetCornerPoints(points);
-
-		Line lines[12] =
-		{
-			{ points[0], points[1] },
-			{ points[1], points[2] },
-			{ points[2], points[3] },
-			{ points[3], points[0] },
-
-			{ points[0], points[4] },
-			{ points[1], points[5] },
-			{ points[2], points[6] },
-			{ points[3], points[7] },
-
-			{ points[4], points[5] },
-			{ points[5], points[6] },
-			{ points[6], points[7] },
-			{ points[7], points[4] },
-		};
-
-		Plane plane(0, 1, 0, 0);
-		Array<Vector3> hits;
-		for (Line& li : lines)
-		{
-			Vector3 pt;
-			if (plane.Intersects(li.from, li.to, &pt))
-			{
-				hits.Add(pt);
-			}
-		}
-
-		Vector3 minPos, maxPos;
-		for (Vector3& p : hits)
-		{
-			minPos = Vector3::Min(p, minPos);
-			maxPos = Vector3::Max(p, maxPos);
-		}
-
-		auto* model = mesh->GetStaticMeshModel();
-		model->SetPosition(0, Vector3(minPos.x, 0, maxPos.z));
-		model->SetPosition(1, Vector3(minPos.x, 0, minPos.z));
-		model->SetPosition(2, Vector3(maxPos.x, 0, maxPos.z));
-		model->SetPosition(3, Vector3(maxPos.x, 0, minPos.z));
-		model->SetUV(0, Vector2(-1.0f, 1.0f));
-		model->SetUV(1, Vector2(-1.0f, -1.0f));
-		model->SetUV(2, Vector2(1.0f, 1.0f));
-		model->SetUV(3, Vector2(1.0f, -1.0f));
 	}
 }

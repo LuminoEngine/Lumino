@@ -107,11 +107,27 @@ void DX9GraphicsDevice::Initialize(const ConfigData& configData)
 	if (m_defaultSwapChain != NULL) {
 		m_defaultSwapChain->PostInitialize();
 	}
+
+
+	for (int i = 0; i < m_dxCaps.MaxSimultaneousTextures; ++i)
+	{
+		IDirect3DTexture9* tex = NULL;
+		LN_COMCALL(m_dxDevice->CreateTexture(2, 2, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &tex, NULL));
+		m_dummyTextures.Add(tex);
+	}
+
+	
 }
 
 //------------------------------------------------------------------------------
 void DX9GraphicsDevice::Finalize()
 {
+	for (IDirect3DTexture9* tex : m_dummyTextures)
+	{
+		LN_SAFE_RELEASE(tex);
+	}
+	m_dummyTextures.Clear();
+
 	GraphicsDeviceBase::Finalize();
 	LN_SAFE_RELEASE(m_renderer);
 	LN_SAFE_RELEASE(m_defaultSwapChain);

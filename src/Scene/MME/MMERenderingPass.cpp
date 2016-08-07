@@ -221,7 +221,7 @@ void MMERenderingPass::CreateGridContents()
 	GraphicsManager* gm = GetManager()->GetGraphicsManager();
 
 	// 適当な四角形メッシュ
-	m_gridPlane = RefPtr<StaticMeshModel>::MakeRef();
+	m_gridPlane = RefPtr<MeshResource>::MakeRef();
 	m_gridPlane->Initialize(gm);
 	m_gridPlane->CreateSquarePlane(Vector2(1, 1), Vector3::UnitY, MeshCreationFlags::DynamicBuffers);
 

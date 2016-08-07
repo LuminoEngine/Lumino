@@ -251,7 +251,7 @@ Texture2D* ModelManager::GetMMDDefaultToonTexture(int index)
 }
 
 //------------------------------------------------------------------------------
-RefPtr<StaticMeshModel> ModelManager::CreateModelCore(const PathName& filePath)
+RefPtr<MeshResource> ModelManager::CreateModelCore(const PathName& filePath)
 {
 #if defined(LN_OS_WIN32)
 	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath), false);
@@ -260,7 +260,7 @@ RefPtr<StaticMeshModel> ModelManager::CreateModelCore(const PathName& filePath)
 	//RefPtr<ModelCore> modelCore(loader.Load(this, stream, filePath.GetParent(), true));
 	
 	XFileLoader loader;
-	RefPtr<StaticMeshModel> mesh = loader.Load(this, stream, filePath.GetParent(), true, ModelCreationFlag::None);
+	RefPtr<MeshResource> mesh = loader.Load(this, stream, filePath.GetParent(), true, ModelCreationFlag::None);
 
 	//modelCore->RefreshInitialValues();
 	//modelCore.SafeAddRef();

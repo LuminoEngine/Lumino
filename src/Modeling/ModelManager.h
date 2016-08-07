@@ -6,6 +6,7 @@
 LN_NAMESPACE_BEGIN
 class FileManager;
 namespace Physics { class PhysicsManager; }
+class MeshResource;
 class StaticMeshModel;
 
 namespace detail
@@ -37,7 +38,7 @@ public:
 
 	RefPtr<Texture> CreateTexture(const PathName& parentDir, const StringRef& filePath, ModelCreationFlag flags);
 	
-	RefPtr<StaticMeshModel> CreateModelCore(const PathName& filePath);
+	RefPtr<MeshResource> CreateModelCore(const PathName& filePath);
 	//Animation::AnimationClip* CreateMotion(const PathName& filePath);
 
 private:

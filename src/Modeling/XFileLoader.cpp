@@ -549,7 +549,7 @@ static void FlipTriangleFronts(TIndex* indices, int count)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream, const PathName& parentDir, bool isDynamic, ModelCreationFlag flags)
+RefPtr<MeshResource> XFileLoader::Load(ModelManager* manager, Stream* stream, const PathName& parentDir, bool isDynamic, ModelCreationFlag flags)
 {
 	Driver::DX9GraphicsDevice* device = dynamic_cast<Driver::DX9GraphicsDevice*>(manager->GetGraphicsManager()->GetGraphicsDevice());
 	LN_THROW(device != nullptr, ArgumentException);
@@ -589,7 +589,7 @@ RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream,
 
 	try
 	{
-		auto mesh = StaticMeshModelPtr::MakeRef();
+		auto mesh = RefPtr<MeshResource>::MakeRef();
 		mesh->Initialize(manager->GetGraphicsManager());
 
 		// スキンメッシュではない場合

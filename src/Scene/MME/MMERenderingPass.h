@@ -3,7 +3,7 @@
 #include "../RenderingPass.h"
 
 LN_NAMESPACE_BEGIN
-class StaticMeshModel;
+class MeshResource;
 
 LN_NAMESPACE_SCENE_BEGIN
 
@@ -30,7 +30,7 @@ private:
 	MMDPass		m_mmdPass;
 	MMEShader*	m_ownerShader;			///< このパス (OFFSCREENRENDERTARGET) の生成元となったシェーダ
 
-	RefPtr<StaticMeshModel>	m_gridPlane;
+	RefPtr<MeshResource>	m_gridPlane;
 };
 
 LN_NAMESPACE_SCENE_END

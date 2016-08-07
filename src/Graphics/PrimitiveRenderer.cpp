@@ -174,7 +174,7 @@ void PrimitiveRendererCore::Initialize(GraphicsManager* manager)
 	// シェーダ (DrawingContext3D)
 	static const byte_t code_PrimitiveRenderer_fx_Data[] =
 	{
-#include "Resource/PrimitiveRenderer.fx.h"
+#include "Resource/PrimitiveRenderer.lfx.h"
 	};
 	static const size_t code_PrimitiveRenderer_fx_Len = LN_ARRAY_SIZE_OF(code_PrimitiveRenderer_fx_Data);
 

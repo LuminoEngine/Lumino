@@ -27,7 +27,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
 
 private:
-	RefPtr<StaticMeshModel>	m_mesh;
+	RefPtr<MeshResource>	m_mesh;
 	Vector3					m_direction;
 };
 

@@ -62,8 +62,9 @@ Texture2DPtr AssetsManager::LoadTexture(const StringRef& filePath)
 	Texture2D* ptr = static_cast<Texture2D*>(m_textureCache->FindObjectAddRef(key));
 	if (ptr != nullptr) { return Texture2DPtr(ptr, false); }
 
+	// TODO: mipmap ON にしたい。ただ、サンプラステートを変更しないとならないようなので動作確認してから。
 	Texture2DPtr ref = Texture2DPtr::MakeRef();
-	ref->Initialize(m_engineManager->GetGraphicsManager(), filePath, TextureFormat::R8G8B8A8, 1);
+	ref->Initialize(m_engineManager->GetGraphicsManager(), filePath, TextureFormat::R8G8B8A8, false);
 
 	m_textureCache->RegisterCacheObject(key, ref);
 	return ref;

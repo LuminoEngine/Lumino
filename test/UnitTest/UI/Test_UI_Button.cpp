@@ -15,7 +15,7 @@ TEST_F(Test_UI_Button, Basic)
 	button1->SetText(_T("Button"));
 	uiRoot->SetContent(button1);
 
-	while (Engine::UpdateFrame());
+	//while (Engine::UpdateFrame());
 
 
 }

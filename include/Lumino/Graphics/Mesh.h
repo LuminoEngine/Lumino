@@ -36,21 +36,6 @@ class MeshResource
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
-LN_INTERNAL_ACCESS:
-	MeshResource();
-	virtual ~MeshResource();
-	void Initialize(GraphicsManager* manager);
-};
-
-
-/**
-	@brief
-*/
-class StaticMeshModel
-	: public Object
-{
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
-public:
 
 	void SetMaterialCount(int count);
 
@@ -63,8 +48,8 @@ public:
 	//void FlipFaces();
 
 LN_INTERNAL_ACCESS:
-	StaticMeshModel();
-	virtual ~StaticMeshModel();
+	MeshResource();
+	virtual ~MeshResource();
 	void Initialize(GraphicsManager* manager);
 	void CreateBox(const Vector3& size);
 	void CreateSphere(float radius, int slices, int stacks, MeshCreationFlags flags);
@@ -93,6 +78,37 @@ LN_INTERNAL_ACCESS:	// TODO:
 
 	RefPtr<MaterialList>		m_materials;
 	MeshAttributeList			m_attributes;
+};
+
+
+/**
+	@brief
+*/
+class StaticMeshModel
+	: public Object
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+
+	int GetSubsetCount() const;
+	//Material* GetMaterial(int index) const;
+
+	//void SetPosition(int index, const Vector3& position);
+	//void SetUV(int index, const Vector2& uv);
+	//const Vector3& GetPosition(int index);
+
+LN_INTERNAL_ACCESS:
+	StaticMeshModel();
+	virtual ~StaticMeshModel();
+	void Initialize(GraphicsManager* manager, MeshResource* sharingMesh);
+	void InitializeBox(GraphicsManager* manager, const Vector3& size);
+	void InitializeSphere(GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags);
+	void InitializeSquarePlane(GraphicsManager* manager, const Vector2& size, const Vector3& front, MeshCreationFlags flags);
+	void InitializeScreenPlane(GraphicsManager* manager);
+
+LN_INTERNAL_ACCESS:	// TODO:
+	RefPtr<MeshResource>	m_meshResource;
+	RefPtr<MaterialList>	m_materials;
 };
 
 LN_NAMESPACE_END
