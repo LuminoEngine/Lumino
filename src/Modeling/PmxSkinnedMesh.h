@@ -3,7 +3,61 @@
 #include <Lumino/Graphics/Mesh.h>
 
 LN_NAMESPACE_BEGIN
+class PmxSkinnedMeshResource;
 
+/// モデルファイルのフォーマット
+enum ModelFormat
+{
+	ModelFormat_Unknown = 0,
+	ModelFormat_PMD,
+	ModelFormat_PMX,
+};
+
+/// ボーンフラグ 接続先(PMD子ボーン指定)表示方法
+enum BoneConnectType
+{
+	BoneConnectType_PositionOffset = 0,		///< 座標オフセットで指定
+	BoneConnectType_Bone,					///< ボーンで指定
+};
+
+/// ボーンフラグ ローカル付与 
+enum LocalProvideType
+{
+	LocalProvideType_UserTransformValue = 0,	///< ユーザー変形値／IKリンク／多重付与
+	LocalProvideType_ParentLocalTransformValue,	///< 親のローカル変形量
+};
+
+/// モーフ種別
+enum ModelMorphType
+{
+	ModelMorphType_Vertex = 0,
+	ModelMorphType_UV,
+	ModelMorphType_AdditionalUV1,
+	ModelMorphType_AdditionalUV2,
+	ModelMorphType_AdditionalUV3,
+	ModelMorphType_AdditionalUV4,
+	ModelMorphType_Bone,
+	ModelMorphType_Matrial,
+	ModelMorphType_Group,
+	ModelMorphType_Flip,
+	ModelMorphType_Impulse,
+};
+
+/// 剛体の形状
+enum CollisionShapeType
+{
+	CollisionShapeType_Sphere = 0,		///< 球
+	CollisionShapeType_Box,				///< 箱
+	CollisionShapeType_Capsule,			///< カプセル    
+};
+
+/// 剛体の演算種別
+enum RigidBodyType
+{
+	RigidBodyType_ControlledByBone = 0,	///< Bone追従
+	RigidBodyType_Physics,				///< 物理演算
+	RigidBodyType_PhysicsAlignment,		///< 物理演算(Bone位置合せ)
+};
 
 /// 共有マテリアルデータ
 class PmxMaterialResource
@@ -73,7 +127,7 @@ class PmxBoneResource
 	: public RefObject
 {
 public:
-	PmxBoneResource(ModelCore* owner, int boneIndex);
+	PmxBoneResource(PmxSkinnedMeshResource* owner, int boneIndex);
 	void RefreshInitialValues();
 	const Vector3& GetOffsetFromParent() const { return m_offsetFromParent; }
 	const Matrix& GetInitialTranstormInv() const { return m_initialTranstormInv; }
@@ -112,10 +166,10 @@ public:
 	int					KeyValue;					///< [外部親変形:1 の場合] Key値
 
 private:
-	ModelCore*			m_owner;
-	int					m_boneIndex;
-	Vector3				m_offsetFromParent;			///< (RefreshInitialValues() で設定される) 親ボーンのからの相対位置 (親OrgPosition - OrgPosition)
-	Matrix				m_initialTranstormInv;		///< (RefreshInitialValues() で設定される) モデル座標系内の初期姿勢の逆行列
+	PmxSkinnedMeshResource*	m_owner;
+	int						m_boneIndex;
+	Vector3					m_offsetFromParent;			///< (RefreshInitialValues() で設定される) 親ボーンのからの相対位置 (親OrgPosition - OrgPosition)
+	Matrix					m_initialTranstormInv;		///< (RefreshInitialValues() で設定される) モデル座標系内の初期姿勢の逆行列
 };
 
 
@@ -305,7 +359,7 @@ class PmxSkinnedMeshResource
 {
 	LN_CACHE_OBJECT_DECL;
 public:
-	virtual ~ModelCore();
+	virtual ~PmxSkinnedMeshResource();
 	void RefreshInitialValues();
 
 public:
@@ -316,13 +370,12 @@ public:
 	//String				Comment;			///< コメント
 	//String				EnglishComment;		///< コメント英
 
-	ModelMaterialCore		Material;			///< マテリアル
-	ModelBoneCoreList		Bones;				///< ボーンリスト
-	ModelIKCoreList			IKs;				///< IK リスト
-	ModelMorphCoreList		Morphs;				///< モーフリスト
-	ModelRigidBodyCoreList	RigidBodys;			///< 剛体リスト
-	ModelJointCoreList		Joints;				///< ジョイントリスト
-
+	Array<RefPtr<PmxMaterialResource>>	materials;	// マテリアルリスト
+	Array<RefPtr<PmxBoneResource>>		bones;		// ボーンリスト
+	Array<RefPtr<PmxIKResource>>		iks;		// IK リスト
+	Array<RefPtr<PmxMorphResource>>		morphs;		// モーフリスト
+	Array<RefPtr<PmxRigidBodyResource>>	rigidBodys;	// 剛体リスト
+	Array<RefPtr<PmxJointResource>>		joints;		// ジョイントリスト
 };
 
 LN_NAMESPACE_END

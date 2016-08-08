@@ -334,6 +334,8 @@ set(LN_SOURCES_Modeling
 	src/Modeling/Common.h
 	src/Modeling/ModelManager.cpp
 	src/Modeling/ModelManager.h
+	src/Modeling/PmxSkinnedMesh.cpp
+	src/Modeling/PmxSkinnedMesh.h
 )
 
 set(LN_SOURCES_Scene
