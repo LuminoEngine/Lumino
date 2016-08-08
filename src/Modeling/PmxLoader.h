@@ -1,15 +1,14 @@
 ﻿
 #pragma once
-#include <Lumino/IO/BinaryReader.h>
 #include "Common.h"
-#include "ModelCore.h"
 
-namespace Lumino
-{
-namespace Modeling
-{
+LN_NAMESPACE_BEGIN
+class BinaryReader;
+class Texture2D;
+class ModelManager;
+class PmxSkinnedMeshResource;
 
-class PMXLoader
+class PmxLoader
 {
 public:
 
@@ -39,13 +38,10 @@ public:
 #pragma pack( pop )
 
 public:
-	~PMXLoader();
+	PmxLoader();
+	~PmxLoader();
 
-public:
-
-	/// 読み込み
-	///		baseDir	: .pmx ファイルの存在するフォルダパス
-	ModelCore* Load(ModelManager* manager, Stream* stream, const PathNameW& baseDir, bool isDynamic);
+	RefPtr<PmxSkinnedMeshResource> Load(ModelManager* manager, Stream* stream, const PathName& baseDir, bool isDynamic);
 
 private:
 	PMX_Encode getEncode() { return (PMX_Encode)m_pmxHeader.Data[0]; }
@@ -61,7 +57,7 @@ private:
 	void LoadModelInfo(BinaryReader* reader);
 	void LoadVertices(BinaryReader* reader);
 	void LoadIndices(BinaryReader* reader);
-	void LoadTextureTable(BinaryReader* reader, const PathNameW& baseDir);
+	void LoadTextureTable(BinaryReader* reader, const PathName& baseDir);
 	void LoadMaterials(BinaryReader* reader);
 	void LoadBones(BinaryReader* reader);
 	void LoadMorphs(BinaryReader* reader);
@@ -69,17 +65,15 @@ private:
 	void LoadRigidBodys(BinaryReader* reader);
 	void LoadJoints(BinaryReader* reader);
 
-	StringW ReadString(BinaryReader* reader);
+	String ReadString(BinaryReader* reader);
 
 private:
 	ModelManager*					m_manager;
 	bool							m_isDynamic;
-	//uint32_t						mFlags;
-	RefPtr<ModelCore>				m_modelCore;		///< 最終出力
+	RefPtr<PmxSkinnedMeshResource>	m_modelCore;		///< 最終出力
 	PMX_Header						m_pmxHeader;
-	ArrayList<Graphics::Texture*>	m_textureTable;
+	Array<RefPtr<Texture2D>>		m_textureTable;
 	ByteBuffer						m_tmpBuffer;
 };
 
-} // namespace Modeling
-} // namespace Lumino
+LN_NAMESPACE_END
