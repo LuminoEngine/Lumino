@@ -36,7 +36,17 @@ MaterialInstance::~MaterialInstance()
 //------------------------------------------------------------------------------
 void MaterialInstance::Combine(Material* owner, Material* parent)
 {
+	bool modified = false;
 	if (m_owner == nullptr || owner != m_owner || m_owner->m_modifiedForMaterialInstance)
+	{
+		modified = true;
+	}
+	if (parent != nullptr && parent->m_modifiedForMaterialInstance)
+	{
+		modified = true;
+	}
+
+	if (modified)
 	{
 		// set
 		m_owner = owner;
@@ -179,6 +189,11 @@ void MaterialList2::UpdateMaterialInstances(SceneGraph* sceneGraph)
 		if (m_instanceList.GetCount() != 1) m_instanceList.Resize(1);
 		LN_NOTIMPLEMENTED();
 		//m_instanceList[0].Combine(parent, nullptr);
+	}
+
+	if (parent != nullptr)
+	{
+		parent->m_modifiedForMaterialInstance = false;
 	}
 }
 

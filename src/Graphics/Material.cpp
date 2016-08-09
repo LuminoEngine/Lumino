@@ -77,7 +77,7 @@ RefPtr<Material> Material::Copy() const
 	// コピー先が本当に必要になったタイミングで評価されるようにする。
 	m->m_shaderModified = m_shaderModified;
 
-	m->m_modifiedForMaterialInstance = m_shaderModified;
+	m->m_modifiedForMaterialInstance = m_modifiedForMaterialInstance;
 
 	return m;
 }
