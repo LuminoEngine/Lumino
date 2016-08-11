@@ -499,12 +499,15 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(MeshResource, Object);
 //------------------------------------------------------------------------------
 MeshResource::MeshResource()
 	: m_manager(nullptr)
+	, m_usage(ResourceUsage::Static)
 	, m_vertexDeclaration()
 	, m_vertexBuffer()
+	, m_blendWeightsVertexBuffer()
 	, m_indexBuffer()
 	, m_vertexCount(0)
 	, m_indexCount(0)
 	, m_lockedVertexBuffer(nullptr)
+	, m_lockedBlendWeightsVertexBuffer(nullptr)
 	, m_lockedIndexBuffer(nullptr)
 	, m_materials()
 	, m_attributes()
@@ -597,55 +600,75 @@ Material* MeshResource::GetMaterial(int index) const
 void MeshResource::SetPosition(int index, const Vector3& position)
 {
 	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
-	TryLockBuffers();
-	m_lockedVertexBuffer[index].position = position;
+	Vertex* v = (Vertex*)TryLockVertexBuffer(VB_BasicVertices, sizeof(Vertex));
+	v[index].position = position;
 }
 
 //------------------------------------------------------------------------------
 void MeshResource::SetUV(int index, const Vector2& uv)
 {
 	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
-	TryLockBuffers();
-	m_lockedVertexBuffer[index].uv = uv;
+	Vertex* v = (Vertex*)TryLockVertexBuffer(VB_BasicVertices, sizeof(Vertex));
+	v[index].uv = uv;
 }
 
 //------------------------------------------------------------------------------
 const Vector3& MeshResource::GetPosition(int index)
 {
 	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return Vector3::Zero;
-	TryLockBuffers();
-	return m_lockedVertexBuffer[index].position;
+	Vertex* v = (Vertex*)TryLockVertexBuffer(VB_BasicVertices, sizeof(Vertex));
+	return v[index].position;
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::TryLockBuffers()
+void* MeshResource::TryLockVertexBuffer(VertexBufferType type, int stride)
 {
-	if (m_lockedVertexBuffer == nullptr)
+	if (m_vertexBufferInfos[type].lockedBuffer == nullptr)
 	{
-		ByteBuffer* buf = m_vertexBuffer->Lock();
-		m_lockedVertexBuffer = (Vertex*)buf->GetData();
+		if (m_vertexBufferInfos[type].buffer == nullptr)
+		{
+			m_vertexBufferInfos[type].buffer = RefPtr<VertexBuffer>::MakeRef();
+			m_vertexBufferInfos[type].buffer->Initialize(m_manager, stride * m_vertexCount, nullptr, m_usage);
+			m_vertexDeclarationModified = true;
+		}
+
+		ByteBuffer* buf = m_vertexBufferInfos[type].buffer->Lock();
+		m_vertexBufferInfos[type].lockedBuffer = (BlendWeight*)buf->GetData();
 	}
+	return m_vertexBufferInfos[type].lockedBuffer;
+}
+
+//------------------------------------------------------------------------------
+void* MeshResource::TryLockIndexBuffer()
+{
 	if (m_lockedIndexBuffer == nullptr)
 	{
 		ByteBuffer* buf = m_indexBuffer->Lock();
 		m_lockedIndexBuffer = buf->GetData();
 	}
+	return m_lockedIndexBuffer;
 }
 
 //------------------------------------------------------------------------------
 void MeshResource::CommitRenderData(VertexDeclaration** decls, VertexBuffer** vb, IndexBuffer** ib)
 {
+	for (int i = 0; i < VB_Count)
+
 	if (m_lockedVertexBuffer != nullptr)
 	{
 		m_vertexBuffer->Unlock();
 		m_lockedVertexBuffer = nullptr;
+	}
+	if (m_blendWeightsVertexBuffer != nullptr)
+	{
+		m_blendWeightsVertexBuffer->Unlock();
+		m_blendWeightsVertexBuffer = nullptr;
 	}
 	if (m_lockedIndexBuffer != nullptr)
 	{
 		m_indexBuffer->Unlock();
 		m_lockedIndexBuffer = nullptr;
 	}
-
 
 	if (decls != nullptr) *decls = m_vertexDeclaration;
 	if (vb != nullptr) *vb = m_vertexBuffer;
@@ -655,13 +678,13 @@ void MeshResource::CommitRenderData(VertexDeclaration** decls, VertexBuffer** vb
 //------------------------------------------------------------------------------
 void MeshResource::CreateBuffers(int vertexCount, int indexCount, int attributeCount, MeshCreationFlags flags)
 {
-	m_vertexDeclaration = m_manager->GetDefaultVertexDeclaration();
+	//m_vertexDeclaration = m_manager->GetDefaultVertexDeclaration();
 
-	ResourceUsage usage = (flags.TestFlag(MeshCreationFlags::DynamicBuffers)) ? ResourceUsage::Static : ResourceUsage::Dynamic;
+	m_usage = (flags.TestFlag(MeshCreationFlags::DynamicBuffers)) ? ResourceUsage::Static : ResourceUsage::Dynamic;
 	m_vertexBuffer = RefPtr<VertexBuffer>::MakeRef();
 	m_indexBuffer = RefPtr<IndexBuffer>::MakeRef();
-	m_vertexBuffer->Initialize(m_manager, sizeof(Vertex) * vertexCount, nullptr, usage);
-	m_indexBuffer->Initialize(m_manager, indexCount, nullptr, IndexBufferFormat_UInt16, usage);
+	m_vertexBuffer->Initialize(m_manager, sizeof(Vertex) * vertexCount, nullptr, m_usage);
+	m_indexBuffer->Initialize(m_manager, indexCount, nullptr, IndexBufferFormat_UInt16, m_usage);	// TODO: int32
 
 	SetMaterialCount(1);
 	m_attributes[0].MaterialIndex = 0;
@@ -670,6 +693,7 @@ void MeshResource::CreateBuffers(int vertexCount, int indexCount, int attributeC
 
 	m_vertexCount = vertexCount;
 	m_indexCount = indexCount;
+	m_vertexDeclarationModified = true;
 }
 
 //------------------------------------------------------------------------------

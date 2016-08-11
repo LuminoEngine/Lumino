@@ -45,9 +45,38 @@ public:
 	void SetUV(int index, const Vector2& uv);
 	const Vector3& GetPosition(int index);
 
-	//void FlipFaces();
+
+	//void AddTangentsBuffer();
+	//void AddBlendWeightsBuffer();
+
 
 LN_INTERNAL_ACCESS:
+	//enum class LockTarget
+	//{
+	//	BasicVertices,
+	//	BlendWeights,
+	//	Indices,
+	//};
+
+	enum VertexBufferType
+	{
+		VB_BasicVertices = 0,
+		VB_BlendWeights,
+		VB_Count,
+	};
+
+	struct VertexBufferInfo
+	{
+		RefPtr<VertexBuffer>	buffer;
+		void*					lockedBuffer;
+	};
+
+	struct BlendWeight
+	{
+		float	weights[4];
+		float	indices[4];
+	};
+
 	MeshResource();
 	virtual ~MeshResource();
 	void Initialize(GraphicsManager* manager);
@@ -58,7 +87,8 @@ LN_INTERNAL_ACCESS:
 
 	int GetSubsetCount() const { return m_attributes.GetCount(); }
 
-	void TryLockBuffers();
+	void* TryLockVertexBuffer(VertexBufferType type, int stride);
+	void* TryLockIndexBuffer();
 	void CommitRenderData(VertexDeclaration** decls, VertexBuffer** vb, IndexBuffer** ib);
 
 
@@ -68,16 +98,17 @@ private:
 
 LN_INTERNAL_ACCESS:	// TODO:
 	GraphicsManager*			m_manager;
+	ResourceUsage				m_usage;
 	RefPtr<VertexDeclaration>	m_vertexDeclaration;
-	RefPtr<VertexBuffer>		m_vertexBuffer;
+	VertexBufferInfo			m_vertexBufferInfos[VB_Count];
 	RefPtr<IndexBuffer>			m_indexBuffer;
 	int							m_vertexCount;
 	int							m_indexCount;
-	Vertex*						m_lockedVertexBuffer;
 	void*						m_lockedIndexBuffer;
 
 	RefPtr<MaterialList>		m_materials;
 	MeshAttributeList			m_attributes;
+	bool						m_vertexDeclarationModified;
 };
 
 
