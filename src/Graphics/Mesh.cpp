@@ -534,7 +534,7 @@ void MeshResource::Initialize(GraphicsManager* manager)
 void MeshResource::CreateBox(const Vector3& size)
 {
 	TexUVBoxMeshFactory factory(size);
-	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), 1, MeshCreationFlags::None);
+	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), MeshCreationFlags::None);
 
 	void* vb = TryLockVertexBuffer(VB_BasicVertices, sizeof(Vertex));
 	void* ib = TryLockIndexBuffer();
@@ -545,7 +545,7 @@ void MeshResource::CreateBox(const Vector3& size)
 void MeshResource::CreateSphere(float radius, int slices, int stacks, MeshCreationFlags flags)
 {
 	SphereMeshFactory factory(radius, slices, stacks);
-	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), 1, MeshCreationFlags::None);
+	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), MeshCreationFlags::None);
 
 	void* vb = TryLockVertexBuffer(VB_BasicVertices, sizeof(Vertex));
 	void* ib = TryLockIndexBuffer();
@@ -557,7 +557,7 @@ void MeshResource::CreateSphere(float radius, int slices, int stacks, MeshCreati
 void MeshResource::CreateSquarePlane(const Vector2& size, const Vector3& front, MeshCreationFlags flags)
 {
 	PlaneMeshFactory2 factory(size, front);
-	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), 1, flags);
+	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), flags);
 
 	void* vb = TryLockVertexBuffer(VB_BasicVertices, sizeof(Vertex));
 	void* ib = TryLockIndexBuffer();
@@ -569,7 +569,7 @@ void MeshResource::CreateSquarePlane(const Vector2& size, const Vector3& front, 
 void MeshResource::CreateScreenPlane()
 {
 	PlaneMeshFactory factory(Vector2(2.0f, 2.0f));
-	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), 1, MeshCreationFlags::None);
+	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), MeshCreationFlags::None);
 
 	void* vb = TryLockVertexBuffer(VB_BasicVertices, sizeof(Vertex));
 	void* ib = TryLockIndexBuffer();
@@ -577,14 +577,14 @@ void MeshResource::CreateScreenPlane()
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::SetMaterialCount(int count)
+void MeshResource::AddMaterials(int count)
 {
 	int oldCount = m_materials->GetCount();
-	m_materials->Resize(count);
-	m_attributes.Resize(count);
-	if (oldCount < count)
+	int newCount = oldCount + count;
+	m_materials->Resize(newCount);
+	if (oldCount < newCount)
 	{
-		for (int i = oldCount; i < count; ++i)
+		for (int i = oldCount; i < newCount; ++i)
 		{
 			auto m = RefPtr<Material>::MakeRef();
 			m_materials->SetAt(i, m);
@@ -657,6 +657,12 @@ void* MeshResource::TryLockIndexBuffer()
 {
 	if (m_lockedIndexBuffer == nullptr)
 	{
+		if (m_indexBuffer == nullptr)
+		{
+			m_indexBuffer = RefPtr<IndexBuffer>::MakeRef();
+			m_indexBuffer->Initialize(m_manager, m_indexCount, nullptr, IndexBufferFormat_UInt16, m_usage);	// TODO: int32
+		}
+
 		ByteBuffer* buf = m_indexBuffer->Lock();
 		m_lockedIndexBuffer = buf->GetData();
 	}
@@ -753,13 +759,12 @@ void MeshResource::CommitRenderData(VertexDeclaration** outDecl, VertexBuffer** 
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::CreateBuffers(int vertexCount, int indexCount, int attributeCount, MeshCreationFlags flags)
+void MeshResource::CreateBuffers(int vertexCount, int indexCount, MeshCreationFlags flags)
 {
 	m_usage = (flags.TestFlag(MeshCreationFlags::DynamicBuffers)) ? ResourceUsage::Static : ResourceUsage::Dynamic;
-	m_indexBuffer = RefPtr<IndexBuffer>::MakeRef();
-	m_indexBuffer->Initialize(m_manager, indexCount, nullptr, IndexBufferFormat_UInt16, m_usage);	// TODO: int32
 
-	SetMaterialCount(1);
+	AddMaterials(1);
+	AddSections(1);
 	m_attributes[0].MaterialIndex = 0;
 	m_attributes[0].StartIndex = 0;
 	m_attributes[0].PrimitiveNum = indexCount / 3;

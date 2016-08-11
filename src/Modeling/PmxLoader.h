@@ -5,8 +5,8 @@
 LN_NAMESPACE_BEGIN
 class BinaryReader;
 class Texture2D;
-class ModelManager;
 class PmxSkinnedMeshResource;
+namespace detail { class ModelManager; }
 
 class PmxLoader
 {
@@ -41,7 +41,7 @@ public:
 	PmxLoader();
 	~PmxLoader();
 
-	RefPtr<PmxSkinnedMeshResource> Load(ModelManager* manager, Stream* stream, const PathName& baseDir, bool isDynamic);
+	RefPtr<PmxSkinnedMeshResource> Load(detail::ModelManager* manager, Stream* stream, const PathName& baseDir, bool isDynamic, ModelCreationFlag flags);
 
 private:
 	PMX_Encode getEncode() { return (PMX_Encode)m_pmxHeader.Data[0]; }
@@ -68,11 +68,12 @@ private:
 	String ReadString(BinaryReader* reader);
 
 private:
-	ModelManager*					m_manager;
+	detail::ModelManager*			m_manager;
 	bool							m_isDynamic;
+	ModelCreationFlag				m_flags;
 	RefPtr<PmxSkinnedMeshResource>	m_modelCore;		///< 最終出力
 	PMX_Header						m_pmxHeader;
-	Array<RefPtr<Texture2D>>		m_textureTable;
+	Array<RefPtr<Texture>>			m_textureTable;
 	ByteBuffer						m_tmpBuffer;
 };
 

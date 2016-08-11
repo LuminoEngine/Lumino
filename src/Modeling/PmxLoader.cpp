@@ -22,10 +22,11 @@ PmxLoader::~PmxLoader()
 }
 
 //------------------------------------------------------------------------------
-RefPtr<PmxSkinnedMeshResource> PmxLoader::Load(ModelManager* manager, Stream* stream, const PathName& baseDir, bool isDynamic)
+RefPtr<PmxSkinnedMeshResource> PmxLoader::Load(detail::ModelManager* manager, Stream* stream, const PathName& baseDir, bool isDynamic, ModelCreationFlag flags)
 {
 	m_manager = manager;
 	m_isDynamic = isDynamic;
+	m_flags = flags;
 
 	BinaryReader reader(stream);
 	m_modelCore = RefPtr<PmxSkinnedMeshResource>::MakeRef();
@@ -229,9 +230,10 @@ void PmxLoader::LoadIndices(BinaryReader* reader)
 		reader->Read(indices, getVertexIndexSize() * indexCount);
 	}
 }
+#endif
 
 //------------------------------------------------------------------------------
-void PmxLoader::LoadTextureTable(BinaryReader* reader, const PathNameW& baseDir)
+void PmxLoader::LoadTextureTable(BinaryReader* reader, const PathName& baseDir)
 {
 	// テクスチャ数
 	int textureCount = reader->ReadInt32();
@@ -245,11 +247,10 @@ void PmxLoader::LoadTextureTable(BinaryReader* reader, const PathNameW& baseDir)
 		String name = ReadString(reader);
 
 		// 作成
-		PathNameW filePath(baseDir, name);
-		m_textureTable.Add(Graphics::Texture::Create(filePath));
+		PathName filePath(baseDir, name);
+		m_textureTable.Add(m_manager->CreateTexture(baseDir, filePath, m_flags));
 	}
 }
-#endif
 
 //------------------------------------------------------------------------------
 void PmxLoader::LoadMaterials(BinaryReader* reader)
@@ -264,7 +265,7 @@ void PmxLoader::LoadMaterials(BinaryReader* reader)
 	int indexAttrOffset = 0;
 	for (int i = 0; i < materialCount; ++i)
 	{
-		Graphics::Material* m = &m_modelCore->Material.Materials[i];
+		PmxMaterialResource* m = m_modelCore->materials[i];
 
 		// 材質名
 		/*m_modelCore->Material.Name = */ReadString(reader);
@@ -277,14 +278,14 @@ void PmxLoader::LoadMaterials(BinaryReader* reader)
 
 		// Specular
 		reader->Read(&m->Specular, sizeof(float) * 3);
-		m->Specular.A = 1.0f;
+		m->Specular.a = 1.0f;
 
 		// Specular係数
 		m->Power = reader->ReadFloat();
 
 		// Ambient
 		reader->Read(&m->Ambient, sizeof(float) * 3);
-		m->Ambient.A = 1.0f;
+		m->Ambient.a = 1.0f;
 
 		// 描画フラグ (MMDDrawingFlags)
 		uint8_t bitFlag = reader->ReadInt8();
@@ -304,7 +305,7 @@ void PmxLoader::LoadMaterials(BinaryReader* reader)
 
 		// スフィアテクスチャ
 		int sphereTexture = (int)reader->ReadInt(getTextureIndexSize());
-		m->SphereMode = (enum Graphics::Material::SphereMode)reader->ReadInt8();
+		m->SphereMode = (enum PmxMaterialResource::SphereMode)reader->ReadInt8();
 		LN_NOTIMPLEMENTED();	// TODO: sphereTexture 使ってないよ
 
 		// トゥーンテクスチャ

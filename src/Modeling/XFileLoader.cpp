@@ -697,7 +697,7 @@ RefPtr<MeshResource> XFileLoader::Load(ModelManager* manager, Stream* stream, co
 
 			// マテリアル数取得
 			uint32_t attr_num = allocate_hierarchy.getAllMaterialNum();
-			mesh->SetMaterialCount(attr_num);
+			mesh->AddMaterials(attr_num);
 
 			// マテリアル、属性配列
 			MaterialList* materials = mesh->m_materials;
