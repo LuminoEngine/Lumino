@@ -85,6 +85,8 @@ public:
 	};
 
 public:
+	// TODO: çﬁéøñº Ç»Ç«Ç‡
+
 	Color						Diffuse;			///< ï®ëÃÇÃêF
 	Color						Ambient;			///< ä¬ã´åı
 	Color						Specular;			///< åıëÚ

@@ -501,17 +501,19 @@ MeshResource::MeshResource()
 	: m_manager(nullptr)
 	, m_usage(ResourceUsage::Static)
 	, m_vertexDeclaration()
-	, m_vertexBuffer()
-	, m_blendWeightsVertexBuffer()
 	, m_indexBuffer()
 	, m_vertexCount(0)
 	, m_indexCount(0)
-	, m_lockedVertexBuffer(nullptr)
-	, m_lockedBlendWeightsVertexBuffer(nullptr)
 	, m_lockedIndexBuffer(nullptr)
 	, m_materials()
 	, m_attributes()
+	, m_vertexDeclarationModified(false)
 {
+	for (int i = 0; i < VB_Count; ++i)
+	{
+		m_vertexBufferInfos[i].buffer = nullptr;
+		m_vertexBufferInfos[i].lockedBuffer = nullptr;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -534,9 +536,9 @@ void MeshResource::CreateBox(const Vector3& size)
 	TexUVBoxMeshFactory factory(size);
 	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), 1, MeshCreationFlags::None);
 
-	ScopedVertexBufferLock lock1(m_vertexBuffer);
-	ScopedIndexBufferLock lock2(m_indexBuffer);
-	factory.Generate((Vertex*)lock1.GetData(), (uint16_t*)lock2.GetData());
+	void* vb = TryLockVertexBuffer(VB_BasicVertices, sizeof(Vertex));
+	void* ib = TryLockIndexBuffer();
+	factory.Generate((Vertex*)vb, (uint16_t*)ib);
 }
 
 //------------------------------------------------------------------------------
@@ -545,10 +547,10 @@ void MeshResource::CreateSphere(float radius, int slices, int stacks, MeshCreati
 	SphereMeshFactory factory(radius, slices, stacks);
 	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), 1, MeshCreationFlags::None);
 
-	ScopedVertexBufferLock lock1(m_vertexBuffer);
-	ScopedIndexBufferLock lock2(m_indexBuffer);
-	factory.Generate((Vertex*)lock1.GetData(), (uint16_t*)lock2.GetData());
-	PostGenerated((Vertex*)lock1.GetData(), lock2.GetData(), flags);
+	void* vb = TryLockVertexBuffer(VB_BasicVertices, sizeof(Vertex));
+	void* ib = TryLockIndexBuffer();
+	factory.Generate((Vertex*)vb, (uint16_t*)ib);
+	PostGenerated((Vertex*)vb, ib, flags);
 }
 
 //------------------------------------------------------------------------------
@@ -557,10 +559,10 @@ void MeshResource::CreateSquarePlane(const Vector2& size, const Vector3& front, 
 	PlaneMeshFactory2 factory(size, front);
 	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), 1, flags);
 
-	ScopedVertexBufferLock lock1(m_vertexBuffer);
-	ScopedIndexBufferLock lock2(m_indexBuffer);
-	factory.Generate((Vertex*)lock1.GetData(), (uint16_t*)lock2.GetData());
-	PostGenerated((Vertex*)lock1.GetData(), lock2.GetData(), flags);
+	void* vb = TryLockVertexBuffer(VB_BasicVertices, sizeof(Vertex));
+	void* ib = TryLockIndexBuffer();
+	factory.Generate((Vertex*)vb, (uint16_t*)ib);
+	PostGenerated((Vertex*)vb, ib, flags);
 }
 
 //------------------------------------------------------------------------------
@@ -569,9 +571,9 @@ void MeshResource::CreateScreenPlane()
 	PlaneMeshFactory factory(Vector2(2.0f, 2.0f));
 	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), 1, MeshCreationFlags::None);
 
-	ScopedVertexBufferLock lock1(m_vertexBuffer);
-	ScopedIndexBufferLock lock2(m_indexBuffer);
-	factory.Generate((Vertex*)lock1.GetData(), (uint16_t*)lock2.GetData());
+	void* vb = TryLockVertexBuffer(VB_BasicVertices, sizeof(Vertex));
+	void* ib = TryLockIndexBuffer();
+	factory.Generate((Vertex*)vb, (uint16_t*)ib);
 }
 
 //------------------------------------------------------------------------------
@@ -621,6 +623,18 @@ const Vector3& MeshResource::GetPosition(int index)
 }
 
 //------------------------------------------------------------------------------
+void MeshResource::AddSections(int count)
+{
+	m_attributes.Resize(m_attributes.GetCount() + count);
+}
+
+//------------------------------------------------------------------------------
+MeshAttribute* MeshResource::GetSection(int index)
+{
+	return &m_attributes[index];
+}
+
+//------------------------------------------------------------------------------
 void* MeshResource::TryLockVertexBuffer(VertexBufferType type, int stride)
 {
 	if (m_vertexBufferInfos[type].lockedBuffer == nullptr)
@@ -650,40 +664,99 @@ void* MeshResource::TryLockIndexBuffer()
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::CommitRenderData(VertexDeclaration** decls, VertexBuffer** vb, IndexBuffer** ib)
+void MeshResource::CommitRenderData(VertexDeclaration** outDecl, VertexBuffer** outVBs, int* outVBCount, IndexBuffer** outIB)
 {
-	for (int i = 0; i < VB_Count)
+	LN_ASSERT(outDecl != nullptr);
+	LN_ASSERT(outVBs != nullptr);
+	LN_ASSERT(outVBCount != nullptr);
+	LN_ASSERT(outIB != nullptr);
 
-	if (m_lockedVertexBuffer != nullptr)
+	// VertexDeclaration
+	if (m_vertexDeclarationModified)
 	{
-		m_vertexBuffer->Unlock();
-		m_lockedVertexBuffer = nullptr;
+		m_vertexDeclaration = RefPtr<VertexDeclaration>::MakeRef();
+		m_vertexDeclaration->Initialize(m_manager);
+		int stream = 0;
+
+		// BasicVertices
+		if (m_vertexBufferInfos[VB_BasicVertices].buffer != nullptr)
+		{
+			m_vertexDeclaration->AddVertexElement(stream, VertexElementType_Float3, VertexElementUsage_Position, 0);
+			m_vertexDeclaration->AddVertexElement(stream, VertexElementType_Float2, VertexElementUsage_TexCoord, 0);
+			m_vertexDeclaration->AddVertexElement(stream, VertexElementType_Float3, VertexElementUsage_Normal, 0);
+			m_vertexDeclaration->AddVertexElement(stream, VertexElementType_Float4, VertexElementUsage_Color, 0);
+			++stream;
+		}
+
+		// BlendWeights
+		if (m_vertexBufferInfos[VB_BlendWeights].buffer != nullptr)
+		{
+			m_vertexDeclaration->AddVertexElement(stream, VertexElementType_Float4, VertexElementUsage_BlendWeight, 0);
+			m_vertexDeclaration->AddVertexElement(stream, VertexElementType_Float4, VertexElementUsage_BlendIndices, 0);
+			++stream;
+		}
+
+		// AdditionalUVs
+		if (m_vertexBufferInfos[VB_AdditionalUVs].buffer != nullptr)
+		{
+			m_vertexDeclaration->AddVertexElement(stream, VertexElementType_Float4, VertexElementUsage_TexCoord, 1);
+			m_vertexDeclaration->AddVertexElement(stream, VertexElementType_Float4, VertexElementUsage_TexCoord, 2);
+			m_vertexDeclaration->AddVertexElement(stream, VertexElementType_Float4, VertexElementUsage_TexCoord, 3);
+			m_vertexDeclaration->AddVertexElement(stream, VertexElementType_Float4, VertexElementUsage_TexCoord, 4);
+			++stream;
+		}
+
+		// SdefInfo
+		if (m_vertexBufferInfos[VB_SdefInfo].buffer != nullptr)
+		{
+			m_vertexDeclaration->AddVertexElement(stream, VertexElementType_Float4, VertexElementUsage_TexCoord, 5);
+			m_vertexDeclaration->AddVertexElement(stream, VertexElementType_Float3, VertexElementUsage_TexCoord, 6);
+			m_vertexDeclaration->AddVertexElement(stream, VertexElementType_Float3, VertexElementUsage_TexCoord, 7);
+			++stream;
+		}
+
+		// MmdExtra
+		if (m_vertexBufferInfos[VB_MmdExtra].buffer != nullptr)
+		{
+			m_vertexDeclaration->AddVertexElement(stream, VertexElementType_Float1, VertexElementUsage_TexCoord, 8);
+			m_vertexDeclaration->AddVertexElement(stream, VertexElementType_Float1, VertexElementUsage_PointSize, 15);
+			++stream;
+		}
 	}
-	if (m_blendWeightsVertexBuffer != nullptr)
+	*outDecl = m_vertexDeclaration;
+
+	// VertexBuffer
+	int vbCount = 0;
+	for (int i = 0; i < VB_Count; ++i)
 	{
-		m_blendWeightsVertexBuffer->Unlock();
-		m_blendWeightsVertexBuffer = nullptr;
+		if (m_vertexBufferInfos[i].lockedBuffer != nullptr)
+		{
+			m_vertexBufferInfos[i].buffer->Unlock();
+			m_vertexBufferInfos[i].lockedBuffer = nullptr;
+		}
+
+		if (m_vertexBufferInfos[i].buffer != nullptr)
+		{
+			outVBs[vbCount] = m_vertexBufferInfos[i].buffer;
+			++vbCount;
+		}
 	}
+	*outVBCount = vbCount;
+
+	// IndexBuffer
 	if (m_lockedIndexBuffer != nullptr)
 	{
 		m_indexBuffer->Unlock();
 		m_lockedIndexBuffer = nullptr;
 	}
-
-	if (decls != nullptr) *decls = m_vertexDeclaration;
-	if (vb != nullptr) *vb = m_vertexBuffer;
-	if (ib != nullptr) *ib = m_indexBuffer;
+	*outIB = m_indexBuffer;
 }
 
 //------------------------------------------------------------------------------
 void MeshResource::CreateBuffers(int vertexCount, int indexCount, int attributeCount, MeshCreationFlags flags)
 {
-	//m_vertexDeclaration = m_manager->GetDefaultVertexDeclaration();
-
 	m_usage = (flags.TestFlag(MeshCreationFlags::DynamicBuffers)) ? ResourceUsage::Static : ResourceUsage::Dynamic;
-	m_vertexBuffer = RefPtr<VertexBuffer>::MakeRef();
 	m_indexBuffer = RefPtr<IndexBuffer>::MakeRef();
-	m_vertexBuffer->Initialize(m_manager, sizeof(Vertex) * vertexCount, nullptr, m_usage);
 	m_indexBuffer->Initialize(m_manager, indexCount, nullptr, IndexBufferFormat_UInt16, m_usage);	// TODO: int32
 
 	SetMaterialCount(1);

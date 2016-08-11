@@ -19,7 +19,7 @@ LN_ENUM_FLAGS(MeshCreationFlags)
 LN_ENUM_FLAGS_DECLARE(MeshCreationFlags);
 
 /// メッシュの属性
-struct MeshAttribute
+struct MeshAttribute	// TODO: Section
 {
 	int		MaterialIndex;  ///< 対応するマテリアル番号
 	int		StartIndex;     ///< 開始インデックス
@@ -45,23 +45,17 @@ public:
 	void SetUV(int index, const Vector2& uv);
 	const Vector3& GetPosition(int index);
 
-
-	//void AddTangentsBuffer();
-	//void AddBlendWeightsBuffer();
-
+	void AddSections(int count);
+	MeshAttribute* GetSection(int index);
 
 LN_INTERNAL_ACCESS:
-	//enum class LockTarget
-	//{
-	//	BasicVertices,
-	//	BlendWeights,
-	//	Indices,
-	//};
-
 	enum VertexBufferType
 	{
 		VB_BasicVertices = 0,
 		VB_BlendWeights,
+		VB_AdditionalUVs,
+		VB_SdefInfo,
+		VB_MmdExtra,
 		VB_Count,
 	};
 
@@ -73,8 +67,26 @@ LN_INTERNAL_ACCESS:
 
 	struct BlendWeight
 	{
-		float	weights[4];
-		float	indices[4];
+		float		weights[4];
+		float		indices[4];
+	};
+
+	struct AdditionalUVs
+	{
+		Vector4		uv[4];
+	};
+
+	struct SdefInfo
+	{
+		Vector4		sdefC;
+		Vector3		sdefR0;
+		Vector3		sdefR1;
+	};
+
+	struct MmdExtra
+	{
+		float		edgeWeight;
+		float		index;
 	};
 
 	MeshResource();
@@ -89,8 +101,7 @@ LN_INTERNAL_ACCESS:
 
 	void* TryLockVertexBuffer(VertexBufferType type, int stride);
 	void* TryLockIndexBuffer();
-	void CommitRenderData(VertexDeclaration** decls, VertexBuffer** vb, IndexBuffer** ib);
-
+	void CommitRenderData(VertexDeclaration** outDecl, VertexBuffer** outVBs, int* outVBCount, IndexBuffer** outIB);
 
 private:
 	void CreateBuffers(int vertexCount, int indexCount, int attributeCount, MeshCreationFlags flags);

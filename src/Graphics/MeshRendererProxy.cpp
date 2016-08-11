@@ -91,13 +91,18 @@ void MeshRendererProxy::DrawMesh(MeshResource* mesh, int startIndex, int triangl
 	}
 	
 	VertexDeclaration* decls;
-	VertexBuffer* vb;
+	VertexBuffer* vb[Driver::MaxVertexStreams] = {};
+	int vbCount;
 	IndexBuffer* ib;
-	mesh->CommitRenderData(&decls, &vb, &ib);
+	mesh->CommitRenderData(&decls, vb, &vbCount, &ib);
 
 	DrawMeshCommandData data;
 	data.vertexDeclaration = decls->GetDeviceObject();
-	data.vertexBuffers[0] = vb->GetDeviceObject();		// TODO: まだ1つだけ
+	for (int i = 0; i < vbCount; ++i)
+	{
+		data.vertexBuffers[i] = vb[i]->GetDeviceObject();
+	}
+	data.vertexBuffersCount = vbCount;
 	data.indexBuffer = ib->GetDeviceObject();
 	data.startIndex = startIndex;
 	data.triangleCount = triangleCount;
@@ -120,13 +125,11 @@ void MeshRendererProxy::FlushStateImpl(const Matrix& world, const Matrix& viewPr
 //------------------------------------------------------------------------------
 void MeshRendererProxy::DrawMeshImpl(const DrawMeshCommandData& data)
 {
-	//auto* deserializer = m_manager->GetShaderVariableCommitSerializeHelper();
-	//deserializer->Deserialize(variablesData.GetData(), variablesData.GetSize());
-
-	//m_shader.pass->Apply();
-
 	m_renderer->SetVertexDeclaration(data.vertexDeclaration);
-	m_renderer->SetVertexBuffer(0, data.vertexBuffers[0]);		// TODO: まだ1つだけ
+	for (int i = 0; i < data.vertexBuffersCount; ++i)
+	{
+		m_renderer->SetVertexBuffer(i, data.vertexBuffers[i]);
+	}
 	m_renderer->SetIndexBuffer(data.indexBuffer);
 	m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, data.startIndex, data.triangleCount);
 }

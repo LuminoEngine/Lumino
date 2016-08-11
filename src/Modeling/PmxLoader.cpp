@@ -249,6 +249,7 @@ void PmxLoader::LoadTextureTable(BinaryReader* reader, const PathNameW& baseDir)
 		m_textureTable.Add(Graphics::Texture::Create(filePath));
 	}
 }
+#endif
 
 //------------------------------------------------------------------------------
 void PmxLoader::LoadMaterials(BinaryReader* reader)
@@ -257,8 +258,8 @@ void PmxLoader::LoadMaterials(BinaryReader* reader)
 	int materialCount = reader->ReadInt32();
 
 	// メモリ確保
-	m_modelCore->Material.Materials.Resize(materialCount);
-	m_modelCore->Material.Attributes.Resize(materialCount);
+	m_modelCore->materials.Resize(materialCount);
+	m_modelCore->AddSections(materialCount);
 
 	int indexAttrOffset = 0;
 	for (int i = 0; i < materialCount; ++i)
@@ -330,14 +331,13 @@ void PmxLoader::LoadMaterials(BinaryReader* reader)
 		int vc = reader->ReadInt32();
 
 		// 属性テーブルを埋める
-		MeshAttribute* attr = &m_modelCore->Material.Attributes[i];
+		MeshAttribute* attr = m_modelCore->GetSection(i);
 		attr->MaterialIndex = i;
 		attr->StartIndex = indexAttrOffset;
 		attr->PrimitiveNum = vc / 3;
 		indexAttrOffset += vc;
 	}
 }
-#endif
 
 //------------------------------------------------------------------------------
 void PmxLoader::LoadBones(BinaryReader* reader)

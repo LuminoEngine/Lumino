@@ -619,8 +619,8 @@ RefPtr<MeshResource> XFileLoader::Load(ModelManager* manager, Stream* stream, co
 			mesh->m_vertexDeclaration = manager->GetGraphicsManager()->GetDefaultVertexDeclaration();
 
 			// VertexBuffer
-			mesh->m_vertexBuffer.Attach(LN_NEW VertexBuffer());
-			mesh->m_vertexBuffer->Initialize(
+			mesh->m_vertexBufferInfos[0].buffer.Attach(LN_NEW VertexBuffer());
+			mesh->m_vertexBufferInfos[0].buffer->Initialize(
 				manager->GetGraphicsManager(),
 				sizeof(Vertex) * all_vertex_num,
 				nullptr,
@@ -641,7 +641,7 @@ RefPtr<MeshResource> XFileLoader::Load(ModelManager* manager, Stream* stream, co
 				(isDynamic) ? ResourceUsage::Dynamic : ResourceUsage::Static);
 
 			// 書き込み開始
-			ScopedVertexBufferLock lockVertexBuffer(mesh->m_vertexBuffer);
+			ScopedVertexBufferLock lockVertexBuffer(mesh->m_vertexBufferInfos[0].buffer);
 			ScopedIndexBufferLock lockIndexBuffer(mesh->m_indexBuffer);
 			Vertex* vertices = (Vertex*)lockVertexBuffer.GetData();
 			void* indices = lockIndexBuffer.GetData();
@@ -689,7 +689,7 @@ RefPtr<MeshResource> XFileLoader::Load(ModelManager* manager, Stream* stream, co
 				FlipTriangleFronts<uint32_t>((uint32_t*)indices, all_index_num);
 
 			// 書き込み終了
-			mesh->m_vertexBuffer->Unlock();
+			mesh->m_vertexBufferInfos[0].buffer->Unlock();
 			mesh->m_indexBuffer->Unlock();
 
 			//-----------------------------------------------------

@@ -36,6 +36,7 @@ private:
 	{
 		RefPtr<Driver::IVertexDeclaration>	vertexDeclaration;
 		RefPtr<Driver::IVertexBuffer>		vertexBuffers[Driver::MaxVertexStreams];
+		int									vertexBuffersCount;
 		RefPtr<Driver::IIndexBuffer>		indexBuffer;
 		int									startIndex;
 		int									triangleCount;
