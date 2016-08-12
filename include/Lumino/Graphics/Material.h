@@ -79,7 +79,7 @@ LN_INTERNAL_ACCESS:
 
 public:	// TODO:
 
-	void SetMaterialTexture(Texture* v) { FindShaderValue(_T("MaterialTexture"))->SetManagedTexture(v); }
+	void SetMaterialTexture(Texture* v) { SetTextureParameter(_T("MaterialTexture"), v); }
 	Texture* GetMaterialTexture() const { return GetTexture(_T("MaterialTexture"), nullptr); }
 
 	void SetOpacity(float v) { SetFloatParameter(_T("Opacity"), v); }
