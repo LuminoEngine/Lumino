@@ -290,8 +290,21 @@ void VisualNode::UpdateViewFlustumHierarchy(Camera* camera, SceneNodeArray* rend
 	{
 		// TODO: 視錘台カリング等
 
-		// TOOD: Zソート用の距離を計算
-
+		// Zソート用の距離を計算
+		switch (camera->GetZSortDistanceBase())
+		{
+		case ZSortDistanceBase::NodeZ:
+			m_zDistance = GetCombinedGlobalMatrix().GetPosition().z;
+			break;
+		case ZSortDistanceBase::CameraDistance:
+			m_zDistance = (GetCombinedGlobalMatrix().GetPosition() - camera->GetCombinedGlobalMatrix().GetPosition()).GetLengthSquared();
+			break;
+		case ZSortDistanceBase::CameraScreenDistance:
+			m_zDistance = Vector3::Dot(
+				GetCombinedGlobalMatrix().GetPosition() - camera->GetCombinedGlobalMatrix().GetPosition(),
+				camera->GetCombinedGlobalMatrix().GetFront());		// 平面と点の距離
+			break;
+		}
 
 		// このノードは描画できる
 		renderingNodeList->Add(this);

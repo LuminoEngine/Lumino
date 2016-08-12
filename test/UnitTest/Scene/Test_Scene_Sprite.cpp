@@ -49,4 +49,17 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 		Engine::UpdateFrame();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Scene_Sprite.Issues_Volkoff_1.png"), 100));
 	}
+	// <Issues> 2D では Z ソートの基準がカメラ位置からの直線距離ではなく、スクリーンからの距離でなければならない。
+	{
+		auto tex1 = Texture2D::Create(32, 32);
+		auto tex2 = Texture2D::Create(32, 32);
+		tex1->Clear(Color32::Red);
+		tex2->Clear(Color32::Blue);
+		auto s1 = Sprite2D::Create(tex1);
+		auto s2 = Sprite2D::Create(tex2);
+		s1->SetPosition(10, 20, 100);
+		s2->SetPosition(15, 25, 100);	// スクリーンが Z 平面に平行なら、Z が同じときはあとから作ったものが常に手前になる。
+		Engine::UpdateFrame();
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Scene_Sprite.Issues_Volkoff_2.png"), 100));
+	}
 }

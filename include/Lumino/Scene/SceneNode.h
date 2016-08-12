@@ -101,7 +101,7 @@ public:
 	void SetRenderingMode(SceneNodeRenderingMode mode) { m_renderingMode = mode; }
 
 	SceneNodeList* GetChildren() const { return m_children; }
-	
+
 public:
 
 	/// ノード種別の取得
@@ -140,7 +140,7 @@ public:
 	virtual bool IsVisible() const { return false; }
 	virtual const Matrix& GetMatrix() const { return m_combinedGlobalMatrix; }
 	virtual float GetOpacity() const { return 0.0f; }
-	virtual const Matrix& FindFrameMarix(const String& name) const  { return Matrix::Identity; }	// TODO
+	virtual const Matrix& FindFrameMarix(const String& name) const { return Matrix::Identity; }	// TODO
 	virtual float FindMorphBlend(const String& name) const { return 0.0f; }	// TODO
 	virtual LightNodeList* GetAffectLightList() { return NULL; }
 
@@ -153,6 +153,7 @@ LN_INTERNAL_ACCESS:
 	void Initialize(SceneGraph* owner);
 	void SetAutoRemove(bool enabled) { m_isAutoRemove = enabled; }
 	bool IsAutoRemove() const { return m_isAutoRemove; }
+	const Matrix& GetCombinedGlobalMatrix() const { return m_combinedGlobalMatrix; }
 
 private:
 	void SetOwnerSceneGraph(SceneGraph* owner);

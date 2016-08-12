@@ -32,6 +32,7 @@ Camera::Camera()
 	, m_fovY(Math::PI / 3.0f)	// Unity based.
 	, m_nearClip(0.3f)			// Unity based.
 	, m_farClip(1000.0f)
+	, m_zSortDistanceBase(ZSortDistanceBase::CameraDistance)
 	, m_cameraBehavior(nullptr)
 {
 	m_transform.translation.Set(0, 0, 0.0f);
@@ -58,12 +59,14 @@ void Camera::Initialize(SceneGraph* owner, CameraProjection proj)
 		m_nearClip = 0.0f;	// TODO
 		m_farClip = 1000.0f;
 		m_transform.translation.Set(0, 0, 0);
+		m_zSortDistanceBase = ZSortDistanceBase::CameraScreenDistance;
 	}
 	else if (m_projectionMode == CameraProjection_3D)
 	{
 		m_nearClip = 0.3f;
 		m_farClip = 1000.0f;
 		m_transform.translation.Set(0, 0, -20.0f);
+		m_zSortDistanceBase = ZSortDistanceBase::CameraDistance;
 	}
 }
 

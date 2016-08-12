@@ -7,6 +7,13 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 class CameraViewportLayer;
 
+enum class ZSortDistanceBase
+{
+	NodeZ,					/**< ノードの Z 値を距離として使用する */
+	CameraDistance,			/**< カメラとノードの距離を使用する */
+	CameraScreenDistance,	/**< カメラが映すスクリーン平面とノードの距離を使用する */
+};
+
 /**
 	@brief
 */
@@ -50,6 +57,9 @@ public:
 	const ViewFrustum& GetViewFrustum() const { return m_viewFrustum; }
 
 
+	void SetZSortDistanceBase(ZSortDistanceBase type) { m_zSortDistanceBase = type; }
+	ZSortDistanceBase GetZSortDistanceBase() const { return m_zSortDistanceBase; }
+
 	void SetCameraBehavior(CameraBehavior* behavior);
 	CameraBehavior* GetCameraBehavior() const { return m_cameraBehavior; }
 
@@ -57,6 +67,8 @@ public:
 	Vector3 WorldToViewportPoint(const Vector3& position) const;
 	// 2D→3D
 	Vector3 ViewportToWorldPoint(const Vector3& position) const;
+
+
 
 public:	// internal
 
@@ -102,6 +114,7 @@ private:
 	float				m_fovY;
 	float				m_nearClip;
 	float				m_farClip;
+	ZSortDistanceBase	m_zSortDistanceBase;
 	CameraBehavior*		m_cameraBehavior;
 
 	Matrix				m_viewMatrix;		///< ビュー行列
