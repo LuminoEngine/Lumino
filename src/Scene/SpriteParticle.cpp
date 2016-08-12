@@ -539,7 +539,7 @@ void SpriteParticle::OnUpdateFrame(float deltaTime)
 //------------------------------------------------------------------------------
 void SpriteParticle::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 {
-	m_model->Render(dc->BeginGraphicsContext(), m_instance, dc->CurrentCamera->GetPosition(), dc->CurrentCamera->GetViewMatrixI());
+	m_model->Render(dc, m_instance, dc->CurrentCamera->GetPosition(), dc->CurrentCamera->GetViewMatrixI());
 }
 
 LN_NAMESPACE_SCENE_END

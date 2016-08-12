@@ -2,6 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/Graphics/SpriteRenderer.h>
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
+#include "SceneGraphManager.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
@@ -11,8 +12,7 @@ LN_NAMESPACE_SCENE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-SceneGraphRenderingContext::SceneGraphRenderingContext(RenderingContext* context)
-	: m_context(context)
+SceneGraphRenderingContext::SceneGraphRenderingContext()
 {
 }
 
@@ -21,9 +21,10 @@ SceneGraphRenderingContext::~SceneGraphRenderingContext()
 {
 }
 
-void SceneGraphRenderingContext::Flush()
+//------------------------------------------------------------------------------
+void SceneGraphRenderingContext::Initialize(SceneGraphManager* manager)
 {
-	return m_context->Flush();
+	RenderingContext::Initialize(manager->GetGraphicsManager());
 }
 
 LN_NAMESPACE_SCENE_END

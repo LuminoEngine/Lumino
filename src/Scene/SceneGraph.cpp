@@ -139,16 +139,13 @@ void SceneGraph::Render(Texture* renderTarget, Camera* camera)
 
 		// Z ソート・優先度ソート
 		std::stable_sort(m_renderingNodeList.begin(), m_renderingNodeList.end(), SceneNode::CmpZAndPrioritySort);
-
 	}
 
 	{
-		//RenderingParams params;
 		SceneGraphRenderingContext* dc = m_manager->GetRenderingContext();
 		dc->CurrentCamera = camera;
 		dc->renderingLightList = &m_renderingLightList;
-		//dc->BeginGraphicsContext()->SetViewProjectionTransform(camera->GetViewMatrix(), camera->GetProjectionMatrix());
-		dc->BeginGraphicsContext()->SetRenderTarget(0, renderTarget);
+		dc->SetRenderTarget(0, renderTarget);
 		for (RenderingPass* pass : *GetRenderingPasses())
 		{
 			if (pass == nullptr) continue;

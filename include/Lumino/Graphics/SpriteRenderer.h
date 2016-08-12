@@ -48,7 +48,7 @@ public:
 		@brief		レンダリングステートを設定します。
 		@details	次の DrawRequest2D または DrawRequest3D で描画要求されるスプライトに対して適用するレンダリングステートです。
 	*/
-	void SetRenderState(const RenderState& state);
+	//void SetRenderState(const RenderState& state);
 
 	/**
 		@brief		スプライトのソートに関する情報を設定します。
@@ -56,7 +56,7 @@ public:
 		@param[in]	basis		: ソートの基準
 		@details	この設定は次の Flash で使用します。
 	*/
-	void SetSortMode(uint32_t flags, SortingDistanceBasis basis);
+	void SetSortMode(SpriteSortMode flags, SortingDistanceBasis basis);
 	
 	/**
 		@brief		スプライトの描画を要求します。
@@ -120,9 +120,6 @@ public:
 		const Color& color,
 		AxisDirection front);
 
-	/**
-		@brief		要求されているスプライトを全て描画します。
-	*/
 	virtual void Flush() override;
 	virtual void OnActivated() override {}
 	virtual void OnDeactivated() override { Flush(); }
@@ -134,6 +131,7 @@ LN_INTERNAL_ACCESS:
 	virtual ~SpriteRenderer();
 	GraphicsManager*	m_manager;
 	SpriteRendererImpl*	m_internal;
+	SpriteSortMode		m_spriteSortMode;
 };
 
 LN_NAMESPACE_GRAPHICS_END

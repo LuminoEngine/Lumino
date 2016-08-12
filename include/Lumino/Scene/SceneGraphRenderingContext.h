@@ -6,12 +6,13 @@
 LN_NAMESPACE_BEGIN
 class SpriteRenderer;
 LN_NAMESPACE_SCENE_BEGIN
+class SceneGraphManager;
 
 /**
 	@brief	
 */
 class SceneGraphRenderingContext
-	//: public GraphicsContext
+	: public RenderingContext
 {
 LN_INTERNAL_ACCESS:
 	RenderingPass*				Pass;
@@ -19,19 +20,13 @@ LN_INTERNAL_ACCESS:
 	LightNodeList*				renderingLightList;
 	MMEShader*					Shader;				// 本当に必要なシェーダ (VisualNode::Render() 以下で使用可能)
 
-public:
-	RenderingContext* BeginGraphicsContext() { return m_context; }
-	void Flush();
-
-	//Details::Renderer* GetRenderer() { return m_context->; }
-
-protected:
+private:
 	friend class SceneGraphManager;
-	SceneGraphRenderingContext(RenderingContext* context);
+	SceneGraphRenderingContext();
 	virtual ~SceneGraphRenderingContext();
+	void Initialize(SceneGraphManager* manager);
 
 private:
-	RenderingContext*	m_context;
 };
 
 LN_NAMESPACE_SCENE_END

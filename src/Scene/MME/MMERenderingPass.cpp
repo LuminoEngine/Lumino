@@ -205,10 +205,9 @@ void MMERenderingPass::PostRender(SceneGraphRenderingContext* dc)
 
 	m_gridPlane->GetMaterial(0)->SetMatrixParameter(_T("WorldViewProjMatrix"), dc->CurrentCamera->GetViewProjectionMatrix());
 
-	auto* r = dc->BeginGraphicsContext();
-	r->ResetStates();
-	r->SetBlendMode(BlendMode::Alpha);
-	r->DrawMesh(
+	dc->ResetStates();
+	dc->SetBlendMode(BlendMode::Alpha);
+	dc->DrawMesh(
 		m_gridPlane,
 		m_gridPlane->m_attributes[0].StartIndex,
 		m_gridPlane->m_attributes[0].PrimitiveNum,

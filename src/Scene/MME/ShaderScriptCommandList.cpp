@@ -342,11 +342,11 @@ int ShaderScriptCommandList::InternalExecute(DrawParams& params, int pc, int cur
 		{
 			if (cmd->RenderColorTarget.TextureVariable)
 			{
-				params.Params->BeginGraphicsContext()->SetRenderTarget(cmd->RenderColorTarget.Index, cmd->RenderColorTarget.TextureVariable->GetTexture());
+				params.Params->SetRenderTarget(cmd->RenderColorTarget.Index, cmd->RenderColorTarget.TextureVariable->GetTexture());
 			}
 			else
 			{
-				params.Params->BeginGraphicsContext()->SetRenderTarget(cmd->RenderColorTarget.Index, m_oldRenderTarget[cmd->RenderColorTarget.Index]);
+				params.Params->SetRenderTarget(cmd->RenderColorTarget.Index, m_oldRenderTarget[cmd->RenderColorTarget.Index]);
 			}
 			break;
 		}
@@ -354,11 +354,11 @@ int ShaderScriptCommandList::InternalExecute(DrawParams& params, int pc, int cur
 		{
 			if (cmd->RenderDepthStencilTarget.TextureVariable)
 			{
-				params.Params->BeginGraphicsContext()->SetDepthBuffer(cmd->RenderDepthStencilTarget.TextureVariable->GetTexture());
+				params.Params->SetDepthBuffer(cmd->RenderDepthStencilTarget.TextureVariable->GetTexture());
 			}
 			else
 			{
-				params.Params->BeginGraphicsContext()->SetDepthBuffer(m_oldDepthBuffer);
+				params.Params->SetDepthBuffer(m_oldDepthBuffer);
 			}
 			break;
 		}
@@ -378,12 +378,12 @@ int ShaderScriptCommandList::InternalExecute(DrawParams& params, int pc, int cur
 		}
 		case COMMAND_ClearColor:
 		{
-			params.Params->BeginGraphicsContext()->Clear(ClearFlags::Color, m_clearColor);
+			params.Params->Clear(ClearFlags::Color, m_clearColor);
 			break;
 		}
 		case COMMAND_ClearDepth:
 		{
-			params.Params->BeginGraphicsContext()->Clear(ClearFlags::Depth, Color::Transparency, m_clearDepth);
+			params.Params->Clear(ClearFlags::Depth, Color::Transparency, m_clearDepth);
 			break;
 		}
 		case COMMAND_ScriptExternal_Color:
@@ -434,10 +434,10 @@ int ShaderScriptCommandList::InternalExecute(DrawParams& params, int pc, int cur
 		case COMMAND_DrawBuffer:
 		{
 			if (cmd->DrawBuffer.Pass != nullptr) {
-				params.Params->BeginGraphicsContext()->SetShaderPass(cmd->DrawBuffer.Pass);
+				params.Params->SetShaderPass(cmd->DrawBuffer.Pass);
 			}
 
-			params.Params->BeginGraphicsContext()->DrawSquarePrimitive(
+			params.Params->DrawSquarePrimitive(
 				Vector3(-1.0f, 1.0f, 0.0f), Vector2(0.0f, 0.0f), Color::White,		// 左上
 				Vector3(1.0f, 1.0f, 0.0f), Vector2(1.0f, 0.0f), Color::White,		// 右上
 				Vector3(1.0f, -1.0f, 0.0f), Vector2(1.0f, 1.0f), Color::White,		// 右下
@@ -494,10 +494,10 @@ void ShaderScriptCommandList::PushCurrentState(DrawParams& params)
 	// 現在のレンダリングターゲット&深度バッファを記憶
 	for (int i = 0; i < Renderer::MaxMultiRenderTargets; ++i)
 	{
-		m_oldRenderTarget[i] = params.Params->BeginGraphicsContext()->GetRenderTarget(i);
+		m_oldRenderTarget[i] = params.Params->GetRenderTarget(i);
 		LN_SAFE_ADDREF(m_oldRenderTarget[i]);
 	}
-	m_oldDepthBuffer = params.Params->BeginGraphicsContext()->GetDepthBuffer();
+	m_oldDepthBuffer = params.Params->GetDepthBuffer();
 	LN_SAFE_ADDREF(m_oldDepthBuffer);
 
 	// 親の状態を記憶
@@ -514,10 +514,10 @@ void ShaderScriptCommandList::PopCurrentState(DrawParams& params)
 	// レンダリングターゲット&深度バッファを元に戻す
 	for (int i = 0; i < Renderer::MaxMultiRenderTargets; ++i)
 	{
-		params.Params->BeginGraphicsContext()->SetRenderTarget(i, m_oldRenderTarget[i]);
+		params.Params->SetRenderTarget(i, m_oldRenderTarget[i]);
 		LN_SAFE_RELEASE(m_oldRenderTarget[i]);
 	}
-	params.Params->BeginGraphicsContext()->SetDepthBuffer(m_oldDepthBuffer);
+	params.Params->SetDepthBuffer(m_oldDepthBuffer);
 	LN_SAFE_RELEASE(m_oldDepthBuffer);
 
 	// 親の状態を元に戻す

@@ -219,8 +219,10 @@ SpriteRenderer* SpriteRenderer::Create(int maxSpriteCount, GraphicsManager* mana
 
 //------------------------------------------------------------------------------
 SpriteRenderer::SpriteRenderer(GraphicsManager* manager, int maxSpriteCount)
+	: m_manager(manager)
+	, m_internal(nullptr)
+	, m_spriteSortMode(SpriteSortMode::Texture | SpriteSortMode::DepthBackToFront)
 {
-	m_manager = manager;
 	m_internal = LN_NEW SpriteRendererImpl(manager, maxSpriteCount);
 }
 
@@ -233,7 +235,13 @@ SpriteRenderer::~SpriteRenderer()
 //------------------------------------------------------------------------------
 void SpriteRenderer::SetTransform(const Matrix& matrix)
 {
-	LN_CALL_COMMAND(SetTransform, SpriteRendererImpl::SetTransformCommand, matrix);
+	LN_ENQUEUE_RENDER_COMMAND_2(
+		SpriteRenderer_SetTransform, m_manager,
+		SpriteRendererImpl*, m_internal,
+		Matrix, matrix,
+		{
+			m_internal->SetTransform(matrix);
+		});
 }
 
 //------------------------------------------------------------------------------
@@ -249,15 +257,9 @@ void SpriteRenderer::SetViewPixelSize(const SizeI& size)
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderer::SetRenderState(const RenderState& state)
+void SpriteRenderer::SetSortMode(SpriteSortMode flags, SortingDistanceBasis basis)
 {
-	LN_CALL_COMMAND(SetRenderState, SpriteRendererImpl::SetRenderStateCommand, state);
-}
-
-//------------------------------------------------------------------------------
-void SpriteRenderer::SetSortMode(uint32_t flags, SortingDistanceBasis basis)
-{
-	LN_CALL_COMMAND(SetSortMode, SpriteRendererImpl::SetSortModeCommand, flags, basis);
+	m_spriteSortMode = flags;
 }
 
 //------------------------------------------------------------------------------
@@ -329,13 +331,13 @@ void SpriteRenderer::DrawRequest3D(
 //------------------------------------------------------------------------------
 void SpriteRenderer::Flush()
 {
-	//LN_CALL_COMMAND(Flush, SpriteRendererImpl::FlushCommand);
-    if (m_manager->GetRenderingType() == GraphicsRenderingType::Threaded) {
-        m_manager->GetPrimaryRenderingCommandList()->AddCommand<SpriteRendererImpl::FlushCommand>(m_internal);
-    }
-    else {
-        m_internal->Flush();
-    }
+	LN_ENQUEUE_RENDER_COMMAND_1(
+		SpriteRenderer_Flush, m_manager,
+		SpriteRendererImpl*, m_internal,
+		SpriteSortMode, m_spriteSortMode,
+		{
+			m_internal->Flush(m_spriteSortMode);
+		});
 }
 
 
@@ -366,7 +368,6 @@ SpriteRendererImpl::SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCo
 	, m_viewPosition()
 	, m_viewProjMatrix()
 	, m_viewPixelSize()
-	, m_spriteSortMode(SpriteSortMode::Texture | SpriteSortMode::DepthBackToFront)
 	, m_sortingBasis(SortingDistanceBasis_RawZ)
 {
 	GraphicsResourceObject::Initialize(manager);
@@ -502,27 +503,26 @@ void SpriteRendererImpl::SetViewPixelSize(const SizeI& size)
 }
 
 //------------------------------------------------------------------------------
-void SpriteRendererImpl::SetRenderState(const RenderState& state)
-{
-	// 同じものがあればカレントに
-	size_t count = m_renderStateList.GetCount();
-	for (size_t i = 0; i < count; ++i)
-	{
-		if (state == m_renderStateList[i]) {
-			m_currentRenderStateIndex = i;
-			return;
-		}
-	}
-
-	// 見つからなかったら登録
-	m_renderStateList.Add(state);
-	m_currentRenderStateIndex = count;
-}
+//void SpriteRendererImpl::SetRenderState(const RenderState& state)
+//{
+//	// 同じものがあればカレントに
+//	size_t count = m_renderStateList.GetCount();
+//	for (size_t i = 0; i < count; ++i)
+//	{
+//		if (state == m_renderStateList[i]) {
+//			m_currentRenderStateIndex = i;
+//			return;
+//		}
+//	}
+//
+//	// 見つからなかったら登録
+//	m_renderStateList.Add(state);
+//	m_currentRenderStateIndex = count;
+//}
 
 //------------------------------------------------------------------------------
 void SpriteRendererImpl::SetSortMode(uint32_t flags, SortingDistanceBasis basis)
 {
-	m_spriteSortMode = flags;
 	m_sortingBasis = basis;
 }
 
@@ -887,7 +887,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-void SpriteRendererImpl::Flush()
+void SpriteRendererImpl::Flush(SpriteSortMode sortFlags)
 {
 	int spriteCount = m_spriteRequestListUsedCount;	// 描画するスプライトの数
 	if (spriteCount == 0) { return; }				// 0 個ならなにもしない
@@ -899,15 +899,15 @@ void SpriteRendererImpl::Flush()
 	//memcpy(m_spriteIndexList, mSpriteIndexArraySource, sizeof(*m_spriteIndexList) * mLastSpriteNum);
 
 	// インデックスを並び替える
-	if (m_spriteSortMode & SpriteSortMode::Texture)
+	if (sortFlags & SpriteSortMode::Texture)
 	{
-		if (m_spriteSortMode & SpriteSortMode::DepthBackToFront)
+		if (sortFlags & SpriteSortMode::DepthBackToFront)
 		{
 			SpriteCmpDepthBackToFront cmp;
 			cmp.spriteList = &m_spriteRequestList;
 			std::stable_sort(m_spriteIndexList.begin(), m_spriteIndexList.begin() + spriteCount, cmp);
 		}
-		else if (m_spriteSortMode & SpriteSortMode::DepthFrontToBack)
+		else if (sortFlags & SpriteSortMode::DepthFrontToBack)
 		{
 			SpriteCmpDepthFrontToBack cmp;
 			cmp.spriteList = &m_spriteRequestList;
@@ -916,13 +916,13 @@ void SpriteRendererImpl::Flush()
 	}
 	else
 	{
-		if (m_spriteSortMode & SpriteSortMode::DepthBackToFront)
+		if (sortFlags & SpriteSortMode::DepthBackToFront)
 		{
 			SpriteCmpTexDepthBackToFront cmp;
 			cmp.spriteList = &m_spriteRequestList;
 			std::stable_sort(m_spriteIndexList.begin(), m_spriteIndexList.begin() + spriteCount, cmp);
 		}
-		else if (m_spriteSortMode & SpriteSortMode::DepthFrontToBack)
+		else if (sortFlags & SpriteSortMode::DepthFrontToBack)
 		{
 			SpriteCmpTexDepthFrontToBack cmp;
 			cmp.spriteList = &m_spriteRequestList;

@@ -116,7 +116,7 @@ void HugePlane::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 		//m_mesh->SetUV(2, Vector2(1.0f, 1.0f));
 		//m_mesh->SetUV(3, Vector2(1.0f, -1.0f));
 
-		dc->BeginGraphicsContext()->DrawMesh(m_mesh, m_mesh->m_attributes[subsetIndex].StartIndex, m_mesh->m_attributes[subsetIndex].PrimitiveNum);
+		dc->DrawMesh(m_mesh, m_mesh->m_attributes[subsetIndex].StartIndex, m_mesh->m_attributes[subsetIndex].PrimitiveNum);
 	}
 }
 

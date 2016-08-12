@@ -49,14 +49,14 @@ void Grid::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 
 	for (int x = 0; x <= divCount; ++x)
 	{
-		dc->BeginGraphicsContext()->DrawLinePrimitive(
+		dc->DrawLinePrimitive(
 			Vector3(planeMin.x + step.x * x, 0, planeMin.z), Color::DimGray,
 			Vector3(planeMin.x + step.x * x, 0, planeMax.z), Color::DimGray);
 	}
 
 	for (int z = 0; z <= divCount; ++z)
 	{
-		dc->BeginGraphicsContext()->DrawLinePrimitive(
+		dc->DrawLinePrimitive(
 			Vector3(planeMin.x, 0, planeMin.z + step.z * z), Color::DimGray,
 			Vector3(planeMax.x, 0, planeMin.z + step.z * z), Color::DimGray);
 	}

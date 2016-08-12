@@ -239,7 +239,7 @@ void Sprite::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 {
 	if (subsetIndex == 0)
 	{
-		dc->BeginGraphicsContext()->DrawSquarePrimitive(
+		dc->DrawSquarePrimitive(
 			Vector3(m_upperLeft.x, m_upperLeft.y, m_upperLeft.z), Vector2(m_upperLeftUV.x, m_upperLeftUV.y), Color::White,
 			Vector3(m_upperLeft.x, m_lowerRight.y, m_lowerRight.z), Vector2(m_upperLeftUV.x, m_lowerRightUV.y), Color::White,
 			Vector3(m_lowerRight.x, m_lowerRight.y, m_lowerRight.z), Vector2(m_lowerRightUV.x, m_lowerRightUV.y), Color::White,

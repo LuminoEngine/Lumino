@@ -28,7 +28,7 @@ public:
 	void SetViewPixelSize(const SizeI& size);
 
 	/// レンダリングスレートの設定
-	void SetRenderState(const RenderState& state);
+	//void SetRenderState(const RenderState& state);
 
 	/// ソート方法の設定
 	void SetSortMode(uint32_t flags, SortingDistanceBasis basis);
@@ -53,7 +53,7 @@ public:
 		AxisDirection front);
 
 	/// バッチ処理されているスプライトの描画
-	void Flush();
+	void Flush(SpriteSortMode sortFlags);
 
 	/// 描画せずにバッチをすべてクリアする
 	void Clear();
@@ -142,7 +142,6 @@ private:
 	Matrix							m_viewProjMatrix;
 	Vector2							m_viewPixelSize;
 
-	uint32_t						m_spriteSortMode;			///< ソート方法 (SpriteSortMode)
 	SortingDistanceBasis			m_sortingBasis;				///< ソート基準
    
 	/// シェーダ関係の変数をまとめた構造体
@@ -157,20 +156,6 @@ private:
     } m_shader;
 
 public:
-
-	struct SetTransformCommand : public RenderingCommand
-	{
-		SpriteRendererImpl*	m_renderer;
-		Matrix	m_transform;
-
-		void Create(SpriteRendererImpl* renderer, const Matrix& transform)
-		{
-			m_renderer = renderer;
-			m_transform = transform;
-			MarkGC(m_renderer);
-		}
-		void Execute() { m_renderer->SetTransform(m_transform); }
-	};
 
 	struct SetViewProjMatrixCommand : public RenderingCommand
 	{
@@ -200,20 +185,6 @@ public:
 			MarkGC(m_renderer);
 		}
 		void Execute() { m_renderer->SetViewPixelSize(m_size); }
-	};
-
-	struct SetRenderStateCommand : public RenderingCommand
-	{
-		SpriteRendererImpl*	m_renderer;
-		RenderState	m_state;
-
-		void Create(SpriteRendererImpl* renderer, const RenderState& state)
-		{
-			m_renderer = renderer;
-			m_state = state;
-			MarkGC(m_renderer);
-		}
-		void Execute() { m_renderer->SetRenderState(m_state); }
 	};
 
 	struct SetSortModeCommand : public RenderingCommand
@@ -306,30 +277,6 @@ public:
 		{
 			m_renderer->DrawRequest3D(m_position, m_center, m_size, m_texture, m_srcRect, m_colorTable, m_front);
 		}
-	};
-
-	struct FlushCommand : public RenderingCommand
-	{
-		SpriteRendererImpl*	m_renderer;
-
-		void Create(SpriteRendererImpl* renderer)
-		{
-			m_renderer = renderer;
-			MarkGC(m_renderer);
-		}
-		void Execute() { m_renderer->Flush(); }
-	};
-
-	struct ClearCommand : public RenderingCommand
-	{
-		SpriteRendererImpl*	m_renderer;
-
-		void Create(SpriteRendererImpl* renderer)
-		{
-			m_renderer = renderer;
-			MarkGC(m_renderer);
-		}
-		void Execute() { m_renderer->Clear(); }
 	};
 };
 

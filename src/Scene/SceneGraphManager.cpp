@@ -45,7 +45,8 @@ SceneGraphManager::SceneGraphManager(const ConfigData& configData)
 		m_renderingPassIDStack.Push(i);
 	}
 
-	m_renderingContext = LN_NEW SceneGraphRenderingContext(m_graphicsManager->GetRenderingContext());
+	m_renderingContext = LN_NEW SceneGraphRenderingContext();
+	m_renderingContext->Initialize(this);
 }
 
 //------------------------------------------------------------------------------

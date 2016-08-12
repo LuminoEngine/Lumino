@@ -429,7 +429,7 @@ void VisualNode::DrawSubsetInternal(SceneGraphRenderingContext* dc, int subsetIn
 
 	// パス開始
 	if (pass != nullptr) {
-		dc->BeginGraphicsContext()->SetShaderPass(pass);
+		dc->SetShaderPass(pass);
 	}
 
 	// サブセット描画の本体
@@ -457,12 +457,11 @@ Shader* VisualNode::GetPrimaryShader() const
 void VisualNode::Render(SceneGraphRenderingContext* dc)
 {
 	// レンダリングステートの設定
-	RenderingContext* r = dc->BeginGraphicsContext();
-	r->ResetStates();
-	r->SetBlendMode(m_renderState.blendMode);
-	r->SetCullingMode(m_renderState.cullingMode);
-	r->SetDepthTestEnabled(m_renderState.depthTestEnabled);
-	r->SetDepthWriteEnabled(m_renderState.depthWriteEnabled);
+	dc->ResetStates();
+	dc->SetBlendMode(m_renderState.blendMode);
+	dc->SetCullingMode(m_renderState.cullingMode);
+	dc->SetDepthTestEnabled(m_renderState.depthTestEnabled);
+	dc->SetDepthWriteEnabled(m_renderState.depthWriteEnabled);
 
 	// 描画
 	OnRender(dc);
