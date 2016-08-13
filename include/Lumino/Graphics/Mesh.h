@@ -42,8 +42,20 @@ public:
 	Material* GetMaterial(int index) const;
 
 	void SetPosition(int index, const Vector3& position);
+	void SetNormal(int index, const Vector3& normal);
 	void SetUV(int index, const Vector2& uv);
 	const Vector3& GetPosition(int index);
+
+
+	void SetBlendWeight(int index, int blendIndex, float value);
+	void SetBlendWeights(int index, float v0, float v1, float v2, float v3);
+	void SetBlendIndex(int index, int blendIndex, float value);
+	void SetBlendIndices(int index, float v0, float v1, float v2, float v3);
+
+	// PMX
+	void SetAdditionalUV(int index, int additionalUVIndex, const Vector4& uv);
+	void SetEdgeWeight(int index, float weight);
+
 
 	void AddSections(int count);
 	MeshAttribute* GetSection(int index);
@@ -92,6 +104,11 @@ LN_INTERNAL_ACCESS:
 	MeshResource();
 	virtual ~MeshResource();
 	void Initialize(GraphicsManager* manager);
+	void CreateVertexBuffer(int vertexCount);
+	void CreateIndexBuffer(int indexCount);
+	void BeginCreating(MeshCreationFlags flags);
+	void EndCreating();
+
 	void CreateBox(const Vector3& size);
 	void CreateSphere(float radius, int slices, int stacks, MeshCreationFlags flags);
 	void CreateSquarePlane(const Vector2& size, const Vector3& front, MeshCreationFlags flags);

@@ -531,6 +531,30 @@ void MeshResource::Initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
+void MeshResource::CreateVertexBuffer(int vertexCount)
+{
+	m_vertexCount = vertexCount;
+}
+
+//------------------------------------------------------------------------------
+void MeshResource::CreateIndexBuffer(int indexCount)
+{
+	m_indexCount = indexCount;
+}
+
+//------------------------------------------------------------------------------
+void MeshResource::BeginCreating(MeshCreationFlags flags)
+{
+	m_usage = (flags.TestFlag(MeshCreationFlags::DynamicBuffers)) ? ResourceUsage::Static : ResourceUsage::Dynamic;
+}
+
+//------------------------------------------------------------------------------
+void MeshResource::EndCreating()
+{
+	m_vertexDeclarationModified = true;
+}
+
+//------------------------------------------------------------------------------
 void MeshResource::CreateBox(const Vector3& size)
 {
 	TexUVBoxMeshFactory factory(size);
@@ -539,6 +563,7 @@ void MeshResource::CreateBox(const Vector3& size)
 	void* vb = TryLockVertexBuffer(VB_BasicVertices, sizeof(Vertex));
 	void* ib = TryLockIndexBuffer();
 	factory.Generate((Vertex*)vb, (uint16_t*)ib);
+	EndCreating();
 }
 
 //------------------------------------------------------------------------------
@@ -551,6 +576,7 @@ void MeshResource::CreateSphere(float radius, int slices, int stacks, MeshCreati
 	void* ib = TryLockIndexBuffer();
 	factory.Generate((Vertex*)vb, (uint16_t*)ib);
 	PostGenerated((Vertex*)vb, ib, flags);
+	EndCreating();
 }
 
 //------------------------------------------------------------------------------
@@ -563,6 +589,7 @@ void MeshResource::CreateSquarePlane(const Vector2& size, const Vector3& front, 
 	void* ib = TryLockIndexBuffer();
 	factory.Generate((Vertex*)vb, (uint16_t*)ib);
 	PostGenerated((Vertex*)vb, ib, flags);
+	EndCreating();
 }
 
 //------------------------------------------------------------------------------
@@ -574,6 +601,7 @@ void MeshResource::CreateScreenPlane()
 	void* vb = TryLockVertexBuffer(VB_BasicVertices, sizeof(Vertex));
 	void* ib = TryLockIndexBuffer();
 	factory.Generate((Vertex*)vb, (uint16_t*)ib);
+	EndCreating();
 }
 
 //------------------------------------------------------------------------------
@@ -607,6 +635,14 @@ void MeshResource::SetPosition(int index, const Vector3& position)
 }
 
 //------------------------------------------------------------------------------
+void MeshResource::SetNormal(int index, const Vector3& normal)
+{
+	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
+	Vertex* v = (Vertex*)TryLockVertexBuffer(VB_BasicVertices, sizeof(Vertex));
+	v[index].normal = normal;
+}
+
+//------------------------------------------------------------------------------
 void MeshResource::SetUV(int index, const Vector2& uv)
 {
 	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
@@ -620,6 +656,60 @@ const Vector3& MeshResource::GetPosition(int index)
 	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return Vector3::Zero;
 	Vertex* v = (Vertex*)TryLockVertexBuffer(VB_BasicVertices, sizeof(Vertex));
 	return v[index].position;
+}
+
+//------------------------------------------------------------------------------
+void MeshResource::SetBlendWeight(int index, int blendIndex, float value)
+{
+	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
+	BlendWeight* v = (BlendWeight*)TryLockVertexBuffer(VB_BlendWeights, sizeof(BlendWeight));
+	v[index].weights[blendIndex] = value;
+}
+
+//------------------------------------------------------------------------------
+void MeshResource::SetBlendWeights(int index, float v0, float v1, float v2, float v3)
+{
+	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
+	BlendWeight* v = (BlendWeight*)TryLockVertexBuffer(VB_BlendWeights, sizeof(BlendWeight));
+	v[index].weights[0] = v0;
+	v[index].weights[1] = v1;
+	v[index].weights[2] = v2;
+	v[index].weights[3] = v3;
+}
+
+//------------------------------------------------------------------------------
+void MeshResource::SetBlendIndex(int index, int blendIndex, float value)
+{
+	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
+	BlendWeight* v = (BlendWeight*)TryLockVertexBuffer(VB_BlendWeights, sizeof(BlendWeight));
+	v[index].indices[blendIndex] = value;
+}
+
+//------------------------------------------------------------------------------
+void MeshResource::SetBlendIndices(int index, float v0, float v1, float v2, float v3)
+{
+	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
+	BlendWeight* v = (BlendWeight*)TryLockVertexBuffer(VB_BlendWeights, sizeof(BlendWeight));
+	v[index].indices[0] = v0;
+	v[index].indices[1] = v1;
+	v[index].indices[2] = v2;
+	v[index].indices[3] = v3;
+}
+
+//------------------------------------------------------------------------------
+void MeshResource::SetAdditionalUV(int index, int additionalUVIndex, const Vector4& uv)
+{
+	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
+	AdditionalUVs* v = (AdditionalUVs*)TryLockVertexBuffer(VB_AdditionalUVs, sizeof(AdditionalUVs));
+	v[index].uv[additionalUVIndex] = uv;
+}
+
+//------------------------------------------------------------------------------
+void MeshResource::SetEdgeWeight(int index, float weight)
+{
+	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
+	MmdExtra* v = (MmdExtra*)TryLockVertexBuffer(VB_MmdExtra, sizeof(MmdExtra));
+	v[index].edgeWeight = weight;
 }
 
 //------------------------------------------------------------------------------
@@ -647,7 +737,7 @@ void* MeshResource::TryLockVertexBuffer(VertexBufferType type, int stride)
 		}
 
 		ByteBuffer* buf = m_vertexBufferInfos[type].buffer->Lock();
-		m_vertexBufferInfos[type].lockedBuffer = (BlendWeight*)buf->GetData();
+		m_vertexBufferInfos[type].lockedBuffer = buf->GetData();
 	}
 	return m_vertexBufferInfos[type].lockedBuffer;
 }
@@ -761,8 +851,6 @@ void MeshResource::CommitRenderData(VertexDeclaration** outDecl, VertexBuffer** 
 //------------------------------------------------------------------------------
 void MeshResource::CreateBuffers(int vertexCount, int indexCount, MeshCreationFlags flags)
 {
-	m_usage = (flags.TestFlag(MeshCreationFlags::DynamicBuffers)) ? ResourceUsage::Static : ResourceUsage::Dynamic;
-
 	AddMaterials(1);
 	AddSections(1);
 	m_attributes[0].MaterialIndex = 0;
@@ -771,7 +859,6 @@ void MeshResource::CreateBuffers(int vertexCount, int indexCount, MeshCreationFl
 
 	m_vertexCount = vertexCount;
 	m_indexCount = indexCount;
-	m_vertexDeclarationModified = true;
 }
 
 //------------------------------------------------------------------------------

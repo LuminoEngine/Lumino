@@ -7,6 +7,25 @@
 
 LN_NAMESPACE_BEGIN
 
+// PMX モデルの頂点情報
+struct PMX_Vertex
+{
+	Vector3	Position;			///< 位置
+	float	BlendWeights[4];	///< ボーンブレンド率
+	float	BlendIndices[4];	///< ボーンインデックス
+	Vector3	Normal;				///< 法線
+	Color	Color;				///< 頂点カラー (ライブラリ独自仕様)
+	Vector2	TexUV;				///< テクスチャUV
+
+	Vector4	AdditionalUV[4];	///< 追加UV
+	Vector4	SdefC;				///< Sdef - C値
+	Vector3	SdefR0;				///< Sdef - R0値
+	Vector3	SdefR1;				///< Sdef - R1値
+
+	float	EdgeWeight;			///< エッジウェイト
+	float	Index;				///< 頂点インデックス値
+};
+
 //==============================================================================
 // PmxLoader
 //==============================================================================
@@ -31,6 +50,7 @@ RefPtr<PmxSkinnedMeshResource> PmxLoader::Load(detail::ModelManager* manager, St
 	BinaryReader reader(stream);
 	m_modelCore = RefPtr<PmxSkinnedMeshResource>::MakeRef();
 	m_modelCore->Format = ModelFormat_PMX;
+	m_modelCore->BeginCreating(MeshCreationFlags::None);	// TODO:
 	
 	//-----------------------------------------------------
 	// ヘッダ
@@ -40,9 +60,9 @@ RefPtr<PmxSkinnedMeshResource> PmxLoader::Load(detail::ModelManager* manager, St
 		m_pmxHeader.Magic[2] != 'X' ||
 		m_pmxHeader.Magic[3] != ' ')
 	{
-		return NULL;
+		return nullptr;
 	}
-	if (m_pmxHeader.Version < 2.0f) return NULL;
+	if (m_pmxHeader.Version < 2.0f) return nullptr;
 #if 1
 	//_p( m_pmxHeader.Version );
 	printf( "DataSize              : %d\n", m_pmxHeader.DataSize );
@@ -86,7 +106,7 @@ RefPtr<PmxSkinnedMeshResource> PmxLoader::Load(detail::ModelManager* manager, St
 	// ジョイント
 	LoadJoints( &reader );
 
-	m_modelCore.SafeAddRef();
+	m_modelCore->EndCreating();
 	return m_modelCore;
 }
 
@@ -106,7 +126,6 @@ void PmxLoader::LoadModelInfo(BinaryReader* reader)
 	/*m_modelCore->EnglishComment = */ReadString(reader);
 }
 
-#if 0
 //------------------------------------------------------------------------------
 void PmxLoader::LoadVertices(BinaryReader* reader)
 {
@@ -114,8 +133,7 @@ void PmxLoader::LoadVertices(BinaryReader* reader)
 	int vertexCount = reader->ReadInt32();
 
 	// 頂点バッファ作成
-	m_modelCore->VertexBuffer.Attach(Graphics::VertexBuffer::Create(
-		m_manager->GetGraphicsManager(), PMX_Vertex::Elements(), PMX_Vertex::ElementCount, vertexCount, NULL, Graphics::DeviceResourceUsage_Static));
+	m_modelCore->CreateVertexBuffer(vertexCount);
 
 	// データを流し込む
 	struct BaseVertex
@@ -124,82 +142,104 @@ void PmxLoader::LoadVertices(BinaryReader* reader)
 		Vector3	Normal;
 		Vector2	TexUV;
 	} baseVertex;
-	Graphics::ScopedVertexBufferLock lock(m_modelCore->VertexBuffer);
-	PMX_Vertex* vertices = (PMX_Vertex*)lock.GetData();
+
 	for (int i = 0; i < vertexCount; ++i)
 	{
-		PMX_Vertex* v = &vertices[i];
-
 		// 頂点、法線、テクスチャUV
 		reader->Read(&baseVertex, sizeof(BaseVertex));
-		v->Position = baseVertex.Position;
-		v->Normal = baseVertex.Normal;
-		v->TexUV = baseVertex.TexUV;
+		m_modelCore->SetPosition(i, baseVertex.Position);
+		m_modelCore->SetNormal(i, baseVertex.Normal);
+		m_modelCore->SetUV(i, baseVertex.TexUV);
 
 		// 追加UV
-		for (int j = 0; j < getAdditionalUVCount(); i++)
+		for (int iAddUV = 0; iAddUV < getAdditionalUVCount(); iAddUV++)
 		{
-			v->AdditionalUV[i].Set(
-				reader->ReadFloat(),
-				reader->ReadFloat(),
-				reader->ReadFloat(),
-				reader->ReadFloat());
+			Vector4 uv;
+			reader->Read(&uv, sizeof(Vector4));
+			m_modelCore->SetAdditionalUV(i, iAddUV, uv);
 		}
 
 		// ブレンドウェイト
 		int defType = reader->ReadInt8();
 		switch (defType)
 		{
-		case 0:	// BDEF1
-			v->BlendIndices[0] = (float)reader->ReadInt(getBoneIndexSize());
-			v->BlendIndices[1] = 0.0f;
-			v->BlendIndices[2] = 0.0f;
-			v->BlendIndices[3] = 0.0f;
-			v->BlendWeights[0] = 1.0f;
-			v->BlendWeights[1] = 0.0f;
-			v->BlendWeights[2] = 0.0f;
-			v->BlendWeights[3] = 0.0f;
-			break;
-		case 1:	// BDEF2
-			v->BlendIndices[0] = (float)reader->ReadInt(getBoneIndexSize());
-			v->BlendIndices[1] = (float)reader->ReadInt(getBoneIndexSize());
-			v->BlendIndices[2] = 0.0f;
-			v->BlendIndices[3] = 0.0f;
-			v->BlendWeights[0] = reader->ReadFloat();
-			v->BlendWeights[1] = 1.0f - v->BlendWeights[0];
-			v->BlendWeights[2] = 0.0f;
-			v->BlendWeights[3] = 0.0f;
-			break;
-		case 2:	// BDEF4
-			v->BlendIndices[0] = (float)reader->ReadInt(getBoneIndexSize());
-			v->BlendIndices[1] = (float)reader->ReadInt(getBoneIndexSize());
-			v->BlendIndices[2] = (float)reader->ReadInt(getBoneIndexSize());
-			v->BlendIndices[3] = (float)reader->ReadInt(getBoneIndexSize());
-			v->BlendWeights[0] = reader->ReadFloat();
-			v->BlendWeights[1] = reader->ReadFloat();
-			v->BlendWeights[2] = reader->ReadFloat();
-			v->BlendWeights[3] = reader->ReadFloat();
-			break;
-		case 3:	// SDEF
-			v->BlendIndices[0] = (float)reader->ReadInt(getBoneIndexSize());
-			v->BlendIndices[1] = (float)reader->ReadInt(getBoneIndexSize());
-			v->BlendIndices[2] = 0.0f;
-			v->BlendIndices[3] = 0.0f;
-			v->BlendWeights[0] = reader->ReadFloat();
-			v->BlendWeights[1] = 1.0f - v->BlendWeights[0];
-			v->BlendWeights[2] = 0.0f;
-			v->BlendWeights[3] = 0.0f;
-			reader->Read(&v->SdefC, sizeof(float) * 3);
-			reader->Read(&v->SdefR0, sizeof(float) * 3);
-			reader->Read(&v->SdefR1, sizeof(float) * 3);	// TODO:※修正値を要計算
-			break;
+			case 0:	// BDEF1
+			{
+				m_modelCore->SetBlendIndices(
+					i,
+					(float)reader->ReadInt(getBoneIndexSize()),
+					0.0f,
+					0.0f,
+					0.0f);
+				m_modelCore->SetBlendWeights(
+					i,
+					1.0f,
+					0.0f,
+					0.0f,
+					0.0f);
+				break;
+			}
+			case 1:	// BDEF2
+			{
+				m_modelCore->SetBlendIndices(
+					i,
+					(float)reader->ReadInt(getBoneIndexSize()),
+					(float)reader->ReadInt(getBoneIndexSize()),
+					0.0f,
+					0.0f);
+				int v0 = reader->ReadFloat();
+				m_modelCore->SetBlendWeights(
+					i,
+					v0,
+					1.0f - v0,
+					0.0f,
+					0.0f);
+				break;
+			}
+			case 2:	// BDEF4
+			{
+				m_modelCore->SetBlendIndices(
+					i,
+					(float)reader->ReadInt(getBoneIndexSize()),
+					(float)reader->ReadInt(getBoneIndexSize()),
+					(float)reader->ReadInt(getBoneIndexSize()),
+					(float)reader->ReadInt(getBoneIndexSize()));
+				m_modelCore->SetBlendWeights(
+					i,
+					reader->ReadFloat(),
+					reader->ReadFloat(),
+					reader->ReadFloat(),
+					reader->ReadFloat());
+				break;
+			}
+			case 3:	// SDEF
+			{
+				m_modelCore->SetBlendIndices(
+					i,
+					(float)reader->ReadInt(getBoneIndexSize()),
+					(float)reader->ReadInt(getBoneIndexSize()),
+					0.0f,
+					0.0f);
+				int v0 = reader->ReadFloat();
+				m_modelCore->SetBlendWeights(
+					i,
+					v0,
+					1.0f - v0,
+					0.0f,
+					0.0f);
+				reader->Read(&v->SdefC, sizeof(float) * 3);
+				reader->Read(&v->SdefR0, sizeof(float) * 3);
+				reader->Read(&v->SdefR1, sizeof(float) * 3);	// TODO:※修正値を要計算
+				break;
+			}
 		}
 
 		// エッジ倍率
-		v->EdgeWeight = reader->ReadFloat();
+		m_modelCore->SetEdgeWeight(i, reader->ReadFloat());
 	}
 }
 
+#if 0
 //------------------------------------------------------------------------------
 void PmxLoader::LoadIndices(BinaryReader* reader)
 {
