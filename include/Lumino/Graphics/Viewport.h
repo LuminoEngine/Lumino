@@ -106,6 +106,7 @@ private:
 	Color						m_backgroundColor;
 	RenderTarget*				m_primaryLayerTarget;
 	RenderTarget*				m_secondaryLayerTarget;
+	RefPtr<DepthBuffer>			m_depthBuffer;
 };
 
 LN_NAMESPACE_END

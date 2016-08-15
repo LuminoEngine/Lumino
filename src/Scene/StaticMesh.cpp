@@ -93,6 +93,7 @@ void StaticMesh::Initialize(SceneGraph* owner, StaticMeshModel* meshModel)
 //------------------------------------------------------------------------------
 void StaticMesh::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 {
+	printf("StaticMesh::DrawSubset\n");
 	dc->DrawMesh(m_mesh, subsetIndex);
 }
 

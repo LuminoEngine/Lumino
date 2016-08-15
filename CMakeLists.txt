@@ -304,6 +304,10 @@ set(LN_SOURCES_Graphics_Text
 	src/Graphics/Text/TextRenderer.cpp
 	src/Graphics/Text/TextRenderer.h
 )
+set(LN_SOURCES_Graphics_Mesh
+	include/Lumino/Graphics/Mesh/SkinnedMeshModel.h
+	src/Graphics/Mesh/SkinnedMeshModel.cpp
+)
 
 set(LN_SOURCES_Effect
 	include/Lumino/Effect/Common.h
@@ -697,6 +701,7 @@ source_group("Physics"			FILES ${LN_SOURCES_Physics})
 source_group("Graphics"			FILES ${LN_SOURCES_Graphics})
 source_group("Graphics_Device"	FILES ${LN_SOURCES_Graphics_Device})
 source_group("Graphics_Text"	FILES ${LN_SOURCES_Graphics_Text})
+source_group("Graphics_Mesh"	FILES ${LN_SOURCES_Graphics_Mesh})
 source_group("Effect"			FILES ${LN_SOURCES_Effect})
 source_group("Tilemap"			FILES ${LN_SOURCES_TileMap})
 source_group("Modeling"			FILES ${LN_SOURCES_Modeling})
@@ -719,6 +724,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Graphics}
 	${LN_SOURCES_Graphics_Device}
 	${LN_SOURCES_Graphics_Text}
+	${LN_SOURCES_Graphics_Mesh}
 	${LN_SOURCES_Effect}
 	${LN_SOURCES_TileMap}
 	${LN_SOURCES_Modeling}

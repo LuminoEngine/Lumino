@@ -500,6 +500,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(MeshResource, Object);
 MeshResource::MeshResource()
 	: m_manager(nullptr)
 	, m_usage(ResourceUsage::Static)
+	, m_indexBufferFormat(IndexBufferFormat_UInt16)
 	, m_vertexDeclaration()
 	, m_indexBuffer()
 	, m_vertexCount(0)
@@ -537,9 +538,10 @@ void MeshResource::CreateVertexBuffer(int vertexCount)
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::CreateIndexBuffer(int indexCount)
+void MeshResource::CreateIndexBuffer(int indexCount, IndexBufferFormat format)
 {
 	m_indexCount = indexCount;
+	m_indexBufferFormat = format;
 }
 
 //------------------------------------------------------------------------------
@@ -697,11 +699,54 @@ void MeshResource::SetBlendIndices(int index, float v0, float v1, float v2, floa
 }
 
 //------------------------------------------------------------------------------
+void MeshResource::SetIndex(int index, int vertexIndex)
+{
+	if (m_indexBufferFormat == IndexBufferFormat_UInt16)
+	{
+		uint16_t* i = (uint16_t*)TryLockIndexBuffer();
+		i[index] = vertexIndex;
+	}
+	else if (m_indexBufferFormat == IndexBufferFormat_UInt32)
+	{
+		uint32_t* i = (uint32_t*)TryLockIndexBuffer();
+		i[index] = vertexIndex;
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+	}
+}
+
+//------------------------------------------------------------------------------
 void MeshResource::SetAdditionalUV(int index, int additionalUVIndex, const Vector4& uv)
 {
 	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
 	AdditionalUVs* v = (AdditionalUVs*)TryLockVertexBuffer(VB_AdditionalUVs, sizeof(AdditionalUVs));
 	v[index].uv[additionalUVIndex] = uv;
+}
+
+//------------------------------------------------------------------------------
+void MeshResource::SetSdefC(int index, const Vector4& value)
+{
+	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
+	SdefInfo* v = (SdefInfo*)TryLockVertexBuffer(VB_SdefInfo, sizeof(SdefInfo));
+	v[index].sdefC = value;
+}
+
+//------------------------------------------------------------------------------
+void MeshResource::SetSdefR0(int index, const Vector3& value)
+{
+	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
+	SdefInfo* v = (SdefInfo*)TryLockVertexBuffer(VB_SdefInfo, sizeof(SdefInfo));
+	v[index].sdefR0 = value;
+}
+
+//------------------------------------------------------------------------------
+void MeshResource::SetSdefR1(int index, const Vector3& value)
+{
+	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
+	SdefInfo* v = (SdefInfo*)TryLockVertexBuffer(VB_SdefInfo, sizeof(SdefInfo));
+	v[index].sdefR1 = value;
 }
 
 //------------------------------------------------------------------------------
@@ -750,7 +795,7 @@ void* MeshResource::TryLockIndexBuffer()
 		if (m_indexBuffer == nullptr)
 		{
 			m_indexBuffer = RefPtr<IndexBuffer>::MakeRef();
-			m_indexBuffer->Initialize(m_manager, m_indexCount, nullptr, IndexBufferFormat_UInt16, m_usage);	// TODO: int32
+			m_indexBuffer->Initialize(m_manager, m_indexCount, nullptr, m_indexBufferFormat, m_usage);
 		}
 
 		ByteBuffer* buf = m_indexBuffer->Lock();

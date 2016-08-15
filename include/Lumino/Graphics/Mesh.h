@@ -52,8 +52,13 @@ public:
 	void SetBlendIndex(int index, int blendIndex, float value);
 	void SetBlendIndices(int index, float v0, float v1, float v2, float v3);
 
+	void SetIndex(int index, int vertexIndex);
+
 	// PMX
 	void SetAdditionalUV(int index, int additionalUVIndex, const Vector4& uv);
+	void SetSdefC(int index, const Vector4& value);
+	void SetSdefR0(int index, const Vector3& value);
+	void SetSdefR1(int index, const Vector3& value);
 	void SetEdgeWeight(int index, float weight);
 
 
@@ -105,7 +110,7 @@ LN_INTERNAL_ACCESS:
 	virtual ~MeshResource();
 	void Initialize(GraphicsManager* manager);
 	void CreateVertexBuffer(int vertexCount);
-	void CreateIndexBuffer(int indexCount);
+	void CreateIndexBuffer(int indexCount, IndexBufferFormat format);
 	void BeginCreating(MeshCreationFlags flags);
 	void EndCreating();
 
@@ -127,6 +132,7 @@ private:
 LN_INTERNAL_ACCESS:	// TODO:
 	GraphicsManager*			m_manager;
 	ResourceUsage				m_usage;
+	IndexBufferFormat			m_indexBufferFormat;
 	RefPtr<VertexDeclaration>	m_vertexDeclaration;
 	VertexBufferInfo			m_vertexBufferInfos[VB_Count];
 	RefPtr<IndexBuffer>			m_indexBuffer;

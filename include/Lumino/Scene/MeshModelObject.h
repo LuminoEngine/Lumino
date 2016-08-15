@@ -1,5 +1,33 @@
 ﻿
 #pragma once
+#include "VisualNode.h"
+
+LN_NAMESPACE_BEGIN
+class SkinnedMeshModel;
+class SkinnedMesh;
+using SkinnedMeshPtr = RefPtr<SkinnedMesh>;
+
+/**
+	@brief
+*/
+class SkinnedMesh
+	: public VisualNode
+{
+public:
+	static SkinnedMeshPtr Create(const StringRef& filePath);
+
+LN_INTERNAL_ACCESS:
+	SkinnedMesh();
+	virtual ~SkinnedMesh();
+	void Initialize(SceneGraph* ownerSceneGraph, SkinnedMeshModel* meshModel);
+	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
+
+private:
+	RefPtr<SkinnedMeshModel>	m_meshModel;
+};
+
+LN_NAMESPACE_END
+
 //#include "../../../src/Modeling/Model.h"	// TODO
 //#include "VisualNode.h"
 //

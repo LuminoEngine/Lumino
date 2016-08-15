@@ -61,6 +61,7 @@ void DrawingContext::SetViewProjectionTransform(const Matrix& view, const Matrix
 	m_state.viewTransform = view;
 	m_state.projectionTransform = proj;
 }
+
 //------------------------------------------------------------------------------
 void DrawingContext::SetRenderTarget(int index, Texture* texture)
 {

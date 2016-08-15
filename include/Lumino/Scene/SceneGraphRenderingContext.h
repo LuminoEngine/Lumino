@@ -20,6 +20,7 @@ LN_INTERNAL_ACCESS:
 	LightNodeList*				renderingLightList;
 	MMEShader*					Shader;				// 本当に必要なシェーダ (VisualNode::Render() 以下で使用可能)
 
+
 private:
 	friend class SceneGraphManager;
 	SceneGraphRenderingContext();

@@ -65,7 +65,6 @@ protected:
 	virtual ~SceneGraph();
 	void CreateCore(SceneGraphManager* manager);
 
-
 LN_INTERNAL_ACCESS:
 	//void AddNode(SceneNode* node) { m_allNodes.Add(node); }
 	//void RemoveNode(SceneNode* node) { m_allNodes.Remove(node); }

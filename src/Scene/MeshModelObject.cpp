@@ -1,6 +1,67 @@
 ﻿
 #pragma once
 #include "../Internal.h"
+#include <Lumino/Graphics/Mesh/SkinnedMeshModel.h>
+#include <Lumino/Scene/SceneGraph.h>
+#include <Lumino/Scene/SceneGraphRenderingContext.h>
+#include <Lumino/Scene/MeshModelObject.h>
+#include "../Modeling/PmxSkinnedMesh.h"
+#include "SceneGraphManager.h"
+
+LN_NAMESPACE_BEGIN
+
+//==============================================================================
+// SkinnedMesh
+//==============================================================================
+
+//------------------------------------------------------------------------------
+SkinnedMeshPtr SkinnedMesh::Create(const StringRef& filePath)
+{
+	auto ptr = SkinnedMeshPtr::MakeRef();
+	auto meshResource = SceneGraphManager::Instance->GetModelManager()->CreateSkinnedMeshModel(filePath);
+	auto mesh = RefPtr<SkinnedMeshModel>::MakeRef();
+	mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager(), meshResource);
+	ptr->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), mesh);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
+SkinnedMesh::SkinnedMesh()
+	: m_meshModel()
+{
+
+}
+
+//------------------------------------------------------------------------------
+SkinnedMesh::~SkinnedMesh()
+{
+
+}
+
+//------------------------------------------------------------------------------
+void SkinnedMesh::Initialize(SceneGraph* ownerSceneGraph, SkinnedMeshModel* meshModel)
+{
+	if (LN_CHECKEQ_ARG(meshModel == nullptr)) return;
+	m_meshModel = meshModel;
+
+	VisualNode::Initialize(ownerSceneGraph, m_meshModel->m_materials->GetCount());
+
+	m_materialList->CopyShared(m_meshModel->m_materials, true);
+
+
+	ownerSceneGraph->GetManager()->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
+	SetAutoRemove(true);
+}
+
+//------------------------------------------------------------------------------
+void SkinnedMesh::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
+{
+	dc->DrawMesh(m_meshModel->m_meshResource, subsetIndex);
+}
+
+LN_NAMESPACE_END
+
+
 //#include <Lumino/Scene/MeshModelObject.h>
 //#include "MME/MMEShader.h"
 //#include <Lumino/Scene/SceneGraph.h>

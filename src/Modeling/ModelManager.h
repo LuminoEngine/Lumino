@@ -8,6 +8,7 @@ class FileManager;
 namespace Physics { class PhysicsManager; }
 class MeshResource;
 class StaticMeshModel;
+class PmxSkinnedMeshResource;
 
 namespace detail
 {
@@ -39,6 +40,7 @@ public:
 	RefPtr<Texture> CreateTexture(const PathName& parentDir, const StringRef& filePath, ModelCreationFlag flags);
 	
 	RefPtr<MeshResource> CreateModelCore(const PathName& filePath);
+	RefPtr<PmxSkinnedMeshResource> CreateSkinnedMeshModel(const PathName& filePath);
 	//Animation::AnimationClip* CreateMotion(const PathName& filePath);
 
 private:

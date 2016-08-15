@@ -343,6 +343,7 @@ Texture* RenderingContext::GetRenderTarget(int index) const
 //------------------------------------------------------------------------------
 void RenderingContext::SetDepthBuffer(Texture* depthBuffer)
 {
+	printf("RenderingContext::SetDepthBuffer %p\n", depthBuffer);
 	if (m_state.depthBuffer != depthBuffer)
 	{
 		NorityStateChanging();
@@ -511,6 +512,12 @@ void RenderingContext::DrawMesh(MeshResource* mesh, int startIndex, int triangle
 }
 
 //------------------------------------------------------------------------------
+void RenderingContext::DrawMesh(MeshResource* mesh, int subset)
+{
+	DrawMesh(mesh, mesh->m_attributes[subset].StartIndex, mesh->m_attributes[subset].PrimitiveNum);
+}
+
+//------------------------------------------------------------------------------
 void RenderingContext::DrawMesh(StaticMeshModel* mesh, int subset)
 {
 	DrawMesh(mesh->m_meshResource, mesh->m_meshResource->m_attributes[subset].StartIndex, mesh->m_meshResource->m_attributes[subset].PrimitiveNum);
@@ -537,6 +544,17 @@ void RenderingContext::DrawMesh(MeshResource* mesh, int startIndex, int triangle
 void RenderingContext::DrawMesh(StaticMeshModel* mesh, int startIndex, int triangleCount, Material* material)
 {
 	DrawMesh(mesh->m_meshResource, startIndex, triangleCount, material);
+}
+
+//------------------------------------------------------------------------------
+void RenderingContext::InheritStatus(RenderingContext* parent)
+{
+	LN_ASSERT(parent != nullptr);
+	if (!m_state.Equals(parent->m_state))
+	{
+		m_state = parent->m_state;
+		NorityStateChanging();
+	}
 }
 
 //------------------------------------------------------------------------------

@@ -122,6 +122,8 @@ public:
 		SphereMode = SphereMode_Disable;
 		DrawingFlags = 0;
 	}
+
+	RefPtr<Material> MakeCommonMaterial() const;
 };
 
 /// 共有ボーンデータ

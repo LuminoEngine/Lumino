@@ -49,6 +49,7 @@ RefPtr<PmxSkinnedMeshResource> PmxLoader::Load(detail::ModelManager* manager, St
 
 	BinaryReader reader(stream);
 	m_modelCore = RefPtr<PmxSkinnedMeshResource>::MakeRef();
+	m_modelCore->Initialize(manager->GetGraphicsManager());
 	m_modelCore->Format = ModelFormat_PMX;
 	m_modelCore->BeginCreating(MeshCreationFlags::None);	// TODO:
 	
@@ -227,9 +228,13 @@ void PmxLoader::LoadVertices(BinaryReader* reader)
 					1.0f - v0,
 					0.0f,
 					0.0f);
-				reader->Read(&v->SdefC, sizeof(float) * 3);
-				reader->Read(&v->SdefR0, sizeof(float) * 3);
-				reader->Read(&v->SdefR1, sizeof(float) * 3);	// TODO:※修正値を要計算
+				Vector3 sdefC, sdefR0, sdefR1;
+				reader->Read(&sdefC, sizeof(float) * 3);
+				reader->Read(&sdefR0, sizeof(float) * 3);
+				reader->Read(&sdefR1, sizeof(float) * 3);	// TODO:※修正値を要計算
+				m_modelCore->SetSdefC(i, Vector4(sdefC, 0));
+				m_modelCore->SetSdefR0(i, sdefR0);
+				m_modelCore->SetSdefR1(i, sdefR1);
 				break;
 			}
 		}
@@ -239,38 +244,53 @@ void PmxLoader::LoadVertices(BinaryReader* reader)
 	}
 }
 
-#if 0
 //------------------------------------------------------------------------------
 void PmxLoader::LoadIndices(BinaryReader* reader)
 {
 	// インデックス数
 	int indexCount = reader->ReadInt32();
 
-	Graphics::IndexBufferFormat format = Graphics::IndexBufferFormat_UInt16;
-	if (getVertexIndexSize() > 2) {
-		format = Graphics::IndexBufferFormat_UInt32;
-	}
-
 	// インデックスバッファ作成
-	m_modelCore->IndexBuffer.Attach(Graphics::IndexBuffer::Create(
-		m_manager->GetGraphicsManager(), indexCount, NULL, format, Graphics::DeviceResourceUsage_Static));
+	IndexBufferFormat format = IndexBufferFormat_UInt16;
+	if (getVertexIndexSize() > 2) {
+		format = IndexBufferFormat_UInt16;
+	}
+	m_modelCore->CreateIndexBuffer(indexCount, format);
+
+	// とりあえずまずは全部読み込む
+	ByteBuffer indicesBuffer(getVertexIndexSize() * indexCount);
+	reader->Read(indicesBuffer.GetData(), indicesBuffer.GetSize());
 
 	// 1 バイトインデックス
 	if (getVertexIndexSize() == 1)
 	{
-		// TODO:未対応
-		LN_THROW(0, NotImplementedException);
+		LN_NOTIMPLEMENTED();
+	}
+	// 2 バイトインデックス
+	else if (getVertexIndexSize() == 2)
+	{
+		auto indices = (const uint16_t*)indicesBuffer.GetConstData();
+		for (int i = 0; i < indexCount; i += 3)
+		{
+			// PMX と Lumino では面方向が逆なので反転する
+			m_modelCore->SetIndex(i + 0, indices[i + 0]);
+			m_modelCore->SetIndex(i + 1, indices[i + 2]);
+			m_modelCore->SetIndex(i + 2, indices[i + 1]);
+		}
 	}
 	// 2 or 4 バイトインデックス
 	else
 	{
-		// そのままコピー
-		Graphics::ScopedIndexBufferLock lock(m_modelCore->IndexBuffer);
-		byte_t* indices = (byte_t*)lock.GetData();
-		reader->Read(indices, getVertexIndexSize() * indexCount);
+		auto indices = (const uint32_t*)indicesBuffer.GetConstData();
+		for (int i = 0; i < indexCount; i += 3)
+		{
+			// PMX と Lumino では面方向が逆なので反転する
+			m_modelCore->SetIndex(i + 0, indices[i + 0]);
+			m_modelCore->SetIndex(i + 1, indices[i + 2]);
+			m_modelCore->SetIndex(i + 2, indices[i + 1]);
+		}
 	}
 }
-#endif
 
 //------------------------------------------------------------------------------
 void PmxLoader::LoadTextureTable(BinaryReader* reader, const PathName& baseDir)
@@ -305,7 +325,8 @@ void PmxLoader::LoadMaterials(BinaryReader* reader)
 	int indexAttrOffset = 0;
 	for (int i = 0; i < materialCount; ++i)
 	{
-		PmxMaterialResource* m = m_modelCore->materials[i];
+		auto m = RefPtr<PmxMaterialResource>::MakeRef();
+		m_modelCore->materials[i] = m;;
 
 		// 材質名
 		/*m_modelCore->Material.Name = */ReadString(reader);
@@ -345,8 +366,10 @@ void PmxLoader::LoadMaterials(BinaryReader* reader)
 
 		// スフィアテクスチャ
 		int sphereTexture = (int)reader->ReadInt(getTextureIndexSize());
+		if (sphereTexture >= 0) {
+			m->SphereTexture = m_textureTable[sphereTexture];
+		}
 		m->SphereMode = (enum PmxMaterialResource::SphereMode)reader->ReadInt8();
-		LN_NOTIMPLEMENTED();	// TODO: sphereTexture 使ってないよ
 
 		// トゥーンテクスチャ
 		int shareToon = reader->ReadInt8();

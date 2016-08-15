@@ -157,6 +157,7 @@ Viewport::Viewport()
 	, m_backgroundColor(Color::White)
 	, m_primaryLayerTarget(nullptr)
 	, m_secondaryLayerTarget(nullptr)
+	, m_depthBuffer()
 {
 }
 
@@ -194,6 +195,7 @@ void Viewport::Render()
 
 	RenderingContext* context = m_manager->GetRenderingContext();
 	context->SetRenderTarget(0, m_primaryLayerTarget);
+	context->SetDepthBuffer(m_depthBuffer);
 	context->Clear(ClearFlags::All, m_backgroundColor, 1.0f, 0x00);
 
 	// ZIndex でソート
@@ -214,6 +216,7 @@ void Viewport::Render()
 //------------------------------------------------------------------------------
 void Viewport::TryRemakeLayerTargets()
 {
+	// RenderTarget
 	if (m_primaryLayerTarget == nullptr || m_renderTarget->GetSize() != m_primaryLayerTarget->GetSize())
 	{
 		LN_SAFE_RELEASE(m_primaryLayerTarget);
@@ -224,6 +227,13 @@ void Viewport::TryRemakeLayerTargets()
 		m_primaryLayerTarget->CreateImpl(m_manager, m_renderTarget->GetSize(), 1, TextureFormat::R8G8B8X8);
 		m_secondaryLayerTarget = LN_NEW RenderTarget();
 		m_secondaryLayerTarget->CreateImpl(m_manager, m_renderTarget->GetSize(), 1, TextureFormat::R8G8B8X8);
+	}
+
+	// DepthBuffer
+	if (m_depthBuffer == nullptr || m_depthBuffer->GetSize() != m_primaryLayerTarget->GetSize())
+	{
+		m_depthBuffer = RefPtr<DepthBuffer>::MakeRef();
+		m_depthBuffer->CreateImpl(m_manager, m_renderTarget->GetSize(), TextureFormat::D24S8);
 	}
 }
 

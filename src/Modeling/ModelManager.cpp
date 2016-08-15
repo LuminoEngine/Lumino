@@ -114,7 +114,7 @@
 #if defined(LN_OS_WIN32)
 #include "XFileLoader.h"
 #endif
-//#include "PMXLoader.h"
+#include "PmxLoader.h"
 //#include "VMDLoader.h"
 #include "ModelManager.h"
 
@@ -271,6 +271,15 @@ RefPtr<MeshResource> ModelManager::CreateModelCore(const PathName& filePath)
 #endif
 }
 
+//------------------------------------------------------------------------------
+RefPtr<PmxSkinnedMeshResource> ModelManager::CreateSkinnedMeshModel(const PathName& filePath)
+{
+	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath), false);
+	PmxLoader loader;
+	RefPtr<PmxSkinnedMeshResource> mesh = loader.Load(this, stream, filePath.GetParent(), true, ModelCreationFlag::None);
+	return mesh;
+}
+
 #if 0
 //------------------------------------------------------------------------------
 Animation::AnimationClip* ModelManager::CreateMotion(const PathName& filePath)
@@ -311,7 +320,8 @@ RefPtr<Texture> ModelManager::CreateTexture(const PathName& parentDir, const Str
 
 	// TODO: キャッシュが効かない
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
-	tex->Initialize(m_graphicsManager, path, TextureFormat::B8G8R8A8, 1);
+	tex->Initialize(m_graphicsManager, path, TextureFormat::B8G8R8A8, false);	// TODO: mipmap
+	//tex->Initialize(m_graphicsManager, SizeI(32, 32), TextureFormat::B8G8R8A8, false);
 	return tex;
 }
 

@@ -165,9 +165,11 @@ LN_INTERNAL_ACCESS:
 	virtual ~RenderingContext();
 	void Initialize(GraphicsManager* manager);
 	void DrawMesh(MeshResource* mesh, int startIndex, int triangleCount);
+	void DrawMesh(MeshResource* mesh, int subset);
 	void DrawMesh(StaticMeshModel* mesh, int subset);
 	void DrawMesh(MeshResource* mesh, int startIndex, int triangleCount, Material* material);
 	void DrawMesh(StaticMeshModel* mesh, int startIndex, int triangleCount, Material* material);
+	void InheritStatus(RenderingContext* parent);
 
 protected:
 	virtual void OnStateFlush() override;

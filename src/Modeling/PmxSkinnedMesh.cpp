@@ -4,6 +4,48 @@
 
 LN_NAMESPACE_BEGIN
 
+
+//==============================================================================
+// PmxMaterialResource
+//==============================================================================
+
+//------------------------------------------------------------------------------
+RefPtr<Material> PmxMaterialResource::MakeCommonMaterial() const
+{
+	auto m = RefPtr<Material>::MakeRef();
+	m->SetColorParameter(
+		Material::DiffuseParameter,
+		Diffuse.r,
+		Diffuse.g,
+		Diffuse.b,
+		Diffuse.a);
+	m->SetColorParameter(
+		Material::AmbientParameter,
+		Ambient.r,
+		Ambient.g,
+		Ambient.b,
+		Ambient.a);
+	m->SetColorParameter(
+		Material::SpecularParameter,
+		Specular.r,
+		Specular.g,
+		Specular.b,
+		Specular.a);
+	m->SetColorParameter(
+		Material::EmissiveParameter,
+		Emissive.r,
+		Emissive.g,
+		Emissive.b,
+		Emissive.a);
+	m->SetFloatParameter(
+		Material::PowerParameter,
+		Power);
+	m->SetTextureParameter(
+		Material::MaterialTextureParameter,
+		Texture);
+	return m;
+}
+
 //==============================================================================
 // PmxBoneResource
 //==============================================================================
