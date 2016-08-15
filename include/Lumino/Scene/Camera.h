@@ -149,7 +149,7 @@ public:
 	static CameraViewportLayer* GetDefault3D();
 
 
-	virtual void Render(RenderTarget* renderTarget) override;
+	virtual void Render(RenderingContext* context) override;
 
 LN_INTERNAL_ACCESS:
 	CameraViewportLayer(Camera* hostingCamera);

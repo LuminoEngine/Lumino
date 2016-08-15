@@ -65,7 +65,6 @@ void IRenderer::SetIndexBuffer(IIndexBuffer* indexBuffer)
 //------------------------------------------------------------------------------
 void IRenderer::FlushStates()
 {
-	printf("IRenderer::FlushStates()\n");
 	if (!m_requestedRenderState.Equals(m_currentRenderState))
 	{
 		OnUpdateRenderState(m_requestedRenderState, m_currentRenderState, false);

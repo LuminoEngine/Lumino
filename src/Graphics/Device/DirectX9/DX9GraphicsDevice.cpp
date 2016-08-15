@@ -405,7 +405,6 @@ void DX9GraphicsDevice::ResetDevice(bool fullscreen)
 	// 既に作成されている場合はリセット
 	else
 	{
-		//printf("%u %u %u %u", D3DERR_DEVICELOST, D3DERR_DEVICEREMOVED, D3DERR_DRIVERINTERNALERROR, D3DERR_INVALIDCALL);
 		// デバイスのリセット (作成したスレッド以外でリセットしようとすると失敗する)
 		LN_COMCALL(m_dxDevice->Reset(&m_presentParameters));
 	}

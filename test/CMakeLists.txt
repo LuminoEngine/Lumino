@@ -27,7 +27,7 @@ set(LN_TEST_SOURCES
 	UnitTest/Scene/Test_Scene_Sprite.cpp
 	UnitTest/Scene/Test_Scene_SpriteParticle.cpp
 	UnitTest/Scene/Test_Scene_StaticMesh.cpp
-	UnitTest/Scene/Test_Scene_VisualNode.cpp
+	UnitTest/Scene/Test_Scene_SceneNode.cpp
 	UnitTest/UI/Test_UI_Button.cpp
 	UnitTest/UI/Test_UI_TextBlock.cpp
 )

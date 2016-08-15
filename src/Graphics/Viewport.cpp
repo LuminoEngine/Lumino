@@ -204,7 +204,8 @@ void Viewport::Render()
 
 	for (auto& layer : *m_viewportLayerList)
 	{
-		layer->Render(m_primaryLayerTarget);
+		context->SetRenderTarget(0, m_primaryLayerTarget);
+		layer->Render(context);
 		layer->PostRender(context, &m_primaryLayerTarget, &m_secondaryLayerTarget);
 	}
 

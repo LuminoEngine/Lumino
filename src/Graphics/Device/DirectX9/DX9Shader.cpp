@@ -657,27 +657,6 @@ DX9ShaderPass::DX9ShaderPass(DX9Shader* owner, D3DXHANDLE handle, int passIndex,
 		//printf("%s\n", cd.Name);	// これでサンプラ変数が取れる
 	}
 	constantTablePS->Release();
-
-#if 0
-	printf("----------------\n");
-	LPD3DXCONSTANTTABLE constantTable;
-	D3DXGetShaderConstantTable(desc.pVertexShaderFunction, &constantTable);
-	
-
-	D3DXCONSTANTTABLE_DESC constDesc;
-	constantTable->GetDesc(&constDesc);
-	//_p(constDesc.Creator);
-	//_p(constDesc.Version);
-	//_p(constDesc.Constants);
-#pragma comment(lib, "d3dx9.lib")
-	for (int i = 0; i < constDesc.Constants; ++i)
-	{
-		printf("--------\n");
-		D3DXHANDLE handle = constantTable->GetConstant(NULL, i);
-		D3DXCONSTANT_DESC cd;
-		constantTable->GetConstantDesc(handle, &cd, NULL);
-	}
-#endif
 }
 
 //------------------------------------------------------------------------------

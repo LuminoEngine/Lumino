@@ -463,8 +463,6 @@ void VisualNode::Render(SceneGraphRenderingContext* dc)
 	dc->SetDepthTestEnabled(m_renderState.depthTestEnabled);
 	dc->SetDepthWriteEnabled(m_renderState.depthWriteEnabled);
 
-	printf("%d %d\n", m_renderState.depthTestEnabled, m_renderState.depthWriteEnabled);
-
 	// 描画
 	OnRender(dc);
 

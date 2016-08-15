@@ -96,8 +96,9 @@ void SceneGraph::UpdateFrame(float deltaTime)
 }
 
 //------------------------------------------------------------------------------
-void SceneGraph::Render(Texture* renderTarget, Camera* camera)
+void SceneGraph::Render(RenderingContext* context, Camera* camera)
 {
+	Texture* renderTarget = context->GetRenderTarget(0);
 	SizeF viewSize((float)renderTarget->GetSize().width, (float)renderTarget->GetSize().height);
 
 	// 全てのシェーダの Scene 単位データの更新
@@ -143,6 +144,7 @@ void SceneGraph::Render(Texture* renderTarget, Camera* camera)
 
 	{
 		SceneGraphRenderingContext* dc = m_manager->GetRenderingContext();
+		dc->InheritStatus(context);	// context から、レンダーステートやレンダーターゲット、深度バッファを引き継ぐ
 		dc->CurrentCamera = camera;
 		dc->renderingLightList = &m_renderingLightList;
 		dc->SetRenderTarget(0, renderTarget);

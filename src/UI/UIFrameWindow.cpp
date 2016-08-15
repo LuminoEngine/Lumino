@@ -34,7 +34,7 @@ UIViewportLayer::~UIViewportLayer()
 }
 
 //------------------------------------------------------------------------------
-void UIViewportLayer::Render(RenderTarget* renderTarget)
+void UIViewportLayer::Render(RenderingContext* context)
 {
 	DrawingContext* g = m_view->GetOwnerContext()->GetManager()->GetGraphicsManager()->GetDrawingContext();
 

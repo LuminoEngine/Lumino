@@ -266,8 +266,6 @@ void Mp3Decoder::CheckId3v()
 		read_size = m_stream->Read(data, 3);
 		LN_THROW(read_size == 3, InvalidFormatException, "not found mp3 tag.");
 
-		//printf( "%c %c %c %c\n", data[ 0 ], data[ 1 ], data[ 2 ], data[ 3 ] );
-
 		// 'TAG' が見つかった
 		if (data[0] == 'T' && data[1] == 'A' && data[2] == 'G')
 		{

@@ -40,7 +40,7 @@ public:
 	float GetElapsedTime() const { return m_elapsedTime; }
 
 	/// 描画
-	void Render(Texture* renderTarget, Camera* camera);
+	void Render(RenderingContext* context, Camera* camera);
 
 	/// マウス移動イベントを通知する (ViewPane の左上を 0,0 とした座標を指定する)
 	bool InjectMouseMove(int x, int y);

@@ -208,7 +208,6 @@ bool MidiDecoder::SearchTrack(BinaryReader& reader, uint32_t* cc111_time)
 				entry.position = (uint32_t)reader.GetPosition() - 1;
 				entry.volume = data2;
 				m_volumeEntryList.Add(entry);
-				//printf("ボリュームチェンジ %d\n", data2);
 			}
 			break;
 

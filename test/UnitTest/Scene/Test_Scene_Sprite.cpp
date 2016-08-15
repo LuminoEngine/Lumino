@@ -47,7 +47,7 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 		auto sprite1 = Sprite2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
 		sprite1->SetSrcRect(32, 0, 32, 32);
 		Engine::UpdateFrame();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Scene_Sprite.Issues_Volkoff_1.png"), 100));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Scene_Sprite.Issues_Volkoff_1.png")));
 	}
 	// <Issues> 2D では Z ソートの基準がカメラ位置からの直線距離ではなく、スクリーンからの距離でなければならない。
 	{
@@ -60,7 +60,7 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 		s1->SetPosition(10, 20, 100);
 		s2->SetPosition(15, 25, 100);	// スクリーンが Z 平面に平行なら、Z が同じときはあとから作ったものが常に手前になる。
 		Engine::UpdateFrame();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Scene_Sprite.Issues_Volkoff_2.png"), 100));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Scene_Sprite.Issues_Volkoff_2.png")));
 	}
 	// <Issues> 2D では Z ソートの基準がカメラ位置からの直線距離ではなく、スクリーンからの距離でなければならない。
 	{
@@ -72,6 +72,6 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 		Engine::UpdateFrame();			// 1度描く
 		s1->SetTexture(tex2);			// 次にテクスチャを変更する
 		Engine::UpdateFrame();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Scene_Sprite.Issues_Volkoff_3.png"), 100));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Scene_Sprite.Issues_Volkoff_3.png")));
 	}
 }

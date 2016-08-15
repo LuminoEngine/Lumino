@@ -542,9 +542,6 @@ void XAudio2StreamingAudioPlayer::_addNextBuffer()
                 mPassedLoopBeginSample = true;
             }
 
-            //printf( "%d %d %d\n", mLoopBegin, mLoopLength, ( mLoopBegin + mLoopLength ) );
-            //printf( "b:%d l:%d n:%d a:%d\n", mLoopBegin, mLoopLength, mWriteSampleNum, ( mLoopBegin + mLoopLength ) * smp_size );
-
             // 終端サンプル数を超えた場合、そこが終端
             if ( mLoopLength > 0 && mWriteSampleNum > ( mLoopBegin + mLoopLength ) * smp_size )
             {

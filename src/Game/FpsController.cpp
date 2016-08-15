@@ -125,30 +125,16 @@ void FpsController::Process()
 		{
 			m_term = m_baseTime + 1.0f - m_currentTime;
 		}
-
-		//printf( "f: a:%f bt:%f rc:%f ct:%f lt:%f\n", m_term, m_baseTime, m_frameRateRec * m_frameCount, m_currentTime, m_currentTime - m_lastRealTime );
 	}
 	else
 	{
 		// 今回待つべき時間 = 現在あるべき時刻 - 現在の時刻
 		m_term = (m_baseTime + m_frameRateRec * m_frameCount) - m_currentTime;
-
-		//if ( m_term < 0 )
-		//{
-		//    printf( "c:%f\n", m_term );
-		//}
-		//printf( "s: a:%f bt:%f rc:%f ct:%f lt:%f\n", m_term, m_baseTime, m_frameRateRec * m_frameCount, m_currentTime, m_currentTime - m_lastRealTime );
 	}
-
-	//printf( "frame:%d term:%f etime:%f\n", m_frameCount, m_term, m_elapsedRealTime );
-	//printf( "etime:%f term:%f \n", m_elapsedRealTime, m_term );
-	//static int ii = 0;
-	//++ii;
 
 	// 待つべき時間だけ待つ
 	if (m_term > 0.0)
 	{
-		//printf( "t:%lf c:%d\n", m_term, m_frameCount );
 
 
 		//if ( ii > 120 && m_term < 0.016 )

@@ -36,7 +36,7 @@ public:
 	static bool EqualsScreenShot(const TCHAR* filePath, int passRate = 90);
 	static bool EqualsTexture(Texture* texture, const TCHAR* filePath);
 	static bool EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath, int passRate);
-	static bool CheckScreenShot(const TCHAR* filePath, int passRate = 90, bool save = false);
+	static bool CheckScreenShot(const TCHAR* filePath, int passRate = 100, bool save = false);
 
 protected:
 	virtual void SetUp();

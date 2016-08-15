@@ -201,7 +201,6 @@ ITexture* DX9Renderer::GetRenderTarget(int index)
 //------------------------------------------------------------------------------
 void DX9Renderer::SetDepthBuffer(ITexture* texture)
 {
-	printf("DX9Renderer::SetDepthBuffer %p\n", texture);
 	InternalSetDepthBuffer(texture, false);
 }
 
@@ -242,7 +241,6 @@ void DX9Renderer::Clear(ClearFlags flags, const Color& color, float z, uint8_t s
 //------------------------------------------------------------------------------
 void DX9Renderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
 {
-	printf("DrawPrimitive\n");
 	IRenderer::FlushStates();
 
 	DX9VertexDeclaration* decl = static_cast<DX9VertexDeclaration*>(m_currentVertexDeclaration.Get());
@@ -267,7 +265,6 @@ void DX9Renderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int pr
 //------------------------------------------------------------------------------
 void DX9Renderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
 {
-	printf("DrawPrimitiveIndexed s\n");
 	IRenderer::FlushStates();
 
 	DX9VertexDeclaration* decl = static_cast<DX9VertexDeclaration*>(m_currentVertexDeclaration.Get());
@@ -297,7 +294,6 @@ void DX9Renderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, 
 			vertexCount,
 			startIndex,
 			primitiveCount));
-	printf("DrawPrimitiveIndexed e\n");
 }
 
 //------------------------------------------------------------------------------
@@ -403,13 +399,11 @@ void DX9Renderer::OnUpdateDepthStencilState(const DepthStencilState& newState, c
 	// 深度テスト
 	if (newState.DepthTestEnabled != oldState.DepthTestEnabled || reset)
 	{
-		printf("depth %d\n", newState.DepthTestEnabled);
 		m_dxDevice->SetRenderState(D3DRS_ZENABLE, (newState.DepthTestEnabled) ? TRUE : FALSE);
 	}
 	// 深度書き込み
 	if (newState.DepthWriteEnabled != oldState.DepthWriteEnabled || reset)
 	{
-		printf("write %d\n", newState.DepthWriteEnabled);
 		m_dxDevice->SetRenderState(D3DRS_ZWRITEENABLE, (newState.DepthWriteEnabled) ? TRUE : FALSE);
 	}
 	// 深度比較関数

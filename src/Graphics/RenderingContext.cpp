@@ -343,7 +343,6 @@ Texture* RenderingContext::GetRenderTarget(int index) const
 //------------------------------------------------------------------------------
 void RenderingContext::SetDepthBuffer(Texture* depthBuffer)
 {
-	printf("RenderingContext::SetDepthBuffer %p\n", depthBuffer);
 	if (m_state.depthBuffer != depthBuffer)
 	{
 		NorityStateChanging();

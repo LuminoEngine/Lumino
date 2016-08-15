@@ -51,7 +51,7 @@ TEST_F(Test_Graphics_GraphicsContext, DrawRectangle)
 		g->DrawRectangle(RectF(0, 0, 83, 83));
 		Engine::EndRendering();
 
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_GraphicsContext.DrawRectangle3.png"), 100, true));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_GraphicsContext.DrawRectangle3.png")));
 	}
 }
 
@@ -73,7 +73,7 @@ TEST_F(Test_Graphics_GraphicsContext, FrameTextureBrush)
 
 	Engine::EndRendering();
 
-	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_GraphicsContext.FrameTextureBrush_test.png"), 100, true));
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_GraphicsContext.FrameTextureBrush_test.png")));
 }
 
 //------------------------------------------------------------------------------

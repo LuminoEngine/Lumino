@@ -232,9 +232,9 @@ CameraViewportLayer::~CameraViewportLayer()
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer::Render(RenderTarget* renderTarget)
+void CameraViewportLayer::Render(RenderingContext* context)
 {
-	m_hostingCamera->GetOwnerSceneGraph()->Render(renderTarget, m_hostingCamera);
+	m_hostingCamera->GetOwnerSceneGraph()->Render(context, m_hostingCamera);
 }
 
 //==============================================================================

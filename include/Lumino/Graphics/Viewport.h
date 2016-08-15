@@ -41,7 +41,7 @@ protected:
 	//virtual void PreRender(const SizeF& viewSize) {}
 
 	/// 本描画
-	virtual void Render(RenderTarget* renderTarget) = 0;
+	virtual void Render(RenderingContext* context) = 0;
 
 	/// 後描画
 	void PostRender(RenderingContext* context, RenderTarget** primaryLayerTarget, RenderTarget** secondaryLayerTarget);

@@ -138,8 +138,6 @@ void FontGlyphTextureCache::LookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, b
 	{
 		(*outFlush) = false;
 	}
-
-	//printf("p: %p %d %d\n", outInfo->fillGlyphBitmap, outInfo->srcRect.X, outInfo->srcRect.Y);
 }
 
 #if 0
@@ -151,7 +149,6 @@ void FontGlyphTextureCache::CommitCacheGlyphInfo(CacheGlyphInfo* info, Rect* src
 
 	if (info->fillGlyphBitmap == nullptr)
 	{
-		//printf("nullptr\n");
 	}
 	else
 	{
@@ -164,8 +161,6 @@ void FontGlyphTextureCache::CommitCacheGlyphInfo(CacheGlyphInfo* info, Rect* src
 		Rect dst(info->srcRect.x + info->outlineOffset, info->srcRect.y + info->outlineOffset, info->fillGlyphBitmap->GetSize());
 		Rect src(0, 0, info->fillGlyphBitmap->GetSize());
 		m_lockedFillBitmap->BitBlt(dst, info->fillGlyphBitmap, src, Color::White, false);
-		//
-		//printf("s: %p %d %d\n", info->fillGlyphBitmap, dst.X, dst.Y);
 
 		//m_lockedFillBitmap->Clear(Color::White);
 		// TODO: Outline

@@ -21,7 +21,7 @@ protected:
 	friend class UIFrameWindow;
 	UIViewportLayer(UILayoutView* view);
 	virtual ~UIViewportLayer();
-	virtual void Render(RenderTarget* renderTarget) override;
+	virtual void Render(RenderingContext* context) override;
 
 private:
 	UILayoutView*	m_view;

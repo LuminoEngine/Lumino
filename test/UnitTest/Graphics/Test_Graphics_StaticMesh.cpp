@@ -33,12 +33,8 @@ TEST_F(Test_Graphics_StaticMesh, DepthTest)
 	box1->GetMaterials()->GetAt(0)->SetMaterialTexture(tex1);
 	box2->GetMaterials()->GetAt(0)->SetMaterialTexture(tex2);
 
-	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
-	Camera::GetMain3DCamera()->SetCameraBehavior(cb);
-
 	while (Engine::UpdateFrame())
 	{
-		printf("----\n");
 	}
 }
 
