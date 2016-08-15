@@ -19,6 +19,9 @@ public:
 };
 
 /// Animator
+/** 
+	@note	SkinnedMesh に対応し、インスタンス扱い。
+*/
 class Animator
 	: public RefObject
 {

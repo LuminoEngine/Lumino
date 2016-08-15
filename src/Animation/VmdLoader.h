@@ -1,18 +1,12 @@
 ﻿
 #pragma once
-
 #include <map>
-#include "../Animation/AnimationCurve.h"
 #include "../Animation/AnimationClip.h"
-#include "Common.h"
 
-namespace Lumino
-{
-namespace Modeling
-{
+LN_NAMESPACE_BEGIN
 
-/// VMD モーションファイルの読み取り
-class VMDLoader
+// VMD モーションファイルの読み取り
+class VmdLoader
 {
 public:
 #pragma pack(push, 1)
@@ -42,34 +36,32 @@ public:
 	// 表情データ
 	struct VMD_Face
 	{
-		char			szFaceName[15];		// 表情名
-		unsigned long	ulFrameNo;			// フレーム番号
-		float			fFactor;			// ブレンド率
+		char			szFaceName[15];	// 表情名
+		unsigned long	ulFrameNo;		// フレーム番号
+		float			fFactor;		// ブレンド率
 	};
 #pragma pack( pop )
 
 	struct BoneAnimation
 	{
 		String TargetBoneName;
-		RefPtr<Animation::VMDBezierSQTTransformAnimation>	AnimationCurve;
+		RefPtr<VMDBezierSQTTransformAnimation>	AnimationCurve;
 	};
 	
 	struct FaceAnimation
 	{
 		String TargetFaceName;
-		RefPtr<Animation::FloatAnimationCurve>	AnimationCurve;
+		RefPtr<FloatAnimationCurve>	AnimationCurve;
 	};
 
-	typedef ArrayList<BoneAnimation>	BoneAnimationList;
-	typedef ArrayList<FaceAnimation>	FaceAnimationList;
+	typedef Array<BoneAnimation>	BoneAnimationList;
+	typedef Array<FaceAnimation>	FaceAnimationList;
 
 public:
-	VMDLoader() {}
-	~VMDLoader();
+	VmdLoader() {}
+	~VmdLoader();
 
-public:
-
-	/// 読み込み
+	// 読み込み
 	bool Load(Stream* stream);
 
 	double GetLastFramePosition() const { return m_lastFramePosition; }
@@ -90,5 +82,4 @@ private:
 	FaceAnimationIndexMap   m_faceAnimationIndexMap;
 };
 
-} // namespace Modeling
-} // namespace Lumino
+LN_NAMESPACE_END

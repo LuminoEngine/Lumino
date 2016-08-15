@@ -16,10 +16,15 @@ class SkinnedMesh
 public:
 	static SkinnedMeshPtr Create(const StringRef& filePath);
 
+public:
+	SkinnedMeshModel* GetSkinnedMeshModel() const;
+
 LN_INTERNAL_ACCESS:
 	SkinnedMesh();
 	virtual ~SkinnedMesh();
 	void Initialize(SceneGraph* ownerSceneGraph, SkinnedMeshModel* meshModel);
+	virtual void OnUpdateFrame(float elapsedTime) override;
+	virtual void UpdateNodeRenderingParams(MMEShader* priorityShader) override;
 	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
 
 private:

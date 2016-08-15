@@ -6,6 +6,7 @@
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/MeshModelObject.h>
 #include "../Modeling/PmxSkinnedMesh.h"
+#include "MME/MMEShader.h"
 #include "SceneGraphManager.h"
 
 LN_NAMESPACE_BEGIN
@@ -51,6 +52,40 @@ void SkinnedMesh::Initialize(SceneGraph* ownerSceneGraph, SkinnedMeshModel* mesh
 
 	ownerSceneGraph->GetManager()->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
 	SetAutoRemove(true);
+}
+
+//------------------------------------------------------------------------------
+SkinnedMeshModel* SkinnedMesh::GetSkinnedMeshModel() const
+{
+	return m_meshModel;
+}
+
+//------------------------------------------------------------------------------
+void SkinnedMesh::OnUpdateFrame(float elapsedTime)
+{
+	m_meshModel->GetAnimator()->AdvanceTime((double)elapsedTime * 30);
+	m_meshModel->UpdateBoneTransformHierarchy();
+	m_meshModel->UpdateSkinningMatrices();
+}
+
+//------------------------------------------------------------------------------
+void SkinnedMesh::UpdateNodeRenderingParams(MMEShader* priorityShader)
+{
+	Shader* core = priorityShader;
+	ShaderVariable* v;
+
+	v = core->FindVariable(_T("lnBoneTextureReciprocalSize"));
+	if (v) {
+		Vector4 invSize;
+		invSize.x = 1.0f / m_meshModel->GetSkinningMatricesTexture()->GetRealSize().width;
+		invSize.y = 1.0f / m_meshModel->GetSkinningMatricesTexture()->GetRealSize().height;
+		v->SetVector(invSize);
+	}
+
+	v = core->FindVariable(_T("lnBoneTexture"));
+	if (v) {
+		v->SetTexture(m_meshModel->GetSkinningMatricesTexture());
+	}
 }
 
 //------------------------------------------------------------------------------

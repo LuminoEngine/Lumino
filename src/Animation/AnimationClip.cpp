@@ -1,5 +1,6 @@
 ﻿
 #include "../Internal.h"
+#include "VmdLoader.h"
 #include "AnimationClip.h"
 
 LN_NAMESPACE_BEGIN
@@ -9,7 +10,32 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
+AnimationClipPtr AnimationClip::Create(const StringRef& filePath)
+{
+	auto stream = FileStream::Create(filePath.GetBegin(), FileOpenMode::Read);
+
+	VmdLoader loader;
+	loader.Load(stream);
+
+	auto ptr = AnimationClipPtr::MakeRef();
+	for (VmdLoader::BoneAnimation& anim : loader.GetBoneAnimationList())
+	{
+		ptr->AddAnimationCurve(anim.TargetBoneName, anim.AnimationCurve);
+	}
+	for (VmdLoader::FaceAnimation& anim : loader.GetFaceAnimationList())
+	{
+		ptr->AddAnimationCurve(anim.TargetFaceName, anim.AnimationCurve);
+	}
+	ptr->m_lastFrameTime = loader.GetLastFramePosition();
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
 AnimationClip::AnimationClip()
+	: m_name()
+	, m_lastFrameTime(0)
+	, m_defaultrapMode(WrapMode_Once)
+	, m_animationCurveEntryList()
 {
 }
 

@@ -110,7 +110,7 @@
 #include "../Internal.h"
 #include <Lumino/IO/FileManager.h>
 #include <Lumino/Graphics/Texture.h>
-//#include "ModelCore.h"
+#include "PmxSkinnedMesh.h"
 #if defined(LN_OS_WIN32)
 #include "XFileLoader.h"
 #endif
@@ -277,6 +277,7 @@ RefPtr<PmxSkinnedMeshResource> ModelManager::CreateSkinnedMeshModel(const PathNa
 	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath), false);
 	PmxLoader loader;
 	RefPtr<PmxSkinnedMeshResource> mesh = loader.Load(this, stream, filePath.GetParent(), true, ModelCreationFlag::None);
+	mesh->RefreshInitialValues();
 	return mesh;
 }
 

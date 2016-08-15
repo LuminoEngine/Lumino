@@ -1,27 +1,20 @@
 ﻿
-#include "../Internal.h"
-#include "VMDLoader.h"
+#include "Internal.h"
+#include "VmdLoader.h"
 
-namespace Lumino
-{
-namespace Modeling
-{
+LN_NAMESPACE_BEGIN
   
 //==============================================================================
-// VMDLoader
+// VmdLoader
 //==============================================================================
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-VMDLoader::~VMDLoader()
+//------------------------------------------------------------------------------
+VmdLoader::~VmdLoader()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-bool VMDLoader::Load(Stream* stream)
+//------------------------------------------------------------------------------
+bool VmdLoader::Load(Stream* stream)
 {
 	m_lastFramePosition = 0.0;
 	BinaryReader reader(stream);
@@ -62,13 +55,13 @@ bool VMDLoader::Load(Stream* stream)
 		if (itr == m_boneAnimationIndexMap.end())
 		{
 			BoneAnimation anim;
-			anim.TargetBoneName.ConvertFrom(vmdMotion.szBoneName, 15, Text::Encoding::GetEncoding(Text::EncodingType_SJIS));// = String(vmdMotion.szBoneName);
+			anim.TargetBoneName.ConvertFrom(vmdMotion.szBoneName, 15, Encoding::GetEncoding(EncodingType::SJIS));
 
 			// 名前・インデックスの対応
 			m_boneAnimationIndexMap.insert(BoneAnimationIndexPair(vmdMotion.szBoneName, m_boneAnimationList.GetCount()));
 
 			// アニメーション作成、キー追加
-			anim.AnimationCurve.Attach(LN_NEW Animation::VMDBezierSQTTransformAnimation(), false);
+			anim.AnimationCurve = RefPtr<VMDBezierSQTTransformAnimation>::MakeRef();
 			anim.AnimationCurve->AddKeyFrame(
 				static_cast< double >(vmdMotion.ulFrameNo),
 				vmdMotion.vec3Position,
@@ -94,7 +87,7 @@ bool VMDLoader::Load(Stream* stream)
 	}
 
 	// キーフレーム順にソート
-	LN_FOREACH(BoneAnimation& anim, m_boneAnimationList)
+	for (BoneAnimation& anim : m_boneAnimationList)
 	{
 		anim.AnimationCurve->SortKeyFrame();
 	}
@@ -120,14 +113,14 @@ bool VMDLoader::Load(Stream* stream)
 		if (itr == m_faceAnimationIndexMap.end())
 		{
 			FaceAnimation anim;
-			anim.TargetFaceName.ConvertFrom(vmdFace.szFaceName, 15, Text::Encoding::GetEncoding(Text::EncodingType_SJIS));
+			anim.TargetFaceName.ConvertFrom(vmdFace.szFaceName, 15, Encoding::GetEncoding(EncodingType::SJIS));
 			//anim.TargetFaceName = String(vmdFace.szFaceName);
 
 			// 名前・インデックスの対応
 			m_faceAnimationIndexMap.insert(FaceAnimationIndexPair(anim.TargetFaceName, m_faceAnimationList.GetCount()));
 
 			// アニメーション作成、キー追加
-			anim.AnimationCurve.Attach(LN_NEW Animation::FloatAnimationCurve());
+			anim.AnimationCurve = RefPtr<FloatAnimationCurve>::MakeRef();
 			anim.AnimationCurve->AddKeyFrame(vmdFace.ulFrameNo, vmdFace.fFactor);
 			m_faceAnimationList.Add(anim);
 		}
@@ -139,15 +132,12 @@ bool VMDLoader::Load(Stream* stream)
 		}
 	}
 
-#if 0	// ScalarAnimation::addKeyFrame() は追加時にソートされるため必要ない
 	// キーフレーム順にソート
-	ln_foreach( FaceAnimation& anim, m_faceAnimationList )
-	{
-		anim.Animation->sortKeyFrame();
-	}
-#endif
+	//for (FaceAnimation& anim : m_faceAnimationList)
+	//{
+	//	anim.AnimationCurve->SortKeyFrame();
+	//}
 	return true;
 }
 
-} // namespace Modeling
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -180,9 +180,9 @@ void DX9Texture::SetSubData(const Point& point, const void* data, size_t dataByt
 	byte_t* w = (byte_t*)lockedRect.pBits;
 	for (int row = 0; row < lineHeight; ++row)
 	{
-		const byte_t* srcline = &d[(4 * dataBitmapSize.width) * row];	// TODO format
+		const byte_t* srcline = &d[lockedRect.Pitch * row];	// TODO format
 		byte_t* dstline = &w[lockedRect.Pitch * row];	// TODO format
-		memcpy(dstline, srcline, (4 * lineWidth));
+		memcpy(dstline, srcline, lockedRect.Pitch);
 	}
 
 	m_dxTexture->UnlockRect(0);

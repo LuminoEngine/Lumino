@@ -19,22 +19,3 @@ protected:
 //
 //	while (Engine::UpdateFrame());
 //}
-
-//------------------------------------------------------------------------------
-TEST_F(Test_Graphics_StaticMesh, DepthTest)
-{
-	auto tex1 = Texture2D::Create(32, 32);
-	auto tex2 = Texture2D::Create(32, 32);
-	tex1->Clear(Color32::Red);
-	tex2->Clear(Color32::Blue);
-
-	auto box1 = StaticMesh::CreateBox(Vector3(1, 2, 3));
-	auto box2 = StaticMesh::CreateBox(Vector3(2, 1, 1));
-	box1->GetMaterials()->GetAt(0)->SetMaterialTexture(tex1);
-	box2->GetMaterials()->GetAt(0)->SetMaterialTexture(tex2);
-
-	while (Engine::UpdateFrame())
-	{
-	}
-}
-

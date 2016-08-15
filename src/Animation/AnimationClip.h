@@ -4,10 +4,15 @@
 #include <Lumino/Animation/AnimationCurve.h>
 
 LN_NAMESPACE_BEGIN
+class AnimationClip;
+using AnimationClipPtr = RefPtr<AnimationClip>;
 
 class AnimationClip
 	: public RefObject
 {
+public:
+	static AnimationClipPtr Create(const StringRef& filePath);
+
 public:
 	struct AnimationCurveEntry
 	{

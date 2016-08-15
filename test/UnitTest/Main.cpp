@@ -79,8 +79,8 @@ void TestEnv::SetUp()
 	Logger::Initialize(_T("test_log.txt"));
 
 	EngineSettings settings;
-	EngineSettings::SetMainWindowSize(SizeI(160, 120));
-	EngineSettings::SetMainBackBufferSize(SizeI(160, 120));
+	EngineSettings::SetMainWindowSize(SizeI(160*4, 120 * 4));
+	EngineSettings::SetMainBackBufferSize(SizeI(160 * 4, 120 * 4));
 	EngineSettings::SetGraphicsAPI(GraphicsAPI::DirectX9);//GraphicsAPI::OpenGL);//
 	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Immediate);
 	//settings.graphicsAPI = GraphicsAPI::DirectX9; //GraphicsAPI::OpenGL;//
@@ -225,7 +225,7 @@ GTEST_API_ int main(int argc, char **argv)
 #if 1	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_Scene_SceneNode.*"
+		"--gtest_filter=Test_Graphics_Pmx.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);
