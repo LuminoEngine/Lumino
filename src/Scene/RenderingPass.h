@@ -46,8 +46,6 @@ public:
 
 	//int GetPassID() const { return m_passID; }
 
-	void SetDefaultShader(MMEShader* shader) { m_defaultShader = shader; }
-	MMEShader* GetDefaultShader() { return m_defaultShader; }
 
 	/// このパスで優先的に使用されるシェーダを追加する
 	void AddPriorityShader(const String& matchingNameKey, MMEShader* shader, bool isHide);
@@ -66,6 +64,7 @@ public:
 
 LN_INTERNAL_ACCESS:
 	SceneGraphManager* GetManager() const { return m_manager; }
+	MMEShader* GetDefaultShader(detail::SceneNodeDefaultShaderClass shaderClass) const { return m_defaultShader[shaderClass]; }
 
 protected:
 
@@ -83,7 +82,7 @@ protected:
 	int							m_internalEntryID;		///< このパスに割り当てられるID (0 ～ MaxRenderingPass-1)
 	RefPtr<Texture>				m_renderTarget;			///< このパスの描画先となるレンダリングターゲット (NULL可。MMDPass の "zplot" であれば Zバッファがターゲットになる)
 	RefPtr<Texture>				m_depthBuffer;			///< このパスの描画先となる深度バッファ (NULL可)
-	RefPtr<MMEShader>			m_defaultShader;		///< このパスの描画でデフォルトとして使用されるシェーダ (シェーダを持っていない VisualNode に対して使われる)
+	RefPtr<MMEShader>			m_defaultShader[detail::SceneNodeDefaultShaderClass_Count];		///< このパスの描画でデフォルトとして使用されるシェーダ (シェーダを持っていない VisualNode に対して使われる)
 	PriorityParamsEntryList		m_priorityEntryList;	///< このパスで優先的に使用されるシェーダ (シェーダを持っている VisualNode に対しても強制的にこちらを使う)
 	Nullable<Color>				m_clearColor;			///< パス開始時にレンダリングターゲットをクリアする色
 	Nullable<float>				m_clearDepth;			///< パス開始時に深度バッファをクリアするZ値

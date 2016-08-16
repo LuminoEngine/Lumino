@@ -18,11 +18,6 @@ LN_NAMESPACE_SCENE_BEGIN
 // MMDSceneGraph
 //==============================================================================
 
-static const byte_t g_SSNoLighting_Data[] =
-{
-#include "Resource/SSBasic2D.fxc.h"
-};
-static const size_t g_SSNoLighting_Data_Len = LN_ARRAY_SIZE_OF(g_SSNoLighting_Data);
 
 //------------------------------------------------------------------------------
 MMDSceneGraph::MMDSceneGraph()
@@ -82,16 +77,15 @@ void MMDSceneGraph::CreateCore(SceneGraphManager* manager)
 	//m_mmdRenderingPasses[MMD_PASS_shadow] = LN_NEW MMERenderingPass(this, MMD_PASS_shadow);
 	//m_mmdRenderingPasses[MMD_PASS_edge] = LN_NEW MMERenderingPass(this, MMD_PASS_edge);
 
-	m_mmdRenderingPasses[MMD_PASS_object] = LN_NEW MMERenderingPass(manager, MMD_PASS_object);
+	auto pass = RefPtr<MMERenderingPass>::MakeRef(manager, MMD_PASS_object);
+	pass->Initialize();
+	LN_REFOBJ_SET(m_mmdRenderingPasses[MMD_PASS_object], pass);
 	//m_mmdRenderingPasses[MMD_PASS_object_ss] = LN_NEW MMERenderingPass(this, MMD_PASS_object_ss);
 	//m_mmdRenderingPasses[MMD_PASS_Infomation] = LN_NEW InfomationRenderingPass(manager);
 
 	//m_default3DLayer->GetRenderingPasses()->Add(m_mmdRenderingPasses[MMD_PASS_object]);
 	//m_default3DLayer->GetRenderingPasses()->Add(m_mmdRenderingPasses[MMD_PASS_Infomation]);
 
-	MMEShaderErrorInfo result;
-	RefPtr<MMEShader> defaultShader(MMEShader::Create((const char*)g_SSNoLighting_Data, g_SSNoLighting_Data_Len, &result, GetManager()), false);
-	m_mmdRenderingPasses[MMD_PASS_object]->SetDefaultShader(defaultShader);
 
 }
 

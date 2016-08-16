@@ -1,8 +1,6 @@
 ﻿
 #include "../Internal.h"
 #include <Lumino/Graphics/RenderingContext.h>
-#include "MME/MMEShaderErrorInfo.h"
-#include "MME/MMEShader.h"
 #include "MME/MMERenderingPass.h"
 #include "MME/MmdMaterial.h"	// TODO
 #include "SceneGraphManager.h"
@@ -300,12 +298,6 @@ detail::MaterialInstance* SceneGraph::CreateMaterialInstance()
 // Basic2DSceneGraph
 //==============================================================================
 
-static const byte_t g_SSBasic2D_Data[] =
-{
-#include "Resource/SSBasic2D.fxc.h"
-};
-static const size_t g_SSBasic2D_Data_Len = LN_ARRAY_SIZE_OF(g_SSBasic2D_Data);
-
 //------------------------------------------------------------------------------
 Basic2DSceneGraph::Basic2DSceneGraph()
 	: m_defaultRoot(nullptr)
@@ -336,10 +328,10 @@ void Basic2DSceneGraph::CreateCore(SceneGraphManager* manager)
 	m_defaultCamera->Initialize(this, CameraProjection_2D);
 	m_defaultRoot->AddChild(m_defaultCamera);
 
-	MMEShaderErrorInfo result;
-	RefPtr<MMEShader> defaultShader(MMEShader::Create((const char*)g_SSBasic2D_Data, g_SSBasic2D_Data_Len, &result, GetManager()), false);
-	m_renderingPasses.Add(LN_NEW MMERenderingPass(manager, MMD_PASS_object));
-	m_renderingPasses[0]->SetDefaultShader(defaultShader);
+	auto pass = RefPtr<MMERenderingPass>::MakeRef(manager, MMD_PASS_object);
+	pass->Initialize();
+	m_renderingPasses.Add(pass);
+	pass->AddRef();
 }
 
 //------------------------------------------------------------------------------

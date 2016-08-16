@@ -9,6 +9,8 @@
 #include "MMEShaderTechnique.h"
 #include "MMERenderingPass.h"
 #include "MmdMaterial.h"
+#include "MMEShader.h"
+#include "MMEShaderErrorInfo.h"
 #include "../SceneGraphManager.h"
 
 LN_NAMESPACE_BEGIN
@@ -35,6 +37,38 @@ MMERenderingPass::~MMERenderingPass()
 }
 
 //------------------------------------------------------------------------------
+void MMERenderingPass::Initialize()
+{
+	// StaticMesh 用デフォルトシェーダ
+	{
+		static const byte_t shaderData[] =
+		{
+#include "../Resource/SSBasic2D.fxc.h"
+		};
+		static const size_t shaderDataLen = LN_ARRAY_SIZE_OF(shaderData);
+
+		MMEShaderErrorInfo result;
+		auto shader = RefPtr<MMEShader>::MakeRef();
+		shader->Initialize(GetManager(), (const char*)shaderData, shaderDataLen, &result);
+		m_defaultShader[detail::SceneNodeDefaultShaderClass_StaticMesh] = shader;
+	}
+
+	// SkinnedMesh 用デフォルトシェーダ
+	{
+		static const byte_t shaderData[] =
+		{
+#include "../Resource/ForwardRenderingSkinnedMesh3D.fx.h"
+		};
+		static const size_t shaderDataLen = LN_ARRAY_SIZE_OF(shaderData);
+
+		MMEShaderErrorInfo result;
+		auto shader = RefPtr<MMEShader>::MakeRef();
+		shader->Initialize(GetManager(), (const char*)shaderData, shaderDataLen, &result);
+		m_defaultShader[detail::SceneNodeDefaultShaderClass_SkinnedMesh] = shader;
+	}
+}
+
+//------------------------------------------------------------------------------
 void MMERenderingPass::RenderNode(SceneGraphRenderingContext* dc, SceneNode* node)
 {
 	VisualNode* visualNode = static_cast<VisualNode*>(node);
@@ -44,9 +78,11 @@ void MMERenderingPass::RenderNode(SceneGraphRenderingContext* dc, SceneNode* nod
 //------------------------------------------------------------------------------
 void MMERenderingPass::RenderSubset(SceneGraphRenderingContext* dc, VisualNode* visualNode, int subset)
 {
+	detail::SceneNodeDefaultShaderClass shaderClass = visualNode->GetShaderClass();
+
 	// 今回のパスで本当に必要な情報 (使用するシェーダ等) を取得する
 	RenderingPriorityParams priorityParams;
-	SelectPriorityParams(visualNode, subset, &priorityParams);
+	SelectPriorityParams(visualNode, subset, &priorityParams, shaderClass);
 	if (priorityParams.Hide) {	// このパスでは描画しない
 		return;
 	}
@@ -84,18 +120,19 @@ void MMERenderingPass::RenderSubset(SceneGraphRenderingContext* dc, VisualNode* 
 
 	// テクニックが見つからなかった。この条件に当てはまるのは、テクニックのターゲットサブセット範囲が指定されていて、
 	// iSubset がいずれにもマッチしなかった場合。この場合はデフォルトのシェーダを探す。
-	if (tech == NULL)
+	if (tech == nullptr)
 	{
-		if (dc->Pass->GetDefaultShader() != NULL)
+		if (dc->Pass->GetDefaultShader(shaderClass) != nullptr)
 		{
-			tech = dc->Pass->GetDefaultShader()->FindTechnique(
+			tech = dc->Pass->GetDefaultShader(shaderClass)->FindTechnique(
 				m_mmdPass,
 				useTexture,
 				useSphereTexture,
 				useToonTexture,
 				false,	// TODO
 				subset);
-			if (tech == NULL) {
+			if (tech == nullptr)
+			{
 				// デフォルトのシェーダにも一致するテクニックが見つからなかった。
 				// この iSubset は描画しない。というかできない。
 				return;
@@ -112,7 +149,7 @@ void MMERenderingPass::RenderSubset(SceneGraphRenderingContext* dc, VisualNode* 
 }
 
 //------------------------------------------------------------------------------
-void MMERenderingPass::SelectPriorityParams(SceneNode* node, int subsetIndex, RenderingPriorityParams* outParams)
+void MMERenderingPass::SelectPriorityParams(SceneNode* node, int subsetIndex, RenderingPriorityParams* outParams, detail::SceneNodeDefaultShaderClass shaderClass)
 {
 	outParams->Shader = nullptr;
 
@@ -188,8 +225,8 @@ void MMERenderingPass::SelectPriorityParams(SceneNode* node, int subsetIndex, Re
 	}
 
 	// ここまでで何も選択されていなければデフォルトのシェーダを使用する
-	if (outParams->Shader == NULL) {
-		outParams->Shader = m_defaultShader;
+	if (outParams->Shader == nullptr) {
+		outParams->Shader = m_defaultShader[shaderClass];
 	}
 
 	// ここまでで何も選択されていないということは、デフォルトのシェーダすらなかったということ。

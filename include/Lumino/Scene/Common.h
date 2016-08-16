@@ -135,6 +135,12 @@ struct RenderingPassClientData
 	int				PriorityShaderIndex;	///< RenderingPass::m_priorityShaderList のインデックス (-1 は一致なし)
 };
 
+enum SceneNodeDefaultShaderClass
+{
+	SceneNodeDefaultShaderClass_StaticMesh,
+	SceneNodeDefaultShaderClass_SkinnedMesh,
+	SceneNodeDefaultShaderClass_Count,
+};
 
 }
 LN_NAMESPACE_SCENE_END

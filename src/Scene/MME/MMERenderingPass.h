@@ -14,6 +14,7 @@ class MMERenderingPass
 public:
 	MMERenderingPass(SceneGraphManager* manager, MMDPass mmdPass, MMEShader* ownerShader = NULL);
 	virtual ~MMERenderingPass();
+	void Initialize();
 
 private:
 	virtual void RenderNode(SceneGraphRenderingContext* dc, SceneNode* node) override;
@@ -22,7 +23,7 @@ private:
 
 private:
 	/// このパスのデフォルト&優先シェーダと、指定したノードのシェーダから描画に使用するテクニックを選択する。
-	void SelectPriorityParams(SceneNode* node, int subsetIndex, RenderingPriorityParams* outParams);
+	void SelectPriorityParams(SceneNode* node, int subsetIndex, RenderingPriorityParams* outParams, detail::SceneNodeDefaultShaderClass shaderClass);
 	void CreateGridContents();
 	void AdjustGridMesh(Camera* camera);
 

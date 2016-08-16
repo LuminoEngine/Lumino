@@ -27,6 +27,9 @@ LN_INTERNAL_ACCESS:
 	virtual void UpdateNodeRenderingParams(MMEShader* priorityShader) override;
 	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
 
+LN_PROTECTED_INTERNAL_ACCESS:
+	virtual detail::SceneNodeDefaultShaderClass GetShaderClass() override { return detail::SceneNodeDefaultShaderClass_SkinnedMesh; }
+
 private:
 	RefPtr<SkinnedMeshModel>	m_meshModel;
 };

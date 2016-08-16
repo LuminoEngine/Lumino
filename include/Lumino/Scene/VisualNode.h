@@ -128,9 +128,11 @@ protected:
 
 LN_INTERNAL_ACCESS:
 	MaterialList2* GetMaterialList() { return m_materialList; }
-	//const detail::VisualNodeRenderState& GetVisualNodeRenderState() const { return m_renderState; }
 	Shader* GetPrimaryShader() const;
 	void Render(SceneGraphRenderingContext* dc);
+
+LN_PROTECTED_INTERNAL_ACCESS:
+	virtual detail::SceneNodeDefaultShaderClass GetShaderClass() { return detail::SceneNodeDefaultShaderClass_StaticMesh; }
 
 protected:
 	int						m_subsetCount;

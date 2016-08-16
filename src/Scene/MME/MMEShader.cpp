@@ -17,12 +17,6 @@ LN_NAMESPACE_SCENE_BEGIN
 // MMEShader
 //==============================================================================
 
-static const unsigned char MMM_EffectHeader_Data[] =
-{
-#include "../Resource/MMM_EffectHeader.fxh.h"
-};
-static const size_t MMM_EffectHeader_Data_Len = LN_ARRAY_SIZE_OF(MMM_EffectHeader_Data) - 1;
-
 //------------------------------------------------------------------------------
 MMEShaderPtr MMEShader::Create(const StringRef& filePath)
 {
@@ -36,29 +30,14 @@ MMEShaderPtr MMEShader::Create(const StringRef& filePath)
 //------------------------------------------------------------------------------
 MMEShader* MMEShader::Create(const char* code, int codeLength, MMEShaderErrorInfo* errorInfo, SceneGraphManager* manager)
 {
-	// TODO: 自動付加するべきだろうか？
-	StringA newCode(code, codeLength);
-	//StringA newCode((const char*)MMM_EffectHeader_Data, MMM_EffectHeader_Data_Len);
-	//newCode += StringA::GetNewLine();
-	//newCode += "#line 1";
-	//newCode += StringA::GetNewLine();
-	//newCode += StringA(code, codeLength);
-
-	RefPtr<MMEShader> mmeShader(LN_NEW MMEShader(manager), false);
-	mmeShader->Initialize(manager->GetGraphicsManager(), newCode.c_str(), newCode.GetLength());
-	MMEShaderBuilder::Create(manager, mmeShader, errorInfo);
+	RefPtr<MMEShader> mmeShader(LN_NEW MMEShader(), false);
+	mmeShader->Initialize(manager, code, codeLength, errorInfo);
 	return mmeShader.DetachMove();
-
-	//RefPtr<Shader> shader(LN_NEW Shader(), false);
-	//shader->Initialize(manager->GetGraphicsManager(), newCode.c_str(), newCode.GetLength());
-	//RefPtr<MMEShader> mmeShader(MMEShaderBuilder::Create(manager, shader, errorInfo), false);
-	//mmeShader.SafeAddRef();
-	//return mmeShader;
 }
 
 //------------------------------------------------------------------------------
-MMEShader::MMEShader(SceneGraphManager* manager)
-	: m_manager(NULL)
+MMEShader::MMEShader()
+	: m_manager(nullptr)
 	, m_mmeScriptOutput(MME_SCROUT_color)
 	, m_mmeScriptClass(MME_SCRCLS_object)
 	, m_mmeScriptOrder(MME_SCRORDER_standard)
@@ -70,24 +49,53 @@ MMEShader::MMEShader(SceneGraphManager* manager)
 	, m_tempBuffer()
 	, m_tempBufferWriter(&m_tempBuffer)
 {
-	LN_REFOBJ_SET(m_manager, manager);
-	m_manager->AddShader(this);
 }
 
 //------------------------------------------------------------------------------
 MMEShader::~MMEShader()
 {
-	LN_FOREACH(MMEShaderTechnique* tech, m_mmeShaderTechniqueList) {
+	for (MMEShaderTechnique* tech : m_mmeShaderTechniqueList)
+	{
 		tech->Release();
 	}
-	LN_FOREACH(MMEShaderVariable* var, m_mmeShaderVariableList) {
+	for (MMEShaderVariable* var : m_mmeShaderVariableList)
+	{
 		delete var;
 	}
 
-	if (m_manager != NULL) {
+	if (m_manager != nullptr)
+	{
 		m_manager->RemoveShader(this);
 		LN_SAFE_RELEASE(m_manager);
 	}
+}
+
+//------------------------------------------------------------------------------
+void MMEShader::Initialize(SceneGraphManager* manager, const char* code, int codeLength, MMEShaderErrorInfo* errorInfo)
+{
+	LN_CHECK_ARG(manager != nullptr);
+	LN_CHECK_ARG(code != nullptr);
+	LN_CHECK_ARG(codeLength >= 0);
+
+	LN_REFOBJ_SET(m_manager, manager);
+	m_manager->AddShader(this);
+
+	// MMM のヘッダをコード先頭に追加する
+	static const unsigned char MMM_EffectHeader_Data[] =
+	{
+#include "../Resource/MMM_EffectHeader.fxh.h"
+	};
+	static const size_t MMM_EffectHeader_Data_Len = LN_ARRAY_SIZE_OF(MMM_EffectHeader_Data);
+	StringBuilderA newCode;
+	newCode.Append((const char*)MMM_EffectHeader_Data, MMM_EffectHeader_Data_Len);
+	newCode.Append("#line 1");
+	newCode.Append(StringA::GetNewLine().c_str());
+	newCode.Append(code, codeLength);
+
+	Shader::Initialize(manager->GetGraphicsManager(), newCode.c_str(), newCode.GetLength());
+	// TODO: Shader コンパイルのエラーを返したい
+
+	MMEShaderBuilder::Create(manager, this, errorInfo);
 }
 
 //------------------------------------------------------------------------------

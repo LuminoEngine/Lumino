@@ -61,9 +61,10 @@ public:
 	MMEShaderTechnique* FindTechnique(MMDPass mmdPass, bool UseTexture, bool UseSphereMap, bool UseToon, bool UseSelfShadow, int subsetIndex);
 
 
-private:
-	MMEShader(SceneGraphManager* manager);
+LN_INTERNAL_ACCESS:
+	MMEShader();
 	virtual ~MMEShader();
+	void Initialize(SceneGraphManager* manager, const char* code, int codeLength, MMEShaderErrorInfo* errorInfo);
 
 	typedef Array<MMEShaderVariable*>	MMEShaderVariableList;
 	typedef Array<MMEShaderTechnique*>	MMEShaderTechniqueList;
