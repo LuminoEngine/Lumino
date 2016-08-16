@@ -134,8 +134,6 @@ private:
 	Matrix				m_viewMatrixIT;		///< ビュー行列 (Inverse * Transpose)
 	Matrix				m_projMatrixIT;		///< プロジェクション行列 (Inverse * Transpose)
 	Matrix				m_viewProjMatrixIT;	///< ビュー行列とプロジェクション行列の積 (Inverse * Transpose)
-
-	friend class Internal::SceneHelper;
 };
 
 /**

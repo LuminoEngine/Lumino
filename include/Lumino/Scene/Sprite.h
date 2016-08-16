@@ -76,8 +76,6 @@ private:
 	Vector3		m_lowerRight;
 	Vector2		m_upperLeftUV;
 	Vector2		m_lowerRightUV;
-
-	friend class Internal::SceneHelper;
 };
 
 /**

@@ -116,7 +116,7 @@ void MMERenderingPass::SelectPriorityParams(SceneNode* node, int subsetIndex, Re
 {
 	outParams->Shader = nullptr;
 
-	Internal::RenderingPassClientData* data = &node->m_renderingPassClientDataList[m_internalEntryID];
+	detail::RenderingPassClientData* data = &node->m_renderingPassClientDataList[m_internalEntryID];
 
 	// node の m_internalID 番目のフィルタ情報を設定したものが this ではない。
 	// (node が新しく作成されたオブジェクトであるか、前の RenderingPass が解放され ID が返却された後、新たに作成された RenderingPass が同じ ID を取得した場合)

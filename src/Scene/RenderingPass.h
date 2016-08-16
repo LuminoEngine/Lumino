@@ -24,7 +24,7 @@ class RenderingPass
 	: public RefObject
 {
 public:
-	static const int MaxRenderingPass = Internal::MaxRenderingPass;		///< 1 つのシーングラフ内で作成できる RenderingPass の最大数
+	static const int MaxRenderingPass = detail::MaxRenderingPass;		///< 1 つのシーングラフ内で作成できる RenderingPass の最大数
 
 public:
 	struct NodeData

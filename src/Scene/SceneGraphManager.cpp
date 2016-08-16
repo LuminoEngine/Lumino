@@ -4,7 +4,6 @@
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Scene/SceneNode.h>
 #include "SceneGraphManager.h"
-#include "SceneHelper.h"
 #include "RenderingPass.h"
 #include <Lumino/Scene/MMDSceneGraph.h>
 #include <Lumino/Scene/SceneGraphRenderingContext.h>

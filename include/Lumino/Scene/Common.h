@@ -124,46 +124,10 @@ enum InternalRenderingPass
 	InternalRenderingPass_Infomation,		///< デバッグ情報等
 };
 
-/// カメラ単位の設定項目 (1フレームに1度だけ設定すればいいパラメータ)
-//struct CameraSceneParams
-//{
-//	//const Matrix*	Mat_CameraView;
-//	//const Matrix*	Mat_CameraProj;
-//	//const Matrix*	Mat_CameraViewProj;    ///< カメラのビューとプロジェクション行列の積
-//
-//	//Vector4			CameraPosition;	    ///< カメラの位置
-//	//Vector4			CameraDirection;	    ///< カメラの向き
-//	//Vector4         ViewPixelSize;         ///< 描画先RTサイズ
-//
-//	//// 以下は calcMatrices() で設定する
-//	//Matrix  Mat_CameraView_Inverse;
-//	//Matrix  Mat_CameraProj_Inverse;
-//	//Matrix  Mat_CameraViewProj_Inverse;
-//	//Matrix  Mat_CameraView_Transpose;
-//	//Matrix  Mat_CameraProj_Transpose;
-//	//Matrix  Mat_CameraViewProj_Transpose;
-//	//Matrix  Mat_CameraView_InverseTranspose;
-//	//Matrix  Mat_CameraProj_InverseTranspose;
-//	//Matrix  Mat_CameraViewProj_InverseTranspose;
-//
-//	//void CalcMatrices()
-//	//{
-//	//	Mat_CameraView_Inverse = Matrix::Inverse(*Mat_CameraView);
-//	//	Mat_CameraProj_Inverse = Matrix::Inverse(*Mat_CameraProj);
-//	//	Mat_CameraViewProj_Inverse = Matrix::Inverse(*Mat_CameraViewProj);
-//	//	Mat_CameraView_Transpose = Matrix::Transpose(*Mat_CameraView);
-//	//	Mat_CameraProj_Transpose = Matrix::Transpose(*Mat_CameraProj);
-//	//	Mat_CameraViewProj_Transpose = Matrix::Transpose(*Mat_CameraViewProj);
-//	//	Mat_CameraView_InverseTranspose = Mat_CameraView_Inverse * Mat_CameraView_Transpose;
-//	//	Mat_CameraProj_InverseTranspose = Mat_CameraProj_Inverse * Mat_CameraProj_Transpose;
-//	//	Mat_CameraViewProj_InverseTranspose = Mat_CameraViewProj_Inverse * Mat_CameraViewProj_Transpose;
-//	//}
-//};
 
-namespace Internal
+namespace detail
 {
 static const int MaxRenderingPass = 32;
-class SceneHelper;
 
 struct RenderingPassClientData
 {

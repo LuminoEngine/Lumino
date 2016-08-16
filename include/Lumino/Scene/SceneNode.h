@@ -183,9 +183,7 @@ protected:
 	float				m_zDistance;			///< Z ソート用の距離値 (ソート自体が速度的にクリティカルになりそうなので、getter を仮想関数にはしたくない)
 
 	friend class MMERenderingPass;	// TODO: VisualNode に持ってくべきかも。ついでに friend も何とかしたい
-	Internal::RenderingPassClientData	m_renderingPassClientDataList[Internal::MaxRenderingPass];
-
-	friend class Internal::SceneHelper;
+	detail::RenderingPassClientData	m_renderingPassClientDataList[detail::MaxRenderingPass];
 };
 
 class SceneNodeList
