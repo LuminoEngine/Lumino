@@ -35,6 +35,7 @@ void Light::Initialize(SceneGraph* owner, LightType type)
 {
 	SceneNode::Initialize(owner);
 	m_type = type;
+	SetAngles(-0.5, -1.0, 0.5);	// MMM Default
 }
 
 //------------------------------------------------------------------------------

@@ -95,7 +95,7 @@ VS_OUTPUT Basic_VS(LN_VS_INPUT input)
 		if (LightEnables[i])
 		{
 			color += (float3(1,1,1) - color) * (max(0, DiffuseColor[i] * dot(output.Normal, -LightDirection[i])));
-			//output.Color.rgb = float3(dot(output.Normal, -LightDirection[i]), 0, 0);
+			//output.Color.rgb = float3(dot(output.Normal, -LightDirection[i]), 0, 0);zzzzzz
 			ambient += AmbientColor[i];
 			count = count + 1.0;
 		}

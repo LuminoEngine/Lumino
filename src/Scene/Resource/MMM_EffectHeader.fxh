@@ -1,11 +1,11 @@
 //=============================================================================
 // MikuMikuMoving
-//-----------------------------------------------------------------------------
-//	このファイルを int 配列に展開したものは、
-//	Tools の HLSL 変換ツールからも参照される。
 //=============================================================================
 
 #ifdef LN_HLSL_DX9
+
+//ライト数
+static const int MMM_LightCount = 3;
 
 // ボーンテクスチャサイズの逆数
 float2 lnBoneTextureReciprocalSize = float2( 1.0/4.0, 1.0/256.0 );
@@ -145,3 +145,4 @@ float4 PixelShaderFunction(VertexShaderInput input) : COLOR0
 
 
 #endif // LN_HLSL_DX9
+

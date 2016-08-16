@@ -88,9 +88,10 @@ void MMEShader::Initialize(SceneGraphManager* manager, const char* code, int cod
 	static const size_t MMM_EffectHeader_Data_Len = LN_ARRAY_SIZE_OF(MMM_EffectHeader_Data);
 	StringBuilderA newCode;
 	newCode.Append((const char*)MMM_EffectHeader_Data, MMM_EffectHeader_Data_Len);
-	newCode.Append("#line 1");
+	newCode.Append("#line 5");
 	newCode.Append(StringA::GetNewLine().c_str());
 	newCode.Append(code, codeLength);
+	StringA sss = newCode.ToString();
 
 	Shader::Initialize(manager->GetGraphicsManager(), newCode.c_str(), newCode.GetLength());
 	// TODO: Shader コンパイルのエラーを返したい

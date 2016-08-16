@@ -388,7 +388,6 @@ set(LN_SOURCES_Scene
 	src/Scene/SceneGraphManager.cpp
 	src/Scene/SceneGraphManager.h
 	src/Scene/SceneGraphRenderingContext.cpp
-	src/Scene/SceneHelper.h
 	src/Scene/SceneNode.cpp
 	src/Scene/SceneTR.cpp
 	src/Scene/Sprite.cpp
