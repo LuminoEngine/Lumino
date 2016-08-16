@@ -288,7 +288,7 @@ void DX9Texture3D::SetSubData(const Point& point, const void* data, size_t dataB
 //------------------------------------------------------------------------------
 void DX9Texture3D::SetSubData3D(const Box32& box, const void* data, size_t dataBytes)
 {
-	if (LN_CHECKEQ_ARG(data == nullptr)) return;
+	LN_CHECK_ARG(data != nullptr);
 	if (dataBytes == 0) return;
 
 	D3DBOX d3dBox;

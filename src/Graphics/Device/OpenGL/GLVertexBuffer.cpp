@@ -114,8 +114,8 @@ GLVertexDeclaration::~GLVertexDeclaration()
 //------------------------------------------------------------------------------
 void GLVertexDeclaration::Initialize(const VertexElement* elements, int elementsCount)
 {
-	if (LN_CHECKEQ_ARG(elements == nullptr)) return;
-	if (LN_CHECKEQ_ARG(elementsCount < 0)) return;
+	LN_CHECK_ARG(elements != nullptr);
+	LN_CHECK_ARG(elementsCount >= 0);
 
 	// 頂点宣言作成
 	CreateGLVertexElements(elements, elementsCount, &m_vertexElements);

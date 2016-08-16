@@ -37,7 +37,7 @@ const String& AnimationState::GetName() const
 //------------------------------------------------------------------------------
 void AnimationState::Refresh(Animator* animator)
 {
-	if (LN_CHECKEQ_ARG(animator == nullptr)) return;
+	LN_CHECK_ARG(animator != nullptr);
 
 	ClearTargetList();
 

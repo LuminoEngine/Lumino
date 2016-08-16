@@ -544,7 +544,7 @@ void Win32NativeWindow::Initilaize(
 	bool fullscreen,
 	bool resizable)
 {
-	if (LN_CHECKEQ_ARG(windowManager == nullptr)) return;
+	LN_CHECK_ARG(windowManager != nullptr);
 	PlatformWindow::Initialize(SizeI(width, height));
 
 	mTitleText = windowTitle;

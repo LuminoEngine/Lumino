@@ -75,8 +75,8 @@ Sound::~Sound()
 //------------------------------------------------------------------------------
 void Sound::Initialize(detail::AudioManager* manager, detail::AudioStream* stream)
 {
-	if (LN_CHECKEQ_ARG(manager == nullptr)) return;
-	if (LN_CHECKEQ_ARG(stream == nullptr)) return;
+	LN_CHECK_ARG(manager != nullptr);
+	LN_CHECK_ARG(stream != nullptr);
 	m_manager = manager;
 	LN_REFOBJ_SET(m_audioStream, stream);
 }

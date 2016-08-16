@@ -251,7 +251,7 @@ void Bitmap::ConvertToDownFlow()
 //------------------------------------------------------------------------------
 void Bitmap::CopyRawData(const void* data, size_t byteCount)
 {
-	if (LN_CHECKEQ_ARG(m_bitmapData.GetSize() > byteCount)) return;
+	LN_CHECK_ARG(m_bitmapData.GetSize() <= byteCount);
 	m_bitmapData.Copy(data, byteCount);
 }
 
@@ -264,14 +264,14 @@ size_t Bitmap::GetByteCount() const
 //------------------------------------------------------------------------------
 void Bitmap::SetPixel(int x, int y, int z, const Color32& color)
 {
-	if (LN_CHECKEQ_OUTRANGE(x, 0, m_size.width)) return;
-	if (LN_CHECKEQ_OUTRANGE(y, 0, m_size.height)) return;
-	if (LN_CHECKEQ_OUTRANGE(z, 0, m_depth)) return;
-	if (LN_CHECKEQ_STATE(
-		m_format != PixelFormat::B8G8R8A8 &&
-		m_format != PixelFormat::B8G8R8X8 &&
-		m_format != PixelFormat::R8G8B8A8 &&
-		m_format != PixelFormat::R8G8B8X8)) return;
+	LN_CHECK_RANGE(x, 0, m_size.width);
+	LN_CHECK_RANGE(y, 0, m_size.height);
+	LN_CHECK_RANGE(z, 0, m_depth);
+	LN_CHECK_STATE(
+		m_format == PixelFormat::B8G8R8A8 ||
+		m_format == PixelFormat::B8G8R8X8 ||
+		m_format == PixelFormat::R8G8B8A8 ||
+		m_format == PixelFormat::R8G8B8X8);
 
 	struct U32
 	{

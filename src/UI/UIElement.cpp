@@ -58,7 +58,7 @@ UIElement::~UIElement()
 //------------------------------------------------------------------------------
 void UIElement::Initialize(detail::UIManager* manager)
 {
-	if (LN_CHECKEQ_ARG(manager == nullptr)) return;
+	LN_CHECK_ARG(manager != nullptr);
 	m_manager = manager;
 
 	// 要素名を覚えておく。末端のサブクラスの名前となる。
@@ -511,8 +511,8 @@ void UIElement::Render(DrawingContext* g)
 //------------------------------------------------------------------------------
 void UIElement::RaiseEventInternal(const UIEventInfo* ev, UIEventArgs* e)
 {
-	if (LN_CHECKEQ_ARG(ev == nullptr)) return;
-	if (LN_CHECKEQ_ARG(e == nullptr)) return;
+	LN_CHECK_ARG(ev != nullptr);
+	LN_CHECK_ARG(e != nullptr);
 	tr::TypeInfo* thisType = tr::TypeInfo::GetTypeInfo(this);
 
 	// this に AddHandler されているイベントハンドラを呼び出す。

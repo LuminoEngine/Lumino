@@ -32,8 +32,8 @@ SkinnedMeshModel::~SkinnedMeshModel()
 //------------------------------------------------------------------------------
 void SkinnedMeshModel::Initialize(GraphicsManager* manager, PmxSkinnedMeshResource* sharingMesh)
 {
-	if (LN_CHECKEQ_ARG(manager == nullptr)) return;
-	if (LN_CHECKEQ_ARG(sharingMesh == nullptr)) return;
+	LN_CHECK_ARG(manager != nullptr);
+	LN_CHECK_ARG(sharingMesh != nullptr);
 
 	// メッシュ(バッファ類)は共有する
 	m_meshResource = sharingMesh;

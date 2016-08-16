@@ -502,7 +502,7 @@ void MMEShader::UpdateNodeParams(SceneNode* node, Camera* affectCamera, const Li
 //------------------------------------------------------------------------------
 void MMEShader::UpdateSubsetParams(detail::MaterialInstance* material)
 {
-	if (LN_CHECKEQ_ARG(material->GetMaterialTypeId() != detail::MmdMaterialTypeId)) return;
+	LN_CHECK_ARG(material->GetMaterialTypeId() == detail::MmdMaterialTypeId);
 
 	MmdMaterialInstance* ownerMaterial = static_cast<MmdMaterialInstance*>(material);
 

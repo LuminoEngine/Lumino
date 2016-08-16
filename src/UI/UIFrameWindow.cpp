@@ -73,9 +73,9 @@ UIFrameWindow::~UIFrameWindow()
 //------------------------------------------------------------------------------
 void UIFrameWindow::Initialize(detail::UIManager* manager, PlatformWindow* platformWindow, SwapChain* swapChain, UILayoutView* view)
 {
-	if (LN_CHECKEQ_ARG(manager == nullptr)) return;
-	if (LN_CHECKEQ_ARG(platformWindow == nullptr)) return;
-	if (LN_CHECKEQ_ARG(swapChain == nullptr)) return;
+	LN_CHECK_ARG(manager != nullptr);
+	LN_CHECK_ARG(platformWindow != nullptr);
+	LN_CHECK_ARG(swapChain != nullptr);
 	m_manager = manager;
 	LN_REFOBJ_SET(m_platformWindow, platformWindow);
 	LN_REFOBJ_SET(m_swapChain, swapChain);
@@ -145,7 +145,7 @@ UIMainWindow::~UIMainWindow()
 //------------------------------------------------------------------------------
 void UIMainWindow::Initialize(detail::UIManager* manager, PlatformWindow* platformWindow)
 {
-	if (LN_CHECKEQ_ARG(manager == nullptr)) return;
+	LN_CHECK_ARG(manager != nullptr);
 
 	m_mainUIContext = LN_NEW UIContext();
 	m_mainUIContext->Initialize(manager);
@@ -202,8 +202,8 @@ UINativeHostWindow::~UINativeHostWindow()
 //------------------------------------------------------------------------------
 void UINativeHostWindow::Initialize(detail::UIManager* manager, void* windowHandle)
 {
-	if (LN_CHECKEQ_ARG(manager == nullptr)) return;
-	if (LN_CHECKEQ_ARG(windowHandle == nullptr)) return;
+	LN_CHECK_ARG(manager != nullptr);
+	LN_CHECK_ARG(windowHandle != nullptr);
 
 	WindowCreationSettings ws;
 	//ws.title;		// TODO

@@ -78,7 +78,7 @@ StaticMesh::~StaticMesh()
 //------------------------------------------------------------------------------
 void StaticMesh::Initialize(SceneGraph* owner, StaticMeshModel* meshModel)
 {
-	if (LN_CHECKEQ_ARG(meshModel == nullptr)) return;
+	LN_CHECK_ARG(meshModel != nullptr);
 	m_mesh = meshModel;
 
 	VisualNode::Initialize(owner, m_mesh->GetSubsetCount());

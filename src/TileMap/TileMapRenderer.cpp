@@ -78,7 +78,7 @@ void TileMapRenderer::SetTransform(const Matrix& world, const Matrix& viewProj)
 //------------------------------------------------------------------------------
 void TileMapRenderer::Draw(RenderingContext* context, TileMapModel* tileMap, const RectF& boundingRect, const ViewFrustum& cameraFrustum)
 {
-	if (LN_CHECKEQ_ARG(tileMap == nullptr)) return;
+	LN_CHECK_ARG(tileMap != nullptr);
 	m_context = context;
 	//m_spriteRenderer = spriteRenderer;
 
@@ -192,8 +192,8 @@ void TileMapRenderer::End()
 //------------------------------------------------------------------------------
 void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, TileSet* tileSet, const BoundingRect& renderRange)
 {
-	if (LN_CHECKEQ_ARG(layer == nullptr)) return;
-	if (LN_CHECKEQ_ARG(tileSet == nullptr)) return;
+	LN_CHECK_ARG(layer != nullptr);
+	LN_CHECK_ARG(tileSet != nullptr);
 
 	int allocedTileCount = 0;
 	if (m_vertexBuffer != nullptr && m_indexBuffer != nullptr)

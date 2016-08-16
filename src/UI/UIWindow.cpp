@@ -22,7 +22,7 @@ UIWindow::~UIWindow()
 //------------------------------------------------------------------------------
 void UIWindow::InitializeDefault(detail::UIManager* manager)
 {
-	if (LN_CHECKEQ_ARG(manager == nullptr)) return;
+	LN_CHECK_ARG(manager != nullptr);
 	m_manager = manager;
 }
 

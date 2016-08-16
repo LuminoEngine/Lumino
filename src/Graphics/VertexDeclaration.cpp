@@ -53,8 +53,8 @@ void VertexDeclaration::Initialize(GraphicsManager* manager, const VertexElement
 //------------------------------------------------------------------------------
 void VertexDeclaration::AddVertexElement(int streamIndex, VertexElementType type, VertexElementUsage usage, int usageIndex)
 {
-	if (LN_CHECKEQ_ARG(streamIndex < 0)) return;
-	if (LN_CHECKEQ_ARG(usageIndex < 0)) return;
+	LN_CHECK_ARG(streamIndex >= 0);
+	LN_CHECK_ARG(usageIndex >= 0);
 
 	VertexElement e;
 	e.StreamIndex = streamIndex;

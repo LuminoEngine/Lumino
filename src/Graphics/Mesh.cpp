@@ -525,7 +525,7 @@ MeshResource::~MeshResource()
 //------------------------------------------------------------------------------
 void MeshResource::Initialize(GraphicsManager* manager)
 {
-	if (LN_CHECKEQ_ARG(manager == nullptr)) return;
+	LN_CHECK_ARG(manager != nullptr);
 	m_manager = manager;
 
 	m_materials = RefPtr<MaterialList>::MakeRef();
@@ -631,7 +631,7 @@ Material* MeshResource::GetMaterial(int index) const
 //------------------------------------------------------------------------------
 void MeshResource::SetPosition(int index, const Vector3& position)
 {
-	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
+	LN_CHECK_RANGE(index, 0, m_vertexCount);
 	Vertex* v = (Vertex*)TryLockVertexBuffer(VB_BasicVertices, sizeof(Vertex));
 	v[index].position = position;
 }
@@ -639,7 +639,7 @@ void MeshResource::SetPosition(int index, const Vector3& position)
 //------------------------------------------------------------------------------
 void MeshResource::SetNormal(int index, const Vector3& normal)
 {
-	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
+	LN_CHECK_RANGE(index, 0, m_vertexCount);
 	Vertex* v = (Vertex*)TryLockVertexBuffer(VB_BasicVertices, sizeof(Vertex));
 	v[index].normal = normal;
 }
@@ -647,7 +647,7 @@ void MeshResource::SetNormal(int index, const Vector3& normal)
 //------------------------------------------------------------------------------
 void MeshResource::SetUV(int index, const Vector2& uv)
 {
-	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
+	LN_CHECK_RANGE(index, 0, m_vertexCount);
 	Vertex* v = (Vertex*)TryLockVertexBuffer(VB_BasicVertices, sizeof(Vertex));
 	v[index].uv = uv;
 }
@@ -655,7 +655,7 @@ void MeshResource::SetUV(int index, const Vector2& uv)
 //------------------------------------------------------------------------------
 const Vector3& MeshResource::GetPosition(int index)
 {
-	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return Vector3::Zero;
+	LN_CHECK_RANGE(index, 0, m_vertexCount);
 	Vertex* v = (Vertex*)TryLockVertexBuffer(VB_BasicVertices, sizeof(Vertex));
 	return v[index].position;
 }
@@ -663,7 +663,7 @@ const Vector3& MeshResource::GetPosition(int index)
 //------------------------------------------------------------------------------
 void MeshResource::SetBlendWeight(int index, int blendIndex, float value)
 {
-	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
+	LN_CHECK_RANGE(index, 0, m_vertexCount);
 	BlendWeight* v = (BlendWeight*)TryLockVertexBuffer(VB_BlendWeights, sizeof(BlendWeight));
 	v[index].weights[blendIndex] = value;
 }
@@ -671,7 +671,7 @@ void MeshResource::SetBlendWeight(int index, int blendIndex, float value)
 //------------------------------------------------------------------------------
 void MeshResource::SetBlendWeights(int index, float v0, float v1, float v2, float v3)
 {
-	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
+	LN_CHECK_RANGE(index, 0, m_vertexCount);
 	BlendWeight* v = (BlendWeight*)TryLockVertexBuffer(VB_BlendWeights, sizeof(BlendWeight));
 	v[index].weights[0] = v0;
 	v[index].weights[1] = v1;
@@ -682,7 +682,7 @@ void MeshResource::SetBlendWeights(int index, float v0, float v1, float v2, floa
 //------------------------------------------------------------------------------
 void MeshResource::SetBlendIndex(int index, int blendIndex, float value)
 {
-	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
+	LN_CHECK_RANGE(index, 0, m_vertexCount);
 	BlendWeight* v = (BlendWeight*)TryLockVertexBuffer(VB_BlendWeights, sizeof(BlendWeight));
 	v[index].indices[blendIndex] = value;
 }
@@ -690,7 +690,7 @@ void MeshResource::SetBlendIndex(int index, int blendIndex, float value)
 //------------------------------------------------------------------------------
 void MeshResource::SetBlendIndices(int index, float v0, float v1, float v2, float v3)
 {
-	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
+	LN_CHECK_RANGE(index, 0, m_vertexCount);
 	BlendWeight* v = (BlendWeight*)TryLockVertexBuffer(VB_BlendWeights, sizeof(BlendWeight));
 	v[index].indices[0] = v0;
 	v[index].indices[1] = v1;
@@ -720,7 +720,7 @@ void MeshResource::SetIndex(int index, int vertexIndex)
 //------------------------------------------------------------------------------
 void MeshResource::SetAdditionalUV(int index, int additionalUVIndex, const Vector4& uv)
 {
-	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
+	LN_CHECK_RANGE(index, 0, m_vertexCount);
 	AdditionalUVs* v = (AdditionalUVs*)TryLockVertexBuffer(VB_AdditionalUVs, sizeof(AdditionalUVs));
 	v[index].uv[additionalUVIndex] = uv;
 }
@@ -728,7 +728,7 @@ void MeshResource::SetAdditionalUV(int index, int additionalUVIndex, const Vecto
 //------------------------------------------------------------------------------
 void MeshResource::SetSdefC(int index, const Vector4& value)
 {
-	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
+	LN_CHECK_RANGE(index, 0, m_vertexCount);
 	SdefInfo* v = (SdefInfo*)TryLockVertexBuffer(VB_SdefInfo, sizeof(SdefInfo));
 	v[index].sdefC = value;
 }
@@ -736,7 +736,7 @@ void MeshResource::SetSdefC(int index, const Vector4& value)
 //------------------------------------------------------------------------------
 void MeshResource::SetSdefR0(int index, const Vector3& value)
 {
-	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
+	LN_CHECK_RANGE(index, 0, m_vertexCount);
 	SdefInfo* v = (SdefInfo*)TryLockVertexBuffer(VB_SdefInfo, sizeof(SdefInfo));
 	v[index].sdefR0 = value;
 }
@@ -744,7 +744,7 @@ void MeshResource::SetSdefR0(int index, const Vector3& value)
 //------------------------------------------------------------------------------
 void MeshResource::SetSdefR1(int index, const Vector3& value)
 {
-	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
+	LN_CHECK_RANGE(index, 0, m_vertexCount);
 	SdefInfo* v = (SdefInfo*)TryLockVertexBuffer(VB_SdefInfo, sizeof(SdefInfo));
 	v[index].sdefR1 = value;
 }
@@ -752,7 +752,7 @@ void MeshResource::SetSdefR1(int index, const Vector3& value)
 //------------------------------------------------------------------------------
 void MeshResource::SetEdgeWeight(int index, float weight)
 {
-	if (LN_CHECKEQ_ARG(index < 0 || m_vertexCount <= index)) return;
+	LN_CHECK_RANGE(index, 0, m_vertexCount);
 	MmdExtra* v = (MmdExtra*)TryLockVertexBuffer(VB_MmdExtra, sizeof(MmdExtra));
 	v[index].edgeWeight = weight;
 }
@@ -954,8 +954,8 @@ StaticMeshModel::~StaticMeshModel()
 //------------------------------------------------------------------------------
 void StaticMeshModel::Initialize(GraphicsManager* manager, MeshResource* sharingMesh)
 {
-	if (LN_CHECKEQ_ARG(manager == nullptr)) return;
-	if (LN_CHECKEQ_ARG(sharingMesh == nullptr)) return;
+	LN_CHECK_ARG(manager != nullptr);
+	LN_CHECK_ARG(sharingMesh != nullptr);
 
 	// メッシュ(バッファ類)は共有する
 	m_meshResource = sharingMesh;
