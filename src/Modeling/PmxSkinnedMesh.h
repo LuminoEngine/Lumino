@@ -1,4 +1,9 @@
-
+/*
+	[x] メッシュ
+	[x] ボーン
+	[ ]
+	[ ] 付与
+*/
 #pragma once
 #include <Lumino/Graphics/Mesh.h>
 

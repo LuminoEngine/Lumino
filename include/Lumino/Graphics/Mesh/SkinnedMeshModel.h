@@ -65,7 +65,10 @@ LN_INTERNAL_ACCESS:
 	// サブセット描画
 	//void DrawSubset(int subsetIndex);
 
-	void SolveIK(PmxIKResource* ikInfo);
+private:
+	void UpdateIK();
+	void UpdateIKInternal(PmxIKResource* ikInfo, int linkIndex, int loop, int ikt, int depth);
+	void UpdateIKInternal2(PmxIKResource* ik);
 
 LN_INTERNAL_ACCESS:	// TODO:
 	RefPtr<PmxSkinnedMeshResource>	m_meshResource;
@@ -87,6 +90,8 @@ class SkinnedMeshBone
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
+	SkinnedMeshBone* GetParent() const { return m_parent; }
+	const Vector3& GetPosition() const { return m_position; }	// IK 用
 
 LN_INTERNAL_ACCESS:
 	SkinnedMeshBone();
@@ -115,12 +120,21 @@ protected:
 	virtual const String& GetAnimationTargetName() const override;
 	virtual void SetAnimationTargetValue(ValueType type, const void* value) override;
 
-private:
+LN_INTERNAL_ACCESS:	// TODO
 	RefPtr<PmxBoneResource>	m_core;				// 共有データクラス
 	SkinnedMeshBone*		m_parent;
 	Array<SkinnedMeshBone*>	m_children;			// 子ボーンリスト
 	SQTTransform			m_localTransform;	// モーションを書き込むのはここ
 	Matrix					m_combinedMatrix;	// 結合済み行列 (モデル内のグローバル行列)
+
+	Quaternion				m_userRotation;
+	Matrix					m_ikLocalMatrix;			// IK 作業用
+	Matrix					m_ikLocalRotationMatrix;	// IK 作業用
+	Quaternion				m_ikQuaternion;				// IK 作業用
+	Vector3					m_position;					// IK 作業用
+	Matrix					m_globalRotationMatrix;
+
+	friend class SkinnedMeshModel;
 };
 
 LN_NAMESPACE_END

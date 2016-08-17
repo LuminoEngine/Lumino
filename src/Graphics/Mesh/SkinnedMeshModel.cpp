@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <Lumino/Graphics/Mesh.h>
 #include <Lumino/Graphics/Mesh/SkinnedMeshModel.h>
@@ -35,11 +35,11 @@ void SkinnedMeshModel::Initialize(GraphicsManager* manager, PmxSkinnedMeshResour
 	LN_CHECK_ARG(manager != nullptr);
 	LN_CHECK_ARG(sharingMesh != nullptr);
 
-	// ƒƒbƒVƒ…(ƒoƒbƒtƒ@—Ş)‚Í‹¤—L‚·‚é
+	// ãƒ¡ãƒƒã‚·ãƒ¥(ãƒãƒƒãƒ•ã‚¡é¡)ã¯å…±æœ‰ã™ã‚‹
 	m_meshResource = sharingMesh;
 
-	// ƒ}ƒeƒŠƒAƒ‹‚ÍƒRƒs[‚·‚é
-	// TODO: ƒRƒs[—L–³‚Ìƒtƒ‰ƒO‚ª‚ ‚Á‚½‚Ù‚¤‚ª‚¢‚¢‚©‚àH
+	// ãƒãƒ†ãƒªã‚¢ãƒ«ã¯ã‚³ãƒ”ãƒ¼ã™ã‚‹
+	// TODO: ã‚³ãƒ”ãƒ¼æœ‰ç„¡ã®ãƒ•ãƒ©ã‚°ãŒã‚ã£ãŸã»ã†ãŒã„ã„ã‹ã‚‚ï¼Ÿ
 	int count = m_meshResource->materials.GetCount();
 	m_materials = RefPtr<MaterialList>::MakeRef();
 	m_materials->Resize(count);
@@ -49,18 +49,18 @@ void SkinnedMeshModel::Initialize(GraphicsManager* manager, PmxSkinnedMeshResour
 	}
 
 	//---------------------------------------------------------
-	// Bone ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‰»
+	// Bone ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–
 	int boneCount = m_meshResource->bones.GetCount();
 	if (boneCount > 0)
 	{
 		m_allBoneList.Resize(boneCount);
-		// ‚Ü‚¸‚Í Bone ‚ğì‚é
+		// ã¾ãšã¯ Bone ã‚’ä½œã‚‹
 		for (int i = 0; i < boneCount; i++)
 		{
 			m_allBoneList[i] = SkinnedMeshBonePtr::MakeRef();
 			m_allBoneList[i]->Initialize(m_meshResource->bones[i]);
 		}
-		// Ÿ‚Éq‚Æe‚ğŒq‚°‚é
+		// æ¬¡ã«å­ã¨è¦ªã‚’ç¹‹ã’ã‚‹
 		for (int i = 0; i < boneCount; i++)
 		{
 			int parentIndex = m_meshResource->bones[i]->ParentBoneIndex;
@@ -70,45 +70,42 @@ void SkinnedMeshModel::Initialize(GraphicsManager* manager, PmxSkinnedMeshResour
 			}
 			else
 			{
-				m_rootBoneList.Add(m_allBoneList[i]);	// e‚ª‚¢‚È‚¢Bƒ‹[ƒgƒ{[ƒ“‚Æ‚µ‚ÄŠo‚¦‚Ä‚¨‚­
+				m_rootBoneList.Add(m_allBoneList[i]);	// è¦ªãŒã„ãªã„ã€‚ãƒ«ãƒ¼ãƒˆãƒœãƒ¼ãƒ³ã¨ã—ã¦è¦šãˆã¦ãŠã
 			}
 		}
 
-		// ƒ{[ƒ“s—ñ‚ğ‘‚«‚Ş‚Æ‚±‚ë‚ğì‚é
+		// ãƒœãƒ¼ãƒ³è¡Œåˆ—ã‚’æ›¸ãè¾¼ã‚€ã¨ã“ã‚ã‚’ä½œã‚‹
 		m_skinningMatrices.Resize(boneCount);
 		m_skinningMatricesTexture = RefPtr<Texture2D>::MakeRef();
-		m_skinningMatricesTexture->Initialize(manager, SizeI(4, boneCount), TextureFormat::R32G32B32A32_Float, false);	// TODO: DynamicANoManaged
+		m_skinningMatricesTexture->Initialize(manager, SizeI(4, boneCount), TextureFormat::R32G32B32A32_Float, false);	// TODO: Dynamicã€NoManaged
 
-		// ƒAƒjƒ[ƒVƒ‡ƒ“ŠÇ—
+		// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ç®¡ç†
 		m_animator = RefPtr<Animator>::MakeRef();
 		m_animator->Create(this);
 	}
 }
 
 //------------------------------------------------------------------------------
-// p¨XV‡@ (ƒ†[ƒU[XV‚Ì‘O‚ÉŠm’è‚·‚é•K—v‚ª‚ ‚é‚à‚Ì)
-//		Eƒ{[ƒ“‚ÌƒOƒ[ƒoƒ‹s—ñXV
-//		E„‘ÌXV (ƒtƒŒ[ƒ€ˆÊ’u‚ğ„‘ÌˆÊ’u‚Ö)
+// å§¿å‹¢æ›´æ–°â‘  (ãƒ¦ãƒ¼ã‚¶ãƒ¼æ›´æ–°ã®å‰ã«ç¢ºå®šã™ã‚‹å¿…è¦ãŒã‚ã‚‹ã‚‚ã®)
+//		ãƒ»ãƒœãƒ¼ãƒ³ã®ã‚°ãƒ­ãƒ¼ãƒãƒ«è¡Œåˆ—æ›´æ–°
+//		ãƒ»å‰›ä½“æ›´æ–° (ãƒ•ãƒ¬ãƒ¼ãƒ ä½ç½®ã‚’å‰›ä½“ä½ç½®ã¸)
 void SkinnedMeshModel::PreUpdate()
 {
 	UpdateBoneTransformHierarchy();
 }
 
 //------------------------------------------------------------------------------
-// p¨XV‡A (ƒ†[ƒU[XV‚ÌŒãA•`‰æ‚Ì‘O‚És‚¤•K—v‚ª‚ ‚é‚à‚Ì)
-//		Eƒ‚[ƒtXV
-//		EIKXV
-//		E„‘ÌXV („‘ÌˆÊ’u‚ğƒtƒŒ[ƒ€ˆÊ’u‚Ö)
-//		EƒXƒLƒjƒ“ƒOs—ñ‚Ìì¬
+// å§¿å‹¢æ›´æ–°â‘¡ (ãƒ¦ãƒ¼ã‚¶ãƒ¼æ›´æ–°ã®å¾Œã€æç”»ã®å‰ã«è¡Œã†å¿…è¦ãŒã‚ã‚‹ã‚‚ã®)
+//		ãƒ»ãƒ¢ãƒ¼ãƒ•æ›´æ–°
+//		ãƒ»IKæ›´æ–°
+//		ãƒ»å‰›ä½“æ›´æ–° (å‰›ä½“ä½ç½®ã‚’ãƒ•ãƒ¬ãƒ¼ãƒ ä½ç½®ã¸)
+//		ãƒ»ã‚¹ã‚­ãƒ‹ãƒ³ã‚°è¡Œåˆ—ã®ä½œæˆ
 void SkinnedMeshModel::PostUpdate()
 {
-	// IK XV
-	for (PmxIKResource* ik : m_meshResource->iks)
-	{
-		SolveIK(ik);
-	}
+	// IK æ›´æ–°
+	UpdateIK();
 
-	// ƒXƒLƒjƒ“ƒOs—ñ‚Ìì¬
+	// ã‚¹ã‚­ãƒ‹ãƒ³ã‚°è¡Œåˆ—ã®ä½œæˆ
 	UpdateSkinningMatrices();
 }
 
@@ -124,36 +121,36 @@ void SkinnedMeshModel::UpdateBoneTransformHierarchy()
 //------------------------------------------------------------------------------
 void SkinnedMeshModel::UpdateSkinningMatrices()
 {
-	// ƒXƒLƒjƒ“ƒOs—ñ‚Ìì¬
+	// ã‚¹ã‚­ãƒ‹ãƒ³ã‚°è¡Œåˆ—ã®ä½œæˆ
 	for (int i = 0; i < m_allBoneList.GetCount(); i++)
 	{
 		/*
-			‰Šúp¨‚ÍAƒXƒLƒjƒ“ƒO‚µ‚È‚­‚Ä‚à“¯‚¶p¨B
-			‚Â‚Ü‚èA’¸“_ƒXƒLƒjƒ“ƒO‚Å‰Šúp¨‚É‚µ‚½‚¢‚Æ‚«‚Í Matrix::Identity ‚Ìƒ{[ƒ“s—ñ‚ğ“n‚·B
+			åˆæœŸå§¿å‹¢ã¯ã€ã‚¹ã‚­ãƒ‹ãƒ³ã‚°ã—ãªãã¦ã‚‚åŒã˜å§¿å‹¢ã€‚
+			ã¤ã¾ã‚Šã€é ‚ç‚¹ã‚¹ã‚­ãƒ‹ãƒ³ã‚°ã§åˆæœŸå§¿å‹¢ã«ã—ãŸã„ã¨ãã¯ Matrix::Identity ã®ãƒœãƒ¼ãƒ³è¡Œåˆ—ã‚’æ¸¡ã™ã€‚
 
-			ƒ{[ƒ“‚ÍÅ‰‚©‚çƒIƒtƒZƒbƒg‚ª“ü‚Á‚Ä‚é‚¯‚ÇA
-			‚»‚ê‚ğƒXƒLƒjƒ“ƒO‚É“K—p‚·‚é‚Æp¨‚ª•ö‚ê‚Ä‚µ‚Ü‚¤B
-			‚»‚Ì‚½‚ßA‰ŠúƒIƒtƒZƒbƒg‚ğ‘Å‚¿Á‚·ˆ—‚ª•K—vB‚»‚ê‚ª GetInitialTranstormInv()B
+			ãƒœãƒ¼ãƒ³ã¯æœ€åˆã‹ã‚‰ã‚ªãƒ•ã‚»ãƒƒãƒˆãŒå…¥ã£ã¦ã‚‹ã‘ã©ã€
+			ãã‚Œã‚’ã‚¹ã‚­ãƒ‹ãƒ³ã‚°ã«é©ç”¨ã™ã‚‹ã¨å§¿å‹¢ãŒå´©ã‚Œã¦ã—ã¾ã†ã€‚
+			ãã®ãŸã‚ã€åˆæœŸã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’æ‰“ã¡æ¶ˆã™å‡¦ç†ãŒå¿…è¦ã€‚ãã‚ŒãŒ GetInitialTranstormInv()ã€‚
 
-			ID3DXSkinInfo::GetBoneOffsetMatrix() ‚Å
-			æ“¾‚Å‚«‚és—ñ (SkinnedMeshƒTƒ“ƒvƒ‹‚Ì D3DXMESHCONTAINER_DERIVED::pBoneOffsetMatrices) ‚ª‚±‚ê‚É‚ ‚½‚é‚à‚Ì‚Á‚Û‚¢B
-			ƒTƒ“ƒvƒ‹‚Å‚à•`‰æ‚Ì’¼‘O‚É‘ÎÛƒ{[ƒ“s—ñ‚É‚±‚Ìs—ñ‚ğæZ‚µ‚Ä‚¢‚éB
+			ID3DXSkinInfo::GetBoneOffsetMatrix() ã§
+			å–å¾—ã§ãã‚‹è¡Œåˆ— (SkinnedMeshã‚µãƒ³ãƒ—ãƒ«ã® D3DXMESHCONTAINER_DERIVED::pBoneOffsetMatrices) ãŒã“ã‚Œã«ã‚ãŸã‚‹ã‚‚ã®ã£ã½ã„ã€‚
+			ã‚µãƒ³ãƒ—ãƒ«ã§ã‚‚æç”»ã®ç›´å‰ã«å¯¾è±¡ãƒœãƒ¼ãƒ³è¡Œåˆ—ã«ã“ã®è¡Œåˆ—ã‚’ä¹—ç®—ã—ã¦ã„ã‚‹ã€‚
 		*/
 		m_skinningMatrices[i] = m_allBoneList[i]->GetCore()->GetInitialTranstormInv();
 		m_skinningMatrices[i] *= m_allBoneList[i]->GetCombinedMatrix();
 	}
 
-	// ƒXƒLƒjƒ“ƒOƒeƒNƒXƒ`ƒƒXV
+	// ã‚¹ã‚­ãƒ‹ãƒ³ã‚°ãƒ†ã‚¯ã‚¹ãƒãƒ£æ›´æ–°
 	if (!m_skinningMatricesTexture.IsNull())
 	{
 		m_skinningMatricesTexture->SetSubData(Point(0, 0), &m_skinningMatrices[0]);
 	}
 
-	// ‘S‚Ä‚Ìƒ[ƒJƒ‹ƒgƒ‰ƒ“ƒXƒtƒH[ƒ€‚ğƒŠƒZƒbƒg‚·‚é
-	//		ƒŠƒZƒbƒg‚µ‚Ä‚¨‚©‚È‚¢‚ÆAIK‚Å–â‘è‚ªo‚éB
-	//		(IK‚Í‚»‚Ì“_‚ÌLocalTransform‚É‘Î‚µ‚Äˆ—‚ğs‚¤‚½‚ßA‰ñ“]Šp“x‚ª‚Ç‚ñ‚Ç‚ñ‘‚¦‚½‚è‚·‚é)
-	//		‚È‚¨Aˆê˜A‚ÌXV‚ÌÅŒã‚Ås‚Á‚Ä‚¢‚é‚Ì‚ÍAƒAƒjƒ[ƒVƒ‡ƒ“‚©‚ç‚ÌXV‚ğŠO•”‚Ås‚Á‚Ä‚¢‚é‚½‚ßB
-	// TODO: ‚Å‚«‚ê‚Îˆê˜A‚Ìˆ—‚Ì’†‚Å•K‚¸’Ê‚é‚Æ‚±‚ë‚ÉˆÚ“®‚µ‚½‚¢
+	// å…¨ã¦ã®ãƒ­ãƒ¼ã‚«ãƒ«ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ ã‚’ãƒªã‚»ãƒƒãƒˆã™ã‚‹
+	//		ãƒªã‚»ãƒƒãƒˆã—ã¦ãŠã‹ãªã„ã¨ã€IKã§å•é¡ŒãŒå‡ºã‚‹ã€‚
+	//		(IKã¯ãã®æ™‚ç‚¹ã®LocalTransformã«å¯¾ã—ã¦å‡¦ç†ã‚’è¡Œã†ãŸã‚ã€å›è»¢è§’åº¦ãŒã©ã‚“ã©ã‚“å¢—ãˆãŸã‚Šã™ã‚‹)
+	//		ãªãŠã€ä¸€é€£ã®æ›´æ–°ã®æœ€å¾Œã§è¡Œã£ã¦ã„ã‚‹ã®ã¯ã€ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‹ã‚‰ã®æ›´æ–°ã‚’å¤–éƒ¨ã§è¡Œã£ã¦ã„ã‚‹ãŸã‚ã€‚
+	// TODO: ã§ãã‚Œã°ä¸€é€£ã®å‡¦ç†ã®ä¸­ã§å¿…ãšé€šã‚‹ã¨ã“ã‚ã«ç§»å‹•ã—ãŸã„
 	for (SkinnedMeshBone* bone : m_allBoneList)
 	{
 		bone->ResetLocalTransform();
@@ -202,17 +199,15 @@ static void NormalizeEular(Vector3* eulers)
 }
 
 //------------------------------------------------------------------------------
-static void LimitIKRotation(const PmxIKResource::IKLink& ikLink, SkinnedMeshBone* ikLinkBone)
+static Quaternion LimitIKRotation(const PmxIKResource::IKLink& ikLink, const Quaternion& localRot)
 {
-	if (!ikLink.IsRotateLimit) return;
-
-	Quaternion& localRot = ikLinkBone->GetLocalTransformPtr()->rotation;
+	//if (!ikLink.IsRotateLimit) return;
 
 	RotationOrder type;
 	bool locked;
 	Vector3 euler;
 
-	type = RotationOrder::XYZ;
+	type = RotationOrder::ZXY;
 	euler = localRot.ToEulerAngles(type, &locked);
 	if (locked)
 	{
@@ -220,123 +215,560 @@ static void LimitIKRotation(const PmxIKResource::IKLink& ikLink, SkinnedMeshBone
 		euler = localRot.ToEulerAngles(type, &locked);
 		if (locked)
 		{
-			type = RotationOrder::ZXY;
+			type = RotationOrder::XYZ;
 			euler = localRot.ToEulerAngles(type, &locked);
 			if (locked)
 			{
-				LN_ASSERT(0);	// ‚ ‚è“¾‚È‚¢‚Í‚¸‚¾‚ªc
+				LN_CHECK_STATE(0);	// ã‚ã‚Šå¾—ãªã„ã¯ãšã ãŒâ€¦
 			}
 		}
 	}
 
-	// Šp“xC³
+	// è§’åº¦ä¿®æ­£
 	NormalizeEular(&euler);
 	euler.Clamp(ikLink.MinLimit, ikLink.MaxLimit);
 
-	// –ß‚·
+	// æˆ»ã™
 	Matrix rotMat = Matrix::MakeRotationEulerAngles(euler, type);
-	localRot = Quaternion::MakeFromRotationMatrix(rotMat);
+	return Quaternion::MakeFromRotationMatrix(rotMat);
 }
 
 //------------------------------------------------------------------------------
-void SkinnedMeshModel::SolveIK(PmxIKResource* ik)
+void SkinnedMeshModel::UpdateIK()
+{
+	for (PmxIKResource* ik : m_meshResource->iks)
+	{
+		UpdateIKInternal2(ik);
+		//SkinnedMeshBone* ikTarget = m_allBoneList[ik->IKTargetBoneIndex];
+		//ikTarget->m_ikLocalRotationMatrix = Matrix::MakeRotationQuaternion(ikTarget->m_userRotation);
+		//ikTarget->m_ikLocalMatrix =
+		//	Matrix::MakeTranslation(-ikTarget->m_localTransform.translation) *
+		//	ikTarget->m_ikLocalRotationMatrix *
+		//	Matrix::MakeTranslation(ikTarget->m_localTransform.translation);
+		//for (int i = 0; i < ik->LoopCount; ++i)
+		//{
+		//	UpdateIKInternal(ik, 0, i, ik->LoopCount / 2, 0);
+		//}
+	}
+}
+static float GetUpperLowerRadian(float fR, float lower, float upper, bool loopFlag)
+{
+	if (fR < lower)
+	{
+		float num = 2.0f * lower - fR;
+		if (num <= upper && loopFlag)
+		{
+			fR = num;
+		}
+		else
+		{
+			fR = lower;
+		}
+	}
+	if (fR > upper)
+	{
+		float num2 = 2.0f * upper - fR;
+		if (num2 >= lower && loopFlag)
+		{
+			fR = num2;
+		}
+		else
+		{
+			fR = upper;
+		}
+	}
+	return fR;
+}
+static void UpdateIKChildMatrix(SkinnedMeshBone* ikLinkBone, Matrix parentMatrix, Matrix parent_mat_normal, SkinnedMeshBone* endframe, SkinnedMeshBone* target)
+{
+
+	ikLinkBone->m_combinedMatrix = ikLinkBone->m_ikLocalMatrix * parentMatrix;
+	ikLinkBone->m_position = Vector3::TransformCoord(ikLinkBone->GetCore()->OrgPosition, ikLinkBone->m_combinedMatrix);
+	ikLinkBone->m_globalRotationMatrix = ikLinkBone->m_ikLocalRotationMatrix * parent_mat_normal;
+
+	if (ikLinkBone->GetCore()->Name == _T("å·¦è¶³é¦–"))
+	{
+		printf("");
+	}
+
+	for (SkinnedMeshBone* bone : ikLinkBone->m_children)
+	{
+		if (bone != endframe)
+		{
+			UpdateIKChildMatrix(bone, ikLinkBone->m_combinedMatrix, ikLinkBone->m_globalRotationMatrix, endframe, target);
+		}
+	}
+
+	//if (frame.Sibling != null && (frame.Sibling.Bone.BoneFlags & BoneType.IK_Child) > (BoneType)0 && (target.Bone.BoneFlags & BoneType.Unvisible) > (BoneType)0)
+	//{
+	//	this.UpdateIKChildMatrix(frame.Sibling, matrix, mat_normal, endframe, target);
+	//}
+	//if (ikLinkBone != endframe)
+	//{
+	//	//if (frame.Sibling != null)
+	//	//{
+	//	//	this.UpdateIKChildMatrix(frame.Sibling, matrix, mat_normal, endframe, target);
+	//	//}
+	//	if (frame.FirstChild != null)
+	//	{
+	//		
+	//	}
+	//}
+}
+//------------------------------------------------------------------------------
+void SkinnedMeshModel::UpdateIKInternal(PmxIKResource* ik, int linkIndex, int loop, int ikt, int depth)
 {
 	/*
-		[’ˆÓ] MMD‚ÌIK‚É‚ÍAIK‚ÌŒvZŒ‹‰Ê‚ÍIKŒn—ñ‚Ìqƒ{[ƒ“‚É‚Í“K—p‚³‚ê‚È‚¢‚Æ‚¢‚¤“Á’¥‚ª‚ ‚è‚Ü‚·B
+		[æ³¨æ„] MMDã®IKã«ã¯ã€IKã®è¨ˆç®—çµæœã¯IKç³»åˆ—ã®å­ãƒœãƒ¼ãƒ³ã«ã¯é©ç”¨ã•ã‚Œãªã„ã¨ã„ã†ç‰¹å¾´ãŒã‚ã‚Šã¾ã™ã€‚
 		http://ch.nicovideo.jp/penguin/blomaga/ar70894
 	*/
+	PmxIKResource::IKLink& ikLink = ik->IKLinks[linkIndex];
+	SkinnedMeshBone* ikLinkBone = m_allBoneList[ikLink.LinkBoneIndex];	// å‹•ã‹ã™ãƒœãƒ¼ãƒ³
+	SkinnedMeshBone* ikBone = m_allBoneList[ik->IKBoneIndex];			// IK ãƒœãƒ¼ãƒ³ (IK æƒ…å ±ã‚’æŒã¤ãƒœãƒ¼ãƒ³ã€‚ç›®æ¨™åœ°ç‚¹)
+	SkinnedMeshBone* effector = m_allBoneList[ik->IKTargetBoneIndex];	// IK ã‚¿ãƒ¼ã‚²ãƒƒãƒˆãƒœãƒ¼ãƒ³ (ã‚¨ãƒ•ã‚§ã‚¯ã‚¿ã€‚IKã«å‘ãã¹ããƒœãƒ¼ãƒ³ãŸã¡ã®ä¸­ã®å…ˆé ­ãƒœãƒ¼ãƒ³)
 
+	// â†“ã“ã‚Œã‚‰ã® Position ã¯ã‚°ãƒ­ãƒ¼ãƒãƒ«ç©ºé–“
+	Vector3 vector = Vector3::SafeNormalize(ikLinkBone->GetPosition() - effector->GetPosition());
+	Vector3 vector2 = Vector3::SafeNormalize(ikLinkBone->GetPosition() - ikBone->GetPosition());
+	Vector3 rotationAxis = Vector3::SafeNormalize(Vector3::Cross(vector, vector2));
+
+	const Matrix& matNormal = ikLinkBone->m_globalRotationMatrix;
+	float restrictRadian = ik->IKRotateLimit;
+
+	// IKLink ã«ã¤ã„ã¦ã„ã‚‹è§’åº¦åˆ¶é™ã‚’ã€€rotationAxis ã«ã»ã©ã“ã™
+	if (ikLink.IsRotateLimit && loop < ikt)
+	{
+		const Matrix& parentMatNormal = ikLinkBone->GetParent()->m_globalRotationMatrix;
+
+		if (ikLink.MinLimit.y == 0.0f && ikLink.MaxLimit.y == 0.0f && ikLink.MinLimit.z == 0.0f && ikLink.MaxLimit.z == 0.0f)
+		{
+			// parentMatNormal ã®å³æ–¹å‘ã¨ä¹—ç®—
+			float num = rotationAxis.x * parentMatNormal.m11 + rotationAxis.y * parentMatNormal.m12 + rotationAxis.z * parentMatNormal.m13;
+			if (num >= 0.0f)
+			{
+				rotationAxis.x = 1.0f;
+			}
+			else
+			{
+				rotationAxis.x = -1.0f;
+			}
+			rotationAxis.y = 0.0f;
+			rotationAxis.z = 0.0f;
+		}
+		else
+		{
+			// parentMatNormal ã®ä¸Šæ–¹å‘ã¨ä¹—ç®—
+			if (ikLink.MinLimit.x == 0.0f && ikLink.MaxLimit.x == 0.0f && ikLink.MinLimit.z == 0.0f && ikLink.MaxLimit.z == 0.0f)
+			{
+				float num2 = rotationAxis.x * parentMatNormal.m21 + rotationAxis.y * parentMatNormal.m22 + rotationAxis.z * parentMatNormal.m23;
+				if (num2 >= 0.0f)
+				{
+					rotationAxis.y = 1.0f;
+				}
+				else
+				{
+					rotationAxis.y = -1.0f;
+				}
+				rotationAxis.x = 0.0f;
+				rotationAxis.z = 0.0f;
+			}
+			else
+			{
+				if (ikLink.MinLimit.x == 0.0f && ikLink.MaxLimit.x == 0.0f && ikLink.MinLimit.y == 0.0f && ikLink.MaxLimit.y == 0.0f)
+				{
+					// parentMatNormal ã®å‰æ–¹å‘ã¨ä¹—ç®—
+					float num3 = rotationAxis.x * parentMatNormal.m31 + rotationAxis.y * parentMatNormal.m32 + rotationAxis.z * parentMatNormal.m33;
+					if (num3 >= 0.0f)
+					{
+						rotationAxis.z = 1.0f;
+					}
+					else
+					{
+						rotationAxis.z = -1.0f;
+					}
+					rotationAxis.x = 0.0f;
+					rotationAxis.y = 0.0f;
+				}
+				else
+				{
+					// å›è»¢ã®ã¿ã®åº§æ¨™è¿”é‚„
+					Vector3 v;
+					v.x = rotationAxis.x * matNormal.m11 + rotationAxis.y * matNormal.m12 + rotationAxis.z * matNormal.m13;
+					v.y = rotationAxis.x * matNormal.m21 + rotationAxis.y * matNormal.m22 + rotationAxis.z * matNormal.m23;
+					v.z = rotationAxis.x * matNormal.m31 + rotationAxis.y * matNormal.m32 + rotationAxis.z * matNormal.m33;
+					rotationAxis = Vector3::SafeNormalize(v);
+				}
+			}
+		}
+	}
+	// è§’åº¦åˆ¶é™ã—ãªã„å ´åˆ
+	else
+	{
+		// å›è»¢ã®ã¿ã®åº§æ¨™è¿”é‚„
+		Vector3 v;
+		v.x = rotationAxis.x * matNormal.m11 + rotationAxis.y * matNormal.m12 + rotationAxis.z * matNormal.m13;
+		v.y = rotationAxis.x * matNormal.m21 + rotationAxis.y * matNormal.m22 + rotationAxis.z * matNormal.m23;
+		v.z = rotationAxis.x * matNormal.m31 + rotationAxis.y * matNormal.m32 + rotationAxis.z * matNormal.m33;
+		rotationAxis = Vector3::SafeNormalize(v);
+	}
+
+	// å›è»¢è§’
+	float num4 = Vector3::Dot(vector, vector2);
+	if (num4 > 1.0f)
+	{
+		num4 = 1.0f;
+	}
+	else
+	{
+		if (num4 < -1.0f)
+		{
+			num4 = -1.0f;
+		}
+	}
+	num4 = acosf(num4);
+	if (num4 > restrictRadian * (float)(depth + 1))
+	{
+		num4 = restrictRadian * (float)(depth + 1);
+	}
+
+	Quaternion tq = Quaternion::Identity;
+	if (rotationAxis != Vector3::Zero) tq = Quaternion::MakeFromRotationAxis(rotationAxis, num4);
+	ikLinkBone->m_ikQuaternion = tq * ikLinkBone->m_ikQuaternion;
+	if (loop == 0)
+	{
+		ikLinkBone->m_ikQuaternion *= ikLinkBone->m_userRotation;// *ikLinkBone->m_inherehRotation * ikLinkBone->m_morphRotation;
+	}
+	Matrix matrix = Matrix::MakeRotationQuaternion(ikLinkBone->m_ikQuaternion);
+
+	// â†“è§’åº¦åˆ¶é™ã€‚matrix ã¨ ikLinkBone->m_ikQuaternion ã«çµæœã‚’è¨­å®šã™ã‚‹
+	// m_ikQuaternion ã¯å‰å›å€¤ã¨ã—ã¦ä¿æŒã—ã¦ã„ã‚‹ã€‚
+	if (ikLink.IsRotateLimit)
+	{
+		if ((double)ikLink.MinLimit.x > -1.5707963267948966 && (double)ikLink.MaxLimit.x < 1.5707963267948966)
+		{
+			float num5 = -matrix.m32;
+			float num6 = asinf(num5);
+			if (abs(num6) > 1.535889f)
+			{
+				if (num6 < 0.0f)
+				{
+					num6 = -1.535889f;
+				}
+				else
+				{
+					num6 = 1.535889f;
+				}
+			}
+			float num7 = cosf(num6);
+			float num8 = matrix.m31 / num7;
+			float num9 = matrix.m33 / num7;
+			float num10 = atan2f(num8, num9);
+			float num11 = matrix.m12 / num7;
+			float num12 = matrix.m22 / num7;
+			float num13 = atan2f(num11, num12);
+			bool loopFlag = loop < ikt;
+			num6 = GetUpperLowerRadian(num6, ikLink.MinLimit.x, ikLink.MaxLimit.x, loopFlag);
+			num10 = GetUpperLowerRadian(num10, ikLink.MinLimit.y, ikLink.MaxLimit.y, loopFlag);
+			num13 = GetUpperLowerRadian(num13, ikLink.MinLimit.z, ikLink.MaxLimit.z, loopFlag);
+			matrix = Matrix::MakeRotationZ(num13) * Matrix::MakeRotationX(num6) * Matrix::MakeRotationY(num10);
+		}
+		else
+		{
+			if ((double)ikLink.MinLimit.y > -1.5707963267948966 && (double)ikLink.MaxLimit.y < 1.5707963267948966)
+			{
+				float num14 = -matrix.m13;
+				float num15 = (float)asinf((double)num14);
+				if (abs(num15) > 1.535889f)
+				{
+					if (num15 < 0.0f)
+					{
+						num15 = -1.535889f;
+					}
+					else
+					{
+						num15 = 1.535889f;
+					}
+				}
+				float num16 = (float)cosf((double)num15);
+				float num17 = matrix.m23 / num16;
+				float num18 = matrix.m33 / num16;
+				float num19 = (float)atan2f((double)num17, (double)num18);
+				float num20 = matrix.m12 / num16;
+				float num21 = matrix.m11 / num16;
+				float num22 = (float)atan2f((double)num20, (double)num21);
+				bool loopFlag2 = loop < ikt;
+				num19 = GetUpperLowerRadian(num19, ikLink.MinLimit.x, ikLink.MaxLimit.x, loopFlag2);
+				num15 = GetUpperLowerRadian(num15, ikLink.MinLimit.y, ikLink.MaxLimit.y, loopFlag2);
+				num22 = GetUpperLowerRadian(num22, ikLink.MinLimit.z, ikLink.MaxLimit.z, loopFlag2);
+				matrix = Matrix::MakeRotationX(num19) * Matrix::MakeRotationY(num15) * Matrix::MakeRotationZ(num22);
+			}
+			else
+			{
+				float num23 = -matrix.m21;
+				float num24 = (float)asinf((double)num23);
+				if (abs(num24) > 1.535889f)
+				{
+					if (num24 < 0.0f)
+					{
+						num24 = -1.535889f;
+					}
+					else
+					{
+						num24 = 1.535889f;
+					}
+				}
+				float num25 = (float)cosf((double)num24);
+				float num26 = matrix.m23 / num25;
+				float num27 = matrix.m22 / num25;
+				float num28 = (float)atan2f((double)num26, (double)num27);
+				float num29 = matrix.m31 / num25;
+				float num30 = matrix.m11 / num25;
+				float num31 = (float)atan2f((double)num29, (double)num30);
+				bool loopFlag3 = loop < ikt;
+				num28 = GetUpperLowerRadian(num28, ikLink.MinLimit.x, ikLink.MaxLimit.x, loopFlag3);
+				num31 = GetUpperLowerRadian(num31, ikLink.MinLimit.y, ikLink.MaxLimit.y, loopFlag3);
+				num24 = GetUpperLowerRadian(num24, ikLink.MinLimit.z, ikLink.MaxLimit.z, loopFlag3);
+				matrix = Matrix::MakeRotationY(num31) * Matrix::MakeRotationZ(num24) * Matrix::MakeRotationX(num28);
+			}
+		}
+		ikLinkBone->m_ikQuaternion = Quaternion::MakeFromRotationMatrix(matrix);
+	}
+
+	
+
+	ikLinkBone->m_ikLocalRotationMatrix = matrix;
+	ikLinkBone->m_ikLocalMatrix = Matrix::MakeTranslation(-ikLinkBone->m_localTransform.translation) * matrix * Matrix::MakeTranslation(ikLinkBone->m_localTransform.translation);
+	ikLinkBone->m_combinedMatrix = ikLinkBone->m_ikLocalMatrix * ikLinkBone->GetParent()->GetCombinedMatrix();  // ã“ã‚ŒãŒæœ€çµ‚å‡ºåŠ›
+	ikLinkBone->m_position = Vector3::TransformCoord(ikLinkBone->GetCore()->OrgPosition, ikLinkBone->m_combinedMatrix);
+	ikLinkBone->m_globalRotationMatrix = ikLinkBone->m_ikLocalRotationMatrix *  ikLinkBone->GetParent()->m_globalRotationMatrix;
+	
+	if (ikLinkBone->GetCore()->Name == _T("å·¦è¶³é¦–"))
+	{
+		printf("");
+	}
+
+
+	for (int i = 0; i < ikLinkBone->m_children.GetCount(); ++i)
+	{
+		UpdateIKChildMatrix(ikLinkBone->m_children[i], ikLinkBone->m_combinedMatrix, ikLinkBone->m_globalRotationMatrix, effector, ikBone);
+	}
+	if (linkIndex < ik->IKLinks.GetCount() - 1)
+	{
+		linkIndex++;
+		UpdateIKInternal(ik, linkIndex, loop, ikt, depth + 1);
+	}
+
+}
+
+void SkinnedMeshModel::UpdateIKInternal2(PmxIKResource* ik)
+{
 	//ModelFrame2* effector = mOwnerModel->getFrame( ikTargetBone->getFrameCore()->IKTargetBoneIndex );
 
-	// IK\¬ƒ{[ƒ“‚ÌƒOƒ[ƒoƒ‹s—ñ‚ğÄXV‚·‚é
-	//for ( short jk = ik->IKLinks.size() - 1 ; jk >= 0 ; --jk)
-	//{
-	//	mOwnerModel->getFrame(ik->IKLinks[jk].LinkBoneIndex)->updateGlobalMatrix(false);
-	//	//frames[mIKCore->IKBoneIndexArray[j]].updateGlobalMatrix( false );
-	//}
-	//effector->updateGlobalMatrix( true );
+	
 
+	SkinnedMeshBone* ikBone = m_allBoneList[ik->IKBoneIndex];			// IK ãƒœãƒ¼ãƒ³ (IK æƒ…å ±ã‚’æŒã¤ãƒœãƒ¼ãƒ³ã€‚ç›®æ¨™åœ°ç‚¹)
+	SkinnedMeshBone* effector = m_allBoneList[ik->IKTargetBoneIndex];	// IK ã‚¿ãƒ¼ã‚²ãƒƒãƒˆãƒœãƒ¼ãƒ³ (ã‚¨ãƒ•ã‚§ã‚¯ã‚¿ã€‚IKã«å‘ãã¹ããƒœãƒ¼ãƒ³ãŸã¡ã®ä¸­ã®å…ˆé ­ãƒœãƒ¼ãƒ³)
+	int ikt = ik->LoopCount / 2;
 
-	//ModelFrameCore* frameCore = ikTargetBone->getFrameCore();
-
-	SkinnedMeshBone* ikBone = m_allBoneList[ik->IKBoneIndex];			// IK ƒ{[ƒ“ (IK î•ñ‚ğ‚Âƒ{[ƒ“B–Ú•W’n“_)
-	SkinnedMeshBone* effector = m_allBoneList[ik->IKTargetBoneIndex];	// IK ƒ^[ƒQƒbƒgƒ{[ƒ“ (ƒGƒtƒFƒNƒ^BIK‚ÉŒü‚­‚×‚«ƒ{[ƒ“‚½‚¿‚Ì’†‚Ìæ“ªƒ{[ƒ“)
-
-	for (int i = 0; i < ik->LoopCount; ++i)
+	// IKæ§‹æˆãƒœãƒ¼ãƒ³ã®ã‚°ãƒ­ãƒ¼ãƒãƒ«è¡Œåˆ—ã‚’å†æ›´æ–°ã™ã‚‹
+	for (short jk = ik->IKLinks.GetCount() - 1; jk >= 0; --jk)
 	{
-		// IKƒ{[ƒ“‚ÌƒOƒ[ƒoƒ‹ˆÊ’u
+		m_allBoneList[ik->IKLinks[jk].LinkBoneIndex]->UpdateGlobalTransform(false);
+	}
+	effector->UpdateGlobalTransform(false);
+
+	if (effector->m_combinedMatrix.GetPosition().y > 10)
+	{
+		effector->m_combinedMatrix.GetPosition().Print();
+	}
+
+	for (int iCalc = 0; iCalc < ik->LoopCount; iCalc++)
+	{
+		// IKãƒœãƒ¼ãƒ³ã®ã‚°ãƒ­ãƒ¼ãƒãƒ«ä½ç½®
 		const Vector3& targetPos = ikBone->GetCombinedMatrix().GetPosition();
 
 		for (int iLink = 0; iLink < ik->IKLinks.GetCount(); ++iLink)
 		{
-			// “®‚©‚·ƒ{[ƒ“
+			// å‹•ã‹ã™ãƒœãƒ¼ãƒ³
 			PmxIKResource::IKLink& ikLink = ik->IKLinks[iLink];
 			SkinnedMeshBone* ikLinkBone = m_allBoneList[ikLink.LinkBoneIndex];
 
-			// ƒGƒtƒFƒNƒ^‚ÌˆÊ’u
+			// ã‚¨ãƒ•ã‚§ã‚¯ã‚¿ã®ä½ç½®
 			const Vector3& effPos = effector->GetCombinedMatrix().GetPosition();
+			//effPos.Print();
+			//targetPos.Print();
 
-			// ƒ[ƒ‹ƒhÀ•WŒn‚©‚ç’–Úƒm[ƒh‚Ì‹ÇŠÀ•WŒn‚Ö‚Ì•ÏŠ·
-			// (IKƒŠƒ“ƒNŠî€‚Ìƒ[ƒJƒ‹À•WŒn‚Ö•ÏŠ·‚·‚és—ñ)
+			// ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ç³»ã‹ã‚‰æ³¨ç›®ãƒãƒ¼ãƒ‰ã®å±€æ‰€åº§æ¨™ç³»ã¸ã®å¤‰æ›
+			// (IKãƒªãƒ³ã‚¯åŸºæº–ã®ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™ç³»ã¸å¤‰æ›ã™ã‚‹è¡Œåˆ—)
 			Matrix invCoord = Matrix::MakeInverse(ikLinkBone->GetCombinedMatrix());
-			
-			// ŠeƒxƒNƒgƒ‹‚ÌÀ•W•ÏŠ·‚ğs‚¢AŒŸõ’†‚Ìƒ{[ƒ“iŠî€‚ÌÀ•WŒn‚É‚·‚é
-			// (1) ’–Úƒm[ƒh¨ƒGƒtƒFƒNƒ^ˆÊ’u‚Ö‚ÌƒxƒNƒgƒ‹(a)(’–Úƒm[ƒh)
+
+			// å„ãƒ™ã‚¯ãƒˆãƒ«ã®åº§æ¨™å¤‰æ›ã‚’è¡Œã„ã€æ¤œç´¢ä¸­ã®ãƒœãƒ¼ãƒ³iåŸºæº–ã®åº§æ¨™ç³»ã«ã™ã‚‹
+			// (1) æ³¨ç›®ãƒãƒ¼ãƒ‰â†’ã‚¨ãƒ•ã‚§ã‚¯ã‚¿ä½ç½®ã¸ã®ãƒ™ã‚¯ãƒˆãƒ«(a)(æ³¨ç›®ãƒãƒ¼ãƒ‰)
 			Vector3 localEffPos = Vector3::TransformCoord(effPos, invCoord);
 
-			// (2) Šî€ŠÖßi¨–Ú•WˆÊ’u‚Ö‚ÌƒxƒNƒgƒ‹(b)(ƒ{[ƒ“iŠî€À•WŒn)
+			// (2) åŸºæº–é–¢ç¯€iâ†’ç›®æ¨™ä½ç½®ã¸ã®ãƒ™ã‚¯ãƒˆãƒ«(b)(ãƒœãƒ¼ãƒ³iåŸºæº–åº§æ¨™ç³»)
 			Vector3 localTargetPos = Vector3::TransformCoord(targetPos, invCoord);
 
-			// (1) Šî€ŠÖß¨ƒGƒtƒFƒNƒ^ˆÊ’u‚Ö‚Ì•ûŒüƒxƒNƒgƒ‹
-			localEffPos.Normalize();
-			// (2) Šî€ŠÖß¨–Ú•WˆÊ’u‚Ö‚Ì•ûŒüƒxƒNƒgƒ‹
-			localTargetPos.Normalize();
+			// ååˆ†è¿‘ã‘ã‚Œã°çµ‚äº†
+			if ((localEffPos - localTargetPos).GetLengthSquared() < 0.0000001f) return;
 
-			// ‰ñ“]Šp
-			float rotationDotProduct = Vector3::Dot(localEffPos, localTargetPos);
-			if (rotationDotProduct > 1.f) rotationDotProduct = 1.f;
+			// (1) åŸºæº–é–¢ç¯€â†’ã‚¨ãƒ•ã‚§ã‚¯ã‚¿ä½ç½®ã¸ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
+			Vector3 localEffDir = Vector3::SafeNormalize(localEffPos);
+			// (2) åŸºæº–é–¢ç¯€â†’ç›®æ¨™ä½ç½®ã¸ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
+			Vector3 localTargetDir = Vector3::SafeNormalize(localTargetPos);
+
+			//if (ikLinkBone->GetCore()->Name.Contains(_T("ã²ã–")))
+			//{
+			//	// X è»¸ã‚’åˆ‡ã‚‹ (MikuMikuPenguin ã‹ã‚‰å‚è€ƒã«ã—ãŸ)
+			//	localEffDir.Set(0, localEffDir.y, localEffDir.z);
+			//	localEffDir.Normalize();
+			//	localTargetDir.Set(0, localTargetDir.y, localTargetDir.z);
+			//	localTargetDir.Normalize();
+			//}
+
+
+
+
+			// å›è»¢è§’
+			float rotationDotProduct = Vector3::Dot(localEffDir, localTargetDir);
+			rotationDotProduct = Math::Clamp(rotationDotProduct, -1.0f, 1.0f);
 			float rotationAngle = acosf(rotationDotProduct);
 
+			if (0.00000001f < fabsf(rotationAngle))
+			{
+				// å›è»¢é‡åˆ¶é™ã‚’ã‹ã‘ã‚‹
+				if (rotationAngle > ik->IKRotateLimit /16)
+				{
+					rotationAngle = ik->IKRotateLimit / 16;
+				}
+				//if (rotationAngle > ik->IKRotateLimit / 8)
+				//	rotationAngle = ik->IKRotateLimit / 8;
+				//if (rotationAngle < -ik->IKRotateLimit / 8)
+				//	rotationAngle = -ik->IKRotateLimit / 8;
+
+				// å›è»¢è»¸
+				Vector3 rotationAxis = Vector3::Cross(localEffDir, localTargetDir);
+				if (rotationAxis.GetLengthSquared() < 0.0000001f) continue;
+				rotationAxis.Normalize();
+
+				// é–¢ç¯€å›è»¢é‡ã®è£œæ­£
+				Quaternion rotQuat(rotationAxis, rotationAngle);
+
+
+				if (ikLink.IsRotateLimit)
+				{
+					//Vector3 angles = rotQuat.ToEulerAngles();
+
+					//if (angles.x < -3.14159f)	angles.x = -3.14159f;
+					//if (-0.002f < angles.x)		angles.x = -0.002f;
+					//angles.y = 0.0f;
+					//angles.z = 0.0f;
+
+					//rotQuat = Quaternion::MakeFromEulerAngles(angles);
+					rotQuat = LimitIKRotation(ikLink, rotQuat);
+				}
+
+				rotQuat.Normalize();
+
+
+				ikLinkBone->GetLocalTransformPtr()->rotation = Quaternion::Multiply(ikLinkBone->GetLocalTransformPtr()->rotation, rotQuat);
+				ikLinkBone->GetLocalTransformPtr()->rotation.Normalize();
+
+
+
+
+				for (short jk = ik->IKLinks.GetCount() - 1; jk >= 0; --jk)
+				{
+					m_allBoneList[ik->IKLinks[jk].LinkBoneIndex]->UpdateGlobalTransform(false);
+				}
+				effector->UpdateGlobalTransform(true);
+
+				if (effector->m_combinedMatrix.GetPosition().y > 10)
+				{
+					effector->m_combinedMatrix.GetPosition().Print();
+				}
+
+				if (ikLinkBone->GetCore()->Name == _T("å·¦è¶³é¦–") && ikLinkBone->m_combinedMatrix.GetPosition().y > 10)
+				{
+					ikLinkBone->m_combinedMatrix.GetPosition().Print();
+				}
+
+			}
 #if 0
-			//‰ñ“]—Ê§ŒÀ‚ğ‚©‚¯‚é
+#if 0
+			//å›è»¢é‡åˆ¶é™ã‚’ã‹ã‘ã‚‹
 			if (rotationAngle > Math::PI * ik->IKRotateLimit * (iLink + 1))
 				rotationAngle = Math::PI * ik->IKRotateLimit * (iLink + 1);
 			if (rotationAngle < -Math::PI * ik->IKRotateLimit * (iLink + 1))
 				rotationAngle = -Math::PI * ik->IKRotateLimit * (iLink + 1);
 
 #else
-			//‰ñ“]—Ê§ŒÀ‚ğ‚©‚¯‚é
-			if (rotationAngle > ik->IKRotateLimit)
-				rotationAngle = ik->IKRotateLimit;
-			if (rotationAngle < -ik->IKRotateLimit)
-				rotationAngle = -ik->IKRotateLimit;
+			//å›è»¢é‡åˆ¶é™ã‚’ã‹ã‘ã‚‹
+			//if (rotationAngle > ik->IKRotateLimit)
+			//	rotationAngle = ik->IKRotateLimit;
+			//if (rotationAngle < -ik->IKRotateLimit)
+			//	rotationAngle = -ik->IKRotateLimit;
 #endif
 
-			// ‰ñ“]²
-			Vector3 rotationAxis = Vector3::Cross(localEffPos, localTargetPos);
-			
-			//if (frame->getFrameCore()->IKLimitter)
-			//	frame->getFrameCore()->IKLimitter->adjustAxisLimits( &rotationAxis );
-			rotationAxis.Normalize();
+			// å›è»¢è»¸
+			Vector3 rotationAxis = Vector3::SafeNormalize(Vector3::Cross(localEffDir, localTargetDir));
+
+			//if (ikLink.IsRotateLimit && iCalc < ikt)
+			//{
+			//	const Matrix& parentMatNormal = ikLinkBone->GetParent()->m_globalRotationMatrix;
+
+			//	if (ikLink.MinLimit.y == 0.0f && ikLink.MaxLimit.y == 0.0f && ikLink.MinLimit.z == 0.0f && ikLink.MaxLimit.z == 0.0f)
+			//	{
+			//		rotationAxis.Set((rotationAxis.x >= 0.0f) ? 1.0f : -1.0f, 0.0f, 0.0f);
+			//	}
+			//	else
+			//	{
+			//		if (ikLink.MinLimit.x == 0.0f && ikLink.MaxLimit.x == 0.0f && ikLink.MinLimit.z == 0.0f && ikLink.MaxLimit.z == 0.0f)
+			//		{
+			//			rotationAxis.Set(0.0f, (rotationAxis.y >= 0.0f) ? 1.0f : -1.0f, 0.0f);
+			//		}
+			//		else
+			//		{
+			//			if (ikLink.MinLimit.x == 0.0f && ikLink.MaxLimit.x == 0.0f && ikLink.MinLimit.y == 0.0f && ikLink.MaxLimit.y == 0.0f)
+			//			{
+			//				rotationAxis.Set(0.0f, 0.0f, (rotationAxis.z >= 0.0f) ? 1.0f : -1.0f);
+			//			}
+			//		}
+			//	}
+			//}
+			//
+
+
 
 
 			if (!Math::IsNaN(rotationAngle) && rotationAngle > 1.0e-3f && !rotationAxis.IsNaNOrInf())
 			{
-				// ŠÖß‰ñ“]—Ê‚Ì•â³
+				// é–¢ç¯€å›è»¢é‡ã®è£œæ­£
 				Quaternion rotQuat(rotationAxis, rotationAngle);
 				ikLinkBone->GetLocalTransformPtr()->rotation = Quaternion::Multiply(ikLinkBone->GetLocalTransformPtr()->rotation, rotQuat);
 
-				// ‰ñ“]§ŒÀ
-				LimitIKRotation(ikLink, ikLinkBone);
+				// å›è»¢åˆ¶é™
+				//LimitIKRotation(ikLink, ikLinkBone);
 
-				// ––’[‚Ì‚Ù‚¤‚©‚çAIK\¬ƒ{[ƒ“‚ÌƒOƒ[ƒoƒ‹s—ñ‚ğÄXV‚·‚é
-				// TODO: IKLinks ‚Ì‡”Ô‚Í•t‚¯ª¨––’[‚Ö‚ğ‘O’ñ‚É‚µ‚Ä‚¢‚éB”O‚Ì‚½‚ß–‘Oƒ`ƒFƒbƒN‚µ‚½‚Ù‚¤‚ª‚¢‚¢‚©‚à
+				// æœ«ç«¯ã®ã»ã†ã‹ã‚‰ã€IKæ§‹æˆãƒœãƒ¼ãƒ³ã®ã‚°ãƒ­ãƒ¼ãƒãƒ«è¡Œåˆ—ã‚’å†æ›´æ–°ã™ã‚‹
+				// TODO: IKLinks ã®é †ç•ªã¯ä»˜ã‘æ ¹â†’æœ«ç«¯ã¸ã‚’å‰æã«ã—ã¦ã„ã‚‹ã€‚å¿µã®ãŸã‚äº‹å‰ãƒã‚§ãƒƒã‚¯ã—ãŸã»ã†ãŒã„ã„ã‹ã‚‚
 				for (short jk = ik->IKLinks.GetCount() - 1; jk >= 0; --jk)
 				{
 					m_allBoneList[ik->IKLinks[jk].LinkBoneIndex]->UpdateGlobalTransform(false);
 				}
 				effector->UpdateGlobalTransform(true);
+
+				if (effector->m_combinedMatrix.GetPosition().y > 10)
+				{
+					effector->m_combinedMatrix.GetPosition().Print();
+				}
+
+				if (ikLinkBone->GetCore()->Name == _T("å·¦è¶³é¦–") && ikLinkBone->m_combinedMatrix.GetPosition().y > 10)
+				{
+					ikLinkBone->m_combinedMatrix.GetPosition().Print();
+				}
 			}
+#endif
 		}
 	}
 }
@@ -397,20 +829,26 @@ void SkinnedMeshBone::AddChildBone(SkinnedMeshBone* bone)
 //------------------------------------------------------------------------------
 void SkinnedMeshBone::UpdateGlobalTransform(bool hierarchical)
 {
-	// m_localTransform ‚ÍAƒ{[ƒ“‚Ìƒ[ƒJƒ‹p¨‚ÅƒAƒjƒ[ƒVƒ‡ƒ“‚ª“K—p‚³‚ê‚Ä‚¢‚éB
-	// “K—p‚³‚ê‚Ä‚¢‚È‚¯‚ê‚Î IdentityB
+	// m_localTransform ã¯ã€ãƒœãƒ¼ãƒ³ã®ãƒ­ãƒ¼ã‚«ãƒ«å§¿å‹¢ã§ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãŒé©ç”¨ã•ã‚Œã¦ã„ã‚‹ã€‚
+	// é©ç”¨ã•ã‚Œã¦ã„ãªã‘ã‚Œã° Identityã€‚
 	m_combinedMatrix = m_localTransform;
 
-	// e‚©‚ç‚Ì•½sˆÚ“®—Ê
+	// è¦ªã‹ã‚‰ã®å¹³è¡Œç§»å‹•é‡
 	m_combinedMatrix.Translate(m_core->GetOffsetFromParent());
 
-	// es—ñ‚ÆŒ‹‡
+	// è¦ªè¡Œåˆ—ã¨çµåˆ
+	Matrix parentRotation;
 	if (m_parent != nullptr)
 	{
 		m_combinedMatrix *= m_parent->GetCombinedMatrix();
 	}
 
-	// qƒ{[ƒ“XV
+	if (m_combinedMatrix.IsNaNOrInf())
+	{
+		printf("");
+	}
+
+	// å­ãƒœãƒ¼ãƒ³æ›´æ–°
 	if (hierarchical)
 	{
 		for (SkinnedMeshBone* bone : m_children)
@@ -418,6 +856,13 @@ void SkinnedMeshBone::UpdateGlobalTransform(bool hierarchical)
 			bone->UpdateGlobalTransform(hierarchical);
 		}
 	}
+
+	m_position = Vector3::TransformCoord(GetCore()->OrgPosition, m_combinedMatrix);
+	m_userRotation = m_localTransform.rotation;
+	Matrix matrix2 = Matrix::MakeRotationQuaternion(/*m_morphRotation * */m_userRotation/* * m_inherehRotation*/);
+	m_globalRotationMatrix = matrix2 * parentRotation;
+	m_ikLocalRotationMatrix = Matrix::Identity;
+	m_ikQuaternion = Quaternion::Identity;
 }
 
 //------------------------------------------------------------------------------

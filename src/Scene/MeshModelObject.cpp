@@ -52,6 +52,8 @@ void SkinnedMesh::Initialize(SceneGraph* ownerSceneGraph, SkinnedMeshModel* mesh
 
 	ownerSceneGraph->GetManager()->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
 	SetAutoRemove(true);
+
+
 }
 
 //------------------------------------------------------------------------------
@@ -63,7 +65,13 @@ SkinnedMeshModel* SkinnedMesh::GetSkinnedMeshModel() const
 //------------------------------------------------------------------------------
 void SkinnedMesh::OnUpdateFrame(float elapsedTime)
 {
-	m_meshModel->GetAnimator()->AdvanceTime((double)elapsedTime * 30);
+	m_meshModel->GetAnimator()->AdvanceTime(elapsedTime * 30);
+	//static bool init = false;
+	//if (!init)
+	//{
+	//	m_meshModel->GetAnimator()->AdvanceTime(808.11);
+	//	init = true;
+	//}
 	m_meshModel->PreUpdate();
 	m_meshModel->PostUpdate();
 }

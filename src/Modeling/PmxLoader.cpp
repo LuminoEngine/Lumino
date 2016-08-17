@@ -500,7 +500,7 @@ void PmxLoader::LoadBones(BinaryReader* reader)
 			ik->IKBoneIndex = i;							// 現在処理中のボーン番号
 			ik->IKTargetBoneIndex = (int)reader->ReadInt(getBoneIndexSize());
 			ik->LoopCount = reader->ReadInt32();
-			ik->IKRotateLimit = reader->ReadFloat();
+			ik->IKRotateLimit = reader->ReadFloat()/* * 4*/;
 
 			int ikLinkCount = reader->ReadInt32();
 			for (int i = 0; i < ikLinkCount; i++)
