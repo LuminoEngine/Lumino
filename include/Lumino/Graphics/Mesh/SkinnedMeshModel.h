@@ -8,6 +8,7 @@ LN_NAMESPACE_BEGIN
 class Animator;
 class PmxSkinnedMeshResource;	// TODO: 抽象化したい
 class PmxBoneResource;			// TODO: 抽象化したい
+class PmxIKResource;
 class SkinnedMeshModel;
 class SkinnedMeshBone;
 using SkinnedMeshModelPtr = RefPtr<SkinnedMeshModel>;
@@ -36,6 +37,11 @@ LN_INTERNAL_ACCESS:
 	virtual ~SkinnedMeshModel();
 	void Initialize(GraphicsManager* manager, PmxSkinnedMeshResource* sharingMesh);
 
+	void PreUpdate();
+
+	void PostUpdate();
+
+
 
 	// ボーン行列を、ルートボーンから階層的に更新する
 	// (アニメーション適用後に呼び出す)
@@ -58,6 +64,8 @@ LN_INTERNAL_ACCESS:
 
 	// サブセット描画
 	//void DrawSubset(int subsetIndex);
+
+	void SolveIK(PmxIKResource* ikInfo);
 
 LN_INTERNAL_ACCESS:	// TODO:
 	RefPtr<PmxSkinnedMeshResource>	m_meshResource;
@@ -89,16 +97,18 @@ LN_INTERNAL_ACCESS:
 	PmxBoneResource* GetCore() const;
 
 	// 子ボーンの追加
-	void AddChildBone(SkinnedMeshBone* bone) { m_children.Add(bone); }
+	void AddChildBone(SkinnedMeshBone* bone);
 
 	// ボーン行列を階層的に更新する
-	void UpdateTransformHierarchy(const Matrix& parentMatrix);
+	void UpdateGlobalTransform(bool hierarchical);
 
 	//  結合済み行列 (モデル内のグローバル行列) の取得
 	const Matrix& GetCombinedMatrix() const { return m_combinedMatrix; }
 
 	// ローカル行列を初期値に戻す
 	void ResetLocalTransform() { m_localTransform = SQTTransform::Identity; }
+
+	SQTTransform* GetLocalTransformPtr() { return &m_localTransform; }
 
 protected:
 	// IAnimationTargetAttribute interface
@@ -107,6 +117,7 @@ protected:
 
 private:
 	RefPtr<PmxBoneResource>	m_core;				// 共有データクラス
+	SkinnedMeshBone*		m_parent;
 	Array<SkinnedMeshBone*>	m_children;			// 子ボーンリスト
 	SQTTransform			m_localTransform;	// モーションを書き込むのはここ
 	Matrix					m_combinedMatrix;	// 結合済み行列 (モデル内のグローバル行列)

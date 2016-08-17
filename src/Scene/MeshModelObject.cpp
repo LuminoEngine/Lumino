@@ -64,8 +64,8 @@ SkinnedMeshModel* SkinnedMesh::GetSkinnedMeshModel() const
 void SkinnedMesh::OnUpdateFrame(float elapsedTime)
 {
 	m_meshModel->GetAnimator()->AdvanceTime((double)elapsedTime * 30);
-	m_meshModel->UpdateBoneTransformHierarchy();
-	m_meshModel->UpdateSkinningMatrices();
+	m_meshModel->PreUpdate();
+	m_meshModel->PostUpdate();
 }
 
 //------------------------------------------------------------------------------
