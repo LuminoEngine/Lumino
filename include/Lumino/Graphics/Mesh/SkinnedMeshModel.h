@@ -78,6 +78,7 @@ LN_INTERNAL_ACCESS:	// TODO:
 	Array<Matrix>					m_skinningMatrices;			// スキニングに使用する最終ボーン行列 (要素数はボーン数)
 	RefPtr<Texture2D>				m_skinningMatricesTexture;	// Texture fetch による GPU スキニング用のテクスチャ
 	RefPtr<Animator>				m_animator;
+	Array<SkinnedMeshBone*>			m_ikBoneList;
 };
 
 
@@ -97,6 +98,7 @@ LN_INTERNAL_ACCESS:
 	SkinnedMeshBone();
 	virtual ~SkinnedMeshBone();
 	void Initialize(PmxBoneResource* boneResource);
+	void PostInitialize(SkinnedMeshModel* owner, int depth);
 
 	// PmxBoneResource の取得
 	PmxBoneResource* GetCore() const;
@@ -126,6 +128,7 @@ LN_INTERNAL_ACCESS:	// TODO
 	Array<SkinnedMeshBone*>	m_children;			// 子ボーンリスト
 	SQTTransform			m_localTransform;	// モーションを書き込むのはここ
 	Matrix					m_combinedMatrix;	// 結合済み行列 (モデル内のグローバル行列)
+	int						m_depth;			// 0 から
 
 	Quaternion				m_userRotation;
 	Matrix					m_ikLocalMatrix;			// IK 作業用

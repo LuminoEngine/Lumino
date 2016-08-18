@@ -7,6 +7,187 @@
 
 LN_NAMESPACE_BEGIN
 
+
+static void NormalizeEular(Vector3* eulers)
+{
+	float& x = eulers->x;
+	float& y = eulers->y;
+	float& z = eulers->z;
+	if (x < -Math::PI || Math::PI < x)
+	{
+		if (x > 0)
+		{
+			x -= Math::PI * 2;
+		}
+		else
+		{
+			x += Math::PI * 2;
+		}
+	}
+	if (y < -Math::PI*0.5f || Math::PI*0.5f < y)
+	{
+		if (y > 0)
+		{
+			y -= Math::PI * 2;
+		}
+		else
+		{
+			y += Math::PI * 2;
+		}
+	}
+	if (z < -Math::PI || Math::PI < z)
+	{
+		if (z > 0)
+		{
+			z -= Math::PI * 2;
+		}
+		else
+		{
+			z += Math::PI * 2;
+		}
+	}
+}
+
+class CCDIK
+{
+public:
+
+	SkinnedMeshModel* owner;
+
+	void UpdateTransform()
+	{
+		//for (SkinnedMeshBone* ikBone : owner->m_ikBoneList)
+		//{
+		//	UpdateEachIKBoneTransform(ikBone);
+		//}
+		for (PmxIKResource* ik : owner->m_meshResource->iks)
+		{
+			UpdateEachIKBoneTransform(ik);
+		}
+	}
+
+	void UpdateEachIKBoneTransform(PmxIKResource* ik)
+	{
+		// ループ回数のリセット
+		//foreach(var link in IKbone.ikLinks) link.loopCount = 0;
+
+		// 決められた回数IKループを繰り返す
+
+		for (int iCalc = 0; iCalc < ik->LoopCount; iCalc++)
+		{
+			SkinnedMeshBone* ikBone = owner->m_allBoneList[ik->IKBoneIndex];			// IK ボーン (IK 情報を持つボーン。目標地点)
+			SkinnedMeshBone* effector = owner->m_allBoneList[ik->IKTargetBoneIndex];	// IK ターゲットボーン (エフェクタ。IKに向くべきボーンたちの中の先頭ボーン)
+
+			IKloop(ik, ikBone, effector);
+		}
+	}
+	void IKloop(PmxIKResource* ik, SkinnedMeshBone* ikBone, SkinnedMeshBone* effector)
+	{
+		Vector3 TargetGlobalPos = Vector3::TransformCoord(ikBone->GetCore()->OrgPosition, ikBone->GetCombinedMatrix());
+		//const Vector3& TargetGlobalPos = ikBone->GetCombinedMatrix().GetPosition();
+
+		for (int iLink = 0; iLink < ik->IKLinks.GetCount(); ++iLink)
+		{
+			PmxIKResource::IKLink& ikLink = ik->IKLinks[iLink];
+			SkinnedMeshBone* ikLinkBone = owner->m_allBoneList[ikLink.LinkBoneIndex];
+
+			// ワールド座標系から注目ノードの局所座標系への変換
+			// (IKリンク基準のローカル座標系へ変換する行列)
+			Matrix ToLinkLocal = Matrix::MakeInverse(ikLinkBone->GetCombinedMatrix());
+
+			Vector3 ikLinkBoneLocalPos = Vector3::TransformCoord(ikLinkBone->GetCombinedMatrix().GetPosition(), ToLinkLocal);
+
+			// GetLink2Effector
+			Vector3 effectorPos = Vector3::TransformCoord(effector->GetCore()->OrgPosition, effector->GetCombinedMatrix() * ToLinkLocal); //●
+			//const Vector3& effectorPos = effector->GetCombinedMatrix().GetPosition();
+			//Vector3 effectorPos = Vector3::TransformCoord(effector->GetCombinedMatrix().GetPosition(), ToLinkLocal);
+			//Vector3 link2Effector = Vector3::SafeNormalize(effectorPos - ikLinkBoneLocalPos/*ikLinkBone->GetCore()->OrgPosition*/);
+			Vector3 link2Effector = Vector3::SafeNormalize(effectorPos - ikLinkBone->GetCore()->OrgPosition);
+		
+			// GetLink2Target
+			Vector3 targetPos = Vector3::TransformCoord(TargetGlobalPos, ToLinkLocal);
+			//Vector3 targetPos = Vector3::TransformCoord(TargetGlobalPos, ToLinkLocal);
+			//Vector3 link2Target = Vector3::SafeNormalize(targetPos - ikLinkBoneLocalPos/*ikLinkBone->GetCore()->OrgPosition*/);
+			Vector3 link2Target = Vector3::SafeNormalize(targetPos - ikLinkBone->GetCore()->OrgPosition);
+
+			IKLinkCalc(ikLink, ikLinkBone, link2Effector, link2Target, ik->IKRotateLimit);
+
+
+			//for (short jk = ik->IKLinks.GetCount() - 1; jk >= 0; --jk)
+			//{
+			//	owner->m_allBoneList[ik->IKLinks[jk].LinkBoneIndex]->UpdateGlobalTransform(false);
+			//}
+			//effector->UpdateGlobalTransform(true);
+		}
+	}
+
+	void IKLinkCalc(PmxIKResource::IKLink& ikLink, SkinnedMeshBone* ikLinkBone, const Vector3& link2Effector, const Vector3& link2Target, float RotationLimited)
+	{
+		//回転角度を求める
+		float dot = Vector3::Dot(link2Effector, link2Target);
+		if (dot > 1.0f) dot = 1.0f;
+		float rotationAngle = Math::Clamp(acosf(dot), -RotationLimited, RotationLimited);
+		if (Math::IsNaN(rotationAngle)) return;
+		if (rotationAngle <= 1.0e-3f) return;
+
+		//回転軸を求める
+		Vector3 rotationAxis = Vector3::Cross(link2Effector, link2Target);
+		//ikLink.loopCount++;
+
+		//軸を中心として回転する行列を作成する。
+		Quaternion rotation = Quaternion(rotationAxis, rotationAngle);
+		rotation.Normalize();
+		//ikLinkBone->GetLocalTransformPtr()->rotation = Quaternion::Multiply(ikLinkBone->GetLocalTransformPtr()->rotation, ikLinkBone->m_ikQuaternion);
+		ikLinkBone->GetLocalTransformPtr()->rotation = rotation * ikLinkBone->GetLocalTransformPtr()->rotation;
+		//ikLink.ikLinkBone.Rotation = rotation * ikLink.ikLinkBone.Rotation;
+
+		// 回転量制限
+		ikLinkBone->GetLocalTransformPtr()->rotation = RestrictRotation(ikLink, ikLinkBone->GetLocalTransformPtr()->rotation);
+
+		ikLinkBone->UpdateGlobalTransform(true);
+	}
+
+	Quaternion RestrictRotation(const PmxIKResource::IKLink& ikLink, const Quaternion& localRot)
+	{
+		if (!ikLink.IsRotateLimit) return localRot;
+
+		RotationOrder type;
+		bool locked;
+		Vector3 euler;
+
+		type = RotationOrder::ZXY;
+		euler = localRot.ToEulerAngles(type, &locked);
+		if (locked)
+		{
+			type = RotationOrder::YZX;
+			euler = localRot.ToEulerAngles(type, &locked);
+			if (locked)
+			{
+				type = RotationOrder::XYZ;
+				euler = localRot.ToEulerAngles(type, &locked);
+				if (locked)
+				{
+					LN_CHECK_STATE(0);	// あり得ないはずだが…
+				}
+			}
+		}
+
+		// 角度修正
+		NormalizeEular(&euler);
+
+		//euler.x = GetUpperLowerRadian(euler.x, ikLink.MinLimit.x, ikLink.MaxLimit.x, loopFlag);
+		//euler.y = GetUpperLowerRadian(euler.y, ikLink.MinLimit.y, ikLink.MaxLimit.y, loopFlag);
+		//euler.z = GetUpperLowerRadian(euler.z, ikLink.MinLimit.z, ikLink.MaxLimit.z, loopFlag);
+		euler.Clamp(ikLink.MinLimit, ikLink.MaxLimit);
+
+		// 戻す
+		Matrix rotMat = Matrix::MakeRotationEulerAngles(euler, type);
+		return Quaternion::MakeFromRotationMatrix(rotMat);
+	}
+};
+
+
+
 //==============================================================================
 // SkinnedMeshModel
 //==============================================================================
@@ -59,6 +240,12 @@ void SkinnedMeshModel::Initialize(GraphicsManager* manager, PmxSkinnedMeshResour
 		{
 			m_allBoneList[i] = SkinnedMeshBonePtr::MakeRef();
 			m_allBoneList[i]->Initialize(m_meshResource->bones[i]);
+			
+			// IK ボーンを集める
+			if (m_meshResource->bones[i]->IsIK)
+			{
+				m_ikBoneList.Add(m_allBoneList[i]);
+			}
 		}
 		// 次に子と親を繋げる
 		for (int i = 0; i < boneCount; i++)
@@ -73,6 +260,10 @@ void SkinnedMeshModel::Initialize(GraphicsManager* manager, PmxSkinnedMeshResour
 				m_rootBoneList.Add(m_allBoneList[i]);	// 親がいない。ルートボーンとして覚えておく
 			}
 		}
+		for (SkinnedMeshBone* rootBone : m_rootBoneList)
+		{
+			rootBone->PostInitialize(this, 0);
+		}
 
 		// ボーン行列を書き込むところを作る
 		m_skinningMatrices.Resize(boneCount);
@@ -83,6 +274,36 @@ void SkinnedMeshModel::Initialize(GraphicsManager* manager, PmxSkinnedMeshResour
 		m_animator = RefPtr<Animator>::MakeRef();
 		m_animator->Create(this);
 	}
+
+
+	struct BoneComparer
+	{
+		int boneCount;
+
+		bool operator () (SkinnedMeshBone* x, SkinnedMeshBone* y) const
+		{
+			//後であればあるほどスコアが大きくなるように計算する
+			int xScore = 0;
+			int yScore = 0;
+			if (x->GetCore()->TransformAfterPhysics)
+			{
+				xScore += boneCount * boneCount;
+			}
+			if (y->GetCore()->TransformAfterPhysics)
+			{
+				yScore += boneCount * boneCount;
+			}
+			xScore += boneCount * x->m_depth;
+			yScore += boneCount * y->m_depth;
+			xScore += x->GetCore()->GetBoneIndex();
+			yScore += y->GetCore()->GetBoneIndex();
+			return xScore < yScore;
+		}
+
+	} cmp;
+	cmp.boneCount = m_ikBoneList.GetCount();
+
+	std::sort(m_ikBoneList.begin(), m_ikBoneList.end(), cmp);
 }
 
 //------------------------------------------------------------------------------
@@ -136,8 +357,8 @@ void SkinnedMeshModel::UpdateSkinningMatrices()
 			取得できる行列 (SkinnedMeshサンプルの D3DXMESHCONTAINER_DERIVED::pBoneOffsetMatrices) がこれにあたるものっぽい。
 			サンプルでも描画の直前に対象ボーン行列にこの行列を乗算している。
 		*/
-		m_skinningMatrices[i] = m_allBoneList[i]->GetCore()->GetInitialTranstormInv();
-		m_skinningMatrices[i] *= m_allBoneList[i]->GetCombinedMatrix();
+		//m_skinningMatrices[i] = m_allBoneList[i]->GetCore()->GetInitialTranstormInv();
+		m_skinningMatrices[i] = m_allBoneList[i]->GetCombinedMatrix();
 	}
 
 	// スキニングテクスチャ更新
@@ -158,45 +379,6 @@ void SkinnedMeshModel::UpdateSkinningMatrices()
 }
 
 //------------------------------------------------------------------------------
-static void NormalizeEular(Vector3* eulers)
-{
-	float& x = eulers->x;
-	float& y = eulers->y;
-	float& z = eulers->z;
-	if (x < -Math::PI || Math::PI < x)
-	{
-		if (x > 0)
-		{
-			x -= Math::PI * 2;
-		}
-		else
-		{
-			x += Math::PI * 2;
-		}
-	}
-	if (y < -Math::PI*0.5f || Math::PI*0.5f < y)
-	{
-		if (y > 0)
-		{
-			y -= Math::PI * 2;
-		}
-		else
-		{
-			y += Math::PI * 2;
-		}
-	}
-	if (z < -Math::PI || Math::PI < z)
-	{
-		if (z > 0)
-		{
-			z -= Math::PI * 2;
-		}
-		else
-		{
-			z += Math::PI * 2;
-		}
-	}
-}
 
 static float GetUpperLowerRadian(float fR, float lower, float upper, bool loopFlag)
 {
@@ -268,6 +450,10 @@ static Quaternion LimitIKRotation(const PmxIKResource::IKLink& ikLink, const Qua
 //------------------------------------------------------------------------------
 void SkinnedMeshModel::UpdateIK()
 {
+	CCDIK ik;
+	ik.owner = this;
+	ik.UpdateTransform();
+#if 0
 	for (PmxIKResource* ik : m_meshResource->iks)
 	{
 		UpdateIKInternal2(ik);
@@ -282,6 +468,7 @@ void SkinnedMeshModel::UpdateIK()
 		//	UpdateIKInternal(ik, 0, i, ik->LoopCount / 2, 0);
 		//}
 	}
+#endif
 }
 static void UpdateIKChildMatrix(SkinnedMeshBone* ikLinkBone, Matrix parentMatrix, Matrix parent_mat_normal, SkinnedMeshBone* endframe, SkinnedMeshBone* target)
 {
@@ -953,6 +1140,7 @@ SkinnedMeshBone::SkinnedMeshBone()
 	, m_children()
 	, m_localTransform()
 	, m_combinedMatrix()
+	, m_depth(0)
 {
 }
 
@@ -965,6 +1153,17 @@ SkinnedMeshBone::~SkinnedMeshBone()
 void SkinnedMeshBone::Initialize(PmxBoneResource* boneResource)
 {
 	m_core = boneResource;
+}
+
+//------------------------------------------------------------------------------
+void SkinnedMeshBone::PostInitialize(SkinnedMeshModel* owner, int depth)
+{
+	m_depth = depth;
+
+	for (SkinnedMeshBone* bone : m_children)
+	{
+		bone->PostInitialize(owner, m_depth + 1);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -985,12 +1184,25 @@ void SkinnedMeshBone::AddChildBone(SkinnedMeshBone* bone)
 //------------------------------------------------------------------------------
 void SkinnedMeshBone::UpdateGlobalTransform(bool hierarchical)
 {
+#if 0
 	// m_localTransform は、ボーンのローカル姿勢でアニメーションが適用されている。
 	// 適用されていなければ Identity。
-	m_combinedMatrix = m_localTransform;
+	//m_combinedMatrix = m_localTransform;
+	m_combinedMatrix =
+		//Matrix::MakeTranslation(-m_core->OrgPosition) *
+		Matrix::MakeRotationQuaternion(m_localTransform.rotation) *
+		Matrix::MakeTranslation(m_localTransform.translation)/* *
+		Matrix::MakeTranslation(m_core->OrgPosition)*/;
 
 	// 親からの平行移動量
 	m_combinedMatrix.Translate(m_core->GetOffsetFromParent());
+#else
+	m_combinedMatrix =
+		Matrix::MakeTranslation(-m_core->OrgPosition) *
+		Matrix::MakeRotationQuaternion(m_localTransform.rotation) *
+		Matrix::MakeTranslation(m_localTransform.translation) *
+		Matrix::MakeTranslation(m_core->OrgPosition);
+#endif
 
 	// 親行列と結合
 	Matrix parentRotation;
@@ -999,10 +1211,10 @@ void SkinnedMeshBone::UpdateGlobalTransform(bool hierarchical)
 		m_combinedMatrix *= m_parent->GetCombinedMatrix();
 	}
 
-	if (m_combinedMatrix.IsNaNOrInf())
-	{
-		printf("");
-	}
+	//if (m_combinedMatrix.IsNaNOrInf())
+	//{
+	//	printf("");
+	//}
 
 	// 子ボーン更新
 	if (hierarchical)

@@ -46,6 +46,17 @@ bool VmdLoader::Load(Stream* stream)
 		//	printf("[%s]", vmdMotion.szBoneName);
 		//}
 
+
+		VMDBezierSQTTransformAnimation2::BoneFrameData frame;
+		frame.Time = static_cast< double >(vmdMotion.ulFrameNo);
+		frame.Position = vmdMotion.vec3Position;
+		frame.Rotation = vmdMotion.vec4Rotation;
+		for (int iC = 0; iC < 4; ++iC)
+		{
+			frame.Curves[iC].v1.Set(vmdMotion.Interpolation[0][0][iC] / 128.0f, vmdMotion.Interpolation[0][1][iC] / 128.0f);
+			frame.Curves[iC].v2.Set(vmdMotion.Interpolation[0][2][iC] / 128.0f, vmdMotion.Interpolation[0][3][iC] / 128.0f);
+		}
+
 		// 既存アニメーション検索
 		BoneAnimationIndexMap::iterator itr =
 			m_boneAnimationIndexMap.find(vmdMotion.szBoneName);
@@ -61,28 +72,14 @@ bool VmdLoader::Load(Stream* stream)
 			m_boneAnimationIndexMap.insert(BoneAnimationIndexPair(vmdMotion.szBoneName, m_boneAnimationList.GetCount()));
 
 			// アニメーション作成、キー追加
-			anim.AnimationCurve = RefPtr<VMDBezierSQTTransformAnimation>::MakeRef();
-			anim.AnimationCurve->AddKeyFrame(
-				static_cast< double >(vmdMotion.ulFrameNo),
-				vmdMotion.vec3Position,
-				vmdMotion.vec4Rotation,
-				vmdMotion.cInterpolationX,
-				vmdMotion.cInterpolationY,
-				vmdMotion.cInterpolationZ,
-				vmdMotion.cInterpolationRot);
+			anim.AnimationCurve = RefPtr<VMDBezierSQTTransformAnimation2>::MakeRef();
+			anim.AnimationCurve->AddFrame(frame);
 			m_boneAnimationList.Add(anim);
 		}
 		// すでにあるボーン
 		else
 		{
-			m_boneAnimationList[(itr->second)].AnimationCurve->AddKeyFrame(
-				static_cast< double >(vmdMotion.ulFrameNo),
-				vmdMotion.vec3Position,
-				vmdMotion.vec4Rotation,
-				vmdMotion.cInterpolationX,
-				vmdMotion.cInterpolationY,
-				vmdMotion.cInterpolationZ,
-				vmdMotion.cInterpolationRot);
+			m_boneAnimationList[(itr->second)].AnimationCurve->AddFrame(frame);
 		}
 	}
 

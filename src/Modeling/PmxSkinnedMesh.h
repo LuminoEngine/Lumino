@@ -138,6 +138,7 @@ class PmxBoneResource
 public:
 	PmxBoneResource(PmxSkinnedMeshResource* owner, int boneIndex);
 	void RefreshInitialValues();
+	int GetBoneIndex() const { return m_boneIndex; }
 	const Vector3& GetOffsetFromParent() const { return m_offsetFromParent; }
 	const Matrix& GetInitialTranstormInv() const { return m_initialTranstormInv; }
 
@@ -209,7 +210,7 @@ public:
 		これは MMD 上でモーションを作る時も同じ。
 	*/
 
-	int			IKBoneIndex;			///< IKボーン (PMX では、この IK 情報を持つボーンを指す)
+	int			IKBoneIndex;			///< IKボーン (PMX では、この IK 情報を持つボーンを指す) TODO: いらない
 	int			IKTargetBoneIndex;		///< IKターゲットボーン
 	int			LoopCount;				///< 演算回数
 	float		IKRotateLimit;			///< IKループ計算時の1回あたりの制限角度 -> ラジアン角 | PMDのIK値とは4倍異なるので注意

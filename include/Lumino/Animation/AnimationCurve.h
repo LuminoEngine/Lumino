@@ -290,4 +290,87 @@ private:
 	SQTTransform	m_transform;
 };
 
+class VMDBezierSQTTransformAnimation2
+	: public AnimationCurve
+{
+public:
+	struct BezierCurve
+	{
+		float Epsilon = 1.0e-3f;
+
+		Vector2 v1;
+		Vector2 v2;
+
+		float Evaluate(float Progress)
+		{
+			//ニュートン法による近似
+			float t = Math::Clamp(Progress, 0, 1);
+			float dt;
+			do
+			{
+				dt = -(fx(t) - Progress) / dfx(t);
+				if (Math::IsNaN(dt))
+					break;
+				t += Math::Clamp(dt, -1.0f, 1.0f);//大幅に移動して別の解に到達するのを防止する用
+			} while (abs(dt) > Epsilon);
+			return Math::Clamp(fy(t), 0.0f, 1.0f);//念のため、0-1の間に収まるようにした
+		}
+	private:
+		//fy(t)を計算する関数
+		float fy(float t)
+		{
+			//fy(t)=(1-t)^3*0+3*(1-t)^2*t*v1.y+3*(1-t)*t^2*v2.y+t^3*1
+			return 3 * (1 - t) * (1 - t) * t * v1.y + 3 * (1 - t) * t * t * v2.y + t * t * t;
+		}
+		//fx(t)を計算する関数
+		float fx(float t)
+		{
+			//fx(t)=(1-t)^3*0+3*(1-t)^2*t*v1.x+3*(1-t)*t^2*v2.x+t^3*1
+			return 3 * (1 - t) * (1 - t) * t * v1.x + 3 * (1 - t) * t * t * v2.x + t * t * t;
+		}
+		//dfx/dtを計算する関数
+		float dfx(float t)
+		{
+			//dfx(t)/dt=-6(1-t)*t*v1.x+3(1-t)^2*v1.x-3t^2*v2.x+6(1-t)*t*v2.x+3t^2
+			return -6 * (1 - t) * t * v1.x + 3 * (1 - t) * (1 - t) * v1.x
+				- 3 * t * t * v2.x + 6 * (1 - t) * t * v2.x + 3 * t * t;
+		}
+	};
+
+
+	struct BoneFrameData
+	{
+		double			Time;					// フレーム位置
+		Vector3			Position;				// 位置
+		Quaternion		Rotation;	// 回転(クォータニオン)
+		std::array<BezierCurve, 4>		Curves;
+
+		//BoneFrameData& operator=(const BoneFrameData& data)
+		//{
+		//	Time = data.Time;
+		//	Position = data.Position;
+		//	Rotation = data.Rotation;
+		//	Curves[0] = data.Curves[0];
+		//}
+	};
+
+public:
+	VMDBezierSQTTransformAnimation2();
+	virtual ~VMDBezierSQTTransformAnimation2();
+
+public:
+	void AddFrame(const BoneFrameData& frame) { m_keyFrameList.Add(frame); }
+	void SortKeyFrame();
+
+public:
+	virtual ValueType GetValueType() const { return ValueType_SQTTransform; }
+	virtual void UpdateValue(double time);
+	virtual double GetLastFrameTime() const;
+
+private:
+	typedef Array<BoneFrameData>	KeyFrameList;
+	KeyFrameList	m_keyFrameList;
+	SQTTransform	m_transform;
+};
+
 LN_NAMESPACE_END

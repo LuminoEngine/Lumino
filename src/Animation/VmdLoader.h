@@ -27,10 +27,12 @@ public:
 		Vector3	vec3Position;			// 位置
 		Quaternion	vec4Rotation;		// 回転(クォータニオン)
 
-		char	cInterpolationX[16];	// 補間情報 X軸移動
-		char	cInterpolationY[16];	// 補間情報 Y軸移動
-		char	cInterpolationZ[16];	// 補間情報 Z軸移動
-		char	cInterpolationRot[16];	// 補間情報 回転
+		//char	cInterpolationX[16];	// 補間情報 X軸移動
+		//char	cInterpolationY[16];	// 補間情報 Y軸移動
+		//char	cInterpolationZ[16];	// 補間情報 Z軸移動
+		//char	cInterpolationRot[16];	// 補間情報 回転
+
+		byte_t	Interpolation[4][4][4];
 	};
 
 	// 表情データ
@@ -45,7 +47,7 @@ public:
 	struct BoneAnimation
 	{
 		String TargetBoneName;
-		RefPtr<VMDBezierSQTTransformAnimation>	AnimationCurve;
+		RefPtr<VMDBezierSQTTransformAnimation2>	AnimationCurve;
 	};
 	
 	struct FaceAnimation

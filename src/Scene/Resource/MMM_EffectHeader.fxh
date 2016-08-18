@@ -79,7 +79,7 @@ MMM_SKINNING_OUTPUT MMM_SkinnedPositionNormal(
     
 	// �Ō�̂ЂƂȊO
 	int iBone = 0;
-	for ( ; iBone < MaxIndices - 3; ++iBone )
+	for ( ; iBone < MaxIndices - 1; ++iBone )
 	{
 		if ( weights_array[iBone] != 0.0 )
 		{

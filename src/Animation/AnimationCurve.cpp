@@ -443,4 +443,103 @@ double VMDBezierSQTTransformAnimation::GetLastFrameTime() const
 	return m_keyFrameList.GetLast().Time;
 }
 
+
+
+//==============================================================================
+// VMDBezierSQTTransformAnimation
+//==============================================================================
+VMDBezierSQTTransformAnimation2::VMDBezierSQTTransformAnimation2()
+{
+
+}
+VMDBezierSQTTransformAnimation2::~VMDBezierSQTTransformAnimation2()
+{
+
+}
+void VMDBezierSQTTransformAnimation2::SortKeyFrame()
+{
+	struct
+	{
+		bool operator()(const BoneFrameData& l, const BoneFrameData& r) const
+		{
+			return l.Time < r.Time;
+		}
+	} compare;
+
+	//std::stable_sort(m_keyFrameList.begin(), m_keyFrameList.end(), compare);
+	std::sort(m_keyFrameList.begin(), m_keyFrameList.end(), compare);
+}
+void VMDBezierSQTTransformAnimation2::UpdateValue(double time)
+{
+	// フレーム数 1 個
+	if (m_keyFrameList.GetCount() == 1)
+	{
+		m_transform.rotation = m_keyFrameList.GetFront().Rotation;
+		m_transform.translation = m_keyFrameList.GetFront().Position;
+		return;
+	}
+
+	// 最初のフレーム以前であれば最初のフレームの値を返す
+	if (time <= m_keyFrameList.GetFront().Time)
+	{
+		m_transform.rotation = m_keyFrameList.GetFront().Rotation;
+		m_transform.translation = m_keyFrameList.GetFront().Position;
+		return;
+	}
+
+	// 最後のフレーム以降であれば最後のフレームの値を返す
+	if (time >= m_keyFrameList.GetLast().Time)
+	{
+		m_transform.rotation = m_keyFrameList.GetLast().Rotation;
+		m_transform.translation = m_keyFrameList.GetLast().Position;
+		return;
+	}
+
+	// あるフレーム位置直前のキーフレームを検索するための関数オブジェクト
+	struct GreaterEqual
+	{
+		double FramePos;
+		bool operator()(const BoneFrameData& key) const
+		{
+			return FramePos <= key.Time;
+		}
+	} compare;
+	compare.FramePos = time;
+
+	// キー検索
+	KeyFrameList::iterator itr = std::find_if(m_keyFrameList.begin(), m_keyFrameList.end(), compare);
+
+	size_t k1idx = itr - m_keyFrameList.begin();
+	size_t k0idx = k1idx - 1;
+
+	BoneFrameData& k0 = m_keyFrameList[k0idx];
+	BoneFrameData& k1 = m_keyFrameList[k1idx];
+
+	// 現在のフレームの前後キーフレーム間での進行度を求めてペジェ関数で変換する
+	float s = (k1.Time == k0.Time) ? 0 :
+		(float)(time - k0.Time) / (float)(k1.Time - k0.Time); // 進行度
+	
+	float ss[4];
+	for (int i = 0; i < 4; ++i) ss[i] = k0.Curves[i].Evaluate(s);
+
+	// ボーンを更新する
+	Vector3 progress(ss[0], ss[1], ss[2]);
+	m_transform.translation =
+		Vector3(Math::Lerp(k0.Position.x, k1.Position.x, progress.x),
+			Math::Lerp(k0.Position.y, k1.Position.y, progress.y),
+			Math::Lerp(k0.Position.z, k1.Position.z, progress.z));
+	
+	m_transform.rotation =
+		Quaternion::Slerp(k0.Rotation, k1.Rotation, ss[3]);
+		//CGHelper.ComplementRotateQuaternion(k0, k1, ss[3]);
+}
+
+//------------------------------------------------------------------------------
+double VMDBezierSQTTransformAnimation2::GetLastFrameTime() const
+{
+	if (m_keyFrameList.IsEmpty()) return 0;
+	return m_keyFrameList.GetLast().Time;
+}
+
+
 LN_NAMESPACE_END
