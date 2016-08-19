@@ -129,6 +129,7 @@ LN_INTERNAL_ACCESS:	// TODO
 	SQTTransform			m_localTransform;	// モーションを書き込むのはここ
 	Matrix					m_combinedMatrix;	// 結合済み行列 (モデル内のグローバル行列)
 	int						m_depth;			// 0 から
+	PmxIKResource*			m_ikInfo;
 
 	Quaternion				m_userRotation;
 	Matrix					m_ikLocalMatrix;			// IK 作業用

@@ -56,14 +56,14 @@ public:
 
 	void UpdateTransform()
 	{
-		//for (SkinnedMeshBone* ikBone : owner->m_ikBoneList)
-		//{
-		//	UpdateEachIKBoneTransform(ikBone);
-		//}
-		for (PmxIKResource* ik : owner->m_meshResource->iks)
+		for (SkinnedMeshBone* ikBone : owner->m_ikBoneList)
 		{
-			UpdateEachIKBoneTransform(ik);
+			UpdateEachIKBoneTransform(ikBone->m_ikInfo);
 		}
+		//for (PmxIKResource* ik : owner->m_meshResource->iks)
+		//{
+		//	UpdateEachIKBoneTransform(ik);
+		//}
 	}
 
 	void UpdateEachIKBoneTransform(PmxIKResource* ik)
@@ -155,7 +155,8 @@ public:
 		bool locked;
 		Vector3 euler;
 
-		type = RotationOrder::ZXY;
+		// 分解の試行順序は XYZ が一番最初でなければならない (Love&Joy モーションで破綻する)
+		type = RotationOrder::XYZ;
 		euler = localRot.ToEulerAngles(type, &locked);
 		if (locked)
 		{
@@ -163,7 +164,7 @@ public:
 			euler = localRot.ToEulerAngles(type, &locked);
 			if (locked)
 			{
-				type = RotationOrder::XYZ;
+				type = RotationOrder::ZXY;
 				euler = localRot.ToEulerAngles(type, &locked);
 				if (locked)
 				{
@@ -179,9 +180,23 @@ public:
 		//euler.y = GetUpperLowerRadian(euler.y, ikLink.MinLimit.y, ikLink.MaxLimit.y, loopFlag);
 		//euler.z = GetUpperLowerRadian(euler.z, ikLink.MinLimit.z, ikLink.MaxLimit.z, loopFlag);
 		euler.Clamp(ikLink.MinLimit, ikLink.MaxLimit);
+		//float xRotation = euler.x;
+		//float yRotation = euler.y;
+		//float zRotation = euler.z;
 
 		// 戻す
 		Matrix rotMat = Matrix::MakeRotationEulerAngles(euler, type);
+		//switch (type)
+		//{
+		//case RotationOrder::XYZ:
+		//	return Quaternion::MakeFromRotationMatrix(Matrix::MakeRotationX(xRotation) * Matrix::MakeRotationY(yRotation) * Matrix::MakeRotationZ(zRotation));
+		//case RotationOrder::YZX:
+		//	return Quaternion::MakeFromRotationMatrix(Matrix::MakeRotationY(yRotation) * Matrix::MakeRotationZ(zRotation) * Matrix::MakeRotationX(xRotation));
+		//case RotationOrder::ZXY:
+		//	return Quaternion::MakeFromYawPitchRoll(yRotation, xRotation, zRotation);
+		//}
+
+		//return localRot;
 		return Quaternion::MakeFromRotationMatrix(rotMat);
 	}
 };
@@ -264,6 +279,10 @@ void SkinnedMeshModel::Initialize(GraphicsManager* manager, PmxSkinnedMeshResour
 		{
 			rootBone->PostInitialize(this, 0);
 		}
+		for (PmxIKResource* ik : m_meshResource->iks)
+		{
+			m_allBoneList[ik->IKBoneIndex]->m_ikInfo = ik;
+		}
 
 		// ボーン行列を書き込むところを作る
 		m_skinningMatrices.Resize(boneCount);
@@ -301,7 +320,7 @@ void SkinnedMeshModel::Initialize(GraphicsManager* manager, PmxSkinnedMeshResour
 		}
 
 	} cmp;
-	cmp.boneCount = m_ikBoneList.GetCount();
+	cmp.boneCount = m_allBoneList.GetCount();
 
 	std::sort(m_ikBoneList.begin(), m_ikBoneList.end(), cmp);
 }
@@ -1141,6 +1160,7 @@ SkinnedMeshBone::SkinnedMeshBone()
 	, m_localTransform()
 	, m_combinedMatrix()
 	, m_depth(0)
+	, m_ikInfo(nullptr)
 {
 }
 

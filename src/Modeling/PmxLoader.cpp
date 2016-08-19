@@ -510,8 +510,16 @@ void PmxLoader::LoadBones(BinaryReader* reader)
 				ikLink.IsRotateLimit = (reader->ReadInt8() != 0);
 				if (ikLink.IsRotateLimit)
 				{
-					reader->Read(&ikLink.MinLimit, sizeof(float) * 3);
-					reader->Read(&ikLink.MaxLimit, sizeof(float) * 3);
+					Vector3 minLimit, maxLimit;
+					reader->Read(&minLimit, sizeof(float) * 3);
+					reader->Read(&maxLimit, sizeof(float) * 3);
+					ikLink.MinLimit = Vector3::Min(minLimit, maxLimit);
+					ikLink.MaxLimit = Vector3::Max(minLimit, maxLimit);
+
+					const Vector3 EularMaximum(Math::PI - FLT_EPSILON, 0.5f * Math::PI - FLT_EPSILON, Math::PI - FLT_EPSILON);
+					const Vector3 EularMinimum = -EularMaximum;
+					ikLink.MinLimit.Clamp(EularMinimum, EularMaximum);
+					ikLink.MaxLimit.Clamp(EularMinimum, EularMaximum);
 				}
 
 				ik->IKLinks.Add(ikLink);
