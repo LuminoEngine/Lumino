@@ -5,10 +5,10 @@
 
 LN_NAMESPACE_BEGIN
 class FileManager;
-namespace Physics { class PhysicsManager; }
 class MeshResource;
 class StaticMeshModel;
 class PmxSkinnedMeshResource;
+namespace detail { class PhysicsManager; }
 
 namespace detail
 {
@@ -21,7 +21,7 @@ public:
 	struct ConfigData
 	{
 		FileManager*				fileManager = nullptr;
-		Physics::PhysicsManager*	physicsManager = nullptr;
+		detail::PhysicsManager*		physicsManager = nullptr;
 		GraphicsManager*			graphicsManager = nullptr;
 		int							modelCoreCacheSize = 32;
 		int							modelCoreCacheMemorySize = 0;
@@ -33,7 +33,7 @@ public:
 
 	void Initialize(const ConfigData& configData);
 	void Finalize();
-	Physics::PhysicsManager* GetPhysicsManager() { return m_physicsManager; }
+	detail::PhysicsManager* GetPhysicsManager() { return m_physicsManager; }
 	GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
 	Texture2D* GetMMDDefaultToonTexture(int index);
 
@@ -45,7 +45,7 @@ public:
 
 private:
 	FileManager*			m_fileManager;
-	Physics::PhysicsManager*		m_physicsManager;
+	PhysicsManager*		m_physicsManager;
 	GraphicsManager*	m_graphicsManager;
 	//RefPtr<CacheManager>				m_cacheManager;
 	std::array<Texture2D*, 10>	m_mmdDefaultToonTexture;

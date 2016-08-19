@@ -3,8 +3,8 @@
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
-namespace Physics
-{
+class BodyBase;
+namespace detail { class PhysicsWorld; }
 
 /// 接触点情報
 struct ContactInfo
@@ -16,23 +16,11 @@ struct ContactInfo
 
 /// 各種 Body のベースクラス
 class BodyBase
-	: public tr::ReflectionObject
+	: public Object
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	typedef Array<ContactInfo>	ContactInfoList;
-
-public:
-    BodyBase();
-    virtual ~BodyBase();
-
-public:
-
-	/// 初期化
-	void Create(PhysicsManager* manager, btCollisionObject* obj);
-
-	/// 種類
-	virtual BodyType GetBodyType() const = 0;
 
 	/// 接触点情報のリスト
 	const ContactInfoList& GetContactInfoList() const { return m_contactList; }
@@ -43,25 +31,18 @@ public:
 	/// ユーザーデータの取得
 	void* GetUserData() const { return m_userData; }
 
-public:	// internal
-	///// シミュレーション更新直前の処理
-	//virtual void preUpdate() {}
-
-	///// シミュレーション更新直後の処理
-	//virtual void postUpdate() {}
-
-	/// デバッグ用の形状描画
-	virtual void DrawDebugShape(IDebugRenderer* renderer) {}
-
+LN_INTERNAL_ACCESS:
 	void ClearContactList() { m_contactList.Clear(); }
-
 	void AddContact(const ContactInfo& contact) { m_contactList.Add(contact); }
 
 protected:
-	PhysicsManager*		m_manager;
-	void*				m_userData;
-	ContactInfoList		m_contactList;
+	BodyBase();
+	virtual ~BodyBase();
+	void Initialize(btCollisionObject* obj);
+
+private:
+	void*					m_userData;
+	ContactInfoList			m_contactList;
 };
 
-} // namespace Physics
 LN_NAMESPACE_END

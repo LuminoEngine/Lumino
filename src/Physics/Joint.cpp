@@ -4,10 +4,9 @@
 #include <Lumino/Physics/RigidBody.h>
 #include <Lumino/Physics/Joint.h>
 #include "BulletUtils.h"
+#include "PhysicsManager.h"
 
 LN_NAMESPACE_BEGIN
-namespace Physics
-{
 
 //==============================================================================
 // Joint
@@ -15,32 +14,26 @@ namespace Physics
 
 //------------------------------------------------------------------------------
 Joint::Joint()
-	: m_manager(NULL)
-	, m_btConstraint(NULL)
+	: /*m_manager(nullptr)
+	, */m_btConstraint(nullptr)
 {
 }
 
 //------------------------------------------------------------------------------
 Joint::~Joint()
 {
-	if (m_manager != NULL)
-    {
-		if (m_btConstraint != NULL)
-        {
-			m_manager->GetBtWorld()->removeConstraint(m_btConstraint);
-			LN_SAFE_DELETE(m_btConstraint);
-        }
-		LN_SAFE_RELEASE(m_manager);
-    }
+	if (m_btConstraint != nullptr)
+	{
+		LN_SAFE_DELETE(m_btConstraint);
+	}
 }
 
 //------------------------------------------------------------------------------
-void Joint::Create(PhysicsManager* manager, btTypedConstraint* constraint)
+void Joint::Initialize(btTypedConstraint* constraint)
 {
-	LN_REFOBJ_SET(m_manager, manager);
 	m_btConstraint = constraint;
-	m_manager->AddJoint(this);
 }
+
 
 //==============================================================================
 // DofSpringJoint
@@ -48,10 +41,9 @@ void Joint::Create(PhysicsManager* manager, btTypedConstraint* constraint)
 
 //------------------------------------------------------------------------------
 DofSpringJoint::DofSpringJoint()
-	: m_btDofSpringConstraint(NULL)
-	, m_body0(NULL)
-	, m_body1(NULL)
-	//, m_modifiedFlags(Modified_None)
+	: m_btDofSpringConstraint(nullptr)
+	, m_bodyA(nullptr)
+	, m_bodyB(nullptr)
 	, m_initialUpdate(true)
 {
 	//memset(m_enableSpring, 0, sizeof(0));
@@ -68,40 +60,28 @@ DofSpringJoint::DofSpringJoint()
 //------------------------------------------------------------------------------
 DofSpringJoint::~DofSpringJoint()
 {
-	// コンストレイントを先に解放する必要があるため、ベースのデストラクタより先に解放処理を行う
-	if (m_manager != NULL)
-	{
-		if (m_btConstraint != NULL)
-		{
-			m_manager->GetBtWorld()->removeConstraint(m_btConstraint);
-			LN_SAFE_DELETE(m_btConstraint);
-		}
-	}
-
-	LN_SAFE_RELEASE(m_body0);
-	LN_SAFE_RELEASE(m_body1);
 }
 
 //------------------------------------------------------------------------------
-void DofSpringJoint::Create(PhysicsManager* manager, RigidBody* body0, RigidBody* body1, const Matrix& localOffset0, const Matrix& localOffset1)
+void DofSpringJoint::Initialize(RigidBody* bodyA, RigidBody* bodyB, const Matrix& localOffsetA, const Matrix& localOffsetB)
 {
-	LN_ASSERT(manager && body0 && body1);
+	LN_CHECK_ARG(bodyA != nullptr);
+	LN_CHECK_ARG(bodyB != nullptr);
+	m_bodyA = bodyA;
+	m_bodyB = bodyB;
 
-	LN_REFOBJ_SET(m_body0, body0);
-	LN_REFOBJ_SET(m_body1, body1);
-
-	btTransform local0, local1;
-	local0.setFromOpenGLMatrix((const btScalar*)&localOffset0);
-	local1.setFromOpenGLMatrix((const btScalar*)&localOffset1);
+	btTransform localA, localB;
+	localA.setFromOpenGLMatrix((const btScalar*)&localOffsetA);
+	localB.setFromOpenGLMatrix((const btScalar*)&localOffsetB);
 
 	m_btDofSpringConstraint = new btGeneric6DofSpringConstraint(
-        *body0->GetBtRigidBody(),
-        *body1->GetBtRigidBody(),
-		local0,
-        local1,
+        *m_bodyA->GetBtRigidBody(),
+        *m_bodyB->GetBtRigidBody(),
+		localA,
+        localB,
         true);
 
-	Joint::Create(manager, m_btDofSpringConstraint);
+	Joint::Initialize(m_btDofSpringConstraint);
 	m_initialUpdate = true;
 }
 
@@ -163,7 +143,7 @@ void DofSpringJoint::SetLinearLowerLimit(const Vector3& linearLower)
 {
 	LN_THROW(!m_initialUpdate, InvalidOperationException);	// 初回 StepSimulation() 前のみ可能
 	m_btDofSpringConstraint->setLinearLowerLimit(
-		BulletUtil::LNVector3ToBtVector3(linearLower));
+		detail::BulletUtil::LNVector3ToBtVector3(linearLower));
 }
 
 //------------------------------------------------------------------------------
@@ -171,7 +151,7 @@ void DofSpringJoint::SetLinearUpperLimit(const Vector3& linearUpper)
 {
 	LN_THROW(!m_initialUpdate, InvalidOperationException);	// 初回 StepSimulation() 前のみ可能
 	m_btDofSpringConstraint->setLinearUpperLimit(
-		BulletUtil::LNVector3ToBtVector3(linearUpper));
+		detail::BulletUtil::LNVector3ToBtVector3(linearUpper));
 }
 
 //------------------------------------------------------------------------------
@@ -179,7 +159,7 @@ void DofSpringJoint::SetAngularLowerLimit(const Vector3& angularLower)
 {
 	LN_THROW(!m_initialUpdate, InvalidOperationException);	// 初回 StepSimulation() 前のみ可能
 	m_btDofSpringConstraint->setAngularLowerLimit(
-		BulletUtil::LNVector3ToBtVector3(angularLower));
+		detail::BulletUtil::LNVector3ToBtVector3(angularLower));
 }
 
 //------------------------------------------------------------------------------
@@ -187,13 +167,7 @@ void DofSpringJoint::SetAngularUpperLimit(const Vector3& angularUpper)
 {
 	LN_THROW(!m_initialUpdate, InvalidOperationException);	// 初回 StepSimulation() 前のみ可能
 	m_btDofSpringConstraint->setAngularUpperLimit(
-		BulletUtil::LNVector3ToBtVector3(angularUpper));
+		detail::BulletUtil::LNVector3ToBtVector3(angularUpper));
 }
 
-//------------------------------------------------------------------------------
-void DofSpringJoint::SyncBeforeStepSimulation()
-{
-}
-
-} // namespace Physics
 LN_NAMESPACE_END

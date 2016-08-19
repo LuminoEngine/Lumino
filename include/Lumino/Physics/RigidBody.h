@@ -4,26 +4,7 @@
 #include "BodyBase.h"
 
 LN_NAMESPACE_BEGIN
-namespace Physics
-{
-
-//struct RigidBodyInitArgs
-//{
-//    btCollisionShape*   Shape;      ///< (BodyBase  削除時に delete される)
-//    btRigidBody*        RigidBody;  ///< (RigidBody 削除時に delete される	PMD 側を修正したら削除予定)
-//	//uint16_t               Group;
-//	//uint16_t               Mask;
-//	//float				Mass;
-//	//bool				AdditionalDamping;
-//	//bool				KinematicObject;	///< Kinematicオブジェクトとする (MotionState の getWorldTransform() が呼ばれるようになる)
-//
-//	RigidBodyInitArgs()
-//	{
-//		//AdditionalDamping = false;
-//		RigidBody = NULL;
-//		//KinematicObject = false;
-//	}
-//};
+class Collider;
 
 /// 剛体のクラス
 class RigidBody
@@ -69,17 +50,11 @@ public:
 		@param[in]	collider	: 衝突判定形状
 		@details	作成されたオブジェクトは使い終えたら Release() を呼び出して参照を解放する必要があります。
 	*/
-	static RigidBody* Create(Collider* collider);
+	//static RigidBody* Create(Collider* collider);
 
-public:
-    RigidBody();
-    virtual ~RigidBody();
 
 public:
 
-	/// 初期化 (剛体を受け取ってワールドに追加する) (現行PMD用にpublic。後で protected にする)
-	///		shape		: (BodyBase  削除時に delete される)
-	void Initialize(PhysicsManager* manager, Collider* collider, const ConfigData& configData);
 
 	/// 位置の設定
 	void SetPosition(const Vector3& position);
@@ -143,19 +118,25 @@ public:
 	/// 物理演算の対象であるか (false の場合、衝突判定のみ対象)
 	bool IsContactResponse() const { return true; }
 
-public:	// internal
-	virtual BodyType GetBodyType() const { return BodyType_RigidBody; }
+
+LN_INTERNAL_ACCESS:
+	RigidBody();
+	virtual ~RigidBody();
+	/// 初期化 (剛体を受け取ってワールドに追加する) (現行PMD用にpublic。後で protected にする)
+	///		shape		: (BodyBase  削除時に delete される)
+	void Initialize(Collider* collider, const ConfigData& configData);
+
 	btRigidBody* GetBtRigidBody() { return m_btRigidBody; }
 	uint16_t GetGroup() const { return m_group; }
 	uint16_t GetGroupMask() const { return m_groupMask; }
 
 	/// シミュレーション直前更新処理 (メインスレッドから呼ばれる)
-	void SyncBeforeStepSimulation();
+	void SyncBeforeStepSimulation(detail::PhysicsWorld* world);
 
 	/// シミュレーション直後更新処理 (メインまたは物理更新スレッドから呼ばれる)
 	void SyncAfterStepSimulation();
 
-protected:
+private:
 
 	enum ModifiedFlags
 	{
@@ -183,46 +164,4 @@ protected:
 	uint32_t				m_modifiedFlags;
 };
 
-#if 0
-/// 平面のクラス
-class Plane
-	: public RigidBody
-{
-public:
-	Plane(PhysicsManager* manager, uint16_t group = 0xffff, uint16_t groupMask = 0xffff);
-	virtual ~Plane();
-};
-
-/// 
-class Box
-	: public RigidBody
-{
-public:
-	Box(PhysicsManager* manager, const Vector3& size, float mass, uint16_t group = 0xffff, uint16_t groupMask = 0xffff);
-	Box(PhysicsManager* manager, const Vector3& size, const ConfigData& configData);
-	virtual ~Box();
-};
-
-/// 
-class Capsule
-	: public RigidBody
-{
-public:
-	Capsule(PhysicsManager* manager, float radius, float length, float mass, uint16_t group = 0xffff, uint16_t groupMask = 0xffff);
-	Capsule(PhysicsManager* manager, float radius, float length, const ConfigData& configData);
-	virtual ~Capsule();
-};
-
-/// 
-class Sphere
-	: public RigidBody
-{
-public:
-	Sphere(PhysicsManager* manager, float radius, float mass, uint16_t group = 0xffff, uint16_t groupMask = 0xffff);
-	Sphere(PhysicsManager* manager, float radius, const ConfigData& configData);
-	virtual ~Sphere();
-};
-#endif
-
-} // namespace Physics
 LN_NAMESPACE_END

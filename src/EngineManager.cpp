@@ -439,7 +439,8 @@ void EngineManager::InitializePhysicsManager()
 	if (m_physicsManager.IsNull())
 	{
 		InitializeCommon();
-		m_physicsManager.Attach(LN_NEW Physics::PhysicsManager(Physics::SimulationType_Sync));
+		m_physicsManager = RefPtr<detail::PhysicsManager>::MakeRef();
+		m_physicsManager->Initialize();
 	}
 #endif
 }
@@ -734,6 +735,12 @@ void EngineManager::ResetFrameDelay()
 void EngineManager::Exit()
 {
 	m_endRequested = true;
+}
+
+//------------------------------------------------------------------------------
+detail::PhysicsManager* EngineManager::GetPhysicsManager() const
+{
+	return m_physicsManager;
 }
 
 //------------------------------------------------------------------------------

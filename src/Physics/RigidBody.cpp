@@ -2,115 +2,12 @@
 #include "Internal.h"
 #include <btBulletDynamicsCommon.h>
 #include <LinearMath/btMotionState.h>
-#include <Lumino/Physics/PhysicsManager.h>
 #include <Lumino/Physics/Collider.h>
 #include <Lumino/Physics/RigidBody.h>
 #include "BulletUtils.h"
+#include "PhysicsManager.h"
 
 LN_NAMESPACE_BEGIN
-namespace Physics
-{
-
-#if 0
-struct	DefaultMotionState : public btMotionState
-{
-	btTransform m_graphicsWorldTrans;
-	btTransform	m_centerOfMassOffset;
-	btTransform m_startWorldTrans;
-	void*		m_userPointer;
-
-	DefaultMotionState(const btTransform& startTrans = btTransform::getIdentity(),const btTransform& centerOfMassOffset = btTransform::getIdentity())
-		: m_graphicsWorldTrans(startTrans),
-		m_centerOfMassOffset(centerOfMassOffset),
-		m_startWorldTrans(startTrans),
-		m_userPointer(0)
-
-	{
-		
-	}
-
-	///synchronizes world transform from user to physics
-	virtual void	getWorldTransform(btTransform& centerOfMassWorldTrans ) const 
-	{
-			centerOfMassWorldTrans = 	m_centerOfMassOffset.inverse() * m_graphicsWorldTrans ;
-
-			//BulletUtil::dumpBtTransform(centerOfMassWorldTrans);
-	}
-
-	///synchronizes world transform from physics to user
-	///Bullet only calls the update of worldtransform for active objects
-	virtual void	setWorldTransform(const btTransform& centerOfMassWorldTrans)
-	{
-		//BulletUtil::dumpBtTransform(centerOfMassWorldTrans);
-
-		/*printf("setWorldTransform() %f %f %f\n", 
-			centerOfMassWorldTrans.getOrigin().x(), 
-			centerOfMassWorldTrans.getOrigin().y(), 
-			centerOfMassWorldTrans.getOrigin().z());
-			m_graphicsWorldTrans = centerOfMassWorldTrans * m_centerOfMassOffset ;*/
-			//if (LMath::isNaN( centerOfMassWorldTrans.getOrigin().x() ))
-			//{
-			//	int a = 0;
-			//}
-
-			/* ここで設定されるものと m_btRigidBody->getWorldTransform() で取得したものは、たとえシミュレーション直後であっても微妙に違う。
-			const btMatrix3x3& r = m_graphicsWorldTrans.getBasis();
-		const btVector3&   p = m_graphicsWorldTrans.getOrigin();
-		LMatrix m(
-			r[0].x(), r[1].x(), r[2].x(), 0.0f,
-			r[0].y(), r[1].y(), r[2].y(), 0.0f,
-			r[0].z(), r[1].z(), r[2].z(), 0.0f,
-			p.x(),   p.y(),    p.z(),    1.0f );
-
-		printf("setWorldTransform()\n");
-		m.cdump();
-		*/
-	}
-};
-
-
-
-struct RigidBody::KinematicMotionState
-: public btMotionState
-{
-RigidBody* mBody;
-btTransform m_graphicsWorldTrans;
-
-KinematicMotionState( const btTransform& startTrans )
-	: mBody					( NULL )
-	, m_graphicsWorldTrans	( startTrans )
-{
-}
-
-virtual void getWorldTransform( btTransform& centerOfMassWorldTrans ) const
-{
-	/* stepSimulation() から呼ばれる。非同期にする場合は注意 */
-	//printf("getWorldTransform()\n");
-	/*
-	btTransform		bttrBoneTransform;
-
-    LMatrix gl_mat = mFrame->getWorldMatrix();
-        
-	bttrBoneTransform.setFromOpenGLMatrix( (float *)(&gl_mat) );
-
-	centerOfMassWorldTrans = bttrBoneTransform * m_BoneOffset;
-	*/
-	centerOfMassWorldTrans = m_graphicsWorldTrans;
-}
-
-virtual void setWorldTransform( const btTransform& centerOfMassWorldTrans )
-{
-	//printf("setWorldTransform()\n");
-	m_graphicsWorldTrans = centerOfMassWorldTrans;
-}
-
-void setMatrix( const LMatrix& matrix )
-{
-	m_graphicsWorldTrans.setFromOpenGLMatrix( (btScalar*)&matrix );
-}
-};
-#endif
-
 
 //==============================================================================
 // RigidBody
@@ -118,14 +15,14 @@ void setMatrix( const LMatrix& matrix )
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(RigidBody, BodyBase);
 
 //------------------------------------------------------------------------------
-RigidBody* RigidBody::Create(Collider* collider)
-{
-	ConfigData data;
-	RefPtr<RigidBody> obj(LN_NEW RigidBody(), false);
-	obj->Initialize(GetPhysicsManager(nullptr), collider, data);
-	obj.SafeAddRef();
-	return obj;
-}
+//RigidBody* RigidBody::Create(Collider* collider)
+//{
+//	ConfigData data;
+//	RefPtr<RigidBody> obj(LN_NEW RigidBody(), false);
+//	obj->Initialize(GetPhysicsManager(nullptr), collider, data);
+//	obj.SafeAddRef();
+//	return obj;
+//}
 
 //------------------------------------------------------------------------------
 RigidBody::RigidBody()
@@ -143,26 +40,20 @@ RigidBody::RigidBody()
 //------------------------------------------------------------------------------
 RigidBody::~RigidBody()
 {
-	if (m_btRigidBody != NULL)
+	if (m_btRigidBody != nullptr)
 	{
-		// 剛体を World から取り除く
-		// (Manager でやろうとすると、MultiThreadingRefObjectList からの削除をコールバックしたりしないとダメだったり、同じ処理を何箇所かに書かなければならないので面倒)
-		m_manager->GetBtWorld()->removeCollisionObject(m_btRigidBody);
-
 		btMotionState* state = m_btRigidBody->getMotionState();
 		LN_SAFE_DELETE(state);
-
 		LN_SAFE_RELEASE(m_collider);
-		//btCollisionShape* shape = m_btRigidBody->getCollisionShape();
-		//LN_SAFE_DELETE(shape);
-
 		LN_SAFE_DELETE(m_btRigidBody);
 	}
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::Initialize(PhysicsManager* manager, Collider* collider, const ConfigData& configData)
+void RigidBody::Initialize(Collider* collider, const ConfigData& configData)
 {
+	LN_CHECK_ARG(collider != nullptr);
+
 	LN_REFOBJ_SET(m_collider, collider);
 
 	// 各初期プロパティ
@@ -191,7 +82,7 @@ void RigidBody::Initialize(PhysicsManager* manager, Collider* collider, const Co
 
 	// 初期姿勢と MotionState
 	btTransform initialTransform;
-	if (configData.InitialTransform != NULL)
+	if (configData.InitialTransform != nullptr)
 	{
 		initialTransform.setFromOpenGLMatrix((const btScalar*)configData.InitialTransform);
 		initialTransform.getOrigin().setX(initialTransform.getOrigin().x() * configData.Scale);
@@ -238,15 +129,15 @@ void RigidBody::Initialize(PhysicsManager* manager, Collider* collider, const Co
 	m_groupMask = configData.GroupMask;
 	m_modifiedFlags = Modified_Activate;
 
-	BodyBase::Create(manager, m_btRigidBody);
-	m_manager->AddRigidBody(this);
-
+	BodyBase::Initialize(m_btRigidBody);
 
 	m_mass = configData.Mass;
 }
 //------------------------------------------------------------------------------
 void RigidBody::SetPosition(const Vector3& position)
 {
+	m_btRigidBody->activate();
+
 	m_worldTransform.m[3][0] = position.x;
 	m_worldTransform.m[3][1] = position.y;
 	m_worldTransform.m[3][2] = position.z;
@@ -427,7 +318,7 @@ void RigidBody::ClearForces()
 //------------------------------------------------------------------------------
 // 
 //------------------------------------------------------------------------------
-void RigidBody::SyncBeforeStepSimulation()
+void RigidBody::SyncBeforeStepSimulation(detail::PhysicsWorld* world)
 {
 	// RigidBodyConstraintFlags
 	if ((m_modifiedFlags & Modified_RigidBodyConstraintFlags) != 0)
@@ -490,8 +381,8 @@ void RigidBody::SyncBeforeStepSimulation()
 		m_btRigidBody->setMassProps(m_mass, inertia);
 		if (isStatic != m_btRigidBody->isStaticObject())
 		{
-			m_manager->GetBtWorld()->removeRigidBody(m_btRigidBody);
-			m_manager->GetBtWorld()->addRigidBody(m_btRigidBody);
+			world->GetBtWorld()->removeRigidBody(m_btRigidBody);
+			world->GetBtWorld()->addRigidBody(m_btRigidBody);
 		}
 	}
 
@@ -509,7 +400,7 @@ void RigidBody::SyncBeforeStepSimulation()
 	// ApplyForce
 	if ((m_modifiedFlags & Modified_ApplyForce) != 0)
 	{
-		m_btRigidBody->applyForce(BulletUtil::LNVector3ToBtVector3(m_appliedForce), btVector3(0,0,0));
+		m_btRigidBody->applyForce(detail::BulletUtil::LNVector3ToBtVector3(m_appliedForce), btVector3(0,0,0));
 		m_appliedForce = Vector3::Zero;
 	}
 	//m_btRigidBody->applyImpulse
@@ -540,113 +431,4 @@ void RigidBody::SyncAfterStepSimulation()
 	}
 }
 
-#if 0
-
-//==============================================================================
-// Plane
-//==============================================================================
-
-//------------------------------------------------------------------------------
-Plane::Plane(PhysicsManager* manager, uint16_t group, uint16_t groupMask)
-{
-	btCollisionShape* shape = new btStaticPlaneShape(btVector3(0.0f, 1.0f, 0.0f), 0.0f);
-
-	ConfigData data;
-	data.Group = group;
-	data.GroupMask = groupMask;
-	RigidBody::Create(manager, shape, data);
-}
-
-//------------------------------------------------------------------------------
-Plane::~Plane()
-{
-}
-
-//==============================================================================
-// Box
-//==============================================================================
-
-//------------------------------------------------------------------------------
-Box::Box(PhysicsManager* manager, const Vector3& size, float mass, uint16_t group, uint16_t groupMask)
-{
-	btCollisionShape* shape = new btBoxShape(BulletUtil::LNVector3ToBtVector3(size/* * 0.5f*/));
-
-	ConfigData data;
-	data.Mass = mass;
-	data.Group = group;
-	data.GroupMask = groupMask;
-	RigidBody::Create(manager, shape, data);
-}
-
-//------------------------------------------------------------------------------
-Box::Box(PhysicsManager* manager, const Vector3& size, const ConfigData& configData)
-{
-	btCollisionShape* shape = new btBoxShape(BulletUtil::LNVector3ToBtVector3(size/* * 0.5f*/));
-	RigidBody::Create(manager, shape, configData);
-}
-
-//------------------------------------------------------------------------------
-Box::~Box()
-{
-}
-
-//==============================================================================
-// Capsule
-//==============================================================================
-
-//------------------------------------------------------------------------------
-Capsule::Capsule(PhysicsManager* manager, float radius, float length, float mass, uint16_t group, uint16_t groupMask)
-{
-	btCollisionShape* shape = new btCapsuleShape(radius, length);
-
-	ConfigData data;
-	data.Mass = mass;
-	data.Group = group;
-	data.GroupMask = groupMask;
-	RigidBody::Create(manager, shape, data);
-}
-
-//------------------------------------------------------------------------------
-Capsule::Capsule(PhysicsManager* manager, float radius, float length, const ConfigData& configData)
-{
-	btCollisionShape* shape = new (radius, length);
-	RigidBody::Create(manager, shape, configData);
-}
-
-//------------------------------------------------------------------------------
-Capsule::~Capsule()
-{
-}
-
-//==============================================================================
-// Capsule
-//==============================================================================
-
-//------------------------------------------------------------------------------
-Sphere::Sphere(PhysicsManager* manager, float radius, float mass, uint16_t group, uint16_t groupMask)
-{
-	btCollisionShape* shape = new btSphereShape(radius);
-
-	ConfigData data;
-	data.Mass = mass;
-	data.Group = group;
-	data.GroupMask = groupMask;
-	RigidBody::Create(manager, shape, data);
-}
-
-//------------------------------------------------------------------------------
-Sphere::Sphere(PhysicsManager* manager, float radius, const ConfigData& configData)
-{
-	btCollisionShape* shape = new btSphereShape(radius);
-	RigidBody::Create(manager, shape, configData);
-}
-
-//------------------------------------------------------------------------------
-Sphere::~Sphere()
-{
-}
-
-#endif
-
-} // namespace Physics
 LN_NAMESPACE_END

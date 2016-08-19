@@ -3,7 +3,7 @@
 #include <map>
 #include <Lumino/Base/Stack.h>
 #include <Lumino/IO/FileManager.h>
-#include <Lumino/Physics/PhysicsManager.h>
+#include "../Physics/PhysicsManager.h"
 #include "../../src/Graphics/GraphicsManager.h"		// TODO: remove
 #include <Lumino/Scene/Common.h>
 #include "../Effect/EffectManager.h"
@@ -28,7 +28,7 @@ public:
 	{
 		EngineDiagCore*				engineDiag = nullptr;
 		FileManager*		FileManager;
-		Physics::PhysicsManager*	PhysicsManager;
+		detail::PhysicsManager*	PhysicsManager;
 		GraphicsManager*	GraphicsManager;
 		detail::EffectManager*		effectManager;
 		detail::ModelManager*		modelManager = nullptr;
@@ -74,7 +74,7 @@ public:
 
 public:	// internal
 	EngineDiagCore* GetEngineDiag() const { return m_engineDiag; }
-	Physics::PhysicsManager* GetPhysicsManager() { return m_physicsManager; }
+	detail::PhysicsManager* GetPhysicsManager() { return m_physicsManager; }
 	GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
 	detail::EffectManager* GetEffectManager() { return m_effectManager; }
 	detail::ModelManager* GetModelManager() { return m_modelManager; }
@@ -99,7 +99,7 @@ private:
 
 	EngineDiagCore*						m_engineDiag;
 	RefPtr<FileManager>					m_fileManager;
-	RefPtr<Physics::PhysicsManager>		m_physicsManager;
+	RefPtr<detail::PhysicsManager>		m_physicsManager;
 	RefPtr<GraphicsManager>	m_graphicsManager;
 	detail::EffectManager*				m_effectManager;
 	detail::ModelManager*				m_modelManager;

@@ -14,10 +14,8 @@
 #include "Lumino/Physics/Collider.h"
 #include "Lumino/Physics/BodyBase.h"
 #include "Lumino/Physics/Joint.h"
-#include "Lumino/Physics/PhysicsManager.h"
 #include "Lumino/Physics/RigidBody.h"
 #include "Lumino/Physics/Common.h"
-#include "Lumino/Physics/IDebugRenderer.h"
 
 #include "Lumino/Graphics/Common.h"
 #include "Lumino/Graphics/Graphics.h"

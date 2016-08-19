@@ -8,18 +8,15 @@
 #include "BulletUtils.h"
 
 LN_NAMESPACE_BEGIN
-namespace Physics
-{
 
 //==============================================================================
 // Collider
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Collider, tr::ReflectionObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Collider, Object);
 
 //------------------------------------------------------------------------------
 Collider::Collider()
-	: m_manager(nullptr)
-	, m_shape(nullptr)
+	: m_shape(nullptr)
 {
 }
 
@@ -30,9 +27,8 @@ Collider::~Collider()
 }
 
 //------------------------------------------------------------------------------
-void Collider::Initialize(PhysicsManager* manager, btCollisionShape* shape)
+void Collider::Initialize(btCollisionShape* shape)
 {
-	m_manager = manager;
 	m_shape = shape;
 }
 
@@ -42,12 +38,11 @@ void Collider::Initialize(PhysicsManager* manager, btCollisionShape* shape)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PlaneCollider, Collider);
 	
 //------------------------------------------------------------------------------
-PlaneCollider* PlaneCollider::Create(const Vector3& direction)
+PlaneColliderPtr PlaneCollider::Create(const Vector3& direction)
 {
-	RefPtr<PlaneCollider> obj(LN_NEW PlaneCollider(), false);
-	obj->Initialize(GetPhysicsManager(nullptr), direction);
-	obj.SafeAddRef();
-	return obj;
+	auto ptr = RefPtr<PlaneCollider>::MakeRef();
+	ptr->Initialize(direction);
+	return ptr;
 }
 
 //------------------------------------------------------------------------------
@@ -61,9 +56,9 @@ PlaneCollider::~PlaneCollider()
 }
 
 //------------------------------------------------------------------------------
-void PlaneCollider::Initialize(PhysicsManager* manager, const Vector3& direction)
+void PlaneCollider::Initialize(const Vector3& direction)
 {
-	Collider::Initialize(manager, new btStaticPlaneShape(BulletUtil::LNVector3ToBtVector3(Vector3::Normalize(direction)), 0.0f));
+	Collider::Initialize(new btStaticPlaneShape(detail::BulletUtil::LNVector3ToBtVector3(Vector3::Normalize(direction)), 0.0f));
 }
 
 //==============================================================================
@@ -72,16 +67,15 @@ void PlaneCollider::Initialize(PhysicsManager* manager, const Vector3& direction
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(BoxCollider, Collider);
 	
 //------------------------------------------------------------------------------
-BoxCollider* BoxCollider::Create(const Vector3& size)
+BoxColliderPtr BoxCollider::Create(const Vector3& size)
 {
-	RefPtr<BoxCollider> obj(LN_NEW BoxCollider(), false);
-	obj->Initialize(GetPhysicsManager(nullptr), size);
-	obj.SafeAddRef();
-	return obj;
+	auto ptr = RefPtr<BoxCollider>::MakeRef();
+	ptr->Initialize(size);
+	return ptr;
 }
 
 //------------------------------------------------------------------------------
-BoxCollider* BoxCollider::Create(float x, float y, float z)
+BoxColliderPtr BoxCollider::Create(float x, float y, float z)
 {
 	return Create(Vector3(x, y, z));
 }
@@ -97,9 +91,9 @@ BoxCollider::~BoxCollider()
 }
 
 //------------------------------------------------------------------------------
-void BoxCollider::Initialize(PhysicsManager* manager, const Vector3& size)
+void BoxCollider::Initialize(const Vector3& size)
 {
-	Collider::Initialize(manager, new btBoxShape(BulletUtil::LNVector3ToBtVector3(size * 0.5f)));
+	Collider::Initialize(new btBoxShape(detail::BulletUtil::LNVector3ToBtVector3(size * 0.5f)));
 	// ※PMD の剛体サイズは bullet のと同じなので注意
 }
 
@@ -109,12 +103,11 @@ void BoxCollider::Initialize(PhysicsManager* manager, const Vector3& size)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SphereCollider, Collider);
 	
 //------------------------------------------------------------------------------
-SphereCollider* SphereCollider::Create(float radius)
+SphereColliderPtr SphereCollider::Create(float radius)
 {
-	RefPtr<SphereCollider> obj(LN_NEW SphereCollider(), false);
-	obj->Initialize(GetPhysicsManager(nullptr), radius);
-	obj.SafeAddRef();
-	return obj;
+	auto ptr = RefPtr<SphereCollider>::MakeRef();
+	ptr->Initialize(radius);
+	return ptr;
 }
 	
 //------------------------------------------------------------------------------
@@ -128,9 +121,9 @@ SphereCollider::~SphereCollider()
 }
 
 //------------------------------------------------------------------------------
-void SphereCollider::Initialize(PhysicsManager* manager, float radius)
+void SphereCollider::Initialize(float radius)
 {
-	Collider::Initialize(manager, new btSphereShape(radius));
+	Collider::Initialize(new btSphereShape(radius));
 }
 
 //==============================================================================
@@ -139,12 +132,11 @@ void SphereCollider::Initialize(PhysicsManager* manager, float radius)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(CapsuleCollider, Collider);
 
 //------------------------------------------------------------------------------
-CapsuleCollider* CapsuleCollider::Create(float radius, float height)
+CapsuleColliderPtr CapsuleCollider::Create(float radius, float height)
 {
-	RefPtr<CapsuleCollider> obj(LN_NEW CapsuleCollider(), false);
-	obj->Initialize(GetPhysicsManager(nullptr), radius, height);
-	obj.SafeAddRef();
-	return obj;
+	auto ptr = RefPtr<CapsuleCollider>::MakeRef();
+	ptr->Initialize(radius, height);
+	return ptr;
 }
 
 //------------------------------------------------------------------------------
@@ -158,10 +150,9 @@ CapsuleCollider::~CapsuleCollider()
 }
 
 //------------------------------------------------------------------------------
-void CapsuleCollider::Initialize(PhysicsManager* manager, float radius, float height)
+void CapsuleCollider::Initialize(float radius, float height)
 {
-	Collider::Initialize(manager, new btCapsuleShape(radius, height));
+	Collider::Initialize(new btCapsuleShape(radius, height));
 }
-	
-} // namespace Physics
+
 LN_NAMESPACE_END

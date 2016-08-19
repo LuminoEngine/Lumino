@@ -60,19 +60,10 @@ public:
 		{
 			UpdateEachIKBoneTransform(ikBone->m_ikInfo);
 		}
-		//for (PmxIKResource* ik : owner->m_meshResource->iks)
-		//{
-		//	UpdateEachIKBoneTransform(ik);
-		//}
 	}
 
 	void UpdateEachIKBoneTransform(PmxIKResource* ik)
 	{
-		// ループ回数のリセット
-		//foreach(var link in IKbone.ikLinks) link.loopCount = 0;
-
-		// 決められた回数IKループを繰り返す
-
 		for (int iCalc = 0; iCalc < ik->LoopCount; iCalc++)
 		{
 			SkinnedMeshBone* ikBone = owner->m_allBoneList[ik->IKBoneIndex];			// IK ボーン (IK 情報を持つボーン。目標地点)
@@ -84,7 +75,6 @@ public:
 	void IKloop(PmxIKResource* ik, SkinnedMeshBone* ikBone, SkinnedMeshBone* effector)
 	{
 		Vector3 TargetGlobalPos = Vector3::TransformCoord(ikBone->GetCore()->OrgPosition, ikBone->GetCombinedMatrix());
-		//const Vector3& TargetGlobalPos = ikBone->GetCombinedMatrix().GetPosition();
 
 		for (int iLink = 0; iLink < ik->IKLinks.GetCount(); ++iLink)
 		{
@@ -93,53 +83,34 @@ public:
 
 			// ワールド座標系から注目ノードの局所座標系への変換
 			// (IKリンク基準のローカル座標系へ変換する行列)
-			Matrix ToLinkLocal = Matrix::MakeInverse(ikLinkBone->GetCombinedMatrix());
+			Matrix toLinkLocal = Matrix::MakeInverse(ikLinkBone->GetCombinedMatrix());
 
-			Vector3 ikLinkBoneLocalPos = Vector3::TransformCoord(ikLinkBone->GetCombinedMatrix().GetPosition(), ToLinkLocal);
-
-			// GetLink2Effector
-			Vector3 effectorPos = Vector3::TransformCoord(effector->GetCore()->OrgPosition, effector->GetCombinedMatrix() * ToLinkLocal); //●
-			//const Vector3& effectorPos = effector->GetCombinedMatrix().GetPosition();
-			//Vector3 effectorPos = Vector3::TransformCoord(effector->GetCombinedMatrix().GetPosition(), ToLinkLocal);
-			//Vector3 link2Effector = Vector3::SafeNormalize(effectorPos - ikLinkBoneLocalPos/*ikLinkBone->GetCore()->OrgPosition*/);
+			Vector3 effectorPos = Vector3::TransformCoord(effector->GetCore()->OrgPosition, effector->GetCombinedMatrix() * toLinkLocal);
 			Vector3 link2Effector = Vector3::SafeNormalize(effectorPos - ikLinkBone->GetCore()->OrgPosition);
 		
-			// GetLink2Target
-			Vector3 targetPos = Vector3::TransformCoord(TargetGlobalPos, ToLinkLocal);
-			//Vector3 targetPos = Vector3::TransformCoord(TargetGlobalPos, ToLinkLocal);
-			//Vector3 link2Target = Vector3::SafeNormalize(targetPos - ikLinkBoneLocalPos/*ikLinkBone->GetCore()->OrgPosition*/);
+			Vector3 targetPos = Vector3::TransformCoord(TargetGlobalPos, toLinkLocal);
 			Vector3 link2Target = Vector3::SafeNormalize(targetPos - ikLinkBone->GetCore()->OrgPosition);
 
 			IKLinkCalc(ikLink, ikLinkBone, link2Effector, link2Target, ik->IKRotateLimit);
-
-
-			//for (short jk = ik->IKLinks.GetCount() - 1; jk >= 0; --jk)
-			//{
-			//	owner->m_allBoneList[ik->IKLinks[jk].LinkBoneIndex]->UpdateGlobalTransform(false);
-			//}
-			//effector->UpdateGlobalTransform(true);
 		}
 	}
 
 	void IKLinkCalc(PmxIKResource::IKLink& ikLink, SkinnedMeshBone* ikLinkBone, const Vector3& link2Effector, const Vector3& link2Target, float RotationLimited)
 	{
-		//回転角度を求める
+		// 回転角度を求める
 		float dot = Vector3::Dot(link2Effector, link2Target);
 		if (dot > 1.0f) dot = 1.0f;
 		float rotationAngle = Math::Clamp(acosf(dot), -RotationLimited, RotationLimited);
 		if (Math::IsNaN(rotationAngle)) return;
 		if (rotationAngle <= 1.0e-3f) return;
 
-		//回転軸を求める
+		// 回転軸を求める
 		Vector3 rotationAxis = Vector3::Cross(link2Effector, link2Target);
-		//ikLink.loopCount++;
 
-		//軸を中心として回転する行列を作成する。
+		// 軸を中心として回転する行列を作成する
 		Quaternion rotation = Quaternion(rotationAxis, rotationAngle);
 		rotation.Normalize();
-		//ikLinkBone->GetLocalTransformPtr()->rotation = Quaternion::Multiply(ikLinkBone->GetLocalTransformPtr()->rotation, ikLinkBone->m_ikQuaternion);
 		ikLinkBone->GetLocalTransformPtr()->rotation = rotation * ikLinkBone->GetLocalTransformPtr()->rotation;
-		//ikLink.ikLinkBone.Rotation = rotation * ikLink.ikLinkBone.Rotation;
 
 		// 回転量制限
 		ikLinkBone->GetLocalTransformPtr()->rotation = RestrictRotation(ikLink, ikLinkBone->GetLocalTransformPtr()->rotation);
@@ -155,6 +126,7 @@ public:
 		bool locked;
 		Vector3 euler;
 
+		// まずオイラー角に分解する。
 		// 分解の試行順序は XYZ が一番最初でなければならない (Love&Joy モーションで破綻する)
 		type = RotationOrder::XYZ;
 		euler = localRot.ToEulerAngles(type, &locked);
@@ -175,29 +147,10 @@ public:
 
 		// 角度修正
 		NormalizeEular(&euler);
-
-		//euler.x = GetUpperLowerRadian(euler.x, ikLink.MinLimit.x, ikLink.MaxLimit.x, loopFlag);
-		//euler.y = GetUpperLowerRadian(euler.y, ikLink.MinLimit.y, ikLink.MaxLimit.y, loopFlag);
-		//euler.z = GetUpperLowerRadian(euler.z, ikLink.MinLimit.z, ikLink.MaxLimit.z, loopFlag);
 		euler.Clamp(ikLink.MinLimit, ikLink.MaxLimit);
-		//float xRotation = euler.x;
-		//float yRotation = euler.y;
-		//float zRotation = euler.z;
 
 		// 戻す
-		Matrix rotMat = Matrix::MakeRotationEulerAngles(euler, type);
-		//switch (type)
-		//{
-		//case RotationOrder::XYZ:
-		//	return Quaternion::MakeFromRotationMatrix(Matrix::MakeRotationX(xRotation) * Matrix::MakeRotationY(yRotation) * Matrix::MakeRotationZ(zRotation));
-		//case RotationOrder::YZX:
-		//	return Quaternion::MakeFromRotationMatrix(Matrix::MakeRotationY(yRotation) * Matrix::MakeRotationZ(zRotation) * Matrix::MakeRotationX(xRotation));
-		//case RotationOrder::ZXY:
-		//	return Quaternion::MakeFromYawPitchRoll(yRotation, xRotation, zRotation);
-		//}
-
-		//return localRot;
-		return Quaternion::MakeFromRotationMatrix(rotMat);
+		return Quaternion::MakeFromRotationMatrix(Matrix::MakeRotationEulerAngles(euler, type));
 	}
 };
 
@@ -397,74 +350,6 @@ void SkinnedMeshModel::UpdateSkinningMatrices()
 	}
 }
 
-//------------------------------------------------------------------------------
-
-static float GetUpperLowerRadian(float fR, float lower, float upper, bool loopFlag)
-{
-	if (fR < lower)
-	{
-		float num = 2.0f * lower - fR;
-		if (num <= upper && loopFlag)
-		{
-			fR = num;
-		}
-		else
-		{
-			fR = lower;
-		}
-	}
-	if (fR > upper)
-	{
-		float num2 = 2.0f * upper - fR;
-		if (num2 >= lower && loopFlag)
-		{
-			fR = num2;
-		}
-		else
-		{
-			fR = upper;
-		}
-	}
-	return fR;
-}
-//------------------------------------------------------------------------------
-static Quaternion LimitIKRotation(const PmxIKResource::IKLink& ikLink, const Quaternion& localRot, bool loopFlag)
-{
-	//if (!ikLink.IsRotateLimit) return;
-
-	RotationOrder type;
-	bool locked;
-	Vector3 euler;
-
-	type = RotationOrder::ZXY;
-	euler = localRot.ToEulerAngles(type, &locked);
-	if (locked)
-	{
-		type = RotationOrder::YZX;
-		euler = localRot.ToEulerAngles(type, &locked);
-		if (locked)
-		{
-			type = RotationOrder::XYZ;
-			euler = localRot.ToEulerAngles(type, &locked);
-			if (locked)
-			{
-				LN_CHECK_STATE(0);	// あり得ないはずだが…
-			}
-		}
-	}
-
-	// 角度修正
-	NormalizeEular(&euler);
-
-	//euler.x = GetUpperLowerRadian(euler.x, ikLink.MinLimit.x, ikLink.MaxLimit.x, loopFlag);
-	//euler.y = GetUpperLowerRadian(euler.y, ikLink.MinLimit.y, ikLink.MaxLimit.y, loopFlag);
-	//euler.z = GetUpperLowerRadian(euler.z, ikLink.MinLimit.z, ikLink.MaxLimit.z, loopFlag);
-	euler.Clamp(ikLink.MinLimit, ikLink.MaxLimit);
-
-	// 戻す
-	Matrix rotMat = Matrix::MakeRotationEulerAngles(euler, type);
-	return Quaternion::MakeFromRotationMatrix(rotMat);
-}
 
 //------------------------------------------------------------------------------
 void SkinnedMeshModel::UpdateIK()
@@ -472,667 +357,6 @@ void SkinnedMeshModel::UpdateIK()
 	CCDIK ik;
 	ik.owner = this;
 	ik.UpdateTransform();
-#if 0
-	for (PmxIKResource* ik : m_meshResource->iks)
-	{
-		UpdateIKInternal2(ik);
-		//SkinnedMeshBone* ikTarget = m_allBoneList[ik->IKTargetBoneIndex];
-		//ikTarget->m_ikLocalRotationMatrix = Matrix::MakeRotationQuaternion(ikTarget->m_userRotation);
-		//ikTarget->m_ikLocalMatrix =
-		//	Matrix::MakeTranslation(-ikTarget->m_localTransform.translation) *
-		//	ikTarget->m_ikLocalRotationMatrix *
-		//	Matrix::MakeTranslation(ikTarget->m_localTransform.translation);
-		//for (int i = 0; i < ik->LoopCount; ++i)
-		//{
-		//	UpdateIKInternal(ik, 0, i, ik->LoopCount / 2, 0);
-		//}
-	}
-#endif
-}
-static void UpdateIKChildMatrix(SkinnedMeshBone* ikLinkBone, Matrix parentMatrix, Matrix parent_mat_normal, SkinnedMeshBone* endframe, SkinnedMeshBone* target)
-{
-
-	ikLinkBone->m_combinedMatrix = ikLinkBone->m_ikLocalMatrix * parentMatrix;
-	ikLinkBone->m_position = Vector3::TransformCoord(ikLinkBone->GetCore()->OrgPosition, ikLinkBone->m_combinedMatrix);
-	ikLinkBone->m_globalRotationMatrix = ikLinkBone->m_ikLocalRotationMatrix * parent_mat_normal;
-
-	if (ikLinkBone->GetCore()->Name == _T("左足首"))
-	{
-		printf("");
-	}
-
-	for (SkinnedMeshBone* bone : ikLinkBone->m_children)
-	{
-		if (bone != endframe)
-		{
-			UpdateIKChildMatrix(bone, ikLinkBone->m_combinedMatrix, ikLinkBone->m_globalRotationMatrix, endframe, target);
-		}
-	}
-
-	//if (frame.Sibling != null && (frame.Sibling.Bone.BoneFlags & BoneType.IK_Child) > (BoneType)0 && (target.Bone.BoneFlags & BoneType.Unvisible) > (BoneType)0)
-	//{
-	//	this.UpdateIKChildMatrix(frame.Sibling, matrix, mat_normal, endframe, target);
-	//}
-	//if (ikLinkBone != endframe)
-	//{
-	//	//if (frame.Sibling != null)
-	//	//{
-	//	//	this.UpdateIKChildMatrix(frame.Sibling, matrix, mat_normal, endframe, target);
-	//	//}
-	//	if (frame.FirstChild != null)
-	//	{
-	//		
-	//	}
-	//}
-}
-//------------------------------------------------------------------------------
-void SkinnedMeshModel::UpdateIKInternal(PmxIKResource* ik, int linkIndex, int loop, int ikt, int depth)
-{
-	/*
-		[注意] MMDのIKには、IKの計算結果はIK系列の子ボーンには適用されないという特徴があります。
-		http://ch.nicovideo.jp/penguin/blomaga/ar70894
-	*/
-	PmxIKResource::IKLink& ikLink = ik->IKLinks[linkIndex];
-	SkinnedMeshBone* ikLinkBone = m_allBoneList[ikLink.LinkBoneIndex];	// 動かすボーン
-	SkinnedMeshBone* ikBone = m_allBoneList[ik->IKBoneIndex];			// IK ボーン (IK 情報を持つボーン。目標地点)
-	SkinnedMeshBone* effector = m_allBoneList[ik->IKTargetBoneIndex];	// IK ターゲットボーン (エフェクタ。IKに向くべきボーンたちの中の先頭ボーン)
-
-	// ↓これらの Position はグローバル空間
-	Vector3 vector = Vector3::SafeNormalize(ikLinkBone->GetPosition() - effector->GetPosition());
-	Vector3 vector2 = Vector3::SafeNormalize(ikLinkBone->GetPosition() - ikBone->GetPosition());
-	Vector3 rotationAxis = Vector3::SafeNormalize(Vector3::Cross(vector, vector2));
-
-	const Matrix& matNormal = ikLinkBone->m_globalRotationMatrix;
-	float restrictRadian = ik->IKRotateLimit;
-
-	// IKLink についている角度制限を　rotationAxis にほどこす
-	if (ikLink.IsRotateLimit && loop < ikt)
-	{
-		const Matrix& parentMatNormal = ikLinkBone->GetParent()->m_globalRotationMatrix;
-
-		if (ikLink.MinLimit.y == 0.0f && ikLink.MaxLimit.y == 0.0f && ikLink.MinLimit.z == 0.0f && ikLink.MaxLimit.z == 0.0f)
-		{
-			// parentMatNormal の右方向と乗算
-			float num = rotationAxis.x * parentMatNormal.m11 + rotationAxis.y * parentMatNormal.m12 + rotationAxis.z * parentMatNormal.m13;
-			if (num >= 0.0f)
-			{
-				rotationAxis.x = 1.0f;
-			}
-			else
-			{
-				rotationAxis.x = -1.0f;
-			}
-			rotationAxis.y = 0.0f;
-			rotationAxis.z = 0.0f;
-		}
-		else
-		{
-			// parentMatNormal の上方向と乗算
-			if (ikLink.MinLimit.x == 0.0f && ikLink.MaxLimit.x == 0.0f && ikLink.MinLimit.z == 0.0f && ikLink.MaxLimit.z == 0.0f)
-			{
-				float num2 = rotationAxis.x * parentMatNormal.m21 + rotationAxis.y * parentMatNormal.m22 + rotationAxis.z * parentMatNormal.m23;
-				if (num2 >= 0.0f)
-				{
-					rotationAxis.y = 1.0f;
-				}
-				else
-				{
-					rotationAxis.y = -1.0f;
-				}
-				rotationAxis.x = 0.0f;
-				rotationAxis.z = 0.0f;
-			}
-			else
-			{
-				if (ikLink.MinLimit.x == 0.0f && ikLink.MaxLimit.x == 0.0f && ikLink.MinLimit.y == 0.0f && ikLink.MaxLimit.y == 0.0f)
-				{
-					// parentMatNormal の前方向と乗算
-					float num3 = rotationAxis.x * parentMatNormal.m31 + rotationAxis.y * parentMatNormal.m32 + rotationAxis.z * parentMatNormal.m33;
-					if (num3 >= 0.0f)
-					{
-						rotationAxis.z = 1.0f;
-					}
-					else
-					{
-						rotationAxis.z = -1.0f;
-					}
-					rotationAxis.x = 0.0f;
-					rotationAxis.y = 0.0f;
-				}
-				else
-				{
-					// 回転のみの座標返還
-					Vector3 v;
-					v.x = rotationAxis.x * matNormal.m11 + rotationAxis.y * matNormal.m12 + rotationAxis.z * matNormal.m13;
-					v.y = rotationAxis.x * matNormal.m21 + rotationAxis.y * matNormal.m22 + rotationAxis.z * matNormal.m23;
-					v.z = rotationAxis.x * matNormal.m31 + rotationAxis.y * matNormal.m32 + rotationAxis.z * matNormal.m33;
-					rotationAxis = Vector3::SafeNormalize(v);
-				}
-			}
-		}
-	}
-	// 角度制限しない場合
-	else
-	{
-		// 回転のみの座標返還
-		Vector3 v;
-		v.x = rotationAxis.x * matNormal.m11 + rotationAxis.y * matNormal.m12 + rotationAxis.z * matNormal.m13;
-		v.y = rotationAxis.x * matNormal.m21 + rotationAxis.y * matNormal.m22 + rotationAxis.z * matNormal.m23;
-		v.z = rotationAxis.x * matNormal.m31 + rotationAxis.y * matNormal.m32 + rotationAxis.z * matNormal.m33;
-		rotationAxis = Vector3::SafeNormalize(v);
-	}
-
-	// 回転角
-	float num4 = Vector3::Dot(vector, vector2);
-	if (num4 > 1.0f)
-	{
-		num4 = 1.0f;
-	}
-	else
-	{
-		if (num4 < -1.0f)
-		{
-			num4 = -1.0f;
-		}
-	}
-	num4 = acosf(num4);
-	if (num4 > restrictRadian * (float)(depth + 1))
-	{
-		num4 = restrictRadian * (float)(depth + 1);
-	}
-
-	Quaternion tq = Quaternion::Identity;
-	if (rotationAxis != Vector3::Zero) tq = Quaternion::MakeFromRotationAxis(rotationAxis, num4);
-	ikLinkBone->m_ikQuaternion = tq * ikLinkBone->m_ikQuaternion;
-	if (loop == 0)
-	{
-		ikLinkBone->m_ikQuaternion *= ikLinkBone->m_userRotation;// *ikLinkBone->m_inherehRotation * ikLinkBone->m_morphRotation;
-	}
-	Matrix matrix = Matrix::MakeRotationQuaternion(ikLinkBone->m_ikQuaternion);
-
-	// ↓角度制限。matrix と ikLinkBone->m_ikQuaternion に結果を設定する
-	// m_ikQuaternion は前回値として保持している。
-	if (ikLink.IsRotateLimit)
-	{
-		if ((double)ikLink.MinLimit.x > -1.5707963267948966 && (double)ikLink.MaxLimit.x < 1.5707963267948966)
-		{
-			float num5 = -matrix.m32;
-			float num6 = asinf(num5);
-			if (abs(num6) > 1.535889f)
-			{
-				if (num6 < 0.0f)
-				{
-					num6 = -1.535889f;
-				}
-				else
-				{
-					num6 = 1.535889f;
-				}
-			}
-			float num7 = cosf(num6);
-			float num8 = matrix.m31 / num7;
-			float num9 = matrix.m33 / num7;
-			float num10 = atan2f(num8, num9);
-			float num11 = matrix.m12 / num7;
-			float num12 = matrix.m22 / num7;
-			float num13 = atan2f(num11, num12);
-			bool loopFlag = loop < ikt;
-			num6 = GetUpperLowerRadian(num6, ikLink.MinLimit.x, ikLink.MaxLimit.x, loopFlag);
-			num10 = GetUpperLowerRadian(num10, ikLink.MinLimit.y, ikLink.MaxLimit.y, loopFlag);
-			num13 = GetUpperLowerRadian(num13, ikLink.MinLimit.z, ikLink.MaxLimit.z, loopFlag);
-			matrix = Matrix::MakeRotationZ(num13) * Matrix::MakeRotationX(num6) * Matrix::MakeRotationY(num10);
-		}
-		else
-		{
-			if ((double)ikLink.MinLimit.y > -1.5707963267948966 && (double)ikLink.MaxLimit.y < 1.5707963267948966)
-			{
-				float num14 = -matrix.m13;
-				float num15 = (float)asinf((double)num14);
-				if (abs(num15) > 1.535889f)
-				{
-					if (num15 < 0.0f)
-					{
-						num15 = -1.535889f;
-					}
-					else
-					{
-						num15 = 1.535889f;
-					}
-				}
-				float num16 = (float)cosf((double)num15);
-				float num17 = matrix.m23 / num16;
-				float num18 = matrix.m33 / num16;
-				float num19 = (float)atan2f((double)num17, (double)num18);
-				float num20 = matrix.m12 / num16;
-				float num21 = matrix.m11 / num16;
-				float num22 = (float)atan2f((double)num20, (double)num21);
-				bool loopFlag2 = loop < ikt;
-				num19 = GetUpperLowerRadian(num19, ikLink.MinLimit.x, ikLink.MaxLimit.x, loopFlag2);
-				num15 = GetUpperLowerRadian(num15, ikLink.MinLimit.y, ikLink.MaxLimit.y, loopFlag2);
-				num22 = GetUpperLowerRadian(num22, ikLink.MinLimit.z, ikLink.MaxLimit.z, loopFlag2);
-				matrix = Matrix::MakeRotationX(num19) * Matrix::MakeRotationY(num15) * Matrix::MakeRotationZ(num22);
-			}
-			else
-			{
-				float num23 = -matrix.m21;
-				float num24 = (float)asinf((double)num23);
-				if (abs(num24) > 1.535889f)
-				{
-					if (num24 < 0.0f)
-					{
-						num24 = -1.535889f;
-					}
-					else
-					{
-						num24 = 1.535889f;
-					}
-				}
-				float num25 = (float)cosf((double)num24);
-				float num26 = matrix.m23 / num25;
-				float num27 = matrix.m22 / num25;
-				float num28 = (float)atan2f((double)num26, (double)num27);
-				float num29 = matrix.m31 / num25;
-				float num30 = matrix.m11 / num25;
-				float num31 = (float)atan2f((double)num29, (double)num30);
-				bool loopFlag3 = loop < ikt;
-				num28 = GetUpperLowerRadian(num28, ikLink.MinLimit.x, ikLink.MaxLimit.x, loopFlag3);
-				num31 = GetUpperLowerRadian(num31, ikLink.MinLimit.y, ikLink.MaxLimit.y, loopFlag3);
-				num24 = GetUpperLowerRadian(num24, ikLink.MinLimit.z, ikLink.MaxLimit.z, loopFlag3);
-				matrix = Matrix::MakeRotationY(num31) * Matrix::MakeRotationZ(num24) * Matrix::MakeRotationX(num28);
-			}
-		}
-		ikLinkBone->m_ikQuaternion = Quaternion::MakeFromRotationMatrix(matrix);
-	}
-
-	
-
-	ikLinkBone->m_ikLocalRotationMatrix = matrix;
-	ikLinkBone->m_ikLocalMatrix = Matrix::MakeTranslation(-ikLinkBone->m_localTransform.translation) * matrix * Matrix::MakeTranslation(ikLinkBone->m_localTransform.translation);
-	ikLinkBone->m_combinedMatrix = ikLinkBone->m_ikLocalMatrix * ikLinkBone->GetParent()->GetCombinedMatrix();  // これが最終出力
-	ikLinkBone->m_position = Vector3::TransformCoord(ikLinkBone->GetCore()->OrgPosition, ikLinkBone->m_combinedMatrix);
-	ikLinkBone->m_globalRotationMatrix = ikLinkBone->m_ikLocalRotationMatrix *  ikLinkBone->GetParent()->m_globalRotationMatrix;
-	
-	if (ikLinkBone->GetCore()->Name == _T("左足首"))
-	{
-		printf("");
-	}
-
-
-	for (int i = 0; i < ikLinkBone->m_children.GetCount(); ++i)
-	{
-		UpdateIKChildMatrix(ikLinkBone->m_children[i], ikLinkBone->m_combinedMatrix, ikLinkBone->m_globalRotationMatrix, effector, ikBone);
-	}
-	if (linkIndex < ik->IKLinks.GetCount() - 1)
-	{
-		linkIndex++;
-		UpdateIKInternal(ik, linkIndex, loop, ikt, depth + 1);
-	}
-
-}
-
-void SkinnedMeshModel::UpdateIKInternal2(PmxIKResource* ik)
-{
-	//ModelFrame2* effector = mOwnerModel->getFrame( ikTargetBone->getFrameCore()->IKTargetBoneIndex );
-
-	for (SkinnedMeshBone* bone : m_allBoneList)
-	{
-		bone->m_ikLocalRotationMatrix = Matrix::Identity;
-		bone->m_ikQuaternion = Quaternion::Identity;
-	}
-
-
-	SkinnedMeshBone* ikBone = m_allBoneList[ik->IKBoneIndex];			// IK ボーン (IK 情報を持つボーン。目標地点)
-	SkinnedMeshBone* effector = m_allBoneList[ik->IKTargetBoneIndex];	// IK ターゲットボーン (エフェクタ。IKに向くべきボーンたちの中の先頭ボーン)
-	int ikt = ik->LoopCount / 2;
-
-	// IK構成ボーンのグローバル行列を再更新する
-	for (short jk = ik->IKLinks.GetCount() - 1; jk >= 0; --jk)
-	{
-		m_allBoneList[ik->IKLinks[jk].LinkBoneIndex]->UpdateGlobalTransform(false);
-	}
-	effector->UpdateGlobalTransform(false);
-
-	if (effector->m_combinedMatrix.GetPosition().y > 10)
-	{
-		effector->m_combinedMatrix.GetPosition().Print();
-	}
-
-	for (int iCalc = 0; iCalc < ik->LoopCount; iCalc++)
-	{
-		// IKボーンのグローバル位置
-		const Vector3& targetPos = ikBone->GetCombinedMatrix().GetPosition();
-
-		for (int iLink = 0; iLink < ik->IKLinks.GetCount(); ++iLink)
-		{
-			// 動かすボーン
-			PmxIKResource::IKLink& ikLink = ik->IKLinks[iLink];
-			SkinnedMeshBone* ikLinkBone = m_allBoneList[ikLink.LinkBoneIndex];
-
-			// エフェクタの位置
-			const Vector3& effPos = effector->GetCombinedMatrix().GetPosition();
-			//effPos.Print();
-			//targetPos.Print();
-
-			// ワールド座標系から注目ノードの局所座標系への変換
-			// (IKリンク基準のローカル座標系へ変換する行列)
-			Matrix invCoord = Matrix::MakeInverse(ikLinkBone->GetCombinedMatrix());
-
-			// 各ベクトルの座標変換を行い、検索中のボーンi基準の座標系にする
-			// (1) 注目ノード→エフェクタ位置へのベクトル(a)(注目ノード)
-			Vector3 localEffPos = Vector3::TransformCoord(effPos, invCoord);
-
-			// (2) 基準関節i→目標位置へのベクトル(b)(ボーンi基準座標系)
-			Vector3 localTargetPos = Vector3::TransformCoord(targetPos, invCoord);
-
-			// 十分近ければ終了
-			if ((localEffPos - localTargetPos).GetLengthSquared() < 0.0000001f) return;
-
-			// (1) 基準関節→エフェクタ位置への方向ベクトル
-			Vector3 localEffDir = Vector3::SafeNormalize(localEffPos);
-			// (2) 基準関節→目標位置への方向ベクトル
-			Vector3 localTargetDir = Vector3::SafeNormalize(localTargetPos);
-
-			//if (ikLinkBone->GetCore()->Name.Contains(_T("ひざ")))
-			//{
-			//	// X 軸を切る (MikuMikuPenguin から参考にした)
-			//	localEffDir.Set(0, localEffDir.y, localEffDir.z);
-			//	localEffDir.Normalize();
-			//	localTargetDir.Set(0, localTargetDir.y, localTargetDir.z);
-			//	localTargetDir.Normalize();
-			//}
-
-			// 回転軸
-			Vector3 rotationAxis = Vector3::Cross(localEffDir, localTargetDir);
-			if (rotationAxis.GetLengthSquared() < 0.0000001f) continue;
-			rotationAxis.Normalize();
-
-			if (ikLink.IsRotateLimit && iCalc < ikt)
-			{
-				const Matrix& parentMatNormal = ikLinkBone->GetParent()->m_globalRotationMatrix;
-
-				if (ikLink.MinLimit.y == 0.0f && ikLink.MaxLimit.y == 0.0f && ikLink.MinLimit.z == 0.0f && ikLink.MaxLimit.z == 0.0f)
-				{
-					rotationAxis.Set((rotationAxis.x >= 0.0f) ? 1.0f : -1.0f, 0.0f, 0.0f);
-				}
-				else
-				{
-					if (ikLink.MinLimit.x == 0.0f && ikLink.MaxLimit.x == 0.0f && ikLink.MinLimit.z == 0.0f && ikLink.MaxLimit.z == 0.0f)
-					{
-						rotationAxis.Set(0.0f, (rotationAxis.y >= 0.0f) ? 1.0f : -1.0f, 0.0f);
-					}
-					else
-					{
-						if (ikLink.MinLimit.x == 0.0f && ikLink.MaxLimit.x == 0.0f && ikLink.MinLimit.y == 0.0f && ikLink.MaxLimit.y == 0.0f)
-						{
-							rotationAxis.Set(0.0f, 0.0f, (rotationAxis.z >= 0.0f) ? 1.0f : -1.0f);
-						}
-					}
-				}
-			}
-
-
-			// 回転角
-			float rotationDotProduct = Vector3::Dot(localEffDir, localTargetDir);
-			rotationDotProduct = Math::Clamp(rotationDotProduct, -1.0f, 1.0f);
-			float rotationAngle = acosf(rotationDotProduct);
-			if (rotationAngle > (ik->IKRotateLimit / 40) * (float)(iLink + 1))
-			{
-				rotationAngle = (ik->IKRotateLimit / 40) * (float)(iLink + 1);
-			}
-			//if (rotationAngle > ik->IKRotateLimit)
-			//	rotationAngle = ik->IKRotateLimit;
-			//if (rotationAngle < -ik->IKRotateLimit)
-			//	rotationAngle = -ik->IKRotateLimit;
-
-
-			if (0.00000001f < fabsf(rotationAngle))
-			{
-				// 回転量制限をかける
-				//if (rotationAngle > ik->IKRotateLimit /16)
-				//{
-				//	rotationAngle = ik->IKRotateLimit / 16;
-				//}
-				//if (rotationAngle > ik->IKRotateLimit / 16)
-				//	rotationAngle = ik->IKRotateLimit / 16;
-				//if (rotationAngle < -ik->IKRotateLimit / 16)
-				//	rotationAngle = -ik->IKRotateLimit / 16;
-
-				Quaternion tq = Quaternion::Identity;
-				if (rotationAxis != Vector3::Zero) tq = Quaternion::MakeFromRotationAxis(rotationAxis, rotationAngle);
-				ikLinkBone->m_ikQuaternion = tq * ikLinkBone->m_ikQuaternion;
-				//if (iCalc == 0)
-				//{
-				//	ikLinkBone->m_ikQuaternion *= ikLinkBone->GetLocalTransformPtr()->rotation;//ikLinkBone->m_userRotation;// *ikLinkBone->m_inherehRotation * ikLinkBone->m_morphRotation;
-				//}
-
-				//ikLinkBone->m_ikQuaternion = tq;
-				Matrix matrix = Matrix::MakeRotationQuaternion(ikLinkBone->m_ikQuaternion);
-
-				// ↓角度制限。matrix と ikLinkBone->m_ikQuaternion に結果を設定する
-				// m_ikQuaternion は前回値として保持している。
-				if (ikLink.IsRotateLimit)
-				{
-#if 1
-					bool loopFlag2 = iCalc < ikt;
-					ikLinkBone->m_ikQuaternion = LimitIKRotation(ikLink, ikLinkBone->m_ikQuaternion, loopFlag2);
-#else
-					if ((double)ikLink.MinLimit.x > -1.5707963267948966 && (double)ikLink.MaxLimit.x < 1.5707963267948966)
-					{
-						float num5 = -matrix.m32;
-						float num6 = asinf(num5);
-						if (abs(num6) > 1.535889f)
-						{
-							if (num6 < 0.0f)
-							{
-								num6 = -1.535889f;
-							}
-							else
-							{
-								num6 = 1.535889f;
-							}
-						}
-						float num7 = cosf(num6);
-						float num8 = matrix.m31 / num7;
-						float num9 = matrix.m33 / num7;
-						float num10 = atan2f(num8, num9);
-						float num11 = matrix.m12 / num7;
-						float num12 = matrix.m22 / num7;
-						float num13 = atan2f(num11, num12);
-						bool loopFlag = iCalc < ikt;
-						num6 = GetUpperLowerRadian(num6, ikLink.MinLimit.x, ikLink.MaxLimit.x, loopFlag);
-						num10 = GetUpperLowerRadian(num10, ikLink.MinLimit.y, ikLink.MaxLimit.y, loopFlag);
-						num13 = GetUpperLowerRadian(num13, ikLink.MinLimit.z, ikLink.MaxLimit.z, loopFlag);
-						matrix = Matrix::MakeRotationZ(num13) * Matrix::MakeRotationX(num6) * Matrix::MakeRotationY(num10);
-					}
-					else
-					{
-						if ((double)ikLink.MinLimit.y > -1.5707963267948966 && (double)ikLink.MaxLimit.y < 1.5707963267948966)
-						{
-							float num14 = -matrix.m13;
-							float num15 = (float)asinf((double)num14);
-							if (abs(num15) > 1.535889f)
-							{
-								if (num15 < 0.0f)
-								{
-									num15 = -1.535889f;
-								}
-								else
-								{
-									num15 = 1.535889f;
-								}
-							}
-							float num16 = (float)cosf((double)num15);
-							float num17 = matrix.m23 / num16;
-							float num18 = matrix.m33 / num16;
-							float num19 = (float)atan2f((double)num17, (double)num18);
-							float num20 = matrix.m12 / num16;
-							float num21 = matrix.m11 / num16;
-							float num22 = (float)atan2f((double)num20, (double)num21);
-							bool loopFlag2 = iCalc < ikt;
-							num19 = GetUpperLowerRadian(num19, ikLink.MinLimit.x, ikLink.MaxLimit.x, loopFlag2);
-							num15 = GetUpperLowerRadian(num15, ikLink.MinLimit.y, ikLink.MaxLimit.y, loopFlag2);
-							num22 = GetUpperLowerRadian(num22, ikLink.MinLimit.z, ikLink.MaxLimit.z, loopFlag2);
-							matrix = Matrix::MakeRotationX(num19) * Matrix::MakeRotationY(num15) * Matrix::MakeRotationZ(num22);
-						}
-						else
-						{
-							float num23 = -matrix.m21;
-							float num24 = (float)asinf((double)num23);
-							if (abs(num24) > 1.535889f)
-							{
-								if (num24 < 0.0f)
-								{
-									num24 = -1.535889f;
-								}
-								else
-								{
-									num24 = 1.535889f;
-								}
-							}
-							float num25 = (float)cosf((double)num24);
-							float num26 = matrix.m23 / num25;
-							float num27 = matrix.m22 / num25;
-							float num28 = (float)atan2f((double)num26, (double)num27);
-							float num29 = matrix.m31 / num25;
-							float num30 = matrix.m11 / num25;
-							float num31 = (float)atan2f((double)num29, (double)num30);
-							bool loopFlag3 = iCalc < ikt;
-							num28 = GetUpperLowerRadian(num28, ikLink.MinLimit.x, ikLink.MaxLimit.x, loopFlag3);
-							num31 = GetUpperLowerRadian(num31, ikLink.MinLimit.y, ikLink.MaxLimit.y, loopFlag3);
-							num24 = GetUpperLowerRadian(num24, ikLink.MinLimit.z, ikLink.MaxLimit.z, loopFlag3);
-							matrix = Matrix::MakeRotationY(num31) * Matrix::MakeRotationZ(num24) * Matrix::MakeRotationX(num28);
-						}
-					}
-					ikLinkBone->m_ikQuaternion = Quaternion::MakeFromRotationMatrix(matrix);
-#endif
-				}
-
-
-
-				ikLinkBone->m_ikLocalRotationMatrix = matrix;
-				
-				
-
-				// 関節回転量の補正
-				//Quaternion rotQuat(rotationAxis, rotationAngle);
-
-
-				//if (ikLink.IsRotateLimit)
-				//{
-				//	//Vector3 angles = rotQuat.ToEulerAngles();
-
-				//	//if (angles.x < -3.14159f)	angles.x = -3.14159f;
-				//	//if (-0.002f < angles.x)		angles.x = -0.002f;
-				//	//angles.y = 0.0f;
-				//	//angles.z = 0.0f;
-
-				//	//rotQuat = Quaternion::MakeFromEulerAngles(angles);
-				//	rotQuat = LimitIKRotation(ikLink, rotQuat);
-				//}
-
-				//rotQuat.Normalize();
-
-				ikLinkBone->GetLocalTransformPtr()->rotation = Quaternion::Multiply(ikLinkBone->GetLocalTransformPtr()->rotation, ikLinkBone->m_ikQuaternion);
-				//ikLinkBone->GetLocalTransformPtr()->rotation = ikLinkBone->m_ikQuaternion;//Quaternion::Multiply(ikLinkBone->GetLocalTransformPtr()->rotation, rotQuat);
-				//ikLinkBone->GetLocalTransformPtr()->rotation = Quaternion::Multiply(ikLinkBone->GetLocalTransformPtr()->rotation, rotQuat);
-				ikLinkBone->GetLocalTransformPtr()->rotation.Normalize();
-
-
-
-				for (short jk = ik->IKLinks.GetCount() - 1; jk >= 0; --jk)
-				{
-					m_allBoneList[ik->IKLinks[jk].LinkBoneIndex]->UpdateGlobalTransform(false);
-				}
-				effector->UpdateGlobalTransform(true);
-
-				//if (effector->m_combinedMatrix.GetPosition().y > 10)
-				//{
-				//	effector->m_combinedMatrix.GetPosition().Print();
-				//}
-
-				//if (ikLinkBone->GetCore()->Name == _T("左足首") && ikLinkBone->m_combinedMatrix.GetPosition().y > 10)
-				//{
-				//	ikLinkBone->m_combinedMatrix.GetPosition().Print();
-				//}
-
-			}
-#if 0
-#if 0
-			//回転量制限をかける
-			if (rotationAngle > Math::PI * ik->IKRotateLimit * (iLink + 1))
-				rotationAngle = Math::PI * ik->IKRotateLimit * (iLink + 1);
-			if (rotationAngle < -Math::PI * ik->IKRotateLimit * (iLink + 1))
-				rotationAngle = -Math::PI * ik->IKRotateLimit * (iLink + 1);
-
-#else
-			//回転量制限をかける
-			//if (rotationAngle > ik->IKRotateLimit)
-			//	rotationAngle = ik->IKRotateLimit;
-			//if (rotationAngle < -ik->IKRotateLimit)
-			//	rotationAngle = -ik->IKRotateLimit;
-#endif
-
-			// 回転軸
-			Vector3 rotationAxis = Vector3::SafeNormalize(Vector3::Cross(localEffDir, localTargetDir));
-
-			//if (ikLink.IsRotateLimit && iCalc < ikt)
-			//{
-			//	const Matrix& parentMatNormal = ikLinkBone->GetParent()->m_globalRotationMatrix;
-
-			//	if (ikLink.MinLimit.y == 0.0f && ikLink.MaxLimit.y == 0.0f && ikLink.MinLimit.z == 0.0f && ikLink.MaxLimit.z == 0.0f)
-			//	{
-			//		rotationAxis.Set((rotationAxis.x >= 0.0f) ? 1.0f : -1.0f, 0.0f, 0.0f);
-			//	}
-			//	else
-			//	{
-			//		if (ikLink.MinLimit.x == 0.0f && ikLink.MaxLimit.x == 0.0f && ikLink.MinLimit.z == 0.0f && ikLink.MaxLimit.z == 0.0f)
-			//		{
-			//			rotationAxis.Set(0.0f, (rotationAxis.y >= 0.0f) ? 1.0f : -1.0f, 0.0f);
-			//		}
-			//		else
-			//		{
-			//			if (ikLink.MinLimit.x == 0.0f && ikLink.MaxLimit.x == 0.0f && ikLink.MinLimit.y == 0.0f && ikLink.MaxLimit.y == 0.0f)
-			//			{
-			//				rotationAxis.Set(0.0f, 0.0f, (rotationAxis.z >= 0.0f) ? 1.0f : -1.0f);
-			//			}
-			//		}
-			//	}
-			//}
-			//
-
-
-
-
-			if (!Math::IsNaN(rotationAngle) && rotationAngle > 1.0e-3f && !rotationAxis.IsNaNOrInf())
-			{
-				// 関節回転量の補正
-				Quaternion rotQuat(rotationAxis, rotationAngle);
-				ikLinkBone->GetLocalTransformPtr()->rotation = Quaternion::Multiply(ikLinkBone->GetLocalTransformPtr()->rotation, rotQuat);
-
-				// 回転制限
-				//LimitIKRotation(ikLink, ikLinkBone);
-
-				// 末端のほうから、IK構成ボーンのグローバル行列を再更新する
-				// TODO: IKLinks の順番は付け根→末端へを前提にしている。念のため事前チェックしたほうがいいかも
-				for (short jk = ik->IKLinks.GetCount() - 1; jk >= 0; --jk)
-				{
-					m_allBoneList[ik->IKLinks[jk].LinkBoneIndex]->UpdateGlobalTransform(false);
-				}
-				effector->UpdateGlobalTransform(true);
-
-				if (effector->m_combinedMatrix.GetPosition().y > 10)
-				{
-					effector->m_combinedMatrix.GetPosition().Print();
-				}
-
-				if (ikLinkBone->GetCore()->Name == _T("左足首") && ikLinkBone->m_combinedMatrix.GetPosition().y > 10)
-				{
-					ikLinkBone->m_combinedMatrix.GetPosition().Print();
-				}
-			}
-#endif
-		}
-	}
 }
 
 //------------------------------------------------------------------------------
@@ -1204,25 +428,11 @@ void SkinnedMeshBone::AddChildBone(SkinnedMeshBone* bone)
 //------------------------------------------------------------------------------
 void SkinnedMeshBone::UpdateGlobalTransform(bool hierarchical)
 {
-#if 0
-	// m_localTransform は、ボーンのローカル姿勢でアニメーションが適用されている。
-	// 適用されていなければ Identity。
-	//m_combinedMatrix = m_localTransform;
-	m_combinedMatrix =
-		//Matrix::MakeTranslation(-m_core->OrgPosition) *
-		Matrix::MakeRotationQuaternion(m_localTransform.rotation) *
-		Matrix::MakeTranslation(m_localTransform.translation)/* *
-		Matrix::MakeTranslation(m_core->OrgPosition)*/;
-
-	// 親からの平行移動量
-	m_combinedMatrix.Translate(m_core->GetOffsetFromParent());
-#else
 	m_combinedMatrix =
 		Matrix::MakeTranslation(-m_core->OrgPosition) *
 		Matrix::MakeRotationQuaternion(m_localTransform.rotation) *
 		Matrix::MakeTranslation(m_localTransform.translation) *
 		Matrix::MakeTranslation(m_core->OrgPosition);
-#endif
 
 	// 親行列と結合
 	Matrix parentRotation;
@@ -1230,11 +440,6 @@ void SkinnedMeshBone::UpdateGlobalTransform(bool hierarchical)
 	{
 		m_combinedMatrix *= m_parent->GetCombinedMatrix();
 	}
-
-	//if (m_combinedMatrix.IsNaNOrInf())
-	//{
-	//	printf("");
-	//}
 
 	// 子ボーン更新
 	if (hierarchical)
@@ -1244,13 +449,6 @@ void SkinnedMeshBone::UpdateGlobalTransform(bool hierarchical)
 			bone->UpdateGlobalTransform(hierarchical);
 		}
 	}
-
-	m_position = Vector3::TransformCoord(GetCore()->OrgPosition, m_combinedMatrix);
-	m_userRotation = m_localTransform.rotation;
-	Matrix matrix2 = Matrix::MakeRotationQuaternion(/*m_morphRotation * */m_userRotation/* * m_inherehRotation*/);
-	m_globalRotationMatrix = matrix2 * parentRotation;
-	m_ikLocalRotationMatrix = Matrix::Identity;
-	m_ikQuaternion = Quaternion::Identity;
 }
 
 //------------------------------------------------------------------------------

@@ -3,28 +3,31 @@
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
-namespace Physics
-{
+class PlaneCollider;
+class BoxCollider;
+class SphereCollider;
+class CapsuleCollider;
+using PlaneColliderPtr = RefPtr<PlaneCollider>;
+using BoxColliderPtr = RefPtr<BoxCollider>;
+using SphereColliderPtr = RefPtr<SphereCollider>;
+using CapsuleColliderPtr = RefPtr<CapsuleCollider>;
 
 /**
 	@brief	衝突判定のためのオブジェクト形状のベースクラスです。
 */
 class Collider
-	: public tr::ReflectionObject
+	: public Object
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
-public:
-	
 protected:
 	Collider();
 	virtual ~Collider();
-	void Initialize(PhysicsManager* manager, btCollisionShape* shape);
+	void Initialize(btCollisionShape* shape);
 
 LN_INTERNAL_ACCESS:
 	btCollisionShape* GetBtCollisionShape() { return m_shape; }
 		
 private:
-	PhysicsManager*		m_manager;
 	btCollisionShape*	m_shape;
 };
 
@@ -42,12 +45,12 @@ public:
 		@param[in]	direction	: 面の正面方向 (省略した場合は Y+ 方向)
 		@details	作成されたオブジェクトは使い終えたら Release() を呼び出して参照を解放する必要があります。
 	*/
-	static PlaneCollider* Create(const Vector3& direction = Vector3::UnitY);
+	static PlaneColliderPtr Create(const Vector3& direction = Vector3::UnitY);
 	
-protected:
+LN_INTERNAL_ACCESS:
 	PlaneCollider();
 	virtual ~PlaneCollider();
-	void Initialize(PhysicsManager* manager, const Vector3& direction);
+	void Initialize(const Vector3& direction);
 };
 
 /**
@@ -64,19 +67,19 @@ public:
 		@param[in]	size	: 各辺の幅
 		@details	作成されたオブジェクトは使い終えたら Release() を呼び出して参照を解放する必要があります。
 	*/
-	static BoxCollider* Create(const Vector3& size);
+	static BoxColliderPtr Create(const Vector3& size);
 	
 	/**
 		@brief		BoxCollider オブジェクトを作成します。
 		@param[in]	x, y, z	: 各辺の幅
 		@details	作成されたオブジェクトは使い終えたら Release() を呼び出して参照を解放する必要があります。
 	*/
-	static BoxCollider* Create(float x, float y, float z);
-	
-protected:
+	static BoxColliderPtr Create(float x, float y, float z);
+
+LN_INTERNAL_ACCESS:
 	BoxCollider();
 	virtual ~BoxCollider();
-	void Initialize(PhysicsManager* manager, const Vector3& size);
+	void Initialize(const Vector3& size);
 };
 
 /**
@@ -93,12 +96,12 @@ public:
 		@param[in]	radius	: 半径
 		@details	作成されたオブジェクトは使い終えたら Release() を呼び出して参照を解放する必要があります。
 	*/
-	static SphereCollider* Create(float radius);
-	
-protected:
+	static SphereColliderPtr Create(float radius);
+
+LN_INTERNAL_ACCESS:
 	SphereCollider();
 	virtual ~SphereCollider();
-	void Initialize(PhysicsManager* manager, float radius);
+	void Initialize(float radius);
 };
 
 /**
@@ -116,14 +119,12 @@ public:
 		@param[in]	height	: 高さ
 		@details	作成されたオブジェクトは使い終えたら Release() を呼び出して参照を解放する必要があります。
 	*/
-	static CapsuleCollider* Create(float radius, float height);
-	
-protected:
+	static CapsuleColliderPtr Create(float radius, float height);
+
+LN_INTERNAL_ACCESS:
 	CapsuleCollider();
 	virtual ~CapsuleCollider();
-	void Initialize(PhysicsManager* manager, float radius, float height);
+	void Initialize(float radius, float height);
 };
 
-
-} // namespace Physics
 LN_NAMESPACE_END

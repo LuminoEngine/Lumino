@@ -6,7 +6,6 @@
 #include <Lumino/Threading/Thread.h>
 #include "Platform/PlatformManager.h"
 #include <Lumino/Platform/EventListener.h>
-#include <Lumino/Physics/PhysicsManager.h>
 #include <Lumino/Documents/DocumentsManager.h>
 #include <Lumino/Game/FpsController.h>
 #include <Lumino/EngineSettings.h>
@@ -19,6 +18,7 @@ namespace detail { class EffectManager; }
 namespace detail { class ModelManager; }
 namespace detail { class UIManager; }
 namespace detail { class AudioManager; }
+namespace detail { class PhysicsManager; }
 class GraphicsManager;
 class SceneGraphManager;
 class Application;
@@ -187,7 +187,7 @@ public:
 
 	PlatformManager* GetPlatformManager() const { return m_platformManager; }
 	detail::AudioManager* GetAudioManager() const { return m_audioManager; }
-	Physics::PhysicsManager* GetPhysicsManager() const { return m_physicsManager; }
+	detail::PhysicsManager* GetPhysicsManager() const;
 	GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
 	Documents::DocumentsManager* GetDocumentsManager() const { return m_documentsManager; }
 	detail::UIManager* GetUIManager() const { return m_uiManager; }
@@ -230,7 +230,7 @@ private:
 	RefPtr<PlatformManager>				m_platformManager;
 	detail::InputManager*				m_inputManager;
 	detail::AudioManager*				m_audioManager;
-	RefPtr<Physics::PhysicsManager>		m_physicsManager;
+	RefPtr<detail::PhysicsManager>		m_physicsManager;
 	GraphicsManager*					m_graphicsManager;
 	detail::EffectManager*				m_effectManager;
 	detail::ModelManager*				m_modelManager;

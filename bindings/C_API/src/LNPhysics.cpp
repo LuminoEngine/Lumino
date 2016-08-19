@@ -5,7 +5,7 @@
 //==============================================================================
 // LNPlaneCollider
 //==============================================================================
-LN_TYPE_INFO_IMPL(Physics::PlaneCollider, LNPlaneCollider);
+LN_TYPE_INFO_IMPL(PlaneCollider, LNPlaneCollider);
 
 //------------------------------------------------------------------------------
 LNResult LNPlaneCollider_Create(LN_OUT LN_HANDLE(LNPlaneCollider)* outPlaneCollider)
@@ -24,7 +24,7 @@ LNResult LNPlaneCollider_CreateVec3(const LNVector3* direction, LN_OUT LN_HANDLE
 //==============================================================================
 // LNBoxCollider
 //==============================================================================
-LN_TYPE_INFO_IMPL(Physics::BoxCollider, LNBoxCollider);
+LN_TYPE_INFO_IMPL(BoxCollider, LNBoxCollider);
 
 //------------------------------------------------------------------------------
 LNResult LNBoxCollider_Create(const LNVector3* size, LN_OUT LN_HANDLE(LNBoxCollider)* outBoxCollider)
@@ -43,7 +43,7 @@ LNResult LNBoxCollider_CreateXYZ(float x, float y, float z, LN_OUT LN_HANDLE(LNB
 //==============================================================================
 // LNSphereCollider
 //==============================================================================
-LN_TYPE_INFO_IMPL(Physics::SphereCollider, LNSphereCollider);
+LN_TYPE_INFO_IMPL(SphereCollider, LNSphereCollider);
 
 //------------------------------------------------------------------------------
 LNResult LNSphereCollider_Create(float radius, LN_OUT LN_HANDLE(LNSphereCollider)* outSphereCollider)
@@ -55,7 +55,7 @@ LNResult LNSphereCollider_Create(float radius, LN_OUT LN_HANDLE(LNSphereCollider
 //==============================================================================
 // LNCapsuleCollider
 //==============================================================================
-LN_TYPE_INFO_IMPL(Physics::CapsuleCollider, LNCapsuleCollider);
+LN_TYPE_INFO_IMPL(CapsuleCollider, LNCapsuleCollider);
 
 //------------------------------------------------------------------------------
 LNResult LNCapsuleCollider_Create(float radius, float height, LN_OUT LN_HANDLE(LNCapsuleCollider)* outCapsuleCollider)
@@ -67,7 +67,7 @@ LNResult LNCapsuleCollider_Create(float radius, float height, LN_OUT LN_HANDLE(L
 //==============================================================================
 // LNRigidBody
 //==============================================================================
-LN_TYPE_INFO_IMPL(Physics::RigidBody, LNRigidBody);
+LN_TYPE_INFO_IMPL(RigidBody, LNRigidBody);
 
 //------------------------------------------------------------------------------
 LNResult LNRigidBody_Create(LN_OUT LN_HANDLE(LNRigidBody)* outRigidBody)

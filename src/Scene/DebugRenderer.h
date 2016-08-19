@@ -2,14 +2,14 @@
 #pragma once
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Graphics/RenderingContext.h>
-#include <Lumino/Physics/IDebugRenderer.h>
 #include <Lumino/Scene/Common.h>
+#include "../Physics/PhysicsManager.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 class DebugRenderer
-	: public Physics::IDebugRenderer
+	: public detail::IDebugRenderer
 {
 public:
 	DebugRenderer(RenderingContext* context)

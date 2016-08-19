@@ -1,20 +1,18 @@
 ﻿
 #pragma once
-
 #include <LinearMath/btVector3.h>
 #include <LinearMath/btQuaternion.h>
 #include <LinearMath/btTransform.h>
 #include <LuminoMath.h>
 
 LN_NAMESPACE_BEGIN
-namespace Physics
+namespace detail
 {
 
-/// Bullet とのデータ変換などのユーティリティ
+// Bullet とのデータ変換などのユーティリティ
 class BulletUtil
 {
 public:
-
 	static const btVector3 Zero;
 
 	static Vector3 btVector3ToLNVector3(const btVector3& v)
@@ -37,7 +35,6 @@ public:
 		return btQuaternion(q.x, q.y, q.z, q.w);
 	}
 
-
 	static void DumpBtVector3(const btVector3& v)
 	{
 		printf("Vector3\n%f, %f, %f\n", v.x(), v.y(), v.z());
@@ -53,5 +50,5 @@ public:
 	}
 };
 
-} // namespace Physics
+} // namespace detail
 LN_NAMESPACE_END

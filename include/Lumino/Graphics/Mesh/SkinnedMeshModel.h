@@ -13,6 +13,7 @@ class SkinnedMeshModel;
 class SkinnedMeshBone;
 using SkinnedMeshModelPtr = RefPtr<SkinnedMeshModel>;
 using SkinnedMeshBonePtr = RefPtr<SkinnedMeshBone>;
+namespace detail { class PhysicsWorld; }
 
 /**
 	@brief
@@ -92,7 +93,6 @@ class SkinnedMeshBone
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	SkinnedMeshBone* GetParent() const { return m_parent; }
-	const Vector3& GetPosition() const { return m_position; }	// IK 用
 
 LN_INTERNAL_ACCESS:
 	SkinnedMeshBone();
@@ -131,12 +131,8 @@ LN_INTERNAL_ACCESS:	// TODO
 	int						m_depth;			// 0 から
 	PmxIKResource*			m_ikInfo;
 
-	Quaternion				m_userRotation;
-	Matrix					m_ikLocalMatrix;			// IK 作業用
-	Matrix					m_ikLocalRotationMatrix;	// IK 作業用
-	Quaternion				m_ikQuaternion;				// IK 作業用
-	Vector3					m_position;					// IK 作業用
-	Matrix					m_globalRotationMatrix;
+	// TODO: これは物理演算機能を持つサブクラスを作ったほうがいい気がする
+	RefPtr<detail::PhysicsWorld>	m_physicsWorld;
 
 	friend class SkinnedMeshModel;
 };

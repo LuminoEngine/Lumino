@@ -1,34 +1,29 @@
 ﻿
 #pragma once
-
 #include "Common.h"
-#include "PhysicsManager.h"
 
 LN_NAMESPACE_BEGIN
-namespace Physics
-{
+namespace detail { class PhysicsWorld; }
+class RigidBody;
 
 /// ジョイントのベースクラス
 class Joint
     : public RefObject
 {
+public:
+
+
 protected:
 	Joint();
 	virtual ~Joint();
-	void Create(PhysicsManager* manager, btTypedConstraint* constraint);
+	void Initialize(btTypedConstraint* constraint);
 
-public:
+LN_INTERNAL_ACCESS:
 	btTypedConstraint* GetBtConstraint() { return m_btConstraint; }
 
-	/// シミュレーション直前更新処理 (メインスレッドから呼ばれる)
-	virtual void SyncBeforeStepSimulation() {}
-
-	/// シミュレーション直後更新処理 (メインまたは物理更新スレッドから呼ばれる)
-	virtual void SyncAfterStepSimulation() {}
-
-protected:
-	PhysicsManager*		m_manager;
-    btTypedConstraint*	m_btConstraint;
+private:
+	//detail::PhysicsWorld*	m_world;
+    btTypedConstraint*		m_btConstraint;
 };
 
 /// DofSpringJoint
@@ -38,11 +33,6 @@ class DofSpringJoint
 	: public Joint
 {
 public:
-	DofSpringJoint();
-    virtual ~DofSpringJoint();
-
-public:
-	void Create(PhysicsManager* manager, RigidBody* body0, RigidBody* body1, const Matrix& localOffset0, const Matrix& localOffset1);
 
 	// 各 index は 0～5
 	void EnableSpring(int index, bool enabled);
@@ -57,31 +47,15 @@ public:
 	void SetAngularLowerLimit(const Vector3& angularLower);
 	void SetAngularUpperLimit(const Vector3& angularUpper);
 
-protected:
-	virtual void SyncBeforeStepSimulation();
-	virtual void SyncAfterStepSimulation() {}
+LN_INTERNAL_ACCESS:
+	DofSpringJoint();
+	virtual ~DofSpringJoint();
+	void Initialize(RigidBody* bodyA, RigidBody* bodyB, const Matrix& localOffsetA, const Matrix& localOffsetB);
 
 private:
-
-	//enum ModifiedFlags
-	//{
-	//	Modified_None = 0x0000,
-
-	//	Modified_EnableSpring = 0x0001,
-	//	Modified_Stiffness = 0x0002,
-	//	Modified_Damping = 0x0004,
-	//	Modified_EquilibriumPoint = 0x0008,
-
-	//	Modified_Limit = 0x0010,
-	//	Modified_LinearLowerLimit= 0x0020,
-	//	Modified_LinearUpperLimit = 0x0040,
-	//	Modified_AngularLowerLimit = 0x0080,
-	//	Modified_AngularUpperLimit = 0x0100,
-	//};
-
 	btGeneric6DofSpringConstraint*	m_btDofSpringConstraint;
-	RigidBody*		m_body0;
-	RigidBody*		m_body1;
+	RefPtr<RigidBody>				m_bodyA;
+	RefPtr<RigidBody>				m_bodyB;
 
 	//bool			m_enableSpring[6];
 	//float			m_stiffness[6];
@@ -97,5 +71,4 @@ private:
 	volatile bool	m_initialUpdate;
 };
 
-} // namespace Physics
 LN_NAMESPACE_END
