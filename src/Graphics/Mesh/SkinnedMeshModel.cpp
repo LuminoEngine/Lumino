@@ -78,7 +78,10 @@ public:
 	}
 	void IKloop(PmxIKResource* ik, SkinnedMeshBone* ikBone, SkinnedMeshBone* effector)
 	{
-		Vector3 TargetGlobalPos = Vector3::TransformCoord(ikBone->GetCore()->OrgPosition, ikBone->GetCombinedMatrix());
+		//Vector3 TargetGlobalPos = Vector3::TransformCoord(ikBone->GetCore()->OrgPosition, ikBone->GetCombinedMatrix());
+
+		// IKボーンのグローバル位置
+		const Vector3& targetPos = ikBone->GetCombinedMatrix().GetPosition();
 
 		for (int iLink = 0; iLink < ik->IKLinks.GetCount(); ++iLink)
 		{
@@ -89,11 +92,26 @@ public:
 			// (IKリンク基準のローカル座標系へ変換する行列)
 			Matrix toLinkLocal = Matrix::MakeInverse(ikLinkBone->GetCombinedMatrix());
 
-			Vector3 effectorPos = Vector3::TransformCoord(effector->GetCore()->OrgPosition, effector->GetCombinedMatrix() * toLinkLocal);
-			Vector3 link2Effector = Vector3::SafeNormalize(effectorPos - ikLinkBone->GetCore()->OrgPosition);
+			//Vector3 effectorPos = Vector3::TransformCoord(effector->GetCore()->OrgPosition, effector->GetCombinedMatrix() * toLinkLocal);
+			//Vector3 link2Effector = Vector3::SafeNormalize(effectorPos - ikLinkBone->GetCore()->OrgPosition);
 		
-			Vector3 targetPos = Vector3::TransformCoord(TargetGlobalPos, toLinkLocal);
-			Vector3 link2Target = Vector3::SafeNormalize(targetPos - ikLinkBone->GetCore()->OrgPosition);
+			//Vector3 targetPos = Vector3::TransformCoord(TargetGlobalPos, toLinkLocal);
+			//Vector3 link2Target = Vector3::SafeNormalize(targetPos - ikLinkBone->GetCore()->OrgPosition);
+
+			// エフェクタのグローバル位置
+			const Vector3& effPos = effector->GetCombinedMatrix().GetPosition();
+
+			// 各ベクトルの座標変換を行い、検索中のボーンi基準の座標系にする
+			// (1) 注目ノード→エフェクタ位置へのベクトル(a)(注目ノード)
+			Vector3 localEffPos = Vector3::TransformCoord(effPos, toLinkLocal);
+
+			// (2) 基準関節i→目標位置へのベクトル(b)(ボーンi基準座標系)
+			Vector3 localTargetPos = Vector3::TransformCoord(targetPos, toLinkLocal);
+
+			// (1) 基準関節→エフェクタ位置への方向ベクトル
+			Vector3 link2Effector = Vector3::SafeNormalize(localEffPos);
+			// (2) 基準関節→目標位置への方向ベクトル
+			Vector3 link2Target = Vector3::SafeNormalize(localTargetPos);
 
 			IKLinkCalc(ikLink, ikLinkBone, link2Effector, link2Target, ik->IKRotateLimit);
 		}
@@ -319,6 +337,7 @@ void SkinnedMeshModel::PreUpdate()
 //		・スキニング行列の作成
 void SkinnedMeshModel::PostUpdate()
 {
+#if 0
 	for (detail::MmdSkinnedMeshRigidBody* body : m_rigidBodyList)
 	{
 		body->UpdateBeforePhysics();
@@ -331,6 +350,7 @@ void SkinnedMeshModel::PostUpdate()
 	{
 		body->UpdateAfterPhysics();
 	}
+#endif
 
 	// IK 更新
 	UpdateIK();
@@ -366,8 +386,8 @@ void SkinnedMeshModel::UpdateSkinningMatrices()
 			取得できる行列 (SkinnedMeshサンプルの D3DXMESHCONTAINER_DERIVED::pBoneOffsetMatrices) がこれにあたるものっぽい。
 			サンプルでも描画の直前に対象ボーン行列にこの行列を乗算している。
 		*/
-		//m_skinningMatrices[i] = m_allBoneList[i]->GetCore()->GetInitialTranstormInv();
-		m_skinningMatrices[i] = m_allBoneList[i]->GetCombinedMatrix();
+		m_skinningMatrices[i] = m_allBoneList[i]->GetCore()->GetInitialTranstormInv() * m_allBoneList[i]->GetCombinedMatrix();
+		//m_skinningMatrices[i] = m_allBoneList[i]->GetCombinedMatrix();
 	}
 
 	// スキニングテクスチャ更新
@@ -465,14 +485,24 @@ void SkinnedMeshBone::AddChildBone(SkinnedMeshBone* bone)
 //------------------------------------------------------------------------------
 void SkinnedMeshBone::UpdateGlobalTransform(bool hierarchical)
 {
+	// m_localTransform は、ボーンのローカル姿勢でアニメーションが適用されている。
+	// 適用されていなければ Identity。
+	//m_combinedMatrix = m_localTransform;
 	m_combinedMatrix =
-		Matrix::MakeTranslation(-m_core->OrgPosition) *
+		//Matrix::MakeTranslation(-m_core->OrgPosition) *
 		Matrix::MakeRotationQuaternion(m_localTransform.rotation) *
-		Matrix::MakeTranslation(m_localTransform.translation) *
-		Matrix::MakeTranslation(m_core->OrgPosition);
+		Matrix::MakeTranslation(m_localTransform.translation)/* *
+															 Matrix::MakeTranslation(m_core->OrgPosition)*/;
+	// 親からの平行移動量
+	m_combinedMatrix.Translate(m_core->GetOffsetFromParent());
+
+	//m_combinedMatrix =
+	//	Matrix::MakeTranslation(-m_core->OrgPosition) *
+	//	Matrix::MakeRotationQuaternion(m_localTransform.rotation) *
+	//	Matrix::MakeTranslation(m_localTransform.translation) *
+	//	Matrix::MakeTranslation(m_core->OrgPosition);
 
 	// 親行列と結合
-	Matrix parentRotation;
 	if (m_parent != nullptr)
 	{
 		m_combinedMatrix *= m_parent->GetCombinedMatrix();
