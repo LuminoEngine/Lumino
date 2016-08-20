@@ -198,9 +198,7 @@ void PhysicsWorld::Initialize(PhysicsManager* manager)
 	//m_btWorld->setDebugDrawer(&gDebugDrawer);
 
 	// 重力		TODO: 初期値
-	m_btWorld->setGravity(btVector3(0.0f, -9.8f * 2.5f, 0.0f));
-	//SetGravity(Vector3(0.0f, -9.8f * 2.5f, 0.0f));
-	//SetGravity( LVector3( 0.0f, /*-9.8f*/-9.81f * 10.0f/* * 2.0f*/, 0.0f ) );
+	m_btWorld->setGravity(btVector3(0.0f, -9.81f, 0.0f));
 
 	m_softBodyWorldInfo = new btSoftBodyWorldInfo();
 	m_softBodyWorldInfo->air_density = 1.2f;
@@ -239,6 +237,12 @@ void PhysicsWorld::Initialize(PhysicsManager* manager)
 
 	*/
 
+}
+
+//------------------------------------------------------------------------------
+void PhysicsWorld::SetGravity(const Vector3& gravity)
+{
+	m_btWorld->setGravity(btVector3(gravity.x, gravity.y, gravity.z));
 }
 
 //------------------------------------------------------------------------------
@@ -288,7 +292,7 @@ void PhysicsWorld::AddRigidBody(RigidBody* rigidBody)
 {
 	LN_ASSERT(rigidBody != nullptr);
 	m_rigidBodyList.Add(rigidBody);
-	m_btWorld->addRigidBody(rigidBody->GetBtRigidBody());
+	m_btWorld->addRigidBody(rigidBody->GetBtRigidBody(), rigidBody->GetGroup(), rigidBody->GetGroupMask());
 }
 
 //------------------------------------------------------------------------------

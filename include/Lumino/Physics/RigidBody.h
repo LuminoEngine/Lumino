@@ -60,6 +60,10 @@ public:
 	void SetPosition(const Vector3& position);
 	void SetPosition(float x, float y, float z);
 
+	void SetLinearVelocity(const Vector3& velocity);
+	void SetAngularVelocity(const Vector3& velocity);
+
+
 #if 0
 	/// 回転の設定
 	void setRotation( const Quaternion& rotation );

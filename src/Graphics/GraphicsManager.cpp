@@ -91,6 +91,7 @@ GraphicsManager* GraphicsManager::GetInstance(GraphicsManager* priority)
 GraphicsManager::GraphicsManager()
 	: m_animationManager(nullptr)
 	, m_fileManager(nullptr)
+	, m_physicsManager(nullptr)
 	, m_mainWindow(nullptr)
 	, m_fontManager(nullptr)
 	, m_graphicsDevice(nullptr)
@@ -150,6 +151,7 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 	m_renderingType = configData.renderingType;
 	m_animationManager = configData.animationManager;
 	LN_REFOBJ_SET(m_fileManager, configData.fileManager);
+	m_physicsManager = configData.physicsManager;
 	m_mainWindow = configData.mainWindow;
 	m_platformTextureLoading = configData.platformTextureLoading;
 

@@ -25,6 +25,8 @@ public:
 	virtual ~PhysicsWorld();
 	void Initialize(PhysicsManager* manager);
 
+	void SetGravity(const Vector3& gravity);
+
 	btDiscreteDynamicsWorld* GetBtWorld() { return m_btWorld; }
 
 	void StepSimulation(float elapsedTime);

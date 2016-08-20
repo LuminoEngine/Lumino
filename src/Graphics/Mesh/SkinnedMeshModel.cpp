@@ -2,7 +2,11 @@
 #include "../Internal.h"
 #include <Lumino/Graphics/Mesh.h>
 #include <Lumino/Graphics/Mesh/SkinnedMeshModel.h>
+#include <Lumino/Physics/Collider.h>	// TODO: MMD でのみ必要
+#include <Lumino/Physics/RigidBody.h>	// TODO: MMD でのみ必要
+#include <Lumino/Physics/Joint.h>	// TODO: MMD でのみ必要
 #include "../GraphicsManager.h"
+#include "../../Physics/PhysicsManager.h"
 #include "../../Modeling/PmxSkinnedMesh.h"
 
 LN_NAMESPACE_BEGIN
@@ -276,6 +280,26 @@ void SkinnedMeshModel::Initialize(GraphicsManager* manager, PmxSkinnedMeshResour
 	cmp.boneCount = m_allBoneList.GetCount();
 
 	std::sort(m_ikBoneList.begin(), m_ikBoneList.end(), cmp);
+
+	//---------------------------------------------------------
+	// 物理演算
+	m_physicsWorld = RefPtr<detail::PhysicsWorld>::MakeRef();
+	m_physicsWorld->Initialize(manager->GetPhysicsManager());
+	m_physicsWorld->SetGravity(Vector3(0, -9.80f * 10.0f, 0));
+
+	m_rigidBodyList.Resize(m_meshResource->rigidBodys.GetCount());
+	for (int i = 0; i < m_meshResource->rigidBodys.GetCount(); ++i)
+	{
+		m_rigidBodyList[i] = RefPtr<detail::MmdSkinnedMeshRigidBody>::MakeRef();
+		m_rigidBodyList[i]->Initialize(this, m_meshResource->rigidBodys[i], 1.0f);
+	}
+
+	m_jointList.Resize(m_meshResource->joints.GetCount());
+	for (int i = 0; i < m_meshResource->joints.GetCount(); ++i)
+	{
+		m_jointList[i] = RefPtr<detail::MmdSkinnedMeshJoint>::MakeRef();
+		m_jointList[i]->Initialize(this, m_meshResource->joints[i]);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -295,6 +319,19 @@ void SkinnedMeshModel::PreUpdate()
 //		・スキニング行列の作成
 void SkinnedMeshModel::PostUpdate()
 {
+	for (detail::MmdSkinnedMeshRigidBody* body : m_rigidBodyList)
+	{
+		body->UpdateBeforePhysics();
+	}
+
+
+
+
+	for (detail::MmdSkinnedMeshRigidBody* body : m_rigidBodyList)
+	{
+		body->UpdateAfterPhysics();
+	}
+
 	// IK 更新
 	UpdateIK();
 
@@ -462,6 +499,248 @@ void SkinnedMeshBone::SetAnimationTargetValue(ValueType type, const void* value)
 {
 	LN_CHECK_ARG(type == ValueType_SQTTransform);
 	m_localTransform = *((SQTTransform*)value);
+}
+
+
+namespace detail
+{
+
+//==============================================================================
+// MmdSkinnedMeshRigidBody
+//==============================================================================
+
+//------------------------------------------------------------------------------
+MmdSkinnedMeshRigidBody::MmdSkinnedMeshRigidBody()
+	: m_resource(nullptr)
+	, m_bone(nullptr)
+	, m_rigidBody(nullptr)
+	, m_boneLocalPosition()
+{
+
+}
+
+//------------------------------------------------------------------------------
+MmdSkinnedMeshRigidBody::~MmdSkinnedMeshRigidBody()
+{
+
+}
+
+//------------------------------------------------------------------------------
+void MmdSkinnedMeshRigidBody::Initialize(SkinnedMeshModel* ownerModel, PmxRigidBodyResource* rigidBodyResource, float scale)
+{
+	m_resource = rigidBodyResource;
+	m_bone = ownerModel->m_allBoneList[m_resource->RelatedBoneIndex];
+
+	// 衝突判定形状
+	ColliderPtr collider;
+	switch (rigidBodyResource->ColShapeData.Type)
+	{
+		case CollisionShapeType_Sphere:
+		{
+			auto c = SphereColliderPtr::MakeRef();
+			c->Initialize(m_resource->ColShapeData.Sphere.Radius * scale);
+			collider = c;
+			break;
+		}
+		case CollisionShapeType_Box:
+		{
+			auto c= BoxColliderPtr::MakeRef();
+			Vector3 size(m_resource->ColShapeData.Box.Width * scale, m_resource->ColShapeData.Box.Height * scale, m_resource->ColShapeData.Box.Depth * scale);
+			size *= 2.0f;
+			c->Initialize(size);
+			collider = c;
+			break;
+		}
+		case CollisionShapeType_Capsule:
+		{
+			auto c = CapsuleColliderPtr::MakeRef();
+			c->Initialize(m_resource->ColShapeData.Capsule.Radius * scale, m_resource->ColShapeData.Capsule.Height * scale);
+			collider = c;
+			break;
+		}
+	}
+
+	Matrix initialTransform = m_resource->InitialTransform;
+	initialTransform.m41 *= scale;
+	initialTransform.m42 *= scale;
+	initialTransform.m43 *= scale;
+	m_boneLocalPosition = Matrix::MakeInverse(initialTransform);
+
+	RigidBody::ConfigData data;
+	data.InitialTransform = &initialTransform;
+	data.Scale = scale;
+	data.Group = m_resource->Group;
+	data.GroupMask = m_resource->GroupMask;
+	data.Friction = m_resource->Friction;
+	data.Restitution = m_resource->Restitution;		// HitFraction	
+	data.LinearDamping = m_resource->LinearDamping;
+	data.AngularDamping = m_resource->AngularDamping;
+	data.AdditionalDamping = true;
+	if (m_resource->RigidBodyType == RigidBodyType_Physics ||
+		m_resource->RigidBodyType == RigidBodyType_PhysicsAlignment)
+	{
+		data.Mass = m_resource->Mass;
+		data.KinematicObject = false;
+	}
+	else
+	{
+		data.KinematicObject = true;
+	}
+
+	m_rigidBody = RefPtr<RigidBody>::MakeRef();
+	m_rigidBody->Initialize(collider, data);
+	ownerModel->m_physicsWorld->AddRigidBody(m_rigidBody);
+}
+
+//------------------------------------------------------------------------------
+RigidBody* MmdSkinnedMeshRigidBody::GetRigidBody() const
+{
+	return m_rigidBody;
+}
+
+//------------------------------------------------------------------------------
+void MmdSkinnedMeshRigidBody::UpdateBeforePhysics()
+{
+	if (m_resource->RigidBodyType == RigidBodyType_ControlledByBone)
+	{
+		Matrix t =
+			//Matrix::MakeScalingScaling(1.0f / scale, 1.0f / scale, 1.0f / scale) *
+			m_resource->InitialTransform * Matrix::MakeTranslation(m_bone->GetCore()->OrgPosition) *
+			m_bone->GetCombinedMatrix();
+		m_rigidBody->SetWorldTransform(t);
+		m_rigidBody->SetLinearVelocity(Vector3::Zero);
+		m_rigidBody->SetAngularVelocity(Vector3::Zero);
+		m_rigidBody->Activate();
+	}
+}
+
+//------------------------------------------------------------------------------
+void MmdSkinnedMeshRigidBody::UpdateAfterPhysics()
+{
+	if (m_resource->RigidBodyType == RigidBodyType_Physics ||
+		m_resource->RigidBodyType == RigidBodyType_PhysicsAlignment)
+	{
+		Matrix matrix;
+
+		if (0/*stillMode*/)  // 「静止」モード・物理演算のぷるぷるを抑える
+		{
+		}
+		else
+		{
+			matrix = /*Matrix::MakeScalingScaling(scale, scale, scale) * */m_rigidBody->GetWorldTransform();
+		}
+
+		if (matrix.IsNaNOrInf())
+		{
+			matrix = Matrix::Identity;
+		}
+
+		if (1/*NoRelatedBone*/)
+		{
+			Matrix globalPose = m_boneLocalPosition * matrix;
+			Matrix localPose = globalPose * Matrix::MakeInverse(m_bone->GetParent()->GetCombinedMatrix());
+			Matrix mat = Matrix::MakeTranslation(m_bone->GetCore()->OrgPosition) * localPose * Matrix::MakeTranslation(-m_bone->GetCore()->OrgPosition);
+			m_bone->m_localTransform.translation = mat.GetPosition();
+			m_bone->m_localTransform.rotation = Quaternion::MakeFromRotationMatrix(mat);
+			m_bone->UpdateGlobalTransform(true);
+
+			//m_bone->m_combinedMatrix =
+			//	Matrix::MakeTranslation(-m_bone->GetCore()->OrgPosition) *
+			//	m_boneLocalPosition *
+			//	matrix;
+		}
+	}
+}
+
+//==============================================================================
+// MmdSkinnedMeshJoint
+//==============================================================================
+
+//------------------------------------------------------------------------------
+MmdSkinnedMeshJoint::MmdSkinnedMeshJoint()
+	: m_joint(nullptr)
+{
+
+}
+
+//------------------------------------------------------------------------------
+MmdSkinnedMeshJoint::~MmdSkinnedMeshJoint()
+{
+
+}
+
+//------------------------------------------------------------------------------
+void MmdSkinnedMeshJoint::Initialize(SkinnedMeshModel* ownerModel, PmxJointResource* jointResource)
+{
+	LN_CHECK_ARG(ownerModel != nullptr);
+	LN_CHECK_ARG(jointResource != nullptr);
+
+	MmdSkinnedMeshRigidBody* bodyA = ownerModel->m_rigidBodyList[jointResource->RigidBodyAIndex];
+	MmdSkinnedMeshRigidBody* bodyB = ownerModel->m_rigidBodyList[jointResource->RigidBodyBIndex];
+
+	// モデル空間上でのジョイント姿勢
+	Matrix jointOffset =
+		Matrix::MakeRotationYawPitchRoll(jointResource->Rotation.y, jointResource->Rotation.x, jointResource->Rotation.z) *
+		Matrix::MakeTranslation(jointResource->Position);
+
+	Matrix transInvA = Matrix::MakeInverse(bodyA->GetRigidBody()->GetWorldTransform());
+	Matrix transInvB = Matrix::MakeInverse(bodyA->GetRigidBody()->GetWorldTransform());
+
+	// 各剛体のローカルから見たジョイント位置
+	Matrix frameInA = jointOffset * transInvA;
+	Matrix frameInB = jointOffset * transInvB;
+
+	m_joint = RefPtr<DofSpringJoint>::MakeRef();
+	m_joint->Initialize(bodyA->GetRigidBody(), bodyB->GetRigidBody(), frameInA, frameInB);
+
+	// SpringPositionStiffness.x
+	if (jointResource->SpringPositionStiffness.x != 0.0f)
+	{
+		m_joint->SetStiffness(0, jointResource->SpringPositionStiffness.x);
+		m_joint->EnableSpring(0, true);
+	}
+	else
+	{
+		m_joint->EnableSpring(0, false);
+	}
+
+	// SpringPositionStiffness.y
+	if (jointResource->SpringPositionStiffness.y != 0.0f)
+	{
+		m_joint->SetStiffness(1, jointResource->SpringPositionStiffness.y);
+		m_joint->EnableSpring(1, true);
+	}
+	else
+	{
+		m_joint->EnableSpring(1, false);
+	}
+
+	// SpringPositionStiffness.z
+	if (jointResource->SpringPositionStiffness.z != 0.0f)
+	{
+		m_joint->SetStiffness(2, jointResource->SpringPositionStiffness.z);
+		m_joint->EnableSpring(2, true);
+	}
+	else
+	{
+		m_joint->EnableSpring(2, false);
+	}
+
+	m_joint->SetStiffness(3, jointResource->SpringRotationStiffness.x);
+	m_joint->EnableSpring(3, true);
+	m_joint->SetStiffness(4, jointResource->SpringRotationStiffness.y);
+	m_joint->EnableSpring(4, true);
+	m_joint->SetStiffness(5, jointResource->SpringRotationStiffness.z);
+	m_joint->EnableSpring(5, true);
+
+	m_joint->SetLinearLowerLimit(jointResource->PositionLimitLower);
+	m_joint->SetLinearUpperLimit(jointResource->PositionLimitUpper);
+	m_joint->SetAngularLowerLimit(jointResource->RotationLimitLower);
+	m_joint->SetAngularUpperLimit(jointResource->RotationLimitUpper);
+
+	ownerModel->m_physicsWorld->AddJoint(m_joint);
+} 
+
 }
 
 LN_NAMESPACE_END

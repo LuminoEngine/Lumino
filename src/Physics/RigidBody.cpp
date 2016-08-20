@@ -88,6 +88,7 @@ void RigidBody::Initialize(Collider* collider, const ConfigData& configData)
 		initialTransform.getOrigin().setX(initialTransform.getOrigin().x() * configData.Scale);
 		initialTransform.getOrigin().setY(initialTransform.getOrigin().y() * configData.Scale);
 		initialTransform.getOrigin().setZ(initialTransform.getOrigin().z() * configData.Scale);
+		m_worldTransform = *configData.InitialTransform;
 	}
 	else {
 		initialTransform.setIdentity();
@@ -163,6 +164,18 @@ void RigidBody::SetPosition(const Vector3& position)
 void RigidBody::SetPosition(float x, float y, float z)
 {
 	SetPosition(Vector3(x, y, z));
+}
+
+//------------------------------------------------------------------------------
+void RigidBody::SetLinearVelocity(const Vector3& velocity)
+{
+	m_btRigidBody->setLinearVelocity(detail::BulletUtil::LNVector3ToBtVector3(velocity));
+}
+
+//------------------------------------------------------------------------------
+void RigidBody::SetAngularVelocity(const Vector3& velocity)
+{
+	m_btRigidBody->setAngularVelocity(detail::BulletUtil::LNVector3ToBtVector3(velocity));
 }
 
 

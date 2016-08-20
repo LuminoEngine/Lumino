@@ -463,6 +463,7 @@ void EngineManager::InitializeGraphicsManager()
 		data.backBufferSize = m_configData.mainBackBufferSize;
 		data.animationManager = m_animationManager;
 		data.fileManager = m_fileManager;
+		data.physicsManager = m_physicsManager;
 		data.platformTextureLoading = true;
 #ifdef LN_OS_WIN32
 		data.D3D9Device = m_configData.D3D9Device;

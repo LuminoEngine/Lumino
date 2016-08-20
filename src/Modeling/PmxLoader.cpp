@@ -751,13 +751,13 @@ void PmxLoader::LoadRigidBodys(BinaryReader* reader)
 		uint8_t physicsType = reader->ReadUInt8();
 		switch (physicsType)
 		{
-		case 0:
+		case 0:	// Static
 			body->RigidBodyType = RigidBodyType_ControlledByBone;
 			break;
-		case 1:
+		case 1:	// Dynamic
 			body->RigidBodyType = RigidBodyType_Physics;
 			break;
-		case 2:
+		case 2:	// StaticDynamic
 			body->RigidBodyType = RigidBodyType_PhysicsAlignment;
 			break;
 		}

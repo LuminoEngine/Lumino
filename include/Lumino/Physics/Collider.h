@@ -3,10 +3,12 @@
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
+class Collider;
 class PlaneCollider;
 class BoxCollider;
 class SphereCollider;
 class CapsuleCollider;
+using ColliderPtr = RefPtr<Collider>;
 using PlaneColliderPtr = RefPtr<PlaneCollider>;
 using BoxColliderPtr = RefPtr<BoxCollider>;
 using SphereColliderPtr = RefPtr<SphereCollider>;

@@ -13,7 +13,15 @@ class SkinnedMeshModel;
 class SkinnedMeshBone;
 using SkinnedMeshModelPtr = RefPtr<SkinnedMeshModel>;
 using SkinnedMeshBonePtr = RefPtr<SkinnedMeshBone>;
-namespace detail { class PhysicsWorld; }
+
+class RigidBody;	// TODO: MMD でのみ必要
+class DofSpringJoint;		// TODO: MMD でのみ必要
+namespace detail { class PhysicsWorld; }	// TODO: MMD でのみ必要
+namespace detail { class MmdSkinnedMeshRigidBody; }
+namespace detail { class MmdSkinnedMeshJoint; }
+class PmxRigidBodyResource;
+class PmxJointResource;
+
 
 /**
 	@brief
@@ -80,6 +88,11 @@ LN_INTERNAL_ACCESS:	// TODO:
 	RefPtr<Texture2D>				m_skinningMatricesTexture;	// Texture fetch による GPU スキニング用のテクスチャ
 	RefPtr<Animator>				m_animator;
 	Array<SkinnedMeshBone*>			m_ikBoneList;
+
+	// TODO: これは物理演算機能を持つサブクラスを作ったほうがいい気がする
+	RefPtr<detail::PhysicsWorld>	m_physicsWorld;
+	Array<RefPtr<detail::MmdSkinnedMeshRigidBody>>	m_rigidBodyList;
+	Array<RefPtr<detail::MmdSkinnedMeshJoint>>		m_jointList;
 };
 
 
@@ -127,14 +140,47 @@ LN_INTERNAL_ACCESS:	// TODO
 	SkinnedMeshBone*		m_parent;
 	Array<SkinnedMeshBone*>	m_children;			// 子ボーンリスト
 	SQTTransform			m_localTransform;	// モーションを書き込むのはここ
-	Matrix					m_combinedMatrix;	// 結合済み行列 (モデル内のグローバル行列)
+	Matrix					m_combinedMatrix;	// 結合済み行列 ()
 	int						m_depth;			// 0 から
 	PmxIKResource*			m_ikInfo;
 
-	// TODO: これは物理演算機能を持つサブクラスを作ったほうがいい気がする
-	RefPtr<detail::PhysicsWorld>	m_physicsWorld;
-
 	friend class SkinnedMeshModel;
 };
+
+namespace detail
+{
+
+class MmdSkinnedMeshRigidBody
+	: public RefObject
+{
+LN_INTERNAL_ACCESS:
+	MmdSkinnedMeshRigidBody();
+	virtual ~MmdSkinnedMeshRigidBody();
+	void Initialize(SkinnedMeshModel* ownerModel, PmxRigidBodyResource* rigidBodyResource, float scale);
+
+	RigidBody* GetRigidBody() const;
+	void UpdateBeforePhysics();
+	void UpdateAfterPhysics();
+
+private:
+	PmxRigidBodyResource*	m_resource;
+	SkinnedMeshBone*		m_bone;
+	RefPtr<RigidBody>		m_rigidBody;
+	Matrix					m_boneLocalPosition;
+};
+
+class MmdSkinnedMeshJoint
+	: public RefObject
+{
+LN_INTERNAL_ACCESS:
+	MmdSkinnedMeshJoint();
+	virtual ~MmdSkinnedMeshJoint();
+	void Initialize(SkinnedMeshModel* ownerModel, PmxJointResource* jointResource);
+
+private:
+	RefPtr<DofSpringJoint>	m_joint;
+};
+
+}
 
 LN_NAMESPACE_END

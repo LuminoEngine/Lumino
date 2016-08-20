@@ -20,6 +20,8 @@ class TextRenderer;
 class BitmapTextRenderer;
 class SwapChain;
 namespace detail { class ContextInterface; }
+namespace detail { class PhysicsManager; }
+
 
 namespace detail
 {
@@ -72,6 +74,7 @@ public:
 		SizeI						backBufferSize = SizeI(640, 480);					// バックバッファのサイズ
 		detail::AnimationManager*	animationManager = nullptr;
 		FileManager*				fileManager = nullptr;								// FileManager
+		detail::PhysicsManager*		physicsManager = nullptr;
 		bool						platformTextureLoading = false;						// 画像リソースの読み込みにプラットフォーム固有の機能を使用するか
 		void*						D3D9Device = nullptr;								// 作成済みの IDirect3DDevice9 インターフェイス
 		bool						fpuPreserveEnabled = false;
@@ -160,6 +163,7 @@ public:	// TODO
 public:
 	void AddResourceObject(GraphicsResourceObject* obj) { m_resourceObjectList.Add(obj); }
 	void RemoveResourceObject(GraphicsResourceObject* obj) { m_resourceObjectList.Remove(obj); }
+	detail::PhysicsManager* GetPhysicsManager() const { return m_physicsManager; }
 	Driver::IGraphicsDevice* GetGraphicsDevice() { return m_graphicsDevice; }
 	RenderingThread* GetRenderingThread() { return m_renderingThread; }
 	bool IsPlatformTextureLoading() { return m_platformTextureLoading; }
@@ -174,6 +178,7 @@ public:
 private:
 	detail::AnimationManager*		m_animationManager;
 	FileManager*					m_fileManager;
+	detail::PhysicsManager*			m_physicsManager;
 	PlatformWindow*					m_mainWindow;
 	FontManager*					m_fontManager;
 	GraphicsRenderingType			m_renderingType;
