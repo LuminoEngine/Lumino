@@ -53,7 +53,7 @@ public:
 protected:
 	virtual void drawLine(const btVector3& from, const btVector3& to, const btVector3& color)
 	{
-		drawLine(from, to, color);
+		drawLine(from, to, color, color);
 	}
 
 	virtual void drawLine(const btVector3& from, const btVector3& to, const btVector3& fromColor, const btVector3& toColor) override
@@ -106,6 +106,12 @@ PhysicsWorld::PhysicsWorld()
 PhysicsWorld::~PhysicsWorld()
 {
 	GCPhysicsObjects();
+
+	if (m_manager != nullptr)
+	{
+		m_manager->RemovePhysicsWorld(this);
+	}
+
 	LN_SAFE_DELETE(m_btCollisionConfig);
 	LN_SAFE_DELETE(m_btCollisionDispatcher);
 	LN_SAFE_DELETE(m_btBroadphase);
@@ -237,6 +243,7 @@ void PhysicsWorld::Initialize(PhysicsManager* manager)
 
 	*/
 
+	m_manager->AddPhysicsWorld(this);
 }
 
 //------------------------------------------------------------------------------
@@ -258,7 +265,7 @@ void PhysicsWorld::StepSimulation(float elapsedTime)
 	// http://d.hatena.ne.jp/ousttrue/20100425/1272165711
 	// m_elapsedTime が 1.0(1秒) より小さい間は 16ms を最大 60 回繰り返して追いつこうとする設定。
 	// m_elapsedTime が 1.0 を超えている場合は追いつけずに、物体の移動が遅くなる。
-	m_btWorld->stepSimulation(elapsedTime, 60, internalUnit);
+	m_btWorld->stepSimulation(elapsedTime, 120, 0.008333334f);
 
 	// m_elapsedTime が 16ms より大きい場合は、1回 16ms 分のシミュレーションを可能な限り繰り返して m_elapsedTime に追いついていく設定。
 	// 遅れるほど計算回数が増えるので、最終的に破綻するかもしれない。

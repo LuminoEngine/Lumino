@@ -37,13 +37,6 @@ void InfomationRenderingPass::RenderSubset(SceneGraphRenderingContext* dc, Visua
 //------------------------------------------------------------------------------
 void InfomationRenderingPass::PostRender(SceneGraphRenderingContext* dc)
 {
-	if (m_manager->GetPhysicsManager() != nullptr)
-	{
-		DebugRenderer dr(dc);
-		// TODO: SetViewProjection は別の場所でやったほうがステート変更少なくてすむかも？
-		//dc->BeginGraphicsContext()->SetViewProjectionTransform(dc->CurrentCamera->GetViewMatrix(), dc->CurrentCamera->GetProjectionMatrix());
-		m_manager->GetPhysicsManager()->DrawDebugShapesAllWorld(&dr);
-	}
 }
 
 LN_NAMESPACE_SCENE_END

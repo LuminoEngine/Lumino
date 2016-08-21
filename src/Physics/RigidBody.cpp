@@ -444,4 +444,9 @@ void RigidBody::SyncAfterStepSimulation()
 	}
 }
 
+void RigidBody::MarkMMDDynamic()
+{
+	m_btRigidBody->setCollisionFlags(m_btRigidBody->getCollisionFlags() & -3);
+}
+
 LN_NAMESPACE_END

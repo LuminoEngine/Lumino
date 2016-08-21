@@ -18,6 +18,25 @@ enum ModelFormat
 	ModelFormat_PMX,
 };
 
+LN_ENUM_FLAGS(BoneType)
+{
+	LinkTargetByBoneIndex = 1,
+	Rotate,
+	XYZ = 4,
+	Draw = 8,
+	Operatable = 16,
+	IK = 32,
+	IK_Child = 64,
+	Unvisible = 128,
+	InhereRotate = 256, // 回転付与
+	InhereXYZ = 512,       // 移動付与
+	FixAxis = 1024,
+	LocalAxis = 2048,
+	TransformAfterPhysics = 4096,
+	ParentTransform = 8192
+};
+LN_ENUM_FLAGS_DECLARE(BoneType);
+
 /// ボーンフラグ 接続先(PMD子ボーン指定)表示方法
 enum BoneConnectType
 {
@@ -166,13 +185,13 @@ public:
 	// ↑ボーンフラグ
 
 	// ↓ボーンフラグにより使用するデータ
-	Vector3				PositionOffset;				///< [接続先:0 の場合] 座標オフセット, ボーン位置からの相対分
-	int					ConnectedBoneIndex;			///< [接続先:1 の場合] 接続先ボーンのボーンIndex
+	Vector3				PositionOffset;				///< [接続先:0 の場合] 座標オフセット, ボーン位置からの相対分 (エディタでボーンを表示するときの、先端方向。ゲームとしては必要ない。デバッグ情報としてボーンを表示するときに利用できる)
+	int					ConnectedBoneIndex;			///< [接続先:1 の場合] 接続先ボーンのボーンIndex (エディタでボーンを表示するときの、先端方向。ゲームとしては必要ない。デバッグ情報としてボーンを表示するときに利用できる)
 	int					ProvidedParentBoneIndex;	///< [回転付与:1 または 移動付与:1 の場合] 付与親ボーンのボーンIndex
 	float				ProvidedRatio;				///< [回転付与:1 または 移動付与:1 の場合] 付与率
-	Vector3				AxisDirectionVector;		///< [軸固定:1 の場合] 軸の方向ベクトル
-	Vector3				DimentionXDirectionVector;	///< [ローカル軸:1 の場合] X軸の方向ベクトル
-	Vector3				DimentionZDirectionVector;	///< [ローカル軸:1 の場合] Z軸の方向ベクトル
+	Vector3				AxisDirectionVector;		///< [軸固定:1 の場合] 軸の方向ベクトル (TODO: 捻じれの制限をつける。PMXE のボーンリストでは紫のアイコンで表示される。MMF では未対応だった)
+	Vector3				DimentionXDirectionVector;	///< [ローカル軸:1 の場合] X軸の方向ベクトル (TODO: インパルスモーフで使用するようだ。今は未対応)
+	Vector3				DimentionZDirectionVector;	///< [ローカル軸:1 の場合] Z軸の方向ベクトル (TODO: インパルスモーフで使用するようだ。今は未対応)
 	int					KeyValue;					///< [外部親変形:1 の場合] Key値
 
 private:
@@ -328,7 +347,7 @@ public:
 public:
 	String				Name;				///< 剛体名
 	//String			EnglishName;		///< 剛体英名
-	int					RelatedBoneIndex;	///< 関連ボーン
+	int					RelatedBoneIndex;	///< 関連ボーン (関連なしの場合は-1)
 	uint16_t			Group;				///< 衝突グループ
 	uint16_t			GroupMask;			///< 衝突グループマスク
 	RigidBodyType		RigidBodyType;		///< 形状

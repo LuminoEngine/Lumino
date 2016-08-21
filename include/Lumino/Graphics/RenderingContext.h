@@ -171,6 +171,8 @@ LN_INTERNAL_ACCESS:
 	void DrawMesh(StaticMeshModel* mesh, int startIndex, int triangleCount, Material* material);
 	void InheritStatus(RenderingContext* parent);
 
+	detail::PrimitiveRenderer* GetPrimitiveRenderer() const { return m_primitiveRenderer; }	// TODO: test
+
 protected:
 	virtual void OnStateFlush() override;
 	virtual void OnPrimitiveFlush() override;

@@ -188,7 +188,7 @@ void PmxLoader::LoadVertices(BinaryReader* reader)
 					(float)reader->ReadInt(getBoneIndexSize()),
 					0.0f,
 					0.0f);
-				int v0 = reader->ReadFloat();
+				float v0 = reader->ReadFloat();
 				m_modelCore->SetBlendWeights(
 					i,
 					v0,
@@ -221,7 +221,7 @@ void PmxLoader::LoadVertices(BinaryReader* reader)
 					(float)reader->ReadInt(getBoneIndexSize()),
 					0.0f,
 					0.0f);
-				int v0 = reader->ReadFloat();
+				float v0 = reader->ReadFloat();
 				m_modelCore->SetBlendWeights(
 					i,
 					v0,

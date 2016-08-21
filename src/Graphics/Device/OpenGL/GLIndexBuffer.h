@@ -23,6 +23,7 @@ public:
 	GLuint GetIndexBufferObject() const { return m_indexBufferObject; }
 
 public:
+	virtual size_t GetByteCount() const { return m_byteCount; }
 	virtual IndexBufferFormat GetFormat() const { return m_format; }
 	virtual ResourceUsage GetUsage() const { return m_usage; }
 	virtual void SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes);

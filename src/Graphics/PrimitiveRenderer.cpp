@@ -299,6 +299,19 @@ void PrimitiveRendererCore::Blt(Driver::ITexture* source, Driver::ITexture* dest
 //------------------------------------------------------------------------------
 void PrimitiveRendererCore::Flush()
 {
+	// サイズが足りなければ再作成
+	auto* device = m_manager->GetGraphicsDevice();
+	if (m_vertexBuffer->GetByteCount() < m_vertexCacheUsed)
+	{
+		LN_SAFE_RELEASE(m_vertexBuffer);
+		m_vertexBuffer = device->CreateVertexBuffer(m_vertexCacheUsed, nullptr, ResourceUsage::Dynamic);
+	}
+	if (m_indexBuffer->GetByteCount() < m_indexCache.GetBufferUsedByteCount())
+	{
+		LN_SAFE_RELEASE(m_indexBuffer);
+		m_indexBuffer = device->CreateIndexBuffer(m_indexCache.GetBufferUsedByteCount(), nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
+	}
+
 	// 描画する
 	m_vertexBuffer->SetSubData(0, m_vertexCache.GetConstData(), m_vertexCacheUsed);
 	m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
@@ -334,7 +347,7 @@ void PrimitiveRendererCore::Flush()
 	// ユーザーシェーダを使わない場合
 	else
 	{
-		if (m_useInternalShader)
+		//if (m_useInternalShader)
 		{
 			Driver::ITexture* srcTexture = m_foreTexture;
 			if (srcTexture == nullptr) {

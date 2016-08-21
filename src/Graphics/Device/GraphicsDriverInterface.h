@@ -301,6 +301,7 @@ class IIndexBuffer
 	: public IDeviceObject
 {
 public:
+	virtual size_t GetByteCount() const = 0;
 
 	/// インデックスバッファのフォーマットの取得　
 	virtual IndexBufferFormat GetFormat() const = 0;

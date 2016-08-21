@@ -140,6 +140,8 @@ LN_INTERNAL_ACCESS:
 	/// シミュレーション直後更新処理 (メインまたは物理更新スレッドから呼ばれる)
 	void SyncAfterStepSimulation();
 
+	void MarkMMDDynamic();
+
 private:
 
 	enum ModifiedFlags

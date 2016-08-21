@@ -337,13 +337,20 @@ void SkinnedMeshModel::PreUpdate()
 //		・スキニング行列の作成
 void SkinnedMeshModel::PostUpdate()
 {
-#if 0
+	// IK 更新
+	UpdateIK();
+	UpdateBoneTransformHierarchy();
+
+	// 付与適用
+	UpdateBestow();
+
+#if 1
 	for (detail::MmdSkinnedMeshRigidBody* body : m_rigidBodyList)
 	{
 		body->UpdateBeforePhysics();
 	}
 
-
+	m_physicsWorld->StepSimulation(0.016);
 
 
 	for (detail::MmdSkinnedMeshRigidBody* body : m_rigidBodyList)
@@ -352,8 +359,6 @@ void SkinnedMeshModel::PostUpdate()
 	}
 #endif
 
-	// IK 更新
-	UpdateIK();
 
 	// スキニング行列の作成
 	UpdateSkinningMatrices();
@@ -414,6 +419,24 @@ void SkinnedMeshModel::UpdateIK()
 	CCDIK ik;
 	ik.owner = this;
 	ik.UpdateTransform();
+}
+
+//------------------------------------------------------------------------------
+void SkinnedMeshModel::UpdateBestow()
+{
+	for (SkinnedMeshBone* bone : m_allBoneList)
+	{
+		if (bone->GetCore()->IsMoveProvided)
+		{
+			SkinnedMeshBone* parent = m_allBoneList[bone->GetCore()->ProvidedParentBoneIndex];
+			bone->m_localTransform.translation += Vector3::Lerp(Vector3::Zero, parent->m_localTransform.translation, bone->GetCore()->ProvidedRatio);
+		}
+		if (bone->GetCore()->IsRotateProvided)
+		{
+			SkinnedMeshBone* parent = m_allBoneList[bone->GetCore()->ProvidedParentBoneIndex];
+			bone->m_localTransform.rotation *= Quaternion::Slerp(Quaternion::Identity, parent->m_localTransform.rotation, bone->GetCore()->ProvidedRatio);
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -493,6 +516,8 @@ void SkinnedMeshBone::UpdateGlobalTransform(bool hierarchical)
 		Matrix::MakeRotationQuaternion(m_localTransform.rotation) *
 		Matrix::MakeTranslation(m_localTransform.translation)/* *
 															 Matrix::MakeTranslation(m_core->OrgPosition)*/;
+
+
 	// 親からの平行移動量
 	m_combinedMatrix.Translate(m_core->GetOffsetFromParent());
 
@@ -559,7 +584,14 @@ MmdSkinnedMeshRigidBody::~MmdSkinnedMeshRigidBody()
 void MmdSkinnedMeshRigidBody::Initialize(SkinnedMeshModel* ownerModel, PmxRigidBodyResource* rigidBodyResource, float scale)
 {
 	m_resource = rigidBodyResource;
-	m_bone = ownerModel->m_allBoneList[m_resource->RelatedBoneIndex];
+	if (m_resource->RelatedBoneIndex > 0)
+	{
+		m_bone = ownerModel->m_allBoneList[m_resource->RelatedBoneIndex];
+	}
+	else
+	{
+		m_bone = nullptr;
+	}
 
 	// 衝突判定形状
 	ColliderPtr collider;
@@ -590,11 +622,24 @@ void MmdSkinnedMeshRigidBody::Initialize(SkinnedMeshModel* ownerModel, PmxRigidB
 		}
 	}
 
+	//Matrix bias;
+	//bias.RotateZ(m_resource->.z);
+	//bias.RotateX(pmd_rigidbody_->vec3Rotation.x);
+	//bias.RotateY(pmd_rigidbody_->vec3Rotation.y);
+
+
 	Matrix initialTransform = m_resource->InitialTransform;
 	initialTransform.m41 *= scale;
 	initialTransform.m42 *= scale;
 	initialTransform.m43 *= scale;
 	m_boneLocalPosition = Matrix::MakeInverse(initialTransform);
+
+	m_boneOffset = initialTransform;
+	m_boneOffset.m41 -= m_bone->GetCore()->OrgPosition.x;
+	m_boneOffset.m42 -= m_bone->GetCore()->OrgPosition.y;
+	m_boneOffset.m43 -= m_bone->GetCore()->OrgPosition.z;
+
+	m_offsetBodyToBone = Matrix::MakeTranslation(m_bone->GetCore()->OrgPosition) * m_boneLocalPosition;
 
 	RigidBody::ConfigData data;
 	data.InitialTransform = &initialTransform;
@@ -635,22 +680,30 @@ void MmdSkinnedMeshRigidBody::UpdateBeforePhysics()
 	{
 		Matrix t =
 			//Matrix::MakeScalingScaling(1.0f / scale, 1.0f / scale, 1.0f / scale) *
-			m_resource->InitialTransform * Matrix::MakeTranslation(m_bone->GetCore()->OrgPosition) *
-			m_bone->GetCombinedMatrix();
+			//m_resource->InitialTransform * /*Matrix::MakeTranslation(m_bone->GetCore()->OrgPosition) **/
+			
+			m_boneOffset
+			* m_bone->GetCombinedMatrix()
+			;
 		m_rigidBody->SetWorldTransform(t);
 		m_rigidBody->SetLinearVelocity(Vector3::Zero);
 		m_rigidBody->SetAngularVelocity(Vector3::Zero);
 		m_rigidBody->Activate();
+	}
+	else
+	{
+		m_rigidBody->MarkMMDDynamic();
 	}
 }
 
 //------------------------------------------------------------------------------
 void MmdSkinnedMeshRigidBody::UpdateAfterPhysics()
 {
+	Matrix matrix;
+
 	if (m_resource->RigidBodyType == RigidBodyType_Physics ||
 		m_resource->RigidBodyType == RigidBodyType_PhysicsAlignment)
 	{
-		Matrix matrix;
 
 		if (0/*stillMode*/)  // 「静止」モード・物理演算のぷるぷるを抑える
 		{
@@ -667,18 +720,116 @@ void MmdSkinnedMeshRigidBody::UpdateAfterPhysics()
 
 		if (1/*NoRelatedBone*/)
 		{
-			Matrix globalPose = m_boneLocalPosition * matrix;
-			Matrix localPose = globalPose * Matrix::MakeInverse(m_bone->GetParent()->GetCombinedMatrix());
-			Matrix mat = Matrix::MakeTranslation(m_bone->GetCore()->OrgPosition) * localPose * Matrix::MakeTranslation(-m_bone->GetCore()->OrgPosition);
-			m_bone->m_localTransform.translation = mat.GetPosition();
-			m_bone->m_localTransform.rotation = Quaternion::MakeFromRotationMatrix(mat);
-			m_bone->UpdateGlobalTransform(true);
+#if 1
+#if 0
+			// 剛体初期姿勢の逆行列を乗算することで、剛体がどれだけ動いたかがわかる
+			Matrix globalPose = /*m_boneLocalPosition * */matrix;
+			//Matrix globalPose = Matrix::MakeTranslation(matrix.GetPosition());
+			//Matrix localPose = Matrix::MakeInverse(m_resource->InitialTransform/*m_bone->GetParent()->GetCombinedMatrix()*/) * globalPose;
+			//Matrix localPose = m_boneLocalPosition * globalPose;
+			Matrix localPose = globalPose * m_boneLocalPosition;
+			//Matrix localPose = globalPose * Matrix::MakeInverse(m_boneOffset);
 
-			//m_bone->m_combinedMatrix =
-			//	Matrix::MakeTranslation(-m_bone->GetCore()->OrgPosition) *
-			//	m_boneLocalPosition *
-			//	matrix;
+			//Matrix localPose = globalPose * Matrix::MakeInverse(m_resource->InitialTransform);
+			//Matrix mat = Matrix::MakeTranslation(m_bone->GetCore()->OrgPosition) * localPose * Matrix::MakeTranslation(-m_bone->GetCore()->OrgPosition);
+			//m_bone->m_combinedMatrix = globalPose;
+
+			//localPose.Translate(-m_bone->GetCore()->GetOffsetFromParent());
+			
+			//m_bone->m_localTransform.translation = localPose.GetPosition();
+			//m_bone->m_localTransform.rotation = Quaternion::MakeFromRotationMatrix(localPose);
+			//m_bone->UpdateGlobalTransform(false);
+
+
+			//if (m_resource->RigidBodyType == RigidBodyType_PhysicsAlignment)
+			//{
+			//	localPose.m41 = 0.0f;
+			//	localPose.m42 = 0.0f;
+			//	localPose.m43 = 0.0f;
+			//}
+
+			m_bone->m_combinedMatrix =
+				localPose *
+				Matrix::MakeTranslation(m_bone->GetCore()->OrgPosition)
+				;
+
+			//m_bone->m_combinedMatrix = matrix;
+#endif
+
+			//----
+			//matrix.m41 = m_resource->InitialTransform.GetPosition().x;
+			//matrix.m42 = m_resource->InitialTransform.GetPosition().y;
+			//matrix.m43 = m_resource->InitialTransform.GetPosition().z;
+
+			m_bone->m_combinedMatrix =
+				m_offsetBodyToBone * matrix;
+
+#else
+			Matrix mat = Matrix::MakeTranslation(-m_bone->GetCore()->OrgPosition) * m_boneLocalPosition * matrix;
+
+			m_bone->m_combinedMatrix = mat;
+#endif
 		}
+	}
+
+	// ボーン位置合わせ
+	if (m_resource->RigidBodyType == RigidBodyType_PhysicsAlignment)
+	{
+#if 0
+		//Matrix parentMat = //m_bone->m_combinedMatrix;
+		Matrix matrix = m_bone->m_combinedMatrix * m_boneLocalPosition;//Matrix::MakeInverse(parentMat);    // ボーンのローカル行列(親から見てどれだけ移動しているか)
+		//if ((frame.Bone.BoneFlags & BoneType.TransformAfterPhysics) > (BoneType)0)
+		//{
+		//	Vector3 vector = frame.Bone.Position;
+		//	Matrix matrix2 = matrix;
+		//	matrix2.M41 = (matrix2.M42 = (matrix2.M43 = 0f));
+		//	matrix = Matrix.Translation(-vector) * frame.RotationMatrix * matrix2 * Matrix.Translation(frame.UserXYZ) * Matrix.Translation(vector);
+		//	frame.CombinedMatrix = matrix * parentMat;
+		//}
+		Matrix bodyMat = m_rigidBody->GetWorldTransform();
+		bodyMat.Translate(-matrix.m41, -matrix.m42, -matrix.m43);
+		m_rigidBody->SetWorldTransform(bodyMat);
+
+		//matrix.m41 = 0.0f;
+		//matrix.m42 = 0.0f;
+		//matrix.m43 = 0.0f;
+		//m_bone->m_combinedMatrix =
+		//	matrix *
+		//	Matrix::MakeTranslation(m_bone->GetCore()->OrgPosition) *
+		//	parentMat;
+#endif
+		//Vector3 offset = /*m_bone->m_combinedMatrix.GetPosition() + */m_resource->InitialTransform.GetPosition();
+
+		// ボーン位置合わせの時の剛体のあるべき姿勢
+		Matrix t =
+			m_boneOffset
+			* m_bone->GetCombinedMatrix()
+			;
+		Vector3 offset = t.GetPosition();
+
+		Matrix bodyMat = m_rigidBody->GetWorldTransform();
+		bodyMat.m41 = offset.x;
+		bodyMat.m42 = offset.y;
+		bodyMat.m43 = offset.z;
+		m_rigidBody->SetWorldTransform(bodyMat);
+
+		//uint32_t aa = 0xFFFFFFFF & -3;
+
+		//Matrix matrix = m_bone->m_combinedMatrix * m_boneLocalPosition;
+		//matrix.m41 = 0.0f;
+		//matrix.m42 = 0.0f;
+		//matrix.m43 = 0.0f;
+		//m_bone->m_combinedMatrix =
+		//	matrix *
+		//	Matrix::MakeTranslation(m_bone->m_core->GetOffsetFromParent()) *
+		//	m_bone->GetParent()->GetCombinedMatrix();
+
+		//matrix.m41 = 0.0f;
+		//matrix.m42 = 0.0f;
+		//matrix.m43 = 0.0f;
+		//m_bone->m_combinedMatrix =
+		//	m_offsetBodyToBone * matrix *
+		//	Matrix::MakeTranslation(m_bone->m_core->GetOffsetFromParent()) * m_bone->GetParent()->GetCombinedMatrix();
 	}
 }
 
@@ -714,7 +865,7 @@ void MmdSkinnedMeshJoint::Initialize(SkinnedMeshModel* ownerModel, PmxJointResou
 		Matrix::MakeTranslation(jointResource->Position);
 
 	Matrix transInvA = Matrix::MakeInverse(bodyA->GetRigidBody()->GetWorldTransform());
-	Matrix transInvB = Matrix::MakeInverse(bodyA->GetRigidBody()->GetWorldTransform());
+	Matrix transInvB = Matrix::MakeInverse(bodyB->GetRigidBody()->GetWorldTransform());
 
 	// 各剛体のローカルから見たジョイント位置
 	Matrix frameInA = jointOffset * transInvA;

@@ -79,7 +79,7 @@ MMM_SKINNING_OUTPUT MMM_SkinnedPositionNormal(
     
 	// �Ō�̂ЂƂȊO
 	int iBone = 0;
-	for ( ; iBone < MaxIndices - 1; ++iBone )
+	for ( ; iBone < MaxIndices/* - 1*/; ++iBone )
 	{
 		if ( weights_array[iBone] != 0.0 )
 		{
@@ -100,7 +100,7 @@ MMM_SKINNING_OUTPUT MMM_SkinnedPositionNormal(
 			o.Normal   += (mul( float4( normal, 1.0 ), bone ) * weights_array[iBone]).xyz;
 		}
 	}
-    
+#if 0
 	// �Ō�̂ЂƂ�
 	last_weight = 1.0 - last_weight;
 
@@ -114,9 +114,9 @@ MMM_SKINNING_OUTPUT MMM_SkinnedPositionNormal(
 		tex2Dlod( lnBoneSampler, tc1 ),
 		tex2Dlod( lnBoneSampler, tc2 ),
 		tex2Dlod( lnBoneSampler, tc3 ) );
-
 	o.Position += mul( position, bone ) * last_weight;
 	o.Normal   += (mul( float4( normal, 1.0 ), bone ) * last_weight).xyz;
+#endif
 	return o;
 }
 /*

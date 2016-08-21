@@ -76,8 +76,8 @@ LN_INTERNAL_ACCESS:
 
 private:
 	void UpdateIK();
-	void UpdateIKInternal(PmxIKResource* ikInfo, int linkIndex, int loop, int ikt, int depth);
-	void UpdateIKInternal2(PmxIKResource* ik);
+	void UpdateBestow();
+
 
 LN_INTERNAL_ACCESS:	// TODO:
 	RefPtr<PmxSkinnedMeshResource>	m_meshResource;
@@ -167,6 +167,8 @@ private:
 	SkinnedMeshBone*		m_bone;
 	RefPtr<RigidBody>		m_rigidBody;
 	Matrix					m_boneLocalPosition;
+	Matrix					m_boneOffset;
+	Matrix					m_offsetBodyToBone;
 };
 
 class MmdSkinnedMeshJoint

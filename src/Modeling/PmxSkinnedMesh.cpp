@@ -63,8 +63,13 @@ void PmxBoneResource::RefreshInitialValues()
 	if (ParentBoneIndex >= 0)
 	{
 		m_offsetFromParent = OrgPosition - m_owner->bones[ParentBoneIndex]->OrgPosition;
-		m_initialTranstormInv = Matrix::MakeTranslation(-OrgPosition);
 	}
+	else
+	{
+		m_offsetFromParent = OrgPosition;	// モデル原点からのオフセット
+	}
+		
+	m_initialTranstormInv = Matrix::MakeTranslation(-OrgPosition);
 }
 
 //==============================================================================

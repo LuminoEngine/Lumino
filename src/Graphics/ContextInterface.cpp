@@ -230,6 +230,7 @@ void ContextInterface::NorityStartDrawing(detail::IRendererPloxy* rendererPloxy)
 	if (m_stateChanged)
 	{
 		OnStateFlush();
+		m_stateChanged = false;
 	}
 	SwitchActiveRendererPloxy(rendererPloxy);
 }

@@ -12,6 +12,8 @@
 #include "MMEShader.h"
 #include "MMEShaderErrorInfo.h"
 #include "../SceneGraphManager.h"
+#include "../DebugRenderer.h"
+#include "../../Graphics/PrimitiveRenderer.h"	// TODO: test
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
@@ -249,6 +251,19 @@ void MMERenderingPass::PostRender(SceneGraphRenderingContext* dc)
 		m_gridPlane->m_attributes[0].StartIndex,
 		m_gridPlane->m_attributes[0].PrimitiveNum,
 		m_gridPlane->GetMaterial(0));
+
+
+#if 0
+	if (m_manager->GetPhysicsManager() != nullptr)
+	{
+		DebugRenderer dr(dc);
+		// TODO: SetViewProjection は別の場所でやったほうがステート変更少なくてすむかも？
+		//dc->BeginGraphicsContext()->SetViewProjectionTransform(dc->CurrentCamera->GetViewMatrix(), dc->CurrentCamera->GetProjectionMatrix());
+		dc->GetPrimitiveRenderer()->SetViewProjMatrix(dc->CurrentCamera->GetViewProjectionMatrix());
+		m_manager->GetPhysicsManager()->DrawDebugShapesAllWorld(&dr);
+		dc->Flush();
+	}
+#endif
 }
 
 //------------------------------------------------------------------------------

@@ -24,6 +24,7 @@ public:
 	IDirect3DIndexBuffer9* GetDxIndexBuffer() const { return m_indexBuffer; }
 
 public:
+	virtual size_t GetByteCount() const { return m_indexCount * m_indexStride; }
 	virtual IndexBufferFormat GetFormat() const { return m_format; }
 	virtual ResourceUsage GetUsage() const { return m_usage; }
 	virtual void SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes);
