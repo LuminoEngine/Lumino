@@ -204,6 +204,12 @@ Texture2DPtr Texture2D::Create(const void* data, size_t size, TextureFormat form
 }
 
 //------------------------------------------------------------------------------
+Texture2DPtr Texture2D::GetWhiteTexture()
+{
+	return GraphicsManager::GetInstance()->GetDummyWhiteTexture();
+}
+
+//------------------------------------------------------------------------------
 Texture2D::Texture2D()
 	: m_mipmap(false)
 	, m_isPlatformLoaded(false)

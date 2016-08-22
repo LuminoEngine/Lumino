@@ -77,6 +77,10 @@ MMM_SKINNING_OUTPUT MMM_SkinnedPositionNormal(
 	
 	float  last_weight = 0.0;
     
+    
+    o.Position += position;
+	return o;
+    
 	// �Ō�̂ЂƂȊO
 	int iBone = 0;
 	for ( ; iBone < MaxIndices/* - 1*/; ++iBone )

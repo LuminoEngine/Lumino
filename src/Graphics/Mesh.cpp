@@ -111,6 +111,86 @@ private:
 	Vector3	m_front;
 };
 
+
+class PlaneMeshFactory3
+{
+public:
+	PlaneMeshFactory3(const Vector2& size, int sliceX, int sliceZ)
+		: m_size(size)
+		, m_sliceX(sliceX)
+		, m_sliceZ(sliceZ)
+	{
+		LN_CHECK_ARG(sliceX >= 1);
+		LN_CHECK_ARG(sliceZ >= 1);
+	}
+
+	int GetVertexCount() const { return (m_sliceX + 1) * (m_sliceZ + 1); }
+	int GetIndexCount() const { return (m_sliceX * m_sliceZ * 2) * 3; }
+
+	void Generate(Vertex* outVertices, uint16_t* outIndices)
+	{
+		Vector2 minPos = -m_size / 2;
+		Vector2 maxPos = m_size / 2;
+
+		float minX = -m_size.x / 2;
+		float maxX = m_size.x / 2;
+		float minZ = -m_size.y / 2;
+		float maxZ = m_size.y / 2;
+		float stepX = (maxPos.x - minPos.x) / m_sliceX;
+		float stepZ = (maxPos.y - minPos.y) / m_sliceZ;
+		float StepU = 1.0f / m_sliceX;
+		float StepV = 1.0f / m_sliceZ;
+		Vertex* v = outVertices;
+		uint16_t* i = (uint16_t*)outIndices;
+
+		// vertices
+		for (int iZ = 0; iZ < m_sliceZ + 1; ++iZ)
+		{
+			for (int iX = 0; iX < m_sliceX + 1; ++iX)
+			{
+				if (iX == m_sliceX)
+					v->position.x = maxX;	// 誤差を出したくないため直接設定
+				else
+					v->position.x = minX + stepX * iX;
+
+				if (iZ == m_sliceZ)
+					v->position.z = minZ;	// 誤差を出したくないため直接設定
+				else
+					v->position.z = maxZ - stepZ * iZ;
+
+				v->position.y = 0.0f;
+				v->normal.Set(0.0f, 1.0f, 0.0f);
+				v->uv.Set(StepU * iX, 1.0f - StepV * iZ);
+				++v;
+			}
+		}
+
+		// indices
+		for (int iZ = 0; iZ < m_sliceZ; ++iZ)
+		{
+			for (int iX = 0; iX < m_sliceX; ++iX)
+			{
+				int p1 = (iX + 0) + (iZ + 0) * (m_sliceX + 1);	// ┏
+				int p2 = (iX + 0) + (iZ + 1) * (m_sliceX + 1);	// ┗
+				int p3 = (iX + 1) + (iZ + 0) * (m_sliceX + 1);	// ┓
+				int p4 = (iX + 1) + (iZ + 1) * (m_sliceX + 1);	// ┛
+				i[0] = p1;
+				i[1] = p2;
+				i[2] = p3;
+				i[3] = p3;
+				i[4] = p2;
+				i[5] = p4;
+				i += 6;
+			}
+		}
+	}
+
+private:
+	Vector2	m_size;
+	int		m_sliceX;
+	int		m_sliceZ;
+};
+
 class BoxMeshFactory
 {
 public:
@@ -582,6 +662,19 @@ void MeshResource::CreateSphere(float radius, int slices, int stacks, MeshCreati
 }
 
 //------------------------------------------------------------------------------
+void MeshResource::CreatePlane(const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags)
+{
+	PlaneMeshFactory3 factory(size, sliceH, sliceV);
+	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), MeshCreationFlags::None);
+
+	void* vb = TryLockVertexBuffer(VB_BasicVertices, sizeof(Vertex));
+	void* ib = TryLockIndexBuffer();
+	factory.Generate((Vertex*)vb, (uint16_t*)ib);
+	PostGenerated((Vertex*)vb, ib, flags);
+	EndCreating();
+}
+
+//------------------------------------------------------------------------------
 void MeshResource::CreateSquarePlane(const Vector2& size, const Vector3& front, MeshCreationFlags flags)
 {
 	PlaneMeshFactory2 factory(size, front);
@@ -986,6 +1079,15 @@ void StaticMeshModel::InitializeSphere(GraphicsManager* manager, float radius, i
 	auto res = RefPtr<MeshResource>::MakeRef();
 	res->Initialize(manager);
 	res->CreateSphere(radius, slices, stacks, flags);
+	Initialize(manager, res);
+}
+
+//------------------------------------------------------------------------------
+void StaticMeshModel::InitializePlane(GraphicsManager* manager, const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags)
+{
+	auto res = RefPtr<MeshResource>::MakeRef();
+	res->Initialize(manager);
+	res->CreatePlane(size, sliceH, sliceV, flags);
 	Initialize(manager, res);
 }
 

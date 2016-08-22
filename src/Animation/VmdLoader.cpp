@@ -114,7 +114,7 @@ bool VmdLoader::Load(Stream* stream)
 			//anim.TargetFaceName = String(vmdFace.szFaceName);
 
 			// 名前・インデックスの対応
-			m_faceAnimationIndexMap.insert(FaceAnimationIndexPair(anim.TargetFaceName, m_faceAnimationList.GetCount()));
+			m_faceAnimationIndexMap.insert(FaceAnimationIndexPair(vmdFace.szFaceName, m_faceAnimationList.GetCount()));
 
 			// アニメーション作成、キー追加
 			anim.AnimationCurve = RefPtr<FloatAnimationCurve>::MakeRef();

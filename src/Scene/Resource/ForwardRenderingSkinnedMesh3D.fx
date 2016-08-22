@@ -167,7 +167,7 @@ VS_OUTPUT vsBasic(MMM_SKINNING_INPUT IN, uniform bool useTexture, uniform bool u
 //-------------------------------------------------------------------------
 float4 psBasic(VS_OUTPUT IN, uniform bool useTexture, uniform bool useSphereMap, uniform bool useToon, uniform bool useSelfShadow) : COLOR0
 {
-	return tex2D(ObjTexSampler, IN.Tex);
+	return float4(1, 0, 0, 1);// tex2D(ObjTexSampler, IN.Tex);
 #if 0
 	float4 Color = IN.Color;
 	float4 texColor = float4(1,1,1,1);

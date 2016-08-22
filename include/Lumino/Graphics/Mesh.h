@@ -41,6 +41,9 @@ public:
 	void AddMaterials(int count);
 	Material* GetMaterial(int index) const;
 
+	int GetVertexCount() const { return m_vertexCount; }
+	int GetIndexCount() const { return m_indexCount; }
+
 	void SetPosition(int index, const Vector3& position);
 	void SetNormal(int index, const Vector3& normal);
 	void SetUV(int index, const Vector2& uv);
@@ -116,6 +119,7 @@ LN_INTERNAL_ACCESS:
 
 	void CreateBox(const Vector3& size);
 	void CreateSphere(float radius, int slices, int stacks, MeshCreationFlags flags);
+	void CreatePlane(const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags);
 	void CreateSquarePlane(const Vector2& size, const Vector3& front, MeshCreationFlags flags);
 	void CreateScreenPlane();
 
@@ -155,6 +159,8 @@ class StaticMeshModel
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
+	MeshResource* GetMeshResource() const { return m_meshResource; }
+
 	int GetSubsetCount() const;
 	//Material* GetMaterial(int index) const;
 
@@ -168,6 +174,7 @@ LN_INTERNAL_ACCESS:
 	void Initialize(GraphicsManager* manager, MeshResource* sharingMesh);
 	void InitializeBox(GraphicsManager* manager, const Vector3& size);
 	void InitializeSphere(GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags);
+	void InitializePlane(GraphicsManager* manager, const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags);
 	void InitializeSquarePlane(GraphicsManager* manager, const Vector2& size, const Vector3& front, MeshCreationFlags flags);
 	void InitializeScreenPlane(GraphicsManager* manager);
 

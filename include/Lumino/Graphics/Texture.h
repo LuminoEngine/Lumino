@@ -115,6 +115,8 @@ public:
 	*/
 	static Texture2DPtr Create(const void* data, size_t size, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
 
+	static Texture2DPtr GetWhiteTexture();
+
 public:
 
 	void Clear(const Color32& color);
