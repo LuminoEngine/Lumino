@@ -7,6 +7,8 @@
 //ライト数
 static const int MMM_LightCount = 3;
 
+float	 MMM_modelsize = 1.0;
+
 // ボーンテクスチャサイズの逆数
 float2 lnBoneTextureReciprocalSize = float2( 1.0/4.0, 1.0/256.0 );
 
@@ -14,12 +16,22 @@ float2 lnBoneTextureReciprocalSize = float2( 1.0/4.0, 1.0/256.0 );
 texture lnBoneTexture;
 sampler2D lnBoneSampler = sampler_state
 {
-    Texture = <lnBoneTexture>;
-    MinFilter = Point;  // 殆どのGPUでは以下のようなステート設定にしないと
-    MagFilter = Point;  // 頂点テクスチャのフェッチがうまくいかない
-    MipFilter = None;
-    AddressU = Clamp;
-    AddressV = Clamp;
+	Texture = <lnBoneTexture>;
+	MinFilter = Point;  // 殆どのGPUでは以下のようなステート設定にしないと
+	MagFilter = Point;  // 頂点テクスチャのフェッチがうまくいかない
+	MipFilter = None;
+	AddressU = Clamp;
+	AddressV = Clamp;
+};
+texture lnBoneLocalQuaternionTexture;
+sampler2D lnBoneLocalQuaternionSampler = sampler_state
+{
+	Texture = <lnBoneLocalQuaternionTexture>;
+	MinFilter = Point; 
+	MagFilter = Point;
+	MipFilter = None;
+	AddressU = Clamp;
+	AddressV = Clamp;
 };
 
 struct MMM_SKINNING_INPUT
@@ -27,7 +39,7 @@ struct MMM_SKINNING_INPUT
 	float4	Pos				: POSITION;
 	float4	BlendWeight		: BLENDWEIGHT;
 	float4	BlendIndices	: BLENDINDICES;
-    float4	Color			: COLOR0;		// 独自
+	float4	Color			: COLOR0;		// 独自
 	float3	Normal			: NORMAL;
 	float2	Tex				: TEXCOORD0;
 	float4	AddUV1			: TEXCOORD1;
@@ -49,6 +61,98 @@ struct MMM_SKINNING_OUTPUT
 
 #define MaxIndices 4
 
+
+//------------------------------------------------------------------------------
+float4x4 LN_GetBoneMatrix(int boneIndex)
+{
+	float2 uv = lnBoneTextureReciprocalSize;
+	float4 tc0 = float4( 0.5f * uv.x, (boneIndex + 0.5f) * uv.y, 0, 1 );	// +0.5 は半ピクセル分
+	float4 tc1 = float4( 1.5f * uv.x, (boneIndex + 0.5f) * uv.y, 0, 1 );
+	float4 tc2 = float4( 2.5f * uv.x, (boneIndex + 0.5f) * uv.y, 0, 1 );
+	float4 tc3 = float4( 3.5f * uv.x, (boneIndex + 0.5f) * uv.y, 0, 1 );
+	return float4x4(
+		tex2Dlod( lnBoneSampler, tc0 ),
+		tex2Dlod( lnBoneSampler, tc1 ),
+		tex2Dlod( lnBoneSampler, tc2 ),
+		tex2Dlod( lnBoneSampler, tc3 ) );
+}
+
+//------------------------------------------------------------------------------
+float4 LN_GetBoneLocalQuaternion(int boneIndex)
+{
+	float2 uv = lnBoneTextureReciprocalSize;
+	float4 tc0 = float4(0.5f, (boneIndex + 0.5f) * uv.y, 0, 1);	// +0.5 は半ピクセル分
+	return tex2Dlod(lnBoneLocalQuaternionSampler, tc0);
+}
+
+//------------------------------------------------------------------------------
+float4 LN_QuaternionSlerp(float4 q1, float4 q2, float t)
+{
+	float4 quat;
+
+	float opposite, inverse;
+	float tt = 1;
+	float dot = q1.w * q2.w + q1.x * q2.x + q1.y * q2.y + q1.z * q2.z;
+
+	if (dot < 0)
+	{
+		tt = -1;
+		dot = -dot;
+	}
+
+	if (dot > 0.999999)
+	{
+		inverse = 1.0 - t;
+		opposite = t * tt;
+	}
+	else
+	{
+		float acosf = acos(dot);
+		float invSin = 1.0 / sin(acosf);
+
+		inverse = sin((1.0 - t) * acosf) * invSin;
+		opposite = sin(t * acosf) * invSin * tt;
+	}
+
+	return float4(inverse * q1.x + opposite * q2.x, inverse * q1.y + opposite * q2.y, inverse * q1.z + opposite * q2.z, inverse * q1.w + opposite * q2.w);
+}
+
+//------------------------------------------------------------------------------
+float4x4 LN_QuaternionToMatrix(float4 quat)
+{
+	float4x4 mat;
+
+	float xy = quat.x * quat.y;
+	float zz = quat.z * quat.z;
+	float wx = quat.w * quat.x;
+	float wy = quat.w * quat.y;
+	float yz = quat.y * quat.z;
+	float wz = quat.w * quat.z;
+
+	mat._11 = 1.0f - 2.0f * quat.y * quat.y - 2.0f * zz;
+	mat._12 = 2.0f * xy + 2.0f * wz;
+	mat._13 = 2.0f * quat.x * quat.z - 2.0f * wy;
+	mat._14 = 0;
+
+	mat._21 = 2.0f * xy - 2.0f * wz;
+	mat._22 = 1.0f - 2.0f * quat.x * quat.x - 2.0f * zz;
+	mat._23 = 2.0f * yz + 2.0f * wx;
+	mat._24 = 0;
+
+	mat._31 = 2.0f * quat.x * quat.z + 2.0f * wy;
+	mat._32 = 2.0f * yz - 2.0f * wx;
+	mat._33 = 1.0f - 2.0f * quat.x * quat.x - 2.0f * quat.y * quat.y;
+	mat._34 = 0;
+
+	mat._41 = 0;
+	mat._42 = 0;
+	mat._43 = 0;
+	mat._44 = 1.0f;
+
+	return mat;
+}
+
+
 MMM_SKINNING_OUTPUT MMM_SkinnedPositionNormal(
 	float4	position,
 	float3	normal,
@@ -59,68 +163,60 @@ MMM_SKINNING_OUTPUT MMM_SkinnedPositionNormal(
 	float3	sdefR1 )
 {
 	MMM_SKINNING_OUTPUT o;
-	o.Position = 0.0;
-	o.Normal = 0.0;
+	float3 pos = 0.0;
+	float3 nml = 0.0;
 
-	float2 uv = lnBoneTextureReciprocalSize;
-	float  weights_array[MaxIndices];//  = (float[MaxIndices])weights;
-	weights_array[0] = weights.x;
-	weights_array[1] = weights.y;
-	weights_array[2] = weights.z;
-	weights_array[3] = weights.w;
-	//int    index_array[MaxIndices]    = { (int)indices.x, (int)indices.y, (int)indices.z, (int)indices.w };//(int[MaxIndices])D3DCOLORtoUBYTE4(indices);
-	int    index_array[MaxIndices];
-	index_array[0] = (int)indices.x;
-	index_array[1] = (int)indices.y;
-	index_array[2] = (int)indices.z;
-	index_array[3] = (int)indices.w;
+	float blendWeights[4] = (float[4])weights;
+	float BlendIndices[4] = (float[4])indices;
 	
-	float  last_weight = 0.0;
-    
-    
-    o.Position += position;
-	return o;
-    
-	// 最後のひとつ以外
-	int iBone = 0;
-	for ( ; iBone < MaxIndices/* - 1*/; ++iBone )
+	if (sdefC.w >= 0)
 	{
-		if ( weights_array[iBone] != 0.0 )
-		{
-			last_weight = last_weight + weights_array[iBone];
+		float4 center = float4(sdefC.xyz, 1.0f);
+		float4 r0 = float4(sdefR0, 1.0f);
+		float4 r1 = float4(sdefR1, 1.0f);
 
-			float4 tc0 = float4( 0.5f * uv.x, ( index_array[iBone] + 0.5f ) * uv.y, 0, 1 );	// +0.5 は半ピクセル分
-			float4 tc1 = float4( 1.5f * uv.x, ( index_array[iBone] + 0.5f ) * uv.y, 0, 1 );
-			float4 tc2 = float4( 2.5f * uv.x, ( index_array[iBone] + 0.5f ) * uv.y, 0, 1 );
-			float4 tc3 = float4( 3.5f * uv.x, ( index_array[iBone] + 0.5f ) * uv.y, 0, 1 );
-	        
-			float4x4 bone = float4x4(
-				tex2Dlod( lnBoneSampler, tc0 ),
-				tex2Dlod( lnBoneSampler, tc1 ),
-				tex2Dlod( lnBoneSampler, tc2 ),
-				tex2Dlod( lnBoneSampler, tc3 ) );
+		float3 pp0 = mul(r0, LN_GetBoneMatrix(BlendIndices[0]));
+		float3 pp1 = mul(r1, LN_GetBoneMatrix(BlendIndices[1]));
 
-			o.Position += mul( position , bone ) * weights_array[iBone];
-			o.Normal   += (mul( float4( normal, 1.0 ), bone ) * weights_array[iBone]).xyz;
-		}
+		float3 prc = pp0 * blendWeights[0] + pp1 * blendWeights[1];
+
+		float3 v1, diff;
+
+		v1 = mul(center, LN_GetBoneMatrix(BlendIndices[0]));
+		diff = (v1 - center) * blendWeights[0];
+
+		v1 = mul(center, LN_GetBoneMatrix(BlendIndices[1]));
+		diff += (v1 - center) * blendWeights[1];
+
+		float3 trans = center + diff;
+		trans = (trans + prc) * 0.5;
+
+		float4 quat = LN_QuaternionSlerp(LN_GetBoneLocalQuaternion(BlendIndices[0]), LN_GetBoneLocalQuaternion(BlendIndices[1]), blendWeights[1]);
+		float4x4 mat = LN_QuaternionToMatrix(quat);
+		
+		pos = mul(position - center, mat) * MMM_modelsize + trans;
+		nml = mul(normal, mat) * MMM_modelsize;
+		
+		
 	}
-#if 0
-	// 最後のひとつ
-	last_weight = 1.0 - last_weight;
+	else
+	{
+		float lastWeight = 0.0f;
 
-	float4 tc0 = float4( 0.5f * uv.x, ( index_array[iBone] + 0.5f ) * uv.y, 0, 1 );
-	float4 tc1 = float4( 1.5f * uv.x, ( index_array[iBone] + 0.5f ) * uv.y, 0, 1 );
-	float4 tc2 = float4( 2.5f * uv.x, ( index_array[iBone] + 0.5f ) * uv.y, 0, 1 );
-	float4 tc3 = float4( 3.5f * uv.x, ( index_array[iBone] + 0.5f ) * uv.y, 0, 1 );
-
-	float4x4 bone = float4x4(
-		tex2Dlod( lnBoneSampler, tc0 ),
-		tex2Dlod( lnBoneSampler, tc1 ),
-		tex2Dlod( lnBoneSampler, tc2 ),
-		tex2Dlod( lnBoneSampler, tc3 ) );
-	o.Position += mul( position, bone ) * last_weight;
-	o.Normal   += (mul( float4( normal, 1.0 ), bone ) * last_weight).xyz;
-#endif
+		for (int i = 0; i < 3; i++)
+		{
+			lastWeight += blendWeights[i];
+			pos += mul(position, LN_GetBoneMatrix(BlendIndices[i])) * blendWeights[i];
+			nml += mul(normal, LN_GetBoneMatrix(BlendIndices[i])) * blendWeights[i];
+		}
+		lastWeight = 1.0f - lastWeight;
+		pos += mul(position, LN_GetBoneMatrix(BlendIndices[3])) * lastWeight;
+		nml += mul(normal, LN_GetBoneMatrix(BlendIndices[3])) * lastWeight;
+	}
+	
+	o.Position = float4(pos, 1.0f);
+	o.Normal = nml.xyz;
+	
 	return o;
 }
 /*

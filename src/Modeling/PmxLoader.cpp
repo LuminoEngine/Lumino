@@ -46,6 +46,7 @@ RefPtr<PmxSkinnedMeshResource> PmxLoader::Load(detail::ModelManager* manager, St
 	m_manager = manager;
 	m_isDynamic = isDynamic;
 	m_flags = flags;
+	m_hasSDEF = false;
 
 	BinaryReader reader(stream);
 	m_modelCore = RefPtr<PmxSkinnedMeshResource>::MakeRef();
@@ -107,6 +108,11 @@ RefPtr<PmxSkinnedMeshResource> PmxLoader::Load(detail::ModelManager* manager, St
 	// ジョイント
 	LoadJoints( &reader );
 
+	if (m_hasSDEF)
+	{
+		CalcSDEFCorrection();
+	}
+
 	m_modelCore->EndCreating();
 	return m_modelCore;
 }
@@ -166,75 +172,58 @@ void PmxLoader::LoadVertices(BinaryReader* reader)
 		{
 			case 0:	// BDEF1
 			{
-				m_modelCore->SetBlendIndices(
-					i,
-					(float)reader->ReadInt(getBoneIndexSize()),
-					0.0f,
-					0.0f,
-					0.0f);
-				m_modelCore->SetBlendWeights(
-					i,
-					1.0f,
-					0.0f,
-					0.0f,
-					0.0f);
+				int i0 = reader->ReadInt(getBoneIndexSize());
+				m_modelCore->SetBlendIndices(i, i0, 0.0f, 0.0f, 0.0f);
+				m_modelCore->SetBlendWeights(i, 1.0f, 0.0f, 0.0f, 0.0f);
+				m_modelCore->SetSdefC(i, Vector4(0, 0, 0, -1));
+				m_modelCore->SetSdefR0(i, Vector3::Zero);
+				m_modelCore->SetSdefR1(i, Vector3::Zero);
 				break;
 			}
 			case 1:	// BDEF2
 			{
-				m_modelCore->SetBlendIndices(
-					i,
-					(float)reader->ReadInt(getBoneIndexSize()),
-					(float)reader->ReadInt(getBoneIndexSize()),
-					0.0f,
-					0.0f);
-				float v0 = reader->ReadFloat();
-				m_modelCore->SetBlendWeights(
-					i,
-					v0,
-					1.0f - v0,
-					0.0f,
-					0.0f);
+				int i0 = reader->ReadInt(getBoneIndexSize());
+				int i1 = reader->ReadInt(getBoneIndexSize());
+				float w0 = reader->ReadFloat();
+				m_modelCore->SetBlendIndices(i, i0, i1, 0.0f, 0.0f);
+				m_modelCore->SetBlendWeights(i, w0, 1.0f - w0, 0.0f, 0.0f);
+				m_modelCore->SetSdefC(i, Vector4(0, 0, 0, -1));
+				m_modelCore->SetSdefR0(i, Vector3::Zero);
+				m_modelCore->SetSdefR1(i, Vector3::Zero);
 				break;
 			}
 			case 2:	// BDEF4
 			{
-				m_modelCore->SetBlendIndices(
-					i,
-					(float)reader->ReadInt(getBoneIndexSize()),
-					(float)reader->ReadInt(getBoneIndexSize()),
-					(float)reader->ReadInt(getBoneIndexSize()),
-					(float)reader->ReadInt(getBoneIndexSize()));
-				m_modelCore->SetBlendWeights(
-					i,
-					reader->ReadFloat(),
-					reader->ReadFloat(),
-					reader->ReadFloat(),
-					reader->ReadFloat());
+				int i0 = reader->ReadInt(getBoneIndexSize());
+				int i1 = reader->ReadInt(getBoneIndexSize());
+				int i2 = reader->ReadInt(getBoneIndexSize());
+				int i3 = reader->ReadInt(getBoneIndexSize());
+				float w0 = reader->ReadFloat();
+				float w1 = reader->ReadFloat();
+				float w2 = reader->ReadFloat();
+				float w3 = reader->ReadFloat();
+				m_modelCore->SetBlendIndices(i, i0, i1, i2, i3);
+				m_modelCore->SetBlendWeights(i, w0, w1, w2, w3);
+				m_modelCore->SetSdefC(i, Vector4(0, 0, 0, -1));
+				m_modelCore->SetSdefR0(i, Vector3::Zero);
+				m_modelCore->SetSdefR1(i, Vector3::Zero);
 				break;
 			}
 			case 3:	// SDEF
 			{
-				m_modelCore->SetBlendIndices(
-					i,
-					(float)reader->ReadInt(getBoneIndexSize()),
-					(float)reader->ReadInt(getBoneIndexSize()),
-					0.0f,
-					0.0f);
-				float v0 = reader->ReadFloat();
-				m_modelCore->SetBlendWeights(
-					i,
-					v0,
-					1.0f - v0,
-					0.0f,
-					0.0f);
+				int i0 = reader->ReadInt(getBoneIndexSize());
+				int i1 = reader->ReadInt(getBoneIndexSize());
+				float w0 = reader->ReadFloat();
+				m_modelCore->SetBlendIndices(i, i0, i1, 0.0f, 0.0f);
+				m_modelCore->SetBlendWeights(i, w0, 1.0f - w0, 0.0f, 0.0f);
 				Vector3 sdefC, sdefR0, sdefR1;
 				reader->Read(&sdefC, sizeof(float) * 3);
 				reader->Read(&sdefR0, sizeof(float) * 3);
 				reader->Read(&sdefR1, sizeof(float) * 3);	// TODO:※修正値を要計算
-				m_modelCore->SetSdefC(i, Vector4(sdefC, 0));
+				m_modelCore->SetSdefC(i, Vector4(sdefC, -1/*1.0f*/));	// TODO: 調査中なので BDEF2 扱いする
 				m_modelCore->SetSdefR0(i, sdefR0);
 				m_modelCore->SetSdefR1(i, sdefR1);
+				m_hasSDEF = true;
 				break;
 			}
 		}
@@ -821,6 +810,42 @@ String PmxLoader::ReadString(BinaryReader* reader)
 	}
 
 	return str;
+}
+
+//------------------------------------------------------------------------------
+void PmxLoader::CalcSDEFCorrection()
+{
+#if 0	// TODO: 調査中
+	int vertexCount = m_modelCore->GetVertexCount();
+	for (int iVertex = 0; iVertex < vertexCount; ++iVertex)
+	{
+		Vector4 sdefC = m_modelCore->GetSdefC(iVertex);
+		if (sdefC.w > 0.0f)
+		{
+			Vector3 sdefR0 = m_modelCore->GetSdefR0(iVertex);
+			Vector3 sdefR1 = m_modelCore->GetSdefR1(iVertex);
+			float weight0, weight1;
+			int bone0, bone1;
+			m_modelCore->GetBlendWeights(iVertex, &weight0, &weight1, nullptr, nullptr);
+			m_modelCore->GetBlendIndices(iVertex, &bone0, &bone1, nullptr, nullptr);
+
+			if (bone0 >= 0 && bone1 >= 0 && m_modelCore->bones[bone1]->ParentBoneIndex != bone0 && m_modelCore->bones[bone0]->ParentBoneIndex != bone1)
+			{
+				// 不正な親子関係を見つけた。w を 0 にし、シェーダ側で BDEF 計算を行うようにする。
+				sdefC.w = 0.0f;
+				m_modelCore->SetSdefC(iVertex, sdefC);
+				continue;
+			}
+
+			Vector3 t1(sdefC.x, sdefC.y, sdefC.z);
+			Vector3 t2 = sdefR0 * weight0 + sdefR1 * weight1;
+			sdefR0 = t1 + sdefR0 - t2;
+			sdefR1 = t1 + sdefR1 - t2;
+			m_modelCore->SetSdefR0(iVertex, sdefR0);
+			m_modelCore->SetSdefR0(iVertex, sdefR1);
+		}
+	}
+#endif
 }
 
 LN_NAMESPACE_END

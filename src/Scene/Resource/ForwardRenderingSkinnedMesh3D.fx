@@ -139,6 +139,11 @@ VS_OUTPUT vsBasic(MMM_SKINNING_INPUT IN, uniform bool useTexture, uniform bool u
 		output.SubTex.z = NormalWV.x * 0.5f + 0.5f;
 		output.SubTex.w = NormalWV.y * -0.5f + 0.5f;
 	}
+	
+	//output.Color.r = IN.BlendWeight.x;
+	//output.Color.g = IN.BlendWeight.y;
+	//output.Color.b = IN.BlendWeight.z;
+	//output.Color.a = 1;
 
 #if 0
 	if (useSelfShadow)
@@ -167,7 +172,7 @@ VS_OUTPUT vsBasic(MMM_SKINNING_INPUT IN, uniform bool useTexture, uniform bool u
 //-------------------------------------------------------------------------
 float4 psBasic(VS_OUTPUT IN, uniform bool useTexture, uniform bool useSphereMap, uniform bool useToon, uniform bool useSelfShadow) : COLOR0
 {
-	return float4(1, 0, 0, 1);// tex2D(ObjTexSampler, IN.Tex);
+	return tex2D(ObjTexSampler, IN.Tex);//IN.Color;//float4(1, 0, 0, 1);// 
 #if 0
 	float4 Color = IN.Color;
 	float4 texColor = float4(1,1,1,1);

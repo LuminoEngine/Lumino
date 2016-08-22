@@ -52,16 +52,22 @@ public:
 
 	void SetBlendWeight(int index, int blendIndex, float value);
 	void SetBlendWeights(int index, float v0, float v1, float v2, float v3);
+	void GetBlendWeights(int index, float* out0, float* out1, float* out2, float* out3);
+
 	void SetBlendIndex(int index, int blendIndex, float value);
-	void SetBlendIndices(int index, float v0, float v1, float v2, float v3);
+	void SetBlendIndices(int index, float v0, float v1, float v2, float v3);	// TODO: int
+	void GetBlendIndices(int index, int* out0, int* out1, int* out2, int* out3);
 
 	void SetIndex(int index, int vertexIndex);
 
 	// PMX
 	void SetAdditionalUV(int index, int additionalUVIndex, const Vector4& uv);
 	void SetSdefC(int index, const Vector4& value);
+	const Vector4& GetSdefC(int index);
 	void SetSdefR0(int index, const Vector3& value);
+	const Vector3& GetSdefR0(int index);
 	void SetSdefR1(int index, const Vector3& value);
+	const Vector3& GetSdefR1(int index);
 	void SetEdgeWeight(int index, float weight);
 
 

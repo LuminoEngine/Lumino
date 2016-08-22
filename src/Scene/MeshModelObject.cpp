@@ -94,6 +94,10 @@ void SkinnedMesh::UpdateNodeRenderingParams(MMEShader* priorityShader)
 	if (v) {
 		v->SetTexture(m_meshModel->GetSkinningMatricesTexture());
 	}
+	v = core->FindVariable(_T("lnBoneLocalQuaternionTexture"));
+	if (v) {
+		v->SetTexture(m_meshModel->m_skinningLocalQuaternionsTexture);
+	}
 }
 
 //------------------------------------------------------------------------------

@@ -66,6 +66,7 @@ private:
 	void LoadJoints(BinaryReader* reader);
 
 	String ReadString(BinaryReader* reader);
+	void CalcSDEFCorrection();
 
 private:
 	detail::ModelManager*			m_manager;
@@ -75,6 +76,7 @@ private:
 	PMX_Header						m_pmxHeader;
 	Array<RefPtr<Texture>>			m_textureTable;
 	ByteBuffer						m_tmpBuffer;
+	bool							m_hasSDEF;
 };
 
 LN_NAMESPACE_END

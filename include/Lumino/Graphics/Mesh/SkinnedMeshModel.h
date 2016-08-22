@@ -85,7 +85,9 @@ LN_INTERNAL_ACCESS:	// TODO:
 	Array<SkinnedMeshBonePtr>		m_allBoneList;				// 全ボーンリスト
 	Array<SkinnedMeshBone*>			m_rootBoneList;				// ルートボーンリスト (親を持たないボーンリスト)
 	Array<Matrix>					m_skinningMatrices;			// スキニングに使用する最終ボーン行列 (要素数はボーン数)
+	Array<Quaternion>				m_skinningLocalQuaternions;
 	RefPtr<Texture2D>				m_skinningMatricesTexture;	// Texture fetch による GPU スキニング用のテクスチャ
+	RefPtr<Texture2D>				m_skinningLocalQuaternionsTexture;	// Texture fetch による GPU スキニング用のテクスチャ
 	RefPtr<Animator>				m_animator;
 	Array<SkinnedMeshBone*>			m_ikBoneList;
 

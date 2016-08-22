@@ -264,6 +264,10 @@ void SkinnedMeshModel::Initialize(GraphicsManager* manager, PmxSkinnedMeshResour
 		m_skinningMatricesTexture = RefPtr<Texture2D>::MakeRef();
 		m_skinningMatricesTexture->Initialize(manager, SizeI(4, boneCount), TextureFormat::R32G32B32A32_Float, false);	// TODO: Dynamic、NoManaged
 
+		m_skinningLocalQuaternions.Resize(boneCount);
+		m_skinningLocalQuaternionsTexture = RefPtr<Texture2D>::MakeRef();
+		m_skinningLocalQuaternionsTexture->Initialize(manager, SizeI(1, boneCount), TextureFormat::R32G32B32A32_Float, false);	// TODO: Dynamic、NoManaged
+
 		// アニメーション管理
 		m_animator = RefPtr<Animator>::MakeRef();
 		m_animator->Create(this);
@@ -393,12 +397,16 @@ void SkinnedMeshModel::UpdateSkinningMatrices()
 		*/
 		m_skinningMatrices[i] = m_allBoneList[i]->GetCore()->GetInitialTranstormInv() * m_allBoneList[i]->GetCombinedMatrix();
 		//m_skinningMatrices[i] = m_allBoneList[i]->GetCombinedMatrix();
+	
+		m_skinningLocalQuaternions[i] = Quaternion::MakeFromRotationMatrix(m_skinningMatrices[i]);//m_allBoneList[i]->m_localTransform.rotation;//
+
 	}
 
 	// スキニングテクスチャ更新
 	if (!m_skinningMatricesTexture.IsNull())
 	{
 		m_skinningMatricesTexture->SetSubData(Point(0, 0), &m_skinningMatrices[0]);
+		m_skinningLocalQuaternionsTexture->SetSubData(Point(0, 0), &m_skinningLocalQuaternions[0]);
 	}
 
 	// 全てのローカルトランスフォームをリセットする

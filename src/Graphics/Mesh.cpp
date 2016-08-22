@@ -773,6 +773,17 @@ void MeshResource::SetBlendWeights(int index, float v0, float v1, float v2, floa
 }
 
 //------------------------------------------------------------------------------
+void MeshResource::GetBlendWeights(int index, float* out0, float* out1, float* out2, float* out3)
+{
+	LN_CHECK_RANGE(index, 0, m_vertexCount);
+	BlendWeight* v = (BlendWeight*)TryLockVertexBuffer(VB_BlendWeights, sizeof(BlendWeight));
+	if (out0 != nullptr) *out0 = v[index].weights[0];
+	if (out1 != nullptr) *out1 = v[index].weights[1];
+	if (out2 != nullptr) *out2 = v[index].weights[2];
+	if (out3 != nullptr) *out3 = v[index].weights[3];
+}
+
+//------------------------------------------------------------------------------
 void MeshResource::SetBlendIndex(int index, int blendIndex, float value)
 {
 	LN_CHECK_RANGE(index, 0, m_vertexCount);
@@ -789,6 +800,17 @@ void MeshResource::SetBlendIndices(int index, float v0, float v1, float v2, floa
 	v[index].indices[1] = v1;
 	v[index].indices[2] = v2;
 	v[index].indices[3] = v3;
+}
+
+//------------------------------------------------------------------------------
+void MeshResource::GetBlendIndices(int index, int* out0, int* out1, int* out2, int* out3)
+{
+	LN_CHECK_RANGE(index, 0, m_vertexCount);
+	BlendWeight* v = (BlendWeight*)TryLockVertexBuffer(VB_BlendWeights, sizeof(BlendWeight));
+	if (out0 != nullptr) *out0 = (int)v[index].indices[0];
+	if (out1 != nullptr) *out1 = (int)v[index].indices[1];
+	if (out2 != nullptr) *out2 = (int)v[index].indices[2];
+	if (out3 != nullptr) *out3 = (int)v[index].indices[3];
 }
 
 //------------------------------------------------------------------------------
@@ -827,6 +849,14 @@ void MeshResource::SetSdefC(int index, const Vector4& value)
 }
 
 //------------------------------------------------------------------------------
+const Vector4& MeshResource::GetSdefC(int index)
+{
+	LN_CHECK_RANGE(index, 0, m_vertexCount);
+	SdefInfo* v = (SdefInfo*)TryLockVertexBuffer(VB_SdefInfo, sizeof(SdefInfo));
+	return v[index].sdefC;
+}
+
+//------------------------------------------------------------------------------
 void MeshResource::SetSdefR0(int index, const Vector3& value)
 {
 	LN_CHECK_RANGE(index, 0, m_vertexCount);
@@ -835,11 +865,27 @@ void MeshResource::SetSdefR0(int index, const Vector3& value)
 }
 
 //------------------------------------------------------------------------------
+const Vector3& MeshResource::GetSdefR0(int index)
+{
+	LN_CHECK_RANGE(index, 0, m_vertexCount);
+	SdefInfo* v = (SdefInfo*)TryLockVertexBuffer(VB_SdefInfo, sizeof(SdefInfo));
+	return v[index].sdefR0;
+}
+
+//------------------------------------------------------------------------------
 void MeshResource::SetSdefR1(int index, const Vector3& value)
 {
 	LN_CHECK_RANGE(index, 0, m_vertexCount);
 	SdefInfo* v = (SdefInfo*)TryLockVertexBuffer(VB_SdefInfo, sizeof(SdefInfo));
 	v[index].sdefR1 = value;
+}
+
+//------------------------------------------------------------------------------
+const Vector3& MeshResource::GetSdefR1(int index)
+{
+	LN_CHECK_RANGE(index, 0, m_vertexCount);
+	SdefInfo* v = (SdefInfo*)TryLockVertexBuffer(VB_SdefInfo, sizeof(SdefInfo));
+	return v[index].sdefR1;
 }
 
 //------------------------------------------------------------------------------
