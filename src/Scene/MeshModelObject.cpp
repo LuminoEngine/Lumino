@@ -65,6 +65,8 @@ SkinnedMeshModel* SkinnedMesh::GetSkinnedMeshModel() const
 //------------------------------------------------------------------------------
 void SkinnedMesh::OnUpdateFrame(float elapsedTime)
 {
+	m_meshModel->SetWorldTransform(m_combinedGlobalMatrix);
+
 	m_meshModel->GetAnimator()->AdvanceTime(elapsedTime * 30);
 	//static bool init = false;
 	//if (!init)

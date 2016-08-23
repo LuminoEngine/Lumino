@@ -570,11 +570,18 @@ namespace detail
 
 //==============================================================================
 // MmdSkinnedMeshRigidBody
+//------------------------------------------------------------------------------
+/*
+	剛体はシーンのワールド空間に配置され、物理演算される。
+	ボーンの位置へ移動する、またはボーンを剛体の位置へ移動する場合は
+	ワールド空間⇔モデルグローバル空間の変換を伴う。
+*/
 //==============================================================================
 
 //------------------------------------------------------------------------------
 MmdSkinnedMeshRigidBody::MmdSkinnedMeshRigidBody()
-	: m_resource(nullptr)
+	: m_ownerModel(nullptr)
+	, m_resource(nullptr)
 	, m_bone(nullptr)
 	, m_rigidBody(nullptr)
 	, m_boneLocalPosition()
@@ -591,6 +598,7 @@ MmdSkinnedMeshRigidBody::~MmdSkinnedMeshRigidBody()
 //------------------------------------------------------------------------------
 void MmdSkinnedMeshRigidBody::Initialize(SkinnedMeshModel* ownerModel, PmxRigidBodyResource* rigidBodyResource, float scale)
 {
+	m_ownerModel = ownerModel;
 	m_resource = rigidBodyResource;
 	if (m_resource->RelatedBoneIndex > 0)
 	{
@@ -691,7 +699,8 @@ void MmdSkinnedMeshRigidBody::UpdateBeforePhysics()
 			//m_resource->InitialTransform * /*Matrix::MakeTranslation(m_bone->GetCore()->OrgPosition) **/
 			
 			m_boneOffset
-			* m_bone->GetCombinedMatrix()
+			* m_bone->GetCombinedMatrix() *
+			m_ownerModel->GetWorldTransform()
 			;
 		m_rigidBody->SetWorldTransform(t);
 		m_rigidBody->SetLinearVelocity(Vector3::Zero);
@@ -725,6 +734,8 @@ void MmdSkinnedMeshRigidBody::UpdateAfterPhysics()
 		{
 			matrix = Matrix::Identity;
 		}
+
+		matrix = matrix * m_ownerModel->GetWorldTransformInverse();
 
 		if (1/*NoRelatedBone*/)
 		{
@@ -770,7 +781,7 @@ void MmdSkinnedMeshRigidBody::UpdateAfterPhysics()
 			//matrix.m43 = m_resource->InitialTransform.GetPosition().z;
 
 			m_bone->m_combinedMatrix =
-				m_offsetBodyToBone * matrix;
+				(m_offsetBodyToBone * matrix);
 
 #else
 			Matrix mat = Matrix::MakeTranslation(-m_bone->GetCore()->OrgPosition) * m_boneLocalPosition * matrix;
@@ -810,9 +821,9 @@ void MmdSkinnedMeshRigidBody::UpdateAfterPhysics()
 
 		// ボーン位置合わせの時の剛体のあるべき姿勢
 		Matrix t =
-			m_boneOffset
-			* m_bone->GetCombinedMatrix()
-			;
+			m_boneOffset *
+			m_bone->GetCombinedMatrix() *
+			m_ownerModel->GetWorldTransform();
 		Vector3 offset = t.GetPosition();
 
 		Matrix bodyMat = m_rigidBody->GetWorldTransform();
@@ -820,6 +831,8 @@ void MmdSkinnedMeshRigidBody::UpdateAfterPhysics()
 		bodyMat.m42 = offset.y;
 		bodyMat.m43 = offset.z;
 		m_rigidBody->SetWorldTransform(bodyMat);
+
+		// TODO: 位置合わせの時はボーンの姿勢も調整する。(回転成分のみを適用する)
 
 		//uint32_t aa = 0xFFFFFFFF & -3;
 

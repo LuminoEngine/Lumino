@@ -46,6 +46,11 @@ LN_INTERNAL_ACCESS:
 	virtual ~SkinnedMeshModel();
 	void Initialize(GraphicsManager* manager, PmxSkinnedMeshResource* sharingMesh);
 
+	void SetWorldTransform(const Matrix& matrix) { m_worldTransform = matrix; m_worldTransformInverse = Matrix::MakeInverse(m_worldTransform); }
+	const Matrix& GetWorldTransform() const { return m_worldTransform; }
+	const Matrix& GetWorldTransformInverse() const { return m_worldTransformInverse; }
+
+
 	void PreUpdate();
 
 	void PostUpdate();
@@ -95,6 +100,9 @@ LN_INTERNAL_ACCESS:	// TODO:
 	RefPtr<detail::PhysicsWorld>	m_physicsWorld;
 	Array<RefPtr<detail::MmdSkinnedMeshRigidBody>>	m_rigidBodyList;
 	Array<RefPtr<detail::MmdSkinnedMeshJoint>>		m_jointList;
+
+	Matrix		m_worldTransform;
+	Matrix		m_worldTransformInverse;
 };
 
 
@@ -165,6 +173,7 @@ LN_INTERNAL_ACCESS:
 	void UpdateAfterPhysics();
 
 private:
+	SkinnedMeshModel*		m_ownerModel;
 	PmxRigidBodyResource*	m_resource;
 	SkinnedMeshBone*		m_bone;
 	RefPtr<RigidBody>		m_rigidBody;

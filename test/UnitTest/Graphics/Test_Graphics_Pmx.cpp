@@ -30,6 +30,12 @@ TEST_F(Test_Graphics_Pmx, Basic)
 
 	while (Engine::UpdateFrame())
 	{
+		if (Input::IsPressed(InputButtons::Left))
+		{
+			Vector3 pos = mesh->GetPosition();
+			pos.x -= 0.05;
+			mesh->SetPosition(pos);
+		}
 	}
 }
 
