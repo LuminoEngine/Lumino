@@ -68,6 +68,7 @@ set(LN_SOURCES_Animation
 	src/Animation/AnimationState.h
 	src/Animation/Animator.cpp
 	src/Animation/Animator.h
+	src/Animation/Detail.h
 	src/Animation/Internal.h
 	src/Animation/VmdLoader.cpp
 	src/Animation/VmdLoader.h

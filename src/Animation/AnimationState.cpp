@@ -42,9 +42,9 @@ void AnimationState::Refresh(Animator* animator)
 	ClearTargetList();
 
 	// Curve の適用先を element から探し、見つかれば t に持っておく
-	LN_FOREACH(const AnimationClip::AnimationCurveEntry& e, m_clip->GetAnimationCurveEntryList())
+	for (const AnimationClip::AnimationCurveEntry& e : m_clip->GetAnimationCurveEntryList())
 	{
-		AnimationTargetAttributeEntity* target = animator->FindAnimationTargetAttributeEntity(e.RelativePath);
+		detail::AnimationTargetAttributeEntity* target = animator->FindAnimationTargetAttributeEntity(e.RelativePath);
 		if (target != NULL)
 		{
 			AnimationTarget t;
@@ -80,7 +80,7 @@ void AnimationState::AdvanceTime(double elapsedTime)
 //------------------------------------------------------------------------------
 void AnimationState::ClearTargetList()
 {
-	LN_FOREACH(AnimationTarget& target, m_animationTargetList)
+	for (AnimationTarget& target : m_animationTargetList)
 	{
 		target.Curve->Release();
 	}
@@ -91,7 +91,7 @@ void AnimationState::ClearTargetList()
 void AnimationState::SetLocalTime(double time)
 {
 	m_currentLocalTime = time;
-	LN_FOREACH(AnimationTarget& target, m_animationTargetList)
+	for (AnimationTarget& target : m_animationTargetList)
 	{
 
 

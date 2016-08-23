@@ -2,28 +2,9 @@
 #pragma once
 #include <Lumino/Animation/Common.h>
 #include <Lumino/Animation/AnimationCurve.h>
+#include "Detail.h"
 
 LN_NAMESPACE_BEGIN
-
-/// アニメーションの値を設定するオブジェクトのインターフェイス
-class IAnimationTargetAttribute
-{
-public:
-	virtual ~IAnimationTargetAttribute() {}
-
-	virtual const String& GetAnimationTargetName() const = 0;
-	virtual void SetAnimationTargetValue(ValueType type, const void* value) = 0;
-
-};
-
-/// IAnimationTargetAttribute に一時バッファを持たせたくなかったので、ラップする構造体を用意する
-struct AnimationTargetAttributeEntity
-{
-	IAnimationTargetAttribute*	Target;
-	ValueType					Type;			///< Buffer の値の型
-	byte_t						Buffer[64];		///< IAnimationTargetAttribute に設定する前の計算の一時バッファ
-	bool						Modified;		///< 1 つ以上値が設定されたか
-};
 
 /// データモデルである AnimationClip に対するインスタンス
 class AnimationState
@@ -59,8 +40,8 @@ private:
 private:
 	struct AnimationTarget
 	{
-		AnimationCurve*					Curve;		// このアニメーションは
-		AnimationTargetAttributeEntity*	Target;		// TargetState.Value に値をセットする
+		AnimationCurve*							Curve;		// このアニメーションは
+		detail::AnimationTargetAttributeEntity*	Target;		// TargetState.Value に値をセットする
 	};
 
 	typedef Array<AnimationTarget>	AnimationTargetList;

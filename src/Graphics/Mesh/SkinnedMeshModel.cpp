@@ -454,7 +454,7 @@ int SkinnedMeshModel::GetAnimationTargetAttributeCount() const
 }
 
 //------------------------------------------------------------------------------
-IAnimationTargetAttribute* SkinnedMeshModel::GetAnimationTargetAttribute(int index)
+detail::IAnimationTargetAttribute* SkinnedMeshModel::GetAnimationTargetAttribute(int index)
 {
 	return m_allBoneList[index].Get();
 }

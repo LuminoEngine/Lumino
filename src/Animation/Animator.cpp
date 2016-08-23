@@ -122,7 +122,7 @@ Animator::~Animator()
 }
 
 //------------------------------------------------------------------------------
-void Animator::Create(IAnimationTargetElement* element)
+void Animator::Create(detail::IAnimationTargetElement* element)
 {
 	m_element = element;
 
@@ -158,7 +158,7 @@ void Animator::Play(const TCHAR* name/*, PlayMode mode*/)
 void Animator::AdvanceTime(double elapsedTime)
 {
 	// 一時バッファをクリアする (TODO: Valiant 型みたいなのを作って、各値毎に適切なクリア処理を実装する方が良いかもしれない…)
-	LN_FOREACH(AnimationTargetAttributeEntity& e, m_animationTargetAttributeEntityList)
+	for (detail::AnimationTargetAttributeEntity& e : m_animationTargetAttributeEntityList)
 	{
 		memset(e.Buffer, 0, sizeof(e.Buffer));
 		e.Modified = false;
@@ -170,7 +170,7 @@ void Animator::AdvanceTime(double elapsedTime)
 		pair.second->AdvanceTime(elapsedTime);
 	}
 
-	LN_FOREACH(AnimationTargetAttributeEntity& e, m_animationTargetAttributeEntityList)
+	for (detail::AnimationTargetAttributeEntity& e : m_animationTargetAttributeEntityList)
 	{
 		//if (e.Target->GetAnimationTargetName() == _T("右腕")) {
 		//	printf("b");
@@ -200,9 +200,9 @@ void Animator::RemoveAnimationClip(AnimationClip* animationClip)
 }
 
 //------------------------------------------------------------------------------
-AnimationTargetAttributeEntity* Animator::FindAnimationTargetAttributeEntity(const String& name) const
+detail::AnimationTargetAttributeEntity* Animator::FindAnimationTargetAttributeEntity(const String& name)
 {
-	LN_FOREACH(AnimationTargetAttributeEntity& e, m_animationTargetAttributeEntityList)
+	for (detail::AnimationTargetAttributeEntity& e : m_animationTargetAttributeEntityList)
 	{
 		if (e.Target->GetAnimationTargetName() == name) {
 			return &e;

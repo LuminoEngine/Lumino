@@ -16,9 +16,6 @@ class AnimationCurve;
 class AnimationClip;
 class AnimationState;
 class Animator;
-class IAnimationTargetAttribute;
-class IAnimationTargetElement;
-struct AnimationTargetAttributeEntity;
 
 
 /// AnimationCurve の値の種類

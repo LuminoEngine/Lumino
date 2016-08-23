@@ -28,7 +28,7 @@ class PmxJointResource;
 */
 class SkinnedMeshModel
 	: public Object
-	, public IAnimationTargetElement
+	, public detail::IAnimationTargetElement
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
@@ -39,7 +39,7 @@ public:
 protected:
 	// IAnimationTargetElement interface
 	virtual int GetAnimationTargetAttributeCount() const override;
-	virtual IAnimationTargetAttribute* GetAnimationTargetAttribute(int index) override;
+	virtual detail::IAnimationTargetAttribute* GetAnimationTargetAttribute(int index) override;
 
 LN_INTERNAL_ACCESS:
 	SkinnedMeshModel();
@@ -103,7 +103,7 @@ LN_INTERNAL_ACCESS:	// TODO:
 */
 class SkinnedMeshBone
 	: public Object
-	, public IAnimationTargetAttribute
+	, public detail::IAnimationTargetAttribute
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:

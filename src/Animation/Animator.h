@@ -2,23 +2,10 @@
 #pragma once
 #include <Lumino/Animation/Common.h>
 #include <Lumino/Animation/AnimationCurve.h>
+#include "Detail.h"
 
 LN_NAMESPACE_BEGIN
 
-/// アニメーションしたいオブジェクトを保持するオブジェクトのインターフェイス
-class IAnimationTargetElement
-{
-public:
-	virtual ~IAnimationTargetElement() {}
-
-	virtual int GetAnimationTargetAttributeCount() const = 0;
-	virtual IAnimationTargetAttribute* GetAnimationTargetAttribute(int index) = 0;
-
-	/// (見つからなければ NULL を返す)
-	//virtual IAnimationTargetAttribute* FindAnimationTargetAttributes(const String& relativePath) const = 0;
-};
-
-/// Animator
 /** 
 	@note	SkinnedMesh に対応し、インスタンス扱い。
 */
@@ -34,7 +21,7 @@ public:
 public:
 
 	/// 作成
-	void Create(IAnimationTargetElement* element);
+	void Create(detail::IAnimationTargetElement* element);
 
 	/// 再生中であるかを確認する
 	bool IsPlaying() const;
@@ -69,7 +56,7 @@ public:
 	void RemoveAnimationClip(AnimationClip* animationClip);
 
 	/// AnimationTargetEntity の検索 (見つからなければ NULL)
-	AnimationTargetAttributeEntity* FindAnimationTargetAttributeEntity(const String& name) const;
+	detail::AnimationTargetAttributeEntity* FindAnimationTargetAttributeEntity(const String& name);
 
 	/// AnimationState の検索
 	AnimationState* FindAnimationState(const TCHAR* clipName);
@@ -78,10 +65,10 @@ public:
 	//void addAnimationApplyTarget(IAnimationApplyTarget* target);
 
 private:
-	typedef Array<AnimationTargetAttributeEntity>	AnimationTargetAttributeEntityList;
-	typedef SortedArray<String, AnimationState*>		AnimationStateList;
+	typedef Array<detail::AnimationTargetAttributeEntity>	AnimationTargetAttributeEntityList;
+	typedef SortedArray<String, AnimationState*>			AnimationStateList;
 
-	IAnimationTargetElement*			m_element;
+	detail::IAnimationTargetElement*	m_element;
 	AnimationTargetAttributeEntityList	m_animationTargetAttributeEntityList;
 	AnimationStateList					m_animationStateList;
 
