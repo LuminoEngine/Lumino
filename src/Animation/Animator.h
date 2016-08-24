@@ -5,6 +5,7 @@
 #include "Detail.h"
 
 LN_NAMESPACE_BEGIN
+namespace detail { class AnimationLayer; }
 
 /** 
 	@note	SkinnedMesh に対応し、インスタンス扱い。
@@ -13,6 +14,7 @@ class Animator
 	: public RefObject
 {
 public:
+	static const int MaxLayers = 8;
 
 public:
 	Animator();
@@ -27,7 +29,7 @@ public:
 	bool IsPlaying() const;
 
 	/// 再生
-	void Play(const TCHAR* name/*, PlayMode mode = PlayMode_StopSameLayer*/);
+	void Play(const TCHAR* name, float duration = 0.3f/*, PlayMode mode = PlayMode_StopSameLayer*/);
 
 	///// ブレンド (アニメーションの再生には影響しない。停止中のアニメーションがこの関数によって再生開始されることはない)
 	//void Blend(const lnKeyChar* animName, lnFloat targetWeight, lnFloat fadeLength);
@@ -53,24 +55,25 @@ public:
 	void AddAnimationClip(AnimationClip* animationClip, int layer = 0);
 
 	/// アニメーションクリップの削除
-	void RemoveAnimationClip(AnimationClip* animationClip);
+	void RemoveAnimationClip(AnimationClip* animationClip, int layer = 0);
 
 	/// AnimationTargetEntity の検索 (見つからなければ NULL)
 	detail::AnimationTargetAttributeEntity* FindAnimationTargetAttributeEntity(const String& name);
 
-	/// AnimationState の検索
-	AnimationState* FindAnimationState(const TCHAR* clipName);
 
 	/// AnimationApplyTarget の追加 (できるだけ AnimationController 作成直後に設定すること。重複禁止)
 	//void addAnimationApplyTarget(IAnimationApplyTarget* target);
 
+LN_INTERNAL_ACCESS:
+	//void AddLayer();
+
 private:
 	typedef Array<detail::AnimationTargetAttributeEntity>	AnimationTargetAttributeEntityList;
-	typedef SortedArray<String, AnimationState*>			AnimationStateList;
 
 	detail::IAnimationTargetElement*	m_element;
 	AnimationTargetAttributeEntityList	m_animationTargetAttributeEntityList;
-	AnimationStateList					m_animationStateList;
+
+	std::array<RefPtr<detail::AnimationLayer>, MaxLayers>	m_layerList;
 
 	///// 追加済み AnimationApplyTarget の検索
 	//AnimationApplyTargetState* findAnimationApplyTargetState(const lnKeyChar* naem);
@@ -81,5 +84,27 @@ private:
 	//AnimationStateArray				mAnimationStateArray;
 	//AnimationApplyTargetStateArray	mAnimationApplyTargetStateArray;
 };
+
+namespace detail
+{
+
+class AnimationLayer
+	: public RefObject
+{
+public:
+	typedef SortedArray<String, RefPtr<AnimationState>>	AnimationStateList;
+
+	Animator*			m_owner;
+	AnimationStateList	m_animationStateList;
+
+	AnimationLayer(Animator* owner);
+	void CreateStateAndAttachClip(AnimationClip* animationClip);
+	void RemoveStateByClip(AnimationClip* animationClip);
+	void TransitionState(const StringRef& name, float duration);
+	void AdvanceTime(float elapsedTime);
+	AnimationState* FindAnimationState(const StringRef& clipName);
+};
+
+} // namespace detail
 
 LN_NAMESPACE_END

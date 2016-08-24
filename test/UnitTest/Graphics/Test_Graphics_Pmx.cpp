@@ -18,6 +18,7 @@ TEST_F(Test_Graphics_Pmx, Basic)
 	auto mesh = SkinnedMesh::Create(_T("D:/MMD/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
 	auto clip = AnimationClip::Create(_T("D:/MMD/モーション/Love&Joy/love&joyお面無しver.vmd"));
 	//auto clip = AnimationClip::Create(_T("D:/MMD/モーション/Zigg-Zagg/ZZ-MikuV2.vmd"));
+	clip->SetName(_T("dance"));
 	auto model = mesh->GetSkinnedMeshModel();
 	auto animator = model->GetAnimator();
 	animator->AddAnimationClip(clip);
@@ -35,6 +36,10 @@ TEST_F(Test_Graphics_Pmx, Basic)
 			Vector3 pos = mesh->GetPosition();
 			pos.x -= 0.05;
 			mesh->SetPosition(pos);
+		}
+		if (Input::IsOffTriggered(InputButtons::Left))
+		{
+			animator->Play(_T(""), 5.0f);
 		}
 	}
 }

@@ -162,7 +162,7 @@ public:
 				euler = localRot.ToEulerAngles(type, &locked);
 				if (locked)
 				{
-					LN_CHECK_STATE(0);	// あり得ないはずだが…
+					LN_CHECK_STATE(0);	// あり得ないはずだが…。localRotの要素がすべて0とか。
 				}
 			}
 		}

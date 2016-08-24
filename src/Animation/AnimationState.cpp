@@ -12,11 +12,13 @@ LN_NAMESPACE_BEGIN
 
 //------------------------------------------------------------------------------
 AnimationState::AnimationState(AnimationClip* clip)
-	: m_clip(NULL)
+	: m_clip(nullptr)
 	, m_animationTargetList()
 	, m_currentLocalTime(0.0)
 	, m_state(PlayState_Stopped)
 	, m_addingBlendWeight(1.0f)
+	, m_internalFade(InternalFade::None)
+	, m_internalFadeWeight()
 {
 	LN_REFOBJ_SET(m_clip, clip);
 }
@@ -62,9 +64,11 @@ void AnimationState::SetPlayState(PlayState state)
 	// 新しく再生を開始する場合は時間をリセットする
 	if (m_state == PlayState_Stopped && state == PlayState_Playing)
 	{
-		m_state = state;
-		SetLocalTime(0.0);
+		m_internalFade = InternalFade::None;
+		m_addingBlendWeight = 0.0f;
 	}
+
+	m_state = state;
 }
 
 //------------------------------------------------------------------------------
@@ -72,8 +76,25 @@ void AnimationState::AdvanceTime(double elapsedTime)
 {
 	if (m_state == PlayState_Playing)
 	{
-		m_currentLocalTime += elapsedTime;
-		SetLocalTime(m_currentLocalTime);
+		SetLocalTime(m_currentLocalTime + elapsedTime);
+	}
+}
+
+//------------------------------------------------------------------------------
+void AnimationState::FadeInLinerInternal(float duration)
+{
+	SetPlayState(PlayState_Playing);
+	m_internalFade = InternalFade::FadeIn;
+	m_internalFadeWeight.Start(1.0f, duration);
+}
+
+//------------------------------------------------------------------------------
+void AnimationState::FadeOutLinerInternal(float duration)
+{
+	if (m_state == PlayState_Playing)
+	{
+		m_internalFade = InternalFade::FadeOut;
+		m_internalFadeWeight.Start(0.0f, duration);
 	}
 }
 
@@ -90,15 +111,31 @@ void AnimationState::ClearTargetList()
 //------------------------------------------------------------------------------
 void AnimationState::SetLocalTime(double time)
 {
+	float elapsed = time - m_currentLocalTime;
+
+	// 時間が巻き戻ったらいろいろリセット
+	if (elapsed < 0.0f)
+	{
+		m_internalFade = InternalFade::None;
+		m_addingBlendWeight = 0.0f;
+	}
+	else
+	{
+		m_internalFadeWeight.AdvanceTime(elapsed);
+		m_addingBlendWeight = m_internalFadeWeight.GetValue();
+		if (m_internalFade == InternalFade::FadeOut && m_internalFadeWeight.IsFinished())
+		{
+			// フェードアウト中で最後までたどり着いたら停止状態にする
+			m_state = PlayState_Stopped;
+		}
+	}
+
+	
+
 	m_currentLocalTime = time;
+
 	for (AnimationTarget& target : m_animationTargetList)
 	{
-
-
-		//if (target.Target->Target->GetAnimationTargetName() == _T("センター")) {
-		//	printf("a");
-		//}
-
 		// 時間をセットして値を生成する
 		target.Curve->SetTime(time);
 

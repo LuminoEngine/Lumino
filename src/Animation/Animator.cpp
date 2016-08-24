@@ -108,23 +108,25 @@ LN_NAMESPACE_BEGIN
 
 //------------------------------------------------------------------------------
 Animator::Animator()
-	: m_element(NULL)
+	: m_element(nullptr)
+	, m_layerList()
 {
 }
 
 //------------------------------------------------------------------------------
 Animator::~Animator()
 {
-	for (auto& pair : m_animationStateList)
-	{
-		pair.second->Release();
-	}
 }
 
 //------------------------------------------------------------------------------
 void Animator::Create(detail::IAnimationTargetElement* element)
 {
 	m_element = element;
+
+	for (int i = 0; i < MaxLayers; ++i)
+	{
+		m_layerList[i] = RefPtr<detail::AnimationLayer>::MakeRef(this);
+	}
 
 	int count = m_element->GetAnimationTargetAttributeCount();
 	m_animationTargetAttributeEntityList.Resize(count);
@@ -144,13 +146,11 @@ bool Animator::IsPlaying() const
 }
 
 //------------------------------------------------------------------------------
-void Animator::Play(const TCHAR* name/*, PlayMode mode*/)
+void Animator::Play(const TCHAR* name, float duration)
 {
-	AnimationState* state = FindAnimationState(name);
-	if (state != NULL)
+	for (detail::AnimationLayer* layer : m_layerList)
 	{
-		// 再生中状態にする
-		state->SetPlayState(PlayState_Playing);
+		layer->TransitionState(name, duration);
 	}
 }
 
@@ -162,19 +162,23 @@ void Animator::AdvanceTime(double elapsedTime)
 	{
 		memset(e.Buffer, 0, sizeof(e.Buffer));
 		e.Modified = false;
+
+		// TODO: 暫定。ちゃんと Variant っぽくして初期化しよう
+		if (e.Type == ValueType_SQTTransform)
+		{
+			SQTTransform* t = (SQTTransform*)e.Buffer;
+			*t = SQTTransform::Identity;
+		}
 	}
 
-	// TODO: レイヤーの考慮
-	for (auto& pair : m_animationStateList)
+	// レイヤーの時間を進める
+	for (detail::AnimationLayer* layer : m_layerList)
 	{
-		pair.second->AdvanceTime(elapsedTime);
+		layer->AdvanceTime(elapsedTime);
 	}
 
 	for (detail::AnimationTargetAttributeEntity& e : m_animationTargetAttributeEntityList)
 	{
-		//if (e.Target->GetAnimationTargetName() == _T("右腕")) {
-		//	printf("b");
-		//}
 		// 一連の処理の中で本当に値がセットされたものだけ通知する
 		if (e.Modified) {
 			e.Target->SetAnimationTargetValue(e.Type, e.Buffer);
@@ -185,18 +189,13 @@ void Animator::AdvanceTime(double elapsedTime)
 //------------------------------------------------------------------------------
 void Animator::AddAnimationClip(AnimationClip* animationClip, int layer)
 {
-	LN_CHECK_ARG(animationClip != nullptr);
-
-	AnimationState* state = LN_NEW AnimationState(animationClip);
-	m_animationStateList.Add(animationClip->GetName(), state);
-	state->Refresh(this);
+	m_layerList[layer]->CreateStateAndAttachClip(animationClip);
 }
 
 //------------------------------------------------------------------------------
-void Animator::RemoveAnimationClip(AnimationClip* animationClip)
+void Animator::RemoveAnimationClip(AnimationClip* animationClip, int layer)
 {
-	LN_CHECK_ARG(animationClip != nullptr);
-	LN_THROW(0, NotImplementedException);
+	m_layerList[layer]->RemoveStateByClip(animationClip);
 }
 
 //------------------------------------------------------------------------------
@@ -208,16 +207,78 @@ detail::AnimationTargetAttributeEntity* Animator::FindAnimationTargetAttributeEn
 			return &e;
 		}
 	}
-	return NULL;
+	return nullptr;
+}
+
+
+namespace detail
+{
+//==============================================================================
+// AnimationLayer
+//==============================================================================
+
+//------------------------------------------------------------------------------
+AnimationLayer::AnimationLayer(Animator* owner)
+	: m_owner(owner)
+	, m_animationStateList()
+{
 }
 
 //------------------------------------------------------------------------------
-AnimationState* Animator::FindAnimationState(const TCHAR* clipName)
+void AnimationLayer::CreateStateAndAttachClip(AnimationClip* animationClip)
 {
-	LN_CHECK_ARG(clipName != nullptr);
-	AnimationState** state = m_animationStateList.Find(clipName);
-	if (state == nullptr) { return nullptr; }
+	LN_CHECK_ARG(animationClip != nullptr);
+
+	auto state = RefPtr<AnimationState>::MakeRef(animationClip);
+	m_animationStateList.Add(animationClip->GetName(), state);
+	state->Refresh(m_owner);
+}
+
+//------------------------------------------------------------------------------
+void AnimationLayer::RemoveStateByClip(AnimationClip* animationClip)
+{
+	LN_CHECK_ARG(animationClip != nullptr);
+	LN_THROW(0, NotImplementedException);
+}
+
+//------------------------------------------------------------------------------
+void AnimationLayer::TransitionState(const StringRef& name, float duration)
+{
+	AnimationState* state = FindAnimationState(name);
+	if (state != nullptr)
+	{
+		// 再生中状態にする
+		state->FadeInLinerInternal(duration);
+		//state->SetPlayState(PlayState_Playing);
+	}
+
+	// state 以外の再生中ステートに対してフェードアウトさせる
+	for (auto& pair : m_animationStateList)
+	{
+		if (pair.second != state && pair.second->GetPlayState() == PlayState_Playing)
+		{
+			pair.second->FadeOutLinerInternal(duration);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+void AnimationLayer::AdvanceTime(float elapsedTime)
+{
+	for (auto& pair : m_animationStateList)
+	{
+		pair.second->AdvanceTime(elapsedTime);
+	}
+}
+
+//------------------------------------------------------------------------------
+AnimationState* AnimationLayer::FindAnimationState(const StringRef& clipName)
+{
+	RefPtr<AnimationState>* state = m_animationStateList.Find(clipName);
+	if (state == nullptr) return nullptr;
 	return *state;
 }
+
+} // namespace detail
 
 LN_NAMESPACE_END

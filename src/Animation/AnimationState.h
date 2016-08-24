@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include <Lumino/Animation/Common.h>
+#include <Lumino/Animation/EasingValue.h>
 #include <Lumino/Animation/AnimationCurve.h>
 #include "Detail.h"
 
@@ -28,10 +29,14 @@ public:
 	PlayState GetPlayState() const { return m_state; }
 
 	/// この AnimationState の同レイヤー内のブレンド率
-	void SetAddingBlendWeight(float weight) { m_addingBlendWeight = weight; }
+	//void SetAddingBlendWeight(float weight) { m_addingBlendWeight = weight; }
 
 	/// 時間を進める
 	void AdvanceTime(double elapsedTime);
+
+LN_INTERNAL_ACCESS:
+	void FadeInLinerInternal(float duration);
+	void FadeOutLinerInternal(float duration);
 
 private:
 	void ClearTargetList();
@@ -44,6 +49,13 @@ private:
 		detail::AnimationTargetAttributeEntity*	Target;		// TargetState.Value に値をセットする
 	};
 
+	enum class InternalFade
+	{
+		None,
+		FadeIn,
+		FadeOut,
+	};
+
 	typedef Array<AnimationTarget>	AnimationTargetList;
 
 	AnimationClip*			m_clip;
@@ -51,6 +63,9 @@ private:
 	double					m_currentLocalTime;
 	PlayState				m_state;
 	float					m_addingBlendWeight;
+
+	InternalFade			m_internalFade;
+	EasingValue<float>		m_internalFadeWeight;
 };
 
 LN_NAMESPACE_END
