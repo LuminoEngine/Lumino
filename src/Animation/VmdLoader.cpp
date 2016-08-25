@@ -48,7 +48,7 @@ bool VmdLoader::Load(Stream* stream)
 
 
 		VMDBezierSQTTransformAnimation2::BoneFrameData frame;
-		frame.Time = static_cast< double >(vmdMotion.ulFrameNo);
+		frame.Time = static_cast< double >(vmdMotion.ulFrameNo) / 30.0f;
 		frame.Position = vmdMotion.vec3Position;
 		frame.Rotation = vmdMotion.vec4Rotation;
 		for (int iC = 0; iC < 4; ++iC)

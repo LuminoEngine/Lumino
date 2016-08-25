@@ -16,13 +16,17 @@ protected:
 TEST_F(Test_Graphics_Pmx, Basic)
 {
 	auto mesh = SkinnedMesh::Create(_T("D:/MMD/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
-	auto clip = AnimationClip::Create(_T("D:/MMD/モーション/Love&Joy/love&joyお面無しver.vmd"));
+	//auto clip = AnimationClip::Create(_T("D:/MMD/モーション/Love&Joy/love&joyお面無しver.vmd"));
 	//auto clip = AnimationClip::Create(_T("D:/MMD/モーション/Zigg-Zagg/ZZ-MikuV2.vmd"));
-	clip->SetName(_T("dance"));
+	auto clip1 = AnimationClip::Create(_T("D:/MMD/モーション/走歩スv2.2full/歩く/A01_SO_女の子歩き_s591_p40.vmd"));
+	auto clip2 = AnimationClip::Create(_T("D:/MMD/モーション/ln/Idle.vmd"));
+	clip1->SetName(_T("walk"));
+	clip2->SetName(_T("idle"));
 	auto model = mesh->GetSkinnedMeshModel();
 	auto animator = model->GetAnimator();
-	animator->AddAnimationClip(clip);
-	animator->Play(clip->GetName().c_str());
+	animator->AddAnimationClip(clip1);
+	animator->AddAnimationClip(clip2);
+	animator->Play(clip2->GetName().c_str());
 	
 	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
 	Camera::GetMain3DCamera()->SetCameraBehavior(cb);
@@ -36,10 +40,15 @@ TEST_F(Test_Graphics_Pmx, Basic)
 			Vector3 pos = mesh->GetPosition();
 			pos.x -= 0.05;
 			mesh->SetPosition(pos);
+			mesh->SetAngles(0, Math::PI / 2, 0);
 		}
 		if (Input::IsOffTriggered(InputButtons::Left))
 		{
-			animator->Play(_T(""), 5.0f);
+			animator->Play(clip2->GetName().c_str());
+		}
+		if (Input::IsTriggered(InputButtons::Left))
+		{
+			animator->Play(clip1->GetName().c_str());
 		}
 	}
 }
