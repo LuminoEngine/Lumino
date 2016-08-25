@@ -29,9 +29,8 @@ struct PrimitiveRendererCore_SetStateCommand : public RenderingCommand
 	SizeI					m_viewPixelSize;
 	bool					m_useInternalShader;
 	PrimitiveRendererMode	m_mode;
-	Driver::IShader*		m_userShader;
 	Driver::ITexture*		m_foreTexture;
-	void Create(PrimitiveRendererCore* core, const Matrix& world, const Matrix& viewProj, const SizeI& viewPixelSize, bool useInternalShader, PrimitiveRendererMode mode, Driver::IShader* userShader, Driver::ITexture* foreTexture)
+	void Create(PrimitiveRendererCore* core, const Matrix& world, const Matrix& viewProj, const SizeI& viewPixelSize, bool useInternalShader, PrimitiveRendererMode mode, Driver::ITexture* foreTexture)
 	{
 		m_core = core;
 		m_transform = world;
@@ -39,14 +38,12 @@ struct PrimitiveRendererCore_SetStateCommand : public RenderingCommand
 		m_viewPixelSize = viewPixelSize;
 		m_useInternalShader = useInternalShader;
 		m_mode = mode;
-		m_userShader = userShader;
-		MarkGC(m_userShader);
 		m_foreTexture = foreTexture;
 		MarkGC(m_foreTexture);
 	}
 	void Execute()
 	{
-		m_core->SetState(m_transform, m_viewProj, m_viewPixelSize, m_useInternalShader, m_mode, m_userShader, m_foreTexture);
+		m_core->SetState(m_transform, m_viewProj, m_viewPixelSize, m_useInternalShader, m_mode, m_foreTexture);
 	}
 };
 
@@ -114,18 +111,6 @@ struct PrimitiveRendererCore_FlushCommand : public RenderingCommand
 //==============================================================================
 // PrimitiveRendererCore
 //==============================================================================
-//	
-//static const byte_t g_PrimitiveRenderer_fx_Data[] =
-//{
-//#include "Resource/PrimitiveRenderer.fx.h"
-//};
-//static const size_t g_PrimitiveRenderer_fx_Len = LN_ARRAY_SIZE_OF(g_PrimitiveRenderer_fx_Data);
-//
-//static const byte_t g_PrimitiveRendererForBlt_fx_Data[] =
-//{
-//#include "Resource/PrimitiveRendererForBlt.fx.h"
-//};
-//static const size_t g_PrimitiveRendererForBlt_fx_Len = LN_ARRAY_SIZE_OF(g_PrimitiveRendererForBlt_fx_Data);
 
 //------------------------------------------------------------------------------
 PrimitiveRendererCore::PrimitiveRendererCore()
@@ -137,7 +122,6 @@ PrimitiveRendererCore::PrimitiveRendererCore()
 	, m_vertexCacheUsed(0)
 	, m_foreTexture(nullptr)
 	, m_mode(PrimitiveRendererMode::TriangleList)
-	, m_userShader(nullptr)
 	, m_useInternalShader(true)
 {
 }
@@ -146,9 +130,7 @@ PrimitiveRendererCore::PrimitiveRendererCore()
 PrimitiveRendererCore::~PrimitiveRendererCore()
 {
 	LN_SAFE_RELEASE(m_foreTexture);
-	LN_SAFE_RELEASE(m_userShader);
 	LN_SAFE_RELEASE(m_shader.shader);
-	//LN_SAFE_RELEASE(m_shaderForBlt.shader);
 	LN_SAFE_RELEASE(m_vertexBufferForBlt);
 	LN_SAFE_RELEASE(m_vertexBuffer);
 	LN_SAFE_RELEASE(m_indexBuffer);
@@ -209,7 +191,7 @@ void PrimitiveRendererCore::Initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRendererCore::SetState(const Matrix& world, const Matrix& viewProj, const SizeI& viewPixelSize, bool useInternalShader, PrimitiveRendererMode mode, Driver::IShader* userShader, Driver::ITexture* texture)
+void PrimitiveRendererCore::SetState(const Matrix& world, const Matrix& viewProj, const SizeI& viewPixelSize, bool useInternalShader, PrimitiveRendererMode mode, Driver::ITexture* texture)
 {
 	float vw = (viewPixelSize.width != 0.0) ? (0.5f / viewPixelSize.width) : 0.0f;
 	float vh = (viewPixelSize.height != 0.0) ? (0.5f / viewPixelSize.height) : 0.0f;
@@ -225,7 +207,6 @@ void PrimitiveRendererCore::SetState(const Matrix& world, const Matrix& viewProj
 	//m_shaderForBlt.varPixelStep->SetVector(Vector4(vw, vh, 0, 0));
 	m_useInternalShader = useInternalShader;
 	m_mode = mode;
-	LN_REFOBJ_SET(m_userShader, userShader);
 	LN_REFOBJ_SET(m_foreTexture, texture);
 }
 
@@ -316,38 +297,8 @@ void PrimitiveRendererCore::Flush()
 	m_vertexBuffer->SetSubData(0, m_vertexCache.GetConstData(), m_vertexCacheUsed);
 	m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
 
-	// ユーザーシェーダを使う場合
-	if (m_userShader != nullptr)
 	{
-		int techCount = m_userShader->GetTechniqueCount();
-		for (int iTech = 0; iTech < techCount; ++iTech)
-		{
-			Driver::IShaderTechnique* tech = m_userShader->GetTechnique(iTech);
-			int passCount = tech->GetPassCount();
-			for (int iPass = 0; iPass < passCount; ++iPass)
-			{
-				tech->GetPass(iPass)->Apply();
-
-				if (m_mode == PrimitiveRendererMode::TriangleList)
-				{
-					m_renderer->SetVertexDeclaration(m_vertexDeclaration);
-					m_renderer->SetVertexBuffer(0, m_vertexBuffer);
-					m_renderer->SetIndexBuffer(m_indexBuffer);
-					m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
-				}
-				else if (m_mode == PrimitiveRendererMode::LineList)
-				{
-					m_renderer->SetVertexDeclaration(m_vertexDeclaration);
-					m_renderer->SetVertexBuffer(0, m_vertexBuffer);
-					m_renderer->DrawPrimitive(PrimitiveType_LineList, 0, GetCurrentVertexCount() / 2);
-				}
-			}
-		}
-	}
-	// ユーザーシェーダを使わない場合
-	else
-	{
-		//if (m_useInternalShader)
+		if (m_useInternalShader)
 		{
 			Driver::ITexture* srcTexture = m_foreTexture;
 			if (srcTexture == nullptr) {
@@ -411,7 +362,6 @@ void PrimitiveRendererCore::AddVertex(const Vector3& pos, const Vector2& uv, con
 PrimitiveRenderer::PrimitiveRenderer()
 	: m_manager(nullptr)
 	, m_core(nullptr)
-	, m_userShader(nullptr)
 	, m_texture(nullptr)
 	, m_useInternalShader(true)
 	, m_stateModified(false)
@@ -422,7 +372,6 @@ PrimitiveRenderer::PrimitiveRenderer()
 //------------------------------------------------------------------------------
 PrimitiveRenderer::~PrimitiveRenderer()
 {
-	LN_SAFE_RELEASE(m_userShader);
 	LN_SAFE_RELEASE(m_texture);
 	LN_SAFE_RELEASE(m_core);
 }
@@ -461,13 +410,6 @@ void PrimitiveRenderer::SetViewPixelSize(const SizeI& size)
 void PrimitiveRenderer::SetUseInternalShader(bool useInternalShader)
 {
 	m_useInternalShader = useInternalShader;
-	m_stateModified = true;
-}
-
-//------------------------------------------------------------------------------
-void PrimitiveRenderer::SetUserShader(Shader* shader)
-{
-	LN_REFOBJ_SET(m_userShader, shader);
 	m_stateModified = true;
 }
 
@@ -571,12 +513,7 @@ void PrimitiveRenderer::CheckUpdateState()
 	{
 		Flush();
 
-		if (m_userShader != nullptr)
-		{
-			m_userShader->TryCommitChanges();
-		}
 		LN_CALL_CORE_COMMAND(SetState, PrimitiveRendererCore_SetStateCommand, m_transform, m_viewProj, m_viewPixelSize, m_useInternalShader, m_mode,
-			(m_userShader != nullptr) ? m_userShader->m_deviceObj : nullptr,
 			(m_texture != nullptr) ? m_texture->GetDeviceObject() : nullptr);
 		m_stateModified = false;
 	}

@@ -1,4 +1,4 @@
-#include "TestConfig.h"
+ï»¿#include "TestConfig.h"
 #include "../../../src/EngineManager.h"
 
 //------------------------------------------------------------------------------
@@ -11,7 +11,7 @@
 //	setlocale(LC_ALL, "");
 //
 //
-//#if 0	// •”•ª“I‚ÉƒeƒXƒg‚ðŽÀs‚µ‚½‚è‚·‚é
+//#if 0	// éƒ¨åˆ†çš„ã«ãƒ†ã‚¹ãƒˆã‚’å®Ÿè¡Œã—ãŸã‚Šã™ã‚‹
 //	char* testArgs[] = {
 //		argv[0],
 //		"--gtest_filter=Test_Scene_Sprite.*"
@@ -78,7 +78,7 @@ void TestEnv::SetUp()
 {
 	Logger::Initialize(_T("test_log.txt"));
 
-	int scale = 4;
+	int scale = 1;
 	EngineSettings settings;
 	EngineSettings::SetMainWindowSize(SizeI(160 * scale, 120 * scale));
 	EngineSettings::SetMainBackBufferSize(SizeI(160 * scale, 120 * scale));
@@ -91,7 +91,7 @@ void TestEnv::SetUp()
 	Font::RegisterFontFile(LN_LOCALFILE("../../tools/VLGothic/VL-Gothic-Regular.ttf"));
 	Font::GetDefaultFont()->SetName(_T("VL Gothic"));
 
-	// ”wŒi‚ÍƒOƒŒ[‚É‚µ‚Ä‚¨‚­‚Æ‰ÁŽZ‡¬‚ÌƒeƒXƒg‚Æ‚©A‚¢‚ë‚¢‚ë“s‡‚ª‚æ‚¢
+	// èƒŒæ™¯ã¯ã‚°ãƒ¬ãƒ¼ã«ã—ã¦ãŠãã¨åŠ ç®—åˆæˆã®ãƒ†ã‚¹ãƒˆã¨ã‹ã€ã„ã‚ã„ã‚éƒ½åˆãŒã‚ˆã„
 	Viewport::GetMainWindowViewport()->SetBackgroundColor(Color32::Gray);
 }
 
@@ -181,6 +181,7 @@ bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath, int passRate
 
 	int colorRange = 255 - (255 * passRate / 100);
 	int pass = 0;
+	int fail = 0;
 
 	for (int y = 0; y < bmp1->GetSize().height; ++y)
 	{
@@ -194,6 +195,10 @@ bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath, int passRate
 				(ignoreAlpha || abs(c1.a - c2.a) <= colorRange))
 			{
 				++pass;
+			}
+			else
+			{
+				++fail;
 			}
 		}
 	}
@@ -223,10 +228,10 @@ GTEST_API_ int main(int argc, char **argv)
 #endif
 	setlocale(LC_ALL, "");
 
-#if 1	// •”•ª“I‚ÉƒeƒXƒg‚ðŽÀs‚µ‚½‚è‚·‚é
+#if 1	// éƒ¨åˆ†çš„ã«ãƒ†ã‚¹ãƒˆã‚’å®Ÿè¡Œã—ãŸã‚Šã™ã‚‹
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_Graphics_Pmx.Basic"
+		"--gtest_filter=Test_Scene_Sprite.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);

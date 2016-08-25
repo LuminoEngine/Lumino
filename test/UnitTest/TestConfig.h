@@ -36,7 +36,7 @@ public:
 	static bool EqualsScreenShot(const TCHAR* filePath, int passRate = 90);
 	static bool EqualsTexture(Texture* texture, const TCHAR* filePath);
 	static bool EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath, int passRate);
-	static bool CheckScreenShot(const TCHAR* filePath, int passRate = 100, bool save = false);
+	static bool CheckScreenShot(const TCHAR* filePath, int passRate = 99, bool save = false);	// 基本的に 99% 一致していれば良い。グラボによって、色成分+-1 くらいの誤差がある (Radeon HD8490)
 
 protected:
 	virtual void SetUp();
