@@ -55,6 +55,10 @@ void UIContext::Initialize(detail::UIManager* manager)
 //------------------------------------------------------------------------------
 void UIContext::SetFocusElement(UIElement* element)
 {
+	if (element != nullptr)
+	{
+		LN_CHECK_STATE(element->IsFocusable());
+	}
 	m_focusElement = element;
 }
 

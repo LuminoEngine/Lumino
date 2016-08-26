@@ -68,6 +68,7 @@ LN_ENUM_FLAGS(InvalidateFlags)
 	Rendering = 0x004,			// 描画系プロパティに変更がある
 	VisualState = 0x0008,	// VisualState に変更がある
 
+
 	All = 0xFFFFFFFF,
 };
 LN_ENUM_FLAGS_DECLARE(InvalidateFlags);

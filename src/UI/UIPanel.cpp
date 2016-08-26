@@ -80,16 +80,19 @@ SizeF UIPanel::ArrangeOverride(const SizeF& finalSize)
 }
 
 //------------------------------------------------------------------------------
-void UIPanel::OnChildElementAdd(UIElement* element)
+void UIPanel::OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e)
 {
-	LN_THROW(element->GetParent() == nullptr, InvalidOperationException, "the child elements of already other elements.");
-	element->SetParent(this, GetOwnerLayoutView());
-}
+	// V‚µ‚­’Ç‰Á‚³‚ê‚½‚à‚Ì‚½‚¿
+	for (UIElement* element : e.newItems)
+	{
+		element->SetParent(this);
+	}
 
-//------------------------------------------------------------------------------
-void UIPanel::OnChildElementRemove(UIElement* element)
-{
-	element->SetParent(nullptr, nullptr);
+	// íœ‚³‚ê‚½‚à‚Ì‚½‚¿
+	for (UIElement* element : e.oldItems)
+	{
+		element->SetParent(nullptr);
+	}
 }
 
 LN_NAMESPACE_END

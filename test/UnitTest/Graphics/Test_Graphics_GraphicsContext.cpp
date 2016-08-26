@@ -73,7 +73,7 @@ TEST_F(Test_Graphics_GraphicsContext, FrameTextureBrush)
 
 	Engine::EndRendering();
 
-	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_GraphicsContext.FrameTextureBrush_test.png")));
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_GraphicsContext.FrameTextureBrush.png")));
 }
 
 //------------------------------------------------------------------------------

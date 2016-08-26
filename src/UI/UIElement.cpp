@@ -35,7 +35,6 @@ LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIKeyEventArgs, TextInputEvent, "TextInput"
 //------------------------------------------------------------------------------
 UIElement::UIElement()
 	: m_manager(nullptr)
-	, m_ownerLayoutView(nullptr)
 	, m_parent(nullptr)
 	, m_localStyle(nullptr)
 	, m_currentVisualStateStyle(nullptr)
@@ -81,8 +80,10 @@ void UIElement::Focus()
 {
 	if (IsFocusable())
 	{
-		if (m_parent != nullptr) { m_parent->ActivateInternal(this); }
-		m_ownerLayoutView->GetOwnerContext()->SetFocusElement(this);
+		if (m_parent != nullptr)
+		{
+			m_parent->ActivateInternal(this);
+		}
 	}
 }
 
@@ -274,10 +275,10 @@ void UIElement::OnMouseLeave(UIMouseEventArgs* e)
 }
 
 //------------------------------------------------------------------------------
-void UIElement::SetParent(UIElement* parent, UILayoutView* ownerLayoutView)
+void UIElement::SetParent(UIElement* parent)
 {
+	LN_THROW(GetParent() == nullptr, InvalidOperationException, "the child elements of already other elements.");
 	m_parent = parent;
-	m_ownerLayoutView = ownerLayoutView;
 }
 
 //------------------------------------------------------------------------------
@@ -299,9 +300,13 @@ UIElement* UIElement::CheckMouseHoverElement(const PointF& globalPt)
 }
 
 //------------------------------------------------------------------------------
+// child : Activate の発生元となった UIElement
 void UIElement::ActivateInternal(UIElement* child)
 {
-	if (m_parent != NULL) { m_parent->ActivateInternal(this); }
+	if (m_parent != nullptr)
+	{
+		m_parent->ActivateInternal(child);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -452,15 +457,11 @@ void UIElement::OnUpdatingLayout()
 }
 
 //------------------------------------------------------------------------------
-void UIElement::UpdateLayout()
+void UIElement::UpdateLayout(const SizeF& viewSize)
 {
-	// TODO: ここは GetRootStyleTable を使うべき？
-	// 今は UILayoutView::UpdateLayout() からしか呼ばれていないので問題ないが…。
-	ApplyTemplateHierarchy(m_ownerLayoutView->GetOwnerContext()->GetRootStyleTable(), nullptr);
-
 	SizeF size(
-		Math::IsNaNOrInf(m_size.width) ? m_ownerLayoutView->GetViewPixelSize().width : m_size.width,
-		Math::IsNaNOrInf(m_size.height) ? m_ownerLayoutView->GetViewPixelSize().height : m_size.height);
+		Math::IsNaNOrInf(m_size.width) ? viewSize.width : m_size.width,
+		Math::IsNaNOrInf(m_size.height) ? viewSize.height : m_size.height);
 
 	// サイズが定まっていない場合はレイアウトを決定できない
 	// TODO: 例外の方が良いかも？

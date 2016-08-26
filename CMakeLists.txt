@@ -93,10 +93,12 @@ set(LN_SOURCES_Platform
 	include/Lumino/Platform/EventListener.h
 	include/Lumino/Platform/Ime.h
 	include/Lumino/Platform/PlatformEventArgs.h
+	include/Lumino/Platform/PlatformFileOpenDialog.h
 	include/Lumino/Platform/PlatformSupport.h
 	include/Lumino/Platform/PlatformWindow.h
 	src/Platform/Internal.h
 	src/Platform/MouseCursorVisibility.h
+	src/Platform/PlatformFileOpenDialog.cpp
 	src/Platform/PlatformManager.cpp
 	src/Platform/PlatformManager.h
 	src/Platform/PlatformWindowManagerBase.cpp
@@ -451,6 +453,7 @@ set(LN_SOURCES_UI
 	include/Lumino/UI/UIItemsControl.h
 	include/Lumino/UI/UILayoutRoot.h
 	include/Lumino/UI/UILayoutView.h
+	include/Lumino/UI/UIListBox.h
 	include/Lumino/UI/UIPanel.h
 	include/Lumino/UI/UIStyle.h
 	include/Lumino/UI/UITextBlock.h
@@ -472,6 +475,7 @@ set(LN_SOURCES_UI
 	src/UI/UIItemsControl.cpp
 	src/UI/UILayoutRoot.cpp
 	src/UI/UILayoutView.cpp
+	src/UI/UIListBox.cpp
 	src/UI/UIManager.cpp
 	src/UI/UIManager.h
 	src/UI/UIPanel.cpp
@@ -568,6 +572,7 @@ if (WIN32)
 		src/Platform/Win32/Clipboard_Win32.cpp
 		src/Platform/Win32/Ime_Win32.cpp
 		src/Platform/Win32/PlatformSupport_Win32.cpp
+		src/Platform/Win32/Win32PlatformFileOpenDialog.h
 		src/Platform/Win32/Win32PlatformWindow.cpp
 		src/Platform/Win32/Win32PlatformWindowManager.cpp
 		src/Platform/Win32/Win32PlatformWindowManager.h

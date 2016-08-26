@@ -105,7 +105,7 @@ public:
 	virtual UIElement* GetVisualChildOrderd(int index) const;
 
 	/** この要素が関連付けられている UILayoutView を取得します。*/
-	UILayoutView* GetOwnerLayoutView() const { return m_ownerLayoutView; }
+	//UILayoutView* GetOwnerLayoutView() const { return m_ownerLayoutView; }
 
 
 	virtual void MeasureLayout(const SizeF& availableSize);
@@ -176,12 +176,12 @@ protected:
 
 LN_INTERNAL_ACCESS:
 	detail::UIManager* GetManager() const { return m_manager; }
-	void SetParent(UIElement* parent, UILayoutView* ownerLayoutView);
+	void SetParent(UIElement* parent);
 	const String& GetCurrentVisualStateName() const { return m_currentVisualStateName; }
 	UIElement* CheckMouseHoverElement(const PointF& globalPt);
-	void ActivateInternal(UIElement* child);
+	virtual void ActivateInternal(UIElement* child);
 	virtual bool OnEvent(detail::UIInternalEventType type, UIEventArgs* args);
-	void UpdateLayout();
+	void UpdateLayout(const SizeF& viewSize);
 	void UpdateTransformHierarchy();
 	void Render(DrawingContext* g);
 
@@ -192,7 +192,7 @@ private:
 	void RaiseEventInternal(const UIEventInfo* ev, UIEventArgs* e);
 
 	detail::UIManager*		m_manager;
-	UILayoutView*			m_ownerLayoutView;
+	//UILayoutView*			m_ownerLayoutView;
 	String					m_keyName;
 	UIElement*				m_parent;
 	UIStylePropertyTable*	m_localStyle;			// 内部的に使用されるスタイル。親や VisualState から取得したスタイルをマージしたもの。

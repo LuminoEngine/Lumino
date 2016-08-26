@@ -79,7 +79,7 @@ void UIContentControl::OnUpdatingLayout()
 		m_contentHost->AddChild(m_contentElement);
 
 		// 要素ツリーに入ったのでスタイルを更新する
-		m_contentHost->ApplyTemplateHierarchy(GetOwnerLayoutView()->GetOwnerContext()->GetRootStyleTable(), GetLocalStyle());
+		//m_contentHost->ApplyTemplateHierarchy(GetOwnerLayoutView()->GetOwnerContext()->GetRootStyleTable(), GetLocalStyle());
 		m_contentElementModified = false;
 	}
 

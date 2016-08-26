@@ -81,14 +81,14 @@ void UIControl::SetVisualTreeRoot(UIElement* element)
 {
 	if (m_visualTreeRoot != nullptr)
 	{
-		m_visualTreeRoot->SetParent(nullptr, nullptr);
+		m_visualTreeRoot->SetParent(nullptr);
 	}
 
 	LN_REFOBJ_SET(m_visualTreeRoot, element);
 
 	if (m_visualTreeRoot != nullptr)
 	{
-		m_visualTreeRoot->SetParent(this, GetOwnerLayoutView());
+		m_visualTreeRoot->SetParent(this);
 	}
 }
 

@@ -19,6 +19,8 @@
 #include <Lumino/Scene/SceneTR.h>
 #include <thread>
 
+#include <Lumino/UI/UIListBox.h>
+
 
 //void LN_STDCALL Button1_MouseMove(CoreObject* sender, MouseEventArgs* e)
 //{
@@ -291,6 +293,27 @@ int main()
 		//EngineSettings::SetMainWindowSize(160, 120);
 		//EngineSettings::SetMainBackBufferSize(160, 120);
 		Engine::Initialize();
+
+
+		auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+		auto listbox1 = tr::UIListBox::Create();
+		listbox1->AddTextItem(_T("item1"));
+		uiRoot->SetContent(listbox1);
+
+
+		while (Engine::UpdateFrame())
+		{
+		}
+
+		return 0;
+
+
+
+
+
+
+
+
 
 
 		//auto tex = Assets::LoadTexture(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/0129.png"));

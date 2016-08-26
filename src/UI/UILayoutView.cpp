@@ -37,8 +37,8 @@ void UILayoutView::Initialize(UIContext* ownerContext, PlatformWindow* ownerNati
 	m_ownerNativeWindow = ownerNativeWindow;
 
 	m_rootElement = LN_NEW UILayoutRoot();
-	m_rootElement->Initialize(m_ownerContext->GetManager());
-	m_rootElement->SetParent(nullptr, this);
+	m_rootElement->Initialize(m_ownerContext->GetManager(), this);
+	m_rootElement->SetParent(nullptr);
 }
 
 //------------------------------------------------------------------------------
@@ -49,7 +49,12 @@ void UILayoutView::UpdateLayout(const SizeF& viewSize)
 	if (m_rootElement != nullptr)
 	{
 		m_rootElement->SetSize(m_viewPixelSize);
-		m_rootElement->UpdateLayout();
+
+		// TODO: ここは GetRootStyleTable を使うべき？
+		// 今は UILayoutView::UpdateLayout() からしか呼ばれていないので問題ないが…。
+		m_rootElement->ApplyTemplateHierarchy(GetOwnerContext()->GetRootStyleTable(), nullptr);
+
+		m_rootElement->UpdateLayout(GetViewPixelSize());
 		m_rootElement->UpdateTransformHierarchy();
 	}
 }
