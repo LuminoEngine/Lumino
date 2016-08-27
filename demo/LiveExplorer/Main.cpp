@@ -300,6 +300,7 @@ int main()
 		listbox1->AddTextItem(_T("item1"));
 		uiRoot->SetContent(listbox1);
 
+		Viewport::GetMainWindowViewport()->SetBackgroundColor(Color::Gray);
 
 		while (Engine::UpdateFrame())
 		{

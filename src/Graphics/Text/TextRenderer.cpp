@@ -1,12 +1,7 @@
 ﻿
 /*
-書式設定されたテキストの描画
-https://msdn.microsoft.com/ja-jp/library/ms752098%28v=vs.110%29.aspx
-
-
-
-
-
+	書式設定されたテキストの描画
+	https://msdn.microsoft.com/ja-jp/library/ms752098%28v=vs.110%29.aspx
 */
 
 #include "../Internal.h"
@@ -20,89 +15,9 @@ https://msdn.microsoft.com/ja-jp/library/ms752098%28v=vs.110%29.aspx
 #include "TextLayoutEngine.h"
 #include "FontGlyphTextureCache.h"
 
-#define LN_CALL_CORE_COMMAND(func, command, ...) \
-	if (m_manager->GetRenderingType() == GraphicsRenderingType::Threaded) { \
-		m_manager->GetPrimaryRenderingCommandList()->AddCommand<command>(m_core, __VA_ARGS__); \
-	} \
-	else { \
-		m_core->func(__VA_ARGS__); \
-	}
-
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail
 {
-
-//==============================================================================
-struct TextRendererCore_SetStateCommand : public RenderingCommand
-{
-	TextRendererCore*	m_core;
-	Matrix				m_transform;
-	Matrix				m_viewProj;
-	SizeI				m_viewPixelSize;
-	void Create(TextRendererCore* core, const Matrix& world, const Matrix& viewProj, const SizeI& viewPixelSize)
-	{
-		m_core = core;
-		m_transform = world;
-		m_viewProj = viewProj;
-		m_viewPixelSize = viewPixelSize;
-	}
-	void Execute()
-	{
-		m_core->SetState(m_transform, m_viewProj, m_viewPixelSize);
-	}
-};
-
-#if 0
-//==============================================================================
-struct TextRendererCore_DrawGlyphRunCommand : public RenderingCommand
-{
-	TextRendererCore* m_core;
-	PointF m_position;
-	DataHandle m_dataList;
-	int m_dataCount;
-	Driver::ITexture* m_glyphsTexture;
-	Driver::ITexture* m_strokesTexture;
-	//ColorF m_foreColor;
-	//ColorF m_strokeColor;
-
-	void Create(
-		TextRendererCore* core,
-		const PointF& position,
-		TextRendererCore::GlyphRunData* dataList,
-		int dataCount,
-		Driver::ITexture* glyphsTexture,
-		Driver::ITexture* strokesTexture/*,
-		const ColorF& foreColor, 
-		const ColorF& strokeColor*/)
-	{
-		DataHandle dataHandle = AllocExtData(sizeof(TextRendererCore::GlyphRunData) * dataCount, dataList);
-		MarkGC(glyphsTexture);
-		if (strokesTexture != NULL) { MarkGC(strokesTexture); }
-		m_core = core;
-		m_position = position;
-		m_dataList = dataHandle;
-		m_dataCount = dataCount;
-		m_glyphsTexture = glyphsTexture;
-		m_strokesTexture = strokesTexture;
-		//m_foreColor = foreColor;
-		//m_strokeColor = strokeColor;
-	}
-
-	void Execute()
-	{
-		m_core->DrawGlyphRun(m_position, (TextRendererCore::GlyphRunData*)GetExtData(m_dataList), m_dataCount, m_glyphsTexture, m_strokesTexture/*, m_foreColor, m_strokeColor*/);
-	}
-};
-
-//==============================================================================
-struct TextRendererCore_FlushCommand : public RenderingCommand
-{
-	TextRendererCore* m_core;
-	void Create(TextRendererCore* core) { m_core = core; }
-	void Execute() { m_core->Flush(); }
-};
-#endif
 
 //==============================================================================
 // TextRendererCore
@@ -120,8 +35,6 @@ TextRendererCore::TextRendererCore()
 	, m_renderer(nullptr)
 	, m_vertexBuffer(nullptr)
 	, m_indexBuffer(nullptr)
-	//, m_foreTexture(nullptr)
-	//, m_glyphsMaskTexture(nullptr)
 {
 }
 
@@ -170,29 +83,11 @@ void TextRendererCore::SetState(const Matrix& world, const Matrix& viewProj, con
 }
 
 //------------------------------------------------------------------------------
-void TextRendererCore::DrawGlyphRun(const PointF& position, const GlyphRunData* dataList, int dataCount, Internal::FontGlyphTextureCache* cache, RenderingCommandList* cmdList /*Driver::ITexture* glyphsTexture, Driver::ITexture* strokesTexture*//*, const ColorF& foreColor, const ColorF& strokeColor*/)
+void TextRendererCore::Render(const GlyphRunData* dataList, int dataCount, Internal::FontGlyphTextureCache* cache)
 {
-	//m_glyphsMaskTexture = glyphsTexture;
-
 	SizeF texSizeInv(1.0f / cache->GetGlyphsTextureSize().width, 1.0f / cache->GetGlyphsTextureSize().height);
 	for (int i = 0; i < dataCount; ++i)
 	{
-		//Internal::CacheGlyphInfo info;
-		//if (dataList[i].fillBitmapData != 0)
-		//{
-		//	m_tmpBitmap.Deserialize(cmdList->GetExtData(dataList[i].fillBitmapData));
-		//	info.fillGlyphBitmap = &m_tmpBitmap;
-		//}
-		//else
-		//{
-		//	info.fillGlyphBitmap = nullptr;
-		//}
-		//info.srcRect = dataList[i].srcRect;
-		//info.outlineOffset = dataList[i].outlineOffset;
-
-		//Rect srcFillRect, srcOutlineRect;
-		//cache->CommitCacheGlyphInfo(&info, &srcFillRect, &srcOutlineRect);
-
 		// TODO: 以下、srcFillRect, srcOutlineRectを使った方が良い気がする
 
 		RectF uvSrcRect((float)dataList[i].srcRect.x, (float)dataList[i].srcRect.y, (float)dataList[i].srcRect.width, (float)dataList[i].srcRect.height);
@@ -202,10 +97,40 @@ void TextRendererCore::DrawGlyphRun(const PointF& position, const GlyphRunData* 
 		uvSrcRect.height *= texSizeInv.height;
 
 		RectF dstRect(dataList[i].Position, (float)dataList[i].srcRect.width, (float)dataList[i].srcRect.height);
-		dstRect.x += position.x;
-		dstRect.y += position.y;
 		InternalDrawRectangle(dstRect, uvSrcRect);
 	}
+
+	Flush(cache);
+}
+
+//------------------------------------------------------------------------------
+void TextRendererCore::InternalDrawRectangle(const RectF& rect, const RectF& srcUVRect)
+{
+	if (rect.IsEmpty()) { return; }		// 矩形がつぶれているので書く必要はない
+
+	float lu = srcUVRect.GetLeft();
+	float tv = srcUVRect.GetTop();
+	float ru = srcUVRect.GetRight();
+	float bv = srcUVRect.GetBottom();
+
+	uint16_t i = m_vertexCache.GetCount();
+	m_indexCache.Add(i + 0);
+	m_indexCache.Add(i + 1);
+	m_indexCache.Add(i + 2);
+	m_indexCache.Add(i + 2);
+	m_indexCache.Add(i + 1);
+	m_indexCache.Add(i + 3);
+
+	Vertex v;
+	v.color = Color::White;	// TODO
+	v.position.Set(rect.GetLeft(), rect.GetTop(), 0);	v.uv.Set(lu, tv);	// 左上
+	m_vertexCache.Add(v);
+	v.position.Set(rect.GetLeft(), rect.GetBottom(), 0); v.uv.Set(lu, bv);	// 左下
+	m_vertexCache.Add(v);
+	v.position.Set(rect.GetRight(), rect.GetTop(), 0);	v.uv.Set(ru, tv);	// 右上
+	m_vertexCache.Add(v);
+	v.position.Set(rect.GetRight(), rect.GetBottom(), 0); v.uv.Set(ru, bv);	// 右下
+	m_vertexCache.Add(v);
 }
 
 //------------------------------------------------------------------------------
@@ -249,35 +174,6 @@ void TextRendererCore::Flush(Internal::FontGlyphTextureCache* cache)
 	m_renderer->SetRenderState(oldState);
 }
 
-//------------------------------------------------------------------------------
-void TextRendererCore::InternalDrawRectangle(const RectF& rect, const RectF& srcUVRect)
-{
-	if (rect.IsEmpty()) { return; }		// 矩形がつぶれているので書く必要はない
-
-	float lu = srcUVRect.GetLeft();
-	float tv = srcUVRect.GetTop();
-	float ru = srcUVRect.GetRight();
-	float bv = srcUVRect.GetBottom();
-
-	uint16_t i = m_vertexCache.GetCount();
-	m_indexCache.Add(i + 0);
-	m_indexCache.Add(i + 1);
-	m_indexCache.Add(i + 2);
-	m_indexCache.Add(i + 2);
-	m_indexCache.Add(i + 1);
-	m_indexCache.Add(i + 3);
-
-	Vertex v;
-	v.color = Color::White;	// TODO
-	v.position.Set(rect.GetLeft(), rect.GetTop(), 0);	v.uv.Set(lu, tv);	// 左上
-	m_vertexCache.Add(v);
-	v.position.Set(rect.GetLeft(), rect.GetBottom(), 0); v.uv.Set(lu, bv);	// 左下
-	m_vertexCache.Add(v);
-	v.position.Set(rect.GetRight(), rect.GetTop(), 0);	v.uv.Set(ru, tv);	// 右上
-	m_vertexCache.Add(v);
-	v.position.Set(rect.GetRight(), rect.GetBottom(), 0); v.uv.Set(ru, bv);	// 右下
-	m_vertexCache.Add(v);
-}
 
 //==============================================================================
 // TextRenderer
@@ -411,118 +307,68 @@ void TextRenderer::DrawString(const TCHAR* str, int length, const RectF& rect, S
 //------------------------------------------------------------------------------
 void TextRenderer::DrawGlyphsInternal(const PointF& position, const Array<TextLayoutResultItem>& layoutItems, Internal::FontGlyphTextureCache* cache)
 {
-	// TODO: ↓いまは Flush でやるようなことをしている。後で変更したい。
-
 	CheckUpdateState();
-
-	// 一時メモリ確保
-	m_tempBuffer.Resize(sizeof(TextRendererCore::GlyphRunData) * layoutItems.GetCount());
-	auto dataList = (TextRendererCore::GlyphRunData*)m_tempBuffer.GetData();
-
-	RenderingCommandList* cmdList = m_manager->GetPrimaryRenderingCommandList();
 
 	int dataCount = layoutItems.GetCount();
 	for (int i = 0; i < dataCount; ++i)
 	{
 		const TextLayoutResultItem& item = layoutItems[i];
 
+		// 必要なグリフを探す。LookupGlyphInfo() の中で、テクスチャにグリフビットマップが Blt される。
 		Internal::CacheGlyphInfo info;
 		bool flush;
-
-		// Fill
 		cache->LookupGlyphInfo(item.Char, &info, &flush);
 		if (flush)
 		{
-			LN_NOTIMPLEMENTED();
+			FlushInternal(cache);
 		}
-		//if (info.fillGlyphBitmap != nullptr)
-		//{
-		//	// ビットマップデータを一時メモリへ保存する
-		//	dataList[i].fillBitmapData = cmdList->AllocExtData(info.fillGlyphBitmap->GetSerializeSize(), nullptr);
-		//	info.fillGlyphBitmap->Serialize(cmdList->GetExtData(dataList[i].fillBitmapData));
-		//}
-		//else
-		//{
-		//	dataList[i].fillBitmapData = 0;
-		//}
 		
 		// TODO: Outline
 
-		dataList[i].Position.Set((float)item.Location.OuterTopLeftPosition.x, (float)item.Location.OuterTopLeftPosition.y);
-		dataList[i].srcRect = info.srcRect;
-		dataList[i].outlineOffset = info.outlineOffset;
+		TextRendererCore::GlyphRunData layoutData;
+		layoutData.Position.x = position.x + (float)item.Location.OuterTopLeftPosition.x;
+		layoutData.Position.y = position.y + (float)item.Location.OuterTopLeftPosition.y;
+		layoutData.srcRect = info.srcRect;
+		layoutData.outlineOffset = info.outlineOffset;
+		m_glyphLayoutDataList.Add(layoutData);
 	}
-
-	//RenderingCommandList::DataHandle dataHandle = cmdList->AllocExtData(sizeof(TextRendererCore::GlyphRunData) * dataCount, dataList);
-
-	RenderBulkData dataListData(dataList, sizeof(TextRendererCore::GlyphRunData) * dataCount);
-
-	LN_ENQUEUE_RENDER_COMMAND_6(
-		DrawGlyphsInternal, m_manager,
-		TextRendererCore*, m_core,
-		PointF, position,
-		RenderBulkData, dataListData,
-		int, dataCount,
-		RefPtr<Internal::FontGlyphTextureCache>, cache,
-		RenderingCommandList*, cmdList,
-		{
-			m_core->DrawGlyphRun(
-				position,
-				(TextRendererCore::GlyphRunData*)dataListData.GetData(),
-				dataCount,
-				cache,
-				cmdList);
-			m_core->Flush(cache);
-		});
-
-
-
-
-
-#if 0
-
-	/*	Font 系は非スレッドセーフ。
-	グリフとその配置はメインスレッドで作ってから TextRendererCore に送る。
-	*/
-
-	// 一時メモリ確保
-	m_tempBuffer.Resize(sizeof(TextRendererCore::GlyphRunData) * layoutItems.GetCount());
-	auto data = (TextRendererCore::GlyphRunData*)m_tempBuffer.GetData();
-
-	// 確保したメモリにテクスチャ描画情報を作っていく
-	Texture* tex1 = NULL;
-	Texture* tex2 = NULL;	// TODO: ストローク
-	int count = layoutItems.GetCount();
-	for (int i = 0; i < count; ++i)
-	{
-		Rect srcRect;
-		const TextLayoutResultItem& item = layoutItems[i];
-		cache->LookupGlyph(item.Char, 0, &tex1, &srcRect);	// TODO: ストローク
-
-		data[i].Position.Set((float)item.Location.OuterTopLeftPosition.X, (float)item.Location.OuterTopLeftPosition.Y);
-		data[i].SrcPixelRect.Set((float)srcRect.X, (float)srcRect.Y, (float)srcRect.Width, (float)srcRect.Height);
-	}
-
-	//ScopedTextureLock lock(tex1);
-	//lock.GetBitmap()->Save(L"test.png");
-
-	Driver::ITexture* dtex2 = (tex2 != NULL) ? tex2->GetDeviceObject() : NULL;
-
-	LN_CALL_CORE_COMMAND(DrawGlyphRun, TextRendererCore_DrawGlyphRunCommand, position, data, count, tex1->GetDeviceObject(), dtex2/*, ColorF::Black, ColorF::Blue*/);	// TODO: 色
+	
 	m_flushRequested = true;
-#endif
 }
 
 //------------------------------------------------------------------------------
 void TextRenderer::Flush()
 {
-#if 0
 	if (m_flushRequested)
 	{
-		LN_CALL_CORE_COMMAND(Flush, TextRendererCore_FlushCommand);
-		m_flushRequested = false;
+		// 現在のフォント設定に一致するテクスチャキャッシュを探す
+		RefPtr<Internal::FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_font), false);
+
+		FlushInternal(cache);
 	}
-#endif
+}
+
+//------------------------------------------------------------------------------
+void TextRenderer::FlushInternal(Internal::FontGlyphTextureCache* cache)
+{
+	int dataCount = m_glyphLayoutDataList.GetCount();
+	RenderBulkData dataListData(&m_glyphLayoutDataList[0], sizeof(TextRendererCore::GlyphRunData) * dataCount);
+
+	LN_ENQUEUE_RENDER_COMMAND_4(
+		TextRenderer_Flush, m_manager,
+		TextRendererCore*, m_core,
+		RenderBulkData, dataListData,
+		int, dataCount,
+		RefPtr<Internal::FontGlyphTextureCache>, cache,
+		{
+			m_core->Render(
+				(TextRendererCore::GlyphRunData*)dataListData.GetData(),
+				dataCount,
+				cache);
+		});
+
+	m_glyphLayoutDataList.Clear();
+	m_flushRequested = false;
 }
 
 //------------------------------------------------------------------------------
@@ -530,8 +376,16 @@ void TextRenderer::CheckUpdateState()	// あらゆる Draw の直前にやりた
 {
 	if (m_stateModified)
 	{
-		Flush();
-		LN_CALL_CORE_COMMAND(SetState, TextRendererCore_SetStateCommand, m_transform, m_viewProj, m_viewPixelSize);
+		LN_ENQUEUE_RENDER_COMMAND_4(
+			TextRenderer_Flush, m_manager,
+			TextRendererCore*, m_core,
+			Matrix, m_transform,
+			Matrix, m_viewProj,
+			SizeI, m_viewPixelSize,
+			{
+				m_core->SetState(m_transform, m_viewProj, m_viewPixelSize);
+			});
+
 		m_stateModified = false;
 	}
 }
@@ -711,5 +565,4 @@ void TextRenderer::DrawLineHorizontal(const UTF32* text, int length, const Rect&
 
 #endif
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

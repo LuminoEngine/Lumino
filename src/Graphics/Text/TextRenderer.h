@@ -7,8 +7,6 @@
 #include "../RenderingCommand.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
-
 namespace detail
 {
 
@@ -32,8 +30,7 @@ public:
 	void Initialize(GraphicsManager* manager);
 
 	void SetState(const Matrix& world, const Matrix& viewProj, const SizeI& viewPixelSize);
-	void DrawGlyphRun(const PointF& position, const GlyphRunData* dataList, int dataCount, Internal::FontGlyphTextureCache* cache, RenderingCommandList* cmdList/*Driver::ITexture* glyphsTexture, Driver::ITexture* strokesTexture*//*, const ColorF& foreColor, const ColorF& strokeColor*/);
-	void Flush(Internal::FontGlyphTextureCache* cache);
+	void Render(const GlyphRunData* dataList, int dataCount, Internal::FontGlyphTextureCache* cache);
 
 private:
 
@@ -59,6 +56,7 @@ private:
 	};
 
 	void InternalDrawRectangle(const RectF& rect, const RectF& srcUVRect);
+	void Flush(Internal::FontGlyphTextureCache* cache);
 
 	GraphicsManager*		m_manager;
 	Driver::IRenderer*		m_renderer;
@@ -120,12 +118,13 @@ public:
 public:
 	// TODO: ↓いまは Flush でやるようなことをしている。後で変更したい。
 	void DrawGlyphsInternal(const PointF& position, const Array<TextLayoutResultItem>& layoutItems, Internal::FontGlyphTextureCache* cache);
+	void FlushInternal(Internal::FontGlyphTextureCache* cache);
 	void CheckUpdateState();
 
 private:
 	GraphicsManager*	m_manager;
 	TextRendererCore*	m_core;
-	ByteBuffer			m_tempBuffer;	// TODO: 複数 Renderer が作られたときに備えて、メモリ効率のため core に移動してしまうのも手
+	Array<TextRendererCore::GlyphRunData>	m_glyphLayoutDataList;
 
 	Matrix				m_transform;
 	Matrix				m_viewProj;
@@ -202,5 +201,4 @@ private:
 };
 #endif
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END
