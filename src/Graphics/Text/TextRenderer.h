@@ -30,7 +30,7 @@ public:
 	void Initialize(GraphicsManager* manager);
 
 	void SetState(const Matrix& world, const Matrix& viewProj, const SizeI& viewPixelSize);
-	void Render(const GlyphRunData* dataList, int dataCount, Internal::FontGlyphTextureCache* cache);
+	void Render(const GlyphRunData* dataList, int dataCount, Internal::FontGlyphTextureCache* cache, Brush* fillBrush);
 
 private:
 
@@ -55,7 +55,7 @@ private:
 		static const int ElementCount = 3;
 	};
 
-	void InternalDrawRectangle(const RectF& rect, const RectF& srcUVRect);
+	void InternalDrawRectangle(const RectF& rect, const RectF& srcUVRect, const Color& color);
 	void Flush(Internal::FontGlyphTextureCache* cache);
 
 	GraphicsManager*		m_manager;
@@ -102,7 +102,7 @@ public:
 	void SetTransform(const Matrix& matrix);
 	void SetViewProjMatrix(const Matrix& matrix);
 	void SetViewPixelSize(const SizeI& size);
-	void SetFont(Font* font);
+	void SetState(Font* font, Brush* fillBrush);
 
 	void DrawGlyphRun(const Point& position, GlyphRun* glyphRun);
 	void DrawGlyphRun(const PointF& position, GlyphRun* glyphRun);	// SetFont 無視
@@ -129,7 +129,8 @@ private:
 	Matrix				m_transform;
 	Matrix				m_viewProj;
 	SizeI				m_viewPixelSize;
-	Font*				m_font;
+	RefPtr<Font>		m_font;
+	RefPtr<Brush>		m_fillBrush;
 	bool				m_stateModified;
 	bool				m_flushRequested;
 };

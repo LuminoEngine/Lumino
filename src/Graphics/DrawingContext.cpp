@@ -269,7 +269,9 @@ void DrawingContext::OnStateFlush()
 
 	m_geometryRenderer->SetBrush(m_state.fillBrush);
 
-	m_textRenderer->SetFont((m_state.font != nullptr) ? m_state.font : GetManager()->GetFontManager()->GetDefaultFont());
+	m_textRenderer->SetState(
+		(m_state.font != nullptr) ? m_state.font : GetManager()->GetFontManager()->GetDefaultFont(),
+		m_state.fillBrush);
 
 
 

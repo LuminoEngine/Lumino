@@ -7,6 +7,7 @@
 #include "../Internal.h"
 #include <algorithm>
 #include <Lumino/Graphics/GraphicsException.h>
+#include <Lumino/Graphics/Brush.h>
 #include "../Device/GraphicsDriverInterface.h"
 #include "../RendererImpl.h"
 #include "../RenderingCommand.h"
@@ -83,8 +84,14 @@ void TextRendererCore::SetState(const Matrix& world, const Matrix& viewProj, con
 }
 
 //------------------------------------------------------------------------------
-void TextRendererCore::Render(const GlyphRunData* dataList, int dataCount, Internal::FontGlyphTextureCache* cache)
+void TextRendererCore::Render(const GlyphRunData* dataList, int dataCount, Internal::FontGlyphTextureCache* cache, Brush* fillBrush)
 {
+	Color color = Color::White;
+	if (fillBrush != nullptr && fillBrush->GetType() == BrushType_SolidColor)
+	{
+		color = static_cast<ColorBrush*>(fillBrush)->GetColor();
+	}
+
 	SizeF texSizeInv(1.0f / cache->GetGlyphsTextureSize().width, 1.0f / cache->GetGlyphsTextureSize().height);
 	for (int i = 0; i < dataCount; ++i)
 	{
@@ -97,14 +104,14 @@ void TextRendererCore::Render(const GlyphRunData* dataList, int dataCount, Inter
 		uvSrcRect.height *= texSizeInv.height;
 
 		RectF dstRect(dataList[i].Position, (float)dataList[i].srcRect.width, (float)dataList[i].srcRect.height);
-		InternalDrawRectangle(dstRect, uvSrcRect);
+		InternalDrawRectangle(dstRect, uvSrcRect, color);
 	}
 
 	Flush(cache);
 }
 
 //------------------------------------------------------------------------------
-void TextRendererCore::InternalDrawRectangle(const RectF& rect, const RectF& srcUVRect)
+void TextRendererCore::InternalDrawRectangle(const RectF& rect, const RectF& srcUVRect, const Color& color)
 {
 	if (rect.IsEmpty()) { return; }		// 矩形がつぶれているので書く必要はない
 
@@ -122,7 +129,7 @@ void TextRendererCore::InternalDrawRectangle(const RectF& rect, const RectF& src
 	m_indexCache.Add(i + 3);
 
 	Vertex v;
-	v.color = Color::White;	// TODO
+	v.color = color;
 	v.position.Set(rect.GetLeft(), rect.GetTop(), 0);	v.uv.Set(lu, tv);	// 左上
 	m_vertexCache.Add(v);
 	v.position.Set(rect.GetLeft(), rect.GetBottom(), 0); v.uv.Set(lu, bv);	// 左下
@@ -192,7 +199,6 @@ TextRenderer::TextRenderer()
 //------------------------------------------------------------------------------
 TextRenderer::~TextRenderer()
 {
-	LN_SAFE_RELEASE(m_font);
 }
 
 //------------------------------------------------------------------------------
@@ -200,7 +206,7 @@ void TextRenderer::Initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 	m_core = m_manager->GetTextRendererCore();
-	SetFont(m_manager->GetFontManager()->GetDefaultFont());
+	SetState(m_manager->GetFontManager()->GetDefaultFont(), nullptr);
 }
 
 //------------------------------------------------------------------------------
@@ -225,10 +231,22 @@ void TextRenderer::SetViewPixelSize(const SizeI& size)
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::SetFont(Font* font)
+void TextRenderer::SetState(Font* font, Brush* fillBrush)
 {
-	LN_REFOBJ_SET(m_font, font);
-	m_stateModified = true;
+	if (m_font != font)
+	{
+		m_font = font;
+		m_stateModified = true;
+	}
+	if (m_fillBrush != fillBrush)
+	{
+		if (fillBrush != nullptr && fillBrush->GetType() != BrushType_SolidColor)
+		{
+			LN_NOTIMPLEMENTED();
+		}
+		m_fillBrush = fillBrush;
+		m_stateModified = true;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -354,17 +372,19 @@ void TextRenderer::FlushInternal(Internal::FontGlyphTextureCache* cache)
 	int dataCount = m_glyphLayoutDataList.GetCount();
 	RenderBulkData dataListData(&m_glyphLayoutDataList[0], sizeof(TextRendererCore::GlyphRunData) * dataCount);
 
-	LN_ENQUEUE_RENDER_COMMAND_4(
+	LN_ENQUEUE_RENDER_COMMAND_5(
 		TextRenderer_Flush, m_manager,
 		TextRendererCore*, m_core,
 		RenderBulkData, dataListData,
 		int, dataCount,
 		RefPtr<Internal::FontGlyphTextureCache>, cache,
+		RefPtr<Brush>, m_fillBrush,
 		{
 			m_core->Render(
 				(TextRendererCore::GlyphRunData*)dataListData.GetData(),
 				dataCount,
-				cache);
+				cache,
+				m_fillBrush);
 		});
 
 	m_glyphLayoutDataList.Clear();
