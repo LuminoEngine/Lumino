@@ -96,9 +96,10 @@ struct BasicContextState
 	ShaderPass* GetShaderPass() const { return m_shaderPass; }
 
 	bool Equals(const BasicContextState& s) const;
+	void Copy(const BasicContextState& s);
 
 private:
-	RefPtr<Texture>			m_renderTargets[MaxMultiRenderTargets];
+	std::array<RefPtr<Texture>, MaxMultiRenderTargets>	m_renderTargets;
 	RefPtr<Shader>			m_ownerShader;
 	ShaderPass*				m_shaderPass = nullptr;
 };

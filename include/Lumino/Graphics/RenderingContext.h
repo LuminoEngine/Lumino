@@ -172,6 +172,7 @@ LN_INTERNAL_ACCESS:
 	void InheritStatus(RenderingContext* parent);
 
 	detail::PrimitiveRenderer* GetPrimitiveRenderer() const { return m_primitiveRenderer; }	// TODO: test
+	const detail::BasicContextState& GetCurrentContxtState() const { return m_state; }
 
 protected:
 	virtual void OnStateFlush() override;

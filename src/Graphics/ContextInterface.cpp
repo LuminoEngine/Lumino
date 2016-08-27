@@ -189,6 +189,18 @@ bool BasicContextState::Equals(const BasicContextState& s) const
 	return true;
 }
 
+//------------------------------------------------------------------------------
+void BasicContextState::Copy(const BasicContextState& s)
+{
+	renderState = s.renderState;
+	depthStencilState = s.depthStencilState;
+	depthBuffer = s.depthBuffer;
+	viewport = s.viewport;
+	m_renderTargets = s.m_renderTargets;
+	m_ownerShader = s.m_ownerShader;
+	m_shaderPass = s.m_shaderPass;
+}
+
 //==============================================================================
 // ContextInterface
 //==============================================================================

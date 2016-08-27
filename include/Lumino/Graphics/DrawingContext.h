@@ -6,6 +6,7 @@
 #include "Brush.h"
 
 LN_NAMESPACE_BEGIN
+class RenderingContext;
 namespace detail { class GeometryRenderer; }
 namespace detail { class TextRenderer; }
 namespace detail { class FrameRectRenderer; }
@@ -63,6 +64,7 @@ LN_INTERNAL_ACCESS:
 	DrawingContext();
 	virtual ~DrawingContext();
 	void Initialize(GraphicsManager* manager);
+	void InheritStatus(RenderingContext* parent);
 
 protected:
 	virtual void OnStateFlush() override;

@@ -38,7 +38,8 @@ void UIViewportLayer::Render(RenderingContext* context)
 {
 	DrawingContext* g = m_view->GetOwnerContext()->GetManager()->GetGraphicsManager()->GetDrawingContext();
 
-
+	// TODO: ステートリセットもほしいかも？
+	g->InheritStatus(context);
 	g->Clear(ClearFlags::Depth, Color::White);	// TODO
 	g->Set2DRenderingMode(-1, 1);	// TODO
 

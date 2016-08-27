@@ -1,5 +1,6 @@
 
 #include "Internal.h"
+#include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/Graphics/Shader.h>
 #include "RendererImpl.h"
@@ -242,6 +243,17 @@ void DrawingContext::DrawText(const StringRef& text, const RectF& rect, StringFo
 void DrawingContext::Flush()
 {
 	detail::ContextInterface::FlushImplemented();
+}
+
+//------------------------------------------------------------------------------
+void DrawingContext::InheritStatus(RenderingContext* parent)
+{
+	LN_ASSERT(parent != nullptr);
+	if (!m_state.detail::BasicContextState::Equals(parent->GetCurrentContxtState()))
+	{
+		m_state.Copy(parent->GetCurrentContxtState());
+		NorityStateChanging();
+	}
 }
 
 //------------------------------------------------------------------------------
