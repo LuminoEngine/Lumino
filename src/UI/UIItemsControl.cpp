@@ -39,21 +39,48 @@ UIElementCollection* UIItemsControl::GetItems() const
 void UIItemsControl::SetItemsHostPanel(UIPanel* panel)
 {
 	LN_CHECK_ARG(panel != nullptr);
-	panel->SetParent(this);
+	SetVisualTreeRoot(panel);
 	m_itemsHostPanel = panel;
 }
 
 //------------------------------------------------------------------------------
-int UIItemsControl::GetVisualChildrenCount() const
-{
-	return 1;	// ItemsHostPanel 1‚Â•ª
-}
+//int UIItemsControl::GetVisualChildrenCount() const
+//{
+//	return 1;	// ItemsHostPanel 1‚Â•ª
+//}
+//
+////------------------------------------------------------------------------------
+//UIElement* UIItemsControl::GetVisualChildOrderd(int index) const
+//{
+//	return m_itemsHostPanel;
+//}
 
-//------------------------------------------------------------------------------
-UIElement* UIItemsControl::GetVisualChildOrderd(int index) const
-{
-	return m_itemsHostPanel;
-}
+////------------------------------------------------------------------------------
+//SizeF UIItemsControl::MeasureOverride(const SizeF& constraint)
+//{
+//	SizeF desiredSize = UIElement::MeasureOverride(constraint);
+//
+//	m_itemsHostPanel->MeasureLayout(constraint);
+//	const SizeF& childDesiredSize = m_itemsHostPanel->GetDesiredSize();
+//
+//	desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
+//	desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
+//
+//	return desiredSize;
+//}
+//
+////------------------------------------------------------------------------------
+//SizeF UIItemsControl::ArrangeOverride(const SizeF& finalSize)
+//{
+//	RectF childFinal(0, 0, finalSize);
+//
+//	SizeF childDesiredSize = m_itemsHostPanel->GetDesiredSize();
+//	childDesiredSize.width = std::max(finalSize.width, childDesiredSize.width);
+//	childDesiredSize.height = std::max(finalSize.height, childDesiredSize.height);
+//	m_itemsHostPanel->ArrangeLayout(RectF(0, 0, childDesiredSize));
+//
+//	return finalSize;
+//}
 
 //------------------------------------------------------------------------------
 void UIItemsControl::OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e)

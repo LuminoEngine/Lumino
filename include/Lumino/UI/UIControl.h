@@ -32,10 +32,13 @@ protected:
 	virtual ~UIControl();
 	void Initialize(detail::UIManager* manager);
 
+	// UIElement interface
 	virtual int GetVisualChildrenCount() const override;
 	virtual UIElement* GetVisualChildOrderd(int index) const override;
 	virtual SizeF MeasureOverride(const SizeF& constraint) override;
 	virtual SizeF ArrangeOverride(const SizeF& finalSize) override;
+	virtual VerticalAlignment* GetPriorityContentVerticalAlignment() override;
+	virtual HorizontalAlignment* GetPriorityContentHorizontalAlignment() override;
 
 LN_INTERNAL_ACCESS:
 	void SetVisualTreeRoot(UIElement* element);

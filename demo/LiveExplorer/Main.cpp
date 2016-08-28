@@ -20,6 +20,7 @@
 #include <thread>
 
 #include <Lumino/UI/UIListBox.h>
+#include <Lumino/UI/UIPanel.h>
 
 
 //void LN_STDCALL Button1_MouseMove(CoreObject* sender, MouseEventArgs* e)
@@ -296,9 +297,23 @@ int main()
 
 
 		auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+		auto canvas1 = UICanvas::Create();
+		canvas1->SetHorizontalAlignment(HorizontalAlignment::Stretch);
+		canvas1->SetVerticalAlignment(VerticalAlignment::Stretch);
+		//canvas1->SetBackground(ColorBrush::DimGray);
+		uiRoot->SetContent(canvas1);
+
 		auto listbox1 = tr::UIListBox::Create();
-		listbox1->AddTextItem(_T("item1"));
-		uiRoot->SetContent(listbox1);
+		//listbox1->SetHorizontalAlignment(HorizontalAlignment::Stretch);
+		//listbox1->SetVerticalAlignment(VerticalAlignment::Stretch);
+		listbox1->SetPosition(PointF(5, 10));
+		listbox1->SetSize(SizeF(100, 200));
+		listbox1->SetBackground(ColorBrush::Red);
+		auto item1 = listbox1->AddTextItem(_T("item1"));
+		auto item2 = listbox1->AddTextItem(_T("item2"));
+		item1->SetBackground(ColorBrush::Green);
+		item2->SetBackground(ColorBrush::Blue);
+		canvas1->AddChild(listbox1);
 
 		Viewport::GetMainWindowViewport()->SetBackgroundColor(Color::Gray);
 

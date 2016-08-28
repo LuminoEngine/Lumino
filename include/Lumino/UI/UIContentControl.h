@@ -20,10 +20,10 @@ protected:
 	UIContentControl();
 	virtual ~UIContentControl();
 	void Initialize(detail::UIManager* manager);
-	virtual void OnUpdatingLayout() override;
+	//virtual void OnUpdatingLayout() override;
+
 
 private:
-	UIPanel*	m_contentHost;		// m_contentElement ÇÃí«â¡êÊ (êeóvëf)
 	UIElement*	m_contentElement;
 	bool		m_contentElementModified;
 };

@@ -22,13 +22,16 @@ class UIListBoxItem
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:
+	static const String NormalState;
+	static const String MouseOverState;
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	UIListBoxItem();
 	virtual ~UIListBoxItem();
 	void Initialize(ln::detail::UIManager* manager);
 
-private:
+protected:
+	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e) override;
 };
 
 /**

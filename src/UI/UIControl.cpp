@@ -77,6 +77,20 @@ SizeF UIControl::ArrangeOverride(const SizeF& finalSize)
 }
 
 //------------------------------------------------------------------------------
+VerticalAlignment* UIControl::GetPriorityContentVerticalAlignment()
+{
+	if (m_verticalContentAlignment == VerticalAlignment::Stretch) return nullptr;
+	return &m_verticalContentAlignment;
+}
+
+//------------------------------------------------------------------------------
+HorizontalAlignment* UIControl::GetPriorityContentHorizontalAlignment()
+{
+	if (m_horizontalContentAlignment == VerticalAlignment::Stretch) return nullptr;
+	return &m_horizontalContentAlignment;
+}
+
+//------------------------------------------------------------------------------
 void UIControl::SetVisualTreeRoot(UIElement* element)
 {
 	if (m_visualTreeRoot != nullptr)

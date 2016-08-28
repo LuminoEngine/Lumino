@@ -574,6 +574,7 @@ public:
 	// このクラスは描画コマンドの引数となるクラス。RefPtr とかはメンバに置かないこと。
 	struct DrawingState
 	{
+		Matrix					transform;
 		detail::DrawingClass	drawingClass;
 		BrushData	Brush;
 		PenData		pen;
@@ -592,6 +593,8 @@ public:
 		// Painter 側で作り、PainterEngineState をコマンドリストに乗せるときに使う。
 		void Create(const detail::DrawingState& state)
 		{
+			transform = state.transform;
+
 			// ブラシデータ
 			Brush.Set(state.brush);
 			pen.Set(state.pen);
@@ -606,6 +609,8 @@ public:
 		void Copy(const DrawingState& state)
 		{
 			ReleaseObjects();
+
+			transform = state.transform;
 			drawingClass = state.drawingClass;
 
 			// ブラシデータ
@@ -1055,7 +1060,7 @@ void DrawingContextImpl::Flush()
 
 
 	Driver::IRenderer* renderer = m_manager->GetGraphicsDevice()->GetRenderer();
-	m_shader3D.varWorldMatrix->SetMatrix(Matrix::Identity);
+	m_shader3D.varWorldMatrix->SetMatrix(m_currentState.transform);
 	m_shader3D.varViewProjMatrix->SetMatrix(m_view * m_proj);
 
 	//renderer->Clear(ClearFlags::Depth, Color::White, 1.0f);

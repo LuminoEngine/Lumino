@@ -213,20 +213,27 @@ UIStyleTable::~UIStyleTable()
 }
 
 //------------------------------------------------------------------------------
-void UIStyleTable::AddStyle(const String& targetName, UIStyle* style)
+void UIStyleTable::AddStyle(const tr::TypeInfo* targetType, UIStyle* style)
 {
 	LN_CHECK_ARG(style != nullptr);
-
-	StyleKey k{ targetName };
-	m_table.Add(k, style);
+	m_table.Add(targetType, style);
 }
 
 //------------------------------------------------------------------------------
-UIStyle* UIStyleTable::FindStyle(const String& targetName)
+UIStyle* UIStyleTable::FindStyle(const tr::TypeInfo* targetType)
 {
-	StyleKey k{ targetName };
-	RefPtr<UIStyle>* s = m_table.Find(k);
-	if (s != nullptr) return s->Get();
+	LN_CHECK_ARG(targetType != nullptr);
+
+	RefPtr<UIStyle>* s = m_table.Find(targetType);
+	if (s != nullptr)
+	{
+		return s->Get();
+	}
+	else if (targetType->GetBaseClass() != nullptr)
+	{
+		// ベースクラスで再帰検索
+		return FindStyle(targetType->GetBaseClass());
+	}
 	return nullptr;
 }
 

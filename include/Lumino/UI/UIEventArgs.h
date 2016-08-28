@@ -18,7 +18,6 @@ public:
 
 public:
 	tr::ReflectionObject*	sender;
-	//bool					handled;
 };
 
 /**

@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "../Animation/Common.h"
 #include "Common.h"
@@ -101,7 +101,7 @@ public:
 	//EasingMode	easingMode;
 	//double		time;
 
-	bool				m_mergedMark;	// UIStylePropertyTable::UpdateInherit ‚Ì’†‚Åg‚¤ì‹Æ—p•Ï”
+	bool				m_mergedMark;	// UIStylePropertyTable::UpdateInherit ã®ä¸­ã§ä½¿ã†ä½œæ¥­ç”¨å¤‰æ•°
 };
 
 
@@ -192,22 +192,14 @@ public:
 	UIStyleTable();
 	virtual ~UIStyleTable();
 
-	void AddStyle(const String& targetName, UIStyle* style);
+	void AddStyle(const tr::TypeInfo* targetType, UIStyle* style);
 
-	// Œ©‚Â‚©‚ç‚È‚¯‚ê‚Î nullptr
-	// TODO: –¼‘O‚¾‚¯‚¶‚áƒ_ƒBƒTƒuƒNƒ‰ƒX‚É‘Î‰‚·‚éƒXƒ^ƒCƒ‹‚ªŒ©‚Â‚©‚ç‚È‚¯‚ê‚ÎŠî’êƒNƒ‰ƒX‚Ì‚à’T‚µ‚½‚¢BUIElement ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğ“n‚·‚æ‚¤‚É‚·‚éB
-	UIStyle* FindStyle(const String& targetName);
+	// è¦‹ã¤ã‹ã‚‰ãªã‘ã‚Œã° nullptr
+	UIStyle* FindStyle(const tr::TypeInfo* targetType);
 
-private:
-	// TODO: –¼‘O‚¾‚¯‚¾‚©‚ç‚¢‚ç‚È‚¢‚©‚È
-	struct StyleKey
-	{
-		String	targetName;
-		//String	targetState;	// VisualState
+private:	
+	typedef const tr::TypeInfo* StyleKey;
 
-		bool operator < (const StyleKey& other) const { return targetName < other.targetName; }
-		bool operator == (const StyleKey& other) const { return targetName == other.targetName; }
-	};
 	SortedArray<StyleKey, RefPtr<UIStyle>>	m_table;
 };
 

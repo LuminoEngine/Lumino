@@ -20,6 +20,8 @@ class UIElement
 	LN_UI_TYPEINFO_DECLARE();
 
 public:
+	LN_TR_PROPERTY(PointF,				PositionProperty);				/**< Position プロパティの識別子 */
+	LN_TR_PROPERTY(SizeF,				SizeProperty);					/**< Size プロパティの識別子 */
 	LN_TR_PROPERTY(VerticalAlignment,	VerticalAlignmentProperty);		/**< VerticalAlignment プロパティの識別子 */
 	LN_TR_PROPERTY(HorizontalAlignment,	HorizontalAlignmentProperty);	/**< HorizontalAlignment プロパティの識別子 */
 	LN_TR_PROPERTY(BrushPtr,			BackgroundProperty);			/**< Background プロパティの識別子 */
@@ -54,11 +56,20 @@ public:
 	/** @name Properties */
 	/** @{ */
 
+	void SetPosition(const PointF& value) { tr::Property::SetPropertyValueDirect<PointF>(this, PositionProperty, value); }
+	const PointF& GetPosition() const { return tr::Property::GetPropertyValueDirect<PointF>(this, PositionProperty); }
+
+	void SetSize(const SizeF& value) { tr::Property::SetPropertyValueDirect<SizeF>(this, SizeProperty, value); }
+	const SizeF& GetSize() const { return tr::Property::GetPropertyValueDirect<SizeF>(this, SizeProperty); }
+
 	void SetVerticalAlignment(VerticalAlignment value) { tr::Property::SetPropertyValueDirect<VerticalAlignment>(this, VerticalAlignmentProperty, value); }
 	VerticalAlignment GetVerticalAlignment() const { return tr::Property::GetPropertyValueDirect<VerticalAlignment>(this, VerticalAlignmentProperty); }
 
 	void SetHorizontalAlignment(HorizontalAlignment value) { tr::Property::SetPropertyValueDirect<HorizontalAlignment>(this, HorizontalAlignmentProperty, value); }
 	HorizontalAlignment GetHorizontalAlignment() const { return tr::Property::GetPropertyValueDirect<HorizontalAlignment>(this, HorizontalAlignmentProperty); }
+
+	void SetBackground(Brush* value) { tr::Property::SetPropertyValueDirect<BrushPtr>(this, BackgroundProperty, value); }
+	Brush* GetBackground() const { return tr::Property::GetPropertyValueDirect<BrushPtr>(this, BackgroundProperty); }
 
 
 	/** @} */
@@ -67,15 +78,13 @@ public:
 public:
 
 
-
-
 	/** 要素の識別名を取得します。*/
 	const String& GetKeyName() const { return m_keyName; }
 
 	/** 論理上の親要素を取得します。*/
 	UIElement* GetParent() const { return m_parent; }
 
-	void SetSize(const SizeF& size) { m_size = size; }
+	//void SetSize(const SizeF& size) { m_size = size; }
 
 	/** この要素がフォーカスを得ることができるかを確認します。*/
 	virtual bool IsFocusable() const { return false; }
@@ -176,14 +185,22 @@ protected:
 
 LN_INTERNAL_ACCESS:
 	detail::UIManager* GetManager() const { return m_manager; }
+	const PointF& GetPositionInternal() const { return m_position; }
+	const SizeF& GetSizeInternal() const { return m_size; }
 	void SetParent(UIElement* parent);
 	const String& GetCurrentVisualStateName() const { return m_currentVisualStateName; }
 	UIElement* CheckMouseHoverElement(const PointF& globalPt);
 	virtual void ActivateInternal(UIElement* child);
 	virtual bool OnEvent(detail::UIInternalEventType type, UIEventArgs* args);
+	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e);
 	void UpdateLayout(const SizeF& viewSize);
 	void UpdateTransformHierarchy();
 	void Render(DrawingContext* g);
+
+LN_PROTECTED_INTERNAL_ACCESS:
+	virtual VerticalAlignment* GetPriorityContentVerticalAlignment();
+	virtual HorizontalAlignment* GetPriorityContentHorizontalAlignment();
+
 
 private:
 	void UpdateLocalStyleAndApplyProperties(UIStylePropertyTable* parentStyle, UIStylePropertyTable* currentStateStyle);
@@ -199,13 +216,14 @@ private:
 	SizeF					m_desiredSize;			// MeasureLayout() で決定されるこのコントロールの要求サイズ
 	RectF					m_finalLocalRect;		// 描画に使用する最終境界矩形 (グローバル座標系=RootFrame のローカル座標系)
 	RectF					m_finalGlobalRect;
-	String					m_elementName;				// 要素名 ("UITextBlock" など)
+	String					m_elementName;				// 要素名 ("UITextBlock" など) TODO: いらないかも
 	String					m_currentVisualStateName;
 	UIStylePropertyTable*	m_currentVisualStateStyle;
 
 	// Property
 	//		これらには直接値を設定しないこと。Property::SetValueDirect() を使う。
 	//		これによって必要にアニメーションを止めたりできる。
+	PointF					m_position;
 	SizeF					m_size;
 	ThicknessF				m_margin;
 	ThicknessF				m_padding;

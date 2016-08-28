@@ -17,6 +17,8 @@ LN_NAMESPACE_BEGIN
 LN_UI_TYPEINFO_IMPLEMENT(UIElement, tr::ReflectionObject);
 
 // Property definition
+LN_TR_PROPERTY_IMPLEMENT(UIElement, PointF, PositionProperty, "Position", m_position, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(UIElement, SizeF, SizeProperty, "Size", m_size, tr::PropertyMetadata(SizeF(NAN, NAN)));
 LN_TR_PROPERTY_IMPLEMENT(UIElement, VerticalAlignment, VerticalAlignmentProperty, "VerticalAlignment", m_verticalAlignment, tr::PropertyMetadata(VerticalAlignment::Center));
 LN_TR_PROPERTY_IMPLEMENT(UIElement, HorizontalAlignment, HorizontalAlignmentProperty, "HorizontalAlignment", m_horizontalAlignment, tr::PropertyMetadata(HorizontalAlignment::Center));
 LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, BackgroundProperty, "Background", m_background, tr::PropertyMetadata());
@@ -38,6 +40,7 @@ UIElement::UIElement()
 	, m_parent(nullptr)
 	, m_localStyle(nullptr)
 	, m_currentVisualStateStyle(nullptr)
+	, m_position(0, 0)
 	, m_size(NAN, NAN)
 	, m_horizontalAlignment(HorizontalAlignment::Center)
 	, m_verticalAlignment(VerticalAlignment::Center)
@@ -178,10 +181,17 @@ void UIElement::ArrangeLayout(const RectF& finalLocalRect)
 	arrangeSize.width = Math::IsNaNOrInf(m_size.width) ? finalLocalRect.width : m_size.width;
 	arrangeSize.height = Math::IsNaNOrInf(m_size.height) ? finalLocalRect.height : m_size.height;
 
+	HorizontalAlignment  hAlign = m_horizontalAlignment;
+	VerticalAlignment    vAlign = m_verticalAlignment;
+	HorizontalAlignment* parentHAlign = (m_parent != nullptr) ? m_parent->GetPriorityContentHorizontalAlignment() : nullptr;
+	VerticalAlignment*   parentVAlign = (m_parent != nullptr) ? m_parent->GetPriorityContentVerticalAlignment() : nullptr;
+	if (parentHAlign != nullptr) hAlign = *parentHAlign;
+	if (parentVAlign != nullptr) vAlign = *parentVAlign;
+
 	const SizeF& ds = GetDesiredSize();
 	RectF arrangeRect;
-	UIHelper::AdjustHorizontalAlignment(arrangeSize, ds, m_horizontalAlignment, &arrangeRect);
-	UIHelper::AdjustVerticalAlignment(arrangeSize, ds, m_verticalAlignment, &arrangeRect);
+	UIHelper::AdjustHorizontalAlignment(arrangeSize, ds, hAlign, &arrangeRect);
+	UIHelper::AdjustVerticalAlignment(arrangeSize, ds, vAlign, &arrangeRect);
 
 	// Margin を考慮する (0 以下には出来ない)
 	float marginWidth = m_margin.Left + m_margin.Right;
@@ -233,7 +243,7 @@ void UIElement::OnRender(DrawingContext* g)
 	if (m_background != nullptr)
 	{
 		g->SetBrush(m_background);
-		g->DrawRectangle(m_finalLocalRect);
+		g->DrawRectangle(RectF(0, 0, m_finalLocalRect.GetSize()));
 	}
 }
 
@@ -371,6 +381,14 @@ bool UIElement::OnEvent(detail::UIInternalEventType type, UIEventArgs* args)
 }
 
 //------------------------------------------------------------------------------
+// this でハンドリングしたいルーティングイベントが発生したとき、イベント経由ではなく
+// 通常の仮想関数で通知することで、パフォーマンスの向上を図る。
+// (UI要素作成時のイベントハンドラの new や AddHandler をする必要がなくなる)
+void UIElement::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
+{
+}
+
+//------------------------------------------------------------------------------
 //void UIElement::ApplyTemplate()
 //{
 //	/// 現在のテンプレートからビジュアルツリーを再構築します。
@@ -400,7 +418,7 @@ void UIElement::ApplyTemplateHierarchy(UIStyleTable* styleTable, UIStyleProperty
 	// VisualState の変更がある場合
 	if (m_invalidateFlags.TestFlag(detail::InvalidateFlags::VisualState))
 	{
-		UIStyle* style = styleTable->FindStyle(m_elementName);
+		UIStyle* style = styleTable->FindStyle(tr::TypeInfo::GetTypeInfo(this));
 		if (style != nullptr)
 		{
 			m_currentVisualStateStyle = style->FindStylePropertyTable(m_currentVisualStateName);
@@ -476,7 +494,7 @@ void UIElement::UpdateLayout(const SizeF& viewSize)
 //------------------------------------------------------------------------------
 void UIElement::UpdateTransformHierarchy()
 {
-	if (m_parent != NULL)
+	if (m_parent != nullptr)
 	{
 		m_finalGlobalRect.x = m_parent->m_finalGlobalRect.x + m_finalLocalRect.x;
 		m_finalGlobalRect.y = m_parent->m_finalGlobalRect.y + m_finalLocalRect.y;
@@ -503,6 +521,13 @@ void UIElement::Render(DrawingContext* g)
 	Matrix mat;
 	mat.Translate(m_finalGlobalRect.x, m_finalGlobalRect.y, 0);
 	g->SetTransform(mat);
+
+	//if (m_background != nullptr)
+	//{
+	//	g->SetBrush(m_background);
+	//	g->DrawRectangle(m_finalLocalRect);
+	//}
+
 	OnRender(g);
 
 	// 子要素
@@ -510,17 +535,34 @@ void UIElement::Render(DrawingContext* g)
 }
 
 //------------------------------------------------------------------------------
+VerticalAlignment* UIElement::GetPriorityContentVerticalAlignment()
+{
+	return nullptr;
+}
+
+//------------------------------------------------------------------------------
+HorizontalAlignment* UIElement::GetPriorityContentHorizontalAlignment()
+{
+	return nullptr;
+}
+
+//------------------------------------------------------------------------------
 void UIElement::RaiseEventInternal(const UIEventInfo* ev, UIEventArgs* e)
 {
 	LN_CHECK_ARG(ev != nullptr);
 	LN_CHECK_ARG(e != nullptr);
-	tr::TypeInfo* thisType = tr::TypeInfo::GetTypeInfo(this);
 
-	// this に AddHandler されているイベントハンドラを呼び出す。
+	// まずは this に通知
+	OnRoutedEvent(ev, e);
+	if (e->handled) return;
+
+	// this に AddHandler されているイベントハンドラを呼び出す
+	tr::TypeInfo* thisType = tr::TypeInfo::GetTypeInfo(this);
 	thisType->InvokeReflectionEvent(this, ev, e);
+	if (e->handled) return;
 
 	// bubble
-	if (!e->handled && m_parent != NULL)
+	if (m_parent != nullptr)
 	{
 		m_parent->RaiseEventInternal(ev, e);
 	}

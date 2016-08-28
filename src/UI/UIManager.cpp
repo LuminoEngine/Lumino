@@ -7,6 +7,8 @@
 
 // for style definition
 #include <Lumino/UI/UITextBlock.h>
+#include <Lumino/UI/UIButton.h>
+#include <Lumino/UI/UIListBox.h>
 
 LN_NAMESPACE_BEGIN
 namespace detail
@@ -83,13 +85,18 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 	{
 		auto test = UIStyle::Create();
 		test->AddValue(_T(""), UITextBlock::FontSizeProperty, 20);
-		table->AddStyle(_T("UITextBlock"), test);
+		table->AddStyle(tr::TypeInfo::GetTypeInfo<UITextBlock>(), test);
 	}
 	{
 		auto test = UIStyle::Create();
 		test->AddValue(_T(""), UIElement::BackgroundProperty, ColorBrush::Blue);
 //		test->m_background = ColorBrush::Blue;
-		table->AddStyle(_T("UIButton"), test);
+		table->AddStyle(tr::TypeInfo::GetTypeInfo<UIButton>(), test);
+	}
+	{
+		auto style = UIStyle::Create();
+		style->AddValue(tr::UIListBoxItem::MouseOverState, UIElement::BackgroundProperty, ColorBrush::DimGray);
+		table->AddStyle(tr::TypeInfo::GetTypeInfo<tr::UIListBoxItem>(), style);
 	}
 }
 

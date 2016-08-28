@@ -1,6 +1,6 @@
 
 #pragma once
-#include "UIElement.h"
+#include "UIControl.h"
 #include "UIElementCollection.h"
 
 LN_NAMESPACE_BEGIN
@@ -9,7 +9,7 @@ LN_NAMESPACE_BEGIN
 	@brief		
 */
 class UIItemsControl
-	: public UIElement
+	: public UIControl
 	, public tr::IUIElementCollectionOwner
 {
 	LN_UI_TYPEINFO_DECLARE();
@@ -24,8 +24,10 @@ protected:
 	void SetItemsHostPanel(UIPanel* panel);
 
 	// UIElement interface
-	virtual int GetVisualChildrenCount() const override;
-	virtual UIElement* GetVisualChildOrderd(int index) const override;
+	//virtual int GetVisualChildrenCount() const override;
+	//virtual UIElement* GetVisualChildOrderd(int index) const override;
+	//virtual SizeF MeasureOverride(const SizeF& constraint) override;
+	//virtual SizeF ArrangeOverride(const SizeF& finalSize) override;
 
 	// IUIElementCollectionOwner interface
 	virtual void OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e) override;
