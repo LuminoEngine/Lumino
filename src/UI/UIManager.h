@@ -11,6 +11,7 @@ class PlatformWindow;
 namespace detail
 {
 class EventArgsPool;
+class AnimationManager;
 
 class UIManager
 	: public RefObject
@@ -18,6 +19,7 @@ class UIManager
 public:
 	struct Settings
 	{
+		AnimationManager*				animationManager = nullptr;
 		PlatformManager*				platformManager = nullptr;
 		GraphicsManager*				graphicsManager = nullptr;
 		AssetsManager*					assetsManager = nullptr;
@@ -35,17 +37,19 @@ public:
 
 	void Initialize(const Settings& settings);
 	void Finalize();
-	EventArgsPool* GetEventArgsPool() { return m_eventArgsPool; }
-	UIStyleTable* GetDefaultStyleTable() { return m_defaultStyleTable; }
-	PlatformManager* GetPlatformManager() { return m_platformManager; }
-	GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
-	AssetsManager* GetAssetsManager() { return m_assetsManager; }
-	UIMainWindow* GetMainWindow() { return m_mainWindow; }
+	EventArgsPool* GetEventArgsPool() const { return m_eventArgsPool; }
+	UIStyleTable* GetDefaultStyleTable() const { return m_defaultStyleTable; }
+	AnimationManager* GetAnimationManager() const { return m_animationManager; }
+	PlatformManager* GetPlatformManager() const { return m_platformManager; }
+	GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
+	AssetsManager* GetAssetsManager() const { return m_assetsManager; }
+	UIMainWindow* GetMainWindow() const { return m_mainWindow; }
 
 private:
 	void MakeDefaultStyle(UIStyleTable* table);
 
 	EventArgsPool*		m_eventArgsPool;
+	AnimationManager*	m_animationManager;
 	PlatformManager*	m_platformManager;
 	GraphicsManager*	m_graphicsManager;
 	AssetsManager*		m_assetsManager;

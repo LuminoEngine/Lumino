@@ -29,6 +29,8 @@ UIManager* UIManager::GetInstance(UIManager* priority)
 //------------------------------------------------------------------------------
 UIManager::UIManager()
 	: m_eventArgsPool(nullptr)
+	, m_animationManager(nullptr)
+	, m_platformManager(nullptr)
 	, m_graphicsManager(nullptr)
 	, m_assetsManager(nullptr)
 	, m_defaultStyleTable(nullptr)
@@ -44,11 +46,14 @@ UIManager::~UIManager()
 //------------------------------------------------------------------------------
 void UIManager::Initialize(const Settings& settings)
 {
+	LN_CHECK_ARG(settings.animationManager != nullptr);
+	LN_CHECK_ARG(settings.platformManager != nullptr);
 	LN_CHECK_ARG(settings.graphicsManager != nullptr);
 	LN_CHECK_ARG(settings.assetsManager != nullptr);
 	LN_CHECK_ARG(settings.mainWindow != nullptr);
 
 	m_eventArgsPool = LN_NEW EventArgsPool();
+	m_animationManager = settings.animationManager;
 	m_platformManager = settings.platformManager;
 	m_graphicsManager = settings.graphicsManager;
 	m_assetsManager = settings.assetsManager;
@@ -95,7 +100,9 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 	}
 	{
 		auto style = UIStyle::Create();
-		style->AddValue(tr::UIListBoxItem::MouseOverState, UIElement::BackgroundProperty, ColorBrush::DimGray);
+		style->AddValue(tr::UIListBoxItem::NormalState, UIElement::DecoratorBackgroundProperty, ColorBrush::DimGray);
+		style->AddValue(tr::UIListBoxItem::NormalState, UIElement::DecoratorOpacityProperty, 0.0f);
+		style->AddValue(tr::UIListBoxItem::MouseOverState, UIElement::DecoratorOpacityProperty, 1.0f, 5.0);
 		table->AddStyle(tr::TypeInfo::GetTypeInfo<tr::UIListBoxItem>(), style);
 	}
 }

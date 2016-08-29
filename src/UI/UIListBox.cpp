@@ -33,6 +33,7 @@ void UIListBoxItem::Initialize(ln::detail::UIManager* manager)
 	UIContentControl::Initialize(manager);
 	SetHorizontalAlignment(HorizontalAlignment::Left);
 	SetVerticalAlignment(VerticalAlignment::Center);
+	GoToVisualState(_T("Normal"));
 }
 
 //------------------------------------------------------------------------------

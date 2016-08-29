@@ -23,6 +23,8 @@ LN_TR_PROPERTY_IMPLEMENT(UIElement, VerticalAlignment, VerticalAlignmentProperty
 LN_TR_PROPERTY_IMPLEMENT(UIElement, HorizontalAlignment, HorizontalAlignmentProperty, "HorizontalAlignment", m_horizontalAlignment, tr::PropertyMetadata(HorizontalAlignment::Center));
 LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, BackgroundProperty, "Background", m_background, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, ForegroundProperty, "Foreground", m_foreground, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, DecoratorBackgroundProperty, "DecoratorBackground", m_decoratorBackground, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(UIElement, float, DecoratorOpacityProperty, "DecoratorBackground", m_decoratorOpacity, tr::PropertyMetadata(0.0f));
 
 // Event definition
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIMouseEventArgs, MouseEnterEvent, "MouseEnter", MouseEnter);
@@ -45,6 +47,8 @@ UIElement::UIElement()
 	, m_horizontalAlignment(HorizontalAlignment::Center)
 	, m_verticalAlignment(VerticalAlignment::Center)
 	, m_opacity(1.0f)
+	, m_decoratorBackground(nullptr)
+	, m_decoratorOpacity(1.0f)
 	, m_combinedOpacity(0.0f)
 	, m_isEnabled(true)
 	, m_isMouseOver(nullptr)
@@ -243,6 +247,13 @@ void UIElement::OnRender(DrawingContext* g)
 	if (m_background != nullptr)
 	{
 		g->SetBrush(m_background);
+		g->DrawRectangle(RectF(0, 0, m_finalLocalRect.GetSize()));
+	}
+	if (m_decoratorBackground != nullptr)
+	{
+		g->SetBrush(m_decoratorBackground);
+		g->SetOpacity(m_decoratorOpacity);
+		printf("%p %f\n", this, m_decoratorOpacity);
 		g->DrawRectangle(RectF(0, 0, m_finalLocalRect.GetSize()));
 	}
 }
@@ -516,17 +527,9 @@ void UIElement::UpdateTransformHierarchy()
 //------------------------------------------------------------------------------
 void UIElement::Render(DrawingContext* g)
 {
-	//g->DrawRectangle(m_finalGlobalRect, Color(255,0,0,200));
-
 	Matrix mat;
 	mat.Translate(m_finalGlobalRect.x, m_finalGlobalRect.y, 0);
 	g->SetTransform(mat);
-
-	//if (m_background != nullptr)
-	//{
-	//	g->SetBrush(m_background);
-	//	g->DrawRectangle(m_finalLocalRect);
-	//}
 
 	OnRender(g);
 

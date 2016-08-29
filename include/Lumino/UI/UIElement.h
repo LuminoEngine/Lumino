@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include "../Base/GeometryStructs.h"
+#include "../Animation/AnimatableObject.h"
 #include "Common.h"
 #include "Detail.h"
 #include "UITypeInfo.h"
@@ -15,7 +16,7 @@ class UIStylePropertyTable;
 	@details	
 */
 class UIElement
-	: public tr::ReflectionObject
+	: public AnimatableObject
 {
 	LN_UI_TYPEINFO_DECLARE();
 
@@ -26,6 +27,8 @@ public:
 	LN_TR_PROPERTY(HorizontalAlignment,	HorizontalAlignmentProperty);	/**< HorizontalAlignment プロパティの識別子 */
 	LN_TR_PROPERTY(BrushPtr,			BackgroundProperty);			/**< Background プロパティの識別子 */
 	LN_TR_PROPERTY(BrushPtr,			ForegroundProperty);			/**< Foreground プロパティの識別子 */
+	LN_TR_PROPERTY(BrushPtr,			DecoratorBackgroundProperty);	/**< DecoratorBackground プロパティの識別子 */
+	LN_TR_PROPERTY(float,				DecoratorOpacityProperty);		/**< Foreground プロパティの識別子 */
 
 	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseEnterEvent);				/**< MouseEnter ルーティングイベントの識別子 */
 	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseLeaveEvent);				/**< MouseLeave ルーティングイベントの識別子 */
@@ -237,6 +240,10 @@ private:
 
 	float							m_opacity;
 	//ToneF							m_tone;
+
+	BrushPtr				m_decoratorBackground;
+	float					m_decoratorOpacity;
+
 
 	//RefPtr<Style>					m_style;
 	float					m_combinedOpacity;

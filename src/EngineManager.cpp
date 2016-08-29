@@ -537,12 +537,14 @@ void EngineManager::InitializeUIManager()
 	if (m_uiManager == nullptr)
 	{
 		InitializeCommon();
+		InitializeAnimationManager();
 		InitializePlatformManager();
 		InitializeGraphicsManager();
 		InitializeDocumentsManager();
 		InitializeAssetsManager();
 
 		detail::UIManager::Settings data;
+		data.animationManager = m_animationManager;
 		data.platformManager = m_platformManager;
 		data.graphicsManager = m_graphicsManager;
 		data.assetsManager = m_assetsManager;

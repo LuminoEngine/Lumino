@@ -1,16 +1,18 @@
-/*
-	[2016/5/13] m_image ‚É‚Â‚¢‚Ä
-		WPF ‚Æ‚©‚É‚Í—pˆÓ‚³‚ê‚Ä‚¢‚È‚¢‚ªAƒQ[ƒ€Œü‚¯UI‚Æ‚µ‚Ä‚Í—pˆÓ‚µ‚Ä‚¨‚¢‚½‚Ù‚¤‚ª•Ö—˜‚È‚Ì‚Å‚½‚¹‚½‚à‚ÌB
-		ˆê”Ê“I‚ÈGUIƒtƒŒ[ƒ€ƒ[ƒN‚ÍF‚âü‚Ìí—Ş‚ÅƒXƒ^ƒCƒ‹‚ğ•\Œ»‚·‚é‚ªAƒQ[ƒ€‚Å‚Í‰æ‘œ‚ğg‚¤‚±‚Æ‚ª‘½‚¢B
-		‚½‚¾A1–‡‚Ì‰æ‘œ‚¾‚¯‚ÅƒtƒF[ƒh‚È‚Ç‚Ì‘JˆÚ‚ğs‚¤‚ÆA“§–¾“x‚ÌƒuƒŒƒ“ƒh’†‚ÉˆêuŒã‚ë‚ÌƒIƒuƒWƒFƒNƒg‚ª“§‚¯‚ÄŒ©‚¦‚é‚±‚Æ‚É‚È‚éB
-		”wŒi‚Æ‘OŒi2í—Ş—pˆÓ‚µA”wŒi‚ÍŠî–{“I‚É“§–¾“x‚ğ•ÏX‚µ‚È‚¢A‘OŒi‚ÍVisualState‚Ì•ÏX‚É‡‚í‚¹‚Ä‚¢‚ë‚¢‚ë•Ï‚í‚é‚æ‚¤‚É‚·‚é‚ÆˆÀ’è‚µ‚ÄŒ©‚¦‚éB
+ï»¿/*
+	[2016/5/13] m_image ã«ã¤ã„ã¦
+		WPF ã¨ã‹ã«ã¯ç”¨æ„ã•ã‚Œã¦ã„ãªã„ãŒã€ã‚²ãƒ¼ãƒ å‘ã‘UIã¨ã—ã¦ã¯ç”¨æ„ã—ã¦ãŠã„ãŸã»ã†ãŒä¾¿åˆ©ãªã®ã§æŒãŸã›ãŸã‚‚ã®ã€‚
+		ä¸€èˆ¬çš„ãªGUIãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã¯è‰²ã‚„ç·šã®ç¨®é¡ã§ã‚¹ã‚¿ã‚¤ãƒ«ã‚’è¡¨ç¾ã™ã‚‹ãŒã€ã‚²ãƒ¼ãƒ ã§ã¯ç”»åƒã‚’ä½¿ã†ã“ã¨ãŒå¤šã„ã€‚
+		ãŸã ã€1æšã®ç”»åƒã ã‘ã§ãƒ•ã‚§ãƒ¼ãƒ‰ãªã©ã®é·ç§»ã‚’è¡Œã†ã¨ã€é€æ˜åº¦ã®ãƒ–ãƒ¬ãƒ³ãƒ‰ä¸­ã«ä¸€ç¬å¾Œã‚ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒé€ã‘ã¦è¦‹ãˆã‚‹ã“ã¨ã«ãªã‚‹ã€‚
+		èƒŒæ™¯ã¨å‰æ™¯2ç¨®é¡ç”¨æ„ã—ã€èƒŒæ™¯ã¯åŸºæœ¬çš„ã«é€æ˜åº¦ã‚’å¤‰æ›´ã—ãªã„ã€å‰æ™¯ã¯VisualStateã®å¤‰æ›´ã«åˆã‚ã›ã¦ã„ã‚ã„ã‚å¤‰ã‚ã‚‹ã‚ˆã†ã«ã™ã‚‹ã¨å®‰å®šã—ã¦è¦‹ãˆã‚‹ã€‚
 
-		‚¿‚È‚İ‚ÉQt‚¾‚ÆimageƒvƒƒpƒeƒB‚ª‚ ‚éB
+		ã¡ãªã¿ã«Qtã ã¨imageãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãŒã‚ã‚‹ã€‚
 		http://doc.qt.io/qt-4.8/stylesheet-examples.html
 */
 #include "Internal.h"
 #include <Lumino/UI/UIElement.h>
 #include <Lumino/UI/UIStyle.h>
+#include "../Animation/AnimationManager.h"
+#include "UIManager.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -37,9 +39,9 @@ void UIStylePropertyTable::Initialize(const StringRef& visualStateName)
 }
 
 //------------------------------------------------------------------------------
-void UIStylePropertyTable::AddValue(const tr::Property* targetProperty, const tr::Variant& value)
+void UIStylePropertyTable::AddValue(const tr::Property* targetProperty, const tr::Variant& value, double time, EasingMode easingMode)
 {
-	m_attributes.Add(UIStyleAttribute(targetProperty, value));
+	m_attributes.Add(UIStyleAttribute(targetProperty, value, time, easingMode));
 }
 
 //------------------------------------------------------------------------------
@@ -47,7 +49,7 @@ detail::InvalidateFlags UIStylePropertyTable::UpdateInherit(UIStylePropertyTable
 {
 	bool changed = false;
 
-	// parent ‚ª‚Á‚Ä‚¢‚é’l‚Ì‚¤‚¿A“¯‚¶ targetProperty ‚Ì‚à‚Ì‚ğ’T‚·B‚»‚ñ‚È‚É”‚Í‘½‚­‚È‚¢‚Í‚¸‚È‚Ì‚ÅüŒ`’TõB
+	// parent ãŒæŒã£ã¦ã„ã‚‹å€¤ã®ã†ã¡ã€åŒã˜ targetProperty ã®ã‚‚ã®ã‚’æ¢ã™ã€‚ãã‚“ãªã«æ•°ã¯å¤šããªã„ã¯ãšãªã®ã§ç·šå½¢æ¢ç´¢ã€‚
 	for (UIStyleAttribute& parentAttr : parent->m_attributes)
 	{
 		parentAttr.m_mergedMark = false;
@@ -63,14 +65,14 @@ detail::InvalidateFlags UIStylePropertyTable::UpdateInherit(UIStylePropertyTable
 		}
 	}
 
-	// parent ‚ª‚Á‚Ä‚¢‚é’l‚Ì‚¤‚¿A“¯‚¶ targetProperty ‚Å‚Í‚È‚©‚Á‚½‚à‚Ì‚ğ’P‚È‚éQÆ‚Æ‚µ‚ÄŒp³‚·‚éB
+	// parent ãŒæŒã£ã¦ã„ã‚‹å€¤ã®ã†ã¡ã€åŒã˜ targetProperty ã§ã¯ãªã‹ã£ãŸã‚‚ã®ã‚’å˜ãªã‚‹å‚ç…§ã¨ã—ã¦ç¶™æ‰¿ã™ã‚‹ã€‚
 	m_parentRefAttributes.Clear();
 	for (UIStyleAttribute& parentAttr : parent->m_attributes)
 	{
 		if (!parentAttr.m_mergedMark)
 		{
 			m_parentRefAttributes.Add(&parentAttr);
-			changed = true;	// TODO: ‚Ù‚Æ‚ñ‚Ç–ˆ‰ñXV‚³‚ê‚½‚±‚Æ‚É‚È‚Á‚Ä‚µ‚Ü‚¤BƒŠƒrƒWƒ‡ƒ“ƒJƒEƒ“ƒg•K{‚©‚ÈEE
+			changed = true;	// TODO: ã»ã¨ã‚“ã©æ¯å›æ›´æ–°ã•ã‚ŒãŸã“ã¨ã«ãªã£ã¦ã—ã¾ã†ã€‚ãƒªãƒ“ã‚¸ãƒ§ãƒ³ã‚«ã‚¦ãƒ³ãƒˆå¿…é ˆã‹ãªãƒ»ãƒ»
 		}
 	}
 
@@ -82,15 +84,40 @@ void UIStylePropertyTable::Apply(UIElement* targetElement)
 {
 	for (UIStyleAttribute& setter : m_attributes)
 	{
-		tr::Property::SetPropertyValue(targetElement, setter.m_targetProperty, setter.value);
-		// TODO: ƒAƒjƒ[ƒVƒ‡ƒ“
+		ApplyInternal(targetElement, setter);
 	}
 	for (UIStyleAttribute* setter : m_parentRefAttributes)
 	{
-		tr::Property::SetPropertyValue(targetElement, setter->m_targetProperty, setter->value);
-		// TODO: ƒAƒjƒ[ƒVƒ‡ƒ“
+		ApplyInternal(targetElement, *setter);
 	}
 }
+
+//------------------------------------------------------------------------------
+void UIStylePropertyTable::ApplyInternal(UIElement* targetElement, const UIStyleAttribute& setter)
+{
+	if (setter.time == 0.0)
+	{
+		tr::Property::SetPropertyValue(targetElement, setter.m_targetProperty, setter.value);
+	}
+	else
+	{
+		// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³
+		if (setter.value.GetType() == tr::VariantType::Float)
+		{
+			float now = tr::Property::GetPropertyValueDirect<float>(targetElement, setter.m_targetProperty);
+			float target = tr::Variant::Cast<float>(setter.value);
+
+			auto anim = ValueEasingCurve<float>::Create(target, setter.time, setter.easingMode);
+			AnimationClock* ac = targetElement->GetManager()->GetAnimationManager()->StartPropertyAnimation(targetElement);
+			ac->AddAnimationCurve(anim.Get(), targetElement, setter.m_targetProperty, now);
+		}
+		else
+		{
+			LN_NOTIMPLEMENTED();
+		}
+	}
+}
+
 
 //==============================================================================
 // UIStyle
@@ -126,14 +153,14 @@ UIStyle::~UIStyle()
 }
 
 //------------------------------------------------------------------------------
-void UIStyle::AddValue(const StringRef& visualStateName, const tr::Property* targetProperty, const tr::Variant& value)
+void UIStyle::AddValue(const StringRef& visualStateName, const tr::Property* targetProperty, const tr::Variant& value, double time, EasingMode easingMode)
 {
 	RefPtr<UIStylePropertyTable> table;
 	if (!m_propertyTableMap.TryGetValue(visualStateName, &table))
 	{
 		table = RefPtr<UIStylePropertyTable>::MakeRef();
 		table->Initialize(visualStateName);
-		table->AddValue(targetProperty, value);
+		table->AddValue(targetProperty, value, time, easingMode);
 		m_propertyTableMap.Add(visualStateName, table);
 	}
 }
@@ -152,14 +179,14 @@ UIStylePropertyTable* UIStyle::FindStylePropertyTable(const String& visualStateN
 //------------------------------------------------------------------------------
 //detail::InvalidateFlags UIStyle::UpdateInherit(UIStyle* parent)
 //{
-//	// e‚ª‚È‚¢ƒ‹[ƒg—v‘fƒXƒ^ƒCƒ‹‚ÍŒp³‚É‚æ‚é’l•ÏX‚Íl—¶‚·‚é•K—v‚Í‚È‚¢
+//	// è¦ªãŒãªã„ãƒ«ãƒ¼ãƒˆè¦ç´ ã‚¹ã‚¿ã‚¤ãƒ«ã¯ç¶™æ‰¿ã«ã‚ˆã‚‹å€¤å¤‰æ›´ã¯è€ƒæ…®ã™ã‚‹å¿…è¦ã¯ãªã„
 //	if (parent == nullptr) return detail::InvalidateFlags::None;
 //
 //	detail::InvalidateFlags invalidate = detail::InvalidateFlags::None;
 //
 //	for (auto& pair : m_propertyTableMap)
 //	{
-//		// parent ‚ª‚Á‚Ä‚¢‚é’l‚Ì‚¤‚¿A“¯‚¶ targetProperty ‚Ì‚à‚Ì‚ğ’T‚·B‚»‚ñ‚È‚É”‚Í‘½‚­‚È‚¢‚Í‚¸‚È‚Ì‚ÅüŒ`’TõB
+//		// parent ãŒæŒã£ã¦ã„ã‚‹å€¤ã®ã†ã¡ã€åŒã˜ targetProperty ã®ã‚‚ã®ã‚’æ¢ã™ã€‚ãã‚“ãªã«æ•°ã¯å¤šããªã„ã¯ãšãªã®ã§ç·šå½¢æ¢ç´¢ã€‚
 //		for (auto& parentPair : parent->m_propertyTableMap)
 //		{
 //			if (pair.first == parentPair.first)
@@ -231,7 +258,7 @@ UIStyle* UIStyleTable::FindStyle(const tr::TypeInfo* targetType)
 	}
 	else if (targetType->GetBaseClass() != nullptr)
 	{
-		// ƒx[ƒXƒNƒ‰ƒX‚ÅÄ‹AŒŸõ
+		// ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã§å†å¸°æ¤œç´¢
 		return FindStyle(targetType->GetBaseClass());
 	}
 	return nullptr;
