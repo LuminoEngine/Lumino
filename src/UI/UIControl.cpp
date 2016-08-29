@@ -12,8 +12,6 @@ LN_UI_TYPEINFO_IMPLEMENT(UIControl, UIElement);
 LN_TR_PROPERTY_IMPLEMENT(UIControl, VerticalAlignment, VerticalContentAlignmentProperty, "VerticalContentAlignment", m_verticalContentAlignment, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(UIControl, HorizontalAlignment, HorizontalContentAlignmentProperty, "HorizontalContentAlignment", m_horizontalContentAlignment, tr::PropertyMetadata());
 
-const String UIControl::MouseOverStateName = _T("MouseOver");
-
 //------------------------------------------------------------------------------
 UIControl::UIControl()
 	: m_visualTreeRoot(nullptr)
@@ -30,8 +28,6 @@ UIControl::~UIControl()
 void UIControl::Initialize(detail::UIManager* manager)
 {
 	UIElement::Initialize(manager);
-	MouseEnter += CreateDelegate(this, &UIControl::EventHandler_MouseEnter);
-	MouseLeave += CreateDelegate(this, &UIControl::EventHandler_MouseLeave);
 }
 
 //------------------------------------------------------------------------------
@@ -104,18 +100,6 @@ void UIControl::SetVisualTreeRoot(UIElement* element)
 	{
 		m_visualTreeRoot->SetParent(this);
 	}
-}
-
-//------------------------------------------------------------------------------
-void UIControl::EventHandler_MouseEnter(UIMouseEventArgs* e)
-{
-	GoToVisualState(MouseOverStateName);
-}
-
-//------------------------------------------------------------------------------
-void UIControl::EventHandler_MouseLeave(UIMouseEventArgs* e)
-{
-	GoToVisualState(_T(""));	// TODO: Normal ‚à’è”‚É‚µ‚Ä‚¨‚¢‚½•û‚ª—Ç‚¢
 }
 
 LN_NAMESPACE_END

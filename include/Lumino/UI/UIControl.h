@@ -16,9 +16,6 @@ public:
 	LN_TR_PROPERTY(VerticalAlignment,	VerticalContentAlignmentProperty);		/**< VerticalContentAlignment プロパティの識別子 */
 	LN_TR_PROPERTY(HorizontalAlignment, HorizontalContentAlignmentProperty);	/**< HorizontalContentAlignment プロパティの識別子 */
 	
-
-	static const String MouseOverStateName;		/**< "MouseOver" */
-
 public:
 
 	void SetVerticalContentAlignment(VerticalAlignment value) { tr::Property::SetPropertyValueDirect<VerticalAlignment>(this, VerticalContentAlignmentProperty, value); }
@@ -45,9 +42,6 @@ LN_INTERNAL_ACCESS:
 	UIElement* GetVisualTreeRoot() { return m_visualTreeRoot; }
 
 private:
-	void EventHandler_MouseEnter(UIMouseEventArgs* e);
-	void EventHandler_MouseLeave(UIMouseEventArgs* e);
-
 	VerticalAlignment	m_verticalContentAlignment;
 	HorizontalAlignment	m_horizontalContentAlignment;
 

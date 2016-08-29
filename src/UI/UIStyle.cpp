@@ -160,9 +160,10 @@ void UIStyle::AddValue(const StringRef& visualStateName, const tr::Property* tar
 	{
 		table = RefPtr<UIStylePropertyTable>::MakeRef();
 		table->Initialize(visualStateName);
-		table->AddValue(targetProperty, value, time, easingMode);
 		m_propertyTableMap.Add(visualStateName, table);
 	}
+
+	table->AddValue(targetProperty, value, time, easingMode);
 }
 
 //------------------------------------------------------------------------------

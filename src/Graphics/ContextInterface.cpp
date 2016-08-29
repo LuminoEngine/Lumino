@@ -225,6 +225,7 @@ void ContextInterface::Initialize(GraphicsManager* manager)
 	assert(manager != nullptr);
 	m_manager = manager;
 	m_baseRenderer = m_manager->GetRenderer();
+	m_stateChanged = true;
 }
 
 //------------------------------------------------------------------------------
@@ -319,6 +320,75 @@ void ContextInterface::SetBasicContextState(const BasicContextState& state)
 		m_baseRenderer->SetRenderTarget(i, state.GetRenderTarget(i));
 	m_baseRenderer->SetDepthBuffer(state.depthBuffer);
 	m_baseRenderer->SetViewport(state.viewport);
+}
+
+//------------------------------------------------------------------------------
+void ContextInterface::MakeBlendMode(BlendMode mode, RenderState* state)
+{
+	switch (mode)
+	{
+		// もっといろいろ http://d.hatena.ne.jp/Ko-Ta/20070618/p1
+		case BlendMode::Normal:
+			state->alphaBlendEnabled = false;
+			state->blendOp = BlendOp::Add;
+			state->sourceBlend = BlendFactor::One;
+			state->destinationBlend = BlendFactor::Zero;
+			break;
+		case BlendMode::Alpha:
+			state->alphaBlendEnabled = true;
+			state->blendOp = BlendOp::Add;
+			state->sourceBlend = BlendFactor::SourceAlpha;
+			state->destinationBlend = BlendFactor::InverseSourceAlpha;
+			break;
+		case BlendMode::Add:
+			state->alphaBlendEnabled = true;
+			state->blendOp = BlendOp::Add;
+			state->sourceBlend = BlendFactor::SourceAlpha;
+			state->destinationBlend = BlendFactor::One;
+			break;
+		case BlendMode::AddAlphaDisabled:
+			state->alphaBlendEnabled = true;
+			state->blendOp = BlendOp::Add;
+			state->sourceBlend = BlendFactor::One;
+			state->destinationBlend = BlendFactor::One;
+			break;
+		case BlendMode::Subtract:
+			state->alphaBlendEnabled = true;
+			state->blendOp = BlendOp::ReverseSubtract;
+			state->sourceBlend = BlendFactor::SourceAlpha;
+			state->destinationBlend = BlendFactor::One;
+			break;
+		case BlendMode::SubtractAlphaDisabled:
+			state->alphaBlendEnabled = true;
+			state->blendOp = BlendOp::ReverseSubtract;
+			state->sourceBlend = BlendFactor::One;
+			state->destinationBlend = BlendFactor::One;
+			break;
+		case BlendMode::MultiplyAlphaDisabled:
+			state->alphaBlendEnabled = true;
+			state->blendOp = BlendOp::Add;
+			// AlphaDisable (Alpha を別指定できない今の仕様では Alpha を考慮できない)
+			state->sourceBlend = BlendFactor::Zero;
+			state->destinationBlend = BlendFactor::SourceColor;
+			break;
+		//case BlendMode_Screen:
+		//	m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+		//	m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+		//	m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_SRCALPHASAT);
+		//	m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVDESTCOLOR);
+		//	m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 255);
+		//	break;
+		//case BlendMode_Reverse:
+		//	m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+		//	m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+		//	m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+		//	m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVSRCCOLOR);
+		//	m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 1);
+		//	break;
+	default:
+		assert(0);
+		break;
+	}
 }
 
 } // namespace detail

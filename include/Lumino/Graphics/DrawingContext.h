@@ -22,6 +22,7 @@ public:
 	void SetRenderTarget(int index, Texture* texture);
 	void SetDepthBuffer(Texture* depthBuffer);
 
+	void SetBlendMode(BlendMode mode);
 
 	void SetTransform(const Matrix& matrix);
 	void SetOpacity(float opacity);	// 0~1

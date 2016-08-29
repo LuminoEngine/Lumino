@@ -101,8 +101,8 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 	{
 		auto style = UIStyle::Create();
 		style->AddValue(tr::UIListBoxItem::NormalState, UIElement::DecoratorBackgroundProperty, ColorBrush::DimGray);
-		style->AddValue(tr::UIListBoxItem::NormalState, UIElement::DecoratorOpacityProperty, 0.0f);
-		style->AddValue(tr::UIListBoxItem::MouseOverState, UIElement::DecoratorOpacityProperty, 1.0f, 5.0);
+		style->AddValue(tr::UIListBoxItem::NormalState, UIElement::DecoratorOpacityProperty, 0.0f, 0.3);
+		style->AddValue(tr::UIListBoxItem::MouseOverState, UIElement::DecoratorOpacityProperty, 1.0f, 0.3);
 		table->AddStyle(tr::TypeInfo::GetTypeInfo<tr::UIListBoxItem>(), style);
 	}
 }

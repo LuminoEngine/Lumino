@@ -132,6 +132,10 @@ protected:
 	void SetBasicContextState(const BasicContextState& state);
 	Details::Renderer* GetBaseRenderer() const { return m_baseRenderer; }
 
+
+	// Utils
+	static void MakeBlendMode(BlendMode mode, RenderState* state);
+
 private:
 	void SwitchActiveRendererPloxy(detail::IRendererPloxy* rendererPloxy);
 

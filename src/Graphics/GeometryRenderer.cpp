@@ -1134,7 +1134,7 @@ void DrawingContextImpl::ExpandGeometriesFill()
 
 	Color fillColor = Color::White;
 	if (m_currentState.Brush.Type == BrushType_SolidColor)
-		fillColor = *((Color*)m_currentState.Brush.SolidColorBrush.Color);
+		fillColor = m_currentState.ForeColor;//*((Color*)m_currentState.Brush.SolidColorBrush.Color);
 
 	RectF srcPixelRect = RectF::Zero;
 	RectF srcUVRect = RectF::Zero;

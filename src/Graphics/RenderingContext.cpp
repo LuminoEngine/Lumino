@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Internal.h"
 #include "GraphicsManager.h"
 #include <Lumino/Graphics/RenderingContext.h>
@@ -120,70 +120,9 @@ void RenderingContext::SetDestinationBlend(BlendFactor blend)
 }
 void RenderingContext::SetBlendMode(BlendMode mode)
 {
-	switch (mode)
-	{
-		// ‚à‚Á‚Æ‚¢‚ë‚¢‚ë http://d.hatena.ne.jp/Ko-Ta/20070618/p1
-	case BlendMode::Normal:
-		SetAlphaBlendEnabled(false);
-		SetBlendOp(BlendOp::Add);
-		SetSourceBlend(BlendFactor::One);
-		SetDestinationBlend(BlendFactor::Zero);
-		break;
-	case BlendMode::Alpha:
-		SetAlphaBlendEnabled(true);
-		SetBlendOp(BlendOp::Add);
-		SetSourceBlend(BlendFactor::SourceAlpha);
-		SetDestinationBlend(BlendFactor::InverseSourceAlpha);
-		break;
-	case BlendMode::Add:
-		SetAlphaBlendEnabled(true);
-		SetBlendOp(BlendOp::Add);
-		SetSourceBlend(BlendFactor::SourceAlpha);
-		SetDestinationBlend(BlendFactor::One);
-		break;
-	case BlendMode::AddAlphaDisabled:
-		SetAlphaBlendEnabled(true);
-		SetBlendOp(BlendOp::Add);
-		SetSourceBlend(BlendFactor::One);
-		SetDestinationBlend(BlendFactor::One);
-		break;
-	case BlendMode::Subtract:
-		SetAlphaBlendEnabled(true);
-		SetBlendOp(BlendOp::ReverseSubtract);
-		SetSourceBlend(BlendFactor::SourceAlpha);
-		SetDestinationBlend(BlendFactor::One);
-		break;
-	case BlendMode::SubtractAlphaDisabled:
-		SetAlphaBlendEnabled(true);
-		SetBlendOp(BlendOp::ReverseSubtract);
-		SetSourceBlend(BlendFactor::One);
-		SetDestinationBlend(BlendFactor::One);
-		break;
-	case BlendMode::MultiplyAlphaDisabled:
-		SetAlphaBlendEnabled(true);
-		SetBlendOp(BlendOp::Add);
-		// AlphaDisable (Alpha ‚ð•ÊŽw’è‚Å‚«‚È‚¢¡‚ÌŽd—l‚Å‚Í Alpha ‚ðl—¶‚Å‚«‚È‚¢)
-		SetSourceBlend(BlendFactor::Zero);
-		SetDestinationBlend(BlendFactor::SourceColor);
-		break;
-		//case BlendMode_Screen:
-		//	m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-		//	m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-		//	m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_SRCALPHASAT);
-		//	m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVDESTCOLOR);
-		//	m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 255);
-		//	break;
-		//case BlendMode_Reverse:
-		//	m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-		//	m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-		//	m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-		//	m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVSRCCOLOR);
-		//	m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 1);
-		//	break;
-	default:
-		assert(0);
-		break;
-	}
+	RenderState newState = m_state.renderState;
+	MakeBlendMode(mode, &newState);
+	SetRenderState(newState);
 }
 void RenderingContext::SetCullingMode(CullingMode mode)
 {
@@ -490,7 +429,7 @@ void RenderingContext::Blt(Texture* source, RenderTarget* dest, Shader* shader)
 //------------------------------------------------------------------------------
 void RenderingContext::BltInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Shader* shader)
 {
-	// ‚±‚±‚Å null ‚É‚µ‚Ä‚¨‚©‚È‚¢‚ÆPrimitiveRenderer‚ªŒÃ‚¢ƒVƒF[ƒ_‚ð“K—p‚µ‚Ä‚µ‚Ü‚¤
+	// ã“ã“ã§ null ã«ã—ã¦ãŠã‹ãªã„ã¨PrimitiveRendererãŒå¤ã„ã‚·ã‚§ãƒ¼ãƒ€ã‚’é©ç”¨ã—ã¦ã—ã¾ã†
 	SetShaderPass(nullptr);
 
 	RenderStateBlock2 stateBlock(this);
@@ -527,9 +466,9 @@ void RenderingContext::DrawMesh(MeshResource* mesh, int startIndex, int triangle
 {
 	material->ApplyToShaderVariables();
 
-	// TODO: ‚Æ‚è‚ ‚¦‚¸ 0 ”ÔƒeƒNƒjƒbƒN‚Ì‘SƒpƒX‚Å•`‰æ‚·‚é
-	// Scene ‚Ì‚Ù‚¤‚ÅŽg‚Á‚Ä‚¢‚é Script ‚àl—¶‚µ‚½ƒJƒXƒ^ƒ}ƒCƒY‚ð‚µ‚½‚¢ê‡A
-	// RenderingContext ‚ð”h¶‚³‚¹‚é‚Ì‚ª‚¢‚¢‚ÆŽv‚¤B
+	// TODO: ã¨ã‚Šã‚ãˆãš 0 ç•ªãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ã®å…¨ãƒ‘ã‚¹ã§æç”»ã™ã‚‹
+	// Scene ã®ã»ã†ã§ä½¿ã£ã¦ã„ã‚‹ Script ã‚‚è€ƒæ…®ã—ãŸã‚«ã‚¹ã‚¿ãƒžã‚¤ã‚ºã‚’ã—ãŸã„å ´åˆã€
+	// RenderingContext ã‚’æ´¾ç”Ÿã•ã›ã‚‹ã®ãŒã„ã„ã¨æ€ã†ã€‚
 	Shader* shader = material->GetShader();
 	ShaderTechnique* tech = shader->GetTechniques()[0];
 	for (auto* pass : tech->GetPasses())

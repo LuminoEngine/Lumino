@@ -44,6 +44,11 @@ void DrawingContext::Initialize(GraphicsManager* manager)
 
 	m_frameRectRenderer = LN_NEW detail::FrameRectRenderer();
 	m_frameRectRenderer->Initialize(manager);
+
+	//m_state.renderState.alphaBlendEnabled = true;
+	//m_state.renderState.blendOp = BlendOp::Add;
+	//m_state.renderState.sourceBlend = BlendFactor::SourceAlpha;
+	//m_state.renderState.destinationBlend = BlendFactor::InverseSourceAlpha;
 }
 
 //------------------------------------------------------------------------------
@@ -80,6 +85,18 @@ void DrawingContext::SetDepthBuffer(Texture* depthBuffer)
 	{
 		NorityStateChanging();
 		m_state.depthBuffer = depthBuffer;
+	}
+}
+
+//------------------------------------------------------------------------------
+void DrawingContext::SetBlendMode(BlendMode mode)
+{
+	RenderState newState = m_state.renderState;
+	MakeBlendMode(mode, &newState);
+	if (m_state.renderState != newState)
+	{
+		NorityStateChanging();
+		m_state.renderState = newState;
 	}
 }
 

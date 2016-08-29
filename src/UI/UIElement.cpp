@@ -24,7 +24,7 @@ LN_TR_PROPERTY_IMPLEMENT(UIElement, HorizontalAlignment, HorizontalAlignmentProp
 LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, BackgroundProperty, "Background", m_background, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, ForegroundProperty, "Foreground", m_foreground, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, DecoratorBackgroundProperty, "DecoratorBackground", m_decoratorBackground, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(UIElement, float, DecoratorOpacityProperty, "DecoratorBackground", m_decoratorOpacity, tr::PropertyMetadata(0.0f));
+LN_TR_PROPERTY_IMPLEMENT(UIElement, float, DecoratorOpacityProperty, "DecoratorOpacity", m_decoratorOpacity, tr::PropertyMetadata(0.0f));
 
 // Event definition
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIMouseEventArgs, MouseEnterEvent, "MouseEnter", MouseEnter);
@@ -253,7 +253,6 @@ void UIElement::OnRender(DrawingContext* g)
 	{
 		g->SetBrush(m_decoratorBackground);
 		g->SetOpacity(m_decoratorOpacity);
-		printf("%p %f\n", this, m_decoratorOpacity);
 		g->DrawRectangle(RectF(0, 0, m_finalLocalRect.GetSize()));
 	}
 }
@@ -433,12 +432,12 @@ void UIElement::ApplyTemplateHierarchy(UIStyleTable* styleTable, UIStyleProperty
 		if (style != nullptr)
 		{
 			m_currentVisualStateStyle = style->FindStylePropertyTable(m_currentVisualStateName);
-			m_invalidateFlags &= ~detail::InvalidateFlags::VisualState;
 		}
 		else
 		{
 			m_currentVisualStateStyle = nullptr;
 		}
+		m_invalidateFlags &= ~detail::InvalidateFlags::VisualState;
 	}
 
 	// Style 更新

@@ -33,7 +33,7 @@ void UIListBoxItem::Initialize(ln::detail::UIManager* manager)
 	UIContentControl::Initialize(manager);
 	SetHorizontalAlignment(HorizontalAlignment::Left);
 	SetVerticalAlignment(VerticalAlignment::Center);
-	GoToVisualState(_T("Normal"));
+	GoToVisualState(NormalState);
 }
 
 //------------------------------------------------------------------------------
@@ -41,11 +41,11 @@ void UIListBoxItem::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 {
 	if (ev == UIElement::MouseEnterEvent)
 	{
-		GoToVisualState(_T("MouseOverState"));
+		GoToVisualState(MouseOverState);
 	}
 	else if (ev == UIElement::MouseLeaveEvent)
 	{
-		GoToVisualState(_T("Normal"));
+		GoToVisualState(NormalState);
 	}
 }
 
