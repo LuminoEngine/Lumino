@@ -190,6 +190,7 @@ LN_INTERNAL_ACCESS:
 	detail::UIManager* GetManager() const { return m_manager; }
 	const PointF& GetPositionInternal() const { return m_position; }
 	const SizeF& GetSizeInternal() const { return m_size; }
+	const BrushPtr& GetForegroundInternal() const { return m_foreground; }
 	void SetParent(UIElement* parent);
 	const String& GetCurrentVisualStateName() const { return m_currentVisualStateName; }
 	UIElement* CheckMouseHoverElement(const PointF& globalPt);

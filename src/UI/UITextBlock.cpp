@@ -60,6 +60,7 @@ SizeF UITextBlock::MeasureOverride(const SizeF& availableSize)
 void UITextBlock::OnRender(DrawingContext* g)
 {
 	g->SetFont(GetActiveFont());
+	g->SetBrush(GetForegroundInternal());
 	g->DrawText(m_text, PointF::Zero);
 	g->Flush();	// TODO
 }
