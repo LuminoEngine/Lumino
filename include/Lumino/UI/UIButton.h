@@ -24,6 +24,11 @@ protected:
 	virtual ~UIButton();
 	void Initialize(detail::UIManager* manager);
 
+
+	virtual void OnRender(DrawingContext* g)
+	{
+		UIContentControl::OnRender(g);
+	}
 private:
 };
 

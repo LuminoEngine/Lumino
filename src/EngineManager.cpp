@@ -198,6 +198,7 @@ EngineManager::EngineManager(const detail::EngineSettings& configData)
 	, m_fileManager(nullptr)
 	, m_inputManager(nullptr)
 	, m_audioManager(nullptr)
+	, m_physicsManager(nullptr)
 	, m_graphicsManager(nullptr)
 	, m_effectManager(nullptr)
 	, m_modelManager(nullptr)
@@ -435,14 +436,12 @@ void EngineManager::InitializeAudioManager()
 //------------------------------------------------------------------------------
 void EngineManager::InitializePhysicsManager()
 {
-#ifdef LN_BUILD_SCENE_MODULE
 	if (m_physicsManager.IsNull())
 	{
 		InitializeCommon();
 		m_physicsManager = RefPtr<detail::PhysicsManager>::MakeRef();
 		m_physicsManager->Initialize();
 	}
-#endif
 }
 
 //------------------------------------------------------------------------------

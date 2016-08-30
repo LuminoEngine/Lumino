@@ -58,6 +58,14 @@ void UIManager::Initialize(const Settings& settings)
 	m_graphicsManager = settings.graphicsManager;
 	m_assetsManager = settings.assetsManager;
 
+	static const byte_t defaultSkin_data[] =
+	{
+#include "Resource/DefaultSkin.png.h"
+	};
+	MemoryStream defaultSkinStream(defaultSkin_data, LN_ARRAY_SIZE_OF(defaultSkin_data));
+	m_defaultSkinTexture = RefPtr<Texture2D>::MakeRef();
+	m_defaultSkinTexture->Initialize(m_graphicsManager, &defaultSkinStream, TextureFormat::R8G8B8A8, false);
+
 	m_defaultStyleTable = LN_NEW UIStyleTable();
 	MakeDefaultStyle(m_defaultStyleTable);
 
@@ -92,12 +100,12 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 		test->AddValue(_T(""), UITextBlock::FontSizeProperty, 20);
 		table->AddStyle(tr::TypeInfo::GetTypeInfo<UITextBlock>(), test);
 	}
-	{
-		auto test = UIStyle::Create();
-		test->AddValue(_T(""), UIElement::BackgroundProperty, ColorBrush::Blue);
-//		test->m_background = ColorBrush::Blue;
-		table->AddStyle(tr::TypeInfo::GetTypeInfo<UIButton>(), test);
-	}
+//	{
+//		auto test = UIStyle::Create();
+//		test->AddValue(_T(""), UIElement::BackgroundProperty, ColorBrush::Blue);
+////		test->m_background = ColorBrush::Blue;
+//		table->AddStyle(tr::TypeInfo::GetTypeInfo<UIButton>(), test);
+//	}
 	{
 		auto style = UIStyle::Create();
 		style->AddValue(tr::UIListBoxItem::NormalState, UIElement::DecoratorBackgroundProperty, ColorBrush::DimGray);

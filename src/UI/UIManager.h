@@ -53,6 +53,7 @@ private:
 	PlatformManager*	m_platformManager;
 	GraphicsManager*	m_graphicsManager;
 	AssetsManager*		m_assetsManager;
+	RefPtr<Texture2D>	m_defaultSkinTexture;
 	UIStyleTable*		m_defaultStyleTable;
 	UIMainWindow*		m_mainWindow;
 };

@@ -286,41 +286,55 @@ int main()
 
 
 
-
-		EngineSettings appData;
-		EngineSettings::SetGraphicsAPI(GraphicsAPI::DirectX9);
-		EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Immediate);
-		EngineSettings::SetDirectMusicMode(DirectMusicMode::Normal);
-		//EngineSettings::SetMainWindowSize(160, 120);
-		//EngineSettings::SetMainBackBufferSize(160, 120);
-		Engine::Initialize();
-
-
-		auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
-		auto canvas1 = UICanvas::Create();
-		canvas1->SetHorizontalAlignment(HorizontalAlignment::Stretch);
-		canvas1->SetVerticalAlignment(VerticalAlignment::Stretch);
-		//canvas1->SetBackground(ColorBrush::DimGray);
-		uiRoot->SetContent(canvas1);
-
-		auto listbox1 = tr::UIListBox::Create();
-		//listbox1->SetHorizontalAlignment(HorizontalAlignment::Stretch);
-		//listbox1->SetVerticalAlignment(VerticalAlignment::Stretch);
-		listbox1->SetPosition(PointF(5, 10));
-		listbox1->SetSize(SizeF(100, 200));
-		listbox1->SetBackground(ColorBrush::Red);
-		auto item1 = listbox1->AddTextItem(_T("item1"));
-		auto item2 = listbox1->AddTextItem(_T("item2"));
-		item1->SetBackground(ColorBrush::Green);
-		item2->SetBackground(ColorBrush::Blue);
-		canvas1->AddChild(listbox1);
-
-		Viewport::GetMainWindowViewport()->SetBackgroundColor(Color::Gray);
-
-		while (Engine::UpdateFrame())
 		{
+			EngineSettings appData;
+			EngineSettings::SetGraphicsAPI(GraphicsAPI::DirectX9);
+			EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Immediate);
+			EngineSettings::SetDirectMusicMode(DirectMusicMode::Normal);
+			//EngineSettings::SetMainWindowSize(160, 120);
+			//EngineSettings::SetMainBackBufferSize(160, 120);
+			Engine::Initialize();
+
+
+			auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+			auto canvas1 = UICanvas::Create();
+			canvas1->SetHorizontalAlignment(HorizontalAlignment::Stretch);
+			canvas1->SetVerticalAlignment(VerticalAlignment::Stretch);
+			//canvas1->SetBackground(ColorBrush::DimGray);
+			uiRoot->SetContent(canvas1);
+
+#if 1
+			auto listbox1 = tr::UIListBox::Create();
+			listbox1->SetPosition(PointF(5, 10));
+			listbox1->SetSize(SizeF(100, 200));
+			listbox1->SetBackground(ColorBrush::Red);
+			auto item1 = listbox1->AddTextItem(_T("item1"));
+			//auto item2 = listbox1->AddTextItem(_T("item2"));
+			item1->SetBackground(ColorBrush::Green);
+			//item2->SetBackground(ColorBrush::Blue);
+			canvas1->AddChild(listbox1);
+#endif
+
+			auto button1 = UIButton::Create();
+			button1->SetPosition(PointF(300, 10));
+			button1->SetSize(SizeF(80, 24));
+			button1->SetBackground(ColorBrush::Blue);
+			canvas1->AddChild(button1);
+
+			//auto button2 = UIButton::Create();
+			//button2->SetPosition(PointF(20, 10));
+			//button2->SetSize(SizeF(80, 24));
+			//button2->SetBackground(ColorBrush::Blue);
+			//canvas1->AddChild(button2);
+
+			Viewport::GetMainWindowViewport()->SetBackgroundColor(Color::Gray);
+
+			while (Engine::UpdateFrame())
+			{
+			}
 		}
 
+		Engine::Terminate();
 		return 0;
 
 

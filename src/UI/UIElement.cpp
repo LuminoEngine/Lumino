@@ -247,12 +247,13 @@ void UIElement::OnRender(DrawingContext* g)
 	if (m_background != nullptr)
 	{
 		g->SetBrush(m_background);
+		g->SetOpacity(m_combinedOpacity);
 		g->DrawRectangle(RectF(0, 0, m_finalLocalRect.GetSize()));
 	}
 	if (m_decoratorBackground != nullptr)
 	{
 		g->SetBrush(m_decoratorBackground);
-		g->SetOpacity(m_decoratorOpacity);
+		g->SetOpacity(m_combinedOpacity * m_decoratorOpacity);
 		g->DrawRectangle(RectF(0, 0, m_finalLocalRect.GetSize()));
 	}
 }
