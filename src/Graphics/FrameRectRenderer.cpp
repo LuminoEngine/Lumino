@@ -97,13 +97,17 @@ void FrameRectRendererCore::Draw(const RectF& rect)
 	// 枠
 	{
 		// TODO: thickness が left しか対応できていない
-		PutFrameRectangle(rect, m_state.borderThickness, srcTexture, m_state.srcRect);
+		PutFrameRectangle(rect, m_state.borderThickness, srcTexture, m_state.srcRect, m_state.wrapMode);
 	}
 
 	// Inner
 	if (m_state.imageDrawMode == BrushImageDrawMode::BoxFrame)
 	{
-		LN_THROW(0, NotImplementedException);
+		RectF dstRect = rect;
+		dstRect.x += m_state.borderThickness.Left;
+		dstRect.y += m_state.borderThickness.Top;
+		dstRect.width -= m_state.borderThickness.Right + m_state.borderThickness.Left;
+		dstRect.height -= m_state.borderThickness.Bottom + m_state.borderThickness.Top;
 
 		Rect srcRect = m_state.srcRect;
 		srcRect.x += m_state.borderThickness.Left;
@@ -116,17 +120,7 @@ void FrameRectRendererCore::Draw(const RectF& rect)
 		texSize.height = 1.0f / texSize.height;
 		RectF uvSrcRect(srcRect.x * texSize.width, srcRect.y * texSize.height, srcRect.width * texSize.width, srcRect.height * texSize.height);
 
-		if (m_state.wrapMode == BrushWrapMode::Stretch)
-		{
-			RectF tr = rect;
-			// TODO: thickness が left しか対応できていない
-			//tr.Inflate((float)-brush->GetThickness(), (float)-brush->GetThickness());
-			//PutRectangleStretch(tr, uvSrcRect);
-		}
-		else
-		{
-			LN_THROW(0, NotImplementedException);
-		}
+		PutRectangle(dstRect, srcRect, uvSrcRect, srcTexture, m_state.wrapMode);
 	}
 
 
@@ -234,7 +228,20 @@ void FrameRectRendererCore::PutRectangleTiling(const RectF& rect, const Rect& sr
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRendererCore::PutFrameRectangle(const RectF& rect, const ThicknessF& borderThickness, Driver::ITexture* srcTexture, Rect srcRect)
+void FrameRectRendererCore::PutRectangle(const RectF& rect, const Rect& srcPixelRect, const RectF& srcUVRect, Driver::ITexture* srcTexture, BrushWrapMode wrapMode)
+{
+	if (wrapMode == BrushWrapMode::Stretch)
+	{
+		PutRectangleStretch(rect, srcUVRect);
+	}
+	else if (wrapMode == BrushWrapMode::Tile)
+	{
+		PutRectangleTiling(rect, srcPixelRect, srcUVRect, srcTexture);
+	}
+}
+
+//------------------------------------------------------------------------------
+void FrameRectRendererCore::PutFrameRectangle(const RectF& rect, const ThicknessF& borderThickness, Driver::ITexture* srcTexture, Rect srcRect, BrushWrapMode wrapMode)
 {
 	if (srcRect.IsEmpty()) return;
 	assert(srcTexture != nullptr);
@@ -297,74 +304,74 @@ void FrameRectRendererCore::PutFrameRectangle(const RectF& rect, const Thickness
 	// 左上	■□□
 	//		□　□
 	//		□□□
-	PutRectangleTiling(
+	PutRectangle(
 		RectF(outerRect.GetLeft(), outerRect.GetTop(), dstFrame.Left, dstFrame.Top),
 		Rect(outerSrcRect.GetLeft(), outerSrcRect.GetTop(), srcFrame.Left, srcFrame.Top),
 		RectF(outerUVRect.GetLeft(), outerUVRect.GetTop(), uvFrame.Left, uvFrame.Top),
-		srcTexture);
+		srcTexture, wrapMode);
 
 	// 上	□■□
 	//		□　□
 	//		□□□
-	PutRectangleTiling(
+	PutRectangle(
 		RectF(innerRect.GetLeft(), outerRect.GetTop(), innerRect.width, dstFrame.Top),
 		Rect(innerSrcRect.GetLeft(), outerSrcRect.GetTop(), innerSrcRect.width, srcFrame.Top),
 		RectF(innerUVRect.GetLeft(), outerUVRect.GetTop(), innerUVRect.width, uvFrame.Top),
-		srcTexture);
+		srcTexture, wrapMode);
 
 	// 右上	□□■
 	//		□　□
 	//		□□□
-	PutRectangleTiling(
+	PutRectangle(
 		RectF(innerRect.GetRight(), outerRect.GetTop(), dstFrame.Right, dstFrame.Top),
 		Rect(innerSrcRect.GetRight(), outerSrcRect.GetTop(), srcFrame.Right, srcFrame.Top),
 		RectF(innerUVRect.GetRight(), outerUVRect.GetTop(), uvFrame.Right, uvFrame.Top),
-		srcTexture);
+		srcTexture, wrapMode);
 
 	// 右	□□□
 	//		□　■
 	//		□□□
-	PutRectangleTiling(
+	PutRectangle(
 		RectF(innerRect.GetRight(), innerRect.GetTop(), dstFrame.Right, innerRect.height),
 		Rect(innerSrcRect.GetRight(), innerSrcRect.GetTop(), srcFrame.Right, innerSrcRect.height),
 		RectF(innerUVRect.GetRight(), innerUVRect.GetTop(), uvFrame.Right, innerUVRect.height),
-		srcTexture);
+		srcTexture, wrapMode);
 
 	// 右下	□□□
 	//		□　□
 	//		□□■
-	PutRectangleTiling(
+	PutRectangle(
 		RectF(innerRect.GetRight(), innerRect.GetBottom(), dstFrame.Right, dstFrame.Bottom),
 		Rect(innerSrcRect.GetRight(), innerSrcRect.GetBottom(), srcFrame.Right, srcFrame.Bottom),
 		RectF(innerUVRect.GetRight(), innerUVRect.GetBottom(), uvFrame.Right, uvFrame.Bottom),
-		srcTexture);
+		srcTexture, wrapMode);
 
 	// 下	□□□
 	//		□　□
 	//		□■□
-	PutRectangleTiling(
+	PutRectangle(
 		RectF(innerRect.GetLeft(), innerRect.GetBottom(), innerRect.width, dstFrame.Bottom),
 		Rect(innerSrcRect.GetLeft(), innerSrcRect.GetBottom(), innerSrcRect.width, srcFrame.Bottom),
 		RectF(innerUVRect.GetLeft(), innerUVRect.GetBottom(), innerUVRect.width, uvFrame.Bottom),
-		srcTexture);
+		srcTexture, wrapMode);
 
 	// 左下	□□□
 	//		□　□
 	//		■□□
-	PutRectangleTiling(
+	PutRectangle(
 		RectF(outerRect.GetLeft(), innerRect.GetBottom(), dstFrame.Left, dstFrame.Bottom),
 		Rect(outerSrcRect.GetLeft(), innerSrcRect.GetBottom(), srcFrame.Left, srcFrame.Bottom),
 		RectF(outerUVRect.GetLeft(), innerUVRect.GetBottom(), uvFrame.Left, uvFrame.Bottom),
-		srcTexture);
+		srcTexture, wrapMode);
 
 	// 左	□□□
 	//		■　□
 	//		□□□
-	PutRectangleTiling(
+	PutRectangle(
 		RectF(outerRect.GetLeft(), innerRect.GetTop(), dstFrame.Left, innerRect.height),
 		Rect(outerSrcRect.GetLeft(), innerSrcRect.GetTop(), srcFrame.Left, innerSrcRect.height),
 		RectF(outerUVRect.GetLeft(), innerUVRect.GetTop(), uvFrame.Left, innerUVRect.height),
-		srcTexture);
+		srcTexture, wrapMode);
 }
 
 //==============================================================================
