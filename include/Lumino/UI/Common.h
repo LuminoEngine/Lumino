@@ -68,6 +68,7 @@ LN_ENUM_FLAGS(InvalidateFlags)
 	Rendering = 0x004,			// 描画系プロパティに変更がある
 	VisualState = 0x0008,	// VisualState に変更がある
 
+	Initializing = 0x0010,	// オブジェクト作成～最初の更新。完了したら Loaded イベント。この間にセットされるスタイルはアニメーションせず即適用。
 
 	All = 0xFFFFFFFF,
 };

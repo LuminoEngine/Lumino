@@ -2,7 +2,6 @@
 #pragma once
 #include "Common.h"
 #include "../Graphics/Text/Font.h"
-//#include "Texture.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -82,6 +81,7 @@ public:
 	Texture* GetTexture() const;
 
 	void SetSourceRect(const Rect& rect) { m_srcRect = rect; }
+	void SetSourceRect(int x, int y, int width, int height) { m_srcRect.Set(x, y, width, height); }
 	const Rect& GetSourceRect() const { return m_srcRect; }
 
 
@@ -91,7 +91,8 @@ public:
 	void SetImageDrawMode(BrushImageDrawMode mode) { m_imageDrawMode = mode; }
 	BrushImageDrawMode GetImageDrawMode() const { return m_imageDrawMode; }
 
-	void SetBorderThickness(ThicknessF thickness) { m_borderThickness = thickness; }
+	void SetBorderThickness(const ThicknessF& thickness) { m_borderThickness = thickness; }
+	void SetBorderThickness(float left, float top, float right, float bottom) { m_borderThickness.Set(left, top, right, bottom); }
 	const ThicknessF& GetBorderThickness() const { return m_borderThickness; }
 	
 

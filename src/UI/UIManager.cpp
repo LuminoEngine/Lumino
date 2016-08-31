@@ -6,6 +6,7 @@
 #include "UIManager.h"
 
 // for style definition
+#include <Lumino/Graphics/Brush.h>
 #include <Lumino/UI/UITextBlock.h>
 #include <Lumino/UI/UIButton.h>
 #include <Lumino/UI/UIListBox.h>
@@ -107,8 +108,21 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 //		table->AddStyle(tr::TypeInfo::GetTypeInfo<UIButton>(), test);
 //	}
 	{
+		auto brush = RefPtr<TextureBrush>::MakeRef();
+		brush->Create(m_defaultSkinTexture);
+		brush->SetSourceRect(0, 32, 32, 32);
+		brush->SetBorderThickness(8, 8, 8, 8);
+		brush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
+		brush->SetWrapMode(BrushWrapMode::Stretch);
+
 		auto style = UIStyle::Create();
-		style->AddValue(tr::UIListBoxItem::NormalState, UIElement::DecoratorBackgroundProperty, ColorBrush::DimGray);
+		style->AddValue(tr::UIListBox::NormalState, UIElement::BackgroundProperty, brush);
+		table->AddStyle(tr::TypeInfo::GetTypeInfo<tr::UIListBox>(), style);
+	}
+
+	{
+		auto style = UIStyle::Create();
+		style->AddValue(tr::UIListBoxItem::NormalState, UIElement::DecoratorBackgroundProperty, ColorBrush::Green);
 		style->AddValue(tr::UIListBoxItem::NormalState, UIElement::DecoratorOpacityProperty, 0.0f, 0.3);
 		style->AddValue(tr::UIListBoxItem::MouseOverState, UIElement::DecoratorOpacityProperty, 1.0f, 0.3);
 		table->AddStyle(tr::TypeInfo::GetTypeInfo<tr::UIListBoxItem>(), style);

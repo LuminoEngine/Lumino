@@ -304,22 +304,23 @@ int main()
 			uiRoot->SetContent(canvas1);
 
 #if 1
+
 			auto listbox1 = tr::UIListBox::Create();
 			listbox1->SetPosition(PointF(5, 10));
 			listbox1->SetSize(SizeF(100, 200));
-			listbox1->SetBackground(ColorBrush::Red);
+			//listbox1->SetBackground(ColorBrush::Red);
 			auto item1 = listbox1->AddTextItem(_T("item1"));
-			//auto item2 = listbox1->AddTextItem(_T("item2"));
-			item1->SetBackground(ColorBrush::Green);
+			auto item2 = listbox1->AddTextItem(_T("item2"));
+			//item1->SetBackground(ColorBrush::Green);
 			//item2->SetBackground(ColorBrush::Blue);
 			canvas1->AddChild(listbox1);
 #endif
 
-			auto button1 = UIButton::Create();
-			button1->SetPosition(PointF(300, 10));
-			button1->SetSize(SizeF(80, 24));
-			button1->SetBackground(ColorBrush::Blue);
-			canvas1->AddChild(button1);
+			//auto button1 = UIButton::Create();
+			//button1->SetPosition(PointF(300, 10));
+			//button1->SetSize(SizeF(80, 24));
+			//button1->SetBackground(ColorBrush::Blue);
+			//canvas1->AddChild(button1);
 
 			//auto button2 = UIButton::Create();
 			//button2->SetPosition(PointF(20, 10));
@@ -327,7 +328,7 @@ int main()
 			//button2->SetBackground(ColorBrush::Blue);
 			//canvas1->AddChild(button2);
 
-			Viewport::GetMainWindowViewport()->SetBackgroundColor(Color::Gray);
+			//Viewport::GetMainWindowViewport()->SetBackgroundColor(Color::Gray);
 
 			while (Engine::UpdateFrame())
 			{

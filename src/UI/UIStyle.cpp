@@ -80,22 +80,22 @@ detail::InvalidateFlags UIStylePropertyTable::UpdateInherit(UIStylePropertyTable
 }
 
 //------------------------------------------------------------------------------
-void UIStylePropertyTable::Apply(UIElement* targetElement)
+void UIStylePropertyTable::Apply(UIElement* targetElement, bool useTransitionAnimation)
 {
 	for (UIStyleAttribute& setter : m_attributes)
 	{
-		ApplyInternal(targetElement, setter);
+		ApplyInternal(targetElement, setter, useTransitionAnimation);
 	}
 	for (UIStyleAttribute* setter : m_parentRefAttributes)
 	{
-		ApplyInternal(targetElement, *setter);
+		ApplyInternal(targetElement, *setter, useTransitionAnimation);
 	}
 }
 
 //------------------------------------------------------------------------------
-void UIStylePropertyTable::ApplyInternal(UIElement* targetElement, const UIStyleAttribute& setter)
+void UIStylePropertyTable::ApplyInternal(UIElement* targetElement, const UIStyleAttribute& setter, bool useTransitionAnimation)
 {
-	if (setter.time == 0.0)
+	if (!useTransitionAnimation || setter.time == 0.0)
 	{
 		tr::Property::SetPropertyValue(targetElement, setter.m_targetProperty, setter.value);
 	}

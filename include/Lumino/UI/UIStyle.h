@@ -127,10 +127,10 @@ LN_INTERNAL_ACCESS:
 	virtual ~UIStylePropertyTable();
 	void Initialize(const StringRef& visualStateName);
 	detail::InvalidateFlags UpdateInherit(UIStylePropertyTable* parent);
-	void Apply(UIElement* targetElement);
+	void Apply(UIElement* targetElement, bool useTransitionAnimation);
 
 private:
-	void ApplyInternal(UIElement* targetElement, const UIStyleAttribute& setter);
+	void ApplyInternal(UIElement* targetElement, const UIStyleAttribute& setter, bool useTransitionAnimation);
 
 	String						m_visualStateName;
 	Array<UIStyleAttribute>		m_attributes;

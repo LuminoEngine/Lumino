@@ -66,6 +66,7 @@ void UIElement::Initialize(detail::UIManager* manager)
 {
 	LN_CHECK_ARG(manager != nullptr);
 	m_manager = manager;
+	m_invalidateFlags |= detail::InvalidateFlags::Initializing;
 
 	// 要素名を覚えておく。末端のサブクラスの名前となる。
 	m_elementName = tr::TypeInfo::GetTypeInfo(this)->GetName();
@@ -79,7 +80,7 @@ void UIElement::Initialize(detail::UIManager* manager)
 void UIElement::GoToVisualState(const StringRef& stateName)
 {
 	m_currentVisualStateName = stateName;
-	m_invalidateFlags = detail::InvalidateFlags::VisualState;
+	m_invalidateFlags |= detail::InvalidateFlags::VisualState;
 }
 
 //------------------------------------------------------------------------------
@@ -469,7 +470,7 @@ void UIElement::UpdateLocalStyleAndApplyProperties(UIStylePropertyTable* parentS
 //------------------------------------------------------------------------------
 void UIElement::OnUpdateStyle(UIStylePropertyTable* localStyle, detail::InvalidateFlags invalidateFlags)
 {
-	localStyle->Apply(this);
+	localStyle->Apply(this, !m_invalidateFlags.TestFlag(detail::InvalidateFlags::Initializing));
 	// TODO: UITextElement::OnUpdateStyle 参照
 	// TODO: アニメーション
 	//if (tr::Property::GetBaseValueSource(this, BackgroundProperty) <= tr::PropertySetSource::ByStyle)
@@ -522,6 +523,9 @@ void UIElement::UpdateTransformHierarchy()
 
 	// 子要素
 	UIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->UpdateTransformHierarchy(); });
+
+	// 最初の更新おわり
+	m_invalidateFlags &= ~detail::InvalidateFlags::Initializing;
 }
 
 //------------------------------------------------------------------------------

@@ -39,8 +39,6 @@ public:
 
 		RefPtr<AnimationCurveInstance> inst(curve->CreateAnimationCurveInstance(targetObject, targetProperty, startValue), false);
 		m_instanceList.Add(inst);
-
-		
 	}
 
 
