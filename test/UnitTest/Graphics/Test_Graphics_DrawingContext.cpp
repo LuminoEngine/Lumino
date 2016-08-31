@@ -2,7 +2,7 @@
 #include <Lumino/Graphics/DrawingContext.h>
 #include "../../src/Graphics/RendererImpl.h"
 
-class Test_Graphics_GraphicsContext : public ::testing::Test
+class Test_Graphics_DrawingContext : public ::testing::Test
 {
 protected:
 	virtual void SetUp() {}
@@ -11,9 +11,9 @@ protected:
 };
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Graphics_GraphicsContext, DrawRectangle)
+TEST_F(Test_Graphics_DrawingContext, DrawRectangle)
 {
-	// <Test>
+	// <Test> 単色塗りつぶし
 	{
 		Engine::BeginRendering();
 		auto* g = Engine::GetMainDrawingContext();
@@ -22,7 +22,20 @@ TEST_F(Test_Graphics_GraphicsContext, DrawRectangle)
 		g->DrawRectangle(RectF(10, 20, 30, 40));
 		Engine::EndRendering();
 
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_GraphicsContext.DrawRectangle.png")));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_DrawingContext.DrawRectangle.png")));
+	}
+	// <Test> テクスチャ全体を拡大して描画する
+	{
+		auto brush = TextureBrush::Create(LN_LOCALFILE("TestData/img1_BYTE_R8G8B8A8_20x20.png"));
+
+		Engine::BeginRendering();
+		auto* g = Engine::GetMainDrawingContext();
+		g->Clear(ClearFlags::All, Color::White);
+		g->SetBrush(brush);
+		g->DrawRectangle(RectF(0, 0, 20, 20));
+		Engine::EndRendering();
+
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_DrawingContext.DrawRectangle2.png")));
 	}
 	// <Test> テクスチャ全体を拡大して描画する
 	{
@@ -35,28 +48,28 @@ TEST_F(Test_Graphics_GraphicsContext, DrawRectangle)
 		g->DrawRectangle(RectF(10, 20, 30, 40));
 		Engine::EndRendering();
 
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_GraphicsContext.DrawRectangle2.png")));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_DrawingContext.DrawRectangle3.png")));
 	}
-	{
-		auto brush1 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
-		brush1->SetSourceRect(Rect(0, 192, 32, 32));
-		brush1->SetWrapMode(BrushWrapMode_Stretch);	// TODO:
-		brush1->SetImageDrawMode(BrushImageDrawMode::BorderFrame);
-		brush1->SetBorderThickness(ThicknessF(8, 8, 8, 8));
+	//{
+	//	auto brush1 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
+	//	brush1->SetSourceRect(Rect(0, 192, 32, 32));
+	//	brush1->SetWrapMode(BrushWrapMode_Stretch);	// TODO:
+	//	brush1->SetImageDrawMode(BrushImageDrawMode::BorderFrame);
+	//	brush1->SetBorderThickness(ThicknessF(8, 8, 8, 8));
 
-		Engine::BeginRendering();
-		auto* g = Engine::GetMainDrawingContext();
-		g->Clear(ClearFlags::All, Color::Gray);
-		g->SetBrush(brush1);
-		g->DrawRectangle(RectF(0, 0, 83, 83));
-		Engine::EndRendering();
+	//	Engine::BeginRendering();
+	//	auto* g = Engine::GetMainDrawingContext();
+	//	g->Clear(ClearFlags::All, Color::Gray);
+	//	g->SetBrush(brush1);
+	//	g->DrawRectangle(RectF(0, 0, 83, 83));
+	//	Engine::EndRendering();
 
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_GraphicsContext.DrawRectangle3.png")));
-	}
+	//	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_DrawingContext.DrawRectangle3.png")));
+	//}
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Graphics_GraphicsContext, FrameTextureBrush)
+TEST_F(Test_Graphics_DrawingContext, FrameTextureBrush)
 {
 	auto brush1 = FrameTextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
 	brush1->SetSourceRect(Rect(0, 192, 32, 32));
@@ -73,11 +86,11 @@ TEST_F(Test_Graphics_GraphicsContext, FrameTextureBrush)
 
 	Engine::EndRendering();
 
-	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_GraphicsContext.FrameTextureBrush.png")));
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_DrawingContext.FrameTextureBrush.png")));
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Graphics_GraphicsContext, DrawText1)
+TEST_F(Test_Graphics_DrawingContext, DrawText1)
 {
 	Engine::BeginRendering();
 	auto* g = Engine::GetMainDrawingContext();
@@ -88,11 +101,11 @@ TEST_F(Test_Graphics_GraphicsContext, DrawText1)
 
 	Engine::EndRendering();
 
-	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_GraphicsContext.DrawText1.png")));
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_DrawingContext.DrawText1.png")));
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Graphics_GraphicsContext, DrawText_UserFont)
+TEST_F(Test_Graphics_DrawingContext, DrawText_UserFont)
 {
 	// TODO: Register しなくても直接読みたい
 	Font::RegisterFontFile(LN_LOCALFILE("../../../tools/VLGothic/VL-Gothic-Regular.ttf"));
@@ -109,6 +122,6 @@ TEST_F(Test_Graphics_GraphicsContext, DrawText_UserFont)
 
 	Engine::EndRendering();
 
-	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_GraphicsContext.DrawText_UserFont.png")));
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_DrawingContext.DrawText_UserFont.png")));
 }
 

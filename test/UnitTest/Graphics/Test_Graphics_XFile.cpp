@@ -14,7 +14,7 @@ TEST_F(Test_Graphics_XFile, Basic)
 {
 	//auto shader = MMEShader::Create(LN_LOCALFILE("../../../src/Scene/Resource/BasicForwardRendering.fx"));
 	auto shader = MMEShader::Create(LN_LOCALFILE("TestData/Grid.fx"));
-	auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Grid1.png"), TextureFormat::R8G8B8A8, 4);
+	auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Grid1.png"), TextureFormat::R8G8B8A8/*, 4*/);
 
 	//auto mesh = StaticMesh::Create(LN_LOCALFILE("TestData/Box_1.x"));
 	//auto mesh = StaticMesh::Create(_T("D:/tmp/box1.x"));

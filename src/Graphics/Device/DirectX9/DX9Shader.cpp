@@ -686,7 +686,7 @@ void DX9ShaderPass::Apply()
 		LN_COMCALL(m_dxEffect->SetTechnique(m_technique));
 		LN_COMCALL(m_dxEffect->Begin(&dummy, 0));
 		LN_COMCALL(m_dxEffect->BeginPass(m_passIndex));
-		m_renderer->SetCurrentShaderPass(this);		// 前の Pass の EndPass() が呼ばれる
+		m_renderer->SetCurrentShaderPass(this);
 	}
 	
 }

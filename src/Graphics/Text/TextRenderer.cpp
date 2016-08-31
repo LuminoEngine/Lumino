@@ -240,10 +240,6 @@ void TextRenderer::SetState(Font* font, Brush* fillBrush)
 	}
 	if (m_fillBrush != fillBrush)
 	{
-		if (fillBrush != nullptr && fillBrush->GetType() != BrushType_SolidColor)
-		{
-			LN_NOTIMPLEMENTED();
-		}
 		m_fillBrush = fillBrush;
 		m_stateModified = true;
 	}
@@ -394,6 +390,12 @@ void TextRenderer::FlushInternal(Internal::FontGlyphTextureCache* cache)
 //------------------------------------------------------------------------------
 void TextRenderer::CheckUpdateState()	// あらゆる Draw の直前にやりたいこと
 {
+	if (m_fillBrush != nullptr && m_fillBrush->GetType() != BrushType_SolidColor)
+	{
+		LN_NOTIMPLEMENTED();
+	}
+
+
 	if (m_stateModified)
 	{
 		LN_ENQUEUE_RENDER_COMMAND_4(
