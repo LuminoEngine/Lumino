@@ -331,7 +331,7 @@ void SpriteRenderer::DrawRequest3D(
 //------------------------------------------------------------------------------
 void SpriteRenderer::Flush()
 {
-	LN_ENQUEUE_RENDER_COMMAND_1(
+	LN_ENQUEUE_RENDER_COMMAND_2(
 		SpriteRenderer_Flush, m_manager,
 		SpriteRendererImpl*, m_internal,
 		SpriteSortMode, m_spriteSortMode,

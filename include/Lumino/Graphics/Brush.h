@@ -7,18 +7,17 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
-enum BrushWrapMode
+enum class BrushWrapMode
 {
-	BrushWrapMode_Stretch = 0,	///< イメージ全体を引き延ばす
-	BrushWrapMode_Tile,			///< イメージを並べて表示する
-
+	Stretch,		/**< イメージ全体を引き延ばす。*/
+	Tile,			/**< イメージを並べて表示する。*/
 };
 
 enum class BrushImageDrawMode
 {
 	Image,
 	BoxFrame,
-	BorderFrame,
+	BorderFrame,	/**< 3x3 のボーダーを描画する。中央は描画しない。*/
 };
 
 class Brush
@@ -106,45 +105,6 @@ private:
 	ThicknessF			m_borderThickness;
 };
 
-
-class FrameTextureBrush
-	: public Brush
-{
-public:
-	static FrameTextureBrushPtr Create(const TCHAR* filePath);
-	static FrameTextureBrushPtr Create(Texture* texture);
-
-public:
-	void SetTexture(Texture* texture);
-	Texture* GetTexture() const;
-
-	void SetSourceRect(const Rect& rect) { m_srcRect = rect; }
-	const Rect& GetSourceRect() const { return m_srcRect; }
-
-	void SetInnerAreaSourceRect(const Rect& rect) { m_innerSrcRect = rect; }
-	const Rect& GetInnerAreaSourceRect() const { return m_innerSrcRect; }
-
-
-	void SetWrapMode(BrushWrapMode mode) { m_wrapMode = mode; }
-	BrushWrapMode GetWrapMode() const { return m_wrapMode; }
-
-
-	void SetThickness(int thickness) { m_frameThickness = thickness; }
-	int GetThickness() const { return m_frameThickness; }	// TODO: Thickness クラスにできない？
-
-	virtual BrushType GetType() const { return BrushType_FrameTexture; }
-
-public:
-	FrameTextureBrush();
-	virtual ~FrameTextureBrush();
-
-private:
-	RefPtr<Texture>		m_texture;
-	Rect				m_srcRect;	///< 初期値は (0, 0, INT_MAX, INT_MAX) で、全体を転送することを表す
-	Rect				m_innerSrcRect;
-	int					m_frameThickness;
-	BrushWrapMode		m_wrapMode;
-};
 
 /**
 	@brief	図形の枠線の描画方法を表します。

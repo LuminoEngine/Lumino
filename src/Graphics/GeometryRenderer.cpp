@@ -451,16 +451,6 @@ public:
 				float				borderThickness[4];
 
 			} TextureBrush;
-
-			struct
-			{
-				Driver::ITexture*	Texture;
-				int					SourceRect[4];	///< XYWH
-				int					InnerSourceRect[4];	///< XYWH
-				BrushWrapMode		WrapMode;
-				int					FrameThicness;
-
-			} FrameTextureBrush;
 		};
 
 		void Set(ln::Brush* brush)
@@ -494,23 +484,6 @@ public:
 					TextureBrush.imageDrawMode = t->GetImageDrawMode();
 					t->GetBorderThickness().ToArray(TextureBrush.borderThickness);
 				}
-				else if (Type == BrushType_FrameTexture)
-				{
-					auto t = static_cast<ln::FrameTextureBrush*>(brush);
-					FrameTextureBrush.Texture = (t->GetTexture() != nullptr) ? t->GetTexture()->GetDeviceObject() : nullptr;
-					const Rect& r = t->GetSourceRect();
-					const Rect& r2 = t->GetInnerAreaSourceRect();
-					FrameTextureBrush.SourceRect[0] = r.x;		// TODO: POD 型をまとめて定義したほうがいい気がする
-					FrameTextureBrush.SourceRect[1] = r.y;
-					FrameTextureBrush.SourceRect[2] = r.width;
-					FrameTextureBrush.SourceRect[3] = r.height;
-					FrameTextureBrush.InnerSourceRect[0] = r2.x;		// TODO: POD 型をまとめて定義したほうがいい気がする
-					FrameTextureBrush.InnerSourceRect[1] = r2.y;
-					FrameTextureBrush.InnerSourceRect[2] = r2.width;
-					FrameTextureBrush.InnerSourceRect[3] = r2.height;
-					FrameTextureBrush.WrapMode = t->GetWrapMode();
-					FrameTextureBrush.FrameThicness = t->GetThickness();
-				}
 				else {
 					LN_THROW(0, NotImplementedException);
 				}
@@ -529,18 +502,12 @@ public:
 			else if (Type == BrushType_Texture) {
 				LN_SAFE_ADDREF(TextureBrush.Texture);
 			}
-			else if (Type == BrushType_FrameTexture) {
-				LN_SAFE_ADDREF(FrameTextureBrush.Texture);
-			}
 		}
 
 		Driver::ITexture* SelectTexutre(Driver::ITexture* defaultTexture)
 		{
 			if (Type == BrushType_Texture) {
 				return TextureBrush.Texture;
-			}
-			else if (Type == BrushType_FrameTexture) {
-				return FrameTextureBrush.Texture;
 			}
 			return defaultTexture;
 		}
@@ -629,9 +596,6 @@ public:
 			if (Brush.Type == BrushType_Texture) {
 				LN_SAFE_RELEASE(Brush.TextureBrush.Texture);
 			}
-			else if (Brush.Type == BrushType_FrameTexture) {
-				LN_SAFE_RELEASE(Brush.FrameTextureBrush.Texture);
-			}
 		}
 
 		void UpdateCurrentForeColor()
@@ -688,9 +652,6 @@ public:
 
 			if (m_state.Brush.Type == BrushType_Texture) {
 				MarkGC(m_state.Brush.TextureBrush.Texture);
-			}
-			if (m_state.Brush.Type == BrushType_FrameTexture) {
-				MarkGC(m_state.Brush.FrameTextureBrush.Texture);
 			}
 		}
 		void Execute() { m_impl->SetState(m_state); }

@@ -213,7 +213,9 @@ void DrawingContext::DrawRectangle(const RectF& rect)
 {
 	NorityStartDrawing(m_geometryRenderer);
 
-	if (m_state.fillBrush->GetType() == BrushType_FrameTexture)
+	if (m_state.fillBrush != nullptr &&
+		m_state.fillBrush->GetType() == BrushType_Texture &&
+		(static_cast<TextureBrush*>(m_state.fillBrush.Get())->GetImageDrawMode() == BrushImageDrawMode::BoxFrame || static_cast<TextureBrush*>(m_state.fillBrush.Get())->GetImageDrawMode() == BrushImageDrawMode::BorderFrame))
 	{
 		m_frameRectRenderer->Draw(rect);
 	}
@@ -303,10 +305,9 @@ void DrawingContext::OnStateFlush()
 	m_textRenderer->SetViewProjMatrix(viewProj);
 	m_textRenderer->SetViewPixelSize(size);
 
-	if (m_state.fillBrush != nullptr &&
-		m_state.fillBrush->GetType() == BrushType_FrameTexture)
+	if (m_state.fillBrush != nullptr && m_state.fillBrush->GetType() == BrushType_Texture)
 	{
-		m_frameRectRenderer->SetState(static_cast<FrameTextureBrush*>(m_state.fillBrush.Get()), m_state.worldTransform, viewProj);
+		m_frameRectRenderer->SetState(static_cast<TextureBrush*>(m_state.fillBrush.Get()), m_state.worldTransform, viewProj);
 	}
 }
 

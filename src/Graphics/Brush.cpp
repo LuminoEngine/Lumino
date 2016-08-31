@@ -78,7 +78,7 @@ RefPtr<TextureBrush> TextureBrush::Create(const StringRef& filePath)
 //------------------------------------------------------------------------------
 TextureBrush::TextureBrush()
 	: m_srcRect(0, 0, INT_MAX, INT_MAX)
-	, m_wrapMode(BrushWrapMode_Stretch)
+	, m_wrapMode(BrushWrapMode::Stretch)
 	, m_imageDrawMode(BrushImageDrawMode::Image)
 {
 }
@@ -109,53 +109,6 @@ void TextureBrush::SetTexture(Texture* texture)
 
 //------------------------------------------------------------------------------
 Texture* TextureBrush::GetTexture() const
-{
-	return m_texture;
-}
-
-//==============================================================================
-// FrameTextureBrush
-//==============================================================================
-
-//------------------------------------------------------------------------------
-FrameTextureBrushPtr FrameTextureBrush::Create(const TCHAR* filePath)
-{
-	auto tex = Texture2D::Create(filePath);
-	FrameTextureBrushPtr ptr(LN_NEW FrameTextureBrush(), false);
-	ptr->SetTexture(tex);
-	return ptr;
-}
-
-//------------------------------------------------------------------------------
-FrameTextureBrushPtr FrameTextureBrush::Create(Texture* texture)
-{
-	FrameTextureBrushPtr ptr(LN_NEW FrameTextureBrush(), false);
-	ptr->SetTexture(texture);
-	return ptr;
-}
-
-//------------------------------------------------------------------------------
-FrameTextureBrush::FrameTextureBrush()
-	: m_texture()
-	, m_srcRect(0, 0, INT_MAX, INT_MAX)
-	, m_frameThickness(8)
-	, m_wrapMode(BrushWrapMode_Stretch)
-{
-}
-
-//------------------------------------------------------------------------------
-FrameTextureBrush::~FrameTextureBrush()
-{
-}
-
-//------------------------------------------------------------------------------
-void FrameTextureBrush::SetTexture(Texture* texture)
-{
-	m_texture = texture;
-}
-
-//------------------------------------------------------------------------------
-Texture* FrameTextureBrush::GetTexture() const
 {
 	return m_texture;
 }

@@ -51,15 +51,12 @@ class Font;
 typedef RefPtr<Font>		FontPtr;
 class GlyphRun;
 
-class PainterEngine;
 class Helper;
 class RenderingCommandList;
 class RenderingThread;
 
 class Brush;
-class FrameTextureBrush;
 typedef RefPtr<Brush>				BrushPtr;
-typedef RefPtr<FrameTextureBrush>	FrameTextureBrushPtr;
 
 class ScreenMotionBlurImageEffect;
 typedef RefPtr<ScreenMotionBlurImageEffect>	ScreenMotionBlurImageEffectPtr;
@@ -300,7 +297,6 @@ enum BrushType
 	BrushType_Unknown = 0,
 	BrushType_SolidColor,
 	BrushType_Texture,
-	BrushType_FrameTexture,
 };
 
 

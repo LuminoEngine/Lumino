@@ -1,6 +1,6 @@
-/*
-	˜g‚Ì•`‰æ‚Í GeometryRenderer ‚ªs‚¤ƒpƒX•`‰æ‚Æ‚Íˆ—“à—e‚ª‘å‚«‚­ˆÙ‚È‚éB(“ü—Í‚Í—‚Ä‚¢‚é‚ª)
-	‚»‚Ì‚½‚ß•ÊƒNƒ‰ƒX‚É•ª‚¯‚½Bˆ—‚ÌU‚è•ª‚¯‚Í GraphicsContext ‚ª’S“–‚·‚éB
+ï»¿/*
+	æ ã®æç”»ã¯ GeometryRenderer ãŒè¡Œã†ãƒ‘ã‚¹æç”»ã¨ã¯å‡¦ç†å†…å®¹ãŒå¤§ããç•°ãªã‚‹ã€‚(å…¥åŠ›ã¯ä¼¼ã¦ã„ã‚‹ãŒ)
+	ãã®ãŸã‚åˆ¥ã‚¯ãƒ©ã‚¹ã«åˆ†ã‘ãŸã€‚å‡¦ç†ã®æŒ¯ã‚Šåˆ†ã‘ã¯ GraphicsContext ãŒæ‹…å½“ã™ã‚‹ã€‚
 */
 #include "Internal.h"
 #include <Lumino/Graphics/GraphicsException.h>
@@ -88,31 +88,39 @@ void FrameRectRendererCore::Draw(const RectF& rect)
 {
 	if (rect.IsEmpty()) return;
 
-	// TODO: ‚Æ‚è‚ ‚¦‚¸¡‚Í fill ‚¾‚¯
+	// TODO: ã¨ã‚Šã‚ãˆãšä»Šã¯ fill ã ã‘
 
-	FrameTextureBrush* brush = m_state.brush;
-	Driver::ITexture* srcTexture = brush->GetTexture()->GetDeviceObject();
+	Driver::ITexture* srcTexture = m_state.texture;
 	if (srcTexture == nullptr) srcTexture = m_manager->GetDummyDeviceTexture();
 
 
-	// ˜g
+	// æ 
 	{
-		//Rect& srcRect = *((Rect*)brush.SourceRect);
-		PutFrameRectangle(rect, brush->GetThickness(), srcTexture, brush->GetSourceRect());
+		// TODO: thickness ãŒ left ã—ã‹å¯¾å¿œã§ãã¦ã„ãªã„
+		PutFrameRectangle(rect, m_state.borderThickness, srcTexture, m_state.srcRect);
 	}
 
 	// Inner
+	if (m_state.imageDrawMode == BrushImageDrawMode::BoxFrame)
 	{
-		const Rect& srcRect = brush->GetInnerAreaSourceRect();
+		LN_THROW(0, NotImplementedException);
+
+		Rect srcRect = m_state.srcRect;
+		srcRect.x += m_state.borderThickness.Left;
+		srcRect.y += m_state.borderThickness.Top;
+		srcRect.width -= m_state.borderThickness.Right + m_state.borderThickness.Left;
+		srcRect.height -= m_state.borderThickness.Bottom + m_state.borderThickness.Top;
+
 		SizeF texSize((float)srcTexture->GetRealSize().width, (float)srcTexture->GetRealSize().height);
 		texSize.width = 1.0f / texSize.width;
 		texSize.height = 1.0f / texSize.height;
 		RectF uvSrcRect(srcRect.x * texSize.width, srcRect.y * texSize.height, srcRect.width * texSize.width, srcRect.height * texSize.height);
 
-		if (brush->GetWrapMode() == BrushWrapMode_Stretch)
+		if (m_state.wrapMode == BrushWrapMode::Stretch)
 		{
 			RectF tr = rect;
-			tr.Inflate((float)-brush->GetThickness(), (float)-brush->GetThickness());
+			// TODO: thickness ãŒ left ã—ã‹å¯¾å¿œã§ãã¦ã„ãªã„
+			//tr.Inflate((float)-brush->GetThickness(), (float)-brush->GetThickness());
 			//PutRectangleStretch(tr, uvSrcRect);
 		}
 		else
@@ -130,7 +138,7 @@ void FrameRectRendererCore::Draw(const RectF& rect)
 		const SizeI& viewPixelSize = m_renderer->GetRenderTarget(0)->GetSize();
 		m_shader.varViewportSize->SetVector(Vector4((float)viewPixelSize.width, (float)viewPixelSize.height, 0, 0));
 
-		// •`‰æ‚·‚é
+		// æç”»ã™ã‚‹
 		m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
 		m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
 		m_shader.varTone->SetVector(ToneF());
@@ -142,7 +150,7 @@ void FrameRectRendererCore::Draw(const RectF& rect)
 		m_renderer->SetIndexBuffer(m_indexBuffer);
 		m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
 
-		// ƒLƒƒƒbƒVƒ…ƒNƒŠƒA
+		// ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚¯ãƒªã‚¢
 		m_vertexCache.Clear();
 		m_indexCache.Clear();
 	}
@@ -163,7 +171,7 @@ void FrameRectRendererCore::RequestBuffers(int faceCount)
 //------------------------------------------------------------------------------
 void FrameRectRendererCore::PutRectangleStretch(const RectF& rect, const RectF& srcUVRect)
 {
-	if (rect.IsEmpty()) { return; }		// ‹éŒ`‚ª‚Â‚Ô‚ê‚Ä‚¢‚é‚Ì‚Å‘‚­•K—v‚Í‚È‚¢
+	if (rect.IsEmpty()) { return; }		// çŸ©å½¢ãŒã¤ã¶ã‚Œã¦ã„ã‚‹ã®ã§æ›¸ãå¿…è¦ã¯ãªã„
 
 	float lu = srcUVRect.GetLeft();
 	float tv = srcUVRect.GetTop();
@@ -180,27 +188,27 @@ void FrameRectRendererCore::PutRectangleStretch(const RectF& rect, const RectF& 
 
 	Vertex v;
 	v.Color.Set(1, 1, 1, 1);
-	v.Position.Set(rect.GetLeft(), rect.GetTop(), 0);		v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1, 1);	// ¶ã
+	v.Position.Set(rect.GetLeft(), rect.GetTop(), 0);		v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1, 1);	// å·¦ä¸Š
 	m_vertexCache.Add(v);
-	v.Position.Set(rect.GetLeft(), rect.GetBottom(), 0);	v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1, 2);	// ¶‰º
+	v.Position.Set(rect.GetLeft(), rect.GetBottom(), 0);	v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1, 2);	// å·¦ä¸‹
 	m_vertexCache.Add(v);
-	v.Position.Set(rect.GetRight(), rect.GetTop(), 0);		v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(2, 1);	// ‰Eã
+	v.Position.Set(rect.GetRight(), rect.GetTop(), 0);		v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(2, 1);	// å³ä¸Š
 	m_vertexCache.Add(v);
-	v.Position.Set(rect.GetRight(), rect.GetBottom(), 0);	v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(2, 2);	// ‰E‰º
+	v.Position.Set(rect.GetRight(), rect.GetBottom(), 0);	v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(2, 2);	// å³ä¸‹
 	m_vertexCache.Add(v);
 }
 
 //------------------------------------------------------------------------------
 void FrameRectRendererCore::PutRectangleTiling(const RectF& rect, const Rect& srcPixelRect, const RectF& srcUVRect, Driver::ITexture* srcTexture)
 {
-	if (rect.IsEmpty()) return;		// ‹éŒ`‚ª‚Â‚Ô‚ê‚Ä‚¢‚é‚Ì‚Å‘‚­•K—v‚Í‚È‚¢
+	if (rect.IsEmpty()) return;		// çŸ©å½¢ãŒã¤ã¶ã‚Œã¦ã„ã‚‹ã®ã§æ›¸ãå¿…è¦ã¯ãªã„
 
 	float uvX = srcUVRect.x;
 	float uvY = srcUVRect.y;
 	float uvWidth = srcUVRect.width;
 	float uvHeight = srcUVRect.height;
-	float blockCountW = (rect.width / srcPixelRect.width);		// ‰¡•ûŒü‚É‚¢‚­‚Â‚Ìƒ^ƒCƒ‹‚ğ•À‚×‚ç‚ê‚é‚© (0.5 ‚È‚ÇA’[”‚àŠÜ‚Ş)
-	float blockCountH = (rect.height / srcPixelRect.height);	// c•ûŒü‚É‚¢‚­‚Â‚Ìƒ^ƒCƒ‹‚ğ•À‚×‚ç‚ê‚é‚© (0.5 ‚È‚ÇA’[”‚àŠÜ‚Ş)
+	float blockCountW = (rect.width / srcPixelRect.width);		// æ¨ªæ–¹å‘ã«ã„ãã¤ã®ã‚¿ã‚¤ãƒ«ã‚’ä¸¦ã¹ã‚‰ã‚Œã‚‹ã‹ (0.5 ãªã©ã€ç«¯æ•°ã‚‚å«ã‚€)
+	float blockCountH = (rect.height / srcPixelRect.height);	// ç¸¦æ–¹å‘ã«ã„ãã¤ã®ã‚¿ã‚¤ãƒ«ã‚’ä¸¦ã¹ã‚‰ã‚Œã‚‹ã‹ (0.5 ãªã©ã€ç«¯æ•°ã‚‚å«ã‚€)
 
 	float lu = uvX;
 	float tv = uvY;
@@ -215,18 +223,18 @@ void FrameRectRendererCore::PutRectangleTiling(const RectF& rect, const Rect& sr
 
 	Vertex v;
 	v.Color.Set(1, 1, 1, 1);
-	v.Position.Set(rect.GetLeft(), rect.GetTop(), 0);		v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1.0f, 1.0f);	// ¶ã
+	v.Position.Set(rect.GetLeft(), rect.GetTop(), 0);		v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1.0f, 1.0f);	// å·¦ä¸Š
 	m_vertexCache.Add(v);
-	v.Position.Set(rect.GetLeft(), rect.GetBottom(), 0);	v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1.0f, 1.0f + blockCountH);	// ¶‰º
+	v.Position.Set(rect.GetLeft(), rect.GetBottom(), 0);	v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1.0f, 1.0f + blockCountH);	// å·¦ä¸‹
 	m_vertexCache.Add(v);
-	v.Position.Set(rect.GetRight(), rect.GetTop(), 0);		v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1.0f + blockCountW, 1.0f);	// ‰Eã
+	v.Position.Set(rect.GetRight(), rect.GetTop(), 0);		v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1.0f + blockCountW, 1.0f);	// å³ä¸Š
 	m_vertexCache.Add(v);
-	v.Position.Set(rect.GetRight(), rect.GetBottom(), 0);	v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1.0f + blockCountW, 1.0f + blockCountH);	// ‰E‰º
+	v.Position.Set(rect.GetRight(), rect.GetBottom(), 0);	v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1.0f + blockCountW, 1.0f + blockCountH);	// å³ä¸‹
 	m_vertexCache.Add(v);
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRendererCore::PutFrameRectangle(const RectF& rect, float frameWidth, Driver::ITexture* srcTexture, Rect srcRect)
+void FrameRectRendererCore::PutFrameRectangle(const RectF& rect, const ThicknessF& borderThickness, Driver::ITexture* srcTexture, Rect srcRect)
 {
 	if (srcRect.IsEmpty()) return;
 	assert(srcTexture != nullptr);
@@ -246,117 +254,117 @@ void FrameRectRendererCore::PutFrameRectangle(const RectF& rect, float frameWidt
 	texSize.height = 1.0f / texSize.height;
 	RectF uvSrcRect(srcRect.x * texSize.width, srcRect.y * texSize.height, srcRect.width * texSize.width, srcRect.height * texSize.height);
 
-
-	float frameWidthH = frameWidth;
-	float frameWidthV = frameWidth;
-	float uvFrameWidthH = frameWidth * texSize.width;
-	float uvFrameWidthV = frameWidth * texSize.height;
-	int frameWidthHI = (int)frameWidth;	// Œ^•ÏŠ·‰ñ”‚ğŒ¸‚ç‚·‚½‚ßA‚ ‚ç‚©‚¶‚ß int ‰»‚µ‚Ä‚¨‚­
-	int frameWidthVI = (int)frameWidth;
-
-	// ‰¡•‚ª¬‚³‚¢‚½‚ßA˜g•‚à‹·‚ß‚È‚¯‚ê‚Î‚È‚ç‚È‚¢
-	if (rect.width < frameWidthH * 2)
+	ThicknessF dstFrame;
+	ThicknessF uvFrame;
+	Thickness srcFrame;
 	{
-		float ratio = rect.width / (frameWidthH * 2);	// Œ³‚Ì•‚©‚ç‰½ % ‚É‚È‚é‚©
-		frameWidthH *= ratio;
-		uvFrameWidthH *= ratio;
-		frameWidthHI = (int)ceil(ratio * frameWidthHI);
-	}
-	// c•‚ª¬‚³‚¢‚½‚ßA˜g•‚à‹·‚ß‚È‚¯‚ê‚Î‚È‚ç‚È‚¢
-	if (rect.height < frameWidthV * 2)
-	{
-		float ratio = rect.height / (frameWidthV * 2);	// Œ³‚Ì•‚©‚ç‰½ % ‚É‚È‚é‚©
-		frameWidthV *= ratio;
-		uvFrameWidthV *= ratio;
-		frameWidthVI = (int)ceil(ratio * frameWidthVI);
+		ThicknessF baseThickness = borderThickness;
+
+		// æ¨ªå¹…ãŒå°ã•ã„ãŸã‚ã€æ å¹…ã‚‚ç‹­ã‚ãªã‘ã‚Œã°ãªã‚‰ãªã„
+		if (rect.width < baseThickness.Left + baseThickness.Right)
+		{
+			baseThickness.Left = rect.width / 2;
+			baseThickness.Right = rect.width / 2;
+		}
+		// ç¸¦å¹…ãŒå°ã•ã„ãŸã‚ã€æ å¹…ã‚‚ç‹­ã‚ãªã‘ã‚Œã°ãªã‚‰ãªã„
+		if (rect.height < baseThickness.Top + baseThickness.Bottom)
+		{
+			baseThickness.Top = rect.height / 2;
+			baseThickness.Bottom = rect.height / 2;
+		}
+
+		dstFrame.Left = baseThickness.Left;
+		dstFrame.Right = baseThickness.Right;
+		dstFrame.Top = baseThickness.Top;
+		dstFrame.Bottom = baseThickness.Bottom;
+		uvFrame.Left = baseThickness.Left * texSize.width;
+		uvFrame.Right = baseThickness.Right * texSize.width;
+		uvFrame.Top = baseThickness.Top * texSize.height;
+		uvFrame.Bottom = baseThickness.Bottom * texSize.height;
+		srcFrame.Left = (int)baseThickness.Left;	// å‹å¤‰æ›å›æ•°ã‚’æ¸›ã‚‰ã™ãŸã‚ã€ã‚ã‚‰ã‹ã˜ã‚ int åŒ–ã—ã¦ãŠã
+		srcFrame.Right = (int)baseThickness.Right;
+		srcFrame.Top = (int)baseThickness.Top;
+		srcFrame.Bottom = (int)baseThickness.Bottom;
 	}
 
 	RectF outerRect = rect;
-	RectF innerRect(outerRect.x + frameWidthH, outerRect.y + frameWidthV, outerRect.width - frameWidthH * 2, outerRect.height - frameWidthV * 2);
+	RectF innerRect(outerRect.x + dstFrame.Left, outerRect.y + dstFrame.Top, outerRect.width - (dstFrame.Left + dstFrame.Right), outerRect.height - (dstFrame.Top + dstFrame.Bottom));
 	RectF outerUVRect = uvSrcRect;
-	RectF innerUVRect(outerUVRect.x + uvFrameWidthH, outerUVRect.y + uvFrameWidthV, outerUVRect.width - uvFrameWidthH * 2, outerUVRect.height - uvFrameWidthV * 2);
+	RectF innerUVRect(outerUVRect.x + uvFrame.Left, outerUVRect.y + uvFrame.Top, outerUVRect.width - (uvFrame.Left + uvFrame.Right), outerUVRect.height - (uvFrame.Top + uvFrame.Bottom));
 	Rect  outerSrcRect = srcRect;
-	Rect  innerSrcRect(outerSrcRect.x + frameWidthHI, outerSrcRect.y + frameWidthVI, outerSrcRect.width - frameWidthHI * 2, outerSrcRect.height - frameWidthVI * 2);
+	Rect  innerSrcRect(outerSrcRect.x + srcFrame.Left, outerSrcRect.y + srcFrame.Top, outerSrcRect.width - (srcFrame.Left + srcFrame.Right), outerSrcRect.height - (srcFrame.Top + srcFrame.Bottom));
 
-	// ¶ã	¡  
-	//		 @ 
-	//		   
-	//PutRectangleTiling(
-	//	RectF(outerRect.GetLeft(), outerRect.GetTop(), frameWidthH, frameWidthV),
-	//	Rect(outerSrcRect.GetLeft(), outerSrcRect.GetTop(), frameWidthHI, frameWidthVI),
-	//	RectF(outerUVRect.GetLeft(), outerUVRect.GetTop(), uvFrameWidthH, uvFrameWidthV),
-	//	srcTexture);
-
-	// ã	 ¡ 
-	//		 @ 
-	//		   
+	// å·¦ä¸Š	â– â–¡â–¡
+	//		â–¡ã€€â–¡
+	//		â–¡â–¡â–¡
 	PutRectangleTiling(
-		RectF(innerRect.GetLeft(), outerRect.GetTop(), innerRect.width, frameWidth),
-		Rect(innerSrcRect.GetLeft(), outerSrcRect.GetTop(), innerSrcRect.width, frameWidthVI),
-		RectF(innerUVRect.GetLeft(), outerUVRect.GetTop(), innerUVRect.width, uvFrameWidthV),
+		RectF(outerRect.GetLeft(), outerRect.GetTop(), dstFrame.Left, dstFrame.Top),
+		Rect(outerSrcRect.GetLeft(), outerSrcRect.GetTop(), srcFrame.Left, srcFrame.Top),
+		RectF(outerUVRect.GetLeft(), outerUVRect.GetTop(), uvFrame.Left, uvFrame.Top),
 		srcTexture);
 
-	// ‰Eã	  ¡
-	//		 @ 
-	//		   
-	//PutRectangleTiling(
-	//	RectF(innerRect.GetRight(), outerRect.GetTop(), frameWidthH, frameWidthV),
-	//	Rect(innerSrcRect.GetRight(), outerSrcRect.GetTop(), frameWidthHI, frameWidthVI),
-	//	RectF(innerUVRect.GetRight(), outerUVRect.GetTop(), uvFrameWidthH, uvFrameWidthV),
-	//	srcTexture);
-
-	// ‰E	   
-	//		 @¡
-	//		   
+	// ä¸Š	â–¡â– â–¡
+	//		â–¡ã€€â–¡
+	//		â–¡â–¡â–¡
 	PutRectangleTiling(
-		RectF(innerRect.GetRight(), innerRect.GetTop(), frameWidthH, innerRect.height),
-		Rect(innerSrcRect.GetRight(), innerSrcRect.GetTop(), frameWidthHI, innerSrcRect.height),
-		RectF(innerUVRect.GetRight(), innerUVRect.GetTop(), uvFrameWidthH, innerUVRect.height),
+		RectF(innerRect.GetLeft(), outerRect.GetTop(), innerRect.width, dstFrame.Top),
+		Rect(innerSrcRect.GetLeft(), outerSrcRect.GetTop(), innerSrcRect.width, srcFrame.Top),
+		RectF(innerUVRect.GetLeft(), outerUVRect.GetTop(), innerUVRect.width, uvFrame.Top),
 		srcTexture);
 
-	// ‰E‰º	   
-	//		 @ 
-	//		  ¡
-	//PutRectangleTiling(
-	//	RectF(innerRect.GetRight(), innerRect.GetBottom(), frameWidthH, frameWidthV),
-	//	Rect(innerSrcRect.GetRight(), innerSrcRect.GetBottom(), frameWidthHI, frameWidthVI),
-	//	RectF(innerUVRect.GetRight(), innerUVRect.GetBottom(), uvFrameWidthH, uvFrameWidthV),
-	//	srcTexture);
-
-	// ‰º	   
-	//		 @ 
-	//		 ¡ 
+	// å³ä¸Š	â–¡â–¡â– 
+	//		â–¡ã€€â–¡
+	//		â–¡â–¡â–¡
 	PutRectangleTiling(
-		RectF(innerRect.GetLeft(), innerRect.GetBottom(), innerRect.width, frameWidthV),
-		Rect(innerSrcRect.GetLeft(), innerSrcRect.GetBottom(), innerSrcRect.width, frameWidthVI),
-		RectF(innerUVRect.GetLeft(), innerUVRect.GetBottom(), innerUVRect.width, uvFrameWidthV),
+		RectF(innerRect.GetRight(), outerRect.GetTop(), dstFrame.Right, dstFrame.Top),
+		Rect(innerSrcRect.GetRight(), outerSrcRect.GetTop(), srcFrame.Right, srcFrame.Top),
+		RectF(innerUVRect.GetRight(), outerUVRect.GetTop(), uvFrame.Right, uvFrame.Top),
 		srcTexture);
 
-	// ¶‰º	   
-	//		 @ 
-	//		¡  
-	//PutRectangleTiling(
-	//	RectF(outerRect.GetLeft(), innerRect.GetBottom(), frameWidthH, frameWidthV),
-	//	Rect(outerSrcRect.GetLeft(), innerSrcRect.GetBottom(), frameWidthHI, frameWidthVI),
-	//	RectF(outerUVRect.GetLeft(), innerUVRect.GetBottom(), uvFrameWidthH, uvFrameWidthV),
-	//	srcTexture);
-
-	// ¶	   
-	//		¡@ 
-	//		   
+	// å³	â–¡â–¡â–¡
+	//		â–¡ã€€â– 
+	//		â–¡â–¡â–¡
 	PutRectangleTiling(
-		RectF(outerRect.GetLeft(), innerRect.GetTop(), frameWidthH, innerRect.height),
-		Rect(outerSrcRect.GetLeft(), innerSrcRect.GetTop(), frameWidthHI, innerSrcRect.height),
-		RectF(outerUVRect.GetLeft(), innerUVRect.GetTop(), uvFrameWidthH, innerUVRect.height),
+		RectF(innerRect.GetRight(), innerRect.GetTop(), dstFrame.Right, innerRect.height),
+		Rect(innerSrcRect.GetRight(), innerSrcRect.GetTop(), srcFrame.Right, innerSrcRect.height),
+		RectF(innerUVRect.GetRight(), innerUVRect.GetTop(), uvFrame.Right, innerUVRect.height),
 		srcTexture);
 
-	//m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
-	//m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
-	//m_renderer->SetVertexBuffer(m_vertexBuffer);
-	//m_renderer->SetIndexBuffer(m_indexBuffer);
-	//m_shader.varTexture->SetTexture(srcTexture);
-	//m_shader.Pass->Apply();
-	//m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, 16);
+	// å³ä¸‹	â–¡â–¡â–¡
+	//		â–¡ã€€â–¡
+	//		â–¡â–¡â– 
+	PutRectangleTiling(
+		RectF(innerRect.GetRight(), innerRect.GetBottom(), dstFrame.Right, dstFrame.Bottom),
+		Rect(innerSrcRect.GetRight(), innerSrcRect.GetBottom(), srcFrame.Right, srcFrame.Bottom),
+		RectF(innerUVRect.GetRight(), innerUVRect.GetBottom(), uvFrame.Right, uvFrame.Bottom),
+		srcTexture);
+
+	// ä¸‹	â–¡â–¡â–¡
+	//		â–¡ã€€â–¡
+	//		â–¡â– â–¡
+	PutRectangleTiling(
+		RectF(innerRect.GetLeft(), innerRect.GetBottom(), innerRect.width, dstFrame.Bottom),
+		Rect(innerSrcRect.GetLeft(), innerSrcRect.GetBottom(), innerSrcRect.width, srcFrame.Bottom),
+		RectF(innerUVRect.GetLeft(), innerUVRect.GetBottom(), innerUVRect.width, uvFrame.Bottom),
+		srcTexture);
+
+	// å·¦ä¸‹	â–¡â–¡â–¡
+	//		â–¡ã€€â–¡
+	//		â– â–¡â–¡
+	PutRectangleTiling(
+		RectF(outerRect.GetLeft(), innerRect.GetBottom(), dstFrame.Left, dstFrame.Bottom),
+		Rect(outerSrcRect.GetLeft(), innerSrcRect.GetBottom(), srcFrame.Left, srcFrame.Bottom),
+		RectF(outerUVRect.GetLeft(), innerUVRect.GetBottom(), uvFrame.Left, uvFrame.Bottom),
+		srcTexture);
+
+	// å·¦	â–¡â–¡â–¡
+	//		â– ã€€â–¡
+	//		â–¡â–¡â–¡
+	PutRectangleTiling(
+		RectF(outerRect.GetLeft(), innerRect.GetTop(), dstFrame.Left, innerRect.height),
+		Rect(outerSrcRect.GetLeft(), innerSrcRect.GetTop(), srcFrame.Left, innerSrcRect.height),
+		RectF(outerUVRect.GetLeft(), innerUVRect.GetTop(), uvFrame.Left, innerUVRect.height),
+		srcTexture);
 }
 
 //==============================================================================
@@ -386,12 +394,19 @@ void FrameRectRenderer::Initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRenderer::SetState(FrameTextureBrush* brush, const Matrix& world, const Matrix& viewProj)
+void FrameRectRenderer::SetState(TextureBrush* brush, const Matrix& world, const Matrix& viewProj)
 {
+	LN_CHECK_ARG(brush != nullptr);
+
 	FrameRectRendererState state;
-	state.brush = brush;
 	state.worldTransform = world;
 	state.viewProjTransform = viewProj;
+	state.imageDrawMode = brush->GetImageDrawMode();
+	state.borderThickness = brush->GetBorderThickness();
+	state.srcRect = brush->GetSourceRect();
+	state.wrapMode = brush->GetWrapMode();
+	state.texture = (brush->GetTexture() != nullptr) ? brush->GetTexture()->GetDeviceObject() : nullptr;
+	LN_CHECK_STATE(state.texture != nullptr);
 
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		SetState, m_manager,
@@ -400,17 +415,6 @@ void FrameRectRenderer::SetState(FrameTextureBrush* brush, const Matrix& world, 
 		{
 			m_core->SetState(state);
 		});
-
-	//m_state.fillBrush = fillBrush;
-	//m_state.strokeBrush = strokeBrush;
-
-	//LN_ENQUEUE_RENDER_COMMAND_2(
-	//	SetState, m_manager,
-	//	FrameRectRendererCore*, m_core,
-	//	FrameRectRendererState, m_state,
-	//	{
-	//		m_core->SetState(m_state);
-	//	});
 }
 
 //------------------------------------------------------------------------------

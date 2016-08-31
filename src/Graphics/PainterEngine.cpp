@@ -22,6 +22,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
+#if 0
 //==============================================================================
 // PainterEngine
 //==============================================================================
@@ -676,6 +677,6 @@ void PainterEngine::UpdateCurrentForeColor()
 		state.ForeColor.a = state.Opacity;
 	}
 }
-
+#endif
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

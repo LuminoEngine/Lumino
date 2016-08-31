@@ -15,7 +15,6 @@ class RenderingThread;
 class GraphicsContext;
 class RenderingContext;
 class DrawingContext;
-class PainterEngine;
 class TextRenderer;
 class BitmapTextRenderer;
 class SwapChain;
@@ -168,7 +167,6 @@ public:
 	RenderingThread* GetRenderingThread() { return m_renderingThread; }
 	bool IsPlatformTextureLoading() { return m_platformTextureLoading; }
 	RenderingCommandList* GetPrimaryRenderingCommandList();
-	PainterEngine* GetPainterEngine() { return m_painterEngine; }
 	detail::TextRendererCore* GetTextRendererCore() { return m_textRendererCore; }
 	Driver::ITexture* GetDummyDeviceTexture() { return m_dummyDeviceTexture; }
 	const RefPtr<Texture2D>& GetDummyWhiteTexture() { return m_dymmyWhiteTexture; }
@@ -197,7 +195,6 @@ private:
 
 
 	detail::TextRendererCore*		m_textRendererCore;
-	PainterEngine*					m_painterEngine;
 	BitmapTextRenderer*				m_bitmapTextRenderer;
 	detail::ShaderVariableCommitSerializeHelper	m_shaderVariableCommitSerializeHelper;
 

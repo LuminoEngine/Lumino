@@ -11,9 +11,13 @@ namespace detail
 
 struct FrameRectRendererState
 {
-	RefPtr<FrameTextureBrush>	brush;
 	Matrix						worldTransform;
 	Matrix						viewProjTransform;
+	BrushImageDrawMode			imageDrawMode;
+	ThicknessF					borderThickness;
+	Rect						srcRect;
+	BrushWrapMode				wrapMode;
+	RefPtr<Driver::ITexture>	texture;
 };
 
 class FrameRectRendererCore
@@ -32,7 +36,7 @@ private:
 
 	void PutRectangleStretch(const RectF& rect, const RectF& srcUVRect);
 	void PutRectangleTiling(const RectF& rect, const Rect& srcPixelRect, const RectF& srcUVRect, Driver::ITexture* srcTexture);
-	void PutFrameRectangle(const RectF& rect, float frameWidth, Driver::ITexture* srcTexture, Rect srcRect);
+	void PutFrameRectangle(const RectF& rect, const ThicknessF& borderThickness, Driver::ITexture* srcTexture, Rect srcRect);
 
 	// TODO í∏ì_êÈåæÇ∆Ç©ÇÕäOïîÇ©ÇÁÇ‡ÇÁÇ§ÇÊÇ§Ç…ÇµÇΩÇ¢
 	struct Vertex
@@ -90,7 +94,7 @@ public:
 	~FrameRectRenderer();
 	void Initialize(GraphicsManager* manager);
 
-	void SetState(FrameTextureBrush* brush, const Matrix& world, const Matrix& viewProj);
+	void SetState(TextureBrush* brush, const Matrix& world, const Matrix& viewProj);
 
 	void Draw(const RectF& rect);
 

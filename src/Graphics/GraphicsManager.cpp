@@ -104,7 +104,6 @@ GraphicsManager::GraphicsManager()
 	, m_activeContext(nullptr)
 	, m_renderingContext(nullptr)
 	, m_drawingContext(nullptr)
-	, m_painterEngine(nullptr)
 	, m_textRendererCore(nullptr)
 	, m_bitmapTextRenderer(nullptr)
 {
@@ -119,7 +118,6 @@ GraphicsManager::~GraphicsManager()
 	LN_SAFE_RELEASE(m_defaultVertexDeclaration);
 	LN_SAFE_RELEASE(m_bitmapTextRenderer);
 	LN_SAFE_RELEASE(m_textRendererCore);
-	LN_SAFE_RELEASE(m_painterEngine);
 	m_dymmyWhiteTexture.SafeRelease();
 	LN_SAFE_RELEASE(m_dummyDeviceTexture);
 	LN_SAFE_RELEASE(m_mainSwapChain);

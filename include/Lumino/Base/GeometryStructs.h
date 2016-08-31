@@ -580,6 +580,15 @@ public:
 	}
 };
 
+class Thickness	// TODO: struct
+{
+public:
+	int		Left;		/**< 四角形の左辺の幅 */
+	int		Top;		/**< 四角形の上辺の幅 */
+	int		Right;		/**< 四角形の右辺の幅 */
+	int		Bottom;		/**< 四角形の底辺の幅 */
+
+};
 
 /**
 	@brief		四角形の枠の太さを表すクラスです。(浮動小数点形式)
