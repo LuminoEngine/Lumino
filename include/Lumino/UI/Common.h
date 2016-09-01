@@ -55,6 +55,9 @@ LN_ENUM_FLAGS(AlignmentAnchor)
 	TopRatios		= 0x0080,			/**< */
 	RightRatios		= 0x0100,			/**< */
 	BottomRatios	= 0x0200,			/**< */
+
+	HCenter = 0x0400,			/**< */
+	VCenter = 0x0800,			/**< */
 };
 LN_ENUM_FLAGS_DECLARE(AlignmentAnchor);
 

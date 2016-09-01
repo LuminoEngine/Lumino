@@ -14,9 +14,14 @@ class UIButton
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:
+	LN_ROUTED_EVENT(UIMouseEventArgs, ClickEvent);		/**< Click ルーティングイベントの識別子 */
+
+public:
 	static UIButtonPtr Create();
 
 public:
+	UIEvent<UIMouseEventArgs>		click;		/**< */
+
 	void SetText(const StringRef& text);
 
 protected:
@@ -24,11 +29,10 @@ protected:
 	virtual ~UIButton();
 	void Initialize(detail::UIManager* manager);
 
+	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e) override;
 
-	virtual void OnRender(DrawingContext* g)
-	{
-		UIContentControl::OnRender(g);
-	}
+	virtual void OnClick(UIMouseEventArgs* e);
+
 private:
 };
 

@@ -11,6 +11,9 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 LN_UI_TYPEINFO_IMPLEMENT(UIButton, UIContentControl);
 
+// Event definition
+LN_ROUTED_EVENT_IMPLEMENT(UIButton, UIMouseEventArgs, ClickEvent, "Click", click);
+
 //------------------------------------------------------------------------------
 UIButtonPtr UIButton::Create()
 {
@@ -44,6 +47,29 @@ void UIButton::SetText(const StringRef& text)
 	textBlock->Initialize(GetManager());
 	textBlock->SetText(text);
 	SetContent(textBlock);
+}
+
+//------------------------------------------------------------------------------
+void UIButton::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
+{
+	if (ev == UIElement::MouseUpEvent)
+	{
+		OnClick(static_cast<UIMouseEventArgs*>(e));
+	}
+	else if (ev == UIElement::MouseLeaveEvent)
+	{
+	}
+
+	UIContentControl::OnRoutedEvent(ev, e);
+}
+
+//------------------------------------------------------------------------------
+void UIButton::OnClick(UIMouseEventArgs* e)
+{
+	if (!e->handled)
+	{
+		RaiseEvent(ClickEvent, this, e);
+	}
 }
 
 LN_NAMESPACE_END

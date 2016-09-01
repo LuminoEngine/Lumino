@@ -313,7 +313,8 @@ int main()
 			//button1->SetContent(_T(">"));
 			button1->SetSize(SizeF(20, 20));
 			button1->SetBackground(ColorBrush::Red);
-			button1->SetAnchor(AlignmentAnchor::RightOffsets);
+			button1->SetAnchor(AlignmentAnchor::RightOffsets | AlignmentAnchor::VCenter);
+			button1->click += [](UIMouseEventArgs* e) { GameAudio::PlayBGM(_T("D:/tmp/GrandSky.mp3")); };
 			itemCanvas1->AddChild(button1);
 
 			auto listbox1 = tr::UIListBox::Create();

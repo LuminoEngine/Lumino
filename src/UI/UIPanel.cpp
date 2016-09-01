@@ -231,63 +231,85 @@ SizeF UICanvas::ArrangeOverride(const SizeF& finalSize)
 		//{
 		//}
 		
-		
+		const SizeF& desiredSize = child->GetDesiredSize();
+		SizeF size = child->GetSizeInternal();
+		size.width = Math::IsNaN(size.width) ? desiredSize.width : size.width;
+		size.height = Math::IsNaN(size.height) ? desiredSize.height : size.height;
+
+		RectF childRect(child->GetPositionInternal(), child->GetSizeInternal());
 		AlignmentAnchor anchor = child->GetAnchorInternal();
 		
 		if (anchor != AlignmentAnchor::None)
 		{
 			const ThicknessF& margin = GetMargineInternal();
-			ThicknessF m;//(child->GetPositionInternal(), child->GetSizeInternal());
-			m.Left = child->GetPositionInternal().x;
-			m.Top = child->GetPositionInternal().y;
-			m.Right = finalSize.width - (child->GetPositionInternal().x + child->GetSizeInternal().width);
-			m.Bottom = finalSize.height - (child->GetPositionInternal().y + child->GetSizeInternal().height);
 			
+			float l = NAN, t = NAN, r = NAN, b = NAN;
 			if (anchor.TestFlag(AlignmentAnchor::LeftOffsets))
-				m.Left = margin.Left;
+				l = margin.Left;
 			else if (anchor.TestFlag(AlignmentAnchor::LeftRatios))
-				m.Left = finalSize.width * margin.Left;
+				l = finalSize.width * margin.Left;
 			
 			if (anchor.TestFlag(AlignmentAnchor::TopOffsets))
-				m.Top = margin.Top;
+				t = margin.Top;
 			else if (anchor.TestFlag(AlignmentAnchor::TopRatios))
-				m.Top = finalSize.height * margin.Top;
+				t = finalSize.height * margin.Top;
 			
 			if (anchor.TestFlag(AlignmentAnchor::RightOffsets))
-				m.Right = margin.Right;
+				r = finalSize.width - margin.Right;
 			else if (anchor.TestFlag(AlignmentAnchor::RightRatios))
-				m.Right = finalSize.width * margin.Right;
+				r = finalSize.width - (finalSize.width * margin.Right);
 			
 			if (anchor.TestFlag(AlignmentAnchor::BottomOffsets))
-				m.Bottom = margin.Bottom;
+				b = finalSize.height - margin.Bottom;
 			else if (anchor.TestFlag(AlignmentAnchor::RightRatios))
-				m.Bottom = finalSize.height * margin.Bottom;
-			
-			RectF childRect;
-			childRect.x = m.Left;
-			childRect.y = m.Top;
-			childRect.width = (finalSize.width - m.Right) - m.Left;
-			childRect.height = (finalSize.height - m.Bottom) - m.Top;
+				b = finalSize.height - (finalSize.height * margin.Bottom);
+
+			if (anchor.TestFlag(AlignmentAnchor::HCenter))
+				childRect.x = (finalSize.width - childRect.width) / 2;
+
+			if (anchor.TestFlag(AlignmentAnchor::VCenter))
+				childRect.y = (finalSize.height - childRect.height) / 2;
+
+			if (!Math::IsNaN(l) || !Math::IsNaN(r))
+			{
+				if (!Math::IsNaN(l) && Math::IsNaN(r))
+				{
+					childRect.x = l;
+				}
+				else if (Math::IsNaN(l) && !Math::IsNaN(r))
+				{
+					childRect.x = r - childRect.width;
+				}
+				else
+				{
+					childRect.x = l;
+					childRect.width = r - l;
+				}
+			}
+
+			if (!Math::IsNaN(t) || !Math::IsNaN(b))
+			{
+				if (!Math::IsNaN(t) && Math::IsNaN(b))
+				{
+					childRect.y = t;
+				}
+				else if (Math::IsNaN(t) && !Math::IsNaN(b))
+				{
+					childRect.y = b - childRect.height;
+				}
+				else
+				{
+					childRect.y = t;
+					childRect.height = b - t;
+				}
+			}
+
 			child->ArrangeLayout(childRect);
 		}
 		else
 		{
-			RectF childRect(child->GetPositionInternal(), child->GetSizeInternal());
 			child->ArrangeLayout(childRect);
 		}
-		
-		
-		/*
-		if (anchor.TestFlag(AlignmentAnchor::CenterOffsets))
-		{
-			
-		}
-		else
-		{
-			base
-		}
-		*/
-		
 	}
 
 	return finalSize;
