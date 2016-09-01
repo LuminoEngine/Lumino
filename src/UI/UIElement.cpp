@@ -19,6 +19,7 @@ LN_UI_TYPEINFO_IMPLEMENT(UIElement, tr::ReflectionObject);
 // Property definition
 LN_TR_PROPERTY_IMPLEMENT(UIElement, PointF, PositionProperty, "Position", m_position, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(UIElement, SizeF, SizeProperty, "Size", m_size, tr::PropertyMetadata(SizeF(NAN, NAN)));
+LN_TR_PROPERTY_IMPLEMENT(UIElement, AlignmentAnchor, AnchorProperty, "Anchor", m_anchor, tr::PropertyMetadata(AlignmentAnchor::None));
 LN_TR_PROPERTY_IMPLEMENT(UIElement, VerticalAlignment, VerticalAlignmentProperty, "VerticalAlignment", m_verticalAlignment, tr::PropertyMetadata(VerticalAlignment::Center));
 LN_TR_PROPERTY_IMPLEMENT(UIElement, HorizontalAlignment, HorizontalAlignmentProperty, "HorizontalAlignment", m_horizontalAlignment, tr::PropertyMetadata(HorizontalAlignment::Center));
 LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, BackgroundProperty, "Background", m_background, tr::PropertyMetadata());
@@ -44,6 +45,7 @@ UIElement::UIElement()
 	, m_currentVisualStateStyle(nullptr)
 	, m_position(0, 0)
 	, m_size(NAN, NAN)
+	, m_anchor(AlignmentAnchor::None)
 	, m_horizontalAlignment(HorizontalAlignment::Center)
 	, m_verticalAlignment(VerticalAlignment::Center)
 	, m_opacity(1.0f)
@@ -526,6 +528,7 @@ void UIElement::UpdateTransformHierarchy()
 
 	// 最初の更新おわり
 	m_invalidateFlags &= ~detail::InvalidateFlags::Initializing;
+	m_invalidateFlags &= ~detail::InvalidateFlags::ParentChangedUpdating;
 }
 
 //------------------------------------------------------------------------------

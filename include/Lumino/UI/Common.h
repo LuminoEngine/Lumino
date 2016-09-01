@@ -38,6 +38,27 @@ LN_ENUM(HorizontalAlignment)
 };
 LN_ENUM_DECLARE(HorizontalAlignment);
 
+
+/** */
+LN_ENUM_FLAGS(AlignmentAnchor)
+{
+	None			= 0x0000,			/**< */
+
+	//CenterOffsets	= 0x0001,			/**< */
+	LeftOffsets		= 0x0002,			/**< */
+	TopOffsets		= 0x0004,			/**< */
+	RightOffsets	= 0x0008,			/**< */
+	BottomOffsets	= 0x0010,			/**< */
+
+	//CenterRatios	= 0x0020,			/**< */
+	LeftRatios		= 0x0040,			/**< */
+	TopRatios		= 0x0080,			/**< */
+	RightRatios		= 0x0100,			/**< */
+	BottomRatios	= 0x0200,			/**< */
+};
+LN_ENUM_FLAGS_DECLARE(AlignmentAnchor);
+
+
 namespace detail
 {
 class UIManager;
@@ -60,6 +81,15 @@ enum class UIInternalEventType
 	MouseLeave,			/**< UI要素からマウスカーソルが離れた */
 };
 
+struct AnchorInfo
+{
+	Vector2	left;
+	Vector2	top;
+	Vector2	right;
+	Vector2	bottom;
+	Vector2	center;
+};
+
 LN_ENUM_FLAGS(InvalidateFlags)
 {
 	None = 0x0000,
@@ -69,6 +99,7 @@ LN_ENUM_FLAGS(InvalidateFlags)
 	VisualState = 0x0008,	// VisualState に変更がある
 
 	Initializing = 0x0010,	// オブジェクト作成～最初の更新。完了したら Loaded イベント。この間にセットされるスタイルはアニメーションせず即適用。
+	ParentChangedUpdating = 0x0020,
 
 	All = 0xFFFFFFFF,
 };

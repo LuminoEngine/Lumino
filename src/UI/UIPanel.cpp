@@ -222,10 +222,72 @@ SizeF UICanvas::MeasureOverride(const SizeF& constraint)
 //------------------------------------------------------------------------------
 SizeF UICanvas::ArrangeOverride(const SizeF& finalSize)
 {
+	//ThicknessF canvas;
+	
+	
 	for (UIElement* child : *GetChildren())
 	{
-		RectF childRect(child->GetPositionInternal(), child->GetSizeInternal());
-		child->ArrangeLayout(childRect);
+		//if (child->GetInvalidateFlags().TestFlag(detail::InvalidateFlags::ParentChangedUpdating))
+		//{
+		//}
+		
+		
+		AlignmentAnchor anchor = child->GetAnchorInternal();
+		
+		if (anchor != AlignmentAnchor::None)
+		{
+			const ThicknessF& margin = GetMargineInternal();
+			ThicknessF m;//(child->GetPositionInternal(), child->GetSizeInternal());
+			m.Left = child->GetPositionInternal().x;
+			m.Top = child->GetPositionInternal().y;
+			m.Right = finalSize.width - (child->GetPositionInternal().x + child->GetSizeInternal().width);
+			m.Bottom = finalSize.height - (child->GetPositionInternal().y + child->GetSizeInternal().height);
+			
+			if (anchor.TestFlag(AlignmentAnchor::LeftOffsets))
+				m.Left = margin.Left;
+			else if (anchor.TestFlag(AlignmentAnchor::LeftRatios))
+				m.Left = finalSize.width * margin.Left;
+			
+			if (anchor.TestFlag(AlignmentAnchor::TopOffsets))
+				m.Top = margin.Top;
+			else if (anchor.TestFlag(AlignmentAnchor::TopRatios))
+				m.Top = finalSize.height * margin.Top;
+			
+			if (anchor.TestFlag(AlignmentAnchor::RightOffsets))
+				m.Right = margin.Right;
+			else if (anchor.TestFlag(AlignmentAnchor::RightRatios))
+				m.Right = finalSize.width * margin.Right;
+			
+			if (anchor.TestFlag(AlignmentAnchor::BottomOffsets))
+				m.Bottom = margin.Bottom;
+			else if (anchor.TestFlag(AlignmentAnchor::RightRatios))
+				m.Bottom = finalSize.height * margin.Bottom;
+			
+			RectF childRect;
+			childRect.x = m.Left;
+			childRect.y = m.Top;
+			childRect.width = (finalSize.width - m.Right) - m.Left;
+			childRect.height = (finalSize.height - m.Bottom) - m.Top;
+			child->ArrangeLayout(childRect);
+		}
+		else
+		{
+			RectF childRect(child->GetPositionInternal(), child->GetSizeInternal());
+			child->ArrangeLayout(childRect);
+		}
+		
+		
+		/*
+		if (anchor.TestFlag(AlignmentAnchor::CenterOffsets))
+		{
+			
+		}
+		else
+		{
+			base
+		}
+		*/
+		
 	}
 
 	return finalSize;

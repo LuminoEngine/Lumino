@@ -304,12 +304,25 @@ int main()
 			uiRoot->SetContent(canvas1);
 
 #if 1
+			auto itemCanvas1 = UICanvas::Create();
+			itemCanvas1->SetBackground(ColorBrush::DimGray);
+			itemCanvas1->SetSize(SizeF(NAN, 32));
+			itemCanvas1->SetHorizontalAlignment(HorizontalAlignment::Stretch);
+
+			auto button1 = UIButton::Create();
+			//button1->SetContent(_T(">"));
+			button1->SetSize(SizeF(20, 20));
+			button1->SetBackground(ColorBrush::Red);
+			button1->SetAnchor(AlignmentAnchor::RightOffsets);
+			itemCanvas1->AddChild(button1);
 
 			auto listbox1 = tr::UIListBox::Create();
 			listbox1->SetPosition(PointF(5, 10));
 			listbox1->SetSize(SizeF(100, 200));
 			//listbox1->SetBackground(ColorBrush::Red);
-			auto item1 = listbox1->AddTextItem(_T("item1"));
+			//auto item1 = listbox1->AddTextItem(_T("item1"));
+			auto item1 = listbox1->AddItem(itemCanvas1);
+			item1->SetHorizontalContentAlignment(HorizontalAlignment::Stretch);
 			auto item2 = listbox1->AddTextItem(_T("item2"));
 			//item1->SetBackground(ColorBrush::Green);
 			//item2->SetBackground(ColorBrush::Blue);

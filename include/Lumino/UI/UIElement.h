@@ -23,6 +23,7 @@ class UIElement
 public:
 	LN_TR_PROPERTY(PointF,				PositionProperty);				/**< Position プロパティの識別子 */
 	LN_TR_PROPERTY(SizeF,				SizeProperty);					/**< Size プロパティの識別子 */
+	LN_TR_PROPERTY(AlignmentAnchor,		AnchorProperty);				/**< Anchor プロパティの識別子 */
 	LN_TR_PROPERTY(VerticalAlignment,	VerticalAlignmentProperty);		/**< VerticalAlignment プロパティの識別子 */
 	LN_TR_PROPERTY(HorizontalAlignment,	HorizontalAlignmentProperty);	/**< HorizontalAlignment プロパティの識別子 */
 	LN_TR_PROPERTY(BrushPtr,			BackgroundProperty);			/**< Background プロパティの識別子 */
@@ -64,6 +65,9 @@ public:
 
 	void SetSize(const SizeF& value) { tr::Property::SetPropertyValueDirect<SizeF>(this, SizeProperty, value); }
 	const SizeF& GetSize() const { return tr::Property::GetPropertyValueDirect<SizeF>(this, SizeProperty); }
+
+	void SetAnchor(AlignmentAnchor value) { tr::Property::SetPropertyValueDirect<AlignmentAnchor>(this, AnchorProperty, value); }
+	AlignmentAnchor GetAnchor() const { return tr::Property::GetPropertyValueDirect<AlignmentAnchor>(this, AnchorProperty); }
 
 	void SetVerticalAlignment(VerticalAlignment value) { tr::Property::SetPropertyValueDirect<VerticalAlignment>(this, VerticalAlignmentProperty, value); }
 	VerticalAlignment GetVerticalAlignment() const { return tr::Property::GetPropertyValueDirect<VerticalAlignment>(this, VerticalAlignmentProperty); }
@@ -190,9 +194,13 @@ LN_INTERNAL_ACCESS:
 	detail::UIManager* GetManager() const { return m_manager; }
 	const PointF& GetPositionInternal() const { return m_position; }
 	const SizeF& GetSizeInternal() const { return m_size; }
+	const ThicknessF& GetMargineInternal() const { return m_margin; }
+	AlignmentAnchor GetAnchorInternal() const { return m_anchor; }
 	const BrushPtr& GetForegroundInternal() const { return m_foreground; }
 	void SetParent(UIElement* parent);
 	const String& GetCurrentVisualStateName() const { return m_currentVisualStateName; }
+	//AnchorInfo* GetAnchorInfo() {return &m_anchorInfo; }
+	detail::InvalidateFlags GetInvalidateFlags() const { return m_invalidateFlags; }
 	UIElement* CheckMouseHoverElement(const PointF& globalPt);
 	virtual void ActivateInternal(UIElement* child);
 	virtual bool OnEvent(detail::UIInternalEventType type, UIEventArgs* args);
@@ -231,6 +239,7 @@ private:
 	SizeF					m_size;
 	ThicknessF				m_margin;
 	ThicknessF				m_padding;
+	AlignmentAnchor			m_anchor;
 	HorizontalAlignment		m_horizontalAlignment;
 	VerticalAlignment		m_verticalAlignment;
 	BrushPtr				m_background;
@@ -248,7 +257,7 @@ private:
 
 	//RefPtr<Style>					m_style;
 	float					m_combinedOpacity;
-	//Array< RefPtr<AnimationClock> >	m_animationClockList;
+	//AnchorInfo				m_anchorInfo;
 	detail::InvalidateFlags	m_invalidateFlags;
 	bool					m_isEnabled;
 	bool					m_isMouseOver;
