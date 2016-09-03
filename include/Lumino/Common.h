@@ -4,6 +4,10 @@
 #pragma once
 #include <Lumino/Base/Common.h>
 
+#define LNR_CLASS()
+#define LNR_METHOD()
+#define LNR_PROPERTY()
+
 LN_NAMESPACE_BEGIN
 
 class EngineManager;

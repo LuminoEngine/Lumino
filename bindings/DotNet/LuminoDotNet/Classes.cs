@@ -1219,6 +1219,23 @@ namespace Lumino
             }
             
         }
+
+        private static Result Callback_OnRender(IntPtr handle)
+        {
+            var this_ = InternalManager.GetWrapperObject<SceneNode>(handle);
+            this_.OnRender();
+            return Result.OK;
+        }
+  
+        protected virtual void OnRender()
+        {
+            Console.WriteLine("OnRender");
+        }
+
+        private void InitializeCallbacks()
+        {
+
+        }
     
         internal SceneNode(_LNInternal i) : base(i) {}
         

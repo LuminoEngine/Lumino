@@ -60,6 +60,15 @@ LNResult LNSceneNode_GetChildren(LN_HANDLE(LNSceneNode) sceneNode, LN_OUT LN_GEN
 	LN_FUNC_TRY_END_RETURN;
 }
 
+//------------------------------------------------------------------------------
+LNResult LNSceneNode_OnRender(LN_HANDLE(LNSceneNode) sceneNode)
+{
+	LN_CHECK_ARG_HANDLE(sceneNode);
+	LN_FUNC_TRY_BEGIN;
+	TO_REFOBJ(VisualNode, sceneNode)->VisualNode::OnRender(nullptr);	// TODO: Test
+	LN_FUNC_TRY_END_RETURN;
+}
+
 //==============================================================================
 // LNSprite
 //==============================================================================

@@ -67,6 +67,13 @@ LN_CLASS(LNSceneNode, LNObject)
 	LN_ATTR_PROPERTY
 	LNResult LNSceneNode_GetChildren(LN_HANDLE(LNSceneNode) sceneNode, LN_OUT LN_GENERIC_HANDLE(LNObjectList, LNSceneNode)* outList);
 	
+	/**
+		@brief		test
+		@param[in]	sceneNode	: ノードハンドル
+	*/
+	LN_INSTANCE_API
+	LNResult LNSceneNode_OnRender(LN_HANDLE(LNSceneNode) sceneNode);
+
 LN_CLASS_END
 
 //==============================================================================

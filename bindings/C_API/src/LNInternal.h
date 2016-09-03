@@ -12,7 +12,6 @@ using namespace ln;
 #include "../include/LNTypedef.h"
 #include "../include/LNCommon.h"
 #include "LNManager.h"
-#include "LNWrapperImplement.h"
 
 //------------------------------------------------------------------------------
 
@@ -102,7 +101,7 @@ const T* cp_cast(const U* p) { return reinterpret_cast<const T*>(p); }
 #define TO_CORE_STRUCT_CP(t, p)	reinterpret_cast<const t*>(p)
 
 #define TO_REFOBJ(type, h)		static_cast<type*>((h != NULL) ? LFManager::GetObjectEntry(h)->Object : NULL)
-#define TO_HANDLE_ADDREF(ptr)	LFManager::CheckRegisterObject(ptr);
+#define TO_HANDLE_ADDREF(ptr)	LFManager::CheckRegisterObject(ptr)
 
 #define TO_SAFE_VARIANT(p)		(p != NULL) ? (*reinterpret_cast<Variant*>(p)) : Variant()
 
@@ -217,3 +216,5 @@ LN_API void LArchiveMaker_Close();
 
 } // extern "C"
 
+
+#include "LNWrapperImplement.h"
