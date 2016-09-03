@@ -1220,22 +1220,6 @@ namespace Lumino
             
         }
 
-        private static Result Callback_OnRender(IntPtr handle)
-        {
-            var this_ = InternalManager.GetWrapperObject<SceneNode>(handle);
-            this_.OnRender();
-            return Result.OK;
-        }
-  
-        protected virtual void OnRender()
-        {
-            Console.WriteLine("OnRender");
-        }
-
-        private void InitializeCallbacks()
-        {
-
-        }
     
         internal SceneNode(_LNInternal i) : base(i) {}
         
@@ -1307,14 +1291,43 @@ namespace Lumino
         /// <param name="texture">2Dスプライトが表示するテクスチャのハンドル</param>
         public  Sprite2D( Texture texture) : base(_LNInternal.InternalBlock)
         {
+
             IntPtr outSprite2D;
             var result = API.LNSprite2D_CreateFromTexture( (texture != null) ? texture.Handle : default(IntPtr), out outSprite2D);
             if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             InternalManager.RegisterWrapperObject(this, outSprite2D);
-        
+
+            InitializeCallbacks();
         }
-        
-    
+
+
+
+        [DllImport(API.DLLName, CharSet = API.DLLCharSet, CallingConvention = API.DefaultCallingConvention)]
+        public extern static Result LNSceneNode_OverrideOnRender(IntPtr handle, LNCallback_Handle callback);
+
+        [DllImport(API.DLLName, CharSet = API.DLLCharSet, CallingConvention = API.DefaultCallingConvention)]
+        public extern static Result LNSceneNode_OnRender(IntPtr handle);
+
+        private static Result Callback_OnRender(IntPtr handle)
+        {
+            var this_ = InternalManager.GetWrapperObject<Sprite2D>(handle);
+            this_.OnRender();
+            return Result.OK;
+        }
+
+        protected virtual void OnRender()
+        {
+            Console.WriteLine("OnRender");
+            //LNSceneNode_OnRender
+        }
+
+
+        private void InitializeCallbacks()
+        {
+            LNSceneNode_OverrideOnRender(Handle, Callback_OnRender);
+        }
+
+
     };
     
     /// <summary>

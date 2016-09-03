@@ -142,6 +142,7 @@ private:
 class CameraViewportLayer
 	: public ViewportLayer
 {
+	//LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	static CameraViewportLayer* GetDefault2D();
 	static CameraViewportLayer* GetDefault3D();

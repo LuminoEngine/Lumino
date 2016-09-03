@@ -181,6 +181,22 @@ namespace Test
             AssertEq(l1, list1[0]);
         }
 
+        //--------------------------------------------------------------
+        // メソッドのオーバーライド
+        class MySprite2D : Sprite2D
+        {
+            protected override void OnRender()
+            {
+                Console.WriteLine("OnRender");
+            }
+        }
+        static void Test_MethodOverride()
+        {
+            var tex1 = new Texture2D(32, 32);
+            var spr2 = new Sprite2D(tex1);
+            Engine.UpdateFrame();
+        }
+
         static void Main(string[] args)
         {
             Engine.Initialize();
@@ -192,6 +208,7 @@ namespace Test
             Test_Dispose();
             Test_ObjectList();
             Test_DefaultObjectList();
+            Test_MethodOverride();
             Engine.Terminate();
             Console.WriteLine("Test succeeded.");
         }

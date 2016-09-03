@@ -18,7 +18,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // UIViewportLayer
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIViewportLayer, ViewportLayer);
+//LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIViewportLayer, ViewportLayer);
 
 //------------------------------------------------------------------------------
 UIViewportLayer::UIViewportLayer(UILayoutView* view)

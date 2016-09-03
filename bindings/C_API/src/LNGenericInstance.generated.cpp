@@ -93,4 +93,12 @@ LN_API LNResult LNSceneNodeList_RemoveAt(LN_HANDLE(LNSceneNodeList) listObject, 
     return LNObjectList_RemoveAt(listObject, index);
 }
 
+
+
+LN_API LNResult LNSceneNode_OverrideOnRender(LN_HANDLE(LNSceneNode) sceneNode, LNCallback_Handle callback)
+{
+	TO_REFOBJ(LNWISprite2D, sceneNode)->m_override_OnRender = callback;
+	return LN_OK;
+}
+
 } // extern "C"

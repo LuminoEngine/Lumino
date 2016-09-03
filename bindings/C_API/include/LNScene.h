@@ -71,7 +71,7 @@ LN_CLASS(LNSceneNode, LNObject)
 		@brief		test
 		@param[in]	sceneNode	: ノードハンドル
 	*/
-	LN_INSTANCE_API
+	LN_PROTECTED_VIRTUAL_API
 	LNResult LNSceneNode_OnRender(LN_HANDLE(LNSceneNode) sceneNode);
 
 LN_CLASS_END

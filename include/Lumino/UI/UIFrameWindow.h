@@ -13,7 +13,7 @@ class PlatformWindow;
 class UIViewportLayer
 	: public ViewportLayer
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	//LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	static const int DefaultZIndex = 100;
 

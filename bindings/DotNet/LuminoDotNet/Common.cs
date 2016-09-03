@@ -6,6 +6,12 @@ using System.Text;
 
 namespace Lumino
 {
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate Result LNCallback_Handle(IntPtr handle);
+
+
+
+
     /// <summary>
     /// ライブラリ内部で発生した例外
     /// </summary>

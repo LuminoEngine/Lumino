@@ -38,7 +38,6 @@ class CppPackageRule : ModuleRule
         Logger.WriteLine("copy include files...");
         Utils.CopyDirectory(Path.Combine(builder.LuminoRootDir, "include"), Path.Combine(releaseDir, "include"), true);
         Utils.CopyDirectory(Path.Combine(builder.LuminoRootDir, "external/Lumino.Core/include"), Path.Combine(releaseDir, "include"), true);
-        Utils.CopyDirectory(Path.Combine(builder.LuminoRootDir, "external/Lumino.Math/include"), Path.Combine(releaseDir, "include"), true);
 
         // .lib
         Logger.WriteLine("copy lib files...");

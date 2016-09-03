@@ -40,4 +40,10 @@ LN_API LNResult LNSceneNodeList_Remove(LN_HANDLE(LNSceneNodeList) listObject, LN
 
 LN_API LNResult LNSceneNodeList_RemoveAt(LN_HANDLE(LNSceneNodeList) listObject, int index);
 
+
+
+
+typedef LNResult(*LNCallback_Handle)(LNHandle handle);
+LN_API LNResult LNSceneNode_OverrideOnRender(LN_HANDLE(LNSceneNode) sceneNode, LNCallback_Handle callback);
+
 } // extern "C"

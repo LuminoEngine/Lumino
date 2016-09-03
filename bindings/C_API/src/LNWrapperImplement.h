@@ -21,11 +21,14 @@ class LNWISprite : public ln::Sprite
 };
 
 
-typedef LNResult(*LNCallback_Handle)(LNHandle handle);
 
+typedef LNResult(*LNCallback_Handle)(LNHandle handle);
 class LNWISprite2D : public ln::Sprite2D
 {
+public:
+
 	LNCallback_Handle	m_override_OnRender = nullptr;
+
 	virtual void OnRender(SceneGraphRenderingContext* dc) override
 	{
 		if (m_override_OnRender)

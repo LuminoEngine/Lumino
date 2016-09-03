@@ -206,6 +206,8 @@ void Camera::OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph* oldOwner
 //==============================================================================
 // CameraViewportLayer
 //==============================================================================
+//LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(CameraViewportLayer, ViewportLayer);
+
 //------------------------------------------------------------------------------
 CameraViewportLayer* CameraViewportLayer::GetDefault2D()
 {

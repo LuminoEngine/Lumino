@@ -50,8 +50,8 @@ class LuminoEngineRule : ModuleRule
         {
             var targets = new []
             {
-                new { DirName = "build_msvc120x86_MT", VSTarget = "Visual Studio 12", Unicode = "OFF", Platform="Win32" },
-                new { DirName = "build_msvc120x86u_MT", VSTarget = "Visual Studio 12", Unicode = "ON", Platform="Win32" },
+                //new { DirName = "build_msvc120x86_MT", VSTarget = "Visual Studio 12", Unicode = "OFF", Platform="Win32" },
+                //new { DirName = "build_msvc120x86u_MT", VSTarget = "Visual Studio 12", Unicode = "ON", Platform="Win32" },
                 //new { DirName = "build_msvc120x64_MT", VSTarget = "Visual Studio 12 Win64", Unicode = "OFF" },
                 //new { DirName = "build_msvc120x64u_MT", VSTarget = "Visual Studio 12 Win64", Unicode = "ON" },
                 new { DirName = "build_msvc140x86_MT", VSTarget = "Visual Studio 14", Unicode = "OFF", Platform="Win32" },
