@@ -289,7 +289,7 @@ int main()
 		{
 			EngineSettings appData;
 			EngineSettings::SetGraphicsAPI(GraphicsAPI::DirectX9);
-			EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Immediate);
+			EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Threaded);
 			EngineSettings::SetDirectMusicMode(DirectMusicMode::Normal);
 			//EngineSettings::SetMainWindowSize(160, 120);
 			//EngineSettings::SetMainBackBufferSize(160, 120);
@@ -305,7 +305,7 @@ int main()
 
 #if 1
 			auto itemCanvas1 = UICanvas::Create();
-			itemCanvas1->SetBackground(ColorBrush::DimGray);
+			//itemCanvas1->SetBackground(ColorBrush::DimGray);
 			itemCanvas1->SetSize(SizeF(NAN, 32));
 			itemCanvas1->SetHorizontalAlignment(HorizontalAlignment::Stretch);
 
@@ -342,7 +342,14 @@ int main()
 			//button2->SetBackground(ColorBrush::Blue);
 			//canvas1->AddChild(button2);
 
-			//Viewport::GetMainWindowViewport()->SetBackgroundColor(Color::Gray);
+			Viewport::GetMainWindowViewport()->SetBackgroundColor(Color::Gray);
+
+			//auto box1 = StaticMesh::CreateBox(Vector3(2, 2, 2));
+			//auto shader1 = MMEShader::Create(_T("D:/Proj/Lumino/src/Scene/Resource/BasicForwardRendering - コピー.fx"));
+			//box1->SetShader(shader1);
+
+			//auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
+			//Camera::GetMain3DCamera()->SetCameraBehavior(cb);
 
 			while (Engine::UpdateFrame())
 			{

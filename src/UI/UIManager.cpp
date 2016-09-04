@@ -99,14 +99,22 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 	{
 		auto test = UIStyle::Create();
 		test->AddValue(_T(""), UITextBlock::FontSizeProperty, 20);
+		test->AddValue(_T(""), UITextBlock::ForegroundProperty, ColorBrush::Black);
 		table->AddStyle(tr::TypeInfo::GetTypeInfo<UITextBlock>(), test);
 	}
-//	{
-//		auto test = UIStyle::Create();
-//		test->AddValue(_T(""), UIElement::BackgroundProperty, ColorBrush::Blue);
-////		test->m_background = ColorBrush::Blue;
-//		table->AddStyle(tr::TypeInfo::GetTypeInfo<UIButton>(), test);
-//	}
+	// UIButton
+	{
+		auto brush = RefPtr<TextureBrush>::MakeRef();
+		brush->Create(m_defaultSkinTexture);
+		brush->SetSourceRect(0, 0, 32, 32);
+		brush->SetBorderThickness(8, 8, 8, 8);
+		brush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
+		brush->SetWrapMode(BrushWrapMode::Stretch);
+
+		auto test = UIStyle::Create();
+		test->AddValue(_T(""), UIElement::BackgroundProperty, brush);
+		table->AddStyle(tr::TypeInfo::GetTypeInfo<UIButton>(), test);
+	}
 	{
 		auto brush = RefPtr<TextureBrush>::MakeRef();
 		brush->Create(m_defaultSkinTexture);
