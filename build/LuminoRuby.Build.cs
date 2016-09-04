@@ -51,9 +51,10 @@ class LuminoRubyRule : ModuleRule
         // フルパスにしないと PATH を切れない
         var rubyBin = Path.GetFullPath(_devKitDir + "bin");
         var mingwBin = Path.GetFullPath(_devKitDir + "mingw/bin");
+        var mingwLib = Path.GetFullPath(_devKitDir + "mingw/lib");
 
-		var oldEnv = Environment.GetEnvironmentVariable("PATH");
-        Environment.SetEnvironmentVariable("PATH", rubyBin + ";" + mingwBin + ";" + oldEnv);
+        var oldEnv = Environment.GetEnvironmentVariable("PATH");
+        Environment.SetEnvironmentVariable("PATH", rubyBin + ";" + mingwBin + ";" + mingwLib + ";" + oldEnv);
 
         // build フォルダへ必要なファイルをコピーする
         Directory.CreateDirectory(rubyBuildDir);

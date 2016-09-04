@@ -165,6 +165,17 @@ def test_default_object_list
   assert_eq(l1, l2)
 end
 
+#---------------------------------------------------------------
+# オーバーライド
+class MySprite < Sprite2D
+  def on_render
+    p "dd onrender"
+  end
+end
+def test_method_override
+  spr1 = MySprite.new
+  Engine.update_frame
+end
 
 Engine.initialize
 
@@ -189,6 +200,9 @@ test_object_list
 
 p "test_default_object_list"
 test_default_object_list
+
+p "test_method_override"
+test_method_override
 
 # TODO: GC のテストするなら
 #GC.stress = true	# http://www.slideshare.net/tarui/ss-23517958

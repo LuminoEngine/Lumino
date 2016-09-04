@@ -127,10 +127,25 @@ struct wrapSprite
 struct wrapSprite2D
     : public wrapSprite
 {
+	static ID	Callback_OnRenderId;
+	static LNResult Callback_OnRender(LNHandle handle)
+    {
+        VALUE this_ = Manager::GetWrapperObjectFromHandle(handle);
+        rb_funcall(this_, Callback_OnRenderId, 0);
+        return LN_OK;
+    }
 
     wrapSprite2D()
-    {}
+    {
+    	Callback_OnRenderId = rb_intern("on_render");
+    }
+	
+	void InitCallbacks()
+	{
+		LNSceneNode_OverrideOnRender(Handle, Callback_OnRender);
+	}
 };
+ID	wrapSprite2D::Callback_OnRenderId = 0;
 
 
 struct wrapUIFrameWindow
@@ -1850,6 +1865,7 @@ static VALUE lnrbLNSprite2D_Create(int argc, VALUE *argv, VALUE self)
         if (true) {
             LNResult errorCode = LNSprite2D_Create(&selfObj->Handle);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
+        	selfObj->InitCallbacks();
             Manager::RegisterWrapperObject(self);
             return Qnil;
         }
@@ -1868,6 +1884,17 @@ static VALUE lnrbLNSprite2D_Create(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "Lumino::Sprite2D.sprite_2d - wrong argument type.");
     return Qnil;
 }
+
+
+
+static VALUE lnrbLNSprite2D_OnRender(int argc, VALUE *argv, VALUE self)
+{
+	printf("lnrbLNSprite2D_OnRender\n");
+    return Qnil;
+}
+
+
+
 
 static void LNUIFrameWindow_delete(wrapUIFrameWindow* obj)
 {
@@ -2163,6 +2190,7 @@ void InitClasses()
     g_class_Sprite2D = rb_define_class_under(g_luminoModule, "Sprite2D", g_class_Sprite);
     rb_define_alloc_func(g_class_Sprite2D, LNSprite2D_allocate);
     rb_define_private_method(g_class_Sprite2D, "initialize", LN_TO_RUBY_FUNC(lnrbLNSprite2D_Create), -1);
+    rb_define_method(g_class_Sprite, "on_render", LN_TO_RUBY_FUNC(lnrbLNSprite2D_OnRender), -1);
 
     g_class_UIFrameWindow = rb_define_class_under(g_luminoModule, "UIFrameWindow", g_class_RefObject);
     rb_define_alloc_func(g_class_UIFrameWindow, LNUIFrameWindow_allocate);

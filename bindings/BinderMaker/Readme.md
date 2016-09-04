@@ -100,3 +100,10 @@ C#
 LNList_GetCount() は、自動生成される LNSceneNodeList_GetCount() が呼び出す。
 Wrapper クラスは、LNList_GetCount() ではなく LNSceneNodeList_GetCount() を呼び出す。
 
+
+
+オーバーライド
+--------------------
+
+
+
