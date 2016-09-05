@@ -1,7 +1,7 @@
 ﻿
 #include "../Internal.h"
-#include <Lumino/Graphics/SpriteRenderer.h>
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
+#include "../Graphics/SpriteRenderer.h"
 #include "SceneGraphManager.h"
 
 LN_NAMESPACE_BEGIN

@@ -201,8 +201,9 @@ Selene ではスプライトひとつ毎に drawPrimitive 読んでたけど…�
 #include "Internal.h"
 #include <math.h>
 #include <Lumino/Graphics/GraphicsException.h>
-#include <Lumino/Graphics/SpriteRenderer.h>
-#include "SpriteRendererImpl.h"
+#include "SpriteRenderer.h"
+#include "RenderingCommand.h"
+#include "GraphicsManager.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -223,7 +224,8 @@ SpriteRenderer::SpriteRenderer(GraphicsManager* manager, int maxSpriteCount)
 	, m_internal(nullptr)
 	, m_spriteSortMode(SpriteSortMode::Texture | SpriteSortMode::DepthBackToFront)
 {
-	m_internal = LN_NEW SpriteRendererImpl(manager, maxSpriteCount);
+	m_internal = LN_NEW SpriteRendererImpl();
+	m_internal->Initialize(manager, maxSpriteCount);
 }
 
 //------------------------------------------------------------------------------
@@ -247,13 +249,26 @@ void SpriteRenderer::SetTransform(const Matrix& matrix)
 //------------------------------------------------------------------------------
 void SpriteRenderer::SetViewProjMatrix(const Matrix& view, const Matrix& proj)
 {
-	LN_CALL_COMMAND(SetViewProjMatrix, SpriteRendererImpl::SetViewProjMatrixCommand, view, proj);
+	LN_ENQUEUE_RENDER_COMMAND_3(
+		SpriteRenderer_SetTransform, m_manager,
+		SpriteRendererImpl*, m_internal,
+		Matrix, view,
+		Matrix, proj,
+		{
+			m_internal->SetViewProjMatrix(view, proj);
+		});
 }
 
 //------------------------------------------------------------------------------
 void SpriteRenderer::SetViewPixelSize(const SizeI& size)
 {
-	LN_CALL_COMMAND(SetViewPixelSize, SpriteRendererImpl::SetViewPixelSizeCommand, size);
+	LN_ENQUEUE_RENDER_COMMAND_2(
+		SpriteRenderer_SetTransform, m_manager,
+		SpriteRendererImpl*, m_internal,
+		SizeI, size,
+		{
+			m_internal->SetViewPixelSize(size);
+		});
 }
 
 //------------------------------------------------------------------------------
@@ -271,13 +286,28 @@ void SpriteRenderer::DrawRequest2D(
 	const RectF& srcRect,
 	const Color* colorTable)
 {
-	const Color defaultColor[] = { Color::White, Color::White, Color::White, Color::White };
-	if (colorTable == NULL) {
-		colorTable = defaultColor;
+	SpriteColorTable ct = { {Color::White, Color::White, Color::White, Color::White} };
+	if (colorTable != nullptr)
+	{
+		ct.colors[0] = colorTable[0];
+		ct.colors[1] = colorTable[1];
+		ct.colors[2] = colorTable[2];
+		ct.colors[3] = colorTable[3];
 	}
-	LN_CALL_COMMAND(
-		DrawRequest2D, SpriteRendererImpl::DrawRequest2DCommand,
-		position, center, size, (texture != NULL) ? texture->GetDeviceObject() : NULL, srcRect, colorTable);
+
+	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->GetDeviceObject() : nullptr;
+	LN_ENQUEUE_RENDER_COMMAND_7(
+		SpriteRenderer_SetTransform, m_manager,
+		SpriteRendererImpl*, m_internal,
+		const Vector3, position,
+		const Vector3, center,
+		const Vector2, size,
+		RefPtr<Driver::ITexture>, deviceTexture,
+		const RectF, srcRect,
+		SpriteColorTable, ct,
+		{
+			m_internal->DrawRequest2D(position, center, size, deviceTexture, srcRect, ct);
+		});
 }
 
 //------------------------------------------------------------------------------
@@ -289,10 +319,20 @@ void SpriteRenderer::DrawRequest2D(
 	const RectF& srcRect,
 	const Color& color)
 {
-	const Color colorTable[] = { color, color, color, color };
-	LN_CALL_COMMAND(
-		DrawRequest2D, SpriteRendererImpl::DrawRequest2DCommand,
-		position, center, size, (texture != NULL) ? texture->GetDeviceObject() : NULL, srcRect, colorTable);
+	SpriteColorTable ct = { { color, color, color, color } };
+	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->GetDeviceObject() : nullptr;
+	LN_ENQUEUE_RENDER_COMMAND_7(
+		SpriteRenderer_SetTransform, m_manager,
+		SpriteRendererImpl*, m_internal,
+		const Vector3, position,
+		const Vector3, center,
+		const Vector2, size,
+		RefPtr<Driver::ITexture>, deviceTexture,
+		const RectF, srcRect,
+		SpriteColorTable, ct,
+		{
+			m_internal->DrawRequest2D(position, center, size, deviceTexture, srcRect, ct);
+		});
 }
 
 //------------------------------------------------------------------------------
@@ -305,13 +345,29 @@ void SpriteRenderer::DrawRequest3D(
 	const Color* colorTable,
 	AxisDirection front)
 {
-	const Color defaultColor[] = { Color::White, Color::White, Color::White, Color::White };
-	if (colorTable == NULL) {
-		colorTable = defaultColor;
+	SpriteColorTable ct = { { Color::White, Color::White, Color::White, Color::White } };
+	if (colorTable != nullptr)
+	{
+		ct.colors[0] = colorTable[0];
+		ct.colors[1] = colorTable[1];
+		ct.colors[2] = colorTable[2];
+		ct.colors[3] = colorTable[3];
 	}
-	LN_CALL_COMMAND(
-		DrawRequest3D, SpriteRendererImpl::DrawRequest3DCommand,
-		position, center, size, texture->GetDeviceObject(), srcRect, colorTable, front);
+
+	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->GetDeviceObject() : nullptr;
+	LN_ENQUEUE_RENDER_COMMAND_8(
+		SpriteRenderer_SetTransform, m_manager,
+		SpriteRendererImpl*, m_internal,
+		const Vector3, position,
+		const Vector3, center,
+		const Vector2, size,
+		RefPtr<Driver::ITexture>, deviceTexture,
+		const RectF, srcRect,
+		SpriteColorTable, ct,
+		AxisDirection, front,
+		{
+			m_internal->DrawRequest3D(position, center, size, deviceTexture, srcRect, ct, front);
+		});
 }
 
 //------------------------------------------------------------------------------
@@ -324,8 +380,21 @@ void SpriteRenderer::DrawRequest3D(
 	const Color& color,
 	AxisDirection front)
 {
-	Color colors[] = { color, color, color, color };
-	DrawRequest3D(position, center, size, texture, srcRect, colors, front);
+	SpriteColorTable ct = { { color, color, color, color } };
+	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->GetDeviceObject() : nullptr;
+	LN_ENQUEUE_RENDER_COMMAND_8(
+		SpriteRenderer_SetTransform, m_manager,
+		SpriteRendererImpl*, m_internal,
+		const Vector3, position,
+		const Vector3, center,
+		const Vector2, size,
+		RefPtr<Driver::ITexture>, deviceTexture,
+		const RectF, srcRect,
+		SpriteColorTable, ct,
+		AxisDirection, front,
+		{
+			m_internal->DrawRequest3D(position, center, size, deviceTexture, srcRect, ct, front);
+		});
 }
 
 //------------------------------------------------------------------------------
@@ -352,10 +421,10 @@ static const byte_t g_SpriteRenderer_fx_Data[] =
 static const size_t g_SpriteRenderer_fx_Len = LN_ARRAY_SIZE_OF(g_SpriteRenderer_fx_Data);
 
 //------------------------------------------------------------------------------
-SpriteRendererImpl::SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCount)
+SpriteRendererImpl::SpriteRendererImpl()
 	: m_vertexBuffer()
 	, m_indexBuffer()
-	, m_maxSprites(maxSpriteCount)
+	, m_maxSprites(0)
 	, m_spriteRequestList()
 	, m_spriteRequestListUsedCount(0)
 	, m_spriteIndexList()
@@ -370,8 +439,7 @@ SpriteRendererImpl::SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCo
 	, m_viewPixelSize()
 	, m_sortingBasis(SortingDistanceBasis_RawZ)
 {
-	GraphicsResourceObject::Initialize(manager);
-	CreateInternal();
+	//CreateInternal();
 }
 
 //------------------------------------------------------------------------------
@@ -379,25 +447,28 @@ SpriteRendererImpl::~SpriteRendererImpl()
 {
 }
 
-//------------------------------------------------------------------------------
-void SpriteRendererImpl::OnChangeDevice(Driver::IGraphicsDevice* device)
-{
-	if (device == NULL)
-	{
-		m_vertexBuffer.SafeRelease();
-		m_indexBuffer.SafeRelease();
-		m_shader.Shader.SafeRelease();
-	}
-	else
-	{
-		CreateInternal();
-	}
-}
+////------------------------------------------------------------------------------
+//void SpriteRendererImpl::OnChangeDevice(Driver::IGraphicsDevice* device)
+//{
+//	if (device == NULL)
+//	{
+//		m_vertexBuffer.SafeRelease();
+//		m_indexBuffer.SafeRelease();
+//		m_shader.Shader.SafeRelease();
+//	}
+//	else
+//	{
+//		CreateInternal();
+//	}
+//}
 
 //------------------------------------------------------------------------------
-void SpriteRendererImpl::CreateInternal()
+void SpriteRendererImpl::Initialize(GraphicsManager* manager, int maxSpriteCount)
 {
-	auto* device = m_manager->GetGraphicsDevice();
+	LN_CHECK_ARG(manager != nullptr);
+	m_manager = manager;
+	m_maxSprites = maxSpriteCount;
+	auto* device = manager->GetGraphicsDevice();
 
 	//-----------------------------------------------------
 	// 頂点バッファとインデックスバッファ
@@ -533,7 +604,7 @@ void SpriteRendererImpl::DrawRequest2D(
 	const Vector2& size,
 	Driver::ITexture* texture,
 	const RectF& srcRect,
-	const Color* colorTable)
+	const SpriteColorTable& colorTable)
 {
 	DrawRequest3DInternal(
 		position,
@@ -553,7 +624,7 @@ void SpriteRendererImpl::DrawRequest3D(
 	const Vector2& size,
 	Driver::ITexture* texture,
 	const RectF& srcRect,
-	const Color* colorTable,
+	const SpriteColorTable& colorTable,
 	AxisDirection front)
 {
 	DrawRequest3DInternal(position, center, size, texture, srcRect, colorTable, front, true);
@@ -566,7 +637,7 @@ void SpriteRendererImpl::DrawRequest3DInternal(
     const Vector2& size,
 	Driver::ITexture* texture,
     const RectF& srcRect,
-	const Color* colorTable,
+	const SpriteColorTable& colorTable,
 	AxisDirection front,
 	bool is3D)
 {
@@ -691,20 +762,10 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 	sprite.Vertices[3].Position.TransformCoord(mat);
 
 	// 色
-	if (colorTable != NULL)
-	{
-		sprite.Vertices[0].Color = colorTable[0];
-		sprite.Vertices[1].Color = colorTable[1];
-		sprite.Vertices[2].Color = colorTable[2];
-		sprite.Vertices[3].Color = colorTable[3];
-	}
-	else
-	{
-		sprite.Vertices[0].Color = Color::White;
-		sprite.Vertices[1].Color = Color::White;
-		sprite.Vertices[2].Color = Color::White;
-		sprite.Vertices[3].Color = Color::White;
-	}
+	sprite.Vertices[0].Color = colorTable.colors[0];
+	sprite.Vertices[1].Color = colorTable.colors[1];
+	sprite.Vertices[2].Color = colorTable.colors[2];
+	sprite.Vertices[3].Color = colorTable.colors[3];
 
 	// テクスチャ
 	if (texture != NULL)

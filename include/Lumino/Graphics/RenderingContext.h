@@ -157,9 +157,6 @@ public:
 	void Blt(Texture* source, RenderTarget* dest, Shader* shader);
 
 
-	// DrawSprite
-
-
 LN_INTERNAL_ACCESS:
 	RenderingContext();
 	virtual ~RenderingContext();

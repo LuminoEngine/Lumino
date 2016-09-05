@@ -194,7 +194,6 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/RenderState.h
 	include/Lumino/Graphics/SamplerState.h
 	include/Lumino/Graphics/Shader.h
-	include/Lumino/Graphics/SpriteRenderer.h
 	include/Lumino/Graphics/SwapChain.h
 	include/Lumino/Graphics/Texture.h
 	include/Lumino/Graphics/Utils.h
@@ -252,7 +251,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/SamplerState.cpp
 	src/Graphics/Shader.cpp
 	src/Graphics/SpriteRenderer.cpp
-	src/Graphics/SpriteRendererImpl.h
+	src/Graphics/SpriteRenderer.h
 	src/Graphics/SwapChain.cpp
 	src/Graphics/Texture.cpp
 	src/Graphics/Utils.cpp

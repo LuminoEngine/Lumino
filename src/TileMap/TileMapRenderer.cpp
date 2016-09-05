@@ -4,7 +4,6 @@
 		仮想クラスとしておく。
 */
 #include "../Internal.h"
-#include <Lumino/Graphics/SpriteRenderer.h>
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/VertexDeclaration.h>
 #include <Lumino/Graphics/VertexBuffer.h>
@@ -14,6 +13,7 @@
 #include <Lumino/TileMap/TileMapRenderer.h>
 #include <Lumino/TileMap/TileMapModel.h>
 #include "../Graphics/Device/GraphicsDriverInterface.h"
+#include "../Graphics/SpriteRenderer.h"
 
 LN_NAMESPACE_BEGIN
 

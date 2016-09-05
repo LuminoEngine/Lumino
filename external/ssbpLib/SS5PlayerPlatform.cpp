@@ -6,7 +6,7 @@
 #include "../../src/Graphics/Internal.h"
 #include "../../include/Lumino/Graphics/Color.h"
 #include "../../include/Lumino/Graphics/Texture.h"
-#include "../../include/Lumino/Graphics/SpriteRenderer.h"
+#include "../../src/Graphics/SpriteRenderer.h"
 
 /**
 * 各プラットフォームに合わせて処理を作成してください
