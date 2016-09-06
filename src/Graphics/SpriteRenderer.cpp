@@ -249,14 +249,16 @@ void SpriteRenderer::SetTransform(const Matrix& matrix)
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderer::SetViewProjMatrix(const Matrix& view, const Matrix& proj)
+void SpriteRenderer::SetState(const RenderState& renderState, const Matrix& view, const Matrix& proj)
 {
-	LN_ENQUEUE_RENDER_COMMAND_3(
+	LN_ENQUEUE_RENDER_COMMAND_4(
 		SpriteRenderer_SetTransform, m_manager,
 		SpriteRendererImpl*, m_internal,
+		RenderState, renderState,
 		Matrix, view,
 		Matrix, proj,
 		{
+			m_internal->SetRenderState(renderState);
 			m_internal->SetViewProjMatrix(view, proj);
 		});
 }
@@ -576,22 +578,22 @@ void SpriteRendererImpl::SetViewPixelSize(const SizeI& size)
 }
 
 //------------------------------------------------------------------------------
-//void SpriteRendererImpl::SetRenderState(const RenderState& state)
-//{
-//	// 同じものがあればカレントに
-//	size_t count = m_renderStateList.GetCount();
-//	for (size_t i = 0; i < count; ++i)
-//	{
-//		if (state == m_renderStateList[i]) {
-//			m_currentRenderStateIndex = i;
-//			return;
-//		}
-//	}
-//
-//	// 見つからなかったら登録
-//	m_renderStateList.Add(state);
-//	m_currentRenderStateIndex = count;
-//}
+void SpriteRendererImpl::SetRenderState(const RenderState& state)
+{
+	// 同じものがあればカレントに
+	size_t count = m_renderStateList.GetCount();
+	for (size_t i = 0; i < count; ++i)
+	{
+		if (state == m_renderStateList[i]) {
+			m_currentRenderStateIndex = i;
+			return;
+		}
+	}
+
+	// 見つからなかったら登録
+	m_renderStateList.Add(state);
+	m_currentRenderStateIndex = count;
+}
 
 //------------------------------------------------------------------------------
 void SpriteRendererImpl::SetSortMode(uint32_t flags, SortingDistanceBasis basis)
@@ -770,10 +772,10 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 		float b = (sr.y + sr.height) * texSizeInv.y;
 		sprite.Vertices[0].TexUV.x = l;
 		sprite.Vertices[0].TexUV.y = t;
-		sprite.Vertices[1].TexUV.x = r;
-		sprite.Vertices[1].TexUV.y = t;
-		sprite.Vertices[2].TexUV.x = l;
-		sprite.Vertices[2].TexUV.y = b;
+		sprite.Vertices[1].TexUV.x = l;
+		sprite.Vertices[1].TexUV.y = b;
+		sprite.Vertices[2].TexUV.x = r;
+		sprite.Vertices[2].TexUV.y = t;
 		sprite.Vertices[3].TexUV.x = r;
 		sprite.Vertices[3].TexUV.y = b;
 
@@ -784,10 +786,10 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 	{
 		sprite.Vertices[0].TexUV.x = 0;
 		sprite.Vertices[0].TexUV.y = 0;
-		sprite.Vertices[1].TexUV.x = 1;
-		sprite.Vertices[1].TexUV.y = 0;
-		sprite.Vertices[2].TexUV.x = 0;
-		sprite.Vertices[2].TexUV.y = 1;
+		sprite.Vertices[1].TexUV.x = 0;
+		sprite.Vertices[1].TexUV.y = 1;
+		sprite.Vertices[2].TexUV.x = 1;
+		sprite.Vertices[2].TexUV.y = 0;
 		sprite.Vertices[3].TexUV.x = 1;
 		sprite.Vertices[3].TexUV.y = 1;
 		sprite.Texture = m_manager->GetDummyDeviceTexture();

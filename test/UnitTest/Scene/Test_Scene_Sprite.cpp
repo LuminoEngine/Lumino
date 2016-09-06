@@ -14,7 +14,7 @@ TEST_F(Test_Scene_Sprite, Basic)
 	auto sprite1 = Sprite2D::Create(tex);
 	sprite1->SetSize(SizeF(32, 32));
 	Engine::UpdateFrame();
-	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/IntegrateTest_Scene_Sprite.Basic.png"), 99, true));
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_Sprite.Basic.png")));
 }
 
 //------------------------------------------------------------------------------
@@ -46,7 +46,7 @@ TEST_F(Test_Scene_Sprite, BlendMode)
 	Viewport::GetMainWindowViewport()->SetBackgroundColor(Color32::Gray);
 
 	Engine::UpdateFrame();
-	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/IntegrateTest_Scene_Sprite.BlendMode.png")));
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_Sprite.BlendMode.png")));
 }
 
 //------------------------------------------------------------------------------

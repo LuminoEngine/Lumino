@@ -295,7 +295,23 @@ void Sprite2D::Initialize(SceneGraph* owner)
 //------------------------------------------------------------------------------
 void Sprite2D::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 {
-	dc->DrawSprite2D(m_combinedGlobalMatrix, m_size, GetTexture(), m_srcRect, Color::White);
+	const SizeI& texSize = GetTexture()->GetSize();
+
+	// 転送元矩形が負値ならテクスチャ全体を転送する
+	Rect srcRect = m_srcRect;// m_srcRect(0, 0, tex->GetSize().width, tex->GetSize().height);
+	if (srcRect.width < 0 && srcRect.height < 0)
+	{
+		srcRect.width = texSize.width;
+		srcRect.height = texSize.height;
+	}
+	SizeF spriteSize = m_size;
+	if (spriteSize.width < 0 && spriteSize.height < 0)
+	{
+		spriteSize.width = texSize.width;
+		spriteSize.height = texSize.height;
+	}
+
+	dc->DrawSprite2D(m_combinedGlobalMatrix, spriteSize, GetTexture(), srcRect, Color::White);
 	//Sprite::DrawSubset(dc, subsetIndex);
 	//if (subsetIndex == 0)
 	//{

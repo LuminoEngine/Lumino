@@ -33,7 +33,7 @@ public:
 	void SetViewPixelSize(const SizeI& size);
 
 	/// レンダリングスレートの設定
-	//void SetRenderState(const RenderState& state);
+	void SetRenderState(const RenderState& state);
 
 	/// ソート方法の設定
 	void SetSortMode(uint32_t flags, SortingDistanceBasis basis);
@@ -189,10 +189,7 @@ public:
 	*/
 	void SetTransform(const Matrix& matrix);
 
-	/**
-		@brief		ビュー及びプロジェクション行列を設定します。
-	*/
-	void SetViewProjMatrix(const Matrix& view, const Matrix& proj);
+	void SetState(const RenderState& renderState, const Matrix& view, const Matrix& proj);
 
 	/**
 		@brief		描画先のビューサイズを設定します。

@@ -60,7 +60,7 @@ void SceneGraphRenderingContext::OnStateFlush()
 
 	const SizeI& size = GetRenderTarget(0)->GetSize();
 	m_spriteRenderer->SetViewPixelSize(size);
-	m_spriteRenderer->SetViewProjMatrix(CurrentCamera->GetViewMatrix(), CurrentCamera->GetProjectionMatrix());
+	m_spriteRenderer->SetState(GetRenderState(), CurrentCamera->GetViewMatrix(), CurrentCamera->GetProjectionMatrix());
 }
 
 LN_NAMESPACE_SCENE_END
