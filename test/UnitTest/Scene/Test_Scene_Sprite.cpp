@@ -8,6 +8,16 @@ protected:
 };
 
 //------------------------------------------------------------------------------
+TEST_F(Test_Scene_Sprite, Basic)
+{
+	auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
+	auto sprite1 = Sprite2D::Create(tex);
+	sprite1->SetSize(SizeF(32, 32));
+	Engine::UpdateFrame();
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/IntegrateTest_Scene_Sprite.Basic.png"), 99, true));
+}
+
+//------------------------------------------------------------------------------
 TEST_F(Test_Scene_Sprite, BlendMode)
 {
 	auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));

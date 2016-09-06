@@ -16,9 +16,9 @@
 
 namespace ss
 {
-	ln::GraphicsManager*	g_graphicsManager = nullptr;
-	ln::SpriteRenderer*		g_spriteRenderer = nullptr;
-	std::set<ln::Texture2D*>	g_texPtrSet;
+	::ln::GraphicsManager*	g_graphicsManager = nullptr;
+	::ln::detail::SpriteRenderer*		g_spriteRenderer = nullptr;
+	std::set<::ln::Texture2D*>	g_texPtrSet;
 
 	/**
 	* ファイル読み込み

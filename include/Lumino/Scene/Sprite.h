@@ -66,7 +66,7 @@ protected:
 
 	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
 
-private:
+protected:
 	SpriteCoord	m_spriteCoord;
 	SizeF		m_size;
 	Rect		m_srcRect;
@@ -103,6 +103,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	Sprite2D();
 	virtual ~Sprite2D();
 	void Initialize(SceneGraph* owner);
+	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
 };
 
 /**

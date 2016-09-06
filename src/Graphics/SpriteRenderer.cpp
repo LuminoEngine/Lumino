@@ -207,6 +207,8 @@ Selene ではスプライトひとつ毎に drawPrimitive 読んでたけど…�
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
+namespace detail
+{
 
 //==============================================================================
 // SpriteRenderer
@@ -662,51 +664,39 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 		{
 		case AxisDirection_X:
 			sprite.Vertices[0].Position.Set(LN_WRITE_V3(0, t, l));     // 左上
-			sprite.Vertices[1].Position.Set(LN_WRITE_V3(0, t, r));     // 右上
-			sprite.Vertices[2].Position.Set(LN_WRITE_V3(0, b, l));     // 左下
+			sprite.Vertices[1].Position.Set(LN_WRITE_V3(0, b, l));     // 左下
+			sprite.Vertices[2].Position.Set(LN_WRITE_V3(0, t, r));     // 右上
 			sprite.Vertices[3].Position.Set(LN_WRITE_V3(0, b, r));     // 右下
 			break;
 		case AxisDirection_Y:
 			sprite.Vertices[0].Position.Set(LN_WRITE_V3(l, 0, t));
-			sprite.Vertices[1].Position.Set(LN_WRITE_V3(r, 0, t));
-			sprite.Vertices[2].Position.Set(LN_WRITE_V3(l, 0, b));
+			sprite.Vertices[1].Position.Set(LN_WRITE_V3(l, 0, b));
+			sprite.Vertices[2].Position.Set(LN_WRITE_V3(r, 0, t));
 			sprite.Vertices[3].Position.Set(LN_WRITE_V3(r, 0, b));
 			break;
 		case AxisDirection_Z:
-			/*
-			sprite.Vertices[ 0 ].Position.set( LN_WRITE_V3( r, t, 0 ) );
-			sprite.Vertices[ 1 ].Position.set( LN_WRITE_V3( l, t, 0 ) );
-			sprite.Vertices[ 2 ].Position.set( LN_WRITE_V3( r, b, 0 ) );
-			sprite.Vertices[ 3 ].Position.set( LN_WRITE_V3( l, b, 0 ) );
-			*/
 			sprite.Vertices[0].Position.Set(LN_WRITE_V3(r, t, 0));
-			sprite.Vertices[1].Position.Set(LN_WRITE_V3(l, t, 0));
-			sprite.Vertices[2].Position.Set(LN_WRITE_V3(r, b, 0));
+			sprite.Vertices[1].Position.Set(LN_WRITE_V3(r, b, 0));
+			sprite.Vertices[2].Position.Set(LN_WRITE_V3(l, t, 0));
 			sprite.Vertices[3].Position.Set(LN_WRITE_V3(l, b, 0));
 			break;
 		case AxisDirection_RX:
 			sprite.Vertices[0].Position.Set(LN_WRITE_V3(0, t, r));
-			sprite.Vertices[1].Position.Set(LN_WRITE_V3(0, t, l));
-			sprite.Vertices[2].Position.Set(LN_WRITE_V3(0, b, r));
+			sprite.Vertices[1].Position.Set(LN_WRITE_V3(0, b, r));
+			sprite.Vertices[2].Position.Set(LN_WRITE_V3(0, t, l));
 			sprite.Vertices[3].Position.Set(LN_WRITE_V3(0, b, l));
 			break;
 		case AxisDirection_RY:
 			sprite.Vertices[0].Position.Set(LN_WRITE_V3(r, 0, t));
-			sprite.Vertices[1].Position.Set(LN_WRITE_V3(l, 0, t));
-			sprite.Vertices[2].Position.Set(LN_WRITE_V3(r, 0, b));
+			sprite.Vertices[1].Position.Set(LN_WRITE_V3(r, 0, b));
+			sprite.Vertices[2].Position.Set(LN_WRITE_V3(l, 0, t));
 			sprite.Vertices[3].Position.Set(LN_WRITE_V3(l, 0, b));
 			break;
 		case AxisDirection_RZ:
 			sprite.Vertices[0].Position.Set(LN_WRITE_V3(l, t, 0));
-			sprite.Vertices[1].Position.Set(LN_WRITE_V3(r, t, 0));
-			sprite.Vertices[2].Position.Set(LN_WRITE_V3(l, b, 0));
+			sprite.Vertices[1].Position.Set(LN_WRITE_V3(l, b, 0));
+			sprite.Vertices[2].Position.Set(LN_WRITE_V3(r, t, 0));
 			sprite.Vertices[3].Position.Set(LN_WRITE_V3(r, b, 0));
-			/* 右手用
-			sprite.Vertices[ 0 ].Position.set( LN_WRITE_V3( l, t, 0 ) );
-			sprite.Vertices[ 1 ].Position.set( LN_WRITE_V3( l, b, 0 ) );
-			sprite.Vertices[ 2 ].Position.set( LN_WRITE_V3( r, t, 0 ) );
-			sprite.Vertices[ 3 ].Position.set( LN_WRITE_V3( r, b, 0 ) );
-			*/
 			break;
 		}
 #undef LN_WRITE_V3
@@ -716,8 +706,8 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 	{
 		Vector3 origin(-center);
 		sprite.Vertices[0].Position.Set(origin.x, origin.y, origin.z);
-		sprite.Vertices[1].Position.Set(origin.x + size.x, origin.y, origin.z);
-		sprite.Vertices[2].Position.Set(origin.x, origin.y + size.y, origin.z);
+		sprite.Vertices[1].Position.Set(origin.x, origin.y + size.y, origin.z);
+		sprite.Vertices[2].Position.Set(origin.x + size.x, origin.y, origin.z);
 		sprite.Vertices[3].Position.Set(origin.x + size.x, origin.y + size.y, origin.z);
 	}
 
@@ -768,7 +758,7 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 	sprite.Vertices[3].Color = colorTable.colors[3];
 
 	// テクスチャ
-	if (texture != NULL)
+	if (texture != nullptr)
 	{
 		// テクスチャ座標
 		const SizeI& texSize = texture->GetRealSize();
@@ -1095,5 +1085,6 @@ void SpriteRendererImpl::Clear()
 	m_spriteRequestListUsedCount = 0;
 }
 
+} // namespace detail
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

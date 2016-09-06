@@ -292,6 +292,20 @@ void Sprite2D::Initialize(SceneGraph* owner)
 	Sprite::Initialize(owner, SpriteCoord_2D);
 }
 
+//------------------------------------------------------------------------------
+void Sprite2D::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
+{
+	dc->DrawSprite2D(m_combinedGlobalMatrix, m_size, GetTexture(), m_srcRect, Color::White);
+	//Sprite::DrawSubset(dc, subsetIndex);
+	//if (subsetIndex == 0)
+	//{
+	//	dc->DrawSquarePrimitive(
+	//		Vector3(m_upperLeft.x, m_upperLeft.y, m_upperLeft.z), Vector2(m_upperLeftUV.x, m_upperLeftUV.y), Color::White,
+	//		Vector3(m_upperLeft.x, m_lowerRight.y, m_lowerRight.z), Vector2(m_upperLeftUV.x, m_lowerRightUV.y), Color::White,
+	//		Vector3(m_lowerRight.x, m_lowerRight.y, m_lowerRight.z), Vector2(m_lowerRightUV.x, m_lowerRightUV.y), Color::White,
+	//		Vector3(m_lowerRight.x, m_upperLeft.y, m_upperLeft.z), Vector2(m_lowerRightUV.x, m_upperLeftUV.y), Color::White);
+	//}
+}
 
 //==============================================================================
 // Sprite3D

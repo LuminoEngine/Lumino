@@ -4,7 +4,6 @@
 #include <ssbpLib/SS5Player.h>
 #include "SceneGraphManager.h"
 #include "RenderingPass.h"
-#include <Lumino/Graphics/SpriteRenderer.h>
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/SpriteModelObject.h>
