@@ -33,10 +33,10 @@ void SceneGraphRenderingContext::Initialize(SceneGraphManager* manager)
 //------------------------------------------------------------------------------
 void SceneGraphRenderingContext::SetCurrentCamera(Camera* camera)
 {
-	if (CurrentCamera != camera)
+	if (m_currentCamera != camera)
 	{
 		NorityStateChanging();
-		CurrentCamera = camera;
+		m_currentCamera = camera;
 	}
 }
 
@@ -60,7 +60,7 @@ void SceneGraphRenderingContext::OnStateFlush()
 
 	const SizeI& size = GetRenderTarget(0)->GetSize();
 	m_spriteRenderer->SetViewPixelSize(size);
-	m_spriteRenderer->SetState(GetRenderState(), CurrentCamera->GetViewMatrix(), CurrentCamera->GetProjectionMatrix());
+	m_spriteRenderer->SetState(GetRenderState(), m_currentCamera->GetViewMatrix(), m_currentCamera->GetProjectionMatrix());
 }
 
 LN_NAMESPACE_SCENE_END

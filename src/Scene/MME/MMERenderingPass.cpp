@@ -94,7 +94,7 @@ void MMERenderingPass::RenderSubset(SceneGraphRenderingContext* dc, VisualNode* 
 	visualNode->UpdateAffectLights(dc->renderingLightList, dc->Shader->GetRequiredLightCount());
 
 	// ノード単位データを更新する
-	priorityParams.Shader->UpdateNodeParams(visualNode, dc->CurrentCamera, *visualNode->GetAffectLightList());
+	priorityParams.Shader->UpdateNodeParams(visualNode, dc->GetCurrentCamera(), *visualNode->GetAffectLightList());
 	visualNode->UpdateNodeRenderingParams(priorityParams.Shader);
 
 	//const Material& material = visualNode->GetVisualNodeParams().GetCombinedSubsetParams(subset).Material;
@@ -240,9 +240,9 @@ void MMERenderingPass::SelectPriorityParams(SceneNode* node, int subsetIndex, Re
 //------------------------------------------------------------------------------
 void MMERenderingPass::PostRender(SceneGraphRenderingContext* dc)
 {
-	AdjustGridMesh(dc->CurrentCamera);
+	AdjustGridMesh(dc->GetCurrentCamera());
 
-	m_gridPlane->GetMaterial(0)->SetMatrixParameter(_T("WorldViewProjMatrix"), dc->CurrentCamera->GetViewProjectionMatrix());
+	m_gridPlane->GetMaterial(0)->SetMatrixParameter(_T("WorldViewProjMatrix"), dc->GetCurrentCamera()->GetViewProjectionMatrix());
 
 	dc->ResetStates();
 	dc->SetBlendMode(BlendMode::Alpha);

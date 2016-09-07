@@ -143,7 +143,7 @@ void SceneGraph::Render(RenderingContext* context, Camera* camera)
 	{
 		SceneGraphRenderingContext* dc = m_manager->GetRenderingContext();
 		dc->InheritStatus(context);	// context から、レンダーステートやレンダーターゲット、深度バッファを引き継ぐ
-		dc->CurrentCamera = camera;
+		dc->SetCurrentCamera(camera);
 		dc->renderingLightList = &m_renderingLightList;
 		dc->SetRenderTarget(0, renderTarget);
 		for (RenderingPass* pass : *GetRenderingPasses())

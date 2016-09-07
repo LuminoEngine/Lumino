@@ -25,7 +25,6 @@ public:
 
 LN_INTERNAL_ACCESS:
 	RenderingPass*				Pass;
-	Camera*						CurrentCamera;
 	LightNodeList*				renderingLightList;
 	MMEShader*					Shader;				// 本当に必要なシェーダ (VisualNode::Render() 以下で使用可能)
 
@@ -37,9 +36,11 @@ LN_INTERNAL_ACCESS:
 	virtual ~SceneGraphRenderingContext();
 	void Initialize(SceneGraphManager* manager);
 	void SetCurrentCamera(Camera* camera);
+	Camera* GetCurrentCamera() const { return m_currentCamera; }
 
 private:
 	RefPtr<detail::SpriteRenderer>	m_spriteRenderer;
+	Camera*							m_currentCamera;
 };
 
 LN_NAMESPACE_SCENE_END

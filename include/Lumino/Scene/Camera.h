@@ -106,8 +106,9 @@ LN_INTERNAL_ACCESS:
 
 	CameraViewportLayer*	m_ownerLayer;
 
-private:
 	CameraProjection	m_projectionMode;
+
+private:
 	CameraDirection		m_directionMode;
 	Vector3				m_lookAt;
 	Vector3				m_upDirection;

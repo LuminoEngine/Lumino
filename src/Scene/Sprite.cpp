@@ -307,8 +307,8 @@ void Sprite2D::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 	SizeF spriteSize = m_size;
 	if (spriteSize.width < 0 && spriteSize.height < 0)
 	{
-		spriteSize.width = texSize.width;
-		spriteSize.height = texSize.height;
+		spriteSize.width = srcRect.width;
+		spriteSize.height = srcRect.height;
 	}
 
 	dc->DrawSprite2D(m_combinedGlobalMatrix, spriteSize, GetTexture(), srcRect, Color::White);
