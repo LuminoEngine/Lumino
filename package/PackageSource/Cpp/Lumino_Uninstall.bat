@@ -6,7 +6,7 @@ setx LuminoInstallDir ""
 set MY_DOCUMENTS=%USERPROFILE%\Documents
 set VS_TEMPLATES_DIR=%MY_DOCUMENTS%\Visual Studio 2015\Templates\ProjectTemplates\
 
-del "%VS_TEMPLATES_DIR%LuminoProject.zip"
+del "%VS_TEMPLATES_DIR%LuminoProjectCpp.zip"
 
 echo ----------
 echo Lumino をアンインストールしました。

@@ -25,7 +25,6 @@ option(LN_EXCEPTION_BACKTRACE "In some unix environment there is a possibility t
 
 option(LN_BUILD_AUDIO_MODULE "Build 'Audio' module." ON)
 option(LN_BUILD_SCENE_MODULE "Build 'Scene' module." ON)
-option(LN_BUILD_FOUNDATION_MODULE "Build 'Foundation' module." ON)
 option(LN_BUILD_C_API "Build 'C API' module." ON)
 option(LN_USE_EXTERNAL_Effekseer "" ON)
 
@@ -541,7 +540,6 @@ set(LN_SOURCES_Engine
 	src/Version.cpp
 )
 
-if (LN_BUILD_FOUNDATION_MODULE)
 set(LN_SOURCES_Foundation
 	include/Lumino/Foundation/Application.h
 	include/Lumino/Foundation/GameScene.h
@@ -550,7 +548,6 @@ set(LN_SOURCES_Foundation
 	src/Foundation/EntryPoint.h
 	src/Foundation/GameSceneManager.cpp
 	src/Foundation/GameSceneManager.h)
-endif()
 
 #--------------------------------------
 # External linker source files.
@@ -627,11 +624,10 @@ if (WIN32)
 		src/Audio/DirectMusic/DirectMusicAudioPlayer.h
 	)
 
-	if (LN_BUILD_FOUNDATION_MODULE)
 	set(LN_SOURCES_Foundation
+		${LN_SOURCES_Foundation}
 		src/Foundation/Main_Win32.cpp
 	)
-	endif()
 
 
 elseif (APPLE)
@@ -652,12 +648,10 @@ elseif (APPLE)
 		src/Graphics/Device/OpenGL/NSGLGraphicsDevice.mm
 		src/Graphics/Device/OpenGL/NSGLGraphicsDevice.h
 	)	
-
-	if (LN_BUILD_FOUNDATION_MODULE)
 	set(LN_SOURCES_Foundation
+		${LN_SOURCES_Foundation}
 		src/Foundation/Main_Mac.cpp
 	)
-	endif()
 
 
 elseif (UNIX)
