@@ -50,6 +50,26 @@ TEST_F(Test_Scene_Sprite, BlendMode)
 }
 
 //------------------------------------------------------------------------------
+TEST_F(Test_Scene_Sprite, DrawCallCount)
+{
+	// <Test> 
+	{
+		// 1度書いて、初期状態のときの描画数を覚えておく
+		Engine::UpdateFrame();
+		int defaultCount = EngineDiag::GetGraphicsDeviceDrawCount();
+
+		auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
+		auto sprite1 = Sprite2D::Create(tex);
+		auto sprite2 = Sprite2D::Create(tex);
+		auto sprite3 = Sprite2D::Create(tex);
+
+		Engine::UpdateFrame();
+		int defaultCount3 = EngineDiag::GetGraphicsDeviceDrawCount();
+		ASSERT_EQ(defaultCount + 1, EngineDiag::GetGraphicsDeviceDrawCount());
+	}
+}
+
+//------------------------------------------------------------------------------
 TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 {
 	// <Issues> デフォルトのサンプラステートの繰り返しモードは Repert になる。

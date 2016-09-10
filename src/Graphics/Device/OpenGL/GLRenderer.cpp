@@ -152,136 +152,6 @@ void GLRenderer::SetViewport(const Rect& rect)
 }
 
 //------------------------------------------------------------------------------
-//const Rect& GLRenderer::GetViewport()
-//{
-//	return m_currentViewportRect;
-//}
-
-//------------------------------------------------------------------------------
-void GLRenderer::Clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
-{
-	IRenderer::FlushStates();
-
-	// フレームバッファを最新にする
-	UpdateFrameBuffer();
-
-	glDepthMask(GL_TRUE);	LN_CHECK_GLERROR();   // これがないと Depth が正常にクリアされない
-
-	glClearColor(color.r, color.g, color.b, color.a); LN_CHECK_GLERROR();
-	glClearDepth(z); LN_CHECK_GLERROR();
-	glClearStencil(0); LN_CHECK_GLERROR();
-    
-    /*
-    GLenum fs = glCheckFramebufferStatus( GL_FRAMEBUFFER );
-    if (fs == GL_FRAMEBUFFER_COMPLETE)
-    {
-        printf("GL_FRAMEBUFFER_COMPLETE\n");
-    }
-    if (fs == GL_FRAMEBUFFER_UNSUPPORTED)
-    {
-        printf("GL_FRAMEBUFFER_UNSUPPORTED\n");
-    }
-    if (fs == GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
-    {
-        printf("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT\n");
-    }
-     */
-
-    // TODO: フレームバッファのサイズが０だと失敗する
-	glClear(
-		((flags.TestFlag(ClearFlags::Color)) ? GL_COLOR_BUFFER_BIT : 0) |
-		((flags.TestFlag(ClearFlags::Depth)) ? GL_DEPTH_BUFFER_BIT : 0) |
-		((flags.TestFlag(ClearFlags::Stencil)) ? GL_STENCIL_BUFFER_BIT : 0));
-	LN_CHECK_GLERROR();
-}
-
-//------------------------------------------------------------------------------
-void GLRenderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
-{
-	IRenderer::FlushStates();
-
-	if (m_currentVertexBuffer == NULL) {
-		LN_THROW(0, InvalidOperationException);
-		return;
-	}
-
-	// 描画に必要な情報を最新にする
-	//UpdateRenderState(m_requestedRenderState, m_justSawReset);
-	//UpdateDepthStencilState(m_requestedDepthStencilState, m_justSawReset);
-	UpdateFrameBuffer();
-	UpdateVAO();
-	UpdateVertexAttribPointer();
-	m_justSawReset = false;
-
-
-	// TODO:仮位置
-	//glCullFace(GL_FRONT_AND_BACK); LN_CHECK_GLERROR();
-	//glFrontFace(GL_CCW); LN_CHECK_GLERROR();
-	//glEnable(GL_CULL_FACE); LN_CHECK_GLERROR();
-	//glFrontFace(GL_CCW);//時計回りが表
-	//glEnable(GL_CULL_FACE);//カリングON 
-	//glDisable(GL_CULL_FACE);
-
-	// プリミティブと必要な頂点数の取得
-	GLenum gl_prim;
-	int vertexCount;
-	GetPrimitiveInfo(primitive, primitiveCount, &gl_prim, &vertexCount);
-
-	// 描画
-	glDrawArrays(gl_prim, startVertex, vertexCount);
-	LN_CHECK_GLERROR();
-
-	// 後始末 (解除)
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-//------------------------------------------------------------------------------
-void GLRenderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
-{
-	IRenderer::FlushStates();
-
-	if (m_currentVertexBuffer == NULL ||
-		m_currentIndexBuffer == NULL ||
-		m_currentShaderPass == NULL) {
-		LN_THROW(0, InvalidOperationException);
-		return;
-	}
-
-	// 描画に必要な情報を最新にする
-	//UpdateRenderState(m_requestedRenderState, m_justSawReset);
-	//UpdateDepthStencilState(m_requestedDepthStencilState, m_justSawReset);
-	UpdateFrameBuffer();
-	UpdateVAO();
-	UpdateVertexAttribPointer();
-	m_justSawReset = false;
-
-	// プリミティブと必要な頂点数の取得
-	GLenum gl_prim;
-	int vertexCount;
-	GetPrimitiveInfo(primitive, primitiveCount, &gl_prim, &vertexCount);
-
-	// 引数 start end には、本来であれば0～vertexCountまでのインデックスの中の最大、最小の値を渡す。
-	// http://wiki.livedoor.jp/mikk_ni3_92/d/glDrawRangeElements%A4%CB%A4%E8%A4%EB%C9%C1%B2%E8
-	// ただ、全範囲を渡しても特に問題なさそうなのでこのまま。
-	if (m_currentIndexBuffer->GetFormat() == IndexBufferFormat_UInt16)
-	{
-		glDrawElements(gl_prim, vertexCount, GL_UNSIGNED_SHORT, (GLvoid*)(sizeof(GLushort) * startIndex));
-	}
-	else
-	{
-		glDrawElements(gl_prim, vertexCount, GL_UNSIGNED_INT, (GLvoid*)(sizeof(GLuint) * startIndex));
-	}
-
-	// 後始末 (解除)
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-//------------------------------------------------------------------------------
 void GLRenderer::OnUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset)
 {
 	if (reset)
@@ -458,6 +328,124 @@ void GLRenderer::OnUpdatePrimitiveData(IVertexDeclaration* decls, const Array<Re
 {
 	LN_REFOBJ_SET(m_currentVertexBuffer, static_cast<GLVertexBuffer*>(vertexBuufers[0].Get()));
 	LN_REFOBJ_SET(m_currentIndexBuffer, static_cast<GLIndexBuffer*>(indexBuffer));
+}
+
+//------------------------------------------------------------------------------
+void GLRenderer::OnClear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
+{
+	// フレームバッファを最新にする
+	UpdateFrameBuffer();
+
+	glDepthMask(GL_TRUE);	LN_CHECK_GLERROR();   // これがないと Depth が正常にクリアされない
+
+	glClearColor(color.r, color.g, color.b, color.a); LN_CHECK_GLERROR();
+	glClearDepth(z); LN_CHECK_GLERROR();
+	glClearStencil(0); LN_CHECK_GLERROR();
+
+	/*
+	GLenum fs = glCheckFramebufferStatus( GL_FRAMEBUFFER );
+	if (fs == GL_FRAMEBUFFER_COMPLETE)
+	{
+	printf("GL_FRAMEBUFFER_COMPLETE\n");
+	}
+	if (fs == GL_FRAMEBUFFER_UNSUPPORTED)
+	{
+	printf("GL_FRAMEBUFFER_UNSUPPORTED\n");
+	}
+	if (fs == GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
+	{
+	printf("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT\n");
+	}
+	*/
+
+	// TODO: フレームバッファのサイズが０だと失敗する
+	glClear(
+		((flags.TestFlag(ClearFlags::Color)) ? GL_COLOR_BUFFER_BIT : 0) |
+		((flags.TestFlag(ClearFlags::Depth)) ? GL_DEPTH_BUFFER_BIT : 0) |
+		((flags.TestFlag(ClearFlags::Stencil)) ? GL_STENCIL_BUFFER_BIT : 0));
+	LN_CHECK_GLERROR();
+}
+
+//------------------------------------------------------------------------------
+void GLRenderer::OnDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
+{
+	if (m_currentVertexBuffer == NULL) {
+		LN_THROW(0, InvalidOperationException);
+		return;
+	}
+
+	// 描画に必要な情報を最新にする
+	//UpdateRenderState(m_requestedRenderState, m_justSawReset);
+	//UpdateDepthStencilState(m_requestedDepthStencilState, m_justSawReset);
+	UpdateFrameBuffer();
+	UpdateVAO();
+	UpdateVertexAttribPointer();
+	m_justSawReset = false;
+
+
+	// TODO:仮位置
+	//glCullFace(GL_FRONT_AND_BACK); LN_CHECK_GLERROR();
+	//glFrontFace(GL_CCW); LN_CHECK_GLERROR();
+	//glEnable(GL_CULL_FACE); LN_CHECK_GLERROR();
+	//glFrontFace(GL_CCW);//時計回りが表
+	//glEnable(GL_CULL_FACE);//カリングON 
+	//glDisable(GL_CULL_FACE);
+
+	// プリミティブと必要な頂点数の取得
+	GLenum gl_prim;
+	int vertexCount;
+	GetPrimitiveInfo(primitive, primitiveCount, &gl_prim, &vertexCount);
+
+	// 描画
+	glDrawArrays(gl_prim, startVertex, vertexCount);
+	LN_CHECK_GLERROR();
+
+	// 後始末 (解除)
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+//------------------------------------------------------------------------------
+void GLRenderer::OnDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
+{
+	if (m_currentVertexBuffer == NULL ||
+		m_currentIndexBuffer == NULL ||
+		m_currentShaderPass == NULL) {
+		LN_THROW(0, InvalidOperationException);
+		return;
+	}
+
+	// 描画に必要な情報を最新にする
+	//UpdateRenderState(m_requestedRenderState, m_justSawReset);
+	//UpdateDepthStencilState(m_requestedDepthStencilState, m_justSawReset);
+	UpdateFrameBuffer();
+	UpdateVAO();
+	UpdateVertexAttribPointer();
+	m_justSawReset = false;
+
+	// プリミティブと必要な頂点数の取得
+	GLenum gl_prim;
+	int vertexCount;
+	GetPrimitiveInfo(primitive, primitiveCount, &gl_prim, &vertexCount);
+
+	// 引数 start end には、本来であれば0～vertexCountまでのインデックスの中の最大、最小の値を渡す。
+	// http://wiki.livedoor.jp/mikk_ni3_92/d/glDrawRangeElements%A4%CB%A4%E8%A4%EB%C9%C1%B2%E8
+	// ただ、全範囲を渡しても特に問題なさそうなのでこのまま。
+	if (m_currentIndexBuffer->GetFormat() == IndexBufferFormat_UInt16)
+	{
+		glDrawElements(gl_prim, vertexCount, GL_UNSIGNED_SHORT, (GLvoid*)(sizeof(GLushort) * startIndex));
+	}
+	else
+	{
+		glDrawElements(gl_prim, vertexCount, GL_UNSIGNED_INT, (GLvoid*)(sizeof(GLuint) * startIndex));
+	}
+
+	// 後始末 (解除)
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 //------------------------------------------------------------------------------

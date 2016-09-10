@@ -40,6 +40,11 @@ public:
 	float GetMainFPS() const;
 	float GetMainFPSCapacity() const;
 
+	// Graphics
+	void ResetGraphicsFrameReport() { m_graphicsDeviceDrawCount = 0; }
+	void IncreaseGraphicsDeviceDrawCount() { ++m_graphicsDeviceDrawCount; }
+	int GetGraphicsDeviceDrawCount() const { return m_graphicsDeviceDrawCount; }
+
 	// SceneGraph
 	void IncreaseVisualNodeDrawCount() { ++m_visualNodeDrawCount; }
 	void ResetVisualNodeDrawCount() { m_visualNodeDrawCount = 0; }
@@ -54,6 +59,7 @@ private:
 	~EngineDiagCore();
 
 	EngineManager*	m_manager;
+	int				m_graphicsDeviceDrawCount;
 	int				m_visualNodeDrawCount;
 };
 

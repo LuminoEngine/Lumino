@@ -15,6 +15,8 @@ class EngineDiag
 {
 public:
 
+	static int GetGraphicsDeviceDrawCount();
+
 	static int GetVisualNodeDrawCount();
 };
 

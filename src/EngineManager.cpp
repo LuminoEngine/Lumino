@@ -464,6 +464,7 @@ void EngineManager::InitializeGraphicsManager()
 		data.fileManager = m_fileManager;
 		data.physicsManager = m_physicsManager;
 		data.platformTextureLoading = true;
+		data.diag = &EngineDiagCore::Instance;
 #ifdef LN_OS_WIN32
 		data.D3D9Device = m_configData.D3D9Device;
 #endif
@@ -706,6 +707,7 @@ void EngineManager::Render()
 		DrawingContext* g = m_graphicsManager->GetDrawingContext();
 		g->PushState();
 
+		EngineDiagCore::Instance.ResetGraphicsFrameReport();	// TODO: GameMode のみ？
 		EngineDiagCore::Instance.ResetVisualNodeDrawCount();	// TODO: GameMode のみ？
 		m_uiManager->GetMainWindow()->RenderContents();
 		//

@@ -5,6 +5,7 @@
 #include <Lumino/Graphics/Color.h>
 
 LN_NAMESPACE_BEGIN
+class EngineDiagCore;
 class Bitmap;
 class PlatformWindow;
 
@@ -227,22 +228,29 @@ public:
 	void SetIndexBuffer(IIndexBuffer* indexBuffer);
 
 	/// 設定されている各種バッファをクリアする
-	virtual void Clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00) = 0;
+	void Clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
 
 	/// プリミティブ描画
-	virtual void DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) = 0;
+	void DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount);
 
 	/// プリミティブ描画 (インデックス付き。頂点、インデックスの両方のバッファのdynamic、static が一致している必要がある)
-	virtual void DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) = 0;
+	void DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount);
+
+	void SetDiag(EngineDiagCore* diag) { m_diag = diag; }
 
 protected:
 	IRenderer();
 	virtual ~IRenderer();
 
-	void FlushStates();
 	virtual	void OnUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset) = 0;
 	virtual	void OnUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset) = 0;
 	virtual void OnUpdatePrimitiveData(IVertexDeclaration* decls, const Array<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer) = 0;
+	virtual void OnClear(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
+	virtual void OnDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) = 0;
+	virtual void OnDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) = 0;
+
+private:
+	void FlushStates();
 
 protected:	// TODO: private
 	enum ModifiedFlags
@@ -253,6 +261,7 @@ protected:	// TODO: private
 		Modified_IndexBuffer		= 0x0004,
 	};
 
+	EngineDiagCore*					m_diag;
 	uint32_t						m_modifiedFlags;
 	RenderState						m_requestedRenderState;
 	RenderState						m_currentRenderState;

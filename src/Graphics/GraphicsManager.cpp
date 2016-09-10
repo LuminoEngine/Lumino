@@ -213,6 +213,8 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 	LN_THROW(0, NotImplementedException);
 #endif
 
+	Driver::IRenderer* renderer = m_graphicsDevice->GetRenderer();
+	renderer->SetDiag(configData.diag);
 
 	// Renderer
 	m_renderer = LN_NEW Details::Renderer(this);

@@ -1,5 +1,6 @@
 ﻿
 #include "../../Internal.h"
+#include "../../EngineDiagCore.h"
 #include "GraphicsDriverInterface.h"
 
 LN_NAMESPACE_BEGIN
@@ -13,7 +14,8 @@ namespace Driver
 
 //------------------------------------------------------------------------------
 IRenderer::IRenderer()
-	: m_modifiedFlags(Modified_None)
+	: m_diag(nullptr)
+	, m_modifiedFlags(Modified_None)
 	, m_requestedRenderState()
 	, m_currentRenderState()
 	, m_requestedDepthStencilState()
@@ -60,6 +62,29 @@ void IRenderer::SetIndexBuffer(IIndexBuffer* indexBuffer)
 		m_currentIndexBuffer = indexBuffer;
 		m_modifiedFlags |= Modified_IndexBuffer;
 	}
+}
+
+//------------------------------------------------------------------------------
+void IRenderer::Clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
+{
+	FlushStates();
+	OnClear(flags, color, z, stencil);
+}
+
+//------------------------------------------------------------------------------
+void IRenderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
+{
+	FlushStates();
+	OnDrawPrimitive(primitive, startVertex, primitiveCount);
+	if (m_diag != nullptr) m_diag->IncreaseGraphicsDeviceDrawCount();
+}
+
+//------------------------------------------------------------------------------
+void IRenderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
+{
+	FlushStates();
+	OnDrawPrimitiveIndexed(primitive, startIndex, primitiveCount);
+	if (m_diag != nullptr) m_diag->IncreaseGraphicsDeviceDrawCount();
 }
 
 //------------------------------------------------------------------------------

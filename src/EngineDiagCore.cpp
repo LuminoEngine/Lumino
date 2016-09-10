@@ -16,6 +16,12 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
+int EngineDiag::GetGraphicsDeviceDrawCount()
+{
+	return EngineDiagCore::Instance.GetGraphicsDeviceDrawCount();
+}
+
+//------------------------------------------------------------------------------
 int EngineDiag::GetVisualNodeDrawCount()
 {
 	return EngineDiagCore::Instance.GetVisualNodeDrawCount();
@@ -29,6 +35,7 @@ EngineDiagCore EngineDiagCore::Instance;
 
 //------------------------------------------------------------------------------
 EngineDiagCore::EngineDiagCore()
+	: m_graphicsDeviceDrawCount(0)
 {
 }
 

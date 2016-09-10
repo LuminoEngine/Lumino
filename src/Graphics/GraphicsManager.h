@@ -8,6 +8,7 @@
 #include <Lumino/Graphics/Text/Font.h>
 
 LN_NAMESPACE_BEGIN
+class EngineDiagCore;
 class FileManager;
 
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -77,6 +78,7 @@ public:
 		bool						platformTextureLoading = false;						// 画像リソースの読み込みにプラットフォーム固有の機能を使用するか
 		void*						D3D9Device = nullptr;								// 作成済みの IDirect3DDevice9 インターフェイス
 		bool						fpuPreserveEnabled = false;
+		EngineDiagCore*				diag = nullptr;
 	};
 
 	static GraphicsManager*	GetInstance(GraphicsManager* priority = nullptr);

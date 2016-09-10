@@ -211,92 +211,6 @@ void DX9Renderer::SetViewport(const Rect& rect)
 }
 
 //------------------------------------------------------------------------------
-void DX9Renderer::Clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
-{
-	IRenderer::FlushStates();
-	//TryBeginScene();
-
-	// ※レンダリングターゲットと深度バッファのサイズが一致している必要がある。
-	//   していない場合、エラーとならないがクリアされない。
-	if (m_currentDepthBuffer != nullptr)
-	{
-		LN_CHECK_STATE(m_currentRenderTargets[0]->GetSize() == m_currentDepthBuffer->GetSize());
-	}
-
-	DWORD flag = 0;
-	if (flags.TestFlag(ClearFlags::Color)) { flag |= D3DCLEAR_TARGET; }
-	if (m_currentDepthBuffer && flags.TestFlag(ClearFlags::Depth))	{ flag |= (D3DCLEAR_ZBUFFER); }
-	if (m_currentDepthBuffer && flags.TestFlag(ClearFlags::Stencil)) { flag |= (D3DCLEAR_STENCIL); }
-	if (flag == 0) { return; }
-
-	Color32 c;
-	c.r = static_cast<uint8_t>(color.r * 255);
-	c.g = static_cast<uint8_t>(color.g * 255);
-	c.b = static_cast<uint8_t>(color.b * 255);
-	c.a = static_cast<uint8_t>(color.a * 255);
-	D3DCOLOR dxc = D3DCOLOR_ARGB(c.a, c.r, c.g, c.b);
-	LN_COMCALL(m_dxDevice->Clear(0, NULL, flag, dxc, z, stencil));
-}
-
-//------------------------------------------------------------------------------
-void DX9Renderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
-{
-	IRenderer::FlushStates();
-
-	DX9VertexDeclaration* decl = static_cast<DX9VertexDeclaration*>(m_currentVertexDeclaration.Get());
-
-	D3DPRIMITIVETYPE dx_prim = D3DPT_TRIANGLELIST;
-	switch (primitive)
-	{
-		//case LN_PRIMITIVE_TRIANGLELIST:   dx_prim = D3DPT_TRIANGLELIST; break;
-	case PrimitiveType_TriangleStrip:
-		dx_prim = D3DPT_TRIANGLESTRIP; break;
-	case PrimitiveType_LineList:
-		dx_prim = D3DPT_LINELIST; break;
-	case PrimitiveType_LineStrip:
-		dx_prim = D3DPT_LINESTRIP; break;
-	case PrimitiveType_PointList:
-		dx_prim = D3DPT_POINTLIST; break;
-	}
-
-	LN_COMCALL(m_dxDevice->DrawPrimitive(dx_prim, startVertex, primitiveCount));
-}
-
-//------------------------------------------------------------------------------
-void DX9Renderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
-{
-	IRenderer::FlushStates();
-
-	DX9VertexDeclaration* decl = static_cast<DX9VertexDeclaration*>(m_currentVertexDeclaration.Get());
-
-	// TODO: とりあえず 0 番ストリームで頂点数を計る
-	size_t vertexCount = m_currentVertexBuffers[0]->GetByteCount() / decl->GetVertexStride(0);
-
-	D3DPRIMITIVETYPE dx_prim = D3DPT_TRIANGLELIST;
-	switch (primitive)
-	{
-		//case LN_PRIMITIVE_TRIANGLELIST:     dx_prim = D3DPT_TRIANGLELIST; break;
-	case PrimitiveType_TriangleStrip:
-		dx_prim = D3DPT_TRIANGLESTRIP; break;
-	case PrimitiveType_LineList:
-		dx_prim = D3DPT_LINELIST; break;
-	case PrimitiveType_LineStrip:
-		dx_prim = D3DPT_LINESTRIP; break;
-	case PrimitiveType_PointList:
-		dx_prim = D3DPT_POINTLIST; break;
-	}
-
-	LN_COMCALL(
-		m_dxDevice->DrawIndexedPrimitive(
-			dx_prim,
-			0,
-			0,
-			vertexCount,
-			startIndex,
-			primitiveCount));
-}
-
-//------------------------------------------------------------------------------
 void DX9Renderer::RestoreStatus()
 {
 	// プログラム実行中、特に変化しないステートはここで設定してしまう
@@ -470,6 +384,85 @@ void DX9Renderer::OnUpdatePrimitiveData(IVertexDeclaration* decls, const Array<R
 
 	// IndexBuffer
 	InternalSetIndexBuffer(indexBuffer, false);
+}
+
+//------------------------------------------------------------------------------
+void DX9Renderer::OnClear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
+{
+	// ※レンダリングターゲットと深度バッファのサイズが一致している必要がある。
+	//   していない場合、エラーとならないがクリアされない。
+	if (m_currentDepthBuffer != nullptr)
+	{
+		LN_CHECK_STATE(m_currentRenderTargets[0]->GetSize() == m_currentDepthBuffer->GetSize());
+	}
+
+	DWORD flag = 0;
+	if (flags.TestFlag(ClearFlags::Color)) { flag |= D3DCLEAR_TARGET; }
+	if (m_currentDepthBuffer && flags.TestFlag(ClearFlags::Depth)) { flag |= (D3DCLEAR_ZBUFFER); }
+	if (m_currentDepthBuffer && flags.TestFlag(ClearFlags::Stencil)) { flag |= (D3DCLEAR_STENCIL); }
+	if (flag == 0) { return; }
+
+	Color32 c;
+	c.r = static_cast<uint8_t>(color.r * 255);
+	c.g = static_cast<uint8_t>(color.g * 255);
+	c.b = static_cast<uint8_t>(color.b * 255);
+	c.a = static_cast<uint8_t>(color.a * 255);
+	D3DCOLOR dxc = D3DCOLOR_ARGB(c.a, c.r, c.g, c.b);
+	LN_COMCALL(m_dxDevice->Clear(0, NULL, flag, dxc, z, stencil));
+}
+
+//------------------------------------------------------------------------------
+void DX9Renderer::OnDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
+{
+	DX9VertexDeclaration* decl = static_cast<DX9VertexDeclaration*>(m_currentVertexDeclaration.Get());
+
+	D3DPRIMITIVETYPE dx_prim = D3DPT_TRIANGLELIST;
+	switch (primitive)
+	{
+		//case LN_PRIMITIVE_TRIANGLELIST:   dx_prim = D3DPT_TRIANGLELIST; break;
+	case PrimitiveType_TriangleStrip:
+		dx_prim = D3DPT_TRIANGLESTRIP; break;
+	case PrimitiveType_LineList:
+		dx_prim = D3DPT_LINELIST; break;
+	case PrimitiveType_LineStrip:
+		dx_prim = D3DPT_LINESTRIP; break;
+	case PrimitiveType_PointList:
+		dx_prim = D3DPT_POINTLIST; break;
+	}
+
+	LN_COMCALL(m_dxDevice->DrawPrimitive(dx_prim, startVertex, primitiveCount));
+}
+
+//------------------------------------------------------------------------------
+void DX9Renderer::OnDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
+{
+	DX9VertexDeclaration* decl = static_cast<DX9VertexDeclaration*>(m_currentVertexDeclaration.Get());
+
+	// TODO: とりあえず 0 番ストリームで頂点数を計る
+	size_t vertexCount = m_currentVertexBuffers[0]->GetByteCount() / decl->GetVertexStride(0);
+
+	D3DPRIMITIVETYPE dx_prim = D3DPT_TRIANGLELIST;
+	switch (primitive)
+	{
+		//case LN_PRIMITIVE_TRIANGLELIST:     dx_prim = D3DPT_TRIANGLELIST; break;
+	case PrimitiveType_TriangleStrip:
+		dx_prim = D3DPT_TRIANGLESTRIP; break;
+	case PrimitiveType_LineList:
+		dx_prim = D3DPT_LINELIST; break;
+	case PrimitiveType_LineStrip:
+		dx_prim = D3DPT_LINESTRIP; break;
+	case PrimitiveType_PointList:
+		dx_prim = D3DPT_POINTLIST; break;
+	}
+
+	LN_COMCALL(
+		m_dxDevice->DrawIndexedPrimitive(
+			dx_prim,
+			0,
+			0,
+			vertexCount,
+			startIndex,
+			primitiveCount));
 }
 
 //------------------------------------------------------------------------------
