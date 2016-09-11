@@ -108,8 +108,7 @@ public:
 	virtual void UpdateNodeRenderingParams(MMEShader* priorityShader) {}
 
 
-	// IMMESubsetRenerer
-//	virtual void OnDrawSubset(int subsetIndex, void* userData, MMEShader* shader, pass) { DrawSubset(*((RenderingParams*)userData), subsetIndex); }
+	virtual detail::Sphere GetBoundingSphere();
 
 	void DrawSubsetInternal(SceneGraphRenderingContext* dc, int subsetIndex, MMEShader* shader, ShaderPass* pass);
 

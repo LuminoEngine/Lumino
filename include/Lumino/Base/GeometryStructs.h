@@ -636,4 +636,14 @@ public:
 	bool operator != (const ThicknessF& obj) const { return !operator==(obj); }
 };
 
+namespace detail
+{
+
+struct Sphere
+{
+	Vector3		center;
+	float		radius;
+};
+
+} // namespace detail
 LN_NAMESPACE_END

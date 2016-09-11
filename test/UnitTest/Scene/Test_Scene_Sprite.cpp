@@ -136,17 +136,44 @@ TEST_F(Test_Scene_Sprite3D, Basic)
 	// <Test> 普通の描画
 	// <Test> 不透明度の設定
 	{
-		auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
+		Engine::UpdateFrame();
+		int defaultCount = EngineDiag::GetGraphicsDeviceDrawCount();
 
-		auto sprite1 = Sprite2D::Create(tex);
+		auto tex1 = Texture2D::Create(32, 32);
+		auto tex2 = Texture2D::Create(32, 32);
+		auto sprite1 = Sprite3D::Create(1, 1, tex1);
+		auto sprite2 = Sprite3D::Create(1, 1, tex2);
+		auto sprite3 = Sprite3D::Create(1, 1, tex1);
 		sprite1->SetPosition(0, 0);
-
-		auto sprite2 = Sprite2D::Create(tex);
-		sprite2->SetPosition(32, 0);
-		sprite2->SetOpacity(0.5);
-		//sprite2->SetBlendMode(BlendMode::Alpha);
+		sprite2->SetPosition(10, 10);
+		sprite3->SetPosition(20, 20);
 
 		Engine::UpdateFrame();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_Sprite.Basic.png")));
+		int defaultCount2 = EngineDiag::GetGraphicsDeviceDrawCount();
+		//ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_Sprite3D.Basic.png")));
+	}
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Scene_Sprite3D, ViewFrustumCulling)
+{
+	// <Test> 視錐台化リング
+	{
+		Engine::UpdateFrame();
+		int count1 = EngineDiag::GetVisualNodeDrawCount();
+
+		auto tex1 = Texture2D::Create(32, 32);
+		auto sprite1 = Sprite3D::Create(1, 1, tex1);
+		auto sprite2 = Sprite3D::Create(1, 1, tex1);
+
+		Engine::UpdateFrame();
+		int count2 = EngineDiag::GetVisualNodeDrawCount();
+		ASSERT_EQ(count1 + 2, count2);
+
+		sprite2->SetPosition(-100, 0);
+		Engine::UpdateFrame();
+		int count3 = EngineDiag::GetVisualNodeDrawCount();
+		ASSERT_EQ(count1 + 1, count3);	// 完全に範囲外なので描画されない
+
 	}
 }

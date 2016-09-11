@@ -221,6 +221,24 @@ void Sprite::UpdateVertexData()
 			break;
 		}
 	}
+
+
+
+	// 転送元矩形が負値ならテクスチャ全体を転送する
+	Texture* tex = GetTexture();
+	const SizeI& texSize = (tex != nullptr) ? tex->GetSize() : SizeI::Zero;
+	m_renderSourceRect = m_srcRect;
+	if (m_renderSourceRect.width < 0 && m_renderSourceRect.height < 0)
+	{
+		m_renderSourceRect.width = texSize.width;
+		m_renderSourceRect.height = texSize.height;
+	}
+	m_renderSize = m_size;
+	if (m_renderSize.width < 0 && m_renderSize.height < 0)
+	{
+		m_renderSize.width = m_renderSourceRect.width;
+		m_renderSize.height = m_renderSourceRect.height;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -293,28 +311,19 @@ void Sprite2D::Initialize(SceneGraph* owner)
 }
 
 //------------------------------------------------------------------------------
-void Sprite2D::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
+void Sprite2D::OnRender(SceneGraphRenderingContext* dc)
 {
-	const SizeI& texSize = GetTexture()->GetSize();
+	// レンダリングステートの設定
+	// TODO: これは Sprite 描画のバッチのソート要素として、DrawSprite2D に渡せるようにしたい
+	dc->ResetStates();
+	dc->SetBlendMode(m_renderState.blendMode);
+	dc->SetCullingMode(m_renderState.cullingMode);
+	dc->SetDepthTestEnabled(m_renderState.depthTestEnabled);
+	dc->SetDepthWriteEnabled(m_renderState.depthWriteEnabled);
 
-	// 転送元矩形が負値ならテクスチャ全体を転送する
-	Rect srcRect = m_srcRect;// m_srcRect(0, 0, tex->GetSize().width, tex->GetSize().height);
-	if (srcRect.width < 0 && srcRect.height < 0)
-	{
-		srcRect.width = texSize.width;
-		srcRect.height = texSize.height;
-	}
-	SizeF spriteSize = m_size;
-	if (spriteSize.width < 0 && spriteSize.height < 0)
-	{
-		spriteSize.width = srcRect.width;
-		spriteSize.height = srcRect.height;
-	}
 
-	detail::MaterialInstance* mat = m_materialList->GetMaterialInstance(subsetIndex);
-
-	dc->DrawSprite2D(m_combinedGlobalMatrix, spriteSize, GetTexture(), srcRect, mat->m_colorScale);
-	//Sprite::DrawSubset(dc, subsetIndex);
+	detail::MaterialInstance* mat = m_materialList->GetMaterialInstance(0);
+	dc->DrawSprite2D(m_combinedGlobalMatrix, m_renderSize, GetTexture(), m_renderSourceRect, mat->m_colorScale);
 	//if (subsetIndex == 0)
 	//{
 	//	dc->DrawSquarePrimitive(
@@ -324,6 +333,12 @@ void Sprite2D::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 	//		Vector3(m_lowerRight.x, m_upperLeft.y, m_upperLeft.z), Vector2(m_lowerRightUV.x, m_upperLeftUV.y), Color::White);
 	//}
 }
+
+////------------------------------------------------------------------------------
+//void Sprite2D::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
+//{
+//}
+
 
 //==============================================================================
 // Sprite3D
@@ -374,27 +389,25 @@ void Sprite3D::Initialize(SceneGraph* owner)
 }
 
 //------------------------------------------------------------------------------
-void Sprite3D::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
+detail::Sphere Sprite3D::GetBoundingSphere()
 {
-	const SizeI& texSize = GetTexture()->GetSize();
+	return m_boundingSphere;
+}
 
-	// 転送元矩形が負値ならテクスチャ全体を転送する
-	Rect srcRect = m_srcRect;// m_srcRect(0, 0, tex->GetSize().width, tex->GetSize().height);
-	if (srcRect.width < 0 && srcRect.height < 0)
-	{
-		srcRect.width = texSize.width;
-		srcRect.height = texSize.height;
-	}
-	SizeF spriteSize = m_size;
-	if (spriteSize.width < 0 && spriteSize.height < 0)
-	{
-		spriteSize.width = srcRect.width;
-		spriteSize.height = srcRect.height;
-	}
+//------------------------------------------------------------------------------
+void Sprite3D::OnRender(SceneGraphRenderingContext* dc)
+{
+	// レンダリングステートの設定
+	// TODO: これは Sprite 描画のバッチのソート要素として、DrawSprite2D に渡せるようにしたい
+	dc->ResetStates();
+	dc->SetBlendMode(m_renderState.blendMode);
+	dc->SetCullingMode(m_renderState.cullingMode);
+	dc->SetDepthTestEnabled(m_renderState.depthTestEnabled);
+	dc->SetDepthWriteEnabled(m_renderState.depthWriteEnabled);
 
-	detail::MaterialInstance* mat = m_materialList->GetMaterialInstance(subsetIndex);
+	detail::MaterialInstance* mat = m_materialList->GetMaterialInstance(0);
 
-	dc->DrawSprite3D(m_combinedGlobalMatrix, spriteSize, GetTexture(), srcRect, mat->m_colorScale);
+	dc->DrawSprite3D(m_combinedGlobalMatrix, m_renderSize, GetTexture(), m_renderSourceRect, mat->m_colorScale);
 	//Sprite::DrawSubset(dc, subsetIndex);
 	//if (subsetIndex == 0)
 	//{
@@ -404,6 +417,18 @@ void Sprite3D::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 	//		Vector3(m_lowerRight.x, m_lowerRight.y, m_lowerRight.z), Vector2(m_lowerRightUV.x, m_lowerRightUV.y), Color::White,
 	//		Vector3(m_lowerRight.x, m_upperLeft.y, m_upperLeft.z), Vector2(m_lowerRightUV.x, m_upperLeftUV.y), Color::White);
 	//}
+}
+
+//------------------------------------------------------------------------------
+void Sprite3D::UpdateVertexData()
+{
+	Sprite::UpdateVertexData();
+
+	Vector2 s(m_renderSize.width / 2, m_renderSize.height / 2);
+
+
+	m_boundingSphere.center = Vector3::Zero;
+	m_boundingSphere.radius = s.GetLength();
 }
 
 

@@ -53,8 +53,6 @@ public:
 	FlipMode GetFlipMode() const { return m_flipMode; }
 
 private:
-	void UpdateTexUV();
-	void UpdateVertexData();
 
 	/// ピクセル単位の転送矩形をテクスチャUVの矩形 (0.0～1.0) に変換する
 	static void NormalizeSrcRect(const Rect& srcRect, const SizeI& textureSize, float* l, float* t, float* r, float* b);
@@ -64,6 +62,8 @@ protected:
 	virtual ~Sprite();
 	void Initialize(SceneGraph* owner, SpriteCoord spriteCoord);
 
+	void UpdateTexUV();
+	virtual void UpdateVertexData();
 	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
 
 protected:
@@ -76,6 +76,9 @@ protected:
 	Vector3		m_lowerRight;
 	Vector2		m_upperLeftUV;
 	Vector2		m_lowerRightUV;
+
+	SizeF		m_renderSize;
+	Rect		m_renderSourceRect;
 };
 
 /**
@@ -103,7 +106,11 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	Sprite2D();
 	virtual ~Sprite2D();
 	void Initialize(SceneGraph* owner);
-	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
+	virtual void OnRender(SceneGraphRenderingContext* dc) override;
+	//virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
+
+
+private:
 };
 
 /**
@@ -127,7 +134,13 @@ protected:
 	Sprite3D();
 	virtual ~Sprite3D();
 	void Initialize(SceneGraph* owner);
-	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
+	virtual detail::Sphere GetBoundingSphere() override;
+	virtual void OnRender(SceneGraphRenderingContext* dc) override;
+	//virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
+	virtual void UpdateVertexData() override;
+
+private:
+	detail::Sphere	m_boundingSphere;
 };
 
 LN_NAMESPACE_SCENE_END
