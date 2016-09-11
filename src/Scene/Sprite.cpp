@@ -373,6 +373,39 @@ void Sprite3D::Initialize(SceneGraph* owner)
 	Sprite::Initialize(owner, SpriteCoord_RZ);
 }
 
+//------------------------------------------------------------------------------
+void Sprite3D::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
+{
+	const SizeI& texSize = GetTexture()->GetSize();
+
+	// 転送元矩形が負値ならテクスチャ全体を転送する
+	Rect srcRect = m_srcRect;// m_srcRect(0, 0, tex->GetSize().width, tex->GetSize().height);
+	if (srcRect.width < 0 && srcRect.height < 0)
+	{
+		srcRect.width = texSize.width;
+		srcRect.height = texSize.height;
+	}
+	SizeF spriteSize = m_size;
+	if (spriteSize.width < 0 && spriteSize.height < 0)
+	{
+		spriteSize.width = srcRect.width;
+		spriteSize.height = srcRect.height;
+	}
+
+	detail::MaterialInstance* mat = m_materialList->GetMaterialInstance(subsetIndex);
+
+	dc->DrawSprite3D(m_combinedGlobalMatrix, spriteSize, GetTexture(), srcRect, mat->m_colorScale);
+	//Sprite::DrawSubset(dc, subsetIndex);
+	//if (subsetIndex == 0)
+	//{
+	//	dc->DrawSquarePrimitive(
+	//		Vector3(m_upperLeft.x, m_upperLeft.y, m_upperLeft.z), Vector2(m_upperLeftUV.x, m_upperLeftUV.y), Color::White,
+	//		Vector3(m_upperLeft.x, m_lowerRight.y, m_lowerRight.z), Vector2(m_upperLeftUV.x, m_lowerRightUV.y), Color::White,
+	//		Vector3(m_lowerRight.x, m_lowerRight.y, m_lowerRight.z), Vector2(m_lowerRightUV.x, m_lowerRightUV.y), Color::White,
+	//		Vector3(m_lowerRight.x, m_upperLeft.y, m_upperLeft.z), Vector2(m_lowerRightUV.x, m_upperLeftUV.y), Color::White);
+	//}
+}
+
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END

@@ -127,6 +127,7 @@ protected:
 	Sprite3D();
 	virtual ~Sprite3D();
 	void Initialize(SceneGraph* owner);
+	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
 };
 
 LN_NAMESPACE_SCENE_END

@@ -118,3 +118,35 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Scene_Sprite.Issues_Volkoff_3.png")));
 	}
 }
+
+
+
+
+
+class Test_Scene_Sprite3D : public ::testing::Test
+{
+protected:
+	virtual void SetUp() {}
+	virtual void TearDown() {}
+};
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Scene_Sprite3D, Basic)
+{
+	// <Test> ïÅí ÇÃï`âÊ
+	// <Test> ïsìßñæìxÇÃê›íË
+	{
+		auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
+
+		auto sprite1 = Sprite2D::Create(tex);
+		sprite1->SetPosition(0, 0);
+
+		auto sprite2 = Sprite2D::Create(tex);
+		sprite2->SetPosition(32, 0);
+		sprite2->SetOpacity(0.5);
+		//sprite2->SetBlendMode(BlendMode::Alpha);
+
+		Engine::UpdateFrame();
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_Sprite.Basic.png")));
+	}
+}

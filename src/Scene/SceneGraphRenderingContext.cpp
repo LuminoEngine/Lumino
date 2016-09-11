@@ -52,6 +52,20 @@ void SceneGraphRenderingContext::DrawSprite2D(
 }
 
 //------------------------------------------------------------------------------
+void SceneGraphRenderingContext::DrawSprite3D(
+	const Matrix& transform,
+	const SizeF& size,
+	Texture* texture,
+	const RectF& srcRect,
+	const Color& color,
+	AxisDirection front)
+{
+	NorityStartDrawing(m_spriteRenderer);
+	m_spriteRenderer->SetTransform(transform);
+	m_spriteRenderer->DrawRequest3D(Vector3::Zero, Vector3::Zero, Vector2(size.width, size.height), texture, srcRect, color, front);
+}
+
+//------------------------------------------------------------------------------
 void SceneGraphRenderingContext::OnStateFlush()
 {
 	RenderingContext::OnStateFlush();

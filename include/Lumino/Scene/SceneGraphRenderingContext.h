@@ -23,6 +23,14 @@ public:
 		const RectF& srcRect,
 		const Color& color);
 
+	void DrawSprite3D(
+		const Matrix& transform,
+		const SizeF& size,
+		Texture* texture,
+		const RectF& srcRect,
+		const Color& color,
+		AxisDirection front = AxisDirection_RZ);
+	
 LN_INTERNAL_ACCESS:
 	RenderingPass*				Pass;
 	LightNodeList*				renderingLightList;
