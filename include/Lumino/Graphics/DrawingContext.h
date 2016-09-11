@@ -65,9 +65,11 @@ LN_INTERNAL_ACCESS:
 	DrawingContext();
 	virtual ~DrawingContext();
 	void Initialize(GraphicsManager* manager);
+	void InitializeFrame(RenderTarget* renderTarget);
 	void InheritStatus(RenderingContext* parent);
 
 protected:
+	virtual bool OnCheckStateChanged() override;
 	virtual void OnStateFlush() override;
 	virtual void OnPrimitiveFlush() override;
 	virtual void OnShaderVariableModified(ShaderVariable* var) override;
@@ -91,6 +93,7 @@ private:
 	detail::FrameRectRenderer*	m_frameRectRenderer;
 
 	ContextState				m_state;
+	ContextState				m_backendState;
 	std::stack<ContextState>	m_stateStack;
 };
 

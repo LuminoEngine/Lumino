@@ -14,6 +14,7 @@ LN_NAMESPACE_SCENE_BEGIN
 
 //------------------------------------------------------------------------------
 SceneGraphRenderingContext::SceneGraphRenderingContext()
+	: m_currentCamera(nullptr)
 {
 }
 
@@ -33,11 +34,8 @@ void SceneGraphRenderingContext::Initialize(SceneGraphManager* manager)
 //------------------------------------------------------------------------------
 void SceneGraphRenderingContext::SetCurrentCamera(Camera* camera)
 {
-	if (m_currentCamera != camera)
-	{
-		NorityStateChanging();
-		m_currentCamera = camera;
-	}
+	if (m_currentCamera != nullptr) Flush();
+	m_currentCamera = camera;
 }
 
 //------------------------------------------------------------------------------

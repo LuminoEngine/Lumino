@@ -52,6 +52,14 @@ void DrawingContext::Initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
+void DrawingContext::InitializeFrame(RenderTarget* renderTarget)
+{
+	//ResetStates();
+	m_state.SetRenderTarget(0, renderTarget);
+	m_backendState.SetRenderTarget(0, renderTarget);
+}
+
+//------------------------------------------------------------------------------
 void DrawingContext::Set2DRenderingMode(float minZ, float maxZ)
 {
 	NorityStateChanging();
@@ -276,39 +284,49 @@ void DrawingContext::InheritStatus(RenderingContext* parent)
 }
 
 //------------------------------------------------------------------------------
+bool DrawingContext::OnCheckStateChanged()
+{
+	return !m_state.Equals(m_backendState);
+}
+
+//------------------------------------------------------------------------------
 void DrawingContext::OnStateFlush()
 {
 	ContextInterface::OnStateFlush();
-	SetBasicContextState(m_state);
+	const ContextState& state = m_state;
 
-	m_geometryRenderer->SetTransform(m_state.worldTransform);
-	m_textRenderer->SetTransform(m_state.worldTransform);
+	SetBasicContextState(state);
 
-	m_geometryRenderer->SetOpacity(m_state.opacity);
+	m_geometryRenderer->SetTransform(state.worldTransform);
+	m_textRenderer->SetTransform(state.worldTransform);
 
-	m_geometryRenderer->SetBrush(m_state.fillBrush);
+	m_geometryRenderer->SetOpacity(state.opacity);
+
+	m_geometryRenderer->SetBrush(state.fillBrush);
 
 	m_textRenderer->SetState(
-		(m_state.font != nullptr) ? m_state.font : GetManager()->GetFontManager()->GetDefaultFont(),
-		m_state.fillBrush);
+		(state.font != nullptr) ? state.font : GetManager()->GetFontManager()->GetDefaultFont(),
+		state.fillBrush);
 
 
 
 
 
 
-	const SizeI& size = m_state.GetRenderTarget(0)->GetSize();
-	Matrix viewProj = m_state.viewTransform * m_state.projectionTransform;
+	const SizeI& size = state.GetRenderTarget(0)->GetSize();
+	Matrix viewProj = state.viewTransform * state.projectionTransform;
 
-	m_geometryRenderer->SetViewProjection(m_state.viewTransform, m_state.projectionTransform, size);
+	m_geometryRenderer->SetViewProjection(state.viewTransform, state.projectionTransform, size);
 	//m_spriteRenderer->SetViewPixelSize(size);
 	m_textRenderer->SetViewProjMatrix(viewProj);
 	m_textRenderer->SetViewPixelSize(size);
 
-	if (m_state.fillBrush != nullptr && m_state.fillBrush->GetType() == BrushType_Texture)
+	if (state.fillBrush != nullptr && state.fillBrush->GetType() == BrushType_Texture)
 	{
-		m_frameRectRenderer->SetState(static_cast<TextureBrush*>(m_state.fillBrush.Get()), m_state.worldTransform, viewProj);
+		m_frameRectRenderer->SetState(static_cast<TextureBrush*>(state.fillBrush.Get()), state.worldTransform, viewProj);
 	}
+
+	m_backendState = m_state;
 }
 
 //------------------------------------------------------------------------------

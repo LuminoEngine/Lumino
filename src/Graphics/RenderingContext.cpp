@@ -65,6 +65,13 @@ void RenderingContext::Initialize(GraphicsManager* manager)
 	m_meshRendererProxy->Initialize(manager);
 }
 
+//------------------------------------------------------------------------------
+void RenderingContext::InitializeFrame(RenderTarget* renderTarget)
+{
+	ResetStates();
+	m_state.SetRenderTarget(0, renderTarget);
+	m_backendState.SetRenderTarget(0, renderTarget);
+}
 
 
 
@@ -488,11 +495,18 @@ void RenderingContext::DrawMesh(StaticMeshModel* mesh, int startIndex, int trian
 void RenderingContext::InheritStatus(RenderingContext* parent)
 {
 	LN_ASSERT(parent != nullptr);
-	if (!m_state.Equals(parent->m_state))
+	//if (!m_state.Equals(parent->m_state))
 	{
 		m_state = parent->m_state;
+		m_backendState = parent->m_backendState;
 		NorityStateChanging();
 	}
+}
+
+//------------------------------------------------------------------------------
+bool RenderingContext::OnCheckStateChanged()
+{
+	return !m_state.Equals(m_backendState);
 }
 
 //------------------------------------------------------------------------------
@@ -507,6 +521,8 @@ void RenderingContext::OnStateFlush()
 	const SizeI& size = m_state.GetRenderTarget(0)->GetSize();
 	m_primitiveRenderer->SetViewPixelSize(size);
 	m_primitiveRenderer->SetUseInternalShader(GetShaderPass() == nullptr);
+
+	m_backendState = m_state;
 }
 
 //------------------------------------------------------------------------------

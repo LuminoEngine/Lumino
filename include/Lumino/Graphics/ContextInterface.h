@@ -123,6 +123,7 @@ protected:
 	void OnActivated();
 	void OnDeactivated();
 
+	virtual bool OnCheckStateChanged() = 0;
 	virtual void OnStateFlush();
 	virtual void OnPrimitiveFlush();
 

@@ -224,7 +224,7 @@ SpriteRenderer* SpriteRenderer::Create(int maxSpriteCount, GraphicsManager* mana
 SpriteRenderer::SpriteRenderer(GraphicsManager* manager, int maxSpriteCount)
 	: m_manager(manager)
 	, m_internal(nullptr)
-	, m_spriteSortMode(SpriteSortMode::Texture | SpriteSortMode::DepthBackToFront)
+	, m_spriteSortMode(/*SpriteSortMode::Texture | */SpriteSortMode::DepthBackToFront)
 {
 	m_internal = LN_NEW SpriteRendererImpl();
 	m_internal->Initialize(manager, maxSpriteCount);
@@ -828,15 +828,16 @@ public:
 		{
 			if (lsp.RenderStateIndex == rsp.RenderStateIndex)
 			{
-				if (lsp.Depth > rsp.Depth)
-				{
-					return true;
-				}
-				if (lsp.Depth == rsp.Depth)
-				{
-					return lsp.Texture < rsp.Texture;
-				}
-				return false;
+				return lsp.Depth > rsp.Depth;
+				//if (lsp.Depth > rsp.Depth)
+				//{
+				//	return true;
+				//}
+				//if (lsp.Depth == rsp.Depth)
+				//{
+				//	return lsp.Texture < rsp.Texture;
+				//}
+				//return false;
 			}
 			return lsp.RenderStateIndex < rsp.RenderStateIndex;
 		}
@@ -859,15 +860,16 @@ public:
 		{
 			if (lsp.RenderStateIndex == rsp.RenderStateIndex)
 			{
-				if (lsp.Depth < rsp.Depth)
-				{
-					return true;
-				}
-				if (lsp.Depth == rsp.Depth)
-				{
-					return lsp.Texture < rsp.Texture;
-				}
-				return false;
+				return lsp.Depth < rsp.Depth;
+				//if (lsp.Depth < rsp.Depth)
+				//{
+				//	return true;
+				//}
+				//if (lsp.Depth == rsp.Depth)
+				//{
+				//	return lsp.Texture < rsp.Texture;
+				//}
+				//return false;
 			}
 			return lsp.RenderStateIndex < rsp.RenderStateIndex;
 		}
@@ -956,13 +958,13 @@ void SpriteRendererImpl::Flush(SpriteSortMode sortFlags)
 	{
 		if (sortFlags & SpriteSortMode::DepthBackToFront)
 		{
-			SpriteCmpDepthBackToFront cmp;
+			SpriteCmpTexDepthBackToFront cmp;
 			cmp.spriteList = &m_spriteRequestList;
 			std::stable_sort(m_spriteIndexList.begin(), m_spriteIndexList.begin() + spriteCount, cmp);
 		}
 		else if (sortFlags & SpriteSortMode::DepthFrontToBack)
 		{
-			SpriteCmpDepthFrontToBack cmp;
+			SpriteCmpTexDepthFrontToBack cmp;
 			cmp.spriteList = &m_spriteRequestList;
 			std::stable_sort(m_spriteIndexList.begin(), m_spriteIndexList.begin() + spriteCount, cmp);
 		}
@@ -971,13 +973,13 @@ void SpriteRendererImpl::Flush(SpriteSortMode sortFlags)
 	{
 		if (sortFlags & SpriteSortMode::DepthBackToFront)
 		{
-			SpriteCmpTexDepthBackToFront cmp;
+			SpriteCmpDepthBackToFront cmp;
 			cmp.spriteList = &m_spriteRequestList;
 			std::stable_sort(m_spriteIndexList.begin(), m_spriteIndexList.begin() + spriteCount, cmp);
 		}
 		else if (sortFlags & SpriteSortMode::DepthFrontToBack)
 		{
-			SpriteCmpTexDepthFrontToBack cmp;
+			SpriteCmpDepthFrontToBack cmp;
 			cmp.spriteList = &m_spriteRequestList;
 			std::stable_sort(m_spriteIndexList.begin(), m_spriteIndexList.begin() + spriteCount, cmp);
 		}
@@ -1063,7 +1065,7 @@ void SpriteRendererImpl::Flush(SpriteSortMode sortFlags)
 	AttributeList::iterator end = m_attributeList.end();
 	for (; itr != end; ++itr)
 	{
-		r->SetRenderState(m_renderStateList[itr->RenderStateIndex]);
+		//r->SetRenderState(m_renderStateList[itr->RenderStateIndex]);
 		m_shader.varTexture->SetTexture(itr->Texture);
 		pass->Apply();
 		r->SetVertexDeclaration(m_vertexDeclaration);

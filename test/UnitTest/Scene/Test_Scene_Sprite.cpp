@@ -10,11 +10,22 @@ protected:
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_Sprite, Basic)
 {
-	auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
-	auto sprite1 = Sprite2D::Create(tex);
-	sprite1->SetSize(SizeF(32, 32));
-	Engine::UpdateFrame();
-	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_Sprite.Basic.png")));
+	// <Test> 普通の描画
+	// <Test> 不透明度の設定
+	{
+		auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
+
+		auto sprite1 = Sprite2D::Create(tex);
+		sprite1->SetPosition(0, 0);
+
+		auto sprite2 = Sprite2D::Create(tex);
+		sprite2->SetPosition(32, 0);
+		sprite2->SetOpacity(0.5);
+		//sprite2->SetBlendMode(BlendMode::Alpha);
+
+		Engine::UpdateFrame();
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_Sprite.Basic.png")));
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -27,6 +38,9 @@ TEST_F(Test_Scene_Sprite, BlendMode)
 	auto sprite4 = Sprite2D::Create(tex);
 	auto sprite5 = Sprite2D::Create(tex);
 	auto sprite6 = Sprite2D::Create(tex);
+
+	sprite1->SetPosition(0, 0);
+	sprite1->SetBlendMode(BlendMode::Alpha);
 
 	sprite2->SetPosition(10, 10);
 	sprite2->SetBlendMode(BlendMode::Add);
@@ -52,7 +66,7 @@ TEST_F(Test_Scene_Sprite, BlendMode)
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_Sprite, DrawCallCount)
 {
-	// <Test> 
+	// <Test> ステートが同一であれば1度のドローコールにまとめられる。
 	{
 		// 1度書いて、初期状態のときの描画数を覚えておく
 		Engine::UpdateFrame();
@@ -64,7 +78,6 @@ TEST_F(Test_Scene_Sprite, DrawCallCount)
 		auto sprite3 = Sprite2D::Create(tex);
 
 		Engine::UpdateFrame();
-		int defaultCount3 = EngineDiag::GetGraphicsDeviceDrawCount();
 		ASSERT_EQ(defaultCount + 1, EngineDiag::GetGraphicsDeviceDrawCount());
 	}
 }

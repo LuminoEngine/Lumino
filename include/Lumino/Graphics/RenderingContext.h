@@ -161,6 +161,7 @@ LN_INTERNAL_ACCESS:
 	RenderingContext();
 	virtual ~RenderingContext();
 	void Initialize(GraphicsManager* manager);
+	void InitializeFrame(RenderTarget* renderTarget);
 	void DrawMesh(MeshResource* mesh, int startIndex, int triangleCount);
 	void DrawMesh(MeshResource* mesh, int subset);
 	void DrawMesh(StaticMeshModel* mesh, int subset);
@@ -172,6 +173,7 @@ LN_INTERNAL_ACCESS:
 	const detail::BasicContextState& GetCurrentContxtState() const { return m_state; }
 
 protected:
+	virtual bool OnCheckStateChanged() override;
 	virtual void OnStateFlush() override;
 	virtual void OnPrimitiveFlush() override;
 	virtual void OnShaderVariableModified(ShaderVariable* var) override;
@@ -184,6 +186,7 @@ private:
 	detail::PrimitiveRenderer*				m_primitiveRenderer;
 	detail::MeshRendererProxy*				m_meshRendererProxy;
 	detail::BasicContextState				m_state;
+	detail::BasicContextState				m_backendState;
 	std::stack<detail::BasicContextState>	m_stateStack;
 };
 

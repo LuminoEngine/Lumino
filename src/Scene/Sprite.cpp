@@ -311,7 +311,9 @@ void Sprite2D::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 		spriteSize.height = srcRect.height;
 	}
 
-	dc->DrawSprite2D(m_combinedGlobalMatrix, spriteSize, GetTexture(), srcRect, Color::White);
+	detail::MaterialInstance* mat = m_materialList->GetMaterialInstance(subsetIndex);
+
+	dc->DrawSprite2D(m_combinedGlobalMatrix, spriteSize, GetTexture(), srcRect, mat->m_colorScale);
 	//Sprite::DrawSubset(dc, subsetIndex);
 	//if (subsetIndex == 0)
 	//{

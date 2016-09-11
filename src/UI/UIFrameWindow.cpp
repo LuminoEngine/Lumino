@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.h"
 #include <Lumino/Platform/PlatformWindow.h>
+#include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/Graphics/SwapChain.h>
 #include <Lumino/Graphics/Viewport.h>
@@ -105,9 +106,12 @@ void UIFrameWindow::BeginRendering()
 	Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
 	renderer->Begin();
 
+	m_manager->GetGraphicsManager()->GetRenderingContext()->InitializeFrame(m_swapChain->GetBackBuffer());
+
 	DrawingContext* g = m_manager->GetGraphicsManager()->GetDrawingContext();
+	g->InitializeFrame(m_swapChain->GetBackBuffer());
 	g->SetRenderTarget(0, m_swapChain->GetBackBuffer());
-	g->SetDepthBuffer(m_swapChain->GetBackBufferDepth());
+	g->SetDepthBuffer(m_swapChain->GetBackBufferDepth());	// TODO: InitializeFrame に混ぜたほうがいいかも
 	g->Clear(ClearFlags::All, Color::Black);
 }
 

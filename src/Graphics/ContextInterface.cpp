@@ -232,7 +232,6 @@ void ContextInterface::Initialize(GraphicsManager* manager)
 void ContextInterface::NorityStateChanging()
 {
 	m_manager->SwitchActiveContext(this);
-	OnPrimitiveFlush();
 	m_stateChanged = true;
 }
 
@@ -242,7 +241,11 @@ void ContextInterface::NorityStartDrawing(detail::IRendererPloxy* rendererPloxy)
 	m_manager->SwitchActiveContext(this);
 	if (m_stateChanged)
 	{
-		OnStateFlush();
+		if (OnCheckStateChanged())
+		{
+			OnPrimitiveFlush();
+			OnStateFlush();
+		}
 		m_stateChanged = false;
 	}
 	SwitchActiveRendererPloxy(rendererPloxy);
@@ -254,7 +257,12 @@ void ContextInterface::FlushImplemented()
 	m_manager->SwitchActiveContext(this);
 	if (m_stateChanged)
 	{
-		OnStateFlush();
+		if (OnCheckStateChanged())
+		{
+			OnPrimitiveFlush();
+			OnStateFlush();
+		}
+		m_stateChanged = false;
 	}
 	OnPrimitiveFlush();
 }
