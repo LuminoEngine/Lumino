@@ -1,6 +1,6 @@
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
   <TemplateData>
-    <Name>LuminoProject</Name>
+    <Name>Lumino プロジェクト</Name>
     <Description>Lumino でアプリケーションを開発するためのプロジェクトです。</Description>
     <ProjectType>VC</ProjectType>
     <ProjectSubType>
@@ -20,7 +20,7 @@
       <ProjectItem ReplaceParameters="false" TargetFileName="resource.h">RESOURCE\resource.h</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="resource.rc">RESOURCE\resource.rc</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="icon.ico">RESOURCE\icon.ico</ProjectItem>
-      <ProjectItem ReplaceParameters="false" TargetFileName="icon256.png">CONTENTS\icon256.png</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="icon256.png">DATA\icon256.png</ProjectItem>
     </Project>
   </TemplateContent>
 </VSTemplate>

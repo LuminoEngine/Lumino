@@ -29,7 +29,7 @@
     <Image Include="Resource\icon.ico">
       <Filter>Resource</Filter>
     </Image>
-    <Image Include="Contents\icon256.png">
+    <Image Include="Data\icon256.png">
       <Filter>Resource</Filter>
     </Image>
   </ItemGroup>

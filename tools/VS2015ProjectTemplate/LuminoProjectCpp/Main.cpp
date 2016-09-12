@@ -9,7 +9,7 @@ void Main()
 	Engine::Initialize();
 
 	// 画像を読み込み、2Dスプライトを作成する
-	auto sprite = Sprite2D::Create("Contents/icon256.png");
+	auto sprite = Sprite2D::Create("Data/icon256.png");
 
 	// 2Dスプライトの位置を設定する
 	sprite->SetPosition(200, 100);
