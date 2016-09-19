@@ -21,6 +21,8 @@
       <ProjectItem ReplaceParameters="false" TargetFileName="resource.rc">RESOURCE\resource.rc</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="icon.ico">RESOURCE\icon.ico</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="icon256.png">DATA\icon256.png</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="stdafx.cpp">stdafx.cpp</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="stdafx.h">stdafx.h</ProjectItem>
     </Project>
   </TemplateContent>
 </VSTemplate>
