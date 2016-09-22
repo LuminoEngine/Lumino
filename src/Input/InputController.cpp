@@ -10,6 +10,12 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
+InputController* InputController::GetController(int index)
+{
+	return detail::InputManager::GetInstance()->GetVirtualPad(index);
+}
+
+//------------------------------------------------------------------------------
 InputController::InputController(detail::InputManager* manager)
 	: m_manager(manager)
 	, m_repeatIntervalStart(20)	// TODO 要調整。時間の方がいいかも？

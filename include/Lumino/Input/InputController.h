@@ -9,6 +9,9 @@ class InputController
 	: public RefObject
 {
 public:
+	static InputController* GetController(int index);
+
+public:
 	InputController(detail::InputManager* manager);
 	virtual ~InputController();
 

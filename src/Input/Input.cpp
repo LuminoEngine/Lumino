@@ -40,21 +40,15 @@ float Input::GetAxisValue(const StringRef& bindingName)
 	return detail::InputManager::GetInstance()->GetVirtualPad(0)->GetAxisValue(bindingName);
 }
 
-//------------------------------------------------------------------------------
-InputController* Input::GetController(int index)
-{
-	return detail::InputManager::GetInstance()->GetVirtualPad(index);
-}
-
 //==============================================================================
 // InputButton
 //==============================================================================
 const String InputButtons::Any = String::GetEmpty();
-const String InputButtons::Left = _T("Left");
-const String InputButtons::Right = _T("Right");
-const String InputButtons::Up = _T("Up");
-const String InputButtons::Down = _T("Down");
-const String InputButtons::Ok = _T("Ok");
-const String InputButtons::Cancel = _T("Cancel");
+const String InputButtons::Left = _T("left");
+const String InputButtons::Right = _T("right");
+const String InputButtons::Up = _T("up");
+const String InputButtons::Down = _T("down");
+const String InputButtons::Ok = _T("ok");
+const String InputButtons::Cancel = _T("cancel");
 
 LN_NAMESPACE_END

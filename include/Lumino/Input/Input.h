@@ -36,8 +36,6 @@ public:
 	*/
 	static float GetAxisValue(const StringRef& bindingName);
 
-	static InputController* GetController(int index);
-
 private:
 };
 
