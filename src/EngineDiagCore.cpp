@@ -80,7 +80,7 @@ EngineDiagViewer::EngineDiagViewer()
 	: m_diagCore(nullptr)
 	, m_mainWindow(nullptr)
 	, m_font(nullptr)
-	, m_isVisible(false)
+	, m_displayMode(DisplayMode_Hide)
 {
 }
 
@@ -104,15 +104,26 @@ void EngineDiagViewer::Initialize(EngineManager* manager, EngineDiagCore* diagCo
 }
 
 //------------------------------------------------------------------------------
+void EngineDiagViewer::ToggleDisplayMode()
+{
+	m_displayMode = (DisplayMode)((m_displayMode + 1) % DisplayMode__Count);
+}
+
+//------------------------------------------------------------------------------
 void EngineDiagViewer::UpdateFrame()
 {
-	String str = String::Format(_T("{0} - MainFPS:{1}/{2}"), m_originalMainWindowTitle, m_diagCore->GetMainFPS(), m_diagCore->GetMainFPSCapacity());
-	m_mainWindow->SetTitleText(str);
+	if (m_displayMode == DisplayMode_FPSSummary)
+	{
+		String str = String::Format(_T("{0} - MainFPS:{1}/{2}"), m_originalMainWindowTitle, m_diagCore->GetMainFPS(), m_diagCore->GetMainFPSCapacity());
+		m_mainWindow->SetTitleText(str);
+	}
 }
 
 //------------------------------------------------------------------------------
 void EngineDiagViewer::Render(DrawingContext* g, const Vector2& viewSize)
 {
+	if (m_displayMode != DisplayMode_Details) return;
+
 	PointF location(m_windowRect.x, m_windowRect.y);
 	g->SetOpacity(0.5f);
 	g->SetFont(m_font);

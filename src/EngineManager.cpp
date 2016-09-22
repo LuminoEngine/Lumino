@@ -319,8 +319,6 @@ void EngineManager::Initialize()
 	InitializeSceneGraphManager();
 #endif
 	InitializeAssetsManager();
-	//m_application = LN_NEW detail::InternalApplicationImpl();	// TODO: とりあえず
-	//m_application->Initialize(this);
 
 	EngineDiagCore::Instance.Initialize(this);
 }
@@ -717,7 +715,7 @@ void EngineManager::Render()
 		//	m_uiManager->GetMainWindow()->RenderUI();
 		//}
 
-		if (m_diagViewer != nullptr && m_diagViewer->IsVisible())
+		if (m_diagViewer != nullptr)
 		{
 			// TODO: このあたりも GetMainWindow()->Render() の中に持っていくべき？
 			g->Clear(ClearFlags::Depth, Color::White);	// TODO
@@ -814,7 +812,7 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 			m_configData.acceleratorKeys.toggleShowDiag->EqualKeyInput(e.key.keyCode, e.key.modifierKeys) &&
 			m_diagViewer != nullptr)
 		{
-			m_diagViewer->SetVisible(!m_diagViewer->IsVisible());
+			m_diagViewer->ToggleDisplayMode();
 		}
 		break;
 	case PlatformEventType::KeyUp:
