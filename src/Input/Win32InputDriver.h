@@ -13,10 +13,12 @@ public:
 	virtual ~Win32InputDriver();
 
 	void Initialize(HWND hWnd);
-	int GetJoypadCount();
-	void GetJoypadState(int joypadNumber, JoypadDeviceState* state);
-	void StartVibration(int joypadNumber, int power, int time);
-	void StopVibration(int joypadNumber);
+
+	virtual int GetJoystickCount() override;
+	virtual void GetJoystickState(int joysticNumber, JoystickDeviceState* state) override;
+
+	void StartVibration(int joysticNumber, int power, int time);
+	void StopVibration(int joysticNumber);
 
 private:
 	void Finalize();
@@ -30,7 +32,7 @@ private:
 private:
 	HWND						m_hWnd;
 	IDirectInput8*				m_directInput;
-	Array<Win32JoystickDriver*>	m_joypadList;
+	Array<Win32JoystickDriver*>	m_joystickList;
 	int							m_XInputDeviceCount;
 	bool						m_comInited;
 };

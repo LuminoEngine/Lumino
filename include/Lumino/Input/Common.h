@@ -25,19 +25,12 @@ typedef RefPtr<InputBinding>	InputBindingPtr;
 //	MouseButton_Max,
 //};
 
-/// 入力デバイスを識別する値
-enum InputDeviceID
+
+enum class JoystickPovAxis
 {
-	InputDeviceID_Unknown = 0,
-	InputDeviceID_Keyboard,
-	InputDeviceID_Mouse,
-	InputDeviceID_Joypad1,
-	InputDeviceID_Joypad2,
-	InputDeviceID_Joypad3,
-	InputDeviceID_Joypad4,
+	X,
+	Y,
 };
-
-
 
 namespace detail
 {
@@ -114,22 +107,66 @@ class InputManager;
 //};
 //LN_ENUM_DECLARE(DeviceInputSource);
 
+enum class DeviceInputSourceType
+{
+	Keyboard,
+	Mouse,
+	JoystickButton,
+	JoystickAxis,
+	JoystickPov,
+	// Motion,
+	// Gesture,
+	// Android,
+};
+
 struct DeviceInputSource
 {
-	uint32_t	id;
+	DeviceInputSourceType	type;
 
-	static const uint32_t KeyboardFlag			= 0x00010000;
-	static const uint32_t MouseFlag				= 0x00020000;
-	static const uint32_t JoystickButtonFlag	= 0x00040000;
-	static const uint32_t JoystickAxisFlag		= 0x00080000;
-	static const uint32_t JoystickPovFlag		= 0x00100000;
-	
-	static const uint32_t ValueMask				= 0x0000FFFF;
-	static const uint32_t JoystickNumberMask	= 0x0000F000;
-	static const uint32_t JoystickValueMask		= 0x00000FFF;
-	// Motion
-	// Gesture
-	// Android
+	union
+	{
+		struct
+		{
+			Key				key;
+			ModifierKeys::enum_type	modifierKeys;
+
+		} Keyboard;
+
+		struct
+		{
+			MouseButton::enum_type		buttonNumber;
+
+		} Mouse;
+
+		struct
+		{
+			int				buttonNumber;
+
+		} JoystickButton;
+
+		struct
+		{
+			int				axizNumber;
+
+		} JoystickAxis;
+
+		struct
+		{
+			JoystickPovAxis		povAxis;
+
+		} JoystickPov;
+	};
+};
+
+enum InputDeviceID
+{
+	InputDeviceID_None = 0x0000,
+	InputDeviceID_Keyboard = 0x0001,
+	InputDeviceID_Mouse = 0x0002,
+	InputDeviceID_Joystick0 = 0x0004,
+	InputDeviceID_Joystick1 = 0x0008,
+	InputDeviceID_Joystick2 = 0x0010,
+	InputDeviceID_Joystick3 = 0x0020,
 };
 
 } // namespace detail

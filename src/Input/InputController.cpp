@@ -1,4 +1,8 @@
-﻿
+﻿/*
+	[2016/10/2]
+		BindingSlot は、InputBinding は UE4 に合わせて名前を持たせないようにしたため、
+		入力ソースとの対応付けを行うために必要。
+*/
 #include "../Internal.h"
 #include <Lumino/Input/InputController.h>
 #include "InputManager.h"
@@ -18,6 +22,10 @@ InputController* InputController::GetController(int index)
 //------------------------------------------------------------------------------
 InputController::InputController(detail::InputManager* manager)
 	: m_manager(manager)
+	, m_attachedDevices(detail::InputDeviceID_Keyboard | detail::InputDeviceID_Mouse | detail::InputDeviceID_Joystick0)	// TODO
+	, m_bindingSlots()
+	, m_inputStatus()
+	, m_inputStateForAny()
 	, m_repeatIntervalStart(20)	// TODO 要調整。時間の方がいいかも？
 	, m_repeatIntervalStep(5)
 {
@@ -73,18 +81,20 @@ float InputController::GetAxisValue(const StringRef& bindingName) const
 }
 
 //------------------------------------------------------------------------------
-void InputController::AddBinding(InputBinding* binding)
+void InputController::AddBinding(const StringRef& buttonName, InputBinding* binding)
 {
-	m_bindings.Add(RefPtr<InputBinding>(binding));
+	BindingSlot slot = { buttonName, binding };
+	m_bindingSlots.Add(slot);
 
-	auto* state = m_inputStatus.Find(binding->GetName());
+	// まだ登録したことがない名前であれば InputState を作る。そうでなければ参照カウントを増やす。
+	auto* state = m_inputStatus.Find(buttonName);
 	if (state == nullptr)
 	{
 		InputState newState;
 		newState.current = 0;
 		newState.state = 0;
 		newState.ref = 1;
-		m_inputStatus.Add(binding->GetName(), newState);
+		m_inputStatus.Add(buttonName, newState);
 	}
 	else
 	{
@@ -95,22 +105,27 @@ void InputController::AddBinding(InputBinding* binding)
 //------------------------------------------------------------------------------
 void InputController::RemoveBinding(InputBinding* binding)
 {
-	m_bindings.Remove(RefPtr<InputBinding>(binding));
+	int index = m_bindingSlots.IndexOf([binding](const BindingSlot& slot) { return slot.binding == binding; });
+	if (index < 0) return;
 
-	auto* state = m_inputStatus.Find(binding->GetName());
+	const String& name = m_bindingSlots[index].name;
+
+	auto* state = m_inputStatus.Find(name);
 	state->ref--;
 	if (state->ref <= 0) {
-		m_inputStatus.Remove(binding->GetName());
+		m_inputStatus.Remove(name);
 	}
+
+	m_bindingSlots.RemoveAt(index);
 }
 
 //------------------------------------------------------------------------------
 void InputController::ClearBindings()
 {
-	Array<RefPtr<InputBinding>> list = m_bindings;
+	Array<BindingSlot> list = m_bindingSlots;
 	for (int i = list.GetCount() - 1; i >= 0; ++i)	// 後ろから回した方がちょっと削除の効率がいい
 	{
-		RemoveBinding(list[i]);
+		RemoveBinding(list[i].binding);
 	}
 }
 
@@ -135,10 +150,16 @@ void InputController::UpdateFrame()
 	m_inputStateForAny.current = 0;
 
 	// m_inputStatus に現在の入力値を展開する
-	for (auto& binding : m_bindings)
+	for (const BindingSlot& slot : m_bindingSlots)
 	{
-		float v = m_manager->GetVirtualButtonState(binding->GetDeviceInputSource(), true, true);
-		InputState* state = m_inputStatus.Find(binding->GetName());
+		InputBinding* binding = slot.binding;
+
+		float v = m_manager->GetVirtualButtonState(
+			binding->GetDeviceInputSource(),
+			(m_attachedDevices & detail::InputDeviceID_Keyboard) != 0,
+			(m_attachedDevices & detail::InputDeviceID_Mouse) != 0,
+			GetJoyNumber());
+		InputState* state = m_inputStatus.Find(slot.name);
 		if (state != nullptr)
 		{
 			v = (binding->IsNegativeValue()) ? -v : v;
@@ -159,6 +180,16 @@ void InputController::UpdateFrame()
 		}
 	}
 	UpdateOneInputState(&m_inputStateForAny);
+}
+
+//------------------------------------------------------------------------------
+int InputController::GetJoyNumber() const
+{
+	if (m_attachedDevices & detail::InputDeviceID_Joystick0) return 0;
+	if (m_attachedDevices & detail::InputDeviceID_Joystick1) return 1;
+	if (m_attachedDevices & detail::InputDeviceID_Joystick2) return 2;
+	if (m_attachedDevices & detail::InputDeviceID_Joystick3) return 3;
+	return -1;
 }
 
 //------------------------------------------------------------------------------

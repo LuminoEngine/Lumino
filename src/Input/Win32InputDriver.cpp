@@ -47,27 +47,27 @@ void Win32InputDriver::Finalize()
 }
 
 //------------------------------------------------------------------------------
-int Win32InputDriver::GetJoypadCount()
+int Win32InputDriver::GetJoystickCount()
 {
-	return m_joypadList.GetCount();
+	return m_joystickList.GetCount();
 }
 
 //------------------------------------------------------------------------------
-void Win32InputDriver::GetJoypadState(int joypadNumber, JoypadDeviceState* state)
+void Win32InputDriver::GetJoystickState(int joystickNumber, JoystickDeviceState* state)
 {
-	m_joypadList[joypadNumber]->GetJoypadDeviceState(state);
+	m_joystickList[joystickNumber]->GetJoystickDeviceState(state);
 }
 
 //------------------------------------------------------------------------------
-void Win32InputDriver::StartVibration(int joypadNumber, int power, int time)
+void Win32InputDriver::StartVibration(int joystickNumber, int power, int time)
 {
-	m_joypadList[joypadNumber]->StartVibration(power, time);
+	m_joystickList[joystickNumber]->StartVibration(power, time);
 }
 
 //------------------------------------------------------------------------------
-void Win32InputDriver::StopVibration(int joypadNumber)
+void Win32InputDriver::StopVibration(int joystickNumber)
 {
-	m_joypadList[joypadNumber]->StopVibration();
+	m_joystickList[joystickNumber]->StopVibration();
 }
 
 //------------------------------------------------------------------------------
@@ -89,10 +89,10 @@ void Win32InputDriver::RefreshDevice()
 //------------------------------------------------------------------------------
 void Win32InputDriver::ReleaseDevice()
 {
-	for (Win32JoystickDriver* joy : m_joypadList) {
+	for (Win32JoystickDriver* joy : m_joystickList) {
 		joy->Release();
 	}
-	m_joypadList.Clear();
+	m_joystickList.Clear();
 	m_XInputDeviceCount = 0;
 }
 
@@ -120,9 +120,9 @@ void Win32InputDriver::CreateJoysticksDevice(const DIDEVICEINSTANCE* instance)
 		}
 		LN_SAFE_RELEASE(device);
 
-		Win32JoystickDriver* joypad = LN_NEW Win32JoystickDriver();
-		joypad->Initialize(NULL, m_hWnd, m_XInputDeviceCount, true);
-		m_joypadList.Add(joypad);
+		Win32JoystickDriver* joystick = LN_NEW Win32JoystickDriver();
+		joystick->Initialize(NULL, m_hWnd, m_XInputDeviceCount, true);
+		m_joystickList.Add(joystick);
 		++m_XInputDeviceCount;
 	}
 	else
@@ -139,9 +139,9 @@ void Win32InputDriver::CreateJoysticksDevice(const DIDEVICEINSTANCE* instance)
 			{
 				//DXST_ERRORLOGFMT_ADDA(( "デバイスの登録名:%s" , State.tszInstanceName )) ;
 				//DXST_ERRORLOGFMT_ADDA(( "デバイスの製品登録名:%s" , State.tszProductName )) ;
-				Win32JoystickDriver* joypad = LN_NEW Win32JoystickDriver();
-				joypad->Initialize(device, m_hWnd, -1, (caps.dwFlags & DIDC_FORCEFEEDBACK) != 0);
-				m_joypadList.Add(joypad);
+				Win32JoystickDriver* joystick = LN_NEW Win32JoystickDriver();
+				joystick->Initialize(device, m_hWnd, -1, (caps.dwFlags & DIDC_FORCEFEEDBACK) != 0);
+				m_joystickList.Add(joystick);
 			}
 		}
 	}

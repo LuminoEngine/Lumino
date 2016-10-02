@@ -194,7 +194,7 @@ void Win32JoystickDriver::Dispose()
 }
 
 //------------------------------------------------------------------------------
-void Win32JoystickDriver::GetJoypadDeviceState(JoypadDeviceState* joyState)
+void Win32JoystickDriver::GetJoystickDeviceState(JoystickDeviceState* joyState)
 {
 	// XInput
 	if (IsXInputDevice())
@@ -262,7 +262,7 @@ void Win32JoystickDriver::GetJoypadDeviceState(JoypadDeviceState* joyState)
 		if (SUCCEEDED(hr))
 		{
 			// ボタン
-			for (int i = 0; i < JoypadDeviceState::MaxJoypadButtons; ++i)
+			for (int i = 0; i < JoystickDeviceState::MaxButtons; ++i)
 			{
 				joyState->Buttons[i] = (state.rgbButtons[i] & 0x80) != 0x00;
 			}
@@ -326,7 +326,7 @@ void Win32JoystickDriver::GetJoypadDeviceState(JoypadDeviceState* joyState)
 		else
 		{
 			mDevice->Acquire();
-			memset(joyState, 0, sizeof(JoypadDeviceState));
+			memset(joyState, 0, sizeof(JoystickDeviceState));
 		}
 	}
 

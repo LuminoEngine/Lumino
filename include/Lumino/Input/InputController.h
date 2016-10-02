@@ -21,14 +21,23 @@ public:
 	bool IsRepeated(const StringRef& bindingName) const;
 	float GetAxisValue(const StringRef& bindingName) const;
 
-	void AddBinding(InputBinding* binding);
+	void AddBinding(const StringRef& buttonName, InputBinding* binding);
 	void RemoveBinding(InputBinding* binding);
 	void ClearBindings();
 	void SetRepeatInterval(int start, int step);
 
 	void UpdateFrame();
 
+	// TODO:
+	int GetJoyNumber() const;
+
 private:
+	struct BindingSlot
+	{
+		String					name;
+		RefPtr<InputBinding>	binding;
+	};
+
 	struct InputState
 	{
 		float	current;
@@ -40,7 +49,8 @@ private:
 	const InputState* LockupState(const StringRef& bindingName) const;
 
 	detail::InputManager*			m_manager;
-	Array<RefPtr<InputBinding>>		m_bindings;
+	uint32_t						m_attachedDevices;		// TODO: 本当ならちゃんとインターフェイス組むべきかも
+	Array<BindingSlot>				m_bindingSlots;
 	SortedArray<String, InputState>	m_inputStatus;
 	InputState						m_inputStateForAny;
 	int								m_repeatIntervalStart;

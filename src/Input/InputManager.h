@@ -12,7 +12,7 @@ namespace detail
 class InputManager
 	: public RefObject
 {
-public:	static const int MaxJoypads = 4;
+public:	static const int MaxJoysticks = 4;
 
 	struct Settings
 	{
@@ -41,7 +41,7 @@ public:
 	void OnEvent(const PlatformEventArgs& e);
 
 
-	float GetVirtualButtonState(const detail::DeviceInputSource& input, bool keyboard, bool mouse);
+	float GetVirtualButtonState(const detail::DeviceInputSource& input, bool keyboard, bool mouse, int joyNumber);
 
 private:
 	void RefreshDevices();

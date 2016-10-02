@@ -69,16 +69,23 @@ void InputManager::Initialize(const Settings& settings)
 	
 	LN_THROW(m_inputDriver != nullptr, NotImplementedException);
 
+	// TODO: 今は1つだけ
 	auto pad = RefPtr<InputController>::MakeRef(this);
 	m_defaultVirtualPads[0] = pad;
 	m_defaultVirtualPads[0]->AddRef();
 
-	pad->AddBinding(InputBinding::Create(InputButtons::Left, Key::Left));
-	pad->AddBinding(InputBinding::Create(InputButtons::Right, Key::Right));
-	pad->AddBinding(InputBinding::Create(InputButtons::Up, Key::Up));
-	pad->AddBinding(InputBinding::Create(InputButtons::Down, Key::Down));
-	pad->AddBinding(InputBinding::Create(InputButtons::Ok, Key::Z));
-	pad->AddBinding(InputBinding::Create(InputButtons::Cancel, Key::X));
+	pad->AddBinding(InputButtons::Left, InputBinding::CreateKeyboardBinding(Key::Left));
+	pad->AddBinding(InputButtons::Right, InputBinding::CreateKeyboardBinding(Key::Right));
+	pad->AddBinding(InputButtons::Up, InputBinding::CreateKeyboardBinding(Key::Up));
+	pad->AddBinding(InputButtons::Down, InputBinding::CreateKeyboardBinding(Key::Down));
+	pad->AddBinding(InputButtons::Ok, InputBinding::CreateKeyboardBinding(Key::Z));
+	pad->AddBinding(InputButtons::Cancel, InputBinding::CreateKeyboardBinding(Key::X));
+
+
+	//pad->AddBinding(InputBinding::CreateJoystickAxisBinding(InputButtons::Left, 0));
+	//pad->AddBinding(InputBinding::CreateJoystickAxisBinding(InputButtons::Right, Key::Right));
+	//pad->AddBinding(InputBinding::CreateJoystickAxisBinding(InputButtons::Up, Key::Up));
+	//pad->AddBinding(InputBinding::CreateJoystickAxisBinding(InputButtons::Down, Key::Down));
 
 	if (g_inputManager == nullptr) {
 		g_inputManager = this;
@@ -121,37 +128,53 @@ void InputManager::OnEvent(const PlatformEventArgs& e)
 }
 
 //------------------------------------------------------------------------------
-float InputManager::GetVirtualButtonState(const detail::DeviceInputSource& input, bool keyboard, bool mouse)
+float InputManager::GetVirtualButtonState(const detail::DeviceInputSource& input, bool keyboard, bool mouse, int joyNumber)
 {
 	// キーボード
-	if (input.id & detail::DeviceInputSource::KeyboardFlag)
+	if (keyboard && input.type == detail::DeviceInputSourceType::Keyboard)
 	{
-		uint32_t k = (input.id & detail::DeviceInputSource::ValueMask) & 0x0FFF;
-		uint32_t m = ((input.id & detail::DeviceInputSource::ValueMask) & 0xF000) >> 24;
-		if (m != 0) { LN_NOTIMPLEMENTED(); }
-		return m_inputDriver->GetKeyState((Key)k) ? 1.0f : 0.0f;
+		if (input.Keyboard.modifierKeys != 0) { LN_NOTIMPLEMENTED(); }
+		return m_inputDriver->GetKeyState(input.Keyboard.key) ? 1.0f : 0.0f;
 	}
 	// マウス
-	if (input.id & detail::DeviceInputSource::MouseFlag)
+	if (mouse && input.type == detail::DeviceInputSourceType::Mouse)
 	{
-		uint32_t k = input.id & detail::DeviceInputSource::ValueMask;
-		return m_inputDriver->GetMouseState((MouseButton::enum_type)k) ? 1.0f : 0.0f;
+		return m_inputDriver->GetMouseState(input.Mouse.buttonNumber) ? 1.0f : 0.0f;
 	}
 	// ジョイスティック - ボタン
-	if (input.id & detail::DeviceInputSource::JoystickButtonFlag)
+	if (joyNumber > -1 && input.type == detail::DeviceInputSourceType::JoystickButton)
 	{
-		uint32_t number = (input.id & detail::DeviceInputSource::JoystickNumberMask) >> 12;
-		LN_THROW(0, NotImplementedException);
+		JoystickDeviceState state;
+		m_inputDriver->GetJoystickState(joyNumber, &state);
+		LN_CHECK_RANGE(input.JoystickButton.buttonNumber, 0, JoystickDeviceState::MaxButtons);
+		return state.Buttons[input.JoystickButton.buttonNumber] ? 1.0f : 0.0f;
 	}
 	// ジョイスティック - 軸
-	if (input.id & detail::DeviceInputSource::JoystickAxisFlag)
+	if (joyNumber > -1 && input.type == detail::DeviceInputSourceType::JoystickAxis)
 	{
-		LN_THROW(0, NotImplementedException);
+		JoystickDeviceState state;
+		m_inputDriver->GetJoystickState(joyNumber, &state);
+		LN_CHECK_RANGE(input.JoystickAxis.axizNumber, 0, JoystickDeviceState::MaxAxis);
+		return state.Axes[input.JoystickAxis.axizNumber];
 	}
 	// ジョイスティック - POV
-	if (input.id & detail::DeviceInputSource::JoystickPovFlag)
+	if (joyNumber > -1 && input.type == detail::DeviceInputSourceType::JoystickPov)
 	{
-		LN_THROW(0, NotImplementedException);
+		JoystickDeviceState state;
+		m_inputDriver->GetJoystickState(joyNumber, &state);
+
+		if (input.JoystickPov.povAxis == JoystickPovAxis::X)
+		{
+			if (state.POV & PovDirFlags::Left) return -1.0;
+			if (state.POV & PovDirFlags::Right) return 1.0;
+			return 0.0f;
+		}
+		else if (input.JoystickPov.povAxis == JoystickPovAxis::Y)
+		{
+			if (state.POV & PovDirFlags::Up) return -1.0;
+			if (state.POV & PovDirFlags::Down) return 1.0;
+			return 0.0f;
+		}
 	}
 	return 0.0f;
 }

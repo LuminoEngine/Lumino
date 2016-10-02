@@ -10,24 +10,43 @@ LN_NAMESPACE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(InputBinding, tr::ReflectionObject);
 
 //------------------------------------------------------------------------------
-InputBindingPtr InputBinding::Create(const String& bindingName, Key key, ModifierKeys modifier)
+InputBindingPtr InputBinding::CreateKeyboardBinding(Key key, ModifierKeys modifier)
 {
-	return RefPtr<InputBinding>::MakeRef(bindingName, key, modifier);
+	auto ptr = RefPtr<InputBinding>::MakeRef();
+	ptr->InitializeKeyboardBinding(key, modifier);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
+InputBindingPtr InputBinding::CreateJoystickButtonBinding(int buttonNumber)
+{
+	auto ptr = RefPtr<InputBinding>::MakeRef();
+	ptr->InitializeJoystickButtonBinding(buttonNumber);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
+InputBindingPtr InputBinding::CreateJoystickAxisBinding(int axisNumber)
+{
+	auto ptr = RefPtr<InputBinding>::MakeRef();
+	ptr->InitializeJoystickAxisBinding(axisNumber);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
+InputBindingPtr InputBinding::CreateJoystickPovBinding(JoystickPovAxis direction)
+{
+	auto ptr = RefPtr<InputBinding>::MakeRef();
+	ptr->InitializeJoystickPovBinding(direction);
+	return ptr;
 }
 
 //------------------------------------------------------------------------------
 InputBinding::InputBinding()
-	: m_negativeValue(false)
+	: m_source()
 	, m_minValidMThreshold(0.2f)
+	, m_negativeValue(false)
 {
-}
-
-//------------------------------------------------------------------------------
-InputBinding::InputBinding(const String& bindingName, Key key, ModifierKeys modifier)
-	: InputBinding()
-{
-	m_bindingName = bindingName;
-	m_source.id = detail::DeviceInputSource::KeyboardFlag | ((uint32_t)key) | (modifier << 24);
 }
 
 //------------------------------------------------------------------------------
@@ -36,14 +55,41 @@ InputBinding::~InputBinding()
 }
 
 //------------------------------------------------------------------------------
+void InputBinding::InitializeKeyboardBinding(Key key, ModifierKeys modifier)
+{
+	m_source.type = detail::DeviceInputSourceType::Keyboard;
+	m_source.Keyboard.key = key;
+	m_source.Keyboard.modifierKeys = (ModifierKeys::enum_type)(int)modifier;
+}
+
+//------------------------------------------------------------------------------
+void InputBinding::InitializeJoystickButtonBinding(int buttonNumber)
+{
+	m_source.type = detail::DeviceInputSourceType::JoystickButton;
+	m_source.JoystickButton.buttonNumber = buttonNumber;
+}
+
+//------------------------------------------------------------------------------
+void InputBinding::InitializeJoystickAxisBinding(int axisNumber)
+{
+	m_source.type = detail::DeviceInputSourceType::JoystickAxis;
+	m_source.JoystickAxis.axizNumber = axisNumber;
+}
+
+//------------------------------------------------------------------------------
+void InputBinding::InitializeJoystickPovBinding(JoystickPovAxis direction)
+{
+	m_source.type = detail::DeviceInputSourceType::JoystickPov;
+	m_source.JoystickPov.povAxis = direction;
+}
+
+//------------------------------------------------------------------------------
 bool InputBinding::EqualKeyInput(Key keyCode, ModifierKeys modifier)
 {
-	if (m_source.id & detail::DeviceInputSource::KeyboardFlag)
+	if (m_source.type == detail::DeviceInputSourceType::Keyboard)
 	{
-		uint32_t k = (m_source.id & detail::DeviceInputSource::ValueMask) & 0x0FFF;
-		uint32_t m = ((m_source.id & detail::DeviceInputSource::ValueMask) & 0xF000) >> 24;
-		if ((uint32_t)keyCode != k) return false;
-		if (modifier != m) return false;
+		if (keyCode != m_source.Keyboard.key) return false;
+		if (modifier != m_source.Keyboard.modifierKeys) return false;
 		return true;
 	}
 	return false;

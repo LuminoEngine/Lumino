@@ -18,14 +18,14 @@ LN_ENUM_FLAGS(PovDirFlags)
 LN_ENUM_FLAGS_DECLARE(PovDirFlags);
 
 /// ジョイパッドの状態を表す構造体
-struct JoypadDeviceState
+struct JoystickDeviceState
 {
-	static const int MaxJoypadButtons = 16;    ///< ジョイパッドのボタンの最大数
-	static const int MaxJoypadAxis = 8;        ///< ジョイパッドの軸の最大数
+	static const int MaxButtons = 16;    ///< ジョイパッドのボタンの最大数
+	static const int MaxAxis = 8;        ///< ジョイパッドの軸の最大数
 
-	float		Axes[MaxJoypadAxis];
+	float		Axes[MaxAxis];
 	uint32_t	POV;						        ///< POV 状態 (POVDir の組み合わせ  GLFWでは取れない)
-	uint8_t		Buttons[MaxJoypadButtons];
+	uint8_t		Buttons[MaxButtons];
 };
 
 // 
@@ -40,7 +40,10 @@ public:
 	bool GetMouseState(MouseButton button) const { return m_mouseStatus[(int)button]; }
 	const Point& GetMousePoint() const { return m_mousePoint; }
 	int GetMouseWheel() const { return m_mouseWheel; }
-	
+
+	virtual int GetJoystickCount() = 0;
+	virtual void GetJoystickState(int joystickNumber, JoystickDeviceState* state) = 0;
+
 	virtual void UpdateFrame();
 	virtual void OnEvent(const PlatformEventArgs& e);
 

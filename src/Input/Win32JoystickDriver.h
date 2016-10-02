@@ -38,7 +38,7 @@ public:
 	void Dispose();
 
 	/// ジョイパッドの状態を取得する
-	void GetJoypadDeviceState(JoypadDeviceState* state);
+	void GetJoystickDeviceState(JoystickDeviceState* state);
 
 	/// XInput デバイスかを判定する
 	bool IsXInputDevice() const { return mXInputNo >= 0; }
@@ -60,8 +60,8 @@ private:
 public:
 
 	static const int AXIS_RANGE = 1000;							///< DirectInput に設定する軸の範囲 ( -1000～1000 )
-	static const int MAX_BUTTON_NUM = JoypadDeviceState::MaxJoypadButtons;	///< ボタンの数
-	static const int MAX_AXIS_NUM = JoypadDeviceState::MaxJoypadButtons;			///< 軸の数
+	static const int MAX_BUTTON_NUM = JoystickDeviceState::MaxButtons;	///< ボタンの数
+	static const int MAX_AXIS_NUM = JoystickDeviceState::MaxButtons;			///< 軸の数
 	
 
 private:
