@@ -4,6 +4,7 @@
 #define LN_INTERNAL_ACCESS				public
 #define LN_PROTECTED_INTERNAL_ACCESS	public
 
+#define NOMINMAX
 #include <LuminoCore.h>
 #include "../include/Lumino/Graphics/Common.h"	// TODO: Internal.h には置きたくない
 
@@ -13,11 +14,12 @@
 #include "../external/GL/glext.h"
 
 #if defined(LN_OS_WIN32)
-	//#include <GL/wglew.h>
-	#include "../external/GL/wglext.h"
+#include <Objbase.h>
+//#include <GL/wglew.h>
+#include "../external/GL/wglext.h"
 #elif defined(LN_OS_X11)
-	#include <GL/glx.h>
-	#include "../external/GL/glxext.h"
+#include <GL/glx.h>
+#include "../external/GL/glxext.h"
 #endif
 
 #include "Graphics/Device/OpenGL/LNGL.h"

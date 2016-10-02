@@ -39,7 +39,6 @@
 #include "Lumino/Effect/VisualEffect.h"
 #include "Lumino/Effect/VisualEffectInstance.h"
 
-#include "Lumino/Platform/PlatformSupport.h"
 #include "Lumino/Platform/PlatformWindow.h"
 #include "Lumino/Platform/PlatformEventArgs.h"
 #include "Lumino/Platform/EventListener.h"

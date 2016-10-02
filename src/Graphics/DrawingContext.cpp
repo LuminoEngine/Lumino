@@ -248,20 +248,29 @@ void DrawingContext::DrawTexture(const RectF& rect, Texture* texture, const Rect
 }
 
 //------------------------------------------------------------------------------
+#pragma push_macro("DrawText")
+#undef DrawText
 void DrawingContext::DrawText(const StringRef& text, const PointF& position)
 {
 	NorityStartDrawing(m_textRenderer);
 	Flush();	// TODO: TextRenderer ‚ª Flush –¢‘Î‰ž‚È‚Ì‚ÅB
 	m_textRenderer->DrawString(text.GetBegin(), text.GetLength(), position);
 }
-
-//------------------------------------------------------------------------------
 void DrawingContext::DrawText(const StringRef& text, const RectF& rect, StringFormatFlags flags)
 {
 	NorityStartDrawing(m_textRenderer);
 	Flush();	// TODO: TextRenderer ‚ª Flush –¢‘Î‰ž‚È‚Ì‚ÅB
 	m_textRenderer->DrawString(text.GetBegin(), text.GetLength(), rect, flags);
 }
+void DrawingContext::LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const PointF& position)
+{
+	DrawText(text, position);
+}
+void DrawingContext::LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const RectF& rect, StringFormatFlags flags)
+{
+	DrawText(text, rect, flags);
+}
+#pragma pop_macro("DrawText")
 
 
 

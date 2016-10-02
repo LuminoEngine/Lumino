@@ -5,6 +5,9 @@
 #include "ContextInterface.h"
 #include "Brush.h"
 
+#pragma push_macro("DrawText")
+#undef DrawText
+
 LN_NAMESPACE_BEGIN
 class RenderingContext;
 namespace detail { class GeometryRenderer; }
@@ -95,6 +98,12 @@ private:
 	ContextState				m_state;
 	ContextState				m_backendState;
 	std::stack<ContextState>	m_stateStack;
+
+public:
+	void LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const PointF& position);
+	void LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const RectF& rect, StringFormatFlags flags);
 };
 
 LN_NAMESPACE_END
+
+#pragma pop_macro("DrawText")

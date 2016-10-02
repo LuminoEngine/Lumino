@@ -1,4 +1,5 @@
 ﻿
+#include "Internal.h"
 #include "AudioStream.h"
 #include "AudioUtils.h"
 

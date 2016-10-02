@@ -95,7 +95,7 @@ void GraphicsDeviceBase::GCDeviceResource()
 void GraphicsDeviceBase::AttachRenderingThread()
 {
 	LN_THROW(m_attachRenderingThreadId == 0, InvalidOperationException);
-	m_attachRenderingThreadId = Thread::GetCurrentThreadID();
+	m_attachRenderingThreadId = Thread::GetCurrentThreadId();
 }
 
 //------------------------------------------------------------------------------

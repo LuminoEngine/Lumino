@@ -11,7 +11,9 @@
 #include <Lumino/Base/Exception.h>
 
 #if defined(LN_OS_WIN32)
+	#include <windows.h>
 	#include <mmreg.h>
+	#include <mmiscapi.h>
 	#include <msacm.h>
 	#include <xaudio2.h>
 	#include <x3daudio.h>

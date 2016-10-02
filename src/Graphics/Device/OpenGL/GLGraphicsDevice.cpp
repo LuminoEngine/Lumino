@@ -294,7 +294,7 @@ void GLGraphicsDevice::DetachRenderingThread()
 //------------------------------------------------------------------------------
 void GLGraphicsDevice::OnBeginAccessContext()
 {
-	if (Thread::GetCurrentThreadID() != m_attachRenderingThreadId)
+	if (Thread::GetCurrentThreadId() != m_attachRenderingThreadId)
 	{
 		MakeCurrentContext(GetMainContext());
 	}
@@ -303,7 +303,7 @@ void GLGraphicsDevice::OnBeginAccessContext()
 //------------------------------------------------------------------------------
 void GLGraphicsDevice::OnEndAccessContext()
 {
-	if (Thread::GetCurrentThreadID() != m_attachRenderingThreadId)
+	if (Thread::GetCurrentThreadId() != m_attachRenderingThreadId)
 	{
 		MakeCurrentContext(nullptr);
 	}
