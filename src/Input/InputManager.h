@@ -41,7 +41,7 @@ public:
 	void OnEvent(const PlatformEventArgs& e);
 
 
-	float GetVirtualButtonState(const detail::DeviceInputSource& input, bool keyboard, bool mouse, int joyNumber);
+	float GetVirtualButtonState(InputBinding* binding, const detail::DeviceInputSource& input, bool keyboard, bool mouse, int joyNumber);
 
 private:
 	void RefreshDevices();

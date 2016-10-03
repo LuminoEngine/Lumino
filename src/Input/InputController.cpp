@@ -155,6 +155,7 @@ void InputController::UpdateFrame()
 		InputBinding* binding = slot.binding;
 
 		float v = m_manager->GetVirtualButtonState(
+			binding,
 			binding->GetDeviceInputSource(),
 			(m_attachedDevices & detail::InputDeviceID_Keyboard) != 0,
 			(m_attachedDevices & detail::InputDeviceID_Mouse) != 0,

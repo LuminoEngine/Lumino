@@ -95,4 +95,39 @@ bool InputBinding::EqualKeyInput(Key keyCode, ModifierKeys modifier)
 	return false;
 }
 
+//------------------------------------------------------------------------------
+detail::InputBindingType InputBinding::GetType() const
+{
+	return detail::InputBindingType::Keyboard;
+}
+
+//==============================================================================
+// GamepadInputBinding
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(GamepadInputBinding, InputBinding);
+
+//------------------------------------------------------------------------------
+GamepadInputBindingPtr GamepadInputBinding::Create(GamepadInputElement element)
+{
+	auto ptr = GamepadInputBindingPtr::MakeRef(element);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
+GamepadInputBinding::GamepadInputBinding(GamepadInputElement element)
+	: m_element(element)
+{
+}
+
+//------------------------------------------------------------------------------
+GamepadInputBinding::~GamepadInputBinding()
+{
+}
+
+//------------------------------------------------------------------------------
+detail::InputBindingType GamepadInputBinding::GetType() const
+{
+	return detail::InputBindingType::Gamepad;
+}
+
 LN_NAMESPACE_END

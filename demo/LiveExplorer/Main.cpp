@@ -314,7 +314,7 @@ int main()
 			button1->SetSize(SizeF(20, 20));
 			button1->SetBackground(ColorBrush::Red);
 			button1->SetAnchor(AlignmentAnchor::RightOffsets | AlignmentAnchor::VCenter);
-			button1->click += [](UIMouseEventArgs* e) { GameAudio::PlayBGM(_T("D:/tmp/GrandSky.mp3")); };
+			button1->click += [](UIMouseEventArgs* e) { GameAudio::PlayBGM(_T("D:/tmp/GrandSky.mp3"), 1.0f, 1.05f); };
 			itemCanvas1->AddChild(button1);
 
 			auto listbox1 = tr::UIListBox::Create();
@@ -353,6 +353,18 @@ int main()
 
 			while (Engine::UpdateFrame())
 			{
+				if (Input::IsPressed("Left"))
+				{
+					Console::WriteLine("left");
+				}
+				if (Input::IsPressed("Down"))
+				{
+					Console::WriteLine("Down");
+				}
+				if (Input::IsPressed("Ok"))
+				{
+					Console::WriteLine("Ok");
+				}
 			}
 		}
 
