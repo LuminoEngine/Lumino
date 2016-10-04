@@ -3,9 +3,11 @@
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
+class InputBinding;
 class KeyboardBinding;
 class MouseBinding;
 class GamepadInputBinding;
+using InputBindingPtr = RefPtr<InputBinding>;
 using KeyboardBindingPtr = RefPtr<KeyboardBinding>;
 using MouseBindingPtr = RefPtr<MouseBinding>;
 using GamepadInputBindingPtr = RefPtr<GamepadInputBinding>;

@@ -6,6 +6,8 @@
 
 LN_NAMESPACE_BEGIN
 class InputDriver;
+class InputBinding;
+
 namespace detail
 {
 
