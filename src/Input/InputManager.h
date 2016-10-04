@@ -30,7 +30,7 @@ public:
 
 	InputController* GetVirtualPad(int index) { return m_defaultVirtualPads[index]; }
 
-	/// 入力情報を 1 フレーム分更新
+	void PreUpdateFrame();
 	void UpdateFrame();
 
 	//InputDevice* GetInputDevice() { return m_inputDevice; }
@@ -41,7 +41,7 @@ public:
 	void OnEvent(const PlatformEventArgs& e);
 
 
-	float GetVirtualButtonState(InputBinding* binding, const detail::DeviceInputSource& input, bool keyboard, bool mouse, int joyNumber);
+	float GetVirtualButtonState(InputBinding* binding, bool keyboard, bool mouse, int joyNumber);
 
 private:
 	void RefreshDevices();

@@ -74,12 +74,12 @@ void InputManager::Initialize(const Settings& settings)
 	m_defaultVirtualPads[0] = pad;
 	m_defaultVirtualPads[0]->AddRef();
 
-	pad->AddBinding(InputButtons::Left,		InputBinding::CreateKeyboardBinding(Key::Left));
-	pad->AddBinding(InputButtons::Right,	InputBinding::CreateKeyboardBinding(Key::Right));
-	pad->AddBinding(InputButtons::Up,		InputBinding::CreateKeyboardBinding(Key::Up));
-	pad->AddBinding(InputButtons::Down,		InputBinding::CreateKeyboardBinding(Key::Down));
-	pad->AddBinding(InputButtons::Ok,		InputBinding::CreateKeyboardBinding(Key::Z));
-	pad->AddBinding(InputButtons::Cancel,	InputBinding::CreateKeyboardBinding(Key::X));
+	pad->AddBinding(InputButtons::Left,		KeyboardBinding::Create(Key::Left));
+	pad->AddBinding(InputButtons::Right,	KeyboardBinding::Create(Key::Right));
+	pad->AddBinding(InputButtons::Up,		KeyboardBinding::Create(Key::Up));
+	pad->AddBinding(InputButtons::Down,		KeyboardBinding::Create(Key::Down));
+	pad->AddBinding(InputButtons::Ok,		KeyboardBinding::Create(Key::Z));
+	pad->AddBinding(InputButtons::Cancel,	KeyboardBinding::Create(Key::X));
 
 	pad->AddBinding(InputButtons::Left,		GamepadInputBinding::Create(GamepadInputElement::Axis1Minus));
 	pad->AddBinding(InputButtons::Right,	GamepadInputBinding::Create(GamepadInputElement::Axis1Plus));
@@ -110,6 +110,12 @@ void InputManager::Finalize()
 }
 
 //------------------------------------------------------------------------------
+void InputManager::PreUpdateFrame()
+{
+	m_inputDriver->PreUpdateFrame();
+}
+
+//------------------------------------------------------------------------------
 void InputManager::UpdateFrame()
 {
 	for (auto* pad : m_defaultVirtualPads)
@@ -129,23 +135,28 @@ void InputManager::OnEvent(const PlatformEventArgs& e)
 }
 
 //------------------------------------------------------------------------------
-float InputManager::GetVirtualButtonState(InputBinding* binding, const detail::DeviceInputSource& input, bool keyboard, bool mouse, int joyNumber)
+float InputManager::GetVirtualButtonState(InputBinding* binding, bool keyboard, bool mouse, int joyNumber)
 {
 	// キーボード
-	if (keyboard && input.type == detail::DeviceInputSourceType::Keyboard)
+	if (keyboard && binding->GetType() == detail::InputBindingType::Keyboard)
 	{
-		if (input.Keyboard.modifierKeys != 0) { LN_NOTIMPLEMENTED(); }
-		return m_inputDriver->GetKeyState(input.Keyboard.key) ? 1.0f : 0.0f;
+		auto* b = static_cast<KeyboardBinding*>(binding);
+		if (b->GetModifierKeys() != 0) { LN_NOTIMPLEMENTED(); }
+		return m_inputDriver->QueryKeyState(b->GetKey()) ? 1.0f : 0.0f;
 	}
 	// マウス
-	if (mouse && input.type == detail::DeviceInputSourceType::Mouse)
+	if (mouse && binding->GetType() == detail::InputBindingType::Mouse)
 	{
-		return m_inputDriver->GetMouseState(input.Mouse.buttonNumber) ? 1.0f : 0.0f;
+		auto* b = static_cast<MouseBinding*>(binding);
+		if (b->GetModifierKeys() != 0) { LN_NOTIMPLEMENTED(); }
+		return m_inputDriver->QueryMouseState(b->GetMouseAction()) ? 1.0f : 0.0f;
 	}
 
 	// ゲームパッド
 	if (binding->GetType() == detail::InputBindingType::Gamepad)
 	{
+		if (joyNumber >= m_inputDriver->GetJoystickCount()) return 0.0f;
+
 		auto b = static_cast<GamepadInputBinding*>(binding);
 		int e = (int)b->GetElement();
 		// ボタン

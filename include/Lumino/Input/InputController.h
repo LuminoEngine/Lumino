@@ -48,10 +48,12 @@ private:
 	void UpdateOneInputState(InputState* state);
 	const InputState* LockupState(const StringRef& bindingName) const;
 
+	using StatusMap = SortedArray<String, InputState, detail::StringCaseInsensitiveLess<String>>;
+
 	detail::InputManager*			m_manager;
 	uint32_t						m_attachedDevices;		// TODO: 本当ならちゃんとインターフェイス組むべきかも
 	Array<BindingSlot>				m_bindingSlots;
-	SortedArray<String, InputState>	m_inputStatus;
+	StatusMap						m_inputStatus;
 	InputState						m_inputStateForAny;
 	int								m_repeatIntervalStart;
 	int								m_repeatIntervalStep;

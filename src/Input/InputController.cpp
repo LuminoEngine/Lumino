@@ -156,14 +156,13 @@ void InputController::UpdateFrame()
 
 		float v = m_manager->GetVirtualButtonState(
 			binding,
-			binding->GetDeviceInputSource(),
 			(m_attachedDevices & detail::InputDeviceID_Keyboard) != 0,
 			(m_attachedDevices & detail::InputDeviceID_Mouse) != 0,
 			GetJoyNumber());
 		InputState* state = m_inputStatus.Find(slot.name);
 		if (state != nullptr)
 		{
-			v = (binding->IsNegativeValue()) ? -v : v;
+			v *= binding->GetScale();
 			if (v >= binding->GetMinValidMThreshold()) {
 				state->current = std::max(state->current, v);	// Binding が重複したとか、とりあえず大きい方を使う
 			}

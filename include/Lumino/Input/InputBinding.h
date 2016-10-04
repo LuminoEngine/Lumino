@@ -3,8 +3,29 @@
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
+class KeyboardBinding;
+class MouseBinding;
 class GamepadInputBinding;
+using KeyboardBindingPtr = RefPtr<KeyboardBinding>;
+using MouseBindingPtr = RefPtr<MouseBinding>;
 using GamepadInputBindingPtr = RefPtr<GamepadInputBinding>;
+
+/** マウスによって実行されるアクション */
+enum class MouseAction
+{
+	LeftClick,				/**< 左ボタンのクリック */
+	LeftDoubleClick,		/**< 左ボタンのダブルクリック */
+	RightClick,				/**< 右ボタンのクリック */
+	RightDoubleClick,		/**< 右ボタンのダブルクリック */
+	MiddleClick,			/**< 中央ボタンのクリック */
+	MiddleDoubleClick,		/**< 中央ボタンのダブルクリック */
+	X1Click,				/**< 拡張ボタン1のクリック */
+	X1DoubleClick,			/**< 拡張ボタン1のダブルクリック */
+	X2Click,				/**< 拡張ボタン2のクリック */
+	X2DoubleClick,			/**< 拡張ボタン2のダブルクリック */
+	WheelPlus,				/**< プラス方向へのホイール回転 */
+	WheelMinus,				/**< マイナス方向へのホイール回転 */
+};
 
 enum class GamepadInputElement
 {
@@ -62,6 +83,7 @@ namespace detail {
 enum class InputBindingType
 {
 	Keyboard,
+	Mouse,
 	Gamepad,
 };
 
@@ -75,41 +97,85 @@ class InputBinding
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-
-	/**
-		@brief		InputBinding オブジェクトを作成します。
-	*/
-	static InputBindingPtr CreateKeyboardBinding(Key key, ModifierKeys modifier = ModifierKeys::None);
-
-	static InputBindingPtr CreateJoystickButtonBinding(int buttonNumber);
-	static InputBindingPtr CreateJoystickAxisBinding(int axisNumber);
-	static InputBindingPtr CreateJoystickPovBinding(JoystickPovAxis direction);
-
-public:
 	float GetMinValidMThreshold() const { return m_minValidMThreshold; }
-
-	bool IsNegativeValue() const { return m_negativeValue; }
-
-	bool EqualKeyInput(Key keyCode, ModifierKeys modifier);
-
-LN_INTERNAL_ACCESS:
-	InputBinding();
-	virtual ~InputBinding();
-	void InitializeKeyboardBinding(Key key, ModifierKeys modifier);
-	void InitializeJoystickButtonBinding(int buttonNumber);
-	void InitializeJoystickAxisBinding(int axisNumber);
-	void InitializeJoystickPovBinding(JoystickPovAxis direction);
-	const detail::DeviceInputSource& GetDeviceInputSource() const { return m_source; }
+	float GetScale() const { return 1.0f; }	// TODO
 
 LN_PROTECTED_INTERNAL_ACCESS:
+	InputBinding();
+	virtual ~InputBinding();
+	virtual detail::InputBindingType GetType() const = 0;
+
+private:
+	float						m_minValidMThreshold;
+};
+
+/**
+	@brief	ユーザー入力となるキーボード操作の組み合わせを定義します。
+*/
+class KeyboardBinding
+	: public InputBinding
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+
+	/**
+		@brief		MouseBinding オブジェクトを作成します。
+		@param[in]	key				: 関連付けられるキー
+		@param[in]	modifierKeys	: 関連付けられる修飾キー
+	*/
+	static KeyboardBindingPtr Create(Key key, ModifierKeys modifierKeys = ModifierKeys::None);
+
+public:
+
+	/** 関連付けられるキー */
+	Key GetKey() const { return m_key; }
+
+	/** 関連付けられる修飾キー */
+	ModifierKeys GetModifierKeys() const { return m_modifierKeys; }
+
+LN_PROTECTED_INTERNAL_ACCESS:
+	KeyboardBinding(Key key, ModifierKeys modifierKeys);
+	virtual ~KeyboardBinding();
 	virtual detail::InputBindingType GetType() const;
 
 private:
-	detail::DeviceInputSource	m_source;
-	float						m_minValidMThreshold;
-	bool						m_negativeValue;
+	Key				m_key;
+	ModifierKeys	m_modifierKeys;
 };
 
+/**
+	@brief	ユーザー入力となるマウス操作の組み合わせを定義します。
+*/
+class MouseBinding
+	: public InputBinding
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+
+	/**
+		@brief		MouseBinding オブジェクトを作成します。
+		@param[in]	mouseAction		: 関連付けられるマウス操作
+		@param[in]	modifierKeys	: 関連付けられる修飾キー
+	*/
+	static MouseBindingPtr Create(MouseAction mouseAction, ModifierKeys modifierKeys = ModifierKeys::None);
+
+public:
+
+	/** 関連付けられるマウス操作 */
+	MouseAction GetMouseAction() const { return m_mouseAction; }
+
+	/** 関連付けられる修飾キー */
+	ModifierKeys GetModifierKeys() const { return m_modifierKeys; }
+
+LN_PROTECTED_INTERNAL_ACCESS:
+	MouseBinding(MouseAction mouseAction, ModifierKeys modifierKeys);
+	virtual ~MouseBinding();
+	virtual detail::InputBindingType GetType() const;
+
+private:
+	MouseAction		m_mouseAction;
+	ModifierKeys	m_modifierKeys;
+};
 
 /**
 	@brief	

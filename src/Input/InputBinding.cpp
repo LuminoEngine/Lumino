@@ -10,42 +10,8 @@ LN_NAMESPACE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(InputBinding, tr::ReflectionObject);
 
 //------------------------------------------------------------------------------
-InputBindingPtr InputBinding::CreateKeyboardBinding(Key key, ModifierKeys modifier)
-{
-	auto ptr = RefPtr<InputBinding>::MakeRef();
-	ptr->InitializeKeyboardBinding(key, modifier);
-	return ptr;
-}
-
-//------------------------------------------------------------------------------
-InputBindingPtr InputBinding::CreateJoystickButtonBinding(int buttonNumber)
-{
-	auto ptr = RefPtr<InputBinding>::MakeRef();
-	ptr->InitializeJoystickButtonBinding(buttonNumber);
-	return ptr;
-}
-
-//------------------------------------------------------------------------------
-InputBindingPtr InputBinding::CreateJoystickAxisBinding(int axisNumber)
-{
-	auto ptr = RefPtr<InputBinding>::MakeRef();
-	ptr->InitializeJoystickAxisBinding(axisNumber);
-	return ptr;
-}
-
-//------------------------------------------------------------------------------
-InputBindingPtr InputBinding::CreateJoystickPovBinding(JoystickPovAxis direction)
-{
-	auto ptr = RefPtr<InputBinding>::MakeRef();
-	ptr->InitializeJoystickPovBinding(direction);
-	return ptr;
-}
-
-//------------------------------------------------------------------------------
 InputBinding::InputBinding()
-	: m_source()
-	, m_minValidMThreshold(0.2f)
-	, m_negativeValue(false)
+	: m_minValidMThreshold(0.2f)
 {
 }
 
@@ -54,52 +20,67 @@ InputBinding::~InputBinding()
 {
 }
 
+//==============================================================================
+// KeyboardBinding
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(KeyboardBinding, InputBinding);
+
 //------------------------------------------------------------------------------
-void InputBinding::InitializeKeyboardBinding(Key key, ModifierKeys modifier)
+KeyboardBindingPtr KeyboardBinding::Create(Key key, ModifierKeys modifierKeys)
 {
-	m_source.type = detail::DeviceInputSourceType::Keyboard;
-	m_source.Keyboard.key = key;
-	m_source.Keyboard.modifierKeys = (ModifierKeys::enum_type)(int)modifier;
+	auto ptr = KeyboardBindingPtr::MakeRef(key, modifierKeys);
+	return ptr;
 }
 
 //------------------------------------------------------------------------------
-void InputBinding::InitializeJoystickButtonBinding(int buttonNumber)
+KeyboardBinding::KeyboardBinding(Key key, ModifierKeys modifierKeys)
+	: m_key(key)
+	, m_modifierKeys(modifierKeys)
 {
-	m_source.type = detail::DeviceInputSourceType::JoystickButton;
-	m_source.JoystickButton.buttonNumber = buttonNumber;
 }
 
 //------------------------------------------------------------------------------
-void InputBinding::InitializeJoystickAxisBinding(int axisNumber)
+KeyboardBinding::~KeyboardBinding()
 {
-	m_source.type = detail::DeviceInputSourceType::JoystickAxis;
-	m_source.JoystickAxis.axizNumber = axisNumber;
 }
 
 //------------------------------------------------------------------------------
-void InputBinding::InitializeJoystickPovBinding(JoystickPovAxis direction)
-{
-	m_source.type = detail::DeviceInputSourceType::JoystickPov;
-	m_source.JoystickPov.povAxis = direction;
-}
-
-//------------------------------------------------------------------------------
-bool InputBinding::EqualKeyInput(Key keyCode, ModifierKeys modifier)
-{
-	if (m_source.type == detail::DeviceInputSourceType::Keyboard)
-	{
-		if (keyCode != m_source.Keyboard.key) return false;
-		if (modifier != m_source.Keyboard.modifierKeys) return false;
-		return true;
-	}
-	return false;
-}
-
-//------------------------------------------------------------------------------
-detail::InputBindingType InputBinding::GetType() const
+detail::InputBindingType KeyboardBinding::GetType() const
 {
 	return detail::InputBindingType::Keyboard;
 }
+
+
+//==============================================================================
+// MouseBinding
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(MouseBinding, InputBinding);
+
+//------------------------------------------------------------------------------
+MouseBindingPtr MouseBinding::Create(MouseAction mouseAction, ModifierKeys modifierKeys)
+{
+	auto ptr = MouseBindingPtr::MakeRef(mouseAction, modifierKeys);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
+MouseBinding::MouseBinding(MouseAction mouseAction, ModifierKeys modifierKeys)
+	: m_mouseAction(mouseAction)
+	, m_modifierKeys(modifierKeys)
+{
+}
+
+//------------------------------------------------------------------------------
+MouseBinding::~MouseBinding()
+{
+}
+
+//------------------------------------------------------------------------------
+detail::InputBindingType MouseBinding::GetType() const
+{
+	return detail::InputBindingType::Mouse;
+}
+
 
 //==============================================================================
 // GamepadInputBinding

@@ -3,6 +3,7 @@
 #include <array>
 #include <Lumino/Platform/PlatformEventArgs.h>
 #include <Lumino/Input/Common.h>
+#include <Lumino/Input/InputBinding.h>
 
 LN_NAMESPACE_BEGIN
 
@@ -36,20 +37,48 @@ public:
 	InputDriver();
 	virtual ~InputDriver();
 
-	bool GetKeyState(Key key) const { return m_keyStatus[(int)key]; }
-	bool GetMouseState(MouseButton button) const { return m_mouseStatus[(int)button]; }
+	bool QueryKeyState(Key key);
+	bool QueryMouseState(MouseAction action);
+
+	void PreUpdateFrame();
+
+
+
+
+
+
+	//bool GetKeyState(Key key) const { return m_keyStatus[(int)key]; }
+	//bool GetMouseState(MouseButton button) const { return m_mouseStatus[(int)button]; }
 	const Point& GetMousePoint() const { return m_mousePoint; }
 	int GetMouseWheel() const { return m_mouseWheel; }
 
 	virtual int GetJoystickCount() = 0;
 	virtual void GetJoystickState(int joystickNumber, JoystickDeviceState* state) = 0;
 
-	virtual void UpdateFrame();
 	virtual void OnEvent(const PlatformEventArgs& e);
 
+
+
+	void OnKeyDown(Key key);
+	void OnKeyUp(Key key);
+	void OnMouseButtonDown(MouseButton button);
+	void OnMouseButtonUp(MouseButton button);
+
+
+
 private:
+	struct MouseClickTracker
+	{
+		double		lastTime;
+		int			clickCount;
+	};
+	
+
+
 	std::array<bool, (int)Key::TERMINATOR>			m_keyStatus;
 	std::array<bool, (int)MouseButton::TERMINATOR>	m_mouseStatus;
+	std::array<MouseClickTracker, (int)MouseButton::TERMINATOR>	m_mouseClickTrackers;
+	float				m_mouseButtonClickTimeout;
 	Point	m_mousePoint;
 	int		m_mouseWheel;
 };

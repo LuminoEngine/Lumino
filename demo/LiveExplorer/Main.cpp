@@ -353,15 +353,15 @@ int main()
 
 			while (Engine::UpdateFrame())
 			{
-				if (Input::IsPressed("Left"))
+				if (Input::IsPressed(_T("Left")))
 				{
 					Console::WriteLine("left");
 				}
-				if (Input::IsPressed("Down"))
+				if (Input::IsPressed(_T("Down")))
 				{
 					Console::WriteLine("Down");
 				}
-				if (Input::IsPressed("Ok"))
+				if (Input::IsPressed(_T("Ok")))
 				{
 					Console::WriteLine("Ok");
 				}

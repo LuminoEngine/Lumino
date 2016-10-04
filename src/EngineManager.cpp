@@ -601,6 +601,10 @@ bool EngineManager::UpdateFrame()
 		deltaTime = m_fpsController.GetElapsedGameTime();
 	}
 
+	if (m_inputManager != nullptr) {
+		m_inputManager->PreUpdateFrame();
+	}
+
 	if (!m_platformManager->DoEvents())
 	{
 		m_endRequested = true;
@@ -807,13 +811,13 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 			if (uiView->InjectKeyDown(e.key.keyCode, e.key.modifierKeys)) { return true; }
 		}
 
-		// デバッグ表示切替
-		if (m_configData.acceleratorKeys.toggleShowDiag != nullptr &&
-			m_configData.acceleratorKeys.toggleShowDiag->EqualKeyInput(e.key.keyCode, e.key.modifierKeys) &&
-			m_diagViewer != nullptr)
-		{
-			m_diagViewer->ToggleDisplayMode();
-		}
+		//// デバッグ表示切替
+		//if (m_configData.acceleratorKeys.toggleShowDiag != nullptr &&
+		//	m_configData.acceleratorKeys.toggleShowDiag->EqualKeyInput(e.key.keyCode, e.key.modifierKeys) &&
+		//	m_diagViewer != nullptr)
+		//{
+		//	m_diagViewer->ToggleDisplayMode();
+		//}
 		break;
 	case PlatformEventType::KeyUp:
 		if (uiView != nullptr)

@@ -106,57 +106,57 @@ class InputManager;
 //	JoypadAxisEnd = JoypadAxis8Plus,
 //};
 //LN_ENUM_DECLARE(DeviceInputSource);
+//
+//enum class DeviceInputSourceType
+//{
+//	Keyboard,
+//	Mouse,
+//	JoystickButton,
+//	JoystickAxis,
+//	JoystickPov,
+//	// Motion,
+//	// Gesture,
+//	// Android,
+//};
 
-enum class DeviceInputSourceType
-{
-	Keyboard,
-	Mouse,
-	JoystickButton,
-	JoystickAxis,
-	JoystickPov,
-	// Motion,
-	// Gesture,
-	// Android,
-};
-
-struct DeviceInputSource
-{
-	DeviceInputSourceType	type;
-
-	union
-	{
-		struct
-		{
-			Key				key;
-			ModifierKeys::enum_type	modifierKeys;
-
-		} Keyboard;
-
-		struct
-		{
-			MouseButton::enum_type		buttonNumber;
-
-		} Mouse;
-
-		struct
-		{
-			int				buttonNumber;
-
-		} JoystickButton;
-
-		struct
-		{
-			int				axizNumber;
-
-		} JoystickAxis;
-
-		struct
-		{
-			JoystickPovAxis		povAxis;
-
-		} JoystickPov;
-	};
-};
+//struct DeviceInputSource
+//{
+//	DeviceInputSourceType	type;
+//
+//	union
+//	{
+//		struct
+//		{
+//			Key				key;
+//			ModifierKeys::enum_type	modifierKeys;
+//
+//		} Keyboard;
+//
+//		struct
+//		{
+//			MouseButton::enum_type		buttonNumber;
+//
+//		} Mouse;
+//
+//		struct
+//		{
+//			int				buttonNumber;
+//
+//		} JoystickButton;
+//
+//		struct
+//		{
+//			int				axizNumber;
+//
+//		} JoystickAxis;
+//
+//		struct
+//		{
+//			JoystickPovAxis		povAxis;
+//
+//		} JoystickPov;
+//	};
+//};
 
 enum InputDeviceID
 {
