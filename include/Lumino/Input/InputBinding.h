@@ -6,11 +6,11 @@ LN_NAMESPACE_BEGIN
 class InputBinding;
 class KeyboardBinding;
 class MouseBinding;
-class GamepadInputBinding;
+class GamepadBinding;
 using InputBindingPtr = RefPtr<InputBinding>;
 using KeyboardBindingPtr = RefPtr<KeyboardBinding>;
 using MouseBindingPtr = RefPtr<MouseBinding>;
-using GamepadInputBindingPtr = RefPtr<GamepadInputBinding>;
+using GamepadBindingPtr = RefPtr<GamepadBinding>;
 
 /** マウスによって実行されるアクション */
 enum class MouseAction
@@ -29,7 +29,8 @@ enum class MouseAction
 	WheelMinus,				/**< マイナス方向へのホイール回転 */
 };
 
-enum class GamepadInputElement
+/** ゲームパッドの入力要素 */
+enum class GamepadElement
 {
 	Button1,
 	Button2,
@@ -62,37 +63,26 @@ enum class GamepadInputElement
 	Axis7,			/**< -1.0 .. 1.0 */
 	Axis8,			/**< -1.0 .. 1.0 */
 	//
-	Axis1Minus,		///< X1 -1.0
-	Axis1Plus,		///< X1  1.0
-	Axis2Minus,		///< Y1 -1.0
-	Axis2Plus,		///< Y1  1.0
-	Axis3Minus,		///< X2 -1.0
-	Axis3Plus,		///< X2  1.0
-	Axis4Minus,		///< Y2 -1.0
-	Axis4Plus,		///< Y2  1.0
-	Axis5Minus,		///< X3 -1.0
-	Axis5Plus,		///< X3  1.0     XInput LT
-	Axis6Minus,		///< Y3 -1.0
-	Axis6Plus,		///< Y3  1.0     XInput RT
-	Axis7Minus,		///< X4 -1.0
-	Axis7Plus,		///< X4  1.0
-	Axis8Minus,		///< Y4 -1.0
-	Axis8Plus,		///< Y4  1.0
+	Axis1Minus,		/**< X1 -1.0 */
+	Axis1Plus,		/**< X1  1.0 */
+	Axis2Minus,		/**< Y1 -1.0 */
+	Axis2Plus,		/**< Y1  1.0 */
+	Axis3Minus,		/**< X2 -1.0 */
+	Axis3Plus,		/**< X2  1.0 */
+	Axis4Minus,		/**< Y2 -1.0 */
+	Axis4Plus,		/**< Y2  1.0 */
+	Axis5Minus,		/**< X3 -1.0 */
+	Axis5Plus,		/**< X3  1.0 (XInput LT) */
+	Axis6Minus,		/**< Y3 -1.0 */
+	Axis6Plus,		/**< Y3  1.0 (XInput RT) */
+	Axis7Minus,		/**< X4 -1.0 */
+	Axis7Plus,		/**< X4  1.0 */
+	Axis8Minus,		/**< Y4 -1.0 */
+	Axis8Plus,		/**< Y4  1.0 */
 };
-
-namespace detail {
-
-enum class InputBindingType
-{
-	Keyboard,
-	Mouse,
-	Gamepad,
-};
-
-} // namespace detail
 
 /**
-	@brief	
+	@brief	ユーザー入力となる入力デバイス操作を定義するためのベースクラスです。
 */
 class InputBinding
 	: public Object
@@ -180,27 +170,32 @@ private:
 };
 
 /**
-	@brief	
+	@brief	ユーザー入力となるゲームパッド操作の組み合わせを定義します。
 */
-class GamepadInputBinding
+class GamepadBinding
 	: public InputBinding
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static GamepadInputBindingPtr Create(GamepadInputElement element);
+
+	/**
+		@brief		GamepadBinding オブジェクトを作成します。
+		@param[in]	element		: 関連付けられるゲームパッド操作
+	*/
+	static GamepadBindingPtr Create(GamepadElement element);
 
 public:
-	GamepadInputElement GetElement() const { return m_element; }
 
-LN_INTERNAL_ACCESS:
-	GamepadInputBinding(GamepadInputElement element);
-	virtual ~GamepadInputBinding();
+	/** 関連付けられるゲームパッド操作 */
+	GamepadElement GetElement() const { return m_element; }
 
 LN_PROTECTED_INTERNAL_ACCESS:
+	GamepadBinding(GamepadElement element);
+	virtual ~GamepadBinding();
 	virtual detail::InputBindingType GetType() const;
 
 private:
-	GamepadInputElement		m_element;
+	GamepadElement		m_element;
 };
 
 LN_NAMESPACE_END

@@ -81,12 +81,12 @@ void InputManager::Initialize(const Settings& settings)
 	pad->AddBinding(InputButtons::Ok,		KeyboardBinding::Create(Key::Z));
 	pad->AddBinding(InputButtons::Cancel,	KeyboardBinding::Create(Key::X));
 
-	pad->AddBinding(InputButtons::Left,		GamepadInputBinding::Create(GamepadInputElement::Axis1Minus));
-	pad->AddBinding(InputButtons::Right,	GamepadInputBinding::Create(GamepadInputElement::Axis1Plus));
-	pad->AddBinding(InputButtons::Up,		GamepadInputBinding::Create(GamepadInputElement::Axis2Minus));
-	pad->AddBinding(InputButtons::Down,		GamepadInputBinding::Create(GamepadInputElement::Axis2Plus));
-	pad->AddBinding(InputButtons::Ok,		GamepadInputBinding::Create(GamepadInputElement::Button1));
-	pad->AddBinding(InputButtons::Cancel,	GamepadInputBinding::Create(GamepadInputElement::Button2));
+	pad->AddBinding(InputButtons::Left,		GamepadBinding::Create(GamepadElement::Axis1Minus));
+	pad->AddBinding(InputButtons::Right,	GamepadBinding::Create(GamepadElement::Axis1Plus));
+	pad->AddBinding(InputButtons::Up,		GamepadBinding::Create(GamepadElement::Axis2Minus));
+	pad->AddBinding(InputButtons::Down,		GamepadBinding::Create(GamepadElement::Axis2Plus));
+	pad->AddBinding(InputButtons::Ok,		GamepadBinding::Create(GamepadElement::Button1));
+	pad->AddBinding(InputButtons::Cancel,	GamepadBinding::Create(GamepadElement::Button2));
 
 	if (g_inputManager == nullptr) {
 		g_inputManager = this;
@@ -157,42 +157,42 @@ float InputManager::GetVirtualButtonState(InputBinding* binding, bool keyboard, 
 	{
 		if (joyNumber >= m_inputDriver->GetJoystickCount()) return 0.0f;
 
-		auto b = static_cast<GamepadInputBinding*>(binding);
+		auto b = static_cast<GamepadBinding*>(binding);
 		int e = (int)b->GetElement();
 		// ボタン
-		if ((int)GamepadInputElement::Button1 <= e && e <= (int)GamepadInputElement::Button16)
+		if ((int)GamepadElement::Button1 <= e && e <= (int)GamepadElement::Button16)
 		{
-			int number = e - (int)GamepadInputElement::Button1;
+			int number = e - (int)GamepadElement::Button1;
 			JoystickDeviceState state;
 			m_inputDriver->GetJoystickState(joyNumber, &state);
 			LN_CHECK_RANGE(number, 0, JoystickDeviceState::MaxButtons);
 			return state.Buttons[number] ? 1.0f : 0.0f;
 		}
 		// POV
-		if ((int)GamepadInputElement::PovLeft <= e && e <= (int)GamepadInputElement::PovDown)
+		if ((int)GamepadElement::PovLeft <= e && e <= (int)GamepadElement::PovDown)
 		{
 			JoystickDeviceState state;
 			m_inputDriver->GetJoystickState(joyNumber, &state);
-			if (b->GetElement() == GamepadInputElement::PovLeft && (state.POV & PovDirFlags::Left)) return 1.0;
-			if (b->GetElement() == GamepadInputElement::PovRight && (state.POV & PovDirFlags::Right)) return 1.0;
-			if (b->GetElement() == GamepadInputElement::PovUp && (state.POV & PovDirFlags::Up)) return 1.0;
-			if (b->GetElement() == GamepadInputElement::PovDown && (state.POV & PovDirFlags::Down)) return 1.0;
+			if (b->GetElement() == GamepadElement::PovLeft && (state.POV & PovDirFlags::Left)) return 1.0;
+			if (b->GetElement() == GamepadElement::PovRight && (state.POV & PovDirFlags::Right)) return 1.0;
+			if (b->GetElement() == GamepadElement::PovUp && (state.POV & PovDirFlags::Up)) return 1.0;
+			if (b->GetElement() == GamepadElement::PovDown && (state.POV & PovDirFlags::Down)) return 1.0;
 			return 0.0f;
 		}
 		// Axis -1.0 .. 1.0
-		if ((int)GamepadInputElement::Axis1 <= e && e <= (int)GamepadInputElement::Axis8)
+		if ((int)GamepadElement::Axis1 <= e && e <= (int)GamepadElement::Axis8)
 		{
-			int number = e - (int)GamepadInputElement::Axis1;
+			int number = e - (int)GamepadElement::Axis1;
 			JoystickDeviceState state;
 			m_inputDriver->GetJoystickState(joyNumber, &state);
 			LN_CHECK_RANGE(number, 0, JoystickDeviceState::MaxAxis);
 			return state.Axes[number];
 		}
 		// Axis 0.0 .. 1.0
-		if ((int)GamepadInputElement::Axis1Minus <= e && e <= (int)GamepadInputElement::Axis8Plus)
+		if ((int)GamepadElement::Axis1Minus <= e && e <= (int)GamepadElement::Axis8Plus)
 		{
-			int number = (e - (int)GamepadInputElement::Axis1Minus) / 2;
-			int sign = ((e - (int)GamepadInputElement::Axis1Minus) % 2 == 0) ? -1.0f : 1.0f;
+			int number = (e - (int)GamepadElement::Axis1Minus) / 2;
+			int sign = ((e - (int)GamepadElement::Axis1Minus) % 2 == 0) ? -1.0f : 1.0f;
 
 			JoystickDeviceState state;
 			m_inputDriver->GetJoystickState(joyNumber, &state);

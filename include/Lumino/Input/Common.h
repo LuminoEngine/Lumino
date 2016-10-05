@@ -22,5 +22,12 @@ enum InputDeviceID
 	InputDeviceID_Joystick3 = 0x0020,
 };
 
+enum class InputBindingType
+{
+	Keyboard,
+	Mouse,
+	Gamepad,
+};
+
 } // namespace detail
 LN_NAMESPACE_END

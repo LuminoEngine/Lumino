@@ -32,7 +32,7 @@ public:
 	static bool IsRepeated(const StringRef& bindingName);
 
 	/**
-		@brief		指定した軸のアナログ値を取得します。(0.0～1.0)
+		@brief		指定した軸のアナログ値を取得します。
 	*/
 	static float GetAxisValue(const StringRef& bindingName);
 

@@ -83,30 +83,30 @@ detail::InputBindingType MouseBinding::GetType() const
 
 
 //==============================================================================
-// GamepadInputBinding
+// GamepadBinding
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(GamepadInputBinding, InputBinding);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(GamepadBinding, InputBinding);
 
 //------------------------------------------------------------------------------
-GamepadInputBindingPtr GamepadInputBinding::Create(GamepadInputElement element)
+GamepadBindingPtr GamepadBinding::Create(GamepadElement element)
 {
-	auto ptr = GamepadInputBindingPtr::MakeRef(element);
+	auto ptr = GamepadBindingPtr::MakeRef(element);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-GamepadInputBinding::GamepadInputBinding(GamepadInputElement element)
+GamepadBinding::GamepadBinding(GamepadElement element)
 	: m_element(element)
 {
 }
 
 //------------------------------------------------------------------------------
-GamepadInputBinding::~GamepadInputBinding()
+GamepadBinding::~GamepadBinding()
 {
 }
 
 //------------------------------------------------------------------------------
-detail::InputBindingType GamepadInputBinding::GetType() const
+detail::InputBindingType GamepadBinding::GetType() const
 {
 	return detail::InputBindingType::Gamepad;
 }
