@@ -205,34 +205,34 @@ void ModelManager::Initialize(const ConfigData& configData)
 
 	MemoryStream data1(toon01Data, toon01DataLen);
 	m_mmdDefaultToonTexture[0] = LN_NEW Texture2D();
-	m_mmdDefaultToonTexture[0]->Initialize(m_graphicsManager, &data1, TextureFormat::R8G8B8A8, 1);
+	m_mmdDefaultToonTexture[0]->Initialize(m_graphicsManager, &data1, TextureFormat::R8G8B8A8, false);
 	MemoryStream data2(toon02Data, toon02DataLen);
 	m_mmdDefaultToonTexture[1] = LN_NEW Texture2D();
-	m_mmdDefaultToonTexture[1]->Initialize(m_graphicsManager, &data2, TextureFormat::R8G8B8A8, 1);
+	m_mmdDefaultToonTexture[1]->Initialize(m_graphicsManager, &data2, TextureFormat::R8G8B8A8, false);
 	MemoryStream data3(toon03Data, toon03DataLen);
 	m_mmdDefaultToonTexture[2] = LN_NEW Texture2D();
-	m_mmdDefaultToonTexture[2]->Initialize(m_graphicsManager, &data3, TextureFormat::R8G8B8A8, 1);
+	m_mmdDefaultToonTexture[2]->Initialize(m_graphicsManager, &data3, TextureFormat::R8G8B8A8, false);
 	MemoryStream data4(toon04Data, toon04DataLen);
 	m_mmdDefaultToonTexture[3] = LN_NEW Texture2D();
-	m_mmdDefaultToonTexture[3]->Initialize(m_graphicsManager, &data4, TextureFormat::R8G8B8A8, 1);
+	m_mmdDefaultToonTexture[3]->Initialize(m_graphicsManager, &data4, TextureFormat::R8G8B8A8, false);
 	MemoryStream data5(toon05Data, toon05DataLen);
 	m_mmdDefaultToonTexture[4] = LN_NEW Texture2D();
-	m_mmdDefaultToonTexture[4]->Initialize(m_graphicsManager, &data5, TextureFormat::R8G8B8A8, 1);
+	m_mmdDefaultToonTexture[4]->Initialize(m_graphicsManager, &data5, TextureFormat::R8G8B8A8, false);
 	MemoryStream data6(toon06Data, toon06DataLen);
 	m_mmdDefaultToonTexture[5] = LN_NEW Texture2D();
-	m_mmdDefaultToonTexture[5]->Initialize(m_graphicsManager, &data6, TextureFormat::R8G8B8A8, 1);
+	m_mmdDefaultToonTexture[5]->Initialize(m_graphicsManager, &data6, TextureFormat::R8G8B8A8, false);
 	MemoryStream data7(toon07Data, toon07DataLen);
 	m_mmdDefaultToonTexture[6] = LN_NEW Texture2D();
-	m_mmdDefaultToonTexture[6]->Initialize(m_graphicsManager, &data7, TextureFormat::R8G8B8A8, 1);
+	m_mmdDefaultToonTexture[6]->Initialize(m_graphicsManager, &data7, TextureFormat::R8G8B8A8, false);
 	MemoryStream data8(toon08Data, toon08DataLen);
 	m_mmdDefaultToonTexture[7] = LN_NEW Texture2D();
-	m_mmdDefaultToonTexture[7]->Initialize(m_graphicsManager, &data8, TextureFormat::R8G8B8A8, 1);
+	m_mmdDefaultToonTexture[7]->Initialize(m_graphicsManager, &data8, TextureFormat::R8G8B8A8, false);
 	MemoryStream data9(toon09Data, toon09DataLen);
 	m_mmdDefaultToonTexture[8] = LN_NEW Texture2D();
-	m_mmdDefaultToonTexture[8]->Initialize(m_graphicsManager, &data9, TextureFormat::R8G8B8A8, 1);
+	m_mmdDefaultToonTexture[8]->Initialize(m_graphicsManager, &data9, TextureFormat::R8G8B8A8, false);
 	MemoryStream data10(toon10Data, toon10DataLen);
 	m_mmdDefaultToonTexture[9] = LN_NEW Texture2D();
-	m_mmdDefaultToonTexture[9]->Initialize(m_graphicsManager, &data10, TextureFormat::R8G8B8A8, 1);
+	m_mmdDefaultToonTexture[9]->Initialize(m_graphicsManager, &data10, TextureFormat::R8G8B8A8, false);
 }
 
 //------------------------------------------------------------------------------

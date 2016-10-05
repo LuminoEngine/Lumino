@@ -70,28 +70,43 @@ int IndexBuffer::GetIndexStride() const
 //------------------------------------------------------------------------------
 ByteBuffer* IndexBuffer::Lock()
 {
+	if (m_lockedBuffer.GetSize() == 0 || m_usage == ResourceUsage::Static)
+	{
+		m_lockedBuffer.Alloc(GetIndexStride() * m_indexCount);
+	}
 	// まだ1度も SetVertexBufferCommand に入っていない場合は直接 Lock で書き換えできる
-	if (m_initialUpdate) {
-		void* buffer;
-		size_t size;
-		m_deviceObj->Lock(&buffer, &size);
-		m_lockedBuffer.Attach(buffer, size);
-	}
-	else {
-		LN_THROW(0, NotImplementedException);
-	}
+	//if (m_initialUpdate) {
+	//	void* buffer;
+	//	size_t size;
+	//	m_deviceObj->Lock(&buffer, &size);
+	//	m_lockedBuffer.Attach(buffer, size);
+	//}
+	//else {
+	//	LN_THROW(0, NotImplementedException);
+	//}
+
 	return &m_lockedBuffer;
 }
 
 //------------------------------------------------------------------------------
 void IndexBuffer::Unlock()
 {
-	if (m_initialUpdate) {
-		m_deviceObj->Unlock();
+	// まだ1度も SetVertexBufferCommand に入っていない場合は直接書き換えできる
+	if (m_initialUpdate)
+	{
+		m_deviceObj->SetSubData(0, m_lockedBuffer.GetConstData(), m_lockedBuffer.GetSize());
 	}
-	else {
+	else
+	{
 		LN_THROW(0, NotImplementedException);
 	}
+
+	//if (m_initialUpdate) {
+	//	m_deviceObj->Unlock();
+	//}
+	//else {
+	//	LN_THROW(0, NotImplementedException);
+	//}
 }
 
 //------------------------------------------------------------------------------

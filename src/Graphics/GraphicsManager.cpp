@@ -270,7 +270,7 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 
 
 	m_dymmyWhiteTexture = RefPtr<Texture2D>::MakeRef();
-	m_dymmyWhiteTexture->Initialize(this, SizeI(32, 32), TextureFormat::R8G8B8A8, 1);
+	m_dymmyWhiteTexture->Initialize(this, SizeI(32, 32), TextureFormat::R8G8B8A8, false);
 	m_dymmyWhiteTexture->Clear(Color32::White);
 }
 
@@ -365,7 +365,7 @@ void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
 		}
 
 		// ダミーテクスチャ
-		m_dummyDeviceTexture = m_graphicsDevice->CreateTexture(SizeI(32, 32), 1, TextureFormat::R8G8B8A8, NULL);
+		m_dummyDeviceTexture = m_graphicsDevice->CreateTexture(SizeI(32, 32), false, TextureFormat::R8G8B8A8, NULL);
 		{
 			Driver::IGraphicsDevice::ScopedLockContext lock(m_graphicsDevice);
 			BitmapPainter painter(m_dummyDeviceTexture->Lock());

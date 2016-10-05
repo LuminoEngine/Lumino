@@ -155,7 +155,7 @@ void GLTexture::SetSubData(const Point& point, const void* data, size_t dataByte
 			pixelFormat,
 			elementType,
 			data);
-		LN_CHECK_GLERROR();
+		LN_CHECK_GLERROR();	// ここで GL_INVALID_VALUE になる場合は MipLevel の指定が間違っているかもしれない
 		//glEnable(GL_TEXTURE_2D);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
