@@ -42,19 +42,21 @@ void SceneGraphRenderingContext::SetCurrentCamera(Camera* camera)
 void SceneGraphRenderingContext::DrawSprite2D(
 	const Matrix& transform,
 	const SizeF& size,
+	const Vector2& anchorRatio,
 	Texture* texture,
 	const RectF& srcRect,
 	const Color& color)
 {
 	NorityStartDrawing(m_spriteRenderer);
 	m_spriteRenderer->SetTransform(transform);
-	m_spriteRenderer->DrawRequest2D(Vector3::Zero, Vector3::Zero, Vector2(size.width, size.height), texture, srcRect, color);
+	m_spriteRenderer->DrawRequest2D(Vector3::Zero, Vector2(size.width, size.height), anchorRatio, texture, srcRect, color);
 }
 
 //------------------------------------------------------------------------------
 void SceneGraphRenderingContext::DrawSprite3D(
 	const Matrix& transform,
 	const SizeF& size,
+	const Vector2& anchorRatio,
 	Texture* texture,
 	const RectF& srcRect,
 	const Color& color,
@@ -62,7 +64,7 @@ void SceneGraphRenderingContext::DrawSprite3D(
 {
 	NorityStartDrawing(m_spriteRenderer);
 	m_spriteRenderer->SetTransform(transform);
-	m_spriteRenderer->DrawRequest3D(Vector3::Zero, Vector3::Zero, Vector2(size.width, size.height), texture, srcRect, color, front);
+	m_spriteRenderer->DrawRequest3D(Vector3::Zero, Vector2(size.width, size.height), anchorRatio, texture, srcRect, color, front);
 }
 
 //------------------------------------------------------------------------------

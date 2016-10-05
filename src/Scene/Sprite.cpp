@@ -311,6 +311,18 @@ void Sprite2D::Initialize(SceneGraph* owner)
 }
 
 //------------------------------------------------------------------------------
+void Sprite2D::SetAnchor(const Vector2& ratio)
+{
+	m_anchor = ratio;
+}
+
+//------------------------------------------------------------------------------
+void Sprite2D::SetAnchor(float ratioX, float ratioY)
+{
+	m_anchor.Set(ratioX, ratioY);
+}
+
+//------------------------------------------------------------------------------
 void Sprite2D::OnRender(SceneGraphRenderingContext* dc)
 {
 	// レンダリングステートの設定
@@ -323,7 +335,7 @@ void Sprite2D::OnRender(SceneGraphRenderingContext* dc)
 
 
 	detail::MaterialInstance* mat = m_materialList->GetMaterialInstance(0);
-	dc->DrawSprite2D(m_combinedGlobalMatrix, m_renderSize, GetTexture(), m_renderSourceRect, mat->m_colorScale);
+	dc->DrawSprite2D(m_combinedGlobalMatrix, m_renderSize, m_anchor, GetTexture(), m_renderSourceRect, mat->m_colorScale);
 	//if (subsetIndex == 0)
 	//{
 	//	dc->DrawSquarePrimitive(
@@ -407,7 +419,7 @@ void Sprite3D::OnRender(SceneGraphRenderingContext* dc)
 
 	detail::MaterialInstance* mat = m_materialList->GetMaterialInstance(0);
 
-	dc->DrawSprite3D(m_combinedGlobalMatrix, m_renderSize, GetTexture(), m_renderSourceRect, mat->m_colorScale);
+	dc->DrawSprite3D(m_combinedGlobalMatrix, m_renderSize, Vector2::Zero, GetTexture(), m_renderSourceRect, mat->m_colorScale);
 	//Sprite::DrawSubset(dc, subsetIndex);
 	//if (subsetIndex == 0)
 	//{

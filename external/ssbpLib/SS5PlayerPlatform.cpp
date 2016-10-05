@@ -179,8 +179,8 @@ namespace ss
 		{
 			g_spriteRenderer->DrawRequest2D(
 				ln::Vector3(0, 0, 0),
-				ln::Vector3(0, 0, 0),
 				ln::Vector2(state.rect.size.width, state.rect.size.height),
+				ln::Vector2(0, 0),
 				(ln::Texture2D*)state.texture.handle,
 				ln::RectF(state.rect.origin.x, state.rect.origin.y, state.rect.size.width, state.rect.size.height),
 				ln::Color::White);
@@ -189,8 +189,8 @@ namespace ss
 		{
 			g_spriteRenderer->DrawRequest3D(
 				ln::Vector3(0, 0, 0),
-				ln::Vector3(0, 0, 0),
 				ln::Vector2(state.rect.size.width, state.rect.size.height),
+				ln::Vector2(0, 0),
 				(ln::Texture2D*)state.texture.handle,
 				ln::RectF(state.rect.origin.x, state.rect.origin.y, state.rect.size.width, state.rect.size.height),
 				ln::Color::White,

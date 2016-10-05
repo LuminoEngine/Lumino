@@ -64,6 +64,38 @@ TEST_F(Test_Scene_Sprite, BlendMode)
 }
 
 //------------------------------------------------------------------------------
+TEST_F(Test_Scene_Sprite, Anchor)
+{
+	// <Test> 原点の指定
+	{
+		auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
+
+		// 左上原点
+		auto sprite1 = Sprite2D::Create(tex);
+		sprite1->SetPosition(0, 0);
+		sprite1->SetAnchor(0, 0);
+
+		// 中央原点
+		auto sprite2 = Sprite2D::Create(tex);
+		sprite2->SetPosition(32, 32);
+		sprite2->SetAnchor(Vector2(0.5, 0.5));
+
+		// 右下原点
+		auto sprite3 = Sprite2D::Create(tex);
+		sprite3->SetPosition(64, 64);
+		sprite3->SetAnchor(1, 1);
+
+		// 中央下原点
+		auto sprite4 = Sprite2D::Create(tex);
+		sprite4->SetPosition(32, 120);
+		sprite4->SetAnchor(0.5, 1);
+
+		Engine::UpdateFrame();
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_Sprite.Anchor.png")));
+	}
+}
+
+//------------------------------------------------------------------------------
 TEST_F(Test_Scene_Sprite, DrawCallCount)
 {
 	// <Test> ステートが同一であれば1度のドローコールにまとめられる。

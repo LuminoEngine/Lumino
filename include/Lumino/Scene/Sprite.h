@@ -39,6 +39,7 @@ public:
 	/// サイズの設定
 	void SetSize(const SizeF& size) { m_size = size; UpdateVertexData(); }
 
+
 	/// テクスチャの転送矩形の設定 (ピクセル単位)
 	void SetSrcRect(const Rect& rect);
 	void SetSrcRect(int x, int y, int width, int height) { SetSrcRect(Rect(x, y, width, height)); }
@@ -102,15 +103,25 @@ public:
 
 	static Sprite2DPtr Create(Texture* texture);
 
+public:
+
+	/** 
+		@brief		スプライトの原点を設定します。
+		@details	値は (0,0) から (1,1) の間で指定します。
+					デフォルトは (0,0) で、これはスプライトの左上が原点であることを意味します。
+					(0.5,0.5) はスプライトの中央、(1,1) は右下が原点となります。
+	*/
+	void SetAnchor(const Vector2& ratio);
+	void SetAnchor(float ratioX, float ratioY);		/**< @overload SetAnchor */
+
 LN_PROTECTED_INTERNAL_ACCESS:
 	Sprite2D();
 	virtual ~Sprite2D();
 	void Initialize(SceneGraph* owner);
 	virtual void OnRender(SceneGraphRenderingContext* dc) override;
-	//virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
-
 
 private:
+	Vector2	m_anchor;
 };
 
 /**

@@ -41,8 +41,8 @@ public:
 	/// 描画リクエスト
 	void DrawRequest2D(
 		const Vector3& position,
-		const Vector3& center,
 		const Vector2& size,
+		const Vector2& anchorRatio,
 		Driver::ITexture* texture,
 		const RectF& srcRect,
 		const SpriteColorTable& colorTable);
@@ -50,8 +50,8 @@ public:
 	/// 描画リクエスト
 	void DrawRequest3D(
 		const Vector3& position,
-		const Vector3& center,
 		const Vector2& size,
+		const Vector2& anchorRatio,
 		Driver::ITexture* texture,
 		const RectF& srcRect,
 		const SpriteColorTable& colorTable,    // 4 頂点分。NULL の場合は白
@@ -70,8 +70,8 @@ private:
 	/// 描画リクエスト
 	void DrawRequest3DInternal(
 		const Vector3& position,
-		const Vector3& center,
 		const Vector2& size,
+		const Vector2& anchorRatio,
 		Driver::ITexture* texture,
 		const RectF& srcRect,
 		const SpriteColorTable& colorTable,
@@ -221,8 +221,8 @@ public:
 	*/
 	void DrawRequest2D(
 		const Vector3& position,
-		const Vector3& center,
 		const Vector2& size,
+		const Vector2& anchorRatio,
 		Texture* texture,
 		const RectF& srcRect,		// TODO: Rect のほうがピクセル単位であることがわかりやすい
 		const Color* colorTable);
@@ -238,8 +238,8 @@ public:
 	*/
 	void DrawRequest2D(
 		const Vector3& position,
-		const Vector3& center,
 		const Vector2& size,
+		const Vector2& anchorRatio,
 		Texture* texture,
 		const RectF& srcRect,
 		const Color& color);
@@ -256,8 +256,8 @@ public:
 	*/
 	void DrawRequest3D(
 		const Vector3& position,
-		const Vector3& center,
 		const Vector2& size,
+		const Vector2& anchorRatio,
 		Texture* texture,
 		const RectF& srcRect,
 		const Color* colorTable,
@@ -265,7 +265,7 @@ public:
 
 	void DrawRequest3D(
 		const Vector3& position,
-		const Vector3& center,
+		const Vector2& anchorRatio,
 		const Vector2& size,
 		Texture* texture,
 		const RectF& srcRect,

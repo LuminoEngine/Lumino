@@ -1,203 +1,4 @@
-﻿/*
-    ソートする要素は、
-        ・プライオリティ
-        ・Z座標 or ビュー行列の位置成分からの距離
-        ・テクスチャ
-
-
-    行列計算のテスト…
-
-        頂点毎にワールド行列を覚えておいて (Vector3 の Right Up Front Position の4x3)、
-        シェーダ内で計算するのと、CPU 側で4頂点に対して transform() するのとどっちが早いのかテスト。
-
-        方法…
-            drawRequest() を 6400 回実行。
-            そのループと、シーン全体の描画処理の時間を計測する。
-
-            Intel(R) Core(TM)2 Duo CPU     E8200  @ 2.66GHz (2 CPUs), ~2.7GHz
-            NVIDIA Quadro FX 1700
-
-        結果…
-
-            １．CPU 側で座標変換
-
-                drawRequest : 約 6500ns
-                Render      : 約 3500ns
-
-            ２．シェーダ内で計算
-
-                drawRequest : 約 11000ns
-                Render      : 約 5000ns
-
-            ３．２の環境で、行列の代入を切ってみる
-
-                drawRequest : 約 5000ns
-                Render      : 約 5000ns
-
-            おまけ.
-                シェーダ内の mul 回数を 1 回だけにしてみた。(↑のは行列作成→mul→ViewProj mul の2回)
-
-                drawRequest : 約 5000ns
-                Render      : 約 5000ns
-
-                あんまり変わらない。
-
-        考察…
-
-            行列の計算よりも、値コピー×4 (4頂点分) のほうがはるかに重い。
-            シェーダの方は渡す頂点データのサイズが一番影響大きかったみたい。
-                
-*/
-
-/*
-
-◆ 設計とか
-
-・Sprite クラスの drawSubset() は、サブセット番号 0 のみが渡されてくる。
-
-・SceneObject を継承することでユーザー任意の描画をできるようにする
-	・SpriteRenderer を使う限り、drawPrimitive() 使うわけじゃないのでこれまで通りっていうわけにはいかない。
-
-・SceneOjbect には onRequestBatchDraw() を持たせておく。
-  この関数は、SpriteRenderer や BillboardRenderer のように、データをバッファに溜めてから
-  後で一度に描画するものの描画リクエスト送信を実装する。
-
-・ISprite には２つの種類がある。
-  ひとつは、単一の汎用性のあるスプライトっていうイメージ。
-  これは以前までと同様、onDrawSubset() で setVertexBuffer()、drawPrimitive() の順に実行して描画する。
-  バッチ処理の対象ではない。
-  もうひとつは、バッチ処理されるもの。ひとつめのよりも高速に描画できる
-  (描画中、setVertexBuffer() で頂点バッファの設定を変えない等)が、
-  スプライト以外のオブジェクトとのZソートがうまくいかない。
-  （2Dであるスプライトなら頑張ればいけると思うけど、3D空間に配置されるビルボードはかなりキツイ）
-  そのため、バッチ処理は以下のものを対象とする。
-    ・半透明要素の無いオブジェクト(アルファテストでカットされるものはOK(アルファ値が完全に0))
-    ・半透明要素があり、かつ、半透明要素の描画パスで描画するもの(通常のオブジェクトの後に描画するべきもの)
-  一応、バッチ処理の想定している使い方は主にエフェクト関係なので、この方向で問題はないかも。
-  作成に関しては createSprite() createBatchSprite() の関数を使い、
-  返るインターフェイスは両方とも ISprite。
-
-
-
-
-
-Selene ではスプライトひとつ毎に drawPrimitive 読んでたけど…？
-
-検証
-    頂点 60000
-    トライアングルリスト
-    視点の近くで描画
-
-    １．四角形ひとつにつき 回、DrawPrimitive() を呼ぶ
-        奇数フレーム目が平均 1000ms
-        偶数フレーム目が平均 500ms
-
-    ２．全体を1度の DrawPrimitive() で描画
-        １．とほとんど同じ。
-
-    DrawPrimitive() のところだけ比べてみると、
-    １．では 0～2ms、２．では 0ms。
-
-
-    速度的にはほとんど変わらなかった。ちなみに速度が落ちてるのは Present()。
-    誤差は関数呼び出しの分の時間って感じで、描画にはほとんど関係ないかも。
-
-
-
-
-◆ 複数の四角形を格納した頂点バッファに対して、
-   四角形ひとつにつき一度 drawPrimitive() を呼んで描画する
-
-
-検証するコード
-
-	lnU32 n = (VERTEX_NUM / 3) / 2;
-	for ( lnU32 i = 0; i < n; ++i )
-	{
-	    renderer_->setVertexBuffer( mVertexBuffer, true );
-	    renderer_->drawPrimitive( LN_PRIMITIVE_TRIANGLELIST, i * 3, 2 );
-	}
-
-
-頂点数 60000
-トライアングルリスト
-一度の drawPrimitive() で2つのプリミティブ (四角形)を描画する
-
-
-● 動的な頂点バッファとして作成した場合
-	80ms～90ms
-	
-● 静的な頂点バッファとして作成した場合
-	40ms～50ms
-	倍くらい早い。
-
-● lock() unlock() の重さ
-	静的な頂点バッファとして作成後、
-	上記コードの直前で
-		mVertexBuffer->lock();
-		mVertexBuffer->unlock();
-	の２行を呼ぶ。
-	結果、80ms～90ms。
-	動的な頂点バッファとほぼ同じ。
-	
-● lock() unlock() の重さ  100回
-	静的な頂点バッファとして作成後、
-	上記コードの直前で
-	for ( lnU32 i = 0; i < 100; ++i )
-    {
-        mVertexBuffer->lock();
-        mVertexBuffer->unlock();
-    }
-    を実行する。
-    結果、80ms～90ms。
-    ほとんど変わらなかった。
-    
-● renderer_->setVertexBuffer( mVertexBuffer, true ); を
-	ループの外に出して、１度だけ実行するようにする
-	
-	・動的の場合
-		80ms～90ms。
-		あまり変わらない。
-		
-	・静的の場合
-		40ms～50ms
-		あまり変わらない。
-		
-	・静的で１００回lock()
-		80ms～90ms。
-		あまり変わらない。
-		
-		
-◆ もうひとつ頂点バッファを作って、以下のコードを実行
-
-	lnU32 n = (VERTEX_NUM / 3) / 2;
-	n /= 2;
-    for ( lnU32 i = 0; i < n; ++i )
-    {
-        renderer_->setVertexBuffer( mVertexBuffer, true );
-        renderer_->drawPrimitive( LN_PRIMITIVE_TRIANGLELIST, i * 3, 2 );
-
-        renderer_->setVertexBuffer( mVertexBuffer2, true );
-        renderer_->drawPrimitive( LN_PRIMITIVE_TRIANGLELIST, i * 3, 2 );
-    }
-    
-    ・動的の場合
-		200ms～220ms。
-		
-		
-    ・静的の場合
-    	90～110ms
-    	
-    ・静的・100 lock() の場合
-    	90～110ms
-    	
-	・静的・100 lock() 両方の場合
-    	90～110ms
-
-
-
-*/
-
+﻿
 #include "Internal.h"
 #include <math.h>
 #include <Lumino/Graphics/GraphicsException.h>
@@ -284,8 +85,8 @@ void SpriteRenderer::SetSortMode(SpriteSortMode flags, SortingDistanceBasis basi
 //------------------------------------------------------------------------------
 void SpriteRenderer::DrawRequest2D(
 	const Vector3& position,
-	const Vector3& center,
 	const Vector2& size,
+	const Vector2& anchorRatio,
 	Texture* texture,
 	const RectF& srcRect,
 	const Color* colorTable)
@@ -304,21 +105,21 @@ void SpriteRenderer::DrawRequest2D(
 		SpriteRenderer_SetTransform, m_manager,
 		SpriteRendererImpl*, m_internal,
 		const Vector3, position,
-		const Vector3, center,
 		const Vector2, size,
+		const Vector2, anchorRatio,
 		RefPtr<Driver::ITexture>, deviceTexture,
 		const RectF, srcRect,
 		SpriteColorTable, ct,
 		{
-			m_internal->DrawRequest2D(position, center, size, deviceTexture, srcRect, ct);
+			m_internal->DrawRequest2D(position, size, anchorRatio, deviceTexture, srcRect, ct);
 		});
 }
 
 //------------------------------------------------------------------------------
 void SpriteRenderer::DrawRequest2D(
 	const Vector3& position,
-	const Vector3& center,
 	const Vector2& size,
+	const Vector2& anchorRatio,
 	Texture* texture,
 	const RectF& srcRect,
 	const Color& color)
@@ -329,21 +130,21 @@ void SpriteRenderer::DrawRequest2D(
 		SpriteRenderer_SetTransform, m_manager,
 		SpriteRendererImpl*, m_internal,
 		const Vector3, position,
-		const Vector3, center,
 		const Vector2, size,
+		const Vector2, anchorRatio,
 		RefPtr<Driver::ITexture>, deviceTexture,
 		const RectF, srcRect,
 		SpriteColorTable, ct,
 		{
-			m_internal->DrawRequest2D(position, center, size, deviceTexture, srcRect, ct);
+			m_internal->DrawRequest2D(position, size, anchorRatio, deviceTexture, srcRect, ct);
 		});
 }
 
 //------------------------------------------------------------------------------
 void SpriteRenderer::DrawRequest3D(
 	const Vector3& position,
-	const Vector3& center,
 	const Vector2& size,
+	const Vector2& anchorRatio,
 	Texture* texture,
 	const RectF& srcRect,
 	const Color* colorTable,
@@ -363,22 +164,22 @@ void SpriteRenderer::DrawRequest3D(
 		SpriteRenderer_SetTransform, m_manager,
 		SpriteRendererImpl*, m_internal,
 		const Vector3, position,
-		const Vector3, center,
 		const Vector2, size,
+		const Vector2, anchorRatio,
 		RefPtr<Driver::ITexture>, deviceTexture,
 		const RectF, srcRect,
 		SpriteColorTable, ct,
 		AxisDirection, front,
 		{
-			m_internal->DrawRequest3D(position, center, size, deviceTexture, srcRect, ct, front);
+			m_internal->DrawRequest3D(position, size, anchorRatio, deviceTexture, srcRect, ct, front);
 		});
 }
 
 //------------------------------------------------------------------------------
 void SpriteRenderer::DrawRequest3D(
 	const Vector3& position,
-	const Vector3& center,
 	const Vector2& size,
+	const Vector2& anchorRatio,
 	Texture* texture,
 	const RectF& srcRect,
 	const Color& color,
@@ -390,14 +191,14 @@ void SpriteRenderer::DrawRequest3D(
 		SpriteRenderer_SetTransform, m_manager,
 		SpriteRendererImpl*, m_internal,
 		const Vector3, position,
-		const Vector3, center,
 		const Vector2, size,
+		const Vector2, anchorRatio,
 		RefPtr<Driver::ITexture>, deviceTexture,
 		const RectF, srcRect,
 		SpriteColorTable, ct,
 		AxisDirection, front,
 		{
-			m_internal->DrawRequest3D(position, center, size, deviceTexture, srcRect, ct, front);
+			m_internal->DrawRequest3D(position, size, anchorRatio, deviceTexture, srcRect, ct, front);
 		});
 }
 
@@ -604,16 +405,16 @@ void SpriteRendererImpl::SetSortMode(uint32_t flags, SortingDistanceBasis basis)
 //------------------------------------------------------------------------------
 void SpriteRendererImpl::DrawRequest2D(
     const Vector3& position,
-	const Vector3& center,
 	const Vector2& size,
+	const Vector2& anchorRatio,
 	Driver::ITexture* texture,
 	const RectF& srcRect,
 	const SpriteColorTable& colorTable)
 {
 	DrawRequest3DInternal(
 		position,
-		center,
 		size,
+		anchorRatio,
 		texture,
 		srcRect,
 		colorTable,
@@ -624,21 +425,21 @@ void SpriteRendererImpl::DrawRequest2D(
 //------------------------------------------------------------------------------
 void SpriteRendererImpl::DrawRequest3D(
 	const Vector3& position,
-	const Vector3& center,
 	const Vector2& size,
+	const Vector2& anchorRatio,
 	Driver::ITexture* texture,
 	const RectF& srcRect,
 	const SpriteColorTable& colorTable,
 	AxisDirection front)
 {
-	DrawRequest3DInternal(position, center, size, texture, srcRect, colorTable, front, true);
+	DrawRequest3DInternal(position, size, anchorRatio, texture, srcRect, colorTable, front, true);
 }
 
 //------------------------------------------------------------------------------
 void SpriteRendererImpl::DrawRequest3DInternal(
     const Vector3& position,
-    const Vector3& center,
     const Vector2& size,
+	const Vector2& anchorRatio,
 	Driver::ITexture* texture,
     const RectF& srcRect,
 	const SpriteColorTable& colorTable,
@@ -649,10 +450,12 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 
 	BatchSpriteData& sprite = m_spriteRequestList[m_spriteRequestListUsedCount];
 
+	Vector2 center(size.x * anchorRatio.x, size.y * anchorRatio.y);
+
 	// 3D の場合の頂点座標
 	if (is3D)
 	{
-		Vector3 origin(-center);
+		//Vector3 origin(-center);
 		Vector2 harf_size(size * 0.5f);
 		float l, t, r, b;
 		r = harf_size.x;
@@ -660,7 +463,12 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 		l = -r;
 		t = -b;
 
-#define LN_WRITE_V3( x_, y_, z_ ) origin.x + x_, origin.y + y_, origin.z + z_
+		l -= center.x;
+		r -= center.x;
+		t -= center.y;
+		b -= center.y;
+
+#define LN_WRITE_V3( x_, y_, z_ ) x_, y_, z_
 
 		switch (front)
 		{
@@ -706,11 +514,11 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 	// 2D の場合の頂点座標
 	else
 	{
-		Vector3 origin(-center);
-		sprite.Vertices[0].Position.Set(origin.x, origin.y, origin.z);
-		sprite.Vertices[1].Position.Set(origin.x, origin.y + size.y, origin.z);
-		sprite.Vertices[2].Position.Set(origin.x + size.x, origin.y, origin.z);
-		sprite.Vertices[3].Position.Set(origin.x + size.x, origin.y + size.y, origin.z);
+		Vector2 origin(-center);
+		sprite.Vertices[0].Position.Set(origin.x, origin.y, 0);
+		sprite.Vertices[1].Position.Set(origin.x, origin.y + size.y, 0);
+		sprite.Vertices[2].Position.Set(origin.x + size.x, origin.y, 0);
+		sprite.Vertices[3].Position.Set(origin.x + size.x, origin.y + size.y, 0);
 	}
 
 	Matrix mat = m_transformMatrix.GetRotationMatrix();
