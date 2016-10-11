@@ -73,7 +73,7 @@ LN_INTERNAL_ACCESS:
 
 protected:
 	virtual bool OnCheckStateChanged() override;
-	virtual void OnStateFlush() override;
+	virtual void OnStateFlush(detail::IRendererPloxy* activeRenderer) override;
 	virtual void OnPrimitiveFlush() override;
 	virtual void OnShaderVariableModified(ShaderVariable* var) override;
 

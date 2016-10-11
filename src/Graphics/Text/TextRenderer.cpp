@@ -190,7 +190,12 @@ void TextRendererCore::Flush(Internal::FontGlyphTextureCache* cache)
 TextRenderer::TextRenderer()
 	: m_manager(nullptr)
 	, m_core(nullptr)
+	, m_glyphLayoutDataList()
+	, m_transform()
+	, m_viewProj()
+	, m_viewPixelSize()
 	, m_font(nullptr)
+	, m_fillBrush(nullptr)
 	, m_stateModified(false)
 	, m_flushRequested(false)
 {
@@ -206,7 +211,7 @@ void TextRenderer::Initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 	m_core = m_manager->GetTextRendererCore();
-	SetState(m_manager->GetFontManager()->GetDefaultFont(), nullptr);
+	m_font = m_manager->GetFontManager()->GetDefaultFont();
 }
 
 //------------------------------------------------------------------------------
@@ -217,22 +222,18 @@ void TextRenderer::SetTransform(const Matrix& matrix)
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::SetViewProjMatrix(const Matrix& matrix)
+void TextRenderer::SetState(const Matrix& matrix, const SizeI& size, Font* font, Brush* fillBrush)
 {
-	m_viewProj = matrix;
-	m_stateModified = true;
-}
-
-//------------------------------------------------------------------------------
-void TextRenderer::SetViewPixelSize(const SizeI& size)
-{
-	m_viewPixelSize = size;
-	m_stateModified = true;
-}
-
-//------------------------------------------------------------------------------
-void TextRenderer::SetState(Font* font, Brush* fillBrush)
-{
+	if (m_viewProj != matrix)
+	{
+		m_viewProj = matrix;
+		m_stateModified = true;
+	}
+	if (m_viewPixelSize != size)
+	{
+		m_viewPixelSize = size;
+		m_stateModified = true;
+	}
 	if (m_font != font)
 	{
 		m_font = font;
@@ -246,25 +247,19 @@ void TextRenderer::SetState(Font* font, Brush* fillBrush)
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::DrawGlyphRun(const Point& position, GlyphRun* glyphRun)
+void TextRenderer::DrawGlyphRun(const Matrix& transform, const Point& position, GlyphRun* glyphRun)
 {
-	DrawGlyphRun(PointF((float)position.x, (float)position.y), glyphRun);
+	DrawGlyphRun(transform, PointF((float)position.x, (float)position.y), glyphRun);
 }
-void TextRenderer::DrawGlyphRun(const PointF& position, GlyphRun* glyphRun)
+void TextRenderer::DrawGlyphRun(const Matrix& transform, const PointF& position, GlyphRun* glyphRun)
 {
-	if (glyphRun == NULL) { return; }
+	if (glyphRun == nullptr) return;
 	CheckUpdateState();
-	DrawGlyphsInternal(position, glyphRun->RequestLayoutItems(), glyphRun->LookupFontGlyphTextureCache());
+	DrawGlyphsInternal(transform, position, glyphRun->RequestLayoutItems(), glyphRun->LookupFontGlyphTextureCache());
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::DrawString(const String& str, const PointF& position)
-{
-	DrawString(str.c_str(), str.GetLength(), position);
-}
-
-//------------------------------------------------------------------------------
-void TextRenderer::DrawString(const TCHAR* str, int length, const PointF& position)
+void TextRenderer::DrawString(const Matrix& transform, const TCHAR* str, int length, const PointF& position)
 {
 	length = (length < 0) ? StringTraits::tcslen(str) : length;
 
@@ -279,11 +274,11 @@ void TextRenderer::DrawString(const TCHAR* str, int length, const PointF& positi
 	cache->GetTextLayoutEngine()->ResetSettings();
 	cache->GetTextLayoutEngine()->LayoutText((UTF32*)utf32Buf.GetConstData(), utf32Buf.GetSize() / sizeof(UTF32), LayoutTextOptions::All, &result);
 
-	DrawGlyphsInternal(position, result.Items, cache);
+	DrawGlyphsInternal(transform, position, result.Items, cache);
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::DrawString(const TCHAR* str, int length, const RectF& rect, StringFormatFlags flags)
+void TextRenderer::DrawString(const Matrix& transform, const TCHAR* str, int length, const RectF& rect, StringFormatFlags flags)
 {
 	length = (length < 0) ? StringTraits::tcslen(str) : length;
 
@@ -315,11 +310,11 @@ void TextRenderer::DrawString(const TCHAR* str, int length, const RectF& rect, S
 	TextLayoutResult result;
 	cache->GetTextLayoutEngine()->LayoutText((UTF32*)utf32Buf.GetConstData(), utf32Buf.GetSize() / sizeof(UTF32), LayoutTextOptions::All, &result);
 
-	DrawGlyphsInternal(rect.GetTopLeft(), result.Items, cache);
+	DrawGlyphsInternal(transform, rect.GetTopLeft(), result.Items, cache);
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::DrawGlyphsInternal(const PointF& position, const Array<TextLayoutResultItem>& layoutItems, Internal::FontGlyphTextureCache* cache)
+void TextRenderer::DrawGlyphsInternal(const Matrix& transform, const PointF& position, const Array<TextLayoutResultItem>& layoutItems, Internal::FontGlyphTextureCache* cache)
 {
 	CheckUpdateState();
 

@@ -42,7 +42,7 @@ LN_INTERNAL_ACCESS:
 	MMEShader*					Shader;				// 本当に必要なシェーダ (VisualNode::Render() 以下で使用可能)
 
 protected:
-	virtual void OnStateFlush() override;
+	virtual void OnStateFlush(detail::IRendererPloxy* activeRenderer) override;
 
 LN_INTERNAL_ACCESS:
 	SceneGraphRenderingContext();

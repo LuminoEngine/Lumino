@@ -254,13 +254,13 @@ void DrawingContext::DrawText(const StringRef& text, const PointF& position)
 {
 	NorityStartDrawing(m_textRenderer);
 	Flush();	// TODO: TextRenderer ‚ª Flush –¢‘Î‰ž‚È‚Ì‚ÅB
-	m_textRenderer->DrawString(text.GetBegin(), text.GetLength(), position);
+	m_textRenderer->DrawString(Matrix::Identity, text.GetBegin(), text.GetLength(), position);
 }
 void DrawingContext::DrawText(const StringRef& text, const RectF& rect, StringFormatFlags flags)
 {
 	NorityStartDrawing(m_textRenderer);
 	Flush();	// TODO: TextRenderer ‚ª Flush –¢‘Î‰ž‚È‚Ì‚ÅB
-	m_textRenderer->DrawString(text.GetBegin(), text.GetLength(), rect, flags);
+	m_textRenderer->DrawString(Matrix::Identity, text.GetBegin(), text.GetLength(), rect, flags);
 }
 void DrawingContext::LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const PointF& position)
 {
@@ -299,36 +299,37 @@ bool DrawingContext::OnCheckStateChanged()
 }
 
 //------------------------------------------------------------------------------
-void DrawingContext::OnStateFlush()
+void DrawingContext::OnStateFlush(detail::IRendererPloxy* activeRenderer)
 {
-	ContextInterface::OnStateFlush();
+	ContextInterface::OnStateFlush(activeRenderer);
 	const ContextState& state = m_state;
 
 	SetBasicContextState(state);
-
-	m_geometryRenderer->SetTransform(state.worldTransform);
-	m_textRenderer->SetTransform(state.worldTransform);
-
-	m_geometryRenderer->SetOpacity(state.opacity);
-
-	m_geometryRenderer->SetBrush(state.fillBrush);
-
-	m_textRenderer->SetState(
-		(state.font != nullptr) ? state.font : GetManager()->GetFontManager()->GetDefaultFont(),
-		state.fillBrush);
-
-
-
-
 
 
 	const SizeI& size = state.GetRenderTarget(0)->GetSize();
 	Matrix viewProj = state.viewTransform * state.projectionTransform;
 
-	m_geometryRenderer->SetViewProjection(state.viewTransform, state.projectionTransform, size);
-	//m_spriteRenderer->SetViewPixelSize(size);
-	m_textRenderer->SetViewProjMatrix(viewProj);
-	m_textRenderer->SetViewPixelSize(size);
+	// GeometryRenderer
+	if (activeRenderer == m_geometryRenderer)
+	{
+		m_geometryRenderer->SetTransform(state.worldTransform);
+		m_geometryRenderer->SetOpacity(state.opacity);
+		m_geometryRenderer->SetBrush(state.fillBrush);
+		m_geometryRenderer->SetViewProjection(state.viewTransform, state.projectionTransform, size);
+	}
+
+	// TextRenderer
+	if (activeRenderer == m_textRenderer)
+	{
+		m_textRenderer->SetTransform(state.worldTransform);
+		m_textRenderer->SetState(
+			viewProj,
+			size,
+			(state.font != nullptr) ? state.font : GetManager()->GetFontManager()->GetDefaultFont(),
+			state.fillBrush);
+	}
+
 
 	if (state.fillBrush != nullptr && state.fillBrush->GetType() == BrushType_Texture)
 	{

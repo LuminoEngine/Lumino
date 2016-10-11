@@ -248,7 +248,7 @@ void ContextInterface::NorityStartDrawing(detail::IRendererPloxy* rendererPloxy)
 		if (OnCheckStateChanged())
 		{
 			OnPrimitiveFlush();
-			OnStateFlush();
+			OnStateFlush(m_activeRendererPloxy);
 		}
 		m_stateChanged = false;
 	}
@@ -263,7 +263,7 @@ void ContextInterface::FlushImplemented()
 		if (OnCheckStateChanged())
 		{
 			OnPrimitiveFlush();
-			OnStateFlush();
+			OnStateFlush(m_activeRendererPloxy);
 		}
 		m_stateChanged = false;
 	}
@@ -284,7 +284,7 @@ void ContextInterface::OnDeactivated()
 }
 
 //------------------------------------------------------------------------------
-void ContextInterface::OnStateFlush()
+void ContextInterface::OnStateFlush(detail::IRendererPloxy* activeRenderer)
 {
 }
 

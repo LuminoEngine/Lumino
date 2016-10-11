@@ -74,13 +74,17 @@ void SceneGraphRenderingContext::DrawSprite3D(
 }
 
 //------------------------------------------------------------------------------
-void SceneGraphRenderingContext::OnStateFlush()
+void SceneGraphRenderingContext::OnStateFlush(detail::IRendererPloxy* activeRenderer)
 {
-	RenderingContext::OnStateFlush();
+	RenderingContext::OnStateFlush(activeRenderer);
 
-	const SizeI& size = GetRenderTarget(0)->GetSize();
-	m_spriteRenderer->SetViewPixelSize(size);
-	m_spriteRenderer->SetState(GetRenderState(), m_currentCamera->GetViewMatrix(), m_currentCamera->GetProjectionMatrix());
+	// SpriteRenderer
+	if (activeRenderer == m_spriteRenderer)
+	{
+		const SizeI& size = GetRenderTarget(0)->GetSize();
+		m_spriteRenderer->SetViewPixelSize(size);
+		m_spriteRenderer->SetState(GetRenderState(), m_currentCamera->GetViewMatrix(), m_currentCamera->GetProjectionMatrix());
+	}
 }
 
 LN_NAMESPACE_SCENE_END

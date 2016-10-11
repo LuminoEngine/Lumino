@@ -124,7 +124,7 @@ protected:
 	void OnDeactivated();
 
 	virtual bool OnCheckStateChanged() = 0;
-	virtual void OnStateFlush();
+	virtual void OnStateFlush(detail::IRendererPloxy* activeRenderer);
 	virtual void OnPrimitiveFlush();
 
 	// call by ShaderVariable::SetModified()

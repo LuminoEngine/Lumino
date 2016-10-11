@@ -100,16 +100,13 @@ public:
 	void Initialize(GraphicsManager* manager);
 
 	void SetTransform(const Matrix& matrix);
-	void SetViewProjMatrix(const Matrix& matrix);
-	void SetViewPixelSize(const SizeI& size);
-	void SetState(Font* font, Brush* fillBrush);
+	void SetState(const Matrix& matrix, const SizeI& size, Font* font, Brush* fillBrush);
 
-	void DrawGlyphRun(const Point& position, GlyphRun* glyphRun);
-	void DrawGlyphRun(const PointF& position, GlyphRun* glyphRun);	// SetFont 無視
+	void DrawGlyphRun(const Matrix& transform, const Point& position, GlyphRun* glyphRun);
+	void DrawGlyphRun(const Matrix& transform, const PointF& position, GlyphRun* glyphRun);	// SetFont 無視
 
-	void DrawString(const String& str, const PointF& position);
-	void DrawString(const TCHAR* str, int length, const PointF& position);
-	void DrawString(const TCHAR* str, int length, const RectF& rect, StringFormatFlags flags);
+	void DrawString(const Matrix& transform, const TCHAR* str, int length, const PointF& position);
+	void DrawString(const Matrix& transform, const TCHAR* str, int length, const RectF& rect, StringFormatFlags flags);
 
 	virtual void Flush() override;
 	virtual void OnActivated() { m_stateModified = true; }
@@ -117,7 +114,7 @@ public:
 
 public:
 	// TODO: ↓いまは Flush でやるようなことをしている。後で変更したい。
-	void DrawGlyphsInternal(const PointF& position, const Array<TextLayoutResultItem>& layoutItems, Internal::FontGlyphTextureCache* cache);
+	void DrawGlyphsInternal(const Matrix& transform, const PointF& position, const Array<TextLayoutResultItem>& layoutItems, Internal::FontGlyphTextureCache* cache);
 	void FlushInternal(Internal::FontGlyphTextureCache* cache);
 	void CheckUpdateState();
 

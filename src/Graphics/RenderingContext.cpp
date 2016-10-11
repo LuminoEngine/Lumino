@@ -510,17 +510,21 @@ bool RenderingContext::OnCheckStateChanged()
 }
 
 //------------------------------------------------------------------------------
-void RenderingContext::OnStateFlush()
+void RenderingContext::OnStateFlush(detail::IRendererPloxy* activeRenderer)
 {
-	ContextInterface::OnStateFlush();
+	ContextInterface::OnStateFlush(activeRenderer);
 	SetBasicContextState(m_state);
 
 	auto* pass = m_state.GetShaderPass();
 	if (pass != nullptr) GetBaseRenderer()->SetShaderPass(pass);
 
-	const SizeI& size = m_state.GetRenderTarget(0)->GetSize();
-	m_primitiveRenderer->SetViewPixelSize(size);
-	m_primitiveRenderer->SetUseInternalShader(GetShaderPass() == nullptr);
+	// PrimitiveRenderer
+	if (activeRenderer == m_primitiveRenderer)
+	{
+		const SizeI& size = m_state.GetRenderTarget(0)->GetSize();
+		m_primitiveRenderer->SetViewPixelSize(size);
+		m_primitiveRenderer->SetUseInternalShader(GetShaderPass() == nullptr);
+	}
 
 	m_backendState = m_state;
 }
