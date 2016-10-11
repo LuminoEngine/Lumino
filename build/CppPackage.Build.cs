@@ -1,3 +1,4 @@
+//#define VS2013
 using System;
 using System.Text;
 using System.IO;
@@ -41,20 +42,26 @@ class CppPackageRule : ModuleRule
 
         // .lib
         Logger.WriteLine("copy lib files...");
+#if VS2013
         Directory.CreateDirectory(releaseDir + "lib/MSVC120/x86");
         Utils.CopyFiles(builder.LuminoLibDir + "MSVC120/x86/Debug", "*.lib", releaseDir + "lib/MSVC120/x86");
         Utils.CopyFiles(builder.LuminoLibDir + "MSVC120/x86/Release", "*.lib", releaseDir + "lib/MSVC120/x86");
+#endif
         Directory.CreateDirectory(releaseDir + "lib/MSVC140/x86");
         Utils.CopyFiles(builder.LuminoLibDir + "MSVC140/x86/Debug", "*.lib", releaseDir + "lib/MSVC140/x86");
         Utils.CopyFiles(builder.LuminoLibDir + "MSVC140/x86/Release", "*.lib", releaseDir + "lib/MSVC140/x86");
 
         // インストールスクリプトとか、プロジェクトテンプレート
         Logger.WriteLine("copy other files...");
+#if VS2013
         Directory.CreateDirectory(releaseDir + "tools/VS2013ProjectTemplate");
+#endif
         Directory.CreateDirectory(releaseDir + "tools/VS2015ProjectTemplate");
         Utils.CopyFile(pkgSrcDir + "Lumino_Install.bat", releaseDir);
         Utils.CopyFile(pkgSrcDir + "Lumino_Uninstall.bat", releaseDir);
+#if VS2013
         Utils.CreateZipFile(builder.LuminoToolsDir + "VS2013ProjectTemplate/LuminoProjectCpp", releaseDir + "tools/VS2013ProjectTemplate/LuminoProjectCpp.zip", false);
+#endif
         Utils.CreateZipFile(builder.LuminoToolsDir + "VS2015ProjectTemplate/LuminoProjectCpp", releaseDir + "tools/VS2015ProjectTemplate/LuminoProjectCpp.zip", false);
 
         // Readme.txt (バージョン名を埋め込む)
