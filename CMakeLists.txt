@@ -365,6 +365,7 @@ set(LN_SOURCES_Scene
 	include/Lumino/Scene/SpriteModelObject.h
 	include/Lumino/Scene/SpriteParticle.h
 	include/Lumino/Scene/StaticMesh.h
+	include/Lumino/Scene/Text.h
 	include/Lumino/Scene/TileMap.h
 	include/Lumino/Scene/VisualNode.h
 	include/Lumino/Scene/MME/MMESceneObject.h
@@ -394,6 +395,7 @@ set(LN_SOURCES_Scene
 	src/Scene/SpriteModelObject.cpp
 	src/Scene/SpriteParticle.cpp
 	src/Scene/StaticMesh.cpp
+	src/Scene/Text.cpp
 	src/Scene/TileMap.cpp
 	src/Scene/VisualNode.cpp
 	external/ssbpLib/ssShader_frag.h
