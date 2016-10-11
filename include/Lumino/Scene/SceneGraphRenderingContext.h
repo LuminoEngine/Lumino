@@ -5,6 +5,7 @@
 
 LN_NAMESPACE_BEGIN
 namespace detail { class SpriteRenderer; }
+namespace detail { class TextRenderer; }
 LN_NAMESPACE_SCENE_BEGIN
 class SceneGraphManager;
 
@@ -32,6 +33,8 @@ public:
 		const RectF& srcRect,
 		const Color& color,
 		AxisDirection front = AxisDirection_RZ);
+
+	void DrawText();
 	
 LN_INTERNAL_ACCESS:
 	RenderingPass*				Pass;
@@ -49,8 +52,9 @@ LN_INTERNAL_ACCESS:
 	Camera* GetCurrentCamera() const { return m_currentCamera; }
 
 private:
-	RefPtr<detail::SpriteRenderer>	m_spriteRenderer;
 	Camera*							m_currentCamera;
+	RefPtr<detail::SpriteRenderer>	m_spriteRenderer;
+	RefPtr<detail::TextRenderer>	m_textRenderer;
 };
 
 LN_NAMESPACE_SCENE_END

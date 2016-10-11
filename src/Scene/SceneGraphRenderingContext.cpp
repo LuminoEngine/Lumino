@@ -3,6 +3,7 @@
 #include <Lumino/Scene/Camera.h>
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include "../Graphics/SpriteRenderer.h"
+#include "../Graphics/Text/TextRenderer.h"
 #include "SceneGraphManager.h"
 
 LN_NAMESPACE_BEGIN
@@ -15,6 +16,8 @@ LN_NAMESPACE_SCENE_BEGIN
 //------------------------------------------------------------------------------
 SceneGraphRenderingContext::SceneGraphRenderingContext()
 	: m_currentCamera(nullptr)
+	, m_spriteRenderer(nullptr)
+	, m_textRenderer(nullptr)
 {
 }
 
@@ -29,6 +32,9 @@ void SceneGraphRenderingContext::Initialize(SceneGraphManager* manager)
 	RenderingContext::Initialize(manager->GetGraphicsManager());
 
 	m_spriteRenderer = RefPtr<detail::SpriteRenderer>::MakeRef(manager->GetGraphicsManager(), 2048);	// TODO
+
+	m_textRenderer = RefPtr<detail::TextRenderer>::MakeRef();
+	m_textRenderer->Initialize(manager->GetGraphicsManager());
 }
 
 //------------------------------------------------------------------------------

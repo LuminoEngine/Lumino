@@ -239,6 +239,10 @@ void ContextInterface::NorityStateChanging()
 void ContextInterface::NorityStartDrawing(detail::IRendererPloxy* rendererPloxy)
 {
 	m_manager->SwitchActiveContext(this);
+
+	// アクティブな Renderer の切り替え
+	SwitchActiveRendererPloxy(rendererPloxy);
+
 	if (m_stateChanged)
 	{
 		if (OnCheckStateChanged())
@@ -248,7 +252,6 @@ void ContextInterface::NorityStartDrawing(detail::IRendererPloxy* rendererPloxy)
 		}
 		m_stateChanged = false;
 	}
-	SwitchActiveRendererPloxy(rendererPloxy);
 }
 
 //------------------------------------------------------------------------------
