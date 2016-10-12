@@ -83,6 +83,7 @@ OpenSceneGraph もたぶんそう。
 #include "Graphics/RendererImpl.h"
 #include "Graphics/RenderingThread.h"
 #include "Graphics/GraphicsManager.h"
+#include "Documents/DocumentsManager.h"
 #include <Lumino/Graphics/DrawingContext.h>
 #include "Scene/SceneGraphManager.h"
 #include <Lumino/Scene/SceneGraph.h>
@@ -516,17 +517,16 @@ void EngineManager::InitializeModelManager()
 //------------------------------------------------------------------------------
 void EngineManager::InitializeDocumentsManager()
 {
-#if 0
-	if (m_documentsManager.IsNull())
+	if (m_documentsManager == nullptr)
 	{
 		InitializeCommon();
 		InitializeGraphicsManager();
 
-		Documents::DocumentsManager::ConfigData data;
-		data.GraphicsManager = m_graphicsManager;
-		m_documentsManager.Attach(LN_NEW Documents::DocumentsManager(data));
+		detail::DocumentsManager::ConfigData data;
+		data.graphicsManager = m_graphicsManager;
+		m_documentsManager.Attach(LN_NEW detail::DocumentsManager());
+		m_documentsManager->Initialize(data);
 	}
-#endif
 }
 
 //------------------------------------------------------------------------------

@@ -3,7 +3,6 @@
 #include <Lumino/UI/Common.h>
 
 LN_NAMESPACE_BEGIN
-namespace Documents { class DocumentsManager; }
 class AssetsManager;
 class PlatformManager;
 class PlatformWindow;
