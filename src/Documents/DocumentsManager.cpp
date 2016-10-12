@@ -1,20 +1,29 @@
-﻿
-#include "../Internal.h"
-#include <Lumino/Documents/DocumentsManager.h>
+
+#include "Internal.h"
+#include "DocumentsManager.h"
 
 LN_NAMESPACE_BEGIN
-namespace Documents
-{
+namespace detail {
 
-//=============================================================================
+//==============================================================================
 // DocumentsManager
-//=============================================================================
+//==============================================================================
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-DocumentsManager::DocumentsManager(const ConfigData& configData)
-	: m_graphicsManager(configData.GraphicsManager)
+//------------------------------------------------------------------------------
+DocumentsManager::DocumentsManager()
+	: m_graphicsManager(nullptr)
+	, m_TCharToUTF32Converter()
+	, m_UTF32ToTCharConverter()
+{
+}
+
+//------------------------------------------------------------------------------
+DocumentsManager::~DocumentsManager()
+{
+}
+
+//------------------------------------------------------------------------------
+void DocumentsManager::Initialize(const ConfigData& configData)
 {
 	m_TCharToUTF32Converter.SetDestinationEncoding(Encoding::GetUTF32Encoding());
 	m_TCharToUTF32Converter.SetSourceEncoding(Encoding::GetTCharEncoding());
@@ -22,13 +31,5 @@ DocumentsManager::DocumentsManager(const ConfigData& configData)
 	m_UTF32ToTCharConverter.SetSourceEncoding(Encoding::GetUTF32Encoding());
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-DocumentsManager::~DocumentsManager()
-{
-}
-
-} // namespace Documents
+} // namespace detail
 LN_NAMESPACE_END
-

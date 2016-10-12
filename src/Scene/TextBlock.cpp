@@ -5,29 +5,29 @@
 #include "RenderingPass.h"
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/SceneGraph.h>
-#include <Lumino/Scene/Text.h>
+#include <Lumino/Scene/TextBlock.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 //==============================================================================
-// Text2D
+// TextBlock2D
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Text2D, VisualNode);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TextBlock2D, VisualNode);
 
 //------------------------------------------------------------------------------
-Text2D::Text2D()
+TextBlock2D::TextBlock2D()
 	: VisualNode()
 {
 }
 
 //------------------------------------------------------------------------------
-Text2D::~Text2D()
+TextBlock2D::~TextBlock2D()
 {
 }
 
 //------------------------------------------------------------------------------
-void Text2D::Initialize(SceneGraph* owner, SpriteCoord spriteCoord)
+void TextBlock2D::Initialize(SceneGraph* owner)
 {
 	VisualNode::Initialize(owner, 1);
 }

@@ -365,7 +365,7 @@ set(LN_SOURCES_Scene
 	include/Lumino/Scene/SpriteModelObject.h
 	include/Lumino/Scene/SpriteParticle.h
 	include/Lumino/Scene/StaticMesh.h
-	include/Lumino/Scene/Text.h
+	include/Lumino/Scene/TextBlock.h
 	include/Lumino/Scene/TileMap.h
 	include/Lumino/Scene/VisualNode.h
 	include/Lumino/Scene/MME/MMESceneObject.h
@@ -395,7 +395,7 @@ set(LN_SOURCES_Scene
 	src/Scene/SpriteModelObject.cpp
 	src/Scene/SpriteParticle.cpp
 	src/Scene/StaticMesh.cpp
-	src/Scene/Text.cpp
+	src/Scene/TextBlock.cpp
 	src/Scene/TileMap.cpp
 	src/Scene/VisualNode.cpp
 	external/ssbpLib/ssShader_frag.h
@@ -487,24 +487,11 @@ set(LN_SOURCES_UI
 )
 
 set(LN_SOURCES_Documents
-	include/Lumino/Documents/Bold.h
-	include/Lumino/Documents/Common.h
-	include/Lumino/Documents/DocumentsManager.h
-	include/Lumino/Documents/DocumentsRenderer.h
-	include/Lumino/Documents/Inline.h
-	include/Lumino/Documents/Paragraph.h
-	include/Lumino/Documents/Run.h
-	include/Lumino/Documents/Span.h
-	include/Lumino/Documents/TextElement.h
-	src/Documents/Bold.cpp
-	src/Documents/DocumentsHelper.h
+	src/Documents/DocumentElements.cpp
+	src/Documents/DocumentElements.h
 	src/Documents/DocumentsManager.cpp
-	src/Documents/DocumentsRenderer.cpp
-	src/Documents/Inline.cpp
-	src/Documents/Paragraph.cpp
-	src/Documents/Run.cpp
-	src/Documents/Span.cpp
-	src/Documents/TextElement.cpp
+	src/Documents/DocumentsManager.h
+	src/Documents/Internal.h
 )
 
 set(LN_SOURCES_Game
@@ -732,7 +719,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Scene}
 	${LN_SOURCES_Scene_MMD}
 	${LN_SOURCES_UI}
-	#${LN_SOURCES_Documents}
+	${LN_SOURCES_Documents}
 	${LN_SOURCES_Game}
 	${LN_SOURCES_Engine}
 	${LN_SOURCES_C_API}

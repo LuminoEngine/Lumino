@@ -9,7 +9,7 @@ LN_NAMESPACE_SCENE_BEGIN
 /**
 	@brief
 */
-class Text2D
+class TextBlock2D
 	: public VisualNode
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
@@ -27,16 +27,19 @@ public:
 
 public:
 
+	/** 表示する文字列を設定します。 */
+	void SetText(const StringRef& text);
 
 protected:
-	Text2D();
-	virtual ~Text2D();
-	void Initialize(SceneGraph* owner, SpriteCoord spriteCoord);
+	TextBlock2D();
+	virtual ~TextBlock2D();
+	void Initialize(SceneGraph* owner);
 
 	virtual detail::Sphere GetBoundingSphere() override;
 	virtual void OnRender(SceneGraphRenderingContext* dc) override;
 
 protected:
+	String		m_text;
 	SizeF		m_renderSize;
 };
 
