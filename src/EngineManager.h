@@ -19,6 +19,7 @@ namespace detail { class UIManager; }
 namespace detail { class AudioManager; }
 namespace detail { class PhysicsManager; }
 namespace detail { class DocumentsManager; }
+class FileManager;
 class GraphicsManager;
 class SceneGraphManager;
 class Application;
@@ -234,7 +235,7 @@ private:
 	GraphicsManager*					m_graphicsManager;
 	detail::EffectManager*				m_effectManager;
 	detail::ModelManager*				m_modelManager;
-	RefPtr<detail::DocumentsManager>	m_documentsManager;
+	detail::DocumentsManager*			m_documentsManager;
 	detail::UIManager*					m_uiManager;
 	SceneGraphManager*					m_sceneGraphManager;
 	AssetsManager*						m_assetsManager;

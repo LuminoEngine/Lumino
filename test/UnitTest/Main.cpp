@@ -1,5 +1,6 @@
 ﻿#include "TestConfig.h"
 #include "../../../src/EngineManager.h"
+#include "../../../src/Graphics/GraphicsManager.h"
 
 //------------------------------------------------------------------------------
 //GTEST_API_ int main(int argc, char **argv)

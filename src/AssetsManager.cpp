@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.h"
 #include <Lumino/Assets.h>
+#include "Graphics/GraphicsManager.h"
 #include "Graphics/Text/FreeTypeFont.h"
 #include "EngineManager.h"
 #include "AssetsManager.h"

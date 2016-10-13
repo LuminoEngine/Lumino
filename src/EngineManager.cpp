@@ -203,6 +203,7 @@ EngineManager::EngineManager(const detail::EngineSettings& configData)
 	, m_graphicsManager(nullptr)
 	, m_effectManager(nullptr)
 	, m_modelManager(nullptr)
+	, m_documentsManager(nullptr)
 	, m_uiManager(nullptr)
 	, m_sceneGraphManager(nullptr)
 	, m_assetsManager(nullptr)
@@ -272,6 +273,8 @@ EngineManager::~EngineManager()
 		m_uiManager->Finalize();
 		LN_SAFE_RELEASE(m_uiManager);
 	}
+
+	LN_SAFE_RELEASE(m_documentsManager);
 
 	LN_SAFE_RELEASE(m_graphicsManager);
 
@@ -524,7 +527,7 @@ void EngineManager::InitializeDocumentsManager()
 
 		detail::DocumentsManager::ConfigData data;
 		data.graphicsManager = m_graphicsManager;
-		m_documentsManager.Attach(LN_NEW detail::DocumentsManager());
+		m_documentsManager = LN_NEW detail::DocumentsManager();
 		m_documentsManager->Initialize(data);
 	}
 }

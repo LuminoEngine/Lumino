@@ -20,8 +20,9 @@ public:
 	DocumentsManager();
 	virtual ~DocumentsManager();
 	void Initialize(const ConfigData& configData);
+	GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
 
-protected:
+private:
 	GraphicsManager*		m_graphicsManager;
 	EncodingConverter		m_TCharToUTF32Converter;
 	EncodingConverter		m_UTF32ToTCharConverter;

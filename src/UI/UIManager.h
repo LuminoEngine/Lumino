@@ -11,6 +11,7 @@ namespace detail
 {
 class EventArgsPool;
 class AnimationManager;
+class DocumentsManager;
 
 class UIManager
 	: public RefObject
@@ -23,7 +24,7 @@ public:
 		GraphicsManager*				graphicsManager = nullptr;
 		AssetsManager*					assetsManager = nullptr;
 		PlatformWindow*					mainWindow = nullptr;
-		Documents::DocumentsManager*	documentsManager = nullptr;
+		detail::DocumentsManager*		documentsManager = nullptr;
 	};
 
 	static const float MouseButtonClickTimeout;

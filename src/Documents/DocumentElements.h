@@ -70,8 +70,12 @@ public:
 	bool IsFontAntiAlias() const { return m_fontData.IsAntiAlias; }
 
 protected:
+	virtual void OnFontDataChanged(const GraphicsManager::FontData& newData);
 	virtual SizeF Measure();
 	virtual void Render(IDocumentsRenderer* renderer);
+
+LN_INTERNAL_ACCESS:
+	DocumentsManager* GetManager() const { return m_manager; }
 
 private:
 	DocumentsManager*			m_manager;
@@ -119,11 +123,15 @@ public:
 	virtual ~Run();
 	void Initialize(DocumentsManager* manager);
 
-	//virtual SizeF Measure();
-	//virtual void Render(DocumentsRenderer* renderer);
+protected:
+	// TextElement interface
+	virtual void OnFontDataChanged(const GraphicsManager::FontData& newData) override;
+	virtual SizeF Measure() override;
+	virtual void Render(IDocumentsRenderer* renderer) override;
 
 private:
-	StringBuilder	m_text;
+	GenericStringBuilderCore<UTF32>	m_text;
+	RefPtr<GlyphRun>				m_glyphRun;
 };
 
 /**

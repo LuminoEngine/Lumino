@@ -1,5 +1,7 @@
 
 #include "Internal.h"
+#include <Lumino/Graphics/Text/GlyphRun.h>
+#include "DocumentsManager.h"
 #include "DocumentElements.h"
 
 LN_NAMESPACE_BEGIN
@@ -54,17 +56,68 @@ void TextElement::Initialize(DocumentsManager* manager)
 	m_fontData.IsBold = false;
 	m_fontData.IsItalic = false;
 	m_fontData.IsAntiAlias = true;
-	m_fontDataModified = false;
+	m_fontDataModified = true;
+}
+
+//------------------------------------------------------------------------------
+void TextElement::OnFontDataChanged(const GraphicsManager::FontData& newData)
+{
 }
 
 //------------------------------------------------------------------------------
 SizeF TextElement::Measure()
 {
+	if (m_fontDataModified)
+	{
+		OnFontDataChanged(m_fontData);
+		m_fontDataModified = false;
+	}
+
 	return SizeF::Zero;
 }
 
 //------------------------------------------------------------------------------
 void TextElement::Render(IDocumentsRenderer* renderer)
+{
+}
+
+//==============================================================================
+// Run
+//==============================================================================
+
+//------------------------------------------------------------------------------
+Run::Run()
+	: Inline()
+{
+}
+
+//------------------------------------------------------------------------------
+Run::~Run()
+{
+}
+
+//------------------------------------------------------------------------------
+void Run::Initialize(DocumentsManager* manager)
+{
+	Inline::Initialize(manager);
+}
+
+//------------------------------------------------------------------------------
+void Run::OnFontDataChanged(const GraphicsManager::FontData& newData)
+{
+	//m_glyphRun->
+	//RefPtr<Internal::FontGlyphTextureCache> cache(GetManager()->GetGraphicsManager()->LookupGlyphTextureCache(newData), false);
+	//Helper::AttachGlyphTextureCache(m_glyphRun, cache);
+}
+
+//------------------------------------------------------------------------------
+SizeF Run::Measure()
+{
+	return SizeF::Zero;
+}
+
+//------------------------------------------------------------------------------
+void Run::Render(IDocumentsRenderer* renderer)
 {
 }
 
