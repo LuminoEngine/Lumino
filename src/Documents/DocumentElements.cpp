@@ -1,4 +1,4 @@
-
+﻿
 #include "Internal.h"
 #include <Lumino/Graphics/Text/GlyphRun.h>
 #include "DocumentsManager.h"
@@ -100,6 +100,9 @@ Run::~Run()
 void Run::Initialize(DocumentsManager* manager)
 {
 	Inline::Initialize(manager);
+
+	// TODO: 本当に画面に表示されている分だけ作ればいろいろ節約できそう
+	m_glyphRun = RefPtr<GlyphRun>::MakeRef();
 }
 
 //------------------------------------------------------------------------------
