@@ -40,7 +40,7 @@ void GlyphRun::Initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void GlyphRun::SetFont(Font* font)
+void GlyphRun::SetFont(RawFont* font)
 {
 	if (font != m_layoutEngine->GetFont())
 	{
@@ -56,7 +56,7 @@ void GlyphRun::SetFont(Font* font)
 }
 
 //------------------------------------------------------------------------------
-Font* GlyphRun::GetFont() const
+RawFont* GlyphRun::GetFont() const
 {
 	return m_layoutEngine->GetFont();
 }

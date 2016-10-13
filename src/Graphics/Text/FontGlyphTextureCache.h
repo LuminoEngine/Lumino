@@ -1,6 +1,4 @@
-﻿/**
-	@file	FontGlyphTextureCache.h
-*/
+﻿
 #pragma once
 #include <Lumino/Base/Cache.h>
 #include <Lumino/Graphics/Color.h>
@@ -29,7 +27,7 @@ public:
 	FontGlyphTextureCache();
 	virtual ~FontGlyphTextureCache();
 
-	void Initialize(GraphicsManager* manager, Font* font);	// TODO: ストローク幅をpenで表すなら太さ分の引数が増えることになる。
+	void Initialize(GraphicsManager* manager, RawFont* font);	// TODO: ストローク幅をpenで表すなら太さ分の引数が増えることになる。
 
 
 	// まずメインスレッドでこの関数でキャッシュを検索する。
@@ -66,7 +64,7 @@ private:
 	typedef std::map<UTF32, CachedGlyphInfo>	CachedGlyphInfoMap;
 
 	GraphicsManager*		m_manager;
-	RefPtr<Font>			m_font;
+	RefPtr<RawFont>			m_font;
 	int						m_maxCacheGlyphs;		// キャッシュできる最大文字数
 	SizeI					m_glyphMaxBitmapSize;	// 現在のフォントの1文字分のビットマップの最大サイズ
 	int						m_glyphWidthCount;

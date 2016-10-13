@@ -42,7 +42,7 @@ void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const 
 	LN_CHECK_ARG(target != nullptr);
 	LN_CHECK_ARG(glyphRun != nullptr);
 
-	Font* font = glyphRun->GetFont();
+	RawFont* font = glyphRun->GetFont();
 
 	auto& items = glyphRun->RequestLayoutItems();
 	auto& renderSize = glyphRun->GetRenderSize();

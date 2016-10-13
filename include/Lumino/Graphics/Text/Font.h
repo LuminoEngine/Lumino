@@ -7,6 +7,8 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class Bitmap;
+class RawFont;
+using RawFontPtr = RefPtr<RawFont>;
 
 struct FontGlyphLocation
 {
@@ -51,7 +53,7 @@ struct FontGlyphData
 /**
 	@brief		フォントのクラスです。
 */
-class Font
+class RawFont
 	: public RefObject
 	, public ICacheObject
 {
@@ -59,12 +61,12 @@ class Font
 public:
 	static const int DefaultSize = 20;
 
-	static FontPtr GetDefaultFont();
+	static RawFontPtr GetDefaultFont();
 
-	static FontPtr Create();
+	static RawFontPtr Create();
 
 
-	static Font* CreateBuiltInBitmapFontInternal(FontManager* manager, int size);			// TODO: manager を何とかしたい
+	static RawFont* CreateBuiltInBitmapFontInternal(FontManager* manager, int size);			// TODO: manager を何とかしたい
 
 
 	static void RegisterFontFile(const StringRef& filePath);
@@ -122,7 +124,7 @@ public:
 	virtual bool IsAntiAlias() const = 0;
 
 	/// このフォントのコピーを作成する
-	virtual FontPtr Copy() const = 0;
+	virtual RawFontPtr Copy() const = 0;
 
 	/** 次の行のベースラインまでの長さを返します。*/
 	virtual int GetLineSpacing() = 0;
@@ -150,8 +152,8 @@ public:
 
 
 protected:
-	Font();
-	virtual ~Font();
+	RawFont();
+	virtual ~RawFont();
 };
 
 LN_NAMESPACE_GRAPHICS_END

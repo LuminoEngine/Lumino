@@ -10,7 +10,7 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 //==============================================================================
-// Font
+// RawFont
 //==============================================================================
 
 static const byte_t g_BuiltInBitmapFont_size7_Data[] =
@@ -20,7 +20,7 @@ static const byte_t g_BuiltInBitmapFont_size7_Data[] =
 static const size_t g_BuiltInBitmapFont_size7_Len = LN_ARRAY_SIZE_OF(g_BuiltInBitmapFont_size7_Data);
 
 //------------------------------------------------------------------------------
-Font* Font::CreateBuiltInBitmapFontInternal(FontManager* manager, int size)
+RawFont* RawFont::CreateBuiltInBitmapFontInternal(FontManager* manager, int size)
 {
 	MemoryStream stream(g_BuiltInBitmapFont_size7_Data, g_BuiltInBitmapFont_size7_Len);
 	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(&stream), false);
@@ -28,7 +28,7 @@ Font* Font::CreateBuiltInBitmapFontInternal(FontManager* manager, int size)
 }
 
 //------------------------------------------------------------------------------
-void Font::RegisterFontFile(const StringRef& filePath)
+void RawFont::RegisterFontFile(const StringRef& filePath)
 {
 	GraphicsManager::GetInstance()->GetFontManager()->RegisterFontFile(filePath);
 }
@@ -128,10 +128,10 @@ void BitmapFont::getTextSize(const wchar_t* text, int len, Geometry::Rect* rect)
 #endif
 
 //------------------------------------------------------------------------------
-FontPtr BitmapFont::Copy() const
+RawFontPtr BitmapFont::Copy() const
 {
 	RefPtr<BitmapFont> font(LN_NEW BitmapFont(m_manager, m_fontBitmap), false);
-	return FontPtr::StaticCast(font);
+	return RawFontPtr::StaticCast(font);
 }
 
 //------------------------------------------------------------------------------

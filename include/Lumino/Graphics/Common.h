@@ -47,8 +47,6 @@ class ShaderVariable;
 class ShaderTechnique;
 class ShaderPass;
 
-class Font;
-typedef RefPtr<Font>		FontPtr;
 class GlyphRun;
 
 class Helper;

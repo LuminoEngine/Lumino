@@ -222,7 +222,7 @@ void TextRenderer::SetTransform(const Matrix& matrix)
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::SetState(const Matrix& matrix, const SizeI& size, Font* font, Brush* fillBrush)
+void TextRenderer::SetState(const Matrix& matrix, const SizeI& size, RawFont* font, Brush* fillBrush)
 {
 	if (m_viewProj != matrix)
 	{
@@ -416,7 +416,7 @@ void TextRenderer::CheckUpdateState()	// あらゆる Draw の直前にやりた
 //==============================================================================
 
 //------------------------------------------------------------------------------
-TextRenderer::TextRenderer(Bitmap* targetBitmap, Font* font)
+TextRenderer::TextRenderer(Bitmap* targetBitmap, RawFont* font)
 	: m_targetBitmap(targetBitmap)
 	, m_font(font)
 	, m_foreColor(Graphics::Color::Black)

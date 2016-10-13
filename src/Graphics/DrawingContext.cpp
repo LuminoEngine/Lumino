@@ -136,7 +136,7 @@ void DrawingContext::SetBrush(Brush* brush)
 }
 
 //------------------------------------------------------------------------------
-void DrawingContext::SetFont(Font* font)
+void DrawingContext::SetFont(RawFont* font)
 {
 	if (m_state.font != font)
 	{

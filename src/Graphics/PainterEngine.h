@@ -64,7 +64,7 @@ struct PainterState
 {
 	Matrix			Transform;
 	RefPtr<Brush>	Brush;
-	RefPtr<Font>	Font;
+	RefPtr<RawFont>	Font;
 	float			Opacity;
 	ToneF			Tone;
 };

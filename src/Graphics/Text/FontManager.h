@@ -21,7 +21,7 @@ typedef struct FT_GlyphRec_*  FT_Glyph;
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
-class Font;
+class RawFont;
 
 class FontKey
 {
@@ -89,10 +89,10 @@ public:
 	void RegisterFontFile(const String& fontFilePath);
 
 	/// デフォルトのフォントをセットする
-	void SetDefaultFont(Font* font);
+	void SetDefaultFont(RawFont* font);
 
 	/// デフォルトのフォントを取得する
-	Font* GetDefaultFont() const { return m_defaultFont; }
+	RawFont* GetDefaultFont() const { return m_defaultFont; }
 
 
 
@@ -156,7 +156,7 @@ private:
 
 	RefPtr<FileManager>	m_fileManager;
 	GraphicsManager*	m_graphicsManager;
-	Font*  m_defaultFont;
+	RawFont*			m_defaultFont;
 
 	EncodingConverter		m_charToUTF32Converter;
 	EncodingConverter		m_wcharToUTF32Converter;

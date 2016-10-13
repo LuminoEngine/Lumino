@@ -100,7 +100,7 @@ public:
 	void Initialize(GraphicsManager* manager);
 
 	void SetTransform(const Matrix& matrix);
-	void SetState(const Matrix& matrix, const SizeI& size, Font* font, Brush* fillBrush);
+	void SetState(const Matrix& matrix, const SizeI& size, RawFont* font, Brush* fillBrush);
 
 	void DrawGlyphRun(const Matrix& transform, const Point& position, GlyphRun* glyphRun);
 	void DrawGlyphRun(const Matrix& transform, const PointF& position, GlyphRun* glyphRun);	// SetFont 無視
@@ -126,7 +126,7 @@ private:
 	Matrix				m_transform;
 	Matrix				m_viewProj;
 	SizeI				m_viewPixelSize;
-	RefPtr<Font>		m_font;
+	RefPtr<RawFont>		m_font;
 	RefPtr<Brush>		m_fillBrush;
 	bool				m_stateModified;
 	bool				m_flushRequested;
@@ -161,7 +161,7 @@ enum FlowDirection
 class TextRenderer
 {
 public:
-	TextRenderer(Bitmap* targetBitmap, Font* font);
+	TextRenderer(Bitmap* targetBitmap, RawFont* font);
 	~TextRenderer();
 
 	void SetForeColor(Graphics::Color color) { m_foreColor = color; }
@@ -184,7 +184,7 @@ private:
 
 private:
 	Bitmap*			m_targetBitmap;
-	Font*			m_font;
+	RawFont*		m_font;
 	Graphics::Color	m_foreColor;
 	Graphics::Color	m_strokeColor;
 	int				m_strokeSize;

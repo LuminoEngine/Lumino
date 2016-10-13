@@ -27,7 +27,7 @@ struct DrawingState
 	Matrix			transform;
 	RefPtr<Brush>	brush;
 	RefPtr<Pen>		pen;
-	RefPtr<Font>	font;
+	RefPtr<RawFont>	font;
 	float			opacity = 1.0f;
 	ToneF			tone;
 };
@@ -47,7 +47,7 @@ public:
 	void SetPen(Pen* pen);
 	void SetOpacity(float opacity);	// 0~1
 	void SetTone(const ToneF& tone);
-	void SetFont(Font* font);
+	void SetFont(RawFont* font);
 
 	void MoveTo(const Vector3& point, const Color& color);
 	void LineTo(const Vector3& point, const Color& color);

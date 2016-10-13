@@ -27,8 +27,8 @@ class GlyphRun
 	: public Object
 {
 public:
-	void SetFont(Font* font);
-	Font* GetFont() const;
+	void SetFont(RawFont* font);
+	RawFont* GetFont() const;
 	void SetText(const StringRef& text);
 	void SetTextAlignment(TextAlignment align);	// TODO: Run に持たせるべき？
 	//int GetStrokeSize() const;

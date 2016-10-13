@@ -141,7 +141,7 @@ public:	// TODO: internal
 		bool	IsItalic;
 		bool	IsAntiAlias;
 
-		Font* CreateFontFromData(FontManager* m) const;
+		RawFont* CreateFontFromData(FontManager* m) const;
 	};
 
 	static uint64_t CalcFontSettingHash(const FontData& fontData);
@@ -154,7 +154,7 @@ public:	// TODO: internal
 	//TextRenderer* LookupTextRenderer(const FontData& fontData);
 
 	Internal::FontGlyphTextureCache* LookupGlyphTextureCache(const FontData& fontData);
-	Internal::FontGlyphTextureCache* LookupGlyphTextureCache(Font* font);
+	Internal::FontGlyphTextureCache* LookupGlyphTextureCache(RawFont* font);
 
 public:	// TODO
 	friend class Helper;

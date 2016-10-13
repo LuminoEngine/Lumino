@@ -22,13 +22,13 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 //==============================================================================
-// Font
+// RawFont
 //==============================================================================
 
 //------------------------------------------------------------------------------
-FontPtr Font::Create()
+RawFontPtr RawFont::Create()
 {
-	FontPtr obj(LN_NEW FreeTypeFont(GraphicsManager::GetInstance()->GetFontManager()), false);
+	RawFontPtr obj(LN_NEW FreeTypeFont(GraphicsManager::GetInstance()->GetFontManager()), false);
 	return obj;
 }
 
@@ -155,12 +155,12 @@ FreeTypeFont::~FreeTypeFont()
 }
 
 //------------------------------------------------------------------------------
-FontPtr FreeTypeFont::Copy() const
+RawFontPtr FreeTypeFont::Copy() const
 {
 	RefPtr<FreeTypeFont> font(LN_NEW FreeTypeFont(m_manager), false);
 	font->m_fontData = m_fontData;
 	font->m_modified = true;
-	return FontPtr::StaticCast(font);
+	return RawFontPtr::StaticCast(font);
 }
 
 #if 0

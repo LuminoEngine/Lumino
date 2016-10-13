@@ -423,7 +423,7 @@ Internal::FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(const 
 	auto* tr = (Internal::FontGlyphTextureCache*)m_glyphTextureCache->FindObjectAddRef(key);
 	if (tr != NULL) { return tr; }
 
-	Font* font = fontData.CreateFontFromData(m_fontManager);
+	RawFont* font = fontData.CreateFontFromData(m_fontManager);
 	tr = LN_NEW Internal::FontGlyphTextureCache();
 	tr->Initialize(this, font);
 	font->Release();
@@ -432,7 +432,7 @@ Internal::FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(const 
 }
 
 //------------------------------------------------------------------------------
-Internal::FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(Font* font)
+Internal::FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(RawFont* font)
 {
 	FontData fontData;
 	fontData.Family = font->GetName();
@@ -453,30 +453,15 @@ Internal::FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(Font* 
 }
 
 //------------------------------------------------------------------------------
-//TextRenderer* GraphicsManager::LookupTextRenderer(const FontData& fontData)
-//{
-//	CacheKey key(CalcFontSettingHash(fontData));
-//	TextRenderer* tr = (TextRenderer*)m_textRendererCache->FindObjectAddRef(key);
-//	if (tr != NULL) { return tr; }
-//
-//	tr = TextRenderer::Create(this);
-//	Font* font = fontData.CreateFontFromData(m_fontManager);
-//	tr->SetFont(font);
-//	font->Release();
-//	m_textRendererCache->RegisterCacheObject(key, tr);
-//	return tr;
-//}
-
-//------------------------------------------------------------------------------
 RenderingCommandList* GraphicsManager::GetPrimaryRenderingCommandList()
 {
 	return m_renderer->m_primaryCommandList;
 }
 
 //------------------------------------------------------------------------------
-Font* GraphicsManager::FontData::CreateFontFromData(FontManager* m) const
+RawFont* GraphicsManager::FontData::CreateFontFromData(FontManager* m) const
 {
-	Font* font = LN_NEW FreeTypeFont(m);
+	RawFont* font = LN_NEW FreeTypeFont(m);
 	font->SetName(Family);
 	font->SetSize(Size);
 	//font->SetEdgeSize(EdgeSize);

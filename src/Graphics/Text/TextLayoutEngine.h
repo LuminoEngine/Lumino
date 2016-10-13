@@ -44,8 +44,8 @@ public:
 	~TextLayoutEngine();
 
 public:
-	void SetFont(Font* font) { m_font = font; }
-	Font* GetFont() const { return m_font; }
+	void SetFont(RawFont* font) { m_font = font; }
+	RawFont* GetFont() const { return m_font; }
 	//void SetForeColor(Graphics::Color color) { m_foreColor = color; }
 	//void SetStrokeColor(Graphics::Color color) { m_strokeColor = color; }
 	void SetStrokeSize(int size) { m_strokeSize = size; }
@@ -68,7 +68,7 @@ private:
 	void LayoutLineHorizontal(const UTF32* text, int length, const Rect& lineArea, SizeI* outLineSize);
 
 private:
-	RefPtr<Font>		m_font;
+	RefPtr<RawFont>		m_font;
 	//Graphics::Color	m_foreColor;
 	//Graphics::Color	m_strokeColor;
 	int					m_strokeSize;

@@ -20,7 +20,7 @@ LN_TR_PROPERTY_IMPLEMENT(UITextElement, bool, IsFontItalicProperty, "IsFontItali
 //------------------------------------------------------------------------------
 UITextElement::UITextElement()
 	: m_fontFamily(String::GetEmpty())
-	, m_fontSize(Font::DefaultSize)
+	, m_fontSize(RawFont::DefaultSize)
 	, m_fontBold(false)
 	, m_fontItalic(false)
 	, m_invalidateFont(true)

@@ -72,14 +72,14 @@ Texture2DPtr AssetsManager::LoadTexture(const StringRef& filePath)
 }
 
 //------------------------------------------------------------------------------
-FontPtr AssetsManager::LoadFont(const StringRef& name, int size, bool isBold, bool isItalic, bool isAntiAlias)
+RawFontPtr AssetsManager::LoadFont(const StringRef& name, int size, bool isBold, bool isItalic, bool isAntiAlias)
 {
 	CacheKey key(String::Format(_T("{0}-{1}{2}{3}{4}"), name, size, isBold, isItalic, isAntiAlias));
 
-	Font* ptr = static_cast<Font*>(m_fontCache->FindObjectAddRef(key));
-	if (ptr != nullptr) { return FontPtr(ptr, false); }
+	RawFont* ptr = static_cast<RawFont*>(m_fontCache->FindObjectAddRef(key));
+	if (ptr != nullptr) { return RawFontPtr(ptr, false); }
 
-	FontPtr ref;
+	RawFontPtr ref;
 	if (name.IsEmpty())
 	{
 		ref = m_engineManager->GetGraphicsManager()->GetFontManager()->GetDefaultFont()->Copy();
@@ -97,7 +97,7 @@ FontPtr AssetsManager::LoadFont(const StringRef& name, int size, bool isBold, bo
 	ref->SetAntiAlias(isAntiAlias);
 
 	m_fontCache->RegisterCacheObject(key, ref);
-	return FontPtr::StaticCast(ref);
+	return RawFontPtr::StaticCast(ref);
 }
 
 //==============================================================================

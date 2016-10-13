@@ -10,28 +10,28 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 //==============================================================================
-// Font
+// RawFont
 //==============================================================================
 
 //------------------------------------------------------------------------------
-FontPtr Font::GetDefaultFont()
+RawFontPtr RawFont::GetDefaultFont()
 {
-	FontPtr font(GraphicsManager::GetInstance()->GetFontManager()->GetDefaultFont(), true);
+	RawFontPtr font(GraphicsManager::GetInstance()->GetFontManager()->GetDefaultFont(), true);
 	return font;
 }
 
 //------------------------------------------------------------------------------
-Font::Font()
+RawFont::RawFont()
 {
 }
 
 //------------------------------------------------------------------------------
-Font::~Font()
+RawFont::~RawFont()
 {
 }
 
 //------------------------------------------------------------------------------
-SizeI Font::GetTextSize(const StringRef& text)
+SizeI RawFont::GetTextSize(const StringRef& text)
 {
 	auto* r = GetManager()->GetGraphicsManager()->GetBitmapTextRenderer();
 	auto* gr = r->GetTempGlyphRun();

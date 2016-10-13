@@ -234,7 +234,7 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 }
 
 //------------------------------------------------------------------------------
-void FontManager::SetDefaultFont(Font* font)
+void FontManager::SetDefaultFont(RawFont* font)
 {
 	LN_REFOBJ_SET(m_defaultFont, font);
 }

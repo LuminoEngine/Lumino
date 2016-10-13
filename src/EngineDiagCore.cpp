@@ -98,7 +98,7 @@ void EngineDiagViewer::Initialize(EngineManager* manager, EngineDiagCore* diagCo
 	m_mainWindow = manager->GetPlatformManager()->GetMainWindow();
 	m_originalMainWindowTitle = m_mainWindow->GetTitleText();
 
-	m_font = Font::CreateBuiltInBitmapFontInternal(manager->GetGraphicsManager()->GetFontManager(), 7);
+	m_font = RawFont::CreateBuiltInBitmapFontInternal(manager->GetGraphicsManager()->GetFontManager(), 7);
 	//m_windowRect.Set(640 - 8 - 300, 8, 300, 256);	// TODO
 	m_windowRect.Set(8, 8, 300, 300);
 }

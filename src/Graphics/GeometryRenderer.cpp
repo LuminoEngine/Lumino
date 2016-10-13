@@ -1740,7 +1740,7 @@ void GeometryRenderer::SetTone(const ToneF& tone)
 }
 
 //------------------------------------------------------------------------------
-void GeometryRenderer::SetFont(Font* font)
+void GeometryRenderer::SetFont(RawFont* font)
 {
 	if (m_currentState.font != font)
 	{

@@ -430,8 +430,8 @@ void Texture2D::Blt(int x, int y, Bitmap* srcBitmap/*, const Rect& srcRect*/)
 //------------------------------------------------------------------------------
 #pragma push_macro("DrawText")
 #undef DrawText
-void Texture2D::DrawText(const StringRef& text, const Rect& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment) { LN_AFX_FUNCNAME(DrawText)(text, rect, font, fillColor, strokeColor, strokeThickness, alignment); }
-void Texture2D::LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const Rect& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment)
+void Texture2D::DrawText(const StringRef& text, const Rect& rect, RawFont* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment) { LN_AFX_FUNCNAME(DrawText)(text, rect, font, fillColor, strokeColor, strokeThickness, alignment); }
+void Texture2D::LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const Rect& rect, RawFont* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment)
 {
 	ScopedTextureLock lock(this);
 	auto* r = m_manager->GetBitmapTextRenderer();

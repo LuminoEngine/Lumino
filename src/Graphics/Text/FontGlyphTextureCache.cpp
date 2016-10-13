@@ -36,7 +36,7 @@ FontGlyphTextureCache::~FontGlyphTextureCache()
 }
 
 //------------------------------------------------------------------------------
-void FontGlyphTextureCache::Initialize(GraphicsManager* manager, Font* font)
+void FontGlyphTextureCache::Initialize(GraphicsManager* manager, RawFont* font)
 {
 	m_manager = manager;
 	m_font = font;
@@ -207,7 +207,7 @@ void FontGlyphTextureCache::ResetUsedFlags()
 
 #if 0
 //------------------------------------------------------------------------------
-FontGlyphTextureCache::FontGlyphTextureCache(GraphicsManager* manager, Font* font)
+FontGlyphTextureCache::FontGlyphTextureCache(GraphicsManager* manager, RawFont* font)
 {
 	m_manager = manager;
 	m_font = font;
@@ -358,7 +358,7 @@ namespace detail
 
 	//	CachedGlyphInfoMap			m_cachedGlyphInfoMap;
 	//	RefPtr<Device::ITexture>	m_glyphCacheTexture;
-	//	RefPtr<Font>		m_font;
+	//	RefPtr<RawFont>		m_font;
 
 
 	//public:
@@ -370,7 +370,7 @@ namespace detail
 	//	{
 	//	}
 
-	//	void SetFont(Font* font)
+	//	void SetFont(RawFont* font)
 	//	{
 	//		m_font = font;
 	//	}

@@ -33,7 +33,7 @@ private:
 	EngineDiagCore*	m_diagCore;
 	PlatformWindow*	m_mainWindow;
 	String			m_originalMainWindowTitle;
-	Font*			m_font;
+	RawFont*		m_font;
 	RectF			m_windowRect;
 	DisplayMode		m_displayMode;
 };

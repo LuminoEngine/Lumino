@@ -9,7 +9,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 	@brief		ビットマップフォントのクラスです。
 */
 class BitmapFont
-    : public Font
+    : public RawFont
 {
 public:
 	BitmapFont(FontManager* manager, Bitmap* bitmap);
@@ -28,7 +28,7 @@ public:
 	virtual bool IsItalic() const { return false; }
 	virtual void SetAntiAlias(bool enabled) { LN_THROW(0, InvalidOperationException); }
 	virtual bool IsAntiAlias() const { return false; }
-	virtual FontPtr Copy() const;
+	virtual RawFontPtr Copy() const;
 	virtual int GetLineSpacing() { return m_charHeight; }
 	virtual FontGlyphLocation* AdvanceKerning(UTF32 utf32code, int strokeSize, FontGlyphLocation* prevData);
 	virtual FontGlyphBitmap* LookupGlyphBitmap(UTF32 utf32code, int strokeSize);

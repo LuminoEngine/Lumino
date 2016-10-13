@@ -89,8 +89,8 @@ void TestEnv::SetUp()
 	//settings.renderingType = GraphicsRenderingType::Immediate; //RenderingType::Deferred;//
 	Engine::Initialize();
 
-	Font::RegisterFontFile(LN_LOCALFILE("../../tools/VLGothic/VL-Gothic-Regular.ttf"));
-	Font::GetDefaultFont()->SetName(_T("VL Gothic"));
+	RawFont::RegisterFontFile(LN_LOCALFILE("../../tools/VLGothic/VL-Gothic-Regular.ttf"));
+	RawFont::GetDefaultFont()->SetName(_T("VL Gothic"));
 
 	// 背景はグレーにしておくと加算合成のテストとか、いろいろ都合がよい
 	Viewport::GetMainWindowViewport()->SetBackgroundColor(Color32::Gray);

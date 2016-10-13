@@ -33,7 +33,7 @@ private:
 private:
 	GraphicsManager*		m_manager;
 	Profiler*				m_profiler;
-	RefPtr<Font>			m_font;
+	RefPtr<RawFont>			m_font;
 	RectF					m_windowRect;
 };
 
