@@ -603,7 +603,7 @@ MeshResource::~MeshResource()
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::Initialize(GraphicsManager* manager)
+void MeshResource::Initialize(detail::GraphicsManager* manager)
 {
 	LN_CHECK_ARG(manager != nullptr);
 	m_manager = manager;
@@ -1091,7 +1091,7 @@ StaticMeshModel::~StaticMeshModel()
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::Initialize(GraphicsManager* manager, MeshResource* sharingMesh)
+void StaticMeshModel::Initialize(detail::GraphicsManager* manager, MeshResource* sharingMesh)
 {
 	LN_CHECK_ARG(manager != nullptr);
 	LN_CHECK_ARG(sharingMesh != nullptr);
@@ -1111,7 +1111,7 @@ void StaticMeshModel::Initialize(GraphicsManager* manager, MeshResource* sharing
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::InitializeBox(GraphicsManager* manager, const Vector3& size)
+void StaticMeshModel::InitializeBox(detail::GraphicsManager* manager, const Vector3& size)
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
 	res->Initialize(manager);
@@ -1120,7 +1120,7 @@ void StaticMeshModel::InitializeBox(GraphicsManager* manager, const Vector3& siz
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::InitializeSphere(GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags)
+void StaticMeshModel::InitializeSphere(detail::GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags)
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
 	res->Initialize(manager);
@@ -1129,7 +1129,7 @@ void StaticMeshModel::InitializeSphere(GraphicsManager* manager, float radius, i
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::InitializePlane(GraphicsManager* manager, const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags)
+void StaticMeshModel::InitializePlane(detail::GraphicsManager* manager, const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags)
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
 	res->Initialize(manager);
@@ -1138,7 +1138,7 @@ void StaticMeshModel::InitializePlane(GraphicsManager* manager, const Vector2& s
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::InitializeSquarePlane(GraphicsManager* manager, const Vector2& size, const Vector3& front, MeshCreationFlags flags)
+void StaticMeshModel::InitializeSquarePlane(detail::GraphicsManager* manager, const Vector2& size, const Vector3& front, MeshCreationFlags flags)
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
 	res->Initialize(manager);
@@ -1147,7 +1147,7 @@ void StaticMeshModel::InitializeSquarePlane(GraphicsManager* manager, const Vect
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::InitializeScreenPlane(GraphicsManager* manager)
+void StaticMeshModel::InitializeScreenPlane(detail::GraphicsManager* manager)
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
 	res->Initialize(manager);

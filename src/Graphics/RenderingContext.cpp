@@ -53,7 +53,7 @@ RenderingContext::~RenderingContext()
 }
 
 //------------------------------------------------------------------------------
-void RenderingContext::Initialize(GraphicsManager* manager)
+void RenderingContext::Initialize(detail::GraphicsManager* manager)
 {
 	detail::ContextInterface::Initialize(manager);
 

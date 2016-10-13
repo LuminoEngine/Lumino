@@ -92,7 +92,7 @@ public:
 	ShaderTechnique* FindTechnique(const TCHAR* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 	ShaderTechnique* FindTechnique(const String& name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const { return FindTechnique(name.c_str(), cs); }
 
-	GraphicsManager* GetManager() { return m_manager; }
+	detail::GraphicsManager* GetManager() { return m_manager; }
 
 protected:
 	virtual ~Shader();
@@ -101,8 +101,8 @@ protected:
 LN_INTERNAL_ACCESS:
 	friend class RenderingCommandList;
 	Shader();
-	void Initialize(GraphicsManager* manager, const StringRef& filePath);
-	void Initialize(GraphicsManager* manager, const void* code, int length);
+	void Initialize(detail::GraphicsManager* manager, const StringRef& filePath);
+	void Initialize(detail::GraphicsManager* manager, const void* code, int length);
 	void PostInitialize();
 	void SetModifiedVariables(bool modified) { m_modifiedVariables = modified; }
 	bool IsModifiedVariables() const { return m_modifiedVariables; }

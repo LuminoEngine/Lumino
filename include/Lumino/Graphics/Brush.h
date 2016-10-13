@@ -75,7 +75,7 @@ public:
 	virtual ~TextureBrush();
 
 public:
-	void Create(const TCHAR* filePath, GraphicsManager* manager);
+	void Create(const TCHAR* filePath, detail::GraphicsManager* manager);
 	void Create(Texture* texture);
 	void SetTexture(Texture* texture);
 	Texture* GetTexture() const;

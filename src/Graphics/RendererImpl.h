@@ -25,10 +25,8 @@ public:
 	static const int MaxMultiRenderTargets = 4;
 
 public:
-	Renderer(GraphicsManager* manager);
+	Renderer(detail::GraphicsManager* manager);
 	~Renderer();
-
-public:
 
 	/**
 		@brief	この Renderer による描画を開始します。

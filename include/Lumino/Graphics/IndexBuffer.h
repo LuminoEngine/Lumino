@@ -62,7 +62,7 @@ public:
 LN_INTERNAL_ACCESS:
 	IndexBuffer();
 	virtual ~IndexBuffer();
-	void Initialize(GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage);
+	void Initialize(detail::GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage);
 
 	Driver::IIndexBuffer* GetDeviceObject() const { return m_deviceObj; }
 

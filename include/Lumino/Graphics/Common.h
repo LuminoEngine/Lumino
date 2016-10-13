@@ -21,8 +21,7 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
-class GraphicsManager;
-class FontManager;
+namespace detail { class GraphicsManager; }
 
 class RenderState;
 class DepthStencilState;
@@ -68,10 +67,6 @@ typedef tr::ReflectionObjectList<ImageEffect*>	ImageEffectList;
 
 struct TextLayoutResult;
 
-namespace Internal
-{
-class FontGlyphTextureCache;
-}
 namespace Details
 {
 	class Renderer;
@@ -351,6 +346,25 @@ namespace Driver
 
 } // namespace Driver
 
+namespace detail {
+
+class FontData
+{
+public:
+
+	String	Family;
+	int		Size;
+	//int		EdgeSize;
+	bool	IsBold;
+	bool	IsItalic;
+	bool	IsAntiAlias;
+
+	FontData();
+	bool operator < (const FontData& right);
+	uint64_t CalcHash() const;
+};
+
+} // namespace detail
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END
 

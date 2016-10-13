@@ -16,7 +16,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //------------------------------------------------------------------------------
 RawFontPtr RawFont::GetDefaultFont()
 {
-	RawFontPtr font(GraphicsManager::GetInstance()->GetFontManager()->GetDefaultFont(), true);
+	RawFontPtr font(detail::GraphicsManager::GetInstance()->GetFontManager()->GetDefaultFont(), true);
 	return font;
 }
 

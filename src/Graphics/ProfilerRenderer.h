@@ -18,7 +18,7 @@ class ProfilerRenderer
 	static const int rowHeight = 32;
 
 public:
-	ProfilerRenderer(GraphicsManager* manager, Profiler* profiler);
+	ProfilerRenderer(detail::GraphicsManager* manager, Profiler* profiler);
 	virtual ~ProfilerRenderer();
 
 public:
@@ -31,10 +31,10 @@ private:
 #endif
 
 private:
-	GraphicsManager*		m_manager;
-	Profiler*				m_profiler;
-	RefPtr<RawFont>			m_font;
-	RectF					m_windowRect;
+	detail::GraphicsManager*	m_manager;
+	Profiler*					m_profiler;
+	RefPtr<RawFont>				m_font;
+	RectF						m_windowRect;
 };
 
 LN_NAMESPACE_GRAPHICS_END

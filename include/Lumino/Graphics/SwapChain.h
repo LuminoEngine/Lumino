@@ -42,8 +42,8 @@ public:
 
 LN_INTERNAL_ACCESS:
 	SwapChain();
-	void InitializeDefault(GraphicsManager* manager);
-	void InitializeSub(GraphicsManager* manager, PlatformWindow* window);
+	void InitializeDefault(detail::GraphicsManager* manager);
+	void InitializeSub(detail::GraphicsManager* manager, PlatformWindow* window);
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 //private:

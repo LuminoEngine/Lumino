@@ -89,7 +89,7 @@ TextureBrush::~TextureBrush()
 }
 
 //------------------------------------------------------------------------------
-void TextureBrush::Create(const TCHAR* filePath, GraphicsManager* manager)
+void TextureBrush::Create(const TCHAR* filePath, detail::GraphicsManager* manager)
 {
 	m_texture = Texture2D::Create(filePath, TextureFormat::R8G8B8A8, false);		//TODO: GraphicsManager?
 }

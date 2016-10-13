@@ -7,14 +7,9 @@
 #include <Lumino/Graphics/Text/Font.h>
 #include "FontManager.h"
 
-//typedef struct  FT_Bitmap_  FT_Bitmap;
-//typedef signed int  FT_Int;
-//typedef struct  FTC_ImageTypeRec_ FTC_ImageTypeRec;
-
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
-class FontManager;
-
+namespace detail {
 
 struct FreeTypeGlyphLocation
 	: public FontGlyphLocation
@@ -111,7 +106,7 @@ private:
 	//bool				m_isBold;
 	//bool				m_isItalic;
 	//bool				m_isAntiAlias;
-	FontKey				m_fontData;
+	detail::FontData	m_fontData;
 	int					m_edgeSize;
 	bool				m_modified;
 
@@ -133,5 +128,5 @@ private:
 	RefPtr<Bitmap>		m_outlineBitmap;	///< LookupGlyphData() で生成する一時グリフデータ
 };
 
-LN_NAMESPACE_GRAPHICS_END
+} // namespace detail
 LN_NAMESPACE_END

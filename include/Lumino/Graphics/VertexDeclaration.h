@@ -29,8 +29,8 @@ public:
 LN_INTERNAL_ACCESS:
 	VertexDeclaration();
 	virtual ~VertexDeclaration();
-	void Initialize(GraphicsManager* manager);
-	void Initialize(GraphicsManager* manager, const VertexElement* elements, int count);
+	void Initialize(detail::GraphicsManager* manager);
+	void Initialize(detail::GraphicsManager* manager, const VertexElement* elements, int count);
 	void TryUpdateResource();
 	Driver::IVertexDeclaration* GetDeviceObject();
 

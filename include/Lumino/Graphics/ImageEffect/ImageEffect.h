@@ -19,13 +19,13 @@ public:
 protected:
 	ImageEffect();
 	virtual ~ImageEffect();
-	void Initialize(GraphicsManager* manager);
+	void Initialize(detail::GraphicsManager* manager);
 
 	virtual void OnRender(RenderingContext* context, RenderTarget* source, RenderTarget* destination) = 0;
 
 	friend class ViewportLayer;
 
-	GraphicsManager*	m_manager;
+	detail::GraphicsManager*	m_manager;
 };
 
 LN_NAMESPACE_GRAPHICS_END

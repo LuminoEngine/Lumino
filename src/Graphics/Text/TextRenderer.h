@@ -30,7 +30,7 @@ public:
 	void Initialize(GraphicsManager* manager);
 
 	void SetState(const Matrix& world, const Matrix& viewProj, const SizeI& viewPixelSize);
-	void Render(const GlyphRunData* dataList, int dataCount, Internal::FontGlyphTextureCache* cache, Brush* fillBrush);
+	void Render(const GlyphRunData* dataList, int dataCount, FontGlyphTextureCache* cache, Brush* fillBrush);
 
 private:
 
@@ -56,7 +56,7 @@ private:
 	};
 
 	void InternalDrawRectangle(const RectF& rect, const RectF& srcUVRect, const Color& color);
-	void Flush(Internal::FontGlyphTextureCache* cache);
+	void Flush(FontGlyphTextureCache* cache);
 
 	GraphicsManager*		m_manager;
 	Driver::IRenderer*		m_renderer;
@@ -114,8 +114,8 @@ public:
 
 public:
 	// TODO: ↓いまは Flush でやるようなことをしている。後で変更したい。
-	void DrawGlyphsInternal(const Matrix& transform, const PointF& position, const Array<TextLayoutResultItem>& layoutItems, Internal::FontGlyphTextureCache* cache);
-	void FlushInternal(Internal::FontGlyphTextureCache* cache);
+	void DrawGlyphsInternal(const Matrix& transform, const PointF& position, const Array<TextLayoutResultItem>& layoutItems, FontGlyphTextureCache* cache);
+	void FlushInternal(FontGlyphTextureCache* cache);
 	void CheckUpdateState();
 
 private:

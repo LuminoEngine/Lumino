@@ -117,7 +117,7 @@ LN_INTERNAL_ACCESS:
 
 	MeshResource();
 	virtual ~MeshResource();
-	void Initialize(GraphicsManager* manager);
+	void Initialize(detail::GraphicsManager* manager);
 	void CreateVertexBuffer(int vertexCount);
 	void CreateIndexBuffer(int indexCount, IndexBufferFormat format);
 	void BeginCreating(MeshCreationFlags flags);
@@ -140,7 +140,7 @@ private:
 	void PostGenerated(Vertex* vb, void* ib, MeshCreationFlags flags);
 
 LN_INTERNAL_ACCESS:	// TODO:
-	GraphicsManager*			m_manager;
+	detail::GraphicsManager*	m_manager;
 	ResourceUsage				m_usage;
 	IndexBufferFormat			m_indexBufferFormat;
 	RefPtr<VertexDeclaration>	m_vertexDeclaration;
@@ -177,12 +177,12 @@ public:
 LN_INTERNAL_ACCESS:
 	StaticMeshModel();
 	virtual ~StaticMeshModel();
-	void Initialize(GraphicsManager* manager, MeshResource* sharingMesh);
-	void InitializeBox(GraphicsManager* manager, const Vector3& size);
-	void InitializeSphere(GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags);
-	void InitializePlane(GraphicsManager* manager, const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags);
-	void InitializeSquarePlane(GraphicsManager* manager, const Vector2& size, const Vector3& front, MeshCreationFlags flags);
-	void InitializeScreenPlane(GraphicsManager* manager);
+	void Initialize(detail::GraphicsManager* manager, MeshResource* sharingMesh);
+	void InitializeBox(detail::GraphicsManager* manager, const Vector3& size);
+	void InitializeSphere(detail::GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags);
+	void InitializePlane(detail::GraphicsManager* manager, const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags);
+	void InitializeSquarePlane(detail::GraphicsManager* manager, const Vector2& size, const Vector3& front, MeshCreationFlags flags);
+	void InitializeScreenPlane(detail::GraphicsManager* manager);
 
 LN_INTERNAL_ACCESS:	// TODO:
 	RefPtr<MeshResource>	m_meshResource;

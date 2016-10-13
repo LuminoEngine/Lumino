@@ -16,7 +16,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 VertexDeclarationPtr VertexDeclaration::Create()
 {
 	auto ptr = VertexDeclarationPtr::MakeRef();
-	ptr->Initialize(GraphicsManager::GetInstance());
+	ptr->Initialize(detail::GraphicsManager::GetInstance());
 	return ptr;
 }
 
@@ -34,13 +34,13 @@ VertexDeclaration::~VertexDeclaration()
 }
 
 //------------------------------------------------------------------------------
-void VertexDeclaration::Initialize(GraphicsManager* manager)
+void VertexDeclaration::Initialize(detail::GraphicsManager* manager)
 {
 	GraphicsResourceObject::Initialize(manager);
 }
 
 //------------------------------------------------------------------------------
-void VertexDeclaration::Initialize(GraphicsManager* manager, const VertexElement* elements, int count)
+void VertexDeclaration::Initialize(detail::GraphicsManager* manager, const VertexElement* elements, int count)
 {
 	GraphicsResourceObject::Initialize(manager);
 

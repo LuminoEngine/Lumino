@@ -70,7 +70,7 @@ public:
 	bool IsFontAntiAlias() const { return m_fontData.IsAntiAlias; }
 
 protected:
-	virtual void OnFontDataChanged(const GraphicsManager::FontData& newData);
+	virtual void OnFontDataChanged(const FontData& newData);
 	virtual SizeF Measure();
 	virtual void Render(IDocumentsRenderer* renderer);
 
@@ -78,9 +78,9 @@ LN_INTERNAL_ACCESS:
 	DocumentsManager* GetManager() const { return m_manager; }
 
 private:
-	DocumentsManager*			m_manager;
-	GraphicsManager::FontData	m_fontData;
-	bool						m_fontDataModified;
+	DocumentsManager*	m_manager;
+	FontData			m_fontData;
+	bool				m_fontDataModified;
 };
 
 /**
@@ -125,7 +125,7 @@ public:
 
 protected:
 	// TextElement interface
-	virtual void OnFontDataChanged(const GraphicsManager::FontData& newData) override;
+	virtual void OnFontDataChanged(const FontData& newData) override;
 	virtual SizeF Measure() override;
 	virtual void Render(IDocumentsRenderer* renderer) override;
 

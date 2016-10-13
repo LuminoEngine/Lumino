@@ -338,7 +338,7 @@ const GifColorType GifContext::PaletteGPriority[256] =
 FrameCapturerPtr FrameCapturer::Create()
 {
 	auto ptr = FrameCapturerPtr::MakeRef();
-	ptr->Initialize(GraphicsManager::GetInstance());
+	ptr->Initialize(detail::GraphicsManager::GetInstance());
 	return ptr;
 }
 
@@ -361,7 +361,7 @@ FrameCapturer::~FrameCapturer()
 }
 
 //------------------------------------------------------------------------------
-void FrameCapturer::Initialize(GraphicsManager* manager)
+void FrameCapturer::Initialize(detail::GraphicsManager* manager)
 {
 	m_manager = manager;
 	m_gifContext = LN_NEW detail::DynamicPaletteGifContext();//;GifContext

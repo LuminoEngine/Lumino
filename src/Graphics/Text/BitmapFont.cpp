@@ -7,7 +7,6 @@
 #include "BitmapFont.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 //==============================================================================
 // RawFont
@@ -20,18 +19,20 @@ static const byte_t g_BuiltInBitmapFont_size7_Data[] =
 static const size_t g_BuiltInBitmapFont_size7_Len = LN_ARRAY_SIZE_OF(g_BuiltInBitmapFont_size7_Data);
 
 //------------------------------------------------------------------------------
-RawFont* RawFont::CreateBuiltInBitmapFontInternal(FontManager* manager, int size)
+RawFont* RawFont::CreateBuiltInBitmapFontInternal(detail::FontManager* manager, int size)
 {
 	MemoryStream stream(g_BuiltInBitmapFont_size7_Data, g_BuiltInBitmapFont_size7_Len);
 	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(&stream), false);
-	return LN_NEW BitmapFont(manager, bitmap);
+	return LN_NEW detail::BitmapFont(manager, bitmap);
 }
 
 //------------------------------------------------------------------------------
 void RawFont::RegisterFontFile(const StringRef& filePath)
 {
-	GraphicsManager::GetInstance()->GetFontManager()->RegisterFontFile(filePath);
+	detail::GraphicsManager::GetInstance()->GetFontManager()->RegisterFontFile(filePath);
 }
+
+namespace detail {
 
 //==============================================================================
 // BitmapFont
@@ -178,5 +179,5 @@ FontGlyphBitmap* BitmapFont::LookupGlyphBitmap(UTF32 utf32code, int strokeSize)
 }
 
 
-LN_NAMESPACE_GRAPHICS_END
+} // namespace detail
 LN_NAMESPACE_END

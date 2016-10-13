@@ -30,7 +30,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 RefPtr<Shader> Shader::Create(const StringRef& filePath)
 {
 	RefPtr<Shader> obj(LN_NEW Shader(), false);
-	obj->Initialize(GraphicsManager::GetInstance(), filePath);
+	obj->Initialize(detail::GraphicsManager::GetInstance(), filePath);
 	return obj;
 }
 
@@ -38,7 +38,7 @@ RefPtr<Shader> Shader::Create(const StringRef& filePath)
 RefPtr<Shader> Shader::Create(const char* code, int length)
 {
 	RefPtr<Shader> obj(LN_NEW Shader(), false);
-	obj->Initialize(GraphicsManager::GetInstance(), code, length);
+	obj->Initialize(detail::GraphicsManager::GetInstance(), code, length);
 	return obj;
 }
 //
@@ -97,7 +97,7 @@ Shader::~Shader()
 }
 
 //------------------------------------------------------------------------------
-void Shader::Initialize(GraphicsManager* manager, const StringRef& filePath)
+void Shader::Initialize(detail::GraphicsManager* manager, const StringRef& filePath)
 {
 	GraphicsResourceObject::Initialize(manager);
 	
@@ -116,7 +116,7 @@ void Shader::Initialize(GraphicsManager* manager, const StringRef& filePath)
 }
 
 //------------------------------------------------------------------------------
-void Shader::Initialize(GraphicsManager* manager, const void* code, int length)
+void Shader::Initialize(detail::GraphicsManager* manager, const void* code, int length)
 {
 	GraphicsResourceObject::Initialize(manager);
 
@@ -175,10 +175,10 @@ void Shader::TryCommitChanges()
 
 	RenderBulkData varsData(serializer->GetSerializeData(), serializer->GetSerializeDataLength());
 
-	GraphicsManager* manager = GetManager();
+	detail::GraphicsManager* manager = GetManager();
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		CommitChanges, GetManager(),
-		GraphicsManager*, manager,
+		detail::GraphicsManager*, manager,
 		RenderBulkData, varsData,
 		{
 			auto* serializer = manager->GetShaderVariableCommitSerializeHelper();

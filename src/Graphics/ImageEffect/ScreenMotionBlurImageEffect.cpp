@@ -26,7 +26,7 @@ static const size_t g_ScreenMotionBlurImageEffect_fx_Len = LN_ARRAY_SIZE_OF(g_Sc
 ScreenMotionBlurImageEffectPtr ScreenMotionBlurImageEffect::Create()
 {
 	ScreenMotionBlurImageEffectPtr obj(LN_NEW ScreenMotionBlurImageEffect(), false);
-	obj->Initialize(GraphicsManager::GetInstance());
+	obj->Initialize(detail::GraphicsManager::GetInstance());
 	return obj;
 }
 
@@ -47,7 +47,7 @@ ScreenMotionBlurImageEffect::~ScreenMotionBlurImageEffect()
 }
 
 //------------------------------------------------------------------------------
-void ScreenMotionBlurImageEffect::Initialize(GraphicsManager* manager)
+void ScreenMotionBlurImageEffect::Initialize(detail::GraphicsManager* manager)
 {
 	ImageEffect::Initialize(manager);
 

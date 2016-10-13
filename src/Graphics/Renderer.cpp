@@ -20,8 +20,7 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 static Details::Renderer* GetRenderer()
 {
-	// TODO: 未初期化エラー
-	return GraphicsManager::GetInstance()->GetRenderer();
+	return detail::GraphicsManager::GetInstance()->GetRenderer();
 }
 
 //------------------------------------------------------------------------------
@@ -55,7 +54,7 @@ namespace Details
 {
 
 //------------------------------------------------------------------------------
-Renderer::Renderer(GraphicsManager* manager)
+Renderer::Renderer(detail::GraphicsManager* manager)
 	: m_internal(manager->GetGraphicsDevice()->GetRenderer())
 	, m_primaryCommandList(NULL)
 	, m_currentRenderState()

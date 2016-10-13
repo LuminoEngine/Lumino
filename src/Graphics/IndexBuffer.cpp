@@ -40,7 +40,7 @@ IndexBuffer::~IndexBuffer()
 }
 
 //------------------------------------------------------------------------------
-void IndexBuffer::Initialize(GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
+void IndexBuffer::Initialize(detail::GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
 {
 	m_indexCount = indexCount;
 	m_format = format;

@@ -11,7 +11,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-ProfilerRenderer::ProfilerRenderer(GraphicsManager* manager, Profiler* profiler)
+ProfilerRenderer::ProfilerRenderer(detail::GraphicsManager* manager, Profiler* profiler)
 	: m_manager(manager)
 	, m_profiler(profiler)
 {

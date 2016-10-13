@@ -5,7 +5,6 @@
 #include <Lumino/IO/FileManager.h>
 #include <Lumino/Text/EncodingConverter.h>
 
-// TODO: これらを思いっきり公開してるのは何とかしたい…
 typedef int  FT_Error;
 typedef void*  FT_Pointer;
 typedef FT_Pointer  FTC_FaceID;
@@ -20,57 +19,11 @@ typedef struct FT_StreamRec_*  FT_Stream;
 typedef struct FT_GlyphRec_*  FT_Glyph;
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 class RawFont;
+class FreeTypeFont;
 
-class FontKey
-{
-public:
-
-	String	Family;
-	int		Size;
-	//int		EdgeSize;
-	bool	IsBold;
-	bool	IsItalic;
-	bool	IsAntiAlias;
-
-	FontKey()
-		: Family()
-		, Size(16)
-		//, EdgeSize(0)
-		, IsBold(false)
-		, IsItalic(false)
-		, IsAntiAlias(false)
-	{}
-
-	bool operator < (const FontKey& right)
-	{
-		if (Family < right.Family) { return true; }
-		if (Family > right.Family) { return false; }
-		if (Size < right.Size) { return true; }
-		if (Size > right.Size) { return false; }
-		//if (EdgeSize < right.EdgeSize) { return true; }
-		//if (EdgeSize > right.EdgeSize) { return false; }
-		if (IsBold < right.IsBold) { return true; }
-		if (IsBold > right.IsBold) { return false; }
-		if (IsItalic < right.IsItalic) { return true; }
-		if (IsItalic > right.IsItalic) { return false; }
-		if (IsAntiAlias < right.IsAntiAlias) { return true; }
-		if (IsAntiAlias > right.IsAntiAlias) { return false; }
-		return false;
-	}
-
-	uint32_t CalcHash()
-	{
-		uint32_t v = Hash::CalcHash(Family.c_str());
-		v += Size;
-		//v += 10 * EdgeSize;
-		v += 100 * (int)IsBold;
-		v += 1000 * (int)IsItalic;
-		v += 10000 * (int)IsAntiAlias;
-		return v;
-	}
-};
+namespace detail {
+class GraphicsManager;
 
 // フォントの管理クラス
 class FontManager
@@ -98,14 +51,12 @@ public:
 
 	EncodingConverter* GetCharToUTF32Converter() { return &m_charToUTF32Converter; }
 	EncodingConverter* GetWCharToUTF32Converter() { return &m_wcharToUTF32Converter; }
-
-
 	EncodingConverter* GetTCharToUTF32Converter() { return &m_TCharToUTF32Converter; }
 	EncodingConverter* GetUTF32ToTCharConverter() { return &m_UTF32ToTCharConverter; }
 
-private:
+	RawFontPtr LookupRawFont(const detail::FontData& keyData);
 
-	friend class FreeTypeFont;
+LN_INTERNAL_ACCESS:
 	FT_Library GetFTLibrary() const { return m_ftLibrary; }
 	FTC_Manager GetFTCacheManager() const { return m_ftCacheManager; }
 	FTC_CMapCache GetFTCacheMapCache() const { return m_ftCMapCache; }
@@ -152,11 +103,12 @@ private:
 	};
 	typedef std::map<intptr_t, TTFDataEntry>     TTFDataEntryMap;
 	typedef std::pair<intptr_t, TTFDataEntry>    TTFDataEntryPair;
-	TTFDataEntryMap		m_ttfDataEntryMap;
+	TTFDataEntryMap			m_ttfDataEntryMap;
 
-	RefPtr<FileManager>	m_fileManager;
-	GraphicsManager*	m_graphicsManager;
-	RawFont*			m_defaultFont;
+	RefPtr<FileManager>		m_fileManager;
+	GraphicsManager*		m_graphicsManager;
+	RefPtr<CacheManager>	m_rawFontCache;
+	RawFont*				m_defaultFont;
 
 	EncodingConverter		m_charToUTF32Converter;
 	EncodingConverter		m_wcharToUTF32Converter;
@@ -179,5 +131,5 @@ private:
 
 };
 
-LN_NAMESPACE_GRAPHICS_END
+} // namespace detail
 LN_NAMESPACE_END

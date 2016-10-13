@@ -29,7 +29,7 @@ public:
 		EngineDiagCore*				engineDiag = nullptr;
 		FileManager*		FileManager;
 		detail::PhysicsManager*	PhysicsManager;
-		GraphicsManager*	GraphicsManager;
+		detail::GraphicsManager*	GraphicsManager;
 		detail::EffectManager*		effectManager;
 		detail::ModelManager*		modelManager = nullptr;
 		Viewport*					mainViewport = nullptr;
@@ -75,7 +75,7 @@ public:
 public:	// internal
 	EngineDiagCore* GetEngineDiag() const { return m_engineDiag; }
 	detail::PhysicsManager* GetPhysicsManager() { return m_physicsManager; }
-	GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
+	detail::GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
 	detail::EffectManager* GetEffectManager() { return m_effectManager; }
 	detail::ModelManager* GetModelManager() { return m_modelManager; }
 	Texture2D* GetDummyWhiteTexture() { return m_dummyWhiteTexture; }
@@ -99,8 +99,8 @@ private:
 
 	EngineDiagCore*						m_engineDiag;
 	RefPtr<FileManager>					m_fileManager;
-	RefPtr<detail::PhysicsManager>		m_physicsManager;
-	RefPtr<GraphicsManager>	m_graphicsManager;
+	RefPtr<detail::PhysicsManager>		m_physicsManager;	// TODO: remove RefPtr
+	RefPtr<detail::GraphicsManager>	m_graphicsManager;	// TODO: remove RefPtr
 	detail::EffectManager*				m_effectManager;
 	detail::ModelManager*				m_modelManager;
 	RefPtr<Texture2D>			m_dummyWhiteTexture;

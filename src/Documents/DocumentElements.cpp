@@ -60,7 +60,7 @@ void TextElement::Initialize(DocumentsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void TextElement::OnFontDataChanged(const GraphicsManager::FontData& newData)
+void TextElement::OnFontDataChanged(const FontData& newData)
 {
 }
 
@@ -103,7 +103,7 @@ void Run::Initialize(DocumentsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void Run::OnFontDataChanged(const GraphicsManager::FontData& newData)
+void Run::OnFontDataChanged(const FontData& newData)
 {
 	//m_glyphRun->
 	//RefPtr<Internal::FontGlyphTextureCache> cache(GetManager()->GetGraphicsManager()->LookupGlyphTextureCache(newData), false);

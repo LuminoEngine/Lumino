@@ -6,6 +6,7 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
+namespace detail { class FreeTypeFont; }
 
 /** ビットマップのピクセルフォーマット */
 enum class PixelFormat
@@ -171,7 +172,7 @@ private:
 
 
 private:
-	friend class FreeTypeFont;
+	friend class ::ln::detail::FreeTypeFont;
 	ByteBuffer		m_bitmapData;	// ビットマップデータ本体
 	SizeI			m_size;			// サイズ (ピクセル数単位)
 	int				m_depth;		// 深度 (Z座標)

@@ -6,6 +6,7 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
+namespace detail { class FontManager; }
 class Bitmap;
 class RawFont;
 using RawFontPtr = RefPtr<RawFont>;
@@ -66,7 +67,7 @@ public:
 	static RawFontPtr Create();
 
 
-	static RawFont* CreateBuiltInBitmapFontInternal(FontManager* manager, int size);			// TODO: manager を何とかしたい
+	static RawFont* CreateBuiltInBitmapFontInternal(detail::FontManager* manager, int size);			// TODO: manager を何とかしたい
 
 
 	static void RegisterFontFile(const StringRef& filePath);
@@ -148,7 +149,7 @@ public:
 	//virtual FontGlyphData* LookupGlyphData(UTF32 utf32code, FontGlyphData* prevData) = 0;
 
 
-	virtual FontManager* GetManager() const = 0;
+	virtual detail::FontManager* GetManager() const = 0;
 
 
 protected:

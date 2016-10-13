@@ -32,7 +32,7 @@ DrawingContext::~DrawingContext()
 }
 
 //------------------------------------------------------------------------------
-void DrawingContext::Initialize(GraphicsManager* manager)
+void DrawingContext::Initialize(detail::GraphicsManager* manager)
 {
 	detail::ContextInterface::Initialize(manager);
 

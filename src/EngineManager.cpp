@@ -385,7 +385,7 @@ void EngineManager::InitializeGraphicsManager()
 		InitializePlatformManager();
 		InitializePhysicsManager();
 
-		GraphicsManager::ConfigData data;
+		detail::GraphicsManager::ConfigData data;
 		data.graphicsAPI = m_configData.graphicsAPI;
 		data.renderingType = m_configData.renderingType;
 		data.mainWindow = m_platformManager->GetMainWindow();
@@ -398,7 +398,7 @@ void EngineManager::InitializeGraphicsManager()
 #ifdef LN_OS_WIN32
 		data.D3D9Device = m_configData.D3D9Device;
 #endif
-		m_graphicsManager = LN_NEW GraphicsManager();
+		m_graphicsManager = LN_NEW detail::GraphicsManager();
 		m_graphicsManager->Initialize(data);
 
 		m_diagViewer = LN_NEW EngineDiagViewer();

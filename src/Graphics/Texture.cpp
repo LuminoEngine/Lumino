@@ -160,7 +160,7 @@ Texture2DPtr Texture2D::Create(int width, int height, TextureFormat format, bool
 Texture2DPtr Texture2D::Create(const SizeI& size, TextureFormat format, bool mipmap)
 {
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
-	tex->Initialize(GraphicsManager::GetInstance(), size, format, mipmap);
+	tex->Initialize(detail::GraphicsManager::GetInstance(), size, format, mipmap);
 	return tex;
 }
 
@@ -168,7 +168,7 @@ Texture2DPtr Texture2D::Create(const SizeI& size, TextureFormat format, bool mip
 Texture2DPtr Texture2D::Create(const StringRef& filePath, TextureFormat format, bool mipmap)
 {
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
-	tex->Initialize(GraphicsManager::GetInstance(), filePath, format, mipmap);
+	tex->Initialize(detail::GraphicsManager::GetInstance(), filePath, format, mipmap);
 	return tex;
 }
 
@@ -176,7 +176,7 @@ Texture2DPtr Texture2D::Create(const StringRef& filePath, TextureFormat format, 
 Texture2DPtr Texture2D::Create(Stream* stream, TextureFormat format, bool mipmap)
 {
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
-	tex->Initialize(GraphicsManager::GetInstance(), stream, format, mipmap);
+	tex->Initialize(detail::GraphicsManager::GetInstance(), stream, format, mipmap);
 	return tex;
 	/*
 	if (GetManager()->IsPlatformTextureLoading())
@@ -206,7 +206,7 @@ Texture2DPtr Texture2D::Create(const void* data, size_t size, TextureFormat form
 //------------------------------------------------------------------------------
 Texture2DPtr Texture2D::GetWhiteTexture()
 {
-	return GraphicsManager::GetInstance()->GetDummyWhiteTexture();
+	return detail::GraphicsManager::GetInstance()->GetDummyWhiteTexture();
 }
 
 //------------------------------------------------------------------------------
@@ -221,7 +221,7 @@ Texture2D::Texture2D()
 }
 
 //------------------------------------------------------------------------------
-void Texture2D::Initialize(GraphicsManager* manager, const SizeI& size, TextureFormat format, bool mipmap)
+void Texture2D::Initialize(detail::GraphicsManager* manager, const SizeI& size, TextureFormat format, bool mipmap)
 {
 	GraphicsResourceObject::Initialize(manager);
 
@@ -233,13 +233,13 @@ void Texture2D::Initialize(GraphicsManager* manager, const SizeI& size, TextureF
 	m_primarySurface = LN_NEW Bitmap(size, Utils::TranslatePixelFormat(format));
 
 	// テクスチャを作る
-	m_deviceObj = GraphicsManager::GetInstance()->GetGraphicsDevice()->CreateTexture(size, m_mipmap, format, nullptr);
+	m_deviceObj = manager->GetGraphicsDevice()->CreateTexture(size, m_mipmap, format, nullptr);
 
 	m_initializing = true;
 }
 
 //------------------------------------------------------------------------------
-void Texture2D::Initialize(GraphicsManager* manager, const StringRef& filePath, TextureFormat format, bool mipmap)
+void Texture2D::Initialize(detail::GraphicsManager* manager, const StringRef& filePath, TextureFormat format, bool mipmap)
 {
 	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath), false);
 	Initialize(manager, stream, format, mipmap);
@@ -248,7 +248,7 @@ void Texture2D::Initialize(GraphicsManager* manager, const StringRef& filePath, 
 //------------------------------------------------------------------------------
 // プラットフォーム依存用
 //------------------------------------------------------------------------------
-void Texture2D::Initialize(GraphicsManager* manager, Stream* stream, TextureFormat format, bool mipmap)
+void Texture2D::Initialize(detail::GraphicsManager* manager, Stream* stream, TextureFormat format, bool mipmap)
 {
 	GraphicsResourceObject::Initialize(manager);
 	m_mipmap = mipmap;
@@ -501,7 +501,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Texture3D, Texture);
 Texture3DPtr Texture3D::Create(int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage)
 {
 	auto ptr = Texture3DPtr::MakeRef();
-	ptr->Initialize(GraphicsManager::GetInstance(), width, height, depth, format, mipLevels, usage);
+	ptr->Initialize(detail::GraphicsManager::GetInstance(), width, height, depth, format, mipLevels, usage);
 	return ptr;
 }
 
@@ -520,7 +520,7 @@ Texture3D::~Texture3D()
 }
 
 //------------------------------------------------------------------------------
-void Texture3D::Initialize(GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage)
+void Texture3D::Initialize(detail::GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage)
 {
 	GraphicsResourceObject::Initialize(manager);
 	m_size.width = width;
@@ -619,7 +619,7 @@ void Texture3D::OnChangeDevice(Driver::IGraphicsDevice* device)
 RenderTargetPtr RenderTarget::Create(const SizeI& size, TextureFormat format, int mipLevels)
 {
 	RefPtr<RenderTarget> tex(LN_NEW RenderTarget(), false);
-	tex->CreateImpl(GraphicsManager::GetInstance(), size, mipLevels, format);
+	tex->CreateImpl(detail::GraphicsManager::GetInstance(), size, mipLevels, format);
 	return tex;
 }
 
@@ -633,7 +633,7 @@ RenderTarget::RenderTarget()
 }
 
 //------------------------------------------------------------------------------
-void RenderTarget::CreateImpl(GraphicsManager* manager, const SizeI& size, int mipLevels, TextureFormat format)
+void RenderTarget::CreateImpl(detail::GraphicsManager* manager, const SizeI& size, int mipLevels, TextureFormat format)
 {
 	GraphicsResourceObject::Initialize(manager);
 
@@ -644,7 +644,7 @@ void RenderTarget::CreateImpl(GraphicsManager* manager, const SizeI& size, int m
 }
 
 //------------------------------------------------------------------------------
-void RenderTarget::CreateCore(GraphicsManager* manager, bool isDefaultBackBuffer)
+void RenderTarget::CreateCore(detail::GraphicsManager* manager, bool isDefaultBackBuffer)
 {
 	GraphicsResourceObject::Initialize(manager);
 	m_deviceObj = NULL;
@@ -692,7 +692,7 @@ void RenderTarget::OnChangeDevice(Driver::IGraphicsDevice* device)
 Texture* DepthBuffer::Create(const SizeI& size, TextureFormat format)
 {
 	RefPtr<DepthBuffer> tex(LN_NEW DepthBuffer(), false);
-	tex->CreateImpl(GraphicsManager::GetInstance(), size, format);
+	tex->CreateImpl(detail::GraphicsManager::GetInstance(), size, format);
 	tex.SafeAddRef();
 	return tex;
 }
@@ -703,7 +703,7 @@ DepthBuffer::DepthBuffer()
 }
 
 //------------------------------------------------------------------------------
-void DepthBuffer::CreateImpl(GraphicsManager* manager, const SizeI& size, TextureFormat format)
+void DepthBuffer::CreateImpl(detail::GraphicsManager* manager, const SizeI& size, TextureFormat format)
 {
 	GraphicsResourceObject::Initialize(manager);
 	m_size = size;

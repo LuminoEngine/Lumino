@@ -38,7 +38,7 @@ SwapChain::~SwapChain()
 }
 
 //------------------------------------------------------------------------------
-void SwapChain::InitializeDefault(GraphicsManager* manager)
+void SwapChain::InitializeDefault(detail::GraphicsManager* manager)
 {
 	GraphicsResourceObject::Initialize(manager);
 
@@ -48,7 +48,7 @@ void SwapChain::InitializeDefault(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void SwapChain::InitializeSub(GraphicsManager* manager, PlatformWindow* window)
+void SwapChain::InitializeSub(detail::GraphicsManager* manager, PlatformWindow* window)
 {
 	GraphicsResourceObject::Initialize(manager);
 

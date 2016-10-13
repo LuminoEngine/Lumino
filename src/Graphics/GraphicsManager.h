@@ -23,9 +23,10 @@ namespace detail { class ContextInterface; }
 namespace detail { class PhysicsManager; }
 
 
-namespace detail
-{
-	class TextRendererCore;
+namespace detail {
+
+class TextRendererCore;
+class FontGlyphTextureCache;
 
 // ShaderVariable からコミットするルートと、Material からコミットするルートがある。
 // ShaderVariableCommitSerializeHelper は、その同じような処理をまとめたクラス。
@@ -48,7 +49,6 @@ private:
 	RefPtr<BinaryWriter>	m_writer;
 };
 
-}
 
 class IDeviceResetListener
 {
@@ -72,9 +72,9 @@ public:
 		GraphicsRenderingType		renderingType = GraphicsRenderingType::Threaded;
 		PlatformWindow*				mainWindow = nullptr;								// アプリケーションのメインウィンドウ
 		SizeI						backBufferSize = SizeI(640, 480);					// バックバッファのサイズ
-		detail::AnimationManager*	animationManager = nullptr;
+		AnimationManager*			animationManager = nullptr;
 		FileManager*				fileManager = nullptr;								// FileManager
-		detail::PhysicsManager*		physicsManager = nullptr;
+		PhysicsManager*				physicsManager = nullptr;
 		bool						platformTextureLoading = false;						// 画像リソースの読み込みにプラットフォーム固有の機能を使用するか
 		void*						D3D9Device = nullptr;								// 作成済みの IDirect3DDevice9 インターフェイス
 		bool						fpuPreserveEnabled = false;
@@ -103,7 +103,7 @@ public:
 	SwapChain* GetMainSwapChain() { return m_mainSwapChain; }
 
 
-	detail::AnimationManager* GetAnimationManager() const { return m_animationManager; }
+	AnimationManager* GetAnimationManager() const { return m_animationManager; }
 
 	/** 関連付けられている FileManager を取得します。*/
 	FileManager* GetFileManager() const { return m_fileManager; }
@@ -128,23 +128,10 @@ public:
 
 	void ChangeDevice(Driver::IGraphicsDevice* device);
 
-	void SwitchActiveContext(detail::ContextInterface* context);
-	detail::ContextInterface* GetActiveContext() const { return m_activeContext; }
+	void SwitchActiveContext(ContextInterface* context);
+	ContextInterface* GetActiveContext() const { return m_activeContext; }
 
 public:	// TODO: internal
-	struct FontData
-	{
-		String	Family;
-		int		Size;
-		//int		EdgeSize;
-		bool	IsBold;
-		bool	IsItalic;
-		bool	IsAntiAlias;
-
-		RawFont* CreateFontFromData(FontManager* m) const;
-	};
-
-	static uint64_t CalcFontSettingHash(const FontData& fontData);
 
 	///// 指定したフォント設定に一致する TextRenderer* を検索する。
 	///// あくまでグリフテクスチャのキャッシュを使いまわすためのものであることに注意。
@@ -153,8 +140,8 @@ public:	// TODO: internal
 	///// また、参照カウントを増やして返す。
 	//TextRenderer* LookupTextRenderer(const FontData& fontData);
 
-	Internal::FontGlyphTextureCache* LookupGlyphTextureCache(const FontData& fontData);
-	Internal::FontGlyphTextureCache* LookupGlyphTextureCache(RawFont* font);
+	FontGlyphTextureCache* LookupGlyphTextureCache(const FontData& fontData);
+	FontGlyphTextureCache* LookupGlyphTextureCache(RawFont* font);
 
 public:	// TODO
 	friend class Helper;
@@ -164,21 +151,21 @@ public:	// TODO
 public:
 	void AddResourceObject(GraphicsResourceObject* obj) { m_resourceObjectList.Add(obj); }
 	void RemoveResourceObject(GraphicsResourceObject* obj) { m_resourceObjectList.Remove(obj); }
-	detail::PhysicsManager* GetPhysicsManager() const { return m_physicsManager; }
+	PhysicsManager* GetPhysicsManager() const { return m_physicsManager; }
 	Driver::IGraphicsDevice* GetGraphicsDevice() { return m_graphicsDevice; }
 	RenderingThread* GetRenderingThread() { return m_renderingThread; }
 	bool IsPlatformTextureLoading() { return m_platformTextureLoading; }
 	RenderingCommandList* GetPrimaryRenderingCommandList();
-	detail::TextRendererCore* GetTextRendererCore() { return m_textRendererCore; }
+	TextRendererCore* GetTextRendererCore() { return m_textRendererCore; }
 	Driver::ITexture* GetDummyDeviceTexture() { return m_dummyDeviceTexture; }
 	const RefPtr<Texture2D>& GetDummyWhiteTexture() { return m_dymmyWhiteTexture; }
 	VertexDeclaration* GetDefaultVertexDeclaration() const { return m_defaultVertexDeclaration; }
-	detail::ShaderVariableCommitSerializeHelper* GetShaderVariableCommitSerializeHelper() { return &m_shaderVariableCommitSerializeHelper; }
+	ShaderVariableCommitSerializeHelper* GetShaderVariableCommitSerializeHelper() { return &m_shaderVariableCommitSerializeHelper; }
 
 private:
-	detail::AnimationManager*		m_animationManager;
+	AnimationManager*				m_animationManager;
 	FileManager*					m_fileManager;
-	detail::PhysicsManager*			m_physicsManager;
+	PhysicsManager*					m_physicsManager;
 	PlatformWindow*					m_mainWindow;
 	FontManager*					m_fontManager;
 	GraphicsRenderingType			m_renderingType;
@@ -191,14 +178,14 @@ private:
 	Details::Renderer*				m_renderer;
 	RenderingThread*				m_renderingThread;
 
-	detail::ContextInterface*		m_activeContext;
+	ContextInterface*				m_activeContext;
 	RenderingContext*				m_renderingContext;
 	DrawingContext*					m_drawingContext;
 
 
-	detail::TextRendererCore*		m_textRendererCore;
+	TextRendererCore*				m_textRendererCore;
 	BitmapTextRenderer*				m_bitmapTextRenderer;
-	detail::ShaderVariableCommitSerializeHelper	m_shaderVariableCommitSerializeHelper;
+	ShaderVariableCommitSerializeHelper	m_shaderVariableCommitSerializeHelper;
 
 	Driver::ITexture*				m_dummyDeviceTexture;
 	RefPtr<Texture2D>				m_dymmyWhiteTexture;
@@ -206,5 +193,5 @@ private:
 	bool							m_platformTextureLoading;
 };
 
-LN_NAMESPACE_GRAPHICS_END
+} // namespace detail
 LN_NAMESPACE_END

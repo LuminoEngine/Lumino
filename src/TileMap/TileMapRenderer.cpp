@@ -45,7 +45,7 @@ static const byte_t g_TileMapRenderer_fx_Data[] =
 static const size_t g_TileMapRenderer_fx_Len = LN_ARRAY_SIZE_OF(g_TileMapRenderer_fx_Data);
 
 //------------------------------------------------------------------------------
-TileMapRenderer::TileMapRenderer(GraphicsManager* manager)
+TileMapRenderer::TileMapRenderer(detail::GraphicsManager* manager)
 	: m_graphicsManager(manager)
 	, m_vertexBuffer(nullptr)
 	, m_indexBuffer(nullptr)

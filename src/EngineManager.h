@@ -13,6 +13,7 @@ LN_NAMESPACE_BEGIN
 
 namespace detail { class AnimationManager; }
 namespace detail { class InputManager; }
+namespace detail { class GraphicsManager; }
 namespace detail { class EffectManager; }
 namespace detail { class ModelManager; }
 namespace detail { class UIManager; }
@@ -20,7 +21,6 @@ namespace detail { class AudioManager; }
 namespace detail { class PhysicsManager; }
 namespace detail { class DocumentsManager; }
 class FileManager;
-class GraphicsManager;
 class SceneGraphManager;
 class Application;
 class EngineDiagViewer;
@@ -189,7 +189,7 @@ public:
 	PlatformManager* GetPlatformManager() const { return m_platformManager; }
 	detail::AudioManager* GetAudioManager() const { return m_audioManager; }
 	detail::PhysicsManager* GetPhysicsManager() const;
-	GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
+	detail::GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
 	detail::DocumentsManager* GetDocumentsManager() const { return m_documentsManager; }
 	detail::UIManager* GetUIManager() const { return m_uiManager; }
 	SceneGraphManager* GetSceneGraphManager() const { return m_sceneGraphManager; }
@@ -232,7 +232,7 @@ private:
 	detail::InputManager*				m_inputManager;
 	detail::AudioManager*				m_audioManager;
 	RefPtr<detail::PhysicsManager>		m_physicsManager;
-	GraphicsManager*					m_graphicsManager;
+	detail::GraphicsManager*			m_graphicsManager;
 	detail::EffectManager*				m_effectManager;
 	detail::ModelManager*				m_modelManager;
 	detail::DocumentsManager*			m_documentsManager;

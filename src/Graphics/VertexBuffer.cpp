@@ -42,7 +42,7 @@ VertexBuffer::~VertexBuffer()
 }
 
 //------------------------------------------------------------------------------
-void VertexBuffer::Initialize(GraphicsManager* manager, size_t bufferSize, const void* data, ResourceUsage usage)
+void VertexBuffer::Initialize(detail::GraphicsManager* manager, size_t bufferSize, const void* data, ResourceUsage usage)
 {
 	GraphicsResourceObject::Initialize(manager);
 

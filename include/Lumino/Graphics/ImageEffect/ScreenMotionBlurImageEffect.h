@@ -35,7 +35,7 @@ public:
 protected:
 	ScreenMotionBlurImageEffect();
 	virtual ~ScreenMotionBlurImageEffect();
-	void Initialize(GraphicsManager* manager);
+	void Initialize(detail::GraphicsManager* manager);
 	virtual void OnRender(RenderingContext* context, RenderTarget* source, RenderTarget* destination) override;
 
 	RenderTarget*	m_accumTexture;	// 前回の画面描画内容

@@ -31,7 +31,7 @@ GlyphRun::~GlyphRun()
 }
 
 //------------------------------------------------------------------------------
-void GlyphRun::Initialize(GraphicsManager* manager)
+void GlyphRun::Initialize(detail::GraphicsManager* manager)
 {
 	LN_CHECK_ARG(manager != nullptr);
 	m_manager = manager;
@@ -122,7 +122,7 @@ const Array<TextLayoutResultItem>& GlyphRun::RequestLayoutItems()
 }
 
 //------------------------------------------------------------------------------
-Internal::FontGlyphTextureCache* GlyphRun::LookupFontGlyphTextureCache()
+detail::FontGlyphTextureCache* GlyphRun::LookupFontGlyphTextureCache()
 {
 	if (m_glyphTextureCache == nullptr)
 	{

@@ -84,7 +84,7 @@ void TextRendererCore::SetState(const Matrix& world, const Matrix& viewProj, con
 }
 
 //------------------------------------------------------------------------------
-void TextRendererCore::Render(const GlyphRunData* dataList, int dataCount, Internal::FontGlyphTextureCache* cache, Brush* fillBrush)
+void TextRendererCore::Render(const GlyphRunData* dataList, int dataCount, FontGlyphTextureCache* cache, Brush* fillBrush)
 {
 	Color color = Color::White;
 	if (fillBrush != nullptr && fillBrush->GetType() == BrushType_SolidColor)
@@ -141,7 +141,7 @@ void TextRendererCore::InternalDrawRectangle(const RectF& rect, const RectF& src
 }
 
 //------------------------------------------------------------------------------
-void TextRendererCore::Flush(Internal::FontGlyphTextureCache* cache)
+void TextRendererCore::Flush(FontGlyphTextureCache* cache)
 {
 	if (m_indexCache.GetCount() == 0) { return; }
 
@@ -267,7 +267,7 @@ void TextRenderer::DrawString(const Matrix& transform, const TCHAR* str, int len
 	const ByteBuffer& utf32Buf = m_manager->GetFontManager()->GetTCharToUTF32Converter()->Convert(str, sizeof(TCHAR) * length);
 
 	// 現在のフォント設定に一致するテクスチャキャッシュを探す
-	RefPtr<Internal::FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_font), false);
+	RefPtr<FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_font), false);
 
 	// 
 	TextLayoutResult result;
@@ -286,7 +286,7 @@ void TextRenderer::DrawString(const Matrix& transform, const TCHAR* str, int len
 	const ByteBuffer& utf32Buf = m_manager->GetFontManager()->GetTCharToUTF32Converter()->Convert(str, sizeof(TCHAR) * length);
 
 	// 現在のフォント設定に一致するテクスチャキャッシュを探す
-	RefPtr<Internal::FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_font), false);
+	RefPtr<FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_font), false);
 
 	// 
 	TextLayoutEngine* layout = cache->GetTextLayoutEngine();
@@ -314,7 +314,7 @@ void TextRenderer::DrawString(const Matrix& transform, const TCHAR* str, int len
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::DrawGlyphsInternal(const Matrix& transform, const PointF& position, const Array<TextLayoutResultItem>& layoutItems, Internal::FontGlyphTextureCache* cache)
+void TextRenderer::DrawGlyphsInternal(const Matrix& transform, const PointF& position, const Array<TextLayoutResultItem>& layoutItems, FontGlyphTextureCache* cache)
 {
 	CheckUpdateState();
 
@@ -324,7 +324,7 @@ void TextRenderer::DrawGlyphsInternal(const Matrix& transform, const PointF& pos
 		const TextLayoutResultItem& item = layoutItems[i];
 
 		// 必要なグリフを探す。LookupGlyphInfo() の中で、テクスチャにグリフビットマップが Blt される。
-		Internal::CacheGlyphInfo info;
+		CacheGlyphInfo info;
 		bool flush;
 		cache->LookupGlyphInfo(item.Char, &info, &flush);
 		if (flush)
@@ -351,14 +351,14 @@ void TextRenderer::Flush()
 	if (m_flushRequested)
 	{
 		// 現在のフォント設定に一致するテクスチャキャッシュを探す
-		RefPtr<Internal::FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_font), false);
+		RefPtr<FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_font), false);
 
 		FlushInternal(cache);
 	}
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::FlushInternal(Internal::FontGlyphTextureCache* cache)
+void TextRenderer::FlushInternal(FontGlyphTextureCache* cache)
 {
 	int dataCount = m_glyphLayoutDataList.GetCount();
 	RenderBulkData dataListData(&m_glyphLayoutDataList[0], sizeof(TextRendererCore::GlyphRunData) * dataCount);
@@ -368,7 +368,7 @@ void TextRenderer::FlushInternal(Internal::FontGlyphTextureCache* cache)
 		TextRendererCore*, m_core,
 		RenderBulkData, dataListData,
 		int, dataCount,
-		RefPtr<Internal::FontGlyphTextureCache>, cache,
+		RefPtr<FontGlyphTextureCache>, cache,
 		RefPtr<Brush>, m_fillBrush,
 		{
 			m_core->Render(

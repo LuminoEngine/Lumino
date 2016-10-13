@@ -72,33 +72,33 @@ Texture2DPtr AssetsManager::LoadTexture(const StringRef& filePath)
 }
 
 //------------------------------------------------------------------------------
-RawFontPtr AssetsManager::LoadFont(const StringRef& name, int size, bool isBold, bool isItalic, bool isAntiAlias)
-{
-	CacheKey key(String::Format(_T("{0}-{1}{2}{3}{4}"), name, size, isBold, isItalic, isAntiAlias));
-
-	RawFont* ptr = static_cast<RawFont*>(m_fontCache->FindObjectAddRef(key));
-	if (ptr != nullptr) { return RawFontPtr(ptr, false); }
-
-	RawFontPtr ref;
-	if (name.IsEmpty())
-	{
-		ref = m_engineManager->GetGraphicsManager()->GetFontManager()->GetDefaultFont()->Copy();
-	}
-	else
-	{
-		auto ftFont = RefPtr<FreeTypeFont>::MakeRef(m_engineManager->GetGraphicsManager()->GetFontManager());
-		ref = ftFont;
-	}
-
-	ref->SetName(name);
-	ref->SetSize(size);
-	ref->SetBold(isBold);
-	ref->SetItalic(isItalic);
-	ref->SetAntiAlias(isAntiAlias);
-
-	m_fontCache->RegisterCacheObject(key, ref);
-	return RawFontPtr::StaticCast(ref);
-}
+//RawFontPtr AssetsManager::LoadFont(const StringRef& name, int size, bool isBold, bool isItalic, bool isAntiAlias)
+//{
+//	CacheKey key(String::Format(_T("{0}-{1}{2}{3}{4}"), name, size, isBold, isItalic, isAntiAlias));
+//
+//	RawFont* ptr = static_cast<RawFont*>(m_fontCache->FindObjectAddRef(key));
+//	if (ptr != nullptr) { return RawFontPtr(ptr, false); }
+//
+//	RawFontPtr ref;
+//	if (name.IsEmpty())
+//	{
+//		ref = m_engineManager->GetGraphicsManager()->GetFontManager()->GetDefaultFont()->Copy();
+//	}
+//	else
+//	{
+//		auto ftFont = RefPtr<FreeTypeFont>::MakeRef(m_engineManager->GetGraphicsManager()->GetFontManager());
+//		ref = ftFont;
+//	}
+//
+//	ref->SetName(name);
+//	ref->SetSize(size);
+//	ref->SetBold(isBold);
+//	ref->SetItalic(isItalic);
+//	ref->SetAntiAlias(isAntiAlias);
+//
+//	m_fontCache->RegisterCacheObject(key, ref);
+//	return RawFontPtr::StaticCast(ref);
+//}
 
 //==============================================================================
 // Assets

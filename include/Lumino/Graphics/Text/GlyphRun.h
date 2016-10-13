@@ -5,6 +5,7 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
+namespace detail { class FontGlyphTextureCache; }
 class TextLayoutEngine;	// TODO: detail
 
 // TODO: detail
@@ -37,9 +38,9 @@ public:
 LN_INTERNAL_ACCESS:
 	GlyphRun();
 	virtual ~GlyphRun();
-	void Initialize(GraphicsManager* manager);
+	void Initialize(detail::GraphicsManager* manager);
 	const Array<TextLayoutResultItem>& RequestLayoutItems();
-	Internal::FontGlyphTextureCache* LookupFontGlyphTextureCache();
+	detail::FontGlyphTextureCache* LookupFontGlyphTextureCache();
 	const UTF32* GetText() const { return m_utf32Text.c_str(); }
 	int GetTextLength() const { return m_utf32Text.GetLength(); }
 
@@ -56,11 +57,11 @@ private:
 	void UpdateTextLayoutItem();
 
 	friend class Helper;
-	GraphicsManager*					m_manager;
+	detail::GraphicsManager*			m_manager;
 	GenericStringBuilderCore<UTF32>		m_utf32Text;
 	TextLayoutResult					m_glyphData;
 	TextLayoutEngine*					m_layoutEngine;	// TODO: detail にして new しない
-	Internal::FontGlyphTextureCache*	m_glyphTextureCache;
+	detail::FontGlyphTextureCache*		m_glyphTextureCache;
 	bool								m_modifiedRenderSize;
 	bool								m_modifiedItems;
 };

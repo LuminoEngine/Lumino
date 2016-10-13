@@ -169,7 +169,7 @@ Viewport::~Viewport()
 }
 
 //------------------------------------------------------------------------------
-void Viewport::Initialize(GraphicsManager* manager, RenderTarget* renderTarget)
+void Viewport::Initialize(detail::GraphicsManager* manager, RenderTarget* renderTarget)
 {
 	m_manager = manager;
 	m_renderTarget = renderTarget;

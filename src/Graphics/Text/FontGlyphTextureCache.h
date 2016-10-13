@@ -7,8 +7,8 @@
 #include <Lumino/Graphics/Text/Font.h>
 #include "TextLayoutEngine.h"	// TODO
 
-
-LN_BEGIN_INTERNAL_NAMESPACE(Graphics)
+LN_NAMESPACE_BEGIN
+namespace detail {
 
 struct CacheGlyphInfo
 {
@@ -18,6 +18,8 @@ struct CacheGlyphInfo
 	Rect	srcRect;
 };
 
+// このクラスは、1つのテクスチャにできる限りグリフを詰め込むために使用する。
+// たくさん文字を書くときでも、テクスチャの切り替えが無ければ1度のドローコールで全て書くことができる。
 class FontGlyphTextureCache
 	: public RefObject
 	, public ICacheObject
@@ -82,5 +84,5 @@ private:
 
 };
 
-LN_END_INTERNAL_NAMESPACE
-
+} // namespace detail
+LN_NAMESPACE_END

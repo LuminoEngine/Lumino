@@ -2,7 +2,8 @@
 #include "Internal.h"
 #include <Lumino/UI/UIStyle.h>
 #include <Lumino/UI/UITextElement.h>
-#include "../AssetsManager.h"
+#include "../Graphics/GraphicsManager.h"
+#include "../Graphics/Text/FontManager.h"
 #include "UIManager.h"
 
 LN_NAMESPACE_BEGIN
@@ -38,7 +39,13 @@ SizeF UITextElement::MeasureOverride(const SizeF& constraint)
 	// フォント更新
 	if (m_invalidateFont)
 	{
-		m_font = GetManager()->GetAssetsManager()->LoadFont(m_fontFamily, m_fontSize, m_fontBold, m_fontItalic, true);
+		detail::FontData data;
+		data.Family = m_fontFamily;
+		data.Size = m_fontSize;
+		data.IsBold = m_fontBold;
+		data.IsItalic = m_fontItalic;
+		data.IsAntiAlias = true;
+		m_font = GetManager()->GetGraphicsManager()->GetFontManager()->LookupRawFont(data);
 		m_invalidateFont = false;
 	}
 

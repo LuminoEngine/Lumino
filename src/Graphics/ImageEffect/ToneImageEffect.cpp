@@ -26,7 +26,7 @@ static const size_t g_ToneImageEffect_fx_Len = LN_ARRAY_SIZE_OF(g_ToneImageEffec
 ToneImageEffectPtr ToneImageEffect::Create()
 {
 	ToneImageEffectPtr obj(LN_NEW ToneImageEffect(), false);
-	obj->Initialize(GraphicsManager::GetInstance());
+	obj->Initialize(detail::GraphicsManager::GetInstance());
 	return obj;
 }
 
@@ -42,7 +42,7 @@ ToneImageEffect::~ToneImageEffect()
 }
 
 //------------------------------------------------------------------------------
-void ToneImageEffect::Initialize(GraphicsManager* manager)
+void ToneImageEffect::Initialize(detail::GraphicsManager* manager)
 {
 	ImageEffect::Initialize(manager);
 

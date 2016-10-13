@@ -149,10 +149,10 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 LN_INTERNAL_ACCESS:
-	void Initialize(GraphicsManager* manager, const SizeI& size, TextureFormat format, bool mipmap);
-	void Initialize(GraphicsManager* manager, const StringRef& filePath, TextureFormat format, bool mipmap);
-	void Initialize(GraphicsManager* manager, Stream* stream, TextureFormat format, bool mipmap);
-	void Initialize(GraphicsManager* manager, bool isDefaultBackBuffer);
+	void Initialize(detail::GraphicsManager* manager, const SizeI& size, TextureFormat format, bool mipmap);
+	void Initialize(detail::GraphicsManager* manager, const StringRef& filePath, TextureFormat format, bool mipmap);
+	void Initialize(detail::GraphicsManager* manager, Stream* stream, TextureFormat format, bool mipmap);
+	void Initialize(detail::GraphicsManager* manager, bool isDefaultBackBuffer);
 	void TryLock();
 	Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }
 
@@ -207,7 +207,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	Texture3D();
 	virtual ~Texture3D();
-	void Initialize(GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage);
+	void Initialize(detail::GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage);
 
 protected:
 	virtual void ApplyModifies() override;
@@ -244,8 +244,8 @@ public:
 
 LN_INTERNAL_ACCESS:
 	RenderTarget();
-	void CreateImpl(GraphicsManager* manager, const SizeI& size, int mipLevels, TextureFormat format);
-	void CreateCore(GraphicsManager* manager, bool isDefaultBackBuffer);
+	void CreateImpl(detail::GraphicsManager* manager, const SizeI& size, int mipLevels, TextureFormat format);
+	void CreateCore(detail::GraphicsManager* manager, bool isDefaultBackBuffer);
 	void AttachDefaultBackBuffer(Driver::ITexture* deviceObj);
 	void DetachDefaultBackBuffer();
 
@@ -283,7 +283,7 @@ public:
 
 LN_INTERNAL_ACCESS:
 	DepthBuffer();
-	void CreateImpl(GraphicsManager* manager, const SizeI& size, TextureFormat format);
+	void CreateImpl(detail::GraphicsManager* manager, const SizeI& size, TextureFormat format);
 
 protected:
 	virtual ~DepthBuffer();

@@ -23,7 +23,7 @@ public:
 
 	Texture2DPtr LoadTexture(const StringRef& filePath);
 
-	RawFontPtr LoadFont(const StringRef& name, int size, bool isBold, bool isItalic, bool isAntiAlias);
+	//RawFontPtr LoadFont(const StringRef& name, int size, bool isBold, bool isItalic, bool isAntiAlias);
 
 private:
 	EngineManager*			m_engineManager;

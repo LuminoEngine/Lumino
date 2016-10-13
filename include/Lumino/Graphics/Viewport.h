@@ -92,14 +92,14 @@ public:
 LN_INTERNAL_ACCESS:	// TODO: いまはとりあえず内部用途
 	Viewport();
 	virtual ~Viewport();
-	void Initialize(GraphicsManager* manager, RenderTarget* renderTarget);
+	void Initialize(detail::GraphicsManager* manager, RenderTarget* renderTarget);
 	void Render();
 
 private:
 	void TryRemakeLayerTargets();
 	void MakeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, Matrix* mat);
 
-	GraphicsManager*			m_manager;
+	detail::GraphicsManager*	m_manager;
 	RenderTarget*				m_renderTarget;
 
 	RefPtr<ViewportLayerList>	m_viewportLayerList;

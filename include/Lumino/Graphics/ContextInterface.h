@@ -5,10 +5,7 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
-class GraphicsManager;
-
-namespace detail
-{
+namespace detail {
 class RenderTargetTextureCache;
 
 LN_ENUM_FLAGS(ContextStateFlags)
@@ -148,7 +145,6 @@ private:
 	friend class GraphicsManager;
 	friend class ShaderVariable;
 };
-
 
 } // namespace detail
 LN_NAMESPACE_GRAPHICS_END

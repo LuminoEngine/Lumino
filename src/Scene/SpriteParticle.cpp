@@ -49,7 +49,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SpriteParticleModel, Object);
 SpriteParticleModelPtr SpriteParticleModel::Create()
 {
 	auto ptr = SpriteParticleModelPtr::MakeRef();
-	ptr->Initialize(GraphicsManager::GetInstance());
+	ptr->Initialize(detail::GraphicsManager::GetInstance());
 	return ptr;
 }
 
@@ -97,7 +97,7 @@ SpriteParticleModel::~SpriteParticleModel()
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticleModel::Initialize(GraphicsManager* manager)
+void SpriteParticleModel::Initialize(detail::GraphicsManager* manager)
 {
 	m_manager = manager;
 }

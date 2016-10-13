@@ -160,7 +160,7 @@ public:
 LN_INTERNAL_ACCESS:
 	RenderingContext();
 	virtual ~RenderingContext();
-	void Initialize(GraphicsManager* manager);
+	void Initialize(detail::GraphicsManager* manager);
 	void InitializeFrame(RenderTarget* renderTarget);
 	void DrawMesh(MeshResource* mesh, int startIndex, int triangleCount);
 	void DrawMesh(MeshResource* mesh, int subset);

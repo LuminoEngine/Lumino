@@ -31,7 +31,6 @@
 #include <Lumino/Graphics/DrawingContext.h>
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 //==============================================================================
 // GraphicsResourceObject
@@ -50,7 +49,7 @@ GraphicsResourceObject::~GraphicsResourceObject()
 }
 
 //------------------------------------------------------------------------------
-void GraphicsResourceObject::Initialize(GraphicsManager* manager)
+void GraphicsResourceObject::Initialize(detail::GraphicsManager* manager)
 {
 	m_manager = manager;
 	m_manager->AddResourceObject(this);
@@ -71,6 +70,7 @@ void GraphicsResourceObject::ApplyModifies()
 {
 }
 
+namespace detail {
 //==============================================================================
 // GraphicsManager
 //==============================================================================
@@ -400,31 +400,31 @@ void GraphicsManager::SwitchActiveContext(detail::ContextInterface* context)
 }
 
 //------------------------------------------------------------------------------
-uint64_t GraphicsManager::CalcFontSettingHash(const FontData& fontData)
-{
-	uint32_t v[2];
-	v[0] = Hash::CalcHash(fontData.Family.c_str());
-
-	uint8_t* v2 = (uint8_t*)&v[1];
-	v2[0] = fontData.Size;
-	//v2[1] = fontData.EdgeSize;
-	v2[3] =
-		(((fontData.IsBold) ? 1 : 0)) |
-		(((fontData.IsItalic) ? 1 : 0) << 1) |
-		(((fontData.IsAntiAlias) ? 1 : 0) << 2);
-
-	return *((uint64_t*)&v);
-}
+//uint64_t GraphicsManager::CalcFontSettingHash(const FontData& fontData)
+//{
+//	uint32_t v[2];
+//	v[0] = Hash::CalcHash(fontData.Family.c_str());
+//
+//	uint8_t* v2 = (uint8_t*)&v[1];
+//	v2[0] = fontData.Size;
+//	//v2[1] = fontData.EdgeSize;
+//	v2[3] =
+//		(((fontData.IsBold) ? 1 : 0)) |
+//		(((fontData.IsItalic) ? 1 : 0) << 1) |
+//		(((fontData.IsAntiAlias) ? 1 : 0) << 2);
+//
+//	return *((uint64_t*)&v);
+//}
 
 //------------------------------------------------------------------------------
-Internal::FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(const FontData& fontData)
+FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(const detail::FontData& fontData)
 {
-	CacheKey key(CalcFontSettingHash(fontData));
-	auto* tr = (Internal::FontGlyphTextureCache*)m_glyphTextureCache->FindObjectAddRef(key);
+	CacheKey key(fontData.CalcHash());
+	auto* tr = (FontGlyphTextureCache*)m_glyphTextureCache->FindObjectAddRef(key);
 	if (tr != NULL) { return tr; }
 
-	RawFont* font = fontData.CreateFontFromData(m_fontManager);
-	tr = LN_NEW Internal::FontGlyphTextureCache();
+	RawFont* font = m_fontManager->LookupRawFont(fontData);//fontData.CreateFontFromData(m_fontManager);
+	tr = LN_NEW FontGlyphTextureCache();
 	tr->Initialize(this, font);
 	font->Release();
 	m_glyphTextureCache->RegisterCacheObject(key, tr);
@@ -432,9 +432,9 @@ Internal::FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(const 
 }
 
 //------------------------------------------------------------------------------
-Internal::FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(RawFont* font)
+FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(RawFont* font)
 {
-	FontData fontData;
+	detail::FontData fontData;
 	fontData.Family = font->GetName();
 	fontData.Size = font->GetSize();
 	//fontData.EdgeSize = font->GetEdgeSize();
@@ -442,11 +442,11 @@ Internal::FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(RawFon
 	fontData.IsItalic = font->IsItalic();
 	fontData.IsAntiAlias = font->IsAntiAlias();
 
-	CacheKey key(CalcFontSettingHash(fontData));
-	auto* tr = (Internal::FontGlyphTextureCache*)m_glyphTextureCache->FindObjectAddRef(key);
+	CacheKey key(fontData.CalcHash());
+	auto* tr = (FontGlyphTextureCache*)m_glyphTextureCache->FindObjectAddRef(key);
 	if (tr != NULL) { return tr; }
 
-	tr = LN_NEW Internal::FontGlyphTextureCache();
+	tr = LN_NEW FontGlyphTextureCache();
 	tr->Initialize(this, font);
 	m_glyphTextureCache->RegisterCacheObject(key, tr);
 	return tr;
@@ -459,21 +459,18 @@ RenderingCommandList* GraphicsManager::GetPrimaryRenderingCommandList()
 }
 
 //------------------------------------------------------------------------------
-RawFont* GraphicsManager::FontData::CreateFontFromData(FontManager* m) const
-{
-	RawFont* font = LN_NEW FreeTypeFont(m);
-	font->SetName(Family);
-	font->SetSize(Size);
-	//font->SetEdgeSize(EdgeSize);
-	font->SetBold(IsBold);
-	font->SetItalic(IsItalic);
-	font->SetAntiAlias(IsAntiAlias);
-	return font;
-}
+//RawFont* GraphicsManager::FontData::CreateFontFromData(FontManager* m) const
+//{
+//	RawFont* font = LN_NEW FreeTypeFont(m);
+//	font->SetName(Family);
+//	font->SetSize(Size);
+//	//font->SetEdgeSize(EdgeSize);
+//	font->SetBold(IsBold);
+//	font->SetItalic(IsItalic);
+//	font->SetAntiAlias(IsAntiAlias);
+//	return font;
+//}
 
-
-namespace detail
-{
 
 //==============================================================================
 // ShaderVariableCommitSerializeHelper
@@ -637,6 +634,4 @@ void ShaderVariableCommitSerializeHelper::Deserialize(const void* data, size_t l
 }
 
 } // namespace detail 
-
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

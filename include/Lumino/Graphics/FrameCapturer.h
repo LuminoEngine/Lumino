@@ -24,7 +24,7 @@ public:
 LN_INTERNAL_ACCESS:
 	FrameCapturer();
 	virtual ~FrameCapturer();
-	void Initialize(GraphicsManager* manager);
+	void Initialize(detail::GraphicsManager* manager);
 
 private:
 	enum class State
@@ -35,7 +35,7 @@ private:
 
 	void RecordCommand(Driver::ITexture* target, State newState);
 
-	GraphicsManager*			m_manager;
+	detail::GraphicsManager*	m_manager;
 	RenderTarget*				m_capturerTarget;
 	State						m_requestedState;
 	

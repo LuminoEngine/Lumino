@@ -7,7 +7,6 @@
 
 LN_NAMESPACE_BEGIN
 class FileManager;
-class GraphicsManager;
 class AudioManager;
 
 namespace detail

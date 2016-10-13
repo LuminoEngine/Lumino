@@ -201,7 +201,7 @@ SkinnedMeshModel::~SkinnedMeshModel()
 }
 
 //------------------------------------------------------------------------------
-void SkinnedMeshModel::Initialize(GraphicsManager* manager, PmxSkinnedMeshResource* sharingMesh)
+void SkinnedMeshModel::Initialize(detail::GraphicsManager* manager, PmxSkinnedMeshResource* sharingMesh)
 {
 	LN_CHECK_ARG(manager != nullptr);
 	LN_CHECK_ARG(sharingMesh != nullptr);

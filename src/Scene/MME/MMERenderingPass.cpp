@@ -269,7 +269,7 @@ void MMERenderingPass::PostRender(SceneGraphRenderingContext* dc)
 //------------------------------------------------------------------------------
 void MMERenderingPass::CreateGridContents()
 {
-	GraphicsManager* gm = GetManager()->GetGraphicsManager();
+	detail::GraphicsManager* gm = GetManager()->GetGraphicsManager();
 
 	// 適当な四角形メッシュ
 	m_gridPlane = RefPtr<MeshResource>::MakeRef();

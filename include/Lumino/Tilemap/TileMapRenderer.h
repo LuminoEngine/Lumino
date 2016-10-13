@@ -27,7 +27,7 @@ protected:
 	//	const Rect& srcRect);
 
 public:
-	TileMapRenderer(GraphicsManager* manager);
+	TileMapRenderer(detail::GraphicsManager* manager);
 	virtual ~TileMapRenderer();
 
 private:
@@ -41,7 +41,7 @@ private:
 
 	void DrawLayer(TileLayer* layer, const RectF& boundingRect, TileSet* tileSet, const BoundingRect& renderRange);
 
-	GraphicsManager*	m_graphicsManager;
+	detail::GraphicsManager*	m_graphicsManager;
 	RenderingContext*	m_context;
 	RefPtr<VertexDeclaration>	m_vertexDeclaration;
 	VertexBuffer*		m_vertexBuffer;

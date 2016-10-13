@@ -19,7 +19,6 @@
 #include "BitmapFont.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 //==============================================================================
 // RawFont
@@ -28,9 +27,11 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //------------------------------------------------------------------------------
 RawFontPtr RawFont::Create()
 {
-	RawFontPtr obj(LN_NEW FreeTypeFont(GraphicsManager::GetInstance()->GetFontManager()), false);
+	RawFontPtr obj(LN_NEW detail::FreeTypeFont(detail::GraphicsManager::GetInstance()->GetFontManager()), false);
 	return obj;
 }
+
+namespace detail {
 
 //==============================================================================
 // FreeTypeGlyphData
@@ -962,5 +963,5 @@ void FreeTypeFont::GetBitmapTextMetrix()
 	LN_NOTIMPLEMENTED();
 }
 
-LN_NAMESPACE_GRAPHICS_END
+} // namespace detail
 LN_NAMESPACE_END

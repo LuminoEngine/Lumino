@@ -60,7 +60,68 @@ AfterEffects は、"テキストレイヤー" なるものに "エフェクト" 
 #include "FreeTypeFont.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
+namespace detail {
+
+//==============================================================================
+// FontData
+//==============================================================================
+
+//------------------------------------------------------------------------------
+FontData::FontData()
+	: Family()
+	, Size(16)
+	//, EdgeSize(0)
+	, IsBold(false)
+	, IsItalic(false)
+	, IsAntiAlias(false)
+{}
+
+//------------------------------------------------------------------------------
+bool FontData::operator < (const FontData& right)
+{
+	if (Family < right.Family) { return true; }
+	if (Family > right.Family) { return false; }
+	if (Size < right.Size) { return true; }
+	if (Size > right.Size) { return false; }
+	//if (EdgeSize < right.EdgeSize) { return true; }
+	//if (EdgeSize > right.EdgeSize) { return false; }
+	if (IsBold < right.IsBold) { return true; }
+	if (IsBold > right.IsBold) { return false; }
+	if (IsItalic < right.IsItalic) { return true; }
+	if (IsItalic > right.IsItalic) { return false; }
+	if (IsAntiAlias < right.IsAntiAlias) { return true; }
+	if (IsAntiAlias > right.IsAntiAlias) { return false; }
+	return false;
+}
+
+//------------------------------------------------------------------------------
+uint64_t FontData::CalcHash() const
+{
+	uint32_t v[2];
+	v[0] = Hash::CalcHash(Family.c_str());
+
+	uint8_t* v2 = (uint8_t*)&v[1];
+	v2[0] = Size;
+	//v2[1] = fontData.EdgeSize;
+	v2[3] =
+		(((IsBold) ? 1 : 0)) |
+		(((IsItalic) ? 1 : 0) << 1) |
+		(((IsAntiAlias) ? 1 : 0) << 2);
+
+	return *((uint64_t*)&v);
+}
+
+//uint32_t CalcHash() const
+//{
+//	uint32_t v = Hash::CalcHash(Family.c_str());
+//	v += Size;
+//	//v += 10 * EdgeSize;
+//	v += 100 * (int)IsBold;
+//	v += 1000 * (int)IsItalic;
+//	v += 10000 * (int)IsAntiAlias;
+//	return v;
+//}
+
 	
 //==============================================================================
 // FontManager
@@ -119,11 +180,15 @@ void FontManager::Initialize(FileManager* fileManager, GraphicsManager* graphics
 	m_defaultFont->SetName(DefaultFontName);
 	m_defaultFont->SetSize(12);
 	m_defaultFont->SetAntiAlias(true);
+
+	// キャッシュ
+	m_rawFontCache = RefPtr<CacheManager>::MakeRef(32, 0);
 }
 
 //------------------------------------------------------------------------------
 void FontManager::Finalize()
 {
+	m_rawFontCache->Finalize();
 	LN_SAFE_RELEASE(m_defaultFont);
 
 	// 登録したTTFファイルのメモリバッファをすべて解放
@@ -237,6 +302,34 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 void FontManager::SetDefaultFont(RawFont* font)
 {
 	LN_REFOBJ_SET(m_defaultFont, font);
+}
+
+//------------------------------------------------------------------------------
+RawFontPtr FontManager::LookupRawFont(const detail::FontData& keyData)
+{
+	CacheKey key(keyData.CalcHash());
+	RawFont* ptr = static_cast<RawFont*>(m_rawFontCache->FindObjectAddRef(key));
+	if (ptr != nullptr) return RawFontPtr(ptr, false);	// found
+
+	RawFontPtr ref;
+	if (keyData.Family.IsEmpty())
+	{
+		ref = GetDefaultFont()->Copy();
+	}
+	else
+	{
+		auto ftFont = RefPtr<FreeTypeFont>::MakeRef(this);
+		ref = ftFont;
+	}
+
+	ref->SetName(keyData.Family);
+	ref->SetSize(keyData.Size);
+	ref->SetBold(keyData.IsBold);
+	ref->SetItalic(keyData.IsItalic);
+	ref->SetAntiAlias(keyData.IsAntiAlias);
+
+	m_rawFontCache->RegisterCacheObject(key, ref);
+	return RawFontPtr::StaticCast(ref);
 }
 
 //------------------------------------------------------------------------------
@@ -573,5 +666,5 @@ void FontManager::StreamCloseFunc(FT_Stream stream)
 }
 #endif
 
-LN_NAMESPACE_GRAPHICS_END
+} // namespace detail
 LN_NAMESPACE_END

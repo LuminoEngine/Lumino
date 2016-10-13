@@ -67,7 +67,7 @@ public:
 LN_INTERNAL_ACCESS:
 	DrawingContext();
 	virtual ~DrawingContext();
-	void Initialize(GraphicsManager* manager);
+	void Initialize(detail::GraphicsManager* manager);
 	void InitializeFrame(RenderTarget* renderTarget);
 	void InheritStatus(RenderingContext* parent);
 

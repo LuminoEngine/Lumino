@@ -13,7 +13,8 @@
 #include "../Device/GraphicsDriverInterface.h"
 #include "FontGlyphTextureCache.h"
 
-LN_BEGIN_INTERNAL_NAMESPACE(Graphics)
+LN_NAMESPACE_BEGIN
+namespace detail {
 
 //==============================================================================
 // FontGlyphTextureCache
@@ -204,7 +205,6 @@ void FontGlyphTextureCache::ResetUsedFlags()
 	m_curPrimUsedCount = 0;
 }
 
-
 #if 0
 //------------------------------------------------------------------------------
 FontGlyphTextureCache::FontGlyphTextureCache(GraphicsManager* manager, RawFont* font)
@@ -338,7 +338,10 @@ void FontGlyphTextureCache::Measure(const UTF32* text, int length, TextLayoutRes
 	m_layoutEngine.LayoutText(text, length, LayoutTextOptions::All, outResult);	// TODO: RenderSize だけでもいいかも？
 }
 
-LN_END_INTERNAL_NAMESPACE
+
+} // namespace detail
+LN_NAMESPACE_END
+
 
 #if 0
 namespace detail

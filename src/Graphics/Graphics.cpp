@@ -81,20 +81,20 @@ void Graphics::ChangeDirectX9Device(void* id3d9device)
 #if defined(LN_OS_WIN32)
 	if (id3d9device == NULL)
 	{
-		GraphicsManager::GetInstance()->ChangeDevice(NULL);
+		detail::GraphicsManager::GetInstance()->ChangeDevice(NULL);
 	}
 	else
 	{
 		Driver::DX9GraphicsDevice::ConfigData data;
-		data.MainWindow = GraphicsManager::GetInstance()->GetMainWindow();
-		data.FileManager = GraphicsManager::GetInstance()->GetFileManager();
+		data.MainWindow = detail::GraphicsManager::GetInstance()->GetMainWindow();
+		data.FileManager = detail::GraphicsManager::GetInstance()->GetFileManager();
 		data.D3D9Device = (IDirect3DDevice9*)id3d9device;
 		//data.BackbufferSize = configData.MainWindow->GetSize();	// TODO
 		//data.EnableVSyncWait = false;			// TODO
 		//data.EnableFPUPreserve = false;			// TODO
 		auto* device = LN_NEW Driver::DX9GraphicsDevice();
 		device->Initialize(data);
-		GraphicsManager::GetInstance()->ChangeDevice(device);
+		detail::GraphicsManager::GetInstance()->ChangeDevice(device);
 		device->Release();
 	}
     

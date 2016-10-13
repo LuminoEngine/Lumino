@@ -12,10 +12,10 @@ class GraphicsResourceObject
 	: public tr::ReflectionObject
 {
 protected:
-	friend class GraphicsManager;
+	friend class detail::GraphicsManager;
 	friend class ShaderVariable;
 
-	void Initialize(GraphicsManager* manager);
+	void Initialize(detail::GraphicsManager* manager);
 	void Finalize();
 
 	virtual void ApplyModifies();
@@ -28,7 +28,7 @@ protected:
 	virtual ~GraphicsResourceObject();
 
 
-	GraphicsManager*	m_manager;
+	detail::GraphicsManager*	m_manager;
 };
 
 LN_NAMESPACE_END

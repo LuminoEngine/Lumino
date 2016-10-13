@@ -44,7 +44,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	SkinnedMeshModel();
 	virtual ~SkinnedMeshModel();
-	void Initialize(GraphicsManager* manager, PmxSkinnedMeshResource* sharingMesh);
+	void Initialize(detail::GraphicsManager* manager, PmxSkinnedMeshResource* sharingMesh);
 
 	void SetWorldTransform(const Matrix& matrix) { m_worldTransform = matrix; m_worldTransformInverse = Matrix::MakeInverse(m_worldTransform); }
 	const Matrix& GetWorldTransform() const { return m_worldTransform; }

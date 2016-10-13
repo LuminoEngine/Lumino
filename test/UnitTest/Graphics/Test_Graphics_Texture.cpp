@@ -16,7 +16,7 @@ protected:
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Texture, SetSubData)
 {
-	RefPtr<RawFont> font(RawFont::CreateBuiltInBitmapFontInternal(GraphicsManager::GetInstance()->GetFontManager(), 7));
+	RefPtr<RawFont> font(RawFont::CreateBuiltInBitmapFontInternal(detail::GraphicsManager::GetInstance()->GetFontManager(), 7));
 	FontGlyphBitmap* fb = font->LookupGlyphBitmap('S', 0);
 
 	auto texture = Texture2D::Create(32, 32);

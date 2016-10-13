@@ -39,7 +39,7 @@ ImageEffect::~ImageEffect()
 }
 
 //------------------------------------------------------------------------------
-void ImageEffect::Initialize(GraphicsManager* manager)
+void ImageEffect::Initialize(detail::GraphicsManager* manager)
 {
 	LN_CHECK_ARG(manager != nullptr);
 	m_manager = manager;
