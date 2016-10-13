@@ -7,6 +7,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail { class FontManager; }
+namespace detail { class FontGlyphTextureCache; }
 class Bitmap;
 class RawFont;
 using RawFontPtr = RefPtr<RawFont>;
@@ -155,6 +156,12 @@ public:
 protected:
 	RawFont();
 	virtual ~RawFont();
+
+LN_INTERNAL_ACCESS:
+	detail::FontGlyphTextureCache* GetGlyphTextureCache();
+
+private:
+	detail::FontGlyphTextureCache*	m_glyphTextureCache;
 };
 
 LN_NAMESPACE_GRAPHICS_END

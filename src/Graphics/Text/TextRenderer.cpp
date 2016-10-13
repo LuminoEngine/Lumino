@@ -222,16 +222,16 @@ void TextRenderer::SetTransform(const Matrix& matrix)
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::SetState(const Matrix& matrix, const SizeI& size, RawFont* font, Brush* fillBrush)
+void TextRenderer::SetState(const Matrix& viewProj, const SizeI& viewPixelSize, RawFont* font, Brush* fillBrush)
 {
-	if (m_viewProj != matrix)
+	if (m_viewProj != viewProj)
 	{
-		m_viewProj = matrix;
+		m_viewProj = viewProj;
 		m_stateModified = true;
 	}
-	if (m_viewPixelSize != size)
+	if (m_viewPixelSize != viewPixelSize)
 	{
-		m_viewPixelSize = size;
+		m_viewPixelSize = viewPixelSize;
 		m_stateModified = true;
 	}
 	if (m_font != font)
@@ -266,8 +266,7 @@ void TextRenderer::DrawString(const Matrix& transform, const TCHAR* str, int len
 	// UTF32 へ変換
 	const ByteBuffer& utf32Buf = m_manager->GetFontManager()->GetTCharToUTF32Converter()->Convert(str, sizeof(TCHAR) * length);
 
-	// 現在のフォント設定に一致するテクスチャキャッシュを探す
-	RefPtr<FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_font), false);
+	FontGlyphTextureCache* cache = m_font->GetGlyphTextureCache();
 
 	// 
 	TextLayoutResult result;
@@ -285,8 +284,7 @@ void TextRenderer::DrawString(const Matrix& transform, const TCHAR* str, int len
 	// UTF32 へ変換
 	const ByteBuffer& utf32Buf = m_manager->GetFontManager()->GetTCharToUTF32Converter()->Convert(str, sizeof(TCHAR) * length);
 
-	// 現在のフォント設定に一致するテクスチャキャッシュを探す
-	RefPtr<FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_font), false);
+	FontGlyphTextureCache* cache = m_font->GetGlyphTextureCache();
 
 	// 
 	TextLayoutEngine* layout = cache->GetTextLayoutEngine();
@@ -350,9 +348,7 @@ void TextRenderer::Flush()
 {
 	if (m_flushRequested)
 	{
-		// 現在のフォント設定に一致するテクスチャキャッシュを探す
-		RefPtr<FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_font), false);
-
+		FontGlyphTextureCache* cache = m_font->GetGlyphTextureCache();
 		FlushInternal(cache);
 	}
 }

@@ -126,11 +126,7 @@ const Array<TextLayoutResultItem>& GlyphRun::RequestLayoutItems()
 //------------------------------------------------------------------------------
 detail::FontGlyphTextureCache* GlyphRun::LookupFontGlyphTextureCache()
 {
-	if (m_glyphTextureCache == nullptr)
-	{
-		m_glyphTextureCache = m_manager->LookupGlyphTextureCache(m_layoutEngine->GetFont());	// 参照カウントは増えている
-	}
-	return m_glyphTextureCache;
+	return m_layoutEngine->GetFont()->GetGlyphTextureCache();
 }
 
 #if 0

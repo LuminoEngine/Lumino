@@ -497,6 +497,7 @@ void EngineManager::InitializeSceneGraphManager()
 		InitializeEffectManager();
 		InitializeModelManager();
 		InitializeUIManager();
+		InitializeDocumentsManager();
 
 		SceneGraphManager::ConfigData data;
 		data.engineDiag = &EngineDiagCore::Instance;
@@ -505,6 +506,7 @@ void EngineManager::InitializeSceneGraphManager()
 		data.PhysicsManager = m_physicsManager;
 		data.effectManager = m_effectManager;
 		data.modelManager = m_modelManager;
+		data.documentsManager = m_documentsManager;
 		data.mainViewport = m_uiManager->GetMainWindow()->GetViewport();
 		m_sceneGraphManager = LN_NEW SceneGraphManager(data);
 		m_sceneGraphManager->CreateDefaultSceneGraph();

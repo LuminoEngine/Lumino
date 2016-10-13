@@ -4,6 +4,7 @@
 #include <Lumino/Graphics/Text/GlyphRun.h>
 #include "../GraphicsManager.h"
 #include "FontManager.h"
+#include "FontGlyphTextureCache.h"
 #include "BitmapTextRenderer.h"
 
 LN_NAMESPACE_BEGIN
@@ -22,12 +23,14 @@ RawFontPtr RawFont::GetDefaultFont()
 
 //------------------------------------------------------------------------------
 RawFont::RawFont()
+	: m_glyphTextureCache(nullptr)
 {
 }
 
 //------------------------------------------------------------------------------
 RawFont::~RawFont()
 {
+	LN_SAFE_RELEASE(m_glyphTextureCache);
 }
 
 //------------------------------------------------------------------------------
@@ -38,6 +41,17 @@ SizeI RawFont::GetTextSize(const StringRef& text)
 	gr->SetFont(this);
 	gr->SetText(text);
 	return gr->GetRenderSize();
+}
+
+//------------------------------------------------------------------------------
+detail::FontGlyphTextureCache* RawFont::GetGlyphTextureCache()
+{
+	if (m_glyphTextureCache == nullptr)
+	{
+		m_glyphTextureCache = LN_NEW detail::FontGlyphTextureCache();
+		m_glyphTextureCache->Initialize(GetManager()->GetGraphicsManager(), this);
+	}
+	return m_glyphTextureCache;
 }
 
 LN_NAMESPACE_GRAPHICS_END

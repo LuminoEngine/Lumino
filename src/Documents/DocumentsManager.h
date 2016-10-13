@@ -21,6 +21,8 @@ public:
 	virtual ~DocumentsManager();
 	void Initialize(const ConfigData& configData);
 	GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
+	EncodingConverter* GetTCharToUTF32Converter() { return &m_TCharToUTF32Converter; }	// TODO: fontmanager ‚ÌŽg‚¦‚Î‚¢‚¢‚©‚à
+	EncodingConverter* GetUTF32ToTCharConverter() { return &m_UTF32ToTCharConverter; }
 
 private:
 	GraphicsManager*		m_graphicsManager;

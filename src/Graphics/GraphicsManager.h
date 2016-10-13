@@ -131,23 +131,6 @@ public:
 	void SwitchActiveContext(ContextInterface* context);
 	ContextInterface* GetActiveContext() const { return m_activeContext; }
 
-public:	// TODO: internal
-
-	///// 指定したフォント設定に一致する TextRenderer* を検索する。
-	///// あくまでグリフテクスチャのキャッシュを使いまわすためのものであることに注意。
-	///// 取得した TextRenderer に SetFont してはならないし、
-	///// 色や配置設定は全て再設定しなければならない。(者と同じ設定であるとは限らない)
-	///// また、参照カウントを増やして返す。
-	//TextRenderer* LookupTextRenderer(const FontData& fontData);
-
-	FontGlyphTextureCache* LookupGlyphTextureCache(const FontData& fontData);
-	FontGlyphTextureCache* LookupGlyphTextureCache(RawFont* font);
-
-public:	// TODO
-	friend class Helper;
-	//friend class Application;
-
-
 public:
 	void AddResourceObject(GraphicsResourceObject* obj) { m_resourceObjectList.Add(obj); }
 	void RemoveResourceObject(GraphicsResourceObject* obj) { m_resourceObjectList.Remove(obj); }
@@ -169,7 +152,6 @@ private:
 	PlatformWindow*					m_mainWindow;
 	FontManager*					m_fontManager;
 	GraphicsRenderingType			m_renderingType;
-	RefPtr<CacheManager>			m_glyphTextureCache;
 	Array<GraphicsResourceObject*>	m_resourceObjectList;
 	Array<IDeviceResetListener*>	m_deviceResetListenerList;
 	

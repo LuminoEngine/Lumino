@@ -13,6 +13,7 @@
 #include "MME/MMETypes.h"	// TODO: これは別の場所に移動したい・・・
 
 LN_NAMESPACE_BEGIN
+namespace detail { class DocumentsManager; }
 class EngineDiagCore;
 
 LN_NAMESPACE_SCENE_BEGIN
@@ -32,16 +33,15 @@ public:
 		detail::GraphicsManager*	GraphicsManager;
 		detail::EffectManager*		effectManager;
 		detail::ModelManager*		modelManager = nullptr;
+		detail::DocumentsManager*	documentsManager = nullptr;
 		Viewport*					mainViewport = nullptr;
 
-		//Modeling::ModelManager*		ModelManager;
 
 		ConfigData()
 			: FileManager(nullptr)
 			, PhysicsManager(nullptr)
 			, GraphicsManager(nullptr)
 			, effectManager(nullptr)
-			//, ModelManager(nullptr)
 		{}
 	};
 
@@ -78,6 +78,7 @@ public:	// internal
 	detail::GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
 	detail::EffectManager* GetEffectManager() { return m_effectManager; }
 	detail::ModelManager* GetModelManager() { return m_modelManager; }
+	detail::DocumentsManager* GetDocumentsManager() { return m_documentsManager; }
 	Texture2D* GetDummyWhiteTexture() { return m_dummyWhiteTexture; }
 
 	void OnNodeRename(SceneNode* node, const String& oldName, const String& newName);
@@ -103,6 +104,7 @@ private:
 	RefPtr<detail::GraphicsManager>	m_graphicsManager;	// TODO: remove RefPtr
 	detail::EffectManager*				m_effectManager;
 	detail::ModelManager*				m_modelManager;
+	detail::DocumentsManager*			m_documentsManager;
 	RefPtr<Texture2D>			m_dummyWhiteTexture;
 
 	SceneGraphRenderingContext*		m_renderingContext;

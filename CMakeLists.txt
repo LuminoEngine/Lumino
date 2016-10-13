@@ -487,6 +487,7 @@ set(LN_SOURCES_UI
 )
 
 set(LN_SOURCES_Documents
+	include/Lumino/Documents/Common.h
 	src/Documents/DocumentElements.cpp
 	src/Documents/DocumentElements.h
 	src/Documents/DocumentsManager.cpp

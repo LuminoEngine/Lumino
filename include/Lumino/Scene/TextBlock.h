@@ -5,6 +5,9 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
+namespace detail { class Paragraph; }
+class TextBlock2D;
+using TextBlock2DPtr = RefPtr<TextBlock2D>;
 
 /**
 	@brief
@@ -14,20 +17,15 @@ class TextBlock2D
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	//
-	///**
-	//	@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
-	//*/
-	//static SpriteBase* Create();
-
-	///**
-	//	@brief		
-	//*/
-	//static SpriteBase* Create3D();
+	
+	/**
+		@brief		
+	*/
+	static TextBlock2DPtr Create(const StringRef& text);
 
 public:
 
-	/** 表示する文字列を設定します。 */
+	/** 表示する文字列を設定します。*/
 	void SetText(const StringRef& text);
 
 protected:
@@ -39,7 +37,7 @@ protected:
 	virtual void OnRender(SceneGraphRenderingContext* dc) override;
 
 protected:
-	String		m_text;
+	RefPtr<detail::Paragraph>	m_paragraph;
 	SizeF		m_renderSize;
 };
 

@@ -112,9 +112,6 @@ GraphicsManager::GraphicsManager()
 //------------------------------------------------------------------------------
 GraphicsManager::~GraphicsManager()
 {
-	if (m_glyphTextureCache != nullptr) {
-		m_glyphTextureCache->Finalize();
-	}
 	LN_SAFE_RELEASE(m_defaultVertexDeclaration);
 	LN_SAFE_RELEASE(m_bitmapTextRenderer);
 	LN_SAFE_RELEASE(m_textRendererCore);
@@ -241,9 +238,6 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 
 	m_drawingContext = LN_NEW DrawingContext();
 	m_drawingContext->Initialize(this);
-
-	// TextRendererCache
-	m_glyphTextureCache = RefPtr<CacheManager>::MakeRef(512, 0);
 
 	m_bitmapTextRenderer = LN_NEW BitmapTextRenderer();
 	m_bitmapTextRenderer->Initialize(this);
@@ -416,41 +410,6 @@ void GraphicsManager::SwitchActiveContext(detail::ContextInterface* context)
 //	return *((uint64_t*)&v);
 //}
 
-//------------------------------------------------------------------------------
-FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(const detail::FontData& fontData)
-{
-	CacheKey key(fontData.CalcHash());
-	auto* tr = (FontGlyphTextureCache*)m_glyphTextureCache->FindObjectAddRef(key);
-	if (tr != NULL) { return tr; }
-
-	RawFont* font = m_fontManager->LookupRawFont(fontData);//fontData.CreateFontFromData(m_fontManager);
-	tr = LN_NEW FontGlyphTextureCache();
-	tr->Initialize(this, font);
-	font->Release();
-	m_glyphTextureCache->RegisterCacheObject(key, tr);
-	return tr;
-}
-
-//------------------------------------------------------------------------------
-FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(RawFont* font)
-{
-	detail::FontData fontData;
-	fontData.Family = font->GetName();
-	fontData.Size = font->GetSize();
-	//fontData.EdgeSize = font->GetEdgeSize();
-	fontData.IsBold = font->IsBold();
-	fontData.IsItalic = font->IsItalic();
-	fontData.IsAntiAlias = font->IsAntiAlias();
-
-	CacheKey key(fontData.CalcHash());
-	auto* tr = (FontGlyphTextureCache*)m_glyphTextureCache->FindObjectAddRef(key);
-	if (tr != NULL) { return tr; }
-
-	tr = LN_NEW FontGlyphTextureCache();
-	tr->Initialize(this, font);
-	m_glyphTextureCache->RegisterCacheObject(key, tr);
-	return tr;
-}
 
 //------------------------------------------------------------------------------
 RenderingCommandList* GraphicsManager::GetPrimaryRenderingCommandList()

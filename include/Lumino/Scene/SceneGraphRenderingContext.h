@@ -2,6 +2,7 @@
 #pragma once
 #include "Common.h"
 #include "../Graphics/RenderingContext.h"
+#include "../Documents/Common.h"
 
 LN_NAMESPACE_BEGIN
 namespace detail { class SpriteRenderer; }
@@ -14,6 +15,7 @@ class SceneGraphManager;
 */
 class SceneGraphRenderingContext
 	: public RenderingContext
+	, public detail::IDocumentsRenderer
 {
 public:
 
@@ -43,6 +45,8 @@ LN_INTERNAL_ACCESS:
 
 protected:
 	virtual void OnStateFlush(detail::IRendererPloxy* activeRenderer) override;
+
+	virtual void OnDrawGlyphRun(GlyphRun* glyphRun, const Point& point) override;
 
 LN_INTERNAL_ACCESS:
 	SceneGraphRenderingContext();

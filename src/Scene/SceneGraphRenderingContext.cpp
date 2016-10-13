@@ -74,6 +74,13 @@ void SceneGraphRenderingContext::DrawSprite3D(
 }
 
 //------------------------------------------------------------------------------
+void SceneGraphRenderingContext::OnDrawGlyphRun(GlyphRun* glyphRun, const Point& point)
+{
+	NorityStartDrawing(m_textRenderer);
+	m_textRenderer->DrawGlyphRun(Matrix::Identity, point, glyphRun);
+}
+
+//------------------------------------------------------------------------------
 void SceneGraphRenderingContext::OnStateFlush(detail::IRendererPloxy* activeRenderer)
 {
 	RenderingContext::OnStateFlush(activeRenderer);
@@ -84,6 +91,12 @@ void SceneGraphRenderingContext::OnStateFlush(detail::IRendererPloxy* activeRend
 		const SizeI& size = GetRenderTarget(0)->GetSize();
 		m_spriteRenderer->SetViewPixelSize(size);
 		m_spriteRenderer->SetState(GetRenderState(), m_currentCamera->GetViewMatrix(), m_currentCamera->GetProjectionMatrix());
+	}
+	// TextRenderer
+	if (activeRenderer == m_textRenderer)
+	{
+		const SizeI& size = GetRenderTarget(0)->GetSize();
+		m_textRenderer->SetState(m_currentCamera->GetViewProjectionMatrix(), size, nullptr, nullptr);
 	}
 }
 

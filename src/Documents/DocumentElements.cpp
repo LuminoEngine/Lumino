@@ -106,22 +106,29 @@ void Run::Initialize(DocumentsManager* manager)
 }
 
 //------------------------------------------------------------------------------
+void Run::SetText(const StringRef& text)
+{
+	//m_text.Clear();
+	//m_text.Append(GetManager()->GetTCharToUTF32Converter()->Convert(text.GetBegin(), text.GetLength()));
+	m_glyphRun->SetText(text);
+}
+
+//------------------------------------------------------------------------------
 void Run::OnFontDataChanged(const FontData& newData)
 {
-	//m_glyphRun->
-	//RefPtr<Internal::FontGlyphTextureCache> cache(GetManager()->GetGraphicsManager()->LookupGlyphTextureCache(newData), false);
-	//Helper::AttachGlyphTextureCache(m_glyphRun, cache);
 }
 
 //------------------------------------------------------------------------------
 SizeF Run::Measure()
 {
-	return SizeF::Zero;
+	const SizeI& size = m_glyphRun->GetRenderSize();
+	return SizeF((float)size.width, (float)size.height);
 }
 
 //------------------------------------------------------------------------------
 void Run::Render(IDocumentsRenderer* renderer)
 {
+	renderer->OnDrawGlyphRun(m_glyphRun, Point::Zero);
 }
 
 } // namespace detail

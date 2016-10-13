@@ -100,7 +100,7 @@ public:
 	void Initialize(GraphicsManager* manager);
 
 	void SetTransform(const Matrix& matrix);
-	void SetState(const Matrix& matrix, const SizeI& size, RawFont* font, Brush* fillBrush);
+	void SetState(const Matrix& viewProj, const SizeI& viewPixelSize, RawFont* font, Brush* fillBrush);
 
 	void DrawGlyphRun(const Matrix& transform, const Point& position, GlyphRun* glyphRun);
 	void DrawGlyphRun(const Matrix& transform, const PointF& position, GlyphRun* glyphRun);	// SetFont 無視

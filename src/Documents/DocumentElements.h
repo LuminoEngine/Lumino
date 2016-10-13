@@ -1,17 +1,11 @@
 
 #pragma once
+#include <Lumino/Documents/Common.h>
 #include "../Graphics/GraphicsManager.h"
 
 LN_NAMESPACE_BEGIN
 namespace detail {
 class DocumentsManager;
-
-class IDocumentsRenderer
-{
-public:
-	virtual ~IDocumentsRenderer() = default;
-	virtual void OnDrawGlyphRun(GlyphRun* glyphRun, const Point& point) = 0;
-};
 
 /**
 	@brief
@@ -96,6 +90,7 @@ public:
 
 private:
 	// Inline List
+	
 };
 
 /**
@@ -122,6 +117,8 @@ public:
 	Run();
 	virtual ~Run();
 	void Initialize(DocumentsManager* manager);
+
+	void SetText(const StringRef& text);
 
 protected:
 	// TextElement interface
