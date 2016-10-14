@@ -240,12 +240,14 @@ void ContextInterface::NorityStartDrawing(detail::IRendererPloxy* rendererPloxy)
 {
 	m_manager->SwitchActiveContext(this);
 
+	bool forceStateFlush = (m_activeRendererPloxy != rendererPloxy);
+
 	// アクティブな Renderer の切り替え
 	SwitchActiveRendererPloxy(rendererPloxy);
 
-	if (m_stateChanged)
+	if (m_stateChanged || forceStateFlush)
 	{
-		if (OnCheckStateChanged())
+		if (OnCheckStateChanged() || forceStateFlush)
 		{
 			OnPrimitiveFlush();
 			OnStateFlush(m_activeRendererPloxy);

@@ -33,6 +33,7 @@ protected:
 	virtual ~TextBlock2D();
 	void Initialize(SceneGraph* owner);
 
+	virtual void UpdateFrameHierarchy(SceneNode* parent, float deltaTime) override;
 	virtual detail::Sphere GetBoundingSphere() override;
 	virtual void OnRender(SceneGraphRenderingContext* dc) override;
 

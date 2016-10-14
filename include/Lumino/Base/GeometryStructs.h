@@ -132,6 +132,7 @@ class SizeF
 public:
 	static const SizeF	Zero;	///< SizeF(0, 0)
 	static const SizeF	NaN;	///< SizeF(NaN, NaN)
+	static const SizeF	Max;	///< SizeF(FLT_MAX, FLT_MAX)
 
 public:
 	float	width;				///< X 方向の大きさ

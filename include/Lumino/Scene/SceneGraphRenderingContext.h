@@ -35,8 +35,6 @@ public:
 		const RectF& srcRect,
 		const Color& color,
 		AxisDirection front = AxisDirection_RZ);
-
-	void DrawText();
 	
 LN_INTERNAL_ACCESS:
 	RenderingPass*				Pass;

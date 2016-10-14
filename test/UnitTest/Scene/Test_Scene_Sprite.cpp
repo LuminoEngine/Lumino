@@ -1,4 +1,5 @@
 #include <TestConfig.h>
+#include <Lumino/Scene/TextBlock.h>
 
 class Test_Scene_Sprite : public ::testing::Test
 {
@@ -207,5 +208,22 @@ TEST_F(Test_Scene_Sprite3D, ViewFrustumCulling)
 		int count3 = EngineDiag::GetVisualNodeDrawCount();
 		ASSERT_EQ(count1 + 1, count3);	// Š®‘S‚É”ÍˆÍŠO‚È‚Ì‚Å•`‰æ‚³‚ê‚È‚¢
 
+	}
+}
+
+class Test_Scene_TextBlock2D : public ::testing::Test
+{
+protected:
+	virtual void SetUp() {}
+	virtual void TearDown() {}
+};
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Scene_TextBlock2D, Basic)
+{
+	{
+		auto text = TextBlock2D::Create(_T("Lumino"));
+		Engine::UpdateFrame();
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_TextBlock2D.Basic.png")));
 	}
 }

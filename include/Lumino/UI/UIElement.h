@@ -6,6 +6,7 @@
 #include "Detail.h"
 #include "UITypeInfo.h"
 #include "UIEvent.h"
+#include "LayoutElement.h"
 
 LN_NAMESPACE_BEGIN
 class DrawingContext;
@@ -17,6 +18,7 @@ class UIStylePropertyTable;
 */
 class UIElement
 	: public AnimatableObject
+	, public ILayoutElement
 {
 	LN_UI_TYPEINFO_DECLARE();
 
@@ -124,8 +126,8 @@ public:
 	//UILayoutView* GetOwnerLayoutView() const { return m_ownerLayoutView; }
 
 
-	virtual void MeasureLayout(const SizeF& availableSize);
-	virtual void ArrangeLayout(const RectF& finalLocalRect);
+	virtual void MeasureLayout(const SizeF& availableSize) override;
+	virtual void ArrangeLayout(const RectF& finalLocalRect) override;
 
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
 	void RaiseEvent(const UIEventInfo* ev, UIElement* sender, UIEventArgs* e);
@@ -158,7 +160,7 @@ protected:
 		@return		この要素のレイアウトの際に必要となる最低限のサイズ。この要素のサイズと、全ての子要素のサイズに基づき決定します。Inf であってはなりません。
 		@details	constraint は、ScrollViewer 等のコンテンツとなった場合は Infinity が渡されることがあります。
 	*/
-	virtual SizeF MeasureOverride(const SizeF& constraint);
+	virtual SizeF MeasureOverride(const SizeF& constraint) override;
 
 	/**
 		@brief		子要素の配置を確定し、この要素の最終サイズを返します。
@@ -166,7 +168,7 @@ protected:
 		@return		要素の最終サイズ。要素の描画時にこのサイズを使用します。
 		@details	派生クラスは finalSize よりも大きいサイズを返すと、描画時に見切れが発生します。
 	*/
-	virtual SizeF ArrangeOverride(const SizeF& finalSize);
+	virtual SizeF ArrangeOverride(const SizeF& finalSize) override;
 
 	/** この要素のレイアウトの更新が完了した時に呼び出されます。*/
 	virtual void OnLayoutUpdated();
@@ -210,11 +212,28 @@ LN_INTERNAL_ACCESS:
 	void Render(DrawingContext* g);
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	virtual VerticalAlignment* GetPriorityContentVerticalAlignment();
 	virtual HorizontalAlignment* GetPriorityContentHorizontalAlignment();
+	virtual VerticalAlignment* GetPriorityContentVerticalAlignment();
 
 
 private:
+	// ILayoutElement interface
+	virtual const PointF& GetLayoutPosition() const override;
+	virtual const SizeF& GetLayoutSize() const override;
+	virtual const ThicknessF& GetLayoutMargin() const override;
+	virtual const ThicknessF& GetLayoutPadding() const override;
+	virtual AlignmentAnchor GetLayoutAnchor() const override;
+	virtual HorizontalAlignment GetLayoutHorizontalAlignment() const override;
+	virtual VerticalAlignment GetLayoutVerticalAlignment() const override;
+	virtual ILayoutElement* GetLayoutParent() const override;
+	//virtual int GetLayoutChildCount() const override;
+	//virtual UIElement* GetLayoutChild(int index) const override;
+	virtual VerticalAlignment* GetLayoutContentVerticalAlignment() override;
+	virtual HorizontalAlignment* GetLayoutContentHorizontalAlignment() override;
+	virtual const SizeF& GetLayoutDesiredSize() const override;
+	virtual void SetLayoutDesiredSize(const SizeF& size) override;
+	virtual void SetLayoutFinalLocalRect(const RectF& rect) override;
+
 	void UpdateLocalStyleAndApplyProperties(UIStylePropertyTable* parentStyle, UIStylePropertyTable* currentStateStyle);
 
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する

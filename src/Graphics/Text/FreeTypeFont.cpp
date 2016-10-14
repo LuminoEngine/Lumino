@@ -627,9 +627,12 @@ void FreeTypeFont::UpdateFont()
 {
 	if (m_modified)
 	{
-		m_ftFaceID = (FTC_FaceID)m_fontData.CalcHash();//(FTC_FaceID)Hash::CalcHash(m_fontData.Family.c_str());
+		const String* name = &m_fontData.Family;
+		if (name->IsEmpty()) name = &m_manager->GetDefaultFont()->GetName();
+
+		m_ftFaceID = (FTC_FaceID)Hash::CalcHash(name->c_str());
 		FTC_Manager ftc_manager = m_manager->GetFTCacheManager();
-		m_manager->m_requesterFaceName = m_fontData.Family.c_str();
+		m_manager->m_requesterFaceName = name->c_str();
 
 		FT_Error err = FTC_Manager_LookupFace(ftc_manager, m_ftFaceID, &m_ftFace);
 		LN_THROW(err == 0, InvalidOperationException, "failed FTC_Manager_LookupFace : %d\n", err);

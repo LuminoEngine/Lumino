@@ -255,6 +255,7 @@ void TextRenderer::DrawGlyphRun(const Matrix& transform, const PointF& position,
 {
 	if (glyphRun == nullptr) return;
 	CheckUpdateState();
+	m_font = glyphRun->GetFont();
 	DrawGlyphsInternal(transform, position, glyphRun->RequestLayoutItems(), glyphRun->LookupFontGlyphTextureCache());
 }
 

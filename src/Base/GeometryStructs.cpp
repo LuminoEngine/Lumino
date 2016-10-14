@@ -24,6 +24,7 @@ const SizeI	SizeI::Zero(0, 0);
 //==============================================================================
 const SizeF	SizeF::Zero(0, 0);
 const SizeF	SizeF::NaN(NAN, NAN);
+const SizeF SizeF::Max(FLT_MAX, FLT_MAX);
 
 //==============================================================================
 // Rect

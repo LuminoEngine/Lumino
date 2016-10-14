@@ -1,6 +1,7 @@
 
 #pragma once
 #include <Lumino/Documents/Common.h>
+#include <Lumino/UI/LayoutElement.h>
 #include "../Graphics/GraphicsManager.h"
 
 LN_NAMESPACE_BEGIN
@@ -28,6 +29,7 @@ private:
 */
 class TextElement
 	: public Object
+	, public ILayoutElement
 {
 public:
 	TextElement();
@@ -64,19 +66,50 @@ public:
 	/** フォントのアンチエイリアス有無を取得します。*/
 	bool IsFontAntiAlias() const { return m_fontData.IsAntiAlias; }
 
+
+	virtual void Render(IDocumentsRenderer* renderer);
+
 protected:
 	virtual void OnFontDataChanged(const FontData& newData);
-	virtual SizeF MeasureLayout();
-	virtual void ArrangeLayout(const RectF& finalLocalRect);
-	virtual void Render(IDocumentsRenderer* renderer);
+
+	// ILayoutElement interface
+	virtual SizeF MeasureOverride(const SizeF& constraint);
+	virtual const PointF& GetLayoutPosition() const override;
+	virtual const SizeF& GetLayoutSize() const override;
+	virtual const ThicknessF& GetLayoutMargin() const override;
+	virtual const ThicknessF& GetLayoutPadding() const override;
+	virtual AlignmentAnchor GetLayoutAnchor() const override;
+	virtual HorizontalAlignment GetLayoutHorizontalAlignment() const override;
+	virtual VerticalAlignment GetLayoutVerticalAlignment() const override;
+	virtual ILayoutElement* GetLayoutParent() const override;
+	//virtual int GetLayoutChildCount() const override;
+	//virtual ILayoutElement* GetLayoutChild(int index) const override;
+	virtual VerticalAlignment* GetLayoutContentVerticalAlignment() override;
+	virtual HorizontalAlignment* GetLayoutContentHorizontalAlignment() override;
+	virtual const SizeF& GetLayoutDesiredSize() const override;
+	virtual void SetLayoutDesiredSize(const SizeF& size) override;
+	virtual void SetLayoutFinalLocalRect(const RectF& rect) override;
 
 LN_INTERNAL_ACCESS:
 	DocumentsManager* GetManager() const { return m_manager; }
+	void SetParent(TextElement* parent) { m_parent = parent; }
+	TextElement* GetParent() const { return m_parent; }
 
 private:
-	DocumentsManager*	m_manager;
-	FontData			m_fontData;
-	bool				m_fontDataModified;
+	DocumentsManager*		m_manager;
+	FontData				m_fontData;
+	bool					m_fontDataModified;
+
+	PointF					m_position;
+	SizeF					m_size;
+	ThicknessF				m_margin;
+	ThicknessF				m_padding;
+	AlignmentAnchor			m_anchor;
+	HorizontalAlignment		m_horizontalAlignment;
+	VerticalAlignment		m_verticalAlignment;
+	TextElement*			m_parent;
+	SizeF					m_desiredSize;
+	RectF					m_finalLocalRect;
 };
 
 /**
@@ -92,6 +125,8 @@ public:
 
 	void AddInline(Inline* inl);
 	void ClearInlines();
+
+	virtual void Render(IDocumentsRenderer* renderer);
 
 private:
 	Array<RefPtr<Inline>>	m_inlines;
@@ -127,9 +162,12 @@ public:
 protected:
 	// TextElement interface
 	virtual void OnFontDataChanged(const FontData& newData) override;
-	virtual SizeF MeasureLayout() override;
-	virtual void ArrangeLayout(const RectF& finalLocalRect) override;
+	//virtual SizeF MeasureLayout() override;
+	//virtual void ArrangeLayout(const RectF& finalLocalRect) override;
 	virtual void Render(IDocumentsRenderer* renderer) override;
+
+	// ILayoutElement interface
+	virtual SizeF MeasureOverride(const SizeF& constraint);
 
 private:
 	GenericStringBuilderCore<UTF32>	m_text;
