@@ -440,6 +440,7 @@ endif()
 set(LN_SOURCES_UI
 	include/Lumino/UI/Common.h
 	include/Lumino/UI/Detail.h
+	include/Lumino/UI/LayoutElement.h
 	include/Lumino/UI/UIButton.h
 	include/Lumino/UI/UIContentControl.h
 	include/Lumino/UI/UIContext.h
@@ -462,6 +463,7 @@ set(LN_SOURCES_UI
 	include/Lumino/UI/UIWindow.h
 	src/UI/EventArgsPool.h
 	src/UI/Internal.h
+	src/UI/LayoutElement.cpp
 	src/UI/UIButton.cpp
 	src/UI/UIContentControl.cpp
 	src/UI/UIContext.cpp

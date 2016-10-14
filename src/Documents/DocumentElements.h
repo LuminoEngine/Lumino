@@ -6,6 +6,7 @@
 LN_NAMESPACE_BEGIN
 namespace detail {
 class DocumentsManager;
+class Inline;
 
 /**
 	@brief
@@ -65,7 +66,8 @@ public:
 
 protected:
 	virtual void OnFontDataChanged(const FontData& newData);
-	virtual SizeF Measure();
+	virtual SizeF MeasureLayout();
+	virtual void ArrangeLayout(const RectF& finalLocalRect);
 	virtual void Render(IDocumentsRenderer* renderer);
 
 LN_INTERNAL_ACCESS:
@@ -88,9 +90,11 @@ public:
 	virtual ~Paragraph();
 	void Initialize(DocumentsManager* manager);
 
+	void AddInline(Inline* inl);
+	void ClearInlines();
+
 private:
-	// Inline List
-	
+	Array<RefPtr<Inline>>	m_inlines;
 };
 
 /**
@@ -123,7 +127,8 @@ public:
 protected:
 	// TextElement interface
 	virtual void OnFontDataChanged(const FontData& newData) override;
-	virtual SizeF Measure() override;
+	virtual SizeF MeasureLayout() override;
+	virtual void ArrangeLayout(const RectF& finalLocalRect) override;
 	virtual void Render(IDocumentsRenderer* renderer) override;
 
 private:

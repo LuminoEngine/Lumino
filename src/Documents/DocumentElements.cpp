@@ -65,7 +65,7 @@ void TextElement::OnFontDataChanged(const FontData& newData)
 }
 
 //------------------------------------------------------------------------------
-SizeF TextElement::Measure()
+SizeF TextElement::MeasureLayout()
 {
 	if (m_fontDataModified)
 	{
@@ -77,9 +77,72 @@ SizeF TextElement::Measure()
 }
 
 //------------------------------------------------------------------------------
+void TextElement::ArrangeLayout(const RectF& finalLocalRect)
+{
+
+}
+
+//------------------------------------------------------------------------------
 void TextElement::Render(IDocumentsRenderer* renderer)
 {
 }
+
+
+//==============================================================================
+// Paragraph
+//==============================================================================
+
+//------------------------------------------------------------------------------
+Paragraph::Paragraph()
+	: TextElement()
+{
+}
+
+//------------------------------------------------------------------------------
+Paragraph::~Paragraph()
+{
+}
+
+//------------------------------------------------------------------------------
+void Paragraph::Initialize(DocumentsManager* manager)
+{
+	TextElement::Initialize(manager);
+}
+
+//------------------------------------------------------------------------------
+void Paragraph::AddInline(Inline* inl)
+{
+	LN_CHECK_ARG(inl != nullptr);
+	m_inlines.Add(inl);
+}
+
+//------------------------------------------------------------------------------
+void Paragraph::ClearInlines()
+{
+	m_inlines.Clear();
+}
+
+//==============================================================================
+// Inline
+//==============================================================================
+
+//------------------------------------------------------------------------------
+Inline::Inline()
+	: TextElement()
+{
+}
+
+//------------------------------------------------------------------------------
+Inline::~Inline()
+{
+}
+
+//------------------------------------------------------------------------------
+void Inline::Initialize(DocumentsManager* manager)
+{
+	TextElement::Initialize(manager);
+}
+
 
 //==============================================================================
 // Run
@@ -119,10 +182,16 @@ void Run::OnFontDataChanged(const FontData& newData)
 }
 
 //------------------------------------------------------------------------------
-SizeF Run::Measure()
+SizeF Run::MeasureLayout()
 {
 	const SizeI& size = m_glyphRun->GetRenderSize();
 	return SizeF((float)size.width, (float)size.height);
+}
+
+//------------------------------------------------------------------------------
+void Run::ArrangeLayout(const RectF& finalLocalRect)
+{
+
 }
 
 //------------------------------------------------------------------------------
