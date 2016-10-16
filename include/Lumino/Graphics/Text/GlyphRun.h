@@ -6,7 +6,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail { class FontGlyphTextureCache; }
-class TextLayoutEngine;	// TODO: detail
+namespace detail { class TextLayoutEngine; }
 
 // TODO: detail
 struct TextLayoutResultItem
@@ -32,7 +32,6 @@ public:
 	RawFont* GetFont() const;
 	void SetText(const StringRef& text);
 	void SetTextAlignment(TextAlignment align);	// TODO: Run に持たせるべき？
-	//int GetStrokeSize() const;
 	const SizeI& GetRenderSize();
 
 LN_INTERNAL_ACCESS:
@@ -44,15 +43,6 @@ LN_INTERNAL_ACCESS:
 	const UTF32* GetText() const { return m_utf32Text.c_str(); }
 	int GetTextLength() const { return m_utf32Text.GetLength(); }
 
-#if 0
-public:
-	void Update(const UTF32* text, int length);
-
-private:
-	void AttachGlyphTextureCache(Internal::FontGlyphTextureCache* cache);
-	Internal::FontGlyphTextureCache*	m_glyphTextureCache;
-#endif
-
 private:
 	void UpdateTextLayoutItem();
 
@@ -60,7 +50,7 @@ private:
 	detail::GraphicsManager*			m_manager;
 	GenericStringBuilderCore<UTF32>		m_utf32Text;
 	TextLayoutResult					m_glyphData;
-	TextLayoutEngine*					m_layoutEngine;	// TODO: detail にして new しない
+	detail::TextLayoutEngine*			m_layoutEngine;	// TODO: detail にして new しない
 	detail::FontGlyphTextureCache*		m_glyphTextureCache;
 	bool								m_modifiedRenderSize;
 	bool								m_modifiedItems;

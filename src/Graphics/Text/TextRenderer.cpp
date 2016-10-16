@@ -96,22 +96,22 @@ void TextRendererCore::Render(const GlyphRunData* dataList, int dataCount, FontG
 	for (int i = 0; i < dataCount; ++i)
 	{
 		// TODO: 以下、srcFillRect, srcOutlineRectを使った方が良い気がする
-
-		RectF uvSrcRect((float)dataList[i].srcRect.x, (float)dataList[i].srcRect.y, (float)dataList[i].srcRect.width, (float)dataList[i].srcRect.height);
+		const GlyphRunData& data = dataList[i];
+		RectF uvSrcRect((float)data.srcRect.x, (float)data.srcRect.y, (float)data.srcRect.width, (float)data.srcRect.height);
 		uvSrcRect.x *= texSizeInv.width;
 		uvSrcRect.width *= texSizeInv.width;
 		uvSrcRect.y *= texSizeInv.height;
 		uvSrcRect.height *= texSizeInv.height;
 
-		RectF dstRect(dataList[i].Position, (float)dataList[i].srcRect.width, (float)dataList[i].srcRect.height);
-		InternalDrawRectangle(dstRect, uvSrcRect, color);
+		RectF dstRect(data.Position, (float)data.srcRect.width, (float)data.srcRect.height);
+		InternalDrawRectangle(data.transform, dstRect, uvSrcRect, color);
 	}
 
 	Flush(cache);
 }
 
 //------------------------------------------------------------------------------
-void TextRendererCore::InternalDrawRectangle(const RectF& rect, const RectF& srcUVRect, const Color& color)
+void TextRendererCore::InternalDrawRectangle(const Matrix& transform, const RectF& rect, const RectF& srcUVRect, const Color& color)
 {
 	if (rect.IsEmpty()) { return; }		// 矩形がつぶれているので書く必要はない
 
@@ -131,12 +131,16 @@ void TextRendererCore::InternalDrawRectangle(const RectF& rect, const RectF& src
 	Vertex v;
 	v.color = color;
 	v.position.Set(rect.GetLeft(), rect.GetTop(), 0);	v.uv.Set(lu, tv);	// 左上
+	v.position.TransformCoord(transform);
 	m_vertexCache.Add(v);
 	v.position.Set(rect.GetLeft(), rect.GetBottom(), 0); v.uv.Set(lu, bv);	// 左下
+	v.position.TransformCoord(transform);
 	m_vertexCache.Add(v);
 	v.position.Set(rect.GetRight(), rect.GetTop(), 0);	v.uv.Set(ru, tv);	// 右上
+	v.position.TransformCoord(transform);
 	m_vertexCache.Add(v);
 	v.position.Set(rect.GetRight(), rect.GetBottom(), 0); v.uv.Set(ru, bv);	// 右下
+	v.position.TransformCoord(transform);
 	m_vertexCache.Add(v);
 }
 
@@ -144,11 +148,6 @@ void TextRendererCore::InternalDrawRectangle(const RectF& rect, const RectF& src
 void TextRendererCore::Flush(FontGlyphTextureCache* cache)
 {
 	if (m_indexCache.GetCount() == 0) { return; }
-
-	//Driver::ITexture* srcTexture = m_foreTexture;
-	//if (srcTexture == nullptr) {
-	//	srcTexture = m_manager->GetDummyTexture();
-	//}
 
 	// ビットマップフォントからの描画なので、アルファブレンドONでなければ真っ白矩形になってしまう。
 	// ・・・が、TextRendererCore のような低レベルでステートを強制変更してしまうのはいかがなものか・・・。
@@ -334,6 +333,7 @@ void TextRenderer::DrawGlyphsInternal(const Matrix& transform, const PointF& pos
 		// TODO: Outline
 
 		TextRendererCore::GlyphRunData layoutData;
+		layoutData.transform = transform;
 		layoutData.Position.x = position.x + (float)item.Location.OuterTopLeftPosition.x;
 		layoutData.Position.y = position.y + (float)item.Location.OuterTopLeftPosition.y;
 		layoutData.srcRect = info.srcRect;

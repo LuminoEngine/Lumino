@@ -75,7 +75,7 @@ void TextElement::OnFontDataChanged(const FontData& newData)
 }
 
 //------------------------------------------------------------------------------
-void TextElement::Render(IDocumentsRenderer* renderer)
+void TextElement::Render(const Matrix& transform, IDocumentsRenderer* renderer)
 {
 }
 
@@ -107,13 +107,91 @@ const SizeF& TextElement::GetLayoutDesiredSize() const { return m_desiredSize; }
 void TextElement::SetLayoutDesiredSize(const SizeF& size) { m_desiredSize = size; }
 void TextElement::SetLayoutFinalLocalRect(const RectF& rect) { m_finalLocalRect = rect; }
 
+
+//==============================================================================
+// Block
+//==============================================================================
+
+//------------------------------------------------------------------------------
+Block::Block()
+	: TextElement()
+{
+}
+
+//------------------------------------------------------------------------------
+Block::~Block()
+{
+}
+
+//------------------------------------------------------------------------------
+void Block::Initialize(DocumentsManager* manager)
+{
+	TextElement::Initialize(manager);
+}
+
+//------------------------------------------------------------------------------
+void Block::AddChildElement(TextElement* inl)
+{
+	LN_CHECK_ARG(inl != nullptr);
+	LN_CHECK_ARG(inl->GetParent() == nullptr);
+	m_childElements.Add(inl);
+	inl->SetParent(this);
+}
+
+//------------------------------------------------------------------------------
+void Block::ClearChildElements()
+{
+	for (TextElement* child : m_childElements) child->SetParent(nullptr);
+	m_childElements.Clear();
+}
+
+//------------------------------------------------------------------------------
+void Block::Render(const Matrix& transform, IDocumentsRenderer* renderer)
+{
+	for (TextElement* child : m_childElements) child->Render(transform, renderer);
+}
+
+//------------------------------------------------------------------------------
+SizeF Block::MeasureOverride(const SizeF& constraint)
+{
+	SizeF childDesirdSize;
+	for (TextElement* child : m_childElements)
+	{
+		// TODO: とりあえず 左から右へのフロー
+		SizeF size = child->MeasureOverride(constraint);
+		childDesirdSize.width += size.width;
+		childDesirdSize.height = std::max(childDesirdSize.height, size.height);
+	}
+
+	SizeF desirdSize = TextElement::MeasureOverride(constraint);
+	return SizeF::Max(desirdSize, childDesirdSize);
+}
+
+//------------------------------------------------------------------------------
+SizeF Block::ArrangeOverride(const SizeF& finalSize)
+{
+	float prevChildSize = 0;
+	RectF childRect;
+	for (TextElement* child : m_childElements)
+	{
+		// TODO: とりあえず 左から右へのフロー
+		SizeF childDesiredSize = child->GetDesiredSize();
+		childRect.x += prevChildSize;
+		prevChildSize = childDesiredSize.width;
+		childRect.width = prevChildSize;
+		childRect.height = finalSize.height;
+		child->ArrangeLayout(childRect);
+	}
+
+	return finalSize;
+}
+
 //==============================================================================
 // Paragraph
 //==============================================================================
 
 //------------------------------------------------------------------------------
 Paragraph::Paragraph()
-	: TextElement()
 {
 }
 
@@ -128,27 +206,6 @@ void Paragraph::Initialize(DocumentsManager* manager)
 	TextElement::Initialize(manager);
 }
 
-//------------------------------------------------------------------------------
-void Paragraph::AddInline(Inline* inl)
-{
-	LN_CHECK_ARG(inl != nullptr);
-	LN_CHECK_ARG(inl->GetParent() == nullptr);
-	m_inlines.Add(inl);
-	inl->SetParent(this);
-}
-
-//------------------------------------------------------------------------------
-void Paragraph::ClearInlines()
-{
-	for (Inline* inl : m_inlines) inl->SetParent(nullptr);
-	m_inlines.Clear();
-}
-
-//------------------------------------------------------------------------------
-void Paragraph::Render(IDocumentsRenderer* renderer)
-{
-	for (Inline* inl : m_inlines) inl->Render(renderer);
-}
 
 //==============================================================================
 // Inline
@@ -222,9 +279,9 @@ SizeF Run::MeasureOverride(const SizeF& constraint)
 }
 
 //------------------------------------------------------------------------------
-void Run::Render(IDocumentsRenderer* renderer)
+void Run::Render(const Matrix& transform, IDocumentsRenderer* renderer)
 {
-	renderer->OnDrawGlyphRun(m_glyphRun, Point::Zero);
+	renderer->OnDrawGlyphRun(transform, m_glyphRun, Point::Zero);
 }
 
 } // namespace detail

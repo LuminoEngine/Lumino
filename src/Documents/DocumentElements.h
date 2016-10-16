@@ -67,13 +67,12 @@ public:
 	bool IsFontAntiAlias() const { return m_fontData.IsAntiAlias; }
 
 
-	virtual void Render(IDocumentsRenderer* renderer);
+	virtual void Render(const Matrix& transform, IDocumentsRenderer* renderer);
 
 protected:
 	virtual void OnFontDataChanged(const FontData& newData);
 
 	// ILayoutElement interface
-	virtual SizeF MeasureOverride(const SizeF& constraint);
 	virtual const PointF& GetLayoutPosition() const override;
 	virtual const SizeF& GetLayoutSize() const override;
 	virtual const ThicknessF& GetLayoutMargin() const override;
@@ -82,18 +81,21 @@ protected:
 	virtual HorizontalAlignment GetLayoutHorizontalAlignment() const override;
 	virtual VerticalAlignment GetLayoutVerticalAlignment() const override;
 	virtual ILayoutElement* GetLayoutParent() const override;
-	//virtual int GetLayoutChildCount() const override;
-	//virtual ILayoutElement* GetLayoutChild(int index) const override;
 	virtual VerticalAlignment* GetLayoutContentVerticalAlignment() override;
 	virtual HorizontalAlignment* GetLayoutContentHorizontalAlignment() override;
 	virtual const SizeF& GetLayoutDesiredSize() const override;
 	virtual void SetLayoutDesiredSize(const SizeF& size) override;
 	virtual void SetLayoutFinalLocalRect(const RectF& rect) override;
 
+LN_PROTECTED_INTERNAL_ACCESS:
+	// ILayoutElement interface
+	virtual SizeF MeasureOverride(const SizeF& constraint);
+
 LN_INTERNAL_ACCESS:
 	DocumentsManager* GetManager() const { return m_manager; }
 	void SetParent(TextElement* parent) { m_parent = parent; }
 	TextElement* GetParent() const { return m_parent; }
+	const SizeF& GetDesiredSize() const { return m_desiredSize; }
 
 private:
 	DocumentsManager*		m_manager;
@@ -115,21 +117,40 @@ private:
 /**
 	@brief	コンテンツをグループ化して段落にするために使用される。
 */
-class Paragraph
+class Block
 	: public TextElement
+{
+public:
+	Block();
+	virtual ~Block();
+	void Initialize(DocumentsManager* manager);
+
+	void AddChildElement(TextElement* inl);
+	void ClearChildElements();
+
+	virtual void Render(const Matrix& transform, IDocumentsRenderer* renderer);
+
+protected:
+	virtual SizeF MeasureOverride(const SizeF& constraint);
+	virtual SizeF ArrangeOverride(const SizeF& finalSize);
+
+private:
+	Array<RefPtr<TextElement>>	m_childElements;
+};
+
+/**
+	@brief	コンテンツをグループ化して段落にするために使用される。
+*/
+class Paragraph
+	: public Block
 {
 public:
 	Paragraph();
 	virtual ~Paragraph();
 	void Initialize(DocumentsManager* manager);
 
-	void AddInline(Inline* inl);
-	void ClearInlines();
-
-	virtual void Render(IDocumentsRenderer* renderer);
 
 private:
-	Array<RefPtr<Inline>>	m_inlines;
 };
 
 /**
@@ -162,9 +183,7 @@ public:
 protected:
 	// TextElement interface
 	virtual void OnFontDataChanged(const FontData& newData) override;
-	//virtual SizeF MeasureLayout() override;
-	//virtual void ArrangeLayout(const RectF& finalLocalRect) override;
-	virtual void Render(IDocumentsRenderer* renderer) override;
+	virtual void Render(const Matrix& transform, IDocumentsRenderer* renderer) override;
 
 	// ILayoutElement interface
 	virtual SizeF MeasureOverride(const SizeF& constraint);

@@ -37,7 +37,7 @@ void GlyphRun::Initialize(detail::GraphicsManager* manager)
 {
 	LN_CHECK_ARG(manager != nullptr);
 	m_manager = manager;
-	m_layoutEngine = LN_NEW TextLayoutEngine();
+	m_layoutEngine = LN_NEW detail::TextLayoutEngine();
 	m_layoutEngine->SetFont(m_manager->GetFontManager()->GetDefaultFont());
 }
 
@@ -93,7 +93,7 @@ const SizeI& GlyphRun::GetRenderSize()
 	{
 		if (m_layoutEngine->GetFont() != nullptr && m_utf32Text.GetLength() > 0)
 		{
-			m_layoutEngine->LayoutText(m_utf32Text.c_str(), m_utf32Text.GetLength(), LayoutTextOptions::RenderSizeOnly, &m_glyphData);
+			m_layoutEngine->LayoutText(m_utf32Text.c_str(), m_utf32Text.GetLength(), detail::LayoutTextOptions::RenderSizeOnly, &m_glyphData);
 		}
 		m_modifiedRenderSize = false;
 	}
@@ -109,7 +109,7 @@ void GlyphRun::UpdateTextLayoutItem()
 		m_glyphData.Items.Clear();
 		if (m_layoutEngine->GetFont() != nullptr && m_utf32Text.GetLength() > 0)
 		{
-			m_layoutEngine->LayoutText(m_utf32Text.c_str(), m_utf32Text.GetLength(), LayoutTextOptions::All, &m_glyphData);
+			m_layoutEngine->LayoutText(m_utf32Text.c_str(), m_utf32Text.GetLength(), detail::LayoutTextOptions::All, &m_glyphData);
 		}
 		m_modifiedRenderSize = false;
 		m_modifiedItems = false;
@@ -128,27 +128,6 @@ detail::FontGlyphTextureCache* GlyphRun::LookupFontGlyphTextureCache()
 {
 	return m_layoutEngine->GetFont()->GetGlyphTextureCache();
 }
-
-#if 0
-//------------------------------------------------------------------------------
-void GlyphRun::Update(const UTF32* text, int length)
-{
-	m_glyphData->Items.Clear();
-	m_glyphTextureCache->Measure(text, length, m_glyphData);
-}
-
-//------------------------------------------------------------------------------
-const Size GlyphRun::GetRenderSize() const
-{
-	return m_glyphData->AreaSize;
-}
-
-//------------------------------------------------------------------------------
-void GlyphRun::AttachGlyphTextureCache(Internal::FontGlyphTextureCache* cache)
-{
-	LN_REFOBJ_SET(m_glyphTextureCache, cache);
-}
-#endif
 
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

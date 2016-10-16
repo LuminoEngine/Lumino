@@ -7,8 +7,7 @@
 #include "../RenderingCommand.h"
 
 LN_NAMESPACE_BEGIN
-namespace detail
-{
+namespace detail {
 
 class TextRendererCore
 	: public RefObject
@@ -16,8 +15,8 @@ class TextRendererCore
 public:
 	struct GlyphRunData
 	{
-		PointF		Position;
-		//RectF		SrcPixelRect;
+		Matrix	transform;
+		PointF	Position;
 
 		// CacheGlyphInfo から取りだすデータ
 		int			outlineOffset;
@@ -55,7 +54,7 @@ private:
 		static const int ElementCount = 3;
 	};
 
-	void InternalDrawRectangle(const RectF& rect, const RectF& srcUVRect, const Color& color);
+	void InternalDrawRectangle(const Matrix& transform, const RectF& rect, const RectF& srcUVRect, const Color& color);
 	void Flush(FontGlyphTextureCache* cache);
 
 	GraphicsManager*		m_manager;

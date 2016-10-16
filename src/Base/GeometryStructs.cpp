@@ -24,7 +24,15 @@ const SizeI	SizeI::Zero(0, 0);
 //==============================================================================
 const SizeF	SizeF::Zero(0, 0);
 const SizeF	SizeF::NaN(NAN, NAN);
-const SizeF SizeF::Max(FLT_MAX, FLT_MAX);
+const SizeF SizeF::MaxValue(FLT_MAX, FLT_MAX);
+
+//------------------------------------------------------------------------------
+SizeF SizeF::Max(const SizeF& size1, const SizeF& size2)
+{
+	return SizeF(
+		(size1.width > size2.width) ? size1.width : size2.width,
+		(size1.height > size2.height) ? size1.height : size2.height);
+}
 
 //==============================================================================
 // Rect

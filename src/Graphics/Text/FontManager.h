@@ -38,15 +38,18 @@ public:
 	GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
 
 
-	/// フォントファイルを追加する (ttf)
+	// フォントファイルを追加する (ttf)
 	void RegisterFontFile(const String& fontFilePath);
 
-	/// デフォルトのフォントをセットする
+	// デフォルトのフォントをセットする
 	void SetDefaultFont(RawFont* font);
 
-	/// デフォルトのフォントを取得する
+	// デフォルトのフォントを取得する
 	RawFont* GetDefaultFont() const { return m_defaultFont; }
 
+	// FreeTypeFont で名前が空のときに使われる
+	void SetDefaultFontName(const String& name) { m_defaultFontName = name; }
+	const String& GetDefaultFontName() const { return m_defaultFontName; }
 
 
 	EncodingConverter* GetCharToUTF32Converter() { return &m_charToUTF32Converter; }
@@ -109,6 +112,7 @@ LN_INTERNAL_ACCESS:
 	GraphicsManager*		m_graphicsManager;
 	RefPtr<CacheManager>	m_rawFontCache;
 	RawFont*				m_defaultFont;
+	String					m_defaultFontName;
 
 	EncodingConverter		m_charToUTF32Converter;
 	EncodingConverter		m_wcharToUTF32Converter;

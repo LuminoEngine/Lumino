@@ -17,6 +17,14 @@ LN_NAMESPACE_SCENE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TextBlock2D, VisualNode);
 
 //------------------------------------------------------------------------------
+TextBlock2DPtr TextBlock2D::Create()
+{
+	auto ptr = TextBlock2DPtr::MakeRef();
+	ptr->Initialize(SceneGraphManager::Instance->GetDefault2DSceneGraph());
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
 TextBlock2DPtr TextBlock2D::Create(const StringRef& text)
 {
 	auto ptr = TextBlock2DPtr::MakeRef();
@@ -52,19 +60,19 @@ void TextBlock2D::Initialize(SceneGraph* owner)
 //------------------------------------------------------------------------------
 void TextBlock2D::SetText(const StringRef& text)
 {
-	m_paragraph->ClearInlines();
+	m_paragraph->ClearChildElements();
 	auto run = RefPtr<detail::Run>::MakeRef();
 	run->Initialize(GetOwnerSceneGraph()->GetManager()->GetDocumentsManager());
 	run->SetText(text);
-	m_paragraph->AddInline(run);
+	m_paragraph->AddChildElement(run);
 }
 
 //------------------------------------------------------------------------------
 void TextBlock2D::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 {
 	VisualNode::UpdateFrameHierarchy(parent, deltaTime);
-	m_paragraph->MeasureLayout(SizeF::Max);
-	m_paragraph->ArrangeLayout(RectF(0, 0, SizeF::Max));
+	m_paragraph->MeasureLayout(SizeF::MaxValue);
+	m_paragraph->ArrangeLayout(RectF(0, 0, SizeF::MaxValue));
 }
 
 //------------------------------------------------------------------------------
@@ -76,7 +84,7 @@ detail::Sphere TextBlock2D::GetBoundingSphere()
 //------------------------------------------------------------------------------
 void TextBlock2D::OnRender(SceneGraphRenderingContext* dc)
 {
-	m_paragraph->Render(dc);
+	m_paragraph->Render(m_combinedGlobalMatrix, dc);
 }
 
 LN_NAMESPACE_SCENE_END

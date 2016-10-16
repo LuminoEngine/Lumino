@@ -224,6 +224,13 @@ TEST_F(Test_Scene_TextBlock2D, Basic)
 	{
 		auto text = TextBlock2D::Create(_T("Lumino"));
 		Engine::UpdateFrame();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_TextBlock2D.Basic.png")));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_TextBlock2D.Basic1.png")));
+	}
+	{
+		auto text = TextBlock2D::Create();
+		text->SetText(_T("Lumino"));
+		text->SetPosition(100, 20, 0);
+		Engine::UpdateFrame();
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_TextBlock2D.Basic2.png"), 99, true));
 	}
 }

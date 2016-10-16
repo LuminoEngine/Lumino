@@ -4,7 +4,7 @@
 #include "TextLayoutEngine.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
+namespace detail {
 
 //==============================================================================
 // TextLayoutEngine
@@ -202,5 +202,5 @@ void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const
 	}
 }
 
-LN_NAMESPACE_GRAPHICS_END
+} // namespace detail
 LN_NAMESPACE_END

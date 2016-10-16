@@ -11,6 +11,105 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 //==============================================================================
+// Font
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Font, Object);
+
+//------------------------------------------------------------------------------
+FontPtr Font::Create()
+{
+	auto ptr = FontPtr::MakeRef();
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
+Font::Font()
+	: m_manager(nullptr)
+	, m_fontInfo()
+	, m_rawFont(nullptr)
+{
+}
+
+//------------------------------------------------------------------------------
+void Font::Initialize(detail::GraphicsManager* manager)
+{
+	LN_CHECK_ARG(manager != nullptr);
+	m_manager = manager;
+}
+
+//------------------------------------------------------------------------------
+Font::~Font()
+{
+
+}
+
+//------------------------------------------------------------------------------
+void Font::SetName(const String& familyName)
+{
+	m_fontInfo.Family = familyName;
+	m_rawFont = nullptr;
+}
+
+//------------------------------------------------------------------------------
+const String& Font::GetName() const
+{
+	return m_fontInfo.Family;
+}
+
+//------------------------------------------------------------------------------
+void Font::SetSize(int size)
+{
+	m_fontInfo.Size = size;
+	m_rawFont = nullptr;
+}
+
+//------------------------------------------------------------------------------
+int Font::GetSize() const
+{
+	return m_fontInfo.Size;
+}
+
+//------------------------------------------------------------------------------
+void Font::SetBold(bool enabled)
+{
+	m_fontInfo.IsBold = enabled;
+	m_rawFont = nullptr;
+}
+
+//------------------------------------------------------------------------------
+bool Font::IsBold() const
+{
+	return m_fontInfo.IsBold;
+}
+
+//------------------------------------------------------------------------------
+void Font::SetItalic(bool enabled)
+{
+	m_fontInfo.IsItalic = enabled;
+	m_rawFont = nullptr;
+}
+
+//------------------------------------------------------------------------------
+bool Font::IsItalic() const
+{
+	return m_fontInfo.IsItalic;
+}
+
+//------------------------------------------------------------------------------
+void Font::SetAntiAlias(bool enabled)
+{
+	m_fontInfo.IsAntiAlias = enabled;
+	m_rawFont = nullptr;
+}
+
+//------------------------------------------------------------------------------
+bool Font::IsAntiAlias() const
+{
+	return m_fontInfo.IsAntiAlias;
+}
+
+
+//==============================================================================
 // RawFont
 //==============================================================================
 

@@ -21,6 +21,11 @@ public:
 	/**
 		@brief		
 	*/
+	static TextBlock2DPtr Create();
+
+	/**
+		@brief		
+	*/
 	static TextBlock2DPtr Create(const StringRef& text);
 
 public:

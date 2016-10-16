@@ -628,7 +628,7 @@ void FreeTypeFont::UpdateFont()
 	if (m_modified)
 	{
 		const String* name = &m_fontData.Family;
-		if (name->IsEmpty()) name = &m_manager->GetDefaultFont()->GetName();
+		if (name->IsEmpty()) name = &m_manager->GetDefaultFontName();
 
 		m_ftFaceID = (FTC_FaceID)Hash::CalcHash(name->c_str());
 		FTC_Manager ftc_manager = m_manager->GetFTCacheManager();

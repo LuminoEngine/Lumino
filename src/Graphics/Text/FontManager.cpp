@@ -127,11 +127,10 @@ uint64_t FontData::CalcHash() const
 // FontManager
 //==============================================================================
 
-static const TCHAR* DefaultFontName = _T("Meiryo UI");
-
 //------------------------------------------------------------------------------
 FontManager::FontManager()
 {
+	m_defaultFontName = _T("Meiryo UI");
 }
 
 //------------------------------------------------------------------------------
@@ -177,9 +176,10 @@ void FontManager::Initialize(FileManager* fileManager, GraphicsManager* graphics
 
 	// デフォルトフォント
 	m_defaultFont = LN_NEW FreeTypeFont(this);
-	m_defaultFont->SetName(DefaultFontName);
+	m_defaultFont->SetName(m_defaultFontName);
 	m_defaultFont->SetSize(12);
 	m_defaultFont->SetAntiAlias(true);
+	//m_defaultFont = RawFont::CreateBuiltInBitmapFontInternal(this, 7);
 
 	// キャッシュ
 	m_rawFontCache = RefPtr<CacheManager>::MakeRef(32, 0);

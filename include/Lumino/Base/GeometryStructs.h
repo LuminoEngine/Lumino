@@ -130,9 +130,9 @@ public:
 class SizeF
 {
 public:
-	static const SizeF	Zero;	///< SizeF(0, 0)
-	static const SizeF	NaN;	///< SizeF(NaN, NaN)
-	static const SizeF	Max;	///< SizeF(FLT_MAX, FLT_MAX)
+	static const SizeF	Zero;		///< SizeF(0, 0)
+	static const SizeF	NaN;		///< SizeF(NaN, NaN)
+	static const SizeF	MaxValue;	///< SizeF(FLT_MAX, FLT_MAX)
 
 public:
 	float	width;				///< X 方向の大きさ
@@ -166,6 +166,9 @@ public:
 		@brief	いずれかの要素が 0 かを判定します。
 	*/
 	bool IsAnyZero() const { return (width == 0.0f || height == 0.0f); }
+
+public:
+	static SizeF Max(const SizeF& size1, const SizeF& size2);
 
 public:
 	bool operator == (const SizeF& obj) const { return (width == obj.width && height == obj.height); }

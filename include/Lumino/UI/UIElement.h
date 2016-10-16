@@ -226,8 +226,6 @@ private:
 	virtual HorizontalAlignment GetLayoutHorizontalAlignment() const override;
 	virtual VerticalAlignment GetLayoutVerticalAlignment() const override;
 	virtual ILayoutElement* GetLayoutParent() const override;
-	//virtual int GetLayoutChildCount() const override;
-	//virtual UIElement* GetLayoutChild(int index) const override;
 	virtual VerticalAlignment* GetLayoutContentVerticalAlignment() override;
 	virtual HorizontalAlignment* GetLayoutContentHorizontalAlignment() override;
 	virtual const SizeF& GetLayoutDesiredSize() const override;

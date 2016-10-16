@@ -4,7 +4,7 @@
 #include <Lumino/Graphics/Text/Font.h>
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
+namespace detail {
 
 ///// テキストの配置方法
 //enum TextAlignment
@@ -84,5 +84,5 @@ private:
 	LayoutTextOptions	m_layoutTextOptions;
 };
 
-LN_NAMESPACE_GRAPHICS_END
+} // namespace detail
 LN_NAMESPACE_END

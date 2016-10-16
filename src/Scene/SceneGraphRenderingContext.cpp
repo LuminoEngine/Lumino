@@ -74,10 +74,10 @@ void SceneGraphRenderingContext::DrawSprite3D(
 }
 
 //------------------------------------------------------------------------------
-void SceneGraphRenderingContext::OnDrawGlyphRun(GlyphRun* glyphRun, const Point& point)
+void SceneGraphRenderingContext::OnDrawGlyphRun(const Matrix& transform, GlyphRun* glyphRun, const Point& point)
 {
 	NorityStartDrawing(m_textRenderer);
-	m_textRenderer->DrawGlyphRun(Matrix::Identity, point, glyphRun);
+	m_textRenderer->DrawGlyphRun(transform, point, glyphRun);
 }
 
 //------------------------------------------------------------------------------

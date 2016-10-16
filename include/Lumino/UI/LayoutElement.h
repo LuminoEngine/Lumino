@@ -14,9 +14,6 @@ public:
 	virtual void ArrangeLayout(const RectF& finalLocalRect);
 
 protected:
-	virtual SizeF MeasureOverride(const SizeF& constraint);
-	virtual SizeF ArrangeOverride(const SizeF& finalSize);
-
 	virtual const PointF& GetLayoutPosition() const = 0;
 	virtual const SizeF& GetLayoutSize() const = 0;
 	virtual const ThicknessF& GetLayoutMargin() const = 0;
@@ -25,34 +22,19 @@ protected:
 	virtual HorizontalAlignment GetLayoutHorizontalAlignment() const = 0;
 	virtual VerticalAlignment GetLayoutVerticalAlignment() const = 0;
 	virtual ILayoutElement* GetLayoutParent() const = 0;
-	//virtual int GetLayoutChildCount() const = 0;
-	//virtual ILayoutElement* GetLayoutChild(int index) const = 0;
 	virtual HorizontalAlignment* GetLayoutContentHorizontalAlignment() = 0;
 	virtual VerticalAlignment* GetLayoutContentVerticalAlignment() = 0;
 	virtual const SizeF& GetLayoutDesiredSize() const = 0;
 	virtual void SetLayoutDesiredSize(const SizeF& size) = 0;
 	virtual void SetLayoutFinalLocalRect(const RectF& rect) = 0;
-	
 
-	//const SizeF& GetRenderSize() const { return m_finalLocalRect.GetSize(); }
-	//float GetActualWidth() const { return m_finalLocalRect.width; }
-	//float GetActualHeight() const { return m_finalLocalRect.height; }
+LN_PROTECTED_INTERNAL_ACCESS:
+	virtual SizeF MeasureOverride(const SizeF& constraint);
+	virtual SizeF ArrangeOverride(const SizeF& finalSize);
 
 protected:
 	ILayoutElement();
 	virtual ~ILayoutElement();
-	
-private:
-	//SizeF					m_desiredSize;			// MeasureLayout() で決定されるこのコントロールの要求サイズ
-	//RectF					m_finalLocalRect;		// 描画に使用する最終境界矩形 (グローバル座標系=RootFrame のローカル座標系)
-	//RectF					m_finalGlobalRect;
-	//PointF					m_position;
-	//SizeF					m_size;
-	//ThicknessF				m_margin;
-	//ThicknessF				m_padding;
-	//AlignmentAnchor			m_anchor;
-	//HorizontalAlignment		m_horizontalAlignment;
-	//VerticalAlignment		m_verticalAlignment;
 };
 
 

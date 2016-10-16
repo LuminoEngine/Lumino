@@ -9,8 +9,70 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail { class FontManager; }
 namespace detail { class FontGlyphTextureCache; }
 class Bitmap;
+class Font;
 class RawFont;
+using FontPtr = RefPtr<Font>;
 using RawFontPtr = RefPtr<RawFont>;
+
+
+/**
+	@brief		
+*/
+class Font
+	: public Object
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+
+	/**  */
+	static FontPtr Create();
+
+public:
+
+	/** フォントファミリ名の設定 */
+	void SetName(const String& familyName);
+
+	/** フォントファミリ名の取得 */
+	const String& GetName() const;
+
+	/** フォントサイズの有効設定 */
+	void SetSize(int size);
+
+	/** フォントサイズの取得 */
+	int GetSize() const;
+
+	/** 太文字の有効設定 */
+	void SetBold(bool enabled);
+
+	/** 太文字の判定 */
+	bool IsBold() const;
+
+	/** イタリック体の有効設定 */
+	void SetItalic(bool enabled);
+
+	/** イタリック体の判定 */
+	bool IsItalic() const;
+
+	/** アンチエイリアスの有効設定 */
+	void SetAntiAlias(bool enabled);
+
+	/** アンチエイリアスの有効判定 */
+	bool IsAntiAlias() const;
+
+LN_INTERNAL_ACCESS:
+	Font();
+	virtual ~Font();
+	void Initialize(detail::GraphicsManager* manager);
+
+private:
+	detail::GraphicsManager*	m_manager;
+	detail::FontData			m_fontInfo;
+	RefPtr<RawFont>				m_rawFont;
+};
+
+
+
+
 
 struct FontGlyphLocation
 {
@@ -53,7 +115,7 @@ struct FontGlyphData
 
 
 /**
-	@brief		フォントのクラスです。
+	@brief		
 */
 class RawFont
 	: public RefObject

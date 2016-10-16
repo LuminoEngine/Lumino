@@ -44,7 +44,7 @@ LN_INTERNAL_ACCESS:
 protected:
 	virtual void OnStateFlush(detail::IRendererPloxy* activeRenderer) override;
 
-	virtual void OnDrawGlyphRun(GlyphRun* glyphRun, const Point& point) override;
+	virtual void OnDrawGlyphRun(const Matrix& transform, GlyphRun* glyphRun, const Point& point) override;
 
 LN_INTERNAL_ACCESS:
 	SceneGraphRenderingContext();
