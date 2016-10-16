@@ -11,34 +11,53 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-bool Input::IsPressed(const StringRef& bindingName)
+bool Input::IsPressed(const StringRef& buttonName)
 {
-	return detail::InputManager::GetInstance()->GetVirtualPad(0)->IsPressed(bindingName);
+	return detail::InputManager::GetInstance()->GetVirtualPad(0)->IsPressed(buttonName);
 }
 
 //------------------------------------------------------------------------------
-bool Input::IsTriggered(const StringRef& bindingName)
+bool Input::IsTriggered(const StringRef& buttonName)
 {
-	return detail::InputManager::GetInstance()->GetVirtualPad(0)->IsTriggered(bindingName);
+	return detail::InputManager::GetInstance()->GetVirtualPad(0)->IsTriggered(buttonName);
 }
 
 //------------------------------------------------------------------------------
-bool Input::IsOffTriggered(const StringRef& bindingName)
+bool Input::IsOffTriggered(const StringRef& buttonName)
 {
-	return detail::InputManager::GetInstance()->GetVirtualPad(0)->IsOffTriggered(bindingName);
+	return detail::InputManager::GetInstance()->GetVirtualPad(0)->IsOffTriggered(buttonName);
 }
 
 //------------------------------------------------------------------------------
-bool Input::IsRepeated(const StringRef& bindingName)
+bool Input::IsRepeated(const StringRef& buttonName)
 {
-	return detail::InputManager::GetInstance()->GetVirtualPad(0)->IsRepeated(bindingName);
+	return detail::InputManager::GetInstance()->GetVirtualPad(0)->IsRepeated(buttonName);
 }
 
 //------------------------------------------------------------------------------
-float Input::GetAxisValue(const StringRef& bindingName)
+float Input::GetAxisValue(const StringRef& buttonName)
 {
-	return detail::InputManager::GetInstance()->GetVirtualPad(0)->GetAxisValue(bindingName);
+	return detail::InputManager::GetInstance()->GetVirtualPad(0)->GetAxisValue(buttonName);
 }
+
+//------------------------------------------------------------------------------
+void Input::AddButtonBinding(const StringRef& buttonName, InputBinding* binding)
+{
+	return detail::InputManager::GetInstance()->GetVirtualPad(0)->AddBinding(buttonName, binding);
+}
+
+//------------------------------------------------------------------------------
+void Input::RemoveBinding(InputBinding* binding)
+{
+	return detail::InputManager::GetInstance()->GetVirtualPad(0)->RemoveBinding(binding);
+}
+
+//------------------------------------------------------------------------------
+void Input::ClearBindings()
+{
+	return detail::InputManager::GetInstance()->GetVirtualPad(0)->ClearBindings();
+}
+
 
 //==============================================================================
 // InputButton

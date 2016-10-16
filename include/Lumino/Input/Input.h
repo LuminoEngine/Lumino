@@ -5,7 +5,7 @@
 LN_NAMESPACE_BEGIN
 
 /**
-	@brief	
+	@brief		ゲームパッドやキーボードなどの入力システムのインターフェイス
 */
 class Input
 {
@@ -14,27 +14,42 @@ public:
 	/**
 		@brief		ボタンが現在押されているかを判定します。
 	*/
-	static bool IsPressed(const StringRef& bindingName);
+	static bool IsPressed(const StringRef& buttonName);
 
 	/**
 		@brief		ボタンが新しく押された瞬間を判定します。
 	*/
-	static bool IsTriggered(const StringRef& bindingName);
+	static bool IsTriggered(const StringRef& buttonName);
 
 	/**
 		@brief		ボタンが離された瞬間を判定します。
 	*/
-	static bool IsOffTriggered(const StringRef& bindingName);
+	static bool IsOffTriggered(const StringRef& buttonName);
 
 	/**
 		@brief		ボタンが新しく押された瞬間とリピート状態を判定します。
 	*/
-	static bool IsRepeated(const StringRef& bindingName);
+	static bool IsRepeated(const StringRef& buttonName);
 
 	/**
 		@brief		指定した軸のアナログ値を取得します。
 	*/
-	static float GetAxisValue(const StringRef& bindingName);
+	static float GetAxisValue(const StringRef& buttonName);
+
+	/**
+		@brief		ボタンのアクションマッピングを追加します。
+	*/
+	static void AddButtonBinding(const StringRef& buttonName, InputBinding* binding);
+
+	/**
+		@brief		アクションマッピングを除外します。
+	*/
+	static void RemoveBinding(InputBinding* binding);
+
+	/**
+		@brief		全てのアクションマッピングを削除します。
+	*/
+	static void ClearBindings();
 
 private:
 };
