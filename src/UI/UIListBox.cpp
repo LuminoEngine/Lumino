@@ -31,8 +31,8 @@ UIListBoxItem::~UIListBoxItem()
 void UIListBoxItem::Initialize(ln::detail::UIManager* manager)
 {
 	UIContentControl::Initialize(manager);
-	SetHorizontalContentAlignment(HorizontalAlignment::Left);
-	SetHorizontalAlignment(HorizontalAlignment::Stretch);
+	SetHContentAlignment(HAlignment::Left);
+	SetHAlignment(HAlignment::Stretch);
 	GoToVisualState(NormalState);
 }
 
@@ -78,12 +78,12 @@ UIListBox::~UIListBox()
 void UIListBox::Initialize(ln::detail::UIManager* manager)
 {
 	UIItemsControl::Initialize(manager);
-	SetHorizontalContentAlignment(HorizontalAlignment::Stretch);
+	SetHContentAlignment(HAlignment::Stretch);
 
 	auto panel = RefPtr<UIStackPanel>::MakeRef();
 	panel->Initialize(manager);
-	panel->SetHorizontalAlignment(HorizontalAlignment::Stretch);
-	panel->SetVerticalAlignment(VerticalAlignment::Stretch);
+	panel->SetHAlignment(HAlignment::Stretch);
+	panel->SetVAlignment(VAlignment::Stretch);
 	SetItemsHostPanel(panel);
 	GoToVisualState(NormalState);
 }

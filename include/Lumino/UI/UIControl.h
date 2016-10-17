@@ -13,16 +13,16 @@ class UIControl
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:
-	LN_TR_PROPERTY(VerticalAlignment,	VerticalContentAlignmentProperty);		/**< VerticalContentAlignment プロパティの識別子 */
-	LN_TR_PROPERTY(HorizontalAlignment, HorizontalContentAlignmentProperty);	/**< HorizontalContentAlignment プロパティの識別子 */
+	LN_TR_PROPERTY(HAlignment,	HContentAlignmentProperty);		/**< HContentAlignment プロパティの識別子 */
+	LN_TR_PROPERTY(VAlignment,	VContentAlignmentProperty);		/**< VContentAlignment プロパティの識別子 */
 	
 public:
-
-	void SetVerticalContentAlignment(VerticalAlignment value) { tr::Property::SetPropertyValueDirect<VerticalAlignment>(this, VerticalContentAlignmentProperty, value); }
-	VerticalAlignment GetVerticalContentAlignment() const { return tr::Property::GetPropertyValueDirect<VerticalAlignment>(this, VerticalContentAlignmentProperty); }
 	
-	void SetHorizontalContentAlignment(HorizontalAlignment value) { tr::Property::SetPropertyValueDirect<HorizontalAlignment>(this, HorizontalContentAlignmentProperty, value); }
-	HorizontalAlignment GetHorizontalContentAlignment() const { return tr::Property::GetPropertyValueDirect<HorizontalAlignment>(this, HorizontalContentAlignmentProperty); }
+	void SetHContentAlignment(HAlignment value) { tr::Property::SetPropertyValueDirect<HAlignment>(this, HContentAlignmentProperty, value); }
+	HAlignment GetHContentAlignment() const { return tr::Property::GetPropertyValueDirect<HAlignment>(this, HContentAlignmentProperty); }
+
+	void SetVContentAlignment(VAlignment value) { tr::Property::SetPropertyValueDirect<VAlignment>(this, VContentAlignmentProperty, value); }
+	VAlignment GetVContentAlignment() const { return tr::Property::GetPropertyValueDirect<VAlignment>(this, VContentAlignmentProperty); }
 
 protected:
 	UIControl();
@@ -34,16 +34,16 @@ protected:
 	virtual UIElement* GetVisualChildOrderd(int index) const override;
 	virtual SizeF MeasureOverride(const SizeF& constraint) override;
 	virtual SizeF ArrangeOverride(const SizeF& finalSize) override;
-	virtual VerticalAlignment* GetPriorityContentVerticalAlignment() override;
-	virtual HorizontalAlignment* GetPriorityContentHorizontalAlignment() override;
+	virtual VAlignment* GetPriorityContentVAlignment() override;
+	virtual HAlignment* GetPriorityContentHAlignment() override;
 
 LN_INTERNAL_ACCESS:
 	void SetVisualTreeRoot(UIElement* element);
 	UIElement* GetVisualTreeRoot() { return m_visualTreeRoot; }
 
 private:
-	VerticalAlignment	m_verticalContentAlignment;
-	HorizontalAlignment	m_horizontalContentAlignment;
+	VAlignment	m_verticalContentAlignment;
+	HAlignment	m_horizontalContentAlignment;
 
 	UIElement*	m_visualTreeRoot;
 };

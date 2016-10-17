@@ -1,7 +1,6 @@
-﻿/**
-	@file	Point.h
-*/
+﻿
 #pragma once
+#include <Lumino/Math/Vector3.h>
 
 LN_NAMESPACE_BEGIN
 

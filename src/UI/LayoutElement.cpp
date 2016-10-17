@@ -67,10 +67,10 @@ void ILayoutElement::ArrangeLayout(const RectF& finalLocalRect)
 	arrangeSize.height = Math::IsNaNOrInf(size.height) ? finalLocalRect.height : size.height;
 
 	ILayoutElement* parent = GetLayoutParent();
-	HorizontalAlignment  hAlign = GetLayoutHorizontalAlignment();
-	VerticalAlignment    vAlign = GetLayoutVerticalAlignment();
-	HorizontalAlignment* parentHAlign = (parent != nullptr) ? parent->GetLayoutContentHorizontalAlignment() : nullptr;
-	VerticalAlignment*   parentVAlign = (parent != nullptr) ? parent->GetLayoutContentVerticalAlignment() : nullptr;
+	HAlignment  hAlign = GetLayoutHAlignment();
+	VAlignment    vAlign = GetLayoutVAlignment();
+	HAlignment* parentHAlign = (parent != nullptr) ? parent->GetLayoutContentHAlignment() : nullptr;
+	VAlignment*   parentVAlign = (parent != nullptr) ? parent->GetLayoutContentVAlignment() : nullptr;
 	if (parentHAlign != nullptr) hAlign = *parentHAlign;
 	if (parentVAlign != nullptr) vAlign = *parentVAlign;
 

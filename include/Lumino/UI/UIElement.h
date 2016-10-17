@@ -26,8 +26,8 @@ public:
 	LN_TR_PROPERTY(PointF,				PositionProperty);				/**< Position プロパティの識別子 */
 	LN_TR_PROPERTY(SizeF,				SizeProperty);					/**< Size プロパティの識別子 */
 	LN_TR_PROPERTY(AlignmentAnchor,		AnchorProperty);				/**< Anchor プロパティの識別子 */
-	LN_TR_PROPERTY(VerticalAlignment,	VerticalAlignmentProperty);		/**< VerticalAlignment プロパティの識別子 */
-	LN_TR_PROPERTY(HorizontalAlignment,	HorizontalAlignmentProperty);	/**< HorizontalAlignment プロパティの識別子 */
+	LN_TR_PROPERTY(HAlignment,			HAlignmentProperty);			/**< HAlignment プロパティの識別子 */
+	LN_TR_PROPERTY(VAlignment,			VAlignmentProperty);			/**< VAlignment プロパティの識別子 */
 	LN_TR_PROPERTY(BrushPtr,			BackgroundProperty);			/**< Background プロパティの識別子 */
 	LN_TR_PROPERTY(BrushPtr,			ForegroundProperty);			/**< Foreground プロパティの識別子 */
 	LN_TR_PROPERTY(BrushPtr,			DecoratorBackgroundProperty);	/**< DecoratorBackground プロパティの識別子 */
@@ -71,11 +71,11 @@ public:
 	void SetAnchor(AlignmentAnchor value) { tr::Property::SetPropertyValueDirect<AlignmentAnchor>(this, AnchorProperty, value); }
 	AlignmentAnchor GetAnchor() const { return tr::Property::GetPropertyValueDirect<AlignmentAnchor>(this, AnchorProperty); }
 
-	void SetVerticalAlignment(VerticalAlignment value) { tr::Property::SetPropertyValueDirect<VerticalAlignment>(this, VerticalAlignmentProperty, value); }
-	VerticalAlignment GetVerticalAlignment() const { return tr::Property::GetPropertyValueDirect<VerticalAlignment>(this, VerticalAlignmentProperty); }
+	void SetHAlignment(HAlignment value) { tr::Property::SetPropertyValueDirect<HAlignment>(this, HAlignmentProperty, value); }
+	HAlignment GetHAlignment() const { return tr::Property::GetPropertyValueDirect<HAlignment>(this, HAlignmentProperty); }
 
-	void SetHorizontalAlignment(HorizontalAlignment value) { tr::Property::SetPropertyValueDirect<HorizontalAlignment>(this, HorizontalAlignmentProperty, value); }
-	HorizontalAlignment GetHorizontalAlignment() const { return tr::Property::GetPropertyValueDirect<HorizontalAlignment>(this, HorizontalAlignmentProperty); }
+	void SetVAlignment(VAlignment value) { tr::Property::SetPropertyValueDirect<VAlignment>(this, VAlignmentProperty, value); }
+	VAlignment GetVAlignment() const { return tr::Property::GetPropertyValueDirect<VAlignment>(this, VAlignmentProperty); }
 
 	void SetBackground(Brush* value) { tr::Property::SetPropertyValueDirect<BrushPtr>(this, BackgroundProperty, value); }
 	Brush* GetBackground() const { return tr::Property::GetPropertyValueDirect<BrushPtr>(this, BackgroundProperty); }
@@ -212,8 +212,8 @@ LN_INTERNAL_ACCESS:
 	void Render(DrawingContext* g);
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	virtual HorizontalAlignment* GetPriorityContentHorizontalAlignment();
-	virtual VerticalAlignment* GetPriorityContentVerticalAlignment();
+	virtual HAlignment* GetPriorityContentHAlignment();
+	virtual VAlignment* GetPriorityContentVAlignment();
 
 
 private:
@@ -223,11 +223,11 @@ private:
 	virtual const ThicknessF& GetLayoutMargin() const override;
 	virtual const ThicknessF& GetLayoutPadding() const override;
 	virtual AlignmentAnchor GetLayoutAnchor() const override;
-	virtual HorizontalAlignment GetLayoutHorizontalAlignment() const override;
-	virtual VerticalAlignment GetLayoutVerticalAlignment() const override;
+	virtual HAlignment GetLayoutHAlignment() const override;
+	virtual VAlignment GetLayoutVAlignment() const override;
 	virtual ILayoutElement* GetLayoutParent() const override;
-	virtual VerticalAlignment* GetLayoutContentVerticalAlignment() override;
-	virtual HorizontalAlignment* GetLayoutContentHorizontalAlignment() override;
+	virtual HAlignment* GetLayoutContentHAlignment() override;
+	virtual VAlignment* GetLayoutContentVAlignment() override;
 	virtual const SizeF& GetLayoutDesiredSize() const override;
 	virtual void SetLayoutDesiredSize(const SizeF& size) override;
 	virtual void SetLayoutFinalLocalRect(const RectF& rect) override;
@@ -257,8 +257,8 @@ private:
 	ThicknessF				m_margin;
 	ThicknessF				m_padding;
 	AlignmentAnchor			m_anchor;
-	HorizontalAlignment		m_horizontalAlignment;
-	VerticalAlignment		m_verticalAlignment;
+	HAlignment				m_horizontalAlignment;
+	VAlignment				m_verticalAlignment;
 	BrushPtr				m_background;
 	BrushPtr				m_foreground;
 	//detail::BorderInfo				m_border;

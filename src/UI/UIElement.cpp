@@ -20,8 +20,8 @@ LN_UI_TYPEINFO_IMPLEMENT(UIElement, tr::ReflectionObject);
 LN_TR_PROPERTY_IMPLEMENT(UIElement, PointF, PositionProperty, "Position", m_position, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(UIElement, SizeF, SizeProperty, "Size", m_size, tr::PropertyMetadata(SizeF(NAN, NAN)));
 LN_TR_PROPERTY_IMPLEMENT(UIElement, AlignmentAnchor, AnchorProperty, "Anchor", m_anchor, tr::PropertyMetadata(AlignmentAnchor::None));
-LN_TR_PROPERTY_IMPLEMENT(UIElement, VerticalAlignment, VerticalAlignmentProperty, "VerticalAlignment", m_verticalAlignment, tr::PropertyMetadata(VerticalAlignment::Center));
-LN_TR_PROPERTY_IMPLEMENT(UIElement, HorizontalAlignment, HorizontalAlignmentProperty, "HorizontalAlignment", m_horizontalAlignment, tr::PropertyMetadata(HorizontalAlignment::Center));
+LN_TR_PROPERTY_IMPLEMENT(UIElement, HAlignment, HAlignmentProperty, "HAlignment", m_horizontalAlignment, tr::PropertyMetadata(HAlignment::Center));
+LN_TR_PROPERTY_IMPLEMENT(UIElement, VAlignment, VAlignmentProperty, "VAlignment", m_verticalAlignment, tr::PropertyMetadata(VAlignment::Center));
 LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, BackgroundProperty, "Background", m_background, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, ForegroundProperty, "Foreground", m_foreground, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, DecoratorBackgroundProperty, "DecoratorBackground", m_decoratorBackground, tr::PropertyMetadata());
@@ -46,8 +46,8 @@ UIElement::UIElement()
 	, m_position(0, 0)
 	, m_size(NAN, NAN)
 	, m_anchor(AlignmentAnchor::None)
-	, m_horizontalAlignment(HorizontalAlignment::Center)
-	, m_verticalAlignment(VerticalAlignment::Center)
+	, m_horizontalAlignment(HAlignment::Center)
+	, m_verticalAlignment(VAlignment::Center)
 	, m_opacity(1.0f)
 	, m_decoratorBackground(nullptr)
 	, m_decoratorOpacity(1.0f)
@@ -476,13 +476,13 @@ void UIElement::Render(DrawingContext* g)
 }
 
 //------------------------------------------------------------------------------
-VerticalAlignment* UIElement::GetPriorityContentVerticalAlignment()
+HAlignment* UIElement::GetPriorityContentHAlignment()
 {
 	return nullptr;
 }
 
 //------------------------------------------------------------------------------
-HorizontalAlignment* UIElement::GetPriorityContentHorizontalAlignment()
+VAlignment* UIElement::GetPriorityContentVAlignment()
 {
 	return nullptr;
 }
@@ -515,13 +515,11 @@ const SizeF& UIElement::GetLayoutSize() const { return m_size; }
 const ThicknessF& UIElement::GetLayoutMargin() const { return m_margin; }
 const ThicknessF& UIElement::GetLayoutPadding() const { return m_padding; }
 AlignmentAnchor UIElement::GetLayoutAnchor() const { return m_anchor; }
-HorizontalAlignment UIElement::GetLayoutHorizontalAlignment() const { return m_horizontalAlignment; }
-VerticalAlignment UIElement::GetLayoutVerticalAlignment() const { return m_verticalAlignment; }
+HAlignment UIElement::GetLayoutHAlignment() const { return m_horizontalAlignment; }
+VAlignment UIElement::GetLayoutVAlignment() const { return m_verticalAlignment; }
 ILayoutElement* UIElement::GetLayoutParent() const { return m_parent; }
-//int UIElement::GetLayoutChildCount() const { return GetVisualChildrenCount(); }
-//UIElement* UIElement::GetLayoutChild(int index) const { return GetVisualChildOrderd(index); }
-HorizontalAlignment* UIElement::GetLayoutContentHorizontalAlignment() { return GetPriorityContentHorizontalAlignment(); }
-VerticalAlignment* UIElement::GetLayoutContentVerticalAlignment() { return GetPriorityContentVerticalAlignment(); }
+HAlignment* UIElement::GetLayoutContentHAlignment() { return GetPriorityContentHAlignment(); }
+VAlignment* UIElement::GetLayoutContentVAlignment() { return GetPriorityContentVAlignment(); }
 const SizeF& UIElement::GetLayoutDesiredSize() const { return m_desiredSize; }
 void UIElement::SetLayoutDesiredSize(const SizeF& size) { m_desiredSize = size; }
 void UIElement::SetLayoutFinalLocalRect(const RectF& rect) { m_finalLocalRect = rect; }

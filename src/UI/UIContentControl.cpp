@@ -30,8 +30,8 @@ void UIContentControl::Initialize(detail::UIManager* manager)
 {
 	UIControl::Initialize(manager);
 
-	SetVerticalContentAlignment(VerticalAlignment::Stretch);
-	SetHorizontalContentAlignment(HorizontalAlignment::Stretch);
+	SetVContentAlignment(VAlignment::Stretch);
+	SetHContentAlignment(HAlignment::Stretch);
 }
 
 //------------------------------------------------------------------------------

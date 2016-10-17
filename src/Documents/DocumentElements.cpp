@@ -43,8 +43,8 @@ TextElement::TextElement()
 	, m_margin()
 	, m_padding()
 	, m_anchor(AlignmentAnchor::None)
-	, m_horizontalAlignment(HorizontalAlignment::Left)
-	, m_verticalAlignment(VerticalAlignment::Top)
+	, m_horizontalAlignment(HAlignment::Left)
+	, m_verticalAlignment(VAlignment::Top)
 	, m_parent(nullptr)
 	, m_desiredSize()
 	, m_finalLocalRect()
@@ -96,13 +96,11 @@ const SizeF& TextElement::GetLayoutSize() const { return m_size; }
 const ThicknessF& TextElement::GetLayoutMargin() const { return m_margin; }
 const ThicknessF& TextElement::GetLayoutPadding() const { return m_padding; }
 AlignmentAnchor TextElement::GetLayoutAnchor() const { return m_anchor; }
-HorizontalAlignment TextElement::GetLayoutHorizontalAlignment() const { return m_horizontalAlignment; }
-VerticalAlignment TextElement::GetLayoutVerticalAlignment() const { return m_verticalAlignment; }
+HAlignment TextElement::GetLayoutHAlignment() const { return m_horizontalAlignment; }
+VAlignment TextElement::GetLayoutVAlignment() const { return m_verticalAlignment; }
 ILayoutElement* TextElement::GetLayoutParent() const { return m_parent; }
-//int TextElement::GetLayoutChildCount() const { return 0; }
-//ILayoutElement* TextElement::GetLayoutChild(int index) const { return nullptr; }
-HorizontalAlignment* TextElement::GetLayoutContentHorizontalAlignment() { return nullptr; }
-VerticalAlignment* TextElement::GetLayoutContentVerticalAlignment() { return nullptr; }
+HAlignment* TextElement::GetLayoutContentHAlignment() { return nullptr; }
+VAlignment* TextElement::GetLayoutContentVAlignment() { return nullptr; }
 const SizeF& TextElement::GetLayoutDesiredSize() const { return m_desiredSize; }
 void TextElement::SetLayoutDesiredSize(const SizeF& size) { m_desiredSize = size; }
 void TextElement::SetLayoutFinalLocalRect(const RectF& rect) { m_finalLocalRect = rect; }

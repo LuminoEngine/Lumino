@@ -298,8 +298,8 @@ int main()
 
 			auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
 			auto canvas1 = UICanvas::Create();
-			canvas1->SetHorizontalAlignment(HorizontalAlignment::Stretch);
-			canvas1->SetVerticalAlignment(VerticalAlignment::Stretch);
+			canvas1->SetHAlignment(HAlignment::Stretch);
+			canvas1->SetVAlignment(VAlignment::Stretch);
 			//canvas1->SetBackground(ColorBrush::DimGray);
 			uiRoot->SetContent(canvas1);
 
@@ -307,7 +307,7 @@ int main()
 			auto itemCanvas1 = UICanvas::Create();
 			//itemCanvas1->SetBackground(ColorBrush::DimGray);
 			itemCanvas1->SetSize(SizeF(NAN, 32));
-			itemCanvas1->SetHorizontalAlignment(HorizontalAlignment::Stretch);
+			itemCanvas1->SetHAlignment(HAlignment::Stretch);
 
 			auto button1 = UIButton::Create();
 			//button1->SetContent(_T(">"));
@@ -323,7 +323,7 @@ int main()
 			//listbox1->SetBackground(ColorBrush::Red);
 			//auto item1 = listbox1->AddTextItem(_T("item1"));
 			auto item1 = listbox1->AddItem(itemCanvas1);
-			item1->SetHorizontalContentAlignment(HorizontalAlignment::Stretch);
+			item1->SetHContentAlignment(HAlignment::Stretch);
 			auto item2 = listbox1->AddTextItem(_T("item2"));
 			//item1->SetBackground(ColorBrush::Green);
 			//item2->SetBackground(ColorBrush::Blue);

@@ -9,8 +9,8 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 LN_UI_TYPEINFO_IMPLEMENT(UIControl, UIElement);
 
-LN_TR_PROPERTY_IMPLEMENT(UIControl, VerticalAlignment, VerticalContentAlignmentProperty, "VerticalContentAlignment", m_verticalContentAlignment, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(UIControl, HorizontalAlignment, HorizontalContentAlignmentProperty, "HorizontalContentAlignment", m_horizontalContentAlignment, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(UIControl, HAlignment, HContentAlignmentProperty, "HContentAlignment", m_horizontalContentAlignment, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(UIControl, VAlignment, VContentAlignmentProperty, "VContentAlignment", m_verticalContentAlignment, tr::PropertyMetadata());
 
 //------------------------------------------------------------------------------
 UIControl::UIControl()
@@ -72,18 +72,18 @@ SizeF UIControl::ArrangeOverride(const SizeF& finalSize)
 	return finalSize;
 }
 
-//------------------------------------------------------------------------------
-VerticalAlignment* UIControl::GetPriorityContentVerticalAlignment()
-{
-	if (m_verticalContentAlignment == VerticalAlignment::Stretch) return nullptr;
-	return &m_verticalContentAlignment;
-}
 
 //------------------------------------------------------------------------------
-HorizontalAlignment* UIControl::GetPriorityContentHorizontalAlignment()
+HAlignment* UIControl::GetPriorityContentHAlignment()
 {
-	if (m_horizontalContentAlignment == VerticalAlignment::Stretch) return nullptr;
+	if (m_horizontalContentAlignment == VAlignment::Stretch) return nullptr;
 	return &m_horizontalContentAlignment;
+}
+//------------------------------------------------------------------------------
+VAlignment* UIControl::GetPriorityContentVAlignment()
+{
+	if (m_verticalContentAlignment == VAlignment::Stretch) return nullptr;
+	return &m_verticalContentAlignment;
 }
 
 //------------------------------------------------------------------------------

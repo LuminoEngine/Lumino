@@ -17,26 +17,25 @@ class UIMainWindow;
 class UILayoutRoot;
 class UIPanel;
 
-
 /** 縦方向の表示位置を示します。*/
-LN_ENUM(VerticalAlignment)
+LN_ENUM(VAlignment)
 {
 	Top = 0,			/**< 子要素を、親のレイアウト スロットの上端に揃えて配置します。*/
 	Center,				/**< 子要素を、親のレイアウト スロットの中央に揃えて配置します。*/
 	Bottom,				/**< 子要素を、親のレイアウト スロットの下端に揃えて配置します。*/
 	Stretch,			/**< 子要素を、親のレイアウト スロット全体に引き伸ばします。*/
 };
-LN_ENUM_DECLARE(VerticalAlignment);
+LN_ENUM_DECLARE(VAlignment);
 
 /** 横方向の表示位置を示します。*/
-LN_ENUM(HorizontalAlignment)
+LN_ENUM(HAlignment)
 {
 	Left = 0,			/**< 子要素を、親のレイアウト スロットの左側に揃えて配置します。*/
 	Center,				/**< 子要素を、親のレイアウト スロットの中央に揃えて配置します。*/
 	Right,				/**< 子要素を、親のレイアウト スロットの右側に揃えて配置します。*/
 	Stretch,			/**< 子要素を、親のレイアウト スロット全体に引き伸ばします。*/
 };
-LN_ENUM_DECLARE(HorizontalAlignment);
+LN_ENUM_DECLARE(HAlignment);
 
 
 /** */
@@ -84,14 +83,14 @@ enum class UIInternalEventType
 	MouseLeave,			/**< UI要素からマウスカーソルが離れた */
 };
 
-struct AnchorInfo
-{
-	Vector2	left;
-	Vector2	top;
-	Vector2	right;
-	Vector2	bottom;
-	Vector2	center;
-};
+//struct AnchorInfo
+//{
+//	Vector2	left;
+//	Vector2	top;
+//	Vector2	right;
+//	Vector2	bottom;
+//	Vector2	center;
+//};
 
 LN_ENUM_FLAGS(InvalidateFlags)
 {

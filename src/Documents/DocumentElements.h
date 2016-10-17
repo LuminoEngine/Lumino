@@ -78,11 +78,11 @@ protected:
 	virtual const ThicknessF& GetLayoutMargin() const override;
 	virtual const ThicknessF& GetLayoutPadding() const override;
 	virtual AlignmentAnchor GetLayoutAnchor() const override;
-	virtual HorizontalAlignment GetLayoutHorizontalAlignment() const override;
-	virtual VerticalAlignment GetLayoutVerticalAlignment() const override;
+	virtual HAlignment GetLayoutHAlignment() const override;
+	virtual VAlignment GetLayoutVAlignment() const override;
 	virtual ILayoutElement* GetLayoutParent() const override;
-	virtual VerticalAlignment* GetLayoutContentVerticalAlignment() override;
-	virtual HorizontalAlignment* GetLayoutContentHorizontalAlignment() override;
+	virtual HAlignment* GetLayoutContentHAlignment() override;
+	virtual VAlignment* GetLayoutContentVAlignment() override;
 	virtual const SizeF& GetLayoutDesiredSize() const override;
 	virtual void SetLayoutDesiredSize(const SizeF& size) override;
 	virtual void SetLayoutFinalLocalRect(const RectF& rect) override;
@@ -107,8 +107,8 @@ private:
 	ThicknessF				m_margin;
 	ThicknessF				m_padding;
 	AlignmentAnchor			m_anchor;
-	HorizontalAlignment		m_horizontalAlignment;
-	VerticalAlignment		m_verticalAlignment;
+	HAlignment				m_horizontalAlignment;
+	VAlignment				m_verticalAlignment;
 	TextElement*			m_parent;
 	SizeF					m_desiredSize;
 	RectF					m_finalLocalRect;

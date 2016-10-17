@@ -1,6 +1,7 @@
 
 #pragma once
 #include "Common.h"
+#include "../Base/GeometryStructs.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -19,11 +20,11 @@ protected:
 	virtual const ThicknessF& GetLayoutMargin() const = 0;
 	virtual const ThicknessF& GetLayoutPadding() const = 0;
 	virtual AlignmentAnchor GetLayoutAnchor() const = 0;
-	virtual HorizontalAlignment GetLayoutHorizontalAlignment() const = 0;
-	virtual VerticalAlignment GetLayoutVerticalAlignment() const = 0;
+	virtual HAlignment GetLayoutHAlignment() const = 0;
+	virtual VAlignment GetLayoutVAlignment() const = 0;
 	virtual ILayoutElement* GetLayoutParent() const = 0;
-	virtual HorizontalAlignment* GetLayoutContentHorizontalAlignment() = 0;
-	virtual VerticalAlignment* GetLayoutContentVerticalAlignment() = 0;
+	virtual HAlignment* GetLayoutContentHAlignment() = 0;
+	virtual VAlignment* GetLayoutContentVAlignment() = 0;
 	virtual const SizeF& GetLayoutDesiredSize() const = 0;
 	virtual void SetLayoutDesiredSize(const SizeF& size) = 0;
 	virtual void SetLayoutFinalLocalRect(const RectF& rect) = 0;
@@ -53,46 +54,46 @@ public:
 	//	}
 	//}
 
-	static void AdjustHorizontalAlignment(const SizeF& arrangeSize, const SizeF& desiredSize, HorizontalAlignment align, RectF* outRect)
+	static void AdjustHorizontalAlignment(const SizeF& arrangeSize, const SizeF& desiredSize, HAlignment align, RectF* outRect)
 	{
 		switch (align)
 		{
-		case HorizontalAlignment::Left:
+		case HAlignment::Left:
 			outRect->x = 0;
 			outRect->width = desiredSize.width;
 			break;
-		case HorizontalAlignment::Center:
+		case HAlignment::Center:
 			outRect->x = (arrangeSize.width - desiredSize.width) / 2;
 			outRect->width = desiredSize.width;
 			break;
-		case HorizontalAlignment::Right:
+		case HAlignment::Right:
 			outRect->x = arrangeSize.width - desiredSize.width;
 			outRect->width = desiredSize.width;
 			break;
-		case HorizontalAlignment::Stretch:
+		case HAlignment::Stretch:
 			outRect->x = 0;
 			outRect->width = arrangeSize.width;
 			break;
 		}
 	}
 
-	static void AdjustVerticalAlignment(const SizeF& arrangeSize, const SizeF& desiredSize, VerticalAlignment align, RectF* outRect)
+	static void AdjustVerticalAlignment(const SizeF& arrangeSize, const SizeF& desiredSize, VAlignment align, RectF* outRect)
 	{
 		switch (align)
 		{
-		case VerticalAlignment::Top:
+		case VAlignment::Top:
 			outRect->y = 0;
 			outRect->height = desiredSize.height;
 			break;
-		case VerticalAlignment::Center:
+		case VAlignment::Center:
 			outRect->y = (arrangeSize.height - desiredSize.height) / 2;
 			outRect->height = desiredSize.height;
 			break;
-		case VerticalAlignment::Bottom:
+		case VAlignment::Bottom:
 			outRect->y = arrangeSize.height - desiredSize.height;
 			outRect->height = desiredSize.height;
 			break;
-		case VerticalAlignment::Stretch:
+		case VAlignment::Stretch:
 			outRect->y = 0;
 			outRect->height = arrangeSize.height;
 			break;
