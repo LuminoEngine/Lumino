@@ -59,12 +59,12 @@ void ILayoutElement::ArrangeLayout(const RectF& finalLocalRect)
 	// TODO: HorizontalAlignment 等を考慮して、最終的な座標とサイズを決定する。
 	//		 この要素のサイズが省略されていれば、Stretch ならサイズは最大に、それ以外なら最小になる。
 
-	SizeF arrangeSize;
+	const SizeF& areaSize = finalLocalRect.GetSize();
 
 	// この要素のサイズが明示的に指定されている場合はそちらを優先する
-	const SizeF& size = GetLayoutSize();
-	arrangeSize.width = Math::IsNaNOrInf(size.width) ? finalLocalRect.width : size.width;
-	arrangeSize.height = Math::IsNaNOrInf(size.height) ? finalLocalRect.height : size.height;
+	//const SizeF& size = GetLayoutSize();
+	//arrangeSize.width = Math::IsNaNOrInf(size.width) ? finalLocalRect.width : size.width;
+	//arrangeSize.height = Math::IsNaNOrInf(size.height) ? finalLocalRect.height : size.height;
 
 	ILayoutElement* parent = GetLayoutParent();
 	HAlignment  hAlign = GetLayoutHAlignment();
@@ -76,8 +76,8 @@ void ILayoutElement::ArrangeLayout(const RectF& finalLocalRect)
 
 	const SizeF& ds = GetLayoutDesiredSize();
 	RectF arrangeRect;
-	detail::LayoutHelper::AdjustHorizontalAlignment(arrangeSize, ds, hAlign, &arrangeRect);
-	detail::LayoutHelper::AdjustVerticalAlignment(arrangeSize, ds, vAlign, &arrangeRect);
+	detail::LayoutHelper::AdjustHorizontalAlignment(areaSize, ds, hAlign, &arrangeRect);
+	detail::LayoutHelper::AdjustVerticalAlignment(areaSize, ds, vAlign, &arrangeRect);
 
 	// Margin を考慮する (0 以下には出来ない)
 	const ThicknessF& margin = GetLayoutMargin();

@@ -232,7 +232,12 @@ void UIElement::OnMouseLeave(UIMouseEventArgs* e)
 //------------------------------------------------------------------------------
 void UIElement::SetParent(UIElement* parent)
 {
-	LN_THROW(GetParent() == nullptr, InvalidOperationException, "the child elements of already other elements.");
+	if (parent != nullptr)
+	{
+		// 既に親があるとき、新しい親をつけることはできない
+		LN_THROW(GetParent() == nullptr, InvalidOperationException, "the child elements of already other elements.");
+	}
+
 	m_parent = parent;
 }
 
@@ -523,5 +528,9 @@ VAlignment* UIElement::GetLayoutContentVAlignment() { return GetPriorityContentV
 const SizeF& UIElement::GetLayoutDesiredSize() const { return m_desiredSize; }
 void UIElement::SetLayoutDesiredSize(const SizeF& size) { m_desiredSize = size; }
 void UIElement::SetLayoutFinalLocalRect(const RectF& rect) { m_finalLocalRect = rect; }
+int UIElement::GetLayoutColumn() const { return m_gridLayoutInfo.layoutColumn; }
+int UIElement::GetLayoutRow() const { return m_gridLayoutInfo.layoutRow; }
+int UIElement::GetLayoutColumnSpan() const { return m_gridLayoutInfo.layoutColumnSpan; }
+int UIElement::GetLayoutRowSpan() const { return m_gridLayoutInfo.layoutRowSpan; }
 
 LN_NAMESPACE_END

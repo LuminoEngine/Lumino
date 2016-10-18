@@ -14,6 +14,7 @@ public:
 	virtual void MeasureLayout(const SizeF& availableSize);
 	virtual void ArrangeLayout(const RectF& finalLocalRect);
 
+
 protected:
 	virtual const PointF& GetLayoutPosition() const = 0;
 	virtual const SizeF& GetLayoutSize() const = 0;
@@ -29,7 +30,14 @@ protected:
 	virtual void SetLayoutDesiredSize(const SizeF& size) = 0;
 	virtual void SetLayoutFinalLocalRect(const RectF& rect) = 0;
 
+
 LN_PROTECTED_INTERNAL_ACCESS:
+	// GridLayout properties
+	virtual int GetLayoutColumn() const = 0;
+	virtual int GetLayoutRow() const = 0;
+	virtual int GetLayoutColumnSpan() const = 0;
+	virtual int GetLayoutRowSpan() const = 0;
+
 	virtual SizeF MeasureOverride(const SizeF& constraint);
 	virtual SizeF ArrangeOverride(const SizeF& finalSize);
 
@@ -40,6 +48,14 @@ protected:
 
 
 namespace detail {
+
+struct GridLayoutInfo
+{
+	int		layoutColumn = 0;
+	int		layoutRow = 0;
+	int		layoutColumnSpan = 0;
+	int		layoutRowSpan = 0;
+};
 
 class LayoutHelper
 {
@@ -54,7 +70,7 @@ public:
 	//	}
 	//}
 
-	static void AdjustHorizontalAlignment(const SizeF& arrangeSize, const SizeF& desiredSize, HAlignment align, RectF* outRect)
+	static void AdjustHorizontalAlignment(const SizeF& areaSize, const SizeF& desiredSize, HAlignment align, RectF* outRect)
 	{
 		switch (align)
 		{
@@ -63,21 +79,21 @@ public:
 			outRect->width = desiredSize.width;
 			break;
 		case HAlignment::Center:
-			outRect->x = (arrangeSize.width - desiredSize.width) / 2;
+			outRect->x = (areaSize.width - desiredSize.width) / 2;
 			outRect->width = desiredSize.width;
 			break;
 		case HAlignment::Right:
-			outRect->x = arrangeSize.width - desiredSize.width;
+			outRect->x = areaSize.width - desiredSize.width;
 			outRect->width = desiredSize.width;
 			break;
 		case HAlignment::Stretch:
 			outRect->x = 0;
-			outRect->width = arrangeSize.width;
+			outRect->width = areaSize.width;
 			break;
 		}
 	}
 
-	static void AdjustVerticalAlignment(const SizeF& arrangeSize, const SizeF& desiredSize, VAlignment align, RectF* outRect)
+	static void AdjustVerticalAlignment(const SizeF& areaSize, const SizeF& desiredSize, VAlignment align, RectF* outRect)
 	{
 		switch (align)
 		{
@@ -86,16 +102,16 @@ public:
 			outRect->height = desiredSize.height;
 			break;
 		case VAlignment::Center:
-			outRect->y = (arrangeSize.height - desiredSize.height) / 2;
+			outRect->y = (areaSize.height - desiredSize.height) / 2;
 			outRect->height = desiredSize.height;
 			break;
 		case VAlignment::Bottom:
-			outRect->y = arrangeSize.height - desiredSize.height;
+			outRect->y = areaSize.height - desiredSize.height;
 			outRect->height = desiredSize.height;
 			break;
 		case VAlignment::Stretch:
 			outRect->y = 0;
-			outRect->height = arrangeSize.height;
+			outRect->height = areaSize.height;
 			break;
 		}
 	}

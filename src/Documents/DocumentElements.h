@@ -86,6 +86,10 @@ protected:
 	virtual const SizeF& GetLayoutDesiredSize() const override;
 	virtual void SetLayoutDesiredSize(const SizeF& size) override;
 	virtual void SetLayoutFinalLocalRect(const RectF& rect) override;
+	virtual int GetLayoutColumn() const override;
+	virtual int GetLayoutRow() const override;
+	virtual int GetLayoutColumnSpan() const override;
+	virtual int GetLayoutRowSpan() const override;
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	// ILayoutElement interface
@@ -112,6 +116,7 @@ private:
 	TextElement*			m_parent;
 	SizeF					m_desiredSize;
 	RectF					m_finalLocalRect;
+	detail::GridLayoutInfo	m_gridLayoutInfo;
 };
 
 /**

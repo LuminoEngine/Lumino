@@ -216,7 +216,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual VAlignment* GetPriorityContentVAlignment();
 
 
-private:
+LN_PROTECTED_INTERNAL_ACCESS:
 	// ILayoutElement interface
 	virtual const PointF& GetLayoutPosition() const override;
 	virtual const SizeF& GetLayoutSize() const override;
@@ -231,7 +231,12 @@ private:
 	virtual const SizeF& GetLayoutDesiredSize() const override;
 	virtual void SetLayoutDesiredSize(const SizeF& size) override;
 	virtual void SetLayoutFinalLocalRect(const RectF& rect) override;
+	virtual int GetLayoutColumn() const override;
+	virtual int GetLayoutRow() const override;
+	virtual int GetLayoutColumnSpan() const override;
+	virtual int GetLayoutRowSpan() const override;
 
+private:
 	void UpdateLocalStyleAndApplyProperties(UIStylePropertyTable* parentStyle, UIStylePropertyTable* currentStateStyle);
 
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
@@ -259,6 +264,8 @@ private:
 	AlignmentAnchor			m_anchor;
 	HAlignment				m_horizontalAlignment;
 	VAlignment				m_verticalAlignment;
+	detail::GridLayoutInfo	m_gridLayoutInfo;
+
 	BrushPtr				m_background;
 	BrushPtr				m_foreground;
 	//detail::BorderInfo				m_border;

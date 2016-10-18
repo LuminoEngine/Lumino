@@ -5,7 +5,9 @@
 
 LN_NAMESPACE_BEGIN
 class UICanvas;
+class UIGridLayout;
 using UICanvasPtr = RefPtr<UICanvas>;
+using UIGridLayoutPtr = RefPtr<UIGridLayout>;
 
 /** コントロールのレイアウト方向を示します。*/
 LN_ENUM(Orientation)
@@ -17,6 +19,8 @@ LN_ENUM_DECLARE(Orientation);
 
 /**
 	@brief		1つ以上の子 UIElement を持つ UI 要素のベースクラスです。
+
+	@details	HAlignment 及び VAlignment の規定値は Stretch です。
 */
 class UIPanel
 	: public UIElement
@@ -90,6 +94,34 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual SizeF ArrangeOverride(const SizeF& finalSize) override;
 
 private:
+};
+
+
+/**
+	@brief		
+*/
+class UIGridLayout
+	: public UIPanel
+{
+	LN_UI_TYPEINFO_DECLARE();
+public:
+	static UIGridLayoutPtr Create();
+
+LN_PROTECTED_INTERNAL_ACCESS:
+	UIGridLayout();
+	virtual ~UIGridLayout();
+	void Initialize(detail::UIManager* manager);
+
+	// UIElement interface
+	virtual SizeF MeasureOverride(const SizeF& constraint) override;
+	virtual SizeF ArrangeOverride(const SizeF& finalSize) override;
+
+private:
+	class DefinitionBase;
+	class ColumnDefinition;
+	class RowDefinition;
+	Array<RefPtr<ColumnDefinition>>	m_columnDefinitions;
+	Array<RefPtr<RowDefinition>>	m_rowDefinitions;
 };
 
 LN_NAMESPACE_END

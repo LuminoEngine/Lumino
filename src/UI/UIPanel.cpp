@@ -25,6 +25,10 @@ void UIPanel::Initialize(detail::UIManager* manager)
 {
 	UIElement::Initialize(manager);
 	m_children = RefPtr<UIElementCollection>::MakeRef(this);
+
+	// Panel 系のデフォルトは Stretch
+	SetHAlignment(HAlignment::Stretch);
+	SetVAlignment(VAlignment::Stretch);
 }
 
 //------------------------------------------------------------------------------
@@ -310,6 +314,302 @@ SizeF UICanvas::ArrangeOverride(const SizeF& finalSize)
 		{
 			child->ArrangeLayout(childRect);
 		}
+	}
+
+	return finalSize;
+}
+
+
+//==============================================================================
+// DefinitionBase
+//==============================================================================
+class UIGridLayout::DefinitionBase
+	: public Object
+{
+public:
+	enum class ValueType
+	{
+		Auto,	// 子要素のサイズに合わせるか
+		Pixel,	// サイズを直接指定する
+		Ratio,	// レイアウト後、残りの領域を使うか (Star)
+	};
+
+	DefinitionBase()
+		: m_type(ValueType::Auto)
+		, m_size(0.0f)
+		, m_minSize(0.0f)
+		, m_maxSize(FLT_MAX)
+	{
+	}
+
+	virtual ~DefinitionBase()
+	{
+	}
+
+	ValueType GetType() const { return m_type; }
+
+	float GetAvailableDesiredSize() const
+	{
+		if (m_type == ValueType::Auto) {
+			return m_desiredSize;
+		}
+		else if (m_type == ValueType::Pixel) {
+			return Math::Clamp(m_size, m_minSize, m_maxSize);
+		}
+		else {
+			return 0;
+		}
+	}
+
+	float GetRatioWeight() const
+	{
+		return (m_size == 0.0f) ? 1.0f : m_size;
+	}
+
+protected:
+	ValueType	m_type;
+	float		m_size;
+	float		m_minSize;
+	float		m_maxSize;
+
+public:
+	float		m_desiredSize;
+	float		m_actualOffset;	// 最終オフセット
+	float		m_actualSize;	// 最終サイズ
+};
+
+//==============================================================================
+// ColumnDefinition
+//==============================================================================
+class UIGridLayout::ColumnDefinition
+	: public DefinitionBase
+{
+public:
+
+	ColumnDefinition()
+	{
+	}
+
+	virtual ~ColumnDefinition()
+	{
+	}
+
+	void SetWidth(float value, ValueType type = ValueType::Pixel) { m_size = value; m_type = type; }
+	float GetWidth() const { return m_size; }
+
+	void SetMinWidth(float value) { m_size = value; }
+	float GetMinWidth() const { return m_size; }
+
+	void SetMaxWidth(float value) { m_size = value; }
+	float GetMaxWidth() const { return m_size; }
+};
+
+//==============================================================================
+// RowDefinition
+//==============================================================================
+class UIGridLayout::RowDefinition
+	: public DefinitionBase
+{
+public:
+
+	RowDefinition()
+	{
+	}
+
+	virtual ~RowDefinition()
+	{
+	}
+
+	void SetHeight(float value, ValueType type = ValueType::Pixel) { m_size = value; m_type = type; }
+	float GetHeight() const { return m_size; }
+
+	void SetMinHeight(float value) { m_size = value; }
+	float GetMinHeight() const { return m_size; }
+
+	void SetMaxHeight(float value) { m_size = value; }
+	float GetMaxHeight() const { return m_size; }
+};
+
+//==============================================================================
+// UIGridLayout
+//==============================================================================
+LN_UI_TYPEINFO_IMPLEMENT(UIGridLayout, UIPanel)
+
+//------------------------------------------------------------------------------
+UIGridLayoutPtr UIGridLayout::Create()
+{
+	auto ptr = UIGridLayoutPtr::MakeRef();
+	ptr->Initialize(detail::UIManager::GetInstance());
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
+UIGridLayout::UIGridLayout()
+	: m_columnDefinitions()
+	, m_rowDefinitions()
+{
+}
+
+//------------------------------------------------------------------------------
+UIGridLayout::~UIGridLayout()
+{
+}
+
+//------------------------------------------------------------------------------
+void UIGridLayout::Initialize(detail::UIManager* manager)
+{
+	UIPanel::Initialize(manager);
+}
+
+//------------------------------------------------------------------------------
+SizeF UIGridLayout::MeasureOverride(const SizeF& constraint)
+{
+	for (UIElement* child : *GetChildren())
+	{
+		// まずは子を Measure
+		child->MeasureLayout(constraint);
+
+		// child が配置されるべき column と row を探す
+		int colIdx = child->GetLayoutColumn();
+		int rowIdx = child->GetLayoutRow();
+		colIdx = m_columnDefinitions.IsOutOfRange(colIdx) ? 0 : colIdx;
+		rowIdx = m_rowDefinitions.IsOutOfRange(rowIdx) ? 0 : rowIdx;
+		ColumnDefinition* col = m_columnDefinitions.IsEmpty() ? nullptr : m_columnDefinitions.GetAt(colIdx);
+		RowDefinition*    row = m_rowDefinitions.IsEmpty() ? nullptr : m_rowDefinitions.GetAt(rowIdx);
+
+		// 子要素の DesiredSize (最低サイズ) を測るのは、セルのサイズ指定が "Auto" の時だけでよい。
+		const SizeF& childDesiredSize = child->GetDesiredSize();
+		if (col != nullptr && col->GetType() == DefinitionBase::ValueType::Auto)
+		{
+			col->m_desiredSize = std::max(col->m_desiredSize, childDesiredSize.width);
+		}
+		if (row != nullptr && row->GetType() == DefinitionBase::ValueType::Auto)
+		{
+			row->m_desiredSize = std::max(row->m_desiredSize, childDesiredSize.height);
+		}
+	}
+
+	// 各セルの DesiredSize を集計して、Grid 全体の DesiredSize を求める
+	SizeF desiredSize = UIPanel::MeasureOverride(constraint);
+	for (auto col : m_columnDefinitions)
+	{
+		desiredSize.width += col->GetAvailableDesiredSize();
+	}
+	for (auto row : m_rowDefinitions)
+	{
+		desiredSize.height += row->GetAvailableDesiredSize();
+	}
+
+	return desiredSize;
+}
+
+//------------------------------------------------------------------------------
+SizeF UIGridLayout::ArrangeOverride(const SizeF& finalSize)
+{
+	// "Auto" と "Pixel" 指定である Column/Row の最終サイズを確定させる。
+	// また、"*" である行列の数をカウントする。
+	SizeF totalActual = SizeF::Zero;
+	float starColCount = 0.0f;
+	float starRowCount = 0.0f;
+	for (auto col : m_columnDefinitions)
+	{
+		if (col->GetType() == DefinitionBase::ValueType::Auto || col->GetType() == DefinitionBase::ValueType::Pixel)
+		{
+			col->m_actualSize = col->GetAvailableDesiredSize();
+			totalActual.width += col->m_actualSize;
+		}
+		else
+		{
+			starColCount += col->GetRatioWeight();
+		}
+	}
+	for (auto row : m_rowDefinitions)
+	{
+		if (row->GetType() == DefinitionBase::ValueType::Auto || row->GetType() == DefinitionBase::ValueType::Pixel)
+		{
+			row->m_actualSize = row->GetAvailableDesiredSize();
+			totalActual.height += row->m_actualSize;
+		}
+		else
+		{
+			starRowCount += row->GetRatioWeight();
+		}
+	}
+
+	// "1*" 分のセルの領域
+	SizeF starUnit(
+		(starColCount != 0.0f) ? (finalSize.width - totalActual.width) / starColCount : 0.0f,
+		(starRowCount != 0.0f) ? (finalSize.height - totalActual.height) / starRowCount : 0.0f);
+	starUnit.width = std::max(0.0f, starUnit.width);	// 負値はダメ
+	starUnit.height = std::max(0.0f, starUnit.height);	// 負値はダメ
+
+	// "*" 指定である Column/Row の最終サイズを確定させ、
+	// 全セルのオフセット (位置) も確定させる
+	PointF totalOffset = PointF::Zero;
+	for (auto col : m_columnDefinitions)
+	{
+		if (col->GetType() == DefinitionBase::ValueType::Ratio)
+		{
+			col->m_actualSize = starUnit.width;
+		}
+
+		// セルX座標確定
+		col->m_actualOffset = totalOffset.x;
+		totalOffset.x += col->m_actualSize;
+	}
+	for (auto row : m_rowDefinitions)
+	{
+		if (row->GetType() == DefinitionBase::ValueType::Ratio)
+		{
+			row->m_actualSize = starUnit.height;
+		}
+
+		// セルY座標確定
+		row->m_actualOffset = totalOffset.y;
+		totalOffset.y += row->m_actualSize;
+	}
+
+	// 子要素の最終位置・サイズを確定させる
+	for (UIElement* child : *GetChildren())
+	{
+		int colIdx = child->GetLayoutColumn();
+		int rowIdx = child->GetLayoutRow();
+		int colSpan = child->GetLayoutColumnSpan();
+		int rowSpan = child->GetLayoutRowSpan();
+		colSpan = std::max(1, colSpan);	// 最低 1
+		rowSpan = std::max(1, rowSpan);	// 最低 1
+		colSpan = std::min(colSpan, colIdx + m_columnDefinitions.GetCount());	// 最大値制限
+		rowSpan = std::min(rowSpan, rowIdx + m_rowDefinitions.GetCount());		// 最大値制限
+
+		// Span を考慮してサイズを確定
+		RectF rect = RectF::Zero;
+		if (m_columnDefinitions.IsEmpty())
+		{
+			rect.width = finalSize.width;
+		}
+		else
+		{
+			rect.x = m_columnDefinitions[colIdx]->m_actualOffset;
+			for (int iCol = 0; iCol < colSpan; ++iCol)
+			{
+				rect.width += m_columnDefinitions[colIdx + iCol]->m_actualSize;
+			}
+		}
+		if (m_rowDefinitions.IsEmpty())
+		{
+			rect.height = finalSize.height;
+		}
+		else
+		{
+			rect.y = m_rowDefinitions[rowIdx]->m_actualOffset;
+			for (int iRow = 0; iRow < rowSpan; ++iRow)
+			{
+				rect.height += m_rowDefinitions[rowIdx + iRow]->m_actualSize;
+			}
+		}
+
+		// Arrange
+		child->ArrangeLayout(rect);
 	}
 
 	return finalSize;
