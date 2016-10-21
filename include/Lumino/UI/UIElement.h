@@ -62,23 +62,23 @@ public:
 	/** @name Properties */
 	/** @{ */
 
-	void SetPosition(const PointF& value) { tr::Property::SetPropertyValueDirect<PointF>(this, PositionProperty, value); }
-	const PointF& GetPosition() const { return tr::Property::GetPropertyValueDirect<PointF>(this, PositionProperty); }
+	void SetPosition(const PointF& value) { tr::PropertyInfo::SetPropertyValueDirect<PointF>(this, PositionProperty, value); }
+	const PointF& GetPosition() const { return tr::PropertyInfo::GetPropertyValueDirect<PointF>(this, PositionProperty); }
 
-	void SetSize(const SizeF& value) { tr::Property::SetPropertyValueDirect<SizeF>(this, SizeProperty, value); }
-	const SizeF& GetSize() const { return tr::Property::GetPropertyValueDirect<SizeF>(this, SizeProperty); }
+	void SetSize(const SizeF& value) { tr::PropertyInfo::SetPropertyValueDirect<SizeF>(this, SizeProperty, value); }
+	const SizeF& GetSize() const { return tr::PropertyInfo::GetPropertyValueDirect<SizeF>(this, SizeProperty); }
 
-	void SetAnchor(AlignmentAnchor value) { tr::Property::SetPropertyValueDirect<AlignmentAnchor>(this, AnchorProperty, value); }
-	AlignmentAnchor GetAnchor() const { return tr::Property::GetPropertyValueDirect<AlignmentAnchor>(this, AnchorProperty); }
+	void SetAnchor(AlignmentAnchor value) { tr::PropertyInfo::SetPropertyValueDirect<AlignmentAnchor>(this, AnchorProperty, value); }
+	AlignmentAnchor GetAnchor() const { return tr::PropertyInfo::GetPropertyValueDirect<AlignmentAnchor>(this, AnchorProperty); }
 
-	void SetHAlignment(HAlignment value) { tr::Property::SetPropertyValueDirect<HAlignment>(this, HAlignmentProperty, value); }
-	HAlignment GetHAlignment() const { return tr::Property::GetPropertyValueDirect<HAlignment>(this, HAlignmentProperty); }
+	void SetHAlignment(HAlignment value) { tr::PropertyInfo::SetPropertyValueDirect<HAlignment>(this, HAlignmentProperty, value); }
+	HAlignment GetHAlignment() const { return tr::PropertyInfo::GetPropertyValueDirect<HAlignment>(this, HAlignmentProperty); }
 
-	void SetVAlignment(VAlignment value) { tr::Property::SetPropertyValueDirect<VAlignment>(this, VAlignmentProperty, value); }
-	VAlignment GetVAlignment() const { return tr::Property::GetPropertyValueDirect<VAlignment>(this, VAlignmentProperty); }
+	void SetVAlignment(VAlignment value) { tr::PropertyInfo::SetPropertyValueDirect<VAlignment>(this, VAlignmentProperty, value); }
+	VAlignment GetVAlignment() const { return tr::PropertyInfo::GetPropertyValueDirect<VAlignment>(this, VAlignmentProperty); }
 
-	void SetBackground(Brush* value) { tr::Property::SetPropertyValueDirect<BrushPtr>(this, BackgroundProperty, value); }
-	Brush* GetBackground() const { return tr::Property::GetPropertyValueDirect<BrushPtr>(this, BackgroundProperty); }
+	void SetBackground(Brush* value) { tr::PropertyInfo::SetPropertyValueDirect<BrushPtr>(this, BackgroundProperty, value); }
+	Brush* GetBackground() const { return tr::PropertyInfo::GetPropertyValueDirect<BrushPtr>(this, BackgroundProperty); }
 
 
 	/** @} */

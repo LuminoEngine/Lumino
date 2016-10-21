@@ -31,7 +31,7 @@ protected:
 	virtual void OnRender(RenderingContext* context, RenderTarget* source, RenderTarget* destination) override;
 
 private:
-	ToneF m_tone;
+	tr::Property<ToneF> m_tone;
 
 	struct ShaderInfo
 	{

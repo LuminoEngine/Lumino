@@ -18,11 +18,11 @@ public:
 	
 public:
 	
-	void SetHContentAlignment(HAlignment value) { tr::Property::SetPropertyValueDirect<HAlignment>(this, HContentAlignmentProperty, value); }
-	HAlignment GetHContentAlignment() const { return tr::Property::GetPropertyValueDirect<HAlignment>(this, HContentAlignmentProperty); }
+	void SetHContentAlignment(HAlignment value) { tr::PropertyInfo::SetPropertyValueDirect<HAlignment>(this, HContentAlignmentProperty, value); }
+	HAlignment GetHContentAlignment() const { return tr::PropertyInfo::GetPropertyValueDirect<HAlignment>(this, HContentAlignmentProperty); }
 
-	void SetVContentAlignment(VAlignment value) { tr::Property::SetPropertyValueDirect<VAlignment>(this, VContentAlignmentProperty, value); }
-	VAlignment GetVContentAlignment() const { return tr::Property::GetPropertyValueDirect<VAlignment>(this, VContentAlignmentProperty); }
+	void SetVContentAlignment(VAlignment value) { tr::PropertyInfo::SetPropertyValueDirect<VAlignment>(this, VContentAlignmentProperty, value); }
+	VAlignment GetVContentAlignment() const { return tr::PropertyInfo::GetPropertyValueDirect<VAlignment>(this, VContentAlignmentProperty); }
 
 protected:
 	UIControl();

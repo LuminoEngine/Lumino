@@ -10,9 +10,9 @@ LN_NAMESPACE_BEGIN
 
 struct AnimationClockArgs
 {
-	AnimationCurve* curve;
-	Object*			targetObject;
-	tr::Property*	targetProperty;
+	AnimationCurve*		curve;
+	Object*				targetObject;
+	tr::PropertyInfo*	targetProperty;
 };
 
 /**
@@ -33,7 +33,7 @@ public:
 	bool IsFinished() const { return m_isFinished; }
 
 	template<typename TCurve, typename TValue>
-	void AddAnimationCurve(TCurve* curve, AnimatableObject* targetObject, const tr::Property* targetProperty, const TValue& startValue)
+	void AddAnimationCurve(TCurve* curve, AnimatableObject* targetObject, const tr::PropertyInfo* targetProperty, const TValue& startValue)
 	{
 		targetObject->DeactivatePropertyAnimation(targetProperty);
 

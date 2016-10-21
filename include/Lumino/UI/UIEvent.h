@@ -103,7 +103,7 @@ class UIEventInfo
 	: public tr::ReflectionEventInfo
 {
 public:
-	UIEventInfo(tr::TypeInfo* ownerClass, const String& name, RaiseEventFunc raiseEvent)
+	UIEventInfo(tr::TypeInfo* ownerClass, const TCHAR* name, RaiseEventFunc raiseEvent)
 		: tr::ReflectionEventInfo(ownerClass, name, raiseEvent)
 	{}
 };

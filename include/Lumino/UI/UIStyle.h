@@ -61,7 +61,7 @@ class UIStyleAttribute
 {
 public:
 	//UIStyleAttribute() : value(), isSet(false), m_modified(true) {}
-	UIStyleAttribute(const tr::Property* targetProperty, const tr::Variant& v, double time_, EasingMode easingMode_)
+	UIStyleAttribute(const tr::PropertyInfo* targetProperty, const tr::Variant& v, double time_, EasingMode easingMode_)
 		: m_targetProperty(targetProperty)
 		, value(v)
 		, isSet(false)
@@ -99,7 +99,7 @@ public:
 		}
 	}
 
-	const tr::Property*	m_targetProperty;
+	const tr::PropertyInfo*	m_targetProperty;
 	tr::Variant			value;
 	bool				isSet;
 	bool				m_modified;
@@ -120,7 +120,7 @@ class UIStylePropertyTable
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	void AddValue(const tr::Property* targetProperty, const tr::Variant& value, double time, EasingMode easingMode);
+	void AddValue(const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time, EasingMode easingMode);
 
 LN_INTERNAL_ACCESS:
 	UIStylePropertyTable();
@@ -153,7 +153,7 @@ public:
 	UIStyle();
 	virtual ~UIStyle();
 
-	void AddValue(const StringRef& visualStateName, const tr::Property* targetProperty, const tr::Variant& value, double time = 0.0, EasingMode easingMode = EasingMode::Linear);
+	void AddValue(const StringRef& visualStateName, const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time = 0.0, EasingMode easingMode = EasingMode::Linear);
 
 
 LN_INTERNAL_ACCESS:

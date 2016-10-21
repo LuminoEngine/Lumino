@@ -34,7 +34,7 @@ void AnimatableObject::OnPropertyChanged(tr::PropertyChangedEventArgs* e)
 }
 
 //------------------------------------------------------------------------------
-void AnimatableObject::DeactivatePropertyAnimation(const tr::Property* targetProperty)
+void AnimatableObject::DeactivatePropertyAnimation(const tr::PropertyInfo* targetProperty)
 {
 	// 再生中のアニメの中に同じターゲットの同じプロパティをアニメーションしているものがあれば停止する
 	for (auto& clock : m_playingAnimationClockList)

@@ -39,7 +39,7 @@ void UIStylePropertyTable::Initialize(const StringRef& visualStateName)
 }
 
 //------------------------------------------------------------------------------
-void UIStylePropertyTable::AddValue(const tr::Property* targetProperty, const tr::Variant& value, double time, EasingMode easingMode)
+void UIStylePropertyTable::AddValue(const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time, EasingMode easingMode)
 {
 	m_attributes.Add(UIStyleAttribute(targetProperty, value, time, easingMode));
 }
@@ -97,14 +97,14 @@ void UIStylePropertyTable::ApplyInternal(UIElement* targetElement, const UIStyle
 {
 	if (!useTransitionAnimation || setter.time == 0.0)
 	{
-		tr::Property::SetPropertyValue(targetElement, setter.m_targetProperty, setter.value);
+		tr::PropertyInfo::SetPropertyValue(targetElement, setter.m_targetProperty, setter.value);
 	}
 	else
 	{
 		// アニメーション
 		if (setter.value.GetType() == tr::VariantType::Float)
 		{
-			float now = tr::Property::GetPropertyValueDirect<float>(targetElement, setter.m_targetProperty);
+			float now = tr::PropertyInfo::GetPropertyValueDirect<float>(targetElement, setter.m_targetProperty);
 			float target = tr::Variant::Cast<float>(setter.value);
 
 			auto anim = ValueEasingCurve<float>::Create(target, setter.time, setter.easingMode);
@@ -153,7 +153,7 @@ UIStyle::~UIStyle()
 }
 
 //------------------------------------------------------------------------------
-void UIStyle::AddValue(const StringRef& visualStateName, const tr::Property* targetProperty, const tr::Variant& value, double time, EasingMode easingMode)
+void UIStyle::AddValue(const StringRef& visualStateName, const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time, EasingMode easingMode)
 {
 	RefPtr<UIStylePropertyTable> table;
 	if (!m_propertyTableMap.TryGetValue(visualStateName, &table))

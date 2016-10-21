@@ -13,7 +13,7 @@ class AnimationCurveInstance
 public:
 	RefPtr<AnimationCurve>	owner;
 	Object*			targetObject;		// TODO: アニメ実行中に Target がデストラクトされた時の対応
-	const tr::Property*	targetProperty;
+	const tr::PropertyInfo*	targetProperty;
 	//Variant		StartValue;
 	bool			isActive;			// true の場合、実際に再生する (古い再生を停止するときに false にする。本来はリストから delete しても良いのだが、メモリ効率的に。)
 };
@@ -25,7 +25,7 @@ class TypedAnimationCurveInstance
 public:
 	TValue	startValue;
 
-	TypedAnimationCurveInstance(AnimationCurve* owner_, Object* targetObject_, const tr::Property* targetProperty_, const TValue& startValue_)
+	TypedAnimationCurveInstance(AnimationCurve* owner_, Object* targetObject_, const tr::PropertyInfo* targetProperty_, const TValue& startValue_)
 		: startValue(startValue_)
 	{
 		owner = owner_;
@@ -106,7 +106,7 @@ public:
 
 	void SetDuration(double duration) { m_duration = duration; }
 
-	AnimationCurveInstance* CreateAnimationCurveInstance(Object* targetObject, const tr::Property* targetProperty, const TValue& startValue)
+	AnimationCurveInstance* CreateAnimationCurveInstance(Object* targetObject, const tr::PropertyInfo* targetProperty, const TValue& startValue)
 	{
 		return LN_NEW TypedAnimationCurveInstance<TValue>(this, targetObject, targetProperty, startValue);
 	}
@@ -125,17 +125,17 @@ public:
         // また、時間が既に終端を超えていたり、比較関数が無い場合も直値セット。
         if (m_duration == 0 || m_duration <= time || m_easingFunction == nullptr)
         {
-            tr::Property::SetPropertyValueDirect(instance->targetObject, instance->targetProperty, m_targetValue, tr::PropertySetSource::ByAnimation);
+            tr::PropertyInfo::SetPropertyValueDirect(instance->targetObject, instance->targetProperty, m_targetValue, tr::PropertySetSource::ByAnimation);
         }
         // 時間が 0 以前の場合は初期値
         else if (time <= 0)
         {
-            tr::Property::SetPropertyValueDirect<TValue>(instance->targetObject, instance->targetProperty, instance->startValue, tr::PropertySetSource::ByAnimation);
+			tr::PropertyInfo::SetPropertyValueDirect<TValue>(instance->targetObject, instance->targetProperty, instance->startValue, tr::PropertySetSource::ByAnimation);
         }
         // 補間で求める
         else
         {
-            tr::Property::SetPropertyValueDirect<TValue>(instance->targetObject, instance->targetProperty, m_easingFunction(time, instance->startValue, m_targetValue - instance->startValue, m_duration), tr::PropertySetSource::ByAnimation);
+			tr::PropertyInfo::SetPropertyValueDirect<TValue>(instance->targetObject, instance->targetProperty, m_easingFunction(time, instance->startValue, m_targetValue - instance->startValue, m_duration), tr::PropertySetSource::ByAnimation);
         }
         
         return (time < m_duration);

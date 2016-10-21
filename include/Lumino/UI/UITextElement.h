@@ -20,28 +20,28 @@ public:
 public:
 
 	/** フォントファミリ名を設定します。*/
-	void SetFontFamily(const String& value) { tr::Property::SetPropertyValueDirect<String>(this, FontFamilyProperty, value); }
+	void SetFontFamily(const String& value) { tr::PropertyInfo::SetPropertyValueDirect<String>(this, FontFamilyProperty, value); }
 
 	/** フォントファミリ名を取得します。*/
-	String GetFontFamily() const { return tr::Property::GetPropertyValueDirect<String>(this, FontFamilyProperty); }
+	String GetFontFamily() const { return tr::PropertyInfo::GetPropertyValueDirect<String>(this, FontFamilyProperty); }
 
 	/** フォントサイズを設定します。*/
-	void SetFontSize(int value) { tr::Property::SetPropertyValueDirect<int>(this, FontSizeProperty, value); }
+	void SetFontSize(int value) { tr::PropertyInfo::SetPropertyValueDirect<int>(this, FontSizeProperty, value); }
 
 	/** フォントサイズを取得します。*/
-	int GetFontSize() const { return tr::Property::GetPropertyValueDirect<int>(this, FontSizeProperty); }
+	int GetFontSize() const { return tr::PropertyInfo::GetPropertyValueDirect<int>(this, FontSizeProperty); }
 
 	/** フォントの太字有無を設定します。*/
-	void SetFontBold(bool value) { tr::Property::SetPropertyValueDirect<bool>(this, IsFontBoldProperty, value); }
+	void SetFontBold(bool value) { tr::PropertyInfo::SetPropertyValueDirect<bool>(this, IsFontBoldProperty, value); }
 
 	/** フォントの太字有無を取得します。*/
-	bool IsFontBold() const { return tr::Property::GetPropertyValueDirect<bool>(this, IsFontBoldProperty); }
+	bool IsFontBold() const { return tr::PropertyInfo::GetPropertyValueDirect<bool>(this, IsFontBoldProperty); }
 
 	/** フォントのイタリック体有無を設定します。*/
-	void SetFontItalic(bool value) { tr::Property::SetPropertyValueDirect<bool>(this, IsFontItalicProperty, value); }
+	void SetFontItalic(bool value) { tr::PropertyInfo::SetPropertyValueDirect<bool>(this, IsFontItalicProperty, value); }
 
 	/** フォントのイタリック体有無を取得します。*/
-	bool IsFontItalic() const { return tr::Property::GetPropertyValueDirect<bool>(this, IsFontItalicProperty); }
+	bool IsFontItalic() const { return tr::PropertyInfo::GetPropertyValueDirect<bool>(this, IsFontItalicProperty); }
 
 protected:
 	UITextElement();

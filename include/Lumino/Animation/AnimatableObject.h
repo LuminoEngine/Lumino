@@ -20,7 +20,7 @@ protected:
 	virtual void OnPropertyChanged(tr::PropertyChangedEventArgs* e) override;
 
 private:
-	void DeactivatePropertyAnimation(const tr::Property* targetProperty);
+	void DeactivatePropertyAnimation(const tr::PropertyInfo* targetProperty);
 
 	friend class detail::AnimationManager;
 	friend class AnimationClock;
