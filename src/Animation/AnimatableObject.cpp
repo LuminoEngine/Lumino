@@ -24,7 +24,7 @@ AnimatableObject::~AnimatableObject()
 //------------------------------------------------------------------------------
 void AnimatableObject::OnPropertyChanged(tr::PropertyChangedEventArgs* e)
 {
-	Object::OnPropertyChanged(e);
+	//Object::OnPropertyChanged(e);
 
 	// Animation による設定以外の場合は一度アニメーションを停止する
 	if (e->cause != tr::PropertySetSource::ByAnimation)
@@ -41,10 +41,12 @@ void AnimatableObject::DeactivatePropertyAnimation(const tr::PropertyInfo* targe
 	{
 		for (auto& playingCurveLineInst : clock->m_instanceList)
 		{
-			if (playingCurveLineInst->targetObject == this &&
-				playingCurveLineInst->targetProperty == targetProperty)
+			if (playingCurveLineInst->GetTargetObject() == this &&
+				playingCurveLineInst->GetTargetPropertyInfo() == targetProperty)
 			{
 				playingCurveLineInst->isActive = false;
+
+				
 			}
 		}
 	}

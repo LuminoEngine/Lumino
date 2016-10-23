@@ -10,6 +10,7 @@ class AnimationClock;
 */
 class AnimatableObject
 	: public Object
+	, public tr::IPropertyChangedListener
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:

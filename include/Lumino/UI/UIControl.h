@@ -34,16 +34,16 @@ protected:
 	virtual UIElement* GetVisualChildOrderd(int index) const override;
 	virtual SizeF MeasureOverride(const SizeF& constraint) override;
 	virtual SizeF ArrangeOverride(const SizeF& finalSize) override;
-	virtual VAlignment* GetPriorityContentVAlignment() override;
-	virtual HAlignment* GetPriorityContentHAlignment() override;
+	virtual const VAlignment* GetPriorityContentVAlignment() override;
+	virtual const HAlignment* GetPriorityContentHAlignment() override;
 
 LN_INTERNAL_ACCESS:
 	void SetVisualTreeRoot(UIElement* element);
 	UIElement* GetVisualTreeRoot() { return m_visualTreeRoot; }
 
 private:
-	VAlignment	m_verticalContentAlignment;
-	HAlignment	m_horizontalContentAlignment;
+	tr::Property<VAlignment>	m_verticalContentAlignment;
+	tr::Property<HAlignment>	m_horizontalContentAlignment;
 
 	UIElement*	m_visualTreeRoot;
 };

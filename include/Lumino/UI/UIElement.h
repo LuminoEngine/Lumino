@@ -212,8 +212,8 @@ LN_INTERNAL_ACCESS:
 	void Render(DrawingContext* g);
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	virtual HAlignment* GetPriorityContentHAlignment();
-	virtual VAlignment* GetPriorityContentVAlignment();
+	virtual const HAlignment* GetPriorityContentHAlignment();
+	virtual const VAlignment* GetPriorityContentVAlignment();
 
 
 LN_PROTECTED_INTERNAL_ACCESS:
@@ -226,8 +226,8 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual HAlignment GetLayoutHAlignment() const override;
 	virtual VAlignment GetLayoutVAlignment() const override;
 	virtual ILayoutElement* GetLayoutParent() const override;
-	virtual HAlignment* GetLayoutContentHAlignment() override;
-	virtual VAlignment* GetLayoutContentVAlignment() override;
+	virtual const HAlignment* GetLayoutContentHAlignment() override;
+	virtual const VAlignment* GetLayoutContentVAlignment() override;
 	virtual const SizeF& GetLayoutDesiredSize() const override;
 	virtual void SetLayoutDesiredSize(const SizeF& size) override;
 	virtual void SetLayoutFinalLocalRect(const RectF& rect) override;
@@ -257,17 +257,17 @@ private:
 	// Property
 	//		これらには直接値を設定しないこと。Property::SetValueDirect() を使う。
 	//		これによって必要にアニメーションを止めたりできる。
-	PointF					m_position;
-	SizeF					m_size;
+	tr::Property<PointF>	m_position;
+	tr::Property<SizeF>		m_size;
 	ThicknessF				m_margin;
 	ThicknessF				m_padding;
-	AlignmentAnchor			m_anchor;
-	HAlignment				m_horizontalAlignment;
-	VAlignment				m_verticalAlignment;
+	tr::Property<AlignmentAnchor>	m_anchor;
+	tr::Property<HAlignment>		m_horizontalAlignment;
+	tr::Property<VAlignment>		m_verticalAlignment;
 	detail::GridLayoutInfo	m_gridLayoutInfo;
 
-	BrushPtr				m_background;
-	BrushPtr				m_foreground;
+	tr::Property<BrushPtr>			m_background;
+	tr::Property<BrushPtr>			m_foreground;
 	//detail::BorderInfo				m_border;
 
 
@@ -275,8 +275,8 @@ private:
 	float							m_opacity;
 	//ToneF							m_tone;
 
-	BrushPtr				m_decoratorBackground;
-	float					m_decoratorOpacity;
+	tr::Property<BrushPtr>				m_decoratorBackground;
+	tr::Property<float>					m_decoratorOpacity;
 
 
 	//RefPtr<Style>					m_style;

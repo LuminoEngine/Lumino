@@ -69,8 +69,8 @@ void ILayoutElement::ArrangeLayout(const RectF& finalLocalRect)
 	ILayoutElement* parent = GetLayoutParent();
 	HAlignment  hAlign = GetLayoutHAlignment();
 	VAlignment    vAlign = GetLayoutVAlignment();
-	HAlignment* parentHAlign = (parent != nullptr) ? parent->GetLayoutContentHAlignment() : nullptr;
-	VAlignment*   parentVAlign = (parent != nullptr) ? parent->GetLayoutContentVAlignment() : nullptr;
+	const HAlignment* parentHAlign = (parent != nullptr) ? parent->GetLayoutContentHAlignment() : nullptr;
+	const VAlignment* parentVAlign = (parent != nullptr) ? parent->GetLayoutContentVAlignment() : nullptr;
 	if (parentHAlign != nullptr) hAlign = *parentHAlign;
 	if (parentVAlign != nullptr) vAlign = *parentVAlign;
 

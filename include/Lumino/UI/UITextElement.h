@@ -54,10 +54,10 @@ protected:
 LN_INTERNAL_ACCESS:
 	void OnFontPropertyChanged(tr::PropertyChangedEventArgs* e);
 
-	String			m_fontFamily;
-	int				m_fontSize;
-	bool			m_fontBold;
-	bool			m_fontItalic;
+	tr::Property<String>		m_fontFamily;
+	tr::Property<int>			m_fontSize;
+	tr::Property<bool>			m_fontBold;
+	tr::Property<bool>			m_fontItalic;
 
 	RawFontPtr		m_font;
 	bool			m_invalidateFont;

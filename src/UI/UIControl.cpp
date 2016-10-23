@@ -74,16 +74,16 @@ SizeF UIControl::ArrangeOverride(const SizeF& finalSize)
 
 
 //------------------------------------------------------------------------------
-HAlignment* UIControl::GetPriorityContentHAlignment()
+const HAlignment* UIControl::GetPriorityContentHAlignment()
 {
-	if (m_horizontalContentAlignment == VAlignment::Stretch) return nullptr;
-	return &m_horizontalContentAlignment;
+	if (m_horizontalContentAlignment.Get() == VAlignment::Stretch) return nullptr;
+	return &m_horizontalContentAlignment.Get();
 }
 //------------------------------------------------------------------------------
-VAlignment* UIControl::GetPriorityContentVAlignment()
+const VAlignment* UIControl::GetPriorityContentVAlignment()
 {
-	if (m_verticalContentAlignment == VAlignment::Stretch) return nullptr;
-	return &m_verticalContentAlignment;
+	if (m_verticalContentAlignment.Get() == VAlignment::Stretch) return nullptr;
+	return &m_verticalContentAlignment.Get();
 }
 
 //------------------------------------------------------------------------------

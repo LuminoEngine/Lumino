@@ -24,8 +24,8 @@ protected:
 	virtual HAlignment GetLayoutHAlignment() const = 0;
 	virtual VAlignment GetLayoutVAlignment() const = 0;
 	virtual ILayoutElement* GetLayoutParent() const = 0;
-	virtual HAlignment* GetLayoutContentHAlignment() = 0;
-	virtual VAlignment* GetLayoutContentVAlignment() = 0;
+	virtual const HAlignment* GetLayoutContentHAlignment() = 0;
+	virtual const VAlignment* GetLayoutContentVAlignment() = 0;
 	virtual const SizeF& GetLayoutDesiredSize() const = 0;
 	virtual void SetLayoutDesiredSize(const SizeF& size) = 0;
 	virtual void SetLayoutFinalLocalRect(const RectF& rect) = 0;

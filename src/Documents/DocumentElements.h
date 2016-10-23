@@ -81,8 +81,8 @@ protected:
 	virtual HAlignment GetLayoutHAlignment() const override;
 	virtual VAlignment GetLayoutVAlignment() const override;
 	virtual ILayoutElement* GetLayoutParent() const override;
-	virtual HAlignment* GetLayoutContentHAlignment() override;
-	virtual VAlignment* GetLayoutContentVAlignment() override;
+	virtual const HAlignment* GetLayoutContentHAlignment() override;
+	virtual const VAlignment* GetLayoutContentVAlignment() override;
 	virtual const SizeF& GetLayoutDesiredSize() const override;
 	virtual void SetLayoutDesiredSize(const SizeF& size) override;
 	virtual void SetLayoutFinalLocalRect(const RectF& rect) override;

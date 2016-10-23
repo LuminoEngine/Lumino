@@ -7,33 +7,22 @@
 
 LN_NAMESPACE_BEGIN
 
-class AnimationCurveInstance
+class AnimationCurveInstanceBase
 	: public RefObject
 {
 public:
 	RefPtr<AnimationCurve>	owner;
-	Object*			targetObject;		// TODO: アニメ実行中に Target がデストラクトされた時の対応
-	const tr::PropertyInfo*	targetProperty;
+	//Object*			targetObject;		// TODO: アニメ実行中に Target がデストラクトされた時の対応
+	//const tr::PropertyInfo*	targetProperty;
 	//Variant		StartValue;
 	bool			isActive;			// true の場合、実際に再生する (古い再生を停止するときに false にする。本来はリストから delete しても良いのだが、メモリ効率的に。)
-};
 
-template<typename TValue>
-class TypedAnimationCurveInstance
-	: public AnimationCurveInstance
-{
 public:
-	TValue	startValue;
-
-	TypedAnimationCurveInstance(AnimationCurve* owner_, Object* targetObject_, const tr::PropertyInfo* targetProperty_, const TValue& startValue_)
-		: startValue(startValue_)
-	{
-		owner = owner_;
-		targetObject = targetObject_;
-		targetProperty = targetProperty_;
-		isActive = true;
-	}
+	virtual bool ApplyPropertyAnimation(double time) = 0;
+	virtual AnimatableObject* GetTargetObject() = 0;
+	virtual const tr::PropertyInfo* GetTargetPropertyInfo() = 0;
 };
+
 
 
 /// 値を補完するクラスのベースクラス
@@ -59,12 +48,68 @@ public:
 
 	void SetTime(double time);
 
-	//virtual AnimationCurveInstance* CreateAnimationCurveInstance(Object* targetObject, tr::Property* targetProperty) = 0;
-	virtual bool ApplyPropertyAnimation(AnimationCurveInstance* instance, double time) { return false; }
-
 private:
 	WrapMode	m_wrapMode;
 };
+
+
+
+
+
+namespace detail {
+
+template<typename TValue>
+class ValueEasingCurveInstance
+	: public AnimationCurveInstanceBase
+{
+public:
+	TValue		m_startValue;
+	TValue		m_targetValue;
+	tr::PropertyRef<TValue> m_targetProperty;
+
+	ValueEasingCurveInstance(AnimationCurve* owner_, const tr::PropertyRef<TValue>& targetProperty, const TValue& startValue, const TValue& targetValue)
+		: m_startValue(startValue)
+		, m_targetValue(targetValue)
+		, m_targetProperty(targetProperty)
+	{
+		owner = owner_;
+		isActive = true;
+	}
+
+	virtual bool ApplyPropertyAnimation(double time) override
+	{
+		// 経過時間 0 の場合はそのままセットで良い。0除算対策の意味も込めて。
+		// また、時間が既に終端を超えていたり、比較関数が無い場合も直値セット。
+		if (m_duration == 0 || m_duration <= time || m_easingFunction == nullptr)
+		{
+			tr::PropertyInfo::SetPropertyValueDirect(m_targetProperty, m_targetValue, tr::PropertySetSource::ByAnimation);
+		}
+		// 時間が 0 以前の場合は初期値
+		else if (time <= 0)
+		{
+			tr::PropertyInfo::SetPropertyValueDirect<TValue>(m_targetProperty, startValue, tr::PropertySetSource::ByAnimation);
+		}
+		// 補間で求める
+		else
+		{
+			tr::PropertyInfo::SetPropertyValueDirect<TValue>(m_targetProperty, m_easingFunction(time, m_startValue, m_targetValue - m_startValue, m_duration), tr::PropertySetSource::ByAnimation);
+		}
+
+		return (time < m_duration);
+	}
+
+	virtual AnimatableObject* GetTargetObject() override
+	{
+		return static_cast<AnimatableObject*>(m_targetProperty.GetOwenr().Get());
+	}
+
+	virtual const tr::PropertyInfo* GetTargetPropertyInfo() override
+	{
+		return m_targetProperty.GetPropertyInfo();
+	}
+};
+
+} // namespace detail
 
 
 template<typename TValue>
@@ -106,40 +151,11 @@ public:
 
 	void SetDuration(double duration) { m_duration = duration; }
 
-	AnimationCurveInstance* CreateAnimationCurveInstance(Object* targetObject, const tr::PropertyInfo* targetProperty, const TValue& startValue)
+	AnimationCurveInstanceBase* CreateAnimationCurveInstance(const tr::PropertyRef<TValue>& targetProperty, const TValue& startValue)
 	{
-		return LN_NEW TypedAnimationCurveInstance<TValue>(this, targetObject, targetProperty, startValue);
+		return LN_NEW detail::ValueEasingCurveInstance<TValue>(this, targetProperty, startValue, m_targetValue);
 	}
-
-	//virtual bool ApplyPropertyAnimation(AnimationCurveInstance* instance_,/*Object* targetObject, tr::Property* targetProp, const TValue& startValue, */double time)
-	//{
- //       return (time < m_duration);
-	//}
- //   
- //   
-	virtual bool ApplyPropertyAnimation(AnimationCurveInstance* instance_,/*Object* targetObject, tr::Property* targetProp, const TValue& startValue, */double time) override
-    {
-        TypedAnimationCurveInstance<TValue>* instance = static_cast<TypedAnimationCurveInstance<TValue>*>(instance_);
-        
-        // 経過時間 0 の場合はそのままセットで良い。0除算対策の意味も込めて。
-        // また、時間が既に終端を超えていたり、比較関数が無い場合も直値セット。
-        if (m_duration == 0 || m_duration <= time || m_easingFunction == nullptr)
-        {
-            tr::PropertyInfo::SetPropertyValueDirect(instance->targetObject, instance->targetProperty, m_targetValue, tr::PropertySetSource::ByAnimation);
-        }
-        // 時間が 0 以前の場合は初期値
-        else if (time <= 0)
-        {
-			tr::PropertyInfo::SetPropertyValueDirect<TValue>(instance->targetObject, instance->targetProperty, instance->startValue, tr::PropertySetSource::ByAnimation);
-        }
-        // 補間で求める
-        else
-        {
-			tr::PropertyInfo::SetPropertyValueDirect<TValue>(instance->targetObject, instance->targetProperty, m_easingFunction(time, instance->startValue, m_targetValue - instance->startValue, m_duration), tr::PropertySetSource::ByAnimation);
-        }
-        
-        return (time < m_duration);
-    }
+	
 
 private:
 	TValue		m_targetValue;
@@ -199,21 +215,6 @@ public:
 	virtual ValueType GetValueType() const { return ValueType_Float; }
 	virtual void UpdateValue(double time);
 	virtual double GetLastFrameTime() const;
-
-#if 0
-	//template<typename TValue>
-	/*virtual*/ AnimationCurveInstance* CreateAnimationCurveInstance(Object* targetObject, tr::Property* targetProperty, float startValue)
-	{
-		return LN_NEW TypedAnimationCurveInstance<float>(this, targetObject, targetProperty, startValue);
-	}
-
-	bool ApplyPorpertyAnimation(Object* targetObject, tr::Property* targetProp, float startValue, float time)
-	{
-		UpdateValue(time);
-		targetObject->SetTypedPropertyValue<float>(targetProp, GetValue());
-		return (time < m_duration);
-	}
-#endif
 
 private:
 	typedef Array<FloatKeyFrame>	KeyFrameList;

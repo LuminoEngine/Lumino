@@ -77,11 +77,11 @@ void AnimationClock::SetTime(double time)
 	// とりあえず true にしておいて、タイムラインが1つでも実行中だったら false にする
 	m_isFinished = true;
 
-	for (RefPtr<AnimationCurveInstance>& tli : m_instanceList)
+	for (RefPtr<AnimationCurveInstanceBase>& tli : m_instanceList)
 	{
 		if (tli->isActive)
 		{
-			bool r = tli->owner->ApplyPropertyAnimation(tli, time);
+			bool r = tli->ApplyPropertyAnimation(time);
 			if (r) {
 				m_isFinished = false;
 			}

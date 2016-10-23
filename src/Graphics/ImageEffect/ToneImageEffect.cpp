@@ -14,7 +14,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 // ToneImageEffect
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ToneImageEffect, ImageEffect);
-LN_TR_PROPERTY_IMPLEMENT(ToneImageEffect, ToneF, Tone, "Tone", m_tone, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(ToneImageEffect, Vector4, Tone, "Tone", m_tone, tr::PropertyMetadata());
 
 static const byte_t g_ToneImageEffect_fx_Data[] =
 {
@@ -63,15 +63,15 @@ void ToneImageEffect::ChangeTone(const ToneF& tone, double time)
 {
 	auto anim = ValueEasingCurve<Vector4>::Create(tone, time, EasingMode::Linear);
 	AnimationClock* ac = m_manager->GetAnimationManager()->StartPropertyAnimation(this);
-	ac->AddAnimationCurve(anim.Get(), this, ToneImageEffect::Tone, m_tone);
+	ac->AddAnimationCurve(anim.Get(), this, ToneImageEffect::Tone, m_tone.Get());
 }
 
 //------------------------------------------------------------------------------
 void ToneImageEffect::OnRender(RenderingContext* context, RenderTarget* source, RenderTarget* destination)
 {
-	if (m_tone != ToneF::Zero)
+	if (m_tone != Vector4::Zero)
 	{
-		m_shader.varTone->SetVector(m_tone);
+		m_shader.varTone->SetVector(m_tone.Get());
 		m_shader.varScreenTexture->SetTexture(source);
 		context->Blt(nullptr, destination, m_shader.shader);
 	}

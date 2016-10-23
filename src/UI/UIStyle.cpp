@@ -109,7 +109,7 @@ void UIStylePropertyTable::ApplyInternal(UIElement* targetElement, const UIStyle
 
 			auto anim = ValueEasingCurve<float>::Create(target, setter.time, setter.easingMode);
 			AnimationClock* ac = targetElement->GetManager()->GetAnimationManager()->StartPropertyAnimation(targetElement);
-			ac->AddAnimationCurve(anim.Get(), targetElement, setter.m_targetProperty, now);
+			ac->AddAnimationCurve(anim.Get(), targetElement, static_cast<const tr::TypedPropertyInfo<float>*>(setter.m_targetProperty), now);
 		}
 		else
 		{

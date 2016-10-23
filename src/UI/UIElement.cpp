@@ -43,8 +43,8 @@ UIElement::UIElement()
 	, m_parent(nullptr)
 	, m_localStyle(nullptr)
 	, m_currentVisualStateStyle(nullptr)
-	, m_position(0, 0)
-	, m_size(NAN, NAN)
+	, m_position(PointF(0, 0))
+	, m_size(SizeF(NAN, NAN))
 	, m_anchor(AlignmentAnchor::None)
 	, m_horizontalAlignment(HAlignment::Center)
 	, m_verticalAlignment(VAlignment::Center)
@@ -178,15 +178,15 @@ void UIElement::OnLayoutUpdated()
 //------------------------------------------------------------------------------
 void UIElement::OnRender(DrawingContext* g)
 {
-	if (m_background != nullptr)
+	if (m_background.Get() != nullptr)
 	{
-		g->SetBrush(m_background);
+		g->SetBrush(m_background.Get());
 		g->SetOpacity(m_combinedOpacity);
 		g->DrawRectangle(RectF(0, 0, m_finalLocalRect.GetSize()));
 	}
-	if (m_decoratorBackground != nullptr)
+	if (m_decoratorBackground.Get() != nullptr)
 	{
-		g->SetBrush(m_decoratorBackground);
+		g->SetBrush(m_decoratorBackground.Get());
 		g->SetOpacity(m_combinedOpacity * m_decoratorOpacity);
 		g->DrawRectangle(RectF(0, 0, m_finalLocalRect.GetSize()));
 	}
@@ -428,8 +428,8 @@ void UIElement::OnUpdatingLayout()
 void UIElement::UpdateLayout(const SizeF& viewSize)
 {
 	SizeF size(
-		Math::IsNaNOrInf(m_size.width) ? viewSize.width : m_size.width,
-		Math::IsNaNOrInf(m_size.height) ? viewSize.height : m_size.height);
+		Math::IsNaNOrInf(m_size.Get().width) ? viewSize.width : m_size.Get().width,
+		Math::IsNaNOrInf(m_size.Get().height) ? viewSize.height : m_size.Get().height);
 
 	// サイズが定まっていない場合はレイアウトを決定できない
 	// TODO: 例外の方が良いかも？
@@ -481,13 +481,13 @@ void UIElement::Render(DrawingContext* g)
 }
 
 //------------------------------------------------------------------------------
-HAlignment* UIElement::GetPriorityContentHAlignment()
+const HAlignment* UIElement::GetPriorityContentHAlignment()
 {
 	return nullptr;
 }
 
 //------------------------------------------------------------------------------
-VAlignment* UIElement::GetPriorityContentVAlignment()
+const VAlignment* UIElement::GetPriorityContentVAlignment()
 {
 	return nullptr;
 }
@@ -523,8 +523,8 @@ AlignmentAnchor UIElement::GetLayoutAnchor() const { return m_anchor; }
 HAlignment UIElement::GetLayoutHAlignment() const { return m_horizontalAlignment; }
 VAlignment UIElement::GetLayoutVAlignment() const { return m_verticalAlignment; }
 ILayoutElement* UIElement::GetLayoutParent() const { return m_parent; }
-HAlignment* UIElement::GetLayoutContentHAlignment() { return GetPriorityContentHAlignment(); }
-VAlignment* UIElement::GetLayoutContentVAlignment() { return GetPriorityContentVAlignment(); }
+const HAlignment* UIElement::GetLayoutContentHAlignment() { return GetPriorityContentHAlignment(); }
+const VAlignment* UIElement::GetLayoutContentVAlignment() { return GetPriorityContentVAlignment(); }
 const SizeF& UIElement::GetLayoutDesiredSize() const { return m_desiredSize; }
 void UIElement::SetLayoutDesiredSize(const SizeF& size) { m_desiredSize = size; }
 void UIElement::SetLayoutFinalLocalRect(const RectF& rect) { m_finalLocalRect = rect; }

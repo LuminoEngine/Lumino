@@ -99,8 +99,8 @@ AlignmentAnchor TextElement::GetLayoutAnchor() const { return m_anchor; }
 HAlignment TextElement::GetLayoutHAlignment() const { return m_horizontalAlignment; }
 VAlignment TextElement::GetLayoutVAlignment() const { return m_verticalAlignment; }
 ILayoutElement* TextElement::GetLayoutParent() const { return m_parent; }
-HAlignment* TextElement::GetLayoutContentHAlignment() { return nullptr; }
-VAlignment* TextElement::GetLayoutContentVAlignment() { return nullptr; }
+const HAlignment* TextElement::GetLayoutContentHAlignment() { return nullptr; }
+const VAlignment* TextElement::GetLayoutContentVAlignment() { return nullptr; }
 const SizeF& TextElement::GetLayoutDesiredSize() const { return m_desiredSize; }
 void TextElement::SetLayoutDesiredSize(const SizeF& size) { m_desiredSize = size; }
 void TextElement::SetLayoutFinalLocalRect(const RectF& rect) { m_finalLocalRect = rect; }
