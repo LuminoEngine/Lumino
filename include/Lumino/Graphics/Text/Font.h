@@ -24,16 +24,28 @@ class Font
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
-	/**  */
+	/**
+		@brief	デフォルトのスタイルに基づいてフォントを作成します。
+	*/
 	static FontPtr Create();
+	
+	/**
+		@brief	指定したフォントファミリとデフォルトのサイズに基づいてフォントを作成します。
+	*/
+	static FontPtr Create(const String& family);
+	
+	/**
+		@brief	指定したフォントファミリとサイズに基づいてフォントを作成します。
+	*/
+	static FontPtr Create(const String& family, float size);
 
 public:
 
 	/** フォントファミリ名の設定 */
-	void SetName(const String& familyName);
+	void SetFamily(const String& familyName);
 
 	/** フォントファミリ名の取得 */
-	const String& GetName() const;
+	const String& GetFamily() const;
 
 	/** フォントサイズの有効設定 */
 	void SetSize(int size);

@@ -23,6 +23,23 @@ FontPtr Font::Create()
 }
 
 //------------------------------------------------------------------------------
+FontPtr Font::Create(const String& family)
+{
+	auto ptr = FontPtr::MakeRef();
+	ptr->SetFamily(family);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
+FontPtr Font::Create(const String& family, float size)
+{
+	auto ptr = FontPtr::MakeRef();
+	ptr->SetFamily(family);
+	ptr->SetSize(size);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
 Font::Font()
 	: m_manager(nullptr)
 	, m_fontInfo()
@@ -40,18 +57,17 @@ void Font::Initialize(detail::GraphicsManager* manager)
 //------------------------------------------------------------------------------
 Font::~Font()
 {
-
 }
 
 //------------------------------------------------------------------------------
-void Font::SetName(const String& familyName)
+void Font::SetFamily(const String& familyName)
 {
 	m_fontInfo.Family = familyName;
 	m_rawFont = nullptr;
 }
 
 //------------------------------------------------------------------------------
-const String& Font::GetName() const
+const String& Font::GetFamily() const
 {
 	return m_fontInfo.Family;
 }

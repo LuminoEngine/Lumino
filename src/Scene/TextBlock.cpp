@@ -68,6 +68,18 @@ void TextBlock2D::SetText(const StringRef& text)
 }
 
 //------------------------------------------------------------------------------
+void TextBlock2D::SetAnchor(const Vector2& ratio)
+{
+	m_anchor = ratio;
+}
+
+//------------------------------------------------------------------------------
+void TextBlock2D::SetAnchor(float ratioX, float ratioY)
+{
+	m_anchor.Set(ratioX, ratioY);
+}
+
+//------------------------------------------------------------------------------
 void TextBlock2D::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 {
 	VisualNode::UpdateFrameHierarchy(parent, deltaTime);
@@ -84,7 +96,8 @@ detail::Sphere TextBlock2D::GetBoundingSphere()
 //------------------------------------------------------------------------------
 void TextBlock2D::OnRender(SceneGraphRenderingContext* dc)
 {
-	m_paragraph->Render(m_combinedGlobalMatrix, dc);
+	const SizeF& size = m_paragraph->GetRenderSize();
+	m_paragraph->Render(Matrix::MakeTranslation(-size.width * m_anchor.x, -size.height * m_anchor.y, 0) * m_combinedGlobalMatrix, dc);
 }
 
 LN_NAMESPACE_SCENE_END

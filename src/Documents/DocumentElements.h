@@ -100,6 +100,7 @@ LN_INTERNAL_ACCESS:
 	void SetParent(TextElement* parent) { m_parent = parent; }
 	TextElement* GetParent() const { return m_parent; }
 	const SizeF& GetDesiredSize() const { return m_desiredSize; }
+	const SizeF& GetRenderSize() const { return m_finalLocalRect.GetSize(); }
 
 private:
 	DocumentsManager*		m_manager;

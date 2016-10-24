@@ -227,10 +227,32 @@ TEST_F(Test_Scene_TextBlock2D, Basic)
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_TextBlock2D.Basic1.png")));
 	}
 	{
-		auto text = TextBlock2D::Create();
-		text->SetText(_T("Lumino"));
-		text->SetPosition(100, 20, 0);
+		auto text1 = TextBlock2D::Create();
+		text1->SetText(_T("upper left"));
+		text1->SetPosition(0, 0, 0);
+		text1->SetAnchor(0, 0);
+
+		auto text2 = TextBlock2D::Create();
+		text2->SetText(_T("upper right"));
+		text2->SetPosition(160, 0, 0);
+		text2->SetAnchor(1, 0);
+
+		auto text3 = TextBlock2D::Create();
+		text3->SetText(_T("lower left"));
+		text3->SetPosition(0, 120, 0);
+		text3->SetAnchor(0, 1);
+
+		auto text4 = TextBlock2D::Create();
+		text4->SetText(_T("lower right"));
+		text4->SetPosition(160, 120, 0);
+		text4->SetAnchor(1, 1);
+
+		auto text5 = TextBlock2D::Create();
+		text5->SetText(_T("center"));
+		text5->SetPosition(80, 60, 0);
+		text5->SetAnchor(0.5, 0.5);
+
 		Engine::UpdateFrame();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_TextBlock2D.Basic2.png"), 99, true));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_TextBlock2D.Basic2.png")));
 	}
 }
