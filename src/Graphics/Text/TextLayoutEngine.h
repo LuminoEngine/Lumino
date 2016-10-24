@@ -68,7 +68,7 @@ private:
 	void LayoutLineHorizontal(const UTF32* text, int length, const Rect& lineArea, SizeI* outLineSize);
 
 private:
-	RefPtr<RawFont>		m_font;
+	RawFont*			m_font;
 	//Graphics::Color	m_foreColor;
 	//Graphics::Color	m_strokeColor;
 	int					m_strokeSize;

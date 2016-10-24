@@ -66,7 +66,7 @@ private:
 	typedef std::map<UTF32, CachedGlyphInfo>	CachedGlyphInfoMap;
 
 	GraphicsManager*		m_manager;
-	RefPtr<RawFont>			m_font;
+	RawFont*				m_font;
 	int						m_maxCacheGlyphs;		// キャッシュできる最大文字数
 	SizeI					m_glyphMaxBitmapSize;	// 現在のフォントの1文字分のビットマップの最大サイズ
 	int						m_glyphWidthCount;

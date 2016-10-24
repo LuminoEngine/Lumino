@@ -52,7 +52,7 @@ protected:
 	virtual void OnUpdateStyle(UIStylePropertyTable* localStyle, detail::InvalidateFlags invalidateFlags) override;
 
 LN_INTERNAL_ACCESS:
-	void OnFontPropertyChanged(tr::PropertyChangedEventArgs* e);
+	static void OnFontPropertyChanged(Object* obj, tr::PropertyChangedEventArgs* e);
 
 	tr::Property<String>		m_fontFamily;
 	tr::Property<int>			m_fontSize;

@@ -23,7 +23,7 @@ public:
 	virtual const tr::PropertyInfo* GetTargetPropertyInfo() = 0;
 };
 
-
+template<typename TValue> class ValueEasingCurve;
 
 /// 値を補完するクラスのベースクラス
 class AnimationCurve
@@ -63,12 +63,14 @@ class ValueEasingCurveInstance
 	: public AnimationCurveInstanceBase
 {
 public:
+	ValueEasingCurve<TValue>*	m_owner;
 	TValue		m_startValue;
 	TValue		m_targetValue;
 	tr::PropertyRef<TValue> m_targetProperty;
 
-	ValueEasingCurveInstance(AnimationCurve* owner_, const tr::PropertyRef<TValue>& targetProperty, const TValue& startValue, const TValue& targetValue)
-		: m_startValue(startValue)
+	ValueEasingCurveInstance(ValueEasingCurve<TValue>* owner_, const tr::PropertyRef<TValue>& targetProperty, const TValue& startValue, const TValue& targetValue)
+		: m_owner(owner_)
+		, m_startValue(startValue)
 		, m_targetValue(targetValue)
 		, m_targetProperty(targetProperty)
 	{
@@ -78,24 +80,7 @@ public:
 
 	virtual bool ApplyPropertyAnimation(double time) override
 	{
-		// 経過時間 0 の場合はそのままセットで良い。0除算対策の意味も込めて。
-		// また、時間が既に終端を超えていたり、比較関数が無い場合も直値セット。
-		if (m_duration == 0 || m_duration <= time || m_easingFunction == nullptr)
-		{
-			tr::PropertyInfo::SetPropertyValueDirect(m_targetProperty, m_targetValue, tr::PropertySetSource::ByAnimation);
-		}
-		// 時間が 0 以前の場合は初期値
-		else if (time <= 0)
-		{
-			tr::PropertyInfo::SetPropertyValueDirect<TValue>(m_targetProperty, startValue, tr::PropertySetSource::ByAnimation);
-		}
-		// 補間で求める
-		else
-		{
-			tr::PropertyInfo::SetPropertyValueDirect<TValue>(m_targetProperty, m_easingFunction(time, m_startValue, m_targetValue - m_startValue, m_duration), tr::PropertySetSource::ByAnimation);
-		}
-
-		return (time < m_duration);
+		return ApplyPropertyAnimationInternal(time);
 	}
 
 	virtual AnimatableObject* GetTargetObject() override
@@ -107,6 +92,9 @@ public:
 	{
 		return m_targetProperty.GetPropertyInfo();
 	}
+
+private:
+	bool ApplyPropertyAnimationInternal(double time);
 };
 
 } // namespace detail
@@ -150,12 +138,16 @@ public:
 	}
 
 	void SetDuration(double duration) { m_duration = duration; }
+	double GetDuration() const { return m_duration; }
+
+
 
 	AnimationCurveInstanceBase* CreateAnimationCurveInstance(const tr::PropertyRef<TValue>& targetProperty, const TValue& startValue)
 	{
 		return LN_NEW detail::ValueEasingCurveInstance<TValue>(this, targetProperty, startValue, m_targetValue);
 	}
 	
+	const std::function< TValue(double, TValue, TValue, double) >& GetEasingFunction() const { return m_easingFunction; }
 
 private:
 	TValue		m_targetValue;
@@ -165,6 +157,41 @@ private:
 };
 
 
+
+
+
+namespace detail {
+
+
+//------------------------------------------------------------------------------
+template<typename TValue>
+bool ValueEasingCurveInstance<TValue>::ApplyPropertyAnimationInternal(double time)
+{
+	double duration = m_owner->GetDuration();
+	auto easingFunction = m_owner->GetEasingFunction();
+
+	// 経過時間 0 の場合はそのままセットで良い。0除算対策の意味も込めて。
+	// また、時間が既に終端を超えていたり、比較関数が無い場合も直値セット。
+	if (duration == 0 || duration <= time || easingFunction == nullptr)
+	{
+		tr::PropertyInfo::SetPropertyValueDirect(m_targetProperty, m_targetValue, tr::PropertySetSource::ByAnimation);
+	}
+	// 時間が 0 以前の場合は初期値
+	else if (time <= 0)
+	{
+		tr::PropertyInfo::SetPropertyValueDirect<TValue>(m_targetProperty, m_startValue, tr::PropertySetSource::ByAnimation);
+	}
+	// 補間で求める
+	else
+	{
+		tr::PropertyInfo::SetPropertyValueDirect<TValue>(m_targetProperty, easingFunction(time, m_startValue, m_targetValue - m_startValue, duration), tr::PropertySetSource::ByAnimation);
+	}
+
+	return (time < duration);
+}
+
+
+} // namespace detail
 
 
 /// FloatAnimationCurve のキーフレーム

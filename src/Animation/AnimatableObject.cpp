@@ -22,16 +22,16 @@ AnimatableObject::~AnimatableObject()
 }
 
 //------------------------------------------------------------------------------
-void AnimatableObject::OnPropertyChanged(tr::PropertyChangedEventArgs* e)
-{
-	//Object::OnPropertyChanged(e);
-
-	// Animation による設定以外の場合は一度アニメーションを停止する
-	if (e->cause != tr::PropertySetSource::ByAnimation)
-	{
-		DeactivatePropertyAnimation(e->changedProperty);
-	}
-}
+//void AnimatableObject::OnPropertyChanged(tr::PropertyChangedEventArgs* e)
+//{
+//	//Object::OnPropertyChanged(e);
+//
+//	// Animation による設定以外の場合は一度アニメーションを停止する
+//	if (e->cause != tr::PropertySetSource::ByAnimation)
+//	{
+//		DeactivatePropertyAnimation(e->changedProperty);
+//	}
+//}
 
 //------------------------------------------------------------------------------
 void AnimatableObject::DeactivatePropertyAnimation(const tr::PropertyInfo* targetProperty)

@@ -12,10 +12,10 @@ LN_NAMESPACE_BEGIN
 // UITextElement
 //==============================================================================
 LN_UI_TYPEINFO_IMPLEMENT(UITextElement, UIElement);
-LN_TR_PROPERTY_IMPLEMENT(UITextElement, String, FontFamilyProperty, "FontFamily", m_fontFamily, tr::PropertyMetadata(_T(""), &UITextElement::OnFontPropertyChanged));
-LN_TR_PROPERTY_IMPLEMENT(UITextElement, int, FontSizeProperty, "FontSize", m_fontSize, tr::PropertyMetadata(_T(""), &UITextElement::OnFontPropertyChanged));
-LN_TR_PROPERTY_IMPLEMENT(UITextElement, bool, IsFontBoldProperty, "IsFontBold", m_fontBold, tr::PropertyMetadata(_T(""), &UITextElement::OnFontPropertyChanged));
-LN_TR_PROPERTY_IMPLEMENT(UITextElement, bool, IsFontItalicProperty, "IsFontItalic", m_fontItalic, tr::PropertyMetadata(_T(""), &UITextElement::OnFontPropertyChanged));
+LN_TR_PROPERTY_IMPLEMENT(UITextElement, String, FontFamilyProperty, "FontFamily", m_fontFamily, tr::PropertyMetadata(_T("")));
+LN_TR_PROPERTY_IMPLEMENT(UITextElement, int, FontSizeProperty, "FontSize", m_fontSize, tr::PropertyMetadata(_T("")));
+LN_TR_PROPERTY_IMPLEMENT(UITextElement, bool, IsFontBoldProperty, "IsFontBold", m_fontBold, tr::PropertyMetadata(_T("")));
+LN_TR_PROPERTY_IMPLEMENT(UITextElement, bool, IsFontItalicProperty, "IsFontItalic", m_fontItalic, tr::PropertyMetadata(_T("")));
 
 
 //------------------------------------------------------------------------------
@@ -26,6 +26,10 @@ UITextElement::UITextElement()
 	, m_fontItalic(false)
 	, m_invalidateFont(true)
 {
+	m_fontFamily.SetStaticListener(this, OnFontPropertyChanged);
+	m_fontSize.SetStaticListener(this, OnFontPropertyChanged);
+	m_fontBold.SetStaticListener(this, OnFontPropertyChanged);
+	m_fontItalic.SetStaticListener(this, OnFontPropertyChanged);
 }
 
 //------------------------------------------------------------------------------
@@ -67,9 +71,10 @@ void UITextElement::OnUpdateStyle(UIStylePropertyTable* localStyle, detail::Inva
 }
 
 //------------------------------------------------------------------------------
-void UITextElement::OnFontPropertyChanged(tr::PropertyChangedEventArgs* e)
+void UITextElement::OnFontPropertyChanged(Object* obj, tr::PropertyChangedEventArgs* e)
+//void UITextElement::OnFontPropertyChanged(tr::PropertyChangedEventArgs* e)
 {
-	m_invalidateFont = true;
+	static_cast<UITextElement*>(obj)->m_invalidateFont = true;
 	// TODO: InvalidateMeasure
 }
 

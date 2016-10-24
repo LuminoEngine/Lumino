@@ -10,7 +10,7 @@ class AnimationClock;
 */
 class AnimatableObject
 	: public Object
-	, public tr::IPropertyChangedListener
+	//, public tr::IPropertyChangedListener
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
@@ -18,7 +18,7 @@ public:
 	virtual ~AnimatableObject();
 
 protected:
-	virtual void OnPropertyChanged(tr::PropertyChangedEventArgs* e) override;
+	//virtual void OnPropertyChanged(tr::PropertyChangedEventArgs* e) override;
 
 private:
 	void DeactivatePropertyAnimation(const tr::PropertyInfo* targetProperty);

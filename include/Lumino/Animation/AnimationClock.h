@@ -45,7 +45,7 @@ public:
 	template<typename TCurve, typename TValue>
 	void AddAnimationCurve(TCurve* curve, AnimatableObject* targetObject, const tr::TypedPropertyInfo<TValue>* targetPropertyInfo,/*const tr::PropertyRef<TValue>& targetProperty, */const TValue& startValue)
 	{
-		auto targetProperty = tr::PropertyInfo::GetProperty(this, targetPropertyInfo);
+		auto targetProperty = tr::PropertyInfo::GetProperty(targetObject, targetPropertyInfo);
 		targetObject->DeactivatePropertyAnimation(targetPropertyInfo);
 
 		RefPtr<AnimationCurveInstanceBase> inst(curve->CreateAnimationCurveInstance(targetProperty, startValue), false);
