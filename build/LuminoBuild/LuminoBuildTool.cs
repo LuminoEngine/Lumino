@@ -256,6 +256,12 @@ namespace LuminoBuildTool
 			}
 		}
 
+        public static int TryCallProcess(string program, string args)
+        {
+            string dummy;
+            return TryCallProcessStdErr(program, args, out dummy);
+        }
+
         public static int TryCallProcessStdErr(string program, string args, out string outStdErr)
         {
             using (Process p = new Process())

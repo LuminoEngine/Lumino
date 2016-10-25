@@ -38,3 +38,15 @@ mkdir build_msvc140x64u_MT
 cd build_msvc140x86u_MT
 cmake -G"Visual Studio 14 Win64" -DLN_USE_UNICODE_CHAR_SET=ON -DLN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME=ON ../..
 cd ..
+
+
+mkdir build_msvc140x86_MT_llvm
+cd build_msvc140x86_MT_llvm
+cmake -G"Visual Studio 14" -DLN_USE_UNICODE_CHAR_SET=OFF -DLN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME=ON -T"LLVM-vs2014" ../..
+cd ..
+
+mkdir build_msvc140x86u_MT_llvm
+cd build_msvc140x86u_MT_llvm
+cmake -G"Visual Studio 14" -DLN_USE_UNICODE_CHAR_SET=ON -DLN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME=ON -T"LLVM-vs2014" ../..
+cd ..
+

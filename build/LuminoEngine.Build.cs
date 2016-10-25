@@ -50,8 +50,8 @@ class LuminoEngineRule : ModuleRule
         {
             var targets = new []
             {
-                //new { DirName = "build_msvc120x86_MT", VSTarget = "Visual Studio 12", Unicode = "OFF", Platform="Win32" },
-                //new { DirName = "build_msvc120x86u_MT", VSTarget = "Visual Studio 12", Unicode = "ON", Platform="Win32" },
+                new { DirName = "build_msvc120x86_MT", VSTarget = "Visual Studio 12", Unicode = "OFF", Platform="Win32" },
+                new { DirName = "build_msvc120x86u_MT", VSTarget = "Visual Studio 12", Unicode = "ON", Platform="Win32" },
                 //new { DirName = "build_msvc120x64_MT", VSTarget = "Visual Studio 12 Win64", Unicode = "OFF" },
                 //new { DirName = "build_msvc120x64u_MT", VSTarget = "Visual Studio 12 Win64", Unicode = "ON" },
                 new { DirName = "build_msvc140x86_MT", VSTarget = "Visual Studio 14", Unicode = "OFF", Platform="Win32" },
@@ -65,9 +65,11 @@ class LuminoEngineRule : ModuleRule
             {
                 Directory.CreateDirectory(builder.LuminoBuildDir + t.DirName);
                 Directory.SetCurrentDirectory(builder.LuminoBuildDir + t.DirName);
-                Utils.CallProcess("cmake", string.Format("-G\"{0}\" -DLN_USE_UNICODE_CHAR_SET={1} -DLN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME=ON ../..", t.VSTarget, t.Unicode));
-                Utils.CallProcess(_msbuild, string.Format("Lumino.sln /t:Build /p:Configuration=\"Debug\" /p:Platform=\"{0}\" /m", t.Platform));
-                Utils.CallProcess(_msbuild, string.Format("Lumino.sln /t:Build /p:Configuration=\"Release\" /p:Platform=\"{0}\" /m", t.Platform));
+                if (Utils.TryCallProcess("cmake", string.Format("-G\"{0}\" -DLN_USE_UNICODE_CHAR_SET={1} -DLN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME=ON ../..", t.VSTarget, t.Unicode)) == 0)
+                {
+                    Utils.CallProcess(_msbuild, string.Format("Lumino.sln /t:Build /p:Configuration=\"Debug\" /p:Platform=\"{0}\" /m", t.Platform));
+                    Utils.CallProcess(_msbuild, string.Format("Lumino.sln /t:Build /p:Configuration=\"Release\" /p:Platform=\"{0}\" /m", t.Platform));
+                }
             }
         }
         else
