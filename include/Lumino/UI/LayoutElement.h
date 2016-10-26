@@ -87,8 +87,16 @@ public:
 			outRect->width = desiredSize.width;
 			break;
 		case HAlignment::Stretch:
-			outRect->x = 0;
-			outRect->width = areaSize.width;
+			if (Math::IsNaN(desiredSize.width))
+			{
+				outRect->x = 0;
+				outRect->width = areaSize.width;
+			}
+			else
+			{
+				outRect->x = (areaSize.width - desiredSize.width) / 2;
+				outRect->width = desiredSize.width;
+			}
 			break;
 		}
 	}
@@ -110,8 +118,16 @@ public:
 			outRect->height = desiredSize.height;
 			break;
 		case VAlignment::Stretch:
-			outRect->y = 0;
-			outRect->height = areaSize.height;
+			if (Math::IsNaN(desiredSize.height))
+			{
+				outRect->y = 0;
+				outRect->height = areaSize.height;
+			}
+			else
+			{
+				outRect->y = (areaSize.height - desiredSize.height) / 2;
+				outRect->height = desiredSize.height;
+			}
 			break;
 		}
 	}

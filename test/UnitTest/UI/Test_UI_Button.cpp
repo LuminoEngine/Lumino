@@ -44,7 +44,7 @@ TEST_F(Test_UI_GridLayout, Basic)
 
 	Engine::UpdateFrame();
 
-	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.Basic.png")));
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.Basic1.png")));
 
 	// button ‚ÌŽQÆ‚ðØ‚Á‚Ä‚à‚Ü‚¾¶‚«‚Ä‚¢‚é
 	button.SafeRelease();
@@ -55,6 +55,21 @@ TEST_F(Test_UI_GridLayout, Basic)
 	// root ‚©‚ç‚ÌŽQÆ‚ðØ‚é‚Æ‚æ‚¤‚â‚­íœ‚³‚ê‚é
 	uiRoot->SetContent(nullptr);
 	ASSERT_EQ(false, ref.IsAlive());
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_UI_GridLayout, DefaultLayout)
+{
+	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+
+	auto grid1 = UIGridLayout::Create();
+	auto button1 = UIButton::Create();
+	grid1->AddChild(button1);
+	uiRoot->SetContent(grid1);
+
+	Engine::UpdateFrame();
+
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.DefaultLayout1.png")));
 }
 
 //------------------------------------------------------------------------------
@@ -117,4 +132,45 @@ TEST_F(Test_UI_GridLayout, Layout)
 	Engine::UpdateFrame();
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.Layout1.png")));
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_UI_GridLayout, TreeLayout)
+{
+	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+
+	auto grid1 = UIGridLayout::Create(2, 2);
+
+	UIGridLayoutPtr grids[3];
+	for (int i = 0; i < 3; ++i)
+	{
+		grids[i] = UIGridLayout::Create(2, 2);
+
+		auto button1 = UIButton::Create();
+		grids[i]->AddChild(button1);
+
+		auto button2 = UIButton::Create();
+		button2->SetLayoutColumn(1);
+		grids[i]->AddChild(button2);
+
+		auto button3 = UIButton::Create();
+		button3->SetLayoutRow(1);
+		grids[i]->AddChild(button3);
+
+		auto button4 = UIButton::Create();
+		button4->SetLayoutColumn(1);
+		button4->SetLayoutRow(1);
+		grids[i]->AddChild(button4);
+
+		grid1->AddChild(grids[i]);
+	}
+	grids[1]->SetLayoutRow(1);
+	grids[2]->SetLayoutColumn(1);
+	grids[2]->SetLayoutRowSpan(2);
+
+	uiRoot->SetContent(grid1);
+
+	Engine::UpdateFrame();
+
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.TreeLayout1.png")));
 }

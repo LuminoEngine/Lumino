@@ -61,11 +61,6 @@ void ILayoutElement::ArrangeLayout(const RectF& finalLocalRect)
 
 	const SizeF& areaSize = finalLocalRect.GetSize();
 
-	// この要素のサイズが明示的に指定されている場合はそちらを優先する
-	//const SizeF& size = GetLayoutSize();
-	//arrangeSize.width = Math::IsNaNOrInf(size.width) ? finalLocalRect.width : size.width;
-	//arrangeSize.height = Math::IsNaNOrInf(size.height) ? finalLocalRect.height : size.height;
-
 	ILayoutElement* parent = GetLayoutParent();
 	HAlignment		hAlign = GetLayoutHAlignment();
 	VAlignment		vAlign = GetLayoutVAlignment();
@@ -74,7 +69,11 @@ void ILayoutElement::ArrangeLayout(const RectF& finalLocalRect)
 	if (parentHAlign != nullptr) hAlign = *parentHAlign;
 	if (parentVAlign != nullptr) vAlign = *parentVAlign;
 
-	const SizeF& ds = GetLayoutDesiredSize();
+	const SizeF& layoutSize = GetLayoutSize();
+	SizeF ds = GetLayoutDesiredSize();
+	ds.width = Math::IsNaNOrInf(layoutSize.width) ? layoutSize.width : ds.width;
+	ds.height = Math::IsNaNOrInf(layoutSize.height) ? layoutSize.height : ds.height;
+
 	RectF arrangeRect;
 	detail::LayoutHelper::AdjustHorizontalAlignment(areaSize, ds, hAlign, &arrangeRect);
 	detail::LayoutHelper::AdjustVerticalAlignment(areaSize, ds, vAlign, &arrangeRect);
