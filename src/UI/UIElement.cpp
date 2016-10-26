@@ -20,8 +20,8 @@ LN_UI_TYPEINFO_IMPLEMENT(UIElement, tr::ReflectionObject);
 LN_TR_PROPERTY_IMPLEMENT(UIElement, PointF, PositionProperty, "Position", m_position, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(UIElement, SizeF, SizeProperty, "Size", m_size, tr::PropertyMetadata(SizeF(NAN, NAN)));
 LN_TR_PROPERTY_IMPLEMENT(UIElement, AlignmentAnchor, AnchorProperty, "Anchor", m_anchor, tr::PropertyMetadata(AlignmentAnchor::None));
-LN_TR_PROPERTY_IMPLEMENT(UIElement, HAlignment, HAlignmentProperty, "HAlignment", m_horizontalAlignment, tr::PropertyMetadata(HAlignment::Center));
-LN_TR_PROPERTY_IMPLEMENT(UIElement, VAlignment, VAlignmentProperty, "VAlignment", m_verticalAlignment, tr::PropertyMetadata(VAlignment::Center));
+LN_TR_PROPERTY_IMPLEMENT(UIElement, HAlignment, HAlignmentProperty, "HAlignment", m_horizontalAlignment, tr::PropertyMetadata(HAlignment::Stretch));
+LN_TR_PROPERTY_IMPLEMENT(UIElement, VAlignment, VAlignmentProperty, "VAlignment", m_verticalAlignment, tr::PropertyMetadata(VAlignment::Stretch));
 LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, BackgroundProperty, "Background", m_background, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, ForegroundProperty, "Foreground", m_foreground, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, DecoratorBackgroundProperty, "DecoratorBackground", m_decoratorBackground, tr::PropertyMetadata());
@@ -46,8 +46,8 @@ UIElement::UIElement()
 	, m_position(PointF(0, 0))
 	, m_size(SizeF(NAN, NAN))
 	, m_anchor(AlignmentAnchor::None)
-	, m_horizontalAlignment(HAlignment::Center)
-	, m_verticalAlignment(VAlignment::Center)
+	, m_horizontalAlignment(HAlignment::Stretch)
+	, m_verticalAlignment(VAlignment::Stretch)
 	, m_opacity(1.0f)
 	, m_decoratorBackground(nullptr)
 	, m_decoratorOpacity(1.0f)
@@ -77,6 +77,16 @@ void UIElement::Initialize(detail::UIManager* manager)
 
 	GoToVisualState(String::GetEmpty());
 }
+
+//------------------------------------------------------------------------------
+void UIElement::SetLayoutColumn(int index) { m_gridLayoutInfo.layoutColumn = index; }
+int UIElement::GetLayoutColumn() const { return m_gridLayoutInfo.layoutColumn; }
+void UIElement::SetLayoutRow(int index) { m_gridLayoutInfo.layoutRow = index; }
+int UIElement::GetLayoutRow() const { return m_gridLayoutInfo.layoutRow; }
+void UIElement::SetLayoutColumnSpan(int span) { m_gridLayoutInfo.layoutColumnSpan = span; }
+int UIElement::GetLayoutColumnSpan() const { return m_gridLayoutInfo.layoutColumnSpan; }
+void UIElement::SetLayoutRowSpan(int span) { m_gridLayoutInfo.layoutRowSpan = span; }
+int UIElement::GetLayoutRowSpan() const { return m_gridLayoutInfo.layoutRowSpan; }
 
 //------------------------------------------------------------------------------
 void UIElement::GoToVisualState(const StringRef& stateName)
@@ -528,9 +538,9 @@ const VAlignment* UIElement::GetLayoutContentVAlignment() { return GetPriorityCo
 const SizeF& UIElement::GetLayoutDesiredSize() const { return m_desiredSize; }
 void UIElement::SetLayoutDesiredSize(const SizeF& size) { m_desiredSize = size; }
 void UIElement::SetLayoutFinalLocalRect(const RectF& rect) { m_finalLocalRect = rect; }
-int UIElement::GetLayoutColumn() const { return m_gridLayoutInfo.layoutColumn; }
-int UIElement::GetLayoutRow() const { return m_gridLayoutInfo.layoutRow; }
-int UIElement::GetLayoutColumnSpan() const { return m_gridLayoutInfo.layoutColumnSpan; }
-int UIElement::GetLayoutRowSpan() const { return m_gridLayoutInfo.layoutRowSpan; }
+//int UIElement::GetLayoutColumn() const { return m_gridLayoutInfo.layoutColumn; }
+//int UIElement::GetLayoutRow() const { return m_gridLayoutInfo.layoutRow; }
+//int UIElement::GetLayoutColumnSpan() const { return m_gridLayoutInfo.layoutColumnSpan; }
+//int UIElement::GetLayoutRowSpan() const { return m_gridLayoutInfo.layoutRowSpan; }
 
 LN_NAMESPACE_END

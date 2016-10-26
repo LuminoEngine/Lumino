@@ -3,6 +3,7 @@
 #include <Lumino/UI/Common.h>
 
 LN_NAMESPACE_BEGIN
+class FileManager;
 class AssetsManager;
 class PlatformManager;
 class PlatformWindow;
@@ -19,12 +20,14 @@ class UIManager
 public:
 	struct Settings
 	{
-		AnimationManager*				animationManager = nullptr;
-		PlatformManager*				platformManager = nullptr;
-		GraphicsManager*				graphicsManager = nullptr;
-		AssetsManager*					assetsManager = nullptr;
-		PlatformWindow*					mainWindow = nullptr;
-		detail::DocumentsManager*		documentsManager = nullptr;
+		FileManager*			fileManager = nullptr;
+		AnimationManager*		animationManager = nullptr;
+		PlatformManager*		platformManager = nullptr;
+		GraphicsManager*		graphicsManager = nullptr;
+		AssetsManager*			assetsManager = nullptr;
+		PlatformWindow*			mainWindow = nullptr;
+		DocumentsManager*		documentsManager = nullptr;
+		PathName				defaultSkinFilePath;
 	};
 
 	static const float MouseButtonClickTimeout;
@@ -49,6 +52,7 @@ private:
 	void MakeDefaultStyle(UIStyleTable* table);
 
 	EventArgsPool*		m_eventArgsPool;
+	FileManager*		m_fileManager;
 	AnimationManager*	m_animationManager;
 	PlatformManager*	m_platformManager;
 	GraphicsManager*	m_graphicsManager;

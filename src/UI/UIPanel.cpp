@@ -335,10 +335,13 @@ public:
 	};
 
 	DefinitionBase()
-		: m_type(ValueType::Auto)
+		: m_type(ValueType::Ratio)
 		, m_size(0.0f)
 		, m_minSize(0.0f)
 		, m_maxSize(FLT_MAX)
+		, m_desiredSize(0.0f)
+		, m_actualOffset(0.0f)
+		, m_actualSize(0.0f)
 	{
 	}
 
@@ -444,6 +447,15 @@ UIGridLayoutPtr UIGridLayout::Create()
 }
 
 //------------------------------------------------------------------------------
+UIGridLayoutPtr UIGridLayout::Create(int columnCount, int rowCount)
+{
+	auto ptr = UIGridLayoutPtr::MakeRef();
+	ptr->Initialize(detail::UIManager::GetInstance());
+	ptr->SetGridSize(columnCount, rowCount);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
 UIGridLayout::UIGridLayout()
 	: m_columnDefinitions()
 	, m_rowDefinitions()
@@ -459,6 +471,18 @@ UIGridLayout::~UIGridLayout()
 void UIGridLayout::Initialize(detail::UIManager* manager)
 {
 	UIPanel::Initialize(manager);
+}
+
+//------------------------------------------------------------------------------
+void UIGridLayout::SetGridSize(int columnCount, int rowCount)
+{
+	m_columnDefinitions.Clear();
+	m_rowDefinitions.Clear();
+
+	for (int i = 0; i < columnCount; ++i)
+		m_columnDefinitions.Add(RefPtr<ColumnDefinition>::MakeRef());
+	for (int i = 0; i < rowCount; ++i)
+		m_rowDefinitions.Add(RefPtr<RowDefinition>::MakeRef());
 }
 
 //------------------------------------------------------------------------------

@@ -466,6 +466,7 @@ void EngineManager::InitializeUIManager()
 	if (m_uiManager == nullptr)
 	{
 		InitializeCommon();
+		InitializeFileManager();
 		InitializeAnimationManager();
 		InitializePlatformManager();
 		InitializeGraphicsManager();
@@ -473,12 +474,14 @@ void EngineManager::InitializeUIManager()
 		InitializeAssetsManager();
 
 		detail::UIManager::Settings data;
+		data.fileManager = m_fileManager;
 		data.animationManager = m_animationManager;
 		data.platformManager = m_platformManager;
 		data.graphicsManager = m_graphicsManager;
 		data.assetsManager = m_assetsManager;
 		data.mainWindow = m_platformManager->GetMainWindow();
 		data.documentsManager = m_documentsManager;
+		data.defaultSkinFilePath = m_configData.defaultSkinFilePath;
 		m_uiManager = LN_NEW detail::UIManager();
 		m_uiManager->Initialize(data);
 	}

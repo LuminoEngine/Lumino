@@ -1,4 +1,10 @@
-﻿
+﻿/*
+	Skin Texture
+		- Button Background (Normal)
+		- Button Background (On mouse)
+		- Button Background (Push down)
+		- Button Decorator (Focused)
+*/
 #include "Internal.h"
 #include <Lumino/UI/UIStyle.h>
 #include <Lumino/UI/UIFrameWindow.h>
@@ -30,6 +36,7 @@ UIManager* UIManager::GetInstance(UIManager* priority)
 //------------------------------------------------------------------------------
 UIManager::UIManager()
 	: m_eventArgsPool(nullptr)
+	, m_fileManager(nullptr)
 	, m_animationManager(nullptr)
 	, m_platformManager(nullptr)
 	, m_graphicsManager(nullptr)
@@ -47,6 +54,7 @@ UIManager::~UIManager()
 //------------------------------------------------------------------------------
 void UIManager::Initialize(const Settings& settings)
 {
+	LN_CHECK_ARG(settings.fileManager != nullptr);
 	LN_CHECK_ARG(settings.animationManager != nullptr);
 	LN_CHECK_ARG(settings.platformManager != nullptr);
 	LN_CHECK_ARG(settings.graphicsManager != nullptr);
@@ -54,18 +62,28 @@ void UIManager::Initialize(const Settings& settings)
 	LN_CHECK_ARG(settings.mainWindow != nullptr);
 
 	m_eventArgsPool = LN_NEW EventArgsPool();
+	m_fileManager = settings.fileManager;
 	m_animationManager = settings.animationManager;
 	m_platformManager = settings.platformManager;
 	m_graphicsManager = settings.graphicsManager;
 	m_assetsManager = settings.assetsManager;
 
-	static const byte_t defaultSkin_data[] =
+	// default UI skin
+	if (settings.defaultSkinFilePath.IsEmpty())
 	{
+		static const byte_t defaultSkin_data[] =
+		{
 #include "Resource/DefaultSkin.png.h"
-	};
-	MemoryStream defaultSkinStream(defaultSkin_data, LN_ARRAY_SIZE_OF(defaultSkin_data));
-	m_defaultSkinTexture = RefPtr<Texture2D>::MakeRef();
-	m_defaultSkinTexture->Initialize(m_graphicsManager, &defaultSkinStream, TextureFormat::R8G8B8A8, false);
+		};
+		MemoryStream defaultSkinStream(defaultSkin_data, LN_ARRAY_SIZE_OF(defaultSkin_data));
+		m_defaultSkinTexture = RefPtr<Texture2D>::MakeRef();
+		m_defaultSkinTexture->Initialize(m_graphicsManager, &defaultSkinStream, TextureFormat::R8G8B8A8, false);
+	}
+	else
+	{
+		m_defaultSkinTexture = RefPtr<Texture2D>::MakeRef();
+		m_defaultSkinTexture->Initialize(m_graphicsManager, settings.defaultSkinFilePath, TextureFormat::R8G8B8A8, false);
+	}
 
 	m_defaultStyleTable = LN_NEW UIStyleTable();
 	MakeDefaultStyle(m_defaultStyleTable);

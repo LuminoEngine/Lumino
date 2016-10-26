@@ -28,10 +28,7 @@ class AssetsManager;
 
 namespace detail
 {
-	
-/**
-	@brief		アプリケーションの初期化設定です。
-*/
+
 class EngineSettings
 {
 public:
@@ -135,6 +132,10 @@ public:
 		@brief	内部的に COM の初期化を行います。
 	*/
 	bool autoCoInitialize = true;
+
+	// UI Skin
+	PathName	defaultSkinFilePath;
+
 
 public:
 	EngineSettings()

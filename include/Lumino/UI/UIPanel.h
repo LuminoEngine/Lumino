@@ -106,6 +106,12 @@ class UIGridLayout
 	LN_UI_TYPEINFO_DECLARE();
 public:
 	static UIGridLayoutPtr Create();
+	static UIGridLayoutPtr Create(int columnCount, int rowCount);
+
+public:
+
+	void SetGridSize(int columnCount, int rowCount);
+
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	UIGridLayout();

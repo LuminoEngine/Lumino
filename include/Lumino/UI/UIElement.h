@@ -137,6 +137,21 @@ public:
 	float GetActualWidth() const { return m_finalLocalRect.width; }
 	float GetActualHeight() const { return m_finalLocalRect.height; }
 
+	//--------------------------------------------------------------------------
+	/** @name Grid layout */
+	/** @{ */
+
+	void SetLayoutColumn(int index);
+	virtual int GetLayoutColumn() const override;
+	void SetLayoutRow(int index);
+	virtual int GetLayoutRow() const override;
+	void SetLayoutColumnSpan(int span);
+	virtual int GetLayoutColumnSpan() const override;
+	void SetLayoutRowSpan(int span);
+	virtual int GetLayoutRowSpan() const override;
+
+	/** @} */
+
 protected:
 	UIElement();
 	virtual ~UIElement();
@@ -231,10 +246,10 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual const SizeF& GetLayoutDesiredSize() const override;
 	virtual void SetLayoutDesiredSize(const SizeF& size) override;
 	virtual void SetLayoutFinalLocalRect(const RectF& rect) override;
-	virtual int GetLayoutColumn() const override;
-	virtual int GetLayoutRow() const override;
-	virtual int GetLayoutColumnSpan() const override;
-	virtual int GetLayoutRowSpan() const override;
+	//virtual int GetLayoutColumn() const override;
+	//virtual int GetLayoutRow() const override;
+	//virtual int GetLayoutColumnSpan() const override;
+	//virtual int GetLayoutRowSpan() const override;
 
 private:
 	void UpdateLocalStyleAndApplyProperties(UIStylePropertyTable* parentStyle, UIStylePropertyTable* currentStateStyle);
