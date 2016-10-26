@@ -68,10 +68,10 @@ bool InputDriver::QueryMouseState(MouseAction action)
 //------------------------------------------------------------------------------
 void InputDriver::PreUpdateFrame()
 {
-	m_keyStatus.fill(false);
-	m_mouseStatus.fill(false);
-	m_mousePoint.x = 0;
-	m_mousePoint.y = 0;
+	//m_keyStatus.fill(false);
+	//m_mouseStatus.fill(false);
+	//m_mousePoint.x = 0;
+	//m_mousePoint.y = 0;
 	m_mouseWheel = 0;
 }
 
