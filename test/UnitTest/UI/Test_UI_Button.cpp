@@ -1,5 +1,5 @@
 #include <TestConfig.h>
-#include <Lumino/UI/UIPanel.h>
+#include <Lumino/UI/UILayoutPanel.h>
 
 class Test_UI_Button : public ::testing::Test
 {
@@ -174,3 +174,95 @@ TEST_F(Test_UI_GridLayout, TreeLayout)
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.TreeLayout1.png")));
 }
+
+//------------------------------------------------------------------------------
+TEST_F(Test_UI_GridLayout, GridLength)
+{
+	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+
+	auto grid1 = UIGridLayout::Create();
+	grid1->AddColumnDefinition();	// default
+	grid1->AddColumnDefinition(GridLengthType::Pixel, 50);
+	grid1->AddColumnDefinition(GridLengthType::Auto);
+	grid1->AddColumnDefinition(GridLengthType::Ratio, 2.0f);
+	grid1->AddRowDefinition();		// default
+	grid1->AddRowDefinition(GridLengthType::Pixel, 50);
+	grid1->AddRowDefinition(GridLengthType::Auto);
+	grid1->AddRowDefinition(GridLengthType::Ratio, 2.0f);
+
+	auto button1 = UIButton::Create();
+	button1->SetLayoutColumn(0);
+	button1->SetLayoutRow(0);
+	grid1->AddChild(button1);
+
+	auto button2 = UIButton::Create();
+	button2->SetLayoutColumn(1);
+	button2->SetLayoutRow(1);
+	grid1->AddChild(button2);
+
+	auto button3 = UIButton::Create();
+	button3->SetSize(SizeF(20, 20));
+	button3->SetLayoutColumn(2);
+	button3->SetLayoutRow(2);
+	grid1->AddChild(button3);
+
+	auto button4 = UIButton::Create();
+	button4->SetLayoutColumn(3);
+	button4->SetLayoutRow(3);
+	grid1->AddChild(button4);
+
+
+	uiRoot->SetContent(grid1);
+
+	Engine::UpdateFrame();
+
+
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.GridLength1.png")));
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_UI_GridLayout, MinMax)
+{
+	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+
+	auto grid1 = UIGridLayout::Create();
+
+	uiRoot->SetContent(grid1);
+	grid1->AddColumnDefinition(GridLengthType::Auto, 1.0f, 20.0f, 30.0f);
+	grid1->AddColumnDefinition(GridLengthType::Auto, 1.0f, 20.0f, 30.0f);
+	grid1->AddColumnDefinition(GridLengthType::Auto, 1.0f, 20.0f, 30.0f);
+	grid1->AddRowDefinition(GridLengthType::Auto, 1.0f, 20.0f, 30.0f);
+	grid1->AddRowDefinition(GridLengthType::Auto, 1.0f, 20.0f, 30.0f);
+	grid1->AddRowDefinition(GridLengthType::Auto, 1.0f, 20.0f, 30.0f);
+
+
+	auto button1 = UIButton::Create();
+	button1->SetLayoutColumn(0);
+	button1->SetLayoutRow(0);
+	button1->SetSize(SizeF(10, 10));
+	button1->SetHAlignment(HAlignment::Left);
+	button1->SetVAlignment(VAlignment::Top);
+	grid1->AddChild(button1);
+
+	auto button2 = UIButton::Create();
+	button2->SetLayoutColumn(1);
+	button2->SetLayoutRow(1);
+	button2->SetSize(SizeF(40, 40));
+	button2->SetHAlignment(HAlignment::Left);
+	button2->SetVAlignment(VAlignment::Top);
+	grid1->AddChild(button2);
+
+	auto button3 = UIButton::Create();
+	button3->SetLayoutColumn(2);
+	button3->SetLayoutRow(2);
+	button3->SetSize(SizeF(10, 10));
+	button3->SetHAlignment(HAlignment::Left);
+	button3->SetVAlignment(VAlignment::Top);
+	grid1->AddChild(button3);
+
+
+	Engine::UpdateFrame();
+
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.MinMax1.png"), 99, true));
+}
+

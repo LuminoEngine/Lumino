@@ -1,7 +1,7 @@
 
 #include "Internal.h"
 #include <Lumino/UI/UIItemsControl.h>
-#include <Lumino/UI/UIPanel.h>
+#include <Lumino/UI/UILayoutPanel.h>
 
 LN_NAMESPACE_BEGIN
 
@@ -36,7 +36,7 @@ UIElementCollection* UIItemsControl::GetItems() const
 }
 
 //------------------------------------------------------------------------------
-void UIItemsControl::SetItemsHostPanel(UIPanel* panel)
+void UIItemsControl::SetItemsHostPanel(UILayoutPanel* panel)
 {
 	LN_CHECK_ARG(panel != nullptr);
 	SetVisualTreeRoot(panel);

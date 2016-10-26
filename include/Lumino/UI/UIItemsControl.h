@@ -4,6 +4,7 @@
 #include "UIElementCollection.h"
 
 LN_NAMESPACE_BEGIN
+class UILayoutPanel;
 
 /**
 	@brief		
@@ -21,7 +22,7 @@ protected:
 	UIItemsControl();
 	virtual ~UIItemsControl();
 	void Initialize(detail::UIManager* manager);
-	void SetItemsHostPanel(UIPanel* panel);
+	void SetItemsHostPanel(UILayoutPanel* panel);
 
 	// UIElement interface
 	//virtual int GetVisualChildrenCount() const override;
@@ -34,7 +35,7 @@ protected:
 
 private:
 	RefPtr<UIElementCollection>	m_items;
-	RefPtr<UIPanel>				m_itemsHostPanel;
+	RefPtr<UILayoutPanel>			m_itemsHostPanel;
 };
 
 LN_NAMESPACE_END

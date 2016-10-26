@@ -1,27 +1,27 @@
 
 #include "Internal.h"
-#include <Lumino/UI/UIPanel.h>
+#include <Lumino/UI/UILayoutPanel.h>
 #include "UIManager.h"
 
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
-// UIPanel
+// UILayoutPanel
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIPanel, UIElement)
+LN_UI_TYPEINFO_IMPLEMENT(UILayoutPanel, UIElement)
 
 //------------------------------------------------------------------------------
-UIPanel::UIPanel()
+UILayoutPanel::UILayoutPanel()
 {
 }
 
 //------------------------------------------------------------------------------
-UIPanel::~UIPanel()
+UILayoutPanel::~UILayoutPanel()
 {
 }
 
 //------------------------------------------------------------------------------
-void UIPanel::Initialize(detail::UIManager* manager)
+void UILayoutPanel::Initialize(detail::UIManager* manager)
 {
 	UIElement::Initialize(manager);
 	m_children = RefPtr<UIElementCollection>::MakeRef(this);
@@ -32,31 +32,31 @@ void UIPanel::Initialize(detail::UIManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void UIPanel::AddChild(UIElement* element)
+void UILayoutPanel::AddChild(UIElement* element)
 {
 	m_children->Add(element);
 }
 
 //------------------------------------------------------------------------------
-void UIPanel::RemoveChild(UIElement* element)
+void UILayoutPanel::RemoveChild(UIElement* element)
 {
 	m_children->Remove(element);
 }
 
 //------------------------------------------------------------------------------
-int UIPanel::GetVisualChildrenCount() const
+int UILayoutPanel::GetVisualChildrenCount() const
 {
 	return m_children->GetCount();
 }
 
 //------------------------------------------------------------------------------
-UIElement* UIPanel::GetVisualChildOrderd(int index) const
+UIElement* UILayoutPanel::GetVisualChildOrderd(int index) const
 {
 	return m_children->GetAt(index);
 }
 
 //------------------------------------------------------------------------------
-SizeF UIPanel::MeasureOverride(const SizeF& constraint)
+SizeF UILayoutPanel::MeasureOverride(const SizeF& constraint)
 {
 	SizeF desiredSize = UIElement::MeasureOverride(constraint);
 	for (UIElement* child : *m_children)
@@ -71,7 +71,7 @@ SizeF UIPanel::MeasureOverride(const SizeF& constraint)
 }
 
 //------------------------------------------------------------------------------
-SizeF UIPanel::ArrangeOverride(const SizeF& finalSize)
+SizeF UILayoutPanel::ArrangeOverride(const SizeF& finalSize)
 {
 	for (UIElement* child : *m_children)
 	{
@@ -84,7 +84,7 @@ SizeF UIPanel::ArrangeOverride(const SizeF& finalSize)
 }
 
 //------------------------------------------------------------------------------
-void UIPanel::OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e)
+void UILayoutPanel::OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e)
 {
 	// 新しく追加されたものたち
 	for (UIElement* element : e.newItems)
@@ -103,7 +103,7 @@ void UIPanel::OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e)
 //==============================================================================
 // UIStackPanel
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIStackPanel, UIPanel)
+LN_UI_TYPEINFO_IMPLEMENT(UIStackPanel, UILayoutPanel)
 
 //------------------------------------------------------------------------------
 UIStackPanel::UIStackPanel()
@@ -118,7 +118,7 @@ UIStackPanel::~UIStackPanel()
 //------------------------------------------------------------------------------
 void UIStackPanel::Initialize(detail::UIManager* manager)
 {
-	UIPanel::Initialize(manager);
+	UILayoutPanel::Initialize(manager);
 }
 
 //------------------------------------------------------------------------------
@@ -191,7 +191,7 @@ SizeF UIStackPanel::ArrangeOverride(const SizeF& finalSize)
 //==============================================================================
 // UICanvas
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UICanvas, UIPanel)
+LN_UI_TYPEINFO_IMPLEMENT(UICanvas, UILayoutPanel)
 
 //------------------------------------------------------------------------------
 UICanvasPtr UICanvas::Create()
@@ -214,13 +214,13 @@ UICanvas::~UICanvas()
 //------------------------------------------------------------------------------
 void UICanvas::Initialize(detail::UIManager* manager)
 {
-	UIPanel::Initialize(manager);
+	UILayoutPanel::Initialize(manager);
 }
 
 //------------------------------------------------------------------------------
 SizeF UICanvas::MeasureOverride(const SizeF& constraint)
 {
-	return UIPanel::MeasureOverride(constraint);
+	return UILayoutPanel::MeasureOverride(constraint);
 }
 
 //------------------------------------------------------------------------------
@@ -327,15 +327,9 @@ class UIGridLayout::DefinitionBase
 	: public Object
 {
 public:
-	enum class ValueType
-	{
-		Auto,	// 子要素のサイズに合わせるか
-		Pixel,	// サイズを直接指定する
-		Ratio,	// レイアウト後、残りの領域を使うか (Star)
-	};
 
 	DefinitionBase()
-		: m_type(ValueType::Ratio)
+		: m_type(GridLengthType::Ratio)
 		, m_size(0.0f)
 		, m_minSize(0.0f)
 		, m_maxSize(FLT_MAX)
@@ -349,14 +343,14 @@ public:
 	{
 	}
 
-	ValueType GetType() const { return m_type; }
+	GridLengthType GetType() const { return m_type; }
 
 	float GetAvailableDesiredSize() const
 	{
-		if (m_type == ValueType::Auto) {
+		if (m_type == GridLengthType::Auto) {
 			return m_desiredSize;
 		}
-		else if (m_type == ValueType::Pixel) {
+		else if (m_type == GridLengthType::Pixel) {
 			return Math::Clamp(m_size, m_minSize, m_maxSize);
 		}
 		else {
@@ -369,16 +363,21 @@ public:
 		return (m_size == 0.0f) ? 1.0f : m_size;
 	}
 
+	void AdjustActualSize()
+	{
+		m_actualSize = Math::Clamp(m_actualSize, m_minSize, m_maxSize);
+	}
+
 protected:
-	ValueType	m_type;
-	float		m_size;
-	float		m_minSize;
-	float		m_maxSize;
+	GridLengthType	m_type;
+	float			m_size;
+	float			m_minSize;
+	float			m_maxSize;
 
 public:
-	float		m_desiredSize;
-	float		m_actualOffset;	// 最終オフセット
-	float		m_actualSize;	// 最終サイズ
+	float			m_desiredSize;
+	float			m_actualOffset;	// 最終オフセット
+	float			m_actualSize;	// 最終サイズ
 };
 
 //==============================================================================
@@ -397,14 +396,14 @@ public:
 	{
 	}
 
-	void SetWidth(float value, ValueType type = ValueType::Pixel) { m_size = value; m_type = type; }
+	void SetWidth(float value, GridLengthType type = GridLengthType::Pixel) { m_size = value; m_type = type; }
 	float GetWidth() const { return m_size; }
 
-	void SetMinWidth(float value) { m_size = value; }
-	float GetMinWidth() const { return m_size; }
+	void SetMinWidth(float value) { m_minSize = value; }
+	float GetMinWidth() const { return m_minSize; }
 
-	void SetMaxWidth(float value) { m_size = value; }
-	float GetMaxWidth() const { return m_size; }
+	void SetMaxWidth(float value) { m_maxSize = value; }
+	float GetMaxWidth() const { return m_maxSize; }
 };
 
 //==============================================================================
@@ -423,20 +422,20 @@ public:
 	{
 	}
 
-	void SetHeight(float value, ValueType type = ValueType::Pixel) { m_size = value; m_type = type; }
+	void SetHeight(float value, GridLengthType type = GridLengthType::Pixel) { m_size = value; m_type = type; }
 	float GetHeight() const { return m_size; }
 
-	void SetMinHeight(float value) { m_size = value; }
-	float GetMinHeight() const { return m_size; }
+	void SetMinHeight(float value) { m_minSize = value; }
+	float GetMinHeight() const { return m_minSize; }
 
-	void SetMaxHeight(float value) { m_size = value; }
-	float GetMaxHeight() const { return m_size; }
+	void SetMaxHeight(float value) { m_maxSize = value; }
+	float GetMaxHeight() const { return m_maxSize; }
 };
 
 //==============================================================================
 // UIGridLayout
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIGridLayout, UIPanel)
+LN_UI_TYPEINFO_IMPLEMENT(UIGridLayout, UILayoutPanel)
 
 //------------------------------------------------------------------------------
 UIGridLayoutPtr UIGridLayout::Create()
@@ -470,7 +469,7 @@ UIGridLayout::~UIGridLayout()
 //------------------------------------------------------------------------------
 void UIGridLayout::Initialize(detail::UIManager* manager)
 {
-	UIPanel::Initialize(manager);
+	UILayoutPanel::Initialize(manager);
 }
 
 //------------------------------------------------------------------------------
@@ -483,6 +482,26 @@ void UIGridLayout::SetGridSize(int columnCount, int rowCount)
 		m_columnDefinitions.Add(RefPtr<ColumnDefinition>::MakeRef());
 	for (int i = 0; i < rowCount; ++i)
 		m_rowDefinitions.Add(RefPtr<RowDefinition>::MakeRef());
+}
+
+//------------------------------------------------------------------------------
+void UIGridLayout::AddColumnDefinition(GridLengthType type, float width, float minWidth, float maxWidth)
+{
+	auto ptr = RefPtr<ColumnDefinition>::MakeRef();
+	ptr->SetWidth(width, type);
+	ptr->SetMinWidth(minWidth);
+	ptr->SetMaxWidth(maxWidth);
+	m_columnDefinitions.Add(ptr);
+}
+
+//------------------------------------------------------------------------------
+void UIGridLayout::AddRowDefinition(GridLengthType type, float height, float minHeight, float maxHeight)
+{
+	auto ptr = RefPtr<RowDefinition>::MakeRef();
+	ptr->SetHeight(height, type);
+	ptr->SetMinHeight(minHeight);
+	ptr->SetMaxHeight(maxHeight);
+	m_rowDefinitions.Add(ptr);
 }
 
 //------------------------------------------------------------------------------
@@ -503,18 +522,18 @@ SizeF UIGridLayout::MeasureOverride(const SizeF& constraint)
 
 		// 子要素の DesiredSize (最低サイズ) を測るのは、セルのサイズ指定が "Auto" の時だけでよい。
 		const SizeF& childDesiredSize = child->GetDesiredSize();
-		if (col != nullptr && col->GetType() == DefinitionBase::ValueType::Auto)
+		if (col != nullptr && col->GetType() == GridLengthType::Auto)
 		{
 			col->m_desiredSize = std::max(col->m_desiredSize, childDesiredSize.width);
 		}
-		if (row != nullptr && row->GetType() == DefinitionBase::ValueType::Auto)
+		if (row != nullptr && row->GetType() == GridLengthType::Auto)
 		{
 			row->m_desiredSize = std::max(row->m_desiredSize, childDesiredSize.height);
 		}
 	}
 
 	// 各セルの DesiredSize を集計して、Grid 全体の DesiredSize を求める
-	SizeF desiredSize = UIPanel::MeasureOverride(constraint);
+	SizeF desiredSize = UILayoutPanel::MeasureOverride(constraint);
 	for (auto col : m_columnDefinitions)
 	{
 		desiredSize.width += col->GetAvailableDesiredSize();
@@ -537,7 +556,7 @@ SizeF UIGridLayout::ArrangeOverride(const SizeF& finalSize)
 	float starRowCount = 0.0f;
 	for (auto col : m_columnDefinitions)
 	{
-		if (col->GetType() == DefinitionBase::ValueType::Auto || col->GetType() == DefinitionBase::ValueType::Pixel)
+		if (col->GetType() == GridLengthType::Auto || col->GetType() == GridLengthType::Pixel)
 		{
 			col->m_actualSize = col->GetAvailableDesiredSize();
 			totalActual.width += col->m_actualSize;
@@ -549,7 +568,7 @@ SizeF UIGridLayout::ArrangeOverride(const SizeF& finalSize)
 	}
 	for (auto row : m_rowDefinitions)
 	{
-		if (row->GetType() == DefinitionBase::ValueType::Auto || row->GetType() == DefinitionBase::ValueType::Pixel)
+		if (row->GetType() == GridLengthType::Auto || row->GetType() == GridLengthType::Pixel)
 		{
 			row->m_actualSize = row->GetAvailableDesiredSize();
 			totalActual.height += row->m_actualSize;
@@ -572,10 +591,12 @@ SizeF UIGridLayout::ArrangeOverride(const SizeF& finalSize)
 	PointF totalOffset = PointF::Zero;
 	for (auto col : m_columnDefinitions)
 	{
-		if (col->GetType() == DefinitionBase::ValueType::Ratio)
+		if (col->GetType() == GridLengthType::Ratio)
 		{
-			col->m_actualSize = starUnit.width;
+			col->m_actualSize = starUnit.width * col->GetRatioWeight();
 		}
+
+		col->AdjustActualSize();
 
 		// セルX座標確定
 		col->m_actualOffset = totalOffset.x;
@@ -583,10 +604,12 @@ SizeF UIGridLayout::ArrangeOverride(const SizeF& finalSize)
 	}
 	for (auto row : m_rowDefinitions)
 	{
-		if (row->GetType() == DefinitionBase::ValueType::Ratio)
+		if (row->GetType() == GridLengthType::Ratio)
 		{
-			row->m_actualSize = starUnit.height;
+			row->m_actualSize = starUnit.height * row->GetRatioWeight();
 		}
+
+		row->AdjustActualSize();
 
 		// セルY座標確定
 		row->m_actualOffset = totalOffset.y;

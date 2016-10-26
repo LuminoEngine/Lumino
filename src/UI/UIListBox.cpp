@@ -2,7 +2,7 @@
 #include "Internal.h"
 #include <Lumino/UI/UITextBlock.h>
 #include <Lumino/UI/UIListBox.h>
-#include <Lumino/UI/UIPanel.h>	// TODO: stackpanel ‚É‚·‚é‚©‚à
+#include <Lumino/UI/UILayoutPanel.h>	// TODO: stackpanel ‚É‚·‚é‚©‚à
 #include "UIManager.h"
 
 LN_NAMESPACE_BEGIN

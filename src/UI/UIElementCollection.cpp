@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.h"
-#include <Lumino/UI/UIPanel.h>
+#include <Lumino/UI/UILayoutPanel.h>
 #include <Lumino/UI/UIElementCollection.h>
 
 LN_NAMESPACE_BEGIN

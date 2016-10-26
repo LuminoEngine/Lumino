@@ -17,12 +17,20 @@ LN_ENUM(Orientation)
 };
 LN_ENUM_DECLARE(Orientation);
 
+/** グリッドレイアウトのセルサイズを指定する値の種類です。*/
+enum class GridLengthType
+{
+	Auto,				/**< 子要素のサイズに合わせる */
+	Pixel,				/**< サイズを直接指定する */
+	Ratio,				/**< レイアウト後、残りの領域を使うか */
+};
+
 /**
 	@brief		1つ以上の子 UIElement を持つ UI 要素のベースクラスです。
 
 	@details	HAlignment 及び VAlignment の規定値は Stretch です。
 */
-class UIPanel
+class UILayoutPanel
 	: public UIElement
 	, public tr::IUIElementCollectionOwner
 {
@@ -32,8 +40,8 @@ public:
 	void RemoveChild(UIElement* element);
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	UIPanel();
-	virtual ~UIPanel();
+	UILayoutPanel();
+	virtual ~UILayoutPanel();
 	void Initialize(detail::UIManager* manager);
 	UIElementCollection* GetChildren() const { return m_children; }
 
@@ -54,7 +62,7 @@ private:
 	@brief		
 */
 class UIStackPanel
-	: public UIPanel
+	: public UILayoutPanel
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:
@@ -78,7 +86,7 @@ private:
 	@brief		
 */
 class UICanvas
-	: public UIPanel
+	: public UILayoutPanel
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:
@@ -101,17 +109,27 @@ private:
 	@brief		
 */
 class UIGridLayout
-	: public UIPanel
+	: public UILayoutPanel
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:
+
+	/**
+		@brief		UIGridLayout オブジェクトを作成します。
+	*/
 	static UIGridLayoutPtr Create();
+
+	/**
+		@brief		指定した数の行列をもつ UIGridLayout オブジェクトを作成します。
+		@details	各セルの幅と高さは GridLengthType::Ratio となります。
+	*/
 	static UIGridLayoutPtr Create(int columnCount, int rowCount);
 
 public:
 
 	void SetGridSize(int columnCount, int rowCount);
-
+	void AddColumnDefinition(GridLengthType type = GridLengthType::Ratio, float width = 1.0f, float minWidth = 0.0f, float maxWidth = FLT_MAX);
+	void AddRowDefinition(GridLengthType type = GridLengthType::Ratio, float height = 1.0f, float minHeight = 0.0f, float maxHeight = FLT_MAX);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	UIGridLayout();

@@ -20,7 +20,7 @@
 #include <thread>
 
 #include <Lumino/UI/UIListBox.h>
-#include <Lumino/UI/UIPanel.h>
+#include <Lumino/UI/UILayoutPanel.h>
 
 
 //void LN_STDCALL Button1_MouseMove(CoreObject* sender, MouseEventArgs* e)
