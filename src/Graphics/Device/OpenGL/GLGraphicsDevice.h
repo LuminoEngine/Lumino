@@ -112,8 +112,6 @@ protected:
 	int							m_openGLMajorVersion;
 	int							m_openGLMinorVersion;
 	Mutex						m_mutex;	// TODO: いらないかな
-	//Array<IDeviceObject*>		m_allDeviceResourceList;	///< 全てのデバイスリソースのリスト;
-	//Mutex			m_allDeviceResourceListMutex;
 };
 
 

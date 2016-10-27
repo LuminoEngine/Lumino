@@ -73,7 +73,7 @@ LN_INTERNAL_ACCESS:
 		ShaderValuePtr	value;
 	};
 
-	const Array<ValuePair>& GetLinkedVariableList() { return m_linkedVariableList; }
+	const List<ValuePair>& GetLinkedVariableList() { return m_linkedVariableList; }
 
 	RefPtr<Material> Copy() const;
 
@@ -109,7 +109,7 @@ private:
 
 	RefPtr<Shader>						m_shader;
 	SortedArray<String, ShaderValuePtr>	m_valueList;
-	Array<ValuePair>					m_linkedVariableList;
+	List<ValuePair>					m_linkedVariableList;
 	
 	BlendMode							m_blendMode;
 	CullingMode							m_culling;

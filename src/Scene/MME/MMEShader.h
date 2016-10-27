@@ -66,8 +66,8 @@ LN_INTERNAL_ACCESS:
 	virtual ~MMEShader();
 	void Initialize(SceneGraphManager* manager, const char* code, int codeLength, MMEShaderErrorInfo* errorInfo);
 
-	typedef Array<MMEShaderVariable*>	MMEShaderVariableList;
-	typedef Array<MMEShaderTechnique*>	MMEShaderTechniqueList;
+	typedef List<MMEShaderVariable*>	MMEShaderVariableList;
+	typedef List<MMEShaderTechnique*>	MMEShaderTechniqueList;
 
 	SceneGraphManager*		m_manager;
 

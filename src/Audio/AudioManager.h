@@ -64,8 +64,8 @@ private:
 
 	CacheManager*		m_audioStreamCache;
 
-	Array<Sound*>		m_addingSoundList;
-	Array<Sound*>		m_soundList;
+	List<Sound*>		m_addingSoundList;
+	List<Sound*>		m_soundList;
 	Mutex				m_soundListMutex;
 	ConditionFlag		m_endRequested;
 	DelegateThread		m_pollingThread;

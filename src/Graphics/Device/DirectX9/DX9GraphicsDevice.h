@@ -55,7 +55,7 @@ public:
 
 	const D3DPRESENT_PARAMETERS& GetPresentParameters() const { return m_presentParameters; }
 
-	const Array<IDirect3DTexture9*>& GetDummyTextures() const { return m_dummyTextures; }
+	const List<IDirect3DTexture9*>& GetDummyTextures() const { return m_dummyTextures; }
 
 public:
 	virtual void Finalize() override;
@@ -112,7 +112,7 @@ private:
 	DWORD                       m_MSAAQualityFullScreen;
 	D3DDEVTYPE				    m_deviceType;        ///< デバイスの種類。_checkDeviceInformation() でチェックして initialize() に伝えるために用意
 
-	Array<IDirect3DTexture9*>	m_dummyTextures;
+	List<IDirect3DTexture9*>	m_dummyTextures;
 };
 
 } // namespace Driver

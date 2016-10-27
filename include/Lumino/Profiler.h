@@ -35,7 +35,7 @@ public:
 	struct Group
 	{
 		String		Name;					///< グループ名
-		Array< std::shared_ptr<Section> >	Sections;
+		List< std::shared_ptr<Section> >	Sections;
 		//Section		Sections[MaxSections];
 		ElapsedTimer	Timer;
 		float			LimitElapsedTime;	///< 許容時間 (ns 単位。フレームレートの逆数)
@@ -50,7 +50,7 @@ public:
 	struct CommitedGroup
 	{
 		String					Name;		///< グループ名
-		Array<CommitedSection>	Sections;
+		List<CommitedSection>	Sections;
 		uint64_t				TotalTime;	///< CommitedSection のトータル ElapsedTime
 		float					LimitElapsedTime;	///< 許容時間 (ns 単位。フレームレートの逆数)
 	};
@@ -95,20 +95,20 @@ public:
 
 	void Commit();
 
-	const Array<CommitedGroup>& GetCommitedGroups() const { return m_commitedGroups; }
+	const List<CommitedGroup>& GetCommitedGroups() const { return m_commitedGroups; }
 	float GetCommitedMainFPS() const { return m_commitedMainFPS; }
 	float GetCommitedMainFPSCapacity() const { return m_commitedMainFPSCapacity; }
 	const SizeI& GetCommitedMainWindowSize() const { return m_commitedMainWindowSize; }
 	const SizeI& GetCommitedMainBackbufferSize() const { return m_commitedMainBackbufferSize; }
 
 private:
-	Array< std::shared_ptr<Group> >			m_groups;
+	List< std::shared_ptr<Group> >			m_groups;
 	float					m_mainFPS;
 	float					m_mainFPSCapacity;
 	SizeI					m_mainWindowSize;
 	SizeI					m_mainBackbufferSize;
 
-	Array<CommitedGroup>	m_commitedGroups;
+	List<CommitedGroup>	m_commitedGroups;
 	float					m_commitedMainFPS;
 	float					m_commitedMainFPSCapacity;
 	SizeI					m_commitedMainWindowSize;

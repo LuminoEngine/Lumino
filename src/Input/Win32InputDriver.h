@@ -32,7 +32,7 @@ private:
 private:
 	HWND						m_hWnd;
 	IDirectInput8*				m_directInput;
-	Array<Win32JoystickDriver*>	m_joystickList;
+	List<Win32JoystickDriver*>	m_joystickList;
 	int							m_XInputDeviceCount;
 	bool						m_comInited;
 };

@@ -75,7 +75,7 @@ protected:
 		//RefPtr<MMEShader>	Shader;					///< 割り当てるシェーダ
 	};
 
-	typedef Array<PriorityParamsEntry>	PriorityParamsEntryList;
+	typedef List<PriorityParamsEntry>	PriorityParamsEntryList;
 
 	friend class SceneGraphManager;
 	SceneGraphManager*			m_manager;

@@ -39,7 +39,7 @@ public:
 	}
 
 private:
-	typedef Array<tr::ReflectionObject*>	ObjectList;
+	typedef List<tr::ReflectionObject*>	ObjectList;
 	ObjectList					m_poolList;
 
 	tr::ReflectionObject* FindFreeObject(tr::TypeInfo* typeId)
@@ -113,7 +113,7 @@ public:
 	}
 
 private:
-	typedef Array<UIEventArgs*>							EventArgsList;
+	typedef List<UIEventArgs*>							EventArgsList;
 	typedef SortedArray<tr::TypeInfo*, EventArgsList*>	EventArgsMap;
 	EventArgsMap	m_pool;
 
@@ -144,14 +144,14 @@ private:
 	}
 
 
-	//Array<MouseEventArgs*>	m_mouseEventArgsPool;
+	//List<MouseEventArgs*>	m_mouseEventArgsPool;
 
 
 
 
 
 	template<class T>
-	T FindFreeObject(const Array<T>& pool)
+	T FindFreeObject(const List<T>& pool)
 	{
 		LN_FOREACH(T a, pool)
 		{
@@ -162,8 +162,8 @@ private:
 		return NULL;
 	}
 
-	//Array<MouseEventArgs*>	m_mouseEventArgsPool;
-	//Array<KeyEventArgs*>	m_keyEventArgsPool;
+	//List<MouseEventArgs*>	m_mouseEventArgsPool;
+	//List<KeyEventArgs*>	m_keyEventArgsPool;
 };
 
 } // namespace detail

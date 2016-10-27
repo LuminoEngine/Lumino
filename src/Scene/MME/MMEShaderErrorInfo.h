@@ -36,7 +36,7 @@ public:
 	bool HasError() const { return !m_errorList.IsEmpty(); }
 
 private:
-	Array<MMEShaderErrorObject>	m_errorList;
+	List<MMEShaderErrorObject>	m_errorList;
 };
 
 LN_NAMESPACE_SCENE_END

@@ -74,7 +74,7 @@ private:
 	ModelCreationFlag				m_flags;
 	RefPtr<PmxSkinnedMeshResource>	m_modelCore;		///< 最終出力
 	PMX_Header						m_pmxHeader;
-	Array<RefPtr<Texture>>			m_textureTable;
+	List<RefPtr<Texture>>			m_textureTable;
 	ByteBuffer						m_tmpBuffer;
 	bool							m_hasSDEF;
 };

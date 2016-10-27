@@ -81,7 +81,7 @@ LNResult LNViewport_GetMainViewport(LN_OUT LN_HANDLE(LNViewport)* outViewport)
 {
 	LN_CHECK_ARG_RETURN(outViewport != nullptr);
 	LN_FUNC_TRY_BEGIN;
-	*outViewport = TO_HANDLE_ADDREF(ln::Viewport::GetMainWindowViewport());
+	*outViewport = TO_HANDLE_ADDREF(ln::Viewport::GetMainViewport());
 	LN_FUNC_TRY_END_RETURN;
 }
 

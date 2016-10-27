@@ -22,15 +22,15 @@ class ModelMorphCore;
 class ModelRigidBodyCore;
 class ModelJointCore;
 
-typedef Array<Material>				MaterialList;
-typedef Array<ModelBoneCore*>		ModelBoneCoreList;
-typedef Array<ModelIKCore*>			ModelIKCoreList;
-typedef Array<ModelMorphCore*>		ModelMorphCoreList;
-typedef Array<ModelRigidBodyCore*>	ModelRigidBodyCoreList;
-typedef Array<ModelJointCore*>		ModelJointCoreList;
+typedef List<Material>				MaterialList;
+typedef List<ModelBoneCore*>		ModelBoneCoreList;
+typedef List<ModelIKCore*>			ModelIKCoreList;
+typedef List<ModelMorphCore*>		ModelMorphCoreList;
+typedef List<ModelRigidBodyCore*>	ModelRigidBodyCoreList;
+typedef List<ModelJointCore*>		ModelJointCoreList;
 
 class ModelBone;
-typedef Array<ModelBone*>			ModelBoneList;
+typedef List<ModelBone*>			ModelBoneList;
 
 
 /// モデルファイルのフォーマット

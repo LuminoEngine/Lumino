@@ -18,7 +18,7 @@ struct TextLayoutResultItem
 struct TextLayoutResult
 {
 	SizeI						AreaSize;
-	Array<TextLayoutResultItem>	Items;
+	List<TextLayoutResultItem>	Items;
 };
 
 /**
@@ -38,7 +38,7 @@ LN_INTERNAL_ACCESS:
 	GlyphRun();
 	virtual ~GlyphRun();
 	void Initialize(detail::GraphicsManager* manager);
-	const Array<TextLayoutResultItem>& RequestLayoutItems();
+	const List<TextLayoutResultItem>& RequestLayoutItems();
 	detail::FontGlyphTextureCache* LookupFontGlyphTextureCache();
 	const UTF32* GetText() const { return m_utf32Text.c_str(); }
 	int GetTextLength() const { return m_utf32Text.GetLength(); }

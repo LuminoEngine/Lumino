@@ -56,8 +56,8 @@ public:
 		RefPtr<FloatAnimationCurve>	AnimationCurve;
 	};
 
-	typedef Array<BoneAnimation>	BoneAnimationList;
-	typedef Array<FaceAnimation>	FaceAnimationList;
+	typedef List<BoneAnimation>	BoneAnimationList;
+	typedef List<FaceAnimation>	FaceAnimationList;
 
 public:
 	VmdLoader() {}

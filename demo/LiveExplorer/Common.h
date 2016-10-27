@@ -21,8 +21,8 @@ public:
 
 public:
 	static DemoMainFunc RegisterDemo(const char* name, DemoMainFunc func);
-	static Array<DemoInfo>	m_demos;
-	static std::map<String, std::map<String, Array<DemoInfo> > >	m_demosTable;
+	static List<DemoInfo>	m_demos;
+	static std::map<String, std::map<String, List<DemoInfo> > >	m_demosTable;
 };
 
 #define DemoMain(name, desc) \

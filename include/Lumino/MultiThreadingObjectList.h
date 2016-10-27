@@ -15,7 +15,7 @@ template<typename TRefObj>
 class MultiThreadingRefObjectList
 {
 public:
-	typedef Array<TRefObj>	ObjectArray;
+	typedef List<TRefObj>	ObjectArray;
 
 private:
 	ObjectArray	m_objectArray;		///< メインのリスト

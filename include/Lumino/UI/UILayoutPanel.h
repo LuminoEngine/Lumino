@@ -144,8 +144,8 @@ private:
 	class DefinitionBase;
 	class ColumnDefinition;
 	class RowDefinition;
-	Array<RefPtr<ColumnDefinition>>	m_columnDefinitions;
-	Array<RefPtr<RowDefinition>>	m_rowDefinitions;
+	List<RefPtr<ColumnDefinition>>	m_columnDefinitions;
+	List<RefPtr<RowDefinition>>	m_rowDefinitions;
 };
 
 LN_NAMESPACE_END

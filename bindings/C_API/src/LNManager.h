@@ -69,7 +69,7 @@ public:
 	static EncodingConverter*	TCharToUTF8Converter;
 
 private:
-	typedef Array<ObjectEntry>	ObjectEntryList;
+	typedef List<ObjectEntry>	ObjectEntryList;
 	static ObjectEntryList		m_objectEntryList;
 	static Stack<int>			m_objectIndexStack;
 

@@ -122,7 +122,7 @@ void InputController::RemoveBinding(InputBinding* binding)
 //------------------------------------------------------------------------------
 void InputController::ClearBindings()
 {
-	Array<BindingSlot> list = m_bindingSlots;
+	List<BindingSlot> list = m_bindingSlots;
 	for (int i = list.GetCount() - 1; i >= 0; ++i)	// 後ろから回した方がちょっと削除の効率がいい
 	{
 		RemoveBinding(list[i].binding);

@@ -48,7 +48,7 @@ public:
 protected:
 	virtual	void OnUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset) override;
 	virtual	void OnUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset) override;
-	virtual void OnUpdatePrimitiveData(IVertexDeclaration* decls, const Array<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer) override;
+	virtual void OnUpdatePrimitiveData(IVertexDeclaration* decls, const List<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer) override;
 	virtual void OnClear(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
 	virtual void OnDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) override;
 	virtual void OnDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) override;

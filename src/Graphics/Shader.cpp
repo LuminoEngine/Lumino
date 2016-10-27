@@ -198,7 +198,7 @@ ShaderVariable* Shader::FindVariable(const TCHAR* name, CaseSensitivity cs) cons
 }
 
 //------------------------------------------------------------------------------
-const Array<ShaderTechnique*>& Shader::GetTechniques() const
+const List<ShaderTechnique*>& Shader::GetTechniques() const
 {
 	return m_techniques;
 }
@@ -767,7 +767,7 @@ void ShaderVariable::SetShaderValue(const ShaderValue& value)
 }
 
 //------------------------------------------------------------------------------
-const Array<ShaderVariable*>& ShaderVariable::GetAnnotations() const
+const List<ShaderVariable*>& ShaderVariable::GetAnnotations() const
 {
 	return m_annotations;
 }
@@ -867,7 +867,7 @@ const String& ShaderTechnique::GetName() const
 }
 
 //------------------------------------------------------------------------------
-const Array<ShaderPass*>& ShaderTechnique::GetPasses() const
+const List<ShaderPass*>& ShaderTechnique::GetPasses() const
 {
 	return m_passes;
 }
@@ -881,7 +881,7 @@ ShaderPass* ShaderTechnique::GetPass(const TCHAR* name) const
 }
 
 //------------------------------------------------------------------------------
-const Array<ShaderVariable*>& ShaderTechnique::GetAnnotations() const
+const List<ShaderVariable*>& ShaderTechnique::GetAnnotations() const
 {
 	return m_annotations;
 }
@@ -971,7 +971,7 @@ void ShaderPass::Apply()
 }
 
 //------------------------------------------------------------------------------
-const Array<ShaderVariable*>& ShaderPass::GetAnnotations() const
+const List<ShaderVariable*>& ShaderPass::GetAnnotations() const
 {
 	return m_annotations;
 }

@@ -93,7 +93,7 @@ void TestEnv::SetUp()
 	RawFont::GetDefaultFont()->SetName(_T("VL Gothic"));
 
 	// 背景はグレーにしておくと加算合成のテストとか、いろいろ都合がよい
-	Viewport::GetMainWindowViewport()->SetBackgroundColor(Color32::Gray);
+	Viewport::GetMainViewport()->SetBackgroundColor(Color32::Gray);
 }
 
 //------------------------------------------------------------------------------

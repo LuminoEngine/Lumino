@@ -25,7 +25,7 @@ private:
 
 	friend class detail::AnimationManager;
 	friend class AnimationClock;
-	Array<RefPtr<AnimationClock>>	m_playingAnimationClockList;
+	List<RefPtr<AnimationClock>>	m_playingAnimationClockList;
 };
 
 LN_NAMESPACE_END

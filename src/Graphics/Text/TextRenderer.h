@@ -113,14 +113,14 @@ public:
 
 public:
 	// TODO: ↓いまは Flush でやるようなことをしている。後で変更したい。
-	void DrawGlyphsInternal(const Matrix& transform, const PointF& position, const Array<TextLayoutResultItem>& layoutItems, FontGlyphTextureCache* cache);
+	void DrawGlyphsInternal(const Matrix& transform, const PointF& position, const List<TextLayoutResultItem>& layoutItems, FontGlyphTextureCache* cache);
 	void FlushInternal(FontGlyphTextureCache* cache);
 	void CheckUpdateState();
 
 private:
 	GraphicsManager*	m_manager;
 	TextRendererCore*	m_core;
-	Array<TextRendererCore::GlyphRunData>	m_glyphLayoutDataList;
+	List<TextRendererCore::GlyphRunData>	m_glyphLayoutDataList;
 
 	Matrix				m_transform;
 	Matrix				m_viewProj;

@@ -36,7 +36,7 @@ private:
 	UIStyleTable*		m_rootStyleTable;
 	UILayoutView*		m_mainWindowView;
 	UIElement*			m_focusElement;
-	//Array<UIElement*>	m_allElementList;
+	//List<UIElement*>	m_allElementList;
 };
 
 LN_NAMESPACE_END

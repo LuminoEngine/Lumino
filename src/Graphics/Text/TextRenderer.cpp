@@ -312,7 +312,7 @@ void TextRenderer::DrawString(const Matrix& transform, const TCHAR* str, int len
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::DrawGlyphsInternal(const Matrix& transform, const PointF& position, const Array<TextLayoutResultItem>& layoutItems, FontGlyphTextureCache* cache)
+void TextRenderer::DrawGlyphsInternal(const Matrix& transform, const PointF& position, const List<TextLayoutResultItem>& layoutItems, FontGlyphTextureCache* cache)
 {
 	CheckUpdateState();
 

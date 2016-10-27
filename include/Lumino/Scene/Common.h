@@ -35,10 +35,10 @@ class MMEShaderTechnique;
 
 class CameraBehavior;
 
-typedef Array<RenderingPass*>	RenderingPassList;
-typedef Array<Light*>			LightNodeList;
-typedef Array<SceneNode*>		SceneNodeArray;
-typedef Array<MMEShader*>		SceneShaderList;
+typedef List<RenderingPass*>	RenderingPassList;
+typedef List<Light*>			LightNodeList;
+typedef List<SceneNode*>		SceneNodeArray;
+typedef List<MMEShader*>		SceneShaderList;
 
 /// ノード種別
 enum SceneNodeType

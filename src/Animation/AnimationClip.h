@@ -20,7 +20,7 @@ public:
 		AnimationCurve*			Curve;
 	};
 
-	typedef Array<AnimationCurveEntry>	AnimationCurveEntryList;
+	typedef List<AnimationCurveEntry>	AnimationCurveEntryList;
 
 public:
 	AnimationClip();

@@ -361,7 +361,7 @@ void DX9Renderer::OnUpdateDepthStencilState(const DepthStencilState& newState, c
 }
 
 //------------------------------------------------------------------------------
-void DX9Renderer::OnUpdatePrimitiveData(IVertexDeclaration* decls, const Array<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer)
+void DX9Renderer::OnUpdatePrimitiveData(IVertexDeclaration* decls, const List<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer)
 {
 	LN_CHECK_STATE(m_currentVertexDeclaration != nullptr);
 	DX9VertexDeclaration* dx9Decls = static_cast<DX9VertexDeclaration*>(decls);

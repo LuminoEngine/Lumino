@@ -117,7 +117,7 @@ void GlyphRun::UpdateTextLayoutItem()
 }
 
 //------------------------------------------------------------------------------
-const Array<TextLayoutResultItem>& GlyphRun::RequestLayoutItems()
+const List<TextLayoutResultItem>& GlyphRun::RequestLayoutItems()
 {
 	UpdateTextLayoutItem();
 	return m_glyphData.Items;

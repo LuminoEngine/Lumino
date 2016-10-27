@@ -87,19 +87,19 @@ private:
 LN_INTERNAL_ACCESS:	// TODO:
 	RefPtr<PmxSkinnedMeshResource>	m_meshResource;
 	RefPtr<MaterialList>			m_materials;
-	Array<SkinnedMeshBonePtr>		m_allBoneList;				// 全ボーンリスト
-	Array<SkinnedMeshBone*>			m_rootBoneList;				// ルートボーンリスト (親を持たないボーンリスト)
-	Array<Matrix>					m_skinningMatrices;			// スキニングに使用する最終ボーン行列 (要素数はボーン数)
-	Array<Quaternion>				m_skinningLocalQuaternions;
+	List<SkinnedMeshBonePtr>		m_allBoneList;				// 全ボーンリスト
+	List<SkinnedMeshBone*>			m_rootBoneList;				// ルートボーンリスト (親を持たないボーンリスト)
+	List<Matrix>					m_skinningMatrices;			// スキニングに使用する最終ボーン行列 (要素数はボーン数)
+	List<Quaternion>				m_skinningLocalQuaternions;
 	RefPtr<Texture2D>				m_skinningMatricesTexture;	// Texture fetch による GPU スキニング用のテクスチャ
 	RefPtr<Texture2D>				m_skinningLocalQuaternionsTexture;	// Texture fetch による GPU スキニング用のテクスチャ
 	RefPtr<Animator>				m_animator;
-	Array<SkinnedMeshBone*>			m_ikBoneList;
+	List<SkinnedMeshBone*>			m_ikBoneList;
 
 	// TODO: これは物理演算機能を持つサブクラスを作ったほうがいい気がする
 	RefPtr<detail::PhysicsWorld>	m_physicsWorld;
-	Array<RefPtr<detail::MmdSkinnedMeshRigidBody>>	m_rigidBodyList;
-	Array<RefPtr<detail::MmdSkinnedMeshJoint>>		m_jointList;
+	List<RefPtr<detail::MmdSkinnedMeshRigidBody>>	m_rigidBodyList;
+	List<RefPtr<detail::MmdSkinnedMeshJoint>>		m_jointList;
 
 	Matrix		m_worldTransform;
 	Matrix		m_worldTransformInverse;
@@ -148,7 +148,7 @@ protected:
 LN_INTERNAL_ACCESS:	// TODO
 	RefPtr<PmxBoneResource>	m_core;				// 共有データクラス
 	SkinnedMeshBone*		m_parent;
-	Array<SkinnedMeshBone*>	m_children;			// 子ボーンリスト
+	List<SkinnedMeshBone*>	m_children;			// 子ボーンリスト
 	SQTTransform			m_localTransform;	// モーションを書き込むのはここ
 	Matrix					m_combinedMatrix;	// 結合済み行列 ()
 	int						m_depth;			// 0 から

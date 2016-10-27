@@ -190,7 +190,7 @@ enum class RenderStateId
 //	GLint params;
 //	glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &params); LN_CHECK_GLERROR();
 //
-//	Array<GLShaderPassVariableInfo> passVarList;
+//	List<GLShaderPassVariableInfo> passVarList;
 //	for (int i = 0; i < params; ++i)
 //	{
 //		GLShaderPassVariableInfo passVar;

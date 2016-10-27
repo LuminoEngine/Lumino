@@ -39,7 +39,7 @@ LN_INTERNAL_ACCESS:
 
 private:
 	RefPtr<Driver::IVertexDeclaration>	m_deviceObj;		// TODO: これは RefPtr にしたくない。Driver 系の include が必要になってしまう。
-	Array<VertexElement>				m_vertexElements;
+	List<VertexElement>					m_vertexElements;
 	bool								m_modified;
 };
 

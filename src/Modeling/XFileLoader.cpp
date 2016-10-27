@@ -711,7 +711,7 @@ RefPtr<MeshResource> XFileLoader::Load(ModelManager* manager, Stream* stream, co
 					// 属性テーブルを取得する
 					DWORD   attr_num = 0;
 					c->MeshData.pMesh->GetAttributeTable(NULL, &attr_num);
-					Array<D3DXATTRIBUTERANGE> dx_attrib_table;
+					List<D3DXATTRIBUTERANGE> dx_attrib_table;
 					dx_attrib_table.Resize(attr_num);
 					c->MeshData.pMesh->GetAttributeTable(&dx_attrib_table[0], &attr_num);
 

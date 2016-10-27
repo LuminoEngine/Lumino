@@ -232,7 +232,7 @@ public:
 
 
 		//png_bytepp rows = bitmapData->GetData();
-		Array<png_bytep> rows;
+		List<png_bytep> rows;
 		ByteBuffer tmpData = bitmapData;	// 書き込み可能ポインタでないと png の API に渡せないので一時メモリ化する。
 		rows.Resize(size.height);
 		int rowBytes = png_get_rowbytes(pp, pngInfo);	// PixelFormat_BYTE_R8G8B8A8

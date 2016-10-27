@@ -19,9 +19,9 @@ enum class NotifyCollectionChangedAction
 struct ChildCollectionChangedArgs
 {
 	NotifyCollectionChangedAction	action;
-	const Array<RefPtr<UIElement>>&	newItems;
+	const List<RefPtr<UIElement>>&	newItems;
 	int								newStartingIndex;
-	const Array<RefPtr<UIElement>>&	oldItems;			/**< Move、Remove、または Replace アクションの影響を受ける項目の一覧を取得します。*/
+	const List<RefPtr<UIElement>>&	oldItems;			/**< Move、Remove、または Replace アクションの影響を受ける項目の一覧を取得します。*/
 	int								oldStartingIndex;	/**< Move、Remove、または Replace アクションが発生した位置のインデックスを取得します。*/
 };
 
@@ -58,8 +58,8 @@ LN_INTERNAL_ACCESS:
 
 private:
 	tr::IUIElementCollectionOwner*	m_owner;
-	Array<RefPtr<UIElement>>		m_newItemsCache;
-	Array<RefPtr<UIElement>>		m_oldItemsCache;
+	List<RefPtr<UIElement>>		m_newItemsCache;
+	List<RefPtr<UIElement>>		m_oldItemsCache;
 };
 
 LN_NAMESPACE_END

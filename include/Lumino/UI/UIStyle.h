@@ -133,10 +133,10 @@ private:
 	void ApplyInternal(UIElement* targetElement, const UIStyleAttribute& setter, bool useTransitionAnimation);
 
 	String						m_visualStateName;
-	Array<UIStyleAttribute>		m_attributes;
+	List<UIStyleAttribute>		m_attributes;
 
 	//UIStylePropertyTable*		m_lastInheritedParent;
-	Array<UIStyleAttribute*>	m_parentRefAttributes;
+	List<UIStyleAttribute*>	m_parentRefAttributes;
 };
 
 /**

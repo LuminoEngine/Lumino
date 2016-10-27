@@ -141,7 +141,7 @@ protected:
 	virtual SizeF ArrangeOverride(const SizeF& finalSize);
 
 private:
-	Array<RefPtr<TextElement>>	m_childElements;
+	List<RefPtr<TextElement>>	m_childElements;
 };
 
 /**

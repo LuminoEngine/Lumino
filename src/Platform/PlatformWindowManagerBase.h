@@ -45,7 +45,7 @@ public:
 	void Exit() { m_endRequested = true; }
 
 protected:
-	Array<PlatformWindow*>	m_windowArray;
+	List<PlatformWindow*>	m_windowArray;
 	bool					m_endRequested;
 };
 

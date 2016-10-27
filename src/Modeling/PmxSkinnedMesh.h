@@ -234,7 +234,7 @@ public:
 	int			LoopCount;				///< 演算回数
 	float		IKRotateLimit;			///< IKループ計算時の1回あたりの制限角度 -> ラジアン角 | PMDのIK値とは4倍異なるので注意
 
-	Array<IKLink> IKLinks;			///< IK影響ボーンと制限のリスト
+	List<IKLink> IKLinks;			///< IK影響ボーンと制限のリスト
 
 	/* PMD の場合の IKRotateLimit は以下の計算結果を格納する
 	*		PI * Fact * (iLink + 1)
@@ -309,7 +309,7 @@ public:
 		} ImpulseMorphOffset;
 	};
 
-	Array<MorphOffset>	MorphOffsets;
+	List<MorphOffset>	MorphOffsets;
 };
 
 /// 共有剛体データ
@@ -405,12 +405,12 @@ public:
 	//String				Comment;			///< コメント
 	//String				EnglishComment;		///< コメント英
 
-	Array<RefPtr<PmxMaterialResource>>	materials;	// マテリアルリスト
-	Array<RefPtr<PmxBoneResource>>		bones;		// ボーンリスト
-	Array<RefPtr<PmxIKResource>>		iks;		// IK リスト
-	Array<RefPtr<PmxMorphResource>>		morphs;		// モーフリスト
-	Array<RefPtr<PmxRigidBodyResource>>	rigidBodys;	// 剛体リスト
-	Array<RefPtr<PmxJointResource>>		joints;		// ジョイントリスト
+	List<RefPtr<PmxMaterialResource>>	materials;	// マテリアルリスト
+	List<RefPtr<PmxBoneResource>>		bones;		// ボーンリスト
+	List<RefPtr<PmxIKResource>>		iks;		// IK リスト
+	List<RefPtr<PmxMorphResource>>		morphs;		// モーフリスト
+	List<RefPtr<PmxRigidBodyResource>>	rigidBodys;	// 剛体リスト
+	List<RefPtr<PmxJointResource>>		joints;		// ジョイントリスト
 };
 
 LN_NAMESPACE_END

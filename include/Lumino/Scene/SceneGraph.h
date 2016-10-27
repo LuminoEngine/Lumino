@@ -57,7 +57,7 @@ public:
 	virtual void UpdateFrame(float deltaTime);
 	virtual SceneNode* GetRootNode() = 0;
 	virtual Camera* GetMainCamera() = 0;
-	virtual Array<RenderingPass*>* GetRenderingPasses() = 0;
+	virtual List<RenderingPass*>* GetRenderingPasses() = 0;
 	virtual detail::MaterialInstance* CreateMaterialInstance();
 
 protected:
@@ -68,7 +68,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	//void AddNode(SceneNode* node) { m_allNodes.Add(node); }
 	//void RemoveNode(SceneNode* node) { m_allNodes.Remove(node); }
-	Array<Camera*>* GetAllCameraList() { return &m_allCameraList; }
+	List<Camera*>* GetAllCameraList() { return &m_allCameraList; }
 
 private:
 
@@ -92,7 +92,7 @@ private:
 
 	double				m_time;					///< 時間処理の開始通知からの経過時間 (秒)
 	float				m_elapsedTime;			///< 前回フレームからの経過時間 (秒)
-	Array<Camera*>		m_allCameraList;
+	List<Camera*>		m_allCameraList;
 	SceneNodeArray		m_renderingNodeList;	// 視錘台カリング等を行った後の、実際に描画するべきノードのリスト
 	LightNodeList		m_renderingLightList;	// 描画ルート以下のライト (他の描画空間にライティングの影響を与えないようにするため)
 
@@ -114,7 +114,7 @@ public:
 	virtual void UpdateFrame(float elapsedTime);
 	virtual SceneNode* GetRootNode() override { return m_defaultRoot; }
 	virtual Camera* GetMainCamera() override { return m_defaultCamera; }
-	virtual Array<RenderingPass*>* GetRenderingPasses() override { return &m_renderingPasses; }
+	virtual List<RenderingPass*>* GetRenderingPasses() override { return &m_renderingPasses; }
 
 public:
 	Basic2DSceneGraph();
@@ -124,7 +124,7 @@ public:
 private:
 	SceneNode*				m_defaultRoot;
 	Camera*					m_defaultCamera;
-	Array<RenderingPass*>	m_renderingPasses;
+	List<RenderingPass*>	m_renderingPasses;
 };
 
 LN_NAMESPACE_SCENE_END

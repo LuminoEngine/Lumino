@@ -53,8 +53,8 @@ private:
 	class	btThreadSupportInterface*		m_threadSupportSolver;
 #endif
 
-	Array<RefPtr<RigidBody>>				m_rigidBodyList;
-	Array<RefPtr<Joint>>					m_jointList;
+	List<RefPtr<RigidBody>>				m_rigidBodyList;
+	List<RefPtr<Joint>>					m_jointList;
 };
 
 class PhysicsManager
@@ -75,7 +75,7 @@ public:
 	void DrawDebugShapesAllWorld(IDebugRenderer* renderer);
 
 private:
-	Array<PhysicsWorld*>	m_worldList;
+	List<PhysicsWorld*>	m_worldList;
 
 //
 //

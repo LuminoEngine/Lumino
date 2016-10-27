@@ -73,8 +73,8 @@ void GraphicsDeviceBase::GCDeviceResource()
 	*/
 	MutexScopedLock lock(m_deviceObjectListMutex);
 
-	Array<IDeviceObject*>::iterator itr = m_deviceObjectList.begin();
-	Array<IDeviceObject*>::iterator end = m_deviceObjectList.end();
+	List<IDeviceObject*>::iterator itr = m_deviceObjectList.begin();
+	List<IDeviceObject*>::iterator end = m_deviceObjectList.end();
 	for (; itr != end;)
 	{
 		if ((*itr)->GetReferenceCount() == 1) {

@@ -160,7 +160,7 @@ private:
 
 private:
 
-	typedef Array<PlayerObject*> PlayRequestList;
+	typedef List<PlayerObject*> PlayRequestList;
 
     HWND						m_windowHandle;
 	DirectMusicMode				m_initMode;

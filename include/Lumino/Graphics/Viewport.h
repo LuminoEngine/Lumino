@@ -64,7 +64,7 @@ LN_INTERNAL_ACCESS:
 };
 
 /**
-	@brief		
+	@brief		ビューポートのクラス
 */
 class Viewport
 	: public Object

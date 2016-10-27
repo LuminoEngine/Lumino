@@ -56,7 +56,7 @@ private:
 		FadeOut,
 	};
 
-	typedef Array<AnimationTarget>	AnimationTargetList;
+	typedef List<AnimationTarget>	AnimationTargetList;
 
 	AnimationClip*			m_clip;
 	AnimationTargetList		m_animationTargetList;

@@ -78,8 +78,8 @@ LN_INTERNAL_ACCESS:
 	void Thread_ASyncProc();
 
 private:
-	typedef Array<IArchive*>		ArchiveList;
-	typedef Array<ASyncIOObject*>	ASyncIOObjectList;
+	typedef List<IArchive*>		ArchiveList;
+	typedef List<ASyncIOObject*>	ASyncIOObjectList;
 
 	FileAccessPriority		m_fileAccessPriority;
 	ArchiveList				m_archiveList;

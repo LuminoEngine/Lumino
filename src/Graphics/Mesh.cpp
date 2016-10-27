@@ -568,7 +568,7 @@ private:
 	int		m_slices;
 	int		m_stacks;
 
-	Array<SinCos>	m_sincosTable;
+	List<SinCos>	m_sincosTable;
 };
 
 //==============================================================================

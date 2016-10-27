@@ -33,7 +33,7 @@ public:
 
 	
 private:
-	Array<RefPtr<AnimationClock>>	m_clockList;
+	List<RefPtr<AnimationClock>>	m_clockList;
 };
 
 } // namespace detail

@@ -519,10 +519,10 @@ void MMEShaderTechnique::ParseScriptCommandString(ShaderVariable* scriptAnno, Sh
 }
 
 //------------------------------------------------------------------------------
-void MMEShaderTechnique::ParseSubsetIndexArray(const String& subsetText, Array<bool>* subsetIndexArray, bool* endToRange)
+void MMEShaderTechnique::ParseSubsetIndexArray(const String& subsetText, List<bool>* subsetIndexArray, bool* endToRange)
 {
 	*endToRange = false;
-	Array<String> tokens = StringTraits::Split(String(subsetText), _T(","), StringSplitOptions::RemoveEmptyEntries);
+	List<String> tokens = StringTraits::Split(String(subsetText), _T(","), StringSplitOptions::RemoveEmptyEntries);
 
 	LN_FOREACH(String& token, tokens)
 	{
@@ -568,7 +568,7 @@ void MMEShaderTechnique::ParseSubsetIndexArray(const String& subsetText, Array<b
 }
 
 //------------------------------------------------------------------------------
-void MMEShaderTechnique::ParseSubsetIndexArray(const TCHAR* subsetText, Array<int>* subsetIndexArray)
+void MMEShaderTechnique::ParseSubsetIndexArray(const TCHAR* subsetText, List<int>* subsetIndexArray)
 {
 	struct SubsetIndexOrder
 	{

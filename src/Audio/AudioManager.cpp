@@ -251,8 +251,8 @@ void AudioManager::Thread_Polling()
         }
 
 		// GC。このリストからしか参照されてなければ Release する。
-		Array<Sound*>::iterator itr = m_soundList.begin();
-		Array<Sound*>::iterator end = m_soundList.end();
+		List<Sound*>::iterator itr = m_soundList.begin();
+		List<Sound*>::iterator end = m_soundList.end();
 		while (itr != end)
 		{
 			// TODO: フェード中は開放しない

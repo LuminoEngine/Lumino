@@ -31,7 +31,7 @@ TEST_F(Test_Graphics_Pmx, Basic)
 	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
 	Camera::GetMain3DCamera()->SetCameraBehavior(cb);
 
-	Viewport::GetMainWindowViewport()->SetBackgroundColor(Color::White);
+	Viewport::GetMainViewport()->SetBackgroundColor(Color::White);
 
 	while (Engine::UpdateFrame())
 	{

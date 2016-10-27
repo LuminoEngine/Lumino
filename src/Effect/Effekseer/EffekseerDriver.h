@@ -136,7 +136,7 @@ public:
 private:
 	EffekseerEffectCore*		m_ownerEffectCore;
 	::Effekseer::Handle			m_currentHandle;
-	Array<::Effekseer::Handle>	m_drawHandleArray;
+	List<::Effekseer::Handle>	m_drawHandleArray;
 	Matrix						m_worldMatrix;
 };
 

@@ -68,8 +68,8 @@ private:
 
 	ShaderDiag					m_diag;
 
-	Array<GLShaderVariable*>	m_variables;
-	Array<GLShaderTechnique*>	m_techniques;
+	List<GLShaderVariable*>	m_variables;
+	List<GLShaderTechnique*>	m_techniques;
 	std::map<String, GLuint>	m_glVertexShaderEntryMap;
 	std::map<String, GLuint>	m_glPixelShaderEntryMap;
 };
@@ -99,8 +99,8 @@ public:
 private:
 	GLShader*					m_ownerShader;
 	GLint						m_glUniformLocation;
-	//Array<SamplerStatePair>		m_samplerStatus;
-	Array<GLShaderAnnotation*>	m_annotations;
+	//List<SamplerStatePair>		m_samplerStatus;
+	List<GLShaderAnnotation*>	m_annotations;
 };
 
 // アノテーション
@@ -148,8 +148,8 @@ public:
 private:
 	GLShader*					m_ownerShader;
 	String						m_name;
-	Array<GLShaderPass*>		m_passes;
-	Array<GLShaderAnnotation*>	m_annotations;
+	List<GLShaderPass*>		m_passes;
+	List<GLShaderAnnotation*>	m_annotations;
 };
 
 /// OpenGL 用の IShaderPass の実装
@@ -185,9 +185,9 @@ private:
 	GLShader*						m_ownerShader;
 	GLuint							m_program;
 	String							m_name;
-	Array<GLShaderAnnotation*>		m_annotations;
+	List<GLShaderAnnotation*>		m_annotations;
 	int8_t							m_usageAttrIndexTable[VertexElementUsage_Max][MaxUsageIndex];
-	Array<GLShaderPassVariableInfo>	m_passVarList;		// この Pass が本当に使う変数のリスト。最適化されていれば消えるものもある。
+	List<GLShaderPassVariableInfo>	m_passVarList;		// この Pass が本当に使う変数のリスト。最適化されていれば消えるものもある。
 	//int								m_textureVarCount;
 };
 

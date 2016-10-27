@@ -96,7 +96,7 @@ protected:
 	virtual void OnItemRemoved(RefObject* item) {}
 
 protected:
-	Array<RefObject*>	m_list;
+	List<RefObject*>	m_list;
 };
 
 #define LN_REF_OBJECT_LIST_DECL(itemType) \
@@ -116,7 +116,7 @@ public:
 	class const_iterator
 	{
 	public:
-		typedef Array<RefObject*>			internal_list;
+		typedef List<RefObject*>			internal_list;
 		typedef TRefObj*						value_type;
 		typedef internal_list::difference_type	difference_type;
 		typedef const value_type*				pointer;
@@ -157,7 +157,7 @@ public:
 	class iterator
 	{
 	public:
-		typedef Array<RefObject*>			internal_list;
+		typedef List<RefObject*>			internal_list;
 		typedef TRefObj*						value_type;
 		typedef internal_list::difference_type	difference_type;
 		typedef value_type*						pointer;

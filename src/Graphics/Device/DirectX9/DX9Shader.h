@@ -37,7 +37,7 @@ public:
 	ID3DXEffect* GetID3DXEffect() { return m_dxEffect; }
 
 	//const SamplerState* FindSamplerState(IDirect3DBaseTexture9* dxTexture) const;
-	Array<TextureVarInfo>* GetTextureVarInfoList() { return &m_textureVariables; }
+	List<TextureVarInfo>* GetTextureVarInfoList() { return &m_textureVariables; }
 
 	// override IShader
 	virtual int GetVariableCount() const { return m_variables.GetCount(); }
@@ -51,9 +51,9 @@ private:
 
 	DX9GraphicsDevice*				m_device;
 	ID3DXEffect*					m_dxEffect;
-	Array<DX9ShaderVariable*>		m_variables;
-	Array<TextureVarInfo>			m_textureVariables;		// texture 型変数と sampler 型変数のペアを探すために使用する
-	Array<DX9ShaderTechnique*>		m_techniques;
+	List<DX9ShaderVariable*>		m_variables;
+	List<TextureVarInfo>			m_textureVariables;		// texture 型変数と sampler 型変数のペアを探すために使用する
+	List<DX9ShaderTechnique*>		m_techniques;
 };
 
 /// シェーダ変数
@@ -87,8 +87,8 @@ public:
 private:
 	ID3DXEffect*					m_dxEffect;
 	D3DXHANDLE						m_handle;
-	Array<DX9ShaderAnnotation*>		m_annotations;
-	Array<BOOL>						m_temp;
+	List<DX9ShaderAnnotation*>		m_annotations;
+	List<BOOL>						m_temp;
 	DX9TextureBase*					m_texture;
 };
 
@@ -133,8 +133,8 @@ private:
 	ID3DXEffect*					m_dxEffect;
 	D3DXHANDLE						m_handle;
 	String							m_name;
-	Array<DX9ShaderAnnotation*>		m_annotations;
-	Array<DX9ShaderPass*>			m_passes;
+	List<DX9ShaderAnnotation*>		m_annotations;
+	List<DX9ShaderPass*>			m_passes;
 };
 
 /// パス
@@ -169,8 +169,8 @@ private:
 	D3DXHANDLE						m_technique;
 	int								m_passIndex;
 	String							m_name;
-	Array<DX9ShaderAnnotation*>		m_annotations;
-	Array<SamplerLink>				m_samplerLinkList;
+	List<DX9ShaderAnnotation*>		m_annotations;
+	List<SamplerLink>				m_samplerLinkList;
 	bool							m_resolvedSamplerLink;
 };
 

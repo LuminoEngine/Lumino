@@ -152,8 +152,8 @@ private:
 	PlatformWindow*					m_mainWindow;
 	FontManager*					m_fontManager;
 	GraphicsRenderingType			m_renderingType;
-	Array<GraphicsResourceObject*>	m_resourceObjectList;
-	Array<IDeviceResetListener*>	m_deviceResetListenerList;
+	List<GraphicsResourceObject*>	m_resourceObjectList;
+	List<IDeviceResetListener*>	m_deviceResetListenerList;
 	
 	Driver::IGraphicsDevice*		m_graphicsDevice;
 	SwapChain*						m_mainSwapChain;

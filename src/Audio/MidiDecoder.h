@@ -70,7 +70,7 @@ private:
 	Mutex				m_mutex;
 	uint32_t			m_cc111Time;
 	uint32_t			m_baseTime;
-	Array<VolumeEntry>	m_volumeEntryList;
+	List<VolumeEntry>	m_volumeEntryList;
 	bool				m_volumeNormalize;
 	
 };

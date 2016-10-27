@@ -71,7 +71,7 @@ public:
 	/**
 		@brief		このシェーダで定義されている全ての変数を取得します。
 	*/
-	const Array<ShaderVariable*>& GetVariables() const { return m_variables; }
+	const List<ShaderVariable*>& GetVariables() const { return m_variables; }
 	
 	/**
 		@brief		名前を指定してシェーダ変数を検索します。
@@ -83,7 +83,7 @@ public:
 	/**
 		@brief		このシェーダで定義されている全てのテクニックを取得します。
 	*/
-	const Array<ShaderTechnique*>& GetTechniques() const;
+	const List<ShaderTechnique*>& GetTechniques() const;
 
 	/**
 		@brief		名前を指定してテクニックを検索します。
@@ -110,8 +110,8 @@ LN_INTERNAL_ACCESS:
 
 	ByteBuffer					m_sourceCode;
 	Driver::IShader*			m_deviceObj;
-	Array<ShaderVariable*>		m_variables;
-	Array<ShaderTechnique*>		m_techniques;
+	List<ShaderVariable*>		m_variables;
+	List<ShaderTechnique*>		m_techniques;
 	ShaderVariable*				m_viewportPixelSize;
 	bool						m_modifiedVariables;
 };
@@ -257,7 +257,7 @@ public:
 	/**
 		@brief		このシェーダ変数で定義されている全てのアノテーションを取得します。
 	*/
-	const Array<ShaderVariable*>& GetAnnotations() const;
+	const List<ShaderVariable*>& GetAnnotations() const;
 
 	/**
 		@brief		名前を指定してアノテーションを検索します。
@@ -285,7 +285,7 @@ private:
 	Driver::IShaderVariable*	m_deviceObj;
 	ShaderValue					m_value;
 	Texture*					m_textureValue;		// ShaderValue は Driver でも使われるので ITexture* を持ち、Texture* は持たない。 
-	Array<ShaderVariable*>		m_annotations;
+	List<ShaderVariable*>		m_annotations;
 	bool						m_modified;
 };
 
@@ -299,7 +299,7 @@ public:
 
 	const String& GetName() const;
 
-	const Array<ShaderPass*>& GetPasses() const;
+	const List<ShaderPass*>& GetPasses() const;
 	
 	/**
 		@brief		名前を指定してパスを検索します。
@@ -310,7 +310,7 @@ public:
 	/**
 		@brief		このテクニックで定義されている全てのアノテーションを取得します。
 	*/
-	const Array<ShaderVariable*>& GetAnnotations() const;
+	const List<ShaderVariable*>& GetAnnotations() const;
 
 	/**
 		@brief		名前を指定してアノテーションを検索します。
@@ -331,8 +331,8 @@ private:
 	Shader*						m_owner;
 	Driver::IShaderTechnique*	m_deviceObj;
 	String						m_name;
-	Array<ShaderPass*>			m_passes;
-	Array<ShaderVariable*>		m_annotations;
+	List<ShaderPass*>			m_passes;
+	List<ShaderVariable*>		m_annotations;
 };
 
 /**
@@ -352,7 +352,7 @@ public:
 	/**
 		@brief		このパスで定義されている全てのアノテーションを取得します。
 	*/
-	const Array<ShaderVariable*>& GetAnnotations() const;
+	const List<ShaderVariable*>& GetAnnotations() const;
 
 	/**
 		@brief		名前を指定してアノテーションを検索します。
@@ -380,7 +380,7 @@ private:
 	Shader*						m_owner;
 	Driver::IShaderPass*		m_deviceObj;
 	String						m_name;
-	Array<ShaderVariable*>		m_annotations;
+	List<ShaderVariable*>		m_annotations;
 };
 
 LN_NAMESPACE_GRAPHICS_END

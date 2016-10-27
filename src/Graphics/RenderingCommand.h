@@ -310,12 +310,12 @@ public:
 	}
 
 private:
-	Array<size_t>			m_commandList;
+	List<size_t>			m_commandList;
 	ByteBuffer				m_commandDataBuffer;
 	size_t					m_commandDataBufferUsed;
 	ByteBuffer				m_extDataBuffer;
 	size_t					m_extDataBufferUsed;
-	Array<RefObject*>		m_markGCList;
+	List<RefObject*>		m_markGCList;
 	Driver::IGraphicsDevice*	m_currentDevice;
 	Driver::IRenderer*			m_currentRenderer;	///< 描画実行中の IRenderer
 

@@ -244,7 +244,7 @@ protected:
 
 	virtual	void OnUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset) = 0;
 	virtual	void OnUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset) = 0;
-	virtual void OnUpdatePrimitiveData(IVertexDeclaration* decls, const Array<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer) = 0;
+	virtual void OnUpdatePrimitiveData(IVertexDeclaration* decls, const List<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer) = 0;
 	virtual void OnClear(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
 	virtual void OnDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) = 0;
 	virtual void OnDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) = 0;
@@ -268,7 +268,7 @@ protected:	// TODO: private
 	DepthStencilState				m_requestedDepthStencilState;
 	DepthStencilState				m_currentDepthStencilState;
 	RefPtr<IVertexDeclaration>		m_currentVertexDeclaration;
-	Array<RefPtr<IVertexBuffer>>	m_currentVertexBuffers;
+	List<RefPtr<IVertexBuffer>>		m_currentVertexBuffers;
 	RefPtr<IIndexBuffer>			m_currentIndexBuffer;
 };
 

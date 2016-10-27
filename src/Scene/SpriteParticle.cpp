@@ -386,7 +386,7 @@ void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<deta
 	class SpriteCmpDepthBackToFront
 	{
 	public:
-		Array<detail::ParticleData>* spriteList;
+		List<detail::ParticleData>* spriteList;
 
 		bool operator()(int left, int right)
 		{

@@ -21,7 +21,7 @@ public:
 	virtual void UpdateFrame(float elapsedTime) override;
 	virtual SceneNode* GetRootNode() override { return m_defaultRoot; }
 	virtual Camera* GetMainCamera() override { return m_default3DCamera; }
-	virtual Array<RenderingPass*>* GetRenderingPasses() override { return &m_mmdRenderingPasses; }
+	virtual List<RenderingPass*>* GetRenderingPasses() override { return &m_mmdRenderingPasses; }
 
 	//virtual bool InjectMouseWheel(int delta) override;
 	virtual detail::MaterialInstance* CreateMaterialInstance() override;
@@ -45,7 +45,7 @@ private:
 
 
 
-	Array<RenderingPass*>	m_mmdRenderingPasses;
+	List<RenderingPass*>	m_mmdRenderingPasses;
 
 };
 

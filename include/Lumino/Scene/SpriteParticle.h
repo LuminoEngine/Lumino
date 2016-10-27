@@ -35,8 +35,8 @@ struct ParticleData
 struct SpriteParticleModelInstance
 {
 	//RefPtr<SpriteParticleModel>	m_owner;
-	Array<ParticleData>			m_particles;
-	Array<int>					m_particleIndices;
+	List<ParticleData>			m_particles;
+	List<int>					m_particleIndices;
 	int							m_activeCount = 0;
 	double						m_time = 0;
 	double						m_lastSpawnTime = 0;	// ÅŒã‚É•úo‚µ‚½ŠÔ (m_oneSpawnDeltaTime ‚Ì”{”‚É‚È‚é)

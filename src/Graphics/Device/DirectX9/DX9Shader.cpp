@@ -317,8 +317,8 @@ void DX9ShaderVariable::GetValue(ID3DXEffect* dxEffect, D3DXHANDLE handle, Shade
 	}
 	case ShaderVariableType_BoolArray:
 	{
-		Array<BOOL> tmp1;
-		std::vector<bool> tmp2;	// TODO: Array<bool> がつかえないので
+		List<BOOL> tmp1;
+		std::vector<bool> tmp2;	// TODO: List<bool> がつかえないので
 		tmp1.Resize(desc.Elements);
 		tmp2.resize(desc.Elements);
 		LN_COMCALL(dxEffect->GetBoolArray(handle, (BOOL*)&tmp1[0], desc.Elements));

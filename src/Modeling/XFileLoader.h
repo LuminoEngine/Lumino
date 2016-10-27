@@ -50,7 +50,7 @@ struct DerivedD3DXFrame
 struct DerivedD3DXMeshContainer
     : public D3DXMESHCONTAINER
 {
-    Array<String>  TextureNames;       ///< テクスチャ名 (マテリアル配列と対応)
+	List<String>  TextureNames;       ///< テクスチャ名 (マテリアル配列と対応)
     ID3DXMesh*		            OriginalMesh;       ///< 元のメッシュ (念のため用意。スキニング方法ごとのメッシュ変換やソフトウェアスキニングで使う )
     D3DXMATRIX*		            BoneOffsetMatrices;	///< ボーンオフセット行列の配列 ( 行列更新する時の元になる初期姿勢 )
 
@@ -75,8 +75,8 @@ struct DerivedD3DXMeshContainer
 	}
 };
 
-typedef Array<DerivedD3DXFrame*>			DerivedD3DXFrameArray;
-typedef Array<DerivedD3DXMeshContainer*>	DerivedD3DXMeshContainerArray;
+typedef List<DerivedD3DXFrame*>			DerivedD3DXFrameArray;
+typedef List<DerivedD3DXMeshContainer*>	DerivedD3DXMeshContainerArray;
 
 class AllocateHierarchy
     : public ID3DXAllocateHierarchy

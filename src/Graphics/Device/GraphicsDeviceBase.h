@@ -76,7 +76,7 @@ protected:
 		}
 	};
 
-	typedef Array<IDeviceObject*>	DeviceObjectList;
+	typedef List<IDeviceObject*>	DeviceObjectList;
 	
 	uint32_t			m_attachRenderingThreadId;
 	DeviceObjectList	m_deviceObjectList;

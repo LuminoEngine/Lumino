@@ -25,7 +25,7 @@ struct MeshAttribute	// TODO: Section
 	int		StartIndex;     ///< 開始インデックス
 	int		PrimitiveNum;   ///< 描画プリミティブ数 (三角形の数)
 };
-typedef Array<MeshAttribute>		MeshAttributeList;
+typedef List<MeshAttribute>		MeshAttributeList;
 
 /**
 	@brief

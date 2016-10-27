@@ -197,7 +197,7 @@ LN_INTERNAL_ACCESS:
 	
 private:
 	RefPtr<Material>				m_mainMaterial;
-	Array<RefPtr<detail::MaterialInstance>>	m_instanceList;
+	List<RefPtr<detail::MaterialInstance>>	m_instanceList;
 };
 
 LN_NAMESPACE_SCENE_END

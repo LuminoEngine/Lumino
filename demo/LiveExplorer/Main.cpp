@@ -342,7 +342,7 @@ int main()
 			//button2->SetBackground(ColorBrush::Blue);
 			//canvas1->AddChild(button2);
 
-			Viewport::GetMainWindowViewport()->SetBackgroundColor(Color::Gray);
+			Viewport::GetMainViewport()->SetBackgroundColor(Color::Gray);
 
 			//auto box1 = StaticMesh::CreateBox(Vector3(2, 2, 2));
 			//auto shader1 = MMEShader::Create(_T("D:/Proj/Lumino/src/Scene/Resource/BasicForwardRendering - コピー.fx"));
@@ -666,7 +666,7 @@ int main()
 DemoManager::DemoMainFunc DemoManager::RegisterDemo(const char* name, DemoMainFunc func)
 {
     String t = String::FromNativeCharString(name);
-	Array<String> tokens = t.Split(_T("."));
+	List<String> tokens = t.Split(_T("."));
 	DemoInfo info;
 	info.Group1 = tokens[0];
 	info.Group2 = tokens[1];
@@ -678,5 +678,5 @@ DemoManager::DemoMainFunc DemoManager::RegisterDemo(const char* name, DemoMainFu
 	return func;
 }
 
-Array<DemoManager::DemoInfo>			DemoManager::m_demos;
-std::map<String, std::map<String, Array<DemoManager::DemoInfo> > >	DemoManager::m_demosTable;
+List<DemoManager::DemoInfo>			DemoManager::m_demos;
+std::map<String, std::map<String, List<DemoManager::DemoInfo> > >	DemoManager::m_demosTable;

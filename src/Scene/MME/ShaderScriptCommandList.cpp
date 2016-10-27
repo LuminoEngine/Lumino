@@ -52,7 +52,7 @@ void ShaderScriptCommandList::AddChildPassCommandList(ShaderScriptCommandList* c
 }
 
 //------------------------------------------------------------------------------
-//void ShaderScriptCommandList::SetDrawingSubsetNumbers(const Array<int>& numbers)
+//void ShaderScriptCommandList::SetDrawingSubsetNumbers(const List<int>& numbers)
 //{
 //	m_drawingSubsetNumbers.CopyFrom(numbers);
 //}

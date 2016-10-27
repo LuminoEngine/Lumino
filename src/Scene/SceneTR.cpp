@@ -90,7 +90,7 @@ void HugePlane::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 		//};
 
 		//Plane plane(m_direction, 0);
-		//Array<Vector3> hits;
+		//List<Vector3> hits;
 		//for (Line& li : lines)
 		//{
 		//	Vector3 pt;

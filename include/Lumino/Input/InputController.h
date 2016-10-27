@@ -52,7 +52,7 @@ private:
 
 	detail::InputManager*			m_manager;
 	uint32_t						m_attachedDevices;		// TODO: 本当ならちゃんとインターフェイス組むべきかも
-	Array<BindingSlot>				m_bindingSlots;
+	List<BindingSlot>				m_bindingSlots;
 	StatusMap						m_inputStatus;
 	InputState						m_inputStateForAny;
 	int								m_repeatIntervalStart;

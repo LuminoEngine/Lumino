@@ -62,10 +62,10 @@ public:
 	virtual ~GLVertexDeclaration();
 	void Initialize(const VertexElement* elements, int elementsCount);
 
-	const Array<LNGLVertexElement>& GetVertexElements() const { return m_vertexElements; }
+	const List<LNGLVertexElement>& GetVertexElements() const { return m_vertexElements; }
 
 	// 頂点宣言から GL 用の頂点宣言を生成する
-	static void CreateGLVertexElements(const VertexElement* vertexElements, int elementsCount, Array<LNGLVertexElement>* outList);
+	static void CreateGLVertexElements(const VertexElement* vertexElements, int elementsCount, List<LNGLVertexElement>* outList);
 
 	// 頂点宣言から頂点1つ分のデータサイズ (バイト数) を求める
 	static int GetVertexSize(const VertexElement* vertexElements, int elementsCount, int streamIndex);
@@ -81,7 +81,7 @@ public:
 	virtual void OnResetDevice() override {};
 
 private:
-	Array<LNGLVertexElement>	m_vertexElements;
+	List<LNGLVertexElement>	m_vertexElements;
 };
 
 } // namespace Driver

@@ -89,7 +89,7 @@ public:	// internal
 	void AddShader(MMEShader* shader);
 	void RemoveShader(MMEShader* shader);
 	SceneShaderList* GetShaderList() { return &m_sceneShaderList; }
-	Array<Camera*>* GetAllCameraList() { return &m_allCameraList; }
+	List<Camera*>* GetAllCameraList() { return &m_allCameraList; }
 
 	/// 指定した座標に近いライトを取得する (取得する数は outList の要素数。あらかじめ Resize() しておくこと)
 	void SelectLight(Vector3* pos, LightNodeList* outList);
@@ -116,7 +116,7 @@ private:
 	LightNodeList						m_lightNodeList;		///< 全ての Light のリスト
 	SceneShaderList						m_sceneShaderList;
 
-	Array<Camera*>	m_allCameraList;
+	List<Camera*>	m_allCameraList;
 
 	SceneGraph*		m_default3DSceneGraph;
 	SceneGraph*		m_default2DSceneGraph;

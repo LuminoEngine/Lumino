@@ -20,7 +20,7 @@ class BodyBase
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	typedef Array<ContactInfo>	ContactInfoList;
+	typedef List<ContactInfo>	ContactInfoList;
 
 	/// 接触点情報のリスト
 	const ContactInfoList& GetContactInfoList() const { return m_contactList; }

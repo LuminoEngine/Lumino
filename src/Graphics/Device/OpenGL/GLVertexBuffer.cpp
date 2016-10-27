@@ -122,7 +122,7 @@ void GLVertexDeclaration::Initialize(const VertexElement* elements, int elements
 }
 
 //------------------------------------------------------------------------------
-void GLVertexDeclaration::CreateGLVertexElements(const VertexElement* vertexElements, int elementsCount, Array<LNGLVertexElement>* outList)
+void GLVertexDeclaration::CreateGLVertexElements(const VertexElement* vertexElements, int elementsCount, List<LNGLVertexElement>* outList)
 {
 	outList->Reserve(elementsCount);
 

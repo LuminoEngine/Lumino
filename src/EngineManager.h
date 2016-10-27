@@ -76,7 +76,7 @@ public:
 	/**
 		@brief		登録するアーカイブファイルのリストです。
 	*/
-	Array<ArchiveFileEntry>	ArchiveFileEntryList;
+	List<ArchiveFileEntry>	ArchiveFileEntryList;
 	
 	/**
 		@brief		ファイルを開く時の検索場所の優先順です。

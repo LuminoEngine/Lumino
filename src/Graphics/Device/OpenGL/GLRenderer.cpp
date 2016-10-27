@@ -324,7 +324,7 @@ void GLRenderer::OnUpdateDepthStencilState(const DepthStencilState& newState, co
 }
 
 //------------------------------------------------------------------------------
-void GLRenderer::OnUpdatePrimitiveData(IVertexDeclaration* decls, const Array<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer)
+void GLRenderer::OnUpdatePrimitiveData(IVertexDeclaration* decls, const List<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer)
 {
 	LN_REFOBJ_SET(m_currentVertexBuffer, static_cast<GLVertexBuffer*>(vertexBuufers[0].Get()));
 	LN_REFOBJ_SET(m_currentIndexBuffer, static_cast<GLIndexBuffer*>(indexBuffer));
@@ -533,7 +533,7 @@ void GLRenderer::UpdateVertexAttribPointer()
 	GLVertexDeclaration* glDecls = static_cast<GLVertexDeclaration*>(m_currentVertexDeclaration.Get());
 
 	// シェーダの頂点属性の更新
-	const Array<LNGLVertexElement>& elements = glDecls->GetVertexElements();
+	const List<LNGLVertexElement>& elements = glDecls->GetVertexElements();
 	for (const LNGLVertexElement& elm : elements)
 	{
 		int index = m_currentShaderPass->GetUsageAttributeIndex(elm.Usage, elm.UsageIndex);

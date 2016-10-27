@@ -68,7 +68,7 @@ LN_INTERNAL_ACCESS:
 	//void AddLayer();
 
 private:
-	typedef Array<detail::AnimationTargetAttributeEntity>	AnimationTargetAttributeEntityList;
+	typedef List<detail::AnimationTargetAttributeEntity>	AnimationTargetAttributeEntityList;
 
 	detail::IAnimationTargetElement*	m_element;
 	AnimationTargetAttributeEntityList	m_animationTargetAttributeEntityList;

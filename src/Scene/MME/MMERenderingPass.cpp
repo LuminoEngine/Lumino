@@ -341,7 +341,7 @@ void MMERenderingPass::AdjustGridMesh(Camera* camera)
 	};
 
 	Plane plane(0, 1, 0, 0);
-	Array<Vector3> hits;
+	List<Vector3> hits;
 	for (Line& li : lines)
 	{
 		Vector3 pt;
