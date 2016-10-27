@@ -1,7 +1,7 @@
 ﻿
 #pragma once
-
 #include "../Internal.h"
+#include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Utils.h>
 
 LN_NAMESPACE_BEGIN
@@ -52,6 +52,17 @@ PixelFormat Utils::TranslatePixelFormat(TextureFormat format)
 	};
 	assert(LN_ARRAY_SIZE_OF(table) == (int)TextureFormat::_Count);
 	return table[(int)format];
+}
+
+//------------------------------------------------------------------------------
+bool Utils::EqualsTexture(Texture* texture1, Texture* texture2)
+{
+	if (texture1 != texture2) return false;
+	if (texture1 != nullptr)
+	{
+		if (texture1->GetDeviceObject() != texture2->GetDeviceObject()) return false;
+	}
+	return true;
 }
 
 LN_NAMESPACE_GRAPHICS_END

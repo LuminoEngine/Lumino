@@ -6,6 +6,7 @@
 #include <Lumino/Graphics/Shader.h>
 #include <Lumino/Graphics/Material.h>
 #include <Lumino/Graphics/Mesh.h>
+#include <Lumino/Graphics/Utils.h>
 #include "RendererImpl.h"
 #include "PrimitiveRenderer.h"
 #include "MeshRendererProxy.h"
@@ -273,7 +274,7 @@ void RenderingContext::ResetStates()
 //------------------------------------------------------------------------------
 void RenderingContext::SetRenderTarget(int index, Texture* texture)
 {
-	if (texture != m_state.GetRenderTarget(index))
+	if (!Utils::EqualsTexture(texture, m_state.GetRenderTarget(index)))
 	{
 		NorityStateChanging();
 		m_state.SetRenderTarget(index, texture);
@@ -289,7 +290,7 @@ Texture* RenderingContext::GetRenderTarget(int index) const
 //------------------------------------------------------------------------------
 void RenderingContext::SetDepthBuffer(Texture* depthBuffer)
 {
-	if (m_state.depthBuffer != depthBuffer)
+	if (!Utils::EqualsTexture(m_state.depthBuffer, depthBuffer))
 	{
 		NorityStateChanging();
 		m_state.depthBuffer = depthBuffer;

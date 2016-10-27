@@ -10,10 +10,10 @@ protected:
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_TextBlock, Basic)
 {
-	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
-	auto textBlock1 = UITextBlock::Create();
-	textBlock1->SetText(_T("TextBlock"));
-	uiRoot->SetContent(textBlock1);
+	//auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+	//auto textBlock1 = UITextBlock::Create();
+	//textBlock1->SetText(_T("TextBlock"));
+	//uiRoot->SetContent(textBlock1);
 
 	while(Engine::UpdateFrame());
 

@@ -131,6 +131,7 @@ LN_INTERNAL_ACCESS:
 	friend class Texture;
 	friend class ShaderVariable;
 	void PresentCommandList(SwapChain* swapChain);	// m_primaryCommandList をバックグラウンドへ送る
+	void VerifyFrameBuffers();
 
 	Driver::IRenderer*		m_internal;
 	RenderingCommandList*	m_primaryCommandList;

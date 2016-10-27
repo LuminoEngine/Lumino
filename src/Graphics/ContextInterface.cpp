@@ -7,6 +7,7 @@
 #include <Lumino/Graphics/SwapChain.h>
 #include <Lumino/Graphics/ContextInterface.h>
 #include <Lumino/Graphics/Brush.h>
+#include <Lumino/Graphics/Utils.h>
 #include "RendererImpl.h"
 #include "GraphicsManager.h"
 #include "Device/GraphicsDriverInterface.h"
@@ -179,10 +180,10 @@ bool BasicContextState::Equals(const BasicContextState& s) const
 {
 	if (renderState != s.renderState) return false;
 	if (depthStencilState != s.depthStencilState) return false;
-	if (depthBuffer != s.depthBuffer) return false;
+	if (!Utils::EqualsTexture(depthBuffer, s.depthBuffer)) return false;
 	for (int i = 0; i < MaxMultiRenderTargets; ++i)
 	{
-		if (m_renderTargets[i] != s.m_renderTargets[i]) return false;
+		if (!Utils::EqualsTexture(m_renderTargets[i], s.m_renderTargets[i])) return false;
 	}
 	if (m_ownerShader != s.m_ownerShader) return false;
 	if (m_shaderPass != s.m_shaderPass) return false;
@@ -260,16 +261,19 @@ void ContextInterface::NorityStartDrawing(detail::IRendererPloxy* rendererPloxy)
 void ContextInterface::FlushImplemented()
 {
 	m_manager->SwitchActiveContext(this);
-	if (m_stateChanged)
+
+	if (m_activeRendererPloxy != nullptr)
 	{
-		if (OnCheckStateChanged())
+		if (m_stateChanged)
 		{
-			OnPrimitiveFlush();
-			OnStateFlush(m_activeRendererPloxy);
+			if (OnCheckStateChanged())
+			{
+				OnStateFlush(m_activeRendererPloxy);
+			}
+			m_stateChanged = false;
 		}
-		m_stateChanged = false;
+		OnPrimitiveFlush();
 	}
-	OnPrimitiveFlush();
 }
 
 //------------------------------------------------------------------------------

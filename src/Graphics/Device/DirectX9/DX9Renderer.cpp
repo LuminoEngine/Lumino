@@ -490,7 +490,6 @@ void DX9Renderer::InternalSetRenderTarget(int index, ITexture* texture, bool res
 //------------------------------------------------------------------------------
 void DX9Renderer::InternalSetDepthBuffer(ITexture* texture, bool reset)
 {
-
 	if (m_currentDepthBuffer != texture || reset)
 	{
 		if (texture) {

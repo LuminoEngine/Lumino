@@ -79,30 +79,8 @@ void* RenderBulkData::Alloc(RenderingCommandList* commandList)
 
 
 //==============================================================================
-// RenderingCommand
-//==============================================================================
-//void* RenderingCommand::operator new(size_t size, RenderingCommandList* cmmandList)
-//{
-//	size_t dataIdx = cmmandList->Alloc(size, NULL);
-//	RenderingCommand* cmd = (RenderingCommand*)cmmandList->GetBuffer(dataIdx);
-//	cmd->m_commandList = cmmandList;
-//	cmmandList->m_commandList.Add(dataIdx);
-//	return cmd;
-//}
-//
-//void RenderingCommand::operator delete(void* ptr, RenderingCommandList* cmmandList)
-//{
-//}
-
-//==============================================================================
 // RenderingCommandList
 //==============================================================================
-
-#define CREATE_COMMAND(name) \
-	size_t dataIdx = Alloc(sizeof(name##Command), NULL); \
-	name##Command* cmd = (name##Command*)&(m_commandDataBuffer.GetData()[dataIdx]); \
-	cmd->Type = CommandType_##name; \
-	m_commandList.Add(dataIdx);
 
 //------------------------------------------------------------------------------
 RenderingCommandList::RenderingCommandList()
@@ -112,8 +90,8 @@ RenderingCommandList::RenderingCommandList()
 	, m_extDataBuffer()
 	, m_extDataBufferUsed(0)
 	, m_markGCList()
-	, m_currentDevice(NULL)
-	, m_currentRenderer(NULL)
+	, m_currentDevice(nullptr)
+	, m_currentRenderer(nullptr)
 	, m_running(false)
 	, m_idling(true)
 {
@@ -130,6 +108,21 @@ RenderingCommandList::~RenderingCommandList()
 }
 
 //------------------------------------------------------------------------------
+void RenderingCommandList::ClearCommands()
+{
+	m_commandList.Clear();
+	m_commandDataBufferUsed = 0;
+	m_extDataBufferUsed = sizeof(intptr_t);	// ポインタサイズ分予約済みにしておく (null チェックで 0 を使いたい)
+
+	// コマンド内のリソースの参照をクリア
+	for (RefObject* obj : m_markGCList)
+	{
+		obj->Release();
+	}
+	m_markGCList.Clear();
+}
+
+//------------------------------------------------------------------------------
 void RenderingCommandList::Execute(Driver::IGraphicsDevice* device/*Driver::IRenderer* renderer*/)
 {
 	LN_RC_TRACE("RenderingCommandList::Execute() s %p %d\n", this, m_commandList.GetCount());
@@ -137,7 +130,7 @@ void RenderingCommandList::Execute(Driver::IGraphicsDevice* device/*Driver::IRen
 
 	m_currentDevice = device;
 	m_currentRenderer = device->GetRenderer();
-	LN_FOREACH(size_t dataIdx, m_commandList)
+	for (size_t dataIdx : m_commandList)
 	{
 		RenderingCommand* cmd = ((RenderingCommand*)GetCommand(dataIdx));
 		cmd->Execute();
@@ -149,35 +142,20 @@ void RenderingCommandList::Execute(Driver::IGraphicsDevice* device/*Driver::IRen
 //------------------------------------------------------------------------------
 void RenderingCommandList::PostExecute()
 {
-	//LN_RC_TRACE("RenderingCommandList::PostExecute() s %p\n", this);
-	//LN_FOREACH(size_t dataIdx, m_commandList)
-	//{
-	//	((RenderingCommand*)GetCommand(dataIdx))->Release(this);
-	//	((RenderingCommand*)GetCommand(dataIdx))->~RenderingCommand();
-	//}
-	//LN_RC_TRACE("RenderingCommandList::PostExecute() e %p\n", this);
-	m_commandList.Clear();
-	m_commandDataBufferUsed = 0;
-	m_extDataBufferUsed = sizeof(intptr_t);	// ポインタサイズ分予約済みにしておく (null チェックで 0 を使いたい)
-
-	LN_FOREACH(RefObject* obj, m_markGCList)
-	{
-		obj->Release();
-	}
-	m_markGCList.Clear();
+	ClearCommands();
 }
-
 
 //------------------------------------------------------------------------------
 RenderingCommandList::DataHandle RenderingCommandList::AllocCommand(size_t byteCount, const void* copyData)
 {
 	// バッファが足りなければ拡張する
-	if (m_commandDataBufferUsed + byteCount > m_commandDataBuffer.GetSize()) {
+	if (m_commandDataBufferUsed + byteCount > m_commandDataBuffer.GetSize())
+	{
 		size_t newSize = m_commandDataBuffer.GetSize() + std::max(m_commandDataBuffer.GetSize(), byteCount);	// 最低でも byteCount 分を拡張する
 		m_commandDataBuffer.Resize(newSize, false);
 	}
 
-	if (copyData != NULL)
+	if (copyData != nullptr)
 	{
 		byte_t* ptr = &(m_commandDataBuffer.GetData()[m_commandDataBufferUsed]);
 		size_t size = m_commandDataBuffer.GetSize() - m_commandDataBufferUsed;
@@ -196,12 +174,13 @@ RenderingCommandList::DataHandle RenderingCommandList::AllocExtData(size_t byteC
 	// TODO: Bug: 確保メモリ量が増え続けている。
 
 	// バッファが足りなければ拡張する
-	if (m_extDataBufferUsed + byteCount > m_extDataBuffer.GetSize()) {
+	if (m_extDataBufferUsed + byteCount > m_extDataBuffer.GetSize())
+	{
 		size_t newSize = m_extDataBuffer.GetSize() + std::max(m_extDataBuffer.GetSize(), byteCount);	// 最低でも byteCount 分を拡張する
 		m_extDataBuffer.Resize(newSize, false);
 	}
 
-	if (copyData != NULL)
+	if (copyData != nullptr)
 	{
 		byte_t* ptr = &(m_extDataBuffer.GetData()[m_extDataBufferUsed]);
 		size_t size = m_extDataBuffer.GetSize() - m_extDataBufferUsed;

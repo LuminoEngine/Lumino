@@ -6,6 +6,7 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
+class Texture;
 
 /**
 	@brief		
@@ -19,6 +20,8 @@ public:
 	
 	static void SaveScreenShot(const TCHAR* filePath);
 	static void WaitSaveScreenShot();
+
+	static bool EqualsTexture(Texture* texture1, Texture* texture2);
 };
 
 LN_NAMESPACE_GRAPHICS_END

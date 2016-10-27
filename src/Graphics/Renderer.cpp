@@ -23,27 +23,6 @@ static Details::Renderer* GetRenderer()
 	return detail::GraphicsManager::GetInstance()->GetRenderer();
 }
 
-//------------------------------------------------------------------------------
-#if 0
-void Renderer::BeginRendering() { GetRenderer()->Begin(); }
-void Renderer::EndRendering() { GetRenderer()->End(); }
-void Renderer::SetRenderState(const RenderState& state) { GetRenderer()->SetRenderState(state); }
-const RenderState& Renderer::GetRenderState() { return GetRenderer()->GetRenderState(); }
-void Renderer::SetDepthStencilState(const DepthStencilState& state) { GetRenderer()->SetDepthStencilState(state); }
-const DepthStencilState& Renderer::GetDepthStencilState() { return GetRenderer()->GetDepthStencilState(); }
-void Renderer::SetRenderTarget(int index, Texture* texture) { GetRenderer()->SetRenderTarget(index, texture); }
-Texture* Renderer::GetRenderTarget(int index) { return GetRenderer()->GetRenderTarget(index); }
-void Renderer::SetDepthBuffer(Texture* depthBuffer) { GetRenderer()->SetDepthBuffer(depthBuffer); }
-Texture* Renderer::GetDepthBuffer() { return GetRenderer()->GetDepthBuffer(); }
-void Renderer::SetViewport(const Rect& rect) { GetRenderer()->SetViewport(rect); }
-const Rect& Renderer::GetViewport() { return GetRenderer()->GetViewport(); }
-//void Renderer::SetVertexBuffer(VertexBuffer* vertexBuffer) { GetRenderer()->SetVertexBuffer(vertexBuffer); }
-//void Renderer::SetIndexBuffer(IndexBuffer* indexBuffer) { GetRenderer()->SetIndexBuffer(indexBuffer); }
-// TODO: Get はいらない？
-void Renderer::Clear(ClearFlags flags, const Color& color, float zf, uint8_t stencil) { GetRenderer()->Clear(flags, color, zf, stencil); }
-void Renderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) { GetRenderer()->DrawPrimitive(primitive, startVertex, primitiveCount); }
-void Renderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) { GetRenderer()->DrawPrimitiveIndexed(primitive, startIndex, primitiveCount); }
-#endif
 
 //==============================================================================
 // Details::Renderer
@@ -291,6 +270,8 @@ void Renderer::SetShaderPass(ShaderPass* pass)
 //------------------------------------------------------------------------------
 void Renderer::Clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
+	VerifyFrameBuffers();
+
 	LN_ENQUEUE_RENDER_COMMAND_5(
 		Clear, m_manager,
 		Driver::IRenderer*, m_internal,
@@ -308,6 +289,8 @@ void Renderer::Clear(ClearFlags flags, const Color& color, float z, uint8_t sten
 //------------------------------------------------------------------------------
 void Renderer::DrawPrimitive(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount)
 {
+	VerifyFrameBuffers();
+
 	Driver::IVertexDeclaration* decl = (vertexDeclaration != nullptr) ? vertexDeclaration->GetDeviceObject() : nullptr;
 	Driver::IVertexBuffer* vb = (vertexBuffer != nullptr) ? vertexBuffer->GetDeviceObject() : nullptr;
 	LN_ENQUEUE_RENDER_COMMAND_6(
@@ -330,6 +313,8 @@ void Renderer::DrawPrimitive(VertexDeclaration* vertexDeclaration, VertexBuffer*
 //------------------------------------------------------------------------------
 void Renderer::DrawPrimitiveIndexed(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount)
 {
+	VerifyFrameBuffers();
+
 	Driver::IVertexDeclaration* decl = (vertexDeclaration != nullptr) ? vertexDeclaration->GetDeviceObject() : nullptr;
 	Driver::IVertexBuffer* vb = (vertexBuffer != nullptr) ? vertexBuffer->GetDeviceObject() : nullptr;
 	Driver::IIndexBuffer* ib = (indexBuffer != nullptr) ? indexBuffer->GetDeviceObject() : nullptr;
@@ -411,6 +396,16 @@ void Renderer::PresentCommandList(SwapChain* swapChain)
 	RenderingCommandList* t = swapChain->m_commandList;
 	swapChain->m_commandList = m_primaryCommandList;
 	m_primaryCommandList = t;
+}
+
+//------------------------------------------------------------------------------
+void Renderer::VerifyFrameBuffers()
+{
+	// レンダリングターゲットと深度バッファのサイズが一致している必要がある。
+	if (m_currentDepthBuffer != nullptr)
+	{
+		LN_CHECK_STATE(m_currentRenderTargets[0]->GetSize() == m_currentDepthBuffer->GetSize());
+	}
 }
 
 } // namespace Details
