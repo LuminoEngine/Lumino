@@ -144,7 +144,7 @@ ViewportLayerList::~ViewportLayerList()
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Viewport, Object);
 
 //------------------------------------------------------------------------------
-Viewport* Viewport::GetMainWindowViewport()
+Viewport* Viewport::GetMainViewport()
 {
 	return detail::UIManager::GetInstance()->GetMainWindow()->GetViewport();
 }

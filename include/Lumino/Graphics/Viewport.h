@@ -72,7 +72,7 @@ class Viewport
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
-	static Viewport* GetMainWindowViewport();
+	static Viewport* GetMainViewport();
 
 	const SizeI& GetSize() const;
 

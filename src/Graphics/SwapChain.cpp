@@ -86,18 +86,21 @@ void SwapChain::Resize(const SizeI& newSize)
 }
 
 //------------------------------------------------------------------------------
-void SwapChain::Present()
+void SwapChain::BeginRendering()
 {
+	/*
+		この関数はフレームの描画開始時に呼び出す。
+
+		デバイスロストの確認は、描画コマンドを作り始める前に行わなければならない。
+		作り終わった後では、例えばバックバッファをリサイズしてリセットしたとき、
+		その時点で作られている描画コマンドは古いサイズのバックバッファへの描画を前提としていることになる。
+	*/
+
+	auto* device = m_manager->GetGraphicsDevice();
+
 	if (m_manager->GetRenderingType() == GraphicsRenderingType::Immediate)
 	{
-		m_deviceObj->Present(m_backColorBuffer->m_deviceObj);
-
-		// 一時メモリの解放とかをやっておく
-		m_manager->GetPrimaryRenderingCommandList()->PostExecute();
-
-
 		// デバイスロストのチェック
-		auto* device = m_manager->GetGraphicsDevice();
 		if (device->GetDeviceState() == Driver::DeviceState_Lost)
 		{
 			device->GetRenderer()->LeaveRenderState();
@@ -112,16 +115,11 @@ void SwapChain::Present()
 	}
 	else
 	{
-		// 前回発行したコマンドリストがまだ処理中である。待ち状態になるまで待機する。
-		m_waiting.Wait();
+		RenderingThread* thread = m_manager->GetRenderingThread();
 
 		// デバイスロストのチェック
-		bool reset = false;
-		auto* device = m_manager->GetGraphicsDevice();
 		if (device->GetDeviceState() == Driver::DeviceState_Lost)
 		{
-			auto* thread = m_manager->GetRenderingThread();
-
 			// 溜まっているコマンドを全て実行してレンダリングレッドを一時停止する
 			thread->RequestPauseAndWait();
 
@@ -141,31 +139,35 @@ void SwapChain::Present()
 			// 深度バッファのサイズを新しいバックバッファサイズに合わせる
 			m_backDepthBuffer->Resize(m_deviceObj->GetBackBuffer()->GetSize());
 
-			reset = true;
 		}
+	}
+}
+
+//------------------------------------------------------------------------------
+void SwapChain::Present()
+{
+	if (m_manager->GetRenderingType() == GraphicsRenderingType::Immediate)
+	{
+		m_deviceObj->Present(m_backColorBuffer->m_deviceObj);
+
+		// 一時メモリの解放とかをやっておく
+		m_manager->GetPrimaryRenderingCommandList()->PostExecute();
+
+	}
+	else
+	{
+		// 前回この SwapChain から発行したコマンドリストがまだ処理中である。待ち状態になるまで待機する。
+		m_waiting.Wait();
 
 
+		// 実行状態にする。Present コマンドが実行された後、コマンドリストクラスから True がセットされる。
+		// ※ PresentCommandList() の前に false にしておかないとダメ。
+		//    後で false にすると、PresentCommandList() と同時に全部のコマンドが実行されて、描画スレッドから
+		//    true がセットされるのに、その後 false をセットしてしまうことがある。
+		m_waiting.SetFalse();
 
-		if (reset)
-		{
-			// デバイスリセットされた直後はバックバッファのリソースが再構築されている。
-			// リサイズが原因でリセットされた場合、おそらくほとんどの場合でコマンドに入っている深度バッファとサイズが異なる。
-			// このままレンダリングすることはできないので、今回はスキップする。
-			m_commandList->ClearCommands();
-			m_manager->GetPrimaryRenderingCommandList()->ClearCommands();
-			printf("--------\n");
-		}
-		else
-		{
-			// 実行状態にする。Present コマンドが実行された後、コマンドリストクラスから True がセットされる。
-			// ※ PresentCommandList() の前に false にしておかないとダメ。
-			//    後で false にすると、PresentCommandList() と同時に全部のコマンドが実行されて、描画スレッドから
-			//    true がセットされるのに、その後 false をセットしてしまうことがある。
-			m_waiting.SetFalse();
-
-			// Primary コマンドリストの末尾に Present を追加し、キューへ追加する
-			m_manager->GetRenderer()->PresentCommandList(this);
-		}
+		// Primary コマンドリストの末尾に Present を追加し、キューへ追加する
+		m_manager->GetRenderer()->PresentCommandList(this);
 	}
 }
 

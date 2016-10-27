@@ -103,6 +103,8 @@ void UIFrameWindow::Render()
 //------------------------------------------------------------------------------
 void UIFrameWindow::BeginRendering()
 {
+	m_swapChain->BeginRendering();
+
 	Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
 	renderer->Begin();
 

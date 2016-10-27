@@ -35,6 +35,10 @@ public:
 	*/
 	void Resize(const SizeI& newSize);
 
+
+
+	void BeginRendering();
+
 	/**
 		@brief	バックバッファのレンダリング結果をフロントバッファに転送します。
 	*/
