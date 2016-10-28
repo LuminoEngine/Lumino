@@ -1,5 +1,4 @@
 ﻿
-#pragma once
 #include "../Internal.h"
 #include "GraphicsManager.h"
 #include <Lumino/Graphics/VertexDeclaration.h>

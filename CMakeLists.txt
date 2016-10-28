@@ -189,6 +189,7 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/Mesh.h
 	include/Lumino/Graphics/PerlinNoise.h
 	include/Lumino/Graphics/Renderer.h
+	include/Lumino/Graphics/Rendering.h
 	include/Lumino/Graphics/RenderingContext.h
 	include/Lumino/Graphics/RenderState.h
 	include/Lumino/Graphics/SamplerState.h
@@ -239,6 +240,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/ProfilerRenderer.h
 	src/Graphics/Renderer.cpp
 	src/Graphics/RendererImpl.h
+	src/Graphics/Rendering.cpp
 	src/Graphics/RenderingCommand.cpp
 	src/Graphics/RenderingCommand.h
 	src/Graphics/RenderingContext.cpp
