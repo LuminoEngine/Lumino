@@ -24,7 +24,7 @@ namespace detail { class PhysicsManager; }
 
 
 namespace detail {
-
+class InternalContext;
 class TextRendererCore;
 class FontGlyphTextureCache;
 
@@ -144,6 +144,7 @@ public:
 	const RefPtr<Texture2D>& GetDummyWhiteTexture() { return m_dymmyWhiteTexture; }
 	VertexDeclaration* GetDefaultVertexDeclaration() const { return m_defaultVertexDeclaration; }
 	ShaderVariableCommitSerializeHelper* GetShaderVariableCommitSerializeHelper() { return &m_shaderVariableCommitSerializeHelper; }
+	InternalContext* GetInternalContext() const;
 
 private:
 	AnimationManager*				m_animationManager;
@@ -164,6 +165,7 @@ private:
 	RenderingContext*				m_renderingContext;
 	DrawingContext*					m_drawingContext;
 
+	RefPtr<InternalContext>			m_internalContext;
 
 	TextRendererCore*				m_textRendererCore;
 	BitmapTextRenderer*				m_bitmapTextRenderer;

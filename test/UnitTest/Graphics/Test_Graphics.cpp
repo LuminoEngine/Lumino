@@ -43,3 +43,20 @@ TEST_F(Test_Graphics_Viewport, Basic)
 	ASSERT_EQ(160, size.width);
 	ASSERT_EQ(120, size.height);
 }
+
+//==============================================================================
+class Test_Graphics_Rendering : public ::testing::Test {};
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_Rendering, Basic)
+{
+	auto* r = CameraViewportLayer::GetDefault2D()->GetRenderer();
+	r->Clear(ClearFlags::Color, Color::Red);
+	auto tex = Texture2D::Create(LN_LOCALFILE("../Scene/TestData/Sprite1.png"));
+	r->DrawSprite2D(SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White);
+
+	Engine::UpdateFrame();
+
+
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.Basic1.png"), 99, true));
+}

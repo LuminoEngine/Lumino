@@ -21,6 +21,7 @@ protected:
 	friend class UIFrameWindow;
 	UIViewportLayer(UILayoutView* view);
 	virtual ~UIViewportLayer();
+	virtual DrawList* GetRenderer() override { return nullptr; }
 	virtual void Render(RenderingContext* context) override;
 
 private:

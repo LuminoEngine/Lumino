@@ -89,8 +89,8 @@ void SceneGraphRenderingContext::OnStateFlush(detail::IRendererPloxy* activeRend
 	if (activeRenderer == m_spriteRenderer)
 	{
 		const SizeI& size = GetRenderTarget(0)->GetSize();
-		m_spriteRenderer->SetViewPixelSize(size);
-		m_spriteRenderer->SetState(GetRenderState(), m_currentCamera->GetViewMatrix(), m_currentCamera->GetProjectionMatrix());
+		m_spriteRenderer->SetViewInfo(SizeF((float)size.width, (float)size.height), m_currentCamera->GetViewMatrix(), m_currentCamera->GetProjectionMatrix());
+		m_spriteRenderer->SetState(GetRenderState());
 	}
 	// TextRenderer
 	if (activeRenderer == m_textRenderer)

@@ -13,12 +13,19 @@ class IRendererPloxy;
 class SpriteRenderer;
 
 class InternalContext
+	: public RefObject
 {
 public:
 	InternalContext();
 	void Initialize(detail::GraphicsManager* manager);
+	Details::Renderer* GetRenderStateManager();
 	Details::Renderer* BeginBaseRenderer();
 	detail::SpriteRenderer* BeginSpriteRenderer();
+
+	void SetViewInfo(const SizeF& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix);
+	detail::SpriteRenderer* GetSpriteRenderer();
+
+	void Flush();
 
 private:
 	void SwitchActiveRenderer(detail::IRendererPloxy* renderer);
@@ -40,6 +47,7 @@ public:
 	virtual ~DrawElement();
 
 	virtual void Execute(InternalContext* context) = 0;
+	virtual detail::Sphere GetBoundingSphere();
 };
 
 class DrawElementBatch
@@ -54,6 +62,8 @@ public:
 	};
 
 	bool Equal(const DrawElementBatch& obj) const;
+	void Reset(/*RenderTarget* renderTarget, DepthBuffer* depthBuffer*/);
+	void ApplyStatus(InternalContext* context);
 
 	intptr_t				m_rendererId;
 
@@ -67,8 +77,8 @@ public:
 	bool					m_depthTestEnabled;
 	bool					m_depthWriteEnabled;
 
-	// shader
-	RefPtr<Shader>			m_shader;
+	// shader	TODO: サブセット単位でステート変えられるようにしたいこともあるけど、毎回変数値を作るのはちょっと無駄な気がする
+	RefPtr<ShaderPass>		m_shaderPass;
 	List<ShaderValuePair>	m_shaderValueList;
 
 	// screen
@@ -82,6 +92,12 @@ class BatchStateBlock
 public:
 	DrawElementBatch	state;
 	Matrix				transfrom;
+
+	void Reset()
+	{
+		state.Reset();
+		transfrom = Matrix::Identity;
+	}
 };
 
 class DrawElementList
@@ -91,7 +107,11 @@ public:
 
 	DrawElementList();
 
-	detail::DrawElement* GetCommand(CommandHandle handle);
+	int GetElementCount() { return m_commandList.GetCount(); }
+	DrawElement* GetElement(int index) { return GetCommand(m_commandList[index]); }
+	DrawElementBatch* GetBatch(int index) { return &m_batchList[index]; }
+
+	DrawElement* GetCommand(CommandHandle handle);
 
 	void ClearCommands();
 
@@ -109,10 +129,26 @@ private:
 	CommandHandle AllocCommand(size_t byteCount);
 	void PostAddCommandInternal(const DrawElementBatch& state, detail::IRendererPloxy* renderer, DrawElement* element);
 
-	List<size_t>					m_commandList;
-	ByteBuffer						m_commandDataBuffer;
-	size_t							m_commandDataBufferUsed;
-	List<detail::DrawElementBatch>	m_batchList;
+	List<CommandHandle>		m_commandList;
+	ByteBuffer				m_commandDataBuffer;
+	size_t					m_commandDataBufferUsed;
+	List<DrawElementBatch>	m_batchList;
+};
+
+
+class InternalRenderer
+	: public RefObject
+{
+public:
+	InternalRenderer();
+	virtual ~InternalRenderer();
+	void Initialize(GraphicsManager* manager);
+
+	void Render(DrawElementList* elementList, const SizeF& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix, const ViewFrustum& viewFrustum);
+
+private:
+	GraphicsManager*	m_manager;
+	List<DrawElement*>	m_renderingElementList;
 };
 
 } // namespace detail
@@ -163,9 +199,12 @@ LN_INTERNAL_ACCESS:
 	DrawList();
 	virtual ~DrawList();
 	void Initialize(detail::GraphicsManager* manager);
+	detail::DrawElementList* GetDrawElementList() { return &m_drawElementList; }
+	void Clear();
+	void EndFrame();
 
 private:
-	detail::InternalContext			m_internalContext;
+	detail::GraphicsManager*		m_manager;
 	detail::BatchStateBlock			m_state;
 	detail::DrawElementList			m_drawElementList;
 };

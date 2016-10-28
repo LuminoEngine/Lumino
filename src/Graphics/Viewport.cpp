@@ -106,6 +106,11 @@ ViewportLayer::~ViewportLayer()
 {
 }
 
+////------------------------------------------------------------------------------
+//void ViewportLayer::PreRender()
+//{
+//}
+
 //------------------------------------------------------------------------------
 const SizeI& ViewportLayer::GetViewportSize() const
 {

@@ -68,10 +68,12 @@ void SceneGraphManager::CreateDefaultSceneGraph()
 	sg2d.SafeAddRef();
 	m_default2DSceneGraph = sg2d;
 
-	m_default3DCameraViewportLayer = LN_NEW CameraViewportLayer(m_default3DSceneGraph->GetMainCamera());
+	m_default3DCameraViewportLayer = LN_NEW CameraViewportLayer();
+	m_default3DCameraViewportLayer->Initialize(this, m_default3DSceneGraph->GetMainCamera());
 	m_mainViewport->AddViewportLayer(m_default3DCameraViewportLayer);
 
-	m_default2DCameraViewportLayer = LN_NEW CameraViewportLayer(m_default2DSceneGraph->GetMainCamera());
+	m_default2DCameraViewportLayer = LN_NEW CameraViewportLayer();
+	m_default2DCameraViewportLayer->Initialize(this, m_default2DSceneGraph->GetMainCamera());
 	m_mainViewport->AddViewportLayer(m_default2DCameraViewportLayer);
 }
 

@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include "../Graphics/Viewport.h"
+#include "../Graphics/Rendering.h"
 #include "SceneNode.h"
 
 LN_NAMESPACE_BEGIN
@@ -148,14 +149,18 @@ public:
 	static CameraViewportLayer* GetDefault3D();
 
 
+	virtual DrawList* GetRenderer() override;
 	virtual void Render(RenderingContext* context) override;
 
 LN_INTERNAL_ACCESS:
-	CameraViewportLayer(Camera* hostingCamera);
+	CameraViewportLayer();
 	virtual ~CameraViewportLayer();
+	void Initialize(SceneGraphManager* manager, Camera* hostingCamera);
 
 private:
 	RefPtr<Camera>		m_hostingCamera;
+	RefPtr<DrawList>	m_renderer;
+	RefPtr<detail::InternalRenderer>	m_internalRenderer;
 };
 
 /**

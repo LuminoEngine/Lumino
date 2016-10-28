@@ -30,7 +30,7 @@ public:
 	void SetViewProjMatrix(const Matrix& view, const Matrix& proj);
 
 	/// ビューサイズの設定
-	void SetViewPixelSize(const SizeI& size);
+	void SetViewPixelSize(const SizeF& size);
 
 	/// レンダリングスレートの設定
 	void SetRenderState(const RenderState& state);
@@ -189,12 +189,9 @@ public:
 	*/
 	void SetTransform(const Matrix& matrix);
 
-	void SetState(const RenderState& renderState, const Matrix& view, const Matrix& proj);
+	void SetState(const RenderState& renderState);
 
-	/**
-		@brief		描画先のビューサイズを設定します。
-	*/
-	void SetViewPixelSize(const SizeI& size);
+	void SetViewInfo(const SizeF& size, const Matrix& view, const Matrix& proj);
 
 	/**
 		@brief		レンダリングステートを設定します。

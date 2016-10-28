@@ -131,6 +131,7 @@ protected:
 	Details::Renderer* GetBaseRenderer() const { return m_baseRenderer; }
 
 
+public:
 	// Utils
 	static void MakeBlendMode(BlendMode mode, RenderState* state);
 

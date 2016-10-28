@@ -6,6 +6,7 @@
 #include "ImageEffect/ImageEffect.h"
 
 LN_NAMESPACE_BEGIN
+class DrawList;
 
 class RenderingCompositionContext
 {
@@ -32,13 +33,16 @@ public:
 
 	int GetZIndex() const { return m_zIndex; }
 
+
+	virtual DrawList* GetRenderer() = 0;
+
 protected:
 	ViewportLayer();
 	virtual ~ViewportLayer();
 
 
-	///// 前描画
-	//virtual void PreRender(const SizeF& viewSize) {}
+	/// 前描画
+	//virtual void BeginFrame(const SizeF& viewSize);
 
 	/// 本描画
 	virtual void Render(RenderingContext* context) = 0;

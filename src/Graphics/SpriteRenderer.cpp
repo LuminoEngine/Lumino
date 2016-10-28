@@ -50,29 +50,29 @@ void SpriteRenderer::SetTransform(const Matrix& matrix)
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderer::SetState(const RenderState& renderState, const Matrix& view, const Matrix& proj)
-{
-	LN_ENQUEUE_RENDER_COMMAND_4(
-		SpriteRenderer_SetTransform, m_manager,
-		SpriteRendererImpl*, m_internal,
-		RenderState, renderState,
-		Matrix, view,
-		Matrix, proj,
-		{
-			m_internal->SetRenderState(renderState);
-			m_internal->SetViewProjMatrix(view, proj);
-		});
-}
-
-//------------------------------------------------------------------------------
-void SpriteRenderer::SetViewPixelSize(const SizeI& size)
+void SpriteRenderer::SetState(const RenderState& renderState)
 {
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		SpriteRenderer_SetTransform, m_manager,
 		SpriteRendererImpl*, m_internal,
-		SizeI, size,
+		RenderState, renderState,
+		{
+			m_internal->SetRenderState(renderState);
+		});
+}
+
+//------------------------------------------------------------------------------
+void SpriteRenderer::SetViewInfo(const SizeF& size, const Matrix& view, const Matrix& proj)
+{
+	LN_ENQUEUE_RENDER_COMMAND_4(
+		SpriteRenderer_SetTransform, m_manager,
+		SpriteRendererImpl*, m_internal,
+		SizeF, size,
+		Matrix, view,
+		Matrix, proj,
 		{
 			m_internal->SetViewPixelSize(size);
+			m_internal->SetViewProjMatrix(view, proj);
 		});
 }
 
@@ -373,9 +373,9 @@ void SpriteRendererImpl::SetViewProjMatrix(const Matrix& view, const Matrix& pro
 }
 
 //------------------------------------------------------------------------------
-void SpriteRendererImpl::SetViewPixelSize(const SizeI& size)
+void SpriteRendererImpl::SetViewPixelSize(const SizeF& size)
 {
-	m_viewPixelSize.Set((float)size.width, (float)size.height);
+	m_viewPixelSize.Set(size.width, size.height);
 }
 
 //------------------------------------------------------------------------------

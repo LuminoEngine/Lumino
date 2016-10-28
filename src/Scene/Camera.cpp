@@ -219,10 +219,21 @@ CameraViewportLayer* CameraViewportLayer::GetDefault3D()
 }
 
 //------------------------------------------------------------------------------
-CameraViewportLayer::CameraViewportLayer(Camera* hostingCamera)
+CameraViewportLayer::CameraViewportLayer()
+{
+}
+
+//------------------------------------------------------------------------------
+void CameraViewportLayer::Initialize(SceneGraphManager* manager, Camera* hostingCamera)
 {
 	m_hostingCamera = hostingCamera;
 	m_hostingCamera->m_ownerLayer = this;
+
+	m_renderer = RefPtr<DrawList>::MakeRef();
+	m_renderer->Initialize(manager->GetGraphicsManager());
+
+	m_internalRenderer = RefPtr<detail::InternalRenderer>::MakeRef();
+	m_internalRenderer->Initialize(manager->GetGraphicsManager());
 }
 
 //------------------------------------------------------------------------------
@@ -232,9 +243,20 @@ CameraViewportLayer::~CameraViewportLayer()
 }
 
 //------------------------------------------------------------------------------
+DrawList* CameraViewportLayer::GetRenderer()
+{
+	return m_renderer;
+}
+
+//------------------------------------------------------------------------------
 void CameraViewportLayer::Render(RenderingContext* context)
 {
 	m_hostingCamera->GetOwnerSceneGraph()->Render(context, m_hostingCamera);
+
+	// TODO
+	SizeF size((float)GetViewportSize().width, (float)GetViewportSize().height);
+	m_internalRenderer->Render(m_renderer->GetDrawElementList(), size, m_hostingCamera->GetViewMatrix(), m_hostingCamera->GetViewProjectionMatrix(), m_hostingCamera->GetViewFrustum());
+	m_renderer->EndFrame();
 }
 
 //==============================================================================

@@ -29,6 +29,7 @@
 #include <Lumino/Graphics/VertexDeclaration.h>
 #include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Graphics/DrawingContext.h>
+#include <Lumino/Graphics/Rendering.h>
 
 LN_NAMESPACE_BEGIN
 
@@ -101,6 +102,7 @@ GraphicsManager::GraphicsManager()
 	, m_dymmyWhiteTexture(nullptr)
 	, m_renderer(nullptr)
 	, m_renderingThread(nullptr)
+	, m_internalContext(nullptr)
 	, m_activeContext(nullptr)
 	, m_renderingContext(nullptr)
 	, m_drawingContext(nullptr)
@@ -242,6 +244,9 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 	m_bitmapTextRenderer = LN_NEW BitmapTextRenderer();
 	m_bitmapTextRenderer->Initialize(this);
 
+	m_internalContext = RefPtr<InternalContext>::MakeRef();
+	m_internalContext->Initialize(this);
+
 	m_defaultVertexDeclaration = LN_NEW VertexDeclaration();
 	m_defaultVertexDeclaration->Initialize(this);
 	m_defaultVertexDeclaration->AddVertexElement(0, VertexElementType_Float3, VertexElementUsage_Position, 0);
@@ -286,6 +291,7 @@ void GraphicsManager::Finalize()
 
 	LN_SAFE_RELEASE(m_drawingContext);
 	LN_SAFE_RELEASE(m_renderingContext);
+	m_internalContext.SafeRelease();
 }
 
 //------------------------------------------------------------------------------
@@ -391,6 +397,12 @@ void GraphicsManager::SwitchActiveContext(detail::ContextInterface* context)
 			m_activeContext->OnActivated();
 		}
 	}
+}
+
+//------------------------------------------------------------------------------
+InternalContext* GraphicsManager::GetInternalContext() const
+{
+	return m_internalContext;
 }
 
 //------------------------------------------------------------------------------

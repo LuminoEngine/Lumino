@@ -263,7 +263,8 @@ const Rect& Renderer::GetViewport()
 //------------------------------------------------------------------------------
 void Renderer::SetShaderPass(ShaderPass* pass)
 {
-	pass->Apply();
+	if (pass != nullptr)
+		pass->Apply();
 }
 
 //------------------------------------------------------------------------------
