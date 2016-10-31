@@ -103,3 +103,23 @@ TEST_F(Test_Graphics_Rendering, Clear)
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.Clear3.png")));
 	}
 }
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_Rendering, DrawSquarePrimitive)
+{
+	// <Test> 2D、3D シーンのクリアの組み合わせ。2D が手前になる
+	{
+		if (Engine::BeginRendering())
+		{
+			Engine::Render();
+			Engine::GetDefault2DLayer()->GetRenderer()->DrawSquarePrimitive(
+				Vector3(0, 0, 0), Vector2(0, 0), Color::Red,
+				Vector3(0, 50, 0), Vector2(0, 1), Color::Green,
+				Vector3(50, 0, 0), Vector2(1, 0), Color::Blue,
+				Vector3(50, 50, 0), Vector2(1, 1), Color::White,
+				nullptr);
+			Engine::EndRendering();
+		}
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSquarePrimitive1.png")));
+	}
+}

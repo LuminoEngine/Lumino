@@ -10,6 +10,8 @@ class DrawList;
 
 namespace detail {
 class IRendererPloxy;
+class PrimitiveRenderer;
+class MeshRendererProxy;
 class SpriteRenderer;
 
 class InternalContext
@@ -20,7 +22,9 @@ public:
 	void Initialize(detail::GraphicsManager* manager);
 	Details::Renderer* GetRenderStateManager();
 	Details::Renderer* BeginBaseRenderer();
-	detail::SpriteRenderer* BeginSpriteRenderer();
+	PrimitiveRenderer* BeginPrimitiveRenderer();
+	MeshRendererProxy* BeginMeshRenderer();
+	SpriteRenderer* BeginSpriteRenderer();
 
 	void SetViewInfo(const SizeF& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix);
 	detail::SpriteRenderer* GetSpriteRenderer();
@@ -30,9 +34,11 @@ public:
 private:
 	void SwitchActiveRenderer(detail::IRendererPloxy* renderer);
 
-	detail::IRendererPloxy*			m_current;
-	Details::Renderer*				m_baseRenderer;
-	RefPtr<detail::SpriteRenderer>	m_spriteRenderer;
+	IRendererPloxy*				m_current;
+	Details::Renderer*			m_baseRenderer;
+	RefPtr<PrimitiveRenderer>	m_primitiveRenderer;
+	RefPtr<MeshRendererProxy>	m_meshRenderer;
+	RefPtr<SpriteRenderer>		m_spriteRenderer;
 
 	friend class DrawList;
 };
@@ -158,6 +164,19 @@ private:
 	List<DrawElement*>	m_renderingElementList;
 };
 
+
+class ScopedStateBlock2
+{
+public:
+	ScopedStateBlock2(DrawList* renderer);
+	~ScopedStateBlock2();
+	void Apply();
+
+private:
+	DrawList*		m_renderer;
+	BatchStateBlock	m_state;
+};
+
 } // namespace detail
 
 /**
@@ -196,6 +215,17 @@ public:
 
 	void Clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
 
+	/**
+		@brief
+		@details	デフォルトでは反時計回りが表面となります。
+	*/
+	void DrawSquarePrimitive(
+		const Vector3& position1, const Vector2& uv1, const Color& color1,
+		const Vector3& position2, const Vector2& uv2, const Color& color2,
+		const Vector3& position3, const Vector2& uv3, const Color& color3,
+		const Vector3& position4, const Vector2& uv4, const Color& color4,
+		ShaderPass* shaderPass);
+
 	void DrawSprite2D(
 		const SizeF& size,
 		Texture* texture,
@@ -210,6 +240,9 @@ LN_INTERNAL_ACCESS:
 	void Clear();
 	//void BeginFrame(RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
 	void EndFrame();
+	const detail::BatchStateBlock& GetState() const { return m_state; }
+	void SetState(const detail::BatchStateBlock& state) { m_state = state; }
+	void BltInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Shader* shader);
 
 private:
 	detail::GraphicsManager*		m_manager;

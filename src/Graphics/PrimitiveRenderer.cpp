@@ -223,10 +223,10 @@ void PrimitiveRendererCore::DrawSquare(const DrawSquareData& data)
 	uint16_t i = GetCurrentVertexCount();
 	m_indexCache.Add(i + 0);
 	m_indexCache.Add(i + 1);
-	m_indexCache.Add(i + 3);
-	m_indexCache.Add(i + 3);
-	m_indexCache.Add(i + 1);
 	m_indexCache.Add(i + 2);
+	m_indexCache.Add(i + 2);
+	m_indexCache.Add(i + 1);
+	m_indexCache.Add(i + 3);
 
 	AddVertex(data.pos[0], data.uv[0], data.color[0]);
 	AddVertex(data.pos[1], data.uv[1], data.color[1]);
