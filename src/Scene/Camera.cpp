@@ -251,11 +251,31 @@ DrawList* CameraViewportLayer::GetRenderer()
 //------------------------------------------------------------------------------
 void CameraViewportLayer::Render(RenderingContext* context)
 {
-	m_hostingCamera->GetOwnerSceneGraph()->Render(context, m_hostingCamera);
+	// 描画リストのクリアは、SceneGraph の描画前でなければならない。
+	// 出来上がった描画リストを、複数のレイヤーが描画することを想定する。
+	m_renderer->Clear();
 
-	// TODO
+	m_hostingCamera->GetOwnerSceneGraph()->Render(context, m_hostingCamera);
+}
+
+//------------------------------------------------------------------------------
+void CameraViewportLayer::OnBeginFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer)
+{
+//	m_renderer->BeginFrame(renderTarget, depthBuffer);
+}
+
+//------------------------------------------------------------------------------
+void CameraViewportLayer::OnEndFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer)
+{
 	SizeF size((float)GetViewportSize().width, (float)GetViewportSize().height);
-	m_internalRenderer->Render(m_renderer->GetDrawElementList(), size, m_hostingCamera->GetViewMatrix(), m_hostingCamera->GetViewProjectionMatrix(), m_hostingCamera->GetViewFrustum());
+	m_internalRenderer->Render(
+		m_renderer->GetDrawElementList(),
+		size,
+		m_hostingCamera->GetViewMatrix(),
+		m_hostingCamera->GetViewProjectionMatrix(),
+		m_hostingCamera->GetViewFrustum(),
+		renderTarget,
+		depthBuffer);
 	m_renderer->EndFrame();
 }
 

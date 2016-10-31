@@ -50,13 +50,56 @@ class Test_Graphics_Rendering : public ::testing::Test {};
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Rendering, Basic)
 {
-	auto* r = CameraViewportLayer::GetDefault2D()->GetRenderer();
-	r->Clear(ClearFlags::Color, Color::Red);
-	auto tex = Texture2D::Create(LN_LOCALFILE("../Scene/TestData/Sprite1.png"));
-	r->DrawSprite2D(SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White);
 
-	Engine::UpdateFrame();
+	//if (Engine::BeginRendering())
+	//{
+	//	Engine::Render();
 
+	//	auto* r = Engine::GetDefault2DLayer()->GetRenderer();
+	//	r->Clear(ClearFlags::Color, Color::Red);
+	//	auto tex = Texture2D::Create(LN_LOCALFILE("../Scene/TestData/Sprite1.png"));
+	//	r->DrawSprite2D(SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White);
 
-	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.Basic1.png"), 99, true));
+	//	Engine::EndRendering();
+	//}
+
+	//ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.Basic1.png"), 99, true));
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_Rendering, Clear)
+{
+	// <Test> 2D シーンのクリア
+	{
+		if (Engine::BeginRendering())
+		{
+			Engine::Render();
+			auto* r1 = Engine::GetDefault2DLayer()->GetRenderer();
+			r1->Clear(ClearFlags::Color, Color::Blue);
+			Engine::EndRendering();
+		}
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.Clear1.png")));
+	}
+	// <Test> 3D シーンのクリア
+	{
+		if (Engine::BeginRendering())
+		{
+			Engine::Render();
+			auto* r1 = Engine::GetDefault3DLayer()->GetRenderer();
+			r1->Clear(ClearFlags::Color, Color::Red);
+			Engine::EndRendering();
+		}
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.Clear2.png")));
+	}
+	// <Test> 2D、3D シーンのクリアの組み合わせ。2D が手前になる
+	{
+		if (Engine::BeginRendering())
+		{
+			Engine::Render();
+			Engine::GetDefault2DLayer()->GetRenderer()->Clear(ClearFlags::Color, Color::Blue);
+			Engine::GetDefault3DLayer()->GetRenderer()->Clear(ClearFlags::Color, Color::Red);
+			Engine::EndRendering();
+		}
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.Clear3.png")));
+	}
 }

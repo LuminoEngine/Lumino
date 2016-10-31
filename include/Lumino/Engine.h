@@ -48,6 +48,14 @@ public:
 					これを回避するため、時間のかかる処理の直後でこの関数を呼ぶことで、FPS 制御に遅延が発生していないことを伝えます。
 	*/
 	static void ResetFrameDelay();
+
+
+
+
+
+
+	static ViewportLayer* GetDefault2DLayer();
+	static ViewportLayer* GetDefault3DLayer();
 };
 
 LN_NAMESPACE_END

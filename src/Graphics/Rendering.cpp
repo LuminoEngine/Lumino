@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Graphics/Rendering.h>
@@ -136,7 +136,7 @@ void DrawElementBatch::Reset(/*RenderTarget* renderTarget, DepthBuffer* depthBuf
 }
 
 //------------------------------------------------------------------------------
-void DrawElementBatch::ApplyStatus(InternalContext* context)
+void DrawElementBatch::ApplyStatus(InternalContext* context, RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
 {
 	auto* stateManager = context->GetRenderStateManager();
 
@@ -149,7 +149,7 @@ void DrawElementBatch::ApplyStatus(InternalContext* context)
 		ContextInterface::MakeBlendMode(m_blendMode, &state);
 		stateManager->SetRenderState(state);
 
-		// ƒXƒvƒ‰ƒCƒgƒoƒbƒ`‰»‚Ì‚½‚ß
+		// ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆãƒãƒƒãƒåŒ–ã®ãŸã‚
 		context->GetSpriteRenderer()->SetState(state);
 	}
 	// DepthStencilState
@@ -163,11 +163,14 @@ void DrawElementBatch::ApplyStatus(InternalContext* context)
 	{
 		for (int i = 0; i < MaxMultiRenderTargets; ++i)
 		{
-			if (i == 0 && m_renderTargets[i] == nullptr) continue;	// TODO: null ‚¾‚Á‚½‚ç¡İ’è‚³‚ê‚Ä‚¢‚éƒ^[ƒQƒbƒg‚ğã‘‚«‚µ‚½‚­‚È‚¢ (–{—ˆ‚Í‚¿‚á‚ñ‚ÆƒtƒŒ[ƒ€‚Ìæ“ª‚ÅA‚±‚±‚ª null ‚É‚È‚ç‚È‚¢‚æ‚¤‚ÉƒŠƒZƒbƒg‚·‚é‚×‚«)
-
-			stateManager->SetRenderTarget(i, m_renderTargets[i]);
+			if (i == 0 && m_renderTargets[i] == nullptr)
+				stateManager->SetRenderTarget(i, defaultRenderTarget);
+			else
+				stateManager->SetRenderTarget(i, m_renderTargets[i]);
 		}
-		if (stateManager != nullptr) // TODO: null ‚¾‚Á‚½‚ç¡İ’è‚³‚ê‚Ä‚¢‚éƒ^[ƒQƒbƒg‚ğã‘‚«‚µ‚½‚­‚È‚¢(–{—ˆ‚Í‚¿‚á‚ñ‚ÆƒtƒŒ[ƒ€‚Ìæ“ª‚ÅA‚±‚±‚ª null ‚É‚È‚ç‚È‚¢‚æ‚¤‚ÉƒŠƒZƒbƒg‚·‚é‚×‚«)
+		if (m_depthBuffer == nullptr)
+			stateManager->SetDepthBuffer(defaultDepthBuffer);
+		else
 			stateManager->SetDepthBuffer(m_depthBuffer);
 		// TODO: m_scissorRect
 	}
@@ -209,7 +212,7 @@ DrawElementList::DrawElementList()
 	, m_commandDataBuffer()
 	, m_commandDataBufferUsed(0)
 {
-	m_commandList.Reserve(512);	// “K“–‚É
+	m_commandList.Reserve(512);	// é©å½“ã«
 	m_commandDataBuffer.Resize(4096, false);
 	m_commandDataBufferUsed = 0;
 }
@@ -217,10 +220,10 @@ DrawElementList::DrawElementList()
 //------------------------------------------------------------------------------
 DrawElementList::CommandHandle DrawElementList::AllocCommand(size_t byteCount)
 {
-	// ƒoƒbƒtƒ@‚ª‘«‚è‚È‚¯‚ê‚ÎŠg’£‚·‚é
+	// ãƒãƒƒãƒ•ã‚¡ãŒè¶³ã‚Šãªã‘ã‚Œã°æ‹¡å¼µã™ã‚‹
 	if (m_commandDataBufferUsed + byteCount > m_commandDataBuffer.GetSize())
 	{
-		size_t newSize = m_commandDataBuffer.GetSize() + std::max(m_commandDataBuffer.GetSize(), byteCount);	// Å’á‚Å‚à byteCount •ª‚ğŠg’£‚·‚é
+		size_t newSize = m_commandDataBuffer.GetSize() + std::max(m_commandDataBuffer.GetSize(), byteCount);	// æœ€ä½ã§ã‚‚ byteCount åˆ†ã‚’æ‹¡å¼µã™ã‚‹
 		m_commandDataBuffer.Resize(newSize, false);
 	}
 
@@ -288,40 +291,47 @@ void InternalRenderer::Initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void InternalRenderer::Render(DrawElementList* elementList, const SizeF& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix, const ViewFrustum& viewFrustum)
+void InternalRenderer::Render(
+	DrawElementList* elementList,
+	const SizeF& viewPixelSize,
+	const Matrix& viewMatrix,
+	const Matrix& projMatrix,
+	const ViewFrustum& viewFrustum,
+	RenderTarget* defaultRenderTarget,
+	DepthBuffer* defaultDepthBuffer)
 {
 	InternalContext* context = m_manager->GetInternalContext();
 	m_renderingElementList.Clear();
 
-	// ‹“_‚ÉŠÖ‚·‚éî•ñ‚Ìİ’è
+	// è¦–ç‚¹ã«é–¢ã™ã‚‹æƒ…å ±ã®è¨­å®š
 	context->SetViewInfo(viewPixelSize, viewMatrix, projMatrix);
 
-	// ‹‘äƒJƒŠƒ“ƒO
+	// è¦–éŒ˜å°ã‚«ãƒªãƒ³ã‚°
 	for (int i = 0; i < elementList->GetElementCount(); ++i)
 	{
 		DrawElement* element = elementList->GetElement(i);
 		Sphere boundingSphere = element->GetBoundingSphere();
 
-		if (boundingSphere.radius < 0 ||	// ƒ}ƒCƒiƒX’l‚È‚ç‹‘ä‚ÆÕ“Ë”»’è‚µ‚È‚¢
+		if (boundingSphere.radius < 0 ||	// ãƒã‚¤ãƒŠã‚¹å€¤ãªã‚‰è¦–éŒå°ã¨è¡çªåˆ¤å®šã—ãªã„
 			viewFrustum.Intersects(boundingSphere.center, boundingSphere.radius))
 		{
-			// ‚±‚Ìƒm[ƒh‚Í•`‰æ‚Å‚«‚é
+			// ã“ã®ãƒãƒ¼ãƒ‰ã¯æç”»ã§ãã‚‹
 			m_renderingElementList.Add(element);
 		}
 	}
 
-	// •`‰æ
+	// æç”»
 	int currentBatchIndex = -1;
 	for (DrawElement* element : m_renderingElementList)
 	{
-		// ƒXƒe[ƒg‚Ì•Ï‚í‚è–Úƒ`ƒFƒbƒN
+		// ã‚¹ãƒ†ãƒ¼ãƒˆã®å¤‰ã‚ã‚Šç›®ãƒã‚§ãƒƒã‚¯
 		if (element->batchIndex != currentBatchIndex)
 		{
 			currentBatchIndex = element->batchIndex;
-			elementList->GetBatch(currentBatchIndex)->ApplyStatus(context);
+			elementList->GetBatch(currentBatchIndex)->ApplyStatus(context, defaultRenderTarget, defaultDepthBuffer);
 		}
 
-		// •`‰æÀs
+		// æç”»å®Ÿè¡Œ
 		element->Execute(context);
 	}
 }
@@ -395,6 +405,13 @@ void DrawList::EndFrame()
 {
 	m_manager->GetInternalContext()->Flush();
 }
+
+////------------------------------------------------------------------------------
+//void DrawList::BeginFrame(RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
+//{
+//	m_state.state.m_renderTargets[0] = defaultRenderTarget;
+//	m_state.state.m_depthBuffer = defaultDepthBuffer;
+//}
 
 //------------------------------------------------------------------------------
 void DrawList::SetTransform(const Matrix& transform)

@@ -89,4 +89,16 @@ void Engine::ResetFrameDelay()
 	EngineManager::Instance->ResetFrameDelay();
 }
 
+//------------------------------------------------------------------------------
+ViewportLayer* Engine::GetDefault2DLayer()
+{
+	return EngineManager::Instance->GetSceneGraphManager()->GetDefault2DCameraViewportLayer();
+}
+
+//------------------------------------------------------------------------------
+ViewportLayer* Engine::GetDefault3DLayer()
+{
+	return EngineManager::Instance->GetSceneGraphManager()->GetDefault3DCameraViewportLayer();
+}
+
 LN_NAMESPACE_END

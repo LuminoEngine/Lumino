@@ -63,7 +63,7 @@ public:
 
 	bool Equal(const DrawElementBatch& obj) const;
 	void Reset(/*RenderTarget* renderTarget, DepthBuffer* depthBuffer*/);
-	void ApplyStatus(InternalContext* context);
+	void ApplyStatus(InternalContext* context, RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
 
 	intptr_t				m_rendererId;
 
@@ -144,7 +144,14 @@ public:
 	virtual ~InternalRenderer();
 	void Initialize(GraphicsManager* manager);
 
-	void Render(DrawElementList* elementList, const SizeF& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix, const ViewFrustum& viewFrustum);
+	void Render(
+		DrawElementList* elementList,
+		const SizeF& viewPixelSize,
+		const Matrix& viewMatrix,
+		const Matrix& projMatrix,
+		const ViewFrustum& viewFrustum,
+		RenderTarget* defaultRenderTarget,
+		DepthBuffer* defaultDepthBuffer);
 
 private:
 	GraphicsManager*	m_manager;
@@ -201,6 +208,7 @@ LN_INTERNAL_ACCESS:
 	void Initialize(detail::GraphicsManager* manager);
 	detail::DrawElementList* GetDrawElementList() { return &m_drawElementList; }
 	void Clear();
+	//void BeginFrame(RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
 	void EndFrame();
 
 private:

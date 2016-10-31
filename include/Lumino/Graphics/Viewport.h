@@ -41,6 +41,7 @@ protected:
 	virtual ~ViewportLayer();
 
 
+
 	/// 前描画
 	//virtual void BeginFrame(const SizeF& viewSize);
 
@@ -49,6 +50,9 @@ protected:
 
 	/// 後描画
 	void PostRender(RenderingContext* context, RenderTarget** primaryLayerTarget, RenderTarget** secondaryLayerTarget);
+
+	virtual void OnBeginFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer);
+	virtual void OnEndFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer);
 
 private:
 	Viewport*				m_owner;
@@ -98,6 +102,7 @@ LN_INTERNAL_ACCESS:	// TODO: いまはとりあえず内部用途
 	virtual ~Viewport();
 	void Initialize(detail::GraphicsManager* manager, RenderTarget* renderTarget);
 	void Render();
+	void EndFrameRender();
 
 private:
 	void TryRemakeLayerTargets();
@@ -112,5 +117,23 @@ private:
 	RenderTarget*				m_secondaryLayerTarget;
 	RefPtr<DepthBuffer>			m_depthBuffer;
 };
+
+///**
+//	@brief		デフォルトで作成される、メインのビューポートのクラス
+//*/
+//class MainViewport
+//	: public Viewport
+//{
+//	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+//public:
+//	ViewportLayer* GetDefault2DLayer();
+//
+//	ViewportLayer* GetDefault3DLayer();
+//
+//LN_INTERNAL_ACCESS:
+//	MainViewport();
+//	virtual ~MainViewport();
+//	void Initialize(detail::GraphicsManager* manager, RenderTarget* renderTarget);
+//};
 
 LN_NAMESPACE_END

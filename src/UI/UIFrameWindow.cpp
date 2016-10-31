@@ -120,6 +120,8 @@ void UIFrameWindow::BeginRendering()
 //------------------------------------------------------------------------------
 void UIFrameWindow::EndRendering()
 {
+	m_mainViewport->EndFrameRender();
+
 	Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
 	m_manager->GetGraphicsManager()->SwitchActiveContext(nullptr);
 	renderer->End();

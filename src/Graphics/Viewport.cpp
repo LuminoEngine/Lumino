@@ -128,6 +128,16 @@ void ViewportLayer::PostRender(RenderingContext* context, RenderTarget** primary
 	}
 }
 
+//------------------------------------------------------------------------------
+void ViewportLayer::OnBeginFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer)
+{
+}
+
+//------------------------------------------------------------------------------
+void ViewportLayer::OnEndFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer)
+{
+}
+
 //==============================================================================
 // ViewportLayerList
 //==============================================================================
@@ -210,10 +220,22 @@ void Viewport::Render()
 	for (auto& layer : *m_viewportLayerList)
 	{
 		context->SetRenderTarget(0, m_primaryLayerTarget);
+		layer->OnBeginFrameRender(m_primaryLayerTarget, m_depthBuffer);
 		layer->Render(context);
 		layer->PostRender(context, &m_primaryLayerTarget, &m_secondaryLayerTarget);
 	}
 
+}
+
+//------------------------------------------------------------------------------
+void Viewport::EndFrameRender()
+{
+	for (ViewportLayer* layer : *m_viewportLayerList)
+	{
+		layer->OnEndFrameRender(m_primaryLayerTarget, m_depthBuffer);
+	}
+
+	RenderingContext* context = m_manager->GetRenderingContext();
 	Matrix m;
 	MakeViewBoxTransform(m_renderTarget->GetSize(), m_primaryLayerTarget->GetSize(), &m);
 	context->Blt(m_primaryLayerTarget, m_renderTarget, m);
@@ -312,5 +334,22 @@ void Viewport::MakeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, 
 	mat->Scale(new_w / sw, new_h / sh, 1.0f);
 	mat->Translate(new_x, new_y, 0.0f);
 }
+
+
+////==============================================================================
+//// MainViewport
+////==============================================================================
+//
+////------------------------------------------------------------------------------
+//ViewportLayer* MainViewport::GetDefault2DLayer()
+//{
+//
+//}
+//
+////------------------------------------------------------------------------------
+//ViewportLayer* MainViewport::GetDefault3DLayer()
+//{
+//
+//}
 
 LN_NAMESPACE_END

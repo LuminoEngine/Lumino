@@ -148,9 +148,11 @@ public:
 	static CameraViewportLayer* GetDefault2D();
 	static CameraViewportLayer* GetDefault3D();
 
-
+	// ViewportLayer interface
 	virtual DrawList* GetRenderer() override;
 	virtual void Render(RenderingContext* context) override;
+	virtual void OnBeginFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer) override;
+	virtual void OnEndFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer) override;
 
 LN_INTERNAL_ACCESS:
 	CameraViewportLayer();
