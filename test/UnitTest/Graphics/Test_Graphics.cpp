@@ -1,4 +1,9 @@
 #include <TestConfig.h>
+#define LN_INTERNAL_ACCESS				public
+#define LN_PROTECTED_INTERNAL_ACCESS	public
+#include <Lumino/Graphics/Mesh.h>
+#include "../../../src/Graphics/GraphicsManager.h"
+
 
 //==============================================================================
 class Test_Graphics_Color : public ::testing::Test
@@ -141,5 +146,25 @@ TEST_F(Test_Graphics_Rendering, DrawSquarePrimitive)
 			Engine::EndRendering();
 		}
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSquarePrimitive1.png")));
+	}
+}
+
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_Rendering, DrawMesh)
+{
+	{
+
+		auto mesh = RefPtr<StaticMeshModel>::MakeRef();
+		mesh->InitializeSphere(detail::GraphicsManager::GetInstance(), 2, 4, 4, MeshCreationFlags::None);
+
+		Engine::UpdateFrame2();	// update camera transform
+		if (Engine::BeginRendering())
+		{
+			Engine::Render();
+			Engine::GetDefault3DLayer()->GetRenderer()->DrawMesh(mesh, 0, mesh->GetMeshResource()->GetMaterial(0));
+			Engine::EndRendering();
+		}
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png"), 99, true));
 	}
 }

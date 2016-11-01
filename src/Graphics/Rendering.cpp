@@ -288,7 +288,7 @@ void DrawElementBatch::ApplyStatus(InternalContext* context, RenderTarget* defau
 		// TODO: m_scissorRect
 	}
 	// Shader
-	if (m_material != nullptr)
+	if (m_material != nullptr && m_material->GetShader() != nullptr)
 	{
 		m_material->ApplyToShaderVariables();
 		Shader* shader = m_material->GetShader();
@@ -630,6 +630,13 @@ void DrawList::DrawSprite2D(
 	ptr->texture = texture;
 	ptr->srcRect = srcRect;
 	ptr->color = color;
+}
+
+//------------------------------------------------------------------------------
+void DrawList::DrawMesh(StaticMeshModel* mesh, int submeshIndex, Material* material)
+{
+	const MeshAttribute& attr = mesh->GetMeshResource()->m_attributes[submeshIndex];
+	DrawMeshInternal(mesh, attr.StartIndex, attr.PrimitiveNum, material);
 }
 
 //------------------------------------------------------------------------------
