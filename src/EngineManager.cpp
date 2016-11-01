@@ -531,6 +531,35 @@ void EngineManager::InitializeAssetsManager()
 //------------------------------------------------------------------------------
 bool EngineManager::UpdateFrame()
 {
+	UpdateFrame2();
+
+	// 手動描画されていなければここで自動描画する
+	if (!m_frameRenderd)
+	{
+		if (BeginRendering())
+		{
+			Render();
+			EndRendering();
+		}
+	}
+
+	m_frameRenderd = false;
+	return !m_endRequested;
+}
+
+//------------------------------------------------------------------------------
+bool EngineManager::UpdateFrame2()
+{
+	m_fpsController.Process();
+
+	Profiler::Instance.SetMainFPS(m_fpsController.GetFps());
+	Profiler::Instance.SetMainFPSCapacity(m_fpsController.GetCapacityFps());
+
+	m_diagViewer->UpdateFrame();
+
+
+
+
 	float deltaTime = m_fixedDeltaTime;
 	if (deltaTime == 0.0f)
 	{
@@ -570,24 +599,6 @@ bool EngineManager::UpdateFrame()
 		}
 	}
 
-	// 手動描画されていなければここで自動描画する
-	if (!m_frameRenderd)
-	{
-		if (BeginRendering())
-		{
-			Render();
-			EndRendering();
-		}
-	}
-
-	m_fpsController.Process();
-
-	Profiler::Instance.SetMainFPS(m_fpsController.GetFps());
-	Profiler::Instance.SetMainFPSCapacity(m_fpsController.GetCapacityFps());
-
-	m_diagViewer->UpdateFrame();
-
-	m_frameRenderd = false;
 	return !m_endRequested;
 }
 

@@ -35,8 +35,6 @@ Camera::Camera()
 	, m_zSortDistanceBase(ZSortDistanceBase::CameraDistance)
 	, m_cameraBehavior(nullptr)
 {
-	m_transform.translation.Set(0, 0, 0.0f);
-
 	// ※ 2D では m_nearClip を0より大きくしたり、Z位置をマイナスにすると何も見えなくなるので注意。 
 }
 
@@ -65,7 +63,7 @@ void Camera::Initialize(SceneGraph* owner, CameraProjection proj)
 	{
 		m_nearClip = 0.3f;
 		m_farClip = 1000.0f;
-		m_transform.translation.Set(0, 0, -20.0f);
+		m_transform.translation.Set(0, 1.0f, -10.0f);	// Unity based.
 		m_zSortDistanceBase = ZSortDistanceBase::CameraDistance;
 	}
 }
@@ -132,10 +130,13 @@ void Camera::UpdateMatrices(const SizeF& viewSize)
 	{
 		// 注視点
 		Vector3 lookAt;
-		if (m_directionMode == CameraDirection::LookAt) {
+		if (m_directionMode == CameraDirection::LookAt &&
+			m_combinedGlobalMatrix.GetPosition() != m_lookAt)	// 位置と注視点が同じだと、Matrix::MakeLookAt で NAN になる
+		{
 			lookAt = m_lookAt;
 		}
-		else {
+		else
+		{
 			lookAt = Vector3::TransformCoord(Vector3(0, 0, 1), m_combinedGlobalMatrix);
 		}
 
@@ -272,7 +273,7 @@ void CameraViewportLayer::OnEndFrameRender(RenderTarget* renderTarget, DepthBuff
 		m_renderer->GetDrawElementList(),
 		size,
 		m_hostingCamera->GetViewMatrix(),
-		m_hostingCamera->GetViewProjectionMatrix(),
+		m_hostingCamera->GetProjectionMatrix(),
 		m_hostingCamera->GetViewFrustum(),
 		renderTarget,
 		depthBuffer);

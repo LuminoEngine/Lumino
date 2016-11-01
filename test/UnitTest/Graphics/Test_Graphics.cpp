@@ -107,30 +107,37 @@ TEST_F(Test_Graphics_Rendering, Clear)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Rendering, DrawLinePrimitive)
 {
-	if (Engine::BeginRendering())
 	{
-		Engine::Render();
-		Engine::GetDefault2DLayer()->GetRenderer()->DrawLinePrimitive(
-			Vector3(0, 0, 0), Color::Red,
-			Vector3(50, 50, 0),Color::White);
-		Engine::EndRendering();
+		if (Engine::BeginRendering())
+		{
+			Engine::Render();
+			Engine::GetDefault2DLayer()->GetRenderer()->DrawLinePrimitive(
+				Vector3(0, 0, 0), Color::Red,
+				Vector3(50, 50, 0), Color::White);
+			Engine::EndRendering();
+		}
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawLinePrimitive1.png")));
 	}
-	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawLinePrimitive1.png")));
 }
 
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Rendering, DrawSquarePrimitive)
 {
 	{
+		Engine::UpdateFrame2();	// update camera transform
 		if (Engine::BeginRendering())
 		{
 			Engine::Render();
+			Engine::GetDefault3DLayer()->GetRenderer()->DrawSquarePrimitive(
+				Vector3(-1, 2, 0), Vector2(0, 0), Color::Red,
+				Vector3(-1, -2, 0), Vector2(0, 1), Color::Green,
+				Vector3(1, 2, 0), Vector2(1, 0), Color::Blue,
+				Vector3(1, -2, 0), Vector2(1, 1), Color::White);
 			Engine::GetDefault2DLayer()->GetRenderer()->DrawSquarePrimitive(
 				Vector3(0, 0, 0), Vector2(0, 0), Color::Red,
 				Vector3(0, 50, 0), Vector2(0, 1), Color::Green,
 				Vector3(50, 0, 0), Vector2(1, 0), Color::Blue,
-				Vector3(50, 50, 0), Vector2(1, 1), Color::White,
-				nullptr);
+				Vector3(50, 50, 0), Vector2(1, 1), Color::White);
 			Engine::EndRendering();
 		}
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSquarePrimitive1.png")));

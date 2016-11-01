@@ -31,6 +31,7 @@ public:
 	*/
 	static bool UpdateFrame();
 
+	static bool UpdateFrame2();
 	static bool BeginRendering();
 	static void EndRendering();
 	static void Render();

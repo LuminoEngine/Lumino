@@ -133,7 +133,7 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 	}
 
 	// グローバル行列結合
-	if (parent != NULL) {
+	if (parent != nullptr) {
 		m_combinedGlobalMatrix = m_localMatrix * parent->m_combinedGlobalMatrix;
 	}
 	else {

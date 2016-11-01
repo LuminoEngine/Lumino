@@ -6,6 +6,8 @@
 #include "Texture.h"
 
 LN_NAMESPACE_BEGIN
+class Material;
+class StaticMeshModel;
 class DrawList;
 
 namespace detail {
@@ -93,13 +95,15 @@ class DrawElementBatch
 public:
 	static const int MaxMultiRenderTargets = 4;
 
-	struct ShaderValuePair
-	{
-		ShaderVariable*		variable;
-		ShaderValue			value;
-	};
+	//struct ShaderValuePair
+	//{
+	//	ShaderVariable*		variable;
+	//	ShaderValue			value;
+	//};
 
 	DrawElementBatch();
+
+	void SetMaterial(Material* value);
 
 	bool Equal(const DrawElementBatch& obj) const;
 	void Reset();
@@ -108,7 +112,7 @@ public:
 
 	intptr_t				m_rendererId;
 
-	// render state
+	// render state		TODO: マテリアルに属するステートは必要ない
 	bool					m_alphaBlendEnabled;
 	BlendMode				m_blendMode;
 	CullingMode				m_cullingMode;
@@ -118,9 +122,12 @@ public:
 	bool					m_depthTestEnabled;
 	bool					m_depthWriteEnabled;
 
+	// TODO: 適用するとなったマテリアルは、描画終了まで Freeze する。パラメータを変更してはならない。
+	// (まるこぴすれば Freeze の必要ないけど、実際描画とマテリアル変更のタイミングは分けるだろう)
+	RefPtr<Material>		m_material;
 	// shader	TODO: サブセット単位でステート変えられるようにしたいこともあるけど、毎回変数値を作るのはちょっと無駄な気がする
-	RefPtr<ShaderPass>		m_shaderPass;
-	List<ShaderValuePair>	m_shaderValueList;
+	//RefPtr<ShaderPass>		m_shaderPass;
+	//List<ShaderValuePair>	m_shaderValueList;
 
 	// screen
 	RefPtr<RenderTarget>	m_renderTargets[MaxMultiRenderTargets];
@@ -285,15 +292,17 @@ public:
 	void DrawSquarePrimitive(
 		const Vector3& position1, const Vector2& uv1, const Color& color1,
 		const Vector3& position2, const Vector2& uv2, const Color& color2,
-		const Vector3& position3, const Vector2& uv3, const Color& color3,
-		const Vector3& position4, const Vector2& uv4, const Color& color4,
-		ShaderPass* shaderPass);
+		const Vector3& position3, const Vector2& uv3, const Color& color3,	// TODO: 順序
+		const Vector3& position4, const Vector2& uv4, const Color& color4/*,
+		ShaderPass* shaderPass*/);
 
 	void DrawSprite2D(
 		const SizeF& size,
 		Texture* texture,
 		const RectF& srcRect,
 		const Color& color);
+
+	void DrawMesh(StaticMeshModel* mesh, int submeshIndex, Material* material);
 
 LN_INTERNAL_ACCESS:
 	DrawList();
@@ -306,6 +315,7 @@ LN_INTERNAL_ACCESS:
 	const detail::BatchStateBlock& GetState() const { return m_state; }
 	void SetState(const detail::BatchStateBlock& state) { m_state = state; }
 	template<typename TElement> TElement* ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer);
+	void DrawMeshInternal(StaticMeshModel* mesh, int startIndex, int triangleCount, Material* material);
 	void BltInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Shader* shader);
 
 private:

@@ -3,6 +3,7 @@
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Graphics/Rendering.h>
 #include <Lumino/Graphics/ContextInterface.h>
+#include <Lumino/Graphics/Mesh.h>
 #include "Device/GraphicsDriverInterface.h"
 #include "GraphicsManager.h"
 #include "RendererImpl.h"
@@ -180,6 +181,16 @@ DrawElementBatch::DrawElementBatch()
 }
 
 //------------------------------------------------------------------------------
+void DrawElementBatch::SetMaterial(Material* value)
+{
+	if (m_material != value)
+	{
+		m_material = value;
+		m_hashDirty = true;
+	}
+}
+
+//------------------------------------------------------------------------------
 bool DrawElementBatch::Equal(const DrawElementBatch& obj) const
 {
 #if 1
@@ -229,8 +240,9 @@ void DrawElementBatch::Reset()
 		m_renderTargets[i] = nullptr;
 	m_depthBuffer = nullptr;
 
-	m_shaderValueList.Clear();
-	m_shaderPass = nullptr;
+	m_material = nullptr;
+	//m_shaderValueList.Clear();
+	//m_shaderPass = nullptr;
 
 	m_hashCode = 0;
 	m_hashDirty = true;
@@ -276,11 +288,18 @@ void DrawElementBatch::ApplyStatus(InternalContext* context, RenderTarget* defau
 		// TODO: m_scissorRect
 	}
 	// Shader
-	for (ShaderValuePair& pair : m_shaderValueList)
+	if (m_material != nullptr)
 	{
-		pair.variable->SetShaderValue(pair.value);
+		m_material->ApplyToShaderVariables();
+		Shader* shader = m_material->GetShader();
+		ShaderPass* pass = shader->GetTechniques().GetAt(0)->GetPasses().GetAt(0);	// TODO: DrawList の実行者によって決定する
+		stateManager->SetShaderPass(pass);
 	}
-	stateManager->SetShaderPass(m_shaderPass);
+	//for (ShaderValuePair& pair : m_shaderValueList)
+	//{
+	//	pair.variable->SetShaderValue(pair.value);
+	//}
+	//stateManager->SetShaderPass(m_shaderPass);
 }
 
 //------------------------------------------------------------------------------
@@ -317,7 +336,7 @@ DrawElement::~DrawElement()
 //------------------------------------------------------------------------------
 void DrawElement::MakeBoundingSphere(const Vector3& minPos, const Vector3& maxPos)
 {
-	Vector3 center = (maxPos - minPos) / 2;
+	Vector3 center = minPos + ((maxPos - minPos) / 2);
 	boundingSphere.center = center;
 	boundingSphere.radius = std::max(Vector3::Distance(minPos, center), Vector3::Distance(maxPos, center));
 }
@@ -546,6 +565,7 @@ void DrawList::DrawLinePrimitive(
 	const Vector3& position1, const Color& color1,
 	const Vector3& position2, const Color& color2)
 {
+	// TODO: キャッシュと LineStrip
 	class DrawElement_DrawLine : public detail::DrawElement
 	{
 	public:
@@ -569,8 +589,8 @@ void DrawList::DrawSquarePrimitive(
 	const Vector3& position1, const Vector2& uv1, const Color& color1,
 	const Vector3& position2, const Vector2& uv2, const Color& color2,
 	const Vector3& position3, const Vector2& uv3, const Color& color3,
-	const Vector3& position4, const Vector2& uv4, const Color& color4,
-	ShaderPass* shaderPass)
+	const Vector3& position4, const Vector2& uv4, const Color& color4/*,
+	ShaderPass* shaderPass*/)
 {
 	class DrawSquarePrimitiveElement : public detail::DrawElement
 	{
@@ -578,7 +598,6 @@ void DrawList::DrawSquarePrimitive(
 		Vector3 position[4];
 		Vector2 uv[4];
 		Color color[4];
-		detail::Sphere boundingSphere;
 
 		virtual void Execute(detail::InternalContext* context) override
 		{
@@ -640,6 +659,36 @@ TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId, detai
 //	}
 //	return nullptr;
 //}
+
+//------------------------------------------------------------------------------
+void DrawList::DrawMeshInternal(StaticMeshModel* mesh, int startIndex, int triangleCount, Material* material)
+{
+	/* 
+	 * この時点では MeshResource ではなく StaticMeshModel が必要。
+	 * LOD リソースがある場合、実際に書くときの視点情報を元に、描画する LOD リソースを選択する必要がある。
+	 */
+
+	class DrawElement_DrawMeshInternal : public detail::DrawElement
+	{
+	public:
+		RefPtr<StaticMeshModel>	mesh;
+		int startIndex;
+		int triangleCount;
+
+		virtual void Execute(detail::InternalContext* context) override
+		{
+			context->BeginMeshRenderer()->DrawMesh(mesh->GetMeshResource(), startIndex, triangleCount);
+		}
+	};
+
+	m_state.state.SetMaterial(material);
+
+	auto* e = ResolveDrawElement<DrawElement_DrawMeshInternal>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_meshRenderer);
+	e->mesh = mesh;
+	e->startIndex = startIndex;
+	e->triangleCount = triangleCount;
+	//e->boundingSphere = ;	// TODO
+}
 
 //------------------------------------------------------------------------------
 void DrawList::BltInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Shader* shader)

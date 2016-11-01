@@ -240,17 +240,17 @@ void MMERenderingPass::SelectPriorityParams(SceneNode* node, int subsetIndex, Re
 //------------------------------------------------------------------------------
 void MMERenderingPass::PostRender(SceneGraphRenderingContext* dc)
 {
-	AdjustGridMesh(dc->GetCurrentCamera());
+	//AdjustGridMesh(dc->GetCurrentCamera());
 
-	m_gridPlane->GetMaterial(0)->SetMatrixParameter(_T("WorldViewProjMatrix"), dc->GetCurrentCamera()->GetViewProjectionMatrix());
+	//m_gridPlane->GetMaterial(0)->SetMatrixParameter(_T("WorldViewProjMatrix"), dc->GetCurrentCamera()->GetViewProjectionMatrix());
 
-	dc->ResetStates();
-	dc->SetBlendMode(BlendMode::Alpha);
-	dc->DrawMesh(
-		m_gridPlane,
-		m_gridPlane->m_attributes[0].StartIndex,
-		m_gridPlane->m_attributes[0].PrimitiveNum,
-		m_gridPlane->GetMaterial(0));
+	//dc->ResetStates();
+	//dc->SetBlendMode(BlendMode::Alpha);
+	//dc->DrawMesh(
+	//	m_gridPlane,
+	//	m_gridPlane->m_attributes[0].StartIndex,
+	//	m_gridPlane->m_attributes[0].PrimitiveNum,
+	//	m_gridPlane->GetMaterial(0));
 
 
 #if 0

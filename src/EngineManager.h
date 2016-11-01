@@ -179,6 +179,7 @@ public:
 
 	void SetFixedDeltaTime(float deltaTime) { m_fixedDeltaTime = deltaTime; }
 	bool UpdateFrame();
+	bool UpdateFrame2();
 	bool BeginRendering();
 	void EndRendering();
 	void Render();
