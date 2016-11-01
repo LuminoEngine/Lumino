@@ -69,7 +69,7 @@ TEST_F(Test_Graphics_Rendering, Basic)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Rendering, Clear)
 {
-	// <Test> 2D シーンのクリア
+	// <Test> 2D ビューのクリア
 	{
 		if (Engine::BeginRendering())
 		{
@@ -80,7 +80,7 @@ TEST_F(Test_Graphics_Rendering, Clear)
 		}
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.Clear1.png")));
 	}
-	// <Test> 3D シーンのクリア
+	// <Test> 3D ビューのクリア
 	{
 		if (Engine::BeginRendering())
 		{
@@ -91,7 +91,7 @@ TEST_F(Test_Graphics_Rendering, Clear)
 		}
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.Clear2.png")));
 	}
-	// <Test> 2D、3D シーンのクリアの組み合わせ。2D が手前になる
+	// <Test> 2D、3D ビュークリアの組み合わせ。2D が手前になる
 	{
 		if (Engine::BeginRendering())
 		{
@@ -105,9 +105,22 @@ TEST_F(Test_Graphics_Rendering, Clear)
 }
 
 //------------------------------------------------------------------------------
+TEST_F(Test_Graphics_Rendering, DrawLinePrimitive)
+{
+	if (Engine::BeginRendering())
+	{
+		Engine::Render();
+		Engine::GetDefault2DLayer()->GetRenderer()->DrawLinePrimitive(
+			Vector3(0, 0, 0), Color::Red,
+			Vector3(50, 50, 0),Color::White);
+		Engine::EndRendering();
+	}
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawLinePrimitive1.png")));
+}
+
+//------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Rendering, DrawSquarePrimitive)
 {
-	// <Test> 2D、3D シーンのクリアの組み合わせ。2D が手前になる
 	{
 		if (Engine::BeginRendering())
 		{

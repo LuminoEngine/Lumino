@@ -14,6 +14,67 @@ LN_NAMESPACE_BEGIN
 
 namespace detail {
 
+//==============================================================================
+// CommandDataCache
+//==============================================================================
+
+//------------------------------------------------------------------------------
+CommandDataCache::CommandDataCache()
+	: m_dataList()
+	, m_dataBuffer()
+	, m_dataBufferUsed(0)
+{
+}
+
+//------------------------------------------------------------------------------
+CommandDataCache::~CommandDataCache()
+{
+}
+
+//------------------------------------------------------------------------------
+void CommandDataCache::Reserve(size_t dataCount, size_t byteCount)
+{
+	Clear();
+	m_dataList.Reserve(dataCount);
+	m_dataBuffer.Resize(byteCount, false);
+}
+
+//------------------------------------------------------------------------------
+void CommandDataCache::Clear()
+{
+	m_dataList.Clear();
+	m_dataBufferUsed = 0;
+}
+
+//------------------------------------------------------------------------------
+CommandDataCache::DataHandle CommandDataCache::AllocData(size_t byteCount)
+{
+	// バッファが足りなければ拡張する
+	if (m_dataBufferUsed + byteCount > m_dataBuffer.GetSize())
+	{
+		size_t newSize = m_dataBuffer.GetSize() + std::max(m_dataBuffer.GetSize(), byteCount);	// 最低でも byteCount 分を拡張する
+		m_dataBuffer.Resize(newSize, false);
+	}
+
+	//if (copyData != nullptr)
+	//{
+	//	byte_t* ptr = &(m_commandDataBuffer.GetData()[m_commandDataBufferUsed]);
+	//	size_t size = m_commandDataBuffer.GetSize() - m_commandDataBufferUsed;
+	//	memcpy_s(ptr, size, copyData, byteCount);
+	//}
+
+	size_t dataIdx = m_dataBufferUsed;
+	m_dataList.Add(dataIdx);
+	m_dataBufferUsed += byteCount;
+	return dataIdx;
+}
+
+//------------------------------------------------------------------------------
+byte_t* CommandDataCache::GetData(DataHandle handle)
+{
+	return &(m_dataBuffer.GetData()[handle]);
+}
+
 
 //==============================================================================
 // InternalContext
@@ -113,8 +174,17 @@ void InternalContext::SwitchActiveRenderer(detail::IRendererPloxy* renderer)
 //==============================================================================
 
 //------------------------------------------------------------------------------
+DrawElementBatch::DrawElementBatch()
+{
+	Reset();
+}
+
+//------------------------------------------------------------------------------
 bool DrawElementBatch::Equal(const DrawElementBatch& obj) const
 {
+#if 1
+	return GetHashCode() == obj.GetHashCode();
+#else
 	if (m_rendererId != obj.m_rendererId) return false;
 
 	if (m_alphaBlendEnabled != obj.m_alphaBlendEnabled) return false;
@@ -141,10 +211,11 @@ bool DrawElementBatch::Equal(const DrawElementBatch& obj) const
 	if (m_scissorRect != obj.m_scissorRect) return false;
 
 	return true;
+#endif
 }
 
 //------------------------------------------------------------------------------
-void DrawElementBatch::Reset(/*RenderTarget* renderTarget, DepthBuffer* depthBuffer*/)
+void DrawElementBatch::Reset()
 {
 	m_alphaBlendEnabled = RenderState::Default.alphaBlendEnabled;
 	m_cullingMode = RenderState::Default.Culling;
@@ -160,6 +231,9 @@ void DrawElementBatch::Reset(/*RenderTarget* renderTarget, DepthBuffer* depthBuf
 
 	m_shaderValueList.Clear();
 	m_shaderPass = nullptr;
+
+	m_hashCode = 0;
+	m_hashDirty = true;
 }
 
 //------------------------------------------------------------------------------
@@ -209,13 +283,30 @@ void DrawElementBatch::ApplyStatus(InternalContext* context, RenderTarget* defau
 	stateManager->SetShaderPass(m_shaderPass);
 }
 
+//------------------------------------------------------------------------------
+size_t DrawElementBatch::GetHashCode() const
+{
+	if (m_hashDirty)
+	{
+		m_hashCode = 0;
+		m_hashDirty = false;
+		m_hashCode = Hash::CalcHash(reinterpret_cast<const char*>(this), sizeof(DrawElementBatch));
+	}
+	return m_hashCode;
+}
+
 //==============================================================================
 // DrawElement
 //==============================================================================
 
 //------------------------------------------------------------------------------
 DrawElement::DrawElement()
+	: transform()
+	, batchIndex(-1)
+	, drawingSectionId(DrawingSectionId::None)
 {
+	boundingSphere.center = Vector3::Zero;
+	boundingSphere.radius = -1.0f;
 }
 
 //------------------------------------------------------------------------------
@@ -223,10 +314,12 @@ DrawElement::~DrawElement()
 {
 }
 
-detail::Sphere DrawElement::GetBoundingSphere()
+//------------------------------------------------------------------------------
+void DrawElement::MakeBoundingSphere(const Vector3& minPos, const Vector3& maxPos)
 {
-	const detail::Sphere s{ Vector3::Zero, -1 };
-	return s;
+	Vector3 center = (maxPos - minPos) / 2;
+	boundingSphere.center = center;
+	boundingSphere.radius = std::max(Vector3::Distance(minPos, center), Vector3::Distance(maxPos, center));
 }
 
 //==============================================================================
@@ -235,54 +328,22 @@ detail::Sphere DrawElement::GetBoundingSphere()
 
 //------------------------------------------------------------------------------
 DrawElementList::DrawElementList()
-	: m_commandList()
-	, m_commandDataBuffer()
-	, m_commandDataBufferUsed(0)
 {
-	m_commandList.Reserve(512);	// 適当に
-	m_commandDataBuffer.Resize(4096, false);
-	m_commandDataBufferUsed = 0;
-}
-
-//------------------------------------------------------------------------------
-DrawElementList::CommandHandle DrawElementList::AllocCommand(size_t byteCount)
-{
-	// バッファが足りなければ拡張する
-	if (m_commandDataBufferUsed + byteCount > m_commandDataBuffer.GetSize())
-	{
-		size_t newSize = m_commandDataBuffer.GetSize() + std::max(m_commandDataBuffer.GetSize(), byteCount);	// 最低でも byteCount 分を拡張する
-		m_commandDataBuffer.Resize(newSize, false);
-	}
-
-	//if (copyData != nullptr)
-	//{
-	//	byte_t* ptr = &(m_commandDataBuffer.GetData()[m_commandDataBufferUsed]);
-	//	size_t size = m_commandDataBuffer.GetSize() - m_commandDataBufferUsed;
-	//	memcpy_s(ptr, size, copyData, byteCount);
-	//}
-
-	size_t dataIdx = m_commandDataBufferUsed;
-	m_commandDataBufferUsed += byteCount;
-
-	return dataIdx;
-}
-
-//------------------------------------------------------------------------------
-detail::DrawElement* DrawElementList::GetCommand(CommandHandle handle)
-{
-	return (detail::DrawElement*)&(m_commandDataBuffer.GetData()[handle]);
+	m_commandDataCache.Reserve(512, 4096);	// 適当に
+	m_extDataCache.Reserve(512, 4096);
 }
 
 //------------------------------------------------------------------------------
 void DrawElementList::ClearCommands()
 {
-	for (CommandHandle handle : m_commandList)
+	for (int i = 0; i < GetElementCount(); ++i)
 	{
-		DrawElement* cmd = GetCommand(handle);
+		DrawElement* cmd = GetElement(i);
 		cmd->~DrawElement();
 	}
-	m_commandList.Clear();
-	m_commandDataBufferUsed = 0;
+
+	m_commandDataCache.Clear();
+	m_extDataCache.Clear();
 }
 
 //------------------------------------------------------------------------------
@@ -423,8 +484,11 @@ public:
 // DrawList
 //==============================================================================
 
+
+
 //------------------------------------------------------------------------------
 DrawList::DrawList()
+	: m_currentSectionTopElement(nullptr)
 {
 }
 
@@ -478,6 +542,29 @@ void DrawList::Clear(ClearFlags flags, const Color& color, float z, uint8_t sten
 }
 
 //------------------------------------------------------------------------------
+void DrawList::DrawLinePrimitive(
+	const Vector3& position1, const Color& color1,
+	const Vector3& position2, const Color& color2)
+{
+	class DrawElement_DrawLine : public detail::DrawElement
+	{
+	public:
+		Vector3 position1; Color color1;
+		Vector3 position2; Color color2;
+
+		virtual void Execute(detail::InternalContext* context) override
+		{
+			context->BeginPrimitiveRenderer()->DrawLine(
+				position1, color1, position2, color2);
+		}
+	};
+	auto* ptr = ResolveDrawElement<DrawElement_DrawLine>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer);
+	ptr->position1 = position1; ptr->color1 = color1;
+	ptr->position2 = position2; ptr->color2 = color2;
+	ptr->MakeBoundingSphere(Vector3::Min(position1, position2), Vector3::Max(position1, position2));
+}
+
+//------------------------------------------------------------------------------
 void DrawList::DrawSquarePrimitive(
 	const Vector3& position1, const Vector2& uv1, const Color& color1,
 	const Vector3& position2, const Vector2& uv2, const Color& color2,
@@ -493,10 +580,6 @@ void DrawList::DrawSquarePrimitive(
 		Color color[4];
 		detail::Sphere boundingSphere;
 
-		virtual detail::Sphere GetBoundingSphere() override
-		{
-			return boundingSphere;
-		}
 		virtual void Execute(detail::InternalContext* context) override
 		{
 			context->BeginPrimitiveRenderer()->DrawSquare(
@@ -506,15 +589,12 @@ void DrawList::DrawSquarePrimitive(
 				position[3], uv[3], color[3]);
 		}
 	};
-	auto* ptr = m_drawElementList.AddCommand<DrawSquarePrimitiveElement>(m_state.state, m_manager->GetInternalContext()->m_primitiveRenderer);
+	auto* ptr = ResolveDrawElement<DrawSquarePrimitiveElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer);
 	ptr->position[0] = position1; ptr->uv[0] = uv1; ptr->color[0] = color1;
 	ptr->position[1] = position2; ptr->uv[1] = uv2; ptr->color[1] = color2;
 	ptr->position[2] = position3; ptr->uv[2] = uv3; ptr->color[2] = color3;
 	ptr->position[3] = position4; ptr->uv[3] = uv4; ptr->color[3] = color4;
-	Vector3 minPos = Vector3::Min(ptr->position, 4);
-	Vector3 maxPos = Vector3::Max(ptr->position, 4);
-	ptr->boundingSphere.center = (maxPos - minPos) / 2;
-	ptr->boundingSphere.radius = std::max(minPos.GetLength(), maxPos.GetLength());
+	ptr->MakeBoundingSphere(Vector3::Min(ptr->position, 4), Vector3::Max(ptr->position, 4));
 }
 
 //------------------------------------------------------------------------------
@@ -524,7 +604,7 @@ void DrawList::DrawSprite2D(
 	const RectF& srcRect,
 	const Color& color)
 {
-	auto* ptr = m_drawElementList.AddCommand<detail::DrawSpriteElement>(m_state.state, m_manager->GetInternalContext()->m_spriteRenderer);
+	auto* ptr = ResolveDrawElement<detail::DrawSpriteElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_spriteRenderer);
 	//ptr->position;
 	ptr->size.Set(size.width, size.height);
 	//ptr->anchorRatio;
@@ -532,6 +612,34 @@ void DrawList::DrawSprite2D(
 	ptr->srcRect = srcRect;
 	ptr->color = color;
 }
+
+//------------------------------------------------------------------------------
+template<typename TElement>
+TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer)
+{
+	// 何か前回追加された DrawElement があり、それと DrawingSectionId、State が一致するならそれに対して追記できる
+	if (sectionId != detail::DrawingSectionId::None &&
+		m_currentSectionTopElement != nullptr &&
+		m_currentSectionTopElement->drawingSectionId == sectionId &&
+		m_drawElementList.GetBatch(m_currentSectionTopElement->batchIndex)->Equal(m_state.state))
+	{
+		return static_cast<TElement*>(m_currentSectionTopElement);
+	}
+
+	// DrawElement を新しく作る
+	TElement* element = m_drawElementList.AddCommand<TElement>(m_state.state, renderer);
+	m_currentSectionTopElement = element;
+	return element;
+}
+
+//detail::DrawElement* DrawList::StartDrawSection(detail::DrawingSectionId sectionId)
+//{
+//	if (m_currentSectionTopElement)
+//	{
+//
+//	}
+//	return nullptr;
+//}
 
 //------------------------------------------------------------------------------
 void DrawList::BltInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Shader* shader)

@@ -14,6 +14,34 @@ class PrimitiveRenderer;
 class MeshRendererProxy;
 class SpriteRenderer;
 
+enum class DrawingSectionId
+{
+	None,
+	Lines,
+};
+
+class CommandDataCache
+{
+public:
+	using DataHandle = size_t;
+
+	CommandDataCache();
+	~CommandDataCache();
+
+	void Reserve(size_t dataCount, size_t byteCount);
+	void Clear();
+	DataHandle AllocData(size_t byteCount);
+	byte_t* GetData(DataHandle handle); 
+
+	int GetDataCount() const { return m_dataList.GetCount(); }
+	byte_t* GetDataByIndex(int index) { return GetData(m_dataList[index]); }
+
+private:
+	List<DataHandle>		m_dataList;
+	ByteBuffer				m_dataBuffer;
+	size_t					m_dataBufferUsed;
+};
+
 class InternalContext
 	: public RefObject
 {
@@ -46,14 +74,18 @@ private:
 class DrawElement
 {
 public:
-	Matrix	transform;
-	int		batchIndex;
+	Matrix				transform;
+	int					batchIndex;
+	DrawingSectionId	drawingSectionId;
+	detail::Sphere		boundingSphere;
 
 	DrawElement();
 	virtual ~DrawElement();
 
 	virtual void Execute(InternalContext* context) = 0;
-	virtual detail::Sphere GetBoundingSphere();
+	const detail::Sphere& GetBoundingSphere() const { return boundingSphere; }
+
+	void MakeBoundingSphere(const Vector3& minPos, const Vector3& maxPos);
 };
 
 class DrawElementBatch
@@ -67,9 +99,12 @@ public:
 		ShaderValue			value;
 	};
 
+	DrawElementBatch();
+
 	bool Equal(const DrawElementBatch& obj) const;
-	void Reset(/*RenderTarget* renderTarget, DepthBuffer* depthBuffer*/);
+	void Reset();
 	void ApplyStatus(InternalContext* context, RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
+	size_t GetHashCode() const;
 
 	intptr_t				m_rendererId;
 
@@ -91,6 +126,9 @@ public:
 	RefPtr<RenderTarget>	m_renderTargets[MaxMultiRenderTargets];
 	RefPtr<DepthBuffer>		m_depthBuffer;
 	Rect					m_scissorRect;
+
+	mutable size_t			m_hashCode;
+	mutable bool			m_hashDirty;
 };
 
 class BatchStateBlock
@@ -113,31 +151,28 @@ public:
 
 	DrawElementList();
 
-	int GetElementCount() { return m_commandList.GetCount(); }
-	DrawElement* GetElement(int index) { return GetCommand(m_commandList[index]); }
+	int GetElementCount() { return m_commandDataCache.GetDataCount(); }
+	DrawElement* GetElement(int index) { return reinterpret_cast<DrawElement*>(m_commandDataCache.GetDataByIndex(index)); }
 	DrawElementBatch* GetBatch(int index) { return &m_batchList[index]; }
-
-	DrawElement* GetCommand(CommandHandle handle);
 
 	void ClearCommands();
 
 	template<typename T, typename... TArgs>
 	T* AddCommand(const DrawElementBatch& state, detail::IRendererPloxy* renderer, TArgs... args)
 	{
-		CommandHandle handle = AllocCommand(sizeof(T));
-		T* t = new (GetCommand(handle))T(args...);
-		m_commandList.Add(handle);
+		auto handle = m_commandDataCache.AllocData(sizeof(T));
+		T* t = new (m_commandDataCache.GetData(handle))T(args...);
 		PostAddCommandInternal(state, renderer, t);
 		return t;
 	}
 
+	byte_t* AllocExtData(size_t size) { return m_extDataCache.GetData(m_extDataCache.AllocData(size)); }
+
 private:
-	CommandHandle AllocCommand(size_t byteCount);
 	void PostAddCommandInternal(const DrawElementBatch& state, detail::IRendererPloxy* renderer, DrawElement* element);
 
-	List<CommandHandle>		m_commandList;
-	ByteBuffer				m_commandDataBuffer;
-	size_t					m_commandDataBufferUsed;
+	CommandDataCache		m_commandDataCache;
+	CommandDataCache		m_extDataCache;
 	List<DrawElementBatch>	m_batchList;
 };
 
@@ -177,6 +212,22 @@ private:
 	BatchStateBlock	m_state;
 };
 
+//class DrawingSection
+//{
+//public:
+//	virtual ~DrawingSection() = default;
+//
+//	DrawElementBatch*	stateInSection;
+//};
+//
+//class DrawingSection_Line
+//{
+//public:
+//	virtual ~DrawingSection_Line() = default;
+//
+//
+//};
+
 } // namespace detail
 
 /**
@@ -214,6 +265,18 @@ public:
 	void SetTransform(const Matrix& transform);
 
 	void Clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
+	
+
+	/**
+		@brief		線分を描画します。
+		@param[in]	position1	: 始点の位置
+		@param[in]	color1		: 始点の色
+		@param[in]	position2	: 終点の位置
+		@param[in]	color2		: 終点の色
+	*/
+	void DrawLinePrimitive(
+		const Vector3& position1, const Color& color1,
+		const Vector3& position2, const Color& color2);
 
 	/**
 		@brief
@@ -242,12 +305,16 @@ LN_INTERNAL_ACCESS:
 	void EndFrame();
 	const detail::BatchStateBlock& GetState() const { return m_state; }
 	void SetState(const detail::BatchStateBlock& state) { m_state = state; }
+	template<typename TElement> TElement* ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer);
 	void BltInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Shader* shader);
 
 private:
 	detail::GraphicsManager*		m_manager;
 	detail::BatchStateBlock			m_state;
 	detail::DrawElementList			m_drawElementList;
+
+	detail::DrawElement*			m_currentSectionTopElement;
+	//detail::DrawElementBatch		m_stateInSection;
 };
 
 LN_NAMESPACE_END
