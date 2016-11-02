@@ -69,6 +69,7 @@ struct ElementInfo
 struct SubsetInfo
 {
 	Material*	material;
+	Texture*	materialTexture;
 };
 
 // セマンティクスが関係するシェーダ変数の管理
@@ -83,6 +84,9 @@ public:
 	void UpdateCameraVariables(const CameraInfo& info);
 	void UpdateElementVariables(const ElementInfo& info);
 	void UpdateSubsetVariables(const SubsetInfo& info);
+
+	// Blit 用
+	void SetMaterialTexture(Texture* texture);
 
 private:
 	GraphicsManager*	m_manager;

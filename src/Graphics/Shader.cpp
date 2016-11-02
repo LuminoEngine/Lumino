@@ -111,8 +111,17 @@ void ShaderSemanticsManager::UpdateSubsetVariables(const SubsetInfo& info)
 {
 	if (m_subsetVariables[SubsetSemantics::MaterialTexture] != nullptr)
 	{
-		Texture* tex = (info.material != nullptr) ? info.material->GetMaterialTexture() : nullptr;
-		m_subsetVariables[SubsetSemantics::MaterialTexture]->SetTexture((tex != nullptr) ? tex : m_manager->GetDummyWhiteTexture());
+		Texture* texture = info.materialTexture;
+		m_subsetVariables[SubsetSemantics::MaterialTexture]->SetTexture((texture != nullptr) ? texture : m_manager->GetDummyWhiteTexture());
+	}
+}
+
+//------------------------------------------------------------------------------
+void ShaderSemanticsManager::SetMaterialTexture(Texture* texture)
+{
+	if (m_subsetVariables[SubsetSemantics::MaterialTexture] != nullptr)
+	{
+		m_subsetVariables[SubsetSemantics::MaterialTexture]->SetTexture((texture != nullptr) ? texture : m_manager->GetDummyWhiteTexture());
 	}
 }
 

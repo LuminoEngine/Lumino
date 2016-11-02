@@ -2,6 +2,9 @@
 #include "../Internal.h"
 #include <Lumino/Graphics/GraphicsException.h>
 #include <Lumino/Graphics/Shader.h>
+#include <Lumino/Graphics/Vertex.h>
+#include <Lumino/Graphics/VertexDeclaration.h>
+#include <Lumino/Graphics/Material.h>
 #include "Device/GraphicsDriverInterface.h"
 #include "RendererImpl.h"
 #include "RenderingCommand.h"
@@ -518,6 +521,74 @@ void PrimitiveRenderer::CheckUpdateState()
 		m_stateModified = false;
 	}
 }
+
+
+//==============================================================================
+// PrimitiveRenderer
+//==============================================================================
+
+//------------------------------------------------------------------------------
+BlitRenderer::BlitRenderer()
+	: m_manager(nullptr)
+	, m_vertexBuffer(nullptr)
+{
+}
+
+//------------------------------------------------------------------------------
+BlitRenderer::~BlitRenderer()
+{
+}
+
+//------------------------------------------------------------------------------
+void BlitRenderer::Initialize(GraphicsManager* manager)
+{
+	m_manager = manager;
+	auto* device = m_manager->GetGraphicsDevice();
+
+	Vertex vertices[4] =
+	{
+		{ Vector3(-1,  1, 0), Vector2(0, 0), Vector3::Zero, Color::White },
+		{ Vector3(-1, -1, 0), Vector2(0, 1), Vector3::Zero, Color::White },
+		{ Vector3( 1,  1, 0), Vector2(1, 0), Vector3::Zero, Color::White },
+		{ Vector3( 1, -1, 0), Vector2(1, 1), Vector3::Zero, Color::White },
+	};
+	m_vertexBuffer.Attach(device->CreateVertexBuffer(sizeof(vertices), vertices, ResourceUsage::Static), false);
+
+	m_commonMaterial = RefPtr<Material>::MakeRef();
+}
+
+//------------------------------------------------------------------------------
+Material* BlitRenderer::GetCommonMaterial() const
+{
+	return m_commonMaterial;
+}
+
+//------------------------------------------------------------------------------
+void BlitRenderer::Blit()
+{
+	auto* _this = this;
+	LN_ENQUEUE_RENDER_COMMAND_1(
+		Blit, m_manager,
+		BlitRenderer*, _this,
+		{
+			_this->BlitImpl();
+		});
+}
+
+//------------------------------------------------------------------------------
+void BlitRenderer::BlitImpl()
+{
+	auto* device = m_manager->GetGraphicsDevice();
+	auto* renderer = device->GetRenderer();
+	renderer->SetVertexDeclaration(m_manager->GetDefaultVertexDeclaration()->GetDeviceObject());
+	renderer->SetVertexBuffer(0, m_vertexBuffer);
+	renderer->DrawPrimitive(PrimitiveType_TriangleStrip, 0, 2);
+}
+
+//------------------------------------------------------------------------------
+void BlitRenderer::Flush() {}
+void BlitRenderer::OnActivated() {}
+void BlitRenderer::OnDeactivated() {}
 
 } // namespace detail
 LN_NAMESPACE_GRAPHICS_END

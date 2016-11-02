@@ -13,6 +13,7 @@ class DrawList;
 namespace detail {
 class IRendererPloxy;
 class PrimitiveRenderer;
+class BlitRenderer;
 class MeshRendererProxy;
 class SpriteRenderer;
 class RenderingPass2;
@@ -54,6 +55,7 @@ public:
 	Details::Renderer* GetRenderStateManager();
 	Details::Renderer* BeginBaseRenderer();
 	PrimitiveRenderer* BeginPrimitiveRenderer();
+	BlitRenderer* BeginBlitRenderer();
 	MeshRendererProxy* BeginMeshRenderer();
 	SpriteRenderer* BeginSpriteRenderer();
 
@@ -69,6 +71,7 @@ private:
 	IRendererPloxy*				m_current;
 	Details::Renderer*			m_baseRenderer;
 	RefPtr<PrimitiveRenderer>	m_primitiveRenderer;
+	RefPtr<BlitRenderer>		m_blitRenderer;
 	RefPtr<MeshRendererProxy>	m_meshRenderer;
 	RefPtr<SpriteRenderer>		m_spriteRenderer;
 
@@ -86,6 +89,9 @@ public:
 
 	DrawElement();
 	virtual ~DrawElement();
+
+	virtual void MakeElementInfo(const CameraInfo& cameraInfo, ElementInfo* outInfo);
+	virtual void MakeSubsetInfo(Material* material, SubsetInfo* outInfo);
 
 	//void Draw(InternalContext* context, RenderingPass2* pass);
 	virtual void DrawSubset(InternalContext* context/*, int subsetIndex*/) = 0;
@@ -107,6 +113,8 @@ public:
 
 	DrawElementBatch();
 
+	void SetRenderTarget(int index, RenderTarget* renderTarget);
+	RenderTarget* GetRenderTarget(int index) const;
 	void SetMaterial(Material* value);
 
 	bool Equal(const DrawElementBatch& obj) const;
@@ -273,7 +281,7 @@ public:
 	/** @{ */
 
 	/** レンダリングターゲットを設定します。*/
-	void SetRenderTarget(int index, RenderTarget* texture);
+	void SetRenderTarget(int index, RenderTarget* renderTarget);
 
 	/** 現在設定されているレンダリングターゲットを取得します。*/
 	RenderTarget* GetRenderTarget(int index) const;
@@ -327,9 +335,9 @@ public:
 
 	void DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material);
 
-	void Blt(Texture* source, RenderTarget* dest);
-	void Blt(Texture* source, RenderTarget* dest, const Matrix& transform);
-	void Blt(Texture* source, RenderTarget* dest, Material* material);
+	void Blit(Texture* source);
+	void Blit(Texture* source, RenderTarget* dest, const Matrix& transform);
+	void Blit(Texture* source, RenderTarget* dest, Material* material);
 
 LN_INTERNAL_ACCESS:
 	DrawList();
@@ -343,7 +351,7 @@ LN_INTERNAL_ACCESS:
 	void SetState(const detail::BatchStateBlock& state) { m_state = state; }
 	template<typename TElement> TElement* ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer);
 	void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material);
-	void BltInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Material* material);
+	void BlitInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Material* material);
 
 private:
 	detail::GraphicsManager*		m_manager;

@@ -51,7 +51,7 @@ VSOutput VSBasic(LN_VSInput v)
 //------------------------------------------------------------------------------
 float4 PSBasic(PSInput p) : COLOR0
 {
-    return tex2D(MaterialTextureSampler, p.UV) * p.Color;
+	return tex2D(MaterialTextureSampler, p.UV) * p.Color;
 }
 
 //------------------------------------------------------------------------------

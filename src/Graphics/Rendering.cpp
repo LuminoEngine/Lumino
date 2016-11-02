@@ -99,6 +99,9 @@ void InternalContext::Initialize(detail::GraphicsManager* manager)
 	m_primitiveRenderer = RefPtr<PrimitiveRenderer>::MakeRef();
 	m_primitiveRenderer->Initialize(manager);
 
+	m_blitRenderer = RefPtr<BlitRenderer>::MakeRef();
+	m_blitRenderer->Initialize(manager);
+
 	m_meshRenderer = RefPtr<MeshRendererProxy>::MakeRef();
 	m_meshRenderer->Initialize(manager);
 
@@ -123,6 +126,13 @@ PrimitiveRenderer* InternalContext::BeginPrimitiveRenderer()
 {
 	SwitchActiveRenderer(m_primitiveRenderer);
 	return m_primitiveRenderer;
+}
+
+//------------------------------------------------------------------------------
+BlitRenderer* InternalContext::BeginBlitRenderer()
+{
+	SwitchActiveRenderer(m_blitRenderer);
+	return m_blitRenderer;
 }
 
 //------------------------------------------------------------------------------
@@ -170,6 +180,7 @@ void InternalContext::SwitchActiveRenderer(detail::IRendererPloxy* renderer)
 	}
 }
 
+
 //==============================================================================
 // DrawElementBatch
 //==============================================================================
@@ -178,6 +189,22 @@ void InternalContext::SwitchActiveRenderer(detail::IRendererPloxy* renderer)
 DrawElementBatch::DrawElementBatch()
 {
 	Reset();
+}
+
+//------------------------------------------------------------------------------
+void DrawElementBatch::SetRenderTarget(int index, RenderTarget* renderTarget)
+{
+	if (m_renderTargets[index] != renderTarget)
+	{
+		m_renderTargets[index] = renderTarget;
+		m_hashDirty = true;
+	}
+}
+
+//------------------------------------------------------------------------------
+RenderTarget* DrawElementBatch::GetRenderTarget(int index) const
+{
+	return m_renderTargets[index];
 }
 
 //------------------------------------------------------------------------------
@@ -345,15 +372,19 @@ DrawElement::DrawElement()
 DrawElement::~DrawElement()
 {
 }
-//
-////------------------------------------------------------------------------------
-//void DrawElement::Draw(InternalContext* context, RenderingPass2* pass)
-//{
-//	for (int i = 0; i < subsetCount; i++)
-//	{
-//		DrawSubset(context, subsetCount);
-//	}
-//}
+
+//------------------------------------------------------------------------------
+void DrawElement::MakeElementInfo(const CameraInfo& cameraInfo, ElementInfo* outInfo)
+{
+	outInfo->WorldViewProjectionMatrix = transform * cameraInfo.viewMatrix * cameraInfo.projMatrix;	// TODO: viewProj はまとめたい
+}
+
+//------------------------------------------------------------------------------
+void DrawElement::MakeSubsetInfo(Material* material, SubsetInfo* outInfo)
+{
+	outInfo->material = material;
+	outInfo->materialTexture = (material != nullptr) ? material->GetMaterialTexture() : nullptr;
+}
 
 //------------------------------------------------------------------------------
 void DrawElement::MakeBoundingSphere(const Vector3& minPos, const Vector3& maxPos)
@@ -462,10 +493,10 @@ void InternalRenderer::Render(
 		}
 
 		ElementInfo elementInfo;
-		elementInfo.WorldViewProjectionMatrix = element->transform * cameraInfo.viewMatrix * cameraInfo.projMatrix;	// TODO: viewProj はまとめたい
+		element->MakeElementInfo(cameraInfo, &elementInfo);
 
 		SubsetInfo subsetInfo;
-		subsetInfo.material = elementList->GetBatch(currentBatchIndex)->m_material;
+		element->MakeSubsetInfo(elementList->GetBatch(currentBatchIndex)->m_material, &subsetInfo);
 
 		currentShader->GetSemanticsManager()->UpdateCameraVariables(cameraInfo);
 		currentShader->GetSemanticsManager()->UpdateElementVariables(elementInfo);
@@ -592,6 +623,7 @@ DrawList::DrawList()
 //------------------------------------------------------------------------------
 DrawList::~DrawList()
 {
+	m_drawElementList.ClearCommands();
 }
 
 //------------------------------------------------------------------------------
@@ -600,6 +632,18 @@ void DrawList::Initialize(detail::GraphicsManager* manager)
 	LN_CHECK_ARG(manager != nullptr);
 	m_manager = manager;
 	Clear();
+}
+
+//------------------------------------------------------------------------------
+void DrawList::SetRenderTarget(int index, RenderTarget* renderTarget)
+{
+	m_state.state.SetRenderTarget(index, renderTarget);
+}
+
+//------------------------------------------------------------------------------
+RenderTarget* DrawList::GetRenderTarget(int index) const
+{
+	return m_state.state.GetRenderTarget(index);
 }
 
 //------------------------------------------------------------------------------
@@ -717,6 +761,24 @@ void DrawList::DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* materi
 }
 
 //------------------------------------------------------------------------------
+void DrawList::Blit(Texture* source)
+{
+	BlitInternal(source, nullptr, Matrix::Identity, nullptr);
+}
+
+//------------------------------------------------------------------------------
+void DrawList::Blit(Texture* source, RenderTarget* dest, const Matrix& transform)
+{
+	BlitInternal(source, dest, transform, nullptr);
+}
+
+//------------------------------------------------------------------------------
+void DrawList::Blit(Texture* source, RenderTarget* dest, Material* material)
+{
+	BlitInternal(source, dest, Matrix::Identity, material);
+}
+
+//------------------------------------------------------------------------------
 template<typename TElement>
 TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer)
 {
@@ -777,10 +839,47 @@ void DrawList::DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Ma
 }
 
 //------------------------------------------------------------------------------
-//void DrawList::BltInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Shader* shader)
-//{
-//
-//}
+void DrawList::BlitInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Material* material)
+{
+
+	class DrawElement_BlitInternal : public detail::DrawElement
+	{
+	public:
+		RefPtr<Texture>	source;
+
+		virtual void MakeElementInfo(const detail::CameraInfo& cameraInfo, detail::ElementInfo* outInfo)
+		{
+			DrawElement::MakeElementInfo(cameraInfo, outInfo);
+			outInfo->WorldViewProjectionMatrix = Matrix::Identity;
+		}
+		virtual void MakeSubsetInfo(Material* material, detail::SubsetInfo* outInfo) override
+		{
+			DrawElement::MakeSubsetInfo(material, outInfo);
+
+			// MaterialTexture を上書きする
+			outInfo->materialTexture = source;
+		}
+
+		virtual void DrawSubset(detail::InternalContext* context) override
+		{
+			context->BeginBlitRenderer()->Blit();
+		}
+	};
+
+	if (dest != nullptr)
+	{
+		SetRenderTarget(0, dest);
+	}
+
+	if (material != nullptr)
+		m_state.state.SetMaterial(material);
+	else
+		m_state.state.SetMaterial(m_manager->GetInternalContext()->m_blitRenderer->GetCommonMaterial());
+
+	auto* e = ResolveDrawElement<DrawElement_BlitInternal>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_blitRenderer);
+	e->transform = transform;
+	e->source = source;
+}
 
 LN_NAMESPACE_END
 

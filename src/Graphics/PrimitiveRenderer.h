@@ -152,6 +152,32 @@ private:
 	bool					m_flushRequested;
 };
 
+
+class BlitRenderer
+	: public RefObject
+	, public detail::IRendererPloxy
+{
+public:
+	BlitRenderer();
+	virtual ~BlitRenderer();
+	void Initialize(GraphicsManager* manager);
+	Material* GetCommonMaterial() const;
+
+	void Blit();
+
+protected:
+	virtual void Flush();
+	virtual void OnActivated();
+	virtual void OnDeactivated();
+
+private:
+	void BlitImpl();
+
+	GraphicsManager*					m_manager;
+	RefPtr<Driver::IVertexBuffer>		m_vertexBuffer;
+	RefPtr<Material>					m_commonMaterial;
+};
+
 } // namespace detail
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END
