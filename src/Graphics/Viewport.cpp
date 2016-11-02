@@ -84,6 +84,7 @@
 #include "../UI/UIManager.h"
 #include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Graphics/Viewport.h>
+#include <Lumino/Graphics/Rendering.h>
 #include <Lumino/UI/UIFrameWindow.h>
 
 LN_NAMESPACE_BEGIN
@@ -112,6 +113,12 @@ ViewportLayer::~ViewportLayer()
 //}
 
 //------------------------------------------------------------------------------
+void ViewportLayer::AddRenderingPass(detail::RenderingPass2* pass)
+{
+	m_renderingPasses.Add(pass);
+}
+
+//------------------------------------------------------------------------------
 const SizeI& ViewportLayer::GetViewportSize() const
 {
 	LN_CHECK_STATE(m_owner != nullptr);
@@ -136,7 +143,17 @@ void ViewportLayer::OnBeginFrameRender(RenderTarget* renderTarget, DepthBuffer* 
 //------------------------------------------------------------------------------
 void ViewportLayer::OnEndFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer)
 {
+	for (detail::RenderingPass2* pass : m_renderingPasses)
+	{
+		OnRenderDrawElementList(renderTarget, depthBuffer, pass);
+	}
 }
+
+//------------------------------------------------------------------------------
+void ViewportLayer::OnRenderDrawElementList(RenderTarget* renderTarget, DepthBuffer* depthBuffer, detail::RenderingPass2* pass)
+{
+}
+
 
 //==============================================================================
 // ViewportLayerList
@@ -152,6 +169,7 @@ ViewportLayerList::ViewportLayerList()
 ViewportLayerList::~ViewportLayerList()
 {
 }
+
 
 //==============================================================================
 // Viewport

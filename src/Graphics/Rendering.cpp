@@ -249,7 +249,7 @@ void DrawElementBatch::Reset()
 }
 
 //------------------------------------------------------------------------------
-void DrawElementBatch::ApplyStatus(InternalContext* context, RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
+Shader* DrawElementBatch::ApplyStatus(InternalContext* context, RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer, Shader* defaultShader)
 {
 	auto* stateManager = context->GetRenderStateManager();
 
@@ -288,18 +288,30 @@ void DrawElementBatch::ApplyStatus(InternalContext* context, RenderTarget* defau
 		// TODO: m_scissorRect
 	}
 	// Shader
+	Shader* activeShader = nullptr;
 	if (m_material != nullptr && m_material->GetShader() != nullptr)
 	{
 		m_material->ApplyToShaderVariables();
-		Shader* shader = m_material->GetShader();
-		ShaderPass* pass = shader->GetTechniques().GetAt(0)->GetPasses().GetAt(0);	// TODO: DrawList の実行者によって決定する
-		stateManager->SetShaderPass(pass);
+		activeShader = m_material->GetShader();
+		//ShaderPass* pass = activeShader->GetTechniques().GetAt(0)->GetPasses().GetAt(0);	// TODO: DrawList の実行者によって決定する
+		//stateManager->SetShaderPass(pass);
+	}
+	else
+	{
+		// TODO: defaultShader の変数がマテリアルのどの情報を欲しているのかはわかる。
+		// 変数名検索しなくても、MMEReqVar みたいに enum でなんとかしたい。
+
+		activeShader = defaultShader;
+		//ShaderPass* pass = activeShader->GetTechniques().GetAt(0)->GetPasses().GetAt(0);	// TODO: DrawList の実行者によって決定する
+		//stateManager->SetShaderPass(pass);
 	}
 	//for (ShaderValuePair& pair : m_shaderValueList)
 	//{
 	//	pair.variable->SetShaderValue(pair.value);
 	//}
 	//stateManager->SetShaderPass(m_shaderPass);
+
+	return activeShader;
 }
 
 //------------------------------------------------------------------------------
@@ -323,6 +335,7 @@ DrawElement::DrawElement()
 	: transform()
 	, batchIndex(-1)
 	, drawingSectionId(DrawingSectionId::None)
+	, subsetIndex(0)
 {
 	boundingSphere.center = Vector3::Zero;
 	boundingSphere.radius = -1.0f;
@@ -332,6 +345,15 @@ DrawElement::DrawElement()
 DrawElement::~DrawElement()
 {
 }
+//
+////------------------------------------------------------------------------------
+//void DrawElement::Draw(InternalContext* context, RenderingPass2* pass)
+//{
+//	for (int i = 0; i < subsetCount; i++)
+//	{
+//		DrawSubset(context, subsetCount);
+//	}
+//}
 
 //------------------------------------------------------------------------------
 void DrawElement::MakeBoundingSphere(const Vector3& minPos, const Vector3& maxPos)
@@ -363,6 +385,7 @@ void DrawElementList::ClearCommands()
 
 	m_commandDataCache.Clear();
 	m_extDataCache.Clear();
+	m_batchList.Clear();
 }
 
 //------------------------------------------------------------------------------
@@ -370,10 +393,10 @@ void DrawElementList::PostAddCommandInternal(const DrawElementBatch& state, deta
 {
 	if (m_batchList.IsEmpty() || !m_batchList.GetLast().Equal(state))
 	{
-		element->batchIndex = m_batchList.GetCount();
 		m_batchList.Add(state);
 		m_batchList.GetLast().m_rendererId = reinterpret_cast<intptr_t>(renderer);
 	}
+	element->batchIndex = m_batchList.GetCount() - 1;
 }
 
 
@@ -400,18 +423,16 @@ void InternalRenderer::Initialize(GraphicsManager* manager)
 //------------------------------------------------------------------------------
 void InternalRenderer::Render(
 	DrawElementList* elementList,
-	const SizeF& viewPixelSize,
-	const Matrix& viewMatrix,
-	const Matrix& projMatrix,
-	const ViewFrustum& viewFrustum,
+	const detail::CameraInfo& cameraInfo,
 	RenderTarget* defaultRenderTarget,
-	DepthBuffer* defaultDepthBuffer)
+	DepthBuffer* defaultDepthBuffer,
+	RenderingPass2* pass)
 {
 	InternalContext* context = m_manager->GetInternalContext();
 	m_renderingElementList.Clear();
 
 	// 視点に関する情報の設定
-	context->SetViewInfo(viewPixelSize, viewMatrix, projMatrix);
+	context->SetViewInfo(cameraInfo.viewPixelSize, cameraInfo.viewMatrix, cameraInfo.projMatrix);
 
 	// 視錘台カリング
 	for (int i = 0; i < elementList->GetElementCount(); ++i)
@@ -420,26 +441,44 @@ void InternalRenderer::Render(
 		Sphere boundingSphere = element->GetBoundingSphere();
 
 		if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
-			viewFrustum.Intersects(boundingSphere.center, boundingSphere.radius))
+			cameraInfo.viewFrustum.Intersects(boundingSphere.center, boundingSphere.radius))
 		{
 			// このノードは描画できる
 			m_renderingElementList.Add(element);
 		}
 	}
 
-	// 描画
+	// DrawElement 描画
 	int currentBatchIndex = -1;
+	Shader* currentShader = nullptr;
 	for (DrawElement* element : m_renderingElementList)
 	{
 		// ステートの変わり目チェック
 		if (element->batchIndex != currentBatchIndex)
 		{
 			currentBatchIndex = element->batchIndex;
-			elementList->GetBatch(currentBatchIndex)->ApplyStatus(context, defaultRenderTarget, defaultDepthBuffer);
+			currentShader = elementList->GetBatch(currentBatchIndex)->ApplyStatus(context, defaultRenderTarget, defaultDepthBuffer, pass->GetDefaultShader());
 		}
 
+		ElementInfo elementInfo;
+		elementInfo.dataSourceId = reinterpret_cast<intptr_t>(element);
+		elementInfo.WorldViewProjectionMatrix = element->transform * cameraInfo.viewMatrix * cameraInfo.projMatrix;	// TODO: viewProj はまとめたい
+
+		SubsetInfo subsetInfo;
+		subsetInfo.dataSourceId = reinterpret_cast<intptr_t>(element);
+		subsetInfo.subsetIndex = element->subsetIndex;
+		subsetInfo.material = elementList->GetBatch(currentBatchIndex)->m_material;
+
+		currentShader->GetSemanticsManager()->UpdateCameraVariables(cameraInfo);
+		currentShader->GetSemanticsManager()->UpdateElementVariables(elementInfo);
+		currentShader->GetSemanticsManager()->UpdateSubsetVariables(subsetInfo);
+
+		auto* stateManager = context->GetRenderStateManager();
+		ShaderPass* pass = currentShader->GetTechniques().GetAt(0)->GetPasses().GetAt(0);	// TODO: DrawList の実行者によって決定する
+		stateManager->SetShaderPass(pass);
+
 		// 描画実行
-		element->Execute(context);
+		element->DrawSubset(context);
 	}
 }
 
@@ -465,6 +504,45 @@ void ScopedStateBlock2::Apply()
 	m_renderer->SetState(m_state);
 }
 
+
+
+//==============================================================================
+// RenderingPass
+//==============================================================================
+//------------------------------------------------------------------------------
+RenderingPass2::RenderingPass2()
+{
+
+}
+
+//------------------------------------------------------------------------------
+RenderingPass2::~RenderingPass2()
+{
+}
+
+//------------------------------------------------------------------------------
+void RenderingPass2::Initialize(GraphicsManager* manager)
+{
+	m_defaultShader = manager->GetDefaultShader(DefaultShader::NoLightingRendering);
+}
+
+//------------------------------------------------------------------------------
+Shader* RenderingPass2::GetDefaultShader() const
+{
+	return m_defaultShader;
+}
+
+////------------------------------------------------------------------------------
+//void RenderingPass2::RenderElement(DrawList* renderer, DrawElement* element)
+//{
+//}
+//
+////------------------------------------------------------------------------------
+//void RenderingPass2::RenderElementSubset(DrawList* renderer, DrawElement* element, int subsetIndex)
+//{
+//}
+
+
 //==============================================================================
 class ClearElement : public DrawElement
 {
@@ -474,7 +552,7 @@ public:
 	float z;
 	uint8_t stencil;
 
-	virtual void Execute(InternalContext* context)
+	virtual void DrawSubset(InternalContext* context/*, int subsetIndex*/) override
 	{
 		context->BeginBaseRenderer()->Clear(flags, color, z, stencil);
 	}
@@ -491,7 +569,7 @@ public:
 	RectF srcRect;
 	Color color;
 
-	virtual void Execute(InternalContext* context)
+	virtual void DrawSubset(InternalContext* context/*, int subsetIndex*/) override
 	{
 		context->BeginSpriteRenderer()->DrawRequest2D(position, size, anchorRatio, texture, srcRect, color);
 	}
@@ -572,7 +650,7 @@ void DrawList::DrawLinePrimitive(
 		Vector3 position1; Color color1;
 		Vector3 position2; Color color2;
 
-		virtual void Execute(detail::InternalContext* context) override
+		virtual void DrawSubset(detail::InternalContext* context/*, int subsetIndex*/) override
 		{
 			context->BeginPrimitiveRenderer()->DrawLine(
 				position1, color1, position2, color2);
@@ -599,7 +677,7 @@ void DrawList::DrawSquarePrimitive(
 		Vector2 uv[4];
 		Color color[4];
 
-		virtual void Execute(detail::InternalContext* context) override
+		virtual void DrawSubset(detail::InternalContext* context/*, int subsetIndex*/) override
 		{
 			context->BeginPrimitiveRenderer()->DrawSquare(
 				position[0], uv[0], color[0],
@@ -633,10 +711,9 @@ void DrawList::DrawSprite2D(
 }
 
 //------------------------------------------------------------------------------
-void DrawList::DrawMesh(StaticMeshModel* mesh, int submeshIndex, Material* material)
+void DrawList::DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material)
 {
-	const MeshAttribute& attr = mesh->GetMeshResource()->m_attributes[submeshIndex];
-	DrawMeshInternal(mesh, attr.StartIndex, attr.PrimitiveNum, material);
+	DrawMeshSubsetInternal(mesh, subsetIndex, material);
 }
 
 //------------------------------------------------------------------------------
@@ -668,7 +745,7 @@ TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId, detai
 //}
 
 //------------------------------------------------------------------------------
-void DrawList::DrawMeshInternal(StaticMeshModel* mesh, int startIndex, int triangleCount, Material* material)
+void DrawList::DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material)
 {
 	/* 
 	 * この時点では MeshResource ではなく StaticMeshModel が必要。
@@ -682,7 +759,7 @@ void DrawList::DrawMeshInternal(StaticMeshModel* mesh, int startIndex, int trian
 		int startIndex;
 		int triangleCount;
 
-		virtual void Execute(detail::InternalContext* context) override
+		virtual void DrawSubset(detail::InternalContext* context/*, int subsetIndex*/) override
 		{
 			context->BeginMeshRenderer()->DrawMesh(mesh->GetMeshResource(), startIndex, triangleCount);
 		}
@@ -690,10 +767,12 @@ void DrawList::DrawMeshInternal(StaticMeshModel* mesh, int startIndex, int trian
 
 	m_state.state.SetMaterial(material);
 
+	const MeshAttribute& attr = mesh->GetMeshResource()->m_attributes[subsetIndex];
 	auto* e = ResolveDrawElement<DrawElement_DrawMeshInternal>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_meshRenderer);
+	e->subsetIndex = subsetIndex;
 	e->mesh = mesh;
-	e->startIndex = startIndex;
-	e->triangleCount = triangleCount;
+	e->startIndex = attr.StartIndex;
+	e->triangleCount = attr.PrimitiveNum;
 	//e->boundingSphere = ;	// TODO
 }
 

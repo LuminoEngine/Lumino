@@ -235,6 +235,10 @@ void CameraViewportLayer::Initialize(SceneGraphManager* manager, Camera* hosting
 
 	m_internalRenderer = RefPtr<detail::InternalRenderer>::MakeRef();
 	m_internalRenderer->Initialize(manager->GetGraphicsManager());
+
+	auto pass = RefPtr<detail::RenderingPass2>::MakeRef();
+	pass->Initialize(manager->GetGraphicsManager());
+	AddRenderingPass(pass);
 }
 
 //------------------------------------------------------------------------------
@@ -266,17 +270,21 @@ void CameraViewportLayer::OnBeginFrameRender(RenderTarget* renderTarget, DepthBu
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer::OnEndFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer)
+void CameraViewportLayer::OnRenderDrawElementList(RenderTarget* renderTarget, DepthBuffer* depthBuffer, detail::RenderingPass2* pass)
 {
 	SizeF size((float)GetViewportSize().width, (float)GetViewportSize().height);
+	detail::CameraInfo cameraInfo;
+	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.Get());
+	cameraInfo.viewPixelSize = size;
+	cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
+	cameraInfo.projMatrix = m_hostingCamera->GetProjectionMatrix();
+	cameraInfo.viewFrustum = m_hostingCamera->GetViewFrustum();
 	m_internalRenderer->Render(
 		m_renderer->GetDrawElementList(),
-		size,
-		m_hostingCamera->GetViewMatrix(),
-		m_hostingCamera->GetProjectionMatrix(),
-		m_hostingCamera->GetViewFrustum(),
+		cameraInfo,
 		renderTarget,
-		depthBuffer);
+		depthBuffer,
+		pass);
 	m_renderer->EndFrame();
 }
 

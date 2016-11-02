@@ -28,6 +28,13 @@ class InternalContext;
 class TextRendererCore;
 class FontGlyphTextureCache;
 
+enum class DefaultShader
+{
+	NoLightingRendering,
+
+	_Count,
+};
+
 // ShaderVariable からコミットするルートと、Material からコミットするルートがある。
 // ShaderVariableCommitSerializeHelper は、その同じような処理をまとめたクラス。
 // Material は ShaderVariable を参照するが、Material から ShaderVariable に値をセットしたくない。
@@ -145,6 +152,7 @@ public:
 	VertexDeclaration* GetDefaultVertexDeclaration() const { return m_defaultVertexDeclaration; }
 	ShaderVariableCommitSerializeHelper* GetShaderVariableCommitSerializeHelper() { return &m_shaderVariableCommitSerializeHelper; }
 	InternalContext* GetInternalContext() const;
+	Shader* GetDefaultShader(DefaultShader type) const;
 
 private:
 	AnimationManager*				m_animationManager;
@@ -166,6 +174,7 @@ private:
 	DrawingContext*					m_drawingContext;
 
 	RefPtr<InternalContext>			m_internalContext;
+	RefPtr<Shader>					m_defaultShaders[(int)DefaultShader::_Count];
 
 	TextRendererCore*				m_textRendererCore;
 	BitmapTextRenderer*				m_bitmapTextRenderer;

@@ -6,6 +6,7 @@
 #include <Lumino/Graphics/GraphicsContext.h>
 #include "GraphicsManager.h"
 #include <Lumino/Graphics/Texture.h>
+#include <Lumino/Graphics/Material.h>
 #include "RendererImpl.h"
 #include "RenderingCommand.h"
 
@@ -21,6 +22,101 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
+
+namespace detail {
+
+//==============================================================================
+// ShaderSemanticsManager
+//==============================================================================
+
+//------------------------------------------------------------------------------
+ShaderSemanticsManager::ShaderSemanticsManager()
+	: m_lastCameraInfoId(0)
+	, m_lastElementInfoId(0)
+	, m_lastSubsetInfoId(0)
+	, m_lastSubsetIndex(0)
+{
+	memset(m_sceneVariables, 0, sizeof(m_sceneVariables));
+	memset(m_cameraVariables, 0, sizeof(m_cameraVariables));
+	memset(m_elementVariables, 0, sizeof(m_elementVariables));
+	memset(m_subsetVariables, 0, sizeof(m_subsetVariables));
+}
+
+//------------------------------------------------------------------------------
+void ShaderSemanticsManager::Initialize(GraphicsManager* manager)
+{
+	LN_CHECK_ARG(manager != nullptr);
+	m_manager = manager;
+}
+
+//------------------------------------------------------------------------------
+void ShaderSemanticsManager::TryPushVariable(ShaderVariable* var)
+{
+	const String& name = var->GetName();
+
+	// 変数名の先頭が ln_ であれば、いろいろな意味を持つ変数かもしれない
+	if (name.IndexOf(_T("ln_")) == 0)
+	{
+		// ElementSemantics
+		if (name == _T("ln_WorldViewProjection"))
+		{
+			m_elementVariables[ElementSemantics::WorldViewProjection] = var;
+			return;
+		}
+
+		// SubsetSemantics
+		if (name == _T("ln_MaterialTexture"))
+		{
+			m_subsetVariables[SubsetSemantics::MaterialTexture] = var;
+			return;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+void ShaderSemanticsManager::UpdateSceneVariables(const SceneInfo& info)
+{
+
+}
+
+//------------------------------------------------------------------------------
+void ShaderSemanticsManager::UpdateCameraVariables(const CameraInfo& info)
+{
+
+}
+
+//------------------------------------------------------------------------------
+void ShaderSemanticsManager::UpdateElementVariables(const ElementInfo& info)
+{
+	if (m_lastElementInfoId != info.dataSourceId)
+	{
+		m_lastElementInfoId = info.dataSourceId;
+
+		if (m_elementVariables[ElementSemantics::WorldViewProjection] != nullptr)
+		{
+			m_elementVariables[ElementSemantics::WorldViewProjection]->SetMatrix(info.WorldViewProjectionMatrix);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+void ShaderSemanticsManager::UpdateSubsetVariables(const SubsetInfo& info)
+{
+	if (m_lastSubsetInfoId != info.dataSourceId || m_lastSubsetIndex != info.subsetIndex)
+	{
+		m_lastSubsetInfoId = info.dataSourceId;
+		m_lastSubsetIndex = info.subsetIndex;
+
+		if (m_subsetVariables[SubsetSemantics::MaterialTexture] != nullptr)
+		{
+			Texture* tex = (info.material != nullptr) ? info.material->GetMaterialTexture() : nullptr;
+			m_subsetVariables[SubsetSemantics::MaterialTexture]->SetTexture((tex != nullptr) ? tex : m_manager->GetDummyWhiteTexture());
+		}
+	}
+}
+
+} // namespace detail
+
 
 //==============================================================================
 // Shader
@@ -130,6 +226,8 @@ void Shader::Initialize(detail::GraphicsManager* manager, const void* code, int 
 //------------------------------------------------------------------------------
 void Shader::PostInitialize()
 {
+	m_semanticsManager.Initialize(m_manager);
+
 	// 変数を展開
 	for (int i = 0; i < m_deviceObj->GetVariableCount(); ++i)
 	{
@@ -141,6 +239,8 @@ void Shader::PostInitialize()
 			// こいつが必要なのは DX9 の HLSL だけなので、セマンティクスだけ見ればOK
 			m_viewportPixelSize = v;
 		}
+
+		m_semanticsManager.TryPushVariable(v);
 	}
 
 	// テクニックを展開

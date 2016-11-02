@@ -29,6 +29,7 @@
 #include <Lumino/Graphics/VertexDeclaration.h>
 #include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Graphics/DrawingContext.h>
+#include <Lumino/Graphics/Shader.h>
 #include <Lumino/Graphics/Rendering.h>
 
 LN_NAMESPACE_BEGIN
@@ -254,6 +255,21 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 	m_defaultVertexDeclaration->AddVertexElement(0, VertexElementType_Float3, VertexElementUsage_Normal, 0);
 	m_defaultVertexDeclaration->AddVertexElement(0, VertexElementType_Float4, VertexElementUsage_Color, 0);
 
+
+	// デフォルトシェーダ
+	{
+		static const byte_t shaderData[] =
+		{
+#include "Resource/NoLightingRendering.fx.h"
+		};
+		static const size_t shaderDataLen = LN_ARRAY_SIZE_OF(shaderData);
+		auto shader = RefPtr<Shader>::MakeRef();
+		shader->Initialize(this, (const char*)shaderData, shaderDataLen);
+		m_defaultShaders[(int)DefaultShader::NoLightingRendering] = shader;
+	}
+	
+
+
 	if (m_renderingType == GraphicsRenderingType::Threaded)
 	{
 		// 描画スレッドを立ち上げる
@@ -403,6 +419,12 @@ void GraphicsManager::SwitchActiveContext(detail::ContextInterface* context)
 InternalContext* GraphicsManager::GetInternalContext() const
 {
 	return m_internalContext;
+}
+
+//------------------------------------------------------------------------------
+Shader* GraphicsManager::GetDefaultShader(DefaultShader type) const
+{
+	return m_defaultShaders[(int)type];
 }
 
 //------------------------------------------------------------------------------

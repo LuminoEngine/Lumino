@@ -15,6 +15,7 @@ class IRendererPloxy;
 class PrimitiveRenderer;
 class MeshRendererProxy;
 class SpriteRenderer;
+class RenderingPass2;
 
 enum class DrawingSectionId
 {
@@ -80,11 +81,13 @@ public:
 	int					batchIndex;
 	DrawingSectionId	drawingSectionId;
 	detail::Sphere		boundingSphere;
+	int					subsetIndex;
 
 	DrawElement();
 	virtual ~DrawElement();
 
-	virtual void Execute(InternalContext* context) = 0;
+	//void Draw(InternalContext* context, RenderingPass2* pass);
+	virtual void DrawSubset(InternalContext* context/*, int subsetIndex*/) = 0;
 	const detail::Sphere& GetBoundingSphere() const { return boundingSphere; }
 
 	void MakeBoundingSphere(const Vector3& minPos, const Vector3& maxPos);
@@ -107,7 +110,7 @@ public:
 
 	bool Equal(const DrawElementBatch& obj) const;
 	void Reset();
-	void ApplyStatus(InternalContext* context, RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
+	Shader* ApplyStatus(InternalContext* context, RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer, Shader* defaultShader);
 	size_t GetHashCode() const;
 
 	intptr_t				m_rendererId;
@@ -194,12 +197,10 @@ public:
 
 	void Render(
 		DrawElementList* elementList,
-		const SizeF& viewPixelSize,
-		const Matrix& viewMatrix,
-		const Matrix& projMatrix,
-		const ViewFrustum& viewFrustum,
+		const detail::CameraInfo& cameraInfo,
 		RenderTarget* defaultRenderTarget,
-		DepthBuffer* defaultDepthBuffer);
+		DepthBuffer* defaultDepthBuffer,
+		RenderingPass2* pass);
 
 private:
 	GraphicsManager*	m_manager;
@@ -234,6 +235,24 @@ private:
 //
 //
 //};
+
+
+class RenderingPass2
+	: public Object
+{
+public:
+	RenderingPass2();
+	virtual ~RenderingPass2();
+	void Initialize(GraphicsManager* manager);
+
+	Shader* GetDefaultShader() const;
+
+	//virtual void RenderElement(DrawList* renderer, DrawElement* element);
+	//virtual void RenderElementSubset(DrawList* renderer, DrawElement* element, int subsetIndex);
+
+private:
+	RefPtr<Shader>	m_defaultShader;
+};
 
 } // namespace detail
 
@@ -302,7 +321,7 @@ public:
 		const RectF& srcRect,
 		const Color& color);
 
-	void DrawMesh(StaticMeshModel* mesh, int submeshIndex, Material* material);
+	void DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material);
 
 LN_INTERNAL_ACCESS:
 	DrawList();
@@ -315,7 +334,7 @@ LN_INTERNAL_ACCESS:
 	const detail::BatchStateBlock& GetState() const { return m_state; }
 	void SetState(const detail::BatchStateBlock& state) { m_state = state; }
 	template<typename TElement> TElement* ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer);
-	void DrawMeshInternal(StaticMeshModel* mesh, int startIndex, int triangleCount, Material* material);
+	void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material);
 	void BltInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Shader* shader);
 
 private:

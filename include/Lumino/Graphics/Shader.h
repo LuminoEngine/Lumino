@@ -5,6 +5,109 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
+class ShaderVariable;
+class Material;
+
+namespace detail {
+	
+// シーン単位のデータに関するセマンティクス
+LN_ENUM(SceneSemantics)
+{
+	Dummy,
+	_Count,
+};
+LN_ENUM_DECLARE(SceneSemantics);
+
+// カメラ単位のデータに関するセマンティクス
+LN_ENUM(CameraSemantics)
+{
+	ViewProjectionMatrix,
+		_Count,
+};
+LN_ENUM_DECLARE(CameraSemantics);
+
+// 描画要素単位のデータに関するセマンティクス
+LN_ENUM(ElementSemantics)
+{
+	WorldViewProjection,
+	_Count,
+};
+LN_ENUM_DECLARE(ElementSemantics);
+
+// サブセット単位のデータに関するセマンティクス
+LN_ENUM(SubsetSemantics)
+{
+	MaterialTexture,
+	_Count,
+};
+LN_ENUM_DECLARE(SubsetSemantics);
+
+// シーン単位のデータに関する情報
+struct SceneInfo
+{
+	//Matrix	ViewProjectionMatrix;
+};
+
+// カメラ単位のデータに関する情報
+struct CameraInfo
+{
+	intptr_t	dataSourceId;
+	SizeF		viewPixelSize;
+	Matrix		viewMatrix;
+	Matrix		projMatrix;
+	ViewFrustum	viewFrustum;
+};
+
+// 描画要素単位のデータに関する情報
+struct ElementInfo
+{
+	intptr_t	dataSourceId;
+	Matrix		WorldViewProjectionMatrix;
+};
+
+// サブセット単位のデータに関する情報
+struct SubsetInfo
+{
+	intptr_t	dataSourceId;
+	int			subsetIndex;
+	Material*	material;
+};
+
+// セマンティクスが関係するシェーダ変数の管理
+class ShaderSemanticsManager
+{
+public:
+	ShaderSemanticsManager();
+	void Initialize(GraphicsManager* manager);
+
+	void TryPushVariable(ShaderVariable* var);
+	void UpdateSceneVariables(const SceneInfo& info);
+	void UpdateCameraVariables(const CameraInfo& info);
+	void UpdateElementVariables(const ElementInfo& info);
+	void UpdateSubsetVariables(const SubsetInfo& info);
+
+private:
+	GraphicsManager*	m_manager;
+	ShaderVariable*		m_sceneVariables[SceneSemantics::_Count];
+	ShaderVariable*		m_cameraVariables[CameraSemantics::_Count];
+	ShaderVariable*		m_elementVariables[ElementSemantics::_Count];
+	ShaderVariable*		m_subsetVariables[SubsetSemantics::_Count];
+	intptr_t			m_lastCameraInfoId;
+	intptr_t			m_lastElementInfoId;
+	intptr_t			m_lastSubsetInfoId;
+	int					m_lastSubsetIndex;
+};
+
+} // namespace detail
+
+
+
+
+
+
+
+
+
 
 /**
 	@brief		シェーダのクラスです。
@@ -107,13 +210,15 @@ LN_INTERNAL_ACCESS:
 	void SetModifiedVariables(bool modified) { m_modifiedVariables = modified; }
 	bool IsModifiedVariables() const { return m_modifiedVariables; }
 	void TryCommitChanges();
+	detail::ShaderSemanticsManager* GetSemanticsManager() { return &m_semanticsManager; }
 
-	ByteBuffer					m_sourceCode;
-	Driver::IShader*			m_deviceObj;
-	List<ShaderVariable*>		m_variables;
-	List<ShaderTechnique*>		m_techniques;
-	ShaderVariable*				m_viewportPixelSize;
-	bool						m_modifiedVariables;
+	ByteBuffer						m_sourceCode;
+	Driver::IShader*				m_deviceObj;
+	List<ShaderVariable*>			m_variables;
+	List<ShaderTechnique*>			m_techniques;
+	detail::ShaderSemanticsManager	m_semanticsManager;
+	ShaderVariable*					m_viewportPixelSize;
+	bool							m_modifiedVariables;
 };
 
 
