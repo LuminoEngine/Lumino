@@ -456,6 +456,7 @@ void InternalRenderer::Render(
 		// ステートの変わり目チェック
 		if (element->batchIndex != currentBatchIndex)
 		{
+			context->Flush();
 			currentBatchIndex = element->batchIndex;
 			currentShader = elementList->GetBatch(currentBatchIndex)->ApplyStatus(context, defaultRenderTarget, defaultDepthBuffer, pass->GetDefaultShader());
 		}
@@ -477,6 +478,8 @@ void InternalRenderer::Render(
 		// 描画実行
 		element->DrawSubset(context);
 	}
+
+	context->Flush();
 }
 
 //==============================================================================

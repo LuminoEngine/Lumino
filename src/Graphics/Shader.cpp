@@ -1067,7 +1067,7 @@ void ShaderPass::Apply()
         m_owner->GetManager()->GetRenderer()->m_primaryCommandList->AddCommand<ApplyShaderPassCommand>(m_deviceObj);
     }
     else {
-        m_deviceObj->Apply();
+		m_owner->GetManager()->GetGraphicsDevice()->GetRenderer()->SetShaderPass(m_deviceObj);
     }
 }
 

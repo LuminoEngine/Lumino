@@ -138,7 +138,7 @@ void FrameRectRendererCore::Draw(const RectF& rect)
 		m_shader.varTone->SetVector(ToneF());
 		m_shader.varTexture->SetTexture(srcTexture);
 		m_shader.varGlyphMaskSampler->SetTexture(m_manager->GetDummyDeviceTexture());
-		m_shader.pass->Apply();
+		m_renderer->SetShaderPass(m_shader.pass);
 		m_renderer->SetVertexDeclaration(m_vertexDeclaration);
 		m_renderer->SetVertexBuffer(0, m_vertexBuffer);
 		m_renderer->SetIndexBuffer(m_indexBuffer);

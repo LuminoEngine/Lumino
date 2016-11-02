@@ -227,6 +227,8 @@ public:
 	/// インデックスバッファの設定
 	void SetIndexBuffer(IIndexBuffer* indexBuffer);
 
+	void SetShaderPass(IShaderPass* pass);
+
 	/// 設定されている各種バッファをクリアする
 	void Clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
 
@@ -270,6 +272,7 @@ protected:	// TODO: private
 	RefPtr<IVertexDeclaration>		m_currentVertexDeclaration;
 	List<RefPtr<IVertexBuffer>>		m_currentVertexBuffers;
 	RefPtr<IIndexBuffer>			m_currentIndexBuffer;
+	RefPtr<IShaderPass>				m_currentShaderPass;
 };
 
 /// 頂点宣言
@@ -566,6 +569,8 @@ public:
 	/// アノテーションを取得する
 	virtual IShaderVariable* GetAnnotation(int index) = 0;
 
+protected:
+	friend class IRenderer;
 	/// パスを適用する (CommitChanges するときも再コール)
 	virtual void Apply() = 0;
 

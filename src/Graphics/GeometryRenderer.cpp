@@ -1058,7 +1058,7 @@ void DrawingContextImpl::Flush()
 
 		m_shader3D.varTexture->SetTexture(m_currentState.Brush.SelectTexutre(m_manager->GetDummyDeviceTexture()));
 		m_shader3D.varGlyphMaskSampler->SetTexture(m_manager->GetDummyDeviceTexture());
-		m_shader3D.passP0->Apply();
+		renderer->SetShaderPass(m_shader3D.passP0);
 		renderer->SetVertexDeclaration(m_vertexDeclaration);
 		renderer->SetVertexBuffer(0, m_vertexBuffer);
 		renderer->SetIndexBuffer(m_indexBuffer);

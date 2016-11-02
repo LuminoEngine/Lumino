@@ -23,6 +23,7 @@ IRenderer::IRenderer()
 	, m_currentVertexDeclaration()
 	, m_currentVertexBuffers()
 	, m_currentIndexBuffer()
+	, m_currentShaderPass(nullptr)
 {
 }
 
@@ -62,6 +63,13 @@ void IRenderer::SetIndexBuffer(IIndexBuffer* indexBuffer)
 		m_currentIndexBuffer = indexBuffer;
 		m_modifiedFlags |= Modified_IndexBuffer;
 	}
+}
+
+//------------------------------------------------------------------------------
+void IRenderer::SetShaderPass(IShaderPass* pass)
+{
+	// ShaderPass はたとえ同じでも次の Draw で必ず Apply する。
+	m_currentShaderPass = pass;
 }
 
 //------------------------------------------------------------------------------
@@ -107,6 +115,12 @@ void IRenderer::FlushStates()
 	{
 		OnUpdatePrimitiveData(m_currentVertexDeclaration, m_currentVertexBuffers, m_currentIndexBuffer);
 	}
+
+	// ShaderPass
+	if (m_currentShaderPass != nullptr)
+		m_currentShaderPass->Apply();
+
+	m_modifiedFlags = Modified_None;
 }
 
 ////==============================================================================

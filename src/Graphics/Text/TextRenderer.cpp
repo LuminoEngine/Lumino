@@ -166,7 +166,7 @@ void TextRendererCore::Flush(FontGlyphTextureCache* cache)
 	m_shader.varTone->SetVector((Vector4&)m_tone);
 	m_shader.varTexture->SetTexture(cache->GetGlyphsFillTexture());
 	//m_shader.varGlyphMaskSampler->SetTexture(m_glyphsMaskTexture);
-	m_shader.pass->Apply();
+	m_renderer->SetShaderPass(m_shader.pass);
 	m_renderer->SetVertexDeclaration(m_vertexDeclaration);
 	m_renderer->SetVertexBuffer(0, m_vertexBuffer);
 	m_renderer->SetIndexBuffer(m_indexBuffer);

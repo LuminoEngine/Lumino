@@ -938,7 +938,7 @@ struct ApplyShaderPassCommand : public RenderingCommand
 		m_pass = pass;
 		MarkGC(pass);
 	}
-	void Execute() { m_pass->Apply(); }
+	void Execute() { GetRenderer()->SetShaderPass(m_pass); /*m_pass->Apply();*/ }
 };
 
 //==============================================================================

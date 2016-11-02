@@ -875,7 +875,7 @@ void SpriteRendererImpl::Flush(SpriteSortMode sortFlags)
 	{
 		//r->SetRenderState(m_renderStateList[itr->RenderStateIndex]);
 		m_shader.varTexture->SetTexture(itr->Texture);
-		pass->Apply();
+		r->SetShaderPass(pass);
 		r->SetVertexDeclaration(m_vertexDeclaration);
 		r->SetVertexBuffer(0, m_vertexBuffer);
 		r->SetIndexBuffer(m_indexBuffer);

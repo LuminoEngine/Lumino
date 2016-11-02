@@ -265,7 +265,7 @@ void PrimitiveRendererCore::Blt(Driver::ITexture* source, Driver::ITexture* dest
 		int passCount = tech->GetPassCount();
 		for (int iPass = 0; iPass < passCount; ++iPass)
 		{
-			tech->GetPass(iPass)->Apply();
+			m_renderer->SetShaderPass(tech->GetPass(iPass));
 			m_renderer->SetVertexDeclaration(m_vertexDeclaration);
 			m_renderer->SetVertexDeclaration(m_vertexDeclarationForBlt);
 			m_renderer->SetVertexBuffer(0, m_vertexBufferForBlt);
@@ -313,7 +313,7 @@ void PrimitiveRendererCore::Flush()
 			m_shader.varWorldMatrix->SetMatrix(m_worldMatrix);
 			m_shader.varViewProjMatrix->SetMatrix(m_viewProjMatrix);
 			m_shader.varTexture->SetTexture(srcTexture);
-			m_shader.pass->Apply();
+			m_renderer->SetShaderPass(m_shader.pass);
 		}
 
 		if (m_mode == PrimitiveRendererMode::TriangleList)

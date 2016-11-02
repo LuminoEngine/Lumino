@@ -65,6 +65,7 @@ public:
 private:
 	void SwitchActiveRenderer(detail::IRendererPloxy* renderer);
 
+
 	IRendererPloxy*				m_current;
 	Details::Renderer*			m_baseRenderer;
 	RefPtr<PrimitiveRenderer>	m_primitiveRenderer;
@@ -136,6 +137,9 @@ public:
 	RefPtr<RenderTarget>	m_renderTargets[MaxMultiRenderTargets];
 	RefPtr<DepthBuffer>		m_depthBuffer;
 	Rect					m_scissorRect;
+
+private:
+
 
 	mutable size_t			m_hashCode;
 	mutable bool			m_hashDirty;
