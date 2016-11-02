@@ -21,8 +21,9 @@ LN_ENUM_DECLARE(SceneSemantics);
 // カメラ単位のデータに関するセマンティクス
 LN_ENUM(CameraSemantics)
 {
-	ViewProjectionMatrix,
-		_Count,
+	ViewportPixelSize,
+	//ViewProjectionMatrix,
+	_Count,
 };
 LN_ENUM_DECLARE(CameraSemantics);
 
@@ -61,15 +62,12 @@ struct CameraInfo
 // 描画要素単位のデータに関する情報
 struct ElementInfo
 {
-	intptr_t	dataSourceId;
 	Matrix		WorldViewProjectionMatrix;
 };
 
 // サブセット単位のデータに関する情報
 struct SubsetInfo
 {
-	intptr_t	dataSourceId;
-	int			subsetIndex;
 	Material*	material;
 };
 
@@ -93,9 +91,6 @@ private:
 	ShaderVariable*		m_elementVariables[ElementSemantics::_Count];
 	ShaderVariable*		m_subsetVariables[SubsetSemantics::_Count];
 	intptr_t			m_lastCameraInfoId;
-	intptr_t			m_lastElementInfoId;
-	intptr_t			m_lastSubsetInfoId;
-	int					m_lastSubsetIndex;
 };
 
 } // namespace detail

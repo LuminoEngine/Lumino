@@ -32,9 +32,6 @@ namespace detail {
 //------------------------------------------------------------------------------
 ShaderSemanticsManager::ShaderSemanticsManager()
 	: m_lastCameraInfoId(0)
-	, m_lastElementInfoId(0)
-	, m_lastSubsetInfoId(0)
-	, m_lastSubsetIndex(0)
 {
 	memset(m_sceneVariables, 0, sizeof(m_sceneVariables));
 	memset(m_cameraVariables, 0, sizeof(m_cameraVariables));
@@ -57,6 +54,13 @@ void ShaderSemanticsManager::TryPushVariable(ShaderVariable* var)
 	// 変数名の先頭が ln_ であれば、いろいろな意味を持つ変数かもしれない
 	if (name.IndexOf(_T("ln_")) == 0)
 	{
+		// CameraSemantics
+		if (name == _T("ln_ViewportPixelSize"))
+		{
+			m_cameraVariables[CameraSemantics::ViewportPixelSize] = var;
+			return;
+		}
+
 		// ElementSemantics
 		if (name == _T("ln_WorldViewProjection"))
 		{
@@ -82,36 +86,33 @@ void ShaderSemanticsManager::UpdateSceneVariables(const SceneInfo& info)
 //------------------------------------------------------------------------------
 void ShaderSemanticsManager::UpdateCameraVariables(const CameraInfo& info)
 {
+	if (m_lastCameraInfoId != info.dataSourceId)
+	{
+		m_lastCameraInfoId = info.dataSourceId;
 
+		if (m_cameraVariables[CameraSemantics::ViewportPixelSize] != nullptr)
+		{
+			m_cameraVariables[CameraSemantics::ViewportPixelSize]->SetVector(Vector4(info.viewPixelSize.width, info.viewPixelSize.height, 0, 0));
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
 void ShaderSemanticsManager::UpdateElementVariables(const ElementInfo& info)
 {
-	if (m_lastElementInfoId != info.dataSourceId)
+	if (m_elementVariables[ElementSemantics::WorldViewProjection] != nullptr)
 	{
-		m_lastElementInfoId = info.dataSourceId;
-
-		if (m_elementVariables[ElementSemantics::WorldViewProjection] != nullptr)
-		{
-			m_elementVariables[ElementSemantics::WorldViewProjection]->SetMatrix(info.WorldViewProjectionMatrix);
-		}
+		m_elementVariables[ElementSemantics::WorldViewProjection]->SetMatrix(info.WorldViewProjectionMatrix);
 	}
 }
 
 //------------------------------------------------------------------------------
 void ShaderSemanticsManager::UpdateSubsetVariables(const SubsetInfo& info)
 {
-	if (m_lastSubsetInfoId != info.dataSourceId || m_lastSubsetIndex != info.subsetIndex)
+	if (m_subsetVariables[SubsetSemantics::MaterialTexture] != nullptr)
 	{
-		m_lastSubsetInfoId = info.dataSourceId;
-		m_lastSubsetIndex = info.subsetIndex;
-
-		if (m_subsetVariables[SubsetSemantics::MaterialTexture] != nullptr)
-		{
-			Texture* tex = (info.material != nullptr) ? info.material->GetMaterialTexture() : nullptr;
-			m_subsetVariables[SubsetSemantics::MaterialTexture]->SetTexture((tex != nullptr) ? tex : m_manager->GetDummyWhiteTexture());
-		}
+		Texture* tex = (info.material != nullptr) ? info.material->GetMaterialTexture() : nullptr;
+		m_subsetVariables[SubsetSemantics::MaterialTexture]->SetTexture((tex != nullptr) ? tex : m_manager->GetDummyWhiteTexture());
 	}
 }
 

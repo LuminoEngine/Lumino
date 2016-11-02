@@ -323,6 +323,10 @@ public:
 
 	void DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material);
 
+	void Blt(Texture* source, RenderTarget* dest);
+	void Blt(Texture* source, RenderTarget* dest, const Matrix& transform);
+	void Blt(Texture* source, RenderTarget* dest, Material* material);
+
 LN_INTERNAL_ACCESS:
 	DrawList();
 	virtual ~DrawList();
@@ -335,7 +339,7 @@ LN_INTERNAL_ACCESS:
 	void SetState(const detail::BatchStateBlock& state) { m_state = state; }
 	template<typename TElement> TElement* ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer);
 	void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material);
-	void BltInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Shader* shader);
+	void BltInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Material* material);
 
 private:
 	detail::GraphicsManager*		m_manager;

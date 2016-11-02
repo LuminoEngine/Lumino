@@ -461,12 +461,9 @@ void InternalRenderer::Render(
 		}
 
 		ElementInfo elementInfo;
-		elementInfo.dataSourceId = reinterpret_cast<intptr_t>(element);
 		elementInfo.WorldViewProjectionMatrix = element->transform * cameraInfo.viewMatrix * cameraInfo.projMatrix;	// TODO: viewProj はまとめたい
 
 		SubsetInfo subsetInfo;
-		subsetInfo.dataSourceId = reinterpret_cast<intptr_t>(element);
-		subsetInfo.subsetIndex = element->subsetIndex;
 		subsetInfo.material = elementList->GetBatch(currentBatchIndex)->m_material;
 
 		currentShader->GetSemanticsManager()->UpdateCameraVariables(cameraInfo);
@@ -777,10 +774,10 @@ void DrawList::DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Ma
 }
 
 //------------------------------------------------------------------------------
-void DrawList::BltInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Shader* shader)
-{
-
-}
+//void DrawList::BltInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Shader* shader)
+//{
+//
+//}
 
 LN_NAMESPACE_END
 
