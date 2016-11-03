@@ -203,3 +203,25 @@ TEST_F(Test_Graphics_Rendering, Blit)
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png")));
 	}
 }
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_Rendering, DrawText_)
+{
+	{
+		auto font = RawFont::GetDefaultFont();
+		float w = Viewport::GetMainViewport()->GetSize().width;
+
+		if (Engine::BeginRendering())
+		{
+			Engine::Render();
+			Engine::GetDefault2DLayer()->GetRenderer()->SetFont(font);
+			Engine::GetDefault2DLayer()->GetRenderer()->SetBrush(ColorBrush::White);
+			Engine::GetDefault2DLayer()->GetRenderer()->DrawText_(_T("Text1"), RectF(0, 0, w, 100), StringFormatFlags::LeftAlignment);
+			Engine::GetDefault2DLayer()->GetRenderer()->DrawText_(_T("Text2"), RectF(0, 0, w, 100), StringFormatFlags::CenterAlignment);
+			Engine::GetDefault2DLayer()->GetRenderer()->DrawText_(_T("Text3"), RectF(0, 0, w, 100), StringFormatFlags::RightAlignment);
+			Engine::EndRendering();
+		}
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawText1.png")));
+	}
+}
+

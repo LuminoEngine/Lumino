@@ -112,6 +112,7 @@ public:
 	virtual void Flush() override;
 	virtual void OnActivated() { m_stateModified = true; }
 	virtual void OnDeactivated() { Flush(); }
+	virtual void OnSetState(const DrawElementBatch* state);
 
 public:
 	// TODO: ↓いまは Flush でやるようなことをしている。後で変更したい。

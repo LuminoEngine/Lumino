@@ -7,6 +7,7 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail {
 class RenderTargetTextureCache;
+class DrawElementBatch;
 
 LN_ENUM_FLAGS(ContextStateFlags)
 {
@@ -76,6 +77,8 @@ public:
 	virtual void Flush() = 0;
 	virtual void OnActivated() = 0;
 	virtual void OnDeactivated() = 0;
+
+	virtual void OnSetState(const DrawElementBatch* state) {}
 };
 
 

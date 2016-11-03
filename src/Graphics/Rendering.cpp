@@ -10,6 +10,7 @@
 #include "PrimitiveRenderer.h"
 #include "MeshRendererProxy.h"
 #include "SpriteRenderer.h"
+#include "Text/TextRenderer.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -88,6 +89,7 @@ InternalContext::InternalContext()
 	, m_meshRenderer(nullptr)
 	, m_spriteRenderer(nullptr)
 	, m_current(nullptr)
+	, m_currentStatePtr(nullptr)
 {
 }
 
@@ -106,6 +108,9 @@ void InternalContext::Initialize(detail::GraphicsManager* manager)
 	m_meshRenderer->Initialize(manager);
 
 	m_spriteRenderer = RefPtr<SpriteRenderer>::MakeRef(manager, 2048);	// TODO
+
+	m_textRenderer = RefPtr<TextRenderer>::MakeRef();
+	m_textRenderer->Initialize(manager);
 }
 
 //------------------------------------------------------------------------------
@@ -150,17 +155,33 @@ SpriteRenderer* InternalContext::BeginSpriteRenderer()
 }
 
 //------------------------------------------------------------------------------
+TextRenderer* InternalContext::BeginTextRenderer()
+{
+	SwitchActiveRenderer(m_textRenderer);
+	return m_textRenderer;
+}
+
+//------------------------------------------------------------------------------
 void InternalContext::SetViewInfo(const SizeF& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix)
 {
-	m_spriteRenderer->SetViewInfo(viewPixelSize, viewMatrix, projMatrix);
 	m_primitiveRenderer->SetViewPixelSize(SizeI(viewPixelSize.width, viewPixelSize.height));
 	m_primitiveRenderer->SetViewProjMatrix(viewMatrix * projMatrix);
+	m_spriteRenderer->SetViewInfo(viewPixelSize, viewMatrix, projMatrix);
+	m_textRenderer->SetViewInfo(viewMatrix * projMatrix, SizeI(viewPixelSize.width, viewPixelSize.height));
 }
 
 //------------------------------------------------------------------------------
 SpriteRenderer* InternalContext::GetSpriteRenderer()
 {
 	return m_spriteRenderer;
+}
+
+//------------------------------------------------------------------------------
+void InternalContext::SetCurrentStatePtr(const DrawElementBatch* state)
+{
+	m_currentStatePtr = state;
+	if (m_current != nullptr)
+		m_current->OnSetState(m_currentStatePtr);
 }
 
 //------------------------------------------------------------------------------
@@ -174,9 +195,18 @@ void InternalContext::SwitchActiveRenderer(detail::IRendererPloxy* renderer)
 {
 	if (m_current != renderer)
 	{
-		if (m_current != nullptr) m_current->OnDeactivated();
+		if (m_current != nullptr)
+		{
+			m_current->OnDeactivated();
+		}
+
 		m_current = renderer;
-		if (m_current != nullptr) m_current->OnActivated();
+
+		if (m_current != nullptr)
+		{
+			m_current->OnActivated();
+			m_current->OnSetState(m_currentStatePtr);
+		}
 	}
 }
 
@@ -231,6 +261,38 @@ void DrawElementBatch::SetStandaloneShaderRenderer(bool enabled)
 bool DrawElementBatch::IsStandaloneShaderRenderer() const
 {
 	return m_standaloneShaderRenderer;
+}
+
+//------------------------------------------------------------------------------
+void DrawElementBatch::SetBrush(Brush* brush)
+{
+	if (m_brush != brush)
+	{
+		m_brush = brush;
+		m_hashDirty = true;
+	}
+}
+
+//------------------------------------------------------------------------------
+Brush* DrawElementBatch::GetBrush() const
+{
+	return m_brush;
+}
+
+//------------------------------------------------------------------------------
+void DrawElementBatch::SetFont(RawFont* font)
+{
+	if (m_font != font)
+	{
+		m_font = font;
+		m_hashDirty = true;
+	}
+}
+
+//------------------------------------------------------------------------------
+RawFont* DrawElementBatch::GetFont() const
+{
+	return m_font;
 }
 
 //------------------------------------------------------------------------------
@@ -498,6 +560,7 @@ void InternalRenderer::Render(
 
 	// DrawElement 描画
 	int currentBatchIndex = -1;
+	DrawElementBatch* currentState = nullptr;
 	Shader* currentShader = nullptr;
 	for (DrawElement* element : m_renderingElementList)
 	{
@@ -506,22 +569,27 @@ void InternalRenderer::Render(
 		{
 			context->Flush();
 			currentBatchIndex = element->batchIndex;
-			currentShader = elementList->GetBatch(currentBatchIndex)->ApplyStatus(context, defaultRenderTarget, defaultDepthBuffer, pass->GetDefaultShader());
+			currentState = elementList->GetBatch(currentBatchIndex);
+			currentShader = currentState->ApplyStatus(context, defaultRenderTarget, defaultDepthBuffer, pass->GetDefaultShader());
+			context->SetCurrentStatePtr(currentState);
 		}
 
-		ElementInfo elementInfo;
-		element->MakeElementInfo(cameraInfo, &elementInfo);
+		if (!currentState->IsStandaloneShaderRenderer())
+		{
+			ElementInfo elementInfo;
+			element->MakeElementInfo(cameraInfo, &elementInfo);
 
-		SubsetInfo subsetInfo;
-		element->MakeSubsetInfo(elementList->GetBatch(currentBatchIndex)->m_material, &subsetInfo);
+			SubsetInfo subsetInfo;
+			element->MakeSubsetInfo(currentState->m_material, &subsetInfo);
 
-		currentShader->GetSemanticsManager()->UpdateCameraVariables(cameraInfo);
-		currentShader->GetSemanticsManager()->UpdateElementVariables(elementInfo);
-		currentShader->GetSemanticsManager()->UpdateSubsetVariables(subsetInfo);
+			currentShader->GetSemanticsManager()->UpdateCameraVariables(cameraInfo);
+			currentShader->GetSemanticsManager()->UpdateElementVariables(elementInfo);
+			currentShader->GetSemanticsManager()->UpdateSubsetVariables(subsetInfo);
 
-		auto* stateManager = context->GetRenderStateManager();
-		ShaderPass* pass = currentShader->GetTechniques().GetAt(0)->GetPasses().GetAt(0);	// TODO: DrawList の実行者によって決定する
-		stateManager->SetShaderPass(pass);
+			auto* stateManager = context->GetRenderStateManager();
+			ShaderPass* pass = currentShader->GetTechniques().GetAt(0)->GetPasses().GetAt(0);	// TODO: DrawList の実行者によって決定する
+			stateManager->SetShaderPass(pass);
+		}
 
 		// 描画実行
 		element->DrawSubset(context);
@@ -664,6 +732,18 @@ RenderTarget* DrawList::GetRenderTarget(int index) const
 }
 
 //------------------------------------------------------------------------------
+void DrawList::SetBrush(Brush* brush)
+{
+	m_state.state.SetBrush(brush);
+}
+
+//------------------------------------------------------------------------------
+void DrawList::SetFont(RawFont* font)
+{
+	m_state.state.SetFont(font);
+}
+
+//------------------------------------------------------------------------------
 void DrawList::Clear()
 {
 	m_drawElementList.ClearCommands();
@@ -793,6 +873,29 @@ void DrawList::Blit(Texture* source, RenderTarget* dest, const Matrix& transform
 void DrawList::Blit(Texture* source, RenderTarget* dest, Material* material)
 {
 	BlitInternal(source, dest, Matrix::Identity, material);
+}
+
+//------------------------------------------------------------------------------
+void DrawList::DrawText_(const StringRef& text, const RectF& rect, StringFormatFlags flags)
+{
+	class DrawElement_DrawText : public detail::DrawElement
+	{
+	public:
+		String text;	// TODO
+		RectF rect;
+		StringFormatFlags flags;
+
+		virtual void DrawSubset(detail::InternalContext* context) override
+		{
+			context->BeginTextRenderer()->DrawString(transform, text.c_str(), text.GetLength(), rect, flags);
+		}
+	};
+
+	auto* e = ResolveDrawElement<DrawElement_DrawText>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_textRenderer);
+	e->text = text;
+	e->rect = rect;
+	e->flags = flags;
+	//e->boundingSphere = ;	// TODO
 }
 
 //------------------------------------------------------------------------------

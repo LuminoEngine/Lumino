@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <Lumino/Graphics/GraphicsException.h>
 #include <Lumino/Graphics/Brush.h>
+#include <Lumino/Graphics/Rendering.h>
 #include "../Device/GraphicsDriverInterface.h"
 #include "../RendererImpl.h"
 #include "../RenderingCommand.h"
@@ -356,6 +357,15 @@ void TextRenderer::Flush()
 	{
 		FontGlyphTextureCache* cache = m_font->GetGlyphTextureCache();
 		FlushInternal(cache);
+	}
+}
+
+//------------------------------------------------------------------------------
+void TextRenderer::OnSetState(const DrawElementBatch* state)
+{
+	if (state != nullptr)
+	{
+		SetState(state->GetFont(), state->GetBrush());
 	}
 }
 

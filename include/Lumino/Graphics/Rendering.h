@@ -16,6 +16,8 @@ class PrimitiveRenderer;
 class BlitRenderer;
 class MeshRendererProxy;
 class SpriteRenderer;
+class TextRenderer;
+class DrawElementBatch;
 class RenderingPass2;
 
 enum class DrawingSectionId
@@ -58,8 +60,10 @@ public:
 	BlitRenderer* BeginBlitRenderer();
 	MeshRendererProxy* BeginMeshRenderer();
 	SpriteRenderer* BeginSpriteRenderer();
+	TextRenderer* BeginTextRenderer();
 
 	void SetViewInfo(const SizeF& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix);
+	void SetCurrentStatePtr(const DrawElementBatch* state);
 	detail::SpriteRenderer* GetSpriteRenderer();
 
 	void Flush();
@@ -74,6 +78,8 @@ private:
 	RefPtr<BlitRenderer>		m_blitRenderer;
 	RefPtr<MeshRendererProxy>	m_meshRenderer;
 	RefPtr<SpriteRenderer>		m_spriteRenderer;
+	RefPtr<TextRenderer>		m_textRenderer;
+	const DrawElementBatch*		m_currentStatePtr;
 
 	friend class DrawList;
 };
@@ -119,6 +125,11 @@ public:
 	void SetStandaloneShaderRenderer(bool enabled);
 	bool IsStandaloneShaderRenderer() const;
 
+	void SetBrush(Brush* brush);
+	Brush* GetBrush() const;
+	void SetFont(RawFont* font);
+	RawFont* GetFont() const;
+
 	bool Equal(const DrawElementBatch& obj) const;
 	void Reset();
 	Shader* ApplyStatus(InternalContext* context, RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer, Shader* defaultShader);
@@ -148,6 +159,11 @@ public:
 	RefPtr<RenderTarget>	m_renderTargets[MaxMultiRenderTargets];
 	RefPtr<DepthBuffer>		m_depthBuffer;
 	Rect					m_scissorRect;
+
+	// painting
+	RefPtr<Brush>			m_brush;
+	RefPtr<RawFont>			m_font;
+
 
 private:
 
@@ -347,7 +363,7 @@ public:
 	void Blit(Texture* source, RenderTarget* dest, Material* material);
 
 
-	void DrawText(const StringRef& text, const RectF& rect, StringFormatFlags flags);
+	void DrawText_(const StringRef& text, const RectF& rect, StringFormatFlags flags);
 
 LN_INTERNAL_ACCESS:
 	DrawList();
