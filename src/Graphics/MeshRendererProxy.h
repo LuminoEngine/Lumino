@@ -27,6 +27,7 @@ public:
 	void DrawMesh(MeshResource* mesh, int startIndex, int triangleCount);
 
 protected:
+	virtual bool IsStandaloneShader() const { return true; }
 	virtual void Flush() override {}
 	virtual void OnActivated() override {}
 	virtual void OnDeactivated() override {}

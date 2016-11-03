@@ -99,7 +99,8 @@ public:
 	void Initialize(GraphicsManager* manager);
 
 	void SetTransform(const Matrix& matrix);
-	void SetState(const Matrix& viewProj, const SizeI& viewPixelSize, RawFont* font, Brush* fillBrush);
+	void SetViewInfo(const Matrix& viewProj, const SizeI& viewPixelSize);
+	void SetState(RawFont* font, Brush* fillBrush);
 
 	void DrawGlyphRun(const Matrix& transform, const Point& position, GlyphRun* glyphRun);
 	void DrawGlyphRun(const Matrix& transform, const PointF& position, GlyphRun* glyphRun);	// SetFont 無視
@@ -107,6 +108,7 @@ public:
 	void DrawString(const Matrix& transform, const TCHAR* str, int length, const PointF& position);
 	void DrawString(const Matrix& transform, const TCHAR* str, int length, const RectF& rect, StringFormatFlags flags);
 
+	virtual bool IsStandaloneShader() const { return true; }
 	virtual void Flush() override;
 	virtual void OnActivated() { m_stateModified = true; }
 	virtual void OnDeactivated() { Flush(); }

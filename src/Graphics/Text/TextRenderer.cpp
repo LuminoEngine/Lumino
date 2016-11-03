@@ -221,7 +221,7 @@ void TextRenderer::SetTransform(const Matrix& matrix)
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::SetState(const Matrix& viewProj, const SizeI& viewPixelSize, RawFont* font, Brush* fillBrush)
+void TextRenderer::SetViewInfo(const Matrix& viewProj, const SizeI& viewPixelSize)
 {
 	if (m_viewProj != viewProj)
 	{
@@ -233,6 +233,11 @@ void TextRenderer::SetState(const Matrix& viewProj, const SizeI& viewPixelSize, 
 		m_viewPixelSize = viewPixelSize;
 		m_stateModified = true;
 	}
+}
+
+//------------------------------------------------------------------------------
+void TextRenderer::SetState(RawFont* font, Brush* fillBrush)
+{
 	if (m_font != font)
 	{
 		m_font = font;

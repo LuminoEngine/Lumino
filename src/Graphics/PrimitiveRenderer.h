@@ -132,9 +132,11 @@ public:
 
 	void Blt(Texture* source, RenderTarget* dest, const Matrix& transform, Shader* shader = nullptr);
 
+
+	virtual bool IsStandaloneShader() const;
 	virtual void Flush() override;
-	virtual void OnActivated() { m_stateModified = true; }
-	virtual void OnDeactivated() { Flush(); }
+	virtual void OnActivated();
+	virtual void OnDeactivated();
 
 private:
 	void SetPrimitiveRendererMode(PrimitiveRendererMode mode);
@@ -166,6 +168,7 @@ public:
 	void Blit();
 
 protected:
+	virtual bool IsStandaloneShader() const;
 	virtual void Flush();
 	virtual void OnActivated();
 	virtual void OnDeactivated();

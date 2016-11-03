@@ -99,6 +99,7 @@ public:
 
 	void Draw(const RectF& rect);
 
+	virtual bool IsStandaloneShader() const { return true; }
 	virtual void Flush() override;
 	virtual void OnActivated() { }
 	virtual void OnDeactivated() { Flush(); }

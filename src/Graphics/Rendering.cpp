@@ -218,6 +218,22 @@ void DrawElementBatch::SetMaterial(Material* value)
 }
 
 //------------------------------------------------------------------------------
+void DrawElementBatch::SetStandaloneShaderRenderer(bool enabled)
+{
+	if (m_standaloneShaderRenderer != enabled)
+	{
+		m_standaloneShaderRenderer = enabled;
+		m_hashDirty = true;
+	}
+}
+
+//------------------------------------------------------------------------------
+bool DrawElementBatch::IsStandaloneShaderRenderer() const
+{
+	return m_standaloneShaderRenderer;
+}
+
+//------------------------------------------------------------------------------
 bool DrawElementBatch::Equal(const DrawElementBatch& obj) const
 {
 #if 1
@@ -270,6 +286,7 @@ void DrawElementBatch::Reset()
 	m_material = nullptr;
 	//m_shaderValueList.Clear();
 	//m_shaderPass = nullptr;
+	m_standaloneShaderRenderer = false;
 
 	m_hashCode = 0;
 	m_hashDirty = true;
@@ -782,6 +799,9 @@ void DrawList::Blit(Texture* source, RenderTarget* dest, Material* material)
 template<typename TElement>
 TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer)
 {
+	// これを決定してから比較を行う
+	m_state.state.SetStandaloneShaderRenderer(renderer->IsStandaloneShader());
+
 	// 何か前回追加された DrawElement があり、それと DrawingSectionId、State が一致するならそれに対して追記できる
 	if (sectionId != detail::DrawingSectionId::None &&
 		m_currentSectionTopElement != nullptr &&

@@ -96,7 +96,8 @@ void SceneGraphRenderingContext::OnStateFlush(detail::IRendererPloxy* activeRend
 	if (activeRenderer == m_textRenderer)
 	{
 		const SizeI& size = GetRenderTarget(0)->GetSize();
-		m_textRenderer->SetState(m_currentCamera->GetViewProjectionMatrix(), size, nullptr, nullptr);
+		m_textRenderer->SetViewInfo(m_currentCamera->GetViewProjectionMatrix(), size);
+		m_textRenderer->SetState(nullptr, nullptr);
 	}
 }
 

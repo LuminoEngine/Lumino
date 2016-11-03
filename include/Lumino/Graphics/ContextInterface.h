@@ -72,6 +72,7 @@ private:
 class IRendererPloxy// : public RefObject
 {
 public:
+	virtual bool IsStandaloneShader() const = 0;
 	virtual void Flush() = 0;
 	virtual void OnActivated() = 0;
 	virtual void OnDeactivated() = 0;

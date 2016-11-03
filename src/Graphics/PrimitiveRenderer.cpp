@@ -500,6 +500,11 @@ void PrimitiveRenderer::Flush()
 }
 
 //------------------------------------------------------------------------------
+bool PrimitiveRenderer::IsStandaloneShader() const { return true; }
+void PrimitiveRenderer::OnActivated() { m_stateModified = true; }
+void PrimitiveRenderer::OnDeactivated() { Flush(); }
+
+//------------------------------------------------------------------------------
 void PrimitiveRenderer::SetPrimitiveRendererMode(PrimitiveRendererMode mode)
 {
 	if (mode != m_mode)
@@ -586,6 +591,7 @@ void BlitRenderer::BlitImpl()
 }
 
 //------------------------------------------------------------------------------
+bool BlitRenderer::IsStandaloneShader() const { return false; }
 void BlitRenderer::Flush() {}
 void BlitRenderer::OnActivated() {}
 void BlitRenderer::OnDeactivated() {}

@@ -269,6 +269,7 @@ public:
 		const Color& color,
 		AxisDirection front);
 
+	virtual bool IsStandaloneShader() const { return true; }
 	virtual void Flush() override;
 	virtual void OnActivated() override {}
 	virtual void OnDeactivated() override { Flush(); }

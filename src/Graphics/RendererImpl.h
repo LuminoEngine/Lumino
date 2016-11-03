@@ -117,6 +117,7 @@ public:
 	void DrawPrimitiveIndexed(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount);
 
 	void FlushState(const detail::ContextState& state);
+	virtual bool IsStandaloneShader() const { return false; }
 	virtual void Flush() override;
 	virtual void OnActivated() {}
 	virtual void OnDeactivated() { }

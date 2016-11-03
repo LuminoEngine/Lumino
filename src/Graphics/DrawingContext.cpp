@@ -323,11 +323,8 @@ void DrawingContext::OnStateFlush(detail::IRendererPloxy* activeRenderer)
 	if (activeRenderer == m_textRenderer)
 	{
 		m_textRenderer->SetTransform(state.worldTransform);
-		m_textRenderer->SetState(
-			viewProj,
-			size,
-			(state.font != nullptr) ? state.font : GetManager()->GetFontManager()->GetDefaultFont(),
-			state.fillBrush);
+		m_textRenderer->SetViewInfo(viewProj, size);
+		m_textRenderer->SetState((state.font != nullptr) ? state.font : GetManager()->GetFontManager()->GetDefaultFont(), state.fillBrush);
 	}
 
 

@@ -116,6 +116,8 @@ public:
 	void SetRenderTarget(int index, RenderTarget* renderTarget);
 	RenderTarget* GetRenderTarget(int index) const;
 	void SetMaterial(Material* value);
+	void SetStandaloneShaderRenderer(bool enabled);
+	bool IsStandaloneShaderRenderer() const;
 
 	bool Equal(const DrawElementBatch& obj) const;
 	void Reset();
@@ -140,6 +142,7 @@ public:
 	// shader	TODO: サブセット単位でステート変えられるようにしたいこともあるけど、毎回変数値を作るのはちょっと無駄な気がする
 	//RefPtr<ShaderPass>		m_shaderPass;
 	//List<ShaderValuePair>	m_shaderValueList;
+	bool					m_standaloneShaderRenderer;
 
 	// screen
 	RefPtr<RenderTarget>	m_renderTargets[MaxMultiRenderTargets];
@@ -302,6 +305,10 @@ public:
 
 	void SetTransform(const Matrix& transform);
 
+
+	void SetBrush(Brush* brush);
+	void SetFont(RawFont* font);
+
 	void Clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
 	
 
@@ -338,6 +345,9 @@ public:
 	void Blit(Texture* source);
 	void Blit(Texture* source, RenderTarget* dest, const Matrix& transform);
 	void Blit(Texture* source, RenderTarget* dest, Material* material);
+
+
+	void DrawText(const StringRef& text, const RectF& rect, StringFormatFlags flags);
 
 LN_INTERNAL_ACCESS:
 	DrawList();

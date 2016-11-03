@@ -73,7 +73,7 @@ public:
 
 	void DrawTexture(const RectF& rect, Texture* texture, const Rect& secRect, const Color& color);
 
-	//void Flush();
+	virtual bool IsStandaloneShader() const { return true; }
 	virtual void Flush() override;
 	virtual void OnActivated() override {}
 	virtual void OnDeactivated() override { Flush(); }
