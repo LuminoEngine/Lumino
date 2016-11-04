@@ -69,14 +69,14 @@ void Camera::Initialize(SceneGraph* owner, CameraProjection proj)
 }
 
 /// ピクセル単位の2D描画に使う射影行列の作成
-void Camera::Perspective2DLH(float width, float height, float nearClip, float farClip, Matrix* outMatrix)
-{
-	outMatrix->Set(
-		2.0f / width, 0.0f, 0.0f, 0.0f,
-		0.0f, -2.0f / height, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f / (farClip - nearClip), 0.0f,
-		-1.0f, 1.0f, nearClip / (nearClip - farClip), 1.0f);
-}
+//void Camera::Perspective2DLH(float width, float height, float nearClip, float farClip, Matrix* outMatrix)
+//{
+//	outMatrix->Set(
+//		2.0f / width, 0.0f, 0.0f, 0.0f,
+//		0.0f, -2.0f / height, 0.0f, 0.0f,
+//		0.0f, 0.0f, 1.0f / (farClip - nearClip), 0.0f,
+//		-1.0f, 1.0f, nearClip / (nearClip - farClip), 1.0f);
+//}
 
 //------------------------------------------------------------------------------
 void Camera::SetCameraBehavior(CameraBehavior* behavior)
@@ -118,9 +118,18 @@ void Camera::UpdateMatrices(const SizeF& viewSize)
 		m_direction = Vector4(direction, 0.0f);
 
 		m_viewMatrix = m_combinedGlobalMatrix;
-		Perspective2DLH(viewSize.width, viewSize.height, m_nearClip, m_farClip, &m_projMatrix);
+		m_projMatrix = Matrix::MakePerspective2DLH(viewSize.width, viewSize.height, m_nearClip, m_farClip);
+
+		
+		//Perspective2DLH(viewSize.width, viewSize.height, m_nearClip, m_farClip, &m_projMatrix);
 		m_viewProjMatrix = m_viewMatrix * m_projMatrix;
 
+		auto a1 = Vector3::TransformCoord(
+			Vector3(48, 0, 10), m_viewProjMatrix);
+		
+		auto a2 = Vector3::TransformCoord(
+			Vector3(48, 0, 100), m_viewProjMatrix);
+		a2 = Vector3(48, 0, 10);
 		//Matrix vp;
 		//vp = Matrix::LookAtLH(Vector3(320, 240, 0), Vector3(320, 240, 1), Vector3(0, 1, 0));
 		//vp *= Matrix::OrthoLH(640, 480, 0, 1000);
