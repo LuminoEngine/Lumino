@@ -67,18 +67,6 @@ Renderer::~Renderer()
 //------------------------------------------------------------------------------
 void Renderer::Begin()
 {
-	//if (m_manager->GetRenderingType() == GraphicsRenderingType::Deferred) {
-	//	m_primaryCommandList->AddCommand<Renderer_BeginCommand>();
-	//}
-	//else {
-	//	if (m_manager->GetGraphicsDevice()->IsStandalone()) {
-	//		m_internal->Begin();
-	//		m_internal->EnterRenderState();
-	//	}
-	//	else {
-	//		m_internal->EnterRenderState();
-	//	}
-	//}
 	bool isStandalone = m_manager->GetGraphicsDevice()->IsStandalone();
 
 	LN_ENQUEUE_RENDER_COMMAND_2(

@@ -123,6 +123,19 @@ void IRenderer::FlushStates()
 	m_modifiedFlags = Modified_None;
 }
 
+//------------------------------------------------------------------------------
+void IRenderer::EnterRenderState()
+{
+	m_modifiedFlags = Modified_All;
+	OnEnterRenderState();
+}
+
+//------------------------------------------------------------------------------
+void IRenderer::LeaveRenderState()
+{
+	OnLeaveRenderState();
+}
+
 ////==============================================================================
 //// ITexture2D
 ////==============================================================================

@@ -359,6 +359,7 @@ public:
 	void DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material);
 
 	void Blit(Texture* source);
+	void Blit(Texture* source, const Matrix& transform);
 	void Blit(Texture* source, RenderTarget* dest, const Matrix& transform);
 	void Blit(Texture* source, RenderTarget* dest, Material* material);
 
@@ -370,7 +371,7 @@ LN_INTERNAL_ACCESS:
 	virtual ~DrawList();
 	void Initialize(detail::GraphicsManager* manager);
 	detail::DrawElementList* GetDrawElementList() { return &m_drawElementList; }
-	void Clear();
+	void BeginMakeElements();
 	//void BeginFrame(RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
 	void EndFrame();
 	const detail::BatchStateBlock& GetState() const { return m_state; }

@@ -64,108 +64,6 @@ void DX9Renderer::OnResetDevice()
 }
 
 //------------------------------------------------------------------------------
-void DX9Renderer::EnterRenderState()
-{
-	// ステートを保存する
-	if (m_restorationStates)
-	{
-		IDirect3DDevice9* device = m_owner->GetIDirect3DDevice9();
-		device->GetRenderState(D3DRS_ALPHABLENDENABLE, &m_state_D3DRS_ALPHABLENDENABLE);
-		device->GetRenderState(D3DRS_BLENDOP, &m_state_D3DRS_BLENDOP);
-		device->GetRenderState(D3DRS_DESTBLEND, &m_state_D3DRS_DESTBLEND);
-		device->GetRenderState(D3DRS_SRCBLEND, &m_state_D3DRS_SRCBLEND);
-		device->GetRenderState(D3DRS_ALPHAREF, &m_state_D3DRS_ALPHAREF);
-		device->GetRenderState(D3DRS_ALPHAFUNC, &m_state_D3DCMP_GREATEREQUAL);
-
-		device->GetRenderState(D3DRS_ZENABLE, &m_state_D3DRS_ZENABLE);
-		device->GetRenderState(D3DRS_ZWRITEENABLE, &m_state_D3DRS_ZWRITEENABLE);
-		device->GetRenderState(D3DRS_ALPHATESTENABLE, &m_state_D3DRS_ALPHATESTENABLE);
-		device->GetRenderState(D3DRS_CULLMODE, &m_state_D3DRS_CULLMODE);
-
-		device->GetRenderState(D3DRS_COLORVERTEX, &m_state_D3DRS_COLORVERTEX);
-		device->GetRenderState(D3DRS_LIGHTING, &m_state_D3DRS_LIGHTING);
-		device->GetRenderState(D3DRS_SHADEMODE, &m_state_D3DRS_SHADEMODE);
-
-		device->GetVertexShader(&m_state_vertexShader);
-		device->GetPixelShader(&m_state_pixelShader);
-		device->GetVertexDeclaration(&m_state_vertexDeclaration);
-		//device->GetStreamSource( 0, &m_state_streamData, &m_state_OffsetInBytes, &m_state_pStride );
-		//device->GetIndices( &m_state_IndexData );
-
-		device->GetTexture(0, &m_state_pTexture);
-		device->GetFVF(&m_state_FVF);
-	}
-
-	RestoreStatus();
-
-	OnUpdateRenderState(m_currentRenderState, m_currentRenderState, true);
-	OnUpdateDepthStencilState(m_currentDepthStencilState, m_currentDepthStencilState, true);
-	for (int i = 0; i < MaxMultiRenderTargets; ++i)
-	{
-		if (i != 0 || m_currentRenderTargets[i] != NULL) {	// 0 に NULL を指定することはできない。なのでやむを得ず何もしない
-			InternalSetRenderTarget(i, m_currentRenderTargets[i], true);
-		}
-	}
-	InternalSetDepthBuffer(m_currentDepthBuffer, true);
-	InternalSetViewport(m_currentViewportRect, true);
-//	InternalSetVertexBuffer(0, m_currentVertexBuffer, true);
-	InternalSetIndexBuffer(m_currentIndexBuffer, true);
-
-	// TODO: ↑Luminoが管理するステートの設定はIRendererにもってく
-}
-
-//------------------------------------------------------------------------------
-void DX9Renderer::LeaveRenderState()
-{
-	// アクティブなパスをここで終了しておく
-	if (m_currentShaderPass != NULL) {
-		m_currentShaderPass->EndPass();
-	}
-	LN_SAFE_RELEASE(m_currentShaderPass);
-
-	// ステートを復元する
-	if (m_restorationStates)
-	{
-		IDirect3DDevice9* device = m_owner->GetIDirect3DDevice9();
-		device->SetRenderState(D3DRS_ALPHABLENDENABLE, m_state_D3DRS_ALPHABLENDENABLE);
-		device->SetRenderState(D3DRS_BLENDOP, m_state_D3DRS_BLENDOP);
-		device->SetRenderState(D3DRS_DESTBLEND, m_state_D3DRS_DESTBLEND);
-		device->SetRenderState(D3DRS_SRCBLEND, m_state_D3DRS_SRCBLEND);
-		device->SetRenderState(D3DRS_ALPHAREF, m_state_D3DRS_ALPHAREF);
-		device->SetRenderState(D3DRS_ALPHAFUNC, m_state_D3DCMP_GREATEREQUAL);
-
-		device->SetRenderState(D3DRS_ZENABLE, m_state_D3DRS_ZENABLE);
-		device->SetRenderState(D3DRS_ZWRITEENABLE, m_state_D3DRS_ZWRITEENABLE);
-		device->SetRenderState(D3DRS_ALPHATESTENABLE, m_state_D3DRS_ALPHATESTENABLE);
-		device->SetRenderState(D3DRS_CULLMODE, m_state_D3DRS_CULLMODE);
-
-		device->SetRenderState(D3DRS_COLORVERTEX, m_state_D3DRS_COLORVERTEX);
-		device->SetRenderState(D3DRS_LIGHTING, m_state_D3DRS_LIGHTING);
-		device->SetRenderState(D3DRS_SHADEMODE, m_state_D3DRS_SHADEMODE);
-
-		device->SetVertexShader(m_state_vertexShader);
-		LN_SAFE_RELEASE(m_state_vertexShader);
-
-		device->SetPixelShader(m_state_pixelShader);
-		LN_SAFE_RELEASE(m_state_pixelShader);
-
-		device->SetVertexDeclaration(m_state_vertexDeclaration);
-		LN_SAFE_RELEASE(m_state_vertexDeclaration);
-
-		//device->SetStreamSource( 0, m_state_streamData, m_state_OffsetInBytes, m_state_pStride );
-		//LN_SAFE_RELEASE( m_state_streamData );
-
-		//device->SetIndices( m_state_IndexData );
-		//LN_SAFE_RELEASE( m_state_IndexData );
-
-		device->SetTexture(0, m_state_pTexture);
-		LN_SAFE_RELEASE(m_state_pTexture);
-
-		device->SetFVF(m_state_FVF);
-	}
-}
-
-//------------------------------------------------------------------------------
 void DX9Renderer::Begin()
 {
 	if (m_owner->IsStandalone()) {
@@ -231,6 +129,108 @@ void DX9Renderer::RestoreStatus()
 
 	OnUpdateRenderState(m_currentRenderState, m_currentRenderState, true);
 	OnUpdateDepthStencilState(m_currentDepthStencilState, m_currentDepthStencilState, true);
+}
+
+//------------------------------------------------------------------------------
+void DX9Renderer::OnEnterRenderState()
+{
+	// ステートを保存する
+	if (m_restorationStates)
+	{
+		IDirect3DDevice9* device = m_owner->GetIDirect3DDevice9();
+		device->GetRenderState(D3DRS_ALPHABLENDENABLE, &m_state_D3DRS_ALPHABLENDENABLE);
+		device->GetRenderState(D3DRS_BLENDOP, &m_state_D3DRS_BLENDOP);
+		device->GetRenderState(D3DRS_DESTBLEND, &m_state_D3DRS_DESTBLEND);
+		device->GetRenderState(D3DRS_SRCBLEND, &m_state_D3DRS_SRCBLEND);
+		device->GetRenderState(D3DRS_ALPHAREF, &m_state_D3DRS_ALPHAREF);
+		device->GetRenderState(D3DRS_ALPHAFUNC, &m_state_D3DCMP_GREATEREQUAL);
+
+		device->GetRenderState(D3DRS_ZENABLE, &m_state_D3DRS_ZENABLE);
+		device->GetRenderState(D3DRS_ZWRITEENABLE, &m_state_D3DRS_ZWRITEENABLE);
+		device->GetRenderState(D3DRS_ALPHATESTENABLE, &m_state_D3DRS_ALPHATESTENABLE);
+		device->GetRenderState(D3DRS_CULLMODE, &m_state_D3DRS_CULLMODE);
+
+		device->GetRenderState(D3DRS_COLORVERTEX, &m_state_D3DRS_COLORVERTEX);
+		device->GetRenderState(D3DRS_LIGHTING, &m_state_D3DRS_LIGHTING);
+		device->GetRenderState(D3DRS_SHADEMODE, &m_state_D3DRS_SHADEMODE);
+
+		device->GetVertexShader(&m_state_vertexShader);
+		device->GetPixelShader(&m_state_pixelShader);
+		device->GetVertexDeclaration(&m_state_vertexDeclaration);
+		//device->GetStreamSource( 0, &m_state_streamData, &m_state_OffsetInBytes, &m_state_pStride );
+		//device->GetIndices( &m_state_IndexData );
+
+		device->GetTexture(0, &m_state_pTexture);
+		device->GetFVF(&m_state_FVF);
+	}
+
+	RestoreStatus();
+
+	OnUpdateRenderState(m_currentRenderState, m_currentRenderState, true);
+	OnUpdateDepthStencilState(m_currentDepthStencilState, m_currentDepthStencilState, true);
+	for (int i = 0; i < MaxMultiRenderTargets; ++i)
+	{
+		if (i != 0 || m_currentRenderTargets[i] != NULL) {	// 0 に NULL を指定することはできない。なのでやむを得ず何もしない
+			InternalSetRenderTarget(i, m_currentRenderTargets[i], true);
+		}
+	}
+	InternalSetDepthBuffer(m_currentDepthBuffer, true);
+	InternalSetViewport(m_currentViewportRect, true);
+	//	InternalSetVertexBuffer(0, m_currentVertexBuffer, true);
+	InternalSetIndexBuffer(m_currentIndexBuffer, true);
+
+	// TODO: ↑Luminoが管理するステートの設定はIRendererにもってく
+}
+
+//------------------------------------------------------------------------------
+void DX9Renderer::OnLeaveRenderState()
+{
+	// アクティブなパスをここで終了しておく
+	if (m_currentShaderPass != NULL) {
+		m_currentShaderPass->EndPass();
+	}
+	LN_SAFE_RELEASE(m_currentShaderPass);
+
+	// ステートを復元する
+	if (m_restorationStates)
+	{
+		IDirect3DDevice9* device = m_owner->GetIDirect3DDevice9();
+		device->SetRenderState(D3DRS_ALPHABLENDENABLE, m_state_D3DRS_ALPHABLENDENABLE);
+		device->SetRenderState(D3DRS_BLENDOP, m_state_D3DRS_BLENDOP);
+		device->SetRenderState(D3DRS_DESTBLEND, m_state_D3DRS_DESTBLEND);
+		device->SetRenderState(D3DRS_SRCBLEND, m_state_D3DRS_SRCBLEND);
+		device->SetRenderState(D3DRS_ALPHAREF, m_state_D3DRS_ALPHAREF);
+		device->SetRenderState(D3DRS_ALPHAFUNC, m_state_D3DCMP_GREATEREQUAL);
+
+		device->SetRenderState(D3DRS_ZENABLE, m_state_D3DRS_ZENABLE);
+		device->SetRenderState(D3DRS_ZWRITEENABLE, m_state_D3DRS_ZWRITEENABLE);
+		device->SetRenderState(D3DRS_ALPHATESTENABLE, m_state_D3DRS_ALPHATESTENABLE);
+		device->SetRenderState(D3DRS_CULLMODE, m_state_D3DRS_CULLMODE);
+
+		device->SetRenderState(D3DRS_COLORVERTEX, m_state_D3DRS_COLORVERTEX);
+		device->SetRenderState(D3DRS_LIGHTING, m_state_D3DRS_LIGHTING);
+		device->SetRenderState(D3DRS_SHADEMODE, m_state_D3DRS_SHADEMODE);
+
+		device->SetVertexShader(m_state_vertexShader);
+		LN_SAFE_RELEASE(m_state_vertexShader);
+
+		device->SetPixelShader(m_state_pixelShader);
+		LN_SAFE_RELEASE(m_state_pixelShader);
+
+		device->SetVertexDeclaration(m_state_vertexDeclaration);
+		LN_SAFE_RELEASE(m_state_vertexDeclaration);
+
+		//device->SetStreamSource( 0, m_state_streamData, m_state_OffsetInBytes, m_state_pStride );
+		//LN_SAFE_RELEASE( m_state_streamData );
+
+		//device->SetIndices( m_state_IndexData );
+		//LN_SAFE_RELEASE( m_state_IndexData );
+
+		device->SetTexture(0, m_state_pTexture);
+		LN_SAFE_RELEASE(m_state_pTexture);
+
+		device->SetFVF(m_state_FVF);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -363,8 +363,13 @@ void DX9Renderer::OnUpdateDepthStencilState(const DepthStencilState& newState, c
 //------------------------------------------------------------------------------
 void DX9Renderer::OnUpdatePrimitiveData(IVertexDeclaration* decls, const List<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer)
 {
-	LN_CHECK_STATE(m_currentVertexDeclaration != nullptr);
 	DX9VertexDeclaration* dx9Decls = static_cast<DX9VertexDeclaration*>(decls);
+
+	// VertexDeclaration
+	if (dx9Decls != nullptr)
+		LN_COMCALL(m_dxDevice->SetVertexDeclaration(dx9Decls->GetDxVertexDeclaration()))
+	else
+		LN_COMCALL(m_dxDevice->SetVertexDeclaration(NULL));
 
 	// VertexBuffer
 	for (int i = 0; i < vertexBuufers.GetCount(); ++i)
@@ -372,12 +377,10 @@ void DX9Renderer::OnUpdatePrimitiveData(IVertexDeclaration* decls, const List<Re
 		DX9VertexBuffer* vb = static_cast<DX9VertexBuffer*>(vertexBuufers[i].Get());
 		if (vb != nullptr)
 		{
-			LN_COMCALL(m_dxDevice->SetVertexDeclaration(dx9Decls->GetDxVertexDeclaration()));
 			LN_COMCALL(m_dxDevice->SetStreamSource(i, vb->GetDxVertexBuffer(), 0, dx9Decls->GetVertexStride(i)));
 		}
 		else
 		{
-			LN_COMCALL(m_dxDevice->SetVertexDeclaration(NULL));
 			LN_COMCALL(m_dxDevice->SetStreamSource(i, NULL, 0, 0));
 		}
 	}

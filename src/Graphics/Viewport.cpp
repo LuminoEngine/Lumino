@@ -85,6 +85,7 @@
 #include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Graphics/Viewport.h>
 #include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Scene/Camera.h>			// for make proj matrix
 #include <Lumino/UI/UIFrameWindow.h>
 
 LN_NAMESPACE_BEGIN
@@ -206,6 +207,16 @@ void Viewport::Initialize(detail::GraphicsManager* manager, RenderTarget* render
 {
 	m_manager = manager;
 	m_renderTarget = renderTarget;
+
+	m_renderer = RefPtr<DrawList>::MakeRef();
+	m_renderer->Initialize(manager);
+
+	m_internalRenderer = RefPtr<detail::InternalRenderer>::MakeRef();
+	m_internalRenderer->Initialize(manager);
+
+	m_pass = RefPtr<detail::RenderingPass2>::MakeRef();
+	m_pass->Initialize(manager);
+
 	TryRemakeLayerTargets();
 }
 
@@ -248,15 +259,33 @@ void Viewport::Render()
 //------------------------------------------------------------------------------
 void Viewport::EndFrameRender()
 {
+	// 全てのレイヤーの描画リストを実行し m_primaryLayerTarget へ書き込む
 	for (ViewportLayer* layer : *m_viewportLayerList)
 	{
 		layer->OnEndFrameRender(m_primaryLayerTarget, m_depthBuffer);
 	}
 
-	RenderingContext* context = m_manager->GetRenderingContext();
-	Matrix m;
-	MakeViewBoxTransform(m_renderTarget->GetSize(), m_primaryLayerTarget->GetSize(), &m);
-	context->Blt(m_primaryLayerTarget, m_renderTarget, m);
+	Matrix viewBoxTransform;
+	MakeViewBoxTransform(m_renderTarget->GetSize(), m_primaryLayerTarget->GetSize(), &viewBoxTransform);
+
+	m_renderer->BeginMakeElements();
+	m_renderer->Blit(m_primaryLayerTarget, viewBoxTransform);
+
+	const SizeI& size = GetSize();
+	detail::CameraInfo cameraInfo;
+	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
+	cameraInfo.viewPixelSize.Set(size.width, size.height);
+	cameraInfo.viewMatrix = Matrix::Identity;
+	Camera::Perspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1, &cameraInfo.projMatrix);
+	cameraInfo.viewFrustum = ViewFrustum(cameraInfo.projMatrix);
+
+	m_internalRenderer->Render(
+		m_renderer->GetDrawElementList(),
+		cameraInfo,
+		m_renderTarget,
+		m_depthBuffer,		// TODO: バックバッファサイズ
+		m_pass);
+	m_renderer->EndFrame();
 }
 
 //------------------------------------------------------------------------------

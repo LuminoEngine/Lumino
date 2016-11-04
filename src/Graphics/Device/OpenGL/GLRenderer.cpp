@@ -86,18 +86,6 @@ void GLRenderer::OnResetDevice()
 }
 
 //------------------------------------------------------------------------------
-void GLRenderer::EnterRenderState()
-{
-
-}
-
-//------------------------------------------------------------------------------
-void GLRenderer::LeaveRenderState()
-{
-
-}
-
-//------------------------------------------------------------------------------
 void GLRenderer::Begin()
 {
 
@@ -149,6 +137,18 @@ void GLRenderer::SetViewport(const Rect& rect)
 	const SizeI& scr = m_currentRenderTargets[0]->GetSize();
 	glViewport(rect.x, scr.height - (rect.y + rect.height), rect.width, rect.height);
 	//LN_THROW(0, NotImplementedException);
+}
+
+//------------------------------------------------------------------------------
+void GLRenderer::OnEnterRenderState()
+{
+
+}
+
+//------------------------------------------------------------------------------
+void GLRenderer::OnLeaveRenderState()
+{
+
 }
 
 //------------------------------------------------------------------------------

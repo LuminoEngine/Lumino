@@ -716,7 +716,7 @@ void DrawList::Initialize(detail::GraphicsManager* manager)
 {
 	LN_CHECK_ARG(manager != nullptr);
 	m_manager = manager;
-	Clear();
+	m_state.Reset();
 }
 
 //------------------------------------------------------------------------------
@@ -744,7 +744,7 @@ void DrawList::SetFont(RawFont* font)
 }
 
 //------------------------------------------------------------------------------
-void DrawList::Clear()
+void DrawList::BeginMakeElements()
 {
 	m_drawElementList.ClearCommands();
 	m_state.Reset();
@@ -861,6 +861,12 @@ void DrawList::DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* materi
 void DrawList::Blit(Texture* source)
 {
 	BlitInternal(source, nullptr, Matrix::Identity, nullptr);
+}
+
+//------------------------------------------------------------------------------
+void DrawList::Blit(Texture* source, const Matrix& transform)
+{
+	BlitInternal(source, nullptr, transform, nullptr);
 }
 
 //------------------------------------------------------------------------------

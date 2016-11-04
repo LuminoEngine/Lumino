@@ -32,8 +32,6 @@ public:
 	//void TryEndScene();
 
 public:
-	virtual void EnterRenderState();
-	virtual void LeaveRenderState();
 	virtual void Begin();
 	virtual void End();
 	virtual void SetRenderTarget(int index, ITexture* texture);
@@ -45,6 +43,8 @@ public:
 
 private:
 	void RestoreStatus();
+	virtual void OnEnterRenderState() override;
+	virtual void OnLeaveRenderState() override;
 	virtual	void OnUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset) override;
 	virtual	void OnUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset) override;
 	virtual void OnUpdatePrimitiveData(IVertexDeclaration* decls, const List<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer) override;

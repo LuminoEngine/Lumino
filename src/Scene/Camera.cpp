@@ -69,7 +69,7 @@ void Camera::Initialize(SceneGraph* owner, CameraProjection proj)
 }
 
 /// ピクセル単位の2D描画に使う射影行列の作成
-static void Perspective2DLH(float width, float height, float nearClip, float farClip, Matrix* outMatrix)
+void Camera::Perspective2DLH(float width, float height, float nearClip, float farClip, Matrix* outMatrix)
 {
 	outMatrix->Set(
 		2.0f / width, 0.0f, 0.0f, 0.0f,
@@ -258,7 +258,7 @@ void CameraViewportLayer::Render(RenderingContext* context)
 {
 	// 描画リストのクリアは、SceneGraph の描画前でなければならない。
 	// 出来上がった描画リストを、複数のレイヤーが描画することを想定する。
-	m_renderer->Clear();
+	m_renderer->BeginMakeElements();
 
 	m_hostingCamera->GetOwnerSceneGraph()->Render(context, m_hostingCamera);
 }

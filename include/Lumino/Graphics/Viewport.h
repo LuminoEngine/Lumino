@@ -6,6 +6,7 @@
 #include "ImageEffect/ImageEffect.h"
 
 LN_NAMESPACE_BEGIN
+namespace detail { class InternalRenderer; }
 namespace detail { class RenderingPass2; }
 class DrawList;
 
@@ -119,6 +120,10 @@ private:
 	RenderTarget*				m_primaryLayerTarget;
 	RenderTarget*				m_secondaryLayerTarget;
 	RefPtr<DepthBuffer>			m_depthBuffer;
+
+	RefPtr<DrawList>					m_renderer;			// for PostProcess and Blit to backbuffer.
+	RefPtr<detail::InternalRenderer>	m_internalRenderer;	// for PostProcess and Blit to backbuffer.
+	RefPtr<detail::RenderingPass2>		m_pass;				// for PostProcess and Blit to backbuffer.
 };
 
 ///**

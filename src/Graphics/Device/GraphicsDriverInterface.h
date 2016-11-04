@@ -190,8 +190,9 @@ public:
 
 public:
 
-	virtual void EnterRenderState() = 0;
-	virtual void LeaveRenderState() = 0;
+
+	void EnterRenderState();
+	void LeaveRenderState();
 
 	virtual void Begin() = 0;
 	virtual void End() = 0;
@@ -244,6 +245,8 @@ protected:
 	IRenderer();
 	virtual ~IRenderer();
 
+	virtual void OnEnterRenderState() = 0;
+	virtual void OnLeaveRenderState() = 0;
 	virtual	void OnUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset) = 0;
 	virtual	void OnUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset) = 0;
 	virtual void OnUpdatePrimitiveData(IVertexDeclaration* decls, const List<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer) = 0;
@@ -261,6 +264,7 @@ protected:	// TODO: private
 		Modified_VertexDeclaration	= 0x0001,
 		Modified_VertexBuffer		= 0x0002,
 		Modified_IndexBuffer		= 0x0004,
+		Modified_All				= 0xFFFFFFFF,
 	};
 
 	EngineDiagCore*					m_diag;

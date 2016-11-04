@@ -70,6 +70,7 @@ public:
 	Vector3 ViewportToWorldPoint(const Vector3& position) const;
 
 
+	static void Perspective2DLH(float width, float height, float nearClip, float farClip, Matrix* outMatrix);
 
 public:	// internal
 
