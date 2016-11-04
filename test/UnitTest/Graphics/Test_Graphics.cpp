@@ -225,3 +225,19 @@ TEST_F(Test_Graphics_Rendering, DrawText_)
 	}
 }
 
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_Rendering, DrawSprite)
+{
+	auto tex = Texture2D::Create(LN_LOCALFILE("../Scene/TestData/Sprite1.png"));
+	if (Engine::BeginRendering())
+	{
+		Engine::Render();
+
+		auto* r = Engine::GetDefault2DLayer()->GetRenderer();
+		r->DrawSprite(Vector3(0, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		Engine::EndRendering();
+	}
+
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSprite1.png"), 99, true));
+}
+

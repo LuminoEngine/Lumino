@@ -34,7 +34,7 @@ public:
 		Texture* texture,
 		const RectF& srcRect,
 		const Color& color,
-		AxisDirection front = AxisDirection_RZ);
+		SpriteBaseDirection baseDirection = SpriteBaseDirection::ZMinus);
 	
 LN_INTERNAL_ACCESS:
 	RenderingPass*				Pass;

@@ -148,7 +148,7 @@ void SpriteRenderer::DrawRequest3D(
 	Texture* texture,
 	const RectF& srcRect,
 	const Color* colorTable,
-	AxisDirection front)
+	SpriteBaseDirection baseDirection)
 {
 	SpriteColorTable ct = { { Color::White, Color::White, Color::White, Color::White } };
 	if (colorTable != nullptr)
@@ -169,9 +169,9 @@ void SpriteRenderer::DrawRequest3D(
 		RefPtr<Driver::ITexture>, deviceTexture,
 		const RectF, srcRect,
 		SpriteColorTable, ct,
-		AxisDirection, front,
+		SpriteBaseDirection, baseDirection,
 		{
-			m_internal->DrawRequest3D(position, size, anchorRatio, deviceTexture, srcRect, ct, front);
+			m_internal->DrawRequest3D(position, size, anchorRatio, deviceTexture, srcRect, ct, baseDirection);
 		});
 }
 
@@ -183,7 +183,7 @@ void SpriteRenderer::DrawRequest3D(
 	Texture* texture,
 	const RectF& srcRect,
 	const Color& color,
-	AxisDirection front)
+	SpriteBaseDirection baseDirection)
 {
 	SpriteColorTable ct = { { color, color, color, color } };
 	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->GetDeviceObject() : nullptr;
@@ -196,9 +196,9 @@ void SpriteRenderer::DrawRequest3D(
 		RefPtr<Driver::ITexture>, deviceTexture,
 		const RectF, srcRect,
 		SpriteColorTable, ct,
-		AxisDirection, front,
+		SpriteBaseDirection, baseDirection,
 		{
-			m_internal->DrawRequest3D(position, size, anchorRatio, deviceTexture, srcRect, ct, front);
+			m_internal->DrawRequest3D(position, size, anchorRatio, deviceTexture, srcRect, ct, baseDirection);
 		});
 }
 
@@ -214,6 +214,21 @@ void SpriteRenderer::Flush()
 		});
 }
 
+//------------------------------------------------------------------------------
+void SpriteRenderer::MakeBoundingSphere(const Vector2& size, SpriteBaseDirection baseDir, detail::Sphere* sphere)
+{
+	Vector2 half = 0.5f * size;
+	sphere->radius = half.GetLength();
+
+	if (baseDir == SpriteBaseDirection::Basic2D)
+	{
+		sphere->center.Set(half.x, half.y, 0);
+	}
+	else
+	{
+		sphere->center = Vector3::Zero;
+	}
+}
 
 //==============================================================================
 // SpriteRendererImpl
@@ -411,15 +426,7 @@ void SpriteRendererImpl::DrawRequest2D(
 	const RectF& srcRect,
 	const SpriteColorTable& colorTable)
 {
-	DrawRequest3DInternal(
-		position,
-		size,
-		anchorRatio,
-		texture,
-		srcRect,
-		colorTable,
-		AxisDirection_RZ,
-		false);
+	DrawRequestInternal(position, size, anchorRatio, texture, srcRect, colorTable, SpriteBaseDirection::Basic2D);
 }
 
 //------------------------------------------------------------------------------
@@ -430,21 +437,20 @@ void SpriteRendererImpl::DrawRequest3D(
 	Driver::ITexture* texture,
 	const RectF& srcRect,
 	const SpriteColorTable& colorTable,
-	AxisDirection front)
+	SpriteBaseDirection baseDir)
 {
-	DrawRequest3DInternal(position, size, anchorRatio, texture, srcRect, colorTable, front, true);
+	DrawRequestInternal(position, size, anchorRatio, texture, srcRect, colorTable, baseDir);
 }
 
 //------------------------------------------------------------------------------
-void SpriteRendererImpl::DrawRequest3DInternal(
+void SpriteRendererImpl::DrawRequestInternal(
     const Vector3& position,
     const Vector2& size,
 	const Vector2& anchorRatio,
 	Driver::ITexture* texture,
     const RectF& srcRect,
 	const SpriteColorTable& colorTable,
-	AxisDirection front,
-	bool is3D)
+	SpriteBaseDirection baseDir)
 {
 	LN_THROW(m_spriteRequestListUsedCount < m_maxSprites, InvalidOperationException);
 
@@ -453,7 +459,7 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 	Vector2 center(size.x * anchorRatio.x, size.y * anchorRatio.y);
 
 	// 3D の場合の頂点座標
-	if (is3D)
+	if (baseDir != SpriteBaseDirection::Basic2D)
 	{
 		//Vector3 origin(-center);
 		Vector2 harf_size(size * 0.5f);
@@ -470,44 +476,44 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 
 #define LN_WRITE_V3( x_, y_, z_ ) x_, y_, z_
 
-		switch (front)
+		switch (baseDir)
 		{
-		case AxisDirection_X:
-			sprite.Vertices[0].Position.Set(LN_WRITE_V3(0, t, l));     // 左上
-			sprite.Vertices[1].Position.Set(LN_WRITE_V3(0, b, l));     // 左下
-			sprite.Vertices[2].Position.Set(LN_WRITE_V3(0, t, r));     // 右上
-			sprite.Vertices[3].Position.Set(LN_WRITE_V3(0, b, r));     // 右下
-			break;
-		case AxisDirection_Y:
-			sprite.Vertices[0].Position.Set(LN_WRITE_V3(l, 0, t));
-			sprite.Vertices[1].Position.Set(LN_WRITE_V3(l, 0, b));
-			sprite.Vertices[2].Position.Set(LN_WRITE_V3(r, 0, t));
-			sprite.Vertices[3].Position.Set(LN_WRITE_V3(r, 0, b));
-			break;
-		case AxisDirection_Z:
-			sprite.Vertices[0].Position.Set(LN_WRITE_V3(r, t, 0));
-			sprite.Vertices[1].Position.Set(LN_WRITE_V3(r, b, 0));
-			sprite.Vertices[2].Position.Set(LN_WRITE_V3(l, t, 0));
-			sprite.Vertices[3].Position.Set(LN_WRITE_V3(l, b, 0));
-			break;
-		case AxisDirection_RX:
-			sprite.Vertices[0].Position.Set(LN_WRITE_V3(0, t, r));
-			sprite.Vertices[1].Position.Set(LN_WRITE_V3(0, b, r));
-			sprite.Vertices[2].Position.Set(LN_WRITE_V3(0, t, l));
-			sprite.Vertices[3].Position.Set(LN_WRITE_V3(0, b, l));
-			break;
-		case AxisDirection_RY:
-			sprite.Vertices[0].Position.Set(LN_WRITE_V3(r, 0, t));
-			sprite.Vertices[1].Position.Set(LN_WRITE_V3(r, 0, b));
-			sprite.Vertices[2].Position.Set(LN_WRITE_V3(l, 0, t));
-			sprite.Vertices[3].Position.Set(LN_WRITE_V3(l, 0, b));
-			break;
-		case AxisDirection_RZ:
-			sprite.Vertices[0].Position.Set(LN_WRITE_V3(l, t, 0));
-			sprite.Vertices[1].Position.Set(LN_WRITE_V3(l, b, 0));
-			sprite.Vertices[2].Position.Set(LN_WRITE_V3(r, t, 0));
-			sprite.Vertices[3].Position.Set(LN_WRITE_V3(r, b, 0));
-			break;
+			case SpriteBaseDirection::XPlus:
+				sprite.Vertices[0].Position.Set(LN_WRITE_V3(0, t, l));     // 左上
+				sprite.Vertices[1].Position.Set(LN_WRITE_V3(0, b, l));     // 左下
+				sprite.Vertices[2].Position.Set(LN_WRITE_V3(0, t, r));     // 右上
+				sprite.Vertices[3].Position.Set(LN_WRITE_V3(0, b, r));     // 右下
+				break;
+			case SpriteBaseDirection::YPlus:
+				sprite.Vertices[0].Position.Set(LN_WRITE_V3(l, 0, t));
+				sprite.Vertices[1].Position.Set(LN_WRITE_V3(l, 0, b));
+				sprite.Vertices[2].Position.Set(LN_WRITE_V3(r, 0, t));
+				sprite.Vertices[3].Position.Set(LN_WRITE_V3(r, 0, b));
+				break;
+			case SpriteBaseDirection::ZPlus:
+				sprite.Vertices[0].Position.Set(LN_WRITE_V3(r, t, 0));
+				sprite.Vertices[1].Position.Set(LN_WRITE_V3(r, b, 0));
+				sprite.Vertices[2].Position.Set(LN_WRITE_V3(l, t, 0));
+				sprite.Vertices[3].Position.Set(LN_WRITE_V3(l, b, 0));
+				break;
+			case SpriteBaseDirection::XMinus:
+				sprite.Vertices[0].Position.Set(LN_WRITE_V3(0, t, r));
+				sprite.Vertices[1].Position.Set(LN_WRITE_V3(0, b, r));
+				sprite.Vertices[2].Position.Set(LN_WRITE_V3(0, t, l));
+				sprite.Vertices[3].Position.Set(LN_WRITE_V3(0, b, l));
+				break;
+			case SpriteBaseDirection::YMinus:
+				sprite.Vertices[0].Position.Set(LN_WRITE_V3(r, 0, t));
+				sprite.Vertices[1].Position.Set(LN_WRITE_V3(r, 0, b));
+				sprite.Vertices[2].Position.Set(LN_WRITE_V3(l, 0, t));
+				sprite.Vertices[3].Position.Set(LN_WRITE_V3(l, 0, b));
+				break;
+			case SpriteBaseDirection::ZMinus:
+				sprite.Vertices[0].Position.Set(LN_WRITE_V3(l, t, 0));
+				sprite.Vertices[1].Position.Set(LN_WRITE_V3(l, b, 0));
+				sprite.Vertices[2].Position.Set(LN_WRITE_V3(r, t, 0));
+				sprite.Vertices[3].Position.Set(LN_WRITE_V3(r, b, 0));
+				break;
 		}
 #undef LN_WRITE_V3
 	}

@@ -674,23 +674,6 @@ public:
 	}
 };
 
-//==============================================================================
-class DrawSpriteElement : public DrawElement
-{
-public:
-	Vector3 position;
-	Vector2 size;
-	Vector2 anchorRatio;
-	RefPtr<Texture> texture;
-	RectF srcRect;
-	Color color;
-
-	virtual void DrawSubset(InternalContext* context/*, int subsetIndex*/) override
-	{
-		context->BeginSpriteRenderer()->DrawRequest2D(position, size, anchorRatio, texture, srcRect, color);
-	}
-};
-
 } // namespace detail 
 
 //==============================================================================
@@ -836,22 +819,6 @@ void DrawList::DrawSquarePrimitive(
 }
 
 //------------------------------------------------------------------------------
-void DrawList::DrawSprite2D(
-	const SizeF& size,
-	Texture* texture,
-	const RectF& srcRect,
-	const Color& color)
-{
-	auto* ptr = ResolveDrawElement<detail::DrawSpriteElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_spriteRenderer);
-	//ptr->position;
-	ptr->size.Set(size.width, size.height);
-	//ptr->anchorRatio;
-	ptr->texture = texture;
-	ptr->srcRect = srcRect;
-	ptr->color = color;
-}
-
-//------------------------------------------------------------------------------
 void DrawList::DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material)
 {
 	DrawMeshSubsetInternal(mesh, subsetIndex, material);
@@ -902,6 +869,42 @@ void DrawList::DrawText_(const StringRef& text, const RectF& rect, StringFormatF
 	e->rect = rect;
 	e->flags = flags;
 	//e->boundingSphere = ;	// TODO
+}
+
+//------------------------------------------------------------------------------
+void DrawList::DrawSprite(
+	const Vector3& position,
+	const SizeF& size,
+	Texture* texture,
+	const RectF& srcRect,
+	const Color& color,
+	SpriteBaseDirection baseDirection)
+{
+	class DrawElement_DrawSprite : public detail::DrawElement
+	{
+	public:
+		Vector3 position;
+		Vector2 size;
+		Vector2 anchorRatio;
+		RefPtr<Texture> texture;
+		RectF srcRect;
+		Color color;
+		SpriteBaseDirection baseDirection;
+
+		virtual void DrawSubset(detail::InternalContext* context) override
+		{
+			context->BeginSpriteRenderer()->DrawRequest2D(position, size, anchorRatio, texture, srcRect, color);
+		}
+	};
+
+	auto* ptr = ResolveDrawElement<DrawElement_DrawSprite>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_spriteRenderer);
+	ptr->position = position;
+	ptr->size.Set(size.width, size.height);
+	ptr->texture = texture;
+	ptr->srcRect = srcRect;
+	ptr->color = color;
+	ptr->baseDirection = baseDirection;
+	detail::SpriteRenderer::MakeBoundingSphere(ptr->size, baseDirection, &ptr->boundingSphere);
 }
 
 //------------------------------------------------------------------------------

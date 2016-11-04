@@ -55,7 +55,7 @@ public:
 		Driver::ITexture* texture,
 		const RectF& srcRect,
 		const SpriteColorTable& colorTable,    // 4 頂点分。NULL の場合は白
-		AxisDirection front);
+		SpriteBaseDirection baseDir);
 
 	/// バッチ処理されているスプライトの描画
 	void Flush(SpriteSortMode sortFlags);
@@ -63,20 +63,16 @@ public:
 	/// 描画せずにバッチをすべてクリアする
 	void Clear();
 
-	//GraphicsManager* GetManager() const { return m_manager; }
 
 private:
-
-	/// 描画リクエスト
-	void DrawRequest3DInternal(
+	void DrawRequestInternal(
 		const Vector3& position,
 		const Vector2& size,
 		const Vector2& anchorRatio,
 		Driver::ITexture* texture,
 		const RectF& srcRect,
 		const SpriteColorTable& colorTable,
-		AxisDirection front,
-		bool is3D);
+		SpriteBaseDirection baseDir);
 
 	/// バッチ処理用スプライト頂点
 	struct BatchSpriteVertex
@@ -258,7 +254,7 @@ public:
 		Texture* texture,
 		const RectF& srcRect,
 		const Color* colorTable,
-		AxisDirection front);
+		SpriteBaseDirection baseDirection);
 
 	void DrawRequest3D(
 		const Vector3& position,
@@ -267,7 +263,7 @@ public:
 		Texture* texture,
 		const RectF& srcRect,
 		const Color& color,
-		AxisDirection front);
+		SpriteBaseDirection baseDirection);
 
 	virtual bool IsStandaloneShader() const { return true; }
 	virtual void Flush() override;
@@ -275,6 +271,8 @@ public:
 	virtual void OnDeactivated() override { Flush(); }
 
 	GraphicsManager* GetManager() const { return m_manager; }
+
+	static void MakeBoundingSphere(const Vector2& size, SpriteBaseDirection baseDir, detail::Sphere* sphere);
 
 LN_INTERNAL_ACCESS:
 	SpriteRenderer(GraphicsManager* manager, int maxSpriteCount);

@@ -194,7 +194,7 @@ namespace ss
 				(ln::Texture2D*)state.texture.handle,
 				ln::RectF(state.rect.origin.x, state.rect.origin.y, state.rect.size.width, state.rect.size.height),
 				ln::Color::White,
-				ln::AxisDirection_RZ);
+				ln::SpriteBaseDirection::ZMinus);
 		}
 
 

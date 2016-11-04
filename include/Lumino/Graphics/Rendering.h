@@ -103,6 +103,7 @@ public:
 	virtual void DrawSubset(InternalContext* context/*, int subsetIndex*/) = 0;
 	const detail::Sphere& GetBoundingSphere() const { return boundingSphere; }
 
+	// (ÉçÅ[ÉJÉãç¿ïWån)
 	void MakeBoundingSphere(const Vector3& minPos, const Vector3& maxPos);
 };
 
@@ -350,12 +351,6 @@ public:
 		const Vector3& position4, const Vector2& uv4, const Color& color4/*,
 		ShaderPass* shaderPass*/);
 
-	void DrawSprite2D(
-		const SizeF& size,
-		Texture* texture,
-		const RectF& srcRect,
-		const Color& color);
-
 	void DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material);
 
 	void Blit(Texture* source);
@@ -365,6 +360,14 @@ public:
 
 
 	void DrawText_(const StringRef& text, const RectF& rect, StringFormatFlags flags);
+
+	void DrawSprite(
+		const Vector3& position,
+		const SizeF& size,
+		Texture* texture,
+		const RectF& srcRect,
+		const Color& color,
+		SpriteBaseDirection baseDirection);
 
 LN_INTERNAL_ACCESS:
 	DrawList();

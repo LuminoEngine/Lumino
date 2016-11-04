@@ -254,17 +254,16 @@ LN_ENUM_REFLECTION(GraphicsRenderingType, Immediate, Threaded);
 LN_ENUM_DECLARE(GraphicsRenderingType)
 
 
-/// 3D 空間での基準方向を表す値
-enum AxisDirection
+/** 3D 空間での基準方向を表す値 */
+enum class SpriteBaseDirection
 {
-	AxisDirection_X = 0,   ///< X+ 方向 (右向き)
-	AxisDirection_Y,       ///< Y+ 方向 (上向き)
-	AxisDirection_Z,       ///< Z+ 方向 (奥向き)
-	AxisDirection_RX,      ///< X- 方向 (左向き)
-	AxisDirection_RY,      ///< Y- 方向 (下向き)
-	AxisDirection_RZ,      ///< Z- 方向 (手前向き)
-
-	AxisDirection_MAX,
+	XPlus,			/**< X+ 方向 (右向き) */
+	YPlus,			/**< Y+ 方向 (上向き) */
+	ZPlus,			/**< Z+ 方向 (奥向き) */
+	XMinus,			/**< X- 方向 (左向き) */
+	YMinus,			/**< Y- 方向 (下向き) */
+	ZMinus,			/**< Z- 方向 (手前向き) */
+	Basic2D,		/**< Z+ 方向、左上原点 */
 };
 
 /// オブジェクトのソートの基準

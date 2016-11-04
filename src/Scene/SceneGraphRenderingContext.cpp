@@ -66,11 +66,11 @@ void SceneGraphRenderingContext::DrawSprite3D(
 	Texture* texture,
 	const RectF& srcRect,
 	const Color& color,
-	AxisDirection front)
+	SpriteBaseDirection baseDirection)
 {
 	NorityStartDrawing(m_spriteRenderer);
 	m_spriteRenderer->SetTransform(transform);
-	m_spriteRenderer->DrawRequest3D(Vector3::Zero, Vector2(size.width, size.height), anchorRatio, texture, srcRect, color, front);
+	m_spriteRenderer->DrawRequest3D(Vector3::Zero, Vector2(size.width, size.height), anchorRatio, texture, srcRect, color, baseDirection);
 }
 
 //------------------------------------------------------------------------------
