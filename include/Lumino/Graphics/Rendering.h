@@ -139,7 +139,6 @@ public:
 	void SetFont(RawFont* font);
 	RawFont* GetFont() const;
 
-	void SetBaseAlphaBlendEnabled(bool enabled);
 	void SetBaseBlendMode(BlendMode mode);
 
 
@@ -151,7 +150,6 @@ public:
 	intptr_t				m_rendererId;
 
 	// render state		TODO: マテリアルに属するステートは必要ない
-	bool					m_baseAlphaBlendEnabled;
 	BlendMode				m_baseBlendMode;
 	CullingMode				m_cullingMode;
 	bool					m_alphaTestEnabled;
@@ -339,7 +337,6 @@ public:
 	/** @name Render status */
 	/** @{ */
 
-	void SetAlphaBlendEnabled(bool enabled);
 	void SetBlendMode(BlendMode mode);
 
 	/** @} */

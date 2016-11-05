@@ -340,64 +340,39 @@ void ContextInterface::SetBasicContextState(const BasicContextState& state)
 }
 
 //------------------------------------------------------------------------------
-void ContextInterface::MakeBlendMode(BlendMode mode, bool alphaEnabled, RenderState* state)
+void ContextInterface::MakeBlendMode(BlendMode mode, RenderState* state)
 {
 	switch (mode)
 	{
 		// もっといろいろ http://d.hatena.ne.jp/Ko-Ta/20070618/p1
 		case BlendMode::Normal:
-			if (alphaEnabled)
-			{
-				//state->alphaBlendEnabled = true;
-				state->blendOp = BlendOp::Add;
-				state->sourceBlend = BlendFactor::SourceAlpha;
-				state->destinationBlend = BlendFactor::InverseSourceAlpha;
-			}
-			else
-			{
-				//state->alphaBlendEnabled = false;
-				state->blendOp = BlendOp::Add;
-				state->sourceBlend = BlendFactor::One;
-				state->destinationBlend = BlendFactor::Zero;
-			}
+			state->alphaBlendEnabled = false;
+			state->blendOp = BlendOp::Add;
+			state->sourceBlend = BlendFactor::One;
+			state->destinationBlend = BlendFactor::Zero;
+			break;
+		case BlendMode::Alpha:
+			state->alphaBlendEnabled = true;
+			state->blendOp = BlendOp::Add;
+			state->sourceBlend = BlendFactor::SourceAlpha;
+			state->destinationBlend = BlendFactor::InverseSourceAlpha;
 			break;
 		case BlendMode::Add:
-			if (alphaEnabled)
-			{
-				//state->alphaBlendEnabled = true;
-				state->blendOp = BlendOp::Add;
-				state->sourceBlend = BlendFactor::SourceAlpha;
-				state->destinationBlend = BlendFactor::One;
-			}
-			else
-			{
-				//state->alphaBlendEnabled = true;
-				state->blendOp = BlendOp::Add;
-				state->sourceBlend = BlendFactor::SourceAlpha;
-				state->destinationBlend = BlendFactor::One;
-			}
+			state->alphaBlendEnabled = true;
+			state->blendOp = BlendOp::Add;
+			state->sourceBlend = BlendFactor::SourceAlpha;
+			state->destinationBlend = BlendFactor::One;
 			break;
 		case BlendMode::Subtract:
-			if (alphaEnabled)
-			{
-				//state->alphaBlendEnabled = true;
-				state->blendOp = BlendOp::ReverseSubtract;
-				state->sourceBlend = BlendFactor::SourceAlpha;
-				state->destinationBlend = BlendFactor::One;
-			}
-			else
-			{
-				//state->alphaBlendEnabled = true;
-				state->blendOp = BlendOp::ReverseSubtract;
-				state->sourceBlend = BlendFactor::One;
-				state->destinationBlend = BlendFactor::One;
-			}
+			state->alphaBlendEnabled = true;
+			state->blendOp = BlendOp::ReverseSubtract;
+			state->sourceBlend = BlendFactor::SourceAlpha;
+			state->destinationBlend = BlendFactor::One;
 			break;
 		case BlendMode::Multiply:
-			//state->alphaBlendEnabled = true;
+			state->alphaBlendEnabled = true;
 			state->blendOp = BlendOp::Add;
-			// AlphaDisable (Alpha を別指定できない今の仕様では Alpha を考慮できない)
-			state->sourceBlend = BlendFactor::Zero;
+			state->sourceBlend = BlendFactor::Zero;	// AlphaDisable (Alpha を別指定できない今の仕様では Alpha を考慮できない)
 			state->destinationBlend = BlendFactor::SourceColor;
 			break;
 		//case BlendMode_Screen:

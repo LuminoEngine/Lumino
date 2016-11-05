@@ -296,16 +296,6 @@ RawFont* DrawElementBatch::GetFont() const
 }
 
 //------------------------------------------------------------------------------
-void DrawElementBatch::SetBaseAlphaBlendEnabled(bool enabled)
-{
-	if (m_baseAlphaBlendEnabled != enabled)
-	{
-		m_baseAlphaBlendEnabled = enabled;
-		m_hashDirty = true;
-	}
-}
-
-//------------------------------------------------------------------------------
 void DrawElementBatch::SetBaseBlendMode(BlendMode mode)
 {
 	if (m_baseBlendMode != mode)
@@ -353,7 +343,6 @@ bool DrawElementBatch::Equal(const DrawElementBatch& obj) const
 //------------------------------------------------------------------------------
 void DrawElementBatch::Reset()
 {
-	m_baseAlphaBlendEnabled = RenderState::Default.alphaBlendEnabled;
 	m_cullingMode = RenderState::Default.Culling;
 	m_alphaTestEnabled = RenderState::Default.AlphaTest;
 	m_baseBlendMode = BlendMode::Normal;
@@ -383,13 +372,12 @@ Shader* DrawElementBatch::ApplyStatus(InternalContext* context, RenderTarget* de
 	{
 		// TODO: Base
 		RenderState state;
-		state.alphaBlendEnabled = m_baseAlphaBlendEnabled;
+		ContextInterface::MakeBlendMode(m_baseBlendMode, &state);
 		state.Culling = m_cullingMode;
 		state.AlphaTest = m_alphaTestEnabled;
-		ContextInterface::MakeBlendMode(m_baseBlendMode, m_baseAlphaBlendEnabled, &state);
 		stateManager->SetRenderState(state);
 
-		// スプライトバッチ化のため
+		// スプライトバッチ化のため (TODO: いらないかも。SpriteRenderer では State でそーとしなくなった)
 		context->GetSpriteRenderer()->SetState(state);
 	}
 	// DepthStencilState
@@ -745,12 +733,6 @@ void DrawList::SetBrush(Brush* brush)
 void DrawList::SetFont(RawFont* font)
 {
 	m_state.state.SetFont(font);
-}
-
-//------------------------------------------------------------------------------
-void DrawList::SetAlphaBlendEnabled(bool enabled)
-{
-	m_state.state.SetBaseAlphaBlendEnabled(enabled);
 }
 
 //------------------------------------------------------------------------------

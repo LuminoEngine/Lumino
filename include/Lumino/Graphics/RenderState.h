@@ -73,9 +73,10 @@ LN_ENUM_DECLARE(StencilOp);
 enum class BlendMode
 {
 	Normal,			/**< 通常 */
-	Add,			/**< 加算 */
-	Subtract,		/**< 減算 */
-	Multiply,		/**< 乗算 */
+	Alpha,			/**< アルファブレンド */
+	Add,			/**< 加算合成 */
+	Subtract,		/**< 減算合成 */
+	Multiply,		/**< 乗算合成 */
 };
 
 /**
