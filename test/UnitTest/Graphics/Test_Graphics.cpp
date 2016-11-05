@@ -229,36 +229,85 @@ TEST_F(Test_Graphics_Rendering, DrawText_)
 TEST_F(Test_Graphics_Rendering, DrawSprite)
 {
 	auto tex = Texture2D::Create(LN_LOCALFILE("../Scene/TestData/Sprite1.png"));
-	if (Engine::BeginRendering())
+
+	// <Test>
 	{
-		Engine::Render();
+		if (Engine::BeginRendering())
+		{
+			Engine::Render();
 
-		auto* r = Engine::GetDefault2DLayer()->GetRenderer();
-		r->DrawSprite(Vector3(48, 0, 10), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);	// Žè‘O
-		r->DrawSprite(Vector3(0, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(32, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			auto* r = Engine::GetDefault2DLayer()->GetRenderer();
+			r->SetAlphaBlendEnabled(true);
+			r->SetBlendMode(BlendMode::Alpha);
 
-		r->DrawSprite(Vector3(0, 32, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color(1, 0, 0, 1), SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(32, 32, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color(0, 1, 0, 1), SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(64, 32, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color(0, 0, 1, 1), SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(96, 32, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color(1, 0, 0, 0.5), SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(128, 32, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color(1, 0, 0, 0), SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(48, 0, 10), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);	// Žè‘O
+			r->DrawSprite(Vector3(0, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(32, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 
-		r->DrawSprite(Vector3(0, 64, 0), SizeF(16, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(16, 64, 0), SizeF(32, 16), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(16, 80, 0), SizeF(16, 16), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(0, 32, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color(1, 0, 0, 1), SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(32, 32, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color(0, 1, 0, 1), SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(64, 32, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color(0, 0, 1, 1), SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(96, 32, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color(1, 0, 0, 0.5), SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(128, 32, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color(1, 0, 0, 0), SpriteBaseDirection::Basic2D);
 
-		r->DrawSprite(Vector3(64, 64, 0), SizeF(16, 16), tex, RectF(16, 0, 16, 32), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(80, 64, 0), SizeF(16, 16), tex, RectF(0, 16, 32, 16), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(64, 80, 0), SizeF(16, 16), tex, RectF(16, 16, 16, 16), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(80, 80, 0), SizeF(16, 16), tex, RectF(0, 0, 16, 16), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(0, 64, 0), SizeF(16, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(16, 64, 0), SizeF(32, 16), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(16, 80, 0), SizeF(16, 16), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 
-		r->DrawSprite(Vector3(96, 64, 0), SizeF(32, 32), tex, RectF(0, 0, 16, 32), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(128, 64, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 16), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(64, 64, 0), SizeF(16, 16), tex, RectF(16, 0, 16, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(80, 64, 0), SizeF(16, 16), tex, RectF(0, 16, 32, 16), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(64, 80, 0), SizeF(16, 16), tex, RectF(16, 16, 16, 16), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(80, 80, 0), SizeF(16, 16), tex, RectF(0, 0, 16, 16), Color::White, SpriteBaseDirection::Basic2D);
 
-		Engine::EndRendering();
+			r->DrawSprite(Vector3(96, 64, 0), SizeF(32, 32), tex, RectF(0, 0, 16, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(128, 64, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 16), Color::White, SpriteBaseDirection::Basic2D);
+
+			Engine::EndRendering();
+		}
+
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSprite1.png")));
 	}
 
-	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSprite1.png"), 99, true));
+	// <Test> Sprite ‚Ì BlendMode
+	{
+		if (Engine::BeginRendering())
+		{
+			Engine::Render();
+
+			auto* r = Engine::GetDefault2DLayer()->GetRenderer();
+
+			r->SetAlphaBlendEnabled(false);
+			r->SetBlendMode(BlendMode::Normal);
+			r->DrawSprite(Vector3(0, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->SetAlphaBlendEnabled(true);
+			r->SetBlendMode(BlendMode::Alpha);
+			r->DrawSprite(Vector3(16, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			
+			r->SetAlphaBlendEnabled(false);
+			r->SetBlendMode(BlendMode::Add);
+			r->DrawSprite(Vector3(32, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->SetAlphaBlendEnabled(true);
+			r->SetBlendMode(BlendMode::Add);
+			r->DrawSprite(Vector3(48, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+
+			r->SetAlphaBlendEnabled(false);
+			r->SetBlendMode(BlendMode::Subtract);
+			r->DrawSprite(Vector3(64, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->SetAlphaBlendEnabled(true);
+			r->SetBlendMode(BlendMode::Subtract);
+			r->DrawSprite(Vector3(80, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+
+			r->SetAlphaBlendEnabled(false);
+			r->SetBlendMode(BlendMode::MultiplyAlphaDisabled);
+			r->DrawSprite(Vector3(96, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->SetAlphaBlendEnabled(true);
+			r->SetBlendMode(BlendMode::MultiplyAlphaDisabled);
+			r->DrawSprite(Vector3(112, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+
+			Engine::EndRendering();
+		}
+
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSprite2.png"), 99, true));
+	}
 }
 

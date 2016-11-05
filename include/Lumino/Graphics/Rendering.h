@@ -112,6 +112,14 @@ class DrawElementBatch
 public:
 	static const int MaxMultiRenderTargets = 4;
 
+	struct BuiltinMaterialParameter
+	{
+		//bool		alphaBlendEnabled;
+		//BlendMode	blendMode;
+		Color		blendColor;
+		ToneF		tone;
+	};
+
 	//struct ShaderValuePair
 	//{
 	//	ShaderVariable*		variable;
@@ -131,6 +139,10 @@ public:
 	void SetFont(RawFont* font);
 	RawFont* GetFont() const;
 
+	void SetBaseAlphaBlendEnabled(bool enabled);
+	void SetBaseBlendMode(BlendMode mode);
+
+
 	bool Equal(const DrawElementBatch& obj) const;
 	void Reset();
 	Shader* ApplyStatus(InternalContext* context, RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer, Shader* defaultShader);
@@ -139,10 +151,12 @@ public:
 	intptr_t				m_rendererId;
 
 	// render state		TODO: マテリアルに属するステートは必要ない
-	bool					m_alphaBlendEnabled;
-	BlendMode				m_blendMode;
+	bool					m_baseAlphaBlendEnabled;
+	BlendMode				m_baseBlendMode;
 	CullingMode				m_cullingMode;
 	bool					m_alphaTestEnabled;
+
+	BuiltinMaterialParameter	m_builtinMaterialParameter;
 
 	// depth stencil
 	bool					m_depthTestEnabled;
@@ -317,6 +331,16 @@ public:
 
 	/** 現在設定されているシザー領域を取得します。*/
 	const Rect& GetViewport() const;
+
+	/** @} */
+
+
+	//--------------------------------------------------------------------------
+	/** @name Render status */
+	/** @{ */
+
+	void SetAlphaBlendEnabled(bool enabled);
+	void SetBlendMode(BlendMode mode);
 
 	/** @} */
 

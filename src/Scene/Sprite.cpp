@@ -265,7 +265,6 @@ void Sprite::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 	}
 }
 
-
 //==============================================================================
 // Sprite2D
 //==============================================================================
@@ -350,6 +349,15 @@ void Sprite2D::OnRender(SceneGraphRenderingContext* dc)
 //void Sprite2D::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 //{
 //}
+
+//------------------------------------------------------------------------------
+void Sprite2D::OnRender2(DrawList* renderer)
+{
+	detail::MaterialInstance* mat = m_materialList->GetMaterialInstance(0);
+
+	renderer->SetTransform(m_combinedGlobalMatrix);
+	renderer->DrawSprite(Vector3::Zero, m_renderSize, GetTexture(), m_renderSourceRect, mat->m_colorScale, SpriteBaseDirection::Basic2D);
+}
 
 
 //==============================================================================

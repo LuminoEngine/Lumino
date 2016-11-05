@@ -269,7 +269,12 @@ void CameraViewportLayer::Render(RenderingContext* context)
 	// 出来上がった描画リストを、複数のレイヤーが描画することを想定する。
 	m_renderer->BeginMakeElements();
 
+	// カメラ行列の更新
+	SizeF viewSize((float)GetViewportSize().width, (float)GetViewportSize().height);
+	m_hostingCamera->UpdateMatrices(viewSize);
+
 	m_hostingCamera->GetOwnerSceneGraph()->Render(context, m_hostingCamera);
+	//m_hostingCamera->GetOwnerSceneGraph()->Render(context, m_hostingCamera);
 }
 
 //------------------------------------------------------------------------------
@@ -281,10 +286,10 @@ void CameraViewportLayer::OnBeginFrameRender(RenderTarget* renderTarget, DepthBu
 //------------------------------------------------------------------------------
 void CameraViewportLayer::OnRenderDrawElementList(RenderTarget* renderTarget, DepthBuffer* depthBuffer, detail::RenderingPass2* pass)
 {
-	SizeF size((float)GetViewportSize().width, (float)GetViewportSize().height);
+	SizeF viewSize((float)GetViewportSize().width, (float)GetViewportSize().height);
 	detail::CameraInfo cameraInfo;
 	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.Get());
-	cameraInfo.viewPixelSize = size;
+	cameraInfo.viewPixelSize = viewSize;
 	cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
 	cameraInfo.projMatrix = m_hostingCamera->GetProjectionMatrix();
 	cameraInfo.viewFrustum = m_hostingCamera->GetViewFrustum();

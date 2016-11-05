@@ -8,7 +8,7 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
-
+class DrawList;
 class SceneNodeList;
 
 /// SceneNode
@@ -134,6 +134,12 @@ public:
 
 	/// Z ソート用の比較関数 (距離と優先度でソート)
 	static bool CmpZAndPrioritySort(const SceneNode* left, const SceneNode* right);
+
+
+
+
+	void Render2(DrawList* renderer);
+	virtual void OnRender2(DrawList* renderer);
 
 
 	// MME の CONTROLOBJECT アノテーション関係

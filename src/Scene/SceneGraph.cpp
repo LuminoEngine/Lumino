@@ -195,6 +195,12 @@ void SceneGraph::Render(RenderingContext* context, Camera* camera)
 }
 
 //------------------------------------------------------------------------------
+void SceneGraph::Render2(DrawList* renderer, Camera* camera)
+{
+	GetRootNode()->Render2(renderer);
+}
+
+//------------------------------------------------------------------------------
 bool SceneGraph::InjectMouseMove(int x, int y)
 {
 	// シェーダ系

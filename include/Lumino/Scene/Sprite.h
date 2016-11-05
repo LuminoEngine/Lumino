@@ -67,6 +67,7 @@ protected:
 	virtual void UpdateVertexData();
 	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
 
+
 protected:
 	SpriteCoord	m_spriteCoord;
 	SizeF		m_size;
@@ -119,6 +120,8 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual ~Sprite2D();
 	void Initialize(SceneGraph* owner);
 	virtual void OnRender(SceneGraphRenderingContext* dc) override;
+
+	virtual void OnRender2(DrawList* renderer) override;
 
 private:
 	Vector2	m_anchor;

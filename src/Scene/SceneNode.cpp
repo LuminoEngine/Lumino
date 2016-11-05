@@ -184,6 +184,22 @@ bool SceneNode::CmpZAndPrioritySort(const SceneNode* left, const SceneNode* righ
 }
 
 //------------------------------------------------------------------------------
+void SceneNode::Render2(DrawList* renderer)
+{
+	for (int i = 0; i < m_children->GetCount(); ++i)
+	{
+		m_children->GetAt(i)->Render2(renderer);
+	}
+
+	OnRender2(renderer);
+}
+
+//------------------------------------------------------------------------------
+void SceneNode::OnRender2(DrawList* renderer)
+{
+}
+
+//------------------------------------------------------------------------------
 void SceneNode::OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph* oldOwner)
 {
 	//if (oldOwner != nullptr) {

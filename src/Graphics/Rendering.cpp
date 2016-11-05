@@ -296,6 +296,26 @@ RawFont* DrawElementBatch::GetFont() const
 }
 
 //------------------------------------------------------------------------------
+void DrawElementBatch::SetBaseAlphaBlendEnabled(bool enabled)
+{
+	if (m_baseAlphaBlendEnabled != enabled)
+	{
+		m_baseAlphaBlendEnabled = enabled;
+		m_hashDirty = true;
+	}
+}
+
+//------------------------------------------------------------------------------
+void DrawElementBatch::SetBaseBlendMode(BlendMode mode)
+{
+	if (m_baseBlendMode != mode)
+	{
+		m_baseBlendMode = mode;
+		m_hashDirty = true;
+	}
+}
+
+//------------------------------------------------------------------------------
 bool DrawElementBatch::Equal(const DrawElementBatch& obj) const
 {
 #if 1
@@ -333,10 +353,10 @@ bool DrawElementBatch::Equal(const DrawElementBatch& obj) const
 //------------------------------------------------------------------------------
 void DrawElementBatch::Reset()
 {
-	m_alphaBlendEnabled = RenderState::Default.alphaBlendEnabled;
+	m_baseAlphaBlendEnabled = RenderState::Default.alphaBlendEnabled;
 	m_cullingMode = RenderState::Default.Culling;
 	m_alphaTestEnabled = RenderState::Default.AlphaTest;
-	m_blendMode = BlendMode::Normal;
+	m_baseBlendMode = BlendMode::Normal;
 
 	m_depthTestEnabled = DepthStencilState::Default.DepthTestEnabled;
 	m_depthWriteEnabled = DepthStencilState::Default.DepthWriteEnabled;
@@ -361,11 +381,12 @@ Shader* DrawElementBatch::ApplyStatus(InternalContext* context, RenderTarget* de
 
 	// RenderState
 	{
+		// TODO: Base
 		RenderState state;
-		state.alphaBlendEnabled = m_alphaBlendEnabled;
+		state.alphaBlendEnabled = m_baseAlphaBlendEnabled;
 		state.Culling = m_cullingMode;
 		state.AlphaTest = m_alphaTestEnabled;
-		ContextInterface::MakeBlendMode(m_blendMode, &state);
+		ContextInterface::MakeBlendMode(m_baseBlendMode, &state);
 		stateManager->SetRenderState(state);
 
 		// スプライトバッチ化のため
@@ -724,6 +745,18 @@ void DrawList::SetBrush(Brush* brush)
 void DrawList::SetFont(RawFont* font)
 {
 	m_state.state.SetFont(font);
+}
+
+//------------------------------------------------------------------------------
+void DrawList::SetAlphaBlendEnabled(bool enabled)
+{
+	m_state.state.SetBaseAlphaBlendEnabled(enabled);
+}
+
+//------------------------------------------------------------------------------
+void DrawList::SetBlendMode(BlendMode mode)
+{
+	m_state.state.SetBaseBlendMode(mode);
 }
 
 //------------------------------------------------------------------------------
