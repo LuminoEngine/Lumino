@@ -230,6 +230,7 @@ TEST_F(Test_Graphics_Rendering, DrawSprite)
 {
 	auto tex = Texture2D::Create(LN_LOCALFILE("../Scene/TestData/Sprite1.png"));
 
+#if 0
 	// <Test>
 	{
 		if (Engine::BeginRendering())
@@ -238,7 +239,7 @@ TEST_F(Test_Graphics_Rendering, DrawSprite)
 
 			auto* r = Engine::GetDefault2DLayer()->GetRenderer();
 			r->SetAlphaBlendEnabled(true);
-			r->SetBlendMode(BlendMode::Alpha);
+			r->SetBlendMode(BlendMode::Normal);
 
 			r->DrawSprite(Vector3(48, 0, 10), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);	// Žè‘O
 			r->DrawSprite(Vector3(0, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
@@ -267,8 +268,69 @@ TEST_F(Test_Graphics_Rendering, DrawSprite)
 
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSprite1.png")));
 	}
+#endif
 
-	// <Test> Sprite ‚Ì BlendMode
+	// <Test> Sprite ‚Ì BlendMode (Alpha Disabled)
+	{
+		if (Engine::BeginRendering())
+		{
+			Engine::Render();
+
+			auto* r = Engine::GetDefault2DLayer()->GetRenderer();
+			r->Clear(ClearFlags::Color, Color::Red);
+
+			//r->SetAlphaBlendEnabled(false);
+			//r->SetBlendMode(BlendMode::Normal);
+			//r->DrawSprite(Vector3(0, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			//r->DrawSprite(Vector3(64, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			//r->DrawSprite(Vector3(0, 32, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			//r->DrawSprite(Vector3(64, 32, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			//
+			//r->SetBlendMode(BlendMode::Normal);
+			//r->DrawSprite(Vector3(16, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			//r->SetAlphaBlendEnabled(false);
+			r->SetBlendMode(BlendMode::Add);
+			r->DrawSprite(Vector3(80, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			
+			//r->SetBlendMode(BlendMode::Subtract);
+			//r->DrawSprite(Vector3(16, 32, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+
+			//r->SetBlendMode(BlendMode::Multiply);
+			//r->DrawSprite(Vector3(80, 32, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+
+
+			
+			//r->DrawSprite(Vector3(16, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			//
+			//r->SetAlphaBlendEnabled(false);
+			//r->SetBlendMode(BlendMode::Add);
+			//r->DrawSprite(Vector3(32, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			//r->SetAlphaBlendEnabled(true);
+			//r->SetBlendMode(BlendMode::Add);
+			//r->DrawSprite(Vector3(48, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+
+			//r->SetAlphaBlendEnabled(false);
+			//r->SetBlendMode(BlendMode::Subtract);
+			//r->DrawSprite(Vector3(64, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			//r->SetAlphaBlendEnabled(true);
+			//r->SetBlendMode(BlendMode::Subtract);
+			//r->DrawSprite(Vector3(80, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+
+			//r->SetAlphaBlendEnabled(false);
+			//r->SetBlendMode(BlendMode::Multiply);
+			//r->DrawSprite(Vector3(96, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			//r->SetAlphaBlendEnabled(true);
+			//r->SetBlendMode(BlendMode::Multiply);
+			//r->DrawSprite(Vector3(112, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+
+			Engine::EndRendering();
+		}
+
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSprite2.png"), 99, true));
+	}
+
+#if 0
+	// <Test> Sprite ‚Ì BlendMode (Alpha Disabled)
 	{
 		if (Engine::BeginRendering())
 		{
@@ -280,9 +342,9 @@ TEST_F(Test_Graphics_Rendering, DrawSprite)
 			r->SetBlendMode(BlendMode::Normal);
 			r->DrawSprite(Vector3(0, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 			r->SetAlphaBlendEnabled(true);
-			r->SetBlendMode(BlendMode::Alpha);
+			r->SetBlendMode(BlendMode::Normal);
 			r->DrawSprite(Vector3(16, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-			
+
 			r->SetAlphaBlendEnabled(false);
 			r->SetBlendMode(BlendMode::Add);
 			r->DrawSprite(Vector3(32, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
@@ -298,10 +360,10 @@ TEST_F(Test_Graphics_Rendering, DrawSprite)
 			r->DrawSprite(Vector3(80, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 
 			r->SetAlphaBlendEnabled(false);
-			r->SetBlendMode(BlendMode::MultiplyAlphaDisabled);
+			r->SetBlendMode(BlendMode::Multiply);
 			r->DrawSprite(Vector3(96, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 			r->SetAlphaBlendEnabled(true);
-			r->SetBlendMode(BlendMode::MultiplyAlphaDisabled);
+			r->SetBlendMode(BlendMode::Multiply);
 			r->DrawSprite(Vector3(112, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 
 			Engine::EndRendering();
@@ -309,5 +371,6 @@ TEST_F(Test_Graphics_Rendering, DrawSprite)
 
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSprite2.png"), 99, true));
 	}
+#endif
 }
 

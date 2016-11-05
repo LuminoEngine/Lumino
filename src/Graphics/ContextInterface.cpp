@@ -340,49 +340,61 @@ void ContextInterface::SetBasicContextState(const BasicContextState& state)
 }
 
 //------------------------------------------------------------------------------
-void ContextInterface::MakeBlendMode(BlendMode mode, RenderState* state)
+void ContextInterface::MakeBlendMode(BlendMode mode, bool alphaEnabled, RenderState* state)
 {
 	switch (mode)
 	{
 		// もっといろいろ http://d.hatena.ne.jp/Ko-Ta/20070618/p1
 		case BlendMode::Normal:
-			state->alphaBlendEnabled = false;
-			state->blendOp = BlendOp::Add;
-			state->sourceBlend = BlendFactor::One;
-			state->destinationBlend = BlendFactor::Zero;
-			break;
-		case BlendMode::Alpha:
-			state->alphaBlendEnabled = true;
-			state->blendOp = BlendOp::Add;
-			state->sourceBlend = BlendFactor::SourceAlpha;
-			state->destinationBlend = BlendFactor::InverseSourceAlpha;
+			if (alphaEnabled)
+			{
+				//state->alphaBlendEnabled = true;
+				state->blendOp = BlendOp::Add;
+				state->sourceBlend = BlendFactor::SourceAlpha;
+				state->destinationBlend = BlendFactor::InverseSourceAlpha;
+			}
+			else
+			{
+				//state->alphaBlendEnabled = false;
+				state->blendOp = BlendOp::Add;
+				state->sourceBlend = BlendFactor::One;
+				state->destinationBlend = BlendFactor::Zero;
+			}
 			break;
 		case BlendMode::Add:
-			state->alphaBlendEnabled = true;
-			state->blendOp = BlendOp::Add;
-			state->sourceBlend = BlendFactor::SourceAlpha;
-			state->destinationBlend = BlendFactor::One;
-			break;
-		case BlendMode::AddAlphaDisabled:
-			state->alphaBlendEnabled = true;
-			state->blendOp = BlendOp::Add;
-			state->sourceBlend = BlendFactor::One;
-			state->destinationBlend = BlendFactor::One;
+			if (alphaEnabled)
+			{
+				//state->alphaBlendEnabled = true;
+				state->blendOp = BlendOp::Add;
+				state->sourceBlend = BlendFactor::SourceAlpha;
+				state->destinationBlend = BlendFactor::One;
+			}
+			else
+			{
+				//state->alphaBlendEnabled = true;
+				state->blendOp = BlendOp::Add;
+				state->sourceBlend = BlendFactor::SourceAlpha;
+				state->destinationBlend = BlendFactor::One;
+			}
 			break;
 		case BlendMode::Subtract:
-			state->alphaBlendEnabled = true;
-			state->blendOp = BlendOp::ReverseSubtract;
-			state->sourceBlend = BlendFactor::SourceAlpha;
-			state->destinationBlend = BlendFactor::One;
+			if (alphaEnabled)
+			{
+				//state->alphaBlendEnabled = true;
+				state->blendOp = BlendOp::ReverseSubtract;
+				state->sourceBlend = BlendFactor::SourceAlpha;
+				state->destinationBlend = BlendFactor::One;
+			}
+			else
+			{
+				//state->alphaBlendEnabled = true;
+				state->blendOp = BlendOp::ReverseSubtract;
+				state->sourceBlend = BlendFactor::One;
+				state->destinationBlend = BlendFactor::One;
+			}
 			break;
-		case BlendMode::SubtractAlphaDisabled:
-			state->alphaBlendEnabled = true;
-			state->blendOp = BlendOp::ReverseSubtract;
-			state->sourceBlend = BlendFactor::One;
-			state->destinationBlend = BlendFactor::One;
-			break;
-		case BlendMode::MultiplyAlphaDisabled:
-			state->alphaBlendEnabled = true;
+		case BlendMode::Multiply:
+			//state->alphaBlendEnabled = true;
 			state->blendOp = BlendOp::Add;
 			// AlphaDisable (Alpha を別指定できない今の仕様では Alpha を考慮できない)
 			state->sourceBlend = BlendFactor::Zero;

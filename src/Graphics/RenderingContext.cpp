@@ -128,9 +128,10 @@ void RenderingContext::SetDestinationBlend(BlendFactor blend)
 }
 void RenderingContext::SetBlendMode(BlendMode mode)
 {
-	RenderState newState = m_state.renderState;
-	MakeBlendMode(mode, &newState);
-	SetRenderState(newState);
+	LN_NOTIMPLEMENTED();
+	//RenderState newState = m_state.renderState;
+	//MakeBlendMode(mode, &newState);
+	//SetRenderState(newState);
 }
 void RenderingContext::SetCullingMode(CullingMode mode)
 {
@@ -441,7 +442,7 @@ void RenderingContext::BltInternal(Texture* source, RenderTarget* dest, const Ma
 	SetShaderPass(nullptr);
 
 	RenderStateBlock2 stateBlock(this);
-	SetBlendMode(BlendMode::Alpha);
+	SetBlendMode(BlendMode::Normal);
 	SetAlphaTestEnabled(false);
 	SetDepthTestEnabled(false);
 	SetDepthWriteEnabled(false);

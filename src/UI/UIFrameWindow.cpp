@@ -41,7 +41,7 @@ void UIViewportLayer::Render(RenderingContext* context)
 
 	// TODO: ステートリセットもほしいかも？
 	g->InheritStatus(context);
-	g->SetBlendMode(BlendMode::Alpha);
+	g->SetBlendMode(BlendMode::Normal);
 	g->Clear(ClearFlags::Depth, Color::White);	// TODO
 	g->Set2DRenderingMode(-1, 1);	// TODO
 

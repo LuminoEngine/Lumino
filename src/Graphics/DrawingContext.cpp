@@ -99,13 +99,15 @@ void DrawingContext::SetDepthBuffer(Texture* depthBuffer)
 //------------------------------------------------------------------------------
 void DrawingContext::SetBlendMode(BlendMode mode)
 {
-	RenderState newState = m_state.renderState;
-	MakeBlendMode(mode, &newState);
-	if (m_state.renderState != newState)
-	{
-		NorityStateChanging();
-		m_state.renderState = newState;
-	}
+	printf("NOTIMPLEMENTED\n");
+	//LN_NOTIMPLEMENTED();
+	//RenderState newState = m_state.renderState;
+	//MakeBlendMode(mode, &newState);
+	//if (m_state.renderState != newState)
+	//{
+	//	NorityStateChanging();
+	//	m_state.renderState = newState;
+	//}
 }
 
 //------------------------------------------------------------------------------

@@ -386,7 +386,7 @@ Shader* DrawElementBatch::ApplyStatus(InternalContext* context, RenderTarget* de
 		state.alphaBlendEnabled = m_baseAlphaBlendEnabled;
 		state.Culling = m_cullingMode;
 		state.AlphaTest = m_alphaTestEnabled;
-		ContextInterface::MakeBlendMode(m_baseBlendMode, &state);
+		ContextInterface::MakeBlendMode(m_baseBlendMode, m_baseAlphaBlendEnabled, &state);
 		stateManager->SetRenderState(state);
 
 		// スプライトバッチ化のため

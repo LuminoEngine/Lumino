@@ -137,7 +137,7 @@ protected:
 
 public:
 	// Utils
-	static void MakeBlendMode(BlendMode mode, RenderState* state);
+	static void MakeBlendMode(BlendMode mode, bool alphaEnabled, RenderState* state);
 
 private:
 	void SwitchActiveRendererPloxy(detail::IRendererPloxy* rendererPloxy);
