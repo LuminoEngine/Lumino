@@ -24,10 +24,10 @@ TEST_F(Test_Scene_Sprite, Basic)
 		sprite2->SetOpacity(0.5);
 
 		Engine::UpdateFrame();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite.Basic.png"), 99, true));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite.Basic.png")));
 	}
 }
-#if 0
+
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_Sprite, BlendMode)
 {
@@ -37,32 +37,27 @@ TEST_F(Test_Scene_Sprite, BlendMode)
 	auto sprite3 = Sprite2D::Create(tex);
 	auto sprite4 = Sprite2D::Create(tex);
 	auto sprite5 = Sprite2D::Create(tex);
-	auto sprite6 = Sprite2D::Create(tex);
 
 	sprite1->SetPosition(0, 0);
-	sprite1->SetBlendMode(BlendMode::Alpha);
+	sprite1->SetBlendMode(BlendMode::Normal);
 
-	sprite2->SetPosition(10, 10);
-	sprite2->SetBlendMode(BlendMode::Add);
+	sprite2->SetPosition(32, 0);
+	sprite2->SetBlendMode(BlendMode::Alpha);
 
-	sprite3->SetPosition(20, 20);
-	sprite3->SetBlendMode(BlendMode::Subtract);
+	sprite3->SetPosition(64, 0);
+	sprite3->SetBlendMode(BlendMode::Add);
 
-	sprite4->SetPosition(30, 30);
-	sprite4->SetBlendMode(BlendMode::AddAlphaDisabled);
+	sprite4->SetPosition(96, 0);
+	sprite4->SetBlendMode(BlendMode::Subtract);
 
-	sprite5->SetPosition(40, 40);
-	sprite5->SetBlendMode(BlendMode::SubtractAlphaDisabled);
-
-	sprite6->SetPosition(50, 50);
-	sprite6->SetBlendMode(BlendMode::MultiplyAlphaDisabled);
-
-	Viewport::GetMainViewport()->SetBackgroundColor(Color32::Gray);
+	sprite5->SetPosition(128, 0);
+	sprite5->SetBlendMode(BlendMode::Multiply);
 
 	Engine::UpdateFrame();
-	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_Sprite.BlendMode.png")));
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite.BlendMode.png"), 99, true));
 }
 
+#if 0
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_Sprite, Anchor)
 {

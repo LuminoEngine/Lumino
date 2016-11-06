@@ -275,7 +275,7 @@ TEST_F(Test_Graphics_Rendering, DrawSprite)
 
 			auto* r = Engine::GetDefault2DLayer()->GetRenderer();
 
-			r->SetBlendMode(BlendMode::Normal);
+			r->SetBlendMode(BlendMode::Normal); 
 			r->DrawSprite(Vector3(0, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 			r->DrawSprite(Vector3(64, 0, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 			r->DrawSprite(Vector3(0, 32, 0), SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);

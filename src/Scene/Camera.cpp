@@ -273,8 +273,8 @@ void CameraViewportLayer::Render(RenderingContext* context)
 	SizeF viewSize((float)GetViewportSize().width, (float)GetViewportSize().height);
 	m_hostingCamera->UpdateMatrices(viewSize);
 
-	m_hostingCamera->GetOwnerSceneGraph()->Render(context, m_hostingCamera);
 	//m_hostingCamera->GetOwnerSceneGraph()->Render(context, m_hostingCamera);
+	m_hostingCamera->GetOwnerSceneGraph()->Render2(m_renderer, m_hostingCamera);
 }
 
 //------------------------------------------------------------------------------

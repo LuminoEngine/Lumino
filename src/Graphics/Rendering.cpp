@@ -908,11 +908,14 @@ void DrawList::DrawSprite(
 
 		virtual void DrawSubset(detail::InternalContext* context) override
 		{
-			context->BeginSpriteRenderer()->DrawRequest2D(position, size, anchorRatio, texture, srcRect, color);
+			auto* r = context->BeginSpriteRenderer();
+			r->SetTransform(transform);
+			r->DrawRequest2D(position, size, anchorRatio, texture, srcRect, color);
 		}
 	};
 
 	auto* ptr = ResolveDrawElement<DrawElement_DrawSprite>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_spriteRenderer);
+	ptr->transform = m_state.transfrom;
 	ptr->position = position;
 	ptr->size.Set(size.width, size.height);
 	ptr->texture = texture;

@@ -354,7 +354,7 @@ void Sprite2D::OnRender(SceneGraphRenderingContext* dc)
 void Sprite2D::OnRender2(DrawList* renderer)
 {
 	detail::MaterialInstance* mat = m_materialList->GetMaterialInstance(0);
-
+	renderer->SetBlendMode(m_renderState.blendMode);
 	renderer->SetTransform(m_combinedGlobalMatrix);
 	renderer->DrawSprite(Vector3::Zero, m_renderSize, GetTexture(), m_renderSourceRect, mat->m_colorScale, SpriteBaseDirection::Basic2D);
 }
