@@ -174,7 +174,7 @@ void UIMainWindow::InjectElapsedTime(float elapsedTime)
 }
 
 //------------------------------------------------------------------------------
-void UIMainWindow::UpdateLayout(const SizeF& viewSize)
+void UIMainWindow::UpdateLayout(const Size& viewSize)
 {
 	m_mainUIContext->GetMainWindowView()->UpdateLayout(viewSize);
 }

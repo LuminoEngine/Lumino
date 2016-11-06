@@ -26,7 +26,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual ~UITextBlock();
 	void Initialize(detail::UIManager* manager);
 
-	virtual SizeF MeasureOverride(const SizeF& availableSize) override;
+	virtual Size MeasureOverride(const Size& availableSize) override;
 	virtual void OnRender(DrawingContext* g) override;
 
 private:

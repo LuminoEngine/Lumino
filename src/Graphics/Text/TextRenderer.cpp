@@ -93,7 +93,7 @@ void TextRendererCore::Render(const GlyphRunData* dataList, int dataCount, FontG
 		color = static_cast<ColorBrush*>(fillBrush)->GetColor();
 	}
 
-	SizeF texSizeInv(1.0f / cache->GetGlyphsTextureSize().width, 1.0f / cache->GetGlyphsTextureSize().height);
+	Size texSizeInv(1.0f / cache->GetGlyphsTextureSize().width, 1.0f / cache->GetGlyphsTextureSize().height);
 	for (int i = 0; i < dataCount; ++i)
 	{
 		// TODO: 以下、srcFillRect, srcOutlineRectを使った方が良い気がする

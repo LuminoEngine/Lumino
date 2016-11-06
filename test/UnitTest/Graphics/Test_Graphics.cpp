@@ -63,7 +63,7 @@ TEST_F(Test_Graphics_Rendering, Basic)
 	//	auto* r = Engine::GetDefault2DLayer()->GetRenderer();
 	//	r->Clear(ClearFlags::Color, Color::Red);
 	//	auto tex = Texture2D::Create(LN_LOCALFILE("../Scene/TestData/Sprite1.png"));
-	//	r->DrawSprite2D(SizeF(32, 32), tex, RectF(0, 0, 32, 32), Color::White);
+	//	r->DrawSprite2D(Size(32, 32), tex, RectF(0, 0, 32, 32), Color::White);
 
 	//	Engine::EndRendering();
 	//}
@@ -239,27 +239,27 @@ TEST_F(Test_Graphics_Rendering, DrawSprite)
 			auto* r = Engine::GetDefault2DLayer()->GetRenderer();
 			r->SetBlendMode(BlendMode::Alpha);
 
-			r->DrawSprite(Vector3(48, 0, 10), SizeF(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);	// Žè‘O
-			r->DrawSprite(Vector3(0, 0, 0), SizeF(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(32, 0, 0), SizeF(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(48, 0, 10), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);	// Žè‘O
+			r->DrawSprite(Vector3(0, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(32, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 
-			r->DrawSprite(Vector3(0, 32, 0), SizeF(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color(1, 0, 0, 1), SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(32, 32, 0), SizeF(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color(0, 1, 0, 1), SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(64, 32, 0), SizeF(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color(0, 0, 1, 1), SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(96, 32, 0), SizeF(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color(1, 0, 0, 0.5), SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(128, 32, 0), SizeF(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color(1, 0, 0, 0), SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(0, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color(1, 0, 0, 1), SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(32, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color(0, 1, 0, 1), SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(64, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color(0, 0, 1, 1), SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(96, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color(1, 0, 0, 0.5), SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(128, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color(1, 0, 0, 0), SpriteBaseDirection::Basic2D);
 
-			r->DrawSprite(Vector3(0, 64, 0), SizeF(16, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(16, 64, 0), SizeF(32, 16), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(16, 80, 0), SizeF(16, 16), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(0, 64, 0), Size(16, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(16, 64, 0), Size(32, 16), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(16, 80, 0), Size(16, 16), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 
-			r->DrawSprite(Vector3(64, 64, 0), SizeF(16, 16), Vector2::Zero, tex, RectF(16, 0, 16, 32), Color::White, SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(80, 64, 0), SizeF(16, 16), Vector2::Zero, tex, RectF(0, 16, 32, 16), Color::White, SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(64, 80, 0), SizeF(16, 16), Vector2::Zero, tex, RectF(16, 16, 16, 16), Color::White, SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(80, 80, 0), SizeF(16, 16), Vector2::Zero, tex, RectF(0, 0, 16, 16), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(64, 64, 0), Size(16, 16), Vector2::Zero, tex, RectF(16, 0, 16, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(80, 64, 0), Size(16, 16), Vector2::Zero, tex, RectF(0, 16, 32, 16), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(64, 80, 0), Size(16, 16), Vector2::Zero, tex, RectF(16, 16, 16, 16), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(80, 80, 0), Size(16, 16), Vector2::Zero, tex, RectF(0, 0, 16, 16), Color::White, SpriteBaseDirection::Basic2D);
 
-			r->DrawSprite(Vector3(96, 64, 0), SizeF(32, 32), Vector2::Zero, tex, RectF(0, 0, 16, 32), Color::White, SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(128, 64, 0), SizeF(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 16), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(96, 64, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 16, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(128, 64, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 16), Color::White, SpriteBaseDirection::Basic2D);
 
 			Engine::EndRendering();
 		}
@@ -276,26 +276,26 @@ TEST_F(Test_Graphics_Rendering, DrawSprite)
 			auto* r = Engine::GetDefault2DLayer()->GetRenderer();
 
 			r->SetBlendMode(BlendMode::Normal); 
-			r->DrawSprite(Vector3(0, 0, 0), SizeF(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(64, 0, 0), SizeF(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(0, 32, 0), SizeF(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(64, 32, 0), SizeF(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(0, 64, 0), SizeF(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(0, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(64, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(0, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(64, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(0, 64, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 			
 			r->SetBlendMode(BlendMode::Normal);
-			r->DrawSprite(Vector3(16, 0, 0), SizeF(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(16, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 
 			r->SetBlendMode(BlendMode::Alpha);
-			r->DrawSprite(Vector3(80, 0, 0), SizeF(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(80, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 
 			r->SetBlendMode(BlendMode::Add);
-			r->DrawSprite(Vector3(16, 32, 0), SizeF(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(16, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 			
 			r->SetBlendMode(BlendMode::Subtract);
-			r->DrawSprite(Vector3(80, 32, 0), SizeF(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(80, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 
 			r->SetBlendMode(BlendMode::Multiply);
-			r->DrawSprite(Vector3(16, 64, 0), SizeF(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+			r->DrawSprite(Vector3(16, 64, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 
 			Engine::EndRendering();
 		}

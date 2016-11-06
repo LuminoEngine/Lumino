@@ -11,13 +11,13 @@ LN_NAMESPACE_BEGIN
 class ILayoutElement
 {
 public:
-	virtual void MeasureLayout(const SizeF& availableSize);
+	virtual void MeasureLayout(const Size& availableSize);
 	virtual void ArrangeLayout(const RectF& finalLocalRect);
 
 
 protected:
 	virtual const PointF& GetLayoutPosition() const = 0;
-	virtual const SizeF& GetLayoutSize() const = 0;
+	virtual const Size& GetLayoutSize() const = 0;
 	virtual const ThicknessF& GetLayoutMargin() const = 0;
 	virtual const ThicknessF& GetLayoutPadding() const = 0;
 	virtual AlignmentAnchor GetLayoutAnchor() const = 0;
@@ -26,8 +26,8 @@ protected:
 	virtual ILayoutElement* GetLayoutParent() const = 0;
 	virtual const HAlignment* GetLayoutContentHAlignment() = 0;
 	virtual const VAlignment* GetLayoutContentVAlignment() = 0;
-	virtual const SizeF& GetLayoutDesiredSize() const = 0;
-	virtual void SetLayoutDesiredSize(const SizeF& size) = 0;
+	virtual const Size& GetLayoutDesiredSize() const = 0;
+	virtual void SetLayoutDesiredSize(const Size& size) = 0;
 	virtual void SetLayoutFinalLocalRect(const RectF& rect) = 0;
 
 
@@ -38,8 +38,8 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual int GetLayoutColumnSpan() const = 0;
 	virtual int GetLayoutRowSpan() const = 0;
 
-	virtual SizeF MeasureOverride(const SizeF& constraint);
-	virtual SizeF ArrangeOverride(const SizeF& finalSize);
+	virtual Size MeasureOverride(const Size& constraint);
+	virtual Size ArrangeOverride(const Size& finalSize);
 
 protected:
 	ILayoutElement();
@@ -70,7 +70,7 @@ public:
 	//	}
 	//}
 
-	static void AdjustHorizontalAlignment(const SizeF& areaSize, const SizeF& desiredSize, HAlignment align, RectF* outRect)
+	static void AdjustHorizontalAlignment(const Size& areaSize, const Size& desiredSize, HAlignment align, RectF* outRect)
 	{
 		switch (align)
 		{
@@ -101,7 +101,7 @@ public:
 		}
 	}
 
-	static void AdjustVerticalAlignment(const SizeF& areaSize, const SizeF& desiredSize, VAlignment align, RectF* outRect)
+	static void AdjustVerticalAlignment(const Size& areaSize, const Size& desiredSize, VAlignment align, RectF* outRect)
 	{
 		switch (align)
 		{

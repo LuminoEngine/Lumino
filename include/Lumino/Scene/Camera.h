@@ -75,7 +75,7 @@ public:
 public:	// internal
 
 	/// 各行列を更新する (SceneNode::UpdateFrameHierarchy() の後で呼び出すこと)
-	void UpdateMatrices(const SizeF& viewSize);
+	void UpdateMatrices(const Size& viewSize);
 
 	// 向きの取得 (シェーダ設定用。UpdateMatrices() の後で呼び出すこと)
 	const Vector4& GetDirectionInternal() const { return m_direction; }

@@ -42,7 +42,7 @@ void UILayoutView::Initialize(UIContext* ownerContext, PlatformWindow* ownerNati
 }
 
 //------------------------------------------------------------------------------
-void UILayoutView::UpdateLayout(const SizeF& viewSize)
+void UILayoutView::UpdateLayout(const Size& viewSize)
 {
 	m_viewPixelSize = viewSize;
 

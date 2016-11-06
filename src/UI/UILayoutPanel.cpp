@@ -56,13 +56,13 @@ UIElement* UILayoutPanel::GetVisualChildOrderd(int index) const
 }
 
 //------------------------------------------------------------------------------
-SizeF UILayoutPanel::MeasureOverride(const SizeF& constraint)
+Size UILayoutPanel::MeasureOverride(const Size& constraint)
 {
-	SizeF desiredSize = UIElement::MeasureOverride(constraint);
+	Size desiredSize = UIElement::MeasureOverride(constraint);
 	for (UIElement* child : *m_children)
 	{
 		child->MeasureLayout(constraint);
-		const SizeF& childDesiredSize = child->GetDesiredSize();
+		const Size& childDesiredSize = child->GetDesiredSize();
 
 		desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
 		desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
@@ -71,11 +71,11 @@ SizeF UILayoutPanel::MeasureOverride(const SizeF& constraint)
 }
 
 //------------------------------------------------------------------------------
-SizeF UILayoutPanel::ArrangeOverride(const SizeF& finalSize)
+Size UILayoutPanel::ArrangeOverride(const Size& finalSize)
 {
 	for (UIElement* child : *m_children)
 	{
-		SizeF childDesiredSize = child->GetDesiredSize();
+		Size childDesiredSize = child->GetDesiredSize();
 		childDesiredSize.width = std::max(finalSize.width, childDesiredSize.width);
 		childDesiredSize.height = std::max(finalSize.height, childDesiredSize.height);
 		child->ArrangeLayout(RectF(0, 0, childDesiredSize));
@@ -122,9 +122,9 @@ void UIStackPanel::Initialize(detail::UIManager* manager)
 }
 
 //------------------------------------------------------------------------------
-SizeF UIStackPanel::MeasureOverride(const SizeF& constraint)
+Size UIStackPanel::MeasureOverride(const Size& constraint)
 {
-	SizeF size = constraint;
+	Size size = constraint;
 
 	if (m_orientation == Orientation::Horizontal)
 	{
@@ -137,12 +137,12 @@ SizeF UIStackPanel::MeasureOverride(const SizeF& constraint)
 		size.height = std::numeric_limits<float>::infinity();
 	}
 
-	SizeF desiredSize;
+	Size desiredSize;
 	for (UIElement* child : *GetChildren())
 	{
 		child->MeasureLayout(size);
 
-		const SizeF& childDesiredSize = child->GetDesiredSize();
+		const Size& childDesiredSize = child->GetDesiredSize();
 		if (m_orientation == Orientation::Horizontal)
 		{
 			desiredSize.width += childDesiredSize.width;
@@ -159,13 +159,13 @@ SizeF UIStackPanel::MeasureOverride(const SizeF& constraint)
 }
 
 //------------------------------------------------------------------------------
-SizeF UIStackPanel::ArrangeOverride(const SizeF& finalSize)
+Size UIStackPanel::ArrangeOverride(const Size& finalSize)
 {
 	float prevChildSize = 0;
 	RectF childRect;
 	for (UIElement* child : *GetChildren())
 	{
-		const SizeF& childDesiredSize = child->GetDesiredSize();
+		const Size& childDesiredSize = child->GetDesiredSize();
 		if (m_orientation == Orientation::Horizontal)
 		{
 			childRect.x += prevChildSize;
@@ -218,13 +218,13 @@ void UICanvas::Initialize(detail::UIManager* manager)
 }
 
 //------------------------------------------------------------------------------
-SizeF UICanvas::MeasureOverride(const SizeF& constraint)
+Size UICanvas::MeasureOverride(const Size& constraint)
 {
 	return UILayoutPanel::MeasureOverride(constraint);
 }
 
 //------------------------------------------------------------------------------
-SizeF UICanvas::ArrangeOverride(const SizeF& finalSize)
+Size UICanvas::ArrangeOverride(const Size& finalSize)
 {
 	//ThicknessF canvas;
 	
@@ -235,8 +235,8 @@ SizeF UICanvas::ArrangeOverride(const SizeF& finalSize)
 		//{
 		//}
 		
-		const SizeF& desiredSize = child->GetDesiredSize();
-		SizeF size = child->GetSizeInternal();
+		const Size& desiredSize = child->GetDesiredSize();
+		Size size = child->GetSizeInternal();
 		size.width = Math::IsNaN(size.width) ? desiredSize.width : size.width;
 		size.height = Math::IsNaN(size.height) ? desiredSize.height : size.height;
 
@@ -505,7 +505,7 @@ void UIGridLayout::AddRowDefinition(GridLengthType type, float height, float min
 }
 
 //------------------------------------------------------------------------------
-SizeF UIGridLayout::MeasureOverride(const SizeF& constraint)
+Size UIGridLayout::MeasureOverride(const Size& constraint)
 {
 	for (UIElement* child : *GetChildren())
 	{
@@ -521,7 +521,7 @@ SizeF UIGridLayout::MeasureOverride(const SizeF& constraint)
 		RowDefinition*    row = m_rowDefinitions.IsEmpty() ? nullptr : m_rowDefinitions.GetAt(rowIdx);
 
 		// 子要素の DesiredSize (最低サイズ) を測るのは、セルのサイズ指定が "Auto" の時だけでよい。
-		const SizeF& childDesiredSize = child->GetDesiredSize();
+		const Size& childDesiredSize = child->GetDesiredSize();
 		if (col != nullptr && col->GetType() == GridLengthType::Auto)
 		{
 			col->m_desiredSize = std::max(col->m_desiredSize, childDesiredSize.width);
@@ -533,7 +533,7 @@ SizeF UIGridLayout::MeasureOverride(const SizeF& constraint)
 	}
 
 	// 各セルの DesiredSize を集計して、Grid 全体の DesiredSize を求める
-	SizeF desiredSize = UILayoutPanel::MeasureOverride(constraint);
+	Size desiredSize = UILayoutPanel::MeasureOverride(constraint);
 	for (auto col : m_columnDefinitions)
 	{
 		desiredSize.width += col->GetAvailableDesiredSize();
@@ -547,11 +547,11 @@ SizeF UIGridLayout::MeasureOverride(const SizeF& constraint)
 }
 
 //------------------------------------------------------------------------------
-SizeF UIGridLayout::ArrangeOverride(const SizeF& finalSize)
+Size UIGridLayout::ArrangeOverride(const Size& finalSize)
 {
 	// "Auto" と "Pixel" 指定である Column/Row の最終サイズを確定させる。
 	// また、"*" である行列の数をカウントする。
-	SizeF totalActual = SizeF::Zero;
+	Size totalActual = Size::Zero;
 	float starColCount = 0.0f;
 	float starRowCount = 0.0f;
 	for (auto col : m_columnDefinitions)
@@ -580,7 +580,7 @@ SizeF UIGridLayout::ArrangeOverride(const SizeF& finalSize)
 	}
 
 	// "1*" 分のセルの領域
-	SizeF starUnit(
+	Size starUnit(
 		(starColCount != 0.0f) ? (finalSize.width - totalActual.width) / starColCount : 0.0f,
 		(starRowCount != 0.0f) ? (finalSize.height - totalActual.height) / starRowCount : 0.0f);
 	starUnit.width = std::max(0.0f, starUnit.width);	// 負値はダメ

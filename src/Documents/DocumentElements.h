@@ -74,7 +74,7 @@ protected:
 
 	// ILayoutElement interface
 	virtual const PointF& GetLayoutPosition() const override;
-	virtual const SizeF& GetLayoutSize() const override;
+	virtual const Size& GetLayoutSize() const override;
 	virtual const ThicknessF& GetLayoutMargin() const override;
 	virtual const ThicknessF& GetLayoutPadding() const override;
 	virtual AlignmentAnchor GetLayoutAnchor() const override;
@@ -83,8 +83,8 @@ protected:
 	virtual ILayoutElement* GetLayoutParent() const override;
 	virtual const HAlignment* GetLayoutContentHAlignment() override;
 	virtual const VAlignment* GetLayoutContentVAlignment() override;
-	virtual const SizeF& GetLayoutDesiredSize() const override;
-	virtual void SetLayoutDesiredSize(const SizeF& size) override;
+	virtual const Size& GetLayoutDesiredSize() const override;
+	virtual void SetLayoutDesiredSize(const Size& size) override;
 	virtual void SetLayoutFinalLocalRect(const RectF& rect) override;
 	virtual int GetLayoutColumn() const override;
 	virtual int GetLayoutRow() const override;
@@ -93,14 +93,14 @@ protected:
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	// ILayoutElement interface
-	virtual SizeF MeasureOverride(const SizeF& constraint);
+	virtual Size MeasureOverride(const Size& constraint);
 
 LN_INTERNAL_ACCESS:
 	DocumentsManager* GetManager() const { return m_manager; }
 	void SetParent(TextElement* parent) { m_parent = parent; }
 	TextElement* GetParent() const { return m_parent; }
-	const SizeF& GetDesiredSize() const { return m_desiredSize; }
-	const SizeF& GetRenderSize() const { return m_finalLocalRect.GetSize(); }
+	const Size& GetDesiredSize() const { return m_desiredSize; }
+	const Size& GetRenderSize() const { return m_finalLocalRect.GetSize(); }
 
 private:
 	DocumentsManager*		m_manager;
@@ -108,14 +108,14 @@ private:
 	bool					m_fontDataModified;
 
 	PointF					m_position;
-	SizeF					m_size;
+	Size					m_size;
 	ThicknessF				m_margin;
 	ThicknessF				m_padding;
 	AlignmentAnchor			m_anchor;
 	HAlignment				m_horizontalAlignment;
 	VAlignment				m_verticalAlignment;
 	TextElement*			m_parent;
-	SizeF					m_desiredSize;
+	Size					m_desiredSize;
 	RectF					m_finalLocalRect;
 	detail::GridLayoutInfo	m_gridLayoutInfo;
 };
@@ -137,8 +137,8 @@ public:
 	virtual void Render(const Matrix& transform, IDocumentsRenderer* renderer);
 
 protected:
-	virtual SizeF MeasureOverride(const SizeF& constraint);
-	virtual SizeF ArrangeOverride(const SizeF& finalSize);
+	virtual Size MeasureOverride(const Size& constraint);
+	virtual Size ArrangeOverride(const Size& finalSize);
 
 private:
 	List<RefPtr<TextElement>>	m_childElements;
@@ -192,7 +192,7 @@ protected:
 	virtual void Render(const Matrix& transform, IDocumentsRenderer* renderer) override;
 
 	// ILayoutElement interface
-	virtual SizeF MeasureOverride(const SizeF& constraint);
+	virtual Size MeasureOverride(const Size& constraint);
 
 private:
 	GenericStringBuilderCore<UTF32>	m_text;

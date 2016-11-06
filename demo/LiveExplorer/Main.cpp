@@ -306,12 +306,12 @@ int main()
 #if 1
 			auto itemCanvas1 = UICanvas::Create();
 			//itemCanvas1->SetBackground(ColorBrush::DimGray);
-			itemCanvas1->SetSize(SizeF(NAN, 32));
+			itemCanvas1->SetSize(Size(NAN, 32));
 			itemCanvas1->SetHAlignment(HAlignment::Stretch);
 
 			auto button1 = UIButton::Create();
 			//button1->SetContent(_T(">"));
-			button1->SetSize(SizeF(20, 20));
+			button1->SetSize(Size(20, 20));
 			button1->SetBackground(ColorBrush::Red);
 			button1->SetAnchor(AlignmentAnchor::RightOffsets | AlignmentAnchor::VCenter);
 			button1->click += [](UIMouseEventArgs* e) { GameAudio::PlayBGM(_T("D:/tmp/GrandSky.mp3"), 1.0f, 1.05f); };
@@ -319,7 +319,7 @@ int main()
 
 			auto listbox1 = tr::UIListBox::Create();
 			listbox1->SetPosition(PointF(5, 10));
-			listbox1->SetSize(SizeF(100, 200));
+			listbox1->SetSize(Size(100, 200));
 			//listbox1->SetBackground(ColorBrush::Red);
 			//auto item1 = listbox1->AddTextItem(_T("item1"));
 			auto item1 = listbox1->AddItem(itemCanvas1);
@@ -332,13 +332,13 @@ int main()
 
 			//auto button1 = UIButton::Create();
 			//button1->SetPosition(PointF(300, 10));
-			//button1->SetSize(SizeF(80, 24));
+			//button1->SetSize(Size(80, 24));
 			//button1->SetBackground(ColorBrush::Blue);
 			//canvas1->AddChild(button1);
 
 			//auto button2 = UIButton::Create();
 			//button2->SetPosition(PointF(20, 10));
-			//button2->SetSize(SizeF(80, 24));
+			//button2->SetSize(Size(80, 24));
 			//button2->SetBackground(ColorBrush::Blue);
 			//canvas1->AddChild(button2);
 

@@ -83,8 +83,8 @@ void TextBlock2D::SetAnchor(float ratioX, float ratioY)
 void TextBlock2D::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 {
 	VisualNode::UpdateFrameHierarchy(parent, deltaTime);
-	m_paragraph->MeasureLayout(SizeF::MaxValue);
-	m_paragraph->ArrangeLayout(RectF(0, 0, SizeF::MaxValue));
+	m_paragraph->MeasureLayout(Size::MaxValue);
+	m_paragraph->ArrangeLayout(RectF(0, 0, Size::MaxValue));
 }
 
 //------------------------------------------------------------------------------
@@ -96,7 +96,7 @@ detail::Sphere TextBlock2D::GetBoundingSphere()
 //------------------------------------------------------------------------------
 void TextBlock2D::OnRender(SceneGraphRenderingContext* dc)
 {
-	const SizeF& size = m_paragraph->GetRenderSize();
+	const Size& size = m_paragraph->GetRenderSize();
 	m_paragraph->Render(Matrix::MakeTranslation(-size.width * m_anchor.x, -size.height * m_anchor.y, 0) * m_combinedGlobalMatrix, dc);
 }
 

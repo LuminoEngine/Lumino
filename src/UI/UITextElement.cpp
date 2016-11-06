@@ -38,7 +38,7 @@ UITextElement::~UITextElement()
 }
 
 //------------------------------------------------------------------------------
-SizeF UITextElement::MeasureOverride(const SizeF& constraint)
+Size UITextElement::MeasureOverride(const Size& constraint)
 {
 	// フォント更新
 	if (m_invalidateFont)

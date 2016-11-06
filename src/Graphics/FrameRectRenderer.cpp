@@ -115,7 +115,7 @@ void FrameRectRendererCore::Draw(const RectF& rect)
 		srcRect.width -= m_state.borderThickness.Right + m_state.borderThickness.Left;
 		srcRect.height -= m_state.borderThickness.Bottom + m_state.borderThickness.Top;
 
-		SizeF texSize((float)srcTexture->GetRealSize().width, (float)srcTexture->GetRealSize().height);
+		Size texSize((float)srcTexture->GetRealSize().width, (float)srcTexture->GetRealSize().height);
 		texSize.width = 1.0f / texSize.width;
 		texSize.height = 1.0f / texSize.height;
 		RectF uvSrcRect(srcRect.x * texSize.width, srcRect.y * texSize.height, srcRect.width * texSize.width, srcRect.height * texSize.height);
@@ -256,7 +256,7 @@ void FrameRectRendererCore::PutFrameRectangle(const RectF& rect, const Thickness
 	m_vertexCache.Clear();
 	m_indexCache.Clear();
 
-	SizeF texSize((float)srcTexture->GetRealSize().width, (float)srcTexture->GetRealSize().height);
+	Size texSize((float)srcTexture->GetRealSize().width, (float)srcTexture->GetRealSize().height);
 	texSize.width = 1.0f / texSize.width;
 	texSize.height = 1.0f / texSize.height;
 	RectF uvSrcRect(srcRect.x * texSize.width, srcRect.y * texSize.height, srcRect.width * texSize.width, srcRect.height * texSize.height);

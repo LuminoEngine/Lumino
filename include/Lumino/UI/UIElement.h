@@ -24,7 +24,7 @@ class UIElement
 
 public:
 	LN_TR_PROPERTY(PointF,				PositionProperty);				/**< Position プロパティの識別子 */
-	LN_TR_PROPERTY(SizeF,				SizeProperty);					/**< Size プロパティの識別子 */
+	LN_TR_PROPERTY(Size,				SizeProperty);					/**< Size プロパティの識別子 */
 	LN_TR_PROPERTY(AlignmentAnchor,		AnchorProperty);				/**< Anchor プロパティの識別子 */
 	LN_TR_PROPERTY(HAlignment,			HAlignmentProperty);			/**< HAlignment プロパティの識別子 */
 	LN_TR_PROPERTY(VAlignment,			VAlignmentProperty);			/**< VAlignment プロパティの識別子 */
@@ -65,8 +65,8 @@ public:
 	void SetPosition(const PointF& value) { tr::PropertyInfo::SetPropertyValueDirect<PointF>(this, PositionProperty, value); }
 	const PointF& GetPosition() const { return tr::PropertyInfo::GetPropertyValueDirect<PointF>(this, PositionProperty); }
 
-	void SetSize(const SizeF& value) { tr::PropertyInfo::SetPropertyValueDirect<SizeF>(this, SizeProperty, value); }
-	const SizeF& GetSize() const { return tr::PropertyInfo::GetPropertyValueDirect<SizeF>(this, SizeProperty); }
+	void SetSize(const Size& value) { tr::PropertyInfo::SetPropertyValueDirect<Size>(this, SizeProperty, value); }
+	const Size& GetSize() const { return tr::PropertyInfo::GetPropertyValueDirect<Size>(this, SizeProperty); }
 
 	void SetAnchor(AlignmentAnchor value) { tr::PropertyInfo::SetPropertyValueDirect<AlignmentAnchor>(this, AnchorProperty, value); }
 	AlignmentAnchor GetAnchor() const { return tr::PropertyInfo::GetPropertyValueDirect<AlignmentAnchor>(this, AnchorProperty); }
@@ -93,16 +93,16 @@ public:
 	/** 論理上の親要素を取得します。*/
 	UIElement* GetParent() const { return m_parent; }
 
-	//void SetSize(const SizeF& size) { m_size = size; }
+	//void SetSize(const Size& size) { m_size = size; }
 
 	/** この要素がフォーカスを得ることができるかを確認します。*/
 	virtual bool IsFocusable() const { return false; }
 
 	/** レイアウト処理の測定パスの実行中にこの要素が計算したサイズを取得します。この値は子要素が親要素へ要求する、子要素自身の最低サイズです。*/
-	const SizeF& GetDesiredSize() const { return m_desiredSize; }
+	const Size& GetDesiredSize() const { return m_desiredSize; }
 
 	/** この要素の最終的な描画サイズを取得します。この値は Arrange() で確定します。*/
-	const SizeF& GetRenderSize() const { return m_finalLocalRect.GetSize(); }
+	const Size& GetRenderSize() const { return m_finalLocalRect.GetSize(); }
 
 	/** この要素へのフォーカスの取得を試みます。*/
 	void Focus();
@@ -126,7 +126,7 @@ public:
 	//UILayoutView* GetOwnerLayoutView() const { return m_ownerLayoutView; }
 
 
-	virtual void MeasureLayout(const SizeF& availableSize) override;
+	virtual void MeasureLayout(const Size& availableSize) override;
 	virtual void ArrangeLayout(const RectF& finalLocalRect) override;
 
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
@@ -175,7 +175,7 @@ protected:
 		@return		この要素のレイアウトの際に必要となる最低限のサイズ。この要素のサイズと、全ての子要素のサイズに基づき決定します。Inf であってはなりません。
 		@details	constraint は、ScrollViewer 等のコンテンツとなった場合は Infinity が渡されることがあります。
 	*/
-	virtual SizeF MeasureOverride(const SizeF& constraint) override;
+	virtual Size MeasureOverride(const Size& constraint) override;
 
 	/**
 		@brief		子要素の配置を確定し、この要素の最終サイズを返します。
@@ -183,7 +183,7 @@ protected:
 		@return		要素の最終サイズ。要素の描画時にこのサイズを使用します。
 		@details	派生クラスは finalSize よりも大きいサイズを返すと、描画時に見切れが発生します。
 	*/
-	virtual SizeF ArrangeOverride(const SizeF& finalSize) override;
+	virtual Size ArrangeOverride(const Size& finalSize) override;
 
 	/** この要素のレイアウトの更新が完了した時に呼び出されます。*/
 	virtual void OnLayoutUpdated();
@@ -210,7 +210,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	detail::UIManager* GetManager() const { return m_manager; }
 	const PointF& GetPositionInternal() const { return m_position; }
-	const SizeF& GetSizeInternal() const { return m_size; }
+	const Size& GetSizeInternal() const { return m_size; }
 	const ThicknessF& GetMargineInternal() const { return m_margin; }
 	AlignmentAnchor GetAnchorInternal() const { return m_anchor; }
 	const BrushPtr& GetForegroundInternal() const { return m_foreground; }
@@ -222,7 +222,7 @@ LN_INTERNAL_ACCESS:
 	virtual void ActivateInternal(UIElement* child);
 	virtual bool OnEvent(detail::UIInternalEventType type, UIEventArgs* args);
 	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e);
-	void UpdateLayout(const SizeF& viewSize);
+	void UpdateLayout(const Size& viewSize);
 	void UpdateTransformHierarchy();
 	void Render(DrawingContext* g);
 
@@ -234,7 +234,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 LN_PROTECTED_INTERNAL_ACCESS:
 	// ILayoutElement interface
 	virtual const PointF& GetLayoutPosition() const override;
-	virtual const SizeF& GetLayoutSize() const override;
+	virtual const Size& GetLayoutSize() const override;
 	virtual const ThicknessF& GetLayoutMargin() const override;
 	virtual const ThicknessF& GetLayoutPadding() const override;
 	virtual AlignmentAnchor GetLayoutAnchor() const override;
@@ -243,8 +243,8 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual ILayoutElement* GetLayoutParent() const override;
 	virtual const HAlignment* GetLayoutContentHAlignment() override;
 	virtual const VAlignment* GetLayoutContentVAlignment() override;
-	virtual const SizeF& GetLayoutDesiredSize() const override;
-	virtual void SetLayoutDesiredSize(const SizeF& size) override;
+	virtual const Size& GetLayoutDesiredSize() const override;
+	virtual void SetLayoutDesiredSize(const Size& size) override;
 	virtual void SetLayoutFinalLocalRect(const RectF& rect) override;
 	//virtual int GetLayoutColumn() const override;
 	//virtual int GetLayoutRow() const override;
@@ -262,7 +262,7 @@ private:
 	String					m_keyName;
 	UIElement*				m_parent;
 	UIStylePropertyTable*	m_localStyle;			// 内部的に使用されるスタイル。親や VisualState から取得したスタイルをマージしたもの。
-	SizeF					m_desiredSize;			// MeasureLayout() で決定されるこのコントロールの要求サイズ
+	Size					m_desiredSize;			// MeasureLayout() で決定されるこのコントロールの要求サイズ
 	RectF					m_finalLocalRect;		// 描画に使用する最終境界矩形 (グローバル座標系=RootFrame のローカル座標系)
 	RectF					m_finalGlobalRect;
 	String					m_elementName;				// 要素名 ("UITextBlock" など) TODO: いらないかも
@@ -273,7 +273,7 @@ private:
 	//		これらには直接値を設定しないこと。Property::SetValueDirect() を使う。
 	//		これによって必要にアニメーションを止めたりできる。
 	tr::Property<PointF>	m_position;
-	tr::Property<SizeF>		m_size;
+	tr::Property<Size>		m_size;
 	ThicknessF				m_margin;
 	ThicknessF				m_padding;
 	tr::Property<AlignmentAnchor>	m_anchor;

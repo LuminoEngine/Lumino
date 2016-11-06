@@ -141,8 +141,8 @@ void EngineDiagViewer::Render(DrawingContext* g, const Vector2& viewSize)
 	g->DrawText(_T("Statistics"), m_windowRect, StringFormatFlags::CenterAlignment);
 
 
-	//LocalPainter painter(SizeF(viewSize.X, viewSize.Y), m_manager);
-	////g->SetProjection(SizeF(viewSize.X, viewSize.Y), 0, 1000);
+	//LocalPainter painter(Size(viewSize.X, viewSize.Y), m_manager);
+	////g->SetProjection(Size(viewSize.X, viewSize.Y), 0, 1000);
 	//g->SetOpacity(0.5f);
 	//g->SetFont(m_font);
 

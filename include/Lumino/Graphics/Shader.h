@@ -53,7 +53,7 @@ struct SceneInfo
 struct CameraInfo
 {
 	intptr_t	dataSourceId;
-	SizeF		viewPixelSize;
+	Size		viewPixelSize;
 	Matrix		viewMatrix;
 	Matrix		projMatrix;
 	ViewFrustum	viewFrustum;

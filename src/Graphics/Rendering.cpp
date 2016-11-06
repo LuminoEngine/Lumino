@@ -162,7 +162,7 @@ TextRenderer* InternalContext::BeginTextRenderer()
 }
 
 //------------------------------------------------------------------------------
-void InternalContext::SetViewInfo(const SizeF& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix)
+void InternalContext::SetViewInfo(const Size& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix)
 {
 	m_primitiveRenderer->SetViewPixelSize(SizeI(viewPixelSize.width, viewPixelSize.height));
 	m_primitiveRenderer->SetViewProjMatrix(viewMatrix * projMatrix);
@@ -889,7 +889,7 @@ void DrawList::DrawText_(const StringRef& text, const RectF& rect, StringFormatF
 //------------------------------------------------------------------------------
 void DrawList::DrawSprite(
 	const Vector3& position,
-	const SizeF& size,
+	const Size& size,
 	const Vector2& anchor,
 	Texture* texture,
 	const RectF& srcRect,

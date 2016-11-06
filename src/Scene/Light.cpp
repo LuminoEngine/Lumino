@@ -39,7 +39,7 @@ void Light::Initialize(SceneGraph* owner, LightType type)
 }
 
 //------------------------------------------------------------------------------
-void Light::UpdateMatrices(const SizeF& viewSize)
+void Light::UpdateMatrices(const Size& viewSize)
 {
 	// 正面方向
 	Vector3 direction = Vector3::TransformCoord(Vector3(0, 0, 1), m_combinedGlobalMatrix);

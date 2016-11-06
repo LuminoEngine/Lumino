@@ -16,7 +16,7 @@ public:
 public:
 
 	/// 前描画
-	virtual void PreRender(const SizeF& viewSize) {}
+	virtual void PreRender(const Size& viewSize) {}
 
 	/// 本描画
 	virtual void Render() {}
@@ -53,7 +53,7 @@ public:
 	RenderingPassRefList* GetRenderingPasses() { return m_renderingPassList; }
 	
 
-	virtual void PreRender(const SizeF& viewSize);
+	virtual void PreRender(const Size& viewSize);
 	virtual void Render();
 
 private:

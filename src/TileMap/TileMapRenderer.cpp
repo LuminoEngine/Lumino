@@ -244,7 +244,7 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 	//int h = (boundingRect.Height + tileSize.Height) / tileSize.Height;
 
 	Texture* tileSetTexture = tileSet->GetImageSource();
-	SizeF invSize(
+	Size invSize(
 		1.0f / tileSetTexture->GetSize().width,
 		1.0f / tileSetTexture->GetSize().height);
 

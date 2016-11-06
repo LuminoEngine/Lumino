@@ -20,7 +20,7 @@ TEST_F(Test_Base_Size, Constants)
 {
 	ASSERT_EQ_SIZE(0, 0, SizeI::Zero);
 
-	ASSERT_EQ_SIZE(0, 0, SizeF::Zero);
+	ASSERT_EQ_SIZE(0, 0, Size::Zero);
 }
 
 //------------------------------------------------------------------------------
@@ -43,18 +43,18 @@ TEST_F(Test_Base_Size, Basic)
 	ASSERT_FALSE(s2 != s3);
 	ASSERT_TRUE(s1 != s2);
 
-	ASSERT_TRUE(SizeF(0, 0).IsAnyZero());
-	ASSERT_TRUE(SizeF(1, 0).IsAnyZero());
-	ASSERT_TRUE(SizeF(0, 1).IsAnyZero());
-	ASSERT_FALSE(SizeF(1, 1).IsAnyZero());
+	ASSERT_TRUE(Size(0, 0).IsAnyZero());
+	ASSERT_TRUE(Size(1, 0).IsAnyZero());
+	ASSERT_TRUE(Size(0, 1).IsAnyZero());
+	ASSERT_FALSE(Size(1, 1).IsAnyZero());
 }
 
 //------------------------------------------------------------------------------
 TEST_F(Test_Base_Size, Float)
 {
-	SizeF s1;
+	Size s1;
 	ASSERT_EQ_SIZE_FLOAT(0, 0, s1);
-	SizeF s2(0.5f, 0.75f);
+	Size s2(0.5f, 0.75f);
 	ASSERT_EQ_SIZE_FLOAT(0.5f, 0.75f, s2);
 
 	s2.Set(3.5f, 4.25f);
@@ -63,14 +63,14 @@ TEST_F(Test_Base_Size, Float)
 	ASSERT_TRUE(s1.IsZero());
 	ASSERT_FALSE(s2.IsZero());
 
-	SizeF s3(3.5f, 4.25f);
+	Size s3(3.5f, 4.25f);
 	ASSERT_TRUE(s2 == s3);
 	ASSERT_FALSE(s1 == s2);
 	ASSERT_FALSE(s2 != s3);
 	ASSERT_TRUE(s1 != s2);
 
-	ASSERT_TRUE(SizeF(0.0f, 0.0f).IsAnyZero());
-	ASSERT_TRUE(SizeF(1.0f, 0.0f).IsAnyZero());
-	ASSERT_TRUE(SizeF(0.0f, 1.0f).IsAnyZero());
-	ASSERT_FALSE(SizeF(1.0f, 1.0f).IsAnyZero());
+	ASSERT_TRUE(Size(0.0f, 0.0f).IsAnyZero());
+	ASSERT_TRUE(Size(1.0f, 0.0f).IsAnyZero());
+	ASSERT_TRUE(Size(0.0f, 1.0f).IsAnyZero());
+	ASSERT_FALSE(Size(1.0f, 1.0f).IsAnyZero());
 }

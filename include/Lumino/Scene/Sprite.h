@@ -37,7 +37,7 @@ public:
 	Texture* GetTexture() const;
 
 	/// サイズの設定
-	void SetSize(const SizeF& size) { m_size = size; UpdateVertexData(); }
+	void SetSize(const Size& size) { m_size = size; UpdateVertexData(); }
 
 
 	/// テクスチャの転送矩形の設定 (ピクセル単位)
@@ -70,7 +70,7 @@ protected:
 
 protected:
 	SpriteCoord	m_spriteCoord;
-	SizeF		m_size;
+	Size		m_size;
 	Rect		m_srcRect;
 	FlipMode	m_flipMode;
 
@@ -79,7 +79,7 @@ protected:
 	Vector2		m_upperLeftUV;
 	Vector2		m_lowerRightUV;
 
-	SizeF		m_renderSize;
+	Size		m_renderSize;
 	Rect		m_renderSourceRect;
 };
 

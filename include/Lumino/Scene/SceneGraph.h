@@ -80,7 +80,8 @@ private:
 		float	time = 0.0f;		// 最後にボタンが押されたときの時間（秒）
 		bool	isDown = false;		// 現在ボタンが押されているか
 
-		void ToVector4(const SizeF& viewSize, Vector4* v) {
+		void ToVector4(const Size& viewSize, Vector4* v)
+		{
 			v->x = (2.0f * ((float)position.x) / viewSize.width) - 1.0f;
 			v->y = (2.0f * ((float)position.y) / viewSize.height) - 1.0f;
 			v->z = (isDown) ? 1.0f : 0.0f;

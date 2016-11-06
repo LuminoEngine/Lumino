@@ -31,8 +31,8 @@ void ProfilerRenderer::Render(const Vector2& viewSize)
 {
 	PointF location(m_windowRect.X, m_windowRect.Y);
 
-	LocalPainter painter(SizeF(viewSize.X, viewSize.Y), m_manager);
-	//painter.SetProjection(SizeF(viewSize.X, viewSize.Y), 0, 1000);
+	LocalPainter painter(Size(viewSize.X, viewSize.Y), m_manager);
+	//painter.SetProjection(Size(viewSize.X, viewSize.Y), 0, 1000);
 	painter.SetOpacity(0.5f);
 	painter.SetFont(m_font);
 

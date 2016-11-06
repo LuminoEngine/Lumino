@@ -262,7 +262,7 @@ void PainterEngine::DrawRectangle(const RectF& rect)
 		Driver::ITexture* srcTexture = state.Brush.TextureBrush.Texture;
 		Rect& srcRect = *((Rect*)state.Brush.TextureBrush.SourceRect);
 
-		SizeF texSize((float)srcTexture->GetRealSize().width, (float)srcTexture->GetRealSize().height);
+		Size texSize((float)srcTexture->GetRealSize().width, (float)srcTexture->GetRealSize().height);
 		texSize.width = 1.0f / texSize.width;
 		texSize.height = 1.0f / texSize.height;
 		RectF uvSrcRect(srcRect.x * texSize.width, srcRect.y * texSize.height, srcRect.width * texSize.width, srcRect.height * texSize.height);
@@ -290,7 +290,7 @@ void PainterEngine::DrawRectangle(const RectF& rect)
 		{
 			Rect& srcRect = *((Rect*)brush.InnerSourceRect);
 			Driver::ITexture* srcTexture = brush.Texture;
-			SizeF texSize((float)srcTexture->GetRealSize().width, (float)srcTexture->GetRealSize().height);
+			Size texSize((float)srcTexture->GetRealSize().width, (float)srcTexture->GetRealSize().height);
 			texSize.width = 1.0f / texSize.width;
 			texSize.height = 1.0f / texSize.height;
 			RectF uvSrcRect(srcRect.x * texSize.width, srcRect.y * texSize.height, srcRect.width * texSize.width, srcRect.height * texSize.height);
@@ -338,7 +338,7 @@ void PainterEngine::DrawFillRectangle(const RectF& rect, Driver::ITexture* srcTe
 	m_vertexCache.Clear();
 	m_indexCache.Clear();
 
-	SizeF texSizeInv(1.0f / srcTexture->GetSize().Width, 1.0f / srcTexture->GetSize().Height);
+	Size texSizeInv(1.0f / srcTexture->GetSize().Width, 1.0f / srcTexture->GetSize().Height);
 	RectF uvSrcRect(srcRect);
 	uvSrcRect.X			*= texSizeInv.Width;
 	uvSrcRect.Width		*= texSizeInv.Width;
@@ -405,7 +405,7 @@ void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth/*, Dr
 	m_vertexCache.Clear();
 	m_indexCache.Clear();
 
-	SizeF texSize((float)srcTexture->GetRealSize().width, (float)srcTexture->GetRealSize().height);
+	Size texSize((float)srcTexture->GetRealSize().width, (float)srcTexture->GetRealSize().height);
 	texSize.width = 1.0f / texSize.width;
 	texSize.height = 1.0f / texSize.height;
 	RectF uvSrcRect(srcRect.x * texSize.width, srcRect.y * texSize.height, srcRect.width * texSize.width, srcRect.height * texSize.height);
@@ -528,7 +528,7 @@ void PainterEngine::DrawGlyphRun(const PointF& position, const GlyphRunData* dat
 {
 	SetInternalGlyphMaskTexture(glyphsTexture);
 
-	SizeF texSizeInv(1.0f / glyphsTexture->GetRealSize().width, 1.0f / glyphsTexture->GetRealSize().height);
+	Size texSizeInv(1.0f / glyphsTexture->GetRealSize().width, 1.0f / glyphsTexture->GetRealSize().height);
 	for (int i = 0; i < dataCount; ++i)
 	{
 		RectF uvSrcRect = dataList[i].SrcPixelRect;

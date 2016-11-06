@@ -36,7 +36,7 @@ TEST_F(Test_UI_GridLayout, Basic)
 
 	auto grid = UIGridLayout::Create();
 	auto button = UIButton::Create();
-	button->SetSize(SizeF(32, 32));
+	button->SetSize(Size(32, 32));
 	grid->AddChild(button);
 	uiRoot->SetContent(grid);
 
@@ -201,7 +201,7 @@ TEST_F(Test_UI_GridLayout, GridLength)
 	grid1->AddChild(button2);
 
 	auto button3 = UIButton::Create();
-	button3->SetSize(SizeF(20, 20));
+	button3->SetSize(Size(20, 20));
 	button3->SetLayoutColumn(2);
 	button3->SetLayoutRow(2);
 	grid1->AddChild(button3);
@@ -239,7 +239,7 @@ TEST_F(Test_UI_GridLayout, MinMax)
 	auto button1 = UIButton::Create();
 	button1->SetLayoutColumn(0);
 	button1->SetLayoutRow(0);
-	button1->SetSize(SizeF(10, 10));
+	button1->SetSize(Size(10, 10));
 	button1->SetHAlignment(HAlignment::Left);
 	button1->SetVAlignment(VAlignment::Top);
 	grid1->AddChild(button1);
@@ -247,7 +247,7 @@ TEST_F(Test_UI_GridLayout, MinMax)
 	auto button2 = UIButton::Create();
 	button2->SetLayoutColumn(1);
 	button2->SetLayoutRow(1);
-	button2->SetSize(SizeF(40, 40));
+	button2->SetSize(Size(40, 40));
 	button2->SetHAlignment(HAlignment::Left);
 	button2->SetVAlignment(VAlignment::Top);
 	grid1->AddChild(button2);
@@ -255,7 +255,7 @@ TEST_F(Test_UI_GridLayout, MinMax)
 	auto button3 = UIButton::Create();
 	button3->SetLayoutColumn(2);
 	button3->SetLayoutRow(2);
-	button3->SetSize(SizeF(10, 10));
+	button3->SetSize(Size(10, 10));
 	button3->SetHAlignment(HAlignment::Left);
 	button3->SetVAlignment(VAlignment::Top);
 	grid1->AddChild(button3);

@@ -32,7 +32,7 @@ DrawingLayer::~DrawingLayer()
 }
 
 //------------------------------------------------------------------------------
-void DrawingLayer::PreRender(const SizeF& viewSize)
+void DrawingLayer::PreRender(const Size& viewSize)
 {
 	LN_THROW(m_camera != NULL, InvalidOperationException);
 	LN_THROW(m_renderingRootNode != NULL, InvalidOperationException);

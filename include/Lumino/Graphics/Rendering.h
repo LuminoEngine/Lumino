@@ -62,7 +62,7 @@ public:
 	SpriteRenderer* BeginSpriteRenderer();
 	TextRenderer* BeginTextRenderer();
 
-	void SetViewInfo(const SizeF& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix);
+	void SetViewInfo(const Size& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix);
 	void SetCurrentStatePtr(const DrawElementBatch* state);
 	detail::SpriteRenderer* GetSpriteRenderer();
 
@@ -384,7 +384,7 @@ public:
 
 	void DrawSprite(
 		const Vector3& position,
-		const SizeF& size,
+		const Size& size,
 		const Vector2& anchor,
 		Texture* texture,
 		const RectF& srcRect,

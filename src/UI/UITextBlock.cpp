@@ -42,9 +42,9 @@ void UITextBlock::SetText(const StringRef& text)
 }
 
 //------------------------------------------------------------------------------
-SizeF UITextBlock::MeasureOverride(const SizeF& availableSize)
+Size UITextBlock::MeasureOverride(const Size& availableSize)
 {
-	SizeF size = UITextElement::MeasureOverride(availableSize);
+	Size size = UITextElement::MeasureOverride(availableSize);
 
 	if (m_font != nullptr)
 	{

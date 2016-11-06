@@ -18,7 +18,7 @@ LN_UI_TYPEINFO_IMPLEMENT(UIElement, tr::ReflectionObject);
 
 // Property definition
 LN_TR_PROPERTY_IMPLEMENT(UIElement, PointF, PositionProperty, "Position", m_position, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(UIElement, SizeF, SizeProperty, "Size", m_size, tr::PropertyMetadata(SizeF(NAN, NAN)));
+LN_TR_PROPERTY_IMPLEMENT(UIElement, Size, SizeProperty, "Size", m_size, tr::PropertyMetadata(Size(NAN, NAN)));
 LN_TR_PROPERTY_IMPLEMENT(UIElement, AlignmentAnchor, AnchorProperty, "Anchor", m_anchor, tr::PropertyMetadata(AlignmentAnchor::None));
 LN_TR_PROPERTY_IMPLEMENT(UIElement, HAlignment, HAlignmentProperty, "HAlignment", m_horizontalAlignment, tr::PropertyMetadata(HAlignment::Stretch));
 LN_TR_PROPERTY_IMPLEMENT(UIElement, VAlignment, VAlignmentProperty, "VAlignment", m_verticalAlignment, tr::PropertyMetadata(VAlignment::Stretch));
@@ -44,7 +44,7 @@ UIElement::UIElement()
 	, m_localStyle(nullptr)
 	, m_currentVisualStateStyle(nullptr)
 	, m_position(PointF(0, 0))
-	, m_size(SizeF(NAN, NAN))
+	, m_size(Size(NAN, NAN))
 	, m_anchor(AlignmentAnchor::None)
 	, m_horizontalAlignment(HAlignment::Stretch)
 	, m_verticalAlignment(VAlignment::Stretch)
@@ -151,7 +151,7 @@ void UIElement::RaiseEvent(const UIEventInfo* ev, UIElement* sender, UIEventArgs
 }
 
 //------------------------------------------------------------------------------
-void UIElement::MeasureLayout(const SizeF& availableSize)
+void UIElement::MeasureLayout(const Size& availableSize)
 {
 	ILayoutElement::MeasureLayout(availableSize);
 
@@ -169,13 +169,13 @@ void UIElement::ArrangeLayout(const RectF& finalLocalRect)
 }
 
 //------------------------------------------------------------------------------
-SizeF UIElement::MeasureOverride(const SizeF& constraint)
+Size UIElement::MeasureOverride(const Size& constraint)
 {
 	return ILayoutElement::MeasureOverride(constraint);
 }
 
 //------------------------------------------------------------------------------
-SizeF UIElement::ArrangeOverride(const SizeF& finalSize)
+Size UIElement::ArrangeOverride(const Size& finalSize)
 {
 	return ILayoutElement::ArrangeOverride(finalSize);
 }
@@ -435,9 +435,9 @@ void UIElement::OnUpdatingLayout()
 }
 
 //------------------------------------------------------------------------------
-void UIElement::UpdateLayout(const SizeF& viewSize)
+void UIElement::UpdateLayout(const Size& viewSize)
 {
-	SizeF size(
+	Size size(
 		Math::IsNaNOrInf(m_size.Get().width) ? viewSize.width : m_size.Get().width,
 		Math::IsNaNOrInf(m_size.Get().height) ? viewSize.height : m_size.Get().height);
 
@@ -526,7 +526,7 @@ void UIElement::RaiseEventInternal(const UIEventInfo* ev, UIEventArgs* e)
 
 //------------------------------------------------------------------------------
 const PointF& UIElement::GetLayoutPosition() const { return m_position; }
-const SizeF& UIElement::GetLayoutSize() const { return m_size; }
+const Size& UIElement::GetLayoutSize() const { return m_size; }
 const ThicknessF& UIElement::GetLayoutMargin() const { return m_margin; }
 const ThicknessF& UIElement::GetLayoutPadding() const { return m_padding; }
 AlignmentAnchor UIElement::GetLayoutAnchor() const { return m_anchor; }
@@ -535,8 +535,8 @@ VAlignment UIElement::GetLayoutVAlignment() const { return m_verticalAlignment; 
 ILayoutElement* UIElement::GetLayoutParent() const { return m_parent; }
 const HAlignment* UIElement::GetLayoutContentHAlignment() { return GetPriorityContentHAlignment(); }
 const VAlignment* UIElement::GetLayoutContentVAlignment() { return GetPriorityContentVAlignment(); }
-const SizeF& UIElement::GetLayoutDesiredSize() const { return m_desiredSize; }
-void UIElement::SetLayoutDesiredSize(const SizeF& size) { m_desiredSize = size; }
+const Size& UIElement::GetLayoutDesiredSize() const { return m_desiredSize; }
+void UIElement::SetLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
 void UIElement::SetLayoutFinalLocalRect(const RectF& rect) { m_finalLocalRect = rect; }
 //int UIElement::GetLayoutColumn() const { return m_gridLayoutInfo.layoutColumn; }
 //int UIElement::GetLayoutRow() const { return m_gridLayoutInfo.layoutRow; }

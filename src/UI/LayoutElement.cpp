@@ -19,7 +19,7 @@ ILayoutElement::~ILayoutElement()
 }
 
 //------------------------------------------------------------------------------
-void ILayoutElement::MeasureLayout(const SizeF& availableSize)
+void ILayoutElement::MeasureLayout(const Size& availableSize)
 {
 	//// 無効情報フラグをこの要素に伝播させる
 	//if (m_parent != nullptr)
@@ -38,11 +38,11 @@ void ILayoutElement::MeasureLayout(const SizeF& availableSize)
 	const ThicknessF& margin = GetLayoutMargin();
 	float marginWidth = margin.Left + margin.Right;
 	float marginHeight = margin.Top + margin.Bottom;
-	SizeF localAvailableSize(
+	Size localAvailableSize(
 		std::max(availableSize.width - marginWidth, 0.0f),
 		std::max(availableSize.height - marginHeight, 0.0f));
 
-	SizeF desiredSize = MeasureOverride(localAvailableSize);
+	Size desiredSize = MeasureOverride(localAvailableSize);
 
 	// Margin を考慮する
 	desiredSize.width += marginWidth;
@@ -59,7 +59,7 @@ void ILayoutElement::ArrangeLayout(const RectF& finalLocalRect)
 	// TODO: HorizontalAlignment 等を考慮して、最終的な座標とサイズを決定する。
 	//		 この要素のサイズが省略されていれば、Stretch ならサイズは最大に、それ以外なら最小になる。
 
-	const SizeF& areaSize = finalLocalRect.GetSize();
+	const Size& areaSize = finalLocalRect.GetSize();
 
 	ILayoutElement* parent = GetLayoutParent();
 	HAlignment		hAlign = GetLayoutHAlignment();
@@ -69,8 +69,8 @@ void ILayoutElement::ArrangeLayout(const RectF& finalLocalRect)
 	if (parentHAlign != nullptr) hAlign = *parentHAlign;
 	if (parentVAlign != nullptr) vAlign = *parentVAlign;
 
-	const SizeF& layoutSize = GetLayoutSize();
-	SizeF ds = GetLayoutDesiredSize();
+	const Size& layoutSize = GetLayoutSize();
+	Size ds = GetLayoutDesiredSize();
 	ds.width = Math::IsNaNOrInf(layoutSize.width) ? layoutSize.width : ds.width;
 	ds.height = Math::IsNaNOrInf(layoutSize.height) ? layoutSize.height : ds.height;
 
@@ -86,7 +86,7 @@ void ILayoutElement::ArrangeLayout(const RectF& finalLocalRect)
 	arrangeRect.height = std::max(arrangeRect.height - marginHeight, 0.0f);
 
 
-	SizeF renderSize = ArrangeOverride(arrangeRect.GetSize());
+	Size renderSize = ArrangeOverride(arrangeRect.GetSize());
 	RectF thisFinalLocalRect;
 	thisFinalLocalRect.x = finalLocalRect.x + margin.Left + arrangeRect.x;
 	thisFinalLocalRect.y = finalLocalRect.y + margin.Top + arrangeRect.y;
@@ -96,14 +96,14 @@ void ILayoutElement::ArrangeLayout(const RectF& finalLocalRect)
 }
 
 //------------------------------------------------------------------------------
-SizeF ILayoutElement::MeasureOverride(const SizeF& constraint)
+Size ILayoutElement::MeasureOverride(const Size& constraint)
 {
 	// 戻り値は、constraint の制限の中で、子要素をレイアウトするために必要な最小サイズ。
 	// ユーザー指定のサイズがある場合はそれを返す。
 	// ただし、constraint を超えることはできない。
 
-	const SizeF& size = GetLayoutSize();
-	SizeF desiredSize;
+	const Size& size = GetLayoutSize();
+	Size desiredSize;
 	// NaN の場合、この要素として必要な最小サイズは 0 となる。
 	desiredSize.width = Math::IsNaNOrInf(size.width) ? 0.0f : size.width;
 	desiredSize.height = Math::IsNaNOrInf(size.height) ? 0.0f : size.height;
@@ -114,7 +114,7 @@ SizeF ILayoutElement::MeasureOverride(const SizeF& constraint)
 }
 
 //------------------------------------------------------------------------------
-SizeF ILayoutElement::ArrangeOverride(const SizeF& finalSize)
+Size ILayoutElement::ArrangeOverride(const Size& finalSize)
 {
 	return finalSize;
 }

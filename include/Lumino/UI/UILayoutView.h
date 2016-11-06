@@ -25,10 +25,10 @@ public:
 
 
 LN_INTERNAL_ACCESS:
-	void UpdateLayout(const SizeF& viewSize);
+	void UpdateLayout(const Size& viewSize);
 	void Render(DrawingContext* g);
 	
-	const SizeF& GetViewPixelSize() const { return m_viewPixelSize; }
+	const Size& GetViewPixelSize() const { return m_viewPixelSize; }
 	bool UpdateMouseHover(const PointF& mousePos);
 	//void CaptureMouse(UIElement* element);
 	//void ReleaseMouseCapture(UIElement* element);
@@ -68,7 +68,7 @@ private:
 	PointF				m_mousePosition;
 	MouseClickTracker	m_mouseClickTrackers[MouseButton::TERMINATOR];
 
-	SizeF				m_viewPixelSize;
+	Size				m_viewPixelSize;
 };
 
 LN_NAMESPACE_END

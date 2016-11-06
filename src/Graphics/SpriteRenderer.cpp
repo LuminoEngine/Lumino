@@ -62,12 +62,12 @@ void SpriteRenderer::SetState(const RenderState& renderState)
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderer::SetViewInfo(const SizeF& size, const Matrix& view, const Matrix& proj)
+void SpriteRenderer::SetViewInfo(const Size& size, const Matrix& view, const Matrix& proj)
 {
 	LN_ENQUEUE_RENDER_COMMAND_4(
 		SpriteRenderer_SetTransform, m_manager,
 		SpriteRendererImpl*, m_internal,
-		SizeF, size,
+		Size, size,
 		Matrix, view,
 		Matrix, proj,
 		{
@@ -388,7 +388,7 @@ void SpriteRendererImpl::SetViewProjMatrix(const Matrix& view, const Matrix& pro
 }
 
 //------------------------------------------------------------------------------
-void SpriteRendererImpl::SetViewPixelSize(const SizeF& size)
+void SpriteRendererImpl::SetViewPixelSize(const Size& size)
 {
 	m_viewPixelSize.Set(size.width, size.height);
 }

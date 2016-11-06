@@ -45,7 +45,7 @@ protected:
 	void AddRenderingPass(detail::RenderingPass2* pass);
 
 	/// 前描画
-	//virtual void BeginFrame(const SizeF& viewSize);
+	//virtual void BeginFrame(const Size& viewSize);
 
 	/// 本描画
 	virtual void Render(RenderingContext* context) = 0;

@@ -97,7 +97,7 @@ void SceneGraph::UpdateFrame(float deltaTime)
 void SceneGraph::Render(RenderingContext* context, Camera* camera)
 {
 	Texture* renderTarget = context->GetRenderTarget(0);
-	SizeF viewSize((float)renderTarget->GetSize().width, (float)renderTarget->GetSize().height);
+	Size viewSize((float)renderTarget->GetSize().width, (float)renderTarget->GetSize().height);
 
 	// 全てのシェーダの Scene 単位データの更新
 	MMESceneParams sceneParams;

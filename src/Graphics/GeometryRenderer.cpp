@@ -177,7 +177,7 @@ void GeometryData::ExpandFillAndUV_FrameRectangle(
 	if (srcPixelRect.IsEmpty()) return;
 	assert(srcTexture != nullptr);
 
-	SizeF texSize((float)srcTexture->GetRealSize().width, (float)srcTexture->GetRealSize().height);
+	Size texSize((float)srcTexture->GetRealSize().width, (float)srcTexture->GetRealSize().height);
 	texSize.width = 1.0f / texSize.width;
 	texSize.height = 1.0f / texSize.height;
 	RectF uvSrcRect(srcPixelRect.x * texSize.width, srcPixelRect.y * texSize.height, srcPixelRect.width * texSize.width, srcPixelRect.height * texSize.height);

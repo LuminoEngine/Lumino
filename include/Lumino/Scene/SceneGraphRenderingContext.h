@@ -21,7 +21,7 @@ public:
 
 	void DrawSprite2D(
 		const Matrix& transform,
-		const SizeF& size,
+		const Size& size,
 		const Vector2& anchorRatio,
 		Texture* texture,
 		const RectF& srcRect,
@@ -29,7 +29,7 @@ public:
 
 	void DrawSprite3D(
 		const Matrix& transform,
-		const SizeF& size,
+		const Size& size,
 		const Vector2& anchorRatio,
 		Texture* texture,
 		const RectF& srcRect,

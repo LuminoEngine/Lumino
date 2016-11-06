@@ -48,7 +48,7 @@ protected:
 	virtual ~UITextElement();
 	RawFont* GetActiveFont() const { return m_font; }
 
-	virtual SizeF MeasureOverride(const SizeF& constraint) override;
+	virtual Size MeasureOverride(const Size& constraint) override;
 	virtual void OnUpdateStyle(UIStylePropertyTable* localStyle, detail::InvalidateFlags invalidateFlags) override;
 
 LN_INTERNAL_ACCESS:

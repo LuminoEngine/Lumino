@@ -79,7 +79,7 @@ void TileMap::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 	}
 
 	//dc->ResetState();
-	//dc->SetProjection(SizeF(640, 480));
+	//dc->SetProjection(Size(640, 480));
 	//dc->SetSolidColor(ColorF::Red);
 	//dc->DrawRectangle(RectF(0, 0, 1, 2));
 	//dc->SetViewProjection(dc->CurrentCamera->GetViewMatrix(), dc->CurrentCamera->GetProjectionMatrix());

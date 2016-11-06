@@ -15,24 +15,16 @@ const Point	Point::Zero(0, 0);
 const PointF PointF::Zero(0, 0);
 
 //==============================================================================
-// SizeI
+// Size
 //==============================================================================
-const SizeI	SizeI::Zero(0, 0);
 
-//==============================================================================
-// SizeF
-//==============================================================================
-const SizeF	SizeF::Zero(0, 0);
-const SizeF	SizeF::NaN(NAN, NAN);
-const SizeF SizeF::MaxValue(FLT_MAX, FLT_MAX);
+template<typename T> const GenericSize<T> GenericSize<T>::Zero(0, 0);
+template<typename T> const GenericSize<T> GenericSize<T>::MinValue(std::numeric_limits<T>::min(), std::numeric_limits<T>::min());
+template<typename T> const GenericSize<T> GenericSize<T>::MaxValue(std::numeric_limits<T>::max(), std::numeric_limits<T>::max());
 
-//------------------------------------------------------------------------------
-SizeF SizeF::Max(const SizeF& size1, const SizeF& size2)
-{
-	return SizeF(
-		(size1.width > size2.width) ? size1.width : size2.width,
-		(size1.height > size2.height) ? size1.height : size2.height);
-}
+// テンプレートのインスタンス化
+template class GenericSize<int>;
+template class GenericSize<float>;
 
 //==============================================================================
 // Rect

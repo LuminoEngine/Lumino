@@ -32,8 +32,8 @@ protected:
 	// UIElement interface
 	virtual int GetVisualChildrenCount() const override;
 	virtual UIElement* GetVisualChildOrderd(int index) const override;
-	virtual SizeF MeasureOverride(const SizeF& constraint) override;
-	virtual SizeF ArrangeOverride(const SizeF& finalSize) override;
+	virtual Size MeasureOverride(const Size& constraint) override;
+	virtual Size ArrangeOverride(const Size& finalSize) override;
 	virtual const VAlignment* GetPriorityContentVAlignment() override;
 	virtual const HAlignment* GetPriorityContentHAlignment() override;
 

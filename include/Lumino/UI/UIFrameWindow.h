@@ -79,7 +79,7 @@ LN_INTERNAL_ACCESS:
 	void Initialize(detail::UIManager* manager, PlatformWindow* platformWindow);
 
 	void InjectElapsedTime(float elapsedTime);
-	void UpdateLayout(const SizeF& viewSize);	// TODO: ゆくゆくは SwapChain や Viewport も UIFrameWindow にもってくる。そのとき、この viewSize はいらなくなる
+	void UpdateLayout(const Size& viewSize);	// TODO: ゆくゆくは SwapChain や Viewport も UIFrameWindow にもってくる。そのとき、この viewSize はいらなくなる
 	void RenderUI();
 
 private:

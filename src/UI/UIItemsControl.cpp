@@ -56,12 +56,12 @@ void UIItemsControl::SetItemsHostPanel(UILayoutPanel* panel)
 //}
 
 ////------------------------------------------------------------------------------
-//SizeF UIItemsControl::MeasureOverride(const SizeF& constraint)
+//Size UIItemsControl::MeasureOverride(const Size& constraint)
 //{
-//	SizeF desiredSize = UIElement::MeasureOverride(constraint);
+//	Size desiredSize = UIElement::MeasureOverride(constraint);
 //
 //	m_itemsHostPanel->MeasureLayout(constraint);
-//	const SizeF& childDesiredSize = m_itemsHostPanel->GetDesiredSize();
+//	const Size& childDesiredSize = m_itemsHostPanel->GetDesiredSize();
 //
 //	desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
 //	desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
@@ -70,11 +70,11 @@ void UIItemsControl::SetItemsHostPanel(UILayoutPanel* panel)
 //}
 //
 ////------------------------------------------------------------------------------
-//SizeF UIItemsControl::ArrangeOverride(const SizeF& finalSize)
+//Size UIItemsControl::ArrangeOverride(const Size& finalSize)
 //{
-//	RectF childFinal(0, 0, finalSize);
+//	Size childFinal(0, 0, finalSize);
 //
-//	SizeF childDesiredSize = m_itemsHostPanel->GetDesiredSize();
+//	Size childDesiredSize = m_itemsHostPanel->GetDesiredSize();
 //	childDesiredSize.width = std::max(finalSize.width, childDesiredSize.width);
 //	childDesiredSize.height = std::max(finalSize.height, childDesiredSize.height);
 //	m_itemsHostPanel->ArrangeLayout(RectF(0, 0, childDesiredSize));

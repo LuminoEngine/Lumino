@@ -80,7 +80,7 @@ void TextElement::Render(const Matrix& transform, IDocumentsRenderer* renderer)
 }
 
 //------------------------------------------------------------------------------
-SizeF TextElement::MeasureOverride(const SizeF& constraint)
+Size TextElement::MeasureOverride(const Size& constraint)
 {
 	if (m_fontDataModified)
 	{
@@ -92,7 +92,7 @@ SizeF TextElement::MeasureOverride(const SizeF& constraint)
 
 //------------------------------------------------------------------------------
 const PointF& TextElement::GetLayoutPosition() const { return m_position; }
-const SizeF& TextElement::GetLayoutSize() const { return m_size; }
+const Size& TextElement::GetLayoutSize() const { return m_size; }
 const ThicknessF& TextElement::GetLayoutMargin() const { return m_margin; }
 const ThicknessF& TextElement::GetLayoutPadding() const { return m_padding; }
 AlignmentAnchor TextElement::GetLayoutAnchor() const { return m_anchor; }
@@ -101,8 +101,8 @@ VAlignment TextElement::GetLayoutVAlignment() const { return m_verticalAlignment
 ILayoutElement* TextElement::GetLayoutParent() const { return m_parent; }
 const HAlignment* TextElement::GetLayoutContentHAlignment() { return nullptr; }
 const VAlignment* TextElement::GetLayoutContentVAlignment() { return nullptr; }
-const SizeF& TextElement::GetLayoutDesiredSize() const { return m_desiredSize; }
-void TextElement::SetLayoutDesiredSize(const SizeF& size) { m_desiredSize = size; }
+const Size& TextElement::GetLayoutDesiredSize() const { return m_desiredSize; }
+void TextElement::SetLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
 void TextElement::SetLayoutFinalLocalRect(const RectF& rect) { m_finalLocalRect = rect; }
 int TextElement::GetLayoutColumn() const { return m_gridLayoutInfo.layoutColumn; }
 int TextElement::GetLayoutRow() const { return m_gridLayoutInfo.layoutRow; }
@@ -154,30 +154,30 @@ void Block::Render(const Matrix& transform, IDocumentsRenderer* renderer)
 }
 
 //------------------------------------------------------------------------------
-SizeF Block::MeasureOverride(const SizeF& constraint)
+Size Block::MeasureOverride(const Size& constraint)
 {
-	SizeF childDesirdSize;
+	Size childDesirdSize;
 	for (TextElement* child : m_childElements)
 	{
 		// TODO: とりあえず 左から右へのフロー
-		SizeF size = child->MeasureOverride(constraint);
+		Size size = child->MeasureOverride(constraint);
 		childDesirdSize.width += size.width;
 		childDesirdSize.height = std::max(childDesirdSize.height, size.height);
 	}
 
-	SizeF desirdSize = TextElement::MeasureOverride(constraint);
-	return SizeF::Max(desirdSize, childDesirdSize);
+	Size desirdSize = TextElement::MeasureOverride(constraint);
+	return Size::Max(desirdSize, childDesirdSize);
 }
 
 //------------------------------------------------------------------------------
-SizeF Block::ArrangeOverride(const SizeF& finalSize)
+Size Block::ArrangeOverride(const Size& finalSize)
 {
 	float prevChildSize = 0;
 	RectF childRect;
 	for (TextElement* child : m_childElements)
 	{
 		// TODO: とりあえず 左から右へのフロー
-		SizeF childDesiredSize = child->GetDesiredSize();
+		Size childDesiredSize = child->GetDesiredSize();
 		childRect.x += prevChildSize;
 		prevChildSize = childDesiredSize.width;
 		childRect.width = prevChildSize;
@@ -270,9 +270,9 @@ void Run::OnFontDataChanged(const FontData& newData)
 }
 
 //------------------------------------------------------------------------------
-SizeF Run::MeasureOverride(const SizeF& constraint)
+Size Run::MeasureOverride(const Size& constraint)
 {
-	SizeF size = Inline::MeasureOverride(constraint);
+	Size size = Inline::MeasureOverride(constraint);
 	const SizeI& runSize = m_glyphRun->GetRenderSize();
 
 	size.width = std::max(size.width, (float)runSize.width);

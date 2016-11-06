@@ -44,13 +44,13 @@ UIElement* UIControl::GetVisualChildOrderd(int index) const
 }
 
 //------------------------------------------------------------------------------
-SizeF UIControl::MeasureOverride(const SizeF& constraint)
+Size UIControl::MeasureOverride(const Size& constraint)
 {
-	SizeF desiredSize = UIElement::MeasureOverride(constraint);
+	Size desiredSize = UIElement::MeasureOverride(constraint);
 	if (m_visualTreeRoot != nullptr)
 	{
 		m_visualTreeRoot->MeasureLayout(constraint);
-		const SizeF& childDesiredSize = m_visualTreeRoot->GetDesiredSize();
+		const Size& childDesiredSize = m_visualTreeRoot->GetDesiredSize();
 
 		desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
 		desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
@@ -59,12 +59,12 @@ SizeF UIControl::MeasureOverride(const SizeF& constraint)
 }
 
 //------------------------------------------------------------------------------
-SizeF UIControl::ArrangeOverride(const SizeF& finalSize)
+Size UIControl::ArrangeOverride(const Size& finalSize)
 {
 	RectF childFinal(0, 0, finalSize);
 	if (m_visualTreeRoot != nullptr)
 	{
-		SizeF childDesiredSize = m_visualTreeRoot->GetDesiredSize();
+		Size childDesiredSize = m_visualTreeRoot->GetDesiredSize();
 		childDesiredSize.width = std::max(finalSize.width, childDesiredSize.width);
 		childDesiredSize.height = std::max(finalSize.height, childDesiredSize.height);
 		m_visualTreeRoot->ArrangeLayout(RectF(0, 0, childDesiredSize));

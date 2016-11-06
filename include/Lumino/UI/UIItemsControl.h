@@ -27,8 +27,8 @@ protected:
 	// UIElement interface
 	//virtual int GetVisualChildrenCount() const override;
 	//virtual UIElement* GetVisualChildOrderd(int index) const override;
-	//virtual SizeF MeasureOverride(const SizeF& constraint) override;
-	//virtual SizeF ArrangeOverride(const SizeF& finalSize) override;
+	//virtual Size MeasureOverride(const Size& constraint) override;
+	//virtual Size ArrangeOverride(const Size& finalSize) override;
 
 	// IUIElementCollectionOwner interface
 	virtual void OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e) override;

@@ -40,7 +40,7 @@ public:
 	void UpdateSceneParams(const MMESceneParams& params, SceneGraphManager* scene);
 
 	/// Camera 単位で必要なパラメータを設定する
-	void UpdateCameraParams(Camera* camera, const SizeF& viewPixelSize);
+	void UpdateCameraParams(Camera* camera, const Size& viewPixelSize);
 
 	/// Node 単位で必要なパラメータを設定する
 	void UpdateNodeParams(SceneNode* node, Camera* affectCamera, const LightNodeList& affectLightList);

@@ -47,7 +47,7 @@ void SceneGraphRenderingContext::SetCurrentCamera(Camera* camera)
 //------------------------------------------------------------------------------
 void SceneGraphRenderingContext::DrawSprite2D(
 	const Matrix& transform,
-	const SizeF& size,
+	const Size& size,
 	const Vector2& anchorRatio,
 	Texture* texture,
 	const RectF& srcRect,
@@ -61,7 +61,7 @@ void SceneGraphRenderingContext::DrawSprite2D(
 //------------------------------------------------------------------------------
 void SceneGraphRenderingContext::DrawSprite3D(
 	const Matrix& transform,
-	const SizeF& size,
+	const Size& size,
 	const Vector2& anchorRatio,
 	Texture* texture,
 	const RectF& srcRect,
@@ -89,7 +89,7 @@ void SceneGraphRenderingContext::OnStateFlush(detail::IRendererPloxy* activeRend
 	if (activeRenderer == m_spriteRenderer)
 	{
 		const SizeI& size = GetRenderTarget(0)->GetSize();
-		m_spriteRenderer->SetViewInfo(SizeF((float)size.width, (float)size.height), m_currentCamera->GetViewMatrix(), m_currentCamera->GetProjectionMatrix());
+		m_spriteRenderer->SetViewInfo(Size((float)size.width, (float)size.height), m_currentCamera->GetViewMatrix(), m_currentCamera->GetProjectionMatrix());
 		m_spriteRenderer->SetState(GetRenderState());
 	}
 	// TextRenderer

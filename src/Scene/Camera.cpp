@@ -108,7 +108,7 @@ Vector3 Camera::ViewportToWorldPoint(const Vector3& position) const
 }
 
 //------------------------------------------------------------------------------
-void Camera::UpdateMatrices(const SizeF& viewSize)
+void Camera::UpdateMatrices(const Size& viewSize)
 {
 	// 2D モード
 	if (m_projectionMode == CameraProjection_2D)
@@ -270,7 +270,7 @@ void CameraViewportLayer::Render(RenderingContext* context)
 	m_renderer->BeginMakeElements();
 
 	// カメラ行列の更新
-	SizeF viewSize((float)GetViewportSize().width, (float)GetViewportSize().height);
+	Size viewSize((float)GetViewportSize().width, (float)GetViewportSize().height);
 	m_hostingCamera->UpdateMatrices(viewSize);
 
 	//m_hostingCamera->GetOwnerSceneGraph()->Render(context, m_hostingCamera);
@@ -286,7 +286,7 @@ void CameraViewportLayer::OnBeginFrameRender(RenderTarget* renderTarget, DepthBu
 //------------------------------------------------------------------------------
 void CameraViewportLayer::OnRenderDrawElementList(RenderTarget* renderTarget, DepthBuffer* depthBuffer, detail::RenderingPass2* pass)
 {
-	SizeF viewSize((float)GetViewportSize().width, (float)GetViewportSize().height);
+	Size viewSize((float)GetViewportSize().width, (float)GetViewportSize().height);
 	detail::CameraInfo cameraInfo;
 	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.Get());
 	cameraInfo.viewPixelSize = viewSize;

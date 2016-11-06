@@ -18,7 +18,7 @@ public:
 		}
 	}
 
-	//static void AdjustHorizontalAlignment(const SizeF& arrangeSize, const SizeF& desiredSize, HorizontalAlignment align, RectF* outRect)
+	//static void AdjustHorizontalAlignment(const Size& arrangeSize, const SizeF& desiredSize, HorizontalAlignment align, RectF* outRect)
 	//{
 	//	switch (align)
 	//	{
@@ -41,7 +41,7 @@ public:
 	//	}
 	//}
 
-	//static void AdjustVerticalAlignment(const SizeF& arrangeSize, const SizeF& desiredSize, VerticalAlignment align, RectF* outRect)
+	//static void AdjustVerticalAlignment(const Size& arrangeSize, const SizeF& desiredSize, VerticalAlignment align, RectF* outRect)
 	//{
 	//	switch (align)
 	//	{

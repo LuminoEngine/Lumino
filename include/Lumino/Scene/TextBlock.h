@@ -54,7 +54,7 @@ protected:
 protected:
 	Vector2	m_anchor;
 	RefPtr<detail::Paragraph>	m_paragraph;
-	SizeF		m_renderSize;
+	Size		m_renderSize;
 };
 
 LN_NAMESPACE_SCENE_END

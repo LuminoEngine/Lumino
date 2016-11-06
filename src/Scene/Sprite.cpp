@@ -63,7 +63,7 @@ void Sprite::Initialize(SceneGraph* owner, SpriteCoord spriteCoord)
 	VisualNode::Initialize(owner, 1);
 	m_spriteCoord = spriteCoord;
 	m_srcRect.Set(0, 0, -1, -1);
-	SetSize(SizeF(-1, -1));
+	SetSize(Size(-1, -1));
 
 	SetBlendMode(BlendMode::Alpha);
 
@@ -380,7 +380,7 @@ Sprite3DPtr Sprite3D::Create(float width, float height)
 {
 	auto obj = Sprite3DPtr::MakeRef();
 	obj->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph());
-	obj->SetSize(SizeF(width, height));
+	obj->SetSize(Size(width, height));
 	return obj;
 }
 
@@ -389,7 +389,7 @@ Sprite3DPtr Sprite3D::Create(float width, float height, Texture* texture)
 {
 	auto obj = Sprite3DPtr::MakeRef();
 	obj->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph());
-	obj->SetSize(SizeF(width, height));
+	obj->SetSize(Size(width, height));
 	obj->SetTexture(texture);
 	return obj;
 }

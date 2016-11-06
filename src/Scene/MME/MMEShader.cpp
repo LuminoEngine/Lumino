@@ -152,7 +152,7 @@ void MMEShader::UpdateSceneParams(const MMESceneParams& params, SceneGraphManage
 }
 
 //------------------------------------------------------------------------------
-void MMEShader::UpdateCameraParams(Camera* camera, const SizeF& viewPixelSize)
+void MMEShader::UpdateCameraParams(Camera* camera, const Size& viewPixelSize)
 {
 	ShaderVariable* var;
 	LN_FOREACH(MMEShaderVariable* sv, m_mmeShaderVariableList)
