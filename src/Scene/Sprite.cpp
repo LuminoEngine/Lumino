@@ -65,6 +65,8 @@ void Sprite::Initialize(SceneGraph* owner, SpriteCoord spriteCoord)
 	m_srcRect.Set(0, 0, -1, -1);
 	SetSize(SizeF(-1, -1));
 
+	SetBlendMode(BlendMode::Alpha);
+
 	// TODO: もらった owner に追加する、で。
 	if (spriteCoord == SpriteCoord_2D)
 	{
@@ -356,7 +358,7 @@ void Sprite2D::OnRender2(DrawList* renderer)
 	detail::MaterialInstance* mat = m_materialList->GetMaterialInstance(0);
 	renderer->SetBlendMode(m_renderState.blendMode);
 	renderer->SetTransform(m_combinedGlobalMatrix);
-	renderer->DrawSprite(Vector3::Zero, m_renderSize, GetTexture(), m_renderSourceRect, mat->m_colorScale, SpriteBaseDirection::Basic2D);
+	renderer->DrawSprite(Vector3::Zero, m_renderSize, m_anchor, GetTexture(), m_renderSourceRect, mat->m_colorScale, SpriteBaseDirection::Basic2D);
 }
 
 

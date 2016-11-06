@@ -54,10 +54,9 @@ TEST_F(Test_Scene_Sprite, BlendMode)
 	sprite5->SetBlendMode(BlendMode::Multiply);
 
 	Engine::UpdateFrame();
-	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite.BlendMode.png"), 99, true));
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite.BlendMode.png")));
 }
 
-#if 0
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_Sprite, Anchor)
 {
@@ -86,10 +85,11 @@ TEST_F(Test_Scene_Sprite, Anchor)
 		sprite4->SetAnchor(0.5, 1);
 
 		Engine::UpdateFrame();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_Sprite.Anchor.png")));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite.Anchor.png")));
 	}
 }
 
+#if 0
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_Sprite, DrawCallCount)
 {

@@ -385,6 +385,7 @@ public:
 	void DrawSprite(
 		const Vector3& position,
 		const SizeF& size,
+		const Vector2& anchor,
 		Texture* texture,
 		const RectF& srcRect,
 		const Color& color,

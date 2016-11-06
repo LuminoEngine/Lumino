@@ -890,6 +890,7 @@ void DrawList::DrawText_(const StringRef& text, const RectF& rect, StringFormatF
 void DrawList::DrawSprite(
 	const Vector3& position,
 	const SizeF& size,
+	const Vector2& anchor,
 	Texture* texture,
 	const RectF& srcRect,
 	const Color& color,
@@ -918,6 +919,7 @@ void DrawList::DrawSprite(
 	ptr->transform = m_state.transfrom;
 	ptr->position = position;
 	ptr->size.Set(size.width, size.height);
+	ptr->anchorRatio = anchor;
 	ptr->texture = texture;
 	ptr->srcRect = srcRect;
 	ptr->color = color;
