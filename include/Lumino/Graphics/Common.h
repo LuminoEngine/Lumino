@@ -329,6 +329,14 @@ LN_ENUM_FLAGS(StringFormatFlags)	// TODO: LayoutFlags のほうがいいかな�
 };
 LN_ENUM_FLAGS_DECLARE(StringFormatFlags);
 
+// ライトの種類
+enum LightType
+{
+	LightType_Directional = 0,	// ディレクショナルライト
+	LightType_Point,			// ポイントライト
+	LightType_Spot,				// スポットライト
+};
+
 namespace Driver
 {
 	class IGraphicsDevice;

@@ -18,6 +18,15 @@ LN_NAMESPACE_BEGIN
 namespace detail {
 
 //==============================================================================
+// DynamicLightInfo
+//==============================================================================
+
+//------------------------------------------------------------------------------
+DynamicLightInfo::DynamicLightInfo()
+{
+}
+
+//==============================================================================
 // CommandDataCache
 //==============================================================================
 
@@ -506,6 +515,8 @@ void DrawElementList::ClearCommands()
 	m_commandDataCache.Clear();
 	m_extDataCache.Clear();
 	m_batchList.Clear();
+
+	m_dynamicLightList.Clear();
 }
 
 //------------------------------------------------------------------------------
@@ -519,6 +530,12 @@ void DrawElementList::PostAddCommandInternal(const DrawElementBatch& state, deta
 	element->batchIndex = m_batchList.GetCount() - 1;
 }
 
+//------------------------------------------------------------------------------
+void DrawElementList::AddDynamicLightInfo(DynamicLightInfo* lightInfo)
+{
+	assert(lightInfo != nullptr);
+	m_dynamicLightList.Add(lightInfo);
+}
 
 //==============================================================================
 // InternalRenderer
@@ -645,6 +662,86 @@ void NonShadingRenderer::Initialize(GraphicsManager* manager)
 
 
 //==============================================================================
+// NonShadingRenderingPass
+//==============================================================================
+//------------------------------------------------------------------------------
+NonShadingRenderingPass::NonShadingRenderingPass()
+{
+}
+
+//------------------------------------------------------------------------------
+NonShadingRenderingPass::~NonShadingRenderingPass()
+{
+}
+
+//------------------------------------------------------------------------------
+void NonShadingRenderingPass::Initialize(GraphicsManager* manager)
+{
+	m_defaultShader = manager->GetDefaultShader(DefaultShader::NoLightingRendering);
+}
+
+//------------------------------------------------------------------------------
+Shader* NonShadingRenderingPass::GetDefaultShader() const
+{
+	return m_defaultShader;
+}
+
+
+
+//==============================================================================
+// ForwardShadingRenderer
+//==============================================================================
+
+//------------------------------------------------------------------------------
+ForwardShadingRenderer::ForwardShadingRenderer()
+{
+}
+
+//------------------------------------------------------------------------------
+ForwardShadingRenderer::~ForwardShadingRenderer()
+{
+}
+
+//------------------------------------------------------------------------------
+void ForwardShadingRenderer::Initialize(GraphicsManager* manager)
+{
+	InternalRenderer::Initialize(manager);
+
+	auto pass = RefPtr<detail::ForwardShadingRenderingPass>::MakeRef();
+	pass->Initialize(manager);
+	AddPass(pass);
+}
+
+
+//==============================================================================
+// ForwardShadingRenderingPass
+//==============================================================================
+//------------------------------------------------------------------------------
+ForwardShadingRenderingPass::ForwardShadingRenderingPass()
+{
+}
+
+//------------------------------------------------------------------------------
+ForwardShadingRenderingPass::~ForwardShadingRenderingPass()
+{
+}
+
+//------------------------------------------------------------------------------
+void ForwardShadingRenderingPass::Initialize(GraphicsManager* manager)
+{
+	m_defaultShader = manager->GetDefaultShader(DefaultShader::NoLightingRendering);
+}
+
+//------------------------------------------------------------------------------
+Shader* ForwardShadingRenderingPass::GetDefaultShader() const
+{
+	return m_defaultShader;
+}
+
+
+
+
+//==============================================================================
 // ScopedStateBlock2
 //==============================================================================
 
@@ -665,6 +762,9 @@ void ScopedStateBlock2::Apply()
 {
 	m_renderer->SetState(m_state);
 }
+
+
+
 
 
 
@@ -704,30 +804,6 @@ RenderingPass2::~RenderingPass2()
 //{
 //}
 
-//==============================================================================
-// NonShadingRenderingPass
-//==============================================================================
-//------------------------------------------------------------------------------
-NonShadingRenderingPass::NonShadingRenderingPass()
-{
-}
-
-//------------------------------------------------------------------------------
-NonShadingRenderingPass::~NonShadingRenderingPass()
-{
-}
-
-//------------------------------------------------------------------------------
-void NonShadingRenderingPass::Initialize(GraphicsManager* manager)
-{
-	m_defaultShader = manager->GetDefaultShader(DefaultShader::NoLightingRendering);
-}
-
-//------------------------------------------------------------------------------
-Shader* NonShadingRenderingPass::GetDefaultShader() const
-{
-	return m_defaultShader;
-}
 
 
 //==============================================================================
@@ -987,6 +1063,12 @@ void DrawList::DrawSprite(
 	ptr->color = color;
 	ptr->baseDirection = baseDirection;
 	detail::SpriteRenderer::MakeBoundingSphere(ptr->size, baseDirection, &ptr->boundingSphere);
+}
+
+//------------------------------------------------------------------------------
+void DrawList::AddDynamicLightInfo(detail::DynamicLightInfo* lightInfo)
+{
+	m_drawElementList.AddDynamicLightInfo(lightInfo);
 }
 
 //------------------------------------------------------------------------------

@@ -10,38 +10,24 @@ class Material;
 
 namespace detail {
 	
-// シーン単位のデータに関するセマンティクス
-LN_ENUM(SceneSemantics)
+// シェーダ変数セマンティクス
+LN_ENUM(BuiltinSemantics)
 {
+	// Scene unit
 	Dummy,
-	_Count,
-};
-LN_ENUM_DECLARE(SceneSemantics);
 
-// カメラ単位のデータに関するセマンティクス
-LN_ENUM(CameraSemantics)
-{
+	// Camera unit
 	ViewportPixelSize,
-	//ViewProjectionMatrix,
-	_Count,
-};
-LN_ENUM_DECLARE(CameraSemantics);
 
-// 描画要素単位のデータに関するセマンティクス
-LN_ENUM(ElementSemantics)
-{
+	// Element unit
 	WorldViewProjection,
-	_Count,
-};
-LN_ENUM_DECLARE(ElementSemantics);
 
-// サブセット単位のデータに関するセマンティクス
-LN_ENUM(SubsetSemantics)
-{
+	// Subset unit
 	MaterialTexture,
+
 	_Count,
 };
-LN_ENUM_DECLARE(SubsetSemantics);
+LN_ENUM_DECLARE(BuiltinSemantics);
 
 // シーン単位のデータに関する情報
 struct SceneInfo
@@ -86,15 +72,21 @@ public:
 	void UpdateSubsetVariables(const SubsetInfo& info);
 
 	// Blit 用
-	void SetMaterialTexture(Texture* texture);
+	//void SetMaterialTexture(Texture* texture);
 
 private:
-	GraphicsManager*	m_manager;
-	ShaderVariable*		m_sceneVariables[SceneSemantics::_Count];
-	ShaderVariable*		m_cameraVariables[CameraSemantics::_Count];
-	ShaderVariable*		m_elementVariables[ElementSemantics::_Count];
-	ShaderVariable*		m_subsetVariables[SubsetSemantics::_Count];
-	intptr_t			m_lastCameraInfoId;
+	struct VariableKindPair
+	{
+		ShaderVariable*		variable;
+		BuiltinSemantics	kind;
+	};
+
+	GraphicsManager*		m_manager;
+	List<VariableKindPair>	m_sceneVariables;
+	List<VariableKindPair>	m_cameraVariables;
+	List<VariableKindPair>	m_elementVariables;
+	List<VariableKindPair>	m_subsetVariables;
+	intptr_t				m_lastCameraInfoId;
 };
 
 } // namespace detail

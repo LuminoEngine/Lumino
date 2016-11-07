@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include "../Graphics/Color.h"
+#include "../Graphics/Rendering.h"	// for DynamicLightInfo
 #include "SceneNode.h"
 
 LN_NAMESPACE_BEGIN
@@ -18,7 +19,7 @@ public:
 public:
 
 	/// ライトの種類の取得
-	LightType GetType() const { return m_type; }
+	LightType GetType() const { return m_lightInfo->m_type; }
 
 	/// ライトの有効、無効を設定する
 	void SetEnabled(bool enabled) { m_enabled = enabled; }
@@ -27,22 +28,22 @@ public:
 	bool IsEnabled() const { return m_enabled; }
 
 	/// ディフューズカラーの設定
-	void SetDiffuseColor(const Color& color) { m_diffuse = color; }
+	void SetDiffuseColor(const Color& color) { m_lightInfo->m_diffuse = color; }
 
 	/// ディフューズカラーの取得
-	const Color& GetDiffuseColor() const { return m_diffuse; }
+	const Color& GetDiffuseColor() const { return m_lightInfo->m_diffuse; }
 
 	/// アンビエントカラーの設定
-	void SetAmbientColor(const Color& color) { m_ambient = color; }
+	void SetAmbientColor(const Color& color) { m_lightInfo->m_ambient = color; }
 
 	/// アンビエントカラーの取得
-	const Color& GetAmbientColor() const { return m_ambient; }
+	const Color& GetAmbientColor() const { return m_lightInfo->m_ambient; }
 
 	/// スペキュラカラーの設定
-	void SetSpecularColor(const Color& color) { m_specular = color; }
+	void SetSpecularColor(const Color& color) { m_lightInfo->m_specular = color; }
 
 	/// スペキュラカラーの取得
-	const Color& GetSpecularColor() const { return m_specular; }
+	const Color& GetSpecularColor() const { return m_lightInfo->m_specular; }
 
 	/// スポットライトのコーン角度の設定 (ラジアン単位)
 	void SetSpotAngle(float angle) { m_spotAngle = angle; }
@@ -62,7 +63,7 @@ public:	// internal
 	void UpdateMatrices(const Size& viewSize);
 
 	// 向きの取得 (シェーダ設定用。UpdateMatrices() の後で呼び出すこと)
-	const Vector4& GetDirectionInternal() const { return m_direction; }
+	//const Vector4& GetDirectionInternal() const { return m_lightInfo->m_direction; }
 
 	// 行列の取得 (シェーダ設定用。UpdateMatrices() の後で呼び出すこと)
 	const Matrix& GetWorldViewProj() const { return m_worldViewProjMatrix; }
@@ -80,15 +81,17 @@ public:	// internal
 	const Matrix& GetViewProjectionMatrixIT() const { return m_viewProjMatrixIT; }
 
 protected:
-	virtual void UpdateViewFlustumHierarchy(Camera* camera, SceneNodeArray* renderingNodeList, LightNodeList* renderingLightList);
+	virtual void UpdateViewFlustumHierarchy(Camera* camera, SceneNodeArray* renderingNodeList, LightNodeList* renderingLightList) override;
+	virtual void OnRender2(DrawList* renderer) override;
 
 private:
 	friend class VisualNode;
 
-	LightType			m_type;				///< ライトの種類
-	Color	m_diffuse;			///< ディフューズカラー
-	Color	m_ambient;			///< アンビエントカラー
-	Color	m_specular;			///< スペキュラカラー
+	//LightType			m_type;				///< ライトの種類
+	//Color	m_diffuse;			///< ディフューズカラー
+	//Color	m_ambient;			///< アンビエントカラー
+	//Color	m_specular;			///< スペキュラカラー
+	RefPtr<detail::DynamicLightInfo>	m_lightInfo;
 	bool				m_enabled;			///< 有効状態
 	float				m_spotAngle;		///< コーン角度 (ラジアン単位)
 	float				m_shadowZFar;
@@ -96,7 +99,7 @@ private:
 	Matrix				m_viewMatrix;		///< ビュー行列
 	Matrix				m_projMatrix;		///< プロジェクション行列
 	Matrix				m_viewProjMatrix;	///< ビュー行列とプロジェクション行列の積
-	Vector4				m_direction;		///< 向き
+	//Vector4				m_direction;		///< 向き
 
 	// 以下はシェーダ変数への設定用。ライトは個々のノードに比べて参照される回数が多いので
 	// 必要になるたびに計算するのではなく、あらかじめ計算しておく。

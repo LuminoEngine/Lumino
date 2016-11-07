@@ -12,10 +12,7 @@ LN_NAMESPACE_SCENE_BEGIN
 //------------------------------------------------------------------------------
 Light::Light()
 	: SceneNode()
-	, m_type(LightType_Directional)
-	, m_diffuse(1.0f, 1.0f, 1.0f, 1.0f)
-	, m_ambient(1.0f, 1.0f, 1.0f, 1.0f)
-	, m_specular(1.0f, 1.0f, 1.0f, 1.0f)
+	, m_lightInfo(false)
 	, m_enabled(true)
 	, m_spotAngle(Math::PI * 0.25f)
 	, m_shadowZFar(1000.0f)
@@ -34,7 +31,12 @@ Light::~Light()
 void Light::Initialize(SceneGraph* owner, LightType type)
 {
 	SceneNode::Initialize(owner);
-	m_type = type;
+	m_lightInfo = RefPtr<detail::DynamicLightInfo>::MakeRef();
+	m_lightInfo->m_type = type;
+	m_lightInfo->m_diffuse.Set(1.0f, 1.0f, 1.0f, 1.0f);
+	m_lightInfo->m_ambient.Set(1.0f, 1.0f, 1.0f, 1.0f);
+	m_lightInfo->m_specular.Set(1.0f, 1.0f, 1.0f, 1.0f);
+
 	SetAngles(-0.5, -1.0, 0.5);	// MMM Default
 }
 
@@ -59,7 +61,7 @@ void Light::UpdateMatrices(const Size& viewSize)
 	m_worldViewProjMatrix = GetMatrix() * m_viewMatrix * m_projMatrix;
 	m_viewProjMatrix = m_viewMatrix * m_projMatrix;
 
-	m_direction = Vector4(direction, 0.0f);
+	m_lightInfo->m_direction = direction;
 
 	m_viewMatrixI = Matrix::MakeInverse(m_viewMatrix);
 	m_projMatrixI = Matrix::MakeInverse(m_projMatrix);
@@ -79,6 +81,15 @@ void Light::UpdateViewFlustumHierarchy(Camera* camera, SceneNodeArray* rendering
 	renderingLightList->Add(this);
 
 	SceneNode::UpdateViewFlustumHierarchy(camera, renderingNodeList, renderingLightList);
+}
+
+//------------------------------------------------------------------------------
+void Light::OnRender2(DrawList* renderer)
+{
+	if (m_enabled)
+	{
+		renderer->AddDynamicLightInfo(m_lightInfo);
+	}
 }
 
 LN_NAMESPACE_SCENE_END

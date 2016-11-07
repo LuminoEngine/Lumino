@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.h"
+#include <unordered_map>
 #include <Lumino/IO/FileManager.h>
 #include <Lumino/Graphics/GraphicsException.h>
 #include <Lumino/Graphics/Shader.h>
@@ -19,6 +20,20 @@
 		m_deviceObj->func(__VA_ARGS__); \
 	}
 
+// String を unordered_map のキーとするためのハッシュ関数 (TODO: Core へ)
+namespace std
+{
+	template <>
+	struct hash<ln::String>
+	{
+		std::size_t operator () (ln::String const & key) const
+		{
+			//return std::hash<const TCHAR*>()(key.c_str());
+			return ln::Hash::CalcHash(key.c_str(), key.GetLength());
+		}
+	};
+
+} // namespace std
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -27,16 +42,33 @@ namespace detail {
 
 //==============================================================================
 // ShaderSemanticsManager
+//		参考:
+//		Unity Builtin Shader variables
+//		https://docs.unity3d.com/Manual/SL-UnityShaderVariables.html
 //==============================================================================
+
+static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_CameraUnit =
+{
+	// Camera unit
+	{ _T("ln_ViewportPixelSize"), BuiltinSemantics::ViewportPixelSize },
+};
+
+static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_ElementUnit =
+{
+	// Element unit
+	{ _T("ln_WorldViewProjection"), BuiltinSemantics::WorldViewProjection },
+};
+
+static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_SubsetUnit =
+{
+	// Subset unit
+	{ _T("ln_MaterialTexture"), BuiltinSemantics::MaterialTexture },
+};
 
 //------------------------------------------------------------------------------
 ShaderSemanticsManager::ShaderSemanticsManager()
 	: m_lastCameraInfoId(0)
 {
-	memset(m_sceneVariables, 0, sizeof(m_sceneVariables));
-	memset(m_cameraVariables, 0, sizeof(m_cameraVariables));
-	memset(m_elementVariables, 0, sizeof(m_elementVariables));
-	memset(m_subsetVariables, 0, sizeof(m_subsetVariables));
 }
 
 //------------------------------------------------------------------------------
@@ -51,27 +83,32 @@ void ShaderSemanticsManager::TryPushVariable(ShaderVariable* var)
 {
 	const String& name = var->GetName();
 
-	// 変数名の先頭が ln_ であれば、いろいろな意味を持つ変数かもしれない
-	if (name.IndexOf(_T("ln_")) == 0)
+	// Camera unit
 	{
-		// CameraSemantics
-		if (name == _T("ln_ViewportPixelSize"))
+		auto itr = g_builtinNameMap_CameraUnit.find(name);
+		if (itr != g_builtinNameMap_CameraUnit.end())
 		{
-			m_cameraVariables[CameraSemantics::ViewportPixelSize] = var;
+			m_cameraVariables.Add({ var, itr->second });
 			return;
 		}
+	}
 
-		// ElementSemantics
-		if (name == _T("ln_WorldViewProjection"))
+	// Element unit
+	{
+		auto itr = g_builtinNameMap_ElementUnit.find(name);
+		if (itr != g_builtinNameMap_ElementUnit.end())
 		{
-			m_elementVariables[ElementSemantics::WorldViewProjection] = var;
+			m_elementVariables.Add({ var, itr->second });
 			return;
 		}
+	}
 
-		// SubsetSemantics
-		if (name == _T("ln_MaterialTexture"))
+	// Subset unit
+	{
+		auto itr = g_builtinNameMap_SubsetUnit.find(name);
+		if (itr != g_builtinNameMap_SubsetUnit.end())
 		{
-			m_subsetVariables[SubsetSemantics::MaterialTexture] = var;
+			m_subsetVariables.Add({ var, itr->second });
 			return;
 		}
 	}
@@ -90,9 +127,16 @@ void ShaderSemanticsManager::UpdateCameraVariables(const CameraInfo& info)
 	{
 		m_lastCameraInfoId = info.dataSourceId;
 
-		if (m_cameraVariables[CameraSemantics::ViewportPixelSize] != nullptr)
+		for (const VariableKindPair& varInfo : m_cameraVariables)
 		{
-			m_cameraVariables[CameraSemantics::ViewportPixelSize]->SetVector(Vector4(info.viewPixelSize.width, info.viewPixelSize.height, 0, 0));
+			switch (varInfo.kind)
+			{
+			case BuiltinSemantics::ViewportPixelSize:
+				varInfo.variable->SetVector(Vector4(info.viewPixelSize.width, info.viewPixelSize.height, 0, 0));
+				break;
+			default:
+				break;
+			}
 		}
 	}
 }
@@ -100,30 +144,43 @@ void ShaderSemanticsManager::UpdateCameraVariables(const CameraInfo& info)
 //------------------------------------------------------------------------------
 void ShaderSemanticsManager::UpdateElementVariables(const ElementInfo& info)
 {
-	if (m_elementVariables[ElementSemantics::WorldViewProjection] != nullptr)
+	for (const VariableKindPair& varInfo : m_elementVariables)
 	{
-		m_elementVariables[ElementSemantics::WorldViewProjection]->SetMatrix(info.WorldViewProjectionMatrix);
+		switch (varInfo.kind)
+		{
+		case BuiltinSemantics::WorldViewProjection:
+			varInfo.variable->SetMatrix(info.WorldViewProjectionMatrix);
+			break;
+		default:
+			break;
+		}
 	}
 }
 
 //------------------------------------------------------------------------------
 void ShaderSemanticsManager::UpdateSubsetVariables(const SubsetInfo& info)
 {
-	if (m_subsetVariables[SubsetSemantics::MaterialTexture] != nullptr)
+	for (const VariableKindPair& varInfo : m_subsetVariables)
 	{
-		Texture* texture = info.materialTexture;
-		m_subsetVariables[SubsetSemantics::MaterialTexture]->SetTexture((texture != nullptr) ? texture : m_manager->GetDummyWhiteTexture());
+		switch (varInfo.kind)
+		{
+		case BuiltinSemantics::MaterialTexture:
+			varInfo.variable->SetTexture((info.materialTexture != nullptr) ? info.materialTexture : m_manager->GetDummyWhiteTexture());
+			break;
+		default:
+			break;
+		}
 	}
 }
 
 //------------------------------------------------------------------------------
-void ShaderSemanticsManager::SetMaterialTexture(Texture* texture)
-{
-	if (m_subsetVariables[SubsetSemantics::MaterialTexture] != nullptr)
-	{
-		m_subsetVariables[SubsetSemantics::MaterialTexture]->SetTexture((texture != nullptr) ? texture : m_manager->GetDummyWhiteTexture());
-	}
-}
+//void ShaderSemanticsManager::SetMaterialTexture(Texture* texture)
+//{
+//	if (m_subsetVariables[SubsetSemantics::MaterialTexture] != nullptr)
+//	{
+//		m_subsetVariables[SubsetSemantics::MaterialTexture]->SetTexture((texture != nullptr) ? texture : m_manager->GetDummyWhiteTexture());
+//	}
+//}
 
 } // namespace detail
 

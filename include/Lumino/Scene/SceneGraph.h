@@ -154,7 +154,7 @@ public:
 private:
 	SceneNode*				m_defaultRoot;
 	Camera*					m_defaultCamera;
-	//List<RenderingPass*>	m_renderingPasses;
+	RefPtr<Light>			m_defaultLight;
 };
 
 LN_NAMESPACE_END

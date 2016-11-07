@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 #include "Color.h"
@@ -20,6 +20,20 @@ class SpriteRenderer;
 class TextRenderer;
 class DrawElementBatch;
 class RenderingPass2;
+
+class DynamicLightInfo
+	: public RefObject
+{
+public:
+	DynamicLightInfo();
+	virtual ~DynamicLightInfo() = default;
+
+	LightType	m_type;				// ãƒ©ã‚¤ãƒˆã®ç¨®é¡
+	Color		m_diffuse;			// ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºã‚«ãƒ©ãƒ¼
+	Color		m_ambient;			// ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆã‚«ãƒ©ãƒ¼
+	Color		m_specular;			// ã‚¹ãƒšã‚­ãƒ¥ãƒ©ã‚«ãƒ©ãƒ¼
+	Vector3		m_direction;		// å‘ã
+};
 
 enum class DrawingSectionId
 {
@@ -104,7 +118,7 @@ public:
 	virtual void DrawSubset(InternalContext* context/*, int subsetIndex*/) = 0;
 	const detail::Sphere& GetBoundingSphere() const { return boundingSphere; }
 
-	// (ƒ[ƒJƒ‹À•WŒn)
+	// (ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™ç³»)
 	void MakeBoundingSphere(const Vector3& minPos, const Vector3& maxPos);
 };
 
@@ -150,7 +164,7 @@ public:
 
 	intptr_t				m_rendererId;
 
-	// render state		TODO: ƒ}ƒeƒŠƒAƒ‹‚É‘®‚·‚éƒXƒe[ƒg‚Í•K—v‚È‚¢
+	// render state		TODO: ãƒãƒ†ãƒªã‚¢ãƒ«ã«å±ã™ã‚‹ã‚¹ãƒ†ãƒ¼ãƒˆã¯å¿…è¦ãªã„
 	BlendMode				m_baseBlendMode;
 	CullingMode				m_cullingMode;
 	bool					m_alphaTestEnabled;
@@ -161,10 +175,10 @@ public:
 	bool					m_depthTestEnabled;
 	bool					m_depthWriteEnabled;
 
-	// TODO: “K—p‚·‚é‚Æ‚È‚Á‚½ƒ}ƒeƒŠƒAƒ‹‚ÍA•`‰æI—¹‚Ü‚Å Freeze ‚·‚éBƒpƒ‰ƒ[ƒ^‚ğ•ÏX‚µ‚Ä‚Í‚È‚ç‚È‚¢B
-	// (‚Ü‚é‚±‚Ò‚·‚ê‚Î Freeze ‚Ì•K—v‚È‚¢‚¯‚ÇAÀÛ•`‰æ‚Æƒ}ƒeƒŠƒAƒ‹•ÏX‚Ìƒ^ƒCƒ~ƒ“ƒO‚Í•ª‚¯‚é‚¾‚ë‚¤)
+	// TODO: é©ç”¨ã™ã‚‹ã¨ãªã£ãŸãƒãƒ†ãƒªã‚¢ãƒ«ã¯ã€æç”»çµ‚äº†ã¾ã§ Freeze ã™ã‚‹ã€‚ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å¤‰æ›´ã—ã¦ã¯ãªã‚‰ãªã„ã€‚
+	// (ã¾ã‚‹ã“ã´ã™ã‚Œã° Freeze ã®å¿…è¦ãªã„ã‘ã©ã€å®Ÿéš›æç”»ã¨ãƒãƒ†ãƒªã‚¢ãƒ«å¤‰æ›´ã®ã‚¿ã‚¤ãƒŸãƒ³ã‚°ã¯åˆ†ã‘ã‚‹ã ã‚ã†)
 	RefPtr<Material>		m_material;
-	// shader	TODO: ƒTƒuƒZƒbƒg’PˆÊ‚ÅƒXƒe[ƒg•Ï‚¦‚ç‚ê‚é‚æ‚¤‚É‚µ‚½‚¢‚±‚Æ‚à‚ ‚é‚¯‚ÇA–ˆ‰ñ•Ï”’l‚ğì‚é‚Ì‚Í‚¿‚å‚Á‚Æ–³‘Ê‚È‹C‚ª‚·‚é
+	// shader	TODO: ã‚µãƒ–ã‚»ãƒƒãƒˆå˜ä½ã§ã‚¹ãƒ†ãƒ¼ãƒˆå¤‰ãˆã‚‰ã‚Œã‚‹ã‚ˆã†ã«ã—ãŸã„ã“ã¨ã‚‚ã‚ã‚‹ã‘ã©ã€æ¯å›å¤‰æ•°å€¤ã‚’ä½œã‚‹ã®ã¯ã¡ã‚‡ã£ã¨ç„¡é§„ãªæ°—ãŒã™ã‚‹
 	//RefPtr<ShaderPass>		m_shaderPass;
 	//List<ShaderValuePair>	m_shaderValueList;
 	bool					m_standaloneShaderRenderer;
@@ -223,12 +237,18 @@ public:
 
 	byte_t* AllocExtData(size_t size) { return m_extDataCache.GetData(m_extDataCache.AllocData(size)); }
 
+
+
+	void AddDynamicLightInfo(DynamicLightInfo* lightInfo);
+
 private:
 	void PostAddCommandInternal(const DrawElementBatch& state, detail::IRendererPloxy* renderer, DrawElement* element);
 
 	CommandDataCache		m_commandDataCache;
 	CommandDataCache		m_extDataCache;
 	List<DrawElementBatch>	m_batchList;
+
+	List<RefPtr<DynamicLightInfo>>	m_dynamicLightList;
 };
 
 
@@ -325,6 +345,40 @@ private:
 	RefPtr<Shader>	m_defaultShader;
 };
 
+
+
+class ForwardShadingRenderer
+	: public InternalRenderer
+{
+public:
+	ForwardShadingRenderer();
+	virtual ~ForwardShadingRenderer();
+	void Initialize(GraphicsManager* manager);
+
+private:
+};
+
+
+class ForwardShadingRenderingPass
+	: public RenderingPass2
+{
+public:
+	ForwardShadingRenderingPass();
+	virtual ~ForwardShadingRenderingPass();
+	void Initialize(GraphicsManager* manager);
+	virtual Shader* GetDefaultShader() const override;
+
+private:
+	RefPtr<Shader>	m_defaultShader;
+};
+
+
+
+
+
+
+
+
 } // namespace detail
 
 /**
@@ -339,22 +393,22 @@ public:
 	/** @name Render targets */
 	/** @{ */
 
-	/** ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ğİ’è‚µ‚Ü‚·B*/
+	/** ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’è¨­å®šã—ã¾ã™ã€‚*/
 	void SetRenderTarget(int index, RenderTarget* renderTarget);
 
-	/** Œ»İİ’è‚³‚ê‚Ä‚¢‚éƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ğæ“¾‚µ‚Ü‚·B*/
+	/** ç¾åœ¨è¨­å®šã•ã‚Œã¦ã„ã‚‹ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	RenderTarget* GetRenderTarget(int index) const;
 
-	/** [“xƒoƒbƒtƒ@‚ğİ’è‚µ‚Ü‚·B*/
+	/** æ·±åº¦ãƒãƒƒãƒ•ã‚¡ã‚’è¨­å®šã—ã¾ã™ã€‚*/
 	void SetDepthBuffer(DepthBuffer* depthBuffer);
 
-	/** Œ»İİ’è‚³‚ê‚Ä‚¢‚é[“xƒoƒbƒtƒ@‚ğæ“¾‚µ‚Ü‚·B*/
+	/** ç¾åœ¨è¨­å®šã•ã‚Œã¦ã„ã‚‹æ·±åº¦ãƒãƒƒãƒ•ã‚¡ã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	DepthBuffer* GetDepthBuffer() const;
 
-	/** ƒVƒU[—Ìˆæ‚ğİ’è‚µ‚Ü‚·B*/
+	/** ã‚·ã‚¶ãƒ¼é ˜åŸŸã‚’è¨­å®šã—ã¾ã™ã€‚*/
 	void SetViewport(const Rect& rect);
 
-	/** Œ»İİ’è‚³‚ê‚Ä‚¢‚éƒVƒU[—Ìˆæ‚ğæ“¾‚µ‚Ü‚·B*/
+	/** ç¾åœ¨è¨­å®šã•ã‚Œã¦ã„ã‚‹ã‚·ã‚¶ãƒ¼é ˜åŸŸã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	const Rect& GetViewport() const;
 
 	/** @} */
@@ -378,11 +432,11 @@ public:
 	
 
 	/**
-		@brief		ü•ª‚ğ•`‰æ‚µ‚Ü‚·B
-		@param[in]	position1	: n“_‚ÌˆÊ’u
-		@param[in]	color1		: n“_‚ÌF
-		@param[in]	position2	: I“_‚ÌˆÊ’u
-		@param[in]	color2		: I“_‚ÌF
+		@brief		ç·šåˆ†ã‚’æç”»ã—ã¾ã™ã€‚
+		@param[in]	position1	: å§‹ç‚¹ã®ä½ç½®
+		@param[in]	color1		: å§‹ç‚¹ã®è‰²
+		@param[in]	position2	: çµ‚ç‚¹ã®ä½ç½®
+		@param[in]	color2		: çµ‚ç‚¹ã®è‰²
 	*/
 	void DrawLinePrimitive(
 		const Vector3& position1, const Color& color1,
@@ -390,12 +444,12 @@ public:
 
 	/**
 		@brief
-		@details	ƒfƒtƒHƒ‹ƒg‚Å‚Í”½Œv‰ñ‚è‚ª•\–Ê‚Æ‚È‚è‚Ü‚·B
+		@details	ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§ã¯åæ™‚è¨ˆå›ã‚ŠãŒè¡¨é¢ã¨ãªã‚Šã¾ã™ã€‚
 	*/
 	void DrawSquarePrimitive(
 		const Vector3& position1, const Vector2& uv1, const Color& color1,
 		const Vector3& position2, const Vector2& uv2, const Color& color2,
-		const Vector3& position3, const Vector2& uv3, const Color& color3,	// TODO: ‡˜
+		const Vector3& position3, const Vector2& uv3, const Color& color3,	// TODO: é †åº
 		const Vector3& position4, const Vector2& uv4, const Color& color4/*,
 		ShaderPass* shaderPass*/);
 
@@ -428,6 +482,8 @@ LN_INTERNAL_ACCESS:
 	void EndFrame();
 	const detail::BatchStateBlock& GetState() const { return m_state; }
 	void SetState(const detail::BatchStateBlock& state) { m_state = state; }
+	void AddDynamicLightInfo(detail::DynamicLightInfo* lightInfo);
+
 	template<typename TElement> TElement* ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer);
 	void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material);
 	void BlitInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Material* material);

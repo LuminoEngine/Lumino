@@ -66,16 +66,6 @@ enum class CameraDirection
 	Transform,		/**< 姿勢の正面方向を向く */
 };
 
-/// ライトの種類
-enum LightType
-{
-	LightType_Directional = 0,	///< ディレクショナルライト
-	LightType_Point,			///< ポイントライト
-	LightType_Spot,				///< スポットライト
-
-	LightType_Max,				///< (Terminator)
-};
-
 /// ビルボードの計算方法
 enum BillboardType
 {

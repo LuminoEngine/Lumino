@@ -363,10 +363,6 @@ Basic3DSceneGraph::Basic3DSceneGraph()
 //------------------------------------------------------------------------------
 Basic3DSceneGraph::~Basic3DSceneGraph()
 {
-	//for (RenderingPass* pass : m_renderingPasses) {
-	//	LN_SAFE_RELEASE(pass);
-	//}
-
 	LN_SAFE_RELEASE(m_defaultCamera);
 	LN_SAFE_RELEASE(m_defaultRoot);
 }
@@ -383,10 +379,9 @@ void Basic3DSceneGraph::CreateCore(SceneGraphManager* manager)
 	m_defaultCamera->Initialize(this, CameraProjection_3D);
 	m_defaultRoot->AddChild(m_defaultCamera);
 
-	//auto pass = RefPtr<MMERenderingPass>::MakeRef(manager, MMD_PASS_object);
-	//pass->Initialize();
-	//m_renderingPasses.Add(pass);
-	//pass->AddRef();
+	m_defaultLight = RefPtr<Light>::MakeRef();
+	m_defaultLight->Initialize(this, LightType_Directional);
+	m_defaultRoot->AddChild(m_defaultLight);
 }
 
 //------------------------------------------------------------------------------
