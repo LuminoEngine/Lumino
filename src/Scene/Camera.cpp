@@ -242,12 +242,13 @@ void CameraViewportLayer::Initialize(SceneGraphManager* manager, Camera* hosting
 	m_renderer = RefPtr<DrawList>::MakeRef();
 	m_renderer->Initialize(manager->GetGraphicsManager());
 
-	m_internalRenderer = RefPtr<detail::InternalRenderer>::MakeRef();
-	m_internalRenderer->Initialize(manager->GetGraphicsManager());
+	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
+	internalRenderer->Initialize(manager->GetGraphicsManager());
+	m_internalRenderer = internalRenderer;
 
-	auto pass = RefPtr<detail::RenderingPass2>::MakeRef();
-	pass->Initialize(manager->GetGraphicsManager());
-	AddRenderingPass(pass);
+	//auto pass = RefPtr<detail::RenderingPass2>::MakeRef();
+	//pass->Initialize(manager->GetGraphicsManager());
+	//AddRenderingPass(pass);
 }
 
 //------------------------------------------------------------------------------
@@ -284,7 +285,7 @@ void CameraViewportLayer::OnBeginFrameRender(RenderTarget* renderTarget, DepthBu
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer::OnRenderDrawElementList(RenderTarget* renderTarget, DepthBuffer* depthBuffer, detail::RenderingPass2* pass)
+void CameraViewportLayer::OnEndFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer)
 {
 	Size viewSize((float)GetViewportSize().width, (float)GetViewportSize().height);
 	detail::CameraInfo cameraInfo;
@@ -297,8 +298,7 @@ void CameraViewportLayer::OnRenderDrawElementList(RenderTarget* renderTarget, De
 		m_renderer->GetDrawElementList(),
 		cameraInfo,
 		renderTarget,
-		depthBuffer,
-		pass);
+		depthBuffer);
 	m_renderer->EndFrame();
 }
 

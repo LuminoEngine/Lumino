@@ -1,4 +1,5 @@
 ﻿
+
 #include "../Internal.h"
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Graphics/Rendering.h>
@@ -540,72 +541,108 @@ void InternalRenderer::Initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
+void InternalRenderer::AddPass(RenderingPass2* pass)
+{
+	m_renderingPassList.Add(pass);
+}
+
+//------------------------------------------------------------------------------
 void InternalRenderer::Render(
 	DrawElementList* elementList,
 	const detail::CameraInfo& cameraInfo,
 	RenderTarget* defaultRenderTarget,
-	DepthBuffer* defaultDepthBuffer,
-	RenderingPass2* pass)
+	DepthBuffer* defaultDepthBuffer)
 {
-	InternalContext* context = m_manager->GetInternalContext();
-	m_renderingElementList.Clear();
-
-	// 視点に関する情報の設定
-	context->SetViewInfo(cameraInfo.viewPixelSize, cameraInfo.viewMatrix, cameraInfo.projMatrix);
-
-	// 視錘台カリング
-	for (int i = 0; i < elementList->GetElementCount(); ++i)
+	for (RenderingPass2* pass : m_renderingPassList)
 	{
-		DrawElement* element = elementList->GetElement(i);
-		Sphere boundingSphere = element->GetBoundingSphere();
+		InternalContext* context = m_manager->GetInternalContext();
+		m_renderingElementList.Clear();
 
-		if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
-			cameraInfo.viewFrustum.Intersects(boundingSphere.center, boundingSphere.radius))
+		// 視点に関する情報の設定
+		context->SetViewInfo(cameraInfo.viewPixelSize, cameraInfo.viewMatrix, cameraInfo.projMatrix);
+
+		// 視錘台カリング
+		for (int i = 0; i < elementList->GetElementCount(); ++i)
 		{
-			// このノードは描画できる
-			m_renderingElementList.Add(element);
+			DrawElement* element = elementList->GetElement(i);
+			Sphere boundingSphere = element->GetBoundingSphere();
+
+			if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
+				cameraInfo.viewFrustum.Intersects(boundingSphere.center, boundingSphere.radius))
+			{
+				// このノードは描画できる
+				m_renderingElementList.Add(element);
+			}
 		}
+
+		// DrawElement 描画
+		int currentBatchIndex = -1;
+		DrawElementBatch* currentState = nullptr;
+		Shader* currentShader = nullptr;
+		for (DrawElement* element : m_renderingElementList)
+		{
+			// ステートの変わり目チェック
+			if (element->batchIndex != currentBatchIndex)
+			{
+				context->Flush();
+				currentBatchIndex = element->batchIndex;
+				currentState = elementList->GetBatch(currentBatchIndex);
+				currentShader = currentState->ApplyStatus(context, defaultRenderTarget, defaultDepthBuffer, pass->GetDefaultShader());
+				context->SetCurrentStatePtr(currentState);
+			}
+
+			if (!currentState->IsStandaloneShaderRenderer())
+			{
+				ElementInfo elementInfo;
+				element->MakeElementInfo(cameraInfo, &elementInfo);
+
+				SubsetInfo subsetInfo;
+				element->MakeSubsetInfo(currentState->m_material, &subsetInfo);
+
+				currentShader->GetSemanticsManager()->UpdateCameraVariables(cameraInfo);
+				currentShader->GetSemanticsManager()->UpdateElementVariables(elementInfo);
+				currentShader->GetSemanticsManager()->UpdateSubsetVariables(subsetInfo);
+
+				auto* stateManager = context->GetRenderStateManager();
+				ShaderPass* pass = currentShader->GetTechniques().GetAt(0)->GetPasses().GetAt(0);	// TODO: DrawList の実行者によって決定する
+				stateManager->SetShaderPass(pass);
+			}
+
+			// 描画実行
+			element->DrawSubset(context);
+		}
+
+		context->Flush();
 	}
-
-	// DrawElement 描画
-	int currentBatchIndex = -1;
-	DrawElementBatch* currentState = nullptr;
-	Shader* currentShader = nullptr;
-	for (DrawElement* element : m_renderingElementList)
-	{
-		// ステートの変わり目チェック
-		if (element->batchIndex != currentBatchIndex)
-		{
-			context->Flush();
-			currentBatchIndex = element->batchIndex;
-			currentState = elementList->GetBatch(currentBatchIndex);
-			currentShader = currentState->ApplyStatus(context, defaultRenderTarget, defaultDepthBuffer, pass->GetDefaultShader());
-			context->SetCurrentStatePtr(currentState);
-		}
-
-		if (!currentState->IsStandaloneShaderRenderer())
-		{
-			ElementInfo elementInfo;
-			element->MakeElementInfo(cameraInfo, &elementInfo);
-
-			SubsetInfo subsetInfo;
-			element->MakeSubsetInfo(currentState->m_material, &subsetInfo);
-
-			currentShader->GetSemanticsManager()->UpdateCameraVariables(cameraInfo);
-			currentShader->GetSemanticsManager()->UpdateElementVariables(elementInfo);
-			currentShader->GetSemanticsManager()->UpdateSubsetVariables(subsetInfo);
-
-			auto* stateManager = context->GetRenderStateManager();
-			ShaderPass* pass = currentShader->GetTechniques().GetAt(0)->GetPasses().GetAt(0);	// TODO: DrawList の実行者によって決定する
-			stateManager->SetShaderPass(pass);
-		}
-
-		// 描画実行
-		element->DrawSubset(context);
-	}
-
-	context->Flush();
 }
+
+
+
+
+//==============================================================================
+// NonShadingRenderer
+//==============================================================================
+
+//------------------------------------------------------------------------------
+NonShadingRenderer::NonShadingRenderer()
+{
+}
+
+//------------------------------------------------------------------------------
+NonShadingRenderer::~NonShadingRenderer()
+{
+}
+
+//------------------------------------------------------------------------------
+void NonShadingRenderer::Initialize(GraphicsManager* manager)
+{
+	InternalRenderer::Initialize(manager);
+
+	auto pass = RefPtr<detail::NonShadingRenderingPass>::MakeRef();
+	pass->Initialize(manager);
+	AddPass(pass);
+}
+
 
 //==============================================================================
 // ScopedStateBlock2
@@ -645,17 +682,17 @@ RenderingPass2::~RenderingPass2()
 {
 }
 
-//------------------------------------------------------------------------------
-void RenderingPass2::Initialize(GraphicsManager* manager)
-{
-	m_defaultShader = manager->GetDefaultShader(DefaultShader::NoLightingRendering);
-}
-
-//------------------------------------------------------------------------------
-Shader* RenderingPass2::GetDefaultShader() const
-{
-	return m_defaultShader;
-}
+////------------------------------------------------------------------------------
+//void RenderingPass2::Initialize(GraphicsManager* manager)
+//{
+//	m_defaultShader = manager->GetDefaultShader(DefaultShader::NoLightingRendering);
+//}
+//
+////------------------------------------------------------------------------------
+//Shader* RenderingPass2::GetDefaultShader() const
+//{
+//	return m_defaultShader;
+//}
 
 ////------------------------------------------------------------------------------
 //void RenderingPass2::RenderElement(DrawList* renderer, DrawElement* element)
@@ -666,6 +703,31 @@ Shader* RenderingPass2::GetDefaultShader() const
 //void RenderingPass2::RenderElementSubset(DrawList* renderer, DrawElement* element, int subsetIndex)
 //{
 //}
+
+//==============================================================================
+// NonShadingRenderingPass
+//==============================================================================
+//------------------------------------------------------------------------------
+NonShadingRenderingPass::NonShadingRenderingPass()
+{
+}
+
+//------------------------------------------------------------------------------
+NonShadingRenderingPass::~NonShadingRenderingPass()
+{
+}
+
+//------------------------------------------------------------------------------
+void NonShadingRenderingPass::Initialize(GraphicsManager* manager)
+{
+	m_defaultShader = manager->GetDefaultShader(DefaultShader::NoLightingRendering);
+}
+
+//------------------------------------------------------------------------------
+Shader* NonShadingRenderingPass::GetDefaultShader() const
+{
+	return m_defaultShader;
+}
 
 
 //==============================================================================

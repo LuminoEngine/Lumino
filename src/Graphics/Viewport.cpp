@@ -113,11 +113,11 @@ ViewportLayer::~ViewportLayer()
 //{
 //}
 
-//------------------------------------------------------------------------------
-void ViewportLayer::AddRenderingPass(detail::RenderingPass2* pass)
-{
-	m_renderingPasses.Add(pass);
-}
+////------------------------------------------------------------------------------
+//void ViewportLayer::AddRenderingPass(detail::RenderingPass2* pass)
+//{
+//	m_renderingPasses.Add(pass);
+//}
 
 //------------------------------------------------------------------------------
 const SizeI& ViewportLayer::GetViewportSize() const
@@ -144,16 +144,16 @@ void ViewportLayer::OnBeginFrameRender(RenderTarget* renderTarget, DepthBuffer* 
 //------------------------------------------------------------------------------
 void ViewportLayer::OnEndFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer)
 {
-	for (detail::RenderingPass2* pass : m_renderingPasses)
-	{
-		OnRenderDrawElementList(renderTarget, depthBuffer, pass);
-	}
+	//for (detail::RenderingPass2* pass : m_renderingPasses)
+	//{
+	//	OnRenderDrawElementList(renderTarget, depthBuffer, pass);
+	//}
 }
 
 //------------------------------------------------------------------------------
-void ViewportLayer::OnRenderDrawElementList(RenderTarget* renderTarget, DepthBuffer* depthBuffer, detail::RenderingPass2* pass)
-{
-}
+//void ViewportLayer::OnRenderDrawElementList(RenderTarget* renderTarget, DepthBuffer* depthBuffer, detail::RenderingPass2* pass)
+//{
+//}
 
 
 //==============================================================================
@@ -211,11 +211,12 @@ void Viewport::Initialize(detail::GraphicsManager* manager, RenderTarget* render
 	m_renderer = RefPtr<DrawList>::MakeRef();
 	m_renderer->Initialize(manager);
 
-	m_internalRenderer = RefPtr<detail::InternalRenderer>::MakeRef();
-	m_internalRenderer->Initialize(manager);
+	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
+	internalRenderer->Initialize(manager);
+	m_internalRenderer = internalRenderer;
 
-	m_pass = RefPtr<detail::RenderingPass2>::MakeRef();
-	m_pass->Initialize(manager);
+	//m_pass = RefPtr<detail::RenderingPass2>::MakeRef();
+	//m_pass->Initialize(manager);
 
 	TryRemakeLayerTargets();
 }
@@ -284,8 +285,7 @@ void Viewport::EndFrameRender()
 		m_renderer->GetDrawElementList(),
 		cameraInfo,
 		m_renderTarget,
-		m_depthBuffer,		// TODO: バックバッファサイズ
-		m_pass);
+		m_depthBuffer);		// TODO: バックバッファサイズ
 	m_renderer->EndFrame();
 }
 

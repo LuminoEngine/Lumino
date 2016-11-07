@@ -153,7 +153,8 @@ public:
 	virtual DrawList* GetRenderer() override;
 	virtual void Render(RenderingContext* context) override;
 	virtual void OnBeginFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer) override;
-	virtual void OnRenderDrawElementList(RenderTarget* renderTarget, DepthBuffer* depthBuffer, detail::RenderingPass2* pass) override;
+	virtual void OnEndFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer) override;
+	//virtual void OnRenderDrawElementList(RenderTarget* renderTarget, DepthBuffer* depthBuffer, detail::RenderingPass2* pass) override;
 
 LN_INTERNAL_ACCESS:
 	CameraViewportLayer();

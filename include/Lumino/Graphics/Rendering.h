@@ -244,12 +244,15 @@ public:
 		DrawElementList* elementList,
 		const detail::CameraInfo& cameraInfo,
 		RenderTarget* defaultRenderTarget,
-		DepthBuffer* defaultDepthBuffer,
-		RenderingPass2* pass);
+		DepthBuffer* defaultDepthBuffer);
+
+protected:
+	void AddPass(RenderingPass2* pass);
 
 private:
-	GraphicsManager*	m_manager;
-	List<DrawElement*>	m_renderingElementList;
+	GraphicsManager*				m_manager;
+	List<RefPtr<RenderingPass2>>	m_renderingPassList;
+	List<DrawElement*>				m_renderingElementList;
 };
 
 
@@ -288,12 +291,35 @@ class RenderingPass2
 public:
 	RenderingPass2();
 	virtual ~RenderingPass2();
-	void Initialize(GraphicsManager* manager);
+	//void Initialize(GraphicsManager* manager);
 
-	Shader* GetDefaultShader() const;
+	virtual Shader* GetDefaultShader() const = 0;
 
 	//virtual void RenderElement(DrawList* renderer, DrawElement* element);
 	//virtual void RenderElementSubset(DrawList* renderer, DrawElement* element, int subsetIndex);
+
+private:
+};
+
+class NonShadingRenderer
+	: public InternalRenderer
+{
+public:
+	NonShadingRenderer();
+	virtual ~NonShadingRenderer();
+	void Initialize(GraphicsManager* manager);
+
+private:
+};
+
+class NonShadingRenderingPass
+	: public RenderingPass2
+{
+public:
+	NonShadingRenderingPass();
+	virtual ~NonShadingRenderingPass();
+	void Initialize(GraphicsManager* manager);
+	virtual Shader* GetDefaultShader() const override;
 
 private:
 	RefPtr<Shader>	m_defaultShader;

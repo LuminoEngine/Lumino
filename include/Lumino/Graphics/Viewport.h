@@ -42,7 +42,7 @@ protected:
 	ViewportLayer();
 	virtual ~ViewportLayer();
 
-	void AddRenderingPass(detail::RenderingPass2* pass);
+	//void AddRenderingPass(detail::RenderingPass2* pass);
 
 	/// 前描画
 	//virtual void BeginFrame(const Size& viewSize);
@@ -55,11 +55,11 @@ protected:
 
 	virtual void OnBeginFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer);
 	virtual void OnEndFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer);
-	virtual void OnRenderDrawElementList(RenderTarget* renderTarget, DepthBuffer* depthBuffer, detail::RenderingPass2* pass);
+	//virtual void OnRenderDrawElementList(RenderTarget* renderTarget, DepthBuffer* depthBuffer, detail::RenderingPass2* pass);
 
 private:
 	Viewport*								m_owner;
-	List<RefPtr<detail::RenderingPass2>>	m_renderingPasses;
+	//List<RefPtr<detail::RenderingPass2>>	m_renderingPasses;
 	RefPtr<ImageEffectList>					m_imageEffects;
 	int										m_zIndex;
 
@@ -123,7 +123,7 @@ private:
 
 	RefPtr<DrawList>					m_renderer;			// for PostProcess and Blit to backbuffer.
 	RefPtr<detail::InternalRenderer>	m_internalRenderer;	// for PostProcess and Blit to backbuffer.
-	RefPtr<detail::RenderingPass2>		m_pass;				// for PostProcess and Blit to backbuffer.
+	//RefPtr<detail::RenderingPass2>		m_pass;				// for PostProcess and Blit to backbuffer.
 };
 
 ///**
