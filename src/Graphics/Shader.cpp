@@ -50,6 +50,8 @@ namespace detail {
 static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_CameraUnit =
 {
 	// Camera unit
+	{ _T("ln_View"), BuiltinSemantics::View },
+	{ _T("ln_Projection"), BuiltinSemantics::Projection },
 	{ _T("ln_ViewportPixelSize"), BuiltinSemantics::ViewportPixelSize },
 };
 
@@ -57,6 +59,7 @@ static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_ElementUnit
 {
 	// Element unit
 	{ _T("ln_WorldViewProjection"), BuiltinSemantics::WorldViewProjection },
+	{ _T("ln_World"), BuiltinSemantics::World },
 };
 
 static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_SubsetUnit =
@@ -131,11 +134,17 @@ void ShaderSemanticsManager::UpdateCameraVariables(const CameraInfo& info)
 		{
 			switch (varInfo.kind)
 			{
-			case BuiltinSemantics::ViewportPixelSize:
-				varInfo.variable->SetVector(Vector4(info.viewPixelSize.width, info.viewPixelSize.height, 0, 0));
-				break;
-			default:
-				break;
+				case BuiltinSemantics::View:
+					varInfo.variable->SetMatrix(info.viewMatrix);
+					break;
+				case BuiltinSemantics::Projection:
+					varInfo.variable->SetMatrix(info.projMatrix);
+					break;
+				case BuiltinSemantics::ViewportPixelSize:
+					varInfo.variable->SetVector(Vector4(info.viewPixelSize.width, info.viewPixelSize.height, 0, 0));
+					break;
+				default:
+					break;
 			}
 		}
 	}
@@ -148,11 +157,14 @@ void ShaderSemanticsManager::UpdateElementVariables(const ElementInfo& info)
 	{
 		switch (varInfo.kind)
 		{
-		case BuiltinSemantics::WorldViewProjection:
-			varInfo.variable->SetMatrix(info.WorldViewProjectionMatrix);
-			break;
-		default:
-			break;
+			case BuiltinSemantics::WorldViewProjection:
+				varInfo.variable->SetMatrix(info.WorldViewProjectionMatrix);
+				break;
+			case BuiltinSemantics::World:
+				varInfo.variable->SetMatrix(info.WorldViewProjectionMatrix);
+				break;
+			default:
+				break;
 		}
 	}
 }
@@ -164,11 +176,11 @@ void ShaderSemanticsManager::UpdateSubsetVariables(const SubsetInfo& info)
 	{
 		switch (varInfo.kind)
 		{
-		case BuiltinSemantics::MaterialTexture:
-			varInfo.variable->SetTexture((info.materialTexture != nullptr) ? info.materialTexture : m_manager->GetDummyWhiteTexture());
-			break;
-		default:
-			break;
+			case BuiltinSemantics::MaterialTexture:
+				varInfo.variable->SetTexture((info.materialTexture != nullptr) ? info.materialTexture : m_manager->GetDummyWhiteTexture());
+				break;
+			default:
+				break;
 		}
 	}
 }

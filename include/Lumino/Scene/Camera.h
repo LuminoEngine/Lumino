@@ -105,6 +105,7 @@ LN_INTERNAL_ACCESS:
 	Camera();
 	virtual ~Camera();
 	void Initialize(SceneGraph* owner, CameraProjection proj);
+	CameraProjection GetProjectionMode() const { return m_projectionMode; }
 
 	CameraViewportLayer*	m_ownerLayer;
 

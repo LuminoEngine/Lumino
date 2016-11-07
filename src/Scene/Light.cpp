@@ -88,6 +88,7 @@ void Light::OnRender2(DrawList* renderer)
 {
 	if (m_enabled)
 	{
+		m_lightInfo->transform = m_combinedGlobalMatrix;
 		renderer->AddDynamicLightInfo(m_lightInfo);
 	}
 }

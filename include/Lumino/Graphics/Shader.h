@@ -17,10 +17,13 @@ LN_ENUM(BuiltinSemantics)
 	Dummy,
 
 	// Camera unit
+	View,
+	Projection,
 	ViewportPixelSize,
 
 	// Element unit
 	WorldViewProjection,
+	World,
 
 	// Subset unit
 	MaterialTexture,
@@ -48,6 +51,7 @@ struct CameraInfo
 // 描画要素単位のデータに関する情報
 struct ElementInfo
 {
+	Matrix		WorldMatrix;
 	Matrix		WorldViewProjectionMatrix;
 };
 

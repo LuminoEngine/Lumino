@@ -33,6 +33,11 @@ public:
 	Color		m_ambient;			// アンビエントカラー
 	Color		m_specular;			// スペキュラカラー
 	Vector3		m_direction;		// 向き
+	Matrix		transform;
+
+	float		tempDistance;		// 作業用変数
+
+	static const int MaxLights = 3;		// MMD based
 };
 
 enum class DrawingSectionId
@@ -120,6 +125,20 @@ public:
 
 	// (ローカル座標系)
 	void MakeBoundingSphere(const Vector3& minPos, const Vector3& maxPos);
+
+	virtual DynamicLightInfo** GetAffectedDynamicLightInfos();
+};
+
+class LightingDrawElement
+	: public DrawElement
+{
+public:
+	LightingDrawElement();
+	virtual ~LightingDrawElement() = default;
+	virtual DynamicLightInfo** GetAffectedDynamicLightInfos() { return m_affectedDynamicLightInfos; }
+
+private:
+	DynamicLightInfo*	m_affectedDynamicLightInfos[DynamicLightInfo::MaxLights];
 };
 
 class DrawElementBatch
@@ -240,6 +259,7 @@ public:
 
 
 	void AddDynamicLightInfo(DynamicLightInfo* lightInfo);
+	const List<RefPtr<DynamicLightInfo>>& GetDynamicLightList() const { return m_dynamicLightList; }
 
 private:
 	void PostAddCommandInternal(const DrawElementBatch& state, detail::IRendererPloxy* renderer, DrawElement* element);
@@ -267,6 +287,7 @@ public:
 		DepthBuffer* defaultDepthBuffer);
 
 protected:
+	virtual void OnPreRender(DrawElementList* elementList);
 	void AddPass(RenderingPass2* pass);
 
 private:
@@ -355,7 +376,13 @@ public:
 	virtual ~ForwardShadingRenderer();
 	void Initialize(GraphicsManager* manager);
 
+protected:
+	virtual void OnPreRender(DrawElementList* elementList);
+
 private:
+	void UpdateAffectLights(DrawElement* element);
+
+	List<DynamicLightInfo*>	m_selectingLights;	// UpdateAffectLights() の作業用変数
 };
 
 

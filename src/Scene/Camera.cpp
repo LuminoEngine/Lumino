@@ -242,9 +242,18 @@ void CameraViewportLayer::Initialize(SceneGraphManager* manager, Camera* hosting
 	m_renderer = RefPtr<DrawList>::MakeRef();
 	m_renderer->Initialize(manager->GetGraphicsManager());
 
-	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
-	internalRenderer->Initialize(manager->GetGraphicsManager());
-	m_internalRenderer = internalRenderer;
+	if (m_hostingCamera->GetProjectionMode() == CameraProjection_3D)
+	{
+		auto internalRenderer = RefPtr<detail::ForwardShadingRenderer>::MakeRef();
+		internalRenderer->Initialize(manager->GetGraphicsManager());
+		m_internalRenderer = internalRenderer;
+	}
+	else
+	{
+		auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
+		internalRenderer->Initialize(manager->GetGraphicsManager());
+		m_internalRenderer = internalRenderer;
+	}
 
 	//auto pass = RefPtr<detail::RenderingPass2>::MakeRef();
 	//pass->Initialize(manager->GetGraphicsManager());

@@ -474,6 +474,7 @@ DrawElement::~DrawElement()
 //------------------------------------------------------------------------------
 void DrawElement::MakeElementInfo(const CameraInfo& cameraInfo, ElementInfo* outInfo)
 {
+	outInfo->WorldMatrix = transform;
 	outInfo->WorldViewProjectionMatrix = transform * cameraInfo.viewMatrix * cameraInfo.projMatrix;	// TODO: viewProj はまとめたい
 }
 
@@ -491,6 +492,24 @@ void DrawElement::MakeBoundingSphere(const Vector3& minPos, const Vector3& maxPo
 	boundingSphere.center = center;
 	boundingSphere.radius = std::max(Vector3::Distance(minPos, center), Vector3::Distance(maxPos, center));
 }
+
+//------------------------------------------------------------------------------
+DynamicLightInfo** DrawElement::GetAffectedDynamicLightInfos()
+{
+	return nullptr;
+}
+
+
+//==============================================================================
+// LightingDrawElement
+//==============================================================================
+
+//------------------------------------------------------------------------------
+LightingDrawElement::LightingDrawElement()
+{
+	memset(m_affectedDynamicLightInfos, 0, sizeof(m_affectedDynamicLightInfos));
+}
+
 
 //==============================================================================
 // DrawElementList
@@ -558,6 +577,11 @@ void InternalRenderer::Initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
+void InternalRenderer::OnPreRender(DrawElementList* elementList)
+{
+}
+
+//------------------------------------------------------------------------------
 void InternalRenderer::AddPass(RenderingPass2* pass)
 {
 	m_renderingPassList.Add(pass);
@@ -570,6 +594,8 @@ void InternalRenderer::Render(
 	RenderTarget* defaultRenderTarget,
 	DepthBuffer* defaultDepthBuffer)
 {
+	OnPreRender(elementList);
+
 	for (RenderingPass2* pass : m_renderingPassList)
 	{
 		InternalContext* context = m_manager->GetInternalContext();
@@ -712,6 +738,63 @@ void ForwardShadingRenderer::Initialize(GraphicsManager* manager)
 	AddPass(pass);
 }
 
+//------------------------------------------------------------------------------
+void ForwardShadingRenderer::OnPreRender(DrawElementList* elementList)
+{
+	auto& lights = elementList->GetDynamicLightList();
+	m_selectingLights.Clear();
+	for (DynamicLightInfo* light : lights)
+	{
+		m_selectingLights.Add(light);
+	}
+
+	for (int i = 0; i < elementList->GetElementCount(); i++)
+	{
+		DrawElement* element = elementList->GetElement(i);
+		DynamicLightInfo** lightInfos = element->GetAffectedDynamicLightInfos();
+		if (lightInfos != nullptr)
+		{
+			UpdateAffectLights(element);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+void ForwardShadingRenderer::UpdateAffectLights(DrawElement* element)
+{
+	/*
+		まず全てのライトに、このノードとの距離をセットする。
+		その後近い順にソートして、ソート結果の先頭から必要な数だけ取りだしている。
+		ライトの数が少なければどんなアルゴリズムにしても大差はないと思うが、
+		ノード単位でソートが実行されるので速度的に少し心配。
+		先頭数個が確定したときにソートを終了する等、最適化の余地はあるが…。
+	*/
+
+	if (m_selectingLights.GetCount() > DynamicLightInfo::MaxLights)
+	{
+		// ソート基準値の計算
+		for (DynamicLightInfo* light : m_selectingLights)
+		{
+			light->tempDistance = Vector3::DistanceSquared(element->transform.GetPosition(), light->transform.GetPosition());
+		}
+
+		// ソート (昇順)
+		std::stable_sort(m_selectingLights.begin(), m_selectingLights.end(), [](DynamicLightInfo* lhs, DynamicLightInfo* rhs) { return lhs->tempDistance < rhs->tempDistance; });
+	}
+
+	// 出力 (足りない分は nullptr で埋める)
+	DynamicLightInfo** affectLightList = element->GetAffectedDynamicLightInfos();
+	int count = std::min(m_selectingLights.GetCount(), DynamicLightInfo::MaxLights);
+	int i = 0;
+	for (; i < count; ++i)
+	{
+		affectLightList[i] = m_selectingLights[i];
+	}
+	for (; i < DynamicLightInfo::MaxLights; ++i)
+	{
+		affectLightList[i] = nullptr;
+	}
+}
 
 //==============================================================================
 // ForwardShadingRenderingPass
@@ -1110,14 +1193,14 @@ void DrawList::DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Ma
 	 * LOD リソースがある場合、実際に書くときの視点情報を元に、描画する LOD リソースを選択する必要がある。
 	 */
 
-	class DrawElement_DrawMeshInternal : public detail::DrawElement
+	class DrawElement_DrawMeshInternal : public detail::LightingDrawElement
 	{
 	public:
 		RefPtr<StaticMeshModel>	mesh;
 		int startIndex;
 		int triangleCount;
 
-		virtual void DrawSubset(detail::InternalContext* context/*, int subsetIndex*/) override
+		virtual void DrawSubset(detail::InternalContext* context) override
 		{
 			context->BeginMeshRenderer()->DrawMesh(mesh->GetMeshResource(), startIndex, triangleCount);
 		}
