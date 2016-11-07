@@ -15,7 +15,7 @@ struct LN_VS_INPUT
 float4x4	ln_WorldViewProjection;
 float4x4	ln_World;
 float4x4	ln_View;
-float4x4	ln_Proj;
+float4x4	ln_Projection;
 
 //ライト関連
 bool		LightEnables[MMM_LightCount]		: LIGHTENABLES;		// 有効フラグ
