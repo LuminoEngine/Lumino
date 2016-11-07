@@ -77,18 +77,18 @@ void SpriteModelObject::OnUpdateFrame(float elapsedTime)
 //}
 
 //------------------------------------------------------------------------------
-void SpriteModelObject::OnRender(SceneGraphRenderingContext* dc)
-{
-	LN_NOTIMPLEMENTED();
-	/*
-	auto* sr = dc->BeginGraphicsContext()->GetSpriteRenderer();
-	sr->SetViewProjMatrix(dc->CurrentCamera->GetViewMatrix(), dc->CurrentCamera->GetProjectionMatrix());
-	sr->SetViewPixelSize(Size(640, 480));
-	ss::g_spriteRenderer = sr;
-	m_player->draw();
-	sr->Flush();
-	*/
-}
+//void SpriteModelObject::OnRender(SceneGraphRenderingContext* dc)
+//{
+//	LN_NOTIMPLEMENTED();
+//	/*
+//	auto* sr = dc->BeginGraphicsContext()->GetSpriteRenderer();
+//	sr->SetViewProjMatrix(dc->CurrentCamera->GetViewMatrix(), dc->CurrentCamera->GetProjectionMatrix());
+//	sr->SetViewPixelSize(Size(640, 480));
+//	ss::g_spriteRenderer = sr;
+//	m_player->draw();
+//	sr->Flush();
+//	*/
+//}
 
 } // namespace tr
 LN_NAMESPACE_END

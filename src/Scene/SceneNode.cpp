@@ -47,7 +47,7 @@ SceneNode::SceneNode()
 	, m_parentNode(NULL)
 	, m_zDistance(FLT_MAX)
 {
-	memset(m_renderingPassClientDataList, 0, sizeof(m_renderingPassClientDataList));
+//	memset(m_renderingPassClientDataList, 0, sizeof(m_renderingPassClientDataList));
 }
 
 //------------------------------------------------------------------------------

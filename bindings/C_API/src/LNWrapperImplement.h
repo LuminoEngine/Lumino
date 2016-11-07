@@ -26,12 +26,12 @@ typedef LNResult(*LNCallback_Handle)(LNHandle handle);
 class LNWISprite2D : public ln::Sprite2D
 {
 	LNCallback_Handle	m_override_OnRender = nullptr;
-	virtual void OnRender(SceneGraphRenderingContext* dc) override
-	{
-		if (m_override_OnRender)
-			m_override_OnRender(TO_HANDLE_ADDREF(this));	// ここでは基底の処理を呼び出さない。呼び出すかどうかはBinder側が決める
-		else
-			Sprite2D::OnRender(dc);
-	}
+	//virtual void OnRender(SceneGraphRenderingContext* dc) override
+	//{
+	//	if (m_override_OnRender)
+	//		m_override_OnRender(TO_HANDLE_ADDREF(this));	// ここでは基底の処理を呼び出さない。呼び出すかどうかはBinder側が決める
+	//	else
+	//		Sprite2D::OnRender(dc);
+	//}
 };
 

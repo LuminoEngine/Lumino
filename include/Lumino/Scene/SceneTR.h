@@ -1,4 +1,4 @@
-
+#if 0
 #pragma once
 #include "Common.h"
 #include "VisualNode.h"
@@ -33,3 +33,4 @@ private:
 
 } // namespace tr
 LN_NAMESPACE_END
+#endif

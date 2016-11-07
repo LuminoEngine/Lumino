@@ -1,4 +1,5 @@
 
+#if 0
 #include "Internal.h"
 #include <Lumino/Graphics/GraphicsContext.h>
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
@@ -64,3 +65,5 @@ void Grid::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
+
+#endif

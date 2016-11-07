@@ -6,6 +6,7 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
+class SceneGraphRenderingContext;
 class MMEShader;
 
 //class IMMESubsetRenerer

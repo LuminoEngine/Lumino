@@ -1,5 +1,7 @@
 ﻿
 #pragma once
+
+#if 0
 #include "Common.h"
 #include <Lumino/Scene/Camera.h>
 
@@ -70,3 +72,4 @@ private:
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
+#endif

@@ -5,7 +5,7 @@
 #include <Lumino/Scene/SceneNode.h>
 #include "SceneGraphManager.h"
 #include "RenderingPass.h"
-#include <Lumino/Scene/MMDSceneGraph.h>
+//#include <Lumino/Scene/MMDSceneGraph.h>
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
 
 // TODO: 移動
@@ -40,25 +40,31 @@ SceneGraphManager::SceneGraphManager(const ConfigData& configData)
 {
 	m_dummyWhiteTexture = m_graphicsManager->GetDummyWhiteTexture();
 
-	// RenderingPass に割り当てる ID
-	for (int i = 0; i < RenderingPass::MaxRenderingPass; ++i) {
-		m_renderingPassIDStack.Push(i);
-	}
+	//// RenderingPass に割り当てる ID
+	//for (int i = 0; i < RenderingPass::MaxRenderingPass; ++i) {
+	//	m_renderingPassIDStack.Push(i);
+	//}
 
-	m_renderingContext = LN_NEW SceneGraphRenderingContext();
-	m_renderingContext->Initialize(this);
+	//m_renderingContext = LN_NEW SceneGraphRenderingContext();
+	//m_renderingContext->Initialize(this);
 }
 
 //------------------------------------------------------------------------------
 SceneGraphManager::~SceneGraphManager()
 {
-	LN_SAFE_DELETE(m_renderingContext);
+	//LN_SAFE_DELETE(m_renderingContext);
 }
 
 //------------------------------------------------------------------------------
 void SceneGraphManager::CreateDefaultSceneGraph()
 {
+#if 0
 	RefPtr<MMDSceneGraph> sg(LN_NEW MMDSceneGraph(), false);
+	sg->CreateCore(this);
+	sg.SafeAddRef();
+	m_default3DSceneGraph = sg;
+#endif
+	RefPtr<Basic3DSceneGraph> sg(LN_NEW Basic3DSceneGraph(), false);
 	sg->CreateCore(this);
 	sg.SafeAddRef();
 	m_default3DSceneGraph = sg;
@@ -148,32 +154,17 @@ void SceneGraphManager::OnNodeRename(SceneNode* node, const String& oldName, con
 	}
 }
 
-//------------------------------------------------------------------------------
-void SceneGraphManager::AddRenderingPass(RenderingPass* pass)
-{
-	// ID 割り当て
-	pass->m_internalEntryID = m_renderingPassIDStack.GetTop();
-	m_renderingPassIDStack.Pop();
-}
-
-//------------------------------------------------------------------------------
-void SceneGraphManager::RemoveRenderingPass(RenderingPass* pass)
-{
-	// ID 返却
-	m_renderingPassIDStack.Push(pass->m_internalEntryID);
-}
-
-//------------------------------------------------------------------------------
-void SceneGraphManager::AddShader(MMEShader* shader)
-{
-	m_sceneShaderList.Add(shader);
-}
-
-//------------------------------------------------------------------------------
-void SceneGraphManager::RemoveShader(MMEShader* shader)
-{
-	m_sceneShaderList.Remove(shader);
-}
+////------------------------------------------------------------------------------
+//void SceneGraphManager::AddShader(MMEShader* shader)
+//{
+//	m_sceneShaderList.Add(shader);
+//}
+//
+////------------------------------------------------------------------------------
+//void SceneGraphManager::RemoveShader(MMEShader* shader)
+//{
+//	m_sceneShaderList.Remove(shader);
+//}
 
 
 LN_NAMESPACE_SCENE_END

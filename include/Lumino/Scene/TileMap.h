@@ -34,7 +34,7 @@ protected:
 	TileMap();
 	virtual ~TileMap();
 	void Create3DCore(SceneGraph* owner);
-	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex);
+	//virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex);
 
 private:
 	TileMapRenderer*	m_renderer;

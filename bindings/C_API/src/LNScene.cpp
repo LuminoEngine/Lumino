@@ -60,6 +60,14 @@ LNResult LNSceneNode_GetChildren(LN_HANDLE(LNSceneNode) sceneNode, LN_OUT LN_GEN
 	LN_FUNC_TRY_END_RETURN;
 }
 
+#if 0
+	/**
+		@brief		test
+		@param[in]	sceneNode	: ノードハンドル
+	*/
+	LN_INSTANCE_API
+	LNResult LNSceneNode_OnRender(LN_HANDLE(LNSceneNode) sceneNode);
+
 //------------------------------------------------------------------------------
 LNResult LNSceneNode_OnRender(LN_HANDLE(LNSceneNode) sceneNode)
 {
@@ -68,6 +76,7 @@ LNResult LNSceneNode_OnRender(LN_HANDLE(LNSceneNode) sceneNode)
 	TO_REFOBJ(VisualNode, sceneNode)->VisualNode::OnRender(nullptr);	// TODO: Test
 	LN_FUNC_TRY_END_RETURN;
 }
+#endif
 
 //==============================================================================
 // LNSprite

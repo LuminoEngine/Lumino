@@ -1,4 +1,5 @@
 ﻿
+#if 0
 #include "../Internal.h"
 #include "DebugRenderer.h"
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
@@ -41,3 +42,4 @@ void InfomationRenderingPass::PostRender(SceneGraphRenderingContext* dc)
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
+#endif

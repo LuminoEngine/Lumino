@@ -10,7 +10,7 @@
 #include <Lumino/Scene/SpriteModelObject.h>
 #include <Lumino/Testing/TestUtils.h>
 //#include <Lumino/Platform/Win32/Win32PlatformWindow.h>
-#include "../../../src/Scene/MME/MMEShader.h"
+//#include "../../../src/Scene/MME/MMEShader.h"
 
 
 #include <Lumino/Graphics/PerlinNoise.h>
@@ -504,11 +504,11 @@ int main()
 		//bmp->BitBlt(0, 0, &bmp1, Rect(0, 0, 256, 256), Color32::White, false);
 		tex->Unlock();
 
-		auto shader = MMEShader::Create(_T("D:/Proj/Volkoff/External/Lumino/src/Scene/Resource/BasicForwardRendering.fx"));
-		auto mesh = StaticMesh::CreateSphere(20, 32, 16, MeshCreationFlags::ReverseFaces);
-		mesh->SetShader(shader);
-		mesh->GetMaterials()->GetAt(0)->SetTextureParameter(Material::MaterialTextureParameter, noiseTex1);
-		mesh->GetMaterials()->GetAt(0)->SetColorParameter(Material::EmissiveParameter, Color::White);
+		//auto shader = MMEShader::Create(_T("D:/Proj/Volkoff/External/Lumino/src/Scene/Resource/BasicForwardRendering.fx"));
+		//auto mesh = StaticMesh::CreateSphere(20, 32, 16, MeshCreationFlags::ReverseFaces);
+		//mesh->SetShader(shader);
+		//mesh->GetMaterials()->GetAt(0)->SetTextureParameter(Material::MaterialTextureParameter, noiseTex1);
+		//mesh->GetMaterials()->GetAt(0)->SetColorParameter(Material::EmissiveParameter, Color::White);
 		
 
 

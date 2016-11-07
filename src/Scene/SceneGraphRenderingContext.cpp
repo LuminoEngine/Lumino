@@ -1,4 +1,5 @@
 ﻿
+#if 0
 #include "../Internal.h"
 #include <Lumino/Scene/Camera.h>
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
@@ -103,3 +104,4 @@ void SceneGraphRenderingContext::OnStateFlush(detail::IRendererPloxy* activeRend
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
+#endif

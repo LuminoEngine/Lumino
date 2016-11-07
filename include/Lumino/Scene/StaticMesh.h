@@ -35,7 +35,7 @@ LN_INTERNAL_ACCESS:
 	StaticMesh();
 	virtual ~StaticMesh();
 	void Initialize(SceneGraph* ownerSceneGraph, StaticMeshModel* meshModel);
-	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
+	//virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
 
 private:
 	RefPtr<StaticMeshModel>	m_mesh;

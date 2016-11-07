@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#if 0
 #include <Lumino/Base/Nullable.h>
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Graphics/Texture.h>
@@ -90,3 +91,4 @@ protected:
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
+#endif

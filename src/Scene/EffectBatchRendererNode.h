@@ -16,8 +16,8 @@ public:
 	void Initialize(SceneGraph* owner, detail::EffectManager* effectManager);
 
 protected:
-	virtual void OnRender(SceneGraphRenderingContext* dc) override;
-	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override {}
+	//virtual void OnRender(SceneGraphRenderingContext* dc) override;
+	//virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override {}
 
 private:
 	detail::EffectManager*	m_effectManager;	// TODO: Manager だとほんとに一括描画になるので Context とかもう少し細かい単位にできるとベスト。

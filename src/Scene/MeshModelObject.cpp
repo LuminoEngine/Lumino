@@ -6,7 +6,7 @@
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/MeshModelObject.h>
 #include "../Modeling/PmxSkinnedMesh.h"
-#include "MME/MMEShader.h"
+//#include "MME/MMEShader.h"
 #include "SceneGraphManager.h"
 
 LN_NAMESPACE_BEGIN
@@ -79,34 +79,34 @@ void SkinnedMesh::OnUpdateFrame(float elapsedTime)
 }
 
 //------------------------------------------------------------------------------
-void SkinnedMesh::UpdateNodeRenderingParams(MMEShader* priorityShader)
-{
-	Shader* core = priorityShader;
-	ShaderVariable* v;
-
-	v = core->FindVariable(_T("lnBoneTextureReciprocalSize"));
-	if (v) {
-		Vector4 invSize;
-		invSize.x = 1.0f / m_meshModel->GetSkinningMatricesTexture()->GetRealSize().width;
-		invSize.y = 1.0f / m_meshModel->GetSkinningMatricesTexture()->GetRealSize().height;
-		v->SetVector(invSize);
-	}
-
-	v = core->FindVariable(_T("lnBoneTexture"));
-	if (v) {
-		v->SetTexture(m_meshModel->GetSkinningMatricesTexture());
-	}
-	v = core->FindVariable(_T("lnBoneLocalQuaternionTexture"));
-	if (v) {
-		v->SetTexture(m_meshModel->m_skinningLocalQuaternionsTexture);
-	}
-}
+//void SkinnedMesh::UpdateNodeRenderingParams(MMEShader* priorityShader)
+//{
+//	Shader* core = priorityShader;
+//	ShaderVariable* v;
+//
+//	v = core->FindVariable(_T("lnBoneTextureReciprocalSize"));
+//	if (v) {
+//		Vector4 invSize;
+//		invSize.x = 1.0f / m_meshModel->GetSkinningMatricesTexture()->GetRealSize().width;
+//		invSize.y = 1.0f / m_meshModel->GetSkinningMatricesTexture()->GetRealSize().height;
+//		v->SetVector(invSize);
+//	}
+//
+//	v = core->FindVariable(_T("lnBoneTexture"));
+//	if (v) {
+//		v->SetTexture(m_meshModel->GetSkinningMatricesTexture());
+//	}
+//	v = core->FindVariable(_T("lnBoneLocalQuaternionTexture"));
+//	if (v) {
+//		v->SetTexture(m_meshModel->m_skinningLocalQuaternionsTexture);
+//	}
+//}
 
 //------------------------------------------------------------------------------
-void SkinnedMesh::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
-{
-	dc->DrawMesh(m_meshModel->m_meshResource, subsetIndex);
-}
+//void SkinnedMesh::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
+//{
+//	dc->DrawMesh(m_meshModel->m_meshResource, subsetIndex);
+//}
 
 LN_NAMESPACE_END
 

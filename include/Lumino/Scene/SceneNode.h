@@ -4,7 +4,7 @@
 #include <Lumino/Base/String.h>
 #include <Lumino/BindingSupport.h>
 #include <Lumino/Graphics/Shader.h>
-#include "MME/MMESceneObject.h"
+//#include "MME/MMESceneObject.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
@@ -14,7 +14,7 @@ class SceneNodeList;
 /// SceneNode
 class SceneNode
 	: public tr::ReflectionObject
-	, public IMMESceneObject
+	//, public IMMESceneObject
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
@@ -127,11 +127,6 @@ public:
 	///		maxCount はシェーダが必要としているライトの最大数。renderingLightList の中から maxCount 個取りだせば良い。
 	virtual void UpdateAffectLights(LightNodeList* renderingLightList, int maxCount) {}
 
-	/// このノードを描画する
-	//virtual void Render(RenderingParams& params) {}
-
-	virtual void DrawSubsetInternal(SceneGraphRenderingContext* dc, int subsetIndex, MMEShader* shader, ShaderPass* pass) {};
-
 	/// Z ソート用の比較関数 (距離と優先度でソート)
 	static bool CmpZAndPrioritySort(const SceneNode* left, const SceneNode* right);
 
@@ -188,8 +183,8 @@ protected:
 	friend class DrawingLayer;
 	float				m_zDistance;			///< Z ソート用の距離値 (ソート自体が速度的にクリティカルになりそうなので、getter を仮想関数にはしたくない)
 
-	friend class MMERenderingPass;	// TODO: VisualNode に持ってくべきかも。ついでに friend も何とかしたい
-	detail::RenderingPassClientData	m_renderingPassClientDataList[detail::MaxRenderingPass];
+	//friend class MMERenderingPass;	// TODO: VisualNode に持ってくべきかも。ついでに friend も何とかしたい
+	//detail::RenderingPassClientData	m_renderingPassClientDataList[detail::MaxRenderingPass];
 };
 
 class SceneNodeList

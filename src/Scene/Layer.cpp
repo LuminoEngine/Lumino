@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#if 0
 #include "../Internal.h"
 #include "SceneGraphManager.h"
 #include "RenderingPass.h"
@@ -47,9 +48,9 @@ void DrawingLayer::PreRender(const Size& viewSize)
 	//		TODO: とりあえず全シェーダ更新している。そんなにたくさんのシェーダは使わないだろうという想定。
 	//		もちろん数が増えてくればこの辺がパフォーマンス的にクリティカルになる。
 	//		改善案はあるが、とりあえず。(SceneGraphManaer.cpp 参照)
-	LN_FOREACH(MMEShader* shader, *m_manager->GetShaderList()) {
-		shader->UpdateCameraParams(m_camera, viewSize);
-	}
+	//LN_FOREACH(MMEShader* shader, *m_manager->GetShaderList()) {
+	//	shader->UpdateCameraParams(m_camera, viewSize);
+	//}
 
 	// このレイヤーのカメラに依るデータを更新する (視錘台カリングやカメラからの距離の更新)
 	m_renderingRootNode->UpdateViewFlustumHierarchy(m_camera, &m_renderingNodeList, &m_renderingLightList);
@@ -70,3 +71,5 @@ void DrawingLayer::Render()
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
+#endif
+

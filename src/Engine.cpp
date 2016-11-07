@@ -10,6 +10,7 @@
 #include "Graphics/RenderingThread.h"
 #include "Scene/SceneGraphManager.h"
 #include <Lumino/Scene/SceneGraph.h>
+#include <Lumino/Scene/Camera.h>
 #include "Effect/EffectManager.h"
 #include "UI/UIManager.h"
 #include "EngineManager.h"

@@ -1,6 +1,7 @@
 
 #pragma once
 #include "Common.h"
+#include "Color.h"
 #include "RenderState.h"
 #include "Shader.h"
 #include "Texture.h"

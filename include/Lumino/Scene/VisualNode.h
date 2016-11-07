@@ -105,15 +105,15 @@ public:
 	virtual void UpdateAffectLights(LightNodeList* renderingLightList, int maxCount);
 
 	/// ノード単位の描画情報の更新。この後すぐ一連のサブセット描画が始まる
-	virtual void UpdateNodeRenderingParams(MMEShader* priorityShader) {}
+	//virtual void UpdateNodeRenderingParams(MMEShader* priorityShader) {}
 
 
 	virtual detail::Sphere GetBoundingSphere();
 
-	void DrawSubsetInternal(SceneGraphRenderingContext* dc, int subsetIndex, MMEShader* shader, ShaderPass* pass);
+	//void DrawSubsetInternal(SceneGraphRenderingContext* dc, int subsetIndex, MMEShader* shader, ShaderPass* pass);
 
-	virtual void OnRender(SceneGraphRenderingContext* dc);
-	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) {}
+	//virtual void OnRender(SceneGraphRenderingContext* dc);
+	//virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) {}
 
 	virtual LightNodeList* GetAffectLightList() { return &m_affectLightList; }
 
@@ -128,7 +128,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	MaterialList2* GetMaterialList() { return m_materialList; }
 	Shader* GetPrimaryShader() const;
-	void Render(SceneGraphRenderingContext* dc);
+	//void Render(SceneGraphRenderingContext* dc);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	virtual detail::SceneNodeDefaultShaderClass GetShaderClass() { return detail::SceneNodeDefaultShaderClass_StaticMesh; }
@@ -136,7 +136,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 protected:
 	int						m_subsetCount;
 
-	friend class RenderingPass;
+	//friend class RenderingPass;
 	RefPtr<MaterialList2>					m_materialList;
 	detail::VisualNodeRenderState	m_renderState;
 	bool					m_isVisible;

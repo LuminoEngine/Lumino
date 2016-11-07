@@ -358,7 +358,7 @@ set(LN_SOURCES_Scene
 	include/Lumino/Scene/Layer.h
 	include/Lumino/Scene/Light.h
 	include/Lumino/Scene/MeshModelObject.h
-	include/Lumino/Scene/MMDSceneGraph.h
+#	include/Lumino/Scene/MMDSceneGraph.h
 	include/Lumino/Scene/SceneGraph.h
 	include/Lumino/Scene/SceneGraphRenderingContext.h
 	include/Lumino/Scene/SceneNode.h
@@ -370,7 +370,7 @@ set(LN_SOURCES_Scene
 	include/Lumino/Scene/TextBlock.h
 	include/Lumino/Scene/TileMap.h
 	include/Lumino/Scene/VisualNode.h
-	include/Lumino/Scene/MME/MMESceneObject.h
+#	include/Lumino/Scene/MME/MMESceneObject.h
 	src/Scene/Camera.cpp
 	src/Scene/Internal.h
 	src/Scene/DebugRenderer.h
@@ -384,7 +384,7 @@ set(LN_SOURCES_Scene
 	src/Scene/Layer.cpp
 	src/Scene/Light.cpp
 	src/Scene/MeshModelObject.cpp
-	src/Scene/MMDSceneGraph.cpp
+#	src/Scene/MMDSceneGraph.cpp
 	src/Scene/RenderingPass.cpp
 	src/Scene/RenderingPass.h
 	src/Scene/SceneGraph.cpp
@@ -722,7 +722,7 @@ set(LN_SOURCES
 	${LN_SOURCES_TileMap}
 	${LN_SOURCES_Modeling}
 	${LN_SOURCES_Scene}
-	${LN_SOURCES_Scene_MMD}
+#	${LN_SOURCES_Scene_MMD}
 	${LN_SOURCES_UI}
 	${LN_SOURCES_Documents}
 	${LN_SOURCES_Game}

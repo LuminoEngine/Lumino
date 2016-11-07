@@ -2,20 +2,24 @@
 #pragma once
 #include "../BindingSupport.h"
 #include "../Graphics/Texture.h"
-#include "Layer.h"
+#include "Common.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_SCENE_BEGIN
-namespace detail { class MaterialInstance; }
 
-class LayerList
-	: public RefObjectList
-{
-public:
-	LN_REF_OBJECT_LIST_DECL(Layer);
-	LayerList() {}
-	virtual ~LayerList() {}
-};
+namespace detail { class MaterialInstance; }
+class SceneGraphManager;	// TODO: detail
+class DrawList;
+class Camera;
+class SceneNode;
+
+//class LayerList
+//	: public RefObjectList
+//{
+//public:
+//	LN_REF_OBJECT_LIST_DECL(Layer);
+//	LayerList() {}
+//	virtual ~LayerList() {}
+//};
 
 /**
 	@brief
@@ -31,7 +35,7 @@ public:
 public:
 
 	/// レイヤーリストの取得
-	LayerList* GetLayerList() { return &m_layerList; }
+	//LayerList* GetLayerList() { return &m_layerList; }
 
 	/// 現在の時間を取得する (秒)
 	double GetTime() const { return m_time; }
@@ -40,7 +44,7 @@ public:
 	float GetElapsedTime() const { return m_elapsedTime; }
 
 	/// 描画
-	void Render(RenderingContext* context, Camera* camera);
+	//void Render(RenderingContext* context, Camera* camera);
 	void Render2(DrawList* renderer, Camera* camera);
 
 	/// マウス移動イベントを通知する (ViewPane の左上を 0,0 とした座標を指定する)
@@ -58,7 +62,7 @@ public:
 	virtual void UpdateFrame(float deltaTime);
 	virtual SceneNode* GetRootNode() = 0;
 	virtual Camera* GetMainCamera() = 0;
-	virtual List<RenderingPass*>* GetRenderingPasses() = 0;
+	//virtual List<RenderingPass*>* GetRenderingPasses() = 0;
 	virtual detail::MaterialInstance* CreateMaterialInstance();
 
 protected:
@@ -90,7 +94,7 @@ private:
 	};
 
 	SceneGraphManager*	m_manager;
-	LayerList			m_layerList;
+	//LayerList			m_layerList;
 
 	double				m_time;					///< 時間処理の開始通知からの経過時間 (秒)
 	float				m_elapsedTime;			///< 前回フレームからの経過時間 (秒)
@@ -116,7 +120,7 @@ public:
 	virtual void UpdateFrame(float elapsedTime);
 	virtual SceneNode* GetRootNode() override { return m_defaultRoot; }
 	virtual Camera* GetMainCamera() override { return m_defaultCamera; }
-	virtual List<RenderingPass*>* GetRenderingPasses() override { return &m_renderingPasses; }
+	//virtual List<RenderingPass*>* GetRenderingPasses() override { return &m_renderingPasses; }
 
 public:
 	Basic2DSceneGraph();
@@ -126,8 +130,31 @@ public:
 private:
 	SceneNode*				m_defaultRoot;
 	Camera*					m_defaultCamera;
-	List<RenderingPass*>	m_renderingPasses;
+	//List<RenderingPass*>	m_renderingPasses;
 };
 
-LN_NAMESPACE_SCENE_END
+/**
+	@brief
+*/
+class Basic3DSceneGraph
+	: public SceneGraph
+{
+public:
+
+	virtual void UpdateFrame(float elapsedTime);
+	virtual SceneNode* GetRootNode() override { return m_defaultRoot; }
+	virtual Camera* GetMainCamera() override { return m_defaultCamera; }
+	//virtual List<RenderingPass*>* GetRenderingPasses() override { return &m_renderingPasses; }
+
+public:
+	Basic3DSceneGraph();
+	virtual ~Basic3DSceneGraph();
+	void CreateCore(SceneGraphManager* manager);
+
+private:
+	SceneNode*				m_defaultRoot;
+	Camera*					m_defaultCamera;
+	//List<RenderingPass*>	m_renderingPasses;
+};
+
 LN_NAMESPACE_END

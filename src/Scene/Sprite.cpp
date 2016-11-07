@@ -1,9 +1,10 @@
 ﻿
 #include "../Internal.h"
-#include <Lumino/Graphics/GraphicsContext.h>
+#include <Lumino/Graphics/GraphicsContext.h>	// TODO: いらない
+#include <Lumino/Graphics/Rendering.h>
 #include "SceneGraphManager.h"
-#include "RenderingPass.h"
-#include <Lumino/Scene/SceneGraphRenderingContext.h>
+#include "RenderingPass.h"	// TODO: いらない
+#include <Lumino/Scene/SceneGraphRenderingContext.h>	// TODO: いらない
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Sprite.h>
 #include "../Graphics/PrimitiveRenderer.h"	// todo
@@ -255,17 +256,17 @@ void Sprite::NormalizeSrcRect(const Rect& srcRect, const SizeI& textureSize, flo
 }
 
 //------------------------------------------------------------------------------
-void Sprite::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
-{
-	if (subsetIndex == 0)
-	{
-		dc->DrawSquarePrimitive(
-			Vector3(m_upperLeft.x, m_upperLeft.y, m_upperLeft.z), Vector2(m_upperLeftUV.x, m_upperLeftUV.y), Color::White,
-			Vector3(m_upperLeft.x, m_lowerRight.y, m_lowerRight.z), Vector2(m_upperLeftUV.x, m_lowerRightUV.y), Color::White,
-			Vector3(m_lowerRight.x, m_lowerRight.y, m_lowerRight.z), Vector2(m_lowerRightUV.x, m_lowerRightUV.y), Color::White,
-			Vector3(m_lowerRight.x, m_upperLeft.y, m_upperLeft.z), Vector2(m_lowerRightUV.x, m_upperLeftUV.y), Color::White);
-	}
-}
+//void Sprite::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
+//{
+//	if (subsetIndex == 0)
+//	{
+//		dc->DrawSquarePrimitive(
+//			Vector3(m_upperLeft.x, m_upperLeft.y, m_upperLeft.z), Vector2(m_upperLeftUV.x, m_upperLeftUV.y), Color::White,
+//			Vector3(m_upperLeft.x, m_lowerRight.y, m_lowerRight.z), Vector2(m_upperLeftUV.x, m_lowerRightUV.y), Color::White,
+//			Vector3(m_lowerRight.x, m_lowerRight.y, m_lowerRight.z), Vector2(m_lowerRightUV.x, m_lowerRightUV.y), Color::White,
+//			Vector3(m_lowerRight.x, m_upperLeft.y, m_upperLeft.z), Vector2(m_lowerRightUV.x, m_upperLeftUV.y), Color::White);
+//	}
+//}
 
 //==============================================================================
 // Sprite2D
@@ -324,28 +325,28 @@ void Sprite2D::SetAnchor(float ratioX, float ratioY)
 }
 
 //------------------------------------------------------------------------------
-void Sprite2D::OnRender(SceneGraphRenderingContext* dc)
-{
-	// レンダリングステートの設定
-	// TODO: これは Sprite 描画のバッチのソート要素として、DrawSprite2D に渡せるようにしたい
-	dc->ResetStates();
-	dc->SetBlendMode(m_renderState.blendMode);
-	dc->SetCullingMode(m_renderState.cullingMode);
-	dc->SetDepthTestEnabled(m_renderState.depthTestEnabled);
-	dc->SetDepthWriteEnabled(m_renderState.depthWriteEnabled);
-
-
-	detail::MaterialInstance* mat = m_materialList->GetMaterialInstance(0);
-	dc->DrawSprite2D(m_combinedGlobalMatrix, m_renderSize, m_anchor, GetTexture(), m_renderSourceRect, mat->m_colorScale);
-	//if (subsetIndex == 0)
-	//{
-	//	dc->DrawSquarePrimitive(
-	//		Vector3(m_upperLeft.x, m_upperLeft.y, m_upperLeft.z), Vector2(m_upperLeftUV.x, m_upperLeftUV.y), Color::White,
-	//		Vector3(m_upperLeft.x, m_lowerRight.y, m_lowerRight.z), Vector2(m_upperLeftUV.x, m_lowerRightUV.y), Color::White,
-	//		Vector3(m_lowerRight.x, m_lowerRight.y, m_lowerRight.z), Vector2(m_lowerRightUV.x, m_lowerRightUV.y), Color::White,
-	//		Vector3(m_lowerRight.x, m_upperLeft.y, m_upperLeft.z), Vector2(m_lowerRightUV.x, m_upperLeftUV.y), Color::White);
-	//}
-}
+//void Sprite2D::OnRender(SceneGraphRenderingContext* dc)
+//{
+//	// レンダリングステートの設定
+//	// TODO: これは Sprite 描画のバッチのソート要素として、DrawSprite2D に渡せるようにしたい
+//	dc->ResetStates();
+//	dc->SetBlendMode(m_renderState.blendMode);
+//	dc->SetCullingMode(m_renderState.cullingMode);
+//	dc->SetDepthTestEnabled(m_renderState.depthTestEnabled);
+//	dc->SetDepthWriteEnabled(m_renderState.depthWriteEnabled);
+//
+//
+//	detail::MaterialInstance* mat = m_materialList->GetMaterialInstance(0);
+//	dc->DrawSprite2D(m_combinedGlobalMatrix, m_renderSize, m_anchor, GetTexture(), m_renderSourceRect, mat->m_colorScale);
+//	//if (subsetIndex == 0)
+//	//{
+//	//	dc->DrawSquarePrimitive(
+//	//		Vector3(m_upperLeft.x, m_upperLeft.y, m_upperLeft.z), Vector2(m_upperLeftUV.x, m_upperLeftUV.y), Color::White,
+//	//		Vector3(m_upperLeft.x, m_lowerRight.y, m_lowerRight.z), Vector2(m_upperLeftUV.x, m_lowerRightUV.y), Color::White,
+//	//		Vector3(m_lowerRight.x, m_lowerRight.y, m_lowerRight.z), Vector2(m_lowerRightUV.x, m_lowerRightUV.y), Color::White,
+//	//		Vector3(m_lowerRight.x, m_upperLeft.y, m_upperLeft.z), Vector2(m_lowerRightUV.x, m_upperLeftUV.y), Color::White);
+//	//}
+//}
 
 ////------------------------------------------------------------------------------
 //void Sprite2D::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
@@ -417,29 +418,29 @@ detail::Sphere Sprite3D::GetBoundingSphere()
 }
 
 //------------------------------------------------------------------------------
-void Sprite3D::OnRender(SceneGraphRenderingContext* dc)
-{
-	// レンダリングステートの設定
-	// TODO: これは Sprite 描画のバッチのソート要素として、DrawSprite2D に渡せるようにしたい
-	dc->ResetStates();
-	dc->SetBlendMode(m_renderState.blendMode);
-	dc->SetCullingMode(m_renderState.cullingMode);
-	dc->SetDepthTestEnabled(m_renderState.depthTestEnabled);
-	dc->SetDepthWriteEnabled(m_renderState.depthWriteEnabled);
-
-	detail::MaterialInstance* mat = m_materialList->GetMaterialInstance(0);
-
-	dc->DrawSprite3D(m_combinedGlobalMatrix, m_renderSize, Vector2::Zero, GetTexture(), m_renderSourceRect, mat->m_colorScale);
-	//Sprite::DrawSubset(dc, subsetIndex);
-	//if (subsetIndex == 0)
-	//{
-	//	dc->DrawSquarePrimitive(
-	//		Vector3(m_upperLeft.x, m_upperLeft.y, m_upperLeft.z), Vector2(m_upperLeftUV.x, m_upperLeftUV.y), Color::White,
-	//		Vector3(m_upperLeft.x, m_lowerRight.y, m_lowerRight.z), Vector2(m_upperLeftUV.x, m_lowerRightUV.y), Color::White,
-	//		Vector3(m_lowerRight.x, m_lowerRight.y, m_lowerRight.z), Vector2(m_lowerRightUV.x, m_lowerRightUV.y), Color::White,
-	//		Vector3(m_lowerRight.x, m_upperLeft.y, m_upperLeft.z), Vector2(m_lowerRightUV.x, m_upperLeftUV.y), Color::White);
-	//}
-}
+//void Sprite3D::OnRender(SceneGraphRenderingContext* dc)
+//{
+//	// レンダリングステートの設定
+//	// TODO: これは Sprite 描画のバッチのソート要素として、DrawSprite2D に渡せるようにしたい
+//	dc->ResetStates();
+//	dc->SetBlendMode(m_renderState.blendMode);
+//	dc->SetCullingMode(m_renderState.cullingMode);
+//	dc->SetDepthTestEnabled(m_renderState.depthTestEnabled);
+//	dc->SetDepthWriteEnabled(m_renderState.depthWriteEnabled);
+//
+//	detail::MaterialInstance* mat = m_materialList->GetMaterialInstance(0);
+//
+//	dc->DrawSprite3D(m_combinedGlobalMatrix, m_renderSize, Vector2::Zero, GetTexture(), m_renderSourceRect, mat->m_colorScale);
+//	//Sprite::DrawSubset(dc, subsetIndex);
+//	//if (subsetIndex == 0)
+//	//{
+//	//	dc->DrawSquarePrimitive(
+//	//		Vector3(m_upperLeft.x, m_upperLeft.y, m_upperLeft.z), Vector2(m_upperLeftUV.x, m_upperLeftUV.y), Color::White,
+//	//		Vector3(m_upperLeft.x, m_lowerRight.y, m_lowerRight.z), Vector2(m_upperLeftUV.x, m_lowerRightUV.y), Color::White,
+//	//		Vector3(m_lowerRight.x, m_lowerRight.y, m_lowerRight.z), Vector2(m_lowerRightUV.x, m_lowerRightUV.y), Color::White,
+//	//		Vector3(m_lowerRight.x, m_upperLeft.y, m_upperLeft.z), Vector2(m_lowerRightUV.x, m_upperLeftUV.y), Color::White);
+//	//}
+//}
 
 //------------------------------------------------------------------------------
 void Sprite3D::UpdateVertexData()

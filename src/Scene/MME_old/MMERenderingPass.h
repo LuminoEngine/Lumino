@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#if 0
 #include "../RenderingPass.h"
 
 LN_NAMESPACE_BEGIN
@@ -36,3 +37,4 @@ private:
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
+#endif

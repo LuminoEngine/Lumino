@@ -8,12 +8,12 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 class SceneGraphManager;
-class SceneGraphRenderingContext;
+//class SceneGraphRenderingContext;
 
 class SceneGraph;
 class Layer;
 class DrawingLayer;
-class RenderingPass;
+//class RenderingPass;
 //class RenderingParams;
 class SceneNode;
 class VisualNode;
@@ -30,15 +30,10 @@ typedef RefPtr<Sprite2D>	Sprite2DPtr;
 class TileMap;
 typedef RefPtr<TileMap>		TileMapPtr;
 
-class MMEShader;
-class MMEShaderTechnique;
-
 class CameraBehavior;
 
-typedef List<RenderingPass*>	RenderingPassList;
 typedef List<Light*>			LightNodeList;
 typedef List<SceneNode*>		SceneNodeArray;
-typedef List<MMEShader*>		SceneShaderList;
 
 /// ノード種別
 enum SceneNodeType
@@ -129,11 +124,11 @@ namespace detail
 {
 static const int MaxRenderingPass = 32;
 
-struct RenderingPassClientData
-{
-	RenderingPass*	OwnerPass;				///< 
-	int				PriorityShaderIndex;	///< RenderingPass::m_priorityShaderList のインデックス (-1 は一致なし)
-};
+//struct RenderingPassClientData
+//{
+//	RenderingPass*	OwnerPass;				///< 
+//	int				PriorityShaderIndex;	///< RenderingPass::m_priorityShaderList のインデックス (-1 は一致なし)
+//};
 
 enum SceneNodeDefaultShaderClass
 {

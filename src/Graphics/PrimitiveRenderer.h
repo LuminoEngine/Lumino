@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include <Lumino/Graphics/Common.h>
+#include <Lumino/Graphics/ContextInterface.h>
 #include <Lumino/Graphics/Text/Font.h>
 #include "PainterEngine.h"
 

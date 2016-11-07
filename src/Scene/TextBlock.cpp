@@ -94,11 +94,11 @@ detail::Sphere TextBlock2D::GetBoundingSphere()
 }
 
 //------------------------------------------------------------------------------
-void TextBlock2D::OnRender(SceneGraphRenderingContext* dc)
-{
-	const Size& size = m_paragraph->GetRenderSize();
-	m_paragraph->Render(Matrix::MakeTranslation(-size.width * m_anchor.x, -size.height * m_anchor.y, 0) * m_combinedGlobalMatrix, dc);
-}
+//void TextBlock2D::OnRender(SceneGraphRenderingContext* dc)
+//{
+//	const Size& size = m_paragraph->GetRenderSize();
+//	m_paragraph->Render(Matrix::MakeTranslation(-size.width * m_anchor.x, -size.height * m_anchor.y, 0) * m_combinedGlobalMatrix, dc);
+//}
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END

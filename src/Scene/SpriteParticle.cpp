@@ -12,6 +12,7 @@
 #include <Lumino/Graphics/VertexBuffer.h>	// TODO:
 #include <Lumino/Graphics/IndexBuffer.h>	// TODO:
 #include <Lumino/Graphics/GraphicsContext.h>	// TODO:
+#include <Lumino/Graphics/RenderingContext.h>	// TODO:
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/SpriteParticle.h>
@@ -537,10 +538,10 @@ void SpriteParticle::OnUpdateFrame(float deltaTime)
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticle::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
-{
-	m_model->Render(dc, m_instance, dc->GetCurrentCamera()->GetPosition(), dc->GetCurrentCamera()->GetViewMatrixI());
-}
+//void SpriteParticle::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
+//{
+//	m_model->Render(dc, m_instance, dc->GetCurrentCamera()->GetPosition(), dc->GetCurrentCamera()->GetViewMatrixI());
+//}
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END

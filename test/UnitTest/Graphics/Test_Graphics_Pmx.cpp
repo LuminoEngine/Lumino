@@ -1,4 +1,5 @@
 #include <TestConfig.h>
+#if 0
 #include <Lumino/Scene/StaticMesh.h>
 #include <Lumino/Scene/MeshModelObject.h>
 #include <Lumino/Graphics/Mesh/SkinnedMeshModel.h>
@@ -105,3 +106,4 @@ TEST_F(Test_Graphics_Pmx, Skinning)
 	{
 	}
 }
+#endif

@@ -24,8 +24,8 @@ LN_INTERNAL_ACCESS:
 	virtual ~SkinnedMesh();
 	void Initialize(SceneGraph* ownerSceneGraph, SkinnedMeshModel* meshModel);
 	virtual void OnUpdateFrame(float elapsedTime) override;
-	virtual void UpdateNodeRenderingParams(MMEShader* priorityShader) override;
-	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
+	//virtual void UpdateNodeRenderingParams(MMEShader* priorityShader) override;
+	//virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	virtual detail::SceneNodeDefaultShaderClass GetShaderClass() override { return detail::SceneNodeDefaultShaderClass_SkinnedMesh; }

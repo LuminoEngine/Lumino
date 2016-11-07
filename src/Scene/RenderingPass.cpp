@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#if 0
 #include "../Internal.h"
 #include "SceneGraphManager.h"
 #include <Lumino/Scene/SceneNode.h>
@@ -14,7 +15,7 @@ LN_NAMESPACE_SCENE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RenderingPass::RenderingPass(SceneGraphManager* manager/*, int passID, MMEShader* ownerShader*/)
+RenderingPass::RenderingPass(SceneGraphManager* manager)
 	: m_manager(NULL)
 	, m_internalEntryID(-1)
 {
@@ -43,3 +44,4 @@ void RenderingPass::RenderSubset(SceneGraphRenderingContext* dc, VisualNode* nod
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
+#endif

@@ -10,7 +10,7 @@
 #include "../Modeling/ModelManager.h"
 #include "Internal.h"
 
-#include "MME/MMETypes.h"	// TODO: これは別の場所に移動したい・・・
+//#include "MME/MMETypes.h"	// TODO: これは別の場所に移動したい・・・
 
 LN_NAMESPACE_BEGIN
 namespace detail { class DocumentsManager; }
@@ -53,7 +53,6 @@ public:
 	virtual ~SceneGraphManager();
 
 public:
-	SceneGraphRenderingContext* GetRenderingContext() { return m_renderingContext; }
 
 	// TODO: SceneGraphManager はホントに単純なシーングラフ管理だけにとどめておいて、MMD 用のシーン構築は別クラスにしてもいいかも
 	void CreateDefaultSceneGraph();
@@ -83,12 +82,7 @@ public:	// internal
 
 	void OnNodeRename(SceneNode* node, const String& oldName, const String& newName);
 
-	void AddRenderingPass(RenderingPass* pass);
-	void RemoveRenderingPass(RenderingPass* pass);
 	void AddLight(Light* light);
-	void AddShader(MMEShader* shader);
-	void RemoveShader(MMEShader* shader);
-	SceneShaderList* GetShaderList() { return &m_sceneShaderList; }
 	List<Camera*>* GetAllCameraList() { return &m_allCameraList; }
 
 	/// 指定した座標に近いライトを取得する (取得する数は outList の要素数。あらかじめ Resize() しておくこと)
@@ -107,14 +101,13 @@ private:
 	detail::DocumentsManager*			m_documentsManager;
 	RefPtr<Texture2D>			m_dummyWhiteTexture;
 
-	SceneGraphRenderingContext*		m_renderingContext;
+	//SceneGraphRenderingContext*		m_renderingContext;
 
 
-	Stack<int>							m_renderingPassIDStack;	///< (0～MaxRenderingPass-1)
+	//Stack<int>							m_renderingPassIDStack;	///< (0～MaxRenderingPass-1)
 	NodeNameMap							m_nodeNameMap;			///< ノードを名前で検索するためのマップ
 	//SceneNode*							m_rootNode;
 	LightNodeList						m_lightNodeList;		///< 全ての Light のリスト
-	SceneShaderList						m_sceneShaderList;
 
 	List<Camera*>	m_allCameraList;
 

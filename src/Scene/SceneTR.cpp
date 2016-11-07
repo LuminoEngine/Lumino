@@ -1,4 +1,4 @@
-
+#if 0
 #include "../Internal.h"
 #include <Lumino/Graphics/Mesh.h>
 #include <Lumino/Scene/SceneGraph.h>
@@ -122,3 +122,4 @@ void HugePlane::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 
 } // namespace tr
 LN_NAMESPACE_END
+#endif

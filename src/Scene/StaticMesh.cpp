@@ -2,7 +2,7 @@
 #pragma once
 #include "../Internal.h"
 #include <Lumino/Scene/StaticMesh.h>
-#include "MME/MMEShader.h"
+//#include "MME/MMEShader.h"
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include "SceneGraphManager.h"
@@ -101,9 +101,9 @@ void StaticMesh::Initialize(SceneGraph* owner, StaticMeshModel* meshModel)
 }
 
 //------------------------------------------------------------------------------
-void StaticMesh::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
-{
-	dc->DrawMesh(m_mesh, subsetIndex);
-}
+//void StaticMesh::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
+//{
+//	dc->DrawMesh(m_mesh, subsetIndex);
+//}
 
 LN_NAMESPACE_END

@@ -33,11 +33,11 @@ void EffectBatchRendererNode::Initialize(SceneGraph* owner, detail::EffectManage
 }
 
 //------------------------------------------------------------------------------
-void EffectBatchRendererNode::OnRender(SceneGraphRenderingContext* dc)
-{
-	m_effectManager->GetEffectEngine()->SetViewProjectin(dc->GetCurrentCamera()->GetViewMatrix(), dc->GetCurrentCamera()->GetProjectionMatrix());
-	m_effectManager->Render();
-}
+//void EffectBatchRendererNode::OnRender(SceneGraphRenderingContext* dc)
+//{
+//	m_effectManager->GetEffectEngine()->SetViewProjectin(dc->GetCurrentCamera()->GetViewMatrix(), dc->GetCurrentCamera()->GetProjectionMatrix());
+//	m_effectManager->Render();
+//}
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END

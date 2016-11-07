@@ -1,8 +1,8 @@
 ﻿
 #include "../Internal.h"
 #include <Lumino/Graphics/RenderingContext.h>
-#include "MME/MMERenderingPass.h"
-#include "MME/MmdMaterial.h"	// TODO
+//#include "MME/MMERenderingPass.h"
+//#include "MME/MmdMaterial.h"	// TODO
 #include "SceneGraphManager.h"
 #include "RenderingPass.h"
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
@@ -14,10 +14,10 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
-//==============================================================================
-// LayerList
-//==============================================================================
-LN_REF_OBJECT_LIST_IMPL(LayerList, Layer);
+////==============================================================================
+//// LayerList
+////==============================================================================
+//LN_REF_OBJECT_LIST_IMPL(LayerList, Layer);
 
 //==============================================================================
 // SceneGraph
@@ -54,7 +54,7 @@ SceneGraph::~SceneGraph()
 	//	}
 	//}
 
-	m_layerList.Clear();
+	//m_layerList.Clear();
 	LN_SAFE_RELEASE(m_manager);
 }
 
@@ -94,6 +94,7 @@ void SceneGraph::UpdateFrame(float deltaTime)
 }
 
 //------------------------------------------------------------------------------
+#if 0
 void SceneGraph::Render(RenderingContext* context, Camera* camera)
 {
 	Texture* renderTarget = context->GetRenderTarget(0);
@@ -193,6 +194,7 @@ void SceneGraph::Render(RenderingContext* context, Camera* camera)
 	//	m_layerList.GetAt(i)->PostRender();
 	//}
 }
+#endif
 
 //------------------------------------------------------------------------------
 void SceneGraph::Render2(DrawList* renderer, Camera* camera)
@@ -296,8 +298,8 @@ bool SceneGraph::InjectMouseWheel(int delta)
 detail::MaterialInstance* SceneGraph::CreateMaterialInstance()
 {
 	// TODO: いまは Mmd じゃないと動かない・・・
-	return LN_NEW MmdMaterialInstance();
-	//return LN_NEW detail::MaterialInstance(detail::NormalMaterialTypeId);
+	//return LN_NEW MmdMaterialInstance();
+	return LN_NEW detail::MaterialInstance(detail::NormalMaterialTypeId);
 }
 
 //==============================================================================
@@ -314,9 +316,9 @@ Basic2DSceneGraph::Basic2DSceneGraph()
 //------------------------------------------------------------------------------
 Basic2DSceneGraph::~Basic2DSceneGraph()
 {
-	for (RenderingPass* pass : m_renderingPasses) {
-		LN_SAFE_RELEASE(pass);
-	}
+	//for (RenderingPass* pass : m_renderingPasses) {
+	//	LN_SAFE_RELEASE(pass);
+	//}
 
 	LN_SAFE_RELEASE(m_defaultCamera);
 	LN_SAFE_RELEASE(m_defaultRoot);
@@ -334,14 +336,61 @@ void Basic2DSceneGraph::CreateCore(SceneGraphManager* manager)
 	m_defaultCamera->Initialize(this, CameraProjection_2D);
 	m_defaultRoot->AddChild(m_defaultCamera);
 
-	auto pass = RefPtr<MMERenderingPass>::MakeRef(manager, MMD_PASS_object);
-	pass->Initialize();
-	m_renderingPasses.Add(pass);
-	pass->AddRef();
+	//auto pass = RefPtr<MMERenderingPass>::MakeRef(manager, MMD_PASS_object);
+	//pass->Initialize();
+	//m_renderingPasses.Add(pass);
+	//pass->AddRef();
 }
 
 //------------------------------------------------------------------------------
 void Basic2DSceneGraph::UpdateFrame(float elapsedTime)
+{
+	SceneGraph::UpdateFrame(elapsedTime);
+	m_defaultRoot->UpdateFrameHierarchy(nullptr, elapsedTime);
+}
+
+//==============================================================================
+// Basic3DSceneGraph
+//==============================================================================
+
+//------------------------------------------------------------------------------
+Basic3DSceneGraph::Basic3DSceneGraph()
+	: m_defaultRoot(nullptr)
+	, m_defaultCamera(nullptr)
+{
+}
+
+//------------------------------------------------------------------------------
+Basic3DSceneGraph::~Basic3DSceneGraph()
+{
+	//for (RenderingPass* pass : m_renderingPasses) {
+	//	LN_SAFE_RELEASE(pass);
+	//}
+
+	LN_SAFE_RELEASE(m_defaultCamera);
+	LN_SAFE_RELEASE(m_defaultRoot);
+}
+
+//------------------------------------------------------------------------------
+void Basic3DSceneGraph::CreateCore(SceneGraphManager* manager)
+{
+	SceneGraph::CreateCore(manager);
+
+	m_defaultRoot = LN_NEW SceneNode();
+	m_defaultRoot->Initialize(this);
+
+	m_defaultCamera = LN_NEW Camera();
+	m_defaultCamera->Initialize(this, CameraProjection_3D);
+	m_defaultRoot->AddChild(m_defaultCamera);
+
+	//auto pass = RefPtr<MMERenderingPass>::MakeRef(manager, MMD_PASS_object);
+	//pass->Initialize();
+	//m_renderingPasses.Add(pass);
+	//pass->AddRef();
+}
+
+//------------------------------------------------------------------------------
+void Basic3DSceneGraph::UpdateFrame(float elapsedTime)
 {
 	SceneGraph::UpdateFrame(elapsedTime);
 	m_defaultRoot->UpdateFrameHierarchy(nullptr, elapsedTime);

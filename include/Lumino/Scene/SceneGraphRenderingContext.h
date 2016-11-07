@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#if 0
 #include "Common.h"
 #include "../Graphics/RenderingContext.h"
 #include "../Documents/Common.h"
@@ -61,3 +62,4 @@ private:
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
+#endif
