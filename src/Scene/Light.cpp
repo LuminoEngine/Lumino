@@ -68,8 +68,6 @@ void Light::UpdateMatrices(/*const Size& viewSize*/)
 
 	m_lightInfo->m_direction = direction;
 
-	direction.Print();
-
 	//m_viewMatrixI = Matrix::MakeInverse(m_viewMatrix);
 	//m_projMatrixI = Matrix::MakeInverse(m_projMatrix);
 	//m_viewProjMatrixI = Matrix::MakeInverse(m_viewProjMatrix);

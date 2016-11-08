@@ -397,20 +397,23 @@ Shader::~Shader()
 //------------------------------------------------------------------------------
 void Shader::Initialize(detail::GraphicsManager* manager, const StringRef& filePath)
 {
-	GraphicsResourceObject::Initialize(manager);
-	
 	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath), false);
 	ByteBuffer buf((size_t)stream->GetLength() + 1, false);
 	stream->Read(buf.GetData(), buf.GetSize());
 	buf[(size_t)stream->GetLength()] = 0x00;
 
-	// TODO: 最後には改行を入れておく。環境によっては改行がないとエラーになる。しかもエラーなのにエラー文字列が出ないこともある。
+	Initialize(manager, buf.GetConstData(), buf.GetSize());
 
-	ShaderCompileResult result;
-	m_deviceObj = m_manager->GetGraphicsDevice()->CreateShader(buf.GetConstData(), buf.GetSize(), &result);
-	LN_THROW(m_deviceObj != nullptr, CompilationException, result);
+	//GraphicsResourceObject::Initialize(manager);
+	//
 
-	PostInitialize();
+	//
+
+	//ShaderCompileResult result;
+	//m_deviceObj = m_manager->GetGraphicsDevice()->CreateShader(buf.GetConstData(), buf.GetSize(), &result);
+	//LN_THROW(m_deviceObj != nullptr, CompilationException, result);
+
+	//PostInitialize();
 }
 
 //------------------------------------------------------------------------------
@@ -418,8 +421,21 @@ void Shader::Initialize(detail::GraphicsManager* manager, const void* code, int 
 {
 	GraphicsResourceObject::Initialize(manager);
 
+	// ヘッダコード先頭に追加する
+	static const unsigned char EffectHeader_Data[] =
+	{
+#include "Resource/EffectHeader.fxh.h"
+	};
+	static const size_t EffectHeader_Data_Len = LN_ARRAY_SIZE_OF(EffectHeader_Data);
+	StringBuilderA newCode;
+	newCode.Append((const char*)EffectHeader_Data, EffectHeader_Data_Len);
+	newCode.Append("#line 5");
+	newCode.Append(StringA::GetNewLine().c_str());
+	newCode.Append((const char*)code, length);
+	newCode.Append("\n");	// 最後には改行を入れておく。環境によっては改行がないとエラーになる。しかもエラーなのにエラー文字列が出ないこともある。
+
 	ShaderCompileResult result;
-	m_deviceObj = m_manager->GetGraphicsDevice()->CreateShader(code, length, &result);
+	m_deviceObj = m_manager->GetGraphicsDevice()->CreateShader(newCode.c_str(), newCode.GetLength(), &result);
 	LN_THROW(m_deviceObj != nullptr, CompilationException, result);
 
 	PostInitialize();
