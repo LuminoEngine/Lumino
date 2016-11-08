@@ -15,10 +15,9 @@ Light::Light()
 	, m_lightInfo(false)
 	, m_enabled(true)
 	, m_spotAngle(Math::PI * 0.25f)
-	, m_shadowZFar(1000.0f)
 	, m_viewMatrix(Matrix::Identity)
-	, m_projMatrix(Matrix::Identity)
-	, m_viewProjMatrix(Matrix::Identity)
+	//, m_projMatrix(Matrix::Identity)
+	//, m_viewProjMatrix(Matrix::Identity)
 {
 }
 
@@ -36,12 +35,18 @@ void Light::Initialize(SceneGraph* owner, LightType type)
 	m_lightInfo->m_diffuse.Set(1.0f, 1.0f, 1.0f, 1.0f);
 	m_lightInfo->m_ambient.Set(1.0f, 1.0f, 1.0f, 1.0f);
 	m_lightInfo->m_specular.Set(1.0f, 1.0f, 1.0f, 1.0f);
+	m_lightInfo->m_shadowZFar = 1000.0f;
 
-	SetAngles(-0.5, -1.0, 0.5);	// MMM Default
+	//SetAngles(-0.5, -1.0, 0.5);	
+
+	//Matrix::MakeLookAtLH
+
+	// MMM Default
+	m_transform.rotation = Quaternion::LookRotation(Vector3(-0.5, -1.0, 0.5));
 }
 
 //------------------------------------------------------------------------------
-void Light::UpdateMatrices(const Size& viewSize)
+void Light::UpdateMatrices(/*const Size& viewSize*/)
 {
 	// 正面方向
 	Vector3 direction = Vector3::TransformCoord(Vector3(0, 0, 1), m_combinedGlobalMatrix);
@@ -56,22 +61,24 @@ void Light::UpdateMatrices(const Size& viewSize)
 	// プロジェクション行列の更新
 	// TODO: 視野角とnear,far
 	// https://sites.google.com/site/mmereference/home/Annotations-and-Semantics-of-the-parameter/2-1-geometry-translation
-	m_projMatrix = Matrix::MakePerspectiveFovLH(Math::PI / 4.0f, viewSize.width / viewSize.height, 0.01f, 1000.0f);
+	//m_projMatrix = Matrix::MakePerspectiveFovLH(Math::PI / 4.0f, viewSize.width / viewSize.height, 0.01f, 1000.0f);
 
-	m_worldViewProjMatrix = GetMatrix() * m_viewMatrix * m_projMatrix;
-	m_viewProjMatrix = m_viewMatrix * m_projMatrix;
+	//m_worldViewProjMatrix = GetMatrix() * m_viewMatrix * m_projMatrix;
+	//m_viewProjMatrix = m_viewMatrix * m_projMatrix;
 
 	m_lightInfo->m_direction = direction;
 
-	m_viewMatrixI = Matrix::MakeInverse(m_viewMatrix);
-	m_projMatrixI = Matrix::MakeInverse(m_projMatrix);
-	m_viewProjMatrixI = Matrix::MakeInverse(m_viewProjMatrix);
-	m_viewMatrixT = Matrix::MakeTranspose(m_viewMatrix);
-	m_projMatrixT = Matrix::MakeTranspose(m_projMatrix);
-	m_viewProjMatrixT = Matrix::MakeTranspose(m_viewProjMatrix);
-	m_viewMatrixIT = Matrix::MakeTranspose(m_viewMatrixI);
-	m_projMatrixIT = Matrix::MakeTranspose(m_projMatrixI);
-	m_viewProjMatrixIT = Matrix::MakeTranspose(m_viewProjMatrixI);
+	direction.Print();
+
+	//m_viewMatrixI = Matrix::MakeInverse(m_viewMatrix);
+	//m_projMatrixI = Matrix::MakeInverse(m_projMatrix);
+	//m_viewProjMatrixI = Matrix::MakeInverse(m_viewProjMatrix);
+	//m_viewMatrixT = Matrix::MakeTranspose(m_viewMatrix);
+	//m_projMatrixT = Matrix::MakeTranspose(m_projMatrix);
+	//m_viewProjMatrixT = Matrix::MakeTranspose(m_viewProjMatrix);
+	//m_viewMatrixIT = Matrix::MakeTranspose(m_viewMatrixI);
+	//m_projMatrixIT = Matrix::MakeTranspose(m_projMatrixI);
+	//m_viewProjMatrixIT = Matrix::MakeTranspose(m_viewProjMatrixI);
 }
 
 //------------------------------------------------------------------------------
@@ -88,6 +95,7 @@ void Light::OnRender2(DrawList* renderer)
 {
 	if (m_enabled)
 	{
+		UpdateMatrices();
 		m_lightInfo->transform = m_combinedGlobalMatrix;
 		renderer->AddDynamicLightInfo(m_lightInfo);
 	}

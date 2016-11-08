@@ -560,6 +560,7 @@ void BlitRenderer::Initialize(GraphicsManager* manager)
 	m_vertexBuffer.Attach(device->CreateVertexBuffer(sizeof(vertices), vertices, ResourceUsage::Static), false);
 
 	m_commonMaterial = RefPtr<Material>::MakeRef();
+	m_commonMaterial->Initialize();
 }
 
 //------------------------------------------------------------------------------

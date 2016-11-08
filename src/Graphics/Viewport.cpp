@@ -279,6 +279,7 @@ void Viewport::EndFrameRender()
 	cameraInfo.viewMatrix = Matrix::Identity;
 	//Camera::Perspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1, &cameraInfo.projMatrix);
 	cameraInfo.projMatrix = Matrix::MakePerspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1);
+	cameraInfo.viewProjMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;
 	cameraInfo.viewFrustum = ViewFrustum(cameraInfo.projMatrix);
 
 	m_internalRenderer->Render(

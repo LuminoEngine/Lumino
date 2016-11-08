@@ -18,50 +18,48 @@ float4x4	ln_View;
 float4x4	ln_Projection;
 
 //ライト関連
-bool		LightEnables[MMM_LightCount]		: LIGHTENABLES;		// 有効フラグ
-float4x4	LightWVPMatrices[MMM_LightCount]	: LIGHTWVPMATRICES;	// 座標変換行列
-float3		LightDirection[MMM_LightCount]		: LIGHTDIRECTIONS;	// 方向
-float3		LightPositions[MMM_LightCount]		: LIGHTPOSITIONS;	// ライト位置
-float		LightZFars[MMM_LightCount]			: LIGHTZFARS;		// ライトzFar値
+bool		ln_LightEnables[MMM_LightCount];		// 有効フラグ
+float3		ln_LightDirections[MMM_LightCount];		// 方向
+float3		ln_LightPositions[MMM_LightCount];		// ライト位置
+float		ln_LightZFars[MMM_LightCount];			// ライトzFar値
 
 // マテリアル色
-float4		MaterialDiffuse		: DIFFUSE  <string Object = "Geometry";>;
-float3		MaterialAmbient		: AMBIENT  <string Object = "Geometry";>;
-float3		MaterialEmmisive	: EMISSIVE <string Object = "Geometry";>;
-float3		MaterialSpecular	: SPECULAR <string Object = "Geometry";>;
-float		SpecularPower		: SPECULARPOWER < string Object = "Geometry"; >;
-
+float4		ln_MaterialDiffuse;
+float3		ln_MaterialAmbient;
+float3		ln_MaterialEmmisive;
+float3		ln_MaterialSpecular;
+float		ln_MaterialSpecularPower;
 
 // ライト色
-float3   LightDiffuses[MMM_LightCount]      : LIGHTDIFFUSECOLORS;
-float3   LightAmbients[MMM_LightCount]      : LIGHTAMBIENTCOLORS;
-float3   LightSpeculars[MMM_LightCount]     : LIGHTSPECULARCOLORS;
+float3		ln_LightDiffuses[MMM_LightCount];
+float3		ln_LightAmbients[MMM_LightCount];
+float3		ln_LightSpeculars[MMM_LightCount];
 
 // ライト色
 static float4 DiffuseColor[3] =
 {
-	MaterialDiffuse * float4(LightDiffuses[0], 1.0f),
-	MaterialDiffuse * float4(LightDiffuses[1], 1.0f),
-	MaterialDiffuse * float4(LightDiffuses[2], 1.0f),
+	ln_MaterialDiffuse * float4(ln_LightDiffuses[0], 1.0f),
+	ln_MaterialDiffuse * float4(ln_LightDiffuses[1], 1.0f),
+	ln_MaterialDiffuse * float4(ln_LightDiffuses[2], 1.0f),
 };
 static float3 AmbientColor[3] =
 {
-	saturate(MaterialAmbient * LightAmbients[0]) + MaterialEmmisive,
-	saturate(MaterialAmbient * LightAmbients[1]) + MaterialEmmisive,
-	saturate(MaterialAmbient * LightAmbients[2]) + MaterialEmmisive,
+	saturate(ln_MaterialAmbient * ln_LightAmbients[0]) + ln_MaterialEmmisive,
+	saturate(ln_MaterialAmbient * ln_LightAmbients[1]) + ln_MaterialEmmisive,
+	saturate(ln_MaterialAmbient * ln_LightAmbients[2]) + ln_MaterialEmmisive,
 };
 static float3 SpecularColor[3] =
 {
-	MaterialSpecular * LightSpeculars[0],
-	MaterialSpecular * LightSpeculars[1],
-	MaterialSpecular * LightSpeculars[2],
+	ln_MaterialSpecular * ln_LightSpeculars[0],
+	ln_MaterialSpecular * ln_LightSpeculars[1],
+	ln_MaterialSpecular * ln_LightSpeculars[2],
 };
 
 // オブジェクトのテクスチャ
-texture		ObjectTexture		: MATERIALTEXTURE;
+texture		ln_MaterialTexture;
 sampler		ObjTexSampler		= sampler_state
 {
-	texture = <ObjectTexture>;
+	texture = <ln_MaterialTexture>;
 	MINFILTER = LINEAR;
 	MAGFILTER = LINEAR;
 };
@@ -92,16 +90,16 @@ VS_OUTPUT Basic_VS(LN_VS_INPUT input)
 	float count = 0;
 	for (int i = 0; i < 3; i++)
 	{
-		if (LightEnables[i])
+		if (ln_LightEnables[i])
 		{
-			color += (float3(1,1,1) - color) * (max(0, DiffuseColor[i] * dot(output.Normal, -LightDirection[i])));
+			color += (float3(1,1,1) - color) * (max(0, DiffuseColor[i] * dot(output.Normal, -ln_LightDirections[i])));
 			//output.Color.rgb = float3(dot(output.Normal, -LightDirection[i]), 0, 0);zzzzzz
 			ambient += AmbientColor[i];
 			count = count + 1.0;
 		}
 	}
 	output.Color.rgb = saturate(ambient / count + color);
-	output.Color.a = MaterialDiffuse.a;
+	output.Color.a = ln_MaterialDiffuse.a;
 	
 	// テクスチャ座標
 	output.Tex = input.Tex;

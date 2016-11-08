@@ -267,6 +267,16 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 		shader->Initialize(this, (const char*)shaderData, shaderDataLen);
 		m_defaultShaders[(int)DefaultShader::NoLightingRendering] = shader;
 	}
+	{
+		static const byte_t shaderData[] =
+		{
+#include "Resource/ForwardRendering.fx.h"
+		};
+		static const size_t shaderDataLen = LN_ARRAY_SIZE_OF(shaderData);
+		auto shader = RefPtr<Shader>::MakeRef();
+		shader->Initialize(this, (const char*)shaderData, shaderDataLen);
+		m_defaultShaders[(int)DefaultShader::ForwardRendering] = shader;
+	}
 	
 
 

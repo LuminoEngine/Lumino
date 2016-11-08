@@ -9,6 +9,7 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class Material;
 using MaterialPtr = RefPtr<Material>;
+namespace detail { class CombinedMaterial; }
 
 /**
 	@brief
@@ -60,9 +61,10 @@ public:
 
 	/** @} */
 
-protected:
+LN_INTERNAL_ACCESS:
 	Material();
 	virtual ~Material();
+	void Initialize();
 
 LN_INTERNAL_ACCESS:
 	using ShaderValuePtr = std::shared_ptr<ShaderValue>;
@@ -75,7 +77,10 @@ LN_INTERNAL_ACCESS:
 
 	const List<ValuePair>& GetLinkedVariableList() { return m_linkedVariableList; }
 
-	RefPtr<Material> Copy() const;
+	RefPtr<Material> CopyShared() const;
+
+	void ResolveCombinedMaterial();
+	detail::CombinedMaterial* GetCombinedMaterial() const;
 
 public:	// TODO:
 
@@ -101,11 +106,19 @@ public:	// TODO:
 	Texture* GetTexture(const StringRef& name, Texture* defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? v->GetManagedTexture() : defaultValue; }
 	int GetInt(const StringRef& name, int defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? v->GetInt() : defaultValue; }
 
+
+	static const Color DefaultDiffuse;	// (1.0f, 1.0f, 1.0f, 1.0f)
+	static const Color DefaultAmbient;	// (0.0f, 0.0f, 0.0f, 0.0f)
+	static const Color DefaultSpecular;	// (0.5f, 0.5f, 0.5f, 0.5f)
+	static const Color DefaultEmissive;	// (0.0f, 0.0f, 0.0f, 0.0f)
+	static const float DefaultPower;	// (50.0f)
+
 private:
 	void LinkVariables();
 	ShaderValue* FindShaderValue(const StringRef& name);
 	ShaderValue* FindShaderValueConst(const StringRef& name) const;
 
+	RefPtr<detail::CombinedMaterial>	m_combinedMaterial;
 	RefPtr<Shader>						m_shader;
 	SortedArray<String, ShaderValuePtr>	m_valueList;
 	List<ValuePair>					m_linkedVariableList;
@@ -138,6 +151,34 @@ LN_INTERNAL_ACCESS:
 	virtual ~MaterialList();
 };
 
+
+namespace detail {
+
+class CombinedMaterial
+	: public RefObject
+{
+public:
+	CombinedMaterial();
+	virtual ~CombinedMaterial();
+
+	Shader*			m_shader;
+	Color			m_colorScale;	// 乗算結合済み (opacity 込み)
+	Color			m_blendColor;	// 加算結合済み
+	ToneF			m_tone;			// 加算結合済み
+
+	Color			m_diffuse;
+	Color			m_ambient;
+	Color			m_specular;
+	Color			m_emissive;
+	float			m_power;
+	Texture*		m_mainTexture;
+
+	//CullingMode		m_culling;
+
+	void Combine(Material* parent, Material* owner, Material* ownerBase);
+};
+
+} // namespace detail
 
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

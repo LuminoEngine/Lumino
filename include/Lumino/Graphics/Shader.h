@@ -9,6 +9,8 @@ class ShaderVariable;
 class Material;
 
 namespace detail {
+
+class DynamicLightInfo;
 	
 // シェーダ変数セマンティクス
 LN_ENUM(BuiltinSemantics)
@@ -24,9 +26,22 @@ LN_ENUM(BuiltinSemantics)
 	// Element unit
 	WorldViewProjection,
 	World,
+	LightEnables,			// bool[]
+	LightWVPMatrices,		// matrix[]
+	LightDirections,		// vector[]
+	LightPositions,			// vector[]
+	LightZFars,				// float[]
+	LightDiffuses,			// vector[]
+	LightAmbients,			// vector[]
+	LightSpeculars,			// vector[]
 
 	// Subset unit
 	MaterialTexture,
+	MaterialDiffuse,		// vector
+	MaterialAmbient,		// vector
+	MaterialEmmisive,		// vector
+	MaterialSpecular,		// vector
+	MaterialSpecularPower,	// float
 
 	_Count,
 };
@@ -45,14 +60,18 @@ struct CameraInfo
 	Size		viewPixelSize;
 	Matrix		viewMatrix;
 	Matrix		projMatrix;
+	Matrix		viewProjMatrix;
 	ViewFrustum	viewFrustum;
 };
 
 // 描画要素単位のデータに関する情報
 struct ElementInfo
 {
-	Matrix		WorldMatrix;
-	Matrix		WorldViewProjectionMatrix;
+	const Matrix*		viewProjMatrix;
+
+	Matrix				WorldMatrix;
+	Matrix				WorldViewProjectionMatrix;
+	DynamicLightInfo**	affectedLights;
 };
 
 // サブセット単位のデータに関する情報
@@ -91,6 +110,9 @@ private:
 	List<VariableKindPair>	m_elementVariables;
 	List<VariableKindPair>	m_subsetVariables;
 	intptr_t				m_lastCameraInfoId;
+
+	MemoryStream			m_tempBuffer;
+	BinaryWriter			m_tempBufferWriter;
 };
 
 } // namespace detail

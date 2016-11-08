@@ -710,6 +710,7 @@ void MeshResource::AddMaterials(int count)
 		for (int i = oldCount; i < newCount; ++i)
 		{
 			auto m = RefPtr<Material>::MakeRef();
+			m->Initialize();
 			m_materials->SetAt(i, m);
 		}
 	}
@@ -1106,7 +1107,7 @@ void StaticMeshModel::Initialize(detail::GraphicsManager* manager, MeshResource*
 	m_materials->Resize(count);
 	for (int i = 0; i < count; ++i)
 	{
-		m_materials->SetAt(i, m_meshResource->m_materials->GetAt(i)->Copy());
+		m_materials->SetAt(i, m_meshResource->m_materials->GetAt(i)->CopyShared());
 	}
 }
 

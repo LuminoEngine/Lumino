@@ -31,10 +31,17 @@ const String Material::EmissiveParameter(_T("Emissive"));
 const String Material::PowerParameter(_T("Power"));
 const String Material::MaterialTextureParameter(_T("MaterialTexture"));
 
+const Color Material::DefaultDiffuse(1.0f, 1.0f, 1.0f, 1.0f);
+const Color Material::DefaultAmbient(0.0f, 0.0f, 0.0f, 0.0f);
+const Color Material::DefaultSpecular(0.5f, 0.5f, 0.5f, 0.5f);
+const Color Material::DefaultEmissive(0.0f, 0.0f, 0.0f, 0.0f);
+const float Material::DefaultPower = 50.0f;
+
 //------------------------------------------------------------------------------
 MaterialPtr Material::Create()
 {
 	auto ptr = MaterialPtr::MakeRef();
+	ptr->Initialize();
 	return ptr;
 }
 
@@ -59,9 +66,16 @@ Material::~Material()
 }
 
 //------------------------------------------------------------------------------
-RefPtr<Material> Material::Copy() const
+void Material::Initialize()
+{
+	m_combinedMaterial = RefPtr<detail::CombinedMaterial>::MakeRef();
+}
+
+//------------------------------------------------------------------------------
+RefPtr<Material> Material::CopyShared() const
 {
 	auto m = RefPtr<Material>::MakeRef();
+	m->Initialize();	// TODO: base
 	m->m_shader = m_shader;
 	m->m_valueList = m_valueList;
 	m->m_linkedVariableList = m_linkedVariableList;
@@ -80,6 +94,18 @@ RefPtr<Material> Material::Copy() const
 	m->m_modifiedForMaterialInstance = m_modifiedForMaterialInstance;
 
 	return m;
+}
+
+//------------------------------------------------------------------------------
+void Material::ResolveCombinedMaterial()
+{
+	m_combinedMaterial->Combine(nullptr, this, nullptr);	// TODO: parent and base
+}
+
+//------------------------------------------------------------------------------
+detail::CombinedMaterial* Material::GetCombinedMaterial() const
+{
+	return m_combinedMaterial;
 }
 
 //------------------------------------------------------------------------------
@@ -229,4 +255,104 @@ void Material::ApplyToShaderVariables()
 	}
 }
 
+
+
+namespace detail {
+
+//==============================================================================
+// MaterialList
+//==============================================================================
+
+//------------------------------------------------------------------------------
+CombinedMaterial::CombinedMaterial()
+	: m_shader(nullptr)
+	, m_colorScale(Color::White)
+	, m_blendColor(Color(0, 0, 0, 1))
+	, m_tone()
+	, m_diffuse(Material::DefaultDiffuse)
+	, m_ambient(Material::DefaultAmbient)
+	, m_specular(Material::DefaultSpecular)
+	, m_emissive(Material::DefaultEmissive)
+	, m_power(Material::DefaultPower)
+	, m_mainTexture(nullptr)
+	//, m_culling(CullingMode::Back)
+{
+}
+
+//------------------------------------------------------------------------------
+CombinedMaterial::~CombinedMaterial()
+{
+}
+
+//------------------------------------------------------------------------------
+void CombinedMaterial::Combine(Material* parent, Material* owner, Material* ownerBase)
+{
+	bool modified = false;
+	if (owner == nullptr || owner != owner || owner->m_modifiedForMaterialInstance)
+	{
+		modified = true;
+	}
+	if (parent != nullptr && parent->m_modifiedForMaterialInstance)
+	{
+		modified = true;
+	}
+
+	if (modified)
+	{
+		Material* source1 = (ownerBase != nullptr) ? ownerBase : owner;
+		Material* source2 = (ownerBase != nullptr) ? owner : nullptr;
+
+		// source1
+		m_shader = source1->GetShader();
+		m_colorScale = source1->GetColorScale();
+		m_colorScale.a *= source1->GetOpacity();
+		m_blendColor = source1->GetBlendColor();
+		m_tone = source1->GetTone();
+
+		// source2
+		if (source2 != nullptr)
+		{
+			if (m_shader == nullptr) m_shader = source2->GetShader();
+			m_colorScale.MultiplyClamp(source2->GetColorScale());
+			m_colorScale.a *= source2->GetOpacity();
+			m_blendColor.AddClamp(source2->GetBlendColor());
+			m_tone.AddClamp(source2->GetTone());
+		}
+
+		// parent
+		if (parent != nullptr)
+		{
+			if (m_shader == nullptr) m_shader = parent->GetShader();
+			m_colorScale.MultiplyClamp(parent->GetColorScale());
+			m_colorScale.a *= parent->GetOpacity();
+			m_blendColor.AddClamp(parent->GetBlendColor());
+			m_tone.AddClamp(parent->GetTone());
+		}
+
+		// Material params (from base only. not parent inherit)
+		// TODO: 文字列検索とかしまくっている。いろいろ最適化の余地ある
+		if (source2 != nullptr)
+		{
+			m_diffuse = source1->GetColor(_T("Diffuse"), source2->GetColor(_T("Diffuse"), Material::DefaultDiffuse));
+			m_ambient = source1->GetColor(_T("Ambient"), source2->GetColor(_T("Ambient"), Material::DefaultAmbient));
+			m_specular = source1->GetColor(_T("Specular"), source2->GetColor(_T("Specular"), Material::DefaultSpecular));
+			m_emissive = source1->GetColor(_T("Emissive"), source2->GetColor(_T("Emissive"), Material::DefaultEmissive));
+			m_power = source1->GetFloat(_T("Power"), source2->GetFloat(_T("Power"), Material::DefaultPower));
+			m_mainTexture = source1->GetTexture(Material::MaterialTextureParameter, source2->GetTexture(Material::MaterialTextureParameter, nullptr));
+		}
+		else
+		{
+			m_diffuse = source1->GetColor(_T("Diffuse"), Material::DefaultDiffuse);
+			m_ambient = source1->GetColor(_T("Ambient"), Material::DefaultAmbient);
+			m_specular = source1->GetColor(_T("Specular"), Material::DefaultSpecular);
+			m_emissive = source1->GetColor(_T("Emissive"), Material::DefaultEmissive);
+			m_power = source1->GetFloat(_T("Power"), Material::DefaultPower);
+			m_mainTexture = source1->GetTexture(Material::MaterialTextureParameter, nullptr);
+		}
+
+		owner->m_modifiedForMaterialInstance = false;
+	}
+}
+
+} // namespace detail
 LN_NAMESPACE_END

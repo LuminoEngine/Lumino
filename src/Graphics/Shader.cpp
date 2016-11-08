@@ -8,9 +8,9 @@
 #include "GraphicsManager.h"
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Material.h>
+#include <Lumino/Graphics/Rendering.h>	// TODO: for LightInfo
 #include "RendererImpl.h"
 #include "RenderingCommand.h"
-
 
 #define LN_CALL_SHADER_COMMAND(func, command, ...) \
 	if (m_owner->GetManager()->GetRenderingType() == GraphicsRenderingType::Threaded) { \
@@ -19,21 +19,6 @@
 	else { \
 		m_deviceObj->func(__VA_ARGS__); \
 	}
-
-// String を unordered_map のキーとするためのハッシュ関数 (TODO: Core へ)
-namespace std
-{
-	template <>
-	struct hash<ln::String>
-	{
-		std::size_t operator () (ln::String const & key) const
-		{
-			//return std::hash<const TCHAR*>()(key.c_str());
-			return ln::Hash::CalcHash(key.c_str(), key.GetLength());
-		}
-	};
-
-} // namespace std
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -49,7 +34,6 @@ namespace detail {
 
 static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_CameraUnit =
 {
-	// Camera unit
 	{ _T("ln_View"), BuiltinSemantics::View },
 	{ _T("ln_Projection"), BuiltinSemantics::Projection },
 	{ _T("ln_ViewportPixelSize"), BuiltinSemantics::ViewportPixelSize },
@@ -57,20 +41,37 @@ static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_CameraUnit 
 
 static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_ElementUnit =
 {
-	// Element unit
 	{ _T("ln_WorldViewProjection"), BuiltinSemantics::WorldViewProjection },
 	{ _T("ln_World"), BuiltinSemantics::World },
+	{ _T("ln_LightEnables"), BuiltinSemantics::LightEnables },
+	{ _T("ln_LightWVPMatrices"), BuiltinSemantics::LightWVPMatrices },
+	{ _T("ln_LightDirections"), BuiltinSemantics::LightDirections },
+	{ _T("ln_LightPositions"), BuiltinSemantics::LightPositions },
+	{ _T("ln_LightZFars"), BuiltinSemantics::LightZFars },
+	{ _T("ln_LightDiffuses"), BuiltinSemantics::LightDiffuses },
+	{ _T("ln_LightAmbients"), BuiltinSemantics::LightAmbients },
+	{ _T("ln_LightSpeculars"), BuiltinSemantics::LightSpeculars },
 };
 
 static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_SubsetUnit =
 {
-	// Subset unit
 	{ _T("ln_MaterialTexture"), BuiltinSemantics::MaterialTexture },
+	{ _T("ln_MaterialDiffuse"), BuiltinSemantics::MaterialDiffuse },
+	{ _T("ln_MaterialAmbient"), BuiltinSemantics::MaterialAmbient },
+	{ _T("ln_MaterialEmmisive"), BuiltinSemantics::MaterialEmmisive },
+	{ _T("ln_MaterialSpecular"), BuiltinSemantics::MaterialSpecular },
+	{ _T("ln_MaterialSpecularPower"), BuiltinSemantics::MaterialSpecularPower },
 };
 
 //------------------------------------------------------------------------------
 ShaderSemanticsManager::ShaderSemanticsManager()
-	: m_lastCameraInfoId(0)
+	: m_manager(nullptr)
+	, m_sceneVariables()
+	, m_cameraVariables()
+	, m_elementVariables()
+	, m_subsetVariables()
+	, m_lastCameraInfoId(0)
+	, m_tempBufferWriter(&m_tempBuffer)
 {
 }
 
@@ -153,6 +154,8 @@ void ShaderSemanticsManager::UpdateCameraVariables(const CameraInfo& info)
 //------------------------------------------------------------------------------
 void ShaderSemanticsManager::UpdateElementVariables(const ElementInfo& info)
 {
+	DynamicLightInfo** lights = info.affectedLights;
+
 	for (const VariableKindPair& varInfo : m_elementVariables)
 	{
 		switch (varInfo.kind)
@@ -163,6 +166,104 @@ void ShaderSemanticsManager::UpdateElementVariables(const ElementInfo& info)
 			case BuiltinSemantics::World:
 				varInfo.variable->SetMatrix(info.WorldViewProjectionMatrix);
 				break;
+
+
+			// TODO: 以下、ライト列挙時に確定したい。何回もこんな計算するのはちょっと・・
+			case BuiltinSemantics::LightEnables:
+				m_tempBufferWriter.Seek(0, SeekOrigin_Begin);
+				for (int i = 0; i < DynamicLightInfo::MaxLights; i++)
+				{
+					// TODO: WriteBool() がほしい
+					m_tempBufferWriter.WriteUInt8((lights == nullptr) ? false : lights[i] != nullptr);
+				}
+				varInfo.variable->SetBoolArray((const bool*)m_tempBuffer.GetBuffer(), DynamicLightInfo::MaxLights);
+				break;
+			case BuiltinSemantics::LightWVPMatrices:
+				LN_NOTIMPLEMENTED();
+				//if (lights != nullptr)
+				//{
+				//	m_tempBufferWriter.Seek(0, SeekOrigin_Begin);
+				//	for (int i = 0; i < DynamicLightInfo::MaxLights; i++)
+				//	{
+				//		Matrix m = (lights[i] != nullptr) ? (lights[i]->transform * (*info.viewProjMatrix)) : Matrix::Identity;
+				//		m_tempBufferWriter.Write(&m, sizeof(Matrix));
+				//	}
+				//	varInfo.variable->SetMatrixArray((const Matrix*)m_tempBuffer.GetBuffer(), DynamicLightInfo::MaxLights);
+				//}
+				break;
+			case BuiltinSemantics::LightDirections:
+				if (lights != nullptr)
+				{
+					m_tempBufferWriter.Seek(0, SeekOrigin_Begin);
+					for (int i = 0; i < DynamicLightInfo::MaxLights; i++)
+					{
+						// TODO: Vector4::Zero がほしい
+						auto& v = (lights[i] != nullptr) ? Vector4(lights[i]->m_direction, 0) : Vector4(0, 0, 0, 0);
+						m_tempBufferWriter.Write(&v, sizeof(Vector4));
+					}
+					varInfo.variable->SetVectorArray((const Vector4*)m_tempBuffer.GetBuffer(), DynamicLightInfo::MaxLights);
+				}
+				break;
+			case BuiltinSemantics::LightPositions:
+				if (lights != nullptr)
+				{
+					for (int i = 0; i < DynamicLightInfo::MaxLights; i++)
+					{
+						// TODO: Vector4::Zero がほしい
+						auto& v = (lights[i] != nullptr) ? Vector4(lights[i]->transform.GetPosition(), 0) : Vector4(0, 0, 0, 0);
+						m_tempBufferWriter.Write(&v, sizeof(Vector4));
+					}
+					varInfo.variable->SetVectorArray((const Vector4*)m_tempBuffer.GetBuffer(), DynamicLightInfo::MaxLights);
+				}
+				break;
+			case BuiltinSemantics::LightZFars:
+				if (lights != nullptr)
+				{
+					m_tempBufferWriter.Seek(0, SeekOrigin_Begin);
+					for (int i = 0; i < DynamicLightInfo::MaxLights; i++)
+					{
+						m_tempBufferWriter.WriteFloat((lights[i] != nullptr) ? lights[i]->m_shadowZFar : 0.0f);
+					}
+					varInfo.variable->SetFloatArray((const float*)m_tempBuffer.GetBuffer(), DynamicLightInfo::MaxLights);
+				}
+				break;
+			case BuiltinSemantics::LightDiffuses:
+				if (lights != nullptr)
+				{
+					m_tempBufferWriter.Seek(0, SeekOrigin_Begin);
+					for (int i = 0; i < DynamicLightInfo::MaxLights; i++)
+					{
+						auto& v = (lights[i] != nullptr) ? lights[i]->m_diffuse : Color::Black;
+						m_tempBufferWriter.Write(&v, sizeof(Color));
+					}
+					varInfo.variable->SetVectorArray((const Vector4*)m_tempBuffer.GetBuffer(), DynamicLightInfo::MaxLights);
+				}
+				break;
+			case BuiltinSemantics::LightAmbients:
+				if (lights != nullptr)
+				{
+					m_tempBufferWriter.Seek(0, SeekOrigin_Begin);
+					for (int i = 0; i < DynamicLightInfo::MaxLights; i++)
+					{
+						auto& v = (lights[i] != nullptr) ? lights[i]->m_ambient : Color::Transparency;		// TODO: デフォルト値は？
+						m_tempBufferWriter.Write(&v, sizeof(Color));
+					}
+					varInfo.variable->SetVectorArray((const Vector4*)m_tempBuffer.GetBuffer(), DynamicLightInfo::MaxLights);
+				}
+				break;
+			case BuiltinSemantics::LightSpeculars:
+				if (lights != nullptr)
+				{
+					m_tempBufferWriter.Seek(0, SeekOrigin_Begin);
+					for (int i = 0; i < DynamicLightInfo::MaxLights; i++)
+					{
+						auto& v = (lights[i] != nullptr) ? lights[i]->m_specular : Color::Black;		// TODO: デフォルト値は？
+						m_tempBufferWriter.Write(&v, sizeof(Color));
+					}
+					varInfo.variable->SetVectorArray((const Vector4*)m_tempBuffer.GetBuffer(), DynamicLightInfo::MaxLights);
+				}
+				break;
+
 			default:
 				break;
 		}
@@ -172,12 +273,34 @@ void ShaderSemanticsManager::UpdateElementVariables(const ElementInfo& info)
 //------------------------------------------------------------------------------
 void ShaderSemanticsManager::UpdateSubsetVariables(const SubsetInfo& info)
 {
+	detail::CombinedMaterial* cm = (info.material != nullptr) ? info.material->GetCombinedMaterial() : nullptr;
+
 	for (const VariableKindPair& varInfo : m_subsetVariables)
 	{
 		switch (varInfo.kind)
 		{
 			case BuiltinSemantics::MaterialTexture:
 				varInfo.variable->SetTexture((info.materialTexture != nullptr) ? info.materialTexture : m_manager->GetDummyWhiteTexture());
+				break;
+			case BuiltinSemantics::MaterialDiffuse:
+				if (cm != nullptr)
+					varInfo.variable->SetVector(cm->m_diffuse);
+				break;
+			case BuiltinSemantics::MaterialAmbient:
+				if (cm != nullptr)
+					varInfo.variable->SetVector(cm->m_ambient);
+				break;
+			case BuiltinSemantics::MaterialEmmisive:
+				if (cm != nullptr)
+					varInfo.variable->SetVector(cm->m_emissive);
+				break;
+			case BuiltinSemantics::MaterialSpecular:
+				if (cm != nullptr)
+					varInfo.variable->SetVector(cm->m_specular);
+				break;
+			case BuiltinSemantics::MaterialSpecularPower:
+				if (cm != nullptr)
+					varInfo.variable->SetFloat(cm->m_power);
 				break;
 			default:
 				break;

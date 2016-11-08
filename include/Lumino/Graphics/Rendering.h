@@ -33,6 +33,8 @@ public:
 	Color		m_ambient;			// アンビエントカラー
 	Color		m_specular;			// スペキュラカラー
 	Vector3		m_direction;		// 向き
+	float		m_shadowZFar;
+
 	Matrix		transform;
 
 	float		tempDistance;		// 作業用変数
@@ -178,7 +180,7 @@ public:
 
 	bool Equal(const DrawElementBatch& obj) const;
 	void Reset();
-	Shader* ApplyStatus(InternalContext* context, RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer, Shader* defaultShader);
+	void ApplyStatus(InternalContext* context, RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
 	size_t GetHashCode() const;
 
 	intptr_t				m_rendererId;
@@ -256,7 +258,7 @@ public:
 
 	byte_t* AllocExtData(size_t size) { return m_extDataCache.GetData(m_extDataCache.AllocData(size)); }
 
-
+	void ResolveCombinedMaterials();
 
 	void AddDynamicLightInfo(DynamicLightInfo* lightInfo);
 	const List<RefPtr<DynamicLightInfo>>& GetDynamicLightList() const { return m_dynamicLightList; }
@@ -325,6 +327,11 @@ private:
 //
 //};
 
+struct ElementRenderingPolicy
+{
+	Shader*	shader;		// null もありえる。Clear など。
+	bool	visible;
+};
 
 class RenderingPass2
 	: public Object
@@ -335,6 +342,8 @@ public:
 	//void Initialize(GraphicsManager* manager);
 
 	virtual Shader* GetDefaultShader() const = 0;
+
+	void SelectElementRenderingPolicy(DrawElement* element, Material* material, ElementRenderingPolicy* outPolicy);
 
 	//virtual void RenderElement(DrawList* renderer, DrawElement* element);
 	//virtual void RenderElementSubset(DrawList* renderer, DrawElement* element, int subsetIndex);
@@ -505,6 +514,7 @@ LN_INTERNAL_ACCESS:
 	void Initialize(detail::GraphicsManager* manager);
 	detail::DrawElementList* GetDrawElementList() { return &m_drawElementList; }
 	void BeginMakeElements();
+	void EndMakeElements();
 	//void BeginFrame(RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
 	void EndFrame();
 	const detail::BatchStateBlock& GetState() const { return m_state; }

@@ -31,6 +31,7 @@ class FontGlyphTextureCache;
 enum class DefaultShader
 {
 	NoLightingRendering,
+	ForwardRendering,
 
 	_Count,
 };

@@ -374,7 +374,7 @@ void DrawElementBatch::Reset()
 }
 
 //------------------------------------------------------------------------------
-Shader* DrawElementBatch::ApplyStatus(InternalContext* context, RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer, Shader* defaultShader)
+void DrawElementBatch::ApplyStatus(InternalContext* context, RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
 {
 	auto* stateManager = context->GetRenderStateManager();
 
@@ -412,31 +412,31 @@ Shader* DrawElementBatch::ApplyStatus(InternalContext* context, RenderTarget* de
 			stateManager->SetDepthBuffer(m_depthBuffer);
 		// TODO: m_scissorRect
 	}
-	// Shader
-	Shader* activeShader = nullptr;
-	if (m_material != nullptr && m_material->GetShader() != nullptr)
-	{
-		m_material->ApplyToShaderVariables();
-		activeShader = m_material->GetShader();
-		//ShaderPass* pass = activeShader->GetTechniques().GetAt(0)->GetPasses().GetAt(0);	// TODO: DrawList の実行者によって決定する
-		//stateManager->SetShaderPass(pass);
-	}
-	else
-	{
-		// TODO: defaultShader の変数がマテリアルのどの情報を欲しているのかはわかる。
-		// 変数名検索しなくても、MMEReqVar みたいに enum でなんとかしたい。
+	//// Shader
+	//Shader* activeShader = nullptr;
+	//if (m_material != nullptr && m_material->GetShader() != nullptr)
+	//{
+	//	m_material->ApplyToShaderVariables();
+	//	activeShader = m_material->GetShader();
+	//	//ShaderPass* pass = activeShader->GetTechniques().GetAt(0)->GetPasses().GetAt(0);	// TODO: DrawList の実行者によって決定する
+	//	//stateManager->SetShaderPass(pass);
+	//}
+	//else
+	//{
+	//	// TODO: defaultShader の変数がマテリアルのどの情報を欲しているのかはわかる。
+	//	// 変数名検索しなくても、MMEReqVar みたいに enum でなんとかしたい。
 
-		activeShader = defaultShader;
-		//ShaderPass* pass = activeShader->GetTechniques().GetAt(0)->GetPasses().GetAt(0);	// TODO: DrawList の実行者によって決定する
-		//stateManager->SetShaderPass(pass);
-	}
+	//	activeShader = defaultShader;
+	//	//ShaderPass* pass = activeShader->GetTechniques().GetAt(0)->GetPasses().GetAt(0);	// TODO: DrawList の実行者によって決定する
+	//	//stateManager->SetShaderPass(pass);
+	//}
 	//for (ShaderValuePair& pair : m_shaderValueList)
 	//{
 	//	pair.variable->SetShaderValue(pair.value);
 	//}
 	//stateManager->SetShaderPass(m_shaderPass);
 
-	return activeShader;
+	//return activeShader;
 }
 
 //------------------------------------------------------------------------------
@@ -474,8 +474,10 @@ DrawElement::~DrawElement()
 //------------------------------------------------------------------------------
 void DrawElement::MakeElementInfo(const CameraInfo& cameraInfo, ElementInfo* outInfo)
 {
+	outInfo->viewProjMatrix = &cameraInfo.viewProjMatrix;
 	outInfo->WorldMatrix = transform;
 	outInfo->WorldViewProjectionMatrix = transform * cameraInfo.viewMatrix * cameraInfo.projMatrix;	// TODO: viewProj はまとめたい
+	outInfo->affectedLights = GetAffectedDynamicLightInfos();
 }
 
 //------------------------------------------------------------------------------
@@ -550,6 +552,18 @@ void DrawElementList::PostAddCommandInternal(const DrawElementBatch& state, deta
 }
 
 //------------------------------------------------------------------------------
+void DrawElementList::ResolveCombinedMaterials()
+{
+	for (DrawElementBatch& state : m_batchList)
+	{
+		if (state.m_material != nullptr)
+		{
+			state.m_material->ResolveCombinedMaterial();
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
 void DrawElementList::AddDynamicLightInfo(DynamicLightInfo* lightInfo)
 {
 	assert(lightInfo != nullptr);
@@ -621,38 +635,53 @@ void InternalRenderer::Render(
 		// DrawElement 描画
 		int currentBatchIndex = -1;
 		DrawElementBatch* currentState = nullptr;
-		Shader* currentShader = nullptr;
+		//Shader* currentShader = nullptr;
 		for (DrawElement* element : m_renderingElementList)
 		{
+			bool visible = true;
+
 			// ステートの変わり目チェック
 			if (element->batchIndex != currentBatchIndex)
 			{
 				context->Flush();
 				currentBatchIndex = element->batchIndex;
 				currentState = elementList->GetBatch(currentBatchIndex);
-				currentShader = currentState->ApplyStatus(context, defaultRenderTarget, defaultDepthBuffer, pass->GetDefaultShader());
+				currentState->ApplyStatus(context, defaultRenderTarget, defaultDepthBuffer);
 				context->SetCurrentStatePtr(currentState);
 			}
 
+			// 固定の内部シェーダを使わない場合はいろいろ設定する
 			if (!currentState->IsStandaloneShaderRenderer())
 			{
-				ElementInfo elementInfo;
-				element->MakeElementInfo(cameraInfo, &elementInfo);
+				ElementRenderingPolicy policy;
+				pass->SelectElementRenderingPolicy(element, currentState->m_material, &policy);
+				visible = policy.visible;
 
-				SubsetInfo subsetInfo;
-				element->MakeSubsetInfo(currentState->m_material, &subsetInfo);
+				if (visible)
+				{
+					Shader* shader = policy.shader;
 
-				currentShader->GetSemanticsManager()->UpdateCameraVariables(cameraInfo);
-				currentShader->GetSemanticsManager()->UpdateElementVariables(elementInfo);
-				currentShader->GetSemanticsManager()->UpdateSubsetVariables(subsetInfo);
+					ElementInfo elementInfo;
+					element->MakeElementInfo(cameraInfo, &elementInfo);
 
-				auto* stateManager = context->GetRenderStateManager();
-				ShaderPass* pass = currentShader->GetTechniques().GetAt(0)->GetPasses().GetAt(0);	// TODO: DrawList の実行者によって決定する
-				stateManager->SetShaderPass(pass);
+					SubsetInfo subsetInfo;
+					element->MakeSubsetInfo(currentState->m_material, &subsetInfo);
+
+					shader->GetSemanticsManager()->UpdateCameraVariables(cameraInfo);
+					shader->GetSemanticsManager()->UpdateElementVariables(elementInfo);
+					shader->GetSemanticsManager()->UpdateSubsetVariables(subsetInfo);
+
+					auto* stateManager = context->GetRenderStateManager();
+					ShaderPass* pass = shader->GetTechniques().GetAt(0)->GetPasses().GetAt(0);	// TODO: DrawList の実行者によって決定する
+					stateManager->SetShaderPass(pass);
+				}
 			}
 
 			// 描画実行
-			element->DrawSubset(context);
+			if (visible)
+			{
+				element->DrawSubset(context);
+			}
 		}
 
 		context->Flush();
@@ -812,7 +841,7 @@ ForwardShadingRenderingPass::~ForwardShadingRenderingPass()
 //------------------------------------------------------------------------------
 void ForwardShadingRenderingPass::Initialize(GraphicsManager* manager)
 {
-	m_defaultShader = manager->GetDefaultShader(DefaultShader::NoLightingRendering);
+	m_defaultShader = manager->GetDefaultShader(DefaultShader::ForwardRendering);
 }
 
 //------------------------------------------------------------------------------
@@ -863,6 +892,23 @@ RenderingPass2::RenderingPass2()
 //------------------------------------------------------------------------------
 RenderingPass2::~RenderingPass2()
 {
+}
+
+//------------------------------------------------------------------------------
+void RenderingPass2::SelectElementRenderingPolicy(DrawElement* element, Material* material, ElementRenderingPolicy* outPolicy)
+{
+	outPolicy->shader = nullptr;
+	if (material != nullptr && material->GetShader() != nullptr)
+	{
+		outPolicy->shader = material->GetShader();
+	}
+	else
+	{
+		outPolicy->shader = GetDefaultShader();
+	}
+
+	// とありあえず全部可
+	outPolicy->visible = true;
 }
 
 ////------------------------------------------------------------------------------
@@ -967,6 +1013,12 @@ void DrawList::BeginMakeElements()
 {
 	m_drawElementList.ClearCommands();
 	m_state.Reset();
+}
+
+//------------------------------------------------------------------------------
+void DrawList::EndMakeElements()
+{
+	m_drawElementList.ResolveCombinedMaterials();
 }
 
 //------------------------------------------------------------------------------

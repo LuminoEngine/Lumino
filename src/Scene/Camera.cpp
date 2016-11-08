@@ -296,12 +296,15 @@ void CameraViewportLayer::OnBeginFrameRender(RenderTarget* renderTarget, DepthBu
 //------------------------------------------------------------------------------
 void CameraViewportLayer::OnEndFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer)
 {
+	m_renderer->EndMakeElements();
+
 	Size viewSize((float)GetViewportSize().width, (float)GetViewportSize().height);
 	detail::CameraInfo cameraInfo;
 	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.Get());
 	cameraInfo.viewPixelSize = viewSize;
 	cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
 	cameraInfo.projMatrix = m_hostingCamera->GetProjectionMatrix();
+	cameraInfo.viewProjMatrix = m_hostingCamera->GetViewProjectionMatrix();
 	cameraInfo.viewFrustum = m_hostingCamera->GetViewFrustum();
 	m_internalRenderer->Render(
 		m_renderer->GetDrawElementList(),
