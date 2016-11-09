@@ -68,13 +68,13 @@ void TextBlock2D::SetText(const StringRef& text)
 }
 
 //------------------------------------------------------------------------------
-void TextBlock2D::SetAnchor(const Vector2& ratio)
+void TextBlock2D::SetAnchorPoint(const Vector2& ratio)
 {
 	m_anchor = ratio;
 }
 
 //------------------------------------------------------------------------------
-void TextBlock2D::SetAnchor(float ratioX, float ratioY)
+void TextBlock2D::SetAnchorPoint(float ratioX, float ratioY)
 {
 	m_anchor.Set(ratioX, ratioY);
 }

@@ -148,7 +148,7 @@ void SwapChain::Present()
 {
 	if (m_manager->GetRenderingType() == GraphicsRenderingType::Immediate)
 	{
-		m_deviceObj->Present(m_backColorBuffer->m_deviceObj);
+		PresentInternal();
 
 		// 一時メモリの解放とかをやっておく
 		m_manager->GetPrimaryRenderingCommandList()->PostExecute();
@@ -158,7 +158,6 @@ void SwapChain::Present()
 	{
 		// 前回この SwapChain から発行したコマンドリストがまだ処理中である。待ち状態になるまで待機する。
 		m_waiting.Wait();
-
 
 		// 実行状態にする。Present コマンドが実行された後、コマンドリストクラスから True がセットされる。
 		// ※ PresentCommandList() の前に false にしておかないとダメ。
@@ -191,6 +190,18 @@ void SwapChain::OnChangeDevice(Driver::IGraphicsDevice* device)
 			m_backColorBuffer->AttachDefaultBackBuffer(m_deviceObj->GetBackBuffer());
 		}
 	}
+}
+
+//------------------------------------------------------------------------------
+void SwapChain::PresentInternal()
+{
+	m_deviceObj->Present(m_backColorBuffer->GetDeviceObject());
+
+	// 実行完了。m_waiting を ture にすることで、メインスレッドからはこのスワップチェインをキューに追加できるようになる。
+	// コマンドの成否にかかわらず true にしないと、例外した後にデッドロックが発生する。
+
+	// TODO: ポインタが fefefefe とかなってたことがあった。メモリバリア張っておくこと。
+	m_waiting.SetTrue();
 }
 
 LN_NAMESPACE_GRAPHICS_END

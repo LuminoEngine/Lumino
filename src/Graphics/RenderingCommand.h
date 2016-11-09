@@ -954,16 +954,7 @@ struct PresentCommand : public RenderingCommand
 
 	void Execute()
 	{
-		m_targetSwapChain->m_deviceObj->Present(m_targetSwapChain->m_backColorBuffer->GetDeviceObject());
-
-
-		// 実行完了。m_waiting を ture にすることで、メインスレッドからはこのスワップチェインをキューに追加できるようになる。
-		// コマンドの成否にかかわらず true にしないと、例外した後にデッドロックが発生する。
-
-		// TODO: ポインタが fefefefe とかなってたことがあった。メモリバリア張っておくこと。
-		m_targetSwapChain->m_waiting.SetTrue();
-		//LN_SAFE_RELEASE(m_targetSwapChain);
-		// TODO: ↑これは CommandList::Execute 側でやるべきなきがする
+		m_targetSwapChain->PresentInternal();
 	}
 };
 	

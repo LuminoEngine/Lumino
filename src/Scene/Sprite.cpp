@@ -313,13 +313,13 @@ void Sprite2D::Initialize(SceneGraph* owner)
 }
 
 //------------------------------------------------------------------------------
-void Sprite2D::SetAnchor(const Vector2& ratio)
+void Sprite2D::SetAnchorPoint(const Vector2& ratio)
 {
 	m_anchor = ratio;
 }
 
 //------------------------------------------------------------------------------
-void Sprite2D::SetAnchor(float ratioX, float ratioY)
+void Sprite2D::SetAnchorPoint(float ratioX, float ratioY)
 {
 	m_anchor.Set(ratioX, ratioY);
 }

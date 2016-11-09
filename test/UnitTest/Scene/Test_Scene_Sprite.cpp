@@ -67,29 +67,28 @@ TEST_F(Test_Scene_Sprite, Anchor)
 		// 左上原点
 		auto sprite1 = Sprite2D::Create(tex);
 		sprite1->SetPosition(0, 0);
-		sprite1->SetAnchor(0, 0);
+		sprite1->SetAnchorPoint(0, 0);
 
 		// 中央原点
 		auto sprite2 = Sprite2D::Create(tex);
 		sprite2->SetPosition(32, 32);
-		sprite2->SetAnchor(Vector2(0.5, 0.5));
+		sprite2->SetAnchorPoint(Vector2(0.5, 0.5));
 
 		// 右下原点
 		auto sprite3 = Sprite2D::Create(tex);
 		sprite3->SetPosition(64, 64);
-		sprite3->SetAnchor(1, 1);
+		sprite3->SetAnchorPoint(1, 1);
 
 		// 中央下原点
 		auto sprite4 = Sprite2D::Create(tex);
 		sprite4->SetPosition(32, 120);
-		sprite4->SetAnchor(0.5, 1);
+		sprite4->SetAnchorPoint(0.5, 1);
 
 		Engine::UpdateFrame();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite.Anchor.png")));
 	}
 }
 
-#if 0
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_Sprite, DrawCallCount)
 {
@@ -109,6 +108,7 @@ TEST_F(Test_Scene_Sprite, DrawCallCount)
 	}
 }
 
+#if 0
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 {
@@ -224,27 +224,27 @@ TEST_F(Test_Scene_TextBlock2D, Basic)
 		auto text1 = TextBlock2D::Create();
 		text1->SetText(_T("upper left"));
 		text1->SetPosition(0, 0, 0);
-		text1->SetAnchor(0, 0);
+		text1->SetAnchorPoint(0, 0);
 
 		auto text2 = TextBlock2D::Create();
 		text2->SetText(_T("upper right"));
 		text2->SetPosition(160, 0, 0);
-		text2->SetAnchor(1, 0);
+		text2->SetAnchorPoint(1, 0);
 
 		auto text3 = TextBlock2D::Create();
 		text3->SetText(_T("lower left"));
 		text3->SetPosition(0, 120, 0);
-		text3->SetAnchor(0, 1);
+		text3->SetAnchorPoint(0, 1);
 
 		auto text4 = TextBlock2D::Create();
 		text4->SetText(_T("lower right"));
 		text4->SetPosition(160, 120, 0);
-		text4->SetAnchor(1, 1);
+		text4->SetAnchorPoint(1, 1);
 
 		auto text5 = TextBlock2D::Create();
 		text5->SetText(_T("center"));
 		text5->SetPosition(80, 60, 0);
-		text5->SetAnchor(0.5, 0.5);
+		text5->SetAnchorPoint(0.5, 0.5);
 
 		Engine::UpdateFrame();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_TextBlock2D.Basic2.png")));

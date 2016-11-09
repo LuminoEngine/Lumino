@@ -34,13 +34,13 @@ public:
 	void SetText(const StringRef& text);
 
 	/** 
-		@brief		スプライトの原点を設定します。
+		@brief		テキストの表示の原点を設定します。
 		@details	値は (0,0) から (1,1) の間で指定します。
-					デフォルトは (0,0) で、これはスプライトの左上が原点であることを意味します。
-					(0.5,0.5) はスプライトの中央、(1,1) は右下が原点となります。
+					デフォルトは (0,0) で、これはテキストの左上が原点であることを意味します。
+					(0.5,0.5) はテキストの中央、(1,1) は右下が原点となります。
 	*/
-	void SetAnchor(const Vector2& ratio);
-	void SetAnchor(float ratioX, float ratioY);		/**< @overload SetAnchor */
+	void SetAnchorPoint(const Vector2& ratio);
+	void SetAnchorPoint(float ratioX, float ratioY);		/**< @overload SetAnchorPoint */
 
 protected:
 	TextBlock2D();

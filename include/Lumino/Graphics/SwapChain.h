@@ -53,6 +53,8 @@ LN_INTERNAL_ACCESS:
 //private:
 	void PostInitialize();
 
+	void PresentInternal();
+
 	Driver::ISwapChain*			m_deviceObj;
 	RenderingCommandList*		m_commandList;
 	ConditionFlag				m_waiting;		// コマンド実行していない

@@ -112,8 +112,8 @@ public:
 					デフォルトは (0,0) で、これはスプライトの左上が原点であることを意味します。
 					(0.5,0.5) はスプライトの中央、(1,1) は右下が原点となります。
 	*/
-	void SetAnchor(const Vector2& ratio);
-	void SetAnchor(float ratioX, float ratioY);		/**< @overload SetAnchor */
+	void SetAnchorPoint(const Vector2& ratio);
+	void SetAnchorPoint(float ratioX, float ratioY);		/**< @overload SetAnchorPoint */
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	Sprite2D();
