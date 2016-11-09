@@ -54,6 +54,7 @@ LN_INTERNAL_ACCESS:
 	void PostInitialize();
 
 	void PresentInternal();
+	void WaitForPresent();
 
 	Driver::ISwapChain*			m_deviceObj;
 	RenderingCommandList*		m_commandList;

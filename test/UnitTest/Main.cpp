@@ -1,4 +1,5 @@
 ﻿#include "TestConfig.h"
+#include <Lumino/UI/UIFrameWindow.h>
 #include "../../../src/EngineManager.h"
 #include "../../../src/Graphics/GraphicsManager.h"
 
@@ -220,6 +221,11 @@ bool TestEnv::CheckScreenShot(const TCHAR* filePath, int passRate, bool save)
 		return EqualsScreenShot(filePath, passRate);
 	}
 }
+//------------------------------------------------------------------------------
+void TestEnv::WaitRendering()
+{
+	Engine::GetMainWindow()->GetSwapChain()->WaitForPresent();
+}
 
 //------------------------------------------------------------------------------
 GTEST_API_ int main(int argc, char **argv)
@@ -232,8 +238,8 @@ GTEST_API_ int main(int argc, char **argv)
 #if 1	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		//"--gtest_filter=Test_Scene_Sprite.*"
-		"--gtest_filter=Test_Graphics_Rendering.*"
+		"--gtest_filter=Test_Scene_Sprite.Issues_Volkoff"
+		//"--gtest_filter=Test_Graphics_Rendering.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);

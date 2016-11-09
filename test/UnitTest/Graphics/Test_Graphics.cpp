@@ -1,6 +1,4 @@
 #include <TestConfig.h>
-#define LN_INTERNAL_ACCESS				public
-#define LN_PROTECTED_INTERNAL_ACCESS	public
 #include <Lumino/Graphics/Mesh.h>
 #include "../../../src/Graphics/GraphicsManager.h"
 

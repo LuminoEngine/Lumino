@@ -248,11 +248,11 @@ public:
 	void ClearCommands();
 
 	template<typename T, typename... TArgs>
-	T* AddCommand(const DrawElementBatch& state, detail::IRendererPloxy* renderer, TArgs... args)
+	T* AddCommand(const DrawElementBatch& state, TArgs... args)
 	{
 		auto handle = m_commandDataCache.AllocData(sizeof(T));
 		T* t = new (m_commandDataCache.GetData(handle))T(args...);
-		PostAddCommandInternal(state, renderer, t);
+		PostAddCommandInternal(state, t);
 		return t;
 	}
 
@@ -264,7 +264,7 @@ public:
 	const List<RefPtr<DynamicLightInfo>>& GetDynamicLightList() const { return m_dynamicLightList; }
 
 private:
-	void PostAddCommandInternal(const DrawElementBatch& state, detail::IRendererPloxy* renderer, DrawElement* element);
+	void PostAddCommandInternal(const DrawElementBatch& state, DrawElement* element);
 
 	CommandDataCache		m_commandDataCache;
 	CommandDataCache		m_extDataCache;

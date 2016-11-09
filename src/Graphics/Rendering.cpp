@@ -541,12 +541,11 @@ void DrawElementList::ClearCommands()
 }
 
 //------------------------------------------------------------------------------
-void DrawElementList::PostAddCommandInternal(const DrawElementBatch& state, detail::IRendererPloxy* renderer, DrawElement* element)
+void DrawElementList::PostAddCommandInternal(const DrawElementBatch& state, DrawElement* element)
 {
 	if (m_batchList.IsEmpty() || !m_batchList.GetLast().Equal(state))
 	{
 		m_batchList.Add(state);
-		m_batchList.GetLast().m_rendererId = reinterpret_cast<intptr_t>(renderer);
 	}
 	element->batchIndex = m_batchList.GetCount() - 1;
 }
@@ -1043,7 +1042,7 @@ void DrawList::SetTransform(const Matrix& transform)
 //------------------------------------------------------------------------------
 void DrawList::Clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
-	auto* ptr = m_drawElementList.AddCommand<detail::ClearElement>(m_state.state, m_manager->GetInternalContext()->m_baseRenderer);
+	auto* ptr = m_drawElementList.AddCommand<detail::ClearElement>(m_state.state);
 	ptr->flags = flags;
 	ptr->color = color;
 	ptr->z = z;
@@ -1213,6 +1212,8 @@ TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId, detai
 	// これを決定してから比較を行う
 	m_state.state.SetStandaloneShaderRenderer(renderer->IsStandaloneShader());
 
+	m_state.state.m_rendererId = reinterpret_cast<intptr_t>(renderer);
+
 	// 何か前回追加された DrawElement があり、それと DrawingSectionId、State が一致するならそれに対して追記できる
 	if (sectionId != detail::DrawingSectionId::None &&
 		m_currentSectionTopElement != nullptr &&
@@ -1223,7 +1224,7 @@ TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId, detai
 	}
 
 	// DrawElement を新しく作る
-	TElement* element = m_drawElementList.AddCommand<TElement>(m_state.state, renderer);
+	TElement* element = m_drawElementList.AddCommand<TElement>(m_state.state);
 	m_currentSectionTopElement = element;
 	return element;
 }

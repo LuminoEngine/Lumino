@@ -98,6 +98,12 @@ void Engine::ResetFrameDelay()
 }
 
 //------------------------------------------------------------------------------
+UIMainWindow* Engine::GetMainWindow()
+{
+	return EngineManager::Instance->GetUIManager()->GetMainWindow();
+}
+
+//------------------------------------------------------------------------------
 ViewportLayer* Engine::GetDefault2DLayer()
 {
 	return EngineManager::Instance->GetSceneGraphManager()->GetDefault2DCameraViewportLayer();

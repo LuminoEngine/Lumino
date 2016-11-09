@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+#define LN_INTERNAL_ACCESS				public
+#define LN_PROTECTED_INTERNAL_ACCESS	public
+
 #include <gtest/gtest.h>
 #include <LuminoCore.h>
 #include <LuminoEngine.h>
@@ -37,6 +40,7 @@ public:
 	static bool EqualsTexture(Texture* texture, const TCHAR* filePath);
 	static bool EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath, int passRate);
 	static bool CheckScreenShot(const TCHAR* filePath, int passRate = 99, bool save = false);	// 基本的に 99% 一致していれば良い。グラボによって、色成分+-1 くらいの誤差がある (Radeon HD8490)
+	static void WaitRendering();
 
 protected:
 	virtual void SetUp();

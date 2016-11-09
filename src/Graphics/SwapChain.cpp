@@ -157,7 +157,7 @@ void SwapChain::Present()
 	else
 	{
 		// 前回この SwapChain から発行したコマンドリストがまだ処理中である。待ち状態になるまで待機する。
-		m_waiting.Wait();
+		WaitForPresent();
 
 		// 実行状態にする。Present コマンドが実行された後、コマンドリストクラスから True がセットされる。
 		// ※ PresentCommandList() の前に false にしておかないとダメ。
@@ -202,6 +202,12 @@ void SwapChain::PresentInternal()
 
 	// TODO: ポインタが fefefefe とかなってたことがあった。メモリバリア張っておくこと。
 	m_waiting.SetTrue();
+}
+
+//------------------------------------------------------------------------------
+void SwapChain::WaitForPresent()
+{
+	m_waiting.Wait();
 }
 
 LN_NAMESPACE_GRAPHICS_END

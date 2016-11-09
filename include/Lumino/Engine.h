@@ -6,6 +6,7 @@
 LN_NAMESPACE_BEGIN
 class RenderingContext;
 class DrawingContext;
+class UIMainWindow;
 
 /**
 	@brief		アプリケーション全体にかかわる処理を行います。
@@ -55,6 +56,7 @@ public:
 
 
 
+	static UIMainWindow* GetMainWindow();
 	static ViewportLayer* GetDefault2DLayer();
 	static ViewportLayer* GetDefault3DLayer();
 };
