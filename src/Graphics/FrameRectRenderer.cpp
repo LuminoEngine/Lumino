@@ -412,7 +412,7 @@ void FrameRectRenderer::SetState(TextureBrush* brush, const Matrix& world, const
 	state.borderThickness = brush->GetBorderThickness();
 	state.srcRect = brush->GetSourceRect();
 	state.wrapMode = brush->GetWrapMode();
-	state.texture = (brush->GetTexture() != nullptr) ? brush->GetTexture()->GetDeviceObject() : nullptr;
+	state.texture = (brush->GetTexture() != nullptr) ? brush->GetTexture()->ResolveDeviceObject() : nullptr;
 	LN_CHECK_STATE(state.texture != nullptr);
 
 	LN_ENQUEUE_RENDER_COMMAND_2(

@@ -195,7 +195,7 @@ void SwapChain::OnChangeDevice(Driver::IGraphicsDevice* device)
 //------------------------------------------------------------------------------
 void SwapChain::PresentInternal()
 {
-	m_deviceObj->Present(m_backColorBuffer->GetDeviceObject());
+	m_deviceObj->Present(m_backColorBuffer->ResolveDeviceObject());
 
 	// 実行完了。m_waiting を ture にすることで、メインスレッドからはこのスワップチェインをキューに追加できるようになる。
 	// コマンドの成否にかかわらず true にしないと、例外した後にデッドロックが発生する。

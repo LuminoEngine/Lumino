@@ -534,7 +534,7 @@ void ShaderVariableCommitSerializeHelper::WriteValue(Driver::IShaderVariable* ta
 		m_writer->WriteUInt64((intptr_t)value.GetDeviceTexture());
 		break;
 	case ShaderVariableType_ManagedTexture:
-		m_writer->WriteUInt64((intptr_t)((value.GetManagedTexture()) ? value.GetManagedTexture()->GetDeviceObject() : nullptr));
+		m_writer->WriteUInt64((intptr_t)((value.GetManagedTexture()) ? value.GetManagedTexture()->ResolveDeviceObject() : nullptr));
 		break;
 	default:
 		LN_THROW(0, ArgumentException);

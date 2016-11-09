@@ -477,8 +477,8 @@ void PrimitiveRenderer::Blt(Texture* source, RenderTarget* dest, const Matrix& t
 		shader->TryCommitChanges();
 	}
 	LN_CALL_CORE_COMMAND(Blt, PrimitiveRendererCore_Blt,
-		(source != nullptr) ? source->GetDeviceObject() : nullptr,
-		(dest != nullptr) ? dest->GetDeviceObject() : nullptr,
+		(source != nullptr) ? source->ResolveDeviceObject() : nullptr,
+		(dest != nullptr) ? dest->ResolveDeviceObject() : nullptr,
 		transform,
 		(shader != nullptr) ? shader->m_deviceObj : nullptr);
 }
@@ -522,7 +522,7 @@ void PrimitiveRenderer::CheckUpdateState()
 		Flush();
 
 		LN_CALL_CORE_COMMAND(SetState, PrimitiveRendererCore_SetStateCommand, m_transform, m_viewProj, m_viewPixelSize, m_useInternalShader, m_mode,
-			(m_texture != nullptr) ? m_texture->GetDeviceObject() : nullptr);
+			(m_texture != nullptr) ? m_texture->ResolveDeviceObject() : nullptr);
 		m_stateModified = false;
 	}
 }

@@ -313,7 +313,11 @@ void Texture2D::TryLock()
 	{
 		if (m_usage == ResourceUsage::Static)
 		{
-			m_primarySurface2 = RefPtr<Bitmap>::MakeRef(m_size, Utils::TranslatePixelFormat(m_format));
+			// フォーマットは DeviceObject 側のフォーマットに合わせる。
+			// もし合わせていないと、転送時に同じサイズで DeviceObject 側のフォーマットと同じ Bitmap を
+			// いちいち作らなければならなくなる。
+			// 基本的に Texture への直接転送は重い体でいるので、ユーザーがあまり Clear や Blit を多用しないような想定でいる。
+			m_primarySurface2 = RefPtr<Bitmap>::MakeRef(m_size, Utils::TranslatePixelFormat(m_deviceObj->GetTextureFormat()));
 		}
 		m_locked = true;
 	}
@@ -357,8 +361,8 @@ void Texture2D::ApplyModifies()
 //------------------------------------------------------------------------------
 void Texture2D::Clear(const Color32& color)
 {
-	ScopedTextureLock lock(this);
-	lock.GetBitmap()->Clear(color);
+	TryLock();
+	m_primarySurface2->Clear(color);
 }
 
 //------------------------------------------------------------------------------

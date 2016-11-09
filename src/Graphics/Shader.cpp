@@ -1028,7 +1028,7 @@ void ShaderVariable::SetTexture(Texture* texture)
 				modified = true;
 			}
 		}
-		else if (texture->GetDeviceObject() != m_value.GetDeviceTexture())
+		else if (texture->ResolveDeviceObject() != m_value.GetDeviceTexture())
 		{
 			modified = true;
 		}
@@ -1041,7 +1041,7 @@ void ShaderVariable::SetTexture(Texture* texture)
 	if (modified)
 	{
 		SetModified();
-		Driver::ITexture* t = (texture != nullptr) ? texture->GetDeviceObject() : nullptr;
+		Driver::ITexture* t = (texture != nullptr) ? texture->ResolveDeviceObject() : nullptr;
 		m_value.SetDeviceTexture(t);
 		LN_REFOBJ_SET(m_textureValue, texture);
 	}

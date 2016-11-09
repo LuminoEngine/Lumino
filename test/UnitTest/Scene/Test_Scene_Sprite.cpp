@@ -134,10 +134,12 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Scene_Sprite.Issues_Volkoff_2.png")));
 	}
 	// <Issues> 2D では Z ソートの基準がカメラ位置からの直線距離ではなく、スクリーンからの距離でなければならない。
+
+	// <Issues> テクスチャを変更できること。
 	{
 		auto tex1 = Texture2D::Create(32, 32);
 		auto tex2 = Texture2D::Create(32, 32);
-		tex1->Clear(Color32::Red);
+		tex1->Clear(Color32::Green);
 		tex2->Clear(Color32::Blue);
 		auto s1 = Sprite2D::Create(tex1);
 		Engine::UpdateFrame();			// 1度描く

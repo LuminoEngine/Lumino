@@ -48,7 +48,8 @@ protected:
 	virtual ~Texture();
 
 LN_INTERNAL_ACCESS:
-	Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }
+	Driver::ITexture* GetDeviceObjectConst() const { return m_deviceObj; }
+	Driver::ITexture* ResolveDeviceObject() { ApplyModifies(); return m_deviceObj; }
 	const SizeI& GetSize() const;
 	const SizeI& GetRealSize() const;
 
@@ -154,7 +155,7 @@ LN_INTERNAL_ACCESS:
 	void Initialize(detail::GraphicsManager* manager, Stream* stream, TextureFormat format, bool mipmap);
 	void Initialize(detail::GraphicsManager* manager, bool isDefaultBackBuffer);
 	void TryLock();
-	Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }
+	//Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }
 
 protected:
 	virtual void ApplyModifies() override;
@@ -215,7 +216,7 @@ protected:
 
 LN_INTERNAL_ACCESS:
 	void TryLock();
-	Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }
+	//Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }
 
 private:
 	int				m_depth;

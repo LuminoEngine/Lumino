@@ -474,7 +474,7 @@ public:
 				else if (Type == BrushType_Texture)
 				{
 					auto t = static_cast<ln::TextureBrush*>(brush);
-					TextureBrush.Texture = (t->GetTexture() != nullptr) ? t->GetTexture()->GetDeviceObject() : nullptr;
+					TextureBrush.Texture = (t->GetTexture() != nullptr) ? t->GetTexture()->ResolveDeviceObject() : nullptr;
 					const Rect& r = t->GetSourceRect();
 					TextureBrush.SourceRect[0] = r.x;		// TODO: POD 型をまとめて定義したほうがいい気がする
 					TextureBrush.SourceRect[1] = r.y;

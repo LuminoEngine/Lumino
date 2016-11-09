@@ -100,7 +100,7 @@ void SpriteRenderer::DrawRequest2D(
 		ct.colors[3] = colorTable[3];
 	}
 
-	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->GetDeviceObject() : nullptr;
+	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->ResolveDeviceObject() : nullptr;
 	LN_ENQUEUE_RENDER_COMMAND_7(
 		SpriteRenderer_SetTransform, m_manager,
 		SpriteRendererImpl*, m_internal,
@@ -125,7 +125,7 @@ void SpriteRenderer::DrawRequest2D(
 	const Color& color)
 {
 	SpriteColorTable ct = { { color, color, color, color } };
-	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->GetDeviceObject() : nullptr;
+	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->ResolveDeviceObject() : nullptr;
 	LN_ENQUEUE_RENDER_COMMAND_7(
 		SpriteRenderer_SetTransform, m_manager,
 		SpriteRendererImpl*, m_internal,
@@ -159,7 +159,7 @@ void SpriteRenderer::DrawRequest3D(
 		ct.colors[3] = colorTable[3];
 	}
 
-	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->GetDeviceObject() : nullptr;
+	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->ResolveDeviceObject() : nullptr;
 	LN_ENQUEUE_RENDER_COMMAND_8(
 		SpriteRenderer_SetTransform, m_manager,
 		SpriteRendererImpl*, m_internal,
@@ -186,7 +186,7 @@ void SpriteRenderer::DrawRequest3D(
 	SpriteBaseDirection baseDirection)
 {
 	SpriteColorTable ct = { { color, color, color, color } };
-	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->GetDeviceObject() : nullptr;
+	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->ResolveDeviceObject() : nullptr;
 	LN_ENQUEUE_RENDER_COMMAND_8(
 		SpriteRenderer_SetTransform, m_manager,
 		SpriteRendererImpl*, m_internal,

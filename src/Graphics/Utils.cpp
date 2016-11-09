@@ -60,7 +60,7 @@ bool Utils::EqualsTexture(Texture* texture1, Texture* texture2)
 	if (texture1 != texture2) return false;
 	if (texture1 != nullptr)
 	{
-		if (texture1->GetDeviceObject() != texture2->GetDeviceObject()) return false;
+		if (texture1->GetDeviceObjectConst() != texture2->GetDeviceObjectConst()) return false;
 	}
 	return true;
 }

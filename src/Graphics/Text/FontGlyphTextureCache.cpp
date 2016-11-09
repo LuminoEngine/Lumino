@@ -172,7 +172,7 @@ void FontGlyphTextureCache::CommitCacheGlyphInfo(CacheGlyphInfo* info, Rect* src
 //------------------------------------------------------------------------------
 Driver::ITexture* FontGlyphTextureCache::GetGlyphsFillTexture()
 {
-	return m_fillGlyphsTexture->GetDeviceObject();
+	return m_fillGlyphsTexture->ResolveDeviceObject();
 	//if (m_lockedFillBitmap != nullptr)
 	//{
 	//	//m_lockedFillBitmap->Save("test4.png");

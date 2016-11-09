@@ -392,7 +392,7 @@ void FrameCapturer::Record()
 
 
 	RefPtr<FrameCapturer> fc = this;
-	Driver::ITexture* target = m_capturerTarget->GetDeviceObject();
+	Driver::ITexture* target = m_capturerTarget->ResolveDeviceObject();
 	State newState = m_requestedState;
 
 	LN_ENQUEUE_RENDER_COMMAND_3(

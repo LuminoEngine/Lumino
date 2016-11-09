@@ -344,6 +344,12 @@ class ITexture
 {
 public:
 
+	//void Clear(const Color& color);
+
+	void SetSubData(const Point& point, Bitmap* bitmap);
+
+
+
 	/// テクスチャの種類の取得
 	virtual TextureType GetTextureType() const = 0;
 
@@ -370,7 +376,7 @@ public:
 	virtual void Unlock() = 0;
 
 protected:
-    virtual ~ITexture() {}
+	virtual ~ITexture();
 
 public:
 	class ScopedLock
