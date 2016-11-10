@@ -48,9 +48,9 @@ Size UITextBlock::MeasureOverride(const Size& availableSize)
 
 	if (m_font != nullptr)
 	{
-		SizeI textSize = m_font->GetTextSize(m_text);
-		size.width = std::max(size.width, (float)textSize.width);
-		size.height = std::max(size.height, (float)textSize.height);
+		Size textSize = m_font->MeasureRenderSize(m_text);
+		size.width = std::max(size.width, textSize.width);
+		size.height = std::max(size.height, textSize.height);
 	}
 
 	return size;

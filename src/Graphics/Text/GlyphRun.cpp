@@ -38,7 +38,7 @@ void GlyphRun::Initialize(detail::GraphicsManager* manager)
 	LN_CHECK_ARG(manager != nullptr);
 	m_manager = manager;
 	m_layoutEngine = LN_NEW detail::TextLayoutEngine();
-	m_layoutEngine->SetFont(m_manager->GetFontManager()->GetDefaultFont());
+	m_layoutEngine->SetFont(m_manager->GetFontManager()->GetDefaultRawFont());
 }
 
 //------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ void GlyphRun::SetFont(RawFont* font)
 	{
 		if (font == nullptr)
 		{
-			font = m_manager->GetFontManager()->GetDefaultFont();
+			font = m_manager->GetFontManager()->GetDefaultRawFont();
 		}
 		m_layoutEngine->SetFont(font);
 		LN_SAFE_RELEASE(m_glyphTextureCache);	// 必要なときにまた取得しなおす

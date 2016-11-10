@@ -206,7 +206,7 @@ TEST_F(Test_Graphics_Rendering, Blit)
 TEST_F(Test_Graphics_Rendering, DrawText_)
 {
 	{
-		auto font = RawFont::GetDefaultFont();
+		auto font = Font::GetDefault();
 		float w = Engine::GetMainViewport()->GetSize().width;
 
 		if (Engine::BeginRendering())

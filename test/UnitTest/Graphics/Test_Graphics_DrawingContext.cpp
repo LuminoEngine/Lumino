@@ -172,8 +172,8 @@ TEST_F(Test_Graphics_DrawingContext, DrawText_UserFont)
 {
 	// TODO: Register しなくても直接読みたい
 	RawFont::RegisterFontFile(LN_LOCALFILE("../../../tools/VLGothic/VL-Gothic-Regular.ttf"));
-	auto font = RawFont::Create();
-	font->SetName(_T("VL Gothic"));
+	auto font = Font::Create();
+	font->SetFamily(_T("VL Gothic"));
 
 	Engine::BeginRendering();
 	auto* g = Engine::GetMainDrawingContext();

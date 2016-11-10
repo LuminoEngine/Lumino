@@ -43,13 +43,11 @@ Size UITextElement::MeasureOverride(const Size& constraint)
 	// フォント更新
 	if (m_invalidateFont)
 	{
-		detail::FontData data;
-		data.Family = m_fontFamily;
-		data.Size = m_fontSize;
-		data.IsBold = m_fontBold;
-		data.IsItalic = m_fontItalic;
-		data.IsAntiAlias = true;
-		m_font = GetManager()->GetGraphicsManager()->GetFontManager()->LookupRawFont(data);
+		m_font->SetFamily(m_fontFamily);
+		m_font->SetSize(m_fontSize);
+		m_font->SetBold(m_fontBold);
+		m_font->SetItalic(m_fontItalic);
+		m_font->SetAntiAlias(true);
 		m_invalidateFont = false;
 	}
 

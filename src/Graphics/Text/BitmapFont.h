@@ -5,9 +5,7 @@
 LN_NAMESPACE_BEGIN
 namespace detail {
 	
-/**
-	@brief		ビットマップフォントのクラスです。
-*/
+// ビットマップフォントのクラス
 class BitmapFont
     : public RawFont
 {
@@ -15,7 +13,6 @@ public:
 	BitmapFont(FontManager* manager, Bitmap* bitmap);
 	virtual ~BitmapFont();
 
-public:
 	virtual void SetName(const String& fontName) { LN_THROW(0, InvalidOperationException); }
 	virtual const String& GetName() const { return m_name; }
 	virtual void SetSize(int size) { LN_THROW(0, InvalidOperationException); }
@@ -37,15 +34,14 @@ public:
 private:
     void Dispose();
 
-private:
 	FontManager*			m_manager;
-	String					m_name;					///< 名前。グリフテクスチャのキャッシュで使用する
+	String					m_name;					// 名前。グリフテクスチャのキャッシュで使用する
 	RefPtr<Bitmap>			m_fontBitmap;
-	int						m_charWidth;			///< 1文字分の幅
-	int						m_charHeight;		///< 1文字分の高さ
-	FontGlyphLocation		m_fontGlyphLocation;	///< AdvanceKerning() で返すデータ
+	int						m_charWidth;			// 1文字分の幅
+	int						m_charHeight;			// 1文字分の高さ
+	FontGlyphLocation		m_fontGlyphLocation;	// AdvanceKerning() で返すデータ
 	RefPtr<Bitmap>			m_glyphBitmap;
-	FontGlyphBitmap			m_fontGlyphBitmap;		///< LookupGlyphBitmap() で返すデータ
+	FontGlyphBitmap			m_fontGlyphBitmap;		// LookupGlyphBitmap() で返すデータ
 };
 
 } // namespace detail

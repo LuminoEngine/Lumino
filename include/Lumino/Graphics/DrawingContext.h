@@ -30,7 +30,7 @@ public:
 	void SetTransform(const Matrix& matrix);
 	void SetOpacity(float opacity);	// 0~1
 	void SetBrush(Brush* brush);
-	void SetFont(RawFont* font);
+	void SetFont(Font* font);
 
 
 
@@ -86,7 +86,7 @@ private:
 		Matrix			projectionTransform;
 		float			opacity = 1.0f;
 		RefPtr<Brush>	fillBrush;
-		RefPtr<RawFont>	font;
+		RefPtr<Font>	font;
 
 		bool Equals(const ContextState& s) const;
 	};

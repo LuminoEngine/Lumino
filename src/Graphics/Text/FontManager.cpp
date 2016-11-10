@@ -1,52 +1,4 @@
-﻿/*
-	FreeType めも
-
-	・FT_CharMap	http://www.freetype.org/freetype2/docs/reference/ft2-base_interface.html#FT_CharMap
-		文字とグリフを対応付けるマップ。
-		1つの FT_Face は複数のキャラマップを持つことがある。
-		通常はその中の1つを使用し、それを「アクティブなキャラマップ」と呼んでいる。
-		アクティブなキャラマップは face->charmap で取得できる。
-
-	■ 縦書きフォントについて
-		FT_Load_Glyph() するときのフラグに FT_LOAD_VERTICAL_LAYOUT を指定すると、
-		slot->advance.y に slot->metrics.vertAdvance が格納されるようになる。
-		ftobjs.c の 758 行目あたりが参考になる。
-*/
-/*
-・ソフトウェア描画
-BitmapFont
-OutlineFont
-・ハードウェア描画
-PolygonFont		… OutlineFont の頂点情報を使う。まはた BitmapFont+矩形
-TextureFont		… OutlineFont または BitmapFont のレンダリング結果を使う
-
-■ カーニングについて
-GUI::RichText で書くときも、Span をまたいでもカーニングは維持される。
-→ <red>i</red><blue>j</blue> とか。
-
-カーニングの量はFontクラスからとるけど、GUI レベルではアラビア語とかは
-TextBox.RightToLeft プロパティによって描画方向が変わる。
-
-GUI の FlowDocument(Span) レベルでカーニングは使えるようにしたい。
-別にカーニングを見せなくても良いが・・・。
-
-textRenderer.BeginLine()
-for (span, spans) {
-textRenderer.DrawLine(span.Text, span.Font, span.pen, span.blush);
-}
-textRenderer.EndLine()
-
-↑この textRenderer は GUI で描く Renderer。
-
-■ 文字単位のアニメーションとかのエフェクトは？
-AfterEffects は、"テキストレイヤー" なるものに "エフェクト" をアタッチすることで行う。
-テキストレイヤーは文字の描画に TextRenderer を使用するが、位置は自分で決める。
-1文字ごとに頂点バッファを用意するか、メッシュみたいに 1つの頂点バッファを Subset で分割するとかやりざまは考える必要がありそう。
-
-・スパイラルダウン
-・ブラー
-→ かなり高レベルな部分の機能と関係する。メッシュと同じ扱いにしたほうが良いかも。
-*/
+﻿
 #include "../Internal.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H	/* <freetype/freetype.h> */
@@ -175,21 +127,36 @@ void FontManager::Initialize(FileManager* fileManager, GraphicsManager* graphics
 	LN_THROW(err == 0, InvalidOperationException, "failed initialize font image cache : %d\n", err);
 
 	// デフォルトフォント
-	m_defaultFont = LN_NEW FreeTypeFont(this);
-	m_defaultFont->SetName(m_defaultFontName);
-	m_defaultFont->SetSize(12);
+	m_defaultFont = RefPtr<Font>::MakeRef();
+	m_defaultFont->Initialize(m_graphicsManager, nullptr);
+	m_defaultFont->SetFamily(m_defaultFontName);
 	m_defaultFont->SetAntiAlias(true);
+
+
+	m_defaultRawFont = LN_NEW FreeTypeFont(this);
+	m_defaultRawFont->SetName(m_defaultFontName);
+	m_defaultRawFont->SetSize(12);
+	m_defaultRawFont->SetAntiAlias(true);
 	//m_defaultFont = RawFont::CreateBuiltInBitmapFontInternal(this, 7);
 
 	// キャッシュ
 	m_rawFontCache = RefPtr<CacheManager>::MakeRef(32, 0);
+
+	// 組み込みフォント
+	m_builtinFontList.Resize(1);
+	{
+		RefPtr<RawFont> raw(RawFont::CreateBuiltInBitmapFontInternal(this, 7), false);
+		RefPtr<Font> font = RefPtr<Font>::MakeRef();
+		font->Initialize(m_graphicsManager, raw);
+		m_builtinFontList[(int)BuiltinFontSize::XXSmall] = font;
+	}
 }
 
 //------------------------------------------------------------------------------
 void FontManager::Finalize()
 {
 	m_rawFontCache->Finalize();
-	LN_SAFE_RELEASE(m_defaultFont);
+	LN_SAFE_RELEASE(m_defaultRawFont);
 
 	// 登録したTTFファイルのメモリバッファをすべて解放
 	//TTFDataEntryMap::iterator itr = m_ttfDataEntryMap.begin();
@@ -299,9 +266,15 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 }
 
 //------------------------------------------------------------------------------
-void FontManager::SetDefaultFont(RawFont* font)
+void FontManager::SetDefaultRawFont(RawFont* font)
 {
-	LN_REFOBJ_SET(m_defaultFont, font);
+	LN_REFOBJ_SET(m_defaultRawFont, font);
+}
+
+//------------------------------------------------------------------------------
+FontPtr FontManager::GetBuiltinFont(BuiltinFontSize size) const
+{
+	return m_builtinFontList[(int)size];
 }
 
 //------------------------------------------------------------------------------
@@ -314,7 +287,7 @@ RawFontPtr FontManager::LookupRawFont(const detail::FontData& keyData)
 	RawFontPtr ref;
 	if (keyData.Family.IsEmpty())
 	{
-		ref = GetDefaultFont()->Copy();
+		ref = GetDefaultRawFont()->Copy();
 	}
 	else
 	{

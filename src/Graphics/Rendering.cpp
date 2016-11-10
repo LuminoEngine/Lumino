@@ -290,7 +290,7 @@ Brush* DrawElementBatch::GetBrush() const
 }
 
 //------------------------------------------------------------------------------
-void DrawElementBatch::SetFont(RawFont* font)
+void DrawElementBatch::SetFont(Font* font)
 {
 	if (m_font != font)
 	{
@@ -300,7 +300,7 @@ void DrawElementBatch::SetFont(RawFont* font)
 }
 
 //------------------------------------------------------------------------------
-RawFont* DrawElementBatch::GetFont() const
+Font* DrawElementBatch::GetFont() const
 {
 	return m_font;
 }
@@ -996,7 +996,7 @@ void DrawList::SetBrush(Brush* brush)
 }
 
 //------------------------------------------------------------------------------
-void DrawList::SetFont(RawFont* font)
+void DrawList::SetFont(Font* font)
 {
 	m_state.state.SetFont(font);
 }

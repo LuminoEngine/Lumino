@@ -46,7 +46,7 @@ public:
 protected:
 	UITextElement();
 	virtual ~UITextElement();
-	RawFont* GetActiveFont() const { return m_font; }
+	Font* GetActiveFont() const { return m_font; }
 
 	virtual Size MeasureOverride(const Size& constraint) override;
 	virtual void OnUpdateStyle(UIStylePropertyTable* localStyle, detail::InvalidateFlags invalidateFlags) override;
@@ -59,7 +59,7 @@ LN_INTERNAL_ACCESS:
 	tr::Property<bool>			m_fontBold;
 	tr::Property<bool>			m_fontItalic;
 
-	RawFontPtr		m_font;
+	FontPtr			m_font;
 	bool			m_invalidateFont;
 };
 

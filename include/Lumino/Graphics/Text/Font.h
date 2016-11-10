@@ -14,9 +14,16 @@ class RawFont;
 using FontPtr = RefPtr<Font>;
 using RawFontPtr = RefPtr<RawFont>;
 
+/** ビルトインフォントの大きさ */
+enum class BuiltinFontSize
+{
+	XXSmall,
+	//Medium,
+	//Large,
+};
 
 /**
-	@brief		
+	@brief		テキストをレンダリングするために使用するフォントを表します。
 */
 class Font
 	: public Object
@@ -38,6 +45,16 @@ public:
 		@brief	指定したフォントファミリとサイズに基づいてフォントを作成します。
 	*/
 	static FontPtr Create(const String& family, float size);
+
+	/**
+		@brief	デフォルトのフォントを取得します。
+	*/
+	static FontPtr GetDefault();
+	
+	/**
+		@brief	Lumino に内蔵されているビットマップフォントを取得します。
+	*/
+	static FontPtr GetBuiltin(BuiltinFontSize size);
 
 public:
 
@@ -71,15 +88,20 @@ public:
 	/** アンチエイリアスの有効判定 */
 	bool IsAntiAlias() const;
 
+	/** 指定した文字列を描画する際のサイズを計算します。*/
+	Size MeasureRenderSize(const StringRef& text);
+
 LN_INTERNAL_ACCESS:
 	Font();
 	virtual ~Font();
-	void Initialize(detail::GraphicsManager* manager);
+	void Initialize(detail::GraphicsManager* manager, RawFont* builtinRawFont);
+	RawFont* ResolveRawFont();
 
 private:
 	detail::GraphicsManager*	m_manager;
 	detail::FontData			m_fontInfo;
 	RefPtr<RawFont>				m_rawFont;
+	bool						m_builtin;
 };
 
 

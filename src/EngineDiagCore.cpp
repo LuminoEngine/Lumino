@@ -5,6 +5,7 @@
 #include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/EngineDiag.h>
 #include "Graphics/GraphicsManager.h"
+#include "Graphics/Text/FontManager.h"
 #include "EngineManager.h"
 #include "EngineDiagCore.h"
 #include "EngineDiagViewer.h"
@@ -98,7 +99,7 @@ void EngineDiagViewer::Initialize(EngineManager* manager, EngineDiagCore* diagCo
 	m_mainWindow = manager->GetPlatformManager()->GetMainWindow();
 	m_originalMainWindowTitle = m_mainWindow->GetTitleText();
 
-	m_font = RawFont::CreateBuiltInBitmapFontInternal(manager->GetGraphicsManager()->GetFontManager(), 7);
+	m_font = manager->GetGraphicsManager()->GetFontManager()->GetBuiltinFont(BuiltinFontSize::XXSmall);
 	//m_windowRect.Set(640 - 8 - 300, 8, 300, 256);	// TODO
 	m_windowRect.Set(8, 8, 300, 300);
 }

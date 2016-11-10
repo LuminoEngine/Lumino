@@ -211,7 +211,7 @@ void TextRenderer::Initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 	m_core = m_manager->GetTextRendererCore();
-	m_font = m_manager->GetFontManager()->GetDefaultFont();
+	m_font = m_manager->GetFontManager()->GetDefaultRawFont();
 }
 
 //------------------------------------------------------------------------------
@@ -237,11 +237,12 @@ void TextRenderer::SetViewInfo(const Matrix& viewProj, const SizeI& viewPixelSiz
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::SetState(RawFont* font, Brush* fillBrush)
+void TextRenderer::SetState(Font* font, Brush* fillBrush)
 {
-	if (m_font != font)
+	RawFont* rawFont = (font != nullptr) ? font->ResolveRawFont() : nullptr;
+	if (m_font != rawFont)
 	{
-		m_font = font;
+		m_font = rawFont;
 		m_stateModified = true;
 	}
 	if (m_fillBrush != fillBrush)

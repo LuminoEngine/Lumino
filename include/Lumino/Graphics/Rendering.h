@@ -7,6 +7,7 @@
 #include "Texture.h"
 
 LN_NAMESPACE_BEGIN
+class Font;
 class Material;
 class StaticMeshModel;
 class DrawList;
@@ -172,8 +173,8 @@ public:
 
 	void SetBrush(Brush* brush);
 	Brush* GetBrush() const;
-	void SetFont(RawFont* font);
-	RawFont* GetFont() const;
+	void SetFont(Font* font);
+	Font* GetFont() const;
 
 	void SetBaseBlendMode(BlendMode mode);
 
@@ -211,7 +212,7 @@ public:
 
 	// painting
 	RefPtr<Brush>			m_brush;
-	RefPtr<RawFont>			m_font;
+	RefPtr<Font>			m_font;
 
 
 private:
@@ -462,7 +463,7 @@ public:
 
 
 	void SetBrush(Brush* brush);
-	void SetFont(RawFont* font);
+	void SetFont(Font* font);
 
 	void Clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
 	
