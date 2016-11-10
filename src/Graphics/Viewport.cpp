@@ -120,7 +120,7 @@ ViewportLayer::~ViewportLayer()
 //}
 
 //------------------------------------------------------------------------------
-const SizeI& ViewportLayer::GetViewportSize() const
+const Size& ViewportLayer::GetViewportSize() const
 {
 	LN_CHECK_STATE(m_owner != nullptr);
 	return m_owner->GetSize();
@@ -178,12 +178,6 @@ ViewportLayerList::~ViewportLayerList()
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Viewport, Object);
 
 //------------------------------------------------------------------------------
-Viewport* Viewport::GetMainViewport()
-{
-	return detail::UIManager::GetInstance()->GetMainWindow()->GetViewport();
-}
-
-//------------------------------------------------------------------------------
 Viewport::Viewport()
 	: m_manager(nullptr)
 	, m_renderTarget(nullptr)
@@ -207,6 +201,7 @@ void Viewport::Initialize(detail::GraphicsManager* manager, RenderTarget* render
 {
 	m_manager = manager;
 	m_renderTarget = renderTarget;
+	m_size.Set((float)m_renderTarget->GetWidth(), (float)m_renderTarget->GetHeight());
 
 	m_renderer = RefPtr<DrawList>::MakeRef();
 	m_renderer->Initialize(manager);
@@ -222,9 +217,9 @@ void Viewport::Initialize(detail::GraphicsManager* manager, RenderTarget* render
 }
 
 //------------------------------------------------------------------------------
-const SizeI& Viewport::GetSize() const
+const Size& Viewport::GetSize() const
 {
-	return m_renderTarget->GetSize();
+	return m_size;
 }
 
 //------------------------------------------------------------------------------
@@ -272,10 +267,9 @@ void Viewport::EndFrameRender()
 	m_renderer->BeginMakeElements();
 	m_renderer->Blit(m_primaryLayerTarget, viewBoxTransform);
 
-	const SizeI& size = GetSize();
 	detail::CameraInfo cameraInfo;
 	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
-	cameraInfo.viewPixelSize.Set(size.width, size.height);
+	cameraInfo.viewPixelSize = GetSize();
 	cameraInfo.viewMatrix = Matrix::Identity;
 	//Camera::Perspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1, &cameraInfo.projMatrix);
 	cameraInfo.projMatrix = Matrix::MakePerspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1);

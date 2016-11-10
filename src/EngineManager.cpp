@@ -609,19 +609,21 @@ bool EngineManager::BeginRendering()
 	if (m_graphicsManager == nullptr || m_uiManager == nullptr) return nullptr;
 
 	// 描画遅延の確認
-	bool delay = false;
+	bool skip = false;
 	if (m_graphicsManager->GetRenderingType() == GraphicsRenderingType::Threaded)
 	{
-		if (m_graphicsManager->GetRenderingThread()->IsRunning()) {
-			delay = true;
+		if (m_configData.delayedRenderingSkip &&
+			m_graphicsManager->GetRenderingThread()->IsRunning())
+		{
+			skip = true;
 		}
 	}
 	else {
 		// TODO:
 	}
-	if (delay) {
+
+	if (skip)
 		return false;
-	}
 
 	m_frameRenderingSkip = false;
 

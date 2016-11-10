@@ -342,7 +342,7 @@ int main()
 			//button2->SetBackground(ColorBrush::Blue);
 			//canvas1->AddChild(button2);
 
-			Viewport::GetMainViewport()->SetBackgroundColor(Color::Gray);
+			Engine::GetMainViewport()->SetBackgroundColor(Color::Gray);
 
 			//auto box1 = StaticMesh::CreateBox(Vector3(2, 2, 2));
 			//auto shader1 = MMEShader::Create(_T("D:/Proj/Lumino/src/Scene/Resource/BasicForwardRendering - コピー.fx"));

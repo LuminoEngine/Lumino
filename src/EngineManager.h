@@ -97,6 +97,8 @@ public:
 	*/
 	GraphicsRenderingType	renderingType = GraphicsRenderingType::Threaded;
 
+	bool		delayedRenderingSkip = false;
+
 	/** ユーザー定義のウィンドウハンドル (windows の場合は HWND) */
 	void*			userMainWindow = nullptr;
 

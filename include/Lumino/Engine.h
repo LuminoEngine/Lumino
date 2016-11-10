@@ -57,6 +57,7 @@ public:
 
 
 	static UIMainWindow* GetMainWindow();
+	static Viewport* GetMainViewport();
 	static ViewportLayer* GetDefault2DLayer();
 	static ViewportLayer* GetDefault3DLayer();
 };

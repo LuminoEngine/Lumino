@@ -9,6 +9,7 @@
 #include "Graphics/ProfilerRenderer.h"
 #include "Graphics/RenderingThread.h"
 #include "Scene/SceneGraphManager.h"
+#include <Lumino/UI/UIFrameWindow.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Camera.h>
 #include "Effect/EffectManager.h"
@@ -101,6 +102,11 @@ void Engine::ResetFrameDelay()
 UIMainWindow* Engine::GetMainWindow()
 {
 	return EngineManager::Instance->GetUIManager()->GetMainWindow();
+}
+//------------------------------------------------------------------------------
+Viewport* Engine::GetMainViewport()
+{
+	return EngineManager::Instance->GetUIManager()->GetMainWindow()->GetViewport();
 }
 
 //------------------------------------------------------------------------------

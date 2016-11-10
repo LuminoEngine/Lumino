@@ -28,7 +28,7 @@ class ViewportLayer
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	const SizeI& GetViewportSize() const;
+	const Size& GetViewportSize() const;
 	ImageEffectList* GetImageEffects() const { return m_imageEffects; }
 
 	void SetZIndex(int zIndex) { m_zIndex = zIndex; }
@@ -83,10 +83,7 @@ class Viewport
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-
-	static Viewport* GetMainViewport();
-
-	const SizeI& GetSize() const;
+	const Size& GetSize() const;
 
 	void SetBackgroundColor(const Color& color);
 
@@ -113,6 +110,7 @@ private:
 	void MakeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, Matrix* mat);
 
 	detail::GraphicsManager*	m_manager;
+	Size						m_size;
 	RenderTarget*				m_renderTarget;
 
 	RefPtr<ViewportLayerList>	m_viewportLayerList;

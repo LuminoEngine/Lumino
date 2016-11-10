@@ -42,7 +42,7 @@ class Test_Graphics_Viewport : public ::testing::Test {};
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Viewport, Basic)
 {
-	const SizeI& size = Viewport::GetMainViewport()->GetSize();
+	const Size& size = Engine::GetMainViewport()->GetSize();
 	ASSERT_EQ(160, size.width);
 	ASSERT_EQ(120, size.height);
 }
@@ -182,8 +182,8 @@ TEST_F(Test_Graphics_Rendering, Blit)
 	}
 	// <Test> 別のレンダーターゲットへの転送
 	{
-		auto rt1 = RenderTarget::Create(Viewport::GetMainViewport()->GetSize());
 		auto tex = Texture2D::Create(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png"));
+		auto rt1 = RenderTarget::Create(tex->GetSize());
 		if (Engine::BeginRendering())
 		{
 			Engine::Render();
@@ -207,7 +207,7 @@ TEST_F(Test_Graphics_Rendering, DrawText_)
 {
 	{
 		auto font = RawFont::GetDefaultFont();
-		float w = Viewport::GetMainViewport()->GetSize().width;
+		float w = Engine::GetMainViewport()->GetSize().width;
 
 		if (Engine::BeginRendering())
 		{

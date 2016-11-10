@@ -1,6 +1,4 @@
-﻿/**
-	@file	Common.h
-*/
+﻿
 #pragma once
 #include <Lumino/Base/Common.h>
 

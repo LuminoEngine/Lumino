@@ -91,14 +91,14 @@ void Camera::SetCameraBehavior(CameraBehavior* behavior)
 //------------------------------------------------------------------------------
 Vector3 Camera::WorldToViewportPoint(const Vector3& position) const
 {
-	const SizeI& size = m_ownerLayer->GetViewportSize();
-	return Vector3::Project(position, m_viewProjMatrix, 0.0f, 0.0f, (float)size.width, (float)size.height, m_nearClip, m_farClip);
+	const Size& size = m_ownerLayer->GetViewportSize();
+	return Vector3::Project(position, m_viewProjMatrix, 0.0f, 0.0f, size.width, size.height, m_nearClip, m_farClip);
 }
 
 //------------------------------------------------------------------------------
 Vector3 Camera::ViewportToWorldPoint(const Vector3& position) const
 {
-	const SizeI& size = m_ownerLayer->GetViewportSize();
+	const Size& size = m_ownerLayer->GetViewportSize();
 	//return Vector3::Unproject(position, m_viewProjMatrix, 0, 0, size.Width, size.Height, m_nearClip, m_farClip);
 	Vector3 v;
 	v.x = (((position.x - 0) / size.width) * 2.0f) - 1.0f;
@@ -280,8 +280,7 @@ void CameraViewportLayer::Render(RenderingContext* context)
 	m_renderer->BeginMakeElements();
 
 	// カメラ行列の更新
-	Size viewSize((float)GetViewportSize().width, (float)GetViewportSize().height);
-	m_hostingCamera->UpdateMatrices(viewSize);
+	m_hostingCamera->UpdateMatrices(GetViewportSize());
 
 	//m_hostingCamera->GetOwnerSceneGraph()->Render(context, m_hostingCamera);
 	m_hostingCamera->GetOwnerSceneGraph()->Render2(m_renderer, m_hostingCamera);
@@ -298,10 +297,9 @@ void CameraViewportLayer::OnEndFrameRender(RenderTarget* renderTarget, DepthBuff
 {
 	m_renderer->EndMakeElements();
 
-	Size viewSize((float)GetViewportSize().width, (float)GetViewportSize().height);
 	detail::CameraInfo cameraInfo;
 	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.Get());
-	cameraInfo.viewPixelSize = viewSize;
+	cameraInfo.viewPixelSize = GetViewportSize();
 	cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
 	cameraInfo.projMatrix = m_hostingCamera->GetProjectionMatrix();
 	cameraInfo.viewProjMatrix = m_hostingCamera->GetViewProjectionMatrix();

@@ -94,7 +94,7 @@ void TestEnv::SetUp()
 	RawFont::GetDefaultFont()->SetName(_T("VL Gothic"));
 
 	// 背景はグレーにしておくと加算合成のテストとか、いろいろ都合がよい
-	Viewport::GetMainViewport()->SetBackgroundColor(Color32::Gray);
+	Engine::GetMainViewport()->SetBackgroundColor(Color32::Gray);
 }
 
 //------------------------------------------------------------------------------
@@ -238,7 +238,7 @@ GTEST_API_ int main(int argc, char **argv)
 #if 1	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_Scene_Sprite.Issues_Volkoff"
+		"--gtest_filter=Test_Graphics_Viewport.*"
 		//"--gtest_filter=Test_Graphics_Rendering.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
