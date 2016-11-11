@@ -302,3 +302,17 @@ TEST_F(Test_Graphics_Rendering, DrawSprite)
 	}
 }
 
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_Rendering, DrawRectangle)
+{
+	{
+		if (Engine::BeginRendering())
+		{
+			Engine::Render();
+			Engine::GetDefault2DLayer()->GetRenderer()->SetBrush(ColorBrush::Red);
+			Engine::GetDefault2DLayer()->GetRenderer()->DrawRectangle(Rect(10, 20, 30, 40));
+			Engine::EndRendering();
+		}
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawRectangle1.png"), 99, true));
+	}
+}

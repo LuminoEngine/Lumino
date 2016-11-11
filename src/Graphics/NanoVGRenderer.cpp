@@ -2,6 +2,7 @@
 #include "Internal.h"
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Graphics/GraphicsException.h>
 #include "Device/GraphicsDriverInterface.h"
 #include "GraphicsManager.h"
 #include "RenderingCommand.h"
@@ -69,7 +70,13 @@ struct LNNVGcontext
 	int	flags = 0;
 	float view[2];
 
-	GraphicsManager*	manager;
+	GraphicsManager*			manager;
+	RefPtr<Driver::IShader>		shader;
+	Driver::IShaderPass*		shaderPass;
+	Driver::IShaderVariable*	varViewSize;
+	Driver::IShaderVariable*	varFrag;
+
+
 	//IndexStack			textureIndexStack;
 	//List<TexturePtr>	textureList;
 	List<Driver::ITexture*>	textureList;
@@ -79,7 +86,21 @@ struct LNNVGcontext
 static int lnnvg__renderCreate(void* uptr)
 {
 	LNNVGcontext* lnc = (LNNVGcontext*)uptr;
+	Driver::IGraphicsDevice* device = lnc->manager->GetGraphicsDevice();
 
+	// シェーダ
+	static const byte_t codeData[] =
+	{
+#include "Resource/NanoVGShader.fx.h"
+	};
+	static const size_t codeLen = LN_ARRAY_SIZE_OF(codeData);
+
+	ShaderCompileResult result;
+	lnc->shader.Attach(device->CreateShader(codeData, codeLen, &result), false);
+	LN_THROW(result.Level != ShaderCompileResultLevel_Error, CompilationException, result);
+	lnc->shaderPass = lnc->shader->GetTechnique(0)->GetPass(0);
+	lnc->varViewSize = lnc->shader->GetVariableByName(_T("viewSize"));
+	lnc->varFrag = lnc->shader->GetVariableByName(_T("frag"));
 
 	return 1;
 }
@@ -87,44 +108,17 @@ static int lnnvg__renderCreate(void* uptr)
 //------------------------------------------------------------------------------
 static int lnnvg__renderCreateTexture(void* uptr, int type, int w, int h, int imageFlags, const unsigned char* data)
 {
-	// 今のところこのフラグは使われていないようだ
-	assert((imageFlags & NVG_IMAGE_REPEATX) == 0);
-	assert((imageFlags & NVG_IMAGE_REPEATY) == 0);
-	assert((imageFlags & NVG_IMAGE_FLIPY) == 0);
-	assert((imageFlags & NVG_IMAGE_PREMULTIPLIED) == 0);
-
-	LNNVGcontext* lnc = (LNNVGcontext*)uptr;
-
-	//TextureFormat format;
-	//if ((type & NVG_TEXTURE_ALPHA) != 0)
-	//	format = TextureFormat::A8;
-	//else if ((type & NVG_TEXTURE_RGBA) != 0)
-	//	format = TextureFormat::R8G8B8A8;
-
-	bool mipmap = ((imageFlags & NVG_IMAGE_GENERATE_MIPMAPS) != 0);
-
-	//auto tex = Texture2DPtr::MakeRef();
-	//tex->Initialize(lnc->manager, SizeI(w, h), format, mipmap);
-
-	//NVG_TEXTURE_ALPHA = 0x01,
-	//NVG_TEXTURE_RGBA = 0x02,
-
-	//NVG_IMAGE_GENERATE_MIPMAPS = 1 << 0,     // Generate mipmaps during creation of the image.
-	//NVG_IMAGE_REPEATX = 1 << 1,		// Repeat image in X direction.
-	//NVG_IMAGE_REPEATY = 1 << 2,		// Repeat image in Y direction.
-	//NVG_IMAGE_FLIPY = 1 << 3,		// Flips (inverses) image in Y direction when rendered.
-	//NVG_IMAGE_PREMULTIPLIED = 1 << 4,		// Image data has premultiplied alpha.
-
-	
-
-	return INT_MAX;//tex->id;
+	// ITexture → NanoVGImage の対応付けは lnnvg__AddImageTexture で行っている。
+	// このドライバ関数が呼び出されるのは、NanoVG のテキスト描画機能からのみで、
+	// いまは NanoVG 初期化時にしか使われない。ここで作られたイメージも使用されることはない。
+	return INT_MAX;
 }
 
 //------------------------------------------------------------------------------
 static int lnnvg__renderDeleteTexture(void* uptr, int image)
 {
-	LNNVGcontext* lnc = (LNNVGcontext*)uptr;
-	return 1;
+	// 削除はここでする必要はない
+	return 1;	// 成功扱い
 }
 
 //------------------------------------------------------------------------------
@@ -153,9 +147,9 @@ static void lnnvg__renderViewport(void* uptr, int width, int height, float devic
 }
 
 //------------------------------------------------------------------------------
-// nvgCancelFrame から呼び出される
 static void lnnvg__renderCancel(void* uptr)
 {
+	// nvgCancelFrame を使う予定はない
 	assert(0);
 }
 
@@ -187,8 +181,6 @@ static void lnnvg__renderTriangles(void* uptr, NVGpaint* paint, NVGscissor* scis
 static void lnnvg__renderDelete(void* uptr)
 {
 	LNNVGcontext* lnc = (LNNVGcontext*)uptr;
-	if (lnc == NULL) return;
-
 	LN_SAFE_DELETE(lnc);
 }
 
@@ -284,12 +276,12 @@ RefPtr<NanoVGCommandList> NanoVGRenderer::TakeCommandList()
 //------------------------------------------------------------------------------
 void NanoVGRenderer::ExecuteCommand(NanoVGCommandList* commandList)
 {
-	NanoVGRenderer* _this;
+	NanoVGRenderer* _this = this;
 	LN_ENQUEUE_RENDER_COMMAND_3(
 		ExecuteCommand, m_manager,
 		NanoVGRenderer*, _this,
 		NanoVGState, m_state,
-		NanoVGCommandList*, commandList,
+		RefPtr<NanoVGCommandList>, commandList,
 		{
 			_this->ExecuteCommandInternal(m_state, commandList);
 		});
@@ -523,6 +515,15 @@ void NanoVGCommandHelper::ExpandBrushState(Brush* brush, NanoVGBrush* outBrush)
 				assert(0);
 				break;
 		}
+	}
+	else
+	{
+		ColorBrush* b = static_cast<ColorBrush*>(brush);
+		outBrush->type = NanoVGBrushType::SolidColor;
+		outBrush->SolidColorInfo.color.r = 0;
+		outBrush->SolidColorInfo.color.g = 0;
+		outBrush->SolidColorInfo.color.b = 0;
+		outBrush->SolidColorInfo.color.a = 1;
 	}
 }
 void NanoVGCommandHelper::ApplyState(NVGcontext* ctx, const NanoVGState* state)

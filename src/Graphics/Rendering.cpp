@@ -124,8 +124,8 @@ void InternalContext::Initialize(detail::GraphicsManager* manager)
 	m_textRenderer = RefPtr<TextRenderer>::MakeRef();
 	m_textRenderer->Initialize(manager);
 
-	//m_nanoVGRenderer = RefPtr<NanoVGRenderer>::MakeRef();
-	//m_nanoVGRenderer->Initialize(manager);
+	m_nanoVGRenderer = RefPtr<NanoVGRenderer>::MakeRef();
+	m_nanoVGRenderer->Initialize(manager);
 }
 
 //------------------------------------------------------------------------------
@@ -1209,6 +1209,28 @@ void DrawList::DrawSprite(
 	ptr->color = color;
 	ptr->baseDirection = baseDirection;
 	detail::SpriteRenderer::MakeBoundingSphere(ptr->size, baseDirection, &ptr->boundingSphere);
+}
+
+//------------------------------------------------------------------------------
+void DrawList::DrawRectangle(const Rect& rect)
+{
+	class DrawElement_DrawNanoVGCommands : public detail::DrawElement
+	{
+	public:
+		Rect rect;
+
+		virtual void DrawSubset(detail::InternalContext* context) override
+		{
+			auto* r = context->BeginNanoVGRenderer();
+			auto cl = r->TakeCommandList();
+			detail::NanoVGCommandHelper::nvgRect(cl, rect.x, rect.y, rect.width, rect.height);
+			detail::NanoVGCommandHelper::nvgFill(cl);
+			r->ExecuteCommand(cl);
+		}
+	};
+	auto* ptr = ResolveDrawElement<DrawElement_DrawNanoVGCommands>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_nanoVGRenderer);
+	ptr->rect = rect;;
+	// TODO: カリング
 }
 
 //------------------------------------------------------------------------------

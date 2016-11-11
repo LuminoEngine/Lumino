@@ -493,6 +493,8 @@ public:
 		const Color& color,
 		SpriteBaseDirection baseDirection);
 
+	void DrawRectangle(const Rect& rect);
+
 LN_INTERNAL_ACCESS:
 	DrawList();
 	virtual ~DrawList();

@@ -3,7 +3,7 @@
 
 static const int NANOVG_GL_UNIFORMARRAY_SIZE = 11;
 
-uniform vec2 viewSize;
+float2 viewSize;
 
 struct VSInput
 {
@@ -38,7 +38,8 @@ VSOutput VSBasic(VSInput v)
 
 
 
-float4 frag[UNIFORMARRAY_SIZE];
+float4 frag[NANOVG_GL_UNIFORMARRAY_SIZE];
+texture tex;
 //uniform sampler2D tex;
 //varying vec2 ftcoord;	// ストロークの濃さ。AntiAlias のときに使う
 //varying vec2 fpos;
@@ -73,13 +74,15 @@ float sdroundrect(float2 pt, float2 ext, float rad)
 }
 float scissorMask(float2 p)
 {
-	float2 sc = (abs((scissorMat * float3(p,1.0)).xy) - scissorExt);
+	//float2 sc = (abs((scissorMat * float3(p,1.0)).xy) - scissorExt);
+	float2 sc = (abs((  mul(float3(p,1.0),scissorMat)   ).xy) - scissorExt);
 	sc = float2(0.5,0.5) - sc * scissorScale;
 	return clamp(sc.x,0.0,1.0) * clamp(sc.y,0.0,1.0);
 }
 float strokeMask(float2 ftcoord)
 {
-	return min(1.0, (1.0-abs(ftcoord.x*2.0-1.0))*strokeMult) * min(1.0, ftcoord.y);
+	//return min(1.0, (1.0-abs(ftcoord.x*2.0-1.0))*strokeMult) * min(1.0, ftcoord.y);
+	return min(1.0, mul(strokeMult,(1.0-abs(ftcoord.x*2.0-1.0)))    ) * min(1.0, ftcoord.y);
 }
 //------------------------------------------------------------------------------
 float4 PSBasic(PSInput p) : COLOR0
@@ -93,18 +96,24 @@ float4 PSBasic(PSInput p) : COLOR0
 #endif
 	if (type == 0) {			// Gradient
 		// Calculate gradient color using box gradient
-		float2 pt = (paintMat * float3(p.fpos,1.0)).xy;
+		//float2 pt = (   paintMat * float3(p.fpos,1.0)   ).xy;
+		float2 pt = (   mul(float3(p.fpos,1.0), paintMat)   ).xy;
 		float d = clamp((sdroundrect(pt, extent, radius) + feather*0.5) / feather, 0.0, 1.0);
-		float4 color = mix(innerCol,outerCol,d);
+		float4 color = lerp(innerCol,outerCol,d);
 		// Combine alpha
 		color *= strokeAlpha * scissor;
 		result = color;
 	} else if (type == 1) {		// Image
 		// Calculate color fron texture
-		float2 pt = (paintMat * float3(p.fpos,1.0)).xy / extent;
+		//float2 pt = (paintMat * float3(p.fpos,1.0)).xy / extent;
+		float2 pt = (    mul(float3(p.fpos,1.0), paintMat)   ).xy / extent;
 		float4 color = tex2D(textureSampler, pt);
-		if (texType == 1) color = float4(color.xyz*color.w,color.w);"
-		if (texType == 2) color = float4(color.x);"
+		
+		// A8 フォーマットは使わない
+		color = float4(color.xyz*color.w,color.w);
+		//if (texType == 1) color = float4(color.xyz*color.w,color.w);
+		//if (texType == 2) color = float4(0, 0, 0, color.x);
+		
 		// Apply color tint and alpha.
 		color *= innerCol;
 		// Combine alpha
