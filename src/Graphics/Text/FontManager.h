@@ -63,6 +63,8 @@ LN_INTERNAL_ACCESS:
 	FTC_Manager GetFTCacheManager() const { return m_ftCacheManager; }
 	FTC_CMapCache GetFTCacheMapCache() const { return m_ftCMapCache; }
 	FTC_ImageCache GetFTCImageCache() const { return m_ftImageCache; }
+	//void AddFreeTypeFont(FreeTypeFont* font) { m_freeTypeFontList.Add(font); }
+	//void RemoveFreeTypeFont(FreeTypeFont* font) { m_freeTypeFontList.Remove(font); }
 
 	// キャッシュ検索コールバック
 	FT_Error FaceRequester(FTC_FaceID face_id, FT_Library library, FT_Pointer request_data, FT_Face* aface);
@@ -120,10 +122,11 @@ LN_INTERNAL_ACCESS:
 	EncodingConverter		m_TCharToUTF32Converter;
 	EncodingConverter		m_UTF32ToTCharConverter;
 
-	FT_Library      m_ftLibrary;
-	FTC_Manager     m_ftCacheManager;
-	FTC_CMapCache   m_ftCMapCache;
-	FTC_ImageCache  m_ftImageCache;
+	FT_Library				m_ftLibrary;
+	FTC_Manager				m_ftCacheManager;
+	FTC_CMapCache			m_ftCMapCache;
+	FTC_ImageCache			m_ftImageCache;
+	//List<FreeTypeFont*>		m_freeTypeFontList;
 
 
 	// FaceRequester() で Windows のシステムフォントを拾うための細工。

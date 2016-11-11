@@ -372,16 +372,17 @@ public:
 };
 
 class CommandDataCache
+	: public RefObject
 {
 public:
 	using DataHandle = size_t;
 
 	CommandDataCache();
-	~CommandDataCache();
+	virtual ~CommandDataCache();
 
 	void Reserve(size_t dataCount, size_t byteCount);
 	void Clear();
-	DataHandle AllocData(size_t byteCount);
+	DataHandle AllocData(size_t byteCount, const void* data = nullptr);
 	byte_t* GetData(DataHandle handle);
 
 	int GetDataCount() const { return m_dataList.GetCount(); }

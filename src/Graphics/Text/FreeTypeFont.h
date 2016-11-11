@@ -62,6 +62,7 @@ class FreeTypeFont
 public:
 	FreeTypeFont(FontManager* manager);
 	virtual ~FreeTypeFont();
+	void Finalize();
 
 public:
 	virtual void SetName(const String& fontName) { m_fontData.Family = fontName; m_modified = true; }

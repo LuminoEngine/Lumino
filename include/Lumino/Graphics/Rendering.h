@@ -7,6 +7,7 @@
 #include "Texture.h"
 
 LN_NAMESPACE_BEGIN
+class Pen;
 class Font;
 class Material;
 class StaticMeshModel;
@@ -19,6 +20,7 @@ class BlitRenderer;
 class MeshRendererProxy;
 class SpriteRenderer;
 class TextRenderer;
+class NanoVGRenderer;
 class DrawElementBatch;
 class RenderingPass2;
 
@@ -64,6 +66,7 @@ public:
 	MeshRendererProxy* BeginMeshRenderer();
 	SpriteRenderer* BeginSpriteRenderer();
 	TextRenderer* BeginTextRenderer();
+	NanoVGRenderer* BeginNanoVGRenderer();
 
 	void SetViewInfo(const Size& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix);
 	void SetCurrentStatePtr(const DrawElementBatch* state);
@@ -74,7 +77,6 @@ public:
 private:
 	void SwitchActiveRenderer(detail::IRendererPloxy* renderer);
 
-
 	IRendererPloxy*				m_current;
 	Details::Renderer*			m_baseRenderer;
 	RefPtr<PrimitiveRenderer>	m_primitiveRenderer;
@@ -82,6 +84,7 @@ private:
 	RefPtr<MeshRendererProxy>	m_meshRenderer;
 	RefPtr<SpriteRenderer>		m_spriteRenderer;
 	RefPtr<TextRenderer>		m_textRenderer;
+	RefPtr<NanoVGRenderer>		m_nanoVGRenderer;
 	const DrawElementBatch*		m_currentStatePtr;
 
 	friend class DrawList;
@@ -153,6 +156,7 @@ public:
 
 	void SetBrush(Brush* brush);
 	Brush* GetBrush() const;
+	Pen* GetPen() const { return nullptr; }	// TODO
 	void SetFont(Font* font);
 	Font* GetFont() const;
 

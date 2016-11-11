@@ -12,6 +12,7 @@
 #include "MeshRendererProxy.h"
 #include "SpriteRenderer.h"
 #include "Text/TextRenderer.h"
+#include "NanoVGRenderer.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -59,7 +60,7 @@ void CommandDataCache::Clear()
 }
 
 //------------------------------------------------------------------------------
-CommandDataCache::DataHandle CommandDataCache::AllocData(size_t byteCount)
+CommandDataCache::DataHandle CommandDataCache::AllocData(size_t byteCount, const void* data)
 {
 	// バッファが足りなければ拡張する
 	if (m_dataBufferUsed + byteCount > m_dataBuffer.GetSize())
@@ -68,12 +69,12 @@ CommandDataCache::DataHandle CommandDataCache::AllocData(size_t byteCount)
 		m_dataBuffer.Resize(newSize, false);
 	}
 
-	//if (copyData != nullptr)
-	//{
-	//	byte_t* ptr = &(m_commandDataBuffer.GetData()[m_commandDataBufferUsed]);
-	//	size_t size = m_commandDataBuffer.GetSize() - m_commandDataBufferUsed;
-	//	memcpy_s(ptr, size, copyData, byteCount);
-	//}
+	if (data != nullptr)
+	{
+		byte_t* ptr = &(m_dataBuffer.GetData()[m_dataBufferUsed]);
+		size_t size = m_dataBuffer.GetSize() - m_dataBufferUsed;
+		memcpy_s(ptr, size, data, byteCount);
+	}
 
 	size_t dataIdx = m_dataBufferUsed;
 	m_dataList.Add(dataIdx);
@@ -98,6 +99,7 @@ InternalContext::InternalContext()
 	, m_primitiveRenderer(nullptr)
 	, m_meshRenderer(nullptr)
 	, m_spriteRenderer(nullptr)
+	, m_nanoVGRenderer(nullptr)
 	, m_current(nullptr)
 	, m_currentStatePtr(nullptr)
 {
@@ -121,6 +123,9 @@ void InternalContext::Initialize(detail::GraphicsManager* manager)
 
 	m_textRenderer = RefPtr<TextRenderer>::MakeRef();
 	m_textRenderer->Initialize(manager);
+
+	//m_nanoVGRenderer = RefPtr<NanoVGRenderer>::MakeRef();
+	//m_nanoVGRenderer->Initialize(manager);
 }
 
 //------------------------------------------------------------------------------
@@ -169,6 +174,13 @@ TextRenderer* InternalContext::BeginTextRenderer()
 {
 	SwitchActiveRenderer(m_textRenderer);
 	return m_textRenderer;
+}
+
+//------------------------------------------------------------------------------
+NanoVGRenderer* InternalContext::BeginNanoVGRenderer()
+{
+	SwitchActiveRenderer(m_nanoVGRenderer);
+	return m_nanoVGRenderer;
 }
 
 //------------------------------------------------------------------------------

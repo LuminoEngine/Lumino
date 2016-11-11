@@ -155,6 +155,16 @@ void FontManager::Initialize(FileManager* fileManager, GraphicsManager* graphics
 //------------------------------------------------------------------------------
 void FontManager::Finalize()
 {
+	//for (FreeTypeFont* font : m_freeTypeFontList)
+	//{
+	//	font->
+	//}
+
+	m_builtinFontList.Clear();
+	//LN_SAFE_RELEASE();
+	//m_defaultRawFont = nullptr;
+	m_defaultFont = nullptr;
+
 	m_rawFontCache->Finalize();
 	LN_SAFE_RELEASE(m_defaultRawFont);
 
