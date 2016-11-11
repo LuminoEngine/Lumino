@@ -10,6 +10,11 @@ LN_NAMESPACE_BEGIN
 namespace detail
 {
 
+class NanoVGCommandHelper
+{
+public:
+};
+
 class NanoVGRenderer
 	: public RefObject
 	, public detail::IRendererPloxy

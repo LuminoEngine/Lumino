@@ -49,27 +49,7 @@ enum class DrawingSectionId
 	Lines,
 };
 
-class CommandDataCache
-{
-public:
-	using DataHandle = size_t;
 
-	CommandDataCache();
-	~CommandDataCache();
-
-	void Reserve(size_t dataCount, size_t byteCount);
-	void Clear();
-	DataHandle AllocData(size_t byteCount);
-	byte_t* GetData(DataHandle handle); 
-
-	int GetDataCount() const { return m_dataList.GetCount(); }
-	byte_t* GetDataByIndex(int index) { return GetData(m_dataList[index]); }
-
-private:
-	List<DataHandle>		m_dataList;
-	ByteBuffer				m_dataBuffer;
-	size_t					m_dataBufferUsed;
-};
 
 class InternalContext
 	: public RefObject

@@ -206,6 +206,8 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/ImageEffect/ScreenMotionBlurImageEffect.h
 	include/Lumino/Graphics/ImageEffect/ToneImageEffect.h
 	external/GL/glew.c
+	external/nanovg/nanovg.c
+	external/nanovg/nanovg.h
 	src/Base/GeometryStructs.cpp
 	src/Graphics/Bitmap.cpp
 	src/Graphics/BitmapPainter.cpp
