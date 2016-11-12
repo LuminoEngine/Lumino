@@ -1055,6 +1055,9 @@ void NanoVGCommandHelper::nvgStroke(NanoVGCommandList* ctx)
 }
 void NanoVGCommandHelper::ExecuteCommand(NanoVGCommandList* commandList, NVGcontext* ctx)
 {
+	NVGparams* param = nvgInternalParams(ctx);
+	param->edgeAntiAlias = 0;
+
 	int count = commandList->GetDataCount();
 	for (int i = 0; i < count; i++)
 	{
@@ -1062,18 +1065,23 @@ void NanoVGCommandHelper::ExecuteCommand(NanoVGCommandList* commandList, NVGcont
 		switch ((int)cmd[0])
 		{
 			case Cmd_nvgMoveTo:
+				param->edgeAntiAlias = 1;
 				::nvgMoveTo(ctx, cmd[1], cmd[2]);
 				break;
 			case Cmd_nvgLineTo:
+				param->edgeAntiAlias = 1;
 				::nvgLineTo(ctx, cmd[1], cmd[2]);
 				break;
 			case Cmd_nvgBezierTo:
+				param->edgeAntiAlias = 1;
 				::nvgBezierTo(ctx, cmd[1], cmd[2], cmd[3], cmd[4], cmd[5], cmd[6]);
 				break;
 			case Cmd_nvgQuadTo:
+				param->edgeAntiAlias = 1;
 				::nvgQuadTo(ctx, cmd[1], cmd[2], cmd[3], cmd[4]);
 				break;
 			case Cmd_nvgArcTo:
+				param->edgeAntiAlias = 1;
 				::nvgArcTo(ctx, cmd[1], cmd[2], cmd[3], cmd[4], cmd[5]);
 				break;
 			case Cmd_nvgClosePath:
@@ -1083,21 +1091,26 @@ void NanoVGCommandHelper::ExecuteCommand(NanoVGCommandList* commandList, NVGcont
 				::nvgPathWinding(ctx, cmd[1]);
 				break;
 			case Cmd_nvgArc:
+				param->edgeAntiAlias = 1;
 				::nvgArc(ctx, cmd[1], cmd[2], cmd[3], cmd[4], cmd[5], cmd[6]);
 				break;
 			case Cmd_nvgRect:
 				::nvgRect(ctx, cmd[1], cmd[2], cmd[3], cmd[4]);
 				break;
 			case Cmd_nvgRoundedRect:
+				param->edgeAntiAlias = 1;
 				::nvgRoundedRect(ctx, cmd[1], cmd[2], cmd[3], cmd[4], cmd[5]);
 				break;
 			case Cmd_nvgRoundedRectVarying:
+				param->edgeAntiAlias = 1;
 				::nvgRoundedRectVarying(ctx, cmd[1], cmd[2], cmd[3], cmd[4], cmd[5], cmd[6], cmd[7], cmd[8]);
 				break;
 			case Cmd_nvgEllipse:
+				param->edgeAntiAlias = 1;
 				::nvgEllipse(ctx, cmd[1], cmd[2], cmd[3], cmd[4]);
 				break;
 			case Cmd_nvgCircle:
+				param->edgeAntiAlias = 1;
 				::nvgCircle(ctx, cmd[1], cmd[2], cmd[3]);
 				break;
 			case Cmd_nvgFill:
