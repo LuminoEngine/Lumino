@@ -94,7 +94,7 @@ float4 PSBasic(PSInput p) : COLOR0
 #else
 	float strokeAlpha = 1.0;
 #endif
-	if (type == 0) {			// Gradient
+	if (type == 0) {			// Gradient	NSVG_SHADER_FILLGRAD
 		// Calculate gradient color using box gradient
 		//float2 pt = (   paintMat * float3(p.fpos,1.0)   ).xy;
 		float2 pt = (   mul(float3(p.fpos,1.0), paintMat)   ).xy;
@@ -103,7 +103,7 @@ float4 PSBasic(PSInput p) : COLOR0
 		// Combine alpha
 		color *= strokeAlpha * scissor;
 		result = color;
-	} else if (type == 1) {		// Image
+	} else if (type == 1) {		// Image	NSVG_SHADER_FILLIMG
 		// Calculate color fron texture
 		//float2 pt = (paintMat * float3(p.fpos,1.0)).xy / extent;
 		float2 pt = (    mul(float3(p.fpos,1.0), paintMat)   ).xy / extent;

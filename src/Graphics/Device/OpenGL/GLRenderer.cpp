@@ -568,6 +568,10 @@ void GLRenderer::GetPrimitiveInfo(PrimitiveType primitive, int primitiveCount, G
 		*gl_prim = GL_TRIANGLE_STRIP;
 		*vertexCount = 2 + primitiveCount;
 		break;
+	case PrimitiveType_TriangleFan:
+		*gl_prim = GL_TRIANGLE_FAN;
+		*vertexCount = 2 + primitiveCount;
+		break;
 	case PrimitiveType_LineList:
 		*gl_prim = GL_LINES;
 		*vertexCount = primitiveCount * 2;

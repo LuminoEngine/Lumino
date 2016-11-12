@@ -425,6 +425,8 @@ void DX9Renderer::OnDrawPrimitive(PrimitiveType primitive, int startVertex, int 
 		//case LN_PRIMITIVE_TRIANGLELIST:   dx_prim = D3DPT_TRIANGLELIST; break;
 	case PrimitiveType_TriangleStrip:
 		dx_prim = D3DPT_TRIANGLESTRIP; break;
+	case PrimitiveType_TriangleFan:
+		dx_prim = D3DPT_TRIANGLEFAN; break;
 	case PrimitiveType_LineList:
 		dx_prim = D3DPT_LINELIST; break;
 	case PrimitiveType_LineStrip:
@@ -448,14 +450,19 @@ void DX9Renderer::OnDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex
 	switch (primitive)
 	{
 		//case LN_PRIMITIVE_TRIANGLELIST:     dx_prim = D3DPT_TRIANGLELIST; break;
-	case PrimitiveType_TriangleStrip:
-		dx_prim = D3DPT_TRIANGLESTRIP; break;
-	case PrimitiveType_LineList:
-		dx_prim = D3DPT_LINELIST; break;
-	case PrimitiveType_LineStrip:
-		dx_prim = D3DPT_LINESTRIP; break;
-	case PrimitiveType_PointList:
-		dx_prim = D3DPT_POINTLIST; break;
+		case PrimitiveType_TriangleStrip:
+			dx_prim = D3DPT_TRIANGLESTRIP; break;
+		case PrimitiveType_TriangleFan:
+			dx_prim = D3DPT_TRIANGLEFAN; break;
+		case PrimitiveType_LineList:
+			dx_prim = D3DPT_LINELIST; break;
+		case PrimitiveType_LineStrip:
+			dx_prim = D3DPT_LINESTRIP; break;
+		case PrimitiveType_PointList:
+			dx_prim = D3DPT_POINTLIST; break;
+		default:
+			assert(0);
+			break;
 	}
 
 	LN_COMCALL(

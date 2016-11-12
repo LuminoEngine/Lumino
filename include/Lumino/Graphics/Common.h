@@ -230,6 +230,7 @@ enum PrimitiveType
 {
 	PrimitiveType_TriangleList = 1,
 	PrimitiveType_TriangleStrip,
+	PrimitiveType_TriangleFan,
 	PrimitiveType_LineList,
 	PrimitiveType_LineStrip,
 	PrimitiveType_PointList,
