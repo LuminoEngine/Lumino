@@ -27,6 +27,7 @@ namespace detail {
 class InternalContext;
 class TextRendererCore;
 class FontGlyphTextureCache;
+class NanoVGCommandListCache;
 
 enum class DefaultShader
 {
@@ -148,6 +149,7 @@ public:
 	bool IsPlatformTextureLoading() { return m_platformTextureLoading; }
 	RenderingCommandList* GetPrimaryRenderingCommandList();
 	TextRendererCore* GetTextRendererCore() { return m_textRendererCore; }
+	const RefPtr<NanoVGCommandListCache>& GetNanoVGCommandListCache() const { return m_nanoVGCommandListCache; }
 	Driver::ITexture* GetDummyDeviceTexture() { return m_dummyDeviceTexture; }
 	const RefPtr<Texture2D>& GetDummyWhiteTexture() { return m_dymmyWhiteTexture; }
 	VertexDeclaration* GetDefaultVertexDeclaration() const { return m_defaultVertexDeclaration; }
@@ -163,7 +165,7 @@ private:
 	FontManager*					m_fontManager;
 	GraphicsRenderingType			m_renderingType;
 	List<GraphicsResourceObject*>	m_resourceObjectList;
-	List<IDeviceResetListener*>	m_deviceResetListenerList;
+	List<IDeviceResetListener*>		m_deviceResetListenerList;
 	
 	Driver::IGraphicsDevice*		m_graphicsDevice;
 	SwapChain*						m_mainSwapChain;
@@ -180,6 +182,8 @@ private:
 	TextRendererCore*				m_textRendererCore;
 	BitmapTextRenderer*				m_bitmapTextRenderer;
 	ShaderVariableCommitSerializeHelper	m_shaderVariableCommitSerializeHelper;
+
+	RefPtr<NanoVGCommandListCache>	m_nanoVGCommandListCache;
 
 	Driver::ITexture*				m_dummyDeviceTexture;
 	RefPtr<Texture2D>				m_dymmyWhiteTexture;

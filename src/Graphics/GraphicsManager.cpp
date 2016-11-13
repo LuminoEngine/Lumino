@@ -20,6 +20,7 @@
 #include "Text/FontGlyphTextureCache.h"
 #include "RenderingThread.h"
 #include "PainterEngine.h"
+#include "NanoVGRenderer.h"
 #include "Text/FontManager.h"
 #include "Text/TextRenderer.h"
 #include "Text/BitmapTextRenderer.h"
@@ -247,6 +248,8 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 
 	m_internalContext = RefPtr<InternalContext>::MakeRef();
 	m_internalContext->Initialize(this);
+
+	m_nanoVGCommandListCache = RefPtr<NanoVGCommandListCache>::MakeRef();
 
 	m_defaultVertexDeclaration = LN_NEW VertexDeclaration();
 	m_defaultVertexDeclaration->Initialize(this);

@@ -99,6 +99,7 @@ class NanoVGCommandHelper
 public:
 	enum Command
 	{
+		Cmd_nvgBeginPath,
 		Cmd_nvgMoveTo,
 		Cmd_nvgLineTo,
 		Cmd_nvgBezierTo,
@@ -116,6 +117,7 @@ public:
 		Cmd_nvgStroke,
 	};
 
+	static void nvgBeginPath(NanoVGCommandList* ctx);
 	static void nvgMoveTo(NanoVGCommandList* ctx, float x, float y);
 	static void nvgLineTo(NanoVGCommandList* ctx, float x, float y);
 	static void nvgBezierTo(NanoVGCommandList* ctx, float c1x, float c1y, float c2x, float c2y, float x, float y);
@@ -138,6 +140,19 @@ public:
 	static NVGpaint GetNVGpaint(NVGcontext* ctx, const NanoVGBrush& brush);
 };
 
+class NanoVGCommandListCache
+	: public RefObject
+{
+public:
+	NanoVGCommandList* QueryCommandList();
+	void ReleaseCommandList(NanoVGCommandList* commandList);
+
+private:
+	Mutex							m_mutex;
+	List<RefPtr<NanoVGCommandList>>	m_objects;
+	Stack<NanoVGCommandList*>		m_freeObjects;
+};
+
 class NanoVGRenderer
 	: public RefObject
 	, public detail::IRendererPloxy
@@ -147,7 +162,6 @@ public:
 	virtual ~NanoVGRenderer();
 	void Initialize(GraphicsManager* manager);
 
-	RefPtr<NanoVGCommandList> TakeCommandList();
 	void ExecuteCommand(NanoVGCommandList* commandList);
 
 protected:
@@ -164,8 +178,6 @@ private:
 	GraphicsManager*				m_manager;
 	NVGcontext*						m_nvgContext;
 	NanoVGState						m_state;
-	List<RefPtr<NanoVGCommandList>>	m_commandListCache;
-	Mutex							m_commandListCacheMutex;
 };
 
 } // namespace detail

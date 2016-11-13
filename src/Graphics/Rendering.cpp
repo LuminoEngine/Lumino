@@ -1217,19 +1217,33 @@ void DrawList::DrawRectangle(const Rect& rect)
 	class DrawElement_DrawNanoVGCommands : public detail::DrawElement
 	{
 	public:
-		Rect rect;
+		detail::NanoVGCommandList*	m_commandList = nullptr;
+
+		detail::NanoVGCommandList* GetGCommandList(DrawList* owner)
+		{
+			if (m_commandList == nullptr)
+			{
+				m_commandList = owner->GetManager()->GetNanoVGCommandListCache()->QueryCommandList();
+			}
+			return m_commandList;
+		}
 
 		virtual void DrawSubset(detail::InternalContext* context) override
 		{
 			auto* r = context->BeginNanoVGRenderer();
-			auto cl = r->TakeCommandList();
-			detail::NanoVGCommandHelper::nvgRect(cl, rect.x, rect.y, rect.width, rect.height);
-			detail::NanoVGCommandHelper::nvgFill(cl);
-			r->ExecuteCommand(cl);
+			//auto cl = r->TakeCommandList();
+			//detail::NanoVGCommandHelper::nvgRect(cl, rect.x, rect.y, rect.width, rect.height);
+			//detail::NanoVGCommandHelper::nvgFill(cl);
+			r->ExecuteCommand(m_commandList);
+			m_commandList = nullptr;
 		}
 	};
-	auto* ptr = ResolveDrawElement<DrawElement_DrawNanoVGCommands>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_nanoVGRenderer);
-	ptr->rect = rect;;
+	auto* ptr = ResolveDrawElement<DrawElement_DrawNanoVGCommands>(detail::DrawingSectionId::NanoVG, m_manager->GetInternalContext()->m_nanoVGRenderer);
+	auto* list = ptr->GetGCommandList(this);
+	detail::NanoVGCommandHelper::nvgBeginPath(list);
+	detail::NanoVGCommandHelper::nvgRect(list, rect.x, rect.y, rect.width, rect.height);
+	detail::NanoVGCommandHelper::nvgFill(list);
+	//ptr->rect = rect;
 	// TODO: カリング
 }
 
@@ -1259,6 +1273,7 @@ TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId, detai
 
 	// DrawElement を新しく作る
 	TElement* element = m_drawElementList.AddCommand<TElement>(m_state.state);
+	element->drawingSectionId = sectionId;
 	m_currentSectionTopElement = element;
 	return element;
 }

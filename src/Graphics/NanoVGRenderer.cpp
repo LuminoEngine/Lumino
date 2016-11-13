@@ -401,6 +401,10 @@ struct LNNVGcontext
 		{
 			m_vertexBuffer.Attach(device->CreateVertexBuffer(bufferSize, verts, ResourceUsage::Dynamic), false);
 		}
+		else
+		{
+			m_vertexBuffer->SetSubData(0, verts, bufferSize);
+		}
 
 		Driver::IRenderer* renderer = device->GetRenderer();
 		renderer->SetVertexDeclaration(m_vertexDeclaration);
@@ -887,6 +891,36 @@ void nvgDeleteLNContext(NVGcontext* ctx)
 }
 
 //==============================================================================
+// NanoVGCommandListCache
+//==============================================================================
+//------------------------------------------------------------------------------
+NanoVGCommandList* NanoVGCommandListCache::QueryCommandList()
+{
+	MutexScopedLock lock(m_mutex);
+
+	if (m_freeObjects.IsEmpty())
+	{
+		auto ptr = RefPtr<NanoVGCommandList>::MakeRef();
+		m_objects.Add(ptr);
+		return ptr;
+	}
+	else
+	{
+		NanoVGCommandList* ptr;
+		m_freeObjects.Pop(&ptr);
+		return ptr;
+	}
+}
+
+//------------------------------------------------------------------------------
+void NanoVGCommandListCache::ReleaseCommandList(NanoVGCommandList* commandList)
+{
+	MutexScopedLock lock(m_mutex);
+	m_freeObjects.Push(commandList);
+}
+
+
+//==============================================================================
 // NanoVGRenderer
 //==============================================================================
 //------------------------------------------------------------------------------
@@ -907,23 +941,6 @@ void NanoVGRenderer::Initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 	m_nvgContext = nvgCreateLNContext(m_manager, NVG_ANTIALIAS/* | NVG_STENCIL_STROKES*/);
-}
-
-//------------------------------------------------------------------------------
-RefPtr<NanoVGCommandList> NanoVGRenderer::TakeCommandList()
-{
-	MutexScopedLock lock(m_commandListCacheMutex);
-
-	if (m_commandListCache.IsEmpty())
-	{
-		return RefPtr<NanoVGCommandList>::MakeRef();
-	}
-	else
-	{
-		auto ptr = m_commandListCache.GetLast();
-		m_commandListCache.RemoveLast();
-		return ptr;
-	}
 }
 
 //------------------------------------------------------------------------------
@@ -971,13 +988,17 @@ void NanoVGRenderer::PushCommandList(NanoVGCommandList* commandList)
 {
 	commandList->Clear();
 
-	MutexScopedLock lock(m_commandListCacheMutex);
-	m_commandListCache.Add(commandList);
+	m_manager->GetNanoVGCommandListCache()->ReleaseCommandList(commandList);
 }
 
 //==============================================================================
 // NanoVGCommandHelper
 //==============================================================================
+void NanoVGCommandHelper::nvgBeginPath(NanoVGCommandList* ctx)
+{
+	float cmd[] = { Cmd_nvgBeginPath };
+	ctx->AllocData(sizeof(cmd), cmd);
+}
 void NanoVGCommandHelper::nvgMoveTo(NanoVGCommandList* ctx, float x, float y)
 {
 	float cmd[] = { Cmd_nvgMoveTo, x, y };
@@ -1064,6 +1085,9 @@ void NanoVGCommandHelper::ExecuteCommand(NanoVGCommandList* commandList, NVGcont
 		float* cmd = (float*)commandList->GetDataByIndex(i);
 		switch ((int)cmd[0])
 		{
+			case Cmd_nvgBeginPath:
+				::nvgBeginPath(ctx);
+				break;
 			case Cmd_nvgMoveTo:
 				param->edgeAntiAlias = 1;
 				::nvgMoveTo(ctx, cmd[1], cmd[2]);

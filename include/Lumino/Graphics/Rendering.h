@@ -48,7 +48,7 @@ public:
 enum class DrawingSectionId
 {
 	None,
-	Lines,
+	NanoVG,
 };
 
 
@@ -499,6 +499,7 @@ LN_INTERNAL_ACCESS:
 	DrawList();
 	virtual ~DrawList();
 	void Initialize(detail::GraphicsManager* manager);
+	detail::GraphicsManager* GetManager() const { return m_manager; }
 	detail::DrawElementList* GetDrawElementList() { return &m_drawElementList; }
 	void BeginMakeElements();
 	void EndMakeElements();
