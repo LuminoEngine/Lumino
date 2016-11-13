@@ -4,6 +4,7 @@
 */
 #include "Internal.h"
 #include <Lumino/Graphics/GraphicsException.h>
+#include <Lumino/Graphics/Rendering.h>
 #include "Device/GraphicsDriverInterface.h"
 #include "GraphicsManager.h"
 #include "RenderingCommand.h"
@@ -401,6 +402,18 @@ void FrameRectRenderer::Initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
+void FrameRectRenderer::SetViewInfo(const Matrix& viewProj)
+{
+	m_viewProj = viewProj;
+}
+
+//------------------------------------------------------------------------------
+void FrameRectRenderer::SetState(TextureBrush* brush)
+{
+	m_brush = brush;
+}
+
+//------------------------------------------------------------------------------
 void FrameRectRenderer::SetState(TextureBrush* brush, const Matrix& world, const Matrix& viewProj)
 {
 	LN_CHECK_ARG(brush != nullptr);
@@ -427,6 +440,8 @@ void FrameRectRenderer::SetState(TextureBrush* brush, const Matrix& world, const
 //------------------------------------------------------------------------------
 void FrameRectRenderer::Draw(const RectF& rect)
 {
+	SetState(m_brush, Matrix::Identity, m_viewProj);
+
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		Draw, m_manager,
 		FrameRectRendererCore*, m_core,
@@ -439,6 +454,12 @@ void FrameRectRenderer::Draw(const RectF& rect)
 //------------------------------------------------------------------------------
 void FrameRectRenderer::Flush()
 {
+}
+
+//------------------------------------------------------------------------------
+void FrameRectRenderer::OnSetState(const DrawElementBatch* state)
+{
+	SetState(static_cast<TextureBrush*>(state->GetBrush()));
 }
 
 } // namespace detail

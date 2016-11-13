@@ -13,6 +13,7 @@
 #include "SpriteRenderer.h"
 #include "Text/TextRenderer.h"
 #include "NanoVGRenderer.h"
+#include "FrameRectRenderer.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -126,6 +127,9 @@ void InternalContext::Initialize(detail::GraphicsManager* manager)
 
 	m_nanoVGRenderer = RefPtr<NanoVGRenderer>::MakeRef();
 	m_nanoVGRenderer->Initialize(manager);
+
+	m_frameRectRenderer = RefPtr<FrameRectRenderer>::MakeRef();
+	m_frameRectRenderer->Initialize(manager);
 }
 
 //------------------------------------------------------------------------------
@@ -184,12 +188,20 @@ NanoVGRenderer* InternalContext::BeginNanoVGRenderer()
 }
 
 //------------------------------------------------------------------------------
+FrameRectRenderer* InternalContext::BeginFrameRectRenderer()
+{
+	SwitchActiveRenderer(m_frameRectRenderer);
+	return m_frameRectRenderer;
+}
+
+//------------------------------------------------------------------------------
 void InternalContext::SetViewInfo(const Size& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix)
 {
 	m_primitiveRenderer->SetViewPixelSize(SizeI(viewPixelSize.width, viewPixelSize.height));
 	m_primitiveRenderer->SetViewProjMatrix(viewMatrix * projMatrix);
 	m_spriteRenderer->SetViewInfo(viewPixelSize, viewMatrix, projMatrix);
 	m_textRenderer->SetViewInfo(viewMatrix * projMatrix, SizeI(viewPixelSize.width, viewPixelSize.height));
+
 }
 
 //------------------------------------------------------------------------------
@@ -1212,8 +1224,16 @@ void DrawList::DrawSprite(
 }
 
 //------------------------------------------------------------------------------
-void DrawList::DrawRectangle(const Rect& rect)
+void DrawList::DrawRectangle(const RectF& rect)
 {
+	if (m_state.state.GetBrush() != nullptr &&
+		m_state.state.GetBrush()->GetType() == BrushType_Texture &&
+		(static_cast<TextureBrush*>(m_state.state.GetBrush())->GetImageDrawMode() == BrushImageDrawMode::BoxFrame || static_cast<TextureBrush*>(m_state.state.GetBrush())->GetImageDrawMode() == BrushImageDrawMode::BorderFrame))
+	{
+		DrawFrameRectangle(rect);
+		return;
+	}
+
 	class DrawElement_DrawNanoVGCommands : public detail::DrawElement
 	{
 	public:
@@ -1360,6 +1380,24 @@ void DrawList::BlitInternal(Texture* source, RenderTarget* dest, const Matrix& t
 	auto* e = ResolveDrawElement<DrawElement_BlitInternal>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_blitRenderer);
 	e->transform = transform;
 	e->source = source;
+}
+
+//------------------------------------------------------------------------------
+void DrawList::DrawFrameRectangle(const RectF& rect)
+{
+	class DrawElement_DrawFrameRectangle : public detail::DrawElement
+	{
+	public:
+		RectF rect;
+		virtual void DrawSubset(detail::InternalContext* context) override
+		{
+			auto* r = context->BeginFrameRectRenderer();
+			r->Draw(rect);
+		}
+	};
+	auto* ptr = ResolveDrawElement<DrawElement_DrawFrameRectangle>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_frameRectRenderer);
+	ptr->rect = rect;
+	// TODO: カリング
 }
 
 LN_NAMESPACE_END

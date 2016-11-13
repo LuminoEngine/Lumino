@@ -332,7 +332,8 @@ void DrawingContext::OnStateFlush(detail::IRendererPloxy* activeRenderer)
 
 	if (state.fillBrush != nullptr && state.fillBrush->GetType() == BrushType_Texture)
 	{
-		m_frameRectRenderer->SetState(static_cast<TextureBrush*>(state.fillBrush.Get()), state.worldTransform, viewProj);
+		m_frameRectRenderer->SetViewInfo(viewProj);
+		m_frameRectRenderer->SetState(static_cast<TextureBrush*>(state.fillBrush.Get()));
 	}
 
 	m_backendState = m_state;

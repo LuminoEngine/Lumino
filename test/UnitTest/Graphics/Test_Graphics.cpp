@@ -305,6 +305,7 @@ TEST_F(Test_Graphics_Rendering, DrawSprite)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Rendering, DrawRectangle)
 {
+	// <Test> íPêFìhÇËÇ¬Ç‘Çµ
 	{
 		if (Engine::BeginRendering())
 		{
@@ -317,5 +318,89 @@ TEST_F(Test_Graphics_Rendering, DrawRectangle)
 			Engine::EndRendering();
 		}
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawRectangle1.png")));
+	}
+	// <Test> BorderFrame + Tile
+	{
+		auto brush1 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
+		brush1->SetSourceRect(Rect(0, 192, 32, 32));
+		brush1->SetWrapMode(BrushWrapMode::Tile);
+		brush1->SetImageDrawMode(BrushImageDrawMode::BorderFrame);
+		brush1->SetBorderThickness(ThicknessF(8, 8, 8, 8));
+
+		auto brush2 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
+		brush2->SetSourceRect(Rect(0, 160, 32, 32));
+		brush2->SetWrapMode(BrushWrapMode::Tile);
+		brush2->SetImageDrawMode(BrushImageDrawMode::BorderFrame);
+		brush2->SetBorderThickness(ThicknessF(0, 2, 4, 8));
+
+		auto brush3 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
+		brush3->SetSourceRect(Rect(0, 160, 32, 32));
+		brush3->SetWrapMode(BrushWrapMode::Tile);
+		brush3->SetImageDrawMode(BrushImageDrawMode::BorderFrame);
+		brush3->SetBorderThickness(ThicknessF(8, 8, 8, 8));
+
+		if (Engine::BeginRendering())
+		{
+			auto* g = Engine::GetDefault2DLayer()->GetRenderer();
+			g->Clear(ClearFlags::All, Color::Gray);
+
+			// å˙Ç≥ãœàÍ
+			g->SetBrush(brush1);
+			g->DrawRectangle(Rect(0, 0, 43, 63));
+
+			// å˙Ç≥ç∑Ç†ÇË
+			g->SetBrush(brush2);
+			g->DrawRectangle(Rect(60, 0, 43, 63));
+
+			// èkëﬁ + å˙Ç≥ãœàÍ
+			g->SetBrush(brush3);
+			g->DrawRectangle(Rect(0, 80, 6, 4));
+
+			// èkëﬁ + å˙Ç≥ç∑Ç†ÇË
+			g->SetBrush(brush2);
+			g->DrawRectangle(Rect(60, 80, 6, 4));
+
+			Engine::EndRendering();
+
+			ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawRectangle4.png"), 99, true));
+		}
+	}
+	// <Test> BorderFrame + Stretch
+	// <Test> BoxFrame + Stretch
+	// <Test> BoxFrame + Tile
+	{
+		auto brush1 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
+		brush1->SetSourceRect(Rect(0, 192, 32, 32));
+		brush1->SetWrapMode(BrushWrapMode::Stretch);
+		brush1->SetImageDrawMode(BrushImageDrawMode::BorderFrame);
+		brush1->SetBorderThickness(ThicknessF(8, 8, 8, 8));
+
+		auto brush2 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
+		brush2->SetSourceRect(Rect(0, 192, 32, 32));
+		brush2->SetWrapMode(BrushWrapMode::Stretch);
+		brush2->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
+		brush2->SetBorderThickness(ThicknessF(8, 8, 8, 8));
+
+		auto brush3 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
+		brush3->SetSourceRect(Rect(0, 192, 32, 32));
+		brush3->SetWrapMode(BrushWrapMode::Tile);
+		brush3->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
+		brush3->SetBorderThickness(ThicknessF(8, 8, 8, 8));
+
+
+		if (Engine::BeginRendering())
+		{
+			auto* g = Engine::GetDefault2DLayer()->GetRenderer();
+			g->Clear(ClearFlags::All, Color::Gray);
+			g->SetBrush(brush1);
+			g->DrawRectangle(RectF(0, 0, 43, 63));
+			g->SetBrush(brush2);
+			g->DrawRectangle(RectF(50, 0, 43, 63));
+			g->SetBrush(brush3);
+			g->DrawRectangle(RectF(100, 0, 43, 63));
+			Engine::EndRendering();
+		}
+
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawRectangle5.png"), 99, true));
 	}
 }

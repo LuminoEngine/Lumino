@@ -21,6 +21,7 @@ class MeshRendererProxy;
 class SpriteRenderer;
 class TextRenderer;
 class NanoVGRenderer;
+class FrameRectRenderer;
 class DrawElementBatch;
 class RenderingPass2;
 
@@ -67,6 +68,7 @@ public:
 	SpriteRenderer* BeginSpriteRenderer();
 	TextRenderer* BeginTextRenderer();
 	NanoVGRenderer* BeginNanoVGRenderer();
+	FrameRectRenderer* BeginFrameRectRenderer();
 
 	void SetViewInfo(const Size& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix);
 	void SetCurrentStatePtr(const DrawElementBatch* state);
@@ -85,6 +87,7 @@ private:
 	RefPtr<SpriteRenderer>		m_spriteRenderer;
 	RefPtr<TextRenderer>		m_textRenderer;
 	RefPtr<NanoVGRenderer>		m_nanoVGRenderer;
+	RefPtr<FrameRectRenderer>	m_frameRectRenderer;
 	const DrawElementBatch*		m_currentStatePtr;
 
 	friend class DrawList;
@@ -493,7 +496,7 @@ public:
 		const Color& color,
 		SpriteBaseDirection baseDirection);
 
-	void DrawRectangle(const Rect& rect);
+	void DrawRectangle(const RectF& rect);
 
 LN_INTERNAL_ACCESS:
 	DrawList();
@@ -512,6 +515,7 @@ LN_INTERNAL_ACCESS:
 	template<typename TElement> TElement* ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer);
 	void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material);
 	void BlitInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Material* material);
+	void DrawFrameRectangle(const RectF& rect);
 
 private:
 	detail::GraphicsManager*		m_manager;
