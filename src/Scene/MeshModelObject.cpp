@@ -3,7 +3,6 @@
 #include "../Internal.h"
 #include <Lumino/Graphics/Mesh/SkinnedMeshModel.h>
 #include <Lumino/Scene/SceneGraph.h>
-#include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/MeshModelObject.h>
 #include "../Modeling/PmxSkinnedMesh.h"
 //#include "MME/MMEShader.h"

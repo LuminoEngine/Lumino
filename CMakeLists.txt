@@ -364,7 +364,6 @@ set(LN_SOURCES_Scene
 	include/Lumino/Scene/MeshModelObject.h
 #	include/Lumino/Scene/MMDSceneGraph.h
 	include/Lumino/Scene/SceneGraph.h
-	include/Lumino/Scene/SceneGraphRenderingContext.h
 	include/Lumino/Scene/SceneNode.h
 	include/Lumino/Scene/SceneTR.h
 	include/Lumino/Scene/Sprite.h
@@ -394,7 +393,6 @@ set(LN_SOURCES_Scene
 	src/Scene/SceneGraph.cpp
 	src/Scene/SceneGraphManager.cpp
 	src/Scene/SceneGraphManager.h
-	src/Scene/SceneGraphRenderingContext.cpp
 	src/Scene/SceneNode.cpp
 	src/Scene/SceneTR.cpp
 	src/Scene/Sprite.cpp

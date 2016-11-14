@@ -49,7 +49,6 @@ protected:
 
 	virtual void UpdateFrameHierarchy(SceneNode* parent, float deltaTime) override;
 	virtual detail::Sphere GetBoundingSphere() override;
-	//virtual void OnRender(SceneGraphRenderingContext* dc) override;
 
 protected:
 	Vector2	m_anchor;

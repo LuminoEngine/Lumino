@@ -101,7 +101,6 @@ private:
 	detail::DocumentsManager*			m_documentsManager;
 	RefPtr<Texture2D>			m_dummyWhiteTexture;
 
-	//SceneGraphRenderingContext*		m_renderingContext;
 
 
 	//Stack<int>							m_renderingPassIDStack;	///< (0～MaxRenderingPass-1)

@@ -227,7 +227,6 @@ protected:
 	void Initialize(SceneGraph* owner, SpriteParticleModel* model);
 
 	virtual void OnUpdateFrame(float deltaTime) override;
-//	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
 
 private:
 	SpriteParticleModel*					m_model;

@@ -2,7 +2,6 @@
 #if 0
 #include "../Internal.h"
 #include "DebugRenderer.h"
-#include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/Camera.h>
 #include "SceneGraphManager.h"
 #include "InfomationRenderingPass.h"

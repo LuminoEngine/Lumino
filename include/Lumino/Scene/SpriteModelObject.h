@@ -35,7 +35,6 @@ protected:
 	void Initialize(SceneGraph* owner, const String& filePath);
 
 	virtual void OnUpdateFrame(float elapsedTime) override;
-//	virtual void OnRender(SceneGraphRenderingContext* dc) override;
 
 private:
 	ss::ResourceManager*	m_resource;

@@ -4,7 +4,6 @@
 #include <ssbpLib/SS5Player.h>
 #include "SceneGraphManager.h"
 #include "RenderingPass.h"
-#include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/SpriteModelObject.h>
 
@@ -69,12 +68,6 @@ void SpriteModelObject::OnUpdateFrame(float elapsedTime)
 {
 	m_player->update(elapsedTime);
 }
-
-//------------------------------------------------------------------------------
-//void SpriteModelObject::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
-//{
-//	m_player->draw();
-//}
 
 //------------------------------------------------------------------------------
 //void SpriteModelObject::OnRender(SceneGraphRenderingContext* dc)

@@ -8,13 +8,10 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 class SceneGraphManager;
-//class SceneGraphRenderingContext;
 
 class SceneGraph;
 class Layer;
 class DrawingLayer;
-//class RenderingPass;
-//class RenderingParams;
 class SceneNode;
 class VisualNode;
 class Camera;

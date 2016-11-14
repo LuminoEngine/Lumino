@@ -3,7 +3,6 @@
 #include <Lumino/Graphics/GraphicsContext.h>
 #include "SceneGraphManager.h"
 #include "RenderingPass.h"
-#include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/TextBlock.h>
 #include "../Documents/DocumentElements.h"

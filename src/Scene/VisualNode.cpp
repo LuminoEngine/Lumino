@@ -4,7 +4,6 @@
 //#include "MME/MMEShader.h"
 #include "RenderingPass.h"
 #include <Lumino/Graphics/GraphicsContext.h>
-#include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/Camera.h>
 #include <Lumino/Scene/Light.h>
 #include <Lumino/Scene/VisualNode.h>

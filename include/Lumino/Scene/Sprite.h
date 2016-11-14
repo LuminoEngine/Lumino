@@ -65,7 +65,6 @@ protected:
 
 	void UpdateTexUV();
 	virtual void UpdateVertexData();
-	//virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
 
 
 protected:
@@ -119,7 +118,6 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	Sprite2D();
 	virtual ~Sprite2D();
 	void Initialize(SceneGraph* owner);
-	//virtual void OnRender(SceneGraphRenderingContext* dc) override;
 
 	virtual void OnRender2(DrawList* renderer) override;
 
@@ -149,8 +147,6 @@ protected:
 	virtual ~Sprite3D();
 	void Initialize(SceneGraph* owner);
 	virtual detail::Sphere GetBoundingSphere() override;
-	//virtual void OnRender(SceneGraphRenderingContext* dc) override;
-	//virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
 	virtual void UpdateVertexData() override;
 
 private:

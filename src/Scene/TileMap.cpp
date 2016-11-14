@@ -4,7 +4,6 @@
 #include "SceneGraphManager.h"
 #include "RenderingPass.h"
 #include <Lumino/Tilemap/TileMapModel.h>
-#include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Tilemap/TileMapRenderer.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/TileMap.h>

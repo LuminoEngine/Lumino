@@ -524,6 +524,35 @@ private:
 
 	detail::DrawElement*			m_currentSectionTopElement;
 	//detail::DrawElementBatch		m_stateInSection;
+
+#if 0
+	/** アルファブレンドの有無 (default: false) */
+	void SetAlphaBlendEnabled(bool enabled);
+	/** ブレンディングの演算方法 (default: Add) */
+	void SetBlendOp(BlendOp op);
+	/** ブレンディングの係数 (default: One) */
+	void SetSourceBlend(BlendFactor blend);
+	/** ブレンディングの係数 (default: Zero) */
+	void SetDestinationBlend(BlendFactor blend);
+
+
+	void SetBlendMode(BlendMode mode);
+	void SetCullingMode(CullingMode mode);
+	void SetFillMode(FillMode mode);
+	void SetAlphaTestEnabled(bool enabled);
+
+	void SetDepthStencilState(const DepthStencilState& state);
+
+	void SetDepthTestEnabled(bool enabled);
+	void SetDepthWriteEnabled(bool enabled);
+	void SetDepthTestFunc(CompareFunc func);
+	void SetStencilEnabled(bool enabled);
+	void SetStencilFunc(CompareFunc func);
+	void SetStencilReferenceValue(uint8_t value);
+	void SetStencilFailOp(StencilOp op);
+	void SetStencilDepthFailOp(StencilOp op);
+	void SetStencilPassOp(StencilOp op);
+#endif
 };
 
 LN_NAMESPACE_END

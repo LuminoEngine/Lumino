@@ -4,7 +4,6 @@
 #include <Lumino/Scene/StaticMesh.h>
 //#include "MME/MMEShader.h"
 #include <Lumino/Scene/SceneGraph.h>
-#include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include "SceneGraphManager.h"
 
 LN_NAMESPACE_BEGIN

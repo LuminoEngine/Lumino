@@ -2,7 +2,6 @@
 #if 0
 #include "Internal.h"
 #include <Lumino/Graphics/GraphicsContext.h>
-#include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Grid.h>
 #include "SceneGraphManager.h"

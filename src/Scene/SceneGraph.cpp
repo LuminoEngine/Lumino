@@ -5,7 +5,6 @@
 //#include "MME/MmdMaterial.h"	// TODO
 #include "SceneGraphManager.h"
 #include "RenderingPass.h"
-#include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/VisualNode.h>
 #include <Lumino/Scene/Camera.h>
 #include <Lumino/Scene/Light.h>

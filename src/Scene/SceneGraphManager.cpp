@@ -5,8 +5,6 @@
 #include <Lumino/Scene/SceneNode.h>
 #include "SceneGraphManager.h"
 #include "RenderingPass.h"
-//#include <Lumino/Scene/MMDSceneGraph.h>
-#include <Lumino/Scene/SceneGraphRenderingContext.h>
 
 // TODO: 移動
 #include <Lumino/Scene/Camera.h>
@@ -39,20 +37,11 @@ SceneGraphManager::SceneGraphManager(const ConfigData& configData)
 	, m_mainViewport(configData.mainViewport)
 {
 	m_dummyWhiteTexture = m_graphicsManager->GetDummyWhiteTexture();
-
-	//// RenderingPass に割り当てる ID
-	//for (int i = 0; i < RenderingPass::MaxRenderingPass; ++i) {
-	//	m_renderingPassIDStack.Push(i);
-	//}
-
-	//m_renderingContext = LN_NEW SceneGraphRenderingContext();
-	//m_renderingContext->Initialize(this);
 }
 
 //------------------------------------------------------------------------------
 SceneGraphManager::~SceneGraphManager()
 {
-	//LN_SAFE_DELETE(m_renderingContext);
 }
 
 //------------------------------------------------------------------------------
