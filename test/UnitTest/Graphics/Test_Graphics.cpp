@@ -319,6 +319,11 @@ TEST_F(Test_Graphics_Rendering, DrawRectangle)
 		}
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawRectangle1.png")));
 	}
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
+{
 	// <Test> BorderFrame + Tile
 	{
 		auto brush1 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
@@ -362,7 +367,7 @@ TEST_F(Test_Graphics_Rendering, DrawRectangle)
 
 			Engine::EndRendering();
 
-			ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawRectangle4.png"), 99, true));
+			ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawFrameRectangle1.png")));
 		}
 	}
 	// <Test> BorderFrame + Stretch
@@ -401,6 +406,6 @@ TEST_F(Test_Graphics_Rendering, DrawRectangle)
 			Engine::EndRendering();
 		}
 
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawRectangle5.png"), 99, true));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawFrameRectangle2.png")));
 	}
 }

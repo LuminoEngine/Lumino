@@ -201,7 +201,7 @@ void InternalContext::SetViewInfo(const Size& viewPixelSize, const Matrix& viewM
 	m_primitiveRenderer->SetViewProjMatrix(viewMatrix * projMatrix);
 	m_spriteRenderer->SetViewInfo(viewPixelSize, viewMatrix, projMatrix);
 	m_textRenderer->SetViewInfo(viewMatrix * projMatrix, SizeI(viewPixelSize.width, viewPixelSize.height));
-
+	m_frameRectRenderer->SetViewInfo(viewMatrix * projMatrix);
 }
 
 //------------------------------------------------------------------------------

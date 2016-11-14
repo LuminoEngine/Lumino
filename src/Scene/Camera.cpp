@@ -297,6 +297,8 @@ void CameraViewportLayer::OnEndFrameRender(RenderTarget* renderTarget, DepthBuff
 {
 	m_renderer->EndMakeElements();
 
+	m_hostingCamera->UpdateMatrices(GetViewportSize());
+
 	detail::CameraInfo cameraInfo;
 	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.Get());
 	cameraInfo.viewPixelSize = GetViewportSize();

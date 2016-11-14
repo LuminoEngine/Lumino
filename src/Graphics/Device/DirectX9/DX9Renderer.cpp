@@ -422,17 +422,25 @@ void DX9Renderer::OnDrawPrimitive(PrimitiveType primitive, int startVertex, int 
 	D3DPRIMITIVETYPE dx_prim = D3DPT_TRIANGLELIST;
 	switch (primitive)
 	{
-		//case LN_PRIMITIVE_TRIANGLELIST:   dx_prim = D3DPT_TRIANGLELIST; break;
+	default:
+	case PrimitiveType_TriangleList:
+		dx_prim = D3DPT_TRIANGLELIST;
+		break;
 	case PrimitiveType_TriangleStrip:
-		dx_prim = D3DPT_TRIANGLESTRIP; break;
+		dx_prim = D3DPT_TRIANGLESTRIP;
+		break;
 	case PrimitiveType_TriangleFan:
-		dx_prim = D3DPT_TRIANGLEFAN; break;
+		dx_prim = D3DPT_TRIANGLEFAN;
+		break;
 	case PrimitiveType_LineList:
-		dx_prim = D3DPT_LINELIST; break;
+		dx_prim = D3DPT_LINELIST;
+		break;
 	case PrimitiveType_LineStrip:
-		dx_prim = D3DPT_LINESTRIP; break;
+		dx_prim = D3DPT_LINESTRIP;
+		break;
 	case PrimitiveType_PointList:
-		dx_prim = D3DPT_POINTLIST; break;
+		dx_prim = D3DPT_POINTLIST;
+		break;
 	}
 
 	LN_COMCALL(m_dxDevice->DrawPrimitive(dx_prim, startVertex, primitiveCount));
@@ -449,19 +457,24 @@ void DX9Renderer::OnDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex
 	D3DPRIMITIVETYPE dx_prim = D3DPT_TRIANGLELIST;
 	switch (primitive)
 	{
-		//case LN_PRIMITIVE_TRIANGLELIST:     dx_prim = D3DPT_TRIANGLELIST; break;
-		case PrimitiveType_TriangleStrip:
-			dx_prim = D3DPT_TRIANGLESTRIP; break;
-		case PrimitiveType_TriangleFan:
-			dx_prim = D3DPT_TRIANGLEFAN; break;
-		case PrimitiveType_LineList:
-			dx_prim = D3DPT_LINELIST; break;
-		case PrimitiveType_LineStrip:
-			dx_prim = D3DPT_LINESTRIP; break;
-		case PrimitiveType_PointList:
-			dx_prim = D3DPT_POINTLIST; break;
 		default:
-			assert(0);
+		case PrimitiveType_TriangleList:
+			dx_prim = D3DPT_TRIANGLELIST;
+			break;
+		case PrimitiveType_TriangleStrip:
+			dx_prim = D3DPT_TRIANGLESTRIP;
+			break;
+		case PrimitiveType_TriangleFan:
+			dx_prim = D3DPT_TRIANGLEFAN;
+			break;
+		case PrimitiveType_LineList:
+			dx_prim = D3DPT_LINELIST;
+			break;
+		case PrimitiveType_LineStrip:
+			dx_prim = D3DPT_LINESTRIP;
+			break;
+		case PrimitiveType_PointList:
+			dx_prim = D3DPT_POINTLIST;
 			break;
 	}
 
