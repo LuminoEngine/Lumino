@@ -283,7 +283,7 @@ Size Run::MeasureOverride(const Size& constraint)
 //------------------------------------------------------------------------------
 void Run::Render(const Matrix& transform, IDocumentsRenderer* renderer)
 {
-	renderer->OnDrawGlyphRun(transform, m_glyphRun, Point::Zero);
+	renderer->OnDrawGlyphRun(transform, m_glyphRun, PointI::Zero);
 }
 
 } // namespace detail

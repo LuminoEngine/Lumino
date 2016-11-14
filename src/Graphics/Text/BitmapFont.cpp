@@ -152,9 +152,9 @@ FontGlyphLocation* BitmapFont::AdvanceKerning(UTF32 utf32code, int strokeSize, F
 	// 最初の文字であればデータリセット
 	else
 	{
-		m_fontGlyphLocation.BitmapTopLeftPosition = Point::Zero;
-		m_fontGlyphLocation.OutlineBitmapTopLeftPosition = Point::Zero;
-		m_fontGlyphLocation.OuterTopLeftPosition = Point::Zero;
+		m_fontGlyphLocation.BitmapTopLeftPosition = PointI::Zero;
+		m_fontGlyphLocation.OutlineBitmapTopLeftPosition = PointI::Zero;
+		m_fontGlyphLocation.OuterTopLeftPosition = PointI::Zero;
 		locData = &m_fontGlyphLocation;
 	}
 	locData->BitmapSize.Set(m_charWidth, m_charHeight);

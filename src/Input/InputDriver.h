@@ -49,7 +49,7 @@ public:
 
 	//bool GetKeyState(Key key) const { return m_keyStatus[(int)key]; }
 	//bool GetMouseState(MouseButton button) const { return m_mouseStatus[(int)button]; }
-	const Point& GetMousePoint() const { return m_mousePoint; }
+	const PointI& GetMousePoint() const { return m_mousePoint; }
 	int GetMouseWheel() const { return m_mouseWheel; }
 
 	virtual int GetJoystickCount() = 0;
@@ -79,7 +79,7 @@ private:
 	std::array<bool, (int)MouseButton::TERMINATOR>	m_mouseStatus;
 	std::array<MouseClickTracker, (int)MouseButton::TERMINATOR>	m_mouseClickTrackers;
 	float				m_mouseButtonClickTimeout;
-	Point	m_mousePoint;
+	PointI	m_mousePoint;
 	int		m_mouseWheel;
 };
 

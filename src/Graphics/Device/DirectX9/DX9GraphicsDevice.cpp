@@ -168,7 +168,7 @@ RefPtr<ITexture> DX9GraphicsDevice::CreateTextureImplement(const SizeI& size, bo
 {
 	RefPtr<DX9Texture> obj(LN_NEW DX9Texture(this, size, format, mipmap), false);
 	if (initialData != nullptr) {
-		obj->SetSubData(Point(0, 0), initialData, Utils::GetTextureFormatByteCount(format) * size.width * size.height, size);
+		obj->SetSubData(PointI(0, 0), initialData, Utils::GetTextureFormatByteCount(format) * size.width * size.height, size);
 	}
 	return obj;
 }

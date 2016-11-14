@@ -206,7 +206,7 @@ public:
 	virtual bool InjectMouseWheel(int delta) override;
 
 private:
-	Point	m_prevPos;
+	PointI	m_prevPos;
 	bool	m_RDrag;
 	bool	m_MDrag;
 };

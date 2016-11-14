@@ -116,7 +116,7 @@ void Texture::Unlock()
 			//cmdList->AddCommand<SetTextureSubDataCommand>(m_deviceObj, m_primarySurface);
 			//SetTextureSubDataCommand::AddCommand(cmdList, m_deviceObj, m_primarySurface);
 			cmdList->AddCommand<SetSubDataTextureCommand>(
-				m_deviceObj, Point(0, 0), m_primarySurface->GetBitmapBuffer()->GetConstData(), m_primarySurface->GetBitmapBuffer()->GetSize(), m_deviceObj->GetSize());
+				m_deviceObj, PointI(0, 0), m_primarySurface->GetBitmapBuffer()->GetConstData(), m_primarySurface->GetBitmapBuffer()->GetSize(), m_deviceObj->GetSize());
 		}
 		else if (m_deviceObj->GetTextureType() == Driver::TextureType_RenderTarget)
 		{
@@ -333,7 +333,7 @@ void Texture2D::ApplyModifies()
 		if (m_initializing)
 		{
 			// まだ1度もコマンドリストに入れられていなければ直接転送できる
-			m_deviceObj->SetSubData(Point::Zero, bmpData->GetConstData(), bmpData->GetSize(), bmpSize);
+			m_deviceObj->SetSubData(PointI::Zero, bmpData->GetConstData(), bmpData->GetSize(), bmpSize);
 		}
 		else
 		{
@@ -345,7 +345,7 @@ void Texture2D::ApplyModifies()
 				SizeI, bmpSize,
 				RefPtr<Driver::ITexture>, deviceTexture,
 				{
-					deviceTexture->SetSubData(Point::Zero, bmpRawData.GetData(), bmpRawData.GetSize(), bmpSize);
+					deviceTexture->SetSubData(PointI::Zero, bmpRawData.GetData(), bmpRawData.GetSize(), bmpSize);
 				});
 		}
 		m_initializing = false;
@@ -384,7 +384,7 @@ void Texture2D::Blt(int x, int y, Texture* srcTexture, const Rect& srcRect)
 //------------------------------------------------------------------------------
 void Texture2D::Blt(int x, int y, Bitmap* srcBitmap/*, const Rect& srcRect*/)
 {
-	Point point(x, y);
+	PointI point(x, y);
 	SizeI srcSize = srcBitmap->GetSize();
 	//// TODO: この Blt は基本的にフォントビットマップの転送に使うので、このままだと非常に効率が悪い。が、とりあえずまずは動くものを。
 	//ScopedTextureLock lock1(this);
@@ -395,7 +395,7 @@ void Texture2D::Blt(int x, int y, Bitmap* srcBitmap/*, const Rect& srcRect*/)
 	////size_t data = cmdList->AllocExtData(srcBitmap->GetSerializeSize(srcRect), nullptr);
 	////srcBitmap->Serialize(cmdList->GetExtData(data), srcRect);
 
-	//Point point(x, y);
+	//PointI point(x, y);
 
 	//RenderBulkData data;
 	//data.Alloc(cmdList, srcBitmap->GetSerializeSize(srcRect));
@@ -420,7 +420,7 @@ void Texture2D::Blt(int x, int y, Bitmap* srcBitmap/*, const Rect& srcRect*/)
 
 	LN_ENQUEUE_RENDER_COMMAND_4(
 		Texture2D_Blt_Bitmap, m_manager,
-		Point, point,
+		PointI, point,
 		SizeI, srcSize,
 		//RenderBulkData, bmpPropData,
 		RenderBulkData, bmpRawData,
@@ -450,7 +450,7 @@ void Texture2D::LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const Rect& rec
 #pragma pop_macro("DrawText")
 
 //------------------------------------------------------------------------------
-void Texture2D::SetSubData(const Point& offset, Bitmap* bitmap)
+void Texture2D::SetSubData(const PointI& offset, Bitmap* bitmap)
 {
 	LN_CHECK_ARG(bitmap != nullptr);
 
@@ -464,7 +464,7 @@ void Texture2D::SetSubData(const Point& offset, Bitmap* bitmap)
 }
 
 //------------------------------------------------------------------------------
-void Texture2D::SetSubData(const Point& offset, const void* data)
+void Texture2D::SetSubData(const PointI& offset, const void* data)
 {
 	LN_CHECK_ARG(data != NULL);
 	// TODO: m_primarySurface にもセット
@@ -490,7 +490,7 @@ void Texture2D::OnChangeDevice(Driver::IGraphicsDevice* device)
 	{
 		// この時点では描画モードにかかわらず m_primarySurface がバックアップデータを保持しているのでそれから復元する。
 		m_deviceObj = device->CreateTexture(m_primarySurface->GetSize(), m_mipmap, m_format, m_primarySurface->GetBitmapBuffer()->GetConstData());
-		//m_deviceObj->SetSubData(Point(0, 0), m_primarySurface->GetBitmapBuffer()->GetConstData(), m_primarySurface->GetBitmapBuffer()->GetSize(), m_primarySurface->GetSize());
+		//m_deviceObj->SetSubData(PointI(0, 0), m_primarySurface->GetBitmapBuffer()->GetConstData(), m_primarySurface->GetBitmapBuffer()->GetSize(), m_primarySurface->GetSize());
 		// TODO: Create でinitialデータも渡してしまう。
 	}
 }

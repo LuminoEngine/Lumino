@@ -18,9 +18,9 @@ protected:
 //------------------------------------------------------------------------------
 TEST_F(Test_Base_Point, Basic)
 {
-	Point pt1;
+	PointI pt1;
 	ASSERT_EQ_POINT(0, 0, pt1);
-	Point pt2(1, 2);
+	PointI pt2(1, 2);
 	ASSERT_EQ_POINT(1, 2, pt2);
 
 	pt2.Set(3, 4);
@@ -29,7 +29,7 @@ TEST_F(Test_Base_Point, Basic)
 	ASSERT_TRUE(pt1.IsZero());
 	ASSERT_FALSE(pt2.IsZero());
 
-	Point pt3(3, 4);
+	PointI pt3(3, 4);
 	ASSERT_TRUE(pt2 == pt3);
 	ASSERT_FALSE(pt1 == pt2);
 	ASSERT_FALSE(pt2 != pt3);

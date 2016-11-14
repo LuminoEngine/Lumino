@@ -7,10 +7,10 @@ LN_NAMESPACE_BEGIN
 /**
 	@brief	2次元上の点を表すクラスです。
 */
-class Point
+class PointI
 {
 public:
-	static const Point	Zero;	///< Point(0, 0)
+	static const PointI	Zero;	///< Point(0, 0)
 
 public:
 	int		x;		///< X 座標
@@ -21,12 +21,12 @@ public:
 	/**
 		@brief	すべての要素を 0 で初期化します。
 	*/
-	Point() { Set(0, 0); }
+	PointI() { Set(0, 0); }
 	
 	/**
 		@brief	座標を指定して初期化します。
 	*/
-	Point(int x, int y) { Set(x, y); }
+	PointI(int x, int y) { Set(x, y); }
 
 public:
 	
@@ -41,8 +41,8 @@ public:
 	bool IsZero() const { return (x == 0 && y == 0); }
 
 public:
-	bool operator == (const Point& obj) const { return (x == obj.x && y == obj.y); }
-	bool operator != (const Point& obj) const { return !operator==(obj); }
+	bool operator == (const PointI& obj) const { return (x == obj.x && y == obj.y); }
+	bool operator != (const PointI& obj) const { return !operator==(obj); }
 };
 
 /**
@@ -167,7 +167,7 @@ public:
 	/**
 		@brief	位置とサイズを指定して初期化します。
 	*/
-	Rect(const Point& point, const SizeI& size) { Set(point.x, point.y, size.width, size.height); }
+	Rect(const PointI& point, const SizeI& size) { Set(point.x, point.y, size.width, size.height); }
 
 	/**
 		@brief	位置とサイズを指定して初期化します。
@@ -177,7 +177,7 @@ public:
 	/**
 		@brief	位置とサイズを指定して初期化します。
 	*/
-	Rect(const Point& point, int width, int height) { Set(point.x, point.y, width, height); }
+	Rect(const PointI& point, int width, int height) { Set(point.x, point.y, width, height); }
 
 	/**
 		@brief	指定した矩形をコピーして初期化します。
@@ -219,32 +219,32 @@ public:
 	/**
 		@brief	左上隅の位置を取得します。
 	*/
-	Point GetTopLeft() const { return Point(GetLeft(), GetTop()); }
+	PointI GetTopLeft() const { return PointI(GetLeft(), GetTop()); }
 	
 	/**
 		@brief	右上隅の位置を取得します。
 	*/
-	Point GetTopRight() const { return Point(GetRight(), GetTop()); }
+	PointI GetTopRight() const { return PointI(GetRight(), GetTop()); }
 	
 	/**
 		@brief	左下隅の位置を取得します。
 	*/
-	Point GetBottomLeft() const { return Point(GetLeft(), GetBottom()); }
+	PointI GetBottomLeft() const { return PointI(GetLeft(), GetBottom()); }
 
 	/**
 		@brief	右下隅の位置を取得します。
 	*/
-	Point GetBottomRight() const { return Point(GetRight(), GetBottom()); }
+	PointI GetBottomRight() const { return PointI(GetRight(), GetBottom()); }
 
 	/**
 		@brief	左上隅の位置を設定します。
 	*/
-	void SetLocation(const Point& pt) { x = pt.x; y = pt.y; }
+	void SetLocation(const PointI& pt) { x = pt.x; y = pt.y; }
 
 	/**
 		@brief	左上隅の位置を取得します。
 	*/
-	Point GetLocation() const { return Point(x, y); }
+	PointI GetLocation() const { return PointI(x, y); }
 	
 	/**
 		@brief	幅と高さを設定します。
@@ -269,7 +269,7 @@ public:
 	/**
 		@brief	矩形内に指定した点が含まれているかどうかを判定します。
 	*/
-	bool Contains(Point point) const { return Contains(point.x, point.y); }
+	bool Contains(PointI point) const { return Contains(point.x, point.y); }
 	
 	/**
 		@brief	矩形内に指定した点が含まれているかどうかを判定します。

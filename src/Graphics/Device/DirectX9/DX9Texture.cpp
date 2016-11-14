@@ -160,7 +160,7 @@ DX9Texture::~DX9Texture()
 }
 
 //------------------------------------------------------------------------------
-void DX9Texture::SetSubData(const Point& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize)
+void DX9Texture::SetSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize)
 {
 	RECT lockRect = { point.x, point.y, point.x + dataBitmapSize.width, point.y + dataBitmapSize.height };
 	if (lockRect.left < 0) lockRect.left = 0;
@@ -319,7 +319,7 @@ void DX9Texture3D::Initialize(int width, int height, int depth, TextureFormat fo
 }
 
 //------------------------------------------------------------------------------
-void DX9Texture3D::SetSubData(const Point& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize)
+void DX9Texture3D::SetSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize)
 {
 	LN_THROW(0, InvalidOperationException);
 }

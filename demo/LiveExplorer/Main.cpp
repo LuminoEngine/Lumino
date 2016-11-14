@@ -126,31 +126,6 @@ void Thread2()
 #endif
 
 
-//template<typename T>
-//static void MarkResource(T& value)
-//{
-//	printf("MarkResource<T>\n");
-//}
-//template<typename T>
-//static void MarkResource(const T& value)
-//{
-//	printf("MarkResource<const T>\n");
-//}
-//
-//template<>
-//static void MarkResource<RefObject*>(RefObject*& value)
-//{
-//	printf("MarkResource<RefObject*>\n");
-//}
-//
-//template<>
-//static void MarkResource<Point>(Point& value)
-//{
-//	printf("MarkResource<Point>\n");
-//}
-
-
-
 
 int main()
 {

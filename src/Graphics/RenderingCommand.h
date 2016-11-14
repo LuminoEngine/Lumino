@@ -962,13 +962,13 @@ struct PresentCommand : public RenderingCommand
 struct SetSubDataTextureCommand : public RenderingCommand
 {
 	Driver::ITexture*		m_targetTexture;
-	Point					m_offset;
+	PointI					m_offset;
 	DataHandle				m_bmpDataIndex;
 	size_t					m_dataSize;
 	SizeI					m_bmpSize;
 	// ↑エラーチェックは Texture で行い、フォーマットは既に決まっていることを前提とするため、コマンドに乗せるデータはこれだけでOK。
 
-	void Create(Driver::ITexture* texture, const Point& offset, const void* data, size_t dataSize, const SizeI& bmpSize)
+	void Create(Driver::ITexture* texture, const PointI& offset, const void* data, size_t dataSize, const SizeI& bmpSize)
 	{
 		m_targetTexture = texture;
 		m_offset = offset;

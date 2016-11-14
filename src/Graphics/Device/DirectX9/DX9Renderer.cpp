@@ -505,7 +505,7 @@ void DX9Renderer::InternalSetRenderTarget(int index, ITexture* texture, bool res
 		// index 0 の場合はビューポートを再設定
 		if (index == 0)
 		{
-			SetViewport(Rect(Point(0, 0), m_currentRenderTargets[0]->GetSize()));
+			SetViewport(Rect(PointI(0, 0), m_currentRenderTargets[0]->GetSize()));
 		}
 	}
 }

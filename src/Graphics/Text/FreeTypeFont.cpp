@@ -280,9 +280,9 @@ FontGlyphLocation* FreeTypeFont::AdvanceKerning(UTF32 utf32code, int strokeSize,
 	{
 		UpdateFont();
 		TryUpdateStroke(strokeSize);
-		m_fontGlyphLocation.BitmapTopLeftPosition = Point::Zero;
-		m_fontGlyphLocation.OutlineBitmapTopLeftPosition = Point::Zero;
-		m_fontGlyphLocation.OuterTopLeftPosition = Point::Zero;
+		m_fontGlyphLocation.BitmapTopLeftPosition = PointI::Zero;
+		m_fontGlyphLocation.OutlineBitmapTopLeftPosition = PointI::Zero;
+		m_fontGlyphLocation.OuterTopLeftPosition = PointI::Zero;
 		m_fontGlyphLocation.NextBaseX = 0;
 		m_fontGlyphLocation.NextBaseY = 0;
 		m_fontGlyphLocation.PreviousGlyphIndex = 0;
@@ -367,7 +367,7 @@ FontGlyphLocation* FreeTypeFont::AdvanceKerning(UTF32 utf32code, int strokeSize,
 	// アウトライン無し
 	else
 	{
-		locData->OutlineBitmapTopLeftPosition = Point::Zero;
+		locData->OutlineBitmapTopLeftPosition = PointI::Zero;
 		locData->OuterTopLeftPosition = locData->BitmapTopLeftPosition;
 	}
 	

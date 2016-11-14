@@ -20,7 +20,7 @@ TEST_F(Test_Base_Rect, Basic)
 	ASSERT_EQ_RECT(0, 0, 0, 0, rc1);
 	Rect rc2(1, 2, 3, 4);
 	ASSERT_EQ_RECT(1, 2, 3, 4, rc2);
-	Rect rc3(Point(5, 6), SizeI(7, 8));
+	Rect rc3(PointI(5, 6), SizeI(7, 8));
 	ASSERT_EQ_RECT(5, 6, 7, 8, rc3);
 	Rect rc4(rc3);
 	ASSERT_EQ_RECT(5, 6, 7, 8, rc4);
@@ -30,13 +30,13 @@ TEST_F(Test_Base_Rect, Basic)
 	ASSERT_EQ(12, rc4.GetRight());
 	ASSERT_EQ(14, rc4.GetBottom());
 
-	ASSERT_EQ(Point(5, 6), rc4.GetTopLeft());
-	ASSERT_EQ(Point(12, 6), rc4.GetTopRight());
-	ASSERT_EQ(Point(5, 14), rc4.GetBottomLeft());
-	ASSERT_EQ(Point(12, 14), rc4.GetBottomRight());
+	ASSERT_EQ(PointI(5, 6), rc4.GetTopLeft());
+	ASSERT_EQ(PointI(12, 6), rc4.GetTopRight());
+	ASSERT_EQ(PointI(5, 14), rc4.GetBottomLeft());
+	ASSERT_EQ(PointI(12, 14), rc4.GetBottomRight());
 
-	rc3.SetLocation(Point(10, 20));
-	ASSERT_EQ(Point(10, 20), rc3.GetLocation());
+	rc3.SetLocation(PointI(10, 20));
+	ASSERT_EQ(PointI(10, 20), rc3.GetLocation());
 
 	rc3.SetSize(SizeI(30, 40));
 	ASSERT_EQ(SizeI(30, 40), rc3.GetSize());
@@ -61,7 +61,7 @@ TEST_F(Test_Base_Rect, Contains)
 {
 	Rect rc1(10, 20, 30, 40);
 	ASSERT_TRUE(rc1.Contains(10, 20));
-	ASSERT_TRUE(rc1.Contains(Point(30, 40)));
+	ASSERT_TRUE(rc1.Contains(PointI(30, 40)));
 
 	// 同じサイズ → true
 	Rect rc2(10, 20, 30, 40);

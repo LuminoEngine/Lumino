@@ -80,7 +80,7 @@ private:
 	/// マウスボタンの状態
 	struct MouseState
 	{
-		Point	position;			// 最後にボタンが押されたときのマウスの座標 (最終的にシェーダに渡すのは -1.0～1.0 だが、スクリーンのリサイズに備えて元の座標で持っておく)
+		PointI	position;			// 最後にボタンが押されたときのマウスの座標 (最終的にシェーダに渡すのは -1.0～1.0 だが、スクリーンのリサイズに備えて元の座標で持っておく)
 		float	time = 0.0f;		// 最後にボタンが押されたときの時間（秒）
 		bool	isDown = false;		// 現在ボタンが押されているか
 
@@ -105,7 +105,7 @@ private:
 	MouseState			m_leftMouseState;		///< マウスの左ボタンの状態
 	MouseState			m_rightMouseState;		///< マウスの右ボタンの状態
 	MouseState			m_middleMouseState;		///< マウスの中ボタンの状態
-	Point				m_mousePosition;		///< マウスの現在位置
+	PointI				m_mousePosition;		///< マウスの現在位置
 };
 
 

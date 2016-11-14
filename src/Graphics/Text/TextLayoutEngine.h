@@ -61,7 +61,7 @@ public:
 
 protected:
 	/// ptLeftTop:DrawingArea の左上を原点とした、グリフの配置先左上座標 (配置方法によってはマイナス値になることもある)
-	//virtual void OnPlaceChar(UTF32 ch, Point ptLeftTop) = 0;
+	//virtual void OnPlaceChar(UTF32 ch, PointI ptLeftTop) = 0;
 
 private:
 	void LayoutTextHorizontal(const UTF32* text, int length);

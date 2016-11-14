@@ -75,7 +75,7 @@ TEST_F(Test_Graphics_Pmx, Skinning)
 	bones[0] = Matrix::Identity;//Matrix(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);//Matrix(FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX);//Matrix::Identity;//
 	bones[1] = Matrix::MakeRotationY(Math::PI / 2) * Matrix::MakeTranslation(10, 0, 0); //Matrix(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);//
 	auto skinnedTex = Texture2D::Create(SizeI(4, 2), TextureFormat::R32G32B32A32_Float, false);
-	skinnedTex->SetSubData(Point::Zero, &bones[0]);
+	skinnedTex->SetSubData(PointI::Zero, &bones[0]);
 	
 	mesh->SetShader(shader);
 	Vector4 invSize;

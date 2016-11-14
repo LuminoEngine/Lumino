@@ -138,8 +138,8 @@ public:
 	/*
 		@brief		
 	*/
-	void SetSubData(const Point& offset, Bitmap* bitmap);
-	void SetSubData(const Point& offset, const void* data);
+	void SetSubData(const PointI& offset, Bitmap* bitmap);
+	void SetSubData(const PointI& offset, const void* data);
 
 	//Device::ITexture* GetDeviceObject() const { return m_deviceObj; }
 

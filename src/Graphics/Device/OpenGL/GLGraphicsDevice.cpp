@@ -90,7 +90,7 @@ RefPtr<ITexture> GLGraphicsDevice::CreateTextureImplement(const SizeI& size, boo
 {
 	RefPtr<GLTexture> obj(LN_NEW GLTexture(size, format, mipmap), false);
 	if (initialData != nullptr) {
-		obj->SetSubData(Point(0, 0), initialData, Utils::GetTextureFormatByteCount(format) * size.width * size.height, size);
+		obj->SetSubData(PointI(0, 0), initialData, Utils::GetTextureFormatByteCount(format) * size.width * size.height, size);
     }
     return RefPtr<ITexture>::StaticCast(obj);
 }

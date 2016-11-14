@@ -47,7 +47,7 @@ void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const 
 	auto& items = glyphRun->RequestLayoutItems();
 	auto& renderSize = glyphRun->GetRenderSize();
 
-	Point offset(0, 0);
+	PointI offset(0, 0);
 	switch (m_textAlignment)
 	{
 		case TextAlignment::Left:
@@ -70,7 +70,7 @@ void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const 
 	}
 
 
-	Point pos(m_renderArea.x + offset.x, m_renderArea.y + offset.y);
+	PointI pos(m_renderArea.x + offset.x, m_renderArea.y + offset.y);
 	for (auto& item : items)
 	{
 		FontGlyphBitmap* gb = font->LookupGlyphBitmap(item.Char, strokeThickness);

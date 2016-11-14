@@ -253,7 +253,7 @@ void TextRenderer::SetState(Font* font, Brush* fillBrush)
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::DrawGlyphRun(const Matrix& transform, const Point& position, GlyphRun* glyphRun)
+void TextRenderer::DrawGlyphRun(const Matrix& transform, const PointI& position, GlyphRun* glyphRun)
 {
 	DrawGlyphRun(transform, PointF((float)position.x, (float)position.y), glyphRun);
 }

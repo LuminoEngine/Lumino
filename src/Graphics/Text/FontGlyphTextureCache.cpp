@@ -115,7 +115,7 @@ void FontGlyphTextureCache::LookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, b
 		// Fill
 		//Rect dst(outInfo->srcRect.x + outInfo->outlineOffset, outInfo->srcRect.y + outInfo->outlineOffset, glyphBitmap->GlyphBitmap->GetSize());
 		//Rect src(0, 0, glyphBitmap->GlyphBitmap->GetSize());
-		Point pt(outInfo->srcRect.x + outInfo->outlineOffset, outInfo->srcRect.y + outInfo->outlineOffset);
+		PointI pt(outInfo->srcRect.x + outInfo->outlineOffset, outInfo->srcRect.y + outInfo->outlineOffset);
 		m_fillGlyphsTexture->Blt(pt.x, pt.y, glyphBitmap->GlyphBitmap);
 		//m_lockedFillBitmap->BitBlt(dst, info->fillGlyphBitmap, src, Color::White, false);
 	}
@@ -286,7 +286,7 @@ void FontGlyphTextureCache::LookupGlyph(UTF32 ch, int strokeThickness, Texture**
 		m_tmpBitmap->BitBlt(dst, glyphBitmap->GlyphBitmap, src, Color::Red, false);
 
 
-		Point pt(
+		PointI pt(
 			(cacheIndex % m_glyphWidthCount) * m_glyphMaxBitmapSize.Width,
 			(cacheIndex / m_glyphWidthCount) * m_glyphMaxBitmapSize.Height);
 		m_glyphCacheTexture->SetSubData(pt, m_tmpBitmap);
@@ -645,7 +645,7 @@ void TextRenderer::DrawChar(UTF32 ch)
 
 
 
-		Point pt(
+		PointI pt(
 			(cacheIndex % m_glyphWidthCount) * m_glyphMaxBitmapSize.Width,
 			(cacheIndex / m_glyphWidthCount) * m_glyphMaxBitmapSize.Height);
 		m_glyphCacheTexture->SetSubData(pt, m_tmpBitmap);
@@ -672,7 +672,7 @@ void TextRenderer::DrawChar(UTF32 ch)
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::DrawSprite(const CachedGlyphInfo& info, const Point& point)
+void TextRenderer::DrawSprite(const CachedGlyphInfo& info, const PointI& point)
 {
 	RectF srcRect(
 		(float)((info.Index % m_glyphWidthCount) * m_glyphMaxBitmapSize.Width),
