@@ -5,6 +5,7 @@
 #include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/Graphics/SwapChain.h>
 #include <Lumino/Graphics/Viewport.h>
+#include <Lumino/Graphics/Rendering.h>
 #include <Lumino/UI/UIContext.h>
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIFrameWindow.h>
@@ -35,8 +36,26 @@ UIViewportLayer::~UIViewportLayer()
 }
 
 //------------------------------------------------------------------------------
+void UIViewportLayer::Initialize()
+{
+	auto* manager = m_view->GetOwnerContext()->GetManager();
+
+	// TODO: DrawList は UI Scene 側につくべき
+	m_renderingContext = RefPtr<DrawList>::MakeRef();
+	m_renderingContext->Initialize(manager->GetGraphicsManager());
+
+	// lighting disabled.
+	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
+	internalRenderer->Initialize(manager->GetGraphicsManager());
+	m_internalRenderer = internalRenderer;
+}
+
+//------------------------------------------------------------------------------
 void UIViewportLayer::Render(RenderingContext* context)
 {
+	m_renderingContext->BeginMakeElements();
+
+
 	DrawingContext* g = m_view->GetOwnerContext()->GetManager()->GetGraphicsManager()->GetDrawingContext();
 
 	// TODO: ステートリセットもほしいかも？
@@ -48,6 +67,26 @@ void UIViewportLayer::Render(RenderingContext* context)
 	// TODO: このへんで、このウィンドウが持っている SwapChain のバックバッファを g にセットする
 
 	m_view->Render(g);
+}
+
+//------------------------------------------------------------------------------
+void UIViewportLayer::OnEndFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer)
+{
+	m_renderingContext->EndMakeElements();
+
+	detail::CameraInfo cameraInfo;
+	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
+	cameraInfo.viewPixelSize = GetViewportSize();
+	cameraInfo.viewMatrix = Matrix::Identity;
+	cameraInfo.projMatrix = Matrix::MakePerspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1);
+	cameraInfo.viewProjMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;
+	cameraInfo.viewFrustum = ViewFrustum(cameraInfo.projMatrix);
+	m_internalRenderer->Render(
+		m_renderingContext->GetDrawElementList(),
+		cameraInfo,
+		renderTarget,
+		depthBuffer);
+	m_renderingContext->EndFrame();
 }
 
 
@@ -89,6 +128,7 @@ void UIFrameWindow::Initialize(detail::UIManager* manager, PlatformWindow* platf
 
 	// UI Layer
 	m_uiLayer.Attach(LN_NEW UIViewportLayer(view), false);
+	m_uiLayer->Initialize();
 	m_mainViewport->AddViewportLayer(m_uiLayer);
 }
 

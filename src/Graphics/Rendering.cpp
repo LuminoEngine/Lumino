@@ -1036,6 +1036,7 @@ void DrawList::BeginMakeElements()
 {
 	m_drawElementList.ClearCommands();
 	m_state.Reset();
+	m_currentSectionTopElement = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -1223,7 +1224,33 @@ void DrawList::DrawSprite(
 	detail::SpriteRenderer::MakeBoundingSphere(ptr->size, baseDirection, &ptr->boundingSphere);
 }
 
+
 //------------------------------------------------------------------------------
+class DrawElement_DrawNanoVGCommands : public detail::DrawElement
+{
+public:
+	detail::NanoVGCommandList*	m_commandList = nullptr;
+
+	detail::NanoVGCommandList* GetGCommandList(DrawList* owner)
+	{
+		if (m_commandList == nullptr)
+		{
+			m_commandList = owner->GetManager()->GetNanoVGCommandListCache()->QueryCommandList();
+		}
+		return m_commandList;
+	}
+
+	virtual void DrawSubset(detail::InternalContext* context) override
+	{
+		auto* r = context->BeginNanoVGRenderer();
+		//auto cl = r->TakeCommandList();
+		//detail::NanoVGCommandHelper::nvgRect(cl, rect.x, rect.y, rect.width, rect.height);
+		//detail::NanoVGCommandHelper::nvgFill(cl);
+		r->ExecuteCommand(m_commandList);
+		m_commandList = nullptr;
+	}
+};
+
 void DrawList::DrawRectangle(const RectF& rect)
 {
 	if (m_state.state.GetBrush() != nullptr &&
@@ -1234,30 +1261,6 @@ void DrawList::DrawRectangle(const RectF& rect)
 		return;
 	}
 
-	class DrawElement_DrawNanoVGCommands : public detail::DrawElement
-	{
-	public:
-		detail::NanoVGCommandList*	m_commandList = nullptr;
-
-		detail::NanoVGCommandList* GetGCommandList(DrawList* owner)
-		{
-			if (m_commandList == nullptr)
-			{
-				m_commandList = owner->GetManager()->GetNanoVGCommandListCache()->QueryCommandList();
-			}
-			return m_commandList;
-		}
-
-		virtual void DrawSubset(detail::InternalContext* context) override
-		{
-			auto* r = context->BeginNanoVGRenderer();
-			//auto cl = r->TakeCommandList();
-			//detail::NanoVGCommandHelper::nvgRect(cl, rect.x, rect.y, rect.width, rect.height);
-			//detail::NanoVGCommandHelper::nvgFill(cl);
-			r->ExecuteCommand(m_commandList);
-			m_commandList = nullptr;
-		}
-	};
 	auto* ptr = ResolveDrawElement<DrawElement_DrawNanoVGCommands>(detail::DrawingSectionId::NanoVG, m_manager->GetInternalContext()->m_nanoVGRenderer);
 	auto* list = ptr->GetGCommandList(this);
 	detail::NanoVGCommandHelper::nvgBeginPath(list);
@@ -1265,6 +1268,7 @@ void DrawList::DrawRectangle(const RectF& rect)
 	detail::NanoVGCommandHelper::nvgFill(list);
 	//ptr->rect = rect;
 	// TODO: カリング
+	
 }
 
 //------------------------------------------------------------------------------

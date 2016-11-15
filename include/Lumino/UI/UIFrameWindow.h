@@ -23,9 +23,15 @@ protected:
 	virtual ~UIViewportLayer();
 	virtual DrawList* GetRenderer() override { return nullptr; }
 	virtual void Render(RenderingContext* context) override;
+	virtual void OnEndFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer) override;
+
+LN_INTERNAL_ACCESS:
+	void Initialize();
 
 private:
-	UILayoutView*	m_view;
+	UILayoutView*		m_view;
+	RefPtr<DrawList>	m_renderingContext;
+	RefPtr<detail::InternalRenderer>	m_internalRenderer;
 };
 
 

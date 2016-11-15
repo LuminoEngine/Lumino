@@ -14,6 +14,7 @@ class StaticMeshModel;
 class DrawList;
 
 namespace detail {
+class GraphicsManager;
 class IRendererPloxy;
 class PrimitiveRenderer;
 class BlitRenderer;

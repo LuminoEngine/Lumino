@@ -319,6 +319,20 @@ TEST_F(Test_Graphics_Rendering, DrawRectangle)
 		}
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawRectangle1.png")));
 	}
+	// <Issue> ‚à‚¤ˆê“x“¯‚¶‚±‚Æ‚ª‚Å‚«‚é
+	{
+		if (Engine::BeginRendering())
+		{
+			Engine::Render();
+			Engine::GetDefault2DLayer()->GetRenderer()->SetBrush(ColorBrush::Red);
+			Engine::GetDefault2DLayer()->GetRenderer()->DrawRectangle(Rect(10, 20, 30, 40));
+			Engine::GetDefault2DLayer()->GetRenderer()->DrawRectangle(Rect(110, 20, 30, 40));
+			Engine::GetDefault2DLayer()->GetRenderer()->SetBrush(ColorBrush::Blue);
+			Engine::GetDefault2DLayer()->GetRenderer()->DrawRectangle(Rect(10, 70, 30, 40));
+			Engine::EndRendering();
+		}
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawRectangle1.png")));
+	}
 }
 
 //------------------------------------------------------------------------------
