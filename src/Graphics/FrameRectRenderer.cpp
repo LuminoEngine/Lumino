@@ -80,12 +80,12 @@ void FrameRectRendererCore::Initialize(GraphicsManager* manager)
 void FrameRectRendererCore::SetState(const FrameRectRendererState& state)
 {
 	m_state = state;
-	m_shader.varWorldMatrix->SetMatrix(m_state.worldTransform);
+	
 	m_shader.varViewProjMatrix->SetMatrix(m_state.viewProjTransform);
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRendererCore::Draw(const RectF& rect)
+void FrameRectRendererCore::Draw(const Matrix& transform, const RectF& rect)
 {
 	if (rect.IsEmpty()) return;
 
@@ -136,6 +136,7 @@ void FrameRectRendererCore::Draw(const RectF& rect)
 		// 描画する
 		m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
 		m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
+		m_shader.varWorldMatrix->SetMatrix(transform);
 		m_shader.varTone->SetVector(ToneF());
 		m_shader.varTexture->SetTexture(srcTexture);
 		m_shader.varGlyphMaskSampler->SetTexture(m_manager->GetDummyDeviceTexture());
@@ -414,12 +415,12 @@ void FrameRectRenderer::SetState(TextureBrush* brush)
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRenderer::SetState(TextureBrush* brush, const Matrix& world, const Matrix& viewProj)
+void FrameRectRenderer::SetState(TextureBrush* brush, const Matrix& world, const Matrix& viewProj)	// TODO: world いらない
 {
 	LN_CHECK_ARG(brush != nullptr);
 
 	FrameRectRendererState state;
-	state.worldTransform = world;
+	//state.worldTransform = world;
 	state.viewProjTransform = viewProj;
 	state.imageDrawMode = brush->GetImageDrawMode();
 	state.borderThickness = brush->GetBorderThickness();
@@ -438,16 +439,17 @@ void FrameRectRenderer::SetState(TextureBrush* brush, const Matrix& world, const
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRenderer::Draw(const RectF& rect)
+void FrameRectRenderer::Draw(const Matrix& transform, const RectF& rect)
 {
 	SetState(m_brush, Matrix::Identity, m_viewProj);
 
-	LN_ENQUEUE_RENDER_COMMAND_2(
+	LN_ENQUEUE_RENDER_COMMAND_3(
 		Draw, m_manager,
 		FrameRectRendererCore*, m_core,
+		Matrix, transform,
 		RectF, rect,
 		{
-			m_core->Draw(rect);
+			m_core->Draw(transform, rect);
 		});
 }
 

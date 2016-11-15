@@ -1032,6 +1032,12 @@ void DrawList::SetBlendMode(BlendMode mode)
 }
 
 //------------------------------------------------------------------------------
+//void DrawList::SetOpacity(float opacity)
+//{
+//	m_state.state.
+//}
+
+//------------------------------------------------------------------------------
 void DrawList::BeginMakeElements()
 {
 	m_drawElementList.ClearCommands();
@@ -1158,6 +1164,12 @@ void DrawList::Blit(Texture* source, RenderTarget* dest, const Matrix& transform
 void DrawList::Blit(Texture* source, RenderTarget* dest, Material* material)
 {
 	BlitInternal(source, dest, Matrix::Identity, material);
+}
+
+//------------------------------------------------------------------------------
+void DrawList::DrawText_(const StringRef& text, const PointF& position)
+{
+	DrawText_(text, RectF(position, FLT_MAX, FLT_MAX), StringFormatFlags::LeftAlignment);
 }
 
 //------------------------------------------------------------------------------
@@ -1396,10 +1408,11 @@ void DrawList::DrawFrameRectangle(const RectF& rect)
 		virtual void DrawSubset(detail::InternalContext* context) override
 		{
 			auto* r = context->BeginFrameRectRenderer();
-			r->Draw(rect);
+			r->Draw(transform, rect);
 		}
 	};
 	auto* ptr = ResolveDrawElement<DrawElement_DrawFrameRectangle>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_frameRectRenderer);
+	ptr->transform = m_state.transfrom;
 	ptr->rect = rect;
 	// TODO: カリング
 }

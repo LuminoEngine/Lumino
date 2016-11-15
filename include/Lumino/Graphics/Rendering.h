@@ -445,6 +445,8 @@ public:
 
 	void SetBlendMode(BlendMode mode);
 
+	void SetOpacity(float opacity);
+
 	/** @} */
 
 	void SetTransform(const Matrix& transform);
@@ -486,6 +488,7 @@ public:
 	void Blit(Texture* source, RenderTarget* dest, Material* material);
 
 
+	void DrawText_(const StringRef& text, const PointF& position);
 	void DrawText_(const StringRef& text, const RectF& rect, StringFormatFlags flags);
 
 	void DrawSprite(

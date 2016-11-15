@@ -11,7 +11,7 @@ namespace detail
 
 struct FrameRectRendererState
 {
-	Matrix						worldTransform;
+	//Matrix						worldTransform;
 	Matrix						viewProjTransform;
 	BrushImageDrawMode			imageDrawMode;
 	ThicknessF					borderThickness;
@@ -29,7 +29,7 @@ public:
 	void Initialize(GraphicsManager* manager);
 
 	void SetState(const FrameRectRendererState& state);
-	void Draw(const RectF& rect);
+	void Draw(const Matrix& transform, const RectF& rect);
 
 private:
 	void RequestBuffers(int faceCount);
@@ -98,7 +98,7 @@ public:
 	void SetViewInfo(const Matrix& viewProj);
 	void SetState(TextureBrush* brush);
 
-	void Draw(const RectF& rect);
+	void Draw(const Matrix& transform, const RectF& rect);
 
 	virtual bool IsStandaloneShader() const { return true; }
 	virtual void Flush() override;

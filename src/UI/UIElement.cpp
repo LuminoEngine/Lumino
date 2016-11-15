@@ -2,6 +2,7 @@
 #include "Internal.h"
 #include <math.h>
 #include <Lumino/Graphics/DrawingContext.h>
+#include <Lumino/Graphics/Rendering.h>
 #include <Lumino/UI/UIEventArgs.h>
 #include <Lumino/UI/UIElement.h>
 #include <Lumino/UI/UIContext.h>
@@ -186,18 +187,18 @@ void UIElement::OnLayoutUpdated()
 }
 
 //------------------------------------------------------------------------------
-void UIElement::OnRender(DrawingContext* g)
+void UIElement::OnRender(DrawList* g)
 {
 	if (m_background.Get() != nullptr)
 	{
 		g->SetBrush(m_background.Get());
-		g->SetOpacity(m_combinedOpacity);
+		//g->SetOpacity(m_combinedOpacity);
 		g->DrawRectangle(RectF(0, 0, m_finalLocalRect.GetSize()));
 	}
 	if (m_decoratorBackground.Get() != nullptr)
 	{
 		g->SetBrush(m_decoratorBackground.Get());
-		g->SetOpacity(m_combinedOpacity * m_decoratorOpacity);
+		//g->SetOpacity(m_combinedOpacity * m_decoratorOpacity);
 		g->DrawRectangle(RectF(0, 0, m_finalLocalRect.GetSize()));
 	}
 }
@@ -478,7 +479,7 @@ void UIElement::UpdateTransformHierarchy()
 }
 
 //------------------------------------------------------------------------------
-void UIElement::Render(DrawingContext* g)
+void UIElement::Render(DrawList* g)
 {
 	Matrix mat;
 	mat.Translate(m_finalGlobalRect.x, m_finalGlobalRect.y, 0);

@@ -9,7 +9,7 @@
 #include "LayoutElement.h"
 
 LN_NAMESPACE_BEGIN
-class DrawingContext;
+class DrawList;
 class UIStylePropertyTable;
 
 /**
@@ -191,7 +191,7 @@ protected:
 	/**
 		@brief	この要素の描画を行います。
 	*/
-	virtual void OnRender(DrawingContext* g);
+	virtual void OnRender(DrawList* g);
 
 	virtual void OnMouseMove(UIMouseEventArgs* e);
 	virtual void OnMouseDown(UIMouseEventArgs* e);
@@ -224,7 +224,7 @@ LN_INTERNAL_ACCESS:
 	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e);
 	void UpdateLayout(const Size& viewSize);
 	void UpdateTransformHierarchy();
-	void Render(DrawingContext* g);
+	void Render(DrawList* g);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	virtual const HAlignment* GetPriorityContentHAlignment();

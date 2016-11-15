@@ -227,7 +227,7 @@ void DrawingContext::DrawRectangle(const RectF& rect)
 		m_state.fillBrush->GetType() == BrushType_Texture &&
 		(static_cast<TextureBrush*>(m_state.fillBrush.Get())->GetImageDrawMode() == BrushImageDrawMode::BoxFrame || static_cast<TextureBrush*>(m_state.fillBrush.Get())->GetImageDrawMode() == BrushImageDrawMode::BorderFrame))
 	{
-		m_frameRectRenderer->Draw(rect);
+		m_frameRectRenderer->Draw(Matrix::Identity, rect);
 	}
 	else
 	{

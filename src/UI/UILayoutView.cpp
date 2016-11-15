@@ -60,7 +60,7 @@ void UILayoutView::UpdateLayout(const Size& viewSize)
 }
 
 //------------------------------------------------------------------------------
-void UILayoutView::Render(DrawingContext* g)
+void UILayoutView::Render(DrawList* g)
 {
 	if (m_rootElement != nullptr)
 	{

@@ -56,17 +56,17 @@ void UIViewportLayer::Render(RenderingContext* context)
 	m_renderingContext->BeginMakeElements();
 
 
-	DrawingContext* g = m_view->GetOwnerContext()->GetManager()->GetGraphicsManager()->GetDrawingContext();
+	//DrawingContext* g = m_view->GetOwnerContext()->GetManager()->GetGraphicsManager()->GetDrawingContext();
 
-	// TODO: ステートリセットもほしいかも？
-	g->InheritStatus(context);
-	g->SetBlendMode(BlendMode::Normal);
-	g->Clear(ClearFlags::Depth, Color::White);	// TODO
-	g->Set2DRenderingMode(-1, 1);	// TODO
+	//// TODO: ステートリセットもほしいかも？
+	//g->InheritStatus(context);
+	//g->SetBlendMode(BlendMode::Normal);
+	//g->Clear(ClearFlags::Depth, Color::White);	// TODO
+	//g->Set2DRenderingMode(-1, 1);	// TODO
 
-	// TODO: このへんで、このウィンドウが持っている SwapChain のバックバッファを g にセットする
+	//// TODO: このへんで、このウィンドウが持っている SwapChain のバックバッファを g にセットする
 
-	m_view->Render(g);
+	m_view->Render(m_renderingContext);
 }
 
 //------------------------------------------------------------------------------
