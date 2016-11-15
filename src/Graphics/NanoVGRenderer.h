@@ -140,17 +140,12 @@ public:
 	static NVGpaint GetNVGpaint(NVGcontext* ctx, const NanoVGBrush& brush);
 };
 
-class NanoVGCommandListCache
-	: public RefObject
-{
-public:
-	NanoVGCommandList* QueryCommandList();
-	void ReleaseCommandList(NanoVGCommandList* commandList);
 
-private:
-	Mutex							m_mutex;
-	List<RefPtr<NanoVGCommandList>>	m_objects;
-	Stack<NanoVGCommandList*>		m_freeObjects;
+class NanoVGCommandListCache
+	: public SimpleOneTimeObjectCache<NanoVGCommandList>
+{
+protected:
+	virtual RefPtr<NanoVGCommandList> CreateObject() override;
 };
 
 class NanoVGRenderer

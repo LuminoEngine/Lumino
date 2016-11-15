@@ -5,6 +5,7 @@
 #include "RenderState.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "ContextInterface.h"
 
 LN_NAMESPACE_BEGIN
 class Pen;
@@ -398,11 +399,12 @@ private:
 };
 
 
-
-
-
-
-
+class DefaultMaterialCache
+	: public SimpleOneTimeObjectCache<Material>
+{
+protected:
+	virtual RefPtr<Material> CreateObject() override;
+};
 
 } // namespace detail
 
@@ -528,6 +530,7 @@ private:
 
 	detail::DrawElement*			m_currentSectionTopElement;
 	//detail::DrawElementBatch		m_stateInSection;
+	detail::DefaultMaterialCache	m_defaultMaterialCache;
 
 #if 0
 	/** アルファブレンドの有無 (default: false) */

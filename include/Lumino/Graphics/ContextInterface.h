@@ -151,6 +151,55 @@ private:
 	friend class ShaderVariable;
 };
 
+
+template<class T>
+class SimpleOneTimeObjectCache
+	: public RefObject
+{
+public:
+	T* QueryCommandList()
+	{
+		MutexScopedLock lock(m_mutex);
+
+		if (m_freeObjects.IsEmpty())
+		{
+			auto ptr = CreateObject();
+			m_objects.Add(ptr);
+			return ptr;
+		}
+		else
+		{
+			NanoVGCommandList* ptr;
+			m_freeObjects.Pop(&ptr);
+			return ptr;
+		}
+	}
+
+	void ReleaseCommandList(T* commandList)
+	{
+		MutexScopedLock lock(m_mutex);
+		m_freeObjects.Push(commandList);
+	}
+
+	void ReleaseAll()
+	{
+		MutexScopedLock lock(m_mutex);
+		m_freeObjects.Clear();
+		for (RefPtr<T>& ptr : m_objects)
+		{
+			m_freeObjects.Push(ptr);
+		}
+	}
+
+protected:
+	virtual RefPtr<T> CreateObject() = 0;
+
+private:
+	Mutex			m_mutex;
+	List<RefPtr<T>>	m_objects;
+	Stack<T*>		m_freeObjects;
+};
+
 } // namespace detail
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

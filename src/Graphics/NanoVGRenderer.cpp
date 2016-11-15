@@ -895,30 +895,11 @@ void nvgDeleteLNContext(NVGcontext* ctx)
 //==============================================================================
 // NanoVGCommandListCache
 //==============================================================================
-//------------------------------------------------------------------------------
-NanoVGCommandList* NanoVGCommandListCache::QueryCommandList()
-{
-	MutexScopedLock lock(m_mutex);
-
-	if (m_freeObjects.IsEmpty())
-	{
-		auto ptr = RefPtr<NanoVGCommandList>::MakeRef();
-		m_objects.Add(ptr);
-		return ptr;
-	}
-	else
-	{
-		NanoVGCommandList* ptr;
-		m_freeObjects.Pop(&ptr);
-		return ptr;
-	}
-}
 
 //------------------------------------------------------------------------------
-void NanoVGCommandListCache::ReleaseCommandList(NanoVGCommandList* commandList)
+RefPtr<NanoVGCommandList> NanoVGCommandListCache::CreateObject()
 {
-	MutexScopedLock lock(m_mutex);
-	m_freeObjects.Push(commandList);
+	return RefPtr<NanoVGCommandList>::MakeRef();
 }
 
 
@@ -1035,12 +1016,12 @@ void NanoVGCommandHelper::nvgClosePath(NanoVGCommandList* ctx)
 }
 void NanoVGCommandHelper::nvgPathWinding(NanoVGCommandList* ctx, int dir)
 {
-	float cmd[] = { (float)Cmd_nvgPathWinding, dir };
+	float cmd[] = { (float)Cmd_nvgPathWinding,(float)dir };
 	ctx->AllocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgArc(NanoVGCommandList* ctx, float cx, float cy, float r, float a0, float a1, int dir)
 {
-	float cmd[] = { (float)Cmd_nvgArc, cx, cy, r, a0, a1, dir };
+	float cmd[] = { (float)Cmd_nvgArc, cx, cy, r, a0, a1, (float)dir };
 	ctx->AllocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgRect(NanoVGCommandList* ctx, float x, float y, float w, float h)

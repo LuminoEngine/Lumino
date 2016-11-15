@@ -874,6 +874,17 @@ Shader* ForwardShadingRenderingPass::GetDefaultShader() const
 }
 
 
+//==============================================================================
+// DefaultMaterialCache
+//==============================================================================
+
+//------------------------------------------------------------------------------
+RefPtr<Material> DefaultMaterialCache::CreateObject()
+{
+	auto m = RefPtr<Material>::MakeRef();
+	m->Initialize();
+	return m;
+}
 
 
 //==============================================================================
