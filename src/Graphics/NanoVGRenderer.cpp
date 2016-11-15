@@ -578,9 +578,11 @@ static int lnnvg__renderCreate(void* uptr)
 #include "Resource/NanoVGShader.fx.h"
 	};
 	static const size_t codeLen = LN_ARRAY_SIZE_OF(codeData);
+	StringA code = lnc->manager->GetCommonShaderHeader();
+	code.Append((const char*)codeData, codeLen);
 
 	ShaderCompileResult result;
-	lnc->shader.Attach(device->CreateShader(codeData, codeLen, &result), false);
+	lnc->shader.Attach(device->CreateShader(code.c_str(), code.GetLength(), &result), false);
 	LN_THROW(result.Level != ShaderCompileResultLevel_Error, CompilationException, result);
 	lnc->shaderPass = lnc->shader->GetTechnique(0)->GetPass(0);
 	lnc->varViewSize = lnc->shader->GetVariableByName(_T("viewSize"));
@@ -946,6 +948,8 @@ void NanoVGRenderer::Initialize(GraphicsManager* manager)
 //------------------------------------------------------------------------------
 void NanoVGRenderer::ExecuteCommand(NanoVGCommandList* commandList)
 {
+	LN_CHECK_ARG(commandList != nullptr);
+
 	NanoVGRenderer* _this = this;
 	LN_ENQUEUE_RENDER_COMMAND_3(
 		ExecuteCommand, m_manager,

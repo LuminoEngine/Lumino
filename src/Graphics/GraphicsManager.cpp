@@ -253,7 +253,17 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 	m_defaultVertexDeclaration->AddVertexElement(0, VertexElementType_Float3, VertexElementUsage_Normal, 0);
 	m_defaultVertexDeclaration->AddVertexElement(0, VertexElementType_Float4, VertexElementUsage_Color, 0);
 
-
+	
+	// Shader common header.
+	{
+		static const unsigned char EffectHeader_Data[] =
+		{
+#include "Resource/EffectHeader.fxh.h"
+		};
+		static const size_t EffectHeader_Data_Len = LN_ARRAY_SIZE_OF(EffectHeader_Data);
+		m_commonShaderHeader.AssignCStr((const char*)EffectHeader_Data, EffectHeader_Data_Len);
+	}
+	
 	// デフォルトシェーダ
 	{
 		static const byte_t shaderData[] =

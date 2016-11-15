@@ -323,6 +323,7 @@ public:
 	float	g;	///< 緑成分のカラーバランス (-1.0～1.0)
 	float	b;	///< 青成分のカラーバランス (-1.0～1.0)
 	float	gray;	///< グレースケール化フィルタの強さ (0.0 ～ 1.0)
+	// TODO: gray → s (彩度:Saturation)
 
 public:
 
@@ -372,10 +373,7 @@ public:
 	bool operator != (const ToneF& tone) { return r != tone.r || g != tone.g || b != tone.b || gray != tone.gray; }
 };
 
-
-//-------------------------------------------------------------------------
-//
-//-------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 inline ToneF operator - (const ToneF& v1) { return ToneF(-v1.r, -v1.g, -v1.b, -v1.gray); }
 inline ToneF operator + (const ToneF& v1, const ToneF& v2) { return ToneF(v1.r + v2.r, v1.g + v2.g, v1.b + v2.b, v1.gray + v2.gray); }
 inline ToneF operator + (const ToneF& v1, float v2) { return ToneF(v1.r + v2, v1.g + v2, v1.b + v2, v1.gray + v2); }

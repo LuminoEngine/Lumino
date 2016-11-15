@@ -153,6 +153,8 @@ public:
 	VertexDeclaration* GetDefaultVertexDeclaration() const { return m_defaultVertexDeclaration; }
 	ShaderVariableCommitSerializeHelper* GetShaderVariableCommitSerializeHelper() { return &m_shaderVariableCommitSerializeHelper; }
 	InternalContext* GetInternalContext() const;
+
+	const StringA& GetCommonShaderHeader() const { return m_commonShaderHeader; }
 	Shader* GetDefaultShader(DefaultShader type) const;
 
 private:
@@ -174,6 +176,7 @@ private:
 	RenderingContext*				m_renderingContext;
 
 	RefPtr<InternalContext>			m_internalContext;
+	StringA							m_commonShaderHeader;
 	RefPtr<Shader>					m_defaultShaders[(int)DefaultShader::_Count];
 
 	TextRendererCore*				m_textRendererCore;

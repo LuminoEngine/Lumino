@@ -34,7 +34,12 @@ float3		ln_LightDiffuses[LN_LightCount];
 float3		ln_LightAmbients[LN_LightCount];
 float3		ln_LightSpeculars[LN_LightCount];
 
-// ライト色
+// ビルトインのエフェクト色
+float4		ln_ColorScale = float4(1, 1, 1, 1);
+float4		ln_BlendColor = float4(0, 0, 0, 1);
+float4		ln_ToneColor = float4(0, 0, 0, 0);
+
+// 各種ベース色
 static float4 ln_DiffuseColor[LN_LightCount] =
 {
 	ln_MaterialDiffuse * float4(ln_LightDiffuses[0], 1.0f),
@@ -76,6 +81,22 @@ float4 LN_GetLambertVertexColor(float3 normal)
 	float4 outColor;
 	outColor.rgb = saturate(ambient / count + color);
 	outColor.a = ln_MaterialDiffuse.a;
+	return outColor;
+}
+
+//------------------------------------------------------------------------------
+float4 LN_GetBuiltinEffectColor(float4 inColor)
+{
+	// apply color scale.
+	float4 outColor = inColor * ln_ColorScale;
+	
+	// apply blend color.
+	outColor.rgb = lerp(outColor.rgb, ln_BlendColor.rgb, ln_BlendColor.a);
+
+	// apply tone. (NTSC Coef method)
+	float y = (0.208012 * outColor.r + 0.586611 * outColor.g + 0.114478 * outColor.b) * ln_ToneColor.w;
+	outColor.rgb = (outColor.rgb * (1.0 - ln_ToneColor.w)) + y + ln_ToneColor.rgb;
+	
 	return outColor;
 }
 
@@ -325,6 +346,5 @@ float4 PixelShaderFunction(VertexShaderInput input) : COLOR0
 }
 */
 
-
+#line 5
 #endif // LN_HLSL_DX9
-

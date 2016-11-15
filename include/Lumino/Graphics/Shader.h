@@ -42,6 +42,9 @@ LN_ENUM(BuiltinSemantics)
 	MaterialEmmisive,		// vector
 	MaterialSpecular,		// vector
 	MaterialSpecularPower,	// float
+	ColorScale,				// vector (Built-in effect)
+	BlendColor,				// vector (Built-in effect)
+	ToneColor,				// vector (Built-in effect)
 
 	_Count,
 };

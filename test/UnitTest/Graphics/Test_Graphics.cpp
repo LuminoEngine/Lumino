@@ -360,6 +360,8 @@ TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
 
 		if (Engine::BeginRendering())
 		{
+			Engine::Render();
+
 			auto* g = Engine::GetDefault2DLayer()->GetRenderer();
 			g->Clear(ClearFlags::All, Color::Gray);
 
@@ -409,6 +411,8 @@ TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
 
 		if (Engine::BeginRendering())
 		{
+			Engine::Render();
+
 			auto* g = Engine::GetDefault2DLayer()->GetRenderer();
 			g->Clear(ClearFlags::All, Color::Gray);
 			g->SetBrush(brush1);

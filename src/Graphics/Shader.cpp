@@ -61,6 +61,9 @@ static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_SubsetUnit 
 	{ _T("ln_MaterialEmmisive"), BuiltinSemantics::MaterialEmmisive },
 	{ _T("ln_MaterialSpecular"), BuiltinSemantics::MaterialSpecular },
 	{ _T("ln_MaterialSpecularPower"), BuiltinSemantics::MaterialSpecularPower },
+	{ _T("ln_ColorScale"), BuiltinSemantics::ColorScale },
+	{ _T("ln_BlendColor"), BuiltinSemantics::BlendColor },
+	{ _T("ln_ToneColor"), BuiltinSemantics::ToneColor },
 };
 
 //------------------------------------------------------------------------------
@@ -275,6 +278,8 @@ void ShaderSemanticsManager::UpdateSubsetVariables(const SubsetInfo& info)
 {
 	detail::CombinedMaterial* cm = (info.material != nullptr) ? info.material->GetCombinedMaterial() : nullptr;
 
+	// TODO: このあたり、もし最適化で変数が消えているなら set しなくて良いようにしたい。
+
 	for (const VariableKindPair& varInfo : m_subsetVariables)
 	{
 		switch (varInfo.kind)
@@ -301,6 +306,18 @@ void ShaderSemanticsManager::UpdateSubsetVariables(const SubsetInfo& info)
 			case BuiltinSemantics::MaterialSpecularPower:
 				if (cm != nullptr)
 					varInfo.variable->SetFloat(cm->m_power);
+				break;
+			case BuiltinSemantics::ColorScale:
+				if (cm != nullptr)
+					varInfo.variable->SetVector(cm->m_colorScale);
+				break;
+			case BuiltinSemantics::BlendColor:
+				if (cm != nullptr)
+					varInfo.variable->SetVector(cm->m_blendColor);
+				break;
+			case BuiltinSemantics::ToneColor:
+				if (cm != nullptr)
+					varInfo.variable->SetVector(cm->m_tone);
 				break;
 			default:
 				break;
@@ -422,13 +439,9 @@ void Shader::Initialize(detail::GraphicsManager* manager, const void* code, int 
 	GraphicsResourceObject::Initialize(manager);
 
 	// ヘッダコード先頭に追加する
-	static const unsigned char EffectHeader_Data[] =
-	{
-#include "Resource/EffectHeader.fxh.h"
-	};
-	static const size_t EffectHeader_Data_Len = LN_ARRAY_SIZE_OF(EffectHeader_Data);
+	
 	StringBuilderA newCode;
-	newCode.Append((const char*)EffectHeader_Data, EffectHeader_Data_Len);
+	newCode.Append(manager->GetCommonShaderHeader().c_str());
 	newCode.Append("#line 5");
 	newCode.Append(StringA::GetNewLine().c_str());
 	newCode.Append((const char*)code, length);
