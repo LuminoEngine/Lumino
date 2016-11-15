@@ -1,7 +1,6 @@
 ﻿
 #include "Internal.h"
 #include <math.h>
-#include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/Graphics/Rendering.h>
 #include <Lumino/UI/UIEventArgs.h>
 #include <Lumino/UI/UIElement.h>

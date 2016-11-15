@@ -15,7 +15,6 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 class RenderingThread;
 class GraphicsContext;
 class RenderingContext;
-class DrawingContext;
 class TextRenderer;
 class BitmapTextRenderer;
 class SwapChain;
@@ -123,7 +122,6 @@ public:
 	FontManager* GetFontManager() const { return m_fontManager; }
 	
 	RenderingContext* GetRenderingContext() const { return m_renderingContext; }
-	DrawingContext* GetDrawingContext() const { return m_drawingContext; }\
 
 	BitmapTextRenderer* GetBitmapTextRenderer() const { return m_bitmapTextRenderer; }
 
@@ -174,7 +172,6 @@ private:
 
 	ContextInterface*				m_activeContext;
 	RenderingContext*				m_renderingContext;
-	DrawingContext*					m_drawingContext;
 
 	RefPtr<InternalContext>			m_internalContext;
 	RefPtr<Shader>					m_defaultShaders[(int)DefaultShader::_Count];

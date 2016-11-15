@@ -12,8 +12,6 @@ set(LN_TEST_SOURCES
 	UnitTest/Platform/Test_Platform_Clipboard.cpp
 	UnitTest/Imaging/Test_Imaging_Bitmap.cpp
 	UnitTest/Graphics/Test_Graphics.cpp
-	UnitTest/Graphics/Test_Graphics_DrawingContext.cpp
-	UnitTest/Graphics/Test_Graphics_RenderingContext.cpp
 	#UnitTest/Graphics/Test_Graphics_IndexBuffer.cpp
 	UnitTest/Graphics/Test_Graphics_Pmx.cpp
 	#UnitTest/Graphics/Test_Graphics_Renderer.cpp

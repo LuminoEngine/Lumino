@@ -996,82 +996,82 @@ void NanoVGRenderer::PushCommandList(NanoVGCommandList* commandList)
 //==============================================================================
 void NanoVGCommandHelper::nvgBeginPath(NanoVGCommandList* ctx)
 {
-	float cmd[] = { Cmd_nvgBeginPath };
+	float cmd[] = { (float)Cmd_nvgBeginPath };
 	ctx->AllocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgMoveTo(NanoVGCommandList* ctx, float x, float y)
 {
-	float cmd[] = { Cmd_nvgMoveTo, x, y };
+	float cmd[] = { (float)Cmd_nvgMoveTo, x, y };
 	ctx->AllocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgLineTo(NanoVGCommandList* ctx, float x, float y)
 {
-	float cmd[] = { Cmd_nvgLineTo, x, y };
+	float cmd[] = { (float)Cmd_nvgLineTo, x, y };
 	ctx->AllocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgBezierTo(NanoVGCommandList* ctx, float c1x, float c1y, float c2x, float c2y, float x, float y)
 {
-	float cmd[] = { Cmd_nvgBezierTo, c1x, c1y, c2x, c2y, x, y };
+	float cmd[] = { (float)Cmd_nvgBezierTo, c1x, c1y, c2x, c2y, x, y };
 	ctx->AllocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgQuadTo(NanoVGCommandList* ctx, float cx, float cy, float x, float y)
 {
-	float cmd[] = { Cmd_nvgQuadTo, cx, cy, x, y };
+	float cmd[] = { (float)Cmd_nvgQuadTo, cx, cy, x, y };
 	ctx->AllocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgArcTo(NanoVGCommandList* ctx, float x1, float y1, float x2, float y2, float radius)
 {
-	float cmd[] = { Cmd_nvgArcTo, x1, y1, x2, y2, radius };
+	float cmd[] = { (float)Cmd_nvgArcTo, x1, y1, x2, y2, radius };
 	ctx->AllocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgClosePath(NanoVGCommandList* ctx)
 {
-	float cmd[] = { Cmd_nvgClosePath };
+	float cmd[] = { (float)Cmd_nvgClosePath };
 	ctx->AllocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgPathWinding(NanoVGCommandList* ctx, int dir)
 {
-	float cmd[] = { Cmd_nvgPathWinding, dir };
+	float cmd[] = { (float)Cmd_nvgPathWinding, dir };
 	ctx->AllocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgArc(NanoVGCommandList* ctx, float cx, float cy, float r, float a0, float a1, int dir)
 {
-	float cmd[] = { Cmd_nvgArc, cx, cy, r, a0, a1, dir };
+	float cmd[] = { (float)Cmd_nvgArc, cx, cy, r, a0, a1, dir };
 	ctx->AllocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgRect(NanoVGCommandList* ctx, float x, float y, float w, float h)
 {
-	float cmd[] = { Cmd_nvgRect, x, y, w, h };
+	float cmd[] = { (float)Cmd_nvgRect, x, y, w, h };
 	ctx->AllocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgRoundedRect(NanoVGCommandList* ctx, float x, float y, float w, float h, float r)
 {
-	float cmd[] = { Cmd_nvgRoundedRect, x, y, w, h, r };
+	float cmd[] = { (float)Cmd_nvgRoundedRect, x, y, w, h, r };
 	ctx->AllocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgRoundedRectVarying(NanoVGCommandList* ctx, float x, float y, float w, float h, float radTopLeft, float radTopRight, float radBottomRight, float radBottomLeft)
 {
-	float cmd[] = { Cmd_nvgRoundedRectVarying, x, y, w, h, radTopLeft, radTopRight, radBottomRight, radBottomLeft };
+	float cmd[] = { (float)Cmd_nvgRoundedRectVarying, x, y, w, h, radTopLeft, radTopRight, radBottomRight, radBottomLeft };
 	ctx->AllocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgEllipse(NanoVGCommandList* ctx, float cx, float cy, float rx, float ry)
 {
-	float cmd[] = { Cmd_nvgEllipse, cx, cy, rx, ry };
+	float cmd[] = { (float)Cmd_nvgEllipse, cx, cy, rx, ry };
 	ctx->AllocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgCircle(NanoVGCommandList* ctx, float cx, float cy, float r)
 {
-	float cmd[] = { Cmd_nvgCircle, cx, cy, r };
+	float cmd[] = { (float)Cmd_nvgCircle, cx, cy, r };
 	ctx->AllocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgFill(NanoVGCommandList* ctx)
 {
-	float cmd[] = { Cmd_nvgFill };
+	float cmd[] = { (float)Cmd_nvgFill };
 	ctx->AllocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgStroke(NanoVGCommandList* ctx)
 {
-	float cmd[] = { Cmd_nvgStroke };
+	float cmd[] = { (float)Cmd_nvgStroke };
 	ctx->AllocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::ExecuteCommand(NanoVGCommandList* commandList, NVGcontext* ctx)

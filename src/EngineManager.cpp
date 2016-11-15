@@ -12,7 +12,6 @@
 #include "Graphics/RenderingThread.h"
 #include "Graphics/GraphicsManager.h"
 #include "Documents/DocumentsManager.h"
-#include <Lumino/Graphics/DrawingContext.h>
 #include "Scene/SceneGraphManager.h"
 #include <Lumino/Scene/SceneGraph.h>
 #include "Effect/EffectManager.h"
@@ -637,8 +636,6 @@ bool EngineManager::BeginRendering()
 	m_uiManager->GetMainWindow()->BeginRendering();
 
 	m_frameRenderd = true;
-	DrawingContext* g = m_graphicsManager->GetDrawingContext();
-	g->Set2DRenderingMode();
 	return true;
 }
 
@@ -655,9 +652,6 @@ void EngineManager::Render()
 {
 	if (m_graphicsManager != nullptr)
 	{
-		DrawingContext* g = m_graphicsManager->GetDrawingContext();
-		g->PushState();
-
 		EngineDiagCore::Instance.ResetGraphicsFrameReport();	// TODO: GameMode のみ？
 		EngineDiagCore::Instance.ResetVisualNodeDrawCount();	// TODO: GameMode のみ？
 		m_uiManager->GetMainWindow()->RenderContents();
@@ -670,13 +664,10 @@ void EngineManager::Render()
 
 		if (m_diagViewer != nullptr)
 		{
-			// TODO: このあたりも GetMainWindow()->Render() の中に持っていくべき？
-			g->Clear(ClearFlags::Depth, Color::White);	// TODO
-			g->Set2DRenderingMode(-1, 1);	// TODO
-			m_diagViewer->Render(g, Vector2(640, 480));	//TODO
+			//m_diagViewer->Render(g, Vector2(640, 480));	//TODO
 		}
 
-		g->PopState();
+		//g->PopState();
 	}
 }
 

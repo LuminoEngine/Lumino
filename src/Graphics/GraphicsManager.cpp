@@ -29,7 +29,6 @@
 #include <Lumino/Graphics/Shader.h>
 #include <Lumino/Graphics/VertexDeclaration.h>
 #include <Lumino/Graphics/RenderingContext.h>
-#include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/Graphics/Shader.h>
 #include <Lumino/Graphics/Rendering.h>
 
@@ -107,7 +106,6 @@ GraphicsManager::GraphicsManager()
 	, m_internalContext(nullptr)
 	, m_activeContext(nullptr)
 	, m_renderingContext(nullptr)
-	, m_drawingContext(nullptr)
 	, m_textRendererCore(nullptr)
 	, m_bitmapTextRenderer(nullptr)
 {
@@ -240,9 +238,6 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 	m_renderingContext = LN_NEW RenderingContext();
 	m_renderingContext->Initialize(this);
 
-	m_drawingContext = LN_NEW DrawingContext();
-	m_drawingContext->Initialize(this);
-
 	m_bitmapTextRenderer = LN_NEW BitmapTextRenderer();
 	m_bitmapTextRenderer->Initialize(this);
 
@@ -318,7 +313,6 @@ void GraphicsManager::Finalize()
 		obj->Finalize();
 	}
 
-	LN_SAFE_RELEASE(m_drawingContext);
 	LN_SAFE_RELEASE(m_renderingContext);
 	m_internalContext.SafeRelease();
 }

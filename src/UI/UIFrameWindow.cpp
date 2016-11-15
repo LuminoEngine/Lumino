@@ -2,7 +2,6 @@
 #include "Internal.h"
 #include <Lumino/Platform/PlatformWindow.h>
 #include <Lumino/Graphics/RenderingContext.h>
-#include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/Graphics/SwapChain.h>
 #include <Lumino/Graphics/Viewport.h>
 #include <Lumino/Graphics/Rendering.h>
@@ -54,17 +53,6 @@ void UIViewportLayer::Initialize()
 void UIViewportLayer::Render(RenderingContext* context)
 {
 	m_renderingContext->BeginMakeElements();
-
-
-	//DrawingContext* g = m_view->GetOwnerContext()->GetManager()->GetGraphicsManager()->GetDrawingContext();
-
-	//// TODO: ステートリセットもほしいかも？
-	//g->InheritStatus(context);
-	//g->SetBlendMode(BlendMode::Normal);
-	//g->Clear(ClearFlags::Depth, Color::White);	// TODO
-	//g->Set2DRenderingMode(-1, 1);	// TODO
-
-	//// TODO: このへんで、このウィンドウが持っている SwapChain のバックバッファを g にセットする
 
 	m_view->Render(m_renderingContext);
 }
@@ -147,14 +135,6 @@ void UIFrameWindow::BeginRendering()
 
 	Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
 	renderer->Begin();
-
-	m_manager->GetGraphicsManager()->GetRenderingContext()->InitializeFrame(m_swapChain->GetBackBuffer());
-
-	DrawingContext* g = m_manager->GetGraphicsManager()->GetDrawingContext();
-	g->InitializeFrame(m_swapChain->GetBackBuffer());
-	g->SetRenderTarget(0, m_swapChain->GetBackBuffer());
-	g->SetDepthBuffer(m_swapChain->GetBackBufferDepth());	// TODO: InitializeFrame に混ぜたほうがいいかも
-	g->Clear(ClearFlags::All, Color::Black);
 }
 
 //------------------------------------------------------------------------------

@@ -2,7 +2,6 @@
 #include "Internal.h"
 #include <Lumino/Platform/PlatformWindow.h>
 #include <Lumino/Graphics/Text/Font.h>
-#include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/EngineDiag.h>
 #include "Graphics/GraphicsManager.h"
 #include "Graphics/Text/FontManager.h"
@@ -120,6 +119,7 @@ void EngineDiagViewer::UpdateFrame()
 }
 
 //------------------------------------------------------------------------------
+#if 0
 void EngineDiagViewer::Render(DrawingContext* g, const Vector2& viewSize)
 {
 	if (m_displayMode != DisplayMode_Details) return;
@@ -196,5 +196,6 @@ void EngineDiagViewer::Render(DrawingContext* g, const Vector2& viewSize)
 
 	g->Flush();
 }
+#endif
 
 LN_NAMESPACE_END
