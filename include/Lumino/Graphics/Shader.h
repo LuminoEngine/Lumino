@@ -9,7 +9,7 @@ class ShaderVariable;
 class Material;
 
 namespace detail {
-
+class CombinedMaterial;
 class DynamicLightInfo;
 	
 // シェーダ変数セマンティクス
@@ -80,8 +80,8 @@ struct ElementInfo
 // サブセット単位のデータに関する情報
 struct SubsetInfo
 {
-	Material*	material;
-	Texture*	materialTexture;
+	CombinedMaterial*	combinedMaterial;
+	Texture*			materialTexture;		// TODO: これやめたい。Blit で使っているが・・・
 };
 
 // セマンティクスが関係するシェーダ変数の管理

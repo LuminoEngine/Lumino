@@ -47,17 +47,15 @@ MaterialPtr Material::Create()
 
 //------------------------------------------------------------------------------
 Material::Material()
-	: m_shader(nullptr)
-	, m_valueList()
-	, m_blendMode(BlendMode::Normal)
-	, m_culling(CullingMode::Back)
-	, m_fill(FillMode_Solid)
-	, m_alphaTest(true)
-	, m_depthTestEnabled(true)
-	, m_depthWriteEnabled(true)
-	, m_shaderModified(false)
-	, m_modifiedForMaterialInstance(false)
+	: m_revisionCount(0)
 {
+	m_builtin.shader = nullptr;
+	m_builtin.blendMode = BlendMode::Normal;
+	m_builtin.culling = CullingMode::Back;
+	m_builtin.fill = FillMode_Solid;
+	m_builtin.alphaTest = true;
+	m_builtin.depthTestEnabled = true;
+	m_builtin.depthWriteEnabled = true;
 }
 
 //------------------------------------------------------------------------------
@@ -68,7 +66,7 @@ Material::~Material()
 //------------------------------------------------------------------------------
 void Material::Initialize()
 {
-	m_combinedMaterial = RefPtr<detail::CombinedMaterial>::MakeRef();
+	//m_combinedMaterial = RefPtr<detail::CombinedMaterial>::MakeRef();
 }
 
 //------------------------------------------------------------------------------
@@ -76,79 +74,90 @@ RefPtr<Material> Material::CopyShared() const
 {
 	auto m = RefPtr<Material>::MakeRef();
 	m->Initialize();	// TODO: base
-	m->m_shader = m_shader;
-	m->m_valueList = m_valueList;
-	m->m_linkedVariableList = m_linkedVariableList;
+	m->m_builtin = m_builtin;
+	//m->m_shader = m_shader;
+	////m->m_valueList = m_valueList;
+	////m->m_linkedVariableList = m_linkedVariableList;
 
-	m->m_blendMode = m_blendMode;
-	m->m_culling = m_culling;
-	m->m_fill = m_fill;
-	m->m_alphaTest = m_alphaTest;
-	m->m_depthTestEnabled = m_depthTestEnabled;
-	m->m_depthWriteEnabled = m_depthWriteEnabled;
+	//m->m_blendMode = m_blendMode;
+	//m->m_culling = m_culling;
+	//m->m_fill = m_fill;
+	//m->m_alphaTest = m_alphaTest;
+	//m->m_depthTestEnabled = m_depthTestEnabled;
+	//m->m_depthWriteEnabled = m_depthWriteEnabled;
 
 	// 遅延評価のための変更フラグはそのまま維持。コピー時は評価しない。
 	// コピー先が本当に必要になったタイミングで評価されるようにする。
-	m->m_shaderModified = m_shaderModified;
+	//m->m_shaderModified = m_shaderModified;
 
-	m->m_modifiedForMaterialInstance = m_modifiedForMaterialInstance;
+	//m->m_modifiedForMaterialInstance = m_modifiedForMaterialInstance;
 
+	m->m_revisionCount = m_revisionCount;
 	return m;
 }
 
-//------------------------------------------------------------------------------
-void Material::ResolveCombinedMaterial()
-{
-	m_combinedMaterial->Combine(nullptr, this, nullptr);	// TODO: parent and base
-}
-
-//------------------------------------------------------------------------------
-detail::CombinedMaterial* Material::GetCombinedMaterial() const
-{
-	return m_combinedMaterial;
-}
+////------------------------------------------------------------------------------
+//void Material::ResolveCombinedMaterial()
+//{
+//	m_combinedMaterial->Combine(nullptr, this, nullptr);	// TODO: parent and base
+//}
+//
+////------------------------------------------------------------------------------
+//detail::CombinedMaterial* Material::GetCombinedMaterial() const
+//{
+//	return m_combinedMaterial;
+//}
 
 //------------------------------------------------------------------------------
 void Material::SetShader(Shader* shader)
 {
-	m_shader = shader;
-	m_shaderModified = true;
-	m_modifiedForMaterialInstance = true;
+	if (m_builtin.shader != shader)
+	{
+		m_builtin.shader = shader;
+		//m_shaderModified = true;
+		//m_modifiedForMaterialInstance = true;
+		m_revisionCount++;
+	}
 }
 
 //------------------------------------------------------------------------------
 void Material::SetIntParameter(const StringRef& name, int value)
 {
-	FindShaderValue(name)->SetInt(value);
-	m_modifiedForMaterialInstance = true;
+	uint32_t hashKey = Hash::CalcHash(name.GetBegin(), name.GetLength());
+	FindAndCreateUserShaderValue(hashKey)->SetInt(value);
+	m_revisionCount++;
 }
 
 //------------------------------------------------------------------------------
 void Material::SetFloatParameter(const StringRef& name, float value)
 {
-	FindShaderValue(name)->SetFloat(value);
-	m_modifiedForMaterialInstance = true;
+	uint32_t hashKey = Hash::CalcHash(name.GetBegin(), name.GetLength());
+	FindAndCreateUserShaderValue(hashKey)->SetFloat(value);
+	m_revisionCount++;
 }
 
 //------------------------------------------------------------------------------
 void Material::SetVectorParameter(const StringRef& name, const Vector4& value)
 {
-	FindShaderValue(name)->SetVector(value);
-	m_modifiedForMaterialInstance = true;
+	uint32_t hashKey = Hash::CalcHash(name.GetBegin(), name.GetLength());
+	FindAndCreateUserShaderValue(hashKey)->SetVector(value);
+	m_revisionCount++;
 }
 
 //------------------------------------------------------------------------------
 void Material::SetMatrixParameter(const StringRef& name, const Matrix& value)
 {
-	FindShaderValue(name)->SetMatrix(value);
-	m_modifiedForMaterialInstance = true;
+	uint32_t hashKey = Hash::CalcHash(name.GetBegin(), name.GetLength());
+	FindAndCreateUserShaderValue(hashKey)->SetMatrix(value);
+	m_revisionCount++;
 }
 
 //------------------------------------------------------------------------------
 void Material::SetTextureParameter(const StringRef& name, Texture* value)
 {
-	FindShaderValue(name)->SetManagedTexture(value);
-	m_modifiedForMaterialInstance = true;
+	uint32_t hashKey = Hash::CalcHash(name.GetBegin(), name.GetLength());
+	FindAndCreateUserShaderValue(hashKey)->SetManagedTexture(value);
+	m_revisionCount++;
 }
 
 //------------------------------------------------------------------------------
@@ -183,76 +192,119 @@ void Material::SetAlphaTestEnabled(bool enabled)
 {
 }
 
+////------------------------------------------------------------------------------
+//void Material::LinkVariables()
+//{
+//	m_linkedVariableList.Clear();
+//
+//	if (m_shader != nullptr)
+//	{
+//		for (ShaderVariable* v : m_shader->GetVariables())
+//		{
+//			if (v->GetType() == ShaderVariableType_Unknown ||
+//				v->GetType() == ShaderVariableType_String)
+//			{
+//				// Unknown と String 型は無視。String 型は読み取り専用で、Material としては持っておく必要ない。
+//			}
+//			else
+//			{
+//				// このマテリアルの値として、シェーダ変数値を保持する変数を作る
+//				ShaderValuePtr valuePtr;
+//				if (!m_valueList.TryGetValue(v->GetName(), &valuePtr))
+//				{
+//					valuePtr = std::make_shared<ShaderValue>(v->GetShaderValue());	// 初期値
+//					m_valueList.Add(v->GetName(), valuePtr);
+//				}
+//
+//				// 変数と値のペア
+//				ValuePair pair = { v, valuePtr };
+//				m_linkedVariableList.Add(pair);
+//			}
+//		}
+//	}
+//
+//	// TODO: シェーダが変更されたことで不要となるものを m_valueList から除外したほうがいいかも
+//}
+//
+////------------------------------------------------------------------------------
+//ShaderValue* Material::FindShaderValue(const StringRef& name)
+//{
+//	ShaderValuePtr v;
+//	if (!m_valueList.TryGetValue(name, &v))
+//	{
+//		v = std::make_shared<ShaderValue>();
+//		m_valueList.Add(name, v);
+//	}
+//	return v.get();
+//}
+//
+////------------------------------------------------------------------------------
+//ShaderValue* Material::FindShaderValueConst(const StringRef& name) const
+//{
+//	ShaderValuePtr v;
+//	if (!m_valueList.TryGetValue(name, &v))
+//	{
+//		return nullptr;
+//	}
+//	return v.get();
+//}
+
 //------------------------------------------------------------------------------
-void Material::LinkVariables()
+//void Material::ApplyToShaderVariables()
+//{
+//	if (m_shaderModified)
+//	{
+//		LinkVariables();
+//		m_shaderModified = false;
+//	}
+//
+//	for (auto& pair : m_linkedVariableList)
+//	{
+//		pair.variable->SetShaderValue(*pair.value);
+//	}
+//}
+
+//------------------------------------------------------------------------------
+ShaderValue* Material::FindAndCreateUserShaderValue(uint32_t hashKey)
 {
-	m_linkedVariableList.Clear();
-
-	if (m_shader != nullptr)
+	auto itr = m_builtinValueMap.find(hashKey);
+	if (itr != m_builtinValueMap.end())
 	{
-		for (ShaderVariable* v : m_shader->GetVariables())
-		{
-			if (v->GetType() == ShaderVariableType_Unknown ||
-				v->GetType() == ShaderVariableType_String)
-			{
-				// Unknown と String 型は無視。String 型は読み取り専用で、Material としては持っておく必要ない。
-			}
-			else
-			{
-				// このマテリアルの値として、シェーダ変数値を保持する変数を作る
-				ShaderValuePtr valuePtr;
-				if (!m_valueList.TryGetValue(v->GetName(), &valuePtr))
-				{
-					valuePtr = std::make_shared<ShaderValue>(v->GetShaderValue());	// 初期値
-					m_valueList.Add(v->GetName(), valuePtr);
-				}
-
-				// 変数と値のペア
-				ValuePair pair = { v, valuePtr };
-				m_linkedVariableList.Add(pair);
-			}
-		}
+		return &(itr->second);
 	}
 
-	// TODO: シェーダが変更されたことで不要となるものを m_valueList から除外したほうがいいかも
+	ShaderValue& value = m_builtinValueMap[hashKey];
+	return &value;
 }
 
 //------------------------------------------------------------------------------
-ShaderValue* Material::FindShaderValue(const StringRef& name)
+const ShaderValue* Material::FindUserShaderValueConst(uint32_t hashKey) const
 {
-	ShaderValuePtr v;
-	if (!m_valueList.TryGetValue(name, &v))
-	{
-		v = std::make_shared<ShaderValue>();
-		m_valueList.Add(name, v);
-	}
-	return v.get();
+	auto itr = m_builtinValueMap.find(hashKey);
+	if (itr != m_builtinValueMap.end())
+		return &(itr->second);
+	return nullptr;
 }
 
 //------------------------------------------------------------------------------
-ShaderValue* Material::FindShaderValueConst(const StringRef& name) const
+uint32_t Material::GetHashCode()
 {
-	ShaderValuePtr v;
-	if (!m_valueList.TryGetValue(name, &v))
+	if (m_revisionCount != 0)
 	{
-		return nullptr;
-	}
-	return v.get();
-}
+		m_hashCode = 0;
+		m_revisionCount = 0;
 
-//------------------------------------------------------------------------------
-void Material::ApplyToShaderVariables()
-{
-	if (m_shaderModified)
-	{
-		LinkVariables();
-		m_shaderModified = false;
+		// TODO: map じゃなくて List で思う。20個も普通値いれないだろうし
+		for (auto& pair : m_userValueMap)
+			m_hashCode |= Hash::CalcHash(reinterpret_cast<const char*>(&pair.second), sizeof(pair.second));
+
+		for (auto& pair : m_builtinValueMap)
+			m_hashCode |= Hash::CalcHash(reinterpret_cast<const char*>(&pair.second), sizeof(pair.second));
+
+		m_hashCode = Hash::CalcHash(reinterpret_cast<const char*>(&m_builtin), sizeof(m_builtin));
 	}
 
-	for (auto& pair : m_linkedVariableList)
-	{
-		pair.variable->SetShaderValue(*pair.value);
-	}
+	return m_hashCode;
 }
 
 //------------------------------------------------------------------------------
@@ -264,20 +316,45 @@ static const uint32_t OpacityHash = Hash::CalcHash("Opacity");
 static const uint32_t ColorScaleHash = Hash::CalcHash("ColorScale");
 static const uint32_t BlendColorHash = Hash::CalcHash("BlendColor");
 static const uint32_t ToneHash = Hash::CalcHash("Tone");
+static const uint32_t DiffuseHash = Hash::CalcHash("Diffuse");
+static const uint32_t AmbientHash = Hash::CalcHash("Ambient");
+static const uint32_t SpecularHash = Hash::CalcHash("Specular");
+static const uint32_t EmissiveHash = Hash::CalcHash("Emissive");
+static const uint32_t PowerHash = Hash::CalcHash("Power");
 
-void Material::SetMaterialTexture(Texture* v) { m_builtinValueMap[MaterialTextureHash].SetManagedTexture(v); }
-Texture* Material::GetMaterialTexture() const { auto itr = m_builtinValueMap.find(MaterialTextureHash); return (itr != m_builtinValueMap.end()) ? itr->second.GetManagedTexture() : nullptr; }
+void Material::SetMaterialTexture(Texture* v)
+{
+	m_builtinValueMap[MaterialTextureHash].SetManagedTexture(v);
+	m_revisionCount++;
+}
+Texture* Material::GetMaterialTexture(Texture* defaultValue) const { auto itr = m_builtinValueMap.find(MaterialTextureHash); return (itr != m_builtinValueMap.end()) ? itr->second.GetManagedTexture() : defaultValue; }
 
-void Material::SetOpacity(float v) { m_builtinValueMap[OpacityHash].SetFloat(v); }
+void Material::SetOpacity(float v)
+{
+	m_builtinValueMap[OpacityHash].SetFloat(v);
+	m_revisionCount++;
+}
 float Material::GetOpacity() const { auto itr = m_builtinValueMap.find(OpacityHash); return (itr != m_builtinValueMap.end()) ? itr->second.GetFloat() : 1.0f; }
 
-void Material::SetColorScale(const Color& v) { m_builtinValueMap[ColorScaleHash].SetVector(v); }
+void Material::SetColorScale(const Color& v)
+{
+	m_builtinValueMap[ColorScaleHash].SetVector(v);
+	m_revisionCount++;
+}
 Color Material::GetColorScale() const { auto itr = m_builtinValueMap.find(ColorScaleHash); return (itr != m_builtinValueMap.end()) ? Color(itr->second.GetVector()) : DefaultColorScale; }
 
-void Material::SetBlendColor(const Color& v) { m_builtinValueMap[BlendColorHash].SetVector(v); }
+void Material::SetBlendColor(const Color& v)
+{
+	m_builtinValueMap[BlendColorHash].SetVector(v);
+	m_revisionCount++;
+}
 Color Material::GetBlendColor() const { auto itr = m_builtinValueMap.find(BlendColorHash); return (itr != m_builtinValueMap.end()) ? Color(itr->second.GetVector()) : DefaultBlendColor; }
 
-void Material::SetTone(const ToneF& v) { m_builtinValueMap[ToneHash].SetVector(v); }
+void Material::SetTone(const ToneF& v)
+{
+	m_builtinValueMap[ToneHash].SetVector(v);
+	m_revisionCount++;
+}
 ToneF Material::GetTone() const { auto itr = m_builtinValueMap.find(ToneHash); return (itr != m_builtinValueMap.end()) ? ToneF(itr->second.GetVector()) : DefaultTone; }
 
 
@@ -305,6 +382,9 @@ CombinedMaterial::CombinedMaterial()
 	, m_power(Material::DefaultPower)
 	, m_mainTexture(nullptr)
 	//, m_culling(CullingMode::Back)
+
+	//, m_lastSourceMaterial(nullptr)
+	, m_lastSourceHashCode(0)
 {
 }
 
@@ -316,17 +396,22 @@ CombinedMaterial::~CombinedMaterial()
 //------------------------------------------------------------------------------
 void CombinedMaterial::Combine(Material* parent, Material* owner, Material* ownerBase)
 {
-	bool modified = false;
-	if (owner == nullptr || owner != owner || owner->m_modifiedForMaterialInstance)
-	{
-		modified = true;
-	}
-	if (parent != nullptr && parent->m_modifiedForMaterialInstance)
-	{
-		modified = true;
-	}
+	//bool modified = false;
+	//if (owner == nullptr || owner != owner || owner->m_modifiedForMaterialInstance)
+	//{
+	//	modified = true;
+	//}
+	//if (parent != nullptr && parent->m_modifiedForMaterialInstance)
+	//{
+	//	modified = true;
+	//}
 
-	if (modified)
+	uint32_t hashCode = 0;
+	if (parent != nullptr)		hashCode |= parent->GetHashCode();
+	if (owner != nullptr)		hashCode |= owner->GetHashCode();
+	if (ownerBase != nullptr)	hashCode |= ownerBase->GetHashCode();
+
+	if (m_lastSourceHashCode != hashCode)
 	{
 		Material* source1 = (ownerBase != nullptr) ? ownerBase : owner;
 		Material* source2 = (ownerBase != nullptr) ? owner : nullptr;
@@ -364,24 +449,24 @@ void CombinedMaterial::Combine(Material* parent, Material* owner, Material* owne
 		// TODO: 文字列検索とかしまくっている。いろいろ最適化の余地ある
 		if (source2 != nullptr)
 		{
-			m_diffuse = source1->GetColor(_T("Diffuse"), source2->GetColor(_T("Diffuse"), Material::DefaultDiffuse));
-			m_ambient = source1->GetColor(_T("Ambient"), source2->GetColor(_T("Ambient"), Material::DefaultAmbient));
-			m_specular = source1->GetColor(_T("Specular"), source2->GetColor(_T("Specular"), Material::DefaultSpecular));
-			m_emissive = source1->GetColor(_T("Emissive"), source2->GetColor(_T("Emissive"), Material::DefaultEmissive));
-			m_power = source1->GetFloat(_T("Power"), source2->GetFloat(_T("Power"), Material::DefaultPower));
-			m_mainTexture = source1->GetTexture(Material::MaterialTextureParameter, source2->GetTexture(Material::MaterialTextureParameter, nullptr));
+			m_diffuse = source1->GetColor(DiffuseHash, source2->GetColor(DiffuseHash, Material::DefaultDiffuse));
+			m_ambient = source1->GetColor(AmbientHash, source2->GetColor(AmbientHash, Material::DefaultAmbient));
+			m_specular = source1->GetColor(SpecularHash, source2->GetColor(SpecularHash, Material::DefaultSpecular));
+			m_emissive = source1->GetColor(EmissiveHash, source2->GetColor(EmissiveHash, Material::DefaultEmissive));
+			m_power = source1->GetFloat(PowerHash, source2->GetFloat(PowerHash, Material::DefaultPower));
+			m_mainTexture = source1->GetMaterialTexture(source2->GetMaterialTexture(nullptr));
 		}
 		else
 		{
-			m_diffuse = source1->GetColor(_T("Diffuse"), Material::DefaultDiffuse);
-			m_ambient = source1->GetColor(_T("Ambient"), Material::DefaultAmbient);
-			m_specular = source1->GetColor(_T("Specular"), Material::DefaultSpecular);
-			m_emissive = source1->GetColor(_T("Emissive"), Material::DefaultEmissive);
-			m_power = source1->GetFloat(_T("Power"), Material::DefaultPower);
-			m_mainTexture = source1->GetTexture(Material::MaterialTextureParameter, nullptr);
+			m_diffuse = source1->GetColor(DiffuseHash, Material::DefaultDiffuse);
+			m_ambient = source1->GetColor(AmbientHash, Material::DefaultAmbient);
+			m_specular = source1->GetColor(SpecularHash, Material::DefaultSpecular);
+			m_emissive = source1->GetColor(EmissiveHash, Material::DefaultEmissive);
+			m_power = source1->GetFloat(PowerHash, Material::DefaultPower);
+			m_mainTexture = source1->GetMaterialTexture(nullptr);
 		}
 
-		owner->m_modifiedForMaterialInstance = false;
+		m_lastSourceHashCode = hashCode;
 	}
 }
 

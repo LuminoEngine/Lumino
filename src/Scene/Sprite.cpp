@@ -91,7 +91,7 @@ void Sprite::SetTexture(Texture* texture)
 //------------------------------------------------------------------------------
 Texture* Sprite::GetTexture() const
 {
-	return m_materialList->GetAt(0)->GetMaterialTexture();
+	return m_materialList->GetAt(0)->GetMaterialTexture(nullptr);
 }
 
 //------------------------------------------------------------------------------

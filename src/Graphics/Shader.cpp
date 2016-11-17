@@ -276,7 +276,7 @@ void ShaderSemanticsManager::UpdateElementVariables(const ElementInfo& info)
 //------------------------------------------------------------------------------
 void ShaderSemanticsManager::UpdateSubsetVariables(const SubsetInfo& info)
 {
-	detail::CombinedMaterial* cm = (info.material != nullptr) ? info.material->GetCombinedMaterial() : nullptr;
+	detail::CombinedMaterial* cm = info.combinedMaterial;
 
 	// TODO: このあたり、もし最適化で変数が消えているなら set しなくて良いようにしたい。
 

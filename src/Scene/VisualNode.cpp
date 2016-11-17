@@ -36,23 +36,23 @@ MaterialInstance::~MaterialInstance()
 //------------------------------------------------------------------------------
 void MaterialInstance::Combine(Material* owner, Material* parent)
 {
-	bool modified = false;
-	if (m_owner == nullptr || owner != m_owner || m_owner->m_modifiedForMaterialInstance)
-	{
-		modified = true;
-	}
-	if (parent != nullptr && parent->m_modifiedForMaterialInstance)
-	{
-		modified = true;
-	}
+	//bool modified = false;
+	//if (m_owner == nullptr || owner != m_owner || m_owner->m_modifiedForMaterialInstance)
+	//{
+	//	modified = true;
+	//}
+	//if (parent != nullptr && parent->m_modifiedForMaterialInstance)
+	//{
+	//	modified = true;
+	//}
 
-	if (modified)
-	{
-		// set
-		m_owner = owner;
-		OnCombine(owner, parent);
-		m_owner->m_modifiedForMaterialInstance = false;
-	}
+	//if (modified)
+	//{
+	//	// set
+	//	m_owner = owner;
+	//	OnCombine(owner, parent);
+	//	m_owner->m_modifiedForMaterialInstance = false;
+	//}
 }
 
 //------------------------------------------------------------------------------
@@ -193,7 +193,7 @@ void MaterialList2::UpdateMaterialInstances(SceneGraph* sceneGraph)
 
 	if (parent != nullptr)
 	{
-		parent->m_modifiedForMaterialInstance = false;
+		//parent->m_modifiedForMaterialInstance = false;
 	}
 }
 

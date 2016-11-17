@@ -32,7 +32,7 @@ public:
 
 public:
 	void SetShader(Shader* shader);
-	Shader* GetShader() const { return m_shader; }
+	Shader* GetShader() const { return m_builtin.shader; }
 	
 	void SetIntParameter(const StringRef& name, int value);
 	void SetFloatParameter(const StringRef& name, float value);
@@ -68,25 +68,25 @@ LN_INTERNAL_ACCESS:
 	void Initialize();
 
 LN_INTERNAL_ACCESS:
-	using ShaderValuePtr = std::shared_ptr<ShaderValue>;
+	//using ShaderValuePtr = std::shared_ptr<ShaderValue>;
 
-	struct ValuePair
-	{
-		ShaderVariable*	variable;
-		ShaderValuePtr	value;
-	};
+	//struct ValuePair
+	//{
+	//	ShaderVariable*	variable;
+	//	ShaderValuePtr	value;
+	//};
 
-	const List<ValuePair>& GetLinkedVariableList() { return m_linkedVariableList; }
+	//const List<ValuePair>& GetLinkedVariableList() { return m_linkedVariableList; }
 
 	RefPtr<Material> CopyShared() const;
 
-	void ResolveCombinedMaterial();
-	detail::CombinedMaterial* GetCombinedMaterial() const;
+	//void ResolveCombinedMaterial();
+	//detail::CombinedMaterial* GetCombinedMaterial() const;
 
 public:	// TODO:
 
 	void SetMaterialTexture(Texture* v);
-	Texture* GetMaterialTexture() const;
+	Texture* GetMaterialTexture(Texture* defaultValue) const;
 
 	void SetOpacity(float v);
 	float GetOpacity() const;
@@ -100,12 +100,12 @@ public:	// TODO:
 	void SetTone(const ToneF& v);
 	ToneF GetTone() const;
 
-	Matrix GetUVTransform() const { auto* v = FindShaderValueConst(_T("UVTransform")); return (v) ? v->GetMatrix() : Matrix::Identity; }
+	Matrix GetUVTransform() const { /*auto* v = FindShaderValueConst(_T("UVTransform")); return (v) ? v->GetMatrix() : */ return Matrix::Identity; }
 
-	Color GetColor(const StringRef& name, const Color& defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? Color(v->GetVector()) : defaultValue; }
-	float GetFloat(const StringRef& name, float defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? v->GetFloat() : defaultValue; }
-	Texture* GetTexture(const StringRef& name, Texture* defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? v->GetManagedTexture() : defaultValue; }
-	int GetInt(const StringRef& name, int defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? v->GetInt() : defaultValue; }
+	//Color GetColor(const StringRef& name, const Color& defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? Color(v->GetVector()) : defaultValue; }
+	//float GetFloat(const StringRef& name, float defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? v->GetFloat() : defaultValue; }
+	//Texture* GetTexture(const StringRef& name, Texture* defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? v->GetManagedTexture() : defaultValue; }
+	//int GetInt(const StringRef& name, int defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? v->GetInt() : defaultValue; }
 
 
 	static const Color DefaultDiffuse;	// (1.0f, 1.0f, 1.0f, 1.0f)
@@ -115,36 +115,51 @@ public:	// TODO:
 	static const float DefaultPower;	// (50.0f)
 
 private:
-	void LinkVariables();
-	ShaderValue* FindShaderValue(const StringRef& name);
-	ShaderValue* FindShaderValueConst(const StringRef& name) const;
+	//void LinkVariables();
+	//ShaderValue* FindShaderValue(const StringRef& name);
+	//ShaderValue* FindShaderValueConst(const StringRef& name) const;
+
+	struct BuiltinParameters
+	{
+		RefPtr<Shader>	shader;
+		BlendMode		blendMode;
+		CullingMode		culling;
+		FillMode		fill;
+		bool			alphaTest;
+		bool			depthTestEnabled;
+		bool			depthWriteEnabled;
+	};
 
 	std::unordered_map<uint32_t, ShaderValue>	m_userValueMap;
 	std::unordered_map<uint32_t, ShaderValue>	m_builtinValueMap;
 
 
-	RefPtr<detail::CombinedMaterial>	m_combinedMaterial;
-	RefPtr<Shader>						m_shader;
-	SortedArray<String, ShaderValuePtr>	m_valueList;
-	List<ValuePair>					m_linkedVariableList;
+	//RefPtr<detail::CombinedMaterial>	m_combinedMaterial;
 	
-	BlendMode							m_blendMode;
-	CullingMode							m_culling;
-	FillMode							m_fill;
-	bool								m_alphaTest;
-	bool								m_depthTestEnabled;
-	bool								m_depthWriteEnabled;
+	//SortedArray<String, ShaderValuePtr>	m_valueList;
+	//List<ValuePair>					m_linkedVariableList;
 
-	bool								m_shaderModified;
+	BuiltinParameters	m_builtin;
+	
+
+	//bool								m_shaderModified;
 
 	friend class RenderingContext;
 
 LN_INTERNAL_ACCESS:
-	bool								m_modifiedForMaterialInstance;
+	//bool								m_modifiedForMaterialInstance;
+	int									m_revisionCount;
+	uint32_t							m_hashCode;
 
-	void ApplyToShaderVariables();
+	//void ApplyToShaderVariables();
 
 	const std::unordered_map<uint32_t, ShaderValue>& GetUserValueMap() const { return m_userValueMap; }
+	ShaderValue* FindAndCreateUserShaderValue(uint32_t hashKey);
+	const ShaderValue* FindUserShaderValueConst(uint32_t hashKey) const;
+	const Color& GetColor(uint32_t hashKey, const Color& defaultValue) const { auto* v = FindUserShaderValueConst(hashKey); return (v) ? static_cast<const Color&>(v->GetVector()) : defaultValue; }
+	float GetFloat(uint32_t hashKey, float defaultValue) const { auto* v = FindUserShaderValueConst(hashKey); return (v) ? v->GetFloat() : defaultValue; }
+	Texture* GetTexture(uint32_t hashKey, Texture* defaultValue) const { auto* v = FindUserShaderValueConst(hashKey); return (v) ? v->GetManagedTexture() : defaultValue; }
+	uint32_t GetHashCode();
 };
 
 /**
@@ -168,14 +183,6 @@ public:
 	CombinedMaterial();
 	virtual ~CombinedMaterial();
 
-	struct ValuePair
-	{
-		uint32_t	nameHash;
-		ShaderValue	value;
-	};
-
-	List<ValuePair>	m_userValueTable;
-
 	Shader*			m_shader;
 	Color			m_colorScale;	// 乗算結合済み (opacity 込み)
 	Color			m_blendColor;	// 加算結合済み
@@ -192,9 +199,23 @@ public:
 
 	void Combine(Material* parent, Material* owner, Material* ownerBase);
 
+	uint32_t GetSourceHashCode() const { return m_lastSourceHashCode; }
+
 private:
 	void CopyUserValueTable(Material* source);
 	void MergeUserValueTable(Material* source);
+
+	struct ValuePair
+	{
+		uint32_t	nameHash;
+		ShaderValue	value;
+	};
+
+	List<ValuePair>	m_userValueTable;
+
+	// change monitoring
+	//Material*	m_lastSourceMaterial;
+	uint32_t	m_lastSourceHashCode;
 };
 
 } // namespace detail

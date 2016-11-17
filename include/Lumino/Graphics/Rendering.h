@@ -26,6 +26,7 @@ class NanoVGRenderer;
 class FrameRectRenderer;
 class DrawElementBatch;
 class RenderingPass2;
+class CombinedMaterial;
 
 class DynamicLightInfo
 	: public RefObject
@@ -55,6 +56,12 @@ enum class DrawingSectionId
 };
 
 
+class CombinedMaterialCache
+	: public SimpleOneTimeObjectCache<CombinedMaterial>
+{
+protected:
+	virtual RefPtr<CombinedMaterial> CreateObject() override;
+};
 
 class InternalContext
 	: public RefObject
@@ -108,7 +115,7 @@ public:
 	virtual ~DrawElement();
 
 	virtual void MakeElementInfo(const CameraInfo& cameraInfo, ElementInfo* outInfo);
-	virtual void MakeSubsetInfo(Material* material, SubsetInfo* outInfo);
+	virtual void MakeSubsetInfo(CombinedMaterial* material, SubsetInfo* outInfo);
 
 	//void Draw(InternalContext* context, RenderingPass2* pass);
 	virtual void DrawSubset(InternalContext* context/*, int subsetIndex*/) = 0;
@@ -187,11 +194,13 @@ class DrawElementBatch
 public:
 	DrawElementBatch();
 
-	void SetMaterial(Material* value);
+	void SetCombinedMaterial(CombinedMaterial* value);
+	CombinedMaterial* GetCombinedMaterial() const { return m_combinedMaterial; }
+
 	void SetStandaloneShaderRenderer(bool enabled);
 	bool IsStandaloneShaderRenderer() const;
 
-	bool Equal(const DrawElementBatch& obj) const;
+	bool Equal(const BatchState& state, Material* material) const;
 	void Reset();
 	void ApplyStatus(InternalContext* context, RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
 	size_t GetHashCode() const;
@@ -201,15 +210,9 @@ public:
 	BatchState				state;
 
 
-	// TODO: 適用するとなったマテリアルは、描画終了まで Freeze する。パラメータを変更してはならない。
-	// (まるこぴすれば Freeze の必要ないけど、実際描画とマテリアル変更のタイミングは分けるだろう)
-	RefPtr<Material>		m_material;
-	// shader	TODO: サブセット単位でステート変えられるようにしたいこともあるけど、毎回変数値を作るのはちょっと無駄な気がする
-	//RefPtr<ShaderPass>		m_shaderPass;
-	//List<ShaderValuePair>	m_shaderValueList;
-
 
 private:
+	CombinedMaterial*		m_combinedMaterial;
 	bool					m_standaloneShaderRenderer;
 	mutable size_t			m_hashCode;
 	mutable bool			m_hashDirty;
@@ -242,28 +245,29 @@ public:
 	void ClearCommands();
 
 	template<typename T, typename... TArgs>
-	T* AddCommand(const DrawElementBatch& state, TArgs... args)
+	T* AddCommand(const BatchState& state, Material* availableMaterial, TArgs... args)
 	{
 		auto handle = m_commandDataCache.AllocData(sizeof(T));
 		T* t = new (m_commandDataCache.GetData(handle))T(args...);
-		PostAddCommandInternal(state, t);
+		PostAddCommandInternal(state, availableMaterial, t);
 		return t;
 	}
 
 	byte_t* AllocExtData(size_t size) { return m_extDataCache.GetData(m_extDataCache.AllocData(size)); }
 
-	void ResolveCombinedMaterials();
+	//void ResolveCombinedMaterials();
 
 	void AddDynamicLightInfo(DynamicLightInfo* lightInfo);
 	const List<RefPtr<DynamicLightInfo>>& GetDynamicLightList() const { return m_dynamicLightList; }
 
 private:
-	void PostAddCommandInternal(const DrawElementBatch& state, DrawElement* element);
+	void PostAddCommandInternal(const BatchState& state, Material* availableMaterial, DrawElement* element);
 
 	CommandDataCache		m_commandDataCache;
 	CommandDataCache		m_extDataCache;
 	List<DrawElementBatch>	m_batchList;
 
+	detail::CombinedMaterialCache	m_combinedMaterialCache;
 	List<RefPtr<DynamicLightInfo>>	m_dynamicLightList;
 };
 
@@ -337,7 +341,7 @@ public:
 
 	virtual Shader* GetDefaultShader() const = 0;
 
-	void SelectElementRenderingPolicy(DrawElement* element, Material* material, ElementRenderingPolicy* outPolicy);
+	void SelectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy);
 
 	//virtual void RenderElement(DrawList* renderer, DrawElement* element);
 	//virtual void RenderElementSubset(DrawList* renderer, DrawElement* element, int subsetIndex);
@@ -403,12 +407,6 @@ private:
 };
 
 
-class DefaultMaterialCache
-	: public SimpleOneTimeObjectCache<Material>
-{
-protected:
-	virtual RefPtr<Material> CreateObject() override;
-};
 
 } // namespace detail
 
@@ -518,23 +516,26 @@ LN_INTERNAL_ACCESS:
 	void EndMakeElements();
 	//void BeginFrame(RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
 	void EndFrame();
+
 	const detail::BatchStateBlock& GetState() const { return m_state; }
 	void SetState(const detail::BatchStateBlock& state) { m_state = state; }
 	void AddDynamicLightInfo(detail::DynamicLightInfo* lightInfo);
 
-	template<typename TElement> TElement* ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer);
+	template<typename TElement> TElement* ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer, Material* userMaterial);
 	void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material);
 	void BlitInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Material* material);
 	void DrawFrameRectangle(const RectF& rect);
 
 private:
 	detail::GraphicsManager*		m_manager;
+	
 	detail::BatchStateBlock			m_state;
+	RefPtr<Material>				m_defaultMaterial;
+
 	detail::DrawElementList			m_drawElementList;
 
 	detail::DrawElement*			m_currentSectionTopElement;
 	//detail::DrawElementBatch		m_stateInSection;
-	detail::DefaultMaterialCache	m_defaultMaterialCache;
 
 #if 0
 	/** アルファブレンドの有無 (default: false) */

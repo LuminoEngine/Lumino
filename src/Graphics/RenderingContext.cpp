@@ -473,18 +473,19 @@ void RenderingContext::DrawMesh(StaticMeshModel* mesh, int subset)
 //------------------------------------------------------------------------------
 void RenderingContext::DrawMesh(MeshResource* mesh, int startIndex, int triangleCount, Material* material)
 {
-	material->ApplyToShaderVariables();
+	assert(0);
+	//material->ApplyToShaderVariables();
 
-	// TODO: とりあえず 0 番テクニックの全パスで描画する
-	// Scene のほうで使っている Script も考慮したカスタマイズをしたい場合、
-	// RenderingContext を派生させるのがいいと思う。
-	Shader* shader = material->GetShader();
-	ShaderTechnique* tech = shader->GetTechniques()[0];
-	for (auto* pass : tech->GetPasses())
-	{
-		SetShaderPass(pass);
-		DrawMesh(mesh, startIndex, triangleCount);
-	}
+	//// TODO: とりあえず 0 番テクニックの全パスで描画する
+	//// Scene のほうで使っている Script も考慮したカスタマイズをしたい場合、
+	//// RenderingContext を派生させるのがいいと思う。
+	//Shader* shader = material->GetShader();
+	//ShaderTechnique* tech = shader->GetTechniques()[0];
+	//for (auto* pass : tech->GetPasses())
+	//{
+	//	SetShaderPass(pass);
+	//	DrawMesh(mesh, startIndex, triangleCount);
+	//}
 }
 
 //------------------------------------------------------------------------------

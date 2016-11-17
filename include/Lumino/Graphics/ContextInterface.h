@@ -169,7 +169,7 @@ public:
 		}
 		else
 		{
-			NanoVGCommandList* ptr;
+			T* ptr;
 			m_freeObjects.Pop(&ptr);
 			return ptr;
 		}
