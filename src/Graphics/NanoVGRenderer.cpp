@@ -839,6 +839,12 @@ static void lnnvg__renderTriangles(void* uptr, NVGpaint* paint, NVGscissor* scis
 static void lnnvg__renderDelete(void* uptr)
 {
 	LNNVGcontext* lnc = (LNNVGcontext*)uptr;
+
+	free(lnc->paths);
+	free(lnc->verts);
+	free(lnc->uniforms);
+	free(lnc->calls);
+
 	LN_SAFE_DELETE(lnc);
 }
 
