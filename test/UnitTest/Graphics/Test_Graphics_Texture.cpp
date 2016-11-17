@@ -1,4 +1,5 @@
 #include <TestConfig.h>
+#if 0
 #include "../../../../src/Graphics/GraphicsManager.h"
 
 class Test_Graphics_Texture : public ::testing::Test
@@ -32,4 +33,5 @@ TEST_F(Test_Graphics_Texture, SetSubData)
 	TestEnv::SaveScreenShot(LN_TEMPFILE("test.png"));
 }
 
+#endif
 

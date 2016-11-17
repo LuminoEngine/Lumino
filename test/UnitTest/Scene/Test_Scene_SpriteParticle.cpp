@@ -1,6 +1,7 @@
 #include <TestConfig.h>
 
 
+#if 0
 class Test_Scene_SpriteParticle : public ::testing::Test
 {
 protected:
@@ -128,3 +129,5 @@ TEST_F(Test_Scene_SpriteParticle, MaxParticles)
 
 	ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/Test_Scene_SpriteParticle.MaxParticles.png")));
 }
+#endif
+
