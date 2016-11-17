@@ -284,8 +284,13 @@ ToneF Material::GetTone() const { auto itr = m_builtinValueMap.find(ToneHash); r
 namespace detail {
 
 //==============================================================================
-// MaterialList
+// CombinedMaterial
 //==============================================================================
+/*
+	ユーザー指定のシェーダ変数値の保持は普通の動的配列にしている。
+	検索でのアクセスがメインだが、20個以下なら unorderd_map や SortedList よりも速い。
+	実際にユーザー指定のシェーダ変数が 20 を超えることも稀だろう。
+*/
 
 //------------------------------------------------------------------------------
 CombinedMaterial::CombinedMaterial()
@@ -332,8 +337,9 @@ void CombinedMaterial::Combine(Material* parent, Material* owner, Material* owne
 		m_colorScale.a *= source1->GetOpacity();
 		m_blendColor = source1->GetBlendColor();
 		m_tone = source1->GetTone();
+		CopyUserValueTable(source1);
 
-		// source2
+		// source2 (base があるなら owner を後からマージ)
 		if (source2 != nullptr)
 		{
 			if (m_shader == nullptr) m_shader = source2->GetShader();
@@ -341,6 +347,7 @@ void CombinedMaterial::Combine(Material* parent, Material* owner, Material* owne
 			m_colorScale.a *= source2->GetOpacity();
 			m_blendColor.AddClamp(source2->GetBlendColor());
 			m_tone.AddClamp(source2->GetTone());
+			MergeUserValueTable(source2);
 		}
 
 		// parent
@@ -375,6 +382,36 @@ void CombinedMaterial::Combine(Material* parent, Material* owner, Material* owne
 		}
 
 		owner->m_modifiedForMaterialInstance = false;
+	}
+}
+
+//------------------------------------------------------------------------------
+void CombinedMaterial::CopyUserValueTable(Material* source)
+{
+	assert(source != nullptr);
+	m_userValueTable.Clear();
+	for (auto& pair : source->GetUserValueMap())
+	{
+		m_userValueTable.Add(ValuePair{ pair.first, pair.second });
+	}
+}
+
+//------------------------------------------------------------------------------
+void CombinedMaterial::MergeUserValueTable(Material* source)
+{
+	assert(source != nullptr);
+	for (auto& pair : source->GetUserValueMap())
+	{
+		uint32_t key = pair.first;
+		ValuePair* p = m_userValueTable.Find([key](const ValuePair& p) { return p.nameHash == key; });
+		if (p != nullptr)
+		{
+			p->value = pair.second;
+		}
+		else
+		{
+			m_userValueTable.Add(ValuePair{ pair.first, pair.second });
+		}
 	}
 }
 

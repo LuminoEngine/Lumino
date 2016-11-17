@@ -119,6 +119,7 @@ private:
 	ShaderValue* FindShaderValue(const StringRef& name);
 	ShaderValue* FindShaderValueConst(const StringRef& name) const;
 
+	std::unordered_map<uint32_t, ShaderValue>	m_userValueMap;
 	std::unordered_map<uint32_t, ShaderValue>	m_builtinValueMap;
 
 
@@ -142,6 +143,8 @@ LN_INTERNAL_ACCESS:
 	bool								m_modifiedForMaterialInstance;
 
 	void ApplyToShaderVariables();
+
+	const std::unordered_map<uint32_t, ShaderValue>& GetUserValueMap() const { return m_userValueMap; }
 };
 
 /**
@@ -165,6 +168,14 @@ public:
 	CombinedMaterial();
 	virtual ~CombinedMaterial();
 
+	struct ValuePair
+	{
+		uint32_t	nameHash;
+		ShaderValue	value;
+	};
+
+	List<ValuePair>	m_userValueTable;
+
 	Shader*			m_shader;
 	Color			m_colorScale;	// 乗算結合済み (opacity 込み)
 	Color			m_blendColor;	// 加算結合済み
@@ -180,6 +191,10 @@ public:
 	//CullingMode		m_culling;
 
 	void Combine(Material* parent, Material* owner, Material* ownerBase);
+
+private:
+	void CopyUserValueTable(Material* source);
+	void MergeUserValueTable(Material* source);
 };
 
 } // namespace detail
