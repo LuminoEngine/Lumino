@@ -944,7 +944,7 @@ void NanoVGRenderer::ExecuteCommand(NanoVGCommandList* commandList)
 //------------------------------------------------------------------------------
 void NanoVGRenderer::OnSetState(const DrawElementBatch* state)
 {
-	NanoVGCommandHelper::ExpandState(state->GetBrush(), state->GetPen(), &m_state);
+	NanoVGCommandHelper::ExpandState(state->state.GetBrush(), state->state.GetPen(), &m_state);
 }
 
 //------------------------------------------------------------------------------

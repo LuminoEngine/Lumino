@@ -132,41 +132,64 @@ private:
 	DynamicLightInfo*	m_affectedDynamicLightInfos[DynamicLightInfo::MaxLights];
 };
 
-class DrawElementBatch
+
+class BatchState
 {
 public:
 	static const int MaxMultiRenderTargets = 4;
 
-	struct BuiltinMaterialParameter
-	{
-		//bool		alphaBlendEnabled;
-		//BlendMode	blendMode;
-		Color		blendColor;
-		ToneF		tone;
-	};
+	BatchState();
 
-	//struct ShaderValuePair
-	//{
-	//	ShaderVariable*		variable;
-	//	ShaderValue			value;
-	//};
-
-	DrawElementBatch();
+	void SetBlendMode(BlendMode mode);
 
 	void SetRenderTarget(int index, RenderTarget* renderTarget);
-	RenderTarget* GetRenderTarget(int index) const;
-	void SetMaterial(Material* value);
-	void SetStandaloneShaderRenderer(bool enabled);
-	bool IsStandaloneShaderRenderer() const;
+	RenderTarget* GetRenderTarget(int index) const { return m_renderTargets[index]; }
+
+	void SetDepthBuffer(DepthBuffer* depthBuffer);
+	DepthBuffer* GetDepthBuffer() const { return m_depthBuffer; }
+
+	void SetScissorRect(const Rect& scissorRect);
+	const Rect& GetScissorRect() const { return m_scissorRect; }
 
 	void SetBrush(Brush* brush);
 	Brush* GetBrush() const;
+
 	Pen* GetPen() const { return nullptr; }	// TODO
+
 	void SetFont(Font* font);
 	Font* GetFont() const;
 
-	void SetBaseBlendMode(BlendMode mode);
 
+LN_INTERNAL_ACCESS:
+	void ApplyStatus(InternalContext* context, RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
+	uint32_t GetHashCode() const;
+	void Reset();
+	bool IsHashDirty() const { return m_hashDirty; }
+
+private:
+
+	BlendMode				m_blendMode;
+
+	RefPtr<RenderTarget>	m_renderTargets[MaxMultiRenderTargets];
+	RefPtr<DepthBuffer>		m_depthBuffer;
+	Rect					m_scissorRect;
+
+	RefPtr<Brush>			m_brush;
+	RefPtr<Font>			m_font;
+
+	mutable size_t			m_hashCode;
+	mutable bool			m_hashDirty;
+};
+
+
+class DrawElementBatch
+{
+public:
+	DrawElementBatch();
+
+	void SetMaterial(Material* value);
+	void SetStandaloneShaderRenderer(bool enabled);
+	bool IsStandaloneShaderRenderer() const;
 
 	bool Equal(const DrawElementBatch& obj) const;
 	void Reset();
@@ -175,16 +198,8 @@ public:
 
 	intptr_t				m_rendererId;
 
-	// render state		TODO: マテリアルに属するステートは必要ない
-	BlendMode				m_baseBlendMode;
-	CullingMode				m_cullingMode;
-	bool					m_alphaTestEnabled;
+	BatchState				state;
 
-	BuiltinMaterialParameter	m_builtinMaterialParameter;
-
-	// depth stencil
-	bool					m_depthTestEnabled;
-	bool					m_depthWriteEnabled;
 
 	// TODO: 適用するとなったマテリアルは、描画終了まで Freeze する。パラメータを変更してはならない。
 	// (まるこぴすれば Freeze の必要ないけど、実際描画とマテリアル変更のタイミングは分けるだろう)
@@ -192,21 +207,10 @@ public:
 	// shader	TODO: サブセット単位でステート変えられるようにしたいこともあるけど、毎回変数値を作るのはちょっと無駄な気がする
 	//RefPtr<ShaderPass>		m_shaderPass;
 	//List<ShaderValuePair>	m_shaderValueList;
-	bool					m_standaloneShaderRenderer;
-
-	// screen
-	RefPtr<RenderTarget>	m_renderTargets[MaxMultiRenderTargets];
-	RefPtr<DepthBuffer>		m_depthBuffer;
-	Rect					m_scissorRect;
-
-	// painting
-	RefPtr<Brush>			m_brush;
-	RefPtr<Font>			m_font;
 
 
 private:
-
-
+	bool					m_standaloneShaderRenderer;
 	mutable size_t			m_hashCode;
 	mutable bool			m_hashDirty;
 };

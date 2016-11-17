@@ -366,7 +366,7 @@ void TextRenderer::OnSetState(const DrawElementBatch* state)
 {
 	if (state != nullptr)
 	{
-		SetState(state->GetFont(), state->GetBrush());
+		SetState(state->state.GetFont(), state->state.GetBrush());
 	}
 }
 

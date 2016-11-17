@@ -255,6 +255,30 @@ void Material::ApplyToShaderVariables()
 	}
 }
 
+//------------------------------------------------------------------------------
+static const Color DefaultColorScale(1, 1, 1, 1);
+static const Color DefaultBlendColor(0, 0, 0, 0);
+static const ToneF DefaultTone(0, 0, 0, 0);
+static const uint32_t MaterialTextureHash = Hash::CalcHash("MaterialTexture");
+static const uint32_t OpacityHash = Hash::CalcHash("Opacity");
+static const uint32_t ColorScaleHash = Hash::CalcHash("ColorScale");
+static const uint32_t BlendColorHash = Hash::CalcHash("BlendColor");
+static const uint32_t ToneHash = Hash::CalcHash("Tone");
+
+void Material::SetMaterialTexture(Texture* v) { m_builtinValueMap[MaterialTextureHash].SetManagedTexture(v); }
+Texture* Material::GetMaterialTexture() const { auto itr = m_builtinValueMap.find(MaterialTextureHash); return (itr != m_builtinValueMap.end()) ? itr->second.GetManagedTexture() : nullptr; }
+
+void Material::SetOpacity(float v) { m_builtinValueMap[OpacityHash].SetFloat(v); }
+float Material::GetOpacity() const { auto itr = m_builtinValueMap.find(OpacityHash); return (itr != m_builtinValueMap.end()) ? itr->second.GetFloat() : 1.0f; }
+
+void Material::SetColorScale(const Color& v) { m_builtinValueMap[ColorScaleHash].SetVector(v); }
+Color Material::GetColorScale() const { auto itr = m_builtinValueMap.find(ColorScaleHash); return (itr != m_builtinValueMap.end()) ? Color(itr->second.GetVector()) : DefaultColorScale; }
+
+void Material::SetBlendColor(const Color& v) { m_builtinValueMap[BlendColorHash].SetVector(v); }
+Color Material::GetBlendColor() const { auto itr = m_builtinValueMap.find(BlendColorHash); return (itr != m_builtinValueMap.end()) ? Color(itr->second.GetVector()) : DefaultBlendColor; }
+
+void Material::SetTone(const ToneF& v) { m_builtinValueMap[ToneHash].SetVector(v); }
+ToneF Material::GetTone() const { auto itr = m_builtinValueMap.find(ToneHash); return (itr != m_builtinValueMap.end()) ? ToneF(itr->second.GetVector()) : DefaultTone; }
 
 
 namespace detail {

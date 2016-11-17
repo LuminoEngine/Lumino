@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include <unordered_map>
 #include "Color.h"
 #include "Texture.h"
 #include "Shader.h"
@@ -84,20 +85,20 @@ LN_INTERNAL_ACCESS:
 
 public:	// TODO:
 
-	void SetMaterialTexture(Texture* v) { SetTextureParameter(_T("MaterialTexture"), v); }
-	Texture* GetMaterialTexture() const { return GetTexture(_T("MaterialTexture"), nullptr); }
+	void SetMaterialTexture(Texture* v);
+	Texture* GetMaterialTexture() const;
 
-	void SetOpacity(float v) { SetFloatParameter(_T("Opacity"), v); }
-	float GetOpacity() const { auto* v = FindShaderValueConst(_T("Opacity")); return (v) ? v->GetFloat() : 1.0f; }
+	void SetOpacity(float v);
+	float GetOpacity() const;
 
-	void SetColorScale(const Color& v) { SetColorParameter(_T("ColorScale"), v); }
-	Color GetColorScale() const { auto* v = FindShaderValueConst(_T("ColorScale")); return (v) ? Color(v->GetVector()) : Color::White; }
+	void SetColorScale(const Color& v);
+	Color GetColorScale() const;
 
-	void SetBlendColor(const Color& v) { SetColorParameter(_T("BlendColor"), v); }
-	Color GetBlendColor() const { auto* v = FindShaderValueConst(_T("BlendColor")); return (v) ? Color(v->GetVector()) : Color::Transparency; }
+	void SetBlendColor(const Color& v);
+	Color GetBlendColor() const;
 
-	void SetTone(const ToneF& v) { SetVectorParameter(_T("Tone"), v); }
-	ToneF GetTone() const { auto* v = FindShaderValueConst(_T("Tone")); return (v) ? ToneF(v->GetVector()) : ToneF(); }
+	void SetTone(const ToneF& v);
+	ToneF GetTone() const;
 
 	Matrix GetUVTransform() const { auto* v = FindShaderValueConst(_T("UVTransform")); return (v) ? v->GetMatrix() : Matrix::Identity; }
 
@@ -117,6 +118,9 @@ private:
 	void LinkVariables();
 	ShaderValue* FindShaderValue(const StringRef& name);
 	ShaderValue* FindShaderValueConst(const StringRef& name) const;
+
+	std::unordered_map<uint32_t, ShaderValue>	m_builtinValueMap;
+
 
 	RefPtr<detail::CombinedMaterial>	m_combinedMaterial;
 	RefPtr<Shader>						m_shader;

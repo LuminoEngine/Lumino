@@ -461,7 +461,7 @@ void FrameRectRenderer::Flush()
 //------------------------------------------------------------------------------
 void FrameRectRenderer::OnSetState(const DrawElementBatch* state)
 {
-	SetState(static_cast<TextureBrush*>(state->GetBrush()));
+	SetState(static_cast<TextureBrush*>(state->state.GetBrush()));
 }
 
 } // namespace detail
