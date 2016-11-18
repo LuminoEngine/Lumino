@@ -297,7 +297,6 @@ Sprite2D::~Sprite2D()
 void Sprite2D::Initialize(SceneGraph* owner)
 {
 	Sprite::Initialize(owner, SpriteCoord_2D);
-	CreateMainMaterial();
 }
 
 //------------------------------------------------------------------------------

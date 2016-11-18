@@ -18,18 +18,13 @@ class VisualNode
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
-	/** 可視状態を設定します。false の場合、ノードの描画自体行われません。(default: true) */
-	void SetVisible(bool visible) { m_isVisible = visible; }
 
-	/** 可視状態を取得します。*/
-	bool IsVisible() const { return m_isVisible; }
 
 	//-------------------------------------------------------------------------
 	/** @name Main material utilities. */
 	/** @{ */
 
-	// TODO: Main は普通のマテリアルとは別にしたほうがいい気がする。BlendColor, Tone, Etc...
-	Material* GetMaterial() const;
+	Material* GetMainMaterial() const;
 
 	tr::ReflectionObjectList<Material*>* GetMaterials() const;
 
@@ -102,7 +97,6 @@ public:
 	virtual SceneNodeType GetSceneNodeType() const { return SceneNodeType_VisualNode; }
 	virtual void UpdateFrameHierarchy(SceneNode* parent, float deltaTime) override;
 	virtual void UpdateViewFlustumHierarchy(Camera* camera, SceneNodeArray* renderingNodeList, LightNodeList* renderingLightList);
-	virtual void UpdateAffectLights(LightNodeList* renderingLightList, int maxCount);
 
 	/// ノード単位の描画情報の更新。この後すぐ一連のサブセット描画が始まる
 	//virtual void UpdateNodeRenderingParams(MMEShader* priorityShader) {}
@@ -115,17 +109,11 @@ public:
 	//virtual void OnRender(SceneGraphRenderingContext* dc);
 	//virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) {}
 
-	virtual LightNodeList* GetAffectLightList() { return &m_affectLightList; }
-
-	/// ライトソート用の比較関数 (距離と優先度でソート)
-	static bool CmpLightSort(const Light* left, const Light* right);
 
 protected:
 	VisualNode();
 	virtual ~VisualNode();
 	void Initialize(SceneGraph* owner, int subsetCount);	// TODO: ここでサブセット数渡す必要はないかな
-	void CreateMainMaterial();
-	Material* GetMainMaterial();
 
 LN_INTERNAL_ACCESS:
 	MaterialList2* GetMaterialList() { return m_materialList; }
@@ -141,46 +129,11 @@ protected:
 	//friend class RenderingPass;
 	RefPtr<MaterialList2>					m_materialList;
 	detail::VisualNodeRenderState	m_renderState;
-	bool					m_isVisible;
 
-	LightNodeList			m_affectLightList;
 
 private:
-	RefPtr<Material>	m_mainMaterial;
 };
 
-
-namespace detail
-{
-
-static const int NormalMaterialTypeId = 0;
-static const int MmdMaterialTypeId = 12345;
-
-class MaterialInstance
-	: public RefObject
-{
-public:
-	MaterialInstance(int materialTypeId);
-	virtual ~MaterialInstance();
-
-	int			m_materialTypeId;
-
-	int GetMaterialTypeId() const { return m_materialTypeId; }
-
-	Material*	m_owner;
-	Color		m_colorScale;	// 乗算結合済み (opacity 込み)
-	Color		m_blendColor;	// 加算結合済み
-	ToneF		m_tone;			// 加算結合済み
-	Shader*		m_shader;
-
-	void Combine(Material* owner, Material* parent);
-
-	virtual void OnCombine(Material* owner, Material* parent);
-
-	const Matrix& GetUVTransform() const;
-};
-
-} // namespace detail
 
 /**
 	@brief
@@ -196,13 +149,9 @@ LN_INTERNAL_ACCESS:
 	virtual ~MaterialList2();
 	void Initialize(int subMaterialCount, bool createMainMaterial);
 	void CopyShared(MaterialList* srcList, bool createMainMaterial);
-	void UpdateMaterialInstances(SceneGraph* sceneGraph);
-	int GetMaterialInstanceCount() const { return m_instanceList.GetCount(); }
-	detail::MaterialInstance* GetMaterialInstance(int index) { return m_instanceList[index]; }
 	
 private:
 	RefPtr<Material>				m_mainMaterial;
-	List<RefPtr<detail::MaterialInstance>>	m_instanceList;
 };
 
 LN_NAMESPACE_SCENE_END

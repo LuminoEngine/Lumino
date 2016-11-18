@@ -13,77 +13,6 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
-namespace detail
-{
-
-//==============================================================================
-// MaterialInstance
-//==============================================================================
-
-//------------------------------------------------------------------------------
-MaterialInstance::MaterialInstance(int materialTypeId)
-	: m_materialTypeId(materialTypeId)
-{
-
-}
-
-//------------------------------------------------------------------------------
-MaterialInstance::~MaterialInstance()
-{
-
-}
-
-//------------------------------------------------------------------------------
-void MaterialInstance::Combine(Material* owner, Material* parent)
-{
-	//bool modified = false;
-	//if (m_owner == nullptr || owner != m_owner || m_owner->m_modifiedForMaterialInstance)
-	//{
-	//	modified = true;
-	//}
-	//if (parent != nullptr && parent->m_modifiedForMaterialInstance)
-	//{
-	//	modified = true;
-	//}
-
-	//if (modified)
-	//{
-	//	// set
-	//	m_owner = owner;
-	//	OnCombine(owner, parent);
-	//	m_owner->m_modifiedForMaterialInstance = false;
-	//}
-}
-
-//------------------------------------------------------------------------------
-void MaterialInstance::OnCombine(Material* owner, Material* parent)
-{
-	m_colorScale = m_owner->GetColorScale();
-	m_colorScale.a *= m_owner->GetOpacity();
-	m_blendColor = m_owner->GetBlendColor();
-	m_tone = m_owner->GetTone();
-	m_shader = m_owner->GetShader();
-
-	// combine
-	if (parent != nullptr)
-	{
-		m_colorScale.MultiplyClamp(parent->GetColorScale());
-		m_colorScale.a *= parent->GetOpacity();
-		m_blendColor.AddClamp(parent->GetBlendColor());
-		m_tone.AddClamp(parent->GetTone());
-		if (m_shader == nullptr) {
-			m_shader = parent->GetShader();
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-const Matrix& MaterialInstance::GetUVTransform() const
-{
-	return m_owner->GetUVTransform();
-}
-
-} // namespace detail
 
 //==============================================================================
 // MaterialList2
@@ -143,60 +72,6 @@ Material* MaterialList2::GetMainMaterial() const
 	return m_mainMaterial;
 }
 
-//------------------------------------------------------------------------------
-void MaterialList2::UpdateMaterialInstances(SceneGraph* sceneGraph)
-{
-	// m_mainMaterial は親として使える？
-	Material* parent = nullptr;
-	if (m_mainMaterial != nullptr)
-	{
-		parent = m_mainMaterial;
-	}
-
-	// m_instanceList のサイズをそろえる
-	int subCount = GetCount();
-	if (m_instanceList.GetCount() != subCount)
-	{
-		int oldCount = m_instanceList.GetCount();
-		int d = subCount - oldCount;
-		m_instanceList.Resize(subCount);
-		if (d > 0)
-		{
-			for (int i = 0; i < d; ++i)
-			{
-				m_instanceList[oldCount + i] = RefPtr<detail::MaterialInstance>(sceneGraph->CreateMaterialInstance(), false);
-			}
-		}
-	}
-
-	// m_instanceList の内容を作っていく
-	if (subCount > 0)
-	{
-		for (int i = 0; i < subCount; ++i)
-		{
-			m_instanceList[i]->Combine(GetAt(i), parent);
-		}
-	}
-	else if (parent != nullptr)
-	{
-		// parent はあるけど SubMaterial が1つも無い。parent を使う。
-		if (m_instanceList.GetCount() != 1) m_instanceList.Resize(1);
-		m_instanceList[0]->Combine(parent, nullptr);
-	}
-	else
-	{
-		// parent も SubMaterial も無い。デフォルトのを使う。
-		if (m_instanceList.GetCount() != 1) m_instanceList.Resize(1);
-		LN_NOTIMPLEMENTED();
-		//m_instanceList[0].Combine(parent, nullptr);
-	}
-
-	if (parent != nullptr)
-	{
-		//parent->m_modifiedForMaterialInstance = false;
-	}
-}
-
 
 //==============================================================================
 // VisualNode
@@ -205,8 +80,6 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(VisualNode, SceneNode);
 
 //------------------------------------------------------------------------------
 VisualNode::VisualNode()
-	: m_isVisible(true)
-	, m_mainMaterial(nullptr)
 {
 }
 
@@ -225,7 +98,7 @@ void VisualNode::Initialize(SceneGraph* owner, int subsetCount)
 }
 
 //------------------------------------------------------------------------------
-Material* VisualNode::GetMaterial() const
+Material* VisualNode::GetMainMaterial() const
 {
 	return m_materialList->GetMainMaterial();
 }
@@ -239,17 +112,15 @@ tr::ReflectionObjectList<Material*>* VisualNode::GetMaterials() const
 //------------------------------------------------------------------------------
 void VisualNode::SetOpacity(float opacity, int subsetIndex)
 {
-	LN_CHECK_STATE(m_mainMaterial != nullptr);
-
+	LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr);
 	// TODO: サブマテリアルの設定
-	m_mainMaterial->SetOpacity(opacity);
+	m_materialList->GetMainMaterial()->SetOpacity(opacity);
 }
 void VisualNode::SetColorScale(const Color& color, int subsetIndex)
 {
-	LN_CHECK_STATE(m_mainMaterial != nullptr);
-
+	LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr);
 	// TODO: サブマテリアルの設定
-	m_mainMaterial->SetColorScale(color);
+	m_materialList->GetMainMaterial()->SetColorScale(color);
 }
 void VisualNode::SetColorScale(float r, float g, float b, float a, int subsetIndex)
 {
@@ -265,31 +136,28 @@ void VisualNode::SetColor(int r, int g, int b, int a)
 }
 void VisualNode::SetBlendColor(const Color& color, int subsetIndex)
 {
-	LN_CHECK_STATE(m_mainMaterial != nullptr);
-
+	LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr);
 	// TODO: サブマテリアルの設定
-	m_mainMaterial->SetBlendColor(color);
+	m_materialList->GetMainMaterial()->SetBlendColor(color);
 }
 void VisualNode::SetTone(const ToneF& tone, int subsetIndex)
 {
-	LN_CHECK_STATE(m_mainMaterial != nullptr);
-
+	LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr);
 	// TODO: サブマテリアルの設定
-	m_mainMaterial->SetTone(tone);
+	m_materialList->GetMainMaterial()->SetTone(tone);
 }
 void VisualNode::SetShader(Shader* shader, int subsetIndex)
 {
-	LN_CHECK_STATE(m_mainMaterial != nullptr);
-
+	LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr);
 	// TODO: サブマテリアルの設定
-	m_mainMaterial->SetShader(shader);
+	m_materialList->GetMainMaterial()->SetShader(shader);
 }
 
 //------------------------------------------------------------------------------
 void VisualNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 {
 	// TODO: 描画関係のデータは UpdateFrame でやるべきではないような気もする。
-	m_materialList->UpdateMaterialInstances(m_ownerSceneGraph);
+	//m_materialList->UpdateMaterialInstances(m_ownerSceneGraph);
 
 	SceneNode::UpdateFrameHierarchy(parent, deltaTime);
 }
@@ -334,50 +202,6 @@ void VisualNode::UpdateViewFlustumHierarchy(Camera* camera, SceneNodeArray* rend
 	}
 }
 
-//------------------------------------------------------------------------------
-void VisualNode::UpdateAffectLights(LightNodeList* renderingLightList, int maxCount)
-{
-	/*
-		まず全てのライトに、このノードとの距離をセットする。
-		その後近い順にソートして、ソート結果の先頭から必要な数だけ取りだしている。
-		ライトの数が少なければどんなアルゴリズムにしても大差はないと思うが、
-		ノード単位でソートが実行されるので速度的に少し心配。
-		先頭数個が確定したときにソートを終了する等、最適化の余地はあるが…。
-	*/
-
-	m_affectLightList.Resize(maxCount);
-
-	// ソート基準値の計算
-	for (Light* light : *renderingLightList)
-	{
-		light->m_tmpDistance = (light->m_combinedGlobalMatrix.GetPosition() - m_combinedGlobalMatrix.GetPosition()).GetLengthSquared();
-	}
-
-	// ソート
-	std::stable_sort(renderingLightList->begin(), renderingLightList->end(), CmpLightSort);
-
-	// 出力 (足りない分は nullptr で埋める)
-	int req = std::min(m_affectLightList.GetCount(), renderingLightList->GetCount());
-	int i = 0;
-	for (; i < req; ++i)
-	{
-		m_affectLightList[i] = renderingLightList->GetAt(i);
-	}
-	for (; i < m_affectLightList.GetCount(); ++i)
-	{
-		m_affectLightList[i] = nullptr;
-	}
-}
-bool VisualNode::CmpLightSort(const Light* left, const Light* right)
-{
-	if (left->m_priority == right->m_priority)
-	{
-		// 距離は昇順。近いほうを先に描画する。
-		return left->m_zDistance < right->m_zDistance;
-	}
-	// 優先度は降順。高いほうを先に描画する。
-	return left->m_priority < right->m_priority;
-}
 
 #if 0
 //------------------------------------------------------------------------------
@@ -499,18 +323,6 @@ Shader* VisualNode::GetPrimaryShader() const
 //	if (m_manager->GetEngineDiag() != nullptr) m_manager->GetEngineDiag()->IncreaseVisualNodeDrawCount();
 //}
 
-//------------------------------------------------------------------------------
-void VisualNode::CreateMainMaterial()
-{
-	m_mainMaterial = RefPtr<Material>::MakeRef();
-	m_mainMaterial->Initialize();
-}
-
-//------------------------------------------------------------------------------
-Material* VisualNode::GetMainMaterial()
-{
-	return m_mainMaterial;
-}
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END

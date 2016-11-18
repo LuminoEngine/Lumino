@@ -46,6 +46,7 @@ SceneNode::SceneNode()
 	, m_children(RefPtr<SceneNodeList>::MakeRef())
 	, m_parentNode(NULL)
 	, m_zDistance(FLT_MAX)
+	, m_isVisible(true)
 {
 //	memset(m_renderingPassClientDataList, 0, sizeof(m_renderingPassClientDataList));
 }
@@ -191,11 +192,11 @@ void SceneNode::Render2(DrawList* renderer)
 		m_children->GetAt(i)->Render2(renderer);
 	}
 
-	// diag
-	//if (m_manager->GetEngineDiag() != nullptr) m_manager->GetEngineDiag()->IncreaseVisualNodeDrawCount();
-	GetOwnerSceneGraph()->GetRenderingProfiler().IncreaseNodeDrawCount();
-
-	OnRender2(renderer);
+	if (m_isVisible)
+	{
+		OnRender2(renderer);
+		GetOwnerSceneGraph()->GetRenderingProfiler().IncreaseNodeDrawCount();
+	}
 }
 
 //------------------------------------------------------------------------------

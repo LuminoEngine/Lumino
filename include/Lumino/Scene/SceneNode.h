@@ -61,11 +61,11 @@ public:
 	/// 原点の取得
 	const Vector3& GetCenter() const { return m_transformCenter; }
 
-	///// 可視状態の設定
-	//void SetVisible(bool enabled) { m_isVisible = enabled; }
+	/** 可視状態を設定します。false の場合、ノードの描画自体行われません。(default: true) */
+	void SetVisible(bool visible) { m_isVisible = visible; }
 
-	///// 可視状態の判定
-	//bool IsVisible() const { return m_isVisible; }
+	/** 可視状態を取得します。*/
+	bool IsVisible() const { return m_isVisible; }
 
 	/// 回転順序の設定
 	void SetRotateOrder(RotationOrder order) { m_rotOrder = order; }
@@ -138,12 +138,11 @@ public:
 
 
 	// MME の CONTROLOBJECT アノテーション関係
-	virtual bool IsVisible() const { return false; }
 	virtual const Matrix& GetMatrix() const { return m_combinedGlobalMatrix; }
 	virtual float GetOpacity() const { return 0.0f; }
 	virtual const Matrix& FindFrameMarix(const String& name) const { return Matrix::Identity; }	// TODO
 	virtual float FindMorphBlend(const String& name) const { return 0.0f; }	// TODO
-	virtual LightNodeList* GetAffectLightList() { return NULL; }
+	//virtual LightNodeList* GetAffectLightList() { return NULL; }
 
 protected:
 	virtual void OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph* oldOwner);
@@ -170,7 +169,6 @@ protected:
 	int					m_priority;
 	BillboardType		m_billboardType;
 	SceneNodeRenderingMode	m_renderingMode;
-	//bool				m_isVisible;
 	bool				m_transformModified;	///< 座標変換行列の再計算が必要か
 	bool				m_isAutoUpdate;
 	bool				m_isAutoRemove;
@@ -185,6 +183,9 @@ protected:
 
 	//friend class MMERenderingPass;	// TODO: VisualNode に持ってくべきかも。ついでに friend も何とかしたい
 	//detail::RenderingPassClientData	m_renderingPassClientDataList[detail::MaxRenderingPass];
+
+private:
+	bool				m_isVisible;
 };
 
 class SceneNodeList

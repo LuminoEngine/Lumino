@@ -6,21 +6,11 @@
 #include "Detail.h"
 
 LN_NAMESPACE_BEGIN
-
-namespace detail { class MaterialInstance; }
 class SceneGraphManager;	// TODO: detail
 class DrawList;
 class Camera;
 class SceneNode;
 
-//class LayerList
-//	: public RefObjectList
-//{
-//public:
-//	LN_REF_OBJECT_LIST_DECL(Layer);
-//	LayerList() {}
-//	virtual ~LayerList() {}
-//};
 
 /**
 	@brief
@@ -63,8 +53,6 @@ public:
 	virtual void UpdateFrame(float deltaTime);
 	virtual SceneNode* GetRootNode() = 0;
 	virtual Camera* GetMainCamera() = 0;
-	//virtual List<RenderingPass*>* GetRenderingPasses() = 0;
-	virtual detail::MaterialInstance* CreateMaterialInstance();
 
 protected:
 	SceneGraph();
