@@ -14,7 +14,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 // ScreenMotionBlurImageEffect
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ScreenMotionBlurImageEffect, ImageEffect);
-LN_TR_PROPERTY_IMPLEMENT(ScreenMotionBlurImageEffect, float, AmountProperty, "Amount", m_amount, tr::PropertyMetadata());
+LN_TR_PROPERTY2_IMPLEMENT(ScreenMotionBlurImageEffect, float, Amount, tr::PropertyMetadata());
 
 static const byte_t g_ScreenMotionBlurImageEffect_fx_Data[] =
 {
@@ -33,7 +33,7 @@ ScreenMotionBlurImageEffectPtr ScreenMotionBlurImageEffect::Create()
 //------------------------------------------------------------------------------
 ScreenMotionBlurImageEffect::ScreenMotionBlurImageEffect()
 	: m_accumTexture(nullptr)
-	, m_amount(0)
+	, Amount(0)
 	, m_center(0, 0)
 	, m_scale(1.0)
 {
@@ -74,14 +74,14 @@ void ScreenMotionBlurImageEffect::SetBlurStatus(float amount, const Vector2& cen
 	{
 		auto anim = ValueEasingCurve<float>::Create(0, duration, EasingMode::Linear);
 		AnimationClock* ac = m_manager->GetAnimationManager()->StartPropertyAnimation(this);
-		ac->AddAnimationCurve(anim.Get(), this, AmountProperty, amount);
+		ac->AddAnimationCurve(anim.Get(), this, AmountId, amount);
 	}
 }
 
 //------------------------------------------------------------------------------
 void ScreenMotionBlurImageEffect::OnRender(RenderingContext* context, RenderTarget* source, RenderTarget* destination)
 {
-	if (m_amount == 0.0)
+	if (Amount == 0.0f)
 	{
 		context->Blt(source, destination);
 		return;
@@ -104,7 +104,7 @@ void ScreenMotionBlurImageEffect::OnRender(RenderingContext* context, RenderTarg
 	blurMatrix.Translate(m_center.x, m_center.y, 0);
 
 
-	m_shader.varBlurPower->SetFloat(m_amount);
+	m_shader.varBlurPower->SetFloat(Amount);
 	m_shader.varBlurColor->SetVector(Vector4(1, 1, 1, 1));
 	m_shader.varBlurMatrix->SetMatrix(blurMatrix);
 	m_shader.varSecondaryTexture->SetTexture(m_accumTexture);

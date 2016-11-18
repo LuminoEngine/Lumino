@@ -116,8 +116,8 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 {
 	{
 		auto test = UIStyle::Create();
-		test->AddValue(_T(""), UITextBlock::FontSizeProperty, 20);
-		test->AddValue(_T(""), UITextBlock::ForegroundProperty, ColorBrush::Black);
+		test->AddValue(_T(""), UITextBlock::FontSizeId, 20);
+		test->AddValue(_T(""), UITextBlock::foregroundId, ColorBrush::Black);
 		table->AddStyle(tr::TypeInfo::GetTypeInfo<UITextBlock>(), test);
 	}
 	// UIButton
@@ -130,7 +130,7 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 		brush->SetWrapMode(BrushWrapMode::Stretch);
 
 		auto test = UIStyle::Create();
-		test->AddValue(_T(""), UIElement::BackgroundProperty, brush);
+		test->AddValue(_T(""), UIElement::backgroundId, brush);
 		table->AddStyle(tr::TypeInfo::GetTypeInfo<UIButton>(), test);
 	}
 	{
@@ -142,15 +142,15 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 		brush->SetWrapMode(BrushWrapMode::Stretch);
 
 		auto style = UIStyle::Create();
-		style->AddValue(tr::UIListBox::NormalState, UIElement::BackgroundProperty, brush);
+		style->AddValue(tr::UIListBox::NormalState, UIElement::backgroundId, brush);
 		table->AddStyle(tr::TypeInfo::GetTypeInfo<tr::UIListBox>(), style);
 	}
 
 	{
 		auto style = UIStyle::Create();
-		style->AddValue(tr::UIListBoxItem::NormalState, UIElement::DecoratorBackgroundProperty, ColorBrush::Green);
-		style->AddValue(tr::UIListBoxItem::NormalState, UIElement::DecoratorOpacityProperty, 0.0f, 0.3);
-		style->AddValue(tr::UIListBoxItem::MouseOverState, UIElement::DecoratorOpacityProperty, 1.0f, 0.3);
+		style->AddValue(tr::UIListBoxItem::NormalState, UIElement::decoratorBackgroundId, ColorBrush::Green);
+		style->AddValue(tr::UIListBoxItem::NormalState, UIElement::decoratorOpacityId, 0.0f, 0.3);
+		style->AddValue(tr::UIListBoxItem::MouseOverState, UIElement::decoratorOpacityId, 1.0f, 0.3);
 		table->AddStyle(tr::TypeInfo::GetTypeInfo<tr::UIListBoxItem>(), style);
 	}
 }

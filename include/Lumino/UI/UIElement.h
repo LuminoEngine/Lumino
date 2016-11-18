@@ -23,15 +23,15 @@ class UIElement
 	LN_UI_TYPEINFO_DECLARE();
 
 public:
-	LN_TR_PROPERTY(PointF,				PositionProperty);				/**< Position プロパティの識別子 */
-	LN_TR_PROPERTY(Size,				SizeProperty);					/**< Size プロパティの識別子 */
-	LN_TR_PROPERTY(AlignmentAnchor,		AnchorProperty);				/**< Anchor プロパティの識別子 */
-	LN_TR_PROPERTY(HAlignment,			HAlignmentProperty);			/**< HAlignment プロパティの識別子 */
-	LN_TR_PROPERTY(VAlignment,			VAlignmentProperty);			/**< VAlignment プロパティの識別子 */
-	LN_TR_PROPERTY(BrushPtr,			BackgroundProperty);			/**< Background プロパティの識別子 */
-	LN_TR_PROPERTY(BrushPtr,			ForegroundProperty);			/**< Foreground プロパティの識別子 */
-	LN_TR_PROPERTY(BrushPtr,			DecoratorBackgroundProperty);	/**< DecoratorBackground プロパティの識別子 */
-	LN_TR_PROPERTY(float,				DecoratorOpacityProperty);		/**< Foreground プロパティの識別子 */
+	LN_TR_PROPERTY2(PointF,				position);				/**< Position プロパティの識別子 */
+	LN_TR_PROPERTY2(Size,				size);					/**< Size プロパティの識別子 */
+	LN_TR_PROPERTY2(AlignmentAnchor,	anchor);				/**< Anchor プロパティの識別子 */
+	LN_TR_PROPERTY2(HAlignment,			hAlignment);			/**< HAlignment プロパティの識別子 */
+	LN_TR_PROPERTY2(VAlignment,			vAlignment);			/**< VAlignment プロパティの識別子 */
+	LN_TR_PROPERTY2(BrushPtr,			background);			/**< Background プロパティの識別子 */
+	LN_TR_PROPERTY2(BrushPtr,			foreground);			/**< Foreground プロパティの識別子 */
+	LN_TR_PROPERTY2(BrushPtr,			decoratorBackground);	/**< DecoratorBackground プロパティの識別子 */
+	LN_TR_PROPERTY2(float,				decoratorOpacity);		/**< Foreground プロパティの識別子 */
 
 	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseEnterEvent);				/**< MouseEnter ルーティングイベントの識別子 */
 	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseLeaveEvent);				/**< MouseLeave ルーティングイベントの識別子 */
@@ -62,23 +62,23 @@ public:
 	/** @name Properties */
 	/** @{ */
 
-	void SetPosition(const PointF& value) { tr::PropertyInfo::SetPropertyValueDirect<PointF>(this, PositionProperty, value); }
-	const PointF& GetPosition() const { return tr::PropertyInfo::GetPropertyValueDirect<PointF>(this, PositionProperty); }
+	void SetPosition(const PointF& value) { tr::PropertyInfo::SetPropertyValueDirect<PointF>(this, positionId, value); }
+	const PointF& GetPosition() const { return tr::PropertyInfo::GetPropertyValueDirect<PointF>(this, positionId); }
 
-	void SetSize(const Size& value) { tr::PropertyInfo::SetPropertyValueDirect<Size>(this, SizeProperty, value); }
-	const Size& GetSize() const { return tr::PropertyInfo::GetPropertyValueDirect<Size>(this, SizeProperty); }
+	void SetSize(const Size& value) { tr::PropertyInfo::SetPropertyValueDirect<Size>(this, sizeId, value); }
+	const Size& GetSize() const { return tr::PropertyInfo::GetPropertyValueDirect<Size>(this, sizeId); }
 
-	void SetAnchor(AlignmentAnchor value) { tr::PropertyInfo::SetPropertyValueDirect<AlignmentAnchor>(this, AnchorProperty, value); }
-	AlignmentAnchor GetAnchor() const { return tr::PropertyInfo::GetPropertyValueDirect<AlignmentAnchor>(this, AnchorProperty); }
+	void SetAnchor(AlignmentAnchor value) { tr::PropertyInfo::SetPropertyValueDirect<AlignmentAnchor>(this, anchorId, value); }
+	AlignmentAnchor GetAnchor() const { return tr::PropertyInfo::GetPropertyValueDirect<AlignmentAnchor>(this, anchorId); }
 
-	void SetHAlignment(HAlignment value) { tr::PropertyInfo::SetPropertyValueDirect<HAlignment>(this, HAlignmentProperty, value); }
-	HAlignment GetHAlignment() const { return tr::PropertyInfo::GetPropertyValueDirect<HAlignment>(this, HAlignmentProperty); }
+	void SetHAlignment(HAlignment value) { tr::PropertyInfo::SetPropertyValueDirect<HAlignment>(this, hAlignmentId, value); }
+	HAlignment GetHAlignment() const { return tr::PropertyInfo::GetPropertyValueDirect<HAlignment>(this, hAlignmentId); }
 
-	void SetVAlignment(VAlignment value) { tr::PropertyInfo::SetPropertyValueDirect<VAlignment>(this, VAlignmentProperty, value); }
-	VAlignment GetVAlignment() const { return tr::PropertyInfo::GetPropertyValueDirect<VAlignment>(this, VAlignmentProperty); }
+	void SetVAlignment(VAlignment value) { tr::PropertyInfo::SetPropertyValueDirect<VAlignment>(this, vAlignmentId, value); }
+	VAlignment GetVAlignment() const { return tr::PropertyInfo::GetPropertyValueDirect<VAlignment>(this, vAlignmentId); }
 
-	void SetBackground(Brush* value) { tr::PropertyInfo::SetPropertyValueDirect<BrushPtr>(this, BackgroundProperty, value); }
-	Brush* GetBackground() const { return tr::PropertyInfo::GetPropertyValueDirect<BrushPtr>(this, BackgroundProperty); }
+	void SetBackground(Brush* value) { tr::PropertyInfo::SetPropertyValueDirect<BrushPtr>(this, backgroundId, value); }
+	Brush* GetBackground() const { return tr::PropertyInfo::GetPropertyValueDirect<BrushPtr>(this, backgroundId); }
 
 
 	/** @} */
@@ -209,11 +209,11 @@ protected:
 
 LN_INTERNAL_ACCESS:
 	detail::UIManager* GetManager() const { return m_manager; }
-	const PointF& GetPositionInternal() const { return m_position; }
-	const Size& GetSizeInternal() const { return m_size; }
+	const PointF& GetPositionInternal() const { return position; }
+	const Size& GetSizeInternal() const { return size; }
 	const ThicknessF& GetMargineInternal() const { return m_margin; }
-	AlignmentAnchor GetAnchorInternal() const { return m_anchor; }
-	const BrushPtr& GetForegroundInternal() const { return m_foreground; }
+	AlignmentAnchor GetAnchorInternal() const { return anchor; }
+	const BrushPtr& GetForegroundInternal() const { return foreground; }
 	void SetParent(UIElement* parent);
 	const String& GetCurrentVisualStateName() const { return m_currentVisualStateName; }
 	//AnchorInfo* GetAnchorInfo() {return &m_anchorInfo; }
@@ -272,17 +272,17 @@ private:
 	// Property
 	//		これらには直接値を設定しないこと。Property::SetValueDirect() を使う。
 	//		これによって必要にアニメーションを止めたりできる。
-	tr::Property<PointF>	m_position;
-	tr::Property<Size>		m_size;
+	//tr::Property<PointF>	m_position;
+	//tr::Property<Size>		m_size;
 	ThicknessF				m_margin;
 	ThicknessF				m_padding;
-	tr::Property<AlignmentAnchor>	m_anchor;
-	tr::Property<HAlignment>		m_horizontalAlignment;
-	tr::Property<VAlignment>		m_verticalAlignment;
+	//tr::Property<AlignmentAnchor>	m_anchor;
+	//tr::Property<HAlignment>		m_horizontalAlignment;
+	//tr::Property<VAlignment>		m_verticalAlignment;
 	detail::GridLayoutInfo	m_gridLayoutInfo;
 
-	tr::Property<BrushPtr>			m_background;
-	tr::Property<BrushPtr>			m_foreground;
+	//tr::Property<BrushPtr>			m_background;
+	//tr::Property<BrushPtr>			m_foreground;
 	//detail::BorderInfo				m_border;
 
 
@@ -290,8 +290,8 @@ private:
 	float							m_opacity;
 	//ToneF							m_tone;
 
-	tr::Property<BrushPtr>				m_decoratorBackground;
-	tr::Property<float>					m_decoratorOpacity;
+	//tr::Property<BrushPtr>				m_decoratorBackground;
+	//tr::Property<float>					m_decoratorOpacity;
 
 
 	//RefPtr<Style>					m_style;

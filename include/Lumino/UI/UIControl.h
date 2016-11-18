@@ -13,16 +13,16 @@ class UIControl
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:
-	LN_TR_PROPERTY(HAlignment,	HContentAlignmentProperty);		/**< HContentAlignment プロパティの識別子 */
-	LN_TR_PROPERTY(VAlignment,	VContentAlignmentProperty);		/**< VContentAlignment プロパティの識別子 */
+	LN_TR_PROPERTY2(HAlignment,	HContentAlignment);		/**< HContentAlignment プロパティの識別子 */
+	LN_TR_PROPERTY2(VAlignment,	VContentAlignment);		/**< VContentAlignment プロパティの識別子 */
 	
 public:
 	
-	void SetHContentAlignment(HAlignment value) { tr::PropertyInfo::SetPropertyValueDirect<HAlignment>(this, HContentAlignmentProperty, value); }
-	HAlignment GetHContentAlignment() const { return tr::PropertyInfo::GetPropertyValueDirect<HAlignment>(this, HContentAlignmentProperty); }
+	void SetHContentAlignment(HAlignment value) { tr::PropertyInfo::SetPropertyValueDirect<HAlignment>(this, HContentAlignmentId, value); }
+	HAlignment GetHContentAlignment() const { return tr::PropertyInfo::GetPropertyValueDirect<HAlignment>(this, HContentAlignmentId); }
 
-	void SetVContentAlignment(VAlignment value) { tr::PropertyInfo::SetPropertyValueDirect<VAlignment>(this, VContentAlignmentProperty, value); }
-	VAlignment GetVContentAlignment() const { return tr::PropertyInfo::GetPropertyValueDirect<VAlignment>(this, VContentAlignmentProperty); }
+	void SetVContentAlignment(VAlignment value) { tr::PropertyInfo::SetPropertyValueDirect<VAlignment>(this, VContentAlignmentId, value); }
+	VAlignment GetVContentAlignment() const { return tr::PropertyInfo::GetPropertyValueDirect<VAlignment>(this, VContentAlignmentId); }
 
 protected:
 	UIControl();
@@ -42,8 +42,6 @@ LN_INTERNAL_ACCESS:
 	UIElement* GetVisualTreeRoot() { return m_visualTreeRoot; }
 
 private:
-	tr::Property<VAlignment>	m_verticalContentAlignment;
-	tr::Property<HAlignment>	m_horizontalContentAlignment;
 
 	UIElement*	m_visualTreeRoot;
 };

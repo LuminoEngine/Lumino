@@ -15,7 +15,7 @@ class ToneImageEffect
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	LN_TR_PROPERTY(Vector4, Tone);
+	LN_TR_PROPERTY2(Vector4, Tone);
 
 public:
 	static ToneImageEffectPtr Create();
@@ -31,7 +31,6 @@ protected:
 	virtual void OnRender(RenderingContext* context, RenderTarget* source, RenderTarget* destination) override;
 
 private:
-	tr::Property<Vector4> m_tone;
 
 	struct ShaderInfo
 	{

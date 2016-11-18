@@ -9,8 +9,8 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 LN_UI_TYPEINFO_IMPLEMENT(UIControl, UIElement);
 
-LN_TR_PROPERTY_IMPLEMENT(UIControl, HAlignment, HContentAlignmentProperty, "HContentAlignment", m_horizontalContentAlignment, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(UIControl, VAlignment, VContentAlignmentProperty, "VContentAlignment", m_verticalContentAlignment, tr::PropertyMetadata());
+LN_TR_PROPERTY2_IMPLEMENT(UIControl, HAlignment, HContentAlignment, tr::PropertyMetadata());
+LN_TR_PROPERTY2_IMPLEMENT(UIControl, VAlignment, VContentAlignment, tr::PropertyMetadata());
 
 //------------------------------------------------------------------------------
 UIControl::UIControl()
@@ -76,14 +76,14 @@ Size UIControl::ArrangeOverride(const Size& finalSize)
 //------------------------------------------------------------------------------
 const HAlignment* UIControl::GetPriorityContentHAlignment()
 {
-	if (m_horizontalContentAlignment.Get() == VAlignment::Stretch) return nullptr;
-	return &m_horizontalContentAlignment.Get();
+	if (HContentAlignment.Get() == VAlignment::Stretch) return nullptr;
+	return &HContentAlignment.Get();
 }
 //------------------------------------------------------------------------------
 const VAlignment* UIControl::GetPriorityContentVAlignment()
 {
-	if (m_verticalContentAlignment.Get() == VAlignment::Stretch) return nullptr;
-	return &m_verticalContentAlignment.Get();
+	if (VContentAlignment.Get() == VAlignment::Stretch) return nullptr;
+	return &VContentAlignment.Get();
 }
 
 //------------------------------------------------------------------------------

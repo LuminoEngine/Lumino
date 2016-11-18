@@ -17,15 +17,15 @@ LN_NAMESPACE_BEGIN
 LN_UI_TYPEINFO_IMPLEMENT(UIElement, tr::ReflectionObject);
 
 // Property definition
-LN_TR_PROPERTY_IMPLEMENT(UIElement, PointF, PositionProperty, "Position", m_position, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(UIElement, Size, SizeProperty, "Size", m_size, tr::PropertyMetadata(Size(NAN, NAN)));
-LN_TR_PROPERTY_IMPLEMENT(UIElement, AlignmentAnchor, AnchorProperty, "Anchor", m_anchor, tr::PropertyMetadata(AlignmentAnchor::None));
-LN_TR_PROPERTY_IMPLEMENT(UIElement, HAlignment, HAlignmentProperty, "HAlignment", m_horizontalAlignment, tr::PropertyMetadata(HAlignment::Stretch));
-LN_TR_PROPERTY_IMPLEMENT(UIElement, VAlignment, VAlignmentProperty, "VAlignment", m_verticalAlignment, tr::PropertyMetadata(VAlignment::Stretch));
-LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, BackgroundProperty, "Background", m_background, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, ForegroundProperty, "Foreground", m_foreground, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, DecoratorBackgroundProperty, "DecoratorBackground", m_decoratorBackground, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(UIElement, float, DecoratorOpacityProperty, "DecoratorOpacity", m_decoratorOpacity, tr::PropertyMetadata(0.0f));
+LN_TR_PROPERTY2_IMPLEMENT(UIElement, PointF, position, tr::PropertyMetadata());
+LN_TR_PROPERTY2_IMPLEMENT(UIElement, Size, size, tr::PropertyMetadata());
+LN_TR_PROPERTY2_IMPLEMENT(UIElement, AlignmentAnchor, anchor, tr::PropertyMetadata());
+LN_TR_PROPERTY2_IMPLEMENT(UIElement, HAlignment, hAlignment, tr::PropertyMetadata());
+LN_TR_PROPERTY2_IMPLEMENT(UIElement, VAlignment, vAlignment, tr::PropertyMetadata());
+LN_TR_PROPERTY2_IMPLEMENT(UIElement, BrushPtr, background, tr::PropertyMetadata());
+LN_TR_PROPERTY2_IMPLEMENT(UIElement, BrushPtr, foreground, tr::PropertyMetadata());
+LN_TR_PROPERTY2_IMPLEMENT(UIElement, BrushPtr, decoratorBackground, tr::PropertyMetadata());
+LN_TR_PROPERTY2_IMPLEMENT(UIElement, float, decoratorOpacity, tr::PropertyMetadata());
 
 // Event definition
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIMouseEventArgs, MouseEnterEvent, "MouseEnter", MouseEnter);
@@ -43,14 +43,14 @@ UIElement::UIElement()
 	, m_parent(nullptr)
 	, m_localStyle(nullptr)
 	, m_currentVisualStateStyle(nullptr)
-	, m_position(PointF(0, 0))
-	, m_size(Size(NAN, NAN))
-	, m_anchor(AlignmentAnchor::None)
-	, m_horizontalAlignment(HAlignment::Stretch)
-	, m_verticalAlignment(VAlignment::Stretch)
+	, position(PointF(0, 0))
+	, size(Size(NAN, NAN))
+	, anchor(AlignmentAnchor::None)
+	, hAlignment(HAlignment::Stretch)
+	, vAlignment(VAlignment::Stretch)
 	, m_opacity(1.0f)
-	, m_decoratorBackground(nullptr)
-	, m_decoratorOpacity(1.0f)
+	, decoratorBackground(nullptr)
+	, decoratorOpacity(1.0f)
 	, m_combinedOpacity(0.0f)
 	, m_isEnabled(true)
 	, m_isMouseOver(nullptr)
@@ -188,15 +188,15 @@ void UIElement::OnLayoutUpdated()
 //------------------------------------------------------------------------------
 void UIElement::OnRender(DrawList* g)
 {
-	if (m_background.Get() != nullptr)
+	if (background.Get() != nullptr)
 	{
-		g->SetBrush(m_background.Get());
+		g->SetBrush(background.Get());
 		//g->SetOpacity(m_combinedOpacity);
 		g->DrawRectangle(RectF(0, 0, m_finalLocalRect.GetSize()));
 	}
-	if (m_decoratorBackground.Get() != nullptr)
+	if (decoratorBackground.Get() != nullptr)
 	{
-		g->SetBrush(m_decoratorBackground.Get());
+		g->SetBrush(decoratorBackground.Get());
 		//g->SetOpacity(m_combinedOpacity * m_decoratorOpacity);
 		g->DrawRectangle(RectF(0, 0, m_finalLocalRect.GetSize()));
 	}
@@ -438,8 +438,8 @@ void UIElement::OnUpdatingLayout()
 void UIElement::UpdateLayout(const Size& viewSize)
 {
 	Size size(
-		Math::IsNaNOrInf(m_size.Get().width) ? viewSize.width : m_size.Get().width,
-		Math::IsNaNOrInf(m_size.Get().height) ? viewSize.height : m_size.Get().height);
+		Math::IsNaNOrInf(size.Get().width) ? viewSize.width : size.Get().width,
+		Math::IsNaNOrInf(size.Get().height) ? viewSize.height : size.Get().height);
 
 	// サイズが定まっていない場合はレイアウトを決定できない
 	// TODO: 例外の方が良いかも？
@@ -525,13 +525,13 @@ void UIElement::RaiseEventInternal(const UIEventInfo* ev, UIEventArgs* e)
 }
 
 //------------------------------------------------------------------------------
-const PointF& UIElement::GetLayoutPosition() const { return m_position; }
-const Size& UIElement::GetLayoutSize() const { return m_size; }
+const PointF& UIElement::GetLayoutPosition() const { return position; }
+const Size& UIElement::GetLayoutSize() const { return size; }
 const ThicknessF& UIElement::GetLayoutMargin() const { return m_margin; }
 const ThicknessF& UIElement::GetLayoutPadding() const { return m_padding; }
-AlignmentAnchor UIElement::GetLayoutAnchor() const { return m_anchor; }
-HAlignment UIElement::GetLayoutHAlignment() const { return m_horizontalAlignment; }
-VAlignment UIElement::GetLayoutVAlignment() const { return m_verticalAlignment; }
+AlignmentAnchor UIElement::GetLayoutAnchor() const { return anchor; }
+HAlignment UIElement::GetLayoutHAlignment() const { return hAlignment; }
+VAlignment UIElement::GetLayoutVAlignment() const { return vAlignment; }
 ILayoutElement* UIElement::GetLayoutParent() const { return m_parent; }
 const HAlignment* UIElement::GetLayoutContentHAlignment() { return GetPriorityContentHAlignment(); }
 const VAlignment* UIElement::GetLayoutContentVAlignment() { return GetPriorityContentVAlignment(); }
