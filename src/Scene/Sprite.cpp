@@ -297,8 +297,7 @@ Sprite2D::~Sprite2D()
 void Sprite2D::Initialize(SceneGraph* owner)
 {
 	Sprite::Initialize(owner, SpriteCoord_2D);
-	m_material = RefPtr<Material>::MakeRef();
-	m_material->Initialize();
+	CreateMainMaterial();
 }
 
 //------------------------------------------------------------------------------
@@ -316,10 +315,12 @@ void Sprite2D::SetAnchorPoint(float ratioX, float ratioY)
 //------------------------------------------------------------------------------
 void Sprite2D::OnRender2(DrawList* renderer)
 {
-	detail::MaterialInstance* mat = m_materialList->GetMaterialInstance(0);
+	Material* mat = GetMainMaterial();
+	Color colorScale = mat->GetColorScale();
+	colorScale.a *= mat->GetOpacity();
 	renderer->SetBlendMode(m_renderState.blendMode);
 	renderer->SetTransform(m_combinedGlobalMatrix);
-	renderer->DrawSprite(Vector3::Zero, m_renderSize, m_anchor, GetTexture(), m_renderSourceRect, m_material->GetColorScale(), SpriteBaseDirection::Basic2D);
+	renderer->DrawSprite(Vector3::Zero, m_renderSize, m_anchor, GetTexture(), m_renderSourceRect, colorScale, SpriteBaseDirection::Basic2D);
 }
 
 

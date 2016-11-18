@@ -123,8 +123,6 @@ LN_PROTECTED_INTERNAL_ACCESS:
 
 private:
 	Vector2	m_anchor;
-
-	RefPtr<Material>	m_material;
 };
 
 /**

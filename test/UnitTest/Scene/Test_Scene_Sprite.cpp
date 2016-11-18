@@ -23,8 +23,8 @@ TEST_F(Test_Scene_Sprite, Basic)
 		sprite2->SetPosition(32, 0);
 		sprite2->SetOpacity(0.5);
 
-		Engine::UpdateFrame();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite.Basic.png")));
+		Engine::Update();
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite.Basic1.png")));
 	}
 }
 
@@ -53,8 +53,8 @@ TEST_F(Test_Scene_Sprite, BlendMode)
 	sprite5->SetPosition(128, 0);
 	sprite5->SetBlendMode(BlendMode::Multiply);
 
-	Engine::UpdateFrame();
-	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite.BlendMode.png")));
+	Engine::Update();
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite.BlendMode1.png")));
 }
 
 //------------------------------------------------------------------------------
@@ -84,7 +84,7 @@ TEST_F(Test_Scene_Sprite, Anchor)
 		sprite4->SetPosition(32, 120);
 		sprite4->SetAnchorPoint(0.5, 1);
 
-		Engine::UpdateFrame();
+		Engine::Update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite.Anchor.png")));
 	}
 }
@@ -95,7 +95,7 @@ TEST_F(Test_Scene_Sprite, DrawCallCount)
 	// <Test> ステートが同一であれば1度のドローコールにまとめられる。
 	{
 		// 1度書いて、初期状態のときの描画数を覚えておく
-		Engine::UpdateFrame();
+		Engine::Update();
 		TestEnv::WaitRendering();
 		int defaultCount = EngineDiag::GetGraphicsDeviceDrawCount();
 
@@ -104,7 +104,7 @@ TEST_F(Test_Scene_Sprite, DrawCallCount)
 		auto sprite2 = Sprite2D::Create(tex);
 		auto sprite3 = Sprite2D::Create(tex);
 
-		Engine::UpdateFrame();
+		Engine::Update();
 		TestEnv::WaitRendering();
 		ASSERT_EQ(defaultCount + 1, EngineDiag::GetGraphicsDeviceDrawCount());
 	}
@@ -117,7 +117,7 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 	{
 		auto sprite1 = Sprite2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
 		sprite1->SetSrcRect(32, 0, 32, 32);
-		Engine::UpdateFrame();
+		Engine::Update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Scene_Sprite.Issues_Volkoff_1.png")));
 	}
 	// <Issues> 2D では Z ソートの基準がカメラ位置からの直線距離ではなく、スクリーンからの距離でなければならない。
@@ -130,7 +130,7 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 		auto s2 = Sprite2D::Create(tex2);
 		s1->SetPosition(10, 20, 100);
 		s2->SetPosition(15, 25, 100);	// スクリーンが Z 平面に平行なら、Z が同じときはあとから作ったものが常に手前になる。
-		Engine::UpdateFrame();
+		Engine::Update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Scene_Sprite.Issues_Volkoff_2.png")));
 	}
 	// <Issues> 2D では Z ソートの基準がカメラ位置からの直線距離ではなく、スクリーンからの距離でなければならない。
@@ -142,9 +142,9 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 		tex1->Clear(Color32::Green);
 		tex2->Clear(Color32::Blue);
 		auto s1 = Sprite2D::Create(tex1);
-		Engine::UpdateFrame();			// 1度描く
+		Engine::Update();			// 1度描く
 		s1->SetTexture(tex2);			// 次にテクスチャを変更する
-		Engine::UpdateFrame();
+		Engine::Update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Scene_Sprite.Issues_Volkoff_3.png")));
 	}
 }
@@ -167,7 +167,7 @@ TEST_F(Test_Scene_Sprite3D, Basic)
 	// <Test> 普通の描画
 	// <Test> 不透明度の設定
 	{
-		Engine::UpdateFrame();
+		Engine::Update();
 		int defaultCount = EngineDiag::GetGraphicsDeviceDrawCount();
 
 		auto tex1 = Texture2D::Create(32, 32);
@@ -179,7 +179,7 @@ TEST_F(Test_Scene_Sprite3D, Basic)
 		sprite2->SetPosition(10, 10);
 		sprite3->SetPosition(20, 20);
 
-		Engine::UpdateFrame();
+		Engine::Update();
 		int defaultCount2 = EngineDiag::GetGraphicsDeviceDrawCount();
 		//ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_Sprite3D.Basic.png")));
 	}
@@ -190,19 +190,19 @@ TEST_F(Test_Scene_Sprite3D, ViewFrustumCulling)
 {
 	// <Test> 視錐台化リング
 	{
-		Engine::UpdateFrame();
+		Engine::Update();
 		int count1 = EngineDiag::GetVisualNodeDrawCount();
 
 		auto tex1 = Texture2D::Create(32, 32);
 		auto sprite1 = Sprite3D::Create(1, 1, tex1);
 		auto sprite2 = Sprite3D::Create(1, 1, tex1);
 
-		Engine::UpdateFrame();
+		Engine::Update();
 		int count2 = EngineDiag::GetVisualNodeDrawCount();
 		ASSERT_EQ(count1 + 2, count2);
 
 		sprite2->SetPosition(-100, 0);
-		Engine::UpdateFrame();
+		Engine::Update();
 		int count3 = EngineDiag::GetVisualNodeDrawCount();
 		ASSERT_EQ(count1 + 1, count3);	// 完全に範囲外なので描画されない
 
@@ -221,7 +221,7 @@ TEST_F(Test_Scene_TextBlock2D, Basic)
 {
 	{
 		auto text = TextBlock2D::Create(_T("Lumino"));
-		Engine::UpdateFrame();
+		Engine::Update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_TextBlock2D.Basic1.png")));
 	}
 	{
@@ -250,7 +250,7 @@ TEST_F(Test_Scene_TextBlock2D, Basic)
 		text5->SetPosition(80, 60, 0);
 		text5->SetAnchorPoint(0.5, 0.5);
 
-		Engine::UpdateFrame();
+		Engine::Update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_TextBlock2D.Basic2.png")));
 	}
 }

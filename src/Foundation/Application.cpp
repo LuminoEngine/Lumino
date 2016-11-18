@@ -68,7 +68,7 @@ void GameApplication::Run()
 		do
 		{
 
-		} while (Engine::UpdateFrame());
+		} while (Engine::Update());
 	}
 	catch (...)
 	{

@@ -326,7 +326,7 @@ int main()
 			//auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
 			//Camera::GetMain3DCamera()->SetCameraBehavior(cb);
 
-			while (Engine::UpdateFrame())
+			while (Engine::Update())
 			{
 				if (Input::IsPressed(_T("Left")))
 				{
@@ -600,7 +600,7 @@ int main()
 
 			//frameCapturer->Record();
 
-			if (!Engine::UpdateFrame()) {
+			if (!Engine::Update()) {
 				break;
 			}
 

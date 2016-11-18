@@ -206,6 +206,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(VisualNode, SceneNode);
 //------------------------------------------------------------------------------
 VisualNode::VisualNode()
 	: m_isVisible(true)
+	, m_mainMaterial(nullptr)
 {
 }
 
@@ -238,13 +239,17 @@ tr::ReflectionObjectList<Material*>* VisualNode::GetMaterials() const
 //------------------------------------------------------------------------------
 void VisualNode::SetOpacity(float opacity, int subsetIndex)
 {
-	LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr);	// TODO: サブマテリアルの設定
-	m_materialList->GetMainMaterial()->SetOpacity(opacity);
+	LN_CHECK_STATE(m_mainMaterial != nullptr);
+
+	// TODO: サブマテリアルの設定
+	m_mainMaterial->SetOpacity(opacity);
 }
 void VisualNode::SetColorScale(const Color& color, int subsetIndex)
 {
-	LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr);	// TODO: サブマテリアルの設定
-	m_materialList->GetMainMaterial()->SetColorScale(color.To32BitColor());
+	LN_CHECK_STATE(m_mainMaterial != nullptr);
+
+	// TODO: サブマテリアルの設定
+	m_mainMaterial->SetColorScale(color);
 }
 void VisualNode::SetColorScale(float r, float g, float b, float a, int subsetIndex)
 {
@@ -260,18 +265,24 @@ void VisualNode::SetColor(int r, int g, int b, int a)
 }
 void VisualNode::SetBlendColor(const Color& color, int subsetIndex)
 {
-	LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr);	// TODO: サブマテリアルの設定
-	m_materialList->GetMainMaterial()->SetBlendColor(color.To32BitColor());
+	LN_CHECK_STATE(m_mainMaterial != nullptr);
+
+	// TODO: サブマテリアルの設定
+	m_mainMaterial->SetBlendColor(color);
 }
 void VisualNode::SetTone(const ToneF& tone, int subsetIndex)
 {
-	LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr);	// TODO: サブマテリアルの設定
-	m_materialList->GetMainMaterial()->SetTone(tone);
+	LN_CHECK_STATE(m_mainMaterial != nullptr);
+
+	// TODO: サブマテリアルの設定
+	m_mainMaterial->SetTone(tone);
 }
 void VisualNode::SetShader(Shader* shader, int subsetIndex)
 {
-	LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr);
-	m_materialList->GetMainMaterial()->SetShader(shader);
+	LN_CHECK_STATE(m_mainMaterial != nullptr);
+
+	// TODO: サブマテリアルの設定
+	m_mainMaterial->SetShader(shader);
 }
 
 //------------------------------------------------------------------------------
@@ -487,6 +498,19 @@ Shader* VisualNode::GetPrimaryShader() const
 //	// diag
 //	if (m_manager->GetEngineDiag() != nullptr) m_manager->GetEngineDiag()->IncreaseVisualNodeDrawCount();
 //}
+
+//------------------------------------------------------------------------------
+void VisualNode::CreateMainMaterial()
+{
+	m_mainMaterial = RefPtr<Material>::MakeRef();
+	m_mainMaterial->Initialize();
+}
+
+//------------------------------------------------------------------------------
+Material* VisualNode::GetMainMaterial()
+{
+	return m_mainMaterial;
+}
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END

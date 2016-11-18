@@ -191,6 +191,10 @@ void SceneNode::Render2(DrawList* renderer)
 		m_children->GetAt(i)->Render2(renderer);
 	}
 
+	// diag
+	//if (m_manager->GetEngineDiag() != nullptr) m_manager->GetEngineDiag()->IncreaseVisualNodeDrawCount();
+	GetOwnerSceneGraph()->GetRenderingProfiler().IncreaseNodeDrawCount();
+
 	OnRender2(renderer);
 }
 

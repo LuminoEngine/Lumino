@@ -124,6 +124,8 @@ protected:
 	VisualNode();
 	virtual ~VisualNode();
 	void Initialize(SceneGraph* owner, int subsetCount);	// TODO: ここでサブセット数渡す必要はないかな
+	void CreateMainMaterial();
+	Material* GetMainMaterial();
 
 LN_INTERNAL_ACCESS:
 	MaterialList2* GetMaterialList() { return m_materialList; }
@@ -142,6 +144,9 @@ protected:
 	bool					m_isVisible;
 
 	LightNodeList			m_affectLightList;
+
+private:
+	RefPtr<Material>	m_mainMaterial;
 };
 
 

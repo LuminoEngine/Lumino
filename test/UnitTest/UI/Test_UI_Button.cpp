@@ -16,7 +16,7 @@ TEST_F(Test_UI_Button, Basic)
 	button1->SetText(_T("Button"));
 	uiRoot->SetContent(button1);
 
-	while (Engine::UpdateFrame());
+	while (Engine::Update());
 
 
 }
@@ -42,7 +42,7 @@ TEST_F(Test_UI_GridLayout, Basic)
 
 	tr::WeakRefPtr<UIButton> ref = button;
 
-	Engine::UpdateFrame();
+	Engine::Update();
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.Basic1.png")));
 
@@ -67,7 +67,7 @@ TEST_F(Test_UI_GridLayout, DefaultLayout)
 	grid1->AddChild(button1);
 	uiRoot->SetContent(grid1);
 
-	Engine::UpdateFrame();
+	Engine::Update();
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.DefaultLayout1.png")));
 }
@@ -129,7 +129,7 @@ TEST_F(Test_UI_GridLayout, Layout)
 
 	uiRoot->SetContent(grid1);
 
-	Engine::UpdateFrame();
+	Engine::Update();
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.Layout1.png")));
 }
@@ -170,7 +170,7 @@ TEST_F(Test_UI_GridLayout, TreeLayout)
 
 	uiRoot->SetContent(grid1);
 
-	Engine::UpdateFrame();
+	Engine::Update();
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.TreeLayout1.png")));
 }
@@ -214,7 +214,7 @@ TEST_F(Test_UI_GridLayout, GridLength)
 
 	uiRoot->SetContent(grid1);
 
-	Engine::UpdateFrame();
+	Engine::Update();
 
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.GridLength1.png")));
@@ -261,7 +261,7 @@ TEST_F(Test_UI_GridLayout, MinMax)
 	grid1->AddChild(button3);
 
 
-	Engine::UpdateFrame();
+	Engine::Update();
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.MinMax1.png"), 99, true));
 }

@@ -528,26 +528,53 @@ void EngineManager::InitializeAssetsManager()
 }
 
 //------------------------------------------------------------------------------
-bool EngineManager::UpdateFrame()
-{
-	UpdateFrame2();
+//bool EngineManager::Update()
+//{
+//	UpdateFrame2();
+//
+//	// 手動描画されていなければここで自動描画する
+//	if (!m_frameRenderd)
+//	{
+//		if (BeginRendering())
+//		{
+//			Render();
+//			EndRendering();
+//		}
+//	}
+//
+//	m_frameRenderd = false;
+//	return !m_endRequested;
+//}
+//
+////------------------------------------------------------------------------------
+//bool EngineManager::UpdateFrame2()
+//{
+//	return !m_endRequested;
+//}
 
-	// 手動描画されていなければここで自動描画する
-	if (!m_frameRenderd)
+//------------------------------------------------------------------------------
+bool EngineManager::UpdateUnitily()
+{
+	BeginFrameUpdate();
+	try
 	{
 		if (BeginRendering())
 		{
 			Render();
 			EndRendering();
 		}
+		EndFrameUpdate();
 	}
-
-	m_frameRenderd = false;
-	return !m_endRequested;
+	catch (...)
+	{
+		EndFrameUpdate();
+		throw;
+	}
+	return IsEndRequested();
 }
 
 //------------------------------------------------------------------------------
-bool EngineManager::UpdateFrame2()
+void EngineManager::BeginFrameUpdate()
 {
 	m_fpsController.Process();
 
@@ -597,8 +624,12 @@ bool EngineManager::UpdateFrame2()
 			m_uiManager->GetMainWindow()->UpdateLayout(Size(static_cast<float>(size.width), static_cast<float>(size.height)));
 		}
 	}
+}
 
-	return !m_endRequested;
+//------------------------------------------------------------------------------
+void EngineManager::EndFrameUpdate()
+{
+
 }
 
 //------------------------------------------------------------------------------

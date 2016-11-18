@@ -28,9 +28,10 @@ public:
 		@return		アプリケーションの終了が要求されている場合は false を返します。
 		@details	この関数はグラフィックスと入力を更新し、指定されたフレームレートになるように待機します。
 	*/
-	static bool UpdateFrame();
+	static bool Update();
 
-	static bool UpdateFrame2();
+	static void BeginFrameUpdate();
+	static void EndFrameUpdate();
 	static bool BeginRendering();
 	static void EndRendering();
 	static void Render();

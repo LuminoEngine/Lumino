@@ -37,17 +37,23 @@ void Engine::Terminate()
 }
 
 //------------------------------------------------------------------------------
-bool Engine::UpdateFrame()
+bool Engine::Update()
 {
 	LN_CHECK_STATE(EngineManager::Instance != nullptr);
-	return EngineManager::Instance->UpdateFrame();
+	return EngineManager::Instance->UpdateUnitily();
 }
 
 //------------------------------------------------------------------------------
-bool Engine::UpdateFrame2()
+void Engine::BeginFrameUpdate()
 {
 	LN_CHECK_STATE(EngineManager::Instance != nullptr);
-	return EngineManager::Instance->UpdateFrame2();
+	EngineManager::Instance->BeginFrameUpdate();
+}
+
+//------------------------------------------------------------------------------
+void Engine::EndFrameUpdate()
+{
+	EngineManager::Instance->EndFrameUpdate();
 }
 
 //------------------------------------------------------------------------------

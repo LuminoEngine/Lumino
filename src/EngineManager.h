@@ -180,8 +180,11 @@ public:
 public:
 
 	void SetFixedDeltaTime(float deltaTime) { m_fixedDeltaTime = deltaTime; }
-	bool UpdateFrame();
-	bool UpdateFrame2();
+
+	bool UpdateUnitily();
+
+	void BeginFrameUpdate();
+	void EndFrameUpdate();
 	bool BeginRendering();
 	void EndRendering();
 	void Render();

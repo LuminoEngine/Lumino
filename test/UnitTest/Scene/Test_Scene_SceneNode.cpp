@@ -14,8 +14,9 @@ TEST_F(Test_Scene_SceneNode, Visible)
 	// <Test> Visible プロパティが false の場合は、ドローコール自体呼び出されないこと。
 	{
 		// 1度書いて、初期状態のときの描画数を覚えておく
-		Engine::UpdateFrame();
-		int defaultCount = EngineDiag::GetVisualNodeDrawCount();
+		Engine::Update();
+		//int defaultCount = EngineDiag::GetVisualNodeDrawCount();
+		int defaultCount = SceneGraph::GetDefault2DSceneGraph()->GetRenderingProfiler().GetLastFrameData()->nodeDrawCount;
 
 		auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
 		auto sprite1 = Sprite2D::Create(tex);
@@ -23,8 +24,8 @@ TEST_F(Test_Scene_SceneNode, Visible)
 
 		sprite1->SetVisible(false);
 
-		Engine::UpdateFrame();
-		ASSERT_EQ(defaultCount + 1, EngineDiag::GetVisualNodeDrawCount());
+		Engine::Update();
+		ASSERT_EQ(defaultCount + 1, SceneGraph::GetDefault2DSceneGraph()->GetRenderingProfiler().GetLastFrameData()->nodeDrawCount);
 	}
 }
 
@@ -43,7 +44,7 @@ TEST_F(Test_Scene_SceneNode, DepthTest)
 		box1->GetMaterials()->GetAt(0)->SetMaterialTexture(tex1);
 		box2->GetMaterials()->GetAt(0)->SetMaterialTexture(tex2);
 
-		Engine::UpdateFrame();
+		Engine::Update();
 
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_SceneNode.DepthTest.png")));
 	}

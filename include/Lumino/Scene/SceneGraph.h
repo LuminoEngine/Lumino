@@ -3,6 +3,7 @@
 #include "../BindingSupport.h"
 #include "../Graphics/Texture.h"
 #include "Common.h"
+#include "Detail.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -74,6 +75,7 @@ LN_INTERNAL_ACCESS:
 	//void AddNode(SceneNode* node) { m_allNodes.Add(node); }
 	//void RemoveNode(SceneNode* node) { m_allNodes.Remove(node); }
 	List<Camera*>* GetAllCameraList() { return &m_allCameraList; }
+	detail::SceneGraphRenderingProfilerInterface& GetRenderingProfiler() { return m_renderingProfiler; }
 
 private:
 
@@ -106,6 +108,8 @@ private:
 	MouseState			m_rightMouseState;		///< マウスの右ボタンの状態
 	MouseState			m_middleMouseState;		///< マウスの中ボタンの状態
 	PointI				m_mousePosition;		///< マウスの現在位置
+
+	detail::SceneGraphRenderingProfilerInterface	m_renderingProfiler;
 };
 
 

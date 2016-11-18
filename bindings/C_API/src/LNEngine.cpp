@@ -143,7 +143,7 @@ LNResult LNEngine_UpdateFrame(LNBool* outRequested)
 {
 	LN_CHECK_ARG_RETURN(outRequested != nullptr);
 	LN_FUNC_TRY_BEGIN;
-	*outRequested = LNOTE_BOOL_TO_LNBOOL(LFManager::Engine->UpdateFrame());
+	*outRequested = LNOTE_BOOL_TO_LNBOOL(LFManager::Engine->UpdateUnitily());
 	LN_FUNC_TRY_END_RETURN;
 }
 

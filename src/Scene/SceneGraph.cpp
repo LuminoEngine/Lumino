@@ -40,6 +40,8 @@ SceneGraph::SceneGraph()
 	, m_time(0)
 	, m_elapsedTime(0)
 {
+	// TODO:
+	GetRenderingProfiler().Subscribe();
 }
 
 //------------------------------------------------------------------------------
@@ -198,7 +200,9 @@ void SceneGraph::Render(RenderingContext* context, Camera* camera)
 //------------------------------------------------------------------------------
 void SceneGraph::Render2(DrawList* renderer, Camera* camera)
 {
+	GetRenderingProfiler().BeginSession();
 	GetRootNode()->Render2(renderer);
+	GetRenderingProfiler().EndSession();
 }
 
 //------------------------------------------------------------------------------

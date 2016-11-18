@@ -127,7 +127,7 @@ TEST_F(Test_Graphics_Rendering, DrawLinePrimitive)
 TEST_F(Test_Graphics_Rendering, DrawSquarePrimitive)
 {
 	{
-		Engine::UpdateFrame2();	// update camera transform
+		Engine::BeginFrameUpdate();	// update camera transform
 		if (Engine::BeginRendering())
 		{
 			Engine::Render();
@@ -143,6 +143,7 @@ TEST_F(Test_Graphics_Rendering, DrawSquarePrimitive)
 				Vector3(50, 50, 0), Vector2(1, 1), Color::White);
 			Engine::EndRendering();
 		}
+		Engine::EndFrameUpdate();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSquarePrimitive1.png")));
 	}
 }
@@ -155,13 +156,14 @@ TEST_F(Test_Graphics_Rendering, DrawMesh)
 		auto mesh = RefPtr<StaticMeshModel>::MakeRef();
 		mesh->InitializeSphere(detail::GraphicsManager::GetInstance(), 2, 4, 4, MeshCreationFlags::None);
 
-		Engine::UpdateFrame2();	// update camera transform
+		Engine::BeginFrameUpdate();	// update camera transform
 		if (Engine::BeginRendering())
 		{
 			Engine::Render();
 			Engine::GetDefault3DLayer()->GetRenderer()->DrawMesh(mesh, 0, mesh->GetMeshResource()->GetMaterial(0));
 			Engine::EndRendering();
 		}
+		Engine::EndFrameUpdate();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png")));
 	}
 }
