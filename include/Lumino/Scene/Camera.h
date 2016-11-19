@@ -69,9 +69,6 @@ public:
 	// 2D→3D
 	Vector3 ViewportToWorldPoint(const Vector3& position) const;
 
-
-	//static void Perspective2DLH(float width, float height, float nearClip, float farClip, Matrix* outMatrix);
-
 public:	// internal
 
 	/// 各行列を更新する (SceneNode::UpdateFrameHierarchy() の後で呼び出すこと)

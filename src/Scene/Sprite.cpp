@@ -15,28 +15,6 @@ LN_NAMESPACE_SCENE_BEGIN
 // Sprite
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite, VisualNode);
-//
-////------------------------------------------------------------------------------
-////
-////------------------------------------------------------------------------------
-//Sprite* Sprite::Create()
-//{
-//	RefPtr<Sprite> obj(LN_NEW Sprite(), false);
-//	obj->CreateCore(SceneGraphManager::Instance, SpriteCoord_2D);
-//	obj.SafeAddRef();
-//	return obj;
-//}
-//
-////------------------------------------------------------------------------------
-////
-////------------------------------------------------------------------------------
-//Sprite* Sprite::Create3D()
-//{
-//	RefPtr<Sprite> obj(LN_NEW Sprite(), false);
-//	obj->CreateCore(SceneGraphManager::Instance, SpriteCoord_RZ);
-//	obj.SafeAddRef();
-//	return obj;
-//}
 
 //------------------------------------------------------------------------------
 Sprite::Sprite()

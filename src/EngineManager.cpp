@@ -570,7 +570,7 @@ bool EngineManager::UpdateUnitily()
 		EndFrameUpdate();
 		throw;
 	}
-	return IsEndRequested();
+	return !IsEndRequested();
 }
 
 //------------------------------------------------------------------------------

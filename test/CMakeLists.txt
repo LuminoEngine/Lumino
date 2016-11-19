@@ -41,3 +41,13 @@ link_libraries(Lumino_Static)
 
 add_definitions(-DGTEST_HAS_TR1_TUPLE=0)
 add_executable(Lumino_UnitTest ${LN_TEST_SOURCES})
+
+
+#===============================================================================
+set(LN_SANDBOX_SOURCES
+	Sandbox/Main.cpp
+)
+
+add_executable(LuminoSandbox ${LN_SANDBOX_SOURCES})
+target_link_libraries(LuminoSandbox LuminoFoundation)
+
