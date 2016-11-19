@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.h"
+#include <math.h>
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Rendering.h>
 #include <Lumino/Graphics/GraphicsException.h>
@@ -170,7 +171,7 @@ struct GLNVGfragUniforms
 	};
 };
 
-void glnvg__setUniforms(GLNVGcontext* gl, int uniformOffset, int image);
+static void glnvg__setUniforms(GLNVGcontext* gl, int uniformOffset, int image);
 
 static int glnvg__maxi(int a, int b)
 {

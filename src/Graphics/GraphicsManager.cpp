@@ -192,7 +192,7 @@ void GraphicsManager::Initialize(const ConfigData& configData)
     m_platformTextureLoading = false;
     
     Driver::NSGLGraphicsDevice::ConfigData data;
-    data.MainWindow = configData.MainWindow;
+    data.MainWindow = configData.mainWindow;
     data.OpenGLMajorVersion = 2;
     data.OpenGLMinorVersion = 1;
 

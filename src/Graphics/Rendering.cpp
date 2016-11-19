@@ -1,6 +1,6 @@
 ﻿
-
 #include "../Internal.h"
+#include <float.h>
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Graphics/Rendering.h>
 #include <Lumino/Graphics/ContextInterface.h>
@@ -385,7 +385,7 @@ void BatchState::ApplyStatus(InternalContext* context, RenderTarget* defaultRend
 }
 
 //------------------------------------------------------------------------------
-size_t BatchState::GetHashCode() const
+uint32_t BatchState::GetHashCode() const
 {
 	if (m_hashDirty)
 	{
@@ -1341,7 +1341,7 @@ void DrawList::AddDynamicLightInfo(detail::DynamicLightInfo* lightInfo)
 template<typename TElement>
 TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer, Material* userMaterial)
 {
-	Material* availableMaterial = (userMaterial != nullptr) ? userMaterial : m_defaultMaterial;
+	Material* availableMaterial = (userMaterial != nullptr) ? userMaterial : m_defaultMaterial.Get();
 
 	// これを決定してから比較を行う
 	m_state.state.SetStandaloneShaderRenderer(renderer->IsStandaloneShader());

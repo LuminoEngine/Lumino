@@ -78,7 +78,7 @@ const T* cp_cast(const U* p) { return reinterpret_cast<const T*>(p); }
 //#define FuncLibManager ::LNote::Core::Function::Manager
 
 // 引数チェック
-#define LN_CHECK_ARG_HANDLE(h)		if (h == NULL) { return ::LN_ERROR_ARGUMENT; }	// TODO 中身もチェック
+#define LN_CHECK_ARG_HANDLE(h)		if (h == 0) { return ::LN_ERROR_ARGUMENT; }	// TODO 中身もチェック
 #define LN_CHECK_ARG_RETURN(exp)	if (!(exp)) { return ::LN_ERROR_ARGUMENT; }	// TODO Core のと間違えそうなので名前変えておく
 
 //------------------------------------------------------------------------------

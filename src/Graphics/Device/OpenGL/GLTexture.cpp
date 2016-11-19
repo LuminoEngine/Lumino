@@ -1,5 +1,4 @@
 ﻿
-#pragma once 
 #include "../../../Internal.h"
 #include <Lumino/Graphics/GraphicsException.h>
 #include <Lumino/Graphics/Utils.h>

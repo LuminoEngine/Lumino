@@ -201,7 +201,7 @@ void ShaderSemanticsManager::UpdateElementVariables(const ElementInfo& info)
 					for (int i = 0; i < DynamicLightInfo::MaxLights; i++)
 					{
 						// TODO: Vector4::Zero がほしい
-						auto& v = (lights[i] != nullptr) ? Vector4(lights[i]->m_direction, 0) : Vector4(0, 0, 0, 0);
+						Vector4 v = (lights[i] != nullptr) ? Vector4(lights[i]->m_direction, 0) : Vector4(0, 0, 0, 0);
 						m_tempBufferWriter.Write(&v, sizeof(Vector4));
 					}
 					varInfo.variable->SetVectorArray((const Vector4*)m_tempBuffer.GetBuffer(), DynamicLightInfo::MaxLights);
@@ -213,7 +213,7 @@ void ShaderSemanticsManager::UpdateElementVariables(const ElementInfo& info)
 					for (int i = 0; i < DynamicLightInfo::MaxLights; i++)
 					{
 						// TODO: Vector4::Zero がほしい
-						auto& v = (lights[i] != nullptr) ? Vector4(lights[i]->transform.GetPosition(), 0) : Vector4(0, 0, 0, 0);
+						Vector4 v = (lights[i] != nullptr) ? Vector4(lights[i]->transform.GetPosition(), 0) : Vector4(0, 0, 0, 0);
 						m_tempBufferWriter.Write(&v, sizeof(Vector4));
 					}
 					varInfo.variable->SetVectorArray((const Vector4*)m_tempBuffer.GetBuffer(), DynamicLightInfo::MaxLights);

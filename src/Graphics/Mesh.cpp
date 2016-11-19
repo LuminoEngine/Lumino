@@ -541,7 +541,7 @@ public:
 #endif
 	}
 
-	static uint16_t vertex_index(UINT slices, int slice, int stack)
+	static uint16_t vertex_index(int slices, int slice, int stack)
 	{
 		return stack*slices + slice + 1;
 	}

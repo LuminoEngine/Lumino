@@ -1,5 +1,4 @@
 ﻿
-#pragma once
 #include "../Internal.h"
 #include <Lumino/Graphics/IndexBuffer.h>
 #include "GraphicsManager.h"

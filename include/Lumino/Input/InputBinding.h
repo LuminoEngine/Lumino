@@ -128,7 +128,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	KeyboardBinding(Key key, ModifierKeys modifierKeys);
 	virtual ~KeyboardBinding();
-	virtual detail::InputBindingType GetType() const;
+	virtual detail::InputBindingType GetType() const override;
 
 private:
 	Key				m_key;
@@ -162,7 +162,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	MouseBinding(MouseAction mouseAction, ModifierKeys modifierKeys);
 	virtual ~MouseBinding();
-	virtual detail::InputBindingType GetType() const;
+	virtual detail::InputBindingType GetType() const override;
 
 private:
 	MouseAction		m_mouseAction;
@@ -192,7 +192,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	GamepadBinding(GamepadElement element);
 	virtual ~GamepadBinding();
-	virtual detail::InputBindingType GetType() const;
+	virtual detail::InputBindingType GetType() const override;
 
 private:
 	GamepadElement		m_element;

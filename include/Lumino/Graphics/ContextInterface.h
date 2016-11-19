@@ -148,7 +148,7 @@ private:
 	bool					m_stateChanged;
 
 	friend class GraphicsManager;
-	friend class ShaderVariable;
+	friend class ::ln::ShaderVariable;
 };
 
 

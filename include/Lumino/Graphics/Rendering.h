@@ -99,7 +99,7 @@ private:
 	RefPtr<FrameRectRenderer>	m_frameRectRenderer;
 	const DrawElementBatch*		m_currentStatePtr;
 
-	friend class DrawList;
+	friend class ::ln::DrawList;
 };
 
 class DrawElement

@@ -241,8 +241,8 @@ void Viewport::Render()
 	// ZIndex でソート
 	std::stable_sort(m_viewportLayerList->begin(), m_viewportLayerList->end(),
 		[](const ViewportLayer* lhs, const ViewportLayer* rhs) { return lhs->GetZIndex() < rhs->GetZIndex(); });
-
-	for (auto& layer : *m_viewportLayerList)
+	
+	for (ViewportLayer* layer : *m_viewportLayerList)
 	{
 		context->SetRenderTarget(0, m_primaryLayerTarget);
 		layer->OnBeginFrameRender(m_primaryLayerTarget, m_depthBuffer);
