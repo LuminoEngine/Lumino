@@ -14,6 +14,18 @@ class Material;
 class StaticMeshModel;
 class DrawList;
 
+
+enum class DrawElementCategory
+{
+	SceneObject,
+	Information,
+};
+
+struct DrawElementMetadata
+{
+	DrawElementCategory	category = DrawElementCategory::SceneObject;
+};
+
 namespace detail {
 class GraphicsManager;
 class IRendererPloxy;
@@ -110,6 +122,7 @@ public:
 	DrawingSectionId	drawingSectionId;
 	detail::Sphere		boundingSphere;
 	int					subsetIndex;
+	DrawElementMetadata	metadata;
 
 	DrawElement();
 	virtual ~DrawElement();
@@ -407,6 +420,15 @@ private:
 };
 
 
+class InfomationRenderingPass
+	: public NonShadingRenderingPass
+{
+public:
+	InfomationRenderingPass();
+	virtual ~InfomationRenderingPass();
+	void Initialize(GraphicsManager* manager);
+};
+
 
 } // namespace detail
 
@@ -484,7 +506,7 @@ public:
 		const Vector3& position4, const Vector2& uv4, const Color& color4/*,
 		ShaderPass* shaderPass*/);
 
-	void DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material);
+	void DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material, const DrawElementMetadata* metadata = nullptr);
 
 	void Blit(Texture* source);
 	void Blit(Texture* source, const Matrix& transform);
@@ -522,7 +544,7 @@ LN_INTERNAL_ACCESS:
 	void AddDynamicLightInfo(detail::DynamicLightInfo* lightInfo);
 
 	template<typename TElement> TElement* ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer, Material* userMaterial);
-	void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material);
+	void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material, const DrawElementMetadata* metadata);
 	void BlitInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Material* material);
 	void DrawFrameRectangle(const RectF& rect);
 

@@ -10,7 +10,7 @@ class SceneGraphManager;	// TODO: detail
 class DrawList;
 class Camera;
 class SceneNode;
-
+class StaticMeshModel;
 
 /**
 	@brief
@@ -36,7 +36,7 @@ public:
 
 	/// 描画
 	//void Render(RenderingContext* context, Camera* camera);
-	void Render2(DrawList* renderer, Camera* camera);
+	virtual void Render2(DrawList* renderer, Camera* camera);
 
 	/// マウス移動イベントを通知する (ViewPane の左上を 0,0 とした座標を指定する)
 	bool InjectMouseMove(int x, int y);
@@ -142,11 +142,17 @@ public:
 	Basic3DSceneGraph();
 	virtual ~Basic3DSceneGraph();
 	void CreateCore(SceneGraphManager* manager);
+	virtual void Render2(DrawList* renderer, Camera* camera) override;
 
 private:
+	void CreateGridContents();
+	void AdjustGridMesh(Camera* camera);
+
 	SceneNode*				m_defaultRoot;
 	Camera*					m_defaultCamera;
 	RefPtr<Light>			m_defaultLight;
+
+	RefPtr<StaticMeshModel>	m_gridPlane;
 };
 
 LN_NAMESPACE_END

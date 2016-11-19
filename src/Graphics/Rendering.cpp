@@ -910,6 +910,27 @@ Shader* ForwardShadingRenderingPass::GetDefaultShader() const
 
 
 //==============================================================================
+// InfomationRenderingPass
+//==============================================================================
+
+//------------------------------------------------------------------------------
+InfomationRenderingPass::InfomationRenderingPass()
+{
+}
+
+//------------------------------------------------------------------------------
+InfomationRenderingPass::~InfomationRenderingPass()
+{
+}
+
+//------------------------------------------------------------------------------
+void InfomationRenderingPass::Initialize(GraphicsManager* manager)
+{
+	NonShadingRenderingPass::Initialize(manager);
+}
+
+
+//==============================================================================
 // CombinedMaterialCache
 //==============================================================================
 
@@ -1185,9 +1206,9 @@ void DrawList::DrawSquarePrimitive(
 }
 
 //------------------------------------------------------------------------------
-void DrawList::DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material)
+void DrawList::DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material, const DrawElementMetadata* metadata)
 {
-	DrawMeshSubsetInternal(mesh, subsetIndex, material);
+	DrawMeshSubsetInternal(mesh, subsetIndex, material, metadata);
 }
 
 //------------------------------------------------------------------------------
@@ -1374,7 +1395,7 @@ TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId, detai
 //}
 
 //------------------------------------------------------------------------------
-void DrawList::DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material)
+void DrawList::DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material, const DrawElementMetadata* metadata)
 {
 	/* 
 	 * この時点では MeshResource ではなく StaticMeshModel が必要。
@@ -1397,6 +1418,7 @@ void DrawList::DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Ma
 	const MeshAttribute& attr = mesh->GetMeshResource()->m_attributes[subsetIndex];
 	auto* e = ResolveDrawElement<DrawElement_DrawMeshInternal>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_meshRenderer, material);
 	e->subsetIndex = subsetIndex;
+	if (metadata != nullptr) e->metadata = *metadata;
 	e->mesh = mesh;
 	e->startIndex = attr.StartIndex;
 	e->triangleCount = attr.PrimitiveNum;

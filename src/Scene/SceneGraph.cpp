@@ -1,6 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include <Lumino/Graphics/RenderingContext.h>
+#include <Lumino/Graphics/Mesh.h>
 //#include "MME/MMERenderingPass.h"
 //#include "MME/MmdMaterial.h"	// TODO
 #include "SceneGraphManager.h"
@@ -378,6 +379,8 @@ void Basic3DSceneGraph::CreateCore(SceneGraphManager* manager)
 	m_defaultLight = RefPtr<Light>::MakeRef();
 	m_defaultLight->Initialize(this, LightType_Directional);
 	m_defaultRoot->AddChild(m_defaultLight);
+
+	CreateGridContents();
 }
 
 //------------------------------------------------------------------------------
@@ -385,6 +388,122 @@ void Basic3DSceneGraph::UpdateFrame(float elapsedTime)
 {
 	SceneGraph::UpdateFrame(elapsedTime);
 	m_defaultRoot->UpdateFrameHierarchy(nullptr, elapsedTime);
+}
+
+//------------------------------------------------------------------------------
+void Basic3DSceneGraph::Render2(DrawList* renderer, Camera* camera)
+{
+	SceneGraph::Render2(renderer, camera);
+
+	if (0)
+	{
+		AdjustGridMesh(camera);
+		renderer->SetBlendMode(BlendMode::Alpha);	// TODO: ステートはマテリアルへ
+		renderer->DrawMesh(m_gridPlane, 0, m_gridPlane->GetMeshResource()->GetMaterial(0));
+	}
+}
+
+//------------------------------------------------------------------------------
+void Basic3DSceneGraph::CreateGridContents()
+{
+	detail::GraphicsManager* gm = GetManager()->GetGraphicsManager();
+
+	// 適当な四角形メッシュ
+	m_gridPlane = RefPtr<StaticMeshModel>::MakeRef();
+	m_gridPlane->InitializeSquarePlane(gm, Vector2(1, 1), Vector3::UnitY, MeshCreationFlags::DynamicBuffers);
+	MeshResource* mesh = m_gridPlane->GetMeshResource();
+
+	// シェーダ (DrawingContext3D)
+	static const byte_t shaderCode[] =
+	{
+#include "Resource/InfinitePlaneGrid.lfx.h"
+	};
+	static const size_t shaderCodeLen = LN_ARRAY_SIZE_OF(shaderCode);
+	auto shader = RefPtr<Shader>::MakeRef();
+	shader->Initialize(gm, shaderCode, shaderCodeLen);
+	mesh->GetMaterial(0)->SetShader(shader);
+
+	// 四方の辺に黒線を引いたテクスチャを作り、マテリアルにセットしておく
+	SizeI gridTexSize(512, 512);
+	auto gridTex = RefPtr<Texture2D>::MakeRef();
+	gridTex->Initialize(gm, gridTexSize, TextureFormat::R8G8B8A8, true);
+	for (int x = 0; x < gridTexSize.width; ++x)
+	{
+		gridTex->SetPixel(x, 0, Color(0, 0, 0, 0.5));
+		gridTex->SetPixel(x, gridTexSize.width - 1, Color(0, 0, 0, 0.5));
+	}
+	for (int y = 0; y < gridTexSize.height; ++y)
+	{
+		gridTex->SetPixel(0, y, Color(0, 0, 0, 0.5));
+		gridTex->SetPixel(gridTexSize.height - 1, y, Color(0, 0, 0, 0.5));
+	}
+	mesh->GetMaterial(0)->SetMaterialTexture(gridTex);
+}
+
+//------------------------------------------------------------------------------
+void Basic3DSceneGraph::AdjustGridMesh(Camera* camera)
+{
+	/*
+	カメラの視錐台と、グリッドを描画したい平面との衝突点から、四角形メッシュを作る。
+	これで視界に映る平面全体をカバーするメッシュができる。
+	あとはシェーダで、頂点の位置を利用してグリッドテクスチャをサンプリングする。
+	*/
+
+	struct Line
+	{
+		Vector3	from;
+		Vector3	to;
+	};
+
+	auto& vf = camera->GetViewFrustum();
+	Vector3 points[8];
+	vf.GetCornerPoints(points);
+
+	Line lines[12] =
+	{
+		{ points[0], points[1] },
+		{ points[1], points[2] },
+		{ points[2], points[3] },
+		{ points[3], points[0] },
+
+		{ points[0], points[4] },
+		{ points[1], points[5] },
+		{ points[2], points[6] },
+		{ points[3], points[7] },
+
+		{ points[4], points[5] },
+		{ points[5], points[6] },
+		{ points[6], points[7] },
+		{ points[7], points[4] },
+	};
+
+	Plane plane(0, 1, 0, 0);
+	List<Vector3> hits;
+	for (Line& li : lines)
+	{
+		Vector3 pt;
+		if (plane.Intersects(li.from, li.to, &pt))
+		{
+			hits.Add(pt);
+		}
+	}
+
+	Vector3 minPos, maxPos;
+	for (Vector3& p : hits)
+	{
+		minPos = Vector3::Min(p, minPos);
+		maxPos = Vector3::Max(p, maxPos);
+	}
+
+	MeshResource* mesh = m_gridPlane->GetMeshResource();
+	mesh->SetPosition(0, Vector3(minPos.x, 0, maxPos.z));
+	mesh->SetPosition(1, Vector3(minPos.x, 0, minPos.z));
+	mesh->SetPosition(2, Vector3(maxPos.x, 0, maxPos.z));
+	mesh->SetPosition(3, Vector3(maxPos.x, 0, minPos.z));
+	mesh->SetUV(0, Vector2(-1.0f, 1.0f));
+	mesh->SetUV(1, Vector2(-1.0f, -1.0f));
+	mesh->SetUV(2, Vector2(1.0f, 1.0f));
+	mesh->SetUV(3, Vector2(1.0f, -1.0f));
 }
 
 LN_NAMESPACE_SCENE_END
