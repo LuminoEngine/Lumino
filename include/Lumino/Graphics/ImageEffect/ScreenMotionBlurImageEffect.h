@@ -13,7 +13,7 @@ class ScreenMotionBlurImageEffect
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	LN_TR_PROPERTY2(float, Amount);
+	LN_TR_PROPERTY(float, Amount);
 public:
 	static ScreenMotionBlurImageEffectPtr Create();
 

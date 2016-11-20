@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include "PmxSkinnedMesh.h"
 
@@ -66,7 +66,7 @@ void PmxBoneResource::RefreshInitialValues()
 	}
 	else
 	{
-		m_offsetFromParent = OrgPosition;	// ƒ‚ƒfƒ‹Œ´“_‚©‚ç‚ÌƒIƒtƒZƒbƒg
+		m_offsetFromParent = OrgPosition;	// ãƒ¢ãƒ‡ãƒ«åŸç‚¹ã‹ã‚‰ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ
 	}
 		
 	m_initialTranstormInv = Matrix::MakeTranslation(-OrgPosition);
@@ -88,6 +88,16 @@ void PmxSkinnedMeshResource::RefreshInitialValues()
 	{
 		b->RefreshInitialValues();
 	}
+
+	// ãƒãƒ†ãƒªã‚¢ãƒ«ã¯ã‚³ãƒ”ãƒ¼ã™ã‚‹
+	int count = materials.GetCount();
+	m_materials = RefPtr<MaterialList>::MakeRef();
+	m_materials->Resize(count);
+	for (int i = 0; i < count; ++i)
+	{
+		m_materials->SetAt(i, materials.GetAt(i)->MakeCommonMaterial());
+	}
+
 }
 
 LN_NAMESPACE_END

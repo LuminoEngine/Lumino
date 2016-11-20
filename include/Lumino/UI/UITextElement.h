@@ -12,10 +12,10 @@ class UITextElement
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:
-	LN_TR_PROPERTY2(String, FontFamily);		/**< FontFamily プロパティの識別子 */
-	LN_TR_PROPERTY2(int, FontSize);			/**< FontSize プロパティの識別子 */
-	LN_TR_PROPERTY2(bool, IsFontBold);		/**< IsFontBold プロパティの識別子 */
-	LN_TR_PROPERTY2(bool, IsFontItalic);		/**< IsFontItalic プロパティの識別子 */
+	LN_TR_PROPERTY(String, FontFamily);		/**< FontFamily プロパティの識別子 */
+	LN_TR_PROPERTY(int, FontSize);			/**< FontSize プロパティの識別子 */
+	LN_TR_PROPERTY(bool, IsFontBold);		/**< IsFontBold プロパティの識別子 */
+	LN_TR_PROPERTY(bool, IsFontItalic);		/**< IsFontItalic プロパティの識別子 */
 
 public:
 

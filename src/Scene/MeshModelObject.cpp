@@ -2,6 +2,7 @@
 #pragma once
 #include "../Internal.h"
 #include <Lumino/Graphics/Mesh/SkinnedMeshModel.h>
+#include <Lumino/Graphics/Rendering.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/MeshModelObject.h>
 #include "../Modeling/PmxSkinnedMesh.h"
@@ -44,9 +45,9 @@ void SkinnedMesh::Initialize(SceneGraph* ownerSceneGraph, SkinnedMeshModel* mesh
 	LN_CHECK_ARG(meshModel != nullptr);
 	m_meshModel = meshModel;
 
-	VisualNode::Initialize(ownerSceneGraph, m_meshModel->m_materials->GetCount());
+	VisualNode::Initialize(ownerSceneGraph, m_meshModel->m_meshResource->m_materials->GetCount());
 
-	m_materialList->CopyShared(m_meshModel->m_materials, true);
+	m_materialList->CopyShared(m_meshModel->m_meshResource->m_materials, true);
 
 
 	ownerSceneGraph->GetManager()->GetDefaultSceneGraph3D()->GetRootNode()->AddChild(this);
@@ -106,6 +107,17 @@ void SkinnedMesh::OnUpdateFrame(float elapsedTime)
 //{
 //	dc->DrawMesh(m_meshModel->m_meshResource, subsetIndex);
 //}
+
+//------------------------------------------------------------------------------
+void SkinnedMesh::OnRender2(DrawList* renderer)
+{
+	StaticMeshModel* mesh = m_meshModel->m_mesh;
+	int subsetCount = mesh->GetSubsetCount();
+	for (int i = 0; i < subsetCount; i++)
+	{
+		renderer->DrawMesh(mesh, i, mesh->GetMeshResource()->GetMaterial(i));
+	}
+}
 
 LN_NAMESPACE_END
 

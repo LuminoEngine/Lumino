@@ -14,7 +14,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 // ToneImageEffect
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ToneImageEffect, ImageEffect);
-LN_TR_PROPERTY2_IMPLEMENT(ToneImageEffect, Vector4, Tone, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(ToneImageEffect, Vector4, Tone, tr::PropertyMetadata());
 
 static const byte_t g_ToneImageEffect_fx_Data[] =
 {

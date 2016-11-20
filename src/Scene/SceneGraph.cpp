@@ -340,7 +340,7 @@ void SceneGraph2D::UpdateFrame(float elapsedTime)
 // SceneGraph3D
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SceneGraph3D, SceneGraph);
-LN_TR_PROPERTY2_IMPLEMENT(SceneGraph3D, bool, VisibleGridPlane, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(SceneGraph3D, bool, VisibleGridPlane, tr::PropertyMetadata());
 
 //------------------------------------------------------------------------------
 SceneGraph3D::SceneGraph3D()

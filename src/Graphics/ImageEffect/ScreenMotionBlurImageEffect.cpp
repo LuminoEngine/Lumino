@@ -14,7 +14,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 // ScreenMotionBlurImageEffect
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ScreenMotionBlurImageEffect, ImageEffect);
-LN_TR_PROPERTY2_IMPLEMENT(ScreenMotionBlurImageEffect, float, Amount, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(ScreenMotionBlurImageEffect, float, Amount, tr::PropertyMetadata());
 
 static const byte_t g_ScreenMotionBlurImageEffect_fx_Data[] =
 {

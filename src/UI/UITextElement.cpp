@@ -12,10 +12,10 @@ LN_NAMESPACE_BEGIN
 // UITextElement
 //==============================================================================
 LN_UI_TYPEINFO_IMPLEMENT(UITextElement, UIElement);
-LN_TR_PROPERTY2_IMPLEMENT(UITextElement, String, FontFamily, tr::PropertyMetadata(UITextElement::OnFontPropertyChanged));
-LN_TR_PROPERTY2_IMPLEMENT(UITextElement, int, FontSize, tr::PropertyMetadata(UITextElement::OnFontPropertyChanged));
-LN_TR_PROPERTY2_IMPLEMENT(UITextElement, bool, IsFontBold, tr::PropertyMetadata(UITextElement::OnFontPropertyChanged));
-LN_TR_PROPERTY2_IMPLEMENT(UITextElement, bool, IsFontItalic, tr::PropertyMetadata(UITextElement::OnFontPropertyChanged));
+LN_TR_PROPERTY_IMPLEMENT(UITextElement, String, FontFamily, tr::PropertyMetadata(UITextElement::OnFontPropertyChanged));
+LN_TR_PROPERTY_IMPLEMENT(UITextElement, int, FontSize, tr::PropertyMetadata(UITextElement::OnFontPropertyChanged));
+LN_TR_PROPERTY_IMPLEMENT(UITextElement, bool, IsFontBold, tr::PropertyMetadata(UITextElement::OnFontPropertyChanged));
+LN_TR_PROPERTY_IMPLEMENT(UITextElement, bool, IsFontItalic, tr::PropertyMetadata(UITextElement::OnFontPropertyChanged));
 
 
 //------------------------------------------------------------------------------

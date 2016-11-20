@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "../../src/Animation/AnimationState.h"		//  TODO
 #include "../../src/Animation/Animator.h"		//  TODO
@@ -6,17 +6,17 @@
 
 LN_NAMESPACE_BEGIN
 class Animator;
-class PmxSkinnedMeshResource;	// TODO: ’ŠÛ‰»‚µ‚½‚¢
-class PmxBoneResource;			// TODO: ’ŠÛ‰»‚µ‚½‚¢
+class PmxSkinnedMeshResource;	// TODO: æŠ½è±¡åŒ–ã—ãŸã„
+class PmxBoneResource;			// TODO: æŠ½è±¡åŒ–ã—ãŸã„
 class PmxIKResource;
 class SkinnedMeshModel;
 class SkinnedMeshBone;
 using SkinnedMeshModelPtr = RefPtr<SkinnedMeshModel>;
 using SkinnedMeshBonePtr = RefPtr<SkinnedMeshBone>;
 
-class RigidBody;	// TODO: MMD ‚Å‚Ì‚İ•K—v
-class DofSpringJoint;		// TODO: MMD ‚Å‚Ì‚İ•K—v
-namespace detail { class PhysicsWorld; }	// TODO: MMD ‚Å‚Ì‚İ•K—v
+class RigidBody;	// TODO: MMD ã§ã®ã¿å¿…è¦
+class DofSpringJoint;		// TODO: MMD ã§ã®ã¿å¿…è¦
+namespace detail { class PhysicsWorld; }	// TODO: MMD ã§ã®ã¿å¿…è¦
 namespace detail { class MmdSkinnedMeshRigidBody; }
 namespace detail { class MmdSkinnedMeshJoint; }
 class PmxRigidBodyResource;
@@ -33,7 +33,7 @@ class SkinnedMeshModel
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
-	// TODO: Unity ‚Å‚Í Mesh ‚©‚ç‚ÍØ‚è—£‚³‚ê‚½“Æ—§‚µ‚½ƒRƒ“ƒ|[ƒlƒ“ƒg‚Å‚ ‚éB‚»‚¤‚µ‚½‚Ù‚¤‚ª‚¢‚¢‚©‚ÈH
+	// TODO: Unity ã§ã¯ Mesh ã‹ã‚‰ã¯åˆ‡ã‚Šé›¢ã•ã‚ŒãŸç‹¬ç«‹ã—ãŸã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã§ã‚ã‚‹ã€‚ãã†ã—ãŸã»ã†ãŒã„ã„ã‹ãªï¼Ÿ
 	Animator* GetAnimator() const { return m_animator; }
 
 protected:
@@ -57,26 +57,26 @@ LN_INTERNAL_ACCESS:
 
 
 
-	// ƒ{[ƒ“s—ñ‚ğAƒ‹[ƒgƒ{[ƒ“‚©‚çŠK‘w“I‚ÉXV‚·‚é
-	// (ƒAƒjƒ[ƒVƒ‡ƒ““K—pŒã‚ÉŒÄ‚Ño‚·)
+	// ãƒœãƒ¼ãƒ³è¡Œåˆ—ã‚’ã€ãƒ«ãƒ¼ãƒˆãƒœãƒ¼ãƒ³ã‹ã‚‰éšå±¤çš„ã«æ›´æ–°ã™ã‚‹
+	// (ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³é©ç”¨å¾Œã«å‘¼ã³å‡ºã™)
 	void UpdateBoneTransformHierarchy();
 
-	// ƒXƒLƒjƒ“ƒO‚Ég—p‚·‚éÅIƒ{[ƒ“s—ñ‚Ìì¬
+	// ã‚¹ã‚­ãƒ‹ãƒ³ã‚°ã«ä½¿ç”¨ã™ã‚‹æœ€çµ‚ãƒœãƒ¼ãƒ³è¡Œåˆ—ã®ä½œæˆ
 	void UpdateSkinningMatrices();
 
-	// ƒXƒLƒjƒ“ƒOs—ñ”z—ñ‚Ìæ“¾ (—v‘f”‚Í—v‘f”‚Íƒ{[ƒ“”B‚±‚ê‚ğ‚»‚Ì‚Ü‚ÜƒXƒLƒjƒ“ƒOƒeƒNƒXƒ`ƒƒ‚É‘‚«‚ß‚é)
+	// ã‚¹ã‚­ãƒ‹ãƒ³ã‚°è¡Œåˆ—é…åˆ—ã®å–å¾— (è¦ç´ æ•°ã¯è¦ç´ æ•°ã¯ãƒœãƒ¼ãƒ³æ•°ã€‚ã“ã‚Œã‚’ãã®ã¾ã¾ã‚¹ã‚­ãƒ‹ãƒ³ã‚°ãƒ†ã‚¯ã‚¹ãƒãƒ£ã«æ›¸ãè¾¼ã‚ã‚‹)
 	//Matrix* GetSkinningMatrices() { return m_skinningMatrices; }
 
-	// ƒXƒLƒjƒ“ƒOs—ñ”z—ñ‚ğ‘‚«‚ñ‚¾ƒeƒNƒXƒ`ƒƒ‚Ìæ“¾
+	// ã‚¹ã‚­ãƒ‹ãƒ³ã‚°è¡Œåˆ—é…åˆ—ã‚’æ›¸ãè¾¼ã‚“ã ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å–å¾—
 	Texture* GetSkinningMatricesTexture() { return m_skinningMatricesTexture; }
 
-	// ƒTƒuƒZƒbƒg”‚Ìæ“¾
+	// ã‚µãƒ–ã‚»ãƒƒãƒˆæ•°ã®å–å¾—
 	//int GetSubsetCount() const;
 
-	// ƒ}ƒeƒŠƒAƒ‹æ“¾
+	// ãƒãƒ†ãƒªã‚¢ãƒ«å–å¾—
 	//const Material& GetMaterial(int subsetIndex) const;
 
-	// ƒTƒuƒZƒbƒg•`‰æ
+	// ã‚µãƒ–ã‚»ãƒƒãƒˆæç”»
 	//void DrawSubset(int subsetIndex);
 
 private:
@@ -85,18 +85,22 @@ private:
 
 
 LN_INTERNAL_ACCESS:	// TODO:
+	// TODO: â†“ã“ã®ã‚ãŸã‚Šã¯ StaticMeshModel ã«ã—ã¦ã€Renderer::DrawMesh ã«æ¸¡ã›ã‚‹ã‚ˆã†ã«ã—ãŸã„ã€‚LOD ã®é¸æŠã¯ãã¡ã‚‰ã§ã€‚
+	//RefPtr<PmxSkinnedMeshResource>	m_meshResource;
+	//RefPtr<MaterialList>			m_materials;
+	RefPtr<StaticMeshModel>			m_mesh;
 	RefPtr<PmxSkinnedMeshResource>	m_meshResource;
-	RefPtr<MaterialList>			m_materials;
-	List<SkinnedMeshBonePtr>		m_allBoneList;				// ‘Sƒ{[ƒ“ƒŠƒXƒg
-	List<SkinnedMeshBone*>			m_rootBoneList;				// ƒ‹[ƒgƒ{[ƒ“ƒŠƒXƒg (e‚ğ‚½‚È‚¢ƒ{[ƒ“ƒŠƒXƒg)
-	List<Matrix>					m_skinningMatrices;			// ƒXƒLƒjƒ“ƒO‚Ég—p‚·‚éÅIƒ{[ƒ“s—ñ (—v‘f”‚Íƒ{[ƒ“”)
+
+	List<SkinnedMeshBonePtr>		m_allBoneList;				// å…¨ãƒœãƒ¼ãƒ³ãƒªã‚¹ãƒˆ
+	List<SkinnedMeshBone*>			m_rootBoneList;				// ãƒ«ãƒ¼ãƒˆãƒœãƒ¼ãƒ³ãƒªã‚¹ãƒˆ (è¦ªã‚’æŒãŸãªã„ãƒœãƒ¼ãƒ³ãƒªã‚¹ãƒˆ)
+	List<Matrix>					m_skinningMatrices;			// ã‚¹ã‚­ãƒ‹ãƒ³ã‚°ã«ä½¿ç”¨ã™ã‚‹æœ€çµ‚ãƒœãƒ¼ãƒ³è¡Œåˆ— (è¦ç´ æ•°ã¯ãƒœãƒ¼ãƒ³æ•°)
 	List<Quaternion>				m_skinningLocalQuaternions;
-	RefPtr<Texture2D>				m_skinningMatricesTexture;	// Texture fetch ‚É‚æ‚é GPU ƒXƒLƒjƒ“ƒO—p‚ÌƒeƒNƒXƒ`ƒƒ
-	RefPtr<Texture2D>				m_skinningLocalQuaternionsTexture;	// Texture fetch ‚É‚æ‚é GPU ƒXƒLƒjƒ“ƒO—p‚ÌƒeƒNƒXƒ`ƒƒ
+	RefPtr<Texture2D>				m_skinningMatricesTexture;	// Texture fetch ã«ã‚ˆã‚‹ GPU ã‚¹ã‚­ãƒ‹ãƒ³ã‚°ç”¨ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£
+	RefPtr<Texture2D>				m_skinningLocalQuaternionsTexture;	// Texture fetch ã«ã‚ˆã‚‹ GPU ã‚¹ã‚­ãƒ‹ãƒ³ã‚°ç”¨ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£
 	RefPtr<Animator>				m_animator;
 	List<SkinnedMeshBone*>			m_ikBoneList;
 
-	// TODO: ‚±‚ê‚Í•¨—‰‰Z‹@”\‚ğ‚ÂƒTƒuƒNƒ‰ƒX‚ğì‚Á‚½‚Ù‚¤‚ª‚¢‚¢‹C‚ª‚·‚é
+	// TODO: ã“ã‚Œã¯ç‰©ç†æ¼”ç®—æ©Ÿèƒ½ã‚’æŒã¤ã‚µãƒ–ã‚¯ãƒ©ã‚¹ã‚’ä½œã£ãŸã»ã†ãŒã„ã„æ°—ãŒã™ã‚‹
 	RefPtr<detail::PhysicsWorld>	m_physicsWorld;
 	List<RefPtr<detail::MmdSkinnedMeshRigidBody>>	m_rigidBodyList;
 	List<RefPtr<detail::MmdSkinnedMeshJoint>>		m_jointList;
@@ -123,19 +127,19 @@ LN_INTERNAL_ACCESS:
 	void Initialize(PmxBoneResource* boneResource);
 	void PostInitialize(SkinnedMeshModel* owner, int depth);
 
-	// PmxBoneResource ‚Ìæ“¾
+	// PmxBoneResource ã®å–å¾—
 	PmxBoneResource* GetCore() const;
 
-	// qƒ{[ƒ“‚Ì’Ç‰Á
+	// å­ãƒœãƒ¼ãƒ³ã®è¿½åŠ 
 	void AddChildBone(SkinnedMeshBone* bone);
 
-	// ƒ{[ƒ“s—ñ‚ğŠK‘w“I‚ÉXV‚·‚é
+	// ãƒœãƒ¼ãƒ³è¡Œåˆ—ã‚’éšå±¤çš„ã«æ›´æ–°ã™ã‚‹
 	void UpdateGlobalTransform(bool hierarchical);
 
-	//  Œ‹‡Ï‚İs—ñ (ƒ‚ƒfƒ‹“à‚ÌƒOƒ[ƒoƒ‹s—ñ) ‚Ìæ“¾
+	//  çµåˆæ¸ˆã¿è¡Œåˆ— (ãƒ¢ãƒ‡ãƒ«å†…ã®ã‚°ãƒ­ãƒ¼ãƒãƒ«è¡Œåˆ—) ã®å–å¾—
 	const Matrix& GetCombinedMatrix() const { return m_combinedMatrix; }
 
-	// ƒ[ƒJƒ‹s—ñ‚ğ‰Šú’l‚É–ß‚·
+	// ãƒ­ãƒ¼ã‚«ãƒ«è¡Œåˆ—ã‚’åˆæœŸå€¤ã«æˆ»ã™
 	void ResetLocalTransform() { m_localTransform = SQTTransform::Identity; }
 
 	SQTTransform* GetLocalTransformPtr() { return &m_localTransform; }
@@ -146,12 +150,12 @@ protected:
 	virtual void SetAnimationTargetValue(ValueType type, const void* value) override;
 
 LN_INTERNAL_ACCESS:	// TODO
-	RefPtr<PmxBoneResource>	m_core;				// ‹¤—Lƒf[ƒ^ƒNƒ‰ƒX
+	RefPtr<PmxBoneResource>	m_core;				// å…±æœ‰ãƒ‡ãƒ¼ã‚¿ã‚¯ãƒ©ã‚¹
 	SkinnedMeshBone*		m_parent;
-	List<SkinnedMeshBone*>	m_children;			// qƒ{[ƒ“ƒŠƒXƒg
-	SQTTransform			m_localTransform;	// ƒ‚[ƒVƒ‡ƒ“‚ğ‘‚«‚Ş‚Ì‚Í‚±‚±
-	Matrix					m_combinedMatrix;	// Œ‹‡Ï‚İs—ñ ()
-	int						m_depth;			// 0 ‚©‚ç
+	List<SkinnedMeshBone*>	m_children;			// å­ãƒœãƒ¼ãƒ³ãƒªã‚¹ãƒˆ
+	SQTTransform			m_localTransform;	// ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã‚’æ›¸ãè¾¼ã‚€ã®ã¯ã“ã“
+	Matrix					m_combinedMatrix;	// çµåˆæ¸ˆã¿è¡Œåˆ— ()
+	int						m_depth;			// 0 ã‹ã‚‰
 	PmxIKResource*			m_ikInfo;
 
 	friend class SkinnedMeshModel;

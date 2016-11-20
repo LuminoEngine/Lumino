@@ -13,8 +13,8 @@ class UIControl
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:
-	LN_TR_PROPERTY2(HAlignment,	HContentAlignment);		/**< HContentAlignment プロパティの識別子 */
-	LN_TR_PROPERTY2(VAlignment,	VContentAlignment);		/**< VContentAlignment プロパティの識別子 */
+	LN_TR_PROPERTY(HAlignment,	HContentAlignment);		/**< HContentAlignment プロパティの識別子 */
+	LN_TR_PROPERTY(VAlignment,	VContentAlignment);		/**< VContentAlignment プロパティの識別子 */
 	
 public:
 	

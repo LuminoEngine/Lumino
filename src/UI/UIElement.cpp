@@ -17,15 +17,15 @@ LN_NAMESPACE_BEGIN
 LN_UI_TYPEINFO_IMPLEMENT(UIElement, tr::ReflectionObject);
 
 // Property definition
-LN_TR_PROPERTY2_IMPLEMENT(UIElement, PointF, position, tr::PropertyMetadata());
-LN_TR_PROPERTY2_IMPLEMENT(UIElement, Size, size, tr::PropertyMetadata());
-LN_TR_PROPERTY2_IMPLEMENT(UIElement, AlignmentAnchor, anchor, tr::PropertyMetadata());
-LN_TR_PROPERTY2_IMPLEMENT(UIElement, HAlignment, hAlignment, tr::PropertyMetadata());
-LN_TR_PROPERTY2_IMPLEMENT(UIElement, VAlignment, vAlignment, tr::PropertyMetadata());
-LN_TR_PROPERTY2_IMPLEMENT(UIElement, BrushPtr, background, tr::PropertyMetadata());
-LN_TR_PROPERTY2_IMPLEMENT(UIElement, BrushPtr, foreground, tr::PropertyMetadata());
-LN_TR_PROPERTY2_IMPLEMENT(UIElement, BrushPtr, decoratorBackground, tr::PropertyMetadata());
-LN_TR_PROPERTY2_IMPLEMENT(UIElement, float, decoratorOpacity, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(UIElement, PointF, position, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(UIElement, Size, size, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(UIElement, AlignmentAnchor, anchor, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(UIElement, HAlignment, hAlignment, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(UIElement, VAlignment, vAlignment, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, background, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, foreground, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, decoratorBackground, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(UIElement, float, decoratorOpacity, tr::PropertyMetadata());
 
 // Event definition
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIMouseEventArgs, MouseEnterEvent, "MouseEnter", MouseEnter);

@@ -186,8 +186,8 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SkinnedMeshModel, Object);
 //------------------------------------------------------------------------------
 SkinnedMeshModel::SkinnedMeshModel()
 	: m_meshResource(nullptr)
-	, m_materials(nullptr)
-	, m_allBoneList()
+	, /*m_materials(nullptr)
+	, */m_allBoneList()
 	, m_rootBoneList()
 	, m_skinningMatrices()
 	, m_skinningMatricesTexture(nullptr)
@@ -206,18 +206,11 @@ void SkinnedMeshModel::Initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 	LN_CHECK_ARG(manager != nullptr);
 	LN_CHECK_ARG(sharingMesh != nullptr);
 
+	m_mesh = Object::MakeRef<StaticMeshModel>(manager, sharingMesh);
+
 	// メッシュ(バッファ類)は共有する
 	m_meshResource = sharingMesh;
 
-	// マテリアルはコピーする
-	// TODO: コピー有無のフラグがあったほうがいいかも？
-	int count = m_meshResource->materials.GetCount();
-	m_materials = RefPtr<MaterialList>::MakeRef();
-	m_materials->Resize(count);
-	for (int i = 0; i < count; ++i)
-	{
-		m_materials->SetAt(i, m_meshResource->materials.GetAt(i)->MakeCommonMaterial());
-	}
 
 	//---------------------------------------------------------
 	// Bone のインスタンス化
@@ -354,7 +347,7 @@ void SkinnedMeshModel::PostUpdate()
 		body->UpdateBeforePhysics();
 	}
 
-	m_physicsWorld->StepSimulation(0.016);
+	m_physicsWorld->StepSimulation(0.016f);
 
 
 	for (detail::MmdSkinnedMeshRigidBody* body : m_rigidBodyList)

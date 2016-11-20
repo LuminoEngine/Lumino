@@ -23,15 +23,15 @@ class UIElement
 	LN_UI_TYPEINFO_DECLARE();
 
 public:
-	LN_TR_PROPERTY2(PointF,				position);				/**< Position プロパティの識別子 */
-	LN_TR_PROPERTY2(Size,				size);					/**< Size プロパティの識別子 */
-	LN_TR_PROPERTY2(AlignmentAnchor,	anchor);				/**< Anchor プロパティの識別子 */
-	LN_TR_PROPERTY2(HAlignment,			hAlignment);			/**< HAlignment プロパティの識別子 */
-	LN_TR_PROPERTY2(VAlignment,			vAlignment);			/**< VAlignment プロパティの識別子 */
-	LN_TR_PROPERTY2(BrushPtr,			background);			/**< Background プロパティの識別子 */
-	LN_TR_PROPERTY2(BrushPtr,			foreground);			/**< Foreground プロパティの識別子 */
-	LN_TR_PROPERTY2(BrushPtr,			decoratorBackground);	/**< DecoratorBackground プロパティの識別子 */
-	LN_TR_PROPERTY2(float,				decoratorOpacity);		/**< Foreground プロパティの識別子 */
+	LN_TR_PROPERTY(PointF,				position);				/**< Position プロパティの識別子 */
+	LN_TR_PROPERTY(Size,				size);					/**< Size プロパティの識別子 */
+	LN_TR_PROPERTY(AlignmentAnchor,		anchor);				/**< Anchor プロパティの識別子 */
+	LN_TR_PROPERTY(HAlignment,			hAlignment);			/**< HAlignment プロパティの識別子 */
+	LN_TR_PROPERTY(VAlignment,			vAlignment);			/**< VAlignment プロパティの識別子 */
+	LN_TR_PROPERTY(BrushPtr,			background);			/**< Background プロパティの識別子 */
+	LN_TR_PROPERTY(BrushPtr,			foreground);			/**< Foreground プロパティの識別子 */
+	LN_TR_PROPERTY(BrushPtr,			decoratorBackground);	/**< DecoratorBackground プロパティの識別子 */
+	LN_TR_PROPERTY(float,				decoratorOpacity);		/**< Foreground プロパティの識別子 */
 
 	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseEnterEvent);				/**< MouseEnter ルーティングイベントの識別子 */
 	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseLeaveEvent);				/**< MouseLeave ルーティングイベントの識別子 */

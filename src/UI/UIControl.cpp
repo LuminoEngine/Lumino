@@ -9,8 +9,8 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 LN_UI_TYPEINFO_IMPLEMENT(UIControl, UIElement);
 
-LN_TR_PROPERTY2_IMPLEMENT(UIControl, HAlignment, HContentAlignment, tr::PropertyMetadata());
-LN_TR_PROPERTY2_IMPLEMENT(UIControl, VAlignment, VContentAlignment, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(UIControl, HAlignment, HContentAlignment, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(UIControl, VAlignment, VContentAlignment, tr::PropertyMetadata());
 
 //------------------------------------------------------------------------------
 UIControl::UIControl()

@@ -296,12 +296,12 @@ uint32_t Material::GetHashCode()
 
 		// TODO: map じゃなくて List で思う。20個も普通値いれないだろうし
 		for (auto& pair : m_userValueMap)
-			m_hashCode |= Hash::CalcHash(reinterpret_cast<const char*>(&pair.second), sizeof(pair.second));
+			m_hashCode += Hash::CalcHash(reinterpret_cast<const char*>(&pair.second), sizeof(pair.second));
 
 		for (auto& pair : m_builtinValueMap)
-			m_hashCode |= Hash::CalcHash(reinterpret_cast<const char*>(&pair.second), sizeof(pair.second));
+			m_hashCode += Hash::CalcHash(reinterpret_cast<const char*>(&pair.second), sizeof(pair.second));
 
-		m_hashCode = Hash::CalcHash(reinterpret_cast<const char*>(&m_builtin), sizeof(m_builtin));
+		m_hashCode += Hash::CalcHash(reinterpret_cast<const char*>(&m_builtin), sizeof(m_builtin));
 	}
 
 	return m_hashCode;
