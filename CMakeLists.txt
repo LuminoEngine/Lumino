@@ -825,6 +825,8 @@ add_subdirectory(external/Lumino.Core)
 link_libraries(LuminoCore_Static)
 link_libraries(LuminoMath)
 
+add_subdirectory(external/Fluorite)
+
 # Make postfix.
 ln_make_postfix(LN_LIB_POSTFIX)
 
