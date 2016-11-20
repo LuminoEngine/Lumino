@@ -53,15 +53,12 @@ void SceneGraphManager::CreateDefaultSceneGraph()
 	sg.SafeAddRef();
 	m_default3DSceneGraph = sg;
 #endif
-	RefPtr<Basic3DSceneGraph> sg(LN_NEW Basic3DSceneGraph(), false);
-	sg->CreateCore(this);
-	sg.SafeAddRef();
-	m_default3DSceneGraph = sg;
 
-	RefPtr<Basic2DSceneGraph> sg2d(LN_NEW Basic2DSceneGraph(), false);
-	sg2d->CreateCore(this);
-	sg2d.SafeAddRef();
-	m_default2DSceneGraph = sg2d;
+	m_default2DSceneGraph = RefPtr<SceneGraph2D>::MakeRef();
+	m_default2DSceneGraph->CreateCore(this);
+
+	m_default3DSceneGraph = RefPtr<SceneGraph3D>::MakeRef();
+	m_default3DSceneGraph->CreateCore(this);
 
 	m_default3DCameraViewportLayer = LN_NEW CameraViewportLayer();
 	m_default3DCameraViewportLayer->Initialize(this, m_default3DSceneGraph->GetMainCamera());
@@ -80,8 +77,8 @@ void SceneGraphManager::ReleaseDefaultSceneGraph()
 	m_mainViewport->RemoveViewportLayer(m_default2DCameraViewportLayer);
 	LN_SAFE_RELEASE(m_default2DCameraViewportLayer);
 
-	LN_SAFE_RELEASE(m_default3DSceneGraph);
-	LN_SAFE_RELEASE(m_default2DSceneGraph);
+	m_default2DSceneGraph.SafeRelease();
+	m_default3DSceneGraph.SafeRelease();
 }
 
 //------------------------------------------------------------------------------
@@ -95,21 +92,6 @@ void SceneGraphManager::UpdateFrameDefaultSceneGraph(float elapsedTime)
 	}
 }
 
-//------------------------------------------------------------------------------
-//void SceneGraphManager::RenderDefaultSceneGraph(Texture* renderTarget)
-//{
-//	for (Camera* camera : m_allCameraList)
-//	{
-//		camera->GetOwnerSceneGraph()->Render(renderTarget, camera);
-//	}
-//	//if (m_default3DSceneGraph != nullptr) {
-//	//	m_default3DSceneGraph->Render(renderTarget);
-//	//}
-//	//if (m_default2DSceneGraph != nullptr) {
-//	//	m_default2DSceneGraph->Render(renderTarget);
-//	//}
-//}
-//
 //------------------------------------------------------------------------------
 SceneNode* SceneGraphManager::FindNodeFirst(const String& name)
 {

@@ -16,13 +16,9 @@ class StaticMeshModel;
 	@brief
 */
 class SceneGraph
-	: public RefObject
+	: public Object
 {
-public:
-	static SceneGraph* GetDefault2DSceneGraph();
-
-	static SceneGraph* GetDefault3DSceneGraph();
-
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
 	/// レイヤーリストの取得
@@ -104,9 +100,10 @@ private:
 /**
 	@brief
 */
-class Basic2DSceneGraph
+class SceneGraph2D
 	: public SceneGraph
 {
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
 	virtual void UpdateFrame(float elapsedTime);
@@ -115,8 +112,8 @@ public:
 	//virtual List<RenderingPass*>* GetRenderingPasses() override { return &m_renderingPasses; }
 
 public:
-	Basic2DSceneGraph();
-	virtual ~Basic2DSceneGraph();
+	SceneGraph2D();
+	virtual ~SceneGraph2D();
 	void CreateCore(SceneGraphManager* manager);
 
 private:
@@ -128,10 +125,12 @@ private:
 /**
 	@brief
 */
-class Basic3DSceneGraph
+class SceneGraph3D
 	: public SceneGraph
 {
 public:
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_TR_PROPERTY2(bool, VisibleGridPlane);
 
 	virtual void UpdateFrame(float elapsedTime);
 	virtual SceneNode* GetRootNode() override { return m_defaultRoot; }
@@ -139,8 +138,8 @@ public:
 	//virtual List<RenderingPass*>* GetRenderingPasses() override { return &m_renderingPasses; }
 
 public:
-	Basic3DSceneGraph();
-	virtual ~Basic3DSceneGraph();
+	SceneGraph3D();
+	virtual ~SceneGraph3D();
 	void CreateCore(SceneGraphManager* manager);
 	virtual void Render2(DrawList* renderer, Camera* camera) override;
 

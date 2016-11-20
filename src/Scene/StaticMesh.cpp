@@ -19,7 +19,7 @@ StaticMeshPtr StaticMesh::Create(const StringRef& filePath)
 	auto meshResource = SceneGraphManager::Instance->GetModelManager()->CreateModelCore(filePath);
 	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
 	mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager(), meshResource);
-	ptr->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), mesh);
+	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), mesh);
 	return ptr;
 }
 
@@ -29,7 +29,7 @@ StaticMeshPtr StaticMesh::CreateBox(const Vector3& size)
 	auto ptr = StaticMeshPtr::MakeRef();
 	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
 	mesh->InitializeBox(SceneGraphManager::Instance->GetGraphicsManager(), size);
-	ptr->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), mesh);
+	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), mesh);
 	return ptr;
 }
 
@@ -39,7 +39,7 @@ StaticMeshPtr StaticMesh::CreateSphere(float radius, int slices, int stacks, Mes
 	auto ptr = StaticMeshPtr::MakeRef();
 	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
 	mesh->InitializeSphere(SceneGraphManager::Instance->GetGraphicsManager(), radius, slices, stacks, flags);
-	ptr->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), mesh);
+	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), mesh);
 	return ptr;
 }
 
@@ -49,7 +49,7 @@ StaticMeshPtr StaticMesh::CreatePlane(const Vector2& size, int sliceH, int slice
 	auto ptr = StaticMeshPtr::MakeRef();
 	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
 	mesh->InitializePlane(SceneGraphManager::Instance->GetGraphicsManager(), size, sliceH, sliceV, flags);
-	ptr->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), mesh);
+	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), mesh);
 	return ptr;
 }
 
@@ -59,7 +59,7 @@ StaticMeshPtr StaticMesh::CreateSquarePlane(const Vector2& size, const Vector3& 
 	auto ptr = StaticMeshPtr::MakeRef();
 	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
 	mesh->InitializeSquarePlane(SceneGraphManager::Instance->GetGraphicsManager(), size, front, flags);
-	ptr->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), mesh);
+	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), mesh);
 	return ptr;
 }
 
@@ -69,7 +69,7 @@ StaticMeshPtr StaticMesh::CreateScreenPlane()
 	auto ptr = StaticMeshPtr::MakeRef();
 	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
 	mesh->InitializeScreenPlane(SceneGraphManager::Instance->GetGraphicsManager());
-	ptr->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), mesh);
+	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), mesh);
 	return ptr;
 }
 
@@ -95,7 +95,7 @@ void StaticMesh::Initialize(SceneGraph* owner, StaticMeshModel* meshModel)
 	m_materialList->CopyShared(m_mesh->m_materials, true);
 
 
-	owner->GetManager()->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
+	owner->GetManager()->GetDefaultSceneGraph3D()->GetRootNode()->AddChild(this);
 	SetAutoRemove(true);
 }
 

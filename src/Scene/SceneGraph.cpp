@@ -22,18 +22,7 @@ LN_NAMESPACE_SCENE_BEGIN
 //==============================================================================
 // SceneGraph
 //==============================================================================
-
-//------------------------------------------------------------------------------
-SceneGraph* SceneGraph::GetDefault2DSceneGraph()
-{
-	return SceneGraphManager::Instance->GetDefault2DSceneGraph();
-}
-
-//------------------------------------------------------------------------------
-SceneGraph* SceneGraph::GetDefault3DSceneGraph()
-{
-	return SceneGraphManager::Instance->GetDefault3DSceneGraph();
-}
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SceneGraph, Object);
 
 //------------------------------------------------------------------------------
 SceneGraph::SceneGraph()
@@ -300,18 +289,19 @@ bool SceneGraph::InjectMouseWheel(int delta)
 
 
 //==============================================================================
-// Basic2DSceneGraph
+// SceneGraph2D
 //==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SceneGraph2D, SceneGraph);
 
 //------------------------------------------------------------------------------
-Basic2DSceneGraph::Basic2DSceneGraph()
+SceneGraph2D::SceneGraph2D()
 	: m_defaultRoot(nullptr)
 	, m_defaultCamera(nullptr)
 {
 }
 
 //------------------------------------------------------------------------------
-Basic2DSceneGraph::~Basic2DSceneGraph()
+SceneGraph2D::~SceneGraph2D()
 {
 	//for (RenderingPass* pass : m_renderingPasses) {
 	//	LN_SAFE_RELEASE(pass);
@@ -322,7 +312,7 @@ Basic2DSceneGraph::~Basic2DSceneGraph()
 }
 
 //------------------------------------------------------------------------------
-void Basic2DSceneGraph::CreateCore(SceneGraphManager* manager)
+void SceneGraph2D::CreateCore(SceneGraphManager* manager)
 {
 	SceneGraph::CreateCore(manager);
 
@@ -340,32 +330,35 @@ void Basic2DSceneGraph::CreateCore(SceneGraphManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void Basic2DSceneGraph::UpdateFrame(float elapsedTime)
+void SceneGraph2D::UpdateFrame(float elapsedTime)
 {
 	SceneGraph::UpdateFrame(elapsedTime);
 	m_defaultRoot->UpdateFrameHierarchy(nullptr, elapsedTime);
 }
 
 //==============================================================================
-// Basic3DSceneGraph
+// SceneGraph3D
 //==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SceneGraph3D, SceneGraph);
+LN_TR_PROPERTY2_IMPLEMENT(SceneGraph3D, bool, VisibleGridPlane, tr::PropertyMetadata());
 
 //------------------------------------------------------------------------------
-Basic3DSceneGraph::Basic3DSceneGraph()
-	: m_defaultRoot(nullptr)
+SceneGraph3D::SceneGraph3D()
+	: VisibleGridPlane(false)
+	, m_defaultRoot(nullptr)
 	, m_defaultCamera(nullptr)
 {
 }
 
 //------------------------------------------------------------------------------
-Basic3DSceneGraph::~Basic3DSceneGraph()
+SceneGraph3D::~SceneGraph3D()
 {
 	LN_SAFE_RELEASE(m_defaultCamera);
 	LN_SAFE_RELEASE(m_defaultRoot);
 }
 
 //------------------------------------------------------------------------------
-void Basic3DSceneGraph::CreateCore(SceneGraphManager* manager)
+void SceneGraph3D::CreateCore(SceneGraphManager* manager)
 {
 	SceneGraph::CreateCore(manager);
 
@@ -384,18 +377,18 @@ void Basic3DSceneGraph::CreateCore(SceneGraphManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void Basic3DSceneGraph::UpdateFrame(float elapsedTime)
+void SceneGraph3D::UpdateFrame(float elapsedTime)
 {
 	SceneGraph::UpdateFrame(elapsedTime);
 	m_defaultRoot->UpdateFrameHierarchy(nullptr, elapsedTime);
 }
 
 //------------------------------------------------------------------------------
-void Basic3DSceneGraph::Render2(DrawList* renderer, Camera* camera)
+void SceneGraph3D::Render2(DrawList* renderer, Camera* camera)
 {
 	SceneGraph::Render2(renderer, camera);
 
-	if (0)
+	if (VisibleGridPlane)
 	{
 		AdjustGridMesh(camera);
 		renderer->SetBlendMode(BlendMode::Alpha);	// TODO: ステートはマテリアルへ
@@ -404,7 +397,7 @@ void Basic3DSceneGraph::Render2(DrawList* renderer, Camera* camera)
 }
 
 //------------------------------------------------------------------------------
-void Basic3DSceneGraph::CreateGridContents()
+void SceneGraph3D::CreateGridContents()
 {
 	detail::GraphicsManager* gm = GetManager()->GetGraphicsManager();
 
@@ -441,7 +434,7 @@ void Basic3DSceneGraph::CreateGridContents()
 }
 
 //------------------------------------------------------------------------------
-void Basic3DSceneGraph::AdjustGridMesh(Camera* camera)
+void SceneGraph3D::AdjustGridMesh(Camera* camera)
 {
 	/*
 	カメラの視錐台と、グリッドを描画したい平面との衝突点から、四角形メッシュを作る。

@@ -743,7 +743,7 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 		}
 		if (m_sceneGraphManager != nullptr)
 		{
-			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseButtonDown(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
+			if (m_sceneGraphManager->GetDefaultSceneGraph3D()->InjectMouseButtonDown(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
 		}
 		break;
 	case PlatformEventType::MouseUp:			// マウスボタンが離された
@@ -753,7 +753,7 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 		}
 		if (m_sceneGraphManager != nullptr)
 		{
-			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseButtonUp(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
+			if (m_sceneGraphManager->GetDefaultSceneGraph3D()->InjectMouseButtonUp(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
 		}
 		break;
 	case PlatformEventType::MouseMove:		// マウスが移動した
@@ -763,7 +763,7 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 		}
 		if (m_sceneGraphManager != nullptr)
 		{
-			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseMove(e.mouse.x, e.mouse.y)) { return true; }
+			if (m_sceneGraphManager->GetDefaultSceneGraph3D()->InjectMouseMove(e.mouse.x, e.mouse.y)) { return true; }
 		}
 		break;
 	case PlatformEventType::MouseWheel:		// マウスホイールが操作された
@@ -773,7 +773,7 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 		}
 		if (m_sceneGraphManager != nullptr)
 		{
-			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseWheel(e.wheel.delta)) { return true; }
+			if (m_sceneGraphManager->GetDefaultSceneGraph3D()->InjectMouseWheel(e.wheel.delta)) { return true; }
 		}
 		break;
 	case PlatformEventType::KeyDown:

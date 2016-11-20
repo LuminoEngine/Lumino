@@ -45,7 +45,7 @@ add_executable(Lumino_UnitTest ${LN_TEST_SOURCES})
 
 #===============================================================================
 set(LN_SANDBOX_SOURCES
-	Sandbox/Main.cpp
+	Sandbox/SandboxMain.cpp
 )
 
 add_executable(LuminoSandbox ${LN_SANDBOX_SOURCES})

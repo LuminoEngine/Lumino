@@ -499,8 +499,8 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SpriteParticle, VisualNode);
 SpriteParticlePtr SpriteParticle::Create3D(SpriteParticleModel* model)
 {
 	auto ptr = SpriteParticlePtr::MakeRef();
-	ptr->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), model);
-	SceneGraphManager::Instance->GetDefault3DSceneGraph()->GetRootNode()->AddChild(ptr);
+	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), model);
+	SceneGraphManager::Instance->GetDefaultSceneGraph3D()->GetRootNode()->AddChild(ptr);
 	return ptr;
 }
 

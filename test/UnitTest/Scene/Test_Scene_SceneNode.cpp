@@ -16,7 +16,7 @@ TEST_F(Test_Scene_SceneNode, Visible)
 		// 1“x‘‚¢‚ÄA‰Šúó‘Ô‚Ì‚Æ‚«‚Ì•`‰æ”‚ðŠo‚¦‚Ä‚¨‚­
 		Engine::Update();
 		//int defaultCount = EngineDiag::GetVisualNodeDrawCount();
-		int defaultCount = SceneGraph::GetDefault2DSceneGraph()->GetRenderingProfiler().GetLastFrameData()->nodeDrawCount;
+		int defaultCount = Engine::GetDefaultSceneGraph2D()->GetRenderingProfiler().GetLastFrameData()->nodeDrawCount;
 
 		auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
 		auto sprite1 = Sprite2D::Create(tex);
@@ -25,7 +25,7 @@ TEST_F(Test_Scene_SceneNode, Visible)
 		sprite1->SetVisible(false);
 
 		Engine::Update();
-		ASSERT_EQ(defaultCount + 1, SceneGraph::GetDefault2DSceneGraph()->GetRenderingProfiler().GetLastFrameData()->nodeDrawCount);
+		ASSERT_EQ(defaultCount + 1, Engine::GetDefaultSceneGraph2D()->GetRenderingProfiler().GetLastFrameData()->nodeDrawCount);
 	}
 }
 

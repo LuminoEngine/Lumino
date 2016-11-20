@@ -115,4 +115,16 @@ ViewportLayer* Engine::GetDefault3DLayer()
 	return EngineManager::Instance->GetSceneGraphManager()->GetDefault3DCameraViewportLayer();
 }
 
+//------------------------------------------------------------------------------
+SceneGraph2D* Engine::GetDefaultSceneGraph2D()
+{
+	return EngineManager::Instance->GetSceneGraphManager()->GetDefaultSceneGraph2D();
+}
+
+//------------------------------------------------------------------------------
+SceneGraph3D* Engine::GetDefaultSceneGraph3D()
+{
+	return EngineManager::Instance->GetSceneGraphManager()->GetDefaultSceneGraph3D();
+}
+
 LN_NAMESPACE_END

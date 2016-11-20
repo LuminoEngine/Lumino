@@ -15,6 +15,8 @@
 LN_NAMESPACE_BEGIN
 namespace detail { class DocumentsManager; }
 class EngineDiagCore;
+class SceneGraph2D;
+class SceneGraph3D;
 
 LN_NAMESPACE_SCENE_BEGIN
 
@@ -57,10 +59,10 @@ public:
 	// TODO: SceneGraphManager はホントに単純なシーングラフ管理だけにとどめておいて、MMD 用のシーン構築は別クラスにしてもいいかも
 	void CreateDefaultSceneGraph();
 	void ReleaseDefaultSceneGraph();
-	SceneGraph* GetDefault3DSceneGraph() { return m_default3DSceneGraph; }
-	SceneGraph* GetDefault2DSceneGraph() { return m_default2DSceneGraph; }
-	CameraViewportLayer* GetDefault3DCameraViewportLayer() { return m_default3DCameraViewportLayer; }
+	SceneGraph2D* GetDefaultSceneGraph2D() { return m_default2DSceneGraph; }
+	SceneGraph3D* GetDefaultSceneGraph3D() { return m_default3DSceneGraph; }
 	CameraViewportLayer* GetDefault2DCameraViewportLayer() { return m_default2DCameraViewportLayer; }
+	CameraViewportLayer* GetDefault3DCameraViewportLayer() { return m_default3DCameraViewportLayer; }
 	void UpdateFrameDefaultSceneGraph(float elapsedTime);
 	//void RenderDefaultSceneGraph(Texture* renderTarget);
 
@@ -110,11 +112,11 @@ private:
 
 	List<Camera*>	m_allCameraList;
 
-	SceneGraph*		m_default3DSceneGraph;
-	SceneGraph*		m_default2DSceneGraph;
+	RefPtr<SceneGraph2D>		m_default2DSceneGraph;
+	RefPtr<SceneGraph3D>		m_default3DSceneGraph;
 
-	CameraViewportLayer*	m_default3DCameraViewportLayer;
 	CameraViewportLayer*	m_default2DCameraViewportLayer;
+	CameraViewportLayer*	m_default3DCameraViewportLayer;
 	Viewport*				m_mainViewport;
 };
 

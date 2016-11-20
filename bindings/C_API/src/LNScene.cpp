@@ -113,7 +113,7 @@ LNResult LNSprite2D_Create(LN_OUT LN_HANDLE(LNSprite2D)* outSprite2D)
 {
 	LN_FUNC_TRY_BEGIN;
 	auto ptr = RefPtr<LNWISprite2D>::MakeRef();
-	ptr->Initialize(LFManager::Engine->GetSceneGraphManager()->GetDefault2DSceneGraph());
+	ptr->Initialize(LFManager::Engine->GetSceneGraphManager()->GetDefaultSceneGraph2D());
 	*outSprite2D = LFManager::CheckRegisterObject(ptr);
 	ptr.SafeAddRef();
 	LN_FUNC_TRY_END_RETURN;
@@ -124,7 +124,7 @@ LNResult LNSprite2D_CreateFromTexture(LN_HANDLE(LNTexture) texture, LN_OUT LN_HA
 {
 	LN_FUNC_TRY_BEGIN;
 	auto ptr = RefPtr<LNWISprite2D>::MakeRef();
-	ptr->Initialize(LFManager::Engine->GetSceneGraphManager()->GetDefault2DSceneGraph());
+	ptr->Initialize(LFManager::Engine->GetSceneGraphManager()->GetDefaultSceneGraph2D());
 	ptr->SetTexture(TO_REFOBJ(Texture, texture));
 	*outSprite2D = LFManager::CheckRegisterObject(ptr);
 	ptr.SafeAddRef();

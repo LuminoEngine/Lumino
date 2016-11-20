@@ -48,12 +48,12 @@ void Sprite::Initialize(SceneGraph* owner, SpriteCoord spriteCoord)
 	// TODO: もらった owner に追加する、で。
 	if (spriteCoord == SpriteCoord_2D)
 	{
-		owner->GetManager()->GetDefault2DSceneGraph()->GetRootNode()->AddChild(this);
+		owner->GetManager()->GetDefaultSceneGraph2D()->GetRootNode()->AddChild(this);
 		SetAutoRemove(true);
 	}
 	else
 	{
-		owner->GetManager()->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
+		owner->GetManager()->GetDefaultSceneGraph3D()->GetRootNode()->AddChild(this);
 		SetAutoRemove(true);
 	}
 }
@@ -242,7 +242,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite2D, Sprite);
 Sprite2DPtr Sprite2D::Create()
 {
 	auto obj = Sprite2DPtr::MakeRef();
-	obj->Initialize(SceneGraphManager::Instance->GetDefault2DSceneGraph());
+	obj->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph2D());
 	return obj;
 }
 
@@ -310,7 +310,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite3D, Sprite);
 Sprite3DPtr Sprite3D::Create()
 {
 	auto obj = Sprite3DPtr::MakeRef();
-	obj->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph());
+	obj->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D());
 	return obj;
 }
 
@@ -318,7 +318,7 @@ Sprite3DPtr Sprite3D::Create()
 Sprite3DPtr Sprite3D::Create(float width, float height)
 {
 	auto obj = Sprite3DPtr::MakeRef();
-	obj->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph());
+	obj->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D());
 	obj->SetSize(Size(width, height));
 	return obj;
 }
@@ -327,7 +327,7 @@ Sprite3DPtr Sprite3D::Create(float width, float height)
 Sprite3DPtr Sprite3D::Create(float width, float height, Texture* texture)
 {
 	auto obj = Sprite3DPtr::MakeRef();
-	obj->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph());
+	obj->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D());
 	obj->SetSize(Size(width, height));
 	obj->SetTexture(texture);
 	return obj;
