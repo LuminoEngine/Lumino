@@ -391,7 +391,6 @@ void SceneGraph3D::Render2(DrawList* renderer, Camera* camera)
 	if (VisibleGridPlane)
 	{
 		AdjustGridMesh(camera);
-		renderer->SetBlendMode(BlendMode::Alpha);	// TODO: ステートはマテリアルへ
 		renderer->DrawMesh(m_gridPlane, 0, m_gridPlane->GetMeshResource()->GetMaterial(0));
 	}
 }
@@ -431,6 +430,8 @@ void SceneGraph3D::CreateGridContents()
 		gridTex->SetPixel(gridTexSize.height - 1, y, Color(0, 0, 0, 0.5));
 	}
 	mesh->GetMaterial(0)->SetMaterialTexture(gridTex);
+
+	mesh->GetMaterial(0)->SetBlendMode(BlendMode::Alpha);
 }
 
 //------------------------------------------------------------------------------
