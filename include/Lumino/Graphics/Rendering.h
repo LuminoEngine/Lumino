@@ -160,7 +160,7 @@ public:
 
 	BatchState();
 
-	void SetBlendMode(BlendMode mode);
+	//void SetBlendMode(BlendMode mode);
 
 	void SetRenderTarget(int index, RenderTarget* renderTarget);
 	RenderTarget* GetRenderTarget(int index) const { return m_renderTargets[index]; }
@@ -181,14 +181,14 @@ public:
 
 
 LN_INTERNAL_ACCESS:
-	void ApplyStatus(InternalContext* context, RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
+	void ApplyStatus(InternalContext* context, CombinedMaterial* combinedMaterial, RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
 	uint32_t GetHashCode() const;
 	void Reset();
 	bool IsHashDirty() const { return m_hashDirty; }
 
 private:
 
-	BlendMode				m_blendMode;
+	//BlendMode				m_blendMode;
 
 	RefPtr<RenderTarget>	m_renderTargets[MaxMultiRenderTargets];
 	RefPtr<DepthBuffer>		m_depthBuffer;
@@ -524,7 +524,8 @@ public:
 		Texture* texture,
 		const RectF& srcRect,
 		const Color& color,
-		SpriteBaseDirection baseDirection);
+		SpriteBaseDirection baseDirection,
+		Material* material = nullptr);
 
 	void DrawRectangle(const RectF& rect);
 

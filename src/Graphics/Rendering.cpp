@@ -256,14 +256,14 @@ BatchState::BatchState()
 }
 
 //------------------------------------------------------------------------------
-void BatchState::SetBlendMode(BlendMode mode)
-{
-	if (m_blendMode != mode)
-	{
-		m_blendMode = mode;
-		m_hashDirty = true;
-	}
-}
+//void BatchState::SetBlendMode(BlendMode mode)
+//{
+//	if (m_blendMode != mode)
+//	{
+//		m_blendMode = mode;
+//		m_hashDirty = true;
+//	}
+//}
 
 //------------------------------------------------------------------------------
 void BatchState::SetRenderTarget(int index, RenderTarget* renderTarget)
@@ -330,7 +330,7 @@ Font* BatchState::GetFont() const
 //------------------------------------------------------------------------------
 void BatchState::Reset()
 {
-	m_blendMode = BlendMode::Normal;
+	//m_blendMode = BlendMode::Normal;
 
 	for (int i = 0; i < MaxMultiRenderTargets; ++i)
 		m_renderTargets[i] = nullptr;
@@ -344,7 +344,7 @@ void BatchState::Reset()
 }
 
 //------------------------------------------------------------------------------
-void BatchState::ApplyStatus(InternalContext* context, RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
+void BatchState::ApplyStatus(InternalContext* context, CombinedMaterial* combinedMaterial, RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
 {
 	auto* stateManager = context->GetRenderStateManager();
 
@@ -352,9 +352,9 @@ void BatchState::ApplyStatus(InternalContext* context, RenderTarget* defaultRend
 	{
 		// TODO: Base
 		RenderState state;
-		ContextInterface::MakeBlendMode(m_blendMode, &state);
-		//state.Culling = m_cullingMode;
-		//state.AlphaTest = m_alphaTestEnabled;
+		ContextInterface::MakeBlendMode(combinedMaterial->m_builtinParameters.blendMode, &state);
+		state.Culling = combinedMaterial->m_builtinParameters.cullingMode;
+		state.AlphaTest = combinedMaterial->m_builtinParameters.alphaTest;
 		stateManager->SetRenderState(state);
 
 		// スプライトバッチ化のため (TODO: いらないかも。SpriteRenderer では State でそーとしなくなった)
@@ -362,10 +362,10 @@ void BatchState::ApplyStatus(InternalContext* context, RenderTarget* defaultRend
 	}
 	// DepthStencilState
 	{
-		//DepthStencilState state;
-		//state.DepthTestEnabled = m_depthTestEnabled;
-		//state.DepthWriteEnabled = m_depthWriteEnabled;
-		//stateManager->SetDepthStencilState(state);
+		DepthStencilState state;
+		state.DepthTestEnabled = combinedMaterial->m_builtinParameters.depthTestEnabled;
+		state.DepthWriteEnabled = combinedMaterial->m_builtinParameters.depthWriteEnabled;
+		stateManager->SetDepthStencilState(state);
 	}
 	// FrameBuffer
 	{
@@ -485,7 +485,7 @@ void DrawElementBatch::Reset()
 //------------------------------------------------------------------------------
 void DrawElementBatch::ApplyStatus(InternalContext* context, RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
 {
-	state.ApplyStatus(context, defaultRenderTarget, defaultDepthBuffer);
+	state.ApplyStatus(context, m_combinedMaterial, defaultRenderTarget, defaultDepthBuffer);
 }
 
 //------------------------------------------------------------------------------
@@ -987,9 +987,9 @@ RenderingPass2::~RenderingPass2()
 void RenderingPass2::SelectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy)
 {
 	outPolicy->shader = nullptr;
-	if (material != nullptr && material->m_shader != nullptr)
+	if (material != nullptr && material->m_builtinParameters.shader != nullptr)
 	{
-		outPolicy->shader = material->m_shader;
+		outPolicy->shader = material->m_builtinParameters.shader;
 	}
 	else
 	{
@@ -1097,7 +1097,8 @@ void DrawList::SetFont(Font* font)
 //------------------------------------------------------------------------------
 void DrawList::SetBlendMode(BlendMode mode)
 {
-	m_state.state.state.SetBlendMode(mode);
+	//m_state.state.state.SetBlendMode(mode);
+	m_defaultMaterial->SetBlendMode(mode);
 }
 
 //------------------------------------------------------------------------------
@@ -1111,6 +1112,7 @@ void DrawList::BeginMakeElements()
 {
 	m_drawElementList.ClearCommands();
 	m_state.Reset();
+	m_defaultMaterial->Reset();
 	m_currentSectionTopElement = nullptr;
 }
 
@@ -1272,7 +1274,8 @@ void DrawList::DrawSprite(
 	Texture* texture,
 	const RectF& srcRect,
 	const Color& color,
-	SpriteBaseDirection baseDirection)
+	SpriteBaseDirection baseDirection,
+	Material* material)
 {
 	class DrawElement_DrawSprite : public detail::DrawElement
 	{
@@ -1293,7 +1296,7 @@ void DrawList::DrawSprite(
 		}
 	};
 
-	auto* ptr = ResolveDrawElement<DrawElement_DrawSprite>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_spriteRenderer, nullptr);
+	auto* ptr = ResolveDrawElement<DrawElement_DrawSprite>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_spriteRenderer, material);
 	ptr->transform = m_state.transfrom;
 	ptr->position = position;
 	ptr->size.Set(size.width, size.height);

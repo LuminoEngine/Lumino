@@ -295,9 +295,9 @@ void Sprite2D::OnRender2(DrawList* renderer)
 	Material* mat = GetMainMaterial();
 	Color colorScale = mat->GetColorScale();
 	colorScale.a *= mat->GetOpacity();
-	renderer->SetBlendMode(m_renderState.blendMode);
+	//renderer->SetBlendMode(m_renderState.blendMode);
 	renderer->SetTransform(m_combinedGlobalMatrix);
-	renderer->DrawSprite(Vector3::Zero, m_renderSize, m_anchor, GetTexture(), m_renderSourceRect, colorScale, SpriteBaseDirection::Basic2D);
+	renderer->DrawSprite(Vector3::Zero, m_renderSize, m_anchor, GetTexture(), m_renderSourceRect, colorScale, SpriteBaseDirection::Basic2D, GetMainMaterial());
 }
 
 

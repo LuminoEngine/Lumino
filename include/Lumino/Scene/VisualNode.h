@@ -64,28 +64,28 @@ public:
 	/** @{ */
 
 	/** このノードを描画する際の合成方法を設定します。デフォルトは BlendMode::Alpha です。*/
-	void SetBlendMode(BlendMode mode) { m_renderState.blendMode = mode; }
+	void SetBlendMode(BlendMode mode);
 
 	/** このノードを描画する際の合成方法を取得します。*/
-	BlendMode GetBlendMode() const { return m_renderState.blendMode; }
+	//BlendMode GetBlendMode() const;
 
 	/** このノードを描画する際のカリング方法を設定します。デフォルトは CullingMode::Back です。*/
-	void SetCullingMode(CullingMode mode) { m_renderState.cullingMode = mode; }
+	void SetCullingMode(CullingMode mode);
 
 	/** このノードを描画する際のカリング方法を取得します。*/
-	CullingMode GetCullingMode() const { return m_renderState.cullingMode; }
+	//CullingMode GetCullingMode() const;
 
 	/** このノードを描画する際の深度テストの有無を設定します。デフォルトは true です。*/
-	void SetDepthTestEnabled(bool flag) { m_renderState.depthTestEnabled = flag; }
+	void SetDepthTestEnabled(bool enabled);
 
 	/** このノードを描画する際の深度テストの有無を取得します。*/
-	bool IsDepthTestEnabled() const { return m_renderState.depthTestEnabled; }
+	//bool IsDepthTestEnabled() const;
 
 	/** このノードを描画する際の深度書き込みの有無を設定します。デフォルトは true です。*/
-	void SetDepthWriteEnabled(bool flag) { m_renderState.depthWriteEnabled = flag; }
+	void SetDepthWriteEnabled(bool enabled);
 
 	/** このノードを描画する際の深度書き込みの有無を取得します。*/
-	bool IsDepthWriteEnabled() const { return m_renderState.depthWriteEnabled; }
+	//bool IsDepthWriteEnabled() const;
 
 	/** @} */
 
@@ -125,13 +125,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 
 protected:
 	int						m_subsetCount;
-
-	//friend class RenderingPass;
-	RefPtr<MaterialList2>					m_materialList;
-	detail::VisualNodeRenderState	m_renderState;
-
-
-private:
+	RefPtr<MaterialList2>	m_materialList;
 };
 
 

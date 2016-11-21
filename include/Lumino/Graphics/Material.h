@@ -10,7 +10,21 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class Material;
 using MaterialPtr = RefPtr<Material>;
-namespace detail { class CombinedMaterial; }
+namespace detail {
+
+class CombinedMaterial;
+struct BuiltinParameters
+{
+	RefPtr<Shader>	shader;
+	BlendMode		blendMode;
+	CullingMode		cullingMode;
+	//FillMode		fill;
+	bool			alphaTest;
+	bool			depthTestEnabled;
+	bool			depthWriteEnabled;
+};
+
+} // namespace detail
 
 /**
 	@brief
@@ -48,8 +62,6 @@ public:
 
 	void SetBlendMode(BlendMode mode);
 	void SetCullingMode(CullingMode mode);
-	void SetFillMode(FillMode mode);
-	void SetAlphaTestEnabled(bool enabled);
 
 	/** @} */
 
@@ -66,6 +78,7 @@ LN_INTERNAL_ACCESS:
 	Material();
 	virtual ~Material();
 	void Initialize();
+	void Reset();
 
 LN_INTERNAL_ACCESS:
 	//using ShaderValuePtr = std::shared_ptr<ShaderValue>;
@@ -119,39 +132,20 @@ private:
 	//ShaderValue* FindShaderValue(const StringRef& name);
 	//ShaderValue* FindShaderValueConst(const StringRef& name) const;
 
-	struct BuiltinParameters
-	{
-		RefPtr<Shader>	shader;
-		BlendMode		blendMode;
-		CullingMode		culling;
-		FillMode		fill;
-		bool			alphaTest;
-		bool			depthTestEnabled;
-		bool			depthWriteEnabled;
-	};
+	
 
 	std::unordered_map<uint32_t, ShaderValue>	m_userValueMap;
 	std::unordered_map<uint32_t, ShaderValue>	m_builtinValueMap;
 
 
-	//RefPtr<detail::CombinedMaterial>	m_combinedMaterial;
-	
-	//SortedArray<String, ShaderValuePtr>	m_valueList;
-	//List<ValuePair>					m_linkedVariableList;
-
-	BuiltinParameters	m_builtin;
-	
-
-	//bool								m_shaderModified;
 
 	friend class RenderingContext;
 
 LN_INTERNAL_ACCESS:
-	//bool								m_modifiedForMaterialInstance;
+	detail::BuiltinParameters	m_builtin;
 	int									m_revisionCount;
 	uint32_t							m_hashCode;
 
-	//void ApplyToShaderVariables();
 
 	const std::unordered_map<uint32_t, ShaderValue>& GetUserValueMap() const { return m_userValueMap; }
 	ShaderValue* FindAndCreateUserShaderValue(uint32_t hashKey);
@@ -183,7 +177,8 @@ public:
 	CombinedMaterial();
 	virtual ~CombinedMaterial();
 
-	Shader*			m_shader;
+	//Shader*			m_shader;
+	BuiltinParameters	m_builtinParameters;
 	Color			m_colorScale;	// 乗算結合済み (opacity 込み)
 	Color			m_blendColor;	// 加算結合済み
 	ToneF			m_tone;			// 加算結合済み

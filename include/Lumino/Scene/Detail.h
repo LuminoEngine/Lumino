@@ -9,15 +9,6 @@ LN_NAMESPACE_SCENE_BEGIN
 namespace detail
 {
 
-struct VisualNodeRenderState
-{
-	BlendMode	blendMode = BlendMode::Normal;
-	CullingMode	cullingMode = CullingMode::Back;
-	bool		depthTestEnabled = true;
-	bool		depthWriteEnabled = true;
-};
-
-
 class IProfilerClient
 {
 public:

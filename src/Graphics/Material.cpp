@@ -49,13 +49,7 @@ MaterialPtr Material::Create()
 Material::Material()
 	: m_revisionCount(0)
 {
-	m_builtin.shader = nullptr;
-	m_builtin.blendMode = BlendMode::Normal;
-	m_builtin.culling = CullingMode::Back;
-	m_builtin.fill = FillMode_Solid;
-	m_builtin.alphaTest = true;
-	m_builtin.depthTestEnabled = true;
-	m_builtin.depthWriteEnabled = true;
+	Reset();
 }
 
 //------------------------------------------------------------------------------
@@ -67,6 +61,19 @@ Material::~Material()
 void Material::Initialize()
 {
 	//m_combinedMaterial = RefPtr<detail::CombinedMaterial>::MakeRef();
+}
+
+//------------------------------------------------------------------------------
+void Material::Reset()
+{
+	m_builtin.shader = nullptr;
+	m_builtin.blendMode = BlendMode::Normal;
+	m_builtin.cullingMode = CullingMode::Back;
+	//m_builtin.fill = FillMode_Solid;
+	m_builtin.alphaTest = true;
+	m_builtin.depthTestEnabled = true;
+	m_builtin.depthWriteEnabled = true;
+	m_revisionCount++;
 }
 
 //------------------------------------------------------------------------------
@@ -175,22 +182,40 @@ void Material::SetColorParameter(const StringRef& name, float r, float g, float 
 //------------------------------------------------------------------------------
 void Material::SetBlendMode(BlendMode mode)
 {
+	m_builtin.blendMode = mode;
+	m_revisionCount++;
 }
 
 //------------------------------------------------------------------------------
 void Material::SetCullingMode(CullingMode mode)
 {
+	m_builtin.cullingMode = mode;
+	m_revisionCount++;
 }
 
 //------------------------------------------------------------------------------
-void Material::SetFillMode(FillMode mode)
+void Material::SetDepthTestEnabled(bool enabled)
 {
+	m_builtin.depthTestEnabled = enabled;
+	m_revisionCount++;
 }
 
 //------------------------------------------------------------------------------
-void Material::SetAlphaTestEnabled(bool enabled)
+void Material::SetDepthWriteEnabled(bool enabled)
 {
+	m_builtin.depthWriteEnabled = enabled;
+	m_revisionCount++;
 }
+
+////------------------------------------------------------------------------------
+//void Material::SetFillMode(FillMode mode)
+//{
+//}
+//
+////------------------------------------------------------------------------------
+//void Material::SetAlphaTestEnabled(bool enabled)
+//{
+//}
 
 ////------------------------------------------------------------------------------
 //void Material::LinkVariables()
@@ -371,7 +396,7 @@ namespace detail {
 
 //------------------------------------------------------------------------------
 CombinedMaterial::CombinedMaterial()
-	: m_shader(nullptr)
+	: m_builtinParameters()
 	, m_colorScale(Color::White)
 	, m_blendColor(Color(0, 0, 0, 1))
 	, m_tone()
@@ -417,7 +442,7 @@ void CombinedMaterial::Combine(Material* parent, Material* owner, Material* owne
 		Material* source2 = (ownerBase != nullptr) ? owner : nullptr;
 
 		// source1
-		m_shader = source1->GetShader();
+		m_builtinParameters = source1->m_builtin;
 		m_colorScale = source1->GetColorScale();
 		m_colorScale.a *= source1->GetOpacity();
 		m_blendColor = source1->GetBlendColor();
@@ -427,7 +452,7 @@ void CombinedMaterial::Combine(Material* parent, Material* owner, Material* owne
 		// source2 (base があるなら owner を後からマージ)
 		if (source2 != nullptr)
 		{
-			if (m_shader == nullptr) m_shader = source2->GetShader();
+			if (m_builtinParameters.shader == nullptr) m_builtinParameters.shader = source2->GetShader();
 			m_colorScale.MultiplyClamp(source2->GetColorScale());
 			m_colorScale.a *= source2->GetOpacity();
 			m_blendColor.AddClamp(source2->GetBlendColor());
@@ -438,7 +463,7 @@ void CombinedMaterial::Combine(Material* parent, Material* owner, Material* owne
 		// parent
 		if (parent != nullptr)
 		{
-			if (m_shader == nullptr) m_shader = parent->GetShader();
+			if (m_builtinParameters.shader == nullptr) m_builtinParameters.shader = parent->GetShader();
 			m_colorScale.MultiplyClamp(parent->GetColorScale());
 			m_colorScale.a *= parent->GetOpacity();
 			m_blendColor.AddClamp(parent->GetBlendColor());
