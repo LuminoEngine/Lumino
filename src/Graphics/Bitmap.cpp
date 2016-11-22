@@ -611,9 +611,18 @@ void Bitmap::BitBltInternalTemplate(
 				ClColor src_alpha = GetA(src);
 				if (src_alpha == 0) continue;     // フォントならコレでかなり高速化できるはず
 
+
 				uint32_t dest_color = dstBuf.GetPixel(x);
 				uint32_t dest_alpha = GetA(dest_color);
 				uint32_t a, r, g, b;
+
+				a = src_alpha;
+
+				// まず、src と mul をまぜまぜ
+				r = (GetR(mulColorRGBA) * GetR(src)) >> 8;
+				g = (GetG(mulColorRGBA) * GetG(src)) >> 8;
+				b = (GetB(mulColorRGBA) * GetB(src)) >> 8;
+				a = (GetA(mulColorRGBA) * src_alpha) >> 8;
 
 				// photoshop 等のツール系の計算式ではやや時間がかかるため、
 				// DirectX 同様、dest のアルファは無視する方向で実装する。
@@ -622,22 +631,17 @@ void Bitmap::BitBltInternalTemplate(
 				// dest(1, 0, 0, 0) とかなら、ユーザーが黒と合成されることを意図していると考えられるが、
 				// 流石に完全に透明なのに黒ずむのはどうかと…。
 				// というわけで、dest_alpha == 0 なら src が 100% になるように細工している。
-				if (dest_alpha == 0) a = 0xff;
-				else a = src_alpha;
+				if (dest_alpha != 0)
+				{
+					r = ((GetR(dest_color) * (0xff - a)) >> 8) +
+						((r * a) >> 8);
 
-				r = (GetR(mulColorRGBA) * GetR(src)) >> 8;
-				g = (GetG(mulColorRGBA) * GetG(src)) >> 8;
-				b = (GetB(mulColorRGBA) * GetB(src)) >> 8;
-				a = (GetA(mulColorRGBA) * a) >> 8;
+					g = ((GetG(dest_color) * (0xff - a)) >> 8) +
+						((g * a) >> 8);
 
-				r = ((GetR(dest_color) * (0xff - a)) >> 8) +
-					((r * a) >> 8);
-
-				g = ((GetG(dest_color) * (0xff - a)) >> 8) +
-					((g * a) >> 8);
-
-				b = ((GetB(dest_color) * (0xff - a)) >> 8) +
-					((b * a) >> 8);
+					b = ((GetB(dest_color) * (0xff - a)) >> 8) +
+						((b * a) >> 8);
+				}
 
 				// 書き込み用に再計算。
 				// 乗算だと、半透明を重ねるごとに薄くなってしまう。

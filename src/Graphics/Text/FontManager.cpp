@@ -25,7 +25,7 @@ FontData::FontData()
 	//, EdgeSize(0)
 	, IsBold(false)
 	, IsItalic(false)
-	, IsAntiAlias(false)
+	, IsAntiAlias(true)
 {}
 
 //------------------------------------------------------------------------------

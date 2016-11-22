@@ -429,3 +429,27 @@ TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawFrameRectangle2.png")));
 	}
 }
+
+//==============================================================================
+class Test_Graphics_Texture : public ::testing::Test
+{
+protected:
+	virtual void SetUp() {}
+	virtual void TearDown() {}
+};
+
+//-----------------------------------------------------------------------------
+TEST_F(Test_Graphics_Texture, DrawText)
+{
+	auto font = Font::Create();
+	auto texture = Texture2D::Create(160, 120);
+	texture->DrawText("Left", Rect(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
+	texture->DrawText("Center", Rect(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Center);
+	texture->DrawText("Rigth", Rect(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Right);
+	//texture->DrawText("Justify", Rect(0, 32, 120, 160), font, Color32::White, Color32::White, 0, TextAlignment::Justify);
+	auto sprite = Sprite2D::Create(texture);
+	sprite->SetBlendMode(BlendMode::Alpha);
+	Engine::Update();
+
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Texture.DrawText1.png")));
+}

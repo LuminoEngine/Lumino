@@ -8,7 +8,7 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail { class RenderTargetTextureCache; }
 class Bitmap;
-class RawFont;
+class Font;
 class Texture;
 class Texture3D;
 using TexturePtr = RefPtr<Texture>;
@@ -130,8 +130,8 @@ public:
 
 #pragma push_macro("DrawText")
 #undef DrawText
-	void DrawText(const StringRef& text, const Rect& rect, RawFont* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment);
-	void LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const Rect& rect, RawFont* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment);
+	void DrawText(const StringRef& text, const Rect& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment);
+	void LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const Rect& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment);
 	// TODO: ↑ TextAlignment じゃなくて TextLayoutFlags の方が良いと思う
 #pragma pop_macro("DrawText")
 	
