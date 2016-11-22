@@ -16,12 +16,12 @@ class CombinedMaterial;
 struct BuiltinParameters
 {
 	RefPtr<Shader>	shader;
-	BlendMode		blendMode;
-	CullingMode		cullingMode;
-	//FillMode		fill;
-	bool			alphaTest;
-	bool			depthTestEnabled;
-	bool			depthWriteEnabled;
+	//BlendMode		blendMode;
+	//CullingMode		cullingMode;
+	////FillMode		fill;
+	//bool			alphaTest;
+	//bool			depthTestEnabled;
+	//bool			depthWriteEnabled;
 };
 
 } // namespace detail
@@ -60,8 +60,14 @@ public:
 	/** @name RenderState */
 	/** @{ */
 
-	void SetBlendMode(BlendMode mode);
-	void SetCullingMode(CullingMode mode);
+	LN_TR_PROPERTY(BlendMode, blendMode);
+	LN_TR_PROPERTY(CullingMode, cullingMode);
+	//LN_TR_PROPERTY(bool, depthTestEnabled);
+	//LN_TR_PROPERTY(bool, depthWriteEnabled);
+
+
+	//void SetBlendMode(BlendMode mode);
+	//void SetCullingMode(CullingMode mode);
 
 	/** @} */
 
@@ -69,8 +75,8 @@ public:
 	/** @name DepthStencilState */
 	/** @{ */
 
-	void SetDepthTestEnabled(bool enabled);
-	void SetDepthWriteEnabled(bool enabled);
+	//void SetDepthTestEnabled(bool enabled);
+	//void SetDepthWriteEnabled(bool enabled);
 
 	/** @} */
 
@@ -132,6 +138,7 @@ private:
 	//ShaderValue* FindShaderValue(const StringRef& name);
 	//ShaderValue* FindShaderValueConst(const StringRef& name) const;
 
+	static void OnRenderStateChanged(Object* obj);
 	
 
 	std::unordered_map<uint32_t, ShaderValue>	m_userValueMap;
@@ -190,7 +197,8 @@ public:
 	float			m_power;
 	Texture*		m_mainTexture;
 
-	//CullingMode		m_culling;
+	BlendMode		m_blendMode;
+	CullingMode		m_cullingMode;
 
 	void Combine(Material* parent, Material* owner, Material* ownerBase);
 

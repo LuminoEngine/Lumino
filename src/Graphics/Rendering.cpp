@@ -352,9 +352,9 @@ void BatchState::ApplyStatus(InternalContext* context, CombinedMaterial* combine
 	{
 		// TODO: Base
 		RenderState state;
-		ContextInterface::MakeBlendMode(combinedMaterial->m_builtinParameters.blendMode, &state);
-		state.Culling = combinedMaterial->m_builtinParameters.cullingMode;
-		state.AlphaTest = combinedMaterial->m_builtinParameters.alphaTest;
+		ContextInterface::MakeBlendMode(combinedMaterial->m_blendMode, &state);
+		state.Culling = combinedMaterial->m_cullingMode;
+		//state.AlphaTest = combinedMaterial->m_alphaTest;
 		stateManager->SetRenderState(state);
 
 		// スプライトバッチ化のため (TODO: いらないかも。SpriteRenderer では State でそーとしなくなった)
@@ -362,10 +362,10 @@ void BatchState::ApplyStatus(InternalContext* context, CombinedMaterial* combine
 	}
 	// DepthStencilState
 	{
-		DepthStencilState state;
-		state.DepthTestEnabled = combinedMaterial->m_builtinParameters.depthTestEnabled;
-		state.DepthWriteEnabled = combinedMaterial->m_builtinParameters.depthWriteEnabled;
-		stateManager->SetDepthStencilState(state);
+		//DepthStencilState state;
+		//state.DepthTestEnabled = combinedMaterial->m_builtinParameters.depthTestEnabled;
+		//state.DepthWriteEnabled = combinedMaterial->m_builtinParameters.depthWriteEnabled;
+		//stateManager->SetDepthStencilState(state);
 	}
 	// FrameBuffer
 	{
@@ -1098,7 +1098,8 @@ void DrawList::SetFont(Font* font)
 void DrawList::SetBlendMode(BlendMode mode)
 {
 	//m_state.state.state.SetBlendMode(mode);
-	m_defaultMaterial->SetBlendMode(mode);
+	//m_defaultMaterial->SetBlendMode(mode);
+	m_defaultMaterial->blendMode = mode;
 }
 
 //------------------------------------------------------------------------------

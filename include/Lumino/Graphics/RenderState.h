@@ -30,12 +30,13 @@ enum class BlendFactor
 };
 
 /** カリング方法 */
-enum class CullingMode
+LN_ENUM(CullingMode)
 {
 	None,						/**< 両面表示 */
 	Front,						/**< 前面を描画しない */
 	Back,						/**< 裏面を描画しない */
 };
+LN_ENUM_DECLARE(CullingMode);
 
 /// 塗りつぶし方法を表します
 enum FillMode
@@ -70,7 +71,7 @@ LN_ENUM(StencilOp)
 LN_ENUM_DECLARE(StencilOp);
 
 /** 合成方法 */
-enum class BlendMode
+LN_ENUM(BlendMode)
 {
 	Normal,			/**< 通常 */
 	Alpha,			/**< アルファブレンド */
@@ -78,6 +79,7 @@ enum class BlendMode
 	Subtract,		/**< 減算合成 */
 	Multiply,		/**< 乗算合成 */
 };
+LN_ENUM_DECLARE(BlendMode);
 
 /**
 	@brief	グラフィックデバイスのレンダリングステートを表すクラスです。

@@ -23,6 +23,8 @@ MaterialList::~MaterialList()
 // Material
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Material, Object);
+LN_TR_PROPERTY_IMPLEMENT(Material, BlendMode, blendMode, tr::PropertyMetadata(Material::OnRenderStateChanged));
+LN_TR_PROPERTY_IMPLEMENT(Material, CullingMode, cullingMode, tr::PropertyMetadata(Material::OnRenderStateChanged));
 
 const String Material::DiffuseParameter(_T("Diffuse"));
 const String Material::AmbientParameter(_T("Ambient"));
@@ -47,8 +49,11 @@ MaterialPtr Material::Create()
 
 //------------------------------------------------------------------------------
 Material::Material()
-	: m_revisionCount(0)
+	: blendMode(BlendMode::Normal)
+	, cullingMode(CullingMode::Back)
+	, m_revisionCount(0)
 {
+	InitializeProperties();
 	Reset();
 }
 
@@ -67,12 +72,13 @@ void Material::Initialize()
 void Material::Reset()
 {
 	m_builtin.shader = nullptr;
-	m_builtin.blendMode = BlendMode::Normal;
-	m_builtin.cullingMode = CullingMode::Back;
-	//m_builtin.fill = FillMode_Solid;
-	m_builtin.alphaTest = true;
-	m_builtin.depthTestEnabled = true;
-	m_builtin.depthWriteEnabled = true;
+	// TODO: とりあえず
+	blendMode = BlendMode::Normal;
+	cullingMode = CullingMode::Back;
+	////m_builtin.fill = FillMode_Solid;
+	//m_builtin.alphaTest = true;
+	//m_builtin.depthTestEnabled = true;
+	//m_builtin.depthWriteEnabled = true;
 	m_revisionCount++;
 }
 
@@ -179,33 +185,33 @@ void Material::SetColorParameter(const StringRef& name, float r, float g, float 
 	SetColorParameter(name, Color(r, g, b, a));
 }
 
-//------------------------------------------------------------------------------
-void Material::SetBlendMode(BlendMode mode)
-{
-	m_builtin.blendMode = mode;
-	m_revisionCount++;
-}
-
-//------------------------------------------------------------------------------
-void Material::SetCullingMode(CullingMode mode)
-{
-	m_builtin.cullingMode = mode;
-	m_revisionCount++;
-}
-
-//------------------------------------------------------------------------------
-void Material::SetDepthTestEnabled(bool enabled)
-{
-	m_builtin.depthTestEnabled = enabled;
-	m_revisionCount++;
-}
-
-//------------------------------------------------------------------------------
-void Material::SetDepthWriteEnabled(bool enabled)
-{
-	m_builtin.depthWriteEnabled = enabled;
-	m_revisionCount++;
-}
+////------------------------------------------------------------------------------
+//void Material::SetBlendMode(BlendMode mode)
+//{
+//	m_builtin.blendMode = mode;
+//	m_revisionCount++;
+//}
+//
+////------------------------------------------------------------------------------
+//void Material::SetCullingMode(CullingMode mode)
+//{
+//	m_builtin.cullingMode = mode;
+//	m_revisionCount++;
+//}
+//
+////------------------------------------------------------------------------------
+//void Material::SetDepthTestEnabled(bool enabled)
+//{
+//	m_builtin.depthTestEnabled = enabled;
+//	m_revisionCount++;
+//}
+//
+////------------------------------------------------------------------------------
+//void Material::SetDepthWriteEnabled(bool enabled)
+//{
+//	m_builtin.depthWriteEnabled = enabled;
+//	m_revisionCount++;
+//}
 
 ////------------------------------------------------------------------------------
 //void Material::SetFillMode(FillMode mode)
@@ -215,78 +221,6 @@ void Material::SetDepthWriteEnabled(bool enabled)
 ////------------------------------------------------------------------------------
 //void Material::SetAlphaTestEnabled(bool enabled)
 //{
-//}
-
-////------------------------------------------------------------------------------
-//void Material::LinkVariables()
-//{
-//	m_linkedVariableList.Clear();
-//
-//	if (m_shader != nullptr)
-//	{
-//		for (ShaderVariable* v : m_shader->GetVariables())
-//		{
-//			if (v->GetType() == ShaderVariableType_Unknown ||
-//				v->GetType() == ShaderVariableType_String)
-//			{
-//				// Unknown と String 型は無視。String 型は読み取り専用で、Material としては持っておく必要ない。
-//			}
-//			else
-//			{
-//				// このマテリアルの値として、シェーダ変数値を保持する変数を作る
-//				ShaderValuePtr valuePtr;
-//				if (!m_valueList.TryGetValue(v->GetName(), &valuePtr))
-//				{
-//					valuePtr = std::make_shared<ShaderValue>(v->GetShaderValue());	// 初期値
-//					m_valueList.Add(v->GetName(), valuePtr);
-//				}
-//
-//				// 変数と値のペア
-//				ValuePair pair = { v, valuePtr };
-//				m_linkedVariableList.Add(pair);
-//			}
-//		}
-//	}
-//
-//	// TODO: シェーダが変更されたことで不要となるものを m_valueList から除外したほうがいいかも
-//}
-//
-////------------------------------------------------------------------------------
-//ShaderValue* Material::FindShaderValue(const StringRef& name)
-//{
-//	ShaderValuePtr v;
-//	if (!m_valueList.TryGetValue(name, &v))
-//	{
-//		v = std::make_shared<ShaderValue>();
-//		m_valueList.Add(name, v);
-//	}
-//	return v.get();
-//}
-//
-////------------------------------------------------------------------------------
-//ShaderValue* Material::FindShaderValueConst(const StringRef& name) const
-//{
-//	ShaderValuePtr v;
-//	if (!m_valueList.TryGetValue(name, &v))
-//	{
-//		return nullptr;
-//	}
-//	return v.get();
-//}
-
-//------------------------------------------------------------------------------
-//void Material::ApplyToShaderVariables()
-//{
-//	if (m_shaderModified)
-//	{
-//		LinkVariables();
-//		m_shaderModified = false;
-//	}
-//
-//	for (auto& pair : m_linkedVariableList)
-//	{
-//		pair.variable->SetShaderValue(*pair.value);
-//	}
 //}
 
 //------------------------------------------------------------------------------
@@ -326,10 +260,20 @@ uint32_t Material::GetHashCode()
 		for (auto& pair : m_builtinValueMap)
 			m_hashCode += Hash::CalcHash(reinterpret_cast<const char*>(&pair.second), sizeof(pair.second));
 
-		m_hashCode += Hash::CalcHash(reinterpret_cast<const char*>(&m_builtin), sizeof(m_builtin));
+		//m_hashCode += Hash::CalcHash(reinterpret_cast<const char*>(&m_builtin), sizeof(m_builtin));
+
+		m_hashCode += reinterpret_cast<intptr_t>(m_builtin.shader.Get());
+		m_hashCode += blendMode.GetHashCode();
+		m_hashCode += cullingMode.GetHashCode();
 	}
 
 	return m_hashCode;
+}
+
+//------------------------------------------------------------------------------
+void Material::OnRenderStateChanged(Object* obj)
+{
+	static_cast<Material*>(obj)->m_revisionCount++;
 }
 
 //------------------------------------------------------------------------------
@@ -448,6 +392,9 @@ void CombinedMaterial::Combine(Material* parent, Material* owner, Material* owne
 		m_blendColor = source1->GetBlendColor();
 		m_tone = source1->GetTone();
 		CopyUserValueTable(source1);
+		// TODO
+		m_blendMode = source1->blendMode;
+		m_cullingMode = source1->cullingMode;
 
 		// source2 (base があるなら owner を後からマージ)
 		if (source2 != nullptr)

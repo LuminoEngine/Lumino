@@ -431,7 +431,7 @@ void SceneGraph3D::CreateGridContents()
 	}
 	mesh->GetMaterial(0)->SetMaterialTexture(gridTex);
 
-	mesh->GetMaterial(0)->SetBlendMode(BlendMode::Alpha);
+	mesh->GetMaterial(0)->blendMode = BlendMode::Alpha;
 }
 
 //------------------------------------------------------------------------------
