@@ -22,49 +22,18 @@ public:
 	void Initialize(GraphicsManager* manager, int maxSpriteCount);
 
 public:
-
-	/// 座標変換行列の設定
 	void SetTransform(const Matrix& matrix);
-
-	/// ビュー、プロジェクション行列の設定 (view はビルボードの計算で必要になるので、view proj で分ける)
 	void SetViewProjMatrix(const Matrix& view, const Matrix& proj);
-
-	/// ビューサイズの設定
 	void SetViewPixelSize(const Size& size);
 
-	/// レンダリングスレートの設定
 	void SetRenderState(const RenderState& state);
 
-	/// ソート方法の設定
 	void SetSortMode(uint32_t flags, SortingDistanceBasis basis);
 
-	/// 描画リクエスト
-	void DrawRequest2D(
-		const Vector3& position,
-		const Vector2& size,
-		const Vector2& anchorRatio,
-		Driver::ITexture* texture,
-		const RectF& srcRect,
-		const SpriteColorTable& colorTable);
-
-	/// 描画リクエスト
-	void DrawRequest3D(
-		const Vector3& position,
-		const Vector2& size,
-		const Vector2& anchorRatio,
-		Driver::ITexture* texture,
-		const RectF& srcRect,
-		const SpriteColorTable& colorTable,    // 4 頂点分。NULL の場合は白
-		SpriteBaseDirection baseDir);
-
-	/// バッチ処理されているスプライトの描画
 	void Flush(SpriteSortMode sortFlags);
 
-	/// 描画せずにバッチをすべてクリアする
 	void Clear();
 
-
-private:
 	void DrawRequestInternal(
 		const Vector3& position,
 		const Vector2& size,
@@ -73,6 +42,9 @@ private:
 		const RectF& srcRect,
 		const SpriteColorTable& colorTable,
 		SpriteBaseDirection baseDir);
+
+
+private:
 
 	/// バッチ処理用スプライト頂点
 	struct BatchSpriteVertex
@@ -202,23 +174,6 @@ public:
 		@details	この設定は次の Flash で使用します。
 	*/
 	void SetSortMode(SpriteSortMode flags, SortingDistanceBasis basis);
-	
-	/**
-		@brief		スプライトの描画を要求します。
-		@param[in]	position	: 
-		@param[in]	center		: 
-		@param[in]	size		: 
-		@param[in]	texture		: 
-		@param[in]	srcRect		: (ピクセル単位)
-		@param[in]	colorTable	: 
-	*/
-	void DrawRequest2D(
-		const Vector3& position,
-		const Vector2& size,
-		const Vector2& anchorRatio,
-		Texture* texture,
-		const RectF& srcRect,		// TODO: Rect のほうがピクセル単位であることがわかりやすい
-		const Color* colorTable);
 
 	/**
 		@brief		スプライトの描画を要求します。
@@ -237,26 +192,7 @@ public:
 		const RectF& srcRect,
 		const Color& color);
 
-	/**
-		@brief		スプライトの描画を要求します。
-		@param[in]	position	: 
-		@param[in]	center		: 
-		@param[in]	size		: 
-		@param[in]	texture		: 
-		@param[in]	srcRect		: 
-		@param[in]	colorTable	: 
-		@param[in]	front		:
-	*/
-	void DrawRequest3D(
-		const Vector3& position,
-		const Vector2& size,
-		const Vector2& anchorRatio,
-		Texture* texture,
-		const RectF& srcRect,
-		const Color* colorTable,
-		SpriteBaseDirection baseDirection);
-
-	void DrawRequest3D(
+	void DrawRequest(
 		const Vector3& position,
 		const Vector2& anchorRatio,
 		const Vector2& size,

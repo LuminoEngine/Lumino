@@ -392,6 +392,16 @@ void Sprite3D::UpdateVertexData()
 	m_boundingSphere.radius = s.GetLength();
 }
 
+//------------------------------------------------------------------------------
+void Sprite3D::OnRender2(DrawList* renderer)
+{
+	Material* mat = GetMainMaterial();
+	Color colorScale = mat->GetColorScale();
+	colorScale.a *= mat->GetOpacity();
+	renderer->SetTransform(m_combinedGlobalMatrix);
+	renderer->DrawSprite(Vector3::Zero, m_renderSize, m_anchor, GetTexture(), m_renderSourceRect, colorScale, SpriteBaseDirection::ZMinus, GetMainMaterial());
+}
+
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END

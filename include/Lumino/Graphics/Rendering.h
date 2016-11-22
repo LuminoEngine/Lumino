@@ -120,7 +120,7 @@ public:
 	Matrix				transform;
 	int					batchIndex;
 	DrawingSectionId	drawingSectionId;
-	detail::Sphere		boundingSphere;
+	detail::Sphere		boundingSphere;		// 位置はワールド座標
 	int					subsetIndex;
 	DrawElementMetadata	metadata;
 

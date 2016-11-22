@@ -148,9 +148,11 @@ protected:
 	void Initialize(SceneGraph* owner);
 	virtual detail::Sphere GetBoundingSphere() override;
 	virtual void UpdateVertexData() override;
+	virtual void OnRender2(DrawList* renderer) override;
 
 private:
 	detail::Sphere	m_boundingSphere;
+	Vector2	m_anchor;
 };
 
 LN_NAMESPACE_SCENE_END

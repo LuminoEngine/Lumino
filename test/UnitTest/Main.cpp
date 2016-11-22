@@ -238,7 +238,7 @@ GTEST_API_ int main(int argc, char **argv)
 #if 0	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_Graphics_Rendering.DrawSprite"
+		"--gtest_filter=Test_Scene_Sprite3D.ViewFrustumCulling"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);

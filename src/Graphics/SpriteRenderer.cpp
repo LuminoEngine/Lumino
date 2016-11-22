@@ -89,39 +89,6 @@ void SpriteRenderer::DrawRequest2D(
 	const Vector2& anchorRatio,
 	Texture* texture,
 	const RectF& srcRect,
-	const Color* colorTable)
-{
-	SpriteColorTable ct = { {Color::White, Color::White, Color::White, Color::White} };
-	if (colorTable != nullptr)
-	{
-		ct.colors[0] = colorTable[0];
-		ct.colors[1] = colorTable[1];
-		ct.colors[2] = colorTable[2];
-		ct.colors[3] = colorTable[3];
-	}
-
-	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->ResolveDeviceObject() : nullptr;
-	LN_ENQUEUE_RENDER_COMMAND_7(
-		SpriteRenderer_SetTransform, m_manager,
-		SpriteRendererImpl*, m_internal,
-		const Vector3, position,
-		const Vector2, size,
-		const Vector2, anchorRatio,
-		RefPtr<Driver::ITexture>, deviceTexture,
-		const RectF, srcRect,
-		SpriteColorTable, ct,
-		{
-			m_internal->DrawRequest2D(position, size, anchorRatio, deviceTexture, srcRect, ct);
-		});
-}
-
-//------------------------------------------------------------------------------
-void SpriteRenderer::DrawRequest2D(
-	const Vector3& position,
-	const Vector2& size,
-	const Vector2& anchorRatio,
-	Texture* texture,
-	const RectF& srcRect,
 	const Color& color)
 {
 	SpriteColorTable ct = { { color, color, color, color } };
@@ -136,47 +103,12 @@ void SpriteRenderer::DrawRequest2D(
 		const RectF, srcRect,
 		SpriteColorTable, ct,
 		{
-			m_internal->DrawRequest2D(position, size, anchorRatio, deviceTexture, srcRect, ct);
+			m_internal->DrawRequestInternal(position, size, anchorRatio, deviceTexture, srcRect, ct, SpriteBaseDirection::Basic2D);
 		});
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderer::DrawRequest3D(
-	const Vector3& position,
-	const Vector2& size,
-	const Vector2& anchorRatio,
-	Texture* texture,
-	const RectF& srcRect,
-	const Color* colorTable,
-	SpriteBaseDirection baseDirection)
-{
-	SpriteColorTable ct = { { Color::White, Color::White, Color::White, Color::White } };
-	if (colorTable != nullptr)
-	{
-		ct.colors[0] = colorTable[0];
-		ct.colors[1] = colorTable[1];
-		ct.colors[2] = colorTable[2];
-		ct.colors[3] = colorTable[3];
-	}
-
-	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->ResolveDeviceObject() : nullptr;
-	LN_ENQUEUE_RENDER_COMMAND_8(
-		SpriteRenderer_SetTransform, m_manager,
-		SpriteRendererImpl*, m_internal,
-		const Vector3, position,
-		const Vector2, size,
-		const Vector2, anchorRatio,
-		RefPtr<Driver::ITexture>, deviceTexture,
-		const RectF, srcRect,
-		SpriteColorTable, ct,
-		SpriteBaseDirection, baseDirection,
-		{
-			m_internal->DrawRequest3D(position, size, anchorRatio, deviceTexture, srcRect, ct, baseDirection);
-		});
-}
-
-//------------------------------------------------------------------------------
-void SpriteRenderer::DrawRequest3D(
+void SpriteRenderer::DrawRequest(
 	const Vector3& position,
 	const Vector2& size,
 	const Vector2& anchorRatio,
@@ -198,7 +130,7 @@ void SpriteRenderer::DrawRequest3D(
 		SpriteColorTable, ct,
 		SpriteBaseDirection, baseDirection,
 		{
-			m_internal->DrawRequest3D(position, size, anchorRatio, deviceTexture, srcRect, ct, baseDirection);
+			m_internal->DrawRequestInternal(position, size, anchorRatio, deviceTexture, srcRect, ct, baseDirection);
 		});
 }
 
@@ -415,31 +347,6 @@ void SpriteRendererImpl::SetRenderState(const RenderState& state)
 void SpriteRendererImpl::SetSortMode(uint32_t flags, SortingDistanceBasis basis)
 {
 	m_sortingBasis = basis;
-}
-
-//------------------------------------------------------------------------------
-void SpriteRendererImpl::DrawRequest2D(
-    const Vector3& position,
-	const Vector2& size,
-	const Vector2& anchorRatio,
-	Driver::ITexture* texture,
-	const RectF& srcRect,
-	const SpriteColorTable& colorTable)
-{
-	DrawRequestInternal(position, size, anchorRatio, texture, srcRect, colorTable, SpriteBaseDirection::Basic2D);
-}
-
-//------------------------------------------------------------------------------
-void SpriteRendererImpl::DrawRequest3D(
-	const Vector3& position,
-	const Vector2& size,
-	const Vector2& anchorRatio,
-	Driver::ITexture* texture,
-	const RectF& srcRect,
-	const SpriteColorTable& colorTable,
-	SpriteBaseDirection baseDir)
-{
-	DrawRequestInternal(position, size, anchorRatio, texture, srcRect, colorTable, baseDir);
 }
 
 //------------------------------------------------------------------------------

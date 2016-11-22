@@ -187,7 +187,7 @@ namespace ss
 		}
 		else
 		{
-			g_spriteRenderer->DrawRequest3D(
+			g_spriteRenderer->DrawRequest(
 				ln::Vector3(0, 0, 0),
 				ln::Vector2(state.rect.size.width, state.rect.size.height),
 				ln::Vector2(0, 0),

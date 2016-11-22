@@ -1,6 +1,7 @@
 #include <TestConfig.h>
 #include <Lumino/Scene/TextBlock.h>
 
+//==============================================================================
 class Test_Scene_Sprite : public ::testing::Test
 {
 protected:
@@ -150,10 +151,10 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 }
 
 
-#if 0
 
 
 
+//==============================================================================
 class Test_Scene_Sprite3D : public ::testing::Test
 {
 protected:
@@ -165,24 +166,46 @@ protected:
 TEST_F(Test_Scene_Sprite3D, Basic)
 {
 	// <Test> 普通の描画
+	{
+		auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
+		auto sprite1 = Sprite3D::Create(1, 1, tex);
+		Engine::Update();
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite3D.Basic1.png")));
+	}
 	// <Test> 不透明度の設定
 	{
+		auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
+		auto sprite1 = Sprite3D::Create(1, 1, tex);
+		sprite1->SetPosition(-1, 0, 0);
+		sprite1->SetOpacity(0.25f);
+		auto sprite2 = Sprite3D::Create(1, 1, tex);
+		sprite2->SetPosition(0, 0, 0);
+		sprite2->SetOpacity(0.5f);
+		auto sprite3 = Sprite3D::Create(1, 1, tex);
+		sprite3->SetPosition(1, 0, 0);
+		sprite3->SetOpacity(0.75f);
 		Engine::Update();
-		int defaultCount = EngineDiag::GetGraphicsDeviceDrawCount();
-
-		auto tex1 = Texture2D::Create(32, 32);
-		auto tex2 = Texture2D::Create(32, 32);
-		auto sprite1 = Sprite3D::Create(1, 1, tex1);
-		auto sprite2 = Sprite3D::Create(1, 1, tex2);
-		auto sprite3 = Sprite3D::Create(1, 1, tex1);
-		sprite1->SetPosition(0, 0);
-		sprite2->SetPosition(10, 10);
-		sprite3->SetPosition(20, 20);
-
-		Engine::Update();
-		int defaultCount2 = EngineDiag::GetGraphicsDeviceDrawCount();
-		//ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_Sprite3D.Basic.png")));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite3D.Basic2.png")));
 	}
+	// <Test> 普通の描画
+	// <Test> 不透明度の設定
+	//{
+	//	Engine::Update();
+	//	int defaultCount = EngineDiag::GetGraphicsDeviceDrawCount();
+
+	//	auto tex1 = Texture2D::Create(32, 32);
+	//	auto tex2 = Texture2D::Create(32, 32);
+	//	auto sprite1 = Sprite3D::Create(1, 1, tex1);
+	//	auto sprite2 = Sprite3D::Create(1, 1, tex2);
+	//	auto sprite3 = Sprite3D::Create(1, 1, tex1);
+	//	sprite1->SetPosition(0, 0);
+	//	sprite2->SetPosition(10, 10);
+	//	sprite3->SetPosition(20, 20);
+
+	//	Engine::Update();
+	//	int defaultCount2 = EngineDiag::GetGraphicsDeviceDrawCount();
+	//	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite3D.Basic1.png"), 99, true));
+	//}
 }
 
 //------------------------------------------------------------------------------
@@ -191,24 +214,28 @@ TEST_F(Test_Scene_Sprite3D, ViewFrustumCulling)
 	// <Test> 視錐台化リング
 	{
 		Engine::Update();
-		int count1 = EngineDiag::GetVisualNodeDrawCount();
+		TestEnv::WaitRendering();
+		int count1 = EngineDiag::GetGraphicsDeviceDrawCount();
 
 		auto tex1 = Texture2D::Create(32, 32);
 		auto sprite1 = Sprite3D::Create(1, 1, tex1);
-		auto sprite2 = Sprite3D::Create(1, 1, tex1);
-
 		Engine::Update();
-		int count2 = EngineDiag::GetVisualNodeDrawCount();
-		ASSERT_EQ(count1 + 2, count2);
+		TestEnv::WaitRendering();
+		int count2= EngineDiag::GetGraphicsDeviceDrawCount();
+		ASSERT_EQ(count1 + 1, count2);
 
-		sprite2->SetPosition(-100, 0);
+		sprite1->SetPosition(-100, 0);
 		Engine::Update();
-		int count3 = EngineDiag::GetVisualNodeDrawCount();
-		ASSERT_EQ(count1 + 1, count3);	// 完全に範囲外なので描画されない
-
+		TestEnv::WaitRendering();
+		int count3 = EngineDiag::GetGraphicsDeviceDrawCount();
+		ASSERT_EQ(count1, count3);	// 完全に範囲外なので描画されない
 	}
 }
 
+
+#if 0
+
+//==============================================================================
 class Test_Scene_TextBlock2D : public ::testing::Test
 {
 protected:

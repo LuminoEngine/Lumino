@@ -1293,7 +1293,7 @@ void DrawList::DrawSprite(
 		{
 			auto* r = context->BeginSpriteRenderer();
 			r->SetTransform(transform);
-			r->DrawRequest2D(position, size, anchorRatio, texture, srcRect, color);
+			r->DrawRequest(position, size, anchorRatio, texture, srcRect, color, baseDirection);
 		}
 	};
 
@@ -1307,6 +1307,7 @@ void DrawList::DrawSprite(
 	ptr->color = color;
 	ptr->baseDirection = baseDirection;
 	detail::SpriteRenderer::MakeBoundingSphere(ptr->size, baseDirection, &ptr->boundingSphere);
+	ptr->boundingSphere.center += ptr->transform.GetPosition();	// TODO: 他と共通化
 }
 
 
