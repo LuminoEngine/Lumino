@@ -711,8 +711,9 @@ void InternalRenderer::Render(
 			// 固定の内部シェーダを使わない場合はいろいろ設定する
 			if (!currentState->IsStandaloneShaderRenderer())
 			{
+				CombinedMaterial* material = currentState->GetCombinedMaterial();
 				ElementRenderingPolicy policy;
-				pass->SelectElementRenderingPolicy(element, currentState->GetCombinedMaterial(), &policy);
+				pass->SelectElementRenderingPolicy(element, material, &policy);
 				visible = policy.visible;
 
 				if (visible)
@@ -723,11 +724,13 @@ void InternalRenderer::Render(
 					element->MakeElementInfo(cameraInfo, &elementInfo);
 
 					SubsetInfo subsetInfo;
-					element->MakeSubsetInfo(currentState->GetCombinedMaterial(), &subsetInfo);
+					element->MakeSubsetInfo(material, &subsetInfo);
 
 					shader->GetSemanticsManager()->UpdateCameraVariables(cameraInfo);
 					shader->GetSemanticsManager()->UpdateElementVariables(elementInfo);
 					shader->GetSemanticsManager()->UpdateSubsetVariables(subsetInfo);
+
+					material->ApplyUserShaderValeues(shader);
 
 					auto* stateManager = context->GetRenderStateManager();
 					ShaderPass* pass = shader->GetTechniques().GetAt(0)->GetPasses().GetAt(0);	// TODO: DrawList の実行者によって決定する

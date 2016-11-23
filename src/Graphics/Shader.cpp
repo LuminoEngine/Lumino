@@ -578,6 +578,20 @@ void Shader::OnChangeDevice(Driver::IGraphicsDevice* device)
 	}
 }
 
+//------------------------------------------------------------------------------
+void Shader::SetShaderValue(uint32_t variableNameHash, const ShaderValue& value)
+{
+	for (ShaderVariable* v : m_variables)
+	{
+		if (v->GetNameHash() == variableNameHash)
+		{
+			v->SetShaderValue(value);
+			return;
+		}
+	}
+}
+
+
 //==============================================================================
 // ShaderValue
 //==============================================================================
@@ -845,6 +859,9 @@ ShaderVariable::ShaderVariable(Shader* owner, Driver::IShaderVariable* deviceObj
 	, m_textureValue(NULL)
 	, m_modified(true)
 {
+	const String& name = deviceObj->GetName();
+	m_nameHash = Hash::CalcHash(name.c_str(), name.GetLength());
+
 	// 初期値として保持しておく
 	m_value = deviceObj->GetValue();
 

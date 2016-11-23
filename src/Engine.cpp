@@ -127,4 +127,10 @@ SceneGraph3D* Engine::GetDefaultSceneGraph3D()
 	return EngineManager::Instance->GetSceneGraphManager()->GetDefaultSceneGraph3D();
 }
 
+//------------------------------------------------------------------------------
+Light* Engine::GetMainLight3D()
+{
+	return EngineManager::Instance->GetSceneGraphManager()->GetDefaultSceneGraph3D()->GetMainLight();
+}
+
 LN_NAMESPACE_END

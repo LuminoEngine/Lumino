@@ -13,34 +13,34 @@ LN_NAMESPACE_BEGIN
 RefPtr<Material> PmxMaterialResource::MakeCommonMaterial() const
 {
 	auto m = RefPtr<Material>::MakeRef();
-	m->SetColorParameter(
+	m->SetBuiltinColorParameter(
 		Material::DiffuseParameter,
 		Diffuse.r,
 		Diffuse.g,
 		Diffuse.b,
 		Diffuse.a);
-	m->SetColorParameter(
+	m->SetBuiltinColorParameter(
 		Material::AmbientParameter,
 		Ambient.r,
 		Ambient.g,
 		Ambient.b,
 		Ambient.a);
-	m->SetColorParameter(
+	m->SetBuiltinColorParameter(
 		Material::SpecularParameter,
 		Specular.r,
 		Specular.g,
 		Specular.b,
 		Specular.a);
-	m->SetColorParameter(
+	m->SetBuiltinColorParameter(
 		Material::EmissiveParameter,
 		Emissive.r,
 		Emissive.g,
 		Emissive.b,
 		Emissive.a);
-	m->SetFloatParameter(
+	m->SetBuiltinFloatParameter(
 		Material::PowerParameter,
 		Power);
-	m->SetTextureParameter(
+	m->SetBuiltinTextureParameter(
 		Material::MaterialTextureParameter,
 		Texture);
 	return m;

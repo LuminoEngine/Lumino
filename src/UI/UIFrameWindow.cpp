@@ -58,7 +58,7 @@ void UIViewportLayer::Render(RenderingContext* context)
 }
 
 //------------------------------------------------------------------------------
-void UIViewportLayer::OnEndFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer)
+void UIViewportLayer::ExecuteDrawListRendering(RenderTarget* renderTarget, DepthBuffer* depthBuffer)
 {
 	m_renderingContext->EndMakeElements();
 

@@ -85,6 +85,15 @@ float4 LN_GetLambertVertexColor(float3 normal)
 }
 
 //------------------------------------------------------------------------------
+float4 LN_CalculateToneColor(float4 inColor, float4 inToneColor)
+{
+	float4 outColor = inColor;
+	float y = (0.208012 * outColor.r + 0.586611 * outColor.g + 0.114478 * outColor.b) * inToneColor.w;
+	outColor.rgb = (outColor.rgb * (1.0 - inToneColor.w)) + y + inToneColor.rgb;
+	return outColor;
+}
+
+//------------------------------------------------------------------------------
 float4 LN_GetBuiltinEffectColor(float4 inColor)
 {
 	// apply color scale.
@@ -94,9 +103,7 @@ float4 LN_GetBuiltinEffectColor(float4 inColor)
 	outColor.rgb = lerp(outColor.rgb, ln_BlendColor.rgb, ln_BlendColor.a);
 
 	// apply tone. (NTSC Coef method)
-	float y = (0.208012 * outColor.r + 0.586611 * outColor.g + 0.114478 * outColor.b) * ln_ToneColor.w;
-	outColor.rgb = (outColor.rgb * (1.0 - ln_ToneColor.w)) + y + ln_ToneColor.rgb;
-	
+	outColor = LN_CalculateToneColor(outColor, ln_ToneColor);
 	return outColor;
 }
 

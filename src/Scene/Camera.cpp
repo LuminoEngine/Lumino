@@ -294,7 +294,7 @@ void CameraViewportLayer::OnBeginFrameRender(RenderTarget* renderTarget, DepthBu
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer::OnEndFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer)
+void CameraViewportLayer::ExecuteDrawListRendering(RenderTarget* renderTarget, DepthBuffer* depthBuffer)
 {
 	m_renderer->EndMakeElements();
 

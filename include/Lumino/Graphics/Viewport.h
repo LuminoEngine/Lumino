@@ -9,6 +9,7 @@ LN_NAMESPACE_BEGIN
 namespace detail { class InternalRenderer; }
 namespace detail { class RenderingPass2; }
 class DrawList;
+class RenderingContext;
 
 class RenderingCompositionContext
 {
@@ -51,10 +52,10 @@ protected:
 	virtual void Render(RenderingContext* context) = 0;
 
 	/// 後描画
-	void PostRender(RenderingContext* context, RenderTarget** primaryLayerTarget, RenderTarget** secondaryLayerTarget);
+	void PostRender(DrawList* context, RenderTarget** primaryLayerTarget, RenderTarget** secondaryLayerTarget);
 
 	virtual void OnBeginFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer);
-	virtual void OnEndFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer);
+	virtual void ExecuteDrawListRendering(RenderTarget* renderTarget, DepthBuffer* depthBuffer);
 	//virtual void OnRenderDrawElementList(RenderTarget* renderTarget, DepthBuffer* depthBuffer, detail::RenderingPass2* pass);
 
 private:
@@ -108,6 +109,8 @@ LN_INTERNAL_ACCESS:	// TODO: いまはとりあえず内部用途
 private:
 	void TryRemakeLayerTargets();
 	void MakeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, Matrix* mat);
+	void BeginBlitRenderer();
+	void FlushBlitRenderer();
 
 	detail::GraphicsManager*	m_manager;
 	Size						m_size;

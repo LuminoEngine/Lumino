@@ -231,6 +231,7 @@ LN_INTERNAL_ACCESS:
 	bool IsModifiedVariables() const { return m_modifiedVariables; }
 	void TryCommitChanges();
 	detail::ShaderSemanticsManager* GetSemanticsManager() { return &m_semanticsManager; }
+	void SetShaderValue(uint32_t variableNameHash, const ShaderValue& value);
 
 	ByteBuffer						m_sourceCode;
 	Driver::IShader*				m_deviceObj;
@@ -395,6 +396,7 @@ LN_INTERNAL_ACCESS:
 	void ChangeDevice(Driver::IShaderVariable* obj);
 	void SetModified();
 	void OnCommitChanges();
+	uint32_t GetNameHash() const { return m_nameHash; }
 	Shader* GetOwnerShader() const { return m_owner; }
 	Driver::IShaderVariable* GetDeviceObject() const { return m_deviceObj; }
 	void SetShaderValue(const ShaderValue& value);
@@ -408,6 +410,7 @@ private:
 	virtual ~ShaderVariable();
 	Shader*						m_owner;
 	Driver::IShaderVariable*	m_deviceObj;
+	uint32_t					m_nameHash;
 	ShaderValue					m_value;
 	Texture*					m_textureValue;		// ShaderValue は Driver でも使われるので ITexture* を持ち、Texture* は持たない。 
 	List<ShaderVariable*>		m_annotations;

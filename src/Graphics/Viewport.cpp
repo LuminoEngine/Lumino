@@ -127,7 +127,7 @@ const Size& ViewportLayer::GetViewportSize() const
 }
 
 //------------------------------------------------------------------------------
-void ViewportLayer::PostRender(RenderingContext* context, RenderTarget** primaryLayerTarget, RenderTarget** secondaryLayerTarget)
+void ViewportLayer::PostRender(DrawList* context, RenderTarget** primaryLayerTarget, RenderTarget** secondaryLayerTarget)
 {
 	for (ImageEffect* e : *m_imageEffects)
 	{
@@ -142,7 +142,7 @@ void ViewportLayer::OnBeginFrameRender(RenderTarget* renderTarget, DepthBuffer* 
 }
 
 //------------------------------------------------------------------------------
-void ViewportLayer::OnEndFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer)
+void ViewportLayer::ExecuteDrawListRendering(RenderTarget* renderTarget, DepthBuffer* depthBuffer)
 {
 	//for (detail::RenderingPass2* pass : m_renderingPasses)
 	//{
@@ -247,7 +247,8 @@ void Viewport::Render()
 		context->SetRenderTarget(0, m_primaryLayerTarget);
 		layer->OnBeginFrameRender(m_primaryLayerTarget, m_depthBuffer);
 		layer->Render(context);
-		layer->PostRender(context, &m_primaryLayerTarget, &m_secondaryLayerTarget);
+
+		
 	}
 
 }
@@ -258,30 +259,20 @@ void Viewport::EndFrameRender()
 	// 全てのレイヤーの描画リストを実行し m_primaryLayerTarget へ書き込む
 	for (ViewportLayer* layer : *m_viewportLayerList)
 	{
-		layer->OnEndFrameRender(m_primaryLayerTarget, m_depthBuffer);
+		layer->ExecuteDrawListRendering(m_primaryLayerTarget, m_depthBuffer);
+		
+		BeginBlitRenderer();
+		layer->PostRender(m_renderer, &m_primaryLayerTarget, &m_secondaryLayerTarget);
+		FlushBlitRenderer();
 	}
 
 	Matrix viewBoxTransform;
 	MakeViewBoxTransform(m_renderTarget->GetSize(), m_primaryLayerTarget->GetSize(), &viewBoxTransform);
 
-	m_renderer->BeginMakeElements();
+	BeginBlitRenderer();
+	m_renderer->SetRenderTarget(0, nullptr);
 	m_renderer->Blit(m_primaryLayerTarget, viewBoxTransform);
-
-	detail::CameraInfo cameraInfo;
-	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
-	cameraInfo.viewPixelSize = GetSize();
-	cameraInfo.viewMatrix = Matrix::Identity;
-	//Camera::Perspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1, &cameraInfo.projMatrix);
-	cameraInfo.projMatrix = Matrix::MakePerspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1);
-	cameraInfo.viewProjMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;
-	cameraInfo.viewFrustum = ViewFrustum(cameraInfo.projMatrix);
-
-	m_internalRenderer->Render(
-		m_renderer->GetDrawElementList(),
-		cameraInfo,
-		m_renderTarget,
-		m_depthBuffer);		// TODO: バックバッファサイズ
-	m_renderer->EndFrame();
+	FlushBlitRenderer();
 }
 
 //------------------------------------------------------------------------------
@@ -378,6 +369,31 @@ void Viewport::MakeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, 
 	mat->Translate(new_x, new_y, 0.0f);
 }
 
+//------------------------------------------------------------------------------
+void Viewport::BeginBlitRenderer()
+{
+	m_renderer->BeginMakeElements();
+}
+
+//------------------------------------------------------------------------------
+void Viewport::FlushBlitRenderer()
+{
+	detail::CameraInfo cameraInfo;
+	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
+	cameraInfo.viewPixelSize = GetSize();
+	cameraInfo.viewMatrix = Matrix::Identity;
+	//Camera::Perspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1, &cameraInfo.projMatrix);
+	cameraInfo.projMatrix = Matrix::MakePerspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1);
+	cameraInfo.viewProjMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;
+	cameraInfo.viewFrustum = ViewFrustum(cameraInfo.projMatrix);
+
+	m_internalRenderer->Render(
+		m_renderer->GetDrawElementList(),
+		cameraInfo,
+		m_renderTarget,
+		m_depthBuffer);		// TODO: バックバッファサイズ
+	m_renderer->EndFrame();
+}
 
 ////==============================================================================
 //// MainViewport

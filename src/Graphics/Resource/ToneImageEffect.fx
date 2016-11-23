@@ -6,17 +6,15 @@
 //=============================================================================
 #ifdef LN_HLSL_DX9
 
-float2          gViewportSize   : VIEWPORTPIXELSIZE;
-static float2   gViewportOffset = ( float2( 0.5, 0.5 ) / gViewportSize );
+static float2   gViewportOffset = (float2( 0.5, 0.5 ) / ln_ViewportPixelSize);
 
 // 色調
-float4 Tone;
+float4 _Tone;
 
 // スクリーン
-texture ScreenTexture;
 sampler ScreenSampler = sampler_state
 { 
-	Texture		= <ScreenTexture>;
+	Texture		= <ln_MaterialTexture>;
 	MinFilter	= POINT;
 	MagFilter	= POINT;
 	MipFilter	= NONE;
@@ -31,8 +29,6 @@ struct VSOutput
 };
 
 //-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
 VSOutput VSMain(
 	float3 pos		: POSITION,
 	float2 texUV	: TEXCOORD0)
@@ -44,19 +40,12 @@ VSOutput VSMain(
 }
 
 //-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
 float4 PSMain(
 	float2 texUV	: TEXCOORD0) : COLOR
 {
-	float4 outColor = tex2D(ScreenSampler, texUV);
-	float y = (0.208012 * outColor.r + 0.586611 * outColor.g + 0.114478 * outColor.b) * Tone.w;
-	outColor.rgb = (outColor.rgb * (1.0 - Tone.w)) + y + Tone.rgb;
-	return outColor;
+	return LN_CalculateToneColor(tex2D(ScreenSampler, texUV), _Tone);
 }
 
-//-----------------------------------------------------------------------------
-//
 //-----------------------------------------------------------------------------
 technique MainDraw
 {
@@ -88,19 +77,13 @@ void main()
 
 #ifdef LN_GLSL_FRAGMENT_Main
 
-uniform vec4 Tone;
-uniform sampler2D ScreenTexture;
+uniform vec4 _Tone;
 
 varying vec2		v_TexUV;
 
 void main()
 {
-	vec4 outColor = texture2D(ScreenTexture, v_TexUV);
-	
-	float y = ( 0.208012 * outColor.r + 0.586611 * outColor.g + 0.114478 * outColor.b ) * Tone.w;
-    outColor.rgb = (outColor.rgb * ( 1.0 - Tone.w )) + y + Tone.rgb;
-    
-	gl_FragColor = outColor;
+	gl_FragColor = LN_CalculateToneColor(ln_MaterialTexture, _Tone);
 }
 
 #endif

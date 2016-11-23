@@ -87,6 +87,15 @@ void Material::Reset()
 }
 
 //------------------------------------------------------------------------------
+void Material::SetBuiltinIntParameter(const StringRef& name, int value) { m_builtinValueMap[Hash::CalcHash(name.GetBegin(), name.GetLength())].SetInt(value); }
+void Material::SetBuiltinFloatParameter(const StringRef& name, float value) { m_builtinValueMap[Hash::CalcHash(name.GetBegin(), name.GetLength())].SetFloat(value); }
+void Material::SetBuiltinVectorParameter(const StringRef& name, const Vector4& value) { m_builtinValueMap[Hash::CalcHash(name.GetBegin(), name.GetLength())].SetVector(value); }
+void Material::SetBuiltinMatrixParameter(const StringRef& name, const Matrix& value) { m_builtinValueMap[Hash::CalcHash(name.GetBegin(), name.GetLength())].SetMatrix(value); }
+void Material::SetBuiltinTextureParameter(const StringRef& name, Texture* value) { m_builtinValueMap[Hash::CalcHash(name.GetBegin(), name.GetLength())].SetManagedTexture(value); }
+void Material::SetBuiltinColorParameter(const StringRef& name, const Color& value) { SetBuiltinVectorParameter(name, value); }
+void Material::SetBuiltinColorParameter(const StringRef& name, float r, float g, float b, float a) { SetBuiltinVectorParameter(name, Color(r, g, b, a)); }
+
+//------------------------------------------------------------------------------
 RefPtr<Material> Material::CopyShared() const
 {
 	auto m = RefPtr<Material>::MakeRef();
@@ -230,21 +239,21 @@ void Material::SetColorParameter(const StringRef& name, float r, float g, float 
 //------------------------------------------------------------------------------
 ShaderValue* Material::FindAndCreateUserShaderValue(uint32_t hashKey)
 {
-	auto itr = m_builtinValueMap.find(hashKey);
-	if (itr != m_builtinValueMap.end())
+	auto itr = m_userValueMap.find(hashKey);
+	if (itr != m_userValueMap.end())
 	{
 		return &(itr->second);
 	}
 
-	ShaderValue& value = m_builtinValueMap[hashKey];
+	ShaderValue& value = m_userValueMap[hashKey];
 	return &value;
 }
 
 //------------------------------------------------------------------------------
 const ShaderValue* Material::FindUserShaderValueConst(uint32_t hashKey) const
 {
-	auto itr = m_builtinValueMap.find(hashKey);
-	if (itr != m_builtinValueMap.end())
+	auto itr = m_userValueMap.find(hashKey);
+	if (itr != m_userValueMap.end())
 		return &(itr->second);
 	return nullptr;
 }
@@ -429,24 +438,33 @@ void CombinedMaterial::Combine(Material* parent, Material* owner, Material* owne
 		// TODO: 文字列検索とかしまくっている。いろいろ最適化の余地ある
 		if (source2 != nullptr)
 		{
-			m_diffuse = source1->GetColor(DiffuseHash, source2->GetColor(DiffuseHash, Material::DefaultDiffuse));
-			m_ambient = source1->GetColor(AmbientHash, source2->GetColor(AmbientHash, Material::DefaultAmbient));
-			m_specular = source1->GetColor(SpecularHash, source2->GetColor(SpecularHash, Material::DefaultSpecular));
-			m_emissive = source1->GetColor(EmissiveHash, source2->GetColor(EmissiveHash, Material::DefaultEmissive));
-			m_power = source1->GetFloat(PowerHash, source2->GetFloat(PowerHash, Material::DefaultPower));
+			m_diffuse = source1->GetBuiltinColor(DiffuseHash, source2->GetBuiltinColor(DiffuseHash, Material::DefaultDiffuse));
+			m_ambient = source1->GetBuiltinColor(AmbientHash, source2->GetBuiltinColor(AmbientHash, Material::DefaultAmbient));
+			m_specular = source1->GetBuiltinColor(SpecularHash, source2->GetBuiltinColor(SpecularHash, Material::DefaultSpecular));
+			m_emissive = source1->GetBuiltinColor(EmissiveHash, source2->GetBuiltinColor(EmissiveHash, Material::DefaultEmissive));
+			m_power = source1->GetBuiltinFloat(PowerHash, source2->GetBuiltinFloat(PowerHash, Material::DefaultPower));
 			m_mainTexture = source1->GetMaterialTexture(source2->GetMaterialTexture(nullptr));
 		}
 		else
 		{
-			m_diffuse = source1->GetColor(DiffuseHash, Material::DefaultDiffuse);
-			m_ambient = source1->GetColor(AmbientHash, Material::DefaultAmbient);
-			m_specular = source1->GetColor(SpecularHash, Material::DefaultSpecular);
-			m_emissive = source1->GetColor(EmissiveHash, Material::DefaultEmissive);
-			m_power = source1->GetFloat(PowerHash, Material::DefaultPower);
+			m_diffuse = source1->GetBuiltinColor(DiffuseHash, Material::DefaultDiffuse);
+			m_ambient = source1->GetBuiltinColor(AmbientHash, Material::DefaultAmbient);
+			m_specular = source1->GetBuiltinColor(SpecularHash, Material::DefaultSpecular);
+			m_emissive = source1->GetBuiltinColor(EmissiveHash, Material::DefaultEmissive);
+			m_power = source1->GetBuiltinFloat(PowerHash, Material::DefaultPower);
 			m_mainTexture = source1->GetMaterialTexture(nullptr);
 		}
 
 		m_lastSourceHashCode = hashCode;
+	}
+}
+
+//------------------------------------------------------------------------------
+void CombinedMaterial::ApplyUserShaderValeues(Shader* targetShader)
+{
+	for (auto& pair : m_userValueTable)
+	{
+		targetShader->SetShaderValue(pair.nameHash, pair.value);
 	}
 }
 

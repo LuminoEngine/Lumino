@@ -7,6 +7,7 @@ LN_NAMESPACE_BEGIN
 class UIMainWindow;
 class SceneGraph2D;
 class SceneGraph3D;
+class Light;
 
 /**
 	@brief		アプリケーション全体にかかわる処理を行います。
@@ -61,6 +62,7 @@ public:
 	static ViewportLayer* GetDefault3DLayer();
 	static SceneGraph2D* GetDefaultSceneGraph2D();
 	static SceneGraph3D* GetDefaultSceneGraph3D();
+	static Light* GetMainLight3D();
 };
 
 LN_NAMESPACE_END

@@ -377,6 +377,9 @@ void SceneGraph3D::CreateCore(SceneGraphManager* manager)
 }
 
 //------------------------------------------------------------------------------
+Light* SceneGraph3D::GetMainLight() const { return m_defaultLight; }
+
+//------------------------------------------------------------------------------
 void SceneGraph3D::UpdateFrame(float elapsedTime)
 {
 	SceneGraph::UpdateFrame(elapsedTime);

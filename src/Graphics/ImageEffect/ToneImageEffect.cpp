@@ -2,7 +2,8 @@
 #include "../Internal.h"
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Shader.h>
-#include <Lumino/Graphics/RenderingContext.h>
+#include <Lumino/Graphics/Material.h>
+#include <Lumino/Graphics/Rendering.h>
 #include <Lumino/Graphics/ImageEffect/ToneImageEffect.h>
 #include "../../Animation/AnimationManager.h"
 #include "../GraphicsManager.h"
@@ -38,7 +39,6 @@ ToneImageEffect::ToneImageEffect()
 //------------------------------------------------------------------------------
 ToneImageEffect::~ToneImageEffect()
 {
-	LN_SAFE_RELEASE(m_shader.shader);
 }
 
 //------------------------------------------------------------------------------
@@ -46,10 +46,16 @@ void ToneImageEffect::Initialize(detail::GraphicsManager* manager)
 {
 	ImageEffect::Initialize(manager);
 
-	m_shader.shader = LN_NEW Shader();
-	m_shader.shader->Initialize(m_manager, g_ToneImageEffect_fx_Data, g_ToneImageEffect_fx_Len);
-	m_shader.varTone = m_shader.shader->FindVariable(_T("Tone"));
-	m_shader.varScreenTexture = m_shader.shader->FindVariable(_T("ScreenTexture"));
+	m_material = Object::MakeRef<Material>();
+	m_material->SetShader(Object::MakeRef<Shader>(m_manager, g_ToneImageEffect_fx_Data, g_ToneImageEffect_fx_Len));
+
+	//m_shader.shader = LN_NEW Shader();
+	//m_shader.shader->Initialize(m_manager, g_ToneImageEffect_fx_Data, g_ToneImageEffect_fx_Len);
+	//m_shader.varTone = m_shader.shader->FindVariable(_T("Tone"));
+	//m_shader.varScreenTexture = m_shader.shader->FindVariable(_T("ScreenTexture"));
+
+
+	printf("%p %p\n", m_material.Get(), m_material->GetShader());
 }
 
 //------------------------------------------------------------------------------
@@ -67,13 +73,16 @@ void ToneImageEffect::ChangeTone(const ToneF& tone, double time)
 }
 
 //------------------------------------------------------------------------------
-void ToneImageEffect::OnRender(RenderingContext* context, RenderTarget* source, RenderTarget* destination)
+void ToneImageEffect::OnRender(DrawList* context, RenderTarget* source, RenderTarget* destination)
 {
 	if (Tone != Vector4::Zero)
 	{
-		m_shader.varTone->SetVector(Tone.Get());
-		m_shader.varScreenTexture->SetTexture(source);
-		context->Blt(nullptr, destination, m_shader.shader);
+		m_material->SetVectorParameter(_T("_Tone"), Tone.Get());
+		context->Blit(source, destination, m_material);
+
+		//m_shader.varTone->SetVector(Tone.Get());
+		//m_shader.varScreenTexture->SetTexture(source);
+		//context->Blit(nullptr, destination, m_shader.shader);
 	}
 }
 

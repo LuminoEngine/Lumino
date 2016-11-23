@@ -28,17 +28,10 @@ protected:
 	ToneImageEffect();
 	virtual ~ToneImageEffect();
 	void Initialize(detail::GraphicsManager* manager);
-	virtual void OnRender(RenderingContext* context, RenderTarget* source, RenderTarget* destination) override;
+	virtual void OnRender(DrawList* context, RenderTarget* source, RenderTarget* destination) override;
 
 private:
-
-	struct ShaderInfo
-	{
-		Shader*          shader = nullptr;
-		ShaderVariable*  varTone = nullptr;
-		ShaderVariable*  varScreenTexture = nullptr;
-	} m_shader;
-
+	RefPtr<Material>	m_material;
 };
 
 LN_NAMESPACE_GRAPHICS_END
