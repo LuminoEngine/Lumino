@@ -32,21 +32,39 @@ TEST_F(Test_Scene_SceneNode, Visible)
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_SceneNode, DepthTest)
 {
+	auto tex1 = Texture2D::Create(32, 32);
+	auto tex2 = Texture2D::Create(32, 32);
+	tex1->Clear(Color32::Red);
+	tex2->Clear(Color32::Blue);
+
 	// <Test> デフォルトでは深度テスト&深度書き込みは有効。
 	{
-		auto tex1 = Texture2D::Create(32, 32);
-		auto tex2 = Texture2D::Create(32, 32);
-		tex1->Clear(Color32::Red);
-		tex2->Clear(Color32::Blue);
-
 		auto box1 = StaticMesh::CreateBox(Vector3(1, 2, 3));
 		auto box2 = StaticMesh::CreateBox(Vector3(2, 1, 1));
 		box1->GetMaterials()->GetAt(0)->SetMaterialTexture(tex1);
 		box2->GetMaterials()->GetAt(0)->SetMaterialTexture(tex2);
-
 		Engine::Update();
-
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_SceneNode.DepthTest.png")));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_SceneNode.DepthTest1.png")));
+	}
+	// <Test> 深度テスト無効
+	{
+		auto s1 = Sprite3D::Create(5, 5, tex1);
+		auto s2 = Sprite3D::Create(5, 5, tex2);
+		s1->SetAngles(0, Math::PI / 4, 0);
+		s2->SetAngles(0, -Math::PI / 4, 0);
+		s2->SetDepthTestEnabled(false);
+		Engine::Update();
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_SceneNode.DepthTest2.png")));
+	}
+	// <Test> 深度書き込み無効
+	{
+		auto s1 = Sprite3D::Create(5, 5, tex1);
+		auto s2 = Sprite3D::Create(5, 5, tex2);
+		s1->SetAngles(0, Math::PI / 4, 0);
+		s1->SetDepthWriteEnabled(false);
+		s2->SetAngles(0, -Math::PI / 4, 0);
+		Engine::Update();
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_SceneNode.DepthTest2.png")));	// 結果は↑と同じ
 	}
 }
 

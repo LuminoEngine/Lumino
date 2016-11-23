@@ -362,10 +362,10 @@ void BatchState::ApplyStatus(InternalContext* context, CombinedMaterial* combine
 	}
 	// DepthStencilState
 	{
-		//DepthStencilState state;
-		//state.DepthTestEnabled = combinedMaterial->m_builtinParameters.depthTestEnabled;
-		//state.DepthWriteEnabled = combinedMaterial->m_builtinParameters.depthWriteEnabled;
-		//stateManager->SetDepthStencilState(state);
+		DepthStencilState state;
+		state.DepthTestEnabled = combinedMaterial->m_depthTestEnabled;
+		state.DepthWriteEnabled = combinedMaterial->m_depthWriteEnabled;
+		stateManager->SetDepthStencilState(state);
 	}
 	// FrameBuffer
 	{

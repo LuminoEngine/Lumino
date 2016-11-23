@@ -62,8 +62,8 @@ public:
 
 	LN_TR_PROPERTY(BlendMode, blendMode);
 	LN_TR_PROPERTY(CullingMode, cullingMode);
-	//LN_TR_PROPERTY(bool, depthTestEnabled);
-	//LN_TR_PROPERTY(bool, depthWriteEnabled);
+	LN_TR_PROPERTY(bool, depthTestEnabled);
+	LN_TR_PROPERTY(bool, depthWriteEnabled);
 
 
 	//void SetBlendMode(BlendMode mode);
@@ -199,6 +199,8 @@ public:
 
 	BlendMode		m_blendMode;
 	CullingMode		m_cullingMode;
+	bool			m_depthTestEnabled;
+	bool			m_depthWriteEnabled;
 
 	void Combine(Material* parent, Material* owner, Material* ownerBase);
 

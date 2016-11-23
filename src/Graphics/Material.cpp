@@ -25,6 +25,8 @@ MaterialList::~MaterialList()
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Material, Object);
 LN_TR_PROPERTY_IMPLEMENT(Material, BlendMode, blendMode, tr::PropertyMetadata(Material::OnRenderStateChanged));
 LN_TR_PROPERTY_IMPLEMENT(Material, CullingMode, cullingMode, tr::PropertyMetadata(Material::OnRenderStateChanged));
+LN_TR_PROPERTY_IMPLEMENT(Material, bool, depthTestEnabled, tr::PropertyMetadata(Material::OnRenderStateChanged));
+LN_TR_PROPERTY_IMPLEMENT(Material, bool, depthWriteEnabled, tr::PropertyMetadata(Material::OnRenderStateChanged));
 
 const String Material::DiffuseParameter(_T("Diffuse"));
 const String Material::AmbientParameter(_T("Ambient"));
@@ -51,6 +53,8 @@ MaterialPtr Material::Create()
 Material::Material()
 	: blendMode(BlendMode::Normal)
 	, cullingMode(CullingMode::Back)
+	, depthTestEnabled(true)
+	, depthWriteEnabled(true)
 	, m_revisionCount(0)
 {
 	InitializeProperties();
@@ -77,8 +81,8 @@ void Material::Reset()
 	cullingMode = CullingMode::Back;
 	////m_builtin.fill = FillMode_Solid;
 	//m_builtin.alphaTest = true;
-	//m_builtin.depthTestEnabled = true;
-	//m_builtin.depthWriteEnabled = true;
+	depthTestEnabled = true;
+	depthWriteEnabled = true;
 	m_revisionCount++;
 }
 
@@ -265,6 +269,8 @@ uint32_t Material::GetHashCode()
 		m_hashCode += reinterpret_cast<intptr_t>(m_builtin.shader.Get());
 		m_hashCode += blendMode.GetHashCode();
 		m_hashCode += cullingMode.GetHashCode();
+		m_hashCode += depthTestEnabled.GetHashCode();
+		m_hashCode += depthWriteEnabled.GetHashCode();
 	}
 
 	return m_hashCode;
@@ -395,6 +401,8 @@ void CombinedMaterial::Combine(Material* parent, Material* owner, Material* owne
 		// TODO
 		m_blendMode = source1->blendMode;
 		m_cullingMode = source1->cullingMode;
+		m_depthTestEnabled = source1->depthTestEnabled;
+		m_depthWriteEnabled = source1->depthWriteEnabled;
 
 		// source2 (base があるなら owner を後からマージ)
 		if (source2 != nullptr)

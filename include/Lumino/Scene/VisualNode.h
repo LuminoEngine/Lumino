@@ -76,13 +76,13 @@ public:
 	//CullingMode GetCullingMode() const;
 
 	/** このノードを描画する際の深度テストの有無を設定します。デフォルトは true です。*/
-	//void SetDepthTestEnabled(bool enabled);
+	void SetDepthTestEnabled(bool enabled);
 
 	/** このノードを描画する際の深度テストの有無を取得します。*/
 	//bool IsDepthTestEnabled() const;
 
 	/** このノードを描画する際の深度書き込みの有無を設定します。デフォルトは true です。*/
-	//void SetDepthWriteEnabled(bool enabled);
+	void SetDepthWriteEnabled(bool enabled);
 
 	/** このノードを描画する際の深度書き込みの有無を取得します。*/
 	//bool IsDepthWriteEnabled() const;

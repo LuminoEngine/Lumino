@@ -164,13 +164,13 @@ void VisualNode::SetCullingMode(CullingMode mode) { GetMainMaterial()->cullingMo
 //CullingMode VisualNode::GetCullingMode() const { return GetMainMaterial()->GetCullingMode(); }
 
 //------------------------------------------------------------------------------
-//void VisualNode::SetDepthTestEnabled(bool enabled) { GetMainMaterial()->SetDepthTestEnabled(enabled); }
+void VisualNode::SetDepthTestEnabled(bool enabled) { GetMainMaterial()->depthTestEnabled = enabled; }
 
 //------------------------------------------------------------------------------
 //bool VisualNode::IsDepthTestEnabled() const { return GetMainMaterial()->IsDepthTestEnabled(); }
 
 //------------------------------------------------------------------------------
-//void VisualNode::SetDepthWriteEnabled(bool enabled) { GetMainMaterial()->SetDepthWriteEnabled(enabled); }
+void VisualNode::SetDepthWriteEnabled(bool enabled) { GetMainMaterial()->depthWriteEnabled = enabled; }
 
 //------------------------------------------------------------------------------
 //bool VisualNode::IsDepthWriteEnabled() const { return GetMainMaterial()->IsDepthWriteEnabled(); }
