@@ -140,7 +140,7 @@ void PmxLoader::LoadVertices(BinaryReader* reader)
 	int vertexCount = reader->ReadInt32();
 
 	// 頂点バッファ作成
-	m_modelCore->CreateVertexBuffer(vertexCount);
+	m_modelCore->ResizeVertexBuffer(vertexCount);
 
 	// データを流し込む
 	struct BaseVertex
@@ -244,7 +244,7 @@ void PmxLoader::LoadIndices(BinaryReader* reader)
 	if (getVertexIndexSize() > 2) {
 		format = IndexBufferFormat_UInt16;
 	}
-	m_modelCore->CreateIndexBuffer(indexCount, format);
+	m_modelCore->ResizeIndexBuffer(indexCount, format);
 
 	// とりあえずまずは全部読み込む
 	ByteBuffer indicesBuffer(getVertexIndexSize() * indexCount);

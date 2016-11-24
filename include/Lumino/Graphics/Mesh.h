@@ -74,6 +74,10 @@ public:
 	void AddSections(int count);
 	MeshAttribute* GetSection(int index);
 
+	/*----------*/
+
+
+
 LN_INTERNAL_ACCESS:
 	enum VertexBufferType
 	{
@@ -118,8 +122,17 @@ LN_INTERNAL_ACCESS:
 	MeshResource();
 	virtual ~MeshResource();
 	void Initialize(detail::GraphicsManager* manager);
-	void CreateVertexBuffer(int vertexCount);
-	void CreateIndexBuffer(int indexCount, IndexBufferFormat format);
+	void Reserve(int vertexCount);
+	void Resize(int vertexCount);
+
+	// for PMX
+	void ResizeVertexBuffer(int vertexCount);
+	void ResizeIndexBuffer(int indexCount, IndexBufferFormat format);
+
+
+
+	//void CreateVertexBuffer(int vertexCount);
+	//void CreateIndexBuffer(int indexCount, IndexBufferFormat format);
 	void BeginCreating(MeshCreationFlags flags);
 	void EndCreating();
 

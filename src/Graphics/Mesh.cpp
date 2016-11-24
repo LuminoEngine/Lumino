@@ -572,6 +572,15 @@ private:
 };
 
 //==============================================================================
+// 
+//==============================================================================
+class MeshGenerator
+{
+public:
+
+};
+
+//==============================================================================
 // MeshResource
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(MeshResource, Object);
@@ -612,13 +621,23 @@ void MeshResource::Initialize(detail::GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::CreateVertexBuffer(int vertexCount)
+void MeshResource::Reserve(int vertexCount)
+{
+}
+
+//------------------------------------------------------------------------------
+void MeshResource::Resize(int vertexCount)
+{
+}
+
+//------------------------------------------------------------------------------
+void MeshResource::ResizeVertexBuffer(int vertexCount)
 {
 	m_vertexCount = vertexCount;
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::CreateIndexBuffer(int indexCount, IndexBufferFormat format)
+void MeshResource::ResizeIndexBuffer(int indexCount, IndexBufferFormat format)
 {
 	m_indexCount = indexCount;
 	m_indexBufferFormat = format;
