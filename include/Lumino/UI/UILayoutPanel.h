@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "UIElement.h"
 #include "UIElementCollection.h"
@@ -9,30 +9,23 @@ class UIGridLayout;
 using UICanvasPtr = RefPtr<UICanvas>;
 using UIGridLayoutPtr = RefPtr<UIGridLayout>;
 
-/** ƒRƒ“ƒgƒ[ƒ‹‚ÌƒŒƒCƒAƒEƒg•ûŒü‚ğ¦‚µ‚Ü‚·B*/
+/** ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆæ–¹å‘ã‚’ç¤ºã—ã¾ã™ã€‚*/
 LN_ENUM(Orientation)
 {
-	Vertical = 0,		/**< ‚’¼•ûŒü‚É”z’u‚µ‚Ü‚·B*/
-	Horizontal,			/**< …•½•ûŒü‚É”z’u‚µ‚Ü‚·B*/
+	Vertical = 0,		/**< å‚ç›´æ–¹å‘ã«é…ç½®ã—ã¾ã™ã€‚*/
+	Horizontal,			/**< æ°´å¹³æ–¹å‘ã«é…ç½®ã—ã¾ã™ã€‚*/
 };
 LN_ENUM_DECLARE(Orientation);
 
-/** ƒOƒŠƒbƒhƒŒƒCƒAƒEƒg‚ÌƒZƒ‹ƒTƒCƒY‚ğw’è‚·‚é’l‚Ìí—Ş‚Å‚·B*/
-enum class GridLengthType
-{
-	Auto,				/**< q—v‘f‚ÌƒTƒCƒY‚É‡‚í‚¹‚é */
-	Pixel,				/**< ƒTƒCƒY‚ğ’¼Úw’è‚·‚é */
-	Ratio,				/**< ƒŒƒCƒAƒEƒgŒãAc‚è‚Ì—Ìˆæ‚ğg‚¤‚© */
-};
-
 /**
-	@brief		1‚ÂˆÈã‚Ìq UIElement ‚ğ‚Â UI —v‘f‚Ìƒx[ƒXƒNƒ‰ƒX‚Å‚·B
+	@brief		1ã¤ä»¥ä¸Šã®å­ UIElement ã‚’æŒã¤ UI è¦ç´ ã®ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
 
-	@details	HAlignment ‹y‚Ñ VAlignment ‚Ì‹K’è’l‚Í Stretch ‚Å‚·B
+	@details	HAlignment åŠã³ VAlignment ã®è¦å®šå€¤ã¯ Stretch ã§ã™ã€‚
 */
 class UILayoutPanel
 	: public UIElement
 	, public tr::IUIElementCollectionOwner
+	, public detail::ILayoutPanel
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:
@@ -53,6 +46,14 @@ LN_PROTECTED_INTERNAL_ACCESS:
 
 	// IUIElementCollectionOwner interface
 	virtual void OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e) override;
+
+	// ILayoutPanel interface
+	virtual int GetLayoutChildrenCount() const;
+	virtual ILayoutElement* GetLayoutChild(int index) const;
+	virtual int GetLayoutGridColumnDefinitionCount() const;
+	virtual detail::GridDefinitionData* GetLayoutGridColumnDefinition(int index) const;
+	virtual int GetLayoutGridRowDefinitionCount() const;
+	virtual detail::GridDefinitionData* GetLayoutGridRowDefinition(int index) const;
 
 private:
 	RefPtr<UIElementCollection>	m_children;
@@ -115,13 +116,13 @@ class UIGridLayout
 public:
 
 	/**
-		@brief		UIGridLayout ƒIƒuƒWƒFƒNƒg‚ğì¬‚µ‚Ü‚·B
+		@brief		UIGridLayout ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆã—ã¾ã™ã€‚
 	*/
 	static UIGridLayoutPtr Create();
 
 	/**
-		@brief		w’è‚µ‚½”‚Ìs—ñ‚ğ‚à‚Â UIGridLayout ƒIƒuƒWƒFƒNƒg‚ğì¬‚µ‚Ü‚·B
-		@details	ŠeƒZƒ‹‚Ì•‚Æ‚‚³‚Í GridLengthType::Ratio ‚Æ‚È‚è‚Ü‚·B
+		@brief		æŒ‡å®šã—ãŸæ•°ã®è¡Œåˆ—ã‚’ã‚‚ã¤ UIGridLayout ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆã—ã¾ã™ã€‚
+		@details	å„ã‚»ãƒ«ã®å¹…ã¨é«˜ã•ã¯ GridLengthType::Ratio ã¨ãªã‚Šã¾ã™ã€‚
 	*/
 	static UIGridLayoutPtr Create(int columnCount, int rowCount);
 
@@ -139,6 +140,12 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	// UIElement interface
 	virtual Size MeasureOverride(const Size& constraint) override;
 	virtual Size ArrangeOverride(const Size& finalSize) override;
+
+	// ILayoutPanel interface
+	virtual int GetLayoutGridColumnDefinitionCount() const;
+	virtual detail::GridDefinitionData* GetLayoutGridColumnDefinition(int index) const;
+	virtual int GetLayoutGridRowDefinitionCount() const;
+	virtual detail::GridDefinitionData* GetLayoutGridRowDefinition(int index) const;
 
 private:
 	class DefinitionBase;

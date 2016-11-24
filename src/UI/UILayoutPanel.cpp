@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Internal.h"
 #include <Lumino/UI/UILayoutPanel.h>
 #include "UIManager.h"
@@ -26,7 +26,7 @@ void UILayoutPanel::Initialize(detail::UIManager* manager)
 	UIElement::Initialize(manager);
 	m_children = RefPtr<UIElementCollection>::MakeRef(this);
 
-	// Panel Œn‚ÌƒfƒtƒHƒ‹ƒg‚Í Stretch
+	// Panel ç³»ã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯ Stretch
 	SetHAlignment(HAlignment::Stretch);
 	SetVAlignment(VAlignment::Stretch);
 }
@@ -86,19 +86,26 @@ Size UILayoutPanel::ArrangeOverride(const Size& finalSize)
 //------------------------------------------------------------------------------
 void UILayoutPanel::OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e)
 {
-	// V‚µ‚­’Ç‰Á‚³‚ê‚½‚à‚Ì‚½‚¿
+	// æ–°ã—ãè¿½åŠ ã•ã‚ŒãŸã‚‚ã®ãŸã¡
 	for (UIElement* element : e.newItems)
 	{
 		element->SetParent(this);
 	}
 
-	// íœ‚³‚ê‚½‚à‚Ì‚½‚¿
+	// å‰Šé™¤ã•ã‚ŒãŸã‚‚ã®ãŸã¡
 	for (UIElement* element : e.oldItems)
 	{
 		element->SetParent(nullptr);
 	}
 }
 
+//------------------------------------------------------------------------------
+int UILayoutPanel::GetLayoutChildrenCount() const { return m_children->GetCount(); }
+ILayoutElement* UILayoutPanel::GetLayoutChild(int index) const { return m_children->GetAt(index); }
+int UILayoutPanel::GetLayoutGridColumnDefinitionCount() const { return 0; }
+detail::GridDefinitionData* UILayoutPanel::GetLayoutGridColumnDefinition(int index) const { return nullptr; }
+int UILayoutPanel::GetLayoutGridRowDefinitionCount() const { return 0; }
+detail::GridDefinitionData* UILayoutPanel::GetLayoutGridRowDefinition(int index) const { return nullptr; }
 
 //==============================================================================
 // UIStackPanel
@@ -128,12 +135,12 @@ Size UIStackPanel::MeasureOverride(const Size& constraint)
 
 	if (m_orientation == Orientation::Horizontal)
 	{
-		// ‰¡‚É•À‚×‚éê‡A•‚Ì§ŒÀ‚ğİ‚¯‚È‚¢
+		// æ¨ªã«ä¸¦ã¹ã‚‹å ´åˆã€å¹…ã®åˆ¶é™ã‚’è¨­ã‘ãªã„
 		size.width = std::numeric_limits<float>::infinity();
 	}
 	else
 	{
-		// c‚É•À‚×‚éê‡A‚‚³‚Ì§ŒÀ‚ğİ‚¯‚È‚¢
+		// ç¸¦ã«ä¸¦ã¹ã‚‹å ´åˆã€é«˜ã•ã®åˆ¶é™ã‚’è¨­ã‘ãªã„
 		size.height = std::numeric_limits<float>::infinity();
 	}
 
@@ -329,13 +336,6 @@ class UIGridLayout::DefinitionBase
 public:
 
 	DefinitionBase()
-		: m_type(GridLengthType::Ratio)
-		, m_size(0.0f)
-		, m_minSize(0.0f)
-		, m_maxSize(FLT_MAX)
-		, m_desiredSize(0.0f)
-		, m_actualOffset(0.0f)
-		, m_actualSize(0.0f)
 	{
 	}
 
@@ -343,41 +343,42 @@ public:
 	{
 	}
 
-	GridLengthType GetType() const { return m_type; }
+	GridLengthType GetType() const { return m_data.type; }
 
-	float GetAvailableDesiredSize() const
-	{
-		if (m_type == GridLengthType::Auto) {
-			return m_desiredSize;
-		}
-		else if (m_type == GridLengthType::Pixel) {
-			return Math::Clamp(m_size, m_minSize, m_maxSize);
-		}
-		else {
-			return 0;
-		}
-	}
+	//float GetAvailableDesiredSize() const
+	//{
+	//	if (m_data.type == GridLengthType::Auto) {
+	//		return m_data.desiredSize;
+	//	}
+	//	else if (m_data.type == GridLengthType::Pixel) {
+	//		return Math::Clamp(m_data.size, m_data.minSize, m_data.maxSize);
+	//	}
+	//	else {
+	//		return 0;
+	//	}
+	//}
 
-	float GetRatioWeight() const
-	{
-		return (m_size == 0.0f) ? 1.0f : m_size;
-	}
+	//float GetRatioWeight() const
+	//{
+	//	return (m_data.size == 0.0f) ? 1.0f : m_data.size;
+	//}
 
-	void AdjustActualSize()
-	{
-		m_actualSize = Math::Clamp(m_actualSize, m_minSize, m_maxSize);
-	}
+	//void AdjustActualSize()
+	//{
+	//	m_data.actualSize = Math::Clamp(m_data.actualSize, m_data.minSize, m_data.maxSize);
+	//}
 
-protected:
-	GridLengthType	m_type;
-	float			m_size;
-	float			m_minSize;
-	float			m_maxSize;
-
-public:
-	float			m_desiredSize;
-	float			m_actualOffset;	// ÅIƒIƒtƒZƒbƒg
-	float			m_actualSize;	// ÅIƒTƒCƒY
+LN_INTERNAL_ACCESS:
+	detail::GridDefinitionData	m_data;
+//	GridLengthType	m_type;
+//	float			m_size;
+//	float			m_minSize;
+//	float			m_maxSize;
+//
+//public:
+//	float			m_desiredSize;
+//	float			m_actualOffset;	// æœ€çµ‚ã‚ªãƒ•ã‚»ãƒƒãƒˆ
+//	float			m_actualSize;	// æœ€çµ‚ã‚µã‚¤ã‚º
 };
 
 //==============================================================================
@@ -396,14 +397,14 @@ public:
 	{
 	}
 
-	void SetWidth(float value, GridLengthType type = GridLengthType::Pixel) { m_size = value; m_type = type; }
-	float GetWidth() const { return m_size; }
+	void SetWidth(float value, GridLengthType type = GridLengthType::Pixel) { m_data.size = value; m_data.type = type; }
+	float GetWidth() const { return m_data.size; }
 
-	void SetMinWidth(float value) { m_minSize = value; }
-	float GetMinWidth() const { return m_minSize; }
+	void SetMinWidth(float value) { m_data.minSize = value; }
+	float GetMinWidth() const { return m_data.minSize; }
 
-	void SetMaxWidth(float value) { m_maxSize = value; }
-	float GetMaxWidth() const { return m_maxSize; }
+	void SetMaxWidth(float value) { m_data.maxSize = value; }
+	float GetMaxWidth() const { return m_data.maxSize; }
 };
 
 //==============================================================================
@@ -422,14 +423,14 @@ public:
 	{
 	}
 
-	void SetHeight(float value, GridLengthType type = GridLengthType::Pixel) { m_size = value; m_type = type; }
-	float GetHeight() const { return m_size; }
+	void SetHeight(float value, GridLengthType type = GridLengthType::Pixel) { m_data.size = value; m_data.type = type; }
+	float GetHeight() const { return m_data.size; }
 
-	void SetMinHeight(float value) { m_minSize = value; }
-	float GetMinHeight() const { return m_minSize; }
+	void SetMinHeight(float value) { m_data.minSize = value; }
+	float GetMinHeight() const { return m_data.minSize; }
 
-	void SetMaxHeight(float value) { m_maxSize = value; }
-	float GetMaxHeight() const { return m_maxSize; }
+	void SetMaxHeight(float value) { m_data.maxSize = value; }
+	float GetMaxHeight() const { return m_data.maxSize; }
 };
 
 //==============================================================================
@@ -507,40 +508,45 @@ void UIGridLayout::AddRowDefinition(GridLengthType type, float height, float min
 //------------------------------------------------------------------------------
 Size UIGridLayout::MeasureOverride(const Size& constraint)
 {
+	int colDefCount = GetLayoutGridColumnDefinitionCount();
+	int rowDefCount = GetLayoutGridRowDefinitionCount();
+
 	for (UIElement* child : *GetChildren())
 	{
-		// ‚Ü‚¸‚Íq‚ğ Measure
+		// ã¾ãšã¯å­ã‚’ Measure
 		child->MeasureLayout(constraint);
 
-		// child ‚ª”z’u‚³‚ê‚é‚×‚« column ‚Æ row ‚ğ’T‚·
+		// child ãŒé…ç½®ã•ã‚Œã‚‹ã¹ã column ã¨ row ã‚’æ¢ã™
 		int colIdx = child->GetLayoutColumn();
 		int rowIdx = child->GetLayoutRow();
-		colIdx = m_columnDefinitions.IsOutOfRange(colIdx) ? 0 : colIdx;
-		rowIdx = m_rowDefinitions.IsOutOfRange(rowIdx) ? 0 : rowIdx;
-		ColumnDefinition* col = m_columnDefinitions.IsEmpty() ? nullptr : m_columnDefinitions.GetAt(colIdx);
-		RowDefinition*    row = m_rowDefinitions.IsEmpty() ? nullptr : m_rowDefinitions.GetAt(rowIdx);
 
-		// q—v‘f‚Ì DesiredSize (Å’áƒTƒCƒY) ‚ğ‘ª‚é‚Ì‚ÍAƒZƒ‹‚ÌƒTƒCƒYw’è‚ª "Auto" ‚Ì‚¾‚¯‚Å‚æ‚¢B
+		colIdx = (0 <= colIdx && colIdx < colDefCount) ? colIdx : 0;
+		rowIdx = (0 <= rowIdx && rowIdx < rowDefCount) ? rowIdx : 0;
+
+		detail::GridDefinitionData* col = (colIdx < colDefCount) ? GetLayoutGridColumnDefinition(colIdx) : nullptr;
+		detail::GridDefinitionData* row = (colIdx < colDefCount) ? GetLayoutGridColumnDefinition(colIdx) : nullptr;
+
+		// å­è¦ç´ ã® DesiredSize (æœ€ä½ã‚µã‚¤ã‚º) ã‚’æ¸¬ã‚‹ã®ã¯ã€ã‚»ãƒ«ã®ã‚µã‚¤ã‚ºæŒ‡å®šãŒ "Auto" ã®æ™‚ã ã‘ã§ã‚ˆã„ã€‚
 		const Size& childDesiredSize = child->GetDesiredSize();
-		if (col != nullptr && col->GetType() == GridLengthType::Auto)
+		if (col != nullptr && col->type == GridLengthType::Auto)
 		{
-			col->m_desiredSize = std::max(col->m_desiredSize, childDesiredSize.width);
+			col->desiredSize = std::max(col->desiredSize, childDesiredSize.width);
 		}
-		if (row != nullptr && row->GetType() == GridLengthType::Auto)
+		if (row != nullptr && row->type == GridLengthType::Auto)
 		{
-			row->m_desiredSize = std::max(row->m_desiredSize, childDesiredSize.height);
+			row->desiredSize = std::max(row->desiredSize, childDesiredSize.height);
 		}
 	}
 
-	// ŠeƒZƒ‹‚Ì DesiredSize ‚ğWŒv‚µ‚ÄAGrid ‘S‘Ì‚Ì DesiredSize ‚ğ‹‚ß‚é
+	// å„ã‚»ãƒ«ã® DesiredSize ã‚’é›†è¨ˆã—ã¦ã€Grid å…¨ä½“ã® DesiredSize ã‚’æ±‚ã‚ã‚‹
 	Size desiredSize = UILayoutPanel::MeasureOverride(constraint);
-	for (auto col : m_columnDefinitions)
+	for (int iCol = 0; iCol < colDefCount; iCol++)
 	{
-		desiredSize.width += col->GetAvailableDesiredSize();
+		desiredSize.width += GetLayoutGridColumnDefinition(iCol)->GetAvailableDesiredSize();
 	}
-	for (auto row : m_rowDefinitions)
+	for (int iRow = 0; iRow < rowDefCount; iRow++)
 	{
-		desiredSize.height += row->GetAvailableDesiredSize();
+		desiredSize.height += GetLayoutGridRowDefinition(iRow)->GetAvailableDesiredSize();
 	}
 
 	return desiredSize;
@@ -549,86 +555,92 @@ Size UIGridLayout::MeasureOverride(const Size& constraint)
 //------------------------------------------------------------------------------
 Size UIGridLayout::ArrangeOverride(const Size& finalSize)
 {
-	// "Auto" ‚Æ "Pixel" w’è‚Å‚ ‚é Column/Row ‚ÌÅIƒTƒCƒY‚ğŠm’è‚³‚¹‚éB
-	// ‚Ü‚½A"*" ‚Å‚ ‚és—ñ‚Ì”‚ğƒJƒEƒ“ƒg‚·‚éB
+	// "Auto" ã¨ "Pixel" æŒ‡å®šã§ã‚ã‚‹ Column/Row ã®æœ€çµ‚ã‚µã‚¤ã‚ºã‚’ç¢ºå®šã•ã›ã‚‹ã€‚
+	// ã¾ãŸã€"*" ã§ã‚ã‚‹è¡Œåˆ—ã®æ•°ã‚’ã‚«ã‚¦ãƒ³ãƒˆã™ã‚‹ã€‚
 	Size totalActual = Size::Zero;
 	float starColCount = 0.0f;
 	float starRowCount = 0.0f;
-	for (auto col : m_columnDefinitions)
+	int colDefCount = GetLayoutGridColumnDefinitionCount();
+	int rowDefCount = GetLayoutGridRowDefinitionCount();
+	for (int iCol = 0; iCol < colDefCount; iCol++)
 	{
-		if (col->GetType() == GridLengthType::Auto || col->GetType() == GridLengthType::Pixel)
+		auto* col = GetLayoutGridColumnDefinition(iCol);
+		if (col->type == GridLengthType::Auto || col->type == GridLengthType::Pixel)
 		{
-			col->m_actualSize = col->GetAvailableDesiredSize();
-			totalActual.width += col->m_actualSize;
+			col->actualSize = col->GetAvailableDesiredSize();
+			totalActual.width += col->actualSize;
 		}
 		else
 		{
-			starColCount += col->GetRatioWeight();
+			starColCount += col->GetRatioSize();
 		}
 	}
-	for (auto row : m_rowDefinitions)
+	for (int iRow = 0; iRow < rowDefCount; iRow++)
 	{
-		if (row->GetType() == GridLengthType::Auto || row->GetType() == GridLengthType::Pixel)
+		auto* row = GetLayoutGridRowDefinition(iRow);
+		if (row->type == GridLengthType::Auto || row->type == GridLengthType::Pixel)
 		{
-			row->m_actualSize = row->GetAvailableDesiredSize();
-			totalActual.height += row->m_actualSize;
+			row->actualSize = row->GetAvailableDesiredSize();
+			totalActual.height += row->actualSize;
 		}
 		else
 		{
-			starRowCount += row->GetRatioWeight();
+			starRowCount += row->GetRatioSize();
 		}
 	}
-
-	// "1*" •ª‚ÌƒZƒ‹‚Ì—Ìˆæ
+	
+	// "1*" åˆ†ã®ã‚»ãƒ«ã®é ˜åŸŸã‚’è¨ˆç®—ã™ã‚‹
 	Size starUnit(
 		(starColCount != 0.0f) ? (finalSize.width - totalActual.width) / starColCount : 0.0f,
 		(starRowCount != 0.0f) ? (finalSize.height - totalActual.height) / starRowCount : 0.0f);
-	starUnit.width = std::max(0.0f, starUnit.width);	// •‰’l‚Íƒ_ƒ
-	starUnit.height = std::max(0.0f, starUnit.height);	// •‰’l‚Íƒ_ƒ
+	starUnit.width = std::max(0.0f, starUnit.width);	// è² å€¤ã¯ãƒ€ãƒ¡
+	starUnit.height = std::max(0.0f, starUnit.height);	// è² å€¤ã¯ãƒ€ãƒ¡
 
-	// "*" w’è‚Å‚ ‚é Column/Row ‚ÌÅIƒTƒCƒY‚ğŠm’è‚³‚¹A
-	// ‘SƒZƒ‹‚ÌƒIƒtƒZƒbƒg (ˆÊ’u) ‚àŠm’è‚³‚¹‚é
+	// "*" æŒ‡å®šã§ã‚ã‚‹ Column/Row ã®æœ€çµ‚ã‚µã‚¤ã‚ºã‚’ç¢ºå®šã•ã›ã€
+	// å…¨ã‚»ãƒ«ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ (ä½ç½®) ã‚‚ç¢ºå®šã•ã›ã‚‹
 	PointF totalOffset = PointF::Zero;
-	for (auto col : m_columnDefinitions)
+	for (int iCol = 0; iCol < colDefCount; iCol++)
 	{
-		if (col->GetType() == GridLengthType::Ratio)
+		auto* col = GetLayoutGridColumnDefinition(iCol);
+		if (col->type == GridLengthType::Ratio)
 		{
-			col->m_actualSize = starUnit.width * col->GetRatioWeight();
+			col->actualSize = starUnit.width * col->GetRatioSize();
 		}
 
 		col->AdjustActualSize();
 
-		// ƒZƒ‹XÀ•WŠm’è
-		col->m_actualOffset = totalOffset.x;
-		totalOffset.x += col->m_actualSize;
+		// ã‚»ãƒ«Xåº§æ¨™ç¢ºå®š
+		col->actualOffset = totalOffset.x;
+		totalOffset.x += col->actualSize;
 	}
-	for (auto row : m_rowDefinitions)
+	for (int iRow = 0; iRow < rowDefCount; iRow++)
 	{
-		if (row->GetType() == GridLengthType::Ratio)
+		auto* row = GetLayoutGridRowDefinition(iRow);
+		if (row->type == GridLengthType::Ratio)
 		{
-			row->m_actualSize = starUnit.height * row->GetRatioWeight();
+			row->actualSize = starUnit.height * row->GetRatioSize();
 		}
 
 		row->AdjustActualSize();
 
-		// ƒZƒ‹YÀ•WŠm’è
-		row->m_actualOffset = totalOffset.y;
-		totalOffset.y += row->m_actualSize;
+		// ã‚»ãƒ«Yåº§æ¨™ç¢ºå®š
+		row->actualOffset = totalOffset.y;
+		totalOffset.y += row->actualSize;
 	}
 
-	// q—v‘f‚ÌÅIˆÊ’uEƒTƒCƒY‚ğŠm’è‚³‚¹‚é
+	// å­è¦ç´ ã®æœ€çµ‚ä½ç½®ãƒ»ã‚µã‚¤ã‚ºã‚’ç¢ºå®šã•ã›ã‚‹
 	for (UIElement* child : *GetChildren())
 	{
 		int colIdx = child->GetLayoutColumn();
 		int rowIdx = child->GetLayoutRow();
 		int colSpan = child->GetLayoutColumnSpan();
 		int rowSpan = child->GetLayoutRowSpan();
-		colSpan = std::max(1, colSpan);	// Å’á 1
-		rowSpan = std::max(1, rowSpan);	// Å’á 1
-		colSpan = std::min(colSpan, colIdx + m_columnDefinitions.GetCount());	// Å‘å’l§ŒÀ
-		rowSpan = std::min(rowSpan, rowIdx + m_rowDefinitions.GetCount());		// Å‘å’l§ŒÀ
+		colSpan = std::max(1, colSpan);	// æœ€ä½ 1
+		rowSpan = std::max(1, rowSpan);	// æœ€ä½ 1
+		colSpan = std::min(colSpan, colIdx + m_columnDefinitions.GetCount());	// æœ€å¤§å€¤åˆ¶é™
+		rowSpan = std::min(rowSpan, rowIdx + m_rowDefinitions.GetCount());		// æœ€å¤§å€¤åˆ¶é™
 
-		// Span ‚ğl—¶‚µ‚ÄƒTƒCƒY‚ğŠm’è
+		// Span ã‚’è€ƒæ…®ã—ã¦ã‚µã‚¤ã‚ºã‚’ç¢ºå®š
 		RectF rect = RectF::Zero;
 		if (m_columnDefinitions.IsEmpty())
 		{
@@ -636,10 +648,10 @@ Size UIGridLayout::ArrangeOverride(const Size& finalSize)
 		}
 		else
 		{
-			rect.x = m_columnDefinitions[colIdx]->m_actualOffset;
+			rect.x = GetLayoutGridColumnDefinition(colIdx)->actualOffset;
 			for (int iCol = 0; iCol < colSpan; ++iCol)
 			{
-				rect.width += m_columnDefinitions[colIdx + iCol]->m_actualSize;
+				rect.width += GetLayoutGridColumnDefinition(colIdx + iCol)->actualSize;
 			}
 		}
 		if (m_rowDefinitions.IsEmpty())
@@ -648,10 +660,10 @@ Size UIGridLayout::ArrangeOverride(const Size& finalSize)
 		}
 		else
 		{
-			rect.y = m_rowDefinitions[rowIdx]->m_actualOffset;
+			rect.y = GetLayoutGridRowDefinition(rowIdx)->actualOffset;
 			for (int iRow = 0; iRow < rowSpan; ++iRow)
 			{
-				rect.height += m_rowDefinitions[rowIdx + iRow]->m_actualSize;
+				rect.height += GetLayoutGridRowDefinition(rowIdx + iRow)->actualSize;
 			}
 		}
 
@@ -661,5 +673,11 @@ Size UIGridLayout::ArrangeOverride(const Size& finalSize)
 
 	return finalSize;
 }
+
+//------------------------------------------------------------------------------
+int UIGridLayout::GetLayoutGridColumnDefinitionCount() const { return m_columnDefinitions.GetCount(); }
+detail::GridDefinitionData* UIGridLayout::GetLayoutGridColumnDefinition(int index) const { return &m_columnDefinitions[index]->m_data; }
+int UIGridLayout::GetLayoutGridRowDefinitionCount() const { return m_rowDefinitions.GetCount(); }
+detail::GridDefinitionData* UIGridLayout::GetLayoutGridRowDefinition(int index)  const { return &m_rowDefinitions[index]->m_data; }
 
 LN_NAMESPACE_END

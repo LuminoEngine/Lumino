@@ -1,9 +1,18 @@
-
+﻿
 #pragma once
 #include "Common.h"
+#include <Lumino/Math/MathUtils.h>
 #include "../Base/GeometryStructs.h"
 
 LN_NAMESPACE_BEGIN
+
+/** グリッドレイアウトのセルサイズを指定する値の種類です。*/
+enum class GridLengthType
+{
+	Auto,				/**< 子要素のサイズに合わせる */
+	Pixel,				/**< サイズを直接指定する */
+	Ratio,				/**< レイアウト後、残りの領域を使うか */
+};
 
 /**
 	@brief		
@@ -31,7 +40,7 @@ protected:
 	virtual void SetLayoutFinalLocalRect(const RectF& rect) = 0;
 
 
-LN_PROTECTED_INTERNAL_ACCESS:
+protected:
 	// GridLayout properties
 	virtual int GetLayoutColumn() const = 0;
 	virtual int GetLayoutRow() const = 0;
@@ -48,6 +57,59 @@ protected:
 
 
 namespace detail {
+
+struct GridDefinitionData
+{
+	// input data
+	GridLengthType	type = GridLengthType::Ratio;
+	float			size = 0.0f;
+	float			minSize = 0.0f;
+	float			maxSize = FLT_MAX;
+
+	// working data
+	float			desiredSize = 0.0f;
+	float			actualOffset = 0.0f;	// 最終オフセット
+	float			actualSize = 0.0f;		// 最終サイズ
+
+	float GetAvailableDesiredSize() const
+	{
+		if (type == GridLengthType::Auto) {
+			return desiredSize;
+		}
+		else if (type == GridLengthType::Pixel) {
+			return Math::Clamp(size, minSize, maxSize);
+		}
+		else {
+			return 0;
+		}
+	}
+
+	float GetRatioSize() const
+	{
+		return (size == 0.0f) ? 1.0f : size;
+	}
+
+	void AdjustActualSize()
+	{
+		actualSize = Math::Clamp(actualSize, minSize, maxSize);
+	}
+};
+
+class ILayoutPanel
+{
+protected:
+	virtual int GetLayoutChildrenCount() const = 0;
+	virtual ILayoutElement* GetLayoutChild(int index) const = 0;
+
+	// GridLayout properties
+	virtual int GetLayoutGridColumnDefinitionCount() const = 0;
+	virtual GridDefinitionData* GetLayoutGridColumnDefinition(int index) const = 0;
+	virtual int GetLayoutGridRowDefinitionCount() const = 0;
+	virtual GridDefinitionData* GetLayoutGridRowDefinition(int index) const = 0;
+
+protected:
+	virtual ~ILayoutPanel() = default;
+};
 
 struct GridLayoutInfo
 {
