@@ -524,7 +524,7 @@ Size UIGridLayout::MeasureOverride(const Size& constraint)
 		rowIdx = (0 <= rowIdx && rowIdx < rowDefCount) ? rowIdx : 0;
 
 		detail::GridDefinitionData* col = (colIdx < colDefCount) ? GetLayoutGridColumnDefinition(colIdx) : nullptr;
-		detail::GridDefinitionData* row = (colIdx < colDefCount) ? GetLayoutGridColumnDefinition(colIdx) : nullptr;
+		detail::GridDefinitionData* row = (rowIdx < rowDefCount) ? GetLayoutGridRowDefinition(rowIdx) : nullptr;
 
 		// 子要素の DesiredSize (最低サイズ) を測るのは、セルのサイズ指定が "Auto" の時だけでよい。
 		const Size& childDesiredSize = child->GetDesiredSize();
