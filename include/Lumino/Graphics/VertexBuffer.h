@@ -56,6 +56,7 @@ LN_INTERNAL_ACCESS:
 	virtual ~VertexBuffer();
 	void Initialize(detail::GraphicsManager* manager, size_t bufferSize, const void* data, ResourceUsage usage);
 	Driver::IVertexBuffer* GetDeviceObject() const { return m_deviceObj; }
+	void Resize(size_t bufferSize);
 
 	// GraphicsResourceObject interface
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);

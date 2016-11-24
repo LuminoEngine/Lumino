@@ -931,15 +931,35 @@ MeshAttribute* MeshResource::GetSection(int index)
 //------------------------------------------------------------------------------
 void* MeshResource::TryLockVertexBuffer(VertexBufferType type, int stride)
 {
+	if (m_usage == ResourceUsage::Dynamic)
+	{
+		size_t requestedSize = stride * m_vertexCount;
+		if (m_vertexBufferInfos[type].buffer != nullptr &&
+			m_vertexBufferInfos[type].buffer->GetBufferSize() != requestedSize)
+		{
+			//const size_t siztTable[VB_Count] =
+			//{
+			//	sizeof(Vertex),			//VB_BasicVertices,
+			//	sizeof(BlendWeight),	//VB_BlendWeights,
+			//	sizeof(AdditionalUVs),	//VB_AdditionalUVs,
+			//	sizeof(SdefInfo),		//VB_SdefInfo,
+			//	sizeof(MmdExtra),		//VB_MmdExtra,
+			//};
+			m_vertexBufferInfos[type].lockedBuffer = nullptr;
+			m_vertexBufferInfos[type].buffer->Unlock();
+			m_vertexBufferInfos[type].buffer->Resize(requestedSize);
+		}
+	}
+
+	if (m_vertexBufferInfos[type].buffer == nullptr)
+	{
+		m_vertexBufferInfos[type].buffer = RefPtr<VertexBuffer>::MakeRef();
+		m_vertexBufferInfos[type].buffer->Initialize(m_manager, stride * m_vertexCount, nullptr, m_usage);
+		m_vertexDeclarationModified = true;
+	}
+
 	if (m_vertexBufferInfos[type].lockedBuffer == nullptr)
 	{
-		if (m_vertexBufferInfos[type].buffer == nullptr)
-		{
-			m_vertexBufferInfos[type].buffer = RefPtr<VertexBuffer>::MakeRef();
-			m_vertexBufferInfos[type].buffer->Initialize(m_manager, stride * m_vertexCount, nullptr, m_usage);
-			m_vertexDeclarationModified = true;
-		}
-
 		ByteBuffer* buf = m_vertexBufferInfos[type].buffer->Lock();
 		m_vertexBufferInfos[type].lockedBuffer = buf->GetData();
 	}
@@ -949,14 +969,25 @@ void* MeshResource::TryLockVertexBuffer(VertexBufferType type, int stride)
 //------------------------------------------------------------------------------
 void* MeshResource::TryLockIndexBuffer()
 {
+	if (m_usage == ResourceUsage::Dynamic)
+	{
+		if (m_indexBuffer != nullptr &&
+			(m_indexBuffer->GetIndexCount() != m_indexCount || m_indexBuffer->GetIndexFormat() != m_indexBufferFormat))
+		{
+			m_lockedIndexBuffer = nullptr;
+			m_indexBuffer->Unlock();
+			m_indexBuffer->Resize(m_indexCount, m_indexBufferFormat);
+		}
+	}
+
+	if (m_indexBuffer == nullptr)
+	{
+		m_indexBuffer = RefPtr<IndexBuffer>::MakeRef();
+		m_indexBuffer->Initialize(m_manager, m_indexCount, nullptr, m_indexBufferFormat, m_usage);
+	}
+
 	if (m_lockedIndexBuffer == nullptr)
 	{
-		if (m_indexBuffer == nullptr)
-		{
-			m_indexBuffer = RefPtr<IndexBuffer>::MakeRef();
-			m_indexBuffer->Initialize(m_manager, m_indexCount, nullptr, m_indexBufferFormat, m_usage);
-		}
-
 		ByteBuffer* buf = m_indexBuffer->Lock();
 		m_lockedIndexBuffer = buf->GetData();
 	}

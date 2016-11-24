@@ -65,6 +65,9 @@ LN_INTERNAL_ACCESS:
 	void Initialize(detail::GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage);
 
 	Driver::IIndexBuffer* GetDeviceObject() const { return m_deviceObj; }
+	int GetIndexCount() const { return m_indexCount; }
+	IndexBufferFormat GetIndexFormat() const { return m_format; }
+	void Resize(int indexCount, IndexBufferFormat format);
 
 	// GraphicsResourceObject interface
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
@@ -75,7 +78,7 @@ private:
 	IndexBufferFormat		m_format;
 	ResourceUsage			m_usage;
 	GraphicsResourcePool	m_pool;
-	ByteBuffer				m_data;
+	//ByteBuffer				m_data;
 	ByteBuffer				m_lockedBuffer;
 	bool					m_initialUpdate;
 	friend class Helper;

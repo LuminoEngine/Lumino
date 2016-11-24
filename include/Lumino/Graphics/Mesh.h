@@ -155,12 +155,13 @@ private:
 LN_INTERNAL_ACCESS:	// TODO:
 	detail::GraphicsManager*	m_manager;
 	ResourceUsage				m_usage;
+	int							m_vertexCount;
+	int							m_indexCount;
 	IndexBufferFormat			m_indexBufferFormat;
+
 	RefPtr<VertexDeclaration>	m_vertexDeclaration;
 	VertexBufferInfo			m_vertexBufferInfos[VB_Count];
 	RefPtr<IndexBuffer>			m_indexBuffer;
-	int							m_vertexCount;
-	int							m_indexCount;
 	void*						m_lockedIndexBuffer;
 
 	RefPtr<MaterialList>		m_materials;

@@ -4,6 +4,7 @@
 #include <Lumino/Graphics/VertexBuffer.h>
 #include "GraphicsManager.h"
 #include "Device/GraphicsDriverInterface.h"
+#include "RenderingCommand.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -49,30 +50,69 @@ void VertexBuffer::Initialize(detail::GraphicsManager* manager, size_t bufferSiz
 	m_bufferSize = bufferSize;
 	m_usage = usage;
 	m_deviceObj = m_manager->GetGraphicsDevice()->CreateVertexBuffer(m_bufferSize, data, usage);
+
+	if (m_usage == ResourceUsage::Dynamic)
+	{
+		m_lockedBuffer.Resize(m_bufferSize);
+	}
 }
 
 //------------------------------------------------------------------------------
 ByteBuffer* VertexBuffer::Lock()
 {
-	// まだ1度も SetVertexBufferCommand に入っていない場合は直接 Lock で書き換えできる
-	if (m_initialUpdate) {
-		m_lockedBuffer.Attach(m_deviceObj->Lock(), m_deviceObj->GetByteCount());
+	if (m_usage == ResourceUsage::Static)
+	{
+		// まだ1度も SetVertexBufferCommand に入っていない場合は直接 Lock で書き換えできる
+		if (m_initialUpdate) {
+			m_lockedBuffer.Attach(m_deviceObj->Lock(), m_deviceObj->GetByteCount());
+		}
+		else {
+			LN_THROW(0, NotImplementedException);
+		}
 	}
-	else {
-		LN_THROW(0, NotImplementedException);
-	}
+
 	return &m_lockedBuffer;
 }
 
 //------------------------------------------------------------------------------
 void VertexBuffer::Unlock()
 {
-	if (m_initialUpdate) {
-		m_deviceObj->Unlock();
+	if (m_usage == ResourceUsage::Static)
+	{
+		if (m_initialUpdate) {
+			m_deviceObj->Unlock();
+		}
+		else {
+			LN_THROW(0, NotImplementedException);
+		}
 	}
-	else {
-		LN_THROW(0, NotImplementedException);
+	else
+	{
+		if (m_deviceObj->GetByteCount() < m_bufferSize)
+		{
+			m_deviceObj = m_manager->GetGraphicsDevice()->CreateVertexBuffer(m_bufferSize, m_lockedBuffer.GetConstData(), m_usage);
+		}
+		else
+		{
+			RenderBulkData data(m_lockedBuffer.GetConstData(), m_lockedBuffer.GetSize());
+			Driver::IVertexBuffer* deviceObj = m_deviceObj;
+			LN_ENQUEUE_RENDER_COMMAND_2(
+				VertexBuffer_SetSubData, m_manager,
+				RenderBulkData, data,
+				RefPtr<Driver::IVertexBuffer>, deviceObj,
+				{
+					deviceObj->SetSubData(0, data.GetData(), data.GetSize());
+				});
+		}
 	}
+}
+
+//------------------------------------------------------------------------------
+void VertexBuffer::Resize(size_t bufferSize)
+{
+	LN_CHECK_STATE(m_usage == ResourceUsage::Dynamic);
+	m_bufferSize = bufferSize;
+	m_lockedBuffer.Resize(m_bufferSize);
 }
 
 //------------------------------------------------------------------------------

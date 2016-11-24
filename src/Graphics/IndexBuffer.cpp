@@ -3,6 +3,7 @@
 #include <Lumino/Graphics/IndexBuffer.h>
 #include "GraphicsManager.h"
 #include "Device/GraphicsDriverInterface.h"
+#include "RenderingCommand.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -47,10 +48,14 @@ void IndexBuffer::Initialize(detail::GraphicsManager* manager, int indexCount, c
 
 	GraphicsResourceObject::Initialize(manager);
 
-	int stride = (format == IndexBufferFormat_UInt16) ? 2 : 4;
-	m_data = ByteBuffer(stride * indexCount);
 
 	m_deviceObj = m_manager->GetGraphicsDevice()->CreateIndexBuffer(m_indexCount, initialData, m_format, m_usage);
+
+	if (m_usage == ResourceUsage::Dynamic)
+	{
+		int stride = (format == IndexBufferFormat_UInt16) ? 2 : 4;
+		m_lockedBuffer.Resize(m_indexCount * stride);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -69,20 +74,23 @@ int IndexBuffer::GetIndexStride() const
 //------------------------------------------------------------------------------
 ByteBuffer* IndexBuffer::Lock()
 {
-	if (m_lockedBuffer.GetSize() == 0 || m_usage == ResourceUsage::Static)
+	if (m_usage == ResourceUsage::Static)
 	{
-		m_lockedBuffer.Alloc(GetIndexStride() * m_indexCount);
+		if (m_lockedBuffer.GetSize() == 0 || m_usage == ResourceUsage::Static)
+		{
+			m_lockedBuffer.Alloc(GetIndexStride() * m_indexCount);
+		}
+		// まだ1度も SetVertexBufferCommand に入っていない場合は直接 Lock で書き換えできる
+		//if (m_initialUpdate) {
+		//	void* buffer;
+		//	size_t size;
+		//	m_deviceObj->Lock(&buffer, &size);
+		//	m_lockedBuffer.Attach(buffer, size);
+		//}
+		//else {
+		//	LN_THROW(0, NotImplementedException);
+		//}
 	}
-	// まだ1度も SetVertexBufferCommand に入っていない場合は直接 Lock で書き換えできる
-	//if (m_initialUpdate) {
-	//	void* buffer;
-	//	size_t size;
-	//	m_deviceObj->Lock(&buffer, &size);
-	//	m_lockedBuffer.Attach(buffer, size);
-	//}
-	//else {
-	//	LN_THROW(0, NotImplementedException);
-	//}
 
 	return &m_lockedBuffer;
 }
@@ -90,22 +98,55 @@ ByteBuffer* IndexBuffer::Lock()
 //------------------------------------------------------------------------------
 void IndexBuffer::Unlock()
 {
-	// まだ1度も SetVertexBufferCommand に入っていない場合は直接書き換えできる
-	if (m_initialUpdate)
+	if (m_usage == ResourceUsage::Static)
 	{
-		m_deviceObj->SetSubData(0, m_lockedBuffer.GetConstData(), m_lockedBuffer.GetSize());
+		// まだ1度も SetVertexBufferCommand に入っていない場合は直接書き換えできる
+		if (m_initialUpdate)
+		{
+			m_deviceObj->SetSubData(0, m_lockedBuffer.GetConstData(), m_lockedBuffer.GetSize());
+		}
+		else
+		{
+			LN_THROW(0, NotImplementedException);
+		}
+
+		//if (m_initialUpdate) {
+		//	m_deviceObj->Unlock();
+		//}
+		//else {
+		//	LN_THROW(0, NotImplementedException);
+		//}
 	}
 	else
 	{
-		LN_THROW(0, NotImplementedException);
+		if (m_deviceObj->GetByteCount() < m_lockedBuffer.GetSize())
+		{
+			m_deviceObj = m_manager->GetGraphicsDevice()->CreateIndexBuffer(m_indexCount, m_lockedBuffer.GetConstData(), m_format, m_usage);
+		}
+		else
+		{
+			RenderBulkData data(m_lockedBuffer.GetConstData(), m_lockedBuffer.GetSize());
+			Driver::IIndexBuffer* deviceObj = m_deviceObj;
+			LN_ENQUEUE_RENDER_COMMAND_2(
+				VertexBuffer_SetSubData, m_manager,
+				RenderBulkData, data,
+				RefPtr<Driver::IIndexBuffer>, deviceObj,
+				{
+					deviceObj->SetSubData(0, data.GetData(), data.GetSize());
+				});
+		}
 	}
 
-	//if (m_initialUpdate) {
-	//	m_deviceObj->Unlock();
-	//}
-	//else {
-	//	LN_THROW(0, NotImplementedException);
-	//}
+}
+
+//------------------------------------------------------------------------------
+void IndexBuffer::Resize(int indexCount, IndexBufferFormat format)
+{
+	LN_CHECK_STATE(m_usage == ResourceUsage::Dynamic);
+	m_indexCount = indexCount;
+	m_format = format;
+	int stride = (format == IndexBufferFormat_UInt16) ? 2 : 4;
+	m_lockedBuffer.Resize(indexCount * stride);
 }
 
 //------------------------------------------------------------------------------
