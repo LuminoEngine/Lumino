@@ -12,6 +12,13 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
+IndexBufferFormat Utils::GetIndexBufferFormat(int indexCount)
+{
+	if (indexCount > USHRT_MAX) return IndexBufferFormat_UInt32;
+	return IndexBufferFormat_UInt16;
+}
+
+//------------------------------------------------------------------------------
 int Utils::GetTextureFormatByteCount(TextureFormat format)
 {
 	static const int table[] =

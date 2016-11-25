@@ -64,7 +64,7 @@ LN_INTERNAL_ACCESS:
 	virtual ~IndexBuffer();
 	void Initialize(detail::GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage);
 
-	Driver::IIndexBuffer* GetDeviceObject() const { return m_deviceObj; }
+	Driver::IIndexBuffer* GetDeviceObject() const;// { return m_deviceObj; }
 	int GetIndexCount() const { return m_indexCount; }
 	IndexBufferFormat GetIndexFormat() const { return m_format; }
 	void Resize(int indexCount, IndexBufferFormat format);
@@ -73,7 +73,8 @@ LN_INTERNAL_ACCESS:
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 private:
-	Driver::IIndexBuffer*	m_deviceObj;
+	//Driver::IIndexBuffer*	m_deviceObj;
+	RefPtr<Driver::IIndexBuffer>	m_deviceObj;
 	int						m_indexCount;
 	IndexBufferFormat		m_format;
 	ResourceUsage			m_usage;

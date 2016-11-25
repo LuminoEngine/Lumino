@@ -1212,6 +1212,12 @@ void DrawList::DrawSquarePrimitive(
 }
 
 //------------------------------------------------------------------------------
+void DrawList::DrawMesh(MeshResource* mesh, int subsetIndex, Material* material, const DrawElementMetadata* metadata)
+{
+	DrawMeshResourceInternal(mesh, subsetIndex, material, metadata);
+}
+
+//------------------------------------------------------------------------------
 void DrawList::DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material, const DrawElementMetadata* metadata)
 {
 	DrawMeshSubsetInternal(mesh, subsetIndex, material, metadata);
@@ -1409,7 +1415,10 @@ void DrawList::DrawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Mat
 		}
 	};
 
-	const MeshAttribute& attr = mesh->m_attributes[subsetIndex];
+	MeshAttribute attr;
+	mesh->GetMeshAttribute(subsetIndex, &attr);
+	if (attr.PrimitiveNum == 0) return;		// not need draw
+
 	auto* e = ResolveDrawElement<DrawElement_DrawMeshResourceInternal>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_meshRenderer, material);
 	e->subsetIndex = subsetIndex;
 	if (metadata != nullptr) e->metadata = *metadata;
@@ -1439,8 +1448,10 @@ void DrawList::DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Ma
 			context->BeginMeshRenderer()->DrawMesh(mesh->GetMeshResource(), startIndex, triangleCount);
 		}
 	};
+	MeshAttribute attr;
+	mesh->GetMeshResource()->GetMeshAttribute(subsetIndex, &attr);
+	if (attr.PrimitiveNum == 0) return;		// not need draw
 
-	const MeshAttribute& attr = mesh->GetMeshResource()->m_attributes[subsetIndex];
 	auto* e = ResolveDrawElement<DrawElement_DrawMeshInternal>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_meshRenderer, material);
 	e->subsetIndex = subsetIndex;
 	if (metadata != nullptr) e->metadata = *metadata;

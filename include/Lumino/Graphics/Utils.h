@@ -14,6 +14,7 @@ class Texture;
 class Utils
 {
 public:
+	static IndexBufferFormat GetIndexBufferFormat(int indexCount);
 
 	static int GetTextureFormatByteCount(TextureFormat format);
 	static PixelFormat TranslatePixelFormat(TextureFormat format);

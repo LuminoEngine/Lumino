@@ -90,6 +90,7 @@ void VertexBuffer::Unlock()
 	{
 		if (m_deviceObj->GetByteCount() < m_bufferSize)
 		{
+			LN_SAFE_RELEASE(m_deviceObj);
 			m_deviceObj = m_manager->GetGraphicsDevice()->CreateVertexBuffer(m_bufferSize, m_lockedBuffer.GetConstData(), m_usage);
 		}
 		else

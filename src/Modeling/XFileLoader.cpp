@@ -590,7 +590,7 @@ RefPtr<MeshResource> XFileLoader::Load(ModelManager* manager, Stream* stream, co
 	try
 	{
 		auto mesh = RefPtr<MeshResource>::MakeRef();
-		mesh->Initialize(manager->GetGraphicsManager());
+		mesh->Initialize(manager->GetGraphicsManager(), ResourceUsage::Static);
 
 		// スキンメッシュではない場合
 		if (!dx_anim_controller)

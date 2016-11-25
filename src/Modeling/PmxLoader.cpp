@@ -50,7 +50,7 @@ RefPtr<PmxSkinnedMeshResource> PmxLoader::Load(detail::ModelManager* manager, St
 
 	BinaryReader reader(stream);
 	m_modelCore = RefPtr<PmxSkinnedMeshResource>::MakeRef();
-	m_modelCore->Initialize(manager->GetGraphicsManager());
+	m_modelCore->Initialize(manager->GetGraphicsManager(), ResourceUsage::Static);
 	m_modelCore->Format = ModelFormat_PMX;
 	m_modelCore->BeginCreating(MeshCreationFlags::None);	// TODO:
 	

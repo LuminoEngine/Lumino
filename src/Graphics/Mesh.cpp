@@ -6,6 +6,7 @@
 #include <Lumino/Graphics/VertexBuffer.h>
 #include <Lumino/Graphics/IndexBuffer.h>
 #include <Lumino/Graphics/Mesh.h>
+#include <Lumino/Graphics/Utils.h>
 #include "GraphicsManager.h"
 
 LN_NAMESPACE_BEGIN
@@ -586,12 +587,22 @@ public:
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(MeshResource, Object);
 
 //------------------------------------------------------------------------------
+MeshResourcePtr MeshResource::Create()
+{
+	auto ptr = MeshResourcePtr::MakeRef();
+	ptr->Initialize(detail::GraphicsManager::GetInstance(), ResourceUsage::Dynamic);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
 MeshResource::MeshResource()
 	: m_manager(nullptr)
 	, m_usage(ResourceUsage::Static)
+	, m_vertexCapacity(0)
+	, m_vertexUsedCount(0)
+	, m_indexCapacity(0)
+	, m_indexUsedCount(0)
 	, m_vertexDeclaration()
-	, m_vertexCount(0)
-	, m_indexCount(0)
 	, m_materials()
 	, m_attributes()
 	, m_vertexDeclarationModified(false)
@@ -604,35 +615,66 @@ MeshResource::~MeshResource()
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::Initialize(detail::GraphicsManager* manager)
+void MeshResource::Initialize(detail::GraphicsManager* manager, ResourceUsage usage)
 {
 	LN_CHECK_ARG(manager != nullptr);
 	m_manager = manager;
+	m_usage = usage;
 
 	m_materials = RefPtr<MaterialList>::MakeRef();
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::Reserve(int vertexCount)
+void MeshResource::Reserve(int vertexCount, int indexCount)
 {
+	TryGlowVertexBuffers(vertexCount);
+	TryGlowIndexBuffer(indexCount);
 }
 
-//------------------------------------------------------------------------------
-void MeshResource::Resize(int vertexCount)
-{
-}
+////------------------------------------------------------------------------------
+//void MeshResource::Resize(int vertexCount)
+//{
+//	ResizeVertexBuffer(vertexCount);
+//}
 
 //------------------------------------------------------------------------------
 void MeshResource::ResizeVertexBuffer(int vertexCount)
 {
-	m_vertexCount = vertexCount;
+	TryGlowVertexBuffers(vertexCount);
+	m_vertexUsedCount = vertexCount;
+}
+
+//------------------------------------------------------------------------------
+void MeshResource::ResizeIndexBuffer(int indexCount)
+{
+	ResizeIndexBuffer(indexCount, Utils::GetIndexBufferFormat(indexCount));
 }
 
 //------------------------------------------------------------------------------
 void MeshResource::ResizeIndexBuffer(int indexCount, IndexBufferFormat format)
 {
-	m_indexCount = indexCount;
+	TryGlowIndexBuffer(indexCount);
+	m_indexUsedCount = indexCount;
 	m_indexBufferInfo.format = format;
+}
+
+//------------------------------------------------------------------------------
+void MeshResource::SetIndexInternal(void* indexBuffer, int index, int vertexIndex)
+{
+	if (m_indexBufferInfo.format == IndexBufferFormat_UInt16)
+	{
+		uint16_t* i = (uint16_t*)indexBuffer;
+		i[index] = vertexIndex;
+	}
+	else if (m_indexBufferInfo.format == IndexBufferFormat_UInt32)
+	{
+		uint32_t* i = (uint32_t*)indexBuffer;
+		i[index] = vertexIndex;
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -736,7 +778,7 @@ Material* MeshResource::GetMaterial(int index) const
 //------------------------------------------------------------------------------
 void MeshResource::SetPosition(int index, const Vector3& position)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexCount);
+	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
 	Vertex* v = (Vertex*)TryLockVertexBuffer(VB_BasicVertices);
 	v[index].position = position;
 }
@@ -744,7 +786,7 @@ void MeshResource::SetPosition(int index, const Vector3& position)
 //------------------------------------------------------------------------------
 void MeshResource::SetNormal(int index, const Vector3& normal)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexCount);
+	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
 	Vertex* v = (Vertex*)TryLockVertexBuffer(VB_BasicVertices);
 	v[index].normal = normal;
 }
@@ -752,7 +794,7 @@ void MeshResource::SetNormal(int index, const Vector3& normal)
 //------------------------------------------------------------------------------
 void MeshResource::SetUV(int index, const Vector2& uv)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexCount);
+	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
 	Vertex* v = (Vertex*)TryLockVertexBuffer(VB_BasicVertices);
 	v[index].uv = uv;
 }
@@ -760,7 +802,7 @@ void MeshResource::SetUV(int index, const Vector2& uv)
 //------------------------------------------------------------------------------
 const Vector3& MeshResource::GetPosition(int index)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexCount);
+	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
 	Vertex* v = (Vertex*)TryLockVertexBuffer(VB_BasicVertices);
 	return v[index].position;
 }
@@ -768,7 +810,7 @@ const Vector3& MeshResource::GetPosition(int index)
 //------------------------------------------------------------------------------
 void MeshResource::SetBlendWeight(int index, int blendIndex, float value)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexCount);
+	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
 	BlendWeight* v = (BlendWeight*)TryLockVertexBuffer(VB_BlendWeights);
 	v[index].weights[blendIndex] = value;
 }
@@ -776,7 +818,7 @@ void MeshResource::SetBlendWeight(int index, int blendIndex, float value)
 //------------------------------------------------------------------------------
 void MeshResource::SetBlendWeights(int index, float v0, float v1, float v2, float v3)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexCount);
+	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
 	BlendWeight* v = (BlendWeight*)TryLockVertexBuffer(VB_BlendWeights);
 	v[index].weights[0] = v0;
 	v[index].weights[1] = v1;
@@ -787,7 +829,7 @@ void MeshResource::SetBlendWeights(int index, float v0, float v1, float v2, floa
 //------------------------------------------------------------------------------
 void MeshResource::GetBlendWeights(int index, float* out0, float* out1, float* out2, float* out3)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexCount);
+	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
 	BlendWeight* v = (BlendWeight*)TryLockVertexBuffer(VB_BlendWeights);
 	if (out0 != nullptr) *out0 = v[index].weights[0];
 	if (out1 != nullptr) *out1 = v[index].weights[1];
@@ -798,7 +840,7 @@ void MeshResource::GetBlendWeights(int index, float* out0, float* out1, float* o
 //------------------------------------------------------------------------------
 void MeshResource::SetBlendIndex(int index, int blendIndex, float value)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexCount);
+	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
 	BlendWeight* v = (BlendWeight*)TryLockVertexBuffer(VB_BlendWeights);
 	v[index].indices[blendIndex] = value;
 }
@@ -806,7 +848,7 @@ void MeshResource::SetBlendIndex(int index, int blendIndex, float value)
 //------------------------------------------------------------------------------
 void MeshResource::SetBlendIndices(int index, float v0, float v1, float v2, float v3)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexCount);
+	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
 	BlendWeight* v = (BlendWeight*)TryLockVertexBuffer(VB_BlendWeights);
 	v[index].indices[0] = v0;
 	v[index].indices[1] = v1;
@@ -817,7 +859,7 @@ void MeshResource::SetBlendIndices(int index, float v0, float v1, float v2, floa
 //------------------------------------------------------------------------------
 void MeshResource::GetBlendIndices(int index, int* out0, int* out1, int* out2, int* out3)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexCount);
+	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
 	BlendWeight* v = (BlendWeight*)TryLockVertexBuffer(VB_BlendWeights);
 	if (out0 != nullptr) *out0 = (int)v[index].indices[0];
 	if (out1 != nullptr) *out1 = (int)v[index].indices[1];
@@ -828,26 +870,13 @@ void MeshResource::GetBlendIndices(int index, int* out0, int* out1, int* out2, i
 //------------------------------------------------------------------------------
 void MeshResource::SetIndex(int index, int vertexIndex)
 {
-	if (m_indexBufferInfo.format == IndexBufferFormat_UInt16)
-	{
-		uint16_t* i = (uint16_t*)TryLockIndexBuffer();
-		i[index] = vertexIndex;
-	}
-	else if (m_indexBufferInfo.format == IndexBufferFormat_UInt32)
-	{
-		uint32_t* i = (uint32_t*)TryLockIndexBuffer();
-		i[index] = vertexIndex;
-	}
-	else
-	{
-		LN_NOTIMPLEMENTED();
-	}
+	SetIndexInternal(TryLockIndexBuffer(), index, vertexIndex);
 }
 
 //------------------------------------------------------------------------------
 void MeshResource::SetAdditionalUV(int index, int additionalUVIndex, const Vector4& uv)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexCount);
+	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
 	AdditionalUVs* v = (AdditionalUVs*)TryLockVertexBuffer(VB_AdditionalUVs);
 	v[index].uv[additionalUVIndex] = uv;
 }
@@ -855,7 +884,7 @@ void MeshResource::SetAdditionalUV(int index, int additionalUVIndex, const Vecto
 //------------------------------------------------------------------------------
 void MeshResource::SetSdefC(int index, const Vector4& value)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexCount);
+	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
 	SdefInfo* v = (SdefInfo*)TryLockVertexBuffer(VB_SdefInfo);
 	v[index].sdefC = value;
 }
@@ -863,7 +892,7 @@ void MeshResource::SetSdefC(int index, const Vector4& value)
 //------------------------------------------------------------------------------
 const Vector4& MeshResource::GetSdefC(int index)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexCount);
+	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
 	SdefInfo* v = (SdefInfo*)TryLockVertexBuffer(VB_SdefInfo);
 	return v[index].sdefC;
 }
@@ -871,7 +900,7 @@ const Vector4& MeshResource::GetSdefC(int index)
 //------------------------------------------------------------------------------
 void MeshResource::SetSdefR0(int index, const Vector3& value)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexCount);
+	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
 	SdefInfo* v = (SdefInfo*)TryLockVertexBuffer(VB_SdefInfo);
 	v[index].sdefR0 = value;
 }
@@ -879,7 +908,7 @@ void MeshResource::SetSdefR0(int index, const Vector3& value)
 //------------------------------------------------------------------------------
 const Vector3& MeshResource::GetSdefR0(int index)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexCount);
+	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
 	SdefInfo* v = (SdefInfo*)TryLockVertexBuffer(VB_SdefInfo);
 	return v[index].sdefR0;
 }
@@ -887,7 +916,7 @@ const Vector3& MeshResource::GetSdefR0(int index)
 //------------------------------------------------------------------------------
 void MeshResource::SetSdefR1(int index, const Vector3& value)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexCount);
+	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
 	SdefInfo* v = (SdefInfo*)TryLockVertexBuffer(VB_SdefInfo);
 	v[index].sdefR1 = value;
 }
@@ -895,7 +924,7 @@ void MeshResource::SetSdefR1(int index, const Vector3& value)
 //------------------------------------------------------------------------------
 const Vector3& MeshResource::GetSdefR1(int index)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexCount);
+	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
 	SdefInfo* v = (SdefInfo*)TryLockVertexBuffer(VB_SdefInfo);
 	return v[index].sdefR1;
 }
@@ -903,7 +932,7 @@ const Vector3& MeshResource::GetSdefR1(int index)
 //------------------------------------------------------------------------------
 void MeshResource::SetEdgeWeight(int index, float weight)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexCount);
+	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
 	MmdExtra* v = (MmdExtra*)TryLockVertexBuffer(VB_MmdExtra);
 	v[index].edgeWeight = weight;
 }
@@ -921,9 +950,33 @@ MeshAttribute* MeshResource::GetSection(int index)
 }
 
 //------------------------------------------------------------------------------
-//void MeshResource::AddSquare(const Vertex& v1, const Vertex& v2, const Vertex& v3, const Vertex& v4)
-//{
-//}
+void MeshResource::Clear()
+{
+	m_vertexUsedCount = 0;
+	m_indexUsedCount = 0;
+}
+
+//------------------------------------------------------------------------------
+void MeshResource::AddSquare(const Vertex& v1, const Vertex& v2, const Vertex& v3, const Vertex& v4)
+{
+	int vs = GetVertexCount();
+	ResizeVertexBuffer(vs + 4);
+	Vertex* v = (Vertex*)TryLockVertexBuffer(VB_BasicVertices);
+	v[vs + 0] = v1;
+	v[vs + 1] = v2;
+	v[vs + 2] = v3;
+	v[vs + 3] = v4;
+
+	int is = GetIndexCount();
+	ResizeIndexBuffer(is + 6);
+	void* i = TryLockIndexBuffer();
+	SetIndexInternal(i, is + 0, vs + 0);
+	SetIndexInternal(i, is + 1, vs + 1);
+	SetIndexInternal(i, is + 2, vs + 3);
+	SetIndexInternal(i, is + 3, vs + 3);
+	SetIndexInternal(i, is + 4, vs + 1);
+	SetIndexInternal(i, is + 5, vs + 2);
+}
 
 //------------------------------------------------------------------------------
 void* MeshResource::TryLockVertexBuffer(VertexBufferType type)
@@ -936,16 +989,21 @@ void* MeshResource::TryLockVertexBuffer(VertexBufferType type)
 		sizeof(SdefInfo),		//VB_SdefInfo,
 		sizeof(MmdExtra),		//VB_MmdExtra,
 	};
+	size_t requestedSize = strideTable[type] * m_vertexCapacity;
 
 	if (m_usage == ResourceUsage::Dynamic)
 	{
-
-		size_t requestedSize = strideTable[type] * m_vertexCount;
 		if (m_vertexBufferInfos[type].buffer != nullptr &&
 			m_vertexBufferInfos[type].buffer->GetBufferSize() != requestedSize)
 		{
-			m_vertexBufferInfos[type].lockedBuffer = nullptr;
-			m_vertexBufferInfos[type].buffer->Unlock();
+			// Unlock
+			if (m_vertexBufferInfos[type].lockedBuffer != nullptr)
+			{
+				m_vertexBufferInfos[type].lockedBuffer = nullptr;
+				m_vertexBufferInfos[type].buffer->Unlock();
+			}
+
+			// Resize
 			m_vertexBufferInfos[type].buffer->Resize(requestedSize);
 		}
 	}
@@ -953,7 +1011,7 @@ void* MeshResource::TryLockVertexBuffer(VertexBufferType type)
 	if (m_vertexBufferInfos[type].buffer == nullptr)
 	{
 		m_vertexBufferInfos[type].buffer = RefPtr<VertexBuffer>::MakeRef();
-		m_vertexBufferInfos[type].buffer->Initialize(m_manager, strideTable[type] * m_vertexCount, nullptr, m_usage);
+		m_vertexBufferInfos[type].buffer->Initialize(m_manager, requestedSize, nullptr, m_usage);
 		m_vertexDeclarationModified = true;
 	}
 
@@ -968,21 +1026,27 @@ void* MeshResource::TryLockVertexBuffer(VertexBufferType type)
 //------------------------------------------------------------------------------
 void* MeshResource::TryLockIndexBuffer()
 {
-	//if (m_usage == ResourceUsage::Dynamic)
-	//{
-	//	if (m_indexBuffer != nullptr &&
-	//		(m_indexBuffer->GetIndexCount() != m_indexCount || m_indexBuffer->GetIndexFormat() != m_indexBufferFormat))
-	//	{
-	//		m_lockedIndexBuffer = nullptr;
-	//		m_indexBuffer->Unlock();
-	//		m_indexBuffer->Resize(m_indexCount, m_indexBufferFormat);
-	//	}
-	//}
+	if (m_usage == ResourceUsage::Dynamic)
+	{
+		if (m_indexBufferInfo.buffer != nullptr &&
+			(m_indexBufferInfo.buffer->GetIndexCount() != m_indexCapacity || m_indexBufferInfo.buffer->GetIndexFormat() != m_indexBufferInfo.format))
+		{
+			// Unlock
+			if (m_indexBufferInfo.lockedBuffer != nullptr)
+			{
+				m_indexBufferInfo.lockedBuffer = nullptr;
+				m_indexBufferInfo.buffer->Unlock();
+			}
+
+			// Resize
+			m_indexBufferInfo.buffer->Resize(m_indexCapacity, m_indexBufferInfo.format);
+		}
+	}
 
 	if (m_indexBufferInfo.buffer == nullptr)
 	{
 		m_indexBufferInfo.buffer = RefPtr<IndexBuffer>::MakeRef();
-		m_indexBufferInfo.buffer->Initialize(m_manager, m_indexCount, nullptr, m_indexBufferInfo.format, m_usage);
+		m_indexBufferInfo.buffer->Initialize(m_manager, m_indexCapacity, nullptr, m_indexBufferInfo.format, m_usage);
 		m_indexBufferInfo.refresh = false;
 	}
 	//else if (m_indexBufferInfo.refresh)
@@ -1000,17 +1064,40 @@ void* MeshResource::TryLockIndexBuffer()
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::TryGlowBuffers(int requestVertexCount)
+void MeshResource::TryGlowVertexBuffers(int requestVertexCount)
 {
 	if (m_vertexUsedCount + requestVertexCount > m_vertexCapacity)
 	{
-		m_vertexCapacity += m_vertexCapacity;
+		m_vertexCapacity += std::max(m_vertexCapacity, requestVertexCount);
 		for (int i = 0; i < VB_Count; ++i)
 		{
 			m_vertexBufferInfos[i].refresh = true;	// 次の TryLock で Resize してほしい
 		}
+	}
+}
 
+//------------------------------------------------------------------------------
+void MeshResource::TryGlowIndexBuffer(int requestIndexCount)
+{
+	if (m_indexUsedCount + requestIndexCount > m_indexCapacity)
+	{
+		m_indexCapacity += std::max(m_indexCapacity, requestIndexCount);
 		m_indexBufferInfo.refresh = true;	// 次の TryLock で Resize してほしい
+	}
+}
+
+//------------------------------------------------------------------------------
+void MeshResource::GetMeshAttribute(int subsetIndex, MeshAttribute* outAttr)
+{
+	if (m_attributes.IsEmpty())
+	{
+		outAttr->MaterialIndex = 0;
+		outAttr->StartIndex = 0;
+		outAttr->PrimitiveNum = m_indexUsedCount / 3;	// triangle only
+	}
+	else
+	{
+		*outAttr = m_attributes[subsetIndex];
 	}
 }
 
@@ -1023,7 +1110,7 @@ void MeshResource::CommitRenderData(VertexDeclaration** outDecl, VertexBuffer** 
 	LN_ASSERT(outIB != nullptr);
 
 	// VertexDeclaration
-	if (m_vertexDeclarationModified)
+	if (m_vertexDeclaration == nullptr || m_vertexDeclarationModified)
 	{
 		m_vertexDeclaration = RefPtr<VertexDeclaration>::MakeRef();
 		m_vertexDeclaration->Initialize(m_manager);
@@ -1112,14 +1199,16 @@ void MeshResource::CreateBuffers(int vertexCount, int indexCount, MeshCreationFl
 	m_attributes[0].StartIndex = 0;
 	m_attributes[0].PrimitiveNum = indexCount / 3;
 
-	m_vertexCount = vertexCount;
-	m_indexCount = indexCount;
+	TryGlowVertexBuffers(vertexCount);
+	TryGlowIndexBuffer(indexCount);
+	m_vertexUsedCount = vertexCount;
+	m_indexUsedCount = indexCount;
 }
 
 //------------------------------------------------------------------------------
 void MeshResource::PostGenerated(Vertex* vb, void* ib, MeshCreationFlags flags)
 {
-	for (int i = 0; i < m_vertexCount; ++i)
+	for (int i = 0; i < m_vertexUsedCount; ++i)
 	{
 		vb[i].color = Color::White;
 	}
@@ -1128,13 +1217,13 @@ void MeshResource::PostGenerated(Vertex* vb, void* ib, MeshCreationFlags flags)
 	{
 		if (m_indexBufferInfo.buffer->GetIndexStride() == 2)
 		{
-			for (int i = 0; i < m_vertexCount; ++i)
+			for (int i = 0; i < m_vertexUsedCount; ++i)
 			{
 				vb[i].normal *= -1.0f;
 			}
 
 			uint16_t* indices = (uint16_t*)ib;
-			for (int i = 0; i < m_indexCount; i += 3)
+			for (int i = 0; i < m_indexUsedCount; i += 3)
 			{
 				std::swap(indices[i + 1], indices[i + 2]);
 			}
@@ -1185,7 +1274,7 @@ void StaticMeshModel::Initialize(detail::GraphicsManager* manager, MeshResource*
 void StaticMeshModel::InitializeBox(detail::GraphicsManager* manager, const Vector3& size)
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
-	res->Initialize(manager);
+	res->Initialize(manager, ResourceUsage::Static);
 	res->CreateBox(size);
 	Initialize(manager, res);
 }
@@ -1194,7 +1283,7 @@ void StaticMeshModel::InitializeBox(detail::GraphicsManager* manager, const Vect
 void StaticMeshModel::InitializeSphere(detail::GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags)
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
-	res->Initialize(manager);
+	res->Initialize(manager, ResourceUsage::Static);
 	res->CreateSphere(radius, slices, stacks, flags);
 	Initialize(manager, res);
 }
@@ -1203,7 +1292,7 @@ void StaticMeshModel::InitializeSphere(detail::GraphicsManager* manager, float r
 void StaticMeshModel::InitializePlane(detail::GraphicsManager* manager, const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags)
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
-	res->Initialize(manager);
+	res->Initialize(manager, ResourceUsage::Static);
 	res->CreatePlane(size, sliceH, sliceV, flags);
 	Initialize(manager, res);
 }
@@ -1212,7 +1301,7 @@ void StaticMeshModel::InitializePlane(detail::GraphicsManager* manager, const Ve
 void StaticMeshModel::InitializeSquarePlane(detail::GraphicsManager* manager, const Vector2& size, const Vector3& front, MeshCreationFlags flags)
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
-	res->Initialize(manager);
+	res->Initialize(manager, ResourceUsage::Static);
 	res->CreateSquarePlane(size, front, flags);
 	Initialize(manager, res);
 }
@@ -1221,7 +1310,7 @@ void StaticMeshModel::InitializeSquarePlane(detail::GraphicsManager* manager, co
 void StaticMeshModel::InitializeScreenPlane(detail::GraphicsManager* manager)
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
-	res->Initialize(manager);
+	res->Initialize(manager, ResourceUsage::Static);
 	res->CreateScreenPlane();
 	Initialize(manager, res);
 }

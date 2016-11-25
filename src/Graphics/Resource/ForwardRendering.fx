@@ -39,7 +39,7 @@ VS_OUTPUT Basic_VS(LN_VS_INPUT input)
 	output.Normal = normalize(mul(input.Normal, (float3x3)ln_World));
 	
 	// 頂点カラー
-	output.Color = LN_GetLambertVertexColor(output.Normal);
+	output.Color = LN_GetLambertVertexColor(output.Normal) * input.Color;
 	
 	// テクスチャ座標
 	output.Tex = input.Tex;

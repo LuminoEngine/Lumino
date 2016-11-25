@@ -7,8 +7,7 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class MeshResource;
 
-namespace detail
-{
+namespace detail {
 
 // いまのところ、streamIndex の仕組みをユーザーに公開しないために用意している。
 // メッシュが使う streamIndex 関係の処理は全部この中。
@@ -21,8 +20,8 @@ public:
 	~MeshRendererProxy();
 	void Initialize(GraphicsManager* manager);
 
-	void SetTransform(const Matrix& matrix);
-	void SetViewProjMatrix(const Matrix& matrix);
+	//void SetTransform(const Matrix& matrix);
+	//void SetViewProjMatrix(const Matrix& matrix);
 
 	void DrawMesh(MeshResource* mesh, int startIndex, int triangleCount);
 
@@ -43,26 +42,27 @@ private:
 		int									triangleCount;
 	};
 
-	void FlushStateImpl(const Matrix& world, const Matrix& viewProj);	// Threading
+	//void FlushStateImpl(const Matrix& world, const Matrix& viewProj);	// Threading
 	void DrawMeshImpl(const DrawMeshCommandData& data);	// Threading
 
 	GraphicsManager*		m_manager;
 	Driver::IRenderer*		m_renderer;
 
-	Matrix					m_transform;
-	Matrix					m_viewProj;
-	bool					m_stateModified;
+	//Matrix					m_transform;
+	//Matrix					m_viewProj;
+	//bool					m_stateModified;
 
-	struct
-	{
-		RefPtr<Driver::IShader>		shader;
-		Driver::IShaderTechnique*	technique = nullptr;
-		Driver::IShaderPass*		pass = nullptr;
-		Driver::IShaderVariable*	varWorldMatrix = nullptr;
-		Driver::IShaderVariable*	varViewProjMatrix = nullptr;
-		Driver::IShaderVariable*	varTexture = nullptr;
+	//struct
+	//{
+	//	RefPtr<Driver::IShader>		shader;
+	//	Driver::IShaderTechnique*	technique = nullptr;
+	//	Driver::IShaderPass*		pass = nullptr;
+	//	Driver::IShaderVariable*	varWorldMatrix = nullptr;
+	//	Driver::IShaderVariable*	varViewProjMatrix = nullptr;
+	//	Driver::IShaderVariable*	varTexture = nullptr;
 
-	} m_shader;
+	//} m_shader;
+
 };
 
 } // namespace detail

@@ -6,7 +6,9 @@
 
 LN_NAMESPACE_BEGIN
 class VertexDeclaration;
+class MeshResource;
 class StaticMeshModel;
+using MeshResourcePtr = RefPtr<MeshResource>;
 using StaticMeshModelPtr = RefPtr<StaticMeshModel>;
 
 /** メッシュ生成オプション */
@@ -35,14 +37,17 @@ class MeshResource
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
+	static MeshResourcePtr Create();
 
+public:
 
 	//void SetMaterialCount(int count);
+	// TODO: MeshResource としては Material は持たない・・ような気がする
 	void AddMaterials(int count);
 	Material* GetMaterial(int index) const;
 
-	int GetVertexCount() const { return m_vertexCount; }
-	int GetIndexCount() const { return m_indexCount; }
+	int GetVertexCount() const { return m_vertexUsedCount; }
+	int GetIndexCount() const { return m_indexUsedCount; }
 
 	void SetPosition(int index, const Vector3& position);
 	void SetNormal(int index, const Vector3& normal);
@@ -75,6 +80,8 @@ public:
 	MeshAttribute* GetSection(int index);
 
 	/*----------*/
+
+	void Clear();
 	
 	/**
 		@brief
@@ -137,18 +144,17 @@ LN_INTERNAL_ACCESS:
 
 	MeshResource();
 	virtual ~MeshResource();
-	void Initialize(detail::GraphicsManager* manager);
-	void Reserve(int vertexCount);
-	void Resize(int vertexCount);
+	void Initialize(detail::GraphicsManager* manager, ResourceUsage usage);
+	void Reserve(int vertexCount, int indexCount);
+	//void Resize(int vertexCount);
 
 	// for PMX
 	void ResizeVertexBuffer(int vertexCount);
+	void ResizeIndexBuffer(int indexCount);
 	void ResizeIndexBuffer(int indexCount, IndexBufferFormat format);
 
+	void SetIndexInternal(void* indexBuffer, int vertexIndex, int value);
 
-
-	//void CreateVertexBuffer(int vertexCount);
-	//void CreateIndexBuffer(int indexCount, IndexBufferFormat format);
 	void BeginCreating(MeshCreationFlags flags);
 	void EndCreating();
 
@@ -162,9 +168,12 @@ LN_INTERNAL_ACCESS:
 
 	void* TryLockVertexBuffer(VertexBufferType type);
 	void* TryLockIndexBuffer();
-	void TryGlowBuffers(int requestVertexCount);
+	void TryGlowVertexBuffers(int requestVertexCount);
+	void TryGlowIndexBuffer(int requestIndexCount);
 
+	void GetMeshAttribute(int subsetIndex, MeshAttribute* outAttr);
 	void CommitRenderData(VertexDeclaration** outDecl, VertexBuffer** outVBs, int* outVBCount, IndexBuffer** outIB);
+
 
 private:
 	void CreateBuffers(int vertexCount, int indexCount, MeshCreationFlags flags);
@@ -173,11 +182,11 @@ private:
 LN_INTERNAL_ACCESS:	// TODO:
 	detail::GraphicsManager*	m_manager;
 	ResourceUsage				m_usage;
-	int							m_vertexCount;
-	int							m_indexCount;
 
 	int							m_vertexCapacity;
 	int							m_vertexUsedCount;
+	int							m_indexCapacity;
+	int							m_indexUsedCount;
 	RefPtr<VertexDeclaration>	m_vertexDeclaration;
 	VertexBufferInfo			m_vertexBufferInfos[VB_Count];
 	IndexBufferInfo				m_indexBufferInfo;
