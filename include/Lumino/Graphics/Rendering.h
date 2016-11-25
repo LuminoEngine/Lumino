@@ -11,6 +11,7 @@ LN_NAMESPACE_BEGIN
 class Pen;
 class Font;
 class Material;
+class MeshResource;
 class StaticMeshModel;
 class DrawList;
 
@@ -506,6 +507,7 @@ public:
 		const Vector3& position4, const Vector2& uv4, const Color& color4/*,
 		ShaderPass* shaderPass*/);
 
+	void DrawMesh(MeshResource* mesh, int subsetIndex, Material* material, const DrawElementMetadata* metadata = nullptr);
 	void DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material, const DrawElementMetadata* metadata = nullptr);
 
 	void Blit(Texture* source);
@@ -545,6 +547,7 @@ LN_INTERNAL_ACCESS:
 	void AddDynamicLightInfo(detail::DynamicLightInfo* lightInfo);
 
 	template<typename TElement> TElement* ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer, Material* userMaterial);
+	void DrawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Material* material, const DrawElementMetadata* metadata);
 	void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material, const DrawElementMetadata* metadata);
 	void BlitInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Material* material);
 	void DrawFrameRectangle(const RectF& rect);

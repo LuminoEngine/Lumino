@@ -1,4 +1,4 @@
-
+Ôªø
 #pragma once
 #include <Lumino/Graphics/Common.h>
 #include "Vertex.h"
@@ -9,21 +9,21 @@ class VertexDeclaration;
 class StaticMeshModel;
 using StaticMeshModelPtr = RefPtr<StaticMeshModel>;
 
-/** ÉÅÉbÉVÉÖê∂ê¨ÉIÉvÉVÉáÉì */
+/** „É°„ÉÉ„Ç∑„É•ÁîüÊàê„Ç™„Éó„Ç∑„Éß„É≥ */
 LN_ENUM_FLAGS(MeshCreationFlags)
 {
 	None					= 0x0000,
-	DynamicBuffers			= 0x0001,	/**< í∏ì_ÉoÉbÉtÉ@ãyÇ—ÉCÉìÉfÉbÉNÉXÉoÉbÉtÉ@ÇÃçÏê¨Ç… ResourceUsage::Dynamic ÇégópÇ∑ÇÈÅB*/
-	ReverseFaces			= 0x0002,	/**< ñ ï˚å¸ÇîΩì]Ç∑ÇÈÅB*/
+	DynamicBuffers			= 0x0001,	/**< È†ÇÁÇπ„Éê„ÉÉ„Éï„Ç°Âèä„Å≥„Ç§„É≥„Éá„ÉÉ„ÇØ„Çπ„Éê„ÉÉ„Éï„Ç°„ÅÆ‰ΩúÊàê„Å´ ResourceUsage::Dynamic „Çí‰ΩøÁî®„Åô„Çã„ÄÇ*/
+	ReverseFaces			= 0x0002,	/**< Èù¢ÊñπÂêë„ÇíÂèçËª¢„Åô„Çã„ÄÇ*/
 };
 LN_ENUM_FLAGS_DECLARE(MeshCreationFlags);
 
-/// ÉÅÉbÉVÉÖÇÃëÆê´
+/// „É°„ÉÉ„Ç∑„É•„ÅÆÂ±ûÊÄß
 struct MeshAttribute	// TODO: Section
 {
-	int		MaterialIndex;  ///< ëŒâûÇ∑ÇÈÉ}ÉeÉäÉAÉãî‘çÜ
-	int		StartIndex;     ///< äJénÉCÉìÉfÉbÉNÉX
-	int		PrimitiveNum;   ///< ï`âÊÉvÉäÉ~ÉeÉBÉuêî (éOäpå`ÇÃêî)
+	int		MaterialIndex;  ///< ÂØæÂøú„Åô„Çã„Éû„ÉÜ„É™„Ç¢„É´Áï™Âè∑
+	int		StartIndex;     ///< ÈñãÂßã„Ç§„É≥„Éá„ÉÉ„ÇØ„Çπ
+	int		PrimitiveNum;   ///< ÊèèÁîª„Éó„É™„Éü„ÉÜ„Ç£„ÉñÊï∞ (‰∏âËßíÂΩ¢„ÅÆÊï∞)
 };
 typedef List<MeshAttribute>		MeshAttributeList;
 
@@ -75,8 +75,15 @@ public:
 	MeshAttribute* GetSection(int index);
 
 	/*----------*/
-
-
+	
+	/**
+		@brief
+		@param[in]	v1	: Â∑¶‰∏ä„ÅÆÈ†ÇÁÇπ
+		@param[in]	v2	: Â∑¶‰∏ã„ÅÆÈ†ÇÁÇπ
+		@param[in]	v3	: Âè≥‰∏ã„ÅÆÈ†ÇÁÇπ
+		@param[in]	v4	: Âè≥‰∏ä„ÅÆÈ†ÇÁÇπ
+	*/
+	void AddSquare(const Vertex& v1, const Vertex& v2, const Vertex& v3, const Vertex& v4);
 
 LN_INTERNAL_ACCESS:
 	enum VertexBufferType
@@ -91,8 +98,17 @@ LN_INTERNAL_ACCESS:
 
 	struct VertexBufferInfo
 	{
-		RefPtr<VertexBuffer>	buffer;
-		void*					lockedBuffer;
+		RefPtr<VertexBuffer>	buffer = nullptr;
+		void*					lockedBuffer = nullptr;
+		bool					refresh = true;
+	};
+	
+	struct IndexBufferInfo
+	{
+		IndexBufferFormat		format = IndexBufferFormat_UInt16;
+		RefPtr<IndexBuffer>		buffer = nullptr;
+		void*					lockedBuffer = nullptr;
+		bool					refresh = true;
 	};
 
 	struct BlendWeight
@@ -144,8 +160,10 @@ LN_INTERNAL_ACCESS:
 
 	int GetSubsetCount() const { return m_attributes.GetCount(); }
 
-	void* TryLockVertexBuffer(VertexBufferType type, int stride);
+	void* TryLockVertexBuffer(VertexBufferType type);
 	void* TryLockIndexBuffer();
+	void TryGlowBuffers(int requestVertexCount);
+
 	void CommitRenderData(VertexDeclaration** outDecl, VertexBuffer** outVBs, int* outVBCount, IndexBuffer** outIB);
 
 private:
@@ -157,12 +175,12 @@ LN_INTERNAL_ACCESS:	// TODO:
 	ResourceUsage				m_usage;
 	int							m_vertexCount;
 	int							m_indexCount;
-	IndexBufferFormat			m_indexBufferFormat;
 
+	int							m_vertexCapacity;
+	int							m_vertexUsedCount;
 	RefPtr<VertexDeclaration>	m_vertexDeclaration;
 	VertexBufferInfo			m_vertexBufferInfos[VB_Count];
-	RefPtr<IndexBuffer>			m_indexBuffer;
-	void*						m_lockedIndexBuffer;
+	IndexBufferInfo				m_indexBufferInfo;
 
 	RefPtr<MaterialList>		m_materials;
 	MeshAttributeList			m_attributes;

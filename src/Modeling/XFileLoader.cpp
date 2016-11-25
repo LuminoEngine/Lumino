@@ -626,6 +626,8 @@ RefPtr<MeshResource> XFileLoader::Load(ModelManager* manager, Stream* stream, co
 				nullptr,
 				(isDynamic) ? ResourceUsage::Dynamic : ResourceUsage::Static);
 
+			LN_NOTIMPLEMENTED();
+#if 0
 			// IndexBuffer
 			IDirect3DIndexBuffer9* dx_indexbuffer;
 			D3DINDEXBUFFER_DESC dx_indexbuffer_desc;
@@ -691,7 +693,7 @@ RefPtr<MeshResource> XFileLoader::Load(ModelManager* manager, Stream* stream, co
 			// 書き込み終了
 			mesh->m_vertexBufferInfos[0].buffer->Unlock();
 			mesh->m_indexBuffer->Unlock();
-
+#endif
 			//-----------------------------------------------------
 			// マテリアル、属性
 
