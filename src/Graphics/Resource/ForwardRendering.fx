@@ -14,8 +14,6 @@ struct LN_VS_INPUT
 sampler		ObjTexSampler		= sampler_state
 {
 	texture = <ln_MaterialTexture>;
-	MINFILTER = LINEAR;
-	MAGFILTER = LINEAR;
 };
 
 struct VS_OUTPUT
