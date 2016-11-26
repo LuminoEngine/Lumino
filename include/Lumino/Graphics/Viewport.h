@@ -120,6 +120,7 @@ private:
 	Color						m_backgroundColor;
 	RenderTarget*				m_primaryLayerTarget;
 	RenderTarget*				m_secondaryLayerTarget;
+	//RenderTarget*				m_primaryLayerTargetOrg;
 	RefPtr<DepthBuffer>			m_depthBuffer;
 
 	RefPtr<DrawList>					m_renderer;			// for PostProcess and Blit to backbuffer.

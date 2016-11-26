@@ -280,6 +280,8 @@ void CameraViewportLayer::Render(RenderingContext* context)
 	// TODO: DrawList は Scene 側につくべき
 	m_renderer->BeginMakeElements();
 
+	m_renderer->Clear(ClearFlags::Depth, Color::White);
+
 	// カメラ行列の更新
 	m_hostingCamera->UpdateMatrices(GetViewportSize());
 

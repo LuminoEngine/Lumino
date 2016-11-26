@@ -38,13 +38,13 @@ ScreenMotionBlurImageEffect::ScreenMotionBlurImageEffect()
 	, m_center(0, 0)
 	, m_scale(1.0)
 {
+	InitializeProperties();
 }
 
 //------------------------------------------------------------------------------
 ScreenMotionBlurImageEffect::~ScreenMotionBlurImageEffect()
 {
 	LN_SAFE_RELEASE(m_accumTexture);
-	//LN_SAFE_RELEASE(m_shader.shader);
 }
 
 //------------------------------------------------------------------------------
@@ -57,25 +57,17 @@ void ScreenMotionBlurImageEffect::Initialize(detail::GraphicsManager* manager)
 	m_material = Object::MakeRef<Material>();
 	m_material->SetShader(shader);
 	m_material->blendMode = BlendMode::Alpha;
-
-	//m_shader.shader = LN_NEW Shader();
-	//m_shader.shader->Initialize(m_manager, g_ScreenMotionBlurImageEffect_fx_Data, g_ScreenMotionBlurImageEffect_fx_Len);
-
-	//m_shader.varBlurPower = m_shader.shader->FindVariable(_T("g_blurPower"));
-	//m_shader.varBlurColor = m_shader.shader->FindVariable(_T("g_blurColor"));
-	//m_shader.varBlurMatrix = m_shader.shader->FindVariable(_T("g_blurMatrix"));
-	//m_shader.varSecondaryTexture = m_shader.shader->FindVariable(_T("g_secondaryTexture"));
-	//m_shader.techMainDraw = m_shader.shader->GetTechniques()[0];
 }
 
 //------------------------------------------------------------------------------
 void ScreenMotionBlurImageEffect::SetBlurStatus(float amount, const Vector2& center, float scale, float duration)
 {
+	SetRadialCenter(center);
+	SetRadialScale(scale);
+
 	if (duration == 0.0f)
 	{
 		SetAmount(amount);			// アニメーション再生中でも、ここでプロパティを再設定するときに停止される
-		SetRadialCenter(center);
-		SetRadialScale(scale);
 	}
 	else
 	{
@@ -104,7 +96,6 @@ void ScreenMotionBlurImageEffect::OnRender(DrawList* context, RenderTarget* sour
 		context->Blit(source, m_accumTexture, Matrix::Identity);
 	}
 
-#if 1
 	Matrix blurMatrix;
 	blurMatrix.Translate(-m_center.x, -m_center.y, 0);
 	blurMatrix.Scale(m_scale);
@@ -112,11 +103,12 @@ void ScreenMotionBlurImageEffect::OnRender(DrawList* context, RenderTarget* sour
 
 	m_material->SetVectorParameter(_T("_BlurColor"), Vector4(1, 1, 1, Amount.Get()));
 	m_material->SetMatrixParameter(_T("_BlurMatrix"), blurMatrix);
-	//m_material->SetMaterialTexture(m_accumTexture);
-	//m_shader.varBlurPower->SetFloat(Amount);
-	//m_shader.varBlurColor->SetVector();
-	//m_shader.varBlurMatrix->SetMatrix(blurMatrix);
-	//m_shader.varSecondaryTexture->SetTexture(m_accumTexture);
+
+	//// m_accumTexture > source
+	//context->Blit(m_accumTexture, destination, m_material);
+
+	//// save
+	//context->Blit(destination, m_accumTexture, Matrix::Identity);
 
 	// m_accumTexture > source
 	context->Blit(m_accumTexture, source, m_material);
@@ -125,18 +117,7 @@ void ScreenMotionBlurImageEffect::OnRender(DrawList* context, RenderTarget* sour
 	context->Blit(source, m_accumTexture, Matrix::Identity);
 
 	context->Blit(m_accumTexture, destination, Matrix::Identity);
-#endif
-#if 0
-	Matrix m;
-	m.Scale(1.05);
-	m_shader.varBlurPower->SetFloat(0.5);
-	m_shader.varBlurColor->SetVector(Vector4(1, 1, 1, 1));
-	m_shader.varBlurMatrix->SetMatrix(m);
-	m_shader.varSecondaryTexture->SetTexture(m_accumTexture);
-	renderingContext->Blt(source, source, m_shader.shader);
-	renderingContext->Blt(source, m_accumTexture);
-	renderingContext->Blt(source, destination);
-#endif
+
 }
 
 LN_NAMESPACE_GRAPHICS_END

@@ -268,10 +268,10 @@ uint32_t Material::GetHashCode()
 
 		// TODO: map じゃなくて List で思う。20個も普通値いれないだろうし
 		for (auto& pair : m_userValueMap)
-			m_hashCode += Hash::CalcHash(reinterpret_cast<const char*>(&pair.second), sizeof(pair.second));
+			m_hashCode += pair.second.GetHashCode();
 
 		for (auto& pair : m_builtinValueMap)
-			m_hashCode += Hash::CalcHash(reinterpret_cast<const char*>(&pair.second), sizeof(pair.second));
+			m_hashCode += pair.second.GetHashCode();
 
 		//m_hashCode += Hash::CalcHash(reinterpret_cast<const char*>(&m_builtin), sizeof(m_builtin));
 
@@ -476,11 +476,7 @@ void CombinedMaterial::CopyUserValueTable(Material* source)
 	for (auto& pair : source->GetUserValueMap())
 	{
 		m_userValueTable.Add(ValuePair{ pair.first, pair.second });
-	}/*
-	for (auto& pair : m_userValueTable)
-	{
-		printf("");;
-	}*/
+	}
 }
 
 //------------------------------------------------------------------------------

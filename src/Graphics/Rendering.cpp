@@ -1086,6 +1086,18 @@ RenderTarget* DrawList::GetRenderTarget(int index) const
 }
 
 //------------------------------------------------------------------------------
+void DrawList::SetDepthBuffer(DepthBuffer* depthBuffer)
+{
+	m_state.state.state.SetDepthBuffer(depthBuffer);
+}
+
+//------------------------------------------------------------------------------
+DepthBuffer* DrawList::GetDepthBuffer() const
+{
+	return m_state.state.state.GetDepthBuffer();
+}
+
+//------------------------------------------------------------------------------
 void DrawList::SetBrush(Brush* brush)
 {
 	m_state.state.state.SetBrush(brush);
@@ -1493,11 +1505,6 @@ void DrawList::BlitInternal(Texture* source, RenderTarget* dest, const Matrix& t
 	{
 		SetRenderTarget(0, dest);
 	}
-
-	//if (material != nullptr)
-	//	m_state.state.SetMaterial(material);
-	//else
-	//	m_state.state.SetMaterial(m_manager->GetInternalContext()->m_blitRenderer->GetCommonMaterial());
 
 	auto* e = ResolveDrawElement<DrawElement_BlitInternal>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_blitRenderer, material);
 	e->transform = transform;

@@ -43,6 +43,9 @@ VSOutput VSMain(
 float4 PSMain(
 	float2 texUV	: TEXCOORD0) : COLOR
 {
+	//float4 c = _Tone;
+	//c.a = 1;
+	//return c;
 	return LN_CalculateToneColor(tex2D(ScreenSampler, texUV), _Tone);
 }
 

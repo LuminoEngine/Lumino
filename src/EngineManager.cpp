@@ -402,6 +402,7 @@ void EngineManager::InitializeGraphicsManager()
 
 		m_diagViewer = LN_NEW EngineDiagViewer();
 		m_diagViewer->Initialize(this, &EngineDiagCore::Instance);
+		m_diagViewer->SetDisplayMode(EngineDiagViewer::DisplayMode_FPSSummary);
 	}
 }
 

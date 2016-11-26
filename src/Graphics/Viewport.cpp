@@ -237,6 +237,7 @@ void Viewport::Render()
 	context->SetRenderTarget(0, m_primaryLayerTarget);
 	context->SetDepthBuffer(m_depthBuffer);
 	context->Clear(ClearFlags::All, m_backgroundColor, 1.0f, 0x00);
+	context->Flush();
 
 	// ZIndex でソート
 	std::stable_sort(m_viewportLayerList->begin(), m_viewportLayerList->end(),
@@ -244,7 +245,7 @@ void Viewport::Render()
 	
 	for (ViewportLayer* layer : *m_viewportLayerList)
 	{
-		context->SetRenderTarget(0, m_primaryLayerTarget);
+		//context->SetRenderTarget(0, m_primaryLayerTarget);
 		layer->OnBeginFrameRender(m_primaryLayerTarget, m_depthBuffer);
 		layer->Render(context);
 
@@ -256,6 +257,8 @@ void Viewport::Render()
 //------------------------------------------------------------------------------
 void Viewport::EndFrameRender()
 {
+	m_renderer->SetDepthBuffer(nullptr);
+
 	// 全てのレイヤーの描画リストを実行し m_primaryLayerTarget へ書き込む
 	for (ViewportLayer* layer : *m_viewportLayerList)
 	{
@@ -289,6 +292,8 @@ void Viewport::TryRemakeLayerTargets()
 		m_primaryLayerTarget->CreateImpl(m_manager, m_renderTarget->GetSize(), 1, TextureFormat::R8G8B8X8);
 		m_secondaryLayerTarget = LN_NEW RenderTarget();
 		m_secondaryLayerTarget->CreateImpl(m_manager, m_renderTarget->GetSize(), 1, TextureFormat::R8G8B8X8);
+
+		//m_primaryLayerTargetOrg = m_primaryLayerTarget;
 	}
 
 	// DepthBuffer
@@ -297,6 +302,11 @@ void Viewport::TryRemakeLayerTargets()
 		m_depthBuffer = RefPtr<DepthBuffer>::MakeRef();
 		m_depthBuffer->CreateImpl(m_manager, m_renderTarget->GetSize(), TextureFormat::D24S8);
 	}
+
+	//if (m_primaryLayerTargetOrg != m_primaryLayerTarget)
+	//{
+	//	std::swap(m_primaryLayerTarget, m_secondaryLayerTarget);
+	//}
 }
 
 //------------------------------------------------------------------------------

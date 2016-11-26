@@ -77,6 +77,7 @@ void AnimationClock::SetTime(double time)
 	// とりあえず true にしておいて、タイムラインが1つでも実行中だったら false にする
 	m_isFinished = true;
 
+
 	for (RefPtr<AnimationCurveInstanceBase>& tli : m_instanceList)
 	{
 		if (tli->isActive)

@@ -287,6 +287,7 @@ public:
 	byte_t* GetDataBuffer() { return m_value.Buffer; }	// 初期値格納用
 
 	bool Equals(const ShaderValue& value) const;
+	uint32_t GetHashCode();
 
 private:
 
@@ -327,6 +328,8 @@ private:
 	ByteBuffer			m_buffer;	// 他の ShaderValue と共有される
 	ShaderVariableType	m_type;
 	Value m_value;
+	uint32_t			m_hashCode;
+	bool				m_hashDirty;
 
 	void ReleaseValueBuffer();
 	void AllocValueBuffer(size_t byteCount);

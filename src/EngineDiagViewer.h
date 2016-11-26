@@ -24,6 +24,7 @@ public:
 
 	//void SetVisible(bool visible) { m_isVisible = visible; }
 	//bool IsVisible() const { return m_isVisible; }
+	void SetDisplayMode(DisplayMode mode) { m_displayMode = mode; }
 	void ToggleDisplayMode();
 	void UpdateFrame();
 	//void Render(DrawingContext* g, const Vector2& viewSize);

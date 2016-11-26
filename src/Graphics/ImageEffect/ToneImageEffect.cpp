@@ -34,6 +34,7 @@ ToneImageEffectPtr ToneImageEffect::Create()
 //------------------------------------------------------------------------------
 ToneImageEffect::ToneImageEffect()
 {
+	InitializeProperties();
 }
 
 //------------------------------------------------------------------------------
@@ -75,8 +76,9 @@ void ToneImageEffect::ChangeTone(const ToneF& tone, double time)
 //------------------------------------------------------------------------------
 void ToneImageEffect::OnRender(DrawList* context, RenderTarget* source, RenderTarget* destination)
 {
-	if (Tone != Vector4::Zero)
+	//if (Tone != Vector4::Zero)
 	{
+		//printf("ToneImageEffect::OnRender %p > %p\n", source, destination);
 		m_material->SetVectorParameter(_T("_Tone"), Tone.Get());
 		context->Blit(source, destination, m_material);
 

@@ -25,16 +25,27 @@ void Main()
 	//auto sprite6 = Sprite3D::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
 
 
-	//auto tonePE = ToneImageEffect::Create();
-	//tonePE->SetTone(ToneF(-0.1, -0.25, -0.5, 1.0));
-	//CameraViewportLayer::GetDefault3D()->GetImageEffects()->Add(tonePE);
 
 	auto blur = ScreenMotionBlurImageEffect::Create();
-	blur->SetAmount(0.5f);
-	blur->SetRadialScale(1.05f);
-	CameraViewportLayer::GetDefault3D()->GetImageEffects()->Add(blur);
+	//blur->SetAmount(0.5f);
+	//blur->SetRadialScale(1.05f);
+	CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(blur);
+
+	//auto tonePE23 = ToneImageEffect::Create();
+	//tonePE23->SetTone(ToneF(1, 0,0, 1.0));
+	//CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(tonePE23);
+
+	//auto tonePE2 = ToneImageEffect::Create();
+	//tonePE2->SetTone(ToneF(0,0,1, 1.0));
+	//CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(tonePE2);
+
+	auto tonePE = ToneImageEffect::Create();
+	//tonePE->SetTone(ToneF(0,0,1, 1.0));
+	tonePE->ChangeTone(ToneF(1, 0, 1, 0), 5);
+	CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(tonePE);
 
 	//Engine::GetMainLight3D()->SetPosition();
+	auto mLogoSprite = Sprite2D::Create(_T("D:/Proj/Volkoff/Volkoff/Data/Graphics/Frontend/Logo_1.png"));
 
 	int map[5*5] =
 	{
@@ -69,8 +80,19 @@ void Main()
 		m_tileLayer->SetTileId(i % 100, i / 100, map[i]);
 	}
 
+	Input::AddButtonBinding("AA", KeyboardBinding::Create(Key::C));
+	Input::AddButtonBinding("GG", KeyboardBinding::Create(Key::A));
+
 	while (Engine::Update())
 	{
+		printf("----\n");
+		if (Input::IsTriggered(InputButtons::Cancel))
+		{
+			//tonePE->SetTone(ToneF(-1, -1, -1, 0));
+			tonePE->ChangeTone(ToneF(1, 1, 1, 0), 0.5);
+			//blur->SetBlurStatus(0.5, Vector2::Zero, 1.05, 0.5);
+		}
+		//blur->SetBlurStatus(0.9f, Vector2::Zero, 1.02);
 	}
 }
 

@@ -599,6 +599,8 @@ void Shader::SetShaderValue(uint32_t variableNameHash, const ShaderValue& value)
 
 //------------------------------------------------------------------------------
 ShaderValue::ShaderValue()
+	: m_hashCode(0)
+	, m_hashDirty(true)
 {
 	m_type = ShaderVariableType_Unknown;
 	memset(&m_value, 0, sizeof(m_value));
@@ -628,6 +630,7 @@ void ShaderValue::SetBool(bool value)
 {
 	m_type = ShaderVariableType_Bool;
 	m_value.BoolVal = value;
+	m_hashDirty = true;
 }
 
 //------------------------------------------------------------------------------
@@ -635,6 +638,7 @@ void ShaderValue::SetInt(int value)
 {
 	m_type = ShaderVariableType_Int;
 	m_value.Int = value;
+	m_hashDirty = true;
 }
 
 //------------------------------------------------------------------------------
@@ -644,6 +648,7 @@ void ShaderValue::SetBoolArray(const bool* values, int count)
 	AllocValueBuffer(sizeof(bool) * count);
 	if (values != NULL) {
 		memcpy(m_value.BoolArray, values, sizeof(bool) * count);
+		m_hashDirty = true;
 	}
 }
 
@@ -652,6 +657,7 @@ void ShaderValue::SetFloat(float value)
 {
 	m_type = ShaderVariableType_Float;
 	m_value.Float = value;
+	m_hashDirty = true;
 }
 
 //------------------------------------------------------------------------------
@@ -661,6 +667,7 @@ void ShaderValue::SetFloatArray(const float* values, int count)
 	AllocValueBuffer(sizeof(float) * count);
 	if (values != NULL) {
 		memcpy(m_value.FloatArray, values, sizeof(float) * count);
+		m_hashDirty = true;
 	}
 }
 
@@ -670,6 +677,7 @@ void ShaderValue::SetVector(const Vector4& vec)
 	m_type = ShaderVariableType_Vector;
 	AllocValueBuffer(sizeof(Vector4));
 	*m_value.Vector = vec;
+	m_hashDirty = true;
 }
 
 //------------------------------------------------------------------------------
@@ -679,6 +687,7 @@ void ShaderValue::SetVectorArray(const Vector4* vectors, int count)
 	AllocValueBuffer(sizeof(Vector4) * count);
 	if (vectors != NULL) {
 		memcpy(m_value.VectorArray, vectors, sizeof(Vector4) * count);
+		m_hashDirty = true;
 	}
 }
 
@@ -688,6 +697,7 @@ void ShaderValue::SetMatrix(const Matrix& matrix)
 	m_type = ShaderVariableType_Matrix;
 	AllocValueBuffer(sizeof(Matrix));
 	*m_value.Matrix = matrix;
+	m_hashDirty = true;
 }
 
 
@@ -698,6 +708,7 @@ void ShaderValue::SetMatrixArray(const Matrix* matrices, int count)
 	AllocValueBuffer(sizeof(Matrix) * count);
 	if (matrices != NULL) {
 		memcpy(m_value.MatrixArray, matrices, sizeof(Matrix) * count);
+		m_hashDirty = true;
 	}
 }
 
@@ -706,6 +717,7 @@ void ShaderValue::SetDeviceTexture(Driver::ITexture* texture)
 {
 	m_type = ShaderVariableType_DeviceTexture;
 	LN_REFOBJ_SET(m_value.DeviceTexture, texture);
+	m_hashDirty = true;
 }
 
 //------------------------------------------------------------------------------
@@ -713,6 +725,7 @@ void ShaderValue::SetManagedTexture(Texture* texture)
 {
 	m_type = ShaderVariableType_ManagedTexture;
 	LN_REFOBJ_SET(m_value.ManagedTexture, texture);
+	m_hashDirty = true;
 }
 
 //------------------------------------------------------------------------------
@@ -724,6 +737,7 @@ void ShaderValue::SetString(const char* str)
 	size_t size = s.GetByteCount() + sizeof(TCHAR);
 	AllocValueBuffer(size);
 	memcpy(m_value.String, s.c_str(), size);
+	m_hashDirty = true;
 }
 
 //------------------------------------------------------------------------------
@@ -733,6 +747,7 @@ void ShaderValue::SetString(const String& s)
 	size_t size = s.GetByteCount() + sizeof(TCHAR);
 	AllocValueBuffer(size);
 	memcpy(m_value.String, s.c_str(), size);
+	m_hashDirty = true;
 }
 
 //------------------------------------------------------------------------------
@@ -771,6 +786,25 @@ bool ShaderValue::Equals(const ShaderValue& value) const
 			break;
 	}
 	return false;
+}
+
+//------------------------------------------------------------------------------
+uint32_t ShaderValue::GetHashCode()
+{
+	if (m_hashDirty)
+	{
+		m_hashCode = Hash::CalcHash(reinterpret_cast<const char*>(&m_value), sizeof(m_value));
+		m_hashCode += (int)m_type;
+
+		if (IsBufferCopyType(m_type))
+		{
+			m_hashCode += Hash::CalcHash((const char*)m_buffer.GetConstData(), m_buffer.GetSize());
+		}
+
+		m_hashDirty = false;
+	}
+
+	return m_hashCode;
 }
 
 //------------------------------------------------------------------------------
@@ -827,6 +861,8 @@ void ShaderValue::Copy(const ShaderValue& value)
 {
 	m_type = value.m_type;
 	m_buffer = value.m_buffer;	// 共有参照
+	m_hashCode = value.m_hashCode;
+	m_hashDirty = value.m_hashDirty;
 
 	//if (m_buffer.IsNull()) {
 	//	memcpy(&m_value, &value.m_value, sizeof(m_value));
