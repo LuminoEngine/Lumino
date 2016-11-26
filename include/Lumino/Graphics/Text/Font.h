@@ -91,6 +91,9 @@ public:
 	/** 指定した文字列を描画する際のサイズを計算します。*/
 	Size MeasureRenderSize(const StringRef& text);
 
+	/** このフォントのコピーを作成します。*/
+	FontPtr Clone() const;
+
 LN_INTERNAL_ACCESS:
 	Font();
 	virtual ~Font();

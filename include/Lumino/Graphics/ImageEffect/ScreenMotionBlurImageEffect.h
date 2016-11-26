@@ -38,21 +38,22 @@ protected:
 	void Initialize(detail::GraphicsManager* manager);
 	virtual void OnRender(DrawList* context, RenderTarget* source, RenderTarget* destination) override;
 
+	RefPtr<Material>	m_material;
 	RenderTarget*		m_accumTexture;	// 前回の画面描画内容
 	Vector2				m_center;
 	float				m_scale;
 
 
-	struct BufferingBlarShader
-	{
-		Shader*          shader;
-		ShaderVariable*  varBlurPower;
-		ShaderVariable*  varBlurColor;
-		ShaderVariable*  varBlurMatrix;
-		ShaderVariable*  varSecondaryTexture;
-		ShaderTechnique* techMainDraw;
+	//struct BufferingBlarShader
+	//{
+	//	Shader*          shader;
+	//	ShaderVariable*  varBlurPower;
+	//	ShaderVariable*  varBlurColor;
+	//	ShaderVariable*  varBlurMatrix;
+	//	ShaderVariable*  varSecondaryTexture;
+	//	ShaderTechnique* techMainDraw;
 
-	} m_shader;
+	//} m_shader;
 };
 
 LN_NAMESPACE_GRAPHICS_END

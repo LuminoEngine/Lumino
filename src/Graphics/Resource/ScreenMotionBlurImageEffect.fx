@@ -3,22 +3,20 @@
 //=============================================================================
 #ifdef LN_HLSL_DX9
 
-float2			g_viewportSize   : VIEWPORTPIXELSIZE;
-static float2	g_viewportOffset = (float2(0.5, 0.5) / g_viewportSize);
+static float2	g_viewportOffset = (float2(0.5, 0.5) / ln_ViewportPixelSize);
 
-float			g_blurPower;	// ブラーの強さ
-float4			g_blurColor;	// ブラーの色
-float4x4		g_blurMatrix;	// ブラーイメージの座標変換行列
+float4			_BlurColor;		// ブラーの色・強さ
+float4x4		_BlurMatrix;	// ブラーイメージの座標変換行列
 
-texture			g_secondaryTexture;
+// secondaryTexture
 sampler2D		g_texSampler = sampler_state
 {
-	texture = <g_secondaryTexture>;
-    MinFilter = POINT;
-    MagFilter = POINT;
-    MipFilter = NONE;
-    AddressU  = CLAMP;
-    AddressV  = CLAMP;
+	texture = <ln_MaterialTexture>;
+	MinFilter = POINT;
+	MagFilter = POINT;
+	MipFilter = NONE;
+	AddressU  = CLAMP;
+	AddressV  = CLAMP;
 };
 
 struct VS_OUTPUT
@@ -35,7 +33,7 @@ VS_OUTPUT vsBasic(
 	float2 inUV		: TEXCOORD0)
 {
     VS_OUTPUT o;
-    o.pos = mul(float4(inPos, 1.0f), g_blurMatrix);
+    o.pos = mul(float4(inPos, 1.0f), _BlurMatrix);
     o.texUV = inUV;// + g_viewportOffset;
     return o;
 }
@@ -47,8 +45,9 @@ float4 psBasic(
 	float2 inUV		: TEXCOORD0) : COLOR0
 {
     float4 out_color = tex2D(g_texSampler, inUV);
-    out_color.a *= g_blurPower;
-    out_color *= g_blurColor;
+    out_color *= _BlurColor;
+	
+	//out_color.a = 0.5;
     
     // ブラーを青っぽくする
     //out_color.rgb *= float3(0, 0, 1);
@@ -77,7 +76,7 @@ technique MainDraw
 // PrimitiveRendererForBlt (GLSL)
 //=============================================================================
 #ifdef LN_GLSL_VERTEX_Main
-uniform mat4	g_blurMatrix;
+uniform mat4	_BlurMatrix;
 
 attribute vec3	ln_Vertex0;
 attribute vec2	ln_MultiTexCoord0;
@@ -86,25 +85,22 @@ varying vec2	v_TexUV;
 
 void main()
 {
-	gl_Position = g_blurMatrix * vec4(ln_Vertex0, 1.0);
+	gl_Position = _BlurMatrix * vec4(ln_Vertex0, 1.0);
 	v_TexUV = ln_MultiTexCoord0;
 }
 #endif
 
 #ifdef LN_GLSL_FRAGMENT_Main
 
-uniform float		g_blurPower;	// ブラーの強さ
-uniform vec4		g_blurColor;	// ブラーの色
-uniform sampler2D	g_secondaryTexture;
+uniform vec4		_BlurColor;	// ブラーの色
 
 varying vec4		v_Color;
 varying vec2		v_TexUV;
 
 void main()
 {
-	vec4 color = texture2D(g_secondaryTexture, v_TexUV);
-    color.a *= g_blurPower;
-    color *= g_blurColor;
+	vec4 color = texture2D(ln_MaterialTexture, v_TexUV);
+    color *= _BlurColor;
 	gl_FragColor = color;
 }
 

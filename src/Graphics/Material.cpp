@@ -476,7 +476,11 @@ void CombinedMaterial::CopyUserValueTable(Material* source)
 	for (auto& pair : source->GetUserValueMap())
 	{
 		m_userValueTable.Add(ValuePair{ pair.first, pair.second });
-	}
+	}/*
+	for (auto& pair : m_userValueTable)
+	{
+		printf("");;
+	}*/
 }
 
 //------------------------------------------------------------------------------

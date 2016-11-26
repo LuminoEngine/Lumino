@@ -484,6 +484,7 @@ void Shader::PostInitialize()
 //------------------------------------------------------------------------------
 void Shader::TryCommitChanges()
 {
+	// TODO: いらなそう
 	if (m_viewportPixelSize != nullptr)
 	{
 		Texture* tex = GetManager()->GetRenderer()->GetRenderTarget(0);
@@ -833,8 +834,13 @@ void ShaderValue::Copy(const ShaderValue& value)
 	//else {
 	//	m_value.Buffer = m_buffer->GetData();
 	//}
-	if (IsBufferCopyType(m_type)) {
+	if (IsBufferCopyType(m_type))
+	{
 		m_value.Buffer = m_buffer.GetData();
+	}
+	else
+	{
+		m_value = value.m_value;
 	}
 
 	if (m_type == ShaderVariableType_DeviceTexture) {

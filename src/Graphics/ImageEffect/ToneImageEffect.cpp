@@ -55,7 +55,7 @@ void ToneImageEffect::Initialize(detail::GraphicsManager* manager)
 	//m_shader.varScreenTexture = m_shader.shader->FindVariable(_T("ScreenTexture"));
 
 
-	printf("%p %p\n", m_material.Get(), m_material->GetShader());
+	//printf("%p %p\n", m_material.Get(), m_material->GetShader());
 }
 
 //------------------------------------------------------------------------------

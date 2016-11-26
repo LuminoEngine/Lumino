@@ -159,6 +159,17 @@ Size Font::MeasureRenderSize(const StringRef& text)
 }
 
 //------------------------------------------------------------------------------
+FontPtr Font::Clone() const
+{
+	auto ptr = FontPtr::MakeRef();
+	ptr->m_manager = m_manager;
+	ptr->m_fontInfo = m_fontInfo;
+	ptr->m_rawFont = m_rawFont;
+	ptr->m_builtin = m_builtin;
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
 RawFont* Font::ResolveRawFont()
 {
 	if (m_rawFont == nullptr)

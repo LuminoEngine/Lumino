@@ -2,7 +2,8 @@
 #include "../Internal.h"
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Shader.h>
-#include <Lumino/Graphics/RenderingContext.h>
+#include <Lumino/Graphics/Material.h>
+#include <Lumino/Graphics/Rendering.h>
 #include <Lumino/Graphics/ImageEffect/ScreenMotionBlurImageEffect.h>
 #include "../../Animation/AnimationManager.h"
 #include "../GraphicsManager.h"
@@ -43,7 +44,7 @@ ScreenMotionBlurImageEffect::ScreenMotionBlurImageEffect()
 ScreenMotionBlurImageEffect::~ScreenMotionBlurImageEffect()
 {
 	LN_SAFE_RELEASE(m_accumTexture);
-	LN_SAFE_RELEASE(m_shader.shader);
+	//LN_SAFE_RELEASE(m_shader.shader);
 }
 
 //------------------------------------------------------------------------------
@@ -51,14 +52,20 @@ void ScreenMotionBlurImageEffect::Initialize(detail::GraphicsManager* manager)
 {
 	ImageEffect::Initialize(manager);
 
-	m_shader.shader = LN_NEW Shader();
-	m_shader.shader->Initialize(m_manager, g_ScreenMotionBlurImageEffect_fx_Data, g_ScreenMotionBlurImageEffect_fx_Len);
+	auto shader = Object::MakeRef<Shader>(m_manager, g_ScreenMotionBlurImageEffect_fx_Data, g_ScreenMotionBlurImageEffect_fx_Len);
 
-	m_shader.varBlurPower = m_shader.shader->FindVariable(_T("g_blurPower"));
-	m_shader.varBlurColor = m_shader.shader->FindVariable(_T("g_blurColor"));
-	m_shader.varBlurMatrix = m_shader.shader->FindVariable(_T("g_blurMatrix"));
-	m_shader.varSecondaryTexture = m_shader.shader->FindVariable(_T("g_secondaryTexture"));
-	m_shader.techMainDraw = m_shader.shader->GetTechniques()[0];
+	m_material = Object::MakeRef<Material>();
+	m_material->SetShader(shader);
+	m_material->blendMode = BlendMode::Alpha;
+
+	//m_shader.shader = LN_NEW Shader();
+	//m_shader.shader->Initialize(m_manager, g_ScreenMotionBlurImageEffect_fx_Data, g_ScreenMotionBlurImageEffect_fx_Len);
+
+	//m_shader.varBlurPower = m_shader.shader->FindVariable(_T("g_blurPower"));
+	//m_shader.varBlurColor = m_shader.shader->FindVariable(_T("g_blurColor"));
+	//m_shader.varBlurMatrix = m_shader.shader->FindVariable(_T("g_blurMatrix"));
+	//m_shader.varSecondaryTexture = m_shader.shader->FindVariable(_T("g_secondaryTexture"));
+	//m_shader.techMainDraw = m_shader.shader->GetTechniques()[0];
 }
 
 //------------------------------------------------------------------------------
@@ -81,50 +88,55 @@ void ScreenMotionBlurImageEffect::SetBlurStatus(float amount, const Vector2& cen
 //------------------------------------------------------------------------------
 void ScreenMotionBlurImageEffect::OnRender(DrawList* context, RenderTarget* source, RenderTarget* destination)
 {
-//	if (Amount == 0.0f)
-//	{
-//		context->Blt(source, destination);
-//		return;
-//	}
-//
-//	const SizeI& sourceSize = source->GetSize();
-//
-//	// m_accumTexture と source のサイズが異なる場合は作り直す
-//	if (m_accumTexture == nullptr || m_accumTexture->GetSize() != sourceSize)
-//	{
-//		m_accumTexture = LN_NEW RenderTarget();
-//		m_accumTexture->CreateImpl(m_manager, sourceSize, 1, TextureFormat::R8G8B8X8);
-//		context->Blt(source, m_accumTexture);
-//	}
-//
-//#if 1
-//	Matrix blurMatrix;
-//	blurMatrix.Translate(-m_center.x, -m_center.y, 0);
-//	blurMatrix.Scale(m_scale);
-//	blurMatrix.Translate(m_center.x, m_center.y, 0);
-//
-//
-//	m_shader.varBlurPower->SetFloat(Amount);
-//	m_shader.varBlurColor->SetVector(Vector4(1, 1, 1, 1));
-//	m_shader.varBlurMatrix->SetMatrix(blurMatrix);
-//	m_shader.varSecondaryTexture->SetTexture(m_accumTexture);
-//	context->Blt(nullptr, source, m_shader.shader);
-//
-//	context->Blt(source, m_accumTexture);
-//
-//	context->Blt(m_accumTexture, destination);
-//#endif
-//#if 0
-//	Matrix m;
-//	m.Scale(1.05);
-//	m_shader.varBlurPower->SetFloat(0.5);
-//	m_shader.varBlurColor->SetVector(Vector4(1, 1, 1, 1));
-//	m_shader.varBlurMatrix->SetMatrix(m);
-//	m_shader.varSecondaryTexture->SetTexture(m_accumTexture);
-//	renderingContext->Blt(source, source, m_shader.shader);
-//	renderingContext->Blt(source, m_accumTexture);
-//	renderingContext->Blt(source, destination);
-//#endif
+	if (Amount == 0.0f)
+	{
+		context->Blit(source, destination, Matrix::Identity);
+		return;
+	}
+
+	const SizeI& sourceSize = source->GetSize();
+
+	// m_accumTexture と source のサイズが異なる場合は作り直す
+	if (m_accumTexture == nullptr || m_accumTexture->GetSize() != sourceSize)
+	{
+		m_accumTexture = LN_NEW RenderTarget();
+		m_accumTexture->CreateImpl(m_manager, sourceSize, 1, TextureFormat::R8G8B8X8);
+		context->Blit(source, m_accumTexture, Matrix::Identity);
+	}
+
+#if 1
+	Matrix blurMatrix;
+	blurMatrix.Translate(-m_center.x, -m_center.y, 0);
+	blurMatrix.Scale(m_scale);
+	blurMatrix.Translate(m_center.x, m_center.y, 0);
+
+	m_material->SetVectorParameter(_T("_BlurColor"), Vector4(1, 1, 1, Amount.Get()));
+	m_material->SetMatrixParameter(_T("_BlurMatrix"), blurMatrix);
+	//m_material->SetMaterialTexture(m_accumTexture);
+	//m_shader.varBlurPower->SetFloat(Amount);
+	//m_shader.varBlurColor->SetVector();
+	//m_shader.varBlurMatrix->SetMatrix(blurMatrix);
+	//m_shader.varSecondaryTexture->SetTexture(m_accumTexture);
+
+	// m_accumTexture > source
+	context->Blit(m_accumTexture, source, m_material);
+
+	// save
+	context->Blit(source, m_accumTexture, Matrix::Identity);
+
+	context->Blit(m_accumTexture, destination, Matrix::Identity);
+#endif
+#if 0
+	Matrix m;
+	m.Scale(1.05);
+	m_shader.varBlurPower->SetFloat(0.5);
+	m_shader.varBlurColor->SetVector(Vector4(1, 1, 1, 1));
+	m_shader.varBlurMatrix->SetMatrix(m);
+	m_shader.varSecondaryTexture->SetTexture(m_accumTexture);
+	renderingContext->Blt(source, source, m_shader.shader);
+	renderingContext->Blt(source, m_accumTexture);
+	renderingContext->Blt(source, destination);
+#endif
 }
 
 LN_NAMESPACE_GRAPHICS_END

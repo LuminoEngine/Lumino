@@ -29,6 +29,11 @@ void Main()
 	//tonePE->SetTone(ToneF(-0.1, -0.25, -0.5, 1.0));
 	//CameraViewportLayer::GetDefault3D()->GetImageEffects()->Add(tonePE);
 
+	auto blur = ScreenMotionBlurImageEffect::Create();
+	blur->SetAmount(0.5f);
+	blur->SetRadialScale(1.05f);
+	CameraViewportLayer::GetDefault3D()->GetImageEffects()->Add(blur);
+
 	//Engine::GetMainLight3D()->SetPosition();
 
 	int map[5*5] =
