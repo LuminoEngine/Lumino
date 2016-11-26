@@ -31,6 +31,39 @@ void Main()
 
 	//Engine::GetMainLight3D()->SetPosition();
 
+	int map[5*5] =
+	{
+		1, 0, 0, 0, 1,
+		1, 0, 0, 0, 1,
+		1, 0, 0, 0, 1,
+		1, 0, 0, 0, 1,
+		1, 0, 0, 0, 1,
+	};
+
+	auto t = Assets::LoadTexture("D:/Proj/Volkoff/Volkoff/Data/Graphics/MapChip_1.png");
+
+	auto m_tileset = TileSet::Create();
+	m_tileset->SetImageSource(t);
+	m_tileset->SetTileSize(SizeI(20, 20));
+
+
+	auto tilemapModel = TileMapModel::Create();
+	tilemapModel->SetTileSet(m_tileset);
+
+	auto m_tileLayer = TileLayer::Create();
+	m_tileLayer->Resize(5, 5);
+	tilemapModel->GetLayers()->Add(m_tileLayer);
+
+	auto mTilemap = TileMap::Create3D();
+	mTilemap->SetTileMap(tilemapModel);
+	mTilemap->SetPriority(1000);
+	mTilemap->SetDepthWriteEnabled(false);
+
+	for (int i = 0; i < 5 * 5; ++i)
+	{
+		m_tileLayer->SetTileId(i % 100, i / 100, map[i]);
+	}
+
 	while (Engine::Update())
 	{
 	}

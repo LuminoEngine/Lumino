@@ -1,9 +1,10 @@
 ﻿
 #pragma once
 #include "Common.h"
+#include "../Graphics/Mesh.h"
 
 LN_NAMESPACE_BEGIN
-class RenderingContext;
+class DrawList;
 
 /**
 	@brief	
@@ -13,7 +14,7 @@ class TileMapRenderer
 {
 public:
 	void SetTransform(const Matrix& world, const Matrix& viewProj);
-	void Draw(RenderingContext* context, TileMapModel* tileMap, const RectF& boundingRect, const ViewFrustum& cameraFrustum);
+	void Draw(DrawList* context, TileMapModel* tileMap, const RectF& boundingRect, const ViewFrustum& cameraFrustum);
 
 protected:
 	void Begin();
@@ -42,10 +43,12 @@ private:
 	void DrawLayer(TileLayer* layer, const RectF& boundingRect, TileSet* tileSet, const BoundingRect& renderRange);
 
 	detail::GraphicsManager*	m_graphicsManager;
-	RenderingContext*	m_context;
-	RefPtr<VertexDeclaration>	m_vertexDeclaration;
-	VertexBuffer*		m_vertexBuffer;
-	IndexBuffer*		m_indexBuffer;
+	DrawList*	m_context;
+	RefPtr<MeshResource>	m_mesh;
+	int						m_maxTileCount;
+	//RefPtr<VertexDeclaration>	m_vertexDeclaration;
+	//VertexBuffer*		m_vertexBuffer;
+	//IndexBuffer*		m_indexBuffer;
 	Matrix				m_viewProj;
 
 	//SpriteRenderer*	m_spriteRenderer;

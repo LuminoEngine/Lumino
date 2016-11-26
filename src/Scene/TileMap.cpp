@@ -6,6 +6,7 @@
 #include <Lumino/Tilemap/TileMapModel.h>
 #include <Lumino/Tilemap/TileMapRenderer.h>
 #include <Lumino/Scene/SceneGraph.h>
+#include <Lumino/Scene/Camera.h>
 #include <Lumino/Scene/TileMap.h>
 #include "SceneGraphManager.h"
 
@@ -63,6 +64,16 @@ void TileMap::Create3DCore(SceneGraph* owner)
 void TileMap::SetTileMap(TileMapModel* tileMap)
 {
 	LN_REFOBJ_SET(m_tileMap, tileMap);
+}
+
+//------------------------------------------------------------------------------
+void TileMap::OnRender2(DrawList* renderer)
+{
+	if (m_tileMap != nullptr)
+	{
+		// TODO: size
+		m_renderer->Draw(renderer, m_tileMap, RectF(0,0,3200,2400), GetOwnerSceneGraph()->GetMainCamera()->GetViewFrustum()/*dc->GetCurrentCamera()->GetViewFrustum()*/);
+	}
 }
 
 //------------------------------------------------------------------------------

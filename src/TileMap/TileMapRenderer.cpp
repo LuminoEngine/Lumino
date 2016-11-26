@@ -9,7 +9,7 @@
 #include <Lumino/Graphics/VertexBuffer.h>
 #include <Lumino/Graphics/IndexBuffer.h>
 #include <Lumino/Graphics/Shader.h>
-#include <Lumino/Graphics/RenderingContext.h>
+#include <Lumino/Graphics/Rendering.h>
 #include <Lumino/TileMap/TileMapRenderer.h>
 #include <Lumino/TileMap/TileMapModel.h>
 #include "../Graphics/Device/GraphicsDriverInterface.h"
@@ -47,9 +47,15 @@ static const size_t g_TileMapRenderer_fx_Len = LN_ARRAY_SIZE_OF(g_TileMapRendere
 //------------------------------------------------------------------------------
 TileMapRenderer::TileMapRenderer(detail::GraphicsManager* manager)
 	: m_graphicsManager(manager)
-	, m_vertexBuffer(nullptr)
-	, m_indexBuffer(nullptr)
+	//, m_vertexBuffer(nullptr)
+	//, m_indexBuffer(nullptr)
 {
+	int tileCount = 20 * 20;
+	m_mesh = Object::MakeRef<MeshResource>(manager, ResourceUsage::Dynamic);
+	m_mesh->ResizeVertexBuffer(tileCount * 4);
+	m_mesh->ResizeIndexBuffer(tileCount * 6);
+	m_maxTileCount = 100 * 100;
+
 	m_shader.shader = LN_NEW Shader();
 	m_shader.shader->Initialize(m_graphicsManager, g_TileMapRenderer_fx_Data, g_TileMapRenderer_fx_Len);
 	m_shader.pass = m_shader.shader->GetTechniques()[0]->GetPasses()[0];
@@ -62,8 +68,8 @@ TileMapRenderer::TileMapRenderer(detail::GraphicsManager* manager)
 //------------------------------------------------------------------------------
 TileMapRenderer::~TileMapRenderer()
 {
-	LN_SAFE_RELEASE(m_vertexBuffer);
-	LN_SAFE_RELEASE(m_indexBuffer);
+	//LN_SAFE_RELEASE(m_vertexBuffer);
+	//LN_SAFE_RELEASE(m_indexBuffer);
 	LN_SAFE_RELEASE(m_shader.shader);
 }
 
@@ -76,7 +82,7 @@ void TileMapRenderer::SetTransform(const Matrix& world, const Matrix& viewProj)
 }
 
 //------------------------------------------------------------------------------
-void TileMapRenderer::Draw(RenderingContext* context, TileMapModel* tileMap, const RectF& boundingRect, const ViewFrustum& cameraFrustum)
+void TileMapRenderer::Draw(DrawList* context, TileMapModel* tileMap, const RectF& boundingRect, const ViewFrustum& cameraFrustum)
 {
 	LN_CHECK_ARG(tileMap != nullptr);
 	m_context = context;
@@ -195,39 +201,26 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 	LN_CHECK_ARG(layer != nullptr);
 	LN_CHECK_ARG(tileSet != nullptr);
 
-	int allocedTileCount = 0;
-	if (m_vertexBuffer != nullptr && m_indexBuffer != nullptr)
-	{
-		allocedTileCount = m_vertexBuffer->GetBufferSize() / sizeof(TileMapVertex) / 4;
-	}
-
 	int tileCount = (renderRange.right - renderRange.left) * (renderRange.bottom - renderRange.top);
+	tileCount = std::min(tileCount, m_maxTileCount);
+	int allocedTileCount = m_mesh->GetVertexCount() / 4;
 	if (tileCount > allocedTileCount)
 	{
-		LN_SAFE_RELEASE(m_vertexBuffer);
-		LN_SAFE_RELEASE(m_indexBuffer);
-		m_vertexDeclaration = RefPtr<VertexDeclaration>::MakeRef();
-		m_vertexDeclaration->Initialize(m_graphicsManager, TileMapVertex::Elements(), TileMapVertex::ElementCount);
-		m_vertexBuffer = LN_NEW VertexBuffer();
-		m_vertexBuffer->Initialize(m_graphicsManager, sizeof(TileMapVertex) * tileCount * 4, nullptr, ResourceUsage::Dynamic);
-		m_indexBuffer = LN_NEW IndexBuffer();
-		m_indexBuffer->Initialize(m_graphicsManager, tileCount * 6, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
+		m_mesh->ResizeVertexBuffer(tileCount * 4);
+		m_mesh->ResizeIndexBuffer(tileCount * 6);
 
 		// インデックスバッファは途中で変わらないので先に埋めておく
-		ByteBuffer* buf = m_indexBuffer->Lock();
-		uint16_t* ib = (uint16_t*)buf->GetData();
 		for (int iTile = 0; iTile < tileCount; ++iTile)
 		{
 			int i = iTile * 6;
 			int v = iTile * 4;
-			ib[i + 0] = v + 0;
-			ib[i + 1] = v + 1;
-			ib[i + 2] = v + 2;
-			ib[i + 3] = v + 2;
-			ib[i + 4] = v + 1;
-			ib[i + 5] = v + 3;
+			m_mesh->SetIndex(i + 0, v + 0);
+			m_mesh->SetIndex(i + 1, v + 1);
+			m_mesh->SetIndex(i + 2, v + 2);
+			m_mesh->SetIndex(i + 3, v + 2);
+			m_mesh->SetIndex(i + 4, v + 1);
+			m_mesh->SetIndex(i + 5, v + 3);
 		}
-		m_indexBuffer->Unlock();
 	}
 
 
@@ -254,8 +247,11 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 	Rect srcRect;
 	const SizeI& layerSize = layer->GetSize();
 
-	ByteBuffer* buf = m_vertexBuffer->Lock();
-	TileMapVertex* vb = (TileMapVertex*)buf->GetData();
+	//ByteBuffer* buf = m_vertexBuffer->Lock();
+	//TileMapVertex* vb = (TileMapVertex*)buf->GetData();
+
+	Vertex virtices[4];
+	for (Vertex& v : virtices) { v.normal = Vector3::UnitZ, v.color = Color::White; }
 
 	int plotCount = 0;
 	Vector3 offset(0/*layerSize.X * tileSize.Width*/, layerSize.height * tileSize.height, 0);
@@ -281,15 +277,20 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 				//pos.Set(x * tileSize.Width, y * tileSize.Height, 0);
 				//size.Set(srcRect.Width, srcRect.Height);
 				//DrawTile(pos, size, texture, srcRect);
-				vb[plotCount + 0].Position = pos;
-				vb[plotCount + 0].TexUV.Set(tl, tt);
-				vb[plotCount + 1].Position = pos + stepY;
-				vb[plotCount + 1].TexUV.Set(tl, tb);
-				vb[plotCount + 2].Position = pos + stepX;
-				vb[plotCount + 2].TexUV.Set(tr, tt);
-				vb[plotCount + 3].Position = pos + stepX + stepY;
-				vb[plotCount + 3].TexUV.Set(tr, tb);
-				plotCount += 4;
+				virtices[0].position = pos;
+				virtices[0].uv.Set(tl, tt);
+				virtices[1].position = pos + stepY;
+				virtices[1].uv.Set(tl, tb);
+				virtices[2].position = pos + stepX + stepY;
+				virtices[2].uv.Set(tr, tb);
+				virtices[3].position = pos + stepX;
+				virtices[3].uv.Set(tr, tt);
+				//plotCount += 4;
+
+				m_mesh->AddSquare(virtices);
+				plotCount++;
+
+				if (plotCount > m_maxTileCount) goto LOOP_EXIT;
 
 				//vb[plotCount + 0].Position.Set(0, 10, 0);
 				//vb[plotCount + 0].TexUV.Set(tl, tt);
@@ -304,13 +305,15 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 		}
 	}
 
+LOOP_EXIT:
+
 	//printf("---\n");
 	//Vector3::Transform(vb[0].Position, m_viewProj).Print();
 	//Vector3::Transform(vb[1].Position, m_viewProj).Print();
 	//Vector3::Transform(vb[2].Position, m_viewProj).Print();
 	//Vector3::Transform(vb[3].Position, m_viewProj).Print();
 
-	m_vertexBuffer->Unlock();
+	//m_vertexBuffer->Unlock();
 
 
 
@@ -321,7 +324,7 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 
 	// TODO: 複数テクスチャ
 	// (と言っても、実際は1layerに1テクスチャでいいと思う。RGSSが少し特殊なだけ。最初に BitBlt で1つのテクスチャにまとめてしまってもいいかも)
-	m_shader.varTexture->SetTexture(tileSetTexture);
+	//m_shader.varTexture->SetTexture(tileSetTexture);
 	//m_shader.varViewProjMatrix->SetMatrix(m_viewProj);
 
 
@@ -330,9 +333,9 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 	//s.Culling = CullingMode_None;
 	//m_renderingContext->SetRenderState(s);
 
-	m_context->SetShaderPass(m_shader.pass);
-	m_context->DrawPrimitiveIndexed(m_vertexDeclaration, m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, plotCount / 2);
-
+	//m_context->SetShaderPass(m_shader.pass);
+	//m_context->DrawPrimitiveIndexed(m_vertexDeclaration, m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, plotCount / 2);
+	m_context->DrawMesh(m_mesh, 0, tileSet->GetMaterial());
 	//printf("%p\n", m_shader.pass);
 	//m_renderingContext->SetVertexBuffer(nullptr);
 	//m_renderingContext->SetIndexBuffer(nullptr);

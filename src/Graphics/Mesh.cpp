@@ -979,6 +979,12 @@ void MeshResource::AddSquare(const Vertex& v1, const Vertex& v2, const Vertex& v
 }
 
 //------------------------------------------------------------------------------
+void MeshResource::AddSquare(const Vertex* virtices)
+{
+	AddSquare(virtices[0], virtices[1], virtices[2], virtices[3]);
+}
+
+//------------------------------------------------------------------------------
 void* MeshResource::TryLockVertexBuffer(VertexBufferType type)
 {
 	const size_t strideTable[VB_Count] =
