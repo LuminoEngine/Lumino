@@ -441,6 +441,8 @@ class DrawList	// TODO: Renderer
 {
 public:
 
+	// TODO: MeshResource など、一度コマンド化したら実行されるまでは変更禁止状態にしたい。
+
 	//--------------------------------------------------------------------------
 	/** @name Render targets */
 	/** @{ */

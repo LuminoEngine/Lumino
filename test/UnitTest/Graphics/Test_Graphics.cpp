@@ -453,3 +453,19 @@ TEST_F(Test_Graphics_Texture, DrawText)
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Texture.DrawText1.png")));
 }
+
+//-----------------------------------------------------------------------------
+TEST_F(Test_Graphics_Texture, Clear)
+{
+	auto font = Font::Create();
+	auto texture = Texture2D::Create(160, 120);
+	texture->DrawText("Left", Rect(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
+	auto sprite = Sprite2D::Create(texture);
+	Engine::Update();
+
+	texture->Clear(Color32(0,0,0,0));
+	Engine::Update();
+
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.Blit1.png")));
+}
+

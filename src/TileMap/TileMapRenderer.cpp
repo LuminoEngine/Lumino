@@ -250,6 +250,8 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 	//ByteBuffer* buf = m_vertexBuffer->Lock();
 	//TileMapVertex* vb = (TileMapVertex*)buf->GetData();
 
+	m_mesh->Clear();
+
 	Vertex virtices[4];
 	for (Vertex& v : virtices) { v.normal = Vector3::UnitZ, v.color = Color::White; }
 
@@ -341,7 +343,6 @@ LOOP_EXIT:
 	//m_renderingContext->SetIndexBuffer(nullptr);
 	//m_renderingContext->SetShaderPass(nullptr);
 
-	//printf("%d %d\n", tileCount, plotCount / 2);
 }
 //
 ////==============================================================================
