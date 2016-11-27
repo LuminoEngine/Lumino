@@ -8,13 +8,6 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 class CameraViewportLayer;
 
-enum class ZSortDistanceBase
-{
-	NodeZ,					/**< ノードの Z 値を距離として使用する */
-	CameraDistance,			/**< カメラとノードの距離を使用する */
-	CameraScreenDistance,	/**< カメラが映すスクリーン平面とノードの距離を使用する */
-};
-
 /**
 	@brief
 */

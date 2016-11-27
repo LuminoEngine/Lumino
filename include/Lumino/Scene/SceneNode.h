@@ -179,6 +179,8 @@ protected:
 	Matrix				m_combinedGlobalMatrix;
 
 	friend class DrawingLayer;
+
+	// TODO: いらない
 	float				m_zDistance;			///< Z ソート用の距離値 (ソート自体が速度的にクリティカルになりそうなので、getter を仮想関数にはしたくない)
 
 	//friend class MMERenderingPass;	// TODO: VisualNode に持ってくべきかも。ついでに friend も何とかしたい

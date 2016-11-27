@@ -512,6 +512,8 @@ DrawElement::DrawElement()
 	, batchIndex(-1)
 	, drawingSectionId(DrawingSectionId::None)
 	, subsetIndex(0)
+	//, zSortDistanceBase(ZSortDistanceBase::CameraDistance)
+	, zDistance(0.0f)
 {
 	boundingSphere.center = Vector3::Zero;
 	boundingSphere.radius = -1.0f;
@@ -668,28 +670,59 @@ void InternalRenderer::Render(
 {
 	OnPreRender(elementList);
 
-	for (RenderingPass2* pass : m_renderingPassList)
+	InternalContext* context = m_manager->GetInternalContext();
+	m_renderingElementList.Clear();
+
+	// 視点に関する情報の設定
+	context->SetViewInfo(cameraInfo.viewPixelSize, cameraInfo.viewMatrix, cameraInfo.projMatrix);
+
+	// 視錘台カリング
+	for (int i = 0; i < elementList->GetElementCount(); ++i)
 	{
-		InternalContext* context = m_manager->GetInternalContext();
-		m_renderingElementList.Clear();
+		DrawElement* element = elementList->GetElement(i);
+		Sphere boundingSphere = element->GetBoundingSphere();
 
-		// 視点に関する情報の設定
-		context->SetViewInfo(cameraInfo.viewPixelSize, cameraInfo.viewMatrix, cameraInfo.projMatrix);
-
-		// 視錘台カリング
-		for (int i = 0; i < elementList->GetElementCount(); ++i)
+		if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
+			cameraInfo.viewFrustum.Intersects(boundingSphere.center, boundingSphere.radius))
 		{
-			DrawElement* element = elementList->GetElement(i);
-			Sphere boundingSphere = element->GetBoundingSphere();
+			// このノードは描画できる
+			m_renderingElementList.Add(element);
 
-			if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
-				cameraInfo.viewFrustum.Intersects(boundingSphere.center, boundingSphere.radius))
+			// calculate distance for ZSort
+			switch (cameraInfo.zSortDistanceBase)
 			{
-				// このノードは描画できる
-				m_renderingElementList.Add(element);
+				case ZSortDistanceBase::NodeZ:
+					element->zDistance = element->transform.GetPosition().z;
+					break;
+				case ZSortDistanceBase::CameraDistance:
+					element->zDistance = (element->transform.GetPosition() - cameraInfo.viewPosition).GetLengthSquared();
+					break;
+				case ZSortDistanceBase::CameraScreenDistance:
+					element->zDistance = Vector3::Dot(
+						element->transform.GetPosition() - cameraInfo.viewPosition,
+						element->transform.GetFront());		// 平面と点の距離
+					break;
+				default:
+					element->zDistance = 0.0f;
+					break;
 			}
 		}
+	}
 
+	/*
+	if (left->m_priority == right->m_priority)
+	{
+		// 距離は降順。遠いほうを先に描画する。
+		return left->m_zDistance > right->m_zDistance;
+	}
+	// 優先度は降順。高いほうを先に描画する。
+	return left->m_priority > right->m_priority;
+	*/
+	// 距離は降順。遠いほうを先に描画する
+	std::stable_sort(m_renderingElementList.begin(), m_renderingElementList.end(), [](const DrawElement* lhs, const DrawElement* rhs) { return lhs->zDistance > rhs->zDistance; });
+
+	for (RenderingPass2* pass : m_renderingPassList)
+	{
 		// DrawElement 描画
 		int currentBatchIndex = -1;
 		DrawElementBatch* currentState = nullptr;

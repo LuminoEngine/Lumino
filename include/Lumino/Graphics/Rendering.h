@@ -16,6 +16,7 @@ class StaticMeshModel;
 class DrawList;
 
 
+
 enum class DrawElementCategory
 {
 	SceneObject,
@@ -123,6 +124,8 @@ public:
 	DrawingSectionId	drawingSectionId;
 	detail::Sphere		boundingSphere;		// 位置はワールド座標
 	int					subsetIndex;
+	//ZSortDistanceBase	zSortDistanceBase;
+	float				zDistance;
 	DrawElementMetadata	metadata;
 
 	DrawElement();

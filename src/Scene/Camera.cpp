@@ -305,10 +305,12 @@ void CameraViewportLayer::ExecuteDrawListRendering(RenderTarget* renderTarget, D
 	detail::CameraInfo cameraInfo;
 	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.Get());
 	cameraInfo.viewPixelSize = GetViewportSize();
+	cameraInfo.viewPosition = m_hostingCamera->GetCombinedGlobalMatrix().GetPosition();
 	cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
 	cameraInfo.projMatrix = m_hostingCamera->GetProjectionMatrix();
 	cameraInfo.viewProjMatrix = m_hostingCamera->GetViewProjectionMatrix();
 	cameraInfo.viewFrustum = m_hostingCamera->GetViewFrustum();
+	cameraInfo.zSortDistanceBase = m_hostingCamera->GetZSortDistanceBase();
 	m_internalRenderer->Render(
 		m_renderer->GetDrawElementList(),
 		cameraInfo,

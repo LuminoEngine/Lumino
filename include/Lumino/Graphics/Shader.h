@@ -8,6 +8,14 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 class ShaderVariable;
 class Material;
 
+
+enum class ZSortDistanceBase
+{
+	NodeZ,					/**< ノードの Z 値を距離として使用する */
+	CameraDistance,			/**< カメラとノードの距離を使用する */
+	CameraScreenDistance,	/**< カメラが映すスクリーン平面とノードの距離を使用する */
+};
+
 namespace detail {
 class CombinedMaterial;
 class DynamicLightInfo;
@@ -61,10 +69,12 @@ struct CameraInfo
 {
 	intptr_t	dataSourceId;
 	Size		viewPixelSize;
+	Vector3		viewPosition;
 	Matrix		viewMatrix;
 	Matrix		projMatrix;
 	Matrix		viewProjMatrix;
 	ViewFrustum	viewFrustum;
+	ZSortDistanceBase	zSortDistanceBase;
 };
 
 // 描画要素単位のデータに関する情報

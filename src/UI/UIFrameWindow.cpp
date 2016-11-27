@@ -65,10 +65,12 @@ void UIViewportLayer::ExecuteDrawListRendering(RenderTarget* renderTarget, Depth
 	detail::CameraInfo cameraInfo;
 	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
 	cameraInfo.viewPixelSize = GetViewportSize();
+	cameraInfo.viewPosition = Vector3::Zero;
 	cameraInfo.viewMatrix = Matrix::Identity;
 	cameraInfo.projMatrix = Matrix::MakePerspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1);
 	cameraInfo.viewProjMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;
 	cameraInfo.viewFrustum = ViewFrustum(cameraInfo.projMatrix);
+	cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
 	m_internalRenderer->Render(
 		m_renderingContext->GetDrawElementList(),
 		cameraInfo,

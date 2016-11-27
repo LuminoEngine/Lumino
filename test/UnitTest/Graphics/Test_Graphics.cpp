@@ -430,6 +430,18 @@ TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
 	}
 }
 
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_Rendering, ZSort)
+{
+	auto t1 = Texture2D::Create(LN_LOCALFILE("TestData/Sprite2.png"));
+	auto s1 = Sprite3D::Create(5, 5, t1);
+	auto s2 = Sprite3D::Create(8, 2, t1);
+	s1->SetPosition(0, 0, 0);	// Žè‘O
+	s2->SetPosition(0, 0, 1);	// ‰œ
+	Engine::Update();
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.ZSort1.png")));
+}
+
 //==============================================================================
 class Test_Graphics_Texture : public ::testing::Test
 {
