@@ -721,7 +721,15 @@ void InternalRenderer::Render(
 	return left->m_priority > right->m_priority;
 	*/
 	// 距離は降順。遠いほうを先に描画する
-	std::stable_sort(m_renderingElementList.begin(), m_renderingElementList.end(), [](const DrawElement* lhs, const DrawElement* rhs) { return lhs->zDistance > rhs->zDistance; });
+	std::stable_sort(
+		m_renderingElementList.begin(), m_renderingElementList.end(),
+		[](const DrawElement* lhs, const DrawElement* rhs)
+		{
+			if (lhs->metadata.priority == rhs->metadata.priority)
+				return lhs->zDistance > rhs->zDistance;
+			return lhs->metadata.priority > rhs->metadata.priority;
+		}
+	);
 
 	for (RenderingPass2* pass : m_renderingPassList)
 	{

@@ -72,7 +72,7 @@ void TileMap::OnRender2(DrawList* renderer)
 	if (m_tileMap != nullptr)
 	{
 		// TODO: size
-		m_renderer->Draw(renderer, m_tileMap, RectF(0,0,3200,2400), GetOwnerSceneGraph()->GetMainCamera()->GetViewFrustum()/*dc->GetCurrentCamera()->GetViewFrustum()*/);
+		m_renderer->Draw(renderer, m_tileMap, RectF(0,0,3200,2400), GetOwnerSceneGraph()->GetMainCamera()->GetViewFrustum()/*dc->GetCurrentCamera()->GetViewFrustum()*/, m_priority);
 	}
 }
 

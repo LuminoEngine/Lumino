@@ -82,7 +82,7 @@ void TileMapRenderer::SetTransform(const Matrix& world, const Matrix& viewProj)
 }
 
 //------------------------------------------------------------------------------
-void TileMapRenderer::Draw(DrawList* context, TileMapModel* tileMap, const RectF& boundingRect, const ViewFrustum& cameraFrustum)
+void TileMapRenderer::Draw(DrawList* context, TileMapModel* tileMap, const RectF& boundingRect, const ViewFrustum& cameraFrustum, int priority)
 {
 	LN_CHECK_ARG(tileMap != nullptr);
 	m_context = context;
@@ -169,7 +169,7 @@ void TileMapRenderer::Draw(DrawList* context, TileMapModel* tileMap, const RectF
 		//printf("%d %d %d %d \n", renderRange.GetLeft(), renderRange.GetTop(), renderRange.GetRight(), renderRange.GetBottom());
 		//printf("%d %d %d %d \n", clipd.left, clipd.top, clipd.right, clipd.bottom);
 
-		DrawLayer(layer, boundingRect, tileMap->GetTileSet(), clipd);
+		DrawLayer(layer, boundingRect, tileMap->GetTileSet(), clipd, priority);
 	}
 	End();
 }
@@ -196,7 +196,7 @@ void TileMapRenderer::End()
 //}
 
 //------------------------------------------------------------------------------
-void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, TileSet* tileSet, const BoundingRect& renderRange)
+void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, TileSet* tileSet, const BoundingRect& renderRange, int priority)
 {
 	LN_CHECK_ARG(layer != nullptr);
 	LN_CHECK_ARG(tileSet != nullptr);
@@ -337,6 +337,10 @@ LOOP_EXIT:
 
 	//m_context->SetShaderPass(m_shader.pass);
 	//m_context->DrawPrimitiveIndexed(m_vertexDeclaration, m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, plotCount / 2);
+	
+	DrawElementMetadata metadata;
+	metadata.priority = priority;
+	m_context->PushMetadata(&metadata);
 	m_context->DrawMesh(m_mesh, 0, tileSet->GetMaterial());
 	//printf("%p\n", m_shader.pass);
 	//m_renderingContext->SetVertexBuffer(nullptr);
