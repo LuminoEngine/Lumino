@@ -17,6 +17,8 @@
 
 LN_NAMESPACE_BEGIN
 
+const DrawElementMetadata DrawElementMetadata::Default;
+
 namespace detail {
 
 //==============================================================================
@@ -1086,6 +1088,7 @@ public:
 //------------------------------------------------------------------------------
 DrawList::DrawList()
 	: m_currentSectionTopElement(nullptr)
+	, m_metadata(nullptr)
 {
 }
 
@@ -1257,15 +1260,15 @@ void DrawList::DrawSquarePrimitive(
 }
 
 //------------------------------------------------------------------------------
-void DrawList::DrawMesh(MeshResource* mesh, int subsetIndex, Material* material, const DrawElementMetadata* metadata)
+void DrawList::DrawMesh(MeshResource* mesh, int subsetIndex, Material* material)
 {
-	DrawMeshResourceInternal(mesh, subsetIndex, material, metadata);
+	DrawMeshResourceInternal(mesh, subsetIndex, material);
 }
 
 //------------------------------------------------------------------------------
-void DrawList::DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material, const DrawElementMetadata* metadata)
+void DrawList::DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material)
 {
-	DrawMeshSubsetInternal(mesh, subsetIndex, material, metadata);
+	DrawMeshSubsetInternal(mesh, subsetIndex, material);
 }
 
 //------------------------------------------------------------------------------
@@ -1418,6 +1421,21 @@ void DrawList::AddDynamicLightInfo(detail::DynamicLightInfo* lightInfo)
 }
 
 //------------------------------------------------------------------------------
+void DrawList::PushMetadata(const DrawElementMetadata* metadata)
+{
+	LN_CHECK_STATE(m_metadata == nullptr);
+	m_metadata = metadata;
+}
+
+//------------------------------------------------------------------------------
+const DrawElementMetadata* DrawList::PopMetadata()
+{
+	auto* m = m_metadata;
+	m_metadata = nullptr;
+	return m;
+}
+
+//------------------------------------------------------------------------------
 template<typename TElement>
 TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer, Material* userMaterial)
 {
@@ -1428,10 +1446,14 @@ TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId, detai
 
 	m_state.state.m_rendererId = reinterpret_cast<intptr_t>(renderer);
 
+	const DrawElementMetadata* userMetadata = PopMetadata();
+	const DrawElementMetadata* metadata = (userMetadata != nullptr) ? userMetadata : &DrawElementMetadata::Default;
+
 	// 何か前回追加された DrawElement があり、それと DrawingSectionId、State が一致するならそれに対して追記できる
 	if (sectionId != detail::DrawingSectionId::None &&
 		m_currentSectionTopElement != nullptr &&
 		m_currentSectionTopElement->drawingSectionId == sectionId &&
+		m_currentSectionTopElement->metadata.Equals(*metadata) &&
 		m_drawElementList.GetBatch(m_currentSectionTopElement->batchIndex)->Equal(m_state.state.state, availableMaterial))
 	{
 		return static_cast<TElement*>(m_currentSectionTopElement);
@@ -1440,12 +1462,13 @@ TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId, detai
 	// DrawElement を新しく作る
 	TElement* element = m_drawElementList.AddCommand<TElement>(m_state.state.state, availableMaterial);
 	element->drawingSectionId = sectionId;
+	element->metadata = *metadata;
 	m_currentSectionTopElement = element;
 	return element;
 }
 
 //------------------------------------------------------------------------------
-void DrawList::DrawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Material* material, const DrawElementMetadata* metadata)
+void DrawList::DrawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Material* material)
 {
 	class DrawElement_DrawMeshResourceInternal : public detail::LightingDrawElement
 	{
@@ -1466,7 +1489,6 @@ void DrawList::DrawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Mat
 
 	auto* e = ResolveDrawElement<DrawElement_DrawMeshResourceInternal>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_meshRenderer, material);
 	e->subsetIndex = subsetIndex;
-	if (metadata != nullptr) e->metadata = *metadata;
 	e->mesh = mesh;
 	e->startIndex = attr.StartIndex;
 	e->triangleCount = attr.PrimitiveNum;
@@ -1474,7 +1496,7 @@ void DrawList::DrawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Mat
 }
 
 //------------------------------------------------------------------------------
-void DrawList::DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material, const DrawElementMetadata* metadata)
+void DrawList::DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material)
 {
 	/* 
 	 * この時点では MeshResource ではなく StaticMeshModel が必要。
@@ -1499,7 +1521,6 @@ void DrawList::DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Ma
 
 	auto* e = ResolveDrawElement<DrawElement_DrawMeshInternal>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_meshRenderer, material);
 	e->subsetIndex = subsetIndex;
-	if (metadata != nullptr) e->metadata = *metadata;
 	e->mesh = mesh;
 	e->startIndex = attr.StartIndex;
 	e->triangleCount = attr.PrimitiveNum;

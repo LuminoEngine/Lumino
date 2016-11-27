@@ -26,6 +26,14 @@ enum class DrawElementCategory
 struct DrawElementMetadata
 {
 	DrawElementCategory	category = DrawElementCategory::SceneObject;
+	int	priority = 0;
+
+	bool Equals(const DrawElementMetadata& rhs) const
+	{
+		return category == rhs.category && priority == rhs.priority;
+	}
+
+	static const DrawElementMetadata Default;
 };
 
 namespace detail {
@@ -512,8 +520,8 @@ public:
 		const Vector3& position4, const Vector2& uv4, const Color& color4/*,
 		ShaderPass* shaderPass*/);
 
-	void DrawMesh(MeshResource* mesh, int subsetIndex, Material* material, const DrawElementMetadata* metadata = nullptr);
-	void DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material, const DrawElementMetadata* metadata = nullptr);
+	void DrawMesh(MeshResource* mesh, int subsetIndex, Material* material);
+	void DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material);
 
 	void Blit(Texture* source);
 	void Blit(Texture* source, const Matrix& transform);
@@ -550,10 +558,12 @@ LN_INTERNAL_ACCESS:
 	const detail::BatchStateBlock& GetState() const { return m_state; }
 	void SetState(const detail::BatchStateBlock& state) { m_state = state; }
 	void AddDynamicLightInfo(detail::DynamicLightInfo* lightInfo);
+	void PushMetadata(const DrawElementMetadata* metadata);
+	const DrawElementMetadata* PopMetadata();
 
 	template<typename TElement> TElement* ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer, Material* userMaterial);
-	void DrawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Material* material, const DrawElementMetadata* metadata);
-	void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material, const DrawElementMetadata* metadata);
+	void DrawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Material* material);
+	void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material);
 	void BlitInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Material* material);
 	void DrawFrameRectangle(const RectF& rect);
 
@@ -567,6 +577,7 @@ private:
 
 	detail::DrawElement*			m_currentSectionTopElement;
 	//detail::DrawElementBatch		m_stateInSection;
+	const DrawElementMetadata*		m_metadata;
 
 #if 0
 	/** アルファブレンドの有無 (default: false) */
