@@ -160,7 +160,7 @@ Texture2DPtr Texture2D::Create(int width, int height, TextureFormat format, bool
 Texture2DPtr Texture2D::Create(const SizeI& size, TextureFormat format, bool mipmap)
 {
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
-	tex->Initialize(detail::GraphicsManager::GetInstance(), size, format, mipmap);
+	tex->Initialize(detail::GraphicsManager::GetInstance(), size, format, mipmap, ResourceUsage::Dynamic);
 	return tex;
 }
 
@@ -221,13 +221,14 @@ Texture2D::Texture2D()
 }
 
 //------------------------------------------------------------------------------
-void Texture2D::Initialize(detail::GraphicsManager* manager, const SizeI& size, TextureFormat format, bool mipmap)
+void Texture2D::Initialize(detail::GraphicsManager* manager, const SizeI& size, TextureFormat format, bool mipmap, ResourceUsage usage)
 {
 	GraphicsResourceObject::Initialize(manager);
 
 	m_size = size;
 	m_mipmap = mipmap;
 	m_format = format;
+	m_usage = usage;
 
 	// ロック用のビットマップを作る
 	m_primarySurface = LN_NEW Bitmap(size, Utils::TranslatePixelFormat(format));
@@ -311,7 +312,7 @@ void Texture2D::TryLock()
 {
 	if (!m_locked)
 	{
-		if (m_usage == ResourceUsage::Static)
+		if (m_primarySurface2 == nullptr)
 		{
 			// フォーマットは DeviceObject 側のフォーマットに合わせる。
 			// もし合わせていないと、転送時に同じサイズで DeviceObject 側のフォーマットと同じ Bitmap を
@@ -351,6 +352,7 @@ void Texture2D::ApplyModifies()
 		m_initializing = false;
 		m_locked = false;
 
+		// static ならメモリを無駄に使わないように解放する
 		if (m_usage == ResourceUsage::Static)
 		{
 			m_primarySurface2.SafeRelease();
@@ -437,15 +439,14 @@ void Texture2D::Blt(int x, int y, Bitmap* srcBitmap/*, const Rect& srcRect*/)
 void Texture2D::DrawText(const StringRef& text, const Rect& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment) { LN_AFX_FUNCNAME(DrawText)(text, rect, font, fillColor, strokeColor, strokeThickness, alignment); }
 void Texture2D::LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const Rect& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment)
 {
-	ScopedTextureLock lock(this);
+	TryLock();
 	auto* r = m_manager->GetBitmapTextRenderer();
 	auto* gr = r->GetTempGlyphRun();
 	gr->SetFont(font->ResolveRawFont());
 	gr->SetText(text);
-	//gr->SetTextAlignment(alignment);
 	r->SetRenderArea(rect);
 	r->SetTextAlignment(alignment);
-	r->DrawGlyphRun(lock.GetBitmap(), gr, fillColor, strokeColor, strokeThickness);
+	r->DrawGlyphRun(m_primarySurface2, gr, fillColor, strokeColor, strokeThickness);
 }
 #pragma pop_macro("DrawText")
 

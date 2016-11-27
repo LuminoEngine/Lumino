@@ -303,7 +303,7 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 
 
 	m_dymmyWhiteTexture = RefPtr<Texture2D>::MakeRef();
-	m_dymmyWhiteTexture->Initialize(this, SizeI(32, 32), TextureFormat::R8G8B8A8, false);
+	m_dymmyWhiteTexture->Initialize(this, SizeI(32, 32), TextureFormat::R8G8B8A8, false, ResourceUsage::Static);
 	m_dymmyWhiteTexture->Clear(Color32::White);
 }
 

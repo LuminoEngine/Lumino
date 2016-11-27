@@ -421,7 +421,7 @@ void SceneGraph3D::CreateGridContents()
 	// 四方の辺に黒線を引いたテクスチャを作り、マテリアルにセットしておく
 	SizeI gridTexSize(512, 512);
 	auto gridTex = RefPtr<Texture2D>::MakeRef();
-	gridTex->Initialize(gm, gridTexSize, TextureFormat::R8G8B8A8, true);
+	gridTex->Initialize(gm, gridTexSize, TextureFormat::R8G8B8A8, true, ResourceUsage::Static);
 	for (int x = 0; x < gridTexSize.width; ++x)
 	{
 		gridTex->SetPixel(x, 0, Color(0, 0, 0, 0.5));

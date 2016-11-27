@@ -150,7 +150,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 LN_INTERNAL_ACCESS:
-	void Initialize(detail::GraphicsManager* manager, const SizeI& size, TextureFormat format, bool mipmap);
+	void Initialize(detail::GraphicsManager* manager, const SizeI& size, TextureFormat format, bool mipmap, ResourceUsage usage);
 	void Initialize(detail::GraphicsManager* manager, const StringRef& filePath, TextureFormat format, bool mipmap);
 	void Initialize(detail::GraphicsManager* manager, Stream* stream, TextureFormat format, bool mipmap);
 	void Initialize(detail::GraphicsManager* manager, bool isDefaultBackBuffer);
