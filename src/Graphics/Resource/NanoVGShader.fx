@@ -1,4 +1,7 @@
 
+//==============================================================================
+#ifdef LN_HLSL_DX9
+
 #define EDGE_AA
 
 static const int NANOVG_GL_UNIFORMARRAY_SIZE = 11;
@@ -30,7 +33,7 @@ VSOutput VSBasic(VSInput v)
 	VSOutput o;
 	o.ftcoord = v.tcoord;
 	o.fpos = v.vertex;
-	// ƒXƒNƒŠ[ƒ“‹óŠÔ‚Ö
+	// ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ç©ºé–“ã¸
 	o.Pos = float4(2.0*v.vertex.x/viewSize.x - 1.0, 1.0 - 2.0*v.vertex.y/viewSize.y, 0, 1);
 	return o;
 }
@@ -41,18 +44,18 @@ VSOutput VSBasic(VSInput v)
 float4 frag[NANOVG_GL_UNIFORMARRAY_SIZE];
 texture tex;
 //uniform sampler2D tex;
-//varying vec2 ftcoord;	// ƒXƒgƒ[ƒN‚Ì”Z‚³BAntiAlias ‚Ì‚Æ‚«‚Ég‚¤
+//varying vec2 ftcoord;	// ã‚¹ãƒˆãƒ­ãƒ¼ã‚¯ã®æ¿ƒã•ã€‚AntiAlias ã®ã¨ãã«ä½¿ã†
 //varying vec2 fpos;
 
 #define scissorMat float3x3(frag[0].xyz, frag[1].xyz, frag[2].xyz)
-#define paintMat float3x3(frag[3].xyz, frag[4].xyz, frag[5].xyz)	// glnvg__convertPaint() ‚Åì‚é
-#define innerCol frag[6]										// InnerColorBglnvg__convertPaint() ‚Åì‚é
-#define outerCol frag[7]										// OuterColorBglnvg__convertPaint() ‚Åì‚é
+#define paintMat float3x3(frag[3].xyz, frag[4].xyz, frag[5].xyz)	// glnvg__convertPaint() ã§ä½œã‚‹
+#define innerCol frag[6]										// InnerColorã€‚glnvg__convertPaint() ã§ä½œã‚‹
+#define outerCol frag[7]										// OuterColorã€‚glnvg__convertPaint() ã§ä½œã‚‹
 #define scissorExt frag[8].xy
 #define scissorScale frag[8].zw
 #define extent frag[9].xy
-#define radius frag[9].z										// nvgRadialGradient‚Ìƒpƒ‰ƒ[ƒ^
-#define feather frag[9].w										// Še Gradient ‚Ìƒpƒ‰ƒ[ƒ^
+#define radius frag[9].z										// nvgRadialGradientã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+#define feather frag[9].w										// å„ Gradient ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 #define strokeMult frag[10].x
 #define strokeThr frag[10].y
 #define texType int(frag[10].z)		// 1:RGBA 2:A
@@ -109,7 +112,7 @@ float4 PSBasic(PSInput p) : COLOR0
 		float2 pt = (    mul(float3(p.fpos,1.0), paintMat)   ).xy / extent;
 		float4 color = tex2D(textureSampler, pt);
 		
-		// A8 ƒtƒH[ƒ}ƒbƒg‚Íg‚í‚È‚¢
+		// A8 ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã¯ä½¿ã‚ãªã„
 		color = float4(color.xyz*color.w,color.w);
 		//if (texType == 1) color = float4(color.xyz*color.w,color.w);
 		//if (texType == 2) color = float4(0, 0, 0, color.x);
@@ -121,7 +124,7 @@ float4 PSBasic(PSInput p) : COLOR0
 		result = color;
 	} else if (type == 2) {		// Stencil fill
 		result = float4(1,1,1,1);
-	} else if (type == 3) {		// Textured tris	EEEglnvg__renderTriangles < nvg__renderText EE‚±‚Ì‚Æ‚« ftcoord ‚Í•’Ê‚ÉƒeƒNƒXƒ`ƒƒUV‚ğ‚ ‚ç‚í‚·
+	} else if (type == 3) {		// Textured tris	ãƒ»ãƒ»ãƒ»glnvg__renderTriangles < nvg__renderText ãƒ»ãƒ»ã“ã®ã¨ã ftcoord ã¯æ™®é€šã«ãƒ†ã‚¯ã‚¹ãƒãƒ£UVã‚’ã‚ã‚‰ã‚ã™
 		result = float4(0, 0, 0, 1);
 	}
 //#ifdef EDGE_AA
@@ -140,5 +143,171 @@ technique MainDraw
 		PixelShader	 = compile ps_3_0 PSBasic();
 	}
 }
+
+
+#endif	// LN_HLSL_DX9
+
+
+//=============================================================================
+#ifdef LN_GLSL_VERTEX_Main
+
+#version 120
+
+#ifdef NANOVG_GL3
+	uniform vec2 viewSize;
+	in vec2 vertex;
+	in vec2 tcoord;
+	out vec2 ftcoord;
+	out vec2 fpos;
+
+#else
+
+	uniform vec2 viewSize;
+	
+	attribute vec2	ln_Vertex;
+	attribute vec2	ln_MultiTexCoord0;
+	
+	varying vec2 ftcoord;
+	varying vec2 fpos;
+
+#endif
+
+void main(void) {
+	ftcoord = ln_MultiTexCoord0;
+	fpos = ln_Vertex;
+	gl_Position = vec4(2.0*ln_Vertex.x/viewSize.x - 1.0, 1.0 - 2.0*ln_Vertex.y/viewSize.y, 0, 1);
+}
+
+#endif
+
+//=============================================================================
+#ifdef LN_GLSL_FRAGMENT_Main
+#ifdef GL_ES
+#if defined(GL_FRAGMENT_PRECISION_HIGH) || defined(NANOVG_GL3)
+ precision highp float;
+#else
+ precision mediump float;
+#endif
+#endif
+#ifdef NANOVG_GL3
+#ifdef USE_UNIFORMBUFFER
+	layout(std140) uniform frag {
+		mat3 scissorMat;
+		mat3 paintMat;
+		vec4 innerCol;
+		vec4 outerCol;
+		vec2 scissorExt;
+		vec2 scissorScale;
+		vec2 extent;
+		float radius;
+		float feather;
+		float strokeMult;
+		float strokeThr;
+		int texType;
+		int type;
+	};
+#else // NANOVG_GL3 && !USE_UNIFORMBUFFER
+	uniform vec4 frag[UNIFORMARRAY_SIZE];
+#endif
+	uniform sampler2D tex;
+	in vec2 ftcoord;
+	in vec2 fpos;
+	out vec4 outColor;
+#else // !NANOVG_GL3
+	uniform vec4 frag[UNIFORMARRAY_SIZE];
+	uniform sampler2D tex;
+	varying vec2 ftcoord;
+	varying vec2 fpos;
+#endif
+#ifndef USE_UNIFORMBUFFER
+	#define scissorMat mat3(frag[0].xyz, frag[1].xyz, frag[2].xyz)
+	#define paintMat mat3(frag[3].xyz, frag[4].xyz, frag[5].xyz)
+	#define innerCol frag[6]
+	#define outerCol frag[7]
+	#define scissorExt frag[8].xy
+	#define scissorScale frag[8].zw
+	#define extent frag[9].xy
+	#define radius frag[9].z
+	#define feather frag[9].w
+	#define strokeMult frag[10].x
+	#define strokeThr frag[10].y
+	#define texType int(frag[10].z)
+	#define type int(frag[10].w)
+#endif
+
+float sdroundrect(vec2 pt, vec2 ext, float rad) {
+	vec2 ext2 = ext - vec2(rad,rad);
+	vec2 d = abs(pt) - ext2;
+	return min(max(d.x,d.y),0.0) + length(max(d,0.0)) - rad;
+}
+
+// Scissoring
+float scissorMask(vec2 p) {
+	vec2 sc = (abs((scissorMat * vec3(p,1.0)).xy) - scissorExt);
+	sc = vec2(0.5,0.5) - sc * scissorScale;
+	return clamp(sc.x,0.0,1.0) * clamp(sc.y,0.0,1.0);
+}
+#ifdef EDGE_AA
+// Stroke - from [0..1] to clipped pyramid, where the slope is 1px.
+float strokeMask() {
+	return min(1.0, (1.0-abs(ftcoord.x*2.0-1.0))*strokeMult) * min(1.0, ftcoord.y);
+}
+#endif
+
+void main(void) {
+   vec4 result;
+	float scissor = scissorMask(fpos);
+#ifdef EDGE_AA
+	float strokeAlpha = strokeMask();
+#else
+	float strokeAlpha = 1.0;
+#endif
+	if (type == 0) {			// Gradient
+		// Calculate gradient color using box gradient
+		vec2 pt = (paintMat * vec3(fpos,1.0)).xy;
+		float d = clamp((sdroundrect(pt, extent, radius) + feather*0.5) / feather, 0.0, 1.0);
+		vec4 color = mix(innerCol,outerCol,d);
+		// Combine alpha
+		color *= strokeAlpha * scissor;
+		result = color;
+	} else if (type == 1) {		// Image
+		// Calculate color fron texture
+		vec2 pt = (paintMat * vec3(fpos,1.0)).xy / extent;
+#ifdef NANOVG_GL3
+		vec4 color = texture(tex, pt);
+#else
+		vec4 color = texture2D(tex, pt);
+#endif
+		if (texType == 1) color = vec4(color.xyz*color.w,color.w);"
+		if (texType == 2) color = vec4(color.x);"
+		// Apply color tint and alpha.
+		color *= innerCol;
+		// Combine alpha
+		color *= strokeAlpha * scissor;
+		result = color;
+	} else if (type == 2) {		// Stencil fill
+		result = vec4(1,1,1,1);
+	} else if (type == 3) {		// Textured tris
+#ifdef NANOVG_GL3
+		vec4 color = texture(tex, ftcoord);
+#else
+		vec4 color = texture2D(tex, ftcoord);
+#endif
+		if (texType == 1) color = vec4(color.xyz*color.w,color.w);"
+		if (texType == 2) color = vec4(color.x);"
+		color *= scissor;
+		result = color * innerCol;
+	}
+#ifdef EDGE_AA
+	if (strokeAlpha < strokeThr) discard;
+#endif
+#ifdef NANOVG_GL3
+	outColor = result;
+#else
+	gl_FragColor = result;
+#endif
+}
+
+#endif	// LN_GLSL_FRAGMENT_Main
 
 

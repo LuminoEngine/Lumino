@@ -469,7 +469,7 @@ static void glnvg__fill(LNNVGcontext* gl, GLNVGcall* call)
 #endif
 
 	// Draw anti-aliased pixels
-	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	//glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
 	glnvg__setUniforms(gl, call->uniformOffset + gl->fragSize, call->image);
 	glnvg__checkError(gl, "fill fill");
