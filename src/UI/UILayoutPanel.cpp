@@ -2,6 +2,7 @@
 #include "Internal.h"
 #include <Lumino/UI/UILayoutPanel.h>
 #include "UIManager.h"
+#include "LayoutImpl.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -58,29 +59,15 @@ UIElement* UILayoutPanel::GetVisualChildOrderd(int index) const
 //------------------------------------------------------------------------------
 Size UILayoutPanel::MeasureOverride(const Size& constraint)
 {
-	Size desiredSize = UIElement::MeasureOverride(constraint);
-	for (UIElement* child : *m_children)
-	{
-		child->MeasureLayout(constraint);
-		const Size& childDesiredSize = child->GetDesiredSize();
-
-		desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
-		desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
-	}
-	return desiredSize;
+	return detail::LayoutImpl<UILayoutPanel>::UILayoutPanel_MeasureOverride(
+		this, constraint,
+		[](UILayoutPanel* panel, const Size& constraint){ return panel->UIElement::MeasureOverride(constraint); });
 }
 
 //------------------------------------------------------------------------------
 Size UILayoutPanel::ArrangeOverride(const Size& finalSize)
 {
-	for (UIElement* child : *m_children)
-	{
-		Size childDesiredSize = child->GetDesiredSize();
-		childDesiredSize.width = std::max(finalSize.width, childDesiredSize.width);
-		childDesiredSize.height = std::max(finalSize.height, childDesiredSize.height);
-		child->ArrangeLayout(RectF(0, 0, childDesiredSize));
-	}
-	return finalSize;
+	return detail::LayoutImpl<UILayoutPanel>::UILayoutPanel_ArrangeOverride(this, finalSize);
 }
 
 //------------------------------------------------------------------------------
@@ -131,67 +118,13 @@ void UIStackPanel::Initialize(detail::UIManager* manager)
 //------------------------------------------------------------------------------
 Size UIStackPanel::MeasureOverride(const Size& constraint)
 {
-	Size size = constraint;
-
-	if (m_orientation == Orientation::Horizontal)
-	{
-		// 横に並べる場合、幅の制限を設けない
-		size.width = std::numeric_limits<float>::infinity();
-	}
-	else
-	{
-		// 縦に並べる場合、高さの制限を設けない
-		size.height = std::numeric_limits<float>::infinity();
-	}
-
-	Size desiredSize;
-	for (UIElement* child : *GetChildren())
-	{
-		child->MeasureLayout(size);
-
-		const Size& childDesiredSize = child->GetDesiredSize();
-		if (m_orientation == Orientation::Horizontal)
-		{
-			desiredSize.width += childDesiredSize.width;
-			desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
-		}
-		else
-		{
-			desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
-			desiredSize.height += child->GetDesiredSize().height;
-		}
-	}
-
-	return desiredSize;
+	return detail::LayoutImpl<UIStackPanel>::UIStackPanel_MeasureOverride(this, constraint, m_orientation);
 }
 
 //------------------------------------------------------------------------------
 Size UIStackPanel::ArrangeOverride(const Size& finalSize)
 {
-	float prevChildSize = 0;
-	RectF childRect;
-	for (UIElement* child : *GetChildren())
-	{
-		const Size& childDesiredSize = child->GetDesiredSize();
-		if (m_orientation == Orientation::Horizontal)
-		{
-			childRect.x += prevChildSize;
-			prevChildSize = childDesiredSize.width;
-			childRect.width = prevChildSize;
-			childRect.height = finalSize.height;//std::min(finalSize.Height, childDesiredSize.Height);
-		}
-		else
-		{
-			childRect.y += prevChildSize;
-			prevChildSize = childDesiredSize.height;
-			childRect.height = prevChildSize;
-			childRect.width = finalSize.width;// std::min(finalSize.Width, childDesiredSize.Width);
-		}
-
-		child->ArrangeLayout(childRect);
-	}
-
-	return finalSize;
+	return detail::LayoutImpl<UIStackPanel>::UIStackPanel_ArrangeOverride(this, finalSize, m_orientation);
 }
 
 

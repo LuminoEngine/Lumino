@@ -5,6 +5,7 @@
 #include "../Base/GeometryStructs.h"
 
 LN_NAMESPACE_BEGIN
+namespace detail { template<class TPanel> class LayoutImpl; }
 
 /** グリッドレイアウトのセルサイズを指定する値の種類です。*/
 enum class GridLengthType
@@ -53,6 +54,8 @@ protected:
 protected:
 	ILayoutElement();
 	virtual ~ILayoutElement();
+
+	template<class TPanel> friend class detail::LayoutImpl;
 };
 
 
@@ -109,6 +112,8 @@ protected:
 
 protected:
 	virtual ~ILayoutPanel() = default;
+
+	template<class TPanel> friend class detail::LayoutImpl;
 };
 
 struct GridLayoutInfo

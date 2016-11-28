@@ -70,18 +70,22 @@ void ILayoutElement::ArrangeLayout(const RectF& finalLocalRect)
 	if (parentVAlign != nullptr) vAlign = *parentVAlign;
 
 	const Size& layoutSize = GetLayoutSize();
-	Size ds = GetLayoutDesiredSize();
-	ds.width = Math::IsNaNOrInf(layoutSize.width) ? layoutSize.width : ds.width;
-	ds.height = Math::IsNaNOrInf(layoutSize.height) ? layoutSize.height : ds.height;
+	Size ds;// = GetLayoutDesiredSize();
+	ds.width = Math::IsNaNOrInf(layoutSize.width) ? finalLocalRect.width : layoutSize.width;
+	ds.height = Math::IsNaNOrInf(layoutSize.height) ? finalLocalRect.height : layoutSize.height;
+
+	// Alignment Ç≈í≤êÆÇ∑ÇÈóÃàÊÇÕÅAmargin óÃàÊÇ‡ä‹Çﬁ
+	const ThicknessF& margin = GetLayoutMargin();
+	float marginWidth = margin.Left + margin.Right;
+	float marginHeight = margin.Top + margin.Bottom;
+	ds.width += marginWidth;
+	ds.height += marginHeight;
 
 	RectF arrangeRect;
 	detail::LayoutHelper::AdjustHorizontalAlignment(areaSize, ds, hAlign, &arrangeRect);
 	detail::LayoutHelper::AdjustVerticalAlignment(areaSize, ds, vAlign, &arrangeRect);
 
 	// Margin Ççló∂Ç∑ÇÈ (0 à»â∫Ç…ÇÕèoóàÇ»Ç¢)
-	const ThicknessF& margin = GetLayoutMargin();
-	float marginWidth = margin.Left + margin.Right;
-	float marginHeight = margin.Top + margin.Bottom;
 	arrangeRect.width = std::max(arrangeRect.width - marginWidth, 0.0f);
 	arrangeRect.height = std::max(arrangeRect.height - marginHeight, 0.0f);
 

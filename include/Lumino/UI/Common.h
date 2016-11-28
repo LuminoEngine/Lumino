@@ -59,6 +59,13 @@ LN_ENUM_FLAGS(AlignmentAnchor)
 };
 LN_ENUM_FLAGS_DECLARE(AlignmentAnchor);
 
+/** コントロールのレイアウト方向を示します。*/
+LN_ENUM(Orientation)
+{
+	Vertical = 0,		/**< 垂直方向に配置します。*/
+	Horizontal,			/**< 水平方向に配置します。*/
+};
+LN_ENUM_DECLARE(Orientation);
 
 namespace detail
 {

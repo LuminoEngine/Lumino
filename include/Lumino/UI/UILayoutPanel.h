@@ -9,14 +9,6 @@ class UIGridLayout;
 using UICanvasPtr = RefPtr<UICanvas>;
 using UIGridLayoutPtr = RefPtr<UIGridLayout>;
 
-/** コントロールのレイアウト方向を示します。*/
-LN_ENUM(Orientation)
-{
-	Vertical = 0,		/**< 垂直方向に配置します。*/
-	Horizontal,			/**< 水平方向に配置します。*/
-};
-LN_ENUM_DECLARE(Orientation);
-
 /**
 	@brief		1つ以上の子 UIElement を持つ UI 要素のベースクラスです。
 
