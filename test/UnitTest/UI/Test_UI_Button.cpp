@@ -21,6 +21,64 @@ TEST_F(Test_UI_Button, Basic)
 
 }
 
+
+//==============================================================================
+class Test_UI_FlowLayout : public ::testing::Test
+{
+protected:
+	virtual void SetUp() {}
+	virtual void TearDown() {}
+};
+
+//------------------------------------------------------------------------------
+TEST_F(Test_UI_FlowLayout, ReverseHorizontal)
+{
+	auto panel = UIStackPanel::Create();
+	auto button1 = UIButton::Create();
+	auto button2 = UIButton::Create();
+	button1->SetSize(Size(40, 20));
+	button1->margin = ThicknessF(5, 5, 5, 5);
+	button2->SetSize(Size(40, 30));
+	button2->margin = ThicknessF(5, 5, 5, 5);
+
+	panel->padding = ThicknessF(5, 5, 5, 5);
+	panel->AddChild(button1);
+	panel->AddChild(button2);
+	panel->SetOrientation(Orientation::ReverseHorizontal);
+
+	UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot()->SetContent(panel);
+
+	Engine::Update();
+
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_FlowLayout.ReverseHorizontal1.png"), 99, true));
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_UI_FlowLayout, Margin_Padding)
+{
+	auto panel = UIStackPanel::Create();
+	auto button1 = UIButton::Create();
+	auto button2 = UIButton::Create();
+	button1->SetSize(Size(80, 32));
+	button2->SetSize(Size(80, 32));
+	button1->SetHAlignment(HAlignment::Left);
+	button2->SetHAlignment(HAlignment::Right);
+	panel->AddChild(button1);
+	panel->AddChild(button2);
+
+	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+	uiRoot->SetContent(panel);
+
+	panel->padding = ThicknessF(5, 10, 15, 20);
+	button2->margin = ThicknessF(5, 10, 15, 20);
+
+	Engine::Update();
+
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_FlowLayout.Margin_Padding1.png")));
+}
+
+
+
 //==============================================================================
 class Test_UI_GridLayout : public ::testing::Test
 {

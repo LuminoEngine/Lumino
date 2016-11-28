@@ -98,7 +98,7 @@ TEST_F(Test_Graphics_MeshResource, Clear)
 			Engine::EndRendering();
 		}
 		Engine::EndFrameUpdate();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_MeshResource.Clear1.png"), 99, true));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_MeshResource.Clear1.png")));
 
 		// 2回目
 		mesh->Clear();		// clear
@@ -115,6 +115,6 @@ TEST_F(Test_Graphics_MeshResource, Clear)
 			Engine::EndRendering();
 		}
 		Engine::EndFrameUpdate();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_MeshResource.Clear2.png"), 99, true));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_MeshResource.Clear2.png")));
 	}
 }

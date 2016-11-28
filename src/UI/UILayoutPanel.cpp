@@ -100,7 +100,16 @@ detail::GridDefinitionData* UILayoutPanel::GetLayoutGridRowDefinition(int index)
 LN_UI_TYPEINFO_IMPLEMENT(UIStackPanel, UILayoutPanel)
 
 //------------------------------------------------------------------------------
+UIStackPanelPtr UIStackPanel::Create()
+{
+	auto ptr = RefPtr<UIStackPanel>::MakeRef();
+	ptr->Initialize(detail::UIManager::GetInstance());
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
 UIStackPanel::UIStackPanel()
+	: m_orientation(Orientation::Vertical)
 {
 }
 

@@ -25,6 +25,8 @@ class UIElement
 public:
 	LN_TR_PROPERTY(PointF,				position);				/**< Position プロパティの識別子 */
 	LN_TR_PROPERTY(Size,				size);					/**< Size プロパティの識別子 */
+	LN_TR_PROPERTY(ThicknessF,			margin);
+	LN_TR_PROPERTY(ThicknessF,			padding);
 	LN_TR_PROPERTY(AlignmentAnchor,		anchor);				/**< Anchor プロパティの識別子 */
 	LN_TR_PROPERTY(HAlignment,			hAlignment);			/**< HAlignment プロパティの識別子 */
 	LN_TR_PROPERTY(VAlignment,			vAlignment);			/**< VAlignment プロパティの識別子 */
@@ -211,7 +213,7 @@ LN_INTERNAL_ACCESS:
 	detail::UIManager* GetManager() const { return m_manager; }
 	const PointF& GetPositionInternal() const { return position; }
 	const Size& GetSizeInternal() const { return size; }
-	const ThicknessF& GetMargineInternal() const { return m_margin; }
+	const ThicknessF& GetMargineInternal() const { return margin; }
 	AlignmentAnchor GetAnchorInternal() const { return anchor; }
 	const BrushPtr& GetForegroundInternal() const { return foreground; }
 	void SetParent(UIElement* parent);
@@ -274,8 +276,6 @@ private:
 	//		これによって必要にアニメーションを止めたりできる。
 	//tr::Property<PointF>	m_position;
 	//tr::Property<Size>		m_size;
-	ThicknessF				m_margin;
-	ThicknessF				m_padding;
 	//tr::Property<AlignmentAnchor>	m_anchor;
 	//tr::Property<HAlignment>		m_horizontalAlignment;
 	//tr::Property<VAlignment>		m_verticalAlignment;

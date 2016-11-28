@@ -4,8 +4,10 @@
 #include "UIElementCollection.h"
 
 LN_NAMESPACE_BEGIN
+class UIStackPanel;
 class UICanvas;
 class UIGridLayout;
+using UIStackPanelPtr = RefPtr<UIStackPanel>;
 using UICanvasPtr = RefPtr<UICanvas>;
 using UIGridLayoutPtr = RefPtr<UIGridLayout>;
 
@@ -58,6 +60,9 @@ class UIStackPanel
 	: public UILayoutPanel
 {
 	LN_UI_TYPEINFO_DECLARE();
+public:
+	static UIStackPanelPtr Create();
+
 public:
 	void SetOrientation(Orientation orientation) { m_orientation = orientation; }
 	Orientation GetOrientation() const { return m_orientation; }
