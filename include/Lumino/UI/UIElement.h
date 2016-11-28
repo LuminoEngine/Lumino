@@ -184,6 +184,8 @@ protected:
 		@param[in]	finalSize	: 親要素がこの要素に対して割り当てた領域のサイズ。
 		@return		要素の最終サイズ。要素の描画時にこのサイズを使用します。
 		@details	派生クラスは finalSize よりも大きいサイズを返すと、描画時に見切れが発生します。
+					また、finalSize には padding プロパティの余白は考慮されません。
+					この余白を正しく反映するためには派生クラスで padding プロパティを参照し、子要素の位置を計算します。
 	*/
 	virtual Size ArrangeOverride(const Size& finalSize) override;
 
