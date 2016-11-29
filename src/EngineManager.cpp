@@ -660,10 +660,10 @@ bool EngineManager::BeginRendering()
 
 
 
-	if (m_effectManager != nullptr) {
-		m_effectManager->PreRender();	// Effekseer の更新スレッドを開始するのはここ
-		// TODO: これも UIMainWindow::BeginRendring の中かなぁ・・・
-	}
+	//if (m_effectManager != nullptr) {
+	//	m_effectManager->PreRender();	// Effekseer の更新スレッドを開始するのはここ
+	//	// TODO: これも UIMainWindow::BeginRendring の中かなぁ・・・
+	//}
 
 	m_uiManager->GetMainWindow()->BeginRendering();
 

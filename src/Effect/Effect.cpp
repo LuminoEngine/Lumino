@@ -13,12 +13,12 @@ LN_NAMESPACE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(VisualEffect, tr::ReflectionObject);
 
 //------------------------------------------------------------------------------
-VisualEffectPtr VisualEffect::Create(const StringRef& filePath)
-{
-	auto* manager = detail::GetEffectManager(nullptr);
-	auto* obj = manager->GetEffectEngine()->CreateEffectCore(PathName(filePath));
-	return VisualEffectPtr(obj, false);
-}
+//VisualEffectPtr VisualEffect::Create(const StringRef& filePath)
+//{
+//	auto* manager = detail::GetEffectManager(nullptr);
+//	auto* obj = manager->GetEffectEngine()->CreateEffectCore(PathName(filePath));
+//	return VisualEffectPtr(obj, false);
+//}
 
 //------------------------------------------------------------------------------
 VisualEffect::~VisualEffect()

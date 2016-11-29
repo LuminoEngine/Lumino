@@ -32,8 +32,11 @@ public:
 	void Initialize(const Settings& settings);
 	void Finalize();
 
-	void PreRender();
-	void Render();
+	EffectEngine* CreateEffectWorld();
+	void ReleaseEffectWorld(EffectEngine* world);
+
+	//void PreRender();
+	//void Render();
 	virtual void OnLostDevice() override;
 	virtual void OnResetDevice() override;
 
@@ -41,19 +44,18 @@ public:
 	GraphicsManager*	GetGraphicsManager() { return m_graphicsManager; }
 	AudioManager*		GetAudioManager() { return m_audioManager; }
 
-	EffectEngine*		GetEffectEngine() { return m_engine; }
+	//EffectEngine*		GetEffectEngine() { return m_engine; }
 
-private:
-	void Thread_UpdateFrame();
+//private:
+//	void Thread_UpdateFrame();
 
 private:
 	FileManager*		m_fileManager;
 	GraphicsManager*	m_graphicsManager;
 	AudioManager*		m_audioManager;
+	List<RefPtr<EffectEngine>>	m_effectWorldList;
 
-	EffectEngine*	m_engine;	// 複数ツール同時対応とかなったら複数できる
-
-	tr::TaskPtr	m_taskUpdateFrame;
+	//tr::TaskPtr	m_taskUpdateFrame;
 };
 
 } // namespace detail

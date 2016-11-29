@@ -6,7 +6,7 @@ using namespace ln;
 
 void Main()
 {
-	EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
+	//EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
 	Engine::Initialize();
 
 	Engine::GetDefaultSceneGraph3D()->VisibleGridPlane = true;
