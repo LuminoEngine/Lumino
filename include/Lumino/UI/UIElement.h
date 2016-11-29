@@ -116,13 +116,10 @@ public:
 	//void ReleaseMouseCapture();
 
 	/** この要素内の子ビジュアル要素の数を取得します。(論理要素も含めたすべての子要素) */
-	virtual int GetVisualChildrenCount() const;
-
-	/** この要素内の指定したインデックスにある子ビジュアル要素を取得します。*/
-	//virtual UIElement* GetVisualChild(int index) const;
+	virtual int GetVisualChildrenCount() const override;
 
 	/** Zオーダーやアクティブ状態を考慮した順で、子ビジュアル要素を取得します。奥にある要素が先、手前にある要素が後になります。*/
-	virtual UIElement* GetVisualChildOrderd(int index) const;
+	virtual ILayoutElement* GetVisualChild(int index) const override;
 
 	/** この要素が関連付けられている UILayoutView を取得します。*/
 	//UILayoutView* GetOwnerLayoutView() const { return m_ownerLayoutView; }
@@ -226,9 +223,11 @@ LN_INTERNAL_ACCESS:
 	virtual void ActivateInternal(UIElement* child);
 	virtual bool OnEvent(detail::UIInternalEventType type, UIEventArgs* args);
 	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e);
-	void UpdateLayout(const Size& viewSize);
-	void UpdateTransformHierarchy();
+	void UpdateLayout(const Size& viewSize) override;
 	void Render(DrawList* g);
+
+protected:
+	virtual void UpdateTransformHierarchy(const RectF& parentGlobalRect) override;
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	virtual const HAlignment* GetPriorityContentHAlignment();
@@ -250,10 +249,9 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual const Size& GetLayoutDesiredSize() const override;
 	virtual void SetLayoutDesiredSize(const Size& size) override;
 	virtual void SetLayoutFinalLocalRect(const RectF& rect) override;
-	//virtual int GetLayoutColumn() const override;
-	//virtual int GetLayoutRow() const override;
-	//virtual int GetLayoutColumnSpan() const override;
-	//virtual int GetLayoutRowSpan() const override;
+	virtual const RectF& GetLayoutFinalLocalRect() override;
+	virtual void SetLayoutFinalGlobalRect(const RectF& rect) override;
+
 
 private:
 	void UpdateLocalStyleAndApplyProperties(UIStylePropertyTable* parentStyle, UIStylePropertyTable* currentStateStyle);

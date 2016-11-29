@@ -37,7 +37,7 @@ int UIControl::GetVisualChildrenCount() const
 }
 
 //------------------------------------------------------------------------------
-UIElement* UIControl::GetVisualChildOrderd(int index) const
+ILayoutElement* UIControl::GetVisualChild(int index) const
 {
 	LN_THROW(0 <= index && index < GetVisualChildrenCount(), OutOfRangeException);
 	return m_visualTreeRoot;

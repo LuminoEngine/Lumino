@@ -26,7 +26,7 @@ protected:
 
 	// UIElement interface
 	//virtual int GetVisualChildrenCount() const override;
-	//virtual UIElement* GetVisualChildOrderd(int index) const override;
+	//virtual UIElement* GetVisualChild(int index) const override;
 	//virtual Size MeasureOverride(const Size& constraint) override;
 	//virtual Size ArrangeOverride(const Size& finalSize) override;
 

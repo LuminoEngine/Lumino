@@ -278,8 +278,8 @@ void main(void) {
 #else
 		vec4 color = texture2D(tex, pt);
 #endif
-		if (texType == 1) color = vec4(color.xyz*color.w,color.w);"
-		if (texType == 2) color = vec4(color.x);"
+		if (texType == 1) color = vec4(color.xyz*color.w,color.w);
+		if (texType == 2) color = vec4(color.x);
 		// Apply color tint and alpha.
 		color *= innerCol;
 		// Combine alpha
@@ -293,8 +293,8 @@ void main(void) {
 #else
 		vec4 color = texture2D(tex, ftcoord);
 #endif
-		if (texType == 1) color = vec4(color.xyz*color.w,color.w);"
-		if (texType == 2) color = vec4(color.x);"
+		if (texType == 1) color = vec4(color.xyz*color.w,color.w);
+		if (texType == 2) color = vec4(color.x);
 		color *= scissor;
 		result = color * innerCol;
 	}

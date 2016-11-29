@@ -86,6 +86,10 @@ protected:
 	virtual const Size& GetLayoutDesiredSize() const override;
 	virtual void SetLayoutDesiredSize(const Size& size) override;
 	virtual void SetLayoutFinalLocalRect(const RectF& rect) override;
+	virtual const RectF& GetLayoutFinalLocalRect() override;
+	virtual void SetLayoutFinalGlobalRect(const RectF& rect) override;
+	virtual int GetVisualChildrenCount() const override;
+	virtual ILayoutElement* GetVisualChild(int index) const override;
 	virtual int GetLayoutColumn() const override;
 	virtual int GetLayoutRow() const override;
 	virtual int GetLayoutColumnSpan() const override;
@@ -117,6 +121,7 @@ private:
 	TextElement*			m_parent;
 	Size					m_desiredSize;
 	RectF					m_finalLocalRect;
+	RectF					m_finalGlobalRect;
 	detail::GridLayoutInfo	m_gridLayoutInfo;
 };
 

@@ -34,7 +34,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 
 	// UIElement interface
 	virtual int GetVisualChildrenCount() const override;
-	virtual UIElement* GetVisualChildOrderd(int index) const override;
+	virtual UIElement* GetVisualChild(int index) const override;
 	virtual Size MeasureOverride(const Size& constraint) override;
 	virtual Size ArrangeOverride(const Size& finalSize) override;
 
@@ -42,12 +42,12 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual void OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e) override;
 
 	// ILayoutPanel interface
-	virtual int GetLayoutChildrenCount() const;
-	virtual ILayoutElement* GetLayoutChild(int index) const;
-	virtual int GetLayoutGridColumnDefinitionCount() const;
-	virtual detail::GridDefinitionData* GetLayoutGridColumnDefinition(int index) const;
-	virtual int GetLayoutGridRowDefinitionCount() const;
-	virtual detail::GridDefinitionData* GetLayoutGridRowDefinition(int index) const;
+	virtual int GetLayoutChildrenCount() override;
+	virtual ILayoutElement* GetLayoutChild(int index) override;
+	virtual int GetLayoutGridColumnDefinitionCount() override;
+	virtual detail::GridDefinitionData* GetLayoutGridColumnDefinition(int index) override;
+	virtual int GetLayoutGridRowDefinitionCount() override;
+	virtual detail::GridDefinitionData* GetLayoutGridRowDefinition(int index) override;
 
 private:
 	RefPtr<UIElementCollection>	m_children;
@@ -139,10 +139,10 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual Size ArrangeOverride(const Size& finalSize) override;
 
 	// ILayoutPanel interface
-	virtual int GetLayoutGridColumnDefinitionCount() const;
-	virtual detail::GridDefinitionData* GetLayoutGridColumnDefinition(int index) const;
-	virtual int GetLayoutGridRowDefinitionCount() const;
-	virtual detail::GridDefinitionData* GetLayoutGridRowDefinition(int index) const;
+	virtual int GetLayoutGridColumnDefinitionCount() override;
+	virtual detail::GridDefinitionData* GetLayoutGridColumnDefinition(int index) override;
+	virtual int GetLayoutGridRowDefinitionCount() override;
+	virtual detail::GridDefinitionData* GetLayoutGridRowDefinition(int index) override;
 
 private:
 	class DefinitionBase;

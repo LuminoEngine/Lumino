@@ -55,7 +55,6 @@ void UILayoutView::UpdateLayout(const Size& viewSize)
 		m_rootElement->ApplyTemplateHierarchy(GetOwnerContext()->GetRootStyleTable(), nullptr);
 
 		m_rootElement->UpdateLayout(GetViewPixelSize());
-		m_rootElement->UpdateTransformHierarchy();
 	}
 }
 

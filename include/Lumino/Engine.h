@@ -35,7 +35,7 @@ public:
 
 	static void BeginFrameUpdate();
 	static void EndFrameUpdate();
-	static bool BeginRendering();
+	static bool BeginRendering();	// TODO: 描画リスト作成開始前に描画中かを判定しても、描画リスト作成中に並列描画できない。十分にリソースを活用できていない。
 	static void EndRendering();
 	static void Render();
 	static void Exit();

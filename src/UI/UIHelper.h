@@ -14,7 +14,7 @@ public:
 		int count = element->GetVisualChildrenCount();
 		for (int i = 0; i < count; ++i)
 		{
-			func(element->GetVisualChildOrderd(i));
+			func(static_cast<UIElement*>(element->GetVisualChild(i)));
 		}
 	}
 

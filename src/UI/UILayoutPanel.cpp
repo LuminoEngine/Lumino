@@ -51,7 +51,7 @@ int UILayoutPanel::GetVisualChildrenCount() const
 }
 
 //------------------------------------------------------------------------------
-UIElement* UILayoutPanel::GetVisualChildOrderd(int index) const
+UIElement* UILayoutPanel::GetVisualChild(int index) const
 {
 	return m_children->GetAt(index);
 }
@@ -87,12 +87,12 @@ void UILayoutPanel::OnChildCollectionChanged(const tr::ChildCollectionChangedArg
 }
 
 //------------------------------------------------------------------------------
-int UILayoutPanel::GetLayoutChildrenCount() const { return m_children->GetCount(); }
-ILayoutElement* UILayoutPanel::GetLayoutChild(int index) const { return m_children->GetAt(index); }
-int UILayoutPanel::GetLayoutGridColumnDefinitionCount() const { return 0; }
-detail::GridDefinitionData* UILayoutPanel::GetLayoutGridColumnDefinition(int index) const { return nullptr; }
-int UILayoutPanel::GetLayoutGridRowDefinitionCount() const { return 0; }
-detail::GridDefinitionData* UILayoutPanel::GetLayoutGridRowDefinition(int index) const { return nullptr; }
+int UILayoutPanel::GetLayoutChildrenCount() { return m_children->GetCount(); }
+ILayoutElement* UILayoutPanel::GetLayoutChild(int index) { return m_children->GetAt(index); }
+int UILayoutPanel::GetLayoutGridColumnDefinitionCount() { return 0; }
+detail::GridDefinitionData* UILayoutPanel::GetLayoutGridColumnDefinition(int index) { return nullptr; }
+int UILayoutPanel::GetLayoutGridRowDefinitionCount() { return 0; }
+detail::GridDefinitionData* UILayoutPanel::GetLayoutGridRowDefinition(int index) { return nullptr; }
 
 //==============================================================================
 // UIStackPanel
@@ -450,176 +450,21 @@ void UIGridLayout::AddRowDefinition(GridLengthType type, float height, float min
 //------------------------------------------------------------------------------
 Size UIGridLayout::MeasureOverride(const Size& constraint)
 {
-	int colDefCount = GetLayoutGridColumnDefinitionCount();
-	int rowDefCount = GetLayoutGridRowDefinitionCount();
-
-	for (UIElement* child : *GetChildren())
-	{
-		// まずは子を Measure
-		child->MeasureLayout(constraint);
-
-		// child が配置されるべき column と row を探す
-		int colIdx = child->GetLayoutColumn();
-		int rowIdx = child->GetLayoutRow();
-
-		colIdx = (0 <= colIdx && colIdx < colDefCount) ? colIdx : 0;
-		rowIdx = (0 <= rowIdx && rowIdx < rowDefCount) ? rowIdx : 0;
-
-		detail::GridDefinitionData* col = (colIdx < colDefCount) ? GetLayoutGridColumnDefinition(colIdx) : nullptr;
-		detail::GridDefinitionData* row = (rowIdx < rowDefCount) ? GetLayoutGridRowDefinition(rowIdx) : nullptr;
-
-		// 子要素の DesiredSize (最低サイズ) を測るのは、セルのサイズ指定が "Auto" の時だけでよい。
-		const Size& childDesiredSize = child->GetDesiredSize();
-		if (col != nullptr && col->type == GridLengthType::Auto)
-		{
-			col->desiredSize = std::max(col->desiredSize, childDesiredSize.width);
-		}
-		if (row != nullptr && row->type == GridLengthType::Auto)
-		{
-			row->desiredSize = std::max(row->desiredSize, childDesiredSize.height);
-		}
-	}
-
-	// 各セルの DesiredSize を集計して、Grid 全体の DesiredSize を求める
-	Size desiredSize = UILayoutPanel::MeasureOverride(constraint);
-	for (int iCol = 0; iCol < colDefCount; iCol++)
-	{
-		desiredSize.width += GetLayoutGridColumnDefinition(iCol)->GetAvailableDesiredSize();
-	}
-	for (int iRow = 0; iRow < rowDefCount; iRow++)
-	{
-		desiredSize.height += GetLayoutGridRowDefinition(iRow)->GetAvailableDesiredSize();
-	}
-
-	return desiredSize;
+	return detail::LayoutImpl<UIGridLayout>::UIGridLayout_MeasureOverride(
+		this, constraint,
+		[](UIGridLayout* panel, const Size& constraint){ return panel->UILayoutPanel::MeasureOverride(constraint); });
 }
 
 //------------------------------------------------------------------------------
 Size UIGridLayout::ArrangeOverride(const Size& finalSize)
 {
-	// "Auto" と "Pixel" 指定である Column/Row の最終サイズを確定させる。
-	// また、"*" である行列の数をカウントする。
-	Size totalActual = Size::Zero;
-	float starColCount = 0.0f;
-	float starRowCount = 0.0f;
-	int colDefCount = GetLayoutGridColumnDefinitionCount();
-	int rowDefCount = GetLayoutGridRowDefinitionCount();
-	for (int iCol = 0; iCol < colDefCount; iCol++)
-	{
-		auto* col = GetLayoutGridColumnDefinition(iCol);
-		if (col->type == GridLengthType::Auto || col->type == GridLengthType::Pixel)
-		{
-			col->actualSize = col->GetAvailableDesiredSize();
-			totalActual.width += col->actualSize;
-		}
-		else
-		{
-			starColCount += col->GetRatioSize();
-		}
-	}
-	for (int iRow = 0; iRow < rowDefCount; iRow++)
-	{
-		auto* row = GetLayoutGridRowDefinition(iRow);
-		if (row->type == GridLengthType::Auto || row->type == GridLengthType::Pixel)
-		{
-			row->actualSize = row->GetAvailableDesiredSize();
-			totalActual.height += row->actualSize;
-		}
-		else
-		{
-			starRowCount += row->GetRatioSize();
-		}
-	}
-	
-	// "1*" 分のセルの領域を計算する
-	Size starUnit(
-		(starColCount != 0.0f) ? (finalSize.width - totalActual.width) / starColCount : 0.0f,
-		(starRowCount != 0.0f) ? (finalSize.height - totalActual.height) / starRowCount : 0.0f);
-	starUnit.width = std::max(0.0f, starUnit.width);	// 負値はダメ
-	starUnit.height = std::max(0.0f, starUnit.height);	// 負値はダメ
-
-	// "*" 指定である Column/Row の最終サイズを確定させ、
-	// 全セルのオフセット (位置) も確定させる
-	PointF totalOffset = PointF::Zero;
-	for (int iCol = 0; iCol < colDefCount; iCol++)
-	{
-		auto* col = GetLayoutGridColumnDefinition(iCol);
-		if (col->type == GridLengthType::Ratio)
-		{
-			col->actualSize = starUnit.width * col->GetRatioSize();
-		}
-
-		col->AdjustActualSize();
-
-		// セルX座標確定
-		col->actualOffset = totalOffset.x;
-		totalOffset.x += col->actualSize;
-	}
-	for (int iRow = 0; iRow < rowDefCount; iRow++)
-	{
-		auto* row = GetLayoutGridRowDefinition(iRow);
-		if (row->type == GridLengthType::Ratio)
-		{
-			row->actualSize = starUnit.height * row->GetRatioSize();
-		}
-
-		row->AdjustActualSize();
-
-		// セルY座標確定
-		row->actualOffset = totalOffset.y;
-		totalOffset.y += row->actualSize;
-	}
-
-	// 子要素の最終位置・サイズを確定させる
-	for (UIElement* child : *GetChildren())
-	{
-		int colIdx = child->GetLayoutColumn();
-		int rowIdx = child->GetLayoutRow();
-		int colSpan = child->GetLayoutColumnSpan();
-		int rowSpan = child->GetLayoutRowSpan();
-		colSpan = std::max(1, colSpan);	// 最低 1
-		rowSpan = std::max(1, rowSpan);	// 最低 1
-		colSpan = std::min(colSpan, colIdx + m_columnDefinitions.GetCount());	// 最大値制限
-		rowSpan = std::min(rowSpan, rowIdx + m_rowDefinitions.GetCount());		// 最大値制限
-
-		// Span を考慮してサイズを確定
-		RectF rect = RectF::Zero;
-		if (m_columnDefinitions.IsEmpty())
-		{
-			rect.width = finalSize.width;
-		}
-		else
-		{
-			rect.x = GetLayoutGridColumnDefinition(colIdx)->actualOffset;
-			for (int iCol = 0; iCol < colSpan; ++iCol)
-			{
-				rect.width += GetLayoutGridColumnDefinition(colIdx + iCol)->actualSize;
-			}
-		}
-		if (m_rowDefinitions.IsEmpty())
-		{
-			rect.height = finalSize.height;
-		}
-		else
-		{
-			rect.y = GetLayoutGridRowDefinition(rowIdx)->actualOffset;
-			for (int iRow = 0; iRow < rowSpan; ++iRow)
-			{
-				rect.height += GetLayoutGridRowDefinition(rowIdx + iRow)->actualSize;
-			}
-		}
-
-		// Arrange
-		child->ArrangeLayout(rect);
-	}
-
-	return finalSize;
+	return detail::LayoutImpl<UIGridLayout>::UIGridLayout_ArrangeOverride(this, finalSize);
 }
 
 //------------------------------------------------------------------------------
-int UIGridLayout::GetLayoutGridColumnDefinitionCount() const { return m_columnDefinitions.GetCount(); }
-detail::GridDefinitionData* UIGridLayout::GetLayoutGridColumnDefinition(int index) const { return &m_columnDefinitions[index]->m_data; }
-int UIGridLayout::GetLayoutGridRowDefinitionCount() const { return m_rowDefinitions.GetCount(); }
-detail::GridDefinitionData* UIGridLayout::GetLayoutGridRowDefinition(int index)  const { return &m_rowDefinitions[index]->m_data; }
+int UIGridLayout::GetLayoutGridColumnDefinitionCount() { return m_columnDefinitions.GetCount(); }
+detail::GridDefinitionData* UIGridLayout::GetLayoutGridColumnDefinition(int index) { return &m_columnDefinitions[index]->m_data; }
+int UIGridLayout::GetLayoutGridRowDefinitionCount() { return m_rowDefinitions.GetCount(); }
+detail::GridDefinitionData* UIGridLayout::GetLayoutGridRowDefinition(int index) { return &m_rowDefinitions[index]->m_data; }
 
 LN_NAMESPACE_END

@@ -134,14 +134,7 @@ int UIElement::GetVisualChildrenCount() const
 }
 
 //------------------------------------------------------------------------------
-//UIElement* UIElement::GetVisualChild(int index) const
-//{
-//	LN_THROW(0, InvalidOperationException);
-//	return nullptr;
-//}
-
-//------------------------------------------------------------------------------
-UIElement* UIElement::GetVisualChildOrderd(int index) const
+ILayoutElement* UIElement::GetVisualChild(int index) const
 {
 	LN_THROW(0, InvalidOperationException);
 	return nullptr;
@@ -263,7 +256,7 @@ UIElement* UIElement::CheckMouseHoverElement(const PointF& globalPt)
 	int count = GetVisualChildrenCount();
 	for (int i = count - 1; i >= 0; i--)
 	{
-		UIElement* e = GetVisualChildOrderd(i)->CheckMouseHoverElement(globalPt);
+		UIElement* e = static_cast<UIElement*>(GetVisualChild(i))->CheckMouseHoverElement(globalPt);
 		if (e != NULL) { return e; }
 	}
 
@@ -441,40 +434,32 @@ void UIElement::OnUpdatingLayout()
 //------------------------------------------------------------------------------
 void UIElement::UpdateLayout(const Size& viewSize)
 {
-	Size size(
-		Math::IsNaNOrInf(size.Get().width) ? viewSize.width : size.Get().width,
-		Math::IsNaNOrInf(size.Get().height) ? viewSize.height : size.Get().height);
-
-	// サイズが定まっていない場合はレイアウトを決定できない
-	// TODO: 例外の方が良いかも？
-	//if (Math::IsNaNOrInf(m_size.Width) || Math::IsNaNOrInf(m_size.Height)) { return; }
-
 	OnUpdatingLayout();
-
-	MeasureLayout(size);
-	ArrangeLayout(RectF(0, 0, size.width, size.height));
+	ILayoutElement::UpdateLayout(viewSize);
 }
 
 //------------------------------------------------------------------------------
-void UIElement::UpdateTransformHierarchy()
+void UIElement::UpdateTransformHierarchy(const RectF& parentGlobalRect)
 {
 	if (m_parent != nullptr)
 	{
-		m_finalGlobalRect.x = m_parent->m_finalGlobalRect.x + m_finalLocalRect.x;
-		m_finalGlobalRect.y = m_parent->m_finalGlobalRect.y + m_finalLocalRect.y;
+		//m_finalGlobalRect.x = m_parent->m_finalGlobalRect.x + m_finalLocalRect.x;
+		//m_finalGlobalRect.y = m_parent->m_finalGlobalRect.y + m_finalLocalRect.y;
 		m_combinedOpacity = m_parent->m_combinedOpacity * m_opacity;	// 不透明度もココで混ぜてしまう
 	}
 	else
 	{
-		m_finalGlobalRect.x = m_finalLocalRect.x;
-		m_finalGlobalRect.y = m_finalLocalRect.y;
+		//m_finalGlobalRect.x = m_finalLocalRect.x;
+		//m_finalGlobalRect.y = m_finalLocalRect.y;
 		m_combinedOpacity = m_opacity;
 	}
-	m_finalGlobalRect.width = m_finalLocalRect.width;
-	m_finalGlobalRect.height = m_finalLocalRect.height;
+	//m_finalGlobalRect.width = m_finalLocalRect.width;
+	//m_finalGlobalRect.height = m_finalLocalRect.height;
 
-	// 子要素
-	UIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->UpdateTransformHierarchy(); });
+	//// 子要素
+	//UIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->UpdateTransformHierarchy(); });
+
+	ILayoutElement::UpdateTransformHierarchy(parentGlobalRect);
 
 	// 最初の更新おわり
 	m_invalidateFlags &= ~detail::InvalidateFlags::Initializing;
@@ -542,9 +527,7 @@ const VAlignment* UIElement::GetLayoutContentVAlignment() { return GetPriorityCo
 const Size& UIElement::GetLayoutDesiredSize() const { return m_desiredSize; }
 void UIElement::SetLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
 void UIElement::SetLayoutFinalLocalRect(const RectF& rect) { m_finalLocalRect = rect; }
-//int UIElement::GetLayoutColumn() const { return m_gridLayoutInfo.layoutColumn; }
-//int UIElement::GetLayoutRow() const { return m_gridLayoutInfo.layoutRow; }
-//int UIElement::GetLayoutColumnSpan() const { return m_gridLayoutInfo.layoutColumnSpan; }
-//int UIElement::GetLayoutRowSpan() const { return m_gridLayoutInfo.layoutRowSpan; }
+const RectF& UIElement::GetLayoutFinalLocalRect() { return m_finalLocalRect; }
+void UIElement::SetLayoutFinalGlobalRect(const RectF& rect) { m_finalGlobalRect = rect; }
 
 LN_NAMESPACE_END

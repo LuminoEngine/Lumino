@@ -57,7 +57,7 @@ void Main()
 		1, 0, 0, 0, 1,
 	};
 
-	auto t = Assets::LoadTexture("D:/Proj/Volkoff/Volkoff/Data/Graphics/MapChip_1.png");
+	auto t = Assets::LoadTexture(_T("D:/Proj/Volkoff/Volkoff/Data/Graphics/MapChip_1.png"));
 
 	auto m_tileset = TileSet::Create();
 	m_tileset->SetImageSource(t);
@@ -81,8 +81,8 @@ void Main()
 		m_tileLayer->SetTileId(i % 100, i / 100, map[i]);
 	}
 
-	Input::AddButtonBinding("AA", KeyboardBinding::Create(Key::C));
-	Input::AddButtonBinding("GG", KeyboardBinding::Create(Key::A));
+	Input::AddButtonBinding(_T("AA"), KeyboardBinding::Create(Key::C));
+	Input::AddButtonBinding(_T("GG"), KeyboardBinding::Create(Key::A));
 
 	while (Engine::Update())
 	{

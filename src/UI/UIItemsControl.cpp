@@ -50,7 +50,7 @@ void UIItemsControl::SetItemsHostPanel(UILayoutPanel* panel)
 //}
 //
 ////------------------------------------------------------------------------------
-//UIElement* UIItemsControl::GetVisualChildOrderd(int index) const
+//UIElement* UIItemsControl::GetVisualChild(int index) const
 //{
 //	return m_itemsHostPanel;
 //}

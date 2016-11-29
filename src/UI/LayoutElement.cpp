@@ -19,6 +19,23 @@ ILayoutElement::~ILayoutElement()
 }
 
 //------------------------------------------------------------------------------
+void ILayoutElement::UpdateLayout(const Size& viewSize)
+{
+	const Size& itemSize = GetLayoutSize();
+	Size size(
+		Math::IsNaNOrInf(itemSize.width) ? viewSize.width : itemSize.width,
+		Math::IsNaNOrInf(itemSize.height) ? viewSize.height : itemSize.height);
+
+	// サイズが定まっていない場合はレイアウトを決定できない
+	// TODO: 例外の方が良いかも？
+	//if (Math::IsNaNOrInf(m_size.Width) || Math::IsNaNOrInf(m_size.Height)) { return; }
+
+	MeasureLayout(size);
+	ArrangeLayout(RectF(0, 0, size.width, size.height));
+	UpdateTransformHierarchy(RectF(0, 0, size));
+}
+
+//------------------------------------------------------------------------------
 void ILayoutElement::MeasureLayout(const Size& availableSize)
 {
 	//// 無効情報フラグをこの要素に伝播させる
@@ -121,6 +138,41 @@ Size ILayoutElement::MeasureOverride(const Size& constraint)
 Size ILayoutElement::ArrangeOverride(const Size& finalSize)
 {
 	return finalSize;
+}
+
+//------------------------------------------------------------------------------
+void ILayoutElement::UpdateTransformHierarchy(const RectF& parentGlobalRect)
+{
+	const RectF& localRect = GetLayoutFinalLocalRect();
+	RectF finalGlobalRect;
+	//if (m_parent != nullptr)
+	//{
+	finalGlobalRect.x = parentGlobalRect.x + localRect.x;
+	finalGlobalRect.y = parentGlobalRect.y + localRect.y;
+		//m_combinedOpacity = m_parent->m_combinedOpacity * m_opacity;	// 不透明度もココで混ぜてしまう
+	//}
+	//else
+	//{
+	//	m_finalGlobalRect.x = m_finalLocalRect.x;
+	//	m_finalGlobalRect.y = m_finalLocalRect.y;
+	//	m_combinedOpacity = m_opacity;
+	//}
+	finalGlobalRect.width = localRect.width;
+	finalGlobalRect.height = localRect.height;
+
+	SetLayoutFinalGlobalRect(finalGlobalRect);
+
+	// update children
+	int childCount = GetVisualChildrenCount();
+	for (int i = 0; i < childCount; i++)
+	{
+		ILayoutElement* child = GetVisualChild(i);
+		child->UpdateTransformHierarchy(finalGlobalRect);
+	}
+
+	// 子要素
+	//UIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->UpdateTransformHierarchy(); });
+
 }
 
 LN_NAMESPACE_END

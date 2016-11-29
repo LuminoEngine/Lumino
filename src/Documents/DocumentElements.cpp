@@ -104,6 +104,10 @@ const VAlignment* TextElement::GetLayoutContentVAlignment() { return nullptr; }
 const Size& TextElement::GetLayoutDesiredSize() const { return m_desiredSize; }
 void TextElement::SetLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
 void TextElement::SetLayoutFinalLocalRect(const RectF& rect) { m_finalLocalRect = rect; }
+const RectF& TextElement::GetLayoutFinalLocalRect() { return m_finalLocalRect; }
+void TextElement::SetLayoutFinalGlobalRect(const RectF& rect) { m_finalGlobalRect = rect; }
+int TextElement::GetVisualChildrenCount() const { return 0; }
+ILayoutElement* TextElement::GetVisualChild(int index) const { return nullptr; }
 int TextElement::GetLayoutColumn() const { return m_gridLayoutInfo.layoutColumn; }
 int TextElement::GetLayoutRow() const { return m_gridLayoutInfo.layoutRow; }
 int TextElement::GetLayoutColumnSpan() const { return m_gridLayoutInfo.layoutColumnSpan; }

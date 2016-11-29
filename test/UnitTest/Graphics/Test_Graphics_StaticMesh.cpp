@@ -13,7 +13,7 @@ TEST_F(Test_Graphics_MeshResource, AddSquare)
 {
 	// 自己照明
 	auto material = Material::Create();
-	material->SetBuiltinColorParameter(Material::AmbientParameter, Color::White);
+	material->SetBuiltinColorParameter(Material::EmissiveParameter, Color::White);
 
 	// <Test> 四角形1つ
 	{

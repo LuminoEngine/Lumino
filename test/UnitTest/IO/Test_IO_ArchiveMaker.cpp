@@ -2,7 +2,7 @@
 #include "../../../src/IO/ArchiveMaker.h"
 #include "../../../src/IO/Archive.h"
 
-#if defined(LN_OS_WIN32) && defined(LN_UNICODE)
+#if 0//defined(LN_OS_WIN32) && defined(LN_UNICODE)
 
 class Test_IO_ArchiveMaker : public ::testing::Test
 {

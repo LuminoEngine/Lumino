@@ -21,9 +21,9 @@ enum class GridLengthType
 class ILayoutElement
 {
 public:
+	virtual void UpdateLayout(const Size& viewSize);
 	virtual void MeasureLayout(const Size& availableSize);
 	virtual void ArrangeLayout(const RectF& finalLocalRect);
-
 
 protected:
 	virtual const PointF& GetLayoutPosition() const = 0;
@@ -39,7 +39,11 @@ protected:
 	virtual const Size& GetLayoutDesiredSize() const = 0;
 	virtual void SetLayoutDesiredSize(const Size& size) = 0;
 	virtual void SetLayoutFinalLocalRect(const RectF& rect) = 0;
+	virtual const RectF& GetLayoutFinalLocalRect() = 0;
+	virtual void SetLayoutFinalGlobalRect(const RectF& rect) = 0;
 
+	virtual int GetVisualChildrenCount() const = 0;
+	virtual ILayoutElement* GetVisualChild(int index) const = 0;
 
 protected:
 	// GridLayout properties
@@ -50,6 +54,7 @@ protected:
 
 	virtual Size MeasureOverride(const Size& constraint);
 	virtual Size ArrangeOverride(const Size& finalSize);
+	virtual void UpdateTransformHierarchy(const RectF& parentGlobalRect);
 
 protected:
 	ILayoutElement();
@@ -101,14 +106,14 @@ struct GridDefinitionData
 class ILayoutPanel
 {
 protected:
-	virtual int GetLayoutChildrenCount() const = 0;
-	virtual ILayoutElement* GetLayoutChild(int index) const = 0;
+	virtual int GetLayoutChildrenCount() = 0;
+	virtual ILayoutElement* GetLayoutChild(int index) = 0;
 
 	// GridLayout properties
-	virtual int GetLayoutGridColumnDefinitionCount() const = 0;
-	virtual GridDefinitionData* GetLayoutGridColumnDefinition(int index) const = 0;
-	virtual int GetLayoutGridRowDefinitionCount() const = 0;
-	virtual GridDefinitionData* GetLayoutGridRowDefinition(int index) const = 0;
+	virtual int GetLayoutGridColumnDefinitionCount() = 0;
+	virtual GridDefinitionData* GetLayoutGridColumnDefinition(int index) = 0;
+	virtual int GetLayoutGridRowDefinitionCount() = 0;
+	virtual GridDefinitionData* GetLayoutGridRowDefinition(int index) = 0;
 
 protected:
 	virtual ~ILayoutPanel() = default;
@@ -133,7 +138,7 @@ public:
 	//	int count = element->GetVisualChildrenCount();
 	//	for (int i = 0; i < count; ++i)
 	//	{
-	//		func(element->GetVisualChildOrderd(i));
+	//		func(element->GetVisualChild(i));
 	//	}
 	//}
 
