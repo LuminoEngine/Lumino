@@ -4,6 +4,7 @@
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
+class PlatformWindow;
 
 /**
 	@brief	プラットフォーム固有の機能にアクセスします。

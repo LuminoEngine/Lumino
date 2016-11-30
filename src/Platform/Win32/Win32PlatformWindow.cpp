@@ -593,7 +593,7 @@ void Win32NativeWindow::Initilaize(
 	Win32WindowManager::AbjustLocationCentering(mWindowHandle);
 
 	// WM_PAINTが呼ばれないようにする
-	::ValidateRect(mWindowHandle, 0);
+	//::ValidateRect(mWindowHandle, 0);
 
 	// ウィンドウハンドルと Win32Window のポインタを関連付ける
 	BOOL r = ::SetProp(mWindowHandle, Win32WindowManager::PROP_WINPROC, this);

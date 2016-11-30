@@ -127,32 +127,32 @@ void DX9SwapChain::Present(ITexture* /*colorBuffer*/)
 	//D3DCOLOR dxc = D3DCOLOR_ARGB(255, 255, 0, 0);
 	//LN_COMCALL(dxDevice->Clear(0, NULL, D3DCLEAR_TARGET, dxc, 1.0f, 0));
 
-	// 転送
-	//IDirect3DDevice9* dxDevice = m_graphicsDevice->GetIDirect3DDevice9();
-	//HRESULT hr = dxDevice->Present(NULL, NULL, m_targetHWnd, NULL);
-	HRESULT hr = m_dxSwapChain->Present(NULL, NULL, m_targetHWnd, NULL, 0);
+	//// 転送
+	////IDirect3DDevice9* dxDevice = m_graphicsDevice->GetIDirect3DDevice9();
+	////HRESULT hr = dxDevice->Present(NULL, NULL, m_targetHWnd, NULL);
+	//HRESULT hr = m_dxSwapChain->Present(NULL, NULL, m_targetHWnd, NULL, 0);
 
-	// デバイスロスト確認
-	if (hr == D3DERR_DEVICELOST)
-	{
-		IDirect3DDevice9* dxDevice = m_graphicsDevice->GetIDirect3DDevice9();
-		hr = dxDevice->TestCooperativeLevel();
-		switch (hr)
-		{
-			// デバイスロスト
-		case D3DERR_DEVICELOST:
-			// TODO: ダメなロスト
-			//::SleepEx( 1000, true );      
-			break;
-			// デバイスロスト：リセット可能状態
-		case D3DERR_DEVICENOTRESET:
-			m_graphicsDevice->SetDeviceLostFlag();
-			break;
-		default:
-			LN_THROW(0, COMException, hr);
-			break;
-		}
-	}
+	//// デバイスロスト確認
+	//if (hr == D3DERR_DEVICELOST)
+	//{
+	//	IDirect3DDevice9* dxDevice = m_graphicsDevice->GetIDirect3DDevice9();
+	//	hr = dxDevice->TestCooperativeLevel();
+	//	switch (hr)
+	//	{
+	//		// デバイスロスト
+	//	case D3DERR_DEVICELOST:
+	//		// TODO: ダメなロスト
+	//		//::SleepEx( 1000, true );      
+	//		break;
+	//		// デバイスロスト：リセット可能状態
+	//	case D3DERR_DEVICENOTRESET:
+	//		m_graphicsDevice->SetDeviceLostFlag();
+	//		break;
+	//	default:
+	//		LN_THROW(0, COMException, hr);
+	//		break;
+	//	}
+	//}
 
 	m_graphicsDevice->GCDeviceResource();
 }

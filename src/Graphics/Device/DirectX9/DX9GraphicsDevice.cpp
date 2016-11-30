@@ -456,7 +456,7 @@ void DX9GraphicsDevice::SetPresentParameters(const SizeI& backbufferSize, bool f
 		m_presentParameters.Windowed = TRUE;
 		m_presentParameters.BackBufferWidth = std::max(1, backbufferSize.width);	// 0 だとデバイス作成時にエラーとなる、最低 1
 		m_presentParameters.BackBufferHeight = std::max(1, backbufferSize.height);	// 0 だとデバイス作成時にエラーとなるため、最低 1
-		m_presentParameters.BackBufferFormat = D3DFMT_X8R8G8B8;//D3DFMT_UNKNOWN;//D3DFMT_X8R8G8B8;//
+		m_presentParameters.BackBufferFormat = D3DFMT_A8R8G8B8;//D3DFMT_X8R8G8B8;//D3DFMT_UNKNOWN;//D3DFMT_X8R8G8B8;//
 		if (false)//( mMSAAQualityWindowed > 0 )
 		{
 			m_presentParameters.MultiSampleType = D3DMULTISAMPLE_NONMASKABLE;
