@@ -52,7 +52,7 @@ float4 Basic_PS(VS_OUTPUT input) : COLOR0
 	float4 color;
 	
 	float4 texColor = tex2D(ObjTexSampler, input.Tex);
-	color = input.Color * texColor;//MaterialDiffuse;//input.Color * texColor;
+	color = /*input.Color * */ texColor;//MaterialDiffuse;//input.Color * texColor;
 	
 	return color;
 }

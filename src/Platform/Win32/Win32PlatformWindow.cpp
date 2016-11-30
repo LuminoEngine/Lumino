@@ -564,7 +564,7 @@ void Win32NativeWindow::Initilaize(
 	if (resizable) {
 		mWindowedStyle |= (WS_THICKFRAME | WS_MAXIMIZEBOX);
 	}
-	DWORD dwExStyle = 0;
+	DWORD dwExStyle = WS_EX_LAYERED | WS_EX_TOPMOST;
 	if (windowManager->GetHIcon() == NULL) {
 		dwExStyle |= WS_EX_DLGMODALFRAME;	// アイコンの無いスタイル
 	}
