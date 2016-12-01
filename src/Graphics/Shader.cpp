@@ -508,10 +508,12 @@ void Shader::TryCommitChanges()
 	RenderBulkData varsData(serializer->GetSerializeData(), serializer->GetSerializeDataLength());
 
 	detail::GraphicsManager* manager = GetManager();
-	LN_ENQUEUE_RENDER_COMMAND_2(
+	Shader* _this = this;
+	LN_ENQUEUE_RENDER_COMMAND_3(
 		CommitChanges, GetManager(),
 		detail::GraphicsManager*, manager,
 		RenderBulkData, varsData,
+		RefPtr<Shader>, _this,
 		{
 			auto* serializer = manager->GetShaderVariableCommitSerializeHelper();
 			serializer->Deserialize(varsData.GetData(), varsData.GetSize());

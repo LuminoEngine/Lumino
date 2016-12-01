@@ -112,13 +112,13 @@ PhysicsWorld::~PhysicsWorld()
 		m_manager->RemovePhysicsWorld(this);
 	}
 
-	LN_SAFE_DELETE(m_btCollisionConfig);
-	LN_SAFE_DELETE(m_btCollisionDispatcher);
-	LN_SAFE_DELETE(m_btBroadphase);
-	LN_SAFE_DELETE(m_btSolver);
-	LN_SAFE_DELETE(m_btWorld);
 	LN_SAFE_DELETE(m_softBodyWorldInfo);
+	LN_SAFE_DELETE(m_btWorld);
 	LN_SAFE_DELETE(m_debugDrawer);
+	LN_SAFE_DELETE(m_btSolver);
+	LN_SAFE_DELETE(m_btBroadphase);
+	LN_SAFE_DELETE(m_btCollisionDispatcher);
+	LN_SAFE_DELETE(m_btCollisionConfig);
 }
 
 //------------------------------------------------------------------------------

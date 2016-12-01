@@ -23,6 +23,7 @@ int EntryPoint()
 	{
 		PlatformSupport::ShowAlertMessageBox(e.GetMessage());
 	}
+	Engine::Terminate();
 	return 0;
 }
 
