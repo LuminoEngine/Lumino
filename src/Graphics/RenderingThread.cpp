@@ -40,21 +40,21 @@ void RenderingThread::Dispose()
 
 	// 残っているコマンドはすべて破棄
 	MutexScopedLock lock(m_mutex);
-	LN_FOREACH(RenderingCommandList* c, m_commandListQueue)
+	for (RenderingCommandList* c : m_commandListQueue)
 	{
 		c->PostExecute();		// TODO: デストラクタでやるべきかも？
 		c->m_running.SetFalse();
 		c->m_idling.SetTrue();
 		c->Release();
 	}
-	m_commandListQueue.Clear();
+	m_commandListQueue.clear();
 }
 
 //------------------------------------------------------------------------------
 void RenderingThread::PushRenderingCommand(RenderingCommandList* commandList)
 {
 	MutexScopedLock lock(m_mutex);
-	m_commandListQueue.Enqueue(commandList);
+	m_commandListQueue.push_back(commandList);
 	commandList->m_running.SetTrue();
 	commandList->m_idling.SetFalse();
 	commandList->AddRef();
@@ -92,9 +92,9 @@ void RenderingThread::Execute()
 		RenderingCommandList* commandList = nullptr;
 		{
 			MutexScopedLock lock(m_mutex);
-			if (!m_commandListQueue.IsEmpty()) {
-				commandList = m_commandListQueue.GetHead();
-				m_commandListQueue.Dequeue();
+			if (!m_commandListQueue.empty()) {
+				commandList = m_commandListQueue.front();
+				m_commandListQueue.pop_front();
 			}
 			else {
 				// コマンドリストがなかった。待機状態にする。Mutex でロックされているのでこの直前に true になっていることはない

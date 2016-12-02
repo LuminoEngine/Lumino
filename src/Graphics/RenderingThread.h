@@ -1,8 +1,7 @@
 ﻿
 #pragma once
-
+#include <deque>
 #include <vector>
-#include <Lumino/Base/Queue.h>
 #include <Lumino/Threading/Thread.h>
 #include "RenderingCommand.h"
 
@@ -38,13 +37,13 @@ protected:
 	virtual void Execute();
 
 private:
-	Driver::IGraphicsDevice*		m_device;
-	Driver::IRenderer*				m_renderer;
-	Queue<RenderingCommandList*>	m_commandListQueue;
-	Mutex							m_mutex;
-	ConditionFlag					m_running;
-	ConditionFlag					m_endRequested;
-	Exception*						m_exception;
+	Driver::IGraphicsDevice*			m_device;
+	Driver::IRenderer*					m_renderer;
+	std::deque<RenderingCommandList*>	m_commandListQueue;
+	Mutex								m_mutex;
+	ConditionFlag						m_running;
+	ConditionFlag						m_endRequested;
+	Exception*							m_exception;
 };
 
 LN_NAMESPACE_GRAPHICS_END
