@@ -53,7 +53,7 @@ public:
 	/// 全ての要素を削除する
 	void Clear()
 	{
-		LN_FOREACH(RefObject* item, m_list) {
+		for (RefObject* item : m_list) {
 			OnItemRemoved(item);	// TODO: erase しながらひとつずつ呼ぶべきかも
 			LN_SAFE_RELEASE(item);
 		}

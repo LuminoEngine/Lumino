@@ -61,14 +61,14 @@ void MidiDecoder::FillOnmemoryBuffer()
 		{
 			// ボリュームの最大値を探す
 			uint32_t maxVolume = 0;
-			LN_FOREACH(VolumeEntry& v, m_volumeEntryList)
+			for (VolumeEntry& v : m_volumeEntryList)
 			{
 				maxVolume = std::max(maxVolume, v.volume);
 			}
 
 			// MIDI データ内の最大ボリュームを 127 にするのに必要な値を求め、全てのボリュームに加算する
 			int sub = 127 - maxVolume;
-			LN_FOREACH(VolumeEntry& v, m_volumeEntryList)
+			for (VolumeEntry& v : m_volumeEntryList)
 			{
 				m_midiFileData[v.position] += sub;
 			}

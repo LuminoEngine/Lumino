@@ -401,10 +401,10 @@ Shader::Shader()
 //------------------------------------------------------------------------------
 Shader::~Shader()
 {
-	LN_FOREACH(ShaderVariable* var, m_variables) {
+	for (ShaderVariable* var : m_variables) {
 		LN_SAFE_RELEASE(var);
 	}
-	LN_FOREACH(ShaderTechnique* tech, m_techniques) {
+	for (ShaderTechnique* tech : m_techniques) {
 		LN_SAFE_RELEASE(tech);
 	}
 
@@ -918,7 +918,7 @@ ShaderVariable::ShaderVariable(Shader* owner, Driver::IShaderVariable* deviceObj
 //------------------------------------------------------------------------------
 ShaderVariable::~ShaderVariable()
 {
-	LN_FOREACH(ShaderVariable* anno, m_annotations) {
+	for (ShaderVariable* anno : m_annotations) {
 		anno->Release();
 	}
 	LN_SAFE_RELEASE(m_textureValue);
@@ -1244,10 +1244,10 @@ ShaderTechnique::ShaderTechnique(Shader* owner, Driver::IShaderTechnique* device
 //------------------------------------------------------------------------------
 ShaderTechnique::~ShaderTechnique()
 {
-	LN_FOREACH(ShaderPass* pass, m_passes) {
+	for (ShaderPass* pass : m_passes) {
 		LN_SAFE_RELEASE(pass);
 	}
-	LN_FOREACH(ShaderVariable* anno, m_annotations) {
+	for (ShaderVariable* anno : m_annotations) {
 		LN_SAFE_RELEASE(anno);
 	}
 }

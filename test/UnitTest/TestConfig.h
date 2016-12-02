@@ -6,7 +6,7 @@
 #include <gtest/gtest.h>
 #include <LuminoCore.h>
 #include <LuminoEngine.h>
-#include <Lumino/Testing/TestUtils.h>
+#include <Lumino/Testing/TestHelper.h>
 
 //#include "../../../src/Scene/SceneGraphManager.h"
 //#include "../../../src/Scene/ViewPane.h"
@@ -19,18 +19,14 @@
 
 using namespace ln;
 
-#define LOCALFILE(fileName) TestUtils::GetFilePath(__FILE__, fileName).GetCStr()
-#define LOCALFILEA(fileName) TestUtils::GetFilePathA(__FILE__, fileName).GetCStr()
-#define LOCALFILEW(fileName) TestUtils::GetFilePathW(__FILE__, fileName).GetCStr()
-
 #define SS_SAVE	0
 #define SS_LOAD	1
 
 /// スクリーンショットの作成マクロ
-//#define SS_SAVE(fileName)	TestEnv::SaveScreenShot(LOCALFILE(TestEnv::MakeScreenShotPath(fileName)))
+//#define SS_SAVE(fileName)	TestEnv::SaveScreenShot(LN_LOCALFILE(TestEnv::MakeScreenShotPath(fileName)))
 
 /// スクリーンショットの比較マクロ
-#define SS_CHECK(mode, fileName) if (mode == SS_SAVE) { TestEnv::SaveScreenShot(LOCALFILE(TestEnv::MakeScreenShotPath(fileName))); } else { ASSERT_TRUE(TestEnv::EqualsScreenShot(LOCALFILE(TestEnv::MakeScreenShotPath(fileName)))); }
+#define SS_CHECK(mode, fileName) if (mode == SS_SAVE) { TestEnv::SaveScreenShot(LN_LOCALFILE(TestEnv::MakeScreenShotPath(fileName))); } else { ASSERT_TRUE(TestEnv::EqualsScreenShot(LOCALFILE(TestEnv::MakeScreenShotPath(fileName)))); }
 
 class TestEnv : public ::testing::Environment
 {

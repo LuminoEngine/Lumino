@@ -77,7 +77,6 @@ private:
 				http://msdn.microsoft.com/ja-jp/library/cc353890.aspx
 */
 class DirectMusicManager
-    : private NonCopyable
 {
 public:
 	static const int MusicTimeBase = 768;

@@ -1,10 +1,8 @@
 
 #pragma once
 #include <LuminoEngine.h>
-#include <Lumino/Testing/TestUtils.h>
+#include <Lumino/Testing/TestHelper.h>
 using namespace ln;
-
-#define LOCALFILE(fileName) TestUtils::GetFilePath(__FILE__, fileName).c_str()
 
 class DemoManager
 {

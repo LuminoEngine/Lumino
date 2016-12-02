@@ -38,7 +38,7 @@ FileManager::~FileManager()
 	m_endRequested.SetTrue();
 	m_asyncProcThread.Wait();
 
-	LN_FOREACH(IArchive* a, m_archiveList) {
+	for (IArchive* a : m_archiveList) {
 		a->Release();
 	}
 	m_archiveList.Clear();
@@ -73,7 +73,7 @@ bool FileManager::ExistsFile(const wchar_t* filePath)
 //------------------------------------------------------------------------------
 bool FileManager::ExistsFile(const PathName& filePath)
 {
-	LN_FOREACH(IArchive* archive, m_archiveList)
+	for (IArchive* archive : m_archiveList)
 	{
 		if (archive->ExistsFile(filePath)) {
 			return true;
@@ -103,7 +103,7 @@ Stream* FileManager::CreateFileStream(const PathName& filePath, bool isDeferring
 	PathName absPath = filePath.CanonicalizePath();
 
 	RefPtr<Stream> stream;
-	LN_FOREACH(IArchive* archive, m_archiveList)
+	for (IArchive* archive : m_archiveList)
 	{
 		if (archive->TryCreateStream(absPath, &stream, isDeferring)) {
 			break;

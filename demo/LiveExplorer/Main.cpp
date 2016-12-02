@@ -8,7 +8,7 @@
 #include <Lumino/Scene/TileMap.h>
 #include <Lumino/Scene/MeshModelObject.h>
 #include <Lumino/Scene/SpriteModelObject.h>
-#include <Lumino/Testing/TestUtils.h>
+#include <Lumino/Testing/TestHelper.h>
 //#include <Lumino/Platform/Win32/Win32PlatformWindow.h>
 //#include "../../../src/Scene/MME/MMEShader.h"
 

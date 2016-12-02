@@ -26,7 +26,7 @@ GraphicsDeviceBase::~GraphicsDeviceBase()
 void GraphicsDeviceBase::Finalize()
 {
 	MutexScopedLock lock(m_deviceObjectListMutex);
-	LN_FOREACH(IDeviceObject* obj, m_deviceObjectList) {
+	for (IDeviceObject* obj : m_deviceObjectList) {
 		obj->Release();
 	}
 	m_deviceObjectList.Clear();

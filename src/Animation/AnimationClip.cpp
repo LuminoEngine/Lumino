@@ -42,7 +42,7 @@ AnimationClip::AnimationClip()
 //------------------------------------------------------------------------------
 AnimationClip::~AnimationClip()
 {
-	LN_FOREACH(AnimationCurveEntry& e, m_animationCurveEntryList) {
+	for (AnimationCurveEntry& e : m_animationCurveEntryList) {
 		e.Curve->Release();
 	}
 }

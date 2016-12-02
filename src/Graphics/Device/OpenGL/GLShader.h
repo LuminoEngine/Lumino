@@ -79,7 +79,7 @@ class GLShaderVariable
 	: public ShaderVariableBase
 {
 public:
-	static GLShaderVariable* Deserialize(GLShader* ownerShader, JsonReader2* json, bool* outOverwrited);
+	static GLShaderVariable* Deserialize(GLShader* ownerShader, tr::JsonReader2* json, bool* outOverwrited);
 
 	GLShaderVariable();
 	virtual ~GLShaderVariable();
@@ -108,7 +108,7 @@ class GLShaderAnnotation
 	: public ShaderVariableBase
 {
 public:
-	static GLShaderAnnotation* Deserialize(JsonReader2* json);
+	static GLShaderAnnotation* Deserialize(tr::JsonReader2* json);
 
 	GLShaderAnnotation();
 	virtual ~GLShaderAnnotation();
@@ -131,7 +131,7 @@ class GLShaderTechnique
 	: public IShaderTechnique
 {
 public:
-	static GLShaderTechnique* Deserialize(GLShader* ownerShader, JsonReader2* json);
+	static GLShaderTechnique* Deserialize(GLShader* ownerShader, tr::JsonReader2* json);
 
 	GLShaderTechnique();
 	virtual ~GLShaderTechnique();
@@ -160,7 +160,7 @@ public:
 	static const int MaxUsageIndex = 16;		///< UsageIndex の最大 (DX9 にあわせて最大の 16)
 
 public:
-	static GLShaderPass* Deserialize(GLShader* ownerShader, JsonReader2* json);
+	static GLShaderPass* Deserialize(GLShader* ownerShader, tr::JsonReader2* json);
 
 	GLShaderPass();
 	virtual ~GLShaderPass();

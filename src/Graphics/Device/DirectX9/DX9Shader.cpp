@@ -203,11 +203,11 @@ DX9Shader::DX9Shader(DX9GraphicsDevice* device, ID3DXEffect* dxEffect)
 //------------------------------------------------------------------------------
 DX9Shader::~DX9Shader()
 {
-	LN_FOREACH(DX9ShaderVariable* v, m_variables) {
+	for (DX9ShaderVariable* v : m_variables) {
 		v->Release();
 	}
 
-	LN_FOREACH(DX9ShaderTechnique* t, m_techniques) {
+	for (DX9ShaderTechnique* t : m_techniques) {
 		t->Release();
 	}
 	LN_SAFE_RELEASE(m_dxEffect);
@@ -450,7 +450,7 @@ DX9ShaderVariable::DX9ShaderVariable(DX9Shader* owner, D3DXHANDLE handle)
 //------------------------------------------------------------------------------
 DX9ShaderVariable::~DX9ShaderVariable()
 {
-	LN_FOREACH(DX9ShaderAnnotation* anno, m_annotations) {
+	for (DX9ShaderAnnotation* anno : m_annotations) {
 		anno->Release();
 	}
 }
@@ -596,10 +596,10 @@ DX9ShaderTechnique::DX9ShaderTechnique(DX9Shader* owner, D3DXHANDLE handle)
 //------------------------------------------------------------------------------
 DX9ShaderTechnique::~DX9ShaderTechnique()
 {
-	LN_FOREACH(DX9ShaderAnnotation* anno, m_annotations) {
+	for (DX9ShaderAnnotation* anno : m_annotations) {
 		anno->Release();
 	}
-	LN_FOREACH(DX9ShaderPass* pass, m_passes) {
+	for (DX9ShaderPass* pass : m_passes) {
 		pass->Release();
 	}
 }
@@ -662,7 +662,7 @@ DX9ShaderPass::DX9ShaderPass(DX9Shader* owner, D3DXHANDLE handle, int passIndex,
 //------------------------------------------------------------------------------
 DX9ShaderPass::~DX9ShaderPass()
 {
-	LN_FOREACH(DX9ShaderAnnotation* anno, m_annotations) {
+	for (DX9ShaderAnnotation* anno : m_annotations) {
 		anno->Release();
 	}
 }
