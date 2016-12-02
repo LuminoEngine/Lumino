@@ -3,7 +3,7 @@
 
 #include <string>
 #include <Lumino/Base/Typedef.h>
-#include <Lumino/Base/Array.h>
+#include <Lumino/Base/List.h>
 #include <Lumino/Base/RefObject.h>
 #include <Lumino/Base/String.h>
 #include <Lumino/Base/EnumExtension.h>

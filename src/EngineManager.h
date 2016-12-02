@@ -2,7 +2,7 @@
 #pragma once
 #include <Lumino/Base/RefObject.h>
 #include <Lumino/Base/String.h>
-#include <Lumino/Base/Array.h>
+#include <Lumino/Base/List.h>
 #include <Lumino/Threading/Thread.h>
 #include "Platform/PlatformManager.h"
 #include <Lumino/Platform/EventListener.h>

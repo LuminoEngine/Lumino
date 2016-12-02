@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include <Lumino/Base/Array.h>
+#include <Lumino/Base/List.h>
 
 #define LN_NAMESPACE_SCENE_BEGIN	//namespace Scene {
 #define LN_NAMESPACE_SCENE_END		//}

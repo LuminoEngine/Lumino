@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include <Lumino/Base/Array.h>
+#include <Lumino/Base/List.h>
 #include "PlatformEventArgs.h"
 
 LN_NAMESPACE_BEGIN

@@ -2,7 +2,7 @@
 #pragma once
 #include <Lumino/Base/RefObject.h>
 #include <Lumino/Base/String.h>
-#include <Lumino/Base/Array.h>
+#include <Lumino/Base/List.h>
 #include <Lumino/Threading/Thread.h>
 #include <Lumino/Platform/Common.h>
 #include <Lumino/Base/GeometryStructs.h>
