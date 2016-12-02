@@ -800,6 +800,14 @@ void MeshResource::SetUV(int index, const Vector2& uv)
 }
 
 //------------------------------------------------------------------------------
+void MeshResource::SetColor(int index, const Color& color)
+{
+	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
+	Vertex* v = (Vertex*)TryLockVertexBuffer(VB_BasicVertices);
+	v[index].color = color;
+}
+
+//------------------------------------------------------------------------------
 const Vector3& MeshResource::GetPosition(int index)
 {
 	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);

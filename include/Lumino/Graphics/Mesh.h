@@ -52,6 +52,7 @@ public:
 	void SetPosition(int index, const Vector3& position);
 	void SetNormal(int index, const Vector3& normal);
 	void SetUV(int index, const Vector2& uv);
+	void SetColor(int index, const Color& color);
 	const Vector3& GetPosition(int index);
 
 

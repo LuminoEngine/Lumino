@@ -157,6 +157,7 @@ void PmxLoader::LoadVertices(BinaryReader* reader)
 		m_modelCore->SetPosition(i, baseVertex.Position);
 		m_modelCore->SetNormal(i, baseVertex.Normal);
 		m_modelCore->SetUV(i, baseVertex.TexUV);
+		m_modelCore->SetColor(i, Color::White);
 
 		// 追加UV
 		for (int iAddUV = 0; iAddUV < getAdditionalUVCount(); iAddUV++)

@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "LNInternal.h"
 #include "LNManager.h"
@@ -32,12 +32,12 @@ void LFManager::PreInitialize()
 //------------------------------------------------------------------------------
 void LFManager::PostInitialize()
 {
-	// •¶šƒR[ƒh•ÏŠ·Ší
+	// æ–‡å­—ã‚³ãƒ¼ãƒ‰å¤‰æ›å™¨
 	TCharToUTF8Converter = LN_NEW EncodingConverter();
 	TCharToUTF8Converter->SetSourceEncoding(Encoding::GetTCharEncoding());
 	TCharToUTF8Converter->SetDestinationEncoding(Encoding::GetUTF8Encoding());
 
-	// ƒIƒuƒWƒFƒNƒgŠÇ—”z—ñ
+	// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç®¡ç†é…åˆ—
 	for (int i = 511; i >= 0; --i)
 	{
 		ObjectEntry e;
@@ -45,7 +45,7 @@ void LFManager::PostInitialize()
 		e.Index = i;
 		m_objectEntryList.Add(e);
 
-		if (i > 0) {  // 0 ‚Í NULL ˆµ‚¢BŒ‡”Ô‚É‚·‚éB
+		if (i > 0) {  // 0 ã¯ NULL æ‰±ã„ã€‚æ¬ ç•ªã«ã™ã‚‹ã€‚
 			m_objectIndexStack.Push(i);
 		}
 	}
@@ -54,8 +54,8 @@ void LFManager::PostInitialize()
 //------------------------------------------------------------------------------
 void LFManager::Terminate()
 {
-	// c‚Á‚Ä‚¢‚éƒIƒuƒWƒFƒNƒg‚ğ‘S‚Äíœ
-	LN_FOREACH(ObjectEntry& e, m_objectEntryList) {
+	// æ®‹ã£ã¦ã„ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å…¨ã¦å‰Šé™¤
+	for (ObjectEntry& e : m_objectEntryList) {
 		LN_SAFE_RELEASE(e.Object);
 	}
 
@@ -76,7 +76,7 @@ LNHandle LFManager::CheckRegisterObject(tr::ReflectionObject* obj)
 {
 	if (obj == nullptr) return NULL;
 
-	// “o˜^Ï‚İ‚È‚çƒnƒ“ƒhƒ‹ (ŠÇ—”z—ñã‚ÌƒCƒ“ƒfƒbƒNƒX) ‚ğ•Ô‚·
+	// ç™»éŒ²æ¸ˆã¿ãªã‚‰ãƒãƒ³ãƒ‰ãƒ« (ç®¡ç†é…åˆ—ä¸Šã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹) ã‚’è¿”ã™
 	if (obj->GetUserData() != NULL)
 	{
 		ObjectRegisterData* data = (ObjectRegisterData*)obj->GetUserData();
@@ -84,10 +84,10 @@ LNHandle LFManager::CheckRegisterObject(tr::ReflectionObject* obj)
 		return data->Index;
 	}
 
-	// ŠÇ—”z—ñ‚ª‚·‚×‚Ä–„‚Ü‚Á‚Ä‚¢‚éê‡
+	// ç®¡ç†é…åˆ—ãŒã™ã¹ã¦åŸ‹ã¾ã£ã¦ã„ã‚‹å ´åˆ
 	if (m_objectIndexStack.IsEmpty())
 	{
-		// ––”ö‚É’Ç‰Á‚·‚é
+		// æœ«å°¾ã«è¿½åŠ ã™ã‚‹
 		ObjectEntry e;
 		e.Object = obj;
 		//e.Interface = obj;
@@ -95,7 +95,7 @@ LNHandle LFManager::CheckRegisterObject(tr::ReflectionObject* obj)
 		e.RefCount = 1;
 		m_objectEntryList.Add(e);
 
-		// ƒ†[ƒU[ƒf[ƒ^“o˜^
+		// ãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒ‡ãƒ¼ã‚¿ç™»éŒ²
 		ObjectRegisterData* data = LN_NEW ObjectRegisterData();
 		data->Index = e.Index;
 		obj->SetUserData(data);
@@ -105,18 +105,18 @@ LNHandle LFManager::CheckRegisterObject(tr::ReflectionObject* obj)
 	}
 	else
 	{
-		// ‹ó‚«êŠ‚ğæ“¾
+		// ç©ºãå ´æ‰€ã‚’å–å¾—
 		int newPos = m_objectIndexStack.GetTop();
 		m_objectIndexStack.Pop();
 
-		// Ši”[
+		// æ ¼ç´
 		ObjectEntry& e = m_objectEntryList[newPos];
 
 		e.Object = obj;
 		e.Index = newPos;
 		e.RefCount = 1;
 
-		// ƒ†[ƒU[ƒf[ƒ^“o˜^
+		// ãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒ‡ãƒ¼ã‚¿ç™»éŒ²
 		ObjectRegisterData* data = LN_NEW ObjectRegisterData();
 		data->Index = e.Index;
 		obj->SetUserData(data);
@@ -133,7 +133,7 @@ LNResult LFManager::ProcException(Exception* e)
 		return LN_ERROR_UNKNOWN;
 	}
 
-	// ÅŒã‚É”­¶‚µ‚½—áŠO‚Æ‚µ‚ÄŠo‚¦‚Ä‚¨‚­
+	// æœ€å¾Œã«ç™ºç”Ÿã—ãŸä¾‹å¤–ã¨ã—ã¦è¦šãˆã¦ãŠã
 	LN_SAFE_DELETE(LastException);
 	LastException = e->Copy();
 
@@ -170,7 +170,7 @@ LNResult LFManager::ProcException(Exception* e)
 void LFManager::ReleaseObject(LNHandle handle)
 {
 	if (!IsSystemInitialized)
-		return;		// ‚·‚×‚Ä‰ğ•úÏ‚İ
+		return;		// ã™ã¹ã¦è§£æ”¾æ¸ˆã¿
 
 	int index = TO_INDEX(handle);
 	ObjectEntry& e = m_objectEntryList[index];
@@ -182,7 +182,7 @@ void LFManager::ReleaseObject(LNHandle handle)
 		{
 			LN_SAFE_RELEASE(e.Object);
 
-			// Index •Ô‹p
+			// Index è¿”å´
 			m_objectIndexStack.Push(index);
 		}
 	}

@@ -26,7 +26,7 @@ void Main()
 	//auto sprite6 = Sprite3D::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
 
 
-
+#if 0
 	auto blur = ScreenMotionBlurImageEffect::Create();
 	//blur->SetAmount(0.5f);
 	//blur->SetRadialScale(1.05f);
@@ -44,7 +44,9 @@ void Main()
 	//tonePE->SetTone(ToneF(0,0,1, 1.0));
 	tonePE->ChangeTone(ToneF(1, 0, 1, 0), 5);
 	CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(tonePE);
+#endif
 
+#if 0
 	//Engine::GetMainLight3D()->SetPosition();
 	auto mLogoSprite = Sprite2D::Create(_T("D:/Proj/Volkoff/Volkoff/Data/Graphics/Frontend/Logo_1.png"));
 
@@ -80,6 +82,7 @@ void Main()
 	{
 		m_tileLayer->SetTileId(i % 100, i / 100, map[i]);
 	}
+#endif
 
 	Input::AddButtonBinding(_T("AA"), KeyboardBinding::Create(Key::C));
 	Input::AddButtonBinding(_T("GG"), KeyboardBinding::Create(Key::A));
@@ -90,7 +93,7 @@ void Main()
 		if (Input::IsTriggered(InputButtons::Cancel))
 		{
 			//tonePE->SetTone(ToneF(-1, -1, -1, 0));
-			tonePE->ChangeTone(ToneF(1, 1, 1, 0), 0.5);
+			//tonePE->ChangeTone(ToneF(1, 1, 1, 0), 0.5);
 			//blur->SetBlurStatus(0.5, Vector2::Zero, 1.05, 0.5);
 		}
 		//blur->SetBlurStatus(0.9f, Vector2::Zero, 1.02);
