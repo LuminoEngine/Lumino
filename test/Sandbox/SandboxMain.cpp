@@ -2,7 +2,20 @@
 #include <LuminoEngine.h>
 #include <Lumino/Scene/MeshModelObject.h>
 #include <Lumino/Scene/Light.h>
+#include <Lumino/Foundation/Application.h>
 using namespace ln;
+
+#if 1
+
+
+void Main()
+{
+	GameApplication app;
+	app.Run();
+}
+
+#else
+
 
 void Main()
 {
@@ -100,3 +113,4 @@ void Main()
 	}
 }
 
+#endif

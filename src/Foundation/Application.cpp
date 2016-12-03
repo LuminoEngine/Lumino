@@ -2,6 +2,8 @@
 #include "../Internal.h"
 #include <Lumino/Engine.h>
 #include <Lumino/Foundation/Application.h>
+#include <Lumino/Foundation/GameScene.h>
+#include "GameSceneManager.h"
 #include "../EngineManager.h"
 
 LN_NAMESPACE_BEGIN
@@ -41,11 +43,13 @@ PlatformWindow* Application::GetNativeMainWindow()
 //------------------------------------------------------------------------------
 GameApplication::GameApplication()
 {
+	m_gameSceneManager = RefPtr<detail::GameSceneManager>::MakeRef();
 }
 
 //------------------------------------------------------------------------------
 GameApplication::~GameApplication()
 {
+	m_gameSceneManager->Finalize();
 }
 
 //------------------------------------------------------------------------------
@@ -54,27 +58,23 @@ void GameApplication::OnConfigure()
 }
 
 //------------------------------------------------------------------------------
-void GameApplication::Run()
+void GameApplication::Run(GameScene* initialScene)
 {
-	try
+	OnConfigure();
+
+	Engine::Initialize();
+
+	if (initialScene == nullptr)
+		m_gameSceneManager->GotoScene(RefPtr<GameScene>::MakeRef());
+	else
+		m_gameSceneManager->GotoScene(initialScene);
+
+	do
 	{
-		EngineSettings::SetGraphicsAPI(GraphicsAPI::DirectX9);
-		EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Immediate);
+		m_gameSceneManager->UpdateFrame();
 
-		OnConfigure();
+	} while (Engine::Update());
 
-		Engine::Initialize();
-
-		do
-		{
-
-		} while (Engine::Update());
-	}
-	catch (...)
-	{
-		Engine::Terminate();
-		throw;
-	}
 	Engine::Terminate();
 }
 

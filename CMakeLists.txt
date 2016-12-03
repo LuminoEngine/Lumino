@@ -501,7 +501,9 @@ set(LN_SOURCES_Documents
 )
 
 set(LN_SOURCES_Game
+	include/Lumino/Game/Component.h
 	include/Lumino/Game/FpsController.h
+	src/Game/Component.cpp
 	src/Game/FpsController.cpp
 )
 

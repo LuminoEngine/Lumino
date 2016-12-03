@@ -4,6 +4,8 @@
 #include "../EngineSettings.h"
 
 LN_NAMESPACE_BEGIN
+class GameScene;
+namespace detail { class GameSceneManager; }
 
 /**
 	@brief		アプリケーションを表します。
@@ -43,6 +45,8 @@ public:
 class GameApplication
 {
 public:
+	GameApplication();
+	virtual ~GameApplication();
 
 	/**
 		@brief		アプリケーションの初期化設定を構築する際に呼び出されます。
@@ -52,11 +56,13 @@ public:
 	/**
 		@brief		アプリケーションを実行します。
 	*/
-	void Run();
+	void Run(GameScene* initialScene = nullptr);
 
 protected:
-	GameApplication();
-	virtual ~GameApplication();
+
+private:
+	RefPtr<detail::GameSceneManager>	m_gameSceneManager;
+	
 };
 
 LN_NAMESPACE_END
