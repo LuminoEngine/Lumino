@@ -4,6 +4,7 @@
 #include <Lumino/Base/String.h>
 #include <Lumino/BindingSupport.h>
 #include <Lumino/Graphics/Shader.h>
+#include <Lumino/Game/Component.h>
 //#include "MME/MMESceneObject.h"
 
 LN_NAMESPACE_BEGIN
@@ -13,7 +14,8 @@ class SceneNodeList;
 
 /// SceneNode
 class SceneNode
-	: public tr::ReflectionObject
+	: public Component
+	//: public tr::ReflectionObject
 	//, public IMMESceneObject
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
@@ -146,6 +148,9 @@ public:
 
 protected:
 	virtual void OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph* oldOwner);
+
+	// Component interface
+	virtual void OnUpdate() override;
 
 LN_INTERNAL_ACCESS:
 	SceneNode();

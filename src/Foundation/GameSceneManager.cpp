@@ -25,9 +25,8 @@ void GameObject::AddComponent(Component* component)
 {
 	LN_FAIL_CHECK_ARG(component != nullptr) return;
 	LN_FAIL_CHECK_ARG(component->m_owner != nullptr) return;
-	component->m_owner = this;
+	component->Attach(this);
 	m_components.Add(component);
-	component->OnAttached();
 }
 
 //------------------------------------------------------------------------------
@@ -51,7 +50,7 @@ void GameObject::OnDestroy()
 void GameObject::ReleaseComponents()
 {
 	for (auto& c : m_components)
-		c->OnDetaching();
+		c->Detach();
 	m_components.Clear();
 }
 

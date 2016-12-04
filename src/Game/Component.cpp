@@ -1,6 +1,7 @@
 
 #include "../Internal.h"
 #include <Lumino/Game/Component.h>
+#include <Lumino/Foundation/GameScene.h>
 
 LN_NAMESPACE_BEGIN
 
@@ -11,13 +12,20 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Component, Object);
 
 //------------------------------------------------------------------------------
 Component::Component()
-	: m_owner(nullptr)
+	: transfotm(nullptr)
+	, m_owner(nullptr)
 {
 }
 
 //------------------------------------------------------------------------------
 Component::~Component()
 {
+}
+
+//------------------------------------------------------------------------------
+GameObject* Component::GetOwner() const
+{
+	return m_owner;
 }
 
 //------------------------------------------------------------------------------
@@ -33,6 +41,22 @@ void Component::OnDetaching()
 //------------------------------------------------------------------------------
 void Component::OnUpdate()
 {
+}
+
+//------------------------------------------------------------------------------
+void Component::Attach(GameObject* owner)
+{
+	m_owner = owner;
+	transfotm = &m_owner->transform;
+	OnAttached();
+}
+
+//------------------------------------------------------------------------------
+void Component::Detach()
+{
+	OnDetaching();
+	m_owner = nullptr;
+	transfotm = nullptr;
 }
 
 //==============================================================================
@@ -51,6 +75,12 @@ Transform::Transform()
 //------------------------------------------------------------------------------
 Transform::~Transform()
 {
+}
+
+//------------------------------------------------------------------------------
+Matrix Transform::GetTransformMatrix() const
+{
+	return Matrix::MakeAffineTransformation(scale, center, rotation, position);
 }
 
 LN_NAMESPACE_END

@@ -4,6 +4,7 @@
 #include "SceneGraphManager.h"
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/SceneNode.h>
+#include <Lumino/Foundation/GameScene.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
@@ -26,7 +27,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ListObject, Object);
 //==============================================================================
 // SceneNode
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SceneNode, tr::ReflectionObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SceneNode, Component);
 
 //------------------------------------------------------------------------------
 SceneNode::SceneNode()
@@ -215,6 +216,11 @@ void SceneNode::OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph* oldOw
 	//}
 }
 
+//------------------------------------------------------------------------------
+void SceneNode::OnUpdate()
+{
+	SetTransform(GetOwner()->transform.GetTransformMatrix());
+}
 
 //==============================================================================
 // SceneNodeList
