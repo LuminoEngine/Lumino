@@ -3,15 +3,45 @@
 #include <Lumino/Scene/MeshModelObject.h>
 #include <Lumino/Scene/Light.h>
 #include <Lumino/Foundation/Application.h>
+#include <Lumino/Foundation/GameScene.h>
 using namespace ln;
 
 #if 1
 
+template<class T, typename... TArgs>
+RefPtr<T> NewObject(TArgs... args)
+{
+	auto ptr = RefPtr<T>::MakeRef();
+	//ptr->Initialize(args);
+	return ptr;
+}
+
+
+class TestScene1
+	: public GameScene
+{
+public:
+
+	virtual void OnStart() override
+	{
+		auto player = GameObject::Create();
+		player->AddComponent(Sprite2D::Create(_T("C:/LocalProj/設計ツール/DT-Win_48x48.png")));
+	}
+
+	virtual void OnUpdate() override
+	{
+	}
+
+	virtual void OnTerminate() override
+	{
+	}
+
+};
 
 void Main()
 {
 	GameApplication app;
-	app.Run();
+	app.Run(NewObject<TestScene1>());
 }
 
 #else

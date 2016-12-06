@@ -142,6 +142,13 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 		m_combinedGlobalMatrix = m_localMatrix;
 	}
 
+	// Component
+	GameObject* owner = GetOwner();
+	if (owner != nullptr)
+	{
+		m_combinedGlobalMatrix *= owner->transform.GetTransformMatrix();
+	}
+
 	OnUpdateFrame(deltaTime);
 
 	// 子ノード更新
@@ -219,7 +226,6 @@ void SceneNode::OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph* oldOw
 //------------------------------------------------------------------------------
 void SceneNode::OnUpdate()
 {
-	SetTransform(GetOwner()->transform.GetTransformMatrix());
 }
 
 //==============================================================================

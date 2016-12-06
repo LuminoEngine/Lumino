@@ -69,6 +69,9 @@ LN_TR_PROPERTY_IMPLEMENT(Transform, Vector3, scale, tr::PropertyMetadata());
 
 //------------------------------------------------------------------------------
 Transform::Transform()
+	: position(Vector3::Zero)
+	, rotation(Quaternion::Identity)
+	, scale(Vector3::Ones)
 {
 }
 

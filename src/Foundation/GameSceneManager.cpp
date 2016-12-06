@@ -11,20 +11,30 @@ LN_NAMESPACE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(GameObject, Object);
 
 //------------------------------------------------------------------------------
+GameObjectPtr GameObject::Create()
+{
+	auto ptr = GameObjectPtr::MakeRef();
+	detail::GameSceneManager::GetInstance()->GetActiveScene()->AddGameObject(ptr);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
 GameObject::GameObject()
 {
+	printf("const \n");
 }
 
 //------------------------------------------------------------------------------
 GameObject::~GameObject()
 {
+	printf("~ \n");
 }
 
 //------------------------------------------------------------------------------
 void GameObject::AddComponent(Component* component)
 {
 	LN_FAIL_CHECK_ARG(component != nullptr) return;
-	LN_FAIL_CHECK_ARG(component->m_owner != nullptr) return;
+	LN_FAIL_CHECK_ARG(component->m_owner == nullptr) return;
 	component->Attach(this);
 	m_components.Add(component);
 }
@@ -77,11 +87,19 @@ void GameScene::OnStart()
 //------------------------------------------------------------------------------
 void GameScene::OnUpdate()
 {
+	tr::ReflectionHelper::GCObjectList(&m_gameObjectList);
 }
 
 //------------------------------------------------------------------------------
 void GameScene::OnTerminate()
 {
+}
+
+//------------------------------------------------------------------------------
+void GameScene::AddGameObject(GameObject* obj)
+{
+	LN_FAIL_CHECK_ARG(obj != nullptr) return;
+	m_gameObjectList.Add(obj);
 }
 
 
@@ -90,14 +108,24 @@ void GameScene::OnTerminate()
 //==============================================================================
 namespace detail {
 
+static GameSceneManager* g_gameSceneManager;
+
+//------------------------------------------------------------------------------
+GameSceneManager* GameSceneManager::GetInstance(GameSceneManager* priority)
+{
+	return (priority != nullptr) ? priority : g_gameSceneManager;
+}
+
 //------------------------------------------------------------------------------
 GameSceneManager::GameSceneManager()
 {
+	g_gameSceneManager = this;
 }
 
 //------------------------------------------------------------------------------
 GameSceneManager::~GameSceneManager()
 {
+	g_gameSceneManager = nullptr;
 }
 
 //------------------------------------------------------------------------------

@@ -4,6 +4,8 @@
 #include "../Game/Component.h"
 
 LN_NAMESPACE_BEGIN
+class GameObject;
+using GameObjectPtr = RefPtr<GameObject>;
 
 /**
 	@brief		
@@ -16,6 +18,8 @@ public:
 	Transform	transform;
 
 public:
+	static GameObjectPtr Create();
+
 	GameObject();
 	virtual ~GameObject();
 
@@ -56,6 +60,12 @@ public:
 	/// 終了処理
 	virtual void OnTerminate();
 
+private:
+	void AddGameObject(GameObject* obj);
+
+	List<GameObjectPtr>	m_gameObjectList;
+
+	friend class GameObject;
 };
 
 LN_NAMESPACE_END

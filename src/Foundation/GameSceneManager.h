@@ -10,6 +10,8 @@ class GameSceneManager
 	: public RefObject
 {
 public:
+	static GameSceneManager* GetInstance(GameSceneManager* priority = nullptr);
+
 	GameSceneManager();
 	virtual ~GameSceneManager();
 	void Finalize();
@@ -17,6 +19,8 @@ public:
 	void GotoScene(GameScene* scene);
 	void CallScene(GameScene* scene);
 	void ReturnScene();
+	GameScene* GetActiveScene() const { return m_activeScene; }
+
 	void UpdateFrame();
 
 private:
