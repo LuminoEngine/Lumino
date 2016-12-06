@@ -87,7 +87,10 @@ void GameScene::OnStart()
 //------------------------------------------------------------------------------
 void GameScene::OnUpdate()
 {
-	tr::ReflectionHelper::GCObjectList(&m_gameObjectList);
+	for (auto& ptr : m_gameObjectList)
+	{
+		ptr->OnUpdate();
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -100,6 +103,14 @@ void GameScene::AddGameObject(GameObject* obj)
 {
 	LN_FAIL_CHECK_ARG(obj != nullptr) return;
 	m_gameObjectList.Add(obj);
+}
+
+//------------------------------------------------------------------------------
+void GameScene::Update()
+{
+
+	OnUpdate();
+	//tr::ReflectionHelper::GCObjectList(&m_gameObjectList);
 }
 
 
@@ -168,6 +179,10 @@ void GameSceneManager::ReturnScene()
 void GameSceneManager::UpdateFrame()
 {
 	ExecuteCommands();
+	if (m_activeScene != nullptr)
+	{
+		m_activeScene->Update();
+	}
 }
 
 //------------------------------------------------------------------------------

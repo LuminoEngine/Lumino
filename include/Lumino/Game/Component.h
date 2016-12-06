@@ -19,7 +19,7 @@ public:
 public:
 	Component();
 	virtual ~Component();
-	GameObject* GetOwner() const;
+	GameObject* GetOwnerObject() const;
 
 	virtual void OnAttached();
 	virtual void OnDetaching();
@@ -50,6 +50,10 @@ public:
 public:
 	Transform();
 	virtual ~Transform();
+
+	/** 指定した方向と距離に移動します。*/
+	void Translate(const Vector3& translation);
+	void Translate(float x, float y, float z = 0.0f);
 
 	Matrix GetTransformMatrix() const;
 

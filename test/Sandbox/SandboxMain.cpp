@@ -17,6 +17,21 @@ RefPtr<T> NewObject(TArgs... args)
 }
 
 
+class Simple2DCharacterController
+	: public Component
+{
+public:
+
+	virtual void OnUpdate() override
+	{
+		auto player = GetOwnerObject();
+		
+		if (Input::IsPressed(InputButtons::Right))
+			player->transform.Translate(1, 0);
+	}
+};
+
+
 class TestScene1
 	: public GameScene
 {
@@ -25,11 +40,13 @@ public:
 	virtual void OnStart() override
 	{
 		auto player = GameObject::Create();
-		player->AddComponent(Sprite2D::Create(_T("C:/LocalProj/設計ツール/DT-Win_48x48.png")));
+		player->AddComponent(Sprite2D::Create(_T("C:/LocalProj/設計ツール/dll_48x48.png")));
+		player->AddComponent(NewObject<Simple2DCharacterController>());
 	}
 
 	virtual void OnUpdate() override
 	{
+		GameScene::OnUpdate();
 	}
 
 	virtual void OnTerminate() override

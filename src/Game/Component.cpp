@@ -23,7 +23,7 @@ Component::~Component()
 }
 
 //------------------------------------------------------------------------------
-GameObject* Component::GetOwner() const
+GameObject* Component::GetOwnerObject() const
 {
 	return m_owner;
 }
@@ -78,6 +78,18 @@ Transform::Transform()
 //------------------------------------------------------------------------------
 Transform::~Transform()
 {
+}
+
+//------------------------------------------------------------------------------
+void Transform::Translate(const Vector3& translation)
+{
+	position = position.Get() + translation;
+}
+
+//------------------------------------------------------------------------------
+void Transform::Translate(float x, float y, float z)
+{
+	Translate(Vector3(x, y, z));
 }
 
 //------------------------------------------------------------------------------

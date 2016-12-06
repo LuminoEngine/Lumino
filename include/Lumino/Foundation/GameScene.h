@@ -6,6 +6,7 @@
 LN_NAMESPACE_BEGIN
 class GameObject;
 using GameObjectPtr = RefPtr<GameObject>;
+namespace detail { class GameSceneManager; }
 
 /**
 	@brief		
@@ -62,10 +63,12 @@ public:
 
 private:
 	void AddGameObject(GameObject* obj);
+	void Update();
 
 	List<GameObjectPtr>	m_gameObjectList;
 
 	friend class GameObject;
+	friend class detail::GameSceneManager;
 };
 
 LN_NAMESPACE_END
