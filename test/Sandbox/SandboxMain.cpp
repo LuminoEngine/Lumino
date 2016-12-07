@@ -8,6 +8,8 @@ using namespace ln;
 
 #if 1
 
+
+
 template<class T, typename... TArgs>
 RefPtr<T> NewObject(TArgs... args)
 {
