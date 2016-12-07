@@ -514,6 +514,10 @@ set(LN_SOURCES_Game
 
 set(LN_SOURCES_Scripting
 	src/Scripting/Common.h
+	src/Scripting/NlFunctionNodes.cpp
+	src/Scripting/NlFunctionNodes.h
+	src/Scripting/NlVariant.cpp
+	src/Scripting/NlVariant.h
 	src/Scripting/ScriptingManager.cpp
 	src/Scripting/ScriptingManager.h
 )
