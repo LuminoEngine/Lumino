@@ -16,19 +16,19 @@ protected:
 //------------------------------------------------------------------------------
 TEST_F(Test_Scripting, Basic)
 {
-	auto nlif = RefPtr<ScriptGraphInterface>::MakeRef();
+	auto nlif = RefPtr<NlGraphInterface>::MakeRef();
 	nlif->Initialize();
 
 	auto epNode = nlif->GetEntryPoint();
 
-	auto node = RefPtr<ScriptNode_Print>::MakeRef();
+	auto node = RefPtr<NlNode_Print>::MakeRef();
 
 
 	nlif->GetGraph()->AddGraphNode(node);
 
-	ScriptHelper::LinkPins(epNode->GetFlowOutputPin(), node->GetFlowInputPin());
+	NlHelper::LinkPins(epNode->GetFlowOutputPin(), node->GetFlowInputPin());
 
-	auto ctx = RefPtr<ScriptContext>::MakeRef();
+	auto ctx = RefPtr<NlContext>::MakeRef();
 	//ctx->Initialize();
 	ctx->CallInterface(nlif);
 

@@ -2,28 +2,28 @@
 #pragma once
 
 LN_NAMESPACE_BEGIN
-class ScriptGraphNode;
-class ScriptGraphPin;
-class ScriptContext;
-class ScriptGraph;
-class ScriptGraphInterface;
-using ScriptGraphNodePtr = RefPtr<ScriptGraphNode>;
-using ScriptGraphPinPtr = RefPtr<ScriptGraphPin>;
-using ScriptGraphPtr = RefPtr<ScriptGraph>;
+class NlGraphNode;
+class NlGraphPin;
+class NlContext;
+class NlGraph;
+class NlGraphInterface;
+using NlGraphNodePtr = RefPtr<NlGraphNode>;
+using NlGraphPinPtr = RefPtr<NlGraphPin>;
+using NlGraphPtr = RefPtr<NlGraph>;
 
-enum class ScriptGraphNodeCategory
+enum class NlGraphNodeCategory
 {
 	Command,
 	Function,
 };
 
-enum class ScriptGraphPinCategory
+enum class NlGraphPinCategory
 {
 	CommandFlow,
 	DataFlow,
 };
 
-enum class ScriptGraphPinDirection
+enum class NlGraphPinDirection
 {
 	Input,
 	Output,
@@ -32,75 +32,75 @@ enum class ScriptGraphPinDirection
 /**
 	@brief	
 */
-class ScriptGraphNode
+class NlGraphNode
 	: public Object
 {
 public:
-	ScriptGraphNodeCategory GetCategory() const { return m_category; }
+	NlGraphNodeCategory GetCategory() const { return m_category; }
 
 protected:
-	virtual void Execute(ScriptContext* sc) = 0;
+	virtual void Execute(NlContext* sc) = 0;
 
-	ScriptGraphPin* CreatePin(ScriptGraphPinCategory category, ScriptGraphPinDirection direction, const StringRef& name);
+	NlGraphPin* CreatePin(NlGraphPinCategory category, NlGraphPinDirection direction, const StringRef& name);
 
 protected:
-	ScriptGraphNode();
-	void Initialize(ScriptGraphNodeCategory category);
+	NlGraphNode();
+	void Initialize(NlGraphNodeCategory category);
 
 private:
-	ScriptGraphNodeCategory	m_category;
-	ScriptGraphPinPtr		m_inputCommandFlowPin;
-	List<ScriptGraphPinPtr>	m_outputCommandFlowPinList;
+	NlGraphNodeCategory	m_category;
+	NlGraphPinPtr		m_inputCommandFlowPin;
+	List<NlGraphPinPtr>	m_outputCommandFlowPinList;
 
-	friend class ScriptContext;
+	friend class NlContext;
 };
 
 /**
 	@brief	
 */
-class ScriptGraphSimpleCommandNode
-	: public ScriptGraphNode
+class NlGraphSimpleCommandNode
+	: public NlGraphNode
 {
 public:
-	ScriptGraphSimpleCommandNode()
+	NlGraphSimpleCommandNode()
 	{
-		m_flowInput = CreatePin(ScriptGraphPinCategory::CommandFlow, ScriptGraphPinDirection::Input, _T("name"));
-		m_flowOutput = CreatePin(ScriptGraphPinCategory::CommandFlow, ScriptGraphPinDirection::Output, _T("name"));
+		m_flowInput = CreatePin(NlGraphPinCategory::CommandFlow, NlGraphPinDirection::Input, _T("name"));
+		m_flowOutput = CreatePin(NlGraphPinCategory::CommandFlow, NlGraphPinDirection::Output, _T("name"));
 	}
 
-	virtual ~ScriptGraphSimpleCommandNode() = default;
+	virtual ~NlGraphSimpleCommandNode() = default;
 
-	ScriptGraphPin* GetFlowInputPin() const { return m_flowInput; }
-	ScriptGraphPin* GetFlowOutputPin() const { return m_flowOutput; }
+	NlGraphPin* GetFlowInputPin() const { return m_flowInput; }
+	NlGraphPin* GetFlowOutputPin() const { return m_flowOutput; }
 
 protected:
-	//virtual void Execute(ScriptContext* sc);
+	//virtual void Execute(NlContext* sc);
 
 private:
-	ScriptGraphPin*		m_flowInput;
-	ScriptGraphPin*		m_flowOutput;
+	NlGraphPin*		m_flowInput;
+	NlGraphPin*		m_flowOutput;
 };
 
 /**
 	@brief	
 */
 class EntryPointNode
-	: public ScriptGraphNode
+	: public NlGraphNode
 {
 public:
 	const String& GetEntryPointName() const { return m_entryPointName; }
-	ScriptGraphPin* GetFlowOutputPin() const { return m_flowOutput; }
+	NlGraphPin* GetFlowOutputPin() const { return m_flowOutput; }
 
 LN_INTERNAL_ACCESS:
 	EntryPointNode();
 	void Initialize(const StringRef& name);
 
 protected:
-	virtual void Execute(ScriptContext* sc);
+	virtual void Execute(NlContext* sc);
 
 private:
 	String				m_entryPointName;
-	ScriptGraphPin*		m_flowOutput;
+	NlGraphPin*		m_flowOutput;
 };
 
 /**
@@ -111,98 +111,98 @@ private:
 			- FunctionNode の InputPin は、複数 Link できない。
 			- FunctionNode の OutputPin は、複数 Link できる。
 */
-class ScriptGraphPin
+class NlGraphPin
 	: public Object
 {
 public:
-	virtual ~ScriptGraphPin() = default;
+	virtual ~NlGraphPin() = default;
 	
-	ScriptGraphNode* GetOwnerNode() const { return m_ownerNode; }
+	NlGraphNode* GetOwnerNode() const { return m_ownerNode; }
 
 	/** リンク先のノードを取得する。リンクされていなければ nullptr を返す。*/
-	ScriptGraphNode* GetLinkedToNode();
+	NlGraphNode* GetLinkedToNode();
 
 	/** 指定したピンへのリンクを作成します。*/
-	void MakeLinkTo(ScriptGraphPin* toPin);
+	void MakeLinkTo(NlGraphPin* toPin);
 
 	/** 指定したピンとのリンクを解除します。*/
-	void BreakLinkTo(ScriptGraphPin* toPin);
+	void BreakLinkTo(NlGraphPin* toPin);
 
 	// 接続可否チェックは別関数で
 
 LN_INTERNAL_ACCESS:
-	ScriptGraphPin();
-	void Initialize(ScriptGraphNode* ownerNode, ScriptGraphPinCategory category, ScriptGraphPinDirection direction);
+	NlGraphPin();
+	void Initialize(NlGraphNode* ownerNode, NlGraphPinCategory category, NlGraphPinDirection direction);
 
 private:
-	ScriptGraphNode*		m_ownerNode;
-	ScriptGraphPinCategory	m_category;
-	ScriptGraphPinDirection	m_direction;
-	List<ScriptGraphPin*>	m_linkedTo;
+	NlGraphNode*		m_ownerNode;
+	NlGraphPinCategory	m_category;
+	NlGraphPinDirection	m_direction;
+	List<NlGraphPin*>	m_linkedTo;
 };
 
 /**
 	@brief	
 */
-class ScriptContext
+class NlContext
 	: public Object
 {
 public:
-	ScriptContext();
+	NlContext();
 
 
 	// 内部用
-	void CallInterface(ScriptGraphInterface* inter);
+	void CallInterface(NlGraphInterface* inter);
 
-	void Goto(ScriptGraphPin* nextFlowPin);
+	void Goto(NlGraphPin* nextFlowPin);
 
 	bool IsCompleted() const;
 
 private:
-	void GotoNode(ScriptGraphNode* next);
+	void GotoNode(NlGraphNode* next);
 	void Step();
 
-	ScriptGraphNode*	m_pc;				// ProgramCounter. 次の Step で実行される Command ノード
-	ScriptGraphNode*	m_lastExecutePC;
+	NlGraphNode*	m_pc;				// ProgramCounter. 次の Step で実行される Command ノード
+	NlGraphNode*	m_lastExecutePC;
 };
 
 /**
 	@brief	
 */
-class ScriptGraph
+class NlGraph
 	: public Object
 {
 public:
-	void AddGraphNode(ScriptGraphNode* node);
+	void AddGraphNode(NlGraphNode* node);
 
 private:
-	List<RefPtr<ScriptGraphNode>>	m_nodeList;
+	List<RefPtr<NlGraphNode>>	m_nodeList;
 };
 
 /**
 	@brief	
 */
-class ScriptGraphInterface
+class NlGraphInterface
 	: public Object
 {
 public:
-	ScriptGraph* GetGraph() const { return m_graph; }
+	NlGraph* GetGraph() const { return m_graph; }
 	EntryPointNode* GetEntryPoint() const { return m_entryPoint; }
 
 LN_INTERNAL_ACCESS:
-	ScriptGraphInterface();
-	virtual ~ScriptGraphInterface() = default;
+	NlGraphInterface();
+	virtual ~NlGraphInterface() = default;
 	void Initialize();
 
 private:
-	ScriptGraphPtr	m_graph;
+	NlGraphPtr	m_graph;
 	EntryPointNode*	m_entryPoint;
 };
 
 /**
 	@brief	
 */
-class ScriptGraphClass
+class NlGraphClass
 	: public Object
 {
 public:
@@ -210,13 +210,13 @@ public:
 
 private:
 	List<EntryPointNode*>	m_entryPointList;
-	ScriptGraphPtr			m_graph;
+	NlGraphPtr			m_graph;
 };
 
 /**
 	@brief	
 */
-class ScriptGraphNodeLibrary
+class NlGraphNodeLibrary
 	: public Object
 {
 public:
@@ -229,10 +229,10 @@ private:
 /**
 	@brief	
 */
-class ScriptHelper
+class NlHelper
 {
 public:
-	static void LinkPins(ScriptGraphPin* pin1, ScriptGraphPin* pin2)
+	static void LinkPins(NlGraphPin* pin1, NlGraphPin* pin2)
 	{
 		LN_FAIL_CHECK_ARG(pin1 != nullptr) return;
 		LN_FAIL_CHECK_ARG(pin2 != nullptr) return;
@@ -246,15 +246,15 @@ public:
 /**
 	@brief	
 */
-class ScriptNode_Print
-	: public ScriptGraphSimpleCommandNode
+class NlNode_Print
+	: public NlGraphSimpleCommandNode
 {
 public:
-	ScriptNode_Print() = default;
-	virtual ~ScriptNode_Print() = default;
+	NlNode_Print() = default;
+	virtual ~NlNode_Print() = default;
 
 protected:
-	virtual void Execute(ScriptContext* sc) override;
+	virtual void Execute(NlContext* sc) override;
 };
 
 
