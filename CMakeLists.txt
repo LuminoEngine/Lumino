@@ -48,6 +48,11 @@ set(LN_SOURCES
 	include/LuminoScene.h
 )
 
+set(LN_SOURCES_Base
+	include/Lumino/Base/Uuid.h
+	src/Base/Uuid.cpp
+)
+
 set(LN_SOURCES_Animation
 	include/Lumino/Animation/AnimatableObject.h
 	include/Lumino/Animation/AnimationClock.h
@@ -688,6 +693,7 @@ endif()
 
 #--------------------------------------
 # Grouping.
+source_group("Base"				FILES ${LN_SOURCES_Base})
 source_group("Animation"		FILES ${LN_SOURCES_Animation})
 source_group("IO"				FILES ${LN_SOURCES_IO})
 source_group("Platform"			FILES ${LN_SOURCES_Platform})
@@ -711,6 +717,7 @@ source_group("Foundation"		FILES ${LN_SOURCES_Foundation})
 
 set(LN_SOURCES
 	${LN_SOURCES}
+	${LN_SOURCES_Base}
 	${LN_SOURCES_Animation}
 	${LN_SOURCES_IO}
 	${LN_SOURCES_Platform}

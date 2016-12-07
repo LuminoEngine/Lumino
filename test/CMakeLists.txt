@@ -4,6 +4,7 @@ set(LN_TEST_SOURCES
 	UnitTest/Main.cpp
 	UnitTest/TestConfig.h
 	UnitTest/Base/Test_Base_GeometryStructs.cpp
+	UnitTest/Base/Test_Base_Uuid.cpp
 	UnitTest/Base/Test_Base_Version.cpp
 	UnitTest/IO/Test_IO_ArchiveMaker.cpp
 	UnitTest/IO/Test_IO_ASync.cpp
