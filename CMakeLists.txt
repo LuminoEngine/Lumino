@@ -512,6 +512,7 @@ set(LN_SOURCES_Game
 	src/Game/FpsController.cpp
 )
 
+if (MSVC_VERSION GREATER 1800)		# (MSVC > vs2013)
 set(LN_SOURCES_Scripting
 	src/Scripting/Common.h
 	src/Scripting/NlFunctionNodes.cpp
@@ -521,6 +522,7 @@ set(LN_SOURCES_Scripting
 	src/Scripting/ScriptingManager.cpp
 	src/Scripting/ScriptingManager.h
 )
+endif()
 
 set(LN_SOURCES_Engine
 	include/Lumino/Assets.h

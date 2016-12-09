@@ -24,10 +24,18 @@ set(LN_TEST_SOURCES
 	UnitTest/Scene/Test_Scene_SpriteParticle.cpp
 	UnitTest/Scene/Test_Scene_StaticMesh.cpp
 	UnitTest/Scene/Test_Scene_SceneNode.cpp
-	UnitTest/Scripting/Test_Scripting.cpp
 	UnitTest/UI/Test_UI_Button.cpp
 	UnitTest/UI/Test_UI_TextBlock.cpp
 )
+
+if (MSVC_VERSION GREATER 1800)		# (MSVC > vs2013)
+	
+	set(LN_TEST_SOURCES
+		${LN_TEST_SOURCES}
+		UnitTest/Scripting/Test_Scripting.cpp
+	)
+	
+endif()
 
 include_directories(
 	"${PROJECT_SOURCE_DIR}/include"
