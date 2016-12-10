@@ -1,5 +1,6 @@
 
 #include "../Internal.h"
+#include "NlVariant.h"
 #include "ScriptingManager.h"
 
 LN_NAMESPACE_BEGIN
@@ -40,11 +41,25 @@ NlGraphPin* NlGraphNode::CreatePin(NlGraphPinCategory category, NlGraphPinDirect
 			return ptr;
 		}
 	}
-	else
+	else if (category == NlGraphPinCategory::DataFlow)
 	{
-		LN_NOTIMPLEMENTED();
+		if (direction == NlGraphPinDirection::Input)
+		{
+			auto ptr = NlGraphPinPtr::MakeRef();
+			ptr->Initialize(this, category, direction);
+			m_inputDataFlowPinList.Add(ptr);
+			return ptr;
+		}
+		else if (direction == NlGraphPinDirection::Output)
+		{
+			auto ptr = NlGraphPinPtr::MakeRef();
+			ptr->Initialize(this, category, direction);
+			m_outputCDataFlowPinList.Add(ptr);
+			return ptr;
+		}
 	}
 
+	LN_UNREACHABLE();
 	return nullptr;
 }
 
@@ -87,6 +102,7 @@ void NlGraphPin::Initialize(NlGraphNode* ownerNode, NlGraphPinCategory category,
 	m_ownerNode = ownerNode;
 	m_category = category;
 	m_direction = direction;
+	m_valueCache = RefPtr<NlVariant>::MakeRef();
 }
 
 //------------------------------------------------------------------------------
@@ -117,6 +133,35 @@ void NlGraphPin::BreakLinkTo(NlGraphPin* toPin)
 	m_linkedTo.Remove(toPin);
 	toPin->m_linkedTo.Remove(this);
 }
+//------------------------------------------------------------------------------
+NlVariant* NlGraphPin::GetValueCache() const
+{
+	return m_valueCache;
+}
+
+//------------------------------------------------------------------------------
+void NlGraphPin::SetInlineValue(NlVariant* value)
+{
+	LN_FAIL_CHECK_ARG(value != nullptr) return;
+	LN_FAIL_CHECK_STATE(m_category == NlGraphPinCategory::DataFlow) return;
+	LN_FAIL_CHECK_STATE(m_direction == NlGraphPinDirection::Output) return;
+	m_valueCache = value;
+}
+
+//------------------------------------------------------------------------------
+NlVariant* NlGraphPin::GetInputValue() const
+{
+	LN_FAIL_CHECK_STATE(m_category == NlGraphPinCategory::DataFlow) return nullptr;
+	LN_FAIL_CHECK_STATE(m_direction == NlGraphPinDirection::Input) return nullptr;
+	if (m_linkedTo.IsEmpty())
+	{
+		return GetValueCache();
+	}
+	else
+	{
+		return m_linkedTo[0]->GetValueCache();
+	}
+}
 
 //==============================================================================
 // NlContext
@@ -127,6 +172,21 @@ NlContext::NlContext()
 	: m_pc(nullptr)
 	, m_lastExecutePC(nullptr)
 {
+}
+
+//------------------------------------------------------------------------------
+NlVariant* NlContext::Evaluate(NlGraphPin* dataInputPin)
+{
+	NlGraphNode* node = dataInputPin->GetLinkedToNode();
+	if (node != nullptr)
+	{
+		node->Execute(this);
+	}
+	else
+	{
+		// use default or inline value.
+	}
+	return dataInputPin->GetInputValue();
 }
 
 //------------------------------------------------------------------------------
@@ -221,9 +281,18 @@ void NlGraphInterface::Initialize()
 //==============================================================================
 
 //------------------------------------------------------------------------------
+NlNode_Print::NlNode_Print()
+{
+	m_inputValuePin = CreatePin(NlGraphPinCategory::DataFlow, NlGraphPinDirection::Input, _T("value"));
+}
+
+//------------------------------------------------------------------------------
 void NlNode_Print::Execute(NlContext* sc)
 {
 	printf("test\n");
+
+	NlVariant* v = sc->Evaluate(m_inputValuePin);
+	printf("test %d\n", v->GetValue<int32_t>());
 
 	sc->Goto(GetFlowOutputPin());
 }

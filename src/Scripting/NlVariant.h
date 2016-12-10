@@ -4,11 +4,12 @@ LN_NAMESPACE_BEGIN
 
 enum class NlVariantType
 {
-	Bool,
-	Int,
-	Float,
-	String,
-	Vector3,
+	Null = 0,
+	Bool = 1,
+	Int32 = 2,
+	Float = 3,
+	String = 4,
+	Vector3 = 5,
 };
 
 /**
@@ -24,6 +25,15 @@ public:
 	NlVariantType GetType() const { return m_type; }
 
 
+	void SetValue(int32_t value) { m_type = NlVariantType::Int32; m_int32 = value; }
+
+
+	template<typename T>
+	T GetValue() { return T(); }
+
+	template<>
+	int32_t GetValue<int32_t>() { return m_int32; }
+
 	//NlVariant(const NlVariant& other);
 
 private:
@@ -31,7 +41,7 @@ private:
 	union/* U*/
 	{
 		bool		m_bool;
-		int			m_int;
+		int32_t			m_int32;
 		float		m_float;
 		//std::string	m_string;
 		String		m_string;

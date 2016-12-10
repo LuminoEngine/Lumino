@@ -10,8 +10,8 @@ LN_NAMESPACE_BEGIN
 
 //------------------------------------------------------------------------------
 NlVariant::NlVariant()
-	: m_type(NlVariantType::Int)
-	, m_int(0)
+	: m_type(NlVariantType::Int32)
+	, m_int32(0)
 {
 }
 

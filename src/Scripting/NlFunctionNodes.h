@@ -23,7 +23,6 @@ protected:
 	virtual void Execute(NlContext* sc) override;
 
 private:
-	RefPtr<NlVariant>	m_outputValue;
 	NlGraphPin*			m_inputLhsPin;
 	NlGraphPin*			m_inputRhsPin;
 	NlGraphPin*			m_outputPin;

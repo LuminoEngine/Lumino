@@ -2,6 +2,7 @@
 #pragma once
 
 LN_NAMESPACE_BEGIN
+class NlVariant;
 class NlGraphNode;
 class NlGraphPin;
 class NlContext;
@@ -43,6 +44,7 @@ protected:
 
 	NlGraphPin* CreatePin(NlGraphPinCategory category, NlGraphPinDirection direction, const StringRef& name);
 
+
 protected:
 	NlGraphNode();
 	void Initialize(NlGraphNodeCategory category);
@@ -51,6 +53,8 @@ private:
 	NlGraphNodeCategory	m_category;
 	NlGraphPinPtr		m_inputCommandFlowPin;
 	List<NlGraphPinPtr>	m_outputCommandFlowPinList;
+	List<NlGraphPinPtr>	m_inputDataFlowPinList;
+	List<NlGraphPinPtr>	m_outputCDataFlowPinList;
 
 	friend class NlContext;
 };
@@ -130,6 +134,12 @@ public:
 
 	// 接続可否チェックは別関数で
 
+	NlVariant* GetValueCache() const;
+
+	void SetInlineValue(NlVariant* value);
+
+	NlVariant* GetInputValue() const;
+
 LN_INTERNAL_ACCESS:
 	NlGraphPin();
 	void Initialize(NlGraphNode* ownerNode, NlGraphPinCategory category, NlGraphPinDirection direction);
@@ -139,6 +149,8 @@ private:
 	NlGraphPinCategory	m_category;
 	NlGraphPinDirection	m_direction;
 	List<NlGraphPin*>	m_linkedTo;
+	RefPtr<NlVariant>	m_valueCache;	// input:inline value, output: return value
+
 };
 
 /**
@@ -149,6 +161,8 @@ class NlContext
 {
 public:
 	NlContext();
+
+	NlVariant* Evaluate(NlGraphPin* dataInputPin);
 
 
 	// 内部用
@@ -250,11 +264,15 @@ class NlNode_Print
 	: public NlGraphSimpleCommandNode
 {
 public:
-	NlNode_Print() = default;
+	NlNode_Print();
 	virtual ~NlNode_Print() = default;
+
+	NlGraphPin* GetInputValuePin() const { return m_inputValuePin; }
 
 protected:
 	virtual void Execute(NlContext* sc) override;
+
+	NlGraphPin*			m_inputValuePin;
 };
 
 
