@@ -268,7 +268,7 @@ void Texture2D::Initialize(detail::GraphicsManager* manager, Stream* stream, Tex
 	// プラットフォーム依存のロードが失敗したら普通の処理
 	if (m_deviceObj == NULL)
 	{
-		m_primarySurface = LN_NEW Bitmap(stream);
+		m_primarySurface = LN_NEW Bitmap(stream, true);
 		m_deviceObj = manager->GetGraphicsDevice()->CreateTexture(m_primarySurface->GetSize(), m_mipmap, format, m_primarySurface->GetBitmapBuffer()->GetConstData());
 	}
 

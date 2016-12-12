@@ -41,7 +41,7 @@ public:
 	Bitmap(const SizeI& size, PixelFormat format, bool upFlow = false);
 	Bitmap(int width, int height, int depth, PixelFormat format, bool upFlow = false);
 
-	Bitmap(Stream* stream);
+	Bitmap(Stream* stream, bool flipV = false);
 	
 	/**
 		@brief		指定したファイルを読み込み、Bitmap を作成します。

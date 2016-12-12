@@ -46,19 +46,20 @@ Bitmap::Bitmap(int width, int height, int depth, PixelFormat format, bool upFlow
 }
 
 //------------------------------------------------------------------------------
-Bitmap::Bitmap(Stream* stream)
+Bitmap::Bitmap(Stream* stream, bool flipV)
 {
 	Init();
 	LN_THROW(stream != NULL, ArgumentException);
 
 	PngFile pngFile;
-	if (!pngFile.load(stream, false)) {
+	if (!pngFile.load(stream, flipV)) {
 		LN_THROW(0, InvalidFormatException);
 	}
 	m_size = pngFile.m_size;
 	m_depth = 1;
 	m_format = pngFile.m_format;
 	m_bitmapData = pngFile.m_bitmapData;
+	m_upFlow = flipV;
 }
 
 //------------------------------------------------------------------------------
