@@ -156,24 +156,24 @@ uniform vec4		ln_BlendColor;// = vec4(0, 0, 0, 1);
 uniform vec4		ln_ToneColor;// = vec4(0, 0, 0, 0);
 
 // 各種ベース色
-const vec4 ln_DiffuseColor[LN_LightCount] =
-{
+vec4 ln_DiffuseColor[LN_LightCount] = vec4[]
+(
 	ln_MaterialDiffuse * vec4(ln_LightDiffuses[0], 1.0f),
 	ln_MaterialDiffuse * vec4(ln_LightDiffuses[1], 1.0f),
-	ln_MaterialDiffuse * vec4(ln_LightDiffuses[2], 1.0f),
-};
-const vec3 ln_AmbientColor[LN_LightCount] =
-{
+	ln_MaterialDiffuse * vec4(ln_LightDiffuses[2], 1.0f)
+);
+vec3 ln_AmbientColor[LN_LightCount] = vec3[]
+(
 	LN_saturate(ln_MaterialAmbient * ln_LightAmbients[0]) + ln_MaterialEmmisive,
 	LN_saturate(ln_MaterialAmbient * ln_LightAmbients[1]) + ln_MaterialEmmisive,
-	LN_saturate(ln_MaterialAmbient * ln_LightAmbients[2]) + ln_MaterialEmmisive,
-};
-const vec3 ln_SpecularColor[LN_LightCount] =
-{
+	LN_saturate(ln_MaterialAmbient * ln_LightAmbients[2]) + ln_MaterialEmmisive
+);
+vec3 ln_SpecularColor[LN_LightCount] = vec3[]
+(
 	ln_MaterialSpecular * ln_LightSpeculars[0],
 	ln_MaterialSpecular * ln_LightSpeculars[1],
-	ln_MaterialSpecular * ln_LightSpeculars[2],
-};
+	ln_MaterialSpecular * ln_LightSpeculars[2]
+);
 
 //------------------------------------------------------------------------------
 vec2 LN_FlipTexCoord(vec2 inUV)

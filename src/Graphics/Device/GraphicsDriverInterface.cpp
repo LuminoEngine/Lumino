@@ -128,6 +128,8 @@ void IRenderer::EnterRenderState()
 {
 	m_modifiedFlags = Modified_All;
 	OnEnterRenderState();
+	OnUpdateRenderState(m_requestedRenderState, m_currentRenderState, true);
+	OnUpdateDepthStencilState(m_requestedDepthStencilState, m_currentDepthStencilState, true);
 }
 
 //------------------------------------------------------------------------------

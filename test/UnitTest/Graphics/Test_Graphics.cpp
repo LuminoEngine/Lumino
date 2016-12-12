@@ -152,9 +152,36 @@ TEST_F(Test_Graphics_Rendering, DrawSquarePrimitive)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Rendering, DrawMesh)
 {
+	//{
+	//	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
+	//	mesh->InitializeSquarePlane(detail::GraphicsManager::GetInstance(), Vector2(2, 1), Vector3::UnitY, MeshCreationFlags::None);
+	//	mesh->GetMeshResource()->SetPosition(0, Vector3(-2, 1, 0));
+	//	mesh->GetMeshResource()->SetNormal(0, Vector3(1, 0, 0));
+	//	mesh->GetMeshResource()->SetPosition(1, Vector3(-2, -1, 0));
+	//	mesh->GetMeshResource()->SetNormal(1, Vector3(1, 1, 0));
+	//	mesh->GetMeshResource()->SetPosition(2, Vector3(2, 1, 0));
+	//	mesh->GetMeshResource()->SetNormal(2, Vector3(0, 1, 0));
+	//	mesh->GetMeshResource()->SetPosition(3, Vector3(2, -1, 0));
+	//	mesh->GetMeshResource()->SetNormal(3, Vector3(0, 0, 1));
+	//	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
+	//	Camera::GetMain3DCamera()->SetCameraBehavior(cb);
+
+	//	while (1)
+	//	{
+	//		Engine::BeginFrameUpdate();	// update camera transform
+	//		if (Engine::BeginRendering())
+	//		{
+	//			Engine::Render();
+	//			Engine::GetDefault3DLayer()->GetRenderer()->DrawMesh(mesh, 0, mesh->GetMeshResource()->GetMaterial(0));
+	//			Engine::EndRendering();
+	//		}
+	//		Engine::EndFrameUpdate();
+	//	}
+	//	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png")));
+	//}
 	{
 		auto mesh = RefPtr<StaticMeshModel>::MakeRef();
-		mesh->InitializeSphere(detail::GraphicsManager::GetInstance(), 2, 4, 4, MeshCreationFlags::None);
+		mesh->InitializeSphere(detail::GraphicsManager::GetInstance(), 2, 8, 4, MeshCreationFlags::None);
 
 		Engine::BeginFrameUpdate();	// update camera transform
 		if (Engine::BeginRendering())
@@ -164,7 +191,7 @@ TEST_F(Test_Graphics_Rendering, DrawMesh)
 			Engine::EndRendering();
 		}
 		Engine::EndFrameUpdate();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png")));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png"), 95));
 	}
 }
 

@@ -82,6 +82,7 @@ void GLRenderer::OnResetDevice()
 	if (m_framebuffer == 0) {
 		glGenFramebuffers(1, &m_framebuffer);
 	}
+	//auto cc = wglGetCurrentContext();
 	m_justSawReset = true;
 }
 
@@ -454,6 +455,7 @@ void GLRenderer::OnDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex,
 //------------------------------------------------------------------------------
 void GLRenderer::UpdateFrameBuffer()
 {
+	//auto cc =wglGetCurrentContext();
 	glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer); LN_CHECK_GLERROR();
     
     if (m_modifiedFrameBuffer)

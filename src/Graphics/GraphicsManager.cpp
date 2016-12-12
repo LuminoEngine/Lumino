@@ -179,6 +179,7 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 		data.MainWindow = configData.mainWindow;
 		data.OpenGLMajorVersion = 2;
 		data.OpenGLMinorVersion = 1;
+		data.createSharedRenderingContext = (m_renderingType == GraphicsRenderingType::Threaded);
 		auto* device = LN_NEW Driver::WGLGraphicsDevice();
 		device->Initialize(data);
 		ChangeDevice(device);

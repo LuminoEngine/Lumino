@@ -23,6 +23,7 @@ public:
 		PlatformWindow*		MainWindow;
 		int					OpenGLMajorVersion;
 		int					OpenGLMinorVersion;
+		bool				createSharedRenderingContext = false;
 
 		ConfigData()
 			: MainWindow(NULL)

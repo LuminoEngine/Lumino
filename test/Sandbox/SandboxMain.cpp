@@ -1,6 +1,7 @@
 ﻿
 #include <LuminoEngine.h>
 #include <Lumino/Scene/MeshModelObject.h>
+#include <Lumino/Scene/StaticMesh.h>
 #include <Lumino/Scene/Light.h>
 #include <Lumino/Foundation/Application.h>
 #include <Lumino/Foundation/GameScene.h>
@@ -93,6 +94,7 @@ void Main()
 	//auto sprite5 = Sprite3D::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
 	//auto sprite6 = Sprite3D::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
 
+	auto mesh = StaticMesh::CreateSphere(2, 4, 4);
 
 #if 0
 	auto blur = ScreenMotionBlurImageEffect::Create();
@@ -157,7 +159,7 @@ void Main()
 
 	while (Engine::Update())
 	{
-		printf("----\n");
+		//printf("----\n");
 		if (Input::IsTriggered(InputButtons::Cancel))
 		{
 			//tonePE->SetTone(ToneF(-1, -1, -1, 0));

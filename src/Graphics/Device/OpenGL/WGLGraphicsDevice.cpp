@@ -215,7 +215,10 @@ void WGLGraphicsDevice::Initialize(const ConfigData& configData)
 	::ReleaseDC(hWnd, hDC);
 
 
-	m_mainRenderingContext = LN_NEW WGLContext(this, configData.MainWindow, m_mainContext);
+	if (configData.createSharedRenderingContext)
+		m_mainRenderingContext = LN_NEW WGLContext(this, configData.MainWindow, m_mainContext);
+	else
+		LN_REFOBJ_SET(m_mainRenderingContext, m_mainContext);
 
 	// m_defaultSwapChain->Create() でシェーダとか作るので先にアクティブにしておく
 	MakeCurrentContext(m_mainContext);
@@ -236,46 +239,6 @@ void WGLGraphicsDevice::Initialize(const ConfigData& configData)
 //------------------------------------------------------------------------------
 void WGLGraphicsDevice::MakeCurrentContext(GLContext* context)
 {
-	/*
-	m 318971
-d 197047
-m 62808
-d 112070
-m 33251
-d 41462
-m 29146
-d 37767
-m 27094
-d 41872
-m 27094
-d 38588
-m 27094
-d 42693
-m 28325
-d 37767
-m 27504
-d 36125
-m 25041
-d 37767
-m 28325
-d 38999
-m 27094
-d 37767
-m 25041
-d 128902
-m 174058
-d 53777
-m 32020
-d 38999
-m 53367
-d 42693
-m 30378
-d 43104
-m 41872
-d 38588
-m 28325
-d 37767
-*/
 	if (context) {
 		BOOL r = wglMakeCurrent(static_cast<WGLContext*>(context)->GetDC(), static_cast<WGLContext*>(context)->GetGLRC());
 		LN_THROW(r, Win32Exception, ::GetLastError());
