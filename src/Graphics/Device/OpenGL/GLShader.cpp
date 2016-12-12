@@ -533,13 +533,13 @@ GLuint GLSLUtils::CompileShader3(GLuint type, const char* code, GLint codeLen, c
 
 	const char* codes[] =
 	{
-		"#define LN_GLSL\n",
+		"#version 120\n\n#define LN_GLSL\n",
 		ifdef.c_str(),
 		code,
 	};
 	GLint codeLens[] =
 	{
-		strlen(codes[1]),
+		strlen(codes[0]),
 		ifdef.GetLength(),
 		codeLen,
 	};
@@ -865,6 +865,7 @@ void GLShaderVariable::Initialize(GLShader* owner, ShaderVariableTypeDesc desc, 
 	m_ownerShader = owner;
 	m_glUniformLocation = location;
 	ShaderVariableBase::Initialize(desc, name, semanticName);
+	MakeInitialValue();
 }
 
 //------------------------------------------------------------------------------
@@ -1346,6 +1347,7 @@ void GLShaderPass::Build()
 		// 名前を String 化
 		String tname;
 		tname.AssignCStr(name);
+		tname = tname.Replace(_T("[0]"), _T(""));
 
 		// Location
 		passVar.Location = glGetUniformLocation(m_program, name); LN_CHECK_GLERROR();
@@ -1457,6 +1459,7 @@ void GLShaderPass::Build()
 				// Location 取得
 				int loc = glGetAttribLocation(m_program, name); LN_CHECK_GLERROR();
 				m_usageAttrIndexTable[iUsage][usageIndex] = loc; LN_CHECK_GLERROR();
+
 				break;
 			}
 		}

@@ -12,7 +12,7 @@ using namespace ln;
 
 
 
-#if 1
+#if 0
 
 
 
@@ -83,7 +83,7 @@ void Main()
 	Camera::GetMain3DCamera()->SetCameraBehavior(cb);
 
 
-	auto mesh = SkinnedMesh::Create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
+	//auto mesh = SkinnedMesh::Create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
 
 	//auto tex = Texture2D::Create("D:/Proj/Volkoff/External/Lumino/test/UnitTest/Scene/TestData/Dice1.png");
 	//auto sprite1 = Sprite3D::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);

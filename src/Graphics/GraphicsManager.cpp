@@ -544,6 +544,7 @@ void ShaderVariableCommitSerializeHelper::WriteValue(Driver::IShaderVariable* ta
 		m_writer->WriteUInt64((intptr_t)((value.GetManagedTexture()) ? value.GetManagedTexture()->ResolveDeviceObject() : nullptr));
 		break;
 	default:
+		// TODO: シェーダ変数に値が1度もセットされなかった場合ここに来る。デフォルト値を使うべき？
 		LN_THROW(0, ArgumentException);
 		break;
 	}

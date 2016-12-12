@@ -37,11 +37,11 @@ VS_OUTPUT Basic_VS(LN_VS_INPUT input)
 	// 頂点法線をワールド空間に変換
 	output.Normal = normalize(mul(input.Normal, (float3x3)ln_World));
 	
-	// 頂点カラー
-	output.Color = LN_GetLambertVertexColor(output.Normal) * input.Color;
-	
 	// テクスチャ座標
 	output.Tex = input.Tex;
+	
+	// 頂点カラー
+	output.Color = LN_GetLambertVertexColor(output.Normal) * input.Color;
 	
 	return output;
 }
@@ -74,18 +74,27 @@ technique MainTec0
 
 //=============================================================================
 #ifdef LN_GLSL_VERTEX_Main
-attribute vec3	ln_Vertex;			// Pos
-attribute vec2	ln_MultiTexCoord0;	// UV
-attribute vec4	ln_Color0;			// Color
+attribute vec3	ln_Vertex;			// POSITION
+attribute vec2	ln_MultiTexCoord0;	// TEXCOORD0
+attribute vec3	ln_Normal0;			// NORMAL0
+attribute vec4	ln_Color0;			// COLOR0
 
 varying vec2	v_TexUV;
 varying vec4	v_Color;
 
 void main()
 {
-	gl_Position		= vec4(ln_Vertex, 1.0) * ln_WorldViewProjection;
+	// 頂点位置をスクリーン空間に変換
+	gl_Position		= ln_WorldViewProjection * vec4(ln_Vertex, 1.0);
+	
+	// 頂点法線をワールド空間に変換
+	vec3 normal		= normalize(mat3(ln_WorldViewProjection) * ln_Normal0);
+	
+	// テクスチャ座標
 	v_TexUV			= LN_FlipTexCoord(ln_MultiTexCoord0);
-	v_Color			= ln_Color0;
+	
+	// 頂点カラー
+	v_Color			= LN_GetLambertVertexColor(normal) * ln_Color0;
 }
 #endif /* LN_GLSL_VERTEX_Main */
 
@@ -96,7 +105,7 @@ varying vec2	v_TexUV;
 
 void main()
 {
-    gl_FragColor = texture2D(ln_MaterialTexture, v_TexUV) * v_Color;
+	gl_FragColor = texture2D(ln_MaterialTexture, v_TexUV) * v_Color;
 }
 #endif /* LN_GLSL_FRAGMENT_Main */
 

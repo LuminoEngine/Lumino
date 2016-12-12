@@ -1,4 +1,7 @@
-
+/*
+	GLSL/HLSL/Metal å‘½ä»¤å¯¾å¿œè¡¨
+	http://dench.flatlib.jp/opengl/glsl_hlsl
+*/
 
 
 //==============================================================================
@@ -8,20 +11,20 @@
 
 static const int LN_LightCount = 3;
 
-// À•W•ÏŠ·s—ñ
+// åº§æ¨™å¤‰æ›è¡Œåˆ—
 float4x4	ln_WorldViewProjection;
 float4x4	ln_World;
 float4x4	ln_View;
 float4x4	ln_Projection;
 float2		ln_ViewportPixelSize;
 
-//ƒ‰ƒCƒgŠÖ˜A
-bool		ln_LightEnables[LN_LightCount];		// —LŒøƒtƒ‰ƒO
-float3		ln_LightDirections[LN_LightCount];		// •ûŒü
-float3		ln_LightPositions[LN_LightCount];		// ƒ‰ƒCƒgˆÊ’u
-float		ln_LightZFars[LN_LightCount];			// ƒ‰ƒCƒgzFar’l
+//ãƒ©ã‚¤ãƒˆé–¢é€£
+bool		ln_LightEnables[LN_LightCount];		// æœ‰åŠ¹ãƒ•ãƒ©ã‚°
+float3		ln_LightDirections[LN_LightCount];		// æ–¹å‘
+float3		ln_LightPositions[LN_LightCount];		// ãƒ©ã‚¤ãƒˆä½ç½®
+float		ln_LightZFars[LN_LightCount];			// ãƒ©ã‚¤ãƒˆzFarå€¤
 
-// ƒ}ƒeƒŠƒAƒ‹F
+// ãƒãƒ†ãƒªã‚¢ãƒ«è‰²
 float4		ln_MaterialDiffuse;
 float3		ln_MaterialAmbient;
 float3		ln_MaterialEmmisive;
@@ -29,17 +32,17 @@ float3		ln_MaterialSpecular;
 float		ln_MaterialSpecularPower;
 texture		ln_MaterialTexture;
 
-// ƒ‰ƒCƒgF
+// ãƒ©ã‚¤ãƒˆè‰²
 float3		ln_LightDiffuses[LN_LightCount];
 float3		ln_LightAmbients[LN_LightCount];
 float3		ln_LightSpeculars[LN_LightCount];
 
-// ƒrƒ‹ƒgƒCƒ“‚ÌƒGƒtƒFƒNƒgF
+// ãƒ“ãƒ«ãƒˆã‚¤ãƒ³ã®ã‚¨ãƒ•ã‚§ã‚¯ãƒˆè‰²
 float4		ln_ColorScale = float4(1, 1, 1, 1);
 float4		ln_BlendColor = float4(0, 0, 0, 1);
 float4		ln_ToneColor = float4(0, 0, 0, 0);
 
-// Šeíƒx[ƒXF
+// å„ç¨®ãƒ™ãƒ¼ã‚¹è‰²
 static float4 ln_DiffuseColor[LN_LightCount] =
 {
 	ln_MaterialDiffuse * float4(ln_LightDiffuses[0], 1.0f),
@@ -63,7 +66,7 @@ static float3 ln_SpecularColor[LN_LightCount] =
 //------------------------------------------------------------------------------
 float4 LN_GetLambertVertexColor(float3 normal)
 {
-	// ƒfƒBƒtƒ…[ƒYF{ƒAƒ“ƒrƒGƒ“ƒgF ŒvZ
+	// ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²ï¼‹ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆè‰² è¨ˆç®—
 	float3 color = float3(0, 0, 0);
 	float3 ambient = float3(0, 0, 0);
 	float count = 0;
@@ -118,10 +121,23 @@ float4 LN_GetBuiltinEffectColor(float4 inColor)
 //==============================================================================
 #ifdef LN_GLSL
 
-// À•W•ÏŠ·s—ñ
-uniform mat4		ln_WorldViewProjection;
+#define LN_saturate(x)	clamp(x, 0.0, 1.0)
+#define LN_LightCount	3
 
-// ƒ}ƒeƒŠƒAƒ‹F
+// åº§æ¨™å¤‰æ›è¡Œåˆ—
+uniform mat4		ln_WorldViewProjection;
+uniform mat4		ln_World;
+uniform mat4		ln_View;
+uniform mat4		ln_Projection;
+uniform vec2		ln_ViewportPixelSize;
+
+//ãƒ©ã‚¤ãƒˆé–¢é€£
+uniform bool		ln_LightEnables[LN_LightCount];		// æœ‰åŠ¹ãƒ•ãƒ©ã‚°
+uniform vec3		ln_LightDirections[LN_LightCount];	// æ–¹å‘
+uniform vec3		ln_LightPositions[LN_LightCount];	// ãƒ©ã‚¤ãƒˆä½ç½®
+uniform float		ln_LightZFars[LN_LightCount];		// ãƒ©ã‚¤ãƒˆzFarå€¤
+
+// ãƒãƒ†ãƒªã‚¢ãƒ«è‰²
 uniform vec4		ln_MaterialDiffuse;
 uniform vec3		ln_MaterialAmbient;
 uniform vec3		ln_MaterialEmmisive;
@@ -129,11 +145,64 @@ uniform vec3		ln_MaterialSpecular;
 uniform float		ln_MaterialSpecularPower;
 uniform sampler2D	ln_MaterialTexture;
 
+// ãƒ©ã‚¤ãƒˆè‰²
+uniform vec3		ln_LightDiffuses[LN_LightCount];
+uniform vec3		ln_LightAmbients[LN_LightCount];
+uniform vec3		ln_LightSpeculars[LN_LightCount];
+
+// ãƒ“ãƒ«ãƒˆã‚¤ãƒ³ã®ã‚¨ãƒ•ã‚§ã‚¯ãƒˆè‰²
+uniform vec4		ln_ColorScale;// = vec4(1, 1, 1, 1);
+uniform vec4		ln_BlendColor;// = vec4(0, 0, 0, 1);
+uniform vec4		ln_ToneColor;// = vec4(0, 0, 0, 0);
+
+// å„ç¨®ãƒ™ãƒ¼ã‚¹è‰²
+const vec4 ln_DiffuseColor[LN_LightCount] =
+{
+	ln_MaterialDiffuse * vec4(ln_LightDiffuses[0], 1.0f),
+	ln_MaterialDiffuse * vec4(ln_LightDiffuses[1], 1.0f),
+	ln_MaterialDiffuse * vec4(ln_LightDiffuses[2], 1.0f),
+};
+const vec3 ln_AmbientColor[LN_LightCount] =
+{
+	LN_saturate(ln_MaterialAmbient * ln_LightAmbients[0]) + ln_MaterialEmmisive,
+	LN_saturate(ln_MaterialAmbient * ln_LightAmbients[1]) + ln_MaterialEmmisive,
+	LN_saturate(ln_MaterialAmbient * ln_LightAmbients[2]) + ln_MaterialEmmisive,
+};
+const vec3 ln_SpecularColor[LN_LightCount] =
+{
+	ln_MaterialSpecular * ln_LightSpeculars[0],
+	ln_MaterialSpecular * ln_LightSpeculars[1],
+	ln_MaterialSpecular * ln_LightSpeculars[2],
+};
 
 //------------------------------------------------------------------------------
 vec2 LN_FlipTexCoord(vec2 inUV)
 {
 	return vec2(inUV.x, -inUV.y + 1.0);
+}
+
+//------------------------------------------------------------------------------
+vec4 LN_GetLambertVertexColor(vec3 normal)
+{
+	// ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²ï¼‹ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆè‰² è¨ˆç®—
+	vec3 color = vec3(0, 0, 0);
+	vec3 ambient = vec3(0, 0, 0);
+	float count = 0;
+	for (int i = 0; i < 3; i++)
+	{
+		if (ln_LightEnables[i])
+		{
+			color += (vec3(1,1,1) - color) * (max(vec3(0,0,0), ln_DiffuseColor[i].rgb * dot(normal, -ln_LightDirections[i])));
+			//output.Color.rgb = float3(dot(output.Normal, -LightDirection[i]), 0, 0);
+			ambient += ln_AmbientColor[i];
+			count = count + 1.0;
+		}
+	}
+	
+	vec4 outColor;
+	outColor.rgb = LN_saturate(ambient / count + color);
+	outColor.a = ln_MaterialDiffuse.a;
+	return outColor;
 }
 
 
@@ -148,21 +217,21 @@ vec2 LN_FlipTexCoord(vec2 inUV)
 //==============================================================================
 #ifdef LN_HLSL_DX9
 
-//ƒ‰ƒCƒg”
+//ãƒ©ã‚¤ãƒˆæ•°
 static const int MMM_LightCount = 3;
 
 float	 MMM_modelsize = 1.0;
 
-// ƒ{[ƒ“ƒeƒNƒXƒ`ƒƒƒTƒCƒY‚Ì‹t”
+// ãƒœãƒ¼ãƒ³ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚µã‚¤ã‚ºã®é€†æ•°
 float2 lnBoneTextureReciprocalSize = float2( 1.0/4.0, 1.0/256.0 );
 
-// ƒ{[ƒ“—p’¸“_ƒeƒNƒXƒ`ƒƒƒTƒ“ƒvƒ‰[éŒ¾
+// ãƒœãƒ¼ãƒ³ç”¨é ‚ç‚¹ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚µãƒ³ãƒ—ãƒ©ãƒ¼å®£è¨€
 texture lnBoneTexture;
 sampler2D lnBoneSampler = sampler_state
 {
 	Texture = <lnBoneTexture>;
-	MinFilter = Point;  // –w‚Ç‚ÌGPU‚Å‚ÍˆÈ‰º‚Ì‚æ‚¤‚ÈƒXƒe[ƒgİ’è‚É‚µ‚È‚¢‚Æ
-	MagFilter = Point;  // ’¸“_ƒeƒNƒXƒ`ƒƒ‚ÌƒtƒFƒbƒ`‚ª‚¤‚Ü‚­‚¢‚©‚È‚¢
+	MinFilter = Point;  // æ®†ã©ã®GPUã§ã¯ä»¥ä¸‹ã®ã‚ˆã†ãªã‚¹ãƒ†ãƒ¼ãƒˆè¨­å®šã«ã—ãªã„ã¨
+	MagFilter = Point;  // é ‚ç‚¹ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚§ãƒƒãƒãŒã†ã¾ãã„ã‹ãªã„
 	MipFilter = None;
 	AddressU = Clamp;
 	AddressV = Clamp;
@@ -183,7 +252,7 @@ struct MMM_SKINNING_INPUT
 	float4	Pos				: POSITION;
 	float4	BlendWeight		: BLENDWEIGHT;
 	float4	BlendIndices	: BLENDINDICES;
-	float4	Color			: COLOR0;		// “Æ©
+	float4	Color			: COLOR0;		// ç‹¬è‡ª
 	float3	Normal			: NORMAL;
 	float2	Tex				: TEXCOORD0;
 	float4	AddUV1			: TEXCOORD1;
@@ -210,7 +279,7 @@ struct MMM_SKINNING_OUTPUT
 float4x3 LN_GetBoneMatrix(int boneIndex)
 {
 	float2 uv = lnBoneTextureReciprocalSize;
-	float4 tc0 = float4( 0.5f * uv.x, (boneIndex + 0.5f) * uv.y, 0, 1 );	// +0.5 ‚Í”¼ƒsƒNƒZƒ‹•ª
+	float4 tc0 = float4( 0.5f * uv.x, (boneIndex + 0.5f) * uv.y, 0, 1 );	// +0.5 ã¯åŠãƒ”ã‚¯ã‚»ãƒ«åˆ†
 	float4 tc1 = float4( 1.5f * uv.x, (boneIndex + 0.5f) * uv.y, 0, 1 );
 	float4 tc2 = float4( 2.5f * uv.x, (boneIndex + 0.5f) * uv.y, 0, 1 );
 	//float4 tc3 = float4( 3.5f * uv.x, (boneIndex + 0.5f) * uv.y, 0, 1 );
@@ -225,7 +294,7 @@ float4x3 LN_GetBoneMatrix(int boneIndex)
 float4 LN_GetBoneLocalQuaternion(int boneIndex)
 {
 	float2 uv = lnBoneTextureReciprocalSize;
-	float4 tc0 = float4(0.5f, (boneIndex + 0.5f) * uv.y, 0, 1);	// +0.5 ‚Í”¼ƒsƒNƒZƒ‹•ª
+	float4 tc0 = float4(0.5f, (boneIndex + 0.5f) * uv.y, 0, 1);	// +0.5 ã¯åŠãƒ”ã‚¯ã‚»ãƒ«åˆ†
 	return tex2Dlod(lnBoneLocalQuaternionSampler, tc0);
 }
 
@@ -375,11 +444,11 @@ struct VertexShaderInput
     float4 Position : POSITION0;
 };
  
-///È—ª///
+///çœç•¥///
  
 VertexShaderInput VertexShaderFunction(VertexShaderInput input)
 {
-///È—ª///
+///çœç•¥///
 return input;
 }
  

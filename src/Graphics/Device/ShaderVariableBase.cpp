@@ -32,6 +32,72 @@ void ShaderVariableBase::Initialize(ShaderVariableTypeDesc desc, const String& n
 }
 
 //------------------------------------------------------------------------------
+void ShaderVariableBase::MakeInitialValue()
+{
+	switch (m_desc.Type)
+	{
+		case ShaderVariableType_Bool:
+		{
+			SetBool(false);
+			break;
+		}
+		case ShaderVariableType_BoolArray:
+		{
+			SetBoolArray(nullptr, m_desc.Elements);
+			break;
+		}
+		case ShaderVariableType_Int:
+		{
+			SetInt(0);
+			break;
+		}
+		case ShaderVariableType_Float:
+		{
+			SetFloat(0.0f);
+			break;
+		}
+		case ShaderVariableType_FloatArray:
+		{
+			SetFloatArray(nullptr, m_desc.Elements);
+			break;
+		}
+		case ShaderVariableType_Vector:
+		{
+			SetVector(Vector4::Zero);
+			break;
+		}
+		case ShaderVariableType_VectorArray:
+		{
+			SetVectorArray(nullptr, m_desc.Elements);
+			break;
+		}
+		case ShaderVariableType_Matrix:
+		{
+			SetMatrix(Matrix::Identity);
+			break;
+		}
+		case ShaderVariableType_MatrixArray:
+		{
+			SetMatrixArray(nullptr, m_desc.Elements);
+			break;
+		}
+		case ShaderVariableType_DeviceTexture:
+		{
+			SetTexture(nullptr);
+			break;
+		}
+		case ShaderVariableType_String:
+		{
+			SetString(String::GetEmpty());
+			break;
+		}
+		default:
+			LN_UNREACHABLE();
+			break;
+	}
+}
+
+//------------------------------------------------------------------------------
 void ShaderVariableBase::SetBool(bool value)
 {
 	m_value.SetBool(value);
