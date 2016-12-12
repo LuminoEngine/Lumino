@@ -108,14 +108,14 @@ varying vec2	v_UVTileUnit;
 void main()
 {
 	//ln_Vertex.xy -= 0.5;
-	gl_Position		= g_worldMatrix * float4(ln_Vertex, 1.0f);
+	gl_Position		= g_worldMatrix * vec4(ln_Vertex, 1.0f);
 	gl_Position		= g_viewProjMatrix * gl_Position;
 	v_Color			= ln_Color0;
 	v_UVOffset		= ln_MultiTexCoord0;
 	v_UVTileUnit	= ln_MultiTexCoord1;
 }
 
-#endif
+#endif /* LN_GLSL_VERTEX_Main */
 //=============================================================================
 #ifdef LN_GLSL_FRAGMENT_Main
 uniform vec4		g_tone;
@@ -128,9 +128,9 @@ void main()
 {
 	vec2 uvUpperLeft = v_UVOffset.xy;	// 転送元左上 UV
 	vec2 uvWidth = v_UVOffset.zw;		// 転送元矩形の幅 UV
-	vec2 uvRatio = fmod(v_UVTileUnit, 1.0);	// 1つの四角形の中のどこにいるのか (0.0～1.0)
-	vec2 uv = lerp(uvUpperLeft, uvUpperLeft + uvWidth, uvRatio);
-	vec4 outColor = texture2D(g_texture, uv) * tex2D(g_glyphMaskTexture, uv) * v_Color;
+	vec2 uvRatio = mod(v_UVTileUnit, 1.0);	// 1つの四角形の中のどこにいるのか (0.0～1.0)
+	vec2 uv = mix(uvUpperLeft, uvUpperLeft + uvWidth, uvRatio);
+	vec4 outColor = texture2D(g_texture, uv) * texture2D(g_glyphMaskTexture, uv) * v_Color;
 	
 	// 色調の計算
 	float y = ( 0.208012 * outColor.r + 0.586611 * outColor.g + 0.114478 * outColor.b ) * g_tone.w;
@@ -138,4 +138,5 @@ void main()
 	
     gl_FragColor = outColor;
 }
-#endif
+#endif /* LN_GLSL_FRAGMENT_Main */
+

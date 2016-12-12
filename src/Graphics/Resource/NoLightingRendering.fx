@@ -1,16 +1,13 @@
+
+//==============================================================================
+#ifdef LN_HLSL_DX9
+
 struct LN_VSInput
 {
 	float3	Pos		: POSITION;		// 位置
 	float2	UV		: TEXCOORD0;	// テクスチャ座標
-	float3	Normal	: NORMAL0;		// 法線
 	float4	Color	: COLOR0;		// 頂点色
 };
-
-
-
-
-
-//------------------------------------------------------------------------------
 
 
 static float2	ViewportOffset = (float2(0.5, 0.5) / ln_ViewportPixelSize);
@@ -40,8 +37,8 @@ VSOutput VSBasic(LN_VSInput v)
 {
 	VSOutput o;
 	o.Pos	= mul(float4(v.Pos, 1.0f), ln_WorldViewProjection);
-	o.Color	= v.Color;
 	o.UV	= v.UV + ViewportOffset;
+	o.Color	= v.Color;
 	return o;
 }
 
@@ -60,3 +57,39 @@ technique MainDraw
 		PixelShader	 = compile ps_3_0 PSBasic();
 	}
 }
+
+#endif /* LN_HLSL_DX9 */
+
+//=============================================================================
+#ifdef LN_GLSL_VERTEX_Main
+attribute vec3	ln_Vertex;			// Pos
+attribute vec2	ln_MultiTexCoord0;	// UV
+attribute vec4	ln_Color0;			// Color
+
+varying vec2	v_TexUV;
+varying vec4	v_Color;
+
+void main()
+{
+	gl_Position		= vec4(ln_Vertex, 1.0) * ln_WorldViewProjection;
+	v_TexUV			= LN_FlipTexCoord(ln_MultiTexCoord0);
+	v_Color			= ln_Color0;
+	
+	//v_TexUV.y *= -1.0;
+	//v_TexUV.y += 1;
+}
+#endif /* LN_GLSL_VERTEX_Main */
+
+//=============================================================================
+#ifdef LN_GLSL_FRAGMENT_Main
+varying vec4	v_Color;
+varying vec2	v_TexUV;
+
+void main()
+{
+    gl_FragColor = texture2D(ln_MaterialTexture, v_TexUV) * v_Color;
+}
+#endif /* LN_GLSL_FRAGMENT_Main */
+
+
+

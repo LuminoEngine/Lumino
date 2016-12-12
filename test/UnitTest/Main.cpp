@@ -4,78 +4,6 @@
 #include "../../../src/Graphics/GraphicsManager.h"
 
 //------------------------------------------------------------------------------
-//GTEST_API_ int main(int argc, char **argv)
-//{
-//
-//#ifdef _WIN32
-//	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-//#endif
-//	setlocale(LC_ALL, "");
-//
-//
-//#if 0	// 部分的にテストを実行したりする
-//	char* testArgs[] = {
-//		argv[0],
-//		"--gtest_filter=Test_Scene_Sprite.*"
-//		//"--gtest_filter=Test_Imaging_Bitmap.BitBlt"
-//		//"--gtest_filter=Test_Graphics_Texture.Lock"
-//	};
-//	argc = sizeof(testArgs) / sizeof(char*);
-//	testing::InitGoogleTest(&argc, (char**)testArgs);
-//#else
-//	testing::InitGoogleTest(&argc, argv);
-//#endif
-//	::testing::AddGlobalTestEnvironment(new TestEnv());
-//	return RUN_ALL_TESTS();
-//}
-
-#if 0
-Platform::PlatformManager*	TestEnv::Platform = NULL;
-Physics::PhysicsManager*	TestEnv::PhysicsManager = NULL;
-GraphicsManagerPtr			TestEnv::Manager;
-Lumino::Renderer*			TestEnv::Renderer = NULL;
-SwapChain*		TestEnv::MainSwapChain = NULL;
-SceneGraphManager*			TestEnv::MMDSceneGraph = NULL;
-
-//------------------------------------------------------------------------------
-Lumino::Renderer* TestEnv::BeginRendering()
-{
-	Renderer* r = TestEnv::Renderer;
-	SwapChain* swap = TestEnv::MainSwapChain;
-	r->SetRenderTarget(0, swap->GetBackBuffer());
-	r->SetDepthBuffer(swap->GetBackBufferDepth());
-	r->Clear(ClearFlags::All, ColorF::White, 1.0f);
-	return r;
-}
-
-//------------------------------------------------------------------------------
-void TestEnv::EndRendering()
-{
-	TestEnv::MainSwapChain->Present();
-}
-
-//------------------------------------------------------------------------------
-PathName TestEnv::MakeScreenShotPath(const char* fileName)
-{
-	PathName path(_T("TestData"));
-	path.Append(Manager->GetGraphicsAPI().ToString());
-	path.Append(fileName);
-	return path;
-}
-
-
-
-
-//------------------------------------------------------------------------------
-RefPtr<Shader> TestEnv::CreateShader(const TCHAR* filePath)
-{
-	ByteBuffer code = FileSystem::ReadAllBytes(filePath);
-	RefPtr<Shader> shader(Shader::Create((char*)code.GetData(), code.GetSize()));
-	return shader;
-}
-#endif
-
-//------------------------------------------------------------------------------
 void TestEnv::SetUp()
 {
 	Logger::Initialize(_T("test_log.txt"));
@@ -83,8 +11,8 @@ void TestEnv::SetUp()
 	int scale = 1;
 	EngineSettings::SetMainWindowSize(SizeI(160 * scale, 120 * scale));
 	EngineSettings::SetMainBackBufferSize(SizeI(160 * scale, 120 * scale));
-	EngineSettings::SetGraphicsAPI(GraphicsAPI::DirectX9);//GraphicsAPI::OpenGL);//
-	//EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Immediate);
+	EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);//GraphicsAPI::DirectX9);//
+	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Immediate);
 	//settings.graphicsAPI = GraphicsAPI::DirectX9; //GraphicsAPI::OpenGL;//
 	//settings.renderingType = GraphicsRenderingType::Immediate; //RenderingType::Deferred;//
 	detail::EngineSettings::instance.defaultSkinFilePath = LN_LOCALFILE("UI/Data/Skin.png");
@@ -238,7 +166,7 @@ GTEST_API_ int main(int argc, char **argv)
 #if 1	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_Scripting.*"
+		"--gtest_filter=Test_Graphics_Rendering.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);

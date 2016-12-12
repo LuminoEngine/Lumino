@@ -92,7 +92,7 @@ void main()
 	v_TexUV			= ln_MultiTexCoord0;
 }
 
-#endif
+#endif /* LN_GLSL_FRAGMENT_Main */
 //=============================================================================
 #ifdef LN_GLSL_FRAGMENT_Main
 uniform vec4		g_tone;
@@ -110,4 +110,5 @@ void main()
 	
     gl_FragColor = outColor;
 }
-#endif
+#endif /* LN_GLSL_FRAGMENT_Main */
+

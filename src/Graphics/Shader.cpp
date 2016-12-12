@@ -167,7 +167,7 @@ void ShaderSemanticsManager::UpdateElementVariables(const ElementInfo& info)
 				varInfo.variable->SetMatrix(info.WorldViewProjectionMatrix);
 				break;
 			case BuiltinSemantics::World:
-				varInfo.variable->SetMatrix(info.WorldViewProjectionMatrix);
+				varInfo.variable->SetMatrix(info.WorldMatrix);
 				break;
 
 

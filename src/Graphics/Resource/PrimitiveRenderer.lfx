@@ -77,7 +77,7 @@ void main()
 	v_TexUV = ln_MultiTexCoord0;
 	v_TexUV.y = 1.0 - v_TexUV.y;
 }
-#endif
+#endif /* LN_GLSL_VERTEX_Main */
 
 #ifdef LN_GLSL_FRAGMENT_Main
 
@@ -91,4 +91,5 @@ void main()
 	gl_FragColor = color * v_Color;
 }
 
-#endif
+#endif /* LN_GLSL_FRAGMENT_Main */
+

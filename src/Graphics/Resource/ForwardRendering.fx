@@ -1,4 +1,7 @@
 
+//==============================================================================
+#ifdef LN_HLSL_DX9
+
 struct LN_VS_INPUT
 {
 	float3	Pos		: POSITION;		// 位置
@@ -6,8 +9,6 @@ struct LN_VS_INPUT
 	float3	Normal	: NORMAL0;//TEXCOORD1;	// 法線
 	float4	Color	: COLOR0;		// 頂点色
 };
-
-//------------------------------------------------------------------------------
 
 
 // オブジェクトのテクスチャ
@@ -67,4 +68,36 @@ technique MainTec0
 		PixelShader	 = compile ps_3_0 Basic_PS();
 	}
 }
+
+
+#endif /* LN_HLSL_DX9 */
+
+//=============================================================================
+#ifdef LN_GLSL_VERTEX_Main
+attribute vec3	ln_Vertex;			// Pos
+attribute vec2	ln_MultiTexCoord0;	// UV
+attribute vec4	ln_Color0;			// Color
+
+varying vec2	v_TexUV;
+varying vec4	v_Color;
+
+void main()
+{
+	gl_Position		= vec4(ln_Vertex, 1.0) * ln_WorldViewProjection;
+	v_TexUV			= LN_FlipTexCoord(ln_MultiTexCoord0);
+	v_Color			= ln_Color0;
+}
+#endif /* LN_GLSL_VERTEX_Main */
+
+//=============================================================================
+#ifdef LN_GLSL_FRAGMENT_Main
+varying vec4	v_Color;
+varying vec2	v_TexUV;
+
+void main()
+{
+    gl_FragColor = texture2D(ln_MaterialTexture, v_TexUV) * v_Color;
+}
+#endif /* LN_GLSL_FRAGMENT_Main */
+
 

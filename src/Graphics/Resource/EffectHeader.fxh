@@ -1,10 +1,10 @@
 
 
-#ifdef LN_HLSL_DX9
 
 //==============================================================================
-// Lumino
+// Lumino (HLSL DX9)
 //==============================================================================
+#ifdef LN_HLSL_DX9
 
 static const int LN_LightCount = 3;
 
@@ -108,9 +108,45 @@ float4 LN_GetBuiltinEffectColor(float4 inColor)
 }
 
 
+
+#endif // LN_HLSL_DX9
+
+
+
+//==============================================================================
+// Lumino (GLSL)
+//==============================================================================
+#ifdef LN_GLSL
+
+// 座標変換行列
+uniform mat4		ln_WorldViewProjection;
+
+// マテリアル色
+uniform vec4		ln_MaterialDiffuse;
+uniform vec3		ln_MaterialAmbient;
+uniform vec3		ln_MaterialEmmisive;
+uniform vec3		ln_MaterialSpecular;
+uniform float		ln_MaterialSpecularPower;
+uniform sampler2D	ln_MaterialTexture;
+
+
+//------------------------------------------------------------------------------
+vec2 LN_FlipTexCoord(vec2 inUV)
+{
+	return vec2(inUV.x, -inUV.y + 1.0);
+}
+
+
+#endif // LN_GLSL
+
+
+
+
+
 //==============================================================================
 // MikuMikuMoving
 //==============================================================================
+#ifdef LN_HLSL_DX9
 
 //ライト数
 static const int MMM_LightCount = 3;
@@ -353,5 +389,6 @@ float4 PixelShaderFunction(VertexShaderInput input) : COLOR0
 }
 */
 
-#line 5
 #endif // LN_HLSL_DX9
+
+#line 5

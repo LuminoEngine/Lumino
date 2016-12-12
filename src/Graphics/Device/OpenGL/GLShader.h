@@ -30,8 +30,24 @@ struct GLShaderPassVariableInfo
 class GLSLUtils
 {
 public:
+	struct CodeRange
+	{
+		const char*	code;
+		GLint		length;
+	};
+
 	static ShaderCompileResultLevel MakeShaderProgram(const char* vsCode, size_t vsCodeLen, const char* fsCode, size_t fsCodeLen, GLuint* outProgram, StringA* outMessage);
-	static bool CompileShader(GLuint shader, int codeCount, const char** codes, const GLint* sizes, StringA* log);
+
+	static void AnalyzeLNBasicShaderCode(const char* code, size_t codeLen, GLuint type, const char* entryName, CodeRange* outCode);
+
+	// return: shader object
+	static GLuint CompileShader2(GLuint type, int codeCount, const char** codes, const GLint* sizes, ShaderDiag* diag);
+
+	// return: shader object
+	static GLuint CompileShader3(GLuint type, const char* code, GLint codeLen, const char* entryName, ShaderDiag* diag);
+
+	// return: Program object
+	static GLuint LinkShader(GLuint vertShader, GLuint fragShader, ShaderDiag* diag);
 };
 
 /// OpenGL 用の IShader の実装
@@ -64,7 +80,7 @@ private:
 
 	GLGraphicsDevice*				m_device;
 	//GLuint							m_glProgram;
-	StringA						m_lastMessage;
+	//StringA						m_lastMessage;
 
 	ShaderDiag					m_diag;
 

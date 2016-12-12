@@ -326,7 +326,10 @@ void GLRenderer::OnUpdateDepthStencilState(const DepthStencilState& newState, co
 //------------------------------------------------------------------------------
 void GLRenderer::OnUpdatePrimitiveData(IVertexDeclaration* decls, const List<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer)
 {
-	LN_REFOBJ_SET(m_currentVertexBuffer, static_cast<GLVertexBuffer*>(vertexBuufers[0].Get()));
+	if (vertexBuufers.IsEmpty())
+		m_currentVertexBuffer = nullptr;
+	else
+		LN_REFOBJ_SET(m_currentVertexBuffer, static_cast<GLVertexBuffer*>(vertexBuufers[0].Get()));
 	LN_REFOBJ_SET(m_currentIndexBuffer, static_cast<GLIndexBuffer*>(indexBuffer));
 }
 

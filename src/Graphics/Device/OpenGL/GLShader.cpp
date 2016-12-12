@@ -13,6 +13,13 @@
 #include "GLGraphicsDevice.h"
 #include "GLShader.h"
 
+#if defined(LN_DO_CHECK_THROW)
+#define	LN_FAIL_CHECK_GLERROR()		for (GLenum lnglerr = glGetError(); lnglerr != GL_NO_ERROR && ln::detail::NotifyException<OpenGLException>(__FILE__, __LINE__, lnglerr); lnglerr = GL_NO_ERROR)
+#else
+#error no implemented
+#define LN_FAIL_CHECK_GLERROR()		for (GLenum lnglerr = glGetError(); lnglerr != GL_NO_ERROR; lnglerr = GL_NO_ERROR)//{ GLenum lnglerr = glGetError(); LN_THROW(lnglerr == GL_NO_ERROR , OpenGLException, lnglerr); }
+#endif
+
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
@@ -347,24 +354,26 @@ ShaderCompileResultLevel GLSLUtils::MakeShaderProgram(const char* vsCode, size_t
 	GLuint vertexShader = 0;
 	GLuint fragmentShader = 0;
 	GLuint program = 0;
+	ShaderDiag diag;
 	try
 	{
 		// シェーダオブジェクトの作成
-		vertexShader = glCreateShader(GL_VERTEX_SHADER);
-		LN_CHECK_GLERROR();
-		fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-		LN_CHECK_GLERROR();
+		//vertexShader = glCreateShader(GL_VERTEX_SHADER);
+		//LN_CHECK_GLERROR();
+		//fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+		//LN_CHECK_GLERROR();
 
 		// シェーダオブジェクトのコンパイル
-		bool vsResult = CompileShader(vertexShader, 1, vs_codes, vs_sizes, outMessage);
-		bool fsResult = CompileShader(fragmentShader, 1, fs_codes, fs_sizes, outMessage);
-		if (!vsResult || !fsResult)
+		vertexShader = CompileShader2(GL_VERTEX_SHADER, 1, vs_codes, vs_sizes, &diag);
+		fragmentShader = CompileShader2(GL_FRAGMENT_SHADER, 1, fs_codes, fs_sizes, &diag);
+		if (vertexShader == 0 || fragmentShader == 0)
 		{
 			// コンパイルエラー
 			glDeleteShader(vertexShader);
 			glDeleteShader(fragmentShader);
 			return ShaderCompileResultLevel_Error;
 		}
+		(*outMessage) = diag.message;
 
 		// プログラムオブジェクトの作成
 		program = glCreateProgram();
@@ -432,37 +441,110 @@ ShaderCompileResultLevel GLSLUtils::MakeShaderProgram(const char* vsCode, size_t
 }
 
 //------------------------------------------------------------------------------
-bool GLSLUtils::CompileShader(GLuint shader, int codeCount, const char** codes, const GLint* sizes, StringA* log)
+void GLSLUtils::AnalyzeLNBasicShaderCode(const char* code, size_t codeLen, GLuint type, const char* entryName, CodeRange* outCode)
 {
-	// シェーダオブジェクトにソースプログラムをセット
-	glShaderSource(shader, codeCount, (const GLchar **)codes, sizes);
-	//LN_CHECK_GLERROR();
+	LN_FAIL_CHECK_ARG(code != nullptr) return;
+	LN_FAIL_CHECK_ARG(entryName != nullptr) return;
+	LN_FAIL_CHECK_ARG(outCode != nullptr) return;
+	outCode->code = nullptr;
+	outCode->length = 0;
 
-	// シェーダのコンパイル
-	glCompileShader(shader);
-	//LN_CHECK_GLERROR();
-
-	// 結果
-	GLint compiled;
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
-	//LN_CHECK_GLERROR();
-
-	// ログがあるかチェック (ログの長さは、最後のNULL文字も含む)
-	int logSize;
-	int length;
-	glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logSize);
-	//LN_CHECK_GLERROR();
-	if (logSize > 1)
+	// make keyword
+	StringA ifdef;
+	StringA endKey;
+	if (type == GL_VERTEX_SHADER)
 	{
-		char* buf = LN_NEW char[logSize];
-		glGetShaderInfoLog(shader, logSize, &length, buf);
-		(*log) += "Compile info:\n";
-		(*log) += buf;
-		LN_SAFE_DELETE_ARRAY(buf);
-		LN_CHECK_GLERROR();
+		ifdef = StringA::Format("#ifdef LN_GLSL_VERTEX_{0}", entryName);
+		endKey = StringA::Format("#endif LN_GLSL_VERTEX_{0}", entryName);
+	}
+	else if (type == GL_FRAGMENT_SHADER)
+	{
+		ifdef = StringA::Format("#ifdef LN_GLSL_FRAGMENT_{0}", entryName);
+		endKey = StringA::Format("#endif LN_GLSL_FRAGMENT_{0}", entryName);
 	}
 
-	return (compiled != GL_FALSE);
+	// find begin - end
+	int codeBegin = StringTraits::IndexOf(code, codeLen, ifdef.c_str(), -1);
+	LN_FAIL_CHECK_FORMAT(codeBegin >= 0) return;
+	//int codeEnd = StringTraits::IndexOf(code, codeLen, "LN_GLSL_END", 11, codeBegin);
+	int codeEnd = StringTraits::IndexOf(code, codeLen, endKey.c_str(), endKey.GetLength(), codeBegin);
+	LN_FAIL_CHECK_FORMAT(codeEnd >= 0) return;
+
+	// make range
+	const char* begin = code + codeBegin + ifdef.GetLength();
+	const char* end = code + codeEnd;
+
+	// output
+	outCode->code = begin;
+	outCode->length = end - begin;
+}
+
+//------------------------------------------------------------------------------
+GLuint GLSLUtils::CompileShader2(GLuint type, int codeCount, const char** codes, const GLint* sizes, ShaderDiag* diag)
+{
+	GLuint shader = glCreateShader(type);
+	LN_FAIL_CHECK_GLERROR() return 0;
+
+	glShaderSource(shader, codeCount, (const GLchar **)codes, sizes);
+	LN_FAIL_CHECK_GLERROR() { glDeleteShader(shader); return 0; }
+
+	glCompileShader(shader);
+	LN_FAIL_CHECK_GLERROR() { glDeleteShader(shader); return 0; }
+
+	// result
+	GLint compiled;
+	GLint logSize;
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
+	glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logSize);	// excluding the null terminator
+
+	if (logSize > 1)
+	{
+		ByteBuffer buf(logSize);
+		int length;
+		glGetShaderInfoLog(shader, logSize, &length, (GLchar*)buf.GetData());
+		diag->message += "Compile info:\n";
+		diag->message += (const char*)buf.GetConstData();
+		diag->level = ShaderCompileResultLevel_Warning;
+	}
+
+	if (compiled == GL_FALSE)
+	{
+		diag->level = ShaderCompileResultLevel_Error;
+		glDeleteShader(shader);
+		shader = 0;
+	}
+
+	return shader;
+}
+
+//------------------------------------------------------------------------------
+GLuint GLSLUtils::CompileShader3(GLuint type, const char* code, GLint codeLen, const char* entryName, ShaderDiag* diag)
+{
+	// make keyword
+	StringA ifdef;
+	if (type == GL_VERTEX_SHADER)
+	{
+		ifdef = StringA::Format("#define LN_GLSL_VERTEX_{0}\n", entryName);
+	}
+	else if (type == GL_FRAGMENT_SHADER)
+	{
+		ifdef = StringA::Format("#define LN_GLSL_FRAGMENT_{0}\n", entryName);
+	}
+
+	const char* codes[] =
+	{
+		"#define LN_GLSL\n",
+		ifdef.c_str(),
+		code,
+	};
+	GLint codeLens[] =
+	{
+		strlen(codes[1]),
+		ifdef.GetLength(),
+		codeLen,
+	};
+
+	return CompileShader2(type, 3, codes, codeLens, diag);
 }
 
 //==============================================================================
@@ -653,41 +735,23 @@ void GLShader::OnResetDevice()
 //------------------------------------------------------------------------------
 GLuint GLShader::CompileShader(const char* code, size_t codeLen, const char* entryName, GLuint type)
 {
-	//StringA define;
-	//if (type == GL_VERTEX_SHADER)
-	//	define = StringA::Format("#define LN_GLSL_VERTEX_{0} 1\n", entryName);
-	//else if (type == GL_FRAGMENT_SHADER)
-	//	define = StringA::Format("#define LN_GLSL_FRAGMENT_{0} 1\n", entryName);
+	//GLSLUtils::CodeRange codeRange;
+	//GLSLUtils::AnalyzeLNBasicShaderCode(code, codeLen, type, entryName, &codeRange);
 
-	StringA ifdef;
-	if (type == GL_VERTEX_SHADER)
-		ifdef = StringA::Format("#ifdef LN_GLSL_VERTEX_{0}", entryName);
-	else if (type == GL_FRAGMENT_SHADER)
-		ifdef = StringA::Format("#ifdef LN_GLSL_FRAGMENT_{0}", entryName);
+	//const char* codes[] =
+	//{
+	//	codeRange.code,
+	//	"#define LN_GLSL\n",
+	//};
+	//GLint codeLens[] =
+	//{
+	//	codeRange.length,
+	//	strlen(codes[1]),
+	//};
 
-
-	int codeBegin = StringTraits::IndexOf(code, codeLen, ifdef.c_str(), -1);
-	LN_THROW(codeBegin >= 0, InvalidFormatException);
-	int codeEnd = StringTraits::IndexOf(code, codeLen, "#endif", -1, codeBegin);
-	LN_THROW(codeEnd >= 0, InvalidFormatException);
-
-	const char* begin = code + codeBegin + ifdef.GetLength();
-	const char* end = code + codeEnd;
-
-	const char* codes[] =
-	{
-		//define.c_str(),
-		begin,
-	};
-	GLint sizes[] =
-	{
-		//(GLint)define.GetLength(),
-		//(GLint)codeLen,
-		(GLint)(end - begin),
-	};
-
-	GLuint shader = glCreateShader(type);
-	if (!GLSLUtils::CompileShader(shader, 1, codes, sizes, &m_lastMessage))	// TODO: エラーメッセージとか
+	//GLuint shader = GLSLUtils::CompileShader2(type, 2, codes, codeLens, &m_diag);
+	GLuint shader = GLSLUtils::CompileShader3(type, code, codeLen, entryName, &m_diag);
+	if (shader == 0)	// TODO: エラーメッセージとか
 	{
 		glDeleteShader(shader);
 		LN_THROW(0, InvalidFormatException);
@@ -841,12 +905,11 @@ void GLShaderVariable::Apply(int location, int textureStageIndex)
 			(const GLfloat*)m_value.GetVectorArray());
 		break;
 	case ShaderVariableType_Matrix:
-		glUniformMatrix4fv(location, 1, GL_TRUE, (const GLfloat*)&m_value.GetMatrix());
+		glUniformMatrix4fv(location, 1, GL_FALSE, (const GLfloat*)&m_value.GetMatrix());
+		LN_FAIL_CHECK_GLERROR();
 		break;
 	case ShaderVariableType_MatrixArray:
-		glUniformMatrix4fv(
-			location, m_desc.Elements, GL_TRUE,		// TODO: 転置でいいか確認
-			(const GLfloat*)m_value.GetMatrixArray());
+		glUniformMatrix4fv(location, m_desc.Elements, GL_FALSE, (const GLfloat*)m_value.GetMatrixArray());
 		break;
 	case ShaderVariableType_DeviceTexture:
 		// textureStageIndex のテクスチャステージにバインド

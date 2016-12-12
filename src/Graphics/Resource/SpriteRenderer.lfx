@@ -85,7 +85,7 @@ void main()
 	v_Color			= ln_Color0;
 	v_TexUV			= ln_MultiTexCoord0;
 }
-#endif
+#endif /* LN_GLSL_VERTEX_Main */
 //=============================================================================
 #ifdef LN_GLSL_FRAGMENT_Main
 uniform sampler2D gMaterialTexture;
@@ -96,8 +96,7 @@ void main()
 {
     gl_FragColor = texture2D(gMaterialTexture, v_TexUV) * v_Color;
 }
-#endif
-
+#endif /* LN_GLSL_FRAGMENT_Main */
 
 
 
