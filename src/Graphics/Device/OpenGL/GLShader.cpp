@@ -958,8 +958,6 @@ void GLShaderVariable::Apply(int location, int textureStageIndex)
 		glActiveTexture(GL_TEXTURE0 + textureStageIndex);
 		LN_FAIL_CHECK_GLERROR() return;
 
-		printf("%p (%d)\n", m_value.GetDeviceTexture(), textureStageIndex);
-
 		if (m_value.GetDeviceTexture() != nullptr)
 			glBindTexture(GL_TEXTURE_2D, static_cast<GLTextureBase*>(m_value.GetDeviceTexture())->GetGLTexture());
 		else

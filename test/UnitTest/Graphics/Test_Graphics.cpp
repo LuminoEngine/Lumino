@@ -191,7 +191,7 @@ TEST_F(Test_Graphics_Rendering, DrawMesh)
 			Engine::EndRendering();
 		}
 		Engine::EndFrameUpdate();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png"), 95));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1_1.png"), 95, true));
 	}
 }
 
@@ -454,7 +454,7 @@ TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
 			Engine::EndRendering();
 		}
 
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawFrameRectangle2.png")));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawFrameRectangle2.png"), 95));
 	}
 }
 
