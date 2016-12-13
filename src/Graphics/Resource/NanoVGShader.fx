@@ -260,7 +260,7 @@ void main(void) {
 	if (strokeAlpha < strokeThr) discard;
 #endif
 	
-	gl_FragColor = result;
+	gl_FragColor = result * vec4(0, 0, 0, 1) + innerCol;//result;
 }
 
 #endif /* LN_GLSL_FRAGMENT_Main */

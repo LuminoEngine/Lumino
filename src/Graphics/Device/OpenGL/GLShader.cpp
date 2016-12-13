@@ -868,6 +868,8 @@ void GLShaderVariable::Initialize(GLShader* owner, ShaderVariableTypeDesc desc, 
 	MakeInitialValue();
 }
 
+GLint g_curPrg;
+
 //------------------------------------------------------------------------------
 void GLShaderVariable::Apply(int location, int textureStageIndex)
 {
@@ -875,18 +877,24 @@ void GLShaderVariable::Apply(int location, int textureStageIndex)
 		return;		// 一度も set されていない変数や、ライブラリが認識できない型である。その場合は何も処理をせず、デフォルト値のままにする。
 	}
 
+	MemoryStream* tempBuffer = m_ownerShader->GetGraphicsDevice()->GetUniformTempBuffer();
+	BinaryWriter* tempWriter = m_ownerShader->GetGraphicsDevice()->GetUniformTempBufferWriter();
+
 	const Vector4* vec;
 
 	switch (m_desc.Type)
 	{
 	case ShaderVariableType_Bool:
 		glUniform1i(location, m_value.GetBool());
+		LN_FAIL_CHECK_GLERROR() return;
 		break;
 	case ShaderVariableType_Int:
 		glUniform1i(location, m_value.GetInt());
+		LN_FAIL_CHECK_GLERROR() return;
 		break;
 	case ShaderVariableType_Float:
 		glUniform1f(location, m_value.GetFloat());
+		LN_FAIL_CHECK_GLERROR() return;
 		break;
 	case ShaderVariableType_Vector:
 		vec = &m_value.GetVector();
@@ -899,23 +907,65 @@ void GLShaderVariable::Apply(int location, int textureStageIndex)
 		else if (m_desc.Columns == 4) {
 			glUniform4f(location, vec->x, vec->y, vec->z, vec->w);
 		}
+		LN_FAIL_CHECK_GLERROR() return;
 		break;
 	case ShaderVariableType_VectorArray:
-		glUniform4fv(
-			location, m_desc.Elements,
-			(const GLfloat*)m_value.GetVectorArray());
+	{
+		const Vector4* begin = m_value.GetVectorArray();
+		const Vector4* end = begin + m_desc.Elements;
+
+		if (m_desc.Columns == 2)
+		{
+			std::for_each(begin, end, [&tempWriter](const Vector4& v) { tempWriter->Write(&v, sizeof(float) * 2); });
+			glUniform2fv(location, m_desc.Elements, (const GLfloat*)tempBuffer->GetBuffer());
+			LN_FAIL_CHECK_GLERROR() return;
+		}
+		else if (m_desc.Columns == 3)
+		{
+			std::for_each(begin, end, [&tempWriter](const Vector4& v) { tempWriter->Write(&v, sizeof(float) * 3); });
+			glUniform3fv(location, m_desc.Elements, (const GLfloat*)tempBuffer->GetBuffer());
+			LN_FAIL_CHECK_GLERROR() return;
+		}
+		else if (m_desc.Columns == 4)
+		{
+			glUniform4fv(location, m_desc.Elements, (const GLfloat*)m_value.GetVectorArray());
+			LN_FAIL_CHECK_GLERROR() return;
+		}
+		else
+		{
+			LN_UNREACHABLE();
+		}
 		break;
+	}
 	case ShaderVariableType_Matrix:
+	{
+		//GLsizei name_len = 0;
+		////GLsizei var_size = 0;   // 配列サイズっぽい
+		////GLenum  var_type = 0;
+		//GLchar  name[256] = { 0 };
+		////glGetActiveUniform(m_program, i, 256, &name_len, &var_size, &var_type, name); LN_CHECK_GLERROR();
+		//glGetActiveUniformName(g_curPrg, location, 256, &name_len, name);
+		//auto loc = glGetUniformLocation(g_curPrg, "ln_WorldViewProjection");
 		glUniformMatrix4fv(location, 1, GL_FALSE, (const GLfloat*)&m_value.GetMatrix());
 		LN_FAIL_CHECK_GLERROR();
 		break;
+	}
 	case ShaderVariableType_MatrixArray:
 		glUniformMatrix4fv(location, m_desc.Elements, GL_FALSE, (const GLfloat*)m_value.GetMatrixArray());
 		break;
 	case ShaderVariableType_DeviceTexture:
 		// textureStageIndex のテクスチャステージにバインド
 		glActiveTexture(GL_TEXTURE0 + textureStageIndex);
-		glBindTexture(GL_TEXTURE_2D, static_cast<GLTextureBase*>(m_value.GetDeviceTexture())->GetGLTexture());
+		LN_FAIL_CHECK_GLERROR() return;
+
+		printf("%p (%d)\n", m_value.GetDeviceTexture(), textureStageIndex);
+
+		if (m_value.GetDeviceTexture() != nullptr)
+			glBindTexture(GL_TEXTURE_2D, static_cast<GLTextureBase*>(m_value.GetDeviceTexture())->GetGLTexture());
+		else
+			glBindTexture(GL_TEXTURE_2D, 0);
+		LN_FAIL_CHECK_GLERROR();
+		
 
 		//LNGL::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, mSamplerState->MinFilter);
 		//LNGL::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mSamplerState->MagFilter);
@@ -924,6 +974,7 @@ void GLShaderVariable::Apply(int location, int textureStageIndex)
 
 		// テクスチャステージ番号をセット
 		glUniform1i(location, textureStageIndex);
+		LN_FAIL_CHECK_GLERROR() return;
 		break;
 	case ShaderVariableType_String:
 		// GLSL に String 型は無い。この値は本ライブラリで使用しているただのメタデータ。
@@ -946,9 +997,9 @@ IShaderVariable* GLShaderVariable::GetAnnotation(int index)
 }
 
 //------------------------------------------------------------------------------
-void GLShaderVariable::ConvertVariableTypeGLToLN(GLenum gl_type, GLsizei gl_var_size, ShaderVariableBase::ShaderVariableTypeDesc* desc)
+void GLShaderVariable::ConvertVariableTypeGLToLN(const char* name, GLenum gl_type, GLsizei gl_var_size, ShaderVariableBase::ShaderVariableTypeDesc* desc)
 {
-	desc->Elements = gl_var_size;
+	desc->Elements = 0;
 	desc->Shared = false;
 
 #define SET_LNDESC( c_, t_, row_, col_ ) { /*desc->Class = (c_); */desc->Type = (t_); desc->Rows = (row_); desc->Columns = (col_); }
@@ -997,6 +1048,31 @@ void GLShaderVariable::ConvertVariableTypeGLToLN(GLenum gl_type, GLsizei gl_var_
 	case GL_SAMPLER_2D_SHADOW:  SET_LNDESC(LN_SVC_SAMPLER, ShaderVariableType_Unknown, 1, 1); break;
 //#endif
 	default: SET_LNDESC(LN_SVC_SAMPLER, ShaderVariableType_Unknown, 0, 0); break;
+	}
+
+	// check array type (e.g. "list[0]")
+	if (StringTraits::IndexOf(name, -1, "[", 1) >= 0)
+	{
+		desc->Elements = gl_var_size;
+
+		switch (desc->Type)
+		{
+		case ShaderVariableType_Bool:
+			desc->Type = ShaderVariableType_BoolArray;
+			break;
+		case ShaderVariableType_Float:
+			desc->Type = ShaderVariableType_FloatArray;
+			break;
+		case ShaderVariableType_Vector:
+			desc->Type = ShaderVariableType_VectorArray;
+			break;
+		case ShaderVariableType_Matrix:
+			desc->Type = ShaderVariableType_MatrixArray;
+			break;
+		default:
+			LN_UNREACHABLE() return;
+			break;
+		}
 	}
 }
 
@@ -1251,6 +1327,8 @@ void GLShaderPass::Apply()
 {
 	glUseProgram(m_program); LN_CHECK_GLERROR();
 
+	g_curPrg = m_program;
+
 	for (GLShaderPassVariableInfo& v : m_passVarList)
 	{
 		v.Variable->Apply(v.Location, v.TextureStageIndex);
@@ -1342,7 +1420,7 @@ void GLShaderPass::Build()
 
 		// 変数情報作成
 		ShaderVariableBase::ShaderVariableTypeDesc desc;
-		GLShaderVariable::ConvertVariableTypeGLToLN(var_type, var_size, &desc);
+		GLShaderVariable::ConvertVariableTypeGLToLN(name, var_type, var_size, &desc);
 
 		// 名前を String 化
 		String tname;

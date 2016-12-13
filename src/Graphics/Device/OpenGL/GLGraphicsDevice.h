@@ -44,6 +44,11 @@ public:
 	int GetOpenGLMinorVersio() const { return m_openGLMinorVersion; }
 	//void GCDeviceResource();
 
+
+	MemoryStream* GetUniformTempBuffer() { return &m_uniformTempBuffer; }
+	BinaryWriter* GetUniformTempBufferWriter() { return &m_uniformTempBufferWriter; }
+
+
 	/// 指定コンテキストをアクティブにする
 	virtual void MakeCurrentContext(GLContext* context) = 0;
 
@@ -113,6 +118,9 @@ protected:
 	int							m_openGLMajorVersion;
 	int							m_openGLMinorVersion;
 	Mutex						m_mutex;	// TODO: いらないかな
+
+	MemoryStream				m_uniformTempBuffer;
+	BinaryWriter				m_uniformTempBufferWriter;
 };
 
 

@@ -126,17 +126,19 @@ varying vec4		v_UVOffset;
 varying vec2		v_UVTileUnit;
 void main()
 {
+	
+	
 	vec2 uvUpperLeft = v_UVOffset.xy;	// 転送元左上 UV
-	vec2 uvWidth = v_UVOffset.zw;		// 転送元矩形の幅 UV
+	vec2 uvSize = v_UVOffset.zw;		// 転送元矩形の幅 UV
 	vec2 uvRatio = mod(v_UVTileUnit, 1.0);	// 1つの四角形の中のどこにいるのか (0.0～1.0)
-	vec2 uv = mix(uvUpperLeft, uvUpperLeft + uvWidth, uvRatio);
+	vec2 uv = uvUpperLeft + mix(vec2(0.0, 0.0), uvSize, uvRatio);//mix(uvUpperLeft, uvUpperLeft + uvWidth, uvRatio);
 	vec4 outColor = texture2D(g_texture, uv) * texture2D(g_glyphMaskTexture, uv) * v_Color;
 	
 	// 色調の計算
 	float y = ( 0.208012 * outColor.r + 0.586611 * outColor.g + 0.114478 * outColor.b ) * g_tone.w;
     outColor.rgb = (outColor.rgb * ( 1.0 - g_tone.w )) + y + g_tone.rgb;
 	
-    gl_FragColor = outColor;
+	gl_FragColor = outColor;
 }
 #endif /* LN_GLSL_FRAGMENT_Main */
 

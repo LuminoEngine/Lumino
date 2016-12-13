@@ -131,7 +131,8 @@ void FrameRectRendererCore::Draw(const Matrix& transform, const RectF& rect)
 		if (m_indexCache.GetCount() == 0) { return; }
 
 		const SizeI& viewPixelSize = m_renderer->GetRenderTarget(0)->GetSize();
-		m_shader.varViewportSize->SetVector(Vector4((float)viewPixelSize.width, (float)viewPixelSize.height, 0, 0));
+		if (m_shader.varViewportSize != nullptr)
+			m_shader.varViewportSize->SetVector(Vector4((float)viewPixelSize.width, (float)viewPixelSize.height, 0, 0));
 
 		// 描画する
 		m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());

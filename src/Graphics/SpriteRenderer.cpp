@@ -778,7 +778,8 @@ void SpriteRendererImpl::Flush(SpriteSortMode sortFlags)
 
 	auto* r = m_manager->GetGraphicsDevice()->GetRenderer();
 	m_shader.varViewProjMatrix->SetMatrix(m_viewProjMatrix);
-	m_shader.varViewPixelSize->SetVector(Vector4(m_viewPixelSize.x, m_viewPixelSize.y, 0, 0));
+	if (m_shader.varViewPixelSize != nullptr)
+		m_shader.varViewPixelSize->SetVector(Vector4(m_viewPixelSize.x, m_viewPixelSize.y, 0, 0));
 
 	Driver::IShaderPass* pass = m_shader.techMainDraw->GetPass(0);
 

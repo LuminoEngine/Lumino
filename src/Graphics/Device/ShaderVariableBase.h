@@ -20,7 +20,7 @@ public:
 		ShaderVariableType	Type;
 		int					Rows;       ///< 行の数 (行列型以外は 1)
 		int					Columns;    ///< 列の数 (ベクトル型の要素数でもある。GLSL にセットするときは API を区別するため、必要になる)
-		int					Elements;   ///< 配列の要素数 (配列でない場合は 0) TODO:OpenGLでは1…調査必要
+		int					Elements;   ///< 配列の要素数 (配列でない場合は 0)
 		bool				Shared;     ///< shared キーワードがついている
 	};
 

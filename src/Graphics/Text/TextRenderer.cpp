@@ -81,7 +81,8 @@ void TextRendererCore::SetState(const Matrix& world, const Matrix& viewProj, con
 {
 	m_shader.varWorldMatrix->SetMatrix(world);
 	m_shader.varViewProjMatrix->SetMatrix(viewProj);
-	m_shader.varPixelStep->SetVector(Vector4(0.5f / viewPixelSize.width, 0.5f / viewPixelSize.height, 0, 0));
+	if (m_shader.varPixelStep != nullptr)
+		m_shader.varPixelStep->SetVector(Vector4(0.5f / viewPixelSize.width, 0.5f / viewPixelSize.height, 0, 0));
 }
 
 //------------------------------------------------------------------------------

@@ -23,9 +23,11 @@ namespace Driver
 //------------------------------------------------------------------------------
 GLGraphicsDevice::GLGraphicsDevice()
 	: m_deviceState(DeviceState_Lost)
-	, m_renderer(NULL)
+	, m_renderer(nullptr)
 	, m_openGLMajorVersion(3)
 	, m_openGLMinorVersion(1)
+	, m_uniformTempBuffer()
+	, m_uniformTempBufferWriter(&m_uniformTempBuffer)
 {
 }
 

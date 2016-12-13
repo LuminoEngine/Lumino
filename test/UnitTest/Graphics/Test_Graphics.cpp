@@ -291,7 +291,7 @@ TEST_F(Test_Graphics_Rendering, DrawSprite)
 			Engine::EndRendering();
 		}
 
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSprite1.png")));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSprite1.png"), 95));
 	}
 
 	// <Test> Sprite ‚Ì BlendMode
@@ -415,6 +415,7 @@ TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
 			ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawFrameRectangle1.png")));
 		}
 	}
+	
 	// <Test> BorderFrame + Stretch
 	// <Test> BoxFrame + Stretch
 	// <Test> BoxFrame + Tile

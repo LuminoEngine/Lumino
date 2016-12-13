@@ -110,7 +110,7 @@ public:
 	virtual IShaderVariable* GetAnnotation(int index);
 
 public:
-	static void ConvertVariableTypeGLToLN(GLenum gl_type, GLsizei gl_var_size, ShaderVariableBase::ShaderVariableTypeDesc* desc);
+	static void ConvertVariableTypeGLToLN(const char* name, GLenum gl_type, GLsizei gl_var_size, ShaderVariableBase::ShaderVariableTypeDesc* desc);
 
 private:
 	GLShader*					m_ownerShader;
