@@ -119,7 +119,13 @@ TEST_F(Test_Graphics_Rendering, DrawLinePrimitive)
 				Vector3(50, 50, 0), Color::White);
 			Engine::EndRendering();
 		}
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawLinePrimitive1.png")));
+
+		
+		//auto bmp = Engine::GetMainViewport()->m_primaryLayerTarget->Lock();
+		//bmp->Save(_T("test.png"));
+		//Engine::GetMainViewport()->m_primaryLayerTarget->Unlock();
+
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawLinePrimitive1_.png"), 99, true));
 	}
 }
 
@@ -482,11 +488,11 @@ protected:
 TEST_F(Test_Graphics_Texture, DrawText)
 {
 	auto font = Font::Create();
-	auto texture = Texture2D::Create(160, 120);
-	texture->DrawText(_T("Left"), Rect(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
-	texture->DrawText(_T("Center"), Rect(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Center);
-	texture->DrawText(_T("Rigth"), Rect(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Right);
-	//texture->DrawText("Justify", Rect(0, 32, 120, 160), font, Color32::White, Color32::White, 0, TextAlignment::Justify);
+	auto texture = Texture2D::Create(160, 60);
+	texture->DrawText(_T("Left"), Rect(0, 0, 160, 60), font, Color32::White, Color32::White, 0, TextAlignment::Left);
+	texture->DrawText(_T("Center"), Rect(0, 0, 160, 60), font, Color32::White, Color32::White, 0, TextAlignment::Center);
+	texture->DrawText(_T("Rigth"), Rect(0, 0, 160, 60), font, Color32::White, Color32::White, 0, TextAlignment::Right);
+	//texture->DrawText("Justify", Rect(0, 32, 120, 60), font, Color32::White, Color32::White, 0, TextAlignment::Justify);
 	auto sprite = Sprite2D::Create(texture);
 	sprite->SetBlendMode(BlendMode::Alpha);
 	Engine::Update();
@@ -501,16 +507,16 @@ TEST_F(Test_Graphics_Texture, Issues)
 	// <Issue> Drawtext 連続で描画すると、1フレーム前の内容がクリアされる問題の修正。
 	{
 		auto font = Font::Create();
-		auto texture = Texture2D::Create(160, 120);
-		texture->DrawText(_T("__________"), Rect(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
+		auto texture = Texture2D::Create(160, 60);
+		texture->DrawText(_T("__________"), Rect(0, 0, 160, 60), font, Color32::White, Color32::White, 0, TextAlignment::Left);
 		auto sprite = Sprite2D::Create(texture);
 		Engine::Update();
 
 		texture->Clear(Color32(0, 0, 0, 0));
-		texture->DrawText(_T("Clear1"), Rect(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
+		texture->DrawText(_T("Clear1"), Rect(0, 0, 160, 60), font, Color32::White, Color32::White, 0, TextAlignment::Left);
 		Engine::Update();
 
-		texture->DrawText(_T("Clear2"), Rect(0, 32, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
+		texture->DrawText(_T("Clear2"), Rect(0, 32, 160, 60), font, Color32::White, Color32::White, 0, TextAlignment::Left);
 		Engine::Update();
 
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Texture.Clear1.png")));

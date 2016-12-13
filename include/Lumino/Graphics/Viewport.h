@@ -106,7 +106,7 @@ LN_INTERNAL_ACCESS:	// TODO: いまはとりあえず内部用途
 	void Render();
 	void EndFrameRender();
 
-private:
+public:
 	void TryRemakeLayerTargets();
 	void MakeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, Matrix* mat);
 	void BeginBlitRenderer();

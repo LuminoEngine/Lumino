@@ -91,7 +91,7 @@ void main()
 	vec3 normal		= normalize(mat3(ln_WorldViewProjection) * ln_Normal0);
 	
 	// テクスチャ座標
-	v_TexUV			= LN_FlipTexCoord(ln_MultiTexCoord0);
+	v_TexUV			= ln_MultiTexCoord0;
 	
 	// 頂点カラー
 	v_Color			= LN_GetLambertVertexColor(normal) * ln_Color0;

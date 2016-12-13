@@ -268,7 +268,7 @@ void Texture2D::Initialize(detail::GraphicsManager* manager, Stream* stream, Tex
 	// プラットフォーム依存のロードが失敗したら普通の処理
 	if (m_deviceObj == NULL)
 	{
-		m_primarySurface = LN_NEW Bitmap(stream, true);
+		m_primarySurface = LN_NEW Bitmap(stream);
 		m_deviceObj = manager->GetGraphicsDevice()->CreateTexture(m_primarySurface->GetSize(), m_mipmap, format, m_primarySurface->GetBitmapBuffer()->GetConstData());
 	}
 
@@ -318,7 +318,7 @@ void Texture2D::TryLock()
 			// もし合わせていないと、転送時に同じサイズで DeviceObject 側のフォーマットと同じ Bitmap を
 			// いちいち作らなければならなくなる。
 			// 基本的に Texture への直接転送は重い体でいるので、ユーザーがあまり Clear や Blit を多用しないような想定でいる。
-			m_primarySurface2 = RefPtr<Bitmap>::MakeRef(m_size, Utils::TranslatePixelFormat(m_deviceObj->GetTextureFormat()));
+			m_primarySurface2 = RefPtr<Bitmap>::MakeRef(m_size, Utils::TranslatePixelFormat(m_deviceObj->GetTextureFormat()), true);
 		}
 		m_locked = true;
 	}

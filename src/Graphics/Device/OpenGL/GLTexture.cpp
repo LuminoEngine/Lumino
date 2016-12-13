@@ -265,11 +265,13 @@ void GLRenderTargetTexture::SetSubData3D(const Box32& box, const void* data, siz
 Bitmap* GLRenderTargetTexture::Lock()
 {
 	// ビットマップデータは上下逆になっていて、[0] は (0, height-1) を指す
-	m_lockingBitmap = LN_NEW Bitmap(m_size, Utils::TranslatePixelFormat(m_format), true);
+	m_lockingBitmap = LN_NEW Bitmap(m_size, Utils::TranslatePixelFormat(m_format), false);
 
 	glBindTexture(GL_TEXTURE_2D, m_glTexture); LN_CHECK_GLERROR();
 	glGetTexImage(GL_TEXTURE_2D, 0, m_pixelFormat, m_elementType, m_lockingBitmap->GetBitmapBuffer()->GetData()); LN_CHECK_GLERROR();
 	glBindTexture(GL_TEXTURE_2D, 0); LN_CHECK_GLERROR();
+
+	//const Color32* c = (const Color32*)m_lockingBitmap->GetBitmapBuffer()->GetConstData();
 
 	return m_lockingBitmap;
 }

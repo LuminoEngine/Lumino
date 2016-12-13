@@ -133,7 +133,7 @@ void main()
 	vec2 uvRatio = mod(v_UVTileUnit, 1.0);	// 1つの四角形の中のどこにいるのか (0.0～1.0)
 	vec2 uv = uvUpperLeft + mix(vec2(0.0, 0.0), uvSize, uvRatio);//mix(uvUpperLeft, uvUpperLeft + uvWidth, uvRatio);
 	
-	uv = vec2(uv.x, -uv.y + 1.0);
+	//uv = vec2(uv.x, -uv.y + 1.0);
 	
 	vec4 outColor = texture2D(g_texture, uv) * texture2D(g_glyphMaskTexture, uv) * v_Color;
 	

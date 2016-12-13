@@ -85,6 +85,7 @@
 #include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Graphics/Viewport.h>
 #include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Graphics/Bitmap.h>		// TODO: test
 #include <Lumino/Scene/Camera.h>			// for make proj matrix
 #include <Lumino/UI/UIFrameWindow.h>
 

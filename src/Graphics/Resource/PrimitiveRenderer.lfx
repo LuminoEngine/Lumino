@@ -75,7 +75,7 @@ void main()
 	gl_Position = g_viewProjMatrix * g_worldMatrix * vec4(ln_Vertex0, 1.0);
 	v_Color = ln_Color0;
 	v_TexUV = ln_MultiTexCoord0;
-	v_TexUV.y = 1.0 - v_TexUV.y;
+	//v_TexUV.y = 1.0 - v_TexUV.y;
 }
 #endif /* LN_GLSL_VERTEX_Main */
 

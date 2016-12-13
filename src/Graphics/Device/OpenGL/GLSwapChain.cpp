@@ -161,8 +161,8 @@ void GLSwapChain::InternalPresent(ITexture* colorBuffer, GLRenderer* renderer)
 	glDisable(GL_DEPTH_TEST);
 	glDepthMask(GL_FALSE);
 
-	//glClearColor(0.3, 0.6, 1.0, 0.0);
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.3, 0.6, 1.0, 0.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// VAO はコンテキスト間で共有できない。(WGL では動いたが、GLX では glBindVertexArray() でエラーとなった)
 	// そのため、この SwapChain 用の VAO を、現在のスレッドで作る。(WGL ではスレッド間共有できない)
@@ -173,10 +173,69 @@ void GLSwapChain::InternalPresent(ITexture* colorBuffer, GLRenderer* renderer)
 
 	glUseProgram(m_shaderProgram); LN_CHECK_GLERROR();
 
-	// テクスチャユニット0に戻す
-	glActiveTexture(GL_TEXTURE0); LN_CHECK_GLERROR();
-	glBindTexture(GL_TEXTURE_2D, static_cast<GLTextureBase*>(colorBuffer)->GetGLTexture()); LN_CHECK_GLERROR();
+
+
+	// 赤点テクスチャ
+	GLuint ttex;
+	{
+		glGenTextures(1, &ttex); LN_CHECK_GLERROR();
+
+		// テクスチャユニット0に戻す
+		glActiveTexture(GL_TEXTURE0); LN_CHECK_GLERROR();
+		//glBindTexture(GL_TEXTURE_2D, static_cast<GLTextureBase*>(colorBuffer)->GetGLTexture()); LN_CHECK_GLERROR();
+		glBindTexture(GL_TEXTURE_2D, ttex); LN_CHECK_GLERROR();
+
+		GLubyte textureData[160][120][4] = { 0 };
+		//memset(textureData, 255, sizeof(textureData));
+		textureData[0][0][0] = 255;
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 160, 120, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData); LN_CHECK_GLERROR();
+		//glTexSubImage2D(
+		//	GL_TEXTURE_2D,
+		//	0,//mMipLevel,
+		//	0,
+		//	0,
+		//	160,//bitmap->GetSize().Width,
+		//	dataBitmapSize.height,///bitmap->GetSize().Height,
+		//	pixelFormat,
+		//	elementType,
+		//	data);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	}
+
+
+
+
+	GLuint rtex;
+	{
+		// カラーバッファ用のテクスチャを用意する
+		glGenTextures(1, &rtex); LN_CHECK_GLERROR();
+		glBindTexture(GL_TEXTURE_2D, rtex); LN_CHECK_GLERROR();
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 160, 120, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL); LN_CHECK_GLERROR();
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		GLuint fbo;
+		glGenFramebuffers(1, &fbo); LN_CHECK_GLERROR();
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo); LN_CHECK_GLERROR();
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + 0, GL_TEXTURE_2D, rtex, 0); LN_CHECK_GLERROR();
+	}
+
+
+
+
+
+
+
+
+	glBindTexture(GL_TEXTURE_2D, ttex); LN_CHECK_GLERROR();
 	glUniform1i(m_textureLoc, 0); LN_CHECK_GLERROR();	// テクスチャユニット 0 を割り当てる
+
+
+
 
 
 	// VAO と 頂点バッファを指定する
@@ -195,6 +254,35 @@ void GLSwapChain::InternalPresent(ITexture* colorBuffer, GLRenderer* renderer)
 	//glClear(GL_COLOR_BUFFER_BIT);
 	// 描画
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); LN_CHECK_GLERROR();
+
+
+
+
+
+
+
+	{
+		glBindTexture(GL_TEXTURE_2D, rtex); LN_CHECK_GLERROR();
+		glBindFramebuffer(GL_FRAMEBUFFER, 0); LN_CHECK_GLERROR();
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); LN_CHECK_GLERROR();
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	// attribute 変数を無効にする
 	glDisableVertexAttribArray(1);

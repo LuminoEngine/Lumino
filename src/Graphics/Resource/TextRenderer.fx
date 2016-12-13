@@ -89,7 +89,7 @@ void main()
 	gl_Position		= g_worldMatrix * vec4(ln_Vertex, 1.0);
 	gl_Position		= g_viewProjMatrix * gl_Position;
 	v_Color			= ln_Color0;
-	v_TexUV			= ln_MultiTexCoord0;
+	v_TexUV			= ln_MultiTexCoord0;//vec2(ln_MultiTexCoord0.x, -ln_MultiTexCoord0.y + 1.0);
 }
 
 #endif /* LN_GLSL_FRAGMENT_Main */

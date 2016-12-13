@@ -82,7 +82,7 @@ varying vec2	v_TexUV;
 void main()
 {
 	gl_Position		= gViewProjMatrix * vec4(ln_Vertex, 1.0);
-	v_TexUV			= vec2(ln_MultiTexCoord0.x, -ln_MultiTexCoord0.y + 1.0);	// V Flip
+	v_TexUV			= ln_MultiTexCoord0;//vec2(ln_MultiTexCoord0.x, -ln_MultiTexCoord0.y + 1.0);	// V Flip
 	v_Color			= ln_Color0;
 }
 #endif /* LN_GLSL_VERTEX_Main */

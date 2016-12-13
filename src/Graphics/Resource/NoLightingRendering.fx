@@ -72,7 +72,7 @@ varying vec4	v_Color;
 void main()
 {
 	gl_Position		= ln_WorldViewProjection * vec4(ln_Vertex, 1.0);
-	v_TexUV			= LN_FlipTexCoord(ln_MultiTexCoord0);
+	v_TexUV			= ln_MultiTexCoord0;
 	v_Color			= ln_Color0;
 }
 #endif /* LN_GLSL_VERTEX_Main */
