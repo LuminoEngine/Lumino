@@ -191,7 +191,7 @@ TEST_F(Test_Graphics_Rendering, DrawMesh)
 			Engine::EndRendering();
 		}
 		Engine::EndFrameUpdate();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1_1.png"), 95, true));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1_1.png"), 95, true));	// ˆê’v—¦ 95%B‚à‚µ^‚Á•‚É‚È‚Á‚½‚è‚µ‚½‚ç‚í‚©‚é
 	}
 }
 
@@ -467,7 +467,7 @@ TEST_F(Test_Graphics_Rendering, ZSort)
 	s1->SetPosition(0, 0, 0);	// Žè‘O
 	s2->SetPosition(0, 0, 1);	// ‰œ
 	Engine::Update();
-	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.ZSort1.png")));
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.ZSort1.png"), 90));
 }
 
 //==============================================================================

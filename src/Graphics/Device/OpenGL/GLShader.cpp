@@ -879,6 +879,7 @@ void GLShaderVariable::Apply(int location, int textureStageIndex)
 
 	MemoryStream* tempBuffer = m_ownerShader->GetGraphicsDevice()->GetUniformTempBuffer();
 	BinaryWriter* tempWriter = m_ownerShader->GetGraphicsDevice()->GetUniformTempBufferWriter();
+	tempWriter->Seek(0, SeekOrigin_Begin);
 
 	const Vector4* vec;
 
@@ -888,6 +889,16 @@ void GLShaderVariable::Apply(int location, int textureStageIndex)
 		glUniform1i(location, m_value.GetBool());
 		LN_FAIL_CHECK_GLERROR() return;
 		break;
+	case ShaderVariableType_BoolArray:
+	{
+		const bool* begin = m_value.GetBoolArray();
+		const bool* end = begin + m_desc.Elements;
+
+		std::for_each(begin, end, [&tempWriter](bool v) { GLint i = (v) ? 1 : 0; tempWriter->Write(&i, sizeof(GLint)); });
+		glUniform1iv(location, m_desc.Elements, (const GLint*)tempBuffer->GetBuffer());
+		LN_FAIL_CHECK_GLERROR() return;
+		break;
+	}
 	case ShaderVariableType_Int:
 		glUniform1i(location, m_value.GetInt());
 		LN_FAIL_CHECK_GLERROR() return;
@@ -978,6 +989,7 @@ void GLShaderVariable::Apply(int location, int textureStageIndex)
 		// GLSL に String 型は無い。この値は本ライブラリで使用しているただのメタデータ。
 		break;
 	default:
+		LN_UNREACHABLE();
 		break;
 	}
 }
