@@ -143,26 +143,19 @@ PFNWGLCREATECONTEXTATTRIBSARBPROC	WGLGraphicsDevice::CreateContextAttribsARB = N
 
 //------------------------------------------------------------------------------
 WGLGraphicsDevice::WGLGraphicsDevice()
-	: m_defaultSwapChain(NULL)
-	, m_mainContext(NULL)
-	, m_mainRenderingContext(NULL)
+	: m_glInited(false)
 {
 }
 
 //------------------------------------------------------------------------------
 WGLGraphicsDevice::~WGLGraphicsDevice()
 {
-	LN_SAFE_RELEASE(m_defaultSwapChain);
-	LN_SAFE_RELEASE(m_mainContext);
-	LN_SAFE_RELEASE(m_mainRenderingContext);
 }
 
 //------------------------------------------------------------------------------
-void WGLGraphicsDevice::Initialize(const ConfigData& configData)
+RefPtr<GLContext> WGLGraphicsDevice::InitializeMainContext(const ConfigData& configData)
 {
-	GLGraphicsDevice::Initialize(configData);
-
-	HWND hWnd = PlatformSupport::GetWindowHandle(m_mainWindow);
+	HWND hWnd = PlatformSupport::GetWindowHandle(configData.MainWindow);
 	HDC hDC = ::GetDC(hWnd);
 
 	// まずは wglCreateContext で適当にコンテキストを作る。
@@ -204,36 +197,23 @@ void WGLGraphicsDevice::Initialize(const ConfigData& configData)
 
 	SelectGLVersion(configData.OpenGLMajorVersion, configData.OpenGLMinorVersion);
 
-	// コンテキスト作成後、wglMakeCurrent() で設定しないとエラーが返る
-	if (glewInit() != GLEW_OK) {
-		LN_THROW(0, InvalidOperationException);
-	}
+	
+	GLenum result = glewInit();
+	LN_FAIL_CHECK_STATE(result == GLEW_OK) return nullptr;	// コンテキスト作成後、wglMakeCurrent() しないとエラーが返る
 
-	m_mainContext = LN_NEW WGLContext(this, configData.MainWindow, NULL);
+	auto mainContext = RefPtr<WGLContext>::MakeRef(this, configData.MainWindow, nullptr);
 
 	wglDeleteContext(hGLRC);
 	::ReleaseDC(hWnd, hDC);
 
+	return RefPtr<GLContext>::StaticCast(mainContext);
+}
 
-	if (configData.createSharedRenderingContext)
-		m_mainRenderingContext = LN_NEW WGLContext(this, configData.MainWindow, m_mainContext);
-	else
-		LN_REFOBJ_SET(m_mainRenderingContext, m_mainContext);
-
-	// m_defaultSwapChain->Create() でシェーダとか作るので先にアクティブにしておく
-	MakeCurrentContext(m_mainContext);
-
-
-
-	m_defaultSwapChain = LN_NEW GLSwapChain();
-	RefPtr<WGLContext> context(LN_NEW WGLContext(this, m_mainWindow, m_mainContext), false);
-	m_defaultSwapChain->Initialize(this, context, m_mainWindow);
-
-	// Renderer の初期化でもオブジェクトを生成したりするのでメインのコンテキストがアクティブになっているときに初期化する必要がある
-	m_renderer = LN_NEW GLRenderer();
-	m_renderer->Initialize();
-
-	MakeCurrentContext(NULL);
+//------------------------------------------------------------------------------
+RefPtr<GLContext> WGLGraphicsDevice::CreateContext(PlatformWindow* window)
+{
+	auto ptr = RefPtr<WGLContext>::MakeRef(this, window, static_cast<WGLContext*>(GetMainContext()));
+	return RefPtr<GLContext>::StaticCast(ptr);
 }
 
 //------------------------------------------------------------------------------
@@ -249,35 +229,6 @@ void WGLGraphicsDevice::MakeCurrentContext(GLContext* context)
 		BOOL r = wglMakeCurrent(NULL, NULL);
 		LN_THROW(r, Win32Exception, ::GetLastError());
 	}
-}
-
-//------------------------------------------------------------------------------
-GLContext* WGLGraphicsDevice::GetMainContext()
-{
-	return m_mainContext;
-}
-
-//------------------------------------------------------------------------------
-GLContext* WGLGraphicsDevice::GetMainRenderingContext()
-{
-	return m_mainRenderingContext;
-}
-
-//------------------------------------------------------------------------------
-ISwapChain* WGLGraphicsDevice::GetDefaultSwapChain()
-{
-	return m_defaultSwapChain;
-}
-
-//------------------------------------------------------------------------------
-ISwapChain* WGLGraphicsDevice::CreateSwapChain(PlatformWindow* window)
-{
-	RefPtr<GLSwapChain> obj(LN_NEW GLSwapChain(), false);
-	RefPtr<WGLContext> context(LN_NEW WGLContext(this, window, m_mainContext), false);
-	obj->Initialize(this, context, window);
-	AddDeviceResource(obj);
-	obj.SafeAddRef();
-	return obj;
 }
 
 //------------------------------------------------------------------------------

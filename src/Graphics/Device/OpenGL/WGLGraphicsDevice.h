@@ -34,17 +34,12 @@ class WGLGraphicsDevice
 {
 public:
 	WGLGraphicsDevice();
-	~WGLGraphicsDevice();
-	void Initialize(const ConfigData& configData);
+	virtual ~WGLGraphicsDevice();
 
-	virtual void MakeCurrentContext(GLContext* context);
-	virtual GLContext* GetMainContext();
-	virtual GLContext* GetMainRenderingContext();
-
-public:
-	// override IGraphicsDevice
-	virtual ISwapChain* GetDefaultSwapChain() override;
-	virtual ISwapChain* CreateSwapChain(PlatformWindow* window) override;
+	// GLGraphicsDevice interface
+	virtual RefPtr<GLContext> InitializeMainContext(const ConfigData& configData) override;
+	virtual RefPtr<GLContext> CreateContext(PlatformWindow* window) override;
+	virtual void MakeCurrentContext(GLContext* context) override;
 
 	static PFNWGLGETEXTENSIONSSTRINGEXTPROC		GetExtensionsStringEXT;
 	static PFNWGLGETEXTENSIONSSTRINGARBPROC		GetExtensionsStringARB;
@@ -54,9 +49,6 @@ private:
 	int CheckPlatformExtensionSupported(const char* extension);
 	bool CheckContainsExtensionString(const char* string, const GLubyte* extensions);
 
-	GLSwapChain*	m_defaultSwapChain;
-	WGLContext*		m_mainContext;
-	WGLContext*		m_mainRenderingContext;
 	bool			m_glInited;
 };
 

@@ -401,7 +401,6 @@ void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
 		// ダミーテクスチャ
 		m_dummyDeviceTexture = m_graphicsDevice->CreateTexture(SizeI(32, 32), false, TextureFormat::R8G8B8A8, NULL);
 		{
-			Driver::IGraphicsDevice::ScopedLockContext lock(m_graphicsDevice);
 			BitmapPainter painter(m_dummyDeviceTexture->Lock());
 			painter.Clear(Color32::White);
 			m_dummyDeviceTexture->Unlock();

@@ -77,8 +77,6 @@ public:
 	virtual void ResetDevice() override;
 	virtual void OnLostDevice() override;
 	virtual void OnResetDevice() override;
-	virtual void LockContext() override {}
-	virtual void UnlockContext() override {}
 
 private:
 	void CheckDeviceInformation();

@@ -18,7 +18,7 @@ public:
 
 public:
 
-	virtual void Finalize();
+	virtual void Finalize() override;
 
 	/// リソース登録
 	void AddDeviceResource(IDeviceObject* obj);
@@ -54,8 +54,8 @@ protected:
 	virtual RefPtr<ITexture> CreateDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format) = 0;
 	virtual RefPtr<IShader> CreateShaderImplement(const void* textData, size_t size, ShaderCompileResult* result) = 0;
 	virtual RefPtr<ISwapChain> CreateSwapChainImplement(PlatformWindow* window) = 0;
-	virtual void OnBeginAccessContext();
-	virtual void OnEndAccessContext();
+	//virtual void OnBeginAccessContext();
+	//virtual void OnEndAccessContext();
 
 protected:
 
@@ -67,11 +67,11 @@ protected:
 		{
 			m_device = d;
 			m_device->m_contextAccessMutex.Lock();
-			m_device->OnBeginAccessContext();
+			//m_device->OnBeginAccessContext();
 		}
 		~ScopedAccessContext()
 		{
-			m_device->OnEndAccessContext();
+			//m_device->OnEndAccessContext();
 			m_device->m_contextAccessMutex.Unlock();
 		}
 	};

@@ -197,16 +197,6 @@ ISwapChain* GraphicsDeviceBase::CreateSwapChain(PlatformWindow* window)
 	return obj.DetachMove();
 }
 
-//------------------------------------------------------------------------------
-void GraphicsDeviceBase::OnBeginAccessContext()
-{
-}
-
-//------------------------------------------------------------------------------
-void GraphicsDeviceBase::OnEndAccessContext()
-{
-}
-
 } // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

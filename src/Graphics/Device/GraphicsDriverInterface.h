@@ -129,30 +129,6 @@ public:
 	/// 描画スレッドの終了処理
 	virtual void DetachRenderingThread() = 0;
 
-	/// リソースコンテキストを現在のスレッド上でアクティブにする
-	virtual void LockContext() = 0;
-
-	/// リソースコンテキストを非アクティブにする
-	virtual void UnlockContext() = 0;
-
-public:
-
-	class ScopedLockContext
-	{
-	public:
-		ScopedLockContext(IGraphicsDevice* device)
-		{
-			m_device = device;
-			m_device->LockContext();
-		}
-		~ScopedLockContext()
-		{
-			m_device->UnlockContext();
-		}
-	private:
-		IGraphicsDevice* m_device;
-	};
-
 protected:
 	virtual ~IGraphicsDevice() {}
 };

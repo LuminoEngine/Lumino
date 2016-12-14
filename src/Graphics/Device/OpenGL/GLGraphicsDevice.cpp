@@ -5,6 +5,7 @@
 #include "../../../Internal.h"
 #include <Lumino/Graphics/Utils.h>
 #include <Lumino/Platform/PlatformWindow.h>
+#include "GLSwapChain.h"
 #include "GLVertexBuffer.h"
 #include "GLIndexBuffer.h"
 #include "GLTexture.h"
@@ -34,7 +35,7 @@ GLGraphicsDevice::GLGraphicsDevice()
 //------------------------------------------------------------------------------
 GLGraphicsDevice::~GLGraphicsDevice()
 {
-	LN_ASSERT(m_renderer == NULL);	// Finalize 済みであること
+	LN_ASSERT(m_renderer == nullptr);	// Finalize 済みであること
 }
 
 //------------------------------------------------------------------------------
@@ -43,24 +44,68 @@ void GLGraphicsDevice::Initialize(const ConfigData& configData)
 	m_mainWindow = configData.MainWindow;
 	m_deviceState = DeviceState_Enabled;
 
-
 	Logger::WriteLine("GLGraphicsDevice::Initialize");
 	Logger::WriteLine("    Requested OpenGL version : %d.%d", configData.OpenGLMajorVersion, configData.OpenGLMinorVersion);
+
+	// create main context
+	m_mainContext = InitializeMainContext(configData);
+
+	// Threading: create new rendering context
+	// Immediate: referemce main context
+	if (configData.createSharedRenderingContext)
+		m_mainRenderingContext = CreateContext(m_mainWindow);
+	else
+		m_mainRenderingContext = m_mainContext;
+
+	// m_defaultSwapChain->Create() でシェーダとか作るので先にアクティブにしておく
+	MakeCurrentContext(m_mainContext);
+
+	// create MainWindow SwapChain
+	m_defaultSwapChain = RefPtr<GLSwapChain>::MakeRef();
+	m_defaultSwapChain->Initialize(this, m_mainContext, m_mainWindow);
+
+	// create Renderer
+	m_renderer = RefPtr<GLRenderer>::MakeRef();
+	m_renderer->Initialize();
 }
 
 //------------------------------------------------------------------------------
 void GLGraphicsDevice::Finalize()	// 仮想関数呼び出しが必要なのでデストラクタとは別に開放用関数を用意した
 {
-	OnBeginAccessContext();
+	ScopedAccessContext lock(this);
 	GraphicsDeviceBase::Finalize();
-	LN_SAFE_RELEASE(m_renderer);
-	OnEndAccessContext();
 
-	//ScopedContext lock(this);
-	//LN_FOREACH(IDeviceObject* obj, m_allDeviceResourceList) {
-	//	obj->Release();
-	//}
-	//m_allDeviceResourceList.Clear();
+	m_renderer.SafeRelease();
+	m_defaultSwapChain.SafeRelease();
+	m_mainRenderingContext.SafeRelease();
+	m_mainContext.SafeRelease();
+}
+
+//------------------------------------------------------------------------------
+GLContext* GLGraphicsDevice::GetMainContext() const
+{
+	return m_mainContext;
+}
+
+//------------------------------------------------------------------------------
+GLContext* GLGraphicsDevice::GetMainRenderingContext() const
+{
+	return m_mainRenderingContext;
+}
+
+//------------------------------------------------------------------------------
+ISwapChain* GLGraphicsDevice::GetDefaultSwapChain()
+{
+	return m_defaultSwapChain;
+}
+
+//------------------------------------------------------------------------------
+ISwapChain* GLGraphicsDevice::CreateSwapChain(PlatformWindow* window)
+{
+	RefPtr<GLContext> context = CreateContext(window);
+	auto ptr = RefPtr<GLSwapChain>::MakeRef();
+	ptr->Initialize(this, context, window);
+	return ptr.DetachMove();
 }
 
 //------------------------------------------------------------------------------
@@ -184,20 +229,6 @@ void GLGraphicsDevice::OnResetDevice()
 }
 
 //------------------------------------------------------------------------------
-void GLGraphicsDevice::LockContext()
-{
-	m_mutex.Lock();
-	OnBeginAccessContext();
-}
-
-//------------------------------------------------------------------------------
-void GLGraphicsDevice::UnlockContext()
-{
-	OnEndAccessContext();
-	m_mutex.Unlock();
-}
-
-//------------------------------------------------------------------------------
 void GLGraphicsDevice::ParseGLVersion(int* glMajor, int* glMinor, int* glslMajor, int* glslMinor)
 {
 	// GL_VERSION の文字列フォーマットは決まっている。
@@ -293,23 +324,23 @@ void GLGraphicsDevice::DetachRenderingThread()
 	GraphicsDeviceBase::DetachRenderingThread();
 }
 
-//------------------------------------------------------------------------------
-void GLGraphicsDevice::OnBeginAccessContext()
-{
-	if (Thread::GetCurrentThreadId() != m_attachRenderingThreadId)
-	{
-		MakeCurrentContext(GetMainContext());
-	}
-}
-
-//------------------------------------------------------------------------------
-void GLGraphicsDevice::OnEndAccessContext()
-{
-	if (Thread::GetCurrentThreadId() != m_attachRenderingThreadId)
-	{
-		MakeCurrentContext(nullptr);
-	}
-}
+////------------------------------------------------------------------------------
+//void GLGraphicsDevice::OnBeginAccessContext()
+//{
+//	if (Thread::GetCurrentThreadId() != m_attachRenderingThreadId)
+//	{
+//		MakeCurrentContext(GetMainContext());
+//	}
+//}
+//
+////------------------------------------------------------------------------------
+//void GLGraphicsDevice::OnEndAccessContext()
+//{
+//	if (Thread::GetCurrentThreadId() != m_attachRenderingThreadId)
+//	{
+//		MakeCurrentContext(nullptr);
+//	}
+//}
 
 } // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
