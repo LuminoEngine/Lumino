@@ -166,7 +166,7 @@ GTEST_API_ int main(int argc, char **argv)
 #if 0	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_Graphics_Rendering.DrawText_"
+		"--gtest_filter=Test_Graphics_Rendering.Blit"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);

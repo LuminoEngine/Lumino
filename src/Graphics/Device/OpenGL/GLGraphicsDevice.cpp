@@ -41,6 +41,8 @@ GLGraphicsDevice::~GLGraphicsDevice()
 //------------------------------------------------------------------------------
 void GLGraphicsDevice::Initialize(const ConfigData& configData)
 {
+	LN_FAIL_CHECK_ARG(configData.MainWindow != nullptr) return;
+
 	m_mainWindow = configData.MainWindow;
 	m_deviceState = DeviceState_Enabled;
 
@@ -61,12 +63,14 @@ void GLGraphicsDevice::Initialize(const ConfigData& configData)
 	MakeCurrentContext(m_mainContext);
 
 	// create MainWindow SwapChain
+	RefPtr<GLContext> swapChainContext = m_mainContext;
+	if (configData.createSharedRenderingContext)
+		swapChainContext = CreateContext(m_mainWindow);
 	m_defaultSwapChain = RefPtr<GLSwapChain>::MakeRef();
-	m_defaultSwapChain->Initialize(this, m_mainContext, m_mainWindow);
+	m_defaultSwapChain->Initialize(this, swapChainContext, m_mainWindow);
 
 	// create Renderer
 	m_renderer = RefPtr<GLRenderer>::MakeRef();
-	m_renderer->Initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -315,11 +319,13 @@ void GLGraphicsDevice::AttachRenderingThread()
 {
 	MakeCurrentContext(GetMainRenderingContext());
 	GraphicsDeviceBase::AttachRenderingThread();
+	m_renderer->Activate();
 }
 
 //------------------------------------------------------------------------------
 void GLGraphicsDevice::DetachRenderingThread()
 {
+	m_renderer->Deactivate();
 	MakeCurrentContext(nullptr);
 	GraphicsDeviceBase::DetachRenderingThread();
 }

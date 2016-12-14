@@ -16,10 +16,31 @@ class GLSwapChain;
 /*
 	OpenGL のコンテキストの持ち方
 
+	Threading モードの場合、Lumino は以下のように分類したたくさんの Context を作る。
+	- SwapChain Context
+		SwapChain を通して PlatformWindow へバックバッファを転送するための Context。
+		この種類の Context は、SwapChain 1つに対して必ず 1 つ存在する。
+		レンダリングスレッド上で Current になる。
+	- Renderer Context
+		実際に描画を行うためのコンテキスト。
+		他の分類の Context とは独立して 1 つ存在する。
+		レンダリングスレッド上で Current になる。
+	- Main Context
+		メインスレッドで常にアクティブになっている Context。
+		他の分類の Context とは独立して 1 つ存在する。
+		他の分類の Context は、全て Main Context の共有 Context である。
+	- Resource Context
+		ユーザーが別のスレッドでリソースを作る場合に使う Context。
+		他の分類の Context とは独立して 1 つ存在する。
+		メインスレッド以外で、リソースにアクセスする必要がある場合に Current になる。
+		解放のタイミングが難しいので、1つしか作らず、排他処理して使うことになる。
+
+		
+	Immediate モードの場合、
+
 	- SwapChain 1つに対して1つの Context を割り当てる。(Swap の都合上必須)
 	- メインスレッドでは常に MainWindow の SwapChain に割り当てられた Context がカレントになっている。
-	- Threading モードの場合、レンダリングスレッドは常に専用の Context がカレントになっている。
-	- Immediate モードの場合、メインスレッドの Context とレンダリングスレッドの Context は等しい。
+	- メインスレッドの Context とレンダリングスレッドの Context は等しい。
 	- リソースロードスレッドを使う場合、メインスレッド以外ではロード用の 1 つの Context を使いまわす。(排他制御)
 */
 class GLGraphicsDevice

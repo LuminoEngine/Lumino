@@ -146,8 +146,9 @@ void GLSwapChain::InternalPresent(ITexture* colorBuffer, GLRenderer* renderer)
 	glUseProgram(0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); LN_CHECK_GLERROR();
     
-    GLenum fs = glCheckFramebufferStatus( GL_FRAMEBUFFER );
+    
     /*
+	GLenum fs = glCheckFramebufferStatus( GL_FRAMEBUFFER );
      GL_FRAMEBUFFER_COMPLETE	フレームバッファが完全である	36053
      GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT	フレームバッファのアタッチメントポイントが不完全である。必要なアタッチメントが無いか、テクスチャレンダラーバッファが有効でない	36054
      GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT	フレームバッファに有効なアタッチメントが無い	36055
@@ -205,7 +206,6 @@ void GLSwapChain::InternalPresent(ITexture* colorBuffer, GLRenderer* renderer)
 	glBindVertexArray(0);
 	glUseProgram(0);
 	glFlush();
-	renderer->ResetRenderState();
 #if 0
 	// colorBuffer 全体をバックバッファに描画する
 	glRotatef(0.0f, 0.0f, 0.0f, 1.0f);

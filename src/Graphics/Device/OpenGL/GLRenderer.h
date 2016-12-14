@@ -22,16 +22,13 @@ public:
 	virtual ~GLRenderer();
 
 public:
-	void Initialize();
+	void Activate();
+	void Deactivate();
 
 	/// ShaderPass::Begin から呼ばれる
 	void SetCurrentShaderPass(GLShaderPass* pass) { m_currentShaderPass = pass; }
 
 	GLuint GetVertexArrayObject();
-
-	void OnLostDevice();
-	void OnResetDevice();
-	void ResetRenderState() { m_justSawReset = true; }	// Present の内部描画の後に呼ばれる
 
 public:
 	virtual void Begin();
@@ -68,7 +65,6 @@ private:
 	GLuint					m_vertexArray;
 	GLuint					m_framebuffer;
 	bool					m_modifiedFrameBuffer;
-	volatile bool			m_justSawReset;
 };
 
 } // namespace Driver

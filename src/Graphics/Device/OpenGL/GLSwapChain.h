@@ -10,7 +10,7 @@ namespace Driver
 class GLGraphicsDevice;
 class GLRenderer;
 
-/// OpenGL 用の ISwapChain の実装
+// OpenGL 用の ISwapChain の実装
 class GLSwapChain
 	: public ISwapChain
 {

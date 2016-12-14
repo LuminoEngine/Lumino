@@ -24,7 +24,6 @@ GLRenderer::GLRenderer()
 	, m_vertexArray(0)
 	, m_framebuffer(0)
 	, m_modifiedFrameBuffer(false)
-	, m_justSawReset(false)
 {
 	memset(m_currentRenderTargets, 0, sizeof(m_currentRenderTargets));
 }
@@ -32,10 +31,42 @@ GLRenderer::GLRenderer()
 //------------------------------------------------------------------------------
 GLRenderer::~GLRenderer()
 {
+}
+
+//------------------------------------------------------------------------------
+void GLRenderer::Activate()
+{
+	// VAO はコンテキスト間で共有できないため、描画スレッド上で作る必要がある。
+	// なお、メインスレッドの MainContext で作った後、描画スレッドの RenderingContext に glBindVertexArray すると、
+	// GL_INVALID_OPERATION が発生する。
+	// http://stackoverflow.com/questions/18492878/crash-on-vaos-loaded-from-non-main-thread
+	//
+	// FBO や他にも共有できないものがある
+	// http://stackoverflow.com/questions/16782279/how-to-render-to-an-fbo-on-a-shared-context
+
+	LN_FAIL_CHECK_STATE(m_vertexArray == 0) return;
+	LN_FAIL_CHECK_STATE(m_framebuffer == 0) return;
+
+	glGenVertexArrays(1, &m_vertexArray);
+	glGenFramebuffers(1, &m_framebuffer);
+}
+
+//------------------------------------------------------------------------------
+void GLRenderer::Deactivate()
+{
+	if (m_vertexArray != 0)
+	{
+		glDeleteVertexArrays(1, &m_vertexArray);
+		m_vertexArray = 0;
+	}
+	if (m_framebuffer != 0)
+	{
+		glDeleteFramebuffers(1, &m_framebuffer);
+		m_framebuffer = 0;
+	}
+
 	LN_SAFE_RELEASE(m_currentVertexBuffer);
 	LN_SAFE_RELEASE(m_currentIndexBuffer);
-
-	OnLostDevice();
 
 	for (int i = 0; i < MaxMultiRenderTargets; ++i) {
 		LN_SAFE_RELEASE(m_currentRenderTargets[i]);
@@ -44,46 +75,10 @@ GLRenderer::~GLRenderer()
 }
 
 //------------------------------------------------------------------------------
-void GLRenderer::Initialize()
-{
-	OnResetDevice();
-}
-
-//------------------------------------------------------------------------------
 GLuint GLRenderer::GetVertexArrayObject()
 {
-	// VAO はコンテキスト間で共有できないため、描画スレッド上で作る必要がある。
-	// なお、メインスレッドの MainContext で作った後、描画スレッドの RenderingContext に glBindVertexArray すると、
-	// GL_INVALID_OPERATION が発生する。
-	// http://stackoverflow.com/questions/18492878/crash-on-vaos-loaded-from-non-main-thread
-	if (m_vertexArray == 0) {
-		glGenVertexArrays(1, &m_vertexArray);
-	}
+	
 	return m_vertexArray;
-}
-
-//------------------------------------------------------------------------------
-void GLRenderer::OnLostDevice()
-{
-	if (m_vertexArray != 0) {
-		// TODO: VAO はコンテキスト間で共有できないので、描画スレッド上で開放する必要がある
-		glDeleteVertexArrays(1, &m_vertexArray);
-		m_vertexArray = 0;
-	}
-	if (m_framebuffer != 0) {
-		glDeleteFramebuffers(1, &m_framebuffer);
-		m_framebuffer = 0;
-	}
-}
-
-//------------------------------------------------------------------------------
-void GLRenderer::OnResetDevice()
-{
-	if (m_framebuffer == 0) {
-		glGenFramebuffers(1, &m_framebuffer);
-	}
-	//auto cc = wglGetCurrentContext();
-	m_justSawReset = true;
 }
 
 //------------------------------------------------------------------------------
@@ -384,7 +379,6 @@ void GLRenderer::OnDrawPrimitive(PrimitiveType primitive, int startVertex, int p
 	UpdateFrameBuffer();
 	UpdateVAO();
 	UpdateVertexAttribPointer();
-	m_justSawReset = false;
 
 
 	// TODO:仮位置
@@ -426,7 +420,6 @@ void GLRenderer::OnDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex,
 	UpdateFrameBuffer();
 	UpdateVAO();
 	UpdateVertexAttribPointer();
-	m_justSawReset = false;
 
 	// プリミティブと必要な頂点数の取得
 	GLenum gl_prim;
@@ -499,9 +492,6 @@ void GLRenderer::UpdateFrameBuffer()
 				GL_RENDERBUFFER, 0);
 			LN_CHECK_GLERROR();
 		}
-		//GL_FRAMEBUFFER_COMPLETE
-		//int t = glCheckFramebufferStatus(GL_FRAMEBUFFER);// != GL_FRAMEBUFFER_COMPLETE)
-		//printf("");
 	}
 	m_modifiedFrameBuffer = false;
     

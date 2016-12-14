@@ -137,9 +137,9 @@ void WGLContext::SwapBuffers()
 // WGLGraphicsDevice
 //==============================================================================
 
-PFNWGLGETEXTENSIONSSTRINGEXTPROC	WGLGraphicsDevice::GetExtensionsStringEXT = NULL;
-PFNWGLGETEXTENSIONSSTRINGARBPROC	WGLGraphicsDevice::GetExtensionsStringARB = NULL;
-PFNWGLCREATECONTEXTATTRIBSARBPROC	WGLGraphicsDevice::CreateContextAttribsARB = NULL;
+PFNWGLGETEXTENSIONSSTRINGEXTPROC	WGLGraphicsDevice::GetExtensionsStringEXT = nullptr;
+PFNWGLGETEXTENSIONSSTRINGARBPROC	WGLGraphicsDevice::GetExtensionsStringARB = nullptr;
+PFNWGLCREATECONTEXTATTRIBSARBPROC	WGLGraphicsDevice::CreateContextAttribsARB = nullptr;
 
 //------------------------------------------------------------------------------
 WGLGraphicsDevice::WGLGraphicsDevice()
@@ -206,6 +206,7 @@ RefPtr<GLContext> WGLGraphicsDevice::InitializeMainContext(const ConfigData& con
 	wglDeleteContext(hGLRC);
 	::ReleaseDC(hWnd, hDC);
 
+
 	return RefPtr<GLContext>::StaticCast(mainContext);
 }
 
@@ -221,7 +222,13 @@ void WGLGraphicsDevice::MakeCurrentContext(GLContext* context)
 {
 	if (context != nullptr)
 	{
-		BOOL r = wglMakeCurrent(static_cast<WGLContext*>(context)->GetDC(), static_cast<WGLContext*>(context)->GetGLRC());
+		// 環境によっては、wglMakeCurrent() が失敗するにもかかわらず GetLastError() が 0 を返すことがある。
+		// そういうときは、まず wglMakeCurrent(NULL, NULL) してみるとちゃんとエラーが取れる。
+		// http://stackoverflow.com/questions/21613842/wglmakecurrent-in-second-thread-fails
+		//wglMakeCurrent(NULL, NULL);
+
+		WGLContext* wglContext = static_cast<WGLContext*>(context);
+		BOOL r = wglMakeCurrent(wglContext->GetDC(), wglContext->GetGLRC());
 		LN_THROW(r, Win32Exception, ::GetLastError());
 	}
 	else
