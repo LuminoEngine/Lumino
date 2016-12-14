@@ -129,6 +129,9 @@ public:
 	/// 描画スレッドの終了処理
 	virtual void DetachRenderingThread() = 0;
 
+
+	virtual void FlushResource() = 0;
+
 protected:
 	virtual ~IGraphicsDevice() {}
 };

@@ -165,6 +165,8 @@ void SwapChain::Present()
 		//    true がセットされるのに、その後 false をセットしてしまうことがある。
 		m_waiting.SetFalse();
 
+		m_manager->GetGraphicsDevice()->FlushResource();
+
 		// Primary コマンドリストの末尾に Present を追加し、キューへ追加する
 		m_manager->GetRenderer()->PresentCommandList(this);
 	}

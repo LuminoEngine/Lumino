@@ -116,6 +116,7 @@ private:
 	virtual void ResetDevice() override;
 	virtual void OnLostDevice() override;
 	virtual void OnResetDevice() override;
+	virtual void FlushResource() override;
 
 
 protected:

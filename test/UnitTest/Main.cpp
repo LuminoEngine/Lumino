@@ -12,7 +12,7 @@ void TestEnv::SetUp()
 	EngineSettings::SetMainWindowSize(SizeI(160 * scale, 120 * scale));
 	EngineSettings::SetMainBackBufferSize(SizeI(160 * scale, 120 * scale));
 	EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);//GraphicsAPI::DirectX9);//
-	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Immediate);//GraphicsRenderingType::Threaded);//
+	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
 	//settings.graphicsAPI = GraphicsAPI::DirectX9; //GraphicsAPI::OpenGL;//
 	//settings.renderingType = GraphicsRenderingType::Immediate; //RenderingType::Deferred;//
 	detail::EngineSettings::instance.defaultSkinFilePath = LN_LOCALFILE("UI/Data/Skin.png");

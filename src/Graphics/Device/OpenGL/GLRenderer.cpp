@@ -500,15 +500,6 @@ void GLRenderer::UpdateFrameBuffer()
 //------------------------------------------------------------------------------
 void GLRenderer::UpdateVAO()
 {
-	// VAO はコンテキスト間で共有できないため、描画スレッド上で作る必要がある。
-	// なお、メインスレッドの MainContext で作った後、描画スレッドの RenderingContext に glBindVertexArray すると、
-	// GL_INVALID_OPERATION が発生する。
-	// http://stackoverflow.com/questions/18492878/crash-on-vaos-loaded-from-non-main-thread
-	if (m_vertexArray == 0) {
-		glGenVertexArrays(1, &m_vertexArray);
-	}
-
-	// GL 3.2 Core からは VertexArrayObject (VAO) が必須となった
 	glBindVertexArray(m_vertexArray); LN_CHECK_GLERROR();
 	glBindBuffer(GL_ARRAY_BUFFER, m_currentVertexBuffer->GetGLVertexBuffer()); LN_CHECK_GLERROR();
 

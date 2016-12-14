@@ -13,7 +13,7 @@ class GLVertexBuffer;
 class GLIndexBuffer;
 class GLShaderPass;
 
-/// OpenGL 用の IRenderer の実装
+// OpenGL 用の IRenderer の実装
 class GLRenderer
 	: public IRenderer
 {

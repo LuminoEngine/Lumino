@@ -233,6 +233,22 @@ void GLGraphicsDevice::OnResetDevice()
 }
 
 //------------------------------------------------------------------------------
+void GLGraphicsDevice::FlushResource()
+{
+	/*
+		- AMD Radeon(TM) HD8490
+			glTexSubImage2D() などで設定されたデータは、その時点ではまだ VRAM に転送されない。
+			MakeCurrent(NULL) されたり、glFlush() で始めて転送される。
+			
+			Threading モードの場合、メインスレッドは描画はしないがどこかで glFlush() しておかないと、
+			別スレッドで描画しようとしたときに実はまだ VRAM にデータが無い、ということになってしまう。
+			(DirectX はそのへん面倒見てくれたが・・・)
+	*/
+
+	glFlush();
+}
+
+//------------------------------------------------------------------------------
 void GLGraphicsDevice::ParseGLVersion(int* glMajor, int* glMinor, int* glslMajor, int* glslMinor)
 {
 	// GL_VERSION の文字列フォーマットは決まっている。
