@@ -185,7 +185,7 @@ TEST_F(Test_Scene_Sprite3D, Basic)
 		sprite3->SetPosition(1, 0, 0);
 		sprite3->SetOpacity(0.75f);
 		Engine::Update();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite3D.Basic2.png")));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite3D.Basic2.png"), 95));
 	}
 	// <Test> •’Ê‚Ì•`‰æ
 	// <Test> •s“§–¾“x‚Ìİ’è

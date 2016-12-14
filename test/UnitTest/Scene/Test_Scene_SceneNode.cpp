@@ -54,7 +54,7 @@ TEST_F(Test_Scene_SceneNode, DepthTest)
 		s2->SetAngles(0, -Math::PI / 4, 0);
 		s2->SetDepthTestEnabled(false);
 		Engine::Update();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_SceneNode.DepthTest2.png")));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_SceneNode.DepthTest2.png"), 95));
 	}
 	// <Test> [“x‘‚«‚İ–³Œø
 	{
@@ -64,7 +64,7 @@ TEST_F(Test_Scene_SceneNode, DepthTest)
 		s1->SetDepthWriteEnabled(false);
 		s2->SetAngles(0, -Math::PI / 4, 0);
 		Engine::Update();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_SceneNode.DepthTest2.png")));	// Œ‹‰Ê‚Íª‚Æ“¯‚¶
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_SceneNode.DepthTest2.png"), 95));	// Œ‹‰Ê‚Íª‚Æ“¯‚¶
 	}
 }
 

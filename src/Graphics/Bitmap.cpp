@@ -99,13 +99,14 @@ Bitmap::Bitmap(const ByteBuffer& buffer, const SizeI& size, PixelFormat format, 
 }
 
 //------------------------------------------------------------------------------
-Bitmap::Bitmap(void* buffer, const SizeI& size, PixelFormat format)
+Bitmap::Bitmap(void* buffer, const SizeI& size, PixelFormat format, bool upFlow)
 {
 	Init();
 	m_size = size;
 	m_depth = 1;
 	m_format = format;
 	m_bitmapData.Attach(buffer, GetPixelFormatByteCount(m_format, m_size, m_depth));
+	m_upFlow = upFlow;
 }
 
 //------------------------------------------------------------------------------

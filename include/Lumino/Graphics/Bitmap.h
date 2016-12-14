@@ -58,7 +58,7 @@ public:
 	/**
 		@brief		
 	*/
-	Bitmap(void* buffer, const SizeI& size, PixelFormat format);	// 参照モード
+	Bitmap(void* buffer, const SizeI& size, PixelFormat format, bool upFlow = false);	// 参照モード
 	Bitmap(void* buffer, int width, int height, int depth, PixelFormat format);	// 参照モード
 	//Bitmap(void* buffer, const Size& size, PixelFormat format, int pitch, bool upFlow);	// 参照モード
 

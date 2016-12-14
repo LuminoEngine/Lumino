@@ -32,7 +32,7 @@ TEST_F(Test_Graphics_MeshResource, AddSquare)
 			Engine::EndRendering();
 		}
 		Engine::EndFrameUpdate();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_MeshResource.AddSquare1.png")));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_MeshResource.AddSquare1.png"), 95));
 	}
 
 	// <Test> 描画しつつ追加
@@ -53,7 +53,7 @@ TEST_F(Test_Graphics_MeshResource, AddSquare)
 			Engine::EndRendering();
 		}
 		Engine::EndFrameUpdate();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_MeshResource.AddSquare2.png")));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_MeshResource.AddSquare2.png"), 95));
 
 		// 2回目
 		mesh->AddSquare(
@@ -69,7 +69,7 @@ TEST_F(Test_Graphics_MeshResource, AddSquare)
 			Engine::EndRendering();
 		}
 		Engine::EndFrameUpdate();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_MeshResource.AddSquare3.png")));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_MeshResource.AddSquare3.png"), 95));
 	}
 }
 
@@ -98,7 +98,7 @@ TEST_F(Test_Graphics_MeshResource, Clear)
 			Engine::EndRendering();
 		}
 		Engine::EndFrameUpdate();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_MeshResource.Clear1.png")));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_MeshResource.Clear1.png"), 95));
 
 		// 2回目
 		mesh->Clear();		// clear
@@ -115,6 +115,6 @@ TEST_F(Test_Graphics_MeshResource, Clear)
 			Engine::EndRendering();
 		}
 		Engine::EndFrameUpdate();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_MeshResource.Clear2.png")));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_MeshResource.Clear2.png"), 95));
 	}
 }

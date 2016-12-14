@@ -331,14 +331,27 @@ void Texture2D::ApplyModifies()
 	{
 		ByteBuffer* bmpData = m_primarySurface2->GetBitmapBuffer();
 		SizeI bmpSize = m_primarySurface2->GetSize();
+
+		// 上下反転した一時ビットマップを作ってそれを転送する
+		RenderingCommandList* cmdList = m_manager->GetPrimaryRenderingCommandList();
+		RenderBulkData bmpRawData;
+		void* bmpRawDataBuf = bmpRawData.Alloc(cmdList, bmpData->GetSize());
+		Bitmap bmpTmp(bmpRawDataBuf, bmpSize, m_primarySurface2->GetPixelFormat(), true);
+		bmpTmp.BitBlt(0, 0, m_primarySurface2, Rect(0, 0, bmpSize), Color32::White, false);
+
+
 		if (m_initializing)
 		{
 			// まだ1度もコマンドリストに入れられていなければ直接転送できる
-			m_deviceObj->SetSubData(PointI::Zero, bmpData->GetConstData(), bmpData->GetSize(), bmpSize);
+			//m_deviceObj->SetSubData(PointI::Zero, bmpData->GetConstData(), bmpData->GetSize(), bmpSize);
+			m_deviceObj->SetSubData(PointI::Zero, bmpRawData.GetData(), bmpRawData.GetSize(), bmpSize);
 		}
 		else
 		{
-			RenderBulkData bmpRawData(bmpData->GetConstData(), bmpData->GetSize());
+			//RenderBulkData bmpRawData(bmpData->GetConstData(), bmpData->GetSize());
+			
+
+			
 			Driver::ITexture* deviceTexture = m_deviceObj;
 			LN_ENQUEUE_RENDER_COMMAND_3(
 				Texture3D_ApplyModifies, m_manager,
