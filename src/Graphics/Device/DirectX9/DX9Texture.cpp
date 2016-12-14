@@ -184,7 +184,8 @@ void DX9Texture::SetSubData(const PointI& point, const void* data, size_t dataBy
 	const byte_t* src = (const byte_t*)data;
 	for (int row = 0; row < lineHeight; ++row)
 	{
-		byte_t* dstline = dst + (lockedRect.Pitch * row);		// TODO format
+		//byte_t* dstline = dst + (lockedRect.Pitch * row);		// TODO format
+		byte_t* dstline = dst + (lockedRect.Pitch * (lineHeight - row - 1));		// TODO format
 		const byte_t* srcline = src + (srcRowBytes * row);	// TODO format
 		memcpy(dstline, srcline, srcRowBytes);
 	}

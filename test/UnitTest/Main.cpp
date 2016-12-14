@@ -12,7 +12,7 @@ void TestEnv::SetUp()
 	EngineSettings::SetMainWindowSize(SizeI(160 * scale, 120 * scale));
 	EngineSettings::SetMainBackBufferSize(SizeI(160 * scale, 120 * scale));
 	EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);//GraphicsAPI::DirectX9);//
-	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Immediate);
+	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Immediate);//GraphicsRenderingType::Threaded);//
 	//settings.graphicsAPI = GraphicsAPI::DirectX9; //GraphicsAPI::OpenGL;//
 	//settings.renderingType = GraphicsRenderingType::Immediate; //RenderingType::Deferred;//
 	detail::EngineSettings::instance.defaultSkinFilePath = LN_LOCALFILE("UI/Data/Skin.png");
@@ -166,7 +166,7 @@ GTEST_API_ int main(int argc, char **argv)
 #if 0	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_Scene_SceneNode.*"
+		"--gtest_filter=Test_Graphics_Rendering.DrawText_"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);

@@ -868,8 +868,6 @@ void GLShaderVariable::Initialize(GLShader* owner, ShaderVariableTypeDesc desc, 
 	MakeInitialValue();
 }
 
-GLint g_curPrg;
-
 //------------------------------------------------------------------------------
 void GLShaderVariable::Apply(int location, int textureStageIndex)
 {
@@ -950,13 +948,6 @@ void GLShaderVariable::Apply(int location, int textureStageIndex)
 	}
 	case ShaderVariableType_Matrix:
 	{
-		//GLsizei name_len = 0;
-		////GLsizei var_size = 0;   // 配列サイズっぽい
-		////GLenum  var_type = 0;
-		//GLchar  name[256] = { 0 };
-		////glGetActiveUniform(m_program, i, 256, &name_len, &var_size, &var_type, name); LN_CHECK_GLERROR();
-		//glGetActiveUniformName(g_curPrg, location, 256, &name_len, name);
-		//auto loc = glGetUniformLocation(g_curPrg, "ln_WorldViewProjection");
 		glUniformMatrix4fv(location, 1, GL_FALSE, (const GLfloat*)&m_value.GetMatrix());
 		LN_FAIL_CHECK_GLERROR();
 		break;
@@ -1336,8 +1327,6 @@ int GLShaderPass::GetUsageAttributeIndex(VertexElementUsage usage, int index)
 void GLShaderPass::Apply()
 {
 	glUseProgram(m_program); LN_CHECK_GLERROR();
-
-	g_curPrg = m_program;
 
 	for (GLShaderPassVariableInfo& v : m_passVarList)
 	{

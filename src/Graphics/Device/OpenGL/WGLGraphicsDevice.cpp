@@ -239,11 +239,13 @@ void WGLGraphicsDevice::Initialize(const ConfigData& configData)
 //------------------------------------------------------------------------------
 void WGLGraphicsDevice::MakeCurrentContext(GLContext* context)
 {
-	if (context) {
+	if (context != nullptr)
+	{
 		BOOL r = wglMakeCurrent(static_cast<WGLContext*>(context)->GetDC(), static_cast<WGLContext*>(context)->GetGLRC());
 		LN_THROW(r, Win32Exception, ::GetLastError());
 	}
-	else {
+	else
+	{
 		BOOL r = wglMakeCurrent(NULL, NULL);
 		LN_THROW(r, Win32Exception, ::GetLastError());
 	}

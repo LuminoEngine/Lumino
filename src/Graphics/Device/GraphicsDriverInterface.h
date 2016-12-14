@@ -366,6 +366,7 @@ public:
 	virtual void SetSamplerState(const SamplerState& state) = 0;
 
 	/// データ転送 (TODO:部分更新は未実装…)
+	// data に渡されるイメージデータは上下が反転している状態。
 	virtual void SetSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) = 0;
 
 	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes) = 0;
