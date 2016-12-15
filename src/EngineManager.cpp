@@ -249,6 +249,13 @@ void EngineManager::Initialize()
 	InitializeAssetsManager();
 
 	EngineDiagCore::Instance.Initialize(this);
+
+	// デフォルトで作成されるレイヤーのサイズを更新しておく
+	// TODO: レイヤーを最初に作ったときでもいいか？
+	if (m_uiManager != nullptr)
+	{
+		m_uiManager->GetMainWindow()->UpdateViewportTransform();
+	}
 }
 
 //------------------------------------------------------------------------------
