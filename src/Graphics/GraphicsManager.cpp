@@ -176,9 +176,9 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 		m_platformTextureLoading = false;
 
 		Driver::WGLGraphicsDevice::ConfigData data;
-		data.MainWindow = configData.mainWindow;
-		data.OpenGLMajorVersion = 2;
-		data.OpenGLMinorVersion = 1;
+		data.mainWindow = configData.mainWindow;
+		data.openGLMajorVersion = 2;
+		data.openGLMinorVersion = 1;
 		data.createSharedRenderingContext = (m_renderingType == GraphicsRenderingType::Threaded);
 		auto* device = LN_NEW Driver::WGLGraphicsDevice();
 		device->Initialize(data);

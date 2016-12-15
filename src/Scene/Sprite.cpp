@@ -73,7 +73,7 @@ Texture* Sprite::GetTexture() const
 }
 
 //------------------------------------------------------------------------------
-void Sprite::SetSrcRect(const Rect& rect)
+void Sprite::SetSrcRect(const RectF& rect)
 {
 	m_srcRect = rect;
 	UpdateTexUV();
@@ -89,7 +89,7 @@ void Sprite::UpdateTexUV()
 		// 転送元矩形が負値ならテクスチャ全体を転送する
 		if (m_srcRect.width < 0 && m_srcRect.height < 0)
 		{
-			Rect srcRect(0, 0, tex->GetSize().width, tex->GetSize().height);
+			RectF srcRect(0, 0, tex->GetSize().width, tex->GetSize().height);
 			NormalizeSrcRect(
 				srcRect, tex->GetRealSize(),
 				&m_upperLeftUV.x, &m_upperLeftUV.y, &m_lowerRightUV.x, &m_lowerRightUV.y);
@@ -222,14 +222,14 @@ void Sprite::UpdateVertexData()
 }
 
 //------------------------------------------------------------------------------
-void Sprite::NormalizeSrcRect(const Rect& srcRect, const SizeI& textureSize, float* l, float* t, float* r, float* b)
+void Sprite::NormalizeSrcRect(const RectF& srcRect, const SizeI& textureSize, float* l, float* t, float* r, float* b)
 {
 	float tex_rw = 1.0f / textureSize.width;
 	float tex_rh = 1.0f / textureSize.height;
-	*l = static_cast<float>(srcRect.GetLeft()) * tex_rw;
-	*t = static_cast<float>(srcRect.GetTop()) * tex_rh;
-	*r = static_cast<float>(srcRect.GetRight()) * tex_rw;
-	*b = static_cast<float>(srcRect.GetBottom()) * tex_rh;
+	*l = srcRect.GetLeft() * tex_rw;
+	*t = srcRect.GetTop() * tex_rh;
+	*r = srcRect.GetRight() * tex_rw;
+	*b = srcRect.GetBottom() * tex_rh;
 }
 
 

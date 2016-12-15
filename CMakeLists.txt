@@ -221,8 +221,6 @@ set(LN_SOURCES_Graphics
 	src/Graphics/FrameCapturer.cpp
 	src/Graphics/FrameRectRenderer.cpp
 	src/Graphics/FrameRectRenderer.h
-	src/Graphics/Geometry.cpp
-	src/Graphics/Geometry.h
 	src/Graphics/GeometryRenderer.cpp
 	src/Graphics/GeometryRenderer.h
 	src/Graphics/Graphics.cpp
@@ -278,8 +276,6 @@ set(LN_SOURCES_Graphics_Device
 	src/Graphics/Device/GraphicsDeviceBase.h
 	src/Graphics/Device/ShaderVariableBase.cpp
 	src/Graphics/Device/ShaderVariableBase.h
-	src/Graphics/Device/OpenGL/GLContext.cpp
-	src/Graphics/Device/OpenGL/GLContext.h
 	src/Graphics/Device/OpenGL/GLGraphicsDevice.cpp
 	src/Graphics/Device/OpenGL/GLGraphicsDevice.h
 	src/Graphics/Device/OpenGL/GLIndexBuffer.cpp

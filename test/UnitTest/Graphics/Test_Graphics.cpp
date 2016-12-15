@@ -340,10 +340,10 @@ TEST_F(Test_Graphics_Rendering, DrawRectangle)
 		{
 			Engine::Render();
 			Engine::GetDefault2DLayer()->GetRenderer()->SetBrush(ColorBrush::Red);
-			Engine::GetDefault2DLayer()->GetRenderer()->DrawRectangle(Rect(10, 20, 30, 40));
-			Engine::GetDefault2DLayer()->GetRenderer()->DrawRectangle(Rect(110, 20, 30, 40));
+			Engine::GetDefault2DLayer()->GetRenderer()->DrawRectangle(RectF(10, 20, 30, 40));
+			Engine::GetDefault2DLayer()->GetRenderer()->DrawRectangle(RectF(110, 20, 30, 40));
 			Engine::GetDefault2DLayer()->GetRenderer()->SetBrush(ColorBrush::Blue);
-			Engine::GetDefault2DLayer()->GetRenderer()->DrawRectangle(Rect(10, 70, 30, 40));
+			Engine::GetDefault2DLayer()->GetRenderer()->DrawRectangle(RectF(10, 70, 30, 40));
 			Engine::EndRendering();
 		}
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawRectangle1.png")));
@@ -354,10 +354,10 @@ TEST_F(Test_Graphics_Rendering, DrawRectangle)
 		{
 			Engine::Render();
 			Engine::GetDefault2DLayer()->GetRenderer()->SetBrush(ColorBrush::Red);
-			Engine::GetDefault2DLayer()->GetRenderer()->DrawRectangle(Rect(10, 20, 30, 40));
-			Engine::GetDefault2DLayer()->GetRenderer()->DrawRectangle(Rect(110, 20, 30, 40));
+			Engine::GetDefault2DLayer()->GetRenderer()->DrawRectangle(RectF(10, 20, 30, 40));
+			Engine::GetDefault2DLayer()->GetRenderer()->DrawRectangle(RectF(110, 20, 30, 40));
 			Engine::GetDefault2DLayer()->GetRenderer()->SetBrush(ColorBrush::Blue);
-			Engine::GetDefault2DLayer()->GetRenderer()->DrawRectangle(Rect(10, 70, 30, 40));
+			Engine::GetDefault2DLayer()->GetRenderer()->DrawRectangle(RectF(10, 70, 30, 40));
 			Engine::EndRendering();
 		}
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawRectangle1.png")));
@@ -396,19 +396,19 @@ TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
 
 			// Œú‚³‹Ïˆê
 			g->SetBrush(brush1);
-			g->DrawRectangle(Rect(0, 0, 43, 63));
+			g->DrawRectangle(RectF(0, 0, 43, 63));
 
 			// Œú‚³·‚ ‚è
 			g->SetBrush(brush2);
-			g->DrawRectangle(Rect(60, 0, 43, 63));
+			g->DrawRectangle(RectF(60, 0, 43, 63));
 
 			// k‘Þ + Œú‚³‹Ïˆê
 			g->SetBrush(brush3);
-			g->DrawRectangle(Rect(0, 80, 6, 4));
+			g->DrawRectangle(RectF(0, 80, 6, 4));
 
 			// k‘Þ + Œú‚³·‚ ‚è
 			g->SetBrush(brush2);
-			g->DrawRectangle(Rect(60, 80, 6, 4));
+			g->DrawRectangle(RectF(60, 80, 6, 4));
 
 			Engine::EndRendering();
 

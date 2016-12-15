@@ -2,7 +2,6 @@
 #pragma once 
 #include "GLGraphicsDevice.h"
 #include "GLSwapChain.h"
-#include "GLContext.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN

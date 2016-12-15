@@ -65,7 +65,7 @@ public:
 	String mainWindowTitle = _T("Lumino");
 	
 	/** デバッグ用のログファイルの出力有無を設定します。(初期値:Debug ビルドの場合true、それ以外は false) */
-	bool applicationLogEnabled = false;
+	bool engineLogEnabled = false;
 
 	/**
 		@brief		標準入出力用のコンソールウィンドウを割り当てるかどうかを設定します。(初期値:false)
@@ -150,7 +150,7 @@ public:
 		, DirectMusicReverbLevel(0.75f)
 	{
 #ifdef LN_DEBUG
-		applicationLogEnabled = true;
+		engineLogEnabled = true;
 		acceleratorKeys.toggleShowDiag = KeyboardBinding::Create(Key::F3);
 #endif
 		//engineAcceleratorKeys[(int)EngineAcceleratorKey::ToggleShowDiag] = Key::F3;
@@ -203,6 +203,7 @@ public:
 	//Application* GetApplication() const { return m_application; }
 
 	const FpsController& GetFpsController() const { return m_fpsController; }
+	EngineDiagViewer* GetEngineDiagViewer() const { return m_diagViewer; }
 
 protected:
 	EngineManager(const detail::EngineSettings& configData);

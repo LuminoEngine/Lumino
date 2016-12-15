@@ -12,9 +12,8 @@ namespace Driver
 class GLContext;
 class GLSwapChain;
 
-// OpenGL 用の IGraphicsDevice の実装
 /*
-	OpenGL のコンテキストの持ち方
+	OpenGL のコンテキストの使われ方
 
 	Threading モードの場合、Lumino は以下のように分類したたくさんの Context を作る。
 	- SwapChain Context
@@ -49,48 +48,27 @@ class GLGraphicsDevice
 public:
 	struct ConfigData
 	{
-		PlatformWindow*		MainWindow;
-		int					OpenGLMajorVersion;
-		int					OpenGLMinorVersion;
+		PlatformWindow*		mainWindow = nullptr;
+		int					openGLMajorVersion = 0;
+		int					openGLMinorVersion = 0;
 		bool				createSharedRenderingContext = false;
-
-		ConfigData()
-			: MainWindow(NULL)
-			, OpenGLMajorVersion(3)
-			, OpenGLMinorVersion(1)
-		{}
 	};
 
 public:
 	GLGraphicsDevice();
 	virtual ~GLGraphicsDevice();
-
-public:
 	void Initialize(const ConfigData& configData);
 
 	int GetOpenGLMajorVersio() const { return m_openGLMajorVersion; }
 	int GetOpenGLMinorVersio() const { return m_openGLMinorVersion; }
-	//void GCDeviceResource();
-
 	GLContext* GetMainContext() const;
 	GLContext* GetMainRenderingContext() const;
-
 	MemoryStream* GetUniformTempBuffer() { return &m_uniformTempBuffer; }
 	BinaryWriter* GetUniformTempBufferWriter() { return &m_uniformTempBufferWriter; }
 
 	virtual RefPtr<GLContext> InitializeMainContext(const ConfigData& configData) = 0;
 	virtual RefPtr<GLContext> CreateContext(PlatformWindow* window) = 0;
-
-
-	/// 指定コンテキストをアクティブにする
 	virtual void MakeCurrentContext(GLContext* context) = 0;
-
-	
-
-	virtual void AttachRenderingThread() override;
-	virtual void DetachRenderingThread() override;
-	//virtual void OnBeginAccessContext() override;
-	//virtual void OnEndAccessContext() override;
 
 public:
 	// IGraphicsDevice interface
@@ -100,6 +78,8 @@ public:
 	virtual IRenderer* GetRenderer() override { return m_renderer; }
 	virtual ISwapChain* GetDefaultSwapChain() override;
 	virtual ISwapChain* CreateSwapChain(PlatformWindow* window) override;
+	virtual void AttachRenderingThread() override;
+	virtual void DetachRenderingThread() override;
 
 private:
 	virtual RefPtr<IVertexDeclaration> CreateVertexDeclarationImplement(const VertexElement* elements, int elementsCount) override;
@@ -118,32 +98,10 @@ private:
 	virtual void OnResetDevice() override;
 	virtual void FlushResource() override;
 
-
 protected:
 	static void ParseGLVersion(int* glMajor, int* glMinor, int* glslMajor, int* glslMinor);
 	static bool ContainsExtensionString(const char* extensionString, const char* str);
 	void SelectGLVersion(int requestMajor, int requestMinor);
-	//void AddDeviceResource(IDeviceObject* obj);
-	//int CheckPlatformExtensionSupported(const char* extension);
-	//bool CheckContainsExtensionString(const char* string, const GLubyte* extensions);
-
-	// TODO: いらないかな
-	//class ScopedContext
-	//{
-	//public:
-	//	GLGraphicsDevice* m_device;
-	//	ScopedContext(GLGraphicsDevice* d)
-	//	{
-	//		m_device = d;
-	//		m_device->m_mutex.Lock();
-	//		m_device->MakeCurrentContext(m_device->GetMainContext());
-	//	}
-	//	~ScopedContext()
-	//	{
-	//		m_device->MakeCurrentContext(NULL);
-	//		m_device->m_mutex.Unlock();
-	//	}
-	//};
 
 private:
 	DeviceState					m_deviceState;
@@ -151,18 +109,24 @@ private:
 	int							m_openGLMajorVersion;
 	int							m_openGLMinorVersion;
 
-
 	RefPtr<GLContext>			m_mainContext;
 	RefPtr<GLContext>			m_mainRenderingContext;
 	RefPtr<GLSwapChain>			m_defaultSwapChain;
 	RefPtr<GLRenderer>			m_renderer;
 
-	Mutex						m_mutex;	// TODO: いらないかな
-
 	MemoryStream				m_uniformTempBuffer;
 	BinaryWriter				m_uniformTempBufferWriter;
 };
 
+// プラットフォームごとの OpenGL コンテキスト
+class GLContext
+	: public RefObject
+{
+public:
+	GLContext() = default;
+	virtual ~GLContext() = default;
+	virtual void SwapBuffers() = 0;
+};
 
 } // namespace Driver
 LN_NAMESPACE_GRAPHICS_END

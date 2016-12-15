@@ -94,7 +94,7 @@ void Main()
 	//auto sprite5 = Sprite3D::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
 	//auto sprite6 = Sprite3D::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
 
-	auto mesh = StaticMesh::CreateSphere(2, 4, 4);
+	//auto mesh = StaticMesh::CreateSphere(2, 4, 4);
 
 #if 0
 	auto blur = ScreenMotionBlurImageEffect::Create();
@@ -153,6 +153,8 @@ void Main()
 		m_tileLayer->SetTileId(i % 100, i / 100, map[i]);
 	}
 #endif
+
+	EngineDiag::SetDisplayMode(EngineDiagDisplayMode::FpsSummary);
 
 	Input::AddButtonBinding(_T("AA"), KeyboardBinding::Create(Key::C));
 	Input::AddButtonBinding(_T("GG"), KeyboardBinding::Create(Key::A));

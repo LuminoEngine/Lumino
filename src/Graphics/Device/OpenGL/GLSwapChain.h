@@ -1,13 +1,13 @@
 ﻿
 #pragma once 
 #include "GLTexture.h"
-#include "GLContext.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
 class GLGraphicsDevice;
+class GLContext;
 class GLRenderer;
 
 // OpenGL 用の ISwapChain の実装

@@ -16,6 +16,12 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
+void EngineDiag::SetDisplayMode(EngineDiagDisplayMode mode)
+{
+	EngineManager::GetInstance()->GetEngineDiagViewer()->SetDisplayMode(mode);
+}
+
+//------------------------------------------------------------------------------
 int EngineDiag::GetGraphicsDeviceDrawCount()
 {
 	return EngineDiagCore::Instance.GetGraphicsDeviceDrawCount();
@@ -80,8 +86,11 @@ EngineDiagViewer::EngineDiagViewer()
 	: m_diagCore(nullptr)
 	, m_mainWindow(nullptr)
 	, m_font(nullptr)
-	, m_displayMode(DisplayMode_Hide)
+	, m_displayMode(EngineDiagDisplayMode::Hide)
 {
+#ifdef LN_DEBUG
+	m_displayMode = EngineDiagDisplayMode::FpsSummary;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -105,13 +114,15 @@ void EngineDiagViewer::Initialize(EngineManager* manager, EngineDiagCore* diagCo
 //------------------------------------------------------------------------------
 void EngineDiagViewer::ToggleDisplayMode()
 {
-	m_displayMode = (DisplayMode)((m_displayMode + 1) % DisplayMode__Count);
+	int d = (int)m_displayMode;
+	d = (d + 1) % DisplayModeCycle;
+	m_displayMode = (EngineDiagDisplayMode)d;
 }
 
 //------------------------------------------------------------------------------
 void EngineDiagViewer::UpdateFrame()
 {
-	if (m_displayMode == DisplayMode_FPSSummary)
+	if (m_displayMode == EngineDiagDisplayMode::FpsSummary)
 	{
 		String str = String::Format(_T("{0} - MainFPS:{1}/{2}"), m_originalMainWindowTitle, m_diagCore->GetMainFPS(), m_diagCore->GetMainFPSCapacity());
 		m_mainWindow->SetTitleText(str);

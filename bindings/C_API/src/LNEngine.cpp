@@ -18,7 +18,7 @@ void LNConfig_SetGraphicsRenderingType(LNGraphicsRenderingType renderingType)
 //------------------------------------------------------------------------------
 void LNConfig_SetEngineLogEnabled(LNBool enabled)
 {
-	LFManager::ConfigData.applicationLogEnabled = LNC_TO_BOOL(enabled);
+	LFManager::ConfigData.engineLogEnabled = LNC_TO_BOOL(enabled);
 }
 
 //------------------------------------------------------------------------------

@@ -1,19 +1,24 @@
 ﻿
 #pragma once
-#include <memory>
-#include <Lumino/Base/List.h>
-#include <Lumino/Base/String.h>
-#include <Lumino/Base/ElapsedTimer.h>
-#include <Lumino/Threading/Mutex.h>
 
 LN_NAMESPACE_BEGIN
 
+/** 診断情報の表示モード */
+enum class EngineDiagDisplayMode
+{
+	Hide = 0,			/**< 表示しない */
+	FpsSummary = 1,
+	InPlaceDetails = 2,
+};
+
 /**
-	@brief
+	@brief	
 */
 class EngineDiag
 {
 public:
+
+	static void SetDisplayMode(EngineDiagDisplayMode mode);
 
 	static int GetGraphicsDeviceDrawCount();
 

@@ -62,7 +62,7 @@ void EngineSettings::SetMainWindowTitle(const StringRef& title)
 //------------------------------------------------------------------------------
 void EngineSettings::SetEngineLogEnabled(bool enabled)
 {
-	detail::EngineSettings::instance.applicationLogEnabled = enabled;
+	detail::EngineSettings::instance.engineLogEnabled = enabled;
 }
 
 //------------------------------------------------------------------------------
@@ -100,7 +100,7 @@ void EngineSettings::SetDirectMusicReverbLevel(float level)
 //==============================================================================
 
 EngineManager* EngineManager::Instance = nullptr;
-const TCHAR* EngineManager::LogFileName = _T("lnlog.txt");
+const TCHAR* EngineManager::LogFileName = _T("EngineLog.txt");
 
 //------------------------------------------------------------------------------
 EngineManager* EngineManager::GetInstance(EngineManager* priority)
@@ -114,7 +114,6 @@ EngineManager* EngineManager::GetInstance(EngineManager* priority)
 EngineManager* EngineManager::Create(const detail::EngineSettings& configData)
 {
 	RefPtr<EngineManager> app(LN_NEW EngineManager(configData), false);
-	//app->Initialize();
 	app.SafeAddRef();
 	return app;
 }
@@ -160,8 +159,6 @@ EngineManager::EngineManager(const detail::EngineSettings& configData)
 //------------------------------------------------------------------------------
 EngineManager::~EngineManager()
 {
-	//LN_SAFE_RELEASE(m_application);
-
 	LN_SAFE_RELEASE(m_diagViewer);
 
 	if (m_assetsManager != nullptr)
@@ -262,7 +259,7 @@ void EngineManager::InitializeCommon()
 		InternalResource::InitializeEngineResource();
 
 		// ログファイル出力
-		if (m_configData.applicationLogEnabled) {
+		if (m_configData.engineLogEnabled) {
 			Logger::Initialize(LogFileName);
 		}
 		m_commonInitied = true;
@@ -402,7 +399,6 @@ void EngineManager::InitializeGraphicsManager()
 
 		m_diagViewer = LN_NEW EngineDiagViewer();
 		m_diagViewer->Initialize(this, &EngineDiagCore::Instance);
-		m_diagViewer->SetDisplayMode(EngineDiagViewer::DisplayMode_FPSSummary);
 	}
 }
 

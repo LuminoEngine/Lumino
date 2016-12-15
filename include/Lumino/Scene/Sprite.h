@@ -41,11 +41,11 @@ public:
 
 
 	/// テクスチャの転送矩形の設定 (ピクセル単位)
-	void SetSrcRect(const Rect& rect);
-	void SetSrcRect(int x, int y, int width, int height) { SetSrcRect(Rect(x, y, width, height)); }
+	void SetSrcRect(const RectF& rect);
+	void SetSrcRect(float x, float y, float width, float height) { SetSrcRect(RectF(x, y, width, height)); }
 
 	/// テクスチャの転送矩形の取得 (ピクセル単位)
-	const Rect& GetSrcRect() const { return m_srcRect; }
+	const RectF& GetSrcRect() const { return m_srcRect; }
 
 	/// 反転方法の設定
 	void SetFlipMode(FlipMode mode) { m_flipMode = mode; UpdateTexUV(); }
@@ -56,7 +56,7 @@ public:
 private:
 
 	/// ピクセル単位の転送矩形をテクスチャUVの矩形 (0.0～1.0) に変換する
-	static void NormalizeSrcRect(const Rect& srcRect, const SizeI& textureSize, float* l, float* t, float* r, float* b);
+	static void NormalizeSrcRect(const RectF& srcRect, const SizeI& textureSize, float* l, float* t, float* r, float* b);
 
 protected:
 	Sprite();
@@ -70,7 +70,7 @@ protected:
 protected:
 	SpriteCoord	m_spriteCoord;
 	Size		m_size;
-	Rect		m_srcRect;
+	RectF		m_srcRect;
 	FlipMode	m_flipMode;
 
 	Vector3		m_upperLeft;
@@ -79,7 +79,7 @@ protected:
 	Vector2		m_lowerRightUV;
 
 	Size		m_renderSize;
-	Rect		m_renderSourceRect;
+	RectF		m_renderSourceRect;
 };
 
 /**

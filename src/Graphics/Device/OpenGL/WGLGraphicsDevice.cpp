@@ -155,7 +155,7 @@ WGLGraphicsDevice::~WGLGraphicsDevice()
 //------------------------------------------------------------------------------
 RefPtr<GLContext> WGLGraphicsDevice::InitializeMainContext(const ConfigData& configData)
 {
-	HWND hWnd = PlatformSupport::GetWindowHandle(configData.MainWindow);
+	HWND hWnd = PlatformSupport::GetWindowHandle(configData.mainWindow);
 	HDC hDC = ::GetDC(hWnd);
 
 	// まずは wglCreateContext で適当にコンテキストを作る。
@@ -195,13 +195,13 @@ RefPtr<GLContext> WGLGraphicsDevice::InitializeMainContext(const ConfigData& con
 	Logger::WriteLine("    GL_SHADING_LANGUAGE_VERSION : %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
 	Logger::WriteLine("    Extensions strings          : %s", GetExtensionsStringEXT());
 
-	SelectGLVersion(configData.OpenGLMajorVersion, configData.OpenGLMinorVersion);
+	SelectGLVersion(configData.openGLMajorVersion, configData.openGLMinorVersion);
 
 	
 	GLenum result = glewInit();
 	LN_FAIL_CHECK_STATE(result == GLEW_OK) return nullptr;	// コンテキスト作成後、wglMakeCurrent() しないとエラーが返る
 
-	auto mainContext = RefPtr<WGLContext>::MakeRef(this, configData.MainWindow, nullptr);
+	auto mainContext = RefPtr<WGLContext>::MakeRef(this, configData.mainWindow, nullptr);
 
 	wglDeleteContext(hGLRC);
 	::ReleaseDC(hWnd, hDC);

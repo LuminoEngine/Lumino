@@ -41,13 +41,13 @@ GLGraphicsDevice::~GLGraphicsDevice()
 //------------------------------------------------------------------------------
 void GLGraphicsDevice::Initialize(const ConfigData& configData)
 {
-	LN_FAIL_CHECK_ARG(configData.MainWindow != nullptr) return;
+	LN_FAIL_CHECK_ARG(configData.mainWindow != nullptr) return;
 
-	m_mainWindow = configData.MainWindow;
+	m_mainWindow = configData.mainWindow;
 	m_deviceState = DeviceState_Enabled;
 
 	Logger::WriteLine("GLGraphicsDevice::Initialize");
-	Logger::WriteLine("    Requested OpenGL version : %d.%d", configData.OpenGLMajorVersion, configData.OpenGLMinorVersion);
+	Logger::WriteLine("    Requested OpenGL version : %d.%d", configData.openGLMajorVersion, configData.openGLMinorVersion);
 
 	// create main context
 	m_mainContext = InitializeMainContext(configData);
@@ -345,24 +345,6 @@ void GLGraphicsDevice::DetachRenderingThread()
 	MakeCurrentContext(nullptr);
 	GraphicsDeviceBase::DetachRenderingThread();
 }
-
-////------------------------------------------------------------------------------
-//void GLGraphicsDevice::OnBeginAccessContext()
-//{
-//	if (Thread::GetCurrentThreadId() != m_attachRenderingThreadId)
-//	{
-//		MakeCurrentContext(GetMainContext());
-//	}
-//}
-//
-////------------------------------------------------------------------------------
-//void GLGraphicsDevice::OnEndAccessContext()
-//{
-//	if (Thread::GetCurrentThreadId() != m_attachRenderingThreadId)
-//	{
-//		MakeCurrentContext(nullptr);
-//	}
-//}
 
 } // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
