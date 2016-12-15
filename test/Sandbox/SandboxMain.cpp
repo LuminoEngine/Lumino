@@ -77,7 +77,9 @@ void Main()
 void Main()
 {
 	//EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
+	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Immediate);//GraphicsRenderingType::Threaded);//
 	Engine::Initialize();
+	//Engine::GetMainViewport()->SetBackgroundColor(Color32::Gray);
 
 	//Engine::GetDefaultSceneGraph3D()->visibleGridPlane = true;
 
@@ -159,6 +161,8 @@ void Main()
 
 	Input::AddButtonBinding(_T("AA"), KeyboardBinding::Create(Key::C));
 	Input::AddButtonBinding(_T("GG"), KeyboardBinding::Create(Key::A));
+
+	auto spr1 = Sprite2D::Create(_T("C:/Proj/LuminoStudio/Engine/External/Lumino/test/UnitTest/Graphics/TestData/Sprite2.png"));
 
 	while (Engine::Update())
 	{

@@ -22,7 +22,7 @@ protected:
 	UIViewportLayer(UILayoutView* view);
 	virtual ~UIViewportLayer();
 	virtual DrawList* GetRenderer() override { return nullptr; }
-	virtual void Render(RenderingContext* context) override;
+	virtual void Render() override;
 	virtual void ExecuteDrawListRendering(RenderTarget* renderTarget, DepthBuffer* depthBuffer) override;
 
 LN_INTERNAL_ACCESS:
@@ -59,9 +59,10 @@ LN_INTERNAL_ACCESS:
 	detail::UIManager* GetManager() const { return m_manager; }
 	SwapChain* GetSwapChain() const { return m_swapChain; }
 	void Render();
+
 	void BeginRendering();
-	void EndRendering();
 	void RenderContents();
+	void EndRendering();
 
 private:
 	detail::UIManager*		m_manager;

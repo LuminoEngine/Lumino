@@ -52,7 +52,7 @@ protected:
 	//virtual void BeginFrame(const Size& viewSize);
 
 	/// 本描画
-	virtual void Render(RenderingContext* context) = 0;
+	virtual void Render() = 0;
 
 	/// 後描画
 	void PostRender(DrawList* context, RenderTarget** primaryLayerTarget, RenderTarget** secondaryLayerTarget);
@@ -63,6 +63,7 @@ protected:
 private:
 	Viewport*					m_owner;
 	ViewportLayerPlacement		m_placement;
+	Size						m_size;
 	RefPtr<ImageEffectList>		m_imageEffects;
 	int							m_zIndex;
 
@@ -86,7 +87,7 @@ class Viewport
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	const Size& GetSize() const;
+	//const Size& GetSize() const;
 
 	void SetBackgroundColor(const Color& color);
 
@@ -104,19 +105,21 @@ public:
 LN_INTERNAL_ACCESS:	// TODO: いまはとりあえず内部用途
 	Viewport();
 	virtual ~Viewport();
-	void Initialize(detail::GraphicsManager* manager, RenderTarget* renderTarget);
-	void Render();
-	void EndFrameRender();
+	void Initialize(detail::GraphicsManager* manager/*, RenderTarget* renderTarget*/);
+
+	// call from UIFrameWindow
+	void BeginRender(Details::Renderer* renderer, const SizeI& viewSize);
+	void Render(Details::Renderer* renderer);
+	void EndRender(Details::Renderer* renderer, RenderTarget* renderTarget);
 
 private:
-	void TryRemakeLayerTargets();
+	void TryRemakeLayerTargets(const SizeI& viewSize);
 	void MakeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, Matrix* mat);
 	void BeginBlitRenderer();
-	void FlushBlitRenderer();
+	void FlushBlitRenderer(RenderTarget* renderTarget);
 
 	detail::GraphicsManager*	m_manager;
-	Size						m_size;
-	RenderTarget*				m_renderTarget;
+	//RenderTarget*				m_renderTarget;
 
 	RefPtr<ViewportLayerList>	m_viewportLayerList;
 	Color						m_backgroundColor;

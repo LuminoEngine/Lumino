@@ -81,6 +81,7 @@
 */
 #include "Internal.h"
 #include "GraphicsManager.h"
+#include "RendererImpl.h"
 #include "../UI/UIManager.h"
 #include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Graphics/Viewport.h>
@@ -123,8 +124,7 @@ ViewportLayer::~ViewportLayer()
 //------------------------------------------------------------------------------
 const Size& ViewportLayer::GetViewportSize() const
 {
-	LN_CHECK_STATE(m_owner != nullptr);
-	return m_owner->GetSize();
+	return m_size;
 }
 
 //------------------------------------------------------------------------------
@@ -140,6 +140,8 @@ void ViewportLayer::PostRender(DrawList* context, RenderTarget** primaryLayerTar
 //------------------------------------------------------------------------------
 void ViewportLayer::OnBeginFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer)
 {
+	// TODO: float
+	m_size.Set((float)renderTarget->GetWidth(), (float)renderTarget->GetHeight());
 }
 
 //------------------------------------------------------------------------------
@@ -181,7 +183,6 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Viewport, Object);
 //------------------------------------------------------------------------------
 Viewport::Viewport()
 	: m_manager(nullptr)
-	, m_renderTarget(nullptr)
 	, m_viewportLayerList(RefPtr<ViewportLayerList>::MakeRef())
 	, m_backgroundColor(Color::White)
 	, m_primaryLayerTarget(nullptr)
@@ -198,11 +199,11 @@ Viewport::~Viewport()
 }
 
 //------------------------------------------------------------------------------
-void Viewport::Initialize(detail::GraphicsManager* manager, RenderTarget* renderTarget)
+void Viewport::Initialize(detail::GraphicsManager* manager/*, RenderTarget* renderTarget*/)
 {
 	m_manager = manager;
-	m_renderTarget = renderTarget;
-	m_size.Set((float)m_renderTarget->GetWidth(), (float)m_renderTarget->GetHeight());
+	//m_renderTarget = renderTarget;
+	//m_size.Set((float)m_renderTarget->GetWidth(), (float)m_renderTarget->GetHeight());
 
 	m_renderer = RefPtr<DrawList>::MakeRef();
 	m_renderer->Initialize(manager);
@@ -214,14 +215,13 @@ void Viewport::Initialize(detail::GraphicsManager* manager, RenderTarget* render
 	//m_pass = RefPtr<detail::RenderingPass2>::MakeRef();
 	//m_pass->Initialize(manager);
 
-	TryRemakeLayerTargets();
 }
 
-//------------------------------------------------------------------------------
-const Size& Viewport::GetSize() const
-{
-	return m_size;
-}
+////------------------------------------------------------------------------------
+//const Size& Viewport::GetSize() const
+//{
+//	return m_size;
+//}
 
 //------------------------------------------------------------------------------
 void Viewport::SetBackgroundColor(const Color& color)
@@ -230,15 +230,24 @@ void Viewport::SetBackgroundColor(const Color& color)
 }
 
 //------------------------------------------------------------------------------
-void Viewport::Render()
+void Viewport::BeginRender(Details::Renderer* renderer, const SizeI& viewSize)
 {
-	TryRemakeLayerTargets();
+	//m_size.Set((float)viewSize.width, (float)viewSize.height);
+	TryRemakeLayerTargets(viewSize);
+}
 
-	RenderingContext* context = m_manager->GetRenderingContext();
-	context->SetRenderTarget(0, m_primaryLayerTarget);
-	context->SetDepthBuffer(m_depthBuffer);
-	context->Clear(ClearFlags::All, m_backgroundColor, 1.0f, 0x00);
-	context->Flush();
+//------------------------------------------------------------------------------
+void Viewport::Render(Details::Renderer* renderer)
+{
+	//RenderingContext* context = m_manager->GetRenderingContext();
+	//context->SetRenderTarget(0, m_primaryLayerTarget);
+	//context->SetDepthBuffer(m_depthBuffer);
+	//context->Clear(ClearFlags::All, m_backgroundColor, 1.0f, 0x00);
+	//context->Flush();
+
+	renderer->SetRenderTarget(0, m_primaryLayerTarget);
+	renderer->SetDepthBuffer(m_depthBuffer);
+	renderer->Clear(ClearFlags::All, m_backgroundColor, 1.0f, 0x00);
 
 	// ZIndex でソート
 	std::stable_sort(m_viewportLayerList->begin(), m_viewportLayerList->end(),
@@ -248,7 +257,7 @@ void Viewport::Render()
 	{
 		//context->SetRenderTarget(0, m_primaryLayerTarget);
 		layer->OnBeginFrameRender(m_primaryLayerTarget, m_depthBuffer);
-		layer->Render(context);
+		layer->Render();
 
 		
 	}
@@ -256,7 +265,7 @@ void Viewport::Render()
 }
 
 //------------------------------------------------------------------------------
-void Viewport::EndFrameRender()
+void Viewport::EndRender(Details::Renderer* renderer, RenderTarget* renderTarget)
 {
 	m_renderer->SetDepthBuffer(nullptr);
 
@@ -267,32 +276,32 @@ void Viewport::EndFrameRender()
 		
 		BeginBlitRenderer();
 		layer->PostRender(m_renderer, &m_primaryLayerTarget, &m_secondaryLayerTarget);
-		FlushBlitRenderer();
+		FlushBlitRenderer(renderTarget);
 	}
 
 	Matrix viewBoxTransform;
-	MakeViewBoxTransform(m_renderTarget->GetSize(), m_primaryLayerTarget->GetSize(), &viewBoxTransform);
+	MakeViewBoxTransform(renderTarget->GetSize(), m_primaryLayerTarget->GetSize(), &viewBoxTransform);
 
 	BeginBlitRenderer();
 	m_renderer->SetRenderTarget(0, nullptr);
 	m_renderer->Blit(m_primaryLayerTarget, viewBoxTransform);
-	FlushBlitRenderer();
+	FlushBlitRenderer(renderTarget);
 }
 
 //------------------------------------------------------------------------------
-void Viewport::TryRemakeLayerTargets()
+void Viewport::TryRemakeLayerTargets(const SizeI& viewSize)
 {
 	// RenderTarget
-	if (m_primaryLayerTarget == nullptr || m_renderTarget->GetSize() != m_primaryLayerTarget->GetSize())
+	if (m_primaryLayerTarget == nullptr || viewSize != m_primaryLayerTarget->GetSize())
 	{
 		LN_SAFE_RELEASE(m_primaryLayerTarget);
 		LN_SAFE_RELEASE(m_secondaryLayerTarget);
 
 		// TODO: できればこういうのは Resize 関数を作りたい。作り直したくない
 		m_primaryLayerTarget = LN_NEW RenderTarget();
-		m_primaryLayerTarget->CreateImpl(m_manager, m_renderTarget->GetSize(), 1, TextureFormat::R8G8B8X8);
+		m_primaryLayerTarget->CreateImpl(m_manager, viewSize, 1, TextureFormat::R8G8B8X8);
 		m_secondaryLayerTarget = LN_NEW RenderTarget();
-		m_secondaryLayerTarget->CreateImpl(m_manager, m_renderTarget->GetSize(), 1, TextureFormat::R8G8B8X8);
+		m_secondaryLayerTarget->CreateImpl(m_manager, viewSize, 1, TextureFormat::R8G8B8X8);
 
 		//m_primaryLayerTargetOrg = m_primaryLayerTarget;
 	}
@@ -301,7 +310,7 @@ void Viewport::TryRemakeLayerTargets()
 	if (m_depthBuffer == nullptr || m_depthBuffer->GetSize() != m_primaryLayerTarget->GetSize())
 	{
 		m_depthBuffer = RefPtr<DepthBuffer>::MakeRef();
-		m_depthBuffer->CreateImpl(m_manager, m_renderTarget->GetSize(), TextureFormat::D24S8);
+		m_depthBuffer->CreateImpl(m_manager, viewSize, TextureFormat::D24S8);
 	}
 
 	//if (m_primaryLayerTargetOrg != m_primaryLayerTarget)
@@ -371,12 +380,14 @@ void Viewport::BeginBlitRenderer()
 }
 
 //------------------------------------------------------------------------------
-void Viewport::FlushBlitRenderer()
+void Viewport::FlushBlitRenderer(RenderTarget* renderTarget)
 {
+	Size targetSize((float)renderTarget->GetWidth(), (float)renderTarget->GetHeight());
+
 	detail::CameraInfo cameraInfo;
 	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
 	cameraInfo.viewPosition = Vector3::Zero;
-	cameraInfo.viewPixelSize = GetSize();
+	cameraInfo.viewPixelSize = targetSize;
 	cameraInfo.viewMatrix = Matrix::Identity;
 	//Camera::Perspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1, &cameraInfo.projMatrix);
 	cameraInfo.projMatrix = Matrix::MakePerspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1);
@@ -387,7 +398,7 @@ void Viewport::FlushBlitRenderer()
 	m_internalRenderer->Render(
 		m_renderer->GetDrawElementList(),
 		cameraInfo,
-		m_renderTarget,
+		renderTarget,
 		m_depthBuffer);		// TODO: バックバッファサイズ
 	m_renderer->EndFrame();
 }

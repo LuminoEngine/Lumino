@@ -1,7 +1,6 @@
 ﻿
 #include "Internal.h"
 #include <Lumino/Platform/PlatformWindow.h>
-#include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Graphics/SwapChain.h>
 #include <Lumino/Graphics/Viewport.h>
 #include <Lumino/Graphics/Rendering.h>
@@ -50,7 +49,7 @@ void UIViewportLayer::Initialize()
 }
 
 //------------------------------------------------------------------------------
-void UIViewportLayer::Render(RenderingContext* context)
+void UIViewportLayer::Render()
 {
 	m_renderingContext->BeginMakeElements();
 
@@ -114,7 +113,7 @@ void UIFrameWindow::Initialize(detail::UIManager* manager, PlatformWindow* platf
 
 	// MainViewport
 	m_mainViewport = LN_NEW Viewport();
-	m_mainViewport->Initialize(m_manager->GetGraphicsManager(), m_swapChain->GetBackBuffer());
+	m_mainViewport->Initialize(m_manager->GetGraphicsManager());
 
 	// UI Layer
 	m_uiLayer.Attach(LN_NEW UIViewportLayer(view), false);
@@ -144,23 +143,26 @@ void UIFrameWindow::BeginRendering()
 
 	Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
 	renderer->Begin();
-}
 
-//------------------------------------------------------------------------------
-void UIFrameWindow::EndRendering()
-{
-	m_mainViewport->EndFrameRender();
-
-	Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
-	m_manager->GetGraphicsManager()->SwitchActiveContext(nullptr);
-	renderer->End();
-	m_swapChain->Present();
+	m_mainViewport->BeginRender(renderer, m_swapChain->GetBackBuffer()->GetSize());
 }
 
 //------------------------------------------------------------------------------
 void UIFrameWindow::RenderContents()
 {
-	m_mainViewport->Render();
+	Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
+	m_mainViewport->Render(renderer);
+}
+
+//------------------------------------------------------------------------------
+void UIFrameWindow::EndRendering()
+{
+	Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
+	m_mainViewport->EndRender(renderer, m_swapChain->GetBackBuffer());
+
+	m_manager->GetGraphicsManager()->SwitchActiveContext(nullptr);
+	renderer->End();
+	m_swapChain->Present();
 }
 
 

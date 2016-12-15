@@ -273,7 +273,7 @@ DrawList* CameraViewportLayer::GetRenderer()
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer::Render(RenderingContext* context)
+void CameraViewportLayer::Render()
 {
 	// 描画リストのクリアは、SceneGraph の描画前でなければならない。
 	// 出来上がった描画リストを、複数のレイヤーが描画することを想定する。
@@ -300,11 +300,13 @@ void CameraViewportLayer::ExecuteDrawListRendering(RenderTarget* renderTarget, D
 {
 	m_renderer->EndMakeElements();
 
-	m_hostingCamera->UpdateMatrices(GetViewportSize());
+	// TODO: float
+	Size targetSize((float)renderTarget->GetWidth(), (float)renderTarget->GetHeight());
+	m_hostingCamera->UpdateMatrices(targetSize);
 
 	detail::CameraInfo cameraInfo;
 	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.Get());
-	cameraInfo.viewPixelSize = GetViewportSize();
+	cameraInfo.viewPixelSize = targetSize;
 	cameraInfo.viewPosition = m_hostingCamera->GetCombinedGlobalMatrix().GetPosition();
 	cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
 	cameraInfo.projMatrix = m_hostingCamera->GetProjectionMatrix();

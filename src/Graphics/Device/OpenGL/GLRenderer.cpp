@@ -37,7 +37,7 @@ GLRenderer::~GLRenderer()
 void GLRenderer::Activate()
 {
 	// VAO はコンテキスト間で共有できないため、描画スレッド上で作る必要がある。
-	// なお、メインスレッドの MainContext で作った後、描画スレッドの RenderingContext に glBindVertexArray すると、
+	// なお、メインスレッドの MainContext で作った後、描画スレッドの Context に glBindVertexArray すると、
 	// GL_INVALID_OPERATION が発生する。
 	// http://stackoverflow.com/questions/18492878/crash-on-vaos-loaded-from-non-main-thread
 	//

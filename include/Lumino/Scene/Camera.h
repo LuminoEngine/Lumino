@@ -142,7 +142,7 @@ public:
 
 	// ViewportLayer interface
 	virtual DrawList* GetRenderer() override;
-	virtual void Render(RenderingContext* context) override;
+	virtual void Render() override;
 	virtual void OnBeginFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer) override;
 	virtual void ExecuteDrawListRendering(RenderTarget* renderTarget, DepthBuffer* depthBuffer) override;
 	//virtual void OnRenderDrawElementList(RenderTarget* renderTarget, DepthBuffer* depthBuffer, detail::RenderingPass2* pass) override;

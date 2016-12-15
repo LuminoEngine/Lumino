@@ -31,7 +31,6 @@ public:
 	float GetElapsedTime() const { return m_elapsedTime; }
 
 	/// 描画
-	//void Render(RenderingContext* context, Camera* camera);
 	virtual void Render2(DrawList* renderer, Camera* camera);
 
 	/// マウス移動イベントを通知する (ViewPane の左上を 0,0 とした座標を指定する)
