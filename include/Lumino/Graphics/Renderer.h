@@ -12,7 +12,6 @@ LN_NAMESPACE_BEGIN
 class Renderer
 {
 public:
-	static const int MaxMultiRenderTargets = 4;
 
 #if 0
 public:

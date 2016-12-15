@@ -332,9 +332,7 @@ Font* BatchState::GetFont() const
 //------------------------------------------------------------------------------
 void BatchState::Reset()
 {
-	//m_blendMode = BlendMode::Normal;
-
-	for (int i = 0; i < MaxMultiRenderTargets; ++i)
+	for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
 		m_renderTargets[i] = nullptr;
 	m_depthBuffer = nullptr;
 
@@ -371,7 +369,7 @@ void BatchState::ApplyStatus(InternalContext* context, CombinedMaterial* combine
 	}
 	// FrameBuffer
 	{
-		for (int i = 0; i < MaxMultiRenderTargets; ++i)
+		for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
 		{
 			if (i == 0 && m_renderTargets[i] == nullptr)
 				stateManager->SetRenderTarget(i, defaultRenderTarget);
@@ -461,7 +459,7 @@ bool DrawElementBatch::Equal(const BatchState& state_, Material* material) const
 //		if (!m_shaderValueList[i].value.Equals(obj.m_shaderValueList[i].value)) return false;
 //	}
 //
-//	for (int i = 0; i < MaxMultiRenderTargets; ++i)
+//	for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
 //	{
 //		if (m_renderTargets[i] != obj.m_renderTargets[i]) return false;
 //	}

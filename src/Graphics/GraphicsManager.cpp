@@ -19,7 +19,6 @@
 #include "RendererImpl.h"
 #include "Text/FontGlyphTextureCache.h"
 #include "RenderingThread.h"
-#include "PainterEngine.h"
 #include "NanoVGRenderer.h"
 #include "Text/FontManager.h"
 #include "Text/TextRenderer.h"

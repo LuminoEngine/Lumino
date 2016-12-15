@@ -372,6 +372,52 @@ public:
 	uint64_t CalcHash() const;
 };
 
+
+template<typename T>
+class CacheBuffer
+{
+public:
+	CacheBuffer()
+		: m_buffer()
+		, m_capacity(0)
+		, m_count(0)
+	{
+	}
+
+	void Reserve(int count)
+	{
+		m_buffer.Resize(sizeof(T) * count, false);
+		m_capacity = count;
+	}
+
+	void Add(const T& value)
+	{
+		if (m_count >= m_capacity) {
+			Reserve(m_capacity * 2);
+		}
+		memcpy(&m_buffer[sizeof(T) * m_count], &value, sizeof(T));
+		m_count++;
+	}
+
+	void Clear()
+	{
+		m_count = 0;
+	}
+
+	T& GetAt(int index) { return ((T*)(m_buffer.GetData()))[index]; }
+	T& GetLast() { return GetAt(m_count - 1); }
+
+	int GetCount() const { return m_count; }
+	byte_t* GetBuffer() { return m_buffer.GetData(); }
+	size_t GetBufferUsedByteCount() { return m_count * sizeof(T); }
+
+
+private:
+	ByteBuffer	m_buffer;
+	int			m_capacity;
+	int			m_count;
+};
+
 class CommandDataCache
 	: public RefObject
 {
@@ -394,6 +440,8 @@ private:
 	ByteBuffer				m_dataBuffer;
 	size_t					m_dataBufferUsed;
 };
+
+
 
 } // namespace detail
 LN_NAMESPACE_GRAPHICS_END

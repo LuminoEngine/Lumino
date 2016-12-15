@@ -1,7 +1,7 @@
 ﻿
 #pragma once 
-
 #include <Lumino/Graphics/Common.h>
+#include <Lumino/Graphics/Graphics.h>
 #include <Lumino/Graphics/RenderState.h>
 #include "../GraphicsDriverInterface.h"
 #include "DX9Texture.h"
@@ -63,7 +63,7 @@ private:
 	RectI					m_currentViewportRect;
 	//DX9VertexBuffer*		m_currentVertexBuffer;
 	DX9IndexBuffer*			m_currentIndexBuffer;
-	DX9RenderTargetTexture*	m_currentRenderTargets[MaxMultiRenderTargets];
+	DX9RenderTargetTexture*	m_currentRenderTargets[Graphics::MaxMultiRenderTargets];
 	DX9DepthBuffer*			m_currentDepthBuffer;
 	DX9ShaderPass*			m_currentShaderPass;
 

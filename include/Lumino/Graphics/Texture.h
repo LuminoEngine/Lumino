@@ -81,7 +81,6 @@ public:
 		@param[in]	mipmap		: ミップマップの有無
 	*/
 	static Texture2DPtr Create(int width, int height, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
-	// TODO: mipMap は unity のように、有無だけで指定したい
 	
 	/**
 		@brief		指定したサイズのテクスチャを作成します。

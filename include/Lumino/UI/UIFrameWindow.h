@@ -48,6 +48,8 @@ public:
 
 	Viewport* GetViewport() const { return m_mainViewport; }
 
+	void SetSize(const SizeI& size);
+
 protected:
 	UIFrameWindow();
 	virtual ~UIFrameWindow();

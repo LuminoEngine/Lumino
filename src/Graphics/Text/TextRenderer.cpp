@@ -16,6 +16,7 @@
 #include "FontManager.h"
 #include "TextLayoutEngine.h"
 #include "FontGlyphTextureCache.h"
+#include "../GraphicsManager.h"
 
 LN_NAMESPACE_BEGIN
 namespace detail

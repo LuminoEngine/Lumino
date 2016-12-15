@@ -9,6 +9,7 @@
 #include "RendererImpl.h"
 #include "RenderingCommand.h"
 #include "PrimitiveRenderer.h"
+#include "GraphicsManager.h"
 
 #define LN_CALL_CORE_COMMAND(func, command, ...) \
 	if (m_manager->GetRenderingType() == GraphicsRenderingType::Threaded) { \

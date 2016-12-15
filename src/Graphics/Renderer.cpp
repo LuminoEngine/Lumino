@@ -58,7 +58,7 @@ Renderer::~Renderer()
 		LN_SAFE_RELEASE(m_primaryCommandList);
 	}
 
-	for (int i = 0; i < MaxMultiRenderTargets; ++i) {
+	for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i) {
 		LN_SAFE_RELEASE(m_currentRenderTargets[i]);
 	}
 	LN_SAFE_RELEASE(m_currentDepthBuffer);
@@ -167,7 +167,7 @@ void Renderer::SetRenderTarget(int index, Texture* texture)
 //------------------------------------------------------------------------------
 Texture* Renderer::GetRenderTarget(int index) const
 {
-	LN_THROW(0 <= index && index < MaxMultiRenderTargets, ArgumentException);
+	LN_THROW(0 <= index && index < Graphics::MaxMultiRenderTargets, ArgumentException);
 	return m_currentRenderTargets[index];
 }
 
@@ -331,7 +331,7 @@ void Renderer::FlushState(const detail::ContextState& state)
 	{
 		SetRenderState(state.renderState);
 		SetDepthStencilState(state.depthStencilState);
-		for (int i = 0; i < detail::ContextState::MaxMultiRenderTargets; ++i) {
+		for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i) {
 			SetRenderTarget(i, state.GetRenderTarget(i));
 		}
 		SetDepthBuffer(state.depthBuffer);

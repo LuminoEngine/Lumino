@@ -168,8 +168,6 @@ private:
 class BatchState
 {
 public:
-	static const int MaxMultiRenderTargets = 4;
-
 	BatchState();
 
 	//void SetBlendMode(BlendMode mode);
@@ -202,7 +200,7 @@ private:
 
 	//BlendMode				m_blendMode;
 
-	RefPtr<RenderTarget>	m_renderTargets[MaxMultiRenderTargets];
+	RefPtr<RenderTarget>	m_renderTargets[Graphics::MaxMultiRenderTargets];
 	RefPtr<DepthBuffer>		m_depthBuffer;
 	RectI					m_scissorRect;
 

@@ -1,6 +1,6 @@
 ﻿
 #pragma once 
-
+#include <Lumino/Graphics/Graphics.h>
 #include "../GraphicsDriverInterface.h"
 #include "GLTexture.h"
 
@@ -59,7 +59,7 @@ private:
 	RectI					m_currentViewportRect;
 	GLVertexBuffer*			m_currentVertexBuffer;
 	GLIndexBuffer*			m_currentIndexBuffer;
-	GLRenderTargetTexture*	m_currentRenderTargets[MaxMultiRenderTargets];
+	GLRenderTargetTexture*	m_currentRenderTargets[Graphics::MaxMultiRenderTargets];
 	GLDepthBuffer*			m_currentDepthBuffer;
 	GLShaderPass*			m_currentShaderPass;
 	GLuint					m_vertexArray;

@@ -3,7 +3,6 @@
 #include <Lumino/Graphics/Bitmap.h>
 #include <Lumino/Graphics/Text/Font.h>
 #include <Lumino/Graphics/Text/GlyphRun.h>
-#include "../PainterEngine.h"
 #include "../RenderingCommand.h"
 
 LN_NAMESPACE_BEGIN

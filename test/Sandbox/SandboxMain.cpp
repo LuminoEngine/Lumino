@@ -5,6 +5,7 @@
 #include <Lumino/Scene/Light.h>
 #include <Lumino/Foundation/Application.h>
 #include <Lumino/Foundation/GameScene.h>
+#include <Lumino/UI/UIFrameWindow.h>
 using namespace ln;
 
 
@@ -78,7 +79,7 @@ void Main()
 	//EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
 	Engine::Initialize();
 
-	Engine::GetDefaultSceneGraph3D()->VisibleGridPlane = true;
+	//Engine::GetDefaultSceneGraph3D()->visibleGridPlane = true;
 
 	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
 	Camera::GetMain3DCamera()->SetCameraBehavior(cb);
@@ -167,6 +168,8 @@ void Main()
 			//tonePE->SetTone(ToneF(-1, -1, -1, 0));
 			//tonePE->ChangeTone(ToneF(1, 1, 1, 0), 0.5);
 			//blur->SetBlurStatus(0.5, Vector2::Zero, 1.05, 0.5);
+
+			Engine::GetMainWindow()->SetSize(SizeI(200, 100));
 		}
 		//blur->SetBlurStatus(0.9f, Vector2::Zero, 1.02);
 	}

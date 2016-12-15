@@ -181,7 +181,7 @@ bool BasicContextState::Equals(const BasicContextState& s) const
 	if (renderState != s.renderState) return false;
 	if (depthStencilState != s.depthStencilState) return false;
 	if (!Utils::EqualsTexture(depthBuffer, s.depthBuffer)) return false;
-	for (int i = 0; i < MaxMultiRenderTargets; ++i)
+	for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
 	{
 		if (!Utils::EqualsTexture(m_renderTargets[i], s.m_renderTargets[i])) return false;
 	}
@@ -333,7 +333,7 @@ void ContextInterface::SetBasicContextState(const BasicContextState& state)
 {
 	m_baseRenderer->SetRenderState(state.renderState);
 	m_baseRenderer->SetDepthStencilState(state.depthStencilState);
-	for (int i = 0; i < BasicContextState::MaxMultiRenderTargets; ++i)
+	for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
 		m_baseRenderer->SetRenderTarget(i, state.GetRenderTarget(i));
 	m_baseRenderer->SetDepthBuffer(state.depthBuffer);
 	m_baseRenderer->SetViewport(state.viewport);

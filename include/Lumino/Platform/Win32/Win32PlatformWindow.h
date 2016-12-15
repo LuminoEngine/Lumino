@@ -36,6 +36,7 @@ public:
 	/// ウィンドウハンドルの取得
 	virtual HWND GetWindowHandle() = 0;
 
+	virtual void SetSize(const SizeI& size) override;
 	virtual void OnPlatformEvent(const PlatformEventArgs& e) override;
 
 public:

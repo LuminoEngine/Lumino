@@ -165,9 +165,6 @@ class IRenderer
 	: public RefObject
 {
 public:
-	static const int MaxMultiRenderTargets = 4;
-
-public:
 
 
 	void EnterRenderState();

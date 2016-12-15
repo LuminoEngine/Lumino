@@ -42,7 +42,8 @@ DX9Renderer::~DX9Renderer()
 {
 	LN_SAFE_RELEASE(m_currentIndexBuffer);
 	LN_SAFE_RELEASE(m_currentDepthBuffer);
-	for (int i = 0; i < MaxMultiRenderTargets; ++i) {
+	for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
+	{
 		LN_SAFE_RELEASE(m_currentRenderTargets[i]);
 	}
 }
@@ -168,7 +169,7 @@ void DX9Renderer::OnEnterRenderState()
 
 	OnUpdateRenderState(m_currentRenderState, m_currentRenderState, true);
 	OnUpdateDepthStencilState(m_currentDepthStencilState, m_currentDepthStencilState, true);
-	for (int i = 0; i < MaxMultiRenderTargets; ++i)
+	for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
 	{
 		if (i != 0 || m_currentRenderTargets[i] != NULL) {	// 0 に NULL を指定することはできない。なのでやむを得ず何もしない
 			InternalSetRenderTarget(i, m_currentRenderTargets[i], true);

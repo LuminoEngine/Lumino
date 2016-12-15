@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include "Common.h"
+#include "Graphics.h"
 #include "RenderState.h"
 
 LN_NAMESPACE_BEGIN
@@ -20,10 +21,6 @@ LN_ENUM_FLAGS_DECLARE(ContextStateFlags);
 
 struct ContextState
 {
-
-
-	static const int MaxMultiRenderTargets = 4;	// TODO
-
 	RenderState				renderState;
 	DepthStencilState		depthStencilState;
 	Texture*				depthBuffer = nullptr;
@@ -64,7 +61,7 @@ struct ContextState
 	void Copy(const ContextState& obj);
 
 private:
-	std::array<Texture*, MaxMultiRenderTargets>	m_renderTargets = {};
+	std::array<Texture*, Graphics::MaxMultiRenderTargets>	m_renderTargets = {};
 	Shader*		m_ownerShader = nullptr;
 	ShaderPass*	m_shaderPass = nullptr;
 	Brush*		m_fillBrush;
@@ -84,8 +81,6 @@ public:
 
 struct BasicContextState
 {
-	static const int MaxMultiRenderTargets = 4;	// TODO
-
 	RenderState				renderState;
 	DepthStencilState		depthStencilState;
 	RefPtr<Texture>			depthBuffer;
@@ -100,7 +95,7 @@ struct BasicContextState
 	void Copy(const BasicContextState& s);
 
 private:
-	std::array<RefPtr<Texture>, MaxMultiRenderTargets>	m_renderTargets;
+	std::array<RefPtr<Texture>, Graphics::MaxMultiRenderTargets>	m_renderTargets;
 	RefPtr<Shader>			m_ownerShader;
 	ShaderPass*				m_shaderPass = nullptr;
 };

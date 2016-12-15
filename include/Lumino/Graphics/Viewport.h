@@ -17,12 +17,15 @@ public:
 	RenderTarget* RequestRenderTarget(int width, int height);
 };
 
-//// Camera とかが継承する
-//class IRenderingCompositionItem
-//{
-//public:
-//	//void Render(RenderingCompositionContext* context);
-//};
+/** ViewportLayer の配置方法 */
+enum class ViewportLayerPlacement
+{
+	Stretch,		/**< 転送先領域全体に拡大または縮小する */
+	AutoResize,		/**< 転送先領域と同じピクセルサイズになるよう自動的にリサイズする */
+	ViewBox,		/**< レイヤーのサイズが維持されるように余白を挿入する */
+};
+
+
 
 class ViewportLayer
 	: public Object
@@ -56,13 +59,12 @@ protected:
 
 	virtual void OnBeginFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer);
 	virtual void ExecuteDrawListRendering(RenderTarget* renderTarget, DepthBuffer* depthBuffer);
-	//virtual void OnRenderDrawElementList(RenderTarget* renderTarget, DepthBuffer* depthBuffer, detail::RenderingPass2* pass);
 
 private:
-	Viewport*								m_owner;
-	//List<RefPtr<detail::RenderingPass2>>	m_renderingPasses;
-	RefPtr<ImageEffectList>					m_imageEffects;
-	int										m_zIndex;
+	Viewport*					m_owner;
+	ViewportLayerPlacement		m_placement;
+	RefPtr<ImageEffectList>		m_imageEffects;
+	int							m_zIndex;
 
 	friend class Viewport;
 };

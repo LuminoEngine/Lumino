@@ -22,9 +22,6 @@ class Renderer
 	, public detail::IRendererPloxy
 {
 public:
-	static const int MaxMultiRenderTargets = 4;
-
-public:
 	Renderer(detail::GraphicsManager* manager);
 	~Renderer();
 
@@ -139,7 +136,7 @@ LN_INTERNAL_ACCESS:
 
 	RenderState				m_currentRenderState;
 	DepthStencilState		m_currentDepthStencilState;
-	Texture*				m_currentRenderTargets[MaxMultiRenderTargets];
+	Texture*				m_currentRenderTargets[Graphics::MaxMultiRenderTargets];
 	Texture*				m_currentDepthBuffer;
 	RectI					m_currentViewport;
 

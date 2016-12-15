@@ -68,7 +68,8 @@ void GLRenderer::Deactivate()
 	LN_SAFE_RELEASE(m_currentVertexBuffer);
 	LN_SAFE_RELEASE(m_currentIndexBuffer);
 
-	for (int i = 0; i < MaxMultiRenderTargets; ++i) {
+	for (int i = 0; i < Graphics::MaxMultiRenderTargets; i++)
+	{
 		LN_SAFE_RELEASE(m_currentRenderTargets[i]);
 	}
 	LN_SAFE_RELEASE(m_currentDepthBuffer);
@@ -454,7 +455,7 @@ void GLRenderer::UpdateFrameBuffer()
     if (m_modifiedFrameBuffer)
     {
         // カラーバッファ
-		for (int i = 0; i < MaxMultiRenderTargets; ++i)
+		for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
 		{
 			// マルチターゲットの参考:http://ramemiso.hateblo.jp/entry/2013/10/20/001909
 			if (m_currentRenderTargets[i] != NULL)

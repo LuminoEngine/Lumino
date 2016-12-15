@@ -123,6 +123,13 @@ void UIFrameWindow::Initialize(detail::UIManager* manager, PlatformWindow* platf
 }
 
 //------------------------------------------------------------------------------
+void UIFrameWindow::SetSize(const SizeI& size)
+{
+	LN_FAIL_CHECK_STATE(m_platformWindow != nullptr) return;
+	m_platformWindow->SetSize(size);
+}
+
+//------------------------------------------------------------------------------
 void UIFrameWindow::Render()
 {
 	BeginRendering();

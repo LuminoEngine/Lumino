@@ -7,7 +7,6 @@
 #include <float.h>
 #include "Device/GraphicsDriverInterface.h"
 #include "RenderingCommand.h"
-#include "PainterEngine.h"	// for CacheBuffer
 #include "GraphicsManager.h"
 #include "RendererImpl.h"
 #include <Lumino/Graphics/Brush.h>

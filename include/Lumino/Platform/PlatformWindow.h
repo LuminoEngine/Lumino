@@ -13,7 +13,7 @@ LN_NAMESPACE_BEGIN
 	@brief	プラットフォーム固有のウィンドウシステムのウィンドウを抽象化します。
 */
 class PlatformWindow
-	: public tr::ReflectionObject
+	: public RefObject
 {
 public:
 
@@ -31,6 +31,8 @@ public:
 		@brief		クライアント領域のサイズを取得します。
 	*/
 	SizeI GetSize() const { return m_clientSize; }
+
+	virtual void SetSize(const SizeI& size) = 0;
 
 	virtual void SetVisible(bool visible) = 0;
 

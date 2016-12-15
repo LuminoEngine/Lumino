@@ -98,6 +98,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ViewportLayer, Object);
 //------------------------------------------------------------------------------
 ViewportLayer::ViewportLayer()
 	: m_owner(nullptr)
+	, m_placement(ViewportLayerPlacement::Stretch)
 	, m_imageEffects(RefPtr<ImageEffectList>::MakeRef())
 	, m_zIndex(0)
 {
@@ -312,20 +313,10 @@ void Viewport::TryRemakeLayerTargets()
 //------------------------------------------------------------------------------
 void Viewport::MakeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, Matrix* mat)
 {
-	//LSize backbufferSize = mWindowSize;
-	//if (isLetterBox()) {
-	//	backbufferSize = getSize();
-	//}
-
 	float sw = static_cast<float>(srcSize.width);   // 転送元
 	float sh = static_cast<float>(srcSize.height);
 	float dw = static_cast<float>(dstSize.width);	// 転送先
 	float dh = static_cast<float>(dstSize.height);
-
-	//if ( isFixedAspect() ) {
-	//	sw = (float)mRequestedBackbufferSize.w;
-	//	sh = (float)mRequestedBackbufferSize.h;
-	//}
 
 	float new_x, new_y;
 	float new_w, new_h;
@@ -367,12 +358,6 @@ void Viewport::MakeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, 
 			new_y = static_cast< float >((dh / 2) - (new_h / 2));
 		}
 	}
-
-	//this->mViewDestRect.set((int)new_x, (int)new_y, (int)new_w, (int)new_h);
-
-	//this->mScreenTransform.identity();
-	//this->mScreenTransform.translation(-new_x, -new_y, 0);
-	//this->mScreenTransform.scaling(1.0f / (new_w / sw), 1.0f / (new_h / sh), 1);
 
 	*mat = Matrix::Identity;
 	mat->Scale(new_w / sw, new_h / sh, 1.0f);

@@ -235,8 +235,6 @@ set(LN_SOURCES_Graphics
 	src/Graphics/MeshRendererProxy.h
 	src/Graphics/NanoVGRenderer.cpp
 	src/Graphics/NanoVGRenderer.h
-	src/Graphics/PainterEngine.cpp
-	src/Graphics/PainterEngine.h
 	src/Graphics/PerlinNoise.cpp
 	src/Graphics/PngFile.h
 	src/Graphics/PrimitiveRenderer.cpp

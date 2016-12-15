@@ -338,7 +338,12 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 }
 
 //------------------------------------------------------------------------------
-//bool Win32PlatformWindow::NortifyEvent(const PlatformEventArgs& e)
+void Win32PlatformWindow::SetSize(const SizeI& size)
+{
+	Win32WindowManager::SetWindowClientSize(GetWindowHandle(), size);
+}
+
+//------------------------------------------------------------------------------
 void Win32PlatformWindow::OnPlatformEvent(const PlatformEventArgs& e)
 {
 	/*	マウス非表示はもっと上のレベルで共通処理できるかと思ったけど、

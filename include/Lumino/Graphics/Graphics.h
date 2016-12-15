@@ -4,11 +4,12 @@
 LN_NAMESPACE_BEGIN
 
 /**
-	@brief	レンダリングに関する機能を提供します。
+	@brief	
 */
 class Graphics
 {
 public:
+	static const int MaxMultiRenderTargets = 4;
 
 	//static void Set2DRenderingMode(float minZ = 0.0f, float maxZ = 1.0f);
 

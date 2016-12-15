@@ -340,11 +340,11 @@ void SceneGraph2D::UpdateFrame(float elapsedTime)
 // SceneGraph3D
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SceneGraph3D, SceneGraph);
-LN_TR_PROPERTY_IMPLEMENT(SceneGraph3D, bool, VisibleGridPlane, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(SceneGraph3D, bool, visibleGridPlane, tr::PropertyMetadata());
 
 //------------------------------------------------------------------------------
 SceneGraph3D::SceneGraph3D()
-	: VisibleGridPlane(false)
+	: visibleGridPlane(false)
 	, m_defaultRoot(nullptr)
 	, m_defaultCamera(nullptr)
 {
@@ -391,7 +391,7 @@ void SceneGraph3D::Render2(DrawList* renderer, Camera* camera)
 {
 	SceneGraph::Render2(renderer, camera);
 
-	if (VisibleGridPlane)
+	if (visibleGridPlane)
 	{
 		AdjustGridMesh(camera);
 		renderer->DrawMesh(m_gridPlane, 0, m_gridPlane->GetMeshResource()->GetMaterial(0));
