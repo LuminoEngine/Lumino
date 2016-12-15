@@ -133,6 +133,42 @@ const Size& ViewportLayer::GetSize() const
 }
 
 //------------------------------------------------------------------------------
+void ViewportLayer::PreRender(const SizeI& ownerViewPixelSize)
+{
+	bool create = false;
+	SizeI newSize;
+
+	// 初回、まだ作成されていなければ作りたい
+	if (m_primaryLayerTarget == nullptr)
+	{
+		create = true;
+		newSize = SizeI((float)m_size.width, (float)m_size.height);
+	}
+
+	// 自動リサイズONで、描画先とサイズが異なるなら再作成
+	if (m_placement == ViewportLayerPlacement::AutoResize && ownerViewPixelSize != m_primaryLayerTarget->GetSize())
+	{
+		newSize = ownerViewPixelSize;
+		create = true;
+	}
+
+	if (create)
+	{
+		// RenderTarget
+		// TODO: できればこういうのは Resize 関数を作りたい。作り直したくない
+		// TODO: というか UE4 みたいにキャッシュしたい
+		m_primaryLayerTarget = RefPtr<RenderTarget>::MakeRef();
+		m_primaryLayerTarget->CreateImpl(m_owner->GetManager(), newSize, 1, TextureFormat::R8G8B8X8);
+		m_secondaryLayerTarget = RefPtr<RenderTarget>::MakeRef();
+		m_secondaryLayerTarget->CreateImpl(m_owner->GetManager(), newSize, 1, TextureFormat::R8G8B8X8);
+
+		// DepthBuffer
+		m_depthBuffer = RefPtr<DepthBuffer>::MakeRef();
+		m_depthBuffer->CreateImpl(m_owner->GetManager(), newSize, TextureFormat::D24S8);
+	}
+}
+
+//------------------------------------------------------------------------------
 void ViewportLayer::PostRender(DrawList* context, RenderTarget** primaryLayerTarget, RenderTarget** secondaryLayerTarget)
 {
 	for (ImageEffect* e : *m_imageEffects)
@@ -233,6 +269,22 @@ void Viewport::SetBackgroundColor(const Color& color)
 }
 
 //------------------------------------------------------------------------------
+void Viewport::AddViewportLayer(ViewportLayer* layer)
+{
+	m_viewportLayerList->Add(layer);
+	layer->SetOwner(this);
+}
+
+//------------------------------------------------------------------------------
+void Viewport::RemoveViewportLayer(ViewportLayer* layer)
+{
+	if (m_viewportLayerList->Remove(RefPtr<ViewportLayer>(layer)))
+	{
+		layer->SetOwner(nullptr);
+	}
+}
+
+//------------------------------------------------------------------------------
 void Viewport::UpdateLayersTransform(const Size& viewSize)
 {
 	for (ViewportLayer* layer : *m_viewportLayerList)
@@ -245,6 +297,11 @@ void Viewport::UpdateLayersTransform(const Size& viewSize)
 void Viewport::BeginRender(Details::Renderer* renderer, const SizeI& viewSize)
 {
 	TryRemakeLayerTargets(viewSize);
+
+	for (ViewportLayer* layer : *m_viewportLayerList)
+	{
+		layer->PreRender(viewSize);
+	}
 }
 
 //------------------------------------------------------------------------------

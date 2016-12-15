@@ -44,10 +44,15 @@ public:
 
 	virtual DrawList* GetRenderer() = 0;
 
-protected:
+LN_INTERNAL_ACCESS:
 	ViewportLayer();
 	virtual ~ViewportLayer();
+	void SetOwner(Viewport* owner) { m_owner = owner; }
 	void UpdateTransform(const Size& viewSize);
+	void PreRender(const SizeI& ownerViewPixelSize);
+	
+//protected:
+
 
 	/// 本描画
 	virtual void Render() = 0;
@@ -65,7 +70,13 @@ private:
 	RefPtr<ImageEffectList>		m_imageEffects;
 	int							m_zIndex;
 
-	friend class Viewport;
+	RefPtr<RenderTarget>		m_primaryLayerTarget;
+	RefPtr<RenderTarget>		m_secondaryLayerTarget;
+	RefPtr<DepthBuffer>			m_depthBuffer;
+	//RenderTarget*				m_primaryLayerTarget;	// for post effect
+	//RenderTarget*				m_secondaryLayerTarget;	// for post effect
+
+	//friend class Viewport;
 };
 
 class ViewportLayerList
@@ -91,19 +102,14 @@ public:
 
 	ObjectList<ViewportLayer*>* GetLayers() const { return m_viewportLayerList; }
 
-	void AddViewportLayer(ViewportLayer* layer) { m_viewportLayerList->Add(layer); layer->m_owner = this; }
-	void RemoveViewportLayer(ViewportLayer* layer)
-	{
-		if (m_viewportLayerList->Remove(RefPtr<ViewportLayer>(layer)))
-		{
-			layer->m_owner = nullptr;
-		}
-	}
+	void AddViewportLayer(ViewportLayer* layer);
+	void RemoveViewportLayer(ViewportLayer* layer);
 
 LN_INTERNAL_ACCESS:	// TODO: いまはとりあえず内部用途
 	Viewport();
 	virtual ~Viewport();
 	void Initialize(detail::GraphicsManager* manager/*, RenderTarget* renderTarget*/);
+	detail::GraphicsManager* GetManager() const { return m_manager; }
 
 	// call from UIFrameWindow
 	void UpdateLayersTransform(const Size& viewSize);
