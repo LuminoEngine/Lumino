@@ -85,7 +85,7 @@ struct GeometryData
 		CacheBuffer<DrawingBasicVertex>* vb,
 		CacheBuffer<uint16_t>* ib,
 		const RectF& rect,
-		const Rect& srcPixelRect,
+		const RectI& srcPixelRect,
 		const RectF& srcUVRect,
 		Driver::ITexture* srcTexture);
 };
@@ -220,7 +220,7 @@ void GeometryData::ExpandFillAndUV_FrameRectangle(
 	ExpandFillAndUV_FrameRectangle_Sub(
 		vb, ib,
 		RectF(outerRect.GetLeft(), outerRect.GetTop(), frameWidthH, frameWidthV),
-		Rect(outerSrcRect.GetLeft(), outerSrcRect.GetTop(), frameWidthHI, frameWidthVI),
+		RectI(outerSrcRect.GetLeft(), outerSrcRect.GetTop(), frameWidthHI, frameWidthVI),
 		RectF(outerUVRect.GetLeft(), outerUVRect.GetTop(), uvFrameWidthH, uvFrameWidthV),
 		srcTexture);
 
@@ -230,7 +230,7 @@ void GeometryData::ExpandFillAndUV_FrameRectangle(
 	ExpandFillAndUV_FrameRectangle_Sub(
 		vb, ib,
 		RectF(innerRect.GetLeft(), outerRect.GetTop(), innerRect.width, frameWidth),
-		Rect(innerSrcRect.GetLeft(), outerSrcRect.GetTop(), innerSrcRect.width, frameWidthVI),
+		RectI(innerSrcRect.GetLeft(), outerSrcRect.GetTop(), innerSrcRect.width, frameWidthVI),
 		RectF(innerUVRect.GetLeft(), outerUVRect.GetTop(), innerUVRect.width, uvFrameWidthV),
 		srcTexture);
 
@@ -240,7 +240,7 @@ void GeometryData::ExpandFillAndUV_FrameRectangle(
 	ExpandFillAndUV_FrameRectangle_Sub(
 		vb, ib,
 		RectF(innerRect.GetRight(), outerRect.GetTop(), frameWidthH, frameWidthV),
-		Rect(innerSrcRect.GetRight(), outerSrcRect.GetTop(), frameWidthHI, frameWidthVI),
+		RectI(innerSrcRect.GetRight(), outerSrcRect.GetTop(), frameWidthHI, frameWidthVI),
 		RectF(innerUVRect.GetRight(), outerUVRect.GetTop(), uvFrameWidthH, uvFrameWidthV),
 		srcTexture);
 
@@ -250,7 +250,7 @@ void GeometryData::ExpandFillAndUV_FrameRectangle(
 	ExpandFillAndUV_FrameRectangle_Sub(
 		vb, ib,
 		RectF(innerRect.GetRight(), innerRect.GetTop(), frameWidthH, innerRect.height),
-		Rect(innerSrcRect.GetRight(), innerSrcRect.GetTop(), frameWidthHI, innerSrcRect.height),
+		RectI(innerSrcRect.GetRight(), innerSrcRect.GetTop(), frameWidthHI, innerSrcRect.height),
 		RectF(innerUVRect.GetRight(), innerUVRect.GetTop(), uvFrameWidthH, innerUVRect.height),
 		srcTexture);
 
@@ -260,7 +260,7 @@ void GeometryData::ExpandFillAndUV_FrameRectangle(
 	ExpandFillAndUV_FrameRectangle_Sub(
 		vb, ib,
 		RectF(innerRect.GetRight(), innerRect.GetBottom(), frameWidthH, frameWidthV),
-		Rect(innerSrcRect.GetRight(), innerSrcRect.GetBottom(), frameWidthHI, frameWidthVI),
+		RectI(innerSrcRect.GetRight(), innerSrcRect.GetBottom(), frameWidthHI, frameWidthVI),
 		RectF(innerUVRect.GetRight(), innerUVRect.GetBottom(), uvFrameWidthH, uvFrameWidthV),
 		srcTexture);
 
@@ -270,7 +270,7 @@ void GeometryData::ExpandFillAndUV_FrameRectangle(
 	ExpandFillAndUV_FrameRectangle_Sub(
 		vb, ib,
 		RectF(innerRect.GetLeft(), innerRect.GetBottom(), innerRect.width, frameWidthV),
-		Rect(innerSrcRect.GetLeft(), innerSrcRect.GetBottom(), innerSrcRect.width, frameWidthVI),
+		RectI(innerSrcRect.GetLeft(), innerSrcRect.GetBottom(), innerSrcRect.width, frameWidthVI),
 		RectF(innerUVRect.GetLeft(), innerUVRect.GetBottom(), innerUVRect.width, uvFrameWidthV),
 		srcTexture);
 
@@ -280,7 +280,7 @@ void GeometryData::ExpandFillAndUV_FrameRectangle(
 	ExpandFillAndUV_FrameRectangle_Sub(
 		vb, ib,
 		RectF(outerRect.GetLeft(), innerRect.GetBottom(), frameWidthH, frameWidthV),
-		Rect(outerSrcRect.GetLeft(), innerSrcRect.GetBottom(), frameWidthHI, frameWidthVI),
+		RectI(outerSrcRect.GetLeft(), innerSrcRect.GetBottom(), frameWidthHI, frameWidthVI),
 		RectF(outerUVRect.GetLeft(), innerUVRect.GetBottom(), uvFrameWidthH, uvFrameWidthV),
 		srcTexture);
 
@@ -290,7 +290,7 @@ void GeometryData::ExpandFillAndUV_FrameRectangle(
 	ExpandFillAndUV_FrameRectangle_Sub(
 		vb, ib,
 		RectF(outerRect.GetLeft(), innerRect.GetTop(), frameWidthH, innerRect.height),
-		Rect(outerSrcRect.GetLeft(), innerSrcRect.GetTop(), frameWidthHI, innerSrcRect.height),
+		RectI(outerSrcRect.GetLeft(), innerSrcRect.GetTop(), frameWidthHI, innerSrcRect.height),
 		RectF(outerUVRect.GetLeft(), innerUVRect.GetTop(), uvFrameWidthH, innerUVRect.height),
 		srcTexture);
 }
@@ -300,7 +300,7 @@ void GeometryData::ExpandFillAndUV_FrameRectangle_Sub(
 	CacheBuffer<DrawingBasicVertex>* vb,
 	CacheBuffer<uint16_t>* ib,
 	const RectF& rect,
-	const Rect& srcPixelRect,
+	const RectI& srcPixelRect,
 	const RectF& srcUVRect,
 	Driver::ITexture* srcTexture)
 {
@@ -475,7 +475,7 @@ public:
 				{
 					auto t = static_cast<ln::TextureBrush*>(brush);
 					TextureBrush.Texture = (t->GetTexture() != nullptr) ? t->GetTexture()->ResolveDeviceObject() : nullptr;
-					const Rect& r = t->GetSourceRect();
+					const RectI& r = t->GetSourceRect();
 					TextureBrush.SourceRect[0] = r.x;		// TODO: POD 型をまとめて定義したほうがいい気がする
 					TextureBrush.SourceRect[1] = r.y;
 					TextureBrush.SourceRect[2] = r.width;
@@ -1863,7 +1863,7 @@ void GeometryRenderer::DrawEllipse(const Vector3& center, const Vector2& radius)
 }
 
 //------------------------------------------------------------------------------
-void GeometryRenderer::DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const Color& color)
+void GeometryRenderer::DrawTexture(const RectF& rect, Texture* texture, const RectI& srcRect, const Color& color)
 {
 	bool flish = false;
 	if (texture != m_internalTextureBrush->GetTexture())

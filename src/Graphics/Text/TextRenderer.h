@@ -20,7 +20,7 @@ public:
 
 		// CacheGlyphInfo から取りだすデータ
 		int			outlineOffset;
-		Rect		srcRect;
+		RectI		srcRect;
 		//RenderingCommandList::DataHandle	fillBitmapData;	// 無ければ 0
 	};
 
@@ -172,7 +172,7 @@ public:
 	void SetTextAlignment(TextAlignment align) { m_textAlignment = align; }
 	void SetTextTrimming(TextTrimming triming) { m_textTrimming = triming; }
 	void SetFlowDirection(FlowDirection dir) { m_flowDirection = dir; }
-	void SetAreaBox(const Rect& area) { m_areaBox = area; }
+	void SetAreaBox(const RectI& area) { m_areaBox = area; }
 
 	/// (連続で呼び出せば、前回の描画情報を引き継ぐ。例えばカーニングを考慮しつつテキストの色を分けたい場合)
 	void DrawText(const char* text, int length);
@@ -182,7 +182,7 @@ public:
 
 private:
 	void DrawTextHorizontal(const UTF32* text, int length);
-	void DrawLineHorizontal(const UTF32* text, int length, const Rect& lineArea);
+	void DrawLineHorizontal(const UTF32* text, int length, const RectI& lineArea);
 
 private:
 	Bitmap*			m_targetBitmap;
@@ -193,7 +193,7 @@ private:
 	TextAlignment	m_textAlignment;
 	TextTrimming	m_textTrimming;
 	FlowDirection	m_flowDirection;
-	Rect			m_areaBox;
+	RectI			m_areaBox;
 	ByteBuffer		m_utf32Buffer;		///< UTF32 文字列への一時変換先 (頻繁にメモリ確保しないように、一度使ったメモリは使いまわしたい)
 	FontGlyphData*	m_prevGlyphData;
 

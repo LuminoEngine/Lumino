@@ -134,7 +134,7 @@ void TileMapRenderer::Draw(DrawList* context, TileMapModel* tileMap, const RectF
 	renderRange.top += 1;
 	renderRange.bottom -= 1;
 	renderRange.right += 1;
-	//Rect renderRange = Rect::MakeFromBounds(
+	//RectI renderRange = Rect::MakeFromBounds(
 	//	(int)l / tileSize.Width,
 	//	(int)b / tileSize.Height,
 	//	(int)r / tileSize.Width,
@@ -190,7 +190,7 @@ void TileMapRenderer::End()
 //	const Vector3& position,
 //	const Vector2& size,
 //	Texture* texture,
-//	const Rect& srcRect)
+//	const RectI& srcRect)
 //{
 //	m_spriteRenderer->DrawRequest2D(position, Vector3::Zero, size, texture, srcRect, nullptr);
 //}
@@ -244,7 +244,7 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 	Vector3 pos;
 	Vector2 size;
 	Texture* texture;
-	Rect srcRect;
+	RectI srcRect;
 	const SizeI& layerSize = layer->GetSize();
 
 	//ByteBuffer* buf = m_vertexBuffer->Lock();
@@ -417,7 +417,7 @@ LOOP_EXIT:
 //	const Vector3& position,
 //	const Vector2& size,
 //	Texture* texture,
-//	const Rect& srcRect)
+//	const RectI& srcRect)
 //{
 //	m_spriteRenderer->DrawRequest2D(position, Vector3::Zero, size, texture, srcRect, nullptr);
 //}

@@ -179,15 +179,15 @@ void Bitmap::Clear(const Color32& color)
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::BitBlt(const Rect& destRect, const Bitmap* srcBitmap, const Rect& srcRect, const Color32& mulColor, bool alphaBlend)
+void Bitmap::BitBlt(const RectI& destRect, const Bitmap* srcBitmap, const RectI& srcRect, const Color32& mulColor, bool alphaBlend)
 {
 	BitBltInternal(this, destRect, srcBitmap, srcRect, RGBA(mulColor.r, mulColor.g, mulColor.b, mulColor.a), alphaBlend);
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::BitBlt(int x, int y, const Bitmap* srcBitmap, const Rect& srcRect, const Color32& mulColor, bool alphaBlend)
+void Bitmap::BitBlt(int x, int y, const Bitmap* srcBitmap, const RectI& srcRect, const Color32& mulColor, bool alphaBlend)
 {
-	BitBltInternal(this, Rect(x, y, INT_MAX, INT_MAX), srcBitmap, srcRect, RGBA(mulColor.r, mulColor.g, mulColor.b, mulColor.a), alphaBlend);
+	BitBltInternal(this, RectI(x, y, INT_MAX, INT_MAX), srcBitmap, srcRect, RGBA(mulColor.r, mulColor.g, mulColor.b, mulColor.a), alphaBlend);
 }
 
 //------------------------------------------------------------------------------
@@ -335,14 +335,14 @@ size_t Bitmap::GetSerializeSize() const
 	//	sizeof(m_pitch) +
 	//	sizeof(m_format) +
 	//	sizeof(m_upFlow);
-	return GetSerializeSize(Rect(0, 0, m_size));
+	return GetSerializeSize(RectI(0, 0, m_size));
 }
 
 //------------------------------------------------------------------------------
-size_t Bitmap::GetSerializeSize(const Rect& rect) const
+size_t Bitmap::GetSerializeSize(const RectI& rect) const
 {
-	Rect clipRect = rect;
-	clipRect.Clip(Rect(0, 0, m_size));
+	RectI clipRect = rect;
+	clipRect.Clip(RectI(0, 0, m_size));
 	
 	return
 		GetPropertySerializeSize() +
@@ -383,14 +383,14 @@ void Bitmap::Serialize(void* buffer)
 
 	//*((bool*)b) = m_upFlow;
 	////b += sizeof(m_upFlow);
-	Serialize(buffer, Rect(0, 0, m_size));
+	Serialize(buffer, RectI(0, 0, m_size));
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::Serialize(void* buffer, const Rect& rect)
+void Bitmap::Serialize(void* buffer, const RectI& rect)
 {
-	Rect clipRect = rect;
-	clipRect.Clip(Rect(0, 0, m_size));
+	RectI clipRect = rect;
+	clipRect.Clip(RectI(0, 0, m_size));
 	
 	byte_t* b = (byte_t*)buffer;
 
@@ -594,8 +594,8 @@ void Bitmap::FillAlpha(byte_t alpha)
 //------------------------------------------------------------------------------
 template<class TDestConverter, class TSrcConverter>
 void Bitmap::BitBltInternalTemplate(
-	Bitmap* dest, const Rect& destRect,
-	const Bitmap* src, const Rect& srcRect,
+	Bitmap* dest, const RectI& destRect,
+	const Bitmap* src, const RectI& srcRect,
 	ClColor mulColorRGBA, bool alphaBlend) throw()
 {
 	DestBuffer<TDestConverter> dstBuf(dest, destRect);
@@ -679,8 +679,8 @@ void Bitmap::BitBltInternalTemplate(
 //------------------------------------------------------------------------------
 template<class TDestConverter>
 void Bitmap::BitBltInternalTemplateHelper(
-	Bitmap* dest, const Rect& destRect,
-	const Bitmap* src, const Rect& srcRect,
+	Bitmap* dest, const RectI& destRect,
+	const Bitmap* src, const RectI& srcRect,
 	ClColor mulColorRGBA, bool alphaBlend)
 {
 	switch (src->m_format)
@@ -711,16 +711,16 @@ void Bitmap::BitBltInternalTemplateHelper(
 
 //------------------------------------------------------------------------------
 void Bitmap::BitBltInternal(
-	Bitmap* dest, const Rect& destRect_,
-	const Bitmap* src, const Rect& srcRect_,
+	Bitmap* dest, const RectI& destRect_,
+	const Bitmap* src, const RectI& srcRect_,
 	ClColor mulColorRGBA, bool alphaBlend)
 {
 	// 双方の矩形を Bitmap からはみ出ないようにクリッピングし、範囲の大きさは dest に合わせる。
 	// (拡縮はしない。srcRect が小さければ、余分な部分は何もしない)
-	Rect destRect = destRect_;
-	Rect srcRect = srcRect_;
-	destRect.Clip(Rect(0, 0, dest->m_size));
-	srcRect.Clip(Rect(0, 0, src->m_size));
+	RectI destRect = destRect_;
+	RectI srcRect = srcRect_;
+	destRect.Clip(RectI(0, 0, dest->m_size));
+	srcRect.Clip(RectI(0, 0, src->m_size));
 	srcRect.width = std::min(srcRect.width, destRect.width);
 	srcRect.height = std::min(srcRect.height, destRect.height);
 
@@ -753,10 +753,10 @@ void Bitmap::BitBltInternal(
 #if 0
 	// 双方の矩形を Bitmap からはみ出ないようにクリッピングし、範囲の大きさは dest に合わせる。
 	// (拡縮はしない。srcRect が小さければ、余分な部分は何もしない)
-	Rect destRect = destRect_;
-	Rect srcRect = srcRect_;
-	destRect.Clip(Rect(0, 0, dest->m_size));
-	srcRect.Clip(Rect(0, 0, src->m_size));
+	RectI destRect = destRect_;
+	RectI srcRect = srcRect_;
+	destRect.Clip(RectI(0, 0, dest->m_size));
+	srcRect.Clip(RectI(0, 0, src->m_size));
 	srcRect.Width = std::min(srcRect.Width, destRect.Width);
 	srcRect.Height = std::min(srcRect.Height, destRect.Height);
 

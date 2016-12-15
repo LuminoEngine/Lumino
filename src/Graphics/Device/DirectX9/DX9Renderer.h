@@ -38,8 +38,8 @@ public:
 	virtual ITexture* GetRenderTarget(int index);
 	virtual void SetDepthBuffer(ITexture* texture);
 	//virtual ITexture* GetDepthBuffer();
-	virtual void SetViewport(const Rect& rect);
-	//virtual const Rect& GetViewport();
+	virtual void SetViewport(const RectI& rect);
+	//virtual const RectI& GetViewport();
 
 private:
 	void RestoreStatus();
@@ -54,13 +54,13 @@ private:
 	
 	void InternalSetRenderTarget(int index, ITexture* texture, bool reset);
 	void InternalSetDepthBuffer(ITexture* texture, bool reset);
-	void InternalSetViewport(const Rect& rect, bool reset);
+	void InternalSetViewport(const RectI& rect, bool reset);
 	void InternalSetIndexBuffer(IIndexBuffer* indexBuffer, bool reset);
 
 private:
 	DX9GraphicsDevice*		m_owner;
 	IDirect3DDevice9*		m_dxDevice;
-	Rect					m_currentViewportRect;
+	RectI					m_currentViewportRect;
 	//DX9VertexBuffer*		m_currentVertexBuffer;
 	DX9IndexBuffer*			m_currentIndexBuffer;
 	DX9RenderTargetTexture*	m_currentRenderTargets[MaxMultiRenderTargets];

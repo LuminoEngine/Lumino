@@ -70,7 +70,7 @@ BitmapFont::~BitmapFont()
 
 #if 0
 //------------------------------------------------------------------------------
-void BitmapFont::getTextSize(const char* text, int len, Geometry::Rect* rect)
+void BitmapFont::getTextSize(const char* text, int len, Geometry::RectI* rect)
 {
 	len = (len <= -1) ? len = strlen(text) : len;
 
@@ -99,7 +99,7 @@ void BitmapFont::getTextSize(const char* text, int len, Geometry::Rect* rect)
 }
 
 //------------------------------------------------------------------------------
-void BitmapFont::getTextSize(const wchar_t* text, int len, Geometry::Rect* rect)
+void BitmapFont::getTextSize(const wchar_t* text, int len, Geometry::RectI* rect)
 {
 	len = (len <= -1) ? len = wcslen(text) : len;
 
@@ -171,8 +171,8 @@ FontGlyphBitmap* BitmapFont::LookupGlyphBitmap(UTF32 utf32code, int strokeSize)
 	}
 
 	// 一時ビットマップへ転送してそれを返す
-	Rect dstRect(0, 0, m_charWidth, m_charHeight);
-	Rect srcRect((utf32code % 16) * m_charWidth, (utf32code / 16) * m_charHeight, m_charWidth, m_charHeight);
+	RectI dstRect(0, 0, m_charWidth, m_charHeight);
+	RectI srcRect((utf32code % 16) * m_charWidth, (utf32code / 16) * m_charHeight, m_charWidth, m_charHeight);
 	m_glyphBitmap->BitBlt(dstRect, m_fontBitmap, srcRect, Color32::White, false);
 
 	return &m_fontGlyphBitmap;

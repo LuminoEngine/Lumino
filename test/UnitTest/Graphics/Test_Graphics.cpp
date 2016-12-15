@@ -370,19 +370,19 @@ TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
 	// <Test> BorderFrame + Tile
 	{
 		auto brush1 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
-		brush1->SetSourceRect(Rect(0, 192, 32, 32));
+		brush1->SetSourceRect(RectI(0, 192, 32, 32));
 		brush1->SetWrapMode(BrushWrapMode::Tile);
 		brush1->SetImageDrawMode(BrushImageDrawMode::BorderFrame);
 		brush1->SetBorderThickness(ThicknessF(8, 8, 8, 8));
 
 		auto brush2 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
-		brush2->SetSourceRect(Rect(0, 160, 32, 32));
+		brush2->SetSourceRect(RectI(0, 160, 32, 32));
 		brush2->SetWrapMode(BrushWrapMode::Tile);
 		brush2->SetImageDrawMode(BrushImageDrawMode::BorderFrame);
 		brush2->SetBorderThickness(ThicknessF(0, 2, 4, 8));
 
 		auto brush3 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
-		brush3->SetSourceRect(Rect(0, 160, 32, 32));
+		brush3->SetSourceRect(RectI(0, 160, 32, 32));
 		brush3->SetWrapMode(BrushWrapMode::Tile);
 		brush3->SetImageDrawMode(BrushImageDrawMode::BorderFrame);
 		brush3->SetBorderThickness(ThicknessF(8, 8, 8, 8));
@@ -421,19 +421,19 @@ TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
 	// <Test> BoxFrame + Tile
 	{
 		auto brush1 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
-		brush1->SetSourceRect(Rect(0, 192, 32, 32));
+		brush1->SetSourceRect(RectI(0, 192, 32, 32));
 		brush1->SetWrapMode(BrushWrapMode::Stretch);
 		brush1->SetImageDrawMode(BrushImageDrawMode::BorderFrame);
 		brush1->SetBorderThickness(ThicknessF(8, 8, 8, 8));
 
 		auto brush2 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
-		brush2->SetSourceRect(Rect(0, 192, 32, 32));
+		brush2->SetSourceRect(RectI(0, 192, 32, 32));
 		brush2->SetWrapMode(BrushWrapMode::Stretch);
 		brush2->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
 		brush2->SetBorderThickness(ThicknessF(8, 8, 8, 8));
 
 		auto brush3 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
-		brush3->SetSourceRect(Rect(0, 192, 32, 32));
+		brush3->SetSourceRect(RectI(0, 192, 32, 32));
 		brush3->SetWrapMode(BrushWrapMode::Tile);
 		brush3->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
 		brush3->SetBorderThickness(ThicknessF(8, 8, 8, 8));
@@ -483,9 +483,9 @@ TEST_F(Test_Graphics_Texture, DrawText)
 {
 	auto font = Font::Create();
 	auto texture = Texture2D::Create(160, 120);
-	texture->DrawText(_T("Left"), Rect(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
-	texture->DrawText(_T("Center"), Rect(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Center);
-	texture->DrawText(_T("Rigth"), Rect(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Right);
+	texture->DrawText(_T("Left"), RectI(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
+	texture->DrawText(_T("Center"), RectI(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Center);
+	texture->DrawText(_T("Rigth"), RectI(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Right);
 	//texture->DrawText("Justify", Rect(0, 32, 120, 160), font, Color32::White, Color32::White, 0, TextAlignment::Justify);
 	auto sprite = Sprite2D::Create(texture);
 	sprite->SetBlendMode(BlendMode::Alpha);
@@ -502,15 +502,15 @@ TEST_F(Test_Graphics_Texture, Issues)
 	{
 		auto font = Font::Create();
 		auto texture = Texture2D::Create(160, 120);
-		texture->DrawText(_T("__________"), Rect(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
+		texture->DrawText(_T("__________"), RectI(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
 		auto sprite = Sprite2D::Create(texture);
 		Engine::Update();
 
 		texture->Clear(Color32(0, 0, 0, 0));
-		texture->DrawText(_T("Clear1"), Rect(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
+		texture->DrawText(_T("Clear1"), RectI(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
 		Engine::Update();
 
-		texture->DrawText(_T("Clear2"), Rect(0, 32, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
+		texture->DrawText(_T("Clear2"), RectI(0, 32, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
 		Engine::Update();
 
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Texture.Clear1.png")));

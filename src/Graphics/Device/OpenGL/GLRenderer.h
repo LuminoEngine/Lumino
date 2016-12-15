@@ -37,8 +37,8 @@ public:
 	virtual ITexture* GetRenderTarget(int index);
 	virtual void SetDepthBuffer(ITexture* texture);
 	//virtual ITexture* GetDepthBuffer();
-	virtual void SetViewport(const Rect& rect);
-	//virtual const Rect& GetViewport();
+	virtual void SetViewport(const RectI& rect);
+	//virtual const RectI& GetViewport();
 
 protected:
 	virtual void OnEnterRenderState() override;
@@ -56,7 +56,7 @@ protected:
 	void GetPrimitiveInfo(PrimitiveType primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount);
 
 private:
-	Rect					m_currentViewportRect;
+	RectI					m_currentViewportRect;
 	GLVertexBuffer*			m_currentVertexBuffer;
 	GLIndexBuffer*			m_currentIndexBuffer;
 	GLRenderTargetTexture*	m_currentRenderTargets[MaxMultiRenderTargets];

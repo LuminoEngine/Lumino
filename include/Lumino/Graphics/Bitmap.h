@@ -86,8 +86,8 @@ public:
 		@brief		指定したビットマップからこのビットマップへブロック転送を行います。
 		(Painter へ移動するべき？)
 	*/
-	void BitBlt(const Rect& destRect, const Bitmap* srcBitmap, const Rect& srcRect, const Color32& mulColor, bool alphaBlend);
-	void BitBlt(int x, int y, const Bitmap* srcBitmap, const Rect& srcRect, const Color32& mulColor, bool alphaBlend);
+	void BitBlt(const RectI& destRect, const Bitmap* srcBitmap, const RectI& srcRect, const Color32& mulColor, bool alphaBlend);
+	void BitBlt(int x, int y, const Bitmap* srcBitmap, const RectI& srcRect, const Color32& mulColor, bool alphaBlend);
 
 	/**
 		@brief		指定したファイルにビットマップを保存します。
@@ -125,12 +125,12 @@ public:
 	Color32 GetPixel(int x, int y) const;
 
 	size_t GetSerializeSize() const;
-	size_t GetSerializeSize(const Rect& rect) const;
+	size_t GetSerializeSize(const RectI& rect) const;
 	size_t GetPropertySerializeSize() const;
 
 
 	void Serialize(void* buffer);
-	void Serialize(void* buffer, const Rect& rect);
+	void Serialize(void* buffer, const RectI& rect);
 	void SerializeProperty(void* buffer);
 	void Deserialize(void* buffer, bool refMode = false);
 	void DeserializePropertyAndRawData(const void* propData, void* rawData, size_t rawDataSize, bool refMode = false);
@@ -154,19 +154,19 @@ private:
 
 	template<class TDestConverter, class TSrcConverter>
 	static void BitBltInternalTemplate(
-		Bitmap* dest, const Rect& destRect,
-		const Bitmap* src, const Rect& srcRect,
+		Bitmap* dest, const RectI& destRect,
+		const Bitmap* src, const RectI& srcRect,
 		ClColor mulColorRGBA, bool alphaBlend) throw();
 
 	template<class TDestConverter>
 	static void BitBltInternalTemplateHelper(
-		Bitmap* dest, const Rect& destRect,
-		const Bitmap* src, const Rect& srcRect,
+		Bitmap* dest, const RectI& destRect,
+		const Bitmap* src, const RectI& srcRect,
 		ClColor mulColorRGBA, bool alphaBlend);
 
 	static void BitBltInternal(
-		Bitmap* dest, const Rect& destRect,
-		const Bitmap* src, const Rect& srcRect, 
+		Bitmap* dest, const RectI& destRect,
+		const Bitmap* src, const RectI& srcRect,
 		ClColor mulColorRGBA, bool alphaBlend);
 
 
@@ -296,7 +296,7 @@ private:
 	public:
 		/// bitmap	: 転送先 Bitmap
 		/// rect	: 転送先領域 (Bitmap のサイズに収まるようにクリッピングされていること)
-		DestBuffer(Bitmap* bitmap, const Rect& rect)
+		DestBuffer(Bitmap* bitmap, const RectI& rect)
 			: m_data(bitmap->m_bitmapData.GetData())
 			, m_widthByteCount((bitmap->m_format == PixelFormat::A1) ? bitmap->m_pitch : (bitmap->m_size.width * Bitmap::GetPixelFormatByteCount(bitmap->GetPixelFormat())))
 			, m_rc(rect)
@@ -327,7 +327,7 @@ private:
 	private:
 		byte_t*			m_data;
 		int				m_widthByteCount;
-		const Rect&		m_rc;
+		const RectI&	m_rc;
 		int				m_bottomLine;
 		byte_t*			m_curLine;
 		bool			m_upFlow;
@@ -339,7 +339,7 @@ private:
 	public:
 		/// bitmap	: 転送元 Bitmap
 		/// rect	: 転送元領域 (Bitmap のサイズに収まるようにクリッピングされていること)
-		SrcBuffer(const Bitmap* bitmap, const Rect& rect)
+		SrcBuffer(const Bitmap* bitmap, const RectI& rect)
 			: m_data(bitmap->m_bitmapData.GetConstData())
 			, m_widthByteCount((bitmap->m_format == PixelFormat::A1) ? bitmap->m_pitch : bitmap->m_size.width * Bitmap::GetPixelFormatByteCount(bitmap->GetPixelFormat()))
 			, m_rc(rect)
@@ -365,7 +365,7 @@ private:
 	private:
 		const byte_t*	m_data;
 		int				m_widthByteCount;
-		const Rect&		m_rc;
+		const RectI&	m_rc;
 		int				m_bottomLine;
 		const byte_t*	m_curLine;
 		bool			m_upFlow;

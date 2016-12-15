@@ -113,8 +113,8 @@ void FontGlyphTextureCache::LookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, b
 
 
 		// Fill
-		//Rect dst(outInfo->srcRect.x + outInfo->outlineOffset, outInfo->srcRect.y + outInfo->outlineOffset, glyphBitmap->GlyphBitmap->GetSize());
-		//Rect src(0, 0, glyphBitmap->GlyphBitmap->GetSize());
+		//RectI dst(outInfo->srcRect.x + outInfo->outlineOffset, outInfo->srcRect.y + outInfo->outlineOffset, glyphBitmap->GlyphBitmap->GetSize());
+		//RectI src(0, 0, glyphBitmap->GlyphBitmap->GetSize());
 		PointI pt(outInfo->srcRect.x + outInfo->outlineOffset, outInfo->srcRect.y + outInfo->outlineOffset);
 		m_fillGlyphsTexture->Blt(pt.x, pt.y, glyphBitmap->GlyphBitmap);
 		//m_lockedFillBitmap->BitBlt(dst, info->fillGlyphBitmap, src, Color::White, false);

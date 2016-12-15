@@ -705,7 +705,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 ////==============================================================================
 //struct SetViewportCommand : public RenderingCommand
 //{
-//	Rect m_viewportRect;
+//	RectI m_viewportRect;
 //	void Create(const Rect& rect) { m_viewportRect = rect; }
 //	void Execute() { GetRenderer()->SetViewport(m_viewportRect); }
 //};

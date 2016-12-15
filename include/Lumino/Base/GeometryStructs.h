@@ -283,11 +283,11 @@ public:
 	bool operator == (const GenericRect<T>& obj) const { return (x == obj.x && y == obj.y && width == obj.width && height == obj.height); }
 	bool operator != (const GenericRect<T>& obj) const { return !operator==(obj); }
 
-	static GenericRect<T> MakeFromBounds(T left, T top, T bottom) { return Rect(left, top, right - left, bottom - top); }
+	static GenericRect<T> MakeFromBounds(T left, T top, T bottom) { return GenericRect<T>(left, top, right - left, bottom - top); }
 };
 
 using RectF = GenericRect<float>;
-using Rect = GenericRect<int>;
+using RectI = GenericRect<int>;
 
 
 class Box32

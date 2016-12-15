@@ -81,12 +81,12 @@ public:
 	/**
 		@brief	ビューポートを設定します。
 	*/
-	void SetViewport(const Rect& rect);
+	void SetViewport(const RectI& rect);
 
 	/**
 		@brief	現在設定されているビューポートを取得します。
 	*/
-	const Rect& GetViewport();
+	const RectI& GetViewport();
 
 	///**
 	//	@brief	頂点バッファを設定します。
@@ -141,7 +141,7 @@ LN_INTERNAL_ACCESS:
 	DepthStencilState		m_currentDepthStencilState;
 	Texture*				m_currentRenderTargets[MaxMultiRenderTargets];
 	Texture*				m_currentDepthBuffer;
-	Rect					m_currentViewport;
+	RectI					m_currentViewport;
 
 	Mutex					m_lockPresentCommandList;
 };

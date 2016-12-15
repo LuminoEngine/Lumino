@@ -35,7 +35,7 @@ public:
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	void Initialize(detail::GraphicsManager* manager);
-	virtual void LookupTileImage(int id, Texture** outTexture, Rect* outSrcRect);
+	virtual void LookupTileImage(int id, Texture** outTexture, RectI* outSrcRect);
 	Material* GetMaterial() const;
 
 private:

@@ -260,7 +260,7 @@ void PainterEngine::DrawRectangle(const RectF& rect)
 	if (state.Brush.Type == BrushType_Texture)
 	{
 		Driver::ITexture* srcTexture = state.Brush.TextureBrush.Texture;
-		Rect& srcRect = *((Rect*)state.Brush.TextureBrush.SourceRect);
+		RectI& srcRect = *((RectI*)state.Brush.TextureBrush.SourceRect);
 
 		Size texSize((float)srcTexture->GetRealSize().width, (float)srcTexture->GetRealSize().height);
 		texSize.width = 1.0f / texSize.width;

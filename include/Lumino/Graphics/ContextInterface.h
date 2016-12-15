@@ -27,7 +27,7 @@ struct ContextState
 	RenderState				renderState;
 	DepthStencilState		depthStencilState;
 	Texture*				depthBuffer = nullptr;
-	Rect					viewport;
+	RectI					viewport;
 
 	Matrix					worldTransform;
 	Matrix					viewTransform;
@@ -56,7 +56,7 @@ struct ContextState
 		renderState = RenderState();
 		depthStencilState = DepthStencilState();
 		depthBuffer = nullptr;
-		viewport = Rect();
+		viewport = RectI();
 		//vertexBuffer = nullptr;
 		//indexBuffer = nullptr;
 	}
@@ -89,7 +89,7 @@ struct BasicContextState
 	RenderState				renderState;
 	DepthStencilState		depthStencilState;
 	RefPtr<Texture>			depthBuffer;
-	Rect					viewport;
+	RectI					viewport;
 
 	void SetRenderTarget(int index, Texture* texture);
 	Texture* GetRenderTarget(int index) const;

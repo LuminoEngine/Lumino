@@ -71,7 +71,7 @@ public:
 
 	void DrawEllipse(const Vector3& center, const Vector2& radius);
 
-	void DrawTexture(const RectF& rect, Texture* texture, const Rect& secRect, const Color& color);
+	void DrawTexture(const RectF& rect, Texture* texture, const RectI& secRect, const Color& color);
 
 	virtual bool IsStandaloneShader() const { return true; }
 	virtual void Flush() override;

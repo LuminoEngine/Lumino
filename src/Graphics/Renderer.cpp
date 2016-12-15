@@ -193,7 +193,7 @@ Texture* Renderer::GetDepthBuffer() const
 }
 
 //------------------------------------------------------------------------------
-void Renderer::SetViewport(const Rect& rect)
+void Renderer::SetViewport(const RectI& rect)
 {
 	//LN_CALL_RENDERER_COMMAND(SetViewport, SetViewportCommand, rect);
 	m_currentViewport = rect;
@@ -201,14 +201,14 @@ void Renderer::SetViewport(const Rect& rect)
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		SetViewport, m_manager,
 		Driver::IRenderer*, m_internal,
-		Rect, rect,
+		RectI, rect,
 		{
 			m_internal->SetViewport(rect);
 		});
 }
 
 //------------------------------------------------------------------------------
-const Rect& Renderer::GetViewport()
+const RectI& Renderer::GetViewport()
 {
 	return m_currentViewport;
 }

@@ -80,9 +80,9 @@ public:
 	void SetTexture(Texture* texture);
 	Texture* GetTexture() const;
 
-	void SetSourceRect(const Rect& rect) { m_srcRect = rect; }
+	void SetSourceRect(const RectI& rect) { m_srcRect = rect; }
 	void SetSourceRect(int x, int y, int width, int height) { m_srcRect.Set(x, y, width, height); }
-	const Rect& GetSourceRect() const { return m_srcRect; }
+	const RectI& GetSourceRect() const { return m_srcRect; }
 
 
 	void SetWrapMode(BrushWrapMode mode) { m_wrapMode = mode; }
@@ -100,7 +100,7 @@ public:
 
 private:
 	RefPtr<Texture>		m_texture;
-	Rect				m_srcRect;	///< 初期値は (0, 0, INT_MAX, INT_MAX) で、全体を転送することを表す
+	RectI				m_srcRect;	///< 初期値は (0, 0, INT_MAX, INT_MAX) で、全体を転送することを表す
 	BrushWrapMode		m_wrapMode;
 	BrushImageDrawMode	m_imageDrawMode;
 	ThicknessF			m_borderThickness;

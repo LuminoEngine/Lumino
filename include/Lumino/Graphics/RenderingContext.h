@@ -96,12 +96,12 @@ public:
 	/**
 		@brief	ビューポートを設定します。
 	*/
-	void SetViewport(const Rect& rect);
+	void SetViewport(const RectI& rect);
 
 	/**
 		@brief	現在設定されているビューポートを取得します。
 	*/
-	const Rect& GetViewport() const;
+	const RectI& GetViewport() const;
 
 
 

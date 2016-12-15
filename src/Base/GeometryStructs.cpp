@@ -27,10 +27,10 @@ template class GenericSize<int>;
 template class GenericSize<float>;
 
 //==============================================================================
-// Rect
+// RectI
 //==============================================================================
-const Rect	Rect::Zero(0, 0, 0, 0);
-const Rect	Rect::Empty(0, 0, -1, -1);
+const RectI	RectI::Zero(0, 0, 0, 0);
+const RectI	RectI::Empty(0, 0, -1, -1);
 
 //==============================================================================
 // RectF

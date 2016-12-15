@@ -15,14 +15,14 @@ public:
 
 	GlyphRun* GetTempGlyphRun() { return m_tmpGlyphRun; }	// テクスチャの DrawText 等、ユーティリティ的に使いたいときに new を減らす
 
-	void SetRenderArea(const Rect& area) { m_renderArea = area; }
+	void SetRenderArea(const RectI& area) { m_renderArea = area; }
 	void SetTextAlignment(TextAlignment align) { m_textAlignment = align; }
 	void DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const Color32& fillColor, const Color32& strokeColor, int strokeThickness);
 
 private:
 	detail::GraphicsManager*	m_manager;
 	GlyphRun*					m_tmpGlyphRun;
-	Rect						m_renderArea;
+	RectI						m_renderArea;
 	TextAlignment				m_textAlignment;
 };
 

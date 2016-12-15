@@ -29,7 +29,7 @@ public:
 
 	//static void DrawEllipse(const Vector3& center, const Vector2& radius);
 
-	//static void DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const Color& color);
+	//static void DrawTexture(const RectF& rect, Texture* texture, const RectI& srcRect, const Color& color);
 
 	//static void DrawText(const StringRef& text, const PointF& position);
 

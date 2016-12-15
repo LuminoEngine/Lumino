@@ -71,12 +71,12 @@ public:
 	/**
 		@brief	ビューポートを設定します。
 	*/
-	static void SetViewport(const Rect& rect);
+	static void SetViewport(const RectI& rect);
 
 	/**
 		@brief	現在設定されているビューポートを取得します。
 	*/
-	static const Rect& GetViewport();
+	static const RectI& GetViewport();
 
 	///**
 	//	@brief	頂点バッファを設定します。

@@ -74,8 +74,8 @@ void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const 
 	for (auto& item : items)
 	{
 		FontGlyphBitmap* gb = font->LookupGlyphBitmap(item.Char, strokeThickness);
-		Rect dstRect;
-		Rect srcRect;
+		RectI dstRect;
+		RectI srcRect;
 
 		// 枠線用ビットマップがある場合は先に描画する
 		if (gb->OutlineBitmap != nullptr)

@@ -288,7 +288,7 @@ void BatchState::SetDepthBuffer(DepthBuffer* depthBuffer)
 }
 
 //------------------------------------------------------------------------------
-void BatchState::SetScissorRect(const Rect& scissorRect)
+void BatchState::SetScissorRect(const RectI& scissorRect)
 {
 	if (m_scissorRect != scissorRect)
 	{

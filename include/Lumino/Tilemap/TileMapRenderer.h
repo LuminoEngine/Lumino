@@ -25,7 +25,7 @@ protected:
 	//	const Vector3& position,
 	//	const Vector2& size,
 	//	Texture* texture,
-	//	const Rect& srcRect);
+	//	const RectI& srcRect);
 
 public:
 	TileMapRenderer(detail::GraphicsManager* manager);
@@ -99,7 +99,7 @@ private:
 //		const Vector3& position,
 //		const Vector2& size,
 //		Texture* texture,
-//		const Rect& srcRect);
+//		const RectI& srcRect);
 //
 //private:
 //	const int MaxSpriteCount = 2048;

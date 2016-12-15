@@ -407,7 +407,7 @@ int main()
 			}
 		}
 		Bitmap* nbmp = noiseTex1->Lock();
-		nbmp->BitBlt(0, 0, &bmp1, Rect(0, 0, 256, 256), Color32::White, false);
+		nbmp->BitBlt(0, 0, &bmp1, RectI(0, 0, 256, 256), Color32::White, false);
 		noiseTex1->Unlock();
 
 		int src_w = bmp1.GetSize().width;
@@ -474,8 +474,8 @@ int main()
 		//filter.FlipVertical(&dst1flip, &dst1);
 
 		Bitmap* bmp = tex->Lock();
-		//bmp->BitBlt(0, 0, &dst1flip, Rect(0, 0, 256, 128), Color32::White, false);
-		bmp->BitBlt(0, 0, &dst1, Rect(0, 0, 256, 256), Color32::White, false);
+		//bmp->BitBlt(0, 0, &dst1flip, RectI(0, 0, 256, 128), Color32::White, false);
+		bmp->BitBlt(0, 0, &dst1, RectI(0, 0, 256, 256), Color32::White, false);
 		//bmp->BitBlt(0, 0, &bmp1, Rect(0, 0, 256, 256), Color32::White, false);
 		tex->Unlock();
 
@@ -539,7 +539,7 @@ int main()
 		auto tex = Assets::LoadTexture(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
 		tex = Assets::LoadTexture(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
 		
-		//tex->DrawText(_T("lumino"), Rect(0, 0, 100, 100), nullptr, Color::Red, Color::Blue, 0, TextAlignment::Left);
+		//tex->DrawText(_T("lumino"), RectI(0, 0, 100, 100), nullptr, Color::Red, Color::Blue, 0, TextAlignment::Left);
 		auto size = Font::GetDefaultFont()->GetTextSize(_T("lumino"));
 		auto sp1 = Sprite2D::Create(tex);
 		//sp1.SafeRelease();

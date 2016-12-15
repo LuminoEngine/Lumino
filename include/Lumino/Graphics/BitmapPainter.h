@@ -30,7 +30,7 @@ public:
 	/**
 		@brief		矩形を塗りつぶします。
 	*/
-	void FillRectangle(const Rect& rect, const Color32& color);
+	void FillRectangle(const RectI& rect, const Color32& color);
 
 private:
 	LN_DISALLOW_COPY_AND_ASSIGN(BitmapPainter);

@@ -31,7 +31,7 @@ void TextLayoutEngine::ResetSettings()
 	m_textAlignment = TextAlignment::Left;
 	m_textTrimming = TextTrimming::None;
 	m_flowDirection = FlowDirection::LeftToRight;
-	m_drawingArea = Rect::Zero;
+	m_drawingArea = RectI::Zero;
 }
 
 //------------------------------------------------------------------------------
@@ -64,7 +64,7 @@ void TextLayoutEngine::LayoutTextHorizontal(const UTF32* text, int length)
 		m_result->Items.Clear();
 	}
 
-	Rect rc = m_drawingArea;
+	RectI rc = m_drawingArea;
 	SizeI lineSize;
 	int begin = 0;	// 1行の開始位置
 	int i = 0;
@@ -121,7 +121,7 @@ void TextLayoutEngine::LayoutTextHorizontal(const UTF32* text, int length)
 //------------------------------------------------------------------------------
 // lineArea : 行を描画できる領域。Y は左上の Y 座標。Bottom は描画領域の下端。
 //------------------------------------------------------------------------------
-void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const Rect& lineArea, SizeI* outLineSize)
+void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const RectI& lineArea, SizeI* outLineSize)
 {
 	outLineSize->Set(0, 0);
 
@@ -158,7 +158,7 @@ void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const
 	if (m_layoutTextOptions == LayoutTextOptions::All)
 	{
 		// 各グリフの配置を決める
-		Rect drawArea = lineArea;
+		RectI drawArea = lineArea;
 		switch (m_textAlignment)
 		{
 		case TextAlignment::Left:

@@ -305,7 +305,7 @@ Texture* RenderingContext::GetDepthBuffer() const
 }
 
 //------------------------------------------------------------------------------
-void RenderingContext::SetViewport(const Rect& rect)
+void RenderingContext::SetViewport(const RectI& rect)
 {
 	if (m_state.viewport != rect)
 	{
@@ -315,7 +315,7 @@ void RenderingContext::SetViewport(const Rect& rect)
 }
 
 //------------------------------------------------------------------------------
-const Rect& RenderingContext::GetViewport() const
+const RectI& RenderingContext::GetViewport() const
 {
 	return m_state.viewport;
 }

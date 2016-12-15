@@ -53,7 +53,7 @@ public:
 	void SetTextAlignment(TextAlignment align) { m_textAlignment = align; }
 	void SetTextTrimming(TextTrimming triming) { m_textTrimming = triming; }
 	void SetFlowDirection(FlowDirection dir) { m_flowDirection = dir; }
-	void SetDrawingArea(const Rect& area) { m_drawingArea = area; }
+	void SetDrawingArea(const RectI& area) { m_drawingArea = area; }
 
 	void ResetSettings();
 
@@ -65,7 +65,7 @@ protected:
 
 private:
 	void LayoutTextHorizontal(const UTF32* text, int length);
-	void LayoutLineHorizontal(const UTF32* text, int length, const Rect& lineArea, SizeI* outLineSize);
+	void LayoutLineHorizontal(const UTF32* text, int length, const RectI& lineArea, SizeI* outLineSize);
 
 private:
 	RawFont*			m_font;
@@ -75,7 +75,7 @@ private:
 	TextAlignment		m_textAlignment;
 	TextTrimming		m_textTrimming;
 	FlowDirection		m_flowDirection;
-	Rect				m_drawingArea;
+	RectI				m_drawingArea;
 	//ByteBuffer			m_utf32Buffer;		///< UTF32 文字列への一時変換先 (頻繁にメモリ確保しないように、一度使ったメモリは使いまわしたい)
 	
 	// レイアウト処理中に使う

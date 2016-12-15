@@ -124,14 +124,14 @@ public:
 
 	void SetPixel(int x, int y, const Color& color);
 
-	//void Blt(int x, int y, Texture* srcTexture, const Rect& srcRect);	// TODO: アルファブレンド有無
+	//void Blt(int x, int y, Texture* srcTexture, const RectI& srcRect);	// TODO: アルファブレンド有無
 	
-	void Blt(int x, int y, Bitmap* srcBitmap/*, const Rect& srcRect*/);
+	void Blt(int x, int y, Bitmap* srcBitmap/*, const RectI& srcRect*/);
 
 #pragma push_macro("DrawText")
 #undef DrawText
-	void DrawText(const StringRef& text, const Rect& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment);
-	void LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const Rect& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment);
+	void DrawText(const StringRef& text, const RectI& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment);
+	void LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const RectI& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment);
 	// TODO: ↑ TextAlignment じゃなくて TextLayoutFlags の方が良いと思う
 #pragma pop_macro("DrawText")
 	

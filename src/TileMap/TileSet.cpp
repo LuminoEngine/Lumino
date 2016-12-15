@@ -55,7 +55,7 @@ Texture* TileSet::GetImageSource() const
 }
 
 //------------------------------------------------------------------------------
-void TileSet::LookupTileImage(int id, Texture** outTexture, Rect* outSrcRect)
+void TileSet::LookupTileImage(int id, Texture** outTexture, RectI* outSrcRect)
 {
 	int x = id % m_tileCountH;
 	int y = id / m_tileCountH;

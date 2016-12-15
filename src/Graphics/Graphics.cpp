@@ -61,7 +61,7 @@ void Graphics::DrawEllipse(const Vector3& center, const Vector2& radius)
 	GraphicsManager::GetInstance()->GetGraphicsContext()->DrawEllipse(center, radius);
 
 }
-void Graphics::DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const Color& color)
+void Graphics::DrawTexture(const RectF& rect, Texture* texture, const RectI& srcRect, const Color& color)
 {
 	GraphicsManager::GetInstance()->GetGraphicsContext()->DrawTexture(rect, texture, srcRect, color);
 }

@@ -310,7 +310,7 @@ void TextRenderer::DrawString(const Matrix& transform, const TCHAR* str, int len
 	else {
 	}
 
-	cache->GetTextLayoutEngine()->SetDrawingArea(Rect(0, 0, (int)rect.width, (int)rect.height));
+	cache->GetTextLayoutEngine()->SetDrawingArea(RectI(0, 0, (int)rect.width, (int)rect.height));
 
 
 	TextLayoutResult result;
@@ -492,7 +492,7 @@ void TextRenderer::DrawText(const wchar_t* text, int length)
 //------------------------------------------------------------------------------
 void TextRenderer::DrawTextHorizontal(const UTF32* text, int length)
 {
-	Rect lineArea(0, 0, m_areaBox.Width, m_font->GetLineHeight());
+	RectI lineArea(0, 0, m_areaBox.Width, m_font->GetLineHeight());
 	int lineBegin = 0;
 	int i = 0;
 	for (; i < length; ++i)
@@ -530,14 +530,14 @@ void TextRenderer::DrawTextHorizontal(const UTF32* text, int length)
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::DrawLineHorizontal(const UTF32* text, int length, const Rect& lineArea)
+void TextRenderer::DrawLineHorizontal(const UTF32* text, int length, const RectI& lineArea)
 {
 	// 描く必要がない
 	if (text == NULL) { return; }
 	if (length == 0) { return; }
 	if (lineArea.Width <= 0 || lineArea.Height <= 0) { return; }
 
-	Rect drawArea = lineArea;
+	RectI drawArea = lineArea;
 	if (m_textAlignment == TextAlignment_Center)
 	{
 		// 中央揃え
@@ -562,7 +562,7 @@ void TextRenderer::DrawLineHorizontal(const UTF32* text, int length, const Rect&
 		FontGlyphData* glyphData = m_font->LookupGlyphData(text[i], m_prevGlyphData);
 
 		// グリフビットマップの転送先
-		Rect destRect(
+		RectI destRect(
 			drawArea.X + glyphData->GlyphOffsetX,
 			drawArea.Y + glyphData->GlyphOffsetY,
 			drawArea.Width - glyphData->GlyphOffsetX,
@@ -574,7 +574,7 @@ void TextRenderer::DrawLineHorizontal(const UTF32* text, int length, const Rect&
 			m_targetBitmap->BitBlt(
 				destRect,
 				glyphData->OutlineBitmap,
-				Rect(0, 0, glyphData->OutlineBitmap->GetSize()),
+				RectI(0, 0, glyphData->OutlineBitmap->GetSize()),
 				m_strokeColor,
 				true);
 
@@ -586,7 +586,7 @@ void TextRenderer::DrawLineHorizontal(const UTF32* text, int length, const Rect&
 		m_targetBitmap->BitBlt(
 			destRect,
 			glyphData->GlyphBitmap,
-			Rect(0, 0, glyphData->GlyphBitmap->GetSize()),
+			RectI(0, 0, glyphData->GlyphBitmap->GetSize()),
 			m_foreColor,
 			true);
 

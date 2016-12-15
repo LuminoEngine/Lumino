@@ -32,7 +32,7 @@ DX9Renderer::DX9Renderer(DX9GraphicsDevice* device)
 
 	D3DVIEWPORT9 vp;
 	m_dxDevice->GetViewport(&vp);
-	SetViewport(Rect(0, 0, vp.Width, vp.Height));
+	SetViewport(RectI(0, 0, vp.Width, vp.Height));
 
 	OnResetDevice();
 }
@@ -103,7 +103,7 @@ void DX9Renderer::SetDepthBuffer(ITexture* texture)
 }
 
 //------------------------------------------------------------------------------
-void DX9Renderer::SetViewport(const Rect& rect)
+void DX9Renderer::SetViewport(const RectI& rect)
 {
 	InternalSetViewport(rect, false);
 }
@@ -505,7 +505,7 @@ void DX9Renderer::InternalSetRenderTarget(int index, ITexture* texture, bool res
 		// index 0 の場合はビューポートを再設定
 		if (index == 0)
 		{
-			SetViewport(Rect(PointI(0, 0), m_currentRenderTargets[0]->GetSize()));
+			SetViewport(RectI(PointI(0, 0), m_currentRenderTargets[0]->GetSize()));
 		}
 	}
 }
@@ -527,7 +527,7 @@ void DX9Renderer::InternalSetDepthBuffer(ITexture* texture, bool reset)
 }
 
 //------------------------------------------------------------------------------
-void DX9Renderer::InternalSetViewport(const Rect& rect, bool reset)
+void DX9Renderer::InternalSetViewport(const RectI& rect, bool reset)
 {
 	D3DVIEWPORT9 viewport;
 	viewport.X = static_cast<DWORD>(rect.x);

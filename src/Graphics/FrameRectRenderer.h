@@ -15,7 +15,7 @@ struct FrameRectRendererState
 	Matrix						viewProjTransform;
 	BrushImageDrawMode			imageDrawMode;
 	ThicknessF					borderThickness;
-	Rect						srcRect;
+	RectI						srcRect;
 	BrushWrapMode				wrapMode;
 	RefPtr<Driver::ITexture>	texture;
 };
@@ -35,9 +35,9 @@ private:
 	void RequestBuffers(int faceCount);
 
 	void PutRectangleStretch(const RectF& rect, const RectF& srcUVRect);
-	void PutRectangleTiling(const RectF& rect, const Rect& srcPixelRect, const RectF& srcUVRect, Driver::ITexture* srcTexture);
-	void PutRectangle(const RectF& rect, const Rect& srcPixelRect, const RectF& srcUVRect, Driver::ITexture* srcTexture, BrushWrapMode wrapMode);
-	void PutFrameRectangle(const RectF& rect, const ThicknessF& borderThickness, Driver::ITexture* srcTexture, Rect srcRect, BrushWrapMode wrapMode);
+	void PutRectangleTiling(const RectF& rect, const RectI& srcPixelRect, const RectF& srcUVRect, Driver::ITexture* srcTexture);
+	void PutRectangle(const RectF& rect, const RectI& srcPixelRect, const RectF& srcUVRect, Driver::ITexture* srcTexture, BrushWrapMode wrapMode);
+	void PutFrameRectangle(const RectF& rect, const ThicknessF& borderThickness, Driver::ITexture* srcTexture, RectI srcRect, BrushWrapMode wrapMode);
 
 	// TODO í∏ì_êÈåæÇ∆Ç©ÇÕäOïîÇ©ÇÁÇ‡ÇÁÇ§ÇÊÇ§Ç…ÇµÇΩÇ¢
 	struct Vertex

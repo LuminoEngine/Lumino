@@ -180,8 +180,8 @@ public:
 	void SetDepthBuffer(DepthBuffer* depthBuffer);
 	DepthBuffer* GetDepthBuffer() const { return m_depthBuffer; }
 
-	void SetScissorRect(const Rect& scissorRect);
-	const Rect& GetScissorRect() const { return m_scissorRect; }
+	void SetScissorRect(const RectI& scissorRect);
+	const RectI& GetScissorRect() const { return m_scissorRect; }
 
 	void SetBrush(Brush* brush);
 	Brush* GetBrush() const;
@@ -204,7 +204,7 @@ private:
 
 	RefPtr<RenderTarget>	m_renderTargets[MaxMultiRenderTargets];
 	RefPtr<DepthBuffer>		m_depthBuffer;
-	Rect					m_scissorRect;
+	RectI					m_scissorRect;
 
 	RefPtr<Brush>			m_brush;
 	RefPtr<Font>			m_font;
@@ -471,10 +471,10 @@ public:
 	DepthBuffer* GetDepthBuffer() const;
 
 	/** シザー領域を設定します。*/
-	void SetViewport(const Rect& rect);
+	void SetViewport(const RectI& rect);
 
 	/** 現在設定されているシザー領域を取得します。*/
-	const Rect& GetViewport() const;
+	const RectI& GetViewport() const;
 
 	/** @} */
 
