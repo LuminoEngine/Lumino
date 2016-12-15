@@ -98,7 +98,6 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ViewportLayer, Object);
 //------------------------------------------------------------------------------
 ViewportLayer::ViewportLayer()
 	: m_owner(nullptr)
-	, m_placement(ViewportLayerPlacement::Stretch)
 	, m_imageEffects(RefPtr<ImageEffectList>::MakeRef())
 	, m_zIndex(0)
 {
@@ -135,41 +134,41 @@ const Size& ViewportLayer::GetSize() const
 //------------------------------------------------------------------------------
 void ViewportLayer::PreRender(const SizeI& ownerViewPixelSize)
 {
-	bool create = false;
-	SizeI newSize;
+	//bool create = false;
+	//SizeI newSize;
 
-	// 初回、まだ作成されていなければ作りたい
-	if (m_primaryLayerTarget == nullptr)
-	{
-		create = true;
-		newSize = SizeI((float)m_size.width, (float)m_size.height);
-	}
+	//// 初回、まだ作成されていなければ作りたい
+	//if (m_primaryLayerTarget == nullptr)
+	//{
+	//	create = true;
+	//	newSize = SizeI((float)m_size.width, (float)m_size.height);
+	//}
 
-	// 自動リサイズONで、描画先とサイズが異なるなら再作成
-	if (m_placement == ViewportLayerPlacement::AutoResize && ownerViewPixelSize != m_primaryLayerTarget->GetSize())
-	{
-		newSize = ownerViewPixelSize;
-		create = true;
-	}
+	//// 自動リサイズONで、描画先とサイズが異なるなら再作成
+	//if (m_placement == ViewportLayerPlacement::AutoResize && ownerViewPixelSize != m_primaryLayerTarget->GetSize())
+	//{
+	//	newSize = ownerViewPixelSize;
+	//	create = true;
+	//}
 
-	if (create)
-	{
-		// RenderTarget
-		// TODO: できればこういうのは Resize 関数を作りたい。作り直したくない
-		// TODO: というか UE4 みたいにキャッシュしたい
-		m_primaryLayerTarget = RefPtr<RenderTarget>::MakeRef();
-		m_primaryLayerTarget->CreateImpl(m_owner->GetManager(), newSize, 1, TextureFormat::R8G8B8X8);
-		m_secondaryLayerTarget = RefPtr<RenderTarget>::MakeRef();
-		m_secondaryLayerTarget->CreateImpl(m_owner->GetManager(), newSize, 1, TextureFormat::R8G8B8X8);
+	//if (create)
+	//{
+	//	// RenderTarget
+	//	// TODO: できればこういうのは Resize 関数を作りたい。作り直したくない
+	//	// TODO: というか UE4 みたいにキャッシュしたい
+	//	m_primaryLayerTarget = RefPtr<RenderTarget>::MakeRef();
+	//	m_primaryLayerTarget->CreateImpl(m_owner->GetManager(), newSize, 1, TextureFormat::R8G8B8X8);
+	//	m_secondaryLayerTarget = RefPtr<RenderTarget>::MakeRef();
+	//	m_secondaryLayerTarget->CreateImpl(m_owner->GetManager(), newSize, 1, TextureFormat::R8G8B8X8);
 
-		// DepthBuffer
-		m_depthBuffer = RefPtr<DepthBuffer>::MakeRef();
-		m_depthBuffer->CreateImpl(m_owner->GetManager(), newSize, TextureFormat::D24S8);
-	}
+	//	// DepthBuffer
+	//	m_depthBuffer = RefPtr<DepthBuffer>::MakeRef();
+	//	m_depthBuffer->CreateImpl(m_owner->GetManager(), newSize, TextureFormat::D24S8);
+	//}
 }
 
 //------------------------------------------------------------------------------
-void ViewportLayer::PostRender(DrawList* context, RenderTarget** primaryLayerTarget, RenderTarget** secondaryLayerTarget)
+void ViewportLayer::PostRender(DrawList* context, RefPtr<RenderTarget>* primaryLayerTarget, RefPtr<RenderTarget>* secondaryLayerTarget)
 {
 	for (ImageEffect* e : *m_imageEffects)
 	{
@@ -222,6 +221,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Viewport, Object);
 //------------------------------------------------------------------------------
 Viewport::Viewport()
 	: m_manager(nullptr)
+	, m_placement(ViewportPlacement::Stretch)
 	, m_viewportLayerList(RefPtr<ViewportLayerList>::MakeRef())
 	, m_backgroundColor(Color::White)
 	, m_primaryLayerTarget(nullptr)
@@ -233,8 +233,6 @@ Viewport::Viewport()
 //------------------------------------------------------------------------------
 Viewport::~Viewport()
 {
-	LN_SAFE_RELEASE(m_primaryLayerTarget);
-	LN_SAFE_RELEASE(m_secondaryLayerTarget);
 }
 
 //------------------------------------------------------------------------------
@@ -287,6 +285,8 @@ void Viewport::RemoveViewportLayer(ViewportLayer* layer)
 //------------------------------------------------------------------------------
 void Viewport::UpdateLayersTransform(const Size& viewSize)
 {
+	m_size = viewSize;
+
 	for (ViewportLayer* layer : *m_viewportLayerList)
 	{
 		layer->UpdateTransform(viewSize);
@@ -342,7 +342,7 @@ void Viewport::EndRender(Details::Renderer* renderer, RenderTarget* renderTarget
 	}
 
 	Matrix viewBoxTransform;
-	MakeViewBoxTransform(renderTarget->GetSize(), m_primaryLayerTarget->GetSize(), &viewBoxTransform);
+	//MakeViewBoxTransform(renderTarget->GetSize(), m_primaryLayerTarget->GetSize(), &viewBoxTransform);
 
 	BeginBlitRenderer();
 	m_renderer->SetRenderTarget(0, nullptr);
@@ -351,34 +351,66 @@ void Viewport::EndRender(Details::Renderer* renderer, RenderTarget* renderTarget
 }
 
 //------------------------------------------------------------------------------
-void Viewport::TryRemakeLayerTargets(const SizeI& viewSize)
+void Viewport::TryRemakeLayerTargets(const SizeI& ownerViewPixelSize)
 {
-	// RenderTarget
-	if (m_primaryLayerTarget == nullptr || viewSize != m_primaryLayerTarget->GetSize())
-	{
-		LN_SAFE_RELEASE(m_primaryLayerTarget);
-		LN_SAFE_RELEASE(m_secondaryLayerTarget);
+	bool create = false;
+	SizeI newSize;
 
+	// 初回、まだ作成されていなければ作りたい
+	if (m_primaryLayerTarget == nullptr)
+	{
+		create = true;
+		newSize = SizeI((float)m_size.width, (float)m_size.height);
+	}
+
+	// 自動リサイズONで、描画先とサイズが異なるなら再作成
+	if (m_placement == ViewportPlacement::AutoResize/* && ownerViewPixelSize != m_primaryLayerTarget->GetSize()*/)
+	{
+		newSize = ownerViewPixelSize;
+		//create = true;
+	}
+
+	if (create)
+	{
+		// RenderTarget
 		// TODO: できればこういうのは Resize 関数を作りたい。作り直したくない
-		m_primaryLayerTarget = LN_NEW RenderTarget();
-		m_primaryLayerTarget->CreateImpl(m_manager, viewSize, 1, TextureFormat::R8G8B8X8);
-		m_secondaryLayerTarget = LN_NEW RenderTarget();
-		m_secondaryLayerTarget->CreateImpl(m_manager, viewSize, 1, TextureFormat::R8G8B8X8);
+		// TODO: というか UE4 みたいにキャッシュしたい
+		m_primaryLayerTarget = RefPtr<RenderTarget>::MakeRef();
+		m_primaryLayerTarget->CreateImpl(GetManager(), newSize, 1, TextureFormat::R8G8B8X8);
+		m_secondaryLayerTarget = RefPtr<RenderTarget>::MakeRef();
+		m_secondaryLayerTarget->CreateImpl(GetManager(), newSize, 1, TextureFormat::R8G8B8X8);
 
-		//m_primaryLayerTargetOrg = m_primaryLayerTarget;
-	}
-
-	// DepthBuffer
-	if (m_depthBuffer == nullptr || m_depthBuffer->GetSize() != m_primaryLayerTarget->GetSize())
-	{
+		// DepthBuffer
 		m_depthBuffer = RefPtr<DepthBuffer>::MakeRef();
-		m_depthBuffer->CreateImpl(m_manager, viewSize, TextureFormat::D24S8);
+		m_depthBuffer->CreateImpl(GetManager(), newSize, TextureFormat::D24S8);
 	}
 
-	//if (m_primaryLayerTargetOrg != m_primaryLayerTarget)
+	//// RenderTarget
+	//if (m_primaryLayerTarget == nullptr || viewSize != m_primaryLayerTarget->GetSize())
 	//{
-	//	std::swap(m_primaryLayerTarget, m_secondaryLayerTarget);
+	//	LN_SAFE_RELEASE(m_primaryLayerTarget);
+	//	LN_SAFE_RELEASE(m_secondaryLayerTarget);
+
+	//	// TODO: できればこういうのは Resize 関数を作りたい。作り直したくない
+	//	m_primaryLayerTarget = LN_NEW RenderTarget();
+	//	m_primaryLayerTarget->CreateImpl(m_manager, viewSize, 1, TextureFormat::R8G8B8X8);
+	//	m_secondaryLayerTarget = LN_NEW RenderTarget();
+	//	m_secondaryLayerTarget->CreateImpl(m_manager, viewSize, 1, TextureFormat::R8G8B8X8);
+
+	//	//m_primaryLayerTargetOrg = m_primaryLayerTarget;
 	//}
+
+	//// DepthBuffer
+	//if (m_depthBuffer == nullptr || m_depthBuffer->GetSize() != m_primaryLayerTarget->GetSize())
+	//{
+	//	m_depthBuffer = RefPtr<DepthBuffer>::MakeRef();
+	//	m_depthBuffer->CreateImpl(m_manager, viewSize, TextureFormat::D24S8);
+	//}
+
+	////if (m_primaryLayerTargetOrg != m_primaryLayerTarget)
+	////{
+	////	std::swap(m_primaryLayerTarget, m_secondaryLayerTarget);
+	////}
 }
 
 //------------------------------------------------------------------------------

@@ -79,7 +79,7 @@ void Main()
 	//EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
 	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Immediate);//GraphicsRenderingType::Threaded);//
 	Engine::Initialize();
-	//Engine::GetMainViewport()->SetBackgroundColor(Color32::Gray);
+	Engine::GetMainViewport()->SetBackgroundColor(Color32::Gray);
 
 	//Engine::GetDefaultSceneGraph3D()->visibleGridPlane = true;
 

@@ -16,8 +16,8 @@ public:
 	RenderTarget* RequestRenderTarget(int width, int height);
 };
 
-/** ViewportLayer の配置方法 */
-enum class ViewportLayerPlacement
+/** Viewport の配置方法 */
+enum class ViewportPlacement
 {
 	Stretch,		/**< 転送先領域全体に拡大または縮小する */
 	AutoResize,		/**< 転送先領域と同じピクセルサイズになるよう自動的にリサイズする */
@@ -58,21 +58,20 @@ LN_INTERNAL_ACCESS:
 	virtual void Render() = 0;
 
 	/// 後描画
-	void PostRender(DrawList* context, RenderTarget** primaryLayerTarget, RenderTarget** secondaryLayerTarget);
+	void PostRender(DrawList* context, RefPtr<RenderTarget>* primaryLayerTarget, RefPtr<RenderTarget>* secondaryLayerTarget);
 
 	virtual void OnBeginFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer);
 	virtual void ExecuteDrawListRendering(RenderTarget* renderTarget, DepthBuffer* depthBuffer);
 
 private:
 	Viewport*					m_owner;
-	ViewportLayerPlacement		m_placement;
 	Size						m_size;
 	RefPtr<ImageEffectList>		m_imageEffects;
 	int							m_zIndex;
 
-	RefPtr<RenderTarget>		m_primaryLayerTarget;
-	RefPtr<RenderTarget>		m_secondaryLayerTarget;
-	RefPtr<DepthBuffer>			m_depthBuffer;
+	//RefPtr<RenderTarget>		m_primaryLayerTarget;
+	//RefPtr<RenderTarget>		m_secondaryLayerTarget;
+	//RefPtr<DepthBuffer>			m_depthBuffer;
 	//RenderTarget*				m_primaryLayerTarget;	// for post effect
 	//RenderTarget*				m_secondaryLayerTarget;	// for post effect
 
@@ -118,18 +117,20 @@ LN_INTERNAL_ACCESS:	// TODO: いまはとりあえず内部用途
 	void EndRender(Details::Renderer* renderer, RenderTarget* renderTarget);
 
 private:
-	void TryRemakeLayerTargets(const SizeI& viewSize);
+	void TryRemakeLayerTargets(const SizeI& ownerViewPixelSize);
 	void MakeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, Matrix* mat);
 	void BeginBlitRenderer();
 	void FlushBlitRenderer(RenderTarget* renderTarget);
 
 	detail::GraphicsManager*	m_manager;
+	Size						m_size;
+	ViewportPlacement			m_placement;
 	//RenderTarget*				m_renderTarget;
 
 	RefPtr<ViewportLayerList>	m_viewportLayerList;
 	Color						m_backgroundColor;
-	RenderTarget*				m_primaryLayerTarget;
-	RenderTarget*				m_secondaryLayerTarget;
+	RefPtr<RenderTarget>				m_primaryLayerTarget;
+	RefPtr<RenderTarget>				m_secondaryLayerTarget;
 	//RenderTarget*				m_primaryLayerTargetOrg;
 	RefPtr<DepthBuffer>			m_depthBuffer;
 
