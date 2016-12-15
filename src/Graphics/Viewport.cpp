@@ -110,6 +110,12 @@ ViewportLayer::~ViewportLayer()
 {
 }
 
+//------------------------------------------------------------------------------
+void ViewportLayer::UpdateTransform(const Size& viewSize)
+{
+	m_size = viewSize;
+}
+
 ////------------------------------------------------------------------------------
 //void ViewportLayer::PreRender()
 //{
@@ -122,7 +128,7 @@ ViewportLayer::~ViewportLayer()
 //}
 
 //------------------------------------------------------------------------------
-const Size& ViewportLayer::GetViewportSize() const
+const Size& ViewportLayer::GetSize() const
 {
 	return m_size;
 }
@@ -140,8 +146,6 @@ void ViewportLayer::PostRender(DrawList* context, RenderTarget** primaryLayerTar
 //------------------------------------------------------------------------------
 void ViewportLayer::OnBeginFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer)
 {
-	// TODO: float
-	m_size.Set((float)renderTarget->GetWidth(), (float)renderTarget->GetHeight());
 }
 
 //------------------------------------------------------------------------------
@@ -230,9 +234,17 @@ void Viewport::SetBackgroundColor(const Color& color)
 }
 
 //------------------------------------------------------------------------------
+void Viewport::UpdateLayersTransform(const Size& viewSize)
+{
+	for (ViewportLayer* layer : *m_viewportLayerList)
+	{
+		layer->UpdateTransform(viewSize);
+	}
+}
+
+//------------------------------------------------------------------------------
 void Viewport::BeginRender(Details::Renderer* renderer, const SizeI& viewSize)
 {
-	//m_size.Set((float)viewSize.width, (float)viewSize.height);
 	TryRemakeLayerTargets(viewSize);
 }
 

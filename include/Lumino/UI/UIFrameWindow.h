@@ -58,6 +58,9 @@ protected:
 LN_INTERNAL_ACCESS:
 	detail::UIManager* GetManager() const { return m_manager; }
 	SwapChain* GetSwapChain() const { return m_swapChain; }
+
+	void UpdateViewportTransform();
+
 	void Render();
 
 	void BeginRendering();

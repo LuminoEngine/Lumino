@@ -613,6 +613,7 @@ void EngineManager::BeginFrameUpdate()
 
 	if (m_uiManager != nullptr)
 	{
+		m_uiManager->GetMainWindow()->UpdateViewportTransform();
 		m_uiManager->GetMainWindow()->InjectElapsedTime(deltaTime);
 
 		{	// プロファイリング範囲

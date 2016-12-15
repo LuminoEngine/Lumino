@@ -32,7 +32,10 @@ class ViewportLayer
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	const Size& GetViewportSize() const;
+
+	/** このレイヤーのピクセルサイズを取得します。*/
+	const Size& GetSize() const;
+
 	ImageEffectList* GetImageEffects() const { return m_imageEffects; }
 
 	void SetZIndex(int zIndex) { m_zIndex = zIndex; }
@@ -45,11 +48,7 @@ public:
 protected:
 	ViewportLayer();
 	virtual ~ViewportLayer();
-
-	//void AddRenderingPass(detail::RenderingPass2* pass);
-
-	/// 前描画
-	//virtual void BeginFrame(const Size& viewSize);
+	void UpdateTransform(const Size& viewSize);
 
 	/// 本描画
 	virtual void Render() = 0;
@@ -108,6 +107,7 @@ LN_INTERNAL_ACCESS:	// TODO: いまはとりあえず内部用途
 	void Initialize(detail::GraphicsManager* manager/*, RenderTarget* renderTarget*/);
 
 	// call from UIFrameWindow
+	void UpdateLayersTransform(const Size& viewSize);
 	void BeginRender(Details::Renderer* renderer, const SizeI& viewSize);
 	void Render(Details::Renderer* renderer);
 	void EndRender(Details::Renderer* renderer, RenderTarget* renderTarget);

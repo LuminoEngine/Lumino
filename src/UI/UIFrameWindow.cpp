@@ -129,6 +129,14 @@ void UIFrameWindow::SetSize(const SizeI& size)
 }
 
 //------------------------------------------------------------------------------
+void UIFrameWindow::UpdateViewportTransform()
+{
+	const SizeI& bbSize = m_swapChain->GetBackBuffer()->GetSize();
+	Size viewSize((float)bbSize.width, (float)bbSize.height);
+	m_mainViewport->UpdateLayersTransform(viewSize);
+}
+
+//------------------------------------------------------------------------------
 void UIFrameWindow::Render()
 {
 	BeginRendering();
