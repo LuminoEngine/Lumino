@@ -9,7 +9,6 @@ LN_NAMESPACE_BEGIN
 namespace detail { class InternalRenderer; }
 namespace detail { class RenderingPass2; }
 class DrawList;
-class RenderingContext;
 
 class RenderingCompositionContext
 {

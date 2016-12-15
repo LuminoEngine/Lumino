@@ -14,7 +14,6 @@ class FileManager;
 LN_NAMESPACE_GRAPHICS_BEGIN
 class RenderingThread;
 class GraphicsContext;
-class RenderingContext;
 class TextRenderer;
 class BitmapTextRenderer;
 class SwapChain;
@@ -121,8 +120,6 @@ public:
 	/** 関連付けられている FontManager を取得します。*/
 	FontManager* GetFontManager() const { return m_fontManager; }
 	
-	RenderingContext* GetRenderingContext() const { return m_renderingContext; }
-
 	BitmapTextRenderer* GetBitmapTextRenderer() const { return m_bitmapTextRenderer; }
 
 	void AddDeviceResetListener(IDeviceResetListener* listener) { m_deviceResetListenerList.Add(listener); }
@@ -173,7 +170,6 @@ private:
 	RenderingThread*				m_renderingThread;
 
 	ContextInterface*				m_activeContext;
-	RenderingContext*				m_renderingContext;
 
 	RefPtr<InternalContext>			m_internalContext;
 	StringA							m_commonShaderHeader;

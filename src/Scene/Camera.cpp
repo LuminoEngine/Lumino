@@ -91,14 +91,14 @@ void Camera::SetCameraBehavior(CameraBehavior* behavior)
 //------------------------------------------------------------------------------
 Vector3 Camera::WorldToViewportPoint(const Vector3& position) const
 {
-	const Size& size = m_ownerLayer->GetViewportSize();
+	const Size& size = m_ownerLayer->GetSize();
 	return Vector3::Project(position, m_viewProjMatrix, 0.0f, 0.0f, size.width, size.height, m_nearClip, m_farClip);
 }
 
 //------------------------------------------------------------------------------
 Vector3 Camera::ViewportToWorldPoint(const Vector3& position) const
 {
-	const Size& size = m_ownerLayer->GetViewportSize();
+	const Size& size = m_ownerLayer->GetSize();
 	//return Vector3::Unproject(position, m_viewProjMatrix, 0, 0, size.Width, size.Height, m_nearClip, m_farClip);
 	Vector3 v;
 	v.x = (((position.x - 0) / size.width) * 2.0f) - 1.0f;
@@ -283,7 +283,7 @@ void CameraViewportLayer::Render()
 	m_renderer->Clear(ClearFlags::Depth, Color::White);
 
 	// カメラ行列の更新
-	m_hostingCamera->UpdateMatrices(GetViewportSize());
+	m_hostingCamera->UpdateMatrices(GetSize());
 
 	//m_hostingCamera->GetOwnerSceneGraph()->Render(context, m_hostingCamera);
 	m_hostingCamera->GetOwnerSceneGraph()->Render2(m_renderer, m_hostingCamera);

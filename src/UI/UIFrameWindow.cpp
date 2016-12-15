@@ -63,7 +63,7 @@ void UIViewportLayer::ExecuteDrawListRendering(RenderTarget* renderTarget, Depth
 
 	detail::CameraInfo cameraInfo;
 	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
-	cameraInfo.viewPixelSize = GetViewportSize();
+	cameraInfo.viewPixelSize = GetSize();
 	cameraInfo.viewPosition = Vector3::Zero;
 	cameraInfo.viewMatrix = Matrix::Identity;
 	cameraInfo.projMatrix = Matrix::MakePerspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1);

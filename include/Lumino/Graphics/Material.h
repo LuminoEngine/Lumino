@@ -153,9 +153,6 @@ private:
 	std::unordered_map<uint32_t, ShaderValue>	m_builtinValueMap;
 
 
-
-	friend class RenderingContext;
-
 LN_INTERNAL_ACCESS:
 	detail::BuiltinParameters	m_builtin;
 	int									m_revisionCount;

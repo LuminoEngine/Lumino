@@ -1,7 +1,6 @@
 ﻿
 #pragma once
 #include <Lumino/Graphics/Color.h>
-#include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Scene/Common.h>
 #include "../Physics/PhysicsManager.h"
 

@@ -604,23 +604,6 @@ int main()
 				break;
 			}
 
-			//if (Engine::BeginRendering())
-			//{
-			//	Engine::Render();
-
-			//	RenderingContext* r = RenderingContext::GetContext();
-
-			//	//if (sp->GetTexture() == nullptr)
-			//	//{
-			//	//	auto t1 = Texture2D::Create(_T("C:/Proj/Lumino/test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
-			//	//	auto t2 = RenderTarget::Create(t1->GetSize());
-			//	//	r->Blt(t1, t2);
-			//	//	sp->SetTexture(t2);
-			//	//}
-
-
-			//	Engine::EndRendering();
-			//}
 
 		}
 

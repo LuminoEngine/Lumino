@@ -12,7 +12,6 @@
 #include <Lumino/Graphics/VertexBuffer.h>	// TODO:
 #include <Lumino/Graphics/IndexBuffer.h>	// TODO:
 #include <Lumino/Graphics/GraphicsContext.h>	// TODO:
-#include <Lumino/Graphics/RenderingContext.h>	// TODO:
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/SpriteParticle.h>
 #include "../Graphics/Device/GraphicsDriverInterface.h"

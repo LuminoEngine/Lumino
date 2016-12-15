@@ -83,7 +83,6 @@
 #include "GraphicsManager.h"
 #include "RendererImpl.h"
 #include "../UI/UIManager.h"
-#include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Graphics/Viewport.h>
 #include <Lumino/Graphics/Rendering.h>
 #include <Lumino/Scene/Camera.h>			// for make proj matrix
@@ -251,12 +250,6 @@ void Viewport::BeginRender(Details::Renderer* renderer, const SizeI& viewSize)
 //------------------------------------------------------------------------------
 void Viewport::Render(Details::Renderer* renderer)
 {
-	//RenderingContext* context = m_manager->GetRenderingContext();
-	//context->SetRenderTarget(0, m_primaryLayerTarget);
-	//context->SetDepthBuffer(m_depthBuffer);
-	//context->Clear(ClearFlags::All, m_backgroundColor, 1.0f, 0x00);
-	//context->Flush();
-
 	renderer->SetRenderTarget(0, m_primaryLayerTarget);
 	renderer->SetDepthBuffer(m_depthBuffer);
 	renderer->Clear(ClearFlags::All, m_backgroundColor, 1.0f, 0x00);
