@@ -221,7 +221,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Viewport, Object);
 //------------------------------------------------------------------------------
 Viewport::Viewport()
 	: m_manager(nullptr)
-	, m_placement(ViewportPlacement::Stretch)
+	, m_placement(ViewportPlacement::ViewBox)
 	, m_viewportLayerList(RefPtr<ViewportLayerList>::MakeRef())
 	, m_backgroundColor(Color::White)
 	, m_primaryLayerTarget(nullptr)
@@ -329,7 +329,6 @@ void Viewport::Render(Details::Renderer* renderer)
 //------------------------------------------------------------------------------
 void Viewport::EndRender(Details::Renderer* renderer, RenderTarget* renderTarget)
 {
-	m_renderer->SetDepthBuffer(nullptr);
 
 	// 全てのレイヤーの描画リストを実行し m_primaryLayerTarget へ書き込む
 	for (ViewportLayer* layer : *m_viewportLayerList)
@@ -341,11 +340,13 @@ void Viewport::EndRender(Details::Renderer* renderer, RenderTarget* renderTarget
 		FlushBlitRenderer(renderTarget);
 	}
 
-	Matrix viewBoxTransform;
-	//MakeViewBoxTransform(renderTarget->GetSize(), m_primaryLayerTarget->GetSize(), &viewBoxTransform);
+	Matrix viewBoxTransform = Matrix::Identity;
+	if (m_placement == ViewportPlacement::ViewBox)
+	{
+		MakeViewBoxTransform(renderTarget->GetSize(), m_primaryLayerTarget->GetSize(), &viewBoxTransform);
+	}
 
 	BeginBlitRenderer();
-	m_renderer->SetRenderTarget(0, nullptr);
 	m_renderer->Blit(m_primaryLayerTarget, viewBoxTransform);
 	FlushBlitRenderer(renderTarget);
 }
@@ -366,8 +367,12 @@ void Viewport::TryRemakeLayerTargets(const SizeI& ownerViewPixelSize)
 	// 自動リサイズONで、描画先とサイズが異なるなら再作成
 	if (m_placement == ViewportPlacement::AutoResize/* && ownerViewPixelSize != m_primaryLayerTarget->GetSize()*/)
 	{
+		if (m_primaryLayerTarget != nullptr && ownerViewPixelSize != m_primaryLayerTarget->GetSize())
+		{
+			create = true;
+		}
+
 		newSize = ownerViewPixelSize;
-		//create = true;
 	}
 
 	if (create)
@@ -462,15 +467,24 @@ void Viewport::MakeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, 
 		}
 	}
 
+#if 0	// pxel based
 	*mat = Matrix::Identity;
 	mat->Scale(new_w / sw, new_h / sh, 1.0f);
 	mat->Translate(new_x, new_y, 0.0f);
+#else	// screen coord based
+	*mat = Matrix::Identity;
+	mat->Scale(new_w / dw, new_h / dh, 1.0f);
+#endif
 }
 
 //------------------------------------------------------------------------------
 void Viewport::BeginBlitRenderer()
 {
 	m_renderer->BeginMakeElements();
+	m_renderer->SetRenderTarget(0, nullptr);
+	m_renderer->SetDepthBuffer(nullptr);
+	m_renderer->SetDepthTestEnabled(false);
+	m_renderer->SetDepthWriteEnabled(false);
 }
 
 //------------------------------------------------------------------------------

@@ -84,7 +84,7 @@ struct BasicContextState
 	RenderState				renderState;
 	DepthStencilState		depthStencilState;
 	RefPtr<Texture>			depthBuffer;
-	RectI					viewport;
+	//RectI					viewport;
 
 	void SetRenderTarget(int index, Texture* texture);
 	Texture* GetRenderTarget(int index) const;

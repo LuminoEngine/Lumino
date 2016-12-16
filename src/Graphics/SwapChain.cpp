@@ -33,7 +33,7 @@ SwapChain::~SwapChain()
 
 	LN_SAFE_RELEASE(m_commandList);
 	LN_SAFE_RELEASE(m_backColorBuffer);
-	LN_SAFE_RELEASE(m_backDepthBuffer);
+	//LN_SAFE_RELEASE(m_backDepthBuffer);
 	LN_SAFE_RELEASE(m_deviceObj);;
 }
 
@@ -72,8 +72,8 @@ void SwapChain::PostInitialize()
 
 	// 独自管理できる深度バッファを作る。
 	// これがないと、OpenGL のバックバッファはレンダリングターゲットと深度バッファを分離することが出来ないため、本Lib的に不都合が起こる。
-	m_backDepthBuffer = LN_NEW DepthBuffer();
-	m_backDepthBuffer->CreateImpl(m_manager, m_deviceObj->GetBackBuffer()->GetSize(), TextureFormat::D24S8);
+	//m_backDepthBuffer = LN_NEW DepthBuffer();
+	//m_backDepthBuffer->CreateImpl(m_manager, m_deviceObj->GetBackBuffer()->GetSize(), TextureFormat::D24S8);
 
 	m_waiting.SetTrue();
 }
@@ -110,7 +110,7 @@ void SwapChain::BeginRendering()
 			device->GetRenderer()->EnterRenderState();
 
 			// 深度バッファのサイズを新しいバックバッファサイズに合わせる
-			m_backDepthBuffer->Resize(m_deviceObj->GetBackBuffer()->GetSize());
+			//m_backDepthBuffer->Resize(m_deviceObj->GetBackBuffer()->GetSize());
 		}
 	}
 	else
@@ -137,7 +137,7 @@ void SwapChain::BeginRendering()
 			thread->RequestResume();
 
 			// 深度バッファのサイズを新しいバックバッファサイズに合わせる
-			m_backDepthBuffer->Resize(m_deviceObj->GetBackBuffer()->GetSize());
+			//m_backDepthBuffer->Resize(m_deviceObj->GetBackBuffer()->GetSize());
 
 		}
 	}

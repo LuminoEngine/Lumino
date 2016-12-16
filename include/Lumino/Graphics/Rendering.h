@@ -485,6 +485,10 @@ public:
 
 	void SetOpacity(float opacity);
 
+	void SetDepthTestEnabled(bool enabled);
+
+	void SetDepthWriteEnabled(bool enabled);
+
 	/** @} */
 
 	void SetTransform(const Matrix& transform);

@@ -143,11 +143,11 @@ void BasicContextState::SetRenderTarget(int index, Texture* texture)
 	{
 		m_renderTargets[index] = texture;
 
-		if (index == 0)
-		{
-			auto& size = texture->GetSize();
-			viewport.Set(0, 0, size.width, size.height);
-		}
+		//if (index == 0)
+		//{
+		//	auto& size = texture->GetSize();
+		//	viewport.Set(0, 0, size.width, size.height);
+		//}
 	}
 }
 
@@ -196,7 +196,7 @@ void BasicContextState::Copy(const BasicContextState& s)
 	renderState = s.renderState;
 	depthStencilState = s.depthStencilState;
 	depthBuffer = s.depthBuffer;
-	viewport = s.viewport;
+	//viewport = s.viewport;
 	m_renderTargets = s.m_renderTargets;
 	m_ownerShader = s.m_ownerShader;
 	m_shaderPass = s.m_shaderPass;
@@ -336,7 +336,7 @@ void ContextInterface::SetBasicContextState(const BasicContextState& state)
 	for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
 		m_baseRenderer->SetRenderTarget(i, state.GetRenderTarget(i));
 	m_baseRenderer->SetDepthBuffer(state.depthBuffer);
-	m_baseRenderer->SetViewport(state.viewport);
+//	m_baseRenderer->SetViewport(state.viewport);
 }
 
 //------------------------------------------------------------------------------

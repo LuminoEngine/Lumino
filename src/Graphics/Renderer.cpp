@@ -38,7 +38,7 @@ Renderer::Renderer(detail::GraphicsManager* manager)
 	, m_currentRenderState()
 	, m_currentDepthStencilState()
 	, m_currentDepthBuffer(NULL)
-	, m_currentViewport()
+	//, m_currentViewport()
 	, m_lockPresentCommandList()
 {
 	memset(m_currentRenderTargets, 0, sizeof(m_currentRenderTargets));
@@ -193,25 +193,25 @@ Texture* Renderer::GetDepthBuffer() const
 }
 
 //------------------------------------------------------------------------------
-void Renderer::SetViewport(const RectI& rect)
-{
-	//LN_CALL_RENDERER_COMMAND(SetViewport, SetViewportCommand, rect);
-	m_currentViewport = rect;
+//void Renderer::SetViewport(const RectI& rect)
+//{
+//	//LN_CALL_RENDERER_COMMAND(SetViewport, SetViewportCommand, rect);
+//	m_currentViewport = rect;
+//
+//	LN_ENQUEUE_RENDER_COMMAND_2(
+//		SetViewport, m_manager,
+//		Driver::IRenderer*, m_internal,
+//		RectI, rect,
+//		{
+//			m_internal->SetViewport(rect);
+//		});
+//}
 
-	LN_ENQUEUE_RENDER_COMMAND_2(
-		SetViewport, m_manager,
-		Driver::IRenderer*, m_internal,
-		RectI, rect,
-		{
-			m_internal->SetViewport(rect);
-		});
-}
-
-//------------------------------------------------------------------------------
-const RectI& Renderer::GetViewport()
-{
-	return m_currentViewport;
-}
+////------------------------------------------------------------------------------
+//const RectI& Renderer::GetViewport()
+//{
+//	return m_currentViewport;
+//}
 
 ////------------------------------------------------------------------------------
 ////
@@ -335,7 +335,7 @@ void Renderer::FlushState(const detail::ContextState& state)
 			SetRenderTarget(i, state.GetRenderTarget(i));
 		}
 		SetDepthBuffer(state.depthBuffer);
-		SetViewport(state.viewport);
+		//SetViewport(state.viewport);
 		//SetVertexBuffer(state.vertexBuffer);
 		//SetIndexBuffer(state.indexBuffer);
 	}

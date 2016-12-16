@@ -19,7 +19,7 @@ namespace Driver
 DX9Renderer::DX9Renderer(DX9GraphicsDevice* device)
 	: m_owner(device)
 	, m_dxDevice(NULL)
-	, m_currentViewportRect()
+	//, m_currentViewportRect()
 	, m_currentIndexBuffer(NULL)
 	, m_currentDepthBuffer(NULL)
 	, m_currentShaderPass(NULL)
@@ -32,7 +32,7 @@ DX9Renderer::DX9Renderer(DX9GraphicsDevice* device)
 
 	D3DVIEWPORT9 vp;
 	m_dxDevice->GetViewport(&vp);
-	SetViewport(RectI(0, 0, vp.Width, vp.Height));
+	//SetViewport(RectI(0, 0, vp.Width, vp.Height));
 
 	OnResetDevice();
 }
@@ -103,11 +103,11 @@ void DX9Renderer::SetDepthBuffer(ITexture* texture)
 	InternalSetDepthBuffer(texture, false);
 }
 
-//------------------------------------------------------------------------------
-void DX9Renderer::SetViewport(const RectI& rect)
-{
-	InternalSetViewport(rect, false);
-}
+////------------------------------------------------------------------------------
+//void DX9Renderer::SetViewport(const RectI& rect)
+//{
+//	InternalSetViewport(rect, false);
+//}
 
 //------------------------------------------------------------------------------
 void DX9Renderer::RestoreStatus()
@@ -176,7 +176,7 @@ void DX9Renderer::OnEnterRenderState()
 		}
 	}
 	InternalSetDepthBuffer(m_currentDepthBuffer, true);
-	InternalSetViewport(m_currentViewportRect, true);
+	//InternalSetViewport(m_currentViewportRect, true);
 	//	InternalSetVertexBuffer(0, m_currentVertexBuffer, true);
 	InternalSetIndexBuffer(m_currentIndexBuffer, true);
 
@@ -400,6 +400,10 @@ void DX9Renderer::OnClear(ClearFlags flags, const Color& color, float z, uint8_t
 		LN_CHECK_STATE(m_currentRenderTargets[0]->GetSize() == m_currentDepthBuffer->GetSize());
 	}
 
+	const SizeI& viewSize = m_currentRenderTargets[0]->GetSize();
+	D3DVIEWPORT9 vp = { 0, 0, viewSize.width, viewSize.height, 0.0f, 1.0f };
+	LN_COMCALL(m_dxDevice->SetViewport(&vp));
+
 	DWORD flag = 0;
 	if (flags.TestFlag(ClearFlags::Color)) { flag |= D3DCLEAR_TARGET; }
 	if (m_currentDepthBuffer && flags.TestFlag(ClearFlags::Depth)) { flag |= (D3DCLEAR_ZBUFFER); }
@@ -418,6 +422,10 @@ void DX9Renderer::OnClear(ClearFlags flags, const Color& color, float z, uint8_t
 //------------------------------------------------------------------------------
 void DX9Renderer::OnDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
 {
+	const SizeI& viewSize = m_currentRenderTargets[0]->GetSize();
+	D3DVIEWPORT9 vp = { 0, 0, viewSize.width, viewSize.height, 0.0f, 1.0f };
+	LN_COMCALL(m_dxDevice->SetViewport(&vp));
+
 	DX9VertexDeclaration* decl = static_cast<DX9VertexDeclaration*>(m_currentVertexDeclaration.Get());
 
 	D3DPRIMITIVETYPE dx_prim = D3DPT_TRIANGLELIST;
@@ -450,6 +458,10 @@ void DX9Renderer::OnDrawPrimitive(PrimitiveType primitive, int startVertex, int 
 //------------------------------------------------------------------------------
 void DX9Renderer::OnDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
 {
+	const SizeI& viewSize = m_currentRenderTargets[0]->GetSize();
+	D3DVIEWPORT9 vp = { 0, 0, viewSize.width, viewSize.height, 0.0f, 1.0f };
+	LN_COMCALL(m_dxDevice->SetViewport(&vp));
+
 	DX9VertexDeclaration* decl = static_cast<DX9VertexDeclaration*>(m_currentVertexDeclaration.Get());
 
 	// TODO: とりあえず 0 番ストリームで頂点数を計る
@@ -503,11 +515,11 @@ void DX9Renderer::InternalSetRenderTarget(int index, ITexture* texture, bool res
 		}
 		LN_REFOBJ_SET(m_currentRenderTargets[index], static_cast<DX9RenderTargetTexture*>(texture));
 
-		// index 0 の場合はビューポートを再設定
-		if (index == 0)
-		{
-			SetViewport(RectI(PointI(0, 0), m_currentRenderTargets[0]->GetSize()));
-		}
+		//// index 0 の場合はビューポートを再設定
+		//if (index == 0)
+		//{
+		//	SetViewport(RectI(PointI(0, 0), m_currentRenderTargets[0]->GetSize()));
+		//}
 	}
 }
 
@@ -527,20 +539,20 @@ void DX9Renderer::InternalSetDepthBuffer(ITexture* texture, bool reset)
 	}
 }
 
-//------------------------------------------------------------------------------
-void DX9Renderer::InternalSetViewport(const RectI& rect, bool reset)
-{
-	D3DVIEWPORT9 viewport;
-	viewport.X = static_cast<DWORD>(rect.x);
-	viewport.Y = static_cast<DWORD>(rect.y);
-	viewport.Width = static_cast<DWORD>(rect.width);
-	viewport.Height = static_cast<DWORD>(rect.height);
-	viewport.MinZ = 0.0f;
-	viewport.MaxZ = 1.0f;
-
-	LN_COMCALL(m_dxDevice->SetViewport(&viewport));
-	m_currentViewportRect = rect;
-}
+////------------------------------------------------------------------------------
+//void DX9Renderer::InternalSetViewport(const RectI& rect, bool reset)
+//{
+//	D3DVIEWPORT9 viewport;
+//	viewport.X = static_cast<DWORD>(rect.x);
+//	viewport.Y = static_cast<DWORD>(rect.y);
+//	viewport.Width = static_cast<DWORD>(rect.width);
+//	viewport.Height = static_cast<DWORD>(rect.height);
+//	viewport.MinZ = 0.0f;
+//	viewport.MaxZ = 1.0f;
+//
+//	LN_COMCALL(m_dxDevice->SetViewport(&viewport));
+//	m_currentViewportRect = rect;
+//}
 
 //------------------------------------------------------------------------------
 void DX9Renderer::InternalSetIndexBuffer(IIndexBuffer* indexBuffer, bool reset)

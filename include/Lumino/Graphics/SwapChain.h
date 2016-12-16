@@ -24,10 +24,10 @@ public:
 	*/
 	RenderTarget* GetBackBuffer() { return m_backColorBuffer; }
 	
-	/**
-		@brief	バックバッファの深度バッファを取得します。
-	*/
-	DepthBuffer* GetBackBufferDepth() { return m_backDepthBuffer; }
+	///**
+	//	@brief	バックバッファの深度バッファを取得します。
+	//*/
+	//DepthBuffer* GetBackBufferDepth() { return m_backDepthBuffer; }
 
 	/**
 		@brief	バックバッファのサイズを変更します。
@@ -60,7 +60,7 @@ LN_INTERNAL_ACCESS:
 	RenderingCommandList*		m_commandList;
 	ConditionFlag				m_waiting;		// コマンド実行していない
 	RenderTarget*				m_backColorBuffer;
-	DepthBuffer*				m_backDepthBuffer;
+	//DepthBuffer*				m_backDepthBuffer;
 	bool						m_isDefault;
 };
 

@@ -124,11 +124,12 @@ void DX9SwapChain::Present(ITexture* /*colorBuffer*/)
 	r->SetDepthBuffer(NULL);
 	
 
+	//IDirect3DDevice9* dxDevice = m_graphicsDevice->GetIDirect3DDevice9();
 	//D3DCOLOR dxc = D3DCOLOR_ARGB(255, 255, 0, 0);
 	//LN_COMCALL(dxDevice->Clear(0, NULL, D3DCLEAR_TARGET, dxc, 1.0f, 0));
 
 	// 転送
-	//IDirect3DDevice9* dxDevice = m_graphicsDevice->GetIDirect3DDevice9();
+	//
 	//HRESULT hr = dxDevice->Present(NULL, NULL, m_targetHWnd, NULL);
 	HRESULT hr = m_dxSwapChain->Present(NULL, NULL, m_targetHWnd, NULL, 0);
 

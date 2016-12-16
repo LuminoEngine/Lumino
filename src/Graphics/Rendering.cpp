@@ -1166,6 +1166,18 @@ void DrawList::SetBlendMode(BlendMode mode)
 //}
 
 //------------------------------------------------------------------------------
+void DrawList::SetDepthTestEnabled(bool enabled)
+{
+	m_defaultMaterial->depthTestEnabled = enabled;
+}
+
+//------------------------------------------------------------------------------
+void DrawList::SetDepthWriteEnabled(bool enabled)
+{
+	m_defaultMaterial->depthWriteEnabled = enabled;
+}
+
+//------------------------------------------------------------------------------
 void DrawList::BeginMakeElements()
 {
 	m_drawElementList.ClearCommands();
@@ -1545,7 +1557,7 @@ void DrawList::BlitInternal(Texture* source, RenderTarget* dest, const Matrix& t
 		virtual void MakeElementInfo(const detail::CameraInfo& cameraInfo, detail::ElementInfo* outInfo)
 		{
 			DrawElement::MakeElementInfo(cameraInfo, outInfo);
-			outInfo->WorldViewProjectionMatrix = Matrix::Identity;
+			outInfo->WorldViewProjectionMatrix = transform;
 		}
 		virtual void MakeSubsetInfo(detail::CombinedMaterial* material, detail::SubsetInfo* outInfo) override
 		{

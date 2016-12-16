@@ -191,7 +191,7 @@ public:
 	//virtual ITexture* GetDepthBuffer() = 0;
 
 	/// ビューポート矩形の設定
-	virtual void SetViewport(const RectI& rect) = 0;
+	//virtual void SetViewport(const RectI& rect) = 0;
 
 	/// ビューポート矩形の取得
 	//virtual const RectI& GetViewport() = 0;
