@@ -74,7 +74,7 @@ void ToneImageEffect::ChangeTone(const ToneF& tone, double time)
 }
 
 //------------------------------------------------------------------------------
-void ToneImageEffect::OnRender(DrawList* context, RenderTarget* source, RenderTarget* destination)
+void ToneImageEffect::OnRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
 	//if (Tone != Vector4::Zero)
 	{

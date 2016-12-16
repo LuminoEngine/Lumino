@@ -14,11 +14,11 @@ public:
 	RenderTargetTextureCache(GraphicsManager* manager);
 	virtual ~RenderTargetTextureCache();
 
-	RefPtr<RenderTarget> RequestRenderTarget(const SizeI& size, TextureFormat format, int mipLevel);
+	RefPtr<RenderTargetTexture> RequestRenderTarget(const SizeI& size, TextureFormat format, int mipLevel);
 	void GCRenderTargets();
 
 private:
-	typedef std::vector<RenderTarget*>	RenderTargetList;
+	typedef std::vector<RenderTargetTexture*>	RenderTargetList;
 
 	GraphicsManager*								m_manager;
 	std::unordered_map<uint64_t, RenderTargetList>	m_renderTargetMap;

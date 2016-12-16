@@ -368,7 +368,7 @@ void FrameCapturer::Initialize(detail::GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void FrameCapturer::SetCapturerTarget(RenderTarget* renderTarget)
+void FrameCapturer::SetCapturerTarget(RenderTargetTexture* renderTarget)
 {
 	LN_REFOBJ_SET(m_capturerTarget, renderTarget);
 }
@@ -434,7 +434,7 @@ void FrameCapturer::RecordCommand(Driver::ITexture* target, State newState)
 
 		if (m_lastTick == 0 || deltaTick > 64)	// FPS15 くらいでプロットする場合はコレ (TODO: fps指定)
 		{
-			// RenderTarget の内容を読み取る
+			// RenderTargetTexture の内容を読み取る
 			Bitmap* bmp = target->Lock();	//TODO: Scoped
 			m_gifContext->AddFrame(bmp, deltaTick);
 			target->Unlock();

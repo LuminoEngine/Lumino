@@ -485,17 +485,17 @@ void Shader::PostInitialize()
 void Shader::TryCommitChanges()
 {
 	// TODO: いらなそう
-	if (m_viewportPixelSize != nullptr)
-	{
-		Texture* tex = GetManager()->GetRenderer()->GetRenderTarget(0);
-		const SizeI& size = tex->GetRealSize();
-		float w = (float)size.width;
-		float h = (float)size.height;
-		const Vector4& vec = m_viewportPixelSize->GetVector();
-		if (m_viewportPixelSize->GetType() == ShaderVariableType_Unknown || vec.x != w || vec.y != h) {
-			m_viewportPixelSize->SetVector(Vector4(w, h, 0, 0));
-		}
-	}
+	//if (m_viewportPixelSize != nullptr)
+	//{
+	//	Texture* tex = GetManager()->GetRenderer()->GetRenderTarget(0);
+	//	const SizeI& size = tex->GetRealSize();
+	//	float w = (float)size.width;
+	//	float h = (float)size.height;
+	//	const Vector4& vec = m_viewportPixelSize->GetVector();
+	//	if (m_viewportPixelSize->GetType() == ShaderVariableType_Unknown || vec.x != w || vec.y != h) {
+	//		m_viewportPixelSize->SetVector(Vector4(w, h, 0, 0));
+	//	}
+	//}
 
 	auto* serializer = GetManager()->GetShaderVariableCommitSerializeHelper();
 	serializer->BeginSerialize();

@@ -11,7 +11,7 @@ void TestEnv::SetUp()
 	int scale = 1;
 	EngineSettings::SetMainWindowSize(SizeI(160 * scale, 120 * scale));
 	EngineSettings::SetMainBackBufferSize(SizeI(160 * scale, 120 * scale));
-	EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);//GraphicsAPI::DirectX9);//
+	EngineSettings::SetGraphicsAPI(GraphicsAPI::DirectX9);//GraphicsAPI::OpenGL);//
 	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
 	//settings.graphicsAPI = GraphicsAPI::DirectX9; //GraphicsAPI::OpenGL;//
 	//settings.renderingType = GraphicsRenderingType::Immediate; //RenderingType::Deferred;//
@@ -47,12 +47,12 @@ bool TestEnv::EqualsScreenShot(const TCHAR* filePath, int passRate)
 }
 
 //------------------------------------------------------------------------------
-bool TestEnv::EqualsTexture(Texture* texture, const TCHAR* filePath)
-{
-	bool r = TestEnv::EqualsBitmapFile(texture->Lock(), filePath, 90);
-	texture->Unlock();
-	return r;
-}
+//bool TestEnv::EqualsTexture(Texture* texture, const TCHAR* filePath)
+//{
+//	bool r = TestEnv::EqualsBitmapFile(texture->Lock(), filePath, 90);
+//	texture->Unlock();
+//	return r;
+//}
 
 //------------------------------------------------------------------------------
 Color32 MixPixels(Bitmap* bmp, int x, int y)

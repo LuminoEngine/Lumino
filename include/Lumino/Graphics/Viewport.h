@@ -13,7 +13,7 @@ class DrawList;
 class RenderingCompositionContext
 {
 public:
-	RenderTarget* RequestRenderTarget(int width, int height);
+	RenderTargetTexture* RequestRenderTarget(int width, int height);
 };
 
 /** Viewport の配置方法 */
@@ -58,24 +58,16 @@ LN_INTERNAL_ACCESS:
 	virtual void Render() = 0;
 
 	/// 後描画
-	void PostRender(DrawList* context, RefPtr<RenderTarget>* primaryLayerTarget, RefPtr<RenderTarget>* secondaryLayerTarget);
+	void PostRender(DrawList* context, RefPtr<RenderTargetTexture>* primaryLayerTarget, RefPtr<RenderTargetTexture>* secondaryLayerTarget);
 
-	virtual void OnBeginFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer);
-	virtual void ExecuteDrawListRendering(RenderTarget* renderTarget, DepthBuffer* depthBuffer);
+	virtual void OnBeginFrameRender(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
+	virtual void ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
 
 private:
 	Viewport*					m_owner;
 	Size						m_size;
 	RefPtr<ImageEffectList>		m_imageEffects;
 	int							m_zIndex;
-
-	//RefPtr<RenderTarget>		m_primaryLayerTarget;
-	//RefPtr<RenderTarget>		m_secondaryLayerTarget;
-	//RefPtr<DepthBuffer>			m_depthBuffer;
-	//RenderTarget*				m_primaryLayerTarget;	// for post effect
-	//RenderTarget*				m_secondaryLayerTarget;	// for post effect
-
-	//friend class Viewport;
 };
 
 class ViewportLayerList
@@ -111,20 +103,20 @@ public:
 LN_INTERNAL_ACCESS:	// TODO: いまはとりあえず内部用途
 	Viewport();
 	virtual ~Viewport();
-	void Initialize(detail::GraphicsManager* manager/*, RenderTarget* renderTarget*/);
+	void Initialize(detail::GraphicsManager* manager);
 	detail::GraphicsManager* GetManager() const { return m_manager; }
 
 	// call from UIFrameWindow
 	void UpdateLayersTransform(const Size& viewSize);
 	void BeginRender(Details::Renderer* renderer, const SizeI& viewSize);
 	void Render(Details::Renderer* renderer);
-	void EndRender(Details::Renderer* renderer, RenderTarget* renderTarget);
+	void EndRender(Details::Renderer* renderer, RenderTargetTexture* renderTarget);
 
 private:
 	void TryRemakeLayerTargets(const SizeI& ownerViewPixelSize);
 	void MakeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, Matrix* mat);
 	void BeginBlitRenderer();
-	void FlushBlitRenderer(RenderTarget* renderTarget);
+	void FlushBlitRenderer(RenderTargetTexture* renderTarget);
 
 	detail::GraphicsManager*	m_manager;
 	Size						m_size;
@@ -133,8 +125,8 @@ private:
 
 	RefPtr<ViewportLayerList>	m_viewportLayerList;
 	Color						m_backgroundColor;
-	RefPtr<RenderTarget>				m_primaryLayerTarget;
-	RefPtr<RenderTarget>				m_secondaryLayerTarget;
+	RefPtr<RenderTargetTexture>	m_primaryLayerTarget;
+	RefPtr<RenderTargetTexture>	m_secondaryLayerTarget;
 	//RenderTarget*				m_primaryLayerTargetOrg;
 	RefPtr<DepthBuffer>			m_depthBuffer;
 

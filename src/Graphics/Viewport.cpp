@@ -153,12 +153,12 @@ void ViewportLayer::PreRender(const SizeI& ownerViewPixelSize)
 
 	//if (create)
 	//{
-	//	// RenderTarget
+	//	// RenderTargetTexture
 	//	// TODO: できればこういうのは Resize 関数を作りたい。作り直したくない
 	//	// TODO: というか UE4 みたいにキャッシュしたい
-	//	m_primaryLayerTarget = RefPtr<RenderTarget>::MakeRef();
+	//	m_primaryLayerTarget = RefPtr<RenderTargetTexture>::MakeRef();
 	//	m_primaryLayerTarget->CreateImpl(m_owner->GetManager(), newSize, 1, TextureFormat::R8G8B8X8);
-	//	m_secondaryLayerTarget = RefPtr<RenderTarget>::MakeRef();
+	//	m_secondaryLayerTarget = RefPtr<RenderTargetTexture>::MakeRef();
 	//	m_secondaryLayerTarget->CreateImpl(m_owner->GetManager(), newSize, 1, TextureFormat::R8G8B8X8);
 
 	//	// DepthBuffer
@@ -168,7 +168,7 @@ void ViewportLayer::PreRender(const SizeI& ownerViewPixelSize)
 }
 
 //------------------------------------------------------------------------------
-void ViewportLayer::PostRender(DrawList* context, RefPtr<RenderTarget>* primaryLayerTarget, RefPtr<RenderTarget>* secondaryLayerTarget)
+void ViewportLayer::PostRender(DrawList* context, RefPtr<RenderTargetTexture>* primaryLayerTarget, RefPtr<RenderTargetTexture>* secondaryLayerTarget)
 {
 	for (ImageEffect* e : *m_imageEffects)
 	{
@@ -178,12 +178,12 @@ void ViewportLayer::PostRender(DrawList* context, RefPtr<RenderTarget>* primaryL
 }
 
 //------------------------------------------------------------------------------
-void ViewportLayer::OnBeginFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer)
+void ViewportLayer::OnBeginFrameRender(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 }
 
 //------------------------------------------------------------------------------
-void ViewportLayer::ExecuteDrawListRendering(RenderTarget* renderTarget, DepthBuffer* depthBuffer)
+void ViewportLayer::ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	//for (detail::RenderingPass2* pass : m_renderingPasses)
 	//{
@@ -236,7 +236,7 @@ Viewport::~Viewport()
 }
 
 //------------------------------------------------------------------------------
-void Viewport::Initialize(detail::GraphicsManager* manager/*, RenderTarget* renderTarget*/)
+void Viewport::Initialize(detail::GraphicsManager* manager)
 {
 	m_manager = manager;
 	//m_renderTarget = renderTarget;
@@ -333,7 +333,7 @@ void Viewport::Render(Details::Renderer* renderer)
 }
 
 //------------------------------------------------------------------------------
-void Viewport::EndRender(Details::Renderer* renderer, RenderTarget* renderTarget)
+void Viewport::EndRender(Details::Renderer* renderer, RenderTargetTexture* renderTarget)
 {
 
 	// 全てのレイヤーの描画リストを実行し m_primaryLayerTarget へ書き込む
@@ -383,45 +383,18 @@ void Viewport::TryRemakeLayerTargets(const SizeI& ownerViewPixelSize)
 
 	if (create)
 	{
-		// RenderTarget
+		// RenderTargetTexture
 		// TODO: できればこういうのは Resize 関数を作りたい。作り直したくない
 		// TODO: というか UE4 みたいにキャッシュしたい
-		m_primaryLayerTarget = RefPtr<RenderTarget>::MakeRef();
+		m_primaryLayerTarget = RefPtr<RenderTargetTexture>::MakeRef();
 		m_primaryLayerTarget->CreateImpl(GetManager(), newSize, 1, TextureFormat::R8G8B8X8);
-		m_secondaryLayerTarget = RefPtr<RenderTarget>::MakeRef();
+		m_secondaryLayerTarget = RefPtr<RenderTargetTexture>::MakeRef();
 		m_secondaryLayerTarget->CreateImpl(GetManager(), newSize, 1, TextureFormat::R8G8B8X8);
 
 		// DepthBuffer
 		m_depthBuffer = RefPtr<DepthBuffer>::MakeRef();
 		m_depthBuffer->CreateImpl(GetManager(), newSize, TextureFormat::D24S8);
 	}
-
-	//// RenderTarget
-	//if (m_primaryLayerTarget == nullptr || viewSize != m_primaryLayerTarget->GetSize())
-	//{
-	//	LN_SAFE_RELEASE(m_primaryLayerTarget);
-	//	LN_SAFE_RELEASE(m_secondaryLayerTarget);
-
-	//	// TODO: できればこういうのは Resize 関数を作りたい。作り直したくない
-	//	m_primaryLayerTarget = LN_NEW RenderTarget();
-	//	m_primaryLayerTarget->CreateImpl(m_manager, viewSize, 1, TextureFormat::R8G8B8X8);
-	//	m_secondaryLayerTarget = LN_NEW RenderTarget();
-	//	m_secondaryLayerTarget->CreateImpl(m_manager, viewSize, 1, TextureFormat::R8G8B8X8);
-
-	//	//m_primaryLayerTargetOrg = m_primaryLayerTarget;
-	//}
-
-	//// DepthBuffer
-	//if (m_depthBuffer == nullptr || m_depthBuffer->GetSize() != m_primaryLayerTarget->GetSize())
-	//{
-	//	m_depthBuffer = RefPtr<DepthBuffer>::MakeRef();
-	//	m_depthBuffer->CreateImpl(m_manager, viewSize, TextureFormat::D24S8);
-	//}
-
-	////if (m_primaryLayerTargetOrg != m_primaryLayerTarget)
-	////{
-	////	std::swap(m_primaryLayerTarget, m_secondaryLayerTarget);
-	////}
 }
 
 //------------------------------------------------------------------------------
@@ -494,7 +467,7 @@ void Viewport::BeginBlitRenderer()
 }
 
 //------------------------------------------------------------------------------
-void Viewport::FlushBlitRenderer(RenderTarget* renderTarget)
+void Viewport::FlushBlitRenderer(RenderTargetTexture* renderTarget)
 {
 	Size targetSize((float)renderTarget->GetWidth(), (float)renderTarget->GetHeight());
 

@@ -38,101 +38,33 @@ Texture::~Texture()
 //------------------------------------------------------------------------------
 const SizeI& Texture::GetSize() const
 {
-	return m_deviceObj->GetSize();
+	return m_size;
 }
 
 //------------------------------------------------------------------------------
 int Texture::GetWidth() const
 {
-	return m_deviceObj->GetSize().width;
+	return m_size.width;
 }
 
 //------------------------------------------------------------------------------
 int Texture::GetHeight() const
 {
-	return m_deviceObj->GetSize().height;
+	return m_size.height;
 }
 
 //------------------------------------------------------------------------------
-const SizeI& Texture::GetRealSize() const
-{
-	return m_deviceObj->GetRealSize();
-}
+//const SizeI& Texture::GetRealSize() const
+//{
+//	return m_deviceObj->GetRealSize();
+//}
 
 //------------------------------------------------------------------------------
 TextureFormat Texture::GetFormat() const
 {
-	return m_deviceObj->GetTextureFormat();
+	return m_format;
 }
 
-
-//------------------------------------------------------------------------------
-Bitmap* Texture::Lock()
-{
-	// Deferred
-	if (m_manager->GetRenderingType() == GraphicsRenderingType::Threaded)
-	{
-		if (m_deviceObj->GetTextureType() == Driver::TextureType_Normal)
-		{
-			return m_primarySurface;
-		}
-		else if (m_deviceObj->GetTextureType() == Driver::TextureType_RenderTarget)
-		{
-			RenderingCommandList* cmdList = m_manager->GetRenderer()->m_primaryCommandList;
-			cmdList->AddCommand<ReadLockTextureCommand>(this);
-
-			// ここでたまっているコマンドをすべて実行する。
-			// ReadLockTexture コマンドが実行されると、m_lockedBitmap に
-			// ロックしたビットマップがセットされる。
-			m_manager->GetRenderingThread()->PushRenderingCommand(cmdList);
-			cmdList->WaitForIdle();
-
-			return m_primarySurface;
-		}
-		return NULL;
-	}
-	// Immediate
-	else
-	{
-		return m_deviceObj->Lock();
-	}
-}
-
-//------------------------------------------------------------------------------
-void Texture::Unlock()
-{
-	// Deferred
-	if (m_manager->GetRenderingType() == GraphicsRenderingType::Threaded)
-	{
-		RenderingCommandList* cmdList = m_manager->GetRenderer()->m_primaryCommandList;
-		if (m_deviceObj->GetTextureType() == Driver::TextureType_Normal)
-		{
-			// 変更済みフラグを ON にしておく。
-			// あとで本当に使うタイミング (=シェーダパスのApply時) になったら FlushPrimarySurface() が呼ばれる
-			//m_primarySurfaceModified = true;
-
-			// TODO: 遅延転送
-			//cmdList->SetTextureSubData(m_deviceObj, m_primarySurface);
-			//cmdList->AddCommand<SetTextureSubDataCommand>(m_deviceObj, m_primarySurface);
-			//SetTextureSubDataCommand::AddCommand(cmdList, m_deviceObj, m_primarySurface);
-			cmdList->AddCommand<SetSubDataTextureCommand>(
-				m_deviceObj, PointI(0, 0), m_primarySurface->GetBitmapBuffer()->GetConstData(), m_primarySurface->GetBitmapBuffer()->GetSize(), m_deviceObj->GetSize());
-		}
-		else if (m_deviceObj->GetTextureType() == Driver::TextureType_RenderTarget)
-		{
-			cmdList->AddCommand<ReadUnlockTextureCommand>(this);
-			//ReadUnlockTextureCommand::AddCommand(cmdList, this);
-			//cmdList->ReadUnlockTexture(this);
-			m_manager->GetRenderingThread()->PushRenderingCommand(cmdList);
-			cmdList->WaitForIdle();
-		}
-	}
-	// Immediate
-	else
-	{
-		m_deviceObj->Unlock();
-	}
-}
 
 //==============================================================================
 // Texture2D
@@ -260,7 +192,7 @@ void Texture2D::Initialize(detail::GraphicsManager* manager, Stream* stream, Tex
 		m_deviceObj = manager->GetGraphicsDevice()->CreateTexturePlatformLoading(stream, m_mipmap, format);
 		if (m_deviceObj != NULL)
 		{
-			m_primarySurface = LN_NEW Bitmap(m_deviceObj->GetSize(), Utils::TranslatePixelFormat(format));
+			m_primarySurface2 = LN_NEW Bitmap(m_deviceObj->GetSize(), Utils::TranslatePixelFormat(format));
 			m_size = m_deviceObj->GetSize();
 		}
 	}
@@ -268,8 +200,9 @@ void Texture2D::Initialize(detail::GraphicsManager* manager, Stream* stream, Tex
 	// プラットフォーム依存のロードが失敗したら普通の処理
 	if (m_deviceObj == NULL)
 	{
-		m_primarySurface = LN_NEW Bitmap(stream, true);
-		m_deviceObj = manager->GetGraphicsDevice()->CreateTexture(m_primarySurface->GetSize(), m_mipmap, format, m_primarySurface->GetBitmapBuffer()->GetConstData());
+		m_locked = true;
+		m_primarySurface2 = LN_NEW Bitmap(stream);
+		m_size = m_primarySurface2->GetSize();
 	}
 
 #if 0
@@ -327,6 +260,11 @@ void Texture2D::TryLock()
 //------------------------------------------------------------------------------
 void Texture2D::ApplyModifies()
 {
+	if (m_deviceObj == nullptr)
+	{
+		m_deviceObj = m_manager->GetGraphicsDevice()->CreateTexture(m_primarySurface2->GetSize(), m_mipmap, m_format, nullptr);
+	}
+
 	if (m_locked)
 	{
 		ByteBuffer* bmpData = m_primarySurface2->GetBitmapBuffer();
@@ -389,14 +327,6 @@ void Texture2D::SetPixel(int x, int y, const Color& color)
 }
 
 //------------------------------------------------------------------------------
-//void Texture2D::Blt(int x, int y, Texture* srcTexture, const RectI& srcRect)
-//{
-//	//ScopedTextureLock lock1(this);
-//	//ScopedTextureLock lock2(srcTexture);
-//	lock1.GetBitmap()->BitBlt(x, y, lock2.GetBitmap(), srcRect, Color32::White, true);
-//}
-
-//------------------------------------------------------------------------------
 void Texture2D::Blt(int x, int y, Bitmap* srcBitmap/*, const RectI& srcRect*/)
 {
 	TryLock();
@@ -436,48 +366,51 @@ void Texture2D::SetSubData(const PointI& offset, Bitmap* bitmap)
 }
 
 //------------------------------------------------------------------------------
-void Texture2D::SetSubData(const PointI& offset, const void* data)
+void Texture2D::SetData(const void* data)
 {
-	LN_CHECK_ARG(data != NULL);
-	// TODO: m_primarySurface にもセット
-	LN_CALL_TEXTURE_COMMAND(SetSubData, SetSubDataTextureCommand,
-		offset, data, m_primarySurface->GetBitmapBuffer()->GetSize(), m_deviceObj->GetSize());
+	LN_NOTIMPLEMENTED();
+	//LN_CHECK_ARG(data != NULL);
+	//// TODO: m_primarySurface にもセット
+	//LN_CALL_TEXTURE_COMMAND(SetSubData, SetSubDataTextureCommand,
+	//	offset, data, m_primarySurface->GetBitmapBuffer()->GetSize(), m_deviceObj->GetSize());
 }
 
 //------------------------------------------------------------------------------
 void Texture2D::OnChangeDevice(Driver::IGraphicsDevice* device)
 {
-	if (device == NULL)
-	{
-		// Immediate のときは Lock で取得する必要がある。Deferred のときは m_primarySurface が持っている。
-		if (m_manager->GetRenderingType() == GraphicsRenderingType::Immediate)
-		{
-			Driver::ITexture::ScopedLock lock(m_deviceObj);
-			m_primarySurface->CopyRawData(lock.GetBitmap()->GetBitmapBuffer()->GetConstData(), m_primarySurface->GetByteCount());
-			//m_primarySurface->Save(_T("test.png"));
-		}
-		LN_SAFE_RELEASE(m_deviceObj);
-	}
-	else
-	{
-		// この時点では描画モードにかかわらず m_primarySurface がバックアップデータを保持しているのでそれから復元する。
-		m_deviceObj = device->CreateTexture(m_primarySurface->GetSize(), m_mipmap, m_format, m_primarySurface->GetBitmapBuffer()->GetConstData());
-		//m_deviceObj->SetSubData(PointI(0, 0), m_primarySurface->GetBitmapBuffer()->GetConstData(), m_primarySurface->GetBitmapBuffer()->GetSize(), m_primarySurface->GetSize());
-		// TODO: Create でinitialデータも渡してしまう。
-	}
+	LN_NOTIMPLEMENTED();
+	//if (device == NULL)
+	//{
+	//	// Immediate のときは Lock で取得する必要がある。Deferred のときは m_primarySurface が持っている。
+	//	if (m_manager->GetRenderingType() == GraphicsRenderingType::Immediate)
+	//	{
+	//		Driver::ITexture::ScopedLock lock(m_deviceObj);
+	//		m_primarySurface->CopyRawData(lock.GetBitmap()->GetBitmapBuffer()->GetConstData(), m_primarySurface->GetByteCount());
+	//		//m_primarySurface->Save(_T("test.png"));
+	//	}
+	//	LN_SAFE_RELEASE(m_deviceObj);
+	//}
+	//else
+	//{
+	//	// この時点では描画モードにかかわらず m_primarySurface がバックアップデータを保持しているのでそれから復元する。
+	//	m_deviceObj = device->CreateTexture(m_primarySurface->GetSize(), m_mipmap, m_format, m_primarySurface->GetBitmapBuffer()->GetConstData());
+	//	//m_deviceObj->SetSubData(PointI(0, 0), m_primarySurface->GetBitmapBuffer()->GetConstData(), m_primarySurface->GetBitmapBuffer()->GetSize(), m_primarySurface->GetSize());
+	//	// TODO: Create でinitialデータも渡してしまう。
+	//}
 }
 
 
 //==============================================================================
 // Texture3D
 //==============================================================================
+namespace tr {
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Texture3D, Texture);
 
 //------------------------------------------------------------------------------
 Texture3DPtr Texture3D::Create(int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage)
 {
 	auto ptr = Texture3DPtr::MakeRef();
-	ptr->Initialize(detail::GraphicsManager::GetInstance(), width, height, depth, format, mipLevels, usage);
+	ptr->Initialize(ln::detail::GraphicsManager::GetInstance(), width, height, depth, format, mipLevels, usage);
 	return ptr;
 }
 
@@ -496,7 +429,7 @@ Texture3D::~Texture3D()
 }
 
 //------------------------------------------------------------------------------
-void Texture3D::Initialize(detail::GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage)
+void Texture3D::Initialize(ln::detail::GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage)
 {
 	GraphicsResourceObject::Initialize(manager);
 	m_size.width = width;
@@ -587,20 +520,22 @@ void Texture3D::OnChangeDevice(Driver::IGraphicsDevice* device)
 	}
 }
 
+} // namespace tr
+
 //==============================================================================
-// RenderTarget
+// RenderTargetTexture
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RenderTargetPtr RenderTarget::Create(const SizeI& size, TextureFormat format, int mipLevels)
+RenderTargetTexturePtr RenderTargetTexture::Create(const SizeI& size, TextureFormat format, int mipLevels)
 {
-	RefPtr<RenderTarget> tex(LN_NEW RenderTarget(), false);
+	RefPtr<RenderTargetTexture> tex(LN_NEW RenderTargetTexture(), false);
 	tex->CreateImpl(detail::GraphicsManager::GetInstance(), size, mipLevels, format);
 	return tex;
 }
 
 //------------------------------------------------------------------------------
-RenderTarget::RenderTarget()
+RenderTargetTexture::RenderTargetTexture()
 	: Texture()
 	, m_mipLevels(0)
 	, m_isDefaultBackBuffer(false)
@@ -609,7 +544,7 @@ RenderTarget::RenderTarget()
 }
 
 //------------------------------------------------------------------------------
-void RenderTarget::CreateImpl(detail::GraphicsManager* manager, const SizeI& size, int mipLevels, TextureFormat format)
+void RenderTargetTexture::CreateImpl(detail::GraphicsManager* manager, const SizeI& size, int mipLevels, TextureFormat format)
 {
 	GraphicsResourceObject::Initialize(manager);
 
@@ -620,29 +555,29 @@ void RenderTarget::CreateImpl(detail::GraphicsManager* manager, const SizeI& siz
 }
 
 //------------------------------------------------------------------------------
-void RenderTarget::CreateCore(detail::GraphicsManager* manager, bool isDefaultBackBuffer)
+void RenderTargetTexture::CreateCore(detail::GraphicsManager* manager, bool isDefaultBackBuffer)
 {
 	GraphicsResourceObject::Initialize(manager);
 	m_deviceObj = NULL;
-	//m_primarySurface = NULL;
 	m_isDefaultBackBuffer = isDefaultBackBuffer;
 }
 
 //------------------------------------------------------------------------------
-RenderTarget::~RenderTarget()
+RenderTargetTexture::~RenderTargetTexture()
 {
 }
 
 //------------------------------------------------------------------------------
-void RenderTarget::AttachDefaultBackBuffer(Driver::ITexture* deviceObj)
+void RenderTargetTexture::AttachDefaultBackBuffer(Driver::ITexture* deviceObj)
 {
 	assert(m_isDefaultBackBuffer);
 	assert(m_deviceObj == NULL);
 	LN_REFOBJ_SET(m_deviceObj, deviceObj);
+	m_size = m_deviceObj->GetSize();
 }
 
 //------------------------------------------------------------------------------
-void RenderTarget::DetachDefaultBackBuffer()
+void RenderTargetTexture::DetachDefaultBackBuffer()
 {
 	assert(m_isDefaultBackBuffer);
 	assert(m_deviceObj != NULL);
@@ -650,7 +585,7 @@ void RenderTarget::DetachDefaultBackBuffer()
 }
 
 //------------------------------------------------------------------------------
-void RenderTarget::OnChangeDevice(Driver::IGraphicsDevice* device)
+void RenderTargetTexture::OnChangeDevice(Driver::IGraphicsDevice* device)
 {
 	if (device == NULL) {
 		LN_SAFE_RELEASE(m_deviceObj);
@@ -660,21 +595,69 @@ void RenderTarget::OnChangeDevice(Driver::IGraphicsDevice* device)
 	}
 }
 
+//------------------------------------------------------------------------------
+Bitmap* RenderTargetTexture::Lock()
+{
+	if (m_manager->GetRenderingType() == GraphicsRenderingType::Threaded)
+	{
+		RenderingCommandList* cmdList = m_manager->GetRenderer()->m_primaryCommandList;
+		cmdList->AddCommand<ReadLockTextureCommand>(this);
+
+		// ここでたまっているコマンドをすべて実行する。
+		// ReadLockTexture コマンドが実行されると、m_lockedBitmap に
+		// ロックしたビットマップがセットされる。
+		m_manager->GetRenderingThread()->PushRenderingCommand(cmdList);
+		cmdList->WaitForIdle();
+
+		return m_primarySurface;
+	}
+	else
+	{
+		return m_deviceObj->Lock();
+	}
+}
+
+//------------------------------------------------------------------------------
+void RenderTargetTexture::Unlock()
+{
+	if (m_manager->GetRenderingType() == GraphicsRenderingType::Threaded)
+	{
+		RenderingCommandList* cmdList = m_manager->GetRenderer()->m_primaryCommandList;
+		cmdList->AddCommand<ReadUnlockTextureCommand>(this);
+		//ReadUnlockTextureCommand::AddCommand(cmdList, this);
+		//cmdList->ReadUnlockTexture(this);
+		m_manager->GetRenderingThread()->PushRenderingCommand(cmdList);
+		cmdList->WaitForIdle();
+	}
+	else
+	{
+		m_deviceObj->Unlock();
+	}
+}
+
+
 //==============================================================================
 // DepthBuffer
 //==============================================================================
 
 //------------------------------------------------------------------------------
-Texture* DepthBuffer::Create(const SizeI& size, TextureFormat format)
+DepthBufferPtr DepthBuffer::Create(const SizeI& size, TextureFormat format)
 {
-	RefPtr<DepthBuffer> tex(LN_NEW DepthBuffer(), false);
-	tex->CreateImpl(detail::GraphicsManager::GetInstance(), size, format);
-	tex.SafeAddRef();
-	return tex;
+	auto ptr = DepthBufferPtr::MakeRef();
+	ptr->CreateImpl(detail::GraphicsManager::GetInstance(), size, format);
+	return ptr;
 }
 
 //------------------------------------------------------------------------------
 DepthBuffer::DepthBuffer()
+	: m_deviceObj(nullptr)
+	, m_size()
+	, m_format(TextureFormat::Unknown)
+{
+}
+
+//------------------------------------------------------------------------------
+DepthBuffer::~DepthBuffer()
 {
 }
 
@@ -688,24 +671,20 @@ void DepthBuffer::CreateImpl(detail::GraphicsManager* manager, const SizeI& size
 }
 
 //------------------------------------------------------------------------------
-DepthBuffer::~DepthBuffer()
-{
-}
-
-//------------------------------------------------------------------------------
 void DepthBuffer::Resize(const SizeI& newSize)
 {
-	m_size = newSize;
 	RefreshDeviceResource();
 }
 
 //------------------------------------------------------------------------------
 void DepthBuffer::OnChangeDevice(Driver::IGraphicsDevice* device)
 {
-	if (device == NULL) {
+	if (device == nullptr)
+	{
 		LN_SAFE_RELEASE(m_deviceObj);
 	}
-	else {
+	else
+	{
 		RefreshDeviceResource();
 	}
 }

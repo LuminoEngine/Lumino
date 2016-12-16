@@ -466,7 +466,7 @@ void PrimitiveRenderer::DrawRectangle(const RectF& rect)
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRenderer::Blt(Texture* source, RenderTarget* dest, const Matrix& transform, Shader* shader)
+void PrimitiveRenderer::Blt(Texture* source, RenderTargetTexture* dest, const Matrix& transform, Shader* shader)
 {
 	m_stateModified = true;	// Blt ではレンダーターゲットを切り替えたりするので、Flush しておく必要がある。
 	m_flushRequested = true;	// Blt ではレンダーターゲットを切り替えたりするので、Flush しておく必要がある。

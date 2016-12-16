@@ -172,8 +172,8 @@ public:
 
 	//void SetBlendMode(BlendMode mode);
 
-	void SetRenderTarget(int index, RenderTarget* renderTarget);
-	RenderTarget* GetRenderTarget(int index) const { return m_renderTargets[index]; }
+	void SetRenderTarget(int index, RenderTargetTexture* renderTarget);
+	RenderTargetTexture* GetRenderTarget(int index) const { return m_renderTargets[index]; }
 
 	void SetDepthBuffer(DepthBuffer* depthBuffer);
 	DepthBuffer* GetDepthBuffer() const { return m_depthBuffer; }
@@ -191,24 +191,22 @@ public:
 
 
 LN_INTERNAL_ACCESS:
-	void ApplyStatus(InternalContext* context, CombinedMaterial* combinedMaterial, RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
+	void ApplyStatus(InternalContext* context, CombinedMaterial* combinedMaterial, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
 	uint32_t GetHashCode() const;
 	void Reset();
 	bool IsHashDirty() const { return m_hashDirty; }
 
 private:
 
-	//BlendMode				m_blendMode;
+	RefPtr<RenderTargetTexture>	m_renderTargets[Graphics::MaxMultiRenderTargets];
+	RefPtr<DepthBuffer>			m_depthBuffer;
+	RectI						m_scissorRect;
 
-	RefPtr<RenderTarget>	m_renderTargets[Graphics::MaxMultiRenderTargets];
-	RefPtr<DepthBuffer>		m_depthBuffer;
-	RectI					m_scissorRect;
+	RefPtr<Brush>				m_brush;
+	RefPtr<Font>				m_font;
 
-	RefPtr<Brush>			m_brush;
-	RefPtr<Font>			m_font;
-
-	mutable size_t			m_hashCode;
-	mutable bool			m_hashDirty;
+	mutable size_t				m_hashCode;
+	mutable bool				m_hashDirty;
 };
 
 
@@ -225,7 +223,7 @@ public:
 
 	bool Equal(const BatchState& state, Material* material) const;
 	void Reset();
-	void ApplyStatus(InternalContext* context, RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
+	void ApplyStatus(InternalContext* context, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
 	size_t GetHashCode() const;
 
 	intptr_t				m_rendererId;
@@ -306,7 +304,7 @@ public:
 	void Render(
 		DrawElementList* elementList,
 		const detail::CameraInfo& cameraInfo,
-		RenderTarget* defaultRenderTarget,
+		RenderTargetTexture* defaultRenderTarget,
 		DepthBuffer* defaultDepthBuffer);
 
 protected:
@@ -457,10 +455,10 @@ public:
 	/** @{ */
 
 	/** レンダリングターゲットを設定します。*/
-	void SetRenderTarget(int index, RenderTarget* renderTarget);
+	void SetRenderTarget(int index, RenderTargetTexture* renderTarget);
 
 	/** 現在設定されているレンダリングターゲットを取得します。*/
-	RenderTarget* GetRenderTarget(int index) const;
+	RenderTargetTexture* GetRenderTarget(int index) const;
 
 	/** 深度バッファを設定します。*/
 	void SetDepthBuffer(DepthBuffer* depthBuffer);
@@ -527,8 +525,8 @@ public:
 
 	void Blit(Texture* source);
 	void Blit(Texture* source, const Matrix& transform);
-	void Blit(Texture* source, RenderTarget* dest, const Matrix& transform);
-	void Blit(Texture* source, RenderTarget* dest, Material* material);
+	void Blit(Texture* source, RenderTargetTexture* dest, const Matrix& transform);
+	void Blit(Texture* source, RenderTargetTexture* dest, Material* material);
 
 
 	void DrawText_(const StringRef& text, const PointF& position);
@@ -554,7 +552,6 @@ LN_INTERNAL_ACCESS:
 	detail::DrawElementList* GetDrawElementList() { return &m_drawElementList; }
 	void BeginMakeElements();
 	void EndMakeElements();
-	//void BeginFrame(RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
 	void EndFrame();
 
 	const detail::BatchStateBlock& GetState() const { return m_state; }
@@ -566,7 +563,7 @@ LN_INTERNAL_ACCESS:
 	template<typename TElement> TElement* ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer, Material* userMaterial);
 	void DrawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Material* material);
 	void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material);
-	void BlitInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Material* material);
+	void BlitInternal(Texture* source, RenderTargetTexture* dest, const Matrix& transform, Material* material);
 	void DrawFrameRectangle(const RectF& rect);
 
 private:

@@ -36,12 +36,12 @@ protected:
 	ScreenMotionBlurImageEffect();
 	virtual ~ScreenMotionBlurImageEffect();
 	void Initialize(detail::GraphicsManager* manager);
-	virtual void OnRender(DrawList* context, RenderTarget* source, RenderTarget* destination) override;
+	virtual void OnRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
-	RefPtr<Material>	m_material;
-	RenderTarget*		m_accumTexture;	// 前回の画面描画内容
-	Vector2				m_center;
-	float				m_scale;
+	RefPtr<Material>		m_material;
+	RenderTargetTexture*	m_accumTexture;	// 前回の画面描画内容
+	Vector2					m_center;
+	float					m_scale;
 };
 
 LN_NAMESPACE_GRAPHICS_END

@@ -172,7 +172,7 @@ Texture* Renderer::GetRenderTarget(int index) const
 }
 
 //------------------------------------------------------------------------------
-void Renderer::SetDepthBuffer(Texture* depthBuffer)
+void Renderer::SetDepthBuffer(DepthBuffer* depthBuffer)
 {
 	Driver::ITexture* t = (depthBuffer != nullptr) ? depthBuffer->ResolveDeviceObject() : nullptr;
 	LN_REFOBJ_SET(m_currentDepthBuffer, depthBuffer);
@@ -187,7 +187,7 @@ void Renderer::SetDepthBuffer(Texture* depthBuffer)
 }
 
 //------------------------------------------------------------------------------
-Texture* Renderer::GetDepthBuffer() const
+DepthBuffer* Renderer::GetDepthBuffer() const
 {
 	return m_currentDepthBuffer;
 }

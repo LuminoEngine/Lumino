@@ -62,7 +62,7 @@ void SwapChain::PostInitialize()
 
 	//Driver::IGraphicsDevice* device = m_manager->GetGraphicsDevice();
 	//m_deviceObj->GetBackBuffer()->AddRef();	// ↓の set 用に+1しておく (TODO: ↓の中でやるのがいいのかもしれないが・・・。)
-	m_backColorBuffer = LN_NEW RenderTarget();//Texture::CreateRenderTarget(m_manager, backbufferSize, 1, TextureFormat_R8G8B8X8);
+	m_backColorBuffer = LN_NEW RenderTargetTexture();//Texture::CreateRenderTarget(m_manager, backbufferSize, 1, TextureFormat_R8G8B8X8);
 	m_backColorBuffer->CreateCore(m_manager, true/*m_deviceObj->GetBackBuffer(), NULL*/);
 	m_backColorBuffer->AttachDefaultBackBuffer(m_deviceObj->GetBackBuffer());
 
@@ -75,7 +75,7 @@ void SwapChain::PostInitialize()
 }
 
 //------------------------------------------------------------------------------
-RenderTarget* SwapChain::GetBackBuffer()
+RenderTargetTexture* SwapChain::GetBackBuffer()
 {
 	if (m_backColorBuffer->GetDeviceObjectConst() != m_deviceObj->GetBackBuffer())
 	{

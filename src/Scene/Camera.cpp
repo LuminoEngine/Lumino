@@ -290,13 +290,13 @@ void CameraViewportLayer::Render()
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer::OnBeginFrameRender(RenderTarget* renderTarget, DepthBuffer* depthBuffer)
+void CameraViewportLayer::OnBeginFrameRender(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 //	m_renderer->BeginFrame(renderTarget, depthBuffer);
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer::ExecuteDrawListRendering(RenderTarget* renderTarget, DepthBuffer* depthBuffer)
+void CameraViewportLayer::ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	m_renderer->EndMakeElements();
 
