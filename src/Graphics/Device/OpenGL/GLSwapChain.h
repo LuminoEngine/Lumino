@@ -33,6 +33,7 @@ private:
 	GLGraphicsDevice*		m_device;
 	GLContext*				m_context;
 	PlatformWindow*			m_window;
+	SizeI					m_backBufferSize;
 	GLRenderTargetTexture*	m_renderTarget;
 
 	GLuint					m_shaderProgram;

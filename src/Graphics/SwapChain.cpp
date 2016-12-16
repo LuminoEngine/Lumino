@@ -1,6 +1,4 @@
 ﻿
-#pragma once
-
 #include "../Internal.h"
 #include <Lumino/Graphics/SwapChain.h>
 #include <Lumino/Graphics/Texture.h>
@@ -19,7 +17,6 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //------------------------------------------------------------------------------
 SwapChain::SwapChain()
 	: m_deviceObj(nullptr)
-	, m_isDefault(true)
 {
 }
 
@@ -33,7 +30,6 @@ SwapChain::~SwapChain()
 
 	LN_SAFE_RELEASE(m_commandList);
 	LN_SAFE_RELEASE(m_backColorBuffer);
-	//LN_SAFE_RELEASE(m_backDepthBuffer);
 	LN_SAFE_RELEASE(m_deviceObj);;
 }
 
@@ -76,6 +72,17 @@ void SwapChain::PostInitialize()
 	//m_backDepthBuffer->CreateImpl(m_manager, m_deviceObj->GetBackBuffer()->GetSize(), TextureFormat::D24S8);
 
 	m_waiting.SetTrue();
+}
+
+//------------------------------------------------------------------------------
+RenderTarget* SwapChain::GetBackBuffer()
+{
+	if (m_backColorBuffer->GetDeviceObjectConst() != m_deviceObj->GetBackBuffer())
+	{
+		m_backColorBuffer->DetachDefaultBackBuffer();
+		m_backColorBuffer->AttachDefaultBackBuffer(m_deviceObj->GetBackBuffer());
+	}
+	return m_backColorBuffer;
 }
 
 //------------------------------------------------------------------------------
@@ -177,20 +184,12 @@ void SwapChain::OnChangeDevice(Driver::IGraphicsDevice* device)
 {
 	if (device == nullptr)
 	{
-		if (m_isDefault)
-		{
-			m_backColorBuffer->DetachDefaultBackBuffer();
-		}
 		LN_SAFE_RELEASE(m_deviceObj);
 	}
 	else
 	{
-		if (m_isDefault)
-		{
-			m_deviceObj = m_manager->GetGraphicsDevice()->GetDefaultSwapChain();
-			m_deviceObj->AddRef();
-			m_backColorBuffer->AttachDefaultBackBuffer(m_deviceObj->GetBackBuffer());
-		}
+		m_deviceObj = m_manager->GetGraphicsDevice()->GetDefaultSwapChain();
+		m_deviceObj->AddRef();
 	}
 }
 

@@ -76,10 +76,11 @@ void Main()
 
 void Main()
 {
-	//EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
+	EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
 	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Immediate);//GraphicsRenderingType::Threaded);//
 	Engine::Initialize();
 	Engine::GetMainViewport()->SetBackgroundColor(Color32::Gray);
+	Engine::GetMainViewport()->SetPlacement(ViewportPlacement::ViewBox);
 
 	//Engine::GetDefaultSceneGraph3D()->visibleGridPlane = true;
 

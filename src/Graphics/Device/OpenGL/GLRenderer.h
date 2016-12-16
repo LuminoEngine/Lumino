@@ -37,7 +37,7 @@ public:
 	virtual ITexture* GetRenderTarget(int index);
 	virtual void SetDepthBuffer(ITexture* texture);
 	//virtual ITexture* GetDepthBuffer();
-	virtual void SetViewport(const RectI& rect);
+	//virtual void SetViewport(const RectI& rect);
 	//virtual const RectI& GetViewport();
 
 protected:

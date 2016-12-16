@@ -43,10 +43,7 @@ class Test_Graphics_Viewport : public ::testing::Test {};
 TEST_F(Test_Graphics_Viewport, Basic)
 {
 	Size size;
-	size = Engine::GetDefault2DLayer()->GetSize();
-	ASSERT_EQ(160, size.width);
-	ASSERT_EQ(120, size.height);
-	size = Engine::GetDefault3DLayer()->GetSize();
+	size = Engine::GetMainViewport()->GetSize();
 	ASSERT_EQ(160, size.width);
 	ASSERT_EQ(120, size.height);
 }

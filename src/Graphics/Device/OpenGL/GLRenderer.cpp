@@ -128,13 +128,13 @@ void GLRenderer::SetDepthBuffer(ITexture* texture)
 //	return 0;
 //}
 
-//------------------------------------------------------------------------------
-void GLRenderer::SetViewport(const RectI& rect)
-{
-	const SizeI& scr = m_currentRenderTargets[0]->GetSize();
-	glViewport(rect.x, scr.height - (rect.y + rect.height), rect.width, rect.height);
-	//LN_THROW(0, NotImplementedException);
-}
+////------------------------------------------------------------------------------
+//void GLRenderer::SetViewport(const RectI& rect)
+//{
+//	const SizeI& scr = m_currentRenderTargets[0]->GetSize();
+//	glViewport(rect.x, scr.height - (rect.y + rect.height), rect.width, rect.height);
+//	//LN_THROW(0, NotImplementedException);
+//}
 
 //------------------------------------------------------------------------------
 void GLRenderer::OnEnterRenderState()
@@ -453,7 +453,12 @@ void GLRenderer::UpdateFrameBuffer()
 	glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer); LN_CHECK_GLERROR();
     
     if (m_modifiedFrameBuffer)
-    {
+	{
+		const SizeI& size = m_currentRenderTargets[0]->GetSize();
+		glViewport(0, 0, size.width, size.height);
+		LN_CHECK_GLERROR();
+
+
         // カラーバッファ
 		for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
 		{
@@ -493,6 +498,8 @@ void GLRenderer::UpdateFrameBuffer()
 				GL_RENDERBUFFER, 0);
 			LN_CHECK_GLERROR();
 		}
+
+
 	}
 	m_modifiedFrameBuffer = false;
     

@@ -22,12 +22,7 @@ public:
 	/**
 		@brief	バックバッファのレンダリングターゲットを取得します。
 	*/
-	RenderTarget* GetBackBuffer() { return m_backColorBuffer; }
-	
-	///**
-	//	@brief	バックバッファの深度バッファを取得します。
-	//*/
-	//DepthBuffer* GetBackBufferDepth() { return m_backDepthBuffer; }
+	RenderTarget* GetBackBuffer();
 
 	/**
 		@brief	バックバッファのサイズを変更します。
@@ -50,7 +45,6 @@ LN_INTERNAL_ACCESS:
 	void InitializeSub(detail::GraphicsManager* manager, PlatformWindow* window);
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
-//private:
 	void PostInitialize();
 
 	void PresentInternal();
@@ -60,8 +54,6 @@ LN_INTERNAL_ACCESS:
 	RenderingCommandList*		m_commandList;
 	ConditionFlag				m_waiting;		// コマンド実行していない
 	RenderTarget*				m_backColorBuffer;
-	//DepthBuffer*				m_backDepthBuffer;
-	bool						m_isDefault;
 };
 
 LN_NAMESPACE_GRAPHICS_END

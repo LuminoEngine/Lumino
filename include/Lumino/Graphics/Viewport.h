@@ -95,9 +95,13 @@ class Viewport
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	//const Size& GetSize() const;
+	const Size& GetSize() const;
 
 	void SetBackgroundColor(const Color& color);
+
+	/** ビューポートの配置方法を設定します。*/
+	void SetPlacement(ViewportPlacement placement);
+
 
 	ObjectList<ViewportLayer*>* GetLayers() const { return m_viewportLayerList; }
 

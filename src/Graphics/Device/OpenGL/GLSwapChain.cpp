@@ -46,8 +46,10 @@ void GLSwapChain::Initialize(GLGraphicsDevice* device, GLContext* context, Platf
 	LN_REFOBJ_SET(m_context, context);
 	LN_REFOBJ_SET(m_window, window);
 
+
 	// TODO: バックバッファサイズ
-	m_renderTarget = LN_NEW GLRenderTargetTexture(m_window->GetSize(), TextureFormat::R8G8B8A8, 1);
+	m_backBufferSize = m_window->GetSize();
+	m_renderTarget = LN_NEW GLRenderTargetTexture(m_backBufferSize, TextureFormat::R8G8B8A8, 1);
 
 	OnResetDevice();
 }
@@ -111,12 +113,14 @@ void GLSwapChain::OnResetDevice()
 //------------------------------------------------------------------------------
 void GLSwapChain::Resize(const SizeI& size)
 {
-	LN_THROW(0, NotImplementedException);
+	m_backBufferSize = size;
 }
 
 //------------------------------------------------------------------------------
 void GLSwapChain::Present(ITexture* colorBuffer)
 {
+	assert(colorBuffer == m_renderTarget);
+
 	try
 	{
 		m_device->MakeCurrentContext(m_context);
@@ -134,6 +138,13 @@ void GLSwapChain::Present(ITexture* colorBuffer)
 	}
 	m_device->MakeCurrentContext(m_device->GetMainRenderingContext());
 	m_device->GCDeviceResource();
+
+
+	if (m_backBufferSize != m_renderTarget->GetSize())
+	{
+		LN_SAFE_RELEASE(m_renderTarget);
+		m_renderTarget = LN_NEW GLRenderTargetTexture(m_backBufferSize, TextureFormat::R8G8B8A8, 1);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -145,7 +156,9 @@ void GLSwapChain::InternalPresent(ITexture* colorBuffer, GLRenderer* renderer)
 	// 各設定をデフォルトに戻す
 	glUseProgram(0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); LN_CHECK_GLERROR();
-    
+
+	const SizeI& size = m_window->GetSize();
+	glViewport(0, 0, size.width, size.height); LN_CHECK_GLERROR();
     
     /*
 	GLenum fs = glCheckFramebufferStatus( GL_FRAMEBUFFER );

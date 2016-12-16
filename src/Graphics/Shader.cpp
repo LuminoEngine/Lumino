@@ -507,6 +507,10 @@ void Shader::TryCommitChanges()
 
 	RenderBulkData varsData(serializer->GetSerializeData(), serializer->GetSerializeDataLength());
 
+	auto* cmdList = GetManager()->GetPrimaryRenderingCommandList();
+	byte_t* data = (byte_t*)varsData.Alloc(cmdList);
+	printf("%p %p %d\n", cmdList, data, data[0]);
+
 	detail::GraphicsManager* manager = GetManager();
 	Shader* _this = this;
 	LN_ENQUEUE_RENDER_COMMAND_3(

@@ -221,7 +221,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Viewport, Object);
 //------------------------------------------------------------------------------
 Viewport::Viewport()
 	: m_manager(nullptr)
-	, m_placement(ViewportPlacement::ViewBox)
+	, m_placement(ViewportPlacement::Stretch)
 	, m_viewportLayerList(RefPtr<ViewportLayerList>::MakeRef())
 	, m_backgroundColor(Color::White)
 	, m_primaryLayerTarget(nullptr)
@@ -254,16 +254,22 @@ void Viewport::Initialize(detail::GraphicsManager* manager/*, RenderTarget* rend
 
 }
 
-////------------------------------------------------------------------------------
-//const Size& Viewport::GetSize() const
-//{
-//	return m_size;
-//}
+//------------------------------------------------------------------------------
+const Size& Viewport::GetSize() const
+{
+	return m_size;
+}
 
 //------------------------------------------------------------------------------
 void Viewport::SetBackgroundColor(const Color& color)
 {
 	m_backgroundColor = color;
+}
+
+//------------------------------------------------------------------------------
+void Viewport::SetPlacement(ViewportPlacement placement)
+{
+	m_placement = placement;
 }
 
 //------------------------------------------------------------------------------
