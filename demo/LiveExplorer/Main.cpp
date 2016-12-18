@@ -406,9 +406,9 @@ int main()
 				//bmp1.SetPixel(x, y, Color32(255, 255, 255, gray));
 			}
 		}
-		Bitmap* nbmp = noiseTex1->Lock();
-		nbmp->BitBlt(0, 0, &bmp1, RectI(0, 0, 256, 256), Color32::White, false);
-		noiseTex1->Unlock();
+		//Bitmap* nbmp = noiseTex1->Lock();
+		//nbmp->BitBlt(0, 0, &bmp1, RectI(0, 0, 256, 256), Color32::White, false);
+		//noiseTex1->Unlock();
 
 		int src_w = bmp1.GetSize().width;
 		int src_h = bmp1.GetSize().height;
@@ -473,11 +473,11 @@ int main()
 		//BitmapFilter filter;
 		//filter.FlipVertical(&dst1flip, &dst1);
 
-		Bitmap* bmp = tex->Lock();
-		//bmp->BitBlt(0, 0, &dst1flip, RectI(0, 0, 256, 128), Color32::White, false);
-		bmp->BitBlt(0, 0, &dst1, RectI(0, 0, 256, 256), Color32::White, false);
-		//bmp->BitBlt(0, 0, &bmp1, Rect(0, 0, 256, 256), Color32::White, false);
-		tex->Unlock();
+		//Bitmap* bmp = tex->Lock();
+		////bmp->BitBlt(0, 0, &dst1flip, RectI(0, 0, 256, 128), Color32::White, false);
+		//bmp->BitBlt(0, 0, &dst1, RectI(0, 0, 256, 256), Color32::White, false);
+		////bmp->BitBlt(0, 0, &bmp1, Rect(0, 0, 256, 256), Color32::White, false);
+		//tex->Unlock();
 
 		//auto shader = MMEShader::Create(_T("D:/Proj/Volkoff/External/Lumino/src/Scene/Resource/BasicForwardRendering.fx"));
 		//auto mesh = StaticMesh::CreateSphere(20, 32, 16, MeshCreationFlags::ReverseFaces);
@@ -556,7 +556,7 @@ int main()
 			//Viewport::GetMainWindowViewport()->AddViewportLayer();
 
 		//auto t1 = Texture2D::Create(LN_LOCALFILE("TestData/Test_Graphics_RenderingContext1.png"));
-		//auto t2 = RenderTarget::Create(t1->GetSize());
+		//auto t2 = RenderTargetTexture::Create(t1->GetSize());
 
 
 		//auto s = Shader::Create(_T("C:/Proj/Lumino/src/Scene/Resource/SSBasic2D.fx"));

@@ -130,7 +130,7 @@ public:
 
 	void DrawRectangle(const RectF& rect);
 
-	void Blt(Texture* source, RenderTarget* dest, const Matrix& transform, Shader* shader = nullptr);
+	void Blt(Texture* source, RenderTargetTexture* dest, const Matrix& transform, Shader* shader = nullptr);
 
 
 	virtual bool IsStandaloneShader() const;

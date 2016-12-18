@@ -78,7 +78,7 @@ void ScreenMotionBlurImageEffect::SetBlurStatus(float amount, const Vector2& cen
 }
 
 //------------------------------------------------------------------------------
-void ScreenMotionBlurImageEffect::OnRender(DrawList* context, RenderTarget* source, RenderTarget* destination)
+void ScreenMotionBlurImageEffect::OnRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
 	if (Amount == 0.0f)
 	{
@@ -91,7 +91,7 @@ void ScreenMotionBlurImageEffect::OnRender(DrawList* context, RenderTarget* sour
 	// m_accumTexture と source のサイズが異なる場合は作り直す
 	if (m_accumTexture == nullptr || m_accumTexture->GetSize() != sourceSize)
 	{
-		m_accumTexture = LN_NEW RenderTarget();
+		m_accumTexture = LN_NEW RenderTargetTexture();
 		m_accumTexture->CreateImpl(m_manager, sourceSize, 1, TextureFormat::R8G8B8X8);
 		context->Blit(source, m_accumTexture, Matrix::Identity);
 	}

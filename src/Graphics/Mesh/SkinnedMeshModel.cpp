@@ -398,8 +398,8 @@ void SkinnedMeshModel::UpdateSkinningMatrices()
 	// スキニングテクスチャ更新
 	if (!m_skinningMatricesTexture.IsNull())
 	{
-		m_skinningMatricesTexture->SetSubData(PointI(0, 0), &m_skinningMatrices[0]);
-		m_skinningLocalQuaternionsTexture->SetSubData(PointI(0, 0), &m_skinningLocalQuaternions[0]);
+		m_skinningMatricesTexture->SetData(&m_skinningMatrices[0]);
+		m_skinningLocalQuaternionsTexture->SetData(&m_skinningLocalQuaternions[0]);
 	}
 
 	// 全てのローカルトランスフォームをリセットする

@@ -68,12 +68,12 @@ public:
 	/**
 		@brief	深度バッファを設定します。
 	*/
-	void SetDepthBuffer(Texture* depthBuffer);
+	void SetDepthBuffer(DepthBuffer* depthBuffer);
 
 	/**
 		@brief	現在設定されている深度バッファを取得します。
 	*/
-	Texture* GetDepthBuffer() const;
+	DepthBuffer* GetDepthBuffer() const;
 
 	///**
 	//	@brief	ビューポートを設定します。
@@ -137,10 +137,9 @@ LN_INTERNAL_ACCESS:
 	RenderState				m_currentRenderState;
 	DepthStencilState		m_currentDepthStencilState;
 	Texture*				m_currentRenderTargets[Graphics::MaxMultiRenderTargets];
-	Texture*				m_currentDepthBuffer;
+	DepthBuffer*			m_currentDepthBuffer;
 	//RectI					m_currentViewport;
 
-	Mutex					m_lockPresentCommandList;
 };
 
 } // namespace Details

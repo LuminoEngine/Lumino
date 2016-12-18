@@ -268,7 +268,7 @@ BatchState::BatchState()
 //}
 
 //------------------------------------------------------------------------------
-void BatchState::SetRenderTarget(int index, RenderTarget* renderTarget)
+void BatchState::SetRenderTarget(int index, RenderTargetTexture* renderTarget)
 {
 	if (m_renderTargets[index] != renderTarget)
 	{
@@ -344,7 +344,7 @@ void BatchState::Reset()
 }
 
 //------------------------------------------------------------------------------
-void BatchState::ApplyStatus(InternalContext* context, CombinedMaterial* combinedMaterial, RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
+void BatchState::ApplyStatus(InternalContext* context, CombinedMaterial* combinedMaterial, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
 {
 	auto* stateManager = context->GetRenderStateManager();
 
@@ -483,7 +483,7 @@ void DrawElementBatch::Reset()
 }
 
 //------------------------------------------------------------------------------
-void DrawElementBatch::ApplyStatus(InternalContext* context, RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
+void DrawElementBatch::ApplyStatus(InternalContext* context, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
 {
 	state.ApplyStatus(context, m_combinedMaterial, defaultRenderTarget, defaultDepthBuffer);
 }
@@ -665,7 +665,7 @@ void InternalRenderer::AddPass(RenderingPass2* pass)
 void InternalRenderer::Render(
 	DrawElementList* elementList,
 	const detail::CameraInfo& cameraInfo,
-	RenderTarget* defaultRenderTarget,
+	RenderTargetTexture* defaultRenderTarget,
 	DepthBuffer* defaultDepthBuffer)
 {
 	OnPreRender(elementList);
@@ -1116,13 +1116,13 @@ void DrawList::Initialize(detail::GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void DrawList::SetRenderTarget(int index, RenderTarget* renderTarget)
+void DrawList::SetRenderTarget(int index, RenderTargetTexture* renderTarget)
 {
 	m_state.state.state.SetRenderTarget(index, renderTarget);
 }
 
 //------------------------------------------------------------------------------
-RenderTarget* DrawList::GetRenderTarget(int index) const
+RenderTargetTexture* DrawList::GetRenderTarget(int index) const
 {
 	return m_state.state.state.GetRenderTarget(index);
 }
@@ -1199,7 +1199,7 @@ void DrawList::EndFrame()
 }
 
 ////------------------------------------------------------------------------------
-//void DrawList::BeginFrame(RenderTarget* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
+//void DrawList::BeginFrame(RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
 //{
 //	m_state.state.m_renderTargets[0] = defaultRenderTarget;
 //	m_state.state.m_depthBuffer = defaultDepthBuffer;
@@ -1302,13 +1302,13 @@ void DrawList::Blit(Texture* source, const Matrix& transform)
 }
 
 //------------------------------------------------------------------------------
-void DrawList::Blit(Texture* source, RenderTarget* dest, const Matrix& transform)
+void DrawList::Blit(Texture* source, RenderTargetTexture* dest, const Matrix& transform)
 {
 	BlitInternal(source, dest, transform, nullptr);
 }
 
 //------------------------------------------------------------------------------
-void DrawList::Blit(Texture* source, RenderTarget* dest, Material* material)
+void DrawList::Blit(Texture* source, RenderTargetTexture* dest, Material* material)
 {
 	BlitInternal(source, dest, Matrix::Identity, material);
 }
@@ -1546,7 +1546,7 @@ void DrawList::DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Ma
 }
 
 //------------------------------------------------------------------------------
-void DrawList::BlitInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Material* material)
+void DrawList::BlitInternal(Texture* source, RenderTargetTexture* dest, const Matrix& transform, Material* material)
 {
 
 	class DrawElement_BlitInternal : public detail::DrawElement

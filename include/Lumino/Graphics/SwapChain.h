@@ -22,7 +22,7 @@ public:
 	/**
 		@brief	バックバッファのレンダリングターゲットを取得します。
 	*/
-	RenderTarget* GetBackBuffer();
+	RenderTargetTexture* GetBackBuffer();
 
 	/**
 		@brief	バックバッファのサイズを変更します。
@@ -53,7 +53,7 @@ LN_INTERNAL_ACCESS:
 	Driver::ISwapChain*			m_deviceObj;
 	RenderingCommandList*		m_commandList;
 	ConditionFlag				m_waiting;		// コマンド実行していない
-	RenderTarget*				m_backColorBuffer;
+	RenderTargetTexture*		m_backColorBuffer;
 };
 
 LN_NAMESPACE_GRAPHICS_END

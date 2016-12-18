@@ -49,7 +49,7 @@ public:
 	// メインスレッドで Flush したときにはこれを呼ぶ
 	void OnFlush();
 
-	const SizeI& GetGlyphsTextureSize() const;
+	//const SizeI& GetGlyphsTextureSize() const;
 
 	TextLayoutEngine* GetTextLayoutEngine() { return &m_layoutEngine; }
 	void Measure(const UTF32* text, int length, TextLayoutResult* outResult);	// ユーティリティ

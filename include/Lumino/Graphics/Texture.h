@@ -10,9 +10,9 @@ namespace detail { class RenderTargetTextureCache; }
 class Bitmap;
 class Font;
 class Texture;
-class Texture3D;
+class DepthBuffer;
 using TexturePtr = RefPtr<Texture>;
-using Texture3DPtr = RefPtr<Texture3D>;
+using DepthBufferPtr = RefPtr<DepthBuffer>;
 
 /**
 	@brief		テクスチャのクラスです。
@@ -40,8 +40,6 @@ public:
 	*/
 	TextureFormat GetFormat() const;
 
-	Bitmap* Lock();
-	void Unlock();
 
 protected:
 	Texture();
@@ -51,7 +49,7 @@ LN_INTERNAL_ACCESS:
 	Driver::ITexture* GetDeviceObjectConst() const { return m_deviceObj; }
 	Driver::ITexture* ResolveDeviceObject() { ApplyModifies(); return m_deviceObj; }
 	const SizeI& GetSize() const;
-	const SizeI& GetRealSize() const;
+	//const SizeI& GetRealSize() const;
 
 protected:
 	friend struct ReadLockTextureCommand;
@@ -133,14 +131,6 @@ public:
 	void LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const RectI& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment);
 	// TODO: ↑ TextAlignment じゃなくて TextLayoutFlags の方が良いと思う
 #pragma pop_macro("DrawText")
-	
-	/*
-		@brief		
-	*/
-	void SetSubData(const PointI& offset, Bitmap* bitmap);
-	void SetSubData(const PointI& offset, const void* data);
-
-	//Device::ITexture* GetDeviceObject() const { return m_deviceObj; }
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	Texture2D();
@@ -154,6 +144,8 @@ LN_INTERNAL_ACCESS:
 	void Initialize(detail::GraphicsManager* manager, Stream* stream, TextureFormat format, bool mipmap);
 	void Initialize(detail::GraphicsManager* manager, bool isDefaultBackBuffer);
 	void TryLock();
+	void SetSubData(const PointI& offset, Bitmap* bitmap);
+	void SetData(const void* data);
 	//Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }
 
 protected:
@@ -173,6 +165,85 @@ protected:
 
 	friend class Helper;
 };
+
+/**
+	@brief		レンダリングターゲットのクラスです。
+*/
+class RenderTargetTexture
+	: public Texture
+{
+public:
+
+	/**
+		@brief		レンダリングターゲットを作成します。
+		@param[in]	size		: レンダリングターゲットのサイズ (ピクセル単位)
+		@param[in]	format		: テクスチャのピクセルフォーマット
+		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
+	*/
+	static RenderTargetTexturePtr Create(const SizeI& size, TextureFormat format = TextureFormat::R8G8B8A8, int mipLevels = 1);
+
+LN_INTERNAL_ACCESS:
+	RenderTargetTexture();
+	void CreateImpl(detail::GraphicsManager* manager, const SizeI& size, int mipLevels, TextureFormat format);
+	void CreateCore(detail::GraphicsManager* manager, bool isDefaultBackBuffer);
+	void AttachDefaultBackBuffer(Driver::ITexture* deviceObj);
+	void DetachDefaultBackBuffer();
+	Bitmap* Lock();
+	void Unlock();
+
+protected:
+	virtual ~RenderTargetTexture();
+	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
+
+private:
+	friend class SwapChain;
+	friend class detail::RenderTargetTextureCache;
+	//Size			m_size;
+	int				m_mipLevels;
+	//TextureFormat	m_format;
+	bool				m_isDefaultBackBuffer;
+
+	bool			m_usedCacheOnFrame;
+};
+
+/**
+	@brief		深度バッファのクラスです。
+*/
+class DepthBuffer
+	: public GraphicsResourceObject
+{
+public:
+
+	/**
+		@brief		深度バッファを作成します。
+		@param[in]	size		: テクスチャのサイズ (ピクセル単位)
+		@param[in]	format		: ピクセルフォーマット
+	*/
+	static DepthBufferPtr Create(const SizeI& size, TextureFormat format = TextureFormat::D24S8);
+
+	const SizeI& GetSize() const { return m_size; }
+
+protected:
+	virtual ~DepthBuffer();
+	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
+
+LN_INTERNAL_ACCESS:
+	DepthBuffer();
+	void CreateImpl(detail::GraphicsManager* manager, const SizeI& size, TextureFormat format);
+	Driver::ITexture* ResolveDeviceObject() const { return m_deviceObj; }
+	void Resize(const SizeI& newSize);
+
+private:
+	void RefreshDeviceResource();
+
+	Driver::ITexture*	m_deviceObj;
+	SizeI				m_size;
+	TextureFormat		m_format;
+};
+
+namespace tr {
+class Texture3D;
+using Texture3DPtr = RefPtr<Texture3D>;
 
 /**
 	@brief		
@@ -207,7 +278,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	Texture3D();
 	virtual ~Texture3D();
-	void Initialize(detail::GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage);
+	void Initialize(ln::detail::GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage);
 
 protected:
 	virtual void ApplyModifies() override;
@@ -226,91 +297,7 @@ private:
 	bool			m_initializing;
 };
 
-/**
-	@brief		レンダリングターゲットのクラスです。
-*/
-class RenderTarget		// TODO: RenderTargetTexture
-	: public Texture
-{
-public:
-
-	/**
-		@brief		レンダリングターゲットを作成します。
-		@param[in]	size		: レンダリングターゲットのサイズ (ピクセル単位)
-		@param[in]	format		: テクスチャのピクセルフォーマット
-		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
-	*/
-	static RenderTargetPtr Create(const SizeI& size, TextureFormat format = TextureFormat::R8G8B8A8, int mipLevels = 1);
-
-LN_INTERNAL_ACCESS:
-	RenderTarget();
-	void CreateImpl(detail::GraphicsManager* manager, const SizeI& size, int mipLevels, TextureFormat format);
-	void CreateCore(detail::GraphicsManager* manager, bool isDefaultBackBuffer);
-	void AttachDefaultBackBuffer(Driver::ITexture* deviceObj);
-	void DetachDefaultBackBuffer();
-
-protected:
-	virtual ~RenderTarget();
-	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
-
-private:
-	friend class SwapChain;
-	friend class detail::RenderTargetTextureCache;
-	//Size			m_size;
-	int				m_mipLevels;
-	//TextureFormat	m_format;
-	bool				m_isDefaultBackBuffer;
-
-	bool			m_usedCacheOnFrame;
-};
-
-/**
-	@brief		深度バッファのクラスです。
-*/
-class DepthBuffer
-	: public Texture	// TODO: 震度バッファはテクスチャ扱いしないほうがいい
-{
-public:
-
-	/**
-		@brief		深度バッファを作成します。
-		@param[in]	size		: テクスチャのサイズ (ピクセル単位)
-		@param[in]	format		: ピクセルフォーマット
-	*/
-	static Texture* Create(const SizeI& size, TextureFormat format = TextureFormat::D24S8);
-
-	void Resize(const SizeI& newSize);
-
-LN_INTERNAL_ACCESS:
-	DepthBuffer();
-	void CreateImpl(detail::GraphicsManager* manager, const SizeI& size, TextureFormat format);
-
-protected:
-	virtual ~DepthBuffer();
-	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
-
-private:
-	void RefreshDeviceResource();
-};
-
-class ScopedTextureLock
-{
-public:
-	ScopedTextureLock(Texture* texture)
-	{
-		m_texture = texture;
-		m_bitmap = m_texture->Lock();
-	}
-	~ScopedTextureLock()
-	{
-		m_texture->Unlock();
-	}
-
-	Bitmap* GetBitmap() const { return m_bitmap; }
-private:
-	Texture*	m_texture;
-	Bitmap*		m_bitmap;
-};
+} // namespace tr
 
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

@@ -4,7 +4,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail { class CapturerContext; }
-class RenderTarget;
+class RenderTargetTexture;
 
 class FrameCapturer;
 using FrameCapturerPtr = RefPtr<FrameCapturer>;
@@ -16,7 +16,7 @@ public:
 	static FrameCapturerPtr Create();
 
 public:
-	void SetCapturerTarget(RenderTarget* renderTarget);
+	void SetCapturerTarget(RenderTargetTexture* renderTarget);
 	void StartRecording();
 	void StopRecording();
 	void Record();
@@ -36,7 +36,7 @@ private:
 	void RecordCommand(Driver::ITexture* target, State newState);
 
 	detail::GraphicsManager*	m_manager;
-	RenderTarget*				m_capturerTarget;
+	RenderTargetTexture*		m_capturerTarget;
 	State						m_requestedState;
 	
 	PathNameA					m_savingDir;

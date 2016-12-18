@@ -83,53 +83,53 @@ void Sprite::SetSrcRect(const RectF& rect)
 //------------------------------------------------------------------------------
 void Sprite::UpdateTexUV()
 {
-	Texture* tex = GetTexture();
-	if (tex)
-	{
-		// 転送元矩形が負値ならテクスチャ全体を転送する
-		if (m_srcRect.width < 0 && m_srcRect.height < 0)
-		{
-			RectF srcRect(0, 0, tex->GetSize().width, tex->GetSize().height);
-			NormalizeSrcRect(
-				srcRect, tex->GetRealSize(),
-				&m_upperLeftUV.x, &m_upperLeftUV.y, &m_lowerRightUV.x, &m_lowerRightUV.y);
-		}
-		else
-		{
-			float l, t, r, b;
-			NormalizeSrcRect(m_srcRect, tex->GetRealSize(), &l, &t, &r, &b);
+	//Texture* tex = GetTexture();
+	//if (tex)
+	//{
+	//	// 転送元矩形が負値ならテクスチャ全体を転送する
+	//	if (m_srcRect.width < 0 && m_srcRect.height < 0)
+	//	{
+	//		RectF srcRect(0, 0, tex->GetSize().width, tex->GetSize().height);
+	//		NormalizeSrcRect(
+	//			srcRect, tex->GetRealSize(),
+	//			&m_upperLeftUV.x, &m_upperLeftUV.y, &m_lowerRightUV.x, &m_lowerRightUV.y);
+	//	}
+	//	else
+	//	{
+	//		float l, t, r, b;
+	//		NormalizeSrcRect(m_srcRect, tex->GetRealSize(), &l, &t, &r, &b);
 
-			// 垂直反転
-			if (m_flipMode == FlipMode_V || m_flipMode == FlipMode_HV)
-			{
-				m_upperLeftUV.y = b;
-				m_lowerRightUV.y = t;
-			}
-			else
-			{
-				m_upperLeftUV.y = t;
-				m_lowerRightUV.y = b;
-			}
-			// 水平反転
-			if (m_flipMode == FlipMode_H || m_flipMode == FlipMode_HV)
-			{
-				m_upperLeftUV.x = r;
-				m_lowerRightUV.x = l;
-			}
-			else
-			{
-				m_upperLeftUV.x = l;
-				m_lowerRightUV.x = r;
-			}
-		}
-	}
-	else
-	{
-		m_upperLeftUV.x = 0.0f;
-		m_upperLeftUV.y = 0.0f;
-		m_lowerRightUV.x = 1.0f;
-		m_lowerRightUV.y = 1.0f;
-	}
+	//		// 垂直反転
+	//		if (m_flipMode == FlipMode_V || m_flipMode == FlipMode_HV)
+	//		{
+	//			m_upperLeftUV.y = b;
+	//			m_lowerRightUV.y = t;
+	//		}
+	//		else
+	//		{
+	//			m_upperLeftUV.y = t;
+	//			m_lowerRightUV.y = b;
+	//		}
+	//		// 水平反転
+	//		if (m_flipMode == FlipMode_H || m_flipMode == FlipMode_HV)
+	//		{
+	//			m_upperLeftUV.x = r;
+	//			m_lowerRightUV.x = l;
+	//		}
+	//		else
+	//		{
+	//			m_upperLeftUV.x = l;
+	//			m_lowerRightUV.x = r;
+	//		}
+	//	}
+	//}
+	//else
+	//{
+	//	m_upperLeftUV.x = 0.0f;
+	//	m_upperLeftUV.y = 0.0f;
+	//	m_lowerRightUV.x = 1.0f;
+	//	m_lowerRightUV.y = 1.0f;
+	//}
 }
 
 //------------------------------------------------------------------------------

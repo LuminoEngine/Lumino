@@ -190,10 +190,10 @@ void FontGlyphTextureCache::OnFlush()
 }
 
 //------------------------------------------------------------------------------
-const SizeI& FontGlyphTextureCache::GetGlyphsTextureSize() const
-{
-	return m_fillGlyphsTexture->GetRealSize();
-}
+//const SizeI& FontGlyphTextureCache::GetGlyphsTextureSize() const
+//{
+//	return m_fillGlyphsTexture->GetRealSize();
+//}
 
 //------------------------------------------------------------------------------
 void FontGlyphTextureCache::ResetUsedFlags()

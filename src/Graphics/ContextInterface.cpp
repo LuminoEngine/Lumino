@@ -180,7 +180,7 @@ bool BasicContextState::Equals(const BasicContextState& s) const
 {
 	if (renderState != s.renderState) return false;
 	if (depthStencilState != s.depthStencilState) return false;
-	if (!Utils::EqualsTexture(depthBuffer, s.depthBuffer)) return false;
+	if (depthBuffer != s.depthBuffer) return false;
 	for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
 	{
 		if (!Utils::EqualsTexture(m_renderTargets[i], s.m_renderTargets[i])) return false;
