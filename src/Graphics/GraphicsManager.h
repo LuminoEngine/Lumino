@@ -154,6 +154,8 @@ public:
 	const StringA& GetCommonShaderHeader() const { return m_commonShaderHeader; }
 	Shader* GetDefaultShader(DefaultShader type) const;
 
+	void PresentSwapChain(SwapChain* swapChain);
+
 private:
 	AnimationManager*				m_animationManager;
 	FileManager*					m_fileManager;
@@ -168,6 +170,7 @@ private:
 	SwapChain*						m_mainSwapChain;
 	Details::Renderer*				m_renderer;
 	RenderingThread*				m_renderingThread;
+	Mutex							m_lockPresentCommandList;
 
 	ContextInterface*				m_activeContext;
 

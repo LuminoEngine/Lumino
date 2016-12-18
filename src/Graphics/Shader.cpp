@@ -509,7 +509,6 @@ void Shader::TryCommitChanges()
 
 	auto* cmdList = GetManager()->GetPrimaryRenderingCommandList();
 	byte_t* data = (byte_t*)varsData.Alloc(cmdList);
-	printf("%p %p %d\n", cmdList, data, data[0]);
 
 	detail::GraphicsManager* manager = GetManager();
 	Shader* _this = this;

@@ -153,30 +153,7 @@ void SwapChain::BeginRendering()
 //------------------------------------------------------------------------------
 void SwapChain::Present()
 {
-	if (m_manager->GetRenderingType() == GraphicsRenderingType::Immediate)
-	{
-		PresentInternal();
-
-		// 一時メモリの解放とかをやっておく
-		m_manager->GetPrimaryRenderingCommandList()->PostExecute();
-
-	}
-	else
-	{
-		// 前回この SwapChain から発行したコマンドリストがまだ処理中である。待ち状態になるまで待機する。
-		WaitForPresent();
-
-		// 実行状態にする。Present コマンドが実行された後、コマンドリストクラスから True がセットされる。
-		// ※ PresentCommandList() の前に false にしておかないとダメ。
-		//    後で false にすると、PresentCommandList() と同時に全部のコマンドが実行されて、描画スレッドから
-		//    true がセットされるのに、その後 false をセットしてしまうことがある。
-		m_waiting.SetFalse();
-
-		m_manager->GetGraphicsDevice()->FlushResource();
-
-		// Primary コマンドリストの末尾に Present を追加し、キューへ追加する
-		m_manager->GetRenderer()->PresentCommandList(this);
-	}
+	m_manager->PresentSwapChain(this);
 }
 
 //------------------------------------------------------------------------------

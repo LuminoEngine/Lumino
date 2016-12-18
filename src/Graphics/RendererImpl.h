@@ -140,7 +140,6 @@ LN_INTERNAL_ACCESS:
 	DepthBuffer*			m_currentDepthBuffer;
 	//RectI					m_currentViewport;
 
-	Mutex					m_lockPresentCommandList;
 };
 
 } // namespace Details

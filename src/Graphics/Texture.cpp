@@ -192,7 +192,7 @@ void Texture2D::Initialize(detail::GraphicsManager* manager, Stream* stream, Tex
 		m_deviceObj = manager->GetGraphicsDevice()->CreateTexturePlatformLoading(stream, m_mipmap, format);
 		if (m_deviceObj != NULL)
 		{
-			m_primarySurface2 = LN_NEW Bitmap(m_deviceObj->GetSize(), Utils::TranslatePixelFormat(format));
+			m_primarySurface2 = RefPtr<Bitmap>::MakeRef(m_deviceObj->GetSize(), Utils::TranslatePixelFormat(format));
 			m_size = m_deviceObj->GetSize();
 		}
 	}
@@ -201,7 +201,7 @@ void Texture2D::Initialize(detail::GraphicsManager* manager, Stream* stream, Tex
 	if (m_deviceObj == NULL)
 	{
 		m_locked = true;
-		m_primarySurface2 = LN_NEW Bitmap(stream);
+		m_primarySurface2 = RefPtr<Bitmap>::MakeRef(stream);
 		m_size = m_primarySurface2->GetSize();
 	}
 
@@ -659,6 +659,7 @@ DepthBuffer::DepthBuffer()
 //------------------------------------------------------------------------------
 DepthBuffer::~DepthBuffer()
 {
+	LN_SAFE_RELEASE(m_deviceObj);
 }
 
 //------------------------------------------------------------------------------
