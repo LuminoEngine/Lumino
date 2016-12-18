@@ -248,7 +248,6 @@ LN_INTERNAL_ACCESS:
 	List<ShaderVariable*>			m_variables;
 	List<ShaderTechnique*>			m_techniques;
 	detail::ShaderSemanticsManager	m_semanticsManager;
-	ShaderVariable*					m_viewportPixelSize;
 	bool							m_modifiedVariables;
 };
 
