@@ -28,7 +28,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIMouseEventArgs, UIEventArgs)
 
 //------------------------------------------------------------------------------
 UIMouseEventArgs::UIMouseEventArgs()
-	: button(MouseButton::None)
+	: button(MouseButtons::None)
 	, x(0)
 	, y(0)
 	, clickCount(0)
@@ -36,7 +36,7 @@ UIMouseEventArgs::UIMouseEventArgs()
 }
 
 //------------------------------------------------------------------------------
-UIMouseEventArgs::UIMouseEventArgs(MouseButton button_, float x_, float y_, int clickCount_)
+UIMouseEventArgs::UIMouseEventArgs(MouseButtons button_, float x_, float y_, int clickCount_)
 	: button(button_)
 	, x(x_)
 	, y(y_)
@@ -56,14 +56,14 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIKeyEventArgs, UIEventArgs)
 
 //------------------------------------------------------------------------------
 UIKeyEventArgs::UIKeyEventArgs()
-	: keyCode(Key::Unknown)
+	: keyCode(Keys::Unknown)
 	, modifierKeys(ModifierKeys::None)
 	, charCode(0x00)
 {
 }
 
 //------------------------------------------------------------------------------
-UIKeyEventArgs::UIKeyEventArgs(Key keyCode_, ModifierKeys modifierKeys_)
+UIKeyEventArgs::UIKeyEventArgs(Keys keyCode_, ModifierKeys modifierKeys_)
 	: keyCode(keyCode_)
 	, modifierKeys(modifierKeys_)
 	, charCode(0x00)

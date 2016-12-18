@@ -45,7 +45,7 @@ struct PlatformEventArgs
 		/** マウスイベントの引数 */
 		struct
 		{
-			MouseButton::value_type	button;	/** ボタン番号 */
+			MouseButtons	button;	/** ボタン番号 */
 			short			x;				/** マウスイベント生成時のマウスの X 座標 (クライアント領域外は -1) */
 			short			y;				/** マウスイベント生成時のマウスの Y 座標 (クライアント領域外は -1) */
 			short			moveX;			/** X 座標の移動量 */
@@ -57,7 +57,7 @@ struct PlatformEventArgs
 		/** キーボードイベントの引数 */
 		struct
 		{
-			Key				keyCode;		/** キーコード */
+			Keys				keyCode;		/** キーコード */
 			ModifierKeys::value_type	modifierKeys;	/** 修飾キー */
 			char			keyChar;		/** 文字 */
 

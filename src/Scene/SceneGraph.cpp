@@ -85,7 +85,7 @@ bool SceneGraph::InjectMouseMove(int x, int y)
 }
 
 //------------------------------------------------------------------------------
-bool SceneGraph::InjectMouseButtonDown(MouseButton button, int x, int y)
+bool SceneGraph::InjectMouseButtonDown(MouseButtons button, int x, int y)
 {
 	// TODO: マウス位置はSceneGraphよりも Viewport(CameraLayer)に付くようにしたい。
 	// プレビュー用のUIElementに描きたいときどうするの？という話。
@@ -94,17 +94,17 @@ bool SceneGraph::InjectMouseButtonDown(MouseButton button, int x, int y)
 	// シェーダ系
 	switch (button)
 	{
-	case MouseButton::Left:
+	case MouseButtons::Left:
 		m_leftMouseState.position = m_mousePosition;
 		m_leftMouseState.time = static_cast<float>(m_time);
 		m_leftMouseState.isDown = true;
 		break;
-	case MouseButton::Right:
+	case MouseButtons::Right:
 		m_rightMouseState.position = m_mousePosition;
 		m_rightMouseState.time = static_cast<float>(m_time);
 		m_rightMouseState.isDown = true;
 		break;
-	case MouseButton::Middle:
+	case MouseButtons::Middle:
 		m_middleMouseState.position = m_mousePosition;
 		m_middleMouseState.time = static_cast<float>(m_time);
 		m_middleMouseState.isDown = true;
@@ -123,18 +123,18 @@ bool SceneGraph::InjectMouseButtonDown(MouseButton button, int x, int y)
 }
 
 //------------------------------------------------------------------------------
-bool SceneGraph::InjectMouseButtonUp(MouseButton button, int x, int y)
+bool SceneGraph::InjectMouseButtonUp(MouseButtons button, int x, int y)
 {
 	// シェーダ系
 	switch (button)
 	{
-	case MouseButton::Left:
+	case MouseButtons::Left:
 		m_leftMouseState.isDown = false;
 		break;
-	case MouseButton::Right:
+	case MouseButtons::Right:
 		m_leftMouseState.isDown = false;
 		break;
-	case MouseButton::Middle:
+	case MouseButtons::Middle:
 		m_leftMouseState.isDown = false;
 		break;
 	default:

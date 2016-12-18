@@ -151,7 +151,7 @@ public:
 	{
 #ifdef LN_DEBUG
 		engineLogEnabled = true;
-		acceleratorKeys.toggleShowDiag = KeyboardBinding::Create(Key::F3);
+		acceleratorKeys.toggleShowDiag = KeyboardBinding::Create(Keys::F3);
 #endif
 		//engineAcceleratorKeys[(int)EngineAcceleratorKey::ToggleShowDiag] = Key::F3;
 	}

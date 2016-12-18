@@ -40,7 +40,7 @@ public:
 	virtual void OnPlatformEvent(const PlatformEventArgs& e) override;
 
 public:
-	static Key ConvertVirtualKeyCode(DWORD winVK);
+	static Keys ConvertVirtualKeyCode(DWORD winVK);
 
 protected:
 	int		mLastMouseX;

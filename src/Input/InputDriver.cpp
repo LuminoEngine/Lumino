@@ -25,7 +25,7 @@ InputDriver::~InputDriver()
 }
 
 //------------------------------------------------------------------------------
-bool InputDriver::QueryKeyState(Key key)
+bool InputDriver::QueryKeyState(Keys key)
 {
 	return m_keyStatus[(int)key];
 }
@@ -36,25 +36,25 @@ bool InputDriver::QueryMouseState(MouseAction action)
 	switch (action)
 	{
 	case ln::MouseAction::LeftClick:
-		return (m_mouseStatus[MouseButton::Left] && m_mouseClickTrackers[MouseButton::Left].clickCount == 1);
+		return (m_mouseStatus[(int)MouseButtons::Left] && m_mouseClickTrackers[(int)MouseButtons::Left].clickCount == 1);
 	case ln::MouseAction::LeftDoubleClick:
-		return (m_mouseStatus[MouseButton::Left] && m_mouseClickTrackers[MouseButton::Left].clickCount == 2);
+		return (m_mouseStatus[(int)MouseButtons::Left] && m_mouseClickTrackers[(int)MouseButtons::Left].clickCount == 2);
 	case ln::MouseAction::RightClick:
-		return (m_mouseStatus[MouseButton::Right] && m_mouseClickTrackers[MouseButton::Right].clickCount == 1);
+		return (m_mouseStatus[(int)MouseButtons::Right] && m_mouseClickTrackers[(int)MouseButtons::Right].clickCount == 1);
 	case ln::MouseAction::RightDoubleClick:
-		return (m_mouseStatus[MouseButton::Right] && m_mouseClickTrackers[MouseButton::Right].clickCount == 2);
+		return (m_mouseStatus[(int)MouseButtons::Right] && m_mouseClickTrackers[(int)MouseButtons::Right].clickCount == 2);
 	case ln::MouseAction::MiddleClick:
-		return (m_mouseStatus[MouseButton::Middle] && m_mouseClickTrackers[MouseButton::Middle].clickCount == 1);
+		return (m_mouseStatus[(int)MouseButtons::Middle] && m_mouseClickTrackers[(int)MouseButtons::Middle].clickCount == 1);
 	case ln::MouseAction::MiddleDoubleClick:
-		return (m_mouseStatus[MouseButton::Middle] && m_mouseClickTrackers[MouseButton::Middle].clickCount == 2);
+		return (m_mouseStatus[(int)MouseButtons::Middle] && m_mouseClickTrackers[(int)MouseButtons::Middle].clickCount == 2);
 	case ln::MouseAction::X1Click:
-		return (m_mouseStatus[MouseButton::X1] && m_mouseClickTrackers[MouseButton::X1].clickCount == 1);
+		return (m_mouseStatus[(int)MouseButtons::X1] && m_mouseClickTrackers[(int)MouseButtons::X1].clickCount == 1);
 	case ln::MouseAction::X1DoubleClick:
-		return (m_mouseStatus[MouseButton::X1] && m_mouseClickTrackers[MouseButton::X1].clickCount == 2);
+		return (m_mouseStatus[(int)MouseButtons::X1] && m_mouseClickTrackers[(int)MouseButtons::X1].clickCount == 2);
 	case ln::MouseAction::X2Click:
-		return (m_mouseStatus[MouseButton::X2] && m_mouseClickTrackers[MouseButton::X2].clickCount == 1);
+		return (m_mouseStatus[(int)MouseButtons::X2] && m_mouseClickTrackers[(int)MouseButtons::X2].clickCount == 1);
 	case ln::MouseAction::X2DoubleClick:
-		return (m_mouseStatus[MouseButton::X2] && m_mouseClickTrackers[MouseButton::X2].clickCount == 2);
+		return (m_mouseStatus[(int)MouseButtons::X2] && m_mouseClickTrackers[(int)MouseButtons::X2].clickCount == 2);
 	case ln::MouseAction::WheelPlus:
 		return (m_mouseWheel > 0);
 	case ln::MouseAction::WheelMinus:
@@ -105,23 +105,23 @@ void InputDriver::OnEvent(const PlatformEventArgs& e)
 }
 
 //------------------------------------------------------------------------------
-void InputDriver::OnKeyDown(Key key)
+void InputDriver::OnKeyDown(Keys key)
 {
 	m_keyStatus[(int)key] = true;
 }
 
 //------------------------------------------------------------------------------
-void InputDriver::OnKeyUp(Key key)
+void InputDriver::OnKeyUp(Keys key)
 {
 	m_keyStatus[(int)key] = false;
 }
 
 //------------------------------------------------------------------------------
-void InputDriver::OnMouseButtonDown(MouseButton button)
+void InputDriver::OnMouseButtonDown(MouseButtons button)
 {
-	m_mouseStatus[button] = true;
+	m_mouseStatus[(int)button] = true;
 
-	MouseClickTracker& tracker = m_mouseClickTrackers[button];
+	MouseClickTracker& tracker = m_mouseClickTrackers[(int)button];
 	tracker.clickCount++;
 
 	double curTime = 0.001 * Environment::GetTickCount();
@@ -135,9 +135,9 @@ void InputDriver::OnMouseButtonDown(MouseButton button)
 }
 
 //------------------------------------------------------------------------------
-void InputDriver::OnMouseButtonUp(MouseButton button)
+void InputDriver::OnMouseButtonUp(MouseButtons button)
 {
-	m_mouseStatus[button] = false;
+	m_mouseStatus[(int)button] = false;
 }
 
 LN_NAMESPACE_END

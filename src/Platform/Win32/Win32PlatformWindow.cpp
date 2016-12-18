@@ -171,35 +171,35 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 				{
 				case WM_LBUTTONDOWN:
 					e.type = PlatformEventType::MouseDown;
-					e.mouse.button = MouseButton::Left;
+					e.mouse.button = MouseButtons::Left;
 					break;
 				case WM_LBUTTONUP:
 					e.type = PlatformEventType::MouseUp;
-					e.mouse.button = MouseButton::Left;
+					e.mouse.button = MouseButtons::Left;
 					break;
 				case WM_RBUTTONDOWN:
 					e.type = PlatformEventType::MouseDown;
-					e.mouse.button = MouseButton::Right;
+					e.mouse.button = MouseButtons::Right;
 					break;
 				case WM_RBUTTONUP:
 					e.type = PlatformEventType::MouseUp;
-					e.mouse.button = MouseButton::Right;
+					e.mouse.button = MouseButtons::Right;
 					break;
 				case WM_MBUTTONDOWN:
 					e.type = PlatformEventType::MouseDown;
-					e.mouse.button = MouseButton::Middle;
+					e.mouse.button = MouseButtons::Middle;
 					break;
 				case WM_MBUTTONUP:
 					e.type = PlatformEventType::MouseUp;
-					e.mouse.button = MouseButton::Middle;
+					e.mouse.button = MouseButtons::Middle;
 					break;
 				case WM_XBUTTONDOWN:
 					e.type = PlatformEventType::MouseDown;
-					e.mouse.button = (wparam & MK_XBUTTON1) ? MouseButton::X1 : MouseButton::X2;
+					e.mouse.button = (wparam & MK_XBUTTON1) ? MouseButtons::X1 : MouseButtons::X2;
 					break;
 				case WM_XBUTTONUP:
 					e.type = PlatformEventType::MouseUp;
-					e.mouse.button = (wparam & MK_XBUTTON1) ? MouseButton::X1 : MouseButton::X2;
+					e.mouse.button = (wparam & MK_XBUTTON1) ? MouseButtons::X1 : MouseButtons::X2;
 					break;
 				}
 
@@ -221,7 +221,7 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 				PlatformEventArgs e;
 				e.type = PlatformEventType::MouseMove;
 				e.sender = this;
-				e.mouse.button = MouseButton::None;
+				e.mouse.button = MouseButtons::None;
 				e.mouse.x = static_cast< short >(LOWORD(lparam));     // 一度 short にキャストしないと、
 				e.mouse.y = static_cast< short >(HIWORD(lparam));     // マイナス値になったとき 65535 とか値が入る
 				e.mouse.moveX = (mLastMouseX >= 0) ? e.mouse.x - mLastMouseX : 0;
@@ -249,7 +249,7 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 					PlatformEventArgs e;
 					e.type = PlatformEventType::MouseMove;
 					e.sender = this;
-					e.mouse.button = MouseButton::None;
+					e.mouse.button = MouseButtons::None;
 					e.mouse.x = (short)pt.x;
 					e.mouse.y = (short)pt.y;
 					e.mouse.moveX = (mLastMouseX >= 0) ? e.mouse.x - mLastMouseX : 0;
@@ -326,7 +326,7 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 						(::GetKeyState(VK_MENU) < 0) ? ModifierKeys::Alt : ModifierKeys::None |
 						(::GetKeyState(VK_SHIFT) < 0) ? ModifierKeys::Shift : ModifierKeys::None |
 						(::GetKeyState(VK_CONTROL) < 0) ? ModifierKeys::Control : ModifierKeys::None;
-					SendPlatformKeyEvent(PlatformEventType::KeyChar, this, Key::Unknown, mods, wparam);
+					SendPlatformKeyEvent(PlatformEventType::KeyChar, this, Keys::Unknown, mods, wparam);
 					*handled = true;
 					return 0;
 				}
@@ -386,133 +386,133 @@ void Win32PlatformWindow::OnPlatformEvent(const PlatformEventArgs& e)
 }
 
 //------------------------------------------------------------------------------
-Key Win32PlatformWindow::ConvertVirtualKeyCode(DWORD winVK)
+Keys Win32PlatformWindow::ConvertVirtualKeyCode(DWORD winVK)
 {
-	if ('A' <= winVK && winVK <= 'Z') return (Key)((int)Key::A + (winVK - 'A'));
-	if ('0' <= winVK && winVK <= '9') return (Key)((int)Key::D0 + (winVK - '0'));
-	if (VK_F1 <= winVK && winVK <= VK_F12) return (Key)((int)Key::F1 + (winVK - VK_F1));
+	if ('A' <= winVK && winVK <= 'Z') return (Keys)((int)Keys::A + (winVK - 'A'));
+	if ('0' <= winVK && winVK <= '9') return (Keys)((int)Keys::D0 + (winVK - '0'));
+	if (VK_F1 <= winVK && winVK <= VK_F12) return (Keys)((int)Keys::F1 + (winVK - VK_F1));
 
 	switch (winVK)
 	{
 	case VK_SPACE:
-		return Key::Space;
+		return Keys::Space;
 	case VK_ESCAPE:
-		return Key::Escape;
+		return Keys::Escape;
 	case VK_UP:
-		return Key::Up;
+		return Keys::Up;
 	case VK_DOWN:
-		return Key::Down;
+		return Keys::Down;
 	case VK_LEFT:
-		return Key::Left;
+		return Keys::Left;
 	case VK_RIGHT:
-		return Key::Right;
+		return Keys::Right;
 	case VK_LSHIFT:
-		return Key::LShift;
+		return Keys::LShift;
 	case VK_RSHIFT:
-		return Key::RShift;
+		return Keys::RShift;
 	case VK_LCONTROL:
-		return Key::LCtrl;
+		return Keys::LCtrl;
 	case VK_RCONTROL:
-		return Key::RCtrl;
+		return Keys::RCtrl;
 	case VK_LMENU:
-		return Key::LAlt;
+		return Keys::LAlt;
 	case VK_RMENU:
-		return Key::RAlt;
+		return Keys::RAlt;
 	case VK_TAB:
-		return Key::Tab;
+		return Keys::Tab;
 	case VK_RETURN:
-		return Key::Enter;
+		return Keys::Enter;
 	case VK_BACK:
-		return Key::BackSpace;
+		return Keys::BackSpace;
 	case VK_INSERT:
-		return Key::Insert;
+		return Keys::Insert;
 	case VK_DELETE:
-		return Key::Delete;
+		return Keys::Delete;
 	case VK_PRIOR:
-		return Key::PageUp;
+		return Keys::PageUp;
 	case VK_NEXT:
-		return Key::PageDown;
+		return Keys::PageDown;
 	case VK_HOME:
-		return Key::Home;
+		return Keys::Home;
 	case VK_END:
-		return Key::End;
+		return Keys::End;
 
 	case VK_OEM_1:
-		return Key::Colon;
+		return Keys::Colon;
 	case VK_OEM_PLUS:
-		return Key::SemiColon;
+		return Keys::SemiColon;
 	case VK_OEM_COMMA:
-		return Key::Comma;
+		return Keys::Comma;
 	case VK_OEM_PERIOD:
-		return Key::Period;
+		return Keys::Period;
 	case VK_OEM_2:
-		return Key::Slash;
+		return Keys::Slash;
 	case VK_OEM_MINUS:
-		return Key::Minus;
+		return Keys::Minus;
 	case VK_OEM_102:
-		return Key::BackSlash;
+		return Keys::BackSlash;
 	case VK_OEM_5:
-		return Key::Yen;
+		return Keys::Yen;
 	case VK_OEM_7:
-		return Key::Caret;
+		return Keys::Caret;
 	case VK_OEM_4:
-		return Key::LBracket;
+		return Keys::LBracket;
 	case VK_OEM_6:
-		return Key::RBracket;
+		return Keys::RBracket;
 		/*
-		case 'A': return Key::A;
-		case 'B': return Key::B;
-		case 'C': return Key::C;
-		case 'D': return Key::D;
-		case 'E': return Key::E;
-		case 'F': return Key::F;
-		case 'G': return Key::G;
-		case 'H': return Key::H;
-		case 'I': return Key::I;
-		case 'J': return Key::J;
-		case 'K': return Key::K;
-		case 'L': return Key::L;
-		case 'M': return Key::M;
-		case 'N': return Key::N;
-		case 'O': return Key::O;
-		case 'P': return Key::P;
-		case 'Q': return Key::Q;
-		case 'R': return Key::R;
-		case 'S': return Key::S;
-		case 'T': return Key::T;
-		case 'U': return Key::U;
-		case 'V': return Key::V;
-		case 'W': return Key::W;
-		case 'X': return Key::X;
-		case 'Y': return Key::Y;
-		case 'Z': return Key::Z;
+		case 'A': return Keys::A;
+		case 'B': return Keys::B;
+		case 'C': return Keys::C;
+		case 'D': return Keys::D;
+		case 'E': return Keys::E;
+		case 'F': return Keys::F;
+		case 'G': return Keys::G;
+		case 'H': return Keys::H;
+		case 'I': return Keys::I;
+		case 'J': return Keys::J;
+		case 'K': return Keys::K;
+		case 'L': return Keys::L;
+		case 'M': return Keys::M;
+		case 'N': return Keys::N;
+		case 'O': return Keys::O;
+		case 'P': return Keys::P;
+		case 'Q': return Keys::Q;
+		case 'R': return Keys::R;
+		case 'S': return Keys::S;
+		case 'T': return Keys::T;
+		case 'U': return Keys::U;
+		case 'V': return Keys::V;
+		case 'W': return Keys::W;
+		case 'X': return Keys::X;
+		case 'Y': return Keys::Y;
+		case 'Z': return Keys::Z;
 
-		Key::0                    = '0',
-		Key::1                    = '1',
-		Key::2                    = '2',
-		Key::3                    = '3',
-		Key::4                    = '4',
-		Key::5                    = '5',
-		Key::6                    = '6',
-		Key::7                    = '7',
-		Key::8                    = '8',
-		Key::9                    = '9',
+		Keys::0                    = '0',
+		Keys::1                    = '1',
+		Keys::2                    = '2',
+		Keys::3                    = '3',
+		Keys::4                    = '4',
+		Keys::5                    = '5',
+		Keys::6                    = '6',
+		Keys::7                    = '7',
+		Keys::8                    = '8',
+		Keys::9                    = '9',
 
-		Key::F1					= VK_F1,
-		Key::F2					= VK_F2,
-		Key::F3					= VK_F3,
-		Key::F4					= VK_F4,
-		Key::F5					= VK_F5,
-		Key::F6					= VK_F6,
-		Key::F7					= VK_F7,
-		Key::F8					= VK_F8,
-		Key::F9					= VK_F9,
-		Key::F10					= VK_F10,
-		Key::F11					= VK_F11,
-		Key::F12					= VK_F12,
+		Keys::F1					= VK_F1,
+		Keys::F2					= VK_F2,
+		Keys::F3					= VK_F3,
+		Keys::F4					= VK_F4,
+		Keys::F5					= VK_F5,
+		Keys::F6					= VK_F6,
+		Keys::F7					= VK_F7,
+		Keys::F8					= VK_F8,
+		Keys::F9					= VK_F9,
+		Keys::F10					= VK_F10,
+		Keys::F11					= VK_F11,
+		Keys::F12					= VK_F12,
 		*/
 	}
-	return Key::Unknown;
+	return Keys::Unknown;
 }
 
 //==============================================================================

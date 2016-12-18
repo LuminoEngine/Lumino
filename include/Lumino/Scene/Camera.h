@@ -171,8 +171,8 @@ public:
 	Camera* GetTargetCamera() const { return m_targetCamera; }
 
 	virtual bool InjectMouseMove(int x, int y) = 0;
-	virtual bool InjectMouseButtonDown(MouseButton button, int x, int y) = 0;
-	virtual bool InjectMouseButtonUp(MouseButton button, int x, int y) = 0;
+	virtual bool InjectMouseButtonDown(MouseButtons button, int x, int y) = 0;
+	virtual bool InjectMouseButtonUp(MouseButtons button, int x, int y) = 0;
 	virtual bool InjectMouseWheel(int delta) = 0;
 
 private:
@@ -190,8 +190,8 @@ public:
 	virtual ~CylinderMouseMoveCameraBehavior();
 
 	virtual bool InjectMouseMove(int x, int y) override;
-	virtual bool InjectMouseButtonDown(MouseButton button, int x, int y) override;
-	virtual bool InjectMouseButtonUp(MouseButton button, int x, int y) override;
+	virtual bool InjectMouseButtonDown(MouseButtons button, int x, int y) override;
+	virtual bool InjectMouseButtonUp(MouseButtons button, int x, int y) override;
 	virtual bool InjectMouseWheel(int delta) override;
 
 private:

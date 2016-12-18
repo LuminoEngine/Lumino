@@ -29,14 +29,14 @@ class UIMouseEventArgs
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	UIMouseEventArgs();
-	UIMouseEventArgs(MouseButton button, float x, float y, int clickCount);
+	UIMouseEventArgs(MouseButtons button, float x, float y, int clickCount);
 	virtual ~UIMouseEventArgs();
 
 public:
-	MouseButton	button;			/**< ボタンの種類 */
-	float		x;				/**< マウスイベント生成時のマウスの X 座標 (コンテキスト内の座標系) */
-	float		y;				/**< マウスイベント生成時のマウスの Y 座標 (コンテキスト内の座標系) */
-	int			clickCount;		/**< ボタンがクリックされた回数。ダブルクリックやトリプルクリックを区別するために使用する。最大3まで。 */
+	MouseButtons	button;			/**< ボタンの種類 */
+	float			x;				/**< マウスイベント生成時のマウスの X 座標 (コンテキスト内の座標系) */
+	float			y;				/**< マウスイベント生成時のマウスの Y 座標 (コンテキスト内の座標系) */
+	int				clickCount;		/**< ボタンがクリックされた回数。ダブルクリックやトリプルクリックを区別するために使用する。最大3まで。 */
 };
 
 /**
@@ -48,11 +48,11 @@ class UIKeyEventArgs
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	UIKeyEventArgs();
-	UIKeyEventArgs(Key keyCode, ModifierKeys modifierKeys);
+	UIKeyEventArgs(Keys keyCode, ModifierKeys modifierKeys);
 	virtual ~UIKeyEventArgs();
 
 public:
-	Key				keyCode;		/**< キーコード */
+	Keys			keyCode;		/**< キーコード */
 	ModifierKeys	modifierKeys;	/** 修飾キー */
 	TCHAR			charCode;		/**< TextInput イベントにより通知された場合、その文字コードが格納されます。*/
 };

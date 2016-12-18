@@ -37,10 +37,10 @@ public:
 	bool InjectMouseMove(int x, int y);
 
 	/// マウスボタンイベントを通知する
-	bool InjectMouseButtonDown(MouseButton button, int x, int y);
+	bool InjectMouseButtonDown(MouseButtons button, int x, int y);
 
 	/// マウスボタンイベントを通知する
-	bool InjectMouseButtonUp(MouseButton button, int x, int y);
+	bool InjectMouseButtonUp(MouseButtons button, int x, int y);
 
 	bool InjectMouseWheel(int delta);
 
