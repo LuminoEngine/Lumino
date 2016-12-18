@@ -14,70 +14,36 @@ class Sprite
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	//
-	///**
-	//	@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
-	//*/
-	//static SpriteBase* Create();
 
-	///**
-	//	@brief		
-	//*/
-	//static SpriteBase* Create3D();
-
-public:
-
-	/// 作成
-	//void Create(/*SpriteCoord spriteCoord = SpriteCoord_RX, SceneGraphManager* manager = NULL*/);
-
-	/// テクスチャの設定
+	/**< スプライトが表示するテクスチャを設定します。*/
 	void SetTexture(Texture* texture);
 
-	/// テクスチャの取得
+	/**< スプライトが表示するテクスチャを取得します。*/
 	Texture* GetTexture() const;
 
-	/// サイズの設定
-	void SetSize(const Size& size) { m_size = size; UpdateVertexData(); }
+	/**< スプライトの大きさを設定します。*/
+	void SetSize(const Size& size);
 
-
-	/// テクスチャの転送矩形の設定 (ピクセル単位)
-	void SetSrcRect(const RectF& rect);
-	void SetSrcRect(float x, float y, float width, float height) { SetSrcRect(RectF(x, y, width, height)); }
-
-	/// テクスチャの転送矩形の取得 (ピクセル単位)
-	const RectF& GetSrcRect() const { return m_srcRect; }
+	/**< テクスチャのどの部分を表示するかを示す転送矩形を設定します。(ピクセル単位) */
+	void SetTextureRect(const RectF& rect);
+	void SetTextureRect(float x, float y, float width, float height);
 
 	/// 反転方法の設定
-	void SetFlipMode(FlipMode mode) { m_flipMode = mode; UpdateTexUV(); }
+	//void SetFlipMode(FlipMode mode) { m_flipMode = mode; UpdateTexUV(); }
 
 	/// 反転方法の取得
-	FlipMode GetFlipMode() const { return m_flipMode; }
+	//FlipMode GetFlipMode() const { return m_flipMode; }
 
-private:
-
-	/// ピクセル単位の転送矩形をテクスチャUVの矩形 (0.0～1.0) に変換する
-	static void NormalizeSrcRect(const RectF& srcRect, const SizeI& textureSize, float* l, float* t, float* r, float* b);
-
-protected:
+LN_PROTECTED_INTERNAL_ACCESS:
 	Sprite();
 	virtual ~Sprite();
 	void Initialize(SceneGraph* owner, SpriteCoord spriteCoord);
+	void UpdateVertexData();
 
-	void UpdateTexUV();
-	virtual void UpdateVertexData();
-
-
-protected:
 	SpriteCoord	m_spriteCoord;
 	Size		m_size;
 	RectF		m_srcRect;
 	FlipMode	m_flipMode;
-
-	Vector3		m_upperLeft;
-	Vector3		m_lowerRight;
-	Vector2		m_upperLeftUV;
-	Vector2		m_lowerRightUV;
-
 	Size		m_renderSize;
 	RectF		m_renderSourceRect;
 };
@@ -118,7 +84,6 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	Sprite2D();
 	virtual ~Sprite2D();
 	void Initialize(SceneGraph* owner);
-
 	virtual void OnRender2(DrawList* renderer) override;
 
 private:
@@ -146,12 +111,9 @@ protected:
 	Sprite3D();
 	virtual ~Sprite3D();
 	void Initialize(SceneGraph* owner);
-	virtual detail::Sphere GetBoundingSphere() override;
-	virtual void UpdateVertexData() override;
 	virtual void OnRender2(DrawList* renderer) override;
 
 private:
-	detail::Sphere	m_boundingSphere;
 	Vector2	m_anchor;
 };
 

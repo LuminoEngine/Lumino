@@ -117,23 +117,6 @@ public:
 	///		座標変換行列を更新し、描画するべきノードであるかをフィルタリングする。
 	virtual void UpdateFrameHierarchy(SceneNode* parent, float deltaTime);
 
-	/// 視点に依るデータを階層的に更新する (ある視点から描画されるとき、最初に呼び出される)
-	///		renderingNodeList	: この視点の中で実際に描画するものはこのリストに追加する (視錘台カリングなど)
-	///		renderingLightList	: this 以下の Light はこのリストに追加する
-	///		この処理は1フレーム内で、レイヤー単位の描画開始時に呼ばれる。
-	virtual void UpdateViewFlustumHierarchy(Camera* camera, SceneNodeArray* renderingNodeList, LightNodeList* renderingLightList);
-
-	/// このノードの近いライトを選択する
-	///		UpdateViewFlustumHierarchy() で、今回の描画で必要なライトが求まる。
-	///		そのリストを使って、このノードの描画に影響するライトをリストアップする。
-	///		maxCount はシェーダが必要としているライトの最大数。renderingLightList の中から maxCount 個取りだせば良い。
-	virtual void UpdateAffectLights(LightNodeList* renderingLightList, int maxCount) {}
-
-	/// Z ソート用の比較関数 (距離と優先度でソート)
-	static bool CmpZAndPrioritySort(const SceneNode* left, const SceneNode* right);
-
-
-
 
 	void Render2(DrawList* renderer);
 	virtual void OnRender2(DrawList* renderer);
@@ -184,9 +167,6 @@ protected:
 	Matrix				m_combinedGlobalMatrix;
 
 	friend class DrawingLayer;
-
-	// TODO: いらない
-	float				m_zDistance;			///< Z ソート用の距離値 (ソート自体が速度的にクリティカルになりそうなので、getter を仮想関数にはしたくない)
 
 	//friend class MMERenderingPass;	// TODO: VisualNode に持ってくべきかも。ついでに friend も何とかしたい
 	//detail::RenderingPassClientData	m_renderingPassClientDataList[detail::MaxRenderingPass];

@@ -184,46 +184,6 @@ void VisualNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 	SceneNode::UpdateFrameHierarchy(parent, deltaTime);
 }
 
-//------------------------------------------------------------------------------
-void VisualNode::UpdateViewFlustumHierarchy(Camera* camera, SceneNodeArray* renderingNodeList, LightNodeList* renderingLightList)
-{
-	if (IsVisible())
-	{
-		// 境界球の調整 (ローカル座標系 → ワールド座標系)
-		detail::Sphere boundingSphere = GetBoundingSphere();
-		boundingSphere.center.x += m_combinedGlobalMatrix.m41;
-		boundingSphere.center.y += m_combinedGlobalMatrix.m42;
-		boundingSphere.center.z += m_combinedGlobalMatrix.m43;
-
-		// 視錘台カリング
-		if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
-			camera->GetViewFrustum().Intersects(boundingSphere.center, boundingSphere.radius))
-		{
-			// このノードは描画できる
-			renderingNodeList->Add(this);
-
-			// Zソート用の距離を計算
-			switch (camera->GetZSortDistanceBase())
-			{
-			case ZSortDistanceBase::NodeZ:
-				m_zDistance = GetCombinedGlobalMatrix().GetPosition().z;
-				break;
-			case ZSortDistanceBase::CameraDistance:
-				m_zDistance = (GetCombinedGlobalMatrix().GetPosition() - camera->GetCombinedGlobalMatrix().GetPosition()).GetLengthSquared();
-				break;
-			case ZSortDistanceBase::CameraScreenDistance:
-				m_zDistance = Vector3::Dot(
-					GetCombinedGlobalMatrix().GetPosition() - camera->GetCombinedGlobalMatrix().GetPosition(),
-					camera->GetCombinedGlobalMatrix().GetFront());		// 平面と点の距離
-				break;
-			}
-		}
-
-		// 子ノードの処理
-		SceneNode::UpdateViewFlustumHierarchy(camera, renderingNodeList, renderingLightList);
-	}
-}
-
 
 #if 0
 //------------------------------------------------------------------------------

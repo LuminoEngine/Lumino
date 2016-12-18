@@ -96,7 +96,6 @@ public:
 
 	virtual SceneNodeType GetSceneNodeType() const { return SceneNodeType_VisualNode; }
 	virtual void UpdateFrameHierarchy(SceneNode* parent, float deltaTime) override;
-	virtual void UpdateViewFlustumHierarchy(Camera* camera, SceneNodeArray* renderingNodeList, LightNodeList* renderingLightList);
 
 	/// ノード単位の描画情報の更新。この後すぐ一連のサブセット描画が始まる
 	//virtual void UpdateNodeRenderingParams(MMEShader* priorityShader) {}

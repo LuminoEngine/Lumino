@@ -23,10 +23,6 @@ Sprite::Sprite()
 	, m_size()
 	, m_srcRect()
 	, m_flipMode(FlipMode_None)
-	, m_upperLeft()
-	, m_lowerRight()
-	, m_upperLeftUV()
-	, m_lowerRightUV()
 {
 }
 
@@ -62,8 +58,13 @@ void Sprite::Initialize(SceneGraph* owner, SpriteCoord spriteCoord)
 void Sprite::SetTexture(Texture* texture)
 {
 	m_materialList->GetAt(0)->SetMaterialTexture(texture);
-	UpdateTexUV();
 	UpdateVertexData();
+}
+
+//------------------------------------------------------------------------------
+void Sprite::SetSize(const Size& size)
+{
+	m_size = size;
 }
 
 //------------------------------------------------------------------------------
@@ -73,137 +74,21 @@ Texture* Sprite::GetTexture() const
 }
 
 //------------------------------------------------------------------------------
-void Sprite::SetSrcRect(const RectF& rect)
+void Sprite::SetTextureRect(const RectF& rect)
 {
 	m_srcRect = rect;
-	UpdateTexUV();
 	UpdateVertexData();
 }
 
 //------------------------------------------------------------------------------
-void Sprite::UpdateTexUV()
+void Sprite::SetTextureRect(float x, float y, float width, float height)
 {
-	//Texture* tex = GetTexture();
-	//if (tex)
-	//{
-	//	// 転送元矩形が負値ならテクスチャ全体を転送する
-	//	if (m_srcRect.width < 0 && m_srcRect.height < 0)
-	//	{
-	//		RectF srcRect(0, 0, tex->GetSize().width, tex->GetSize().height);
-	//		NormalizeSrcRect(
-	//			srcRect, tex->GetRealSize(),
-	//			&m_upperLeftUV.x, &m_upperLeftUV.y, &m_lowerRightUV.x, &m_lowerRightUV.y);
-	//	}
-	//	else
-	//	{
-	//		float l, t, r, b;
-	//		NormalizeSrcRect(m_srcRect, tex->GetRealSize(), &l, &t, &r, &b);
-
-	//		// 垂直反転
-	//		if (m_flipMode == FlipMode_V || m_flipMode == FlipMode_HV)
-	//		{
-	//			m_upperLeftUV.y = b;
-	//			m_lowerRightUV.y = t;
-	//		}
-	//		else
-	//		{
-	//			m_upperLeftUV.y = t;
-	//			m_lowerRightUV.y = b;
-	//		}
-	//		// 水平反転
-	//		if (m_flipMode == FlipMode_H || m_flipMode == FlipMode_HV)
-	//		{
-	//			m_upperLeftUV.x = r;
-	//			m_lowerRightUV.x = l;
-	//		}
-	//		else
-	//		{
-	//			m_upperLeftUV.x = l;
-	//			m_lowerRightUV.x = r;
-	//		}
-	//	}
-	//}
-	//else
-	//{
-	//	m_upperLeftUV.x = 0.0f;
-	//	m_upperLeftUV.y = 0.0f;
-	//	m_lowerRightUV.x = 1.0f;
-	//	m_lowerRightUV.y = 1.0f;
-	//}
+	SetTextureRect(RectF(x, y, width, height));
 }
 
 //------------------------------------------------------------------------------
 void Sprite::UpdateVertexData()
 {
-	// サイズが負値     → 転送矩形を使う
-	// 転送矩形が負値   → テクスチャサイズを使う
-	// テクスチャが無い → サイズ 0,0
-	Vector2 realSize(m_size.width, m_size.height);
-	if (m_size.width < 0.0 && m_size.height < 0.0)
-	{
-		if (m_srcRect.width < 0.0 && m_srcRect.height < 0.0)
-		{
-			Texture* tex = GetTexture();
-			if (tex)
-				realSize.Set((float)tex->GetSize().width, (float)tex->GetSize().height);
-			else
-				realSize = Vector2::Zero;
-		}
-		else
-		{
-			realSize.Set((float)m_srcRect.width, (float)m_srcRect.height);
-		}
-	}
-
-	// 2D 空間用スプライト
-	if (m_spriteCoord == SpriteCoord_2D)
-	{
-		float r = realSize.x;
-		float b = realSize.y;
-		float l = 0;
-		float t = 0;
-		m_upperLeft.Set(l, t, 0);
-		m_lowerRight.Set(r, b, 0);
-	}
-	// 3D 空間用スプライト
-	else
-	{
-		float r = realSize.x * 0.5f;  // +
-		float b = -realSize.y * 0.5f;  // -
-		float l = -r;                  // -
-		float t = -b;                  // +
-
-		switch (m_spriteCoord)
-		{
-		case SpriteCoord_X:
-			m_upperLeft.Set(0, t, r);
-			m_lowerRight.Set(0, b, l);
-			break;
-		case SpriteCoord_Y:
-			m_upperLeft.Set(l, 0, b);
-			m_lowerRight.Set(r, 0, t);
-			break;
-		case SpriteCoord_Z:
-			m_upperLeft.Set(r, t, 0);
-			m_lowerRight.Set(l, b, 0);
-			break;
-		case SpriteCoord_RX:
-			m_upperLeft.Set(0, t, l);
-			m_lowerRight.Set(0, b, r);
-			break;
-		case SpriteCoord_RY:
-			m_upperLeft.Set(r, 0, b);
-			m_lowerRight.Set(l, 0, t);
-			break;
-		case SpriteCoord_RZ:
-			m_upperLeft.Set(l, t, 0);
-			m_lowerRight.Set(r, b, 0);
-			break;
-		}
-	}
-
-
-
 	// 転送元矩形が負値ならテクスチャ全体を転送する
 	Texture* tex = GetTexture();
 	const SizeI& texSize = (tex != nullptr) ? tex->GetSize() : SizeI::Zero;
@@ -219,17 +104,6 @@ void Sprite::UpdateVertexData()
 		m_renderSize.width = m_renderSourceRect.width;
 		m_renderSize.height = m_renderSourceRect.height;
 	}
-}
-
-//------------------------------------------------------------------------------
-void Sprite::NormalizeSrcRect(const RectF& srcRect, const SizeI& textureSize, float* l, float* t, float* r, float* b)
-{
-	float tex_rw = 1.0f / textureSize.width;
-	float tex_rh = 1.0f / textureSize.height;
-	*l = srcRect.GetLeft() * tex_rw;
-	*t = srcRect.GetTop() * tex_rh;
-	*r = srcRect.GetRight() * tex_rw;
-	*b = srcRect.GetBottom() * tex_rh;
 }
 
 
@@ -295,7 +169,6 @@ void Sprite2D::OnRender2(DrawList* renderer)
 	Material* mat = GetMainMaterial();
 	Color colorScale = mat->GetColorScale();
 	colorScale.a *= mat->GetOpacity();
-	//renderer->SetBlendMode(m_renderState.blendMode);
 	renderer->SetTransform(m_combinedGlobalMatrix);
 	renderer->DrawSprite(Vector3::Zero, m_renderSize, m_anchor, GetTexture(), m_renderSourceRect, colorScale, SpriteBaseDirection::Basic2D, GetMainMaterial());
 }
@@ -350,49 +223,6 @@ void Sprite3D::Initialize(SceneGraph* owner)
 }
 
 //------------------------------------------------------------------------------
-detail::Sphere Sprite3D::GetBoundingSphere()
-{
-	return m_boundingSphere;
-}
-
-//------------------------------------------------------------------------------
-//void Sprite3D::OnRender(SceneGraphRenderingContext* dc)
-//{
-//	// レンダリングステートの設定
-//	// TODO: これは Sprite 描画のバッチのソート要素として、DrawSprite2D に渡せるようにしたい
-//	dc->ResetStates();
-//	dc->SetBlendMode(m_renderState.blendMode);
-//	dc->SetCullingMode(m_renderState.cullingMode);
-//	dc->SetDepthTestEnabled(m_renderState.depthTestEnabled);
-//	dc->SetDepthWriteEnabled(m_renderState.depthWriteEnabled);
-//
-//	detail::MaterialInstance* mat = m_materialList->GetMaterialInstance(0);
-//
-//	dc->DrawSprite3D(m_combinedGlobalMatrix, m_renderSize, Vector2::Zero, GetTexture(), m_renderSourceRect, mat->m_colorScale);
-//	//Sprite::DrawSubset(dc, subsetIndex);
-//	//if (subsetIndex == 0)
-//	//{
-//	//	dc->DrawSquarePrimitive(
-//	//		Vector3(m_upperLeft.x, m_upperLeft.y, m_upperLeft.z), Vector2(m_upperLeftUV.x, m_upperLeftUV.y), Color::White,
-//	//		Vector3(m_upperLeft.x, m_lowerRight.y, m_lowerRight.z), Vector2(m_upperLeftUV.x, m_lowerRightUV.y), Color::White,
-//	//		Vector3(m_lowerRight.x, m_lowerRight.y, m_lowerRight.z), Vector2(m_lowerRightUV.x, m_lowerRightUV.y), Color::White,
-//	//		Vector3(m_lowerRight.x, m_upperLeft.y, m_upperLeft.z), Vector2(m_lowerRightUV.x, m_upperLeftUV.y), Color::White);
-//	//}
-//}
-
-//------------------------------------------------------------------------------
-void Sprite3D::UpdateVertexData()
-{
-	Sprite::UpdateVertexData();
-
-	Vector2 s(m_renderSize.width / 2, m_renderSize.height / 2);
-
-
-	m_boundingSphere.center = Vector3::Zero;
-	m_boundingSphere.radius = s.GetLength();
-}
-
-//------------------------------------------------------------------------------
 void Sprite3D::OnRender2(DrawList* renderer)
 {
 	Material* mat = GetMainMaterial();
@@ -401,7 +231,6 @@ void Sprite3D::OnRender2(DrawList* renderer)
 	renderer->SetTransform(m_combinedGlobalMatrix);
 	renderer->DrawSprite(Vector3::Zero, m_renderSize, m_anchor, GetTexture(), m_renderSourceRect, colorScale, SpriteBaseDirection::ZMinus, GetMainMaterial());
 }
-
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
