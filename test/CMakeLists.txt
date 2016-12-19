@@ -46,12 +46,16 @@ include_directories(
 	"${PROJECT_SOURCE_DIR}/external/Lumino.Core/include"
 	"${PROJECT_SOURCE_DIR}/external/Lumino.Math/include"
 )
-	
-link_libraries(Lumino_Static)
+
+
+#set(LN_TEST_LIBS Lumino_static)
+#link_libraries(${LN_TEST_LIBS})
+
 
 add_definitions(-DGTEST_HAS_TR1_TUPLE=0)
 add_executable(Lumino_UnitTest ${LN_TEST_SOURCES})
-
+target_link_libraries(Lumino_UnitTest Lumino_Static)
+add_dependencies(Lumino_UnitTest Lumino_Static)
 
 #===============================================================================
 set(LN_SANDBOX_SOURCES
@@ -59,5 +63,6 @@ set(LN_SANDBOX_SOURCES
 )
 
 add_executable(LuminoSandbox ${LN_SANDBOX_SOURCES})
-target_link_libraries(LuminoSandbox LuminoFoundation)
+target_link_libraries(LuminoSandbox LuminoFoundation Lumino_Static)
+add_dependencies(LuminoSandbox Lumino_Static)
 

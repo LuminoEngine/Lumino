@@ -15,7 +15,7 @@ void Main()
 	sprite->SetPosition(200, 100);
 
 	// Lumino の更新処理 (ウィンドウへの描画などを行い、ウィンドウが閉じられていれば false を返す)
-	while (Engine::UpdateFrame())
+	while (Engine::Update())
 	{
 	}
 

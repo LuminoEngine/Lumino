@@ -46,6 +46,8 @@ set(LN_SOURCES
 	include/LuminoDxLib.h
 	include/LuminoGraphics.h
 	include/LuminoScene.h
+	src/LuminoEngine.PCH.cpp
+	src/LuminoEngine.PCH.h
 )
 
 set(LN_SOURCES_Base
@@ -946,11 +948,12 @@ if (LN_USE_EXTERNAL_Effekseer)
 endif()
 
 # Lumino_static
-add_library(${PROJECT_NAME}_Static STATIC ${LN_SOURCES})
-set_target_properties(${PROJECT_NAME}_Static PROPERTIES COMPILE_DEFINITIONS "${my_definitions}")
-set_target_properties(${PROJECT_NAME}_Static PROPERTIES OUTPUT_NAME "${LN_STATIC_LIB_OUTPUT_NAME}${LN_LIB_POSTFIX}")
-set_target_properties(${PROJECT_NAME}_Static PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
-target_link_libraries(${PROJECT_NAME}_Static ${LN_LINK_LIBS})
+add_library(Lumino_Static STATIC ${LN_SOURCES})
+set_target_properties(Lumino_Static PROPERTIES COMPILE_DEFINITIONS "${my_definitions}")
+set_target_properties(Lumino_Static PROPERTIES OUTPUT_NAME "${LN_STATIC_LIB_OUTPUT_NAME}${LN_LIB_POSTFIX}")
+set_target_properties(Lumino_Static PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
+target_link_libraries(Lumino_Static ${LN_LINK_LIBS})
+ln_add_pch(Lumino_Static "LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
 
 # Foundation
 add_library(LuminoFoundation STATIC ${LN_SOURCES_Foundation})
