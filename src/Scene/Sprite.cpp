@@ -19,7 +19,6 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite, VisualNode);
 //------------------------------------------------------------------------------
 Sprite::Sprite()
 	: VisualNode()
-	, m_spriteCoord(SpriteCoord_RZ)
 	, m_size()
 	, m_srcRect()
 	, m_flipMode(FlipMode_None)
@@ -32,31 +31,24 @@ Sprite::~Sprite()
 }
 
 //------------------------------------------------------------------------------
-void Sprite::Initialize(SceneGraph* owner, SpriteCoord spriteCoord)
+void Sprite::Initialize(SceneGraph* owner)
 {
+	LN_FAIL_CHECK_ARG(owner != nullptr) return;
+
 	VisualNode::Initialize(owner, 1);
-	m_spriteCoord = spriteCoord;
 	m_srcRect.Set(0, 0, -1, -1);
 	SetSize(Size(-1, -1));
 
 	SetBlendMode(BlendMode::Alpha);
 
-	// TODO: もらった owner に追加する、で。
-	if (spriteCoord == SpriteCoord_2D)
-	{
-		owner->GetManager()->GetDefaultSceneGraph2D()->GetRootNode()->AddChild(this);
-		SetAutoRemove(true);
-	}
-	else
-	{
-		owner->GetManager()->GetDefaultSceneGraph3D()->GetRootNode()->AddChild(this);
-		SetAutoRemove(true);
-	}
+	owner->GetRootNode()->AddChild(this);
+	SetAutoRemove(true);
 }
 
 //------------------------------------------------------------------------------
 void Sprite::SetTexture(Texture* texture)
 {
+	LN_FAIL_CHECK_ARG(m_materialList != nullptr) return;
 	m_materialList->GetAt(0)->SetMaterialTexture(texture);
 	UpdateVertexData();
 }
@@ -70,6 +62,7 @@ void Sprite::SetSize(const Size& size)
 //------------------------------------------------------------------------------
 Texture* Sprite::GetTexture() const
 {
+	LN_FAIL_CHECK_ARG(m_materialList != nullptr) return nullptr;
 	return m_materialList->GetAt(0)->GetMaterialTexture(nullptr);
 }
 
@@ -84,6 +77,28 @@ void Sprite::SetTextureRect(const RectF& rect)
 void Sprite::SetTextureRect(float x, float y, float width, float height)
 {
 	SetTextureRect(RectF(x, y, width, height));
+}
+
+//------------------------------------------------------------------------------
+void Sprite::SetAnchorPoint(const Vector2& ratio)
+{
+	m_anchor = ratio;
+}
+
+//------------------------------------------------------------------------------
+void Sprite::SetAnchorPoint(float ratioX, float ratioY)
+{
+	m_anchor.Set(ratioX, ratioY);
+}
+
+//------------------------------------------------------------------------------
+void Sprite::RenderSprite(DrawList* renderer, SpriteBaseDirection dir)
+{
+	Material* mat = GetMainMaterial();
+	Color colorScale = mat->GetColorScale();
+	colorScale.a *= mat->GetOpacity();
+	renderer->SetTransform(m_combinedGlobalMatrix);
+	renderer->DrawSprite(Vector3::Zero, m_renderSize, m_anchor, GetTexture(), m_renderSourceRect, colorScale, dir, GetMainMaterial());
 }
 
 //------------------------------------------------------------------------------
@@ -148,29 +163,13 @@ Sprite2D::~Sprite2D()
 //------------------------------------------------------------------------------
 void Sprite2D::Initialize(SceneGraph* owner)
 {
-	Sprite::Initialize(owner, SpriteCoord_2D);
-}
-
-//------------------------------------------------------------------------------
-void Sprite2D::SetAnchorPoint(const Vector2& ratio)
-{
-	m_anchor = ratio;
-}
-
-//------------------------------------------------------------------------------
-void Sprite2D::SetAnchorPoint(float ratioX, float ratioY)
-{
-	m_anchor.Set(ratioX, ratioY);
+	Sprite::Initialize(owner);
 }
 
 //------------------------------------------------------------------------------
 void Sprite2D::OnRender2(DrawList* renderer)
 {
-	Material* mat = GetMainMaterial();
-	Color colorScale = mat->GetColorScale();
-	colorScale.a *= mat->GetOpacity();
-	renderer->SetTransform(m_combinedGlobalMatrix);
-	renderer->DrawSprite(Vector3::Zero, m_renderSize, m_anchor, GetTexture(), m_renderSourceRect, colorScale, SpriteBaseDirection::Basic2D, GetMainMaterial());
+	RenderSprite(renderer, SpriteBaseDirection::Basic2D);
 }
 
 
@@ -219,17 +218,13 @@ Sprite3D::~Sprite3D()
 //------------------------------------------------------------------------------
 void Sprite3D::Initialize(SceneGraph* owner)
 {
-	Sprite::Initialize(owner, SpriteCoord_RZ);
+	Sprite::Initialize(owner);
 }
 
 //------------------------------------------------------------------------------
 void Sprite3D::OnRender2(DrawList* renderer)
 {
-	Material* mat = GetMainMaterial();
-	Color colorScale = mat->GetColorScale();
-	colorScale.a *= mat->GetOpacity();
-	renderer->SetTransform(m_combinedGlobalMatrix);
-	renderer->DrawSprite(Vector3::Zero, m_renderSize, m_anchor, GetTexture(), m_renderSourceRect, colorScale, SpriteBaseDirection::ZMinus, GetMainMaterial());
+	RenderSprite(renderer, SpriteBaseDirection::ZMinus);
 }
 
 LN_NAMESPACE_SCENE_END
