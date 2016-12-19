@@ -56,7 +56,7 @@ void FontGlyphTextureCache::Initialize(GraphicsManager* manager, RawFont* font)
 	//m_glyphsFillTexture = m_manager->GetGraphicsDevice()->CreateTexture(SizeI(w, w), 1, TextureFormat::R8G8B8A8, nullptr);
 	//m_glyphsFillTexture = Texture2D::Create(SizeI(w, w), TextureFormat_R8G8B8A8, 1);	// TODO: GraphicsManager?
 	m_fillGlyphsTexture = LN_NEW Texture2D();
-	m_fillGlyphsTexture->Initialize(m_manager, SizeI(w, w), TextureFormat::R8G8B8A8, false, ResourceUsage::Static);
+	m_fillGlyphsTexture->Initialize(m_manager, SizeI(w, w), TextureFormat::R8G8B8A8, false, ResourceUsage::Dynamic);
 
 	// 検索に使う情報をリセット
 	m_curPrimUsedFlags.resize(m_maxCacheGlyphs);
@@ -109,17 +109,13 @@ void FontGlyphTextureCache::LookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, b
 			((info.index % m_glyphWidthCount) * m_glyphMaxBitmapSize.width),
 			((info.index / m_glyphWidthCount) * m_glyphMaxBitmapSize.height),
 			info.size.width, info.size.height);
-		//printf("p: %d %d\n", outInfo->srcRect.X, outInfo->srcRect.Y);
 
 
 		// Fill
-		//RectI dst(outInfo->srcRect.x + outInfo->outlineOffset, outInfo->srcRect.y + outInfo->outlineOffset, glyphBitmap->GlyphBitmap->GetSize());
-		//RectI src(0, 0, glyphBitmap->GlyphBitmap->GetSize());
 		PointI pt(outInfo->srcRect.x + outInfo->outlineOffset, outInfo->srcRect.y + outInfo->outlineOffset);
 		m_fillGlyphsTexture->Blt(pt.x, pt.y, glyphBitmap->GlyphBitmap);
 		//m_lockedFillBitmap->BitBlt(dst, info->fillGlyphBitmap, src, Color::White, false);
 	}
-	//
 
 	// 今回、cacheIndex を使うことをマーク
 	if (!m_curPrimUsedFlags[cacheIndex])
@@ -173,14 +169,6 @@ void FontGlyphTextureCache::CommitCacheGlyphInfo(CacheGlyphInfo* info, Rect* src
 Driver::ITexture* FontGlyphTextureCache::GetGlyphsFillTexture()
 {
 	return m_fillGlyphsTexture->ResolveDeviceObject();
-	//if (m_lockedFillBitmap != nullptr)
-	//{
-	//	//m_lockedFillBitmap->Save("test4.png");
-	//	m_glyphsFillTexture->Unlock();
-	//	m_lockedFillBitmap = nullptr;
-	//}
-	////printf("--\n");
-	//return m_glyphsFillTexture;
 }
 
 //------------------------------------------------------------------------------

@@ -1,6 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include <Lumino/Graphics/GraphicsContext.h>
+#include <Lumino/Graphics/Rendering.h>
 #include "SceneGraphManager.h"
 #include "RenderingPass.h"
 #include <Lumino/Scene/SceneGraph.h>
@@ -82,14 +83,34 @@ void TextBlock2D::SetAnchorPoint(float ratioX, float ratioY)
 void TextBlock2D::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 {
 	VisualNode::UpdateFrameHierarchy(parent, deltaTime);
-	m_paragraph->MeasureLayout(Size::MaxValue);
-	m_paragraph->ArrangeLayout(RectF(0, 0, Size::MaxValue));
+	m_paragraph->UpdateLayout(Size::MaxValue);
+	//m_paragraph->MeasureLayout(Size::MaxValue);
+	//m_paragraph->ArrangeLayout(RectF(0, 0, Size::MaxValue));
 }
 
 //------------------------------------------------------------------------------
 detail::Sphere TextBlock2D::GetBoundingSphere()
 {
 	return VisualNode::GetBoundingSphere();
+}
+
+//------------------------------------------------------------------------------
+void TextBlock2D::OnRender2(DrawList* renderer)
+{
+	struct LocalRenderer : detail::IDocumentsRenderer
+	{
+		DrawList* renderer;
+
+		virtual void OnDrawGlyphRun(const Matrix& transform, GlyphRun* glyphRun, const PointF& point) override
+		{
+			renderer->SetTransform(transform);
+			renderer->DrawGlyphRun(point, glyphRun);
+		}
+	} r;
+	r.renderer = renderer;
+
+	const Size& size = m_paragraph->GetRenderSize();
+	m_paragraph->Render(Matrix::MakeTranslation(-size.width * m_anchor.x, -size.height * m_anchor.y, 0) * m_combinedGlobalMatrix, &r);
 }
 
 //------------------------------------------------------------------------------

@@ -39,7 +39,7 @@ TextElement::TextElement()
 	: m_manager(nullptr)
 	, m_fontDataModified(false)
 	, m_position()
-	, m_size()
+	, m_size(NAN, NAN)
 	, m_margin()
 	, m_padding()
 	, m_anchor(AlignmentAnchor::None)
@@ -164,7 +164,9 @@ Size Block::MeasureOverride(const Size& constraint)
 	for (TextElement* child : m_childElements)
 	{
 		// TODO: とりあえず 左から右へのフロー
-		Size size = child->MeasureOverride(constraint);
+		//Size size = child->MeasureOverride(constraint);
+		child->MeasureLayout(constraint);
+		Size size = child->GetLayoutDesiredSize();
 		childDesirdSize.width += size.width;
 		childDesirdSize.height = std::max(childDesirdSize.height, size.height);
 	}
@@ -185,11 +187,11 @@ Size Block::ArrangeOverride(const Size& finalSize)
 		childRect.x += prevChildSize;
 		prevChildSize = childDesiredSize.width;
 		childRect.width = prevChildSize;
-		childRect.height = finalSize.height;
+		childRect.height = std::max(childRect.height, childDesiredSize.height);
 		child->ArrangeLayout(childRect);
 	}
 
-	return finalSize;
+	return Size::Min(finalSize, childRect.GetSize());
 }
 
 //==============================================================================
@@ -287,7 +289,7 @@ Size Run::MeasureOverride(const Size& constraint)
 //------------------------------------------------------------------------------
 void Run::Render(const Matrix& transform, IDocumentsRenderer* renderer)
 {
-	renderer->OnDrawGlyphRun(transform, m_glyphRun, PointI::Zero);
+	renderer->OnDrawGlyphRun(transform, m_glyphRun, PointF::Zero);
 }
 
 } // namespace detail

@@ -233,7 +233,7 @@ TEST_F(Test_Scene_Sprite3D, ViewFrustumCulling)
 }
 
 
-#if 0
+#if 1
 
 //==============================================================================
 class Test_Scene_TextBlock2D : public ::testing::Test
@@ -251,6 +251,7 @@ TEST_F(Test_Scene_TextBlock2D, Basic)
 		Engine::Update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_TextBlock2D.Basic1.png")));
 	}
+	printf("--------\n");
 	{
 		auto text1 = TextBlock2D::Create();
 		text1->SetText(_T("upper left"));

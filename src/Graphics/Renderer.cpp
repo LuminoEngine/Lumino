@@ -43,7 +43,7 @@ Renderer::Renderer(detail::GraphicsManager* manager)
 	GraphicsResourceObject::Initialize(manager);
 
 	//if (m_manager->GetRenderingType() == GraphicsRenderingType::Deferred) {
-		m_primaryCommandList = LN_NEW RenderingCommandList();
+	m_primaryCommandList = LN_NEW RenderingCommandList(manager);
 	//}
 }
 

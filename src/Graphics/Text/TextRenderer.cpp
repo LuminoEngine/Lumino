@@ -379,6 +379,9 @@ void TextRenderer::FlushInternal(FontGlyphTextureCache* cache)
 	int dataCount = m_glyphLayoutDataList.GetCount();
 	RenderBulkData dataListData(&m_glyphLayoutDataList[0], sizeof(TextRendererCore::GlyphRunData) * dataCount);
 
+	// Texture::Blit で転送されるものを Flush する
+	cache->GetGlyphsFillTexture();
+
 	LN_ENQUEUE_RENDER_COMMAND_5(
 		TextRenderer_Flush, m_manager,
 		TextRendererCore*, m_core,
