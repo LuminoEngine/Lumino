@@ -5,7 +5,7 @@
 
 LN_NAMESPACE_BEGIN
 class PlatformWindow;
-
+class SwapChain;
 
 /**
 	@brief		
