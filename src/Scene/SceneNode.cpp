@@ -46,7 +46,6 @@ SceneNode::SceneNode()
 	, m_isAutoRemove(false)
 	, m_children(RefPtr<SceneNodeList>::MakeRef())
 	, m_parentNode(NULL)
-	, m_zDistance(FLT_MAX)
 	, m_isVisible(true)
 {
 //	memset(m_renderingPassClientDataList, 0, sizeof(m_renderingPassClientDataList));
@@ -168,28 +167,6 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 			++i;
 		}
 	}
-}
-
-//------------------------------------------------------------------------------
-void SceneNode::UpdateViewFlustumHierarchy(Camera* camera, SceneNodeArray* renderingNodeList, LightNodeList* renderingLightList)
-{
-	// SceneNode 自体は描画機能を持たないので何もせず、子の処理を行う
-    for (int i = 0; i < m_children->GetCount(); ++i)
-    {
-        m_children->GetAt(i)->UpdateViewFlustumHierarchy(camera, renderingNodeList, renderingLightList);
-    }
-}
-
-//------------------------------------------------------------------------------
-bool SceneNode::CmpZAndPrioritySort(const SceneNode* left, const SceneNode* right)
-{
-	if (left->m_priority == right->m_priority)
-	{
-		// 距離は降順。遠いほうを先に描画する。
-		return left->m_zDistance > right->m_zDistance;
-	}
-	// 優先度は降順。高いほうを先に描画する。
-	return left->m_priority > right->m_priority;
 }
 
 //------------------------------------------------------------------------------

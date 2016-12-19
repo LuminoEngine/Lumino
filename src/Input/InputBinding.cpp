@@ -26,14 +26,14 @@ InputBinding::~InputBinding()
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(KeyboardBinding, InputBinding);
 
 //------------------------------------------------------------------------------
-KeyboardBindingPtr KeyboardBinding::Create(Key key, ModifierKeys modifierKeys)
+KeyboardBindingPtr KeyboardBinding::Create(Keys key, ModifierKeys modifierKeys)
 {
 	auto ptr = KeyboardBindingPtr::MakeRef(key, modifierKeys);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-KeyboardBinding::KeyboardBinding(Key key, ModifierKeys modifierKeys)
+KeyboardBinding::KeyboardBinding(Keys key, ModifierKeys modifierKeys)
 	: m_key(key)
 	, m_modifierKeys(modifierKeys)
 {

@@ -92,9 +92,6 @@ public:
 		}
 	}
 
-	//MouseEventArgs* CreateMouseEventArgs(MouseButton button, int wheel, float x, float y, int clickCount);	// TODO: やめる
-	//KeyEventArgs* CreateKeyEventArgs(Key keyCode, bool isAlt, bool isShift, bool isControl);	// TODO: やめる
-
 	template<class TEventArgs, typename ...TArgs>
 	TEventArgs* Create(TArgs... args)
 	{

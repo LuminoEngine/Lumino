@@ -37,7 +37,7 @@ public:
 	InputDriver();
 	virtual ~InputDriver();
 
-	bool QueryKeyState(Key key);
+	bool QueryKeyState(Keys key);
 	bool QueryMouseState(MouseAction action);
 
 	void PreUpdateFrame();
@@ -59,10 +59,10 @@ public:
 
 
 
-	void OnKeyDown(Key key);
-	void OnKeyUp(Key key);
-	void OnMouseButtonDown(MouseButton button);
-	void OnMouseButtonUp(MouseButton button);
+	void OnKeyDown(Keys key);
+	void OnKeyUp(Keys key);
+	void OnMouseButtonDown(MouseButtons button);
+	void OnMouseButtonUp(MouseButtons button);
 
 
 
@@ -75,9 +75,9 @@ private:
 	
 
 
-	std::array<bool, (int)Key::TERMINATOR>			m_keyStatus;
-	std::array<bool, (int)MouseButton::TERMINATOR>	m_mouseStatus;
-	std::array<MouseClickTracker, (int)MouseButton::TERMINATOR>	m_mouseClickTrackers;
+	std::array<bool, 256>			m_keyStatus;
+	std::array<bool, 8>	m_mouseStatus;
+	std::array<MouseClickTracker, 8>	m_mouseClickTrackers;
 	float				m_mouseButtonClickTimeout;
 	PointI	m_mousePoint;
 	int		m_mouseWheel;

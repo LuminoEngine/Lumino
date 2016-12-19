@@ -115,23 +115,23 @@ public:
 		@param[in]	key				: 関連付けられるキー
 		@param[in]	modifierKeys	: 関連付けられる修飾キー
 	*/
-	static KeyboardBindingPtr Create(Key key, ModifierKeys modifierKeys = ModifierKeys::None);
+	static KeyboardBindingPtr Create(Keys key, ModifierKeys modifierKeys = ModifierKeys::None);
 
 public:
 
 	/** 関連付けられるキー */
-	Key GetKey() const { return m_key; }
+	Keys GetKey() const { return m_key; }
 
 	/** 関連付けられる修飾キー */
 	ModifierKeys GetModifierKeys() const { return m_modifierKeys; }
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	KeyboardBinding(Key key, ModifierKeys modifierKeys);
+	KeyboardBinding(Keys key, ModifierKeys modifierKeys);
 	virtual ~KeyboardBinding();
 	virtual detail::InputBindingType GetType() const override;
 
 private:
-	Key				m_key;
+	Keys			m_key;
 	ModifierKeys	m_modifierKeys;
 };
 

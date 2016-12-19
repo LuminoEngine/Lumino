@@ -31,7 +31,7 @@ public:
 		@param[in]	clientX		: X 座標
 		@param[in]	clientY		: Y 座標
 	*/
-	virtual bool InjectMouseButtonDown(MouseButton button, float clientX, float clientY) = 0;
+	virtual bool InjectMouseButtonDown(MouseButtons button, float clientX, float clientY) = 0;
 
 	/**
 		@brief		マウスボタンが離された時のイベントを受け取ります。
@@ -39,7 +39,7 @@ public:
 		@param[in]	clientX		: X 座標
 		@param[in]	clientY		: Y 座標
 	*/
-	virtual bool InjectMouseButtonUp(MouseButton button, float clientX, float clientY) = 0;
+	virtual bool InjectMouseButtonUp(MouseButtons button, float clientX, float clientY) = 0;
 
 	/**
 		@brief		マウスホイールが操作された時のイベントを受け取ります。
@@ -52,14 +52,14 @@ public:
 		@param[in]	keyCode		: キーコード
 		@param[in]	modifierKeys: 修飾キー
 	*/
-	virtual bool InjectKeyDown(Key keyCode, ModifierKeys modifierKeys) = 0;
+	virtual bool InjectKeyDown(Keys keyCode, ModifierKeys modifierKeys) = 0;
 
 	/**
 		@brief		キーが離された時のイベントを受け取ります。
 		@param[in]	keyCode		: キーコード
 		@param[in]	modifierKeys: 修飾キー
 	*/
-	virtual bool InjectKeyUp(Key keyCode, ModifierKeys modifierKeys) = 0;
+	virtual bool InjectKeyUp(Keys keyCode, ModifierKeys modifierKeys) = 0;
 
 	/**
 		@brief		文字が入力された時のイベントを受け取ります。

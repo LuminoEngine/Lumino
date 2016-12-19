@@ -38,11 +38,11 @@ LN_INTERNAL_ACCESS:
 	// Implements IUIInjectedInputReceiver
 	//virtual bool InjectViewportSizeChanged(int width, int height) override;
 	virtual bool InjectMouseMove(float clientX, float clientY) override;
-	virtual bool InjectMouseButtonDown(MouseButton button, float clientX, float clientY) override;
-	virtual bool InjectMouseButtonUp(MouseButton button, float clientX, float clientY) override;
+	virtual bool InjectMouseButtonDown(MouseButtons button, float clientX, float clientY) override;
+	virtual bool InjectMouseButtonUp(MouseButtons button, float clientX, float clientY) override;
 	virtual bool InjectMouseWheel(int delta) override;
-	virtual bool InjectKeyDown(Key keyCode, ModifierKeys modifierKeys) override;
-	virtual bool InjectKeyUp(Key keyCode, ModifierKeys modifierKeys) override;
+	virtual bool InjectKeyDown(Keys keyCode, ModifierKeys modifierKeys) override;
+	virtual bool InjectKeyUp(Keys keyCode, ModifierKeys modifierKeys) override;
 	virtual bool InjectTextInput(TCHAR ch) override;
 
 private:
@@ -67,7 +67,7 @@ private:
 	UIElement*			m_capturedElement;
 
 	PointF				m_mousePosition;
-	MouseClickTracker	m_mouseClickTrackers[MouseButton::TERMINATOR];
+	MouseClickTracker	m_mouseClickTrackers[8];
 
 	Size				m_viewPixelSize;
 };

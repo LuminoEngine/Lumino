@@ -555,10 +555,10 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseMove(int x, int y)
 }
 
 //------------------------------------------------------------------------------
-bool CylinderMouseMoveCameraBehavior::InjectMouseButtonDown(MouseButton button, int x, int y)
+bool CylinderMouseMoveCameraBehavior::InjectMouseButtonDown(MouseButtons button, int x, int y)
 {
 	// 右ボタン
-	if (button == MouseButton::Right)
+	if (button == MouseButtons::Right)
 	{
 		m_RDrag = true;
 		m_prevPos.x = x;
@@ -567,7 +567,7 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseButtonDown(MouseButton button, 
 
 	}
 	// 中ボタン
-	else if (button == MouseButton::Middle)
+	else if (button == MouseButtons::Middle)
 	{
 		m_MDrag = true;
 		m_prevPos.x = x;
@@ -578,17 +578,17 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseButtonDown(MouseButton button, 
 }
 
 //------------------------------------------------------------------------------
-bool CylinderMouseMoveCameraBehavior::InjectMouseButtonUp(MouseButton button, int x, int y)
+bool CylinderMouseMoveCameraBehavior::InjectMouseButtonUp(MouseButtons button, int x, int y)
 {
 	// 右ボタン
-	if (button == MouseButton::Right)
+	if (button == MouseButtons::Right)
 	{
 		m_RDrag = false;
 		return true;
 
 	}
 	// 中ボタン
-	else if (button == MouseButton::Middle)
+	else if (button == MouseButtons::Middle)
 	{
 		m_MDrag = false;
 		return true;

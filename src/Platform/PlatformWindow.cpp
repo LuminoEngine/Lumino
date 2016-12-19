@@ -116,7 +116,7 @@ bool PlatformWindow::SendPlatformActivateChangedEvent(PlatformWindow* sender, bo
 }
 
 //------------------------------------------------------------------------------
-bool PlatformWindow::SendPlatformKeyEvent(PlatformEventType type_, PlatformWindow* sender_, Key keyCode_, ModifierKeys modifierKeys_, char keyChar_)
+bool PlatformWindow::SendPlatformKeyEvent(PlatformEventType type_, PlatformWindow* sender_, Keys keyCode_, ModifierKeys modifierKeys_, char keyChar_)
 {
 	PlatformEventArgs e;
 	e.type = type_;

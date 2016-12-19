@@ -11,7 +11,7 @@ LN_NAMESPACE_BEGIN
 class EngineManager;
 
 /** マウスボタン */
-LN_ENUM(MouseButton)
+enum class MouseButtons
 {
 	None = 0,		/**< 無効または押されていないことを示す */
 	Left,			/**< 左ボタン */
@@ -20,13 +20,10 @@ LN_ENUM(MouseButton)
 
 	X1,				/**< 拡張ボタン1 */
 	X2,				/**< 拡張ボタン2 */
-
-	TERMINATOR,
 };
-LN_ENUM_DECLARE(MouseButton);
 
 /** キーコード (NumPad はサポートしていない) */
-enum class Key
+enum class Keys
 {
 	Unknown = 0,
 

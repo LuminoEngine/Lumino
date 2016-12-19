@@ -393,7 +393,6 @@ RefPtr<Shader> Shader::Create(const char* code, int length)
 Shader::Shader()
 	: m_deviceObj(nullptr)
 	, m_sourceCode()
-	, m_viewportPixelSize(nullptr)
 	, m_modifiedVariables(true)
 {
 }
@@ -464,13 +463,6 @@ void Shader::PostInitialize()
 	{
 		ShaderVariable* v = LN_NEW ShaderVariable(this, m_deviceObj->GetVariable(i));
 		m_variables.Add(v);
-
-		if (v->GetSemanticName().Compare(_T("VIEWPORTPIXELSIZE"), 17, CaseSensitivity::CaseInsensitive) == 0)
-		{
-			// こいつが必要なのは DX9 の HLSL だけなので、セマンティクスだけ見ればOK
-			m_viewportPixelSize = v;
-		}
-
 		m_semanticsManager.TryPushVariable(v);
 	}
 
@@ -484,19 +476,6 @@ void Shader::PostInitialize()
 //------------------------------------------------------------------------------
 void Shader::TryCommitChanges()
 {
-	// TODO: いらなそう
-	//if (m_viewportPixelSize != nullptr)
-	//{
-	//	Texture* tex = GetManager()->GetRenderer()->GetRenderTarget(0);
-	//	const SizeI& size = tex->GetRealSize();
-	//	float w = (float)size.width;
-	//	float h = (float)size.height;
-	//	const Vector4& vec = m_viewportPixelSize->GetVector();
-	//	if (m_viewportPixelSize->GetType() == ShaderVariableType_Unknown || vec.x != w || vec.y != h) {
-	//		m_viewportPixelSize->SetVector(Vector4(w, h, 0, 0));
-	//	}
-	//}
-
 	auto* serializer = GetManager()->GetShaderVariableCommitSerializeHelper();
 	serializer->BeginSerialize();
 	for (ShaderVariable* v : GetVariables())

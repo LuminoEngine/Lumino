@@ -1,4 +1,4 @@
-#include <TestConfig.h>
+ï»¿#include <TestConfig.h>
 #include <Lumino/Scene/TextBlock.h>
 
 //==============================================================================
@@ -12,8 +12,8 @@ protected:
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_Sprite, Basic)
 {
-	// <Test> •’Ê‚Ì•`‰æ
-	// <Test> •s“§–¾“x‚Ìİ’è
+	// <Test> æ™®é€šã®æç”»
+	// <Test> ä¸é€æ˜åº¦ã®è¨­å®š
 	{
 		auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
 
@@ -61,26 +61,26 @@ TEST_F(Test_Scene_Sprite, BlendMode)
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_Sprite, Anchor)
 {
-	// <Test> Œ´“_‚Ìw’è
+	// <Test> åŸç‚¹ã®æŒ‡å®š
 	{
 		auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
 
-		// ¶ãŒ´“_
+		// å·¦ä¸ŠåŸç‚¹
 		auto sprite1 = Sprite2D::Create(tex);
 		sprite1->SetPosition(0, 0);
 		sprite1->SetAnchorPoint(0, 0);
 
-		// ’†‰›Œ´“_
+		// ä¸­å¤®åŸç‚¹
 		auto sprite2 = Sprite2D::Create(tex);
 		sprite2->SetPosition(32, 32);
 		sprite2->SetAnchorPoint(Vector2(0.5, 0.5));
 
-		// ‰E‰ºŒ´“_
+		// å³ä¸‹åŸç‚¹
 		auto sprite3 = Sprite2D::Create(tex);
 		sprite3->SetPosition(64, 64);
 		sprite3->SetAnchorPoint(1, 1);
 
-		// ’†‰›‰ºŒ´“_
+		// ä¸­å¤®ä¸‹åŸç‚¹
 		auto sprite4 = Sprite2D::Create(tex);
 		sprite4->SetPosition(32, 120);
 		sprite4->SetAnchorPoint(0.5, 1);
@@ -93,9 +93,9 @@ TEST_F(Test_Scene_Sprite, Anchor)
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_Sprite, DrawCallCount)
 {
-	// <Test> ƒXƒe[ƒg‚ª“¯ˆê‚Å‚ ‚ê‚Î1“x‚Ìƒhƒ[ƒR[ƒ‹‚É‚Ü‚Æ‚ß‚ç‚ê‚éB
+	// <Test> ã‚¹ãƒ†ãƒ¼ãƒˆãŒåŒä¸€ã§ã‚ã‚Œã°1åº¦ã®ãƒ‰ãƒ­ãƒ¼ã‚³ãƒ¼ãƒ«ã«ã¾ã¨ã‚ã‚‰ã‚Œã‚‹ã€‚
 	{
-		// 1“x‘‚¢‚ÄA‰Šúó‘Ô‚Ì‚Æ‚«‚Ì•`‰æ”‚ğŠo‚¦‚Ä‚¨‚­
+		// 1åº¦æ›¸ã„ã¦ã€åˆæœŸçŠ¶æ…‹ã®ã¨ãã®æç”»æ•°ã‚’è¦šãˆã¦ãŠã
 		Engine::Update();
 		TestEnv::WaitRendering();
 		int defaultCount = EngineDiag::GetGraphicsDeviceDrawCount();
@@ -114,14 +114,14 @@ TEST_F(Test_Scene_Sprite, DrawCallCount)
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 {
-	// <Issues> ƒfƒtƒHƒ‹ƒg‚ÌƒTƒ“ƒvƒ‰ƒXƒe[ƒg‚ÌŒJ‚è•Ô‚µƒ‚[ƒh‚Í Repert ‚É‚È‚éB
+	// <Issues> ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ã‚µãƒ³ãƒ—ãƒ©ã‚¹ãƒ†ãƒ¼ãƒˆã®ç¹°ã‚Šè¿”ã—ãƒ¢ãƒ¼ãƒ‰ã¯ Repert ã«ãªã‚‹ã€‚
 	{
 		auto sprite1 = Sprite2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
-		sprite1->SetSrcRect(32, 0, 32, 32);
+		sprite1->SetTextureRect(32, 0, 32, 32);
 		Engine::Update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Scene_Sprite.Issues_Volkoff_1.png")));
 	}
-	// <Issues> 2D ‚Å‚Í Z ƒ\[ƒg‚ÌŠî€‚ªƒJƒƒ‰ˆÊ’u‚©‚ç‚Ì’¼ü‹——£‚Å‚Í‚È‚­AƒXƒNƒŠ[ƒ“‚©‚ç‚Ì‹——£‚Å‚È‚¯‚ê‚Î‚È‚ç‚È‚¢B
+	// <Issues> 2D ã§ã¯ Z ã‚½ãƒ¼ãƒˆã®åŸºæº–ãŒã‚«ãƒ¡ãƒ©ä½ç½®ã‹ã‚‰ã®ç›´ç·šè·é›¢ã§ã¯ãªãã€ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã‹ã‚‰ã®è·é›¢ã§ãªã‘ã‚Œã°ãªã‚‰ãªã„ã€‚
 	{
 		auto tex1 = Texture2D::Create(32, 32);
 		auto tex2 = Texture2D::Create(32, 32);
@@ -130,21 +130,21 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 		auto s1 = Sprite2D::Create(tex1);
 		auto s2 = Sprite2D::Create(tex2);
 		s1->SetPosition(10, 20, 100);
-		s2->SetPosition(15, 25, 100);	// ƒXƒNƒŠ[ƒ“‚ª Z •½–Ê‚É•½s‚È‚çAZ ‚ª“¯‚¶‚Æ‚«‚Í‚ ‚Æ‚©‚çì‚Á‚½‚à‚Ì‚ªí‚Éè‘O‚É‚È‚éB
+		s2->SetPosition(15, 25, 100);	// ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ãŒ Z å¹³é¢ã«å¹³è¡Œãªã‚‰ã€Z ãŒåŒã˜ã¨ãã¯ã‚ã¨ã‹ã‚‰ä½œã£ãŸã‚‚ã®ãŒå¸¸ã«æ‰‹å‰ã«ãªã‚‹ã€‚
 		Engine::Update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Scene_Sprite.Issues_Volkoff_2.png")));
 	}
-	// <Issues> 2D ‚Å‚Í Z ƒ\[ƒg‚ÌŠî€‚ªƒJƒƒ‰ˆÊ’u‚©‚ç‚Ì’¼ü‹——£‚Å‚Í‚È‚­AƒXƒNƒŠ[ƒ“‚©‚ç‚Ì‹——£‚Å‚È‚¯‚ê‚Î‚È‚ç‚È‚¢B
+	// <Issues> 2D ã§ã¯ Z ã‚½ãƒ¼ãƒˆã®åŸºæº–ãŒã‚«ãƒ¡ãƒ©ä½ç½®ã‹ã‚‰ã®ç›´ç·šè·é›¢ã§ã¯ãªãã€ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã‹ã‚‰ã®è·é›¢ã§ãªã‘ã‚Œã°ãªã‚‰ãªã„ã€‚
 
-	// <Issues> ƒeƒNƒXƒ`ƒƒ‚ğ•ÏX‚Å‚«‚é‚±‚ÆB
+	// <Issues> ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’å¤‰æ›´ã§ãã‚‹ã“ã¨ã€‚
 	{
 		auto tex1 = Texture2D::Create(32, 32);
 		auto tex2 = Texture2D::Create(32, 32);
 		tex1->Clear(Color32::Green);
 		tex2->Clear(Color32::Blue);
 		auto s1 = Sprite2D::Create(tex1);
-		Engine::Update();			// 1“x•`‚­
-		s1->SetTexture(tex2);			// Ÿ‚ÉƒeƒNƒXƒ`ƒƒ‚ğ•ÏX‚·‚é
+		Engine::Update();			// 1åº¦æã
+		s1->SetTexture(tex2);			// æ¬¡ã«ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’å¤‰æ›´ã™ã‚‹
 		Engine::Update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Scene_Sprite.Issues_Volkoff_3.png")));
 	}
@@ -165,14 +165,14 @@ protected:
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_Sprite3D, Basic)
 {
-	// <Test> •’Ê‚Ì•`‰æ
+	// <Test> æ™®é€šã®æç”»
 	{
 		auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
 		auto sprite1 = Sprite3D::Create(1, 1, tex);
 		Engine::Update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite3D.Basic1.png")));
 	}
-	// <Test> •s“§–¾“x‚Ìİ’è
+	// <Test> ä¸é€æ˜åº¦ã®è¨­å®š
 	{
 		auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
 		auto sprite1 = Sprite3D::Create(1, 1, tex);
@@ -187,8 +187,8 @@ TEST_F(Test_Scene_Sprite3D, Basic)
 		Engine::Update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite3D.Basic2.png"), 95));
 	}
-	// <Test> •’Ê‚Ì•`‰æ
-	// <Test> •s“§–¾“x‚Ìİ’è
+	// <Test> æ™®é€šã®æç”»
+	// <Test> ä¸é€æ˜åº¦ã®è¨­å®š
 	//{
 	//	Engine::Update();
 	//	int defaultCount = EngineDiag::GetGraphicsDeviceDrawCount();
@@ -211,7 +211,7 @@ TEST_F(Test_Scene_Sprite3D, Basic)
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_Sprite3D, ViewFrustumCulling)
 {
-	// <Test> ‹‘ä‰»ƒŠƒ“ƒO
+	// <Test> è¦–éŒå°åŒ–ãƒªãƒ³ã‚°
 	{
 		Engine::Update();
 		TestEnv::WaitRendering();
@@ -228,7 +228,7 @@ TEST_F(Test_Scene_Sprite3D, ViewFrustumCulling)
 		Engine::Update();
 		TestEnv::WaitRendering();
 		int count3 = EngineDiag::GetGraphicsDeviceDrawCount();
-		ASSERT_EQ(count1, count3);	// Š®‘S‚É”ÍˆÍŠO‚È‚Ì‚Å•`‰æ‚³‚ê‚È‚¢
+		ASSERT_EQ(count1, count3);	// å®Œå…¨ã«ç¯„å›²å¤–ãªã®ã§æç”»ã•ã‚Œãªã„
 	}
 }
 

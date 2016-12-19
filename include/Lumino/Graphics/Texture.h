@@ -4,6 +4,9 @@
 #include "Common.h"
 #include "GraphicsResourceObject.h"
 
+#pragma push_macro("DrawText")
+#undef DrawText
+
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail { class RenderTargetTextureCache; }
@@ -40,18 +43,15 @@ public:
 	*/
 	TextureFormat GetFormat() const;
 
+LN_INTERNAL_ACCESS:
+	Driver::ITexture* GetDeviceObjectConst() const { return m_deviceObj; }
+	Driver::ITexture* ResolveDeviceObject() { ApplyModifies(); return m_deviceObj; }
+	const SizeI& GetSize() const;
 
 protected:
 	Texture();
 	virtual ~Texture();
 
-LN_INTERNAL_ACCESS:
-	Driver::ITexture* GetDeviceObjectConst() const { return m_deviceObj; }
-	Driver::ITexture* ResolveDeviceObject() { ApplyModifies(); return m_deviceObj; }
-	const SizeI& GetSize() const;
-	//const SizeI& GetRealSize() const;
-
-protected:
 	friend struct ReadLockTextureCommand;
 	friend struct ReadUnlockTextureCommand;
 	Driver::ITexture*	m_deviceObj;
@@ -61,7 +61,7 @@ protected:
 };
 
 /**
-	@brief		テクスチャのクラスです。
+	@brief		2D テクスチャのクラスです。
 */
 class Texture2D
 	: public Texture
@@ -112,7 +112,11 @@ public:
 		@param[in]	mipmap		: ミップマップの有無
 	*/
 	static Texture2DPtr Create(const void* data, size_t size, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
-
+	
+	/**
+		@brief		白い小さなテクスチャを取得します。
+		@detail		このテクスチャにの全ピクセルは不透明な白 Color32(255, 255, 255, 255) です。
+	*/
 	static Texture2DPtr GetWhiteTexture();
 
 public:
@@ -125,12 +129,10 @@ public:
 	
 	void Blt(int x, int y, Bitmap* srcBitmap/*, const RectI& srcRect*/);
 
-#pragma push_macro("DrawText")
-#undef DrawText
+
 	void DrawText(const StringRef& text, const RectI& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment);
 	void LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const RectI& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment);
 	// TODO: ↑ TextAlignment じゃなくて TextLayoutFlags の方が良いと思う
-#pragma pop_macro("DrawText")
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	Texture2D();
@@ -146,28 +148,21 @@ LN_INTERNAL_ACCESS:
 	void TryLock();
 	void SetSubData(const PointI& offset, Bitmap* bitmap);
 	void SetData(const void* data);
-	//Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }
 
 protected:
 	virtual void ApplyModifies() override;
 
-	friend struct SetRenderTargetCommand;	// TODO
-	friend struct SetDepthBufferCommand;
-	friend struct PresentCommand;	// TODO
-	friend class ShaderVariable;
+	friend struct PresentCommand;
 	bool			m_mipmap;
 	bool			m_isPlatformLoaded;
-
 	ResourceUsage	m_usage;
 	RefPtr<Bitmap>	m_primarySurface2;
 	bool			m_locked;
 	bool			m_initializing;
-
-	friend class Helper;
 };
 
 /**
-	@brief		レンダリングターゲットのクラスです。
+	@brief		レンダリングターゲットテクスチャのクラスです。
 */
 class RenderTargetTexture
 	: public Texture
@@ -184,26 +179,21 @@ public:
 
 LN_INTERNAL_ACCESS:
 	RenderTargetTexture();
+	virtual ~RenderTargetTexture();
 	void CreateImpl(detail::GraphicsManager* manager, const SizeI& size, int mipLevels, TextureFormat format);
 	void CreateCore(detail::GraphicsManager* manager, bool isDefaultBackBuffer);
 	void AttachDefaultBackBuffer(Driver::ITexture* deviceObj);
 	void DetachDefaultBackBuffer();
 	Bitmap* Lock();
 	void Unlock();
-
-protected:
-	virtual ~RenderTargetTexture();
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 private:
-	friend class SwapChain;
-	friend class detail::RenderTargetTextureCache;
-	//Size			m_size;
 	int				m_mipLevels;
-	//TextureFormat	m_format;
-	bool				m_isDefaultBackBuffer;
-
+	bool			m_isDefaultBackBuffer;
 	bool			m_usedCacheOnFrame;
+
+	friend class detail::RenderTargetTextureCache;
 };
 
 /**
@@ -223,15 +213,13 @@ public:
 
 	const SizeI& GetSize() const { return m_size; }
 
-protected:
-	virtual ~DepthBuffer();
-	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
-
-LN_INTERNAL_ACCESS:
+LN_INTERNAL_ACCESS :
 	DepthBuffer();
+	virtual ~DepthBuffer();
 	void CreateImpl(detail::GraphicsManager* manager, const SizeI& size, TextureFormat format);
 	Driver::ITexture* ResolveDeviceObject() const { return m_deviceObj; }
 	void Resize(const SizeI& newSize);
+	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 private:
 	void RefreshDeviceResource();
@@ -301,3 +289,5 @@ private:
 
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END
+
+#pragma pop_macro("DrawText")

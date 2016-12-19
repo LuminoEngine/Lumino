@@ -73,19 +73,6 @@ enum BillboardType
 	BillboardType_Max,			///< (Terminator)
 };
 
-enum SpriteCoord
-{
-	SpriteCoord_X = 0,			///< X+ 方向 (右向き)
-	SpriteCoord_Y,				///< Y+ 方向 (上向き)
-	SpriteCoord_Z,				///< Z+ 方向 (奥向き)
-	SpriteCoord_RX,				///< X- 方向 (左向き)
-	SpriteCoord_RY,				///< Y- 方向 (下向き)
-	SpriteCoord_RZ,				///< Z- 方向 (手前向き)
-	SpriteCoord_2D,				///< 2D 空間用。原点を左上、Y+ 方向を下向きとする。
-
-	SpriteCoord_Max,			///< (Terminator)
-};
-
 /// 反転方法
 enum FlipMode
 {

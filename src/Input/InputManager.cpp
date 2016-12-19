@@ -74,12 +74,12 @@ void InputManager::Initialize(const Settings& settings)
 	m_defaultVirtualPads[0] = pad;
 	m_defaultVirtualPads[0]->AddRef();
 
-	pad->AddBinding(InputButtons::Left,		KeyboardBinding::Create(Key::Left));
-	pad->AddBinding(InputButtons::Right,	KeyboardBinding::Create(Key::Right));
-	pad->AddBinding(InputButtons::Up,		KeyboardBinding::Create(Key::Up));
-	pad->AddBinding(InputButtons::Down,		KeyboardBinding::Create(Key::Down));
-	pad->AddBinding(InputButtons::Ok,		KeyboardBinding::Create(Key::Z));
-	pad->AddBinding(InputButtons::Cancel,	KeyboardBinding::Create(Key::X));
+	pad->AddBinding(InputButtons::Left,		KeyboardBinding::Create(Keys::Left));
+	pad->AddBinding(InputButtons::Right,	KeyboardBinding::Create(Keys::Right));
+	pad->AddBinding(InputButtons::Up,		KeyboardBinding::Create(Keys::Up));
+	pad->AddBinding(InputButtons::Down,		KeyboardBinding::Create(Keys::Down));
+	pad->AddBinding(InputButtons::Ok,		KeyboardBinding::Create(Keys::Z));
+	pad->AddBinding(InputButtons::Cancel,	KeyboardBinding::Create(Keys::X));
 
 	pad->AddBinding(InputButtons::Left,		GamepadBinding::Create(GamepadElement::PovLeft));
 	pad->AddBinding(InputButtons::Right,	GamepadBinding::Create(GamepadElement::PovRight));

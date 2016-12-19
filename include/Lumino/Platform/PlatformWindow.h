@@ -82,7 +82,7 @@ LN_INTERNAL_ACCESS:
 	bool SendPlatformClosingEvent(PlatformWindow* sender);
 	bool SendPlatformWindowSizeChangedEvent(int width, int height);
 	bool SendPlatformActivateChangedEvent(PlatformWindow* sender, bool active);
-	bool SendPlatformKeyEvent(PlatformEventType type_, PlatformWindow* sender_, Key keyCode_, ModifierKeys modifierKeys_, char keyChar_);
+	bool SendPlatformKeyEvent(PlatformEventType type_, PlatformWindow* sender_, Keys keyCode_, ModifierKeys modifierKeys_, char keyChar_);
 	bool SendPlatformMouseWheelEvent(int delta);
 	virtual void OnPlatformEvent(const PlatformEventArgs& e);
 

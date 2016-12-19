@@ -81,7 +81,6 @@ public:	// internal
 	//const Matrix& GetViewProjectionMatrixIT() const { return m_viewProjMatrixIT; }
 
 protected:
-	virtual void UpdateViewFlustumHierarchy(Camera* camera, SceneNodeArray* renderingNodeList, LightNodeList* renderingLightList) override;
 	virtual void OnRender2(DrawList* renderer) override;
 
 private:

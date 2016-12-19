@@ -80,15 +80,6 @@ void Light::UpdateMatrices(/*const Size& viewSize*/)
 }
 
 //------------------------------------------------------------------------------
-void Light::UpdateViewFlustumHierarchy(Camera* camera, SceneNodeArray* renderingNodeList, LightNodeList* renderingLightList)
-{
-	// ライトをリストアップ
-	renderingLightList->Add(this);
-
-	SceneNode::UpdateViewFlustumHierarchy(camera, renderingNodeList, renderingLightList);
-}
-
-//------------------------------------------------------------------------------
 void Light::OnRender2(DrawList* renderer)
 {
 	if (m_enabled)
