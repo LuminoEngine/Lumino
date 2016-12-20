@@ -17,10 +17,10 @@
     <Project TargetFileName="LuminoProject.vcxproj" File="LuminoProject.vcxproj" ReplaceParameters="true">
       <ProjectItem ReplaceParameters="false" TargetFileName="$projectname$.vcxproj.filters">LuminoProject.vcxproj.filters</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="Main.cpp">Main.cpp</ProjectItem>
-      <ProjectItem ReplaceParameters="false" TargetFileName="resource.h">RESOURCE\resource.h</ProjectItem>
-      <ProjectItem ReplaceParameters="false" TargetFileName="resource.rc">RESOURCE\resource.rc</ProjectItem>
-      <ProjectItem ReplaceParameters="false" TargetFileName="icon.ico">RESOURCE\icon.ico</ProjectItem>
-      <ProjectItem ReplaceParameters="false" TargetFileName="icon256.png">DATA\icon256.png</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="resource.h">AppResource\resource.h</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="resource.rc">AppResource\resource.rc</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="icon.ico">AppResource\icon.ico</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="icon256.png">Assets\icon256.png</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="stdafx.cpp">stdafx.cpp</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="stdafx.h">stdafx.h</ProjectItem>
     </Project>

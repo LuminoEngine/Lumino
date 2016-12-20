@@ -1,4 +1,4 @@
-ÅEø<?xml version="1.0" encoding="utf-8"?>
+Ôªø<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -12,14 +12,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="Resource\resource.h" />
+    <ClInclude Include="AppResource\resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Resource\resource.rc" />
+    <ResourceCompile Include="AppResource\resource.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Data\icon256.png" />
-    <Image Include="Resource\icon.ico" />
+    <Image Include="Assets\icon256.png" />
+    <Image Include="AppResource\icon.ico" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
