@@ -8,7 +8,7 @@ class IDocumentsRenderer
 {
 public:
 	virtual ~IDocumentsRenderer() = default;
-	virtual void OnDrawGlyphRun(const Matrix& transform, GlyphRun* glyphRun, const PointF& point) = 0;
+	virtual void OnDrawGlyphRun(const Matrix& transform, Brush* forground, GlyphRun* glyphRun, const PointF& point) = 0;
 };
 
 } // namespace detail

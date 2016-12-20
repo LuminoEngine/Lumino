@@ -163,7 +163,9 @@ void Main()
 	Input::AddButtonBinding(_T("AA"), KeyboardBinding::Create(Keys::C));
 	Input::AddButtonBinding(_T("GG"), KeyboardBinding::Create(Keys::A));
 
-	auto spr1 = Sprite2D::Create(_T("D:/Proj/LuminoStudio/Engine/External/Lumino/test/UnitTest/Graphics/TestData/Sprite2.png"));
+	//auto spr1 = Sprite2D::Create(_T("D:/Proj/LuminoStudio/Engine/External/Lumino/test/UnitTest/Graphics/TestData/Sprite2.png"));
+
+	auto text = TextBlock2D::Create(_T("Hello, world!"));
 
 	while (Engine::Update())
 	{

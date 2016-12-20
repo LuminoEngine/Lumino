@@ -249,9 +249,8 @@ TEST_F(Test_Scene_TextBlock2D, Basic)
 	{
 		auto text = TextBlock2D::Create(_T("Lumino"));
 		Engine::Update();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_TextBlock2D.Basic1.png")));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_TextBlock2D.Basic1.png"), 99, true));
 	}
-	printf("--------\n");
 	{
 		auto text1 = TextBlock2D::Create();
 		text1->SetText(_T("upper left"));
@@ -279,7 +278,7 @@ TEST_F(Test_Scene_TextBlock2D, Basic)
 		text5->SetAnchorPoint(0.5, 0.5);
 
 		Engine::Update();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Scene_TextBlock2D.Basic2.png")));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_TextBlock2D.Basic2.png"), 99, true));
 	}
 }
 #endif

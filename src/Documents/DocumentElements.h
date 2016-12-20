@@ -66,6 +66,8 @@ public:
 	/** フォントのアンチエイリアス有無を取得します。*/
 	bool IsFontAntiAlias() const { return m_fontData.IsAntiAlias; }
 
+	Brush* GetForeground() const;
+
 
 	virtual void Render(const Matrix& transform, IDocumentsRenderer* renderer);
 
@@ -108,8 +110,10 @@ LN_INTERNAL_ACCESS:
 private:
 	DocumentsManager*		m_manager;
 	FontData				m_fontData;
+	RefPtr<Brush>			m_foreground;
 	bool					m_fontDataModified;
 
+	// layout data
 	PointF					m_position;
 	Size					m_size;
 	ThicknessF				m_margin;
