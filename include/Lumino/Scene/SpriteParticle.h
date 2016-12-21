@@ -1,13 +1,13 @@
-
+ï»¿
 #pragma once
 #include <Lumino/Math/Random.h>
+#include <Lumino/Graphics/Rendering.h>
 #include "VisualNode.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
-namespace detail
-{
+namespace detail {
 
 struct ParticleData
 {
@@ -24,22 +24,26 @@ struct ParticleData
 
 	Quaternion	rotation;
 	Color		color;
-	float		spawnTime = -1.f;	// •‰’l‚Ìê‡‚Í”ñƒAƒNƒeƒBƒu
+	float		spawnTime = -1.f;	// è² å€¤ã®å ´åˆã¯éã‚¢ã‚¯ãƒ†ã‚£ãƒ–
 	float		endTime = 0.f;
 	float		lastTime = 0.0f;
-	float		zDistance;			// Zƒ\[ƒg—pì‹Æ•Ï”
+	float		zDistance;			// Zã‚½ãƒ¼ãƒˆç”¨ä½œæ¥­å¤‰æ•°
 	float		ramdomBaseValue = 0.0f;
 	Vector3		currentDirection;
 };
 
 struct SpriteParticleModelInstance
+	: public DrawElement
 {
 	//RefPtr<SpriteParticleModel>	m_owner;
 	List<ParticleData>			m_particles;
 	List<int>					m_particleIndices;
 	int							m_activeCount = 0;
 	double						m_time = 0;
-	double						m_lastSpawnTime = 0;	// ÅŒã‚É•úo‚µ‚½ŠÔ (m_oneSpawnDeltaTime ‚Ì”{”‚É‚È‚é)
+	double						m_lastSpawnTime = 0;	// æœ€å¾Œã«æ”¾å‡ºã—ãŸæ™‚é–“ (m_oneSpawnDeltaTime ã®å€æ•°ã«ãªã‚‹)
+
+
+	virtual void DrawSubset(InternalContext* context) override;
 };
 
 } // namespace detail
@@ -58,14 +62,14 @@ enum class ParticleDirection : uint8_t
 {
 	Billboard,
 
-	/** ˆÚ“®•ûŒü‚ÖŒX‚¯‚é (ƒeƒNƒXƒ`ƒƒUV‚Í‚Ì V+ •ûŒü‚ğis•ûŒü‚Æ‚·‚é) */
+	/** ç§»å‹•æ–¹å‘ã¸å‚¾ã‘ã‚‹ (ãƒ†ã‚¯ã‚¹ãƒãƒ£UVã¯ã® V+ æ–¹å‘ã‚’é€²è¡Œæ–¹å‘ã¨ã™ã‚‹) */
 	MovementDirection,
 };
 
 enum class ParticleEmitterShapeType
 {
-	Sphere,		/** ƒp[ƒeƒBƒNƒ‹‚ğ‹…ó‚É•úo‚µ‚Ü‚·B*/
-	Cone,		/** ƒp[ƒeƒBƒNƒ‹‚ğƒR[ƒ“Œ^‚É•úo‚µ‚Ü‚·B*/
+	Sphere,		/** ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ã‚’çƒçŠ¶ã«æ”¾å‡ºã—ã¾ã™ã€‚*/
+	Cone,		/** ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ã‚’ã‚³ãƒ¼ãƒ³å‹ã«æ”¾å‡ºã—ã¾ã™ã€‚*/
 	Box,
 };
 
@@ -82,16 +86,16 @@ public:
 	void SetTexture(Texture* texture);
 	Texture* GetTexture() const { return m_texture; }
 
-	/** “¯‚É•\¦‚Å‚«‚éƒp[ƒeƒBƒNƒ‹‚ÌÅ‘å”‚ğİ’è‚µ‚Ü‚·B(default: 100) */
+	/** åŒæ™‚ã«è¡¨ç¤ºã§ãã‚‹ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ã®æœ€å¤§æ•°ã‚’è¨­å®šã—ã¾ã™ã€‚(default: 100) */
 	void SetMaxParticles(int count) { m_maxParticles = count; }
 
-	/** 1•bŠÔ‚É•úo‚·‚éƒp[ƒeƒBƒNƒ‹‚Ì”‚ğİ’è‚µ‚Ü‚·B(default: 1) */
+	/** 1ç§’é–“ã«æ”¾å‡ºã™ã‚‹ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ã®æ•°ã‚’è¨­å®šã—ã¾ã™ã€‚(default: 1) */
 	void SetSpawnRate(int count) { m_spawnRate = count; }
 
-	/** ƒp[ƒeƒBƒNƒ‹‚Ì¶‘¶ŠÔ‚ğİ’è‚µ‚Ü‚·B(default: 1.0) */
+	/** ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ã®ç”Ÿå­˜æ™‚é–“ã‚’è¨­å®šã—ã¾ã™ã€‚(default: 1.0) */
 	void SetLifeTime(float time) { m_minLifeTime = m_maxLifeTime = time; }
 
-	// 0.0f`1.0f
+	// 0.0fï½1.0f
 	void SetRandomBaseValueRange(float minValue, float maxValue) { m_minRandomBaseValue = minValue; m_maxRandomBaseValue = maxValue; }
 
 	void SetPositionRange(const Vector3& minValue, const Vector3& maxValue, ParticleRandomSource source = ParticleRandomSource::Self) { m_minPosition = minValue; m_maxPosition = maxValue; m_positionRandomSource = source; }
@@ -103,7 +107,7 @@ public:
 
 	void SetSizeRange(float minValue, float maxValue, ParticleRandomSource source) { m_minSize = minValue; m_maxSize = maxValue; m_sizeRandomSource = source; }
 
-	/** ƒp[ƒeƒBƒNƒ‹¶¬‚Ég—p‚·‚é—”ƒV[ƒh‚ğİ’è‚µ‚Ü‚·B(default: Œ»İ‚ÌŠÔ’l) */
+	/** ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ç”Ÿæˆæ™‚ã«ä½¿ç”¨ã™ã‚‹ä¹±æ•°ã‚·ãƒ¼ãƒ‰ã‚’è¨­å®šã—ã¾ã™ã€‚(default: ç¾åœ¨ã®æ™‚é–“å€¤) */
 	void SetRandomSeed(int seed) { m_rand.SetSeed(seed); }
 
 protected:
@@ -123,9 +127,10 @@ public:	// TODO:
 	float MakeRandom(detail::ParticleData* data, float minValue, float maxValue, ParticleRandomSource source);
 	
 	detail::GraphicsManager*	m_manager;
-	RefPtr<VertexDeclaration>	m_vertexDeclaration;
-	VertexBuffer*		m_vertexBuffer;	// TODO: ‚±‚Ì‚ ‚½‚è‚Í Manager ‚É’u‚¢‚ÄA‘S‘Ì‚Å‹¤—L‚µ‚½•û‚ªƒƒ‚ƒŠŒø—¦‚æ‚¢
-	IndexBuffer*		m_indexBuffer;
+	//RefPtr<VertexDeclaration>	m_vertexDeclaration;
+	RefPtr<MeshResource>		m_mesh;		// TODO: ã“ã®ã‚ãŸã‚Šã¯ Manager ã«ç½®ã„ã¦ã€å…¨ä½“ã§å…±æœ‰ã—ãŸæ–¹ãŒãƒ¡ãƒ¢ãƒªåŠ¹ç‡ã‚ˆã„ã‹ã‚‚ï¼Ÿ
+	//VertexBuffer*		m_vertexBuffer;	
+	//IndexBuffer*		m_indexBuffer;
 	Texture*			m_texture;
 	Randomizer			m_rand;
 
@@ -135,8 +140,8 @@ public:	// TODO:
 	Vector3						m_shapeParam;
 
 	ParticleDirection	m_particleDirection;
-	int					m_spawnRate;	// 1•bŠÔ‚É•úo‚·‚éƒp[ƒeƒBƒNƒ‹”
-	int					m_burstCount;	// 1“x‚Ì•úoƒ^ƒCƒ~ƒ“ƒO‚Å¶¬‚·‚éƒp[ƒeƒBƒNƒ‹”
+	int					m_spawnRate;	// 1ç§’é–“ã«æ”¾å‡ºã™ã‚‹ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«æ•°
+	int					m_burstCount;	// 1åº¦ã®æ”¾å‡ºã‚¿ã‚¤ãƒŸãƒ³ã‚°ã§ç”Ÿæˆã™ã‚‹ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«æ•°
 
 	float				m_minRandomBaseValue;
 	float				m_maxRandomBaseValue;
@@ -155,7 +160,7 @@ public:	// TODO:
 	Vector3				m_minAccel;
 	Vector3				m_maxAccel;
 
-	float				m_minSize;		// TODO: Vec2‚É‚µ‚Ä×’·‚¢ƒp[ƒeƒBƒNƒ‹‚àì‚è‚½‚¢
+	float				m_minSize;		// TODO: Vec2ã«ã—ã¦ç´°é•·ã„ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ã‚‚ä½œã‚ŠãŸã„
 	float				m_maxSize;
 	float				m_minSizeVelocity;
 	float				m_maxSizeVelocity;
@@ -163,33 +168,33 @@ public:	// TODO:
 	float				m_maxSizeAccel;
 
 
-	//LVector3		Axis;				///< ‰ñ“]²
-	//LVector3		AxisRand;           ///< ‰ñ“]²‚Ìƒ‰ƒ“ƒ_ƒ€•
+	//LVector3		Axis;				///< å›è»¢è»¸
+	//LVector3		AxisRand;           ///< å›è»¢è»¸ã®ãƒ©ãƒ³ãƒ€ãƒ å¹…
 
-	//lnFloat			Angle;				///< ‰ŠúŠp“x (Axis ²ü‚è‚Ì‰ñ“])
-	//lnFloat			AngleRand;          ///< ‰ŠúŠp“x‚Ìƒ‰ƒ“ƒ_ƒ€•
+	//lnFloat			Angle;				///< åˆæœŸè§’åº¦ (Axis è»¸å‘¨ã‚Šã®å›è»¢)
+	//lnFloat			AngleRand;          ///< åˆæœŸè§’åº¦ã®ãƒ©ãƒ³ãƒ€ãƒ å¹…
 
-	//lnFloat			AngleVelocity;	    ///< Šp‘¬“x (Axis ²ü‚è‚Ì‰ñ“])
-	//lnFloat			AngleVelocityRand;  ///< ‰ŠúŠp“x‚Ìƒ‰ƒ“ƒ_ƒ€•
+	//lnFloat			AngleVelocity;	    ///< è§’é€Ÿåº¦ (Axis è»¸å‘¨ã‚Šã®å›è»¢)
+	//lnFloat			AngleVelocityRand;  ///< åˆæœŸè§’åº¦ã®ãƒ©ãƒ³ãƒ€ãƒ å¹…
 
-	//lnFloat			AngleAccel;			///< Šp‰Á‘¬“x
-	//lnFloat			AngleAccelRand;     ///< Šp‰Á‘¬“x‚Ìƒ‰ƒ“ƒ_ƒ€•
+	//lnFloat			AngleAccel;			///< è§’åŠ é€Ÿåº¦
+	//lnFloat			AngleAccelRand;     ///< è§’åŠ é€Ÿåº¦ã®ãƒ©ãƒ³ãƒ€ãƒ å¹…
 
-	//lnFloat			Size;				///< ƒTƒCƒY
-	//lnFloat			SizeRand;           ///< ƒTƒCƒY‚Ìƒ‰ƒ“ƒ_ƒ€•
+	//lnFloat			Size;				///< ã‚µã‚¤ã‚º
+	//lnFloat			SizeRand;           ///< ã‚µã‚¤ã‚ºã®ãƒ©ãƒ³ãƒ€ãƒ å¹…
 
-	//lnFloat			SizeVelocity;	    ///< ƒTƒCƒY•Ï‰»‘¬“x
-	//lnFloat			SizeVelocityRand;   ///< ƒTƒCƒY•Ï‰»‘¬“x‚Ìƒ‰ƒ“ƒ_ƒ€•
+	//lnFloat			SizeVelocity;	    ///< ã‚µã‚¤ã‚ºå¤‰åŒ–é€Ÿåº¦
+	//lnFloat			SizeVelocityRand;   ///< ã‚µã‚¤ã‚ºå¤‰åŒ–é€Ÿåº¦ã®ãƒ©ãƒ³ãƒ€ãƒ å¹…
 
-	//lnFloat			SizeAccel;			///< ƒTƒCƒY•Ï‰»‰Á‘¬“x
-	//lnFloat			SizeAccelRand;      ///< ƒTƒCƒY•Ï‰»‰Á‘¬“x‚Ìƒ‰ƒ“ƒ_ƒ€•
-	//LVector3		GlobalAccel;		///< ‘S‘Ì‚É“K—p‚·‚é‰Á‘¬“x (d—Í‚È‚Ç)
-	//lnFloat			GravityPower;		///< ’†S (ƒ[ƒJƒ‹À•W‚Ì 0, 0, 0) ‚Ö‚Ìˆø—Í‚Ì‹­‚³ (•‰‚Ì’l‚ÅË—Í‚É‚È‚é)
+	//lnFloat			SizeAccel;			///< ã‚µã‚¤ã‚ºå¤‰åŒ–åŠ é€Ÿåº¦
+	//lnFloat			SizeAccelRand;      ///< ã‚µã‚¤ã‚ºå¤‰åŒ–åŠ é€Ÿåº¦ã®ãƒ©ãƒ³ãƒ€ãƒ å¹…
+	//LVector3		GlobalAccel;		///< å…¨ä½“ã«é©ç”¨ã™ã‚‹åŠ é€Ÿåº¦ (é‡åŠ›ãªã©)
+	//lnFloat			GravityPower;		///< ä¸­å¿ƒ (ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™ã® 0, 0, 0) ã¸ã®å¼•åŠ›ã®å¼·ã• (è² ã®å€¤ã§æ–¥åŠ›ã«ãªã‚‹)
 
 	
 
-	float		m_emitterDuration;		// ƒGƒ~ƒbƒ^‚Ìƒp[ƒeƒBƒNƒ‹•úoŠÔ
-	// TODO: 0 ‚Ìê‡‚ÍÅ‰‚ÌƒtƒŒ[ƒ€‚Å‚¾‚¯¶¬A‚Æ‚©B(‰Ô‰Î—p)
+	float		m_emitterDuration;		// ã‚¨ãƒŸãƒƒã‚¿ã®ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«æ”¾å‡ºæ™‚é–“
+	// TODO: 0 ã®å ´åˆã¯æœ€åˆã®ãƒ•ãƒ¬ãƒ¼ãƒ ã§ã ã‘ç”Ÿæˆã€ã¨ã‹ã€‚(èŠ±ç«ç”¨)
 
 	ParticleRandomSource	m_positionRandomSource;
 	ParticleRandomSource	m_velocityRandomSource;
@@ -198,7 +203,7 @@ public:	// TODO:
 	ParticleRandomSource	m_sizeVelocityRandomSource;
 	ParticleRandomSource	m_sizeAccelRandomSource;
 
-	int						m_maxParticles;		// —±qÅ‘å”
+	int						m_maxParticles;		// ç²’å­æœ€å¤§æ•°
 
 	////////
 
@@ -227,6 +232,7 @@ protected:
 	void Initialize(SceneGraph* owner, SpriteParticleModel* model);
 
 	virtual void OnUpdateFrame(float deltaTime) override;
+	virtual void OnRender2(DrawList* renderer) override;
 
 private:
 	SpriteParticleModel*					m_model;

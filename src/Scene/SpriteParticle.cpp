@@ -8,9 +8,10 @@
 #include "Internal.h"
 #include <math.h>
 #include "../Graphics/GraphicsManager.h"	// TODO:
-#include <Lumino/Graphics/VertexDeclaration.h>
-#include <Lumino/Graphics/VertexBuffer.h>	// TODO:
-#include <Lumino/Graphics/IndexBuffer.h>	// TODO:
+//#include <Lumino/Graphics/VertexDeclaration.h>
+//#include <Lumino/Graphics/VertexBuffer.h>	// TODO:
+//#include <Lumino/Graphics/IndexBuffer.h>	// TODO:
+#include <Lumino/Graphics/Mesh.h>
 #include <Lumino/Graphics/GraphicsContext.h>	// TODO:
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/SpriteParticle.h>
@@ -20,6 +21,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
+// TODO: いらない
 struct SpriteParticleVertex
 {
 	Vector3		position;
@@ -40,6 +42,17 @@ struct SpriteParticleVertex
 };
 
 //==============================================================================
+// SpriteParticleModelInstance
+//==============================================================================
+namespace detail {
+
+void SpriteParticleModelInstance::DrawSubset(InternalContext* context)
+{
+}
+
+} // namespace detail
+
+//==============================================================================
 // SpriteParticleModel
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SpriteParticleModel, Object);
@@ -55,7 +68,7 @@ SpriteParticleModelPtr SpriteParticleModel::Create()
 //------------------------------------------------------------------------------
 SpriteParticleModel::SpriteParticleModel()
 	: m_manager(nullptr)
-	, m_vertexBuffer(nullptr)
+	, m_mesh(nullptr)
 	, m_texture(nullptr)
 	, m_shapeType(ParticleEmitterShapeType::Sphere)
 	, m_shapeParam(1, 1, 1)
@@ -91,8 +104,8 @@ SpriteParticleModel::SpriteParticleModel()
 SpriteParticleModel::~SpriteParticleModel()
 {
 	LN_SAFE_RELEASE(m_texture);
-	LN_SAFE_RELEASE(m_vertexBuffer);
-	LN_SAFE_RELEASE(m_indexBuffer);
+	//LN_SAFE_RELEASE(m_vertexBuffer);
+	//LN_SAFE_RELEASE(m_indexBuffer);
 }
 
 //------------------------------------------------------------------------------
@@ -110,7 +123,7 @@ void SpriteParticleModel::SetTexture(Texture* texture)
 //------------------------------------------------------------------------------
 void SpriteParticleModel::Commit()
 {
-	if (m_vertexBuffer != nullptr) return;	// Commit済み
+	if (m_mesh != nullptr) return;	// Commit済み
 
 	//LN_SAFE_RELEASE(m_vertexBuffer);
 	//LN_SAFE_RELEASE(m_indexBuffer);
@@ -121,13 +134,17 @@ void SpriteParticleModel::Commit()
 	// 瞬間最大パーティクル数
 	//m_maxParticleCount = (int)ceil(m_maxLifeTime * (float)m_spawnRate);
 
-	m_vertexDeclaration = RefPtr<VertexDeclaration>::MakeRef();
-	m_vertexDeclaration->Initialize(m_manager, SpriteParticleVertex::Elements(), SpriteParticleVertex::ElementCount);
+	m_mesh = RefPtr<MeshResource>::MakeRef();
+	m_mesh->Initialize(m_manager, ResourceUsage::Dynamic);
+	m_mesh->Reserve(m_maxParticles * 4, m_maxParticles * 6);
 
-	m_vertexBuffer = LN_NEW VertexBuffer();
-	m_vertexBuffer->Initialize(m_manager, sizeof(SpriteParticleVertex) * m_maxParticles * 4, nullptr, ResourceUsage::Dynamic);
-	m_indexBuffer = LN_NEW IndexBuffer();
-	m_indexBuffer->Initialize(m_manager, m_maxParticles * 6, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
+	//m_vertexDeclaration = RefPtr<VertexDeclaration>::MakeRef();
+	//m_vertexDeclaration->Initialize(m_manager, SpriteParticleVertex::Elements(), SpriteParticleVertex::ElementCount);
+
+	//m_vertexBuffer = LN_NEW VertexBuffer();
+	//m_vertexBuffer->Initialize(m_manager, sizeof(SpriteParticleVertex) * m_maxParticles * 4, nullptr, ResourceUsage::Dynamic);
+	//m_indexBuffer = LN_NEW IndexBuffer();
+	//m_indexBuffer->Initialize(m_manager, m_maxParticles * 6, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 }
 
 //------------------------------------------------------------------------------
@@ -419,8 +436,11 @@ void SpriteParticleModel::Render(DrawList* context, std::shared_ptr<detail::Spri
 	// 頂点バッファ・インデックスバッファに反映して描画する
 	if (sortRange > 0)
 	{
-		SpriteParticleVertex* vb = (SpriteParticleVertex*)m_vertexBuffer->Lock()->GetData();	// TODO: ScopedLock
-		uint16_t* ib = (uint16_t*)m_indexBuffer->Lock()->GetData();
+		Vertex* vb = reinterpret_cast<Vertex*>(m_mesh->TryLockVertexBuffer(MeshResource::VB_BasicVertices));
+		uint16_t* ib = reinterpret_cast<uint16_t*>(m_mesh->TryLockIndexBuffer());
+
+		//SpriteParticleVertex* vb = (SpriteParticleVertex*)m_vertexBuffer->Lock()->GetData();	
+		//uint16_t* ib = (uint16_t*)m_indexBuffer->Lock()->GetData();
 		int iData = 0;
 		int count = instance->m_particleIndices.GetCount();
 		for (; iData < count; ++iData)
@@ -460,10 +480,10 @@ void SpriteParticleModel::Render(DrawList* context, std::shared_ptr<detail::Spri
 			vb[(iData * 4) + 2].position += pos;
 			vb[(iData * 4) + 3].position += pos;
 
-			vb[(iData * 4) + 0].texUV.Set(0, 0);
-			vb[(iData * 4) + 1].texUV.Set(0, 1);
-			vb[(iData * 4) + 2].texUV.Set(1, 0);
-			vb[(iData * 4) + 3].texUV.Set(1, 1);
+			vb[(iData * 4) + 0].uv.Set(0, 0);
+			vb[(iData * 4) + 1].uv.Set(0, 1);
+			vb[(iData * 4) + 2].uv.Set(1, 0);
+			vb[(iData * 4) + 3].uv.Set(1, 1);
 
 			vb[(iData * 4) + 0].color = data.color;
 			vb[(iData * 4) + 1].color = data.color;
@@ -477,11 +497,12 @@ void SpriteParticleModel::Render(DrawList* context, std::shared_ptr<detail::Spri
 			ib[(iData * 6) + 4] = (iData * 4) + 1;
 			ib[(iData * 6) + 5] = (iData * 4) + 3;
 		}
-		m_vertexBuffer->Unlock();
-		m_indexBuffer->Unlock();
+		//m_vertexBuffer->Unlock();
+		//m_indexBuffer->Unlock();
 
-		LN_NOTIMPLEMENTED();
+		//LN_NOTIMPLEMENTED();
 		//context->DrawPrimitiveIndexed(m_vertexDeclaration, m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, iData * 2);
+		context->DrawMesh(m_mesh, 0, nullptr);
 
 		instance->m_activeCount = iData;
 	}
@@ -534,6 +555,13 @@ void SpriteParticle::OnUpdateFrame(float deltaTime)
 	// TODO: 視錐台カリングでパスしなかったものは呼ぶ必要ない
 
 	m_model->UpdateInstance(m_instance, deltaTime);
+}
+
+//------------------------------------------------------------------------------
+void SpriteParticle::OnRender2(DrawList* renderer)
+{
+	// TODO: name RenderInstance
+	m_model->Render(renderer, m_instance, );
 }
 
 //------------------------------------------------------------------------------
