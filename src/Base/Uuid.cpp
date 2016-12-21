@@ -88,7 +88,7 @@ Uuid::Uuid()
 //------------------------------------------------------------------------------
 Uuid::Uuid(const StringRef& uuidText)
 {
-	char ch1;
+	TCHAR ch1;
 	bool lookingCh1 = true;
 
 	// parse UUID text
