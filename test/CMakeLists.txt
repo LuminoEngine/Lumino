@@ -2,6 +2,8 @@
 set(LN_TEST_SOURCES
 	gtest/src/gtest-all.cc
 	UnitTest/Main.cpp
+	UnitTest/Test.PCH.cpp
+	UnitTest/Test.PCH.h
 	UnitTest/TestConfig.h
 	UnitTest/Base/Test_Base_GeometryStructs.cpp
 	UnitTest/Base/Test_Base_Uuid.cpp
@@ -52,10 +54,11 @@ include_directories(
 #link_libraries(${LN_TEST_LIBS})
 
 
-add_definitions(-DGTEST_HAS_TR1_TUPLE=0)
-add_executable(Lumino_UnitTest ${LN_TEST_SOURCES})
-target_link_libraries(Lumino_UnitTest Lumino_Static)
-add_dependencies(Lumino_UnitTest Lumino_Static)
+#add_definitions(-DGTEST_HAS_TR1_TUPLE=0)
+add_executable(LuminoEngine_Test ${LN_TEST_SOURCES})
+target_link_libraries(LuminoEngine_Test Lumino_Static)
+add_dependencies(LuminoEngine_Test Lumino_Static)
+ln_add_pch(LuminoEngine_Test "Test.PCH.h" "UnitTest/Test.PCH.cpp")
 
 #===============================================================================
 set(LN_SANDBOX_SOURCES
