@@ -278,7 +278,7 @@ void CameraViewportLayer::Render()
 	// 描画リストのクリアは、SceneGraph の描画前でなければならない。
 	// 出来上がった描画リストを、複数のレイヤーが描画することを想定する。
 	// TODO: DrawList は Scene 側につくべき
-	m_renderer->BeginMakeElements();
+	m_renderer->BeginMakeElements(m_hostingCamera);
 
 	m_renderer->Clear(ClearFlags::Depth, Color::White);
 

@@ -14,6 +14,7 @@
 #include <Lumino/Graphics/Mesh.h>
 #include <Lumino/Graphics/GraphicsContext.h>	// TODO:
 #include <Lumino/Scene/SceneGraph.h>
+#include <Lumino/Scene/Camera.h>
 #include <Lumino/Scene/SpriteParticle.h>
 #include "../Graphics/Device/GraphicsDriverInterface.h"
 #include "SceneGraphManager.h"
@@ -561,7 +562,7 @@ void SpriteParticle::OnUpdateFrame(float deltaTime)
 void SpriteParticle::OnRender2(DrawList* renderer)
 {
 	// TODO: name RenderInstance
-	m_model->Render(renderer, m_instance, );
+	m_model->Render(renderer, m_instance, renderer->GetCurrentCamera()->GetPosition(), renderer->GetCurrentCamera()->GetViewMatrixI());
 }
 
 //------------------------------------------------------------------------------

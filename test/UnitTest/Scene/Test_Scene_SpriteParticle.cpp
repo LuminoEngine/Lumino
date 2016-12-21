@@ -1,7 +1,6 @@
 #include <TestConfig.h>
 
 
-#if 0
 class Test_Scene_SpriteParticle : public ::testing::Test
 {
 protected:
@@ -22,19 +21,22 @@ TEST_F(Test_Scene_SpriteParticle, Default)
 	auto particleModel1 = SpriteParticleModel::Create();
 	particleModel1->SetTexture(Texture2D::Create(LN_LOCALFILE("TestData/Particle1.png")));
 	auto particle1 = SpriteParticle::Create3D(particleModel1);
+	//particle1->SetBlendMode(BlendMode::Normal);
+	//particle1->SetBlendColor(Color::White);
 
 	// Create 直後、すぐ表示されている。
-	Engine::UpdateFrame();
+	Engine::Update();
 	ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/Test_Scene_SpriteParticle.Basic_1.png")));
 
 	// 1秒後、消える。
 	for (int i = 0; i < 60; ++i)
 	{
-		Engine::UpdateFrame();
+		Engine::Update();
 	}
 	ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/Test_Scene_SpriteParticle.Basic_2.png")));
 }
 
+#if 0
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_SpriteParticle, PositionVelocityAccel)
 {

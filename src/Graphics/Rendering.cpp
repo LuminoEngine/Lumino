@@ -1178,12 +1178,13 @@ void DrawList::SetDepthWriteEnabled(bool enabled)
 }
 
 //------------------------------------------------------------------------------
-void DrawList::BeginMakeElements()
+void DrawList::BeginMakeElements(Camera* camera)
 {
 	m_drawElementList.ClearCommands();
 	m_state.Reset();
 	m_defaultMaterial->Reset();
 	m_currentSectionTopElement = nullptr;
+	m_camera = camera;
 }
 
 //------------------------------------------------------------------------------

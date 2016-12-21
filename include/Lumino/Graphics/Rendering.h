@@ -15,6 +15,7 @@ class MeshResource;
 class StaticMeshModel;
 class DrawList;
 
+class Camera;
 
 
 enum class DrawElementCategory
@@ -551,7 +552,8 @@ LN_INTERNAL_ACCESS:
 	void Initialize(detail::GraphicsManager* manager);
 	detail::GraphicsManager* GetManager() const { return m_manager; }
 	detail::DrawElementList* GetDrawElementList() { return &m_drawElementList; }
-	void BeginMakeElements();
+	Camera* GetCurrentCamera() const { return m_camera; }
+	void BeginMakeElements(Camera* camera);
 	void EndMakeElements();
 	void EndFrame();
 
@@ -578,6 +580,8 @@ private:
 	detail::DrawElement*			m_currentSectionTopElement;
 	//detail::DrawElementBatch		m_stateInSection;
 	const DrawElementMetadata*		m_metadata;
+
+	Camera*							m_camera;
 
 #if 0
 	/** アルファブレンドの有無 (default: false) */
