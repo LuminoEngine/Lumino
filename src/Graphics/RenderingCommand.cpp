@@ -11,6 +11,8 @@
 #include "Device/GraphicsDriverInterface.h"
 #include <Lumino/Graphics/Shader.h>
 #include "RenderingCommand.h"
+#include "GraphicsManager.h"
+#include "RenderingThread.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -83,8 +85,9 @@ void* RenderBulkData::Alloc(RenderingCommandList* commandList)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RenderingCommandList::RenderingCommandList()
-	: m_commandList()
+RenderingCommandList::RenderingCommandList(detail::GraphicsManager* manager)
+	: m_manager(manager)
+	, m_commandList()
 	, m_commandDataBuffer()
 	, m_commandDataBufferUsed(0)
 	, m_extDataBuffer()
@@ -195,6 +198,18 @@ RenderingCommandList::DataHandle RenderingCommandList::AllocExtData(size_t byteC
 void* RenderingCommandList::GetExtData(DataHandle bufferIndex)
 {
 	return &(m_extDataBuffer.GetData()[bufferIndex]);
+}
+
+//------------------------------------------------------------------------------
+bool RenderingCommandList::CheckOnStandaloneRenderingThread()
+{
+	RenderingThread* rt = m_manager->GetRenderingThread();
+	if (rt != nullptr)
+	{
+		if (Thread::GetCurrentThreadId() == rt->GetThreadId())
+			return true;
+	}
+	return false;
 }
 
 LN_NAMESPACE_GRAPHICS_END

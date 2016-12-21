@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.h"
+#include <Lumino/Graphics/Brush.h>
 #include <Lumino/Graphics/Text/GlyphRun.h>
 #include "DocumentsManager.h"
 #include "DocumentElements.h"
@@ -37,9 +38,11 @@ void Document::Initialize(DocumentsManager* manager)
 //------------------------------------------------------------------------------
 TextElement::TextElement()
 	: m_manager(nullptr)
+	, m_fontData()
+	, m_foreground(nullptr)
 	, m_fontDataModified(false)
 	, m_position()
-	, m_size()
+	, m_size(NAN, NAN)
 	, m_margin()
 	, m_padding()
 	, m_anchor(AlignmentAnchor::None)
@@ -67,6 +70,14 @@ void TextElement::Initialize(DocumentsManager* manager)
 	m_fontData.IsItalic = false;
 	m_fontData.IsAntiAlias = true;
 	m_fontDataModified = true;
+
+	m_foreground = ColorBrush::Black;
+}
+
+//------------------------------------------------------------------------------
+Brush* TextElement::GetForeground() const
+{
+	return m_foreground;
 }
 
 //------------------------------------------------------------------------------
@@ -164,7 +175,9 @@ Size Block::MeasureOverride(const Size& constraint)
 	for (TextElement* child : m_childElements)
 	{
 		// TODO: とりあえず 左から右へのフロー
-		Size size = child->MeasureOverride(constraint);
+		//Size size = child->MeasureOverride(constraint);
+		child->MeasureLayout(constraint);
+		Size size = child->GetLayoutDesiredSize();
 		childDesirdSize.width += size.width;
 		childDesirdSize.height = std::max(childDesirdSize.height, size.height);
 	}
@@ -185,11 +198,11 @@ Size Block::ArrangeOverride(const Size& finalSize)
 		childRect.x += prevChildSize;
 		prevChildSize = childDesiredSize.width;
 		childRect.width = prevChildSize;
-		childRect.height = finalSize.height;
+		childRect.height = std::max(childRect.height, childDesiredSize.height);
 		child->ArrangeLayout(childRect);
 	}
 
-	return finalSize;
+	return Size::Min(finalSize, childRect.GetSize());
 }
 
 //==============================================================================
@@ -287,7 +300,7 @@ Size Run::MeasureOverride(const Size& constraint)
 //------------------------------------------------------------------------------
 void Run::Render(const Matrix& transform, IDocumentsRenderer* renderer)
 {
-	renderer->OnDrawGlyphRun(transform, m_glyphRun, PointI::Zero);
+	renderer->OnDrawGlyphRun(transform, GetForeground(), m_glyphRun, PointF::Zero);
 }
 
 } // namespace detail

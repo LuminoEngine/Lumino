@@ -1314,6 +1314,28 @@ void DrawList::Blit(Texture* source, RenderTargetTexture* dest, Material* materi
 }
 
 //------------------------------------------------------------------------------
+void DrawList::DrawGlyphRun(const PointF& position, GlyphRun* glyphRun)
+{
+	class DrawElement_DrawGlyphRun : public detail::DrawElement
+	{
+	public:
+		RefPtr<GlyphRun>	glyphRun;
+		PointF position;
+
+		virtual void DrawSubset(detail::InternalContext* context) override
+		{
+			context->BeginTextRenderer()->DrawGlyphRun(transform, position, glyphRun);
+		}
+	};
+
+	auto* e = ResolveDrawElement<DrawElement_DrawGlyphRun>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_textRenderer, nullptr);
+	e->transform = m_state.transfrom;
+	e->glyphRun = glyphRun;
+	e->position = position;
+	//e->boundingSphere = ;	// TODO
+}
+
+//------------------------------------------------------------------------------
 void DrawList::DrawText_(const StringRef& text, const PointF& position)
 {
 	DrawText_(text, RectF(position, FLT_MAX, FLT_MAX), StringFormatFlags::LeftAlignment);

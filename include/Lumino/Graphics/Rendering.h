@@ -528,6 +528,7 @@ public:
 	void Blit(Texture* source, RenderTargetTexture* dest, const Matrix& transform);
 	void Blit(Texture* source, RenderTargetTexture* dest, Material* material);
 
+	void DrawGlyphRun(const PointF& position, GlyphRun* glyphRun);
 
 	void DrawText_(const StringRef& text, const PointF& position);
 	void DrawText_(const StringRef& text, const RectF& rect, StringFormatFlags flags);

@@ -74,6 +74,13 @@ public:
 	bool IsAnyZero() const { return (width == 0 || height == 0); }
 
 public:
+	static GenericSize<T> Min(const GenericSize<T>& size1, const GenericSize<T>& size2)
+	{
+		return GenericSize<T>(
+			(size1.width < size2.width) ? size1.width : size2.width,
+			(size1.height < size2.height) ? size1.height : size2.height);
+	}
+
 	static GenericSize<T> Max(const GenericSize<T>& size1, const GenericSize<T>& size2)
 	{
 		return GenericSize<T>(

@@ -55,7 +55,7 @@ void SwapChain::InitializeSub(detail::GraphicsManager* manager, PlatformWindow* 
 //------------------------------------------------------------------------------
 void SwapChain::PostInitialize()
 {
-	m_commandList = LN_NEW RenderingCommandList();
+	m_commandList = LN_NEW RenderingCommandList(m_manager);
 
 	// TODO: デフォルトのバックバッファという仕組みは入らない気がする。
 	// こちら側でレンダリングターゲット作って、Present で全体転送してもらえばいいし。

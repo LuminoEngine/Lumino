@@ -93,14 +93,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="Resource\resource.h" />
+    <ClInclude Include="AppResource\resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Resource\resource.rc" />
+    <ResourceCompile Include="AppResource\resource.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Data\icon256.png" />
-    <Image Include="Resource\icon.ico" />
+    <Image Include="Assets\icon256.png" />
+    <Image Include="AppResource\icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

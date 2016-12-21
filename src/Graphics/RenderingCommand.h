@@ -138,7 +138,7 @@ class RenderingCommandList
 public:
 	typedef size_t	DataHandle;
 
-	RenderingCommandList();
+	RenderingCommandList(detail::GraphicsManager* manager);
 	virtual ~RenderingCommandList();
 
 public:
@@ -177,7 +177,7 @@ private:
 		return dataHandle;
 	}
 
-
+	bool CheckOnStandaloneRenderingThread();
 
 public:
 
@@ -197,6 +197,8 @@ public:
 	template<typename T, typename... TArgs>
 	void EnqueueCommand(TArgs... args)
 	{
+		LN_FAIL_CHECK_STATE(!CheckOnStandaloneRenderingThread()) return;
+
 		size_t dataHandle = AllocCommand(sizeof(T), NULL);
 		T* t = new (GetCommand(dataHandle))T(args...);
 		t->m_commandList = this;
@@ -310,6 +312,7 @@ public:
 	}
 
 private:
+	detail::GraphicsManager*	m_manager;
 	List<size_t>			m_commandList;
 	ByteBuffer				m_commandDataBuffer;
 	size_t					m_commandDataBufferUsed;

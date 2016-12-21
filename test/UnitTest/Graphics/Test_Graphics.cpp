@@ -1,4 +1,4 @@
-#include <TestConfig.h>
+ï»¿#include <TestConfig.h>
 #include <Lumino/Graphics/Mesh.h>
 #include "../../../src/Graphics/GraphicsManager.h"
 
@@ -73,7 +73,7 @@ TEST_F(Test_Graphics_Rendering, Basic)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Rendering, Clear)
 {
-	// <Test> 2D ƒrƒ…[‚ÌƒNƒŠƒA
+	// <Test> 2D ãƒ“ãƒ¥ãƒ¼ã®ã‚¯ãƒªã‚¢
 	{
 		if (Engine::BeginRendering())
 		{
@@ -84,7 +84,7 @@ TEST_F(Test_Graphics_Rendering, Clear)
 		}
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.Clear1.png")));
 	}
-	// <Test> 3D ƒrƒ…[‚ÌƒNƒŠƒA
+	// <Test> 3D ãƒ“ãƒ¥ãƒ¼ã®ã‚¯ãƒªã‚¢
 	{
 		if (Engine::BeginRendering())
 		{
@@ -95,7 +95,7 @@ TEST_F(Test_Graphics_Rendering, Clear)
 		}
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.Clear2.png")));
 	}
-	// <Test> 2DA3D ƒrƒ…[ƒNƒŠƒA‚Ì‘g‚İ‡‚í‚¹B2D ‚ªè‘O‚É‚È‚é
+	// <Test> 2Dã€3D ãƒ“ãƒ¥ãƒ¼ã‚¯ãƒªã‚¢ã®çµ„ã¿åˆã‚ã›ã€‚2D ãŒæ‰‹å‰ã«ãªã‚‹
 	{
 		if (Engine::BeginRendering())
 		{
@@ -192,14 +192,14 @@ TEST_F(Test_Graphics_Rendering, DrawMesh)
 			Engine::EndRendering();
 		}
 		Engine::EndFrameUpdate();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1_1.png"), 95, true));	// ˆê’v—¦ 95%B‚à‚µ^‚Á•‚É‚È‚Á‚½‚è‚µ‚½‚ç‚í‚©‚é
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1_1.png"), 95, true));	// ä¸€è‡´ç‡ 95%ã€‚ã‚‚ã—çœŸã£é»’ã«ãªã£ãŸã‚Šã—ãŸã‚‰ã‚ã‹ã‚‹
 	}
 }
 
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Rendering, Blit)
 {
-	// <Test> ƒfƒtƒHƒ‹ƒg‚ÌƒŒƒ“ƒ_[ƒ^[ƒ^[ƒQƒbƒg‚Ö‚Ì“]‘—
+	// <Test> ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¸ã®è»¢é€
 	{
 		auto tex = Texture2D::Create(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png"));
 		if (Engine::BeginRendering())
@@ -210,7 +210,7 @@ TEST_F(Test_Graphics_Rendering, Blit)
 		}
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png")));
 	}
-	// <Test> •Ê‚ÌƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚Ö‚Ì“]‘—
+	// <Test> åˆ¥ã®ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¸ã®è»¢é€
 	{
 		auto tex = Texture2D::Create(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png"));
 		auto rt1 = RenderTargetTexture::Create(tex->GetSize());
@@ -220,7 +220,7 @@ TEST_F(Test_Graphics_Rendering, Blit)
 			Engine::GetDefault2DLayer()->GetRenderer()->Blit(tex, rt1, nullptr);
 			Engine::EndRendering();
 		}
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.Blit1.png")));	// ‚Ü‚¾‚±‚Ì“_‚Å‚ÍŠDF
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.Blit1.png")));	// ã¾ã ã“ã®æ™‚ç‚¹ã§ã¯ç°è‰²
 
 		if (Engine::BeginRendering())
 		{
@@ -235,10 +235,22 @@ TEST_F(Test_Graphics_Rendering, Blit)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Rendering, DrawText_)
 {
-	{
-		auto font = Font::GetDefault();
-		float w = 160;
+	auto font = Font::GetDefault();
+	float w = 160;
 
+	// <Issue> ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’ã¾ãŸã„ã é€£ç¶šæç”»ã§ã€å¾Œã®ãƒ†ã‚­ã‚¹ãƒˆãŒè¡¨ç¤ºã•ã‚Œãªã„å•é¡Œ
+	{
+		if (Engine::BeginRendering())
+		{
+			Engine::Render();
+			Engine::GetDefault2DLayer()->GetRenderer()->SetFont(font);
+			Engine::GetDefault2DLayer()->GetRenderer()->SetBrush(ColorBrush::White);
+			Engine::GetDefault2DLayer()->GetRenderer()->DrawText_(_T("Lumino"), RectF(0, 0, w, 100), StringFormatFlags::LeftAlignment);
+			Engine::EndRendering();
+		}
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawText1.png")));
+	}
+	{
 		if (Engine::BeginRendering())
 		{
 			Engine::Render();
@@ -249,7 +261,7 @@ TEST_F(Test_Graphics_Rendering, DrawText_)
 			Engine::GetDefault2DLayer()->GetRenderer()->DrawText_(_T("Text3"), RectF(0, 0, w, 100), StringFormatFlags::RightAlignment);
 			Engine::EndRendering();
 		}
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawText1.png")));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawText2.png")));
 	}
 }
 
@@ -267,7 +279,7 @@ TEST_F(Test_Graphics_Rendering, DrawSprite)
 			auto* r = Engine::GetDefault2DLayer()->GetRenderer();
 			r->SetBlendMode(BlendMode::Alpha);
 
-			r->DrawSprite(Vector3(48, 0, 10), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);	// è‘O
+			r->DrawSprite(Vector3(48, 0, 10), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);	// æ‰‹å‰
 			r->DrawSprite(Vector3(0, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 			r->DrawSprite(Vector3(32, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 
@@ -295,7 +307,7 @@ TEST_F(Test_Graphics_Rendering, DrawSprite)
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSprite1.png"), 95));
 	}
 
-	// <Test> Sprite ‚Ì BlendMode
+	// <Test> Sprite ã® BlendMode
 	{
 		if (Engine::BeginRendering())
 		{
@@ -335,7 +347,7 @@ TEST_F(Test_Graphics_Rendering, DrawSprite)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Rendering, DrawRectangle)
 {
-	// <Test> ’PF“h‚è‚Â‚Ô‚µ
+	// <Test> å˜è‰²å¡—ã‚Šã¤ã¶ã—
 	{
 		if (Engine::BeginRendering())
 		{
@@ -349,7 +361,7 @@ TEST_F(Test_Graphics_Rendering, DrawRectangle)
 		}
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawRectangle1.png")));
 	}
-	// <Issue> ‚à‚¤ˆê“x“¯‚¶‚±‚Æ‚ª‚Å‚«‚é
+	// <Issue> ã‚‚ã†ä¸€åº¦åŒã˜ã“ã¨ãŒã§ãã‚‹
 	{
 		if (Engine::BeginRendering())
 		{
@@ -395,19 +407,19 @@ TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
 			auto* g = Engine::GetDefault2DLayer()->GetRenderer();
 			g->Clear(ClearFlags::All, Color::Gray);
 
-			// Œú‚³‹Ïˆê
+			// åšã•å‡ä¸€
 			g->SetBrush(brush1);
 			g->DrawRectangle(RectF(0, 0, 43, 63));
 
-			// Œú‚³·‚ ‚è
+			// åšã•å·®ã‚ã‚Š
 			g->SetBrush(brush2);
 			g->DrawRectangle(RectF(60, 0, 43, 63));
 
-			// k‘Ş + Œú‚³‹Ïˆê
+			// ç¸®é€€ + åšã•å‡ä¸€
 			g->SetBrush(brush3);
 			g->DrawRectangle(RectF(0, 80, 6, 4));
 
-			// k‘Ş + Œú‚³·‚ ‚è
+			// ç¸®é€€ + åšã•å·®ã‚ã‚Š
 			g->SetBrush(brush2);
 			g->DrawRectangle(RectF(60, 80, 6, 4));
 
@@ -465,8 +477,8 @@ TEST_F(Test_Graphics_Rendering, ZSort)
 	auto t1 = Texture2D::Create(LN_LOCALFILE("TestData/Sprite2.png"));
 	auto s1 = Sprite3D::Create(5, 5, t1);
 	auto s2 = Sprite3D::Create(8, 2, t1);
-	s1->SetPosition(0, 0, 0);	// è‘O
-	s2->SetPosition(0, 0, 1);	// ‰œ
+	s1->SetPosition(0, 0, 0);	// æ‰‹å‰
+	s2->SetPosition(0, 0, 1);	// å¥¥
 	Engine::Update();
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.ZSort1.png"), 90));
 }
@@ -498,8 +510,8 @@ TEST_F(Test_Graphics_Texture, DrawText)
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Texture, Issues)
 {
-	// <Issue> Clear ‚ÌŒã‚É Drawtext ‚·‚é‚ÆAClear ‚³‚ê‚Ä‚¢‚È‚¢–â‘è‚ÌC³B
-	// <Issue> Drawtext ˜A‘±‚Å•`‰æ‚·‚é‚ÆA1ƒtƒŒ[ƒ€‘O‚Ì“à—e‚ªƒNƒŠƒA‚³‚ê‚é–â‘è‚ÌC³B
+	// <Issue> Clear ã®å¾Œã« Drawtext ã™ã‚‹ã¨ã€Clear ã•ã‚Œã¦ã„ãªã„å•é¡Œã®ä¿®æ­£ã€‚
+	// <Issue> Drawtext é€£ç¶šã§æç”»ã™ã‚‹ã¨ã€1ãƒ•ãƒ¬ãƒ¼ãƒ å‰ã®å†…å®¹ãŒã‚¯ãƒªã‚¢ã•ã‚Œã‚‹å•é¡Œã®ä¿®æ­£ã€‚
 	{
 		auto font = Font::Create();
 		auto texture = Texture2D::Create(160, 120);

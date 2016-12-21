@@ -31,7 +31,7 @@ class CppPackageRule : ModuleRule
         string releaseDir = builder.LuminoPackageReleaseDir + "LuminoCpp_" + builder.VersionString + "/";
         string pkgSrcDir = builder.LuminoPackageDir + "PackageSource/Cpp/";
         string zipFilePath = builder.LuminoPackageReleaseDir + "LuminoCpp_" + builder.VersionString + ".zip";
-        bool vs2013 = Directory.Exists(releaseDir + "lib/MSVC120/x86");
+        bool vs2013 = Directory.Exists(builder.LuminoRootDir + "lib/MSVC120/x86");
         
         Directory.CreateDirectory(releaseDir);
 

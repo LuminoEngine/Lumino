@@ -49,6 +49,7 @@ protected:
 
 	virtual void UpdateFrameHierarchy(SceneNode* parent, float deltaTime) override;
 	virtual detail::Sphere GetBoundingSphere() override;
+	virtual void OnRender2(DrawList* renderer) override;
 
 protected:
 	Vector2	m_anchor;
