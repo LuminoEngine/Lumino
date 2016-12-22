@@ -70,7 +70,8 @@ SpriteParticleModelPtr SpriteParticleModel::Create()
 SpriteParticleModel::SpriteParticleModel()
 	: m_manager(nullptr)
 	, m_mesh(nullptr)
-	, m_texture(nullptr)
+	//, m_texture(nullptr)
+	, m_material(nullptr)
 	, m_shapeType(ParticleEmitterShapeType::Sphere)
 	, m_shapeParam(1, 1, 1)
 	, m_particleDirection(ParticleDirection::Billboard)
@@ -104,7 +105,7 @@ SpriteParticleModel::SpriteParticleModel()
 //------------------------------------------------------------------------------
 SpriteParticleModel::~SpriteParticleModel()
 {
-	LN_SAFE_RELEASE(m_texture);
+	//LN_SAFE_RELEASE(m_texture);
 	//LN_SAFE_RELEASE(m_vertexBuffer);
 	//LN_SAFE_RELEASE(m_indexBuffer);
 }
@@ -116,10 +117,23 @@ void SpriteParticleModel::Initialize(detail::GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticleModel::SetTexture(Texture* texture)
+//void SpriteParticleModel::SetTexture(Texture* texture)
+//{
+//	LN_REFOBJ_SET(m_texture, texture);
+//}
+
+//------------------------------------------------------------------------------
+void SpriteParticleModel::SetMaterial(Material* material)
 {
-	LN_REFOBJ_SET(m_texture, texture);
+	m_material = material;
 }
+
+//------------------------------------------------------------------------------
+Material* SpriteParticleModel::GetMaterial() const
+{
+	return m_material;
+}
+
 
 //------------------------------------------------------------------------------
 void SpriteParticleModel::Commit()
@@ -137,7 +151,9 @@ void SpriteParticleModel::Commit()
 
 	m_mesh = RefPtr<MeshResource>::MakeRef();
 	m_mesh->Initialize(m_manager, ResourceUsage::Dynamic);
-	m_mesh->Reserve(m_maxParticles * 4, m_maxParticles * 6);
+	m_mesh->ResizeVertexBuffer(m_maxParticles * 4);
+	m_mesh->ResizeIndexBuffer(m_maxParticles * 6);
+	//m_mesh->Reserve(m_maxParticles * 4, m_maxParticles * 6);
 
 	//m_vertexDeclaration = RefPtr<VertexDeclaration>::MakeRef();
 	//m_vertexDeclaration->Initialize(m_manager, SpriteParticleVertex::Elements(), SpriteParticleVertex::ElementCount);
@@ -283,7 +299,7 @@ float SpriteParticleModel::MakeRandom(detail::ParticleData* data, float minValue
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticleModel::Render(DrawList* context, std::shared_ptr<detail::SpriteParticleModelInstance>& instance, const Vector3& viewPosition, const Matrix& viewInv)
+void SpriteParticleModel::Render(DrawList* context, std::shared_ptr<detail::SpriteParticleModelInstance>& instance, const Vector3& viewPosition, const Matrix& viewInv, Material* material)
 {
 #if 0
 	// dt は負値になることもある。instance->m_lastSpawnTime は次に生成するべき粒子の生成時間を示す。
@@ -503,7 +519,7 @@ void SpriteParticleModel::Render(DrawList* context, std::shared_ptr<detail::Spri
 
 		//LN_NOTIMPLEMENTED();
 		//context->DrawPrimitiveIndexed(m_vertexDeclaration, m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, iData * 2);
-		context->DrawMesh(m_mesh, 0, nullptr);
+		context->DrawMesh(m_mesh, 0, material);
 
 		instance->m_activeCount = iData;
 	}
@@ -547,7 +563,7 @@ void SpriteParticle::Initialize(SceneGraph* owner, SpriteParticleModel* model)
 	m_instance = m_model->CreateInstane();
 
 	// TODO: なんか良くないやり方な気がする・・・
-	m_materialList->GetAt(0)->SetMaterialTexture(m_model->GetTexture());
+	//m_materialList->GetAt(0)->SetMaterialTexture(m_model->GetMaterial());
 }
 
 //------------------------------------------------------------------------------
@@ -562,7 +578,7 @@ void SpriteParticle::OnUpdateFrame(float deltaTime)
 void SpriteParticle::OnRender2(DrawList* renderer)
 {
 	// TODO: name RenderInstance
-	m_model->Render(renderer, m_instance, renderer->GetCurrentCamera()->GetPosition(), renderer->GetCurrentCamera()->GetViewMatrixI());
+	m_model->Render(renderer, m_instance, renderer->GetCurrentCamera()->GetPosition(), renderer->GetCurrentCamera()->GetViewMatrixI(), m_model->GetMaterial());
 }
 
 //------------------------------------------------------------------------------

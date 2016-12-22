@@ -19,8 +19,15 @@ protected:
 TEST_F(Test_Scene_SpriteParticle, Default)
 {
 	auto particleModel1 = SpriteParticleModel::Create();
-	particleModel1->SetTexture(Texture2D::Create(LN_LOCALFILE("TestData/Particle1.png")));
+	//particleModel1->SetTexture(Texture2D::Create(LN_LOCALFILE("TestData/Particle1.png")));
+	auto material = Material::Create();
+	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("TestData/Particle1.png")));
+	material->SetBuiltinColorParameter(Material::EmissiveParameter, Color::White);
+	particleModel1->SetMaterial(material);
+
 	auto particle1 = SpriteParticle::Create3D(particleModel1);
+
+	//particle1->GetMainMaterial()->SetBuiltinColorParameter(Material::EmissiveParameter, Color::White);
 	//particle1->SetBlendMode(BlendMode::Normal);
 	//particle1->SetBlendColor(Color::White);
 

@@ -1,4 +1,5 @@
 ﻿
+#define LN_INTERNAL_ACCESS				public
 #include <LuminoEngine.h>
 #include <Lumino/Scene/MeshModelObject.h>
 #include <Lumino/Scene/StaticMesh.h>
@@ -6,6 +7,7 @@
 #include <Lumino/Foundation/Application.h>
 #include <Lumino/Foundation/GameScene.h>
 #include <Lumino/UI/UIFrameWindow.h>
+#include <Lumino/Testing/TestHelper.h>
 using namespace ln;
 
 
@@ -165,7 +167,43 @@ void Main()
 
 	//auto spr1 = Sprite2D::Create(_T("D:/Proj/LuminoStudio/Engine/External/Lumino/test/UnitTest/Graphics/TestData/Sprite2.png"));
 
-	auto text = TextBlock2D::Create(_T("Hello, world!"));
+	//auto text = TextBlock2D::Create(_T("Hello, world!"));
+
+#if 1
+
+	auto m = SpriteParticleModel::Create();
+	m->SetSpawnRate(100);
+	m->SetLifeTime(3.0f);
+	m->m_maxParticles = 300;
+
+	//m->m_shapeType = ParticleEmitterShapeType::Sphere;
+	//m->m_shapeParam.x = 10;
+
+
+	m->m_shapeType = ParticleEmitterShapeType::Cone;
+	m->m_shapeParam.x = Math::PI * 0.1;
+	m->m_shapeParam.y = 2;
+
+	//m->SetPositionRange(Vector3(-10, 10, -10), Vector3(10, 10, 10));
+	m->SetVelocity(Vector3(0, -3, 0));
+	//m->SetAccel(Vector3(0, -8, 0));
+
+	auto material = Material::Create();
+	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	material->SetBuiltinColorParameter(Material::EmissiveParameter, Color::White);
+	m->SetMaterial(material);
+	//m->SetTexture(Texture2D::Create(LN_LOCALFILE("../Media/Spark1.png"), TextureFormat::R8G8B8A8, false));
+
+	auto particle1 = SpriteParticle::Create3D(m);
+	particle1->SetBlendMode(BlendMode::Subtract);
+	particle1->SetPosition(2, 0, 0);
+
+	auto particle2 = SpriteParticle::Create3D(m);
+	particle2->SetBlendMode(BlendMode::Subtract);
+	particle2->SetPosition(3, 0, 0);
+
+	particle1->AddChild(particle2);
+#endif
 
 	while (Engine::Update())
 	{

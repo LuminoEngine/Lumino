@@ -501,6 +501,7 @@ int main()
 
 		//auto grid1 = Grid::Create3D();
 
+#if 0
 		auto m = SpriteParticleModel::Create();
 		m->SetSpawnRate(100);
 		m->SetLifeTime(3.0f);
@@ -527,6 +528,7 @@ int main()
 		particle2->SetPosition(3, 0, 0);
 
 		particle1->AddChild(particle2);
+#endif
 
 		//GameAudio::PlayBGM("D:/Proj/Lumino/bindings/Ruby/sample/Media/ln21.mid");
 		//GameAudio::PlayBGM("D:/tmp/GrandSky.mp3");
