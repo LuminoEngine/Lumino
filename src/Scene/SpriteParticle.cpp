@@ -562,8 +562,10 @@ void SpriteParticle::Initialize(SceneGraph* owner, SpriteParticleModel* model)
 	m_model->Commit();
 	m_instance = m_model->CreateInstane();
 
-	// TODO: なんか良くないやり方な気がする・・・
-	//m_materialList->GetAt(0)->SetMaterialTexture(m_model->GetMaterial());
+	// TODO: なんか良くないやり方な気がする・・・	共有マテリアルは変更禁止にしたほうがいいと思う
+	// TODO: main にはんえいされない
+	m_materialList->SetAt(0, m_model->GetMaterial());
+	m_materialList->m_mainMaterial = m_model->GetMaterial();
 }
 
 //------------------------------------------------------------------------------
@@ -578,7 +580,7 @@ void SpriteParticle::OnUpdateFrame(float deltaTime)
 void SpriteParticle::OnRender2(DrawList* renderer)
 {
 	// TODO: name RenderInstance
-	m_model->Render(renderer, m_instance, renderer->GetCurrentCamera()->GetPosition(), renderer->GetCurrentCamera()->GetViewMatrixI(), m_model->GetMaterial());
+	m_model->Render(renderer, m_instance, renderer->GetCurrentCamera()->GetPosition(), renderer->GetCurrentCamera()->GetViewMatrixI(), m_materialList->GetAt(0));
 }
 
 //------------------------------------------------------------------------------

@@ -123,7 +123,7 @@ LN_INTERNAL_ACCESS:
 	void SimulateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition);
 	void Render(DrawList* context, std::shared_ptr<detail::SpriteParticleModelInstance>& instance, const Vector3& viewPosition, const Matrix& viewInv, Material* material);
 
-private:
+public: // TODO
 	float MakeRandom(detail::ParticleData* data, float minValue, float maxValue, ParticleRandomSource source);
 	
 	detail::GraphicsManager*	m_manager;

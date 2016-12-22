@@ -143,7 +143,7 @@ LN_INTERNAL_ACCESS:
 	void Initialize(int subMaterialCount, bool createMainMaterial);
 	void CopyShared(MaterialList* srcList, bool createMainMaterial);
 	
-private:
+LN_INTERNAL_ACCESS:
 	RefPtr<Material>				m_mainMaterial;
 };
 

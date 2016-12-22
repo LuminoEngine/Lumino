@@ -194,14 +194,14 @@ void Main()
 	//m->SetTexture(Texture2D::Create(LN_LOCALFILE("../Media/Spark1.png"), TextureFormat::R8G8B8A8, false));
 
 	auto particle1 = SpriteParticle::Create3D(m);
-	particle1->SetBlendMode(BlendMode::Subtract);
+	particle1->SetBlendMode(BlendMode::Add);
 	particle1->SetPosition(2, 0, 0);
 
-	auto particle2 = SpriteParticle::Create3D(m);
-	particle2->SetBlendMode(BlendMode::Subtract);
-	particle2->SetPosition(3, 0, 0);
+	//auto particle2 = SpriteParticle::Create3D(m);
+	//particle2->SetBlendMode(BlendMode::Subtract);
+	//particle2->SetPosition(3, 0, 0);
 
-	particle1->AddChild(particle2);
+	//particle1->AddChild(particle2);
 #endif
 
 	while (Engine::Update())
