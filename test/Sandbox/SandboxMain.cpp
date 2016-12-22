@@ -1,5 +1,4 @@
 ﻿
-#define LN_INTERNAL_ACCESS				public
 #include <LuminoEngine.h>
 #include <Lumino/Scene/MeshModelObject.h>
 #include <Lumino/Scene/StaticMesh.h>
@@ -188,9 +187,9 @@ void Main()
 	m->SetVelocity(Vector3(0, -3, 0));
 	//m->SetAccel(Vector3(0, -8, 0));
 
-	auto material = Material::Create();
+	auto material = DiffuseMaterial::Create();
 	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
-	material->SetBuiltinColorParameter(Material::EmissiveParameter, Color::White);
+	material->SetEmissive(Color::White);
 	m->SetMaterial(material);
 	//m->SetTexture(Texture2D::Create(LN_LOCALFILE("../Media/Spark1.png"), TextureFormat::R8G8B8A8, false));
 

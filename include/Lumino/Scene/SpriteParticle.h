@@ -83,9 +83,6 @@ class SpriteParticleModel
 public:
 	static SpriteParticleModelPtr Create();
 
-	//void SetTexture(Texture* texture);
-	//Texture* GetTexture() const { return m_texture; }
-
 	void SetMaterial(Material* material);
 	Material* GetMaterial() const;
 
@@ -126,15 +123,11 @@ LN_INTERNAL_ACCESS:
 	void SimulateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition);
 	void Render(DrawList* context, std::shared_ptr<detail::SpriteParticleModelInstance>& instance, const Vector3& viewPosition, const Matrix& viewInv, Material* material);
 
-public:	// TODO:
+private:
 	float MakeRandom(detail::ParticleData* data, float minValue, float maxValue, ParticleRandomSource source);
 	
 	detail::GraphicsManager*	m_manager;
-	//RefPtr<VertexDeclaration>	m_vertexDeclaration;
 	RefPtr<MeshResource>		m_mesh;		// TODO: このあたりは Manager に置いて、全体で共有した方がメモリ効率よいかも？
-	//VertexBuffer*		m_vertexBuffer;	
-	//IndexBuffer*		m_indexBuffer;
-	//Texture*			m_texture;
 	RefPtr<Material>			m_material;
 	Randomizer			m_rand;
 

@@ -342,6 +342,66 @@ void Material::SetTone(const ToneF& v)
 ToneF Material::GetTone() const { auto itr = m_builtinValueMap.find(ToneHash); return (itr != m_builtinValueMap.end()) ? ToneF(itr->second.GetVector()) : DefaultTone; }
 
 
+//==============================================================================
+// DiffuseMaterial
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(DiffuseMaterial, Material);
+
+//------------------------------------------------------------------------------
+DiffuseMaterialPtr DiffuseMaterial::Create()
+{
+	auto ptr = DiffuseMaterialPtr::MakeRef();
+	ptr->Initialize();
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
+DiffuseMaterial::DiffuseMaterial()
+{
+}
+
+//------------------------------------------------------------------------------
+DiffuseMaterial::~DiffuseMaterial()
+{
+}
+
+//------------------------------------------------------------------------------
+void DiffuseMaterial::Initialize()
+{
+	Material::Initialize();
+}
+
+//------------------------------------------------------------------------------
+void DiffuseMaterial::SetDiffuse(const Color& value)
+{
+	SetBuiltinColorParameter(Material::DiffuseParameter, Color::White);
+}
+
+//------------------------------------------------------------------------------
+void DiffuseMaterial::SetAmbient(const Color& value)
+{
+	SetBuiltinColorParameter(Material::AmbientParameter, Color::White);
+}
+
+//------------------------------------------------------------------------------
+void DiffuseMaterial::SetSpecular(const Color& value)
+{
+	SetBuiltinColorParameter(Material::SpecularParameter, Color::White);
+}
+
+//------------------------------------------------------------------------------
+void DiffuseMaterial::SetEmissive(const Color& value)
+{
+	SetBuiltinColorParameter(Material::EmissiveParameter, Color::White);
+}
+
+//------------------------------------------------------------------------------
+void DiffuseMaterial::SetSpecularPower(float value)
+{
+	SetBuiltinFloatParameter(Material::PowerParameter, value);
+}
+
+
 namespace detail {
 
 //==============================================================================
