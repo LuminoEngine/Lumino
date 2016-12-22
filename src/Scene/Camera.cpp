@@ -159,7 +159,9 @@ void Camera::UpdateMatrices(const Size& viewSize)
 		m_viewProjMatrix = m_viewMatrix * m_projMatrix;
 
 		// 正面方向
-		m_direction = Vector4(lookAt - m_combinedGlobalMatrix.GetPosition(), 0.0f);
+		Vector3 d = lookAt - m_combinedGlobalMatrix.GetPosition();
+		d.Normalize();
+		m_direction = Vector4(d, 0.0f);
 	}
 
 	m_viewFrustum = ViewFrustum(m_viewProjMatrix);

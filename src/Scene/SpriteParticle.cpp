@@ -248,7 +248,7 @@ void SpriteParticleModel::SpawnParticle(detail::ParticleData* data, float spawnT
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition)
+void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition, const Vector3& viewDirection)
 {
 	float localTime = time - data->spawnTime;
 	float deltaTime = time - data->lastTime;
@@ -275,7 +275,8 @@ void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double
 	data->lastTime = time;
 	data->currentDirection = Vector3::Normalize(data->position - prevPos);
 
-	data->zDistance = (data->position - viewPosition).GetLengthSquared();
+	// Z 距離は視点からの距離ではなく、視点平面からの距離でなければ正しくソートできない
+	data->zDistance = Vector3::Dot(data->position - viewPosition, viewDirection);
 
 	float a = 1.0f;
 	
@@ -299,7 +300,7 @@ float SpriteParticleModel::MakeRandom(detail::ParticleData* data, float minValue
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticleModel::Render(DrawList* context, std::shared_ptr<detail::SpriteParticleModelInstance>& instance, const Vector3& viewPosition, const Matrix& viewInv, Material* material)
+void SpriteParticleModel::Render(DrawList* context, std::shared_ptr<detail::SpriteParticleModelInstance>& instance, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, Material* material)
 {
 #if 0
 	// dt は負値になることもある。instance->m_lastSpawnTime は次に生成するべき粒子の生成時間を示す。
@@ -407,13 +408,13 @@ void SpriteParticleModel::Render(DrawList* context, std::shared_ptr<detail::Spri
 		instance->m_lastSpawnTime += m_oneSpawnDeltaTime;
 	}
 
+	// 更新処理
 	for (int i = 0; i < instance->m_activeCount + newIndexCount; ++i)
 	{
 		int idx = instance->m_particleIndices[i];
 		detail::ParticleData& data = instance->m_particles[idx];
-		SimulateOneParticle(&data, instance->m_time, viewPosition);	// パーティクル1つ分のシミュレート
+		SimulateOneParticle(&data, instance->m_time, viewPosition, viewDirection);	// パーティクル1つ分のシミュレート
 	}
-
 
 	// Z 値の大きい方から小さい方へソートする比較
 	class SpriteCmpDepthBackToFront
@@ -519,9 +520,11 @@ void SpriteParticleModel::Render(DrawList* context, std::shared_ptr<detail::Spri
 
 		//LN_NOTIMPLEMENTED();
 		//context->DrawPrimitiveIndexed(m_vertexDeclaration, m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, iData * 2);
+		instance->m_activeCount = iData;
+		m_mesh->m_attributes.Resize(1);
+		m_mesh->m_attributes[0].PrimitiveNum = instance->m_activeCount * 2;
 		context->DrawMesh(m_mesh, 0, material);
 
-		instance->m_activeCount = iData;
 	}
 
 	//instance->m_lastSpawnTime += m_oneSpawnDeltaTime * spawnCount;
@@ -580,7 +583,8 @@ void SpriteParticle::OnUpdateFrame(float deltaTime)
 void SpriteParticle::OnRender2(DrawList* renderer)
 {
 	// TODO: name RenderInstance
-	m_model->Render(renderer, m_instance, renderer->GetCurrentCamera()->GetPosition(), renderer->GetCurrentCamera()->GetViewMatrixI(), m_materialList->GetAt(0));
+	Vector4 dir = renderer->GetCurrentCamera()->GetDirectionInternal();
+	m_model->Render(renderer, m_instance, renderer->GetCurrentCamera()->GetPosition(), dir.GetXYZ(), renderer->GetCurrentCamera()->GetViewMatrixI(), m_materialList->GetAt(0));
 }
 
 //------------------------------------------------------------------------------

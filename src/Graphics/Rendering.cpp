@@ -701,6 +701,7 @@ void InternalRenderer::Render(
 					element->zDistance = Vector3::Dot(
 						element->transform.GetPosition() - cameraInfo.viewPosition,
 						element->transform.GetFront());		// 平面と点の距離
+						// TODO: ↑第2引数違くない？要確認
 					break;
 				default:
 					element->zDistance = 0.0f;
