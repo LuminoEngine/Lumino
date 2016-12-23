@@ -206,17 +206,16 @@ void SpriteParticleModel::UpdateInstance(detail::SpriteParticleModelInstance* in
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticleModel::SpawnParticle(detail::ParticleData* data, float spawnTime)
+void SpriteParticleModel::SpawnParticle(const Matrix& emitterTransform, detail::ParticleData* data, float spawnTime)
 {
 	data->ramdomBaseValue = m_rand.GetFloatRange(m_minRandomBaseValue, m_maxRandomBaseValue);
 
-	//printf("s %p\n", this);
+	Vector3 localPosition = Vector3::Zero;
 
 	switch (m_shapeType)
 	{
 		default:
 		case ParticleEmitterShapeType::Sphere:
-			data->position = Vector3::Zero;
 			data->positionVelocity.x = MakeRandom(data, -1.0, 1.0, ParticleRandomSource::Self);
 			data->positionVelocity.y = MakeRandom(data, -1.0, 1.0, ParticleRandomSource::Self);
 			data->positionVelocity.z = MakeRandom(data, -1.0, 1.0, ParticleRandomSource::Self);
@@ -225,8 +224,6 @@ void SpriteParticleModel::SpawnParticle(detail::ParticleData* data, float spawnT
 			break;
 		case ParticleEmitterShapeType::Cone:
 		{
-			data->position = Vector3::Zero;
-
 			// まず、XZ 平面で Y+ を前方として角度制限付きの位置を求める。
 			float r = MakeRandom(data, 0.0f, m_shapeParam.x, ParticleRandomSource::Self);
 			Vector3 vec;
@@ -245,9 +242,9 @@ void SpriteParticleModel::SpawnParticle(detail::ParticleData* data, float spawnT
 			break;
 		}
 		case ParticleEmitterShapeType::Box:
-			data->position.x = MakeRandom(data, m_minPosition.x, m_maxPosition.x, m_positionRandomSource);
-			data->position.y = MakeRandom(data, m_minPosition.y, m_maxPosition.y, m_positionRandomSource);
-			data->position.z = MakeRandom(data, m_minPosition.z, m_maxPosition.z, m_positionRandomSource);
+			localPosition.x = MakeRandom(data, m_minPosition.x, m_maxPosition.x, m_positionRandomSource);
+			localPosition.y = MakeRandom(data, m_minPosition.y, m_maxPosition.y, m_positionRandomSource);
+			localPosition.z = MakeRandom(data, m_minPosition.z, m_maxPosition.z, m_positionRandomSource);
 			data->positionVelocity.x = MakeRandom(data, m_minVelocity.x, m_maxVelocity.x, m_velocityRandomSource);
 			data->positionVelocity.y = MakeRandom(data, m_minVelocity.y, m_maxVelocity.y, m_velocityRandomSource);
 			data->positionVelocity.z = MakeRandom(data, m_minVelocity.z, m_maxVelocity.z, m_velocityRandomSource);
@@ -257,7 +254,7 @@ void SpriteParticleModel::SpawnParticle(detail::ParticleData* data, float spawnT
 	data->spawnTime = spawnTime;
 	data->lastTime = spawnTime;
 	data->endTime = data->spawnTime + m_maxLifeTime;	// TODO: Rand
-	data->startPosition = data->position;
+	data->startPosition = Vector3::TransformCoord(localPosition, emitterTransform);
 	data->positionAccel.x = MakeRandom(data, m_minAccel.x, m_maxAccel.x, m_accelRandomSource);
 	data->positionAccel.y = MakeRandom(data, m_minAccel.y, m_maxAccel.y, m_accelRandomSource);
 	data->positionAccel.z = MakeRandom(data, m_minAccel.z, m_maxAccel.z, m_accelRandomSource);
@@ -333,7 +330,7 @@ float SpriteParticleModel::MakeRandom(detail::ParticleData* data, float minValue
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelInstance* instance, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, Material* material)
+void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelInstance* instance, const Matrix& emitterTransform, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, Material* material)
 {
 #if 0
 	// dt は負値になることもある。instance->m_lastSpawnTime は次に生成するべき粒子の生成時間を示す。
@@ -424,7 +421,7 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 			// 
 			if (data.spawnTime >= 0.f && data.endTime <= instance->m_time)
 			{
-				SpawnParticle(&data, instance->m_lastSpawnTime);
+				SpawnParticle(emitterTransform, &data, instance->m_lastSpawnTime);
 				spawned = true;
 				break;
 			}
@@ -434,7 +431,7 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 		{
 			int idx = instance->m_particleIndices[iData];
 			detail::ParticleData& data = instance->m_particles[idx];
-			SpawnParticle(&data, instance->m_lastSpawnTime);
+			SpawnParticle(emitterTransform, &data, instance->m_lastSpawnTime);
 			++iData;
 			++newIndexCount;
 		}
@@ -480,15 +477,16 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 	cmp.spriteList = &instance->m_particles;
 	std::stable_sort(instance->m_particleIndices.begin(), instance->m_particleIndices.begin() + sortRange, cmp);
 
-	Matrix transform = viewInv;
-	transform.m41 = 0.0f;
-	transform.m42 = 0.0f;
-	transform.m43 = 0.0f;
 
 	if (sortRange > 0)
 	{
 		if (m_sourceDataType == ParticleSourceDataType::Sprite)
 		{
+			Matrix transform = viewInv;
+			transform.m41 = 0.0f;
+			transform.m42 = 0.0f;
+			transform.m43 = 0.0f;
+
 			// 頂点バッファ・インデックスバッファに反映して描画する
 			Vertex* vb = reinterpret_cast<Vertex*>(m_mesh->TryLockVertexBuffer(MeshResource::VB_BasicVertices));
 			uint16_t* ib = reinterpret_cast<uint16_t*>(m_mesh->TryLockIndexBuffer());
@@ -574,7 +572,12 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 				if (data.spawnTime < 0.0f) break;	// 非アクティブが見つかったら終了
 
 				//printf("%f\n", data.color.a);
-				m_childModel->Render(context, data.m_childInstance, viewPosition, viewDirection, viewInv, m_childModel->GetMaterial());
+				//Matrix mat = Matrix::MakeAffineTransformation(
+				//	Vector3(data.size),
+
+				//);
+				Matrix mat = Matrix::MakeTranslation(data.position);
+				m_childModel->Render(context, data.m_childInstance, mat, viewPosition, viewDirection, viewInv, m_childModel->GetMaterial());
 				
 
 			}
@@ -640,7 +643,7 @@ void SpriteParticle::OnRender2(DrawList* renderer)
 {
 	// TODO: name RenderInstance
 	Vector4 dir = renderer->GetCurrentCamera()->GetDirectionInternal();
-	m_model->Render(renderer, m_instance, renderer->GetCurrentCamera()->GetPosition(), dir.GetXYZ(), renderer->GetCurrentCamera()->GetViewMatrixI(), m_materialList->GetAt(0));
+	m_model->Render(renderer, m_instance, GetCombinedGlobalMatrix(), renderer->GetCurrentCamera()->GetPosition(), dir.GetXYZ(), renderer->GetCurrentCamera()->GetViewMatrixI(), m_materialList->GetAt(0));
 }
 
 //------------------------------------------------------------------------------

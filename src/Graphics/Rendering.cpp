@@ -835,7 +835,7 @@ NonShadingRenderingPass::~NonShadingRenderingPass()
 //------------------------------------------------------------------------------
 void NonShadingRenderingPass::Initialize(GraphicsManager* manager)
 {
-	m_defaultShader = manager->GetDefaultShader(DefaultShader::NoLightingRendering);
+	m_defaultShader = manager->GetBuiltinShader(BuiltinShader::Sprite);
 }
 
 //------------------------------------------------------------------------------
@@ -944,7 +944,7 @@ ForwardShadingRenderingPass::~ForwardShadingRenderingPass()
 //------------------------------------------------------------------------------
 void ForwardShadingRenderingPass::Initialize(GraphicsManager* manager)
 {
-	m_defaultShader = manager->GetDefaultShader(DefaultShader::ForwardRendering);
+	m_defaultShader = manager->GetBuiltinShader(BuiltinShader::LegacyDiffuse);
 }
 
 //------------------------------------------------------------------------------

@@ -132,9 +132,9 @@ public: // TODO
 	void Commit();
 	RefPtr<detail::SpriteParticleModelInstance> CreateInstane();
 	void UpdateInstance(detail::SpriteParticleModelInstance* instance, float deltaTime);
-	void SpawnParticle(detail::ParticleData* data, float spawnTime);
+	void SpawnParticle(const Matrix& emitterTransform, detail::ParticleData* data, float spawnTime);
 	void SimulateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition, const Vector3& viewDirection);
-	void Render(DrawList* context, detail::SpriteParticleModelInstance* instance, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, Material* material);
+	void Render(DrawList* context, detail::SpriteParticleModelInstance* instance, const Matrix& emitterTransform, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, Material* material);
 
 public: // TODO
 	float MakeRandom(detail::ParticleData* data, float minValue, float maxValue, ParticleRandomSource source);

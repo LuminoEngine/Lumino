@@ -342,6 +342,12 @@ void ShaderSemanticsManager::UpdateSubsetVariables(const SubsetInfo& info)
 //==============================================================================
 
 //------------------------------------------------------------------------------
+ShaderPtr Shader::GetBuiltinShader(BuiltinShader shader)
+{
+	return detail::GraphicsManager::GetInstance()->GetBuiltinShader(shader);
+}
+
+//------------------------------------------------------------------------------
 RefPtr<Shader> Shader::Create(const StringRef& filePath)
 {
 	RefPtr<Shader> obj(LN_NEW Shader(), false);

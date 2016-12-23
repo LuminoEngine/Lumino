@@ -338,6 +338,12 @@ enum LightType
 	LightType_Spot,				// スポットライト
 };
 
+enum class BuiltinShader
+{
+	Sprite,
+	LegacyDiffuse,		// Lambert Shading
+};
+
 namespace Driver
 {
 	class IGraphicsDevice;
