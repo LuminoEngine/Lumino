@@ -255,6 +255,7 @@ void SpriteParticleModel::SpawnParticle(const Matrix& emitterTransform, detail::
 	data->lastTime = spawnTime;
 	data->endTime = data->spawnTime + m_maxLifeTime;	// TODO: Rand
 	data->startPosition = Vector3::TransformCoord(localPosition, emitterTransform);
+	data->position = data->startPosition;
 	data->positionAccel.x = MakeRandom(data, m_minAccel.x, m_maxAccel.x, m_accelRandomSource);
 	data->positionAccel.y = MakeRandom(data, m_minAccel.y, m_maxAccel.y, m_accelRandomSource);
 	data->positionAccel.z = MakeRandom(data, m_minAccel.z, m_maxAccel.z, m_accelRandomSource);
