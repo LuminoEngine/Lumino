@@ -47,9 +47,9 @@ struct SpriteParticleVertex
 //==============================================================================
 namespace detail {
 
-void SpriteParticleModelInstance::DrawSubset(InternalContext* context)
-{
-}
+//void SpriteParticleModelInstance::DrawSubset(InternalContext* context)
+//{
+//}
 
 } // namespace detail
 
@@ -74,6 +74,7 @@ SpriteParticleModel::SpriteParticleModel()
 	, m_material(nullptr)
 	, m_shapeType(ParticleEmitterShapeType::Sphere)
 	, m_shapeParam(1, 1, 1)
+	, m_sourceDataType(ParticleSourceDataType::Sprite)
 	, m_particleDirection(ParticleDirection::Billboard)
 	, m_spawnRate(1)
 	, m_burstCount(1)
@@ -134,6 +135,13 @@ Material* SpriteParticleModel::GetMaterial() const
 	return m_material;
 }
 
+//------------------------------------------------------------------------------
+void SpriteParticleModel::SetSubParticle(SpriteParticleModel* particle)
+{
+	LN_FAIL_CHECK_ARG(particle != this) return;	// this は NG。無限再帰する
+	m_childModel = particle;
+	m_sourceDataType = ParticleSourceDataType::Particle;
+}
 
 //------------------------------------------------------------------------------
 void SpriteParticleModel::Commit()
@@ -165,9 +173,9 @@ void SpriteParticleModel::Commit()
 }
 
 //------------------------------------------------------------------------------
-std::shared_ptr<detail::SpriteParticleModelInstance> SpriteParticleModel::CreateInstane()
+RefPtr<detail::SpriteParticleModelInstance> SpriteParticleModel::CreateInstane()
 {
-	auto ptr = std::make_shared<detail::SpriteParticleModelInstance>();
+	auto ptr = RefPtr<detail::SpriteParticleModelInstance>::MakeRef();
 	//ptr->m_owner = this;	// 参照を持っておく
 	ptr->m_particles.Resize(m_maxParticles);
 	ptr->m_particleIndices.Resize(m_maxParticles);
@@ -179,15 +187,30 @@ std::shared_ptr<detail::SpriteParticleModelInstance> SpriteParticleModel::Create
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticleModel::UpdateInstance(std::shared_ptr<detail::SpriteParticleModelInstance>& instance, float deltaTime)
+void SpriteParticleModel::UpdateInstance(detail::SpriteParticleModelInstance* instance, float deltaTime)
 {
 	instance->m_time += deltaTime;
+
+	if (m_sourceDataType == ParticleSourceDataType::Particle)
+	{
+		int iData = 0;
+		for (; iData < instance->m_activeCount; ++iData)
+		{
+			int idx = instance->m_particleIndices[iData];
+			detail::ParticleData& data = instance->m_particles[idx];
+			if (data.spawnTime < 0.0f) break;	// 非アクティブが見つかったら終了
+
+			m_childModel->UpdateInstance(data.m_childInstance, deltaTime);
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
 void SpriteParticleModel::SpawnParticle(detail::ParticleData* data, float spawnTime)
 {
 	data->ramdomBaseValue = m_rand.GetFloatRange(m_minRandomBaseValue, m_maxRandomBaseValue);
+
+	//printf("s %p\n", this);
 
 	switch (m_shapeType)
 	{
@@ -204,17 +227,17 @@ void SpriteParticleModel::SpawnParticle(detail::ParticleData* data, float spawnT
 		{
 			data->position = Vector3::Zero;
 
-			// まず、YX 平面で Z+ を前方として角度制限付きの位置を求める。
+			// まず、XZ 平面で Y+ を前方として角度制限付きの位置を求める。
 			float r = MakeRandom(data, 0.0f, m_shapeParam.x, ParticleRandomSource::Self);
 			Vector3 vec;
 			vec.y = sinf(r);	// TODO: Asm::sincos
 			vec.z = cosf(r);
 
-			// 次に、Z 軸周りの回転を行う。回転角度は 360度 ランダム。
+			// 次に、Y 軸周りの回転を行う。回転角度は 360度 ランダム。
 			r = MakeRandom(data, 0.0f, Math::PI * 2, ParticleRandomSource::Self);
 			data->positionVelocity.x = sinf(r) * vec.y;
-			data->positionVelocity.y = cosf(r) * vec.y;
-			data->positionVelocity.z = vec.z;
+			data->positionVelocity.y = vec.z;
+			data->positionVelocity.z = cosf(r) * vec.y;
 
 			// 最後に正規化して速度化する。
 			data->positionVelocity.Normalize();
@@ -245,6 +268,12 @@ void SpriteParticleModel::SpawnParticle(detail::ParticleData* data, float spawnT
 
 	// TODO
 	data->color = Color::White;
+
+	// SubParticle 作成
+	if (m_sourceDataType == ParticleSourceDataType::Particle)
+	{
+		data->m_childInstance = m_childModel->CreateInstane();
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -270,6 +299,7 @@ void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double
 	if (time >= data->endTime)
 	{
 		data->spawnTime = -1.0f;
+		data->m_childInstance = nullptr;
 	}
 
 	data->lastTime = time;
@@ -284,6 +314,9 @@ void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double
 	a *= Math::Clamp01(localTime / (lifeSpan * m_fadeInRatio));
 	a *= Math::Clamp01((data->endTime - time) / (lifeSpan * m_fadeOutRatio));
 	data->color.a = a;
+
+
+	//printf("%f\n", a);
 }
 
 //------------------------------------------------------------------------------
@@ -300,7 +333,7 @@ float SpriteParticleModel::MakeRandom(detail::ParticleData* data, float minValue
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticleModel::Render(DrawList* context, std::shared_ptr<detail::SpriteParticleModelInstance>& instance, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, Material* material)
+void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelInstance* instance, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, Material* material)
 {
 #if 0
 	// dt は負値になることもある。instance->m_lastSpawnTime は次に生成するべき粒子の生成時間を示す。
@@ -376,6 +409,7 @@ void SpriteParticleModel::Render(DrawList* context, std::shared_ptr<detail::Spri
 		++spawned;
 	}
 #endif
+	LN_FAIL_CHECK_STATE(m_oneSpawnDeltaTime > 0.0f) return;
 
 	int iData = 0;
 	int newIndexCount = 0;
@@ -451,79 +485,101 @@ void SpriteParticleModel::Render(DrawList* context, std::shared_ptr<detail::Spri
 	transform.m42 = 0.0f;
 	transform.m43 = 0.0f;
 
-	// 頂点バッファ・インデックスバッファに反映して描画する
 	if (sortRange > 0)
 	{
-		Vertex* vb = reinterpret_cast<Vertex*>(m_mesh->TryLockVertexBuffer(MeshResource::VB_BasicVertices));
-		uint16_t* ib = reinterpret_cast<uint16_t*>(m_mesh->TryLockIndexBuffer());
-
-		//SpriteParticleVertex* vb = (SpriteParticleVertex*)m_vertexBuffer->Lock()->GetData();	
-		//uint16_t* ib = (uint16_t*)m_indexBuffer->Lock()->GetData();
-		int iData = 0;
-		int count = instance->m_particleIndices.GetCount();
-		for (; iData < count; ++iData)
+		if (m_sourceDataType == ParticleSourceDataType::Sprite)
 		{
-			int idx = instance->m_particleIndices[iData];
-			detail::ParticleData& data = instance->m_particles[idx];
-			if (data.spawnTime < 0.0f) break;	// 非アクティブが見つかったら終了
+			// 頂点バッファ・インデックスバッファに反映して描画する
+			Vertex* vb = reinterpret_cast<Vertex*>(m_mesh->TryLockVertexBuffer(MeshResource::VB_BasicVertices));
+			uint16_t* ib = reinterpret_cast<uint16_t*>(m_mesh->TryLockIndexBuffer());
 
-			const Vector3& pos = data.position;
-			float hs = data.size / 2;
-
-			if (m_particleDirection == ParticleDirection::MovementDirection &&
-				data.currentDirection != Vector3::Zero)
+			//SpriteParticleVertex* vb = (SpriteParticleVertex*)m_vertexBuffer->Lock()->GetData();	
+			//uint16_t* ib = (uint16_t*)m_indexBuffer->Lock()->GetData();
+			int iData = 0;
+			int count = instance->m_particleIndices.GetCount();
+			for (; iData < count; ++iData)
 			{
-				Vector3 d = Vector3::Normalize(viewPosition - data.position);
-				d = Vector3::Cross(d, data.currentDirection);	// 進行方向に対する右方向
+				int idx = instance->m_particleIndices[iData];
+				detail::ParticleData& data = instance->m_particles[idx];
+				if (data.spawnTime < 0.0f) break;	// 非アクティブが見つかったら終了
 
-				vb[(iData * 4) + 0].position = pos - (data.currentDirection * hs) + d * hs;	// 後方右
-				vb[(iData * 4) + 1].position = pos + (data.currentDirection * hs) + d * hs;	// 前方右
-				vb[(iData * 4) + 2].position = pos - (data.currentDirection * hs) - d * hs;	// 後方左
-				vb[(iData * 4) + 3].position = pos + (data.currentDirection * hs) - d * hs;	// 前方左
+				const Vector3& pos = data.position;
+				float hs = data.size / 2;
+
+				if (m_particleDirection == ParticleDirection::MovementDirection &&
+					data.currentDirection != Vector3::Zero)
+				{
+					Vector3 d = Vector3::Normalize(viewPosition - data.position);
+					d = Vector3::Cross(d, data.currentDirection);	// 進行方向に対する右方向
+
+					vb[(iData * 4) + 0].position = pos - (data.currentDirection * hs) + d * hs;	// 後方右
+					vb[(iData * 4) + 1].position = pos + (data.currentDirection * hs) + d * hs;	// 前方右
+					vb[(iData * 4) + 2].position = pos - (data.currentDirection * hs) - d * hs;	// 後方左
+					vb[(iData * 4) + 3].position = pos + (data.currentDirection * hs) - d * hs;	// 前方左
+				}
+				else
+				{
+					// Z- 正面
+					vb[(iData * 4) + 0].position.Set(-hs, hs, 0.0f);	// 左上
+					vb[(iData * 4) + 1].position.Set(-hs, -hs, 0.0f);	// 左下
+					vb[(iData * 4) + 2].position.Set(hs, hs, 0.0f);		// 右上
+					vb[(iData * 4) + 3].position.Set(hs, -hs, 0.0f);	// 右下
+					vb[(iData * 4) + 0].position.TransformCoord(transform);
+					vb[(iData * 4) + 1].position.TransformCoord(transform);
+					vb[(iData * 4) + 2].position.TransformCoord(transform);
+					vb[(iData * 4) + 3].position.TransformCoord(transform);
+				}
+				vb[(iData * 4) + 0].position += pos;
+				vb[(iData * 4) + 1].position += pos;
+				vb[(iData * 4) + 2].position += pos;
+				vb[(iData * 4) + 3].position += pos;
+
+				vb[(iData * 4) + 0].uv.Set(0, 0);
+				vb[(iData * 4) + 1].uv.Set(0, 1);
+				vb[(iData * 4) + 2].uv.Set(1, 0);
+				vb[(iData * 4) + 3].uv.Set(1, 1);
+
+				vb[(iData * 4) + 0].color = data.color;
+				vb[(iData * 4) + 1].color = data.color;
+				vb[(iData * 4) + 2].color = data.color;
+				vb[(iData * 4) + 3].color = data.color;
+
+
+				ib[(iData * 6) + 0] = (iData * 4) + 0;
+				ib[(iData * 6) + 1] = (iData * 4) + 1;
+				ib[(iData * 6) + 2] = (iData * 4) + 2;
+				ib[(iData * 6) + 3] = (iData * 4) + 2;
+				ib[(iData * 6) + 4] = (iData * 4) + 1;
+				ib[(iData * 6) + 5] = (iData * 4) + 3;
 			}
-			else
-			{
-				// Z- 正面
-				vb[(iData * 4) + 0].position.Set(-hs, hs, 0.0f);	// 左上
-				vb[(iData * 4) + 1].position.Set(-hs, -hs, 0.0f);	// 左下
-				vb[(iData * 4) + 2].position.Set(hs, hs, 0.0f);		// 右上
-				vb[(iData * 4) + 3].position.Set(hs, -hs, 0.0f);	// 右下
-				vb[(iData * 4) + 0].position.TransformCoord(transform);
-				vb[(iData * 4) + 1].position.TransformCoord(transform);
-				vb[(iData * 4) + 2].position.TransformCoord(transform);
-				vb[(iData * 4) + 3].position.TransformCoord(transform);
-			}
-			vb[(iData * 4) + 0].position += pos;
-			vb[(iData * 4) + 1].position += pos;
-			vb[(iData * 4) + 2].position += pos;
-			vb[(iData * 4) + 3].position += pos;
+			//m_vertexBuffer->Unlock();
+			//m_indexBuffer->Unlock();
 
-			vb[(iData * 4) + 0].uv.Set(0, 0);
-			vb[(iData * 4) + 1].uv.Set(0, 1);
-			vb[(iData * 4) + 2].uv.Set(1, 0);
-			vb[(iData * 4) + 3].uv.Set(1, 1);
+			//LN_NOTIMPLEMENTED();
+			//context->DrawPrimitiveIndexed(m_vertexDeclaration, m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, iData * 2);
+			instance->m_activeCount = iData;
+			m_mesh->m_attributes.Resize(1);
+			m_mesh->m_attributes[0].PrimitiveNum = instance->m_activeCount * 2;
+			context->DrawMesh(m_mesh, 0, material);
 
-			vb[(iData * 4) + 0].color = data.color;
-			vb[(iData * 4) + 1].color = data.color;
-			vb[(iData * 4) + 2].color = data.color;
-			vb[(iData * 4) + 3].color = data.color;
-
-			ib[(iData * 6) + 0] = (iData * 4) + 0;
-			ib[(iData * 6) + 1] = (iData * 4) + 1;
-			ib[(iData * 6) + 2] = (iData * 4) + 2;
-			ib[(iData * 6) + 3] = (iData * 4) + 2;
-			ib[(iData * 6) + 4] = (iData * 4) + 1;
-			ib[(iData * 6) + 5] = (iData * 4) + 3;
 		}
-		//m_vertexBuffer->Unlock();
-		//m_indexBuffer->Unlock();
+		else if (m_sourceDataType == ParticleSourceDataType::Particle)
+		{
+			int iData = 0;
+			int count = instance->m_particleIndices.GetCount();
+			for (; iData < count; ++iData)
+			{
+				int idx = instance->m_particleIndices[iData];
+				detail::ParticleData& data = instance->m_particles[idx];
+				if (data.spawnTime < 0.0f) break;	// 非アクティブが見つかったら終了
 
-		//LN_NOTIMPLEMENTED();
-		//context->DrawPrimitiveIndexed(m_vertexDeclaration, m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, iData * 2);
-		instance->m_activeCount = iData;
-		m_mesh->m_attributes.Resize(1);
-		m_mesh->m_attributes[0].PrimitiveNum = instance->m_activeCount * 2;
-		context->DrawMesh(m_mesh, 0, material);
+				//printf("%f\n", data.color.a);
+				m_childModel->Render(context, data.m_childInstance, viewPosition, viewDirection, viewInv, m_childModel->GetMaterial());
+				
+
+			}
+			instance->m_activeCount = iData;
+		}
 
 	}
 

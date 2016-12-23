@@ -8,6 +8,7 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 namespace detail {
+struct SpriteParticleModelInstance;
 
 struct ParticleData
 {
@@ -30,10 +31,14 @@ struct ParticleData
 	float		zDistance;			// Zソート用作業変数
 	float		ramdomBaseValue = 0.0f;
 	Vector3		currentDirection;
+	
+	RefPtr<SpriteParticleModelInstance>	m_childInstance;		// ParticleSourceDataType::Particle のときに使われる
+
+	bool IsActive() const { return spawnTime >= 0.0f; }
 };
 
 struct SpriteParticleModelInstance
-	: public DrawElement
+	: public RefObject
 {
 	//RefPtr<SpriteParticleModel>	m_owner;
 	List<ParticleData>			m_particles;
@@ -43,7 +48,7 @@ struct SpriteParticleModelInstance
 	double						m_lastSpawnTime = 0;	// 最後に放出した時間 (m_oneSpawnDeltaTime の倍数になる)
 
 
-	virtual void DrawSubset(InternalContext* context) override;
+	//virtual void DrawSubset(InternalContext* context) override;
 };
 
 } // namespace detail
@@ -66,11 +71,17 @@ enum class ParticleDirection : uint8_t
 	MovementDirection,
 };
 
-enum class ParticleEmitterShapeType
+enum class ParticleEmitterShapeType : uint8_t
 {
 	Sphere,		/** パーティクルを球状に放出します。*/
 	Cone,		/** パーティクルをコーン型に放出します。*/
 	Box,
+};
+
+enum class ParticleSourceDataType : uint8_t
+{
+	Sprite,
+	Particle,
 };
 
 /**
@@ -85,6 +96,8 @@ public:
 
 	void SetMaterial(Material* material);
 	Material* GetMaterial() const;
+
+	void SetSubParticle(SpriteParticleModel* particle);
 
 	/** 同時に表示できるパーティクルの最大数を設定します。(default: 100) */
 	void SetMaxParticles(int count) { m_maxParticles = count; }
@@ -115,13 +128,13 @@ protected:
 	virtual ~SpriteParticleModel();
 	void Initialize(detail::GraphicsManager* manager);
 
-LN_INTERNAL_ACCESS:
+public: // TODO
 	void Commit();
-	std::shared_ptr<detail::SpriteParticleModelInstance> CreateInstane();
-	void UpdateInstance(std::shared_ptr<detail::SpriteParticleModelInstance>& instance, float deltaTime);
+	RefPtr<detail::SpriteParticleModelInstance> CreateInstane();
+	void UpdateInstance(detail::SpriteParticleModelInstance* instance, float deltaTime);
 	void SpawnParticle(detail::ParticleData* data, float spawnTime);
 	void SimulateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition, const Vector3& viewDirection);
-	void Render(DrawList* context, std::shared_ptr<detail::SpriteParticleModelInstance>& instance, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, Material* material);
+	void Render(DrawList* context, detail::SpriteParticleModelInstance* instance, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, Material* material);
 
 public: // TODO
 	float MakeRandom(detail::ParticleData* data, float minValue, float maxValue, ParticleRandomSource source);
@@ -135,6 +148,9 @@ public: // TODO
 	////////
 	ParticleEmitterShapeType	m_shapeType;
 	Vector3						m_shapeParam;
+
+	ParticleSourceDataType		m_sourceDataType;
+	RefPtr<SpriteParticleModel>	m_childModel;		// ParticleSourceDataType::Particle のときに使われる
 
 	ParticleDirection	m_particleDirection;
 	int					m_spawnRate;	// 1秒間に放出するパーティクル数
@@ -233,7 +249,7 @@ protected:
 
 private:
 	SpriteParticleModel*					m_model;
-	std::shared_ptr<detail::SpriteParticleModelInstance>	m_instance;
+	RefPtr<detail::SpriteParticleModelInstance>	m_instance;
 };
 
 LN_NAMESPACE_SCENE_END

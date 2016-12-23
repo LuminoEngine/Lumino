@@ -168,7 +168,7 @@ void Main()
 
 	//auto text = TextBlock2D::Create(_T("Hello, world!"));
 
-#if 1
+#if 0
 
 	auto m = SpriteParticleModel::Create();
 	m->SetSpawnRate(100);
@@ -204,9 +204,40 @@ void Main()
 	//particle1->AddChild(particle2);
 #endif
 
+#if 1
+	auto m1 = SpriteParticleModel::Create();
+	m1->SetSpawnRate(1);
+	m1->SetLifeTime(2.0f);
+	m1->m_maxParticles = 1;
+	m1->m_shapeType = ParticleEmitterShapeType::Cone;
+	m1->m_shapeParam.x = Math::PI * 0.1;
+	m1->m_shapeParam.y = 2;
+
+	auto m2 = SpriteParticleModel::Create();
+	m2->SetSpawnRate(1);
+	m2->SetLifeTime(2.0f);
+	m2->m_maxParticles = 1;
+	m2->m_shapeType = ParticleEmitterShapeType::Cone;
+	m2->m_shapeParam.x = Math::PI * 0.1;
+	m2->m_shapeParam.y = 2;
+	m1->SetSubParticle(m2);
+
+	auto material = DiffuseMaterial::Create();
+	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	material->SetEmissive(Color::White);
+	m1->SetMaterial(material);
+	m2->SetMaterial(material);
+	m2->Commit();
+
+	auto particle1 = SpriteParticle::Create3D(m1);
+	particle1->SetBlendMode(BlendMode::Add);
+	particle1->SetPosition(2, 0, 0);
+
+#endif
+
 	while (Engine::Update())
 	{
-		//printf("----\n");
+		printf("----\n");
 		if (Input::IsTriggered(InputButtons::Cancel))
 		{
 			//tonePE->SetTone(ToneF(-1, -1, -1, 0));
