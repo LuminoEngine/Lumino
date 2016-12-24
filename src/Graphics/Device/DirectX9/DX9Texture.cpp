@@ -242,6 +242,8 @@ void DX9Texture::SetSubData3D(const Box32& box, const void* data, size_t dataByt
 //------------------------------------------------------------------------------
 void DX9Texture::GetData(const RectI& rect, void* outData)
 {
+	LN_FAIL_CHECK_ARG(outData != nullptr) return;
+
 	if (rect != RectI(0, 0, m_realSize))
 	{
 		// TODO: 今はサイズ全体が一致している場合のみ
