@@ -29,6 +29,11 @@ DX9TextureBase::~DX9TextureBase()
 	//LN_SAFE_RELEASE(m_graphicsDevice);
 }
 
+//------------------------------------------------------------------------------
+void DX9TextureBase::GetData(const RectI& rect, void* outData)
+{
+	LN_FAIL_CHECK_STATE(0);
+}
 
 //==============================================================================
 // DX9Texture
@@ -176,8 +181,8 @@ void DX9Texture::SetSubData(const PointI& point, const void* data, size_t dataBy
 	D3DLOCKED_RECT lockedRect;
 	LN_COMCALL(m_dxTexture->LockRect(0, &lockedRect, &lockRect, D3DLOCK_DISCARD));
 
-	size_t pixelSize = lockedRect.Pitch / m_size.width;
-	size_t srcRowBytes = pixelSize * dataBitmapSize.width;
+	size_t pixelByteSize = lockedRect.Pitch / m_size.width;		// ピクセルバイト数
+	size_t srcRowBytes = pixelByteSize * dataBitmapSize.width;	// 横一列のバイト数
 
 #if 1
 	byte_t* dst = (byte_t*)lockedRect.pBits;
@@ -232,6 +237,34 @@ void DX9Texture::SetSubData(const PointI& point, const void* data, size_t dataBy
 void DX9Texture::SetSubData3D(const Box32& box, const void* data, size_t dataBytes)
 {
 	LN_THROW(0, InvalidOperationException);
+}
+
+//------------------------------------------------------------------------------
+void DX9Texture::GetData(const RectI& rect, void* outData)
+{
+	if (rect != RectI(0, 0, m_realSize))
+	{
+		// TODO: 今はサイズ全体が一致している場合のみ
+		LN_NOTIMPLEMENTED();
+	}
+
+	D3DLOCKED_RECT lockedRect;
+	LN_COMCALL(m_dxTexture->LockRect(0, &lockedRect, NULL, D3DLOCK_READONLY));
+
+	size_t pixelByteSize = lockedRect.Pitch / m_size.width;		// ピクセルバイト数
+	size_t srcRowBytes = pixelByteSize * m_realSize.width;		// 横一列のバイト数
+
+	byte_t* dst = (byte_t*)outData;
+	const byte_t* src = (const byte_t*)lockedRect.pBits;
+	for (int row = 0; row < rect.height; ++row)
+	{
+		//byte_t* dstline = dst + (lockedRect.Pitch * row);
+		byte_t* dstline = dst + (lockedRect.Pitch * (rect.height - row - 1));
+		const byte_t* srcline = src + (srcRowBytes * row);
+		memcpy(dstline, srcline, srcRowBytes);
+	}
+
+	LN_COMCALL(m_dxTexture->UnlockRect(0));
 }
 
 //------------------------------------------------------------------------------

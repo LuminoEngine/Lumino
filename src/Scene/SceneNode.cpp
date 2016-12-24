@@ -142,7 +142,7 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 	}
 
 	// Component
-	GameObject* owner = GetOwnerObject();
+	WorldObject* owner = GetOwnerObject();
 	if (owner != nullptr)
 	{
 		m_combinedGlobalMatrix *= owner->transform.GetTransformMatrix();

@@ -146,6 +146,7 @@ Texture2D::Texture2D()
 	: m_mipmap(false)
 	, m_isPlatformLoaded(false)
 	, m_usage(ResourceUsage::Static)
+	, m_usageReadFast(false)
 	, m_primarySurface2()
 	, m_locked(false)
 	, m_initializing(false)
@@ -192,8 +193,14 @@ void Texture2D::Initialize(detail::GraphicsManager* manager, Stream* stream, Tex
 		m_deviceObj = manager->GetGraphicsDevice()->CreateTexturePlatformLoading(stream, m_mipmap, format);
 		if (m_deviceObj != NULL)
 		{
+			SizeI size = m_deviceObj->GetSize();
+			Bitmap deviceSurface(size, Utils::TranslatePixelFormat(m_deviceObj->GetTextureFormat()), true);
+			m_deviceObj->GetData(RectI(0, 0, size), deviceSurface.GetBitmapBuffer()->GetData());
+
 			m_primarySurface2 = RefPtr<Bitmap>::MakeRef(m_deviceObj->GetSize(), Utils::TranslatePixelFormat(format));
-			m_size = m_deviceObj->GetSize();
+			m_primarySurface2->BitBlt(RectI(0, 0, size), &deviceSurface, RectI(0, 0, size), Color32::White, false);
+
+			m_size = size;
 		}
 	}
 
@@ -304,7 +311,7 @@ void Texture2D::ApplyModifies()
 		m_locked = false;
 
 		// static ならメモリを無駄に使わないように解放する
-		if (m_usage == ResourceUsage::Static)
+		if (m_usage == ResourceUsage::Static && m_usageReadFast == false)
 		{
 			m_primarySurface2.SafeRelease();
 		}
@@ -324,6 +331,23 @@ void Texture2D::SetPixel(int x, int y, const Color& color)
 	TryLock();
 	Color32 c = color.To32BitColor();
 	m_primarySurface2->SetPixel(x, y, c);
+}
+
+//------------------------------------------------------------------------------
+void Texture2D::Blit(int x, int y, Texture2D* srcTexture, const RectI& srcRect)
+{
+	LN_FAIL_CHECK_ARG(srcTexture != nullptr) return;
+	if (srcTexture->m_primarySurface2 == nullptr)
+	{
+		// TODO: ITexture から読み取るべきかもしれない
+		LN_NOTIMPLEMENTED();
+	}
+
+	// 頻繁な読み取り操作を行うものとしてマークする
+	srcTexture->m_usageReadFast = true;
+
+	TryLock();
+	m_primarySurface2->BitBlt(RectI(x, y, srcRect.GetSize()), srcTexture->m_primarySurface2, srcRect, Color32::White, false);
 }
 
 //------------------------------------------------------------------------------

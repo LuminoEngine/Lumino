@@ -35,7 +35,9 @@ public:
 	*/
 	void SetTextureRect(const RectF& rect);
 	void SetTextureRect(float x, float y, float width, float height);	/**< @overload SetAnchorPoint */
-	
+
+	const RectF& GetTextureRect() const { return m_srcRect; }
+
 	/** 
 		@brief		スプライトの原点を設定します。
 		@details	値は (0,0) から (1,1) の間で指定します。

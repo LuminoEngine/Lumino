@@ -3,7 +3,7 @@
 #include "../Common.h"
 
 LN_NAMESPACE_BEGIN
-class GameObject;
+class WorldObject;
 class Transform;
 
 /**
@@ -14,24 +14,24 @@ class Component
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	Transform*	transfotm;		/**< アタッチされた GameObject の transform へのポインタ */
+	Transform*	transfotm;		/**< アタッチされた WorldObject の transform へのポインタ */
 
 public:
 	Component();
 	virtual ~Component();
-	GameObject* GetOwnerObject() const;
+	WorldObject* GetOwnerObject() const;
 
 	virtual void OnAttached();
 	virtual void OnDetaching();
 	virtual void OnUpdate();
 
 private:
-	void Attach(GameObject* owner);
+	void Attach(WorldObject* owner);
 	void Detach();
 
-	GameObject*	m_owner;
+	WorldObject*	m_owner;
 
-	friend class GameObject;
+	friend class WorldObject;
 };
 
 /**
