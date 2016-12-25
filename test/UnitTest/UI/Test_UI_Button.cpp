@@ -323,6 +323,6 @@ TEST_F(Test_UI_GridLayout, MinMax)
 
 	Engine::Update();
 
-	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.MinMax1.png"), 99, true));
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.MinMax1.png")));
 }
 

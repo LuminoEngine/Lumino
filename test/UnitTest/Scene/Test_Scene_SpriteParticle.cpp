@@ -4,14 +4,8 @@
 class Test_Scene_SpriteParticle : public ::testing::Test
 {
 protected:
-	virtual void SetUp()
-	{
-		Engine::SetFixedDeltaTime(1.0f / 60);
-	}
-	virtual void TearDown()
-	{
-		Engine::SetFixedDeltaTime(0.0f);
-	}
+	virtual void SetUp() {}
+	virtual void TearDown() {}
 };
 
 

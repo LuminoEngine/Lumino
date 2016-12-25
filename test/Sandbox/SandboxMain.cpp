@@ -77,8 +77,8 @@ void Main()
 
 void Main()
 {
-	EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
-	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Immediate);//GraphicsRenderingType::Threaded);//
+	//EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
+	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
 	Engine::Initialize();
 	Engine::GetMainViewport()->SetBackgroundColor(Color32::Gray);
 	Engine::GetMainViewport()->SetPlacement(ViewportPlacement::AutoResize);
@@ -258,14 +258,14 @@ void Main()
 
 	while (Engine::Update())
 	{
-		printf("----\n");
+		//printf("----\n");
 		if (Input::IsTriggered(InputButtons::Cancel))
 		{
 			//tonePE->SetTone(ToneF(-1, -1, -1, 0));
 			//tonePE->ChangeTone(ToneF(1, 1, 1, 0), 0.5);
 			//blur->SetBlurStatus(0.5, Vector2::Zero, 1.05, 0.5);
 
-			Engine::GetMainWindow()->SetSize(SizeI(200, 100));
+			//Engine::GetMainWindow()->SetSize(SizeI(200, 100));
 		}
 		//blur->SetBlurStatus(0.9f, Vector2::Zero, 1.02);
 	}
