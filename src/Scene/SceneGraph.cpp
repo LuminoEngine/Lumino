@@ -332,16 +332,17 @@ void SceneGraph3D::AdjustGridMesh(Camera* camera)
 
 	Line lines[12] =
 	{
+		// near
 		{ points[0], points[1] },
 		{ points[1], points[2] },
 		{ points[2], points[3] },
 		{ points[3], points[0] },
-
+		// near - far
 		{ points[0], points[4] },
 		{ points[1], points[5] },
 		{ points[2], points[6] },
 		{ points[3], points[7] },
-
+		// far
 		{ points[4], points[5] },
 		{ points[5], points[6] },
 		{ points[6], points[7] },
@@ -375,6 +376,7 @@ void SceneGraph3D::AdjustGridMesh(Camera* camera)
 	mesh->SetUV(1, Vector2(-1.0f, -1.0f));
 	mesh->SetUV(2, Vector2(1.0f, 1.0f));
 	mesh->SetUV(3, Vector2(1.0f, -1.0f));
+	mesh->m_attributes[0].PrimitiveNum = 2;
 }
 
 LN_NAMESPACE_SCENE_END

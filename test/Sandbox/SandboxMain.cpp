@@ -83,7 +83,7 @@ void Main()
 	Engine::GetMainViewport()->SetBackgroundColor(Color32::Gray);
 	Engine::GetMainViewport()->SetPlacement(ViewportPlacement::AutoResize);
 
-	//Engine::GetDefaultSceneGraph3D()->visibleGridPlane = true;
+	Engine::GetDefaultSceneGraph3D()->visibleGridPlane = true;
 
 	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
 	Camera::GetMain3DCamera()->SetCameraBehavior(cb);
@@ -234,7 +234,7 @@ void Main()
 	particle1->SetPosition(2, 0, 0);
 
 #endif
-#if 1
+#if 0
 	auto m1 = SpriteParticleModel::Create();
 	m1->SetSpawnRate(40);
 	m1->SetLifeTime(5.0f);

@@ -136,7 +136,10 @@ public:
 	GenericRect(T x, T y, const GenericSize<T>& size) { Set(x, y, size.width, size.height); }
 
 	/**
-		@brief	位置とサイズを指定して初期化します。
+		位置とサイズを指定して初期化します。
+		@param[in]	point	:
+		@param[in]	width	:
+		@param[in]	height	:
 	*/
 	GenericRect(const GenericPoint<T>& point, T width, T height) { Set(point.x, point.y, width, height); }
 
