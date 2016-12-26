@@ -25,16 +25,19 @@ struct ParticleData
 
 	Quaternion	rotation;
 	Color		color;
-	float		spawnTime = -1.f;	// 負値の場合は非アクティブ
-	float		endTime = 0.f;
-	float		lastTime = 0.0f;
+	float		spawnTime = -1.0f;	// 負値の場合は非アクティブ
+	float		endTime = 0.0f;		// パーティクルの寿命時間
+	float		lastTime = 0.0f;	// 最後の更新時の時間
 	float		zDistance;			// Zソート用作業変数
 	float		ramdomBaseValue = 0.0f;
 	Vector3		currentDirection;
 	
 	RefPtr<SpriteParticleModelInstance>	m_childInstance;		// ParticleSourceDataType::Particle のときに使われる
 
-	bool IsActive() const { return spawnTime >= 0.0f; }
+	bool IsActive() const { return spawnTime >= 0.0f && endTime >= 0.0f; }
+	bool IsSleep() const { return endTime <= lastTime; }
+
+	// Active かつ Sleep 状態はありえる。これは、ループ再生OFFで、既に再生が終わっている ParticleData を示す。
 };
 
 struct SpriteParticleModelInstance
@@ -217,11 +220,14 @@ public: // TODO
 	ParticleRandomSource	m_sizeAccelRandomSource;
 
 	int						m_maxParticles;		// 粒子最大数
+	bool					m_loop;
 
 	////////
 
 	//int			m_maxParticleCount;
 	float		m_oneSpawnDeltaTime;
+
+
 
 };
 

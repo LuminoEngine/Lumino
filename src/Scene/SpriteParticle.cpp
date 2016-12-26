@@ -98,6 +98,7 @@ SpriteParticleModel::SpriteParticleModel()
 	, m_sizeVelocityRandomSource(ParticleRandomSource::Self)
 	, m_sizeAccelRandomSource(ParticleRandomSource::Self)
 	, m_maxParticles(100)
+	, m_loop(true)
 	//, m_maxParticleCount(0)
 	, m_oneSpawnDeltaTime(0)
 {
@@ -296,8 +297,16 @@ void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double
 
 	if (time >= data->endTime)
 	{
-		data->spawnTime = -1.0f;
 		data->m_childInstance = nullptr;
+
+		if (m_loop)
+		{
+			data->spawnTime = -1.0f;
+		}
+		else
+		{
+			// ループ再生しない場合は、非アクティブにしないことで次の Spawn を行わないようにする。
+		}
 	}
 
 	data->lastTime = time;
@@ -408,6 +417,7 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 	}
 #endif
 	LN_FAIL_CHECK_STATE(m_oneSpawnDeltaTime > 0.0f) return;
+	printf("%d\n", instance->m_activeCount);
 
 	int iData = 0;
 	int newIndexCount = 0;
@@ -419,12 +429,15 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 			int idx = instance->m_particleIndices[iData];
 			detail::ParticleData& data = instance->m_particles[idx];
 
-			// 
-			if (data.spawnTime >= 0.f && data.endTime <= instance->m_time)
+			// 今回の更新で消える ParticleData があればそこを使いまわす
+			if (m_loop)
 			{
-				SpawnParticle(emitterTransform, &data, instance->m_lastSpawnTime);
-				spawned = true;
-				break;
+				if (data.IsActive() && data.endTime <= instance->m_time)
+				{
+					SpawnParticle(emitterTransform, &data, instance->m_lastSpawnTime);
+					spawned = true;
+					break;
+				}
 			}
 		}
 
@@ -460,7 +473,7 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 			const detail::ParticleData& rsp = spriteList->GetAt(right);
 
 			// どちらか一方でも非アクティブなら spawnTime の降順にする。そうすると、負値が後ろに集まる。
-			if (lsp.spawnTime < 0.0f || rsp.spawnTime < 0.0f)
+			if (!lsp.IsActive() || !rsp.IsActive())
 			{
 				return lsp.spawnTime > rsp.spawnTime;
 			}
@@ -634,8 +647,6 @@ void SpriteParticle::Initialize(SceneGraph* owner, SpriteParticleModel* model)
 //------------------------------------------------------------------------------
 void SpriteParticle::OnUpdateFrame(float deltaTime)
 {
-	// TODO: 視錐台カリングでパスしなかったものは呼ぶ必要ない
-
 	m_model->UpdateInstance(m_instance, deltaTime);
 }
 

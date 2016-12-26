@@ -77,6 +77,19 @@ void Main()
 
 void Main()
 {
+	//class Foo{
+	//public:
+	//	void FooFunc(){}
+	//};
+	//Foo foo;
+	//std::function<void()> Func = std::bind(&Foo::FooFunc, &foo);
+	//std::function<void()> f2;
+	//f2 = Func;
+	//// メンバ関数を通常の関数として呼べる
+	//Func();
+
+
+
 	//EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
 	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
 	Engine::Initialize();
@@ -234,16 +247,17 @@ void Main()
 	particle1->SetPosition(2, 0, 0);
 
 #endif
-#if 0
+#if 1
 	auto m1 = SpriteParticleModel::Create();
 	m1->SetSpawnRate(40);
 	m1->SetLifeTime(5.0f);
-	m1->m_maxParticles = 400;
+	m1->m_maxParticles = 100;
 	m1->m_shapeType = ParticleEmitterShapeType::Box;
 	m1->m_minPosition.Set(-10, 10, -10);
 	m1->m_maxPosition.Set(10, 10, 10);
 	m1->SetVelocity(Vector3(0, -5,0));
 	m1->SetSize(0.5);
+	m1->m_loop = false;
 
 	auto material = DiffuseMaterial::Create();
 	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
