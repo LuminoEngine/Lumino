@@ -15,9 +15,22 @@ struct ParticleData
 	Vector3		position;
 
 
+	// Physical
 	Vector3		startPosition;
 	Vector3		positionVelocity;
 	Vector3		positionAccel;
+
+
+	// Radial
+	Vector3		m_axis;
+	float		m_angle;
+	float		m_angleVelocity;
+	float		m_angleAccel;
+	float		m_forwardPosition;
+	float		m_forwardVelocity;
+	float		m_forwardAccel;
+
+
 
 	float		size;
 	float		sizeVelocity;
@@ -85,6 +98,20 @@ enum class ParticleSourceDataType : uint8_t
 {
 	Sprite,
 	Particle,
+};
+
+enum class ParticleMovementType : uint8_t
+{
+	Physical,
+	Radial,
+};
+
+template<typename T>
+struct RadomRangeValue
+{
+	T						minValue{};
+	T						maxValue{};
+	ParticleRandomSource	randomSource = ParticleRandomSource::Self;
 };
 
 /**
@@ -155,6 +182,8 @@ public: // TODO
 	ParticleSourceDataType		m_sourceDataType;
 	RefPtr<SpriteParticleModel>	m_childModel;		// ParticleSourceDataType::Particle のときに使われる
 
+
+
 	ParticleDirection	m_particleDirection;
 	int					m_spawnRate;	// 1秒間に放出するパーティクル数
 	int					m_burstCount;	// 1度の放出タイミングで生成するパーティクル数
@@ -169,12 +198,24 @@ public: // TODO
 	float				m_fadeOutRatio;
 
 
+	ParticleMovementType	m_movementType;
+
+	// Physical
 	Vector3				m_minPosition;
 	Vector3				m_maxPosition;
 	Vector3				m_minVelocity;
 	Vector3				m_maxVelocity;
 	Vector3				m_minAccel;
 	Vector3				m_maxAccel;
+
+	// Radial
+	RadomRangeValue<Vector3>	m_axis;
+	RadomRangeValue<float>		m_angle;
+	RadomRangeValue<float>		m_angleVelocity;
+	RadomRangeValue<float>		m_angleAccel;
+	RadomRangeValue<float>		m_forwardPosition;
+	RadomRangeValue<float>		m_forwardVelocity;
+	RadomRangeValue<float>		m_forwardAccel;
 
 	float				m_minSize;		// TODO: Vec2にして細長いパーティクルも作りたい
 	float				m_maxSize;
@@ -184,7 +225,7 @@ public: // TODO
 	float				m_maxSizeAccel;
 
 
-	float				m_forwardAccel = 0.0f;
+	//float				m_forwardAccel = 0.0f;
 
 
 	//LVector3		Axis;				///< 回転軸

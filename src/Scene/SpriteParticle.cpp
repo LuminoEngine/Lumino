@@ -84,6 +84,7 @@ SpriteParticleModel::SpriteParticleModel()
 	, m_maxLifeTime(1.0f)
 	, m_fadeInRatio(0.2f)
 	, m_fadeOutRatio(0.8f)
+	, m_movementType(ParticleMovementType::Physical)
 	, m_minSize(1.0f)
 	, m_maxSize(1.0f)
 	, m_minSizeVelocity(0.0f)
@@ -211,10 +212,12 @@ void SpriteParticleModel::SpawnParticle(const Matrix& emitterTransform, detail::
 {
 	data->ramdomBaseValue = m_rand.GetFloatRange(m_minRandomBaseValue, m_maxRandomBaseValue);
 
-	Vector3 localPosition = Vector3::Zero;
-
-	switch (m_shapeType)
+	if (m_movementType == ParticleMovementType::Physical)
 	{
+		Vector3 localPosition = Vector3::Zero;
+
+		switch (m_shapeType)
+		{
 		default:
 		case ParticleEmitterShapeType::Sphere:
 			data->positionVelocity.x = MakeRandom(data, -1.0, 1.0, ParticleRandomSource::Self);
@@ -250,16 +253,34 @@ void SpriteParticleModel::SpawnParticle(const Matrix& emitterTransform, detail::
 			data->positionVelocity.y = MakeRandom(data, m_minVelocity.y, m_maxVelocity.y, m_velocityRandomSource);
 			data->positionVelocity.z = MakeRandom(data, m_minVelocity.z, m_maxVelocity.z, m_velocityRandomSource);
 			break;
+		}
+
+		data->startPosition = Vector3::TransformCoord(localPosition, emitterTransform);
+		data->position = data->startPosition;
+		data->positionAccel.x = MakeRandom(data, m_minAccel.x, m_maxAccel.x, m_accelRandomSource);
+		data->positionAccel.y = MakeRandom(data, m_minAccel.y, m_maxAccel.y, m_accelRandomSource);
+		data->positionAccel.z = MakeRandom(data, m_minAccel.z, m_maxAccel.z, m_accelRandomSource);
+	}
+	else if (m_movementType == ParticleMovementType::Radial)
+	{
+		data->m_axis.x = MakeRandom(data, m_axis.minValue.x, m_axis.maxValue.x, m_axis.randomSource);
+		data->m_axis.y = MakeRandom(data, m_axis.minValue.y, m_axis.maxValue.y, m_axis.randomSource);
+		data->m_axis.z = MakeRandom(data, m_axis.minValue.z, m_axis.maxValue.z, m_axis.randomSource);
+		data->m_angle = MakeRandom(data, m_angle.minValue, m_angle.maxValue, m_angle.randomSource);
+		data->m_angleVelocity = MakeRandom(data, m_angleVelocity.minValue, m_angleVelocity.maxValue, m_angleVelocity.randomSource);
+		data->m_angleAccel = MakeRandom(data, m_angleAccel.minValue, m_angleAccel.maxValue, m_angleAccel.randomSource);
+		data->m_forwardPosition = MakeRandom(data, m_forwardPosition.minValue, m_forwardPosition.maxValue, m_forwardPosition.randomSource);
+		data->m_forwardVelocity = MakeRandom(data, m_forwardVelocity.minValue, m_forwardVelocity.maxValue, m_forwardVelocity.randomSource);
+		data->m_forwardAccel = MakeRandom(data, m_forwardAccel.minValue, m_forwardAccel.maxValue, m_forwardAccel.randomSource);
+	}
+	else
+	{
+		LN_UNREACHABLE();
 	}
 
 	data->spawnTime = spawnTime;
 	data->lastTime = spawnTime;
 	data->endTime = data->spawnTime + m_maxLifeTime;	// TODO: Rand
-	data->startPosition = Vector3::TransformCoord(localPosition, emitterTransform);
-	data->position = data->startPosition;
-	data->positionAccel.x = MakeRandom(data, m_minAccel.x, m_maxAccel.x, m_accelRandomSource);
-	data->positionAccel.y = MakeRandom(data, m_minAccel.y, m_maxAccel.y, m_accelRandomSource);
-	data->positionAccel.z = MakeRandom(data, m_minAccel.z, m_maxAccel.z, m_accelRandomSource);
 
 	data->size = MakeRandom(data, m_minSize, m_maxSize, m_sizeRandomSource);
 	data->sizeVelocity = MakeRandom(data, m_minSizeVelocity, m_maxSizeVelocity, m_sizeVelocityRandomSource);
@@ -286,14 +307,33 @@ void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double
 	//// TODO: この辺で newPos と pos の差からトレイルを引いたりできる
 
 	//data->position = newPos;
+		Vector3 prevPos = data->position;
 
-	Vector3 prevPos = data->position;
+	if (m_movementType == ParticleMovementType::Physical)
+	{
 
-	data->positionVelocity += data->positionAccel * deltaTime;
-	data->position += data->positionVelocity * deltaTime;
+		data->positionVelocity += data->positionAccel * deltaTime;
+		data->position += data->positionVelocity * deltaTime;
+	}
+	else if (m_movementType == ParticleMovementType::Radial)
+	{
+		data->m_angleVelocity += data->m_angleAccel * deltaTime;
+		data->m_angle += data->m_angleVelocity * deltaTime;
+
+		data->m_forwardVelocity += data->m_forwardAccel * deltaTime;
+		data->m_forwardPosition += data->m_forwardVelocity * deltaTime;
+
+		Matrix mat = Matrix::MakeRotationAxis(data->m_axis, data->m_angle);
+		data->position = Vector3::TransformCoord(Vector3(0, 0, data->m_forwardPosition), mat);
+	}
+	else
+	{
+		LN_UNREACHABLE();
+	}
 
 	data->sizeVelocity += data->sizeAccel * deltaTime;
 	data->size += data->sizeVelocity * deltaTime;
+		data->currentDirection = Vector3::Normalize(data->position - prevPos);
 
 	if (time >= data->endTime)
 	{
@@ -310,7 +350,6 @@ void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double
 	}
 
 	data->lastTime = time;
-	data->currentDirection = Vector3::Normalize(data->position - prevPos);
 
 	// Z 距離は視点からの距離ではなく、視点平面からの距離でなければ正しくソートできない
 	data->zDistance = Vector3::Dot(data->position - viewPosition, viewDirection);
@@ -321,9 +360,6 @@ void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double
 	a *= Math::Clamp01(localTime / (lifeSpan * m_fadeInRatio));
 	a *= Math::Clamp01((data->endTime - time) / (lifeSpan * m_fadeOutRatio));
 	data->color.a = a;
-
-
-	//printf("%f\n", a);
 }
 
 //------------------------------------------------------------------------------
