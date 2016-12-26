@@ -184,6 +184,9 @@ public: // TODO
 	float				m_maxSizeAccel;
 
 
+	float				m_forwardAccel = 0.0f;
+
+
 	//LVector3		Axis;				///< 回転軸
 	//LVector3		AxisRand;           ///< 回転軸のランダム幅
 

@@ -247,7 +247,7 @@ void Main()
 	particle1->SetPosition(2, 0, 0);
 
 #endif
-#if 1
+#if 0
 	auto m1 = SpriteParticleModel::Create();
 	m1->SetSpawnRate(40);
 	m1->SetLifeTime(5.0f);
@@ -256,6 +256,28 @@ void Main()
 	m1->m_minPosition.Set(-10, 10, -10);
 	m1->m_maxPosition.Set(10, 10, 10);
 	m1->SetVelocity(Vector3(0, -5,0));
+	m1->SetSize(0.5);
+	//m1->m_loop = false;
+
+	auto material = DiffuseMaterial::Create();
+	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
+	m1->SetMaterial(material);
+
+	auto particle1 = SpriteParticle::Create3D(m1);
+	particle1->SetBlendMode(BlendMode::Add);
+	particle1->SetPosition(2, 0, 0);
+
+#endif
+#if 1
+	auto m1 = SpriteParticleModel::Create();
+	m1->SetSpawnRate(40);
+	m1->SetLifeTime(5.0f);
+	m1->m_maxParticles = 100;
+	m1->m_shapeType = ParticleEmitterShapeType::Sphere;
+	m1->m_shapeParam.x = 10;
+	//m1->m_minVelocity.Set(-1, -1, -1);
+	//m1->m_maxVelocity.Set(1, 1, 1);
 	m1->SetSize(0.5);
 	m1->m_loop = false;
 

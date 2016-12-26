@@ -417,7 +417,6 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 	}
 #endif
 	LN_FAIL_CHECK_STATE(m_oneSpawnDeltaTime > 0.0f) return;
-	printf("%d\n", instance->m_activeCount);
 
 	int iData = 0;
 	int newIndexCount = 0;
