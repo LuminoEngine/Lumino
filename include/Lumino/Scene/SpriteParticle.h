@@ -7,6 +7,9 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
+class SpriteParticleModel;
+using SpriteParticleModelPtr = RefPtr<SpriteParticleModel>;
+
 namespace detail {
 struct SpriteParticleModelInstance;
 
@@ -38,25 +41,31 @@ struct ParticleData
 
 	Quaternion	rotation;
 	Color		color;
-	float		spawnTime = -1.0f;	// 負値の場合は非アクティブ
-	float		endTime = 0.0f;		// パーティクルの寿命時間
-	float		lastTime = 0.0f;	// 最後の更新時の時間
+	Color		colorVelocity;
+
+	float		spawnTime = -1.0f;	// 負値の場合は非アクティブ (instance time)
+	float		endTime = 0.0f;		// パーティクルの寿命時間 (instance time)
+	float		lastTime = 0.0f;	// 最後の更新時の時間 (instance time)
 	float		zDistance;			// Zソート用作業変数
 	float		ramdomBaseValue = 0.0f;
 	Vector3		currentDirection;
 	
 	RefPtr<SpriteParticleModelInstance>	m_childInstance;		// ParticleSourceDataType::Particle のときに使われる
 
+	bool		m_isTrailPoint = false;
+
 	bool IsActive() const { return spawnTime >= 0.0f && endTime >= 0.0f; }
 	bool IsSleep() const { return endTime <= lastTime; }
 
 	// Active かつ Sleep 状態はありえる。これは、ループ再生OFFで、既に再生が終わっている ParticleData を示す。
+
+	void MakeTrailPointData(const ParticleData& src, float currentTime, float trailTime);
 };
 
 struct SpriteParticleModelInstance
 	: public RefObject
 {
-	//RefPtr<SpriteParticleModel>	m_owner;
+	RefPtr<SpriteParticleModel>	m_owner;
 	List<ParticleData>			m_particles;
 	List<int>					m_particleIndices;
 	int							m_activeCount = 0;
@@ -64,13 +73,21 @@ struct SpriteParticleModelInstance
 	double						m_lastSpawnTime = 0;	// 最後に放出した時間 (m_oneSpawnDeltaTime の倍数になる)
 
 
+	int							m_inactiveFindIndex;
+	int							m_mayActiveCount;
+
 	//virtual void DrawSubset(InternalContext* context) override;
+
+	// 1フレーム分の更新開始。最初に時間を確定させ、更新範囲を決める必要がある。
+	void BeginUpdate(float deltaTime);
+
+	detail::ParticleData* GetNextFreeParticleData();
+
+	void SpawnTrailPoint(detail::ParticleData* sourceData);
 };
 
 } // namespace detail
 
-class SpriteParticleModel;
-using SpriteParticleModelPtr = RefPtr<SpriteParticleModel>;
 
 enum class ParticleRandomSource : uint8_t
 {
@@ -104,6 +121,13 @@ enum class ParticleMovementType : uint8_t
 {
 	Physical,
 	Radial,
+};
+
+enum class ParticlTrailType : uint8_t
+{
+	None,
+	Point,
+	Line,
 };
 
 template<typename T>
@@ -162,8 +186,9 @@ public: // TODO
 	void Commit();
 	RefPtr<detail::SpriteParticleModelInstance> CreateInstane();
 	void UpdateInstance(detail::SpriteParticleModelInstance* instance, float deltaTime);
+	detail::ParticleData* GetNextFreeParticleData(float emitterTime);
 	void SpawnParticle(const Matrix& emitterTransform, detail::ParticleData* data, float spawnTime);
-	void SimulateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition, const Vector3& viewDirection);
+	void SimulateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition, const Vector3& viewDirection, detail::SpriteParticleModelInstance* instance);
 	void Render(DrawList* context, detail::SpriteParticleModelInstance* instance, const Matrix& emitterTransform, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, Material* material);
 
 public: // TODO
@@ -265,6 +290,9 @@ public: // TODO
 
 	int						m_maxParticles;		// 粒子最大数
 	bool					m_loop;
+
+	ParticlTrailType		m_trailType;
+	float					m_trailTime;
 
 	////////
 

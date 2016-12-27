@@ -321,7 +321,7 @@ void Main()
 	particle1->SetPosition(2, 0, 0);
 
 #endif
-#if 1
+#if 0	// 引力斥力
 	auto m1 = SpriteParticleModel::Create();
 	m1->SetSpawnRate(100);
 	m1->SetLifeTime(5.0f);
@@ -339,6 +339,35 @@ void Main()
 	m1->m_forwardVelocity.minValue = -5;
 	m1->m_forwardVelocity.maxValue = 0;
 	m1->SetSize(0.5);
+
+	auto material = DiffuseMaterial::Create();
+	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
+	m1->SetMaterial(material);
+
+	auto particle1 = SpriteParticle::Create3D(m1);
+	particle1->SetBlendMode(BlendMode::Add);
+	particle1->SetPosition(2, 0, 0);
+
+#endif
+#if 1
+	auto m1 = SpriteParticleModel::Create();
+	m1->SetSpawnRate(10);
+	m1->SetLifeTime(5.0f);
+	m1->m_maxParticles = 500;
+	m1->m_movementType = ParticleMovementType::Radial;
+	m1->m_shapeParam.x = 10;
+	m1->m_axis.minValue.Set(0, 1, 0);
+	m1->m_axis.maxValue.Set(0, 1, 0);
+	m1->m_angle.minValue = 0;
+	m1->m_angle.maxValue = Math::PI * 2;
+	m1->m_angleVelocity.minValue = 0.25;
+	m1->m_angleVelocity.maxValue = 1.0;
+	m1->m_forwardPosition.minValue = 5;
+	m1->m_forwardPosition.maxValue = 10;
+	m1->SetSize(0.5);
+	//m1->m_trailType = ParticlTrailType::Point;
+	//m1->m_trailTime = 0.1f;
 
 	auto material = DiffuseMaterial::Create();
 	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));

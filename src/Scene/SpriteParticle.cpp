@@ -43,6 +43,48 @@ struct SpriteParticleVertex
 };
 
 //==============================================================================
+// ParticleData
+//==============================================================================
+namespace detail {
+
+void ParticleData::MakeTrailPointData(const ParticleData& src, float currentTime, float trailTime)
+{
+	position = src.position;
+
+	startPosition = src.startPosition;
+	positionVelocity = src.positionVelocity;
+	positionAccel = src.positionAccel;
+
+	m_axis = src.positionAccel;
+	m_angle = src.m_angle;
+	m_angleVelocity = src.m_angleVelocity;
+	m_angleAccel = src.m_angleAccel;
+	m_forwardPosition = src.m_forwardPosition;
+	m_forwardVelocity = src.m_forwardVelocity;
+	m_forwardAccel = src.m_forwardAccel;
+
+	size = src.size;
+	sizeVelocity = src.sizeVelocity;
+	sizeAccel = src.sizeAccel;
+
+	rotation = src.rotation;
+	color = src.color;
+	colorVelocity.Set(0, 0, 0, -Math::Clamp01(color.a / trailTime));	// 現在の a 値から、trailTime かけて 0 にしたい
+	//color.a = 0;
+
+	spawnTime = currentTime;
+	endTime = currentTime + trailTime;
+	lastTime = spawnTime;
+	zDistance = src.zDistance;			// Zソート用作業変数
+	ramdomBaseValue = src.ramdomBaseValue;
+	currentDirection = src.currentDirection;
+
+	m_isTrailPoint = true;
+}
+
+} // namespace detail
+
+//==============================================================================
 // SpriteParticleModelInstance
 //==============================================================================
 namespace detail {
@@ -50,6 +92,63 @@ namespace detail {
 //void SpriteParticleModelInstance::DrawSubset(InternalContext* context)
 //{
 //}
+
+//------------------------------------------------------------------------------
+void SpriteParticleModelInstance::BeginUpdate(float deltaTime)
+{
+	m_time += deltaTime;
+	m_inactiveFindIndex = 0;
+	m_mayActiveCount = m_activeCount;
+}
+
+//------------------------------------------------------------------------------
+// 取得したものは必ず Spawn しなければならない
+detail::ParticleData* SpriteParticleModelInstance::GetNextFreeParticleData()
+{
+	bool spawned = false;
+	for (; m_inactiveFindIndex < m_activeCount; ++m_inactiveFindIndex)
+	{
+		int idx = m_particleIndices[m_inactiveFindIndex];
+		detail::ParticleData& data = m_particles[idx];
+
+		// 今回の更新で消える ParticleData があればそこを使いまわす
+		if (m_owner->m_loop)
+		{
+			if (data.IsActive() && data.endTime < m_time)
+			{
+				spawned = true;
+				return &data;
+			}
+		}
+	}
+
+	if (!spawned && m_inactiveFindIndex < m_particleIndices.GetCount())
+	{
+		int idx = m_particleIndices[m_inactiveFindIndex];
+		detail::ParticleData& data = m_particles[idx];
+		m_inactiveFindIndex++;
+		m_mayActiveCount++;
+		return &data;
+	}
+
+	// max まで作られている。これ以上作れない
+	return nullptr;
+}
+
+//------------------------------------------------------------------------------
+void SpriteParticleModelInstance::SpawnTrailPoint(detail::ParticleData* sourceData)
+{
+	detail::ParticleData* newData = GetNextFreeParticleData();
+
+	if (newData != nullptr)
+	{
+		newData->MakeTrailPointData(*sourceData, m_time, m_owner->m_trailTime);
+
+		// この関数 SpawnTrailPoint は、更新ループ中から呼ばれる。新して欲しい数を1つ増やす。
+		//m_mayActiveCount++;
+	}
+}
+
 
 } // namespace detail
 
@@ -100,7 +199,8 @@ SpriteParticleModel::SpriteParticleModel()
 	, m_sizeAccelRandomSource(ParticleRandomSource::Self)
 	, m_maxParticles(100)
 	, m_loop(true)
-	//, m_maxParticleCount(0)
+	, m_trailType(ParticlTrailType::None)
+	, m_trailTime(0.0f)
 	, m_oneSpawnDeltaTime(0)
 {
 }
@@ -108,9 +208,6 @@ SpriteParticleModel::SpriteParticleModel()
 //------------------------------------------------------------------------------
 SpriteParticleModel::~SpriteParticleModel()
 {
-	//LN_SAFE_RELEASE(m_texture);
-	//LN_SAFE_RELEASE(m_vertexBuffer);
-	//LN_SAFE_RELEASE(m_indexBuffer);
 }
 
 //------------------------------------------------------------------------------
@@ -150,9 +247,6 @@ void SpriteParticleModel::Commit()
 {
 	if (m_mesh != nullptr) return;	// Commit済み
 
-	//LN_SAFE_RELEASE(m_vertexBuffer);
-	//LN_SAFE_RELEASE(m_indexBuffer);
-
 	// 1 つ放出する最小時間
 	m_oneSpawnDeltaTime = 1.0f / m_spawnRate;
 
@@ -163,22 +257,13 @@ void SpriteParticleModel::Commit()
 	m_mesh->Initialize(m_manager, ResourceUsage::Dynamic);
 	m_mesh->ResizeVertexBuffer(m_maxParticles * 4);
 	m_mesh->ResizeIndexBuffer(m_maxParticles * 6);
-	//m_mesh->Reserve(m_maxParticles * 4, m_maxParticles * 6);
-
-	//m_vertexDeclaration = RefPtr<VertexDeclaration>::MakeRef();
-	//m_vertexDeclaration->Initialize(m_manager, SpriteParticleVertex::Elements(), SpriteParticleVertex::ElementCount);
-
-	//m_vertexBuffer = LN_NEW VertexBuffer();
-	//m_vertexBuffer->Initialize(m_manager, sizeof(SpriteParticleVertex) * m_maxParticles * 4, nullptr, ResourceUsage::Dynamic);
-	//m_indexBuffer = LN_NEW IndexBuffer();
-	//m_indexBuffer->Initialize(m_manager, m_maxParticles * 6, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 }
 
 //------------------------------------------------------------------------------
 RefPtr<detail::SpriteParticleModelInstance> SpriteParticleModel::CreateInstane()
 {
 	auto ptr = RefPtr<detail::SpriteParticleModelInstance>::MakeRef();
-	//ptr->m_owner = this;	// 参照を持っておく
+	ptr->m_owner = this;
 	ptr->m_particles.Resize(m_maxParticles);
 	ptr->m_particleIndices.Resize(m_maxParticles);
 	for (int i = 0; i < m_maxParticles; ++i)
@@ -191,7 +276,7 @@ RefPtr<detail::SpriteParticleModelInstance> SpriteParticleModel::CreateInstane()
 //------------------------------------------------------------------------------
 void SpriteParticleModel::UpdateInstance(detail::SpriteParticleModelInstance* instance, float deltaTime)
 {
-	instance->m_time += deltaTime;
+	instance->BeginUpdate(deltaTime);
 
 	if (m_sourceDataType == ParticleSourceDataType::Particle)
 	{
@@ -289,6 +374,8 @@ void SpriteParticleModel::SpawnParticle(const Matrix& emitterTransform, detail::
 	// TODO
 	data->color = Color::White;
 
+	data->m_isTrailPoint = false;
+
 	// SubParticle 作成
 	if (m_sourceDataType == ParticleSourceDataType::Particle)
 	{
@@ -297,69 +384,98 @@ void SpriteParticleModel::SpawnParticle(const Matrix& emitterTransform, detail::
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition, const Vector3& viewDirection)
+void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition, const Vector3& viewDirection, detail::SpriteParticleModelInstance* instance)
 {
-	float localTime = time - data->spawnTime;
-	float deltaTime = time - data->lastTime;
-	//float t2 = 0.5f * localTime * localTime;
-	//Vector3 newPos = data->startPosition + (data->velocity * localTime) + ((data->acceleration)* t2);
-
-	//// TODO: この辺で newPos と pos の差からトレイルを引いたりできる
-
-	//data->position = newPos;
-		Vector3 prevPos = data->position;
-
-	if (m_movementType == ParticleMovementType::Physical)
+	// 最後に更新したときの時間と現在時間に差があれば更新処理を行う。
+	// もし今のフレームの間に、Trail とかで新しく作成されたパーティクルの場合は更新処理は行われない。
+	if (/*data->IsActive() && */data->lastTime < time)
 	{
-
-		data->positionVelocity += data->positionAccel * deltaTime;
-		data->position += data->positionVelocity * deltaTime;
-	}
-	else if (m_movementType == ParticleMovementType::Radial)
-	{
-		data->m_angleVelocity += data->m_angleAccel * deltaTime;
-		data->m_angle += data->m_angleVelocity * deltaTime;
-
-		data->m_forwardVelocity += data->m_forwardAccel * deltaTime;
-		data->m_forwardPosition += data->m_forwardVelocity * deltaTime;
-
-		Matrix mat = Matrix::MakeRotationAxis(data->m_axis, data->m_angle);
-		data->position = Vector3::TransformCoord(Vector3(0, 0, data->m_forwardPosition), mat);
-	}
-	else
-	{
-		LN_UNREACHABLE();
-	}
-
-	data->sizeVelocity += data->sizeAccel * deltaTime;
-	data->size += data->sizeVelocity * deltaTime;
-		data->currentDirection = Vector3::Normalize(data->position - prevPos);
-
-	if (time >= data->endTime)
-	{
-		data->m_childInstance = nullptr;
-
-		if (m_loop)
+		if (data->m_isTrailPoint)
 		{
-			data->spawnTime = -1.0f;
+			if (time >= data->endTime)
+			{
+				// 消去
+				data->spawnTime = -1.0f;
+			}
+
+			data->color.a = Math::Clamp01(data->color.a + data->colorVelocity.a);
 		}
 		else
 		{
-			// ループ再生しない場合は、非アクティブにしないことで次の Spawn を行わないようにする。
+			// トレイルを残すなら更新前の data のコピーを作る
+			if (m_trailType == ParticlTrailType::Point)
+			{
+				instance->SpawnTrailPoint(data);
+			}
+
+			float localTime = time - data->spawnTime;
+			float deltaTime = time - data->lastTime;
+
+			//// TODO: この辺で newPos と pos の差からトレイルを引いたりできる
+
+			//data->position = newPos;
+			Vector3 prevPos = data->position;
+
+			if (m_movementType == ParticleMovementType::Physical)
+			{
+
+				data->positionVelocity += data->positionAccel * deltaTime;
+				data->position += data->positionVelocity * deltaTime;
+			}
+			else if (m_movementType == ParticleMovementType::Radial)
+			{
+				data->m_angleVelocity += data->m_angleAccel * deltaTime;
+				data->m_angle += data->m_angleVelocity * deltaTime;
+
+				data->m_forwardVelocity += data->m_forwardAccel * deltaTime;
+				data->m_forwardPosition += data->m_forwardVelocity * deltaTime;
+
+				Matrix mat = Matrix::MakeRotationAxis(data->m_axis, data->m_angle);
+				data->position = Vector3::TransformCoord(Vector3(0, 0, data->m_forwardPosition), mat);
+			}
+			else
+			{
+				LN_UNREACHABLE();
+			}
+
+			data->sizeVelocity += data->sizeAccel * deltaTime;
+			data->size += data->sizeVelocity * deltaTime;
+			data->currentDirection = Vector3::Normalize(data->position - prevPos);
+
+			if (time >= data->endTime)
+			{
+				data->m_childInstance = nullptr;
+
+				if (m_loop)
+				{
+					data->spawnTime = -1.0f;
+				}
+				else
+				{
+					// ループ再生しない場合は、非アクティブにしないことで次の Spawn を行わないようにする。
+				}
+			}
+
+			//if (data->position == Vector3::Zero)
+			//{
+			//	printf("");
+			//}
+
+
+			float a = 1.0f;
+
+			float lifeSpan = data->endTime - data->spawnTime;
+			a *= Math::Clamp01(localTime / (lifeSpan * m_fadeInRatio));
+			a *= Math::Clamp01((data->endTime - time) / (lifeSpan * m_fadeOutRatio));
+			data->color.a = a;
 		}
+
+
+		data->lastTime = time;
+
+		// Z 距離は視点からの距離ではなく、視点平面からの距離でなければ正しくソートできない
+		data->zDistance = Vector3::Dot(data->position - viewPosition, viewDirection);
 	}
-
-	data->lastTime = time;
-
-	// Z 距離は視点からの距離ではなく、視点平面からの距離でなければ正しくソートできない
-	data->zDistance = Vector3::Dot(data->position - viewPosition, viewDirection);
-
-	float a = 1.0f;
-	
-	float lifeSpan = data->endTime - data->spawnTime;
-	a *= Math::Clamp01(localTime / (lifeSpan * m_fadeInRatio));
-	a *= Math::Clamp01((data->endTime - time) / (lifeSpan * m_fadeOutRatio));
-	data->color.a = a;
 }
 
 //------------------------------------------------------------------------------
@@ -378,122 +494,29 @@ float SpriteParticleModel::MakeRandom(detail::ParticleData* data, float minValue
 //------------------------------------------------------------------------------
 void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelInstance* instance, const Matrix& emitterTransform, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, Material* material)
 {
-#if 0
-	// dt は負値になることもある。instance->m_lastSpawnTime は次に生成するべき粒子の生成時間を示す。
-	float dt = instance->m_time - instance->m_lastSpawnTime;
-
-	// 前回からの差分時間が、パーティクル1つの最大時間を超えていないかチェック。
-	// もし超えていたら、以前のパーティクルはすべて消滅したということ。
-	// その分の計算を行うのは無駄なので (というか一度に作るパーティクル数が多くなりすぎて配列あふれる)、
-	// 最後に放出した時間 (m_lastSpawnTime) を、計算が必要な時間まで進める。
-	if (dt > m_maxLifeTime)
-	{
-		instance->m_lastSpawnTime = instance->m_time - m_maxLifeTime;
-		dt = instance->m_time - instance->m_lastSpawnTime;
-	}
-	float spawnStartTime = instance->m_lastSpawnTime;
-
-	// 今回は何個作れる？
-	int spawnCount = (int)(dt / m_oneSpawnDeltaTime);
-	if (dt >= 0 && instance->m_time < m_oneSpawnDeltaTime) {	// 開始直後のケア。とにかく1つ作る
-		spawnCount = 1;
-	}
-
-	int spawned = 0;
-
-	// エミッタの放出時間を過ぎているなら作らない
-	if (instance->m_time >= m_emitterDuration)
-	{
-		spawnCount = 0;
-	}
-
-	// まず、今回の更新で非アクティブとなるものは非アクティブにする。
-	// データは前回の Render 時にソートされ、アクティブなものが m_activeCount 以前に集まっているので
-	// 0～m_activeCount-1 までをチェック。
-	// また、非アクティブになったところには、必要であれば新しいパーティクルを作る。
-	// このように同時に行うのは少し複雑だが、先に追加、だと配列があふれる可能性があるし、
-	// 後から追加、だと無駄なループを回さなければならない。
-	for (int i = 0; i < instance->m_activeCount; ++i)
-	{
-		int idx = instance->m_particleIndices[i];
-		detail::ParticleData& data = instance->m_particles[idx];
-		if (data.spawnTime >= 0.f && data.endTime <= instance->m_time)
-		{
-			data.spawnTime = -1;
-
-			// 新しいパーティクルを作る
-			if (spawned < spawnCount)
-			{
-				SpawnParticle(&data, spawnStartTime + (m_oneSpawnDeltaTime * spawned));
-				SimulateOneParticle(&data, instance->m_time, viewPosition);	// パーティクル1つ分のシミュレート
-				++spawned;
-			}
-		}
-		else
-		{
-			SimulateOneParticle(&data, instance->m_time, viewPosition);	// パーティクル1つ分のシミュレート
-		}
-	}
-
-
-	// まだ作るべき数があれば作る
-	int remain = spawnCount - spawned;
-	if (remain + instance->m_activeCount >= instance->m_particleIndices.GetCount())	// 生成可能最大数チェック
-	{
-		remain = instance->m_particleIndices.GetCount() - instance->m_activeCount;
-	}
-	for (int i = 0; i < remain; ++i)
-	{
-		int idx = instance->m_particleIndices[instance->m_activeCount + i];
-		detail::ParticleData& data = instance->m_particles[idx];
-
-		SpawnParticle(&data, spawnStartTime + (m_oneSpawnDeltaTime * spawned));
-		SimulateOneParticle(&data, instance->m_time, viewPosition);	// パーティクル1つ分のシミュレート
-		++spawned;
-	}
-#endif
 	LN_FAIL_CHECK_STATE(m_oneSpawnDeltaTime > 0.0f) return;
 
-	int iData = 0;
 	int newIndexCount = 0;
-	while (instance->m_lastSpawnTime <= instance->m_time)
 	{
-		bool spawned = false;
-		for (; iData < instance->m_activeCount; ++iData)
+		//int iData = 0;
+		while (instance->m_lastSpawnTime <= instance->m_time)
 		{
-			int idx = instance->m_particleIndices[iData];
-			detail::ParticleData& data = instance->m_particles[idx];
-
-			// 今回の更新で消える ParticleData があればそこを使いまわす
-			if (m_loop)
+			detail::ParticleData* data = instance->GetNextFreeParticleData();
+			if (data != nullptr)
 			{
-				if (data.IsActive() && data.endTime <= instance->m_time)
-				{
-					SpawnParticle(emitterTransform, &data, instance->m_lastSpawnTime);
-					spawned = true;
-					break;
-				}
+				SpawnParticle(emitterTransform, data, instance->m_lastSpawnTime);
 			}
-		}
 
-		if (!spawned && iData < m_maxParticles)
-		{
-			int idx = instance->m_particleIndices[iData];
-			detail::ParticleData& data = instance->m_particles[idx];
-			SpawnParticle(emitterTransform, &data, instance->m_lastSpawnTime);
-			++iData;
-			++newIndexCount;
+			instance->m_lastSpawnTime += m_oneSpawnDeltaTime;
 		}
-
-		instance->m_lastSpawnTime += m_oneSpawnDeltaTime;
 	}
 
 	// 更新処理
-	for (int i = 0; i < instance->m_activeCount + newIndexCount; ++i)
+	for (int i = 0; i < instance->m_mayActiveCount; ++i)
 	{
 		int idx = instance->m_particleIndices[i];
 		detail::ParticleData& data = instance->m_particles[idx];
-		SimulateOneParticle(&data, instance->m_time, viewPosition, viewDirection);	// パーティクル1つ分のシミュレート
+		SimulateOneParticle(&data, instance->m_time, viewPosition, viewDirection, instance);	// パーティクル1つ分のシミュレート
 	}
 
 	// Z 値の大きい方から小さい方へソートする比較
@@ -521,7 +544,7 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 	// ソート実施。
 	// ここで非アクティブなものは std::remove のようにリストの後ろに移動し、Zソートも同時に行われる。
 	// 少なくとも、前回アクティブだった数+今回の生成で増えた数をソート範囲にする。
-	int sortRange = instance->m_activeCount + newIndexCount;
+	int sortRange = instance->m_mayActiveCount;
 	SpriteCmpDepthBackToFront cmp;
 	cmp.spriteList = &instance->m_particles;
 	std::stable_sort(instance->m_particleIndices.begin(), instance->m_particleIndices.begin() + sortRange, cmp);
@@ -549,6 +572,11 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 				int idx = instance->m_particleIndices[iData];
 				detail::ParticleData& data = instance->m_particles[idx];
 				if (data.spawnTime < 0.0f) break;	// 非アクティブが見つかったら終了
+
+				//if (data.position == Vector3::Zero)
+				//{
+				//	printf("");
+				//}
 
 				const Vector3& pos = data.position;
 				float hs = data.size / 2;
@@ -620,15 +648,9 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 				detail::ParticleData& data = instance->m_particles[idx];
 				if (data.spawnTime < 0.0f) break;	// 非アクティブが見つかったら終了
 
-				//printf("%f\n", data.color.a);
-				//Matrix mat = Matrix::MakeAffineTransformation(
-				//	Vector3(data.size),
-
-				//);
 				Matrix mat = Matrix::MakeTranslation(data.position);
 				m_childModel->Render(context, data.m_childInstance, mat, viewPosition, viewDirection, viewInv, m_childModel->GetMaterial());
 				
-
 			}
 			instance->m_activeCount = iData;
 		}
