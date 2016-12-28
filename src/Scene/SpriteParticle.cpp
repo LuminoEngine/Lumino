@@ -413,7 +413,8 @@ void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double
 		else
 		{
 			// トレイルを残すなら更新前の data のコピーを作る
-			if (time < data->endTime)	// 今回の更新を経てもまだ生きていること
+			if (data->spawnTime < data->lastTime &&
+				time < data->endTime)	// 今回の更新を経てもまだ生きていること
 			{
 				if (m_trailType == ParticlTrailType::Point)
 				{

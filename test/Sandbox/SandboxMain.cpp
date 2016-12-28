@@ -367,7 +367,7 @@ void Main()
 	m1->m_forwardPosition.maxValue = 10;
 	m1->SetSize(0.5);
 	m1->m_trailType = ParticlTrailType::Point;
-	m1->m_trailTime = 0.1f;
+	m1->m_trailTime = 0.5f;
 	m1->m_loop = false;
 
 	auto material = DiffuseMaterial::Create();
