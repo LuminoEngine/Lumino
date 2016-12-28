@@ -1,7 +1,16 @@
-# Lumino
+﻿# Lumino
+Lumino は C++ で実装された、オープンソースの 2D/3D ゲームエンジンです。
 
-
-Features
+Supported platforms
 --------------------
+- [x] Windows Desktop
+- [ ] Mac OS X
+
+
+How to build
+--------------------
+- [Windows](https://github.com/lriki/Lumino/wiki/BuildingWindows.md)
+
+
 
 

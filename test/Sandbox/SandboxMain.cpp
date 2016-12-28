@@ -352,7 +352,7 @@ void Main()
 #endif
 #if 1
 	auto m1 = SpriteParticleModel::Create();
-	m1->SetSpawnRate(10);
+	m1->SetSpawnRate(1);
 	m1->SetLifeTime(5.0f);
 	m1->m_maxParticles = 500;
 	m1->m_movementType = ParticleMovementType::Radial;
@@ -366,8 +366,9 @@ void Main()
 	m1->m_forwardPosition.minValue = 5;
 	m1->m_forwardPosition.maxValue = 10;
 	m1->SetSize(0.5);
-	//m1->m_trailType = ParticlTrailType::Point;
-	//m1->m_trailTime = 0.1f;
+	m1->m_trailType = ParticlTrailType::Point;
+	m1->m_trailTime = 0.1f;
+	m1->m_loop = false;
 
 	auto material = DiffuseMaterial::Create();
 	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));

@@ -69,8 +69,12 @@ void ParticleData::MakeTrailPointData(const ParticleData& src, float currentTime
 
 	rotation = src.rotation;
 	color = src.color;
-	colorVelocity.Set(0, 0, 0, -Math::Clamp01(color.a / trailTime));	// 現在の a 値から、trailTime かけて 0 にしたい
+	colorVelocity.Set(0, 0, 0, -(color.a / trailTime));	// 現在の a 値から、trailTime かけて 0 にしたい
 	//color.a = 0;
+	//if (colorVelocity.a > 0)
+	//{
+	//	printf("");
+	//}
 
 	spawnTime = currentTime;
 	endTime = currentTime + trailTime;
@@ -386,9 +390,9 @@ void SpriteParticleModel::SpawnParticle(const Matrix& emitterTransform, detail::
 //------------------------------------------------------------------------------
 void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition, const Vector3& viewDirection, detail::SpriteParticleModelInstance* instance)
 {
-	// 最後に更新したときの時間と現在時間に差があれば更新処理を行う。
-	// もし今のフレームの間に、Trail とかで新しく作成されたパーティクルの場合は更新処理は行われない。
-	if (/*data->IsActive() && */data->lastTime < time)
+	float localTime = time - data->spawnTime;
+	float deltaTime = time - data->lastTime;
+
 	{
 		if (data->m_isTrailPoint)
 		{
@@ -396,20 +400,27 @@ void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double
 			{
 				// 消去
 				data->spawnTime = -1.0f;
+				//data->position = Vector3::Zero;
 			}
+			else
+			{
+				float pre = data->color.a;
 
-			data->color.a = Math::Clamp01(data->color.a + data->colorVelocity.a);
+				data->color.a = Math::Clamp01(data->color.a + (data->colorVelocity.a * deltaTime));
+			}
+			//data->color.a = 0.1;
 		}
 		else
 		{
 			// トレイルを残すなら更新前の data のコピーを作る
-			if (m_trailType == ParticlTrailType::Point)
+			if (time < data->endTime)	// 今回の更新を経てもまだ生きていること
 			{
-				instance->SpawnTrailPoint(data);
+				if (m_trailType == ParticlTrailType::Point)
+				{
+					instance->SpawnTrailPoint(data);
+				}
 			}
 
-			float localTime = time - data->spawnTime;
-			float deltaTime = time - data->lastTime;
 
 			//// TODO: この辺で newPos と pos の差からトレイルを引いたりできる
 
@@ -418,7 +429,6 @@ void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double
 
 			if (m_movementType == ParticleMovementType::Physical)
 			{
-
 				data->positionVelocity += data->positionAccel * deltaTime;
 				data->position += data->positionVelocity * deltaTime;
 			}
@@ -449,6 +459,7 @@ void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double
 				if (m_loop)
 				{
 					data->spawnTime = -1.0f;
+					//data->position = Vector3::Zero;
 				}
 				else
 				{
