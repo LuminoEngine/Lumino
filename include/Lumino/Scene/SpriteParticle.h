@@ -230,7 +230,7 @@ public: // TODO
 
 
 
-	// Generic
+	// General
 	RadomRangeValue<float>		m_startVelocity;
 
 
@@ -253,6 +253,7 @@ public: // TODO
 	RadomRangeValue<float>		m_angleVelocity;
 	RadomRangeValue<float>		m_angleAccel;
 
+	// General
 	RadomRangeValue<float>		m_forwardPosition;
 	RadomRangeValue<float>		m_forwardVelocity;
 	RadomRangeValue<float>		m_forwardAccel;
@@ -263,6 +264,8 @@ public: // TODO
 	float				m_maxSizeVelocity;
 	float				m_minSizeAccel;
 	float				m_maxSizeAccel;
+
+	float				m_lengthScale;
 
 
 	//float				m_forwardAccel = 0.0f;

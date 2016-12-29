@@ -380,9 +380,7 @@ void Main()
 	particle1->SetPosition(2, 0, 0);
 
 #endif
-
-
-#if 1	// 
+#if 0	// 放射
 	Camera::GetMain3DCamera()->SetFarClip(10000);
 	auto m1 = SpriteParticleModel::Create();
 	m1->m_maxParticles = 128;
@@ -419,6 +417,34 @@ void Main()
 	particle1->SetBlendMode(BlendMode::Subtract);
 	particle1->SetPosition(2, 0, 200);
 
+#endif
+#if 1	// 雨
+	Camera::GetMain3DCamera()->SetFarClip(10000);
+	auto m1 = SpriteParticleModel::Create();
+	m1->m_maxParticles = 10000;
+	m1->SetSpawnRate(1000);
+	m1->SetLifeTime(2.0);
+	m1->m_loop = true;
+
+	m1->SetSize(0.05, 0.05);
+
+	m1->m_shapeType = ParticleEmitterShapeType::Box;
+	m1->m_shapeParam.Set(10, 0, 10);
+
+	m1->m_particleDirection = ParticleDirection::MovementDirection;
+	m1->m_forwardVelocity.minValue = -12;
+	m1->m_forwardVelocity.maxValue = -12;
+	m1->m_lengthScale = 10;
+
+	auto material = DiffuseMaterial::Create();
+	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
+	m1->SetMaterial(material);
+
+	auto particle1 = ParticleEmitter3D::Create(m1);
+	particle1->SetBlendMode(BlendMode::Add);
+	particle1->SetPosition(0, 10, 0);
+	//particle1->SetAngles(Math::PI, 0, 0);
 #endif
 
 	while (Engine::Update())

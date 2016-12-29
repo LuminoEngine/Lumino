@@ -194,6 +194,7 @@ SpriteParticleModel::SpriteParticleModel()
 	, m_maxSizeVelocity(0.0f)
 	, m_minSizeAccel(0.0f)
 	, m_maxSizeAccel(0.0f)
+	, m_lengthScale(1.0f)
 	, m_emitterDuration(1.0f)
 	, m_positionRandomSource(ParticleRandomSource::Self)
 	, m_velocityRandomSource(ParticleRandomSource::Self)
@@ -333,7 +334,7 @@ void SpriteParticleModel::SpawnParticle(const Matrix& emitterTransform, detail::
 			localFront.x = MakeRandom(data, -1.0, 1.0, ParticleRandomSource::Self);
 			localFront.y = MakeRandom(data, -1.0, 1.0, ParticleRandomSource::Self);
 			localFront.z = MakeRandom(data, -1.0, 1.0, ParticleRandomSource::Self);
-			localFront = Vector3::SafeNormalize(Vector3::UnitZ);
+			localFront = Vector3::SafeNormalize(localFront, Vector3::UnitZ);
 			
 			//data->positionVelocity *= MakeRandom(data, m_startVelocity);
 			break;
@@ -350,23 +351,25 @@ void SpriteParticleModel::SpawnParticle(const Matrix& emitterTransform, detail::
 			localFront.x = sinf(r) * vec.y;
 			localFront.y = vec.z;
 			localFront.z = cosf(r) * vec.y;
-
-			// 最後に正規化して速度化する。
-			//data->positionVelocity.SafeNormalize(Vector3::UnitY);
-			//data->positionVelocity *= m_shapeParam.y;
 			break;
 		}
 		case ParticleEmitterShapeType::Box:
 			localPosition.x = MakeRandom(data, -m_shapeParam.x, m_shapeParam.x, m_positionRandomSource);
 			localPosition.y = MakeRandom(data, -m_shapeParam.y, m_shapeParam.y, m_positionRandomSource);
 			localPosition.z = MakeRandom(data, -m_shapeParam.z, m_shapeParam.z, m_positionRandomSource);
+			localFront = Vector3::UnitY;
 			break;
 		}
 
 		Vector3 worldFront = Vector3::TransformCoord(localFront, emitterTransform);
-		data->position = localFront * MakeRandom(data, m_forwardPosition);
+		data->position = localPosition + localFront * MakeRandom(data, m_forwardPosition);
 		data->positionVelocity = localFront * MakeRandom(data, m_forwardVelocity);
 		data->positionAccel = localFront * MakeRandom(data, m_forwardAccel);
+
+		data->position.TransformCoord(emitterTransform);
+		//TODO: 回転だけのTransformCoord
+		//data->positionVelocity.TransformCoord(emitterTransform);
+		//data->positionAccel.TransformCoord(emitterTransform);
 	}
 	else if (m_movementType == ParticleMovementType::Radial)
 	{
@@ -406,6 +409,8 @@ void SpriteParticleModel::SpawnParticle(const Matrix& emitterTransform, detail::
 	data->size = MakeRandom(data, m_minSize, m_maxSize, m_sizeRandomSource);
 	data->sizeVelocity = MakeRandom(data, m_minSizeVelocity, m_maxSizeVelocity, m_sizeVelocityRandomSource);
 	data->sizeAccel = MakeRandom(data, m_minSizeAccel, m_maxSizeAccel, m_sizeAccelRandomSource);
+
+	//data->currentDirection = Vector3::SafeNormalize(data->position - prevPos, data->positionVelocity);
 
 	// TODO
 	data->color = Color::White;
@@ -488,7 +493,10 @@ void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double
 
 			data->sizeVelocity += data->sizeAccel * deltaTime;
 			data->size += data->sizeVelocity * deltaTime;
+
 			data->currentDirection = Vector3::Normalize(data->position - prevPos);
+			if (data->currentDirection.IsNaNOrInf()) data->currentDirection = Vector3::SafeNormalize(data->positionVelocity, Vector3::UnitY);
+			
 
 			if (time >= data->endTime)
 			{
@@ -634,15 +642,17 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 				float hs = data.size / 2;
 
 				if (m_particleDirection == ParticleDirection::MovementDirection &&
+					!data.currentDirection.IsNaNOrInf() &&
 					data.currentDirection != Vector3::Zero)
 				{
-					Vector3 d = Vector3::Normalize(viewPosition - data.position);
-					d = Vector3::Cross(d, data.currentDirection);	// 進行方向に対する右方向
+					// 進行方向に対する右方向
+					Vector3 r = Vector3::Cross(Vector3::Normalize(viewPosition - data.position), data.currentDirection);
 
-					vb[(iData * 4) + 0].position = pos - (data.currentDirection * hs) + d * hs;	// 後方右
-					vb[(iData * 4) + 1].position = pos + (data.currentDirection * hs) + d * hs;	// 前方右
-					vb[(iData * 4) + 2].position = pos - (data.currentDirection * hs) - d * hs;	// 後方左
-					vb[(iData * 4) + 3].position = pos + (data.currentDirection * hs) - d * hs;	// 前方左
+					Vector3 fd = data.currentDirection * m_lengthScale;
+					vb[(iData * 4) + 0].position = pos - (fd * hs) + r * hs;	// 後方右
+					vb[(iData * 4) + 1].position = pos + (fd * hs) + r * hs;	// 前方右
+					vb[(iData * 4) + 2].position = pos - (fd * hs) - r * hs;	// 後方左
+					vb[(iData * 4) + 3].position = pos + (fd * hs) - r * hs;	// 前方左
 				}
 				else
 				{
@@ -651,15 +661,17 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 					vb[(iData * 4) + 1].position.Set(-hs, -hs, 0.0f);	// 左下
 					vb[(iData * 4) + 2].position.Set(hs, hs, 0.0f);		// 右上
 					vb[(iData * 4) + 3].position.Set(hs, -hs, 0.0f);	// 右下
+					// 視点へ向ける
 					vb[(iData * 4) + 0].position.TransformCoord(transform);
 					vb[(iData * 4) + 1].position.TransformCoord(transform);
 					vb[(iData * 4) + 2].position.TransformCoord(transform);
 					vb[(iData * 4) + 3].position.TransformCoord(transform);
+
+					vb[(iData * 4) + 0].position += pos;
+					vb[(iData * 4) + 1].position += pos;
+					vb[(iData * 4) + 2].position += pos;
+					vb[(iData * 4) + 3].position += pos;
 				}
-				vb[(iData * 4) + 0].position += pos;
-				vb[(iData * 4) + 1].position += pos;
-				vb[(iData * 4) + 2].position += pos;
-				vb[(iData * 4) + 3].position += pos;
 
 				vb[(iData * 4) + 0].uv.Set(0, 0);
 				vb[(iData * 4) + 1].uv.Set(0, 1);
