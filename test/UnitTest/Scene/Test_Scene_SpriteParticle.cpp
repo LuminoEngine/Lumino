@@ -4,8 +4,22 @@
 class Test_Scene_SpriteParticle : public ::testing::Test
 {
 protected:
-	virtual void SetUp() {}
-	virtual void TearDown() {}
+	virtual void SetUp()
+	{
+		material = Material::Create();
+		material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("TestData/Particle1.png")));
+		material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
+
+		oldCamPos = Camera::GetMain3DCamera()->GetPosition();
+		Camera::GetMain3DCamera()->SetPosition(0, 0, 5);
+	}
+	virtual void TearDown()
+	{
+		Camera::GetMain3DCamera()->SetPosition(oldCamPos);
+	}
+
+	Vector3 oldCamPos;
+	MaterialPtr material;
 };
 
 
@@ -13,28 +27,30 @@ protected:
 TEST_F(Test_Scene_SpriteParticle, Default)
 {
 	auto particleModel1 = SpriteParticleModel::Create();
-	//particleModel1->SetTexture(Texture2D::Create(LN_LOCALFILE("TestData/Particle1.png")));
-	auto material = Material::Create();
-	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("TestData/Particle1.png")));
-	material->SetBuiltinColorParameter(Material::EmissiveParameter, Color::White);
 	particleModel1->SetMaterial(material);
 
-	auto particle1 = SpriteParticle::Create3D(particleModel1);
+	auto particle1 = ParticleEmitter::Create3D(particleModel1);
+	particle1->SetBlendMode(BlendMode::Add);
 
-	//particle1->GetMainMaterial()->SetBuiltinColorParameter(Material::EmissiveParameter, Color::White);
-	//particle1->SetBlendMode(BlendMode::Normal);
-	//particle1->SetBlendColor(Color::White);
-
-	// Create 直後、すぐ表示されている。
+	// Create 直後、フェードイン中
 	Engine::Update();
-	ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/Test_Scene_SpriteParticle.Basic_1.png")));
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_SpriteParticle.Default1.png")));
+
+	// 0.5秒後、普通に表示されている
+	for (int i = 0; i < 30; ++i) Engine::Update();
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_SpriteParticle.Default2.png")));
 
 	// 1秒後、消える。
-	for (int i = 0; i < 60; ++i)
-	{
-		Engine::Update();
-	}
-	ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/Test_Scene_SpriteParticle.Basic_2.png")));
+	for (int i = 0; i < 29; ++i) Engine::Update();
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Empty1.png")));
+
+	// 以降、1つの粒子でループ
+	Engine::Update();
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_SpriteParticle.Default1.png")));
+	for (int i = 0; i < 30; ++i) Engine::Update();
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_SpriteParticle.Default2.png")));
+	for (int i = 0; i < 29; ++i) Engine::Update();
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Empty1.png")));
 }
 
 #if 0

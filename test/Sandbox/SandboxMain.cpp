@@ -350,11 +350,11 @@ void Main()
 	particle1->SetPosition(2, 0, 0);
 
 #endif
-#if 1
+#if 0	// point trail
 	auto m1 = SpriteParticleModel::Create();
-	m1->SetSpawnRate(1);
+	m1->SetSpawnRate(4);
 	m1->SetLifeTime(5.0f);
-	m1->m_maxParticles = 500;
+	m1->m_maxParticles = 1000;
 	m1->m_movementType = ParticleMovementType::Radial;
 	m1->m_shapeParam.x = 10;
 	m1->m_axis.minValue.Set(0, 1, 0);
@@ -375,9 +375,45 @@ void Main()
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
 
-	auto particle1 = SpriteParticle::Create3D(m1);
-	particle1->SetBlendMode(BlendMode::Add);
+	auto particle1 = ParticleEmitter::Create3D(m1);
+	particle1->SetBlendMode(BlendMode::Subtract);
 	particle1->SetPosition(2, 0, 0);
+
+#endif
+
+
+#if 1	// 
+	Camera::GetMain3DCamera()->SetFarClip(10000);
+	auto m1 = SpriteParticleModel::Create();
+	m1->m_maxParticles = 128;
+	m1->SetSpawnRate(12);
+	m1->SetLifeTime(3.0);
+	m1->SetAutoFadeTime(0.3, 0.1);
+	m1->m_loop = true;
+
+	m1->SetSize(15, 35);
+
+	m1->m_trailType = ParticlTrailType::Point;
+	m1->m_trailTime = 0.1;
+
+	m1->m_movementType = ParticleMovementType::Radial;
+	m1->m_axis.minValue.Set(0, 0, 1);
+	m1->m_axis.maxValue.Set(0, 0, 1);
+	m1->m_angle.minValue = 0;
+	m1->m_angle.maxValue = Math::PI * 2;
+	m1->m_forwardVelocity.minValue = 5*60;
+	m1->m_forwardVelocity.maxValue = 0.5 * 60;
+	//m1->m_forwardPosition.minValue = 5;
+	//m1->m_forwardPosition.maxValue = 10;
+
+	auto material = DiffuseMaterial::Create();
+	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
+	m1->SetMaterial(material);
+
+	auto particle1 = ParticleEmitter::Create3D(m1);
+	particle1->SetBlendMode(BlendMode::Subtract);
+	//particle1->SetPosition(2, 0, 0);
 
 #endif
 

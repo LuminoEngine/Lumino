@@ -157,22 +157,24 @@ public:
 	void SetMaxParticles(int count) { m_maxParticles = count; }
 
 	/** 1秒間に放出するパーティクルの数を設定します。(default: 1) */
-	void SetSpawnRate(int count) { m_spawnRate = count; }
+	void SetSpawnRate(float rate) { m_spawnRate = rate; }
 
 	/** パーティクルの生存時間を設定します。(default: 1.0) */
 	void SetLifeTime(float time) { m_minLifeTime = m_maxLifeTime = time; }
 
+	void SetAutoFadeTime(float fadeInRatio, float fadeOutRatio) { m_fadeInRatio = fadeInRatio; m_fadeOutRatio = fadeOutRatio; }
+
 	// 0.0f～1.0f
 	void SetRandomBaseValueRange(float minValue, float maxValue) { m_minRandomBaseValue = minValue; m_maxRandomBaseValue = maxValue; }
 
-	void SetPositionRange(const Vector3& minValue, const Vector3& maxValue, ParticleRandomSource source = ParticleRandomSource::Self) { m_minPosition = minValue; m_maxPosition = maxValue; m_positionRandomSource = source; }
+	//void SetPositionRange(const Vector3& minValue, const Vector3& maxValue, ParticleRandomSource source = ParticleRandomSource::Self) { m_minPosition = minValue; m_maxPosition = maxValue; m_positionRandomSource = source; }
 
-	void SetVelocity(const Vector3& value) { m_minVelocity = m_maxVelocity = value; }
-	void SetAccel(const Vector3& value) { m_minAccel = m_maxAccel = value; }
+	//void SetVelocity(const Vector3& value) { m_minVelocity = m_maxVelocity = value; }
+	//void SetAccel(const Vector3& value) { m_minAccel = m_maxAccel = value; }
 
 	void SetSize(float value) { m_minSize = value; m_maxSize = value; }
 
-	void SetSizeRange(float minValue, float maxValue, ParticleRandomSource source) { m_minSize = minValue; m_maxSize = maxValue; m_sizeRandomSource = source; }
+	void SetSize(float minValue, float maxValue, ParticleRandomSource source = ParticleRandomSource::Self) { m_minSize = minValue; m_maxSize = maxValue; m_sizeRandomSource = source; }
 
 	/** パーティクル生成時に使用する乱数シードを設定します。(default: 現在の時間値) */
 	void SetRandomSeed(int seed) { m_rand.SetSeed(seed); }
@@ -185,14 +187,16 @@ protected:
 public: // TODO
 	void Commit();
 	RefPtr<detail::SpriteParticleModelInstance> CreateInstane();
-	void UpdateInstance(detail::SpriteParticleModelInstance* instance, float deltaTime);
-	detail::ParticleData* GetNextFreeParticleData(float emitterTime);
+	void UpdateInstance(detail::SpriteParticleModelInstance* instance, float deltaTime, const Matrix& emitterTransform);
+	//detail::ParticleData* GetNextFreeParticleData(float emitterTime);
 	void SpawnParticle(const Matrix& emitterTransform, detail::ParticleData* data, float spawnTime);
 	void SimulateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition, const Vector3& viewDirection, detail::SpriteParticleModelInstance* instance);
 	void Render(DrawList* context, detail::SpriteParticleModelInstance* instance, const Matrix& emitterTransform, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, Material* material);
 
 public: // TODO
 	float MakeRandom(detail::ParticleData* data, float minValue, float maxValue, ParticleRandomSource source);
+	float MakeRandom(detail::ParticleData* data, const RadomRangeValue<float>& value);
+	Vector3 MakeRandom(detail::ParticleData* data, const RadomRangeValue<Vector3>& value);
 	
 	detail::GraphicsManager*	m_manager;
 	RefPtr<MeshResource>		m_mesh;		// TODO: このあたりは Manager に置いて、全体で共有した方がメモリ効率よいかも？
@@ -210,7 +214,7 @@ public: // TODO
 
 
 	ParticleDirection	m_particleDirection;
-	int					m_spawnRate;	// 1秒間に放出するパーティクル数
+	float				m_spawnRate;	// 1秒間に放出するパーティクル数
 	int					m_burstCount;	// 1度の放出タイミングで生成するパーティクル数
 
 	float				m_minRandomBaseValue;
@@ -223,21 +227,30 @@ public: // TODO
 	float				m_fadeOutRatio;
 
 
+
+	// Generic
+	RadomRangeValue<float>		m_startVelocity;
+
+
+
+
+
 	ParticleMovementType	m_movementType;
 
 	// Physical
-	Vector3				m_minPosition;
-	Vector3				m_maxPosition;
-	Vector3				m_minVelocity;
-	Vector3				m_maxVelocity;
-	Vector3				m_minAccel;
-	Vector3				m_maxAccel;
+	//Vector3				m_minPosition;
+	//Vector3				m_maxPosition;
+	//Vector3				m_minVelocity;
+	//Vector3				m_maxVelocity;
+	//Vector3				m_minAccel;
+	//Vector3				m_maxAccel;
 
 	// Radial
 	RadomRangeValue<Vector3>	m_axis;
 	RadomRangeValue<float>		m_angle;
 	RadomRangeValue<float>		m_angleVelocity;
 	RadomRangeValue<float>		m_angleAccel;
+
 	RadomRangeValue<float>		m_forwardPosition;
 	RadomRangeValue<float>		m_forwardVelocity;
 	RadomRangeValue<float>		m_forwardAccel;
@@ -304,22 +317,22 @@ public: // TODO
 };
 
 
-class SpriteParticle;
-using SpriteParticlePtr = RefPtr<SpriteParticle>;
+class ParticleEmitter;
+using ParticleEmitterPtr = RefPtr<ParticleEmitter>;
 
 /**
 	@brief
 */
-class SpriteParticle
+class ParticleEmitter
 	: public VisualNode
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static SpriteParticlePtr Create3D(SpriteParticleModel* model);
+	static ParticleEmitterPtr Create3D(SpriteParticleModel* model);
 
 protected:
-	SpriteParticle();
-	virtual ~SpriteParticle();
+	ParticleEmitter();
+	virtual ~ParticleEmitter();
 	void Initialize(SceneGraph* owner, SpriteParticleModel* model);
 
 	virtual void OnUpdateFrame(float deltaTime) override;

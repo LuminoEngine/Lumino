@@ -278,8 +278,10 @@ RefPtr<detail::SpriteParticleModelInstance> SpriteParticleModel::CreateInstane()
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticleModel::UpdateInstance(detail::SpriteParticleModelInstance* instance, float deltaTime)
+void SpriteParticleModel::UpdateInstance(detail::SpriteParticleModelInstance* instance, float deltaTime, const Matrix& emitterTransform)
 {
+	LN_FAIL_CHECK_STATE(m_oneSpawnDeltaTime > 0.0f) return;
+
 	instance->BeginUpdate(deltaTime);
 
 	if (m_sourceDataType == ParticleSourceDataType::Particle)
@@ -291,7 +293,25 @@ void SpriteParticleModel::UpdateInstance(detail::SpriteParticleModelInstance* in
 			detail::ParticleData& data = instance->m_particles[idx];
 			if (data.spawnTime < 0.0f) break;	// 非アクティブが見つかったら終了
 
-			m_childModel->UpdateInstance(data.m_childInstance, deltaTime);
+			m_childModel->UpdateInstance(data.m_childInstance, deltaTime, emitterTransform);
+		}
+	}
+
+
+
+
+
+	// create new particles
+	{
+		while (instance->m_lastSpawnTime <= instance->m_time)
+		{
+			detail::ParticleData* data = instance->GetNextFreeParticleData();
+			if (data != nullptr)
+			{
+				SpawnParticle(emitterTransform, data, instance->m_lastSpawnTime);
+			}
+
+			instance->m_lastSpawnTime += m_oneSpawnDeltaTime;
 		}
 	}
 }
@@ -304,16 +324,18 @@ void SpriteParticleModel::SpawnParticle(const Matrix& emitterTransform, detail::
 	if (m_movementType == ParticleMovementType::Physical)
 	{
 		Vector3 localPosition = Vector3::Zero;
+		Vector3 localFront = Vector3::UnitZ;
 
 		switch (m_shapeType)
 		{
 		default:
 		case ParticleEmitterShapeType::Sphere:
-			data->positionVelocity.x = MakeRandom(data, -1.0, 1.0, ParticleRandomSource::Self);
-			data->positionVelocity.y = MakeRandom(data, -1.0, 1.0, ParticleRandomSource::Self);
-			data->positionVelocity.z = MakeRandom(data, -1.0, 1.0, ParticleRandomSource::Self);
-			data->positionVelocity.Normalize();
-			data->positionVelocity *= m_shapeParam.x;
+			localFront.x = MakeRandom(data, -1.0, 1.0, ParticleRandomSource::Self);
+			localFront.y = MakeRandom(data, -1.0, 1.0, ParticleRandomSource::Self);
+			localFront.z = MakeRandom(data, -1.0, 1.0, ParticleRandomSource::Self);
+			localFront = Vector3::SafeNormalize(Vector3::UnitZ);
+			
+			//data->positionVelocity *= MakeRandom(data, m_startVelocity);
 			break;
 		case ParticleEmitterShapeType::Cone:
 		{
@@ -325,48 +347,58 @@ void SpriteParticleModel::SpawnParticle(const Matrix& emitterTransform, detail::
 
 			// 次に、Y 軸周りの回転を行う。回転角度は 360度 ランダム。
 			r = MakeRandom(data, 0.0f, Math::PI * 2, ParticleRandomSource::Self);
-			data->positionVelocity.x = sinf(r) * vec.y;
-			data->positionVelocity.y = vec.z;
-			data->positionVelocity.z = cosf(r) * vec.y;
+			localFront.x = sinf(r) * vec.y;
+			localFront.y = vec.z;
+			localFront.z = cosf(r) * vec.y;
 
 			// 最後に正規化して速度化する。
-			data->positionVelocity.Normalize();
-			data->positionVelocity *= m_shapeParam.y;
+			//data->positionVelocity.SafeNormalize(Vector3::UnitY);
+			//data->positionVelocity *= m_shapeParam.y;
 			break;
 		}
 		case ParticleEmitterShapeType::Box:
-			localPosition.x = MakeRandom(data, m_minPosition.x, m_maxPosition.x, m_positionRandomSource);
-			localPosition.y = MakeRandom(data, m_minPosition.y, m_maxPosition.y, m_positionRandomSource);
-			localPosition.z = MakeRandom(data, m_minPosition.z, m_maxPosition.z, m_positionRandomSource);
-			data->positionVelocity.x = MakeRandom(data, m_minVelocity.x, m_maxVelocity.x, m_velocityRandomSource);
-			data->positionVelocity.y = MakeRandom(data, m_minVelocity.y, m_maxVelocity.y, m_velocityRandomSource);
-			data->positionVelocity.z = MakeRandom(data, m_minVelocity.z, m_maxVelocity.z, m_velocityRandomSource);
+			localPosition.x = MakeRandom(data, -m_shapeParam.x, m_shapeParam.x, m_positionRandomSource);
+			localPosition.y = MakeRandom(data, -m_shapeParam.y, m_shapeParam.y, m_positionRandomSource);
+			localPosition.z = MakeRandom(data, -m_shapeParam.z, m_shapeParam.z, m_positionRandomSource);
 			break;
 		}
 
-		data->startPosition = Vector3::TransformCoord(localPosition, emitterTransform);
-		data->position = data->startPosition;
-		data->positionAccel.x = MakeRandom(data, m_minAccel.x, m_maxAccel.x, m_accelRandomSource);
-		data->positionAccel.y = MakeRandom(data, m_minAccel.y, m_maxAccel.y, m_accelRandomSource);
-		data->positionAccel.z = MakeRandom(data, m_minAccel.z, m_maxAccel.z, m_accelRandomSource);
+		Vector3 worldFront = Vector3::TransformCoord(localFront, emitterTransform);
+		data->position = localFront * MakeRandom(data, m_forwardPosition);
+		data->positionVelocity = localFront * MakeRandom(data, m_forwardVelocity);
+		data->positionAccel = localFront * MakeRandom(data, m_forwardAccel);
 	}
 	else if (m_movementType == ParticleMovementType::Radial)
 	{
 		data->m_axis.x = MakeRandom(data, m_axis.minValue.x, m_axis.maxValue.x, m_axis.randomSource);
 		data->m_axis.y = MakeRandom(data, m_axis.minValue.y, m_axis.maxValue.y, m_axis.randomSource);
 		data->m_axis.z = MakeRandom(data, m_axis.minValue.z, m_axis.maxValue.z, m_axis.randomSource);
+
+		Vector3 yaxis = data->m_axis;
+		Vector3 xaxis = Vector3::Cross(Vector3::UnitY, yaxis);
+		Vector3 zaxis = Vector3::Cross(xaxis, yaxis);
+
+
+
+
 		data->m_angle = MakeRandom(data, m_angle.minValue, m_angle.maxValue, m_angle.randomSource);
 		data->m_angleVelocity = MakeRandom(data, m_angleVelocity.minValue, m_angleVelocity.maxValue, m_angleVelocity.randomSource);
 		data->m_angleAccel = MakeRandom(data, m_angleAccel.minValue, m_angleAccel.maxValue, m_angleAccel.randomSource);
 		data->m_forwardPosition = MakeRandom(data, m_forwardPosition.minValue, m_forwardPosition.maxValue, m_forwardPosition.randomSource);
 		data->m_forwardVelocity = MakeRandom(data, m_forwardVelocity.minValue, m_forwardVelocity.maxValue, m_forwardVelocity.randomSource);
 		data->m_forwardAccel = MakeRandom(data, m_forwardAccel.minValue, m_forwardAccel.maxValue, m_forwardAccel.randomSource);
+
+
+		data->position = zaxis * data->m_forwardPosition;
+		data->positionVelocity = zaxis * data->m_forwardVelocity;
+		data->positionAccel = zaxis * data->m_forwardAccel;
 	}
 	else
 	{
 		LN_UNREACHABLE();
 	}
 
+	data->startPosition = data->position;
 	data->spawnTime = spawnTime;
 	data->lastTime = spawnTime;
 	data->endTime = data->spawnTime + m_maxLifeTime;	// TODO: Rand
@@ -438,11 +470,16 @@ void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double
 				data->m_angleVelocity += data->m_angleAccel * deltaTime;
 				data->m_angle += data->m_angleVelocity * deltaTime;
 
-				data->m_forwardVelocity += data->m_forwardAccel * deltaTime;
-				data->m_forwardPosition += data->m_forwardVelocity * deltaTime;
+				//data->m_forwardVelocity += data->m_forwardAccel * deltaTime;
+				//data->m_forwardPosition += data->m_forwardVelocity * deltaTime;
+				//data->positionVelocity += data->positionAccel * deltaTime;
+				//Vector3 pos = data->startPosition + data->positionVelocity * deltaTime;
+
+				float t = time - data->spawnTime;
+				Vector3 pos = data->startPosition + data->positionVelocity * t + 0.5 * data->positionAccel * t * t;
 
 				Matrix mat = Matrix::MakeRotationAxis(data->m_axis, data->m_angle);
-				data->position = Vector3::TransformCoord(Vector3(0, 0, data->m_forwardPosition), mat);
+				data->position = Vector3::TransformCoord(pos, mat);
 			}
 			else
 			{
@@ -491,6 +528,21 @@ void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double
 }
 
 //------------------------------------------------------------------------------
+float SpriteParticleModel::MakeRandom(detail::ParticleData* data, const RadomRangeValue<float>& value)
+{
+	return MakeRandom(data, value.minValue, value.maxValue, value.randomSource);
+}
+
+//------------------------------------------------------------------------------
+Vector3 SpriteParticleModel::MakeRandom(detail::ParticleData* data, const RadomRangeValue<Vector3>& value)
+{
+	return Vector3(
+		MakeRandom(data, value.minValue.x, value.maxValue.x, value.randomSource),
+		MakeRandom(data, value.minValue.y, value.maxValue.y, value.randomSource),
+		MakeRandom(data, value.minValue.z, value.maxValue.z, value.randomSource));
+}
+
+//------------------------------------------------------------------------------
 float SpriteParticleModel::MakeRandom(detail::ParticleData* data, float minValue, float maxValue, ParticleRandomSource source)
 {
 	if (source == ParticleRandomSource::ByBaseValue)
@@ -506,22 +558,6 @@ float SpriteParticleModel::MakeRandom(detail::ParticleData* data, float minValue
 //------------------------------------------------------------------------------
 void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelInstance* instance, const Matrix& emitterTransform, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, Material* material)
 {
-	LN_FAIL_CHECK_STATE(m_oneSpawnDeltaTime > 0.0f) return;
-
-	int newIndexCount = 0;
-	{
-		//int iData = 0;
-		while (instance->m_lastSpawnTime <= instance->m_time)
-		{
-			detail::ParticleData* data = instance->GetNextFreeParticleData();
-			if (data != nullptr)
-			{
-				SpawnParticle(emitterTransform, data, instance->m_lastSpawnTime);
-			}
-
-			instance->m_lastSpawnTime += m_oneSpawnDeltaTime;
-		}
-	}
 
 	// 更新処理
 	for (int i = 0; i < instance->m_mayActiveCount; ++i)
@@ -674,33 +710,33 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 }
 
 //==============================================================================
-// SpriteParticle
+// ParticleEmitter
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SpriteParticle, VisualNode);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ParticleEmitter, VisualNode);
 
 //------------------------------------------------------------------------------
-SpriteParticlePtr SpriteParticle::Create3D(SpriteParticleModel* model)
+ParticleEmitterPtr ParticleEmitter::Create3D(SpriteParticleModel* model)
 {
-	auto ptr = SpriteParticlePtr::MakeRef();
+	auto ptr = ParticleEmitterPtr::MakeRef();
 	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), model);
 	SceneGraphManager::Instance->GetDefaultSceneGraph3D()->GetRootNode()->AddChild(ptr);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-SpriteParticle::SpriteParticle()
+ParticleEmitter::ParticleEmitter()
 	: m_model(nullptr)
 {
 }
 
 //------------------------------------------------------------------------------
-SpriteParticle::~SpriteParticle()
+ParticleEmitter::~ParticleEmitter()
 {
 	LN_SAFE_RELEASE(m_model);
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticle::Initialize(SceneGraph* owner, SpriteParticleModel* model)
+void ParticleEmitter::Initialize(SceneGraph* owner, SpriteParticleModel* model)
 {
 	VisualNode::Initialize(owner, 1);
 	LN_REFOBJ_SET(m_model, model);
@@ -714,24 +750,18 @@ void SpriteParticle::Initialize(SceneGraph* owner, SpriteParticleModel* model)
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticle::OnUpdateFrame(float deltaTime)
+void ParticleEmitter::OnUpdateFrame(float deltaTime)
 {
-	m_model->UpdateInstance(m_instance, deltaTime);
+	m_model->UpdateInstance(m_instance, deltaTime, GetCombinedGlobalMatrix());
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticle::OnRender2(DrawList* renderer)
+void ParticleEmitter::OnRender2(DrawList* renderer)
 {
 	// TODO: name RenderInstance
 	Vector4 dir = renderer->GetCurrentCamera()->GetDirectionInternal();
 	m_model->Render(renderer, m_instance, GetCombinedGlobalMatrix(), renderer->GetCurrentCamera()->GetPosition(), dir.GetXYZ(), renderer->GetCurrentCamera()->GetViewMatrixI(), m_materialList->GetAt(0));
 }
-
-//------------------------------------------------------------------------------
-//void SpriteParticle::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
-//{
-//	m_model->Render(dc, m_instance, dc->GetCurrentCamera()->GetPosition(), dc->GetCurrentCamera()->GetViewMatrixI());
-//}
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
