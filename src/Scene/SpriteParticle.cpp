@@ -478,7 +478,7 @@ void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double
 				float t = time - data->spawnTime;
 				Vector3 pos = data->startPosition + data->positionVelocity * t + 0.5 * data->positionAccel * t * t;
 
-				Matrix mat = Matrix::MakeRotationAxis(data->m_axis, data->m_angle);
+				Matrix mat = Matrix::MakeRotationAxis(data->m_axis, data->m_angle) * instance->m_worldTransform;
 				data->position = Vector3::TransformCoord(pos, mat);
 			}
 			else
@@ -546,6 +546,10 @@ Vector3 SpriteParticleModel::MakeRandom(detail::ParticleData* data, const RadomR
 float SpriteParticleModel::MakeRandom(detail::ParticleData* data, float minValue, float maxValue, ParticleRandomSource source)
 {
 	if (source == ParticleRandomSource::ByBaseValue)
+	{
+		return Math::Lerp(minValue, maxValue, data->ramdomBaseValue);
+	}
+	else if (source == ParticleRandomSource::ByBaseValueInverse)
 	{
 		return Math::Lerp(minValue, maxValue, data->ramdomBaseValue);
 	}
@@ -752,6 +756,7 @@ void ParticleEmitter::Initialize(SceneGraph* owner, SpriteParticleModel* model)
 //------------------------------------------------------------------------------
 void ParticleEmitter::OnUpdateFrame(float deltaTime)
 {
+	m_instance->m_worldTransform = GetCombinedGlobalMatrix();
 	m_model->UpdateInstance(m_instance, deltaTime, GetCombinedGlobalMatrix());
 }
 

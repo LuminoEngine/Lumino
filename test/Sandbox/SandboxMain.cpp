@@ -406,6 +406,10 @@ void Main()
 	//m1->m_forwardPosition.minValue = 5;
 	//m1->m_forwardPosition.maxValue = 10;
 
+	m1->m_sizeRandomSource = ParticleRandomSource::ByBaseValue;	// サイズが小さいものほど、
+	m1->m_forwardVelocity.randomSource = ParticleRandomSource::ByBaseValueInverse;	// 速度が大きい
+
+
 	auto material = DiffuseMaterial::Create();
 	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
@@ -413,7 +417,7 @@ void Main()
 
 	auto particle1 = ParticleEmitter::Create3D(m1);
 	particle1->SetBlendMode(BlendMode::Subtract);
-	//particle1->SetPosition(2, 0, 0);
+	particle1->SetPosition(2, 0, 200);
 
 #endif
 

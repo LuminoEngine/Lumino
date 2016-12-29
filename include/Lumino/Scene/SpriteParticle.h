@@ -66,6 +66,7 @@ struct SpriteParticleModelInstance
 	: public RefObject
 {
 	RefPtr<SpriteParticleModel>	m_owner;
+	Matrix						m_worldTransform;
 	List<ParticleData>			m_particles;
 	List<int>					m_particleIndices;
 	int							m_activeCount = 0;
@@ -93,6 +94,7 @@ enum class ParticleRandomSource : uint8_t
 {
 	Self,
 	ByBaseValue,
+	ByBaseValueInverse,
 };
 
 
