@@ -320,18 +320,18 @@ public: // TODO
 
 
 class ParticleEmitter;
+class ParticleEmitter3D;
 using ParticleEmitterPtr = RefPtr<ParticleEmitter>;
+using ParticleEmitter3DPtr = RefPtr<ParticleEmitter3D>;
 
 /**
-	@brief
+	パーティクルエミッタのクラスです。
+	@detail		パーティクルエミッタは、実際に表示されるパーティクルの放出点となる VisualNode です。
 */
 class ParticleEmitter
 	: public VisualNode
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
-public:
-	static ParticleEmitterPtr Create3D(SpriteParticleModel* model);
-
 protected:
 	ParticleEmitter();
 	virtual ~ParticleEmitter();
@@ -341,8 +341,21 @@ protected:
 	virtual void OnRender2(DrawList* renderer) override;
 
 private:
-	SpriteParticleModel*					m_model;
+	RefPtr<SpriteParticleModel>					m_model;
 	RefPtr<detail::SpriteParticleModelInstance>	m_instance;
+};
+
+/** 3D 空間に配置されるパーティクルエミッタです。*/
+class ParticleEmitter3D
+	: public ParticleEmitter
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+	static ParticleEmitter3DPtr Create(SpriteParticleModel* model);
+
+protected:
+	ParticleEmitter3D();
+	virtual ~ParticleEmitter3D();
 };
 
 LN_NAMESPACE_SCENE_END

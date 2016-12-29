@@ -29,7 +29,7 @@ TEST_F(Test_Scene_SpriteParticle, Default)
 	auto particleModel1 = SpriteParticleModel::Create();
 	particleModel1->SetMaterial(material);
 
-	auto particle1 = ParticleEmitter::Create3D(particleModel1);
+	auto particle1 = ParticleEmitter3D::Create(particleModel1);
 	particle1->SetBlendMode(BlendMode::Add);
 
 	// Create 直後、フェードイン中

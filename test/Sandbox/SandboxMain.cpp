@@ -415,7 +415,7 @@ void Main()
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
 
-	auto particle1 = ParticleEmitter::Create3D(m1);
+	auto particle1 = ParticleEmitter3D::Create(m1);
 	particle1->SetBlendMode(BlendMode::Subtract);
 	particle1->SetPosition(2, 0, 200);
 

@@ -719,15 +719,6 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ParticleEmitter, VisualNode);
 
 //------------------------------------------------------------------------------
-ParticleEmitterPtr ParticleEmitter::Create3D(SpriteParticleModel* model)
-{
-	auto ptr = ParticleEmitterPtr::MakeRef();
-	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), model);
-	SceneGraphManager::Instance->GetDefaultSceneGraph3D()->GetRootNode()->AddChild(ptr);
-	return ptr;
-}
-
-//------------------------------------------------------------------------------
 ParticleEmitter::ParticleEmitter()
 	: m_model(nullptr)
 {
@@ -736,14 +727,15 @@ ParticleEmitter::ParticleEmitter()
 //------------------------------------------------------------------------------
 ParticleEmitter::~ParticleEmitter()
 {
-	LN_SAFE_RELEASE(m_model);
 }
 
 //------------------------------------------------------------------------------
 void ParticleEmitter::Initialize(SceneGraph* owner, SpriteParticleModel* model)
 {
+	LN_FAIL_CHECK_ARG(model != nullptr);
+
 	VisualNode::Initialize(owner, 1);
-	LN_REFOBJ_SET(m_model, model);
+	m_model = model;
 	m_model->Commit();
 	m_instance = m_model->CreateInstane();
 
@@ -767,6 +759,32 @@ void ParticleEmitter::OnRender2(DrawList* renderer)
 	Vector4 dir = renderer->GetCurrentCamera()->GetDirectionInternal();
 	m_model->Render(renderer, m_instance, GetCombinedGlobalMatrix(), renderer->GetCurrentCamera()->GetPosition(), dir.GetXYZ(), renderer->GetCurrentCamera()->GetViewMatrixI(), m_materialList->GetAt(0));
 }
+
+//==============================================================================
+// ParticleEmitter3D
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ParticleEmitter3D, ParticleEmitter);
+
+//------------------------------------------------------------------------------
+ParticleEmitter3DPtr ParticleEmitter3D::Create(SpriteParticleModel* model)
+{
+	auto ptr = ParticleEmitter3DPtr::MakeRef();
+	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), model);
+	SceneGraphManager::Instance->GetDefaultSceneGraph3D()->GetRootNode()->AddChild(ptr);
+	return ptr;
+
+}
+
+//------------------------------------------------------------------------------
+ParticleEmitter3D::ParticleEmitter3D()
+{
+}
+
+//------------------------------------------------------------------------------
+ParticleEmitter3D::~ParticleEmitter3D()
+{
+}
+
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
