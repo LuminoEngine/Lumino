@@ -7,40 +7,15 @@
 */
 #include "Internal.h"
 #include <math.h>
-#include "../Graphics/GraphicsManager.h"	// TODO:
-//#include <Lumino/Graphics/VertexDeclaration.h>
-//#include <Lumino/Graphics/VertexBuffer.h>	// TODO:
-//#include <Lumino/Graphics/IndexBuffer.h>	// TODO:
 #include <Lumino/Graphics/Mesh.h>
-#include <Lumino/Graphics/GraphicsContext.h>	// TODO:
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Camera.h>
-#include <Lumino/Scene/SpriteParticle.h>
+#include <Lumino/Scene/Particle.h>
 #include "../Graphics/Device/GraphicsDriverInterface.h"
 #include "SceneGraphManager.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
-
-// TODO: いらない
-struct SpriteParticleVertex
-{
-	Vector3		position;
-	Color		color;
-	Vector2		texUV;
-
-	static VertexElement* Elements()
-	{
-		static VertexElement elements[] =
-		{
-			{ 0, VertexElementType_Float3, VertexElementUsage_Position, 0 },
-			{ 0, VertexElementType_Float4, VertexElementUsage_Color, 0 },
-			{ 0, VertexElementType_Float2, VertexElementUsage_TexCoord, 0 },
-		};
-		return elements;
-	}
-	static const int ElementCount = 3;
-};
 
 //==============================================================================
 // ParticleData
@@ -70,11 +45,6 @@ void ParticleData::MakeTrailPointData(const ParticleData& src, float currentTime
 	rotation = src.rotation;
 	color = src.color;
 	colorVelocity.Set(0, 0, 0, -(color.a / trailTime));	// 現在の a 値から、trailTime かけて 0 にしたい
-	//color.a = 0;
-	//if (colorVelocity.a > 0)
-	//{
-	//	printf("");
-	//}
 
 	spawnTime = currentTime;
 	endTime = currentTime + trailTime;
@@ -92,10 +62,6 @@ void ParticleData::MakeTrailPointData(const ParticleData& src, float currentTime
 // SpriteParticleModelInstance
 //==============================================================================
 namespace detail {
-
-//void SpriteParticleModelInstance::DrawSubset(InternalContext* context)
-//{
-//}
 
 //------------------------------------------------------------------------------
 void SpriteParticleModelInstance::BeginUpdate(float deltaTime)

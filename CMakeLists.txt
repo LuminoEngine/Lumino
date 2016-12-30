@@ -367,7 +367,7 @@ set(LN_SOURCES_Scene
 	include/Lumino/Scene/SceneTR.h
 	include/Lumino/Scene/Sprite.h
 	include/Lumino/Scene/SpriteModelObject.h
-	include/Lumino/Scene/SpriteParticle.h
+	include/Lumino/Scene/Particle.h
 	include/Lumino/Scene/StaticMesh.h
 	include/Lumino/Scene/TextBlock.h
 	include/Lumino/Scene/TileMap.h
@@ -396,7 +396,7 @@ set(LN_SOURCES_Scene
 	src/Scene/SceneTR.cpp
 	src/Scene/Sprite.cpp
 	src/Scene/SpriteModelObject.cpp
-	src/Scene/SpriteParticle.cpp
+	src/Scene/Particle.cpp
 	src/Scene/StaticMesh.cpp
 	src/Scene/TextBlock.cpp
 	src/Scene/TileMap.cpp

@@ -70,8 +70,8 @@ struct SpriteParticleModelInstance
 	List<ParticleData>			m_particles;
 	List<int>					m_particleIndices;
 	int							m_activeCount = 0;
-	double						m_time = 0;
-	double						m_lastSpawnTime = 0;	// 最後に放出した時間 (m_oneSpawnDeltaTime の倍数になる)
+	float						m_time = 0;
+	float						m_lastSpawnTime = 0;	// 最後に放出した時間 (m_oneSpawnDeltaTime の倍数になる)
 
 
 	int							m_inactiveFindIndex;
