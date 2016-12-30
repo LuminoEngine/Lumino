@@ -178,7 +178,7 @@ SpriteParticleModel::SpriteParticleModel()
 	, m_shapeType(ParticleEmitterShapeType::Sphere)
 	, m_shapeParam(1, 1, 1)
 	, m_sourceDataType(ParticleSourceDataType::Sprite)
-	, m_particleDirection(ParticleDirection::Billboard)
+	, m_particleDirection(ParticleDirectionType::Billboard)
 	, m_spawnRate(1)
 	, m_burstCount(1)
 	, m_minRandomBaseValue(0.0f)
@@ -633,15 +633,10 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 				detail::ParticleData& data = instance->m_particles[idx];
 				if (data.spawnTime < 0.0f) break;	// 非アクティブが見つかったら終了
 
-				//if (data.position == Vector3::Zero)
-				//{
-				//	printf("");
-				//}
-
 				const Vector3& pos = data.position;
 				float hs = data.size / 2;
 
-				if (m_particleDirection == ParticleDirection::MovementDirection &&
+				if (m_particleDirection == ParticleDirectionType::MovementDirection &&
 					!data.currentDirection.IsNaNOrInf() &&
 					data.currentDirection != Vector3::Zero)
 				{
@@ -649,6 +644,21 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 					Vector3 r = Vector3::Cross(Vector3::Normalize(viewPosition - data.position), data.currentDirection);
 
 					Vector3 fd = data.currentDirection * m_lengthScale;
+					vb[(iData * 4) + 0].position = pos - (fd * hs) + r * hs;	// 後方右
+					vb[(iData * 4) + 1].position = pos + (fd * hs) + r * hs;	// 前方右
+					vb[(iData * 4) + 2].position = pos - (fd * hs) - r * hs;	// 後方左
+					vb[(iData * 4) + 3].position = pos + (fd * hs) - r * hs;	// 前方左
+				}
+				else if (m_particleDirection == ParticleDirectionType::Horizontal)
+				{
+					Vector3 pp(data.position.x, 0, data.position.z);
+					Vector3 pv(viewPosition.x, 0, viewPosition.z);
+
+
+					Vector3 fd = Vector3::Normalize(pp - pv);
+					Vector3 r = Vector3::Cross(Vector3::UnitY, fd);
+
+
 					vb[(iData * 4) + 0].position = pos - (fd * hs) + r * hs;	// 後方右
 					vb[(iData * 4) + 1].position = pos + (fd * hs) + r * hs;	// 前方右
 					vb[(iData * 4) + 2].position = pos - (fd * hs) - r * hs;	// 後方左

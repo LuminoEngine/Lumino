@@ -423,7 +423,7 @@ void Main()
 	auto m1 = SpriteParticleModel::Create();
 	m1->m_maxParticles = 10000;
 	m1->SetSpawnRate(1000);
-	m1->SetLifeTime(2.0);
+	m1->SetLifeTime(1.0);
 	m1->m_loop = true;
 
 	m1->SetSize(0.05, 0.05);
@@ -431,7 +431,7 @@ void Main()
 	m1->m_shapeType = ParticleEmitterShapeType::Box;
 	m1->m_shapeParam.Set(10, 0, 10);
 
-	m1->m_particleDirection = ParticleDirection::MovementDirection;
+	m1->m_particleDirection = ParticleDirectionType::MovementDirection;
 	m1->m_forwardVelocity.minValue = -12;
 	m1->m_forwardVelocity.maxValue = -12;
 	m1->m_lengthScale = 10;
@@ -443,8 +443,26 @@ void Main()
 
 	auto particle1 = ParticleEmitter3D::Create(m1);
 	particle1->SetBlendMode(BlendMode::Add);
-	particle1->SetPosition(0, 10, 0);
+	particle1->SetPosition(0, 12, 0);
 	//particle1->SetAngles(Math::PI, 0, 0);
+
+
+
+	auto m2 = SpriteParticleModel::Create();
+	m2->m_maxParticles = 1000;
+	m2->SetSpawnRate(200);
+	m2->SetLifeTime(0.2);
+	m2->m_loop = true;
+	m2->SetSize(0.1, 0.1);
+	m2->m_minSizeVelocity = 3;
+	m2->m_maxSizeVelocity = 3;
+	m2->m_shapeType = ParticleEmitterShapeType::Box;
+	m2->m_shapeParam.Set(10, 0, 10);
+	m2->m_particleDirection = ParticleDirectionType::Horizontal;
+	m2->SetMaterial(material);
+
+	auto particle2 = ParticleEmitter3D::Create(m2);
+	particle2->SetBlendMode(BlendMode::Add);
 #endif
 
 	while (Engine::Update())

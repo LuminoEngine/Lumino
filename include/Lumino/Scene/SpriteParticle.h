@@ -98,9 +98,11 @@ enum class ParticleRandomSource : uint8_t
 };
 
 
-enum class ParticleDirection : uint8_t
+enum class ParticleDirectionType : uint8_t
 {
 	Billboard,
+
+	Horizontal,
 
 	/** 移動方向へ傾ける (テクスチャUVはの V+ 方向を進行方向とする) */
 	MovementDirection,
@@ -215,7 +217,7 @@ public: // TODO
 
 
 
-	ParticleDirection	m_particleDirection;
+	ParticleDirectionType	m_particleDirection;
 	float				m_spawnRate;	// 1秒間に放出するパーティクル数
 	int					m_burstCount;	// 1度の放出タイミングで生成するパーティクル数
 
