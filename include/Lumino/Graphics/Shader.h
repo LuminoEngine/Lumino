@@ -7,7 +7,8 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class ShaderVariable;
 class Material;
-
+class Shader;
+using ShaderPtr = RefPtr<Shader>;
 
 enum class ZSortDistanceBase
 {
@@ -150,7 +151,12 @@ class Shader
 	: public GraphicsResourceObject
 {
 public:
-	
+
+	/**
+		@brief		
+	*/
+	static ShaderPtr GetBuiltinShader(BuiltinShader shader);
+
 	/**
 		@brief		シェーダコードが記述されたテキストファイルをコンパイルし、Shader を作成します。
 		@param[in]	filePath		: ファイルパス

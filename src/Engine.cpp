@@ -81,9 +81,9 @@ void Engine::Exit()
 }
 
 //------------------------------------------------------------------------------
-void Engine::SetFixedDeltaTime(float deltaTime)
+void Engine::SetFrameUpdateMode(FrameUpdateMode mode)
 {
-	EngineManager::Instance->SetFixedDeltaTime(deltaTime);
+	EngineManager::Instance->SetFrameUpdateMode(mode);
 }
 
 //------------------------------------------------------------------------------

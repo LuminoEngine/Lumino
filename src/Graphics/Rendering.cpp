@@ -701,6 +701,7 @@ void InternalRenderer::Render(
 					element->zDistance = Vector3::Dot(
 						element->transform.GetPosition() - cameraInfo.viewPosition,
 						element->transform.GetFront());		// 平面と点の距離
+						// TODO: ↑第2引数違くない？要確認
 					break;
 				default:
 					element->zDistance = 0.0f;
@@ -834,7 +835,7 @@ NonShadingRenderingPass::~NonShadingRenderingPass()
 //------------------------------------------------------------------------------
 void NonShadingRenderingPass::Initialize(GraphicsManager* manager)
 {
-	m_defaultShader = manager->GetDefaultShader(DefaultShader::NoLightingRendering);
+	m_defaultShader = manager->GetBuiltinShader(BuiltinShader::Sprite);
 }
 
 //------------------------------------------------------------------------------
@@ -943,7 +944,7 @@ ForwardShadingRenderingPass::~ForwardShadingRenderingPass()
 //------------------------------------------------------------------------------
 void ForwardShadingRenderingPass::Initialize(GraphicsManager* manager)
 {
-	m_defaultShader = manager->GetDefaultShader(DefaultShader::ForwardRendering);
+	m_defaultShader = manager->GetBuiltinShader(BuiltinShader::LegacyDiffuse);
 }
 
 //------------------------------------------------------------------------------
@@ -1178,12 +1179,13 @@ void DrawList::SetDepthWriteEnabled(bool enabled)
 }
 
 //------------------------------------------------------------------------------
-void DrawList::BeginMakeElements()
+void DrawList::BeginMakeElements(Camera* camera)
 {
 	m_drawElementList.ClearCommands();
 	m_state.Reset();
 	m_defaultMaterial->Reset();
 	m_currentSectionTopElement = nullptr;
+	m_camera = camera;
 }
 
 //------------------------------------------------------------------------------

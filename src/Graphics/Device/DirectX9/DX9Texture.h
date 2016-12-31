@@ -23,6 +23,7 @@ public:
 public:
 	// ITexture interface
 	virtual void SetSamplerState(const SamplerState& state) { m_samplerState = state; }
+	virtual void GetData(const RectI& rect, void* outData) override;
 
 	virtual IDirect3DBaseTexture9* GetIDirect3DBaseTexture9() = 0;
 	virtual IDirect3DSurface9* GetIDirect3DSurface9() = 0;
@@ -57,6 +58,7 @@ public:
 	virtual const SizeI& GetRealSize() const { return m_realSize; }
 	virtual void SetSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize);
 	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes);
+	virtual void GetData(const RectI& rect, void* outData) override;
 	virtual Bitmap* Lock();
 	virtual void Unlock();
 

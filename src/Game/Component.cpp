@@ -23,7 +23,7 @@ Component::~Component()
 }
 
 //------------------------------------------------------------------------------
-GameObject* Component::GetOwnerObject() const
+WorldObject* Component::GetOwnerObject() const
 {
 	return m_owner;
 }
@@ -44,7 +44,7 @@ void Component::OnUpdate()
 }
 
 //------------------------------------------------------------------------------
-void Component::Attach(GameObject* owner)
+void Component::Attach(WorldObject* owner)
 {
 	m_owner = owner;
 	transfotm = &m_owner->transform;

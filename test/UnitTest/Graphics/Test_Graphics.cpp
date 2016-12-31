@@ -492,6 +492,23 @@ protected:
 };
 
 //-----------------------------------------------------------------------------
+TEST_F(Test_Graphics_Texture, Blit)
+{
+	auto tex1 = Texture2D::Create(LN_LOCALFILE("TestData/Numbers1.png"));
+	auto tex2 = Texture2D::Create(100, 100);
+	tex2->Blit(20 * 0, 20 * 0, tex1, RectI(8 * 0, 14 * 0, 8, 14));
+	tex2->Blit(20 * 1, 20 * 1, tex1, RectI(8 * 1, 14 * 1, 8, 14));
+	tex2->Blit(20 * 2, 20 * 2, tex1, RectI(8 * 2, 14 * 2, 8, 14));
+	tex2->Blit(20 * 3, 20 * 3, tex1, RectI(8 * 3, 14 * 3, 8, 14));
+
+	auto sprite = Sprite2D::Create(tex2);
+	sprite->SetBlendMode(BlendMode::Alpha);
+	Engine::Update();
+
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Texture.Blit1.png")));
+}
+
+//-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Texture, DrawText)
 {
 	auto font = Font::Create();

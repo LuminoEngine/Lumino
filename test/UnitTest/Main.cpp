@@ -18,6 +18,9 @@ void TestEnv::SetUp()
 	detail::EngineSettings::instance.defaultSkinFilePath = LN_LOCALFILE("UI/Data/Skin.png");
 	Engine::Initialize();
 
+	// テストしやすいように固定フレームレートにする
+	Engine::SetFrameUpdateMode(FrameUpdateMode::Fixed);
+
 	RawFont::RegisterFontFile(LN_LOCALFILE("../../tools/VLGothic/VL-Gothic-Regular.ttf"));
 	RawFont::GetDefaultFont()->SetName(_T("VL Gothic"));
 
@@ -163,10 +166,10 @@ GTEST_API_ int main(int argc, char **argv)
 #endif
 	setlocale(LC_ALL, "");
 
-#if 0	// 部分的にテストを実行したりする
+#if 1	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_Scene_TextBlock2D.*"
+		"--gtest_filter=Test_Scene_SpriteParticle.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);

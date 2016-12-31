@@ -127,4 +127,29 @@ LN_ENUM_FLAGS(ModifierKeys)
 };
 LN_ENUM_FLAGS_DECLARE(ModifierKeys);
 
+/** フレーム更新モード */
+enum class FrameUpdateMode
+{
+	/**
+		@brief		固定フレームレート
+		@details	ランタイムエンジンが扱う1フレームの経過時間が、常に一定となります。(60FPS であれば 0.0166)
+	*/
+	Fixed,
+
+	/**
+		@brief		可変フレームレート (GameTime)
+		@details	ランタイムエンジンが扱う1フレームの経過時間が、実際の経過時間となります。
+					ただし、アプリケーションが非アクティブとなっている間や、Engine::ResetFrameDelay() で遅延をリセットした分は含まれません。
+					つまり、実際にゲームが動作している時間のみを対象とした可変フレームレートモードです。
+	*/
+	VariableOnGameTime,
+
+	/**
+		@brief		可変フレームレート (RealTime)
+		@details	ランタイムエンジンが扱う1フレームの経過時間が、実際の経過時間となります。
+					この経過時間は Engine::ResetFrameDelay() などの特殊な時間を考慮しない、現実の経過時間です。
+	*/
+	VariableOnRealTime,
+};
+
 LN_NAMESPACE_END

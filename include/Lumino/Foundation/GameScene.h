@@ -4,14 +4,14 @@
 #include "../Game/Component.h"
 
 LN_NAMESPACE_BEGIN
-class GameObject;
-using GameObjectPtr = RefPtr<GameObject>;
+class WorldObject;
+using WorldObjectPtr = RefPtr<WorldObject>;
 namespace detail { class GameSceneManager; }
 
 /**
 	@brief		
 */
-class GameObject
+class WorldObject
 	: public Object
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
@@ -19,10 +19,10 @@ public:
 	Transform	transform;
 
 public:
-	static GameObjectPtr Create();
+	static WorldObjectPtr Create();
 
-	GameObject();
-	virtual ~GameObject();
+	WorldObject();
+	virtual ~WorldObject();
 
 	void AddComponent(Component* component);
 
@@ -62,12 +62,12 @@ public:
 	virtual void OnTerminate();
 
 private:
-	void AddGameObject(GameObject* obj);
+	void AddGameObject(WorldObject* obj);
 	void Update();
 
-	List<GameObjectPtr>	m_gameObjectList;
+	List<WorldObjectPtr>	m_gameObjectList;
 
-	friend class GameObject;
+	friend class WorldObject;
 	friend class detail::GameSceneManager;
 };
 

@@ -121,6 +121,8 @@ EngineManager* EngineManager::Create(const detail::EngineSettings& configData)
 //------------------------------------------------------------------------------
 EngineManager::EngineManager(const detail::EngineSettings& configData)
 	: m_configData(configData)
+	, m_fpsController()
+	, m_frameUpdateMode(FrameUpdateMode::VariableOnGameTime)
 	, m_animationManager(nullptr)
 	, m_fileManager(nullptr)
 	, m_inputManager(nullptr)
@@ -134,7 +136,6 @@ EngineManager::EngineManager(const detail::EngineSettings& configData)
 	, m_sceneGraphManager(nullptr)
 	, m_assetsManager(nullptr)
 	, m_diagViewer(nullptr)
-	, m_fixedDeltaTime(0.0f)
 	, m_frameRenderingSkip(false)
 	, m_frameRenderd(false)
 	, m_commonInitied(false)
@@ -590,11 +591,22 @@ void EngineManager::BeginFrameUpdate()
 
 
 
-	float deltaTime = m_fixedDeltaTime;
-	if (deltaTime == 0.0f)
-	{
+	//float deltaTime = m_fixedDeltaTime;
+	//if (deltaTime == 0.0f)
+	//{
+	//	deltaTime = m_fpsController.GetElapsedGameTime();
+	//}
+
+	// select runtime notification time source
+	float deltaTime = 0.0f;
+	if (m_frameUpdateMode == FrameUpdateMode::Fixed)
+		deltaTime = 1.0f / m_fpsController.GetFrameRate();
+	else if (m_frameUpdateMode == FrameUpdateMode::VariableOnGameTime)
 		deltaTime = m_fpsController.GetElapsedGameTime();
-	}
+	else if (m_frameUpdateMode == FrameUpdateMode::VariableOnRealTime)
+		deltaTime = m_fpsController.GetTotalRealTime();
+
+
 
 	if (m_inputManager != nullptr) {
 		m_inputManager->PreUpdateFrame();

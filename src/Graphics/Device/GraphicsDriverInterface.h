@@ -346,6 +346,10 @@ public:
 	virtual void SetSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) = 0;
 
 	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes) = 0;
+
+	// (得られるデータは上下反転)
+	virtual void GetData(const RectI& rect, void* outData) = 0;
+
 	/// ロック
 	virtual Bitmap* Lock() = 0;
 

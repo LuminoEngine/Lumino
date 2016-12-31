@@ -39,7 +39,7 @@ public:
 	static void EndRendering();
 	static void Render();
 	static void Exit();
-	static void SetFixedDeltaTime(float deltaTime);
+	static void SetFrameUpdateMode(FrameUpdateMode mode);
 
 	
 	/**

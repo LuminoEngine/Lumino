@@ -140,7 +140,7 @@ struct VertexElement
 };
 
 /**< リソースの使用方法 */
-enum class ResourceUsage
+enum class ResourceUsage : uint8_t
 {
 	Static = 0,			/**< 頻繁に更新を行わないリソース */
 	Dynamic,			/**< 頻繁に更新を行うリソース */
@@ -336,6 +336,12 @@ enum LightType
 	LightType_Directional = 0,	// ディレクショナルライト
 	LightType_Point,			// ポイントライト
 	LightType_Spot,				// スポットライト
+};
+
+enum class BuiltinShader
+{
+	Sprite,
+	LegacyDiffuse,		// Lambert Shading
 };
 
 namespace Driver

@@ -178,8 +178,7 @@ public:
 	static EngineManager* Create(const detail::EngineSettings& configData);
 
 public:
-
-	void SetFixedDeltaTime(float deltaTime) { m_fixedDeltaTime = deltaTime; }
+	void SetFrameUpdateMode(FrameUpdateMode mode) { m_frameUpdateMode = mode; }
 
 	bool UpdateUnitily();
 
@@ -234,6 +233,8 @@ private:
 
 	detail::EngineSettings				m_configData;
 	FpsController						m_fpsController;
+	FrameUpdateMode						m_frameUpdateMode;
+
 	detail::AnimationManager*			m_animationManager;
 	FileManager*						m_fileManager;
 	RefPtr<PlatformManager>				m_platformManager;
@@ -250,12 +251,6 @@ private:
 
 	EngineDiagViewer*					m_diagViewer;
 
-
-	float								m_fixedDeltaTime;
-
-	//Application*						m_application;
-	
-	//NativeWindowEventListener*			m_nativeWindowEventListener;
 	bool								m_frameRenderingSkip;
 	bool								m_frameRenderd;
 	bool								m_commonInitied;

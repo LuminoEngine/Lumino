@@ -9,7 +9,10 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class Material;
+class DiffuseMaterial;
 using MaterialPtr = RefPtr<Material>;
+using DiffuseMaterialPtr = RefPtr<DiffuseMaterial>;
+
 namespace detail {
 
 class CombinedMaterial;
@@ -183,6 +186,31 @@ class MaterialList
 LN_INTERNAL_ACCESS:
 	MaterialList();
 	virtual ~MaterialList();
+};
+
+
+
+/**
+	@brief		非物理ベースレンダリングで使用されるレガシーなマテリアルです。
+*/
+class DiffuseMaterial
+	: public Material
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+	static DiffuseMaterialPtr Create();
+
+public:
+	void SetDiffuse(const Color& value);
+	void SetAmbient(const Color& value);
+	void SetSpecular(const Color& value);
+	void SetEmissive(const Color& value);
+	void SetSpecularPower(float value);
+
+protected:
+	DiffuseMaterial();
+	virtual ~DiffuseMaterial();
+	void Initialize();
 };
 
 

@@ -174,6 +174,12 @@ void GLTexture::SetSubData3D(const Box32& box, const void* data, size_t dataByte
 }
 
 //------------------------------------------------------------------------------
+void GLTexture::GetData(const RectI& rect, void* outData)
+{
+	LN_NOTIMPLEMENTED();
+}
+
+//------------------------------------------------------------------------------
 Bitmap* GLTexture::Lock()
 {
 	m_lockedTexture.Attach(LN_NEW Bitmap(m_size, Utils::TranslatePixelFormat(m_format)));
@@ -262,6 +268,12 @@ void GLRenderTargetTexture::SetSubData3D(const Box32& box, const void* data, siz
 }
 
 //------------------------------------------------------------------------------
+void GLRenderTargetTexture::GetData(const RectI& rect, void* outData)
+{
+	LN_NOTIMPLEMENTED();
+}
+
+//------------------------------------------------------------------------------
 Bitmap* GLRenderTargetTexture::Lock()
 {
 	// ビットマップデータは上下逆になっていて、[0] は (0, height-1) を指す
@@ -302,6 +314,12 @@ GLDepthBuffer::~GLDepthBuffer()
 
 //------------------------------------------------------------------------------
 void GLDepthBuffer::SetSubData3D(const Box32& box, const void* data, size_t dataBytes)
+{
+	LN_THROW(0, InvalidOperationException);
+}
+
+//------------------------------------------------------------------------------
+void GLDepthBuffer::GetData(const RectI& rect, void* outData)
 {
 	LN_THROW(0, InvalidOperationException);
 }

@@ -51,7 +51,7 @@ void UIViewportLayer::Initialize()
 //------------------------------------------------------------------------------
 void UIViewportLayer::Render()
 {
-	m_renderingContext->BeginMakeElements();
+	m_renderingContext->BeginMakeElements(nullptr);
 
 	m_view->Render(m_renderingContext);
 }

@@ -269,7 +269,7 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 		static const size_t shaderDataLen = LN_ARRAY_SIZE_OF(shaderData);
 		auto shader = RefPtr<Shader>::MakeRef();
 		shader->Initialize(this, (const char*)shaderData, shaderDataLen);
-		m_defaultShaders[(int)DefaultShader::NoLightingRendering] = shader;
+		m_builtinShaders[(int)BuiltinShader::Sprite] = shader;
 	}
 	{
 		static const byte_t shaderData[] =
@@ -279,7 +279,7 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 		static const size_t shaderDataLen = LN_ARRAY_SIZE_OF(shaderData);
 		auto shader = RefPtr<Shader>::MakeRef();
 		shader->Initialize(this, (const char*)shaderData, shaderDataLen);
-		m_defaultShaders[(int)DefaultShader::ForwardRendering] = shader;
+		m_builtinShaders[(int)BuiltinShader::LegacyDiffuse] = shader;
 	}
 	
 
@@ -434,9 +434,9 @@ InternalContext* GraphicsManager::GetInternalContext() const
 }
 
 //------------------------------------------------------------------------------
-Shader* GraphicsManager::GetDefaultShader(DefaultShader type) const
+const RefPtr<Shader>& GraphicsManager::GetBuiltinShader(BuiltinShader shader) const
 {
-	return m_defaultShaders[(int)type];
+	return m_builtinShaders[(int)shader];
 }
 
 //------------------------------------------------------------------------------

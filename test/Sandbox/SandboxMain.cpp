@@ -6,6 +6,7 @@
 #include <Lumino/Foundation/Application.h>
 #include <Lumino/Foundation/GameScene.h>
 #include <Lumino/UI/UIFrameWindow.h>
+#include <Lumino/Testing/TestHelper.h>
 using namespace ln;
 
 
@@ -49,7 +50,7 @@ public:
 
 	virtual void OnStart() override
 	{
-		auto player = GameObject::Create();
+		auto player = WorldObject::Create();
 		player->AddComponent(Sprite2D::Create(_T("C:/LocalProj/設計ツール/dll_48x48.png")));
 		player->AddComponent(NewObject<Simple2DCharacterController>());
 	}
@@ -76,13 +77,26 @@ void Main()
 
 void Main()
 {
-	EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
-	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Immediate);//GraphicsRenderingType::Threaded);//
+	//class Foo{
+	//public:
+	//	void FooFunc(){}
+	//};
+	//Foo foo;
+	//std::function<void()> Func = std::bind(&Foo::FooFunc, &foo);
+	//std::function<void()> f2;
+	//f2 = Func;
+	//// メンバ関数を通常の関数として呼べる
+	//Func();
+
+
+
+	//EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
+	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
 	Engine::Initialize();
 	Engine::GetMainViewport()->SetBackgroundColor(Color32::Gray);
 	Engine::GetMainViewport()->SetPlacement(ViewportPlacement::AutoResize);
 
-	//Engine::GetDefaultSceneGraph3D()->visibleGridPlane = true;
+	Engine::GetDefaultSceneGraph3D()->visibleGridPlane = true;
 
 	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
 	Camera::GetMain3DCamera()->SetCameraBehavior(cb);
@@ -165,7 +179,291 @@ void Main()
 
 	//auto spr1 = Sprite2D::Create(_T("D:/Proj/LuminoStudio/Engine/External/Lumino/test/UnitTest/Graphics/TestData/Sprite2.png"));
 
-	auto text = TextBlock2D::Create(_T("Hello, world!"));
+	//auto text = TextBlock2D::Create(_T("Hello, world!"));
+
+#if 0
+
+	auto m = SpriteParticleModel::Create();
+	m->SetSpawnRate(100);
+	m->SetLifeTime(3.0f);
+	m->m_maxParticles = 300;
+
+	//m->m_shapeType = ParticleEmitterShapeType::Sphere;
+	//m->m_shapeParam.x = 10;
+
+
+	m->m_shapeType = ParticleEmitterShapeType::Cone;
+	m->m_shapeParam.x = Math::PI * 0.1;
+	m->m_shapeParam.y = 2;
+
+	//m->SetPositionRange(Vector3(-10, 10, -10), Vector3(10, 10, 10));
+	m->SetVelocity(Vector3(0, -3, 0));
+	//m->SetAccel(Vector3(0, -8, 0));
+
+	auto material = DiffuseMaterial::Create();
+	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	material->SetEmissive(Color::White);
+	m->SetMaterial(material);
+	//m->SetTexture(Texture2D::Create(LN_LOCALFILE("../Media/Spark1.png"), TextureFormat::R8G8B8A8, false));
+
+	auto particle1 = SpriteParticle::Create3D(m);
+	particle1->SetBlendMode(BlendMode::Add);
+	particle1->SetPosition(2, 0, 0);
+
+	//auto particle2 = SpriteParticle::Create3D(m);
+	//particle2->SetBlendMode(BlendMode::Subtract);
+	//particle2->SetPosition(3, 0, 0);
+
+	//particle1->AddChild(particle2);
+#endif
+
+#if 0
+	auto m1 = SpriteParticleModel::Create();
+	m1->SetSpawnRate(2);
+	m1->SetLifeTime(2.0f);
+	m1->m_maxParticles = 10;
+	m1->m_shapeType = ParticleEmitterShapeType::Cone;
+	m1->m_shapeParam.x = Math::PI * 0.1;
+	m1->m_shapeParam.y = 2;
+
+	auto m2 = SpriteParticleModel::Create();
+	m2->SetSpawnRate(2);
+	m2->SetLifeTime(2.0f);
+	m2->m_maxParticles = 10;
+	m2->m_shapeType = ParticleEmitterShapeType::Cone;
+	m2->m_shapeParam.x = Math::PI * 0.1;
+	m2->m_shapeParam.y = 2;
+	m1->SetSubParticle(m2);
+
+	auto material = DiffuseMaterial::Create();
+	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
+	m1->SetMaterial(material);
+	m2->SetMaterial(material);
+	m2->Commit();
+
+	auto particle1 = SpriteParticle::Create3D(m1);
+	particle1->SetBlendMode(BlendMode::Add);
+	particle1->SetPosition(2, 0, 0);
+
+#endif
+#if 0
+	auto m1 = SpriteParticleModel::Create();
+	m1->SetSpawnRate(40);
+	m1->SetLifeTime(5.0f);
+	m1->m_maxParticles = 100;
+	m1->m_shapeType = ParticleEmitterShapeType::Box;
+	m1->m_minPosition.Set(-10, 10, -10);
+	m1->m_maxPosition.Set(10, 10, 10);
+	m1->SetVelocity(Vector3(0, -5,0));
+	m1->SetSize(0.5);
+	//m1->m_loop = false;
+
+	auto material = DiffuseMaterial::Create();
+	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
+	m1->SetMaterial(material);
+
+	auto particle1 = SpriteParticle::Create3D(m1);
+	particle1->SetBlendMode(BlendMode::Add);
+	particle1->SetPosition(2, 0, 0);
+
+#endif
+#if 0	// 半円ほわほわ
+	auto m1 = SpriteParticleModel::Create();
+	m1->SetSpawnRate(40);
+	m1->SetLifeTime(5.0f);
+	m1->m_maxParticles = 100;
+	m1->m_movementType = ParticleMovementType::Radial;
+	m1->m_shapeParam.x = 10;
+	m1->m_axis.minValue.Set(0, 1, 0);
+	m1->m_axis.maxValue.Set(0, 1, 0);
+	m1->m_angle.minValue = 0;
+	m1->m_angle.maxValue = Math::PI;
+	m1->m_forwardPosition.minValue = 1;
+	m1->m_forwardPosition.maxValue = 2;
+	m1->SetSize(0.5);
+
+	auto material = DiffuseMaterial::Create();
+	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
+	m1->SetMaterial(material);
+
+	auto particle1 = SpriteParticle::Create3D(m1);
+	particle1->SetBlendMode(BlendMode::Add);
+	particle1->SetPosition(2, 0, 0);
+
+#endif
+#if 0	// くるくる
+	auto m1 = SpriteParticleModel::Create();
+	m1->SetSpawnRate(40);
+	m1->SetLifeTime(5.0f);
+	m1->m_maxParticles = 100;
+	m1->m_movementType = ParticleMovementType::Radial;
+	m1->m_shapeParam.x = 10;
+	m1->m_axis.minValue.Set(0, 1, 0);
+	m1->m_axis.maxValue.Set(0, 1, 0);
+	m1->m_angle.minValue = 0;
+	m1->m_angle.maxValue = Math::PI * 2;
+	m1->m_angleVelocity.minValue = 0.25;
+	m1->m_angleVelocity.maxValue = 1.0;
+	m1->m_forwardPosition.minValue = 5;
+	m1->m_forwardPosition.maxValue = 10;
+	m1->SetSize(0.5);
+
+	auto material = DiffuseMaterial::Create();
+	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
+	m1->SetMaterial(material);
+
+	auto particle1 = SpriteParticle::Create3D(m1);
+	particle1->SetBlendMode(BlendMode::Add);
+	particle1->SetPosition(2, 0, 0);
+
+#endif
+#if 0	// 引力斥力
+	auto m1 = SpriteParticleModel::Create();
+	m1->SetSpawnRate(100);
+	m1->SetLifeTime(5.0f);
+	m1->m_maxParticles = 1000;
+	m1->m_movementType = ParticleMovementType::Radial;
+	m1->m_shapeParam.x = 10;
+	m1->m_axis.minValue.Set(0, 1, 0);
+	m1->m_axis.maxValue.Set(0, 1, 0);
+	m1->m_angle.minValue = 0;
+	m1->m_angle.maxValue = Math::PI * 2;
+	m1->m_angleVelocity.minValue = 0.25;
+	m1->m_angleVelocity.maxValue = 1.0;
+	m1->m_forwardPosition.minValue = 5;
+	m1->m_forwardPosition.maxValue = 10;
+	m1->m_forwardVelocity.minValue = -5;
+	m1->m_forwardVelocity.maxValue = 0;
+	m1->SetSize(0.5);
+
+	auto material = DiffuseMaterial::Create();
+	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
+	m1->SetMaterial(material);
+
+	auto particle1 = SpriteParticle::Create3D(m1);
+	particle1->SetBlendMode(BlendMode::Add);
+	particle1->SetPosition(2, 0, 0);
+
+#endif
+#if 0	// point trail
+	auto m1 = SpriteParticleModel::Create();
+	m1->SetSpawnRate(4);
+	m1->SetLifeTime(5.0f);
+	m1->m_maxParticles = 1000;
+	m1->m_movementType = ParticleMovementType::Radial;
+	m1->m_shapeParam.x = 10;
+	m1->m_axis.minValue.Set(0, 1, 0);
+	m1->m_axis.maxValue.Set(0, 1, 0);
+	m1->m_angle.minValue = 0;
+	m1->m_angle.maxValue = Math::PI * 2;
+	m1->m_angleVelocity.minValue = 0.25;
+	m1->m_angleVelocity.maxValue = 1.0;
+	m1->m_forwardPosition.minValue = 5;
+	m1->m_forwardPosition.maxValue = 10;
+	m1->SetSize(0.5);
+	m1->m_trailType = ParticlTrailType::Point;
+	m1->m_trailTime = 0.5f;
+	m1->m_loop = false;
+
+	auto material = DiffuseMaterial::Create();
+	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
+	m1->SetMaterial(material);
+
+	auto particle1 = ParticleEmitter::Create3D(m1);
+	particle1->SetBlendMode(BlendMode::Subtract);
+	particle1->SetPosition(2, 0, 0);
+
+#endif
+#if 0	// 放射
+	Camera::GetMain3DCamera()->SetFarClip(10000);
+	auto m1 = SpriteParticleModel::Create();
+	m1->m_maxParticles = 128;
+	m1->SetSpawnRate(12);
+	m1->SetLifeTime(3.0);
+	m1->SetAutoFadeTime(0.3, 0.1);
+	m1->m_loop = true;
+
+	m1->SetSize(15, 35);
+
+	m1->m_trailType = ParticlTrailType::Point;
+	m1->m_trailTime = 0.1;
+
+	m1->m_movementType = ParticleMovementType::Radial;
+	m1->m_axis.minValue.Set(0, 0, 1);
+	m1->m_axis.maxValue.Set(0, 0, 1);
+	m1->m_angle.minValue = 0;
+	m1->m_angle.maxValue = Math::PI * 2;
+	m1->m_forwardVelocity.minValue = 5*60;
+	m1->m_forwardVelocity.maxValue = 0.5 * 60;
+	//m1->m_forwardPosition.minValue = 5;
+	//m1->m_forwardPosition.maxValue = 10;
+
+	m1->m_sizeRandomSource = ParticleRandomSource::ByBaseValue;	// サイズが小さいものほど、
+	m1->m_forwardVelocity.randomSource = ParticleRandomSource::ByBaseValueInverse;	// 速度が大きい
+
+
+	auto material = DiffuseMaterial::Create();
+	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
+	m1->SetMaterial(material);
+
+	auto particle1 = ParticleEmitter3D::Create(m1);
+	particle1->SetBlendMode(BlendMode::Subtract);
+	particle1->SetPosition(2, 0, 200);
+
+#endif
+#if 1	// 雨
+	Camera::GetMain3DCamera()->SetFarClip(10000);
+	auto m1 = SpriteParticleModel::Create();
+	m1->m_maxParticles = 10000;
+	m1->SetSpawnRate(1000);
+	m1->SetLifeTime(1.0);
+	m1->m_loop = true;
+
+	m1->SetSize(0.05, 0.05);
+
+	m1->m_shapeType = ParticleEmitterShapeType::Box;
+	m1->m_shapeParam.Set(10, 0, 10);
+
+	m1->m_particleDirection = ParticleDirectionType::MovementDirection;
+	m1->m_forwardVelocity.minValue = -12;
+	m1->m_forwardVelocity.maxValue = -12;
+	m1->m_lengthScale = 10;
+
+	auto material = DiffuseMaterial::Create();
+	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
+	m1->SetMaterial(material);
+
+	auto particle1 = ParticleEmitter3D::Create(m1);
+	particle1->SetBlendMode(BlendMode::Add);
+	particle1->SetPosition(0, 12, 0);
+	//particle1->SetAngles(Math::PI, 0, 0);
+
+
+
+	auto m2 = SpriteParticleModel::Create();
+	m2->m_maxParticles = 1000;
+	m2->SetSpawnRate(200);
+	m2->SetLifeTime(0.2);
+	m2->m_loop = true;
+	m2->SetSize(0.1, 0.1);
+	m2->m_minSizeVelocity = 3;
+	m2->m_maxSizeVelocity = 3;
+	m2->m_shapeType = ParticleEmitterShapeType::Box;
+	m2->m_shapeParam.Set(10, 0, 10);
+	m2->m_particleDirection = ParticleDirectionType::Horizontal;
+	m2->SetMaterial(material);
+
+	auto particle2 = ParticleEmitter3D::Create(m2);
+	particle2->SetBlendMode(BlendMode::Add);
+#endif
 
 	while (Engine::Update())
 	{
@@ -176,7 +474,7 @@ void Main()
 			//tonePE->ChangeTone(ToneF(1, 1, 1, 0), 0.5);
 			//blur->SetBlurStatus(0.5, Vector2::Zero, 1.05, 0.5);
 
-			Engine::GetMainWindow()->SetSize(SizeI(200, 100));
+			//Engine::GetMainWindow()->SetSize(SizeI(200, 100));
 		}
 		//blur->SetBlurStatus(0.9f, Vector2::Zero, 1.02);
 	}

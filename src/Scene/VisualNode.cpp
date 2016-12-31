@@ -185,67 +185,6 @@ void VisualNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 }
 
 
-#if 0
-//------------------------------------------------------------------------------
-void VisualNode::Render(RenderingParams& params)
-{
-	// レンダリングステートの設定
-	params.Renderer->SetRenderState(m_renderState);
-
-	for (int iSubset = 0; iSubset < m_subsetCount; iSubset++)
-	{
-		// 今回のパスで本当に必要な情報 (使用するシェーダ等) を取得する
-		RenderingPriorityParams priorityParams;
-		params.Pass->SelectPriorityParams(this, iSubset, &priorityParams);
-		if (priorityParams.Hide) {	// このパスでは描画しない
-			return;
-		}
-		params.Shader = priorityParams.Shader;
-
-		// シェーダのノード単位データを更新する
-		priorityParams.Shader->UpdateNodeParams(this, params.CurrentCamera, m_affectLightList);
-
-		// テクニックの検索
-		//m_visualNodeParams.GetCombinedSubsetParams
-		MMEShaderTechnique* tech = priorityParams.Shader->FindTechnique(
-			(InternalRenderingPass)params.Pass->GetPassID(),
-			!m_visualNodeParams.GetCombinedSubsetParams(iSubset).Material.Texture.IsNull(),
-			!m_visualNodeParams.GetCombinedSubsetParams(iSubset).Material.SphereTexture.IsNull(),
-			!m_visualNodeParams.GetCombinedSubsetParams(iSubset).Material.ToonTexture.IsNull(),
-			false,	// TODO
-			iSubset);
-
-		// テクニックが見つからなかった。この条件に当てはまるのは、テクニックのターゲットサブセット範囲が指定されていて、
-		// iSubset がいずれにもマッチしなかった場合。この場合はデフォルトのシェーダを探す。
-		if (tech == NULL)
-		{
-			if (params.Pass->GetDefaultShader() != NULL)
-			{
-				tech = params.Pass->GetDefaultShader()->FindTechnique(
-					(InternalRenderingPass)params.Pass->GetPassID(),
-					!m_visualNodeParams.GetCombinedSubsetParams(iSubset).Material.Texture.IsNull(),
-					!m_visualNodeParams.GetCombinedSubsetParams(iSubset).Material.SphereTexture.IsNull(),
-					!m_visualNodeParams.GetCombinedSubsetParams(iSubset).Material.ToonTexture.IsNull(),
-					false,	// TODO
-					iSubset);
-				if (tech == NULL) {
-					// デフォルトのシェーダにも一致するテクニックが見つからなかった。
-					// この iSubset は描画しない。というかできない。
-					continue;
-				}
-			}
-		}
-
-		// コマンド経由で描画実行
-		ShaderScriptCommandList::DrawParams dp;
-		dp.Params = &params;
-		dp.RenderingNode = this;
-		dp.SubsetIndex = iSubset;
-		tech->GetDrawingCommandList().Execute(dp);
-	}
-}
-#endif
-
 //------------------------------------------------------------------------------
 detail::Sphere VisualNode::GetBoundingSphere()
 {

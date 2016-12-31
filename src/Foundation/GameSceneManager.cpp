@@ -6,32 +6,32 @@
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
-// GameObject
+// WorldObject
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(GameObject, Object);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(WorldObject, Object);
 
 //------------------------------------------------------------------------------
-GameObjectPtr GameObject::Create()
+WorldObjectPtr WorldObject::Create()
 {
-	auto ptr = GameObjectPtr::MakeRef();
+	auto ptr = WorldObjectPtr::MakeRef();
 	detail::GameSceneManager::GetInstance()->GetActiveScene()->AddGameObject(ptr);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-GameObject::GameObject()
+WorldObject::WorldObject()
 {
 	printf("const \n");
 }
 
 //------------------------------------------------------------------------------
-GameObject::~GameObject()
+WorldObject::~WorldObject()
 {
 	printf("~ \n");
 }
 
 //------------------------------------------------------------------------------
-void GameObject::AddComponent(Component* component)
+void WorldObject::AddComponent(Component* component)
 {
 	LN_FAIL_CHECK_ARG(component != nullptr) return;
 	LN_FAIL_CHECK_ARG(component->m_owner == nullptr) return;
@@ -40,24 +40,24 @@ void GameObject::AddComponent(Component* component)
 }
 
 //------------------------------------------------------------------------------
-void GameObject::OnStart()
+void WorldObject::OnStart()
 {
 }
 
 //------------------------------------------------------------------------------
-void GameObject::OnUpdate()
+void WorldObject::OnUpdate()
 {
 	for (auto& c : m_components)
 		c->OnUpdate();
 }
 
 //------------------------------------------------------------------------------
-void GameObject::OnDestroy()
+void WorldObject::OnDestroy()
 {
 }
 
 //------------------------------------------------------------------------------
-void GameObject::ReleaseComponents()
+void WorldObject::ReleaseComponents()
 {
 	for (auto& c : m_components)
 		c->Detach();
@@ -99,7 +99,7 @@ void GameScene::OnTerminate()
 }
 
 //------------------------------------------------------------------------------
-void GameScene::AddGameObject(GameObject* obj)
+void GameScene::AddGameObject(WorldObject* obj)
 {
 	LN_FAIL_CHECK_ARG(obj != nullptr) return;
 	m_gameObjectList.Add(obj);

@@ -27,13 +27,7 @@ class TextRendererCore;
 class FontGlyphTextureCache;
 class NanoVGCommandListCache;
 
-enum class DefaultShader
-{
-	NoLightingRendering,
-	ForwardRendering,
 
-	_Count,
-};
 
 // ShaderVariable からコミットするルートと、Material からコミットするルートがある。
 // ShaderVariableCommitSerializeHelper は、その同じような処理をまとめたクラス。
@@ -152,7 +146,7 @@ public:
 	InternalContext* GetInternalContext() const;
 
 	const StringA& GetCommonShaderHeader() const { return m_commonShaderHeader; }
-	Shader* GetDefaultShader(DefaultShader type) const;
+	const RefPtr<Shader>& GetBuiltinShader(BuiltinShader shader) const;
 
 	void PresentSwapChain(SwapChain* swapChain);
 
@@ -176,7 +170,7 @@ private:
 
 	RefPtr<InternalContext>			m_internalContext;
 	StringA							m_commonShaderHeader;
-	RefPtr<Shader>					m_defaultShaders[(int)DefaultShader::_Count];
+	RefPtr<Shader>					m_builtinShaders[2];
 
 	TextRendererCore*				m_textRendererCore;
 	BitmapTextRenderer*				m_bitmapTextRenderer;

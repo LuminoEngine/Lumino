@@ -72,7 +72,7 @@ class Texture2D
 public:
 
 	/**
-		@brief		指定したサイズのテクスチャを作成します。
+		指定したサイズのテクスチャを作成します。
 		@param[in]	width		: テクスチャの幅 (ピクセル単位)
 		@param[in]	height		: テクスチャの高さ (ピクセル単位)
 		@param[in]	format		: テクスチャのピクセルフォーマット
@@ -81,7 +81,7 @@ public:
 	static Texture2DPtr Create(int width, int height, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
 	
 	/**
-		@brief		指定したサイズのテクスチャを作成します。
+		指定したサイズのテクスチャを作成します。
 		@param[in]	size		: テクスチャサイズ (ピクセル単位)
 		@param[in]	format		: テクスチャのピクセルフォーマット
 		@param[in]	mipmap		: ミップマップの有無
@@ -89,7 +89,7 @@ public:
 	static Texture2DPtr Create(const SizeI& size, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
 
 	/**
-		@brief		ファイルからテクスチャを作成します。
+		ファイルからテクスチャを作成します。
 		@param[in]	filePath	: ファイルパス
 		@param[in]	format		: テクスチャのピクセルフォーマット
 		@param[in]	mipmap		: ミップマップの有無
@@ -97,7 +97,7 @@ public:
 	static Texture2DPtr Create(const StringRef& filePath, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
 
 	/**
-		@brief		画像ファイルデータのストリームを指定してテクスチャを作成します。
+		画像ファイルデータのストリームを指定してテクスチャを作成します。
 		@param[in]	stream		: 画像ファイルデータのストリーム
 		@param[in]	format		: テクスチャのピクセルフォーマット
 		@param[in]	mipmap		: ミップマップの有無
@@ -105,7 +105,7 @@ public:
 	static Texture2DPtr Create(Stream* stream, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
 
 	/**
-		@brief		メモリ上に展開された画像ファイルデータからテクスチャを作成します。
+		メモリ上に展開された画像ファイルデータからテクスチャを作成します。
 		@param[in]	data		: 画像ファイルデータの先頭アドレス
 		@param[in]	size		: データのバイト数
 		@param[in]	format		: テクスチャのピクセルフォーマット
@@ -114,18 +114,19 @@ public:
 	static Texture2DPtr Create(const void* data, size_t size, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
 	
 	/**
-		@brief		白い小さなテクスチャを取得します。
+		白い小さなテクスチャを取得します。
 		@detail		このテクスチャにの全ピクセルは不透明な白 Color32(255, 255, 255, 255) です。
 	*/
 	static Texture2DPtr GetWhiteTexture();
 
 public:
 
+	/** 指定した色でテクスチャ全体を塗りつぶします。*/
 	void Clear(const Color32& color);
 
 	void SetPixel(int x, int y, const Color& color);
 
-	//void Blt(int x, int y, Texture* srcTexture, const RectI& srcRect);	// TODO: アルファブレンド有無
+	void Blit(int x, int y, Texture2D* srcTexture, const RectI& srcRect);	// TODO: アルファブレンド有無
 	
 	void Blt(int x, int y, Bitmap* srcBitmap/*, const RectI& srcRect*/);
 
@@ -156,6 +157,7 @@ protected:
 	bool			m_mipmap;
 	bool			m_isPlatformLoaded;
 	ResourceUsage	m_usage;
+	bool			m_usageReadFast;
 	RefPtr<Bitmap>	m_primarySurface2;
 	bool			m_locked;
 	bool			m_initializing;

@@ -995,6 +995,8 @@ void MeshResource::AddSquare(const Vertex* virtices)
 //------------------------------------------------------------------------------
 void* MeshResource::TryLockVertexBuffer(VertexBufferType type)
 {
+	LN_FAIL_CHECK_STATE(m_vertexUsedCount > 0) return nullptr;
+
 	const size_t strideTable[VB_Count] =
 	{
 		sizeof(Vertex),			//VB_BasicVertices,
@@ -1040,6 +1042,8 @@ void* MeshResource::TryLockVertexBuffer(VertexBufferType type)
 //------------------------------------------------------------------------------
 void* MeshResource::TryLockIndexBuffer()
 {
+	LN_FAIL_CHECK_STATE(m_indexUsedCount > 0) return nullptr;
+
 	if (m_usage == ResourceUsage::Dynamic)
 	{
 		if (m_indexBufferInfo.buffer != nullptr &&
@@ -1209,9 +1213,9 @@ void MeshResource::CreateBuffers(int vertexCount, int indexCount, MeshCreationFl
 {
 	AddMaterials(1);
 	AddSections(1);
-	m_attributes[0].MaterialIndex = 0;
-	m_attributes[0].StartIndex = 0;
-	m_attributes[0].PrimitiveNum = indexCount / 3;
+	//m_attributes[0].MaterialIndex = 0;
+	//m_attributes[0].StartIndex = 0;
+	//m_attributes[0].PrimitiveNum = indexCount / 3;
 
 	TryGlowVertexBuffers(vertexCount);
 	TryGlowIndexBuffer(indexCount);
