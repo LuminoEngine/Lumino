@@ -275,7 +275,10 @@ void SpriteParticleModel::UpdateInstance(detail::SpriteParticleModelInstance* in
 			detail::ParticleData* data = instance->GetNextFreeParticleData();
 			if (data != nullptr)
 			{
-				SpawnParticle(emitterTransform, data, instance->m_lastSpawnTime);
+				for (int i = m_burstCount; i >= 0; i++)
+				{
+					SpawnParticle(emitterTransform, data, instance->m_lastSpawnTime);
+				}
 			}
 
 			instance->m_lastSpawnTime += m_oneSpawnDeltaTime;
@@ -301,8 +304,6 @@ void SpriteParticleModel::SpawnParticle(const Matrix& emitterTransform, detail::
 			localFront.y = MakeRandom(data, -1.0, 1.0, ParticleRandomSource::Self);
 			localFront.z = MakeRandom(data, -1.0, 1.0, ParticleRandomSource::Self);
 			localFront = Vector3::SafeNormalize(localFront, Vector3::UnitZ);
-			
-			//data->positionVelocity *= MakeRandom(data, m_startVelocity);
 			break;
 		case ParticleEmitterShapeType::Cone:
 		{
