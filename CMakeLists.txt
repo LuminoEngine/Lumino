@@ -313,6 +313,8 @@ set(LN_SOURCES_Graphics_Text
 )
 set(LN_SOURCES_Graphics_Mesh
 	include/Lumino/Graphics/Mesh/SkinnedMeshModel.h
+	src/Graphics/Mesh/MqoImporter.cpp
+	src/Graphics/Mesh/MqoImporter.h
 	src/Graphics/Mesh/SkinnedMeshModel.cpp
 )
 

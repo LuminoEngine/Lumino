@@ -418,7 +418,7 @@ void Main()
 	particle1->SetPosition(2, 0, 200);
 
 #endif
-#if 1	// 雨
+#if 0	// 雨
 	Camera::GetMain3DCamera()->SetFarClip(10000);
 	auto m1 = SpriteParticleModel::Create();
 	m1->m_maxParticles = 10000;
@@ -464,6 +464,8 @@ void Main()
 	auto particle2 = ParticleEmitter3D::Create(m2);
 	particle2->SetBlendMode(BlendMode::Add);
 #endif
+
+	auto mesh1 = StaticMesh::Create(_T("D:/Documents/Modeling/test1.mqo"));
 
 	while (Engine::Update())
 	{

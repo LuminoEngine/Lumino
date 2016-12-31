@@ -33,13 +33,14 @@ public:
 
 	void Initialize(const ConfigData& configData);
 	void Finalize();
+	FileManager* GetFileManager() const { return m_fileManager; }
 	detail::PhysicsManager* GetPhysicsManager() { return m_physicsManager; }
 	GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
 	Texture2D* GetMMDDefaultToonTexture(int index);
 
 	RefPtr<Texture> CreateTexture(const PathName& parentDir, const StringRef& filePath, ModelCreationFlag flags);
 	
-	RefPtr<MeshResource> CreateModelCore(const PathName& filePath);
+	RefPtr<MeshResource> CreateStaticMeshResource(const PathName& filePath);
 	RefPtr<PmxSkinnedMeshResource> CreateSkinnedMeshModel(const PathName& filePath);
 	//Animation::AnimationClip* CreateMotion(const PathName& filePath);
 

@@ -116,6 +116,7 @@
 #endif
 #include "PmxLoader.h"
 //#include "VMDLoader.h"
+#include "../Graphics/Mesh/MqoImporter.h"
 #include "ModelManager.h"
 
 LN_NAMESPACE_BEGIN
@@ -251,20 +252,29 @@ Texture2D* ModelManager::GetMMDDefaultToonTexture(int index)
 }
 
 //------------------------------------------------------------------------------
-RefPtr<MeshResource> ModelManager::CreateModelCore(const PathName& filePath)
+RefPtr<MeshResource> ModelManager::CreateStaticMeshResource(const PathName& filePath)
 {
 #if defined(LN_OS_WIN32)
 	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath), false);
 
-	//PMXLoader loader;
-	//RefPtr<ModelCore> modelCore(loader.Load(this, stream, filePath.GetParent(), true));
-	
-	XFileLoader loader;
-	RefPtr<MeshResource> mesh = loader.Load(this, stream, filePath.GetParent(), true, ModelCreationFlag::None);
+	if (filePath.CheckExt(_T(".mqo")))
+	{
+		MqoImporter importer;
+		return importer.Import(this, filePath);
+	}
+	else
+	{
+		//PMXLoader loader;
+		//RefPtr<ModelCore> modelCore(loader.Load(this, stream, filePath.GetParent(), true));
 
-	//modelCore->RefreshInitialValues();
-	//modelCore.SafeAddRef();
-	return mesh;
+		XFileLoader loader;
+		RefPtr<MeshResource> mesh = loader.Load(this, stream, filePath.GetParent(), true, ModelCreationFlag::None);
+
+		//modelCore->RefreshInitialValues();
+		//modelCore.SafeAddRef();
+		return mesh;
+	}
+
 #else
     LN_NOTIMPLEMENTED();
     return nullptr;

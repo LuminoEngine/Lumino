@@ -207,7 +207,7 @@ public:
 	void SetEmissive(const Color& value);
 	void SetSpecularPower(float value);
 
-protected:
+LN_INTERNAL_ACCESS:
 	DiffuseMaterial();
 	virtual ~DiffuseMaterial();
 	void Initialize();
