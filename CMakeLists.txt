@@ -557,7 +557,12 @@ set(LN_SOURCES_Foundation
 	src/Foundation/EntryPoint.cpp
 	src/Foundation/EntryPoint.h
 	src/Foundation/GameSceneManager.cpp
-	src/Foundation/GameSceneManager.h)
+	src/Foundation/GameSceneManager.h
+)
+
+set(LN_DLL_SOURCES
+	src/DllMain.cpp
+)
 
 #--------------------------------------
 # External linker source files.
@@ -947,6 +952,7 @@ if (LN_USE_EXTERNAL_Effekseer)
 	add_definitions(-DLN_USE_EXTERNAL_Effekseer)
 endif()
 
+
 # Lumino_static
 add_library(Lumino_Static STATIC ${LN_SOURCES})
 set_target_properties(Lumino_Static PROPERTIES COMPILE_DEFINITIONS "${my_definitions}")
@@ -954,6 +960,17 @@ set_target_properties(Lumino_Static PROPERTIES OUTPUT_NAME "${LN_STATIC_LIB_OUTP
 set_target_properties(Lumino_Static PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
 target_link_libraries(Lumino_Static ${LN_LINK_LIBS})
 ln_add_pch(Lumino_Static "LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
+
+# LuminoRuntime (shared lib)
+#set(LN_DLL_DEFINITIONS "LUMINO_BUILD_DLL"
+add_library(LuminoRuntime SHARED ${LN_DLL_SOURCES})
+#set_target_properties(LuminoRuntime PROPERTIES COMPILE_DEFINITIONS "${my_definitions}")
+target_compile_definitions(LuminoRuntime PRIVATE LUMINO_BUILD_DLL=1)
+target_link_libraries(LuminoRuntime LuminoFoundation Lumino_Static)
+set_target_properties(LuminoRuntime PROPERTIES OUTPUT_NAME "Lumino")
+set_target_properties(LuminoRuntime PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")	# .dll
+set_target_properties(LuminoRuntime PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")	# .lib (linker)
+add_dependencies(LuminoRuntime Lumino_Static)
 
 # Foundation
 add_library(LuminoFoundation STATIC ${LN_SOURCES_Foundation})
