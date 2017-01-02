@@ -95,6 +95,12 @@ void EngineSettings::SetDirectMusicReverbLevel(float level)
 	detail::EngineSettings::instance.DirectMusicReverbLevel = level;
 }
 
+//------------------------------------------------------------------------------
+void EngineSettings::SetUserWindowHandle(intptr_t hWnd)	// Qt とかは windows.h を隠蔽しているので、型を HWND にしてしまうと #include <windows.h> 必要だったりといろいろ面倒。
+{
+	detail::EngineSettings::instance.userMainWindow = hWnd;
+}
+
 //==============================================================================
 // EngineManager
 //==============================================================================
@@ -250,13 +256,6 @@ void EngineManager::Initialize()
 	InitializeAssetsManager();
 
 	EngineDiagCore::Instance.Initialize(this);
-
-	// デフォルトで作成されるレイヤーのサイズを更新しておく
-	// TODO: レイヤーを最初に作ったときでもいいか？
-	if (m_uiManager != nullptr)
-	{
-		m_uiManager->GetMainWindow()->UpdateViewportTransform();
-	}
 }
 
 //------------------------------------------------------------------------------
@@ -348,7 +347,8 @@ void EngineManager::InitializeAudioManager()
 
 		// ユーザー定義のウィンドウハンドルが指定されている場合、
 		// ダミーウィンドウクラスを作るために PlatformManager の初期化が必要。
-		if (m_configData.userMainWindow != nullptr) {
+		if (m_configData.userMainWindow != 0)
+		{
 			InitializePlatformManager();
 		}
 
@@ -533,31 +533,6 @@ void EngineManager::InitializeAssetsManager()
 }
 
 //------------------------------------------------------------------------------
-//bool EngineManager::Update()
-//{
-//	UpdateFrame2();
-//
-//	// 手動描画されていなければここで自動描画する
-//	if (!m_frameRenderd)
-//	{
-//		if (BeginRendering())
-//		{
-//			Render();
-//			EndRendering();
-//		}
-//	}
-//
-//	m_frameRenderd = false;
-//	return !m_endRequested;
-//}
-//
-////------------------------------------------------------------------------------
-//bool EngineManager::UpdateFrame2()
-//{
-//	return !m_endRequested;
-//}
-
-//------------------------------------------------------------------------------
 bool EngineManager::UpdateUnitily()
 {
 	BeginFrameUpdate();
@@ -632,7 +607,6 @@ void EngineManager::BeginFrameUpdate()
 
 	if (m_uiManager != nullptr)
 	{
-		m_uiManager->GetMainWindow()->UpdateViewportTransform();
 		m_uiManager->GetMainWindow()->InjectElapsedTime(deltaTime);
 
 		{	// プロファイリング範囲

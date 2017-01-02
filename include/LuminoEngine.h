@@ -49,6 +49,7 @@
 #include "Lumino/Input/InputBinding.h"
 #include "Lumino/Input/InputController.h"
 
+#include "Lumino/UI/UIFrameWindow.h"
 #include "Lumino/UI/UIContext.h"
 #include "Lumino/UI/UILayoutView.h"
 #include "Lumino/UI/UILayoutRoot.h"

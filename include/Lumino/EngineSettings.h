@@ -42,6 +42,10 @@ public:
 	/** DirectMusic のリバーブエフェクトの強さを設定します。(default: 0.75) */
 	static void SetDirectMusicReverbLevel(float level);
 
+#ifdef LN_OS_WIN32
+	/** ユーザー指定のメインウィンドウのウィンドウハンドルを設定します。*/
+	static void SetUserWindowHandle(intptr_t hWnd);
+#endif
 };
 
 LN_NAMESPACE_END

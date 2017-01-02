@@ -59,7 +59,6 @@ LN_INTERNAL_ACCESS:
 	detail::UIManager* GetManager() const { return m_manager; }
 	SwapChain* GetSwapChain() const { return m_swapChain; }
 
-	void UpdateViewportTransform();
 
 	void Render();
 
@@ -68,6 +67,8 @@ LN_INTERNAL_ACCESS:
 	void EndRendering();
 
 private:
+	void UpdateViewportTransform();
+
 	detail::UIManager*		m_manager;
 	PlatformWindow*			m_platformWindow;
 	SwapChain*				m_swapChain;
@@ -117,13 +118,18 @@ public:
 	/**
 		@brief		UIFrameWindow を作成します。
 	*/
-	static UINativeHostWindowPtr Create(void* windowHandle);
+	static UINativeHostWindowPtr Create(intptr_t windowHandle);
 
+
+public:
+
+	/** ホストされたネイティブウィンドウへ描画を行います。*/
+	void Render();
 
 LN_INTERNAL_ACCESS:
 	UINativeHostWindow();
 	virtual ~UINativeHostWindow();
-	void Initialize(detail::UIManager* manager, void* windowHandle);
+	void Initialize(detail::UIManager* manager, intptr_t windowHandle);
 
 private:
 	UIContext*	m_mainUIContext;

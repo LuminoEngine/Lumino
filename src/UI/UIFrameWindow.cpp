@@ -119,6 +119,9 @@ void UIFrameWindow::Initialize(detail::UIManager* manager, PlatformWindow* platf
 	m_uiLayer.Attach(LN_NEW UIViewportLayer(view), false);
 	m_uiLayer->Initialize();
 	m_mainViewport->AddViewportLayer(m_uiLayer);
+
+	// SwapChain のサイズを Viewport へ通知
+	UpdateViewportTransform();
 }
 
 //------------------------------------------------------------------------------
@@ -129,20 +132,12 @@ void UIFrameWindow::SetSize(const SizeI& size)
 }
 
 //------------------------------------------------------------------------------
-void UIFrameWindow::UpdateViewportTransform()
-{
-	const SizeI& bbSize = m_swapChain->GetBackBuffer()->GetSize();
-	Size viewSize((float)bbSize.width, (float)bbSize.height);
-	m_mainViewport->UpdateLayersTransform(viewSize);
-}
-
-//------------------------------------------------------------------------------
-void UIFrameWindow::Render()
-{
-	BeginRendering();
-	RenderContents();
-	EndRendering();
-}
+//void UIFrameWindow::Render()
+//{
+//	BeginRendering();
+//	RenderContents();
+//	EndRendering();
+//}
 
 //------------------------------------------------------------------------------
 void UIFrameWindow::BeginRendering()
@@ -171,6 +166,19 @@ void UIFrameWindow::EndRendering()
 	m_manager->GetGraphicsManager()->SwitchActiveContext(nullptr);
 	renderer->End();
 	m_swapChain->Present();
+
+	// SwapChain のサイズを Viewport へ通知
+	// ※ SwapChain のサイズが「本当に」変わるタイミングは、描画コマンドが確定する Present の後。
+	//    フレーム更新の最初で行ってもよいが、この時点で行ってもよい。
+	UpdateViewportTransform();
+}
+
+//------------------------------------------------------------------------------
+void UIFrameWindow::UpdateViewportTransform()
+{
+	const SizeI& bbSize = m_swapChain->GetBackBuffer()->GetSize();
+	Size viewSize((float)bbSize.width, (float)bbSize.height);
+	m_mainViewport->UpdateLayersTransform(viewSize);
 }
 
 
@@ -230,7 +238,7 @@ void UIMainWindow::RenderUI()
 LN_UI_TYPEINFO_IMPLEMENT(UINativeHostWindow, UIFrameWindow)
 
 //------------------------------------------------------------------------------
-UINativeHostWindowPtr UINativeHostWindow::Create(void* windowHandle)
+UINativeHostWindowPtr UINativeHostWindow::Create(intptr_t windowHandle)
 {
 	auto ptr = UINativeHostWindowPtr::MakeRef();
 	ptr->Initialize(detail::UIManager::GetInstance(), windowHandle);
@@ -249,10 +257,10 @@ UINativeHostWindow::~UINativeHostWindow()
 }
 
 //------------------------------------------------------------------------------
-void UINativeHostWindow::Initialize(detail::UIManager* manager, void* windowHandle)
+void UINativeHostWindow::Initialize(detail::UIManager* manager, intptr_t windowHandle)
 {
 	LN_CHECK_ARG(manager != nullptr);
-	LN_CHECK_ARG(windowHandle != nullptr);
+	LN_CHECK_ARG(windowHandle != 0);
 
 	WindowCreationSettings ws;
 	//ws.title;		// TODO
@@ -270,6 +278,14 @@ void UINativeHostWindow::Initialize(detail::UIManager* manager, void* windowHand
 	m_mainUIContext->Initialize(manager);
 
 	UIFrameWindow::Initialize(manager, window, swap, m_mainUIContext->GetMainWindowView());
+}
+
+//------------------------------------------------------------------------------
+void UINativeHostWindow::Render()
+{
+	UIFrameWindow::BeginRendering();
+	UIFrameWindow::RenderContents();
+	UIFrameWindow::EndRendering();
 }
 
 LN_NAMESPACE_END

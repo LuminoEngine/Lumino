@@ -12,11 +12,11 @@ LN_NAMESPACE_BEGIN
 /// ウィンドウを作成するための設定
 struct WindowCreationSettings
 {
-	String	title;							// ウィンドウタイトル
-	SizeI	clientSize = SizeI(640, 480);	// クライアント領域のピクセルサイズ
-	bool	fullscreen = false;				// フルスクリーンモードで作成するかどうか
-	bool	resizable = true;				// 可変ウィンドウとして作成するかどうか
-	void*	userWindow = nullptr;
+	String		title;							// ウィンドウタイトル
+	SizeI		clientSize = SizeI(640, 480);	// クライアント領域のピクセルサイズ
+	bool		fullscreen = false;				// フルスクリーンモードで作成するかどうか
+	bool		resizable = true;				// 可変ウィンドウとして作成するかどうか
+	intptr_t	userWindow = 0;
 };
 
 
