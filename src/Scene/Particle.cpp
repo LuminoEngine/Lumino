@@ -275,7 +275,7 @@ void SpriteParticleModel::UpdateInstance(detail::SpriteParticleModelInstance* in
 			detail::ParticleData* data = instance->GetNextFreeParticleData();
 			if (data != nullptr)
 			{
-				for (int i = m_burstCount; i >= 0; i++)
+				for (int i = m_burstCount; i >= 0; i--)
 				{
 					SpawnParticle(emitterTransform, data, instance->m_lastSpawnTime);
 				}
