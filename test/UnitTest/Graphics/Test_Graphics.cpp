@@ -263,6 +263,19 @@ TEST_F(Test_Graphics_Rendering, DrawText_)
 		}
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawText2.png")));
 	}
+	// <Test> Transform
+	{
+		if (Engine::BeginRendering())
+		{
+			Engine::Render();
+			Engine::GetDefault2DLayer()->GetRenderer()->SetFont(font);
+			Engine::GetDefault2DLayer()->GetRenderer()->SetBrush(ColorBrush::White);
+			Engine::GetDefault2DLayer()->GetRenderer()->SetTransform(Matrix::MakeTranslation(10, 20, 0));
+			Engine::GetDefault2DLayer()->GetRenderer()->DrawText_(_T("Text1"), PointF::Zero);
+			Engine::EndRendering();
+		}
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawText3.png")));
+	}
 }
 
 //------------------------------------------------------------------------------

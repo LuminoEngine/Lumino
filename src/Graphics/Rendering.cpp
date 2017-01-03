@@ -1360,6 +1360,7 @@ void DrawList::DrawText_(const StringRef& text, const RectF& rect, StringFormatF
 	};
 
 	auto* e = ResolveDrawElement<DrawElement_DrawText>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_textRenderer, nullptr);
+	e->transform = m_state.transfrom;
 	e->text = text;
 	e->rect = rect;
 	e->flags = flags;

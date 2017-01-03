@@ -27,6 +27,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	void Initialize(detail::UIManager* manager);
 
 	virtual Size MeasureOverride(const Size& availableSize) override;
+	virtual Size ArrangeOverride(const Size& finalSize) override;
 	virtual void OnRender(DrawList* g) override;
 
 private:
