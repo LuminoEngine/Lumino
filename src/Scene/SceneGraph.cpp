@@ -168,6 +168,14 @@ bool SceneGraph::InjectMouseWheel(int delta)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SceneGraph2D, SceneGraph);
 
 //------------------------------------------------------------------------------
+SceneGraph2DPtr SceneGraph2D::Create()
+{
+	auto ptr = SceneGraph2DPtr::MakeRef();
+	ptr->CreateCore(SceneGraphManager::Instance);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
 SceneGraph2D::SceneGraph2D()
 	: m_defaultRoot(nullptr)
 	, m_defaultCamera(nullptr)

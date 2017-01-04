@@ -6,6 +6,7 @@
 #include <Lumino/Foundation/Application.h>
 #include <Lumino/Foundation/GameScene.h>
 #include <Lumino/UI/UIFrameWindow.h>
+#include <Lumino/UI/UIListBox.h>
 #include <Lumino/Testing/TestHelper.h>
 using namespace ln;
 
@@ -418,7 +419,7 @@ void Main()
 	particle1->SetPosition(2, 0, 200);
 
 #endif
-#if 1	// 雨
+#if 0	// 雨
 	Camera::GetMain3DCamera()->SetFarClip(10000);
 	auto m1 = SpriteParticleModel::Create();
 	m1->m_maxParticles = 10000;
@@ -464,6 +465,13 @@ void Main()
 	auto particle2 = ParticleEmitter3D::Create(m2);
 	particle2->SetBlendMode(BlendMode::Add);
 #endif
+
+	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+
+	auto listBox = tr::UIListBox::Create();
+	listBox->AddTextItem(_T("test"));
+	listBox->AddTextItem(_T("fff"));
+	uiRoot->SetContent(listBox);
 
 	while (Engine::Update())
 	{

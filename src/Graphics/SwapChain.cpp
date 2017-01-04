@@ -89,6 +89,7 @@ RenderTargetTexture* SwapChain::GetBackBuffer()
 void SwapChain::Resize(const SizeI& newSize)
 {
 	m_deviceObj->Resize(newSize);
+	m_backColorBuffer->AttachDefaultBackBuffer(m_deviceObj->GetBackBuffer());
 	// ※ここではまだ深度バッファはリサイズしない。Present を終えた後に行う。
 }
 

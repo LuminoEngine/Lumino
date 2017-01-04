@@ -112,7 +112,7 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 				代わりに終了フラグだけを立てて、それをメインループで検出、
 				その後の finalize() 呼び出しで DestroyWindow() を呼び出す。
 				*/
-				SendPlatformClosingEvent(this);
+				SendPlatformEvent(PlatformEventArgs::MakeClosingEvent(this));
 				*handled = true;
 				return 0;
 			}
@@ -120,14 +120,14 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 			/////////////////// ウィンドウがアクティブ・非アクティブになった場合
 			case WM_ACTIVATE:
 			{
-				SendPlatformActivateChangedEvent(this, ((wparam & 0xffff) != 0));
+				SendPlatformEvent(PlatformEventArgs::MakeActivateChangedEvent(this, ((wparam & 0xffff) != 0)));
 				*handled = true;
 				return 0;
 			}
 			/////////////////////////////////////////////// ウィンドウサイズが変更された
 			case WM_SIZE:
 			{
-				SendPlatformWindowSizeChangedEvent(lparam & 0xFFFF, (lparam >> 16) & 0xFFFF);
+				SendPlatformEvent(PlatformEventArgs::MakeWindowSizeChangedEvent(this, lparam & 0xFFFF, (lparam >> 16) & 0xFFFF));
 				*handled = true;
 				return 0;
 			}
@@ -267,7 +267,7 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 			///////////////////////////////////////////// マウスホイールが操作された
 			case WM_MOUSEWHEEL:
 			{
-				SendPlatformMouseWheelEvent(GET_WHEEL_DELTA_WPARAM(wparam) / WHEEL_DELTA);
+				SendPlatformEvent(PlatformEventArgs::MakeMouseWheelEvent(this, GET_WHEEL_DELTA_WPARAM(wparam) / WHEEL_DELTA));
 				*handled = true;
 				return 0;
 			}
@@ -278,7 +278,7 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 					(::GetKeyState(VK_MENU) < 0) ? ModifierKeys::Alt : ModifierKeys::None |
 					(::GetKeyState(VK_SHIFT) < 0) ? ModifierKeys::Shift : ModifierKeys::None |
 					(::GetKeyState(VK_CONTROL) < 0) ? ModifierKeys::Control : ModifierKeys::None;
-				SendPlatformKeyEvent(PlatformEventType::KeyDown, this, ConvertVirtualKeyCode(wparam), mods, 0);
+				SendPlatformEvent(PlatformEventArgs::MakeKeyEvent(this, PlatformEventType::KeyDown, ConvertVirtualKeyCode(wparam), mods, 0));
 				*handled = true;
 				return 0;
 			}
@@ -289,7 +289,7 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 					(::GetKeyState(VK_MENU) < 0) ? ModifierKeys::Alt : ModifierKeys::None |
 					(::GetKeyState(VK_SHIFT) < 0) ? ModifierKeys::Shift : ModifierKeys::None |
 					(::GetKeyState(VK_CONTROL) < 0) ? ModifierKeys::Control : ModifierKeys::None;
-				SendPlatformKeyEvent(PlatformEventType::KeyUp, this, ConvertVirtualKeyCode(wparam), mods, 0);
+				SendPlatformEvent(PlatformEventArgs::MakeKeyEvent(this, PlatformEventType::KeyUp, ConvertVirtualKeyCode(wparam), mods, 0));
 				*handled = true;
 				return 0;
 			}
@@ -301,7 +301,7 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 					ModifierKeys::Alt |
 					(::GetKeyState(VK_SHIFT) < 0) ? ModifierKeys::Shift : ModifierKeys::None |
 					(::GetKeyState(VK_CONTROL) < 0) ? ModifierKeys::Control : ModifierKeys::None;
-				SendPlatformKeyEvent(PlatformEventType::KeyDown, this, ConvertVirtualKeyCode(wparam), mods, 0);
+				SendPlatformEvent(PlatformEventArgs::MakeKeyEvent(this, PlatformEventType::KeyDown, ConvertVirtualKeyCode(wparam), mods, 0));
 				*handled = true;
 				return 0;
 			}
@@ -313,7 +313,7 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 					ModifierKeys::Alt |
 					(::GetKeyState(VK_SHIFT) < 0) ? ModifierKeys::Shift : ModifierKeys::None |
 					(::GetKeyState(VK_CONTROL) < 0) ? ModifierKeys::Control : ModifierKeys::None;
-				SendPlatformKeyEvent(PlatformEventType::KeyUp, this, ConvertVirtualKeyCode(wparam), mods, 0);
+				SendPlatformEvent(PlatformEventArgs::MakeKeyEvent(this, PlatformEventType::KeyUp, ConvertVirtualKeyCode(wparam), mods, 0));
 				break;	// WM_SYSKEYUPを捕まえた場合、必ずDefWindowProcに行くようにする
 			}
 			///////////////////////////////////////////// 文字入力
@@ -326,7 +326,7 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 						(::GetKeyState(VK_MENU) < 0) ? ModifierKeys::Alt : ModifierKeys::None |
 						(::GetKeyState(VK_SHIFT) < 0) ? ModifierKeys::Shift : ModifierKeys::None |
 						(::GetKeyState(VK_CONTROL) < 0) ? ModifierKeys::Control : ModifierKeys::None;
-					SendPlatformKeyEvent(PlatformEventType::KeyChar, this, Keys::Unknown, mods, wparam);
+					SendPlatformEvent(PlatformEventArgs::MakeKeyEvent(this, PlatformEventType::KeyChar, Keys::Unknown, mods, wparam));
 					*handled = true;
 					return 0;
 				}
@@ -664,7 +664,7 @@ Win32UserHostWindow::Win32UserHostWindow(Win32WindowManager* windowManager, HWND
 	RECT rc = { 0, 0, 0, 0 };
 	::GetClientRect(m_hWnd, &rc);
 	m_clientSize.Set(rc.right, rc.bottom);
-	SendPlatformWindowSizeChangedEvent(rc.right, rc.bottom);
+	SendPlatformEvent(PlatformEventArgs::MakeWindowSizeChangedEvent(this, rc.right, rc.bottom));
 
 	TCHAR text[256];
 	::GetWindowText(m_hWnd, text, 256);

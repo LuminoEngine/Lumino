@@ -595,7 +595,6 @@ RenderTargetTexture::~RenderTargetTexture()
 void RenderTargetTexture::AttachDefaultBackBuffer(Driver::ITexture* deviceObj)
 {
 	assert(m_isDefaultBackBuffer);
-	assert(m_deviceObj == NULL);
 	LN_REFOBJ_SET(m_deviceObj, deviceObj);
 	m_size = m_deviceObj->GetSize();
 }

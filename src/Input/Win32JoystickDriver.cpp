@@ -121,7 +121,8 @@ void Win32JoystickDriver::Initialize( IDirectInputDevice8* device, HWND hwnd, in
 		LN_COMCALL(mDevice->SetDataFormat(&c_dfDIJoystick));
 
 		// フォアグラウンド・排他モード
-		LN_COMCALL(mDevice->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE));
+		//LN_COMCALL(mDevice->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE));
+		//LN_COMCALL(mDevice->SetCooperativeLevel(hwnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE));
 
 		// コールバック関数を使って各軸のモードを設定
 		LN_COMCALL(mDevice->EnumObjects(EnumAxesCallback, this, DIDFT_AXIS));

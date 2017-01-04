@@ -25,7 +25,7 @@ option(LN_EXCEPTION_BACKTRACE "In some unix environment there is a possibility t
 
 option(LN_BUILD_AUDIO_MODULE "Build 'Audio' module." ON)
 option(LN_BUILD_SCENE_MODULE "Build 'Scene' module." ON)
-option(LN_BUILD_C_API "Build 'C API' module." ON)
+option(LN_BUILD_C_API "Build 'C API' module." OFF)
 option(LN_USE_EXTERNAL_Effekseer "" ON)
 
 # Architecture.
@@ -850,7 +850,7 @@ add_subdirectory(external/Lumino.Core)
 link_libraries(LuminoCore_Static)
 link_libraries(LuminoMath)
 
-add_subdirectory(external/Fluorite)
+#add_subdirectory(external/Fluorite)
 
 # Make postfix.
 ln_make_postfix(LN_LIB_POSTFIX)

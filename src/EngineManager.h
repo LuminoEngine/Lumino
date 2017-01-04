@@ -100,7 +100,7 @@ public:
 	bool		delayedRenderingSkip = false;
 
 	/** ユーザー定義のウィンドウハンドル (windows の場合は HWND) */
-	void*			userMainWindow = nullptr;
+	intptr_t			userMainWindow = 0;
 
 	/**
 		@brief		Direct3D の浮動小数点計算の精度に関する情報です。詳しくは MSDN の D3DCREATE_ENABLE_PRESENTSTATS を参照してください。

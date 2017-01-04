@@ -68,73 +68,46 @@ void PlatformWindow::DetachEventListener(IEventListener* listener)
 bool PlatformWindow::SendPlatformEvent(const PlatformEventArgs& e)
 {
 	OnPlatformEvent(e);
-	return SendEventToAllListener(e);
-}
-
-//------------------------------------------------------------------------------
-bool PlatformWindow::SendPlatformClosingEvent(PlatformWindow* sender)
-{
-	PlatformEventArgs e(PlatformEventType::Close, this);
-
-	if (SendPlatformEvent(e)) {
-		return true;
-	}
-
-	// TODO
-	if (this == m_windowManager->GetMainWindow()) {
-		m_windowManager->Exit();
-	}
-	return true;
-}
-
-//------------------------------------------------------------------------------
-bool PlatformWindow::SendPlatformWindowSizeChangedEvent(int width, int height)
-{
-	// ウィンドウサイズを拾っておく
-	m_clientSize.Set(width, height);
-
-	PlatformEventArgs e(PlatformEventType::WindowSizeChanged, this);
-	e.size.width = width;
-	e.size.height = height;
-	SendPlatformEvent(e);
-	return true;
-}
-
-//------------------------------------------------------------------------------
-bool PlatformWindow::SendPlatformActivateChangedEvent(PlatformWindow* sender, bool active)
-{
-	if (active != m_isActive)
+	bool handled = SendEventToAllListener(e);
+	if (!handled)
 	{
-		m_isActive = active;
+		// 以下、デフォルト処理
 
-		PlatformEventArgs e;
-		e.type = (active) ? PlatformEventType::WindowActivate : PlatformEventType::WindowDeactivate;
-		e.sender = sender;
-		return SendPlatformEvent(e);
+		switch (e.type)
+		{
+			case PlatformEventType::Close:
+			{
+				// TODO
+				if (this == m_windowManager->GetMainWindow())
+				{
+					m_windowManager->Exit();
+					return true;
+				}
+				break;
+			}
+			case PlatformEventType::WindowSizeChanged:
+			{
+				// ウィンドウサイズを拾っておく
+				m_clientSize.Set(e.size.width, e.size.height);
+				break;
+			}
+			case PlatformEventType::WindowActivate:
+			{
+				m_isActive = true;
+				break;
+			}
+			case PlatformEventType::WindowDeactivate:
+			{
+				m_isActive = false;
+				break;
+			}
+
+			default:
+				break;
+		}
 	}
-	return false;
-}
 
-//------------------------------------------------------------------------------
-bool PlatformWindow::SendPlatformKeyEvent(PlatformEventType type_, PlatformWindow* sender_, Keys keyCode_, ModifierKeys modifierKeys_, char keyChar_)
-{
-	PlatformEventArgs e;
-	e.type = type_;
-	e.sender = sender_;
-	e.key.keyCode = keyCode_;
-	e.key.modifierKeys = (ModifierKeys::value_type)modifierKeys_.GetValue();
-	e.key.keyChar = keyChar_;
-	return SendPlatformEvent(e);
-}
-
-//------------------------------------------------------------------------------
-bool PlatformWindow::SendPlatformMouseWheelEvent(int delta)
-{
-	PlatformEventArgs e;
-	e.type = PlatformEventType::MouseWheel;
-	e.sender = this;
-	e.wheel.delta = delta;
-	return SendPlatformEvent(e);
+	return handled;
 }
 
 //------------------------------------------------------------------------------

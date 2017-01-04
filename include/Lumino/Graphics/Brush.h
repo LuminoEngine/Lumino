@@ -15,7 +15,7 @@ enum class BrushWrapMode
 enum class BrushImageDrawMode
 {
 	Image,
-	BoxFrame,
+	BoxFrame,		/**< 3x3 のボーダーを描画する。*/
 	BorderFrame,	/**< 3x3 のボーダーを描画する。中央は描画しない。*/
 };
 

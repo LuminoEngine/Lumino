@@ -23,6 +23,7 @@ DX9SwapChain::DX9SwapChain()
 	, m_backBufferSize()
 	, m_backBuffer(nullptr)
 	, m_isDefault(true)
+	, m_dirtySize(false)
 {
 }
 
@@ -105,10 +106,17 @@ void DX9SwapChain::Resize(const SizeI& size)
 {
 	m_backBufferSize = size;
 
-	// ソフト的にデバイスロスト状態にして、
-	// 次回のロストチェック時にバックバッファを作り直す。
-	// (描画スレッドを分けている場合の対応)
-	m_graphicsDevice->SetDeviceLostFlag();
+	if (m_isDefault)
+	{
+		// ソフト的にデバイスロスト状態にして、
+		// 次回のロストチェック時にバックバッファを作り直す。
+		// (描画スレッドを分けている場合の対応)
+		m_graphicsDevice->SetDeviceLostFlag();
+	}
+	else
+	{
+		m_dirtySize = true;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -152,6 +160,14 @@ void DX9SwapChain::Present(ITexture* /*colorBuffer*/)
 		default:
 			LN_THROW(0, COMException, hr);
 			break;
+		}
+	}
+	else
+	{
+		if (m_dirtySize)
+		{
+			OnLostDevice();
+			OnResetDevice();
 		}
 	}
 

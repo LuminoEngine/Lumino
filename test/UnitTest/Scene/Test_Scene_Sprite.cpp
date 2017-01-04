@@ -248,7 +248,7 @@ TEST_F(Test_Scene_TextBlock2D, Basic)
 	{
 		auto text = TextBlock2D::Create(_T("Lumino"));
 		Engine::Update();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_TextBlock2D.Basic1.png"), 99, true));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_TextBlock2D.Basic1.png")));
 	}
 	{
 		auto text1 = TextBlock2D::Create();

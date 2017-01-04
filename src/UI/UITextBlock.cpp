@@ -33,6 +33,8 @@ UITextBlock::~UITextBlock()
 void UITextBlock::Initialize(detail::UIManager* manager)
 {
 	UITextElement::Initialize(manager);
+	SetHAlignment(HAlignment::Center);
+	SetVAlignment(VAlignment::Center);
 }
 
 //------------------------------------------------------------------------------
@@ -54,6 +56,12 @@ Size UITextBlock::MeasureOverride(const Size& availableSize)
 	}
 
 	return size;
+}
+
+//------------------------------------------------------------------------------
+Size UITextBlock::ArrangeOverride(const Size& finalSize)
+{
+	return UITextElement::ArrangeOverride(finalSize);
 }
 
 //------------------------------------------------------------------------------
