@@ -794,10 +794,10 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 		}
 		break;
 	case PlatformEventType::WindowSizeChanged:
-		if (m_graphicsManager != nullptr)
-		{
-			m_graphicsManager->GetMainSwapChain()->Resize(SizeI(e.size.width, e.size.height));
-		}
+		//if (m_graphicsManager != nullptr)
+		//{
+		//	m_graphicsManager->GetMainSwapChain()->Resize(SizeI(e.size.width, e.size.height));
+		//}
 		//if (uiView != nullptr)
 		//{
 		//	if (uiView->InjectViewportSizeChanged(e.size.width, e.size.height)) { return true; }

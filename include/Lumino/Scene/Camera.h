@@ -7,6 +7,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 class CameraViewportLayer;
+using CameraViewportLayerPtr = RefPtr<CameraViewportLayer>;
 
 /**
 	@brief
@@ -139,6 +140,8 @@ class CameraViewportLayer
 public:
 	static CameraViewportLayer* GetDefault2D();
 	static CameraViewportLayer* GetDefault3D();
+
+	static CameraViewportLayerPtr Create(Camera* camera);
 
 	// ViewportLayer interface
 	virtual DrawList* GetRenderer() override;

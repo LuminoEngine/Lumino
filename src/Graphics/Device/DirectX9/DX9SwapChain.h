@@ -43,6 +43,7 @@ private:
 	SizeI						m_backBufferSize;
 	DX9BackBufferTexture*		m_backBuffer;
 	bool						m_isDefault;
+	bool						m_dirtySize;
 };
 
 } // namespace Driver

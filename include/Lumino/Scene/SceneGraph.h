@@ -11,6 +11,10 @@ class DrawList;
 class Camera;
 class SceneNode;
 class StaticMeshModel;
+class SceneGraph2D;
+class SceneGraph3D;
+using SceneGraph2DPtr = RefPtr<SceneGraph2D>;
+using SceneGraph3DPtr = RefPtr<SceneGraph3D>;
 
 /**
 	@brief
@@ -104,6 +108,9 @@ class SceneGraph2D
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
+	static SceneGraph2DPtr Create();
+
+public:
 
 	virtual void UpdateFrame(float elapsedTime);
 	virtual SceneNode* GetRootNode() override { return m_defaultRoot; }
@@ -127,8 +134,8 @@ private:
 class SceneGraph3D
 	: public SceneGraph
 {
-public:
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
 	LN_TR_PROPERTY(bool, visibleGridPlane);
 
 	virtual void UpdateFrame(float elapsedTime);

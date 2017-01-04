@@ -142,6 +142,13 @@ void UIFrameWindow::SetSize(const SizeI& size)
 //------------------------------------------------------------------------------
 void UIFrameWindow::BeginRendering()
 {
+	// ウィンドウサイズとバックバッファサイズを合わせる
+	const SizeI& windowSize = m_platformWindow->GetSize();
+	if (m_swapChain->GetBackBuffer()->GetSize() != windowSize)
+	{
+		m_swapChain->Resize(windowSize);
+	}
+
 	m_swapChain->BeginRendering();
 
 	Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();

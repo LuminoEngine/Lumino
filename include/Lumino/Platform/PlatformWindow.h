@@ -72,18 +72,14 @@ public:
 	*/
 	void DetachEventListener(IEventListener* listener);
 
+	bool SendPlatformEvent(const PlatformEventArgs& e);
+
 protected:
 	PlatformWindow(WindowManagerBase* windowManager);
 	virtual ~PlatformWindow();
 	void Initialize(const SizeI& clientSize);
     
 LN_INTERNAL_ACCESS:
-	bool SendPlatformEvent(const PlatformEventArgs& e);
-	bool SendPlatformClosingEvent(PlatformWindow* sender);
-	bool SendPlatformWindowSizeChangedEvent(int width, int height);
-	bool SendPlatformActivateChangedEvent(PlatformWindow* sender, bool active);
-	bool SendPlatformKeyEvent(PlatformEventType type_, PlatformWindow* sender_, Keys keyCode_, ModifierKeys modifierKeys_, char keyChar_);
-	bool SendPlatformMouseWheelEvent(int delta);
 	virtual void OnPlatformEvent(const PlatformEventArgs& e);
 
 	typedef SortedArray<int, IEventListener*>	EventListenerList;

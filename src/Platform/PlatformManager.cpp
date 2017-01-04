@@ -76,6 +76,50 @@
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
+// PlatformEventArgs
+//==============================================================================
+PlatformEventArgs PlatformEventArgs::MakeClosingEvent(PlatformWindow* sender)
+{
+	return PlatformEventArgs(PlatformEventType::Close, sender);
+}
+
+PlatformEventArgs PlatformEventArgs::MakeWindowSizeChangedEvent(PlatformWindow* sender, int width, int height)
+{
+	PlatformEventArgs e(PlatformEventType::WindowSizeChanged, sender);
+	e.size.width = width;
+	e.size.height = height;
+	return e;
+}
+
+PlatformEventArgs PlatformEventArgs::MakeActivateChangedEvent(PlatformWindow* sender, bool active)
+{
+	PlatformEventArgs e;
+	e.sender = sender;
+	e.type = (active) ? PlatformEventType::WindowActivate : PlatformEventType::WindowDeactivate;
+	return e;
+}
+
+PlatformEventArgs PlatformEventArgs::MakeKeyEvent(PlatformWindow* sender, PlatformEventType type, Keys keyCode, ModifierKeys modifierKeys, char keyChar)
+{
+	PlatformEventArgs e;
+	e.type = type;
+	e.sender = sender;
+	e.key.keyCode = keyCode;
+	e.key.modifierKeys = (ModifierKeys::value_type)modifierKeys.GetValue();
+	e.key.keyChar = keyChar;
+	return e;
+}
+
+PlatformEventArgs PlatformEventArgs::MakeMouseWheelEvent(PlatformWindow* sender, int delta)
+{
+	PlatformEventArgs e;
+	e.type = PlatformEventType::MouseWheel;
+	e.sender = sender;
+	e.wheel.delta = delta;
+	return e;
+}
+
+//==============================================================================
 // PlatformManager
 //==============================================================================
 

@@ -231,6 +231,14 @@ CameraViewportLayer* CameraViewportLayer::GetDefault3D()
 }
 
 //------------------------------------------------------------------------------
+CameraViewportLayerPtr CameraViewportLayer::Create(Camera* camera)
+{
+	auto ptr = CameraViewportLayerPtr::MakeRef();
+	ptr->Initialize(SceneGraphManager::Instance, camera);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
 CameraViewportLayer::CameraViewportLayer()
 {
 }
