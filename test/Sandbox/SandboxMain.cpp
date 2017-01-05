@@ -90,6 +90,17 @@ void Main()
 	//Func();
 
 
+	Ray ray(Vector3(1, 0, 0), Vector3(0, 0, 1));
+	Matrix mat = Matrix::MakeScaling(2) * Matrix::MakeRotationY(Math::PI / 4)/* * Matrix::MakeTranslation(2, 0, 0)*/;
+	mat.Inverse();
+
+	Ray ray2 = ray;
+	ray2.direction += ray2.origin;
+	ray2.origin.TransformCoord(mat);
+	ray2.direction.TransformCoord(mat);
+	ray2.direction -= ray2.origin;
+
+
 
 	//EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
 	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//

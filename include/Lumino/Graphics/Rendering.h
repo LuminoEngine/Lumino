@@ -521,6 +521,8 @@ public:
 		const Vector3& position4, const Vector2& uv4, const Color& color4/*,
 		ShaderPass* shaderPass*/);
 
+	void DrawBox();
+
 	void DrawMesh(MeshResource* mesh, int subsetIndex, Material* material);
 	void DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material);
 
