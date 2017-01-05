@@ -199,8 +199,6 @@ FrameRectRenderer* InternalContext::BeginFrameRectRenderer()
 //------------------------------------------------------------------------------
 void InternalContext::SetViewInfo(const Size& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix)
 {
-	m_primitiveRenderer->SetViewPixelSize(SizeI(viewPixelSize.width, viewPixelSize.height));
-	m_primitiveRenderer->SetViewProjMatrix(viewMatrix * projMatrix);
 	m_spriteRenderer->SetViewInfo(viewPixelSize, viewMatrix, projMatrix);
 	m_textRenderer->SetViewInfo(viewMatrix * projMatrix, SizeI(viewPixelSize.width, viewPixelSize.height));
 	m_frameRectRenderer->SetViewInfo(viewMatrix * projMatrix);
@@ -1255,7 +1253,7 @@ void DrawList::DrawSquarePrimitive(
 	const Vector3& position4, const Vector2& uv4, const Color& color4/*,
 	ShaderPass* shaderPass*/)
 {
-	class DrawSquarePrimitiveElement : public detail::DrawElement
+	class DrawSquarePrimitiveElement : public detail::LightingDrawElement	// TODO: LightingDrawElement は忘れやすい。デフォルトありでいいと思う
 	{
 	public:
 		Vector3 position[4];

@@ -123,21 +123,21 @@ TEST_F(Test_Graphics_Rendering, DrawLinePrimitive)
 		}
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawLinePrimitive1.png")));
 	}
-	// <Test> 2本連続
-	{
-		if (Engine::BeginRendering())
-		{
-			Engine::Render();
-			Engine::GetDefault2DLayer()->GetRenderer()->DrawLinePrimitive(
-				Vector3(0, 0, 0), Color::Red,
-				Vector3(20, 50, 0), Color::White);
-			Engine::GetDefault2DLayer()->GetRenderer()->DrawLinePrimitive(
-				Vector3(20, 50, 0), Color::Red,
-				Vector3(0, 50, 0), Color::Blue);
-			Engine::EndRendering();
-		}
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawLinePrimitive2.png")));
-	}
+	//// <Test> 2本連続
+	//{
+	//	if (Engine::BeginRendering())
+	//	{
+	//		Engine::Render();
+	//		Engine::GetDefault2DLayer()->GetRenderer()->DrawLinePrimitive(
+	//			Vector3(0, 0, 0), Color::Red,
+	//			Vector3(20, 50, 0), Color::White);
+	//		Engine::GetDefault2DLayer()->GetRenderer()->DrawLinePrimitive(
+	//			Vector3(20, 50, 0), Color::Red,
+	//			Vector3(0, 50, 0), Color::Blue);
+	//		Engine::EndRendering();
+	//	}
+	//	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawLinePrimitive2.png")));
+	//}
 }
 
 //------------------------------------------------------------------------------
