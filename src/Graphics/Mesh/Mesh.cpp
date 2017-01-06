@@ -398,29 +398,35 @@ void MeshResource::Clear()
 //------------------------------------------------------------------------------
 void MeshResource::AddSquare(const Vertex& v1, const Vertex& v2, const Vertex& v3, const Vertex& v4)
 {
-	int vs = GetVertexCount();
-	ResizeVertexBuffer(vs + 4);
-	Vertex* v = (Vertex*)TryLockVertexBuffer(VB_BasicVertices);
-	v[vs + 0] = v1;
-	v[vs + 1] = v2;
-	v[vs + 2] = v3;
-	v[vs + 3] = v4;
+	int beginIndex = GetVertexCount();
 
-	int is = GetIndexCount();
-	ResizeIndexBuffer(is + 6);
-	void* i = TryLockIndexBuffer();
-	SetIndexInternal(i, is + 0, vs + 0);
-	SetIndexInternal(i, is + 1, vs + 1);
-	SetIndexInternal(i, is + 2, vs + 3);
-	SetIndexInternal(i, is + 3, vs + 3);
-	SetIndexInternal(i, is + 4, vs + 1);
-	SetIndexInternal(i, is + 5, vs + 2);
+	Vertex* v = (Vertex*)RequestVertexBufferForAdditional(4, VB_BasicVertices);
+	v[0] = v1;
+	v[1] = v2;
+	v[2] = v3;
+	v[3] = v4;
+
+	uint16_t* i = RequestIndexBufferForAdditional(6);
+	i[0] = beginIndex + 0;
+	i[1] = beginIndex + 1;
+	i[2] = beginIndex + 3;
+	i[3] = beginIndex + 3;
+	i[4] = beginIndex + 1;
+	i[5] = beginIndex + 2;
 }
 
 //------------------------------------------------------------------------------
 void MeshResource::AddSquare(const Vertex* virtices)
 {
 	AddSquare(virtices[0], virtices[1], virtices[2], virtices[3]);
+}
+
+//------------------------------------------------------------------------------
+void MeshResource::AddLine(const Vertex& v1, const Vertex& v2)
+{
+	LN_FAIL_CHECK_STATE(!m_attributes.IsEmpty()) return;
+	LN_FAIL_CHECK_STATE(m_attributes.GetLast().primitiveType != PrimitiveType_LineList) return;
+	
 }
 
 //------------------------------------------------------------------------------
@@ -536,6 +542,34 @@ void MeshResource::TryGlowIndexBuffer(int requestIndexCount)
 }
 
 //------------------------------------------------------------------------------
+void* MeshResource::RequestVertexBufferForAdditional(int additionalVertexCount, VertexBufferType type)
+{
+	int begin = GetVertexCount();
+	int newCount = begin + additionalVertexCount;
+	TryGlowVertexBuffers(newCount);
+	m_vertexUsedCount = newCount;
+
+	Vertex* vb = (Vertex*)TryLockVertexBuffer(type);
+	return vb + begin;
+}
+
+//------------------------------------------------------------------------------
+uint16_t* MeshResource::RequestIndexBufferForAdditional(int additionalIndexCount)
+{
+	int begin = GetIndexCount();
+	int newCount = begin + additionalIndexCount;
+
+	LN_FAIL_CHECK_STATE(m_indexBufferInfo.buffer == nullptr || m_indexBufferInfo.buffer->GetIndexStride() == 2) return nullptr;
+	LN_FAIL_CHECK_STATE(newCount <= UINT16_MAX) return nullptr;
+
+	TryGlowIndexBuffer(newCount);
+	m_indexUsedCount = newCount;
+
+	uint16_t* ib = (uint16_t*)TryLockIndexBuffer();
+	return ib + begin;
+}
+
+//------------------------------------------------------------------------------
 void MeshResource::GetMeshAttribute(int subsetIndex, MeshAttribute* outAttr)
 {
 	if (m_attributes.IsEmpty())
@@ -543,6 +577,7 @@ void MeshResource::GetMeshAttribute(int subsetIndex, MeshAttribute* outAttr)
 		outAttr->MaterialIndex = 0;
 		outAttr->StartIndex = 0;
 		outAttr->PrimitiveNum = m_indexUsedCount / 3;	// triangle only
+		outAttr->primitiveType = PrimitiveType_TriangleList;
 	}
 	else
 	{
