@@ -1,6 +1,6 @@
 ﻿
 #include "../Internal.h"
-#include <Lumino/Graphics/Mesh.h>
+#include <Lumino/Graphics/Mesh/Mesh.h>
 #include <Lumino/Graphics/Mesh/SkinnedMeshModel.h>
 #include <Lumino/Physics/Collider.h>	// TODO: MMD でのみ必要
 #include <Lumino/Physics/RigidBody.h>	// TODO: MMD でのみ必要

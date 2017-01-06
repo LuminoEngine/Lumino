@@ -3,7 +3,7 @@
 #include <Lumino/Graphics/VertexDeclaration.h>
 #include <Lumino/Graphics/VertexBuffer.h>
 #include <Lumino/Graphics/IndexBuffer.h>
-#include <Lumino/Graphics/Mesh.h>
+#include <Lumino/Graphics/Mesh/Mesh.h>
 #include "../Graphics/GraphicsManager.h"
 #include "../Graphics/Device/DirectX9/DX9Module.h"
 #include "../Graphics/Device/DirectX9/DX9GraphicsDevice.h"

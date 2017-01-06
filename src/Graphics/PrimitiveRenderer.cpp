@@ -88,7 +88,6 @@ PrimitiveRendererCore::PrimitiveRendererCore()
 	, m_renderer(nullptr)
 	, m_vertexBuffer(nullptr)
 	, m_indexBuffer(nullptr)
-	, m_vertexCacheUsed(0)
 	, m_mode(PrimitiveRendererMode::TriangleList)
 {
 }
@@ -111,11 +110,8 @@ void PrimitiveRendererCore::Initialize(GraphicsManager* manager)
 	m_vertexBuffer = device->CreateVertexBuffer(sizeof(Vertex) * DefaultFaceCount * 4, nullptr, ResourceUsage::Dynamic);
 	m_indexBuffer = device->CreateIndexBuffer(DefaultFaceCount * 6, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 
-	m_vertexCache.Resize(DefaultFaceCount * 4);
-	m_vertexCacheUsed = 0;
+	m_vertexCache.Reserve(DefaultFaceCount * 4);
 	m_indexCache.Reserve(DefaultFaceCount * 6);
-
-	m_vertexStride = sizeof(Vertex);
 }
 
 //------------------------------------------------------------------------------
@@ -134,7 +130,7 @@ void PrimitiveRendererCore::DrawLine(const Vector3& from, const Color& fromColor
 //------------------------------------------------------------------------------
 void PrimitiveRendererCore::DrawSquare(const DrawSquareData& data)
 {
-	uint16_t i = GetCurrentVertexCount();
+	uint16_t i = m_vertexCache.GetCount();
 	m_indexCache.Add(i + 0);
 	m_indexCache.Add(i + 1);
 	m_indexCache.Add(i + 2);
@@ -153,10 +149,10 @@ void PrimitiveRendererCore::Flush()
 {
 	// サイズが足りなければ再作成
 	auto* device = m_manager->GetGraphicsDevice();
-	if (m_vertexBuffer->GetByteCount() < m_vertexCacheUsed)
+	if (m_vertexBuffer->GetByteCount() < m_vertexCache.GetBufferUsedByteCount())
 	{
 		LN_SAFE_RELEASE(m_vertexBuffer);
-		m_vertexBuffer = device->CreateVertexBuffer(m_vertexCacheUsed, nullptr, ResourceUsage::Dynamic);
+		m_vertexBuffer = device->CreateVertexBuffer(m_vertexCache.GetBufferUsedByteCount(), nullptr, ResourceUsage::Dynamic);
 	}
 	if (m_indexBuffer->GetByteCount() < m_indexCache.GetBufferUsedByteCount())
 	{
@@ -165,7 +161,7 @@ void PrimitiveRendererCore::Flush()
 	}
 
 	// 描画する
-	m_vertexBuffer->SetSubData(0, m_vertexCache.GetConstData(), m_vertexCacheUsed);
+	m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
 	m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
 
 	{
@@ -180,32 +176,34 @@ void PrimitiveRendererCore::Flush()
 		{
 			m_renderer->SetVertexDeclaration(m_manager->GetDefaultVertexDeclaration()->GetDeviceObject());
 			m_renderer->SetVertexBuffer(0, m_vertexBuffer);
-			m_renderer->DrawPrimitive(PrimitiveType_LineList, 0, GetCurrentVertexCount() / 2);
+			m_renderer->DrawPrimitive(PrimitiveType_LineList, 0, m_vertexCache.GetCount() / 2);
 		}
 	}
 
 	// キャッシュクリア
-	m_vertexCacheUsed = 0;
+	m_vertexCache.Clear();
 	m_indexCache.Clear();
+}
+
+//------------------------------------------------------------------------------
+void PrimitiveRendererCore::RequestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex)
+{
+	assert(vb != nullptr);
+	assert(ib != nullptr);
+	*outBeginVertexIndex = m_vertexCache.GetCount();
+	*vb = m_vertexCache.Request(vertexCount);
+	*ib = m_indexCache.Request(indexCount);
 }
 
 //------------------------------------------------------------------------------
 void PrimitiveRendererCore::AddVertex(const Vector3& pos, const Vector2& uv, const Color& color)
 {
-	uint32_t size = sizeof(Vertex);
-	if (m_vertexCacheUsed + size >= m_vertexCache.GetSize()) {
-		m_vertexCache.Resize(m_vertexCache.GetSize() * 2);
-	}
-
-	byte_t* data = m_vertexCache.GetData();
-
-	Vertex* v = (Vertex*)&data[m_vertexCacheUsed];
-	v->position = pos;
-	v->uv = uv;
-	v->color = color;
-	v->normal = -Vector3::UnitZ;
-
-	m_vertexCacheUsed += size;
+	Vertex v;
+	v.position = pos;
+	v.uv = uv;
+	v.color = color;
+	v.normal = -Vector3::UnitZ;
+	m_vertexCache.Add(v);
 }
 
 //==============================================================================

@@ -192,7 +192,6 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/GraphicsResourceObject.h
 	include/Lumino/Graphics/IndexBuffer.h
 	include/Lumino/Graphics/Material.h
-	include/Lumino/Graphics/Mesh.h
 	include/Lumino/Graphics/PerlinNoise.h
 	include/Lumino/Graphics/Renderer.h
 	include/Lumino/Graphics/Rendering.h
@@ -232,7 +231,6 @@ set(LN_SOURCES_Graphics
 	src/Graphics/IndexBuffer.cpp
 	src/Graphics/Internal.h
 	src/Graphics/Material.cpp
-	src/Graphics/Mesh.cpp
 	src/Graphics/MeshRendererProxy.cpp
 	src/Graphics/MeshRendererProxy.h
 	src/Graphics/NanoVGRenderer.cpp
@@ -312,7 +310,10 @@ set(LN_SOURCES_Graphics_Text
 	src/Graphics/Text/TextRenderer.h
 )
 set(LN_SOURCES_Graphics_Mesh
+	include/Lumino/Graphics/Mesh/Mesh.h
 	include/Lumino/Graphics/Mesh/SkinnedMeshModel.h
+	src/Graphics/Mesh/Mesh.cpp
+	src/Graphics/Mesh/MeshFactory.h
 	src/Graphics/Mesh/SkinnedMeshModel.cpp
 )
 

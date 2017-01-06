@@ -3,9 +3,11 @@
 #include <Lumino/Graphics/Common.h>
 #include <Lumino/Graphics/ContextInterface.h>
 #include <Lumino/Graphics/Text/Font.h>
+#include "RenderingCommand.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
+struct Vertex;
 
 namespace detail
 {
@@ -36,17 +38,16 @@ public:
 	void DrawSquare(const DrawSquareData& data);
 	void Flush();
 
+	void RequestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex);
+
 private:
 	void AddVertex(const Vector3& pos, const Vector2& uv, const Color& color);
-	int GetCurrentVertexCount() const { return m_vertexCacheUsed / m_vertexStride; }
 
 	GraphicsManager*		m_manager;
 	Driver::IRenderer*		m_renderer;
 	Driver::IVertexBuffer*	m_vertexBuffer;
 	Driver::IIndexBuffer*	m_indexBuffer;
-	ByteBuffer				m_vertexCache;
-	size_t					m_vertexCacheUsed;
-	size_t					m_vertexStride;
+	CacheBuffer<Vertex>		m_vertexCache;
 	CacheBuffer<uint16_t>	m_indexCache;
 	PrimitiveRendererMode	m_mode;
 };
@@ -70,6 +71,28 @@ public:
 
 	void DrawRectangle(const RectF& rect);
 
+
+	template<class TFactory>
+	void DrawMeshFromFactory(const TFactory& factory, PrimitiveRendererMode mode)
+	{
+		SetPrimitiveRendererMode(mode);
+		CheckUpdateState();
+		PrimitiveRendererCore::DrawSquareData data;
+
+		LN_ENQUEUE_RENDER_COMMAND_2(
+			DrawMeshFromFactory, m_manager,
+			PrimitiveRendererCore*, m_core,
+			TFactory, factory,
+			{
+				Vertex* vb;
+				uint16_t* ib;
+				uint16_t beginVertexIndex;
+				m_core->RequestBuffers(factory.GetVertexCount(), factory.GetIndexCount(), &vb, &ib, &beginVertexIndex);
+				factory.Generate(vb, ib, beginVertexIndex);
+			});
+
+		m_flushRequested = true;
+	}
 
 
 	virtual bool IsStandaloneShader() const;

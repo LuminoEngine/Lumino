@@ -398,11 +398,17 @@ public:
 
 	void Add(const T& value)
 	{
-		if (m_count >= m_capacity) {
-			Reserve(m_capacity * 2);
-		}
+		TryGlow(m_count + 1);
 		memcpy(&m_buffer[sizeof(T) * m_count], &value, sizeof(T));
 		m_count++;
+	}
+
+	T* Request(int count)
+	{
+		TryGlow(m_count + count);
+		size_t begin = GetBufferUsedByteCount();
+		m_count += count;
+		return reinterpret_cast<T*>(m_buffer.GetData() + begin);
 	}
 
 	void Clear()
@@ -417,8 +423,15 @@ public:
 	byte_t* GetBuffer() { return m_buffer.GetData(); }
 	size_t GetBufferUsedByteCount() { return m_count * sizeof(T); }
 
-
 private:
+	void TryGlow(int requestCount)
+	{
+		if (m_count + requestCount > m_capacity)
+		{
+			Reserve(m_capacity * 2);
+		}
+	}
+
 	ByteBuffer	m_buffer;
 	int			m_capacity;
 	int			m_count;

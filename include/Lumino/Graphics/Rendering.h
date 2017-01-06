@@ -128,22 +128,21 @@ private:
 class DrawElement
 {
 public:
-	Matrix				transform;
 	int					batchIndex;
 	DrawingSectionId	drawingSectionId;
 	detail::Sphere		boundingSphere;		// 位置はワールド座標
 	int					subsetIndex;
-	//ZSortDistanceBase	zSortDistanceBase;
 	float				zDistance;
 	DrawElementMetadata	metadata;
 
 	DrawElement();
 	virtual ~DrawElement();
 
+	const Matrix& GetTransform() const { return m_transform; }
+
 	virtual void MakeElementInfo(const CameraInfo& cameraInfo, ElementInfo* outInfo);
 	virtual void MakeSubsetInfo(CombinedMaterial* material, SubsetInfo* outInfo);
 
-	//void Draw(InternalContext* context, RenderingPass2* pass);
 	virtual void DrawSubset(InternalContext* context/*, int subsetIndex*/) = 0;
 	const detail::Sphere& GetBoundingSphere() const { return boundingSphere; }
 
@@ -151,6 +150,14 @@ public:
 	void MakeBoundingSphere(const Vector3& minPos, const Vector3& maxPos);
 
 	virtual DynamicLightInfo** GetAffectedDynamicLightInfos();
+
+protected:
+	void OnJoindDrawList(const Matrix& transform);
+	
+private:
+	Matrix	m_transform;
+
+	friend class DrawList;
 };
 
 class LightingDrawElement
@@ -521,7 +528,7 @@ public:
 		const Vector3& position4, const Vector2& uv4, const Color& color4/*,
 		ShaderPass* shaderPass*/);
 
-	void DrawBox();
+	void DrawBox(const Box& box);
 
 	void DrawMesh(MeshResource* mesh, int subsetIndex, Material* material);
 	void DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material);

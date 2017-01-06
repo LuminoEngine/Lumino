@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include "Common.h"
-#include "../Graphics/Mesh.h"
+#include "../Graphics/Mesh/Mesh.h"
 
 LN_NAMESPACE_BEGIN
 class DrawList;

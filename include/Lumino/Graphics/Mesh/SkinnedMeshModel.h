@@ -2,7 +2,7 @@
 #pragma once
 #include "../../src/Animation/AnimationState.h"		//  TODO
 #include "../../src/Animation/Animator.h"		//  TODO
-#include "../Mesh.h"
+#include "Mesh.h"
 
 LN_NAMESPACE_BEGIN
 class Animator;

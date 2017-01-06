@@ -1,5 +1,5 @@
 ﻿#include <TestConfig.h>
-#include <Lumino/Graphics/Mesh.h>
+#include <Lumino/Graphics/Mesh/Mesh.h>
 #include "../../../src/Graphics/GraphicsManager.h"
 
 
@@ -165,6 +165,27 @@ TEST_F(Test_Graphics_Rendering, DrawSquarePrimitive)
 	}
 }
 
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_Rendering, DrawBox)
+{
+	ScopedCameraPosition cp(5, 5, -5);
+	{
+		Engine::BeginFrameUpdate();	// update camera transform
+		if (Engine::BeginRendering())
+		{
+			Engine::Render();
+			auto r = Engine::GetDefault3DLayer()->GetRenderer();
+			r->DrawBox(Box(1));
+			r->SetTransform(Matrix::MakeTranslation(3, 0, 0));
+			r->DrawBox(Box(2));
+			r->SetTransform(Matrix::MakeRotationY(Math::PI / 4) * Matrix::MakeTranslation(-3, 0, 0));
+			r->DrawBox(Box(2));
+			Engine::EndRendering();
+		}
+		Engine::EndFrameUpdate();
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawBox1.png"), 95));
+	}
+}
 
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Rendering, DrawMesh)
