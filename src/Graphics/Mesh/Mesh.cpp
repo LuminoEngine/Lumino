@@ -399,7 +399,6 @@ void MeshResource::Clear()
 void MeshResource::AddSquare(const Vertex& v1, const Vertex& v2, const Vertex& v3, const Vertex& v4)
 {
 	int beginIndex = GetVertexCount();
-
 	Vertex* v = (Vertex*)RequestVertexBufferForAdditional(4, VB_BasicVertices);
 	v[0] = v1;
 	v[1] = v2;
@@ -425,8 +424,18 @@ void MeshResource::AddSquare(const Vertex* virtices)
 void MeshResource::AddLine(const Vertex& v1, const Vertex& v2)
 {
 	LN_FAIL_CHECK_STATE(!m_attributes.IsEmpty()) return;
-	LN_FAIL_CHECK_STATE(m_attributes.GetLast().primitiveType != PrimitiveType_LineList) return;
-	
+	LN_FAIL_CHECK_STATE(m_attributes.GetLast().primitiveType == PrimitiveType_LineList) return;
+
+	int beginIndex = GetVertexCount();
+	Vertex* v = (Vertex*)RequestVertexBufferForAdditional(2, VB_BasicVertices);
+	v[0] = v1;
+	v[1] = v2;
+
+	uint16_t* i = RequestIndexBufferForAdditional(2);
+	i[0] = beginIndex + 0;
+	i[1] = beginIndex + 1;
+
+	m_attributes.GetLast().PrimitiveNum += 1;
 }
 
 //------------------------------------------------------------------------------

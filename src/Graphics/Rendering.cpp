@@ -1547,11 +1547,12 @@ void DrawList::DrawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Mat
 	public:
 		RefPtr<MeshResource>	mesh;
 		int startIndex;
-		int triangleCount;
+		int primitiveCount;
+		PrimitiveType primitiveType;
 
 		virtual void DrawSubset(detail::InternalContext* context) override
 		{
-			context->BeginMeshRenderer()->DrawMesh(mesh, startIndex, triangleCount);
+			context->BeginMeshRenderer()->DrawMesh(mesh, startIndex, primitiveCount, primitiveType);
 		}
 	};
 
@@ -1563,7 +1564,8 @@ void DrawList::DrawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Mat
 	e->subsetIndex = subsetIndex;
 	e->mesh = mesh;
 	e->startIndex = attr.StartIndex;
-	e->triangleCount = attr.PrimitiveNum;
+	e->primitiveCount = attr.PrimitiveNum;
+	e->primitiveType = attr.primitiveType;
 	//e->boundingSphere = ;	// TODO
 }
 
@@ -1580,11 +1582,12 @@ void DrawList::DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Ma
 	public:
 		RefPtr<StaticMeshModel>	mesh;
 		int startIndex;
-		int triangleCount;
+		int primitiveCount;
+		PrimitiveType primitiveType;
 
 		virtual void DrawSubset(detail::InternalContext* context) override
 		{
-			context->BeginMeshRenderer()->DrawMesh(mesh->GetMeshResource(), startIndex, triangleCount);
+			context->BeginMeshRenderer()->DrawMesh(mesh->GetMeshResource(), startIndex, primitiveCount, primitiveType);
 		}
 	};
 	MeshAttribute attr;
@@ -1595,7 +1598,8 @@ void DrawList::DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Ma
 	e->subsetIndex = subsetIndex;
 	e->mesh = mesh;
 	e->startIndex = attr.StartIndex;
-	e->triangleCount = attr.PrimitiveNum;
+	e->primitiveCount = attr.PrimitiveNum;
+	e->primitiveType = attr.primitiveType;
 	//e->boundingSphere = ;	// TODO
 }
 
