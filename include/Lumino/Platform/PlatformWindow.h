@@ -82,7 +82,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	virtual void OnPlatformEvent(const PlatformEventArgs& e);
 
-	typedef SortedArray<int, IEventListener*>	EventListenerList;
+	typedef List<std::pair<int, IEventListener*>>	EventListenerList;
 
 	WindowManagerBase*		m_windowManager;
 	EventListenerList		m_listenerEntryArray;

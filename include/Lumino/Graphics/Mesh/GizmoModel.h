@@ -4,7 +4,7 @@
 LN_NAMESPACE_BEGIN
 class DrawList;
 
-namespace detail {
+namespace tr {
 class GizmoModel;
 using GizmoModelPtr = RefPtr<GizmoModel>;
 
@@ -52,7 +52,7 @@ LN_INTERNAL_ACCESS:
 	
 	GizmoModel();
 	virtual ~GizmoModel();
-	void Initialize(GraphicsManager* manager);
+	void Initialize(ln::detail::GraphicsManager* manager);
 	void MakeScreenFactor();
 	
 	OperationType GetDirectionOperationType(int x, int y);	// translation or scaling
@@ -75,6 +75,6 @@ private:
 	RefPtr<Material>		m_tmat;
 };
 
-} // namespace detail
+} // namespace tr
 LN_NAMESPACE_END
 

@@ -331,6 +331,12 @@ void CameraViewportLayer::ExecuteDrawListRendering(RenderTargetTexture* renderTa
 	m_renderer->EndFrame();
 }
 
+//------------------------------------------------------------------------------
+bool CameraViewportLayer::OnPlatformEvent(const PlatformEventArgs& e)
+{
+	return false;
+}
+
 //==============================================================================
 // CameraBehavior
 //==============================================================================

@@ -2,17 +2,17 @@
 #include "../Internal.h"
 #include <Lumino/Graphics/Material.h>
 #include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Graphics/Mesh/GizmoModel.h>
 #include "../GraphicsManager.h"
-#include "GizmoModel.h"
 
 LN_NAMESPACE_BEGIN
-namespace detail {
+namespace tr {
 
 //------------------------------------------------------------------------------
 GizmoModelPtr GizmoModel::Create()
 {
 	auto ptr = GizmoModelPtr::MakeRef();
-	ptr->Initialize(detail::GraphicsManager::GetInstance());
+	ptr->Initialize(ln::detail::GraphicsManager::GetInstance());
 	return ptr;
 }
 
@@ -30,7 +30,7 @@ GizmoModel::~GizmoModel()
 }
 
 //------------------------------------------------------------------------------
-void GizmoModel::Initialize(GraphicsManager* manager)
+void GizmoModel::Initialize(ln::detail::GraphicsManager* manager)
 {
 	m_tmat = RefPtr<Material>::MakeRef();
 	m_tmat->Initialize();
@@ -204,6 +204,6 @@ void GizmoModel::IntersectsLocalPlanes(int x, int y, bool* xz, Vector3* ptXZ, bo
 	*localViewRay = ray;
 }
 
-} // namespace detail
+} // namespace tr
 LN_NAMESPACE_END
 

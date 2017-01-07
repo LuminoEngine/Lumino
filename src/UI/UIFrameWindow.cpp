@@ -96,6 +96,7 @@ UIFrameWindow::UIFrameWindow()
 //------------------------------------------------------------------------------
 UIFrameWindow::~UIFrameWindow()
 {
+	m_platformWindow->DetachEventListener(this);
 	LN_SAFE_RELEASE(m_mainViewport);
 	LN_SAFE_RELEASE(m_swapChain);
 	LN_SAFE_RELEASE(m_platformWindow);
@@ -111,6 +112,8 @@ void UIFrameWindow::Initialize(detail::UIManager* manager, PlatformWindow* platf
 	LN_REFOBJ_SET(m_platformWindow, platformWindow);
 	LN_REFOBJ_SET(m_swapChain, swapChain);
 
+	m_platformWindow->AttachEventListener(this, 0);
+
 	// MainViewport
 	m_mainViewport = LN_NEW Viewport();
 	m_mainViewport->Initialize(m_manager->GetGraphicsManager());
@@ -122,6 +125,12 @@ void UIFrameWindow::Initialize(detail::UIManager* manager, PlatformWindow* platf
 
 	// SwapChain のサイズを Viewport へ通知
 	UpdateViewportTransform();
+}
+
+//------------------------------------------------------------------------------
+bool UIFrameWindow::OnEvent(const PlatformEventArgs& e)
+{
+	return m_mainViewport->DoPlatformEvent(e);
 }
 
 //------------------------------------------------------------------------------

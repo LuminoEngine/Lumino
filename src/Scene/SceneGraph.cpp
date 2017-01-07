@@ -81,7 +81,7 @@ bool SceneGraph::InjectMouseMove(int x, int y)
 			camera->GetCameraBehavior()->InjectMouseMove(x, y);
 		}
 	}
-	return true;
+	return false;
 }
 
 //------------------------------------------------------------------------------

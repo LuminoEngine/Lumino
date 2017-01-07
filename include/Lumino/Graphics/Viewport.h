@@ -8,6 +8,7 @@
 LN_NAMESPACE_BEGIN
 namespace detail { class InternalRenderer; }
 namespace detail { class RenderingPass2; }
+struct PlatformEventArgs;
 class DrawList;
 
 class RenderingCompositionContext
@@ -44,6 +45,9 @@ public:
 
 	virtual DrawList* GetRenderer() = 0;
 
+protected:
+	virtual bool OnPlatformEvent(const PlatformEventArgs& e);
+
 LN_INTERNAL_ACCESS:
 	ViewportLayer();
 	virtual ~ViewportLayer();
@@ -68,6 +72,8 @@ private:
 	Size						m_size;
 	RefPtr<ImageEffectList>		m_imageEffects;
 	int							m_zIndex;
+
+	friend class Viewport;
 };
 
 class ViewportLayerList
@@ -108,6 +114,7 @@ LN_INTERNAL_ACCESS:	// TODO: いまはとりあえず内部用途
 
 	// call from UIFrameWindow
 	void UpdateLayersTransform(const Size& viewSize);
+	bool DoPlatformEvent(const PlatformEventArgs& e);
 	void BeginRender(Details::Renderer* renderer, const SizeI& viewSize);
 	void Render(Details::Renderer* renderer);
 	void EndRender(Details::Renderer* renderer, RenderTargetTexture* renderTarget);

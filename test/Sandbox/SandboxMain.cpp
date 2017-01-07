@@ -8,7 +8,7 @@
 #include <Lumino/UI/UIFrameWindow.h>
 #include <Lumino/UI/UIListBox.h>
 #include <Lumino/Testing/TestHelper.h>
-#include "../../src/Graphics/Mesh/GizmoModel.h"
+//#include "../../src/Graphics/Mesh/GizmoModel.h"
 using namespace ln;
 
 
@@ -504,7 +504,7 @@ void Main()
 
 
 
-	auto gizmo = detail::GizmoModel::Create();
+	//auto gizmo = detail::GizmoModel::Create();
 
 	while (!Engine::IsEndRequested())
 	{
@@ -513,7 +513,7 @@ void Main()
 		{
 			Engine::Render();
 
-			gizmo->Render(Engine::GetDefault3DLayer()->GetRenderer());
+			//gizmo->Render(Engine::GetDefault3DLayer()->GetRenderer());
 
 			Engine::EndRendering();
 		}

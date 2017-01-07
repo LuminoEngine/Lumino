@@ -310,10 +310,10 @@ set(LN_SOURCES_Graphics_Text
 	src/Graphics/Text/TextRenderer.h
 )
 set(LN_SOURCES_Graphics_Mesh
+	include/Lumino/Graphics/Mesh/GizmoModel.h
 	include/Lumino/Graphics/Mesh/Mesh.h
 	include/Lumino/Graphics/Mesh/SkinnedMeshModel.h
 	src/Graphics/Mesh/GizmoModel.cpp
-	src/Graphics/Mesh/GizmoModel.h
 	src/Graphics/Mesh/Mesh.cpp
 	src/Graphics/Mesh/MeshFactory.h
 	src/Graphics/Mesh/SkinnedMeshModel.cpp
