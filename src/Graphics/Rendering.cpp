@@ -1320,7 +1320,7 @@ void DrawList::DrawBox(const Box& box)
 		{
 			auto* r = context->BeginPrimitiveRenderer();
 			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
-			r->Flush();
+			//r->Flush();
 		}
 	};
 	auto* e = ResolveDrawElement<DrawBoxElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, nullptr);
@@ -1332,7 +1332,7 @@ void DrawList::DrawBox(const Box& box)
 }
 
 //------------------------------------------------------------------------------
-void DrawList::DrawCylinder(float radius, float	height, int slices, int stacks)
+void DrawList::DrawCylinder(float radius, float	height, int slices, int stacks, const Color& color, const Matrix& localTransform)
 {
 	class DrawCylinderElement : public detail::LightingDrawElement	// TODO: LightingDrawElement は忘れやすい。デフォルトありでいいと思う
 	{
@@ -1343,11 +1343,11 @@ void DrawList::DrawCylinder(float radius, float	height, int slices, int stacks)
 		{
 			auto* r = context->BeginPrimitiveRenderer();
 			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
-			r->Flush();
+			//r->Flush();
 		}
 	};
 	auto* e = ResolveDrawElement<DrawCylinderElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, nullptr);
-	e->factory.Initialize(radius, height, slices, stacks);
+	e->factory.Initialize(radius, height, slices, stacks, localTransform, color);
 
 	//e->boundingSphere.center = center;
 	e->boundingSphere.radius = height;	// TODO

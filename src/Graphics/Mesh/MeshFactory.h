@@ -16,6 +16,14 @@ public:
 		Math::SinCos(angle, &dx, &dz);
 		return Vector3(dx, 0, dz);
 	}
+
+	static void Transform(Vertex* begin, Vertex* end, const Matrix& transform)
+	{
+		for (Vertex* v = begin; v < end; v++)
+		{
+			v->position.TransformCoord(transform);
+		}
+	}
 };
 
 class PlaneMeshFactory
@@ -590,10 +598,12 @@ public:
 		, m_height(0)
 		, m_slices(0)
 		, m_stacks(0)
+		, m_transform()
+		, m_color(Color::White)
 	{
 	}
 
-	void Initialize(float radius, float height, int slices, int stacks)
+	void Initialize(float radius, float height, int slices, int stacks, const Matrix& transform, const Color& color)
 	{
 		LN_FAIL_CHECK_ARG(slices >= 3) return;
 		LN_FAIL_CHECK_ARG(stacks >= 1) return;
@@ -601,6 +611,8 @@ public:
 		m_height = height;
 		m_slices = slices;
 		m_stacks = stacks;
+		m_transform = transform;
+		m_color = color;
 	}
 
 	int GetVertexCount() const
@@ -634,7 +646,7 @@ public:
 				Vertex v;
 				v.position.Set(0, yu, 0);
 				v.normal = Vector3::UnitY;
-				v.color = Color::White;
+				v.color = m_color;
 				AddVertex(&vb, v);
 			}
 			// side
@@ -646,7 +658,7 @@ public:
 				v.position.y = y;
 				v.position.z = xz.z;
 				v.normal = n;
-				v.color = Color::White;
+				v.color = m_color;
 				AddVertex(&vb, v);
 				y -= yStep;
 			}
@@ -655,7 +667,7 @@ public:
 				Vertex v;
 				v.position.Set(0, yd, 0);
 				v.normal = -Vector3::UnitY;
-				v.color = Color::White;
+				v.color = m_color;
 				AddVertex(&vb, v);
 			}
 		}
@@ -680,49 +692,8 @@ public:
 			}
 		}
 
-#if 0
-		// lower base
-		y = -m_height / 2;
-		for (int iSlice = 0; iSlice < m_slices + 1; ++iSlice)
-		{
-			Vertex v;
-			v.position.Set(0, y, 0);
-			v.color = Color::White;
-			AddVertex(&vb, v);
-		}
-		// side
-		y = -m_height / 2;
-		for (int iSlice = 0; iSlice < m_slices + 1; ++iSlice)
-		{
-			Vector3 xz = MeshHelper::GetXZCirclePoint(iSlice, m_slices, m_radius);
-
-			for (int iStack = 0; iStack < m_stacks + 1; ++iStack)
-			{
-				Vertex v;
-				v.position.x = xz.x;
-				v.position.y = y;
-				v.position.z = xz.z;
-				v.color = Color::White;
-				AddVertex(&vb, v);
-			}
-		}
-		// upper base
-		y = m_height / 2;
-		for (int iSlice = 0; iSlice < m_slices + 1; ++iSlice)
-		{
-			Vertex v;
-			v.position.Set(0, y, 0);
-			v.color = Color::White;
-			AddVertex(&vb, v);
-		}
-
-		// index
-		int squares = m_slices * (m_stacks + 2);
-		for (int i = 0; i < squares; ++i)
-		{
-			AddSquareIndex(&ib, i * 4);
-		}
-#endif
+		if (!m_transform.IsIdentity())
+			MeshHelper::Transform(outVertices, vb, m_transform);
 	}
 
 	static void AddVertex(Vertex** vb, const Vertex& v)
@@ -731,22 +702,14 @@ public:
 		(*vb)++;
 	}
 
-	//static void AddSquareIndex(uint16_t** ib, uint16_t begin)
-	//{
-	//	(*ib)[0] = begin + 0;
-	//	(*ib)[1] = begin + 1;
-	//	(*ib)[2] = begin + 2;
-	//	(*ib)[3] = begin + 2;
-	//	(*ib)[4] = begin + 1;
-	//	(*ib)[5] = begin + 3;
-	//	(*ib) += 6;
-	//}
-
 private:
 	float	m_radius;
 	float	m_height;
 	int		m_slices;
 	int		m_stacks;
+
+	Matrix	m_transform;
+	Color	m_color;
 };
 
 } // namespace detail
