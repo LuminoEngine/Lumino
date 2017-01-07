@@ -144,6 +144,10 @@ public:
 
 	static CameraViewportLayerPtr Create(Camera* camera);
 
+
+
+	tr::GizmoModel* CreateGizmo();
+
 	// ViewportLayer interface
 	virtual DrawList* GetRenderer() override;
 	virtual void Render() override;
@@ -152,6 +156,7 @@ public:
 
 protected:
 	// ViewportLayer interface
+	virtual void UpdateTransform(const Size& viewSize) override;
 	virtual bool OnPlatformEvent(const PlatformEventArgs& e) override;
 
 LN_INTERNAL_ACCESS:

@@ -1,6 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include "SceneGraphManager.h"
+#include <Lumino/Graphics/Mesh/GizmoModel.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Camera.h>
 
@@ -277,6 +278,14 @@ CameraViewportLayer::~CameraViewportLayer()
 }
 
 //------------------------------------------------------------------------------
+tr::GizmoModel* CameraViewportLayer::CreateGizmo()
+{
+	m_gizmo = RefPtr<tr::GizmoModel>::MakeRef();
+	m_gizmo->Initialize(m_hostingCamera->GetOwnerSceneGraph()->GetManager()->GetGraphicsManager());
+	return m_gizmo;
+}
+
+//------------------------------------------------------------------------------
 DrawList* CameraViewportLayer::GetRenderer()
 {
 	return m_renderer;
@@ -297,6 +306,11 @@ void CameraViewportLayer::Render()
 
 	//m_hostingCamera->GetOwnerSceneGraph()->Render(context, m_hostingCamera);
 	m_hostingCamera->GetOwnerSceneGraph()->Render2(m_renderer, m_hostingCamera);
+
+	if (m_gizmo != nullptr)
+	{
+		m_gizmo->Render(m_renderer);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -332,8 +346,34 @@ void CameraViewportLayer::ExecuteDrawListRendering(RenderTargetTexture* renderTa
 }
 
 //------------------------------------------------------------------------------
+void CameraViewportLayer::UpdateTransform(const Size& viewSize)
+{
+	ViewportLayer::UpdateTransform(viewSize);
+
+	if (m_gizmo != nullptr)
+	{
+		m_gizmo->SetViewInfo(
+			m_hostingCamera->GetCombinedGlobalMatrix().GetPosition(),
+			m_hostingCamera->GetViewMatrix(),
+			m_hostingCamera->GetProjectionMatrix(),
+			SizeI(viewSize.width, viewSize.height));
+	}
+}
+
+//------------------------------------------------------------------------------
 bool CameraViewportLayer::OnPlatformEvent(const PlatformEventArgs& e)
 {
+	if (m_gizmo != nullptr)
+	{
+		switch (e.type)
+		{
+			case PlatformEventType::MouseMove:
+				m_gizmo->InjectMouseMove(e.mouse.x, e.mouse.y);
+				break;
+			default:
+				break;
+		}
+	}
 	return false;
 }
 

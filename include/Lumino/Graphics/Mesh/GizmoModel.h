@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 LN_NAMESPACE_BEGIN
@@ -23,8 +23,10 @@ public:
 
 public:
 	void SetGizmoType(GizmoType type);
+
+	void Setup(const Matrix& parentSpaceTransform, const Matrix& targetInitialTransform);
 	
-	void SetTargetTransform(const Matrix& transform);
+	//void SetTargetTransform(const Matrix& transform);
 	const Matrix& GetTargetTransform() const;
 	
 	void SetViewInfo(const Vector3& viewPosition, const Matrix& view, const Matrix& proj, const SizeI& viewPixelSize);
@@ -63,8 +65,9 @@ LN_INTERNAL_ACCESS:
 private:
 	//RefPtr<MeshResource>	m_mesh;
 	GizmoType				m_gizmoType;
-	Matrix					m_targetTransform;	// Gizmo ‚É‚æ‚Á‚Ä‘€ì‚³‚ê‚é Transform
-	Matrix					m_gizmoTransform;	// Gizmo ©‘Ì‚Ì Transform (‹“_‹——£‚É‚æ‚éƒXƒP[ƒŠƒ“ƒO‚ÍŠÜ‚Ü‚ê‚È‚¢)
+	//Matrix					m_parentSpaceTransform;
+	Matrix					m_targetTransform;	// Gizmo ã«ã‚ˆã£ã¦æ“ä½œã•ã‚Œã‚‹ Transform
+	Matrix					m_gizmoTransform;	// Gizmo è‡ªä½“ã® Transform (è¦–ç‚¹è·é›¢ã«ã‚ˆã‚‹ã‚¹ã‚±ãƒ¼ãƒªãƒ³ã‚°ã¯å«ã¾ã‚Œãªã„)
 	Vector3					m_viewPosition;
 	Matrix					m_view;
 	Matrix					m_proj;
@@ -72,6 +75,7 @@ private:
 	float					m_screenFactor;
 	SizeI					m_viewPixelSize;
 
+	OperationType			m_operationType;
 	RefPtr<Material>		m_tmat;
 };
 

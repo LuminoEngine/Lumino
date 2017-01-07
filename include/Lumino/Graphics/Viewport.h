@@ -48,11 +48,11 @@ public:
 protected:
 	virtual bool OnPlatformEvent(const PlatformEventArgs& e);
 
-LN_INTERNAL_ACCESS:
+LN_PROTECTED_INTERNAL_ACCESS:
 	ViewportLayer();
 	virtual ~ViewportLayer();
 	void SetOwner(Viewport* owner) { m_owner = owner; }
-	void UpdateTransform(const Size& viewSize);
+	virtual void UpdateTransform(const Size& viewSize);
 	void PreRender(const SizeI& ownerViewPixelSize);
 	
 //protected:

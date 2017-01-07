@@ -1,5 +1,6 @@
 ﻿
 #include <LuminoEngine.h>
+#include <Lumino/Graphics/Mesh/GizmoModel.h>
 #include <Lumino/Scene/MeshModelObject.h>
 #include <Lumino/Scene/StaticMesh.h>
 #include <Lumino/Scene/Light.h>
@@ -505,6 +506,9 @@ void Main()
 
 
 	//auto gizmo = detail::GizmoModel::Create();
+
+	auto gizmo = static_cast<CameraViewportLayer*>(Engine::GetDefault3DLayer())->CreateGizmo();
+	gizmo->Setup(Matrix::Identity, Matrix::MakeTranslation(1, 0, 0));
 
 	while (!Engine::IsEndRequested())
 	{
