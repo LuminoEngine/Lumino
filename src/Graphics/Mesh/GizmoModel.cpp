@@ -89,14 +89,12 @@ bool GizmoModel::InjectMouseUp(int x, int y)
 //------------------------------------------------------------------------------
 void GizmoModel::Render(DrawList* context)
 {
-
-	//context->DrawBox(Box(1));
-
-	float r = 0.1f;
+	float r = 0.025f;
 	float d = 1.0f;
 	context->DrawCylinder(r, d, 8, 1, Color::Red, Matrix::MakeRotationZ(Math::PIDiv2) * Matrix::MakeTranslation(d / 2, 0, 0));
 	context->DrawCylinder(r, d, 8, 1, Color::Green, Matrix::MakeTranslation( 0, d / 2,0));
 	context->DrawCylinder(r, d, 8, 1, Color::Blue, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(0, 0, d / 2));
+	context->DrawSphere(0.1f, 8, 8, Color::Yellow);
 }
 
 //------------------------------------------------------------------------------

@@ -204,7 +204,7 @@ TEST_F(Test_Graphics_Rendering, DrawSphere)
 			Engine::EndRendering();
 		}
 		Engine::EndFrameUpdate();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSphere1.png"), 95, true));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSphere1.png"), 95));
 	}
 }
 

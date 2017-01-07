@@ -277,16 +277,159 @@ Color32 Color32::FromString(const StringRef& str)
 //==============================================================================
 const Color Color::Transparency = Color(0.0, 0.0, 0.0, 0.0);
 const Color Color::TransparencyWhite = Color(1.0, 1.0, 1.0, 0.0);
-const Color Color::Black = Color(0.0, 0.0, 0.0, 1.0);
-const Color Color::White = Color(1.0, 1.0, 1.0, 1.0);
-const Color Color::Gray = Color(0.5, 0.5, 0.5, 1.0);
-const Color Color::Red = Color(1.0, 0.0, 0.0, 1.0);
-const Color Color::Green = Color(0.0, 1.0, 0.0, 1.0);
-const Color Color::Blue = Color(0.0, 0.0, 1.0, 1.0);
-const Color Color::DimGray = Color(0.25, 0.25, 0.25, 1.0);
+//const Color Color::Black = Color(0.0, 0.0, 0.0, 1.0);
+//const Color Color::White = Color(1.0, 1.0, 1.0, 1.0);
+//const Color Color::Gray = Color(0.5, 0.5, 0.5, 1.0);
+//const Color Color::Red = Color(1.0, 0.0, 0.0, 1.0);
+//const Color Color::Green = Color(0.0, 1.0, 0.0, 1.0);
+//const Color Color::Blue = Color(0.0, 0.0, 1.0, 1.0);
+//const Color Color::DimGray = Color(0.25, 0.25, 0.25, 1.0);
+//
+const Color Color::AliceBlue(0.941176, 0.972549, 1);
+const Color Color::AntiqueWhite(0.980392, 0.921569, 0.843137);
+const Color Color::Aqua(0, 1, 1);
+const Color Color::Aquamarine(0.498039, 1, 0.831373);
+const Color Color::Azure(0.941176, 1, 1);
+const Color Color::Beige(0.960784, 0.960784, 0.862745);
+const Color Color::Bisque(1, 0.894118, 0.768627);
+const Color Color::Black(0, 0, 0);
+const Color Color::BlanchedAlmond(1, 0.921569, 0.803922);
+const Color Color::Blue(0, 0, 1);
+const Color Color::BlueViolet(0.541176, 0.168627, 0.886275);
+const Color Color::Brown(0.647059, 0.164706, 0.164706);
+const Color Color::BurlyWood(0.870588, 0.721569, 0.529412);
+const Color Color::CadetBlue(0.372549, 0.619608, 0.627451);
+const Color Color::Chartreuse(0.498039, 1, 0);
+const Color Color::Chocolate(0.823529, 0.411765, 0.117647);
+const Color Color::Coral(1, 0.498039, 0.313725);
+const Color Color::CornflowerBlue(0.392157, 0.584314, 0.929412);
+const Color Color::Cornsilk(1, 0.972549, 0.862745);
+const Color Color::Crimson(0.862745, 0.0784314, 0.235294);
+const Color Color::Cyan(0, 1, 1);
+const Color Color::DarkBlue(0, 0, 0.545098);
+const Color Color::DarkCyan(0, 0.545098, 0.545098);
+const Color Color::DarkGoldenrod(0.721569, 0.52549, 0.0431373);
+const Color Color::DarkGray(0.662745, 0.662745, 0.662745);
+const Color Color::DarkGreen(0, 0.392157, 0);
+const Color Color::DarkKhaki(0.741176, 0.717647, 0.419608);
+const Color Color::DarkMagenta(0.545098, 0, 0.545098);
+const Color Color::DarkOliveGreen(0.333333, 0.419608, 0.184314);
+const Color Color::DarkOrange(1, 0.54902, 0);
+const Color Color::DarkOrchid(0.6, 0.196078, 0.8);
+const Color Color::DarkRed(0.545098, 0, 0);
+const Color Color::DarkSalmon(0.913725, 0.588235, 0.478431);
+const Color Color::DarkSeaGreen(0.560784, 0.737255, 0.560784);
+const Color Color::DarkSlateBlue(0.282353, 0.239216, 0.545098);
+const Color Color::DarkSlateGray(0.184314, 0.309804, 0.309804);
+const Color Color::DarkTurquoise(0, 0.807843, 0.819608);
+const Color Color::DarkViolet(0.580392, 0, 0.827451);
+const Color Color::DeepPink(1, 0.0784314, 0.576471);
+const Color Color::DeepSkyBlue(0, 0.74902, 1);
+const Color Color::DimGray(0.411765, 0.411765, 0.411765);
+const Color Color::DodgerBlue(0.117647, 0.564706, 1);
+const Color Color::Firebrick(0.698039, 0.133333, 0.133333);
+const Color Color::FloralWhite(1, 0.980392, 0.941176);
+const Color Color::ForestGreen(0.133333, 0.545098, 0.133333);
+const Color Color::Fuchsia(1, 0, 1);
+const Color Color::Gainsboro(0.862745, 0.862745, 0.862745);
+const Color Color::GhostWhite(0.972549, 0.972549, 1);
+const Color Color::Gold(1, 0.843137, 0);
+const Color Color::Goldenrod(0.854902, 0.647059, 0.12549);
+const Color Color::Gray(0.5, 0.5, 0.5);
+const Color Color::Green(0, 0.5, 0);
+const Color Color::GreenYellow(0.678431, 1, 0.184314);
+const Color Color::Honeydew(0.941176, 1, 0.941176);
+const Color Color::HotPink(1, 0.411765, 0.705882);
+const Color Color::IndianRed(0.803922, 0.360784, 0.360784);
+const Color Color::Indigo(0.294118, 0, 0.509804);
+const Color Color::Ivory(1, 1, 0.941176);
+const Color Color::Khaki(0.941176, 0.901961, 0.54902);
+const Color Color::Lavender(0.901961, 0.901961, 0.980392);
+const Color Color::LavenderBlush(1, 0.941176, 0.960784);
+const Color Color::LawnGreen(0.486275, 0.988235, 0);
+const Color Color::LemonChiffon(1, 0.980392, 0.803922);
+const Color Color::LightBlue(0.678431, 0.847059, 0.901961);
+const Color Color::LightCoral(0.941176, 0.5, 0.5);
+const Color Color::LightCyan(0.878431, 1, 1);
+const Color Color::LightGoldenrodYellow(0.980392, 0.980392, 0.823529);
+const Color Color::LightGray(0.827451, 0.827451, 0.827451);
+const Color Color::LightGreen(0.564706, 0.933333, 0.564706);
+const Color Color::LightPink(1, 0.713725, 0.756863);
+const Color Color::LightSalmon(1, 0.627451, 0.478431);
+const Color Color::LightSeaGreen(0.12549, 0.698039, 0.666667);
+const Color Color::LightSkyBlue(0.529412, 0.807843, 0.980392);
+const Color Color::LightSlateGray(0.466667, 0.533333, 0.6);
+const Color Color::LightSteelBlue(0.690196, 0.768627, 0.870588);
+const Color Color::LightYellow(1, 1, 0.878431);
+const Color Color::Lime(0, 1, 0);
+const Color Color::LimeGreen(0.196078, 0.803922, 0.196078);
+const Color Color::Linen(0.980392, 0.941176, 0.901961);
+const Color Color::Magenta(1, 0, 1);
+const Color Color::Maroon(0.5, 0, 0);
+const Color Color::MediumAquamarine(0.4, 0.803922, 0.666667);
+const Color Color::MediumBlue(0, 0, 0.803922);
+const Color Color::MediumOrchid(0.729412, 0.333333, 0.827451);
+const Color Color::MediumPurple(0.576471, 0.439216, 0.858824);
+const Color Color::MediumSeaGreen(0.235294, 0.701961, 0.443137);
+const Color Color::MediumSlateBlue(0.482353, 0.407843, 0.933333);
+const Color Color::MediumSpringGreen(0, 0.980392, 0.603922);
+const Color Color::MediumTurquoise(0.282353, 0.819608, 0.8);
+const Color Color::MediumVioletRed(0.780392, 0.0823529, 0.521569);
+const Color Color::MidnightBlue(0.0980392, 0.0980392, 0.439216);
+const Color Color::MintCream(0.960784, 1, 0.980392);
+const Color Color::MistyRose(1, 0.894118, 0.882353);
+const Color Color::Moccasin(1, 0.894118, 0.709804);
+const Color Color::NavajoWhite(1, 0.870588, 0.678431);
+const Color Color::Navy(0, 0, 0.5);
+const Color Color::OldLace(0.992157, 0.960784, 0.901961);
+const Color Color::Olive(0.5, 0.5, 0);
+const Color Color::OliveDrab(0.419608, 0.556863, 0.137255);
+const Color Color::Orange(1, 0.647059, 0);
+const Color Color::OrangeRed(1, 0.270588, 0);
+const Color Color::Orchid(0.854902, 0.439216, 0.839216);
+const Color Color::PaleGoldenrod(0.933333, 0.909804, 0.666667);
+const Color Color::PaleGreen(0.596078, 0.984314, 0.596078);
+const Color Color::PaleTurquoise(0.686275, 0.933333, 0.933333);
+const Color Color::PaleVioletRed(0.858824, 0.439216, 0.576471);
+const Color Color::PapayaWhip(1, 0.937255, 0.835294);
+const Color Color::PeachPuff(1, 0.854902, 0.72549);
+const Color Color::Peru(0.803922, 0.521569, 0.247059);
+const Color Color::Pink(1, 0.752941, 0.796078);
+const Color Color::Plum(0.866667, 0.627451, 0.866667);
+const Color Color::PowderBlue(0.690196, 0.878431, 0.901961);
+const Color Color::Purple(0.5, 0, 0.5);
+const Color Color::Red(1, 0, 0);
+const Color Color::RosyBrown(0.737255, 0.560784, 0.560784);
+const Color Color::RoyalBlue(0.254902, 0.411765, 0.882353);
+const Color Color::SaddleBrown(0.545098, 0.270588, 0.0745098);
+const Color Color::Salmon(0.980392, 0.5, 0.447059);
+const Color Color::SandyBrown(0.956863, 0.643137, 0.376471);
+const Color Color::SeaGreen(0.180392, 0.545098, 0.341176);
+const Color Color::SeaShell(1, 0.960784, 0.933333);
+const Color Color::Sienna(0.627451, 0.321569, 0.176471);
+const Color Color::Silver(0.752941, 0.752941, 0.752941);
+const Color Color::SkyBlue(0.529412, 0.807843, 0.921569);
+const Color Color::SlateBlue(0.415686, 0.352941, 0.803922);
+const Color Color::SlateGray(0.439216, 0.5, 0.564706);
+const Color Color::Snow(1, 0.980392, 0.980392);
+const Color Color::SpringGreen(0, 1, 0.498039);
+const Color Color::SteelBlue(0.27451, 0.509804, 0.705882);
+const Color Color::Tan(0.823529, 0.705882, 0.54902);
+const Color Color::Teal(0, 0.5, 0.5);
+const Color Color::Thistle(0.847059, 0.74902, 0.847059);
+const Color Color::Tomato(1, 0.388235, 0.278431);
+const Color Color::Transparent(1, 1, 1);
+const Color Color::Turquoise(0.25098, 0.878431, 0.815686);
+const Color Color::Violet(0.933333, 0.509804, 0.933333);
+const Color Color::Wheat(0.960784, 0.870588, 0.701961);
+const Color Color::White(1, 1, 1);
+const Color Color::WhiteSmoke(0.960784, 0.960784, 0.960784);
+const Color Color::Yellow(1, 1, 0);
+const Color Color::YellowGreen(0.603922, 0.803922, 0.196078);
 
 static const float g_color255Table[256] =
 {
+	// [0]
 	0, 0.00392157, 0.00784314, 0.0117647, 0.0156863, 0.0196078, 0.0235294, 0.027451, 0.0313725, 0.0352941, 0.0392157, 0.0431373, 0.0470588, 0.0509804, 0.054902, 0.0588235,
 	0.0627451, 0.0666667, 0.0705882, 0.0745098, 0.0784314, 0.0823529, 0.0862745, 0.0901961, 0.0941176, 0.0980392, 0.101961, 0.105882, 0.109804, 0.113725, 0.117647, 0.121569,
 	0.12549, 0.129412, 0.133333, 0.137255, 0.141176, 0.145098, 0.14902, 0.152941, 0.156863, 0.160784, 0.164706, 0.168627, 0.172549, 0.176471, 0.180392, 0.184314,
@@ -295,7 +438,8 @@ static const float g_color255Table[256] =
 	0.313725, 0.317647, 0.321569, 0.32549, 0.329412, 0.333333, 0.337255, 0.341176, 0.345098, 0.34902, 0.352941, 0.356863, 0.360784, 0.364706, 0.368627, 0.372549,
 	0.376471, 0.380392, 0.384314, 0.388235, 0.392157, 0.396078, 0.4, 0.403922, 0.407843, 0.411765, 0.415686, 0.419608, 0.423529, 0.427451, 0.431373, 0.435294,
 	0.439216, 0.443137, 0.447059, 0.45098, 0.454902, 0.458824, 0.462745, 0.466667, 0.470588, 0.47451, 0.478431, 0.482353, 0.486275, 0.490196, 0.494118, 0.498039,
-	0.501961, 0.505882, 0.509804, 0.513725, 0.517647, 0.521569, 0.52549, 0.529412, 0.533333, 0.537255, 0.541176, 0.545098, 0.54902, 0.552941, 0.556863, 0.560784,
+	// [128]
+	0.500000, 0.505882, 0.509804, 0.513725, 0.517647, 0.521569, 0.52549, 0.529412, 0.533333, 0.537255, 0.541176, 0.545098, 0.54902, 0.552941, 0.556863, 0.560784,
 	0.564706, 0.568627, 0.572549, 0.576471, 0.580392, 0.584314, 0.588235, 0.592157, 0.596078, 0.6, 0.603922, 0.607843, 0.611765, 0.615686, 0.619608, 0.623529,
 	0.627451, 0.631373, 0.635294, 0.639216, 0.643137, 0.647059, 0.65098, 0.654902, 0.658824, 0.662745, 0.666667, 0.670588, 0.67451, 0.678431, 0.682353, 0.686275,
 	0.690196, 0.694118, 0.698039, 0.701961, 0.705882, 0.709804, 0.713725, 0.717647, 0.721569, 0.72549, 0.729412, 0.733333, 0.737255, 0.741176, 0.745098, 0.74902,
@@ -303,6 +447,7 @@ static const float g_color255Table[256] =
 	0.815686, 0.819608, 0.823529, 0.827451, 0.831373, 0.835294, 0.839216, 0.843137, 0.847059, 0.85098, 0.854902, 0.858824, 0.862745, 0.866667, 0.870588, 0.87451,
 	0.878431, 0.882353, 0.886275, 0.890196, 0.894118, 0.898039, 0.901961, 0.905882, 0.909804, 0.913725, 0.917647, 0.921569, 0.92549, 0.929412, 0.933333, 0.937255,
 	0.941176, 0.945098, 0.94902, 0.952941, 0.956863, 0.960784, 0.964706, 0.968627, 0.972549, 0.976471, 0.980392, 0.984314, 0.988235, 0.992157, 0.996078, 1,
+	// [256]
 };
 
 //------------------------------------------------------------------------------
