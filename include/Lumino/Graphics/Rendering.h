@@ -534,6 +534,8 @@ public:
 
 	void DrawBox(const Box& box);
 
+	void DrawSphere(float radius, int slices = 8, int stacks = 8, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity);
+
 	void DrawCylinder(float radius, float height, int slices = 8, int stacks = 1, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity);
 
 	void DrawCone(float radius, float height);

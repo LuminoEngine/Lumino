@@ -135,12 +135,13 @@ void MeshResource::CreateBox(const Vector3& size)
 //------------------------------------------------------------------------------
 void MeshResource::CreateSphere(float radius, int slices, int stacks, MeshCreationFlags flags)
 {
-	detail::SphereMeshFactory factory(radius, slices, stacks);
+	detail::SphereMeshFactory factory;
+	factory.Initialize(radius, slices, stacks, Color::White, Matrix::Identity);
 	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), MeshCreationFlags::None);
 
 	void* vb = TryLockVertexBuffer(VB_BasicVertices);
 	void* ib = TryLockIndexBuffer();
-	factory.Generate((Vertex*)vb, (uint16_t*)ib);
+	factory.Generate((Vertex*)vb, (uint16_t*)ib, 0);
 	PostGenerated((Vertex*)vb, ib, flags);
 	EndCreating();
 }

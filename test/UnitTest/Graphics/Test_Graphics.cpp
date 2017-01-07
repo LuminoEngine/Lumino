@@ -188,6 +188,27 @@ TEST_F(Test_Graphics_Rendering, DrawBox)
 }
 
 //------------------------------------------------------------------------------
+TEST_F(Test_Graphics_Rendering, DrawSphere)
+{
+	ScopedCameraPosition cp(3, 3, -3);
+	{
+		Engine::BeginFrameUpdate();	// update camera transform
+		if (Engine::BeginRendering())
+		{
+			Engine::Render();
+			auto context = Engine::GetDefault3DLayer()->GetRenderer();
+
+			context->DrawSphere(2, 10, 10, Color::Red);
+			context->DrawSphere(1, 4, 4, Color::Green, Matrix::MakeTranslation(2, 0, 0));
+
+			Engine::EndRendering();
+		}
+		Engine::EndFrameUpdate();
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSphere1.png"), 95, true));
+	}
+}
+
+//------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Rendering, DrawCylinder)
 {
 	ScopedCameraPosition cp(2, 2, 2);

@@ -1320,7 +1320,6 @@ void DrawList::DrawBox(const Box& box)
 		{
 			auto* r = context->BeginPrimitiveRenderer();
 			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
-			//r->Flush();
 		}
 	};
 	auto* e = ResolveDrawElement<DrawBoxElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, nullptr);
@@ -1329,6 +1328,26 @@ void DrawList::DrawBox(const Box& box)
 	Vector3 min, max;
 	box.GetMinMax(&min, &max);
 	e->MakeBoundingSphere(min, max);
+}
+
+//------------------------------------------------------------------------------
+void DrawList::DrawSphere(float radius, int slices, int stacks, const Color& color, const Matrix& localTransform)
+{
+	class DrawSphereElement : public detail::LightingDrawElement	// TODO: LightingDrawElement は忘れやすい。デフォルトありでいいと思う
+	{
+	public:
+		detail::SphereMeshFactory factory;
+
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		{
+			auto* r = context->BeginPrimitiveRenderer();
+			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
+		}
+	};
+	auto* e = ResolveDrawElement<DrawSphereElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, nullptr);
+	e->factory.Initialize(radius, slices, stacks, color, localTransform);
+	e->boundingSphere.center = Vector3::Zero;
+	e->boundingSphere.radius = radius;
 }
 
 //------------------------------------------------------------------------------
@@ -1343,18 +1362,13 @@ void DrawList::DrawCylinder(float radius, float	height, int slices, int stacks, 
 		{
 			auto* r = context->BeginPrimitiveRenderer();
 			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
-			//r->Flush();
 		}
 	};
 	auto* e = ResolveDrawElement<DrawCylinderElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, nullptr);
-	e->factory.Initialize(radius, height, slices, stacks, localTransform, color);
+	e->factory.Initialize(radius, height, slices, stacks, color, localTransform);
 
 	//e->boundingSphere.center = center;
 	e->boundingSphere.radius = height;	// TODO
-
-	//Vector3 min, max;
-	//box.GetMinMax(&min, &max);
-	//e->MakeBoundingSphere(min, max);
 }
 
 //------------------------------------------------------------------------------

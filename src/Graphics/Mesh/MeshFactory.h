@@ -372,7 +372,22 @@ private:
 	Vector3	m_size;
 };
 
+
+class MeshFactoryBase
+{
+public:
+	MeshFactoryBase()
+		: m_transform()
+		, m_color(Color::White)
+	{
+	}
+
+	Matrix	m_transform;
+	Color	m_color = Color::White;
+};
+
 class SphereMeshFactory
+	: public MeshFactoryBase
 {
 public:
 	SphereMeshFactory()
@@ -381,20 +396,17 @@ public:
 		, m_stacks(0)
 	{
 	}
-	SphereMeshFactory(float radius, int slices, int stacks)
-	{
-		Initialize(radius, slices, stacks);
-	}
 
-	void Initialize(float radius, int slices, int stacks)
+	void Initialize(float radius, int slices, int stacks, const Color& color, const Matrix& transform)
 	{
-		//if (LN_CHECKEQ_ARG(radius <= 0.0f)) return;
-		//if (LN_CHECKEQ_ARG(slices <= 1)) return;
-		//if (LN_CHECKEQ_ARG(stacks <= 1)) return;
+		LN_FAIL_CHECK_ARG(slices >= 3) return;
+		LN_FAIL_CHECK_ARG(stacks >= 2) return;
 		m_radius = radius;
 		m_slices = slices;
 		m_stacks = stacks;
 		MakeSinCosTable();
+		m_color = color;
+		m_transform = transform;
 	}
 
 	// Squashed
@@ -420,7 +432,7 @@ public:
 		float	cos;
 	};
 
-	void Generate(Vertex* outVertices, uint16_t* outIndices)
+	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
 	{
 		Vertex* v = outVertices;
 		uint16_t* i = (uint16_t*)outIndices;
@@ -469,6 +481,7 @@ public:
 				v->position = v->normal * m_radius;
 				v->uv.x = sliceUV;
 				v->uv.y = stackUV;
+				v->color = m_color;
 				++v;
 
 				sliceUV += sliceUVStep;
@@ -487,76 +500,18 @@ public:
 				int p2 = (iSlice + 0) + (iStack + 1) * (m_slices + 1);	// ┗
 				int p3 = (iSlice + 1) + (iStack + 0) * (m_slices + 1);	// ┓
 				int p4 = (iSlice + 1) + (iStack + 1) * (m_slices + 1);	// ┛
-				i[0] = p1;
-				i[1] = p2;
-				i[2] = p3;
-				i[3] = p3;
-				i[4] = p2;
-				i[5] = p4;
+				i[0] = beginIndex + p1;
+				i[1] = beginIndex + p2;
+				i[2] = beginIndex + p3;
+				i[3] = beginIndex + p3;
+				i[4] = beginIndex + p2;
+				i[5] = beginIndex + p4;
 				i += 6;
 			}
 		}
 
-#if 0
-		Face* faces = (Face*)outIndices;
-
-		float theta_step = Math::PI / m_stacks;
-		float theta = theta_step;	// XY 平面上の step
-
-		int vertex = 0;
-		int face = 0;
-
-		// top
-		vertices[vertex].normal.x = 0.0f;
-		vertices[vertex].normal.y = 0.0f;
-		vertices[vertex].normal.z = 1.0f;
-		vertices[vertex].position.x = 0.0f;
-		vertices[vertex].position.y = 0.0f;
-		vertices[vertex].position.z = m_radius;
-		vertex++;
-
-		// top faces (triangle fan)
-		for (int iSlice = 0; iSlice < m_slices; ++iSlice)
-		{
-			faces[face][0] = 0;
-			faces[face][1] = iSlice + 1;
-			faces[face][2] = iSlice;
-			face++;
-		}
-
-		// rings
-		for (int iStack = 0; iStack < m_stacks - 1; ++iStack)
-		{
-			float sin_theta = sinf(theta);
-			float cos_theta = cosf(theta);
-
-			for (int iSlice = 0; iSlice < m_slices; ++iSlice)
-			{
-				// vertex
-				vertices[vertex].normal.x = sin_theta * m_sincosTable[iSlice].cos;
-				vertices[vertex].normal.y = sin_theta * m_sincosTable[iSlice].sin;
-				vertices[vertex].normal.z = cos_theta;
-				vertices[vertex].position.x = m_radius * sin_theta * m_sincosTable[iSlice].cos;
-				vertices[vertex].position.y = m_radius * sin_theta * m_sincosTable[iSlice].sin;
-				vertices[vertex].position.z = m_radius * cos_theta;
-				vertex++;
-
-				// faces
-				if (iSlice > 0)
-				{
-					faces[face][0] = vertex_index(m_slices, iSlice - 1, iStack - 1);
-					faces[face][1] = vertex_index(m_slices, iSlice, iStack - 1);
-					faces[face][2] = vertex_index(m_slices, iSlice - 1, iStack);
-					face++;
-
-					faces[face][0] = vertex_index(m_slices, iSlice, iStack - 1);
-					faces[face][1] = vertex_index(m_slices, iSlice, iStack);
-					faces[face][2] = vertex_index(m_slices, iSlice - 1, iStack);
-					face++;
-				}
-			}
-		}
-#endif
+		if (!m_transform.IsIdentity())
+			MeshHelper::Transform(outVertices, v, m_transform);
 	}
 
 	static uint16_t vertex_index(int slices, int slice, int stack)
@@ -591,6 +546,7 @@ private:
 
 // Sphere 同様、uv 展開の都合上 ring の始点と終点、底の位置は同一。
 class CylinderMeshFactory
+	: public MeshFactoryBase
 {
 public:
 	CylinderMeshFactory()
@@ -598,12 +554,10 @@ public:
 		, m_height(0)
 		, m_slices(0)
 		, m_stacks(0)
-		, m_transform()
-		, m_color(Color::White)
 	{
 	}
 
-	void Initialize(float radius, float height, int slices, int stacks, const Matrix& transform, const Color& color)
+	void Initialize(float radius, float height, int slices, int stacks, const Color& color, const Matrix& transform)
 	{
 		LN_FAIL_CHECK_ARG(slices >= 3) return;
 		LN_FAIL_CHECK_ARG(stacks >= 1) return;
@@ -611,8 +565,8 @@ public:
 		m_height = height;
 		m_slices = slices;
 		m_stacks = stacks;
-		m_transform = transform;
 		m_color = color;
+		m_transform = transform;
 	}
 
 	int GetVertexCount() const
@@ -707,9 +661,6 @@ private:
 	float	m_height;
 	int		m_slices;
 	int		m_stacks;
-
-	Matrix	m_transform;
-	Color	m_color;
 };
 
 } // namespace detail
