@@ -149,12 +149,13 @@ void MeshResource::CreateSphere(float radius, int slices, int stacks, MeshCreati
 //------------------------------------------------------------------------------
 void MeshResource::CreatePlane(const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags)
 {
-	detail::PlaneMeshFactory3 factory(size, sliceH, sliceV);
+	detail::PlaneMeshFactory3 factory;
+	factory.Initialize(size, sliceH, sliceV, Color::White, Matrix::Identity);
 	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), MeshCreationFlags::None);
 
 	void* vb = TryLockVertexBuffer(VB_BasicVertices);
 	void* ib = TryLockIndexBuffer();
-	factory.Generate((Vertex*)vb, (uint16_t*)ib);
+	factory.Generate((Vertex*)vb, (uint16_t*)ib, 0);
 	PostGenerated((Vertex*)vb, ib, flags);
 	EndCreating();
 }

@@ -532,13 +532,16 @@ public:
 		const Vector3& position4, const Vector2& uv4, const Color& color4/*,
 		ShaderPass* shaderPass*/);
 
+
+	void DrawSquare(float sizeX, float sizeZ, int slicesX, int slicesZ, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity, Material* material = nullptr);
+
 	void DrawBox(const Box& box);
 
 	void DrawSphere(float radius, int slices = 8, int stacks = 8, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity);
 
 	void DrawCylinder(float radius, float height, int slices = 8, int stacks = 1, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity);
 
-	void DrawCone(float radius, float height);
+	void DrawCone(float radius, float height, int slices = 8, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity);
 
 	void DrawMesh(MeshResource* mesh, int subsetIndex, Material* material);
 	void DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material);

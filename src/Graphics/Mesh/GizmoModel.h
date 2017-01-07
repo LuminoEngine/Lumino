@@ -71,6 +71,8 @@ private:
 	float					m_displayScale;
 	float					m_screenFactor;
 	SizeI					m_viewPixelSize;
+
+	RefPtr<Material>		m_tmat;
 };
 
 } // namespace detail

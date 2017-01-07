@@ -1,5 +1,6 @@
 
 #include "../Internal.h"
+#include <Lumino/Graphics/Material.h>
 #include <Lumino/Graphics/Rendering.h>
 #include "../GraphicsManager.h"
 #include "GizmoModel.h"
@@ -31,6 +32,10 @@ GizmoModel::~GizmoModel()
 //------------------------------------------------------------------------------
 void GizmoModel::Initialize(GraphicsManager* manager)
 {
+	m_tmat = RefPtr<Material>::MakeRef();
+	m_tmat->Initialize();
+	m_tmat->blendMode = BlendMode::Alpha;
+	m_tmat->cullingMode = CullingMode::None;
 }
 
 //------------------------------------------------------------------------------
@@ -91,10 +96,20 @@ void GizmoModel::Render(DrawList* context)
 {
 	float r = 0.025f;
 	float d = 1.0f;
-	context->DrawCylinder(r, d, 8, 1, Color::Red, Matrix::MakeRotationZ(Math::PIDiv2) * Matrix::MakeTranslation(d / 2, 0, 0));
+	context->DrawCylinder(r, d, 8, 1, Color::Red, Matrix::MakeRotationZ(-Math::PIDiv2) * Matrix::MakeTranslation(d / 2, 0, 0));
 	context->DrawCylinder(r, d, 8, 1, Color::Green, Matrix::MakeTranslation( 0, d / 2,0));
 	context->DrawCylinder(r, d, 8, 1, Color::Blue, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(0, 0, d / 2));
 	context->DrawSphere(0.1f, 8, 8, Color::Yellow);
+
+	context->DrawCone(r * 3, r * 6, 8, Color::Red, Matrix::MakeRotationZ(-Math::PIDiv2) * Matrix::MakeTranslation(d, 0, 0));
+	context->DrawCone(r * 3, r * 6, 8, Color::Green, Matrix::MakeTranslation(0, d, 0));
+	context->DrawCone(r * 3, r * 6, 8, Color::Blue, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(0, 0, d));
+
+	float s = 0.3f;
+	float s2 = s / 2;
+	context->DrawSquare(s, s, 1, 1, Color(0, 1, 1, 0.5), Matrix::MakeRotationZ(-Math::PIDiv2) * Matrix::MakeTranslation(0, s2, s2), m_tmat);
+	context->DrawSquare(s, s, 1, 1, Color(1, 0, 1, 0.5), Matrix::MakeTranslation(s2, 0, s2), m_tmat);
+	context->DrawSquare(s, s, 1, 1, Color(1, 1, 0, 0.5), Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(s2, s2, 0), m_tmat);
 }
 
 //------------------------------------------------------------------------------

@@ -1307,6 +1307,26 @@ void DrawList::DrawSquarePrimitive(
 }
 
 //------------------------------------------------------------------------------
+void DrawList::DrawSquare(float sizeX, float sizeZ, int slicesX, int slicesZ, const Color& color, const Matrix& localTransform, Material* material)
+{
+	class DrawCylinderElement : public detail::LightingDrawElement	// TODO: LightingDrawElement は忘れやすい。デフォルトありでいいと思う
+	{
+	public:
+		detail::PlaneMeshFactory3 factory;
+
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		{
+			auto* r = context->BeginPrimitiveRenderer();
+			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
+		}
+	};
+	auto* e = ResolveDrawElement<DrawCylinderElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, material);
+	e->factory.Initialize(Vector2(sizeX, sizeZ), slicesX, slicesZ, color, localTransform);
+	e->boundingSphere.center = Vector3::Zero;
+	e->boundingSphere.radius = Vector3(sizeX, sizeZ, 0).GetLength();
+}
+
+//------------------------------------------------------------------------------
 void DrawList::DrawBox(const Box& box)
 {
 	if (box.center != Vector3::Zero) LN_NOTIMPLEMENTED();
@@ -1366,9 +1386,28 @@ void DrawList::DrawCylinder(float radius, float	height, int slices, int stacks, 
 	};
 	auto* e = ResolveDrawElement<DrawCylinderElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, nullptr);
 	e->factory.Initialize(radius, height, slices, stacks, color, localTransform);
+	e->boundingSphere.center = Vector3::Zero;
+	e->boundingSphere.radius = Vector3(radius, height, 0).GetLength();
+}
 
-	//e->boundingSphere.center = center;
-	e->boundingSphere.radius = height;	// TODO
+//------------------------------------------------------------------------------
+void DrawList::DrawCone(float radius, float height, int slices, const Color& color, const Matrix& localTransform)
+{
+	class DrawCylinderElement : public detail::LightingDrawElement	// TODO: LightingDrawElement は忘れやすい。デフォルトありでいいと思う
+	{
+	public:
+		detail::RegularConeMeshFactory factory;
+
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		{
+			auto* r = context->BeginPrimitiveRenderer();
+			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
+		}
+	};
+	auto* e = ResolveDrawElement<DrawCylinderElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, nullptr);
+	e->factory.Initialize(radius, height, slices, color, localTransform);
+	e->boundingSphere.center = Vector3::Zero;
+	e->boundingSphere.radius = Vector3(radius, height, 0).GetLength();
 }
 
 //------------------------------------------------------------------------------

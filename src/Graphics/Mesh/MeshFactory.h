@@ -31,6 +31,25 @@ public:
 	}
 };
 
+class MeshFactoryBase
+{
+public:
+	MeshFactoryBase()
+		: m_color(Color::White)
+		, m_transform()
+	{
+	}
+
+	void Initialize(const Color& color, const Matrix& transform)
+	{
+		m_color = color;
+		m_transform = transform;
+	}
+
+	Color	m_color;
+	Matrix	m_transform;
+};
+
 class PlaneMeshFactory
 {
 public:
@@ -132,23 +151,32 @@ private:
 	Vector3	m_front;
 };
 
-
+// xz •½–ÊBy+ ‚ðŒü‚­B
 class PlaneMeshFactory3
+	: public MeshFactoryBase
 {
 public:
-	PlaneMeshFactory3(const Vector2& size, int sliceX, int sliceZ)
-		: m_size(size)
-		, m_sliceX(sliceX)
-		, m_sliceZ(sliceZ)
+	PlaneMeshFactory3()
+		: m_size()
+		, m_sliceX(0)
+		, m_sliceZ(0)
 	{
-		LN_CHECK_ARG(sliceX >= 1);
-		LN_CHECK_ARG(sliceZ >= 1);
+	}
+
+	void Initialize(const Vector2& size, int sliceX, int sliceZ, const Color& color, const Matrix& transform)
+	{
+		LN_FAIL_CHECK_ARG(sliceX >= 1) return;
+		LN_FAIL_CHECK_ARG(sliceZ >= 1) return;
+		m_size = size;
+		m_sliceX = sliceX;
+		m_sliceZ = sliceZ;
+		MeshFactoryBase::Initialize(color, transform);
 	}
 
 	int GetVertexCount() const { return (m_sliceX + 1) * (m_sliceZ + 1); }
 	int GetIndexCount() const { return (m_sliceX * m_sliceZ * 2) * 3; }
 
-	void Generate(Vertex* outVertices, uint16_t* outIndices)
+	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
 	{
 		Vector2 minPos = -m_size / 2;
 		Vector2 maxPos = m_size / 2;
@@ -182,6 +210,7 @@ public:
 				v->position.y = 0.0f;
 				v->normal.Set(0.0f, 1.0f, 0.0f);
 				v->uv.Set(StepU * iX, 1.0f - StepV * iZ);
+				v->color = m_color;
 				++v;
 			}
 		}
@@ -195,15 +224,18 @@ public:
 				int p2 = (iX + 0) + (iZ + 1) * (m_sliceX + 1);	// „¯
 				int p3 = (iX + 1) + (iZ + 0) * (m_sliceX + 1);	// „­
 				int p4 = (iX + 1) + (iZ + 1) * (m_sliceX + 1);	// „®
-				i[0] = p1;
-				i[1] = p2;
-				i[2] = p3;
-				i[3] = p3;
-				i[4] = p2;
-				i[5] = p4;
+				i[0] = beginIndex + p1;
+				i[1] = beginIndex + p2;
+				i[2] = beginIndex + p3;
+				i[3] = beginIndex + p3;
+				i[4] = beginIndex + p2;
+				i[5] = beginIndex + p4;
 				i += 6;
 			}
 		}
+
+		if (!m_transform.IsIdentity())
+			MeshHelper::Transform(outVertices, v, m_transform);
 	}
 
 private:
@@ -378,24 +410,6 @@ private:
 };
 
 
-class MeshFactoryBase
-{
-public:
-	MeshFactoryBase()
-		: m_color(Color::White)
-		, m_transform()
-	{
-	}
-
-	void Initialize(const Color& color, const Matrix& transform)
-	{
-		m_color = color;
-		m_transform = transform;
-	}
-
-	Color	m_color;
-	Matrix	m_transform;
-};
 
 class RegularSphereMeshFactory
 	: public MeshFactoryBase
@@ -416,7 +430,7 @@ public:
 		m_slices = slices;
 		m_stacks = stacks;
 		MakeSinCosTable();
-		MeshFactoryBase::Initialize(m_color, m_transform);
+		MeshFactoryBase::Initialize(color, transform);
 	}
 
 	// Squashed
@@ -575,7 +589,7 @@ public:
 		m_height = height;
 		m_slices = slices;
 		m_stacks = stacks;
-		MeshFactoryBase::Initialize(m_color, m_transform);
+		MeshFactoryBase::Initialize(color, transform);
 	}
 
 	int GetVertexCount() const
@@ -690,7 +704,7 @@ public:
 		m_radius = radius;
 		m_height = height;
 		m_slices = slices;
-		MeshFactoryBase::Initialize(m_color, m_transform);
+		MeshFactoryBase::Initialize(color, transform);
 	}
 
 	int GetVertexCount() const
