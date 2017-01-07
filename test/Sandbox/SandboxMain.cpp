@@ -8,6 +8,7 @@
 #include <Lumino/UI/UIFrameWindow.h>
 #include <Lumino/UI/UIListBox.h>
 #include <Lumino/Testing/TestHelper.h>
+#include "../../src/Graphics/Mesh/GizmoModel.h"
 using namespace ln;
 
 
@@ -480,26 +481,42 @@ void Main()
 	particle2->SetBlendMode(BlendMode::Add);
 #endif
 
-	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+	//auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+	//auto listBox = tr::UIListBox::Create();
+	//listBox->AddTextItem(_T("test"));
+	//listBox->AddTextItem(_T("fff"));
+	//uiRoot->SetContent(listBox);
 
-	auto listBox = tr::UIListBox::Create();
-	listBox->AddTextItem(_T("test"));
-	listBox->AddTextItem(_T("fff"));
-	uiRoot->SetContent(listBox);
+	auto gizmo = detail::GizmoModel::Create();
 
-	while (Engine::Update())
+	while (!Engine::IsEndRequested())
 	{
-		//printf("----\n");
-		if (Input::IsTriggered(InputButtons::Cancel))
+		Engine::BeginFrameUpdate();
+		if (Engine::BeginRendering())
 		{
-			//tonePE->SetTone(ToneF(-1, -1, -1, 0));
-			//tonePE->ChangeTone(ToneF(1, 1, 1, 0), 0.5);
-			//blur->SetBlurStatus(0.5, Vector2::Zero, 1.05, 0.5);
+			Engine::Render();
 
-			//Engine::GetMainWindow()->SetSize(SizeI(200, 100));
+			gizmo->Render(Engine::GetDefault3DLayer()->GetRenderer());
+
+			Engine::EndRendering();
 		}
-		//blur->SetBlurStatus(0.9f, Vector2::Zero, 1.02);
+		Engine::EndFrameUpdate();
+
 	}
+
+	//while (Engine::Update())
+	//{
+	//	//printf("----\n");
+	//	if (Input::IsTriggered(InputButtons::Cancel))
+	//	{
+	//		//tonePE->SetTone(ToneF(-1, -1, -1, 0));
+	//		//tonePE->ChangeTone(ToneF(1, 1, 1, 0), 0.5);
+	//		//blur->SetBlurStatus(0.5, Vector2::Zero, 1.05, 0.5);
+
+	//		//Engine::GetMainWindow()->SetSize(SizeI(200, 100));
+	//	}
+	//	//blur->SetBlurStatus(0.9f, Vector2::Zero, 1.02);
+	//}
 }
 
 #endif

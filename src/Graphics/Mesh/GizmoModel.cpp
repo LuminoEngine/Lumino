@@ -1,13 +1,24 @@
 
+#include "../Internal.h"
+#include <Lumino/Graphics/Rendering.h>
+#include "../GraphicsManager.h"
 #include "GizmoModel.h"
 
 LN_NAMESPACE_BEGIN
 namespace detail {
 
 //------------------------------------------------------------------------------
+GizmoModelPtr GizmoModel::Create()
+{
+	auto ptr = GizmoModelPtr::MakeRef();
+	ptr->Initialize(detail::GraphicsManager::GetInstance());
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
 GizmoModel::GizmoModel()
-	: m_mesh(nullptr)
-	, m_gizmoType(GizmoType::Translation)
+	: /*m_mesh(nullptr)
+	, */m_gizmoType(GizmoType::Translation)
 	, m_displayScale(1.0f)
 {
 }
@@ -58,36 +69,42 @@ void GizmoModel::SetDisplayScale(float scale)
 }
 
 //------------------------------------------------------------------------------
-bool GizmoModel::InjectMouseDown(unsigned int x, unsigned int y)
+bool GizmoModel::InjectMouseDown(int x, int y)
 {
+	return false;
 }
 
 //------------------------------------------------------------------------------
-bool GizmoModel::InjectMouseMove(unsigned int x, unsigned int y)
+bool GizmoModel::InjectMouseMove(int x, int y)
 {
+	return false;
 }
 
 //------------------------------------------------------------------------------
-bool GizmoModel::InjectMouseUp(unsigned int x, unsigned int y)
+bool GizmoModel::InjectMouseUp(int x, int y)
 {
+	return false;
 }
 
 //------------------------------------------------------------------------------
 void GizmoModel::Render(DrawList* context)
 {
+
+	//context->DrawBox(Box(1));
+	context->DrawCylinder(1, 2);
 }
 
 //------------------------------------------------------------------------------
 void GizmoModel::MakeScreenFactor()
 {
 	Matrix viewproj = m_view * m_proj;
-	Vector4 trf = Vector4(m_transform.GetPosition(), 1.0f);
-	trf.Transform(viewproj);
+	Vector4 trf = Vector4(m_gizmoTransform.GetPosition(), 1.0f);
+	trf = Vector4::Transform(trf, viewproj);
 	m_screenFactor = m_displayScale * 0.15f * trf.w;
 }
 
 //------------------------------------------------------------------------------
-OperationType GizmoModel::GetDirectionOperationType(int x, int y)
+GizmoModel::OperationType GizmoModel::GetDirectionOperationType(int x, int y)
 {
 	const float MoveXYZBoxSize = 0.25;
 	const float MoveOnPlaneBoxSize = 0.5;
@@ -126,7 +143,7 @@ OperationType GizmoModel::GetDirectionOperationType(int x, int y)
 }
 
 //------------------------------------------------------------------------------
-OperationType GizmoModel::GetRotationOperationType(int x, int y)
+GizmoModel::OperationType GizmoModel::GetRotationOperationType(int x, int y)
 {
  	bool xz, xy, yz;
 	Vector3 ptXZ, ptXY, ptYZ;
@@ -142,7 +159,7 @@ OperationType GizmoModel::GetRotationOperationType(int x, int y)
 void GizmoModel::IntersectsLocalPlanes(int x, int y, bool* xz, Vector3* ptXZ, bool* xy, Vector3* ptXY, bool* yz, Vector3* ptYZ, Ray* localViewRay)
 {
 	Matrix gizmoMat = m_gizmoTransform;
-	gizmoMat.Scaling(m_screenFactor);
+	gizmoMat.Scale(m_screenFactor);
 	
 	Matrix viewproj = m_view * m_proj;
 	

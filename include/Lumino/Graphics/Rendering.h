@@ -534,6 +534,10 @@ public:
 
 	void DrawBox(const Box& box);
 
+	void DrawCylinder(float radius, float height, int slices = 8, int stacks = 1);
+
+	void DrawCone(float radius, float height);
+
 	void DrawMesh(MeshResource* mesh, int subsetIndex, Material* material);
 	void DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material);
 

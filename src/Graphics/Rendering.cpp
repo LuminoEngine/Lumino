@@ -1332,6 +1332,32 @@ void DrawList::DrawBox(const Box& box)
 }
 
 //------------------------------------------------------------------------------
+void DrawList::DrawCylinder(float radius, float	height, int slices, int stacks)
+{
+	class DrawCylinderElement : public detail::LightingDrawElement	// TODO: LightingDrawElement は忘れやすい。デフォルトありでいいと思う
+	{
+	public:
+		detail::CylinderMeshFactory factory;
+
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		{
+			auto* r = context->BeginPrimitiveRenderer();
+			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
+			r->Flush();
+		}
+	};
+	auto* e = ResolveDrawElement<DrawCylinderElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, nullptr);
+	e->factory.Initialize(radius, height, slices, stacks);
+
+	//e->boundingSphere.center = center;
+	e->boundingSphere.radius = height;	// TODO
+
+	//Vector3 min, max;
+	//box.GetMinMax(&min, &max);
+	//e->MakeBoundingSphere(min, max);
+}
+
+//------------------------------------------------------------------------------
 void DrawList::DrawMesh(MeshResource* mesh, int subsetIndex, Material* material)
 {
 	DrawMeshResourceInternal(mesh, subsetIndex, material);

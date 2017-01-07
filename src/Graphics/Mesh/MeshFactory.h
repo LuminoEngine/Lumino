@@ -5,6 +5,19 @@
 LN_NAMESPACE_BEGIN
 namespace detail {
 
+class MeshHelper
+{
+public:
+
+	static Vector3 GetXZCirclePoint(int i, int slices)
+	{
+		float angle = i * Math::PI2 / slices;
+		float dx, dz;
+		Math::SinCos(angle, &dx, &dz);
+		return Vector3(dx, 0, dz);
+	}
+};
+
 class PlaneMeshFactory
 {
 public:
@@ -351,7 +364,6 @@ private:
 	Vector3	m_size;
 };
 
-// top と bottom は TriangleFan
 class SphereMeshFactory
 {
 public:
@@ -567,6 +579,174 @@ private:
 	int		m_stacks;
 
 	List<SinCos>	m_sincosTable;
+};
+
+// Sphere 同様、uv 展開の都合上 ring の始点と終点、底の位置は同一。
+class CylinderMeshFactory
+{
+public:
+	CylinderMeshFactory()
+		: m_radius(0)
+		, m_height(0)
+		, m_slices(0)
+		, m_stacks(0)
+	{
+	}
+
+	void Initialize(float radius, float height, int slices, int stacks)
+	{
+		LN_FAIL_CHECK_ARG(slices >= 3) return;
+		LN_FAIL_CHECK_ARG(stacks >= 1) return;
+		m_radius = radius;
+		m_height = height;
+		m_slices = slices;
+		m_stacks = stacks;
+	}
+
+	int GetVertexCount() const
+	{
+		return (m_slices + 1) * (m_stacks + 3);
+	}
+
+	int GetIndexCount() const
+	{
+		return m_slices * (m_stacks + 2) * 6;
+	}
+
+	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+	{
+		Vertex* vb = outVertices;
+		uint16_t* ib = (uint16_t*)outIndices;
+
+		float yStep = m_height / m_stacks;
+		float y;
+		float yu = m_height / 2;
+		float yd = -m_height / 2;
+
+		//for (int iSlice = 0; iSlice < m_slices + 1; ++iSlice)
+		for (int iSlice = m_slices; iSlice >= 0; iSlice--)
+		{
+			Vector3 n = MeshHelper::GetXZCirclePoint(iSlice, m_slices);
+			Vector3 xz = n * m_radius;
+
+			// upper base
+			{
+				Vertex v;
+				v.position.Set(0, yu, 0);
+				v.normal = Vector3::UnitY;
+				v.color = Color::White;
+				AddVertex(&vb, v);
+			}
+			// side
+			y = yu;
+			for (int iStack = 0; iStack < m_stacks + 1; ++iStack)
+			{
+				Vertex v;
+				v.position.x = xz.x;
+				v.position.y = y;
+				v.position.z = xz.z;
+				v.normal = n;
+				v.color = Color::White;
+				AddVertex(&vb, v);
+				y -= yStep;
+			}
+			// lower base
+			{
+				Vertex v;
+				v.position.Set(0, yd, 0);
+				v.normal = -Vector3::UnitY;
+				v.color = Color::White;
+				AddVertex(&vb, v);
+			}
+		}
+
+		// faces
+		int stacks = m_stacks + 2;
+		for (int iSlice = 0; iSlice < m_slices; ++iSlice)	// x
+		{
+			for (int iStack = 0; iStack < stacks; ++iStack)	// y
+			{
+				int p1 = (iStack + 0) + (iSlice + 0) * (stacks + 1);	// ┏
+				int p2 = (iStack + 1) + (iSlice + 0) * (stacks + 1);	// ┗
+				int p3 = (iStack + 0) + (iSlice + 1) * (stacks + 1);	// ┓
+				int p4 = (iStack + 1) + (iSlice + 1) * (stacks + 1);	// ┛
+				ib[0] = beginIndex + p1;
+				ib[1] = beginIndex + p2;
+				ib[2] = beginIndex + p3;
+				ib[3] = beginIndex + p3;
+				ib[4] = beginIndex + p2;
+				ib[5] = beginIndex + p4;
+				ib += 6;
+			}
+		}
+
+#if 0
+		// lower base
+		y = -m_height / 2;
+		for (int iSlice = 0; iSlice < m_slices + 1; ++iSlice)
+		{
+			Vertex v;
+			v.position.Set(0, y, 0);
+			v.color = Color::White;
+			AddVertex(&vb, v);
+		}
+		// side
+		y = -m_height / 2;
+		for (int iSlice = 0; iSlice < m_slices + 1; ++iSlice)
+		{
+			Vector3 xz = MeshHelper::GetXZCirclePoint(iSlice, m_slices, m_radius);
+
+			for (int iStack = 0; iStack < m_stacks + 1; ++iStack)
+			{
+				Vertex v;
+				v.position.x = xz.x;
+				v.position.y = y;
+				v.position.z = xz.z;
+				v.color = Color::White;
+				AddVertex(&vb, v);
+			}
+		}
+		// upper base
+		y = m_height / 2;
+		for (int iSlice = 0; iSlice < m_slices + 1; ++iSlice)
+		{
+			Vertex v;
+			v.position.Set(0, y, 0);
+			v.color = Color::White;
+			AddVertex(&vb, v);
+		}
+
+		// index
+		int squares = m_slices * (m_stacks + 2);
+		for (int i = 0; i < squares; ++i)
+		{
+			AddSquareIndex(&ib, i * 4);
+		}
+#endif
+	}
+
+	static void AddVertex(Vertex** vb, const Vertex& v)
+	{
+		*(*vb) = v;
+		(*vb)++;
+	}
+
+	//static void AddSquareIndex(uint16_t** ib, uint16_t begin)
+	//{
+	//	(*ib)[0] = begin + 0;
+	//	(*ib)[1] = begin + 1;
+	//	(*ib)[2] = begin + 2;
+	//	(*ib)[3] = begin + 2;
+	//	(*ib)[4] = begin + 1;
+	//	(*ib)[5] = begin + 3;
+	//	(*ib) += 6;
+	//}
+
+private:
+	float	m_radius;
+	float	m_height;
+	int		m_slices;
+	int		m_stacks;
 };
 
 } // namespace detail

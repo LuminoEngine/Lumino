@@ -2,7 +2,11 @@
 #pragma once
 
 LN_NAMESPACE_BEGIN
+class DrawList;
+
 namespace detail {
+class GizmoModel;
+using GizmoModelPtr = RefPtr<GizmoModel>;
 
 enum class GizmoType
 {
@@ -14,6 +18,9 @@ enum class GizmoType
 class GizmoModel
 	: public RefObject
 {
+public:
+	static GizmoModelPtr Create();
+
 public:
 	void SetGizmoType(GizmoType type);
 	
@@ -54,7 +61,7 @@ LN_INTERNAL_ACCESS:
 	void IntersectsLocalPlanes(int x, int y, bool* xz, Vector3* ptXZ, bool* xy, Vector3* ptXY, bool* yz, Vector3* ptYZ, Ray* localViewRay);
 
 private:
-	RefPtr<MeshResource>	m_mesh;
+	//RefPtr<MeshResource>	m_mesh;
 	GizmoType				m_gizmoType;
 	Matrix					m_targetTransform;	// Gizmo によって操作される Transform
 	Matrix					m_gizmoTransform;	// Gizmo 自体の Transform (視点距離によるスケーリングは含まれない)

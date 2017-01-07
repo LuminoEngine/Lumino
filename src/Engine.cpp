@@ -75,6 +75,12 @@ void Engine::Render()
 }
 
 //------------------------------------------------------------------------------
+bool Engine::IsEndRequested()
+{
+	return EngineManager::Instance->IsEndRequested();
+}
+
+//------------------------------------------------------------------------------
 void Engine::Exit()
 {
 	EngineManager::Instance->Exit();
