@@ -135,7 +135,7 @@ void MeshResource::CreateBox(const Vector3& size)
 //------------------------------------------------------------------------------
 void MeshResource::CreateSphere(float radius, int slices, int stacks, MeshCreationFlags flags)
 {
-	detail::SphereMeshFactory factory;
+	detail::RegularSphereMeshFactory factory;
 	factory.Initialize(radius, slices, stacks, Color::White, Matrix::Identity);
 	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), MeshCreationFlags::None);
 

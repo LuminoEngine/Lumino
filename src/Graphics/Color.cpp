@@ -275,16 +275,8 @@ Color32 Color32::FromString(const StringRef& str)
 //==============================================================================
 // Color
 //==============================================================================
-const Color Color::Transparency = Color(0.0, 0.0, 0.0, 0.0);
-const Color Color::TransparencyWhite = Color(1.0, 1.0, 1.0, 0.0);
-//const Color Color::Black = Color(0.0, 0.0, 0.0, 1.0);
-//const Color Color::White = Color(1.0, 1.0, 1.0, 1.0);
-//const Color Color::Gray = Color(0.5, 0.5, 0.5, 1.0);
-//const Color Color::Red = Color(1.0, 0.0, 0.0, 1.0);
-//const Color Color::Green = Color(0.0, 1.0, 0.0, 1.0);
-//const Color Color::Blue = Color(0.0, 0.0, 1.0, 1.0);
-//const Color Color::DimGray = Color(0.25, 0.25, 0.25, 1.0);
-//
+const Color Color::Transparency(0.0, 0.0, 0.0, 0.0);
+const Color Color::TransparencyWhite(1.0, 1.0, 1.0, 0.0);
 const Color Color::AliceBlue(0.941176, 0.972549, 1);
 const Color Color::AntiqueWhite(0.980392, 0.921569, 0.843137);
 const Color Color::Aqua(0, 1, 1);

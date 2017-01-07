@@ -1336,7 +1336,7 @@ void DrawList::DrawSphere(float radius, int slices, int stacks, const Color& col
 	class DrawSphereElement : public detail::LightingDrawElement	// TODO: LightingDrawElement は忘れやすい。デフォルトありでいいと思う
 	{
 	public:
-		detail::SphereMeshFactory factory;
+		detail::RegularSphereMeshFactory factory;
 
 		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
 		{
@@ -1356,7 +1356,7 @@ void DrawList::DrawCylinder(float radius, float	height, int slices, int stacks, 
 	class DrawCylinderElement : public detail::LightingDrawElement	// TODO: LightingDrawElement は忘れやすい。デフォルトありでいいと思う
 	{
 	public:
-		detail::CylinderMeshFactory factory;
+		detail::RegularCylinderMeshFactory factory;
 
 		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
 		{

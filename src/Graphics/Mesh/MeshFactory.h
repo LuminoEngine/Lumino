@@ -1,4 +1,9 @@
-
+/*
+	"RegularXXXX" という名前のついているファクトリは、UV 展開したときに自然になるようなジオメトリを生成する。
+	例えば Box だと、テクスチャを使用しない単色の Box であれば頂点は 8 個でよい。各6面は、頂点を共有できる。
+	しかし、ダイスのように各面に別の UV を設定したい場合は頂点を共有することはできない。この場合は 24 個の頂点が必要になる。
+	そのようなジオメトリを作成するのが "RegularXXXX"。
+*/
 #include "../Internal.h"
 #include <Lumino/Graphics/Vertex.h>
 
@@ -377,20 +382,26 @@ class MeshFactoryBase
 {
 public:
 	MeshFactoryBase()
-		: m_transform()
-		, m_color(Color::White)
+		: m_color(Color::White)
+		, m_transform()
 	{
 	}
 
+	void Initialize(const Color& color, const Matrix& transform)
+	{
+		m_color = color;
+		m_transform = transform;
+	}
+
+	Color	m_color;
 	Matrix	m_transform;
-	Color	m_color = Color::White;
 };
 
-class SphereMeshFactory
+class RegularSphereMeshFactory
 	: public MeshFactoryBase
 {
 public:
-	SphereMeshFactory()
+	RegularSphereMeshFactory()
 		: m_radius(0)
 		, m_slices(0)
 		, m_stacks(0)
@@ -405,8 +416,7 @@ public:
 		m_slices = slices;
 		m_stacks = stacks;
 		MakeSinCosTable();
-		m_color = color;
-		m_transform = transform;
+		MeshFactoryBase::Initialize(m_color, m_transform);
 	}
 
 	// Squashed
@@ -545,11 +555,11 @@ private:
 };
 
 // Sphere 同様、uv 展開の都合上 ring の始点と終点、底の位置は同一。
-class CylinderMeshFactory
+class RegularCylinderMeshFactory
 	: public MeshFactoryBase
 {
 public:
-	CylinderMeshFactory()
+	RegularCylinderMeshFactory()
 		: m_radius(0)
 		, m_height(0)
 		, m_slices(0)
@@ -565,8 +575,7 @@ public:
 		m_height = height;
 		m_slices = slices;
 		m_stacks = stacks;
-		m_color = color;
-		m_transform = transform;
+		MeshFactoryBase::Initialize(m_color, m_transform);
 	}
 
 	int GetVertexCount() const
@@ -661,6 +670,110 @@ private:
 	float	m_height;
 	int		m_slices;
 	int		m_stacks;
+};
+
+
+class RegularConeMeshFactory
+	: public MeshFactoryBase
+{
+public:
+	RegularConeMeshFactory()
+		: m_radius(0)
+		, m_height(0)
+		, m_slices(0)
+	{
+	}
+
+	void Initialize(float radius, float height, int slices, const Color& color, const Matrix& transform)
+	{
+		LN_FAIL_CHECK_ARG(slices >= 3) return;
+		m_radius = radius;
+		m_height = height;
+		m_slices = slices;
+		MeshFactoryBase::Initialize(m_color, m_transform);
+	}
+
+	int GetVertexCount() const
+	{
+		return (m_slices + 1) * 3;
+	}
+
+	int GetIndexCount() const
+	{
+		return m_slices * 3 * 6;
+	}
+
+	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+	{
+		Vertex* vb = outVertices;
+		uint16_t* ib = (uint16_t*)outIndices;
+
+		for (int iSlice = m_slices; iSlice >= 0; iSlice--)
+		{
+			Vector3 n = MeshHelper::GetXZCirclePoint(iSlice, m_slices);
+			Vector3 xz = n * m_radius;
+
+			// top
+			{
+				Vertex v;
+				v.position.Set(0, m_height / 2, 0);
+				v.normal = Vector3::UnitY;
+				v.color = m_color;
+				AddVertex(&vb, v);
+			}
+			// side
+			float y = -m_height / 2;
+			{
+				Vertex v;
+				v.position.Set(xz.x, y, xz.z);
+				v.normal = n;
+				v.color = m_color;
+				AddVertex(&vb, v);
+			}
+			// lower base
+			{
+				Vertex v;
+				v.position.Set(0, y, 0);
+				v.normal = -Vector3::UnitY;
+				v.color = m_color;
+				AddVertex(&vb, v);
+			}
+		}
+
+		// faces
+		int stacks = 2;
+		for (int iSlice = 0; iSlice < m_slices; ++iSlice)	// x
+		{
+			for (int iStack = 0; iStack < stacks; ++iStack)	// y
+			{
+				int p1 = (iStack + 0) + (iSlice + 0) * (stacks + 1);	// ┏
+				int p2 = (iStack + 1) + (iSlice + 0) * (stacks + 1);	// ┗
+				int p3 = (iStack + 0) + (iSlice + 1) * (stacks + 1);	// ┓
+				int p4 = (iStack + 1) + (iSlice + 1) * (stacks + 1);	// ┛
+				ib[0] = beginIndex + p1;
+				ib[1] = beginIndex + p2;
+				ib[2] = beginIndex + p3;
+				ib[3] = beginIndex + p3;
+				ib[4] = beginIndex + p2;
+				ib[5] = beginIndex + p4;
+				ib += 6;
+			}
+		}
+
+		if (!m_transform.IsIdentity())
+			MeshHelper::Transform(outVertices, vb, m_transform);
+	}
+
+	static void AddVertex(Vertex** vb, const Vertex& v)
+	{
+		*(*vb) = v;
+		(*vb)++;
+	}
+
+private:
+	float	m_radius;
+	float	m_height;
+	int		m_slices;
 };
 
 } // namespace detail

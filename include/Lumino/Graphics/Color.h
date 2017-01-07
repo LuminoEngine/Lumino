@@ -213,13 +213,6 @@ public:
 public:
 	static const Color Transparency;			///< 透明 (0.0, 0.0, 0.0, 0.0)
 	static const Color TransparencyWhite;		///< 白透明 (1.0, 1.0, 1.0, 0.0)
-	//static const Color White;					///< 白 (1.0, 1.0, 1.0, 1.0)
-	//static const Color Black;					///< 黒 (0.0, 0.0, 0.0, 1.0)
-	//static const Color Gray;					///< 灰色 (0.5, 0.5, 0.5, 1.0)
-	//static const Color Red;					///< 赤 (1.0, 0.0, 0.0, 1.0)
-	//static const Color Green;					///< 緑 (0.0, 1.0, 0.0, 1.0)
-	//static const Color Blue;					///< 青 (0.0, 0.0, 1.0, 1.0)
-	//static const Color DimGray;				///< 濃い灰色
 
 	// see https://msdn.microsoft.com/ja-jp/library/system.windows.media.colors(v=vs.110).aspx
 	static const Color AliceBlue;             /** #F0F8FF (0.941176, 0.972549, 1) */
