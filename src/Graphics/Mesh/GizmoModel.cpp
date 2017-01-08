@@ -12,10 +12,10 @@ const float GizmoModel::CenterBoxSize = 0.15f;
 const float GizmoModel::BarRadius = 0.05f;
 const float GizmoModel::BarLendth = 1.0f;
 const float GizmoModel::OnPlaneBoxSize = 0.4f;
-const float GizmoModel::RotationRingInner = 0.8f;
+const float GizmoModel::RotationRingInner = 0.9f;
 const float GizmoModel::RotationRingOuter = 1.0f;
 const float GizmoModel::RotationViewZRingInner = 1.0f;
-const float GizmoModel::RotationViewZRingOuter = 1.2f;
+const float GizmoModel::RotationViewZRingOuter = 1.1f;
 const float GizmoModel::BaseOpacity = 0.7f;
 
 //------------------------------------------------------------------------------
@@ -28,8 +28,8 @@ GizmoModelPtr GizmoModel::Create()
 
 //------------------------------------------------------------------------------
 GizmoModel::GizmoModel()
-	: m_gizmoType(GizmoType::Scaling)//GizmoType::Rotation)//GizmoType::Translation)//
-	, m_displayScale(1.0f)
+	: m_gizmoType(GizmoType::Translation)//GizmoType::Scaling)//GizmoType::Rotation)//
+	, m_displayScale(1.25f)
 	, m_operationType(OperationType::None)
 	, m_dragging(false)
 {
@@ -388,7 +388,7 @@ void GizmoModel::SubmitEditing()
 	m_targetInitialTransform = m_targetTransform;
 	
 	// 拡大・回転をリセット
-	m_gizmoTransform = Matrix::MakeTranslation(m_gizmoInitialTransform.GetPosition());
+	m_gizmoTransform = Matrix::MakeTranslation(m_gizmoTransform.GetPosition());
 	m_gizmoInitialTransform = m_gizmoTransform;
 
 	m_dragging = false;

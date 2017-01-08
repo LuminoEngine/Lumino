@@ -537,6 +537,15 @@ void Main()
 		}
 		Engine::EndFrameUpdate();
 
+
+		if (Input::IsTriggered(InputButtons::Ok))
+		{
+			gizmo->SetGizmoType(tr::GizmoType::Translation);
+		}
+		if (Input::IsTriggered(InputButtons::Cancel))
+		{
+			gizmo->SetGizmoType(tr::GizmoType::Rotation);
+		}
 	}
 
 	//while (Engine::Update())
