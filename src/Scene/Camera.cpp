@@ -368,13 +368,19 @@ bool CameraViewportLayer::OnPlatformEvent(const PlatformEventArgs& e)
 		switch (e.type)
 		{
 			case PlatformEventType::MouseDown:
-				m_gizmo->InjectMouseDown(e.mouse.x, e.mouse.y);
+				if (e.mouse.button == MouseButtons::Left)
+				{
+					if (m_gizmo->InjectMouseDown(e.mouse.x, e.mouse.y)) return true;
+				}
 				break;
 			case PlatformEventType::MouseUp:
-				m_gizmo->InjectMouseUp(e.mouse.x, e.mouse.y);
+				if (e.mouse.button == MouseButtons::Left)
+				{
+					if (m_gizmo->InjectMouseUp(e.mouse.x, e.mouse.y)) return true;
+				}
 				break;
 			case PlatformEventType::MouseMove:
-				m_gizmo->InjectMouseMove(e.mouse.x, e.mouse.y);
+				if (m_gizmo->InjectMouseMove(e.mouse.x, e.mouse.y)) return true;
 				break;
 			default:
 				break;

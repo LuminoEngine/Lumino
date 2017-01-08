@@ -52,7 +52,7 @@ LN_INTERNAL_ACCESS:
 		YZ,
 		XYZ,
 
-		ViewXY,
+		//ViewXY,
 		ViewZ,
 	};
 	
@@ -96,6 +96,7 @@ private:
 	Plane					m_draggingLocalPlane;
 	Vector3					m_draggingStartLocalPosition;
 	Matrix					m_draggingStartGizmoTransform;
+	PointI					m_draggingStartViewPixelPoint;
 };
 
 } // namespace tr

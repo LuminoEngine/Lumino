@@ -97,6 +97,7 @@ bool GizmoModel::InjectMouseDown(int x, int y)
 		{
 			m_draggingLocalPlane.Intersects(MakeLocalRay(x, y), &m_draggingStartLocalPosition);
 			m_draggingStartGizmoTransform = m_gizmoTransform;
+			m_draggingStartViewPixelPoint.Set(x, y);
 			m_dragging = true;
 			return true;
 		}
@@ -158,6 +159,27 @@ bool GizmoModel::InjectMouseMove(int x, int y)
 				case ln::tr::GizmoModel::OperationType::Z:
 					rot.RotateAxis(m_draggingLocalPlane.Normal, atan2(localOffaet.y, localOffaet.x));
 					break;
+				case ln::tr::GizmoModel::OperationType::XYZ:
+				{
+
+					Ray ray1 = MakeLocalRay(x + 1, y);
+					Ray ray2 = MakeLocalRay(x, y + 1);
+					Vector3 lp1, lp2;
+					m_draggingLocalPlane.Intersects(ray1, &lp1);
+					m_draggingLocalPlane.Intersects(ray2, &lp2);
+					lp1 -= m_draggingStartLocalPosition;
+					lp2 -= m_draggingStartLocalPosition;
+					Vector3 raxis = Vector3::Normalize(lp1 - localOffaet);
+					Vector3 taxis = Vector3::Normalize(lp2 - localOffaet);
+					rot.RotateAxis(raxis, (y - m_draggingStartViewPixelPoint.y) * -0.05);
+					rot.RotateAxis(taxis, (x - m_draggingStartViewPixelPoint.x) * 0.05);
+					//rot.RotateAxis(raxis, localOffaet.y);
+					//rot.RotateAxis(taxis, localOffaet.x);
+
+
+					//rot.RotateAxis(m_draggingLocalPlane.Normal, atan2(localOffaet.y, localOffaet.x));
+					break;
+				}
 				case ln::tr::GizmoModel::OperationType::ViewZ:
 					rot.RotateAxis(m_draggingLocalPlane.Normal, atan2(localOffaet.y, localOffaet.x));
 					break;
