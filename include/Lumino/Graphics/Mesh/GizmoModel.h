@@ -55,11 +55,15 @@ LN_INTERNAL_ACCESS:
 	GizmoModel();
 	virtual ~GizmoModel();
 	void Initialize(ln::detail::GraphicsManager* manager);
+
+	void SubmitEditing();
+
 	void MakeScreenFactor();
 	
-	OperationType GetDirectionOperationType(int x, int y);	// translation or scaling
+	OperationType GetDirectionOperationType(int x, int y, Plane* outLocalPlane = nullptr);	// translation or scaling
 	OperationType GetRotationOperationType(int x, int y);
 	
+	Ray MakeLocalRay(int x, int y);
 	void IntersectsLocalPlanes(int x, int y, bool* xz, Vector3* ptXZ, bool* xy, Vector3* ptXY, bool* yz, Vector3* ptYZ, Ray* localViewRay);
 
 private:
@@ -67,6 +71,7 @@ private:
 	GizmoType				m_gizmoType;
 	//Matrix					m_parentSpaceTransform;
 	Matrix					m_targetTransform;	// Gizmo によって操作される Transform
+	Matrix					m_gizmoInitialTransform;
 	Matrix					m_gizmoTransform;	// Gizmo 自体の Transform (視点距離によるスケーリングは含まれない)
 	Vector3					m_viewPosition;
 	Matrix					m_view;
@@ -77,6 +82,11 @@ private:
 
 	OperationType			m_operationType;
 	RefPtr<Material>		m_tmat;
+
+	bool					m_dragging;
+	Plane					m_draggingLocalPlane;
+	Vector3					m_draggingStartLocalPosition;
+	Matrix					m_draggingStartGizmoTransform;
 };
 
 } // namespace tr

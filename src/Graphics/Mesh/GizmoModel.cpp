@@ -22,6 +22,7 @@ GizmoModel::GizmoModel()
 	, */m_gizmoType(GizmoType::Translation)
 	, m_displayScale(1.0f)
 	, m_operationType(OperationType::None)
+	, m_dragging(false)
 {
 }
 
@@ -50,6 +51,7 @@ void GizmoModel::Setup(const Matrix& parentSpaceTransform, const Matrix& targetI
 {
 	Matrix targetWorld = parentSpaceTransform * targetInitialTransform;
 	m_gizmoTransform = targetWorld;
+	m_gizmoInitialTransform = m_gizmoTransform;
 }
 
 ////------------------------------------------------------------------------------
@@ -84,19 +86,74 @@ void GizmoModel::SetDisplayScale(float scale)
 //------------------------------------------------------------------------------
 bool GizmoModel::InjectMouseDown(int x, int y)
 {
+	if (!m_dragging)
+	{
+		m_operationType = GetDirectionOperationType(x, y, &m_draggingLocalPlane);
+		if (m_operationType != OperationType::None)
+		{
+			m_draggingLocalPlane.Intersects(MakeLocalRay(x, y), &m_draggingStartLocalPosition);
+			m_draggingStartGizmoTransform = m_gizmoTransform;
+			m_dragging = true;
+			return true;
+		}
+	}
 	return false;
 }
 
 //------------------------------------------------------------------------------
 bool GizmoModel::InjectMouseMove(int x, int y)
 {
-	m_operationType = GetDirectionOperationType(x, y);
+	if (m_dragging)
+	{
+		Vector3 localOffaet;
+		m_draggingLocalPlane.Intersects(MakeLocalRay(x, y), &localOffaet);
+		localOffaet -= m_draggingStartLocalPosition;
+
+		switch (m_operationType)
+		{
+		case ln::tr::GizmoModel::OperationType::X:
+			localOffaet = Vector3(localOffaet.x, 0, 0);
+			break;
+		case ln::tr::GizmoModel::OperationType::Y:
+			localOffaet = Vector3(0, localOffaet.y, 0);
+			break;
+		case ln::tr::GizmoModel::OperationType::Z:
+			localOffaet = Vector3(0, 0, localOffaet.z);
+			break;
+		case ln::tr::GizmoModel::OperationType::XY:
+			localOffaet = Vector3(localOffaet.x, localOffaet.y, 0);
+			break;
+		case ln::tr::GizmoModel::OperationType::XZ:
+			localOffaet = Vector3(localOffaet.x, 0, localOffaet.z);
+			break;
+		case ln::tr::GizmoModel::OperationType::YZ:
+			localOffaet = Vector3(0, localOffaet.y, localOffaet.z);
+			break;
+		case ln::tr::GizmoModel::OperationType::XYZ:
+			break;
+		}
+
+		m_gizmoTransform = m_draggingStartGizmoTransform * Matrix::MakeTranslation(localOffaet);\
+		return true;
+	}
+	else
+	{
+		m_operationType = GetDirectionOperationType(x, y);
+	}
 	return false;
 }
 
 //------------------------------------------------------------------------------
 bool GizmoModel::InjectMouseUp(int x, int y)
 {
+	if (m_dragging)
+	{
+		SubmitEditing();
+
+		m_operationType = GetDirectionOperationType(x, y);
+
+		return true;
+	}
 	return false;
 }
 
@@ -107,6 +164,8 @@ void GizmoModel::Render(DrawList* context)
 	gizmoMat.Scale(m_screenFactor);
 	gizmoMat *= m_gizmoTransform;
 	context->SetTransform(gizmoMat);	// TODO: old
+
+	//m_gizmoTransform.Print();
 
 	float r = 0.025f;
 	float d = 1.0f;
@@ -134,55 +193,74 @@ void GizmoModel::Render(DrawList* context)
 
 	float s = 0.3f;
 	float s2 = s / 2;
-	context->DrawSquare(s, s, 1, 1, Color(0, 1, 1, 0.5), Matrix::MakeRotationZ(-Math::PIDiv2) * Matrix::MakeTranslation(0, s2, s2), m_tmat);
-	context->DrawSquare(s, s, 1, 1, Color(1, 0, 1, 0.5), Matrix::MakeTranslation(s2, 0, s2), m_tmat);
-	context->DrawSquare(s, s, 1, 1, Color(1, 1, 0, 0.5), Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(s2, s2, 0), m_tmat);
 
+	// YZ plane
+	c = (m_operationType == OperationType::YZ) ? Color::White : Color(0, 1, 1, 0.5);
+	context->DrawSquare(s, s, 1, 1, c, Matrix::MakeRotationZ(-Math::PIDiv2) * Matrix::MakeTranslation(0, s2, s2), m_tmat);
+
+	// XZ plane
+	c = (m_operationType == OperationType::XZ) ? Color::White : Color(1, 0, 1, 0.5);
+	context->DrawSquare(s, s, 1, 1, c, Matrix::MakeTranslation(s2, 0, s2), m_tmat);
+
+	// XY plane
+	c = (m_operationType == OperationType::XY) ? Color::White : Color(1, 1, 0, 0.5);
+	context->DrawSquare(s, s, 1, 1, c, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(s2, s2, 0), m_tmat);
 
 	context->SetTransform(Matrix::Identity);
+}
+
+//------------------------------------------------------------------------------
+void GizmoModel::SubmitEditing()
+{
+	m_gizmoInitialTransform = m_gizmoTransform;
+	m_dragging = false;
 }
 
 //------------------------------------------------------------------------------
 void GizmoModel::MakeScreenFactor()
 {
 	Matrix viewproj = m_view * m_proj;
-	Vector4 trf = Vector4(m_gizmoTransform.GetPosition(), 1.0f);
+	Vector4 trf = Vector4(m_gizmoInitialTransform.GetPosition(), 1.0f);
 	trf = Vector4::Transform(trf, viewproj);
 	m_screenFactor = m_displayScale * 0.15f * trf.w;
 }
 
 //------------------------------------------------------------------------------
-GizmoModel::OperationType GizmoModel::GetDirectionOperationType(int x, int y)
+GizmoModel::OperationType GizmoModel::GetDirectionOperationType(int x, int y, Plane* outLocalPlane)
 {
-	const float MoveXYZBoxSize = 0.25;
+	const float MoveXYZBoxSize = 0.3;
 	const float MoveOnPlaneBoxSize = 0.5;
 	
  	bool xz, xy, yz;
 	Vector3 ptXZ, ptXY, ptYZ;
-	Ray ray;
-	IntersectsLocalPlanes(x, y, &xz, &ptXZ, &xy, &ptXY, &yz, &ptYZ, &ray);
+	Ray localViewRay;
+	IntersectsLocalPlanes(x, y, &xz, &ptXZ, &xy, &ptXY, &yz, &ptYZ, &localViewRay);
 	
 	if (xz && xy && yz &&
 		(abs(ptXZ.x) <= MoveXYZBoxSize && (ptXZ.z) <= MoveXYZBoxSize) &&
 		(abs(ptXY.x) <= MoveXYZBoxSize && (ptXY.y) <= MoveXYZBoxSize) &&
 		(abs(ptYZ.y) <= MoveXYZBoxSize && (ptYZ.z) <= MoveXYZBoxSize))
 	{
+		if (outLocalPlane) *outLocalPlane = Plane(-localViewRay.direction);
 		return OperationType::XYZ;
 	}
 	if (xz)
 	{
-		if ((ptXZ.x >= 0) && (ptXZ.x <= 1) && ( fabs(ptXZ.z) < 0.1f)) return OperationType::X;
+		if (outLocalPlane) *outLocalPlane = Plane(Vector3::UnitY);
+		if ((ptXZ.x >= 0) && (ptXZ.x <= 1) && (fabs(ptXZ.z) < 0.1f)) return OperationType::X;
 		if ((ptXZ.z >= 0) && (ptXZ.z <= 1) && ( fabs(ptXZ.x) < 0.1f)) return OperationType::Z;
 		if ((ptXZ.x < MoveOnPlaneBoxSize) && (ptXZ.z < MoveOnPlaneBoxSize) && (ptXZ.x > 0) && (ptXZ.z > 0))  return OperationType::XZ;
 	}
 	if (xy)
 	{
+		if (outLocalPlane) *outLocalPlane = Plane(Vector3::UnitZ);
 		if ((ptXY.x >= 0 ) && (ptXY.x <= 1) && (fabs(ptXY.y) < 0.1f)) return OperationType::X;
 		if ((ptXY.y >= 0 ) && (ptXY.y <= 1) && (fabs(ptXY.x) < 0.1f)) return OperationType::Y;
 		if ((ptXY.x < MoveOnPlaneBoxSize) && (ptXY.y < MoveOnPlaneBoxSize) && (ptXY.x > 0) && (ptXY.y > 0)) return OperationType::XY;
 	}
 	if (yz)
 	{
+		if (outLocalPlane) *outLocalPlane = Plane(Vector3::UnitX);
 		if ((ptYZ.y >= 0) && (ptYZ.y <= 1) && (fabs(ptYZ.z) < 0.1f)) return OperationType::Y;
 		if ((ptYZ.z >= 0) && (ptYZ.z <= 1) && (fabs(ptYZ.y) < 0.1f)) return OperationType::Z;
 		if ((ptYZ.y < MoveOnPlaneBoxSize) && (ptYZ.z < MoveOnPlaneBoxSize) && (ptYZ.y > 0) && (ptYZ.z > 0)) return OperationType::YZ;
@@ -204,18 +282,18 @@ GizmoModel::OperationType GizmoModel::GetRotationOperationType(int x, int y)
 }
 
 //------------------------------------------------------------------------------
-void GizmoModel::IntersectsLocalPlanes(int x, int y, bool* xz, Vector3* ptXZ, bool* xy, Vector3* ptXY, bool* yz, Vector3* ptYZ, Ray* localViewRay)
+Ray GizmoModel::MakeLocalRay(int x, int y)
 {
-	Matrix gizmoMat = m_gizmoTransform;
+	Matrix gizmoMat = m_gizmoInitialTransform;
 	////gizmoMat.Scale(m_screenFactor);
-	
+
 	Matrix viewproj = m_view * m_proj;
-	
+
 	Ray ray;
 	ray.origin = m_viewPosition;
 	ray.direction = Vector3::Unproject(Vector3(x, y, 0), viewproj, 0, 0, m_viewPixelSize.width, m_viewPixelSize.height);
 	ray.direction = ray.direction - ray.origin;
-	
+
 	// ray を gizmo のローカル空間へ変換する
 	Matrix gizmoInv = Matrix::MakeInverse(gizmoMat);
 	{
@@ -226,6 +304,14 @@ void GizmoModel::IntersectsLocalPlanes(int x, int y, bool* xz, Vector3* ptXZ, bo
 		ray.direction -= ray.origin;
 		ray.direction.Normalize();
 	}
+
+	return ray;
+}
+
+//------------------------------------------------------------------------------
+void GizmoModel::IntersectsLocalPlanes(int x, int y, bool* xz, Vector3* ptXZ, bool* xy, Vector3* ptXY, bool* yz, Vector3* ptYZ, Ray* localViewRay)
+{
+	Ray ray = MakeLocalRay(x, y);
 	
 	// 各軸平面と衝突判定
 	*xz = Plane(Vector3::UnitY).Intersects(ray, ptXZ);
