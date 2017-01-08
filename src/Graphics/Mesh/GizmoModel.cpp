@@ -9,8 +9,9 @@ LN_NAMESPACE_BEGIN
 namespace tr {
 
 const float GizmoModel::CenterBoxSize = 0.2f;
-const float GizmoModel::BarRadius = 0.025f;
+const float GizmoModel::BarRadius = 0.03f;
 const float GizmoModel::BarLendth = 1.0f;
+const float GizmoModel::OnPlaneBoxSize = 0.4f;
 const float GizmoModel::RotationRingInner = 0.8f;
 const float GizmoModel::RotationRingOuter = 1.0f;
 const float GizmoModel::RotationViewZRingInner = 1.0f;
@@ -164,7 +165,6 @@ bool GizmoModel::InjectMouseMove(int x, int y)
 					break;
 				case ln::tr::GizmoModel::OperationType::XYZ:
 				{
-
 					Ray ray1 = MakeLocalRay(x + 1, y);
 					Ray ray2 = MakeLocalRay(x, y + 1);
 					Vector3 lp1, lp2;
@@ -176,11 +176,6 @@ bool GizmoModel::InjectMouseMove(int x, int y)
 					Vector3 taxis = Vector3::Normalize(lp2 - localOffaet);
 					rot.RotateAxis(raxis, (y - m_draggingStartViewPixelPoint.y) * -0.05);
 					rot.RotateAxis(taxis, (x - m_draggingStartViewPixelPoint.x) * 0.05);
-					//rot.RotateAxis(raxis, localOffaet.y);
-					//rot.RotateAxis(taxis, localOffaet.x);
-
-
-					//rot.RotateAxis(m_draggingLocalPlane.Normal, atan2(localOffaet.y, localOffaet.x));
 					break;
 				}
 				case ln::tr::GizmoModel::OperationType::ViewZ:
@@ -192,27 +187,29 @@ bool GizmoModel::InjectMouseMove(int x, int y)
 			}
 			case ln::tr::GizmoType::Scaling:
 			{
+				float s = Vector3::Dot(localOffaet, Vector3::Ones);
 				switch (m_operationType)
 				{
 				case ln::tr::GizmoModel::OperationType::X:
-					localOffaet = Vector3(localOffaet.x, 0, 0);
+					localOffaet = Vector3(s, 0, 0);
 					break;
 				case ln::tr::GizmoModel::OperationType::Y:
-					localOffaet = Vector3(0, localOffaet.y, 0);
+					localOffaet = Vector3(0, s, 0);
 					break;
 				case ln::tr::GizmoModel::OperationType::Z:
-					localOffaet = Vector3(0, 0, localOffaet.z);
+					localOffaet = Vector3(0, 0, s);
 					break;
 				case ln::tr::GizmoModel::OperationType::XY:
-					localOffaet = Vector3(localOffaet.x, localOffaet.y, 0);
+					localOffaet = Vector3(s, s, 0);
 					break;
 				case ln::tr::GizmoModel::OperationType::XZ:
-					localOffaet = Vector3(localOffaet.x, 0, localOffaet.z);
+					localOffaet = Vector3(s, 0, s);
 					break;
 				case ln::tr::GizmoModel::OperationType::YZ:
-					localOffaet = Vector3(0, localOffaet.y, localOffaet.z);
+					localOffaet = Vector3(0, s, s);
 					break;
 				case ln::tr::GizmoModel::OperationType::XYZ:
+					localOffaet = Vector3(s, s, s);
 					break;
 				}
 				localOffaet += Vector3::Ones;
@@ -220,7 +217,6 @@ bool GizmoModel::InjectMouseMove(int x, int y)
 				break;
 			}
 		}
-
 		return true;
 	}
 	else
@@ -257,6 +253,9 @@ void GizmoModel::Render(DrawList* context)
 
 	//f ((GizmoType::Rotation)//GizmoType::Translation)
 
+	float s = OnPlaneBoxSize;
+	float s2 = s / 2;
+
 	switch (m_gizmoType)
 	{
 		case ln::tr::GizmoType::Translation:
@@ -282,9 +281,6 @@ void GizmoModel::Render(DrawList* context)
 			// center
 			c = (m_operationType == OperationType::XYZ) ? Color::White : Color::Yellow;
 			context->DrawSphere(CenterBoxSize, 8, 8, c);
-
-			float s = 0.3f;
-			float s2 = s / 2;
 
 			// YZ plane
 			c = (m_operationType == OperationType::YZ) ? Color::White : Color(0, 1, 1, 0.5);
@@ -355,6 +351,18 @@ void GizmoModel::Render(DrawList* context)
 			c = (m_operationType == OperationType::XYZ) ? Color::White : Color::Yellow;
 			context->DrawBox(Box(CenterBoxSize), c);
 
+			// YZ plane
+			c = (m_operationType == OperationType::YZ) ? Color::White : Color(0, 1, 1, 0.5);
+			context->DrawSquare(s, s, 1, 1, c, Matrix::MakeRotationZ(-Math::PIDiv2) * Matrix::MakeTranslation(0, s2, s2), m_tmat);
+
+			// XZ plane
+			c = (m_operationType == OperationType::XZ) ? Color::White : Color(1, 0, 1, 0.5);
+			context->DrawSquare(s, s, 1, 1, c, Matrix::MakeTranslation(s2, 0, s2), m_tmat);
+
+			// XY plane
+			c = (m_operationType == OperationType::XY) ? Color::White : Color(1, 1, 0, 0.5);
+			context->DrawSquare(s, s, 1, 1, c, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(s2, s2, 0), m_tmat);
+
 			break;
 		}
 	}
@@ -387,8 +395,6 @@ void GizmoModel::MakeScreenFactor()
 //------------------------------------------------------------------------------
 GizmoModel::OperationType GizmoModel::GetDirectionOperationType(int x, int y, Plane* outLocalPlane)
 {
-	const float MoveOnPlaneBoxSize = 0.5;
-	
  	bool xz, xy, yz;
 	Vector3 ptXZ, ptXY, ptYZ;
 	Ray localViewRay;
@@ -413,21 +419,21 @@ GizmoModel::OperationType GizmoModel::GetDirectionOperationType(int x, int y, Pl
 				if (outLocalPlane) *outLocalPlane = Plane(Vector3::UnitY);
 				if ((ptXZ.x >= 0) && (ptXZ.x <= 1) && (fabs(ptXZ.z) < 0.1f)) return OperationType::X;
 				if ((ptXZ.z >= 0) && (ptXZ.z <= 1) && ( fabs(ptXZ.x) < 0.1f)) return OperationType::Z;
-				if ((ptXZ.x < MoveOnPlaneBoxSize) && (ptXZ.z < MoveOnPlaneBoxSize) && (ptXZ.x > 0) && (ptXZ.z > 0))  return OperationType::XZ;
+				if ((ptXZ.x < OnPlaneBoxSize) && (ptXZ.z < OnPlaneBoxSize) && (ptXZ.x > 0) && (ptXZ.z > 0))  return OperationType::XZ;
 			}
 			if (xy)
 			{
 				if (outLocalPlane) *outLocalPlane = Plane(Vector3::UnitZ);
 				if ((ptXY.x >= 0 ) && (ptXY.x <= 1) && (fabs(ptXY.y) < 0.1f)) return OperationType::X;
 				if ((ptXY.y >= 0 ) && (ptXY.y <= 1) && (fabs(ptXY.x) < 0.1f)) return OperationType::Y;
-				if ((ptXY.x < MoveOnPlaneBoxSize) && (ptXY.y < MoveOnPlaneBoxSize) && (ptXY.x > 0) && (ptXY.y > 0)) return OperationType::XY;
+				if ((ptXY.x < OnPlaneBoxSize) && (ptXY.y < OnPlaneBoxSize) && (ptXY.x > 0) && (ptXY.y > 0)) return OperationType::XY;
 			}
 			if (yz)
 			{
 				if (outLocalPlane) *outLocalPlane = Plane(Vector3::UnitX);
 				if ((ptYZ.y >= 0) && (ptYZ.y <= 1) && (fabs(ptYZ.z) < 0.1f)) return OperationType::Y;
 				if ((ptYZ.z >= 0) && (ptYZ.z <= 1) && (fabs(ptYZ.y) < 0.1f)) return OperationType::Z;
-				if ((ptYZ.y < MoveOnPlaneBoxSize) && (ptYZ.z < MoveOnPlaneBoxSize) && (ptYZ.y > 0) && (ptYZ.z > 0)) return OperationType::YZ;
+				if ((ptYZ.y < OnPlaneBoxSize) && (ptYZ.z < OnPlaneBoxSize) && (ptYZ.y > 0) && (ptYZ.z > 0)) return OperationType::YZ;
 			}
 			break;
 		}

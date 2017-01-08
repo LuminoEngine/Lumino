@@ -74,6 +74,7 @@ private:
 	static const float CenterBoxSize;
 	static const float BarRadius;
 	static const float BarLendth;
+	static const float OnPlaneBoxSize;
 	static const float RotationRingInner;
 	static const float RotationRingOuter;
 	static const float RotationViewZRingInner;
