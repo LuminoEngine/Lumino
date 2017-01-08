@@ -1347,7 +1347,7 @@ void DrawList::DrawArc(float startAngle, float endAngle, float innerRadius, floa
 }
 
 //------------------------------------------------------------------------------
-void DrawList::DrawBox(const Box& box)
+void DrawList::DrawBox(const Box& box, const Color& color, const Matrix& localTransform, Material* material)
 {
 	if (box.center != Vector3::Zero) LN_NOTIMPLEMENTED();
 
@@ -1362,8 +1362,8 @@ void DrawList::DrawBox(const Box& box)
 			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
 		}
 	};
-	auto* e = ResolveDrawElement<DrawBoxElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, nullptr);
-	e->factory = detail::RegularBoxMeshFactory(Vector3(box.width, box.height, box.depth));	// TODO: center
+	auto* e = ResolveDrawElement<DrawBoxElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, material);
+	e->factory.Initialize(Vector3(box.width, box.height, box.depth), color, localTransform);
 
 	Vector3 min, max;
 	box.GetMinMax(&min, &max);

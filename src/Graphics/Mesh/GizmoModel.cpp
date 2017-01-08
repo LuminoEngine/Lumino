@@ -8,6 +8,9 @@
 LN_NAMESPACE_BEGIN
 namespace tr {
 
+const float GizmoModel::CenterBoxSize = 0.2f;
+const float GizmoModel::BarRadius = 0.025f;
+const float GizmoModel::BarLendth = 1.0f;
 const float GizmoModel::RotationRingInner = 0.8f;
 const float GizmoModel::RotationRingOuter = 1.0f;
 const float GizmoModel::RotationViewZRingInner = 1.0f;
@@ -23,7 +26,7 @@ GizmoModelPtr GizmoModel::Create()
 
 //------------------------------------------------------------------------------
 GizmoModel::GizmoModel()
-	: m_gizmoType(GizmoType::Rotation)//GizmoType::Translation)
+	: m_gizmoType(GizmoType::Scaling)//GizmoType::Rotation)//GizmoType::Translation)
 	, m_displayScale(1.0f)
 	, m_operationType(OperationType::None)
 	, m_dragging(false)
@@ -189,6 +192,31 @@ bool GizmoModel::InjectMouseMove(int x, int y)
 			}
 			case ln::tr::GizmoType::Scaling:
 			{
+				switch (m_operationType)
+				{
+				case ln::tr::GizmoModel::OperationType::X:
+					localOffaet = Vector3(localOffaet.x, 0, 0);
+					break;
+				case ln::tr::GizmoModel::OperationType::Y:
+					localOffaet = Vector3(0, localOffaet.y, 0);
+					break;
+				case ln::tr::GizmoModel::OperationType::Z:
+					localOffaet = Vector3(0, 0, localOffaet.z);
+					break;
+				case ln::tr::GizmoModel::OperationType::XY:
+					localOffaet = Vector3(localOffaet.x, localOffaet.y, 0);
+					break;
+				case ln::tr::GizmoModel::OperationType::XZ:
+					localOffaet = Vector3(localOffaet.x, 0, localOffaet.z);
+					break;
+				case ln::tr::GizmoModel::OperationType::YZ:
+					localOffaet = Vector3(0, localOffaet.y, localOffaet.z);
+					break;
+				case ln::tr::GizmoModel::OperationType::XYZ:
+					break;
+				}
+				localOffaet += Vector3::Ones;
+				m_gizmoTransform = Matrix::MakeScaling(localOffaet) * m_draggingStartGizmoTransform;
 				break;
 			}
 		}
@@ -233,9 +261,8 @@ void GizmoModel::Render(DrawList* context)
 	{
 		case ln::tr::GizmoType::Translation:
 		{
-			float r = 0.025f;
-			float d = 1.0f;
-
+			float r = BarRadius;
+			float d = BarLendth;
 
 			// X axis
 			c = (m_operationType == OperationType::X) ? Color::White : Color::Red;
@@ -254,7 +281,7 @@ void GizmoModel::Render(DrawList* context)
 
 			// center
 			c = (m_operationType == OperationType::XYZ) ? Color::White : Color::Yellow;
-			context->DrawSphere(0.1f, 8, 8, c);
+			context->DrawSphere(CenterBoxSize, 8, 8, c);
 
 			float s = 0.3f;
 			float s2 = s / 2;
@@ -280,7 +307,7 @@ void GizmoModel::Render(DrawList* context)
 
 			// center
 			c = (m_operationType == OperationType::XYZ) ? Color::White : Color::Yellow;
-			context->DrawSphere(0.1f, 8, 8, c);
+			context->DrawSphere(CenterBoxSize, 8, 8, c);
 
 			// X
 			c = (m_operationType == OperationType::X) ? Color::White : Color(1, 0, 0, 0.5);
@@ -305,7 +332,31 @@ void GizmoModel::Render(DrawList* context)
 			break;
 		}
 		case ln::tr::GizmoType::Scaling:
+		{
+			float r = BarRadius;
+			float d = BarLendth;
+
+			// X axis
+			c = (m_operationType == OperationType::X) ? Color::White : Color::Red;
+			context->DrawCylinder(r, d, 8, 1, c, Matrix::MakeRotationZ(-Math::PIDiv2) * Matrix::MakeTranslation(d / 2, 0, 0));
+			context->DrawBox(Box(CenterBoxSize), c, Matrix::MakeTranslation(d, 0, 0));
+
+			// Y axis
+			c = (m_operationType == OperationType::Y) ? Color::White : Color::Green;
+			context->DrawCylinder(r, d, 8, 1, c, Matrix::MakeTranslation(0, d / 2, 0));
+			context->DrawBox(Box(CenterBoxSize), c, Matrix::MakeTranslation(0, d, 0));
+
+			// Z axis
+			c = (m_operationType == OperationType::Z) ? Color::White : Color::Blue;
+			context->DrawCylinder(r, d, 8, 1, c, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(0, 0, d / 2));
+			context->DrawBox(Box(CenterBoxSize), c, Matrix::MakeTranslation(0, 0, d));
+
+			// center
+			c = (m_operationType == OperationType::XYZ) ? Color::White : Color::Yellow;
+			context->DrawBox(Box(CenterBoxSize), c);
+
 			break;
+		}
 	}
 
 	context->SetTransform(Matrix::Identity);
@@ -336,7 +387,6 @@ void GizmoModel::MakeScreenFactor()
 //------------------------------------------------------------------------------
 GizmoModel::OperationType GizmoModel::GetDirectionOperationType(int x, int y, Plane* outLocalPlane)
 {
-	const float MoveXYZBoxSize = 0.3;
 	const float MoveOnPlaneBoxSize = 0.5;
 	
  	bool xz, xy, yz;
@@ -345,9 +395,9 @@ GizmoModel::OperationType GizmoModel::GetDirectionOperationType(int x, int y, Pl
 	IntersectsLocalPlanes(x, y, &xz, &ptXZ, &xy, &ptXY, &yz, &ptYZ, &localViewRay);
 	
 	if (xz && xy && yz &&
-		(abs(ptXZ.x) <= MoveXYZBoxSize && (ptXZ.z) <= MoveXYZBoxSize) &&
-		(abs(ptXY.x) <= MoveXYZBoxSize && (ptXY.y) <= MoveXYZBoxSize) &&
-		(abs(ptYZ.y) <= MoveXYZBoxSize && (ptYZ.z) <= MoveXYZBoxSize))
+		(abs(ptXZ.x) <= CenterBoxSize && (ptXZ.z) <= CenterBoxSize) &&
+		(abs(ptXY.x) <= CenterBoxSize && (ptXY.y) <= CenterBoxSize) &&
+		(abs(ptYZ.y) <= CenterBoxSize && (ptYZ.z) <= CenterBoxSize))
 	{
 		if (outLocalPlane) *outLocalPlane = Plane(-localViewRay.direction);
 		return OperationType::XYZ;

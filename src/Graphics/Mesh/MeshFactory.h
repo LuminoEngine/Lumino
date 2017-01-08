@@ -328,13 +328,15 @@ private:
 
 // 6–Ê‚»‚ê‚¼‚ê“Æ—§‚µ‚½’¸“_‚ðŽ‚Â’¼•û‘Ì
 class RegularBoxMeshFactory
+	: public MeshFactoryBase
 {
 public:
 	RegularBoxMeshFactory() {}
 
-	RegularBoxMeshFactory(const Vector3& size)
+	void Initialize(const Vector3& size, const Color& color, const Matrix& transform)
 	{
 		m_size = size;
+		MeshFactoryBase::Initialize(color, transform);
 	}
 
 	int GetVertexCount() const
@@ -347,11 +349,11 @@ public:
 		return 36;
 	}
 
-	static void SetV(Vertex* vertex, float x, float y, float z, float u, float v, const Vector3& normal)
+	void SetV(Vertex* vertex, float x, float y, float z, float u, float v, const Vector3& normal)
 	{
 		vertex->position.Set(x, y, z);
 		vertex->uv.Set(u, v);
-		vertex->color = Color::White;
+		vertex->color = m_color;
 		vertex->normal = normal;
 	}
 	static void SetI(uint16_t* index, uint16_t begin)
@@ -412,6 +414,9 @@ public:
 		SetV(v, maxPos.x, maxPos.y, maxPos.z, 1.0f, 0.0f, Vector3::UnitY); ++v;	// „­
 		SetV(v, maxPos.x, maxPos.y, minPos.z, 1.0f, 1.0f, Vector3::UnitY); ++v;	// „®
 		SetI(i, beginVertexIndex + 20);
+
+		if (!m_transform.IsIdentity())
+			MeshHelper::Transform(outVertices, v, m_transform);
 	}
 
 private:

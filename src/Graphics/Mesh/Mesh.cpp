@@ -123,7 +123,8 @@ void MeshResource::EndCreating()
 //------------------------------------------------------------------------------
 void MeshResource::CreateBox(const Vector3& size)
 {
-	detail::RegularBoxMeshFactory factory(size);
+	detail::RegularBoxMeshFactory factory;
+	factory.Initialize(size, Color::White, Matrix::Identity);
 	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), MeshCreationFlags::None);
 
 	void* vb = TryLockVertexBuffer(VB_BasicVertices);

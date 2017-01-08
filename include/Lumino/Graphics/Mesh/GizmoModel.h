@@ -71,6 +71,9 @@ LN_INTERNAL_ACCESS:
 	void IntersectsLocalPlanes(int x, int y, bool* xz, Vector3* ptXZ, bool* xy, Vector3* ptXY, bool* yz, Vector3* ptYZ, Ray* localViewRay);
 
 private:
+	static const float CenterBoxSize;
+	static const float BarRadius;
+	static const float BarLendth;
 	static const float RotationRingInner;
 	static const float RotationRingOuter;
 	static const float RotationViewZRingInner;
