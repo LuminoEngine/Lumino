@@ -10,6 +10,8 @@ namespace tr {
 
 const float GizmoModel::RotationRingInner = 0.8f;
 const float GizmoModel::RotationRingOuter = 1.0f;
+const float GizmoModel::RotationViewZRingInner = 1.0f;
+const float GizmoModel::RotationViewZRingOuter = 1.2f;
 
 //------------------------------------------------------------------------------
 GizmoModelPtr GizmoModel::Create()
@@ -156,6 +158,9 @@ bool GizmoModel::InjectMouseMove(int x, int y)
 				case ln::tr::GizmoModel::OperationType::Z:
 					rot.RotateAxis(m_draggingLocalPlane.Normal, atan2(localOffaet.y, localOffaet.x));
 					break;
+				case ln::tr::GizmoModel::OperationType::ViewZ:
+					rot.RotateAxis(m_draggingLocalPlane.Normal, atan2(localOffaet.y, localOffaet.x));
+					break;
 				}
 				m_gizmoTransform = rot * m_draggingStartGizmoTransform;
 				break;
@@ -255,15 +260,26 @@ void GizmoModel::Render(DrawList* context)
 			c = (m_operationType == OperationType::XYZ) ? Color::White : Color::Yellow;
 			context->DrawSphere(0.1f, 8, 8, c);
 
+			// X
 			c = (m_operationType == OperationType::X) ? Color::White : Color(1, 0, 0, 0.5);
 			context->DrawArc(0, Math::PI2, i1, o1, 32, c, Matrix::MakeRotationZ(-Math::PIDiv2), m_tmat);
 
+			// Y
 			c = (m_operationType == OperationType::Y) ? Color::White : Color(0, 1, 0, 0.5);
 			context->DrawArc(0, Math::PI2, i1, o1, 32, c, Matrix::Identity, m_tmat);
 
+			// Z
 			c = (m_operationType == OperationType::Z) ? Color::White : Color(0, 0, 1, 0.5);
 			context->DrawArc(0, Math::PI2, i1, o1, 32, c, Matrix::MakeRotationX(Math::PIDiv2), m_tmat);
 
+			Matrix viewInv = Matrix::MakeInverse(m_view);
+			viewInv.m41 = m_gizmoTransform.m41;
+			viewInv.m42 = m_gizmoTransform.m42; 
+			viewInv.m43 = m_gizmoTransform.m43;
+			context->SetTransform(viewInv);
+
+			c = (m_operationType == OperationType::ViewZ) ? Color::White : Color(1, 1, 0, 0.5);
+			context->DrawArc(0, Math::PI2, RotationViewZRingInner, RotationViewZRingOuter, 32, c, Matrix::MakeRotationX(Math::PIDiv2), m_tmat);
 			break;
 		}
 		case ln::tr::GizmoType::Scaling:
@@ -271,6 +287,8 @@ void GizmoModel::Render(DrawList* context)
 	}
 
 	context->SetTransform(Matrix::Identity);
+
+
 }
 
 //------------------------------------------------------------------------------
@@ -360,6 +378,17 @@ GizmoModel::OperationType GizmoModel::GetDirectionOperationType(int x, int y, Pl
 				if (outLocalPlane) *outLocalPlane = Plane(Vector3::UnitX);
 				float d = ptYZ.GetLength();
 				if (RotationRingInner <= d && d <= RotationRingOuter) return OperationType::X;
+			}
+
+			if (xz && xy && yz)
+			{
+				Plane localPlane(-localViewRay.direction);
+				if (outLocalPlane) *outLocalPlane = localPlane;
+
+				Vector3 pt;
+				localPlane.Intersects(localViewRay, &pt);
+				float d = pt.GetLength();
+				if (RotationViewZRingInner <= d && d <= RotationViewZRingOuter) return OperationType::ViewZ;
 			}
 			break;
 		}

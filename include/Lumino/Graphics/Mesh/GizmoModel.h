@@ -51,6 +51,9 @@ LN_INTERNAL_ACCESS:
 		XZ,
 		YZ,
 		XYZ,
+
+		ViewXY,
+		ViewZ,
 	};
 	
 	GizmoModel();
@@ -70,6 +73,8 @@ LN_INTERNAL_ACCESS:
 private:
 	static const float RotationRingInner;
 	static const float RotationRingOuter;
+	static const float RotationViewZRingInner;
+	static const float RotationViewZRingOuter;
 
 	//RefPtr<MeshResource>	m_mesh;
 	GizmoType				m_gizmoType;
