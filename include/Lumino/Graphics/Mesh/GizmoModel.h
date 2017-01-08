@@ -88,6 +88,7 @@ private:
 	static const float RotationRingOuter;
 	static const float RotationViewZRingInner;
 	static const float RotationViewZRingOuter;
+	static const float BaseOpacity;
 
 	//RefPtr<MeshResource>	m_mesh;
 	GizmoType				m_gizmoType;

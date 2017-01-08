@@ -16,6 +16,7 @@ const float GizmoModel::RotationRingInner = 0.8f;
 const float GizmoModel::RotationRingOuter = 1.0f;
 const float GizmoModel::RotationViewZRingInner = 1.0f;
 const float GizmoModel::RotationViewZRingOuter = 1.2f;
+const float GizmoModel::BaseOpacity = 0.7f;
 
 //------------------------------------------------------------------------------
 GizmoModelPtr GizmoModel::Create()
@@ -27,7 +28,7 @@ GizmoModelPtr GizmoModel::Create()
 
 //------------------------------------------------------------------------------
 GizmoModel::GizmoModel()
-	: m_gizmoType(GizmoType::Translation)//GizmoType::Scaling)//GizmoType::Rotation)//
+	: m_gizmoType(GizmoType::Rotation)//GizmoType::Translation)//GizmoType::Scaling)//
 	, m_displayScale(1.0f)
 	, m_operationType(OperationType::None)
 	, m_dragging(false)
@@ -186,7 +187,9 @@ bool GizmoModel::InjectMouseMove(int x, int y)
 					rot.RotateAxis(m_draggingLocalPlane.Normal, atan2(localOffaet.y, localOffaet.x));
 					break;
 				}
+
 				m_gizmoTransform = rot * m_draggingStartGizmoTransform;
+				m_targetTransform.rotation = m_targetInitialTransform.rotation * Quaternion::MakeFromRotationMatrix(rot);
 				break;
 			}
 			case ln::tr::GizmoType::Scaling:
@@ -288,15 +291,15 @@ void GizmoModel::Render(DrawList* context)
 			context->DrawSphere(CenterBoxSize, 8, 8, c);
 
 			// YZ plane
-			c = (m_operationType == OperationType::YZ) ? Color::White : Color(0, 1, 1, 0.5);
+			c = (m_operationType == OperationType::YZ) ? Color::White : Color(0, 1, 1, BaseOpacity);
 			context->DrawSquare(s, s, 1, 1, c, Matrix::MakeRotationZ(-Math::PIDiv2) * Matrix::MakeTranslation(0, s2, s2), m_tmat);
 
 			// XZ plane
-			c = (m_operationType == OperationType::XZ) ? Color::White : Color(1, 0, 1, 0.5);
+			c = (m_operationType == OperationType::XZ) ? Color::White : Color(1, 0, 1, BaseOpacity);
 			context->DrawSquare(s, s, 1, 1, c, Matrix::MakeTranslation(s2, 0, s2), m_tmat);
 
 			// XY plane
-			c = (m_operationType == OperationType::XY) ? Color::White : Color(1, 1, 0, 0.5);
+			c = (m_operationType == OperationType::XY) ? Color::White : Color(1, 1, 0, BaseOpacity);
 			context->DrawSquare(s, s, 1, 1, c, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(s2, s2, 0), m_tmat);
 
 			break;
@@ -311,24 +314,24 @@ void GizmoModel::Render(DrawList* context)
 			context->DrawSphere(CenterBoxSize, 8, 8, c);
 
 			// X
-			c = (m_operationType == OperationType::X) ? Color::White : Color(1, 0, 0, 0.5);
+			c = (m_operationType == OperationType::X) ? Color::White : Color(1, 0, 0, BaseOpacity);
 			context->DrawArc(0, Math::PI2, i1, o1, 32, c, Matrix::MakeRotationZ(-Math::PIDiv2), m_tmat);
 
 			// Y
-			c = (m_operationType == OperationType::Y) ? Color::White : Color(0, 1, 0, 0.5);
+			c = (m_operationType == OperationType::Y) ? Color::White : Color(0, 1, 0, BaseOpacity);
 			context->DrawArc(0, Math::PI2, i1, o1, 32, c, Matrix::Identity, m_tmat);
 
 			// Z
-			c = (m_operationType == OperationType::Z) ? Color::White : Color(0, 0, 1, 0.5);
+			c = (m_operationType == OperationType::Z) ? Color::White : Color(0, 0, 1, BaseOpacity);
 			context->DrawArc(0, Math::PI2, i1, o1, 32, c, Matrix::MakeRotationX(Math::PIDiv2), m_tmat);
 
-			Matrix viewInv = Matrix::MakeInverse(m_view);
+			Matrix viewInv = Matrix::MakeScaling(m_screenFactor) * Matrix::MakeInverse(m_view);
 			viewInv.m41 = m_gizmoTransform.m41;
 			viewInv.m42 = m_gizmoTransform.m42; 
 			viewInv.m43 = m_gizmoTransform.m43;
 			context->SetTransform(viewInv);
 
-			c = (m_operationType == OperationType::ViewZ) ? Color::White : Color(1, 1, 0, 0.5);
+			c = (m_operationType == OperationType::ViewZ) ? Color::White : Color(1, 1, 0, BaseOpacity);
 			context->DrawArc(0, Math::PI2, RotationViewZRingInner, RotationViewZRingOuter, 32, c, Matrix::MakeRotationX(Math::PIDiv2), m_tmat);
 			break;
 		}
@@ -357,15 +360,15 @@ void GizmoModel::Render(DrawList* context)
 			context->DrawBox(Box(CenterBoxSize), c);
 
 			// YZ plane
-			c = (m_operationType == OperationType::YZ) ? Color::White : Color(0, 1, 1, 0.5);
+			c = (m_operationType == OperationType::YZ) ? Color::White : Color(0, 1, 1, BaseOpacity);
 			context->DrawSquare(s, s, 1, 1, c, Matrix::MakeRotationZ(-Math::PIDiv2) * Matrix::MakeTranslation(0, s2, s2), m_tmat);
 
 			// XZ plane
-			c = (m_operationType == OperationType::XZ) ? Color::White : Color(1, 0, 1, 0.5);
+			c = (m_operationType == OperationType::XZ) ? Color::White : Color(1, 0, 1, BaseOpacity);
 			context->DrawSquare(s, s, 1, 1, c, Matrix::MakeTranslation(s2, 0, s2), m_tmat);
 
 			// XY plane
-			c = (m_operationType == OperationType::XY) ? Color::White : Color(1, 1, 0, 0.5);
+			c = (m_operationType == OperationType::XY) ? Color::White : Color(1, 1, 0, BaseOpacity);
 			context->DrawSquare(s, s, 1, 1, c, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(s2, s2, 0), m_tmat);
 
 			break;
@@ -380,11 +383,11 @@ void GizmoModel::Render(DrawList* context)
 //------------------------------------------------------------------------------
 void GizmoModel::SubmitEditing()
 {
-	m_gizmoInitialTransform = m_gizmoTransform;
 	m_targetInitialTransform = m_targetTransform;
 	
 	// 拡大・回転をリセット
 	m_gizmoTransform = Matrix::MakeTranslation(m_gizmoInitialTransform.GetPosition());
+	m_gizmoInitialTransform = m_gizmoTransform;
 
 	m_dragging = false;
 
