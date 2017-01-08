@@ -28,7 +28,7 @@ GizmoModelPtr GizmoModel::Create()
 
 //------------------------------------------------------------------------------
 GizmoModel::GizmoModel()
-	: m_gizmoType(GizmoType::Rotation)//GizmoType::Translation)//GizmoType::Scaling)//
+	: m_gizmoType(GizmoType::Scaling)//GizmoType::Rotation)//GizmoType::Translation)//
 	, m_displayScale(1.0f)
 	, m_operationType(OperationType::None)
 	, m_dragging(false)
@@ -219,8 +219,10 @@ bool GizmoModel::InjectMouseMove(int x, int y)
 					localOffaet = Vector3(s, s, s);
 					break;
 				}
-				localOffaet += Vector3::Ones;
-				m_gizmoTransform = Matrix::MakeScaling(localOffaet) * m_draggingStartGizmoTransform;
+
+				//localOffaet += Vector3::Ones;
+				//m_gizmoTransform = Matrix::MakeScaling(localOffaet) * m_draggingStartGizmoTransform;
+				m_targetTransform.scale = m_targetInitialTransform.scale + localOffaet;
 				break;
 			}
 		}
