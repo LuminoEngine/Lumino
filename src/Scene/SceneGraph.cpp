@@ -276,6 +276,7 @@ void SceneGraph3D::Render2(DrawList* renderer, Camera* camera)
 	if (visibleGridPlane)
 	{
 		AdjustGridMesh(camera);
+		renderer->SetTransform(Matrix::Identity);
 		renderer->DrawMesh(m_gridPlane, 0, m_gridPlane->GetMeshResource()->GetMaterial(0));
 	}
 }

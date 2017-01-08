@@ -78,8 +78,10 @@ void Main()
 #else
 
 
+
 void Main()
 {
+
 	//class Foo{
 	//public:
 	//	void FooFunc(){}
@@ -508,7 +510,19 @@ void Main()
 	//auto gizmo = detail::GizmoModel::Create();
 
 	auto gizmo = static_cast<CameraViewportLayer*>(Engine::GetDefault3DLayer())->CreateGizmo();
-	gizmo->Setup(Matrix::Identity, Matrix::MakeTranslation(1, 0, 0));
+
+	auto sp = Sprite3D::Create(2, 2, Texture2D::Create(_T("D:/GameProjects/Chronicles/110220c_as019.jpg")));
+	gizmo->Setup(Matrix::Identity, sp->GetTransform());//Matrix::MakeTranslation(1, 0, 0));
+	
+	
+	gizmo->AddOnTargetTransformChanged([sp](tr::GizmoModel* g)
+	{
+		sp->SetTransform(g->GetTargetTransform());
+	});
+	gizmo->AddOnSubmitEditing([sp](tr::GizmoModel* g)
+	{
+		//sp->SetTransform(g->GetTargetTransform());
+	});
 
 	while (!Engine::IsEndRequested())
 	{

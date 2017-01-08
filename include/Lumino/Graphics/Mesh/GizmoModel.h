@@ -24,10 +24,10 @@ public:
 public:
 	void SetGizmoType(GizmoType type);
 
-	void Setup(const Matrix& parentSpaceTransform, const Matrix& targetInitialTransform);
+	void Setup(const Matrix& parentSpaceTransform, const SQTTransform& targetInitialTransform);
 	
 	//void SetTargetTransform(const Matrix& transform);
-	const Matrix& GetTargetTransform() const;
+	const SQTTransform& GetTargetTransform() const;
 	
 	void SetViewInfo(const Vector3& viewPosition, const Matrix& view, const Matrix& proj, const SizeI& viewPixelSize);
 	void SetDisplayScale(float scale);
@@ -38,6 +38,15 @@ public:
 	//bool InjectKeyDown(Keys keyCode, ModifierKeys modifierKeys);
 
 	void Render(DrawList* context);
+
+	void AddOnTargetTransformChanged(const std::function<void(GizmoModel*)>& handler)
+	{
+		m_onTargetTransformChanged.AddHandler(handler);
+	}
+	void AddOnSubmitEditing(const std::function<void(GizmoModel*)>& handler)
+	{
+		m_onSubmitEditing.AddHandler(handler);
+	}
 	
 LN_INTERNAL_ACCESS:
 	
@@ -83,7 +92,8 @@ private:
 	//RefPtr<MeshResource>	m_mesh;
 	GizmoType				m_gizmoType;
 	//Matrix					m_parentSpaceTransform;
-	Matrix					m_targetTransform;	// Gizmo によって操作される Transform
+	SQTTransform					m_targetInitialTransform;
+	SQTTransform					m_targetTransform;	// Gizmo によって操作される Transform
 	Matrix					m_gizmoInitialTransform;
 	Matrix					m_gizmoTransform;	// Gizmo 自体の Transform (視点距離によるスケーリングは含まれない)
 	Vector3					m_viewPosition;
@@ -101,6 +111,9 @@ private:
 	Vector3					m_draggingStartLocalPosition;
 	Matrix					m_draggingStartGizmoTransform;
 	PointI					m_draggingStartViewPixelPoint;
+
+	Event<void(GizmoModel*)>	m_onTargetTransformChanged;
+	Event<void(GizmoModel*)>	m_onSubmitEditing;
 };
 
 } // namespace tr

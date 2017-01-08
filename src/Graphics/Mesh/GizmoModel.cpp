@@ -8,8 +8,8 @@
 LN_NAMESPACE_BEGIN
 namespace tr {
 
-const float GizmoModel::CenterBoxSize = 0.2f;
-const float GizmoModel::BarRadius = 0.03f;
+const float GizmoModel::CenterBoxSize = 0.15f;
+const float GizmoModel::BarRadius = 0.05f;
 const float GizmoModel::BarLendth = 1.0f;
 const float GizmoModel::OnPlaneBoxSize = 0.4f;
 const float GizmoModel::RotationRingInner = 0.8f;
@@ -27,7 +27,7 @@ GizmoModelPtr GizmoModel::Create()
 
 //------------------------------------------------------------------------------
 GizmoModel::GizmoModel()
-	: m_gizmoType(GizmoType::Scaling)//GizmoType::Rotation)//GizmoType::Translation)
+	: m_gizmoType(GizmoType::Translation)//GizmoType::Scaling)//GizmoType::Rotation)//
 	, m_displayScale(1.0f)
 	, m_operationType(OperationType::None)
 	, m_dragging(false)
@@ -55,9 +55,10 @@ void GizmoModel::SetGizmoType(GizmoType type)
 }
 
 //------------------------------------------------------------------------------
-void GizmoModel::Setup(const Matrix& parentSpaceTransform, const Matrix& targetInitialTransform)
+void GizmoModel::Setup(const Matrix& parentSpaceTransform, const SQTTransform& targetInitialTransform)
 {
-	Matrix targetWorld = parentSpaceTransform * targetInitialTransform;
+	m_targetInitialTransform = targetInitialTransform;
+	Matrix targetWorld = parentSpaceTransform * Matrix(targetInitialTransform);
 	m_gizmoTransform = targetWorld;
 	m_gizmoInitialTransform = m_gizmoTransform;
 }
@@ -69,7 +70,7 @@ void GizmoModel::Setup(const Matrix& parentSpaceTransform, const Matrix& targetI
 //}
 
 //------------------------------------------------------------------------------
-const Matrix& GizmoModel::GetTargetTransform() const
+const SQTTransform& GizmoModel::GetTargetTransform() const
 {
 	return m_targetTransform;
 }
@@ -118,6 +119,8 @@ bool GizmoModel::InjectMouseMove(int x, int y)
 		m_draggingLocalPlane.Intersects(MakeLocalRay(x, y), &localOffaet);
 		localOffaet -= m_draggingStartLocalPosition;
 
+		localOffaet *= m_screenFactor;
+
 		switch (m_gizmoType)
 		{
 			case ln::tr::GizmoType::Translation:
@@ -147,6 +150,7 @@ bool GizmoModel::InjectMouseMove(int x, int y)
 				}
 
 				m_gizmoTransform = m_draggingStartGizmoTransform * Matrix::MakeTranslation(localOffaet);
+				m_targetTransform.translation = m_targetInitialTransform.translation + localOffaet;
 				break;
 			}
 			case ln::tr::GizmoType::Rotation:
@@ -217,6 +221,8 @@ bool GizmoModel::InjectMouseMove(int x, int y)
 				break;
 			}
 		}
+
+		m_onTargetTransformChanged.Raise(this);
 		return true;
 	}
 	else
@@ -244,14 +250,12 @@ bool GizmoModel::InjectMouseUp(int x, int y)
 void GizmoModel::Render(DrawList* context)
 {
 	Matrix gizmoMat;
-	//gizmoMat.Scale(m_screenFactor);
+	gizmoMat.Scale(m_screenFactor);
 	gizmoMat *= m_gizmoTransform;
 	context->SetTransform(gizmoMat);	// TODO: old
 
-	Color c;
-	//m_gizmoTransform.Print();
 
-	//f ((GizmoType::Rotation)//GizmoType::Translation)
+	Color c;
 
 	float s = OnPlaneBoxSize;
 	float s2 = s / 2;
@@ -262,21 +266,22 @@ void GizmoModel::Render(DrawList* context)
 		{
 			float r = BarRadius;
 			float d = BarLendth;
+			float cr = r * 2.5;
 
 			// X axis
 			c = (m_operationType == OperationType::X) ? Color::White : Color::Red;
 			context->DrawCylinder(r, d, 8, 1, c, Matrix::MakeRotationZ(-Math::PIDiv2) * Matrix::MakeTranslation(d / 2, 0, 0));
-			context->DrawCone(r * 3, r * 6, 8, c, Matrix::MakeRotationZ(-Math::PIDiv2) * Matrix::MakeTranslation(d, 0, 0));
+			context->DrawCone(cr, r * 6, 8, c, Matrix::MakeRotationZ(-Math::PIDiv2) * Matrix::MakeTranslation(d + cr, 0, 0));
 
 			// Y axis
 			c = (m_operationType == OperationType::Y) ? Color::White : Color::Green;
 			context->DrawCylinder(r, d, 8, 1, c, Matrix::MakeTranslation(0, d / 2, 0));
-			context->DrawCone(r * 3, r * 6, 8, c, Matrix::MakeTranslation(0, d, 0));
+			context->DrawCone(cr, r * 6, 8, c, Matrix::MakeTranslation(0, d + cr, 0));
 
 			// Z axis
 			c = (m_operationType == OperationType::Z) ? Color::White : Color::Blue;
 			context->DrawCylinder(r, d, 8, 1, c, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(0, 0, d / 2));
-			context->DrawCone(r * 3, r * 6, 8, c, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(0, 0, d));
+			context->DrawCone(cr, r * 6, 8, c, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(0, 0, d + cr));
 
 			// center
 			c = (m_operationType == OperationType::XYZ) ? Color::White : Color::Yellow;
@@ -376,18 +381,21 @@ void GizmoModel::Render(DrawList* context)
 void GizmoModel::SubmitEditing()
 {
 	m_gizmoInitialTransform = m_gizmoTransform;
+	m_targetInitialTransform = m_targetTransform;
 	
 	// 拡大・回転をリセット
 	m_gizmoTransform = Matrix::MakeTranslation(m_gizmoInitialTransform.GetPosition());
 
 	m_dragging = false;
+
+	m_onSubmitEditing.Raise(this);
 }
 
 //------------------------------------------------------------------------------
 void GizmoModel::MakeScreenFactor()
 {
 	Matrix viewproj = m_view * m_proj;
-	Vector4 trf = Vector4(m_gizmoInitialTransform.GetPosition(), 1.0f);
+	Vector4 trf = Vector4(m_gizmoTransform.GetPosition(), 1.0f);
 	trf = Vector4::Transform(trf, viewproj);
 	m_screenFactor = m_displayScale * 0.15f * trf.w;
 }
@@ -491,8 +499,9 @@ GizmoModel::OperationType GizmoModel::GetRotationOperationType(int x, int y)
 //------------------------------------------------------------------------------
 Ray GizmoModel::MakeLocalRay(int x, int y)
 {
-	Matrix gizmoMat = m_gizmoInitialTransform;
-	////gizmoMat.Scale(m_screenFactor);
+	Matrix gizmoMat;
+	gizmoMat.Scale(m_screenFactor);
+	gizmoMat *= m_gizmoInitialTransform;
 
 	Matrix viewproj = m_view * m_proj;
 
