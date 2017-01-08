@@ -1327,6 +1327,26 @@ void DrawList::DrawSquare(float sizeX, float sizeZ, int slicesX, int slicesZ, co
 }
 
 //------------------------------------------------------------------------------
+void DrawList::DrawArc(float startAngle, float endAngle, float innerRadius, float outerRadius, int slices, const Color& color, const Matrix& localTransform, Material* material)
+{
+	class DrawArcElement : public detail::LightingDrawElement	// TODO: LightingDrawElement は忘れやすい。デフォルトありでいいと思う
+	{
+	public:
+		detail::ArcMeshFactory factory;
+
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		{
+			auto* r = context->BeginPrimitiveRenderer();
+			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
+		}
+	};
+	auto* e = ResolveDrawElement<DrawArcElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, material);
+	e->factory.Initialize(startAngle, endAngle, innerRadius, outerRadius, slices, color, localTransform);
+	e->boundingSphere.center = Vector3::Zero;
+	e->boundingSphere.radius = outerRadius;
+}
+
+//------------------------------------------------------------------------------
 void DrawList::DrawBox(const Box& box)
 {
 	if (box.center != Vector3::Zero) LN_NOTIMPLEMENTED();

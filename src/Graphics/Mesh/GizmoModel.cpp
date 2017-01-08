@@ -8,6 +8,9 @@
 LN_NAMESPACE_BEGIN
 namespace tr {
 
+const float GizmoModel::RotationRingInner = 0.8f;
+const float GizmoModel::RotationRingOuter = 1.0f;
+
 //------------------------------------------------------------------------------
 GizmoModelPtr GizmoModel::Create()
 {
@@ -18,8 +21,7 @@ GizmoModelPtr GizmoModel::Create()
 
 //------------------------------------------------------------------------------
 GizmoModel::GizmoModel()
-	: /*m_mesh(nullptr)
-	, */m_gizmoType(GizmoType::Translation)
+	: m_gizmoType(GizmoType::Rotation)//GizmoType::Translation)
 	, m_displayScale(1.0f)
 	, m_operationType(OperationType::None)
 	, m_dragging(false)
@@ -109,31 +111,61 @@ bool GizmoModel::InjectMouseMove(int x, int y)
 		m_draggingLocalPlane.Intersects(MakeLocalRay(x, y), &localOffaet);
 		localOffaet -= m_draggingStartLocalPosition;
 
-		switch (m_operationType)
+		switch (m_gizmoType)
 		{
-		case ln::tr::GizmoModel::OperationType::X:
-			localOffaet = Vector3(localOffaet.x, 0, 0);
-			break;
-		case ln::tr::GizmoModel::OperationType::Y:
-			localOffaet = Vector3(0, localOffaet.y, 0);
-			break;
-		case ln::tr::GizmoModel::OperationType::Z:
-			localOffaet = Vector3(0, 0, localOffaet.z);
-			break;
-		case ln::tr::GizmoModel::OperationType::XY:
-			localOffaet = Vector3(localOffaet.x, localOffaet.y, 0);
-			break;
-		case ln::tr::GizmoModel::OperationType::XZ:
-			localOffaet = Vector3(localOffaet.x, 0, localOffaet.z);
-			break;
-		case ln::tr::GizmoModel::OperationType::YZ:
-			localOffaet = Vector3(0, localOffaet.y, localOffaet.z);
-			break;
-		case ln::tr::GizmoModel::OperationType::XYZ:
-			break;
+			case ln::tr::GizmoType::Translation:
+			{
+				switch (m_operationType)
+				{
+				case ln::tr::GizmoModel::OperationType::X:
+					localOffaet = Vector3(localOffaet.x, 0, 0);
+					break;
+				case ln::tr::GizmoModel::OperationType::Y:
+					localOffaet = Vector3(0, localOffaet.y, 0);
+					break;
+				case ln::tr::GizmoModel::OperationType::Z:
+					localOffaet = Vector3(0, 0, localOffaet.z);
+					break;
+				case ln::tr::GizmoModel::OperationType::XY:
+					localOffaet = Vector3(localOffaet.x, localOffaet.y, 0);
+					break;
+				case ln::tr::GizmoModel::OperationType::XZ:
+					localOffaet = Vector3(localOffaet.x, 0, localOffaet.z);
+					break;
+				case ln::tr::GizmoModel::OperationType::YZ:
+					localOffaet = Vector3(0, localOffaet.y, localOffaet.z);
+					break;
+				case ln::tr::GizmoModel::OperationType::XYZ:
+					break;
+				}
+
+				m_gizmoTransform = m_draggingStartGizmoTransform * Matrix::MakeTranslation(localOffaet);
+				break;
+			}
+			case ln::tr::GizmoType::Rotation:
+			{
+				Matrix rot;
+				switch (m_operationType)
+				{
+				case ln::tr::GizmoModel::OperationType::X:
+					rot.RotateAxis(m_draggingLocalPlane.Normal, -atan2(localOffaet.y, localOffaet.z));
+					break;
+				case ln::tr::GizmoModel::OperationType::Y:
+					rot.RotateAxis(m_draggingLocalPlane.Normal, -atan2(localOffaet.z, localOffaet.x));
+					break;
+				case ln::tr::GizmoModel::OperationType::Z:
+					rot.RotateAxis(m_draggingLocalPlane.Normal, atan2(localOffaet.y, localOffaet.x));
+					break;
+				}
+				m_gizmoTransform = rot * m_draggingStartGizmoTransform;
+				break;
+			}
+			case ln::tr::GizmoType::Scaling:
+			{
+				break;
+			}
 		}
 
-		m_gizmoTransform = m_draggingStartGizmoTransform * Matrix::MakeTranslation(localOffaet);\
 		return true;
 	}
 	else
@@ -161,50 +193,82 @@ bool GizmoModel::InjectMouseUp(int x, int y)
 void GizmoModel::Render(DrawList* context)
 {
 	Matrix gizmoMat;
-	gizmoMat.Scale(m_screenFactor);
+	//gizmoMat.Scale(m_screenFactor);
 	gizmoMat *= m_gizmoTransform;
 	context->SetTransform(gizmoMat);	// TODO: old
 
+	Color c;
 	//m_gizmoTransform.Print();
 
-	float r = 0.025f;
-	float d = 1.0f;
+	//f ((GizmoType::Rotation)//GizmoType::Translation)
 
-	Color c;
+	switch (m_gizmoType)
+	{
+		case ln::tr::GizmoType::Translation:
+		{
+			float r = 0.025f;
+			float d = 1.0f;
 
-	// X axis
-	c = (m_operationType == OperationType::X) ? Color::White : Color::Red;
-	context->DrawCylinder(r, d, 8, 1, c, Matrix::MakeRotationZ(-Math::PIDiv2) * Matrix::MakeTranslation(d / 2, 0, 0));
-	context->DrawCone(r * 3, r * 6, 8, c, Matrix::MakeRotationZ(-Math::PIDiv2) * Matrix::MakeTranslation(d, 0, 0));
 
-	// Y axis
-	c = (m_operationType == OperationType::Y) ? Color::White : Color::Green;
-	context->DrawCylinder(r, d, 8, 1, c, Matrix::MakeTranslation( 0, d / 2,0));
-	context->DrawCone(r * 3, r * 6, 8, c, Matrix::MakeTranslation(0, d, 0));
+			// X axis
+			c = (m_operationType == OperationType::X) ? Color::White : Color::Red;
+			context->DrawCylinder(r, d, 8, 1, c, Matrix::MakeRotationZ(-Math::PIDiv2) * Matrix::MakeTranslation(d / 2, 0, 0));
+			context->DrawCone(r * 3, r * 6, 8, c, Matrix::MakeRotationZ(-Math::PIDiv2) * Matrix::MakeTranslation(d, 0, 0));
 
-	// Z axis
-	c = (m_operationType == OperationType::Z) ? Color::White : Color::Blue;
-	context->DrawCylinder(r, d, 8, 1, c, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(0, 0, d / 2));
-	context->DrawCone(r * 3, r * 6, 8, c, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(0, 0, d));
+			// Y axis
+			c = (m_operationType == OperationType::Y) ? Color::White : Color::Green;
+			context->DrawCylinder(r, d, 8, 1, c, Matrix::MakeTranslation(0, d / 2, 0));
+			context->DrawCone(r * 3, r * 6, 8, c, Matrix::MakeTranslation(0, d, 0));
 
-	// center
-	c = (m_operationType == OperationType::XYZ) ? Color::White : Color::Yellow;
-	context->DrawSphere(0.1f, 8, 8, c);
+			// Z axis
+			c = (m_operationType == OperationType::Z) ? Color::White : Color::Blue;
+			context->DrawCylinder(r, d, 8, 1, c, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(0, 0, d / 2));
+			context->DrawCone(r * 3, r * 6, 8, c, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(0, 0, d));
 
-	float s = 0.3f;
-	float s2 = s / 2;
+			// center
+			c = (m_operationType == OperationType::XYZ) ? Color::White : Color::Yellow;
+			context->DrawSphere(0.1f, 8, 8, c);
 
-	// YZ plane
-	c = (m_operationType == OperationType::YZ) ? Color::White : Color(0, 1, 1, 0.5);
-	context->DrawSquare(s, s, 1, 1, c, Matrix::MakeRotationZ(-Math::PIDiv2) * Matrix::MakeTranslation(0, s2, s2), m_tmat);
+			float s = 0.3f;
+			float s2 = s / 2;
 
-	// XZ plane
-	c = (m_operationType == OperationType::XZ) ? Color::White : Color(1, 0, 1, 0.5);
-	context->DrawSquare(s, s, 1, 1, c, Matrix::MakeTranslation(s2, 0, s2), m_tmat);
+			// YZ plane
+			c = (m_operationType == OperationType::YZ) ? Color::White : Color(0, 1, 1, 0.5);
+			context->DrawSquare(s, s, 1, 1, c, Matrix::MakeRotationZ(-Math::PIDiv2) * Matrix::MakeTranslation(0, s2, s2), m_tmat);
 
-	// XY plane
-	c = (m_operationType == OperationType::XY) ? Color::White : Color(1, 1, 0, 0.5);
-	context->DrawSquare(s, s, 1, 1, c, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(s2, s2, 0), m_tmat);
+			// XZ plane
+			c = (m_operationType == OperationType::XZ) ? Color::White : Color(1, 0, 1, 0.5);
+			context->DrawSquare(s, s, 1, 1, c, Matrix::MakeTranslation(s2, 0, s2), m_tmat);
+
+			// XY plane
+			c = (m_operationType == OperationType::XY) ? Color::White : Color(1, 1, 0, 0.5);
+			context->DrawSquare(s, s, 1, 1, c, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(s2, s2, 0), m_tmat);
+
+			break;
+		}
+		case ln::tr::GizmoType::Rotation:
+		{
+			const float i1 = RotationRingInner;
+			const float o1 = RotationRingOuter;
+
+			// center
+			c = (m_operationType == OperationType::XYZ) ? Color::White : Color::Yellow;
+			context->DrawSphere(0.1f, 8, 8, c);
+
+			c = (m_operationType == OperationType::X) ? Color::White : Color(1, 0, 0, 0.5);
+			context->DrawArc(0, Math::PI2, i1, o1, 32, c, Matrix::MakeRotationZ(-Math::PIDiv2), m_tmat);
+
+			c = (m_operationType == OperationType::Y) ? Color::White : Color(0, 1, 0, 0.5);
+			context->DrawArc(0, Math::PI2, i1, o1, 32, c, Matrix::Identity, m_tmat);
+
+			c = (m_operationType == OperationType::Z) ? Color::White : Color(0, 0, 1, 0.5);
+			context->DrawArc(0, Math::PI2, i1, o1, 32, c, Matrix::MakeRotationX(Math::PIDiv2), m_tmat);
+
+			break;
+		}
+		case ln::tr::GizmoType::Scaling:
+			break;
+	}
 
 	context->SetTransform(Matrix::Identity);
 }
@@ -213,6 +277,10 @@ void GizmoModel::Render(DrawList* context)
 void GizmoModel::SubmitEditing()
 {
 	m_gizmoInitialTransform = m_gizmoTransform;
+	
+	// 拡大・回転をリセット
+	m_gizmoTransform = Matrix::MakeTranslation(m_gizmoInitialTransform.GetPosition());
+
 	m_dragging = false;
 }
 
@@ -244,27 +312,59 @@ GizmoModel::OperationType GizmoModel::GetDirectionOperationType(int x, int y, Pl
 		if (outLocalPlane) *outLocalPlane = Plane(-localViewRay.direction);
 		return OperationType::XYZ;
 	}
-	if (xz)
+
+	switch (m_gizmoType)
 	{
-		if (outLocalPlane) *outLocalPlane = Plane(Vector3::UnitY);
-		if ((ptXZ.x >= 0) && (ptXZ.x <= 1) && (fabs(ptXZ.z) < 0.1f)) return OperationType::X;
-		if ((ptXZ.z >= 0) && (ptXZ.z <= 1) && ( fabs(ptXZ.x) < 0.1f)) return OperationType::Z;
-		if ((ptXZ.x < MoveOnPlaneBoxSize) && (ptXZ.z < MoveOnPlaneBoxSize) && (ptXZ.x > 0) && (ptXZ.z > 0))  return OperationType::XZ;
+		case ln::tr::GizmoType::Translation:
+		case ln::tr::GizmoType::Scaling:
+		{
+			if (xz)
+			{
+				if (outLocalPlane) *outLocalPlane = Plane(Vector3::UnitY);
+				if ((ptXZ.x >= 0) && (ptXZ.x <= 1) && (fabs(ptXZ.z) < 0.1f)) return OperationType::X;
+				if ((ptXZ.z >= 0) && (ptXZ.z <= 1) && ( fabs(ptXZ.x) < 0.1f)) return OperationType::Z;
+				if ((ptXZ.x < MoveOnPlaneBoxSize) && (ptXZ.z < MoveOnPlaneBoxSize) && (ptXZ.x > 0) && (ptXZ.z > 0))  return OperationType::XZ;
+			}
+			if (xy)
+			{
+				if (outLocalPlane) *outLocalPlane = Plane(Vector3::UnitZ);
+				if ((ptXY.x >= 0 ) && (ptXY.x <= 1) && (fabs(ptXY.y) < 0.1f)) return OperationType::X;
+				if ((ptXY.y >= 0 ) && (ptXY.y <= 1) && (fabs(ptXY.x) < 0.1f)) return OperationType::Y;
+				if ((ptXY.x < MoveOnPlaneBoxSize) && (ptXY.y < MoveOnPlaneBoxSize) && (ptXY.x > 0) && (ptXY.y > 0)) return OperationType::XY;
+			}
+			if (yz)
+			{
+				if (outLocalPlane) *outLocalPlane = Plane(Vector3::UnitX);
+				if ((ptYZ.y >= 0) && (ptYZ.y <= 1) && (fabs(ptYZ.z) < 0.1f)) return OperationType::Y;
+				if ((ptYZ.z >= 0) && (ptYZ.z <= 1) && (fabs(ptYZ.y) < 0.1f)) return OperationType::Z;
+				if ((ptYZ.y < MoveOnPlaneBoxSize) && (ptYZ.z < MoveOnPlaneBoxSize) && (ptYZ.y > 0) && (ptYZ.z > 0)) return OperationType::YZ;
+			}
+			break;
+		}
+		case ln::tr::GizmoType::Rotation:
+		{
+			if (xz)
+			{
+				if (outLocalPlane) *outLocalPlane = Plane(Vector3::UnitY);
+				float d = ptXZ.GetLength();
+				if (RotationRingInner <= d && d <= RotationRingOuter) return OperationType::Y;
+			}
+			if (xy)
+			{
+				if (outLocalPlane) *outLocalPlane = Plane(Vector3::UnitZ);
+				float d = ptXY.GetLength();
+				if (RotationRingInner <= d && d <= RotationRingOuter) return OperationType::Z;
+			}
+			if (yz)
+			{
+				if (outLocalPlane) *outLocalPlane = Plane(Vector3::UnitX);
+				float d = ptYZ.GetLength();
+				if (RotationRingInner <= d && d <= RotationRingOuter) return OperationType::X;
+			}
+			break;
+		}
 	}
-	if (xy)
-	{
-		if (outLocalPlane) *outLocalPlane = Plane(Vector3::UnitZ);
-		if ((ptXY.x >= 0 ) && (ptXY.x <= 1) && (fabs(ptXY.y) < 0.1f)) return OperationType::X;
-		if ((ptXY.y >= 0 ) && (ptXY.y <= 1) && (fabs(ptXY.x) < 0.1f)) return OperationType::Y;
-		if ((ptXY.x < MoveOnPlaneBoxSize) && (ptXY.y < MoveOnPlaneBoxSize) && (ptXY.x > 0) && (ptXY.y > 0)) return OperationType::XY;
-	}
-	if (yz)
-	{
-		if (outLocalPlane) *outLocalPlane = Plane(Vector3::UnitX);
-		if ((ptYZ.y >= 0) && (ptYZ.y <= 1) && (fabs(ptYZ.z) < 0.1f)) return OperationType::Y;
-		if ((ptYZ.z >= 0) && (ptYZ.z <= 1) && (fabs(ptYZ.y) < 0.1f)) return OperationType::Z;
-		if ((ptYZ.y < MoveOnPlaneBoxSize) && (ptYZ.z < MoveOnPlaneBoxSize) && (ptYZ.y > 0) && (ptYZ.z > 0)) return OperationType::YZ;
-	}
+
 	return OperationType::None;
 }
 

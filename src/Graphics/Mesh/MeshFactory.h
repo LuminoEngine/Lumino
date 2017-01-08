@@ -22,6 +22,15 @@ public:
 		return Vector3(dx, 0, dz);
 	}
 
+	static Vector3 GetXZArcPoint(float startAngle, float endAngle, int i, int slices)
+	{
+		float da = endAngle - startAngle;
+		float angle = (i * da / slices) + startAngle;
+		float dx, dz;
+		Math::SinCos(angle, &dx, &dz);
+		return Vector3(dx, 0, dz);
+	}
+
 	static void Transform(Vertex* begin, Vertex* end, const Matrix& transform)
 	{
 		for (Vertex* v = begin; v < end; v++)
@@ -787,6 +796,102 @@ public:
 private:
 	float	m_radius;
 	float	m_height;
+	int		m_slices;
+};
+
+
+class ArcMeshFactory
+	: public MeshFactoryBase
+{
+public:
+	ArcMeshFactory()
+		: m_startAngle(0)
+		, m_endAngle(0)
+		, m_innerRadius(0)
+		, m_outerRadius(0)
+		, m_slices(0)
+	{
+	}
+
+	void Initialize(float startAngle, float endAngle, float innerRadius, float outerRadius, int slices, const Color& color, const Matrix& transform)
+	{
+		LN_FAIL_CHECK_ARG(slices >= 1) return;
+		m_startAngle = startAngle;
+		m_endAngle = endAngle;
+		m_innerRadius = innerRadius;
+		m_outerRadius = outerRadius;
+		m_slices = slices;
+		MeshFactoryBase::Initialize(color, transform);
+	}
+
+	int GetVertexCount() const
+	{
+		return (m_slices + 1) * 2;
+	}
+
+	int GetIndexCount() const
+	{
+		return m_slices * 6;
+	}
+
+	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+	{
+		Vertex* vb = outVertices;
+		uint16_t* ib = (uint16_t*)outIndices;
+
+		for (int iSlice = 0; iSlice < m_slices + 1; iSlice++)
+		{
+			Vector3 n = MeshHelper::GetXZArcPoint(m_startAngle, m_endAngle, iSlice, m_slices);
+
+			// outer
+			{
+				Vertex v;
+				v.position = n * m_outerRadius;
+				v.normal = Vector3::UnitY;
+				v.color = m_color;
+				AddVertex(&vb, v);
+			}
+			// inner
+			{
+				Vertex v;
+				v.position = n * m_innerRadius;
+				v.normal = Vector3::UnitY;
+				v.color = m_color;
+				AddVertex(&vb, v);
+			}
+		}
+
+		// faces
+		for (int iSlice = 0; iSlice < m_slices; iSlice++)
+		{
+			int p1 = ((iSlice + 0) * 2 + 0);	// „¬
+			int p2 = ((iSlice + 0) * 2 + 1);	// „¯
+			int p3 = ((iSlice + 1) * 2 + 0);	// „­
+			int p4 = ((iSlice + 1) * 2 + 1);	// „®
+			ib[0] = beginIndex + p1;
+			ib[1] = beginIndex + p2;
+			ib[2] = beginIndex + p3;
+			ib[3] = beginIndex + p3;
+			ib[4] = beginIndex + p2;
+			ib[5] = beginIndex + p4;
+			ib += 6;
+		}
+
+		if (!m_transform.IsIdentity())
+			MeshHelper::Transform(outVertices, vb, m_transform);
+	}
+
+	static void AddVertex(Vertex** vb, const Vertex& v)
+	{
+		*(*vb) = v;
+		(*vb)++;
+	}
+
+private:
+	float	m_startAngle;
+	float	m_endAngle;
+	float 	m_innerRadius;
+	float	m_outerRadius;
 	int		m_slices;
 };
 

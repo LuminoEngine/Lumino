@@ -35,7 +35,8 @@ public:
 	bool InjectMouseDown(int x, int y);
 	bool InjectMouseMove(int x, int y);
 	bool InjectMouseUp(int x, int y);
-	
+	//bool InjectKeyDown(Keys keyCode, ModifierKeys modifierKeys);
+
 	void Render(DrawList* context);
 	
 LN_INTERNAL_ACCESS:
@@ -67,6 +68,9 @@ LN_INTERNAL_ACCESS:
 	void IntersectsLocalPlanes(int x, int y, bool* xz, Vector3* ptXZ, bool* xy, Vector3* ptXY, bool* yz, Vector3* ptYZ, Ray* localViewRay);
 
 private:
+	static const float RotationRingInner;
+	static const float RotationRingOuter;
+
 	//RefPtr<MeshResource>	m_mesh;
 	GizmoType				m_gizmoType;
 	//Matrix					m_parentSpaceTransform;
