@@ -483,27 +483,12 @@ void Main()
 	auto particle2 = ParticleEmitter3D::Create(m2);
 	particle2->SetBlendMode(BlendMode::Add);
 #endif
-#if 0
-	StreamReader reader(_T("D:/Proj/LuminoStudio/external/Lumino/src/Graphics/Resource/DotNetColors.txt"));
-	StreamWriter file1(_T("decls.txt"));
-	StreamWriter file2(_T("defs.txt"));
-	String line;
-	while (reader.ReadLine(&line))
-	{
-		auto tokens = line.Split(_T(" "), StringSplitOptions::RemoveEmptyEntries);
-		//Color32 c = Color32::FromString(tokens[1]);
-		Color c = Color::FromString(tokens[1]);
-		file1.WriteLine(_T("static const Color {0,-22} /** {4} ({1}, {2}, {3}) */"), tokens[0] + _T(";"), c.r, c.g, c.b, tokens[1].Replace(_T("#FF"), _T("#")));
-		file2.WriteLine(_T("Color Color::{0}({1}, {2}, {3});"), tokens[0], c.r, c.g, c.b);
-	}
-	return;
-#endif
 
-	//auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
-	//auto listBox = tr::UIListBox::Create();
-	//listBox->AddTextItem(_T("test"));
-	//listBox->AddTextItem(_T("fff"));
-	//uiRoot->SetContent(listBox);
+	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+	auto listBox = tr::UIListBox::Create();
+	listBox->AddTextItem(_T("test"));
+	listBox->AddTextItem(_T("fff"));
+	uiRoot->SetContent(listBox);
 
 
 

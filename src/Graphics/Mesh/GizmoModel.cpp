@@ -16,7 +16,7 @@ const float GizmoModel::RotationRingInner = 0.9f;
 const float GizmoModel::RotationRingOuter = 1.0f;
 const float GizmoModel::RotationViewZRingInner = 1.0f;
 const float GizmoModel::RotationViewZRingOuter = 1.1f;
-const float GizmoModel::BaseOpacity = 0.7f;
+const float GizmoModel::BaseOpacity = 0.5f;
 
 //------------------------------------------------------------------------------
 GizmoModelPtr GizmoModel::Create()
@@ -293,15 +293,15 @@ void GizmoModel::Render(DrawList* context)
 			context->DrawSphere(CenterBoxSize, 8, 8, c);
 
 			// YZ plane
-			c = (m_operationType == OperationType::YZ) ? Color::White : Color(0, 1, 1, BaseOpacity);
+			c = (m_operationType == OperationType::YZ) ? Color::White : Color(1, 0, 0, BaseOpacity);
 			context->DrawSquare(s, s, 1, 1, c, Matrix::MakeRotationZ(-Math::PIDiv2) * Matrix::MakeTranslation(0, s2, s2), m_tmat);
 
 			// XZ plane
-			c = (m_operationType == OperationType::XZ) ? Color::White : Color(1, 0, 1, BaseOpacity);
+			c = (m_operationType == OperationType::XZ) ? Color::White : Color(0, 1, 0, BaseOpacity);
 			context->DrawSquare(s, s, 1, 1, c, Matrix::MakeTranslation(s2, 0, s2), m_tmat);
 
 			// XY plane
-			c = (m_operationType == OperationType::XY) ? Color::White : Color(1, 1, 0, BaseOpacity);
+			c = (m_operationType == OperationType::XY) ? Color::White : Color(0, 0, 1, BaseOpacity);
 			context->DrawSquare(s, s, 1, 1, c, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(s2, s2, 0), m_tmat);
 
 			break;
@@ -362,15 +362,15 @@ void GizmoModel::Render(DrawList* context)
 			context->DrawBox(Box(CenterBoxSize), c);
 
 			// YZ plane
-			c = (m_operationType == OperationType::YZ) ? Color::White : Color(0, 1, 1, BaseOpacity);
+			c = (m_operationType == OperationType::YZ) ? Color::White : Color(1, 0, 0, BaseOpacity);
 			context->DrawSquare(s, s, 1, 1, c, Matrix::MakeRotationZ(-Math::PIDiv2) * Matrix::MakeTranslation(0, s2, s2), m_tmat);
 
 			// XZ plane
-			c = (m_operationType == OperationType::XZ) ? Color::White : Color(1, 0, 1, BaseOpacity);
+			c = (m_operationType == OperationType::XZ) ? Color::White : Color(0, 1, 0, BaseOpacity);
 			context->DrawSquare(s, s, 1, 1, c, Matrix::MakeTranslation(s2, 0, s2), m_tmat);
 
 			// XY plane
-			c = (m_operationType == OperationType::XY) ? Color::White : Color(1, 1, 0, BaseOpacity);
+			c = (m_operationType == OperationType::XY) ? Color::White : Color(0, 0, 1, BaseOpacity);
 			context->DrawSquare(s, s, 1, 1, c, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(s2, s2, 0), m_tmat);
 
 			break;
