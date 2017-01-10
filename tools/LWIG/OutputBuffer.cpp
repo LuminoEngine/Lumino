@@ -12,12 +12,12 @@ OutputBuffer::OutputBuffer()
 OutputBuffer::OutputBuffer(int indent)
 	: OutputBuffer()
 {
-	for (int i = 0 ; i < count; i++) IncreaseIndent();
+	for (int i = 0 ; i < indent; i++) IncreaseIndent();
 }
 
 void OutputBuffer::Clear()
 {
-	m_sb.Clear();
+	m_buffer.Clear();
 	m_indentLevel = 0;
 	m_indent.Clear();
 }
@@ -68,11 +68,11 @@ void OutputBuffer::AppendLineInternal(const StringRef& str)
 
 void OutputBuffer::AppendLinesInternal(const StringRef& str)
 {
-	String ns = str.Replace(_T("\r"), _T(""));
+	String ns = String(str).Replace(_T("\r"), _T(""));
 	List<String> lines = ns.Split(_T("\n"));
 	for (int i = 0; i < lines.GetCount(); i++)
 	{
-		if (lines[i].Length > 0) Indent();
+		if (lines[i].GetLength() > 0) Indent();
 		AppendInternal(lines[i]);
 
 		// ÅŒã‚Ìˆê‚Â‚Í‰üs‚µ‚È‚¢

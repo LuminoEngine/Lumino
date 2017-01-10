@@ -5,7 +5,7 @@
 class HeaderParser
 {
 public:
-	void ParserFiles();
+	void ParseFiles(const List<PathName>& pathes);
 	
 private:
 	void ParseFile(const PathName& path);

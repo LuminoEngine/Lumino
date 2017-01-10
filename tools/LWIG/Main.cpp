@@ -1,28 +1,31 @@
 
+#include "SymbolDatabase.h"
+#include "Parser.h"
 #include "DotNet/DotNetPInvokeLibGenerator.h"
 #include "DotNet/DotNetClassLibGenerator.h"
 
 int main()
 {
-	List<String> files =
+	List<PathName> files =
 	{
-		"Lumino/Graphics/Texture.h"
+		"../../../../include/Lumino/Engine.h"
 	};
 	
-	SymbolDatabase database;
+	//SymbolDatabase database;
 	
-	Parser::ParseFiles(files, &database);
-	
-	
-	{
-		DotNetPInvokeLibGenerator gen;
-		gen.Generate(&database);
-	}
-	
-	{
-		DotNetClassLibGenerator gen;
-		gen.Generate(&database);
-	}
+	HeaderParser parser;
+	parser.ParseFiles(files/*, &database*/);
+	//
+	//
+	//{
+	//	DotNetPInvokeLibGenerator gen;
+	//	gen.Generate(&database);
+	//}
+	//
+	//{
+	//	DotNetClassLibGenerator gen;
+	//	gen.Generate(&database);
+	//}
 	
 	return 0;
 }

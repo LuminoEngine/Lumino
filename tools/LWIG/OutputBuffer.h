@@ -9,7 +9,7 @@ public:
 	OutputBuffer(int indent);
 	
 	/** ‹ó‚Å‚ ‚é‚© */
-	bool IsEmpty() const { return m_sb.IsEmpty(); }
+	bool IsEmpty() const { return m_buffer.IsEmpty(); }
 	
 	/** ƒNƒŠƒA‚·‚é */
 	void Clear();

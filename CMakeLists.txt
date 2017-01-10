@@ -1008,3 +1008,5 @@ if (LN_BUILD_C_API)
 endif()
 
 #add_subdirectory(tools/LNSL)
+add_subdirectory(tools/LWIG)
+
