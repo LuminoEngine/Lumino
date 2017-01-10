@@ -1,6 +1,6 @@
 ﻿
 #include "../Internal.h"
-#include <Lumino/Graphics/Mesh.h>
+#include <Lumino/Graphics/Mesh/Mesh.h>
 //#include "MME/MMERenderingPass.h"
 //#include "MME/MmdMaterial.h"	// TODO
 #include "SceneGraphManager.h"
@@ -81,7 +81,7 @@ bool SceneGraph::InjectMouseMove(int x, int y)
 			camera->GetCameraBehavior()->InjectMouseMove(x, y);
 		}
 	}
-	return true;
+	return false;
 }
 
 //------------------------------------------------------------------------------
@@ -276,6 +276,7 @@ void SceneGraph3D::Render2(DrawList* renderer, Camera* camera)
 	if (visibleGridPlane)
 	{
 		AdjustGridMesh(camera);
+		renderer->SetTransform(Matrix::Identity);
 		renderer->DrawMesh(m_gridPlane, 0, m_gridPlane->GetMeshResource()->GetMaterial(0));
 	}
 }

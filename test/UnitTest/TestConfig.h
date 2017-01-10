@@ -93,3 +93,23 @@ public:
 		return elements;
 	}
 };
+
+class ScopedCameraPosition
+{
+public:
+	ScopedCameraPosition(float x, float y, float z)
+	{
+		camera = Camera::GetMain3DCamera();
+		oldPos = camera->GetPosition();
+		camera->SetPosition(x, y, z);
+	}
+
+	~ScopedCameraPosition()
+	{
+		camera->SetPosition(oldPos);
+	}
+
+	Camera*	camera;
+	Vector3 oldPos;
+};
+

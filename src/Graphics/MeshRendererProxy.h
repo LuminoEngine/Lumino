@@ -20,7 +20,7 @@ public:
 	~MeshRendererProxy();
 	void Initialize(GraphicsManager* manager);
 
-	void DrawMesh(MeshResource* mesh, int startIndex, int triangleCount);
+	void DrawMesh(MeshResource* mesh, int startIndex, int primitiveCount, PrimitiveType primitiveType);
 
 protected:
 	virtual bool IsStandaloneShader() const { return false; }
@@ -36,7 +36,8 @@ private:
 		int									vertexBuffersCount;
 		RefPtr<Driver::IIndexBuffer>		indexBuffer;
 		int									startIndex;
-		int									triangleCount;
+		int									primitiveCount;
+		PrimitiveType						primitiveType;
 	};
 
 	void DrawMeshImpl(const DrawMeshCommandData& data);	// Threading

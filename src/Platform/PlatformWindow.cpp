@@ -55,13 +55,17 @@ void PlatformWindow::SetCursorVisible(bool visible)
 //------------------------------------------------------------------------------
 void PlatformWindow::AttachEventListener(IEventListener* listener, int priority)
 {
-	m_listenerEntryArray.Add(priority, listener);
+	m_listenerEntryArray.Add({ priority, listener });
+	std::stable_sort(
+		m_listenerEntryArray.begin(), m_listenerEntryArray.end(),
+		[](const std::pair<int, IEventListener*>& lhs, const std::pair<int, IEventListener*>& rhs) { return lhs.first < rhs.first; });
 }
 
 //------------------------------------------------------------------------------
 void PlatformWindow::DetachEventListener(IEventListener* listener)
 {
-	m_listenerEntryArray.RemoveAllValue(listener);
+	m_listenerEntryArray.RemoveIf(
+		[listener](const std::pair<int, IEventListener*>& i) { return i.second == listener; });
 }
 
 //------------------------------------------------------------------------------
@@ -121,7 +125,7 @@ void PlatformWindow::OnPlatformEvent(const PlatformEventArgs& e)
 //------------------------------------------------------------------------------
 bool PlatformWindow::SendEventToAllListener(const PlatformEventArgs& e)
 {
-	for (const EventListenerList::Pair& listener : m_listenerEntryArray)
+	for (auto& listener : m_listenerEntryArray)
 	{
 		if (listener.second->OnEvent(e)) {
 			return true;

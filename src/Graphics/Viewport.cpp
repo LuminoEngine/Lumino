@@ -132,6 +132,12 @@ const Size& ViewportLayer::GetSize() const
 }
 
 //------------------------------------------------------------------------------
+bool ViewportLayer::OnPlatformEvent(const PlatformEventArgs& e)
+{
+	return false;
+}
+
+//------------------------------------------------------------------------------
 void ViewportLayer::PreRender(const SizeI& ownerViewPixelSize)
 {
 	//bool create = false;
@@ -300,6 +306,16 @@ void Viewport::UpdateLayersTransform(const Size& viewSize)
 }
 
 //------------------------------------------------------------------------------
+bool Viewport::DoPlatformEvent(const PlatformEventArgs& e)
+{
+	for (ViewportLayer* layer : *m_viewportLayerList)
+	{
+		if (layer->OnPlatformEvent(e)) return true;
+	}
+	return false;
+}
+
+//------------------------------------------------------------------------------
 void Viewport::BeginRender(Details::Renderer* renderer, const SizeI& viewSize)
 {
 	TryRemakeLayerTargets(viewSize);
@@ -326,10 +342,7 @@ void Viewport::Render(Details::Renderer* renderer)
 		//context->SetRenderTarget(0, m_primaryLayerTarget);
 		layer->OnBeginFrameRender(m_primaryLayerTarget, m_depthBuffer);
 		layer->Render();
-
-		
 	}
-
 }
 
 //------------------------------------------------------------------------------

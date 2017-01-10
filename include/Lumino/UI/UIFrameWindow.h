@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "../Platform/EventListener.h"
 #include "../Graphics/Viewport.h"
 #include "UIElement.h"
 
@@ -39,7 +40,8 @@ private:
 	@brief		
 */
 class UIFrameWindow
-	: public Object	// TODO: UILayoutRoot のサブクラスのほうが一般的なUIフレームワーク？
+	: public Object
+	, public IEventListener
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:
@@ -54,6 +56,7 @@ protected:
 	UIFrameWindow();
 	virtual ~UIFrameWindow();
 	void Initialize(detail::UIManager* manager, PlatformWindow* platformWindow, SwapChain* swapChain, UILayoutView* view);
+	virtual bool OnEvent(const PlatformEventArgs& e) override;
 
 LN_INTERNAL_ACCESS:
 	detail::UIManager* GetManager() const { return m_manager; }

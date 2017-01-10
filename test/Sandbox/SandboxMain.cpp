@@ -1,5 +1,6 @@
 ﻿
 #include <LuminoEngine.h>
+#include <Lumino/Graphics/Mesh/GizmoModel.h>
 #include <Lumino/Scene/MeshModelObject.h>
 #include <Lumino/Scene/StaticMesh.h>
 #include <Lumino/Scene/Light.h>
@@ -8,6 +9,7 @@
 #include <Lumino/UI/UIFrameWindow.h>
 #include <Lumino/UI/UIListBox.h>
 #include <Lumino/Testing/TestHelper.h>
+//#include "../../src/Graphics/Mesh/GizmoModel.h"
 using namespace ln;
 
 
@@ -76,8 +78,10 @@ void Main()
 #else
 
 
+
 void Main()
 {
+
 	//class Foo{
 	//public:
 	//	void FooFunc(){}
@@ -89,6 +93,20 @@ void Main()
 	//// メンバ関数を通常の関数として呼べる
 	//Func();
 
+
+
+
+	Ray ray(Vector3(1, 0, 0), Vector3(0, 0, 1));
+	Matrix mat = Matrix::MakeScaling(2) * Matrix::MakeRotationY(Math::PI / 4)/* * Matrix::MakeTranslation(2, 0, 0)*/;
+	mat.Inverse();
+
+	Ray ray2 = ray;
+	ray2.direction += ray2.origin;
+	ray2.origin.TransformCoord(mat);
+	ray2.direction.TransformCoord(mat);
+	ray2.direction -= ray2.origin;
+
+	std::function<void(int)> f = [ray](int a) {};
 
 
 	//EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
@@ -467,25 +485,67 @@ void Main()
 #endif
 
 	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
-
 	auto listBox = tr::UIListBox::Create();
 	listBox->AddTextItem(_T("test"));
 	listBox->AddTextItem(_T("fff"));
 	uiRoot->SetContent(listBox);
 
-	while (Engine::Update())
+
+
+	//auto gizmo = detail::GizmoModel::Create();
+
+	auto gizmo = static_cast<CameraViewportLayer*>(Engine::GetDefault3DLayer())->CreateGizmo();
+
+	auto sp = Sprite3D::Create(2, 2, Texture2D::Create(_T("D:/GameProjects/Chronicles/110220c_as019.jpg")));
+	gizmo->Setup(Matrix::Identity, sp->GetTransform());//Matrix::MakeTranslation(1, 0, 0));
+	
+	
+	gizmo->AddOnTargetTransformChanged([sp](tr::GizmoModel* g)
 	{
-		//printf("----\n");
+		sp->SetTransform(g->GetTargetTransform());
+	});
+	gizmo->AddOnSubmitEditing([sp](tr::GizmoModel* g)
+	{
+		//sp->SetTransform(g->GetTargetTransform());
+	});
+
+	while (!Engine::IsEndRequested())
+	{
+		Engine::BeginFrameUpdate();
+		if (Engine::BeginRendering())
+		{
+			Engine::Render();
+
+			//gizmo->Render(Engine::GetDefault3DLayer()->GetRenderer());
+
+			Engine::EndRendering();
+		}
+		Engine::EndFrameUpdate();
+
+
+		if (Input::IsTriggered(InputButtons::Ok))
+		{
+			gizmo->SetGizmoType(tr::GizmoType::Translation);
+		}
 		if (Input::IsTriggered(InputButtons::Cancel))
 		{
-			//tonePE->SetTone(ToneF(-1, -1, -1, 0));
-			//tonePE->ChangeTone(ToneF(1, 1, 1, 0), 0.5);
-			//blur->SetBlurStatus(0.5, Vector2::Zero, 1.05, 0.5);
-
-			//Engine::GetMainWindow()->SetSize(SizeI(200, 100));
+			gizmo->SetGizmoType(tr::GizmoType::Rotation);
 		}
-		//blur->SetBlurStatus(0.9f, Vector2::Zero, 1.02);
 	}
+
+	//while (Engine::Update())
+	//{
+	//	//printf("----\n");
+	//	if (Input::IsTriggered(InputButtons::Cancel))
+	//	{
+	//		//tonePE->SetTone(ToneF(-1, -1, -1, 0));
+	//		//tonePE->ChangeTone(ToneF(1, 1, 1, 0), 0.5);
+	//		//blur->SetBlurStatus(0.5, Vector2::Zero, 1.05, 0.5);
+
+	//		//Engine::GetMainWindow()->SetSize(SizeI(200, 100));
+	//	}
+	//	//blur->SetBlurStatus(0.9f, Vector2::Zero, 1.02);
+	//}
 }
 
 #endif

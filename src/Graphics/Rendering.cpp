@@ -4,7 +4,7 @@
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Graphics/Rendering.h>
 #include <Lumino/Graphics/ContextInterface.h>
-#include <Lumino/Graphics/Mesh.h>
+#include <Lumino/Graphics/Mesh/Mesh.h>
 #include "Device/GraphicsDriverInterface.h"
 #include "GraphicsManager.h"
 #include "RendererImpl.h"
@@ -14,6 +14,7 @@
 #include "Text/TextRenderer.h"
 #include "NanoVGRenderer.h"
 #include "FrameRectRenderer.h"
+#include "Mesh/MeshFactory.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -199,8 +200,6 @@ FrameRectRenderer* InternalContext::BeginFrameRectRenderer()
 //------------------------------------------------------------------------------
 void InternalContext::SetViewInfo(const Size& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix)
 {
-	m_primitiveRenderer->SetViewPixelSize(SizeI(viewPixelSize.width, viewPixelSize.height));
-	m_primitiveRenderer->SetViewProjMatrix(viewMatrix * projMatrix);
 	m_spriteRenderer->SetViewInfo(viewPixelSize, viewMatrix, projMatrix);
 	m_textRenderer->SetViewInfo(viewMatrix * projMatrix, SizeI(viewPixelSize.width, viewPixelSize.height));
 	m_frameRectRenderer->SetViewInfo(viewMatrix * projMatrix);
@@ -408,6 +407,16 @@ DrawElementBatch::DrawElementBatch()
 }
 
 //------------------------------------------------------------------------------
+void DrawElementBatch::SetTransfrom(const Matrix& value)
+{
+	if (m_transfrom != value)
+	{
+		m_transfrom = value;
+		m_hashDirty = true;
+	}
+}
+
+//------------------------------------------------------------------------------
 void DrawElementBatch::SetCombinedMaterial(CombinedMaterial* value)
 {
 	if (m_combinedMaterial != value)
@@ -434,10 +443,13 @@ bool DrawElementBatch::IsStandaloneShaderRenderer() const
 }
 
 //------------------------------------------------------------------------------
-bool DrawElementBatch::Equal(const BatchState& state_, Material* material) const
+bool DrawElementBatch::Equal(const BatchState& state_, Material* material, const Matrix& transfrom) const
 {
 	assert(m_combinedMaterial != nullptr);
-	return state.GetHashCode() == state_.GetHashCode() && m_combinedMaterial->GetSourceHashCode() == material->GetHashCode();
+	return
+		state.GetHashCode() == state_.GetHashCode() &&
+		m_combinedMaterial->GetSourceHashCode() == material->GetHashCode() &&
+		m_transfrom == transfrom;
 //#if 1
 //	return GetHashCode() == obj.GetHashCode();
 //#else
@@ -475,6 +487,7 @@ void DrawElementBatch::Reset()
 {
 	state.Reset();
 
+	m_transfrom = Matrix::Identity;
 	m_combinedMaterial = nullptr;
 	m_standaloneShaderRenderer = false;
 
@@ -508,8 +521,8 @@ size_t DrawElementBatch::GetHashCode() const
 
 //------------------------------------------------------------------------------
 DrawElement::DrawElement()
-	: transform()
-	, batchIndex(-1)
+	: /*m_transform()
+	, */batchIndex(-1)
 	, drawingSectionId(DrawingSectionId::None)
 	, subsetIndex(0)
 	//, zSortDistanceBase(ZSortDistanceBase::CameraDistance)
@@ -525,11 +538,17 @@ DrawElement::~DrawElement()
 }
 
 //------------------------------------------------------------------------------
-void DrawElement::MakeElementInfo(const CameraInfo& cameraInfo, ElementInfo* outInfo)
+const Matrix& DrawElement::GetTransform(DrawElementList* oenerList) const
+{
+	return oenerList->GetBatch(batchIndex)->GetTransfrom();
+}
+
+//------------------------------------------------------------------------------
+void DrawElement::MakeElementInfo(DrawElementList* oenerList, const CameraInfo& cameraInfo, ElementInfo* outInfo)
 {
 	outInfo->viewProjMatrix = &cameraInfo.viewProjMatrix;
-	outInfo->WorldMatrix = transform;
-	outInfo->WorldViewProjectionMatrix = transform * cameraInfo.viewMatrix * cameraInfo.projMatrix;	// TODO: viewProj はまとめたい
+	outInfo->WorldMatrix = GetTransform(oenerList);
+	outInfo->WorldViewProjectionMatrix = outInfo->WorldMatrix * cameraInfo.viewMatrix * cameraInfo.projMatrix;	// TODO: viewProj はまとめたい
 	outInfo->affectedLights = GetAffectedDynamicLightInfos();
 }
 
@@ -553,6 +572,12 @@ DynamicLightInfo** DrawElement::GetAffectedDynamicLightInfos()
 {
 	return nullptr;
 }
+
+//------------------------------------------------------------------------------
+//void DrawElement::OnJoindDrawList(const Matrix& transform)
+//{
+//	m_transform = transform;
+//}
 
 
 //==============================================================================
@@ -595,9 +620,9 @@ void DrawElementList::ClearCommands()
 }
 
 //------------------------------------------------------------------------------
-void DrawElementList::PostAddCommandInternal(const BatchState& state, Material* availableMaterial, DrawElement* element)
+void DrawElementList::PostAddCommandInternal(const BatchState& state, Material* availableMaterial, const Matrix& transform, DrawElement* element)
 {
-	if (m_batchList.IsEmpty() || !m_batchList.GetLast().Equal(state, availableMaterial))
+	if (m_batchList.IsEmpty() || !m_batchList.GetLast().Equal(state, availableMaterial, transform))
 	{
 		// CombinedMaterial を作る
 		CombinedMaterial* cm = m_combinedMaterialCache.QueryCommandList();
@@ -607,6 +632,7 @@ void DrawElementList::PostAddCommandInternal(const BatchState& state, Material* 
 		m_batchList.Add(DrawElementBatch());
 		m_batchList.GetLast().state = state;
 		m_batchList.GetLast().SetCombinedMaterial(cm);
+		m_batchList.GetLast().SetTransfrom(transform);
 	}
 	element->batchIndex = m_batchList.GetCount() - 1;
 }
@@ -689,18 +715,19 @@ void InternalRenderer::Render(
 			m_renderingElementList.Add(element);
 
 			// calculate distance for ZSort
+			const Matrix& transform = element->GetTransform(elementList);
 			switch (cameraInfo.zSortDistanceBase)
 			{
 				case ZSortDistanceBase::NodeZ:
-					element->zDistance = element->transform.GetPosition().z;
+					element->zDistance = transform.GetPosition().z;
 					break;
 				case ZSortDistanceBase::CameraDistance:
-					element->zDistance = (element->transform.GetPosition() - cameraInfo.viewPosition).GetLengthSquared();
+					element->zDistance = (transform.GetPosition() - cameraInfo.viewPosition).GetLengthSquared();
 					break;
 				case ZSortDistanceBase::CameraScreenDistance:
 					element->zDistance = Vector3::Dot(
-						element->transform.GetPosition() - cameraInfo.viewPosition,
-						element->transform.GetFront());		// 平面と点の距離
+						transform.GetPosition() - cameraInfo.viewPosition,
+						transform.GetFront());		// 平面と点の距離
 						// TODO: ↑第2引数違くない？要確認
 					break;
 				default:
@@ -763,7 +790,7 @@ void InternalRenderer::Render(
 					Shader* shader = policy.shader;
 
 					ElementInfo elementInfo;
-					element->MakeElementInfo(cameraInfo, &elementInfo);
+					element->MakeElementInfo(elementList, cameraInfo, &elementInfo);
 
 					SubsetInfo subsetInfo;
 					element->MakeSubsetInfo(material, &subsetInfo);
@@ -783,7 +810,7 @@ void InternalRenderer::Render(
 			// 描画実行
 			if (visible)
 			{
-				element->DrawSubset(context);
+				element->DrawSubset(elementList, context);
 			}
 		}
 
@@ -886,13 +913,13 @@ void ForwardShadingRenderer::OnPreRender(DrawElementList* elementList)
 		DynamicLightInfo** lightInfos = element->GetAffectedDynamicLightInfos();
 		if (lightInfos != nullptr)
 		{
-			UpdateAffectLights(element);
+			UpdateAffectLights(element, elementList);
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-void ForwardShadingRenderer::UpdateAffectLights(DrawElement* element)
+void ForwardShadingRenderer::UpdateAffectLights(DrawElement* element, DrawElementList* elementList)
 {
 	/*
 		まず全てのライトに、このノードとの距離をセットする。
@@ -907,7 +934,7 @@ void ForwardShadingRenderer::UpdateAffectLights(DrawElement* element)
 		// ソート基準値の計算
 		for (DynamicLightInfo* light : m_selectingLights)
 		{
-			light->tempDistance = Vector3::DistanceSquared(element->transform.GetPosition(), light->transform.GetPosition());
+			light->tempDistance = Vector3::DistanceSquared(element->GetTransform(elementList).GetPosition(), light->transform.GetPosition());
 		}
 
 		// ソート (昇順)
@@ -1078,7 +1105,7 @@ public:
 	float z;
 	uint8_t stencil;
 
-	virtual void DrawSubset(InternalContext* context/*, int subsetIndex*/) override
+	virtual void DrawSubset(detail::DrawElementList* oenerList, InternalContext* context/*, int subsetIndex*/) override
 	{
 		context->BeginBaseRenderer()->Clear(flags, color, z, stencil);
 	}
@@ -1210,13 +1237,13 @@ void DrawList::EndFrame()
 //------------------------------------------------------------------------------
 void DrawList::SetTransform(const Matrix& transform)
 {
-	m_state.transfrom = transform;
+	m_state.state.SetTransfrom(transform);
 }
 
 //------------------------------------------------------------------------------
 void DrawList::Clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
-	auto* ptr = m_drawElementList.AddCommand<detail::ClearElement>(m_state.state.state, m_defaultMaterial);
+	auto* ptr = m_drawElementList.AddCommand<detail::ClearElement>(m_state.state.state, m_defaultMaterial, Matrix::Identity);
 	ptr->flags = flags;
 	ptr->color = color;
 	ptr->z = z;
@@ -1235,7 +1262,7 @@ void DrawList::DrawLinePrimitive(
 		Vector3 position1; Color color1;
 		Vector3 position2; Color color2;
 
-		virtual void DrawSubset(detail::InternalContext* context/*, int subsetIndex*/) override
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context/*, int subsetIndex*/) override
 		{
 			context->BeginPrimitiveRenderer()->DrawLine(
 				position1, color1, position2, color2);
@@ -1255,14 +1282,14 @@ void DrawList::DrawSquarePrimitive(
 	const Vector3& position4, const Vector2& uv4, const Color& color4/*,
 	ShaderPass* shaderPass*/)
 {
-	class DrawSquarePrimitiveElement : public detail::DrawElement
+	class DrawSquarePrimitiveElement : public detail::LightingDrawElement	// TODO: LightingDrawElement は忘れやすい。デフォルトありでいいと思う
 	{
 	public:
 		Vector3 position[4];
 		Vector2 uv[4];
 		Color color[4];
 
-		virtual void DrawSubset(detail::InternalContext* context/*, int subsetIndex*/) override
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context/*, int subsetIndex*/) override
 		{
 			context->BeginPrimitiveRenderer()->DrawSquare(
 				position[0], uv[0], color[0],
@@ -1271,12 +1298,136 @@ void DrawList::DrawSquarePrimitive(
 				position[3], uv[3], color[3]);
 		}
 	};
-	auto* ptr = ResolveDrawElement<DrawSquarePrimitiveElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, nullptr);
-	ptr->position[0] = position1; ptr->uv[0] = uv1; ptr->color[0] = color1;
-	ptr->position[1] = position2; ptr->uv[1] = uv2; ptr->color[1] = color2;
-	ptr->position[2] = position3; ptr->uv[2] = uv3; ptr->color[2] = color3;
-	ptr->position[3] = position4; ptr->uv[3] = uv4; ptr->color[3] = color4;
-	ptr->MakeBoundingSphere(Vector3::Min(ptr->position, 4), Vector3::Max(ptr->position, 4));
+	auto* e = ResolveDrawElement<DrawSquarePrimitiveElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, nullptr);
+	e->position[0] = position1; e->uv[0] = uv1; e->color[0] = color1;
+	e->position[1] = position2; e->uv[1] = uv2; e->color[1] = color2;
+	e->position[2] = position3; e->uv[2] = uv3; e->color[2] = color3;
+	e->position[3] = position4; e->uv[3] = uv4; e->color[3] = color4;
+	e->MakeBoundingSphere(Vector3::Min(e->position, 4), Vector3::Max(e->position, 4));
+}
+
+//------------------------------------------------------------------------------
+void DrawList::DrawSquare(float sizeX, float sizeZ, int slicesX, int slicesZ, const Color& color, const Matrix& localTransform, Material* material)
+{
+	class DrawCylinderElement : public detail::LightingDrawElement	// TODO: LightingDrawElement は忘れやすい。デフォルトありでいいと思う
+	{
+	public:
+		detail::PlaneMeshFactory3 factory;
+
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		{
+			auto* r = context->BeginPrimitiveRenderer();
+			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
+		}
+	};
+	auto* e = ResolveDrawElement<DrawCylinderElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, material);
+	e->factory.Initialize(Vector2(sizeX, sizeZ), slicesX, slicesZ, color, localTransform);
+	e->boundingSphere.center = Vector3::Zero;
+	e->boundingSphere.radius = Vector3(sizeX, sizeZ, 0).GetLength();
+}
+
+//------------------------------------------------------------------------------
+void DrawList::DrawArc(float startAngle, float endAngle, float innerRadius, float outerRadius, int slices, const Color& color, const Matrix& localTransform, Material* material)
+{
+	class DrawArcElement : public detail::LightingDrawElement	// TODO: LightingDrawElement は忘れやすい。デフォルトありでいいと思う
+	{
+	public:
+		detail::ArcMeshFactory factory;
+
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		{
+			auto* r = context->BeginPrimitiveRenderer();
+			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
+		}
+	};
+	auto* e = ResolveDrawElement<DrawArcElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, material);
+	e->factory.Initialize(startAngle, endAngle, innerRadius, outerRadius, slices, color, localTransform);
+	e->boundingSphere.center = Vector3::Zero;
+	e->boundingSphere.radius = outerRadius;
+}
+
+//------------------------------------------------------------------------------
+void DrawList::DrawBox(const Box& box, const Color& color, const Matrix& localTransform, Material* material)
+{
+	if (box.center != Vector3::Zero) LN_NOTIMPLEMENTED();
+
+	class DrawBoxElement : public detail::LightingDrawElement	// TODO: LightingDrawElement は忘れやすい。デフォルトありでいいと思う
+	{
+	public:
+		detail::RegularBoxMeshFactory factory;
+
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		{
+			auto* r = context->BeginPrimitiveRenderer();
+			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
+		}
+	};
+	auto* e = ResolveDrawElement<DrawBoxElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, material);
+	e->factory.Initialize(Vector3(box.width, box.height, box.depth), color, localTransform);
+
+	Vector3 min, max;
+	box.GetMinMax(&min, &max);
+	e->MakeBoundingSphere(min, max);
+}
+
+//------------------------------------------------------------------------------
+void DrawList::DrawSphere(float radius, int slices, int stacks, const Color& color, const Matrix& localTransform)
+{
+	class DrawSphereElement : public detail::LightingDrawElement	// TODO: LightingDrawElement は忘れやすい。デフォルトありでいいと思う
+	{
+	public:
+		detail::RegularSphereMeshFactory factory;
+
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		{
+			auto* r = context->BeginPrimitiveRenderer();
+			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
+		}
+	};
+	auto* e = ResolveDrawElement<DrawSphereElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, nullptr);
+	e->factory.Initialize(radius, slices, stacks, color, localTransform);
+	e->boundingSphere.center = Vector3::Zero;
+	e->boundingSphere.radius = radius;
+}
+
+//------------------------------------------------------------------------------
+void DrawList::DrawCylinder(float radius, float	height, int slices, int stacks, const Color& color, const Matrix& localTransform)
+{
+	class DrawCylinderElement : public detail::LightingDrawElement	// TODO: LightingDrawElement は忘れやすい。デフォルトありでいいと思う
+	{
+	public:
+		detail::RegularCylinderMeshFactory factory;
+
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		{
+			auto* r = context->BeginPrimitiveRenderer();
+			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
+		}
+	};
+	auto* e = ResolveDrawElement<DrawCylinderElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, nullptr);
+	e->factory.Initialize(radius, height, slices, stacks, color, localTransform);
+	e->boundingSphere.center = Vector3::Zero;
+	e->boundingSphere.radius = Vector3(radius, height, 0).GetLength();
+}
+
+//------------------------------------------------------------------------------
+void DrawList::DrawCone(float radius, float height, int slices, const Color& color, const Matrix& localTransform)
+{
+	class DrawCylinderElement : public detail::LightingDrawElement	// TODO: LightingDrawElement は忘れやすい。デフォルトありでいいと思う
+	{
+	public:
+		detail::RegularConeMeshFactory factory;
+
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		{
+			auto* r = context->BeginPrimitiveRenderer();
+			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
+		}
+	};
+	auto* e = ResolveDrawElement<DrawCylinderElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, nullptr);
+	e->factory.Initialize(radius, height, slices, color, localTransform);
+	e->boundingSphere.center = Vector3::Zero;
+	e->boundingSphere.radius = Vector3(radius, height, 0).GetLength();
 }
 
 //------------------------------------------------------------------------------
@@ -1324,14 +1475,13 @@ void DrawList::DrawGlyphRun(const PointF& position, GlyphRun* glyphRun)
 		RefPtr<GlyphRun>	glyphRun;
 		PointF position;
 
-		virtual void DrawSubset(detail::InternalContext* context) override
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
 		{
-			context->BeginTextRenderer()->DrawGlyphRun(transform, position, glyphRun);
+			context->BeginTextRenderer()->DrawGlyphRun(GetTransform(oenerList), position, glyphRun);
 		}
 	};
 
 	auto* e = ResolveDrawElement<DrawElement_DrawGlyphRun>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_textRenderer, nullptr);
-	e->transform = m_state.transfrom;
 	e->glyphRun = glyphRun;
 	e->position = position;
 	//e->boundingSphere = ;	// TODO
@@ -1349,18 +1499,17 @@ void DrawList::DrawText_(const StringRef& text, const RectF& rect, StringFormatF
 	class DrawElement_DrawText : public detail::DrawElement
 	{
 	public:
-		String text;	// TODO
+		String text;	// TODO: BlukData
 		RectF rect;
 		StringFormatFlags flags;
 
-		virtual void DrawSubset(detail::InternalContext* context) override
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
 		{
-			context->BeginTextRenderer()->DrawString(transform, text.c_str(), text.GetLength(), rect, flags);
+			context->BeginTextRenderer()->DrawString(GetTransform(oenerList), text.c_str(), text.GetLength(), rect, flags);
 		}
 	};
 
 	auto* e = ResolveDrawElement<DrawElement_DrawText>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_textRenderer, nullptr);
-	e->transform = m_state.transfrom;
 	e->text = text;
 	e->rect = rect;
 	e->flags = flags;
@@ -1389,16 +1538,15 @@ void DrawList::DrawSprite(
 		Color color;
 		SpriteBaseDirection baseDirection;
 
-		virtual void DrawSubset(detail::InternalContext* context) override
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
 		{
 			auto* r = context->BeginSpriteRenderer();
-			r->SetTransform(transform);
+			r->SetTransform(GetTransform(oenerList));
 			r->DrawRequest(position, size, anchorRatio, texture, srcRect, color, baseDirection);
 		}
 	};
 
 	auto* ptr = ResolveDrawElement<DrawElement_DrawSprite>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_spriteRenderer, material);
-	ptr->transform = m_state.transfrom;
 	ptr->position = position;
 	ptr->size.Set(size.width, size.height);
 	ptr->anchorRatio = anchor;
@@ -1407,7 +1555,7 @@ void DrawList::DrawSprite(
 	ptr->color = color;
 	ptr->baseDirection = baseDirection;
 	detail::SpriteRenderer::MakeBoundingSphere(ptr->size, baseDirection, &ptr->boundingSphere);
-	ptr->boundingSphere.center += ptr->transform.GetPosition();	// TODO: 他と共通化
+	ptr->boundingSphere.center += m_state.state.GetTransfrom().GetPosition();	// TODO: 他と共通化
 }
 
 
@@ -1426,7 +1574,7 @@ public:
 		return m_commandList;
 	}
 
-	virtual void DrawSubset(detail::InternalContext* context) override
+	virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
 	{
 		auto* r = context->BeginNanoVGRenderer();
 		//auto cl = r->TakeCommandList();
@@ -1497,13 +1645,14 @@ TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId, detai
 		m_currentSectionTopElement != nullptr &&
 		m_currentSectionTopElement->drawingSectionId == sectionId &&
 		m_currentSectionTopElement->metadata.Equals(*metadata) &&
-		m_drawElementList.GetBatch(m_currentSectionTopElement->batchIndex)->Equal(m_state.state.state, availableMaterial))
+		m_drawElementList.GetBatch(m_currentSectionTopElement->batchIndex)->Equal(m_state.state.state, availableMaterial, m_state.state.GetTransfrom()))
 	{
 		return static_cast<TElement*>(m_currentSectionTopElement);
 	}
 
 	// DrawElement を新しく作る
-	TElement* element = m_drawElementList.AddCommand<TElement>(m_state.state.state, availableMaterial);
+	TElement* element = m_drawElementList.AddCommand<TElement>(m_state.state.state, availableMaterial, m_state.state.GetTransfrom());
+	//element->OnJoindDrawList(m_state.transfrom);
 	element->drawingSectionId = sectionId;
 	element->metadata = *metadata;
 	m_currentSectionTopElement = element;
@@ -1518,11 +1667,12 @@ void DrawList::DrawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Mat
 	public:
 		RefPtr<MeshResource>	mesh;
 		int startIndex;
-		int triangleCount;
+		int primitiveCount;
+		PrimitiveType primitiveType;
 
-		virtual void DrawSubset(detail::InternalContext* context) override
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
 		{
-			context->BeginMeshRenderer()->DrawMesh(mesh, startIndex, triangleCount);
+			context->BeginMeshRenderer()->DrawMesh(mesh, startIndex, primitiveCount, primitiveType);
 		}
 	};
 
@@ -1534,7 +1684,8 @@ void DrawList::DrawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Mat
 	e->subsetIndex = subsetIndex;
 	e->mesh = mesh;
 	e->startIndex = attr.StartIndex;
-	e->triangleCount = attr.PrimitiveNum;
+	e->primitiveCount = attr.PrimitiveNum;
+	e->primitiveType = attr.primitiveType;
 	//e->boundingSphere = ;	// TODO
 }
 
@@ -1551,11 +1702,12 @@ void DrawList::DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Ma
 	public:
 		RefPtr<StaticMeshModel>	mesh;
 		int startIndex;
-		int triangleCount;
+		int primitiveCount;
+		PrimitiveType primitiveType;
 
-		virtual void DrawSubset(detail::InternalContext* context) override
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
 		{
-			context->BeginMeshRenderer()->DrawMesh(mesh->GetMeshResource(), startIndex, triangleCount);
+			context->BeginMeshRenderer()->DrawMesh(mesh->GetMeshResource(), startIndex, primitiveCount, primitiveType);
 		}
 	};
 	MeshAttribute attr;
@@ -1566,7 +1718,8 @@ void DrawList::DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Ma
 	e->subsetIndex = subsetIndex;
 	e->mesh = mesh;
 	e->startIndex = attr.StartIndex;
-	e->triangleCount = attr.PrimitiveNum;
+	e->primitiveCount = attr.PrimitiveNum;
+	e->primitiveType = attr.primitiveType;
 	//e->boundingSphere = ;	// TODO
 }
 
@@ -1577,12 +1730,13 @@ void DrawList::BlitInternal(Texture* source, RenderTargetTexture* dest, const Ma
 	class DrawElement_BlitInternal : public detail::DrawElement
 	{
 	public:
+		Matrix			overrideTransform;
 		RefPtr<Texture>	source;
 
-		virtual void MakeElementInfo(const detail::CameraInfo& cameraInfo, detail::ElementInfo* outInfo)
+		virtual void MakeElementInfo(detail::DrawElementList* oenerList, const detail::CameraInfo& cameraInfo, detail::ElementInfo* outInfo) override
 		{
-			DrawElement::MakeElementInfo(cameraInfo, outInfo);
-			outInfo->WorldViewProjectionMatrix = transform;
+			DrawElement::MakeElementInfo(oenerList, cameraInfo, outInfo);
+			outInfo->WorldViewProjectionMatrix = overrideTransform;
 		}
 		virtual void MakeSubsetInfo(detail::CombinedMaterial* material, detail::SubsetInfo* outInfo) override
 		{
@@ -1592,7 +1746,7 @@ void DrawList::BlitInternal(Texture* source, RenderTargetTexture* dest, const Ma
 			outInfo->materialTexture = source;
 		}
 
-		virtual void DrawSubset(detail::InternalContext* context) override
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
 		{
 			context->BeginBlitRenderer()->Blit();
 		}
@@ -1604,7 +1758,7 @@ void DrawList::BlitInternal(Texture* source, RenderTargetTexture* dest, const Ma
 	}
 
 	auto* e = ResolveDrawElement<DrawElement_BlitInternal>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_blitRenderer, material);
-	e->transform = transform;
+	e->overrideTransform = transform;
 	e->source = source;
 }
 
@@ -1615,14 +1769,13 @@ void DrawList::DrawFrameRectangle(const RectF& rect)
 	{
 	public:
 		RectF rect;
-		virtual void DrawSubset(detail::InternalContext* context) override
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
 		{
 			auto* r = context->BeginFrameRectRenderer();
-			r->Draw(transform, rect);
+			r->Draw(GetTransform(oenerList), rect);
 		}
 	};
 	auto* ptr = ResolveDrawElement<DrawElement_DrawFrameRectangle>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_frameRectRenderer, nullptr);
-	ptr->transform = m_state.transfrom;
 	ptr->rect = rect;
 	// TODO: カリング
 }

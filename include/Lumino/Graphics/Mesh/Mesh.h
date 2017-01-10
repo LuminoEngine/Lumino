@@ -1,8 +1,8 @@
 ﻿
 #pragma once
 #include <Lumino/Graphics/Common.h>
-#include "Vertex.h"
-#include "Material.h"
+#include "../Vertex.h"
+#include "../Material.h"
 
 LN_NAMESPACE_BEGIN
 class VertexDeclaration;
@@ -25,7 +25,8 @@ struct MeshAttribute	// TODO: Section
 {
 	int		MaterialIndex;  ///< 対応するマテリアル番号
 	int		StartIndex;     ///< 開始インデックス
-	int		PrimitiveNum;   ///< 描画プリミティブ数 (三角形の数)
+	int		PrimitiveNum;   ///< 描画プリミティブ数
+	PrimitiveType	primitiveType = PrimitiveType_TriangleList;
 };
 typedef List<MeshAttribute>		MeshAttributeList;
 
@@ -93,6 +94,10 @@ public:
 	*/
 	void AddSquare(const Vertex& v1, const Vertex& v2, const Vertex& v3, const Vertex& v4);
 	void AddSquare(const Vertex* virtices);
+
+
+	void AddLine(const Vertex& v1, const Vertex& v2);
+
 
 LN_INTERNAL_ACCESS:
 	enum VertexBufferType
@@ -172,6 +177,8 @@ LN_INTERNAL_ACCESS:
 	void* TryLockIndexBuffer();
 	void TryGlowVertexBuffers(int requestVertexCount);
 	void TryGlowIndexBuffer(int requestIndexCount);
+	void* RequestVertexBufferForAdditional(int additionalVertexCount, VertexBufferType type);
+	uint16_t* RequestIndexBufferForAdditional(int additionalIndexCount);
 
 	void GetMeshAttribute(int subsetIndex, MeshAttribute* outAttr);
 	void CommitRenderData(VertexDeclaration** outDecl, VertexBuffer** outVBs, int* outVBCount, IndexBuffer** outIB);

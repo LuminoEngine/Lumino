@@ -50,6 +50,7 @@ class FrameRectRenderer;
 class DrawElementBatch;
 class RenderingPass2;
 class CombinedMaterial;
+class DrawElementList;
 
 class DynamicLightInfo
 	: public RefObject
@@ -128,29 +129,36 @@ private:
 class DrawElement
 {
 public:
-	Matrix				transform;
 	int					batchIndex;
 	DrawingSectionId	drawingSectionId;
 	detail::Sphere		boundingSphere;		// 位置はワールド座標
 	int					subsetIndex;
-	//ZSortDistanceBase	zSortDistanceBase;
 	float				zDistance;
 	DrawElementMetadata	metadata;
 
 	DrawElement();
 	virtual ~DrawElement();
 
-	virtual void MakeElementInfo(const CameraInfo& cameraInfo, ElementInfo* outInfo);
+	const Matrix& GetTransform(DrawElementList* oenerList) const;
+
+	virtual void MakeElementInfo(DrawElementList* oenerList, const CameraInfo& cameraInfo, ElementInfo* outInfo);
 	virtual void MakeSubsetInfo(CombinedMaterial* material, SubsetInfo* outInfo);
 
-	//void Draw(InternalContext* context, RenderingPass2* pass);
-	virtual void DrawSubset(InternalContext* context/*, int subsetIndex*/) = 0;
+	virtual void DrawSubset(DrawElementList* oenerList, InternalContext* context/*, int subsetIndex*/) = 0;
 	const detail::Sphere& GetBoundingSphere() const { return boundingSphere; }
 
 	// (ローカル座標系)
 	void MakeBoundingSphere(const Vector3& minPos, const Vector3& maxPos);
 
 	virtual DynamicLightInfo** GetAffectedDynamicLightInfos();
+
+protected:
+	//void OnJoindDrawList(const Matrix& transform);
+	
+private:
+	//Matrix	m_transform;
+
+	//friend class DrawList;
 };
 
 class LightingDrawElement
@@ -216,13 +224,16 @@ class DrawElementBatch
 public:
 	DrawElementBatch();
 
+	void SetTransfrom(const Matrix& value);
+	const Matrix& GetTransfrom() const { return m_transfrom; }
+
 	void SetCombinedMaterial(CombinedMaterial* value);
 	CombinedMaterial* GetCombinedMaterial() const { return m_combinedMaterial; }
 
 	void SetStandaloneShaderRenderer(bool enabled);
 	bool IsStandaloneShaderRenderer() const;
 
-	bool Equal(const BatchState& state, Material* material) const;
+	bool Equal(const BatchState& state, Material* material, const Matrix& transfrom) const;
 	void Reset();
 	void ApplyStatus(InternalContext* context, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
 	size_t GetHashCode() const;
@@ -234,6 +245,7 @@ public:
 
 
 private:
+	Matrix					m_transfrom;			// WorldTransform. 変わったらシェーダの ln_World* も変える必要がある。
 	CombinedMaterial*		m_combinedMaterial;
 	bool					m_standaloneShaderRenderer;
 	mutable size_t			m_hashCode;
@@ -244,12 +256,11 @@ class BatchStateBlock
 {
 public:
 	DrawElementBatch	state;
-	Matrix				transfrom;
 
 	void Reset()
 	{
 		state.Reset();
-		transfrom = Matrix::Identity;
+		//transfrom = Matrix::Identity;
 	}
 };
 
@@ -267,11 +278,11 @@ public:
 	void ClearCommands();
 
 	template<typename T, typename... TArgs>
-	T* AddCommand(const BatchState& state, Material* availableMaterial, TArgs... args)
+	T* AddCommand(const BatchState& state, Material* availableMaterial, const Matrix& transform, TArgs... args)
 	{
 		auto handle = m_commandDataCache.AllocData(sizeof(T));
 		T* t = new (m_commandDataCache.GetData(handle))T(args...);
-		PostAddCommandInternal(state, availableMaterial, t);
+		PostAddCommandInternal(state, availableMaterial, transform, t);
 		return t;
 	}
 
@@ -283,7 +294,7 @@ public:
 	const List<RefPtr<DynamicLightInfo>>& GetDynamicLightList() const { return m_dynamicLightList; }
 
 private:
-	void PostAddCommandInternal(const BatchState& state, Material* availableMaterial, DrawElement* element);
+	void PostAddCommandInternal(const BatchState& state, Material* availableMaterial, const Matrix& transform, DrawElement* element);
 
 	CommandDataCache		m_commandDataCache;
 	CommandDataCache		m_extDataCache;
@@ -409,7 +420,7 @@ protected:
 	virtual void OnPreRender(DrawElementList* elementList);
 
 private:
-	void UpdateAffectLights(DrawElement* element);
+	void UpdateAffectLights(DrawElement* element, DrawElementList* elementList);
 
 	List<DynamicLightInfo*>	m_selectingLights;	// UpdateAffectLights() の作業用変数
 };
@@ -520,6 +531,19 @@ public:
 		const Vector3& position3, const Vector2& uv3, const Color& color3,	// TODO: 順序
 		const Vector3& position4, const Vector2& uv4, const Color& color4/*,
 		ShaderPass* shaderPass*/);
+
+
+	void DrawSquare(float sizeX, float sizeZ, int slicesX, int slicesZ, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity, Material* material = nullptr);
+	
+	void DrawArc(float startAngle, float endAngle, float innerRadius, float outerRadius, int slices, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity, Material* material = nullptr);
+
+	void DrawBox(const Box& box, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity, Material* material = nullptr);
+
+	void DrawSphere(float radius, int slices = 8, int stacks = 8, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity);
+
+	void DrawCylinder(float radius, float height, int slices = 8, int stacks = 1, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity);
+
+	void DrawCone(float radius, float height, int slices = 8, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity);
 
 	void DrawMesh(MeshResource* mesh, int subsetIndex, Material* material);
 	void DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material);

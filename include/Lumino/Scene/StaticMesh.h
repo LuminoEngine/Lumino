@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include "../Graphics/Mesh.h"
+#include "../Graphics/Mesh/Mesh.h"
 #include "VisualNode.h"
 
 LN_NAMESPACE_BEGIN

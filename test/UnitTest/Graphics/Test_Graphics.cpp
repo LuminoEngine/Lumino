@@ -1,5 +1,5 @@
 ﻿#include <TestConfig.h>
-#include <Lumino/Graphics/Mesh.h>
+#include <Lumino/Graphics/Mesh/Mesh.h>
 #include "../../../src/Graphics/GraphicsManager.h"
 
 
@@ -111,6 +111,7 @@ TEST_F(Test_Graphics_Rendering, Clear)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Rendering, DrawLinePrimitive)
 {
+	// <Test> 1本
 	{
 		if (Engine::BeginRendering())
 		{
@@ -122,6 +123,21 @@ TEST_F(Test_Graphics_Rendering, DrawLinePrimitive)
 		}
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawLinePrimitive1.png")));
 	}
+	//// <Test> 2本連続
+	//{
+	//	if (Engine::BeginRendering())
+	//	{
+	//		Engine::Render();
+	//		Engine::GetDefault2DLayer()->GetRenderer()->DrawLinePrimitive(
+	//			Vector3(0, 0, 0), Color::Red,
+	//			Vector3(20, 50, 0), Color::White);
+	//		Engine::GetDefault2DLayer()->GetRenderer()->DrawLinePrimitive(
+	//			Vector3(20, 50, 0), Color::Red,
+	//			Vector3(0, 50, 0), Color::Blue);
+	//		Engine::EndRendering();
+	//	}
+	//	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawLinePrimitive2.png")));
+	//}
 }
 
 //------------------------------------------------------------------------------
@@ -149,6 +165,72 @@ TEST_F(Test_Graphics_Rendering, DrawSquarePrimitive)
 	}
 }
 
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_Rendering, DrawBox)
+{
+	ScopedCameraPosition cp(5, 5, -5);
+	{
+		Engine::BeginFrameUpdate();	// update camera transform
+		if (Engine::BeginRendering())
+		{
+			Engine::Render();
+			auto r = Engine::GetDefault3DLayer()->GetRenderer();
+			r->DrawBox(Box(1));
+			r->SetTransform(Matrix::MakeTranslation(3, 0, 0));
+			r->DrawBox(Box(2));
+			r->SetTransform(Matrix::MakeRotationY(Math::PI / 4) * Matrix::MakeTranslation(-3, 0, 0));
+			r->DrawBox(Box(2));
+			Engine::EndRendering();
+		}
+		Engine::EndFrameUpdate();
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawBox1.png"), 95));
+	}
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_Rendering, DrawSphere)
+{
+	ScopedCameraPosition cp(3, 3, -3);
+	{
+		Engine::BeginFrameUpdate();	// update camera transform
+		if (Engine::BeginRendering())
+		{
+			Engine::Render();
+			auto context = Engine::GetDefault3DLayer()->GetRenderer();
+
+			context->DrawSphere(2, 10, 10, Color::Red);
+			context->DrawSphere(1, 4, 4, Color::Green, Matrix::MakeTranslation(2, 0, 0));
+
+			Engine::EndRendering();
+		}
+		Engine::EndFrameUpdate();
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSphere1.png"), 95));
+	}
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_Rendering, DrawCylinder)
+{
+	ScopedCameraPosition cp(2, 2, 2);
+	{
+		Engine::BeginFrameUpdate();	// update camera transform
+		if (Engine::BeginRendering())
+		{
+			Engine::Render();
+			auto context = Engine::GetDefault3DLayer()->GetRenderer();
+
+			float r = 0.1f;
+			float d = 1.0f;
+			context->DrawCylinder(r, d, 8, 1, Color::Red, Matrix::MakeRotationZ(Math::PIDiv2) * Matrix::MakeTranslation(d / 2, 0, 0));
+			context->DrawCylinder(r, d, 8, 1, Color::Green, Matrix::MakeTranslation(0, d / 2, 0));
+			context->DrawCylinder(r, d, 8, 1, Color::Blue, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(0, 0, d / 2));
+
+			Engine::EndRendering();
+		}
+		Engine::EndFrameUpdate();
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawCylinder1.png"), 95));
+	}
+}
 
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Rendering, DrawMesh)

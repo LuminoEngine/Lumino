@@ -185,6 +185,8 @@ void UIElement::OnLayoutUpdated()
 //------------------------------------------------------------------------------
 void UIElement::OnRender(DrawList* g)
 {
+	g->SetBlendMode(BlendMode::Alpha);
+
 	if (background.Get() != nullptr)
 	{
 		g->SetBrush(background.Get());
@@ -193,10 +195,15 @@ void UIElement::OnRender(DrawList* g)
 	}
 	if (decoratorBackground.Get() != nullptr)
 	{
+		printf("%f\n", m_combinedOpacity * decoratorOpacity.Get());
+
 		g->SetBrush(decoratorBackground.Get());
 		//g->SetOpacity(m_combinedOpacity * m_decoratorOpacity);
 		g->DrawRectangle(RectF(0, 0, m_finalLocalRect.GetSize()));
 	}
+
+	g->SetBlendMode(BlendMode::Normal);	// TODO: old
+
 }
 
 //------------------------------------------------------------------------------

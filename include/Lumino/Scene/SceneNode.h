@@ -28,37 +28,37 @@ public:
 	const String& GetName() const { return m_name; }
 
 	/// ワールド変換行列の設定
-	void SetTransform(const Matrix& matrix) { m_localMatrix = matrix; m_transformModified = false; }
+	void SetTransform(const SQTTransform& transform) { m_transform = transform; }
 
 	/// ワールド変換行列の取得
-	const Matrix& GgetMatrix() const { return m_localMatrix; }
+	const SQTTransform& GetTransform() const { return m_transform; }
 
 	/// 位置の設定
-	void SetPosition(const Vector3& pos) { m_transform.translation = pos; m_transformModified = true; }
-	void SetPosition(float x, float y, float z = 0.0f) { m_transform.translation.Set(x, y, z); m_transformModified = true; }
+	void SetPosition(const Vector3& pos) { m_transform.translation = pos; }
+	void SetPosition(float x, float y, float z = 0.0f) { m_transform.translation.Set(x, y, z); }
 
 	/// 位置の取得
 	const Vector3& GetPosition() const { return m_transform.translation; }
 
 	/// 回転の設定
-	void SetRotation(const Quaternion& rot) { m_transform.rotation = rot; m_transformModified = true; }
-	void SetAngles(float x, float y, float z) { m_transform.rotation = Quaternion::MakeFromEulerAngles(Vector3(x, y, z)); m_transformModified = true; }
+	void SetRotation(const Quaternion& rot) { m_transform.rotation = rot; }
+	void SetAngles(float x, float y, float z) { m_transform.rotation = Quaternion::MakeFromEulerAngles(Vector3(x, y, z)); }
 
 	/// 回転の取得
 	const Quaternion& GetRotation() const { return m_transform.rotation; }
 
 	/// 拡大率の設定
-	void SetScale(const Vector3& scale) { m_transform.scale = scale; m_transformModified = true; }
-	void SetScale(float xyz) { m_transform.scale.Set(xyz, xyz, xyz); m_transformModified = true; }
-	void SetScale(float x, float y, float z = 0.0f) { m_transform.scale.Set(x, y, z); m_transformModified = true; }
+	void SetScale(const Vector3& scale) { m_transform.scale = scale; }
+	void SetScale(float xyz) { m_transform.scale.Set(xyz, xyz, xyz); }
+	void SetScale(float x, float y, float z = 0.0f) { m_transform.scale.Set(x, y, z); }
 
 	/// 拡大率の取得
 	const Vector3& GetScale() const { return m_transform.scale; }
 
 	/// 原点の設定
-	void SetCenter(const Vector3& center) { m_transformCenter = center; m_transformModified = true; }
+	void SetCenter(const Vector3& center) { m_transformCenter = center; }
 
-	void SetCenter(float x, float y, float z = 0.0f) { m_transformCenter.Set(x, y, z); m_transformModified = true; }
+	void SetCenter(float x, float y, float z = 0.0f) { m_transformCenter.Set(x, y, z); }
 
 	/// 原点の取得
 	const Vector3& GetCenter() const { return m_transformCenter; }
@@ -150,14 +150,14 @@ protected:
 	SceneGraphManager*	m_manager;	// TODO: いらない
 	SceneGraph*			m_ownerSceneGraph;
 	String				m_name;
-	Matrix				m_localMatrix;
+	//Matrix				m_localMatrix;
 	SQTTransform		m_transform;
 	Vector3				m_transformCenter;
 	RotationOrder		m_rotOrder;
 	int					m_priority;
 	BillboardType		m_billboardType;
 	SceneNodeRenderingMode	m_renderingMode;
-	bool				m_transformModified;	///< 座標変換行列の再計算が必要か
+	//bool				m_transformModified;	///< 座標変換行列の再計算が必要か
 	bool				m_isAutoUpdate;
 	bool				m_isAutoRemove;
 
