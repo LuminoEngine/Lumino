@@ -94,3 +94,8 @@ void HeaderParser::ParseFile(const PathName& path)
 	}
 }
 
+void HeaderParser::ParseClassDecl(const TokenList* tokens, int begin, int end)
+{
+
+}
+
