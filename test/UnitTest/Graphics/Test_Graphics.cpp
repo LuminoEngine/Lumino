@@ -161,7 +161,7 @@ TEST_F(Test_Graphics_Rendering, DrawSquarePrimitive)
 			Engine::EndRendering();
 		}
 		Engine::EndFrameUpdate();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSquarePrimitive1.png"), 95));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSquarePrimitive1_.png"), 95, true));
 	}
 }
 

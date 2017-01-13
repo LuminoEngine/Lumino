@@ -30,7 +30,7 @@ template class GenericSize<float>;
 // RectI
 //==============================================================================
 const RectI	RectI::Zero(0, 0, 0, 0);
-const RectI	RectI::Empty(0, 0, -1, -1);
+//const RectI	RectI::Empty(0, 0, -1, -1);
 
 //==============================================================================
 // RectF

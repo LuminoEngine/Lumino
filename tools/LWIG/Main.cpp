@@ -8,12 +8,13 @@ int main()
 {
 	List<PathName> files =
 	{
-		"../../../../include/Lumino/Engine.h"
+		//"../../../../include/Lumino/Engine.h"
+		"../../../../include/Lumino/Base/GeometryStructs.h"
 	};
+
+	SymbolDatabase database;
 	
-	//SymbolDatabase database;
-	
-	HeaderParser parser;
+	HeaderParser parser(&database);
 	parser.ParseFiles(files/*, &database*/);
 	//
 	//

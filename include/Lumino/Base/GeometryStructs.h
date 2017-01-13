@@ -97,148 +97,126 @@ using Size = GenericSize<float>;
 using SizeI = GenericSize<int>;
 
 
-/**
-	@brief		2次元の矩形を表すクラスです。
-*/
-template<typename T>
-class GenericRect
+class GeometryStructsHelper
 {
 public:
-	static const GenericRect<T>	Zero;	/**< (0, 0, 0, 0) */
-	static const GenericRect<T>	Empty;	/**< (0, 0, -1, -1) */
 
+	template<typename TRect>
+	static void Clip(TRect* this_, const TRect& rect)
+	{
+		auto l = (this_->x < rect.x) ? rect.x : this_->x;
+		auto t = (this_->y < rect.y) ? rect.y : this_->y;
+		auto r = (this_->GetRight() > rect.GetRight()) ? rect.GetRight() : this_->GetRight();
+		auto b = (this_->GetBottom() > rect.GetBottom()) ? rect.GetBottom() : this_->GetBottom();
+		this_->x = l;
+		this_->y = t;
+		this_->width = r - l;
+		this_->height = b - t;
+	}
+};
+
+/** 2次元の矩形を表すクラスです。*/
+LN_STRUCT()
+class RectF
+{
 public:
-	T		x;							/**< 左辺の X 座標 */
-	T		y;							/**< 上辺の Y 座標 */
-	T		width;						/**< 幅 */
-	T		height;						/**< 高さ */
-
-public:
-
-	/**
-		@brief	すべての要素を 0 で初期化します。
-	*/
-	GenericRect() { Set(0, 0, 0, 0); }
-
-	/**
-		@brief	位置とサイズを指定して初期化します。
-	*/
-	GenericRect(T x, T y, T width, T height) { Set(x, y, width, height); }
-	
-	/**
-		@brief	位置とサイズを指定して初期化します。
-	*/
-	GenericRect(const GenericPoint<T>& point, const GenericSize<T>& size) { Set(point.x, point.y, size.width, size.height); }
-
-	/**
-		@brief	位置とサイズを指定して初期化します。
-	*/
-	GenericRect(T x, T y, const GenericSize<T>& size) { Set(x, y, size.width, size.height); }
-
-	/**
-		位置とサイズを指定して初期化します。
-		@param[in]	point	:
-		@param[in]	width	:
-		@param[in]	height	:
-	*/
-	GenericRect(const GenericPoint<T>& point, T width, T height) { Set(point.x, point.y, width, height); }
-
-	/**
-		@brief	指定した矩形をコピーして初期化します。
-	*/
-	GenericRect(const GenericRect<T>& rect) { Set(rect.x, rect.y, rect.width, rect.height); }
+	static const RectF	Zero;	/**< (0, 0, 0, 0) */
+	static const RectF	Empty;	/**< (0, 0, -1, -1) */
 
 public:
 
-	/**
-		@brief	各要素を設定します。
-	*/
-	void Set(T x_, T y_, T width_, T height_) { x = x_; y = y_; width = width_; height = height_; }
+	/** 左辺の X 座標 */
+	LN_VARIABLE()
+	float x;
 
-	/**
-		@brief	各要素を設定します。
-	*/
-	void Set(T x_, T y_, const GenericSize<T>& size) { x = x_; y = y_; width = size.width; height = size.height; }
+	/** 上辺の Y 座標 */
+	LN_VARIABLE()
+	float y;
 
-	/**
-		@brief	左辺の x 軸の値を取得します。
-	*/
-	T GetLeft() const { return x; }
+	/** 幅 */
+	LN_VARIABLE()
+	float width;
 
-	/**
-		@brief	上辺の y 軸の位置を取得します。
-	*/
-	T GetTop() const { return y; }
+	/** 高さ */
+	LN_VARIABLE()
+	float height;
 
-	/**
-		@brief	右辺の x 軸の値を取得します。
-	*/
-	T GetRight() const { return x + width; }
+public:
 
-	/**
-		@brief	底辺の y 軸の値を取得します。
-	*/
-	T GetBottom() const { return y + height; }
+	/** すべての要素を 0 で初期化します。*/
+	RectF() { Set(0, 0, 0, 0); }
 
-	/**
-		@brief	左上隅の位置を取得します。
-	*/
-	GenericPoint<T> GetTopLeft() const { return GenericPoint<T>(GetLeft(), GetTop()); }
+	/** 位置とサイズを指定して初期化します。*/
+	RectF(float x, float y, float width, float height) { Set(x, y, width, height); }
 	
-	/**
-		@brief	右上隅の位置を取得します。
-	*/
-	GenericPoint<T> GetTopRight() const { return GenericPoint<T>(GetRight(), GetTop()); }
+	/** 位置とサイズを指定して初期化します。*/
+	RectF(const PointF& point, const Size& size) { Set(point.x, point.y, size.width, size.height); }
+
+	/** 位置とサイズを指定して初期化します。*/
+	RectF(float x, float y, const Size& size) { Set(x, y, size.width, size.height); }
+
+	/** 位置とサイズを指定して初期化します。 */
+	RectF(const PointF& point, float width, float height) { Set(point.x, point.y, width, height); }
+
+	/** 指定した矩形をコピーして初期化します。*/
+	RectF(const RectF& rect) { Set(rect.x, rect.y, rect.width, rect.height); }
+
+public:
+
+	/** 各要素を設定します。*/
+	LN_FUNCTION()
+	void Set(float x_, float y_, float width_, float height_) { x = x_; y = y_; width = width_; height = height_; }
+
+	/** 各要素を設定します。*/
+	void Set(float x_, float y_, const Size& size) { x = x_; y = y_; width = size.width; height = size.height; }
+
+	/** 左辺の x 軸の値を取得します。*/
+	float GetLeft() const { return x; }
+
+	/** 上辺の y 軸の位置を取得します。*/
+	float GetTop() const { return y; }
+
+	/** 右辺の x 軸の値を取得します。*/
+	float GetRight() const { return x + width; }
+
+	/** 底辺の y 軸の値を取得します。*/
+	float GetBottom() const { return y + height; }
+
+	/** 左上隅の位置を取得します。*/
+	PointF GetTopLeft() const { return PointF(GetLeft(), GetTop()); }
 	
-	/**
-		@brief	左下隅の位置を取得します。
-	*/
-	GenericPoint<T> GetBottomLeft() const { return GenericPoint<T>(GetLeft(), GetBottom()); }
-
-	/**
-		@brief	右下隅の位置を取得します。
-	*/
-	GenericPoint<T> GetBottomRight() const { return GenericPoint<T>(GetRight(), GetBottom()); }
-
-	/**
-		@brief	左上隅の位置を設定します。
-	*/
-	void SetLocation(const GenericPoint<T>& pt) { x = pt.x; y = pt.y; }
-
-	/**
-		@brief	左上隅の位置を取得します。
-	*/
-	GenericPoint<T> GetLocation() const { return GenericPoint<T>(x, y); }
+	/** 右上隅の位置を取得します。*/
+	PointF GetTopRight() const { return PointF(GetRight(), GetTop()); }
 	
-	/**
-		@brief	幅と高さを設定します。
-	*/
-	void SetSize(const GenericSize<T>& size) { width = size.width; height = size.height; }
-	
-	/**
-		@brief	幅と高さを取得します。
-	*/
-	GenericSize<T> GetSize() const { return GenericSize<T>(width, height); }
+	/** 左下隅の位置を取得します。*/
+	PointF GetBottomLeft() const { return PointF(GetLeft(), GetBottom()); }
 
-	/**
-		@brief	幅または高さを持たないかを判定します。
-	*/
+	/** 右下隅の位置を取得します。*/
+	PointF GetBottomRight() const { return PointF(GetRight(), GetBottom()); }
+
+	/** 左上隅の位置を設定します。*/
+	void SetLocation(const PointF& pt) { x = pt.x; y = pt.y; }
+
+	/** 左上隅の位置を取得します。*/
+	PointF GetLocation() const { return PointF(x, y); }
+	
+	/** 幅と高さを設定します。*/
+	void SetSize(const Size& size) { width = size.width; height = size.height; }
+	
+	/** 幅と高さを取得します。*/
+	Size GetSize() const { return Size(width, height); }
+
+	/** 幅または高さを持たないかを判定します。*/
 	bool IsEmpty() const { return (width < 0 || height < 0); }
 
-	/**
-		@brief	要素がすべて 0 かを判定します。
-	*/
+	/** 要素がすべて 0 かを判定します。*/
 	bool IsZero() const { return (x == 0 && y == 0 && width == 0 && height == 0); }
 
-	/**
-		@brief	矩形内に指定した点が含まれているかどうかを判定します。
-	*/
-	bool Contains(GenericPoint<T> point) const { return Contains(point.x, point.y); }
+	/** 矩形内に指定した点が含まれているかどうかを判定します。*/
+	bool Contains(const PointF point) const { return Contains(point.x, point.y); }
 	
-	/**
-		@brief	矩形内に指定した点が含まれているかどうかを判定します。
-	*/
-	bool Contains(T x_, T y_) const
+	/** 矩形内に指定した点が含まれているかどうかを判定します。*/
+	bool Contains(float x_, float y_) const
 	{
 		if (IsEmpty()) {
 			return false;
@@ -249,7 +227,7 @@ public:
 	/**
 		@brief	指定した矩形全体が、この矩形内部に含まれているかを判定します。
 	*/
-	bool Contains(const GenericRect<T>& rect) const
+	bool Contains(const RectF& rect) const
 	{
 		if (IsEmpty() || rect.IsEmpty()) {
 			return false;
@@ -264,22 +242,15 @@ public:
 	/**
 		@brief	指定した矩形に収まるように、この矩形をクリッピングします。
 	*/
-	void Clip(const GenericRect<T>& rect)
+	void Clip(const RectF& rect)
 	{
-		T l = (x < rect.x) ? rect.x : x;
-		T t = (y < rect.y) ? rect.y : y;
-		T r = (GetRight() > rect.GetRight()) ? rect.GetRight() : GetRight();
-		T b = (GetBottom() > rect.GetBottom()) ? rect.GetBottom() : GetBottom();
-		x = l;
-		y = t;
-		width = r - l;
-		height = b - t;
+		GeometryStructsHelper::Clip(this, rect);
 	}
 
 	/**
 		@brief	四角形を拡大または縮小します。
 	*/
-	void Inflate(T width_, T height_)
+	void Inflate(float width_, float height_)
 	{
 		x -= width_;
 		y -= height_;
@@ -290,16 +261,43 @@ public:
 	}
 
 public:
-	bool operator == (const GenericRect<T>& obj) const { return (x == obj.x && y == obj.y && width == obj.width && height == obj.height); }
-	bool operator != (const GenericRect<T>& obj) const { return !operator==(obj); }
-
-	static GenericRect<T> MakeFromBounds(T left, T top, T bottom) { return GenericRect<T>(left, top, right - left, bottom - top); }
+	bool operator == (const RectF& obj) const { return (x == obj.x && y == obj.y && width == obj.width && height == obj.height); }
+	bool operator != (const RectF& obj) const { return !operator==(obj); }
 };
 
-using RectF = GenericRect<float>;
-using RectI = GenericRect<int>;
+// 内部用
+class RectI
+{
+public:
+	static const RectI	Zero;
 
+	int		x;
+	int		y;
+	int		width;
+	int		height;
 
+	RectI() { Set(0, 0, 0, 0); }
+	RectI(int x, int y, int width, int height) { Set(x, y, width, height); }
+	RectI(int x, int y, const SizeI& size) { Set(x, y, size.width, size.height); }
+	RectI(const RectI& rect) { Set(rect.x, rect.y, rect.width, rect.height); }
+
+	void Set(int x_, int y_, int width_, int height_) { x = x_; y = y_; width = width_; height = height_; }
+	void Set(int x_, int y_, const SizeI& size) { x = x_; y = y_; width = size.width; height = size.height; }
+
+	bool IsEmpty() const { return (width < 0 || height < 0); }
+	int GetLeft() const { return x; }
+	int GetTop() const { return y; }
+	int GetRight() const { return x + width; }
+	int GetBottom() const { return y + height; }
+	SizeI GetSize() const { return SizeI(width, height); }
+
+	void Clip(const RectI& rect) { GeometryStructsHelper::Clip(this, rect); }
+
+	bool operator == (const RectI& right) const { return (x == right.x && y == right.y && width == right.width && height == right.height); }
+	bool operator != (const RectI& right) const { return !operator==(right); }
+};
+
+// 内部用
 class Box32
 {
 public:

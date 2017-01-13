@@ -25,14 +25,14 @@ BitmapPainter::~BitmapPainter()
 //------------------------------------------------------------------------------
 void BitmapPainter::Clear(const Color32& color)
 {
-	FillRectangle(RectI(PointI(0, 0), m_bitmap->GetSize()), color);
+	FillRectangle(RectI(0, 0, m_bitmap->GetSize()), color);
 }
 
 //------------------------------------------------------------------------------
 void BitmapPainter::FillRectangle(const RectI& rect, const Color32& color)
 {
 	RectI destRect = rect;
-	destRect.Clip(RectI(PointI(0, 0), m_bitmap->GetSize()));
+	destRect.Clip(RectI(0, 0, m_bitmap->GetSize()));
 
 	PixelFormat format = m_bitmap->GetPixelFormat();
 
