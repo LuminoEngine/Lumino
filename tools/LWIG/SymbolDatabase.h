@@ -19,6 +19,7 @@
 
 class ParameterInfo
 {
+public:
 	//DefaultValue
 	//ParameterType
 	String	name;

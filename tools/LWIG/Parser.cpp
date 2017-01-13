@@ -249,11 +249,36 @@ void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
 
 void HeaderParser::ParseParamsDecl(TokenItr begin, TokenItr end, MethodInfoPtr parent)
 {
-	Console::WriteLine("  {0}", (*(end - 1))->GetString());
-	//auto info = std::make_shared<ParameterInfo>();
-	//info->name = (*name)->GetString();
-	//info->typeRawName = (*type)->GetString();
+	auto declTokens = tr::MakeEnumerator::from(begin, end)
+		.Where([](Token* t) { return t->GetTokenGroup() == TokenGroup::Identifier || t->GetTokenGroup() == TokenGroup::Keyword || t->GetTokenGroup() == TokenGroup::Operator || t->GetTokenGroup() == TokenGroup::ArithmeticLiteral; })
+		.ToList();;
+		//.Select([](Token* t) { return t->GetString(); })
+		//
+
+	//paramEnd = declTokens.end();
+	auto paramEnd = std::find_if(declTokens.begin(), declTokens.end(), [](Token* t) { return t->EqualChar('='); });
+
+	auto name = paramEnd - 1;
+	auto type = declTokens.begin();
+	auto typeEnd = name;
+
+	//auto itr = declTokens.begin();
+	//auto name = itr;
+	//for (; itr != paramEnd; ++itr)
+	//{
+	//	name = itr;
+	//}
+
+	//
+	//
+
+
+	auto info = std::make_shared<ParameterInfo>();
+	info->name = (*name)->GetString();
+	info->typeRawName = (*type)->GetString();
 	//parent->declaredFields.Add(info);
+
+	Console::WriteLine("  {0}", info->name);
 }
 
 void HeaderParser::ParseClassDecl(const TokenList* tokens, int begin, int end)
