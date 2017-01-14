@@ -16,6 +16,8 @@
 //};
 //
 //Module
+class TypeInfo;
+using TypeInfoPtr = std::shared_ptr<TypeInfo>;
 
 class ParameterInfo
 {
@@ -34,7 +36,8 @@ using ParameterInfoPtr = std::shared_ptr<ParameterInfo>;
 class FieldInfo
 {
 public:
-	String	name;
+	TypeInfoPtr	type;
+	String		name;
 
 	String	typeRawName;
 };
@@ -48,7 +51,7 @@ public:
 	//IsConstructor
 	//IsStatic
 	//IsVirtual
-	List<FieldInfoPtr>	parameters;
+	List<ParameterInfoPtr>	parameters;
 };
 using MethodInfoPtr = std::shared_ptr<MethodInfo>;
 
@@ -59,13 +62,22 @@ public:
 	bool	isStruct = false;
 	List<FieldInfoPtr>	declaredFields;
 	List<MethodInfoPtr>	declaredMethods;
+
+	TypeInfo() {}
+	TypeInfo(StringRef name_) : name(name_) {}
 };
 
-using TypeInfoPtr = std::shared_ptr<TypeInfo>;
 
 class SymbolDatabase
 {
 public:
-	List<TypeInfoPtr>	m_structs;
+	List<TypeInfoPtr>	predefineds;
+	List<TypeInfoPtr>	structs;
+
+	void Link();
+
+private:
+	void InitializePredefineds();
+	TypeInfoPtr FindTypeInfo(StringRef typeName);
 };
 

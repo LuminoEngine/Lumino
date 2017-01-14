@@ -23,7 +23,10 @@ public:
 	/** 文字列を追加する */
 	template<typename... TArgs>
 	void Append(const StringRef& format, const TArgs&... args) { AppendInternal(String::Format(format, args...)); }
-	
+
+	/** 文字列を追加する (各行の先頭をインデント) */
+	void AppendLine(const StringRef& str) { AppendLineInternal(str); }
+
 	/** 文字列を追加する (各行の先頭をインデント) */
 	template<typename... TArgs>
 	void AppendLine(const StringRef& format, const TArgs&... args) { AppendLineInternal(String::Format(format, args...)); }

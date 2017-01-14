@@ -151,7 +151,7 @@ void HeaderParser::ParseStructDecl(const Decl& decl)
 	auto info = std::make_shared<TypeInfo>();
 	info->name = (*name)->GetString();
 	info->isStruct = true;
-	m_database->m_structs.Add(info);
+	m_database->structs.Add(info);
 
 	for (auto& member : decl.decls)
 	{
@@ -262,23 +262,19 @@ void HeaderParser::ParseParamsDecl(TokenItr begin, TokenItr end, MethodInfoPtr p
 	auto type = declTokens.begin();
 	auto typeEnd = name;
 
-	//auto itr = declTokens.begin();
-	//auto name = itr;
-	//for (; itr != paramEnd; ++itr)
-	//{
-	//	name = itr;
-	//}
-
-	//
-	//
-
+	// lookup TypeName and count '*'
+	TokenItr typeName;
+	int pointerLevel = 0;
+	for (auto itr = declTokens.begin(); itr != typeEnd; ++itr)
+	{
+		if ((*itr)->EqualChar('*')) pointerLevel++;
+		if ((*itr)->GetTokenGroup() == TokenGroup::Identifier || (*itr)->GetTokenGroup() == TokenGroup::Keyword) typeName = itr;
+	}
 
 	auto info = std::make_shared<ParameterInfo>();
 	info->name = (*name)->GetString();
-	info->typeRawName = (*type)->GetString();
-	//parent->declaredFields.Add(info);
-
-	Console::WriteLine("  {0}", info->name);
+	info->typeRawName = (*typeName)->GetString();
+	parent->parameters.Add(info);
 }
 
 void HeaderParser::ParseClassDecl(const TokenList* tokens, int begin, int end)
