@@ -484,21 +484,6 @@ void GameAudioImpl::SetBGSVolume(float volume, double fadeTime)
 }
 
 //------------------------------------------------------------------------------
-//Sound* GameAudioImpl::GetInternalGameSound( InternalGameSound type )
-//{
-//	switch ( type )
-//	{
-//		case InternalGameSound_BGM:
-//			return mBGM;
-//		case InternalGameSound_BGS:
-//			return mBGS;
-//		case InternalGameSound_ME:
-//			return mME;
-//	}
-//	return NULL;
-//}
-
-//------------------------------------------------------------------------------
 void GameAudioImpl::Polling()
 {
 	MutexScopedLock lock(mLock);
@@ -584,7 +569,7 @@ void GameAudioImpl::PushReleaseAtPlayEndList(Sound* sound)
 SoundPtr GameAudioImpl::CreateSound(const StringRef& filePath)
 {
 	auto ptr = SoundPtr::MakeRef();
-	ptr->Initialize(mManager, filePath);
+	ptr->Initialize(filePath);
 	return ptr;
 }
 
@@ -592,7 +577,7 @@ SoundPtr GameAudioImpl::CreateSound(const StringRef& filePath)
 SoundPtr GameAudioImpl::CreateSound(detail::AudioStream* audioStream)
 {
 	auto ptr = SoundPtr::MakeRef();
-	ptr->Initialize(mManager, audioStream);
+	ptr->Initialize(audioStream);
 	return ptr;
 }
 

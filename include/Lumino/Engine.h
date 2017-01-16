@@ -20,13 +20,13 @@ public:
 	/**
 		@brief		エンジンの初期化処理を行います。
 	*/
-	LN_FUNCTION()
+	LN_METHOD()
 	static void Initialize();
 	
 	/**
 		@brief		エンジンの終了処理を行います。
 	*/
-	LN_FUNCTION()
+	LN_METHOD()
 	static void Terminate();
 
 	/**
@@ -34,7 +34,7 @@ public:
 		@return		アプリケーションの終了が要求されている場合は false を返します。
 		@details	この関数はグラフィックスと入力を更新し、指定されたフレームレートになるように待機します。
 	*/
-	LN_FUNCTION()
+	LN_METHOD()
 	static bool Update();
 
 	static void BeginFrameUpdate();

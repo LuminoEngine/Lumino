@@ -10,6 +10,7 @@ int main()
 	List<PathName> files =
 	{
 		"../../../../include/Lumino/Engine.h",
+		"../../../../include/Lumino/Audio/Sound.h",
 		"../../../../include/Lumino/Base/GeometryStructs.h",
 		"../../../../external/Lumino.Core/include/Lumino/Math/Vector3.h"
 	

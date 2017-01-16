@@ -41,6 +41,7 @@ void SymbolDatabase::InitializePredefineds()
 	predefineds.Add(std::make_shared<TypeInfo>("bool")); predefineds.GetLast()->isPrimitive = true;
 	predefineds.Add(std::make_shared<TypeInfo>("int")); predefineds.GetLast()->isPrimitive = true;
 	predefineds.Add(std::make_shared<TypeInfo>("float")); predefineds.GetLast()->isPrimitive = true;
+	predefineds.Add(std::make_shared<TypeInfo>("String")); predefineds.GetLast()->isPrimitive = true; stringType = predefineds.GetLast();
 }
 
 TypeInfoPtr SymbolDatabase::FindTypeInfo(StringRef typeName)
@@ -52,6 +53,8 @@ TypeInfoPtr SymbolDatabase::FindTypeInfo(StringRef typeName)
 
 	type = structs.Find([typeName](TypeInfoPtr type) { return type->name == typeName; });
 	if (type != nullptr) return *type;
+
+	if (typeName == "StringRef") return stringType;
 
 	LN_UNREACHABLE();
 	return nullptr;

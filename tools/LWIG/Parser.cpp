@@ -45,7 +45,7 @@ void HeaderParser::ParseFile(const PathName& path)
 		{
 			LN_PARSE_RESULT(r1, TokenString("LN_STRUCT"));
 			LN_PARSE_RESULT(r2, TokenChar('{'));
-			LN_PARSE_RESULT(r3, Many(Parser<Decl>(Parse_LN_FIELD) || Parser<Decl>(Parse_LN_FUNCTION) || Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment)));
+			LN_PARSE_RESULT(r3, Many(Parser<Decl>(Parse_LN_FIELD) || Parser<Decl>(Parse_LN_METHOD) || Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment)));
 			LN_PARSE_RESULT(r4, TokenChar('}'));
 			return input.Success(Decl{ _T("Struct"), r1.GetMatchBegin(), r4.GetMatchEnd(), r3.GetValue() });
 		}
@@ -54,7 +54,7 @@ void HeaderParser::ParseFile(const PathName& path)
 		{
 			LN_PARSE_RESULT(r1, TokenString("LN_CLASS"));
 			LN_PARSE_RESULT(r2, TokenChar('{'));
-			LN_PARSE_RESULT(r3, Many(Parser<Decl>(Parse_LN_FUNCTION) || Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_DocumentComment)));
+			LN_PARSE_RESULT(r3, Many(Parser<Decl>(Parse_LN_FIELD) || Parser<Decl>(Parse_LN_METHOD) || Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment)));
 			LN_PARSE_RESULT(r4, TokenChar('}'));
 			return input.Success(Decl{ _T("class"), r1.GetMatchBegin(), r4.GetMatchEnd(), r3.GetValue() });
 		}
@@ -66,9 +66,9 @@ void HeaderParser::ParseFile(const PathName& path)
 			return input.Success(Decl{ _T("field"), r1.GetMatchBegin(), r2.GetMatchEnd() });
 		}
 
-		static ParserResult<Decl> Parse_LN_FUNCTION(ParserContext input)
+		static ParserResult<Decl> Parse_LN_METHOD(ParserContext input)
 		{
-			LN_PARSE_RESULT(r1, TokenString("LN_FUNCTION"));
+			LN_PARSE_RESULT(r1, TokenString("LN_METHOD"));
 			LN_PARSE_RESULT(r2, UntilMore(Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock)));
 			return input.Success(Decl{ _T("method"), r1.GetMatchBegin(), r2.GetMatchEnd() });
 		}
@@ -97,7 +97,7 @@ void HeaderParser::ParseFile(const PathName& path)
 				token->EqualString("LN_STRUCT", 9) ||
 				token->EqualString("LN_CLASS", 8) ||
 				token->EqualString("LN_FIELD", 8) ||
-				token->EqualString("LN_FUNCTION", 11) ||
+				token->EqualString("LN_METHOD", 9) ||
 				token->GetTokenGroup() == TokenGroup::Eof;	// TODO: これが無くてもいいようにしたい。今はこれがないと、Many中にEOFしたときOutOfRangeする
 		}
 	};
@@ -190,6 +190,7 @@ void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
 
 	auto info = std::make_shared<MethodInfo>();
 	info->name = (declTokens.GetLast())->GetString();	// ( の直前を関数名として取り出す
+	info->isConstructor = (info->name.IndexOf("Initialize") == 0);	// InitializeXXXX ならコンストラクタ
 	parent->declaredMethods.Add(info);
 
 	// return type
@@ -320,7 +321,13 @@ void HeaderParser::ParseParamType(TokenItr begin, TokenItr end, StringA* outName
 void HeaderParser::ParseClassDecl(const Decl& decl)
 {
 	auto paramEnd = ParseMetadataDecl(decl.begin, decl.end);
-	auto name = std::find_if(paramEnd, decl.end, [](Token* t) { return t->EqualChar('{'); }) - 2;
+	//auto name = std::find_if(paramEnd, decl.end, [](Token* t) { return t->EqualChar(':'); }) - 2;
+	TokenItr name;
+	for (auto itr = paramEnd; itr < decl.end; ++itr)
+	{
+		if ((*itr)->GetTokenGroup() == TokenGroup::Identifier) name = itr;
+		if ((*itr)->EqualChar(':') || (*itr)->EqualChar('{')) break;
+	}
 
 	auto info = std::make_shared<TypeInfo>();
 	info->name = (*name)->GetString();

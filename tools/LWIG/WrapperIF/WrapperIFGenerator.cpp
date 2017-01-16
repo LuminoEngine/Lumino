@@ -5,10 +5,16 @@
 const StringA funcTemplate =
 	"LNResult LN_API LN%ClassName%_%FuncName%(%ParamList%)\n"
 	"{\n"
-	"    LN_FUNC_TRY_BEGIN;\n"
+	"    LWIG_FUNC_TRY_BEGIN;\n"
 	"    %FuncBody%\n"
-	"    LN_FUNC_TRY_END_RETURN;\n"
+	"    LWIG_FUNC_TRY_END_RETURN;\n"
 	"}\n";
+
+const StringA wrapperIFClassTemplate =
+	"class LN%ClassName% : public %ClassName%\n"
+	"{\n"
+	"public:\n"
+	"};\n";
 
 void WrapperIFGenerator::Generate(SymbolDatabase* database)
 {
@@ -31,12 +37,17 @@ void WrapperIFGenerator::Generate(SymbolDatabase* database)
 		buffer.AppendLines(MakeMethods(structInfo));
 	}
 
+	// classes
+	OutputBuffer wrapper;
 	for (auto& classInfo : m_database->classes)
 	{
 		buffer.AppendLines(MakeMethods(classInfo));
+
+		wrapper.AppendLines(wrapperIFClassTemplate.Replace("%ClassName%", classInfo->name));
 	}
 
-	FileSystem::WriteAllText("test.cpp", buffer.ToString());
+	FileSystem::WriteAllText(LUMINO_ROOT_DIR"/test.cpp", buffer.ToString());
+	FileSystem::WriteAllText(LUMINO_ROOT_DIR"/testIF.h", wrapper.ToString());
 }
 
 StringA WrapperIFGenerator::MakeInstanceParamName(TypeInfoPtr info)
@@ -64,7 +75,7 @@ StringA WrapperIFGenerator::MakeMethods(TypeInfoPtr typeInfo)
 						else
 							params.AppendCommad("LN{0}* {1}", typeInfo->name, typeInfo->name, MakeInstanceParamName(typeInfo));
 					}
-					else
+					else if (!methodInfo->isConstructor)
 					{
 						params.AppendCommad("LNHandle {0}", MakeInstanceParamName(typeInfo));
 					}
@@ -74,7 +85,7 @@ StringA WrapperIFGenerator::MakeMethods(TypeInfoPtr typeInfo)
 			// params
 			for (auto& paramInfo : methodInfo->parameters)
 			{
-				params.AppendCommad("{0} {1}", paramInfo->type->name, paramInfo->name);
+				params.AppendCommad("{0} {1}", MakeParamTypeName(paramInfo->type, false), paramInfo->name);
 			}
 
 			// return value
@@ -82,8 +93,14 @@ StringA WrapperIFGenerator::MakeMethods(TypeInfoPtr typeInfo)
 			{
 				params.AppendCommad("{0} outReturn", MakeParamTypeName(methodInfo->returnType, true));
 			}
+			
+			// constructor
+			if (methodInfo->isConstructor)
+			{
+				params.AppendCommad("LNHandle* out{0}", MakeInstanceParamName(typeInfo));
+			}
 		}
-
+		
 		// make func body
 		OutputBuffer body;
 		{
@@ -97,16 +114,35 @@ StringA WrapperIFGenerator::MakeMethods(TypeInfoPtr typeInfo)
 				body.Append("*outReturn = ");
 
 
-			if (methodInfo->isStatic)
-			{
-				body.Append("{0}::{1}({2});", typeInfo->name, methodInfo->name, args.ToString());
-			}
-			else
+			if (typeInfo->isStruct)
 			{
 				String castTo = typeInfo->name;
 				if (methodInfo->isConst) castTo = "const " + castTo;
 
 				body.Append("reinterpret_cast<{0}*>({1})->{2}({3});", castTo, MakeInstanceParamName(typeInfo), methodInfo->name, args.ToString());
+			}
+			else
+			{
+				// static 関数
+				if (methodInfo->isStatic)
+				{
+					body.Append("{0}::{1}({2});", typeInfo->name, methodInfo->name, args.ToString());
+				}
+				// コンストラクタ 関数
+				else if (methodInfo->isConstructor)
+				{
+					OutputBuffer macroArgs;
+					macroArgs.AppendCommad("out" + MakeInstanceParamName(typeInfo));	// 格納する変数名
+					macroArgs.AppendCommad("LN" + typeInfo->name);						// クラス名
+					macroArgs.AppendCommad(methodInfo->name);							// 初期化関数名
+					macroArgs.AppendCommad(args.ToString());							// 引数
+					body.Append("LWIG_CREATE_OBJECT({0});", macroArgs.ToString());
+				}
+				// 普通のインスタンス 関数
+				else
+				{
+					body.Append("LWIG_TO_OBJECT({0})->{1}({2});", MakeInstanceParamName(typeInfo), methodInfo->name, args.ToString());
+				}
 			}
 		}
 
@@ -131,7 +167,10 @@ StringA WrapperIFGenerator::MakeParamTypeName(TypeInfoPtr typeInfo, bool isOut)
 	}
 	else
 	{
-		LN_NOTIMPLEMENTED();
+		if (typeInfo == m_database->stringType)
+			name = "const LNChar*";
+		else
+			name = typeInfo->name;
 	}
 	return name;
 }

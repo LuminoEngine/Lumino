@@ -930,6 +930,8 @@ endif()
 # Output
 #------------------------------------------------------------------------------
 
+add_definitions(-DLUMINO_ROOT_DIR="${PROJECT_SOURCE_DIR}")
+
 #set(CMAKE_CXX_FLAGS "")
 #set(CMAKE_CXX_FLAGS_DEBUG "-g -pg")
 #set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -pg -O3")

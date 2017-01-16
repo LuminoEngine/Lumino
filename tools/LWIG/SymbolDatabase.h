@@ -53,7 +53,8 @@ public:
 	//IsStatic
 	//IsVirtual
 	bool			isConst = false;		// const ƒƒ“ƒoŠÖ”‚Å‚ ‚é‚©
-	bool			isStatic = false;		
+	bool			isStatic = false;
+	bool			isConstructor = false;
 	List<ParameterInfoPtr>	parameters;
 
 	String	returnTypeRawName;
@@ -83,6 +84,7 @@ public:
 	List<TypeInfoPtr>	predefineds;
 	List<TypeInfoPtr>	structs;
 	List<TypeInfoPtr>	classes;
+	TypeInfoPtr			stringType;
 
 	void Link();
 

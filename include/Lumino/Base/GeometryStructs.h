@@ -164,14 +164,14 @@ public:
 public:
 
 	/** 各要素を設定します。*/
-	LN_FUNCTION()
+	LN_METHOD()
 	void Set(float x_, float y_, float width_, float height_) { x = x_; y = y_; width = width_; height = height_; }
 
 	/** 各要素を設定します。*/
 	void Set(float x_, float y_, const Size& size) { x = x_; y = y_; width = size.width; height = size.height; }
 
 	/** 左辺の x 軸の値を取得します。*/
-	LN_FUNCTION()
+	LN_METHOD()
 	float GetLeft() const { return x; }
 
 	/** 上辺の y 軸の位置を取得します。*/

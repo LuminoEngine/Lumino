@@ -14,8 +14,9 @@ typedef RefPtr<Sound>	SoundPtr;
 /**
 	@brief	音声の再生、制御を行います。
 */
+LN_CLASS()
 class Sound
-    : public tr::ReflectionObject
+    : public Object
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
@@ -37,22 +38,26 @@ public:
 		@brief		この音声の音量を設定します。
 		@param[in]	volume	: 音量 (0.0～1.0。初期値は 1.0)
 	*/
+	LN_METHOD()
 	void SetVolume(float volume);
 
 	/**
 		@brief		この音声の音量を取得します。
 	*/
+	LN_METHOD()
 	float GetVolume() const;
 
 	/**
 		@brief		この音声のピッチ (音高) を設定します。
 		@param[in]	volume	: ピッチ (0.5～2.0。初期値は 1.0)
 	*/
+	LN_METHOD()
 	void SetPitch(float pitch);
 
 	/**
 		@brief		この音声のピッチ (音高) を取得します。
 	*/
+	LN_METHOD()
 	float GetPitch() const;
 
 	/**
@@ -77,21 +82,25 @@ public:
 	/**
 		@brief		この音声の再生を開始します。
 	*/
+	LN_METHOD()
 	void Play();
 
 	/**
 		@brief		この音声の再生を停止します。
 	*/
+	LN_METHOD()
 	void Stop();
 
 	/**
 		@brief		この音声の再生を一時停止します。
 	*/
+	LN_METHOD()
 	void Pause();
 
 	/**
 		@brief		一時停止中の再生を再開します。
 	*/
+	LN_METHOD()
 	void Resume();
 
 	/**
@@ -182,9 +191,10 @@ public:
 LN_INTERNAL_ACCESS:
 	Sound();
 	virtual ~Sound();
-	void Initialize(detail::AudioManager* manager, const StringRef& filePath);
-	void Initialize(detail::AudioManager* manager, Stream* stream, SoundLoadingMode loadingMode);
-	void Initialize(detail::AudioManager* manager, detail::AudioStream* audioStream);
+	LN_METHOD()
+	void Initialize(const StringRef& filePath);
+	void Initialize(Stream* stream, SoundLoadingMode loadingMode);
+	void Initialize(detail::AudioStream* audioStream);
 	void CreateAudioPlayerSync();
 	void Polling(float elapsedTime);
 
