@@ -11,18 +11,35 @@ void SymbolDatabase::Link()
 		{
 			fieldInfo->type = FindTypeInfo(fieldInfo->typeRawName);
 		}
+		for (auto methodInfo : structInfo->declaredMethods)
+		{
+			methodInfo->returnType = FindTypeInfo(methodInfo->returnTypeRawName);
+
+			for (auto& paramInfo : methodInfo->parameters)
+			{
+				paramInfo->type = FindTypeInfo(paramInfo->typeRawName);
+			}
+		}
 	}
 }
 
 void SymbolDatabase::InitializePredefineds()
 {
-	predefineds.Add(std::make_shared<TypeInfo>("void"));
-	predefineds.Add(std::make_shared<TypeInfo>("int"));
-	predefineds.Add(std::make_shared<TypeInfo>("float"));
+	predefineds.Add(std::make_shared<TypeInfo>("void")); predefineds.GetLast()->isVoid = true;
+	predefineds.Add(std::make_shared<TypeInfo>("int")); predefineds.GetLast()->isPrimitive = true;
+	predefineds.Add(std::make_shared<TypeInfo>("float")); predefineds.GetLast()->isPrimitive = true;
 }
 
 TypeInfoPtr SymbolDatabase::FindTypeInfo(StringRef typeName)
 {
-	auto type = predefineds.Find([typeName](TypeInfoPtr type) { return type->name == typeName; });
-	return *type;
+	TypeInfoPtr* type;
+	
+	type = predefineds.Find([typeName](TypeInfoPtr type) { return type->name == typeName; });
+	if (type != nullptr) return *type;
+
+	type = structs.Find([typeName](TypeInfoPtr type) { return type->name == typeName; });
+	if (type != nullptr) return *type;
+
+	LN_UNREACHABLE();
+	return nullptr;
 }

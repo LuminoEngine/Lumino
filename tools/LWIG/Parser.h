@@ -31,7 +31,8 @@ private:
 	void ParseFieldDecl(const Decl& decl, TypeInfoPtr parent);
 	void ParseMethodDecl(const Decl& decl, TypeInfoPtr parent);
 	void ParseParamsDecl(TokenItr begin, TokenItr end, MethodInfoPtr parent);
-	void ParseClassDecl(const fl::TokenList* tokens, int begin, int end);
+	void ParseParamType(TokenItr begin, TokenItr end, StringA* outName, int* outPointerLevel);
+	void ParseClassDecl(const Decl& decl);
 
 	SymbolDatabase*	m_database;
 };

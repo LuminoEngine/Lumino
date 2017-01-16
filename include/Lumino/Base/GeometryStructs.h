@@ -126,19 +126,19 @@ public:
 public:
 
 	/** 左辺の X 座標 */
-	LN_VARIABLE()
+	LN_FIELD()
 	float x;
 
 	/** 上辺の Y 座標 */
-	LN_VARIABLE()
+	LN_FIELD()
 	float y;
 
 	/** 幅 */
-	LN_VARIABLE()
+	LN_FIELD()
 	float width;
 
 	/** 高さ */
-	LN_VARIABLE()
+	LN_FIELD()
 	float height;
 
 public:
@@ -171,6 +171,7 @@ public:
 	void Set(float x_, float y_, const Size& size) { x = x_; y = y_; width = size.width; height = size.height; }
 
 	/** 左辺の x 軸の値を取得します。*/
+	LN_FUNCTION()
 	float GetLeft() const { return x; }
 
 	/** 上辺の y 軸の位置を取得します。*/

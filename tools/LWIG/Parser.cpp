@@ -45,7 +45,7 @@ void HeaderParser::ParseFile(const PathName& path)
 		{
 			LN_PARSE_RESULT(r1, TokenString("LN_STRUCT"));
 			LN_PARSE_RESULT(r2, TokenChar('{'));
-			LN_PARSE_RESULT(r3, Many(Parser<Decl>(Parse_LN_VARIABLE) || Parser<Decl>(Parse_LN_FUNCTION) || Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment)));
+			LN_PARSE_RESULT(r3, Many(Parser<Decl>(Parse_LN_FIELD) || Parser<Decl>(Parse_LN_FUNCTION) || Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment)));
 			LN_PARSE_RESULT(r4, TokenChar('}'));
 			return input.Success(Decl{ _T("Struct"), r1.GetMatchBegin(), r4.GetMatchEnd(), r3.GetValue() });
 		}
@@ -56,12 +56,12 @@ void HeaderParser::ParseFile(const PathName& path)
 			LN_PARSE_RESULT(r2, TokenChar('{'));
 			LN_PARSE_RESULT(r3, Many(Parser<Decl>(Parse_LN_FUNCTION) || Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_DocumentComment)));
 			LN_PARSE_RESULT(r4, TokenChar('}'));
-			return input.Success(Decl{ _T("Class"), r1.GetMatchBegin(), r4.GetMatchEnd(), r3.GetValue() });
+			return input.Success(Decl{ _T("class"), r1.GetMatchBegin(), r4.GetMatchEnd(), r3.GetValue() });
 		}
 
-		static ParserResult<Decl> Parse_LN_VARIABLE(ParserContext input)
+		static ParserResult<Decl> Parse_LN_FIELD(ParserContext input)
 		{
-			LN_PARSE_RESULT(r1, TokenString("LN_VARIABLE"));
+			LN_PARSE_RESULT(r1, TokenString("LN_FIELD"));
 			LN_PARSE_RESULT(r2, UntilMore(Parser<Decl>(Parse_EmptyDecl)));
 			return input.Success(Decl{ _T("field"), r1.GetMatchBegin(), r2.GetMatchEnd() });
 		}
@@ -96,7 +96,7 @@ void HeaderParser::ParseFile(const PathName& path)
 				token->EqualChar(';') || token->EqualChar('{') || token->EqualChar('}') ||
 				token->EqualString("LN_STRUCT", 9) ||
 				token->EqualString("LN_CLASS", 8) ||
-				token->EqualString("LN_VARIABLE", 11) ||
+				token->EqualString("LN_FIELD", 8) ||
 				token->EqualString("LN_FUNCTION", 11) ||
 				token->GetTokenGroup() == TokenGroup::Eof;	// TODO: これが無くてもいいようにしたい。今はこれがないと、Many中にEOFしたときOutOfRangeする
 		}
@@ -116,8 +116,8 @@ void HeaderParser::ParseFile(const PathName& path)
 	{
 		//Console::WriteLine(decl1.type);
 
-		if (decl1.type == "Struct")
-			ParseStructDecl(decl1);
+		if (decl1.type == "Struct") ParseStructDecl(decl1);
+		if (decl1.type == "class") ParseClassDecl(decl1);
 
 		for (auto decl2 : decl1.decls)
 		{
@@ -183,12 +183,18 @@ void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
 	// return type .. method name
 	auto declTokens = tr::MakeEnumerator::from(paramEnd, lparen)
 		.Where([](Token* t) { return t->GetTokenGroup() == TokenGroup::Identifier || t->GetTokenGroup() == TokenGroup::Keyword || t->GetTokenGroup() == TokenGroup::Operator || t->GetTokenGroup() == TokenGroup::ArithmeticLiteral; })
-		.Select([](Token* t) { return t->GetString(); })
+		//.Select([](Token* t) { return t->GetString(); })
 		.ToList();
 
+	//for (auto t : declTokens) Console::WriteLine(t->GetString());
+
 	auto info = std::make_shared<MethodInfo>();
-	info->name = declTokens.GetLast();
+	info->name = (declTokens.GetLast())->GetString();	// ( の直前を関数名として取り出す
 	parent->declaredMethods.Add(info);
+
+	// return type
+	int pointerLevel;
+	ParseParamType(declTokens.begin(), declTokens.end() - 1, &info->returnTypeRawName, &pointerLevel);
 
 	// mehod params
 	auto paramBegin = lparen + 1;
@@ -203,6 +209,18 @@ void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
 	}
 	if (paramBegin != rparen) ParseParamsDecl(paramBegin, rparen, info);
 
+	// method attribute
+	{
+		auto begin = rparen + 1;
+		auto end = std::find_if(begin, decl.end, [](Token* t) { return t->EqualChar('{'); });
+		for (auto itr = begin; itr < end; ++itr)
+		{
+			if ((*itr)->EqualString("const"))
+			{
+				info->isConst = true;
+			}
+		}
+	}
 
 	//auto name = paramEnd;
 	//for (auto itr = paramEnd; itr != lparen; ++itr)
@@ -258,44 +276,51 @@ void HeaderParser::ParseParamsDecl(TokenItr begin, TokenItr end, MethodInfoPtr p
 	//paramEnd = declTokens.end();
 	auto paramEnd = std::find_if(declTokens.begin(), declTokens.end(), [](Token* t) { return t->EqualChar('='); });
 
-	auto name = paramEnd - 1;
-	auto type = declTokens.begin();
-	auto typeEnd = name;
+	// , または =(デフォルト引数) の直前を引数名とする
+	auto name = end - 1;
+
+	StringA typeName;
+	int pointerLevel;
+	ParseParamType(declTokens.begin(), paramEnd - 1, &typeName, &pointerLevel);
+
+	auto info = std::make_shared<ParameterInfo>();
+	info->name = (*name)->GetString();
+	info->typeRawName = typeName;
+	parent->parameters.Add(info);
+}
+
+void HeaderParser::ParseParamType(TokenItr begin, TokenItr end, StringA* outName, int* outPointerLevel)
+{
+	auto type = begin;
+	auto typeEnd = end;
 
 	// lookup TypeName and count '*'
 	TokenItr typeName;
 	int pointerLevel = 0;
-	for (auto itr = declTokens.begin(); itr != typeEnd; ++itr)
+	for (auto itr = begin; itr != typeEnd; ++itr)
 	{
 		if ((*itr)->EqualChar('*')) pointerLevel++;
 		if ((*itr)->GetTokenGroup() == TokenGroup::Identifier || (*itr)->GetTokenGroup() == TokenGroup::Keyword) typeName = itr;
 	}
 
-	auto info = std::make_shared<ParameterInfo>();
-	info->name = (*name)->GetString();
-	info->typeRawName = (*typeName)->GetString();
-	parent->parameters.Add(info);
+	*outName = (*typeName)->GetString();
+	*outPointerLevel = pointerLevel;
 }
 
-void HeaderParser::ParseClassDecl(const TokenList* tokens, int begin, int end)
+void HeaderParser::ParseClassDecl(const Decl& decl)
 {
-	int colon = tokens->IndexOf(begin, end - begin, [](Token* t){ return t->EqualChar(':'); });
-	//auto& nameToken = tokens->GetAt(colon);
-	Token* nameToken = tokens->GetAt(begin);
-	Console::WriteLine(nameToken->GetString());
+	auto paramEnd = ParseMetadataDecl(decl.begin, decl.end);
+	auto name = std::find_if(paramEnd, decl.end, [](Token* t) { return t->EqualChar('{'); }) - 2;
 
-	
-	// (...) を取り出す 
-	int paramBegin = tokens->IndexOf(begin, end - begin, [](Token* t){ return t->EqualChar('('); }) + 1;
-	int paramEnd = tokens->IndexOf(paramBegin, end - paramBegin, [](Token* t){ return t->EqualChar(')'); });
+	auto info = std::make_shared<TypeInfo>();
+	info->name = (*name)->GetString();
+	m_database->classes.Add(info);
 
-	// (...) の中の 識別子, ',', '=' だけを取り出す
-	auto argTokens = tr::MakeEnumerator::from(tokens->cbegin() + paramBegin, tokens->cbegin() + paramEnd)
-		.Where([](Token* t) { return t->GetTokenGroup() == TokenGroup::Identifier || t->EqualChar(',') || t->EqualChar('='); });
-
-	for (Token* tt : argTokens)
+	for (auto& member : decl.decls)
 	{
-		Console::WriteLine(tt->GetString());
+		//if (member.type == "field") ParseFieldDecl(member, info);
+		//if (member.type == "method") ParseMethodDecl(member, info);
 	}
+
 }
 

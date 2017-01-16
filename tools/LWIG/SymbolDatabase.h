@@ -25,6 +25,7 @@ public:
 	//DefaultValue
 	//ParameterType
 	String	name;
+	TypeInfoPtr	type;
 	bool	isIn = false;
 	bool	isOut = false;
 	Nullable<StringA>	defaultValue;
@@ -46,12 +47,15 @@ using FieldInfoPtr = std::shared_ptr<FieldInfo>;
 class MethodInfo
 {
 public:
-	String	name;
-
+	String			name;
+	TypeInfoPtr		returnType;
 	//IsConstructor
 	//IsStatic
 	//IsVirtual
+	bool			isConst = false;		// const ÉÅÉìÉoä÷êîÇ≈Ç†ÇÈÇ©
 	List<ParameterInfoPtr>	parameters;
+
+	String	returnTypeRawName;
 };
 using MethodInfoPtr = std::shared_ptr<MethodInfo>;
 
@@ -60,11 +64,15 @@ class TypeInfo
 public:
 	String	name;
 	bool	isStruct = false;
+	bool			isVoid = false;
+	bool				isPrimitive = false;
 	List<FieldInfoPtr>	declaredFields;
 	List<MethodInfoPtr>	declaredMethods;
 
 	TypeInfo() {}
 	TypeInfo(StringRef name_) : name(name_) {}
+
+	bool IsValueType() const { return isStruct || isPrimitive; }
 };
 
 
@@ -73,6 +81,7 @@ class SymbolDatabase
 public:
 	List<TypeInfoPtr>	predefineds;
 	List<TypeInfoPtr>	structs;
+	List<TypeInfoPtr>	classes;
 
 	void Link();
 

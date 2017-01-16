@@ -564,7 +564,11 @@ set(LN_SOURCES_Foundation
 )
 
 set(LN_DLL_SOURCES
+	include/Lumino/Binding/Common.h
 	src/DllMain.cpp
+	src/Binding/Internal.h
+	src/Binding/BindingManager.cpp
+	src/Binding/BindingManager.h
 )
 
 #--------------------------------------

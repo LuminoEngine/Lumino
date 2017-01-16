@@ -9,8 +9,10 @@ int main()
 {
 	List<PathName> files =
 	{
-		//"../../../../include/Lumino/Engine.h"
-		"../../../../include/Lumino/Base/GeometryStructs.h"
+		"../../../../include/Lumino/Engine.h",
+		"../../../../include/Lumino/Base/GeometryStructs.h",
+		"../../../../external/Lumino.Core/include/Lumino/Math/Vector3.h"
+	
 	};
 
 	SymbolDatabase database;

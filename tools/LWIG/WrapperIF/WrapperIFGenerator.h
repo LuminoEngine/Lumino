@@ -10,6 +10,8 @@ public:
 	void Generate(SymbolDatabase* database);
 
 private:
+	StringA MakeParamTypeName(TypeInfoPtr typeInfo, bool isOut);
+
 	SymbolDatabase*	m_database;
 };
 

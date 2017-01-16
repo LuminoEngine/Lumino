@@ -38,10 +38,11 @@ void OutputBuffer::DecreaseIndent()
 		m_indent += "    ";
 }
 
-void OutputBuffer::NewLine(int count)
+OutputBuffer& OutputBuffer::NewLine(int count)
 {
 	for (int i = 0; i < count; i++)
 		m_buffer.Append(m_newLineCode);
+	return *this;
 }
 
 void OutputBuffer::Indent()
