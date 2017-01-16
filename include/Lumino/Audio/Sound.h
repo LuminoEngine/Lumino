@@ -20,6 +20,7 @@ class Sound
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
+
 	/**
 		@brief	Sound クラスのインスタンスを作成します。
 	*/
@@ -179,11 +180,11 @@ public:
 	bool IsVolumeFading() const;
 
 LN_INTERNAL_ACCESS:
-	static SoundPtr CreateInternal(detail::AudioManager* manager, const StringRef& filePath);
-	static SoundPtr CreateInternal(detail::AudioManager* manager, Stream* stream, SoundLoadingMode loadingMode);
 	Sound();
 	virtual ~Sound();
-	void Initialize(detail::AudioManager* manager, detail::AudioStream* stream);
+	void Initialize(detail::AudioManager* manager, const StringRef& filePath);
+	void Initialize(detail::AudioManager* manager, Stream* stream, SoundLoadingMode loadingMode);
+	void Initialize(detail::AudioManager* manager, detail::AudioStream* audioStream);
 	void CreateAudioPlayerSync();
 	void Polling(float elapsedTime);
 

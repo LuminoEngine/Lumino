@@ -509,6 +509,8 @@ void Main()
 		//sp->SetTransform(g->GetTargetTransform());
 	});
 
+	GameAudio::PlayBGM("D:/GameProjects/Materials/BGM/Windsphere/call.mp3");
+
 	while (!Engine::IsEndRequested())
 	{
 		Engine::BeginFrameUpdate();

@@ -53,6 +53,7 @@ public:
 	//IsStatic
 	//IsVirtual
 	bool			isConst = false;		// const ƒƒ“ƒoŠÖ”‚Å‚ ‚é‚©
+	bool			isStatic = false;		
 	List<ParameterInfoPtr>	parameters;
 
 	String	returnTypeRawName;

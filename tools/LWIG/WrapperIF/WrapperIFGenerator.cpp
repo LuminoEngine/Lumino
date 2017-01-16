@@ -28,61 +28,96 @@ void WrapperIFGenerator::Generate(SymbolDatabase* database)
 		buffer.DecreaseIndent();
 		buffer.AppendLine("};");
 
-		
-		for (auto& methodInfo : structInfo->declaredMethods)
-		{
-			// make params
-			OutputBuffer params(1);
-			{
-				if (methodInfo->isConst)
-					params.AppendCommad("const LN{0}* _this", structInfo->name);
-				else
-					params.AppendCommad("LN{0}* _this", structInfo->name);
-
-				for (auto& paramInfo : methodInfo->parameters)
-				{
-					params.AppendCommad("{0} {1}", paramInfo->type->name, paramInfo->name);
-				}
-
-				// return value
-				if (!methodInfo->returnType->isVoid)
-				{
-					params.AppendCommad("{0} outReturn", MakeParamTypeName(methodInfo->returnType, true));
-				}
-			}
-
-			// make func body
-			OutputBuffer body;
-			{
-				OutputBuffer args;
-				for (auto& paramInfo : methodInfo->parameters)
-				{
-					args.AppendCommad(paramInfo->name);
-				}
-
-				if (!methodInfo->returnType->isVoid)
-					body.Append("*outReturn = ");
-
-				String castTo = structInfo->name;
-				if (methodInfo->isConst) castTo = "const " + castTo;
-
-				body.Append("reinterpret_cast<{0}*>(_this)->{1}({2});", castTo, methodInfo->name, args.ToString());
-			}
-
-			buffer.AppendLines(funcTemplate
-				.Replace("%ClassName%", structInfo->name)
-				.Replace("%FuncName%", methodInfo->name)
-				.Replace("%ParamList%", params.ToString())
-				.Replace("%FuncBody%", body.ToString()));
-		}
+		buffer.AppendLines(MakeMethods(structInfo));
 	}
 
 	for (auto& classInfo : m_database->classes)
 	{
-		buffer.AppendLine("// {0}", classInfo->name);
+		buffer.AppendLines(MakeMethods(classInfo));
 	}
 
 	FileSystem::WriteAllText("test.cpp", buffer.ToString());
+}
+
+StringA WrapperIFGenerator::MakeInstanceParamName(TypeInfoPtr info)
+{
+	return info->name;
+}
+
+StringA WrapperIFGenerator::MakeMethods(TypeInfoPtr typeInfo)
+{
+	OutputBuffer buffer;
+
+	for (auto& methodInfo : typeInfo->declaredMethods)
+	{
+		// make params
+		OutputBuffer params(1);
+		{
+			// ‘æ1ˆø”
+			{
+				if (!methodInfo->isStatic)
+				{
+					if (typeInfo->isStruct)
+					{
+						if (methodInfo->isConst)
+							params.AppendCommad("const LN{0}* {1}", typeInfo->name, MakeInstanceParamName(typeInfo));
+						else
+							params.AppendCommad("LN{0}* {1}", typeInfo->name, typeInfo->name, MakeInstanceParamName(typeInfo));
+					}
+					else
+					{
+						params.AppendCommad("LNHandle {0}", MakeInstanceParamName(typeInfo));
+					}
+				}
+			}
+
+			// params
+			for (auto& paramInfo : methodInfo->parameters)
+			{
+				params.AppendCommad("{0} {1}", paramInfo->type->name, paramInfo->name);
+			}
+
+			// return value
+			if (!methodInfo->returnType->isVoid)
+			{
+				params.AppendCommad("{0} outReturn", MakeParamTypeName(methodInfo->returnType, true));
+			}
+		}
+
+		// make func body
+		OutputBuffer body;
+		{
+			OutputBuffer args;
+			for (auto& paramInfo : methodInfo->parameters)
+			{
+				args.AppendCommad(paramInfo->name);
+			}
+
+			if (!methodInfo->returnType->isVoid)
+				body.Append("*outReturn = ");
+
+
+			if (methodInfo->isStatic)
+			{
+				body.Append("{0}::{1}({2});", typeInfo->name, methodInfo->name, args.ToString());
+			}
+			else
+			{
+				String castTo = typeInfo->name;
+				if (methodInfo->isConst) castTo = "const " + castTo;
+
+				body.Append("reinterpret_cast<{0}*>({1})->{2}({3});", castTo, MakeInstanceParamName(typeInfo), methodInfo->name, args.ToString());
+			}
+		}
+
+		buffer.AppendLines(funcTemplate
+			.Replace("%ClassName%", typeInfo->name)
+			.Replace("%FuncName%", methodInfo->name)
+			.Replace("%ParamList%", params.ToString())
+			.Replace("%FuncBody%", body.ToString()));
+	}
+
+	return buffer.ToString();
 }
 
 StringA WrapperIFGenerator::MakeParamTypeName(TypeInfoPtr typeInfo, bool isOut)

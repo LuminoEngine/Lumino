@@ -193,8 +193,18 @@ void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
 	parent->declaredMethods.Add(info);
 
 	// return type
-	int pointerLevel;
-	ParseParamType(declTokens.begin(), declTokens.end() - 1, &info->returnTypeRawName, &pointerLevel);
+	{
+		auto begin = declTokens.begin();
+		auto end = declTokens.end() - 1;
+		int pointerLevel;
+		ParseParamType(begin, end, &info->returnTypeRawName, &pointerLevel);
+
+		for (auto itr = begin; itr != end; ++itr)
+		{
+			if ((*itr)->EqualString("static"))
+				info->isStatic = true;
+		}
+	}
 
 	// mehod params
 	auto paramBegin = lparen + 1;
@@ -318,8 +328,7 @@ void HeaderParser::ParseClassDecl(const Decl& decl)
 
 	for (auto& member : decl.decls)
 	{
-		//if (member.type == "field") ParseFieldDecl(member, info);
-		//if (member.type == "method") ParseMethodDecl(member, info);
+		if (member.type == "method") ParseMethodDecl(member, info);
 	}
 
 }

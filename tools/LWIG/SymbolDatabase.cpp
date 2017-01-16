@@ -21,11 +21,24 @@ void SymbolDatabase::Link()
 			}
 		}
 	}
+	for (auto classInfo : classes)
+	{
+		for (auto methodInfo : classInfo->declaredMethods)
+		{
+			methodInfo->returnType = FindTypeInfo(methodInfo->returnTypeRawName);
+
+			for (auto& paramInfo : methodInfo->parameters)
+			{
+				paramInfo->type = FindTypeInfo(paramInfo->typeRawName);
+			}
+		}
+	}
 }
 
 void SymbolDatabase::InitializePredefineds()
 {
 	predefineds.Add(std::make_shared<TypeInfo>("void")); predefineds.GetLast()->isVoid = true;
+	predefineds.Add(std::make_shared<TypeInfo>("bool")); predefineds.GetLast()->isPrimitive = true;
 	predefineds.Add(std::make_shared<TypeInfo>("int")); predefineds.GetLast()->isPrimitive = true;
 	predefineds.Add(std::make_shared<TypeInfo>("float")); predefineds.GetLast()->isPrimitive = true;
 }
