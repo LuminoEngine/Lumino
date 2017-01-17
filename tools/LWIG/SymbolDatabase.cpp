@@ -5,6 +5,7 @@ void SymbolDatabase::Link()
 {
 	InitializePredefineds();
 
+	// structs
 	for (auto structInfo : structs)
 	{
 		for (auto fieldInfo : structInfo->declaredFields)
@@ -21,6 +22,8 @@ void SymbolDatabase::Link()
 			}
 		}
 	}
+
+	// classes
 	for (auto classInfo : classes)
 	{
 		for (auto methodInfo : classInfo->declaredMethods)
@@ -31,6 +34,15 @@ void SymbolDatabase::Link()
 			{
 				paramInfo->type = FindTypeInfo(paramInfo->typeRawName);
 			}
+		}
+	}
+
+	// enums
+	for (auto enumInfo : enums)
+	{
+		for (auto constantInfo : enumInfo->declaredConstants)
+		{
+			constantInfo->type = FindTypeInfo(constantInfo->typeRawName);
 		}
 	}
 }

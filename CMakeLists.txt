@@ -569,6 +569,9 @@ set(LN_DLL_SOURCES
 	src/Binding/Internal.h
 	src/Binding/BindingManager.cpp
 	src/Binding/BindingManager.h
+	src/Binding/LuminoC.h
+	src/Binding/WrapperIF.cpp
+	src/Binding/WrapperIF.h
 )
 
 #--------------------------------------

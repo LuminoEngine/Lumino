@@ -26,8 +26,13 @@ void HeaderParser::ParseFile(const PathName& path)
 	*/
 	struct DeclsParser : public combinators::ParseLib<DeclsParser>
 	{
-
 		static ParserResult<Decl> Parse_EmptyDecl(ParserContext input)
+		{
+			LN_PARSE_RESULT(r1, TokenChar(';') || TokenChar(','));
+			return input.Success(Decl{ _T("EmptyDecl"), r1.GetMatchBegin(), r1.GetMatchEnd() });
+		}
+
+		static ParserResult<Decl> Parse_EmptyDecl2(ParserContext input)
 		{
 			LN_PARSE_RESULT(r1, TokenChar(';'));
 			return input.Success(Decl{ _T("EmptyDecl"), r1.GetMatchBegin(), r1.GetMatchEnd() });
@@ -40,11 +45,26 @@ void HeaderParser::ParseFile(const PathName& path)
 			LN_PARSE_RESULT(r3, TokenChar('}'));
 			return input.Success(Decl{ _T("LocalBlock"), r1.GetMatchBegin(), r3.GetMatchEnd() });
 		}
+		
+		static ParserResult<Decl> Parse_LN_ENUM(ParserContext input)	// ',' が他のパーサの邪魔をするので、ここでは　{～} だけを取り出す
+		{
+			LN_PARSE_RESULT(r1, TokenString("LN_ENUM_"));
+			LN_PARSE_RESULT(r2, UntilMore(TokenChar('{')));
+			LN_PARSE_RESULT(r3, Many(Parser<Decl>(Parse_EnumMember) || Parser<Decl>(Parse_DocumentComment)));
+			LN_PARSE_RESULT(r4, TokenChar('}'));
+			return input.Success(Decl{ _T("enum"), r1.GetMatchBegin(), r4.GetMatchEnd(), r3.GetValue() });
+		}
+		
+		static ParserResult<Decl> Parse_EnumMember(ParserContext input)
+		{
+			LN_PARSE_RESULT(r1, TokenChar(','));
+			return input.Success(Decl{ _T("enum_member"), r1.GetMatchBegin(), r1.GetMatchEnd() });
+		}
 
 		static ParserResult<Decl> Parse_LN_STRUCT(ParserContext input)
 		{
 			LN_PARSE_RESULT(r1, TokenString("LN_STRUCT"));
-			LN_PARSE_RESULT(r2, TokenChar('{'));
+			LN_PARSE_RESULT(r2, UntilMore(TokenChar('{')));
 			LN_PARSE_RESULT(r3, Many(Parser<Decl>(Parse_LN_FIELD) || Parser<Decl>(Parse_LN_METHOD) || Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment)));
 			LN_PARSE_RESULT(r4, TokenChar('}'));
 			return input.Success(Decl{ _T("Struct"), r1.GetMatchBegin(), r4.GetMatchEnd(), r3.GetValue() });
@@ -53,7 +73,7 @@ void HeaderParser::ParseFile(const PathName& path)
 		static ParserResult<Decl> Parse_LN_CLASS(ParserContext input)
 		{
 			LN_PARSE_RESULT(r1, TokenString("LN_CLASS"));
-			LN_PARSE_RESULT(r2, TokenChar('{'));
+			LN_PARSE_RESULT(r2, UntilMore(TokenChar('{')));
 			LN_PARSE_RESULT(r3, Many(Parser<Decl>(Parse_LN_FIELD) || Parser<Decl>(Parse_LN_METHOD) || Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment)));
 			LN_PARSE_RESULT(r4, TokenChar('}'));
 			return input.Success(Decl{ _T("class"), r1.GetMatchBegin(), r4.GetMatchEnd(), r3.GetValue() });
@@ -69,19 +89,19 @@ void HeaderParser::ParseFile(const PathName& path)
 		static ParserResult<Decl> Parse_LN_METHOD(ParserContext input)
 		{
 			LN_PARSE_RESULT(r1, TokenString("LN_METHOD"));
-			LN_PARSE_RESULT(r2, UntilMore(Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock)));
+			LN_PARSE_RESULT(r2, UntilMore(Parser<Decl>(Parse_EmptyDecl2) || Parser<Decl>(Parse_LocalBlock)));
 			return input.Success(Decl{ _T("method"), r1.GetMatchBegin(), r2.GetMatchEnd() });
 		}
 
 		static ParserResult<Decl> Parse_DocumentComment(ParserContext input)
 		{
 			LN_PARSE_RESULT(r1, Token(TokenGroup::Comment));
-			return input.Success(Decl{ _T("DocumentComment"), r1.GetMatchBegin(), r1.GetMatchEnd() });
+			return input.Success(Decl{ _T("document"), r1.GetMatchBegin(), r1.GetMatchEnd() });
 		}
 
 		static ParserResult<List<Decl>> Parse_File(ParserContext input)
 		{
-			LN_PARSE(r1, Many(Parser<Decl>(Parse_LN_CLASS) || Parser<Decl>(Parse_LN_STRUCT) || Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment)));
+			LN_PARSE(r1, Many(Parser<Decl>(Parse_LN_ENUM) || Parser<Decl>(Parse_LN_CLASS) || Parser<Decl>(Parse_LN_STRUCT) || Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment)));
 			return input.Success(r1);
 		}
 
@@ -93,7 +113,8 @@ void HeaderParser::ParseFile(const PathName& path)
 				return true;
 			}
 			return
-				token->EqualChar(';') || token->EqualChar('{') || token->EqualChar('}') ||
+				token->EqualChar(';') || token->EqualChar(',') || token->EqualChar('{') || token->EqualChar('}') ||
+				token->EqualString("LN_ENUM_", 8) ||
 				token->EqualString("LN_STRUCT", 9) ||
 				token->EqualString("LN_CLASS", 8) ||
 				token->EqualString("LN_FIELD", 8) ||
@@ -116,8 +137,11 @@ void HeaderParser::ParseFile(const PathName& path)
 	{
 		//Console::WriteLine(decl1.type);
 
+		if (decl1.type == "document") ParseDocument(decl1);
 		if (decl1.type == "Struct") ParseStructDecl(decl1);
 		if (decl1.type == "class") ParseClassDecl(decl1);
+		if (decl1.type == "enum") ParseEnumDecl(decl1);
+		
 
 		for (auto decl2 : decl1.decls)
 		{
@@ -149,6 +173,7 @@ void HeaderParser::ParseStructDecl(const Decl& decl)
 	auto name = std::find_if(paramEnd, decl.end, [](Token* t) { return t->EqualChar('{'); }) - 2;
 
 	auto info = std::make_shared<TypeInfo>();
+	info->document = MoveLastDocument();
 	info->name = (*name)->GetString();
 	info->isStruct = true;
 	m_database->structs.Add(info);
@@ -330,6 +355,7 @@ void HeaderParser::ParseClassDecl(const Decl& decl)
 	}
 
 	auto info = std::make_shared<TypeInfo>();
+	info->document = MoveLastDocument();
 	info->name = (*name)->GetString();
 	m_database->classes.Add(info);
 
@@ -337,6 +363,90 @@ void HeaderParser::ParseClassDecl(const Decl& decl)
 	{
 		if (member.type == "method") ParseMethodDecl(member, info);
 	}
-
 }
 
+void HeaderParser::ParseEnumDecl(const Decl& decl)
+{
+	auto paramEnd = ParseMetadataDecl(decl.begin, decl.end);
+
+	// find name
+	TokenItr name;
+	TokenItr itr = paramEnd;
+	for (; itr < decl.end; ++itr)
+	{
+		if ((*itr)->GetTokenGroup() == TokenGroup::Identifier) name = itr;
+		if ((*itr)->EqualChar(':') || (*itr)->EqualChar('{')) break;
+	}
+
+	auto info = std::make_shared<TypeInfo>();
+	info->document = MoveLastDocument();
+	info->name = (*name)->GetString();
+	info->isEnum = true;
+	m_database->enums.Add(info);
+
+	TokenItr last = itr;
+	for (auto& member : decl.decls)
+	{
+		if (member.type == "enum_member")
+		{
+			ParseEnumMemberDecl(last, member.end, info);
+			last = member.end;
+		}
+	}
+}
+
+void HeaderParser::ParseEnumMemberDecl(TokenItr begin, TokenItr end, TypeInfoPtr parent)
+{
+	// find name and value
+	TokenItr name;
+	TokenItr value;
+	TokenItr itr = begin;
+	for (; itr < end; ++itr)
+	{
+		if ((*itr)->GetTokenGroup() == TokenGroup::Identifier) name = itr;
+		if ((*itr)->EqualChar(',') || (*itr)->EqualChar('=')) break;
+	}
+	if ((*itr)->EqualChar('='))
+	{
+		for (; itr < end; ++itr)
+		{
+			if ((*itr)->GetTokenGroup() == TokenGroup::ArithmeticLiteral) value = itr;
+			if ((*itr)->EqualChar(',')) break;
+		}
+	}
+
+	// create info
+	auto info = std::make_shared<ConstantInfo>();
+	info->name = (*name)->GetString();
+	info->value = (*value)->GetString().ToInt32();
+	info->typeRawName = "int";
+	parent->declaredConstants.Add(info);
+}
+
+void HeaderParser::ParseDocument(const Decl& decl)
+{
+	String doc = (*decl.begin)->GetString();
+	doc = doc
+		.Replace("\r\n", "\n")
+		.Replace("\r", "\n")
+		.Replace("/**", "")
+		.Replace("*/", "");
+
+	auto info = std::make_shared<DocumentInfo>();
+
+	List<String> lines = doc.Split("\n");
+	String* target = &info->summary;
+	for (String& line : lines)
+	{
+		(*target) += line.Trim();
+	}
+
+	m_lastDocument = info;
+}
+
+DocumentInfoPtr HeaderParser::MoveLastDocument()
+{
+	auto ptr = m_lastDocument;
+	m_lastDocument = nullptr;
+	return ptr;
+}

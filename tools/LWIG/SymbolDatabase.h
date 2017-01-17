@@ -16,8 +16,19 @@
 //};
 //
 //Module
+
+
+
 class TypeInfo;
 using TypeInfoPtr = std::shared_ptr<TypeInfo>;
+
+class DocumentInfo
+{
+public:
+	String	summary;
+};
+
+using DocumentInfoPtr = std::shared_ptr<DocumentInfo>;
 
 class ParameterInfo
 {
@@ -61,6 +72,17 @@ public:
 };
 using MethodInfoPtr = std::shared_ptr<MethodInfo>;
 
+class ConstantInfo
+{
+public:
+	String			name;
+	TypeInfoPtr		type;
+	tr::Variant		value;
+
+	String			typeRawName;
+};
+using ConstantInfoPtr = std::shared_ptr<ConstantInfo>;
+
 class TypeInfo
 {
 public:
@@ -68,8 +90,11 @@ public:
 	bool	isStruct = false;
 	bool			isVoid = false;
 	bool				isPrimitive = false;
-	List<FieldInfoPtr>	declaredFields;
-	List<MethodInfoPtr>	declaredMethods;
+	bool					isEnum = false;
+	List<FieldInfoPtr>		declaredFields;
+	List<MethodInfoPtr>		declaredMethods;
+	List<ConstantInfoPtr>	declaredConstants;
+	DocumentInfoPtr			document;
 
 	TypeInfo() {}
 	TypeInfo(StringRef name_) : name(name_) {}
@@ -84,6 +109,7 @@ public:
 	List<TypeInfoPtr>	predefineds;
 	List<TypeInfoPtr>	structs;
 	List<TypeInfoPtr>	classes;
+	List<TypeInfoPtr>	enums;
 	TypeInfoPtr			stringType;
 
 	void Link();

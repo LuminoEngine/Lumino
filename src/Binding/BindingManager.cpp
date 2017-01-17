@@ -10,7 +10,7 @@ detail::EngineSettings		LFManager::ConfigData;
 EngineManager*				LFManager::Engine = NULL;
 bool						LFManager::IsSystemInitialized = false;
 Exception*					LFManager::LastException = NULL;
-LNResult					LFManager::LastErrorCode = LN_OK;
+ResultCode					LFManager::LastErrorCode = ResultCode::Ok;
 EncodingConverter*			LFManager::TCharToUTF8Converter = NULL;
 
 LFManager::ObjectEntryList	LFManager::m_objectEntryList;
@@ -124,10 +124,10 @@ LNHandle LFManager::CheckRegisterObject(tr::ReflectionObject* obj)
 }
 
 //------------------------------------------------------------------------------
-LNResult LFManager::ProcException(Exception* e)
+ResultCode LFManager::ProcException(Exception* e)
 {
 	if (e == NULL) {
-		return LN_ERROR_UNKNOWN;
+		return ResultCode::ErrorUnknown;
 	}
 
 	// ç≈å„Ç…î≠ê∂ÇµÇΩó·äOÇ∆ÇµÇƒäoÇ¶ÇƒÇ®Ç≠
@@ -140,27 +140,27 @@ LNResult LFManager::ProcException(Exception* e)
 		if (t != NULL) { LastErrorCode = code; return code; } \
 	}
 
-	ERROR_DEF(VerifyException, LN_ERROR_VERIFY);
-	ERROR_DEF(ArgumentException, LN_ERROR_ARGUMENT);
-	ERROR_DEF(InvalidOperationException, LN_ERROR_INVALID_OPERATION);
-	ERROR_DEF(NotImplementedException, LN_ERROR_NOT_IMPLEMENTED);
-	ERROR_DEF(OutOfMemoryException, LN_ERROR_OUT_OF_MEMORY);
-	ERROR_DEF(OutOfRangeException, LN_ERROR_OUT_OF_RANGE);
-	ERROR_DEF(KeyNotFoundException, LN_ERROR_KEY_NOT_FOUND);
-	ERROR_DEF(OverflowException, LN_ERROR_OVERFLOW);
-	ERROR_DEF(IOException, LN_ERROR_IO);
-	ERROR_DEF(FileNotFoundException, LN_ERROR_FILE_NOT_FOUND);
-	ERROR_DEF(DirectoryNotFoundException, LN_ERROR_DIRECTORY_NOT_FOUND);
-	ERROR_DEF(InvalidFormatException, LN_ERROR_INVALID_FORMAT);
-	ERROR_DEF(EndOfStreamException, LN_ERROR_END_OF_STREAM);
-	ERROR_DEF(EncodingException, LN_ERROR_ENCODING);
-	ERROR_DEF(Win32Exception, LN_ERROR_WIN32);
-	ERROR_DEF(COMException, LN_ERROR_COM);
+	ERROR_DEF(VerifyException, ResultCode::ErrorVERIFY);
+	ERROR_DEF(ArgumentException, ResultCode::ErrorARGUMENT);
+	ERROR_DEF(InvalidOperationException, ResultCode::ErrorINVALID_OPERATION);
+	ERROR_DEF(NotImplementedException, ResultCode::ErrorNOT_IMPLEMENTED);
+	ERROR_DEF(OutOfMemoryException, ResultCode::ErrorOUT_OF_MEMORY);
+	ERROR_DEF(OutOfRangeException, ResultCode::ErrorOUT_OF_RANGE);
+	ERROR_DEF(KeyNotFoundException, ResultCode::ErrorKEY_NOT_FOUND);
+	ERROR_DEF(OverflowException, ResultCode::ErrorOVERFLOW);
+	ERROR_DEF(IOException, ResultCode::ErrorIO);
+	ERROR_DEF(FileNotFoundException, ResultCode::ErrorFILE_NOT_FOUND);
+	ERROR_DEF(DirectoryNotFoundException, ResultCode::ErrorDIRECTORY_NOT_FOUND);
+	ERROR_DEF(InvalidFormatException, ResultCode::ErrorINVALID_FORMAT);
+	ERROR_DEF(EndOfStreamException, ResultCode::ErrorEND_OF_STREAM);
+	ERROR_DEF(EncodingException, ResultCode::ErrorENCODING);
+	ERROR_DEF(Win32Exception, ResultCode::ErrorWIN32);
+	ERROR_DEF(COMException, ResultCode::ErrorCOM);
 
 #undef ERROR_DEF
 
-	LastErrorCode = LN_ERROR_UNKNOWN;
-	return LN_ERROR_UNKNOWN;
+	LastErrorCode = ResultCode::ErrorUnknown;
+	return ResultCode::ErrorUnknown;
 }
 
 //------------------------------------------------------------------------------
@@ -169,7 +169,7 @@ void LFManager::ReleaseObject(LNHandle handle)
 	if (!IsSystemInitialized)
 		return;		// Ç∑Ç◊Çƒâï˙çœÇ›
 
-	int index = TO_INDEX(handle);
+	int index = LWIG_TO_INDEX(handle);
 	ObjectEntry& e = m_objectEntryList[index];
 
 	if (e.Object != NULL)
@@ -188,7 +188,7 @@ void LFManager::ReleaseObject(LNHandle handle)
 //------------------------------------------------------------------------------
 void LFManager::AddRefObject(LNHandle handle)
 {
-	int index = TO_INDEX(handle);
+	int index = LWIG_TO_INDEX(handle);
 	ObjectEntry& e = m_objectEntryList[index];
 	if (e.Object != NULL) {
 		e.RefCount++;
@@ -198,7 +198,7 @@ void LFManager::AddRefObject(LNHandle handle)
 //------------------------------------------------------------------------------
 ObjectEntry* LFManager::GetObjectEntry(LNHandle handle)
 {
-	return &m_objectEntryList[TO_INDEX(handle)];
+	return &m_objectEntryList[LWIG_TO_INDEX(handle)];
 }
 
 //------------------------------------------------------------------------------

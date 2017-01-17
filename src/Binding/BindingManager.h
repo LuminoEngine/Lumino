@@ -5,6 +5,7 @@
 #include <Lumino/Engine.h>
 #include <Lumino/Binding/Common.h>
 //#include "../include/LNCommon.h"
+#include "LuminoC.h"
 
 /// Handle の管理リストの要素
 struct ObjectEntry
@@ -48,7 +49,7 @@ public:
 	static LNHandle CheckRegisterObject(tr::ReflectionObject* obj);
 
 	/// 例外発生時の処理 (Exeption 以外の例外は NULL を指定して呼び出すことで Unknown が返る)
-	static LNResult ProcException(Exception* e);
+	static ResultCode ProcException(Exception* e);
 
 	/// オブジェクトの参照カウントをデクリメント (CoreObject ではなく ObjectEntry のカウントを操作する)
 	static void ReleaseObject(LNHandle handle);
@@ -66,7 +67,7 @@ public:
 	static EngineManager*		Engine;
 	static bool					IsSystemInitialized;
 	static Exception*			LastException;
-	static LNResult				LastErrorCode;
+	static ResultCode			LastErrorCode;
 	static EncodingConverter*	TCharToUTF8Converter;
 
 private:

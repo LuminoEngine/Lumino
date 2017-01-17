@@ -33,7 +33,13 @@ private:
 	void ParseParamsDecl(TokenItr begin, TokenItr end, MethodInfoPtr parent);
 	void ParseParamType(TokenItr begin, TokenItr end, StringA* outName, int* outPointerLevel);
 	void ParseClassDecl(const Decl& decl);
+	void ParseEnumDecl(const Decl& decl);
+	void ParseEnumMemberDecl(TokenItr begin, TokenItr end, TypeInfoPtr parent);
+	void ParseDocument(const Decl& decl);
+
+	DocumentInfoPtr MoveLastDocument();
 
 	SymbolDatabase*	m_database;
+	DocumentInfoPtr	m_lastDocument;
 };
 

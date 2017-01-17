@@ -1,9 +1,10 @@
 
+#include "../Global.h"
 #include "../SymbolDatabase.h"
 #include "WrapperIFGenerator.h"
 
 const StringA funcTemplate =
-	"LNResult LN_API LN%ClassName%_%FuncName%(%ParamList%)\n"
+	"LNResultCode LN_API LN%ClassName%_%FuncName%(%ParamList%)\n"
 	"{\n"
 	"    LWIG_FUNC_TRY_BEGIN;\n"
 	"    %FuncBody%\n"
@@ -46,13 +47,50 @@ void WrapperIFGenerator::Generate(SymbolDatabase* database)
 		wrapper.AppendLines(wrapperIFClassTemplate.Replace("%ClassName%", classInfo->name));
 	}
 
-	FileSystem::WriteAllText(LUMINO_ROOT_DIR"/test.cpp", buffer.ToString());
-	FileSystem::WriteAllText(LUMINO_ROOT_DIR"/testIF.h", wrapper.ToString());
+	// enums
+	OutputBuffer enumsText;
+	{
+		for (auto& enumInfo : m_database->enums)
+		{
+			enumsText.AppendLine("/** {0} */", MakeDocumentComment(enumInfo->document));
+			enumsText.AppendLine("typedef enum tagLN{0}", enumInfo->name);
+			enumsText.AppendLine("{");
+			enumsText.IncreaseIndent();
+			for (auto& constantInfo : enumInfo->declaredConstants)
+			{
+				String name = (enumInfo->name + "_" + constantInfo->name).ToUpper();
+				enumsText.AppendLine("LN_{0} = {1},", name, tr::Variant::Cast<int>(constantInfo->value));
+			}
+			enumsText.DecreaseIndent();
+			enumsText.AppendLine("}} LN{0};", enumInfo->name);
+		}
+	}
+
+	{
+		String src = FileSystem::ReadAllText(PathName(g_templateDir, "WrapperIF/Templates/Source.cpp"));
+		src = src.Replace("%Contents%", buffer.ToString());
+		FileSystem::WriteAllText(LUMINO_ROOT_DIR"/src/Binding/WrapperIF.cpp", src);
+	}
+
+	//FileSystem::WriteAllText(LUMINO_ROOT_DIR"/src/Binding/WrapperIF.h", );
+	//FileSystem::WriteAllText(LUMINO_ROOT_DIR"/src/Binding/LuminoC.h", enumsText.ToString());
+
+	{
+		String src = FileSystem::ReadAllText(PathName(g_templateDir, "WrapperIF/Templates/WrapperIF.h"));
+		src = src.Replace("%WrapperClasses%", wrapper.ToString());
+		FileSystem::WriteAllText(LUMINO_ROOT_DIR"/src/Binding/WrapperIF.h", src);
+	}
+
+	{
+		String src = FileSystem::ReadAllText(PathName(g_templateDir, "WrapperIF/Templates/LuminoC.h"));
+		src = src.Replace("%Enums%", enumsText.ToString());
+		FileSystem::WriteAllText(LUMINO_ROOT_DIR"/src/Binding/LuminoC.h", src);
+	}
 }
 
 StringA WrapperIFGenerator::MakeInstanceParamName(TypeInfoPtr info)
 {
-	return info->name;
+	return info->name.ToLower();
 }
 
 StringA WrapperIFGenerator::MakeMethods(TypeInfoPtr typeInfo)
@@ -73,7 +111,7 @@ StringA WrapperIFGenerator::MakeMethods(TypeInfoPtr typeInfo)
 						if (methodInfo->isConst)
 							params.AppendCommad("const LN{0}* {1}", typeInfo->name, MakeInstanceParamName(typeInfo));
 						else
-							params.AppendCommad("LN{0}* {1}", typeInfo->name, typeInfo->name, MakeInstanceParamName(typeInfo));
+							params.AppendCommad("LN{0}* {1}", typeInfo->name, MakeInstanceParamName(typeInfo));
 					}
 					else if (!methodInfo->isConstructor)
 					{
@@ -133,7 +171,7 @@ StringA WrapperIFGenerator::MakeMethods(TypeInfoPtr typeInfo)
 				{
 					OutputBuffer macroArgs;
 					macroArgs.AppendCommad("out" + MakeInstanceParamName(typeInfo));	// 格納する変数名
-					macroArgs.AppendCommad("LN" + typeInfo->name);						// クラス名
+					macroArgs.AppendCommad(typeInfo->name);								// クラス名
 					macroArgs.AppendCommad(methodInfo->name);							// 初期化関数名
 					macroArgs.AppendCommad(args.ToString());							// 引数
 					body.Append("LWIG_CREATE_OBJECT({0});", macroArgs.ToString());
@@ -141,7 +179,7 @@ StringA WrapperIFGenerator::MakeMethods(TypeInfoPtr typeInfo)
 				// 普通のインスタンス 関数
 				else
 				{
-					body.Append("LWIG_TO_OBJECT({0})->{1}({2});", MakeInstanceParamName(typeInfo), methodInfo->name, args.ToString());
+					body.Append("LWIG_TO_OBJECT({0}, {1})->{2}({3});", typeInfo->name, MakeInstanceParamName(typeInfo), methodInfo->name, args.ToString());
 				}
 			}
 		}
@@ -174,3 +212,9 @@ StringA WrapperIFGenerator::MakeParamTypeName(TypeInfoPtr typeInfo, bool isOut)
 	}
 	return name;
 }
+
+String WrapperIFGenerator::MakeDocumentComment(DocumentInfoPtr doc)
+{
+	return doc->summary;
+}
+
