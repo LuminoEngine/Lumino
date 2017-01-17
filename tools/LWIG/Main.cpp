@@ -1,12 +1,13 @@
 
 #include "Global.h"
-#include "SymbolDatabase.h"
 #include "Parser.h"
 #include "DotNet/DotNetPInvokeLibGenerator.h"
 #include "DotNet/DotNetClassLibGenerator.h"
+#include "DotNet/DotNetCommon.h"
 #include "WrapperIF/WrapperIFGenerator.h"
 
-PathName	g_templateDir;
+PathName		g_templateDir;
+SymbolDatabase	g_database;
 
 int main()
 {
@@ -21,16 +22,21 @@ int main()
 
 	g_templateDir = LUMINO_ROOT_DIR"/tools/LWIG/";
 
-	SymbolDatabase database;
 	
-	HeaderParser parser(&database);
+	HeaderParser parser(&g_database);
 	parser.ParseFiles(files/*, &database*/);
 
-	database.Link();
+	g_database.Link();
+
+	DotNetCommon::Initialize();
 
 	{
 		WrapperIFGenerator gen;
-		gen.Generate(&database);
+		gen.Generate(&g_database);
+	}
+	{
+		DotNetPInvokeLibGenerator g;
+		g.Generate();
 	}
 
 	//

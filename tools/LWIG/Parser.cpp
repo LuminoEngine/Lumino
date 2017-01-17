@@ -214,6 +214,7 @@ void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
 	//for (auto t : declTokens) Console::WriteLine(t->GetString());
 
 	auto info = std::make_shared<MethodInfo>();
+	info->owner = parent;
 	info->name = (declTokens.GetLast())->GetString();	// ( の直前を関数名として取り出す
 	info->isConstructor = (info->name.IndexOf("Initialize") == 0);	// InitializeXXXX ならコンストラクタ
 	parent->declaredMethods.Add(info);

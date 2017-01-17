@@ -1,6 +1,7 @@
 
 #pragma once
 #include <memory>
+#include <Lumino/Base/Enumerable.h>
 
 //class Type
 //{
@@ -39,6 +40,8 @@ public:
 	TypeInfoPtr	type;
 	bool	isIn = false;
 	bool	isOut = false;
+	bool	isThis = false;
+	bool	isReturn = false;
 	Nullable<StringA>	defaultValue;
 
 	String	typeRawName;
@@ -58,6 +61,8 @@ using FieldInfoPtr = std::shared_ptr<FieldInfo>;
 class MethodInfo
 {
 public:
+	// 
+	TypeInfoPtr		owner;
 	String			name;
 	TypeInfoPtr		returnType;
 	//IsConstructor
@@ -68,7 +73,12 @@ public:
 	bool			isConstructor = false;
 	List<ParameterInfoPtr>	parameters;
 
+	// 
+	List<ParameterInfoPtr>	capiParameters;
+
 	String	returnTypeRawName;
+
+	void ExpandCAPIParameters();
 };
 using MethodInfoPtr = std::shared_ptr<MethodInfo>;
 
@@ -102,6 +112,15 @@ public:
 	bool IsValueType() const { return isStruct || isPrimitive; }
 };
 
+class PrimitiveTypes
+{
+public:
+	static TypeInfoPtr	voidType;
+	static TypeInfoPtr	boolType;
+	static TypeInfoPtr	intType;
+	static TypeInfoPtr	floatType;
+	static TypeInfoPtr	stringType;
+};
 
 class SymbolDatabase
 {
@@ -110,11 +129,12 @@ public:
 	List<TypeInfoPtr>	structs;
 	List<TypeInfoPtr>	classes;
 	List<TypeInfoPtr>	enums;
-	TypeInfoPtr			stringType;
 
 	void Link();
 
-private:
+	tr::Enumerator<MethodInfoPtr> GetAllMethods();
+
+public:
 	void InitializePredefineds();
 	TypeInfoPtr FindTypeInfo(StringRef typeName);
 };

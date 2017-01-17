@@ -205,7 +205,7 @@ StringA WrapperIFGenerator::MakeParamTypeName(TypeInfoPtr typeInfo, bool isOut)
 	}
 	else
 	{
-		if (typeInfo == m_database->stringType)
+		if (typeInfo == PrimitiveTypes::stringType)
 			name = "const LNChar*";
 		else
 			name = typeInfo->name;
