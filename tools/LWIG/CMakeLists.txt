@@ -10,12 +10,14 @@ set(LN_SOURCES
 	Parser.h
 	SymbolDatabase.cpp
 	SymbolDatabase.h
-	DotNet/DotNetPInvokeLibGenerator.h
+	DotNet/CSClassLibGenerator.cpp
+	DotNet/CSClassLibGenerator.h
 	DotNet/DotNetClassLibGenerator.cpp
 	DotNet/DotNetClassLibGenerator.h
 	DotNet/DotNetCommon.cpp
 	DotNet/DotNetCommon.h
 	DotNet/DotNetPInvokeLibGenerator.cpp
+	DotNet/DotNetPInvokeLibGenerator.h
 	WrapperIF/WrapperIFGenerator.h
 	WrapperIF/WrapperIFGenerator.cpp
 )

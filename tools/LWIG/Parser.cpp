@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Parser.h"
 #include <Lumino/Base/Enumerable.h>
 using namespace fl;
@@ -21,8 +21,8 @@ void HeaderParser::ParseFiles(const List<PathName>& pathes)
 void HeaderParser::ParseFile(const PathName& path)
 {
 	/*
-	ƒL[ƒ[ƒh‚Æ { } ; ‚É’…–Ú‚µ‚ÄØ‚è•ª‚¯‚éƒp[ƒTB
-	¦ LN_CLASS() ‚Ì ( ) ‚àƒp[ƒX‚Å‚«‚»‚¤‚¾‚ªAƒ_ƒB‚»‚ÌŠO‘¤‚Ì‘S‚Ä‚Ì ( ) ‚àl—¶‚·‚é•K—v‚ª‚ ‚éB‚»‚ê‚Í‚à‚Á‚ÆŒã’i‚ÅB
+	ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ã¨ { } ; ã«ç€ç›®ã—ã¦åˆ‡ã‚Šåˆ†ã‘ã‚‹ãƒ‘ãƒ¼ã‚µã€‚
+	â€» LN_CLASS() ã® ( ) ã‚‚ãƒ‘ãƒ¼ã‚¹ã§ããã†ã ãŒã€ãƒ€ãƒ¡ã€‚ãã®å¤–å´ã®å…¨ã¦ã® ( ) ã‚‚è€ƒæ…®ã™ã‚‹å¿…è¦ãŒã‚ã‚‹ã€‚ãã‚Œã¯ã‚‚ã£ã¨å¾Œæ®µã§ã€‚
 	*/
 	struct DeclsParser : public combinators::ParseLib<DeclsParser>
 	{
@@ -46,7 +46,7 @@ void HeaderParser::ParseFile(const PathName& path)
 			return input.Success(Decl{ _T("LocalBlock"), r1.GetMatchBegin(), r3.GetMatchEnd() });
 		}
 		
-		static ParserResult<Decl> Parse_LN_ENUM(ParserContext input)	// ',' ‚ª‘¼‚Ìƒp[ƒT‚Ì×–‚‚ğ‚·‚é‚Ì‚ÅA‚±‚±‚Å‚Í@{`} ‚¾‚¯‚ğæ‚èo‚·
+		static ParserResult<Decl> Parse_LN_ENUM(ParserContext input)	// ',' ãŒä»–ã®ãƒ‘ãƒ¼ã‚µã®é‚ªé­”ã‚’ã™ã‚‹ã®ã§ã€ã“ã“ã§ã¯ã€€{ï½} ã ã‘ã‚’å–ã‚Šå‡ºã™
 		{
 			LN_PARSE_RESULT(r1, TokenString("LN_ENUM_"));
 			LN_PARSE_RESULT(r2, UntilMore(TokenChar('{')));
@@ -119,7 +119,7 @@ void HeaderParser::ParseFile(const PathName& path)
 				token->EqualString("LN_CLASS", 8) ||
 				token->EqualString("LN_FIELD", 8) ||
 				token->EqualString("LN_METHOD", 9) ||
-				token->GetTokenGroup() == TokenGroup::Eof;	// TODO: ‚±‚ê‚ª–³‚­‚Ä‚à‚¢‚¢‚æ‚¤‚É‚µ‚½‚¢B¡‚Í‚±‚ê‚ª‚È‚¢‚ÆAMany’†‚ÉEOF‚µ‚½‚Æ‚«OutOfRange‚·‚é
+				token->GetTokenGroup() == TokenGroup::Eof;	// TODO: ã“ã‚ŒãŒç„¡ãã¦ã‚‚ã„ã„ã‚ˆã†ã«ã—ãŸã„ã€‚ä»Šã¯ã“ã‚ŒãŒãªã„ã¨ã€Manyä¸­ã«EOFã—ãŸã¨ãOutOfRangeã™ã‚‹
 		}
 	};
 
@@ -151,11 +151,11 @@ void HeaderParser::ParseFile(const PathName& path)
 
 HeaderParser::TokenItr HeaderParser::ParseMetadataDecl(TokenItr begin, TokenItr end)
 {
-	// (...) ‚ğ’T‚·
+	// (...) ã‚’æ¢ã™
 	auto paramBegin = std::find_if(begin, end, [](Token* t) { return t->EqualChar('('); }) + 1;
 	auto paramEnd   = std::find_if(begin, end, [](Token* t) { return t->EqualChar(')'); });
 
-	// (...) ‚Ì’†‚Ì ¯•Êq,@‰p”š, •¶š—ñ, ',', '=' ‚¾‚¯‚ğæ‚èo‚·
+	// (...) ã®ä¸­ã® è­˜åˆ¥å­,ã€€è‹±æ•°å­—, æ–‡å­—åˆ—, ',', '=' ã ã‘ã‚’å–ã‚Šå‡ºã™
 	auto argTokens = tr::MakeEnumerator::from(paramBegin, paramEnd + 1)
 		.Where([](Token* t)
 		{ 
@@ -242,15 +242,11 @@ void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
 	info->owner = parent;
 	info->metadata = MoveLastMetadata();
 	info->document = MoveLastDocument();
-	info->name = (declTokens.GetLast())->GetString();	// ( ‚Ì’¼‘O‚ğŠÖ”–¼‚Æ‚µ‚Äæ‚èo‚·
+	info->name = (declTokens.GetLast())->GetString();	// ( ã®ç›´å‰ã‚’é–¢æ•°åã¨ã—ã¦å–ã‚Šå‡ºã™
 	parent->declaredMethods.Add(info);
 
-	// struct Œ^‚Å–ß‚è’l‚ª–³‚¯‚ê‚ÎƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	// struct å‹ã§æˆ»ã‚Šå€¤ãŒç„¡ã‘ã‚Œã°ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	if (parent->isStruct && declTokens.begin() + 1 == declTokens.end())
-		info->isConstructor = true;
-
-	// class Œ^‚Å InitializeXXXX ‚È‚çƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	if (!parent->isStruct &&info->name.IndexOf("Initialize") == 0)
 		info->isConstructor = true;
 
 	// return type
@@ -270,6 +266,13 @@ void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
 			if ((*itr)->EqualString("static"))
 				info->isStatic = true;
 		}
+	}
+
+	if (!info->isStatic)
+	{
+		// class å‹ã§ InitializeXXXX ãªã‚‰ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+		if (!parent->isStruct &&info->name.IndexOf("Initialize") == 0)
+			info->isConstructor = true;
 	}
 
 	// mehod params
@@ -310,7 +313,7 @@ void HeaderParser::ParseParamsDecl(TokenItr begin, TokenItr end, MethodInfoPtr p
 	//paramEnd = declTokens.end();
 	auto paramEnd = std::find_if(declTokens.begin(), declTokens.end(), [](Token* t) { return t->EqualChar('='); });
 
-	// , ‚Ü‚½‚Í =(ƒfƒtƒHƒ‹ƒgˆø”) ‚Ì’¼‘O‚ğˆø”–¼‚Æ‚·‚é
+	// , ã¾ãŸã¯ =(ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•°) ã®ç›´å‰ã‚’å¼•æ•°åã¨ã™ã‚‹
 	auto name = end - 1;
 
 	StringA typeName;
@@ -346,7 +349,8 @@ void HeaderParser::ParseClassDecl(const Decl& decl)
 	auto paramEnd = ParseMetadataDecl(decl.begin, decl.end);
 	//auto name = std::find_if(paramEnd, decl.end, [](Token* t) { return t->EqualChar(':'); }) - 2;
 	TokenItr name;
-	for (auto itr = paramEnd; itr < decl.end; ++itr)
+	TokenItr itr = paramEnd;
+	for (; itr < decl.end; ++itr)
 	{
 		if ((*itr)->GetTokenGroup() == TokenGroup::Identifier) name = itr;
 		if ((*itr)->EqualChar(':') || (*itr)->EqualChar('{')) break;
@@ -357,6 +361,13 @@ void HeaderParser::ParseClassDecl(const Decl& decl)
 	info->document = MoveLastDocument();
 	info->name = (*name)->GetString();
 	m_database->classes.Add(info);
+
+	// base class name
+	if ((*itr)->EqualChar(':'))
+	{
+		itr = std::find_if(itr, decl.end, [](Token* t) { return t->GetTokenGroup() == TokenGroup::Identifier; });
+		info->baseClassRawName = (*itr)->GetString();
+	}
 
 	for (auto& d : decl.decls)
 	{
@@ -429,7 +440,7 @@ void HeaderParser::ParseDocument(const Decl& decl)
 {
 	String doc = (*decl.begin)->GetString();
 
-	// ‰üsƒR[ƒh“ˆê‚µAƒRƒƒ“ƒgŠJnI—¹‚ğíœ‚·‚é
+	// æ”¹è¡Œã‚³ãƒ¼ãƒ‰çµ±ä¸€ã—ã€ã‚³ãƒ¡ãƒ³ãƒˆé–‹å§‹çµ‚äº†ã‚’å‰Šé™¤ã™ã‚‹
 	doc = doc
 		.Replace("\r\n", "\n")
 		.Replace("\r", "\n")
@@ -468,10 +479,12 @@ void HeaderParser::ParseDocument(const Decl& decl)
 			else if (result[1] == "return")
 			{
 				target = &info->returns;
+				line = line.Mid(result.GetLength());
 			}
 			else if (result[1] == "details")
 			{
 				target = &info->details;
+				line = line.Mid(result.GetLength());
 			}
 		}
 

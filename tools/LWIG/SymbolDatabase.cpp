@@ -2,11 +2,12 @@
 #include "Global.h"
 #include "SymbolDatabase.h"
 
-TypeInfoPtr	PrimitiveTypes::voidType;
-TypeInfoPtr	PrimitiveTypes::boolType;
-TypeInfoPtr	PrimitiveTypes::intType;
-TypeInfoPtr	PrimitiveTypes::floatType;
-TypeInfoPtr	PrimitiveTypes::stringType;
+TypeInfoPtr	PredefinedTypes::voidType;
+TypeInfoPtr	PredefinedTypes::boolType;
+TypeInfoPtr	PredefinedTypes::intType;
+TypeInfoPtr	PredefinedTypes::floatType;
+TypeInfoPtr	PredefinedTypes::stringType;
+TypeInfoPtr	PredefinedTypes::objectType;
 
 //==============================================================================
 // MetadataInfo
@@ -288,23 +289,26 @@ void SymbolDatabase::InitializePredefineds()
 {
 	predefineds.Add(std::make_shared<TypeInfo>("void"));
 	predefineds.GetLast()->isVoid = true;
-	PrimitiveTypes::voidType = predefineds.GetLast();
+	PredefinedTypes::voidType = predefineds.GetLast();
 
 	predefineds.Add(std::make_shared<TypeInfo>("bool"));
 	predefineds.GetLast()->isPrimitive = true;
-	PrimitiveTypes::boolType = predefineds.GetLast();
+	PredefinedTypes::boolType = predefineds.GetLast();
 
 	predefineds.Add(std::make_shared<TypeInfo>("int"));
 	predefineds.GetLast()->isPrimitive = true;
-	PrimitiveTypes::intType = predefineds.GetLast();
+	PredefinedTypes::intType = predefineds.GetLast();
 
 	predefineds.Add(std::make_shared<TypeInfo>("float"));
 	predefineds.GetLast()->isPrimitive = true;
-	PrimitiveTypes::floatType = predefineds.GetLast();
+	PredefinedTypes::floatType = predefineds.GetLast();
 
 	predefineds.Add(std::make_shared<TypeInfo>("String"));
 	predefineds.GetLast()->isPrimitive = true;
-	PrimitiveTypes::stringType = predefineds.GetLast();
+	PredefinedTypes::stringType = predefineds.GetLast();
+
+	predefineds.Add(std::make_shared<TypeInfo>("Object"));
+	PredefinedTypes::objectType = predefineds.GetLast();
 }
 
 TypeInfoPtr SymbolDatabase::FindTypeInfo(StringRef typeName)
@@ -320,7 +324,7 @@ TypeInfoPtr SymbolDatabase::FindTypeInfo(StringRef typeName)
 	type = classes.Find([typeName](TypeInfoPtr type) { return type->name == typeName; });
 	if (type != nullptr) return *type;
 
-	if (typeName == "StringRef") return PrimitiveTypes::stringType;
+	if (typeName == "StringRef") return PredefinedTypes::stringType;
 
 	LN_UNREACHABLE();
 	return nullptr;

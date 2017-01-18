@@ -3,6 +3,7 @@
 #include "Parser.h"
 #include "DotNet/DotNetPInvokeLibGenerator.h"
 #include "DotNet/DotNetClassLibGenerator.h"
+#include "DotNet/CSClassLibGenerator.h"
 #include "DotNet/DotNetCommon.h"
 #include "WrapperIF/WrapperIFGenerator.h"
 
@@ -42,7 +43,11 @@ int main()
 		CSStructsGenerator g;
 		g.Generate();
 	}
-
+	{
+		CSClassLibGenerator g;
+		g.Generate();
+	}
+	
 	//
 	//
 	//{

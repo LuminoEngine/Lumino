@@ -205,7 +205,7 @@ StringA WrapperIFGenerator::MakeParamTypeName(TypeInfoPtr typeInfo, bool isOut)
 	}
 	else
 	{
-		if (typeInfo == PrimitiveTypes::stringType)
+		if (typeInfo == PredefinedTypes::stringType)
 			name = "const LNChar*";
 		else
 			name = typeInfo->name;

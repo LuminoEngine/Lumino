@@ -72,10 +72,10 @@ LNResultCode LN_API LNVector3_Clamp(    LNVector3* vector3, Vector3 minVec, Vect
     reinterpret_cast<Vector3*>(vector3)->Clamp(minVec, maxVec);
     LWIG_FUNC_TRY_END_RETURN;
 }
-LNResultCode LN_API LNEngine_Initialize(    LNHandle* outengine)
+LNResultCode LN_API LNEngine_Initialize()
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_CREATE_OBJECT(outengine, Engine, Initialize, );
+    Engine::Initialize();
     LWIG_FUNC_TRY_END_RETURN;
 }
 LNResultCode LN_API LNEngine_Terminate()

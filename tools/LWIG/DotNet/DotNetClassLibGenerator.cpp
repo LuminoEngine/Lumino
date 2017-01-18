@@ -4,9 +4,6 @@
 #include "DotNetCommon.h"
 #include "DotNetClassLibGenerator.h"
 
-//static const String MethodBodyTemplate =
-//	_T("public %ReturnType% %MethodName%(%ParamList%)");
-
 static const String MethodBodyTemplate =
 	_T("{\n")
 	_T("    %InitStmt%\n")

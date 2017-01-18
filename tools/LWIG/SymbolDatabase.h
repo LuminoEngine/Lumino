@@ -164,16 +164,19 @@ public:
 	List<PropertyInfoPtr>	declaredProperties;
 	List<ConstantInfoPtr>	declaredConstants;
 
+	String					baseClassRawName;
+
 	TypeInfo() {}
 	TypeInfo(StringRef name_) : name(name_) {}
 
 	bool IsValueType() const { return isStruct || isPrimitive; }
+	bool IsStatic() const { return metadata->HasKey("Static"); }
 
 	void MakeProperties();
 	void LinkOverload();
 };
 
-class PrimitiveTypes
+class PredefinedTypes
 {
 public:
 	static TypeInfoPtr	voidType;
@@ -181,6 +184,7 @@ public:
 	static TypeInfoPtr	intType;
 	static TypeInfoPtr	floatType;
 	static TypeInfoPtr	stringType;
+	static TypeInfoPtr	objectType;
 };
 
 class SymbolDatabase
