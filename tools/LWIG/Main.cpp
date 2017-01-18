@@ -38,6 +38,10 @@ int main()
 		DotNetPInvokeLibGenerator g;
 		g.Generate();
 	}
+	{
+		CSStructsGenerator g;
+		g.Generate();
+	}
 
 	//
 	//

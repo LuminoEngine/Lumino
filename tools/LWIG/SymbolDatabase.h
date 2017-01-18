@@ -1,6 +1,7 @@
 
 #pragma once
 #include <memory>
+#include <unordered_map>
 #include <Lumino/Base/Enumerable.h>
 
 //class Type
@@ -21,15 +22,44 @@
 
 
 class TypeInfo;
+class DocumentInfo;
+class ParameterDocumentInfo;
+class MetadataInfo;
+class PropertyInfo;
 using TypeInfoPtr = std::shared_ptr<TypeInfo>;
+using DocumentInfoPtr = std::shared_ptr<DocumentInfo>;
+using ParameterDocumentInfoPtr = std::shared_ptr<ParameterDocumentInfo>;
+using MetadataInfoPtr = std::shared_ptr<MetadataInfo>;
+using PropertyInfoPtr = std::shared_ptr<PropertyInfo>;
+
+class ParameterDocumentInfo
+{
+public:
+	String	name;
+	String	io;
+	String	description;
+};
 
 class DocumentInfo
 {
 public:
-	String	summary;
+	String							summary;
+	List<ParameterDocumentInfoPtr>	params;
+	String							returns;
+	String							details;
 };
 
-using DocumentInfoPtr = std::shared_ptr<DocumentInfo>;
+class MetadataInfo
+{
+public:
+	String								name;
+	std::unordered_map<String, String>	values;
+
+	void AddValue(const String& key, const String& value);
+	String* FindValue(const StringRef& key);
+	bool HasKey(const StringRef& key);
+};
+
 
 class ParameterInfo
 {
@@ -51,8 +81,9 @@ using ParameterInfoPtr = std::shared_ptr<ParameterInfo>;
 class FieldInfo
 {
 public:
-	TypeInfoPtr	type;
-	String		name;
+	DocumentInfoPtr	document;
+	TypeInfoPtr		type;
+	String			name;
 
 	String	typeRawName;
 };
@@ -63,6 +94,8 @@ class MethodInfo
 public:
 	// 
 	TypeInfoPtr		owner;
+	MetadataInfoPtr	metadata;
+	DocumentInfoPtr	document;
 	String			name;
 	TypeInfoPtr		returnType;
 	//IsConstructor
@@ -71,6 +104,7 @@ public:
 	bool			isConst = false;		// const ÉÅÉìÉoä÷êîÇ≈Ç†ÇÈÇ©
 	bool			isStatic = false;
 	bool			isConstructor = false;
+	PropertyInfoPtr	ownerProperty;
 	List<ParameterInfoPtr>	parameters;
 
 	// 
@@ -79,23 +113,41 @@ public:
 	String	returnTypeRawName;
 
 	void ExpandCAPIParameters();
+	String GetCAPIFuncName();
 };
 using MethodInfoPtr = std::shared_ptr<MethodInfo>;
+
+
+class PropertyInfo
+{
+public:
+	TypeInfoPtr			owner;
+	DocumentInfoPtr		document;
+	String				name;
+	TypeInfoPtr			type;
+	MethodInfoPtr		getter;
+	MethodInfoPtr		setter;
+
+	void MakeDocument();
+};
 
 class ConstantInfo
 {
 public:
-	String			name;
-	TypeInfoPtr		type;
-	tr::Variant		value;
+	DocumentInfoPtr		document;
+	String				name;
+	TypeInfoPtr			type;
+	tr::Variant			value;
 
-	String			typeRawName;
+	String				typeRawName;
 };
 using ConstantInfoPtr = std::shared_ptr<ConstantInfo>;
 
 class TypeInfo
 {
 public:
+	MetadataInfoPtr			metadata;
+	DocumentInfoPtr			document;
 	String	name;
 	bool	isStruct = false;
 	bool			isVoid = false;
@@ -103,13 +155,15 @@ public:
 	bool					isEnum = false;
 	List<FieldInfoPtr>		declaredFields;
 	List<MethodInfoPtr>		declaredMethods;
+	List<PropertyInfoPtr>	declaredProperties;
 	List<ConstantInfoPtr>	declaredConstants;
-	DocumentInfoPtr			document;
 
 	TypeInfo() {}
 	TypeInfo(StringRef name_) : name(name_) {}
 
 	bool IsValueType() const { return isStruct || isPrimitive; }
+
+	void MakeProperties();
 };
 
 class PrimitiveTypes

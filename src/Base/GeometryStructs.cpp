@@ -18,13 +18,11 @@ const PointF	PointF::Zero(0, 0);
 // Size
 //==============================================================================
 
-template<typename T> const GenericSize<T> GenericSize<T>::Zero(0, 0);
-template<typename T> const GenericSize<T> GenericSize<T>::MinValue(std::numeric_limits<T>::min(), std::numeric_limits<T>::min());
-template<typename T> const GenericSize<T> GenericSize<T>::MaxValue(std::numeric_limits<T>::max(), std::numeric_limits<T>::max());
+const Size Size::Zero(0, 0);
+const Size Size::MinValue(std::numeric_limits<float>::min(), std::numeric_limits<float>::min());
+const Size Size::MaxValue(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
 
-// テンプレートのインスタンス化
-template class GenericSize<int>;
-template class GenericSize<float>;
+const SizeI SizeI::Zero(0, 0);
 
 //==============================================================================
 // RectI

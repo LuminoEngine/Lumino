@@ -19,7 +19,10 @@ public:
 
 	/** インデントレベルをひとつ減らす */
 	void DecreaseIndent();
-	
+
+	/** 文字列を追加する */
+	OutputBuffer& Append(const StringRef& str) { AppendInternal(str); return *this; }
+
 	/** 文字列を追加する */
 	template<typename... TArgs>
 	OutputBuffer& Append(const StringRef& format, const TArgs&... args) { AppendInternal(String::Format(format, args...)); return *this; }
@@ -32,12 +35,15 @@ public:
 	OutputBuffer& AppendLine(const StringRef& format, const TArgs&... args) { AppendLineInternal(String::Format(format, args...)); return *this; }
 
 	/** 文字列を追加する (各行の先頭をインデント) */
-	OutputBuffer& AppendLines(const StringRef& str) { AppendLinesInternal(str); return *this; }
+	OutputBuffer& AppendLines(const StringRef& str) { AppendLinesInternal(str, String::GetEmpty()); return *this; }
 
 	/** 文字列を追加する (各行の先頭をインデント) */
 	template<typename... TArgs>
-	OutputBuffer& AppendLines(const StringRef& format, const TArgs&... args) { AppendLinesInternal(String::Format(format, args...)); return *this; }
+	OutputBuffer& AppendLines(const StringRef& format, const TArgs&... args) { AppendLinesInternal(String::Format(format, args...), String::GetEmpty()); return *this; }
 	
+	/** 文字列を追加する (各行の先頭をインデント) */
+	OutputBuffer& AppendLinesHeaderd(const StringRef& str, const StringRef& lineHeader) { AppendLinesInternal(str, lineHeader); return *this; }
+
 	/** 既に文字列が存在すれば , を挿入して文字列を追加する */
 	template<typename... TArgs>
 	OutputBuffer& AppendCommad(const StringRef& format, const TArgs&... args)
@@ -59,11 +65,18 @@ public:
 private:
 	void AppendInternal(const StringRef& str);
 	void AppendLineInternal(const StringRef& str);
-	void AppendLinesInternal(const StringRef& str);
+	void AppendLinesInternal(const StringRef& str, const StringRef& lineHeader);
 	
+	enum class State
+	{
+		LineHead,
+		Text,
+	};
+
 	StringBuilder	m_buffer;
 	int				m_indentLevel;
 	String			m_indent;
 	String			m_newLineCode;
+	State			m_state;
 };
 

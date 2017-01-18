@@ -38,8 +38,10 @@ private:
 	void ParseDocument(const Decl& decl);
 
 	DocumentInfoPtr MoveLastDocument();
+	MetadataInfoPtr MoveLastMetadata();
 
 	SymbolDatabase*	m_database;
 	DocumentInfoPtr	m_lastDocument;
+	MetadataInfoPtr	m_lastMetadata;
 };
 

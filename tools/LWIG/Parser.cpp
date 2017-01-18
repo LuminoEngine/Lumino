@@ -142,7 +142,6 @@ void HeaderParser::ParseFile(const PathName& path)
 		if (decl1.type == "class") ParseClassDecl(decl1);
 		if (decl1.type == "enum") ParseEnumDecl(decl1);
 		
-
 		for (auto decl2 : decl1.decls)
 		{
 			//Console::WriteLine("  {0}", decl2.type);
@@ -156,15 +155,38 @@ HeaderParser::TokenItr HeaderParser::ParseMetadataDecl(TokenItr begin, TokenItr 
 	auto paramBegin = std::find_if(begin, end, [](Token* t) { return t->EqualChar('('); }) + 1;
 	auto paramEnd   = std::find_if(begin, end, [](Token* t) { return t->EqualChar(')'); });
 
-	// (...) の中の 識別子, ',', '=' だけを取り出す
-	//auto argTokens = tr::MakeEnumerator::from(tokens->cbegin() + paramBegin, tokens->cbegin() + paramEnd)
-	//	.Where([](Token* t) { return t->GetTokenGroup() == TokenGroup::Identifier || t->EqualChar(',') || t->EqualChar('='); });
+	// (...) の中の 識別子,　英数字, 文字列, ',', '=' だけを取り出す
+	auto argTokens = tr::MakeEnumerator::from(paramBegin, paramEnd + 1)
+		.Where([](Token* t)
+		{ 
+			return
+				t->GetTokenGroup() == TokenGroup::Identifier ||
+				t->GetTokenGroup() == TokenGroup::ArithmeticLiteral ||
+				t->GetTokenGroup() == TokenGroup::StringLiteral ||
+				t->EqualChar(',') ||
+				t->EqualChar('=');
+		});
 
-	//for (Token* tt : argTokens)
-	//{
-	//	Console::WriteLine(tt->GetString());
-	//}
-	return paramEnd;
+	auto info = std::make_shared<MetadataInfo>();
+
+	String key, value;
+	for (auto itr = argTokens.begin(); itr != argTokens.end();)
+	{
+		key = (*itr)->GetString();
+		value = String::GetEmpty();
+		++itr;
+		if (itr != argTokens.end() && (*itr)->EqualChar('='))
+		{
+			++itr;
+			value = (*itr)->GetString();
+			++itr;
+		}
+
+		info->AddValue(key, value);
+	}
+
+	m_lastMetadata = info;
+	return paramEnd + 1;
 }
 
 void HeaderParser::ParseStructDecl(const Decl& decl)
@@ -178,10 +200,11 @@ void HeaderParser::ParseStructDecl(const Decl& decl)
 	info->isStruct = true;
 	m_database->structs.Add(info);
 
-	for (auto& member : decl.decls)
+	for (auto& d : decl.decls)
 	{
-		if (member.type == "field") ParseFieldDecl(member, info);
-		if (member.type == "method") ParseMethodDecl(member, info);
+		if (d.type == "document") ParseDocument(d);
+		if (d.type == "field") ParseFieldDecl(d, info);
+		if (d.type == "method") ParseMethodDecl(d, info);
 	}
 }
 
@@ -192,6 +215,7 @@ void HeaderParser::ParseFieldDecl(const Decl& decl, TypeInfoPtr parent)
 	auto type = decl.end - 4;
 
 	auto info = std::make_shared<FieldInfo>();
+	info->document = MoveLastDocument();
 	info->name = (*name)->GetString();
 	info->typeRawName = (*type)->GetString();
 	parent->declaredFields.Add(info);
@@ -213,13 +237,28 @@ void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
 
 	//for (auto t : declTokens) Console::WriteLine(t->GetString());
 
+
 	auto info = std::make_shared<MethodInfo>();
 	info->owner = parent;
+	info->metadata = MoveLastMetadata();
+	info->document = MoveLastDocument();
 	info->name = (declTokens.GetLast())->GetString();	// ( の直前を関数名として取り出す
-	info->isConstructor = (info->name.IndexOf("Initialize") == 0);	// InitializeXXXX ならコンストラクタ
 	parent->declaredMethods.Add(info);
 
+	// struct 型で戻り値が無ければコンストラクタ
+	if (parent->isStruct && declTokens.begin() + 1 == declTokens.end())
+		info->isConstructor = true;
+
+	// class 型で InitializeXXXX ならコンストラクタ
+	if (!parent->isStruct &&info->name.IndexOf("Initialize") == 0)
+		info->isConstructor = true;
+
 	// return type
+	if (info->isConstructor)
+	{
+		info->returnTypeRawName = "void";
+	}
+	else
 	{
 		auto begin = declTokens.begin();
 		auto end = declTokens.end() - 1;
@@ -258,48 +297,6 @@ void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
 			}
 		}
 	}
-
-	//auto name = paramEnd;
-	//for (auto itr = paramEnd; itr != lparen; ++itr)
-	//{
-	//	if ((*itr)->g)
-	//}
-
-	//struct ParamsParser : public combinators::ParseLib<ParamsParser>
-	//{
-	//	struct Param
-	//	{
-	//		TokenItr			beginType;
-	//		TokenItr			endType;
-	//		StringA				name;
-	//		Nullable<StringA>	defaultValue;
-	//	};
-
-	//	static ParserResult<Decl> Parse_Param(ParserContext input)
-	//	{
-	//		LN_PARSE_RESULT(r1, UntilPrev(TokenChar('=') || TokenChar(',') || TokenChar(')')));
-	//		LN_PARSE_RESULT(r1, Optional(Token(')')));
-
-	//		
-
-	//		return input.Success(Param{ r1.GetMatchBegin(), r1.GetMatchEnd() });
-	//	}
-
-	//	static ParserResult<List<Decl>> Parse_Params(ParserContext input)
-	//	{
-	//		LN_PARSE(r1, Many(Parser<Decl>(Parse_LN_CLASS) || Parser<Decl>(Parse_LN_STRUCT) || Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment)));
-	//		return input.Success(r1);
-	//	}
-
-	//	static bool FilterToken(fl::Token* token)
-	//	{
-	//		return
-	//			token->GetTokenGroup() == TokenGroup::Identifier ||
-	//			token->GetTokenGroup() == TokenGroup::Keyword ||
-	//			token->GetTokenGroup() == TokenGroup::Operator ||
-	//			token->GetTokenGroup() == TokenGroup::Eof;	// TODO: これが無くてもいいようにしたい。今はこれがないと、Many中にEOFしたときOutOfRangeする
-	//	}
-	//};
 }
 
 void HeaderParser::ParseParamsDecl(TokenItr begin, TokenItr end, MethodInfoPtr parent)
@@ -356,13 +353,15 @@ void HeaderParser::ParseClassDecl(const Decl& decl)
 	}
 
 	auto info = std::make_shared<TypeInfo>();
+	info->metadata = MoveLastMetadata();
 	info->document = MoveLastDocument();
 	info->name = (*name)->GetString();
 	m_database->classes.Add(info);
 
-	for (auto& member : decl.decls)
+	for (auto& d : decl.decls)
 	{
-		if (member.type == "method") ParseMethodDecl(member, info);
+		if (d.type == "document") ParseDocument(d);
+		if (d.type == "method") ParseMethodDecl(d, info);
 	}
 }
 
@@ -386,12 +385,13 @@ void HeaderParser::ParseEnumDecl(const Decl& decl)
 	m_database->enums.Add(info);
 
 	TokenItr last = itr;
-	for (auto& member : decl.decls)
+	for (auto& d : decl.decls)
 	{
-		if (member.type == "enum_member")
+		if (d.type == "document") ParseDocument(d);
+		if (d.type == "enum_member")
 		{
-			ParseEnumMemberDecl(last, member.end, info);
-			last = member.end;
+			ParseEnumMemberDecl(last, d.end, info);
+			last = d.end;
 		}
 	}
 }
@@ -418,6 +418,7 @@ void HeaderParser::ParseEnumMemberDecl(TokenItr begin, TokenItr end, TypeInfoPtr
 
 	// create info
 	auto info = std::make_shared<ConstantInfo>();
+	info->document = MoveLastDocument();
 	info->name = (*name)->GetString();
 	info->value = (*value)->GetString().ToInt32();
 	info->typeRawName = "int";
@@ -427,6 +428,8 @@ void HeaderParser::ParseEnumMemberDecl(TokenItr begin, TokenItr end, TypeInfoPtr
 void HeaderParser::ParseDocument(const Decl& decl)
 {
 	String doc = (*decl.begin)->GetString();
+
+	// 改行コード統一し、コメント開始終了を削除する
 	doc = doc
 		.Replace("\r\n", "\n")
 		.Replace("\r", "\n")
@@ -437,8 +440,41 @@ void HeaderParser::ParseDocument(const Decl& decl)
 
 	List<String> lines = doc.Split("\n");
 	String* target = &info->summary;
-	for (String& line : lines)
+	for (String line : lines)
 	{
+		line = line.Trim();
+
+		MatchResult result;
+		if (Regex::Search(line, "@(\\w+)", &result))
+		{
+			if (result[1] == "brief")
+			{
+				target = &info->summary;
+				line = line.Mid(result.GetLength());
+			}
+			else if (result[1] == "param")
+			{
+				String con = line.Mid(result.GetLength());
+				if (Regex::Search(con, R"(\[(\w+)\]\s+(\w+)\s*\:\s*)", &result))
+				{
+					auto paramInfo = std::make_shared<ParameterDocumentInfo>();
+					info->params.Add(paramInfo);
+					paramInfo->io = result[1];
+					paramInfo->name = result[2];
+					target = &paramInfo->description;
+					line = con.Mid(result.GetLength());
+				}
+			}
+			else if (result[1] == "return")
+			{
+				target = &info->returns;
+			}
+			else if (result[1] == "details")
+			{
+				target = &info->details;
+			}
+		}
+
 		(*target) += line.Trim();
 	}
 
@@ -449,5 +485,12 @@ DocumentInfoPtr HeaderParser::MoveLastDocument()
 {
 	auto ptr = m_lastDocument;
 	m_lastDocument = nullptr;
+	return ptr;
+}
+
+MetadataInfoPtr HeaderParser::MoveLastMetadata()
+{
+	auto ptr = m_lastMetadata;
+	m_lastMetadata = nullptr;
 	return ptr;
 }

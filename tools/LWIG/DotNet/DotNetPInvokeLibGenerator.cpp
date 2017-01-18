@@ -15,13 +15,14 @@ void DotNetPInvokeLibGenerator::Generate()
 	{
 		for (auto& enumInfo : g_database.enums)
 		{
-			//enumsText.AppendLine("/** {0} */", MakeDocumentComment(enumInfo->document));
+			enumsText.AppendLines(DotNetCommon::MakeXmlDocument(enumInfo->document));
 			enumsText.AppendLine("public enum {0}", enumInfo->name);
 			enumsText.AppendLine("{");
 			enumsText.IncreaseIndent();
 			for (auto& constantInfo : enumInfo->declaredConstants)
 			{
-				enumsText.AppendLine("{0} = {1},", constantInfo->name, tr::Variant::Cast<int>(constantInfo->value));
+				enumsText.AppendLines(DotNetCommon::MakeXmlDocument(constantInfo->document));
+				enumsText.AppendLine("{0} = {1},", constantInfo->name, tr::Variant::Cast<int>(constantInfo->value)).NewLine();
 			}
 			enumsText.DecreaseIndent();
 			enumsText.AppendLine("}").NewLine();

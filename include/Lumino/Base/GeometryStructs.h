@@ -39,33 +39,36 @@ public:
 using PointF = GenericPoint<float>;
 using PointI = GenericPoint<int>;
 
-/**
-	@brief		2次元上のオブジェクトサイズを表します。
-*/
-template<typename T>
-struct GenericSize
+
+/** 2次元上のオブジェクトサイズを表します。*/
+LN_STRUCT()
+struct Size
 {
 public:
-	static const GenericSize<T>	Zero;		/**< (0, 0) */
-	static const GenericSize<T>	MinValue;	/**< */
-	static const GenericSize<T>	MaxValue;	/**< */
+	static const Size	Zero;		/**< (0, 0) */
+	static const Size	MinValue;	/**< */
+	static const Size	MaxValue;	/**< */
 
 public:
-	T		width;				/**< X 方向の大きさ*/
-	T		height;				/**< Y 方向の大きさ*/
+
+	/** 横幅 */
+	LN_FIELD()
+	float width;
+
+	/** 縦幅 */
+	LN_FIELD()
+	float height;
 
 public:
 
 	/** すべての要素を 0 で初期化します。*/
-	GenericSize() { Set(0, 0); }
-	
-	/** 幅と高さを指定して初期化します。*/
-	GenericSize(T w, T h) { Set(w, h); }
+	Size() { Set(0, 0); }
 
-public:
-	
+	/** 幅と高さを指定して初期化します。*/
+	Size(float w, float h) { Set(w, h); }
+
 	/** 各要素を設定します。*/
-	void Set(T w, T h) { width = w; height = h; }
+	void Set(float w, float h) { width = w; height = h; }
 
 	/** 要素がすべて 0 かを判定します。*/
 	bool IsZero() const { return (width == 0 && height == 0); }
@@ -74,27 +77,45 @@ public:
 	bool IsAnyZero() const { return (width == 0 || height == 0); }
 
 public:
-	static GenericSize<T> Min(const GenericSize<T>& size1, const GenericSize<T>& size2)
+	static Size Min(const Size& size1, const Size& size2)
 	{
-		return GenericSize<T>(
+		return Size(
 			(size1.width < size2.width) ? size1.width : size2.width,
 			(size1.height < size2.height) ? size1.height : size2.height);
 	}
 
-	static GenericSize<T> Max(const GenericSize<T>& size1, const GenericSize<T>& size2)
+	static Size Max(const Size& size1, const Size& size2)
 	{
-		return GenericSize<T>(
+		return Size(
 			(size1.width > size2.width) ? size1.width : size2.width,
 			(size1.height > size2.height) ? size1.height : size2.height);
 	}
 
 public:
-	bool operator == (const GenericSize<T>& obj) const { return (width == obj.width && height == obj.height); }
-	bool operator != (const GenericSize<T>& obj) const { return !operator==(obj); }
+	bool operator == (const Size& obj) const { return (width == obj.width && height == obj.height); }
+	bool operator != (const Size& obj) const { return !operator==(obj); }
 };
 
-using Size = GenericSize<float>;
-using SizeI = GenericSize<int>;
+// 内部用
+struct SizeI
+{
+public:
+	static const SizeI	Zero;
+
+	int		width;
+	int		height;
+
+	SizeI() { Set(0, 0); }
+	SizeI(int w, int h) { Set(w, h); }
+	
+	void Set(int w, int h) { width = w; height = h; }
+	bool IsZero() const { return (width == 0 && height == 0); }
+	bool IsAnyZero() const { return (width == 0 || height == 0); }
+
+	bool operator == (const SizeI& obj) const { return (width == obj.width && height == obj.height); }
+	bool operator != (const SizeI& obj) const { return !operator==(obj); }
+};
+
 
 
 class GeometryStructsHelper
@@ -144,9 +165,11 @@ public:
 public:
 
 	/** すべての要素を 0 で初期化します。*/
+	LN_METHOD()
 	RectF() { Set(0, 0, 0, 0); }
 
 	/** 位置とサイズを指定して初期化します。*/
+	LN_METHOD()
 	RectF(float x, float y, float width, float height) { Set(x, y, width, height); }
 	
 	/** 位置とサイズを指定して初期化します。*/
@@ -202,9 +225,11 @@ public:
 	PointF GetLocation() const { return PointF(x, y); }
 	
 	/** 幅と高さを設定します。*/
+	LN_METHOD(Property)
 	void SetSize(const Size& size) { width = size.width; height = size.height; }
 	
 	/** 幅と高さを取得します。*/
+	LN_METHOD(Property)
 	Size GetSize() const { return Size(width, height); }
 
 	/** 幅または高さを持たないかを判定します。*/

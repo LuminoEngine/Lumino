@@ -8,6 +8,30 @@ TypeInfoPtr	PrimitiveTypes::intType;
 TypeInfoPtr	PrimitiveTypes::floatType;
 TypeInfoPtr	PrimitiveTypes::stringType;
 
+//==============================================================================
+// MetadataInfo
+//==============================================================================
+void MetadataInfo::AddValue(const String& key, const String& value)
+{
+	values[key] = value;
+}
+
+String* MetadataInfo::FindValue(const StringRef& key)
+{
+	auto itr = values.find(key);
+	if (itr != values.end()) return &(itr->second);
+	return nullptr;
+}
+
+bool MetadataInfo::HasKey(const StringRef& key)
+{
+	auto itr = values.find(key);
+	return (itr != values.end());
+}
+
+//==============================================================================
+// MethodInfo
+//==============================================================================
 void MethodInfo::ExpandCAPIParameters()
 {
 	// ëÊ1à¯êî
@@ -44,7 +68,7 @@ void MethodInfo::ExpandCAPIParameters()
 	{
 		auto info = std::make_shared<ParameterInfo>();
 		info->name = "outReturn";
-		info->type = g_database.FindTypeInfo(owner->name);
+		info->type = returnType;
 		info->isReturn = true;
 		capiParameters.Add(info);
 	}
@@ -60,6 +84,104 @@ void MethodInfo::ExpandCAPIParameters()
 	}
 }
 
+
+String MethodInfo::GetCAPIFuncName()
+{
+	return String::Format("LN{0}_{1}", owner->name, name);
+}
+
+
+//==============================================================================
+// TypeInfo
+//==============================================================================
+void TypeInfo::MakeProperties()
+{
+	for (auto& methodInfo : declaredMethods)
+	{
+		if (methodInfo->metadata->HasKey("Property"))
+		{
+			String name;
+			bool isGetter = false;
+			if (methodInfo->name.IndexOf("Get") == 0)
+			{
+				name = methodInfo->name.Mid(3);
+				isGetter = true;
+			}
+			if (methodInfo->name.IndexOf("Is") == 0)
+			{
+				name = methodInfo->name.Mid(3);
+				isGetter = true;
+			}
+			if (methodInfo->name.IndexOf("Set") == 0)
+			{
+				name = methodInfo->name.Mid(3);
+				isGetter = false;
+			}
+
+			PropertyInfoPtr propInfo;
+			{
+				auto* ptr = declaredProperties.Find([name](PropertyInfoPtr info) {return info->name == name; });
+				if (ptr == nullptr)
+				{
+					propInfo = std::make_shared<PropertyInfo>();
+					propInfo->name = name;
+					declaredProperties.Add(propInfo);
+				}
+				else
+				{
+					propInfo = *ptr;
+				}
+			}
+
+			if (isGetter)
+			{
+				LN_THROW(propInfo->getter == nullptr, InvalidOperationException);
+				propInfo->getter = methodInfo;
+				if (propInfo->type == nullptr) propInfo->type = methodInfo->returnType;
+			}
+			else
+			{
+				LN_THROW(propInfo->setter == nullptr, InvalidOperationException);
+				propInfo->setter = methodInfo;
+				if (propInfo->type == nullptr) propInfo->type = methodInfo->parameters[0]->type;
+			}
+
+			methodInfo->ownerProperty = propInfo;
+		}
+	}
+
+	// create document
+	for (auto& propInfo : declaredProperties)
+	{
+		propInfo->MakeDocument();
+	}
+}
+
+//==============================================================================
+// PropertyInfo
+//==============================================================================
+void PropertyInfo::MakeDocument()
+{
+	document = std::make_shared<DocumentInfo>();
+
+	if (getter != nullptr)
+	{
+		document->summary += getter->document->summary;
+		document->details += getter->document->details;
+	}
+	if (setter != nullptr)
+	{
+		if (!document->summary.IsEmpty()) document->summary += "\n";
+		if (!document->details.IsEmpty()) document->details += "\n\n";
+
+		document->summary += setter->document->summary;
+		document->details += setter->document->details;
+	}
+}
+
+//==============================================================================
+// SymbolDatabase
+//==============================================================================
 void SymbolDatabase::Link()
 {
 	InitializePredefineds();
@@ -82,6 +204,8 @@ void SymbolDatabase::Link()
 
 			methodInfo->ExpandCAPIParameters();
 		}
+
+		structInfo->MakeProperties();
 	}
 
 	// classes
@@ -98,6 +222,8 @@ void SymbolDatabase::Link()
 
 			methodInfo->ExpandCAPIParameters();
 		}
+
+		classInfo->MakeProperties();
 	}
 
 	// enums

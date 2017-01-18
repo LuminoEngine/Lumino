@@ -1,6 +1,5 @@
 #pragma once
 #include "../OutputBuffer.h"
-class SymbolDatabase;
 
 class DotNetPInvokeLibGenerator
 {
