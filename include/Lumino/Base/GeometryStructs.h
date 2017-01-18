@@ -187,7 +187,6 @@ public:
 public:
 
 	/** 各要素を設定します。*/
-	LN_METHOD()
 	void Set(float x_, float y_, float width_, float height_) { x = x_; y = y_; width = width_; height = height_; }
 
 	/** 各要素を設定します。*/

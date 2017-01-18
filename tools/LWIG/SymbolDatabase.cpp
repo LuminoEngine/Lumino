@@ -61,6 +61,7 @@ void MethodInfo::ExpandCAPIParameters()
 	for (auto& paramInfo : parameters)
 	{
 		capiParameters.Add(paramInfo);
+		overloadSuffix += StringTraits::ToUpper((TCHAR)paramInfo->name[0]);
 	}
 
 	// return value
@@ -76,18 +77,26 @@ void MethodInfo::ExpandCAPIParameters()
 	// constructor
 	if (isConstructor)
 	{
-		auto info = std::make_shared<ParameterInfo>();
-		info->name = String::Format("out{0}", owner->name);
-		info->type = g_database.FindTypeInfo(owner->name);
-		info->isReturn = true;
-		capiParameters.Add(info);
+		if (owner->isStruct)
+		{
+		}
+		else
+		{
+			auto info = std::make_shared<ParameterInfo>();
+			info->name = String::Format("out{0}", owner->name);
+			info->type = g_database.FindTypeInfo(owner->name);
+			info->isReturn = true;
+			capiParameters.Add(info);
+		}
 	}
 }
 
-
 String MethodInfo::GetCAPIFuncName()
 {
-	return String::Format("LN{0}_{1}", owner->name, name);
+	String n = String::Format("LN{0}_{1}", owner->name, name);
+	if (IsOverloadChild())
+		n += overloadSuffix;
+	return n;
 }
 
 
@@ -157,6 +166,26 @@ void TypeInfo::MakeProperties()
 	}
 }
 
+void TypeInfo::LinkOverload()
+{
+	for (auto& methodInfo1 : declaredMethods)
+	{
+		if (methodInfo1->IsOverloadChild()) continue;
+
+		// find overload child
+		for (auto& methodInfo2 : declaredMethods)
+		{
+			if (methodInfo2 == methodInfo1) continue;
+
+			if (methodInfo1->name == methodInfo2->name)
+			{
+				methodInfo1->overloadChildren.Add(methodInfo2);
+				methodInfo2->overloadParent = methodInfo1;
+			}
+		}
+	}
+}
+
 //==============================================================================
 // PropertyInfo
 //==============================================================================
@@ -206,6 +235,7 @@ void SymbolDatabase::Link()
 		}
 
 		structInfo->MakeProperties();
+		structInfo->LinkOverload();
 	}
 
 	// classes
@@ -224,6 +254,7 @@ void SymbolDatabase::Link()
 		}
 
 		classInfo->MakeProperties();
+		classInfo->LinkOverload();
 	}
 
 	// enums

@@ -24,12 +24,6 @@ LNResultCode LN_API LNRectF_RectF(    LNRectF* rectf, float x, float y, float wi
     reinterpret_cast<RectF*>(rectf)->RectF(x, y, width, height);
     LWIG_FUNC_TRY_END_RETURN;
 }
-LNResultCode LN_API LNRectF_Set(    LNRectF* rectf, float x_, float y_, float width_, float height_)
-{
-    LWIG_FUNC_TRY_BEGIN;
-    reinterpret_cast<RectF*>(rectf)->Set(x_, y_, width_, height_);
-    LWIG_FUNC_TRY_END_RETURN;
-}
 LNResultCode LN_API LNRectF_GetLeft(    const LNRectF* rectf, float* outReturn)
 {
     LWIG_FUNC_TRY_BEGIN;

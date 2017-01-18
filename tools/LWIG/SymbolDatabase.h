@@ -25,11 +25,13 @@ class TypeInfo;
 class DocumentInfo;
 class ParameterDocumentInfo;
 class MetadataInfo;
+class MethodInfo;
 class PropertyInfo;
 using TypeInfoPtr = std::shared_ptr<TypeInfo>;
 using DocumentInfoPtr = std::shared_ptr<DocumentInfo>;
 using ParameterDocumentInfoPtr = std::shared_ptr<ParameterDocumentInfo>;
 using MetadataInfoPtr = std::shared_ptr<MetadataInfo>;
+using MethodInfoPtr = std::shared_ptr<MethodInfo>;
 using PropertyInfoPtr = std::shared_ptr<PropertyInfo>;
 
 class ParameterDocumentInfo
@@ -107,15 +109,19 @@ public:
 	PropertyInfoPtr	ownerProperty;
 	List<ParameterInfoPtr>	parameters;
 
+	String					overloadSuffix;
+	MethodInfoPtr			overloadParent;
+	List<MethodInfoPtr>		overloadChildren;
 	// 
 	List<ParameterInfoPtr>	capiParameters;
 
 	String	returnTypeRawName;
 
+	bool IsOverloadChild() const { return overloadParent != nullptr; }
+
 	void ExpandCAPIParameters();
 	String GetCAPIFuncName();
 };
-using MethodInfoPtr = std::shared_ptr<MethodInfo>;
 
 
 class PropertyInfo
@@ -164,6 +170,7 @@ public:
 	bool IsValueType() const { return isStruct || isPrimitive; }
 
 	void MakeProperties();
+	void LinkOverload();
 };
 
 class PrimitiveTypes

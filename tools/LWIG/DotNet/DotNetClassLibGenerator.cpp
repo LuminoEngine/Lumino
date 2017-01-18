@@ -23,7 +23,6 @@ void CSStructsGenerator::Generate()
 		structText.AppendLines(DotNetCommon::MakeXmlDocument(structInfo->document));
 		structText.Append("[StructLayout(LayoutKind.Sequential)]").NewLine();
 		structText.Append("public struct {0}", structInfo->name).NewLine();
-
 		structText.Append("{").NewLine();
 		structText.IncreaseIndent();
 
@@ -51,7 +50,10 @@ void CSStructsGenerator::Generate()
 			structText.AppendLines(DotNetCommon::MakeXmlDocument(methodInfo->document));
 
 			// method header
-			structText.Append("public {0} {1}({2})", DotNetCommon::MakeTypeName(methodInfo->returnType), methodInfo->name, params.ToString()).NewLine();
+			if (methodInfo->isConstructor)
+				structText.Append("public {0}({1})", methodInfo->name, params.ToString()).NewLine();
+			else
+				structText.Append("public {0} {1}({2})", DotNetCommon::MakeTypeName(methodInfo->returnType), methodInfo->name, params.ToString()).NewLine();
 
 			// method body
 			structText.AppendLines(MakeMethodBody(methodInfo, false)).NewLine();
