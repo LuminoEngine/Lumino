@@ -50,14 +50,9 @@ include_directories(
 )
 
 
-#set(LN_TEST_LIBS Lumino_static)
-#link_libraries(${LN_TEST_LIBS})
-
-
-#add_definitions(-DGTEST_HAS_TR1_TUPLE=0)
 add_executable(LuminoEngine_Test ${LN_TEST_SOURCES})
-target_link_libraries(LuminoEngine_Test Lumino_Static)
-add_dependencies(LuminoEngine_Test Lumino_Static)
+target_link_libraries(LuminoEngine_Test LuminoEngine)
+add_dependencies(LuminoEngine_Test LuminoEngine)
 ln_add_pch(LuminoEngine_Test "Test.PCH.h" "UnitTest/Test.PCH.cpp")
 
 #===============================================================================
@@ -66,6 +61,6 @@ set(LN_SANDBOX_SOURCES
 )
 
 add_executable(LuminoSandbox ${LN_SANDBOX_SOURCES})
-target_link_libraries(LuminoSandbox LuminoFoundation Lumino_Static)
-add_dependencies(LuminoSandbox Lumino_Static)
+target_link_libraries(LuminoSandbox LuminoFoundation LuminoEngine)
+add_dependencies(LuminoSandbox LuminoEngine)
 

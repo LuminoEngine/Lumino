@@ -44,6 +44,13 @@ void WrapperIFGenerator::Generate(SymbolDatabase* database)
 	{
 		buffer.AppendLines(MakeMethods(classInfo));
 
+		static const String SetBindingTypeInfo =
+			"LN_API void LN%ClassName%_SetBindingTypeInfo(void* data)\n"
+			"{\n"
+			"    tr::TypeInfo::GetTypeInfo<%ClassName%>()->SetBindingTypeInfo(data);\n"
+			"}\n";
+		buffer.AppendLines(SetBindingTypeInfo.Replace("%ClassName%", classInfo->name));
+
 		wrapper.AppendLines(wrapperIFClassTemplate.Replace("%ClassName%", classInfo->name));
 	}
 

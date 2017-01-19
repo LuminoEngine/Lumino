@@ -217,6 +217,8 @@ namespace Test
         {
             Engine.Initialize();
 
+            var s1 = new Sound(@"D:\tmp\light_song_instrumental_0.mp3");
+            s1.Play();
             //GameAudio.PlayBGM("D:/tmp/GrandSky.mp3");
 
             //var tex1 = new Texture2D(TestDataFolder + "img1_BYTE_R8G8B8A8_20x20.png");
@@ -231,7 +233,7 @@ namespace Test
             Engine.Terminate();
 
 #if false
-            var s1 = new Sound(@"D:\tmp\ZIGG-ZrAGG.mp3");
+            var s1 = new Sound(@"D:\tmp\light_song_instrumental_0.mp3");
             s1.Pitch = 105;
             Console.WriteLine(s1.Pitch);
             Console.WriteLine(s1.Volume);

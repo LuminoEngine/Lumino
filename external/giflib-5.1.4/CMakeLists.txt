@@ -16,8 +16,7 @@ set(LN_giflib_Sources
 )
 
 add_library(${PROJECT_NAME} STATIC ${LN_giflib_Sources})
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}${LN_LIB_POSTFIX}")
-set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
 
 if (MSVC)
 	add_definitions("/wd4996")		# pragma warning disable

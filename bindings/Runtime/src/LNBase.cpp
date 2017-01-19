@@ -79,17 +79,17 @@ LN_API LNUserData LNObject_GetBindingTypeData(LNHandle hadnleObject)
 //	return LFManager::GetObjectEntry(hadnleObject);
 //}
 
-////------------------------------------------------------------------------------
-//LN_API void LNObject_SetUserData(LNHandle hadnleObject, LNUserData data)
-//{
-//	LFManager::GetObjectEntry(hadnleObject)->UserData = data;
-//}
-//
-////------------------------------------------------------------------------------
-//LN_API LNUserData LNObject_GetUserData(LNHandle hadnleObject)
-//{
-//	return LFManager::GetObjectEntry(hadnleObject)->UserData;
-//}
+//------------------------------------------------------------------------------
+LN_API void LNObject_SetUserData(LNHandle hadnleObject, LNUserData data)
+{
+	LFManager::GetObjectEntry(hadnleObject)->UserData = data;
+}
+
+//------------------------------------------------------------------------------
+LN_API LNUserData LNObject_GetUserData(LNHandle hadnleObject)
+{
+	return LFManager::GetObjectEntry(hadnleObject)->UserData;
+}
 
 
 //==============================================================================

@@ -120,6 +120,11 @@ namespace Lumino
         // init ～ terminate
         public static bool SystemInitialized = false;
 
+        static InternalManager()
+        {
+            Initialize();
+        }
+
         // 初期化
         public static void Initialize()
         {

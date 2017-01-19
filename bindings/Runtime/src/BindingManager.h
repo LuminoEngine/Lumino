@@ -3,8 +3,7 @@
 #include "../../../src/EngineManager.h"	// TODO
 #include <Lumino/Reflection/ReflectionObject.h>
 #include <Lumino/Engine.h>
-#include <Lumino/Binding/Common.h>
-//#include "../include/LNCommon.h"
+#include "../include/Common.h"
 #include "LuminoC.generated.h"
 
 /// Handle の管理リストの要素
