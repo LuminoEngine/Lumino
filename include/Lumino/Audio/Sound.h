@@ -38,37 +38,39 @@ public:
 		@brief		この音声の音量を設定します。
 		@param[in]	volume	: 音量 (0.0～1.0。初期値は 1.0)
 	*/
-	LN_METHOD()
+	LN_METHOD(Property)
 	void SetVolume(float volume);
 
 	/**
 		@brief		この音声の音量を取得します。
 	*/
-	LN_METHOD()
+	LN_METHOD(Property)
 	float GetVolume() const;
 
 	/**
 		@brief		この音声のピッチ (音高) を設定します。
 		@param[in]	volume	: ピッチ (0.5～2.0。初期値は 1.0)
 	*/
-	LN_METHOD()
+	LN_METHOD(Property)
 	void SetPitch(float pitch);
 
 	/**
 		@brief		この音声のピッチ (音高) を取得します。
 	*/
-	LN_METHOD()
+	LN_METHOD(Property)
 	float GetPitch() const;
 
 	/**
 		@brief		ループ再生の有無を設定します。
 		@param[in]	enabled		: ループ再生するか
 	*/
+	LN_METHOD(Property)
 	void SetLoopEnabled(bool enabled);
 
 	/**
 		@brief		ループ再生が有効かを確認します。
 	*/
+	LN_METHOD(Property)
 	bool IsLoopEnabled() const;
 
 	/**
@@ -77,6 +79,7 @@ public:
 		@param[in]	length		: ループ範囲のサンプル数
 		@details	MIDI の場合、ループ範囲はミュージックタイム単位 (四分音符ひとつ分を 768 で表す) で指定します。 
 	*/
+	LN_METHOD()
 	void SetLoopRange(uint32_t begin, uint32_t length);
 
 	/**

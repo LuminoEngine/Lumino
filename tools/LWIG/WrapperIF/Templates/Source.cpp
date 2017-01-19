@@ -1,3 +1,8 @@
 #include "Internal.h"
-#include "WrapperIF.h"
+#include "WrapperIF.generated.h"
+
+extern "C" {
+
 %Contents%
+
+} // extern "C"

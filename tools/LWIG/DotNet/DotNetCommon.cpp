@@ -8,8 +8,17 @@ void DotNetCommon::Initialize()
 	primitiveTypesMap[PredefinedTypes::voidType] = "void";
 	primitiveTypesMap[PredefinedTypes::boolType] = "bool";
 	primitiveTypesMap[PredefinedTypes::intType] = "int";
+	primitiveTypesMap[PredefinedTypes::uint32Type] = "int";
 	primitiveTypesMap[PredefinedTypes::floatType] = "float";
 	primitiveTypesMap[PredefinedTypes::stringType] = "string";
+}
+
+String DotNetCommon::MakePInvokeTypeName(TypeInfoPtr typeInfo)
+{
+	if (typeInfo->IsClass())
+		return "IntPtr";
+
+	return MakeTypeName(typeInfo);
 }
 
 String DotNetCommon::MakeTypeName(TypeInfoPtr typeInfo)

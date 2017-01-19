@@ -567,11 +567,12 @@ set(LN_DLL_SOURCES
 	include/Lumino/Binding/Common.h
 	src/DllMain.cpp
 	src/Binding/Internal.h
+	src/Binding/LNBase.cpp
 	src/Binding/BindingManager.cpp
 	src/Binding/BindingManager.h
-	src/Binding/LuminoC.h
-	src/Binding/WrapperIF.cpp
-	src/Binding/WrapperIF.h
+	src/Binding/LuminoC.generated.h
+	src/Binding/WrapperIF.generated.cpp
+	src/Binding/WrapperIF.generated.h
 )
 
 #--------------------------------------
@@ -1016,6 +1017,8 @@ if (LN_BUILD_C_API)
 	endif()
 endif()
 
-#add_subdirectory(tools/LNSL)
-add_subdirectory(tools/LWIG)
+if (NOT LN_USE_UNICODE_CHAR_SET)
+	#add_subdirectory(tools/LNSL)
+	add_subdirectory(tools/LWIG)
+endif()
 

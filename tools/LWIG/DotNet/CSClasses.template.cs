@@ -10,7 +10,7 @@ namespace Lumino
 
     internal class TypeInfo
     {
-        public delegate RefObject ReferenceObjectFactory(IntPtr handle);
+        public delegate Object ReferenceObjectFactory(IntPtr handle);
 
         public ReferenceObjectFactory Factory;
 

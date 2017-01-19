@@ -8,7 +8,7 @@ static const String MethodBodyTemplate =
 	_T("{\n")
 	_T("    %InitStmt%\n")
 	_T("    var result = API.%APIFuncName%(%CallArgList%);\n")
-	_T("    if (result != ResultCode.Ok) throw LuminoException.MakeExceptionFromLastError(result);\n")
+	_T("    if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);\n")
 	_T("    %ReturnStmt%\n")
 	_T("}\n");
 
@@ -27,14 +27,36 @@ void CSStructsGenerator::Generate()
 		for (auto& fieldInfo : structInfo->declaredFields)
 		{
 			structText.AppendLines(DotNetCommon::MakeXmlDocument(fieldInfo->document));
-			structText.Append("public {0} {1};", DotNetCommon::MakeTypeName(fieldInfo->type), fieldInfo->name).NewLine(2);
+			structText.Append("public {0} {1};", DotNetCommon::MakeTypeName(fieldInfo->type), fieldInfo->name.ToTitleCase()).NewLine(2);
+		}
+
+		// 各要素指定のコンストラクタを作る
+		{
+			// 仮引数リスト → (float x, float y) 等
+			OutputBuffer params;
+			for (auto& fieldInfo : structInfo->declaredFields)
+				params.AppendCommad("{0} {1}", DotNetCommon::MakeTypeName(fieldInfo->type), fieldInfo->name);
+
+			// フィールド格納 代入式 → X = x; Y = y; 等
+			OutputBuffer body;
+			for (auto& fieldInfo : structInfo->declaredFields)
+				body.Append("{0} = {1};", fieldInfo->name.ToTitleCase(), fieldInfo->name).NewLine();
+
+			// メソッド定義
+			structText.Append("public {0}({1})", structInfo->name, params.ToString()).NewLine();
+			structText.Append("{").NewLine();
+			structText.IncreaseIndent();
+			structText.AppendLines(body.ToString());
+			structText.DecreaseIndent();
+			structText.Append("}").NewLine(2);
 		}
 
 		// methods
 		for (auto& methodInfo : structInfo->declaredMethods)
 		{
-			// プロパティの場合はスキップ
-			if (methodInfo->ownerProperty != nullptr) continue;
+			if (methodInfo->ownerProperty != nullptr) continue;								// プロパティの場合はスキップ
+			if (methodInfo->isConstructor && methodInfo->parameters.IsEmpty()) continue;	// C# は構造体にデフォルトコンストラクタは定義できない
+			if (CheckAllMemberSetConstructor(structInfo, methodInfo)) continue;				// 単に全メンバに set するだけのコンストラクタは別途定義される
 
 			// params
 			OutputBuffer params;
@@ -72,7 +94,7 @@ void CSStructsGenerator::Generate()
 			if (propInfo->getter != nullptr)
 			{
 				structText.Append("get").NewLine();
-				structText.AppendLines(MakeMethodBody(propInfo->getter, true));
+				structText.AppendLines(MakeMethodBody(propInfo->getter, false));
 			}
 			if (propInfo->setter != nullptr)
 			{
@@ -92,11 +114,11 @@ void CSStructsGenerator::Generate()
 	{
 		String src = FileSystem::ReadAllText(PathName(g_templateDir, "DotNet/CSStructs.template.cs"));
 		src = src.Replace("%Structs%", structText.ToString());
-		FileSystem::WriteAllText(LUMINO_ROOT_DIR"/CSStructs.generated.cs", src);
+		FileSystem::WriteAllText(PathName(g_csOutputDir, "CSStructs.generated.cs"), src);
 	}
 }
 
-String CSStructsGenerator::MakeMethodBody(MethodInfoPtr methodInfo, bool isProperty)
+String CSStructsGenerator::MakeMethodBody(MethodInfoPtr methodInfo, bool isSetProperty)
 {
 	OutputBuffer methodBody;
 
@@ -116,12 +138,13 @@ String CSStructsGenerator::MakeMethodBody(MethodInfoPtr methodInfo, bool isPrope
 		}
 
 		// call args
-		if (paramInfo->isThis)
-			callArgs.AppendCommad("ref this");
-		else if (paramInfo->isOut || paramInfo->isReturn)
-			callArgs.AppendCommad("out " + paramInfo->name);
-		else
-			callArgs.AppendCommad((isProperty) ? "value" : paramInfo->name);
+		String modifier = "";
+		if (paramInfo->isThis || paramInfo->type->isStruct) modifier = "ref ";
+		if (paramInfo->isOut || paramInfo->isReturn) modifier = "out ";
+		String name = paramInfo->name;
+		if (isSetProperty) name = "value";
+		if (paramInfo->isThis) name = "this";
+		callArgs.AppendCommad(modifier + name);
 
 		// return stmt
 		if (paramInfo->isReturn)
@@ -136,4 +159,20 @@ String CSStructsGenerator::MakeMethodBody(MethodInfoPtr methodInfo, bool isPrope
 		.Replace("%ReturnStmt%", returnStmt));
 
 	return methodBody.ToString();
+}
+
+bool CSStructsGenerator::CheckAllMemberSetConstructor(TypeInfoPtr structInfo, MethodInfoPtr methodInfo)
+{
+	if (!methodInfo->isConstructor) return false;
+
+	int count = methodInfo->parameters.GetCount();
+	if (count != structInfo->declaredFields.GetCount()) return false;
+
+	for (int i = 0; i < count; i++)
+	{
+		if (methodInfo->parameters[i]->type != structInfo->declaredFields[i]->type)
+			return false;
+	}
+
+	return true;
 }

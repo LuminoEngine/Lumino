@@ -5,6 +5,7 @@
 TypeInfoPtr	PredefinedTypes::voidType;
 TypeInfoPtr	PredefinedTypes::boolType;
 TypeInfoPtr	PredefinedTypes::intType;
+TypeInfoPtr	PredefinedTypes::uint32Type;
 TypeInfoPtr	PredefinedTypes::floatType;
 TypeInfoPtr	PredefinedTypes::stringType;
 TypeInfoPtr	PredefinedTypes::objectType;
@@ -84,7 +85,7 @@ void MethodInfo::ExpandCAPIParameters()
 		else
 		{
 			auto info = std::make_shared<ParameterInfo>();
-			info->name = String::Format("out{0}", owner->name);
+			info->name = String::Format(_T("out{0}"), owner->name);
 			info->type = g_database.FindTypeInfo(owner->name);
 			info->isReturn = true;
 			capiParameters.Add(info);
@@ -94,7 +95,7 @@ void MethodInfo::ExpandCAPIParameters()
 
 String MethodInfo::GetCAPIFuncName()
 {
-	String n = String::Format("LN{0}_{1}", owner->name, name);
+	String n = String::Format(_T("LN{0}_{1}"), owner->name, name);
 	if (IsOverloadChild())
 		n += overloadSuffix;
 	return n;
@@ -104,25 +105,37 @@ String MethodInfo::GetCAPIFuncName()
 //==============================================================================
 // TypeInfo
 //==============================================================================
+void TypeInfo::Link()
+{
+	MakeProperties();
+	LinkOverload();
+
+	// find base class
+	if (!baseClassRawName.IsEmpty())
+	{
+		baseClass = g_database.FindTypeInfo(baseClassRawName);
+	}
+}
+
 void TypeInfo::MakeProperties()
 {
 	for (auto& methodInfo : declaredMethods)
 	{
-		if (methodInfo->metadata->HasKey("Property"))
+		if (methodInfo->metadata->HasKey(_T("Property")))
 		{
 			String name;
 			bool isGetter = false;
-			if (methodInfo->name.IndexOf("Get") == 0)
+			if (methodInfo->name.IndexOf(_T("Get")) == 0)
 			{
 				name = methodInfo->name.Mid(3);
 				isGetter = true;
 			}
-			if (methodInfo->name.IndexOf("Is") == 0)
+			if (methodInfo->name.IndexOf(_T("Is")) == 0)
 			{
 				name = methodInfo->name.Mid(3);
 				isGetter = true;
 			}
-			if (methodInfo->name.IndexOf("Set") == 0)
+			if (methodInfo->name.IndexOf(_T("Set")) == 0)
 			{
 				name = methodInfo->name.Mid(3);
 				isGetter = false;
@@ -201,8 +214,8 @@ void PropertyInfo::MakeDocument()
 	}
 	if (setter != nullptr)
 	{
-		if (!document->summary.IsEmpty()) document->summary += "\n";
-		if (!document->details.IsEmpty()) document->details += "\n\n";
+		if (!document->summary.IsEmpty()) document->summary += _T("\n");
+		if (!document->details.IsEmpty()) document->details += _T("\n\n");
 
 		document->summary += setter->document->summary;
 		document->details += setter->document->details;
@@ -235,8 +248,7 @@ void SymbolDatabase::Link()
 			methodInfo->ExpandCAPIParameters();
 		}
 
-		structInfo->MakeProperties();
-		structInfo->LinkOverload();
+		structInfo->Link();
 	}
 
 	// classes
@@ -254,8 +266,7 @@ void SymbolDatabase::Link()
 			methodInfo->ExpandCAPIParameters();
 		}
 
-		classInfo->MakeProperties();
-		classInfo->LinkOverload();
+		classInfo->Link();
 	}
 
 	// enums
@@ -287,27 +298,31 @@ tr::Enumerator<MethodInfoPtr> SymbolDatabase::GetAllMethods()
 
 void SymbolDatabase::InitializePredefineds()
 {
-	predefineds.Add(std::make_shared<TypeInfo>("void"));
+	predefineds.Add(std::make_shared<TypeInfo>(_T("void")));
 	predefineds.GetLast()->isVoid = true;
 	PredefinedTypes::voidType = predefineds.GetLast();
 
-	predefineds.Add(std::make_shared<TypeInfo>("bool"));
+	predefineds.Add(std::make_shared<TypeInfo>(_T("bool")));
 	predefineds.GetLast()->isPrimitive = true;
 	PredefinedTypes::boolType = predefineds.GetLast();
 
-	predefineds.Add(std::make_shared<TypeInfo>("int"));
+	predefineds.Add(std::make_shared<TypeInfo>(_T("int")));
 	predefineds.GetLast()->isPrimitive = true;
 	PredefinedTypes::intType = predefineds.GetLast();
 
-	predefineds.Add(std::make_shared<TypeInfo>("float"));
+	predefineds.Add(std::make_shared<TypeInfo>(_T("uint32_t")));
+	predefineds.GetLast()->isPrimitive = true;
+	PredefinedTypes::uint32Type = predefineds.GetLast();
+
+	predefineds.Add(std::make_shared<TypeInfo>(_T("float")));
 	predefineds.GetLast()->isPrimitive = true;
 	PredefinedTypes::floatType = predefineds.GetLast();
 
-	predefineds.Add(std::make_shared<TypeInfo>("String"));
+	predefineds.Add(std::make_shared<TypeInfo>(_T("String")));
 	predefineds.GetLast()->isPrimitive = true;
 	PredefinedTypes::stringType = predefineds.GetLast();
 
-	predefineds.Add(std::make_shared<TypeInfo>("Object"));
+	predefineds.Add(std::make_shared<TypeInfo>(_T("Object")));
 	PredefinedTypes::objectType = predefineds.GetLast();
 }
 
@@ -324,7 +339,7 @@ TypeInfoPtr SymbolDatabase::FindTypeInfo(StringRef typeName)
 	type = classes.Find([typeName](TypeInfoPtr type) { return type->name == typeName; });
 	if (type != nullptr) return *type;
 
-	if (typeName == "StringRef") return PredefinedTypes::stringType;
+	if (typeName == _T("StringRef")) return PredefinedTypes::stringType;
 
 	LN_UNREACHABLE();
 	return nullptr;

@@ -10,7 +10,7 @@ detail::EngineSettings		LFManager::ConfigData;
 EngineManager*				LFManager::Engine = NULL;
 bool						LFManager::IsSystemInitialized = false;
 Exception*					LFManager::LastException = NULL;
-ResultCode					LFManager::LastErrorCode = ResultCode::Ok;
+ResultCode					LFManager::LastErrorCode = ResultCode::OK;
 EncodingConverter*			LFManager::TCharToUTF8Converter = NULL;
 
 LFManager::ObjectEntryList	LFManager::m_objectEntryList;

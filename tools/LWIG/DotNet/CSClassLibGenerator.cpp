@@ -1,4 +1,4 @@
-
+﻿
 #include "../Global.h"
 #include "../SymbolDatabase.h"
 #include "DotNetCommon.h"
@@ -8,7 +8,7 @@ static const String MethodBodyTemplate =
 	_T("{\n")
 	_T("    %InitStmt%\n")
 	_T("    var result = API.%APIFuncName%(%CallArgList%);\n")
-	_T("    if (result != ResultCode.Ok) throw LuminoException.MakeExceptionFromLastError(result);\n")
+	_T("    if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);\n")
 	_T("    %ReturnStmt%\n")
 	_T("}\n");
 
@@ -19,7 +19,7 @@ void CSClassLibGenerator::Generate()
 	OutputBuffer typeInfoPInvolesText(2);
 	for (auto& classInfo : g_database.classes)
 	{
-		// TypeInfo
+		// ランタイムへの TypeInfo 登録コード
 		if (!classInfo->IsStatic())
 			MakeTypeInfoRegisters(classInfo, &typeInfoRegistersText, &typeInfoPInvolesText);
 
@@ -29,33 +29,9 @@ void CSClassLibGenerator::Generate()
 		// class header
 		String modifier = (classInfo->IsStatic()) ? "static" : "";
 		classesText.Append("public {0} class {1}", modifier, classInfo->name).NewLine();
+		if (classInfo->baseClass != nullptr) classesText.Append("    : " + classInfo->baseClass->name).NewLine();
 		classesText.Append("{").NewLine();
 		classesText.IncreaseIndent();
-
-		// methods
-		for (auto& methodInfo : classInfo->declaredMethods)
-		{
-			// �v���p�e�B�̏ꍇ�̓X�L�b�v
-			if (methodInfo->ownerProperty != nullptr) continue;
-
-			// params
-			OutputBuffer params;
-			for (auto& paramInfo : methodInfo->parameters)
-			{
-				params.AppendCommad("{0} {1}", DotNetCommon::MakeParamTypeName(paramInfo), paramInfo->name);
-			}
-
-			// xml document
-			classesText.AppendLines(DotNetCommon::MakeXmlDocument(methodInfo->document));
-
-			// method header
-			String modifier = (methodInfo->isStatic) ? "static" : "";
-			String returnType = (!methodInfo->isConstructor) ? DotNetCommon::MakeTypeName(methodInfo->returnType) : "";
-			classesText.Append("public {0} {1} {2}({3})", modifier, returnType, methodInfo->name, params.ToString()).NewLine();
-
-			// method body
-			classesText.AppendLines(MakeMethodBody(methodInfo, false)).NewLine();
-		}
 
 		// property
 		for (auto& propInfo : classInfo->declaredProperties)
@@ -85,6 +61,41 @@ void CSClassLibGenerator::Generate()
 			classesText.Append("}").NewLine(2);
 		}
 
+		// methods
+		for (auto& methodInfo : classInfo->declaredMethods)
+		{
+			// プロパティの場合はスキップ
+			if (methodInfo->ownerProperty != nullptr) continue;
+
+			// params
+			OutputBuffer params;
+			for (auto& paramInfo : methodInfo->parameters)
+			{
+				params.AppendCommad("{0} {1}", DotNetCommon::MakeParamTypeName(paramInfo), paramInfo->name);
+			}
+
+			// xml document
+			classesText.AppendLines(DotNetCommon::MakeXmlDocument(methodInfo->document));
+
+			// method header
+			if (methodInfo->isConstructor)
+			{
+				classesText.Append("public {0}({1}) : base(_LNInternal.InternalBlock)", classInfo->name, params.ToString()).NewLine();
+			}
+			else
+			{
+				String modifier = (methodInfo->isStatic) ? "static" : "";
+				classesText.Append("public {0} {1} {2}({3})", modifier, DotNetCommon::MakeTypeName(methodInfo->returnType), methodInfo->name, params.ToString()).NewLine();
+			}
+
+			// method body
+			classesText.AppendLines(MakeMethodBody(methodInfo, false)).NewLine();
+		}
+
+		// internal constructor
+		if (!classInfo->IsStatic())
+			classesText.Append("internal {0}(_LNInternal i) : base(i) {{}}", classInfo->name).NewLine(2);
+
 		classesText.DecreaseIndent();
 		classesText.Append("}").NewLine();
 	}
@@ -95,7 +106,7 @@ void CSClassLibGenerator::Generate()
 		src = src.Replace("%Classes%", classesText.ToString());
 		src = src.Replace("%TypeInfoRegisters%", typeInfoRegistersText.ToString());
 		src = src.Replace("%TypeInfoPInvoke%", typeInfoPInvolesText.ToString());
-		FileSystem::WriteAllText(LUMINO_ROOT_DIR"/CSClasses.generated.cs", src);
+		FileSystem::WriteAllText(PathName(g_csOutputDir, "CSClasses.generated.cs"), src);
 	}
 }
 
@@ -113,14 +124,14 @@ String CSClassLibGenerator::MakeMethodBody(MethodInfoPtr methodInfo, bool isProp
 		if (paramInfo->isOut || paramInfo->isReturn)
 		{
 			if (paramInfo->type->isStruct)
-				initStmt.Append("{0} {1} = new {0}();", DotNetCommon::MakeTypeName(paramInfo->type), paramInfo->name);
+				initStmt.Append("{0} {1} = new {0}();", DotNetCommon::MakePInvokeTypeName(paramInfo->type), paramInfo->name);
 			else
-				initStmt.Append("{0} {1};", DotNetCommon::MakeTypeName(paramInfo->type), paramInfo->name);
+				initStmt.Append("{0} {1};", DotNetCommon::MakePInvokeTypeName(paramInfo->type), paramInfo->name);
 		}
 
 		// call args
 		if (paramInfo->isThis)
-			callArgs.AppendCommad("ref this");
+			callArgs.AppendCommad("Handle");
 		else if (paramInfo->isOut || paramInfo->isReturn)
 			callArgs.AppendCommad("out " + paramInfo->name);
 		else
@@ -128,7 +139,12 @@ String CSClassLibGenerator::MakeMethodBody(MethodInfoPtr methodInfo, bool isProp
 
 		// return stmt
 		if (paramInfo->isReturn)
-			returnStmt = String::Format("return {0};", paramInfo->name);
+		{
+			if (methodInfo->isConstructor)	// クラスコンストラクタの場合は Manager 登録を行う
+				returnStmt = String::Format("InternalManager.RegisterWrapperObject(this, {0});", paramInfo->name);
+			else
+				returnStmt = String::Format("return {0};", paramInfo->name);
+		}
 	}
 
 	// method body
@@ -143,7 +159,7 @@ String CSClassLibGenerator::MakeMethodBody(MethodInfoPtr methodInfo, bool isProp
 
 void CSClassLibGenerator::MakeTypeInfoRegisters(TypeInfoPtr classInfo, OutputBuffer* typeInfoRegistersText, OutputBuffer* typeInfoPInvolesText)
 {
-	// �t�@�N�g��
+	// ファクトリ
 	static const String template1 =
 		"var _%Class% = new TypeInfo(){ Factory = (handle) =>\n"
 		"{\n"

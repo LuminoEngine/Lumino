@@ -4,7 +4,7 @@
 #include "WrapperIFGenerator.h"
 
 const StringA funcTemplate =
-	"LNResultCode LN_API LN%ClassName%_%FuncName%(%ParamList%)\n"
+	"LNResultCode LN_API %FuncName%(%ParamList%)\n"
 	"{\n"
 	"    LWIG_FUNC_TRY_BEGIN;\n"
 	"    %FuncBody%\n"
@@ -69,22 +69,18 @@ void WrapperIFGenerator::Generate(SymbolDatabase* database)
 	{
 		String src = FileSystem::ReadAllText(PathName(g_templateDir, "WrapperIF/Templates/Source.cpp"));
 		src = src.Replace("%Contents%", buffer.ToString());
-		FileSystem::WriteAllText(LUMINO_ROOT_DIR"/src/Binding/WrapperIF.cpp", src);
+		FileSystem::WriteAllText(LUMINO_ROOT_DIR"/src/Binding/WrapperIF.generated.cpp", src);
 	}
-
-	//FileSystem::WriteAllText(LUMINO_ROOT_DIR"/src/Binding/WrapperIF.h", );
-	//FileSystem::WriteAllText(LUMINO_ROOT_DIR"/src/Binding/LuminoC.h", enumsText.ToString());
-
 	{
 		String src = FileSystem::ReadAllText(PathName(g_templateDir, "WrapperIF/Templates/WrapperIF.h"));
 		src = src.Replace("%WrapperClasses%", wrapper.ToString());
-		FileSystem::WriteAllText(LUMINO_ROOT_DIR"/src/Binding/WrapperIF.h", src);
+		FileSystem::WriteAllText(LUMINO_ROOT_DIR"/src/Binding/WrapperIF.generated.h", src);
 	}
 
 	{
 		String src = FileSystem::ReadAllText(PathName(g_templateDir, "WrapperIF/Templates/LuminoC.h"));
 		src = src.Replace("%Enums%", enumsText.ToString());
-		FileSystem::WriteAllText(LUMINO_ROOT_DIR"/src/Binding/LuminoC.h", src);
+		FileSystem::WriteAllText(LUMINO_ROOT_DIR"/src/Binding/LuminoC.generated.h", src);
 	}
 }
 
@@ -100,7 +96,7 @@ StringA WrapperIFGenerator::MakeMethods(TypeInfoPtr typeInfo)
 	for (auto& methodInfo : typeInfo->declaredMethods)
 	{
 		// make params
-		OutputBuffer params(1);
+		OutputBuffer params;
 		{
 			// ‘æ1ˆø”
 			{
@@ -157,7 +153,10 @@ StringA WrapperIFGenerator::MakeMethods(TypeInfoPtr typeInfo)
 				String castTo = typeInfo->name;
 				if (methodInfo->isConst) castTo = "const " + castTo;
 
-				body.Append("reinterpret_cast<{0}*>({1})->{2}({3});", castTo, MakeInstanceParamName(typeInfo), methodInfo->name, args.ToString());
+				if (methodInfo->isConstructor)
+					body.Append("new (reinterpret_cast<{0}*>({1})) {2}({3});", castTo, MakeInstanceParamName(typeInfo), methodInfo->name, args.ToString());
+				else
+					body.Append("reinterpret_cast<{0}*>({1})->{2}({3});", castTo, MakeInstanceParamName(typeInfo), methodInfo->name, args.ToString());
 			}
 			else
 			{
@@ -186,7 +185,7 @@ StringA WrapperIFGenerator::MakeMethods(TypeInfoPtr typeInfo)
 
 		buffer.AppendLines(funcTemplate
 			.Replace("%ClassName%", typeInfo->name)
-			.Replace("%FuncName%", methodInfo->name)
+			.Replace("%FuncName%", methodInfo->GetCAPIFuncName())
 			.Replace("%ParamList%", params.ToString())
 			.Replace("%FuncBody%", body.ToString()));
 	}

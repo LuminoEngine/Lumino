@@ -14,13 +14,13 @@ namespace Lumino
         /// <summary>
         /// 結果コード
         /// </summary>
-        public Result ResultCode { get; private set; }
+        public ResultCode ResultCode { get; private set; }
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name=""resultCode"">結果コード</param>
-        public LuminoException(Result resultCode)
+        public LuminoException(ResultCode resultCode)
         {
             ResultCode = resultCode;
         }
@@ -29,13 +29,13 @@ namespace Lumino
         /// コンストラクタ
         /// </summary>
         /// <param name=""resultCode"">結果コード</param>
-        public LuminoException(Result resultCode, string message)
+        public LuminoException(ResultCode resultCode, string message)
             : base(message)
         {
             ResultCode = resultCode;
         }
 
-        internal static Exception MakeExceptionFromLastError(Result result)
+        internal static Exception MakeExceptionFromLastError(ResultCode result)
         {
             IntPtr errStr;
             int errStrLen;
@@ -56,12 +56,12 @@ namespace Lumino
     /// <summary>
     /// 参照カウントを持つオブジェクトをラップする
     /// </summary>
-    public class RefObject : IDisposable
+    public class Object : IDisposable
     {
         internal IntPtr _handle;
 
-        internal RefObject() { }
-        internal RefObject(_LNInternal i) { }
+        internal Object() { }
+        internal Object(_LNInternal i) { }
 
         /// <summary>
         /// ハンドルの取得
@@ -71,7 +71,7 @@ namespace Lumino
         /// <summary>
         /// デストラクタ
         /// </summary>
-        ~RefObject() { Dispose(); }
+        ~Object() { Dispose(); }
 
         internal virtual void SetHandle(IntPtr handle)
         {
@@ -150,7 +150,7 @@ namespace Lumino
         }
 
         // ハンドルからラップオブジェクトを返す
-        public static T GetWrapperObject<T>(IntPtr handle) where T : RefObject
+        public static T GetWrapperObject<T>(IntPtr handle) where T : Object
         {
             int objectIndex = (int)LNObject_GetUserData(handle);
             if (objectIndex == 0) // 新しく登録する
@@ -160,7 +160,7 @@ namespace Lumino
         }
 
         // 新しいハンドルを登録し、ラップオブジェクトを生成する
-        public static T CreateWrapperObject<T>(IntPtr handle) where T : RefObject
+        public static T CreateWrapperObject<T>(IntPtr handle) where T : Object
         {
             if (handle == IntPtr.Zero) return null;
             var obj = TypeInfo.GetTypeInfoByHandle(handle).Factory(handle);
@@ -170,7 +170,7 @@ namespace Lumino
 
         // handle を refObj にセットし、refObj を管理リストに追加する
         //  (ReferenceObject のコンストラクタからも呼ばれる)
-        public static void RegisterWrapperObject(RefObject refObj, IntPtr handle)
+        public static void RegisterWrapperObject(Object refObj, IntPtr handle)
         {
             // 管理リストが一杯の時は拡張する
             if (_userDataListIndexStack.Count == 0)
@@ -197,7 +197,7 @@ namespace Lumino
 
         // RefObject の Dispose から呼ばれ、管理リストのインデックスを解放する
         //      (ユーザーデータを取得するため、LNObject_Release より前に呼ぶこと)
-        public static void UnregisterWrapperObject(RefObject refObj)
+        public static void UnregisterWrapperObject(Object refObj)
         {
             int index = (int)LNObject_GetUserData(refObj.Handle);
             _userDataList[index].RefObject = null;
@@ -220,35 +220,35 @@ namespace Lumino
         internal const CallingConvention DefaultCallingConvention = API.DefaultCallingConvention;
         
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNObjectList_GetCount(IntPtr listObject, out int outCount);
+        public extern static ResultCode LNObjectList_GetCount(IntPtr listObject, out int outCount);
         
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNObjectList_SetAt(IntPtr listObject, int index, IntPtr itemPtr);
+        public extern static ResultCode LNObjectList_SetAt(IntPtr listObject, int index, IntPtr itemPtr);
         
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNObjectList_GetAt(IntPtr listObject, int index, out IntPtr outItemPtr);
+        public extern static ResultCode LNObjectList_GetAt(IntPtr listObject, int index, out IntPtr outItemPtr);
         
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNObjectList_Add(IntPtr listObject, IntPtr itemPtr);
+        public extern static ResultCode LNObjectList_Add(IntPtr listObject, IntPtr itemPtr);
         
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNObjectList_Clear(IntPtr listObject);
+        public extern static ResultCode LNObjectList_Clear(IntPtr listObject);
         
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNObjectList_Insert(IntPtr listObject, int index, IntPtr itemPtr);
+        public extern static ResultCode LNObjectList_Insert(IntPtr listObject, int index, IntPtr itemPtr);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNObjectList_Remove(IntPtr listObject, IntPtr itemPtr, out bool outRemoved);
+        public extern static ResultCode LNObjectList_Remove(IntPtr listObject, IntPtr itemPtr, out bool outRemoved);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNObjectList_RemoveAt(IntPtr listObject, int index);
+        public extern static ResultCode LNObjectList_RemoveAt(IntPtr listObject, int index);
     }
 
     /// <summary>
     /// オブジェクトのコレクション
     /// </summary>
-    public class ObjectList<T> : RefObject, IEnumerable<T>
-        where T : RefObject
+    public class ObjectList<T> : Object, IEnumerable<T>
+        where T : Object
     {
         private List<T> _cacheList;
 
@@ -278,7 +278,7 @@ namespace Lumino
             {
                 int count;
                 var result = InternalAPI.LNObjectList_GetCount(_handle, out count);
-                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+                if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
                 return count;
             }
         }
@@ -294,7 +294,7 @@ namespace Lumino
             {
                 SyncItems();
                 var result = InternalAPI.LNObjectList_SetAt(_handle, index, value.Handle);
-                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+                if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
                 _cacheList[index] = value;
             }
         }
@@ -303,14 +303,14 @@ namespace Lumino
         {
             SyncItems();
             var result = InternalAPI.LNObjectList_Add(_handle, item.Handle);
-            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
             _cacheList.Add(item);
         }
 
         public void Clear()
         {
             var result = InternalAPI.LNObjectList_Clear(_handle);
-            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
             _cacheList.Clear();
         }
 
@@ -318,7 +318,7 @@ namespace Lumino
         {
             SyncItems();
             var result = InternalAPI.LNObjectList_Insert(_handle, index, item.Handle);
-            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
             _cacheList.Insert(index, item);
         }
 
@@ -327,7 +327,7 @@ namespace Lumino
             SyncItems();
             bool removed;
             var result = InternalAPI.LNObjectList_Remove(_handle, item.Handle, out removed);
-            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
             _cacheList.Remove(item);
             return removed;
         }
@@ -337,7 +337,7 @@ namespace Lumino
         //{
         //    SyncItems();
         //    var result = InternalAPI.LNObjectList_RemoveAll(_handle, item.Handle);
-        //    if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+        //    if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
         //    _cacheList.RemoveAll((i) => i == item);
         //}
 
@@ -345,7 +345,7 @@ namespace Lumino
         {
             SyncItems();
             var result = InternalAPI.LNObjectList_RemoveAt(_handle, index);
-            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
             _cacheList.RemoveAt(index);
         }
 
@@ -366,7 +366,7 @@ namespace Lumino
                 {
                     IntPtr item;
                     var result = InternalAPI.LNObjectList_GetAt(_handle, i, out item);
-                    if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+                    if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
 
                     if (_cacheList[i] == null || _cacheList[i].Handle != item)
                     {

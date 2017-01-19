@@ -1,13 +1,23 @@
 
 #pragma once
 
-#if defined(LN_BUILD_DLL) && defined(LN_MSVC)
+#if defined(LUMINO_BUILD_DLL) && defined(LN_MSVC)
 	#define LN_API	__declspec(dllexport)
 #else
 	#define LN_API
 #endif
 
-typedef char LNChar;
+#ifdef LN_UNICODE
+	typedef wchar_t		LNChar;
+	#define __T(x)      L ## x
+#else
+	typedef char		LNChar;
+	#define __T(x)      x
+#endif
+
+#define LN_OK	LN_RESULTCODE_OK
+
+typedef intptr_t LNUserData;
 
 /** 結果・エラーコード */
 typedef enum tagLNResultCode

@@ -1,5 +1,8 @@
 #include "Internal.h"
-#include "WrapperIF.h"
+#include "WrapperIF.generated.h"
+
+extern "C" {
+
 struct LNSize
 {
     float width;
@@ -12,31 +15,31 @@ struct LNRectF
     float width;
     float height;
 };
-LNResultCode LN_API LNRectF_RectF(    LNRectF* rectf, LNHandle* outrectf)
+LNResultCode LN_API LNRectF_RectF(LNRectF* rectf, LNHandle* outrectf)
 {
     LWIG_FUNC_TRY_BEGIN;
-    reinterpret_cast<RectF*>(rectf)->RectF();
+    new (reinterpret_cast<RectF*>(rectf)) RectF();
     LWIG_FUNC_TRY_END_RETURN;
 }
-LNResultCode LN_API LNRectF_RectF(    LNRectF* rectf, float x, float y, float width, float height, LNHandle* outrectf)
+LNResultCode LN_API LNRectF_RectFXYWH(LNRectF* rectf, float x, float y, float width, float height, LNHandle* outrectf)
 {
     LWIG_FUNC_TRY_BEGIN;
-    reinterpret_cast<RectF*>(rectf)->RectF(x, y, width, height);
+    new (reinterpret_cast<RectF*>(rectf)) RectF(x, y, width, height);
     LWIG_FUNC_TRY_END_RETURN;
 }
-LNResultCode LN_API LNRectF_GetLeft(    const LNRectF* rectf, float* outReturn)
+LNResultCode LN_API LNRectF_GetLeft(const LNRectF* rectf, float* outReturn)
 {
     LWIG_FUNC_TRY_BEGIN;
     *outReturn = reinterpret_cast<const RectF*>(rectf)->GetLeft();
     LWIG_FUNC_TRY_END_RETURN;
 }
-LNResultCode LN_API LNRectF_SetSize(    LNRectF* rectf, Size size)
+LNResultCode LN_API LNRectF_SetSize(LNRectF* rectf, Size size)
 {
     LWIG_FUNC_TRY_BEGIN;
     reinterpret_cast<RectF*>(rectf)->SetSize(size);
     LWIG_FUNC_TRY_END_RETURN;
 }
-LNResultCode LN_API LNRectF_GetSize(    const LNRectF* rectf, Size* outReturn)
+LNResultCode LN_API LNRectF_GetSize(const LNRectF* rectf, Size* outReturn)
 {
     LWIG_FUNC_TRY_BEGIN;
     *outReturn = reinterpret_cast<const RectF*>(rectf)->GetSize();
@@ -48,25 +51,25 @@ struct LNVector3
     float y;
     float z;
 };
-LNResultCode LN_API LNVector3_GetLength(    const LNVector3* vector3, float* outReturn)
+LNResultCode LN_API LNVector3_GetLength(const LNVector3* vector3, float* outReturn)
 {
     LWIG_FUNC_TRY_BEGIN;
     *outReturn = reinterpret_cast<const Vector3*>(vector3)->GetLength();
     LWIG_FUNC_TRY_END_RETURN;
 }
-LNResultCode LN_API LNVector3_GetLengthSquared(    const LNVector3* vector3, float* outReturn)
+LNResultCode LN_API LNVector3_GetLengthSquared(const LNVector3* vector3, float* outReturn)
 {
     LWIG_FUNC_TRY_BEGIN;
     *outReturn = reinterpret_cast<const Vector3*>(vector3)->GetLengthSquared();
     LWIG_FUNC_TRY_END_RETURN;
 }
-LNResultCode LN_API LNVector3_Normalize(    LNVector3* vector3)
+LNResultCode LN_API LNVector3_Normalize(LNVector3* vector3)
 {
     LWIG_FUNC_TRY_BEGIN;
     reinterpret_cast<Vector3*>(vector3)->Normalize();
     LWIG_FUNC_TRY_END_RETURN;
 }
-LNResultCode LN_API LNVector3_Clamp(    LNVector3* vector3, Vector3 minVec, Vector3 maxVec)
+LNResultCode LN_API LNVector3_Clamp(LNVector3* vector3, Vector3 minVec, Vector3 maxVec)
 {
     LWIG_FUNC_TRY_BEGIN;
     reinterpret_cast<Vector3*>(vector3)->Clamp(minVec, maxVec);
@@ -84,64 +87,84 @@ LNResultCode LN_API LNEngine_Terminate()
     Engine::Terminate();
     LWIG_FUNC_TRY_END_RETURN;
 }
-LNResultCode LN_API LNEngine_Update(    bool* outReturn)
+LNResultCode LN_API LNEngine_Update(bool* outReturn)
 {
     LWIG_FUNC_TRY_BEGIN;
     *outReturn = Engine::Update();
     LWIG_FUNC_TRY_END_RETURN;
 }
-LNResultCode LN_API LNSound_SetVolume(    LNHandle sound, float volume)
+LNResultCode LN_API LNSound_SetVolume(LNHandle sound, float volume)
 {
     LWIG_FUNC_TRY_BEGIN;
     LWIG_TO_OBJECT(Sound, sound)->SetVolume(volume);
     LWIG_FUNC_TRY_END_RETURN;
 }
-LNResultCode LN_API LNSound_GetVolume(    LNHandle sound, float* outReturn)
+LNResultCode LN_API LNSound_GetVolume(LNHandle sound, float* outReturn)
 {
     LWIG_FUNC_TRY_BEGIN;
     *outReturn = LWIG_TO_OBJECT(Sound, sound)->GetVolume();
     LWIG_FUNC_TRY_END_RETURN;
 }
-LNResultCode LN_API LNSound_SetPitch(    LNHandle sound, float pitch)
+LNResultCode LN_API LNSound_SetPitch(LNHandle sound, float pitch)
 {
     LWIG_FUNC_TRY_BEGIN;
     LWIG_TO_OBJECT(Sound, sound)->SetPitch(pitch);
     LWIG_FUNC_TRY_END_RETURN;
 }
-LNResultCode LN_API LNSound_GetPitch(    LNHandle sound, float* outReturn)
+LNResultCode LN_API LNSound_GetPitch(LNHandle sound, float* outReturn)
 {
     LWIG_FUNC_TRY_BEGIN;
     *outReturn = LWIG_TO_OBJECT(Sound, sound)->GetPitch();
     LWIG_FUNC_TRY_END_RETURN;
 }
-LNResultCode LN_API LNSound_Play(    LNHandle sound)
+LNResultCode LN_API LNSound_SetLoopEnabled(LNHandle sound, bool enabled)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    LWIG_TO_OBJECT(Sound, sound)->SetLoopEnabled(enabled);
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LNResultCode LN_API LNSound_IsLoopEnabled(LNHandle sound, bool* outReturn)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    *outReturn = LWIG_TO_OBJECT(Sound, sound)->IsLoopEnabled();
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LNResultCode LN_API LNSound_SetLoopRange(LNHandle sound, uint32_t begin, uint32_t length)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    LWIG_TO_OBJECT(Sound, sound)->SetLoopRange(begin, length);
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LNResultCode LN_API LNSound_Play(LNHandle sound)
 {
     LWIG_FUNC_TRY_BEGIN;
     LWIG_TO_OBJECT(Sound, sound)->Play();
     LWIG_FUNC_TRY_END_RETURN;
 }
-LNResultCode LN_API LNSound_Stop(    LNHandle sound)
+LNResultCode LN_API LNSound_Stop(LNHandle sound)
 {
     LWIG_FUNC_TRY_BEGIN;
     LWIG_TO_OBJECT(Sound, sound)->Stop();
     LWIG_FUNC_TRY_END_RETURN;
 }
-LNResultCode LN_API LNSound_Pause(    LNHandle sound)
+LNResultCode LN_API LNSound_Pause(LNHandle sound)
 {
     LWIG_FUNC_TRY_BEGIN;
     LWIG_TO_OBJECT(Sound, sound)->Pause();
     LWIG_FUNC_TRY_END_RETURN;
 }
-LNResultCode LN_API LNSound_Resume(    LNHandle sound)
+LNResultCode LN_API LNSound_Resume(LNHandle sound)
 {
     LWIG_FUNC_TRY_BEGIN;
     LWIG_TO_OBJECT(Sound, sound)->Resume();
     LWIG_FUNC_TRY_END_RETURN;
 }
-LNResultCode LN_API LNSound_Initialize(    const LNChar* filePath, LNHandle* outsound)
+LNResultCode LN_API LNSound_Initialize(const LNChar* filePath, LNHandle* outsound)
 {
     LWIG_FUNC_TRY_BEGIN;
     LWIG_CREATE_OBJECT(outsound, Sound, Initialize, filePath);
     LWIG_FUNC_TRY_END_RETURN;
 }
 
+
+} // extern "C"

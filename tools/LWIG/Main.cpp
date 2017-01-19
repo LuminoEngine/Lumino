@@ -9,6 +9,7 @@
 
 PathName		g_templateDir;
 SymbolDatabase	g_database;
+PathName		g_csOutputDir;
 
 int main()
 {
@@ -22,6 +23,7 @@ int main()
 	};
 
 	g_templateDir = LUMINO_ROOT_DIR"/tools/LWIG/";
+	g_csOutputDir = LUMINO_ROOT_DIR"/bindings/DotNet/LuminoDotNet/";
 
 	
 	HeaderParser parser(&g_database);

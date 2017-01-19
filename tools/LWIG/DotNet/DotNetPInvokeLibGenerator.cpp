@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Global.h"
 #include "../SymbolDatabase.h"
 #include "DotNetCommon.h"
@@ -33,9 +33,9 @@ void DotNetPInvokeLibGenerator::Generate()
 	OutputBuffer funcsText(2);
 	for (auto& methodInfo : g_database.GetAllMethods())
 	{
-		// DLLImportEŒ^–¼EŠÖ”–¼
+		// DLLImportãƒ»åž‹åãƒ»é–¢æ•°å
 		String declText = FuncDeclTempalte;
-		declText = declText.Replace("%FuncName%", methodInfo->name);
+		declText = declText.Replace("%FuncName%", methodInfo->GetCAPIFuncName());
 
 		// params
 		OutputBuffer params;
@@ -53,14 +53,14 @@ void DotNetPInvokeLibGenerator::Generate()
 		String src = FileSystem::ReadAllText(PathName(g_templateDir, "DotNet/DotNetPInvoke.template.cs"));
 		src = src.Replace("%APIList%", funcsText.ToString());
 		src = src.Replace("%EnumList%", enumsText.ToString());
-		FileSystem::WriteAllText(LUMINO_ROOT_DIR"/DotNetPInvoke.cs", src);
+		FileSystem::WriteAllText(PathName(g_csOutputDir, "DotNetPInvoke.generated.cs"), src);
 	}
 }
 
 String DotNetPInvokeLibGenerator::MakeParamTypeName(ParameterInfoPtr paramInfo)
 {
 	String m;
-	if (paramInfo->isOut) m += "out ";
+	if (paramInfo->isOut || paramInfo->isReturn) m += "out ";
 	else if (paramInfo->type->isStruct) m += "ref ";
 
 	auto itr = DotNetCommon::primitiveTypesMap.find(paramInfo->type);
@@ -68,5 +68,5 @@ String DotNetPInvokeLibGenerator::MakeParamTypeName(ParameterInfoPtr paramInfo)
 
 	if (paramInfo->type->isStruct) return m + paramInfo->type->name;
 
-	return m + "LNHandle";//typeInfo->name;
+	return m + "IntPtr";//typeInfo->name;
 }

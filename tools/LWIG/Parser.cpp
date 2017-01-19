@@ -169,11 +169,11 @@ HeaderParser::TokenItr HeaderParser::ParseMetadataDecl(TokenItr begin, TokenItr 
 
 	auto info = std::make_shared<MetadataInfo>();
 
-	String key, value;
+	flString key, value;
 	for (auto itr = argTokens.begin(); itr != argTokens.end();)
 	{
 		key = (*itr)->GetString();
-		value = String::GetEmpty();
+		value = flString::GetEmpty();
 		++itr;
 		if (itr != argTokens.end() && (*itr)->EqualChar('='))
 		{
@@ -182,7 +182,7 @@ HeaderParser::TokenItr HeaderParser::ParseMetadataDecl(TokenItr begin, TokenItr 
 			++itr;
 		}
 
-		info->AddValue(key, value);
+		info->AddValue(String(key), String(value));
 	}
 
 	m_lastMetadata = info;
@@ -196,7 +196,7 @@ void HeaderParser::ParseStructDecl(const Decl& decl)
 
 	auto info = std::make_shared<TypeInfo>();
 	info->document = MoveLastDocument();
-	info->name = (*name)->GetString();
+	info->name = String((*name)->GetString());
 	info->isStruct = true;
 	m_database->structs.Add(info);
 
@@ -216,8 +216,8 @@ void HeaderParser::ParseFieldDecl(const Decl& decl, TypeInfoPtr parent)
 
 	auto info = std::make_shared<FieldInfo>();
 	info->document = MoveLastDocument();
-	info->name = (*name)->GetString();
-	info->typeRawName = (*type)->GetString();
+	info->name = String((*name)->GetString());
+	info->typeRawName = String((*type)->GetString());
 	parent->declaredFields.Add(info);
 }
 
@@ -242,7 +242,7 @@ void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
 	info->owner = parent;
 	info->metadata = MoveLastMetadata();
 	info->document = MoveLastDocument();
-	info->name = (declTokens.GetLast())->GetString();	// ( の直前を関数名として取り出す
+	info->name = String((declTokens.GetLast())->GetString());	// ( の直前を関数名として取り出す
 	parent->declaredMethods.Add(info);
 
 	// struct 型で戻り値が無ければコンストラクタ
@@ -259,7 +259,8 @@ void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
 		auto begin = declTokens.begin();
 		auto end = declTokens.end() - 1;
 		int pointerLevel;
-		ParseParamType(begin, end, &info->returnTypeRawName, &pointerLevel);
+		bool hasConst;
+		ParseParamType(begin, end, &info->returnTypeRawName, &pointerLevel, &hasConst);
 
 		for (auto itr = begin; itr != end; ++itr)
 		{
@@ -271,7 +272,7 @@ void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
 	if (!info->isStatic)
 	{
 		// class 型で InitializeXXXX ならコンストラクタ
-		if (!parent->isStruct &&info->name.IndexOf("Initialize") == 0)
+		if (!parent->isStruct &&info->name.IndexOf(_T("Initialize")) == 0)
 			info->isConstructor = true;
 	}
 
@@ -316,17 +317,19 @@ void HeaderParser::ParseParamsDecl(TokenItr begin, TokenItr end, MethodInfoPtr p
 	// , または =(デフォルト引数) の直前を引数名とする
 	auto name = end - 1;
 
-	StringA typeName;
+	String typeName;
 	int pointerLevel;
-	ParseParamType(declTokens.begin(), paramEnd - 1, &typeName, &pointerLevel);
+	bool hasConst;
+	ParseParamType(declTokens.begin(), paramEnd - 1, &typeName, &pointerLevel, &hasConst);
 
 	auto info = std::make_shared<ParameterInfo>();
-	info->name = (*name)->GetString();
+	info->name = String((*name)->GetString());
 	info->typeRawName = typeName;
+	info->isOut = (!hasConst && pointerLevel > 0);
 	parent->parameters.Add(info);
 }
 
-void HeaderParser::ParseParamType(TokenItr begin, TokenItr end, StringA* outName, int* outPointerLevel)
+void HeaderParser::ParseParamType(TokenItr begin, TokenItr end, String* outName, int* outPointerLevel, bool* outHasConst)
 {
 	auto type = begin;
 	auto typeEnd = end;
@@ -334,40 +337,190 @@ void HeaderParser::ParseParamType(TokenItr begin, TokenItr end, StringA* outName
 	// lookup TypeName and count '*'
 	TokenItr typeName;
 	int pointerLevel = 0;
+	bool hasConst = false;
 	for (auto itr = begin; itr != typeEnd; ++itr)
 	{
 		if ((*itr)->EqualChar('*')) pointerLevel++;
+		if ((*itr)->EqualString("const")) hasConst = true;
 		if ((*itr)->GetTokenGroup() == TokenGroup::Identifier || (*itr)->GetTokenGroup() == TokenGroup::Keyword) typeName = itr;
 	}
 
-	*outName = (*typeName)->GetString();
+	*outName = String((*typeName)->GetString());
 	*outPointerLevel = pointerLevel;
+	*outHasConst = hasConst;
 }
 
 void HeaderParser::ParseClassDecl(const Decl& decl)
 {
-	auto paramEnd = ParseMetadataDecl(decl.begin, decl.end);
-	//auto name = std::find_if(paramEnd, decl.end, [](Token* t) { return t->EqualChar(':'); }) - 2;
-	TokenItr name;
-	TokenItr itr = paramEnd;
-	for (; itr < decl.end; ++itr)
+	/*
+	LN_CLASS()
+	template<typename T>
+	class TestList
 	{
-		if ((*itr)->GetTokenGroup() == TokenGroup::Identifier) name = itr;
-		if ((*itr)->EqualChar(':') || (*itr)->EqualChar('{')) break;
-	}
+	};
+
+	LN_CLASS()
+	class TestList2
+		: public TestList<Engine>
+	{
+	};
+	*/
+	struct ClassHeaderParser : public combinators::ParseLib<ClassHeaderParser>
+	{
+		struct TypeName
+		{
+			flString		name;
+			List<flString>	typeArgs;
+		};
+
+		struct ClassHeader
+		{
+			List<flString>	templateTypeParams;
+			flString		className;
+			List<TypeName>	baseClassNames;
+		};
+
+		//----------------------------------------------------------------------
+		// template <...>
+		static ParserResult<List<flString>> Parse_TemplateDecl(ParserContext input)
+		{
+			LN_PARSE_RESULT(r1, TokenString("template"));
+			LN_PARSE_RESULT(r2, TokenChar('<'));
+			LN_PARSE_RESULT(r3, Parse_TemplateParamList);
+			LN_PARSE_RESULT(r4, TokenChar('>'));
+			return input.Success(r3.GetValue());
+		}
+
+		static ParserResult<List<flString>> Parse_TemplateParamList(ParserContext input)
+		{
+			LN_PARSE_RESULT(r1, Parse_TemplateParam);
+			LN_PARSE_RESULT(r2, Many(Parser<flString>(Parse_TemplateParamLater)));
+			List<flString> list{ r1.GetValue() };
+			list.AddRange(r2.GetValue());
+			return input.Success(list);
+		}
+
+		static ParserResult<flString> Parse_TemplateParam(ParserContext input)
+		{
+			LN_PARSE_RESULT(r1, TokenString("typename") || TokenString("class"));
+			LN_PARSE_RESULT(r2, Token(TokenGroup::Identifier));
+			return input.Success(r2.GetValue()->GetString());
+		}
+
+		static ParserResult<flString> Parse_TemplateParamLater(ParserContext input)
+		{
+			LN_PARSE_RESULT(r1, TokenChar(','));
+			LN_PARSE_RESULT(r2, TokenString("typename") || TokenString("class"));
+			LN_PARSE_RESULT(r3, Token(TokenGroup::Identifier));
+			return input.Success(r3.GetValue()->GetString());
+		}
+
+		//----------------------------------------------------------------------
+		// class
+		static ParserResult<flString> Parse_ClassMain(ParserContext input)
+		{
+			LN_PARSE_RESULT(r1, TokenString("class"));
+			LN_PARSE_RESULT(r2, Token(TokenGroup::Identifier));
+			return input.Success(r2.GetValue()->GetString());
+		}
+
+		//----------------------------------------------------------------------
+		// base classes:
+		static ParserResult<List<TypeName>> Parse_BaseClasses(ParserContext input)
+		{
+			LN_PARSE_RESULT(r1, TokenChar(':'));
+			LN_PARSE_RESULT(r2, Many(Parser<TypeName>(Parse_BaseTypeName)));
+			return input.Success(r2.GetValue());
+		}
+		
+		static ParserResult<TypeName> Parse_BaseTypeName(ParserContext input)
+		{
+			LN_PARSE_RESULT(r1, TokenString("public"));
+			LN_PARSE_RESULT(r2, Token(TokenGroup::Identifier));
+			LN_PARSE_RESULT(r3, Optional(Parser<List<flString>>(Parse_TypeParamList)));
+			return input.Success(TypeName{ r2.GetValue()->GetString(), r3.GetValue().GetValue() });
+		}
+
+		static ParserResult<List<flString>> Parse_TypeParamList(ParserContext input)
+		{
+			LN_PARSE_RESULT(r1, TokenChar('<'));
+			LN_PARSE_RESULT(r2, Parse_TypeParam);
+			LN_PARSE_RESULT(r3, Many(Parser<flString>(Parse_TypeParamLater)));
+			LN_PARSE_RESULT(r4, TokenChar('>'));
+			List<flString> list{ r2.GetValue() };
+			list.AddRange(r3.GetValue());
+			return input.Success(list);
+		}
+
+		static ParserResult<flString> Parse_TypeParam(ParserContext input)
+		{
+			LN_PARSE_RESULT(r1, Token(TokenGroup::Identifier));
+			return input.Success(r1.GetValue()->GetString());
+		}
+
+		static ParserResult<flString> Parse_TypeParamLater(ParserContext input)
+		{
+			LN_PARSE_RESULT(r1, TokenChar(','));
+			LN_PARSE_RESULT(r2, Token(TokenGroup::Identifier));
+			return input.Success(r2.GetValue()->GetString());
+		}
+
+		//----------------------------------------------------------------------
+		// class header:
+		static ParserResult<ClassHeader> Parse_ClassHeader(ParserContext input)
+		{
+			LN_PARSE_RESULT(r1, Optional(Parser<List<flString>>(Parse_TemplateDecl)));
+			LN_PARSE_RESULT(r2, Parse_ClassMain);
+			LN_PARSE_RESULT(r3, Optional(Parser<List<TypeName>>(Parse_BaseClasses)));
+			LN_PARSE_RESULT(r4, TokenChar('{'));
+			return input.Success(ClassHeader{ r1.GetValue().GetValue(), r2.GetValue(), r3.GetValue().GetValue(), });
+		}
+
+		static bool FilterToken(fl::Token* token)
+		{
+			return
+				token->EqualChar('<') ||
+				token->EqualChar('>') ||
+				token->EqualChar(',') ||
+				token->EqualChar(':') ||
+				token->EqualChar('{') ||
+				token->EqualGroupAndString(TokenGroup::Keyword, "template") ||
+				token->EqualGroupAndString(TokenGroup::Keyword, "typename") ||
+				token->EqualGroupAndString(TokenGroup::Keyword, "class") ||
+				token->EqualGroupAndString(TokenGroup::Keyword, "public") ||
+				token->GetTokenGroup() == TokenGroup::Identifier ||
+				token->GetTokenGroup() == TokenGroup::Eof;	// TODO: これが無くてもいいようにしたい。今はこれがないと、Many中にEOFしたときOutOfRangeする
+		}
+	};
+
+	auto paramEnd = ParseMetadataDecl(decl.begin, decl.end);
+
+	auto& result = ClassHeaderParser::TryParse(ClassHeaderParser::Parse_ClassHeader, paramEnd, decl.end);
+	auto& classHeader = result.GetValue();
+
+
+	//auto name = std::find_if(paramEnd, decl.end, [](Token* t) { return t->EqualChar(':'); }) - 2;
+	//TokenItr name;
+	//TokenItr itr = paramEnd;
+	//for (; itr < decl.end; ++itr)
+	//{
+	//	if ((*itr)->GetTokenGroup() == TokenGroup::Identifier) name = itr;
+	//	if ((*itr)->EqualChar(':') || (*itr)->EqualChar('{')) break;
+	//}
 
 	auto info = std::make_shared<TypeInfo>();
 	info->metadata = MoveLastMetadata();
 	info->document = MoveLastDocument();
-	info->name = (*name)->GetString();
+	info->name = String(classHeader.className);
+	if (!classHeader.baseClassNames.IsEmpty()) info->baseClassRawName = String(classHeader.baseClassNames[0].name);
 	m_database->classes.Add(info);
 
 	// base class name
-	if ((*itr)->EqualChar(':'))
-	{
-		itr = std::find_if(itr, decl.end, [](Token* t) { return t->GetTokenGroup() == TokenGroup::Identifier; });
-		info->baseClassRawName = (*itr)->GetString();
-	}
+	//if ((*itr)->EqualChar(':'))
+	//{
+	//	itr = std::find_if(itr, decl.end, [](Token* t) { return t->GetTokenGroup() == TokenGroup::Identifier; });
+	//	info->baseClassRawName = (*itr)->GetString();
+	//}
 
 	for (auto& d : decl.decls)
 	{
@@ -391,7 +544,7 @@ void HeaderParser::ParseEnumDecl(const Decl& decl)
 
 	auto info = std::make_shared<TypeInfo>();
 	info->document = MoveLastDocument();
-	info->name = (*name)->GetString();
+	info->name = String((*name)->GetString());
 	info->isEnum = true;
 	m_database->enums.Add(info);
 
@@ -430,7 +583,7 @@ void HeaderParser::ParseEnumMemberDecl(TokenItr begin, TokenItr end, TypeInfoPtr
 	// create info
 	auto info = std::make_shared<ConstantInfo>();
 	info->document = MoveLastDocument();
-	info->name = (*name)->GetString();
+	info->name = String((*name)->GetString());
 	info->value = (*value)->GetString().ToInt32();
 	info->typeRawName = "int";
 	parent->declaredConstants.Add(info);
@@ -438,35 +591,35 @@ void HeaderParser::ParseEnumMemberDecl(TokenItr begin, TokenItr end, TypeInfoPtr
 
 void HeaderParser::ParseDocument(const Decl& decl)
 {
-	String doc = (*decl.begin)->GetString();
+	String doc((*decl.begin)->GetString());
 
 	// 改行コード統一し、コメント開始終了を削除する
 	doc = doc
-		.Replace("\r\n", "\n")
-		.Replace("\r", "\n")
-		.Replace("/**", "")
-		.Replace("*/", "");
+		.Replace(_T("\r\n"), _T("\n"))
+		.Replace(_T("\r"), _T("\n"))
+		.Replace(_T("/**"), _T(""))
+		.Replace(_T("*/"), _T(""));
 
 	auto info = std::make_shared<DocumentInfo>();
 
-	List<String> lines = doc.Split("\n");
+	List<String> lines = doc.Split(_T("\n"));
 	String* target = &info->summary;
 	for (String line : lines)
 	{
 		line = line.Trim();
 
 		MatchResult result;
-		if (Regex::Search(line, "@(\\w+)", &result))
+		if (Regex::Search(line, _T("@(\\w+)"), &result))
 		{
-			if (result[1] == "brief")
+			if (result[1] == _T("brief"))
 			{
 				target = &info->summary;
 				line = line.Mid(result.GetLength());
 			}
-			else if (result[1] == "param")
+			else if (result[1] == _T("param"))
 			{
 				String con = line.Mid(result.GetLength());
-				if (Regex::Search(con, R"(\[(\w+)\]\s+(\w+)\s*\:\s*)", &result))
+				if (Regex::Search(con, _T(R"(\[(\w+)\]\s+(\w+)\s*\:\s*)"), &result))
 				{
 					auto paramInfo = std::make_shared<ParameterDocumentInfo>();
 					info->params.Add(paramInfo);
@@ -476,12 +629,12 @@ void HeaderParser::ParseDocument(const Decl& decl)
 					line = con.Mid(result.GetLength());
 				}
 			}
-			else if (result[1] == "return")
+			else if (result[1] == _T("return"))
 			{
 				target = &info->returns;
 				line = line.Mid(result.GetLength());
 			}
-			else if (result[1] == "details")
+			else if (result[1] == _T("details"))
 			{
 				target = &info->details;
 				line = line.Mid(result.GetLength());

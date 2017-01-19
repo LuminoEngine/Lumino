@@ -11,7 +11,7 @@ LN_ENUM_()
 enum class ResultCode
 {
 	/** 成功 */
-    Ok							= 0,
+    OK							= 0,
 
 	/** 不明なエラー */
 	ErrorUnknown				= 1,

@@ -163,6 +163,7 @@ public:
 	List<MethodInfoPtr>		declaredMethods;
 	List<PropertyInfoPtr>	declaredProperties;
 	List<ConstantInfoPtr>	declaredConstants;
+	TypeInfoPtr				baseClass;
 
 	String					baseClassRawName;
 
@@ -170,8 +171,12 @@ public:
 	TypeInfo(StringRef name_) : name(name_) {}
 
 	bool IsValueType() const { return isStruct || isPrimitive; }
-	bool IsStatic() const { return metadata->HasKey("Static"); }
+	bool IsStatic() const { return metadata->HasKey(_T("Static")); }
+	bool IsClass() const { return !IsValueType(); }
 
+	void Link();
+
+private:
 	void MakeProperties();
 	void LinkOverload();
 };
@@ -182,6 +187,7 @@ public:
 	static TypeInfoPtr	voidType;
 	static TypeInfoPtr	boolType;
 	static TypeInfoPtr	intType;
+	static TypeInfoPtr	uint32Type;
 	static TypeInfoPtr	floatType;
 	static TypeInfoPtr	stringType;
 	static TypeInfoPtr	objectType;

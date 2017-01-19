@@ -29,7 +29,7 @@ void OutputBuffer::IncreaseIndent()
 	m_indentLevel++;
 	m_indent.Clear();
 	for (int i = 0; i < m_indentLevel; i++)
-		m_indent += "    ";
+		m_indent += _T("    ");
 }
 
 void OutputBuffer::DecreaseIndent()
@@ -37,7 +37,7 @@ void OutputBuffer::DecreaseIndent()
 	m_indentLevel--;
 	m_indent.Clear();
 	for (int i = 0; i < m_indentLevel; i++)
-		m_indent += "    ";
+		m_indent += _T("    ");
 }
 
 OutputBuffer& OutputBuffer::NewLine(int count)

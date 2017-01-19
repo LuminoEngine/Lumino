@@ -5,14 +5,14 @@
 #include <Lumino/Engine.h>
 #include <Lumino/Binding/Common.h>
 //#include "../include/LNCommon.h"
-#include "LuminoC.h"
+#include "LuminoC.generated.h"
 
 /// Handle の管理リストの要素
 struct ObjectEntry
 {
 	//CoreObject*		Object;		///< オブジェクト本体
 	tr::ReflectionObject*	Object;		///< オブジェクト本体
-	void*			UserData;	///< バインダ側からセットするユーザーデータ。基本的に管理配列のインデックスとなる。
+	LNUserData			UserData;	///< バインダ側からセットするユーザーデータ。基本的に管理配列のインデックスとなる。
 	int				Index;		///< このオブジェクトがある管理配列上のインデックス
 	int				RefCount;	///< 外部に公開する参照カウント (この値を直接操作しないこと。必ず Manager 経由で操作する。CoreObject の参照カウントとは別管理である点に注意)
 

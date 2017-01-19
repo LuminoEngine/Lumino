@@ -9,6 +9,7 @@ namespace Test
 {
     class Program
     {
+#if false
         //--------------------------------------------------------------
         static void Test_Struct()
         {
@@ -209,24 +210,22 @@ namespace Test
                     throw new InvalidOperationException();
             }
         }
-
-#if false
-        const string TestDataFolder = "../../../../../../test/UnitTest/Graphics/TestData/";
+#endif
+#if true
 
         static void Main(string[] args)
         {
             Engine.Initialize();
 
-            GameAudio.PlayBGM("D:/tmp/GrandSky.mp3");
+            //GameAudio.PlayBGM("D:/tmp/GrandSky.mp3");
 
-            var tex1 = new Texture2D(TestDataFolder + "img1_BYTE_R8G8B8A8_20x20.png");
-            Console.WriteLine(tex1.Size.Width);
+            //var tex1 = new Texture2D(TestDataFolder + "img1_BYTE_R8G8B8A8_20x20.png");
+            //Console.WriteLine(tex1.Size.Width);
 
-            var sp1 = new Sprite2D(tex1);
+            //var sp1 = new Sprite2D(tex1);
 
-            while (!Engine.IsEndRequested())
+            while (Engine.Update())
             {
-                Engine.UpdateFrame();
             }
 
             Engine.Terminate();

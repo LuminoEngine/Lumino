@@ -47,3 +47,7 @@ const T* cp_cast(const U* p) { return reinterpret_cast<const T*>(p); }
 
 #include "BindingManager.h"
 
+//---------------------------------------------------------------------
+// check
+#define LWIG_CHECK_ARG_NOT_ZERO(x)	if ((x) == 0) return LN_RESULTCODE_ERRORARGUMENT;
+

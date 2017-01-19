@@ -6,6 +6,7 @@ class DotNetCommon
 {
 public:
 	static void Initialize();
+	static String MakePInvokeTypeName(TypeInfoPtr typeInfo);
 	static String MakeTypeName(TypeInfoPtr typeInfo);
 	static String MakeParamTypeName(ParameterInfoPtr paramInfo);
 	static String MakeXmlDocument(DocumentInfoPtr doc);
