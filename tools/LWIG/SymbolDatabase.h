@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <memory>
 #include <unordered_map>
@@ -103,8 +103,9 @@ public:
 	//IsConstructor
 	//IsStatic
 	//IsVirtual
-	bool			isConst = false;		// const ƒƒ“ƒoŠÖ”‚Å‚ ‚é‚©
+	bool			isConst = false;		// const ãƒ¡ãƒ³ãƒé–¢æ•°ã§ã‚ã‚‹ã‹
 	bool			isStatic = false;
+	bool			isVirtual = false;
 	bool			isConstructor = false;
 	PropertyInfoPtr	ownerProperty;
 	List<ParameterInfoPtr>	parameters;
@@ -118,9 +119,13 @@ public:
 	String	returnTypeRawName;
 
 	bool IsOverloadChild() const { return overloadParent != nullptr; }
+	bool IsRuntimeInitializer() const { return metadata->HasKey(_T("RuntimeInitializer")); }
 
+	void LinkParameters();
 	void ExpandCAPIParameters();
 	String GetCAPIFuncName();
+	String GetCApiSetOverrideCallbackFuncName();
+	String GetCApiSetOverrideCallbackTypeName();
 };
 
 

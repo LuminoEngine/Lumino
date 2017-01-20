@@ -260,13 +260,15 @@ void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
 		auto end = declTokens.end() - 1;
 		int pointerLevel;
 		bool hasConst;
-		ParseParamType(begin, end, &info->returnTypeRawName, &pointerLevel, &hasConst);
+		bool hasVirtual;
+		ParseParamType(begin, end, &info->returnTypeRawName, &pointerLevel, &hasConst, &hasVirtual);
 
 		for (auto itr = begin; itr != end; ++itr)
 		{
 			if ((*itr)->EqualString("static"))
 				info->isStatic = true;
 		}
+		info->isVirtual = hasVirtual;
 	}
 
 	if (!info->isStatic)
@@ -315,21 +317,23 @@ void HeaderParser::ParseParamsDecl(TokenItr begin, TokenItr end, MethodInfoPtr p
 	auto paramEnd = std::find_if(declTokens.begin(), declTokens.end(), [](Token* t) { return t->EqualChar('='); });
 
 	// , または =(デフォルト引数) の直前を引数名とする
-	auto name = end - 1;
+	auto name = paramEnd - 1;
 
 	String typeName;
 	int pointerLevel;
 	bool hasConst;
-	ParseParamType(declTokens.begin(), paramEnd - 1, &typeName, &pointerLevel, &hasConst);
+	bool hasVirtual;
+	ParseParamType(declTokens.begin(), paramEnd - 1, &typeName, &pointerLevel, &hasConst, &hasVirtual);
 
 	auto info = std::make_shared<ParameterInfo>();
 	info->name = String((*name)->GetString());
 	info->typeRawName = typeName;
+	info->isIn = hasConst;
 	info->isOut = (!hasConst && pointerLevel > 0);
 	parent->parameters.Add(info);
 }
 
-void HeaderParser::ParseParamType(TokenItr begin, TokenItr end, String* outName, int* outPointerLevel, bool* outHasConst)
+void HeaderParser::ParseParamType(TokenItr begin, TokenItr end, String* outName, int* outPointerLevel, bool* outHasConst, bool* outHasVirtual)
 {
 	auto type = begin;
 	auto typeEnd = end;
@@ -338,16 +342,19 @@ void HeaderParser::ParseParamType(TokenItr begin, TokenItr end, String* outName,
 	TokenItr typeName;
 	int pointerLevel = 0;
 	bool hasConst = false;
+	bool hasVirtual = false;
 	for (auto itr = begin; itr != typeEnd; ++itr)
 	{
 		if ((*itr)->EqualChar('*')) pointerLevel++;
 		if ((*itr)->EqualString("const")) hasConst = true;
+		if ((*itr)->EqualString("virtual")) hasVirtual = true;
 		if ((*itr)->GetTokenGroup() == TokenGroup::Identifier || (*itr)->GetTokenGroup() == TokenGroup::Keyword) typeName = itr;
 	}
 
 	*outName = String((*typeName)->GetString());
 	*outPointerLevel = pointerLevel;
 	*outHasConst = hasConst;
+	*outHasVirtual = hasVirtual;
 }
 
 void HeaderParser::ParseClassDecl(const Decl& decl)

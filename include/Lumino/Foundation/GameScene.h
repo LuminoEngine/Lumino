@@ -44,6 +44,7 @@ private:
 	@brief		ゲームシーンのベースクラスです。
 	@details	ゲームシーンはタイトル画面やゲームオーバー画面などの画面遷移の単位です。
 */
+LN_CLASS()
 class GameScene
 	: public Object
 {
@@ -52,7 +53,8 @@ public:
 	GameScene();
 	virtual ~GameScene();
 
-	/// 開始処理
+	/** 開始処理 */
+	LN_METHOD()
 	virtual void OnStart();
 
 	/// フレーム更新
@@ -60,6 +62,10 @@ public:
 
 	/// 終了処理
 	virtual void OnTerminate();
+
+LN_INTERNAL_ACCESS:
+	LN_METHOD()
+	void Initialize();
 
 private:
 	void AddGameObject(WorldObject* obj);

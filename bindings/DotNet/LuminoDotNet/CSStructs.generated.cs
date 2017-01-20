@@ -160,8 +160,14 @@ namespace Lumino
         }
 
         /// <summary>
-        /// このベクトルを指定された最大値と最小値の範囲にクランプします。@param[in]	minVec	: 最小値@param[in]	maxVec	: 最大値
+        /// このベクトルを指定された最大値と最小値の範囲にクランプします。
         /// </summary>
+        /// <param name="minVec">
+        /// 最小値
+        /// </param>
+        /// <param name="maxVec">
+        /// 最大値
+        /// </param>
         public void Clamp(ref Vector3 minVec, ref Vector3 maxVec)
         {
             

@@ -58,7 +58,7 @@ namespace Lumino
     {
         /// <summary>
         /// この音声の音量を取得します。
-        /// この音声の音量を設定します。@param[in]	volume	: 音量 (0.0～1.0。初期値は 1.0)
+        /// この音声の音量を設定します。
         /// </summary>
         public float Volume
         {
@@ -80,7 +80,7 @@ namespace Lumino
 
         /// <summary>
         /// この音声のピッチ (音高) を取得します。
-        /// この音声のピッチ (音高) を設定します。@param[in]	volume	: ピッチ (0.5～2.0。初期値は 1.0)
+        /// この音声のピッチ (音高) を設定します。
         /// </summary>
         public float Pitch
         {
@@ -101,7 +101,7 @@ namespace Lumino
         }
 
         /// <summary>
-        /// ループ再生の有無を設定します。@param[in]	enabled		: ループ再生するか
+        /// ループ再生の有無を設定します。
         /// </summary>
         public bool LoopEnabled
         {
@@ -129,8 +129,14 @@ namespace Lumino
         }
 
         /// <summary>
-        /// ループ範囲を設定します。@param[in]	begin		: ループ範囲の開始サンプル@param[in]	length		: ループ範囲のサンプル数
+        /// ループ範囲を設定します。
         /// </summary>
+        /// <param name="begin">
+        /// ループ範囲の開始サンプル
+        /// </param>
+        /// <param name="length">
+        /// ループ範囲のサンプル数
+        /// </param>
         /// <remarks>
         /// MIDI の場合、ループ範囲はミュージックタイム単位 (四分音符ひとつ分を 768 で表す) で指定します。
         /// </remarks>
@@ -194,10 +200,83 @@ namespace Lumino
             IntPtr outSound;
             var result = API.LNSound_Initialize(filePath, out outSound);
             if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
-            InternalManager.RegisterWrapperObject(this, outSound);
+            InternalManager.RegisterWrapperObject(this, outSound); API.LNObject_Release(outSound);
         }
 
         internal Sound(_LNInternal i) : base(i) {}
+
+    }
+    /// <summary>
+    /// ゲームアプリケーションを表します。
+    /// </summary>
+    public  class GameApplication
+        : Object
+    {
+        /// <summary>
+        /// アプリケーションを実行します。
+        /// </summary>
+        public  void Run(GameScene initialScene)
+        {
+            
+            var result = API.LNGameApplication_Run(Handle, initialScene.Handle);
+            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            
+        }
+
+        public GameApplication() : base(_LNInternal.InternalBlock)
+        {
+            IntPtr outGameApplication;
+            var result = API.LNGameApplication_Initialize(out outGameApplication);
+            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            InternalManager.RegisterWrapperObject(this, outGameApplication); API.LNObject_Release(outGameApplication);
+        }
+
+        internal GameApplication(_LNInternal i) : base(i) {}
+
+    }
+    /// <summary>
+    /// ゲームシーンのベースクラスです。
+    /// </summary>
+    /// <remarks>
+    /// ゲームシーンはタイトル画面やゲームオーバー画面などの画面遷移の単位です。
+    /// </remarks>
+    public  class GameScene
+        : Object
+    {
+        /// <summary>
+        /// 開始処理
+        /// </summary>
+        public virtual void OnStart()
+        {
+            
+            var result = API.LNGameScene_OnStart_VirtualBase(Handle);
+            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            
+        }
+
+        private static ResultCode OnStart_OverrideCallback(IntPtr gamescene)
+        {
+        	var obj = InternalManager.GetWrapperObject<GameScene>(gamescene);
+        	try
+        	{
+        		obj.OnStart();
+        	}
+        	catch (Exception)
+        	{
+        		return ResultCode.ErrorUnknown; 
+        	}
+        	return ResultCode.OK;
+        }
+
+        public GameScene() : base(_LNInternal.InternalBlock)
+        {
+            IntPtr outGameScene;
+            var result = API.LNGameScene_Initialize(out outGameScene);
+            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            InternalManager.RegisterWrapperObject(this, outGameScene); API.LNObject_Release(outGameScene);
+        }
+
+        internal GameScene(_LNInternal i) : base(i) {}
 
     }
 
@@ -225,6 +304,24 @@ namespace Lumino
             _typeInfos.Add(_Sound);
             LNSound_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
 
+            var _GameApplication = new TypeInfo(){ Factory = (handle) =>
+            {
+                var obj = new GameApplication(_LNInternal.InternalBlock);
+                obj.SetHandle(handle);
+                return obj;
+            }};
+            _typeInfos.Add(_GameApplication);
+            LNGameApplication_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
+
+            var _GameScene = new TypeInfo(){ Factory = (handle) =>
+            {
+                var obj = new GameScene(_LNInternal.InternalBlock);
+                obj.SetHandle(handle);
+                return obj;
+            }};
+            _typeInfos.Add(_GameScene);
+            LNGameScene_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
+
 
         }
 
@@ -239,6 +336,12 @@ namespace Lumino
         
         [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
         private static extern void LNSound_SetBindingTypeInfo(IntPtr data);
+
+        [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+        private static extern void LNGameApplication_SetBindingTypeInfo(IntPtr data);
+
+        [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+        private static extern void LNGameScene_SetBindingTypeInfo(IntPtr data);
 
 
     }

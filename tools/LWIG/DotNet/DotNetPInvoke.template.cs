@@ -7,15 +7,17 @@ namespace Lumino
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void ExceptionCallback(ResultCode errorCode);
 
+%DelegateList%
+
 %EnumList%
 
     public class API
     {
     
 #if DEBUG
-    	internal const string DLLName = "LuminoCUd";
+    	internal const string DLLName = "LuminoUd";
 #else
-    	internal const string DLLName = "LuminoCU";
+    	internal const string DLLName = "LuminoU";
 #endif
         internal const CharSet DLLCharSet = CharSet.Unicode;
         internal const CallingConvention DefaultCallingConvention = CallingConvention.Cdecl;

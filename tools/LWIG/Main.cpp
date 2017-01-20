@@ -6,6 +6,7 @@
 #include "DotNet/CSClassLibGenerator.h"
 #include "DotNet/DotNetCommon.h"
 #include "WrapperIF/WrapperIFGenerator.h"
+#include "WrapperIF/WrapperIFClassesGenerator.h"
 
 PathName		g_templateDir;
 SymbolDatabase	g_database;
@@ -15,11 +16,13 @@ int main()
 {
 	List<PathName> files =
 	{
+		"../../../../bindings/Runtime/include/Common.h",
 		"../../../../include/Lumino/Engine.h",
 		"../../../../include/Lumino/Audio/Sound.h",
 		"../../../../include/Lumino/Base/GeometryStructs.h",
 		"../../../../external/Lumino.Core/include/Lumino/Math/Vector3.h",
-		"../../../../include/Lumino/Binding/Common.h",
+		"../../../../include/Lumino/Foundation/Application.h",
+		"../../../../include/Lumino/Foundation/GameScene.h",
 	};
 
 	g_templateDir = LUMINO_ROOT_DIR"/tools/LWIG/";
@@ -36,6 +39,10 @@ int main()
 	{
 		WrapperIFGenerator gen;
 		gen.Generate(&g_database);
+	}
+	{
+		WrapperIFClassesGenerator gen;
+		gen.Generate();
 	}
 	{
 		DotNetPInvokeLibGenerator g;

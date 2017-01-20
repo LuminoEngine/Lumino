@@ -1,7 +1,7 @@
 
 #include "Internal.h"
 #include "LuminoC.generated.h"
-#include "WrapperIF.generated.h"
+//#include "WrapperIF.generated.h"
 
 extern "C" {
 

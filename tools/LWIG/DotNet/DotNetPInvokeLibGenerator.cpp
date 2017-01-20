@@ -10,6 +10,19 @@ static const String FuncDeclTempalte =
 
 void DotNetPInvokeLibGenerator::Generate()
 {
+	// delegates
+	OutputBuffer delegatesText(1);
+	{
+		for (auto& methodInfo : g_database.GetAllMethods())
+		{
+			if (methodInfo->isVirtual)
+			{
+				delegatesText.Append("[UnmanagedFunctionPointer(CallingConvention.Cdecl)]").NewLine();
+				delegatesText.Append("public delegate ResultCode {0}({1});", methodInfo->GetCApiSetOverrideCallbackTypeName(), MakePInvokeMethodDeclParamList(methodInfo)).NewLine();
+			}
+		}
+	}
+
 	// enums
 	OutputBuffer enumsText(1);
 	{
@@ -33,28 +46,51 @@ void DotNetPInvokeLibGenerator::Generate()
 	OutputBuffer funcsText(2);
 	for (auto& methodInfo : g_database.GetAllMethods())
 	{
-		// DLLImport・型名・関数名
-		String declText = FuncDeclTempalte;
-		declText = declText.Replace("%FuncName%", methodInfo->GetCAPIFuncName());
-
-		// params
-		OutputBuffer params;
-		for (auto& paramInfo : methodInfo->capiParameters)
+		funcsText.AppendLines(MakePInvokeMethodDecl(methodInfo, false)).NewLine();
+		if (methodInfo->isVirtual)
 		{
-			params.AppendCommad("{0} {1}", MakeParamTypeName(paramInfo), paramInfo->name);
+			funcsText.AppendLines(MakePInvokeMethodDecl(methodInfo, true)).NewLine();
+			funcsText.AppendLines(MakePInvokeMethodDeclSetOverrideCallback(methodInfo)).NewLine();
 		}
-		declText = declText.Replace("%Params%", params.ToString());
-
-		funcsText.AppendLines(declText).NewLine();
 	}
 
 	// output
 	{
 		String src = FileSystem::ReadAllText(PathName(g_templateDir, "DotNet/DotNetPInvoke.template.cs"));
-		src = src.Replace("%APIList%", funcsText.ToString());
+		src = src.Replace("%DelegateList%", delegatesText.ToString());
 		src = src.Replace("%EnumList%", enumsText.ToString());
+		src = src.Replace("%APIList%", funcsText.ToString());
 		FileSystem::WriteAllText(PathName(g_csOutputDir, "DotNetPInvoke.generated.cs"), src);
 	}
+}
+
+String DotNetPInvokeLibGenerator::MakePInvokeMethodDecl(MethodInfoPtr methodInfo, bool virtualBase)
+{
+	String suffix = (virtualBase) ? "_VirtualBase" : "";
+
+	// DLLImport・型名・関数名
+	String declText = FuncDeclTempalte;
+	declText = declText.Replace("%FuncName%", methodInfo->GetCAPIFuncName() + suffix);
+
+	// params
+	return declText.Replace("%Params%", MakePInvokeMethodDeclParamList(methodInfo));
+}
+
+String DotNetPInvokeLibGenerator::MakePInvokeMethodDeclSetOverrideCallback(MethodInfoPtr methodInfo)
+{
+	return FuncDeclTempalte
+		.Replace("%FuncName%", methodInfo->GetCApiSetOverrideCallbackFuncName())
+		.Replace("%Params%", methodInfo->GetCApiSetOverrideCallbackTypeName() + " func");
+}
+
+String DotNetPInvokeLibGenerator::MakePInvokeMethodDeclParamList(MethodInfoPtr methodInfo)
+{
+	OutputBuffer params;
+	for (auto& paramInfo : methodInfo->capiParameters)
+	{
+		params.AppendCommad("{0} {1}", MakeParamTypeName(paramInfo), paramInfo->name);
+	}
+	return params.ToString();
 }
 
 String DotNetPInvokeLibGenerator::MakeParamTypeName(ParameterInfoPtr paramInfo)

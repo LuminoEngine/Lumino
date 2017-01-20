@@ -18,6 +18,8 @@ set(LN_SOURCES
 	DotNet/DotNetCommon.h
 	DotNet/DotNetPInvokeLibGenerator.cpp
 	DotNet/DotNetPInvokeLibGenerator.h
+	WrapperIF/WrapperIFClassesGenerator.h
+	WrapperIF/WrapperIFClassesGenerator.cpp
 	WrapperIF/WrapperIFGenerator.h
 	WrapperIF/WrapperIFGenerator.cpp
 )
@@ -30,7 +32,7 @@ include_directories(
 )
 
 add_executable(LWIG ${LN_SOURCES})
-target_link_libraries(LWIG Lumino_Static)
+target_link_libraries(LWIG LuminoEngine)
 target_link_libraries(LWIG Fluorite)
 ln_add_pch(LWIG "LWIG.PCH.h" "LWIG.PCH.cpp")
 

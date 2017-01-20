@@ -7,6 +7,10 @@ namespace Lumino
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void ExceptionCallback(ResultCode errorCode);
 
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate ResultCode LNGameScene_OnStart_OverrideCaller(IntPtr gamescene);
+
+
     /// <summary>
     /// 結果・エラーコード
     /// </summary>
@@ -188,6 +192,24 @@ namespace Lumino
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNSound_Initialize(string filePath, out IntPtr outSound);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNGameApplication_Run(IntPtr gameapplication, IntPtr initialScene);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNGameApplication_Initialize(out IntPtr outGameApplication);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNGameScene_OnStart(IntPtr gamescene);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNGameScene_OnStart_VirtualBase(IntPtr gamescene);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNGameScene_OnStart_SetOverrideCaller(LNGameScene_OnStart_OverrideCaller func);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNGameScene_Initialize(out IntPtr outGameScene);
 
 
 

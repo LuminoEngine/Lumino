@@ -213,11 +213,21 @@ namespace Test
 #endif
 #if true
 
+        class MyScene : GameScene
+        {
+            public override void OnStart()
+            {
+                base.OnStart();
+                Console.WriteLine("OnStart");
+            }
+        }
+
         static void Main(string[] args)
         {
             Engine.Initialize();
 
             var s1 = new Sound(@"D:\tmp\light_song_instrumental_0.mp3");
+            s1.Pitch = 1.05f;
             s1.Play();
             //GameAudio.PlayBGM("D:/tmp/GrandSky.mp3");
 
@@ -229,6 +239,8 @@ namespace Test
             while (Engine.Update())
             {
             }
+            //var app = new GameApplication();
+            //app.Run(new MyScene());
 
             Engine.Terminate();
 

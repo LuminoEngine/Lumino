@@ -68,6 +68,9 @@
 #include "Lumino/Scene/Grid.h"
 #include "Lumino/Scene/TextBlock.h"
 
+#include "Lumino/Foundation/Application.h"
+#include "Lumino/Foundation/GameScene.h"
+
 #include "Lumino/Profiler.h"
 #include "Lumino/Engine.h"
 #include "Lumino/EngineDiag.h"

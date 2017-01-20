@@ -31,7 +31,7 @@ private:
 	void ParseFieldDecl(const Decl& decl, TypeInfoPtr parent);
 	void ParseMethodDecl(const Decl& decl, TypeInfoPtr parent);
 	void ParseParamsDecl(TokenItr begin, TokenItr end, MethodInfoPtr parent);
-	void ParseParamType(TokenItr begin, TokenItr end, String* outName, int* outPointerLevel, bool* outHasConst);
+	void ParseParamType(TokenItr begin, TokenItr end, String* outName, int* outPointerLevel, bool* outHasConst, bool* outHasVirtual);
 	void ParseClassDecl(const Decl& decl);
 	void ParseEnumDecl(const Decl& decl);
 	void ParseEnumMemberDecl(TokenItr begin, TokenItr end, TypeInfoPtr parent);

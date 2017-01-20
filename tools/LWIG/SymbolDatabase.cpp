@@ -1,4 +1,4 @@
-
+﻿
 #include "Global.h"
 #include "SymbolDatabase.h"
 
@@ -34,9 +34,24 @@ bool MetadataInfo::HasKey(const StringRef& key)
 //==============================================================================
 // MethodInfo
 //==============================================================================
+void MethodInfo::LinkParameters()
+{
+	for (auto& paramInfo : parameters)
+	{
+		paramInfo->type = g_database.FindTypeInfo(paramInfo->typeRawName);
+
+		// 今のところ、Class 型の 出力変数は許可しない
+		if (paramInfo->isOut && paramInfo->type->IsClass())
+		{
+			paramInfo->isIn = true;
+			paramInfo->isOut = false;
+		}
+	}
+}
+
 void MethodInfo::ExpandCAPIParameters()
 {
-	// ��1����
+	// 第1引数
 	{
 		if (!isStatic)
 		{
@@ -72,6 +87,8 @@ void MethodInfo::ExpandCAPIParameters()
 		auto info = std::make_shared<ParameterInfo>();
 		info->name = "outReturn";
 		info->type = returnType;
+		info->isIn = false;
+		info->isOut = true;
 		info->isReturn = true;
 		capiParameters.Add(info);
 	}
@@ -101,6 +118,15 @@ String MethodInfo::GetCAPIFuncName()
 	return n;
 }
 
+String MethodInfo::GetCApiSetOverrideCallbackFuncName()
+{
+	return GetCAPIFuncName() + "_SetOverrideCaller";
+}
+
+String MethodInfo::GetCApiSetOverrideCallbackTypeName()
+{
+	return String::Format("LN{0}_{1}_OverrideCaller", owner->name, name);
+}
 
 //==============================================================================
 // TypeInfo
@@ -240,11 +266,7 @@ void SymbolDatabase::Link()
 		{
 			methodInfo->returnType = FindTypeInfo(methodInfo->returnTypeRawName);
 
-			for (auto& paramInfo : methodInfo->parameters)
-			{
-				paramInfo->type = FindTypeInfo(paramInfo->typeRawName);
-			}
-
+			methodInfo->LinkParameters();
 			methodInfo->ExpandCAPIParameters();
 		}
 
@@ -258,11 +280,7 @@ void SymbolDatabase::Link()
 		{
 			methodInfo->returnType = FindTypeInfo(methodInfo->returnTypeRawName);
 
-			for (auto& paramInfo : methodInfo->parameters)
-			{
-				paramInfo->type = FindTypeInfo(paramInfo->typeRawName);
-			}
-
+			methodInfo->LinkParameters();
 			methodInfo->ExpandCAPIParameters();
 		}
 

@@ -75,7 +75,9 @@ namespace Lumino
 
         internal virtual void SetHandle(IntPtr handle)
         {
+            if (_handle != IntPtr.Zero) throw new InvalidOperationException();
             _handle = handle;
+            API.LNObject_AddRef(_handle);
         }
 
         /// <summary>

@@ -10,9 +10,14 @@ public:
 	void Generate(SymbolDatabase* database);
 
 private:
+	String GenerateOverrideCallerFuncPtrs();
+	String GenerateWrapperIFClasses();
+
 	StringA MakeInstanceParamName(TypeInfoPtr info);
 	StringA MakeMethods(TypeInfoPtr typeInfo);
-	StringA MakeParamTypeName(TypeInfoPtr typeInfo, bool isOut);
+	StringA MakeMethod(TypeInfoPtr typeInfo, MethodInfoPtr methodInfo, bool virtualBase);
+	StringA MakeCApiParamTypeName(MethodInfoPtr methodInfo, ParameterInfoPtr paramInfo);
+	StringA MakeCppTypeName(TypeInfoPtr typeInfo);
 	String MakeDocumentComment(DocumentInfoPtr doc);
 
 	SymbolDatabase*	m_database;

@@ -39,6 +39,7 @@ PlatformWindow* Application::GetNativeMainWindow()
 //==============================================================================
 // GameApplication
 //==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(GameApplication, Object);
 
 //------------------------------------------------------------------------------
 GameApplication::GameApplication()
@@ -53,6 +54,12 @@ GameApplication::~GameApplication()
 }
 
 //------------------------------------------------------------------------------
+void GameApplication::Initialize()
+{
+
+}
+
+//------------------------------------------------------------------------------
 void GameApplication::OnConfigure()
 {
 }
@@ -60,9 +67,9 @@ void GameApplication::OnConfigure()
 //------------------------------------------------------------------------------
 void GameApplication::Run(GameScene* initialScene)
 {
-	OnConfigure();
+	//OnConfigure();
 
-	Engine::Initialize();
+	//Engine::Initialize();
 
 	if (initialScene == nullptr)
 		m_gameSceneManager->GotoScene(RefPtr<GameScene>::MakeRef());
@@ -75,7 +82,7 @@ void GameApplication::Run(GameScene* initialScene)
 
 	} while (Engine::Update());
 
-	Engine::Terminate();
+	//Engine::Terminate();
 }
 
 LN_NAMESPACE_END

@@ -6,6 +6,8 @@ class DotNetPInvokeLibGenerator
 public:
 	void Generate();
 
-private:
-	String MakeParamTypeName(ParameterInfoPtr paramInfo);
+	String MakePInvokeMethodDecl(MethodInfoPtr methodInfo, bool virtualBase);
+	String MakePInvokeMethodDeclSetOverrideCallback(MethodInfoPtr methodInfo);
+	static String MakePInvokeMethodDeclParamList(MethodInfoPtr methodInfo);
+	static String MakeParamTypeName(ParameterInfoPtr paramInfo);
 };

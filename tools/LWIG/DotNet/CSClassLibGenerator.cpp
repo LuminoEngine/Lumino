@@ -3,6 +3,7 @@
 #include "../SymbolDatabase.h"
 #include "DotNetCommon.h"
 #include "CSClassLibGenerator.h"
+#include "DotNetPInvokeLibGenerator.h"
 
 static const String MethodBodyTemplate =
 	_T("{\n")
@@ -84,12 +85,18 @@ void CSClassLibGenerator::Generate()
 			}
 			else
 			{
-				String modifier = (methodInfo->isStatic) ? "static" : "";
+				String modifier;
+				if (methodInfo->isStatic) modifier = "static";
+				if (methodInfo->isVirtual) modifier = "virtual";
 				classesText.Append("public {0} {1} {2}({3})", modifier, DotNetCommon::MakeTypeName(methodInfo->returnType), methodInfo->name, params.ToString()).NewLine();
 			}
 
 			// method body
 			classesText.AppendLines(MakeMethodBody(methodInfo, false)).NewLine();
+
+			// override callback
+			if (methodInfo->isVirtual)
+				classesText.AppendLines(MakeOverrideCallbackMethodBody(methodInfo)).NewLine();
 		}
 
 		// internal constructor
@@ -134,6 +141,8 @@ String CSClassLibGenerator::MakeMethodBody(MethodInfoPtr methodInfo, bool isProp
 			callArgs.AppendCommad("Handle");
 		else if (paramInfo->isOut || paramInfo->isReturn)
 			callArgs.AppendCommad("out " + paramInfo->name);
+		else if (paramInfo->type->IsClass())
+			callArgs.AppendCommad(((isProperty) ? "value" : paramInfo->name) + ".Handle");
 		else
 			callArgs.AppendCommad((isProperty) ? "value" : paramInfo->name);
 
@@ -141,20 +150,51 @@ String CSClassLibGenerator::MakeMethodBody(MethodInfoPtr methodInfo, bool isProp
 		if (paramInfo->isReturn)
 		{
 			if (methodInfo->isConstructor)	// クラスコンストラクタの場合は Manager 登録を行う
-				returnStmt = String::Format("InternalManager.RegisterWrapperObject(this, {0});", paramInfo->name);
+				returnStmt = String::Format("InternalManager.RegisterWrapperObject(this, {0}); API.LNObject_Release({0});", paramInfo->name);
 			else
 				returnStmt = String::Format("return {0};", paramInfo->name);
 		}
 	}
 
 	// method body
+	String suffix = (methodInfo->isVirtual) ? "_VirtualBase" : "";
 	methodBody.AppendLines(MethodBodyTemplate
 		.Replace("%InitStmt%", initStmt.ToString())
-		.Replace("%APIFuncName%", methodInfo->GetCAPIFuncName())
+		.Replace("%APIFuncName%", methodInfo->GetCAPIFuncName() + suffix)
 		.Replace("%CallArgList%", callArgs.ToString())
 		.Replace("%ReturnStmt%", returnStmt));
 
 	return methodBody.ToString();
+}
+
+String CSClassLibGenerator::MakeOverrideCallbackMethodBody(MethodInfoPtr methodInfo)
+{
+	static const String MethodTemplate =
+		"private static ResultCode %Method%_OverrideCallback(%CApiParams%)\n"
+		"{\n"
+		"	var obj = InternalManager.GetWrapperObject<%Class%>(gamescene);\n"
+		"	try\n"
+		"	{\n"
+		"		obj.%Method%(%Args%);\n"
+		"	}\n"
+		"	catch (Exception)\n"
+		"	{\n"
+		"		return ResultCode.ErrorUnknown; \n"
+		"	}\n"
+		"	return ResultCode.OK;\n"
+		"}\n";
+
+	return MethodTemplate
+		.Replace("%Method%", methodInfo->name)
+		.Replace("%CApiParams%", DotNetPInvokeLibGenerator::MakePInvokeMethodDeclParamList(methodInfo))
+		.Replace("%Class%", methodInfo->owner->name)
+		.Replace("%Args%", "");
+
+	//OutputBuffer method;
+	//method.Append("private static ResultCode {0}_OverrideCallback({1})", methodInfo->name, DotNetPInvokeLibGenerator::MakePInvokeMethodDeclParamList(methodInfo)).NewLine();
+	//method.Append("{").NewLine();
+	//method.Append("}").NewLine();
+	//return method.ToString();
 }
 
 void CSClassLibGenerator::MakeTypeInfoRegisters(TypeInfoPtr classInfo, OutputBuffer* typeInfoRegistersText, OutputBuffer* typeInfoPInvolesText)

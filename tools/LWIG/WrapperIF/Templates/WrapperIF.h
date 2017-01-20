@@ -4,5 +4,7 @@
 #include "LuminoC.generated.h"
 using namespace ln;
 
+%OverrideCallerFuncPtrs%
+
 %WrapperClasses%
 

@@ -45,6 +45,7 @@ ln_make_output_dir(LN_LIB_OUTPUT_DIR)
 #------------------------------
 # external deps.
 link_libraries(LuminoEngine)
+link_libraries(LuminoFoundation)
 
 #------------------------------
 # Shared library.

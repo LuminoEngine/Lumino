@@ -16,6 +16,7 @@ using namespace ln;
 //------------------------------------------------------------------------------
 #define LWIG_TO_OBJECT(type, h)		static_cast<type*>((h != NULL) ? LFManager::GetObjectEntry(h)->Object : NULL)
 #define LWIG_TO_INDEX(h)			static_cast<int>( h )
+#define LWIG_TO_HANDLE(obj)			LFManager::CheckRegisterObject(obj)
 
 #define LWIG_CREATE_OBJECT(out, type, initFunc, ...)	{ auto ptr = RefPtr<type>::MakeRef(); ptr->initFunc(__VA_ARGS__); *out = LFManager::CheckRegisterObject(ptr); }
 

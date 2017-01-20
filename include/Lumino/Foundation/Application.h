@@ -42,8 +42,11 @@ public:
 /**
 	@brief		ゲームアプリケーションを表します。
 */
+LN_CLASS()
 class GameApplication
+	: public Object
 {
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	GameApplication();
 	virtual ~GameApplication();
@@ -56,9 +59,12 @@ public:
 	/**
 		@brief		アプリケーションを実行します。
 	*/
+	LN_METHOD()
 	void Run(GameScene* initialScene = nullptr);
 
-protected:
+LN_INTERNAL_ACCESS:
+	LN_METHOD()
+	void Initialize();
 
 private:
 	RefPtr<detail::GameSceneManager>	m_gameSceneManager;
