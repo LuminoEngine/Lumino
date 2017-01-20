@@ -954,12 +954,14 @@ endif()
 
 # LuminoEngine
 add_library(LuminoEngine STATIC ${LN_SOURCES})
+set_target_properties(LuminoEngine PROPERTIES OUTPUT_NAME "LuminoEngine${LN_LIB_POSTFIX}")
 set_target_properties(LuminoEngine PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
 target_link_libraries(LuminoEngine ${LN_LINK_LIBS})
 ln_add_pch(LuminoEngine "LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
 
 # Foundation
 add_library(LuminoFoundation STATIC ${LN_SOURCES_Foundation})
+set_target_properties(LuminoFoundation PROPERTIES OUTPUT_NAME "LuminoFoundation${LN_LIB_POSTFIX}")
 set_target_properties(LuminoFoundation PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
 
 #------------------------------

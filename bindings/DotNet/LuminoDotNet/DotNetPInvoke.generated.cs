@@ -203,7 +203,7 @@ namespace Lumino
         public extern static ResultCode LNGameScene_OnStart(IntPtr gamescene);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static ResultCode LNGameScene_OnStart_VirtualBase(IntPtr gamescene);
+        public extern static ResultCode LNGameScene_OnStart_CallVirtualBase(IntPtr gamescene);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNGameScene_OnStart_SetOverrideCaller(LNGameScene_OnStart_OverrideCaller func);

@@ -249,12 +249,12 @@ namespace Lumino
         public virtual void OnStart()
         {
             
-            var result = API.LNGameScene_OnStart_VirtualBase(Handle);
+            var result = API.LNGameScene_OnStart_CallVirtualBase(Handle);
             if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
             
         }
 
-        private static ResultCode OnStart_OverrideCallback(IntPtr gamescene)
+        internal static ResultCode OnStart_OverrideCallback(IntPtr gamescene)
         {
         	var obj = InternalManager.GetWrapperObject<GameScene>(gamescene);
         	try
@@ -322,7 +322,7 @@ namespace Lumino
             _typeInfos.Add(_GameScene);
             LNGameScene_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
 
-
+            API.LNGameScene_OnStart_SetOverrideCaller(GameScene.OnStart_OverrideCallback);
         }
 
         public static TypeInfo GetTypeInfoByHandle(IntPtr handle)

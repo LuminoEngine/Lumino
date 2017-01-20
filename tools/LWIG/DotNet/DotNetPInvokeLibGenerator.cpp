@@ -66,7 +66,7 @@ void DotNetPInvokeLibGenerator::Generate()
 
 String DotNetPInvokeLibGenerator::MakePInvokeMethodDecl(MethodInfoPtr methodInfo, bool virtualBase)
 {
-	String suffix = (virtualBase) ? "_VirtualBase" : "";
+	String suffix = (virtualBase) ? "_CallVirtualBase" : "";
 
 	// DLLImport・型名・関数名
 	String declText = FuncDeclTempalte;

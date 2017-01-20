@@ -96,7 +96,11 @@ void CSClassLibGenerator::Generate()
 
 			// override callback
 			if (methodInfo->isVirtual)
+			{
 				classesText.AppendLines(MakeOverrideCallbackMethodBody(methodInfo)).NewLine();
+				typeInfoRegistersText.Append("API.LN{0}_{1}_SetOverrideCaller({0}.{1}_OverrideCallback);", classInfo->name, methodInfo->name);
+				
+			}
 		}
 
 		// internal constructor
@@ -157,7 +161,7 @@ String CSClassLibGenerator::MakeMethodBody(MethodInfoPtr methodInfo, bool isProp
 	}
 
 	// method body
-	String suffix = (methodInfo->isVirtual) ? "_VirtualBase" : "";
+	String suffix = (methodInfo->isVirtual) ? "_CallVirtualBase" : "";
 	methodBody.AppendLines(MethodBodyTemplate
 		.Replace("%InitStmt%", initStmt.ToString())
 		.Replace("%APIFuncName%", methodInfo->GetCAPIFuncName() + suffix)
@@ -170,7 +174,7 @@ String CSClassLibGenerator::MakeMethodBody(MethodInfoPtr methodInfo, bool isProp
 String CSClassLibGenerator::MakeOverrideCallbackMethodBody(MethodInfoPtr methodInfo)
 {
 	static const String MethodTemplate =
-		"private static ResultCode %Method%_OverrideCallback(%CApiParams%)\n"
+		"internal static ResultCode %Method%_OverrideCallback(%CApiParams%)\n"
 		"{\n"
 		"	var obj = InternalManager.GetWrapperObject<%Class%>(gamescene);\n"
 		"	try\n"

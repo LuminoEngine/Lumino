@@ -162,7 +162,7 @@ LN_API LNResultCode LNSound_Resume(LNHandle sound)
 LN_API LNResultCode LNSound_Initialize(const LNChar* filePath, LNHandle* outSound)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_CREATE_OBJECT(outSound, Sound, Initialize, filePath);
+    LWIG_CREATE_OBJECT(outSound, LNSound, Initialize, filePath);
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API void LNSound_SetBindingTypeInfo(void* data)
@@ -178,7 +178,7 @@ LN_API LNResultCode LNGameApplication_Run(LNHandle gameapplication, LNHandle ini
 LN_API LNResultCode LNGameApplication_Initialize(LNHandle* outGameApplication)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_CREATE_OBJECT(outGameApplication, GameApplication, Initialize, );
+    LWIG_CREATE_OBJECT(outGameApplication, LNGameApplication, Initialize, );
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API void LNGameApplication_SetBindingTypeInfo(void* data)
