@@ -33,6 +33,11 @@ public:
     {
         m_OnStart_OverrideCaller(LWIG_TO_HANDLE(this));
     }
+    template<typename... TArgs>
+    void OnStart_CallBase(TArgs... args)
+    {
+        return GameScene::OnStart(args...);
+    }
 
 };
 GameScene_OnStart_OverrideCaller LNGameScene::m_OnStart_OverrideCaller = nullptr;

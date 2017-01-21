@@ -215,7 +215,7 @@ namespace Test
 
         class MyScene : GameScene
         {
-            public override void OnStart()
+            protected override void OnStart()
             {
                 base.OnStart();
                 Console.WriteLine("OnStart");

@@ -96,67 +96,67 @@ LN_API LNResultCode LNEngine_Update(bool* outReturn)
 LN_API LNResultCode LNSound_SetVolume(LNHandle sound, float volume)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(Sound, sound)->SetVolume(volume);
+    LWIG_TO_OBJECT(LNSound, sound)->SetVolume(volume);
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSound_GetVolume(LNHandle sound, float* outReturn)
 {
     LWIG_FUNC_TRY_BEGIN;
-    *outReturn = LWIG_TO_OBJECT(Sound, sound)->GetVolume();
+    *outReturn = LWIG_TO_OBJECT(LNSound, sound)->GetVolume();
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSound_SetPitch(LNHandle sound, float pitch)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(Sound, sound)->SetPitch(pitch);
+    LWIG_TO_OBJECT(LNSound, sound)->SetPitch(pitch);
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSound_GetPitch(LNHandle sound, float* outReturn)
 {
     LWIG_FUNC_TRY_BEGIN;
-    *outReturn = LWIG_TO_OBJECT(Sound, sound)->GetPitch();
+    *outReturn = LWIG_TO_OBJECT(LNSound, sound)->GetPitch();
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSound_SetLoopEnabled(LNHandle sound, bool enabled)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(Sound, sound)->SetLoopEnabled(enabled);
+    LWIG_TO_OBJECT(LNSound, sound)->SetLoopEnabled(enabled);
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSound_IsLoopEnabled(LNHandle sound, bool* outReturn)
 {
     LWIG_FUNC_TRY_BEGIN;
-    *outReturn = LWIG_TO_OBJECT(Sound, sound)->IsLoopEnabled();
+    *outReturn = LWIG_TO_OBJECT(LNSound, sound)->IsLoopEnabled();
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSound_SetLoopRange(LNHandle sound, uint32_t begin, uint32_t length)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(Sound, sound)->SetLoopRange(begin, length);
+    LWIG_TO_OBJECT(LNSound, sound)->SetLoopRange(begin, length);
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSound_Play(LNHandle sound)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(Sound, sound)->Play();
+    LWIG_TO_OBJECT(LNSound, sound)->Play();
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSound_Stop(LNHandle sound)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(Sound, sound)->Stop();
+    LWIG_TO_OBJECT(LNSound, sound)->Stop();
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSound_Pause(LNHandle sound)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(Sound, sound)->Pause();
+    LWIG_TO_OBJECT(LNSound, sound)->Pause();
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSound_Resume(LNHandle sound)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(Sound, sound)->Resume();
+    LWIG_TO_OBJECT(LNSound, sound)->Resume();
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSound_Initialize(const LNChar* filePath, LNHandle* outSound)
@@ -172,7 +172,7 @@ LN_API void LNSound_SetBindingTypeInfo(void* data)
 LN_API LNResultCode LNGameApplication_Run(LNHandle gameapplication, LNHandle initialScene)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(GameApplication, gameapplication)->Run(LWIG_TO_OBJECT(GameScene, initialScene));
+    LWIG_TO_OBJECT(LNGameApplication, gameapplication)->Run(LWIG_TO_OBJECT(GameScene, initialScene));
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNGameApplication_Initialize(LNHandle* outGameApplication)
@@ -188,13 +188,13 @@ LN_API void LNGameApplication_SetBindingTypeInfo(void* data)
 LN_API LNResultCode LNGameScene_OnStart(LNHandle gamescene)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(GameScene, gamescene)->OnStart();
+    LWIG_TO_OBJECT(LNGameScene, gamescene)->OnStart();
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNGameScene_OnStart_CallVirtualBase(LNHandle gamescene)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(GameScene, gamescene)->GameScene::OnStart();
+    LWIG_TO_OBJECT(LNGameScene, gamescene)->LNGameScene::OnStart_CallBase();
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNGameScene_OnStart_SetOverrideCaller(GameScene_OnStart_OverrideCaller callback)

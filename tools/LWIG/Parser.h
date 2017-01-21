@@ -36,6 +36,7 @@ private:
 	void ParseEnumDecl(const Decl& decl);
 	void ParseEnumMemberDecl(TokenItr begin, TokenItr end, TypeInfoPtr parent);
 	void ParseDocument(const Decl& decl);
+	void ParseAccessLevel(const Decl& decl);
 
 	DocumentInfoPtr MoveLastDocument();
 	MetadataInfoPtr MoveLastMetadata();
@@ -43,5 +44,6 @@ private:
 	SymbolDatabase*	m_database;
 	DocumentInfoPtr	m_lastDocument;
 	MetadataInfoPtr	m_lastMetadata;
+	AccessLevel		m_currentAccessLevel;
 };
 

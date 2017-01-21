@@ -41,7 +41,7 @@ void HeaderParser::ParseFile(const PathName& path)
 		static ParserResult<Decl> Parse_LocalBlock(ParserContext input)
 		{
 			LN_PARSE_RESULT(r1, TokenChar('{'));
-			LN_PARSE_RESULT(r2, Many(Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment)));
+			LN_PARSE_RESULT(r2, Many(Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment) || Parser<Decl>(Parse_AccessLevel)));
 			LN_PARSE_RESULT(r3, TokenChar('}'));
 			return input.Success(Decl{ _T("LocalBlock"), r1.GetMatchBegin(), r3.GetMatchEnd() });
 		}
@@ -65,7 +65,7 @@ void HeaderParser::ParseFile(const PathName& path)
 		{
 			LN_PARSE_RESULT(r1, TokenString("LN_STRUCT"));
 			LN_PARSE_RESULT(r2, UntilMore(TokenChar('{')));
-			LN_PARSE_RESULT(r3, Many(Parser<Decl>(Parse_LN_FIELD) || Parser<Decl>(Parse_LN_METHOD) || Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment)));
+			LN_PARSE_RESULT(r3, Many(Parser<Decl>(Parse_LN_FIELD) || Parser<Decl>(Parse_LN_METHOD) || Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment) || Parser<Decl>(Parse_AccessLevel)));
 			LN_PARSE_RESULT(r4, TokenChar('}'));
 			return input.Success(Decl{ _T("Struct"), r1.GetMatchBegin(), r4.GetMatchEnd(), r3.GetValue() });
 		}
@@ -74,7 +74,7 @@ void HeaderParser::ParseFile(const PathName& path)
 		{
 			LN_PARSE_RESULT(r1, TokenString("LN_CLASS"));
 			LN_PARSE_RESULT(r2, UntilMore(TokenChar('{')));
-			LN_PARSE_RESULT(r3, Many(Parser<Decl>(Parse_LN_FIELD) || Parser<Decl>(Parse_LN_METHOD) || Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment)));
+			LN_PARSE_RESULT(r3, Many(Parser<Decl>(Parse_LN_FIELD) || Parser<Decl>(Parse_LN_METHOD) || Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment) || Parser<Decl>(Parse_AccessLevel)));
 			LN_PARSE_RESULT(r4, TokenChar('}'));
 			return input.Success(Decl{ _T("class"), r1.GetMatchBegin(), r4.GetMatchEnd(), r3.GetValue() });
 		}
@@ -99,9 +99,16 @@ void HeaderParser::ParseFile(const PathName& path)
 			return input.Success(Decl{ _T("document"), r1.GetMatchBegin(), r1.GetMatchEnd() });
 		}
 
+		static ParserResult<Decl> Parse_AccessLevel(ParserContext input)
+		{
+			//LN_PARSE_RESULT(r1, TokenString("public") || TokenString("protected") || TokenString("private") || TokenString("LN_INTERNAL_ACCESS"));
+			LN_PARSE_RESULT(r2, TokenChar(':'));
+			return input.Success(Decl{ _T("AccessLevelLike"), r2.GetMatchBegin(), r2.GetMatchEnd() });
+		}
+
 		static ParserResult<List<Decl>> Parse_File(ParserContext input)
 		{
-			LN_PARSE(r1, Many(Parser<Decl>(Parse_LN_ENUM) || Parser<Decl>(Parse_LN_CLASS) || Parser<Decl>(Parse_LN_STRUCT) || Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment)));
+			LN_PARSE(r1, Many(Parser<Decl>(Parse_LN_ENUM) || Parser<Decl>(Parse_LN_CLASS) || Parser<Decl>(Parse_LN_STRUCT) || Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment) || Parser<Decl>(Parse_AccessLevel)));
 			return input.Success(r1);
 		}
 
@@ -119,6 +126,7 @@ void HeaderParser::ParseFile(const PathName& path)
 				token->EqualString("LN_CLASS", 8) ||
 				token->EqualString("LN_FIELD", 8) ||
 				token->EqualString("LN_METHOD", 9) ||
+				token->EqualChar(':') ||// token->EqualString("public", 6) || token->EqualString("protected", 9) || token->EqualString("private", 6) || token->EqualString("LN_INTERNAL_ACCESS", 18) ||
 				token->GetTokenGroup() == TokenGroup::Eof;	// TODO: これが無くてもいいようにしたい。今はこれがないと、Many中にEOFしたときOutOfRangeする
 		}
 	};
@@ -200,8 +208,10 @@ void HeaderParser::ParseStructDecl(const Decl& decl)
 	info->isStruct = true;
 	m_database->structs.Add(info);
 
+	m_currentAccessLevel = AccessLevel::Public;
 	for (auto& d : decl.decls)
 	{
+		if (d.type == "AccessLevelLike") ParseAccessLevel(d);
 		if (d.type == "document") ParseDocument(d);
 		if (d.type == "field") ParseFieldDecl(d, info);
 		if (d.type == "method") ParseMethodDecl(d, info);
@@ -242,6 +252,7 @@ void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
 	info->owner = parent;
 	info->metadata = MoveLastMetadata();
 	info->document = MoveLastDocument();
+	info->accessLevel = m_currentAccessLevel;
 	info->name = String((declTokens.GetLast())->GetString());	// ( の直前を関数名として取り出す
 	parent->declaredMethods.Add(info);
 
@@ -529,8 +540,10 @@ void HeaderParser::ParseClassDecl(const Decl& decl)
 	//	info->baseClassRawName = (*itr)->GetString();
 	//}
 
+	m_currentAccessLevel = AccessLevel::Private;
 	for (auto& d : decl.decls)
 	{
+		if (d.type == "AccessLevelLike") ParseAccessLevel(d);
 		if (d.type == "document") ParseDocument(d);
 		if (d.type == "method") ParseMethodDecl(d, info);
 	}
@@ -652,6 +665,15 @@ void HeaderParser::ParseDocument(const Decl& decl)
 	}
 
 	m_lastDocument = info;
+}
+
+void HeaderParser::ParseAccessLevel(const Decl& decl)
+{
+	auto t = decl.begin - 1;
+	if ((*t)->EqualString("public")) m_currentAccessLevel = AccessLevel::Public;
+	if ((*t)->EqualString("protected")) m_currentAccessLevel = AccessLevel::Protected;
+	if ((*t)->EqualString("private")) m_currentAccessLevel = AccessLevel::Private;
+	if ((*t)->EqualString("internal")) m_currentAccessLevel = AccessLevel::Internal;
 }
 
 DocumentInfoPtr HeaderParser::MoveLastDocument()

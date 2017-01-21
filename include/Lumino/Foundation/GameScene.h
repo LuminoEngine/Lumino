@@ -49,7 +49,7 @@ class GameScene
 	: public Object
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
-public:
+protected:
 	GameScene();
 	virtual ~GameScene();
 

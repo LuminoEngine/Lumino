@@ -128,6 +128,22 @@ String MethodInfo::GetCApiSetOverrideCallbackTypeName()
 	return String::Format("LN{0}_{1}_OverrideCaller", owner->name, name);
 }
 
+String MethodInfo::GetAccessLevelName(AccessLevel accessLevel)
+{
+	switch (accessLevel)
+	{
+	case AccessLevel::Public:
+		return "public";
+	case AccessLevel::Protected:
+		return "protected";
+	case AccessLevel::Private:
+		return "private";
+	case AccessLevel::Internal:
+		return "internal";
+	}
+	return "";
+}
+
 //==============================================================================
 // TypeInfo
 //==============================================================================

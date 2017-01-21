@@ -79,16 +79,16 @@ void CSClassLibGenerator::Generate()
 			classesText.AppendLines(DotNetCommon::MakeXmlDocument(methodInfo->document));
 
 			// method header
+			String modifier = MethodInfo::GetAccessLevelName(methodInfo->accessLevel);
+			if (methodInfo->isStatic) modifier += " static";
+			if (methodInfo->isVirtual) modifier += " virtual";
 			if (methodInfo->isConstructor)
 			{
-				classesText.Append("public {0}({1}) : base(_LNInternal.InternalBlock)", classInfo->name, params.ToString()).NewLine();
+				classesText.Append("{0} {1}({2}) : base(_LNInternal.InternalBlock)", modifier, classInfo->name, params.ToString()).NewLine();
 			}
 			else
 			{
-				String modifier;
-				if (methodInfo->isStatic) modifier = "static";
-				if (methodInfo->isVirtual) modifier = "virtual";
-				classesText.Append("public {0} {1} {2}({3})", modifier, DotNetCommon::MakeTypeName(methodInfo->returnType), methodInfo->name, params.ToString()).NewLine();
+				classesText.Append("{0} {1} {2}({3})", modifier, DotNetCommon::MakeTypeName(methodInfo->returnType), methodInfo->name, params.ToString()).NewLine();
 			}
 
 			// method body

@@ -163,6 +163,15 @@ String WrapperIFGenerator::GenerateWrapperIFClasses()
 				overrideMethods.Append("{0}({1});", varName, args.ToString()).NewLine();
 				overrideMethods.DecreaseIndent();
 				overrideMethods.Append("}").NewLine();
+
+				// member method
+				overrideMethods.Append("template<typename... TArgs>").NewLine();
+				overrideMethods.Append("{0} {1}_CallBase(TArgs... args)", MakeCppTypeName(methodInfo->returnType), methodInfo->name).NewLine();
+				overrideMethods.Append("{").NewLine();
+				overrideMethods.IncreaseIndent();
+				overrideMethods.Append("return {0}::{1}(args...);", methodInfo->owner->name, methodInfo->name).NewLine();
+				overrideMethods.DecreaseIndent();
+				overrideMethods.Append("}").NewLine();
 			}
 
 			classes.Append(wrapperIFClassTemplate
@@ -318,8 +327,10 @@ StringA WrapperIFGenerator::MakeMethod(TypeInfoPtr typeInfo, MethodInfoPtr metho
 			// 普通のインスタンス 関数
 			else
 			{
-				String prefix = (virtualBase) ? typeInfo->name + "::" : "";
-				callExp = String::Format("LWIG_TO_OBJECT({0}, {1})->{2}({3});", typeInfo->name, MakeInstanceParamName(typeInfo), prefix + methodInfo->name, args.ToString());
+				String name = methodInfo->name;
+				if (virtualBase) 
+					name = ("LN" + typeInfo->name + "::" + name + "_CallBase");
+				callExp = String::Format("LWIG_TO_OBJECT(LN{0}, {1})->{2}({3});", typeInfo->name, MakeInstanceParamName(typeInfo), name, args.ToString());
 			}
 		}
 

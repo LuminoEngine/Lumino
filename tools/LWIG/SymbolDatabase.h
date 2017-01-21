@@ -34,6 +34,14 @@ using MetadataInfoPtr = std::shared_ptr<MetadataInfo>;
 using MethodInfoPtr = std::shared_ptr<MethodInfo>;
 using PropertyInfoPtr = std::shared_ptr<PropertyInfo>;
 
+enum class AccessLevel
+{
+	Public,
+	Protected,
+	Private,
+	Internal,
+};
+
 class ParameterDocumentInfo
 {
 public:
@@ -98,6 +106,7 @@ public:
 	TypeInfoPtr		owner;
 	MetadataInfoPtr	metadata;
 	DocumentInfoPtr	document;
+	AccessLevel		accessLevel = AccessLevel::Public;
 	String			name;
 	TypeInfoPtr		returnType;
 	//IsConstructor
@@ -126,6 +135,8 @@ public:
 	String GetCAPIFuncName();
 	String GetCApiSetOverrideCallbackFuncName();
 	String GetCApiSetOverrideCallbackTypeName();
+
+	static String GetAccessLevelName(AccessLevel accessLevel);
 };
 
 

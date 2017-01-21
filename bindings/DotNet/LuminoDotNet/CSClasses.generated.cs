@@ -140,7 +140,7 @@ namespace Lumino
         /// <remarks>
         /// MIDI の場合、ループ範囲はミュージックタイム単位 (四分音符ひとつ分を 768 で表す) で指定します。
         /// </remarks>
-        public  void SetLoopRange(int begin, int length)
+        public void SetLoopRange(int begin, int length)
         {
             
             var result = API.LNSound_SetLoopRange(Handle, begin, length);
@@ -151,7 +151,7 @@ namespace Lumino
         /// <summary>
         /// この音声の再生を開始します。
         /// </summary>
-        public  void Play()
+        public void Play()
         {
             
             var result = API.LNSound_Play(Handle);
@@ -162,7 +162,7 @@ namespace Lumino
         /// <summary>
         /// この音声の再生を停止します。
         /// </summary>
-        public  void Stop()
+        public void Stop()
         {
             
             var result = API.LNSound_Stop(Handle);
@@ -173,7 +173,7 @@ namespace Lumino
         /// <summary>
         /// この音声の再生を一時停止します。
         /// </summary>
-        public  void Pause()
+        public void Pause()
         {
             
             var result = API.LNSound_Pause(Handle);
@@ -184,7 +184,7 @@ namespace Lumino
         /// <summary>
         /// 一時停止中の再生を再開します。
         /// </summary>
-        public  void Resume()
+        public void Resume()
         {
             
             var result = API.LNSound_Resume(Handle);
@@ -215,7 +215,7 @@ namespace Lumino
         /// <summary>
         /// アプリケーションを実行します。
         /// </summary>
-        public  void Run(GameScene initialScene)
+        public void Run(GameScene initialScene)
         {
             
             var result = API.LNGameApplication_Run(Handle, initialScene.Handle);
@@ -246,7 +246,7 @@ namespace Lumino
         /// <summary>
         /// 開始処理
         /// </summary>
-        public virtual void OnStart()
+        protected virtual void OnStart()
         {
             
             var result = API.LNGameScene_OnStart_CallVirtualBase(Handle);
@@ -268,7 +268,7 @@ namespace Lumino
         	return ResultCode.OK;
         }
 
-        public GameScene() : base(_LNInternal.InternalBlock)
+        protected GameScene() : base(_LNInternal.InternalBlock)
         {
             IntPtr outGameScene;
             var result = API.LNGameScene_Initialize(out outGameScene);
