@@ -75,6 +75,18 @@ LN_API LNResultCode LNVector3_Clamp(LNVector3* vector3, const LNVector3* minVec,
     (reinterpret_cast<Vector3*>(vector3)->Clamp(*reinterpret_cast<const Vector3*>(minVec), *reinterpret_cast<const Vector3*>(maxVec)));
     LWIG_FUNC_TRY_END_RETURN;
 }
+LN_API LNResultCode LNVector3_NormalizeXYZ(float x, float y, float z, LNVector3* outReturn)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    *outReturn = reinterpret_cast<const LNVector3&>(Vector3::Normalize(x, y, z));
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API LNResultCode LNVector3_NormalizeV(const LNVector3* vec, LNVector3* outReturn)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    *outReturn = reinterpret_cast<const LNVector3&>(Vector3::Normalize(*reinterpret_cast<const Vector3*>(vec)));
+    LWIG_FUNC_TRY_END_RETURN;
+}
 LN_API LNResultCode LNEngine_Initialize()
 {
     LWIG_FUNC_TRY_BEGIN;

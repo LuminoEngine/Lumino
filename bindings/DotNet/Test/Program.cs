@@ -9,7 +9,7 @@ namespace Test
 {
     class Program
     {
-#if false
+#if true
         //--------------------------------------------------------------
         static void Test_Struct()
         {
@@ -211,7 +211,7 @@ namespace Test
             }
         }
 #endif
-#if true
+#if false
 
         class MyScene : GameScene
         {

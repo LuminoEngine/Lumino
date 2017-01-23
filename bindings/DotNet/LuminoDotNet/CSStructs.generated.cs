@@ -168,12 +168,52 @@ namespace Lumino
         /// <param name="maxVec">
         /// 最大値
         /// </param>
-        public void Clamp(ref Vector3 minVec, ref Vector3 maxVec)
+        public void Clamp(Vector3 minVec, Vector3 maxVec)
         {
             
             var result = API.LNVector3_Clamp(ref this, ref minVec, ref maxVec);
             if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
             
+        }
+
+        /// <summary>
+        /// 指定ベクトルを正規化したベクトルを返します。
+        /// </summary>
+        /// <param name="x">
+        /// 処理の基になるベクトルの X 要素
+        /// </param>
+        /// <param name="y">
+        /// 処理の基になるベクトルの Y 要素
+        /// </param>
+        /// <param name="z">
+        /// 処理の基になるベクトルの Z 要素
+        /// </param>
+        /// <returns>
+        /// 正規化されたベクトル
+        /// </returns>
+        public static Vector3 Normalize(float x, float y, float z)
+        {
+            Vector3 outReturn = new Vector3();
+            var result = API.LNVector3_NormalizeXYZ(x, y, z, out outReturn);
+            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            return outReturn;
+        }
+
+        /// <summary>
+        /// 指定ベクトルを正規化したベクトルを返します。
+        /// </summary>
+        /// <param name="vec">
+        /// 処理の基になるベクトル
+        /// </param>
+        /// <returns>
+        /// 正規化されたベクトル
+        /// </returns>
+        public static Vector3 Normalize(Vector3 vec)
+        {
+            Vector3 outReturn = new Vector3();
+            var result = API.LNVector3_NormalizeV(ref vec, out outReturn);
+            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            return outReturn;
         }
 
     }

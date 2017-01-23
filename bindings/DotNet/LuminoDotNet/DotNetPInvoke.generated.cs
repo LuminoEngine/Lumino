@@ -108,6 +108,63 @@ namespace Lumino
 
     }
 
+    /// <summary>
+    /// テクスチャのピクセルフォーマット
+    /// </summary>
+    public enum TextureFormat
+    {
+        /// <summary>
+        /// Unknown
+        /// </summary>
+        Unknown = 0,
+
+        /// <summary>
+        /// 32 ビットのアルファ付きフォーマット (GPUネイティブフォーマット。D3D_FMT_A8B8G8R8, DXGI_FORMAT_R8G8B8A8_UNORM)
+        /// </summary>
+        R8G8B8A8 = 1,
+
+        /// <summary>
+        /// 32 ビットのアルファ無しフォーマット
+        /// </summary>
+        R8G8B8X8 = 2,
+
+        /// <summary>
+        /// 32 ビットのアルファ付きフォーマット (GDI互換フォーマット。MME 互換のために定義している)
+        /// </summary>
+        B8G8R8A8 = 3,
+
+        /// <summary>
+        /// 32 ビットのアルファ無しフォーマット
+        /// </summary>
+        B8G8R8X8 = 4,
+
+        /// <summary>
+        /// 64 ビットの浮動小数点フォーマット
+        /// </summary>
+        R16G16B16A16_Float = 5,
+
+        /// <summary>
+        /// 128 ビットの浮動小数点フォーマット
+        /// </summary>
+        R32G32B32A32_Float = 6,
+
+        /// <summary>
+        /// 16 ビットの浮動小数点フォーマット
+        /// </summary>
+        R16_Float = 7,
+
+        /// <summary>
+        /// 32 ビットの浮動小数点フォーマット
+        /// </summary>
+        R32_Float = 8,
+
+        /// <summary>
+        /// S8 32 ビットの深度バッファフォーマット
+        /// </summary>
+        D24S8 = 9,
+
+    }
+
 
 
     public class API
@@ -147,6 +204,12 @@ namespace Lumino
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNVector3_Clamp(ref Vector3 vector3, ref Vector3 minVec, ref Vector3 maxVec);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNVector3_NormalizeXYZ(float x, float y, float z, out Vector3 outReturn);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNVector3_NormalizeV(ref Vector3 vec, out Vector3 outReturn);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNEngine_Initialize();

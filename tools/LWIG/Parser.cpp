@@ -568,6 +568,7 @@ void HeaderParser::ParseEnumDecl(const Decl& decl)
 	info->isEnum = true;
 	m_database->enums.Add(info);
 
+	m_currentEnumValue = 0;
 	TokenItr last = itr;
 	for (auto& d : decl.decls)
 	{
@@ -598,15 +599,18 @@ void HeaderParser::ParseEnumMemberDecl(TokenItr begin, TokenItr end, TypeInfoPtr
 			if ((*itr)->GetTokenGroup() == TokenGroup::ArithmeticLiteral) value = itr;
 			if ((*itr)->EqualChar(',')) break;
 		}
+		m_currentEnumValue = (*value)->GetString().ToInt32();
 	}
 
 	// create info
 	auto info = std::make_shared<ConstantInfo>();
 	info->document = MoveLastDocument();
 	info->name = String((*name)->GetString());
-	info->value = (*value)->GetString().ToInt32();
+	info->value = m_currentEnumValue;
 	info->typeRawName = "int";
 	parent->declaredConstants.Add(info);
+
+	m_currentEnumValue++;
 }
 
 void HeaderParser::ParseDocument(const Decl& decl)

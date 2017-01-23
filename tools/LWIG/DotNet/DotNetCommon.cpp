@@ -34,7 +34,7 @@ String DotNetCommon::MakeParamTypeName(ParameterInfoPtr paramInfo)
 {
 	String m;
 	if (paramInfo->isOut) m += "out ";
-	else if (paramInfo->type->isStruct) m += "ref ";
+	//else if (paramInfo->type->isStruct) m += "ref ";
 
 	return m + MakeTypeName(paramInfo->type);
 }

@@ -300,6 +300,8 @@ StringA WrapperIFGenerator::MakeMethod(TypeInfoPtr typeInfo, MethodInfoPtr metho
 		{
 			if (methodInfo->isConstructor)
 				callExp = String::Format("new (reinterpret_cast<{0}*>({1})) {2}({3});", typeInfo->name, MakeInstanceParamName(typeInfo), methodInfo->name, args.ToString());
+			else if (methodInfo->isStatic)
+				body.Append("({0}::{1}({2}));", typeInfo->name, methodInfo->name, args.ToString());
 			else
 			{
 				String castTo = typeInfo->name;

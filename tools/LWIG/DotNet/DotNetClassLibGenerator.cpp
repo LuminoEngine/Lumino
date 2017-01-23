@@ -69,10 +69,13 @@ void CSStructsGenerator::Generate()
 			structText.AppendLines(DotNetCommon::MakeXmlDocument(methodInfo->document));
 
 			// method header
+			String modifier = MethodInfo::GetAccessLevelName(methodInfo->accessLevel);
+			if (methodInfo->isStatic) modifier += " static";
+			if (methodInfo->isVirtual) modifier += " virtual";
 			if (methodInfo->isConstructor)
-				structText.Append("public {0}({1})", methodInfo->name, params.ToString()).NewLine();
+				structText.Append("{0} {1}({2})", modifier, methodInfo->name, params.ToString()).NewLine();
 			else
-				structText.Append("public {0} {1}({2})", DotNetCommon::MakeTypeName(methodInfo->returnType), methodInfo->name, params.ToString()).NewLine();
+				structText.Append("{0} {1} {2}({3})", modifier, DotNetCommon::MakeTypeName(methodInfo->returnType), methodInfo->name, params.ToString()).NewLine();
 
 			// method body
 			structText.AppendLines(MakeMethodBody(methodInfo, false)).NewLine();

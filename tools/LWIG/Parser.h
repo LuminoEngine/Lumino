@@ -45,5 +45,6 @@ private:
 	DocumentInfoPtr	m_lastDocument;
 	MetadataInfoPtr	m_lastMetadata;
 	AccessLevel		m_currentAccessLevel;
+	int				m_currentEnumValue;
 };
 
