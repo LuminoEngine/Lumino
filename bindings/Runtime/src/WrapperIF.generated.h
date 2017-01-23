@@ -15,6 +15,30 @@ public:
 
 };
 
+class LNTexture : public Texture
+{
+public:
+
+
+
+};
+
+class LNTexture2D : public Texture2D
+{
+public:
+
+
+
+};
+
+class LNGraphicsResourceObject : public GraphicsResourceObject
+{
+public:
+
+
+
+};
+
 class LNGameApplication : public GameApplication
 {
 public:

@@ -207,6 +207,44 @@ namespace Lumino
 
     }
     /// <summary>
+    /// テクスチャのクラスです。
+    /// </summary>
+    public  class Texture
+        : GraphicsResourceObject
+    {
+        internal Texture(_LNInternal i) : base(i) {}
+
+    }
+    /// <summary>
+    /// 2D テクスチャのクラスです。
+    /// </summary>
+    public  class Texture2D
+        : Texture
+    {
+        /// <summary>
+        /// 指定した色でテクスチャ全体を塗りつぶします。
+        /// </summary>
+        public Texture2D(string filePath, TextureFormat format, bool mipmap) : base(_LNInternal.InternalBlock)
+        {
+            IntPtr outTexture2D;
+            var result = API.LNTexture2D_Initialize(filePath, format, mipmap, out outTexture2D);
+            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            InternalManager.RegisterWrapperObject(this, outTexture2D); API.LNObject_Release(outTexture2D);
+        }
+
+        internal Texture2D(_LNInternal i) : base(i) {}
+
+    }
+    /// <summary>
+    /// グラフィックスモジュールの基本的なリソースオブジェクトのベースクラスです。デバイスの状態変化を通知する機能を実装します。
+    /// </summary>
+    public  class GraphicsResourceObject
+        : Object
+    {
+        internal GraphicsResourceObject(_LNInternal i) : base(i) {}
+
+    }
+    /// <summary>
     /// ゲームアプリケーションを表します。
     /// </summary>
     public  class GameApplication
@@ -304,6 +342,33 @@ namespace Lumino
             _typeInfos.Add(_Sound);
             LNSound_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
 
+            var _Texture = new TypeInfo(){ Factory = (handle) =>
+            {
+                var obj = new Texture(_LNInternal.InternalBlock);
+                obj.SetHandle(handle);
+                return obj;
+            }};
+            _typeInfos.Add(_Texture);
+            LNTexture_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
+
+            var _Texture2D = new TypeInfo(){ Factory = (handle) =>
+            {
+                var obj = new Texture2D(_LNInternal.InternalBlock);
+                obj.SetHandle(handle);
+                return obj;
+            }};
+            _typeInfos.Add(_Texture2D);
+            LNTexture2D_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
+
+            var _GraphicsResourceObject = new TypeInfo(){ Factory = (handle) =>
+            {
+                var obj = new GraphicsResourceObject(_LNInternal.InternalBlock);
+                obj.SetHandle(handle);
+                return obj;
+            }};
+            _typeInfos.Add(_GraphicsResourceObject);
+            LNGraphicsResourceObject_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
+
             var _GameApplication = new TypeInfo(){ Factory = (handle) =>
             {
                 var obj = new GameApplication(_LNInternal.InternalBlock);
@@ -336,6 +401,15 @@ namespace Lumino
         
         [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
         private static extern void LNSound_SetBindingTypeInfo(IntPtr data);
+
+        [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+        private static extern void LNTexture_SetBindingTypeInfo(IntPtr data);
+
+        [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+        private static extern void LNTexture2D_SetBindingTypeInfo(IntPtr data);
+
+        [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+        private static extern void LNGraphicsResourceObject_SetBindingTypeInfo(IntPtr data);
 
         [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
         private static extern void LNGameApplication_SetBindingTypeInfo(IntPtr data);

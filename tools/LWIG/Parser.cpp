@@ -448,7 +448,10 @@ void HeaderParser::ParseClassDecl(const Decl& decl)
 		{
 			LN_PARSE_RESULT(r1, TokenChar(':'));
 			LN_PARSE_RESULT(r2, Many(Parser<TypeName>(Parse_BaseTypeName)));
-			return input.Success(r2.GetValue());
+			LN_PARSE_RESULT(r3, Many(Parser<TypeName>(Parse_BaseTypeNameLater)));
+			auto list = r2.GetValue();
+			list.AddRange(r3.GetValue());
+			return input.Success(list);
 		}
 		
 		static ParserResult<TypeName> Parse_BaseTypeName(ParserContext input)
@@ -457,6 +460,15 @@ void HeaderParser::ParseClassDecl(const Decl& decl)
 			LN_PARSE_RESULT(r2, Token(TokenGroup::Identifier));
 			LN_PARSE_RESULT(r3, Optional(Parser<List<flString>>(Parse_TypeParamList)));
 			return input.Success(TypeName{ r2.GetValue()->GetString(), r3.GetValue().GetValue() });
+		}
+
+		static ParserResult<TypeName> Parse_BaseTypeNameLater(ParserContext input)
+		{
+			LN_PARSE_RESULT(r1, TokenChar(','));
+			LN_PARSE_RESULT(r2, TokenString("public"));
+			LN_PARSE_RESULT(r3, Token(TokenGroup::Identifier));
+			LN_PARSE_RESULT(r4, Optional(Parser<List<flString>>(Parse_TypeParamList)));
+			return input.Success(TypeName{ r3.GetValue()->GetString(), r4.GetValue().GetValue() });
 		}
 
 		static ParserResult<List<flString>> Parse_TypeParamList(ParserContext input)

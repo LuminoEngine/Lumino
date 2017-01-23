@@ -373,6 +373,9 @@ TypeInfoPtr SymbolDatabase::FindTypeInfo(StringRef typeName)
 	type = classes.Find([typeName](TypeInfoPtr type) { return type->name == typeName; });
 	if (type != nullptr) return *type;
 
+	type = enums.Find([typeName](TypeInfoPtr type) { return type->name == typeName; });
+	if (type != nullptr) return *type;
+
 	if (typeName == _T("StringRef")) return PredefinedTypes::stringType;
 
 	LN_UNREACHABLE();

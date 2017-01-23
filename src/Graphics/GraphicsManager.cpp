@@ -35,6 +35,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // GraphicsResourceObject
 //==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(GraphicsResourceObject, Object);
 
 //------------------------------------------------------------------------------
 GraphicsResourceObject::GraphicsResourceObject()
@@ -63,11 +64,6 @@ void GraphicsResourceObject::Finalize()
 		m_manager->RemoveResourceObject(this);
 		m_manager = nullptr;
 	}
-}
-
-//------------------------------------------------------------------------------
-void GraphicsResourceObject::ApplyModifies()
-{
 }
 
 namespace detail {
@@ -299,7 +295,7 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 
 
 	m_dymmyWhiteTexture = RefPtr<Texture2D>::MakeRef();
-	m_dymmyWhiteTexture->Initialize(this, SizeI(32, 32), TextureFormat::R8G8B8A8, false, ResourceUsage::Static);
+	m_dymmyWhiteTexture->Initialize(SizeI(32, 32), TextureFormat::R8G8B8A8, false, ResourceUsage::Static);
 	m_dymmyWhiteTexture->Clear(Color32::White);
 }
 

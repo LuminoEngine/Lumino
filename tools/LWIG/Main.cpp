@@ -21,6 +21,8 @@ int main()
 		"../../../../include/Lumino/Audio/Sound.h",
 		"../../../../include/Lumino/Base/GeometryStructs.h",
 		"../../../../include/Lumino/Graphics/Common.h",
+		"../../../../include/Lumino/Graphics/Texture.h",
+		"../../../../include/Lumino/Graphics/GraphicsResourceObject.h",
 		"../../../../external/Lumino.Core/include/Lumino/Math/Vector3.h",
 		"../../../../include/Lumino/Foundation/Application.h",
 		"../../../../include/Lumino/Foundation/GameScene.h",

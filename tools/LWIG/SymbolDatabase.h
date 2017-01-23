@@ -186,7 +186,7 @@ public:
 	TypeInfo() {}
 	TypeInfo(StringRef name_) : name(name_) {}
 
-	bool IsValueType() const { return isStruct || isPrimitive; }
+	bool IsValueType() const { return isStruct || isPrimitive || isEnum; }
 	bool IsStatic() const { return metadata->HasKey(_T("Static")); }
 	bool IsClass() const { return !IsValueType(); }
 

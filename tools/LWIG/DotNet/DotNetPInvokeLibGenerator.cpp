@@ -103,6 +103,7 @@ String DotNetPInvokeLibGenerator::MakeParamTypeName(ParameterInfoPtr paramInfo)
 	if (itr != DotNetCommon::primitiveTypesMap.end()) return m + itr->second;
 
 	if (paramInfo->type->isStruct) return m + paramInfo->type->name;
+	if (paramInfo->type->isEnum) return m + paramInfo->type->name;
 
 	return m + "IntPtr";//typeInfo->name;
 }

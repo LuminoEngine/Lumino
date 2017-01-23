@@ -52,6 +52,7 @@ LN_INTERNAL_ACCESS:
 protected:
 	Texture();
 	virtual ~Texture();
+	virtual void ApplyModifies();
 
 	friend struct ReadLockTextureCommand;
 	friend struct ReadUnlockTextureCommand;
@@ -144,12 +145,11 @@ LN_PROTECTED_INTERNAL_ACCESS:
 LN_CONSTRUCT_ACCESS:
 	Texture2D();
 	virtual ~Texture2D();
+	//LN_METHOD()
+	void Initialize(const SizeI& size, TextureFormat format, bool mipmap, ResourceUsage usage);
 	LN_METHOD()
-	void Initialize(detail::GraphicsManager* manager, const SizeI& size, TextureFormat format, bool mipmap, ResourceUsage usage);
-	LN_METHOD()
-	void Initialize(detail::GraphicsManager* manager, const StringRef& filePath, TextureFormat format, bool mipmap);
-	void Initialize(detail::GraphicsManager* manager, Stream* stream, TextureFormat format, bool mipmap);
-	void Initialize(detail::GraphicsManager* manager, bool isDefaultBackBuffer);
+	void Initialize(const StringRef& filePath, TextureFormat format, bool mipmap);
+	void Initialize(Stream* stream, TextureFormat format, bool mipmap);
 	void TryLock();
 	void SetSubData(const PointI& offset, Bitmap* bitmap);
 	void SetData(const void* data);

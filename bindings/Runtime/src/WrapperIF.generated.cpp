@@ -181,6 +181,24 @@ LN_API void LNSound_SetBindingTypeInfo(void* data)
 {
     tr::TypeInfo::GetTypeInfo<Sound>()->SetBindingTypeInfo(data);
 }
+LN_API void LNTexture_SetBindingTypeInfo(void* data)
+{
+    tr::TypeInfo::GetTypeInfo<Texture>()->SetBindingTypeInfo(data);
+}
+LN_API LNResultCode LNTexture2D_Initialize(const LNChar* filePath, TextureFormat format, bool mipmap, LNHandle* outTexture2D)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    LWIG_CREATE_OBJECT(outTexture2D, LNTexture2D, Initialize, filePath, format, mipmap);
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API void LNTexture2D_SetBindingTypeInfo(void* data)
+{
+    tr::TypeInfo::GetTypeInfo<Texture2D>()->SetBindingTypeInfo(data);
+}
+LN_API void LNGraphicsResourceObject_SetBindingTypeInfo(void* data)
+{
+    tr::TypeInfo::GetTypeInfo<GraphicsResourceObject>()->SetBindingTypeInfo(data);
+}
 LN_API LNResultCode LNGameApplication_Run(LNHandle gameapplication, LNHandle initialScene)
 {
     LWIG_FUNC_TRY_BEGIN;

@@ -257,6 +257,9 @@ namespace Lumino
         public extern static ResultCode LNSound_Initialize(string filePath, out IntPtr outSound);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNTexture2D_Initialize(string filePath, TextureFormat format, bool mipmap, out IntPtr outTexture2D);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNGameApplication_Run(IntPtr gameapplication, IntPtr initialScene);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
