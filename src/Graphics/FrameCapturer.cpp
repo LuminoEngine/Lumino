@@ -3,7 +3,7 @@
 	https://www.w3.org/Graphics/GIF/spec-gif89a.txt
 */
 #include "Internal.h"
-#include <giflib-5.1.4/gif_lib.h>
+#include <gif_lib.h>
 #include "../../../external/jo_gif/jo_gif.cpp"
 #include <Lumino/Threading/Task.h>
 #include <Lumino/Graphics/Texture.h>
