@@ -52,6 +52,8 @@ ln_make_postfix(LN_LIB_POSTFIX)
 #------------------------------------------------------------------------------
 # Output
 #------------------------------------------------------------------------------
+add_definitions(-DLUMINO_ROOT_DIR="${CMAKE_SOURCE_DIR}")
+
 if (LN_EXCEPTION_BACKTRACE)
 	add_definitions(-DLN_EXCEPTION_BACKTRACE)
 endif()

@@ -28,8 +28,8 @@ int main()
 		"../../../../include/Lumino/Foundation/GameScene.h",
 	};
 
-	g_templateDir = LUMINO_ROOT_DIR"/tools/LWIG/";
-	g_csOutputDir = LUMINO_ROOT_DIR"/bindings/DotNet/LuminoDotNet/";
+	g_templateDir = LUMINO_ROOT_DIR"/Tools/LWIG/";
+	g_csOutputDir = LUMINO_ROOT_DIR"/Bindings/DotNet/LuminoDotNet/";
 
 	
 	HeaderParser parser(&g_database);
