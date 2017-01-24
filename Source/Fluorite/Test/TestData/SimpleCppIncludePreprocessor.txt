@@ -1,0 +1,3 @@
+int a;
+#include "SimpleCppIncludePreprocessor.h.txt"
+int d;

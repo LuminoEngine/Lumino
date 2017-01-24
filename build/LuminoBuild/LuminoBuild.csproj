@@ -52,6 +52,9 @@
     <Compile Include="..\RubyPackage.Build.cs">
       <Link>Rules\RubyPackage.Build.cs</Link>
     </Compile>
+    <Compile Include="..\SetupLuminoDependencies.cs">
+      <Link>Rules\SetupLuminoDependencies.cs</Link>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LuminoBuildTool.cs" />

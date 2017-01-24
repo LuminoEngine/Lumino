@@ -1,0 +1,9 @@
+{
+	"member1" : null,
+	"member2" : true,
+	"member3" : false,
+	"member4" : 32.0,
+	"member5" : "string",
+	"member6" : [1, 2],
+	"member7" : {"m1" : 0}
+}

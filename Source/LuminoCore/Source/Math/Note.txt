@@ -1,0 +1,50 @@
+
+■名前付けについて
+
+	XNA は YawPitchRollを指定して Maxtix を作るメソッドの名前は "CreateFromYawPitchRoll"。
+	D3DX は RotationYawPitchRoll。
+	
+	メソッド名を動詞で始めるような規則にするなら "create" で始めるのもアリだけど、
+	LightNote 的に (特に C_API) は "create" は特別な名前すぎるので、これ以外にするべき。
+	
+	参考…
+	
+	Unity
+		this.inverse	(readonly フィールド)
+		this.Rotation	(プロパティ)
+		this.Rotate		(メソッド)
+		Matrix.Perspective	(staticメソッド)
+	
+	XNA
+		Matrix.Invert
+		Matrix.CreateFromYawPitchRoll
+	
+	SlimDX
+		Matrix.Invert
+		Matrix.RotationYawPitchRoll
+		
+		
+	Bullet
+		this.setEuler
+		this.inverse
+	
+	Ogre
+		this.getPitch
+		this.setRotarion(axis, r)
+		this.inverse
+		this.makeInverseTransform
+	
+	cocos2dx
+	gameplay
+		this.inverse
+		Quaternion.createFromAxisAngle
+	
+	Effekseer
+		this.PerspectiveFovLH
+		this.Scalling
+		this.Inverse
+		this.RotationX
+	
+	DXLib
+		Inverse
+

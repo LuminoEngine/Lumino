@@ -1,0 +1,2 @@
+#include "./dir/test1.h"
+int b;
