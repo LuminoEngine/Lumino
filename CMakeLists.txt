@@ -3,6 +3,9 @@ project (LuminoEngine)
 
 include(external/Lumino.Core/cmake/LNCommon.cmake NO_POLICY_SCOPE)
 
+set(LN_DEPENDENCIES_ROOT_DIR "${PROJECT_SOURCE_DIR}/external/LuminoDependencies/")
+include(external/LuminoDependencies/LuminoDependencies.cmake)
+
 set(LN_STATIC_LIB_OUTPUT_NAME "Lumino")
 set(LN_LINK_LIBS "")
 set(LN_UNIT_TEST_LINK_LIBS "")
@@ -854,68 +857,6 @@ add_subdirectory(external/Fluorite)
 # Make postfix.
 ln_make_postfix(LN_LIB_POSTFIX)
 
-add_subdirectory(external/zlib)
-link_libraries(zlib)
-
-add_subdirectory(external/libpng)
-link_libraries(libpng)
-
-add_subdirectory(external/freetype-2.6)
-link_libraries(freetype)
-
-add_subdirectory(external/giflib-5.1.4)
-link_libraries(giflib)
-
-# Audio
-if (LN_BUILD_AUDIO_MODULE)
-	add_subdirectory(external/libogg)
-	link_libraries(libogg)
-	
-	add_subdirectory(external/libvorbis)
-	link_libraries(libvorbis)
-endif()
-
-# Scene
-if (LN_BUILD_SCENE_MODULE)
-	add_subdirectory(external/bullet-2.82)
-	link_libraries(bullet)
-endif()
-
-
-# Effekseer
-if (LN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME)
-	set(USE_MSVC_RUNTIME_LIBRARY_DLL OFF)
-else()
-	set(USE_MSVC_RUNTIME_LIBRARY_DLL ON)
-endif()
-set(USE_INTERNAL_LOADER ON)
-set(USE_GLEW_STATIC OFF)
-set(USE_GLEW_DLL ON)
-set(USE_OPENAL OFF)
-set(USE_OPENGLES2 OFF)
-set(USE_OPENGLES3 OFF)
-set(USE_OPENGL3 OFF)
-#mark_as_advanced(USE_OPENGLES3)
-
-
-if (LN_USE_EXTERNAL_Effekseer)
-	add_subdirectory(external/EffekseerRuntime101/src)
-	link_libraries(effekseer)
-	link_libraries(effekseer_renderer_gl)
-	if (MSVC)
-		link_libraries(effekseer_renderer_dx9)
-		link_libraries(effekseer_sound_xaudio2)
-	endif()
-endif()
-
-set_target_properties(effekseer PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
-set_target_properties(effekseer_renderer_gl PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
-
-if (MSVC)
-	set_target_properties(effekseer_renderer_dx9 PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
-	set_target_properties(effekseer_sound_xaudio2 PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
-endif()
-
 
 
 #------------------------------------------------------------------------------
@@ -956,7 +897,8 @@ endif()
 add_library(LuminoEngine STATIC ${LN_SOURCES})
 set_target_properties(LuminoEngine PROPERTIES OUTPUT_NAME "LuminoEngine${LN_LIB_POSTFIX}")
 set_target_properties(LuminoEngine PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
-target_link_libraries(LuminoEngine ${LN_LINK_LIBS})
+target_include_directories(LuminoEngine PUBLIC ${LN_DEPENDENCIES_INCLUDES})
+target_link_libraries(LuminoEngine ${LN_LINK_LIBS} ${LN_DEPENDENCIES_LIBRARIES})
 ln_add_pch(LuminoEngine "LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
 
 # Foundation

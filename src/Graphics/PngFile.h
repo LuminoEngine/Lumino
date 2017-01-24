@@ -3,7 +3,7 @@
 // 参考；
 // https://svn.gov.pt/projects/ccidadao/repository/middleware-offline/trunk/_src/eidmw/FreeImagePTEiD/Source/FreeImage/PluginPNG.cpp
 //
-#include "../../external/libpng/png.h"
+#include <png.h>
 #include <Lumino/Base/ByteBuffer.h>
 #include <Lumino/IO/Stream.h>
 #include <Lumino/Base/GeometryStructs.h>

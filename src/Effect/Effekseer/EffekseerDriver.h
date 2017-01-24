@@ -1,13 +1,13 @@
 ﻿
 #pragma once
-#include <EffekseerRuntime101/src/Effekseer/Effekseer.h>
+#include <Effekseer.h>
 #if defined(LN_OS_WIN32)
-	#include <EffekseerRuntime101/src/EffekseerRendererDX9/EffekseerRendererDX9.h>
-	#include <EffekseerRuntime101/src/EffekseerSoundXAudio2/EffekseerSoundXAudio2.h>
+	#include <EffekseerRendererDX9.h>
+	#include <EffekseerSoundXAudio2.h>
 #else
 	#include <EffekseerRuntime101/src/EffekseerSoundAL/EffekseerSoundAL.h>
 #endif
-#include <EffekseerRuntime101/src/EffekseerRendererGL/EffekseerRendererGL.h>
+#include <EffekseerRendererGL.h>
 #include <Lumino/Base/Cache.h>
 #include <Lumino/Math/Matrix.h>
 #include <Lumino/IO/FileManager.h>

@@ -1,7 +1,7 @@
 ﻿
 #pragma once
-#include "../../external/libogg/include/ogg/ogg.h"
-#include "../../external/libvorbis/include/vorbis/vorbisfile.h"
+#include <ogg/ogg.h>
+#include <vorbis/vorbisfile.h>
 #include "AudioStream.h"
 
 LN_NAMESPACE_BEGIN
