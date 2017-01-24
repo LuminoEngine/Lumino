@@ -21,7 +21,7 @@ void TestEnv::SetUp()
 	// テストしやすいように固定フレームレートにする
 	Engine::SetFrameUpdateMode(FrameUpdateMode::Fixed);
 
-	RawFont::RegisterFontFile(LN_LOCALFILE("../../tools/VLGothic/VL-Gothic-Regular.ttf"));
+	RawFont::RegisterFontFile(LN_LOCALFILE("../../../../Tools/VLGothic/VL-Gothic-Regular.ttf"));
 	RawFont::GetDefaultFont()->SetName(_T("VL Gothic"));
 
 	// 背景はグレーにしておくと加算合成のテストとか、いろいろ都合がよい
