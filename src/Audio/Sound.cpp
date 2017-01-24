@@ -21,32 +21,35 @@ LN_NAMESPACE_AUDIO_BEGIN
 //==============================================================================
 // Sound
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sound, tr::ReflectionObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sound, Object);
 
 //------------------------------------------------------------------------------
 SoundPtr Sound::Create(const TCHAR* filePath)
 {
-	return CreateInternal(detail::AudioManager::GetInstance(), filePath);
+	auto ptr = SoundPtr::MakeRef();
+	ptr->Initialize(filePath);
+	return ptr;
+	//return CreateInternal(detail::AudioManager::GetInstance(), filePath);
 }
 
 //------------------------------------------------------------------------------
 SoundPtr Sound::Create(Stream* stream, SoundLoadingMode loadingMode)
 {
-	return CreateInternal(detail::AudioManager::GetInstance(), stream, loadingMode);
+	auto ptr = SoundPtr::MakeRef();
+	ptr->Initialize(stream, loadingMode);
+	return ptr;
+	//return CreateInternal(detail::AudioManager::GetInstance(), stream, loadingMode);
 }
 
-//------------------------------------------------------------------------------
-SoundPtr Sound::CreateInternal(detail::AudioManager* manager, const StringRef& filePath)
-{
-	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath, true), false);
-	return SoundPtr(manager->CreateSound(stream, CacheKey(PathName(filePath)), SoundLoadingMode::ASync), false);
-}
-
-//------------------------------------------------------------------------------
-SoundPtr Sound::CreateInternal(detail::AudioManager* manager, Stream* stream, SoundLoadingMode loadingMode)
-{
-	return SoundPtr(manager->CreateSound(stream, CacheKey::Null, loadingMode), false);
-}
+////------------------------------------------------------------------------------
+//SoundPtr Sound::CreateInternal(detail::AudioManager* manager, const StringRef& filePath)
+//{
+//}
+//
+////------------------------------------------------------------------------------
+//SoundPtr Sound::CreateInternal(detail::AudioManager* manager, Stream* stream, SoundLoadingMode loadingMode)
+//{
+//}
 
 //------------------------------------------------------------------------------
 Sound::Sound()
@@ -73,12 +76,53 @@ Sound::~Sound()
 }
 
 //------------------------------------------------------------------------------
-void Sound::Initialize(detail::AudioManager* manager, detail::AudioStream* stream)
+void Sound::Initialize(const StringRef& filePath)
 {
+	detail::AudioManager* manager = detail::AudioManager::GetInstance();
+	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath, true), false);
+	RefPtr<detail::AudioStream> audioStream(manager->CreateAudioStream(stream, CacheKey(PathName(filePath)), SoundLoadingMode::ASync), false);
+
+
+	//manager->CreateSound(stream, CacheKey(PathName(filePath)), SoundLoadingMode::ASync)
+	//return SoundPtr(, false);
+
+
 	LN_CHECK_ARG(manager != nullptr);
 	LN_CHECK_ARG(stream != nullptr);
 	m_manager = manager;
-	LN_REFOBJ_SET(m_audioStream, stream);
+	LN_REFOBJ_SET(m_audioStream, audioStream);
+	m_manager->AddSound(this);
+}
+
+//------------------------------------------------------------------------------
+void Sound::Initialize(Stream* stream, SoundLoadingMode loadingMode)
+{
+	detail::AudioManager* manager = detail::AudioManager::GetInstance();
+	//RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath, true), false);
+	RefPtr<detail::AudioStream> audioStream(manager->CreateAudioStream(stream, CacheKey::Null, SoundLoadingMode::ASync), false);
+
+	//SoundPtr(manager->CreateSound(stream, CacheKey::Null, loadingMode), false);
+
+	LN_CHECK_ARG(manager != nullptr);
+	LN_CHECK_ARG(stream != nullptr);
+	m_manager = manager;
+	LN_REFOBJ_SET(m_audioStream, audioStream);
+
+	if (loadingMode == SoundLoadingMode::Sync) {
+		CreateAudioPlayerSync();
+	}
+	m_manager->AddSound(this);
+}
+
+//------------------------------------------------------------------------------
+void Sound::Initialize(detail::AudioStream* audioStream)
+{
+	detail::AudioManager* manager = detail::AudioManager::GetInstance();
+	LN_CHECK_ARG(manager != nullptr);
+	LN_CHECK_ARG(audioStream != nullptr);
+	m_manager = manager;
+	LN_REFOBJ_SET(m_audioStream, audioStream);
+	m_manager->AddSound(this);
 }
 
 //------------------------------------------------------------------------------

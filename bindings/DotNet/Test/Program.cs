@@ -9,6 +9,7 @@ namespace Test
 {
     class Program
     {
+#if true
         //--------------------------------------------------------------
         static void Test_Struct()
         {
@@ -209,30 +210,42 @@ namespace Test
                     throw new InvalidOperationException();
             }
         }
-
+#endif
 #if false
-        const string TestDataFolder = "../../../../../../test/UnitTest/Graphics/TestData/";
+
+        class MyScene : GameScene
+        {
+            protected override void OnStart()
+            {
+                base.OnStart();
+                Console.WriteLine("OnStart");
+                var s1 = new Sound(@"D:\tmp\light_song_instrumental_0.mp3");
+                s1.Pitch = 1.1f;
+                s1.Play();
+            }
+        }
 
         static void Main(string[] args)
         {
             Engine.Initialize();
 
-            GameAudio.PlayBGM("D:/tmp/GrandSky.mp3");
+            //GameAudio.PlayBGM("D:/tmp/GrandSky.mp3");
 
-            var tex1 = new Texture2D(TestDataFolder + "img1_BYTE_R8G8B8A8_20x20.png");
-            Console.WriteLine(tex1.Size.Width);
+            //var tex1 = new Texture2D(TestDataFolder + "img1_BYTE_R8G8B8A8_20x20.png");
+            //Console.WriteLine(tex1.Size.Width);
 
-            var sp1 = new Sprite2D(tex1);
+            //var sp1 = new Sprite2D(tex1);
 
-            while (!Engine.IsEndRequested())
-            {
-                Engine.UpdateFrame();
-            }
+            //while (Engine.Update())
+            //{
+            //}
+            var app = new GameApplication();
+            app.Run(new MyScene());
 
             Engine.Terminate();
 
 #if false
-            var s1 = new Sound(@"D:\tmp\ZIGG-ZrAGG.mp3");
+            var s1 = new Sound(@"D:\tmp\light_song_instrumental_0.mp3");
             s1.Pitch = 105;
             Console.WriteLine(s1.Pitch);
             Console.WriteLine(s1.Volume);

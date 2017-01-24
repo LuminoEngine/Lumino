@@ -1202,7 +1202,7 @@ void ShaderVariable::OnCommitChanges()
 
 	if (m_textureValue != nullptr)
 	{
-		m_textureValue->ApplyModifies();
+		m_textureValue->ResolveDeviceObject();
 	}
 }
 

@@ -30,7 +30,6 @@ void GLTextureBase::GetGLTextureFormat(TextureFormat format, GLenum* internalFor
 		{ GL_R32F,				GL_RED,				GL_DOUBLE },		// TextureFormat_R32F,
 		{ GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE }, // TextureFormat_D24S8,               ///< 32 ビットの Z バッファフォーマット
 	};
-	assert(LN_ARRAY_SIZE_OF(table) == (int)TextureFormat::_Count);
 	*internalFormat = table[(int)format][0];
 	*pixelFormat = table[(int)format][1];
 	*elementType = table[(int)format][2];

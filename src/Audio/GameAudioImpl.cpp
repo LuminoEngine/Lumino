@@ -70,7 +70,7 @@ void GameAudioImpl::PlayBGM(const TCHAR* filePath, float volume, float pitch, do
 	//	}
 	//}
 
-	auto sound = Sound::CreateInternal(mManager, filePath);
+	auto sound = CreateSound(filePath);
 	//mManager->createSound( filePath, SOUNDPLAYTYPE_STREAMING, false ) );
 
 	PlayBGMFromSound(sound, volume, pitch, fadeTime);
@@ -196,7 +196,7 @@ void GameAudioImpl::PlayBGS(const TCHAR* filePath, float volume, float pitch, do
 	//	}
 	//}
 
-	auto sound = Sound::CreateInternal(mManager, filePath);
+	auto sound = CreateSound(filePath);
 
 	PlayBGSFromSound(sound, volume, pitch, fadeTime);
 
@@ -286,7 +286,7 @@ void GameAudioImpl::StopBGS(double fadeTime)
 //------------------------------------------------------------------------------
 void GameAudioImpl::PlayME(const TCHAR* filePath, float volume, float pitch)
 {
-	auto sound = Sound::CreateInternal(mManager, filePath);
+	auto sound = CreateSound(filePath);
 	PlayMEFromSound(sound, volume, pitch);
 }
 
@@ -367,7 +367,7 @@ void GameAudioImpl::StopME()
 //------------------------------------------------------------------------------
 void GameAudioImpl::PlaySE(const TCHAR* filePath, float volume, float pitch)
 {
-	auto sound = Sound::CreateInternal(mManager, filePath);
+	auto sound = CreateSound(filePath);
 	sound->SetPlayingMode(SoundPlayingMode::OnMemory);
 
 	// ボリューム・ピッチ設定
@@ -387,7 +387,7 @@ void GameAudioImpl::PlaySE(const TCHAR* filePath, float volume, float pitch)
 void GameAudioImpl::PlaySE3D(const TCHAR* filePath, const Vector3& position, float distance, float volume, float pitch)
 {
 	// サウンド作成
-	auto sound = Sound::CreateInternal(mManager, filePath);
+	auto sound = CreateSound(filePath);
 	sound->SetPlayingMode(SoundPlayingMode::OnMemory);
 	sound->Set3DEnabled(true);
 
@@ -410,8 +410,7 @@ void GameAudioImpl::PlaySE3D(const TCHAR* filePath, const Vector3& position, flo
 void GameAudioImpl::PlaySEFromSound(Sound* srcSound, float volume, float pitch)
 {
 	// 受け取った Sound が持っているソースをもとに新しい Sound を作成
-	auto sound = RefPtr<Sound>::MakeRef();
-	sound->Initialize(mManager, srcSound->GetAudioStream());
+	auto sound = CreateSound(srcSound->GetAudioStream());
 	sound->SetPlayingMode(SoundPlayingMode::OnMemory);
 	sound->Set3DEnabled(srcSound->Is3DEnabled());
 
@@ -483,21 +482,6 @@ void GameAudioImpl::SetBGSVolume(float volume, double fadeTime)
 		mBGS->FadeVolume(volume, fadeTime, SoundFadeBehavior::Continue);
 	}
 }
-
-//------------------------------------------------------------------------------
-//Sound* GameAudioImpl::GetInternalGameSound( InternalGameSound type )
-//{
-//	switch ( type )
-//	{
-//		case InternalGameSound_BGM:
-//			return mBGM;
-//		case InternalGameSound_BGS:
-//			return mBGS;
-//		case InternalGameSound_ME:
-//			return mME;
-//	}
-//	return NULL;
-//}
 
 //------------------------------------------------------------------------------
 void GameAudioImpl::Polling()
@@ -579,6 +563,22 @@ void GameAudioImpl::PushReleaseAtPlayEndList(Sound* sound)
 		mReleaseAtPlayEndList.push_back(sound);
 		LN_SAFE_ADDREF(sound);
 	}
+}
+
+//------------------------------------------------------------------------------
+SoundPtr GameAudioImpl::CreateSound(const StringRef& filePath)
+{
+	auto ptr = SoundPtr::MakeRef();
+	ptr->Initialize(filePath);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
+SoundPtr GameAudioImpl::CreateSound(detail::AudioStream* audioStream)
+{
+	auto ptr = SoundPtr::MakeRef();
+	ptr->Initialize(audioStream);
+	return ptr;
 }
 
 } // namespace detail

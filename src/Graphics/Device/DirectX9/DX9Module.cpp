@@ -382,7 +382,7 @@ D3DFORMAT DX9Module::TranslateLNFormatToDxFormat(TextureFormat format)
 		対して、D3DFMT はリトルエンディアンのu32をビットシフトしたときの並びで表している。
 		https://msdn.microsoft.com/ja-jp/library/windows/apps/dn166864.aspx
 	*/
-	static const D3DFORMAT d3dFormats[] =
+	static const std::array<D3DFORMAT, 10> d3dFormats =
 	{
 		D3DFMT_UNKNOWN,			// TextureFormat_Unknown
 
@@ -398,7 +398,7 @@ D3DFORMAT DX9Module::TranslateLNFormatToDxFormat(TextureFormat format)
 
 		D3DFMT_D24S8,			// TextureFormat_D24S8
 	};
-	assert(LN_ARRAY_SIZE_OF(d3dFormats) == (int)TextureFormat::_Count);
+	//assert(LN_ARRAY_SIZE_OF(d3dFormats) == (int)TextureFormat::_Count);
 	return d3dFormats[(int)format];
 }
 

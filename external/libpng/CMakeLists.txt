@@ -26,7 +26,6 @@ add_library(${PROJECT_NAME} STATIC ${LN_LIBPNG_SOURCES})
 include_directories(${PROJECT_SOURCE_DIR}/../zlib)
 
 # Output name setting.
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}${LN_LIB_POSTFIX}")
 set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
 
 if (MSVC)

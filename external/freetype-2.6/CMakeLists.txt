@@ -75,7 +75,6 @@ add_definitions(-DFT_DEBUG_LEVEL_ERROR)
 add_definitions(-DFT_DEBUG_LEVEL_TRACE)
 add_definitions(-DFT2_BUILD_LIBRARY)
 
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}${LN_LIB_POSTFIX}")
 set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
 
 

@@ -76,9 +76,10 @@ private:
 	GameAudioImpl(AudioManager* mamager);
 	~GameAudioImpl();
 
-private:
 	void Polling();
 	void PushReleaseAtPlayEndList(Sound* sound);
+	SoundPtr CreateSound(const StringRef& filePath);
+	SoundPtr CreateSound(detail::AudioStream* audioStream);
 
 private:
 	typedef std::list<Sound*>	ReleaseAtPlayEndList;

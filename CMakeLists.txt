@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.8.7)
-project (Lumino)
+project (LuminoEngine)
 
 include(external/Lumino.Core/cmake/LNCommon.cmake NO_POLICY_SCOPE)
 
@@ -563,10 +563,6 @@ set(LN_SOURCES_Foundation
 	src/Foundation/GameSceneManager.h
 )
 
-set(LN_DLL_SOURCES
-	src/DllMain.cpp
-)
-
 #--------------------------------------
 # External linker source files.
 if (LN_USE_EXTERNAL_Effekseer)
@@ -853,7 +849,7 @@ add_subdirectory(external/Lumino.Core)
 link_libraries(LuminoCore_Static)
 link_libraries(LuminoMath)
 
-#add_subdirectory(external/Fluorite)
+add_subdirectory(external/Fluorite)
 
 # Make postfix.
 ln_make_postfix(LN_LIB_POSTFIX)
@@ -926,6 +922,8 @@ endif()
 # Output
 #------------------------------------------------------------------------------
 
+add_definitions(-DLUMINO_ROOT_DIR="${PROJECT_SOURCE_DIR}")
+
 #set(CMAKE_CXX_FLAGS "")
 #set(CMAKE_CXX_FLAGS_DEBUG "-g -pg")
 #set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -pg -O3")
@@ -940,8 +938,6 @@ endif()
 # library. (Unicode)
 
 if (LN_USE_UNICODE_CHAR_SET)
-	#list(APPEND my_definitions "UNICODE")
-	#list(APPEND my_definitions "_UNICODE")
 	add_definitions(-DUNICODE)
 	add_definitions(-D_UNICODE)
 endif()
@@ -956,31 +952,17 @@ if (LN_USE_EXTERNAL_Effekseer)
 endif()
 
 
-# Lumino_static
-add_library(Lumino_Static STATIC ${LN_SOURCES})
-set_target_properties(Lumino_Static PROPERTIES COMPILE_DEFINITIONS "${my_definitions}")
-set_target_properties(Lumino_Static PROPERTIES OUTPUT_NAME "${LN_STATIC_LIB_OUTPUT_NAME}${LN_LIB_POSTFIX}")
-set_target_properties(Lumino_Static PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
-target_link_libraries(Lumino_Static ${LN_LINK_LIBS})
-ln_add_pch(Lumino_Static "LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
-
-# LuminoRuntime (shared lib)
-#set(LN_DLL_DEFINITIONS "LUMINO_BUILD_DLL"
-add_library(LuminoRuntime SHARED ${LN_DLL_SOURCES})
-#set_target_properties(LuminoRuntime PROPERTIES COMPILE_DEFINITIONS "${my_definitions}")
-target_compile_definitions(LuminoRuntime PRIVATE LUMINO_BUILD_DLL=1)
-target_link_libraries(LuminoRuntime LuminoFoundation Lumino_Static)
-set_target_properties(LuminoRuntime PROPERTIES OUTPUT_NAME "Lumino")
-set_target_properties(LuminoRuntime PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")	# .dll
-set_target_properties(LuminoRuntime PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")	# .lib (linker)
-add_dependencies(LuminoRuntime Lumino_Static)
+# LuminoEngine
+add_library(LuminoEngine STATIC ${LN_SOURCES})
+set_target_properties(LuminoEngine PROPERTIES OUTPUT_NAME "LuminoEngine${LN_LIB_POSTFIX}")
+set_target_properties(LuminoEngine PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
+target_link_libraries(LuminoEngine ${LN_LINK_LIBS})
+ln_add_pch(LuminoEngine "LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
 
 # Foundation
 add_library(LuminoFoundation STATIC ${LN_SOURCES_Foundation})
-set_target_properties(LuminoFoundation PROPERTIES COMPILE_DEFINITIONS "${my_definitions}")
 set_target_properties(LuminoFoundation PROPERTIES OUTPUT_NAME "LuminoFoundation${LN_LIB_POSTFIX}")
 set_target_properties(LuminoFoundation PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
-#target_link_libraries(${PROJECT_NAME}_Static ${LN_LINK_LIBS})
 
 #------------------------------
 # Unit test.
@@ -988,23 +970,20 @@ add_subdirectory(test)
 
 #------------------------------
 # Demo.
-add_subdirectory(demo/LiveExplorer)
 if (LN_DxLib_Demo)
 	add_subdirectory(demo/DxLib)
 endif()
 
 #------------------------------
-# samples.
-#add_subdirectory(sample)
-
-#------------------------------
 #
-if (LN_BUILD_C_API)
-	add_subdirectory(bindings/C_API)
-	add_subdirectory(bindings/C/Test)
-	if (MSVC)
-		add_subdirectory(tools/ArchiveMaker)
-	endif()
+add_subdirectory(bindings/Runtime)
+#add_subdirectory(bindings/C/Test)
+if (MSVC)
+	#add_subdirectory(tools/ArchiveMaker)
 endif()
 
-#add_subdirectory(tools/LNSL)
+if (NOT LN_USE_UNICODE_CHAR_SET)
+	#add_subdirectory(tools/LNSL)
+	add_subdirectory(tools/LWIG)
+endif()
+

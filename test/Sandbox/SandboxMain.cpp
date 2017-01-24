@@ -509,6 +509,7 @@ void Main()
 		//sp->SetTransform(g->GetTargetTransform());
 	});
 
+
 	while (!Engine::IsEndRequested())
 	{
 		Engine::BeginFrameUpdate();

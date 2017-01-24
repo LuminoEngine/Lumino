@@ -65,6 +65,11 @@ TextureFormat Texture::GetFormat() const
 	return m_format;
 }
 
+//------------------------------------------------------------------------------
+void Texture::ApplyModifies()
+{
+}
+
 
 //==============================================================================
 // Texture2D
@@ -92,7 +97,7 @@ Texture2DPtr Texture2D::Create(int width, int height, TextureFormat format, bool
 Texture2DPtr Texture2D::Create(const SizeI& size, TextureFormat format, bool mipmap)
 {
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
-	tex->Initialize(detail::GraphicsManager::GetInstance(), size, format, mipmap, ResourceUsage::Dynamic);
+	tex->Initialize(size, format, mipmap, ResourceUsage::Dynamic);
 	return tex;
 }
 
@@ -100,7 +105,7 @@ Texture2DPtr Texture2D::Create(const SizeI& size, TextureFormat format, bool mip
 Texture2DPtr Texture2D::Create(const StringRef& filePath, TextureFormat format, bool mipmap)
 {
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
-	tex->Initialize(detail::GraphicsManager::GetInstance(), filePath, format, mipmap);
+	tex->Initialize(filePath, format, mipmap);
 	return tex;
 }
 
@@ -108,7 +113,7 @@ Texture2DPtr Texture2D::Create(const StringRef& filePath, TextureFormat format, 
 Texture2DPtr Texture2D::Create(Stream* stream, TextureFormat format, bool mipmap)
 {
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
-	tex->Initialize(detail::GraphicsManager::GetInstance(), stream, format, mipmap);
+	tex->Initialize(stream, format, mipmap);
 	return tex;
 	/*
 	if (GetManager()->IsPlatformTextureLoading())
@@ -154,9 +159,9 @@ Texture2D::Texture2D()
 }
 
 //------------------------------------------------------------------------------
-void Texture2D::Initialize(detail::GraphicsManager* manager, const SizeI& size, TextureFormat format, bool mipmap, ResourceUsage usage)
+void Texture2D::Initialize(const SizeI& size, TextureFormat format, bool mipmap, ResourceUsage usage)
 {
-	GraphicsResourceObject::Initialize(manager);
+	GraphicsResourceObject::Initialize(detail::GraphicsManager::GetInstance());
 
 	m_size = size;
 	m_mipmap = mipmap;
@@ -167,30 +172,30 @@ void Texture2D::Initialize(detail::GraphicsManager* manager, const SizeI& size, 
 	m_primarySurface = LN_NEW Bitmap(size, Utils::TranslatePixelFormat(format));
 
 	// テクスチャを作る
-	m_deviceObj = manager->GetGraphicsDevice()->CreateTexture(size, m_mipmap, format, nullptr);
+	m_deviceObj = m_manager->GetGraphicsDevice()->CreateTexture(size, m_mipmap, format, nullptr);
 
 	m_initializing = true;
 }
 
 //------------------------------------------------------------------------------
-void Texture2D::Initialize(detail::GraphicsManager* manager, const StringRef& filePath, TextureFormat format, bool mipmap)
+void Texture2D::Initialize(const StringRef& filePath, TextureFormat format, bool mipmap)
 {
-	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath), false);
-	Initialize(manager, stream, format, mipmap);
+	RefPtr<Stream> stream(detail::GraphicsManager::GetInstance()->GetFileManager()->CreateFileStream(filePath), false);
+	Initialize(stream, format, mipmap);
 }
 
 //------------------------------------------------------------------------------
 // プラットフォーム依存用
 //------------------------------------------------------------------------------
-void Texture2D::Initialize(detail::GraphicsManager* manager, Stream* stream, TextureFormat format, bool mipmap)
+void Texture2D::Initialize(Stream* stream, TextureFormat format, bool mipmap)
 {
-	GraphicsResourceObject::Initialize(manager);
+	GraphicsResourceObject::Initialize(detail::GraphicsManager::GetInstance());
 	m_mipmap = mipmap;
 	m_format = format;
 
 	if (m_manager->IsPlatformTextureLoading())
 	{
-		m_deviceObj = manager->GetGraphicsDevice()->CreateTexturePlatformLoading(stream, m_mipmap, format);
+		m_deviceObj = m_manager->GetGraphicsDevice()->CreateTexturePlatformLoading(stream, m_mipmap, format);
 		if (m_deviceObj != NULL)
 		{
 			SizeI size = m_deviceObj->GetSize();

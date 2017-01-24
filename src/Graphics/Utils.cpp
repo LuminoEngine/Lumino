@@ -21,7 +21,7 @@ IndexBufferFormat Utils::GetIndexBufferFormat(int indexCount)
 //------------------------------------------------------------------------------
 int Utils::GetTextureFormatByteCount(TextureFormat format)
 {
-	static const int table[] =
+	static const std::array<int, 10> table =
 	{
 		0,		// TextureFormat_Unknown = 0,
 		4,		// TextureFormat_R8G8B8A8,            ///< 32 ビットのアルファ付きフォーマット (GPUネイティブフォーマット。D3D_FMT_A8B8G8R8, DXGI_FORMAT_R8G8B8A8_UNORM)
@@ -34,14 +34,13 @@ int Utils::GetTextureFormatByteCount(TextureFormat format)
 		2,		// TextureFormat_R16F,
 		4,		// TextureFormat_R32F,
 	};
-	assert(LN_ARRAY_SIZE_OF(table) == (int)TextureFormat::_Count);
 	return table[(int)format];
 }
 
 //------------------------------------------------------------------------------
 PixelFormat Utils::TranslatePixelFormat(TextureFormat format)
 {
-	static const PixelFormat table[] =
+	static const std::array<PixelFormat, 10> table =
 	{
 		PixelFormat::Unknown,		// TextureFormat_Unknown = 0,
 
@@ -57,7 +56,6 @@ PixelFormat Utils::TranslatePixelFormat(TextureFormat format)
 		PixelFormat::Unknown,		// TextureFormat_R16F,
 		PixelFormat::Unknown,		// TextureFormat_R32F,
 	};
-	assert(LN_ARRAY_SIZE_OF(table) == (int)TextureFormat::_Count);
 	return table[(int)format];
 }
 

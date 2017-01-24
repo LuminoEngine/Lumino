@@ -189,22 +189,14 @@ AudioPlayer* AudioManager::CreateAudioPlayer(AudioStream* stream, SoundPlayingMo
 }
 
 //------------------------------------------------------------------------------
-Sound* AudioManager::CreateSound(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode)
+void AudioManager::AddSound(Sound* sound)
 {
-	RefPtr<AudioStream> audioStream(CreateAudioStream(stream, key, loadingMode), false);
-	RefPtr<Sound> sound(LN_NEW Sound(), false);
-	sound->Initialize(this, audioStream);
-
-	if (loadingMode == SoundLoadingMode::Sync) {
-		sound->CreateAudioPlayerSync();
-	}
-
 	// 管理リストに追加
 	MutexScopedLock lock(m_soundListMutex);
 	m_addingSoundList.Add(sound);
-	sound.SafeAddRef();	// 管理リストの参照
-	sound.SafeAddRef();	// 外に出すための参照
-	return sound;
+	sound->AddRef();//.SafeAddRef();	// 管理リストの参照
+	//sound.SafeAddRef();	// 外に出すための参照
+	//return sound;
 }
 
 //------------------------------------------------------------------------------

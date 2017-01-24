@@ -14,11 +14,13 @@ typedef RefPtr<Sound>	SoundPtr;
 /**
 	@brief	音声の再生、制御を行います。
 */
+LN_CLASS()
 class Sound
-    : public tr::ReflectionObject
+    : public Object
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
+
 
 	/**
 		@brief	Sound クラスのインスタンスを作成します。
@@ -36,33 +38,39 @@ public:
 		@brief		この音声の音量を設定します。
 		@param[in]	volume	: 音量 (0.0～1.0。初期値は 1.0)
 	*/
+	LN_METHOD(Property)
 	void SetVolume(float volume);
 
 	/**
 		@brief		この音声の音量を取得します。
 	*/
+	LN_METHOD(Property)
 	float GetVolume() const;
 
 	/**
 		@brief		この音声のピッチ (音高) を設定します。
 		@param[in]	volume	: ピッチ (0.5～2.0。初期値は 1.0)
 	*/
+	LN_METHOD(Property)
 	void SetPitch(float pitch);
 
 	/**
 		@brief		この音声のピッチ (音高) を取得します。
 	*/
+	LN_METHOD(Property)
 	float GetPitch() const;
 
 	/**
 		@brief		ループ再生の有無を設定します。
 		@param[in]	enabled		: ループ再生するか
 	*/
+	LN_METHOD(Property)
 	void SetLoopEnabled(bool enabled);
 
 	/**
 		@brief		ループ再生が有効かを確認します。
 	*/
+	LN_METHOD(Property)
 	bool IsLoopEnabled() const;
 
 	/**
@@ -71,26 +79,31 @@ public:
 		@param[in]	length		: ループ範囲のサンプル数
 		@details	MIDI の場合、ループ範囲はミュージックタイム単位 (四分音符ひとつ分を 768 で表す) で指定します。 
 	*/
+	LN_METHOD()
 	void SetLoopRange(uint32_t begin, uint32_t length);
 
 	/**
 		@brief		この音声の再生を開始します。
 	*/
+	LN_METHOD()
 	void Play();
 
 	/**
 		@brief		この音声の再生を停止します。
 	*/
+	LN_METHOD()
 	void Stop();
 
 	/**
 		@brief		この音声の再生を一時停止します。
 	*/
+	LN_METHOD()
 	void Pause();
 
 	/**
 		@brief		一時停止中の再生を再開します。
 	*/
+	LN_METHOD()
 	void Resume();
 
 	/**
@@ -179,11 +192,12 @@ public:
 	bool IsVolumeFading() const;
 
 LN_INTERNAL_ACCESS:
-	static SoundPtr CreateInternal(detail::AudioManager* manager, const StringRef& filePath);
-	static SoundPtr CreateInternal(detail::AudioManager* manager, Stream* stream, SoundLoadingMode loadingMode);
 	Sound();
 	virtual ~Sound();
-	void Initialize(detail::AudioManager* manager, detail::AudioStream* stream);
+	LN_METHOD()
+	void Initialize(const StringRef& filePath);
+	void Initialize(Stream* stream, SoundLoadingMode loadingMode);
+	void Initialize(detail::AudioStream* audioStream);
 	void CreateAudioPlayerSync();
 	void Polling(float elapsedTime);
 

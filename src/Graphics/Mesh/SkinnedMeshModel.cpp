@@ -255,11 +255,11 @@ void SkinnedMeshModel::Initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 		// ボーン行列を書き込むところを作る
 		m_skinningMatrices.Resize(boneCount);
 		m_skinningMatricesTexture = RefPtr<Texture2D>::MakeRef();
-		m_skinningMatricesTexture->Initialize(manager, SizeI(4, boneCount), TextureFormat::R32G32B32A32_Float, false, ResourceUsage::Static);	// TODO: Dynamic、NoManaged
+		m_skinningMatricesTexture->Initialize(SizeI(4, boneCount), TextureFormat::R32G32B32A32_Float, false, ResourceUsage::Static);	// TODO: Dynamic、NoManaged
 
 		m_skinningLocalQuaternions.Resize(boneCount);
 		m_skinningLocalQuaternionsTexture = RefPtr<Texture2D>::MakeRef();
-		m_skinningLocalQuaternionsTexture->Initialize(manager, SizeI(1, boneCount), TextureFormat::R32G32B32A32_Float, false, ResourceUsage::Static);	// TODO: Dynamic、NoManaged
+		m_skinningLocalQuaternionsTexture->Initialize(SizeI(1, boneCount), TextureFormat::R32G32B32A32_Float, false, ResourceUsage::Static);	// TODO: Dynamic、NoManaged
 
 		// アニメーション管理
 		m_animator = RefPtr<Animator>::MakeRef();

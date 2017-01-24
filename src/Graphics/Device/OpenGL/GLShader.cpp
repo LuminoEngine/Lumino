@@ -329,7 +329,7 @@ enum class RenderStateId
 ShaderCompileResultLevel GLSLUtils::MakeShaderProgram(const char* vsCode, size_t vsCodeLen, const char* fsCode, size_t fsCodeLen, GLuint* outProgram, StringA* outMessage)
 {
 	*outProgram = NULL;
-	outMessage->SetEmpty();
+	outMessage->Clear();
 
 	// 頂点シェーダコード
 	const char* vs_codes[] =

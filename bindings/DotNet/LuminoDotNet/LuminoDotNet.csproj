@@ -41,11 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="API.cs" />
-    <Compile Include="Classes.cs" />
     <Compile Include="Common.cs" />
+    <Compile Include="CSClasses.generated.cs" />
+    <Compile Include="CSStructs.generated.cs" />
+    <Compile Include="DotNetPInvoke.generated.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Structs.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -50,7 +50,8 @@ public:
 
 	AudioStream* CreateAudioStream(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode);
 	AudioPlayer* CreateAudioPlayer(AudioStream* stream, SoundPlayingMode mode, bool enable3D);		// 初期化完了済みの AudioStream を渡すこと
-	Sound* CreateSound(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode);
+	//Sound* CreateSound(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode);
+	void AddSound(Sound* sound);
 
 private:
 	void Thread_Polling();
