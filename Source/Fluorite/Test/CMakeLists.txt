@@ -11,12 +11,12 @@ set(LN_TEST_SOURCES
 
 include_directories(
 	"${PROJECT_SOURCE_DIR}"
-	"${PROJECT_SOURCE_DIR}/include"
+	"${PROJECT_SOURCE_DIR}/Include"
 	"${PROJECT_SOURCE_DIR}/test"
 	"${PROJECT_SOURCE_DIR}/test/gtest"
 	"${PROJECT_SOURCE_DIR}/test/gtest/include"
 	"${PROJECT_SOURCE_DIR}/test/gtest/src"
-	"${CMAKE_SOURCE_DIR}/external/Lumino.Core/include"
+	"${PROJECT_SOURCE_DIR}/../LuminoCore/Include"
 )
 	
 link_libraries(Fluorite)

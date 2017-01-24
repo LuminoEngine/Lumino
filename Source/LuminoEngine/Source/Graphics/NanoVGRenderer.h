@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include <Lumino/Graphics/Common.h>
-#include "../../external/nanovg/nanovg.h"
+#include <nanovg/nanovg.h>
 #include <Lumino/Base/GeometryStructs.h>
 #include <Lumino/Graphics/ContextInterface.h>
 #include <Lumino/Math/Matrix.h>

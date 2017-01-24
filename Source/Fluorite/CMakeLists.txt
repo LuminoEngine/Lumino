@@ -53,7 +53,7 @@ source_group("Lexer"		FILES ${LN_FL_SOURCES_Lexer})
 
 set(LN_FL_INCLUDE_DIRECTORIES
 	${PROJECT_SOURCE_DIR}/Include
-	${CMAKE_SOURCE_DIR}/Source/LuminoCore/Include
+	${PROJECT_SOURCE_DIR}/../LuminoCore/Include
 )
 
 #-------------------------------------------------------------------------------

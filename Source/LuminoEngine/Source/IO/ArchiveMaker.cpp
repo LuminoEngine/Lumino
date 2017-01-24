@@ -1,6 +1,6 @@
 ﻿
 #include <string>
-#include "../../external/camellia/camellia.h"
+#include <camellia/camellia.h>
 #include <Lumino/IO/Common.h>
 #include <Lumino/IO/FileSystem.h>
 #include "Archive.h"

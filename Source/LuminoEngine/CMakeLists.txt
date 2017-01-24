@@ -26,10 +26,6 @@ set(LN_LIB_POSTFIX "")
 # Exceprion Backtrace.
 #option(LN_EXCEPTION_BACKTRACE "In some unix environment there is a possibility that can not be compiled." ON)
 
-#option(LN_BUILD_AUDIO_MODULE "Build 'Audio' module." ON)
-#option(LN_BUILD_SCENE_MODULE "Build 'Scene' module." ON)
-#option(LN_BUILD_C_API "Build 'C API' module." OFF)
-#option(LN_USE_EXTERNAL_Effekseer "" ON)
 
 # Architecture.
 #option(LN_BUILD_X64 "Architecture." OFF)
@@ -130,7 +126,6 @@ set(LN_SOURCES_Input
 	Source/Input/InputController.cpp
 )
 
-if (LN_BUILD_AUDIO_MODULE)
 set(LN_SOURCES_Audio
 	Include/LuminoAudio.h
 	Include/Lumino/Audio/Common.h
@@ -163,7 +158,6 @@ set(LN_SOURCES_Audio
 	Source/Audio/WaveDecoder.cpp
 	Source/Audio/WaveDecoder.h
 )
-endif()
 
 set(LN_SOURCES_Physics
 	Include/Lumino/Physics/BodyBase.h
@@ -334,7 +328,6 @@ set(LN_SOURCES_Effect
 	Source/Effect/Internal.h
 )
 
-if (LN_BUILD_SCENE_MODULE)
 set(LN_SOURCES_TileMap
 	Include/Lumino/TileMap/Common.h
 	Include/Lumino/TileMap/TileLayer.h
@@ -444,7 +437,6 @@ set(LN_SOURCES_Scene_MMD
 	Source/Scene/MME/MMEShaderTechnique.h
 	Source/Scene/MME/MMETypes.h
 )
-endif()
 
 set(LN_SOURCES_UI
 	Include/Lumino/UI/Common.h
@@ -760,12 +752,6 @@ set(LN_SOURCES
 #------------------------------------------------------------------------------
 # Apply options
 #------------------------------------------------------------------------------
-# Unicode char set.
-if (LN_USE_UNICODE_CHAR_SET)
-	#add_definitions(-DUNICODE)
-	#add_definitions(-D_UNICODE)
-endif()
-
 find_package(OpenGL REQUIRED)
 
 if (WIN32)
@@ -832,14 +818,9 @@ endif()
 
 set(LN_INCLUDE_DIRECTORIES
 	${PROJECT_SOURCE_DIR}/Include
-	${PROJECT_SOURCE_DIR}/external
-	${PROJECT_SOURCE_DIR}/Source/LuminoCore/Include
-	${PROJECT_SOURCE_DIR}/external/libpng
-	${PROJECT_SOURCE_DIR}/external/bullet-2.82
-	${PROJECT_SOURCE_DIR}/external/freetype-2.6/include
-	${PROJECT_SOURCE_DIR}/external/libogg/include
-	${PROJECT_SOURCE_DIR}/external/glfw-3.1.2/include
-	${PROJECT_SOURCE_DIR}/external/EffekseerRuntime101/Source/Effekseer
+	${PROJECT_SOURCE_DIR}/../LuminoCore/Include
+	${CMAKE_SOURCE_DIR}/external
+	${CMAKE_SOURCE_DIR}/external/glfw-3.1.2/include
 )
 include_directories(${LN_INCLUDE_DIRECTORIES} ${LN_PLATFORM_INCLUDE_DIRS})
 
@@ -877,12 +858,6 @@ endif()
 if (LN_USE_UNICODE_CHAR_SET)
 	add_definitions(-DUNICODE)
 	add_definitions(-D_UNICODE)
-endif()
-if (LN_BUILD_AUDIO_MODULE)
-	add_definitions(-DLN_BUILD_AUDIO_MODULE)
-endif()
-if (LN_BUILD_SCENE_MODULE)
-	add_definitions(-DLN_BUILD_SCENE_MODULE)
 endif()
 if (LN_USE_EXTERNAL_Effekseer)
 	add_definitions(-DLN_USE_EXTERNAL_Effekseer)

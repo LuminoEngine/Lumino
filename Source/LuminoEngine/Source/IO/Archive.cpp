@@ -27,7 +27,7 @@
 
 #include <string>
 #include <algorithm>
-#include "../../external/camellia/camellia.h"
+#include <camellia/camellia.h>
 #include "../Internal.h"
 #include <Lumino/Base/ByteBuffer.h>
 #include <Lumino/Base/Environment.h>

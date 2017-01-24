@@ -214,12 +214,10 @@ EngineManager::~EngineManager()
 		m_physicsManager.SafeRelease();
 		//LN_SAFE_RELEASE(m_physicsManager);
 	}
-#ifdef LN_BUILD_AUDIO_MODULE
 	if (m_audioManager != nullptr) {
 		m_audioManager->Finalize();
 		LN_SAFE_RELEASE(m_audioManager);
 	}
-#endif
 	if (m_inputManager != nullptr) {
 		m_inputManager->Finalize();
 		LN_SAFE_RELEASE(m_inputManager);
@@ -250,9 +248,7 @@ void EngineManager::Initialize()
 	InitializeEffectManager();
 	InitializeModelManager();
 	InitializeUIManager();
-#ifdef LN_BUILD_SCENE_MODULE
 	InitializeSceneGraphManager();
-#endif
 	InitializeAssetsManager();
 
 	EngineDiagCore::Instance.Initialize(this);
@@ -339,7 +335,6 @@ void EngineManager::InitializeInputManager()
 //------------------------------------------------------------------------------
 void EngineManager::InitializeAudioManager()
 {
-#ifdef LN_BUILD_AUDIO_MODULE
 	if (m_audioManager == nullptr)
 	{
 		InitializeCommon();
@@ -364,7 +359,6 @@ void EngineManager::InitializeAudioManager()
 		m_audioManager = LN_NEW detail::AudioManager();
 		m_audioManager->Initialize(settings);
 	}
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -492,7 +486,6 @@ void EngineManager::InitializeUIManager()
 }
 
 //------------------------------------------------------------------------------
-#ifdef LN_BUILD_SCENE_MODULE
 void EngineManager::InitializeSceneGraphManager()
 {
 	if (m_sceneGraphManager == nullptr)
@@ -520,7 +513,6 @@ void EngineManager::InitializeSceneGraphManager()
 		SceneGraphManager::Instance = m_sceneGraphManager;
 	}
 }
-#endif
 
 //------------------------------------------------------------------------------
 void EngineManager::InitializeAssetsManager()
