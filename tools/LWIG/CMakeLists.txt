@@ -27,8 +27,8 @@ set(LN_SOURCES
 source_group("Souece"	FILES ${LN_SOURCES})
 
 include_directories(
-	"${PROJECT_SOURCE_DIR}/external/Lumino.Core/include"
-	"${PROJECT_SOURCE_DIR}/external/Fluorite/include"
+	"${PROJECT_SOURCE_DIR}/Source/LuminoCore/Include"
+	"${PROJECT_SOURCE_DIR}/Source/Fluorite/Include"
 )
 
 add_executable(LWIG ${LN_SOURCES})

@@ -3,10 +3,10 @@
 //
 #include "SS5PlayerPlatform.h"
 #include <set>
-#include "../../src/Graphics/Internal.h"
-#include "../../include/Lumino/Graphics/Color.h"
-#include "../../include/Lumino/Graphics/Texture.h"
-#include "../../src/Graphics/SpriteRenderer.h"
+#include "../../Source/LuminoEngine/Source/Graphics/Internal.h"
+#include <Lumino/Graphics/Color.h>
+#include <Lumino/Graphics/Texture.h>
+#include "../../Source/LuminoEngine/Source/Graphics/SpriteRenderer.h"
 
 /**
 * 各プラットフォームに合わせて処理を作成してください

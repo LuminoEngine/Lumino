@@ -1,7 +1,7 @@
 ﻿cmake_minimum_required (VERSION 3.0.0)
 project (LuminoRuntime)
 
-include(../../external/Lumino.Core/cmake/LNCommon.cmake NO_POLICY_SCOPE)
+include(../../Source/LuminoCore/CMake/LNCommon.cmake NO_POLICY_SCOPE)
 
 #------------------------------------------------------------------------------
 # Files
@@ -29,9 +29,8 @@ set(LN_SOURCES
 
 # include directories.
 set(LN_INCLUDE_DIRECTORIES
-	${CMAKE_SOURCE_DIR}/include
-	${CMAKE_SOURCE_DIR}/external/Lumino.Core/include
-	${CMAKE_SOURCE_DIR}/external/Lumino.Math/include)
+	${CMAKE_SOURCE_DIR}/Source/LuminoEngine/Include
+	${CMAKE_SOURCE_DIR}/Source/LuminoCore/Include)
 	
 # make postfix.
 ln_make_postfix(LN_STATIC_OUTPUT_POSTFIX)

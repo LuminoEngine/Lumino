@@ -1,0 +1,26 @@
+
+[2016/2/19]
+	clang の Parser は再帰下降型。
+	ラムダ式の内部も。
+	ParseAssignmentExpression > ParseCastExpression > ParseLambdaExpression > ParseExpressionList > ParseAssignmentExpression...
+
+	
+	いろいろなところで出てくる Actions メンバ変数は、Sema クラス
+		AST(抽象構文木) を構築するクラス。
+
+[2016/1/19] マクロを実際に展開しないでイテレータで追う？
+	できなくは無いけど複雑になりすぎる。
+
+
+
+参考になるかもしれない
+
+LLVM Reference
+http://llvm.org/docs/LangRef.html
+
+clang::IntegerLiteral Class Reference
+http://clang.llvm.org/doxygen/classclang_1_1IntegerLiteral.html
+
+
+
+

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Manager>
+  <Project Name="AAA">
+    <Branch Name="master" />
+  </Project>
+  <Project Name="BBB">
+    <Branch Name="master" />
+  </Project>
+  <ModifiedCommitList />
+</Manager>
