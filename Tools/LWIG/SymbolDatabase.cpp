@@ -46,6 +46,21 @@ void MethodInfo::LinkParameters()
 			paramInfo->isIn = true;
 			paramInfo->isOut = false;
 		}
+
+		if (paramInfo->rawDefaultValue != nullptr)
+		{
+			String text = paramInfo->rawDefaultValue.Get();
+			if (text.Contains("::"))
+			{
+				auto tokens = text.Split("::");
+				TypeInfoPtr dummy;
+				g_database.FindEnumTypeAndValue(tokens[0], tokens[1], &dummy, &paramInfo->defaultValue);
+			}
+			else
+			{
+				paramInfo->defaultValue = g_database.CreateConstantFromLiteralString(text);
+			}
+		}
 	}
 }
 
@@ -330,6 +345,43 @@ tr::Enumerator<MethodInfoPtr> SymbolDatabase::GetAllMethods()
 	return e;
 }
 
+void SymbolDatabase::FindEnumTypeAndValue(const String& typeName, const String& memberName, TypeInfoPtr* outEnum, ConstantInfoPtr* outMember)
+{
+	for (auto& enumInfo : enums)
+	{
+		if (enumInfo->name == typeName)
+		{
+			for (auto& constantInfo : enumInfo->declaredConstants)
+			{
+				if (constantInfo->name == memberName)
+				{
+					*outEnum = enumInfo;
+					*outMember = constantInfo;
+					return;
+				}
+			}
+		}
+	}
+
+	LN_THROW(0, InvalidOperationException, "Undefined enum: %s::%s", typeName.c_str(), memberName.c_str());
+}
+
+ConstantInfoPtr SymbolDatabase::CreateConstantFromLiteralString(const String& valueStr)
+{
+	auto info = std::make_shared<ConstantInfo>();
+	if (valueStr == "true")
+	{
+		info->type = PredefinedTypes::boolType;
+		info->value = true;
+	}
+	else if (valueStr == "false")
+	{
+		info->type = PredefinedTypes::boolType;
+		info->value = false;
+	}
+	return info;
+}
+
 void SymbolDatabase::InitializePredefineds()
 {
 	predefineds.Add(std::make_shared<TypeInfo>(_T("void")));
@@ -378,6 +430,6 @@ TypeInfoPtr SymbolDatabase::FindTypeInfo(StringRef typeName)
 
 	if (typeName == _T("StringRef")) return PredefinedTypes::stringType;
 
-	LN_UNREACHABLE();
+	LN_THROW(0, InvalidOperationException, "Undefined type: %s", typeName.ToString().c_str());
 	return nullptr;
 }

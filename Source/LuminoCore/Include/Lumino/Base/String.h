@@ -346,6 +346,14 @@ public:
 		@param[in]	delim	: デリミタ文字列
 		@param[in]	option	: 分割方法
 		@return		分割結果の文字列配列
+		@detail		分割が発生しない場合は文字列全体を持つ要素数1の配列を返します。
+					
+					~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+					auto tokens = String("a,b,c").Split(",");		// => ["a", "b", "c"]
+					auto tokens = String("a").Split(",");			// => ["a"]
+					auto tokens = String(",").Split(",");			// => ["", ""]
+					auto tokens = String("a::b").Split("::");		// => ["a", "b"]
+					~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	*/
 	GenericStringArray<TChar> Split(const TChar* delim, StringSplitOptions option = StringSplitOptions::None) const;
 

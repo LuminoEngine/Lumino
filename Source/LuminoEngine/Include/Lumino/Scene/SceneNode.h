@@ -13,6 +13,7 @@ class DrawList;
 class SceneNodeList;
 
 /// SceneNode
+LN_CLASS()
 class SceneNode
 	: public Component
 	//: public tr::ReflectionObject

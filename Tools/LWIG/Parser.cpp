@@ -320,12 +320,18 @@ void HeaderParser::ParseParamsDecl(TokenItr begin, TokenItr end, MethodInfoPtr p
 {
 	auto declTokens = tr::MakeEnumerator::from(begin, end)
 		.Where([](Token* t) { return t->GetTokenGroup() == TokenGroup::Identifier || t->GetTokenGroup() == TokenGroup::Keyword || t->GetTokenGroup() == TokenGroup::Operator || t->GetTokenGroup() == TokenGroup::ArithmeticLiteral; })
-		.ToList();;
-		//.Select([](Token* t) { return t->GetString(); })
-		//
+		.ToList();
+	
+	auto info = std::make_shared<ParameterInfo>();
 
-	//paramEnd = declTokens.end();
 	auto paramEnd = std::find_if(declTokens.begin(), declTokens.end(), [](Token* t) { return t->EqualChar('='); });
+	if (paramEnd != declTokens.end())
+	{
+		// デフォルト引数の解析
+		String value;
+		for (auto itr = paramEnd + 1; itr < declTokens.end(); ++itr) value += (*itr)->GetString();
+		info->rawDefaultValue = value;
+	}
 
 	// , または =(デフォルト引数) の直前を引数名とする
 	auto name = paramEnd - 1;
@@ -336,7 +342,6 @@ void HeaderParser::ParseParamsDecl(TokenItr begin, TokenItr end, MethodInfoPtr p
 	bool hasVirtual;
 	ParseParamType(declTokens.begin(), paramEnd - 1, &typeName, &pointerLevel, &hasConst, &hasVirtual);
 
-	auto info = std::make_shared<ParameterInfo>();
 	info->name = String((*name)->GetString());
 	info->typeRawName = typeName;
 	info->isIn = hasConst;

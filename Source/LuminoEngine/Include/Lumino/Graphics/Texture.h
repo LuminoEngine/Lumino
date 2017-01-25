@@ -148,7 +148,9 @@ LN_CONSTRUCT_ACCESS:
 	//LN_METHOD()
 	void Initialize(const SizeI& size, TextureFormat format, bool mipmap, ResourceUsage usage);
 	LN_METHOD()
-	void Initialize(const StringRef& filePath, TextureFormat format, bool mipmap);
+	void Initialize(int width, int height, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
+	LN_METHOD()
+	void Initialize(const StringRef& filePath, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
 	void Initialize(Stream* stream, TextureFormat format, bool mipmap);
 	void TryLock();
 	void SetSubData(const PointI& offset, Bitmap* bitmap);

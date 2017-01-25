@@ -14,7 +14,7 @@ TEST_F(Test_IO_Process, Example)
 	// <Example> リダイレクト無しで起動。
 	{
 		Process proc;
-		proc.Start(_T("LuminoCore_UnitTest"), _T("--proctest1"));
+		proc.Start(_T("LuminoCore_Test"), _T("--proctest1"));
 		proc.WaitForExit();
 		ASSERT_EQ(5, proc.GetExitCode());
 	}
@@ -23,7 +23,7 @@ TEST_F(Test_IO_Process, Example)
 	{
 		Process proc;
 		proc.SetRedirectStandardOutput(true);
-		proc.Start(_T("LuminoCore_UnitTest"), _T("--proctest1"));
+		proc.Start(_T("LuminoCore_Test"), _T("--proctest1"));
 		ASSERT_EQ(_T("stdout"), proc.GetStandardOutput()->ReadToEnd());
 	}
 
@@ -31,7 +31,7 @@ TEST_F(Test_IO_Process, Example)
 	{
 		Process proc;
 		proc.SetRedirectStandardInput(true);
-		proc.Start(_T("LuminoCore_UnitTest"), _T("--proctest2"));
+		proc.Start(_T("LuminoCore_Test"), _T("--proctest2"));
 		proc.GetStandardInput()->Write(_T("test\n"));	// 改行が必要
 		proc.WaitForExit();
 		ASSERT_EQ(4, proc.GetExitCode());				// 文字数が返ってくる
@@ -42,14 +42,14 @@ TEST_F(Test_IO_Process, Example)
 		Process proc;
 		proc.SetRedirectStandardInput(true);
 		proc.SetRedirectStandardOutput(true);
-		proc.Start(_T("LuminoCore_UnitTest"), _T("--proctest3"));
+		proc.Start(_T("LuminoCore_Test"), _T("--proctest3"));
 		proc.GetStandardInput()->Write(_T("test\n"));	// 改行が必要
 		ASSERT_EQ(_T("[test]"), proc.GetStandardOutput()->ReadToEnd());
 	}
 
 	// <Example> プロセスをシンプルに実行する。
 	{
-		if (Process::Execute(_T("LuminoCore_UnitTest"), _T("--proctest1")) != 5) {
+		if (Process::Execute(_T("LuminoCore_Test"), _T("--proctest1")) != 5) {
 			FAIL();
 		}
 	}
@@ -57,7 +57,7 @@ TEST_F(Test_IO_Process, Example)
 	// <Example> プロセスをシンプルに実行し、標準出力をリダイレクトする。
 	{
 		String stdOutput;
-		if (Process::Execute(_T("LuminoCore_UnitTest"), _T("--proctest1"), &stdOutput) == 5) {
+		if (Process::Execute(_T("LuminoCore_Test"), _T("--proctest1"), &stdOutput) == 5) {
 			ASSERT_EQ(_T("stdout"), stdOutput);
 		}
 		else {
@@ -80,7 +80,7 @@ TEST_F(Test_IO_Process, Example)
 		Process proc;
 		proc.SetRedirectStandardOutput(true);
 		proc.SetOutputDataReceivedCallback(Delegate<void(String)>(&t, &Test::Callback));
-		proc.Start(_T("LuminoCore_UnitTest"), _T("--proctest1"));
+		proc.Start(_T("LuminoCore_Test"), _T("--proctest1"));
 		proc.BeginOutputReadLine();
 		proc.WaitForExit();
 		ASSERT_EQ(_T("stdout"), output);
@@ -107,7 +107,7 @@ TEST_F(Test_IO_Process, Issue)
 		Process proc;
 		proc.SetRedirectStandardOutput(true);
 		proc.SetStandardOutputEncoding(Encoding::GetUTF8Encoding());	// エンコーディングを明示することで回避する
-		proc.Start(_T("LuminoCore_UnitTest"), _T("--proctest4_utf8"));
+		proc.Start(_T("LuminoCore_Test"), _T("--proctest4_utf8"));
 		String str = proc.GetStandardOutput()->ReadToEnd();
 		ASSERT_EQ(_T("あ"), str);
 	}

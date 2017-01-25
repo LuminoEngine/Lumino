@@ -12,6 +12,7 @@ LN_NAMESPACE_SCENE_BEGIN
 class MaterialList2;
 
 /// VisualNode
+LN_CLASS()
 class VisualNode
 	: public SceneNode
 {

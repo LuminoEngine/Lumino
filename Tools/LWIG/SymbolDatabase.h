@@ -27,12 +27,14 @@ class ParameterDocumentInfo;
 class MetadataInfo;
 class MethodInfo;
 class PropertyInfo;
+class ConstantInfo;
 using TypeInfoPtr = std::shared_ptr<TypeInfo>;
 using DocumentInfoPtr = std::shared_ptr<DocumentInfo>;
 using ParameterDocumentInfoPtr = std::shared_ptr<ParameterDocumentInfo>;
 using MetadataInfoPtr = std::shared_ptr<MetadataInfo>;
 using MethodInfoPtr = std::shared_ptr<MethodInfo>;
 using PropertyInfoPtr = std::shared_ptr<PropertyInfo>;
+using ConstantInfoPtr = std::shared_ptr<ConstantInfo>;
 
 enum class AccessLevel
 {
@@ -82,9 +84,10 @@ public:
 	bool	isOut = false;
 	bool	isThis = false;
 	bool	isReturn = false;
-	Nullable<StringA>	defaultValue;
+	ConstantInfoPtr		defaultValue;
 
-	String	typeRawName;
+	String				typeRawName;
+	Nullable<StringA>	rawDefaultValue;
 };
 using ParameterInfoPtr = std::shared_ptr<ParameterInfo>;
 
@@ -163,7 +166,6 @@ public:
 
 	String				typeRawName;
 };
-using ConstantInfoPtr = std::shared_ptr<ConstantInfo>;
 
 class TypeInfo
 {
@@ -178,7 +180,7 @@ public:
 	List<FieldInfoPtr>		declaredFields;
 	List<MethodInfoPtr>		declaredMethods;
 	List<PropertyInfoPtr>	declaredProperties;
-	List<ConstantInfoPtr>	declaredConstants;
+	List<ConstantInfoPtr>	declaredConstants;		// enum メンバ
 	TypeInfoPtr				baseClass;
 
 	String					baseClassRawName;
@@ -220,6 +222,9 @@ public:
 	void Link();
 
 	tr::Enumerator<MethodInfoPtr> GetAllMethods();
+
+	void FindEnumTypeAndValue(const String& typeName, const String& memberName, TypeInfoPtr* outEnum, ConstantInfoPtr* outMember);
+	ConstantInfoPtr CreateConstantFromLiteralString(const String& valueStr);
 
 public:
 	void InitializePredefineds();

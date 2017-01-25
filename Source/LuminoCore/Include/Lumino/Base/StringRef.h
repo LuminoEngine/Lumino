@@ -103,6 +103,9 @@ public:
 		return StringTraits::Mid(GetBegin(), start, count);
 	}
 
+	/** この文字列参照のコピーを持つ文字列を作成します。*/
+	GenericString<TChar> ToString() const;
+
 private:
 	const TChar*						m_str;
 	int									m_pos;
@@ -112,6 +115,12 @@ private:
 	template<typename T> friend class GenericString;
 };
 
+//------------------------------------------------------------------------------
+template<typename TChar>
+GenericString<TChar> GenericStringRef<TChar>::ToString() const
+{
+	return GenericString<TChar>(GetBegin(), GetLength());
+}
 
 //------------------------------------------------------------------------------
 template<typename TChar>
@@ -133,6 +142,7 @@ inline bool operator!=(const GenericStringRef<TChar>& left, const GenericStringR
 {
 	return !right.Equals(left);
 }
+
 
 typedef GenericStringRef<TCHAR>		StringRef;
 typedef GenericStringRef<char>		StringRefA;

@@ -3,48 +3,6 @@
 
 extern "C" {
 
-struct LNSize
-{
-    float width;
-    float height;
-};
-struct LNRectF
-{
-    float x;
-    float y;
-    float width;
-    float height;
-};
-LN_API LNResultCode LNRectF_RectF(LNRectF* rectf)
-{
-    LWIG_FUNC_TRY_BEGIN;
-    new (reinterpret_cast<RectF*>(rectf)) RectF();
-    LWIG_FUNC_TRY_END_RETURN;
-}
-LN_API LNResultCode LNRectF_RectFXYWH(LNRectF* rectf, float x, float y, float width, float height)
-{
-    LWIG_FUNC_TRY_BEGIN;
-    new (reinterpret_cast<RectF*>(rectf)) RectF(x, y, width, height);
-    LWIG_FUNC_TRY_END_RETURN;
-}
-LN_API LNResultCode LNRectF_GetLeft(const LNRectF* rectf, float* outReturn)
-{
-    LWIG_FUNC_TRY_BEGIN;
-    *outReturn = (reinterpret_cast<const RectF*>(rectf)->GetLeft());
-    LWIG_FUNC_TRY_END_RETURN;
-}
-LN_API LNResultCode LNRectF_SetSize(LNRectF* rectf, const LNSize* size)
-{
-    LWIG_FUNC_TRY_BEGIN;
-    (reinterpret_cast<RectF*>(rectf)->SetSize(*reinterpret_cast<const Size*>(size)));
-    LWIG_FUNC_TRY_END_RETURN;
-}
-LN_API LNResultCode LNRectF_GetSize(const LNRectF* rectf, LNSize* outReturn)
-{
-    LWIG_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LNSize&>(reinterpret_cast<const RectF*>(rectf)->GetSize());
-    LWIG_FUNC_TRY_END_RETURN;
-}
 struct LNVector3
 {
     float x;
@@ -85,6 +43,48 @@ LN_API LNResultCode LNVector3_NormalizeV(const LNVector3* vec, LNVector3* outRet
 {
     LWIG_FUNC_TRY_BEGIN;
     *outReturn = reinterpret_cast<const LNVector3&>(Vector3::Normalize(*reinterpret_cast<const Vector3*>(vec)));
+    LWIG_FUNC_TRY_END_RETURN;
+}
+struct LNSize
+{
+    float width;
+    float height;
+};
+struct LNRectF
+{
+    float x;
+    float y;
+    float width;
+    float height;
+};
+LN_API LNResultCode LNRectF_RectF(LNRectF* rectf)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<RectF*>(rectf)) RectF();
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API LNResultCode LNRectF_RectFXYWH(LNRectF* rectf, float x, float y, float width, float height)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<RectF*>(rectf)) RectF(x, y, width, height);
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API LNResultCode LNRectF_GetLeft(const LNRectF* rectf, float* outReturn)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    *outReturn = (reinterpret_cast<const RectF*>(rectf)->GetLeft());
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API LNResultCode LNRectF_SetSize(LNRectF* rectf, const LNSize* size)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    (reinterpret_cast<RectF*>(rectf)->SetSize(*reinterpret_cast<const Size*>(size)));
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API LNResultCode LNRectF_GetSize(const LNRectF* rectf, LNSize* outReturn)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    *outReturn = reinterpret_cast<const LNSize&>(reinterpret_cast<const RectF*>(rectf)->GetSize());
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNEngine_Initialize()
@@ -185,7 +185,13 @@ LN_API void LNTexture_SetBindingTypeInfo(void* data)
 {
     tr::TypeInfo::GetTypeInfo<Texture>()->SetBindingTypeInfo(data);
 }
-LN_API LNResultCode LNTexture2D_Initialize(const LNChar* filePath, TextureFormat format, bool mipmap, LNHandle* outTexture2D)
+LN_API LNResultCode LNTexture2D_Initialize(int width, int height, TextureFormat format, bool mipmap, LNHandle* outTexture2D)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    LWIG_CREATE_OBJECT(outTexture2D, LNTexture2D, Initialize, width, height, format, mipmap);
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API LNResultCode LNTexture2D_InitializeFFM(const LNChar* filePath, TextureFormat format, bool mipmap, LNHandle* outTexture2D)
 {
     LWIG_FUNC_TRY_BEGIN;
     LWIG_CREATE_OBJECT(outTexture2D, LNTexture2D, Initialize, filePath, format, mipmap);

@@ -47,7 +47,7 @@ namespace Test
         {
             var tex1 = new Texture2D(32, 32);
 
-            // 実行エラーになら名ければOK
+            // オーバーロードが解決でき、エラーにならなければOK
             var spr1 = new Sprite2D();
             var spr2 = new Sprite2D(tex1);
         }

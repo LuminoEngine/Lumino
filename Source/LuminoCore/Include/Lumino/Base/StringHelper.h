@@ -245,6 +245,50 @@ public:
 	template<typename TChar>
 	static GenericStringArray<TChar> Split(const GenericString<TChar>& str, const TChar* delim, StringSplitOptions option = StringSplitOptions::None);
 
+	template<typename TChar, typename TLookuped>
+	static void SplitHelper(const TChar* begin, const TChar* end, const TChar* delim, int delimLen, StringSplitOptions option, CaseSensitivity cs, TLookuped callback)
+	{
+		LN_VERIFY_ARG(begin != nullptr);
+		LN_VERIFY_ARG(end != nullptr);
+		LN_VERIFY_ARG(begin <= end);
+		LN_VERIFY_ARG(delim != nullptr);
+
+		delimLen = (delimLen < 0) ? tcslen(delim) : delimLen;
+		const TChar* cur = begin;
+		const TChar* tokenBegin = begin;
+
+		while (cur < end)
+		{
+			if (*cur == *delim && (end - cur >= delimLen) && Compare(cur, delim, delimLen, cs) == 0)
+			{
+				if (option == StringSplitOptions::RemoveEmptyEntries && tokenBegin == cur)
+				{
+					// 空文字列を無視する
+				}
+				else
+				{
+					callback(tokenBegin, cur);
+				}
+				cur += delimLen;
+				tokenBegin = cur;
+			}
+			else
+			{
+				cur++;
+			}
+		}
+
+		// 最後のトークン or デリミタが1つもないとき の分
+		if (option == StringSplitOptions::RemoveEmptyEntries && tokenBegin == cur)
+		{
+			// 空文字列を無視する
+		}
+		else
+		{
+			callback(tokenBegin, cur);
+		}
+	}
+
 	/**
 		@brief		[start] ～ [end - 1] の範囲の先頭が改行かを判別し、一致したら文字数を返す ("\r" か "\n" なら 1、"\r\n" なら 2)
 	*/

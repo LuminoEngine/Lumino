@@ -178,6 +178,12 @@ void Texture2D::Initialize(const SizeI& size, TextureFormat format, bool mipmap,
 }
 
 //------------------------------------------------------------------------------
+void Texture2D::Initialize(int width, int height, TextureFormat format, bool mipmap)
+{
+	Initialize(SizeI(width, height), format, mipmap, ResourceUsage::Dynamic);
+}
+
+//------------------------------------------------------------------------------
 void Texture2D::Initialize(const StringRef& filePath, TextureFormat format, bool mipmap)
 {
 	RefPtr<Stream> stream(detail::GraphicsManager::GetInstance()->GetFileManager()->CreateFileStream(filePath), false);

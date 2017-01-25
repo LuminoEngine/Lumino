@@ -179,21 +179,6 @@ namespace Lumino
         internal const CallingConvention DefaultCallingConvention = CallingConvention.Cdecl;
         
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static ResultCode LNRectF_RectF(ref RectF rectf);
-
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static ResultCode LNRectF_RectFXYWH(ref RectF rectf, float x, float y, float width, float height);
-
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static ResultCode LNRectF_GetLeft(ref RectF rectf, out float outReturn);
-
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static ResultCode LNRectF_SetSize(ref RectF rectf, ref Size size);
-
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static ResultCode LNRectF_GetSize(ref RectF rectf, out Size outReturn);
-
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNVector3_GetLength(ref Vector3 vector3, out float outReturn);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
@@ -210,6 +195,21 @@ namespace Lumino
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNVector3_NormalizeV(ref Vector3 vec, out Vector3 outReturn);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNRectF_RectF(ref RectF rectf);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNRectF_RectFXYWH(ref RectF rectf, float x, float y, float width, float height);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNRectF_GetLeft(ref RectF rectf, out float outReturn);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNRectF_SetSize(ref RectF rectf, ref Size size);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNRectF_GetSize(ref RectF rectf, out Size outReturn);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNEngine_Initialize();
@@ -257,7 +257,10 @@ namespace Lumino
         public extern static ResultCode LNSound_Initialize(string filePath, out IntPtr outSound);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static ResultCode LNTexture2D_Initialize(string filePath, TextureFormat format, bool mipmap, out IntPtr outTexture2D);
+        public extern static ResultCode LNTexture2D_Initialize(int width, int height, TextureFormat format, bool mipmap, out IntPtr outTexture2D);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNTexture2D_InitializeFFM(string filePath, TextureFormat format, bool mipmap, out IntPtr outTexture2D);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNGameApplication_Run(IntPtr gameapplication, IntPtr initialScene);

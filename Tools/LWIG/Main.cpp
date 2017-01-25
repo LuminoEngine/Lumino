@@ -16,61 +16,68 @@ int main()
 {
 	List<PathName> files =
 	{
-		"../../../../bindings/Runtime/include/Common.h",
-		"../../../../include/Lumino/Engine.h",
-		"../../../../include/Lumino/Audio/Sound.h",
-		"../../../../include/Lumino/Base/GeometryStructs.h",
-		"../../../../include/Lumino/Graphics/Common.h",
-		"../../../../include/Lumino/Graphics/Texture.h",
-		"../../../../include/Lumino/Graphics/GraphicsResourceObject.h",
-		"../../../../external/Lumino.Core/include/Lumino/Math/Vector3.h",
-		"../../../../include/Lumino/Foundation/Application.h",
-		"../../../../include/Lumino/Foundation/GameScene.h",
+		LUMINO_ROOT_DIR"/Bindings/Runtime/include/Common.h",
+		LUMINO_ROOT_DIR"/Source/LuminoCore/Include/Lumino/Math/Vector3.h",
+		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Engine.h",
+		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Audio/Sound.h",
+		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Base/GeometryStructs.h",
+		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Graphics/Common.h",
+		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Graphics/Texture.h",
+		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Graphics/GraphicsResourceObject.h",
+		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Foundation/Application.h",
+		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Foundation/GameScene.h",
 	};
 
 	g_templateDir = LUMINO_ROOT_DIR"/Tools/LWIG/";
 	g_csOutputDir = LUMINO_ROOT_DIR"/Bindings/DotNet/LuminoDotNet/";
 
-	
-	HeaderParser parser(&g_database);
-	parser.ParseFiles(files/*, &database*/);
+	try
+	{
 
-	g_database.Link();
+		HeaderParser parser(&g_database);
+		parser.ParseFiles(files/*, &database*/);
 
-	DotNetCommon::Initialize();
+		g_database.Link();
 
-	{
-		WrapperIFGenerator gen;
-		gen.Generate(&g_database);
+		DotNetCommon::Initialize();
+
+		{
+			WrapperIFGenerator gen;
+			gen.Generate(&g_database);
+		}
+		{
+			WrapperIFClassesGenerator gen;
+			gen.Generate();
+		}
+		{
+			DotNetPInvokeLibGenerator g;
+			g.Generate();
+		}
+		{
+			CSStructsGenerator g;
+			g.Generate();
+		}
+		{
+			CSClassLibGenerator g;
+			g.Generate();
+		}
+
+		//
+		//
+		//{
+		//	DotNetPInvokeLibGenerator gen;
+		//	gen.Generate(&database);
+		//}
+		//
+		//{
+		//	DotNetClassLibGenerator gen;
+		//	gen.Generate(&database);
+		//}
 	}
+	catch (Exception& e)
 	{
-		WrapperIFClassesGenerator gen;
-		gen.Generate();
+		Console::WriteLine(e.GetMessage());
 	}
-	{
-		DotNetPInvokeLibGenerator g;
-		g.Generate();
-	}
-	{
-		CSStructsGenerator g;
-		g.Generate();
-	}
-	{
-		CSClassLibGenerator g;
-		g.Generate();
-	}
-	
-	//
-	//
-	//{
-	//	DotNetPInvokeLibGenerator gen;
-	//	gen.Generate(&database);
-	//}
-	//
-	//{
-	//	DotNetClassLibGenerator gen;
-	//	gen.Generate(&database);
-	//}
 	
 	return 0;
 }

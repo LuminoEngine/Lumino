@@ -58,7 +58,7 @@ namespace Lumino
     {
         /// <summary>
         /// この音声の音量を取得します。
-        /// この音声の音量を設定します。
+        /// この音声の音量を設定します。@param[in]	volume	: 音量 (0.0～1.0。初期値は 1.0)
         /// </summary>
         public float Volume
         {
@@ -80,7 +80,7 @@ namespace Lumino
 
         /// <summary>
         /// この音声のピッチ (音高) を取得します。
-        /// この音声のピッチ (音高) を設定します。
+        /// この音声のピッチ (音高) を設定します。@param[in]	volume	: ピッチ (0.5～2.0。初期値は 1.0)
         /// </summary>
         public float Pitch
         {
@@ -101,7 +101,7 @@ namespace Lumino
         }
 
         /// <summary>
-        /// ループ再生の有無を設定します。
+        /// ループ再生の有無を設定します。@param[in]	enabled		: ループ再生するか
         /// </summary>
         public bool LoopEnabled
         {
@@ -129,14 +129,8 @@ namespace Lumino
         }
 
         /// <summary>
-        /// ループ範囲を設定します。
+        /// ループ範囲を設定します。@param[in]	begin		: ループ範囲の開始サンプル@param[in]	length		: ループ範囲のサンプル数
         /// </summary>
-        /// <param name="begin">
-        /// ループ範囲の開始サンプル
-        /// </param>
-        /// <param name="length">
-        /// ループ範囲のサンプル数
-        /// </param>
         /// <remarks>
         /// MIDI の場合、ループ範囲はミュージックタイム単位 (四分音符ひとつ分を 768 で表す) で指定します。
         /// </remarks>
@@ -224,10 +218,18 @@ namespace Lumino
         /// <summary>
         /// 指定した色でテクスチャ全体を塗りつぶします。
         /// </summary>
-        public Texture2D(string filePath, TextureFormat format, bool mipmap) : base(_LNInternal.InternalBlock)
+        public Texture2D(int width, int height, TextureFormat format = 1, bool mipmap = 1) : base(_LNInternal.InternalBlock)
         {
             IntPtr outTexture2D;
-            var result = API.LNTexture2D_Initialize(filePath, format, mipmap, out outTexture2D);
+            var result = API.LNTexture2D_Initialize(width, height, format, mipmap, out outTexture2D);
+            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            InternalManager.RegisterWrapperObject(this, outTexture2D); API.LNObject_Release(outTexture2D);
+        }
+
+        public Texture2D(string filePath, TextureFormat format = 1, bool mipmap = 1) : base(_LNInternal.InternalBlock)
+        {
+            IntPtr outTexture2D;
+            var result = API.LNTexture2D_InitializeFFM(filePath, format, mipmap, out outTexture2D);
             if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
             InternalManager.RegisterWrapperObject(this, outTexture2D); API.LNObject_Release(outTexture2D);
         }
@@ -253,7 +255,7 @@ namespace Lumino
         /// <summary>
         /// アプリケーションを実行します。
         /// </summary>
-        public void Run(GameScene initialScene)
+        public void Run(GameScene initialScene = 1)
         {
             
             var result = API.LNGameApplication_Run(Handle, initialScene.Handle);

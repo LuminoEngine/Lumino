@@ -73,6 +73,12 @@ void CSClassLibGenerator::Generate()
 			for (auto& paramInfo : methodInfo->parameters)
 			{
 				params.AppendCommad("{0} {1}", DotNetCommon::MakeParamTypeName(paramInfo), paramInfo->name);
+
+				// default value
+				if (paramInfo->defaultValue != nullptr)
+				{
+					params.Append(" = 1");
+				}
 			}
 
 			// xml document
