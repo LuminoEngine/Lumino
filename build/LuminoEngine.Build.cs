@@ -50,12 +50,14 @@ class LuminoEngineRule : ModuleRule
         {
             var targets = new []
             {
-                new { DirName = "build_msvc120x86_MT", VSTarget = "Visual Studio 12", Unicode = "OFF", Platform="Win32" },
-                new { DirName = "build_msvc120x86u_MT", VSTarget = "Visual Studio 12", Unicode = "ON", Platform="Win32" },
+                new { DirName = "Build_MSVC120x86_MT", VSTarget = "Visual Studio 12", Unicode = "OFF", Platform="Win32", MSVCStaticRuntime = "ON" },
+                new { DirName = "Build_MSVC120x86U_MT", VSTarget = "Visual Studio 12", Unicode = "ON", Platform="Win32", MSVCStaticRuntime = "ON" },
+                new { DirName = "Build_MSVC120x86_MD", VSTarget = "Visual Studio 12", Unicode = "OFF", Platform="Win32", MSVCStaticRuntime = "OFF" },
+                new { DirName = "Build_MSVC120x86U_MD", VSTarget = "Visual Studio 12", Unicode = "ON", Platform="Win32", MSVCStaticRuntime = "OFF" },
                 //new { DirName = "build_msvc120x64_MT", VSTarget = "Visual Studio 12 Win64", Unicode = "OFF" },
                 //new { DirName = "build_msvc120x64u_MT", VSTarget = "Visual Studio 12 Win64", Unicode = "ON" },
-                new { DirName = "build_msvc140x86_MT", VSTarget = "Visual Studio 14", Unicode = "OFF", Platform="Win32" },
-                new { DirName = "build_msvc140x86u_MT", VSTarget = "Visual Studio 14", Unicode = "ON", Platform="Win32" },
+                new { DirName = "Build_MSVC140x86_MT", VSTarget = "Visual Studio 14", Unicode = "OFF", Platform="Win32", MSVCStaticRuntime = "ON" },
+                new { DirName = "Build_MSVC140x86U_MT", VSTarget = "Visual Studio 14", Unicode = "ON", Platform="Win32", MSVCStaticRuntime = "ON" },
                 //new { DirName = "build_msvc140x64_MT", VSTarget = "Visual Studio 14 Win64", Unicode = "OFF" },
                 //new { DirName = "build_msvc140x64u_MT", VSTarget = "Visual Studio 14 Win64", Unicode = "ON" },
             };
@@ -65,7 +67,7 @@ class LuminoEngineRule : ModuleRule
             {
                 Directory.CreateDirectory(builder.LuminoBuildDir + t.DirName);
                 Directory.SetCurrentDirectory(builder.LuminoBuildDir + t.DirName);
-                if (Utils.TryCallProcess("cmake", string.Format("-G\"{0}\" -DLN_USE_UNICODE_CHAR_SET={1} -DLN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME=ON ../..", t.VSTarget, t.Unicode)) == 0)
+                if (Utils.TryCallProcess("cmake", string.Format("-G\"{0}\" -DLN_USE_UNICODE_CHAR_SET={1} -DLN_MSVC_STATIC_RUNTIME={2} ../..", t.VSTarget, t.Unicode, t.MSVCStaticRuntime)) == 0)
                 {
                     Utils.CallProcess(_msbuild, string.Format("Lumino.sln /t:Build /p:Configuration=\"Debug\" /p:Platform=\"{0}\" /m", t.Platform));
                     Utils.CallProcess(_msbuild, string.Format("Lumino.sln /t:Build /p:Configuration=\"Release\" /p:Platform=\"{0}\" /m", t.Platform));

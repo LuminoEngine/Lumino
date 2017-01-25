@@ -16,14 +16,14 @@ namespace LuminoBuild
             var builder = new LuminoBuildTool.Builder();
             builder.VersionString = "0.3.0a1";
             builder.LuminoRootDir = Path.GetFullPath(Path.Combine(exeDir, "../../../..")) + "/"; // .sln のあるフォルダ
-            builder.LuminoBuildDir = builder.LuminoRootDir + "build/";
-            builder.LuminoBindingsDir = builder.LuminoRootDir + "bindings/";
+            builder.LuminoBuildDir = builder.LuminoRootDir + "Build/";
+            builder.LuminoBindingsDir = builder.LuminoRootDir + "Bindings/";
             builder.LuminoLibDir = builder.LuminoRootDir + "lib/";
-            builder.LuminoToolsDir = builder.LuminoRootDir + "tools/";
-            builder.LuminoDocDir = builder.LuminoRootDir + "doc/";
-            builder.LuminoPackageDir = builder.LuminoRootDir + "package/";
-            builder.LuminoPackageSourceDir = builder.LuminoRootDir + "package/PackageSource/";
-            builder.LuminoPackageReleaseDir = builder.LuminoRootDir + "package/Release/" + builder.VersionString + "/";
+            builder.LuminoToolsDir = builder.LuminoRootDir + "Tools/";
+            builder.LuminoDocDir = builder.LuminoRootDir + "Documentation/";
+            builder.LuminoPackageDir = builder.LuminoRootDir + "Package/";
+            builder.LuminoPackageSourceDir = builder.LuminoRootDir + "Package/PackageSource/";
+            builder.LuminoPackageReleaseDir = builder.LuminoRootDir + "Package/Release/" + builder.VersionString + "/";
 
             builder.Rules = new List<LuminoBuildTool.ModuleRule>();
             builder.Rules.Add(new SetupDependencies());

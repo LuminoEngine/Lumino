@@ -157,7 +157,7 @@ namespace LuminoBuildTool
         /// <param name="stSourcePath">St source path.</param>
         /// <param name="stDestPath">St destination path.</param>
         /// <param name="bOverwrite">If set to <c>true</c> b overwrite.</param>
-        public static void CopyDirectory(string stSourcePath, string stDestPath, bool bOverwrite = true)
+        public static void CopyDirectory(string stSourcePath, string stDestPath, bool bOverwrite = true, string pattern = "*")
         {
             // コピー先のディレクトリがなければ作成する
             if (!System.IO.Directory.Exists(stDestPath))
@@ -170,7 +170,7 @@ namespace LuminoBuildTool
             // コピー元のディレクトリにあるすべてのファイルをコピーする
             if (bOverwrite)
             {
-                foreach (string stCopyFrom in System.IO.Directory.GetFiles(stSourcePath))
+                foreach (string stCopyFrom in System.IO.Directory.GetFiles(stSourcePath, pattern))
                 {
                     string stCopyTo = System.IO.Path.Combine(stDestPath, System.IO.Path.GetFileName(stCopyFrom));
                     System.IO.File.Copy(stCopyFrom, stCopyTo, true);
@@ -178,8 +178,9 @@ namespace LuminoBuildTool
 
                 // 上書き不可能な場合は存在しない時のみコピーする
             }
-            else {
-                foreach (string stCopyFrom in System.IO.Directory.GetFiles(stSourcePath))
+            else
+            {
+                foreach (string stCopyFrom in System.IO.Directory.GetFiles(stSourcePath, pattern))
                 {
                     string stCopyTo = System.IO.Path.Combine(stDestPath, System.IO.Path.GetFileName(stCopyFrom));
 
@@ -194,7 +195,7 @@ namespace LuminoBuildTool
             foreach (string stCopyFrom in System.IO.Directory.GetDirectories(stSourcePath))
             {
                 string stCopyTo = System.IO.Path.Combine(stDestPath, System.IO.Path.GetFileName(stCopyFrom));
-                CopyDirectory(stCopyFrom, stCopyTo, bOverwrite);
+                CopyDirectory(stCopyFrom, stCopyTo, bOverwrite, pattern);
             }
         }
 

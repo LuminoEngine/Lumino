@@ -75,8 +75,7 @@ include_directories(
 	"${PROJECT_SOURCE_DIR}/test/UnitTest"
 )
 
-set(LN_TEST_LIBS LuminoCore_Static)
-list(APPEND LN_TEST_LIBS "LuminoMath")
+set(LN_TEST_LIBS LuminoCore)
 if (WIN32)
 elseif (APPLE)
 	list(APPEND LN_TEST_LIBS "pthread")	# for gtest.
@@ -88,7 +87,6 @@ link_libraries(${LN_TEST_LIBS})
 
 add_definitions(-DGTEST_HAS_TR1_TUPLE=0)	# vs2012
 
-add_executable(LuminoCore_UnitTest ${LN_TEST_SOURCES})
-add_dependencies(LuminoCore_UnitTest LuminoCore_Static)
-add_dependencies(LuminoCore_UnitTest LuminoMath)
+add_executable(LuminoCore_Test ${LN_TEST_SOURCES})
+add_dependencies(LuminoCore_Test LuminoCore)
 
