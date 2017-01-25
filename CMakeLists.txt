@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.8.7)
-project (LuminoEngine)
+project (Lumino)
 
 include(Source/LuminoCore/CMake/LNCommon.cmake NO_POLICY_SCOPE)
 
@@ -21,7 +21,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "C:/Proj/Lumino/lib/MSVC140")
 option(LN_USE_UNICODE_CHAR_SET "Use unicode char set." ON)
 
 # MSVC Runtime library.
-option(LN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /MDd) or to link either." ON)
+option(LN_MSVC_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /MDd) or to link either." ON)
 
 # Exceprion Backtrace.
 option(LN_EXCEPTION_BACKTRACE "In some unix environment there is a possibility that can not be compiled." ON)
@@ -32,20 +32,31 @@ option(LN_USE_EXTERNAL_Effekseer "" ON)
 # Architecture.
 #option(LN_BUILD_X64 "Architecture." OFF)
 
+
+
+#------------------------------------------------------------------------------
+# 
+#------------------------------------------------------------------------------
+# lib postfix
+if (LN_USE_UNICODE_CHAR_SET)
+	set(LN_LIB_POSTFIX "U")
+endif()
+
+# output dir
+set(LN_LIB_OUTPUT_DIR "${PROJECT_SOURCE_DIR}/${LN_LIB_OUTPUT_LOCAL_DIR}")
+
 #------------------------------------------------------------------------------
 # External
 #------------------------------------------------------------------------------
 
 add_subdirectory(Source/LuminoCore)
-link_libraries(LuminoCore_Static)
-link_libraries(LuminoMath)
 
 add_subdirectory(Source/Fluorite)
 
 add_subdirectory(Source/LuminoEngine)
 
 # Make postfix.
-ln_make_postfix(LN_LIB_POSTFIX)
+#ln_make_postfix(LN_LIB_POSTFIX)
 
 
 

@@ -6,31 +6,13 @@ include(../LuminoCore/CMake/LNCommon.cmake NO_POLICY_SCOPE)
 set(LN_DEPENDENCIES_ROOT_DIR "${CMAKE_SOURCE_DIR}/external/LuminoDependencies/")
 include(${CMAKE_SOURCE_DIR}/external/LuminoDependencies/LuminoDependencies.cmake)
 
-set(LN_STATIC_LIB_OUTPUT_NAME "Lumino")
 set(LN_LINK_LIBS "")
 set(LN_UNIT_TEST_LINK_LIBS "")
-set(LN_LIB_POSTFIX "")
-
-#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "C:/Proj/Lumino/lib/MSVC140")
 
 #------------------------------------------------------------------------------
 # Options
 #------------------------------------------------------------------------------
 
-# Unicode char set.
-#option(LN_USE_UNICODE_CHAR_SET "Use unicode char set." ON)
-
-# MSVC Runtime library.
-#option(LN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /MDd) or to link either." ON)
-
-# Exceprion Backtrace.
-#option(LN_EXCEPTION_BACKTRACE "In some unix environment there is a possibility that can not be compiled." ON)
-
-
-# Architecture.
-#option(LN_BUILD_X64 "Architecture." OFF)
-
-#option(LN_DxLib_Demo "DX Library demo." OFF)
 
 
 #------------------------------------------------------------------------------
@@ -755,7 +737,7 @@ set(LN_SOURCES
 find_package(OpenGL REQUIRED)
 
 if (WIN32)
-	if (LN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME)
+	if (LN_MSVC_STATIC_RUNTIME)
 		foreach (flag CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE)
 			if (${flag} MATCHES "/MD")
 				string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
@@ -766,7 +748,7 @@ if (WIN32)
 		endforeach()
 	endif()
 
-	set(CMAKE_DEBUG_POSTFIX "d")
+	#set(CMAKE_DEBUG_POSTFIX "d")
 
 	# platform include dirs.
 	set(LN_PLATFORM_INCLUDE_DIRS "$ENV{DXSDK_DIR}Include")
@@ -829,11 +811,10 @@ include_directories(${LN_INCLUDE_DIRECTORIES} ${LN_PLATFORM_INCLUDE_DIRS})
 # External
 #------------------------------------------------------------------------------
 
-link_libraries(LuminoCore_Static)
-link_libraries(LuminoMath)
+link_libraries(LuminoCore)
 
 # Make postfix.
-ln_make_postfix(LN_LIB_POSTFIX)
+#ln_make_postfix(LN_LIB_POSTFIX)
 
 
 #------------------------------------------------------------------------------

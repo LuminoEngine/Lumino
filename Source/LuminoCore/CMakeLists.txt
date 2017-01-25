@@ -7,7 +7,6 @@ include(cmake/LNCommon.cmake NO_POLICY_SCOPE)
 
 set(LN_LINK_LIBS "")
 set(LN_UNIT_TEST_LINK_LIBS "")
-set(LN_LIB_POSTFIX "")
 
 #------------------------------------------------------------------------------
 # Options
@@ -21,7 +20,7 @@ option(LN_USE_UNICODE_CHAR_SET "Use unicode char set." OFF)
 endif()
 
 # MSVC Runtime library.
-option(LN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /MDd) or to link either." ON)
+option(LN_MSVC_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /MDd) or to link either." ON)
 
 # Exceprion Backtrace.
 option(LN_EXCEPTION_BACKTRACE "In some unix environment there is a possibility that can not be compiled." ON)
@@ -307,6 +306,7 @@ source_group("Json"			FILES ${LN_SOURCES_Json})
 source_group("Threading"	FILES ${LN_SOURCES_Threading})
 source_group("Xml"			FILES ${LN_SOURCES_Xml})
 source_group("Reflection"	FILES ${LN_SOURCES_Reflection})
+source_group("Math"			FILES ${LN_SOURCES_Math})
 source_group("Testing"		FILES ${LN_SOURCES_Testing})
 
 set(LN_SOURCES
@@ -321,6 +321,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Threading}
 	${LN_SOURCES_Xml}
 	${LN_SOURCES_Reflection}
+	${LN_SOURCES_Math}
 	${LN_SOURCES_Testing})
 
 set(LN_INCLUDE_DIRECTORIES
@@ -337,7 +338,7 @@ if (LN_USE_UNICODE_CHAR_SET)
 endif()
 
 if (WIN32)
-	if (LN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME)
+	if (LN_MSVC_STATIC_RUNTIME)
 		foreach (flag CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE)
 			if (${flag} MATCHES "/MD")
 				string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
@@ -348,7 +349,7 @@ if (WIN32)
 		endforeach()
 	endif()
 
-	set(CMAKE_DEBUG_POSTFIX "d")
+	#set(CMAKE_DEBUG_POSTFIX "d")
 	
 	add_definitions("/EHsc")	# VS2015, cmake
 
@@ -382,19 +383,9 @@ else()
     message(FATAL_ERROR "No supported platform was detected.")
 endif()
 
-# Make postfix.
-ln_make_postfix(LN_LIB_POSTFIX)
-
 #------------------------------------------------------------------------------
 # Output
 #------------------------------------------------------------------------------
-
-#set(CMAKE_CXX_FLAGS "")
-#set(CMAKE_CXX_FLAGS_DEBUG "-g -pg")
-#set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -pg -O3")
-#set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3")
-#set(CMAKE_CXX_FLAGS_MINSIZEREL "")
-
 if (LN_EXCEPTION_BACKTRACE)
 	add_definitions(-DLN_EXCEPTION_BACKTRACE)
 endif()
@@ -402,20 +393,11 @@ endif()
 #--------------------------------------
 # Static library.
 # Core
-add_library(${PROJECT_NAME}_Static STATIC ${LN_SOURCES})
-set_target_properties(${PROJECT_NAME}_Static PROPERTIES OUTPUT_NAME "${PROJECT_NAME}${LN_LIB_POSTFIX}")
-target_link_libraries(${PROJECT_NAME}_Static ${LN_LINK_LIBS})
-set_target_properties(${PROJECT_NAME}_Static PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
-ln_add_pch(${PROJECT_NAME}_Static "LuminoCore.PCH.h" "Source/LuminoCore.PCH.cpp")
-
-# Math
-add_library(LuminoMath STATIC ${LN_SOURCES_Math})
-set_target_properties(LuminoMath PROPERTIES OUTPUT_NAME "LuminoMath${LN_LIB_POSTFIX}")
-target_link_libraries(LuminoMath ${LN_LINK_LIBS})
-set_target_properties(LuminoMath PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
+add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
+set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}${LN_LIB_POSTFIX}")
+set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
+target_link_libraries(${PROJECT_NAME} ${LN_LINK_LIBS})
+ln_add_pch(${PROJECT_NAME} "LuminoCore.PCH.h" "Source/LuminoCore.PCH.cpp")
 
 # Unit test.
 add_subdirectory(test)
-
-# samples.
-#add_subdirectory(sample)

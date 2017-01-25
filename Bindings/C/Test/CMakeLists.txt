@@ -20,7 +20,7 @@ set(LN_INCLUDE_DIRECTORIES
 #------------------------------------------------------------------------------
 if (WIN32)
 	# ランタイムライブラリ
-	if (LN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME)
+	if (LN_MSVC_STATIC_RUNTIME)
 		foreach (flag CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE)
 			if (${flag} MATCHES "/MD")
 				string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")

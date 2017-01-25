@@ -64,7 +64,7 @@ include(${CMAKE_SOURCE_DIR}/Source/LuminoCore/CMake/LNCommon.cmake NO_POLICY_SCO
 #-------------------------------------------------------------------------------
 # Dependencies
 #-------------------------------------------------------------------------------
-link_libraries(LuminoCore_Static)
+link_libraries(LuminoCore)
 
 #-------------------------------------------------------------------------------
 # Outputs

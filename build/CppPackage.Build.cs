@@ -31,45 +31,50 @@ class CppPackageRule : ModuleRule
         string releaseDir = builder.LuminoPackageReleaseDir + "LuminoCpp_" + builder.VersionString + "/";
         string pkgSrcDir = builder.LuminoPackageDir + "PackageSource/Cpp/";
         string zipFilePath = builder.LuminoPackageReleaseDir + "LuminoCpp_" + builder.VersionString + ".zip";
-        bool vs2013 = Directory.Exists(builder.LuminoRootDir + "lib/MSVC120/x86");
+        bool vs2013 = Directory.Exists(builder.LuminoLibDir + "MSVC120");
         
         Directory.CreateDirectory(releaseDir);
 
         // include には Engine, Core, Math のヘッダを全てコピーする
         Logger.WriteLine("copy include files...");
-        Utils.CopyDirectory(Path.Combine(builder.LuminoRootDir, "include"), Path.Combine(releaseDir, "include"), true);
-        Utils.CopyDirectory(Path.Combine(builder.LuminoRootDir, "external/Lumino.Core/include"), Path.Combine(releaseDir, "include"), true);
+        string releaseIncludeDir = Path.Combine(releaseDir, "Include");
+        Utils.CopyDirectory(Path.Combine(builder.LuminoRootDir, "Source/LuminoCore/Include"), releaseIncludeDir, true);
+        Utils.CopyDirectory(Path.Combine(builder.LuminoRootDir, "Source/LuminoEngine/Include"), releaseIncludeDir, true);
+
+        // .lib
+        Logger.WriteLine("copy dependencies lib files...");
+        foreach (string dir in Directory.GetDirectories(builder.LuminoRootDir + "External/LuminoDependencies"))
+        {
+            // 今のところ LuminoDependencies/ライブラリ名/lib でフォルダ構成は統一されている。
+            string libDir = dir + "/lib";
+            if (Directory.Exists(libDir))
+            {
+                Utils.CopyDirectory(libDir, releaseDir + "Lib");
+            }
+        }
 
         // .lib
         Logger.WriteLine("copy lib files...");
-        if (vs2013)
-        {
-            Directory.CreateDirectory(releaseDir + "lib/MSVC120/x86");
-            Utils.CopyFiles(builder.LuminoLibDir + "MSVC120/x86/Debug", "*.lib", releaseDir + "lib/MSVC120/x86");
-            Utils.CopyFiles(builder.LuminoLibDir + "MSVC120/x86/Release", "*.lib", releaseDir + "lib/MSVC120/x86");
-        }
-
-        Directory.CreateDirectory(releaseDir + "lib/MSVC140/x86");
-        Utils.CopyFiles(builder.LuminoLibDir + "MSVC140/x86/Debug", "*.lib", releaseDir + "lib/MSVC140/x86");
-        Utils.CopyFiles(builder.LuminoLibDir + "MSVC140/x86/Release", "*.lib", releaseDir + "lib/MSVC140/x86");
+        Utils.CopyDirectory(builder.LuminoLibDir, releaseDir + "Lib", true, "*.lib");
+        Utils.CopyDirectory(builder.LuminoLibDir, releaseDir + "Lib", true, "*.dll");
 
         // インストールスクリプトとか、プロジェクトテンプレート
         Logger.WriteLine("copy other files...");
         if (vs2013)
         {
-            Directory.CreateDirectory(releaseDir + "tools/VS2013ProjectTemplate");
+            Directory.CreateDirectory(releaseDir + "Tools/VS2013ProjectTemplate");
         }
-        Directory.CreateDirectory(releaseDir + "tools/VS2015ProjectTemplate");
+        Directory.CreateDirectory(releaseDir + "Tools/VS2015ProjectTemplate");
         Utils.CopyFile(pkgSrcDir + "Lumino_Install.bat", releaseDir);
         Utils.CopyFile(pkgSrcDir + "Lumino_Uninstall.bat", releaseDir);
         if (vs2013)
         {
-            Utils.CreateZipFile(builder.LuminoToolsDir + "VS2013ProjectTemplate/LuminoProjectCpp", releaseDir + "tools/VS2013ProjectTemplate/LuminoProjectCpp.zip", false);
+            Utils.CreateZipFile(builder.LuminoToolsDir + "VS2013ProjectTemplate/LuminoProjectCpp", releaseDir + "Tools/VS2013ProjectTemplate/LuminoProjectCpp.zip", false);
         }
-        Utils.CreateZipFile(builder.LuminoToolsDir + "VS2015ProjectTemplate/LuminoProjectCpp", releaseDir + "tools/VS2015ProjectTemplate/LuminoProjectCpp.zip", false);
+        Utils.CreateZipFile(builder.LuminoToolsDir + "VS2015ProjectTemplate/LuminoProjectCpp", releaseDir + "Tools/VS2015ProjectTemplate/LuminoProjectCpp.zip", false);
 
         // Readme.txt (バージョン名を埋め込む)
-        string text = File.ReadAllText(pkgSrcDir + "Readme.txt");
+        string text = File.ReadAllText(pkgSrcDir + "Readme.template.txt");
         text = text.Replace("$(LuminoVersion)", builder.VersionString);
         File.WriteAllText(releaseDir + "Readme.txt", text, new UTF8Encoding(true));
         
