@@ -184,7 +184,6 @@ void VisualNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 	SceneNode::UpdateFrameHierarchy(parent, deltaTime);
 }
 
-
 //------------------------------------------------------------------------------
 detail::Sphere VisualNode::GetBoundingSphere()
 {
@@ -193,57 +192,11 @@ detail::Sphere VisualNode::GetBoundingSphere()
 }
 
 //------------------------------------------------------------------------------
-//void VisualNode::DrawSubsetInternal(SceneGraphRenderingContext* dc, int subsetIndex, MMEShader* shader, ShaderPass* pass)
-//{
-//	// シェーダのサブセット単位のデータを更新する
-//	if (shader != nullptr) {
-//		shader->UpdateSubsetParams(m_materialList->GetMaterialInstance(subsetIndex));
-//	}
-//
-//	// パス開始
-//	if (pass != nullptr) {
-//		dc->SetShaderPass(pass);
-//	}
-//
-//	// サブセット描画の本体
-//	DrawSubset(dc, subsetIndex);
-//}
-
-//------------------------------------------------------------------------------
-//void VisualNode::OnRender(SceneGraphRenderingContext* dc)
-//{
-//	// レンダリングステートの設定
-//	dc->ResetStates();
-//	dc->SetBlendMode(m_renderState.blendMode);
-//	dc->SetCullingMode(m_renderState.cullingMode);
-//	dc->SetDepthTestEnabled(m_renderState.depthTestEnabled);
-//	dc->SetDepthWriteEnabled(m_renderState.depthWriteEnabled);
-//
-//
-//	int subsetCount = GetSubsetCount();
-//	for (int i = 0; i < subsetCount; ++i)
-//	{
-//		dc->Pass->RenderSubset(dc, this, i);
-//	}
-//}
-
-//------------------------------------------------------------------------------
 Shader* VisualNode::GetPrimaryShader() const
 {
 	// TODO: main が無ければ [0] のをつかう
 	return m_materialList->GetMainMaterial()->GetShader();
 }
-
-//------------------------------------------------------------------------------
-//void VisualNode::Render(SceneGraphRenderingContext* dc)
-//{
-//	// 描画
-//	OnRender(dc);
-//
-//	// diag
-//	if (m_manager->GetEngineDiag() != nullptr) m_manager->GetEngineDiag()->IncreaseVisualNodeDrawCount();
-//}
-
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
