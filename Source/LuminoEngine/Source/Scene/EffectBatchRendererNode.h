@@ -8,7 +8,7 @@ LN_NAMESPACE_SCENE_BEGIN
 namespace detail { class EffectManager; }
 
 class EffectBatchRendererNode
-	: public VisualNode	// TODO: 単に SceneNode のほうがいい気がするが・・
+	: public VisualNode
 {
 public:
 	EffectBatchRendererNode();

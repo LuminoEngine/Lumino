@@ -205,6 +205,54 @@ LN_API void LNGraphicsResourceObject_SetBindingTypeInfo(void* data)
 {
     tr::TypeInfo::GetTypeInfo<GraphicsResourceObject>()->SetBindingTypeInfo(data);
 }
+LN_API LNResultCode LNSceneNode_SetVisible(LNHandle scenenode, bool visible)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    LWIG_TO_OBJECT(LNSceneNode, scenenode)->SetVisible(visible);
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API LNResultCode LNSceneNode_IsVisible(LNHandle scenenode, bool* outReturn)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    *outReturn = LWIG_TO_OBJECT(LNSceneNode, scenenode)->IsVisible();
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API void LNSceneNode_SetBindingTypeInfo(void* data)
+{
+    tr::TypeInfo::GetTypeInfo<SceneNode>()->SetBindingTypeInfo(data);
+}
+LN_API void LNVisualNode_SetBindingTypeInfo(void* data)
+{
+    tr::TypeInfo::GetTypeInfo<VisualNode>()->SetBindingTypeInfo(data);
+}
+LN_API void LNSprite_SetBindingTypeInfo(void* data)
+{
+    tr::TypeInfo::GetTypeInfo<Sprite>()->SetBindingTypeInfo(data);
+}
+LN_API LNResultCode LNSprite2D_Initialize(LNHandle* outSprite2D)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    LWIG_CREATE_OBJECT(outSprite2D, LNSprite2D, Initialize, );
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API LNResultCode LNSprite2D_InitializeT(LNHandle texture, LNHandle* outSprite2D)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    LWIG_CREATE_OBJECT(outSprite2D, LNSprite2D, Initialize, LWIG_TO_OBJECT(Texture, texture));
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API void LNSprite2D_SetBindingTypeInfo(void* data)
+{
+    tr::TypeInfo::GetTypeInfo<Sprite2D>()->SetBindingTypeInfo(data);
+}
+LN_API void LNSprite3D_SetBindingTypeInfo(void* data)
+{
+    tr::TypeInfo::GetTypeInfo<Sprite3D>()->SetBindingTypeInfo(data);
+}
+LN_API void LNComponent_SetBindingTypeInfo(void* data)
+{
+    tr::TypeInfo::GetTypeInfo<Component>()->SetBindingTypeInfo(data);
+}
 LN_API LNResultCode LNGameApplication_Run(LNHandle gameapplication, LNHandle initialScene)
 {
     LWIG_FUNC_TRY_BEGIN;

@@ -43,7 +43,7 @@ void CSClassLibGenerator::Generate()
 			classesText.AppendLines(DotNetCommon::MakeXmlDocument(propInfo->document));
 
 			// property header
-			classesText.Append("public {0} {1}", DotNetCommon::MakeTypeName(propInfo->type), propInfo->name).NewLine();
+			classesText.Append("public {0} {1}", DotNetCommon::MakeTypeName(propInfo->type), propInfo->namePrefix + propInfo->name).NewLine();
 			classesText.Append("{").NewLine();
 			classesText.IncreaseIndent();
 
@@ -77,7 +77,7 @@ void CSClassLibGenerator::Generate()
 				// default value
 				if (paramInfo->defaultValue != nullptr)
 				{
-					params.Append(" = 1");
+					params.Append(" = {0}", DotNetCommon::MakeLiteral(paramInfo->defaultValue));
 				}
 			}
 

@@ -107,7 +107,10 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	Sprite2D();
 	virtual ~Sprite2D();
-	void Initialize(SceneGraph* owner);
+	LN_METHOD()
+	void Initialize();
+	LN_METHOD()
+	void Initialize(Texture* texture);
 	virtual void OnRender2(DrawList* renderer) override;
 };
 

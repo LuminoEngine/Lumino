@@ -131,7 +131,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite2D, Sprite);
 Sprite2DPtr Sprite2D::Create()
 {
 	auto obj = Sprite2DPtr::MakeRef();
-	obj->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph2D());
+	obj->Initialize();
 	return obj;
 }
 
@@ -161,9 +161,16 @@ Sprite2D::~Sprite2D()
 }
 
 //------------------------------------------------------------------------------
-void Sprite2D::Initialize(SceneGraph* owner)
+void Sprite2D::Initialize()
 {
-	Sprite::Initialize(owner);
+	Sprite::Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph2D());
+}
+
+//------------------------------------------------------------------------------
+void Sprite2D::Initialize(Texture* texture)
+{
+	Initialize();
+	SetTexture(texture);
 }
 
 //------------------------------------------------------------------------------

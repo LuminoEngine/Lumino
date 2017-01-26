@@ -3,6 +3,7 @@
 #include "SymbolDatabase.h"
 
 TypeInfoPtr	PredefinedTypes::voidType;
+TypeInfoPtr	PredefinedTypes::nullptrType;
 TypeInfoPtr	PredefinedTypes::boolType;
 TypeInfoPtr	PredefinedTypes::intType;
 TypeInfoPtr	PredefinedTypes::uint32Type;
@@ -181,6 +182,7 @@ void TypeInfo::MakeProperties()
 		if (methodInfo->metadata->HasKey(_T("Property")))
 		{
 			String name;
+			String namePrefix;
 			bool isGetter = false;
 			if (methodInfo->name.IndexOf(_T("Get")) == 0)
 			{
@@ -189,7 +191,8 @@ void TypeInfo::MakeProperties()
 			}
 			if (methodInfo->name.IndexOf(_T("Is")) == 0)
 			{
-				name = methodInfo->name.Mid(3);
+				name = methodInfo->name.Mid(2);
+				namePrefix = _T("Is");
 				isGetter = true;
 			}
 			if (methodInfo->name.IndexOf(_T("Set")) == 0)
@@ -211,6 +214,7 @@ void TypeInfo::MakeProperties()
 				{
 					propInfo = *ptr;
 				}
+				propInfo->namePrefix = namePrefix;
 			}
 
 			if (isGetter)
@@ -319,13 +323,13 @@ void SymbolDatabase::Link()
 	}
 
 	// enums
-	for (auto enumInfo : enums)
-	{
-		for (auto constantInfo : enumInfo->declaredConstants)
-		{
-			constantInfo->type = FindTypeInfo(constantInfo->typeRawName);
-		}
-	}
+	//for (auto enumInfo : enums)
+	//{
+	//	for (auto constantInfo : enumInfo->declaredConstants)
+	//	{
+	//		constantInfo->type = FindTypeInfo(constantInfo->typeRawName);
+	//	}
+	//}
 }
 
 tr::Enumerator<MethodInfoPtr> SymbolDatabase::GetAllMethods()
@@ -379,6 +383,11 @@ ConstantInfoPtr SymbolDatabase::CreateConstantFromLiteralString(const String& va
 		info->type = PredefinedTypes::boolType;
 		info->value = false;
 	}
+	else if (valueStr == "nullptr")
+	{
+		info->type = PredefinedTypes::nullptrType;
+		info->value = nullptr;
+	}
 	return info;
 }
 
@@ -387,6 +396,10 @@ void SymbolDatabase::InitializePredefineds()
 	predefineds.Add(std::make_shared<TypeInfo>(_T("void")));
 	predefineds.GetLast()->isVoid = true;
 	PredefinedTypes::voidType = predefineds.GetLast();
+
+	predefineds.Add(std::make_shared<TypeInfo>(_T("nullptr")));
+	predefineds.GetLast()->isVoid = true;
+	PredefinedTypes::nullptrType = predefineds.GetLast();
 
 	predefineds.Add(std::make_shared<TypeInfo>(_T("bool")));
 	predefineds.GetLast()->isPrimitive = true;

@@ -39,6 +39,54 @@ public:
 
 };
 
+class LNSceneNode : public SceneNode
+{
+public:
+
+
+
+};
+
+class LNVisualNode : public VisualNode
+{
+public:
+
+
+
+};
+
+class LNSprite : public Sprite
+{
+public:
+
+
+
+};
+
+class LNSprite2D : public Sprite2D
+{
+public:
+
+
+
+};
+
+class LNSprite3D : public Sprite3D
+{
+public:
+
+
+
+};
+
+class LNComponent : public Component
+{
+public:
+
+
+
+};
+
 class LNGameApplication : public GameApplication
 {
 public:

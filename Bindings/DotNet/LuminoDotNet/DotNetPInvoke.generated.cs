@@ -263,6 +263,18 @@ namespace Lumino
         public extern static ResultCode LNTexture2D_InitializeFFM(string filePath, TextureFormat format, bool mipmap, out IntPtr outTexture2D);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNSceneNode_SetVisible(IntPtr scenenode, bool visible);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNSceneNode_IsVisible(IntPtr scenenode, out bool outReturn);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNSprite2D_Initialize(out IntPtr outSprite2D);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNSprite2D_InitializeT(IntPtr texture, out IntPtr outSprite2D);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNGameApplication_Run(IntPtr gameapplication, IntPtr initialScene);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]

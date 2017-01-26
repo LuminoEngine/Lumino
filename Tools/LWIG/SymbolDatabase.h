@@ -149,6 +149,7 @@ public:
 	TypeInfoPtr			owner;
 	DocumentInfoPtr		document;
 	String				name;
+	String				namePrefix;	// Is
 	TypeInfoPtr			type;
 	MethodInfoPtr		getter;
 	MethodInfoPtr		setter;
@@ -203,6 +204,7 @@ class PredefinedTypes
 {
 public:
 	static TypeInfoPtr	voidType;
+	static TypeInfoPtr	nullptrType;
 	static TypeInfoPtr	boolType;
 	static TypeInfoPtr	intType;
 	static TypeInfoPtr	uint32Type;

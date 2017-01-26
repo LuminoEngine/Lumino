@@ -624,7 +624,7 @@ void HeaderParser::ParseEnumMemberDecl(TokenItr begin, TokenItr end, TypeInfoPtr
 	info->document = MoveLastDocument();
 	info->name = String((*name)->GetString());
 	info->value = m_currentEnumValue;
-	info->typeRawName = "int";
+	info->type = parent;
 	parent->declaredConstants.Add(info);
 
 	m_currentEnumValue++;

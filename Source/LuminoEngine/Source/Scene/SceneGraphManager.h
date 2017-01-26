@@ -107,7 +107,6 @@ private:
 
 	//Stack<int>							m_renderingPassIDStack;	///< (0～MaxRenderingPass-1)
 	NodeNameMap							m_nodeNameMap;			///< ノードを名前で検索するためのマップ
-	//SceneNode*							m_rootNode;
 	LightNodeList						m_lightNodeList;		///< 全ての Light のリスト
 
 	List<Camera*>	m_allCameraList;

@@ -69,8 +69,14 @@ namespace Lumino
         }
 
         /// <summary>
-        /// このベクトルを指定された最大値と最小値の範囲にクランプします。@param[in]	minVec	: 最小値@param[in]	maxVec	: 最大値
+        /// このベクトルを指定された最大値と最小値の範囲にクランプします。
         /// </summary>
+        /// <param name="minVec">
+        /// 最小値
+        /// </param>
+        /// <param name="maxVec">
+        /// 最大値
+        /// </param>
         public void Clamp(Vector3 minVec, Vector3 maxVec)
         {
             
@@ -80,8 +86,17 @@ namespace Lumino
         }
 
         /// <summary>
-        /// 指定ベクトルを正規化したベクトルを返します。@param[in]	x		: 処理の基になるベクトルの X 要素@param[in]	y		: 処理の基になるベクトルの Y 要素@param[in]	z		: 処理の基になるベクトルの Z 要素
+        /// 指定ベクトルを正規化したベクトルを返します。
         /// </summary>
+        /// <param name="x">
+        /// 処理の基になるベクトルの X 要素
+        /// </param>
+        /// <param name="y">
+        /// 処理の基になるベクトルの Y 要素
+        /// </param>
+        /// <param name="z">
+        /// 処理の基になるベクトルの Z 要素
+        /// </param>
         /// <returns>
         /// 正規化されたベクトル
         /// </returns>
@@ -94,8 +109,11 @@ namespace Lumino
         }
 
         /// <summary>
-        /// 指定ベクトルを正規化したベクトルを返します。@param[in]	vec		: 処理の基になるベクトル
+        /// 指定ベクトルを正規化したベクトルを返します。
         /// </summary>
+        /// <param name="vec">
+        /// 処理の基になるベクトル
+        /// </param>
         /// <returns>
         /// 正規化されたベクトル
         /// </returns>

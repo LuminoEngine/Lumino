@@ -65,9 +65,11 @@ public:
 	const Vector3& GetCenter() const { return m_transformCenter; }
 
 	/** 可視状態を設定します。false の場合、ノードの描画自体行われません。(default: true) */
+	LN_METHOD(Property)
 	void SetVisible(bool visible) { m_isVisible = visible; }
 
 	/** 可視状態を取得します。*/
+	LN_METHOD(Property)
 	bool IsVisible() const { return m_isVisible; }
 
 	/// 回転順序の設定

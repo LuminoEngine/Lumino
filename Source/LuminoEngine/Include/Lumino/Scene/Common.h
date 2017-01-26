@@ -30,7 +30,6 @@ typedef RefPtr<TileMap>		TileMapPtr;
 class CameraBehavior;
 
 typedef List<Light*>			LightNodeList;
-typedef List<SceneNode*>		SceneNodeArray;
 
 /// ノード種別
 enum SceneNodeType

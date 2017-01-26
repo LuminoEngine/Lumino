@@ -490,7 +490,8 @@ void Main()
 	listBox->AddTextItem(_T("fff"));
 	uiRoot->SetContent(listBox);
 
-
+	GameAudio::PlayBGM("D:/GameProjects/Materials/BGM/Windsphere/call.mp3");
+	
 
 	//auto gizmo = detail::GizmoModel::Create();
 

@@ -24,6 +24,10 @@ int main()
 		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Graphics/Common.h",
 		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Graphics/Texture.h",
 		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Graphics/GraphicsResourceObject.h",
+		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Scene/SceneNode.h",
+		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Scene/VisualNode.h",
+		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Scene/Sprite.h",
+		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Game/Component.h",
 		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Foundation/Application.h",
 		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Foundation/GameScene.h",
 	};
