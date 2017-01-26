@@ -8,7 +8,7 @@
 	https://msdn.microsoft.com/en-us/library/windows/desktop/bb173347(v=vs.85).aspx
 
 */
-#include "../../../Internal.h"
+#include "../../Internal.h"
 #include <Lumino/Graphics/GraphicsException.h>
 #include "GLGraphicsDevice.h"
 #include "GLShader.h"

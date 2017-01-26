@@ -60,7 +60,7 @@
 		
 */
 
-#include "../Internal.h"
+#include "Internal.h"
 #include <Lumino/Platform/PlatformWindow.h>
 #if defined(LN_OS_WIN32)
 	#include "Win32/Win32PlatformWindowManager.h"

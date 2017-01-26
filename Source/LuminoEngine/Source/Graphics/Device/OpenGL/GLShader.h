@@ -1,6 +1,7 @@
 ﻿
 #pragma once 
 #include "../ShaderVariableBase.h"
+#include "GLCommon.h"
 #include "GLRenderer.h"
 
 LN_NAMESPACE_BEGIN

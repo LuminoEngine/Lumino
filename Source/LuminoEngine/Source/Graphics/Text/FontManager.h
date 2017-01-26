@@ -1,5 +1,8 @@
 ﻿
 #pragma once
+#ifdef LN_OS_WIN32
+#include <Windows.h>
+#endif
 #include <map>
 #include <Lumino/Base/Hash.h>
 #include <Lumino/IO/FileManager.h>

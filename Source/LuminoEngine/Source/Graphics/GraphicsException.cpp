@@ -1,6 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include "../../include/Lumino/Graphics/GraphicsException.h"
+#include "Device/OpenGL/GLCommon.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -22,12 +23,6 @@ CompilationException::~CompilationException() throw()
 }
 
 //------------------------------------------------------------------------------
-const TCHAR* CompilationException::GetMessage() const
-{
-	return m_message.c_str();
-}
-
-//------------------------------------------------------------------------------
 const char* CompilationException::what() const throw()
 {
 	return m_messageMBCS.c_str();
@@ -37,6 +32,12 @@ const char* CompilationException::what() const throw()
 Exception* CompilationException::Copy() const
 {
 	return LN_NEW CompilationException(*this);
+}
+
+//------------------------------------------------------------------------------
+const TCHAR* CompilationException::GetMessageOverride() const
+{
+	return m_message.c_str();
 }
 
 //==============================================================================

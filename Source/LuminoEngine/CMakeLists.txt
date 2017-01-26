@@ -253,6 +253,7 @@ set(LN_SOURCES_Graphics_Device
 	Source/Graphics/Device/GraphicsDeviceBase.h
 	Source/Graphics/Device/ShaderVariableBase.cpp
 	Source/Graphics/Device/ShaderVariableBase.h
+	Source/Graphics/Device/OpenGL/GLCommon.h
 	Source/Graphics/Device/OpenGL/GLGraphicsDevice.cpp
 	Source/Graphics/Device/OpenGL/GLGraphicsDevice.h
 	Source/Graphics/Device/OpenGL/GLIndexBuffer.cpp

@@ -42,7 +42,7 @@
 		とすると SlimDX を参考にするのが素直か…。
 */
 
-#include "../../../Internal.h"
+#include "../../Internal.h"
 #include "DX9Module.h"
 #include "DX9GraphicsDevice.h"
 #include "DX9Shader.h"

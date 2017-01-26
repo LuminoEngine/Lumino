@@ -1,5 +1,5 @@
 ﻿
-#include "../../../Internal.h"
+#include "../../Internal.h"
 #include "DX9GraphicsDevice.h"
 #include "DX9IndexBuffer.h"
 
