@@ -484,13 +484,13 @@ void Main()
 	particle2->SetBlendMode(BlendMode::Add);
 #endif
 
-	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
-	auto listBox = tr::UIListBox::Create();
-	listBox->AddTextItem(_T("test"));
-	listBox->AddTextItem(_T("fff"));
-	uiRoot->SetContent(listBox);
+	//auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+	//auto listBox = tr::UIListBox::Create();
+	//listBox->AddTextItem(_T("test"));
+	//listBox->AddTextItem(_T("fff"));
+	//uiRoot->SetContent(listBox);
 
-	GameAudio::PlayBGM("D:/GameProjects/Materials/BGM/Windsphere/call.mp3");
+	//GameAudio::PlayBGM("D:/GameProjects/Materials/BGM/Windsphere/call.mp3");
 	
 
 	//auto gizmo = detail::GizmoModel::Create();
@@ -498,6 +498,7 @@ void Main()
 	auto gizmo = static_cast<CameraViewportLayer*>(Engine::GetDefault3DLayer())->CreateGizmo();
 
 	auto sp = Sprite3D::Create(2, 2, Texture2D::Create(_T("D:/GameProjects/Chronicles/110220c_as019.jpg")));
+	sp->SetTone(ToneF(0, 0, 1, 1.0));
 	gizmo->Setup(Matrix::Identity, sp->GetTransform());//Matrix::MakeTranslation(1, 0, 0));
 	
 	
@@ -509,6 +510,12 @@ void Main()
 	{
 		//sp->SetTransform(g->GetTargetTransform());
 	});
+
+
+	auto tex1 = Texture2D::Create(32, 32);
+	tex1->Clear(Color32::Red);
+	auto box1 = StaticMesh::CreateBox(Vector3(5, 5, 5));
+	box1->GetMaterials()->GetAt(0)->SetMaterialTexture(tex1);
 
 
 	while (!Engine::IsEndRequested())

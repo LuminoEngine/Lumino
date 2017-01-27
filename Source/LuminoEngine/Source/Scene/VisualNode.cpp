@@ -92,7 +92,6 @@ void VisualNode::Initialize(SceneGraph* owner, int subsetCount)
 	SceneNode::Initialize(owner);
 	m_materialList = RefPtr<MaterialList2>::MakeRef();
 	m_materialList->Initialize(subsetCount, true);	// TODO: 今はとりあえず必ず mainMaterial 有り (メモリ効率悪い)
-	m_subsetCount = subsetCount;
 }
 
 //------------------------------------------------------------------------------

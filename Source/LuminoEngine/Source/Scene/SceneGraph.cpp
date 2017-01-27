@@ -290,6 +290,7 @@ void SceneGraph3D::CreateGridContents()
 	m_gridPlane = RefPtr<StaticMeshModel>::MakeRef();
 	m_gridPlane->InitializeSquarePlane(gm, Vector2(1, 1), Vector3::UnitY, MeshCreationFlags::DynamicBuffers);
 	MeshResource* mesh = m_gridPlane->GetMeshResource();
+	mesh->AddSections(1);
 
 	// シェーダ (DrawingContext3D)
 	static const byte_t shaderCode[] =

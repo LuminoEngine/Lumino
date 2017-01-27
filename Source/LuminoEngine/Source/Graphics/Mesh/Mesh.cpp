@@ -690,7 +690,7 @@ void MeshResource::CommitRenderData(VertexDeclaration** outDecl, VertexBuffer** 
 void MeshResource::CreateBuffers(int vertexCount, int indexCount, MeshCreationFlags flags)
 {
 	AddMaterials(1);
-	AddSections(1);
+	//AddSections(1);
 	//m_attributes[0].MaterialIndex = 0;
 	//m_attributes[0].StartIndex = 0;
 	//m_attributes[0].PrimitiveNum = indexCount / 3;

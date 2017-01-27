@@ -93,8 +93,6 @@ public:
 public:
 
 
-	int GetSubsetCount() const { return m_subsetCount; }
-
 	virtual SceneNodeType GetSceneNodeType() const { return SceneNodeType_VisualNode; }
 	virtual void UpdateFrameHierarchy(SceneNode* parent, float deltaTime) override;
 
@@ -124,7 +122,6 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual detail::SceneNodeDefaultShaderClass GetShaderClass() { return detail::SceneNodeDefaultShaderClass_StaticMesh; }
 
 protected:
-	int						m_subsetCount;
 	RefPtr<MaterialList2>	m_materialList;
 };
 

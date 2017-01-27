@@ -35,6 +35,7 @@ LN_INTERNAL_ACCESS:
 	StaticMesh();
 	virtual ~StaticMesh();
 	void Initialize(SceneGraph* ownerSceneGraph, StaticMeshModel* meshModel);
+	virtual void OnRender2(DrawList* renderer) override;
 
 private:
 	RefPtr<StaticMeshModel>	m_mesh;

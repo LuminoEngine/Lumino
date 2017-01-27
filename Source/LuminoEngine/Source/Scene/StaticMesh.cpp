@@ -1,8 +1,7 @@
 ﻿
-#pragma once
 #include "../Internal.h"
+#include <Lumino/Graphics/Rendering.h>
 #include <Lumino/Scene/StaticMesh.h>
-//#include "MME/MMEShader.h"
 #include <Lumino/Scene/SceneGraph.h>
 #include "SceneGraphManager.h"
 
@@ -104,5 +103,11 @@ void StaticMesh::Initialize(SceneGraph* owner, StaticMeshModel* meshModel)
 //{
 //	dc->DrawMesh(m_mesh, subsetIndex);
 //}
+
+//------------------------------------------------------------------------------
+void StaticMesh::OnRender2(DrawList* renderer)
+{
+	renderer->DrawMesh(m_mesh, 0, GetMaterials()->GetAt(0));
+}
 
 LN_NAMESPACE_END
