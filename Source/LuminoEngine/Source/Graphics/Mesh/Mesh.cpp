@@ -187,6 +187,20 @@ void MeshResource::CreateScreenPlane()
 }
 
 //------------------------------------------------------------------------------
+void MeshResource::CreateTeapot(MeshCreationFlags flags)
+{
+	detail::TeapotMeshFactory factory;
+	factory.Initialize(1.0f, 8, Color::White, Matrix::Identity);
+	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), MeshCreationFlags::None);
+
+	void* vb = TryLockVertexBuffer(VB_BasicVertices);
+	void* ib = TryLockIndexBuffer();
+	factory.Generate((Vertex*)vb, (uint16_t*)ib, 0);
+	PostGenerated((Vertex*)vb, ib, flags);
+	EndCreating();
+}
+
+//------------------------------------------------------------------------------
 void MeshResource::AddMaterials(int count)
 {
 	int oldCount = m_materials->GetCount();
@@ -808,6 +822,15 @@ void StaticMeshModel::InitializeScreenPlane(detail::GraphicsManager* manager)
 	auto res = RefPtr<MeshResource>::MakeRef();
 	res->Initialize(manager, ResourceUsage::Static);
 	res->CreateScreenPlane();
+	Initialize(manager, res);
+}
+
+//------------------------------------------------------------------------------
+void StaticMeshModel::InitializeTeapot(detail::GraphicsManager* manager, MeshCreationFlags flags)
+{
+	auto res = RefPtr<MeshResource>::MakeRef();
+	res->Initialize(manager, ResourceUsage::Static);
+	res->CreateTeapot(flags);
 	Initialize(manager, res);
 }
 

@@ -73,6 +73,16 @@ StaticMeshPtr StaticMesh::CreateScreenPlane()
 }
 
 //------------------------------------------------------------------------------
+StaticMeshPtr StaticMesh::CreateTeapot(MeshCreationFlags flags)
+{
+	auto ptr = StaticMeshPtr::MakeRef();
+	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
+	mesh->InitializeTeapot(SceneGraphManager::Instance->GetGraphicsManager(), flags);
+	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), mesh);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
 StaticMesh::StaticMesh()
 	: m_mesh()
 {
@@ -107,7 +117,7 @@ void StaticMesh::Initialize(SceneGraph* owner, StaticMeshModel* meshModel)
 //------------------------------------------------------------------------------
 void StaticMesh::OnRender2(DrawList* renderer)
 {
-	renderer->DrawMesh(m_mesh, 0, GetMaterials()->GetAt(0));
+	renderer->DrawMesh(m_mesh, 0, GetMainMaterial()/*GetMaterials()->GetAt(0)*/);
 }
 
 LN_NAMESPACE_END

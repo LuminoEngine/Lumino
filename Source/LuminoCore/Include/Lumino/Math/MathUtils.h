@@ -37,7 +37,7 @@ public:
 	static void SinCos(float value, float* outSin, float* outCos);
 
 	/// 誤差を考慮し、浮動小数点の比較を行います。
-	static bool EqualsFloat(float value1, float value2);
+	static bool NearEqual(float value1, float value2);
 
 	/// 値が NaN(非数) かを判定します。
 	static bool IsNaN(float value);

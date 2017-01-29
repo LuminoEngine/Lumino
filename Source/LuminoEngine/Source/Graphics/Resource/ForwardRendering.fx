@@ -55,7 +55,7 @@ float4 Basic_PS(VS_OUTPUT input) : COLOR0
 	float4 texColor = tex2D(ObjTexSampler, input.Tex);
 	color = input.Color * texColor;//MaterialDiffuse;//input.Color * texColor;
 	
-	return color;
+	return LN_GetBuiltinEffectColor(color);
 }
 
 //------------------------------------------------------------------------------

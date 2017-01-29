@@ -27,6 +27,8 @@ public:
 
 	static StaticMeshPtr CreateScreenPlane();
 
+	static StaticMeshPtr CreateTeapot(MeshCreationFlags flags);
+
 public:
 
 	StaticMeshModel* GetStaticMeshModel() const { return m_mesh; }
@@ -40,5 +42,8 @@ LN_INTERNAL_ACCESS:
 private:
 	RefPtr<StaticMeshModel>	m_mesh;
 };
+
+
+
 
 LN_NAMESPACE_END

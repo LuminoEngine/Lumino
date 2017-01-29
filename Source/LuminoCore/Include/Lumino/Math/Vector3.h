@@ -138,6 +138,9 @@ public:
 
 	static Vector3 SafeNormalize(const Vector3& vec);
 	static Vector3 SafeNormalize(const Vector3& vec, const Vector3& alt);
+
+	/** 指定した値をすべての要素に設定します。 */
+	static Vector3 Replicate(float value);
 	
 	/**
 		@brief		2つのベクトル間の距離を計算します。
@@ -303,6 +306,8 @@ public:
 		@param[in]	maxZ			: ビューポートの最大深度
 	*/
 	static Vector3 Unproject(const Vector3& point, const Matrix& worldViewProj, float x, float y, float width, float height, float minZ = 0.0f, float maxZ = 1.0f);
+
+	static bool NearEqual(const Vector3& value1, const Vector3& value2);
 
 public:
 

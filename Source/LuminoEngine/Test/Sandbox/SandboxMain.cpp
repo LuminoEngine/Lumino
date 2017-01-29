@@ -495,27 +495,29 @@ void Main()
 
 	//auto gizmo = detail::GizmoModel::Create();
 
-	auto gizmo = static_cast<CameraViewportLayer*>(Engine::GetDefault3DLayer())->CreateGizmo();
+	//auto gizmo = static_cast<CameraViewportLayer*>(Engine::GetDefault3DLayer())->CreateGizmo();
 
-	auto sp = Sprite3D::Create(2, 2, Texture2D::Create(_T("D:/GameProjects/Chronicles/110220c_as019.jpg")));
-	sp->SetTone(ToneF(0, 0, 1, 1.0));
-	gizmo->Setup(Matrix::Identity, sp->GetTransform());//Matrix::MakeTranslation(1, 0, 0));
-	
-	
-	gizmo->AddOnTargetTransformChanged([sp](tr::GizmoModel* g)
-	{
-		sp->SetTransform(g->GetTargetTransform());
-	});
-	gizmo->AddOnSubmitEditing([sp](tr::GizmoModel* g)
-	{
-		//sp->SetTransform(g->GetTargetTransform());
-	});
+	//auto sp = Sprite3D::Create(2, 2, Texture2D::Create(_T("D:/GameProjects/Chronicles/110220c_as019.jpg")));
+	//sp->SetTone(ToneF(0, 0, 1, 1.0));
+	//gizmo->Setup(Matrix::Identity, sp->GetTransform());//Matrix::MakeTranslation(1, 0, 0));
+	//
+	//
+	//gizmo->AddOnTargetTransformChanged([sp](tr::GizmoModel* g)
+	//{
+	//	sp->SetTransform(g->GetTargetTransform());
+	//});
+	//gizmo->AddOnSubmitEditing([sp](tr::GizmoModel* g)
+	//{
+	//	//sp->SetTransform(g->GetTargetTransform());
+	//});
 
 
 	auto tex1 = Texture2D::Create(32, 32);
 	tex1->Clear(Color32::Red);
-	auto box1 = StaticMesh::CreateBox(Vector3(5, 5, 5));
+	//auto box1 = StaticMesh::CreateBox(Vector3(5, 5, 5));
+	auto box1 = StaticMesh::CreateTeapot(MeshCreationFlags::None);
 	box1->GetMaterials()->GetAt(0)->SetMaterialTexture(tex1);
+	box1->SetTone(ToneF(0, 0, 1, 1.0));
 
 
 	while (!Engine::IsEndRequested())
@@ -532,14 +534,14 @@ void Main()
 		Engine::EndFrameUpdate();
 
 
-		if (Input::IsTriggered(InputButtons::Ok))
-		{
-			gizmo->SetGizmoType(tr::GizmoType::Translation);
-		}
-		if (Input::IsTriggered(InputButtons::Cancel))
-		{
-			gizmo->SetGizmoType(tr::GizmoType::Rotation);
-		}
+		//if (Input::IsTriggered(InputButtons::Ok))
+		//{
+		//	gizmo->SetGizmoType(tr::GizmoType::Translation);
+		//}
+		//if (Input::IsTriggered(InputButtons::Cancel))
+		//{
+		//	gizmo->SetGizmoType(tr::GizmoType::Rotation);
+		//}
 	}
 
 	//while (Engine::Update())

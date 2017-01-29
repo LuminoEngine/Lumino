@@ -296,6 +296,7 @@ set(LN_SOURCES_Graphics_Mesh
 	Source/Graphics/Mesh/GizmoModel.cpp
 	Source/Graphics/Mesh/Mesh.cpp
 	Source/Graphics/Mesh/MeshFactory.h
+	Source/Graphics/Mesh/MeshFactory.cpp
 	Source/Graphics/Mesh/SkinnedMeshModel.cpp
 )
 

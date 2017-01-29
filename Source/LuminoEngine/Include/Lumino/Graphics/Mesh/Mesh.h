@@ -170,6 +170,7 @@ LN_INTERNAL_ACCESS:
 	void CreatePlane(const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags);
 	void CreateSquarePlane(const Vector2& size, const Vector3& front, MeshCreationFlags flags);
 	void CreateScreenPlane();
+	void CreateTeapot(MeshCreationFlags flags);
 
 	int GetSubsetCount() const { return m_attributes.GetCount(); }
 
@@ -233,7 +234,8 @@ LN_INTERNAL_ACCESS:
 	void InitializePlane(detail::GraphicsManager* manager, const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags);
 	void InitializeSquarePlane(detail::GraphicsManager* manager, const Vector2& size, const Vector3& front, MeshCreationFlags flags);
 	void InitializeScreenPlane(detail::GraphicsManager* manager);
-
+	void InitializeTeapot(detail::GraphicsManager* manager, MeshCreationFlags flags);
+	
 LN_INTERNAL_ACCESS:	// TODO:
 	RefPtr<MeshResource>	m_meshResource;
 	RefPtr<MaterialList>	m_materials;
