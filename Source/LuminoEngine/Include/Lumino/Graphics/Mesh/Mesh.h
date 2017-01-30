@@ -98,6 +98,11 @@ public:
 
 	void AddLine(const Vertex& v1, const Vertex& v2);
 
+	void AddPlane(const Vector2& size, int sliceH, int sliceV);	// TODO: name SquarePlane
+	void AddBox(const Vector3& size);
+	void AddSphere(float radius, int slices, int stacks);
+	void AddTeapot();
+	void AddScreenPlane();
 
 LN_INTERNAL_ACCESS:
 	enum VertexBufferType
@@ -151,7 +156,7 @@ LN_INTERNAL_ACCESS:
 
 	MeshResource();
 	virtual ~MeshResource();
-	void Initialize(detail::GraphicsManager* manager, ResourceUsage usage);
+	void Initialize(detail::GraphicsManager* manager, MeshCreationFlags flags);
 	void Reserve(int vertexCount, int indexCount);
 	//void Resize(int vertexCount);
 
@@ -161,16 +166,6 @@ LN_INTERNAL_ACCESS:
 	void ResizeIndexBuffer(int indexCount, IndexBufferFormat format);
 
 	void SetIndexInternal(void* indexBuffer, int vertexIndex, int value);
-
-	void BeginCreating(MeshCreationFlags flags);
-	void EndCreating();
-
-	void CreateBox(const Vector3& size);
-	void CreateSphere(float radius, int slices, int stacks, MeshCreationFlags flags);
-	void CreatePlane(const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags);
-	void CreateSquarePlane(const Vector2& size, const Vector3& front, MeshCreationFlags flags);
-	void CreateScreenPlane();
-	void CreateTeapot(MeshCreationFlags flags);
 
 	int GetSubsetCount() const { return m_attributes.GetCount(); }
 
@@ -186,8 +181,7 @@ LN_INTERNAL_ACCESS:
 
 
 private:
-	void CreateBuffers(int vertexCount, int indexCount, MeshCreationFlags flags);
-	void PostGenerated(Vertex* vb, void* ib, MeshCreationFlags flags);
+	//void PostGenerated(Vertex* vb, void* ib, MeshCreationFlags flags);
 
 LN_INTERNAL_ACCESS:	// TODO:
 	detail::GraphicsManager*	m_manager;
@@ -232,8 +226,7 @@ LN_INTERNAL_ACCESS:
 	void InitializeBox(detail::GraphicsManager* manager, const Vector3& size);
 	void InitializeSphere(detail::GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags);
 	void InitializePlane(detail::GraphicsManager* manager, const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags);
-	void InitializeSquarePlane(detail::GraphicsManager* manager, const Vector2& size, const Vector3& front, MeshCreationFlags flags);
-	void InitializeScreenPlane(detail::GraphicsManager* manager);
+	void InitializeScreenPlane(detail::GraphicsManager* manager, MeshCreationFlags flags);
 	void InitializeTeapot(detail::GraphicsManager* manager, MeshCreationFlags flags);
 	
 LN_INTERNAL_ACCESS:	// TODO:

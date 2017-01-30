@@ -53,21 +53,11 @@ StaticMeshPtr StaticMesh::CreatePlane(const Vector2& size, int sliceH, int slice
 }
 
 //------------------------------------------------------------------------------
-StaticMeshPtr StaticMesh::CreateSquarePlane(const Vector2& size, const Vector3& front, MeshCreationFlags flags)
-{
-	auto ptr = StaticMeshPtr::MakeRef();
-	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
-	mesh->InitializeSquarePlane(SceneGraphManager::Instance->GetGraphicsManager(), size, front, flags);
-	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), mesh);
-	return ptr;
-}
-
-//------------------------------------------------------------------------------
 StaticMeshPtr StaticMesh::CreateScreenPlane()
 {
 	auto ptr = StaticMeshPtr::MakeRef();
 	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
-	mesh->InitializeScreenPlane(SceneGraphManager::Instance->GetGraphicsManager());
+	mesh->InitializeScreenPlane(SceneGraphManager::Instance->GetGraphicsManager(), MeshCreationFlags::None);
 	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), mesh);
 	return ptr;
 }

@@ -288,7 +288,7 @@ void SceneGraph3D::CreateGridContents()
 
 	// 適当な四角形メッシュ
 	m_gridPlane = RefPtr<StaticMeshModel>::MakeRef();
-	m_gridPlane->InitializeSquarePlane(gm, Vector2(1, 1), Vector3::UnitY, MeshCreationFlags::DynamicBuffers);
+	m_gridPlane->InitializeScreenPlane(gm, MeshCreationFlags::DynamicBuffers);
 	MeshResource* mesh = m_gridPlane->GetMeshResource();
 	mesh->AddSections(1);
 	mesh->GetSection(0)->MaterialIndex = 0;

@@ -22,9 +22,6 @@ public:
 
 	static StaticMeshPtr CreatePlane(const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags = MeshCreationFlags::None);
 
-	// obsolete
-	static StaticMeshPtr CreateSquarePlane(const Vector2& size, const Vector3& front, MeshCreationFlags flags = MeshCreationFlags::None);
-
 	static StaticMeshPtr CreateScreenPlane();
 
 	static StaticMeshPtr CreateTeapot(MeshCreationFlags flags);

@@ -13,6 +13,11 @@
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
+// MeshResourceBuilder
+//==============================================================================
+
+
+//==============================================================================
 // MeshResource
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(MeshResource, Object);
@@ -21,7 +26,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(MeshResource, Object);
 MeshResourcePtr MeshResource::Create()
 {
 	auto ptr = MeshResourcePtr::MakeRef();
-	ptr->Initialize(detail::GraphicsManager::GetInstance(), ResourceUsage::Dynamic);
+	ptr->Initialize(detail::GraphicsManager::GetInstance(), MeshCreationFlags::DynamicBuffers);
 	return ptr;
 }
 
@@ -46,11 +51,11 @@ MeshResource::~MeshResource()
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::Initialize(detail::GraphicsManager* manager, ResourceUsage usage)
+void MeshResource::Initialize(detail::GraphicsManager* manager, MeshCreationFlags flags)
 {
 	LN_CHECK_ARG(manager != nullptr);
 	m_manager = manager;
-	m_usage = usage;
+	m_usage = (flags.TestFlag(MeshCreationFlags::DynamicBuffers)) ? ResourceUsage::Static : ResourceUsage::Dynamic;
 
 	m_materials = RefPtr<MaterialList>::MakeRef();
 }
@@ -106,98 +111,6 @@ void MeshResource::SetIndexInternal(void* indexBuffer, int index, int vertexInde
 	{
 		LN_NOTIMPLEMENTED();
 	}
-}
-
-//------------------------------------------------------------------------------
-void MeshResource::BeginCreating(MeshCreationFlags flags)
-{
-	m_usage = (flags.TestFlag(MeshCreationFlags::DynamicBuffers)) ? ResourceUsage::Static : ResourceUsage::Dynamic;
-}
-
-//------------------------------------------------------------------------------
-void MeshResource::EndCreating()
-{
-	m_vertexDeclarationModified = true;
-}
-
-//------------------------------------------------------------------------------
-void MeshResource::CreateBox(const Vector3& size)
-{
-	detail::RegularBoxMeshFactory factory;
-	factory.Initialize(size, Color::White, Matrix::Identity);
-	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), MeshCreationFlags::None);
-
-	void* vb = TryLockVertexBuffer(VB_BasicVertices);
-	void* ib = TryLockIndexBuffer();
-	factory.Generate((Vertex*)vb, (uint16_t*)ib, 0);
-	EndCreating();
-}
-
-//------------------------------------------------------------------------------
-void MeshResource::CreateSphere(float radius, int slices, int stacks, MeshCreationFlags flags)
-{
-	detail::RegularSphereMeshFactory factory;
-	factory.Initialize(radius, slices, stacks, Color::White, Matrix::Identity);
-	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), MeshCreationFlags::None);
-
-	void* vb = TryLockVertexBuffer(VB_BasicVertices);
-	void* ib = TryLockIndexBuffer();
-	factory.Generate((Vertex*)vb, (uint16_t*)ib, 0);
-	PostGenerated((Vertex*)vb, ib, flags);
-	EndCreating();
-}
-
-//------------------------------------------------------------------------------
-void MeshResource::CreatePlane(const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags)
-{
-	detail::PlaneMeshFactory3 factory;
-	factory.Initialize(size, sliceH, sliceV, Color::White, Matrix::Identity);
-	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), MeshCreationFlags::None);
-
-	void* vb = TryLockVertexBuffer(VB_BasicVertices);
-	void* ib = TryLockIndexBuffer();
-	factory.Generate((Vertex*)vb, (uint16_t*)ib, 0);
-	PostGenerated((Vertex*)vb, ib, flags);
-	EndCreating();
-}
-
-//------------------------------------------------------------------------------
-void MeshResource::CreateSquarePlane(const Vector2& size, const Vector3& front, MeshCreationFlags flags)
-{
-	detail::PlaneMeshFactory2 factory(size, front);
-	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), flags);
-
-	void* vb = TryLockVertexBuffer(VB_BasicVertices);
-	void* ib = TryLockIndexBuffer();
-	factory.Generate((Vertex*)vb, (uint16_t*)ib);
-	PostGenerated((Vertex*)vb, ib, flags);
-	EndCreating();
-}
-
-//------------------------------------------------------------------------------
-void MeshResource::CreateScreenPlane()
-{
-	detail::PlaneMeshFactory factory(Vector2(2.0f, 2.0f));
-	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), MeshCreationFlags::None);
-
-	void* vb = TryLockVertexBuffer(VB_BasicVertices);
-	void* ib = TryLockIndexBuffer();
-	factory.Generate((Vertex*)vb, (uint16_t*)ib);
-	EndCreating();
-}
-
-//------------------------------------------------------------------------------
-void MeshResource::CreateTeapot(MeshCreationFlags flags)
-{
-	detail::TeapotMeshFactory factory;
-	factory.Initialize(1.0f, 8, Color::White, Matrix::Identity);
-	CreateBuffers(factory.GetVertexCount(), factory.GetIndexCount(), MeshCreationFlags::None);
-
-	void* vb = TryLockVertexBuffer(VB_BasicVertices);
-	void* ib = TryLockIndexBuffer();
-	factory.Generate((Vertex*)vb, (uint16_t*)ib, 0);
-	PostGenerated((Vertex*)vb, ib, flags);
-	EndCreating();
 }
 
 //------------------------------------------------------------------------------
@@ -456,6 +369,85 @@ void MeshResource::AddLine(const Vertex& v1, const Vertex& v2)
 }
 
 //------------------------------------------------------------------------------
+void MeshResource::AddPlane(const Vector2& size, int sliceH, int sliceV)
+{
+	int startIndex = GetVertexCount();
+	LN_VERIFY_STATE(startIndex <= UINT16_MAX);
+
+	// setup factory
+	detail::PlaneMeshFactory3 factory;
+	factory.Initialize(size, sliceH, sliceV, Color::White, Matrix::Identity);
+
+	// alloc buffers, generate mesh
+	Vertex* vb = (Vertex*)RequestVertexBufferForAdditional(factory.GetVertexCount(), VB_BasicVertices);
+	uint16_t* ib = RequestIndexBufferForAdditional(factory.GetIndexCount());
+	factory.Generate(vb, ib, (uint16_t)startIndex);
+}
+
+//------------------------------------------------------------------------------
+void MeshResource::AddBox(const Vector3& size)
+{
+	int startIndex = GetVertexCount();
+	LN_VERIFY_STATE(startIndex <= UINT16_MAX);
+
+	// setup factory
+	detail::RegularBoxMeshFactory factory;
+	factory.Initialize(size, Color::White, Matrix::Identity);
+
+	// alloc buffers, generate mesh
+	Vertex* vb = (Vertex*)RequestVertexBufferForAdditional(factory.GetVertexCount(), VB_BasicVertices);
+	uint16_t* ib = RequestIndexBufferForAdditional(factory.GetIndexCount());
+	factory.Generate(vb, ib, (uint16_t)startIndex);
+}
+
+//------------------------------------------------------------------------------
+void MeshResource::AddSphere(float radius, int slices, int stacks)
+{
+	int startIndex = GetVertexCount();
+	LN_VERIFY_STATE(startIndex <= UINT16_MAX);
+
+	// setup factory
+	detail::RegularSphereMeshFactory factory;
+	factory.Initialize(radius, slices, stacks, Color::White, Matrix::Identity);
+
+	// alloc buffers, generate mesh
+	Vertex* vb = (Vertex*)RequestVertexBufferForAdditional(factory.GetVertexCount(), VB_BasicVertices);
+	uint16_t* ib = RequestIndexBufferForAdditional(factory.GetIndexCount());
+	factory.Generate(vb, ib, (uint16_t)startIndex);
+}
+
+//------------------------------------------------------------------------------
+void MeshResource::AddScreenPlane()
+{
+	int startIndex = GetVertexCount();
+	LN_VERIFY_STATE(startIndex <= UINT16_MAX);
+
+	// setup factory
+	detail::PlaneMeshFactory factory(Vector2(2.0f, 2.0f));
+
+	// alloc buffers, generate mesh
+	Vertex* vb = (Vertex*)RequestVertexBufferForAdditional(factory.GetVertexCount(), VB_BasicVertices);
+	uint16_t* ib = RequestIndexBufferForAdditional(factory.GetIndexCount());
+	factory.Generate(vb, ib, (uint16_t)startIndex);
+}
+
+//------------------------------------------------------------------------------
+void MeshResource::AddTeapot()
+{
+	int startIndex = GetVertexCount();
+	LN_VERIFY_STATE(startIndex <= UINT16_MAX);
+
+	// setup factory
+	detail::TeapotMeshFactory factory;
+	factory.Initialize(1.0f, 8, Color::White, Matrix::Identity);
+
+	// alloc buffers, generate mesh
+	Vertex* vb = (Vertex*)RequestVertexBufferForAdditional(factory.GetVertexCount(), VB_BasicVertices);
+	uint16_t* ib = RequestIndexBufferForAdditional(factory.GetIndexCount());
+	factory.Generate(vb, ib, (uint16_t)startIndex);
+}
+
+//------------------------------------------------------------------------------
 void* MeshResource::TryLockVertexBuffer(VertexBufferType type)
 {
 	LN_FAIL_CHECK_STATE(m_vertexUsedCount > 0) return nullptr;
@@ -701,49 +693,34 @@ void MeshResource::CommitRenderData(VertexDeclaration** outDecl, VertexBuffer** 
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::CreateBuffers(int vertexCount, int indexCount, MeshCreationFlags flags)
-{
-	AddMaterials(1);
-	//AddSections(1);
-	//m_attributes[0].MaterialIndex = 0;
-	//m_attributes[0].StartIndex = 0;
-	//m_attributes[0].PrimitiveNum = indexCount / 3;
-
-	TryGlowVertexBuffers(vertexCount);
-	TryGlowIndexBuffer(indexCount);
-	m_vertexUsedCount = vertexCount;
-	m_indexUsedCount = indexCount;
-}
-
-//------------------------------------------------------------------------------
-void MeshResource::PostGenerated(Vertex* vb, void* ib, MeshCreationFlags flags)
-{
-	for (int i = 0; i < m_vertexUsedCount; ++i)
-	{
-		vb[i].color = Color::White;
-	}
-
-	if (flags.TestFlag(MeshCreationFlags::ReverseFaces))
-	{
-		if (m_indexBufferInfo.buffer->GetIndexStride() == 2)
-		{
-			for (int i = 0; i < m_vertexUsedCount; ++i)
-			{
-				vb[i].normal *= -1.0f;
-			}
-
-			uint16_t* indices = (uint16_t*)ib;
-			for (int i = 0; i < m_indexUsedCount; i += 3)
-			{
-				std::swap(indices[i + 1], indices[i + 2]);
-			}
-		}
-		else
-		{
-			LN_NOTIMPLEMENTED();
-		}
-	}
-}
+//void MeshResource::PostGenerated(Vertex* vb, void* ib, MeshCreationFlags flags)
+//{
+//	for (int i = 0; i < m_vertexUsedCount; ++i)
+//	{
+//		vb[i].color = Color::White;
+//	}
+//
+//	if (flags.TestFlag(MeshCreationFlags::ReverseFaces))
+//	{
+//		if (m_indexBufferInfo.buffer->GetIndexStride() == 2)
+//		{
+//			for (int i = 0; i < m_vertexUsedCount; ++i)
+//			{
+//				vb[i].normal *= -1.0f;
+//			}
+//
+//			uint16_t* indices = (uint16_t*)ib;
+//			for (int i = 0; i < m_indexUsedCount; i += 3)
+//			{
+//				std::swap(indices[i + 1], indices[i + 2]);
+//			}
+//		}
+//		else
+//		{
+//			LN_NOTIMPLEMENTED();
+//		}
+//	}
+//}
 
 //==============================================================================
 // StaticMeshModel
@@ -784,8 +761,9 @@ void StaticMeshModel::Initialize(detail::GraphicsManager* manager, MeshResource*
 void StaticMeshModel::InitializeBox(detail::GraphicsManager* manager, const Vector3& size)
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
-	res->Initialize(manager, ResourceUsage::Static);
-	res->CreateBox(size);
+	res->Initialize(manager, MeshCreationFlags::None);
+	res->AddMaterials(1);
+	res->AddBox(size);
 	Initialize(manager, res);
 }
 
@@ -793,8 +771,9 @@ void StaticMeshModel::InitializeBox(detail::GraphicsManager* manager, const Vect
 void StaticMeshModel::InitializeSphere(detail::GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags)
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
-	res->Initialize(manager, ResourceUsage::Static);
-	res->CreateSphere(radius, slices, stacks, flags);
+	res->Initialize(manager, flags);
+	res->AddMaterials(1);
+	res->AddSphere(radius, slices, stacks);
 	Initialize(manager, res);
 }
 
@@ -802,26 +781,19 @@ void StaticMeshModel::InitializeSphere(detail::GraphicsManager* manager, float r
 void StaticMeshModel::InitializePlane(detail::GraphicsManager* manager, const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags)
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
-	res->Initialize(manager, ResourceUsage::Static);
-	res->CreatePlane(size, sliceH, sliceV, flags);
+	res->Initialize(manager, flags);
+	res->AddMaterials(1);
+	res->AddPlane(size, sliceH, sliceV);
 	Initialize(manager, res);
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::InitializeSquarePlane(detail::GraphicsManager* manager, const Vector2& size, const Vector3& front, MeshCreationFlags flags)
+void StaticMeshModel::InitializeScreenPlane(detail::GraphicsManager* manager, MeshCreationFlags flags)
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
-	res->Initialize(manager, ResourceUsage::Static);
-	res->CreateSquarePlane(size, front, flags);
-	Initialize(manager, res);
-}
-
-//------------------------------------------------------------------------------
-void StaticMeshModel::InitializeScreenPlane(detail::GraphicsManager* manager)
-{
-	auto res = RefPtr<MeshResource>::MakeRef();
-	res->Initialize(manager, ResourceUsage::Static);
-	res->CreateScreenPlane();
+	res->Initialize(manager, flags);
+	res->AddMaterials(1);
+	res->AddScreenPlane();
 	Initialize(manager, res);
 }
 
@@ -829,8 +801,9 @@ void StaticMeshModel::InitializeScreenPlane(detail::GraphicsManager* manager)
 void StaticMeshModel::InitializeTeapot(detail::GraphicsManager* manager, MeshCreationFlags flags)
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
-	res->Initialize(manager, ResourceUsage::Static);
-	res->CreateTeapot(flags);
+	res->Initialize(manager, flags);
+	res->AddMaterials(1);
+	res->AddTeapot();
 	Initialize(manager, res);
 }
 
