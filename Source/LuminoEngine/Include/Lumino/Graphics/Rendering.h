@@ -585,7 +585,8 @@ LN_INTERNAL_ACCESS:
 	void SetState(const detail::BatchStateBlock& state) { m_state = state; }
 	void AddDynamicLightInfo(detail::DynamicLightInfo* lightInfo);
 	void PushMetadata(const DrawElementMetadata* metadata);
-	const DrawElementMetadata* PopMetadata();
+	const DrawElementMetadata* GetMetadata();
+	void PopMetadata();
 
 	template<typename TElement> TElement* ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer, Material* userMaterial);
 	void DrawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Material* material);

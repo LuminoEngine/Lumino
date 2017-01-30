@@ -747,13 +747,14 @@ void InternalRenderer::Render(
 	return left->m_priority > right->m_priority;
 	*/
 	// 距離は降順。遠いほうを先に描画する
+	// 優先度は昇順。高いほうを手前に描画する (UE4 ESceneDepthPriorityGroup)
 	std::stable_sort(
 		m_renderingElementList.begin(), m_renderingElementList.end(),
 		[](const DrawElement* lhs, const DrawElement* rhs)
 		{
 			if (lhs->metadata.priority == rhs->metadata.priority)
 				return lhs->zDistance > rhs->zDistance;
-			return lhs->metadata.priority > rhs->metadata.priority;
+			return lhs->metadata.priority < rhs->metadata.priority;
 		}
 	);
 
@@ -1616,14 +1617,19 @@ void DrawList::PushMetadata(const DrawElementMetadata* metadata)
 {
 	LN_CHECK_STATE(m_metadata == nullptr);
 	m_metadata = metadata;
+	// TODO: stack
 }
 
 //------------------------------------------------------------------------------
-const DrawElementMetadata* DrawList::PopMetadata()
+const DrawElementMetadata* DrawList::GetMetadata()
 {
-	auto* m = m_metadata;
+	return m_metadata;
+}
+
+//------------------------------------------------------------------------------
+void DrawList::PopMetadata()
+{
 	m_metadata = nullptr;
-	return m;
 }
 
 //------------------------------------------------------------------------------
@@ -1637,7 +1643,7 @@ TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId, detai
 
 	m_state.state.m_rendererId = reinterpret_cast<intptr_t>(renderer);
 
-	const DrawElementMetadata* userMetadata = PopMetadata();
+	const DrawElementMetadata* userMetadata = GetMetadata();
 	const DrawElementMetadata* metadata = (userMetadata != nullptr) ? userMetadata : &DrawElementMetadata::Default;
 
 	// 何か前回追加された DrawElement があり、それと DrawingSectionId、State が一致するならそれに対して追記できる

@@ -107,6 +107,7 @@ void StaticMesh::Initialize(SceneGraph* owner, StaticMeshModel* meshModel)
 //------------------------------------------------------------------------------
 void StaticMesh::OnRender2(DrawList* renderer)
 {
+	renderer->SetTransform(m_combinedGlobalMatrix);
 	renderer->DrawMesh(m_mesh, 0, GetMainMaterial()/*GetMaterials()->GetAt(0)*/);
 }
 

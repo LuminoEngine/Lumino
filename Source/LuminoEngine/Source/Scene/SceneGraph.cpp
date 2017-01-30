@@ -277,7 +277,12 @@ void SceneGraph3D::Render2(DrawList* renderer, Camera* camera)
 	{
 		AdjustGridMesh(camera);
 		renderer->SetTransform(Matrix::Identity);
+
+		DrawElementMetadata metadata;
+		metadata.priority = (int)DepthPriority::Foreground;
+		renderer->PushMetadata(&metadata);
 		renderer->DrawMesh(m_gridPlane, 0, m_gridPlane->GetMeshResource()->GetMaterial(0));
+		renderer->PopMetadata();
 	}
 }
 
@@ -324,6 +329,7 @@ void SceneGraph3D::CreateGridContents()
 	mesh->GetMaterial(0)->SetMaterialTexture(gridTex);
 
 	mesh->GetMaterial(0)->blendMode = BlendMode::Alpha;
+	mesh->GetMaterial(0)->depthWriteEnabled = false;
 }
 
 //------------------------------------------------------------------------------

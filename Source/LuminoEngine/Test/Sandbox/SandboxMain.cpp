@@ -523,7 +523,7 @@ void Main()
 	mesh2->SetPosition(2, 0, 0);
 
 	auto mesh3 = StaticMesh::CreatePlane(Vector2(3, 3), 1, 1);
-	mesh3->SetPosition(2, 0, 0);
+	mesh3->SetPosition(-2, 0, 0);
 
 	while (!Engine::IsEndRequested())
 	{

@@ -342,6 +342,7 @@ LOOP_EXIT:
 	metadata.priority = priority;
 	m_context->PushMetadata(&metadata);
 	m_context->DrawMesh(m_mesh, 0, tileSet->GetMaterial());
+	m_context->PopMetadata();
 	//printf("%p\n", m_shader.pass);
 	//m_renderingContext->SetVertexBuffer(nullptr);
 	//m_renderingContext->SetIndexBuffer(nullptr);

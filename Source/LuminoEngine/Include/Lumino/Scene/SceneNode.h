@@ -12,6 +12,13 @@ LN_NAMESPACE_SCENE_BEGIN
 class DrawList;
 class SceneNodeList;
 
+enum class DepthPriority
+{
+	Background = -1000,
+	Normal = 0,
+	Foreground = 1000,
+};
+
 /// SceneNode
 LN_CLASS()
 class SceneNode
@@ -79,10 +86,10 @@ public:
 	RotationOrder GetRotateOrder() const { return m_rotOrder; }
 
 	/// 優先度の設定 (高い方から先に描画される)
-	void SetPriority(int priority) { m_priority = priority; }
+	void SetDepthPriority(DepthPriority priority) { m_priority = priority; }
 
 	/// 優先度の取得
-	int GetPriority() const { return m_priority; }
+	DepthPriority GetDepthPriority() const { return m_priority; }
 
 	/// ビルボード状態の設定
 	void SetBillboardType(BillboardType type) { m_billboardType = type; }
@@ -157,7 +164,7 @@ protected:
 	SQTTransform		m_transform;
 	Vector3				m_transformCenter;
 	RotationOrder		m_rotOrder;
-	int					m_priority;
+	DepthPriority		m_priority;
 	BillboardType		m_billboardType;
 	SceneNodeRenderingMode	m_renderingMode;
 	//bool				m_transformModified;	///< 座標変換行列の再計算が必要か
