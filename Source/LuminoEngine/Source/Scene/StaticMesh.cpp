@@ -15,9 +15,7 @@ LN_NAMESPACE_BEGIN
 StaticMeshPtr StaticMesh::Create(const StringRef& filePath)
 {
 	auto ptr = StaticMeshPtr::MakeRef();
-	auto meshResource = SceneGraphManager::Instance->GetModelManager()->CreateModelCore(filePath);
-	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
-	mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager(), meshResource);
+	auto mesh = SceneGraphManager::Instance->GetModelManager()->CreateStaticMeshModel(filePath);
 	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), mesh);
 	return ptr;
 }

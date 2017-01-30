@@ -19,9 +19,7 @@ LN_NAMESPACE_BEGIN
 SkinnedMeshPtr SkinnedMesh::Create(const StringRef& filePath)
 {
 	auto ptr = SkinnedMeshPtr::MakeRef();
-	auto meshResource = SceneGraphManager::Instance->GetModelManager()->CreateSkinnedMeshModel(filePath);
-	auto mesh = RefPtr<SkinnedMeshModel>::MakeRef();
-	mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager(), meshResource);
+	auto mesh = SceneGraphManager::Instance->GetModelManager()->CreateSkinnedMeshModel(filePath);
 	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), mesh);
 	return ptr;
 }

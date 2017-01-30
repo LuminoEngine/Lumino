@@ -110,6 +110,7 @@
 #include "../Internal.h"
 #include <Lumino/IO/FileManager.h>
 #include <Lumino/Graphics/Texture.h>
+#include <Lumino/Graphics/Mesh/SkinnedMeshModel.h>
 #include "PmxSkinnedMesh.h"
 #if defined(LN_OS_WIN32)
 #include "XFileLoader.h"
@@ -272,12 +273,30 @@ RefPtr<MeshResource> ModelManager::CreateModelCore(const PathName& filePath)
 }
 
 //------------------------------------------------------------------------------
-RefPtr<PmxSkinnedMeshResource> ModelManager::CreateSkinnedMeshModel(const PathName& filePath)
+RefPtr<PmxSkinnedMeshResource> ModelManager::CreateSkinnedMeshResource(const PathName& filePath)
 {
 	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath), false);
 	PmxLoader loader;
 	RefPtr<PmxSkinnedMeshResource> mesh = loader.Load(this, stream, filePath.GetParent(), true, ModelCreationFlag::None);
 	mesh->RefreshInitialValues();
+	return mesh;
+}
+
+//------------------------------------------------------------------------------
+RefPtr<StaticMeshModel> ModelManager::CreateStaticMeshModel(const PathName& filePath)
+{
+	auto meshResource = CreateModelCore(filePath);
+	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
+	mesh->Initialize(m_graphicsManager, meshResource);
+	return mesh;
+}
+
+//------------------------------------------------------------------------------
+RefPtr<SkinnedMeshModel> ModelManager::CreateSkinnedMeshModel(const PathName& filePath)
+{
+	auto meshResource = CreateSkinnedMeshResource(filePath);
+	auto mesh = RefPtr<SkinnedMeshModel>::MakeRef();
+	mesh->Initialize(m_graphicsManager, meshResource);
 	return mesh;
 }
 

@@ -517,7 +517,7 @@ void Main()
 	//auto box1 = StaticMesh::CreateBox(Vector3(5, 5, 5));
 	auto box1 = StaticMesh::CreateTeapot(MeshCreationFlags::None);
 	box1->GetMaterials()->GetAt(0)->SetMaterialTexture(tex1);
-	box1->SetTone(ToneF(0, 0, 1, 1.0));
+	//box1->SetTone(ToneF(0, 0, 1, 1.0));
 
 	auto mesh2 = StaticMesh::CreateBox(Vector3(1, 1, 1));
 	mesh2->SetPosition(2, 0, 0);
