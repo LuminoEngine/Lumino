@@ -291,6 +291,11 @@ void SceneGraph3D::CreateGridContents()
 	m_gridPlane->InitializeSquarePlane(gm, Vector2(1, 1), Vector3::UnitY, MeshCreationFlags::DynamicBuffers);
 	MeshResource* mesh = m_gridPlane->GetMeshResource();
 	mesh->AddSections(1);
+	mesh->GetSection(0)->MaterialIndex = 0;
+	mesh->GetSection(0)->StartIndex = 0;
+	mesh->GetSection(0)->PrimitiveNum = 2;
+	mesh->GetSection(0)->primitiveType = PrimitiveType_TriangleList;
+
 
 	// シェーダ (DrawingContext3D)
 	static const byte_t shaderCode[] =
