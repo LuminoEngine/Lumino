@@ -13,7 +13,9 @@ namespace detail {
 #include <DirectXTK/TeapotData.inc>
 
 static const Vector3 g_XMEpsilon( 1.192092896e-7f, 1.192092896e-7f, 1.192092896e-7f );
-
+static const Vector3 g_XMNegateX(-1.0f, 1.0f, 1.0f);
+static const Vector3 g_XMNegateY(1.0f, -1.0f, 1.0f);
+static const Vector3 g_XMNegateZ(1.0f, 1.0f, -1.0f);
 static const Vector3 g_XMIdentityR1(0.0f, 1.0f, 0.0f);
 static const Vector3 g_XMNegIdentityR1(0.0f,-1.0f, 0.0f);
 
@@ -33,19 +35,19 @@ namespace Bezier
 	}
 
 
-	//inline Vector3 XMVectorSelect
-	//(
-	//	Vector3 V1,
-	//	Vector3 V2,
-	//	Vector3 Control
-	//)
-	//{
-	//	Vector3 Result;
-	//	Result.x = (V1.x & (Control.x != 0)) + (V2.x & Control.x);
-	//	Result.y = (V1.y & (Control.y != 0)) + (V2.y & Control.y);
-	//	Result.z = (V1.z & (Control.z != 0)) + (V2.z & Control.z);
-	//	return Result;
-	//}
+	inline Vector3 XMVectorSelect
+	(
+		Vector3 V1,
+		Vector3 V2,
+		Vector3 Control
+	)
+	{
+		Vector3 Result;
+		Result.x = (Control.x == 0) ? V1.x : V2.x;
+		Result.y = (Control.y == 0) ? V1.y : V2.y;
+		Result.z = (Control.z == 0) ? V1.z : V2.z;
+		return Result;
+	}
 
 	template<typename T>
 	T CubicInterpolate(T const& p1, T const& p2, T const& p3, T const& p4, float t)
@@ -76,8 +78,6 @@ namespace Bezier
 		bool isMirrored,
 		TOutputFunc outputVertex)
 	{
-		/* count = tessellation * tessellation  */
-
 		for (size_t i = 0; i <= tessellation; i++)
 		{
 			float u = (float)i / tessellation;
@@ -135,8 +135,7 @@ namespace Bezier
 					// solution for all possible degenerate bezier patches, but hey,
 					// it's good enough to make the teapot work correctly!
 
-					//LN_NOTIMPLEMENTED();
-					normal = g_XMIdentityR1;// Vector3::Zero;//XMVectorSelect(g_XMIdentityR1, g_XMNegIdentityR1, XMVectorLess(position, Vector3::Zero()));
+					normal = XMVectorSelect(g_XMIdentityR1, g_XMNegIdentityR1, XMVectorLess(position, Vector3::Zero));
 				}
 
 				// Compute the texture coordinate.
@@ -156,8 +155,6 @@ namespace Bezier
 	template<typename TOutputFunc>
 	void CreatePatchIndices(size_t tessellation, bool isMirrored, TOutputFunc outputIndex)
 	{
-		/* count = tessellation * tessellation * 6 */
-
 		size_t stride = tessellation + 1;
 
 		for (size_t i = 0; i < tessellation; i++)
@@ -193,24 +190,6 @@ namespace Bezier
 //==============================================================================
 // TeapotMeshFactory
 //==============================================================================
-
-	int a;
-
-// Creates a teapot primitive.
-
-static const Vector3 g_XMNegateX(-1.0f, 1.0f, 1.0f);
-static const Vector3 g_XMNegateY( 1.0f,-1.0f, 1.0f);
-static const Vector3 g_XMNegateZ( 1.0f, 1.0f,-1.0f);
-
-//int TeapotMeshFactory::GetVertexCount() const
-//{
-//	return (m_slices + 1) * 2;
-//}
-//
-//int TeapotMeshFactory::GetIndexCount() const
-//{
-//	return m_slices * 6;
-//}
 
 void TeapotMeshFactory::ComputeTeapot(float size, size_t tessellation/*, bool rhcoords*/)
 {
@@ -261,11 +240,10 @@ void TeapotMeshFactory::TessellatePatch(const TeapotPatch& patch, size_t tessell
 	}
 
 	// Create the index data.
-	//size_t vbase = vertices.size();
+	size_t vbase = m_vbPos - m_vbBegin;
 	Bezier::CreatePatchIndices(tessellation, isMirrored, [&](size_t index)
 	{
-		AddIndex(index);
-		//index_push_back(indices, vbase + index);
+		AddIndex(vbase + index);
 	});
 
 	// Create the vertex data.
@@ -275,12 +253,11 @@ void TeapotMeshFactory::TessellatePatch(const TeapotPatch& patch, size_t tessell
 		const Vector2& textureCoordinate)
 	{
 		AddVertex(position, normal, textureCoordinate);
-		//vertices.push_back(VertexPositionNormalTexture(position, normal, textureCoordinate));
 	});
 }
 
 //------------------------------------------------------------------------------
-int TeapotMeshFactory::GetVertexCount() const
+static int GetPatchBaseCalls()
 {
 	int baseCall = 0;
 
@@ -294,16 +271,68 @@ int TeapotMeshFactory::GetVertexCount() const
 		}
 	}
 
-	return baseCall * (m_tessellation * m_tessellation);
+	return baseCall;
+}
+
+//------------------------------------------------------------------------------
+TeapotMeshFactory::TeapotMeshFactory()
+	: m_size(0.0f)
+	, m_tessellation(0)
+	, m_vbBegin(nullptr)
+	, m_vbPos(nullptr)
+	, m_ibPos(nullptr)
+	, m_beginIndex(0)
+{
+}
+
+//------------------------------------------------------------------------------
+void TeapotMeshFactory::Initialize(float size, int tessellation, const Color& color, const Matrix& transform)
+{
+	LN_FAIL_CHECK_ARG(tessellation >= 1) return;
+	m_size = size;
+	m_tessellation = tessellation;
+	MeshFactoryBase::Initialize(color, transform);
+}
+
+//------------------------------------------------------------------------------
+int TeapotMeshFactory::GetVertexCount() const
+{
+	int tess = m_tessellation + 1;
+	return GetPatchBaseCalls() * (tess * tess);
+}
+
+//------------------------------------------------------------------------------
+int TeapotMeshFactory::GetIndexCount() const
+{
+	return GetPatchBaseCalls() * (m_tessellation * m_tessellation) * 6;
 }
 
 //------------------------------------------------------------------------------
 void TeapotMeshFactory::Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
 {
-	m_vbPos = outVertices;
+	m_vbBegin = outVertices;
+	m_vbPos = m_vbBegin;
 	m_ibPos = outIndices;
+	m_beginIndex = beginIndex;
 
 	ComputeTeapot(m_size, m_tessellation/*, rhcoords*/);
+}
+
+//------------------------------------------------------------------------------
+void TeapotMeshFactory::AddVertex(const Vector3& pos, const Vector3& normal, const Vector2& texUV)
+{
+	m_vbPos->position = pos;
+	m_vbPos->normal = normal;
+	m_vbPos->uv = texUV;
+	m_vbPos->color = m_color;
+	m_vbPos++;
+}
+
+//------------------------------------------------------------------------------
+void TeapotMeshFactory::AddIndex(uint16_t index)
+{
+	*m_ibPos = m_beginIndex + index;
+	m_ibPos++;
 }
 
 } // namespace detail

@@ -907,55 +907,29 @@ class TeapotMeshFactory
 	: public MeshFactoryBase
 {
 public:
-	TeapotMeshFactory()
-		: m_tessellation(0)
-	{
-	}
+	TeapotMeshFactory();
 
-	void Initialize(float size, int tessellation, const Color& color, const Matrix& transform)
-	{
-		LN_FAIL_CHECK_ARG(tessellation >= 1) return;
-		m_size = size;
-		m_tessellation = tessellation;
-		MeshFactoryBase::Initialize(color, transform);
-	}
+	void Initialize(float size, int tessellation, const Color& color, const Matrix& transform);
 
 	int GetVertexCount() const;
 
-	int GetIndexCount() const
-	{
-		return GetVertexCount() * 6;
-	}
+	int GetIndexCount() const;
 
 	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex);
 
 private:
-	void AddVertex(const Vector3& pos, const Vector3& normal, const Vector2& texUV)
-	{
-		static int cnt = 0;
-		cnt++;
-		printf("%d\n", cnt);
-		m_vbPos->position = pos;
-		m_vbPos->normal = normal;
-		m_vbPos->uv = texUV;
-		m_vbPos->color = m_color;
-		m_vbPos++;
-	}
-	void AddIndex(uint16_t index)
-	{
-		*m_ibPos = index;
-		m_ibPos++;
-	}
+	void AddVertex(const Vector3& pos, const Vector3& normal, const Vector2& texUV);
+	void AddIndex(uint16_t index);
 
 	void ComputeTeapot(float size, size_t tessellation/*, bool rhcoords*/);
 	void TessellatePatch(const TeapotPatch& patch, size_t tessellation, const Vector3& scale, bool isMirrored);
 
-
-	
 	float		m_size;
 	int			m_tessellation;
+	Vertex*		m_vbBegin;
 	Vertex*		m_vbPos;
 	uint16_t*	m_ibPos;
+	uint16_t	m_beginIndex;
 };
 
 } // namespace detail
