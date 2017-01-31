@@ -39,7 +39,6 @@ MeshResource::MeshResource()
 	, m_indexCapacity(0)
 	, m_indexUsedCount(0)
 	, m_vertexDeclaration()
-	, m_materials()
 	, m_attributes()
 	, m_vertexDeclarationModified(false)
 {
@@ -57,7 +56,6 @@ void MeshResource::Initialize(detail::GraphicsManager* manager, MeshCreationFlag
 	m_manager = manager;
 	m_usage = (flags.TestFlag(MeshCreationFlags::DynamicBuffers)) ? ResourceUsage::Static : ResourceUsage::Dynamic;
 
-	m_materials = RefPtr<MaterialList>::MakeRef();
 }
 
 //------------------------------------------------------------------------------
@@ -111,29 +109,6 @@ void MeshResource::SetIndexInternal(void* indexBuffer, int index, int vertexInde
 	{
 		LN_NOTIMPLEMENTED();
 	}
-}
-
-//------------------------------------------------------------------------------
-void MeshResource::AddMaterials(int count)
-{
-	int oldCount = m_materials->GetCount();
-	int newCount = oldCount + count;
-	m_materials->Resize(newCount);
-	if (oldCount < newCount)
-	{
-		for (int i = oldCount; i < newCount; ++i)
-		{
-			auto m = RefPtr<Material>::MakeRef();
-			m->Initialize();
-			m_materials->SetAt(i, m);
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-Material* MeshResource::GetMaterial(int index) const
-{
-	return m_materials->GetAt(index);
 }
 
 //------------------------------------------------------------------------------
@@ -462,7 +437,7 @@ void* MeshResource::TryLockVertexBuffer(VertexBufferType type)
 	};
 	size_t requestedSize = strideTable[type] * m_vertexCapacity;
 
-	if (m_usage == ResourceUsage::Dynamic)
+	//if (m_usage == ResourceUsage::Dynamic)
 	{
 		if (m_vertexBufferInfos[type].buffer != nullptr &&
 			m_vertexBufferInfos[type].buffer->GetBufferSize() != requestedSize)
@@ -499,7 +474,7 @@ void* MeshResource::TryLockIndexBuffer()
 {
 	LN_FAIL_CHECK_STATE(m_indexUsedCount > 0) return nullptr;
 
-	if (m_usage == ResourceUsage::Dynamic)
+	//if (m_usage == ResourceUsage::Dynamic)
 	{
 		if (m_indexBufferInfo.buffer != nullptr &&
 			(m_indexBufferInfo.buffer->GetIndexCount() != m_indexCapacity || m_indexBufferInfo.buffer->GetIndexFormat() != m_indexBufferInfo.format))
@@ -729,6 +704,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(StaticMeshModel, Object);
 
 //------------------------------------------------------------------------------
 StaticMeshModel::StaticMeshModel()
+	: m_materials()
 {
 }
 
@@ -746,15 +722,17 @@ void StaticMeshModel::Initialize(detail::GraphicsManager* manager, MeshResource*
 	// メッシュ(バッファ類)は共有する
 	m_meshResource = sharingMesh;
 
+	m_materials = RefPtr<MaterialList>::MakeRef();
+
 	// マテリアルはコピーする
 	// TODO: コピー有無のフラグがあったほうがいいかも？
-	int count = m_meshResource->m_materials->GetCount();
-	m_materials = RefPtr<MaterialList>::MakeRef();
-	m_materials->Resize(count);
-	for (int i = 0; i < count; ++i)
-	{
-		m_materials->SetAt(i, m_meshResource->m_materials->GetAt(i)->CopyShared());
-	}
+	//int count = m_meshResource->m_materials->GetCount();
+	//m_materials = RefPtr<MaterialList>::MakeRef();
+	//m_materials->Resize(count);
+	//for (int i = 0; i < count; ++i)
+	//{
+	//	m_materials->SetAt(i, m_meshResource->m_materials->GetAt(i)->CopyShared());
+	//}
 }
 
 //------------------------------------------------------------------------------
@@ -762,9 +740,9 @@ void StaticMeshModel::InitializeBox(detail::GraphicsManager* manager, const Vect
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
 	res->Initialize(manager, MeshCreationFlags::None);
-	res->AddMaterials(1);
 	res->AddBox(size);
 	Initialize(manager, res);
+	AddMaterials(1);
 }
 
 //------------------------------------------------------------------------------
@@ -772,9 +750,9 @@ void StaticMeshModel::InitializeSphere(detail::GraphicsManager* manager, float r
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
 	res->Initialize(manager, flags);
-	res->AddMaterials(1);
 	res->AddSphere(radius, slices, stacks);
 	Initialize(manager, res);
+	AddMaterials(1);
 }
 
 //------------------------------------------------------------------------------
@@ -782,9 +760,9 @@ void StaticMeshModel::InitializePlane(detail::GraphicsManager* manager, const Ve
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
 	res->Initialize(manager, flags);
-	res->AddMaterials(1);
 	res->AddPlane(size, sliceH, sliceV);
 	Initialize(manager, res);
+	AddMaterials(1);
 }
 
 //------------------------------------------------------------------------------
@@ -792,9 +770,9 @@ void StaticMeshModel::InitializeScreenPlane(detail::GraphicsManager* manager, Me
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
 	res->Initialize(manager, flags);
-	res->AddMaterials(1);
 	res->AddScreenPlane();
 	Initialize(manager, res);
+	AddMaterials(1);
 }
 
 //------------------------------------------------------------------------------
@@ -802,15 +780,38 @@ void StaticMeshModel::InitializeTeapot(detail::GraphicsManager* manager, MeshCre
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
 	res->Initialize(manager, flags);
-	res->AddMaterials(1);
 	res->AddTeapot();
 	Initialize(manager, res);
+	AddMaterials(1);
 }
 
 //------------------------------------------------------------------------------
 int StaticMeshModel::GetSubsetCount() const
 {
 	return m_meshResource->GetSubsetCount();
+}
+
+//------------------------------------------------------------------------------
+void StaticMeshModel::AddMaterials(int count)
+{
+	int oldCount = m_materials->GetCount();
+	int newCount = oldCount + count;
+	m_materials->Resize(newCount);
+	if (oldCount < newCount)
+	{
+		for (int i = oldCount; i < newCount; ++i)
+		{
+			auto m = RefPtr<Material>::MakeRef();
+			m->Initialize();
+			m_materials->SetAt(i, m);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+Material* StaticMeshModel::GetMaterial(int index) const
+{
+	return m_materials->GetAt(index);
 }
 
 LN_NAMESPACE_END

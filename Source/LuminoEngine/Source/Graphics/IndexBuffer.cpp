@@ -148,7 +148,10 @@ void IndexBuffer::Unlock()
 //------------------------------------------------------------------------------
 void IndexBuffer::Resize(int indexCount, IndexBufferFormat format)
 {
-	LN_CHECK_STATE(m_usage == ResourceUsage::Dynamic);
+	if (!m_initialUpdate)
+	{
+		LN_CHECK_STATE(m_usage == ResourceUsage::Dynamic);
+	}
 	m_indexCount = indexCount;
 	m_format = format;
 	int stride = (format == IndexBufferFormat_UInt16) ? 2 : 4;

@@ -45,7 +45,6 @@ public:
 	RefPtr<SkinnedMeshModel> CreateSkinnedMeshModel(const PathName& filePath);
 
 private:
-	RefPtr<MeshResource> CreateModelCore(const PathName& filePath);
 	RefPtr<PmxSkinnedMeshResource> CreateSkinnedMeshResource(const PathName& filePath);
 	//Animation::AnimationClip* CreateMotion(const PathName& filePath);
 

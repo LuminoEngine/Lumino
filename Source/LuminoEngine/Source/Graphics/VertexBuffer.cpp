@@ -111,7 +111,10 @@ void VertexBuffer::Unlock()
 //------------------------------------------------------------------------------
 void VertexBuffer::Resize(size_t bufferSize)
 {
-	LN_CHECK_STATE(m_usage == ResourceUsage::Dynamic);
+	if (!m_initialUpdate)
+	{
+		LN_CHECK_STATE(m_usage == ResourceUsage::Dynamic);
+	}
 	m_bufferSize = bufferSize;
 	m_lockedBuffer.Resize(m_bufferSize);
 }

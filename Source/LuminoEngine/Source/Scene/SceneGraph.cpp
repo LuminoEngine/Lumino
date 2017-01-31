@@ -281,7 +281,7 @@ void SceneGraph3D::Render2(DrawList* renderer, Camera* camera)
 		DrawElementMetadata metadata;
 		metadata.priority = (int)DepthPriority::Foreground;
 		renderer->PushMetadata(&metadata);
-		renderer->DrawMesh(m_gridPlane, 0, m_gridPlane->GetMeshResource()->GetMaterial(0));
+		renderer->DrawMesh(m_gridPlane, 0, m_gridPlane->GetMaterial(0));
 		renderer->PopMetadata();
 	}
 }
@@ -310,7 +310,7 @@ void SceneGraph3D::CreateGridContents()
 	static const size_t shaderCodeLen = LN_ARRAY_SIZE_OF(shaderCode);
 	auto shader = RefPtr<Shader>::MakeRef();
 	shader->Initialize(gm, shaderCode, shaderCodeLen);
-	mesh->GetMaterial(0)->SetShader(shader);
+	m_gridPlane->GetMaterial(0)->SetShader(shader);
 
 	// 四方の辺に黒線を引いたテクスチャを作り、マテリアルにセットしておく
 	SizeI gridTexSize(512, 512);
@@ -326,10 +326,10 @@ void SceneGraph3D::CreateGridContents()
 		gridTex->SetPixel(0, y, Color(0, 0, 0, 0.5));
 		gridTex->SetPixel(gridTexSize.height - 1, y, Color(0, 0, 0, 0.5));
 	}
-	mesh->GetMaterial(0)->SetMaterialTexture(gridTex);
+	m_gridPlane->GetMaterial(0)->SetMaterialTexture(gridTex);
 
-	mesh->GetMaterial(0)->blendMode = BlendMode::Alpha;
-	mesh->GetMaterial(0)->depthWriteEnabled = false;
+	m_gridPlane->GetMaterial(0)->blendMode = BlendMode::Alpha;
+	m_gridPlane->GetMaterial(0)->depthWriteEnabled = false;
 }
 
 //------------------------------------------------------------------------------

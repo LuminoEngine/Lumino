@@ -268,8 +268,8 @@ void EngineManager::InitializeCommon()
 		if (m_configData.engineLogEnabled)
 		{
 			Logger::Initialize(LogFileName);
-			Logger2::Initialize("log.txt");
-			LN_LOG_INFO("Lumino 1.0.0");
+			//Logger2::Initialize("log.txt");
+			//LN_LOG_INFO("Lumino 1.0.0");
 		}
 		m_commonInitied = true;
 	}

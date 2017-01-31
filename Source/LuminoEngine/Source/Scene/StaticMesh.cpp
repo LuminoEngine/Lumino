@@ -21,16 +21,6 @@ StaticMeshPtr StaticMesh::Create(const StringRef& filePath)
 }
 
 //------------------------------------------------------------------------------
-StaticMeshPtr StaticMesh::CreateBox(const Vector3& size)
-{
-	auto ptr = StaticMeshPtr::MakeRef();
-	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
-	mesh->InitializeBox(SceneGraphManager::Instance->GetGraphicsManager(), size);
-	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), mesh);
-	return ptr;
-}
-
-//------------------------------------------------------------------------------
 StaticMeshPtr StaticMesh::CreateSphere(float radius, int slices, int stacks, MeshCreationFlags flags)
 {
 	auto ptr = StaticMeshPtr::MakeRef();
@@ -107,6 +97,42 @@ void StaticMesh::OnRender2(DrawList* renderer)
 {
 	renderer->SetTransform(m_combinedGlobalMatrix);
 	renderer->DrawMesh(m_mesh, 0, GetMainMaterial()/*GetMaterials()->GetAt(0)*/);
+}
+
+//==============================================================================
+// BoxMesh
+//==============================================================================
+
+//------------------------------------------------------------------------------
+BoxMeshPtr BoxMesh::Create(const Vector3& size)
+{
+	auto ptr = RefPtr<BoxMesh>::MakeRef();
+	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), size);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
+BoxMeshPtr BoxMesh::Create(float width, float height, float depth)
+{
+	return Create(Vector3(width, height, depth));
+}
+
+//------------------------------------------------------------------------------
+BoxMesh::BoxMesh()
+{
+}
+
+//------------------------------------------------------------------------------
+BoxMesh::~BoxMesh()
+{
+}
+
+//------------------------------------------------------------------------------
+void BoxMesh::Initialize(SceneGraph* ownerSceneGraph, const Vector3& size)
+{
+	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
+	mesh->InitializeBox(SceneGraphManager::Instance->GetGraphicsManager(), size);
+	StaticMesh::Initialize(ownerSceneGraph, mesh);
 }
 
 LN_NAMESPACE_END

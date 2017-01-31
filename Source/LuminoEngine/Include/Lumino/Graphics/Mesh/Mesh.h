@@ -42,11 +42,6 @@ public:
 
 public:
 
-	//void SetMaterialCount(int count);
-	// TODO: MeshResource としては Material は持たない・・ような気がする
-	void AddMaterials(int count);
-	Material* GetMaterial(int index) const;
-
 	int GetVertexCount() const { return m_vertexUsedCount; }
 	int GetIndexCount() const { return m_indexUsedCount; }
 
@@ -195,7 +190,7 @@ LN_INTERNAL_ACCESS:	// TODO:
 	VertexBufferInfo			m_vertexBufferInfos[VB_Count];
 	IndexBufferInfo				m_indexBufferInfo;
 
-	RefPtr<MaterialList>		m_materials;
+	//RefPtr<MaterialList>		m_materials;
 	MeshAttributeList			m_attributes;
 	bool						m_vertexDeclarationModified;
 };
@@ -213,11 +208,9 @@ public:
 	MeshResource* GetMeshResource() const { return m_meshResource; }
 
 	int GetSubsetCount() const;
-	//Material* GetMaterial(int index) const;
 
-	//void SetPosition(int index, const Vector3& position);
-	//void SetUV(int index, const Vector2& uv);
-	//const Vector3& GetPosition(int index);
+	void AddMaterials(int count);
+	Material* GetMaterial(int index) const;
 
 LN_INTERNAL_ACCESS:
 	StaticMeshModel();

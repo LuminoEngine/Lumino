@@ -270,7 +270,7 @@ TEST_F(Test_Graphics_Rendering, DrawMesh)
 		if (Engine::BeginRendering())
 		{
 			Engine::Render();
-			Engine::GetDefault3DLayer()->GetRenderer()->DrawMesh(mesh, 0, mesh->GetMeshResource()->GetMaterial(0));
+			Engine::GetDefault3DLayer()->GetRenderer()->DrawMesh(mesh, 0, mesh->GetMaterial(0));
 			Engine::EndRendering();
 		}
 		Engine::EndFrameUpdate();

@@ -252,27 +252,6 @@ Texture2D* ModelManager::GetMMDDefaultToonTexture(int index)
 }
 
 //------------------------------------------------------------------------------
-RefPtr<MeshResource> ModelManager::CreateModelCore(const PathName& filePath)
-{
-#if defined(LN_OS_WIN32)
-	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath), false);
-
-	//PMXLoader loader;
-	//RefPtr<ModelCore> modelCore(loader.Load(this, stream, filePath.GetParent(), true));
-	
-	XFileLoader loader;
-	RefPtr<MeshResource> mesh = loader.Load(this, stream, filePath.GetParent(), true, ModelCreationFlag::None);
-
-	//modelCore->RefreshInitialValues();
-	//modelCore.SafeAddRef();
-	return mesh;
-#else
-    LN_NOTIMPLEMENTED();
-    return nullptr;
-#endif
-}
-
-//------------------------------------------------------------------------------
 RefPtr<PmxSkinnedMeshResource> ModelManager::CreateSkinnedMeshResource(const PathName& filePath)
 {
 	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath), false);
@@ -285,10 +264,28 @@ RefPtr<PmxSkinnedMeshResource> ModelManager::CreateSkinnedMeshResource(const Pat
 //------------------------------------------------------------------------------
 RefPtr<StaticMeshModel> ModelManager::CreateStaticMeshModel(const PathName& filePath)
 {
-	auto meshResource = CreateModelCore(filePath);
-	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
-	mesh->Initialize(m_graphicsManager, meshResource);
+
+#if defined(LN_OS_WIN32)
+	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath), false);
+
+	//PMXLoader loader;
+	//RefPtr<ModelCore> modelCore(loader.Load(this, stream, filePath.GetParent(), true));
+
+	XFileLoader loader;
+	RefPtr<StaticMeshModel> mesh = loader.Load(this, stream, filePath.GetParent(), true, ModelCreationFlag::None);
+
+	//modelCore->RefreshInitialValues();
+	//modelCore.SafeAddRef();
 	return mesh;
+#else
+	LN_NOTIMPLEMENTED();
+	return nullptr;
+#endif
+
+	//auto meshResource = CreateModelCore(filePath);
+	//auto mesh = RefPtr<StaticMeshModel>::MakeRef();
+	//mesh->Initialize(m_graphicsManager, meshResource);
+	//return mesh;
 }
 
 //------------------------------------------------------------------------------

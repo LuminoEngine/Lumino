@@ -43,9 +43,9 @@ void SkinnedMesh::Initialize(SceneGraph* ownerSceneGraph, SkinnedMeshModel* mesh
 	LN_CHECK_ARG(meshModel != nullptr);
 	m_meshModel = meshModel;
 
-	VisualNode::Initialize(ownerSceneGraph, m_meshModel->m_meshResource->m_materials->GetCount());
+	VisualNode::Initialize(ownerSceneGraph, meshModel->m_mesh->m_materials->GetCount());
 
-	m_materialList->CopyShared(m_meshModel->m_meshResource->m_materials, true);
+	m_materialList->CopyShared(meshModel->m_mesh->m_materials, true);
 
 
 	ownerSceneGraph->GetManager()->GetDefaultSceneGraph3D()->GetRootNode()->AddChild(this);
@@ -113,7 +113,7 @@ void SkinnedMesh::OnRender2(DrawList* renderer)
 	int subsetCount = mesh->GetSubsetCount();
 	for (int i = 0; i < subsetCount; i++)
 	{
-		renderer->DrawMesh(mesh, i, mesh->GetMeshResource()->GetMaterial(i));
+		renderer->DrawMesh(mesh, i, mesh->GetMaterial(i));
 	}
 }
 

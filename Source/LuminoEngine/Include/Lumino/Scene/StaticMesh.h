@@ -5,7 +5,9 @@
 
 LN_NAMESPACE_BEGIN
 class StaticMesh;
+class BoxMesh;
 using StaticMeshPtr = RefPtr<StaticMesh>;
+using BoxMeshPtr = RefPtr<BoxMesh>;
 
 /**
 	@brief		
@@ -15,8 +17,6 @@ class StaticMesh
 {
 public:
 	static StaticMeshPtr Create(const StringRef& filePath);
-
-	static StaticMeshPtr CreateBox(const Vector3& size);
 
 	static StaticMeshPtr CreateSphere(float radius, int slices, int stacks, MeshCreationFlags = MeshCreationFlags::None);
 
@@ -41,6 +41,25 @@ private:
 };
 
 
+/**
+	@brief		軸に沿ったボックスのメッシュを表示するクラスです。
+*/
+class BoxMesh
+	: public StaticMesh
+{
+public:
+
+	/** 各軸に沿ったサイズを指定してメッシュを作成します。*/
+	static BoxMeshPtr Create(const Vector3& size);
+
+	/** 各軸に沿ったサイズを指定してメッシュを作成します。*/
+	static BoxMeshPtr Create(float width, float height, float depth);
+
+LN_CONSTRUCT_ACCESS:
+	BoxMesh();
+	virtual ~BoxMesh();
+	void Initialize(SceneGraph* ownerSceneGraph, const Vector3& size);
+};
 
 
 LN_NAMESPACE_END

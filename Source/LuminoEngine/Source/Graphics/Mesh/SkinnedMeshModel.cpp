@@ -211,6 +211,17 @@ void SkinnedMeshModel::Initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 	// メッシュ(バッファ類)は共有する
 	m_meshResource = sharingMesh;
 
+	//---------------------------------------------------------
+	// マテリアルのインスタンス化
+	{
+		int count = sharingMesh->materials.GetCount();
+		m_mesh->m_materials = RefPtr<MaterialList>::MakeRef();
+		m_mesh->m_materials->Resize(count);
+		for (int i = 0; i < count; ++i)
+		{
+			m_mesh->m_materials->SetAt(i, sharingMesh->materials.GetAt(i)->MakeCommonMaterial());
+		}
+	}
 
 	//---------------------------------------------------------
 	// Bone のインスタンス化
