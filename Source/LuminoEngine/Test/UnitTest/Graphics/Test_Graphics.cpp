@@ -1,5 +1,5 @@
 ﻿#include <TestConfig.h>
-#include <Lumino/Graphics/Mesh/Mesh.h>
+#include <Lumino/Mesh/Mesh.h>
 #include "../../../Source/Graphics/GraphicsManager.h"
 
 

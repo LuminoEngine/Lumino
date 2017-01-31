@@ -1,6 +1,6 @@
 ﻿
 #include <LuminoEngine.h>
-#include <Lumino/Graphics/Mesh/GizmoModel.h>
+#include <Lumino/Mesh/GizmoModel.h>
 #include <Lumino/Scene/MeshModelObject.h>
 #include <Lumino/Scene/StaticMesh.h>
 #include <Lumino/Scene/Light.h>

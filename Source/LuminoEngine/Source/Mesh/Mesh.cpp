@@ -1,13 +1,13 @@
 ﻿
 #include "../Internal.h"
-#include "../Device/ShaderVariableBase.h"
+#include "../Graphics/Device/ShaderVariableBase.h"
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/VertexDeclaration.h>
 #include <Lumino/Graphics/VertexBuffer.h>
 #include <Lumino/Graphics/IndexBuffer.h>
-#include <Lumino/Graphics/Mesh/Mesh.h>
+#include <Lumino/Mesh/Mesh.h>
 #include <Lumino/Graphics/Utils.h>
-#include "../GraphicsManager.h"
+#include "../Graphics/GraphicsManager.h"
 #include "MeshFactory.h"
 
 LN_NAMESPACE_BEGIN

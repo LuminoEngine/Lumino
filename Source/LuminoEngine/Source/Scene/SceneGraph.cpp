@@ -1,6 +1,6 @@
 ﻿
 #include "../Internal.h"
-#include <Lumino/Graphics/Mesh/Mesh.h>
+#include <Lumino/Mesh/Mesh.h>
 //#include "MME/MMERenderingPass.h"
 //#include "MME/MmdMaterial.h"	// TODO
 #include "SceneGraphManager.h"

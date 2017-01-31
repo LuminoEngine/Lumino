@@ -4,7 +4,7 @@
 #include <Lumino/Graphics/VertexDeclaration.h>
 #include <Lumino/Graphics/VertexBuffer.h>
 #include <Lumino/Graphics/IndexBuffer.h>
-#include <Lumino/Graphics/Mesh/Mesh.h>
+#include <Lumino/Mesh/Mesh.h>
 #include "Device/GraphicsDriverInterface.h"
 #include "RenderingCommand.h"
 #include "GraphicsManager.h"

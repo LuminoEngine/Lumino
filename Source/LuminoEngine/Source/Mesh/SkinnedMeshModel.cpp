@@ -1,13 +1,13 @@
 ﻿
 #include "../Internal.h"
-#include <Lumino/Graphics/Mesh/Mesh.h>
-#include <Lumino/Graphics/Mesh/SkinnedMeshModel.h>
+#include <Lumino/Mesh/Mesh.h>
+#include <Lumino/Mesh/SkinnedMeshModel.h>
 #include <Lumino/Physics/Collider.h>	// TODO: MMD でのみ必要
 #include <Lumino/Physics/RigidBody.h>	// TODO: MMD でのみ必要
 #include <Lumino/Physics/Joint.h>	// TODO: MMD でのみ必要
-#include "../GraphicsManager.h"
-#include "../../Physics/PhysicsManager.h"
-#include "../../Modeling/PmxSkinnedMesh.h"
+#include "../Graphics/GraphicsManager.h"
+#include "../Physics/PhysicsManager.h"
+#include "PmxSkinnedMesh.h"
 
 LN_NAMESPACE_BEGIN
 

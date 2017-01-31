@@ -4,7 +4,7 @@
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Graphics/Rendering.h>
 #include <Lumino/Graphics/ContextInterface.h>
-#include <Lumino/Graphics/Mesh/Mesh.h>
+#include <Lumino/Mesh/Mesh.h>
 #include "Device/GraphicsDriverInterface.h"
 #include "GraphicsManager.h"
 #include "RendererImpl.h"
@@ -14,7 +14,7 @@
 #include "Text/TextRenderer.h"
 #include "NanoVGRenderer.h"
 #include "FrameRectRenderer.h"
-#include "Mesh/MeshFactory.h"
+#include "../Mesh/MeshFactory.h"
 
 LN_NAMESPACE_BEGIN
 

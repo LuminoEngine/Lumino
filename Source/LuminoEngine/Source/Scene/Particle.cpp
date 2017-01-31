@@ -7,7 +7,7 @@
 */
 #include "Internal.h"
 #include <math.h>
-#include <Lumino/Graphics/Mesh/Mesh.h>
+#include <Lumino/Mesh/Mesh.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Camera.h>
 #include <Lumino/Scene/Particle.h>

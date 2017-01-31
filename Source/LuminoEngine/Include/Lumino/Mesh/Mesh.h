@@ -1,8 +1,8 @@
 ﻿
 #pragma once
 #include <Lumino/Graphics/Common.h>
-#include "../Vertex.h"
-#include "../Material.h"
+#include "../Graphics/Vertex.h"
+#include "../Graphics/Material.h"
 
 LN_NAMESPACE_BEGIN
 class VertexDeclaration;

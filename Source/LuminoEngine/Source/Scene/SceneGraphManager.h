@@ -7,7 +7,7 @@
 #include "../../Source/Graphics/GraphicsManager.h"		// TODO: remove
 #include <Lumino/Scene/Common.h>
 #include "../Effect/EffectManager.h"
-#include "../Modeling/ModelManager.h"
+#include "../Mesh/ModelManager.h"
 #include "Internal.h"
 
 //#include "MME/MMETypes.h"	// TODO: これは別の場所に移動したい・・・

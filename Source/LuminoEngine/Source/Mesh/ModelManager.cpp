@@ -110,7 +110,7 @@
 #include "../Internal.h"
 #include <Lumino/IO/FileManager.h>
 #include <Lumino/Graphics/Texture.h>
-#include <Lumino/Graphics/Mesh/SkinnedMeshModel.h>
+#include <Lumino/Mesh/SkinnedMeshModel.h>
 #include "PmxSkinnedMesh.h"
 #if defined(LN_OS_WIN32)
 #include "XFileLoader.h"

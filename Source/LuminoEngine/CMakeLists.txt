@@ -289,16 +289,6 @@ set(LN_SOURCES_Graphics_Text
 	Source/Graphics/Text/TextRenderer.cpp
 	Source/Graphics/Text/TextRenderer.h
 )
-set(LN_SOURCES_Graphics_Mesh
-	Include/Lumino/Graphics/Mesh/GizmoModel.h
-	Include/Lumino/Graphics/Mesh/Mesh.h
-	Include/Lumino/Graphics/Mesh/SkinnedMeshModel.h
-	Source/Graphics/Mesh/GizmoModel.cpp
-	Source/Graphics/Mesh/Mesh.cpp
-	Source/Graphics/Mesh/MeshFactory.h
-	Source/Graphics/Mesh/MeshFactory.cpp
-	Source/Graphics/Mesh/SkinnedMeshModel.cpp
-)
 
 set(LN_SOURCES_Effect
 	Include/Lumino/Effect/Common.h
@@ -324,14 +314,22 @@ set(LN_SOURCES_TileMap
 	Source/TileMap/TileSet.cpp
 )
 
-set(LN_SOURCES_Modeling
-	Source/Modeling/Common.h
-	Source/Modeling/ModelManager.cpp
-	Source/Modeling/ModelManager.h
-	Source/Modeling/PmxLoader.cpp
-	Source/Modeling/PmxLoader.h
-	Source/Modeling/PmxSkinnedMesh.cpp
-	Source/Modeling/PmxSkinnedMesh.h
+set(LN_SOURCES_Mesh
+	Include/Lumino/Mesh/GizmoModel.h
+	Include/Lumino/Mesh/Mesh.h
+	Include/Lumino/Mesh/SkinnedMeshModel.h
+	Source/Mesh/Common.h
+	Source/Mesh/ModelManager.cpp
+	Source/Mesh/ModelManager.h
+	Source/Mesh/PmxLoader.cpp
+	Source/Mesh/PmxLoader.h
+	Source/Mesh/PmxSkinnedMesh.cpp
+	Source/Mesh/PmxSkinnedMesh.h
+	Source/Mesh/GizmoModel.cpp
+	Source/Mesh/Mesh.cpp
+	Source/Mesh/MeshFactory.h
+	Source/Mesh/MeshFactory.cpp
+	Source/Mesh/SkinnedMeshModel.cpp
 )
 
 set(LN_SOURCES_Scene
@@ -590,10 +588,10 @@ if (WIN32)
 		Source/Graphics/Device/OpenGL/WGLGraphicsDevice.cpp
 		Source/Graphics/Device/OpenGL/WGLGraphicsDevice.h
 	)
-	set(LN_SOURCES_Modeling
- 		${LN_SOURCES_Modeling}
-		Source/Modeling/XFileLoader.cpp
-		Source/Modeling/XFileLoader.h
+	set(LN_SOURCES_Mesh
+ 		${LN_SOURCES_Mesh}
+		Source/Mesh/XFileLoader.cpp
+		Source/Mesh/XFileLoader.h
 	)
 	set(LN_SOURCES_Audio
  		${LN_SOURCES_Audio}
@@ -690,10 +688,9 @@ source_group("Physics"			FILES ${LN_SOURCES_Physics})
 source_group("Graphics"			FILES ${LN_SOURCES_Graphics})
 source_group("Graphics_Device"	FILES ${LN_SOURCES_Graphics_Device})
 source_group("Graphics_Text"	FILES ${LN_SOURCES_Graphics_Text})
-source_group("Graphics_Mesh"	FILES ${LN_SOURCES_Graphics_Mesh})
 source_group("Effect"			FILES ${LN_SOURCES_Effect})
 source_group("Tilemap"			FILES ${LN_SOURCES_TileMap})
-source_group("Modeling"			FILES ${LN_SOURCES_Modeling})
+source_group("Mesh"				FILES ${LN_SOURCES_Mesh})
 source_group("Scene"			FILES ${LN_SOURCES_Scene})
 source_group("Scene_MMD"		FILES ${LN_SOURCES_Scene_MMD})
 source_group("UI"				FILES ${LN_SOURCES_UI})
@@ -715,10 +712,9 @@ set(LN_SOURCES
 	${LN_SOURCES_Graphics}
 	${LN_SOURCES_Graphics_Device}
 	${LN_SOURCES_Graphics_Text}
-	${LN_SOURCES_Graphics_Mesh}
 	${LN_SOURCES_Effect}
 	${LN_SOURCES_TileMap}
-	${LN_SOURCES_Modeling}
+	${LN_SOURCES_Mesh}
 	${LN_SOURCES_Scene}
 #	${LN_SOURCES_Scene_MMD}
 	${LN_SOURCES_UI}

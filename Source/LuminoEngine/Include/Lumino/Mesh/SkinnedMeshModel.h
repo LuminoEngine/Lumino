@@ -1,7 +1,7 @@
 ﻿
 #pragma once
-#include "../../../../Source/Animation/AnimationState.h"		//  TODO
-#include "../../../../Source/Animation/Animator.h"		//  TODO
+#include "../../../Source/Animation/AnimationState.h"		//  TODO
+#include "../../../Source/Animation/Animator.h"		//  TODO
 #include "Mesh.h"
 
 LN_NAMESPACE_BEGIN
