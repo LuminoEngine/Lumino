@@ -518,11 +518,23 @@ void Main()
 	//box1->GetMaterials()->GetAt(0)->SetMaterialTexture(tex1);
 	////box1->SetTone(ToneF(0, 0, 1, 1.0));
 	gizmo->Setup(Matrix::Identity, box1->GetTransform());//Matrix::MakeTranslation(1, 0, 0));
-	//auto mesh2 = BoxMesh::Create(Vector3(1, 1, 1));
-	//mesh2->SetPosition(2, 0, 0);
 
 	//auto mesh3 = StaticMesh::CreatePlane(Vector2(3, 3), 1, 1);
 	//mesh3->SetPosition(-2, 0, 0);
+
+	List<BoxMeshPtr> boxList;
+	for (int z = 0; z < 10; z++)
+	{
+		for (int y = 0; y < 10; y++)
+		{
+			for (int x = 0; x < 10; x++)
+			{
+				auto mesh2 = BoxMesh::Create();
+				mesh2->SetPosition(x * 2, y * 2, z * 2);
+				boxList.Add(mesh2);
+			}
+		}
+	}
 
 	while (!Engine::IsEndRequested())
 	{

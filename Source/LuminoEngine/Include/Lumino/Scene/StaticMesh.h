@@ -49,6 +49,14 @@ class BoxMesh
 {
 public:
 
+	/**
+		@brief		サイズが 1.0 であるボックスのメッシュを作成します。
+		@details	このメッシュは共有リソースです。
+					頂点バッファやインデックスバッファを操作すると、この Create() で作成したほかのメッシュの形状にも影響します。
+					通常はこれらのリソースを変更するべきではありません。
+	*/
+	static BoxMeshPtr Create();
+
 	/** 各軸に沿ったサイズを指定してメッシュを作成します。*/
 	static BoxMeshPtr Create(const Vector3& size);
 
@@ -58,6 +66,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	BoxMesh();
 	virtual ~BoxMesh();
+	void Initialize(SceneGraph* ownerSceneGraph);
 	void Initialize(SceneGraph* ownerSceneGraph, const Vector3& size);
 };
 

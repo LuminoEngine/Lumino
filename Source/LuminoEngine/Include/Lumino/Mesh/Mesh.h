@@ -205,16 +205,19 @@ class StaticMeshModel
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
+	void SetMeshResource(MeshResource* meshResource) { m_meshResource = meshResource; }
 	MeshResource* GetMeshResource() const { return m_meshResource; }
 
 	int GetSubsetCount() const;
 
 	void AddMaterials(int count);
+	void AddMaterial(Material* material);
 	Material* GetMaterial(int index) const;
 
 LN_INTERNAL_ACCESS:
 	StaticMeshModel();
 	virtual ~StaticMeshModel();
+	void Initialize(detail::GraphicsManager* manager);
 	void Initialize(detail::GraphicsManager* manager, MeshResource* sharingMesh);
 	void InitializeBox(detail::GraphicsManager* manager, const Vector3& size);
 	void InitializeSphere(detail::GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags);

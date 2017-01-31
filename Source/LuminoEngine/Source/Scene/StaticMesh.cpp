@@ -104,6 +104,14 @@ void StaticMesh::OnRender2(DrawList* renderer)
 //==============================================================================
 
 //------------------------------------------------------------------------------
+BoxMeshPtr BoxMesh::Create()
+{
+	auto ptr = RefPtr<BoxMesh>::MakeRef();
+	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D());
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
 BoxMeshPtr BoxMesh::Create(const Vector3& size)
 {
 	auto ptr = RefPtr<BoxMesh>::MakeRef();
@@ -125,6 +133,16 @@ BoxMesh::BoxMesh()
 //------------------------------------------------------------------------------
 BoxMesh::~BoxMesh()
 {
+}
+
+//------------------------------------------------------------------------------
+void BoxMesh::Initialize(SceneGraph* ownerSceneGraph)
+{
+	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
+	mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager());
+	mesh->SetMeshResource(detail::ModelManager::GetInstance()->GetUnitBoxMeshResource());
+	mesh->AddMaterial(detail::ModelManager::GetInstance()->GetDefaultMaterial());
+	StaticMesh::Initialize(ownerSceneGraph, mesh);
 }
 
 //------------------------------------------------------------------------------

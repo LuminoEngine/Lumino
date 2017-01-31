@@ -714,6 +714,13 @@ StaticMeshModel::~StaticMeshModel()
 }
 
 //------------------------------------------------------------------------------
+void StaticMeshModel::Initialize(detail::GraphicsManager* manager)
+{
+	LN_VERIFY_ARG(manager != nullptr);
+	m_materials = RefPtr<MaterialList>::MakeRef();
+}
+
+//------------------------------------------------------------------------------
 void StaticMeshModel::Initialize(detail::GraphicsManager* manager, MeshResource* sharingMesh)
 {
 	LN_CHECK_ARG(manager != nullptr);
@@ -806,6 +813,13 @@ void StaticMeshModel::AddMaterials(int count)
 			m_materials->SetAt(i, m);
 		}
 	}
+}
+
+//------------------------------------------------------------------------------
+void StaticMeshModel::AddMaterial(Material* material)
+{
+	LN_VERIFY_STATE(m_materials != nullptr);
+	m_materials->Add(material);
 }
 
 //------------------------------------------------------------------------------

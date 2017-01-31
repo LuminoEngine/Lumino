@@ -29,6 +29,8 @@ public:
 	};
 
 public:
+	static ModelManager* GetInstance(ModelManager* priority = nullptr);
+
 	ModelManager();
 	virtual ~ModelManager();
 
@@ -44,6 +46,9 @@ public:
 	RefPtr<StaticMeshModel> CreateStaticMeshModel(const PathName& filePath);
 	RefPtr<SkinnedMeshModel> CreateSkinnedMeshModel(const PathName& filePath);
 
+	Material* GetDefaultMaterial() const;
+	MeshResource* GetUnitBoxMeshResource() const;
+
 private:
 	RefPtr<PmxSkinnedMeshResource> CreateSkinnedMeshResource(const PathName& filePath);
 	//Animation::AnimationClip* CreateMotion(const PathName& filePath);
@@ -53,6 +58,9 @@ private:
 	GraphicsManager*	m_graphicsManager;
 	//RefPtr<CacheManager>				m_cacheManager;
 	std::array<Texture2D*, 10>	m_mmdDefaultToonTexture;
+
+	RefPtr<Material>		m_defaultMaterial;
+	RefPtr<MeshResource>	m_unitBoxMeshResource;
 };
 
 } // namespace detail

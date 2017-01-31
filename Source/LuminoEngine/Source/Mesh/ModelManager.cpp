@@ -187,6 +187,15 @@ static const unsigned char toon10Data[] =
 };
 static const size_t toon10DataLen = LN_ARRAY_SIZE_OF(toon10Data);
 
+static ModelManager* g_modelManagerInstance = nullptr;
+
+//------------------------------------------------------------------------------
+ModelManager* ModelManager::GetInstance(ModelManager* priority)
+{
+	if (priority != nullptr) return priority;
+	return g_modelManagerInstance;
+}
+
 //------------------------------------------------------------------------------
 ModelManager::ModelManager()
 {
@@ -234,6 +243,18 @@ void ModelManager::Initialize(const ConfigData& configData)
 	MemoryStream data10(toon10Data, toon10DataLen);
 	m_mmdDefaultToonTexture[9] = LN_NEW Texture2D();
 	m_mmdDefaultToonTexture[9]->Initialize(&data10, TextureFormat::R8G8B8A8, false);
+
+	m_defaultMaterial = RefPtr<Material>::MakeRef();
+	m_defaultMaterial->Initialize();
+
+	m_unitBoxMeshResource = RefPtr<MeshResource>::MakeRef();
+	m_unitBoxMeshResource->Initialize(m_graphicsManager, MeshCreationFlags::None);
+	m_unitBoxMeshResource->AddBox(Vector3(1, 1, 1));
+
+	if (g_modelManagerInstance == nullptr)
+	{
+		g_modelManagerInstance = this;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -243,7 +264,18 @@ void ModelManager::Finalize()
 	{
 		tex->Release();
 	}
+
+	if (g_modelManagerInstance == this)
+	{
+		g_modelManagerInstance = nullptr;
+	}
 }
+
+//------------------------------------------------------------------------------
+Material* ModelManager::GetDefaultMaterial() const { return m_defaultMaterial; }
+
+//------------------------------------------------------------------------------
+MeshResource* ModelManager::GetUnitBoxMeshResource() const { return m_unitBoxMeshResource; }
 
 //------------------------------------------------------------------------------
 Texture2D* ModelManager::GetMMDDefaultToonTexture(int index)
