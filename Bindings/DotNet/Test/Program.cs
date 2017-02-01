@@ -1,4 +1,5 @@
-﻿using System;
+﻿//#define SANDBOX
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -202,8 +203,13 @@ namespace Test
         }
 
 
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
+#if SANDBOX
+            var s = new Sandbox();
+            s.Main();
+            return 1;
+#else
             Engine.Initialize();
             Test_Struct();
             Test_RefObjectConstructorOverload();
@@ -216,6 +222,8 @@ namespace Test
             Test_Override();
             Engine.Terminate();
             Console.WriteLine("Test succeeded.");
+            return 0;
+#endif
         }
 
         static void AssertEq<T>(T expected, T actual)
