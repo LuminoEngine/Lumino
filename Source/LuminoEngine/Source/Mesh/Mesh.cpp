@@ -442,12 +442,12 @@ void* MeshResource::TryLockVertexBuffer(VertexBufferType type)
 		if (m_vertexBufferInfos[type].buffer != nullptr &&
 			m_vertexBufferInfos[type].buffer->GetBufferSize() != requestedSize)
 		{
-			// Unlock
-			if (m_vertexBufferInfos[type].lockedBuffer != nullptr)
-			{
-				m_vertexBufferInfos[type].lockedBuffer = nullptr;
-				m_vertexBufferInfos[type].buffer->Unlock();
-			}
+			//// Unlock
+			//if (m_vertexBufferInfos[type].lockedBuffer != nullptr)
+			//{
+			//	m_vertexBufferInfos[type].lockedBuffer = nullptr;
+			//	m_vertexBufferInfos[type].buffer->Unlock();
+			//}
 
 			// Resize
 			m_vertexBufferInfos[type].buffer->Resize(requestedSize);
@@ -644,11 +644,11 @@ void MeshResource::CommitRenderData(VertexDeclaration** outDecl, VertexBuffer** 
 	int vbCount = 0;
 	for (int i = 0; i < VB_Count; ++i)
 	{
-		if (m_vertexBufferInfos[i].lockedBuffer != nullptr)
-		{
-			m_vertexBufferInfos[i].buffer->Unlock();
-			m_vertexBufferInfos[i].lockedBuffer = nullptr;
-		}
+		//if (m_vertexBufferInfos[i].lockedBuffer != nullptr)
+		//{
+		//	m_vertexBufferInfos[i].buffer->Unlock();
+		//	m_vertexBufferInfos[i].lockedBuffer = nullptr;
+		//}
 
 		if (m_vertexBufferInfos[i].buffer != nullptr)
 		{

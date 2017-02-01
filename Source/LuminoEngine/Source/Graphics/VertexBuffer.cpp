@@ -75,38 +75,9 @@ ByteBuffer* VertexBuffer::Lock()
 }
 
 //------------------------------------------------------------------------------
-void VertexBuffer::Unlock()
-{
-	if (m_usage == ResourceUsage::Static)
-	{
-		if (m_initialUpdate) {
-			m_deviceObj->Unlock();
-		}
-		else {
-			LN_THROW(0, NotImplementedException);
-		}
-	}
-	else
-	{
-		if (m_deviceObj->GetByteCount() < m_bufferSize)
-		{
-			LN_SAFE_RELEASE(m_deviceObj);
-			m_deviceObj = m_manager->GetGraphicsDevice()->CreateVertexBuffer(m_bufferSize, m_lockedBuffer.GetConstData(), m_usage);
-		}
-		else
-		{
-			RenderBulkData data(m_lockedBuffer.GetConstData(), m_lockedBuffer.GetSize());
-			Driver::IVertexBuffer* deviceObj = m_deviceObj;
-			LN_ENQUEUE_RENDER_COMMAND_2(
-				VertexBuffer_SetSubData, m_manager,
-				RenderBulkData, data,
-				RefPtr<Driver::IVertexBuffer>, deviceObj,
-				{
-					deviceObj->SetSubData(0, data.GetData(), data.GetSize());
-				});
-		}
-	}
-}
+//void VertexBuffer::Unlock()
+//{
+//}
 
 //------------------------------------------------------------------------------
 void VertexBuffer::Resize(size_t bufferSize)
@@ -147,6 +118,42 @@ void VertexBuffer::OnChangeDevice(Driver::IGraphicsDevice* device)
 		// オブジェクトを作り直す
 		m_deviceObj = m_manager->GetGraphicsDevice()->CreateVertexBuffer(m_bufferSize, data, m_usage);
 	}
+}
+
+//------------------------------------------------------------------------------
+Driver::IVertexBuffer* VertexBuffer::ResolveDeviceObject()
+{
+	if (m_usage == ResourceUsage::Static)
+	{
+		if (m_initialUpdate) {
+			m_deviceObj->Unlock();
+		}
+		else {
+			LN_THROW(0, NotImplementedException);
+		}
+	}
+	else
+	{
+		if (m_deviceObj->GetByteCount() < m_bufferSize)
+		{
+			LN_SAFE_RELEASE(m_deviceObj);
+			m_deviceObj = m_manager->GetGraphicsDevice()->CreateVertexBuffer(m_bufferSize, m_lockedBuffer.GetConstData(), m_usage);
+		}
+		else
+		{
+			RenderBulkData data(m_lockedBuffer.GetConstData(), m_lockedBuffer.GetSize());
+			Driver::IVertexBuffer* deviceObj = m_deviceObj;
+			LN_ENQUEUE_RENDER_COMMAND_2(
+				VertexBuffer_SetSubData, m_manager,
+				RenderBulkData, data,
+				RefPtr<Driver::IVertexBuffer>, deviceObj,
+				{
+					deviceObj->SetSubData(0, data.GetData(), data.GetSize());
+				});
+		}
+	}
+
+	m_initialUpdate = false;
 }
 
 LN_NAMESPACE_GRAPHICS_END

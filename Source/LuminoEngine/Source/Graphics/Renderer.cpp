@@ -277,7 +277,7 @@ void Renderer::DrawPrimitive(VertexDeclaration* vertexDeclaration, VertexBuffer*
 	VerifyFrameBuffers();
 
 	Driver::IVertexDeclaration* decl = (vertexDeclaration != nullptr) ? vertexDeclaration->GetDeviceObject() : nullptr;
-	Driver::IVertexBuffer* vb = (vertexBuffer != nullptr) ? vertexBuffer->GetDeviceObject() : nullptr;
+	Driver::IVertexBuffer* vb = (vertexBuffer != nullptr) ? vertexBuffer->ResolveDeviceObject() : nullptr;
 	LN_ENQUEUE_RENDER_COMMAND_6(
 		DrawPrimitive, m_manager,
 		Driver::IRenderer*, m_internal,
@@ -301,7 +301,7 @@ void Renderer::DrawPrimitiveIndexed(VertexDeclaration* vertexDeclaration, Vertex
 	VerifyFrameBuffers();
 
 	Driver::IVertexDeclaration* decl = (vertexDeclaration != nullptr) ? vertexDeclaration->GetDeviceObject() : nullptr;
-	Driver::IVertexBuffer* vb = (vertexBuffer != nullptr) ? vertexBuffer->GetDeviceObject() : nullptr;
+	Driver::IVertexBuffer* vb = (vertexBuffer != nullptr) ? vertexBuffer->ResolveDeviceObject() : nullptr;
 	Driver::IIndexBuffer* ib = (indexBuffer != nullptr) ? indexBuffer->GetDeviceObject() : nullptr;
 	LN_ENQUEUE_RENDER_COMMAND_7(
 		DrawPrimitiveIndexed, m_manager,
