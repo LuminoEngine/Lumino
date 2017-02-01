@@ -43,7 +43,7 @@ public:
 	/**
 		@brief		リソースをロックします。
 	*/
-	ByteBuffer* Lock();
+	ByteBuffer* GetMappedData();
 	//ByteBuffer* Lock(int offset, int byteCount);	// テスト用
 
 	/**
@@ -70,6 +70,7 @@ private:	// TODO
 	GraphicsResourcePool	m_pool;
 	ByteBuffer				m_lockedBuffer;
 	bool					m_initialUpdate;
+	bool					m_locked;
 };
 
 ///**

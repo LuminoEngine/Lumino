@@ -54,7 +54,7 @@ void MeshResource::Initialize(detail::GraphicsManager* manager, MeshCreationFlag
 {
 	LN_CHECK_ARG(manager != nullptr);
 	m_manager = manager;
-	m_usage = (flags.TestFlag(MeshCreationFlags::DynamicBuffers)) ? ResourceUsage::Static : ResourceUsage::Dynamic;
+	m_usage = (flags.TestFlag(MeshCreationFlags::DynamicBuffers)) ? ResourceUsage::Dynamic : ResourceUsage::Static;
 
 }
 
@@ -461,9 +461,9 @@ void* MeshResource::TryLockVertexBuffer(VertexBufferType type)
 		m_vertexDeclarationModified = true;
 	}
 
-	if (m_vertexBufferInfos[type].lockedBuffer == nullptr)
+	//if (m_vertexBufferInfos[type].lockedBuffer == nullptr)
 	{
-		ByteBuffer* buf = m_vertexBufferInfos[type].buffer->Lock();
+		ByteBuffer* buf = m_vertexBufferInfos[type].buffer->GetMappedData();
 		m_vertexBufferInfos[type].lockedBuffer = buf->GetData();
 	}
 	return m_vertexBufferInfos[type].lockedBuffer;
@@ -480,11 +480,11 @@ void* MeshResource::TryLockIndexBuffer()
 			(m_indexBufferInfo.buffer->GetIndexCount() != m_indexCapacity || m_indexBufferInfo.buffer->GetIndexFormat() != m_indexBufferInfo.format))
 		{
 			// Unlock
-			if (m_indexBufferInfo.lockedBuffer != nullptr)
-			{
-				m_indexBufferInfo.lockedBuffer = nullptr;
-				m_indexBufferInfo.buffer->Unlock();
-			}
+			//if (m_indexBufferInfo.lockedBuffer != nullptr)
+			//{
+			//	m_indexBufferInfo.lockedBuffer = nullptr;
+			//	m_indexBufferInfo.buffer->Unlock();
+			//}
 
 			// Resize
 			m_indexBufferInfo.buffer->Resize(m_indexCapacity, m_indexBufferInfo.format);
@@ -503,9 +503,9 @@ void* MeshResource::TryLockIndexBuffer()
 	//	m_indexBufferInfo.refresh = false;
 	//}
 
-	if (m_indexBufferInfo.lockedBuffer == nullptr)
+	//if (m_indexBufferInfo.lockedBuffer == nullptr)
 	{
-		ByteBuffer* buf = m_indexBufferInfo.buffer->Lock();
+		ByteBuffer* buf = m_indexBufferInfo.buffer->GetMappedData();
 		m_indexBufferInfo.lockedBuffer = buf->GetData();
 	}
 	return m_indexBufferInfo.lockedBuffer;
@@ -647,7 +647,7 @@ void MeshResource::CommitRenderData(VertexDeclaration** outDecl, VertexBuffer** 
 		//if (m_vertexBufferInfos[i].lockedBuffer != nullptr)
 		//{
 		//	m_vertexBufferInfos[i].buffer->Unlock();
-		//	m_vertexBufferInfos[i].lockedBuffer = nullptr;
+			m_vertexBufferInfos[i].lockedBuffer = nullptr;
 		//}
 
 		if (m_vertexBufferInfos[i].buffer != nullptr)
@@ -659,11 +659,11 @@ void MeshResource::CommitRenderData(VertexDeclaration** outDecl, VertexBuffer** 
 	*outVBCount = vbCount;
 
 	// IndexBuffer
-	if (m_indexBufferInfo.lockedBuffer != nullptr)
-	{
-		m_indexBufferInfo.buffer->Unlock();
+	//if (m_indexBufferInfo.lockedBuffer != nullptr)
+	//{
+	//	m_indexBufferInfo.buffer->Unlock();
 		m_indexBufferInfo.lockedBuffer = nullptr;
-	}
+	//}
 	*outIB = m_indexBufferInfo.buffer;
 }
 

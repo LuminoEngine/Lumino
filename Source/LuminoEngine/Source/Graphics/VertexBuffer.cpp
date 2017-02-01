@@ -33,6 +33,7 @@ VertexBuffer::VertexBuffer()
 	, m_usage(ResourceUsage::Static)
 	, m_pool(GraphicsResourcePool::Managed)	// TODO
 	, m_initialUpdate(true)
+	, m_locked(false)
 {
 }
 
@@ -58,7 +59,7 @@ void VertexBuffer::Initialize(detail::GraphicsManager* manager, size_t bufferSiz
 }
 
 //------------------------------------------------------------------------------
-ByteBuffer* VertexBuffer::Lock()
+ByteBuffer* VertexBuffer::GetMappedData()
 {
 	if (m_usage == ResourceUsage::Static)
 	{
@@ -71,6 +72,7 @@ ByteBuffer* VertexBuffer::Lock()
 		}
 	}
 
+	m_locked = true;
 	return &m_lockedBuffer;
 }
 
@@ -123,37 +125,42 @@ void VertexBuffer::OnChangeDevice(Driver::IGraphicsDevice* device)
 //------------------------------------------------------------------------------
 Driver::IVertexBuffer* VertexBuffer::ResolveDeviceObject()
 {
-	if (m_usage == ResourceUsage::Static)
+	if (m_locked)
 	{
-		if (m_initialUpdate) {
-			m_deviceObj->Unlock();
-		}
-		else {
-			LN_THROW(0, NotImplementedException);
-		}
-	}
-	else
-	{
-		if (m_deviceObj->GetByteCount() < m_bufferSize)
+		if (m_usage == ResourceUsage::Static)
 		{
-			LN_SAFE_RELEASE(m_deviceObj);
-			m_deviceObj = m_manager->GetGraphicsDevice()->CreateVertexBuffer(m_bufferSize, m_lockedBuffer.GetConstData(), m_usage);
+			if (m_initialUpdate) {
+				m_deviceObj->Unlock();
+			}
+			else {
+				LN_THROW(0, NotImplementedException);
+			}
 		}
 		else
 		{
-			RenderBulkData data(m_lockedBuffer.GetConstData(), m_lockedBuffer.GetSize());
-			Driver::IVertexBuffer* deviceObj = m_deviceObj;
-			LN_ENQUEUE_RENDER_COMMAND_2(
-				VertexBuffer_SetSubData, m_manager,
-				RenderBulkData, data,
-				RefPtr<Driver::IVertexBuffer>, deviceObj,
-				{
-					deviceObj->SetSubData(0, data.GetData(), data.GetSize());
-				});
+			if (m_deviceObj->GetByteCount() < m_bufferSize)
+			{
+				LN_SAFE_RELEASE(m_deviceObj);
+				m_deviceObj = m_manager->GetGraphicsDevice()->CreateVertexBuffer(m_bufferSize, m_lockedBuffer.GetConstData(), m_usage);
+			}
+			else
+			{
+				RenderBulkData data(m_lockedBuffer.GetConstData(), m_lockedBuffer.GetSize());
+				Driver::IVertexBuffer* deviceObj = m_deviceObj;
+				LN_ENQUEUE_RENDER_COMMAND_2(
+					VertexBuffer_SetSubData, m_manager,
+					RenderBulkData, data,
+					RefPtr<Driver::IVertexBuffer>, deviceObj,
+					{
+						deviceObj->SetSubData(0, data.GetData(), data.GetSize());
+					});
+			}
 		}
 	}
 
 	m_initialUpdate = false;
+	m_locked = false;
+	return m_deviceObj;
 }
 
 LN_NAMESPACE_GRAPHICS_END

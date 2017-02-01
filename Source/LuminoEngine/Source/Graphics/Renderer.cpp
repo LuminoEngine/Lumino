@@ -302,7 +302,7 @@ void Renderer::DrawPrimitiveIndexed(VertexDeclaration* vertexDeclaration, Vertex
 
 	Driver::IVertexDeclaration* decl = (vertexDeclaration != nullptr) ? vertexDeclaration->GetDeviceObject() : nullptr;
 	Driver::IVertexBuffer* vb = (vertexBuffer != nullptr) ? vertexBuffer->ResolveDeviceObject() : nullptr;
-	Driver::IIndexBuffer* ib = (indexBuffer != nullptr) ? indexBuffer->GetDeviceObject() : nullptr;
+	Driver::IIndexBuffer* ib = (indexBuffer != nullptr) ? indexBuffer->ResolveDeviceObject() : nullptr;
 	LN_ENQUEUE_RENDER_COMMAND_7(
 		DrawPrimitiveIndexed, m_manager,
 		Driver::IRenderer*, m_internal,
