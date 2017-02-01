@@ -271,7 +271,7 @@ private:
 
 
 /// VMD用
-class VMDBezierSQTTransformAnimation
+class VMDBezierAttitudeTransformAnimation
 	: public AnimationCurve
 {
 public:
@@ -288,8 +288,8 @@ public:
 	};
 
 public:
-	VMDBezierSQTTransformAnimation();
-	virtual ~VMDBezierSQTTransformAnimation();
+	VMDBezierAttitudeTransformAnimation();
+	virtual ~VMDBezierAttitudeTransformAnimation();
 
 public:
 
@@ -305,7 +305,7 @@ public:
 	void SortKeyFrame();
 
 	/// 補間結果の取得 (SetTime() で更新される)
-	const SQTTransform& GetValue() const { return m_transform; }
+	const AttitudeTransform& GetValue() const { return m_transform; }
 
 public:
 	virtual ValueType GetValueType() const { return ValueType_SQTTransform; }
@@ -315,7 +315,7 @@ public:
 private:
 	typedef List<KeyFrame>	KeyFrameList;
 	KeyFrameList	m_keyFrameList;
-	SQTTransform	m_transform;
+	AttitudeTransform	m_transform;
 };
 
 class VMDBezierSQTTransformAnimation2
@@ -397,8 +397,8 @@ public:
 
 private:
 	typedef List<BoneFrameData>	KeyFrameList;
-	KeyFrameList	m_keyFrameList;
-	SQTTransform	m_transform;
+	KeyFrameList		m_keyFrameList;
+	AttitudeTransform	m_transform;
 };
 
 LN_NAMESPACE_END

@@ -56,7 +56,7 @@ void GizmoModel::SetGizmoType(GizmoType type)
 }
 
 //------------------------------------------------------------------------------
-void GizmoModel::Setup(const Matrix& parentSpaceTransform, const SQTTransform& targetInitialTransform)
+void GizmoModel::Setup(const Matrix& parentSpaceTransform, const AttitudeTransform& targetInitialTransform)
 {
 	m_targetInitialTransform = targetInitialTransform;
 	Matrix targetWorld = parentSpaceTransform * Matrix(targetInitialTransform);
@@ -71,7 +71,7 @@ void GizmoModel::Setup(const Matrix& parentSpaceTransform, const SQTTransform& t
 //}
 
 //------------------------------------------------------------------------------
-const SQTTransform& GizmoModel::GetTargetTransform() const
+const AttitudeTransform& GizmoModel::GetTargetTransform() const
 {
 	return m_targetTransform;
 }

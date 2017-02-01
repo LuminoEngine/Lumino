@@ -79,6 +79,22 @@ public:
 
 };
 
+class LNStaticMesh : public StaticMesh
+{
+public:
+
+
+
+};
+
+class LNBoxMesh : public BoxMesh
+{
+public:
+
+
+
+};
+
 class LNComponent : public Component
 {
 public:

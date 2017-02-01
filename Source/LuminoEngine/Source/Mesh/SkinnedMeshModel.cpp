@@ -565,7 +565,7 @@ const String& SkinnedMeshBone::GetAnimationTargetName() const
 void SkinnedMeshBone::SetAnimationTargetValue(ValueType type, const void* value)
 {
 	LN_CHECK_ARG(type == ValueType_SQTTransform);
-	m_localTransform = *((SQTTransform*)value);
+	m_localTransform = *((AttitudeTransform*)value);
 }
 
 

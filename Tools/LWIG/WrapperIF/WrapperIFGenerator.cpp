@@ -92,7 +92,7 @@ void WrapperIFGenerator::Generate(SymbolDatabase* database)
 	{
 		String src = FileSystem::ReadAllText(PathName(g_templateDir, "WrapperIF/Templates/LuminoC.h"));
 		src = src.Replace("%Enums%", enumsText.ToString());
-		FileSystem::WriteAllText(LUMINO_ROOT_DIR"/bindings/Runtime/srcLuminoC.generated.h", src);
+		FileSystem::WriteAllText(LUMINO_ROOT_DIR"/bindings/Runtime/src/LuminoC.generated.h", src);
 	}
 }
 
@@ -290,6 +290,8 @@ StringA WrapperIFGenerator::MakeMethod(TypeInfoPtr typeInfo, MethodInfoPtr metho
 		{
 			if (methodInfo->returnType->isStruct)
 				body.Append("*outReturn = reinterpret_cast<const LN{0}&>", methodInfo->returnType->name);
+			else if (methodInfo->returnType->IsClass())
+				body.Append("*outReturn = LWIG_TO_HANDLE");
 			else
 				body.Append("*outReturn = ");
 		}
@@ -332,7 +334,7 @@ StringA WrapperIFGenerator::MakeMethod(TypeInfoPtr typeInfo, MethodInfoPtr metho
 				String name = methodInfo->name;
 				if (virtualBase) 
 					name = ("LN" + typeInfo->name + "::" + name + "_CallBase");
-				callExp = String::Format("LWIG_TO_OBJECT(LN{0}, {1})->{2}({3});", typeInfo->name, MakeInstanceParamName(typeInfo), name, args.ToString());
+				callExp = String::Format("(LWIG_TO_OBJECT(LN{0}, {1})->{2}({3}));", typeInfo->name, MakeInstanceParamName(typeInfo), name, args.ToString());
 			}
 		}
 

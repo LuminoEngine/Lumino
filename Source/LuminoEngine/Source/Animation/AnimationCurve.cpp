@@ -318,21 +318,21 @@ float VMDBezierTable::GetYVal(float fX, float fX1, float fY1, float fX2, float f
 }
 
 //==============================================================================
-// VMDBezierSQTTransformAnimation
+// VMDBezierAttitudeTransformAnimation
 //==============================================================================
 
 //------------------------------------------------------------------------------
-VMDBezierSQTTransformAnimation::VMDBezierSQTTransformAnimation()
+VMDBezierAttitudeTransformAnimation::VMDBezierAttitudeTransformAnimation()
 {
 }
 
 //------------------------------------------------------------------------------
-VMDBezierSQTTransformAnimation::~VMDBezierSQTTransformAnimation()
+VMDBezierAttitudeTransformAnimation::~VMDBezierAttitudeTransformAnimation()
 {
 }
 
 //------------------------------------------------------------------------------
-void VMDBezierSQTTransformAnimation::AddKeyFrame(
+void VMDBezierAttitudeTransformAnimation::AddKeyFrame(
 	double framePos, const Vector3& pos, const Quaternion& rot,
 	char* interpolation_x,
 	char* interpolation_y,
@@ -354,7 +354,7 @@ void VMDBezierSQTTransformAnimation::AddKeyFrame(
 }
 
 //------------------------------------------------------------------------------
-void VMDBezierSQTTransformAnimation::SortKeyFrame()
+void VMDBezierAttitudeTransformAnimation::SortKeyFrame()
 {
 	struct
 	{
@@ -369,7 +369,7 @@ void VMDBezierSQTTransformAnimation::SortKeyFrame()
 }
 
 //------------------------------------------------------------------------------
-void VMDBezierSQTTransformAnimation::UpdateValue(double time)
+void VMDBezierAttitudeTransformAnimation::UpdateValue(double time)
 {
 	// フレーム数 1 個
 	if (m_keyFrameList.GetCount() == 1)
@@ -437,7 +437,7 @@ void VMDBezierSQTTransformAnimation::UpdateValue(double time)
 }
 
 //------------------------------------------------------------------------------
-double VMDBezierSQTTransformAnimation::GetLastFrameTime() const
+double VMDBezierAttitudeTransformAnimation::GetLastFrameTime() const
 {
 	if (m_keyFrameList.IsEmpty()) return 0;
 	return m_keyFrameList.GetLast().Time;
@@ -446,7 +446,7 @@ double VMDBezierSQTTransformAnimation::GetLastFrameTime() const
 
 
 //==============================================================================
-// VMDBezierSQTTransformAnimation
+// VMDBezierAttitudeTransformAnimation
 //==============================================================================
 VMDBezierSQTTransformAnimation2::VMDBezierSQTTransformAnimation2()
 {

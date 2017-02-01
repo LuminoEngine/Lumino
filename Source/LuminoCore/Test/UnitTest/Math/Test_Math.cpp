@@ -10,13 +10,13 @@ protected:
 //------------------------------------------------------------------------------
 TEST_F(Test_Math, Basic)
 {
-	// toRadians
+	// DegreesToRadians
 	{
-		ASSERT_FLOAT_EQ(Math::PI, Math::ToRadians(180.0f));
+		ASSERT_FLOAT_EQ(Math::PI, Math::DegreesToRadians(180.0f));
 	}
-	// toDegrees
+	// RadiansToDegrees
 	{
-		ASSERT_FLOAT_EQ(180.0f, Math::ToDegrees(Math::PI));
+		ASSERT_FLOAT_EQ(180.0f, Math::RadiansToDegrees(Math::PI));
 	}
 	// clamp
 	{

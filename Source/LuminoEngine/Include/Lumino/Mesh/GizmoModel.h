@@ -24,10 +24,10 @@ public:
 public:
 	void SetGizmoType(GizmoType type);
 
-	void Setup(const Matrix& parentSpaceTransform, const SQTTransform& targetInitialTransform);
+	void Setup(const Matrix& parentSpaceTransform, const AttitudeTransform& targetInitialTransform);
 	
 	//void SetTargetTransform(const Matrix& transform);
-	const SQTTransform& GetTargetTransform() const;
+	const AttitudeTransform& GetTargetTransform() const;
 	
 	void SetViewInfo(const Vector3& viewPosition, const Matrix& view, const Matrix& proj, const SizeI& viewPixelSize);
 	void SetDisplayScale(float scale);
@@ -93,8 +93,8 @@ private:
 	//RefPtr<MeshResource>	m_mesh;
 	GizmoType				m_gizmoType;
 	//Matrix					m_parentSpaceTransform;
-	SQTTransform					m_targetInitialTransform;
-	SQTTransform					m_targetTransform;	// Gizmo によって操作される Transform
+	AttitudeTransform					m_targetInitialTransform;
+	AttitudeTransform					m_targetTransform;	// Gizmo によって操作される Transform
 	Matrix					m_gizmoInitialTransform;
 	Matrix					m_gizmoTransform;	// Gizmo 自体の Transform (視点距離によるスケーリングは含まれない)
 	Vector3					m_viewPosition;

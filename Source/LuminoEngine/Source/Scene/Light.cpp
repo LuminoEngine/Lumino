@@ -37,15 +37,11 @@ void Light::Initialize(SceneGraph* owner, LightType type)
 	m_lightInfo->m_specular.Set(1.0f, 1.0f, 1.0f, 1.0f);
 	m_lightInfo->m_shadowZFar = 1000.0f;
 
-	//SetAngles(-0.5, -1.0, 0.5);	
-
-	//Matrix::MakeLookAtLH
-
-	// MMM Default
-	//m_transform.rotation = Quaternion::LookRotation(Vector3(-0.5, -1.0, 0.5));
-	//m_transform.rotation = Quaternion::MakeFromYawPitchRoll(Math::ToRadians(-30), Math::ToRadians(50), 0);
-	m_transform.rotation.RotateX(Math::ToRadians(50));
-	m_transform.rotation.RotateY(Math::ToRadians(-30));
+	// Unity Default
+	Quaternion rot;
+	rot.RotateX(Math::DegreesToRadians(50));
+	rot.RotateY(Math::DegreesToRadians(-30));
+	SetRotation(rot);
 }
 
 //------------------------------------------------------------------------------

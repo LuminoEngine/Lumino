@@ -60,7 +60,7 @@ set(LN_TEST_SOURCES
 	UnitTest/Math/Test_Matrix.cpp
 	UnitTest/Math/Test_Plane.cpp
 	UnitTest/Math/Test_Quaternion.cpp
-	UnitTest/Math/Test_SQTTransform.cpp
+	UnitTest/Math/Test_AttitudeTransform.cpp
 	UnitTest/Math/Test_Vector2.cpp
 	UnitTest/Math/Test_Vector3.cpp
 	UnitTest/Math/Test_Vector4.cpp

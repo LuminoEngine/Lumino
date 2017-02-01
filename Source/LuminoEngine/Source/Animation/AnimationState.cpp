@@ -162,15 +162,15 @@ void AnimationState::SetLocalTime(double time)
 		{
 			if (m_addingBlendWeight != 1.0f)
 			{
-				SQTTransform v = static_cast<VMDBezierSQTTransformAnimation*>(target.Curve)->GetValue();
-				SQTTransform* t = (SQTTransform*)target.Target->Buffer;
+				AttitudeTransform v = static_cast<VMDBezierAttitudeTransformAnimation*>(target.Curve)->GetValue();
+				AttitudeTransform* t = (AttitudeTransform*)target.Target->Buffer;
 				t->scale += v.scale * m_addingBlendWeight;
 				t->rotation *= Quaternion::Slerp(Quaternion::Identity, v.rotation, m_addingBlendWeight);
 				t->translation += v.translation * m_addingBlendWeight;
 			}
 			else
 			{
-				*((SQTTransform*)target.Target->Buffer) = static_cast<VMDBezierSQTTransformAnimation*>(target.Curve)->GetValue();
+				*((AttitudeTransform*)target.Target->Buffer) = static_cast<VMDBezierAttitudeTransformAnimation*>(target.Curve)->GetValue();
 			}
 			target.Target->Modified = true;	// 値をセットした
 			break;

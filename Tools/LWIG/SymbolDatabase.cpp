@@ -167,6 +167,7 @@ void TypeInfo::Link()
 {
 	MakeProperties();
 	LinkOverload();
+	ResolveCopyDoc();
 
 	// find base class
 	if (!baseClassRawName.IsEmpty())
@@ -256,6 +257,27 @@ void TypeInfo::LinkOverload()
 			{
 				methodInfo1->overloadChildren.Add(methodInfo2);
 				methodInfo2->overloadParent = methodInfo1;
+			}
+		}
+	}
+}
+
+void TypeInfo::ResolveCopyDoc()
+{
+	for (auto& methodInfo : declaredMethods)
+	{
+		if (methodInfo->document != nullptr && methodInfo->document->IsCopyDoc())
+		{
+			auto e = tr::MakeEnumerator::from(declaredMethods)
+				.Join(declaredMethodsForDocument);
+			for (auto& methodInfo2 : e)
+			{
+				if (methodInfo2->name == methodInfo->document->copydocMethodName &&
+					methodInfo2->paramsRawSignature == methodInfo->document->copydocSignature)
+				{
+					methodInfo->document = methodInfo2->document;
+					break;
+				}
 			}
 		}
 	}

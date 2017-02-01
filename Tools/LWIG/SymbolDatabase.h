@@ -59,6 +59,10 @@ public:
 	List<ParameterDocumentInfoPtr>	params;
 	String							returns;
 	String							details;
+	String							copydocMethodName;
+	String							copydocSignature;
+
+	bool IsCopyDoc() const { return !copydocMethodName.IsEmpty(); }
 };
 
 class MetadataInfo
@@ -129,6 +133,7 @@ public:
 	List<ParameterInfoPtr>	capiParameters;
 
 	String	returnTypeRawName;
+	String	paramsRawSignature;		// 型名と引数名を抽出したもの (デフォルト引数は除く) e.g) "constVector3&minVec,constVector3&maxVec"
 
 	bool IsOverloadChild() const { return overloadParent != nullptr; }
 	bool IsRuntimeInitializer() const { return metadata->HasKey(_T("RuntimeInitializer")); }
@@ -182,6 +187,7 @@ public:
 	List<MethodInfoPtr>		declaredMethods;
 	List<PropertyInfoPtr>	declaredProperties;
 	List<ConstantInfoPtr>	declaredConstants;		// enum メンバ
+	List<MethodInfoPtr>		declaredMethodsForDocument;	// LN_METHOD(Docuent)
 	TypeInfoPtr				baseClass;
 
 	String					baseClassRawName;
@@ -191,13 +197,14 @@ public:
 
 	bool IsValueType() const { return isStruct || isPrimitive || isEnum; }
 	bool IsStatic() const { return metadata->HasKey(_T("Static")); }
-	bool IsClass() const { return !IsValueType(); }
+	bool IsClass() const { return !IsValueType() && !isVoid; }
 
 	void Link();
 
 private:
 	void MakeProperties();
 	void LinkOverload();
+	void ResolveCopyDoc();
 };
 
 class PredefinedTypes

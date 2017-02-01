@@ -10,7 +10,7 @@
 LN_NAMESPACE_BEGIN
 class Vector3;
 class Quaternion;
-class SQTTransform;
+class AttitudeTransform;
 class Plane;
 
 /**
@@ -75,9 +75,9 @@ public:
 	Matrix(const Vector4& row1, const Vector4& row2, const Vector4& row3, const Vector4& row4);
 
 	/**
-		@brief	SQTTransform から Matrix へ変換します。
+		@brief	AttitudeTransform から Matrix へ変換します。
 	*/
-	Matrix(const SQTTransform& transform);
+	Matrix(const AttitudeTransform& transform);
 
 public:
 	

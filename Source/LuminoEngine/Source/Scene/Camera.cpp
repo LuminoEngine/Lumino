@@ -57,27 +57,17 @@ void Camera::Initialize(SceneGraph* owner, CameraProjection proj)
 	{
 		m_nearClip = 0.0f;	// TODO
 		m_farClip = 1000.0f;
-		m_transform.translation.Set(0, 0, 0);
+		SetPosition(0, 0, 0);
 		m_zSortDistanceBase = ZSortDistanceBase::CameraScreenDistance;
 	}
 	else if (m_projectionMode == CameraProjection_3D)
 	{
 		m_nearClip = 0.3f;
 		m_farClip = 1000.0f;
-		m_transform.translation.Set(0, 1.0f, -10.0f);	// Unity based.
+		SetPosition(0, 1.0f, -10.0f);	// Unity based.
 		m_zSortDistanceBase = ZSortDistanceBase::CameraDistance;
 	}
 }
-
-/// ピクセル単位の2D描画に使う射影行列の作成
-//void Camera::Perspective2DLH(float width, float height, float nearClip, float farClip, Matrix* outMatrix)
-//{
-//	outMatrix->Set(
-//		2.0f / width, 0.0f, 0.0f, 0.0f,
-//		0.0f, -2.0f / height, 0.0f, 0.0f,
-//		0.0f, 0.0f, 1.0f / (farClip - nearClip), 0.0f,
-//		-1.0f, 1.0f, nearClip / (nearClip - farClip), 1.0f);
-//}
 
 //------------------------------------------------------------------------------
 void Camera::SetCameraBehavior(CameraBehavior* behavior)
@@ -100,7 +90,6 @@ Vector3 Camera::WorldToViewportPoint(const Vector3& position) const
 Vector3 Camera::ViewportToWorldPoint(const Vector3& position) const
 {
 	const Size& size = m_ownerLayer->GetSize();
-	//return Vector3::Unproject(position, m_viewProjMatrix, 0, 0, size.Width, size.Height, m_nearClip, m_farClip);
 	Vector3 v;
 	v.x = (((position.x - 0) / size.width) * 2.0f) - 1.0f;
 	v.y = -((((position.y - 0) / size.height) * 2.0f) - 1.0f);

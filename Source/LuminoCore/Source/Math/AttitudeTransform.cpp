@@ -1,16 +1,17 @@
 ﻿
-#include "../../include/Lumino/Math/SQTTransform.h"
+#include <Lumino/Math/AttitudeTransform.h>
 
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
-// SQTTransform
+// AttitudeTransform
 //==============================================================================
+// 名前は OpenSceneGraph の PositionAttitudeTransform から。
 
-const SQTTransform SQTTransform::Identity = SQTTransform();
+const AttitudeTransform AttitudeTransform::Identity = AttitudeTransform();
 
 //------------------------------------------------------------------------------
-SQTTransform::SQTTransform()
+AttitudeTransform::AttitudeTransform()
 	: scale(Vector3::Ones)
 	, rotation(Quaternion::Identity)
 	, translation(Vector3::Zero)
@@ -18,7 +19,7 @@ SQTTransform::SQTTransform()
 }
 
 //------------------------------------------------------------------------------
-SQTTransform::SQTTransform(const Vector3& scale_, const Quaternion& rotation_, const Vector3& translation_)
+AttitudeTransform::AttitudeTransform(const Vector3& scale_, const Quaternion& rotation_, const Vector3& translation_)
 	: scale(scale_)
 	, rotation(rotation_)
 	, translation(translation_)

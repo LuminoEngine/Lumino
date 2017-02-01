@@ -12,9 +12,11 @@ using BoxMeshPtr = RefPtr<BoxMesh>;
 /**
 	@brief		
 */
+LN_CLASS()
 class StaticMesh
 	: public VisualNode
 {
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	static StaticMeshPtr Create(const StringRef& filePath);
 
@@ -44,30 +46,45 @@ private:
 /**
 	@brief		軸に沿ったボックスのメッシュを表示するクラスです。
 */
+LN_CLASS()
 class BoxMesh
 	: public StaticMesh
 {
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
 	/**
 		@brief		サイズが 1.0 であるボックスのメッシュを作成します。
 		@details	このメッシュは共有リソースです。
-					頂点バッファやインデックスバッファを操作すると、この Create() で作成したほかのメッシュの形状にも影響します。
+					頂点バッファやインデックスバッファを操作すると、このメソッドで作成したほかのメッシュの形状にも影響します。
 					通常はこれらのリソースを変更するべきではありません。
 	*/
+	LN_METHOD(Document)
 	static BoxMeshPtr Create();
 
 	/** 各軸に沿ったサイズを指定してメッシュを作成します。*/
+	LN_METHOD(Document)
 	static BoxMeshPtr Create(const Vector3& size);
 
 	/** 各軸に沿ったサイズを指定してメッシュを作成します。*/
+	LN_METHOD(Document)
 	static BoxMeshPtr Create(float width, float height, float depth);
 
 LN_CONSTRUCT_ACCESS:
 	BoxMesh();
 	virtual ~BoxMesh();
-	void Initialize(SceneGraph* ownerSceneGraph);
-	void Initialize(SceneGraph* ownerSceneGraph, const Vector3& size);
+
+	/** @copydoc Create() */
+	LN_METHOD()
+	void Initialize();
+
+	/** @copydoc Create(const Vector3& size) */
+	LN_METHOD()
+	void Initialize(const Vector3& size);
+
+	/** @copydoc Create(float width, float height, float depth) */
+	LN_METHOD()
+	void Initialize(float width, float height, float depth);
 };
 
 

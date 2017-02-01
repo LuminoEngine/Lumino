@@ -49,6 +49,7 @@ namespace Lumino
             return outReturn;
         }
 
+        
     }
     /// <summary>
     /// 音声の再生、制御を行います。
@@ -199,6 +200,7 @@ namespace Lumino
 
         internal Sound(_LNInternal i) : base(i) {}
 
+        
     }
     /// <summary>
     /// テクスチャのクラスです。
@@ -208,6 +210,7 @@ namespace Lumino
     {
         internal Texture(_LNInternal i) : base(i) {}
 
+        
     }
     /// <summary>
     /// 2D テクスチャのクラスです。
@@ -236,6 +239,7 @@ namespace Lumino
 
         internal Texture2D(_LNInternal i) : base(i) {}
 
+        
     }
     /// <summary>
     /// グラフィックスモジュールの基本的なリソースオブジェクトのベースクラスです。デバイスの状態変化を通知する機能を実装します。
@@ -245,10 +249,33 @@ namespace Lumino
     {
         internal GraphicsResourceObject(_LNInternal i) : base(i) {}
 
+        
     }
     public  class SceneNode
         : Component
     {
+        /// <summary>
+        /// 位置を取得します。
+        /// 位置を設定します。
+        /// </summary>
+        public Vector3 Position
+        {
+            get
+            {
+                Vector3 outReturn = new Vector3();
+                var result = API.LNSceneNode_GetPosition(Handle, out outReturn);
+                if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
+                return outReturn;
+            }
+            set
+            {
+                
+                var result = API.LNSceneNode_SetPosition(Handle, ref value);
+                if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
+                
+            }
+        }
+
         /// <summary>
         /// 可視状態を取得します。
         /// 可視状態を設定します。false の場合、ノードの描画自体行われません。(default: true)
@@ -273,12 +300,14 @@ namespace Lumino
 
         internal SceneNode(_LNInternal i) : base(i) {}
 
+        
     }
     public  class VisualNode
         : SceneNode
     {
         internal VisualNode(_LNInternal i) : base(i) {}
 
+        
     }
     /// <summary>
     /// スプライトの抽象クラスです。スプライトオブジェクトを作成するには Sprite2D または Sprite3D クラス使用します。
@@ -286,7 +315,31 @@ namespace Lumino
     public  class Sprite
         : VisualNode
     {
+        /// <summary>
+        /// スプライトが表示するテクスチャを取得します。
+        /// スプライトが表示するテクスチャを設定します。
+        /// </summary>
+        public Texture Texture
+        {
+            get
+            {
+                IntPtr outReturn;
+                var result = API.LNSprite_GetTexture(Handle, out outReturn);
+                if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
+                return InternalManager.ReturnObjectHelper<Texture>(outReturn, ref _GetTexture);
+            }
+            set
+            {
+                
+                var result = API.LNSprite_SetTexture(Handle, (value != null) ? value.Handle : IntPtr.Zero);
+                if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
+                
+            }
+        }
+
         internal Sprite(_LNInternal i) : base(i) {}
+
+        private  Texture _GetTexture;
 
     }
     /// <summary>
@@ -312,13 +365,14 @@ namespace Lumino
         public Sprite2D(Texture texture) : base(_LNInternal.InternalBlock)
         {
             IntPtr outSprite2D;
-            var result = API.LNSprite2D_InitializeT(texture.Handle, out outSprite2D);
+            var result = API.LNSprite2D_InitializeT((texture != null) ? texture.Handle : IntPtr.Zero, out outSprite2D);
             if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
             InternalManager.RegisterWrapperObject(this, outSprite2D); API.LNObject_Release(outSprite2D);
         }
 
         internal Sprite2D(_LNInternal i) : base(i) {}
 
+        
     }
     /// <summary>
     /// 3D 空間に配置されるスプライトのクラスです。
@@ -328,6 +382,63 @@ namespace Lumino
     {
         internal Sprite3D(_LNInternal i) : base(i) {}
 
+        
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    public  class StaticMesh
+        : VisualNode
+    {
+        internal StaticMesh(_LNInternal i) : base(i) {}
+
+        
+    }
+    /// <summary>
+    /// 軸に沿ったボックスのメッシュを表示するクラスです。
+    /// </summary>
+    public  class BoxMesh
+        : StaticMesh
+    {
+        /// <summary>
+        /// サイズが 1.0 であるボックスのメッシュを作成します。
+        /// </summary>
+        /// <remarks>
+        /// このメッシュは共有リソースです。頂点バッファやインデックスバッファを操作すると、このメソッドで作成したほかのメッシュの形状にも影響します。通常はこれらのリソースを変更するべきではありません。
+        /// </remarks>
+        public BoxMesh() : base(_LNInternal.InternalBlock)
+        {
+            IntPtr outBoxMesh;
+            var result = API.LNBoxMesh_Initialize(out outBoxMesh);
+            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            InternalManager.RegisterWrapperObject(this, outBoxMesh); API.LNObject_Release(outBoxMesh);
+        }
+
+        /// <summary>
+        /// 各軸に沿ったサイズを指定してメッシュを作成します。
+        /// </summary>
+        public BoxMesh(Vector3 size) : base(_LNInternal.InternalBlock)
+        {
+            IntPtr outBoxMesh;
+            var result = API.LNBoxMesh_InitializeS(ref size, out outBoxMesh);
+            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            InternalManager.RegisterWrapperObject(this, outBoxMesh); API.LNObject_Release(outBoxMesh);
+        }
+
+        /// <summary>
+        /// 各軸に沿ったサイズを指定してメッシュを作成します。
+        /// </summary>
+        public BoxMesh(float width, float height, float depth) : base(_LNInternal.InternalBlock)
+        {
+            IntPtr outBoxMesh;
+            var result = API.LNBoxMesh_InitializeWHD(width, height, depth, out outBoxMesh);
+            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            InternalManager.RegisterWrapperObject(this, outBoxMesh); API.LNObject_Release(outBoxMesh);
+        }
+
+        internal BoxMesh(_LNInternal i) : base(i) {}
+
+        
     }
     /// <summary>
     /// 
@@ -337,6 +448,7 @@ namespace Lumino
     {
         internal Component(_LNInternal i) : base(i) {}
 
+        
     }
     /// <summary>
     /// ゲームアプリケーションを表します。
@@ -350,7 +462,7 @@ namespace Lumino
         public void Run(GameScene initialScene = null)
         {
             
-            var result = API.LNGameApplication_Run(Handle, initialScene.Handle);
+            var result = API.LNGameApplication_Run(Handle, (initialScene != null) ? initialScene.Handle : IntPtr.Zero);
             if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
             
         }
@@ -365,6 +477,7 @@ namespace Lumino
 
         internal GameApplication(_LNInternal i) : base(i) {}
 
+        
     }
     /// <summary>
     /// ゲームシーンのベースクラスです。
@@ -410,6 +523,7 @@ namespace Lumino
 
         internal GameScene(_LNInternal i) : base(i) {}
 
+        
     }
 
 
@@ -508,6 +622,24 @@ namespace Lumino
             _typeInfos.Add(_Sprite3D);
             LNSprite3D_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
 
+            var _StaticMesh = new TypeInfo(){ Factory = (handle) =>
+            {
+                var obj = new StaticMesh(_LNInternal.InternalBlock);
+                obj.SetHandle(handle);
+                return obj;
+            }};
+            _typeInfos.Add(_StaticMesh);
+            LNStaticMesh_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
+
+            var _BoxMesh = new TypeInfo(){ Factory = (handle) =>
+            {
+                var obj = new BoxMesh(_LNInternal.InternalBlock);
+                obj.SetHandle(handle);
+                return obj;
+            }};
+            _typeInfos.Add(_BoxMesh);
+            LNBoxMesh_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
+
             var _Component = new TypeInfo(){ Factory = (handle) =>
             {
                 var obj = new Component(_LNInternal.InternalBlock);
@@ -573,6 +705,12 @@ namespace Lumino
 
         [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
         private static extern void LNSprite3D_SetBindingTypeInfo(IntPtr data);
+
+        [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+        private static extern void LNStaticMesh_SetBindingTypeInfo(IntPtr data);
+
+        [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+        private static extern void LNBoxMesh_SetBindingTypeInfo(IntPtr data);
 
         [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
         private static extern void LNComponent_SetBindingTypeInfo(IntPtr data);

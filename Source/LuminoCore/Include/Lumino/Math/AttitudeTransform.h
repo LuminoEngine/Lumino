@@ -11,7 +11,7 @@ LN_NAMESPACE_BEGIN
 /**
 	@brief		位置、回転、スケールを定義します。
 */
-class LUMINO_EXPORT SQTTransform
+class LUMINO_EXPORT AttitudeTransform
 {
 public:
 
@@ -21,19 +21,19 @@ public:
 	
 public:
 	
-	static const SQTTransform   Identity;  ///< (Vector3::One, Quaternion::Identity, Vector3::Zero)
+	static const AttitudeTransform   Identity;  ///< (Vector3::One, Quaternion::Identity, Vector3::Zero)
 	
 public:
 	
 	/**
 		@brief		各要素を 拡縮1.0、単位クォータニオン、位置(0, 0) でインスタンスを初期化します。
 	*/
-    SQTTransform();
+	AttitudeTransform();
 
 	/**
 		@brief		各要素を指定してインスタンスを初期化します。
 	*/
-    SQTTransform(const Vector3& scale, const Quaternion& rotation, const Vector3& translation);
+	AttitudeTransform(const Vector3& scale, const Quaternion& rotation, const Vector3& translation);
 	
 };
 

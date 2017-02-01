@@ -43,7 +43,7 @@ public:
 	/// デフォルトの再生方法の取得
 	WrapMode GetDefaultWrapMode() { return m_defaultrapMode; }
 
-	/// アニメーションの追加 (3Dモデルモーションであれば、ボーン名, SQTTransformAnimation)
+	/// アニメーションの追加 (3Dモデルモーションであれば、ボーン名, AttitudeTransformAnimation)
 	void AddAnimationCurve(const String& relativePath, AnimationCurve* curve);
 
 	/// 時間を設定し、各 AnimationCurve の補間値を計算する

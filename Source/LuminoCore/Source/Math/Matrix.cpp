@@ -16,7 +16,7 @@
 #include "../../include/Lumino/Math/Vector3.h"
 #include "../../include/Lumino/Math/Vector4.h"
 #include "../../include/Lumino/Math/Quaternion.h"
-#include "../../include/Lumino/Math/SQTTransform.h"
+#include "../../include/Lumino/Math/AttitudeTransform.h"
 #include "../../include/Lumino/Math/Plane.h"
 #include "../../include/Lumino/Math/Matrix.h"
 #include "Asm.h"
@@ -98,7 +98,7 @@ Matrix::Matrix(const Vector4& row1, const Vector4& row2, const Vector4& row3, co
 //}
 
 //------------------------------------------------------------------------------
-Matrix::Matrix(const SQTTransform& transform)
+Matrix::Matrix(const AttitudeTransform& transform)
 {
 	m[0][0] = m[1][1] = m[2][2] = m[3][3] = 1.0f;
 	m[0][1] = m[0][2] = m[0][3] = 0.0f;

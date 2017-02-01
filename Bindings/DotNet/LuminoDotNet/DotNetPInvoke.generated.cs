@@ -170,11 +170,8 @@ namespace Lumino
     public class API
     {
     
-#if DEBUG
-    	internal const string DLLName = "LuminoUd";
-#else
-    	internal const string DLLName = "LuminoU";
-#endif
+        internal const string DLLName = "LuminoU";
+    
         internal const CharSet DLLCharSet = CharSet.Unicode;
         internal const CallingConvention DefaultCallingConvention = CallingConvention.Cdecl;
         
@@ -263,16 +260,37 @@ namespace Lumino
         public extern static ResultCode LNTexture2D_InitializeFFM(string filePath, TextureFormat format, bool mipmap, out IntPtr outTexture2D);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNSceneNode_SetPosition(IntPtr scenenode, ref Vector3 pos);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNSceneNode_GetPosition(IntPtr scenenode, out Vector3 outReturn);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNSceneNode_SetVisible(IntPtr scenenode, bool visible);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNSceneNode_IsVisible(IntPtr scenenode, out bool outReturn);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNSprite_SetTexture(IntPtr sprite, IntPtr texture);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNSprite_GetTexture(IntPtr sprite, out IntPtr outReturn);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNSprite2D_Initialize(out IntPtr outSprite2D);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNSprite2D_InitializeT(IntPtr texture, out IntPtr outSprite2D);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNBoxMesh_Initialize(out IntPtr outBoxMesh);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNBoxMesh_InitializeS(ref Vector3 size, out IntPtr outBoxMesh);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNBoxMesh_InitializeWHD(float width, float height, float depth, out IntPtr outBoxMesh);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNGameApplication_Run(IntPtr gameapplication, IntPtr initialScene);

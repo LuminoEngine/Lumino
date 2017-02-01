@@ -143,8 +143,6 @@ void HeaderParser::ParseFile(const PathName& path)
 	auto result = DeclsParser::TryParse(DeclsParser::Parse_File, tokens);
 	for (auto decl1 : result.GetValue())
 	{
-		//Console::WriteLine(decl1.type);
-
 		if (decl1.type == "document") ParseDocument(decl1);
 		if (decl1.type == "Struct") ParseStructDecl(decl1);
 		if (decl1.type == "class") ParseClassDecl(decl1);
@@ -152,7 +150,6 @@ void HeaderParser::ParseFile(const PathName& path)
 		
 		for (auto decl2 : decl1.decls)
 		{
-			//Console::WriteLine("  {0}", decl2.type);
 		}
 	}
 }
@@ -242,11 +239,7 @@ void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
 	// return type .. method name
 	auto declTokens = tr::MakeEnumerator::from(paramEnd, lparen)
 		.Where([](Token* t) { return t->GetTokenGroup() == TokenGroup::Identifier || t->GetTokenGroup() == TokenGroup::Keyword || t->GetTokenGroup() == TokenGroup::Operator || t->GetTokenGroup() == TokenGroup::ArithmeticLiteral; })
-		//.Select([](Token* t) { return t->GetString(); })
 		.ToList();
-
-	//for (auto t : declTokens) Console::WriteLine(t->GetString());
-
 
 	auto info = std::make_shared<MethodInfo>();
 	info->owner = parent;
@@ -254,7 +247,11 @@ void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
 	info->document = MoveLastDocument();
 	info->accessLevel = m_currentAccessLevel;
 	info->name = String((declTokens.GetLast())->GetString());	// ( の直前を関数名として取り出す
-	parent->declaredMethods.Add(info);
+
+	if (info->metadata->HasKey("Document"))
+		parent->declaredMethodsForDocument.Add(info);	// ドキュメント抽出用メソッド
+	else
+		parent->declaredMethods.Add(info);				// 普通にラッパーを作るメソッド
 
 	// struct 型で戻り値が無ければコンストラクタ
 	if (parent->isStruct && declTokens.begin() + 1 == declTokens.end())
@@ -316,6 +313,7 @@ void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
 	}
 }
 
+// end = ',' | ')'
 void HeaderParser::ParseParamsDecl(TokenItr begin, TokenItr end, MethodInfoPtr parent)
 {
 	auto declTokens = tr::MakeEnumerator::from(begin, end)
@@ -347,6 +345,20 @@ void HeaderParser::ParseParamsDecl(TokenItr begin, TokenItr end, MethodInfoPtr p
 	info->isIn = hasConst;
 	info->isOut = (!hasConst && pointerLevel > 0);
 	parent->parameters.Add(info);
+
+	// copydoc 用シグネチャの抽出
+	String sig;
+	for (auto itr = declTokens.begin(); itr < paramEnd; ++itr)
+	{
+		if ((*itr)->GetTokenGroup() == TokenGroup::Identifier ||
+			(*itr)->GetTokenGroup() == TokenGroup::Operator ||
+			(*itr)->GetTokenGroup() == TokenGroup::Keyword)
+		{
+			sig += (*itr)->GetString();
+		}
+	}
+	if (!parent->paramsRawSignature.IsEmpty()) parent->paramsRawSignature += ",";
+	parent->paramsRawSignature += sig;
 }
 
 void HeaderParser::ParseParamType(TokenItr begin, TokenItr end, String* outName, int* outPointerLevel, bool* outHasConst, bool* outHasVirtual)
@@ -660,7 +672,7 @@ void HeaderParser::ParseDocument(const Decl& decl)
 			else if (result[1] == _T("param"))
 			{
 				String con = line.Mid(result.GetLength());
-				if (Regex::Search(con, _T(R"(\[(\w+)\]\s+(\w+)\s*\:\s*)"), &result))
+				if (Regex::Search(con, R"(\[(\w+)\]\s+(\w+)\s*\:\s*)", &result))
 				{
 					auto paramInfo = std::make_shared<ParameterDocumentInfo>();
 					info->params.Add(paramInfo);
@@ -679,6 +691,18 @@ void HeaderParser::ParseDocument(const Decl& decl)
 			{
 				target = &info->details;
 				line = line.Mid(result.GetLength());
+			}
+			else if (result[1] == _T("copydoc"))
+			{
+				String con = line.Mid(result.GetLength());
+				if (Regex::Search(con, R"((\w+)(.*))", &result))
+				{
+					info->copydocMethodName = result[1];
+					info->copydocSignature = result[2];
+					info->copydocSignature = info->copydocSignature.Remove('(').Remove(')').Remove(' ').Remove('\t');
+					target = &info->details;
+					line.Clear();
+				}
 			}
 		}
 

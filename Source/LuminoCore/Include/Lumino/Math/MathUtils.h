@@ -20,10 +20,10 @@ public:
 public:
 
 	/// 度をラジアンに変換します。
-	static inline float ToRadians(float d) { return d * 0.017453292519943295769236907684886f; }	// 0.017… は180 の逆数 * PI
+	static inline float DegreesToRadians(float d) { return d * 0.017453292519943295769236907684886f; }	// 0.017… は180 の逆数 * PI
 
 	/// ラジアンを度に変換します。
-	static inline float ToDegrees(float r) { return r * 57.295779513082320876798154814105f; }	// 57.29… はPI の逆数 * 180
+	static inline float RadiansToDegrees(float r) { return r * 57.295779513082320876798154814105f; }	// 57.29… はPI の逆数 * 180
 
 	/// 値を指定された範囲内に制限します。
 	static inline float Clamp(float value, float minValue, float maxValue) { return (value > maxValue) ? maxValue : (value < minValue) ? minValue : value; }

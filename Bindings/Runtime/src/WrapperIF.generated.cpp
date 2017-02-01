@@ -108,67 +108,67 @@ LN_API LNResultCode LNEngine_Update(bool* outReturn)
 LN_API LNResultCode LNSound_SetVolume(LNHandle sound, float volume)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(LNSound, sound)->SetVolume(volume);
+    (LWIG_TO_OBJECT(LNSound, sound)->SetVolume(volume));
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSound_GetVolume(LNHandle sound, float* outReturn)
 {
     LWIG_FUNC_TRY_BEGIN;
-    *outReturn = LWIG_TO_OBJECT(LNSound, sound)->GetVolume();
+    *outReturn = (LWIG_TO_OBJECT(LNSound, sound)->GetVolume());
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSound_SetPitch(LNHandle sound, float pitch)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(LNSound, sound)->SetPitch(pitch);
+    (LWIG_TO_OBJECT(LNSound, sound)->SetPitch(pitch));
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSound_GetPitch(LNHandle sound, float* outReturn)
 {
     LWIG_FUNC_TRY_BEGIN;
-    *outReturn = LWIG_TO_OBJECT(LNSound, sound)->GetPitch();
+    *outReturn = (LWIG_TO_OBJECT(LNSound, sound)->GetPitch());
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSound_SetLoopEnabled(LNHandle sound, bool enabled)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(LNSound, sound)->SetLoopEnabled(enabled);
+    (LWIG_TO_OBJECT(LNSound, sound)->SetLoopEnabled(enabled));
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSound_IsLoopEnabled(LNHandle sound, bool* outReturn)
 {
     LWIG_FUNC_TRY_BEGIN;
-    *outReturn = LWIG_TO_OBJECT(LNSound, sound)->IsLoopEnabled();
+    *outReturn = (LWIG_TO_OBJECT(LNSound, sound)->IsLoopEnabled());
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSound_SetLoopRange(LNHandle sound, uint32_t begin, uint32_t length)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(LNSound, sound)->SetLoopRange(begin, length);
+    (LWIG_TO_OBJECT(LNSound, sound)->SetLoopRange(begin, length));
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSound_Play(LNHandle sound)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(LNSound, sound)->Play();
+    (LWIG_TO_OBJECT(LNSound, sound)->Play());
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSound_Stop(LNHandle sound)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(LNSound, sound)->Stop();
+    (LWIG_TO_OBJECT(LNSound, sound)->Stop());
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSound_Pause(LNHandle sound)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(LNSound, sound)->Pause();
+    (LWIG_TO_OBJECT(LNSound, sound)->Pause());
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSound_Resume(LNHandle sound)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(LNSound, sound)->Resume();
+    (LWIG_TO_OBJECT(LNSound, sound)->Resume());
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSound_Initialize(const LNChar* filePath, LNHandle* outSound)
@@ -205,16 +205,28 @@ LN_API void LNGraphicsResourceObject_SetBindingTypeInfo(void* data)
 {
     tr::TypeInfo::GetTypeInfo<GraphicsResourceObject>()->SetBindingTypeInfo(data);
 }
+LN_API LNResultCode LNSceneNode_SetPosition(LNHandle scenenode, const LNVector3* pos)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    (LWIG_TO_OBJECT(LNSceneNode, scenenode)->SetPosition(*reinterpret_cast<const Vector3*>(pos)));
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API LNResultCode LNSceneNode_GetPosition(LNHandle scenenode, LNVector3* outReturn)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    *outReturn = reinterpret_cast<const LNVector3&>(LWIG_TO_OBJECT(LNSceneNode, scenenode)->GetPosition());
+    LWIG_FUNC_TRY_END_RETURN;
+}
 LN_API LNResultCode LNSceneNode_SetVisible(LNHandle scenenode, bool visible)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(LNSceneNode, scenenode)->SetVisible(visible);
+    (LWIG_TO_OBJECT(LNSceneNode, scenenode)->SetVisible(visible));
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSceneNode_IsVisible(LNHandle scenenode, bool* outReturn)
 {
     LWIG_FUNC_TRY_BEGIN;
-    *outReturn = LWIG_TO_OBJECT(LNSceneNode, scenenode)->IsVisible();
+    *outReturn = (LWIG_TO_OBJECT(LNSceneNode, scenenode)->IsVisible());
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API void LNSceneNode_SetBindingTypeInfo(void* data)
@@ -224,6 +236,18 @@ LN_API void LNSceneNode_SetBindingTypeInfo(void* data)
 LN_API void LNVisualNode_SetBindingTypeInfo(void* data)
 {
     tr::TypeInfo::GetTypeInfo<VisualNode>()->SetBindingTypeInfo(data);
+}
+LN_API LNResultCode LNSprite_SetTexture(LNHandle sprite, LNHandle texture)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    (LWIG_TO_OBJECT(LNSprite, sprite)->SetTexture(LWIG_TO_OBJECT(Texture, texture)));
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API LNResultCode LNSprite_GetTexture(LNHandle sprite, LNHandle* outReturn)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    *outReturn = LWIG_TO_HANDLE(LWIG_TO_OBJECT(LNSprite, sprite)->GetTexture());
+    LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API void LNSprite_SetBindingTypeInfo(void* data)
 {
@@ -249,6 +273,32 @@ LN_API void LNSprite3D_SetBindingTypeInfo(void* data)
 {
     tr::TypeInfo::GetTypeInfo<Sprite3D>()->SetBindingTypeInfo(data);
 }
+LN_API void LNStaticMesh_SetBindingTypeInfo(void* data)
+{
+    tr::TypeInfo::GetTypeInfo<StaticMesh>()->SetBindingTypeInfo(data);
+}
+LN_API LNResultCode LNBoxMesh_Initialize(LNHandle* outBoxMesh)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    LWIG_CREATE_OBJECT(outBoxMesh, LNBoxMesh, Initialize, );
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API LNResultCode LNBoxMesh_InitializeS(const LNVector3* size, LNHandle* outBoxMesh)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    LWIG_CREATE_OBJECT(outBoxMesh, LNBoxMesh, Initialize, *reinterpret_cast<const Vector3*>(size));
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API LNResultCode LNBoxMesh_InitializeWHD(float width, float height, float depth, LNHandle* outBoxMesh)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    LWIG_CREATE_OBJECT(outBoxMesh, LNBoxMesh, Initialize, width, height, depth);
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API void LNBoxMesh_SetBindingTypeInfo(void* data)
+{
+    tr::TypeInfo::GetTypeInfo<BoxMesh>()->SetBindingTypeInfo(data);
+}
 LN_API void LNComponent_SetBindingTypeInfo(void* data)
 {
     tr::TypeInfo::GetTypeInfo<Component>()->SetBindingTypeInfo(data);
@@ -256,7 +306,7 @@ LN_API void LNComponent_SetBindingTypeInfo(void* data)
 LN_API LNResultCode LNGameApplication_Run(LNHandle gameapplication, LNHandle initialScene)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(LNGameApplication, gameapplication)->Run(LWIG_TO_OBJECT(GameScene, initialScene));
+    (LWIG_TO_OBJECT(LNGameApplication, gameapplication)->Run(LWIG_TO_OBJECT(GameScene, initialScene)));
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNGameApplication_Initialize(LNHandle* outGameApplication)
@@ -272,13 +322,13 @@ LN_API void LNGameApplication_SetBindingTypeInfo(void* data)
 LN_API LNResultCode LNGameScene_OnStart(LNHandle gamescene)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(LNGameScene, gamescene)->OnStart();
+    (LWIG_TO_OBJECT(LNGameScene, gamescene)->OnStart());
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNGameScene_OnStart_CallVirtualBase(LNHandle gamescene)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(LNGameScene, gamescene)->LNGameScene::OnStart_CallBase();
+    (LWIG_TO_OBJECT(LNGameScene, gamescene)->LNGameScene::OnStart_CallBase());
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNGameScene_OnStart_SetOverrideCaller(GameScene_OnStart_OverrideCaller callback)

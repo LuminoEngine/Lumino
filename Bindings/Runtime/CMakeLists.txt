@@ -13,7 +13,7 @@ set(LN_SOURCES_Runtime
 	src/WrapperIF.generated.h
 	src/BindingManager.cpp
 	src/BindingManager.h
-	src/LNBase.cpp
+	src/InternalAPI.cpp
 	src/LuminoC.generated.h
 	src/WrapperIF.generated.cpp
 )

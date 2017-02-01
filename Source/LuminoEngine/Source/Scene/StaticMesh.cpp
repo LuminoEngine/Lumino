@@ -10,6 +10,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // StaticMesh
 //==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(StaticMesh, VisualNode);
 
 //------------------------------------------------------------------------------
 StaticMeshPtr StaticMesh::Create(const StringRef& filePath)
@@ -87,12 +88,6 @@ void StaticMesh::Initialize(SceneGraph* owner, StaticMeshModel* meshModel)
 }
 
 //------------------------------------------------------------------------------
-//void StaticMesh::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
-//{
-//	dc->DrawMesh(m_mesh, subsetIndex);
-//}
-
-//------------------------------------------------------------------------------
 void StaticMesh::OnRender2(DrawList* renderer)
 {
 	renderer->SetTransform(m_combinedGlobalMatrix);
@@ -102,12 +97,13 @@ void StaticMesh::OnRender2(DrawList* renderer)
 //==============================================================================
 // BoxMesh
 //==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(BoxMesh, StaticMesh);
 
 //------------------------------------------------------------------------------
 BoxMeshPtr BoxMesh::Create()
 {
 	auto ptr = RefPtr<BoxMesh>::MakeRef();
-	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D());
+	ptr->Initialize();
 	return ptr;
 }
 
@@ -115,7 +111,7 @@ BoxMeshPtr BoxMesh::Create()
 BoxMeshPtr BoxMesh::Create(const Vector3& size)
 {
 	auto ptr = RefPtr<BoxMesh>::MakeRef();
-	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), size);
+	ptr->Initialize(size);
 	return ptr;
 }
 
@@ -136,21 +132,27 @@ BoxMesh::~BoxMesh()
 }
 
 //------------------------------------------------------------------------------
-void BoxMesh::Initialize(SceneGraph* ownerSceneGraph)
+void BoxMesh::Initialize()
 {
 	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
 	mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager());
 	mesh->SetMeshResource(detail::ModelManager::GetInstance()->GetUnitBoxMeshResource());
 	mesh->AddMaterial(detail::ModelManager::GetInstance()->GetDefaultMaterial());
-	StaticMesh::Initialize(ownerSceneGraph, mesh);
+	StaticMesh::Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), mesh);
 }
 
 //------------------------------------------------------------------------------
-void BoxMesh::Initialize(SceneGraph* ownerSceneGraph, const Vector3& size)
+void BoxMesh::Initialize(const Vector3& size)
 {
 	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
 	mesh->InitializeBox(SceneGraphManager::Instance->GetGraphicsManager(), size);
-	StaticMesh::Initialize(ownerSceneGraph, mesh);
+	StaticMesh::Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), mesh);
+}
+
+//------------------------------------------------------------------------------
+void BoxMesh::Initialize(float width, float height, float depth)
+{
+	Initialize(Vector3(width, height, depth));
 }
 
 LN_NAMESPACE_END

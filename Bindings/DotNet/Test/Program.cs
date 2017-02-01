@@ -106,21 +106,22 @@ namespace Test
         // 明示的破棄のテスト
         static void Test_Dispose()
         {
-            int c = Diag.GetHandleCount();
+            int c = LanguageBindingHelper.GetHandleCount();
 
             // 1つ作ると Handle が1つ増える
             var tex1 = new Texture2D(32, 32);
-            AssertEq(c + 1, Diag.GetHandleCount());
+            AssertEq(c + 1, LanguageBindingHelper.GetHandleCount());
 
             // 明示的に Dispose するとHandle が1つ減る
             tex1.Dispose();
-            AssertEq(c, Diag.GetHandleCount());
+            AssertEq(c, LanguageBindingHelper.GetHandleCount());
         }
 
         //--------------------------------------------------------------
         // オブジェクトリストのテスト
         static void Test_ObjectList()
         {
+#if false
             var tex1 = new Texture2D(32, 32);
             var spr1 = new Sprite2D(tex1);
             var spr2 = new Sprite2D(tex1);
@@ -163,12 +164,14 @@ namespace Test
             // 別の変数に取り出してみる
             var children2 = spr1.Children;
             AssertEq(children, children2);
+#endif
         }
 
         //--------------------------------------------------------------
         // デフォルトで作成されるオブジェクトリストのテスト
         static void Test_DefaultObjectList()
         {
+#if false
             var vp1 = Viewport.MainViewport;
             var list1 = vp1.Layers;
 
@@ -180,7 +183,24 @@ namespace Test
 
             // もう一度 get してみる
             AssertEq(l1, list1[0]);
+#endif
         }
+
+        //--------------------------------------------------------------
+        // オーバーライドのテスト
+        class MyGameScene : GameScene
+        {
+            protected override void OnStart()
+            {
+                base.OnStart();
+            }
+        }
+        static void Test_Override()
+        {
+            //var app = new GameApplication();
+            //app.Run(new MyGameScene());
+        }
+
 
         static void Main(string[] args)
         {
@@ -193,6 +213,7 @@ namespace Test
             Test_Dispose();
             Test_ObjectList();
             Test_DefaultObjectList();
+            Test_Override();
             Engine.Terminate();
             Console.WriteLine("Test succeeded.");
         }
@@ -274,5 +295,5 @@ namespace Test
 
         }
 #endif
+        }
     }
-}

@@ -105,13 +105,15 @@ void CSClassLibGenerator::Generate()
 			{
 				classesText.AppendLines(MakeOverrideCallbackMethodBody(methodInfo)).NewLine();
 				typeInfoRegistersText.Append("API.LN{0}_{1}_SetOverrideCaller({0}.{1}_OverrideCallback);", classInfo->name, methodInfo->name);
-				
 			}
 		}
 
 		// internal constructor
 		if (!classInfo->IsStatic())
 			classesText.Append("internal {0}(_LNInternal i) : base(i) {{}}", classInfo->name).NewLine(2);
+
+		classesText.Append(m_fieldsText.ToString()).NewLine();
+		m_fieldsText.Clear();
 
 		classesText.DecreaseIndent();
 		classesText.Append("}").NewLine();
@@ -147,20 +149,39 @@ String CSClassLibGenerator::MakeMethodBody(MethodInfoPtr methodInfo, bool isProp
 		}
 
 		// call args
+		String argName;
 		if (paramInfo->isThis)
-			callArgs.AppendCommad("Handle");
-		else if (paramInfo->isOut || paramInfo->isReturn)
-			callArgs.AppendCommad("out " + paramInfo->name);
-		else if (paramInfo->type->IsClass())
-			callArgs.AppendCommad(((isProperty) ? "value" : paramInfo->name) + ".Handle");
+		{
+			argName = "Handle";
+		}
+		else if(paramInfo->isOut || paramInfo->isReturn)
+		{
+			argName = "out " + paramInfo->name;
+		}
 		else
-			callArgs.AppendCommad((isProperty) ? "value" : paramInfo->name);
+		{
+			argName = ((isProperty) ? "value" : paramInfo->name);
+
+			if (paramInfo->type->IsClass())
+				argName = String::Format("({0} != null) ? {0}.Handle : IntPtr.Zero", argName);
+			if (paramInfo->type->isStruct)
+				argName = "ref " + argName;
+		}
+		callArgs.AppendCommad(argName);
 
 		// return stmt
 		if (paramInfo->isReturn)
 		{
 			if (methodInfo->isConstructor)	// クラスコンストラクタの場合は Manager 登録を行う
 				returnStmt = String::Format("InternalManager.RegisterWrapperObject(this, {0}); API.LNObject_Release({0});", paramInfo->name);
+			else if (methodInfo->returnType->IsClass())
+			{
+				returnStmt = String::Format("return InternalManager.ReturnObjectHelper<{0}>({1}, ref _{2});", methodInfo->returnType->name, paramInfo->name, methodInfo->name);
+
+				// cache field
+				String modifier = (methodInfo->isStatic) ? "static" : "";
+				m_fieldsText.Append("private {0} {1} _{2};", modifier, methodInfo->returnType->name, methodInfo->name).NewLine();
+			}
 			else
 				returnStmt = String::Format("return {0};", paramInfo->name);
 		}

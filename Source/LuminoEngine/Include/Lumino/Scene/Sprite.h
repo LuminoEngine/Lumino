@@ -19,11 +19,13 @@ public:
 	/**
 		@brief		スプライトが表示するテクスチャを設定します。
 	*/
+	LN_METHOD(Property)
 	void SetTexture(Texture* texture);
 	
 	/**
 		@brief		スプライトが表示するテクスチャを取得します。
 	*/
+	LN_METHOD(Property)
 	Texture* GetTexture() const;
 
 	/**

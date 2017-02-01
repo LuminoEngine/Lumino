@@ -10,9 +10,9 @@ protected:
 //------------------------------------------------------------------------------
 TEST_F(Test_Matrix, Basic)
 {
-	// Matrix::Matrix(const SQTTransform&)
+	// Matrix::Matrix(const AttitudeTransform&)
 	{
-		SQTTransform t;
+		AttitudeTransform t;
 		t.scale.Set(1, 2, 3);
 		t.rotation = Quaternion::MakeFromYawPitchRoll(0.5, 0.75, 1.0);
 		t.translation.Set(5, 6, 7);
