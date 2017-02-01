@@ -22,7 +22,7 @@
 #include <Lumino/UI/UIContext.h>
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIFrameWindow.h>
-#include <Lumino/Foundation/Application.h>
+#include <Lumino/Framework/Application.h>
 #include "AssetsManager.h"
 #include "EngineDiagViewer.h"
 #include "EngineManager.h"

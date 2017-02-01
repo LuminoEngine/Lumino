@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include <stack>
-#include <Lumino/Foundation/GameScene.h>
+#include <Lumino/Framework/GameScene.h>
 
 LN_NAMESPACE_BEGIN
 namespace detail {

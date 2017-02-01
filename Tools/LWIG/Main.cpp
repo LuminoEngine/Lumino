@@ -29,8 +29,8 @@ int main()
 		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Scene/Sprite.h",
 		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Scene/StaticMesh.h",
 		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Game/Component.h",
-		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Foundation/Application.h",
-		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Foundation/GameScene.h",
+		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Framework/Application.h",
+		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Framework/GameScene.h",
 	};
 
 	g_templateDir = LUMINO_ROOT_DIR"/Tools/LWIG/";

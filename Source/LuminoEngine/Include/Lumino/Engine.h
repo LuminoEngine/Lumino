@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include "Foundation/Application.h"
+#include "Framework/Application.h"
 #include "EngineSettings.h"
 
 LN_NAMESPACE_BEGIN

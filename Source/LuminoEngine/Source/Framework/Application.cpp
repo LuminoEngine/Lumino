@@ -1,8 +1,8 @@
 ﻿
 #include "../Internal.h"
 #include <Lumino/Engine.h>
-#include <Lumino/Foundation/Application.h>
-#include <Lumino/Foundation/GameScene.h>
+#include <Lumino/Framework/Application.h>
+#include <Lumino/Framework/GameScene.h>
 #include "GameSceneManager.h"
 #include "../EngineManager.h"
 

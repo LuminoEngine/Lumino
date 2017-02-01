@@ -4,8 +4,8 @@
 #include <Lumino/Scene/MeshModelObject.h>
 #include <Lumino/Scene/StaticMesh.h>
 #include <Lumino/Scene/Light.h>
-#include <Lumino/Foundation/Application.h>
-#include <Lumino/Foundation/GameScene.h>
+#include <Lumino/Framework/Application.h>
+#include <Lumino/Framework/GameScene.h>
 #include <Lumino/UI/UIFrameWindow.h>
 #include <Lumino/UI/UIListBox.h>
 #include <Lumino/Testing/TestHelper.h>

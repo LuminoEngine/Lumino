@@ -39,7 +39,6 @@ set(LN_INCLUDE_DIRECTORIES
 #------------------------------
 # external deps.
 link_libraries(LuminoEngine)
-link_libraries(LuminoFoundation)
 
 #------------------------------
 # Shared library.

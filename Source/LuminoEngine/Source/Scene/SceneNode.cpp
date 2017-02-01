@@ -4,7 +4,7 @@
 #include "SceneGraphManager.h"
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/SceneNode.h>
-#include <Lumino/Foundation/GameScene.h>
+#include <Lumino/Framework/GameScene.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN

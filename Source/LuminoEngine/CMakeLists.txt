@@ -526,14 +526,14 @@ set(LN_SOURCES_Engine
 	Source/Version.cpp
 )
 
-set(LN_SOURCES_Foundation
-	Include/Lumino/Foundation/Application.h
-	Include/Lumino/Foundation/GameScene.h
-	Source/Foundation/Application.cpp
-	Source/Foundation/EntryPoint.cpp
-	Source/Foundation/EntryPoint.h
-	Source/Foundation/GameSceneManager.cpp
-	Source/Foundation/GameSceneManager.h
+set(LN_SOURCES_Framework
+	Include/Lumino/Framework/Application.h
+	Include/Lumino/Framework/GameScene.h
+	Source/Framework/Application.cpp
+	Source/Framework/EntryPoint.cpp
+	Source/Framework/EntryPoint.h
+	Source/Framework/GameSceneManager.cpp
+	Source/Framework/GameSceneManager.h
 )
 
 #--------------------------------------
@@ -611,9 +611,9 @@ if (WIN32)
 		Source/Audio/DirectMusic/DirectMusicAudioPlayer.h
 	)
 
-	set(LN_SOURCES_Foundation
-		${LN_SOURCES_Foundation}
-		Source/Foundation/Main_Win32.cpp
+	set(LN_SOURCES_Framework
+		${LN_SOURCES_Framework}
+		Source/Framework/Main_Win32.cpp
 	)
 
 
@@ -635,9 +635,9 @@ elseif (APPLE)
 		Source/Graphics/Device/OpenGL/NSGLGraphicsDevice.mm
 		Source/Graphics/Device/OpenGL/NSGLGraphicsDevice.h
 	)	
-	set(LN_SOURCES_Foundation
-		${LN_SOURCES_Foundation}
-		Source/Foundation/Main_Mac.cpp
+	set(LN_SOURCES_Framework
+		${LN_SOURCES_Framework}
+		Source/Framework/Main_Mac.cpp
 	)
 
 
@@ -698,7 +698,7 @@ source_group("Documents"		FILES ${LN_SOURCES_Documents})
 source_group("Game"				FILES ${LN_SOURCES_Game})
 source_group("Scripting"		FILES ${LN_SOURCES_Scripting})
 source_group("Engine"			FILES ${LN_SOURCES_Engine})
-source_group("Foundation"		FILES ${LN_SOURCES_Foundation})
+source_group("Framework"		FILES ${LN_SOURCES_Framework})
 
 set(LN_SOURCES
 	${LN_SOURCES}
@@ -722,6 +722,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Game}
 	${LN_SOURCES_Scripting}
 	${LN_SOURCES_Engine}
+	${LN_SOURCES_Framework}
 	${LN_SOURCES_C_API}
 )
 
@@ -846,11 +847,6 @@ set_target_properties(LuminoEngine PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB
 target_include_directories(LuminoEngine PUBLIC ${LN_DEPENDENCIES_INCLUDES})
 target_link_libraries(LuminoEngine ${LN_LINK_LIBS} ${LN_DEPENDENCIES_LIBRARIES})
 ln_add_pch(LuminoEngine "LuminoEngine.PCH.h" "Source/LuminoEngine.PCH.cpp")
-
-# Foundation
-add_library(LuminoFoundation STATIC ${LN_SOURCES_Foundation})
-set_target_properties(LuminoFoundation PROPERTIES OUTPUT_NAME "LuminoFoundation${LN_LIB_POSTFIX}")
-set_target_properties(LuminoFoundation PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
 
 # Unit test.
 add_subdirectory(Test)
