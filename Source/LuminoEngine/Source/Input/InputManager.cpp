@@ -146,14 +146,14 @@ float InputManager::GetVirtualButtonState(InputBinding* binding, bool keyboard, 
 	if (keyboard && binding->GetType() == detail::InputBindingType::Keyboard)
 	{
 		auto* b = static_cast<KeyboardBinding*>(binding);
-		if (b->GetModifierKeys() != 0) { LN_NOTIMPLEMENTED(); }
+		if (b->GetModifierKeys() != ModifierKeys::None) { LN_NOTIMPLEMENTED(); }
 		return m_inputDriver->QueryKeyState(b->GetKey()) ? 1.0f : 0.0f;
 	}
 	// マウス
 	if (mouse && binding->GetType() == detail::InputBindingType::Mouse)
 	{
 		auto* b = static_cast<MouseBinding*>(binding);
-		if (b->GetModifierKeys() != 0) { LN_NOTIMPLEMENTED(); }
+		if (b->GetModifierKeys() != ModifierKeys::None) { LN_NOTIMPLEMENTED(); }
 		return m_inputDriver->QueryMouseState(b->GetMouseAction()) ? 1.0f : 0.0f;
 	}
 

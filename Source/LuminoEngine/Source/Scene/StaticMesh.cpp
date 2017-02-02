@@ -156,4 +156,54 @@ void BoxMesh::Initialize(float width, float height, float depth, MeshCreationFla
 	Initialize(Vector3(width, height, depth), flags);
 }
 
+//==============================================================================
+// SphereMesh
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SphereMesh, StaticMesh);
+
+//------------------------------------------------------------------------------
+SphereMeshPtr SphereMesh::Create()
+{
+	auto ptr = RefPtr<SphereMesh>::MakeRef();
+	ptr->Initialize();
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
+SphereMeshPtr SphereMesh::Create(float radius, int tessellation)
+{
+	auto ptr = RefPtr<SphereMesh>::MakeRef();
+	ptr->Initialize(radius, tessellation);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
+SphereMesh::SphereMesh()
+{
+}
+
+//------------------------------------------------------------------------------
+SphereMesh::~SphereMesh()
+{
+}
+
+//------------------------------------------------------------------------------
+void SphereMesh::Initialize()
+{
+	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
+	mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager());
+	// TODO: HasFlag(.net)
+	mesh->SetMeshResource(detail::ModelManager::GetInstance()->GetUnitSphereMeshResource(MeshCreationFlags::None));
+	mesh->AddMaterial(detail::ModelManager::GetInstance()->GetDefaultMaterial());
+	StaticMesh::Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), mesh);
+}
+
+//------------------------------------------------------------------------------
+void SphereMesh::Initialize(float radius, int tessellation)
+{
+	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
+	mesh->InitializeSphere(SceneGraphManager::Instance->GetGraphicsManager(), radius, tessellation, tessellation, MeshCreationFlags::None);
+	StaticMesh::Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), mesh);
+}
+
 LN_NAMESPACE_END

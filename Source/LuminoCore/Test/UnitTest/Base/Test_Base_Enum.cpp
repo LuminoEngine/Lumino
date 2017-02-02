@@ -173,7 +173,7 @@ TEST_F(Test_Base_Enum, FlagsOperators)
 	{
 		TestFlags v1;
 		v1 = TestFlags::Option1 & TestFlags::Option2;
-		ASSERT_EQ(0, v1);
+		ASSERT_EQ(TestFlags::Option0, v1);
 
 		TestFlags v2 = TestFlags::Option1;
 		v1 = TestFlags::Option1;
@@ -184,7 +184,7 @@ TEST_F(Test_Base_Enum, FlagsOperators)
 		v1 = TestFlags::Option1 | TestFlags::Option2 | TestFlags::Option3;
 		v1 = v1 & TestFlags::Option2;
 		v1 = TestFlags::Option3 & v1;
-		ASSERT_EQ(0, v1);
+		ASSERT_EQ(TestFlags::Option0, v1);
 	}
 	// <Test> operator &=
 	{
@@ -194,7 +194,7 @@ TEST_F(Test_Base_Enum, FlagsOperators)
 
 		TestFlags v2 = TestFlags::Option2;
 		v1 &= v2;
-		ASSERT_EQ(0, v1);
+		ASSERT_EQ(TestFlags::Option0, v1);
 	}
 	// <Test> operator |=
 	{
@@ -217,7 +217,7 @@ TEST_F(Test_Base_Enum, FlagsOperators)
 		ASSERT_EQ(TestFlags::Option1, v1);	// Option2 が消えている
 
 		v1 &= ~v1;							// 自分自身で落としてみる
-		ASSERT_EQ(0, v1);					// 全部消えている
+		ASSERT_EQ(TestFlags::Option0, v1);					// 全部消えている
 	}
 }
 

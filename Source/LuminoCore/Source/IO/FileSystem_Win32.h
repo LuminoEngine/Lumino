@@ -71,22 +71,22 @@ bool FileSystem::ExistsFile(const StringRefW& filePath)
 }
 
 //------------------------------------------------------------------------------
-void FileSystem::SetAttribute(const char* filePath, uint32_t attr)
+void FileSystem::SetAttribute(const char* filePath, FileAttribute attr)
 {
 	DWORD dwAttr = 0;
-	if (attr & FileAttribute::Directory) dwAttr |= FILE_ATTRIBUTE_DIRECTORY;
-	if (attr & FileAttribute::ReadOnly)  dwAttr |= FILE_ATTRIBUTE_READONLY;
-	if (attr & FileAttribute::Hidden)    dwAttr |= FILE_ATTRIBUTE_HIDDEN;
+	if (attr.TestFlag(FileAttribute::Directory)) dwAttr |= FILE_ATTRIBUTE_DIRECTORY;
+	if (attr.TestFlag(FileAttribute::ReadOnly))  dwAttr |= FILE_ATTRIBUTE_READONLY;
+	if (attr.TestFlag(FileAttribute::Hidden))    dwAttr |= FILE_ATTRIBUTE_HIDDEN;
 	BOOL r = ::SetFileAttributesA(filePath, dwAttr);
 	if (r == FALSE) { Win32IOErrorToExceptionThrow(::GetLastError(), filePath); }
 }
 
-void FileSystem::SetAttribute(const wchar_t* filePath, uint32_t attr)
+void FileSystem::SetAttribute(const wchar_t* filePath, FileAttribute attr)
 {
 	DWORD dwAttr = 0;
-	if (attr & FileAttribute::Directory) dwAttr |= FILE_ATTRIBUTE_DIRECTORY;
-	if (attr & FileAttribute::ReadOnly)  dwAttr |= FILE_ATTRIBUTE_READONLY;
-	if (attr & FileAttribute::Hidden)    dwAttr |= FILE_ATTRIBUTE_HIDDEN;
+	if (attr.TestFlag(FileAttribute::Directory)) dwAttr |= FILE_ATTRIBUTE_DIRECTORY;
+	if (attr.TestFlag(FileAttribute::ReadOnly))  dwAttr |= FILE_ATTRIBUTE_READONLY;
+	if (attr.TestFlag(FileAttribute::Hidden))    dwAttr |= FILE_ATTRIBUTE_HIDDEN;
 	BOOL r = ::SetFileAttributesW(filePath, dwAttr);
 	if (r == FALSE) { Win32IOErrorToExceptionThrow(::GetLastError(), filePath); }
 }

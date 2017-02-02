@@ -30,7 +30,7 @@ TEST_F(Test_IO_FileSystem, Exists)
 //------------------------------------------------------------------------------
 TEST_F(Test_IO_FileSystem, GetAttribute)
 {
-	uint32_t attr;
+	FileAttribute attr;
 
 	// <Test> ファイルを読み取り専用にする
 	// <Test> ファイルの読み取り専用を確認する
