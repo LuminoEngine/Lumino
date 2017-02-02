@@ -120,7 +120,7 @@ LN_CONSTRUCT_ACCESS:
 
 	/** @copydoc Create(float radius, int tessellation) */
 	LN_METHOD()
-	void Initialize(float radius, int tessellation);
+	void Initialize(float radius, int tessellation = 16);
 };
 
 /**
@@ -156,7 +156,7 @@ LN_CONSTRUCT_ACCESS:
 
 	/** @copydoc Create(float size, int tessellation) */
 	LN_METHOD()
-	void Initialize(float size, int tessellation);
+	void Initialize(float size, int tessellation = 8);
 };
 
 LN_NAMESPACE_END
