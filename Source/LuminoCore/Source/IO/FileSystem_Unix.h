@@ -82,7 +82,7 @@ bool FileSystem::ExistsFile(const StringRefW& filePath)
 }
 
 //------------------------------------------------------------------------------
-void FileSystem::SetAttribute(const char* filePath, uint32_t attrs)
+void FileSystem::SetAttribute(const char* filePath, FileAttribute attrs)
 {
 	struct stat st;
 	int ret = ::stat(filePath, &st);
@@ -90,7 +90,7 @@ void FileSystem::SetAttribute(const char* filePath, uint32_t attrs)
 
 	// 変更できるのは読み取り属性だけ。
 	// 隠し属性は Unix ではファイル名で表現する。
-	if (attrs & FileAttribute::ReadOnly) {
+	if (attrs.TestFlag(FileAttribute::ReadOnly)) {
 		ret = ::chmod(filePath, st.st_mode & ~(S_IWUSR | S_IWOTH | S_IWGRP));
 	}
 	else {
@@ -98,7 +98,7 @@ void FileSystem::SetAttribute(const char* filePath, uint32_t attrs)
 	}
 	LN_THROW(ret != -1, IOException);
 }
-void FileSystem::SetAttribute(const wchar_t* filePath, uint32_t attrs)
+void FileSystem::SetAttribute(const wchar_t* filePath, FileAttribute attrs)
 {
 	MBCS_FILEPATH(mbcsFilePath, filePath);
 	return SetAttribute(mbcsFilePath, attrs);

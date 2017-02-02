@@ -255,7 +255,15 @@ void ModelManager::Initialize(const ConfigData& configData)
 	m_unitBoxMeshResourceReverseFaces->Initialize(m_graphicsManager, MeshCreationFlags::None);
 	m_unitBoxMeshResourceReverseFaces->AddBox(Vector3(1, 1, 1));
 	m_unitBoxMeshResourceReverseFaces->ReverseFaces();
-	
+
+	m_unitSphereMeshResource = RefPtr<MeshResource>::MakeRef();
+	m_unitSphereMeshResource->Initialize(m_graphicsManager, MeshCreationFlags::None);
+	m_unitSphereMeshResource->AddSphere(0.5, 16, 16);
+
+	m_unitSphereMeshResourceReverseFaces = RefPtr<MeshResource>::MakeRef();
+	m_unitSphereMeshResourceReverseFaces->Initialize(m_graphicsManager, MeshCreationFlags::None);
+	m_unitSphereMeshResourceReverseFaces->AddSphere(0.5, 16, 16);
+	m_unitSphereMeshResourceReverseFaces->ReverseFaces();
 
 	if (g_modelManagerInstance == nullptr)
 	{
@@ -287,6 +295,12 @@ Material* ModelManager::GetDefaultMaterial() const
 MeshResource* ModelManager::GetUnitBoxMeshResource(bool reverseFaces) const
 {
 	return (reverseFaces) ? m_unitBoxMeshResourceReverseFaces : m_unitBoxMeshResource;
+}
+
+//------------------------------------------------------------------------------
+MeshResource* ModelManager::GetUnitSphereMeshResource(bool reverseFaces) const
+{
+	return (reverseFaces) ? m_unitSphereMeshResourceReverseFaces : m_unitSphereMeshResource;
 }
 
 //------------------------------------------------------------------------------

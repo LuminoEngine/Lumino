@@ -60,8 +60,8 @@ public:
 		@details	この関数により変更できる属性は、読み取り属性のみです。(Unix では隠し属性はファイル名で表現されるためです)
 					それ以外のフラグビットは無視されます。
 	*/
-	static void SetAttribute(const char* filePath, uint32_t attr);
-	static void SetAttribute(const wchar_t* filePath, uint32_t attr);
+	static void SetAttribute(const char* filePath, FileAttribute attr);
+	static void SetAttribute(const wchar_t* filePath, FileAttribute attr);
 
 	/**
 		@brief		ファイルをコピーする

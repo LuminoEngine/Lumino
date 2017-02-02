@@ -79,7 +79,6 @@ enum _##enumName
 	protected: \
 		int	m_value; \
 	public: \
-		inline operator int() const { return m_value; } \
 		typedef _##enumName enum_type; \
 		typedef _##enumName value_type; \
 		enumName() { m_value = 0; } \
@@ -87,6 +86,7 @@ enum _##enumName
 		virtual void SetValue(EnumValueType value) override { m_value = (enum_type)value; } \
 		virtual EnumValueType GetValue() const override { return m_value; } \
 		inline bool TestFlag(enum_type f) const throw() { return (m_value & f) == f && (f != 0 || m_value == f); } \
+        inline explicit operator int() const { return m_value; } \
 		inline bool operator==(enumName right) const { return m_value == right.m_value; } \
 		inline bool operator==(_##enumName right) const { return m_value == right; } \
 		inline bool operator!=(enumName right) const { return !operator==(right); } \
@@ -96,6 +96,8 @@ enum _##enumName
 		inline enumName& operator |= (const enumName& v) { m_value |= v.m_value; return *this; } \
 		inline enumName& operator |= (enum_type v) { m_value |= v; return *this; } \
 		inline enumName operator~() const throw() { enumName value; value.m_value = ~m_value; return value; } \
+		friend inline bool operator==(const enum_type& left, const enumName& right) throw(); \
+		friend inline bool operator!=(const _##enumName& left, const enumName& right) throw(); \
 		friend inline enumName operator&(const enumName& left, const enumName& right) throw(); \
 		friend inline enumName operator&(const enumName& left, enum_type right) throw(); \
 		friend inline enumName operator&(enum_type left, const enumName& right) throw(); \
@@ -106,6 +108,8 @@ enum _##enumName
 		friend inline enumName operator|(enum_type left, enum_type right) throw(); \
 		friend inline enumName operator~(enumName::enum_type v) throw(); \
 	}; \
+	inline bool operator==(const enumName::enum_type& left, const enumName& right) throw()		{ return left == right.m_value; } \
+	inline bool operator!=(const enumName::enum_type& left, const enumName& right) throw()		{ return left == right.m_value; } \
 	inline enumName operator&(const enumName& left, const enumName& right) throw()		{ enumName value; value.m_value = left.m_value & right.m_value; return value; } \
 	inline enumName operator&(const enumName& left, enumName::enum_type right) throw()	{ enumName value; value.m_value = left.m_value & right; return value; } \
 	inline enumName operator&(enumName::enum_type left, const enumName& right) throw()	{ enumName value; value.m_value = right.m_value & left;  return value; } \

@@ -6,8 +6,10 @@
 LN_NAMESPACE_BEGIN
 class StaticMesh;
 class BoxMesh;
+class SphereMesh;
 using StaticMeshPtr = RefPtr<StaticMesh>;
 using BoxMeshPtr = RefPtr<BoxMesh>;
+using SphereMeshPtr = RefPtr<SphereMesh>;
 
 /**
 	@brief		
@@ -87,6 +89,41 @@ LN_CONSTRUCT_ACCESS:
 	void Initialize(float width, float height, float depth, MeshCreationFlags flags = MeshCreationFlags::None);
 };
 
+/**
+	@brief		球のメッシュを表示するクラスです。
+*/
+LN_CLASS()
+class SphereMesh
+	: public StaticMesh
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+
+	/**
+		@brief		半径が 0.5 である球のメッシュを作成します。
+		@details	このメッシュは共有リソースです。
+					頂点バッファやインデックスバッファを操作すると、このメソッドで作成したほかのメッシュの形状にも影響します。
+					通常はこれらのリソースを変更するべきではありません。
+	*/
+	LN_METHOD(Document)
+	static SphereMeshPtr Create();
+
+	/** 半径と分割数を指定してメッシュを作成します。*/
+	LN_METHOD(Document)
+	static SphereMeshPtr Create(float radius, int tessellation = 16);
+
+LN_CONSTRUCT_ACCESS:
+	SphereMesh();
+	virtual ~SphereMesh();
+
+	/** @copydoc Create() */
+	LN_METHOD()
+	void Initialize();
+
+	/** @copydoc Create(float radius, int tessellation) */
+	LN_METHOD()
+	void Initialize(float radius, int tessellation);
+};
 
 
 LN_NAMESPACE_END

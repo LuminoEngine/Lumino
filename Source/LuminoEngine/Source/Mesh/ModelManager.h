@@ -48,6 +48,7 @@ public:
 
 	Material* GetDefaultMaterial() const;
 	MeshResource* GetUnitBoxMeshResource(bool reverseFaces) const;
+	MeshResource* GetUnitSphereMeshResource(bool reverseFaces) const;
 
 private:
 	RefPtr<PmxSkinnedMeshResource> CreateSkinnedMeshResource(const PathName& filePath);
@@ -62,6 +63,8 @@ private:
 	RefPtr<Material>		m_defaultMaterial;
 	RefPtr<MeshResource>	m_unitBoxMeshResource;
 	RefPtr<MeshResource>	m_unitBoxMeshResourceReverseFaces;
+	RefPtr<MeshResource>	m_unitSphereMeshResource;
+	RefPtr<MeshResource>	m_unitSphereMeshResourceReverseFaces;
 };
 
 } // namespace detail
