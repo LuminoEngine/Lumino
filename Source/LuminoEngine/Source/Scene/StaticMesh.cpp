@@ -42,16 +42,6 @@ StaticMeshPtr StaticMesh::CreateScreenPlane()
 }
 
 //------------------------------------------------------------------------------
-StaticMeshPtr StaticMesh::CreateTeapot(MeshCreationFlags flags)
-{
-	auto ptr = StaticMeshPtr::MakeRef();
-	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
-	mesh->InitializeTeapot(SceneGraphManager::Instance->GetGraphicsManager(), flags);
-	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), mesh);
-	return ptr;
-}
-
-//------------------------------------------------------------------------------
 StaticMesh::StaticMesh()
 	: m_mesh()
 {
@@ -193,6 +183,56 @@ void SphereMesh::Initialize(float radius, int tessellation)
 {
 	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
 	mesh->InitializeSphere(SceneGraphManager::Instance->GetGraphicsManager(), radius, tessellation, tessellation, MeshCreationFlags::None);
+	StaticMesh::Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), mesh);
+}
+
+
+//==============================================================================
+// TeapotMesh
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TeapotMesh, StaticMesh);
+
+//------------------------------------------------------------------------------
+TeapotMeshPtr TeapotMesh::Create()
+{
+	auto ptr = RefPtr<TeapotMesh>::MakeRef();
+	ptr->Initialize();
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
+TeapotMeshPtr TeapotMesh::Create(float size, int tessellation)
+{
+	auto ptr = RefPtr<TeapotMesh>::MakeRef();
+	ptr->Initialize(size, tessellation);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
+TeapotMesh::TeapotMesh()
+{
+}
+
+//------------------------------------------------------------------------------
+TeapotMesh::~TeapotMesh()
+{
+}
+
+//------------------------------------------------------------------------------
+void TeapotMesh::Initialize()
+{
+	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
+	mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager());
+	mesh->SetMeshResource(detail::ModelManager::GetInstance()->GetUnitTeapotMeshResource());
+	mesh->AddMaterial(detail::ModelManager::GetInstance()->GetDefaultMaterial());
+	StaticMesh::Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), mesh);
+}
+
+//------------------------------------------------------------------------------
+void TeapotMesh::Initialize(float size, int tessellation)
+{
+	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
+	mesh->InitializeTeapot(SceneGraphManager::Instance->GetGraphicsManager(), size, tessellation, MeshCreationFlags::None);
 	StaticMesh::Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), mesh);
 }
 

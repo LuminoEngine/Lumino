@@ -82,3 +82,24 @@ TEST_F(Test_Scene_StaticMesh, SphereMesh)
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_StaticMesh.SphereMesh2.png"), 95));
 	}
 }
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Scene_StaticMesh, TeapotMesh)
+{
+	ScopedCameraPosition cp(2, 2, -2);
+
+	// <Rest> Create
+	{
+		ScopedCameraPosition cp(2, 2, -2);
+		auto mesh1 = TeapotMesh::Create();
+
+		auto mesh2 = TeapotMesh::Create(2);
+		mesh2->SetPosition(0, 0, 2);
+
+		auto mesh3 = TeapotMesh::Create(1, 1);
+		mesh3->SetPosition(-2, 0, 0);
+
+		Engine::Update();
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_StaticMesh.TeapotMesh1.png"), 95, true));
+	}
+}
