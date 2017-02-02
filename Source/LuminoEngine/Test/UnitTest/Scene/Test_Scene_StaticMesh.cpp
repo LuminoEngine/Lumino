@@ -1,7 +1,4 @@
 ﻿#include <TestConfig.h>
-#if 0
-#include <Lumino/Scene/StaticMesh.h>
-#include "../../../src/Scene/MME/MMEShader.h"
 
 class Test_Scene_StaticMesh : public ::testing::Test
 {
@@ -11,22 +8,18 @@ protected:
 };
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Scene_StaticMesh, Box)
+TEST_F(Test_Scene_StaticMesh, BoxMesh)
 {
-	auto shader = MMEShader::Create(LN_LOCALFILE("../../../src/Scene/Resource/BasicForwardRendering.fx"));
+	ScopedCameraPosition cp(2, 2, -2);
+	auto mesh1 = BoxMesh::Create();
 
-	auto mesh = StaticMesh::CreateBox(Vector3(3, 2, 1));
+	auto mesh2 = BoxMesh::Create(2, 1, 1);
+	mesh2->SetPosition(0, 0, 2);
 
-	mesh->GetMaterials()->GetAt(0)->SetShader(shader);
-	mesh->GetMaterials()->GetAt(0)->SetTextureParameter(_T("MaterialTexture"), Texture2D::Create(LN_LOCALFILE("../Graphics/TestData/img2.png")));
+	auto mesh3 = BoxMesh::Create(Vector3(1, 2, 1));
+	mesh3->SetPosition(-2, 0, 0);
 
-	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
-	Camera::GetMain3DCamera()->SetCameraBehavior(cb);
-
-	while (Engine::UpdateFrame())
-	{
-	}
+	Engine::Update();
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_StaticMesh.BoxMesh1.png")));
 }
 
-
-#endif
