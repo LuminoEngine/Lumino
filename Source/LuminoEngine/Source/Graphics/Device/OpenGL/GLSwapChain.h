@@ -1,5 +1,6 @@
 ﻿
 #pragma once 
+#include "GLCommon.h"
 #include "GLTexture.h"
 
 LN_NAMESPACE_BEGIN

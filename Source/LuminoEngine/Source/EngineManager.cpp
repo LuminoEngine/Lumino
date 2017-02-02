@@ -1,5 +1,8 @@
 ﻿
 #include "Internal.h"
+#ifdef LN_OS_WIN32
+#include <Windows.h>
+#endif
 #include <Lumino/IO/Console.h>
 #include <Lumino/Profiler.h>
 #include "Animation/AnimationManager.h"
@@ -19,7 +22,7 @@
 #include <Lumino/UI/UIContext.h>
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIFrameWindow.h>
-#include <Lumino/Foundation/Application.h>
+#include <Lumino/Framework/Application.h>
 #include "AssetsManager.h"
 #include "EngineDiagViewer.h"
 #include "EngineManager.h"
@@ -262,8 +265,11 @@ void EngineManager::InitializeCommon()
 		InternalResource::InitializeEngineResource();
 
 		// ログファイル出力
-		if (m_configData.engineLogEnabled) {
+		if (m_configData.engineLogEnabled)
+		{
 			Logger::Initialize(LogFileName);
+			//Logger2::Initialize("log.txt");
+			//LN_LOG_INFO("Lumino 1.0.0");
 		}
 		m_commonInitied = true;
 	}

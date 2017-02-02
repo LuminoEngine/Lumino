@@ -1,6 +1,6 @@
 ﻿
 #include "../Internal.h"
-#include <Lumino/Foundation/GameScene.h>
+#include <Lumino/Framework/GameScene.h>
 #include "GameSceneManager.h"
 
 LN_NAMESPACE_BEGIN

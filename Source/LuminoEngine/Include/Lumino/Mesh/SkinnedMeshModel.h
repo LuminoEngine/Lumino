@@ -1,7 +1,7 @@
 ﻿
 #pragma once
-#include "../../../../Source/Animation/AnimationState.h"		//  TODO
-#include "../../../../Source/Animation/Animator.h"		//  TODO
+#include "../../../Source/Animation/AnimationState.h"		//  TODO
+#include "../../../Source/Animation/Animator.h"		//  TODO
 #include "Mesh.h"
 
 LN_NAMESPACE_BEGIN
@@ -140,9 +140,9 @@ LN_INTERNAL_ACCESS:
 	const Matrix& GetCombinedMatrix() const { return m_combinedMatrix; }
 
 	// ローカル行列を初期値に戻す
-	void ResetLocalTransform() { m_localTransform = SQTTransform::Identity; }
+	void ResetLocalTransform() { m_localTransform = AttitudeTransform::Identity; }
 
-	SQTTransform* GetLocalTransformPtr() { return &m_localTransform; }
+	AttitudeTransform* GetLocalTransformPtr() { return &m_localTransform; }
 
 protected:
 	// IAnimationTargetAttribute interface
@@ -153,7 +153,7 @@ LN_INTERNAL_ACCESS:	// TODO
 	RefPtr<PmxBoneResource>	m_core;				// 共有データクラス
 	SkinnedMeshBone*		m_parent;
 	List<SkinnedMeshBone*>	m_children;			// 子ボーンリスト
-	SQTTransform			m_localTransform;	// モーションを書き込むのはここ
+	AttitudeTransform		m_localTransform;	// モーションを書き込むのはここ
 	Matrix					m_combinedMatrix;	// 結合済み行列 ()
 	int						m_depth;			// 0 から
 	PmxIKResource*			m_ikInfo;

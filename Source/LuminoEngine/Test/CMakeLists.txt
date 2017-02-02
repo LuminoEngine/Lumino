@@ -60,6 +60,6 @@ set(LN_SANDBOX_SOURCES
 )
 
 add_executable(LuminoSandbox ${LN_SANDBOX_SOURCES})
-target_link_libraries(LuminoSandbox LuminoFoundation LuminoEngine)
+target_link_libraries(LuminoSandbox LuminoEngine)
 add_dependencies(LuminoSandbox LuminoEngine)
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿//#define SANDBOX
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -47,7 +48,7 @@ namespace Test
         {
             var tex1 = new Texture2D(32, 32);
 
-            // 実行エラーになら名ければOK
+            // オーバーロードが解決でき、エラーにならなければOK
             var spr1 = new Sprite2D();
             var spr2 = new Sprite2D(tex1);
         }
@@ -106,21 +107,22 @@ namespace Test
         // 明示的破棄のテスト
         static void Test_Dispose()
         {
-            int c = Diag.GetHandleCount();
+            int c = LanguageBindingHelper.GetHandleCount();
 
             // 1つ作ると Handle が1つ増える
             var tex1 = new Texture2D(32, 32);
-            AssertEq(c + 1, Diag.GetHandleCount());
+            AssertEq(c + 1, LanguageBindingHelper.GetHandleCount());
 
             // 明示的に Dispose するとHandle が1つ減る
             tex1.Dispose();
-            AssertEq(c, Diag.GetHandleCount());
+            AssertEq(c, LanguageBindingHelper.GetHandleCount());
         }
 
         //--------------------------------------------------------------
         // オブジェクトリストのテスト
         static void Test_ObjectList()
         {
+#if false
             var tex1 = new Texture2D(32, 32);
             var spr1 = new Sprite2D(tex1);
             var spr2 = new Sprite2D(tex1);
@@ -163,12 +165,14 @@ namespace Test
             // 別の変数に取り出してみる
             var children2 = spr1.Children;
             AssertEq(children, children2);
+#endif
         }
 
         //--------------------------------------------------------------
         // デフォルトで作成されるオブジェクトリストのテスト
         static void Test_DefaultObjectList()
         {
+#if false
             var vp1 = Viewport.MainViewport;
             var list1 = vp1.Layers;
 
@@ -180,10 +184,32 @@ namespace Test
 
             // もう一度 get してみる
             AssertEq(l1, list1[0]);
+#endif
         }
 
-        static void Main(string[] args)
+        //--------------------------------------------------------------
+        // オーバーライドのテスト
+        class MyGameScene : GameScene
         {
+            protected override void OnStart()
+            {
+                base.OnStart();
+            }
+        }
+        static void Test_Override()
+        {
+            //var app = new GameApplication();
+            //app.Run(new MyGameScene());
+        }
+
+
+        static int Main(string[] args)
+        {
+#if SANDBOX
+            var s = new Sandbox();
+            s.Main();
+            return 1;
+#else
             Engine.Initialize();
             Test_Struct();
             Test_RefObjectConstructorOverload();
@@ -193,8 +219,11 @@ namespace Test
             Test_Dispose();
             Test_ObjectList();
             Test_DefaultObjectList();
+            Test_Override();
             Engine.Terminate();
             Console.WriteLine("Test succeeded.");
+            return 0;
+#endif
         }
 
         static void AssertEq<T>(T expected, T actual)
@@ -274,5 +303,5 @@ namespace Test
 
         }
 #endif
+        }
     }
-}

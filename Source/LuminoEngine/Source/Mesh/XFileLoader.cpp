@@ -3,7 +3,7 @@
 #include <Lumino/Graphics/VertexDeclaration.h>
 #include <Lumino/Graphics/VertexBuffer.h>
 #include <Lumino/Graphics/IndexBuffer.h>
-#include <Lumino/Graphics/Mesh/Mesh.h>
+#include <Lumino/Mesh/Mesh.h>
 #include "../Graphics/GraphicsManager.h"
 #include "../Graphics/Device/DirectX9/DX9Module.h"
 #include "../Graphics/Device/DirectX9/DX9GraphicsDevice.h"
@@ -549,7 +549,7 @@ static void FlipTriangleFronts(TIndex* indices, int count)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RefPtr<MeshResource> XFileLoader::Load(ModelManager* manager, Stream* stream, const PathName& parentDir, bool isDynamic, ModelCreationFlag flags)
+RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream, const PathName& parentDir, bool isDynamic, ModelCreationFlag flags)
 {
 	Driver::DX9GraphicsDevice* device = dynamic_cast<Driver::DX9GraphicsDevice*>(manager->GetGraphicsManager()->GetGraphicsDevice());
 	LN_THROW(device != nullptr, ArgumentException);
@@ -589,8 +589,9 @@ RefPtr<MeshResource> XFileLoader::Load(ModelManager* manager, Stream* stream, co
 
 	try
 	{
-		auto mesh = RefPtr<MeshResource>::MakeRef();
-		mesh->Initialize(manager->GetGraphicsManager(), ResourceUsage::Static);
+		auto meshRes = RefPtr<MeshResource>::MakeRef();
+		meshRes->Initialize(manager->GetGraphicsManager(), MeshCreationFlags::None);
+		auto mesh1 = NewObject<StaticMeshModel>(manager->GetGraphicsManager(), meshRes);
 
 		// スキンメッシュではない場合
 		if (!dx_anim_controller)
@@ -616,11 +617,11 @@ RefPtr<MeshResource> XFileLoader::Load(ModelManager* manager, Stream* stream, co
 			// 頂点バッファ、インデックスバッファ作成
 
 			// VertexDeclaration
-			mesh->m_vertexDeclaration = manager->GetGraphicsManager()->GetDefaultVertexDeclaration();
+			meshRes->m_vertexDeclaration = manager->GetGraphicsManager()->GetDefaultVertexDeclaration();
 
 			// VertexBuffer
-			mesh->m_vertexBufferInfos[0].buffer.Attach(LN_NEW VertexBuffer());
-			mesh->m_vertexBufferInfos[0].buffer->Initialize(
+			meshRes->m_vertexBufferInfos[0].buffer.Attach(LN_NEW VertexBuffer());
+			meshRes->m_vertexBufferInfos[0].buffer->Initialize(
 				manager->GetGraphicsManager(),
 				sizeof(Vertex) * all_vertex_num,
 				nullptr,
@@ -699,11 +700,11 @@ RefPtr<MeshResource> XFileLoader::Load(ModelManager* manager, Stream* stream, co
 
 			// マテリアル数取得
 			uint32_t attr_num = allocate_hierarchy.getAllMaterialNum();
-			mesh->AddMaterials(attr_num);
+			mesh1->AddMaterials(attr_num);
 
 			// マテリアル、属性配列
-			MaterialList* materials = mesh->m_materials;
-			MeshAttributeList& attributes = mesh->m_attributes;
+			MaterialList* materials = mesh1->m_materials;
+			MeshAttributeList& attributes = meshRes->m_attributes;
 			uint32_t mi = 0;
 			for (DerivedD3DXMeshContainer* c : dx_mesh_containers)
 			{
@@ -742,7 +743,7 @@ RefPtr<MeshResource> XFileLoader::Load(ModelManager* manager, Stream* stream, co
 			}
 		}
 
-		return mesh;
+		return mesh1;
 	}
 	catch (Exception&)
 	{

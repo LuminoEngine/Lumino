@@ -16,7 +16,7 @@
 		  →ゲームならまぁいいけど。
 */
 
-#include "../../Internal.h"
+#include "../Internal.h"
 #include <Lumino/Platform/Win32/Win32PlatformWindow.h>
 #include "Win32PlatformWindowManager.h"
 #include "../MouseCursorVisibility.h"

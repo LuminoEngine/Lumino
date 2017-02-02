@@ -170,29 +170,11 @@ namespace Lumino
     public class API
     {
     
-#if DEBUG
-    	internal const string DLLName = "LuminoUd";
-#else
-    	internal const string DLLName = "LuminoU";
-#endif
+        internal const string DLLName = "LuminoU";
+    
         internal const CharSet DLLCharSet = CharSet.Unicode;
         internal const CallingConvention DefaultCallingConvention = CallingConvention.Cdecl;
         
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static ResultCode LNRectF_RectF(ref RectF rectf);
-
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static ResultCode LNRectF_RectFXYWH(ref RectF rectf, float x, float y, float width, float height);
-
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static ResultCode LNRectF_GetLeft(ref RectF rectf, out float outReturn);
-
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static ResultCode LNRectF_SetSize(ref RectF rectf, ref Size size);
-
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static ResultCode LNRectF_GetSize(ref RectF rectf, out Size outReturn);
-
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNVector3_GetLength(ref Vector3 vector3, out float outReturn);
 
@@ -210,6 +192,21 @@ namespace Lumino
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNVector3_NormalizeV(ref Vector3 vec, out Vector3 outReturn);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNRectF_RectF(ref RectF rectf);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNRectF_RectFXYWH(ref RectF rectf, float x, float y, float width, float height);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNRectF_GetLeft(ref RectF rectf, out float outReturn);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNRectF_SetSize(ref RectF rectf, ref Size size);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNRectF_GetSize(ref RectF rectf, out Size outReturn);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNEngine_Initialize();
@@ -257,7 +254,43 @@ namespace Lumino
         public extern static ResultCode LNSound_Initialize(string filePath, out IntPtr outSound);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static ResultCode LNTexture2D_Initialize(string filePath, TextureFormat format, bool mipmap, out IntPtr outTexture2D);
+        public extern static ResultCode LNTexture2D_Initialize(int width, int height, TextureFormat format, bool mipmap, out IntPtr outTexture2D);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNTexture2D_InitializeFFM(string filePath, TextureFormat format, bool mipmap, out IntPtr outTexture2D);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNSceneNode_SetPosition(IntPtr scenenode, ref Vector3 pos);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNSceneNode_GetPosition(IntPtr scenenode, out Vector3 outReturn);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNSceneNode_SetVisible(IntPtr scenenode, bool visible);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNSceneNode_IsVisible(IntPtr scenenode, out bool outReturn);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNSprite_SetTexture(IntPtr sprite, IntPtr texture);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNSprite_GetTexture(IntPtr sprite, out IntPtr outReturn);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNSprite2D_Initialize(out IntPtr outSprite2D);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNSprite2D_InitializeT(IntPtr texture, out IntPtr outSprite2D);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNBoxMesh_Initialize(out IntPtr outBoxMesh);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNBoxMesh_InitializeS(ref Vector3 size, out IntPtr outBoxMesh);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNBoxMesh_InitializeWHD(float width, float height, float depth, out IntPtr outBoxMesh);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNGameApplication_Run(IntPtr gameapplication, IntPtr initialScene);

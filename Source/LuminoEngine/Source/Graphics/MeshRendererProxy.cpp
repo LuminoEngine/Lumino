@@ -4,7 +4,7 @@
 #include <Lumino/Graphics/VertexDeclaration.h>
 #include <Lumino/Graphics/VertexBuffer.h>
 #include <Lumino/Graphics/IndexBuffer.h>
-#include <Lumino/Graphics/Mesh/Mesh.h>
+#include <Lumino/Mesh/Mesh.h>
 #include "Device/GraphicsDriverInterface.h"
 #include "RenderingCommand.h"
 #include "GraphicsManager.h"
@@ -51,10 +51,10 @@ void MeshRendererProxy::DrawMesh(MeshResource* mesh, int startIndex, int primiti
 	data.vertexDeclaration = decls->GetDeviceObject();
 	for (int i = 0; i < vbCount; ++i)
 	{
-		data.vertexBuffers[i] = vb[i]->GetDeviceObject();
+		data.vertexBuffers[i] = vb[i]->ResolveDeviceObject();
 	}
 	data.vertexBuffersCount = vbCount;
-	data.indexBuffer = ib->GetDeviceObject();
+	data.indexBuffer = ib->ResolveDeviceObject();
 	data.startIndex = startIndex;
 	data.primitiveCount = primitiveCount;
 	data.primitiveType = primitiveType;

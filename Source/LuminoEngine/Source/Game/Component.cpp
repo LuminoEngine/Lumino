@@ -1,7 +1,7 @@
 
 #include "../Internal.h"
 #include <Lumino/Game/Component.h>
-#include <Lumino/Foundation/GameScene.h>
+#include <Lumino/Framework/GameScene.h>
 
 LN_NAMESPACE_BEGIN
 

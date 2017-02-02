@@ -1,5 +1,5 @@
 ﻿#include <TestConfig.h>
-#include <Lumino/Graphics/Mesh/Mesh.h>
+#include <Lumino/Mesh/Mesh.h>
 #include "../../../Source/Graphics/GraphicsManager.h"
 
 
@@ -270,7 +270,7 @@ TEST_F(Test_Graphics_Rendering, DrawMesh)
 		if (Engine::BeginRendering())
 		{
 			Engine::Render();
-			Engine::GetDefault3DLayer()->GetRenderer()->DrawMesh(mesh, 0, mesh->GetMeshResource()->GetMaterial(0));
+			Engine::GetDefault3DLayer()->GetRenderer()->DrawMesh(mesh, 0, mesh->GetMaterial(0));
 			Engine::EndRendering();
 		}
 		Engine::EndFrameUpdate();

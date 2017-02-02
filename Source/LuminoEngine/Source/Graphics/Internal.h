@@ -3,6 +3,10 @@
 #include "../Internal.h"
 #include <Lumino/Graphics/Common.h>
 
+#ifdef LN_OS_WIN32
+#include <Windows.h>
+#endif
+
 #define LN_CALL_COMMAND(func, command, ...) \
 	if (m_manager->GetRenderingType() == GraphicsRenderingType::Threaded) { \
 		m_manager->GetPrimaryRenderingCommandList()->AddCommand<command>(m_internal, __VA_ARGS__); \

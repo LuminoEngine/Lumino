@@ -27,12 +27,14 @@ class ParameterDocumentInfo;
 class MetadataInfo;
 class MethodInfo;
 class PropertyInfo;
+class ConstantInfo;
 using TypeInfoPtr = std::shared_ptr<TypeInfo>;
 using DocumentInfoPtr = std::shared_ptr<DocumentInfo>;
 using ParameterDocumentInfoPtr = std::shared_ptr<ParameterDocumentInfo>;
 using MetadataInfoPtr = std::shared_ptr<MetadataInfo>;
 using MethodInfoPtr = std::shared_ptr<MethodInfo>;
 using PropertyInfoPtr = std::shared_ptr<PropertyInfo>;
+using ConstantInfoPtr = std::shared_ptr<ConstantInfo>;
 
 enum class AccessLevel
 {
@@ -57,6 +59,10 @@ public:
 	List<ParameterDocumentInfoPtr>	params;
 	String							returns;
 	String							details;
+	String							copydocMethodName;
+	String							copydocSignature;
+
+	bool IsCopyDoc() const { return !copydocMethodName.IsEmpty(); }
 };
 
 class MetadataInfo
@@ -82,9 +88,10 @@ public:
 	bool	isOut = false;
 	bool	isThis = false;
 	bool	isReturn = false;
-	Nullable<StringA>	defaultValue;
+	ConstantInfoPtr		defaultValue;
 
-	String	typeRawName;
+	String				typeRawName;
+	Nullable<StringA>	rawDefaultValue;
 };
 using ParameterInfoPtr = std::shared_ptr<ParameterInfo>;
 
@@ -126,6 +133,7 @@ public:
 	List<ParameterInfoPtr>	capiParameters;
 
 	String	returnTypeRawName;
+	String	paramsRawSignature;		// 型名と引数名を抽出したもの (デフォルト引数は除く) e.g) "constVector3&minVec,constVector3&maxVec"
 
 	bool IsOverloadChild() const { return overloadParent != nullptr; }
 	bool IsRuntimeInitializer() const { return metadata->HasKey(_T("RuntimeInitializer")); }
@@ -146,6 +154,7 @@ public:
 	TypeInfoPtr			owner;
 	DocumentInfoPtr		document;
 	String				name;
+	String				namePrefix;	// Is
 	TypeInfoPtr			type;
 	MethodInfoPtr		getter;
 	MethodInfoPtr		setter;
@@ -163,7 +172,6 @@ public:
 
 	String				typeRawName;
 };
-using ConstantInfoPtr = std::shared_ptr<ConstantInfo>;
 
 class TypeInfo
 {
@@ -178,7 +186,8 @@ public:
 	List<FieldInfoPtr>		declaredFields;
 	List<MethodInfoPtr>		declaredMethods;
 	List<PropertyInfoPtr>	declaredProperties;
-	List<ConstantInfoPtr>	declaredConstants;
+	List<ConstantInfoPtr>	declaredConstants;		// enum メンバ
+	List<MethodInfoPtr>		declaredMethodsForDocument;	// LN_METHOD(Docuent)
 	TypeInfoPtr				baseClass;
 
 	String					baseClassRawName;
@@ -188,19 +197,21 @@ public:
 
 	bool IsValueType() const { return isStruct || isPrimitive || isEnum; }
 	bool IsStatic() const { return metadata->HasKey(_T("Static")); }
-	bool IsClass() const { return !IsValueType(); }
+	bool IsClass() const { return !IsValueType() && !isVoid; }
 
 	void Link();
 
 private:
 	void MakeProperties();
 	void LinkOverload();
+	void ResolveCopyDoc();
 };
 
 class PredefinedTypes
 {
 public:
 	static TypeInfoPtr	voidType;
+	static TypeInfoPtr	nullptrType;
 	static TypeInfoPtr	boolType;
 	static TypeInfoPtr	intType;
 	static TypeInfoPtr	uint32Type;
@@ -220,6 +231,9 @@ public:
 	void Link();
 
 	tr::Enumerator<MethodInfoPtr> GetAllMethods();
+
+	void FindEnumTypeAndValue(const String& typeName, const String& memberName, TypeInfoPtr* outEnum, ConstantInfoPtr* outMember);
+	ConstantInfoPtr CreateConstantFromLiteralString(const String& valueStr);
 
 public:
 	void InitializePredefineds();

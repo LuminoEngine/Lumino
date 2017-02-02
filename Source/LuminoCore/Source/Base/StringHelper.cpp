@@ -697,41 +697,45 @@ GenericStringArray<TChar> StringTraits::Split(const GenericString<TChar>& str, c
 {
 	GenericStringArray<TChar> result;
 
-	// 最初の区切り文字を探す
-	int tokenStart = 0;
-	int delimIndex = str.IndexOf(delim, 0);
+	SplitHelper(
+		str.c_str(), str.c_str() + str.GetLength(), delim, -1, option, CaseSensitivity::CaseSensitive,
+		[&result](const TChar* begin, const TChar* end){ result.Add(GenericString<TChar>(begin, end - begin)); });
 
-	if (delimIndex >= 0) {
-		if (option == StringSplitOptions::None || delimIndex > tokenStart) {
-			result.Add(str.SubString(tokenStart, delimIndex - tokenStart));
-		}
-	}
-	else {
-		if (option == StringSplitOptions::None || tokenStart != str.GetLength()) {
-			result.Add(str.SubString(tokenStart));	// 残り全て
-		}
-		return result;
-	}
-	// 次のトークン開始位置を指す
-	tokenStart = delimIndex + 1;
+	//// 最初の区切り文字を探す
+	//int tokenStart = 0;
+	//int delimIndex = str.IndexOf(delim, 0);
 
-	while (tokenStart <= ((int)str.GetLength()))
-	{
-		delimIndex = str.IndexOf(delim, tokenStart);
-		if (delimIndex >= 0) {
-			if (option == StringSplitOptions::None || delimIndex > tokenStart) {
-				result.Add(str.SubString(tokenStart, delimIndex - tokenStart));
-			}
-		}
-		else {
-			if (option == StringSplitOptions::None || tokenStart != str.GetLength()) {
-				result.Add(str.SubString(tokenStart));	// 残り全て
-			}
-			break;
-		}
-		// 次のトークン開始位置を指す
-		tokenStart = delimIndex + 1;
-	}
+	//if (delimIndex >= 0) {
+	//	if (option == StringSplitOptions::None || delimIndex > tokenStart) {
+	//		result.Add(str.SubString(tokenStart, delimIndex - tokenStart));
+	//	}
+	//}
+	//else {
+	//	if (option == StringSplitOptions::None || tokenStart != str.GetLength()) {
+	//		result.Add(str.SubString(tokenStart));	// 残り全て
+	//	}
+	//	return result;
+	//}
+	//// 次のトークン開始位置を指す
+	//tokenStart = delimIndex + 1;
+
+	//while (tokenStart <= ((int)str.GetLength()))
+	//{
+	//	delimIndex = str.IndexOf(delim, tokenStart);
+	//	if (delimIndex >= 0) {
+	//		if (option == StringSplitOptions::None || delimIndex > tokenStart) {
+	//			result.Add(str.SubString(tokenStart, delimIndex - tokenStart));
+	//		}
+	//	}
+	//	else {
+	//		if (option == StringSplitOptions::None || tokenStart != str.GetLength()) {
+	//			result.Add(str.SubString(tokenStart));	// 残り全て
+	//		}
+	//		break;
+	//	}
+	//	// 次のトークン開始位置を指す
+	//	tokenStart = delimIndex + 1;
+	//}
 
 	return result;
 }

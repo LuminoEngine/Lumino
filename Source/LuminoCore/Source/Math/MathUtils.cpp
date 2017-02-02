@@ -68,7 +68,7 @@ void Math::SinCos(float value, float* outSin, float* outCos)
 }
 
 //------------------------------------------------------------------------------
-bool Math::EqualsFloat(float value1, float value2)
+bool Math::NearEqual(float value1, float value2)
 {
 	return ((value2 - FLT_EPSILON) < value1) && (value1 < (value2 + FLT_EPSILON));
 }

@@ -110,6 +110,7 @@
 #include "../Internal.h"
 #include <Lumino/IO/FileManager.h>
 #include <Lumino/Graphics/Texture.h>
+#include <Lumino/Mesh/SkinnedMeshModel.h>
 #include "PmxSkinnedMesh.h"
 #if defined(LN_OS_WIN32)
 #include "XFileLoader.h"
@@ -186,6 +187,15 @@ static const unsigned char toon10Data[] =
 };
 static const size_t toon10DataLen = LN_ARRAY_SIZE_OF(toon10Data);
 
+static ModelManager* g_modelManagerInstance = nullptr;
+
+//------------------------------------------------------------------------------
+ModelManager* ModelManager::GetInstance(ModelManager* priority)
+{
+	if (priority != nullptr) return priority;
+	return g_modelManagerInstance;
+}
+
 //------------------------------------------------------------------------------
 ModelManager::ModelManager()
 {
@@ -233,6 +243,24 @@ void ModelManager::Initialize(const ConfigData& configData)
 	MemoryStream data10(toon10Data, toon10DataLen);
 	m_mmdDefaultToonTexture[9] = LN_NEW Texture2D();
 	m_mmdDefaultToonTexture[9]->Initialize(&data10, TextureFormat::R8G8B8A8, false);
+
+	m_defaultMaterial = RefPtr<Material>::MakeRef();
+	m_defaultMaterial->Initialize();
+
+	m_unitBoxMeshResource = RefPtr<MeshResource>::MakeRef();
+	m_unitBoxMeshResource->Initialize(m_graphicsManager, MeshCreationFlags::None);
+	m_unitBoxMeshResource->AddBox(Vector3(1, 1, 1));
+
+	m_unitBoxMeshResourceReverseFaces = RefPtr<MeshResource>::MakeRef();
+	m_unitBoxMeshResourceReverseFaces->Initialize(m_graphicsManager, MeshCreationFlags::None);
+	m_unitBoxMeshResourceReverseFaces->AddBox(Vector3(1, 1, 1));
+	m_unitBoxMeshResourceReverseFaces->ReverseFaces();
+	
+
+	if (g_modelManagerInstance == nullptr)
+	{
+		g_modelManagerInstance = this;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -242,6 +270,23 @@ void ModelManager::Finalize()
 	{
 		tex->Release();
 	}
+
+	if (g_modelManagerInstance == this)
+	{
+		g_modelManagerInstance = nullptr;
+	}
+}
+
+//------------------------------------------------------------------------------
+Material* ModelManager::GetDefaultMaterial() const
+{
+	return m_defaultMaterial;
+}
+
+//------------------------------------------------------------------------------
+MeshResource* ModelManager::GetUnitBoxMeshResource(bool reverseFaces) const
+{
+	return (reverseFaces) ? m_unitBoxMeshResourceReverseFaces : m_unitBoxMeshResource;
 }
 
 //------------------------------------------------------------------------------
@@ -251,33 +296,48 @@ Texture2D* ModelManager::GetMMDDefaultToonTexture(int index)
 }
 
 //------------------------------------------------------------------------------
-RefPtr<MeshResource> ModelManager::CreateModelCore(const PathName& filePath)
-{
-#if defined(LN_OS_WIN32)
-	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath), false);
-
-	//PMXLoader loader;
-	//RefPtr<ModelCore> modelCore(loader.Load(this, stream, filePath.GetParent(), true));
-	
-	XFileLoader loader;
-	RefPtr<MeshResource> mesh = loader.Load(this, stream, filePath.GetParent(), true, ModelCreationFlag::None);
-
-	//modelCore->RefreshInitialValues();
-	//modelCore.SafeAddRef();
-	return mesh;
-#else
-    LN_NOTIMPLEMENTED();
-    return nullptr;
-#endif
-}
-
-//------------------------------------------------------------------------------
-RefPtr<PmxSkinnedMeshResource> ModelManager::CreateSkinnedMeshModel(const PathName& filePath)
+RefPtr<PmxSkinnedMeshResource> ModelManager::CreateSkinnedMeshResource(const PathName& filePath)
 {
 	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath), false);
 	PmxLoader loader;
 	RefPtr<PmxSkinnedMeshResource> mesh = loader.Load(this, stream, filePath.GetParent(), true, ModelCreationFlag::None);
 	mesh->RefreshInitialValues();
+	return mesh;
+}
+
+//------------------------------------------------------------------------------
+RefPtr<StaticMeshModel> ModelManager::CreateStaticMeshModel(const PathName& filePath)
+{
+
+#if defined(LN_OS_WIN32)
+	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath), false);
+
+	//PMXLoader loader;
+	//RefPtr<ModelCore> modelCore(loader.Load(this, stream, filePath.GetParent(), true));
+
+	XFileLoader loader;
+	RefPtr<StaticMeshModel> mesh = loader.Load(this, stream, filePath.GetParent(), true, ModelCreationFlag::None);
+
+	//modelCore->RefreshInitialValues();
+	//modelCore.SafeAddRef();
+	return mesh;
+#else
+	LN_NOTIMPLEMENTED();
+	return nullptr;
+#endif
+
+	//auto meshResource = CreateModelCore(filePath);
+	//auto mesh = RefPtr<StaticMeshModel>::MakeRef();
+	//mesh->Initialize(m_graphicsManager, meshResource);
+	//return mesh;
+}
+
+//------------------------------------------------------------------------------
+RefPtr<SkinnedMeshModel> ModelManager::CreateSkinnedMeshModel(const PathName& filePath)
+{
+	auto meshResource = CreateSkinnedMeshResource(filePath);
+	auto mesh = RefPtr<SkinnedMeshModel>::MakeRef();
+	mesh->Initialize(m_graphicsManager, meshResource);
 	return mesh;
 }
 

@@ -67,9 +67,10 @@
 #include "Lumino/Scene/Particle.h"
 #include "Lumino/Scene/Grid.h"
 #include "Lumino/Scene/TextBlock.h"
+#include "Lumino/Scene/StaticMesh.h"
 
-#include "Lumino/Foundation/Application.h"
-#include "Lumino/Foundation/GameScene.h"
+#include "Lumino/Framework/Application.h"
+#include "Lumino/Framework/GameScene.h"
 
 #include "Lumino/Profiler.h"
 #include "Lumino/Engine.h"

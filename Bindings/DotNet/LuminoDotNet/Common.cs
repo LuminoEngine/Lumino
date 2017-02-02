@@ -99,6 +99,20 @@ namespace Lumino
     }
 
 
+
+
+    public static class LanguageBindingHelper
+    {
+        public static int GetHandleCount()
+        {
+            int count = 0;
+            InternalAPI.LNDiag_GetHandleCount(out count);
+            return count;
+        }
+    }
+
+
+
     internal class UserData
     {
         public WeakReference RefObject;
@@ -210,8 +224,19 @@ namespace Lumino
             _userDataList[index].RefObject = null;
             _userDataListIndexStack.Push(index);
         }
+
+        // プロパティやメソッドが return するときに必要な処理のヘルパー
+        public static T ReturnObjectHelper<T>(IntPtr returnObjeHandle, ref T cacheField) where T : Object
+        {
+            if (returnObjeHandle == null)
+                cacheField = null;
+            else if (cacheField == null || cacheField.Handle != returnObjeHandle)
+                cacheField = GetWrapperObject<T>(returnObjeHandle);
+            return cacheField;
+        }
     }
-    
+
+
     public static class TestInterface
     {
         public static int GetObjectWeakReferenceCount()
@@ -226,6 +251,8 @@ namespace Lumino
         internal const CharSet DLLCharSet = API.DLLCharSet;
         internal const CallingConvention DefaultCallingConvention = API.DefaultCallingConvention;
         
+        // LNObjectList
+
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNObjectList_GetCount(IntPtr listObject, out int outCount);
         
@@ -249,6 +276,11 @@ namespace Lumino
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNObjectList_RemoveAt(IntPtr listObject, int index);
+
+        // LNDiag
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNDiag_GetHandleCount(out int outCount);
     }
 
     /// <summary>

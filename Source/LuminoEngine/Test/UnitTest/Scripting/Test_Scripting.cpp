@@ -1,6 +1,6 @@
 
 #include <TestConfig.h>
-#include <Lumino/Graphics/Mesh/Mesh.h>
+#include <Lumino/Mesh/Mesh.h>
 #include "../../Source/Scripting/ScriptingManager.h"
 #include "../../Source/Scripting/NlVariant.h"
 #include "../../Source/Scripting/NlFunctionNodes.h"

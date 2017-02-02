@@ -1,6 +1,6 @@
 ﻿
 #include "../Internal.h"
-#include <Lumino/Graphics/Mesh/Mesh.h>
+#include <Lumino/Mesh/Mesh.h>
 //#include "MME/MMERenderingPass.h"
 //#include "MME/MmdMaterial.h"	// TODO
 #include "SceneGraphManager.h"
@@ -277,7 +277,12 @@ void SceneGraph3D::Render2(DrawList* renderer, Camera* camera)
 	{
 		AdjustGridMesh(camera);
 		renderer->SetTransform(Matrix::Identity);
-		renderer->DrawMesh(m_gridPlane, 0, m_gridPlane->GetMeshResource()->GetMaterial(0));
+
+		DrawElementMetadata metadata;
+		metadata.priority = (int)DepthPriority::Foreground;
+		renderer->PushMetadata(&metadata);
+		renderer->DrawMesh(m_gridPlane, 0, m_gridPlane->GetMaterial(0));
+		renderer->PopMetadata();
 	}
 }
 
@@ -288,8 +293,14 @@ void SceneGraph3D::CreateGridContents()
 
 	// 適当な四角形メッシュ
 	m_gridPlane = RefPtr<StaticMeshModel>::MakeRef();
-	m_gridPlane->InitializeSquarePlane(gm, Vector2(1, 1), Vector3::UnitY, MeshCreationFlags::DynamicBuffers);
+	m_gridPlane->InitializeScreenPlane(gm, MeshCreationFlags::DynamicBuffers);
 	MeshResource* mesh = m_gridPlane->GetMeshResource();
+	mesh->AddSections(1);
+	mesh->GetSection(0)->MaterialIndex = 0;
+	mesh->GetSection(0)->StartIndex = 0;
+	mesh->GetSection(0)->PrimitiveNum = 2;
+	mesh->GetSection(0)->primitiveType = PrimitiveType_TriangleList;
+
 
 	// シェーダ (DrawingContext3D)
 	static const byte_t shaderCode[] =
@@ -299,7 +310,7 @@ void SceneGraph3D::CreateGridContents()
 	static const size_t shaderCodeLen = LN_ARRAY_SIZE_OF(shaderCode);
 	auto shader = RefPtr<Shader>::MakeRef();
 	shader->Initialize(gm, shaderCode, shaderCodeLen);
-	mesh->GetMaterial(0)->SetShader(shader);
+	m_gridPlane->GetMaterial(0)->SetShader(shader);
 
 	// 四方の辺に黒線を引いたテクスチャを作り、マテリアルにセットしておく
 	SizeI gridTexSize(512, 512);
@@ -315,9 +326,10 @@ void SceneGraph3D::CreateGridContents()
 		gridTex->SetPixel(0, y, Color(0, 0, 0, 0.5));
 		gridTex->SetPixel(gridTexSize.height - 1, y, Color(0, 0, 0, 0.5));
 	}
-	mesh->GetMaterial(0)->SetMaterialTexture(gridTex);
+	m_gridPlane->GetMaterial(0)->SetMaterialTexture(gridTex);
 
-	mesh->GetMaterial(0)->blendMode = BlendMode::Alpha;
+	m_gridPlane->GetMaterial(0)->blendMode = BlendMode::Alpha;
+	m_gridPlane->GetMaterial(0)->depthWriteEnabled = false;
 }
 
 //------------------------------------------------------------------------------

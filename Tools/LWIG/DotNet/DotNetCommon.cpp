@@ -71,3 +71,23 @@ String DotNetCommon::MakeXmlDocument(DocumentInfoPtr doc)
 	}
 	return buffer.ToString();
 }
+
+String DotNetCommon::MakeLiteral(ConstantInfoPtr constantInfo)
+{
+	if (constantInfo->type == PredefinedTypes::boolType)
+	{
+		if (tr::Variant::Cast<bool>(constantInfo->value))
+			return "true";
+		else
+			return "false";
+	}
+	if (constantInfo->type == PredefinedTypes::nullptrType)
+	{
+		return "null";
+	}
+	if (constantInfo->type->isEnum)
+	{
+		return constantInfo->type->name + "." + constantInfo->name;
+	}
+	return "";
+}

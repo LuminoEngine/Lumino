@@ -9,7 +9,6 @@
 // TODO: 移動
 #include <Lumino/Scene/Camera.h>
 #include <Lumino/Scene/SceneGraph.h>
-#include <Lumino/Scene/Layer.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN

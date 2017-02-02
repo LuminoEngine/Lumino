@@ -1,6 +1,5 @@
 ﻿
 #pragma once
-
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
@@ -15,9 +14,9 @@ public:
 
 public:
 	// override Exception
-	virtual const TCHAR* GetMessage() const;
 	virtual Exception* Copy() const;
 	virtual const char* what() const throw();
+	virtual const TCHAR* GetMessageOverride() const override;
 
 private:
 	String	m_message;		///< コンパイルエラーのメッセージはベースで確保しているメッセージのバッファを余裕で超えることがあるので独自確保

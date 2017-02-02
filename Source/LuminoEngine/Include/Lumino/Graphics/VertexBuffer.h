@@ -43,19 +43,20 @@ public:
 	/**
 		@brief		リソースをロックします。
 	*/
-	ByteBuffer* Lock();
+	ByteBuffer* GetMappedData();
 	//ByteBuffer* Lock(int offset, int byteCount);	// テスト用
 
 	/**
 		@brief		リソースをアンロックします。
 	*/
-	void Unlock();
+	//void Unlock();
 
 LN_INTERNAL_ACCESS:
 	VertexBuffer();
 	virtual ~VertexBuffer();
 	void Initialize(detail::GraphicsManager* manager, size_t bufferSize, const void* data, ResourceUsage usage);
-	Driver::IVertexBuffer* GetDeviceObject() const { return m_deviceObj; }
+	//Driver::IVertexBuffer* GetDeviceObject() const { return m_deviceObj; }
+	Driver::IVertexBuffer* ResolveDeviceObject();
 	void Resize(size_t bufferSize);
 
 	// GraphicsResourceObject interface
@@ -69,39 +70,40 @@ private:	// TODO
 	GraphicsResourcePool	m_pool;
 	ByteBuffer				m_lockedBuffer;
 	bool					m_initialUpdate;
+	bool					m_locked;
 };
 
-/**
-	@brief		VertexBuffer のリソースロックを補助します。
-*/
-class ScopedVertexBufferLock
-{
-public:
-	ScopedVertexBufferLock(VertexBuffer* indexBuffer)
-	{
-		m_vertexBuffer = indexBuffer;
-		m_lockedBuffer = m_vertexBuffer->Lock();
-	}
-	
-	~ScopedVertexBufferLock()
-	{
-		m_vertexBuffer->Unlock();
-	}
-
-	byte_t* GetData()
-	{
-		return m_lockedBuffer->GetData();
-	}
-
-	size_t GetSize()
-	{
-		return m_lockedBuffer->GetSize();
-	}
-
-private:
-	VertexBuffer*	m_vertexBuffer;
-	ByteBuffer*		m_lockedBuffer;
-};
+///**
+//	@brief		VertexBuffer のリソースロックを補助します。
+//*/
+//class ScopedVertexBufferLock
+//{
+//public:
+//	ScopedVertexBufferLock(VertexBuffer* indexBuffer)
+//	{
+//		m_vertexBuffer = indexBuffer;
+//		m_lockedBuffer = m_vertexBuffer->Lock();
+//	}
+//	
+//	~ScopedVertexBufferLock()
+//	{
+//		m_vertexBuffer->Unlock();
+//	}
+//
+//	byte_t* GetData()
+//	{
+//		return m_lockedBuffer->GetData();
+//	}
+//
+//	size_t GetSize()
+//	{
+//		return m_lockedBuffer->GetSize();
+//	}
+//
+//private:
+//	VertexBuffer*	m_vertexBuffer;
+//	ByteBuffer*		m_lockedBuffer;
+//};
 
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

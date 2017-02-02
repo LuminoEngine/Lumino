@@ -254,5 +254,14 @@ private:
 
 typedef tr::ReflectionObject Object;
 
+
+template<class T, typename... TArgs>
+RefPtr<T> NewObject(TArgs&&... args)
+{
+	auto ptr = RefPtr<T>(new T(), false);
+	ptr->Initialize(std::forward<TArgs>(args)...);
+	return ptr;
+}
+
 LN_NAMESPACE_END
 

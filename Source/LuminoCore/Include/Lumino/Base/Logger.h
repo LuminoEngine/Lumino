@@ -1,44 +1,104 @@
-/**
-	@file	Logger.h
-*/
+ï»¿
 #pragma once
+
+#ifdef _MSC_VER
+#define LN_FUNC_MACRO	__FUNCTION__
+#else
+#define LN_FUNC_MACRO	__PRETTY_FUNCTION__
+#endif
+
+/*
+	ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸æ–‡å­—åˆ—ã®å‹ã¯ char ã§ã‚‚ wchar_t ã§ã‚‚è‰¯ã„ã€‚
+	LN_LOG_INFO("message");
+	LN_LOG_INFO(L"message");
+	LN_LOG_INFO(_T("message"));
+
+	ãŸã ã—ã€æ›¸å¼æŒ‡å®šã§å¼•æ•°ã«æ–‡å­—åˆ—ã‚’ä½¿ã†å ´åˆã¯æ˜ç¤ºã™ã‚‹å¿…è¦ãŒã‚ã‚‹ã€‚
+	String str = "aaa";
+	LN_LOG_INFO(_T("str:{0}"), str);
+*/
+
+#define LN_LOG(severity, ...)	::ln::Logger2::WriteLine(severity, __FILE__, LN_FUNC_MACRO, __LINE__, __VA_ARGS__);
+#define LN_LOG_FATAL(...)		LN_LOG(::ln::LogLevel::Fatal, __VA_ARGS__);
+#define LN_LOG_ERROR(...)		LN_LOG(::ln::LogLevel::Error, __VA_ARGS__);
+#define LN_LOG_WARNING(...)		LN_LOG(::ln::LogLevel::Warning, __VA_ARGS__);
+#define LN_LOG_INFO(...)		LN_LOG(::ln::LogLevel::Info, __VA_ARGS__);
+#define LN_LOG_DEBUG(...)		LN_LOG(::ln::LogLevel::Debug, __VA_ARGS__);
+#define LN_LOG_VERBOSE(...)		LN_LOG(::ln::LogLevel::Verbose, __VA_ARGS__);
 
 LN_NAMESPACE_BEGIN
 
-/**
-	@brief		ƒƒOƒtƒ@ƒCƒ‹‚Ìƒ†[ƒeƒBƒŠƒeƒB‚Å‚·B
-*/
+/** ãƒ­ã‚°ã®é€šçŸ¥ãƒ¬ãƒ™ãƒ« */
+enum class LogLevel
+{
+	Fatal,
+	Error,
+	Warning,
+	Info,
+	Debug,
+	Verbose,
+};
+
+/** ãƒ­ã‚°ã®ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£ã§ã™ã€‚*/
 class Logger
 {
 public:
 
-	/** ’Ê’mƒŒƒxƒ‹ */
+	/** é€šçŸ¥ãƒ¬ãƒ™ãƒ« */
 	enum class Level
 	{
-		Info = 0,		/**< î•ñ */
-		Warning ,		/**< Œx */
-		Error,			/**< ƒGƒ‰[ */
+		Info = 0,		/**< æƒ…å ± */
+		Warning ,		/**< è­¦å‘Š */
+		Error,			/**< ã‚¨ãƒ©ãƒ¼ */
 	};
 
 public:
 
 	/**
-		@brief		ƒƒO‹@”\‚ğ‰Šú‰»‚µAƒƒOƒtƒ@ƒCƒ‹‚ğV‹Kì¬‚µ‚Ü‚·B
-		@param[in]	filePath	: ƒƒOƒtƒ@ƒCƒ‹‚ÌƒpƒX
-		@return		true=¬Œ÷ / false=¸”s
+		@brief		ãƒ­ã‚°æ©Ÿèƒ½ã‚’åˆæœŸåŒ–ã—ã€ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ–°è¦ä½œæˆã—ã¾ã™ã€‚
+		@param[in]	filePath	: ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
+		@return		true=æˆåŠŸ / false=å¤±æ•—
 	*/
 	static bool Initialize(const TCHAR* filePath) throw();
 
 	/**
-		@brief		’Ê’mƒŒƒxƒ‹‚ğw’è‚µ‚Ä‘®w’èƒƒbƒZ[ƒW‚ğ‘‚«‚İ‚Ü‚·B
-		@param[in]	level	: ’Ê’mƒŒƒxƒ‹ (w’è‚µ‚È‚¢ê‡‚Í Level_Info)
-		@details	ƒƒO‹@”\‚ª‰Šú‰»‚³‚ê‚Ä‚¢‚È‚¢ê‡‚Í‰½‚à‚µ‚Ü‚¹‚ñB
+		@brief		é€šçŸ¥ãƒ¬ãƒ™ãƒ«ã‚’æŒ‡å®šã—ã¦æ›¸å¼æŒ‡å®šãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æ›¸ãè¾¼ã¿ã¾ã™ã€‚
+		@param[in]	level	: é€šçŸ¥ãƒ¬ãƒ™ãƒ« (æŒ‡å®šã—ãªã„å ´åˆã¯ Level_Info)
+		@details	ãƒ­ã‚°æ©Ÿèƒ½ãŒåˆæœŸåŒ–ã•ã‚Œã¦ã„ãªã„å ´åˆã¯ä½•ã‚‚ã—ã¾ã›ã‚“ã€‚
 	*/
-	static void WriteLine(Level level, const char* format, ...) throw();
-	static void WriteLine(Level level, const wchar_t* format, ...) throw();		///< @overload WriteLine
-	static void WriteLine(const char* format, ...) throw();						///< @overload WriteLine
-	static void WriteLine(const wchar_t* format, ...) throw();					///< @overload WriteLine
+	static void WriteLine(Level severity, const char* format, ...) throw();
+	static void WriteLine(Level severity, const wchar_t* format, ...) throw();	/**< @overload WriteLine */
+	static void WriteLine(const char* format, ...) throw();								/**< @overload WriteLine */
+	static void WriteLine(const wchar_t* format, ...) throw();							/**< @overload WriteLine */
+};
 
+
+/** ãƒ­ã‚°ã®ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£ã§ã™ã€‚*/
+class Logger2
+{
+public:
+
+	/**
+		@brief		ãƒ­ã‚°æ©Ÿèƒ½ã‚’åˆæœŸåŒ–ã—ã€ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ–°è¦ä½œæˆã—ã¾ã™ã€‚
+		@param[in]	filePath	: ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
+		@return		true=æˆåŠŸ / false=å¤±æ•—
+	*/
+	static void Initialize(const StringRef& filePath);
+
+	/**
+		@brief		é€šçŸ¥ãƒ¬ãƒ™ãƒ«ã‚’æŒ‡å®šã—ã¦æ›¸å¼æŒ‡å®šãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æ›¸ãè¾¼ã¿ã¾ã™ã€‚
+		@param[in]	level	: é€šçŸ¥ãƒ¬ãƒ™ãƒ« (æŒ‡å®šã—ãªã„å ´åˆã¯ Level_Info)
+		@details	ãƒ­ã‚°æ©Ÿèƒ½ãŒåˆæœŸåŒ–ã•ã‚Œã¦ã„ãªã„å ´åˆã¯ä½•ã‚‚ã—ã¾ã›ã‚“ã€‚
+	*/
+
+
+	template<typename TChar, typename... TArgs>
+	static void WriteLine(LogLevel level, const char* file, const char* func, int line, const TChar* format, const TArgs&... args) { WriteLineInternal(level, file, func, line, GenericString<TChar>::Format(format, args...)); }
+
+private:
+	static void WriteLineInternal(LogLevel level, const char* file, const char* func, int line, const StringA& message);
+	static void WriteLineInternal(LogLevel level, const char* file, const char* func, int line, const StringW& message);
+	static const char* GetLogLevelString(LogLevel level);
 };
 
 LN_NAMESPACE_END

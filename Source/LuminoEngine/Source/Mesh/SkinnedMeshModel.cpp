@@ -1,13 +1,13 @@
 ﻿
 #include "../Internal.h"
-#include <Lumino/Graphics/Mesh/Mesh.h>
-#include <Lumino/Graphics/Mesh/SkinnedMeshModel.h>
+#include <Lumino/Mesh/Mesh.h>
+#include <Lumino/Mesh/SkinnedMeshModel.h>
 #include <Lumino/Physics/Collider.h>	// TODO: MMD でのみ必要
 #include <Lumino/Physics/RigidBody.h>	// TODO: MMD でのみ必要
 #include <Lumino/Physics/Joint.h>	// TODO: MMD でのみ必要
-#include "../GraphicsManager.h"
-#include "../../Physics/PhysicsManager.h"
-#include "../../Modeling/PmxSkinnedMesh.h"
+#include "../Graphics/GraphicsManager.h"
+#include "../Physics/PhysicsManager.h"
+#include "PmxSkinnedMesh.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -211,6 +211,17 @@ void SkinnedMeshModel::Initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 	// メッシュ(バッファ類)は共有する
 	m_meshResource = sharingMesh;
 
+	//---------------------------------------------------------
+	// マテリアルのインスタンス化
+	{
+		int count = sharingMesh->materials.GetCount();
+		m_mesh->m_materials = RefPtr<MaterialList>::MakeRef();
+		m_mesh->m_materials->Resize(count);
+		for (int i = 0; i < count; ++i)
+		{
+			m_mesh->m_materials->SetAt(i, sharingMesh->materials.GetAt(i)->MakeCommonMaterial());
+		}
+	}
 
 	//---------------------------------------------------------
 	// Bone のインスタンス化
@@ -554,7 +565,7 @@ const String& SkinnedMeshBone::GetAnimationTargetName() const
 void SkinnedMeshBone::SetAnimationTargetValue(ValueType type, const void* value)
 {
 	LN_CHECK_ARG(type == ValueType_SQTTransform);
-	m_localTransform = *((SQTTransform*)value);
+	m_localTransform = *((AttitudeTransform*)value);
 }
 
 

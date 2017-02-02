@@ -51,7 +51,7 @@ TileMapRenderer::TileMapRenderer(detail::GraphicsManager* manager)
 	//, m_indexBuffer(nullptr)
 {
 	int tileCount = 20 * 20;
-	m_mesh = Object::MakeRef<MeshResource>(manager, ResourceUsage::Dynamic);
+	m_mesh = Object::MakeRef<MeshResource>(manager, MeshCreationFlags::DynamicBuffers);
 	m_mesh->ResizeVertexBuffer(tileCount * 4);
 	m_mesh->ResizeIndexBuffer(tileCount * 6);
 	m_maxTileCount = 100 * 100;
@@ -342,6 +342,7 @@ LOOP_EXIT:
 	metadata.priority = priority;
 	m_context->PushMetadata(&metadata);
 	m_context->DrawMesh(m_mesh, 0, tileSet->GetMaterial());
+	m_context->PopMetadata();
 	//printf("%p\n", m_shader.pass);
 	//m_renderingContext->SetVertexBuffer(nullptr);
 	//m_renderingContext->SetIndexBuffer(nullptr);

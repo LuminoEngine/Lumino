@@ -88,16 +88,6 @@ void PmxSkinnedMeshResource::RefreshInitialValues()
 	{
 		b->RefreshInitialValues();
 	}
-
-	// マテリアルはコピーする
-	int count = materials.GetCount();
-	m_materials = RefPtr<MaterialList>::MakeRef();
-	m_materials->Resize(count);
-	for (int i = 0; i < count; ++i)
-	{
-		m_materials->SetAt(i, materials.GetAt(i)->MakeCommonMaterial());
-	}
-
 }
 
 LN_NAMESPACE_END

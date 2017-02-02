@@ -291,7 +291,7 @@ public:
 			}
 			else
 			{
-				rect.x = basePanel->GetLayoutGridColumnDefinition(colIdx)->actualOffset;
+				rect.x += basePanel->GetLayoutGridColumnDefinition(colIdx)->actualOffset;
 				for (int iCol = 0; iCol < colSpan; ++iCol)
 				{
 					rect.width += basePanel->GetLayoutGridColumnDefinition(colIdx + iCol)->actualSize;
@@ -303,7 +303,7 @@ public:
 			}
 			else
 			{
-				rect.y = basePanel->GetLayoutGridRowDefinition(rowIdx)->actualOffset;
+				rect.y += basePanel->GetLayoutGridRowDefinition(rowIdx)->actualOffset;
 				for (int iRow = 0; iRow < rowSpan; ++iRow)
 				{
 					rect.height += basePanel->GetLayoutGridRowDefinition(rowIdx + iRow)->actualSize;

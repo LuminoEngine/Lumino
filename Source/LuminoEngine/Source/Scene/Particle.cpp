@@ -7,7 +7,7 @@
 */
 #include "Internal.h"
 #include <math.h>
-#include <Lumino/Graphics/Mesh/Mesh.h>
+#include <Lumino/Mesh/Mesh.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Camera.h>
 #include <Lumino/Scene/Particle.h>
@@ -225,7 +225,7 @@ void SpriteParticleModel::Commit()
 	//m_maxParticleCount = (int)ceil(m_maxLifeTime * (float)m_spawnRate);
 
 	m_mesh = RefPtr<MeshResource>::MakeRef();
-	m_mesh->Initialize(m_manager, ResourceUsage::Dynamic);
+	m_mesh->Initialize(m_manager, MeshCreationFlags::DynamicBuffers);
 	m_mesh->ResizeVertexBuffer(m_maxParticles * 4);
 	m_mesh->ResizeIndexBuffer(m_maxParticles * 6);
 }

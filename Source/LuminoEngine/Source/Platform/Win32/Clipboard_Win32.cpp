@@ -1,5 +1,5 @@
 ﻿
-#include "../../Internal.h"
+#include "../Internal.h"
 #include <Lumino/Text/Encoding.h>
 #include <Lumino/Platform/Clipboard.h>
 #include <Lumino/Platform/PlatformSupport.h>

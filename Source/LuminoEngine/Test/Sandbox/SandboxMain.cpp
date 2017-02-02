@@ -1,11 +1,11 @@
 ﻿
 #include <LuminoEngine.h>
-#include <Lumino/Graphics/Mesh/GizmoModel.h>
+#include <Lumino/Mesh/GizmoModel.h>
 #include <Lumino/Scene/MeshModelObject.h>
 #include <Lumino/Scene/StaticMesh.h>
 #include <Lumino/Scene/Light.h>
-#include <Lumino/Foundation/Application.h>
-#include <Lumino/Foundation/GameScene.h>
+#include <Lumino/Framework/Application.h>
+#include <Lumino/Framework/GameScene.h>
 #include <Lumino/UI/UIFrameWindow.h>
 #include <Lumino/UI/UIListBox.h>
 #include <Lumino/Testing/TestHelper.h>
@@ -484,31 +484,57 @@ void Main()
 	particle2->SetBlendMode(BlendMode::Add);
 #endif
 
-	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
-	auto listBox = tr::UIListBox::Create();
-	listBox->AddTextItem(_T("test"));
-	listBox->AddTextItem(_T("fff"));
-	uiRoot->SetContent(listBox);
+	//auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+	//auto listBox = tr::UIListBox::Create();
+	//listBox->AddTextItem(_T("test"));
+	//listBox->AddTextItem(_T("fff"));
+	//uiRoot->SetContent(listBox);
 
+	//GameAudio::PlayBGM("D:/GameProjects/Materials/BGM/Windsphere/call.mp3");
+	
 
-
-	//auto gizmo = detail::GizmoModel::Create();
 
 	auto gizmo = static_cast<CameraViewportLayer*>(Engine::GetDefault3DLayer())->CreateGizmo();
 
-	auto sp = Sprite3D::Create(2, 2, Texture2D::Create(_T("D:/GameProjects/Chronicles/110220c_as019.jpg")));
-	gizmo->Setup(Matrix::Identity, sp->GetTransform());//Matrix::MakeTranslation(1, 0, 0));
-	
-	
-	gizmo->AddOnTargetTransformChanged([sp](tr::GizmoModel* g)
-	{
-		sp->SetTransform(g->GetTargetTransform());
-	});
-	gizmo->AddOnSubmitEditing([sp](tr::GizmoModel* g)
-	{
-		//sp->SetTransform(g->GetTargetTransform());
-	});
+	//auto sp = Sprite3D::Create(2, 2, Texture2D::Create(_T("D:/GameProjects/Chronicles/110220c_as019.jpg")));
+	//sp->SetTone(ToneF(0, 0, 1, 1.0));
+	//gizmo->Setup(Matrix::Identity, sp->GetTransform());//Matrix::MakeTranslation(1, 0, 0));
+	//
+	//
+	//gizmo->AddOnTargetTransformChanged([sp](tr::GizmoModel* g)
+	//{
+	//	sp->SetTransform(g->GetTargetTransform());
+	//});
+	//gizmo->AddOnSubmitEditing([sp](tr::GizmoModel* g)
+	//{
+	//	//sp->SetTransform(g->GetTargetTransform());
+	//});
 
+
+	//auto tex1 = Texture2D::Create(32, 32);
+	//tex1->Clear(Color32::Red);
+	//auto box1 = StaticMesh::CreateBox(Vector3(5, 5, 5));
+	auto box1 = StaticMesh::CreateTeapot(MeshCreationFlags::None);
+	//box1->GetMaterials()->GetAt(0)->SetMaterialTexture(tex1);
+	////box1->SetTone(ToneF(0, 0, 1, 1.0));
+	gizmo->Setup(Matrix::Identity, box1->GetTransform());//Matrix::MakeTranslation(1, 0, 0));
+
+	//auto mesh3 = StaticMesh::CreatePlane(Vector2(3, 3), 1, 1);
+	//mesh3->SetPosition(-2, 0, 0);
+
+	List<BoxMeshPtr> boxList;
+	for (int z = 0; z < 10; z++)
+	{
+		for (int y = 0; y < 10; y++)
+		{
+			for (int x = 0; x < 10; x++)
+			{
+				auto mesh2 = BoxMesh::Create();
+				mesh2->SetPosition(x * 2, y * 2, z * 2);
+				boxList.Add(mesh2);
+			}
+		}
+	}
 
 	while (!Engine::IsEndRequested())
 	{
@@ -526,7 +552,7 @@ void Main()
 
 		if (Input::IsTriggered(InputButtons::Ok))
 		{
-			gizmo->SetGizmoType(tr::GizmoType::Translation);
+			gizmo->SetGizmoType(tr::GizmoType::Scaling);
 		}
 		if (Input::IsTriggered(InputButtons::Cancel))
 		{

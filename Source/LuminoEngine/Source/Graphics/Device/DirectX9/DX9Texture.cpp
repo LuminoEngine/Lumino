@@ -1,5 +1,5 @@
 ﻿
-#include "../../../Internal.h"
+#include "../../Internal.h"
 #include <Lumino/Graphics/Utils.h>
 #include "DX9Module.h"
 #include "DX9GraphicsDevice.h"

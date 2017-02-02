@@ -8,6 +8,7 @@ class FileManager;
 class MeshResource;
 class StaticMeshModel;
 class PmxSkinnedMeshResource;
+class SkinnedMeshModel;
 namespace detail { class PhysicsManager; }
 
 namespace detail
@@ -28,6 +29,8 @@ public:
 	};
 
 public:
+	static ModelManager* GetInstance(ModelManager* priority = nullptr);
+
 	ModelManager();
 	virtual ~ModelManager();
 
@@ -39,16 +42,26 @@ public:
 
 	RefPtr<Texture> CreateTexture(const PathName& parentDir, const StringRef& filePath, ModelCreationFlag flags);
 	
-	RefPtr<MeshResource> CreateModelCore(const PathName& filePath);
-	RefPtr<PmxSkinnedMeshResource> CreateSkinnedMeshModel(const PathName& filePath);
-	//Animation::AnimationClip* CreateMotion(const PathName& filePath);
+
+	RefPtr<StaticMeshModel> CreateStaticMeshModel(const PathName& filePath);
+	RefPtr<SkinnedMeshModel> CreateSkinnedMeshModel(const PathName& filePath);
+
+	Material* GetDefaultMaterial() const;
+	MeshResource* GetUnitBoxMeshResource(bool reverseFaces) const;
 
 private:
+	RefPtr<PmxSkinnedMeshResource> CreateSkinnedMeshResource(const PathName& filePath);
+	//Animation::AnimationClip* CreateMotion(const PathName& filePath);
+
 	FileManager*			m_fileManager;
 	PhysicsManager*		m_physicsManager;
 	GraphicsManager*	m_graphicsManager;
 	//RefPtr<CacheManager>				m_cacheManager;
 	std::array<Texture2D*, 10>	m_mmdDefaultToonTexture;
+
+	RefPtr<Material>		m_defaultMaterial;
+	RefPtr<MeshResource>	m_unitBoxMeshResource;
+	RefPtr<MeshResource>	m_unitBoxMeshResourceReverseFaces;
 };
 
 } // namespace detail

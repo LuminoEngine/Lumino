@@ -5,7 +5,7 @@
 	[ ] •t—^
 */
 #pragma once
-#include <Lumino/Graphics/Mesh/Mesh.h>
+#include <Lumino/Mesh/Mesh.h>
 
 LN_NAMESPACE_BEGIN
 class PmxSkinnedMeshResource;

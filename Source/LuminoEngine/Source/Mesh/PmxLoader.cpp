@@ -50,9 +50,8 @@ RefPtr<PmxSkinnedMeshResource> PmxLoader::Load(detail::ModelManager* manager, St
 
 	BinaryReader reader(stream);
 	m_modelCore = RefPtr<PmxSkinnedMeshResource>::MakeRef();
-	m_modelCore->Initialize(manager->GetGraphicsManager(), ResourceUsage::Static);
+	m_modelCore->Initialize(manager->GetGraphicsManager(), MeshCreationFlags::None);
 	m_modelCore->Format = ModelFormat_PMX;
-	m_modelCore->BeginCreating(MeshCreationFlags::None);	// TODO:
 	
 	//-----------------------------------------------------
 	// ヘッダ
@@ -113,7 +112,6 @@ RefPtr<PmxSkinnedMeshResource> PmxLoader::Load(detail::ModelManager* manager, St
 		CalcSDEFCorrection();
 	}
 
-	m_modelCore->EndCreating();
 	return m_modelCore;
 }
 
@@ -789,9 +787,9 @@ void PmxLoader::LoadJoints(BinaryReader* reader)
 		reader->Read(&joint->SpringPositionStiffness, sizeof(Vector3));
 		reader->Read(&joint->SpringRotationStiffness, sizeof(Vector3));
 
-		joint->SpringRotationStiffness.x = Math::ToRadians(joint->SpringRotationStiffness.x);
-		joint->SpringRotationStiffness.y = Math::ToRadians(joint->SpringRotationStiffness.y);
-		joint->SpringRotationStiffness.z = Math::ToRadians(joint->SpringRotationStiffness.z);
+		joint->SpringRotationStiffness.x = Math::DegreesToRadians(joint->SpringRotationStiffness.x);
+		joint->SpringRotationStiffness.y = Math::DegreesToRadians(joint->SpringRotationStiffness.y);
+		joint->SpringRotationStiffness.z = Math::DegreesToRadians(joint->SpringRotationStiffness.z);
 	}
 }
 

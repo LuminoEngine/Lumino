@@ -166,8 +166,8 @@ void Animator::AdvanceTime(double elapsedTime)
 		// TODO: 暫定。ちゃんと Variant っぽくして初期化しよう
 		if (e.Type == ValueType_SQTTransform)
 		{
-			SQTTransform* t = (SQTTransform*)e.Buffer;
-			*t = SQTTransform::Identity;
+			AttitudeTransform* t = (AttitudeTransform*)e.Buffer;
+			*t = AttitudeTransform::Identity;
 		}
 	}
 

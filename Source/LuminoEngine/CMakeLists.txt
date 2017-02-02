@@ -253,6 +253,7 @@ set(LN_SOURCES_Graphics_Device
 	Source/Graphics/Device/GraphicsDeviceBase.h
 	Source/Graphics/Device/ShaderVariableBase.cpp
 	Source/Graphics/Device/ShaderVariableBase.h
+	Source/Graphics/Device/OpenGL/GLCommon.h
 	Source/Graphics/Device/OpenGL/GLGraphicsDevice.cpp
 	Source/Graphics/Device/OpenGL/GLGraphicsDevice.h
 	Source/Graphics/Device/OpenGL/GLIndexBuffer.cpp
@@ -288,15 +289,6 @@ set(LN_SOURCES_Graphics_Text
 	Source/Graphics/Text/TextRenderer.cpp
 	Source/Graphics/Text/TextRenderer.h
 )
-set(LN_SOURCES_Graphics_Mesh
-	Include/Lumino/Graphics/Mesh/GizmoModel.h
-	Include/Lumino/Graphics/Mesh/Mesh.h
-	Include/Lumino/Graphics/Mesh/SkinnedMeshModel.h
-	Source/Graphics/Mesh/GizmoModel.cpp
-	Source/Graphics/Mesh/Mesh.cpp
-	Source/Graphics/Mesh/MeshFactory.h
-	Source/Graphics/Mesh/SkinnedMeshModel.cpp
-)
 
 set(LN_SOURCES_Effect
 	Include/Lumino/Effect/Common.h
@@ -322,14 +314,22 @@ set(LN_SOURCES_TileMap
 	Source/TileMap/TileSet.cpp
 )
 
-set(LN_SOURCES_Modeling
-	Source/Modeling/Common.h
-	Source/Modeling/ModelManager.cpp
-	Source/Modeling/ModelManager.h
-	Source/Modeling/PmxLoader.cpp
-	Source/Modeling/PmxLoader.h
-	Source/Modeling/PmxSkinnedMesh.cpp
-	Source/Modeling/PmxSkinnedMesh.h
+set(LN_SOURCES_Mesh
+	Include/Lumino/Mesh/GizmoModel.h
+	Include/Lumino/Mesh/Mesh.h
+	Include/Lumino/Mesh/SkinnedMeshModel.h
+	Source/Mesh/Common.h
+	Source/Mesh/ModelManager.cpp
+	Source/Mesh/ModelManager.h
+	Source/Mesh/PmxLoader.cpp
+	Source/Mesh/PmxLoader.h
+	Source/Mesh/PmxSkinnedMesh.cpp
+	Source/Mesh/PmxSkinnedMesh.h
+	Source/Mesh/GizmoModel.cpp
+	Source/Mesh/Mesh.cpp
+	Source/Mesh/MeshFactory.h
+	Source/Mesh/MeshFactory.cpp
+	Source/Mesh/SkinnedMeshModel.cpp
 )
 
 set(LN_SOURCES_Scene
@@ -339,7 +339,6 @@ set(LN_SOURCES_Scene
 	Include/Lumino/Scene/EffectNode.h
 	Include/Lumino/Scene/GpuParticle.h
 	Include/Lumino/Scene/Grid.h
-	Include/Lumino/Scene/Layer.h
 	Include/Lumino/Scene/Light.h
 	Include/Lumino/Scene/MeshModelObject.h
 #	Include/Lumino/Scene/MMDSceneGraph.h
@@ -362,9 +361,6 @@ set(LN_SOURCES_Scene
 	Source/Scene/EffectNode.cpp
 	Source/Scene/GpuParticle.cpp
 	Source/Scene/Grid.cpp
-	Source/Scene/InfomationRenderingPass.cpp
-	Source/Scene/InfomationRenderingPass.h
-	Source/Scene/Layer.cpp
 	Source/Scene/Light.cpp
 	Source/Scene/MeshModelObject.cpp
 #	Source/Scene/MMDSceneGraph.cpp
@@ -530,14 +526,14 @@ set(LN_SOURCES_Engine
 	Source/Version.cpp
 )
 
-set(LN_SOURCES_Foundation
-	Include/Lumino/Foundation/Application.h
-	Include/Lumino/Foundation/GameScene.h
-	Source/Foundation/Application.cpp
-	Source/Foundation/EntryPoint.cpp
-	Source/Foundation/EntryPoint.h
-	Source/Foundation/GameSceneManager.cpp
-	Source/Foundation/GameSceneManager.h
+set(LN_SOURCES_Framework
+	Include/Lumino/Framework/Application.h
+	Include/Lumino/Framework/GameScene.h
+	Source/Framework/Application.cpp
+	Source/Framework/EntryPoint.cpp
+	Source/Framework/EntryPoint.h
+	Source/Framework/GameSceneManager.cpp
+	Source/Framework/GameSceneManager.h
 )
 
 #--------------------------------------
@@ -592,10 +588,10 @@ if (WIN32)
 		Source/Graphics/Device/OpenGL/WGLGraphicsDevice.cpp
 		Source/Graphics/Device/OpenGL/WGLGraphicsDevice.h
 	)
-	set(LN_SOURCES_Modeling
- 		${LN_SOURCES_Modeling}
-		Source/Modeling/XFileLoader.cpp
-		Source/Modeling/XFileLoader.h
+	set(LN_SOURCES_Mesh
+ 		${LN_SOURCES_Mesh}
+		Source/Mesh/XFileLoader.cpp
+		Source/Mesh/XFileLoader.h
 	)
 	set(LN_SOURCES_Audio
  		${LN_SOURCES_Audio}
@@ -615,9 +611,9 @@ if (WIN32)
 		Source/Audio/DirectMusic/DirectMusicAudioPlayer.h
 	)
 
-	set(LN_SOURCES_Foundation
-		${LN_SOURCES_Foundation}
-		Source/Foundation/Main_Win32.cpp
+	set(LN_SOURCES_Framework
+		${LN_SOURCES_Framework}
+		Source/Framework/Main_Win32.cpp
 	)
 
 
@@ -639,9 +635,9 @@ elseif (APPLE)
 		Source/Graphics/Device/OpenGL/NSGLGraphicsDevice.mm
 		Source/Graphics/Device/OpenGL/NSGLGraphicsDevice.h
 	)	
-	set(LN_SOURCES_Foundation
-		${LN_SOURCES_Foundation}
-		Source/Foundation/Main_Mac.cpp
+	set(LN_SOURCES_Framework
+		${LN_SOURCES_Framework}
+		Source/Framework/Main_Mac.cpp
 	)
 
 
@@ -692,10 +688,9 @@ source_group("Physics"			FILES ${LN_SOURCES_Physics})
 source_group("Graphics"			FILES ${LN_SOURCES_Graphics})
 source_group("Graphics_Device"	FILES ${LN_SOURCES_Graphics_Device})
 source_group("Graphics_Text"	FILES ${LN_SOURCES_Graphics_Text})
-source_group("Graphics_Mesh"	FILES ${LN_SOURCES_Graphics_Mesh})
 source_group("Effect"			FILES ${LN_SOURCES_Effect})
 source_group("Tilemap"			FILES ${LN_SOURCES_TileMap})
-source_group("Modeling"			FILES ${LN_SOURCES_Modeling})
+source_group("Mesh"				FILES ${LN_SOURCES_Mesh})
 source_group("Scene"			FILES ${LN_SOURCES_Scene})
 source_group("Scene_MMD"		FILES ${LN_SOURCES_Scene_MMD})
 source_group("UI"				FILES ${LN_SOURCES_UI})
@@ -703,7 +698,7 @@ source_group("Documents"		FILES ${LN_SOURCES_Documents})
 source_group("Game"				FILES ${LN_SOURCES_Game})
 source_group("Scripting"		FILES ${LN_SOURCES_Scripting})
 source_group("Engine"			FILES ${LN_SOURCES_Engine})
-source_group("Foundation"		FILES ${LN_SOURCES_Foundation})
+source_group("Framework"		FILES ${LN_SOURCES_Framework})
 
 set(LN_SOURCES
 	${LN_SOURCES}
@@ -717,10 +712,9 @@ set(LN_SOURCES
 	${LN_SOURCES_Graphics}
 	${LN_SOURCES_Graphics_Device}
 	${LN_SOURCES_Graphics_Text}
-	${LN_SOURCES_Graphics_Mesh}
 	${LN_SOURCES_Effect}
 	${LN_SOURCES_TileMap}
-	${LN_SOURCES_Modeling}
+	${LN_SOURCES_Mesh}
 	${LN_SOURCES_Scene}
 #	${LN_SOURCES_Scene_MMD}
 	${LN_SOURCES_UI}
@@ -728,6 +722,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Game}
 	${LN_SOURCES_Scripting}
 	${LN_SOURCES_Engine}
+	${LN_SOURCES_Framework}
 	${LN_SOURCES_C_API}
 )
 
@@ -852,11 +847,6 @@ set_target_properties(LuminoEngine PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB
 target_include_directories(LuminoEngine PUBLIC ${LN_DEPENDENCIES_INCLUDES})
 target_link_libraries(LuminoEngine ${LN_LINK_LIBS} ${LN_DEPENDENCIES_LIBRARIES})
 ln_add_pch(LuminoEngine "LuminoEngine.PCH.h" "Source/LuminoEngine.PCH.cpp")
-
-# Foundation
-add_library(LuminoFoundation STATIC ${LN_SOURCES_Foundation})
-set_target_properties(LuminoFoundation PROPERTIES OUTPUT_NAME "LuminoFoundation${LN_LIB_POSTFIX}")
-set_target_properties(LuminoFoundation PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
 
 # Unit test.
 add_subdirectory(Test)

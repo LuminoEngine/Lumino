@@ -2,7 +2,7 @@
  *	EXT とか ARB とか
  *	https://shikihuiku.wordpress.com/2013/10/08/hardtounderstandoglext/
  */
-#include "../../../Internal.h"
+#include "../../Internal.h"
 #include <Lumino/Graphics/Utils.h>
 #include <Lumino/Platform/PlatformWindow.h>
 #include "GLSwapChain.h"

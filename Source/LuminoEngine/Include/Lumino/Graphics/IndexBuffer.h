@@ -44,12 +44,12 @@ public:
 	/**
 		@brief		リソースをロックします。
 	*/
-	ByteBuffer* Lock();
+	ByteBuffer* GetMappedData();
 
 	/**
 		@brief		リソースをアンロックします。
 	*/
-	void Unlock();
+	//void Unlock();
 
 	/*
 		@brief		インデックスデータを更新します。
@@ -64,7 +64,9 @@ LN_INTERNAL_ACCESS:
 	virtual ~IndexBuffer();
 	void Initialize(detail::GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage);
 
-	Driver::IIndexBuffer* GetDeviceObject() const;// { return m_deviceObj; }
+	//Driver::IIndexBuffer* GetDeviceObject() const;// { return m_deviceObj; }
+
+	Driver::IIndexBuffer* ResolveDeviceObject();
 	int GetIndexCount() const { return m_indexCount; }
 	IndexBufferFormat GetIndexFormat() const { return m_format; }
 	void Resize(int indexCount, IndexBufferFormat format);
@@ -82,40 +84,40 @@ private:
 	//ByteBuffer				m_data;
 	ByteBuffer				m_lockedBuffer;
 	bool					m_initialUpdate;
-	friend class Helper;
+	bool					m_locked;
 };
 
 /**
 	@brief		IndexBuffer のリソースロックを補助します。
 */
-class ScopedIndexBufferLock
-{
-public:
-	ScopedIndexBufferLock(IndexBuffer* indexBuffer)
-	{
-		m_indexBuffer = indexBuffer;
-		m_lockedBuffer = m_indexBuffer->Lock();
-	}
-	
-	~ScopedIndexBufferLock()
-	{
-		m_indexBuffer->Unlock();
-	}
-
-	byte_t* GetData()
-	{
-		return m_lockedBuffer->GetData();
-	}
-
-	size_t GetSize()
-	{
-		return m_lockedBuffer->GetSize();
-	}
-
-private:
-	IndexBuffer*	m_indexBuffer;
-	ByteBuffer*		m_lockedBuffer;
-};
+//class ScopedIndexBufferLock
+//{
+//public:
+//	ScopedIndexBufferLock(IndexBuffer* indexBuffer)
+//	{
+//		m_indexBuffer = indexBuffer;
+//		m_lockedBuffer = m_indexBuffer->Lock();
+//	}
+//	
+//	~ScopedIndexBufferLock()
+//	{
+//		m_indexBuffer->Unlock();
+//	}
+//
+//	byte_t* GetData()
+//	{
+//		return m_lockedBuffer->GetData();
+//	}
+//
+//	size_t GetSize()
+//	{
+//		return m_lockedBuffer->GetSize();
+//	}
+//
+//private:
+//	IndexBuffer*	m_indexBuffer;
+//	ByteBuffer*		m_lockedBuffer;
+//};
 
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

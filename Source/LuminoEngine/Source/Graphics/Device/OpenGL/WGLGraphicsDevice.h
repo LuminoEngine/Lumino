@@ -1,5 +1,6 @@
 ﻿
 #pragma once 
+#include "GLCommon.h"
 #include "GLGraphicsDevice.h"
 #include "GLSwapChain.h"
 

@@ -3,6 +3,7 @@
 #include <Lumino/Platform/PlatformWindow.h>
 #include "../GraphicsDriverInterface.h"
 #include "../GraphicsDeviceBase.h"
+#include "GLCommon.h"
 #include "GLRenderer.h"
 
 LN_NAMESPACE_BEGIN

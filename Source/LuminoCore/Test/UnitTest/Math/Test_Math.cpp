@@ -10,13 +10,13 @@ protected:
 //------------------------------------------------------------------------------
 TEST_F(Test_Math, Basic)
 {
-	// toRadians
+	// DegreesToRadians
 	{
-		ASSERT_FLOAT_EQ(Math::PI, Math::ToRadians(180.0f));
+		ASSERT_FLOAT_EQ(Math::PI, Math::DegreesToRadians(180.0f));
 	}
-	// toDegrees
+	// RadiansToDegrees
 	{
-		ASSERT_FLOAT_EQ(180.0f, Math::ToDegrees(Math::PI));
+		ASSERT_FLOAT_EQ(180.0f, Math::RadiansToDegrees(Math::PI));
 	}
 	// clamp
 	{
@@ -40,11 +40,11 @@ TEST_F(Test_Math, Basic)
 		ASSERT_EQ(256, Math::NextPow2(129));
 		ASSERT_EQ(1024, Math::NextPow2(900));
 	}
-	// equalsFloat
+	// NearEqual
 	{
-		ASSERT_EQ(true, Math::EqualsFloat(1.0, 1.0));
-		ASSERT_EQ(false, Math::EqualsFloat(1.0, 1.0 + FLT_EPSILON));
-		ASSERT_EQ(false, Math::EqualsFloat(1.0, 1.0 - FLT_EPSILON));
+		ASSERT_EQ(true, Math::NearEqual(1.0, 1.0));
+		ASSERT_EQ(false, Math::NearEqual(1.0, 1.0 + FLT_EPSILON));
+		ASSERT_EQ(false, Math::NearEqual(1.0, 1.0 - FLT_EPSILON));
 	}
 	// isnan/isinf (float)
 	{

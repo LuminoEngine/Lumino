@@ -206,6 +206,7 @@ protected:
 	void SetMessage(const TCHAR* caption, const wchar_t* format, va_list args);
 	void SetMessage(const TCHAR* caption, const char* format, ...);
 	void SetMessage(const TCHAR* caption, const wchar_t* format, ...);
+	virtual const TCHAR* GetMessageOverride() const;
 
 private:
 	void AppendMessage(const char* message, size_t len);

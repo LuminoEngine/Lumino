@@ -12,7 +12,7 @@
 	[OpenGL] FrameBufferとRenderBufferについてメモ
 	http://qiita.com/edo_m18/items/95483cabf50494f53bb5
  */
-#include "../../../Internal.h"
+#include "../../Internal.h"
 #include <Lumino/Platform/PlatformWindow.h>
 #include <Lumino/Platform/PlatformSupport.h>
 #include "WGLGraphicsDevice.h"

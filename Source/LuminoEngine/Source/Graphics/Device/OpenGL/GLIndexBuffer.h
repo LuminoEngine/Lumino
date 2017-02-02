@@ -1,6 +1,7 @@
 ﻿
 #pragma once 
 #include "../GraphicsDriverInterface.h"
+#include "GLCommon.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN

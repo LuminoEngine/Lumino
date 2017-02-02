@@ -95,7 +95,7 @@ Exception::~Exception() throw()
 #pragma push_macro("GetMessage")
 #undef GetMessage
 const TCHAR* Exception::GetMessage() const { return LN_AFX_FUNCNAME(GetMessage)(); }
-const TCHAR* Exception::LN_AFX_FUNCNAME(GetMessage)() const { return m_message; }
+const TCHAR* Exception::LN_AFX_FUNCNAME(GetMessage)() const { return GetMessageOverride(); }
 #pragma pop_macro("GetMessage")
 
 //------------------------------------------------------------------------------
@@ -239,6 +239,13 @@ void Exception::SetMessage(const TCHAR* caption, const wchar_t* format, ...)
 	va_start(args, format);
 	SetMessage(caption, format, args);
 	va_end(args);
+}
+
+//------------------------------------------------------------------------------
+// GetMessage() を直接オーバーライドすると、windows.h と使うときに A/W を考慮せねばならず煩雑になる。それを回避するために用意した。
+const TCHAR* Exception::GetMessageOverride() const
+{
+	return m_message;
 }
 
 //------------------------------------------------------------------------------

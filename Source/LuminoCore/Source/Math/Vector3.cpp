@@ -135,6 +135,12 @@ Vector3 Vector3::SafeNormalize(const Vector3& vec, const Vector3& alt)
 }
 
 //------------------------------------------------------------------------------
+Vector3 Vector3::Replicate(float value)
+{
+	return Vector3(value, value, value);
+}
+
+//------------------------------------------------------------------------------
 float Vector3::Distance(const Vector3& vec1, const Vector3& vec2)
 {
 	float x = vec1.x - vec2.x;
@@ -343,6 +349,15 @@ Vector3 Vector3::Unproject(const Vector3& point, const Matrix& worldViewProj, fl
 	v.z = (point.z - minZ) / (maxZ - minZ);
 
 	return Vector3::TransformCoord(v, inv);
+}
+
+//------------------------------------------------------------------------------
+bool Vector3::NearEqual(const Vector3& value1, const Vector3& value2)
+{
+	return
+		Math::NearEqual(value1.x, value2.x) &&
+		Math::NearEqual(value1.y, value2.y) &&
+		Math::NearEqual(value1.z, value2.z);
 }
 
 LN_NAMESPACE_END

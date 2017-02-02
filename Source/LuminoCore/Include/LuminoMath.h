@@ -9,7 +9,7 @@
 #include "Lumino/Math/Vector4.h"
 #include "Lumino/Math/Matrix.h"
 #include "Lumino/Math/Quaternion.h"
-#include "Lumino/Math/SQTTransform.h"
+#include "Lumino/Math/AttitudeTransform.h"
 #include "Lumino/Math/Geometries.h"
 #include "Lumino/Math/Plane.h"
 #include "Lumino/Math/ViewFrustum.h"

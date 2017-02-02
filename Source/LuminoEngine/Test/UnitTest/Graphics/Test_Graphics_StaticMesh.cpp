@@ -146,3 +146,18 @@ TEST_F(Test_Graphics_MeshResource, AddLine)
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_MeshResource.AddLine1.png"), 95));
 	}
 }
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_MeshResource, Geometry)
+{
+
+	ScopedCameraPosition cp(5, 5, -5);
+	{
+		auto mesh = StaticMesh::CreateTeapot(MeshCreationFlags::None);
+
+		Engine::Update();
+
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_MeshResource.Geometry1.png"), 95, true));
+	}
+}
+

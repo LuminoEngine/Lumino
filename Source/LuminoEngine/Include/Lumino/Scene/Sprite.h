@@ -9,6 +9,7 @@ LN_NAMESPACE_SCENE_BEGIN
 /**
 	@brief		スプライトの抽象クラスです。スプライトオブジェクトを作成するには Sprite2D または Sprite3D クラス使用します。
 */
+LN_CLASS()
 class Sprite
 	: public VisualNode
 {
@@ -18,11 +19,13 @@ public:
 	/**
 		@brief		スプライトが表示するテクスチャを設定します。
 	*/
+	LN_METHOD(Property)
 	void SetTexture(Texture* texture);
 	
 	/**
 		@brief		スプライトが表示するテクスチャを取得します。
 	*/
+	LN_METHOD(Property)
 	Texture* GetTexture() const;
 
 	/**
@@ -74,6 +77,7 @@ private:
 /**
 	@brief	2D 空間に配置されるスプライトのクラスです。
 */
+LN_CLASS()
 class Sprite2D
 	: public Sprite
 {
@@ -105,13 +109,17 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	Sprite2D();
 	virtual ~Sprite2D();
-	void Initialize(SceneGraph* owner);
+	LN_METHOD()
+	void Initialize();
+	LN_METHOD()
+	void Initialize(Texture* texture);
 	virtual void OnRender2(DrawList* renderer) override;
 };
 
 /**
 	@brief	3D 空間に配置されるスプライトのクラスです。
 */
+LN_CLASS()
 class Sprite3D
 	: public Sprite
 {

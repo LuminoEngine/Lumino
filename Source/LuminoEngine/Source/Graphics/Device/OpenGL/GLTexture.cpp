@@ -1,5 +1,5 @@
 ﻿
-#include "../../../Internal.h"
+#include "../../Internal.h"
 #include <Lumino/Graphics/GraphicsException.h>
 #include <Lumino/Graphics/Utils.h>
 #include "GLTexture.h"

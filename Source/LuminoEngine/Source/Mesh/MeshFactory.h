@@ -1,8 +1,8 @@
-/*
-	"RegularXXXX" ‚Æ‚¢‚¤–¼‘O‚Ì‚Â‚¢‚Ä‚¢‚éƒtƒ@ƒNƒgƒŠ‚ÍAUV “WŠJ‚µ‚½‚Æ‚«‚É©‘R‚É‚È‚é‚æ‚¤‚ÈƒWƒIƒƒgƒŠ‚ğ¶¬‚·‚éB
-	—á‚¦‚Î Box ‚¾‚ÆAƒeƒNƒXƒ`ƒƒ‚ğg—p‚µ‚È‚¢’PF‚Ì Box ‚Å‚ ‚ê‚Î’¸“_‚Í 8 ŒÂ‚Å‚æ‚¢BŠe6–Ê‚ÍA’¸“_‚ğ‹¤—L‚Å‚«‚éB
-	‚µ‚©‚µAƒ_ƒCƒX‚Ì‚æ‚¤‚ÉŠe–Ê‚É•Ê‚Ì UV ‚ğİ’è‚µ‚½‚¢ê‡‚Í’¸“_‚ğ‹¤—L‚·‚é‚±‚Æ‚Í‚Å‚«‚È‚¢B‚±‚Ìê‡‚Í 24 ŒÂ‚Ì’¸“_‚ª•K—v‚É‚È‚éB
-	‚»‚Ì‚æ‚¤‚ÈƒWƒIƒƒgƒŠ‚ğì¬‚·‚é‚Ì‚ª "RegularXXXX"B
+ï»¿/*
+	"RegularXXXX" ã¨ã„ã†åå‰ã®ã¤ã„ã¦ã„ã‚‹ãƒ•ã‚¡ã‚¯ãƒˆãƒªã¯ã€UV å±•é–‹ã—ãŸã¨ãã«è‡ªç„¶ã«ãªã‚‹ã‚ˆã†ãªã‚¸ã‚ªãƒ¡ãƒˆãƒªã‚’ç”Ÿæˆã™ã‚‹ã€‚
+	ä¾‹ãˆã° Box ã ã¨ã€ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã—ãªã„å˜è‰²ã® Box ã§ã‚ã‚Œã°é ‚ç‚¹ã¯ 8 å€‹ã§ã‚ˆã„ã€‚å„6é¢ã¯ã€é ‚ç‚¹ã‚’å…±æœ‰ã§ãã‚‹ã€‚
+	ã—ã‹ã—ã€ãƒ€ã‚¤ã‚¹ã®ã‚ˆã†ã«å„é¢ã«åˆ¥ã® UV ã‚’è¨­å®šã—ãŸã„å ´åˆã¯é ‚ç‚¹ã‚’å…±æœ‰ã™ã‚‹ã“ã¨ã¯ã§ããªã„ã€‚ã“ã®å ´åˆã¯ 24 å€‹ã®é ‚ç‚¹ãŒå¿…è¦ã«ãªã‚‹ã€‚
+	ãã®ã‚ˆã†ãªã‚¸ã‚ªãƒ¡ãƒˆãƒªã‚’ä½œæˆã™ã‚‹ã®ãŒ "RegularXXXX"ã€‚
 */
 #include "../Internal.h"
 #include <Lumino/Graphics/Vertex.h>
@@ -77,7 +77,7 @@ public:
 		return 6;
 	}
 
-	void Generate(Vertex* outVertices, uint16_t* outIndices)
+	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
 	{
 		Vector2 half = m_size / 2;
 		outVertices[0].position.Set(-half.x, half.y, 0);
@@ -93,12 +93,12 @@ public:
 		outVertices[3].normal.Set(0.0f, 0.0f, -1.0f);
 		outVertices[3].uv.Set(1.0f, 1.0f);
 
-		outIndices[0] = 0;
-		outIndices[1] = 1;
-		outIndices[2] = 2;
-		outIndices[3] = 2;
-		outIndices[4] = 1;
-		outIndices[5] = 3;
+		outIndices[0] = beginIndex + 0;
+		outIndices[1] = beginIndex + 1;
+		outIndices[2] = beginIndex + 2;
+		outIndices[3] = beginIndex + 2;
+		outIndices[4] = beginIndex + 1;
+		outIndices[5] = beginIndex + 3;
 	}
 
 private:
@@ -160,7 +160,14 @@ private:
 	Vector3	m_front;
 };
 
-// xz •½–ÊBy+ ‚ğŒü‚­B
+// xz å¹³é¢ã€‚y+ ã‚’å‘ãã€‚
+// é ‚ç‚¹ã®ä¸¦ã³ã¯
+/*
+	1 2 3
+	4 5 6
+	7 8 9
+*/
+// é ‚ç‚¹ã¯å…±æœ‰ã™ã‚‹ã€‚
 class PlaneMeshFactory3
 	: public MeshFactoryBase
 {
@@ -207,12 +214,12 @@ public:
 			for (int iX = 0; iX < m_sliceX + 1; ++iX)
 			{
 				if (iX == m_sliceX)
-					v->position.x = maxX;	// Œë·‚ğo‚µ‚½‚­‚È‚¢‚½‚ß’¼Úİ’è
+					v->position.x = maxX;	// èª¤å·®ã‚’å‡ºã—ãŸããªã„ãŸã‚ç›´æ¥è¨­å®š
 				else
 					v->position.x = minX + stepX * iX;
 
 				if (iZ == m_sliceZ)
-					v->position.z = minZ;	// Œë·‚ğo‚µ‚½‚­‚È‚¢‚½‚ß’¼Úİ’è
+					v->position.z = minZ;	// èª¤å·®ã‚’å‡ºã—ãŸããªã„ãŸã‚ç›´æ¥è¨­å®š
 				else
 					v->position.z = maxZ - stepZ * iZ;
 
@@ -229,10 +236,10 @@ public:
 		{
 			for (int iX = 0; iX < m_sliceX; ++iX)
 			{
-				int p1 = (iX + 0) + (iZ + 0) * (m_sliceX + 1);	// „¬
-				int p2 = (iX + 0) + (iZ + 1) * (m_sliceX + 1);	// „¯
-				int p3 = (iX + 1) + (iZ + 0) * (m_sliceX + 1);	// „­
-				int p4 = (iX + 1) + (iZ + 1) * (m_sliceX + 1);	// „®
+				int p1 = (iX + 0) + (iZ + 0) * (m_sliceX + 1);	// â”
+				int p2 = (iX + 0) + (iZ + 1) * (m_sliceX + 1);	// â”—
+				int p3 = (iX + 1) + (iZ + 0) * (m_sliceX + 1);	// â”“
+				int p4 = (iX + 1) + (iZ + 1) * (m_sliceX + 1);	// â”›
 				i[0] = beginIndex + p1;
 				i[1] = beginIndex + p2;
 				i[2] = beginIndex + p3;
@@ -276,23 +283,23 @@ public:
 		Vector3 minPos = -(m_size / 2);
 		Vector3 maxPos = (m_size / 2);
 
-		// è‘O (Z-)
-		outVertices[0].position.Set(minPos.x, maxPos.y, minPos.z);	// ¶ã
+		// æ‰‹å‰ (Z-)
+		outVertices[0].position.Set(minPos.x, maxPos.y, minPos.z);	// å·¦ä¸Š
 		outVertices[0].uv.Set(0.0f, 0.0f);
-		outVertices[1].position.Set(minPos.x, minPos.y, minPos.z);	// ¶‰º
+		outVertices[1].position.Set(minPos.x, minPos.y, minPos.z);	// å·¦ä¸‹
 		outVertices[1].uv.Set(0.0f, 1.0f);
-		outVertices[2].position.Set(maxPos.x, maxPos.y, minPos.z);	// ‰Eã
+		outVertices[2].position.Set(maxPos.x, maxPos.y, minPos.z);	// å³ä¸Š
 		outVertices[2].uv.Set(1.0f, 0.0f);
-		outVertices[3].position.Set(maxPos.x, minPos.y, minPos.z);	// ‰E‰º
+		outVertices[3].position.Set(maxPos.x, minPos.y, minPos.z);	// å³ä¸‹
 		outVertices[3].uv.Set(1.0f, 1.0f);
-		// ‰œ (Z+)
-		outVertices[4].position.Set(minPos.x, maxPos.y, maxPos.z);	// ¶ã
+		// å¥¥ (Z+)
+		outVertices[4].position.Set(minPos.x, maxPos.y, maxPos.z);	// å·¦ä¸Š
 		outVertices[4].uv.Set(1.0f, 0.0f);
-		outVertices[5].position.Set(minPos.x, minPos.y, maxPos.z);	// ¶‰º
+		outVertices[5].position.Set(minPos.x, minPos.y, maxPos.z);	// å·¦ä¸‹
 		outVertices[5].uv.Set(1.0f, 1.0f);
-		outVertices[6].position.Set(maxPos.x, maxPos.y, maxPos.z);	// ‰Eã
+		outVertices[6].position.Set(maxPos.x, maxPos.y, maxPos.z);	// å³ä¸Š
 		outVertices[6].uv.Set(0.0f, 0.0f);
-		outVertices[7].position.Set(maxPos.x, minPos.y, maxPos.z);	// ‰E‰º
+		outVertices[7].position.Set(maxPos.x, minPos.y, maxPos.z);	// å³ä¸‹
 		outVertices[7].uv.Set(0.0f, 1.0f);
 
 		for (int i = 0; i < 8; ++i) outVertices[i].color = Color::White;
@@ -314,7 +321,7 @@ public:
 			// top
 			4, 0, 6,
 			6, 0, 2,
-			// bottom (Z- ‚ª–Ê‚Æ‚µ‚Äã•ûŒü)
+			// bottom (Z- ãŒé¢ã¨ã—ã¦ä¸Šæ–¹å‘)
 			1, 5, 3,
 			3, 5, 7,
 		};
@@ -326,7 +333,7 @@ private:
 };
 
 
-// 6–Ê‚»‚ê‚¼‚ê“Æ—§‚µ‚½’¸“_‚ğ‚Â’¼•û‘Ì
+// 6é¢ãã‚Œãã‚Œç‹¬ç«‹ã—ãŸé ‚ç‚¹ã‚’æŒã¤ç›´æ–¹ä½“
 class RegularBoxMeshFactory
 	: public MeshFactoryBase
 {
@@ -373,46 +380,46 @@ public:
 		Vertex* v = outVertices;
 		uint16_t* i = outIndices;
 
-		// è‘O (Z-)
-		SetV(v, minPos.x, maxPos.y, minPos.z, 0.0f, 0.0f, -Vector3::UnitZ); ++v;	// „¬
-		SetV(v, minPos.x, minPos.y, minPos.z, 0.0f, 1.0f, -Vector3::UnitZ); ++v;	// „¯
-		SetV(v, maxPos.x, maxPos.y, minPos.z, 1.0f, 0.0f, -Vector3::UnitZ); ++v;	// „­
-		SetV(v, maxPos.x, minPos.y, minPos.z, 1.0f, 1.0f, -Vector3::UnitZ); ++v;	// „®
+		// æ‰‹å‰ (Z-)
+		SetV(v, minPos.x, maxPos.y, minPos.z, 0.0f, 0.0f, -Vector3::UnitZ); ++v;	// â”
+		SetV(v, minPos.x, minPos.y, minPos.z, 0.0f, 1.0f, -Vector3::UnitZ); ++v;	// â”—
+		SetV(v, maxPos.x, maxPos.y, minPos.z, 1.0f, 0.0f, -Vector3::UnitZ); ++v;	// â”“
+		SetV(v, maxPos.x, minPos.y, minPos.z, 1.0f, 1.0f, -Vector3::UnitZ); ++v;	// â”›
 		SetI(i, beginVertexIndex + 0); i += 6;
 
-		// ‰œ (Z+)
-		SetV(v, maxPos.x, maxPos.y, maxPos.z, 0.0f, 0.0f, Vector3::UnitZ); ++v;	// „¬
-		SetV(v, maxPos.x, minPos.y, maxPos.z, 0.0f, 1.0f, Vector3::UnitZ); ++v;	// „¯
-		SetV(v, minPos.x, maxPos.y, maxPos.z, 1.0f, 0.0f, Vector3::UnitZ); ++v;	// „­
-		SetV(v, minPos.x, minPos.y, maxPos.z, 1.0f, 1.0f, Vector3::UnitZ); ++v;	// „®
+		// å¥¥ (Z+)
+		SetV(v, maxPos.x, maxPos.y, maxPos.z, 0.0f, 0.0f, Vector3::UnitZ); ++v;	// â”
+		SetV(v, maxPos.x, minPos.y, maxPos.z, 0.0f, 1.0f, Vector3::UnitZ); ++v;	// â”—
+		SetV(v, minPos.x, maxPos.y, maxPos.z, 1.0f, 0.0f, Vector3::UnitZ); ++v;	// â”“
+		SetV(v, minPos.x, minPos.y, maxPos.z, 1.0f, 1.0f, Vector3::UnitZ); ++v;	// â”›
 		SetI(i, beginVertexIndex + 4); i += 6;
 
-		// ¶ (X-)
-		SetV(v, minPos.x, maxPos.y, maxPos.z, 0.0f, 0.0f, -Vector3::UnitX); ++v;	// „¬
-		SetV(v, minPos.x, minPos.y, maxPos.z, 0.0f, 1.0f, -Vector3::UnitX); ++v;	// „¯
-		SetV(v, minPos.x, maxPos.y, minPos.z, 1.0f, 0.0f, -Vector3::UnitX); ++v;	// „­
-		SetV(v, minPos.x, minPos.y, minPos.z, 1.0f, 1.0f, -Vector3::UnitX); ++v;	// „®
+		// å·¦ (X-)
+		SetV(v, minPos.x, maxPos.y, maxPos.z, 0.0f, 0.0f, -Vector3::UnitX); ++v;	// â”
+		SetV(v, minPos.x, minPos.y, maxPos.z, 0.0f, 1.0f, -Vector3::UnitX); ++v;	// â”—
+		SetV(v, minPos.x, maxPos.y, minPos.z, 1.0f, 0.0f, -Vector3::UnitX); ++v;	// â”“
+		SetV(v, minPos.x, minPos.y, minPos.z, 1.0f, 1.0f, -Vector3::UnitX); ++v;	// â”›
 		SetI(i, beginVertexIndex + 8); i += 6;
 
-		// ‰E (X+)
-		SetV(v, maxPos.x, maxPos.y, minPos.z, 0.0f, 0.0f, Vector3::UnitX); ++v;	// „¬
-		SetV(v, maxPos.x, minPos.y, minPos.z, 0.0f, 1.0f, Vector3::UnitX); ++v;	// „¯
-		SetV(v, maxPos.x, maxPos.y, maxPos.z, 1.0f, 0.0f, Vector3::UnitX); ++v;	// „­
-		SetV(v, maxPos.x, minPos.y, maxPos.z, 1.0f, 1.0f, Vector3::UnitX); ++v;	// „®
+		// å³ (X+)
+		SetV(v, maxPos.x, maxPos.y, minPos.z, 0.0f, 0.0f, Vector3::UnitX); ++v;	// â”
+		SetV(v, maxPos.x, minPos.y, minPos.z, 0.0f, 1.0f, Vector3::UnitX); ++v;	// â”—
+		SetV(v, maxPos.x, maxPos.y, maxPos.z, 1.0f, 0.0f, Vector3::UnitX); ++v;	// â”“
+		SetV(v, maxPos.x, minPos.y, maxPos.z, 1.0f, 1.0f, Vector3::UnitX); ++v;	// â”›
 		SetI(i, beginVertexIndex + 12); i += 6;
 
-		// ‰º (Y-)(Z- ‚ªUV‚Ìã•ûŒü)
-		SetV(v, minPos.x, minPos.y, minPos.z, 0.0f, 0.0f, -Vector3::UnitY); ++v;	// „¬
-		SetV(v, minPos.x, minPos.y, maxPos.z, 0.0f, 1.0f, -Vector3::UnitY); ++v;	// „¯
-		SetV(v, maxPos.x, minPos.y, minPos.z, 1.0f, 0.0f, -Vector3::UnitY); ++v;	// „­
-		SetV(v, maxPos.x, minPos.y, maxPos.z, 1.0f, 1.0f, -Vector3::UnitY); ++v;	// „®
+		// ä¸‹ (Y-)(Z- ãŒUVã®ä¸Šæ–¹å‘)
+		SetV(v, minPos.x, minPos.y, minPos.z, 0.0f, 0.0f, -Vector3::UnitY); ++v;	// â”
+		SetV(v, minPos.x, minPos.y, maxPos.z, 0.0f, 1.0f, -Vector3::UnitY); ++v;	// â”—
+		SetV(v, maxPos.x, minPos.y, minPos.z, 1.0f, 0.0f, -Vector3::UnitY); ++v;	// â”“
+		SetV(v, maxPos.x, minPos.y, maxPos.z, 1.0f, 1.0f, -Vector3::UnitY); ++v;	// â”›
 		SetI(i, beginVertexIndex + 16); i += 6;
 
-		// ã (Y+)(Z+ ‚ªUV‚Ìã•ûŒü)
-		SetV(v, minPos.x, maxPos.y, maxPos.z, 0.0f, 0.0f, Vector3::UnitY); ++v;	// „¬
-		SetV(v, minPos.x, maxPos.y, minPos.z, 0.0f, 1.0f, Vector3::UnitY); ++v;	// „¯
-		SetV(v, maxPos.x, maxPos.y, maxPos.z, 1.0f, 0.0f, Vector3::UnitY); ++v;	// „­
-		SetV(v, maxPos.x, maxPos.y, minPos.z, 1.0f, 1.0f, Vector3::UnitY); ++v;	// „®
+		// ä¸Š (Y+)(Z+ ãŒUVã®ä¸Šæ–¹å‘)
+		SetV(v, minPos.x, maxPos.y, maxPos.z, 0.0f, 0.0f, Vector3::UnitY); ++v;	// â”
+		SetV(v, minPos.x, maxPos.y, minPos.z, 0.0f, 1.0f, Vector3::UnitY); ++v;	// â”—
+		SetV(v, maxPos.x, maxPos.y, maxPos.z, 1.0f, 0.0f, Vector3::UnitY); ++v;	// â”“
+		SetV(v, maxPos.x, maxPos.y, minPos.z, 1.0f, 1.0f, Vector3::UnitY); ++v;	// â”›
 		SetI(i, beginVertexIndex + 20);
 
 		if (!m_transform.IsIdentity())
@@ -452,7 +459,7 @@ public:
 	int GetVertexCount() const
 	{
 		return (m_slices + 1) * (m_stacks + 1);
-		//return 2 + m_slices * (m_stacks - 1);	// (top ‚Æ bottom ‚Ì 2 “_) + ƒŠƒ“ƒO‚Ì’¸“_” * d‚Ë‚é”
+		//return 2 + m_slices * (m_stacks - 1);	// (top ã¨ bottom ã® 2 ç‚¹) + ãƒªãƒ³ã‚°ã®é ‚ç‚¹æ•° * é‡ã­ã‚‹æ•°
 	}
 
 	int GetIndexCount() const
@@ -480,11 +487,11 @@ public:
 
 		float sliceUVStep = 1.0f / m_slices;
 
-		// XY •½–Êã‚Ì step
+		// XY å¹³é¢ä¸Šã® step
 		float theta_step = Math::PI / m_stacks;
 		float theta = 0.0f;//theta_step;
 
-		// Z+ ‚ğ‹N“_‚Æ‚µAX- •ûŒü‚Ö‰ñ‚Á‚Ä‚¢‚­
+		// Z+ ã‚’èµ·ç‚¹ã¨ã—ã€X- æ–¹å‘ã¸å›ã£ã¦ã„ã
 
 		// rings (Vertex)
 		for (int iStack = 0; iStack < m_stacks + 1; ++iStack)
@@ -534,10 +541,10 @@ public:
 		{
 			for (int iSlice = 0; iSlice < m_slices; ++iSlice)
 			{
-				int p1 = (iSlice + 0) + (iStack + 0) * (m_slices + 1);	// „¬
-				int p2 = (iSlice + 0) + (iStack + 1) * (m_slices + 1);	// „¯
-				int p3 = (iSlice + 1) + (iStack + 0) * (m_slices + 1);	// „­
-				int p4 = (iSlice + 1) + (iStack + 1) * (m_slices + 1);	// „®
+				int p1 = (iSlice + 0) + (iStack + 0) * (m_slices + 1);	// â”
+				int p2 = (iSlice + 0) + (iStack + 1) * (m_slices + 1);	// â”—
+				int p3 = (iSlice + 1) + (iStack + 0) * (m_slices + 1);	// â”“
+				int p4 = (iSlice + 1) + (iStack + 1) * (m_slices + 1);	// â”›
 				i[0] = beginIndex + p1;
 				i[1] = beginIndex + p2;
 				i[2] = beginIndex + p3;
@@ -582,7 +589,7 @@ private:
 	List<SinCos>	m_sincosTable;
 };
 
-// Sphere “¯—lAuv “WŠJ‚Ì“s‡ã ring ‚Ìn“_‚ÆI“_A’ê‚ÌˆÊ’u‚Í“¯ˆêB
+// Sphere åŒæ§˜ã€uv å±•é–‹ã®éƒ½åˆä¸Š ring ã®å§‹ç‚¹ã¨çµ‚ç‚¹ã€åº•ã®ä½ç½®ã¯åŒä¸€ã€‚
 class RegularCylinderMeshFactory
 	: public MeshFactoryBase
 {
@@ -669,10 +676,10 @@ public:
 		{
 			for (int iStack = 0; iStack < stacks; ++iStack)	// y
 			{
-				int p1 = (iStack + 0) + (iSlice + 0) * (stacks + 1);	// „¬
-				int p2 = (iStack + 1) + (iSlice + 0) * (stacks + 1);	// „¯
-				int p3 = (iStack + 0) + (iSlice + 1) * (stacks + 1);	// „­
-				int p4 = (iStack + 1) + (iSlice + 1) * (stacks + 1);	// „®
+				int p1 = (iStack + 0) + (iSlice + 0) * (stacks + 1);	// â”
+				int p2 = (iStack + 1) + (iSlice + 0) * (stacks + 1);	// â”—
+				int p3 = (iStack + 0) + (iSlice + 1) * (stacks + 1);	// â”“
+				int p4 = (iStack + 1) + (iSlice + 1) * (stacks + 1);	// â”›
 				ib[0] = beginIndex + p1;
 				ib[1] = beginIndex + p2;
 				ib[2] = beginIndex + p3;
@@ -774,10 +781,10 @@ public:
 		{
 			for (int iStack = 0; iStack < stacks; ++iStack)	// y
 			{
-				int p1 = (iStack + 0) + (iSlice + 0) * (stacks + 1);	// „¬
-				int p2 = (iStack + 1) + (iSlice + 0) * (stacks + 1);	// „¯
-				int p3 = (iStack + 0) + (iSlice + 1) * (stacks + 1);	// „­
-				int p4 = (iStack + 1) + (iSlice + 1) * (stacks + 1);	// „®
+				int p1 = (iStack + 0) + (iSlice + 0) * (stacks + 1);	// â”
+				int p2 = (iStack + 1) + (iSlice + 0) * (stacks + 1);	// â”—
+				int p3 = (iStack + 0) + (iSlice + 1) * (stacks + 1);	// â”“
+				int p4 = (iStack + 1) + (iSlice + 1) * (stacks + 1);	// â”›
 				ib[0] = beginIndex + p1;
 				ib[1] = beginIndex + p2;
 				ib[2] = beginIndex + p3;
@@ -869,10 +876,10 @@ public:
 		// faces
 		for (int iSlice = 0; iSlice < m_slices; iSlice++)
 		{
-			int p1 = ((iSlice + 0) * 2 + 0);	// „¬
-			int p2 = ((iSlice + 0) * 2 + 1);	// „¯
-			int p3 = ((iSlice + 1) * 2 + 0);	// „­
-			int p4 = ((iSlice + 1) * 2 + 1);	// „®
+			int p1 = ((iSlice + 0) * 2 + 0);	// â”
+			int p2 = ((iSlice + 0) * 2 + 1);	// â”—
+			int p3 = ((iSlice + 1) * 2 + 0);	// â”“
+			int p4 = ((iSlice + 1) * 2 + 1);	// â”›
 			ib[0] = beginIndex + p1;
 			ib[1] = beginIndex + p2;
 			ib[2] = beginIndex + p3;
@@ -898,6 +905,38 @@ private:
 	float 	m_innerRadius;
 	float	m_outerRadius;
 	int		m_slices;
+};
+
+
+struct TeapotPatch;
+
+class TeapotMeshFactory
+	: public MeshFactoryBase
+{
+public:
+	TeapotMeshFactory();
+
+	void Initialize(float size, int tessellation, const Color& color, const Matrix& transform);
+
+	int GetVertexCount() const;
+
+	int GetIndexCount() const;
+
+	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex);
+
+private:
+	void AddVertex(const Vector3& pos, const Vector3& normal, const Vector2& texUV);
+	void AddIndex(uint16_t index);
+
+	void ComputeTeapot(float size, size_t tessellation/*, bool rhcoords*/);
+	void TessellatePatch(const TeapotPatch& patch, size_t tessellation, const Vector3& scale, bool isMirrored);
+
+	float		m_size;
+	int			m_tessellation;
+	Vertex*		m_vbBegin;
+	Vertex*		m_vbPos;
+	uint16_t*	m_ibPos;
+	uint16_t	m_beginIndex;
 };
 
 } // namespace detail

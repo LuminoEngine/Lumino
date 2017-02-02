@@ -12,7 +12,15 @@ LN_NAMESPACE_SCENE_BEGIN
 class DrawList;
 class SceneNodeList;
 
+enum class DepthPriority
+{
+	Background = -1000,
+	Normal = 0,
+	Foreground = 1000,
+};
+
 /// SceneNode
+LN_CLASS()
 class SceneNode
 	: public Component
 	//: public tr::ReflectionObject
@@ -28,16 +36,18 @@ public:
 	const String& GetName() const { return m_name; }
 
 	/// ワールド変換行列の設定
-	void SetTransform(const SQTTransform& transform) { m_transform = transform; }
+	void SetTransform(const AttitudeTransform& transform) { m_transform = transform; }
 
 	/// ワールド変換行列の取得
-	const SQTTransform& GetTransform() const { return m_transform; }
+	const AttitudeTransform& GetTransform() const { return m_transform; }
 
-	/// 位置の設定
+	/** 位置を設定します。*/
+	LN_METHOD(Property)
 	void SetPosition(const Vector3& pos) { m_transform.translation = pos; }
 	void SetPosition(float x, float y, float z = 0.0f) { m_transform.translation.Set(x, y, z); }
 
-	/// 位置の取得
+	/** 位置を取得します。*/
+	LN_METHOD(Property)
 	const Vector3& GetPosition() const { return m_transform.translation; }
 
 	/// 回転の設定
@@ -64,9 +74,11 @@ public:
 	const Vector3& GetCenter() const { return m_transformCenter; }
 
 	/** 可視状態を設定します。false の場合、ノードの描画自体行われません。(default: true) */
+	LN_METHOD(Property)
 	void SetVisible(bool visible) { m_isVisible = visible; }
 
 	/** 可視状態を取得します。*/
+	LN_METHOD(Property)
 	bool IsVisible() const { return m_isVisible; }
 
 	/// 回転順序の設定
@@ -76,10 +88,10 @@ public:
 	RotationOrder GetRotateOrder() const { return m_rotOrder; }
 
 	/// 優先度の設定 (高い方から先に描画される)
-	void SetPriority(int priority) { m_priority = priority; }
+	void SetDepthPriority(DepthPriority priority) { m_priority = priority; }
 
 	/// 優先度の取得
-	int GetPriority() const { return m_priority; }
+	DepthPriority GetDepthPriority() const { return m_priority; }
 
 	/// ビルボード状態の設定
 	void SetBillboardType(BillboardType type) { m_billboardType = type; }
@@ -151,10 +163,10 @@ protected:
 	SceneGraph*			m_ownerSceneGraph;
 	String				m_name;
 	//Matrix				m_localMatrix;
-	SQTTransform		m_transform;
+	AttitudeTransform		m_transform;
 	Vector3				m_transformCenter;
 	RotationOrder		m_rotOrder;
-	int					m_priority;
+	DepthPriority		m_priority;
 	BillboardType		m_billboardType;
 	SceneNodeRenderingMode	m_renderingMode;
 	//bool				m_transformModified;	///< 座標変換行列の再計算が必要か

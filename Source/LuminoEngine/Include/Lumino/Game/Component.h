@@ -9,6 +9,7 @@ class Transform;
 /**
 	@brief		
 */
+LN_CLASS()
 class Component
 	: public Object
 {

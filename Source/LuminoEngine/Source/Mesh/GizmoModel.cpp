@@ -2,8 +2,8 @@
 #include "../Internal.h"
 #include <Lumino/Graphics/Material.h>
 #include <Lumino/Graphics/Rendering.h>
-#include <Lumino/Graphics/Mesh/GizmoModel.h>
-#include "../GraphicsManager.h"
+#include <Lumino/Mesh/GizmoModel.h>
+#include "../Graphics/GraphicsManager.h"
 
 LN_NAMESPACE_BEGIN
 namespace tr {
@@ -56,7 +56,7 @@ void GizmoModel::SetGizmoType(GizmoType type)
 }
 
 //------------------------------------------------------------------------------
-void GizmoModel::Setup(const Matrix& parentSpaceTransform, const SQTTransform& targetInitialTransform)
+void GizmoModel::Setup(const Matrix& parentSpaceTransform, const AttitudeTransform& targetInitialTransform)
 {
 	m_targetInitialTransform = targetInitialTransform;
 	Matrix targetWorld = parentSpaceTransform * Matrix(targetInitialTransform);
@@ -71,7 +71,7 @@ void GizmoModel::Setup(const Matrix& parentSpaceTransform, const SQTTransform& t
 //}
 
 //------------------------------------------------------------------------------
-const SQTTransform& GizmoModel::GetTargetTransform() const
+const AttitudeTransform& GizmoModel::GetTargetTransform() const
 {
 	return m_targetTransform;
 }

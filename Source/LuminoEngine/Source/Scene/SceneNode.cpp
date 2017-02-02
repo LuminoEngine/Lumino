@@ -4,7 +4,7 @@
 #include "SceneGraphManager.h"
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/SceneNode.h>
-#include <Lumino/Foundation/GameScene.h>
+#include <Lumino/Framework/GameScene.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
@@ -38,7 +38,7 @@ SceneNode::SceneNode()
 	, m_transform()
 	, m_transformCenter()
 	, m_rotOrder(RotationOrder::XYZ)
-	, m_priority(0)
+	, m_priority(DepthPriority::Normal)
 	, m_billboardType(BillboardType_None)
 	, m_renderingMode(SceneNodeRenderingMode::Visible)
 	//, m_transformModified(true)

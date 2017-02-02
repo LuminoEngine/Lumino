@@ -7,7 +7,7 @@
 #include "../../Source/Graphics/GraphicsManager.h"		// TODO: remove
 #include <Lumino/Scene/Common.h>
 #include "../Effect/EffectManager.h"
-#include "../Modeling/ModelManager.h"
+#include "../Mesh/ModelManager.h"
 #include "Internal.h"
 
 //#include "MME/MMETypes.h"	// TODO: これは別の場所に移動したい・・・
@@ -107,7 +107,6 @@ private:
 
 	//Stack<int>							m_renderingPassIDStack;	///< (0～MaxRenderingPass-1)
 	NodeNameMap							m_nodeNameMap;			///< ノードを名前で検索するためのマップ
-	//SceneNode*							m_rootNode;
 	LightNodeList						m_lightNodeList;		///< 全ての Light のリスト
 
 	List<Camera*>	m_allCameraList;

@@ -1,5 +1,5 @@
 ﻿
-#include "../../../Internal.h"
+#include "../../Internal.h"
 #include <Lumino/Platform/PlatformWindow.h>
 #include <Lumino/Platform/PlatformSupport.h>
 #include "DX9GraphicsDevice.h"

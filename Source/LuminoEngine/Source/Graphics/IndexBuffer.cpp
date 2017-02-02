@@ -23,12 +23,13 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 
 //------------------------------------------------------------------------------
 IndexBuffer::IndexBuffer()
-: m_deviceObj(nullptr)
-, m_indexCount(0)
-, m_format(IndexBufferFormat_UInt16)
-, m_usage(ResourceUsage::Static)
-, m_pool(GraphicsResourcePool::Managed)	// TODO
-, m_initialUpdate(true)
+	: m_deviceObj(nullptr)
+	, m_indexCount(0)
+	, m_format(IndexBufferFormat_UInt16)
+	, m_usage(ResourceUsage::Static)
+	, m_pool(GraphicsResourcePool::Managed)	// TODO
+	, m_initialUpdate(true)
+	, m_locked(false)
 {
 
 }
@@ -59,8 +60,50 @@ void IndexBuffer::Initialize(detail::GraphicsManager* manager, int indexCount, c
 }
 
 //------------------------------------------------------------------------------
-Driver::IIndexBuffer* IndexBuffer::GetDeviceObject() const
+Driver::IIndexBuffer* IndexBuffer::ResolveDeviceObject()
 {
+	if (m_locked)
+	{
+		if (m_usage == ResourceUsage::Static)
+		{
+			// まだ1度も SetVertexBufferCommand に入っていない場合は直接書き換えできる
+			if (m_initialUpdate)
+			{
+				m_deviceObj->SetSubData(0, m_lockedBuffer.GetConstData(), m_lockedBuffer.GetSize());
+			}
+			else
+			{
+				LN_THROW(0, NotImplementedException);
+			}
+
+			//if (m_initialUpdate) {
+			//	m_deviceObj->Unlock();
+			//}
+			//else {
+			//	LN_THROW(0, NotImplementedException);
+			//}
+		}
+		else
+		{
+			if (m_deviceObj->GetByteCount() < m_lockedBuffer.GetSize())
+			{
+				m_deviceObj.Attach(m_manager->GetGraphicsDevice()->CreateIndexBuffer(m_indexCount, m_lockedBuffer.GetConstData(), m_format, m_usage), false);
+			}
+			else
+			{
+				RenderBulkData data(m_lockedBuffer.GetConstData(), m_lockedBuffer.GetSize());
+				Driver::IIndexBuffer* deviceObj = m_deviceObj;
+				LN_ENQUEUE_RENDER_COMMAND_2(
+					VertexBuffer_SetSubData, m_manager,
+					RenderBulkData, data,
+					RefPtr<Driver::IIndexBuffer>, deviceObj,
+					{
+						deviceObj->SetSubData(0, data.GetData(), data.GetSize());
+					});
+			}
+		}
+	}
+
 	return m_deviceObj;
 }
 
@@ -78,11 +121,11 @@ int IndexBuffer::GetIndexStride() const
 }
 
 //------------------------------------------------------------------------------
-ByteBuffer* IndexBuffer::Lock()
+ByteBuffer* IndexBuffer::GetMappedData()
 {
 	if (m_usage == ResourceUsage::Static)
 	{
-		if (m_lockedBuffer.GetSize() == 0 || m_usage == ResourceUsage::Static)
+		if (m_lockedBuffer.GetSize() == 0)
 		{
 			m_lockedBuffer.Alloc(GetIndexStride() * m_indexCount);
 		}
@@ -98,57 +141,23 @@ ByteBuffer* IndexBuffer::Lock()
 		//}
 	}
 
+	m_locked = true;
 	return &m_lockedBuffer;
 }
 
 //------------------------------------------------------------------------------
-void IndexBuffer::Unlock()
-{
-	if (m_usage == ResourceUsage::Static)
-	{
-		// まだ1度も SetVertexBufferCommand に入っていない場合は直接書き換えできる
-		if (m_initialUpdate)
-		{
-			m_deviceObj->SetSubData(0, m_lockedBuffer.GetConstData(), m_lockedBuffer.GetSize());
-		}
-		else
-		{
-			LN_THROW(0, NotImplementedException);
-		}
-
-		//if (m_initialUpdate) {
-		//	m_deviceObj->Unlock();
-		//}
-		//else {
-		//	LN_THROW(0, NotImplementedException);
-		//}
-	}
-	else
-	{
-		if (m_deviceObj->GetByteCount() < m_lockedBuffer.GetSize())
-		{
-			m_deviceObj.Attach(m_manager->GetGraphicsDevice()->CreateIndexBuffer(m_indexCount, m_lockedBuffer.GetConstData(), m_format, m_usage), false);
-		}
-		else
-		{
-			RenderBulkData data(m_lockedBuffer.GetConstData(), m_lockedBuffer.GetSize());
-			Driver::IIndexBuffer* deviceObj = m_deviceObj;
-			LN_ENQUEUE_RENDER_COMMAND_2(
-				VertexBuffer_SetSubData, m_manager,
-				RenderBulkData, data,
-				RefPtr<Driver::IIndexBuffer>, deviceObj,
-				{
-					deviceObj->SetSubData(0, data.GetData(), data.GetSize());
-				});
-		}
-	}
-
-}
+//void IndexBuffer::Unlock()
+//{
+//
+//}
 
 //------------------------------------------------------------------------------
 void IndexBuffer::Resize(int indexCount, IndexBufferFormat format)
 {
-	LN_CHECK_STATE(m_usage == ResourceUsage::Dynamic);
+	if (!m_initialUpdate)
+	{
+		LN_CHECK_STATE(m_usage == ResourceUsage::Dynamic);
+	}
 	m_indexCount = indexCount;
 	m_format = format;
 	int stride = (format == IndexBufferFormat_UInt16) ? 2 : 4;

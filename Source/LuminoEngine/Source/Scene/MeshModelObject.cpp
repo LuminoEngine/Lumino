@@ -1,11 +1,11 @@
 ﻿
 #pragma once
 #include "../Internal.h"
-#include <Lumino/Graphics/Mesh/SkinnedMeshModel.h>
+#include <Lumino/Mesh/SkinnedMeshModel.h>
 #include <Lumino/Graphics/Rendering.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/MeshModelObject.h>
-#include "../Modeling/PmxSkinnedMesh.h"
+#include "../Mesh/PmxSkinnedMesh.h"
 //#include "MME/MMEShader.h"
 #include "SceneGraphManager.h"
 
@@ -19,9 +19,7 @@ LN_NAMESPACE_BEGIN
 SkinnedMeshPtr SkinnedMesh::Create(const StringRef& filePath)
 {
 	auto ptr = SkinnedMeshPtr::MakeRef();
-	auto meshResource = SceneGraphManager::Instance->GetModelManager()->CreateSkinnedMeshModel(filePath);
-	auto mesh = RefPtr<SkinnedMeshModel>::MakeRef();
-	mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager(), meshResource);
+	auto mesh = SceneGraphManager::Instance->GetModelManager()->CreateSkinnedMeshModel(filePath);
 	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), mesh);
 	return ptr;
 }
@@ -45,9 +43,9 @@ void SkinnedMesh::Initialize(SceneGraph* ownerSceneGraph, SkinnedMeshModel* mesh
 	LN_CHECK_ARG(meshModel != nullptr);
 	m_meshModel = meshModel;
 
-	VisualNode::Initialize(ownerSceneGraph, m_meshModel->m_meshResource->m_materials->GetCount());
+	VisualNode::Initialize(ownerSceneGraph, meshModel->m_mesh->m_materials->GetCount());
 
-	m_materialList->CopyShared(m_meshModel->m_meshResource->m_materials, true);
+	m_materialList->CopyShared(meshModel->m_mesh->m_materials, true);
 
 
 	ownerSceneGraph->GetManager()->GetDefaultSceneGraph3D()->GetRootNode()->AddChild(this);
@@ -115,7 +113,7 @@ void SkinnedMesh::OnRender2(DrawList* renderer)
 	int subsetCount = mesh->GetSubsetCount();
 	for (int i = 0; i < subsetCount; i++)
 	{
-		renderer->DrawMesh(mesh, i, mesh->GetMeshResource()->GetMaterial(i));
+		renderer->DrawMesh(mesh, i, mesh->GetMaterial(i));
 	}
 }
 
