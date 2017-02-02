@@ -514,7 +514,7 @@ void Main()
 	//auto tex1 = Texture2D::Create(32, 32);
 	//tex1->Clear(Color32::Red);
 	//auto box1 = StaticMesh::CreateBox(Vector3(5, 5, 5));
-	auto box1 = StaticMesh::CreateTeapot(MeshCreationFlags::None);
+	auto box1 = TeapotMesh::Create();
 	//box1->GetMaterials()->GetAt(0)->SetMaterialTexture(tex1);
 	////box1->SetTone(ToneF(0, 0, 1, 1.0));
 	gizmo->Setup(Matrix::Identity, box1->GetTransform());//Matrix::MakeTranslation(1, 0, 0));

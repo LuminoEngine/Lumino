@@ -7,9 +7,11 @@ LN_NAMESPACE_BEGIN
 class StaticMesh;
 class BoxMesh;
 class SphereMesh;
+class TeapotMesh;
 using StaticMeshPtr = RefPtr<StaticMesh>;
 using BoxMeshPtr = RefPtr<BoxMesh>;
 using SphereMeshPtr = RefPtr<SphereMesh>;
+using TeapotMeshPtr = RefPtr<TeapotMesh>;
 
 /**
 	@brief		
@@ -25,8 +27,6 @@ public:
 	static StaticMeshPtr CreatePlane(const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags = MeshCreationFlags::None);
 
 	static StaticMeshPtr CreateScreenPlane();
-
-	static StaticMeshPtr CreateTeapot(MeshCreationFlags flags);
 
 public:
 
@@ -123,5 +123,40 @@ LN_CONSTRUCT_ACCESS:
 	void Initialize(float radius, int tessellation);
 };
 
+/**
+	@brief		ティーポットのメッシュを表示するクラスです。
+*/
+LN_CLASS()
+class TeapotMesh
+	: public StaticMesh
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+
+	/**
+		@brief		サイズが 1.0 であるティーポットのメッシュを作成します。
+		@details	このメッシュは共有リソースです。
+					頂点バッファやインデックスバッファを操作すると、このメソッドで作成したほかのメッシュの形状にも影響します。
+					通常はこれらのリソースを変更するべきではありません。
+	*/
+	LN_METHOD(Document)
+	static TeapotMeshPtr Create();
+
+	/** サイズとなめらかさを指定してメッシュを作成します。*/
+	LN_METHOD(Document)
+	static TeapotMeshPtr Create(float size, int tessellation = 8);
+
+LN_CONSTRUCT_ACCESS:
+	TeapotMesh();
+	virtual ~TeapotMesh();
+
+	/** @copydoc Create() */
+	LN_METHOD()
+	void Initialize();
+
+	/** @copydoc Create(float size, int tessellation) */
+	LN_METHOD()
+	void Initialize(float size, int tessellation);
+};
 
 LN_NAMESPACE_END

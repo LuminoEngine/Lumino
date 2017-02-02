@@ -265,6 +265,11 @@ void ModelManager::Initialize(const ConfigData& configData)
 	m_unitSphereMeshResourceReverseFaces->AddSphere(0.5, 16, 16);
 	m_unitSphereMeshResourceReverseFaces->ReverseFaces();
 
+	m_unitTeapotMeshResource = RefPtr<MeshResource>::MakeRef();
+	m_unitTeapotMeshResource->Initialize(m_graphicsManager, MeshCreationFlags::None);
+	m_unitTeapotMeshResource->AddTeapot(1.0f, 8);
+
+
 	if (g_modelManagerInstance == nullptr)
 	{
 		g_modelManagerInstance = this;
@@ -301,6 +306,12 @@ MeshResource* ModelManager::GetUnitBoxMeshResource(bool reverseFaces) const
 MeshResource* ModelManager::GetUnitSphereMeshResource(bool reverseFaces) const
 {
 	return (reverseFaces) ? m_unitSphereMeshResourceReverseFaces : m_unitSphereMeshResource;
+}
+
+//------------------------------------------------------------------------------
+MeshResource* ModelManager::GetUnitTeapotMeshResource() const
+{
+	return m_unitTeapotMeshResource;
 }
 
 //------------------------------------------------------------------------------
