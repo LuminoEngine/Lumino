@@ -29,9 +29,11 @@ TEST_F(Test_Scene_StaticMesh, BoxMesh)
 
 	// <Rest> ReverseFaces
 	{
-		auto mesh1 = BoxMesh::Create(MeshCreationFlags::ReverseFaces);
+		auto mesh1 = BoxMesh::Create(1, 1, 1);
+		mesh1->GetStaticMeshModel()->GetMeshResource()->ReverseFaces();
 
-		auto mesh2 = BoxMesh::Create(2, 1, 1, MeshCreationFlags::ReverseFaces);
+		auto mesh2 = BoxMesh::Create(2, 1, 1);
+		mesh2->GetStaticMeshModel()->GetMeshResource()->ReverseFaces();
 		mesh2->SetPosition(0, 0, 2);
 
 		auto mesh3 = BoxMesh::Create(Vector3(1, 2, 1));
