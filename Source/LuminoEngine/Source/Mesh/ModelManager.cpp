@@ -251,6 +251,12 @@ void ModelManager::Initialize(const ConfigData& configData)
 	m_unitBoxMeshResource->Initialize(m_graphicsManager, MeshCreationFlags::None);
 	m_unitBoxMeshResource->AddBox(Vector3(1, 1, 1));
 
+	m_unitBoxMeshResourceReverseFaces = RefPtr<MeshResource>::MakeRef();
+	m_unitBoxMeshResourceReverseFaces->Initialize(m_graphicsManager, MeshCreationFlags::None);
+	m_unitBoxMeshResourceReverseFaces->AddBox(Vector3(1, 1, 1));
+	m_unitBoxMeshResourceReverseFaces->ReverseFaces();
+	
+
 	if (g_modelManagerInstance == nullptr)
 	{
 		g_modelManagerInstance = this;
@@ -272,10 +278,16 @@ void ModelManager::Finalize()
 }
 
 //------------------------------------------------------------------------------
-Material* ModelManager::GetDefaultMaterial() const { return m_defaultMaterial; }
+Material* ModelManager::GetDefaultMaterial() const
+{
+	return m_defaultMaterial;
+}
 
 //------------------------------------------------------------------------------
-MeshResource* ModelManager::GetUnitBoxMeshResource() const { return m_unitBoxMeshResource; }
+MeshResource* ModelManager::GetUnitBoxMeshResource(bool reverseFaces) const
+{
+	return (reverseFaces) ? m_unitBoxMeshResourceReverseFaces : m_unitBoxMeshResource;
+}
 
 //------------------------------------------------------------------------------
 Texture2D* ModelManager::GetMMDDefaultToonTexture(int index)

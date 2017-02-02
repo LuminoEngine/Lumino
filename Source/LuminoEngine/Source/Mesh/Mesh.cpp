@@ -407,6 +407,31 @@ void MeshResource::AddScreenPlane()
 }
 
 //------------------------------------------------------------------------------
+void MeshResource::ReverseFaces()
+{
+	if (m_indexBufferInfo.buffer->GetIndexStride() == 2)
+	{
+		Vertex* vb = (Vertex*)TryLockVertexBuffer(VB_BasicVertices);
+		uint16_t* ib = (uint16_t*)TryLockIndexBuffer();
+
+		for (int i = 0; i < m_vertexUsedCount; ++i)
+		{
+			vb[i].normal *= -1.0f;
+		}
+		
+		uint16_t* indices = (uint16_t*)ib;
+		for (int i = 0; i < m_indexUsedCount; i += 3)
+		{
+			std::swap(indices[i + 1], indices[i + 2]);
+		}
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+	}
+}
+
+//------------------------------------------------------------------------------
 void MeshResource::AddTeapot()
 {
 	int startIndex = GetVertexCount();
@@ -743,11 +768,12 @@ void StaticMeshModel::Initialize(detail::GraphicsManager* manager, MeshResource*
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::InitializeBox(detail::GraphicsManager* manager, const Vector3& size)
+void StaticMeshModel::InitializeBox(detail::GraphicsManager* manager, const Vector3& size, MeshCreationFlags flags)
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
-	res->Initialize(manager, MeshCreationFlags::None);
+	res->Initialize(manager, flags);
 	res->AddBox(size);
+	if (flags.TestFlag(MeshCreationFlags::ReverseFaces)) res->ReverseFaces();
 	Initialize(manager, res);
 	AddMaterials(1);
 }
@@ -758,6 +784,7 @@ void StaticMeshModel::InitializeSphere(detail::GraphicsManager* manager, float r
 	auto res = RefPtr<MeshResource>::MakeRef();
 	res->Initialize(manager, flags);
 	res->AddSphere(radius, slices, stacks);
+	if (flags.TestFlag(MeshCreationFlags::ReverseFaces)) res->ReverseFaces();
 	Initialize(manager, res);
 	AddMaterials(1);
 }
@@ -768,6 +795,7 @@ void StaticMeshModel::InitializePlane(detail::GraphicsManager* manager, const Ve
 	auto res = RefPtr<MeshResource>::MakeRef();
 	res->Initialize(manager, flags);
 	res->AddPlane(size, sliceH, sliceV);
+	if (flags.TestFlag(MeshCreationFlags::ReverseFaces)) res->ReverseFaces();
 	Initialize(manager, res);
 	AddMaterials(1);
 }
@@ -778,6 +806,7 @@ void StaticMeshModel::InitializeScreenPlane(detail::GraphicsManager* manager, Me
 	auto res = RefPtr<MeshResource>::MakeRef();
 	res->Initialize(manager, flags);
 	res->AddScreenPlane();
+	if (flags.TestFlag(MeshCreationFlags::ReverseFaces)) res->ReverseFaces();
 	Initialize(manager, res);
 	AddMaterials(1);
 }
@@ -788,6 +817,7 @@ void StaticMeshModel::InitializeTeapot(detail::GraphicsManager* manager, MeshCre
 	auto res = RefPtr<MeshResource>::MakeRef();
 	res->Initialize(manager, flags);
 	res->AddTeapot();
+	if (flags.TestFlag(MeshCreationFlags::ReverseFaces)) res->ReverseFaces();
 	Initialize(manager, res);
 	AddMaterials(1);
 }

@@ -60,32 +60,33 @@ public:
 					通常はこれらのリソースを変更するべきではありません。
 	*/
 	LN_METHOD(Document)
-	static BoxMeshPtr Create();
+	static BoxMeshPtr Create(MeshCreationFlags flags = MeshCreationFlags::None);
 
 	/** 各軸に沿ったサイズを指定してメッシュを作成します。*/
 	LN_METHOD(Document)
-	static BoxMeshPtr Create(const Vector3& size);
+	static BoxMeshPtr Create(const Vector3& size, MeshCreationFlags flags = MeshCreationFlags::None);
 
 	/** 各軸に沿ったサイズを指定してメッシュを作成します。*/
 	LN_METHOD(Document)
-	static BoxMeshPtr Create(float width, float height, float depth);
+	static BoxMeshPtr Create(float width, float height, float depth, MeshCreationFlags flags = MeshCreationFlags::None);
 
 LN_CONSTRUCT_ACCESS:
 	BoxMesh();
 	virtual ~BoxMesh();
 
-	/** @copydoc Create() */
+	/** @copydoc Create(MeshCreationFlags flags) */
 	LN_METHOD()
-	void Initialize();
+	void Initialize(MeshCreationFlags flags = MeshCreationFlags::None);
 
-	/** @copydoc Create(const Vector3& size) */
+	/** @copydoc Create(const Vector3& size, MeshCreationFlags flags) */
 	LN_METHOD()
-	void Initialize(const Vector3& size);
+	void Initialize(const Vector3& size, MeshCreationFlags flags = MeshCreationFlags::None);
 
-	/** @copydoc Create(float width, float height, float depth) */
+	/** @copydoc Create(float width, float height, float depth, MeshCreationFlags flags) */
 	LN_METHOD()
-	void Initialize(float width, float height, float depth);
+	void Initialize(float width, float height, float depth, MeshCreationFlags flags = MeshCreationFlags::None);
 };
+
 
 
 LN_NAMESPACE_END

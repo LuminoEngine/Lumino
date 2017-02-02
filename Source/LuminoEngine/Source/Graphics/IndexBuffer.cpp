@@ -125,7 +125,7 @@ ByteBuffer* IndexBuffer::GetMappedData()
 {
 	if (m_usage == ResourceUsage::Static)
 	{
-		if (m_lockedBuffer.GetSize() == 0 || m_usage == ResourceUsage::Static)
+		if (m_lockedBuffer.GetSize() == 0)
 		{
 			m_lockedBuffer.Alloc(GetIndexStride() * m_indexCount);
 		}

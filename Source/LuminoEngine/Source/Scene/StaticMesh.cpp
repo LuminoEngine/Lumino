@@ -100,25 +100,25 @@ void StaticMesh::OnRender2(DrawList* renderer)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(BoxMesh, StaticMesh);
 
 //------------------------------------------------------------------------------
-BoxMeshPtr BoxMesh::Create()
+BoxMeshPtr BoxMesh::Create(MeshCreationFlags flags)
 {
 	auto ptr = RefPtr<BoxMesh>::MakeRef();
-	ptr->Initialize();
+	ptr->Initialize(flags);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-BoxMeshPtr BoxMesh::Create(const Vector3& size)
+BoxMeshPtr BoxMesh::Create(const Vector3& size, MeshCreationFlags flags)
 {
 	auto ptr = RefPtr<BoxMesh>::MakeRef();
-	ptr->Initialize(size);
+	ptr->Initialize(size, flags);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-BoxMeshPtr BoxMesh::Create(float width, float height, float depth)
+BoxMeshPtr BoxMesh::Create(float width, float height, float depth, MeshCreationFlags flags)
 {
-	return Create(Vector3(width, height, depth));
+	return Create(Vector3(width, height, depth), flags);
 }
 
 //------------------------------------------------------------------------------
@@ -132,27 +132,28 @@ BoxMesh::~BoxMesh()
 }
 
 //------------------------------------------------------------------------------
-void BoxMesh::Initialize()
+void BoxMesh::Initialize(MeshCreationFlags flags)
 {
 	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
 	mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager());
-	mesh->SetMeshResource(detail::ModelManager::GetInstance()->GetUnitBoxMeshResource());
+	// TODO: HasFlag(.net)
+	mesh->SetMeshResource(detail::ModelManager::GetInstance()->GetUnitBoxMeshResource(flags.TestFlag(MeshCreationFlags::ReverseFaces)));
 	mesh->AddMaterial(detail::ModelManager::GetInstance()->GetDefaultMaterial());
 	StaticMesh::Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), mesh);
 }
 
 //------------------------------------------------------------------------------
-void BoxMesh::Initialize(const Vector3& size)
+void BoxMesh::Initialize(const Vector3& size, MeshCreationFlags flags)
 {
 	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
-	mesh->InitializeBox(SceneGraphManager::Instance->GetGraphicsManager(), size);
+	mesh->InitializeBox(SceneGraphManager::Instance->GetGraphicsManager(), size, flags);
 	StaticMesh::Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), mesh);
 }
 
 //------------------------------------------------------------------------------
-void BoxMesh::Initialize(float width, float height, float depth)
+void BoxMesh::Initialize(float width, float height, float depth, MeshCreationFlags flags)
 {
-	Initialize(Vector3(width, height, depth));
+	Initialize(Vector3(width, height, depth), flags);
 }
 
 LN_NAMESPACE_END

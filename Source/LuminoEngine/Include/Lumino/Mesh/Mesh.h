@@ -99,6 +99,8 @@ public:
 	void AddTeapot();
 	void AddScreenPlane();
 
+	void ReverseFaces();
+
 LN_INTERNAL_ACCESS:
 	enum VertexBufferType
 	{
@@ -219,7 +221,7 @@ LN_INTERNAL_ACCESS:
 	virtual ~StaticMeshModel();
 	void Initialize(detail::GraphicsManager* manager);
 	void Initialize(detail::GraphicsManager* manager, MeshResource* sharingMesh);
-	void InitializeBox(detail::GraphicsManager* manager, const Vector3& size);
+	void InitializeBox(detail::GraphicsManager* manager, const Vector3& size, MeshCreationFlags flags);
 	void InitializeSphere(detail::GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags);
 	void InitializePlane(detail::GraphicsManager* manager, const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags);
 	void InitializeScreenPlane(detail::GraphicsManager* manager, MeshCreationFlags flags);
