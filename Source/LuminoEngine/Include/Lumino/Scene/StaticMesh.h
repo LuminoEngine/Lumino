@@ -22,8 +22,6 @@ class StaticMesh
 public:
 	static StaticMeshPtr Create(const StringRef& filePath);
 
-	static StaticMeshPtr CreateSphere(float radius, int slices, int stacks, MeshCreationFlags = MeshCreationFlags::None);
-
 	static StaticMeshPtr CreatePlane(const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags = MeshCreationFlags::None);
 
 	static StaticMeshPtr CreateScreenPlane();
@@ -62,31 +60,31 @@ public:
 					通常はこれらのリソースを変更するべきではありません。
 	*/
 	LN_METHOD(Document)
-	static BoxMeshPtr Create(MeshCreationFlags flags = MeshCreationFlags::None);
+	static BoxMeshPtr Create();
 
 	/** 各軸に沿ったサイズを指定してメッシュを作成します。*/
 	LN_METHOD(Document)
-	static BoxMeshPtr Create(const Vector3& size, MeshCreationFlags flags = MeshCreationFlags::None);
+	static BoxMeshPtr Create(const Vector3& size);
 
 	/** 各軸に沿ったサイズを指定してメッシュを作成します。*/
 	LN_METHOD(Document)
-	static BoxMeshPtr Create(float width, float height, float depth, MeshCreationFlags flags = MeshCreationFlags::None);
+	static BoxMeshPtr Create(float width, float height, float depth);
 
 LN_CONSTRUCT_ACCESS:
 	BoxMesh();
 	virtual ~BoxMesh();
 
-	/** @copydoc Create(MeshCreationFlags flags) */
+	/** @copydoc Create() */
 	LN_METHOD()
-	void Initialize(MeshCreationFlags flags = MeshCreationFlags::None);
+	void Initialize();
 
-	/** @copydoc Create(const Vector3& size, MeshCreationFlags flags) */
+	/** @copydoc Create(const Vector3& size) */
 	LN_METHOD()
-	void Initialize(const Vector3& size, MeshCreationFlags flags = MeshCreationFlags::None);
+	void Initialize(const Vector3& size);
 
-	/** @copydoc Create(float width, float height, float depth, MeshCreationFlags flags) */
+	/** @copydoc Create(float width, float height, float depth) */
 	LN_METHOD()
-	void Initialize(float width, float height, float depth, MeshCreationFlags flags = MeshCreationFlags::None);
+	void Initialize(float width, float height, float depth);
 };
 
 /**
