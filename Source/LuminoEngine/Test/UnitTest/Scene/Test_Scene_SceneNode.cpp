@@ -39,8 +39,8 @@ TEST_F(Test_Scene_SceneNode, DepthTest)
 
 	// <Test> デフォルトでは深度テスト&深度書き込みは有効。
 	{
-		auto box1 = BoxMesh::Create(Vector3(1, 2, 3));
-		auto box2 = BoxMesh::Create(Vector3(2, 1, 1));
+		auto box1 = StaticMesh::CreateBox(Vector3(1, 2, 3));
+		auto box2 = StaticMesh::CreateBox(Vector3(2, 1, 1));
 		box1->GetMaterials()->GetAt(0)->SetMaterialTexture(tex1);
 		box2->GetMaterials()->GetAt(0)->SetMaterialTexture(tex2);
 		Engine::Update();

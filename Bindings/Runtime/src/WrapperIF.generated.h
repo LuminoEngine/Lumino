@@ -87,13 +87,13 @@ public:
 
 };
 
-class LNBoxMesh : public BoxMesh
-{
-public:
-
-
-
-};
+//class LNBoxMesh : public BoxMesh
+//{
+//public:
+//
+//
+//
+//};
 
 class LNComponent : public Component
 {
