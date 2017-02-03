@@ -4,8 +4,6 @@
 #include "VisualNode.h"
 
 LN_NAMESPACE_BEGIN
-class StaticMesh;
-using StaticMeshPtr = RefPtr<StaticMesh>;
 
 /**
 	@brief		
@@ -16,11 +14,11 @@ class StaticMesh
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static StaticMeshPtr Create(const StringRef& filePath);
+	static RefPtr<StaticMesh> Create(const StringRef& filePath);
 
-	static StaticMeshPtr CreatePlane(const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags = MeshCreationFlags::None);
+	static RefPtr<StaticMesh> CreatePlane(const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags = MeshCreationFlags::None);
 
-	static StaticMeshPtr CreateScreenPlane();
+	static RefPtr<StaticMesh> CreateScreenPlane();
 
 	/**
 		@brief		サイズが 1.0 であるボックスのメッシュを作成します。
@@ -32,10 +30,12 @@ public:
 	static RefPtr<StaticMesh> CreateBox();
 
 	/** 各軸に沿ったサイズを指定してボックスのメッシュを作成します。*/
-	static StaticMeshPtr CreateBox(const Vector3& size);
+	LN_METHOD()
+	static RefPtr<StaticMesh> CreateBox(const Vector3& size);
 
 	/** 各軸に沿ったサイズを指定してボックスのメッシュを作成します。*/
-	static StaticMeshPtr CreateBox(float width, float height, float depth);
+	LN_METHOD()
+	static RefPtr<StaticMesh> CreateBox(float width, float height, float depth);
 	
 	/**
 		@brief		半径が 0.5 である球のメッシュを作成します。
@@ -43,10 +43,12 @@ public:
 					頂点バッファやインデックスバッファを操作すると、このメソッドで作成したほかのメッシュの形状にも影響します。
 					通常はこれらのリソースを変更するべきではありません。
 	*/
-	static StaticMeshPtr CreateSphere();
+	LN_METHOD()
+	static RefPtr<StaticMesh> CreateSphere();
 
 	/** 半径と分割数を指定して球のメッシュを作成します。*/
-	static StaticMeshPtr CreateSphere(float radius, int tessellation = 16);
+	LN_METHOD()
+	static RefPtr<StaticMesh> CreateSphere(float radius, int tessellation = 16);
 
 	/**
 		@brief		サイズが 1.0 であるティーポットのメッシュを作成します。
@@ -54,10 +56,12 @@ public:
 					頂点バッファやインデックスバッファを操作すると、このメソッドで作成したほかのメッシュの形状にも影響します。
 					通常はこれらのリソースを変更するべきではありません。
 	*/
-	static StaticMeshPtr CreateTeapot();
+	LN_METHOD()
+	static RefPtr<StaticMesh> CreateTeapot();
 
 	/** サイズとなめらかさを指定してメッシュを作成します。*/
-	static StaticMeshPtr CreateTeapot(float size, int tessellation = 8);
+	LN_METHOD()
+	static RefPtr<StaticMesh> CreateTeapot(float size, int tessellation = 8);
 
 public:
 
