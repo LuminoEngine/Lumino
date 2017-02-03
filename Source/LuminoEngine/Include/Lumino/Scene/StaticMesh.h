@@ -29,14 +29,12 @@ public:
 					通常はこれらのリソースを変更するべきではありません。
 	*/
 	LN_METHOD()
-	static StaticMeshPtr CreateBox();
+	static RefPtr<StaticMesh> CreateBox();
 
 	/** 各軸に沿ったサイズを指定してボックスのメッシュを作成します。*/
-	LN_METHOD()
 	static StaticMeshPtr CreateBox(const Vector3& size);
 
 	/** 各軸に沿ったサイズを指定してボックスのメッシュを作成します。*/
-	LN_METHOD()
 	static StaticMeshPtr CreateBox(float width, float height, float depth);
 	
 	/**
@@ -45,11 +43,9 @@ public:
 					頂点バッファやインデックスバッファを操作すると、このメソッドで作成したほかのメッシュの形状にも影響します。
 					通常はこれらのリソースを変更するべきではありません。
 	*/
-	LN_METHOD()
 	static StaticMeshPtr CreateSphere();
 
 	/** 半径と分割数を指定して球のメッシュを作成します。*/
-	LN_METHOD()
 	static StaticMeshPtr CreateSphere(float radius, int tessellation = 16);
 
 	/**
@@ -58,11 +54,9 @@ public:
 					頂点バッファやインデックスバッファを操作すると、このメソッドで作成したほかのメッシュの形状にも影響します。
 					通常はこれらのリソースを変更するべきではありません。
 	*/
-	LN_METHOD()
 	static StaticMeshPtr CreateTeapot();
 
 	/** サイズとなめらかさを指定してメッシュを作成します。*/
-	LN_METHOD()
 	static StaticMeshPtr CreateTeapot(float size, int tessellation = 8);
 
 public:

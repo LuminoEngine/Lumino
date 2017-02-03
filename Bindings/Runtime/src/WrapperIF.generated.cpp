@@ -90,19 +90,19 @@ LN_API LNResultCode LNRectF_GetSize(const LNRectF* rectf, LNSize* outReturn)
 LN_API LNResultCode LNEngine_Initialize()
 {
     LWIG_FUNC_TRY_BEGIN;
-    LFManager::PreInitialize();Engine::Initialize();LFManager::PostInitialize();
+    LFManager::PreInitialize();(Engine::Initialize());LFManager::PostInitialize();
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNEngine_Terminate()
 {
     LWIG_FUNC_TRY_BEGIN;
-    Engine::Terminate();
+    (Engine::Terminate());
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNEngine_Update(bool* outReturn)
 {
     LWIG_FUNC_TRY_BEGIN;
-    *outReturn = Engine::Update();
+    *outReturn = (Engine::Update());
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSound_SetVolume(LNHandle sound, float volume)
@@ -273,32 +273,16 @@ LN_API void LNSprite3D_SetBindingTypeInfo(void* data)
 {
     tr::TypeInfo::GetTypeInfo<Sprite3D>()->SetBindingTypeInfo(data);
 }
+LN_API LNResultCode LNStaticMesh_CreateBox(LNHandle* outReturn)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    *outReturn = LWIG_TO_HANDLE(StaticMesh::CreateBox());
+    LWIG_FUNC_TRY_END_RETURN;
+}
 LN_API void LNStaticMesh_SetBindingTypeInfo(void* data)
 {
     tr::TypeInfo::GetTypeInfo<StaticMesh>()->SetBindingTypeInfo(data);
 }
-//LN_API LNResultCode LNBoxMesh_Initialize(LNHandle* outBoxMesh)
-//{
-//    LWIG_FUNC_TRY_BEGIN;
-//    LWIG_CREATE_OBJECT(outBoxMesh, LNBoxMesh, Initialize, );
-//    LWIG_FUNC_TRY_END_RETURN;
-//}
-//LN_API LNResultCode LNBoxMesh_InitializeS(const LNVector3* size, LNHandle* outBoxMesh)
-//{
-//    LWIG_FUNC_TRY_BEGIN;
-//    LWIG_CREATE_OBJECT(outBoxMesh, LNBoxMesh, Initialize, *reinterpret_cast<const Vector3*>(size));
-//    LWIG_FUNC_TRY_END_RETURN;
-//}
-//LN_API LNResultCode LNBoxMesh_InitializeWHD(float width, float height, float depth, LNHandle* outBoxMesh)
-//{
-//    LWIG_FUNC_TRY_BEGIN;
-//    LWIG_CREATE_OBJECT(outBoxMesh, LNBoxMesh, Initialize, width, height, depth);
-//    LWIG_FUNC_TRY_END_RETURN;
-//}
-//LN_API void LNBoxMesh_SetBindingTypeInfo(void* data)
-//{
-//    tr::TypeInfo::GetTypeInfo<BoxMesh>()->SetBindingTypeInfo(data);
-//}
 LN_API void LNComponent_SetBindingTypeInfo(void* data)
 {
     tr::TypeInfo::GetTypeInfo<Component>()->SetBindingTypeInfo(data);

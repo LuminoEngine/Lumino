@@ -235,7 +235,7 @@ void CSClassLibGenerator::MakeTypeInfoRegisters(TypeInfoPtr classInfo, OutputBuf
 		"var _%Class% = new TypeInfo(){ Factory = (handle) =>\n"
 		"{\n"
 		"    var obj = new %Class%(_LNInternal.InternalBlock);\n"
-		"    obj.SetHandle(handle);\n"
+		//"    obj.SetHandle(handle);\n"
 		"    return obj;\n"
 		"}};\n"
 		"_typeInfos.Add(_%Class%);\n"

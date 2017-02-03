@@ -284,13 +284,7 @@ namespace Lumino
         public extern static ResultCode LNSprite2D_InitializeT(IntPtr texture, out IntPtr outSprite2D);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static ResultCode LNBoxMesh_Initialize(out IntPtr outBoxMesh);
-
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static ResultCode LNBoxMesh_InitializeS(ref Vector3 size, out IntPtr outBoxMesh);
-
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static ResultCode LNBoxMesh_InitializeWHD(float width, float height, float depth, out IntPtr outBoxMesh);
+        public extern static ResultCode LNStaticMesh_CreateBox(out IntPtr outReturn);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNGameApplication_Run(IntPtr gameapplication, IntPtr initialScene);

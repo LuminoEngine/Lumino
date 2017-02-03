@@ -316,7 +316,7 @@ StringA WrapperIFGenerator::MakeMethod(TypeInfoPtr typeInfo, MethodInfoPtr metho
 			// static 関数
 			if (methodInfo->isStatic)
 			{
-				body.Append("{0}::{1}({2});", typeInfo->name, methodInfo->name, args.ToString());
+				body.Append("({0}::{1}({2}));", typeInfo->name, methodInfo->name, args.ToString());
 			}
 			// コンストラクタ 関数
 			else if (methodInfo->isConstructor)
