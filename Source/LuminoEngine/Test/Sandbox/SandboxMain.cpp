@@ -514,7 +514,7 @@ void Main()
 	//auto tex1 = Texture2D::Create(32, 32);
 	//tex1->Clear(Color32::Red);
 	//auto box1 = StaticMesh::CreateBox(Vector3(5, 5, 5));
-	auto box1 = TeapotMesh::Create();
+	auto box1 = StaticMesh::CreateTeapot();
 	//box1->GetMaterials()->GetAt(0)->SetMaterialTexture(tex1);
 	////box1->SetTone(ToneF(0, 0, 1, 1.0));
 	gizmo->Setup(Matrix::Identity, box1->GetTransform());//Matrix::MakeTranslation(1, 0, 0));
@@ -522,14 +522,14 @@ void Main()
 	//auto mesh3 = StaticMesh::CreatePlane(Vector2(3, 3), 1, 1);
 	//mesh3->SetPosition(-2, 0, 0);
 
-	List<BoxMeshPtr> boxList;
+	List<StaticMeshPtr> boxList;
 	for (int z = 0; z < 10; z++)
 	{
 		for (int y = 0; y < 10; y++)
 		{
 			for (int x = 0; x < 10; x++)
 			{
-				auto mesh2 = BoxMesh::Create();
+				auto mesh2 = StaticMesh::CreateBox();
 				mesh2->SetPosition(x * 2, y * 2, z * 2);
 				boxList.Add(mesh2);
 			}

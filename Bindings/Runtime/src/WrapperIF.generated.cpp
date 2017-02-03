@@ -277,28 +277,28 @@ LN_API void LNStaticMesh_SetBindingTypeInfo(void* data)
 {
     tr::TypeInfo::GetTypeInfo<StaticMesh>()->SetBindingTypeInfo(data);
 }
-LN_API LNResultCode LNBoxMesh_Initialize(LNHandle* outBoxMesh)
-{
-    LWIG_FUNC_TRY_BEGIN;
-    LWIG_CREATE_OBJECT(outBoxMesh, LNBoxMesh, Initialize, );
-    LWIG_FUNC_TRY_END_RETURN;
-}
-LN_API LNResultCode LNBoxMesh_InitializeS(const LNVector3* size, LNHandle* outBoxMesh)
-{
-    LWIG_FUNC_TRY_BEGIN;
-    LWIG_CREATE_OBJECT(outBoxMesh, LNBoxMesh, Initialize, *reinterpret_cast<const Vector3*>(size));
-    LWIG_FUNC_TRY_END_RETURN;
-}
-LN_API LNResultCode LNBoxMesh_InitializeWHD(float width, float height, float depth, LNHandle* outBoxMesh)
-{
-    LWIG_FUNC_TRY_BEGIN;
-    LWIG_CREATE_OBJECT(outBoxMesh, LNBoxMesh, Initialize, width, height, depth);
-    LWIG_FUNC_TRY_END_RETURN;
-}
-LN_API void LNBoxMesh_SetBindingTypeInfo(void* data)
-{
-    tr::TypeInfo::GetTypeInfo<BoxMesh>()->SetBindingTypeInfo(data);
-}
+//LN_API LNResultCode LNBoxMesh_Initialize(LNHandle* outBoxMesh)
+//{
+//    LWIG_FUNC_TRY_BEGIN;
+//    LWIG_CREATE_OBJECT(outBoxMesh, LNBoxMesh, Initialize, );
+//    LWIG_FUNC_TRY_END_RETURN;
+//}
+//LN_API LNResultCode LNBoxMesh_InitializeS(const LNVector3* size, LNHandle* outBoxMesh)
+//{
+//    LWIG_FUNC_TRY_BEGIN;
+//    LWIG_CREATE_OBJECT(outBoxMesh, LNBoxMesh, Initialize, *reinterpret_cast<const Vector3*>(size));
+//    LWIG_FUNC_TRY_END_RETURN;
+//}
+//LN_API LNResultCode LNBoxMesh_InitializeWHD(float width, float height, float depth, LNHandle* outBoxMesh)
+//{
+//    LWIG_FUNC_TRY_BEGIN;
+//    LWIG_CREATE_OBJECT(outBoxMesh, LNBoxMesh, Initialize, width, height, depth);
+//    LWIG_FUNC_TRY_END_RETURN;
+//}
+//LN_API void LNBoxMesh_SetBindingTypeInfo(void* data)
+//{
+//    tr::TypeInfo::GetTypeInfo<BoxMesh>()->SetBindingTypeInfo(data);
+//}
 LN_API void LNComponent_SetBindingTypeInfo(void* data)
 {
     tr::TypeInfo::GetTypeInfo<Component>()->SetBindingTypeInfo(data);
