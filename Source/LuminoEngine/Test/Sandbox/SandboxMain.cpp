@@ -522,7 +522,7 @@ void Main()
 	//auto mesh3 = StaticMesh::CreatePlane(Vector2(3, 3), 1, 1);
 	//mesh3->SetPosition(-2, 0, 0);
 
-	List<StaticMeshPtr> boxList;
+	List<RefPtr<StaticMesh>> boxList;
 	for (int z = 0; z < 10; z++)
 	{
 		for (int y = 0; y < 10; y++)

@@ -530,8 +530,6 @@ set(LN_SOURCES_Framework
 	Include/Lumino/Framework/Application.h
 	Include/Lumino/Framework/GameScene.h
 	Source/Framework/Application.cpp
-	Source/Framework/EntryPoint.cpp
-	Source/Framework/EntryPoint.h
 	Source/Framework/GameSceneManager.cpp
 	Source/Framework/GameSceneManager.h
 )
@@ -611,11 +609,6 @@ if (WIN32)
 		Source/Audio/DirectMusic/DirectMusicAudioPlayer.h
 	)
 
-	set(LN_SOURCES_Framework
-		${LN_SOURCES_Framework}
-		Source/Framework/Main_Win32.cpp
-	)
-
 
 elseif (APPLE)
 	set(LN_SOURCES_Platform
@@ -634,12 +627,7 @@ elseif (APPLE)
 		${LN_SOURCES_Graphics_Device}
 		Source/Graphics/Device/OpenGL/NSGLGraphicsDevice.mm
 		Source/Graphics/Device/OpenGL/NSGLGraphicsDevice.h
-	)	
-	set(LN_SOURCES_Framework
-		${LN_SOURCES_Framework}
-		Source/Framework/Main_Mac.cpp
 	)
-
 
 elseif (UNIX)
 	set(LN_SOURCES_Platform
@@ -796,8 +784,8 @@ endif()
 set(LN_INCLUDE_DIRECTORIES
 	${PROJECT_SOURCE_DIR}/Include
 	${PROJECT_SOURCE_DIR}/../LuminoCore/Include
-	${CMAKE_SOURCE_DIR}/external
-	${CMAKE_SOURCE_DIR}/external/glfw-3.1.2/include
+	${CMAKE_SOURCE_DIR}/External
+	${CMAKE_SOURCE_DIR}/External/glfw-3.1.2/include
 )
 include_directories(${LN_INCLUDE_DIRECTORIES} ${LN_PLATFORM_INCLUDE_DIRS})
 
