@@ -321,6 +321,8 @@ set(LN_SOURCES_Mesh
 	Source/Mesh/Common.h
 	Source/Mesh/ModelManager.cpp
 	Source/Mesh/ModelManager.h
+	Source/Mesh/MqoImporter.cpp
+	Source/Mesh/MqoImporter.h
 	Source/Mesh/PmxLoader.cpp
 	Source/Mesh/PmxLoader.h
 	Source/Mesh/PmxSkinnedMesh.cpp

@@ -36,6 +36,7 @@ public:
 
 	void Initialize(const ConfigData& configData);
 	void Finalize();
+	FileManager* GetFileManager() const { return m_fileManager; }
 	detail::PhysicsManager* GetPhysicsManager() { return m_physicsManager; }
 	GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
 	Texture2D* GetMMDDefaultToonTexture(int index);
