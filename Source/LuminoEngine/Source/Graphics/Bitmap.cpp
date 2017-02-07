@@ -68,7 +68,7 @@ Bitmap::Bitmap(const TCHAR* filePath)
 	Init();
 	LN_THROW(filePath != NULL, ArgumentException);
 
-	FileStreamPtr file = FileStream::Create(filePath, FileOpenMode::Read);
+	RefPtr<FileStream> file = FileStream::Create(filePath, FileOpenMode::Read);
 	PngFile pngFile;
 	if (!pngFile.load(file, false)) {
 		LN_THROW(0, InvalidFormatException);

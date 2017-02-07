@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 #include "../Base/String.h"
 #include "../Base/RefObject.h"
@@ -6,50 +6,101 @@
 LN_NAMESPACE_BEGIN
 
 /**
-	@brief	��A�̕�����ǂݎ�邱�Ƃ��ł��郊�[�_�[��\���܂��B
+	@brief	一連の文字を読み取ることができるリーダーを表します。
 */
-class TextReader
+template<typename TChar>
+class GenericTextReader
 	: public RefObject
 {
 public:
-	virtual ~TextReader();
+	virtual ~GenericTextReader() = default;
 	
 public:
 
 	/**
-		@brief		���݈ʒu�̕������擾���܂��B
-		@return		EOF �ɓ��B���Ă��邩�G���[�����������ꍇ�� -1 ��Ԃ��܂��B
-					�߂�l�� -1 �����`�F�b�N������ATCHAR �ɃL���X�g���邱�Ƃŕ����Ƃ��Ďg�p�ł��܂��B
+		@brief		現在位置の文字を取得します。
+		@return		EOF に到達しているかエラーが発生した場合は -1 を返します。
+					戻り値が -1 かをチェックした後、TCHAR にキャストすることで文字として使用できます。
 	*/
 	virtual int Peek() = 0;
 
 	/**
-		@brief		���݈ʒu�̕������擾���A���݈ʒu�����̕����Ɉړ����܂��B
-		@return		EOF �ɓ��B���Ă��邩�G���[�����������ꍇ�� -1 ��Ԃ��܂��B
-					�߂�l�� -1 �����`�F�b�N������ATCHAR �ɃL���X�g���邱�Ƃŕ����Ƃ��Ďg�p�ł��܂��B
+		@brief		現在位置の文字を取得し、現在位置を次の文字に移動します。
+		@return		EOF に到達しているかエラーが発生した場合は -1 を返します。
+					戻り値が -1 かをチェックした後、TCHAR にキャストすることで文字として使用できます。
 	*/
 	virtual int Read() = 0;
 
 	/**
-		@brief		���݈ʒu���� 1 �s���̕������ǂݎ��A���݈ʒu���ړ����܂��B
-		@param[out]	line	: �ǂݎ������������i�[����ϐ��̃|�C���^ (���s�����͊܂܂Ȃ�)
-		@return		���� EOF �ɓ��B���Ă���ꍇ�� false ��Ԃ��܂��B
-		@details	CRLF("\r\n") ��1�̉��s�Ƃ݂Ȃ��܂��B 
-					line �� NULL �̏ꍇ�͌��݈ʒu�� 1 �s�����߂邾���ŁA�������Ԃ��܂���B
+		@brief		現在位置から 1 行分の文字列を読み取り、現在位置を移動します。
+		@param[out]	line	: 読み取った文字列を格納する変数のポインタ (改行文字は含まない)
+		@return		既に EOF に到達している場合は false を返します。
+		@details	CRLF("\r\n") は1つの改行とみなします。 
+					line が NULL の場合は現在位置を 1 行すすめるだけで、文字列を返しません。
 	*/
-	virtual bool ReadLine(String* line) = 0;
+	virtual bool ReadLine(GenericString<TChar>* line) = 0;
 	
 	/**
-		@brief		���݈ʒu����S�Ă̕������ǂݎ��܂��B
-		@return		�ǂݎ����������
+		@brief		現在位置から全ての文字列を読み取ります。
+		@return		読み取った文字列
 	*/
-	virtual String ReadToEnd() = 0;
+	virtual GenericString<TChar> ReadToEnd() = 0;
 
 	/**
-		@brief		���݈ʒu�� EOF �ɓ��B���Ă��邩���m�F���܂��B
+		@brief		現在位置が EOF に到達しているかを確認します。
 	*/
 	virtual bool IsEOF() = 0;
 
 };
+
+using TextReader = GenericTextReader<TCHAR>;
+
+//
+///**
+//	@brief	一連の文字を読み取ることができるリーダーを表します。
+//*/
+//class TextReader
+//	: public RefObject
+//{
+//public:
+//	virtual ~TextReader();
+//	
+//public:
+//
+//	/**
+//		@brief		現在位置の文字を取得します。
+//		@return		EOF に到達しているかエラーが発生した場合は -1 を返します。
+//					戻り値が -1 かをチェックした後、TCHAR にキャストすることで文字として使用できます。
+//	*/
+//	virtual int Peek() = 0;
+//
+//	/**
+//		@brief		現在位置の文字を取得し、現在位置を次の文字に移動します。
+//		@return		EOF に到達しているかエラーが発生した場合は -1 を返します。
+//					戻り値が -1 かをチェックした後、TCHAR にキャストすることで文字として使用できます。
+//	*/
+//	virtual int Read() = 0;
+//
+//	/**
+//		@brief		現在位置から 1 行分の文字列を読み取り、現在位置を移動します。
+//		@param[out]	line	: 読み取った文字列を格納する変数のポインタ (改行文字は含まない)
+//		@return		既に EOF に到達している場合は false を返します。
+//		@details	CRLF("\r\n") は1つの改行とみなします。 
+//					line が NULL の場合は現在位置を 1 行すすめるだけで、文字列を返しません。
+//	*/
+//	virtual bool ReadLine(String* line) = 0;
+//	
+//	/**
+//		@brief		現在位置から全ての文字列を読み取ります。
+//		@return		読み取った文字列
+//	*/
+//	virtual String ReadToEnd() = 0;
+//
+//	/**
+//		@brief		現在位置が EOF に到達しているかを確認します。
+//	*/
+//	virtual bool IsEOF() = 0;
+//
+//};
 
 LN_NAMESPACE_END
