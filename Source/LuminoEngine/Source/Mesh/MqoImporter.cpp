@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <iostream>
 #include <Lumino/Text/Encoding.h>
@@ -20,17 +20,15 @@ MqoImporter::MqoImporter()
 }
 
 //------------------------------------------------------------------------------
-RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const StringRef& filePath)
+RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathName& parentDir, Stream* stream)
 {
 	LN_FAIL_CHECK_ARG(manager != nullptr) return nullptr;
 
-	m_filePath = PathName(filePath);
-	m_parentDir = m_filePath.GetParent();
+	m_parentDir = parentDir;
 
-	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath), false);
+	//RefPtr<Stream> stream(file, false); //manager->GetFileManager()->CreateFileStream(filePath)
 
-	// Metasequoia4 ‚Åo—Í‚³‚ê‚é .mqo ƒtƒ@ƒCƒ‹‚Ì•¶ŽšƒR[ƒh‚Í Shift_JIS ‚¾‚Á‚½
-	// TODO: GenericStreamReader ‚Æ‚©‚É‚µ‚Ä char ‚Ì‚Ü‚Üˆ—‚Å‚«‚ê‚Î‚à‚Á‚Æ‚‘¬‚É‚È‚é
+	// Metasequoia4 ã§å‡ºåŠ›ã•ã‚Œã‚‹ .mqo ãƒ•ã‚¡ã‚¤ãƒ«ã®æ–‡å­—ã‚³ãƒ¼ãƒ‰ã¯ Shift_JIS ã ã£ãŸ
 	StreamReader reader(stream, Encoding::GetEncoding(EncodingType::SJIS));
 
 	String line;
@@ -65,8 +63,8 @@ void MqoImporter::LoadMaterials(StreamReader* reader)
 	{
 		if (line.IndexOf(_T("}")) > -1) break;
 
-		// ƒ}ƒeƒŠƒAƒ‹1‚Â‚Ìî•ñ‚ÍA\s ‹æØ‚è‚Ì‚Ps‚É‚È‚Á‚Ä‚¢‚éB
-		// Å‰‚Ìƒf[ƒ^‚Íƒ}ƒeƒŠƒAƒ‹–¼B‚±‚ê‚Í”ò‚Î‚·B
+		// ãƒžãƒ†ãƒªã‚¢ãƒ«1ã¤ã®æƒ…å ±ã¯ã€\s åŒºåˆ‡ã‚Šã®ï¼‘è¡Œã«ãªã£ã¦ã„ã‚‹ã€‚
+		// æœ€åˆã®ãƒ‡ãƒ¼ã‚¿ã¯ãƒžãƒ†ãƒªã‚¢ãƒ«åã€‚ã“ã‚Œã¯é£›ã°ã™ã€‚
 		int dataHead = 0;
 		{
 			int first = line.IndexOf('"');
@@ -87,52 +85,52 @@ void MqoImporter::LoadMaterials(StreamReader* reader)
 			int numHead = line.IndexOf('(', dataHead) + 1;
 			int numEnd = line.IndexOf(')', dataHead);
 			int dataEnd = numEnd + 1;
-			if (line[numHead] == '"')	// tex("ƒtƒ@ƒCƒ‹–¼") ‚É”õ‚¦‚é
+			if (line[numHead] == '"')	// tex("ãƒ•ã‚¡ã‚¤ãƒ«å") ã«å‚™ãˆã‚‹
 			{
 				numHead++;
 				numEnd = line.IndexOf("\")", dataHead);
 			}
 
 			//if (line.IndexOf(_T("shader"), dataHead, CaseSensitivity::CaseInsensitive)
-			//if (line.IndexOf(_T("vcol"), dataHead, CaseSensitivity::CaseInsensitive)	’¸“_ƒJƒ‰[
-			//if (line.IndexOf(_T("dbls"), dataHead, CaseSensitivity::CaseInsensitive)	—¼–Ê•\Ž¦
-			if (line.IndexOf(_T("col"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	Fi‚q‚f‚ajA•s“§–¾“x
+			//if (line.IndexOf(_T("vcol"), dataHead, CaseSensitivity::CaseInsensitive)	é ‚ç‚¹ã‚«ãƒ©ãƒ¼
+			//if (line.IndexOf(_T("dbls"), dataHead, CaseSensitivity::CaseInsensitive)	ä¸¡é¢è¡¨ç¤º
+			if (line.IndexOf(_T("col"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	è‰²ï¼ˆï¼²ï¼§ï¼¢ï¼‰ã€ä¸é€æ˜Žåº¦
 			{
 				const char * pp = line.c_str() + numHead;
 				sscanf(line.c_str() + numHead, "%f %f %f %f", &color.r, &color.g, &color.b, &color.a);
 			}
-			if (line.IndexOf(_T("dif"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	ŠgŽUŒõ	0`1
+			if (line.IndexOf(_T("dif"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	æ‹¡æ•£å…‰	0ï½ž1
 			{
 				diffuse = StringTraits::ToDouble(line.c_str() + numHead, dataEnd - numHead);
 			}
-			if (line.IndexOf(_T("amb"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	ŽüˆÍŒõ	0`1
+			if (line.IndexOf(_T("amb"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	å‘¨å›²å…‰	0ï½ž1
 			{
 				ambient = StringTraits::ToDouble(line.c_str() + numHead, dataEnd - numHead);
 			}
-			if (line.IndexOf(_T("emi"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	Ž©ŒÈÆ–¾	0`1
+			if (line.IndexOf(_T("emi"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	è‡ªå·±ç…§æ˜Ž	0ï½ž1
 			{
 				emissive = StringTraits::ToDouble(line.c_str() + numHead, dataEnd - numHead);
 			}
-			if (line.IndexOf(_T("spc"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	”½ŽËŒõ	0`1
+			if (line.IndexOf(_T("spc"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	åå°„å…‰	0ï½ž1
 			{
 				specular = StringTraits::ToDouble(line.c_str() + numHead, dataEnd - numHead);
 			}
-			if (line.IndexOf(_T("power"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	”½ŽËŒõ‚Ì‹­‚³	0`100
+			if (line.IndexOf(_T("power"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	åå°„å…‰ã®å¼·ã•	0ï½ž100
 			{
 				power = StringTraits::ToDouble(line.c_str() + numHead, dataEnd - numHead);
 			}
-			//if (line.IndexOf(_T("reflect"), dataHead, CaseSensitivity::CaseInsensitive)	‹¾–Ê”½ŽË iVer4.0ˆÈ~)	0`1
-			//if (line.IndexOf(_T("refract"), dataHead, CaseSensitivity::CaseInsensitive)	‹üÜ—¦ iVer4.0ˆÈ~)	1`5
-			if (line.IndexOf(_T("tex"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	–Í—lƒ}ƒbƒsƒ“ƒO–¼	‘Š‘ÎƒpƒX‚Ü‚½‚Íâ‘ÎƒpƒX‚Å‹Lq
+			//if (line.IndexOf(_T("reflect"), dataHead, CaseSensitivity::CaseInsensitive)	é¡é¢åå°„ ï¼ˆVer4.0ä»¥é™)	0ï½ž1
+			//if (line.IndexOf(_T("refract"), dataHead, CaseSensitivity::CaseInsensitive)	å±ˆæŠ˜çŽ‡ ï¼ˆVer4.0ä»¥é™)	1ï½ž5
+			if (line.IndexOf(_T("tex"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	æ¨¡æ§˜ãƒžãƒƒãƒ”ãƒ³ã‚°å	ç›¸å¯¾ãƒ‘ã‚¹ã¾ãŸã¯çµ¶å¯¾ãƒ‘ã‚¹ã§è¨˜è¿°
 			{
 				texture = m_manager->CreateTexture(m_parentDir, StringRef(line.c_str() + numHead, line.c_str() + numEnd), ModelCreationFlag::IgnoreTextureNotFound);
 			}
-			//if (line.IndexOf(_T("aplane"), dataHead, CaseSensitivity::CaseInsensitive)	“§–¾ƒ}ƒbƒsƒ“ƒO–¼	‘Š‘ÎƒpƒX‚Ü‚½‚Íâ‘ÎƒpƒX‚Å‹Lq
-			//if (line.IndexOf(_T("bump"), dataHead, CaseSensitivity::CaseInsensitive)	‰š“Êƒ}ƒbƒsƒ“ƒO–¼	‘Š‘ÎƒpƒX‚Ü‚½‚Íâ‘ÎƒpƒX‚Å‹Lq
-			//if (line.IndexOf(_T("proj_type"), dataHead, CaseSensitivity::CaseInsensitive)	ƒ}ƒbƒsƒ“ƒO•ûŽ®
-			//if (line.IndexOf(_T("proj_pos"), dataHead, CaseSensitivity::CaseInsensitive)	“Š‰eˆÊ’ui‚w‚x‚yj
-			//if (line.IndexOf(_T("proj_scale"), dataHead, CaseSensitivity::CaseInsensitive)	“Š‰eŠg‘å—¦i‚w‚x‚yj
-			//if (line.IndexOf(_T("proj_angle"), dataHead, CaseSensitivity::CaseInsensitive)	“Š‰eŠp“xi‚g‚o‚aj - 180`180
+			//if (line.IndexOf(_T("aplane"), dataHead, CaseSensitivity::CaseInsensitive)	é€æ˜Žãƒžãƒƒãƒ”ãƒ³ã‚°å	ç›¸å¯¾ãƒ‘ã‚¹ã¾ãŸã¯çµ¶å¯¾ãƒ‘ã‚¹ã§è¨˜è¿°
+			//if (line.IndexOf(_T("bump"), dataHead, CaseSensitivity::CaseInsensitive)	å‡¹å‡¸ãƒžãƒƒãƒ”ãƒ³ã‚°å	ç›¸å¯¾ãƒ‘ã‚¹ã¾ãŸã¯çµ¶å¯¾ãƒ‘ã‚¹ã§è¨˜è¿°
+			//if (line.IndexOf(_T("proj_type"), dataHead, CaseSensitivity::CaseInsensitive)	ãƒžãƒƒãƒ”ãƒ³ã‚°æ–¹å¼
+			//if (line.IndexOf(_T("proj_pos"), dataHead, CaseSensitivity::CaseInsensitive)	æŠ•å½±ä½ç½®ï¼ˆï¼¸ï¼¹ï¼ºï¼‰
+			//if (line.IndexOf(_T("proj_scale"), dataHead, CaseSensitivity::CaseInsensitive)	æŠ•å½±æ‹¡å¤§çŽ‡ï¼ˆï¼¸ï¼¹ï¼ºï¼‰
+			//if (line.IndexOf(_T("proj_angle"), dataHead, CaseSensitivity::CaseInsensitive)	æŠ•å½±è§’åº¦ï¼ˆï¼¨ï¼°ï¼¢ï¼‰ - 180ï½ž180
 
 			dataHead = dataEnd + 1;
 		}
@@ -170,7 +168,12 @@ void MqoImporter::LoadMaterials(StreamReader* reader)
 //------------------------------------------------------------------------------
 void MqoImporter::LoadObject(StreamReader* reader)
 {
-
+	String line;
+	while (reader->ReadLine(&line))
+	{
+		if (line.IndexOf(_T("}")) > -1) break;
+	
+	}
 }
 
 } // namespace detail

@@ -514,14 +514,16 @@ void Main()
 	//auto tex1 = Texture2D::Create(32, 32);
 	//tex1->Clear(Color32::Red);
 	//auto box1 = StaticMesh::CreateBox(Vector3(5, 5, 5));
-	auto box1 = StaticMesh::CreateTeapot();
+	//auto box1 = StaticMesh::CreateTeapot();
+	auto box1 = StaticMesh::Create(_T("C:/Proj/FluoriteSolution/External/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/Plant1.mqo"));
 	//box1->GetMaterials()->GetAt(0)->SetMaterialTexture(tex1);
 	////box1->SetTone(ToneF(0, 0, 1, 1.0));
-	gizmo->Setup(Matrix::Identity, box1->GetTransform());//Matrix::MakeTranslation(1, 0, 0));
+	//gizmo->Setup(Matrix::Identity, box1->GetTransform());//Matrix::MakeTranslation(1, 0, 0));
 
 	//auto mesh3 = StaticMesh::CreatePlane(Vector2(3, 3), 1, 1);
 	//mesh3->SetPosition(-2, 0, 0);
 
+#if 0
 	List<RefPtr<StaticMesh>> boxList;
 	for (int z = 0; z < 10; z++)
 	{
@@ -535,6 +537,7 @@ void Main()
 			}
 		}
 	}
+#endif
 
 	while (!Engine::IsEndRequested())
 	{

@@ -115,6 +115,7 @@
 #if defined(LN_OS_WIN32)
 #include "XFileLoader.h"
 #endif
+#include "MqoImporter.h"
 #include "PmxLoader.h"
 //#include "VMDLoader.h"
 #include "ModelManager.h"
@@ -335,13 +336,22 @@ RefPtr<StaticMeshModel> ModelManager::CreateStaticMeshModel(const PathName& file
 {
 
 #if defined(LN_OS_WIN32)
+	RefPtr<StaticMeshModel> mesh;
 	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath), false);
+
+	PathName parentDir = filePath.GetParent();
+	{
+		MqoImporter importer;
+		mesh = importer.Import(this, parentDir, stream);
+		if (mesh != nullptr) return mesh;
+		stream->Seek(0, SeekOrigin_Begin);
+	}
 
 	//PMXLoader loader;
 	//RefPtr<ModelCore> modelCore(loader.Load(this, stream, filePath.GetParent(), true));
 
 	XFileLoader loader;
-	RefPtr<StaticMeshModel> mesh = loader.Load(this, stream, filePath.GetParent(), true, ModelCreationFlag::None);
+	mesh = loader.Load(this, stream, parentDir, true, ModelCreationFlag::None);
 
 	//modelCore->RefreshInitialValues();
 	//modelCore.SafeAddRef();
