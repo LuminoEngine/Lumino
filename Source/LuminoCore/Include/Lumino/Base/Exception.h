@@ -113,6 +113,7 @@
 #endif
 
 
+#define LN_FATAL(expression, message)				{ if (!(expression)) ln::detail::NotifyFatalError(__FILE__, __LINE__, message); }
 #define LN_VERIFY(expression, exception, ...)		{ if (!(expression)) ln::detail::NotifyException<exception>(__FILE__, __LINE__, __VA_ARGS__); }
 #define LN_VERIFY_ARG(expression, ...)				{ if (!(expression)) ln::detail::NotifyException<::ln::ArgumentException>(__FILE__, __LINE__, __VA_ARGS__); }
 #define LN_VERIFY_STATE(expression, ...)			{ if (!(expression)) ln::detail::NotifyException<::ln::InvalidOperationException>(__FILE__, __LINE__, __VA_ARGS__); }
@@ -129,9 +130,13 @@ class Assertion
 {
 public:
 	using NotifyVerificationHandler = bool(*)(const Exception& e);
+	using NotifyFataiErrorHandler = bool(*)(const char* file, int line, const char* message);
 
 	static void SetNotifyVerificationHandler(NotifyVerificationHandler handler);
 	static NotifyVerificationHandler GetNotifyVerificationHandler();
+
+	static void SetNotifyFataiErrorHandler(NotifyFataiErrorHandler handler);
+	static NotifyFataiErrorHandler GetNotifyFataiErrorHandler();
 };
 
 namespace detail
@@ -153,6 +158,8 @@ inline bool NotifyException(const char* file, int line, TArgs... args)
 	throw e;
 	return true;
 }
+
+bool NotifyFatalError(const char* file, int line, const char* message = nullptr);
 
 } // namespace detail
 

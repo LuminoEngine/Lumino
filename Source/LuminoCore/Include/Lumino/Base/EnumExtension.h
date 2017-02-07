@@ -109,7 +109,7 @@ enum _##enumName
 		friend inline enumName operator~(enumName::enum_type v) throw(); \
 	}; \
 	inline bool operator==(const enumName::enum_type& left, const enumName& right) throw()		{ return left == right.m_value; } \
-	inline bool operator!=(const enumName::enum_type& left, const enumName& right) throw()		{ return left == right.m_value; } \
+	inline bool operator!=(const enumName::enum_type& left, const enumName& right) throw()		{ return left != right.m_value; } \
 	inline enumName operator&(const enumName& left, const enumName& right) throw()		{ enumName value; value.m_value = left.m_value & right.m_value; return value; } \
 	inline enumName operator&(const enumName& left, enumName::enum_type right) throw()	{ enumName value; value.m_value = left.m_value & right; return value; } \
 	inline enumName operator&(enumName::enum_type left, const enumName& right) throw()	{ enumName value; value.m_value = right.m_value & left;  return value; } \
