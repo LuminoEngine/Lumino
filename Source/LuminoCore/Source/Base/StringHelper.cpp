@@ -1140,8 +1140,26 @@ double StringTraits::ToDouble(const TChar* str, int len, const TChar** outEndPtr
 	}
 	return v;
 }
-
 template double StringTraits::ToDouble<char>(const char* str, int len, const char** outEndPtr, NumberConversionResult* outResult);
 template double StringTraits::ToDouble<wchar_t>(const wchar_t* str, int len, const wchar_t** outEndPtr, NumberConversionResult* outResult);
+
+template<typename TChar>
+float StringTraits::ToFloat(const TChar* str, int len, const TChar** outEndPtr, NumberConversionResult* outResult)
+{
+	double value = ToDouble(str, len, outEndPtr, outResult);
+
+	// double に変換するとオーバーフローする場合はエラーを出力する
+	if (outResult != nullptr &&
+		*outResult == NumberConversionResult::Success &&
+		-FLT_MAX <= value && value <= FLT_MAX)
+	{
+		*outResult = NumberConversionResult::Overflow;
+	}
+
+	return (float)value;
+}
+template float StringTraits::ToFloat<char>(const char* str, int len, const char** outEndPtr, NumberConversionResult* outResult);
+template float StringTraits::ToFloat<wchar_t>(const wchar_t* str, int len, const wchar_t** outEndPtr, NumberConversionResult* outResult);
+
 
 LN_NAMESPACE_END

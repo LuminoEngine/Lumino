@@ -51,6 +51,10 @@ RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathNam
 		}
 	}
 
+
+	// マテリアルインデックスでソート
+	std::sort(m_mqoFaceList.begin(), m_mqoFaceList.end(), [](const MqoFace& lhs, const MqoFace& rhs) { return lhs.materialIndex < rhs.materialIndex; });
+
 	LN_NOTIMPLEMENTED();
 	return nullptr;
 }
@@ -88,7 +92,7 @@ void MqoImporter::LoadMaterials(StreamReader* reader)
 			if (line[numHead] == '"')	// tex("ファイル名") に備える
 			{
 				numHead++;
-				numEnd = line.IndexOf("\")", dataHead);
+				numEnd = line.IndexOf(_T("\")"), dataHead);
 			}
 
 			//if (line.IndexOf(_T("shader"), dataHead, CaseSensitivity::CaseInsensitive)
@@ -96,28 +100,27 @@ void MqoImporter::LoadMaterials(StreamReader* reader)
 			//if (line.IndexOf(_T("dbls"), dataHead, CaseSensitivity::CaseInsensitive)	両面表示
 			if (line.IndexOf(_T("col"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	色（ＲＧＢ）、不透明度
 			{
-				const char * pp = line.c_str() + numHead;
-				sscanf(line.c_str() + numHead, "%f %f %f %f", &color.r, &color.g, &color.b, &color.a);
+				ReadFloats(StringRef(line.c_str() + numHead, line.c_str() + numEnd), reinterpret_cast<float*>(&color), 4);
 			}
 			if (line.IndexOf(_T("dif"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	拡散光	0～1
 			{
-				diffuse = StringTraits::ToDouble(line.c_str() + numHead, dataEnd - numHead);
+				diffuse = StringTraits::ToFloat(line.c_str() + numHead, dataEnd - numHead);
 			}
 			if (line.IndexOf(_T("amb"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	周囲光	0～1
 			{
-				ambient = StringTraits::ToDouble(line.c_str() + numHead, dataEnd - numHead);
+				ambient = StringTraits::ToFloat(line.c_str() + numHead, dataEnd - numHead);
 			}
 			if (line.IndexOf(_T("emi"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	自己照明	0～1
 			{
-				emissive = StringTraits::ToDouble(line.c_str() + numHead, dataEnd - numHead);
+				emissive = StringTraits::ToFloat(line.c_str() + numHead, dataEnd - numHead);
 			}
 			if (line.IndexOf(_T("spc"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	反射光	0～1
 			{
-				specular = StringTraits::ToDouble(line.c_str() + numHead, dataEnd - numHead);
+				specular = StringTraits::ToFloat(line.c_str() + numHead, dataEnd - numHead);
 			}
 			if (line.IndexOf(_T("power"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	反射光の強さ	0～100
 			{
-				power = StringTraits::ToDouble(line.c_str() + numHead, dataEnd - numHead);
+				power = StringTraits::ToFloat(line.c_str() + numHead, dataEnd - numHead);
 			}
 			//if (line.IndexOf(_T("reflect"), dataHead, CaseSensitivity::CaseInsensitive)	鏡面反射 （Ver4.0以降)	0～1
 			//if (line.IndexOf(_T("refract"), dataHead, CaseSensitivity::CaseInsensitive)	屈折率 （Ver4.0以降)	1～5
@@ -168,11 +171,147 @@ void MqoImporter::LoadMaterials(StreamReader* reader)
 //------------------------------------------------------------------------------
 void MqoImporter::LoadObject(StreamReader* reader)
 {
+	int index;
 	String line;
 	while (reader->ReadLine(&line))
 	{
 		if (line.IndexOf(_T("}")) > -1) break;
-	
+
+		if ((index = line.IndexOf(_T("vertex "))) >= 0)
+		{
+			int count = StringTraits::ToInt32(line.c_str() + index + 7);
+			m_mqoVertexList.Reserve(m_mqoVertexList.GetCount() + count);
+			ReadVertexChunk(reader);
+		}
+		else if ((index = line.IndexOf(_T("BVertex "))) >= 0)
+		{
+			LN_NOTIMPLEMENTED();
+		}
+		else if ((index = line.IndexOf(_T("face "))) >= 0)
+		{
+			int count = StringTraits::ToInt32(line.c_str() + index + 5);
+			m_mqoFaceList.Reserve(m_mqoFaceList.GetCount() + count);
+			ReadFaceChunk(reader);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+void MqoImporter::ReadInts(const StringRef& str, int* values, int valuesCount)
+{
+	int* valuesEnd = values + valuesCount;
+	StringTraits::SplitHelper(
+		str.GetBegin(), str.GetEnd(), _T(" "), 1, StringSplitOptions::RemoveEmptyEntries, CaseSensitivity::CaseSensitive,
+		[&values, &valuesEnd](const TCHAR* begin, const TCHAR* end)
+		{
+			if (values < valuesEnd)
+			{
+				*values = StringTraits::ToInt32(begin, end - begin);
+				values++;
+			}
+		});
+}
+
+//------------------------------------------------------------------------------
+void MqoImporter::ReadUInts(const StringRef& str, uint32_t* values, int valuesCount)
+{
+	uint32_t* valuesEnd = values + valuesCount;
+	StringTraits::SplitHelper(
+		str.GetBegin(), str.GetEnd(), _T(" "), 1, StringSplitOptions::RemoveEmptyEntries, CaseSensitivity::CaseSensitive,
+		[&values, &valuesEnd](const TCHAR* begin, const TCHAR* end)
+	{
+		if (values < valuesEnd)
+		{
+			*values = StringTraits::ToUInt32(begin, end - begin);
+			values++;
+		}
+	});
+}
+
+//------------------------------------------------------------------------------
+void MqoImporter::ReadFloats(const StringRef& str, float* values, int valuesCount)
+{
+	float* valuesEnd = values + valuesCount;
+	StringTraits::SplitHelper(
+		str.GetBegin(), str.GetEnd(), _T(" "), 1, StringSplitOptions::RemoveEmptyEntries, CaseSensitivity::CaseSensitive,
+		[&values, &valuesEnd](const TCHAR* begin, const TCHAR* end)
+		{
+			if (values < valuesEnd)
+			{
+				*values = StringTraits::ToFloat(begin, end - begin);
+				values++;
+			}
+		});
+}
+
+//------------------------------------------------------------------------------
+void MqoImporter::ReadVertexChunk(StreamReader* reader)
+{
+	String line;
+	while (reader->ReadLine(&line))
+	{
+		if (line.IndexOf(_T("}")) > -1) break;
+
+		Vector3 v;
+		ReadFloats(StringRef(line, 2), reinterpret_cast<float*>(&v), 3);
+		m_mqoVertexList.Add(v);
+	}
+}
+
+//------------------------------------------------------------------------------
+void MqoImporter::ReadFaceChunk(StreamReader* reader)
+{
+	String line;
+	while (reader->ReadLine(&line))
+	{
+		if (line.IndexOf(_T("}")) > -1) break;
+
+		MqoFace face;
+
+		int dataHead = 2;	// 行頭 tab
+		face.vertexCount = StringTraits::ToInt32(line.c_str() + dataHead);
+		dataHead += 2;		// 頂点数, space
+
+		while (dataHead < line.GetLength())
+		{
+			int numHead = line.IndexOf('(', dataHead) + 1;
+			int numEnd = line.IndexOf(')', dataHead);
+			int dataEnd = numEnd + 1;
+			if (line[numHead] == '"')	// tex("ファイル名") に備える
+			{
+				numHead++;
+				numEnd = line.IndexOf(_T("\")"), dataHead);
+			}
+
+			// V(%d ...)	頂点インデックス
+			else if (StringTraits::Compare(line.c_str() + dataHead, _T("V"), 1, CaseSensitivity::CaseInsensitive) == 0)
+			{
+				ReadInts(StringRef(line, numHead, numEnd - numHead), face.vertexIndices, face.vertexCount);
+			}
+			// M(%d)	材質インデックス
+			else if (StringTraits::Compare(line.c_str() + dataHead, _T("M"), 1, CaseSensitivity::CaseInsensitive) == 0)
+			{
+				face.materialIndex = StringTraits::ToInt32(line.c_str() + numHead, numEnd - numHead);
+			}
+			// UV(%.5f %.5f ...)	ＵＶ値
+			else if (StringTraits::Compare(line.c_str() + dataHead, _T("UV"), 2, CaseSensitivity::CaseInsensitive) == 0)
+			{
+				ReadFloats(StringRef(line, numHead, numEnd - numHead), face.uv, face.vertexCount * 2);
+			}
+			// COL(%u)	頂点カラー
+			else if (StringTraits::Compare(line.c_str() + dataHead, _T("COL"), 3, CaseSensitivity::CaseInsensitive) == 0)
+			{
+				ReadUInts(StringRef(line, numHead, numEnd - numHead), face.colors, face.vertexCount);
+			}
+			// CRS(%f ...)	Catmull-Clark/OpenSubdiv曲面用のエッジの折れ目
+			//else if (line.Compare(_T("CRS"), 3, CaseSensitivity::CaseInsensitive) == 0)
+			//{
+			//}
+
+			dataHead = dataEnd + 1;
+		}
+
+		m_mqoFaceList.Add(face);
 	}
 }
 

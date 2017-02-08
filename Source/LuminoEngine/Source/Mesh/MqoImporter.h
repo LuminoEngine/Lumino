@@ -27,6 +27,11 @@ private:
 
 	void LoadMaterials(StreamReader* reader);
 	void LoadObject(StreamReader* reader);
+	void ReadInts(const StringRef& str, int* values, int valuesCount);
+	void ReadUInts(const StringRef& str, uint32_t* values, int valuesCount);
+	void ReadFloats(const StringRef& str, float* values, int valuesCount);
+	void ReadVertexChunk(StreamReader* reader);
+	void ReadFaceChunk(StreamReader* reader);
 
 	ModelManager*	m_manager;
 	PathName		m_filePath;
