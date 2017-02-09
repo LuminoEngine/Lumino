@@ -1,4 +1,7 @@
-﻿
+﻿/*
+	"Section" FStaticMeshSection
+*/
+
 #include "../Internal.h"
 #include "../Graphics/Device/ShaderVariableBase.h"
 #include <Lumino/Graphics/Texture.h>
@@ -279,6 +282,12 @@ void MeshResource::SetEdgeWeight(int index, float weight)
 	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
 	MmdExtra* v = (MmdExtra*)TryLockVertexBuffer(VB_MmdExtra);
 	v[index].edgeWeight = weight;
+}
+
+//------------------------------------------------------------------------------
+void MeshResource::AddMeshSection(const MeshAttribute& section)
+{
+	m_attributes.Add(section);
 }
 
 //------------------------------------------------------------------------------

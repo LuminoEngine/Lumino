@@ -73,6 +73,9 @@ public:
 	void SetEdgeWeight(int index, float weight);
 
 
+	void AddMeshSection(const MeshAttribute& section);
+
+	// TODO
 	void AddSections(int count);
 	MeshAttribute* GetSection(int index);
 
@@ -170,6 +173,8 @@ LN_INTERNAL_ACCESS:
 	void* TryLockIndexBuffer();
 	void TryGlowVertexBuffers(int requestVertexCount);
 	void TryGlowIndexBuffer(int requestIndexCount);
+	//void* RequestVertexBuffer(int vertexCount, VertexBufferType type);
+	//void* RequestIndexBuffer(int indexCount);
 	void* RequestVertexBufferForAdditional(int additionalVertexCount, VertexBufferType type);
 	uint16_t* RequestIndexBufferForAdditional(int additionalIndexCount);
 

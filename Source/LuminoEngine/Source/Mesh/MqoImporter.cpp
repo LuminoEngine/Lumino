@@ -10,12 +10,23 @@
 LN_NAMESPACE_BEGIN
 namespace detail {
 
+// 三角形ポリゴンの法線を求める
+Vector3 TriangleNormal(const Vector3& p0, const Vector3& p1, const Vector3& p2)
+{
+	Vector3 v10 = p1 - p0;
+	Vector3 v20 = p2 - p0;
+	Vector3 nor = Vector3::Cross(v10, v20);
+	return Vector3::Normalize(nor);
+}
+
 //==============================================================================
 // ModelManager
 //==============================================================================
 
 //------------------------------------------------------------------------------
 MqoImporter::MqoImporter()
+	: m_meshIndexCount(0)
+	, m_meshVertexCount(0)
 {
 }
 
@@ -27,6 +38,9 @@ RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathNam
 	m_parentDir = parentDir;
 
 	//RefPtr<Stream> stream(file, false); //manager->GetFileManager()->CreateFileStream(filePath)
+
+	m_model = RefPtr<StaticMeshModel>::MakeRef();
+	m_model->Initialize(manager->GetGraphicsManager());
 
 	// Metasequoia4 で出力される .mqo ファイルの文字コードは Shift_JIS だった
 	StreamReader reader(stream, Encoding::GetEncoding(EncodingType::SJIS));
@@ -51,12 +65,53 @@ RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathNam
 		}
 	}
 
-
 	// マテリアルインデックスでソート
 	std::sort(m_mqoFaceList.begin(), m_mqoFaceList.end(), [](const MqoFace& lhs, const MqoFace& rhs) { return lhs.materialIndex < rhs.materialIndex; });
 
-	LN_NOTIMPLEMENTED();
-	return nullptr;
+	auto mesh = RefPtr<MeshResource>::MakeRef();
+	mesh->Initialize(manager->GetGraphicsManager(), MeshCreationFlags::None);
+	mesh->ResizeIndexBuffer(m_meshIndexCount);
+
+	// インデックスバッファを作りつつ、MqoVertex::referenced を作る
+	{
+		MeshAttribute sec;
+		sec.MaterialIndex = 0;
+		sec.StartIndex = 0;
+		sec.PrimitiveNum = 0;
+		sec.primitiveType = PrimitiveType_TriangleList;
+
+		int next = 0;
+		for (MqoFace& face : m_mqoFaceList)
+		{
+			if (face.materialIndex != sec.MaterialIndex)
+			{
+				mesh->AddMeshSection(sec);
+				sec.MaterialIndex = face.materialIndex;
+				sec.StartIndex = next;
+				sec.PrimitiveNum = 0;
+			}
+
+			next += AddFaceIndices(mesh, next, &face);
+			sec.PrimitiveNum += face.vertexCount - 2;
+		}
+		mesh->AddMeshSection(sec);
+	}
+
+	// 頂点バッファを作る
+	mesh->ResizeVertexBuffer(m_meshVertexCount);
+	for (MqoVertex& vertex : m_mqoVertexList)
+	{
+		for (MqoFacePointRef& ref : vertex.referenced)
+		{
+			mesh->SetPosition(ref.meshVertexNumber, vertex.position);
+			mesh->SetUV(ref.meshVertexNumber, *reinterpret_cast<Vector2*>(&ref.face->uv[ref.pointIndex * 2]));
+			// TODO: 頂点色
+			mesh->SetColor(ref.meshVertexNumber, Color::White);
+		}
+	}
+
+	m_model->SetMeshResource(mesh);
+	return m_model;
 }
 
 //------------------------------------------------------------------------------
@@ -165,6 +220,8 @@ void MqoImporter::LoadMaterials(StreamReader* reader)
 		material->SetSpecular(c);
 
 		material->SetSpecularPower(power);
+
+		m_model->AddMaterial(material);
 	}
 }
 
@@ -252,8 +309,8 @@ void MqoImporter::ReadVertexChunk(StreamReader* reader)
 	{
 		if (line.IndexOf(_T("}")) > -1) break;
 
-		Vector3 v;
-		ReadFloats(StringRef(line, 2), reinterpret_cast<float*>(&v), 3);
+		MqoVertex v;
+		ReadFloats(StringRef(line, 2), reinterpret_cast<float*>(&v.position), 3);
 		m_mqoVertexList.Add(v);
 	}
 }
@@ -267,9 +324,15 @@ void MqoImporter::ReadFaceChunk(StreamReader* reader)
 		if (line.IndexOf(_T("}")) > -1) break;
 
 		MqoFace face;
+		InitMqoFace(&face);
 
 		int dataHead = 2;	// 行頭 tab
 		face.vertexCount = StringTraits::ToInt32(line.c_str() + dataHead);
+
+		if (face.vertexCount == 3) m_meshIndexCount += 3;
+		else if (face.vertexCount == 4) m_meshIndexCount += 6;
+		else LN_NOTIMPLEMENTED();
+
 		dataHead += 2;		// 頂点数, space
 
 		while (dataHead < line.GetLength())
@@ -311,8 +374,86 @@ void MqoImporter::ReadFaceChunk(StreamReader* reader)
 			dataHead = dataEnd + 1;
 		}
 
+
 		m_mqoFaceList.Add(face);
 	}
+}
+
+//------------------------------------------------------------------------------
+void MqoImporter::InitMqoFace(MqoFace* face)
+{
+	memset(face, 0, sizeof(MqoFace));
+	face->colors[0] = face->colors[1] = face->colors[2] = face->colors[3] = 0xFFFFFFFF;
+}
+
+//------------------------------------------------------------------------------
+int MqoImporter::AddFaceIndices(MeshResource* mesh, int startIndexBufferIndex, MqoFace* face)
+{
+	if (face->vertexCount == 3)
+	{
+		int i0 = PutVertexSource(face, 0);
+		int i1 = PutVertexSource(face, 1);
+		int i2 = PutVertexSource(face, 2);
+		mesh->SetIndex(startIndexBufferIndex + 0, i0);
+		mesh->SetIndex(startIndexBufferIndex + 1, i1);
+		mesh->SetIndex(startIndexBufferIndex + 2, i2);
+		return 3;
+	}
+	else if (face->vertexCount == 4)
+	{
+		int i0 = PutVertexSource(face, 0);
+		int i1 = PutVertexSource(face, 1);
+		int i2 = PutVertexSource(face, 2);
+		int i3 = PutVertexSource(face, 3);
+		mesh->SetIndex(startIndexBufferIndex + 0, i0);
+		mesh->SetIndex(startIndexBufferIndex + 1, i1);
+		mesh->SetIndex(startIndexBufferIndex + 2, i3);
+		mesh->SetIndex(startIndexBufferIndex + 3, i3);
+		mesh->SetIndex(startIndexBufferIndex + 4, i1);
+		mesh->SetIndex(startIndexBufferIndex + 5, i2);
+		return 6;
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+	}
+	return 0;
+}
+
+//------------------------------------------------------------------------------
+// 指定した面上の1点と全く同じ点が既に登録されていればそのインデックスを返す。
+// そうでなければ新しく登録する。
+int MqoImporter::PutVertexSource(MqoFace* face, int pointIndex)
+{
+	int vertexIndex = face->vertexIndices[pointIndex];
+	MqoVertex& mqoVertex = m_mqoVertexList[vertexIndex];
+	for (MqoFacePointRef& ref : mqoVertex.referenced)
+	{
+		if (EqualsFacePoint(face, pointIndex, ref.face, ref.pointIndex))
+		{
+			return ref.meshVertexNumber;
+		}
+	}
+
+	// new
+	MqoFacePointRef ref;
+	ref.face = face;
+	ref.pointIndex = pointIndex;
+	ref.meshVertexNumber = m_meshVertexCount;
+	mqoVertex.referenced.Add(ref);
+	m_meshVertexCount++;
+
+	return ref.meshVertexNumber;
+}
+
+//------------------------------------------------------------------------------
+bool MqoImporter::EqualsFacePoint(const MqoFace* face1, int pointIndex1, const MqoFace* face2, int pointIndex2)
+{
+	if (face1->vertexIndices[pointIndex1] != face2->vertexIndices[pointIndex2]) return false;
+	if (face1->uv[pointIndex1 * 2 + 0] != face2->uv[pointIndex2 * 2 + 0]) return false;
+	if (face1->uv[pointIndex1 * 2 + 1] != face2->uv[pointIndex2 * 2 + 1]) return false;
+	if (face1->colors[pointIndex1] != face2->colors[pointIndex2]) return false;
+	return true;
 }
 
 } // namespace detail

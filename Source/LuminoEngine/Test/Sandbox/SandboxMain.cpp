@@ -494,7 +494,7 @@ void Main()
 	
 
 
-	auto gizmo = static_cast<CameraViewportLayer*>(Engine::GetDefault3DLayer())->CreateGizmo();
+	//auto gizmo = static_cast<CameraViewportLayer*>(Engine::GetDefault3DLayer())->CreateGizmo();
 
 	//auto sp = Sprite3D::Create(2, 2, Texture2D::Create(_T("D:/GameProjects/Chronicles/110220c_as019.jpg")));
 	//sp->SetTone(ToneF(0, 0, 1, 1.0));
@@ -553,14 +553,14 @@ void Main()
 		Engine::EndFrameUpdate();
 
 
-		if (Input::IsTriggered(InputButtons::Ok))
-		{
-			gizmo->SetGizmoType(tr::GizmoType::Scaling);
-		}
-		if (Input::IsTriggered(InputButtons::Cancel))
-		{
-			gizmo->SetGizmoType(tr::GizmoType::Rotation);
-		}
+		//if (Input::IsTriggered(InputButtons::Ok))
+		//{
+		//	gizmo->SetGizmoType(tr::GizmoType::Scaling);
+		//}
+		//if (Input::IsTriggered(InputButtons::Cancel))
+		//{
+		//	gizmo->SetGizmoType(tr::GizmoType::Rotation);
+		//}
 	}
 
 	//while (Engine::Update())
