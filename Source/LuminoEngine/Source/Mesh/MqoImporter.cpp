@@ -65,7 +65,61 @@ RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathNam
 		}
 	}
 
+
+	// 先に三角形化しなければならない
+	// 面法線を求める
+	// 頂点に、それを参照している面をつめる
+	for (int i = 0; i < m_mqoFaceList.GetCount(); i++)
+	{
+		MqoFace& face = m_mqoFaceList[i];
+		if (face.vertexCount == 3)
+		{
+		}
+		else if (face.vertexCount == 4)
+		{
+			face.vertexCount = 3;
+
+			MqoFace newFace;
+			newFace.vertexCount = 3;
+			newFace.vertexIndices[0] = face.vertexIndices[0];
+			newFace.vertexIndices[1] = face.vertexIndices[2];
+			newFace.vertexIndices[2] = face.vertexIndices[3];
+			newFace.uv[0] = face.uv[0];
+			newFace.uv[1] = face.uv[2];
+			newFace.uv[2] = face.uv[3];
+			newFace.colors[0] = face.colors[0];
+			newFace.colors[1] = face.colors[2];
+			newFace.colors[2] = face.colors[3];
+			m_mqoFaceList.Add(newFace);
+		}
+		else
+		{
+			LN_NOTIMPLEMENTED();
+		}
+
+		MqoVertex& v0 = m_mqoVertexList[face.vertexIndices[0]];
+		MqoVertex& v1 = m_mqoVertexList[face.vertexIndices[1]];
+		MqoVertex& v2 = m_mqoVertexList[face.vertexIndices[2]];
+		v0.referenced.Add(MqoFacePointRef{ i, 0, 0 });
+		v1.referenced.Add(MqoFacePointRef{ i, 1, 0 });
+		v2.referenced.Add(MqoFacePointRef{ i, 2, 0 });
+		face.normal = TriangleNormal(v0.position, v1.position, v2.position);
+	}
+
+	// 法線計算
+	for (MqoVertex& vertex : m_mqoVertexList)
+	{
+		for (MqoFacePointRef& facePointRef : vertex.referenced)
+		{
+			MqoFace& face = m_mqoFaceList[facePointRef.faceIndex];
+			face.vertexNormals[facePointRef.pointIndex] = face.normal;
+		}
+
+		vertex.referenced.Clear();
+	}
+
 	// マテリアルインデックスでソート
+	// (MqoVertex::referencedFaceIndices はもう使えなくなる)
 	std::sort(m_mqoFaceList.begin(), m_mqoFaceList.end(), [](const MqoFace& lhs, const MqoFace& rhs) { return lhs.materialIndex < rhs.materialIndex; });
 
 	auto mesh = RefPtr<MeshResource>::MakeRef();
@@ -81,8 +135,9 @@ RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathNam
 		sec.primitiveType = PrimitiveType_TriangleList;
 
 		int next = 0;
-		for (MqoFace& face : m_mqoFaceList)
+		for (int iFace = 0; iFace < m_mqoFaceList.GetCount(); iFace++)
 		{
+			const MqoFace& face = m_mqoFaceList[iFace];
 			if (face.materialIndex != sec.MaterialIndex)
 			{
 				mesh->AddMeshSection(sec);
@@ -91,7 +146,7 @@ RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathNam
 				sec.PrimitiveNum = 0;
 			}
 
-			next += AddFaceIndices(mesh, next, &face);
+			next += AddFaceIndices(mesh, next, iFace);
 			sec.PrimitiveNum += face.vertexCount - 2;
 		}
 		mesh->AddMeshSection(sec);
@@ -104,7 +159,8 @@ RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathNam
 		for (MqoFacePointRef& ref : vertex.referenced)
 		{
 			mesh->SetPosition(ref.meshVertexNumber, vertex.position);
-			mesh->SetUV(ref.meshVertexNumber, *reinterpret_cast<Vector2*>(&ref.face->uv[ref.pointIndex * 2]));
+			mesh->SetNormal(ref.meshVertexNumber, m_mqoFaceList[ref.faceIndex].vertexNormals[ref.pointIndex]);
+			mesh->SetUV(ref.meshVertexNumber, m_mqoFaceList[ref.faceIndex].uv[ref.pointIndex]);
 			// TODO: 頂点色
 			mesh->SetColor(ref.meshVertexNumber, Color::White);
 		}
@@ -359,7 +415,7 @@ void MqoImporter::ReadFaceChunk(StreamReader* reader)
 			// UV(%.5f %.5f ...)	ＵＶ値
 			else if (StringTraits::Compare(line.c_str() + dataHead, _T("UV"), 2, CaseSensitivity::CaseInsensitive) == 0)
 			{
-				ReadFloats(StringRef(line, numHead, numEnd - numHead), face.uv, face.vertexCount * 2);
+				ReadFloats(StringRef(line, numHead, numEnd - numHead), reinterpret_cast<float*>(face.uv), face.vertexCount * 2);
 			}
 			// COL(%u)	頂点カラー
 			else if (StringTraits::Compare(line.c_str() + dataHead, _T("COL"), 3, CaseSensitivity::CaseInsensitive) == 0)
@@ -387,13 +443,14 @@ void MqoImporter::InitMqoFace(MqoFace* face)
 }
 
 //------------------------------------------------------------------------------
-int MqoImporter::AddFaceIndices(MeshResource* mesh, int startIndexBufferIndex, MqoFace* face)
+int MqoImporter::AddFaceIndices(MeshResource* mesh, int startIndexBufferIndex, int faceIndex)
 {
+	MqoFace* face = &m_mqoFaceList[faceIndex];
 	if (face->vertexCount == 3)
 	{
-		int i0 = PutVertexSource(face, 0);
-		int i1 = PutVertexSource(face, 1);
-		int i2 = PutVertexSource(face, 2);
+		int i0 = PutVertexSource(faceIndex, 0);
+		int i1 = PutVertexSource(faceIndex, 1);
+		int i2 = PutVertexSource(faceIndex, 2);
 		mesh->SetIndex(startIndexBufferIndex + 0, i0);
 		mesh->SetIndex(startIndexBufferIndex + 1, i1);
 		mesh->SetIndex(startIndexBufferIndex + 2, i2);
@@ -401,10 +458,10 @@ int MqoImporter::AddFaceIndices(MeshResource* mesh, int startIndexBufferIndex, M
 	}
 	else if (face->vertexCount == 4)
 	{
-		int i0 = PutVertexSource(face, 0);
-		int i1 = PutVertexSource(face, 1);
-		int i2 = PutVertexSource(face, 2);
-		int i3 = PutVertexSource(face, 3);
+		int i0 = PutVertexSource(faceIndex, 0);
+		int i1 = PutVertexSource(faceIndex, 1);
+		int i2 = PutVertexSource(faceIndex, 2);
+		int i3 = PutVertexSource(faceIndex, 3);
 		mesh->SetIndex(startIndexBufferIndex + 0, i0);
 		mesh->SetIndex(startIndexBufferIndex + 1, i1);
 		mesh->SetIndex(startIndexBufferIndex + 2, i3);
@@ -423,13 +480,14 @@ int MqoImporter::AddFaceIndices(MeshResource* mesh, int startIndexBufferIndex, M
 //------------------------------------------------------------------------------
 // 指定した面上の1点と全く同じ点が既に登録されていればそのインデックスを返す。
 // そうでなければ新しく登録する。
-int MqoImporter::PutVertexSource(MqoFace* face, int pointIndex)
+int MqoImporter::PutVertexSource(int faceIndex, int pointIndex)
 {
+	MqoFace* face = &m_mqoFaceList[faceIndex];
 	int vertexIndex = face->vertexIndices[pointIndex];
 	MqoVertex& mqoVertex = m_mqoVertexList[vertexIndex];
 	for (MqoFacePointRef& ref : mqoVertex.referenced)
 	{
-		if (EqualsFacePoint(face, pointIndex, ref.face, ref.pointIndex))
+		if (EqualsFacePoint(face, pointIndex, &m_mqoFaceList[ref.faceIndex], ref.pointIndex))
 		{
 			return ref.meshVertexNumber;
 		}
@@ -437,7 +495,7 @@ int MqoImporter::PutVertexSource(MqoFace* face, int pointIndex)
 
 	// new
 	MqoFacePointRef ref;
-	ref.face = face;
+	ref.faceIndex = faceIndex;
 	ref.pointIndex = pointIndex;
 	ref.meshVertexNumber = m_meshVertexCount;
 	mqoVertex.referenced.Add(ref);
@@ -450,9 +508,9 @@ int MqoImporter::PutVertexSource(MqoFace* face, int pointIndex)
 bool MqoImporter::EqualsFacePoint(const MqoFace* face1, int pointIndex1, const MqoFace* face2, int pointIndex2)
 {
 	if (face1->vertexIndices[pointIndex1] != face2->vertexIndices[pointIndex2]) return false;
-	if (face1->uv[pointIndex1 * 2 + 0] != face2->uv[pointIndex2 * 2 + 0]) return false;
-	if (face1->uv[pointIndex1 * 2 + 1] != face2->uv[pointIndex2 * 2 + 1]) return false;
+	if (face1->uv[pointIndex1] != face2->uv[pointIndex2]) return false;
 	if (face1->colors[pointIndex1] != face2->colors[pointIndex2]) return false;
+	if (face1->vertexNormals[pointIndex1] != face2->vertexNormals[pointIndex2]) return false;
 	return true;
 }
 

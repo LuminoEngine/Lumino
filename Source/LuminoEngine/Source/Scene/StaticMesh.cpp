@@ -149,7 +149,12 @@ void StaticMesh::Initialize(SceneGraph* owner, StaticMeshModel* meshModel)
 void StaticMesh::OnRender2(DrawList* renderer)
 {
 	renderer->SetTransform(m_combinedGlobalMatrix);
-	renderer->DrawMesh(m_mesh, 0, GetMainMaterial()/*GetMaterials()->GetAt(0)*/);
+
+	MeshResource* m = m_mesh->GetMeshResource();
+	for (int i = 0; i < m->GetSubsetCount(); i++)
+	{
+		renderer->DrawMesh(m, i, GetMaterials()->GetAt(i));
+	}
 }
 
 LN_NAMESPACE_END
