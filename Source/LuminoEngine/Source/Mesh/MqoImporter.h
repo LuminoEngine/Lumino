@@ -69,6 +69,7 @@ private:
 	RefPtr<StaticMeshModel>	m_model;
 	int						m_meshIndexCount;
 	int						m_meshVertexCount;
+	bool					m_flipZCoord;
 };
 
 } // namespace detail

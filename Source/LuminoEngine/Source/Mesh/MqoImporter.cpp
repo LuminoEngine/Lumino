@@ -15,18 +15,19 @@ Vector3 TriangleNormal(const Vector3& p0, const Vector3& p1, const Vector3& p2)
 {
 	Vector3 v10 = p1 - p0;
 	Vector3 v20 = p2 - p0;
-	Vector3 nor = Vector3::Cross(v10, v20);
+	Vector3 nor = Vector3::Cross(v20, v10);
 	return Vector3::Normalize(nor);
 }
 
 //==============================================================================
-// ModelManager
+// MqoImporter
 //==============================================================================
 
 //------------------------------------------------------------------------------
 MqoImporter::MqoImporter()
 	: m_meshIndexCount(0)
 	, m_meshVertexCount(0)
+	, m_flipZCoord(true)
 {
 }
 
@@ -71,39 +72,41 @@ RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathNam
 	// 頂点に、それを参照している面をつめる
 	for (int i = 0; i < m_mqoFaceList.GetCount(); i++)
 	{
-		MqoFace& face = m_mqoFaceList[i];
-		if (face.vertexCount == 3)
+		MqoFace* face = &m_mqoFaceList[i];
+		if (face->vertexCount == 3)
 		{
 		}
-		else if (face.vertexCount == 4)
+		else if (face->vertexCount == 4)
 		{
-			face.vertexCount = 3;
+			face->vertexCount = 3;
 
 			MqoFace newFace;
 			newFace.vertexCount = 3;
-			newFace.vertexIndices[0] = face.vertexIndices[0];
-			newFace.vertexIndices[1] = face.vertexIndices[2];
-			newFace.vertexIndices[2] = face.vertexIndices[3];
-			newFace.uv[0] = face.uv[0];
-			newFace.uv[1] = face.uv[2];
-			newFace.uv[2] = face.uv[3];
-			newFace.colors[0] = face.colors[0];
-			newFace.colors[1] = face.colors[2];
-			newFace.colors[2] = face.colors[3];
+			newFace.materialIndex = face->materialIndex;
+			newFace.vertexIndices[0] = face->vertexIndices[0];
+			newFace.vertexIndices[1] = face->vertexIndices[2];
+			newFace.vertexIndices[2] = face->vertexIndices[3];
+			newFace.uv[0] = face->uv[0];
+			newFace.uv[1] = face->uv[2];
+			newFace.uv[2] = face->uv[3];
+			newFace.colors[0] = face->colors[0];
+			newFace.colors[1] = face->colors[2];
+			newFace.colors[2] = face->colors[3];
 			m_mqoFaceList.Add(newFace);
+			face = &m_mqoFaceList[i];	// 再配置に備える
 		}
 		else
 		{
 			LN_NOTIMPLEMENTED();
 		}
 
-		MqoVertex& v0 = m_mqoVertexList[face.vertexIndices[0]];
-		MqoVertex& v1 = m_mqoVertexList[face.vertexIndices[1]];
-		MqoVertex& v2 = m_mqoVertexList[face.vertexIndices[2]];
+		MqoVertex& v0 = m_mqoVertexList[face->vertexIndices[0]];
+		MqoVertex& v1 = m_mqoVertexList[face->vertexIndices[1]];
+		MqoVertex& v2 = m_mqoVertexList[face->vertexIndices[2]];
 		v0.referenced.Add(MqoFacePointRef{ i, 0, 0 });
 		v1.referenced.Add(MqoFacePointRef{ i, 1, 0 });
 		v2.referenced.Add(MqoFacePointRef{ i, 2, 0 });
-		face.normal = TriangleNormal(v0.position, v1.position, v2.position);
+		face->normal = TriangleNormal(v0.position, v1.position, v2.position);
 	}
 
 	// 法線計算
@@ -156,10 +159,15 @@ RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathNam
 	mesh->ResizeVertexBuffer(m_meshVertexCount);
 	for (MqoVertex& vertex : m_mqoVertexList)
 	{
+		if (m_flipZCoord) vertex.position.z *= -1.0f;
+
 		for (MqoFacePointRef& ref : vertex.referenced)
 		{
+			Vector3& normal = m_mqoFaceList[ref.faceIndex].vertexNormals[ref.pointIndex];
+			if (m_flipZCoord) normal.z *= -1.0f;
+
 			mesh->SetPosition(ref.meshVertexNumber, vertex.position);
-			mesh->SetNormal(ref.meshVertexNumber, m_mqoFaceList[ref.faceIndex].vertexNormals[ref.pointIndex]);
+			mesh->SetNormal(ref.meshVertexNumber, normal);
 			mesh->SetUV(ref.meshVertexNumber, m_mqoFaceList[ref.faceIndex].uv[ref.pointIndex]);
 			// TODO: 頂点色
 			mesh->SetColor(ref.meshVertexNumber, Color::White);
@@ -189,9 +197,9 @@ void MqoImporter::LoadMaterials(StreamReader* reader)
 
 		Color color = Color::White;
 		float diffuse = 1.0f;
-		float ambient = 1.0f;
-		float emissive = 1.0f;
-		float specular = 1.0f;
+		float ambient = 0.0f;
+		float emissive = 0.5f;
+		float specular = 0.0f;
 		float power = 1.0f;
 		RefPtr<Texture> texture;
 
@@ -451,25 +459,34 @@ int MqoImporter::AddFaceIndices(MeshResource* mesh, int startIndexBufferIndex, i
 		int i0 = PutVertexSource(faceIndex, 0);
 		int i1 = PutVertexSource(faceIndex, 1);
 		int i2 = PutVertexSource(faceIndex, 2);
-		mesh->SetIndex(startIndexBufferIndex + 0, i0);
-		mesh->SetIndex(startIndexBufferIndex + 1, i1);
-		mesh->SetIndex(startIndexBufferIndex + 2, i2);
+		if (m_flipZCoord)
+		{
+			mesh->SetIndex(startIndexBufferIndex + 0, i0);
+			mesh->SetIndex(startIndexBufferIndex + 1, i2);
+			mesh->SetIndex(startIndexBufferIndex + 2, i1);
+		}
+		else
+		{
+			mesh->SetIndex(startIndexBufferIndex + 0, i0);
+			mesh->SetIndex(startIndexBufferIndex + 1, i1);
+			mesh->SetIndex(startIndexBufferIndex + 2, i2);
+		}
 		return 3;
 	}
-	else if (face->vertexCount == 4)
-	{
-		int i0 = PutVertexSource(faceIndex, 0);
-		int i1 = PutVertexSource(faceIndex, 1);
-		int i2 = PutVertexSource(faceIndex, 2);
-		int i3 = PutVertexSource(faceIndex, 3);
-		mesh->SetIndex(startIndexBufferIndex + 0, i0);
-		mesh->SetIndex(startIndexBufferIndex + 1, i1);
-		mesh->SetIndex(startIndexBufferIndex + 2, i3);
-		mesh->SetIndex(startIndexBufferIndex + 3, i3);
-		mesh->SetIndex(startIndexBufferIndex + 4, i1);
-		mesh->SetIndex(startIndexBufferIndex + 5, i2);
-		return 6;
-	}
+	//else if (face->vertexCount == 4)
+	//{
+	//	int i0 = PutVertexSource(faceIndex, 0);
+	//	int i1 = PutVertexSource(faceIndex, 1);
+	//	int i2 = PutVertexSource(faceIndex, 2);
+	//	int i3 = PutVertexSource(faceIndex, 3);
+	//	mesh->SetIndex(startIndexBufferIndex + 0, i0);
+	//	mesh->SetIndex(startIndexBufferIndex + 1, i1);
+	//	mesh->SetIndex(startIndexBufferIndex + 2, i3);
+	//	mesh->SetIndex(startIndexBufferIndex + 3, i3);
+	//	mesh->SetIndex(startIndexBufferIndex + 4, i1);
+	//	mesh->SetIndex(startIndexBufferIndex + 5, i2);
+	//	return 6;
+	//}
 	else
 	{
 		LN_NOTIMPLEMENTED();
