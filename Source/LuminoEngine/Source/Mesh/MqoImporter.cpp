@@ -112,10 +112,27 @@ RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathNam
 	// 法線計算
 	for (MqoVertex& vertex : m_mqoVertexList)
 	{
+		// TODO:
+		float smoothThr = -1.0 * (60.0 / 90.0);	// 180～0 を、-2～0と考える
+
+		// 関連するすべての面の中間の法線を求める
+		Vector3 midNormal;
+		for (MqoFacePointRef& facePointRef : vertex.referenced)
+		{
+			midNormal += m_mqoFaceList[facePointRef.faceIndex].normal;
+		}
+		if (midNormal == Vector3::Zero) midNormal = Vector3::UnitY;
+		midNormal.Normalize();
+
+		// 中間の法線から、smoothThr 以内の角度差であれば中間を共有（スムージング）し、それより大きければ面の向きに従う
 		for (MqoFacePointRef& facePointRef : vertex.referenced)
 		{
 			MqoFace& face = m_mqoFaceList[facePointRef.faceIndex];
-			face.vertexNormals[facePointRef.pointIndex] = face.normal;
+			
+			if ((Vector3::Dot(face.normal, midNormal) - 1.0) >= smoothThr)
+				face.vertexNormals[facePointRef.pointIndex] = midNormal;
+			else
+				face.vertexNormals[facePointRef.pointIndex] = face.normal;
 		}
 
 		vertex.referenced.Clear();
