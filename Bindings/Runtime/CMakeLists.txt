@@ -29,8 +29,8 @@ set(LN_SOURCES
 
 # include directories.
 set(LN_INCLUDE_DIRECTORIES
-	${CMAKE_SOURCE_DIR}/Source/LuminoEngine/Include
-	${CMAKE_SOURCE_DIR}/Source/LuminoCore/Include)
+	${PROJECT_SOURCE_DIR}/../../Source/LuminoEngine/Include
+	${PROJECT_SOURCE_DIR}/../../Source/LuminoCore/Include)
 
 #------------------------------------------------------------------------------
 # Output

@@ -59,7 +59,7 @@ set(LN_FL_INCLUDE_DIRECTORIES
 #-------------------------------------------------------------------------------
 # Configure
 #-------------------------------------------------------------------------------
-include(${CMAKE_SOURCE_DIR}/Source/LuminoCore/CMake/LNCommon.cmake NO_POLICY_SCOPE)
+include(${PROJECT_SOURCE_DIR}/../LuminoCore/CMake/LNCommon.cmake NO_POLICY_SCOPE)
 
 #-------------------------------------------------------------------------------
 # Dependencies

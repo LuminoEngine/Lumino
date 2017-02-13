@@ -1,10 +1,10 @@
 cmake_minimum_required (VERSION 3.0.0)
 project (LuminoEngine)
 
-include(../LuminoCore/CMake/LNCommon.cmake NO_POLICY_SCOPE)
+include(${PROJECT_SOURCE_DIR}/../LuminoCore/CMake/LNCommon.cmake NO_POLICY_SCOPE)
 
-set(LN_DEPENDENCIES_ROOT_DIR "${CMAKE_SOURCE_DIR}/external/LuminoDependencies/")
-include(${CMAKE_SOURCE_DIR}/external/LuminoDependencies/LuminoDependencies.cmake)
+set(LN_DEPENDENCIES_ROOT_DIR "${PROJECT_SOURCE_DIR}/../../External/LuminoDependencies/")
+include(${PROJECT_SOURCE_DIR}/../../External/LuminoDependencies/LuminoDependencies.cmake)
 
 set(LN_LINK_LIBS "")
 set(LN_UNIT_TEST_LINK_LIBS "")
@@ -70,8 +70,8 @@ set(LN_SOURCES_IO
 	Source/IO/FileManager.cpp
 	Source/IO/Archive.cpp
 	Source/IO/Archive.h
-	${CMAKE_SOURCE_DIR}/external/camellia/camellia.cpp
-	${CMAKE_SOURCE_DIR}/external/camellia/camellia.h
+	../../External/camellia/camellia.cpp
+	../../External/camellia/camellia.h
 )
 
 set(LN_SOURCES_Platform
@@ -189,9 +189,9 @@ set(LN_SOURCES_Graphics
 	Include/Lumino/Graphics/ImageEffect/BlurImageEffect.h
 	Include/Lumino/Graphics/ImageEffect/ScreenMotionBlurImageEffect.h
 	Include/Lumino/Graphics/ImageEffect/ToneImageEffect.h
-	${CMAKE_SOURCE_DIR}/external/GL/glew.c
-	${CMAKE_SOURCE_DIR}/external/nanovg/nanovg.c
-	${CMAKE_SOURCE_DIR}/external/nanovg/nanovg.h
+	../../External//GL/glew.c
+	../../External//nanovg/nanovg.c
+	../../External//nanovg/nanovg.h
 	Source/Base/GeometryStructs.cpp
 	Source/Graphics/Bitmap.cpp
 	Source/Graphics/BitmapPainter.cpp
@@ -378,23 +378,23 @@ set(LN_SOURCES_Scene
 	Source/Scene/TextBlock.cpp
 	Source/Scene/TileMap.cpp
 	Source/Scene/VisualNode.cpp
-	${CMAKE_SOURCE_DIR}/external/ssbpLib/ssShader_frag.h
-	${CMAKE_SOURCE_DIR}/external/ssbpLib/SS5Player.cpp
-	${CMAKE_SOURCE_DIR}/external/ssbpLib/SS5Player.h
-	${CMAKE_SOURCE_DIR}/external/ssbpLib/SS5PlayerData.h
-	${CMAKE_SOURCE_DIR}/external/ssbpLib/SS5PlayerPlatform.cpp
-	${CMAKE_SOURCE_DIR}/external/ssbpLib/SS5PlayerPlatform.h
-	${CMAKE_SOURCE_DIR}/external/ssbpLib/SS5PlayerTypes.h
-	${CMAKE_SOURCE_DIR}/external/ssbpLib/common/Animator/ssplayer_PartState.h
-	${CMAKE_SOURCE_DIR}/external/ssbpLib/common/Animator/ssplayer_cellmap.h
-	${CMAKE_SOURCE_DIR}/external/ssbpLib/common/Animator/ssplayer_effect.cpp
-	${CMAKE_SOURCE_DIR}/external/ssbpLib/common/Animator/ssplayer_effect.h
-	${CMAKE_SOURCE_DIR}/external/ssbpLib/common/Animator/ssplayer_effectfunction.cpp
-	${CMAKE_SOURCE_DIR}/external/ssbpLib/common/Animator/ssplayer_effectfunction.h
-	${CMAKE_SOURCE_DIR}/external/ssbpLib/common/Animator/ssplayer_macro.h
-	${CMAKE_SOURCE_DIR}/external/ssbpLib/common/Animator/ssplayer_matrix.cpp
-	${CMAKE_SOURCE_DIR}/external/ssbpLib/common/Animator/ssplayer_matrix.h
-	${CMAKE_SOURCE_DIR}/external/ssbpLib/common/Animator/ssplayer_PartState.cpp
+	../../External/ssbpLib/ssShader_frag.h
+	../../External/ssbpLib/SS5Player.cpp
+	../../External/ssbpLib/SS5Player.h
+	../../External/ssbpLib/SS5PlayerData.h
+	../../External/ssbpLib/SS5PlayerPlatform.cpp
+	../../External/ssbpLib/SS5PlayerPlatform.h
+	../../External/ssbpLib/SS5PlayerTypes.h
+	../../External/ssbpLib/common/Animator/ssplayer_PartState.h
+	../../External/ssbpLib/common/Animator/ssplayer_cellmap.h
+	../../External/ssbpLib/common/Animator/ssplayer_effect.cpp
+	../../External/ssbpLib/common/Animator/ssplayer_effect.h
+	../../External/ssbpLib/common/Animator/ssplayer_effectfunction.cpp
+	../../External/ssbpLib/common/Animator/ssplayer_effectfunction.h
+	../../External/ssbpLib/common/Animator/ssplayer_macro.h
+	../../External/ssbpLib/common/Animator/ssplayer_matrix.cpp
+	../../External/ssbpLib/common/Animator/ssplayer_matrix.h
+	../../External/ssbpLib/common/Animator/ssplayer_PartState.cpp
 )
 set(LN_SOURCES_Scene_MMD
 	Source/Scene/MME/MmdMaterial.cpp
@@ -796,8 +796,8 @@ endif()
 set(LN_INCLUDE_DIRECTORIES
 	${PROJECT_SOURCE_DIR}/Include
 	${PROJECT_SOURCE_DIR}/../LuminoCore/Include
-	${CMAKE_SOURCE_DIR}/external
-	${CMAKE_SOURCE_DIR}/external/glfw-3.1.2/include
+	../../External
+	../../External/glfw-3.1.2/include
 )
 include_directories(${LN_INCLUDE_DIRECTORIES} ${LN_PLATFORM_INCLUDE_DIRS})
 
