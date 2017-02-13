@@ -112,30 +112,56 @@ RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathNam
 	// 法線計算
 	for (MqoVertex& vertex : m_mqoVertexList)
 	{
-		// TODO:
-		float smoothThr = -1.0 * (60.0 / 90.0);	// 180～0 を、-2～0と考える
-
-		// 関連するすべての面の中間の法線を求める
-		Vector3 midNormal;
-		for (MqoFacePointRef& facePointRef : vertex.referenced)
+		if (!vertex.referenced.IsEmpty())
 		{
-			midNormal += m_mqoFaceList[facePointRef.faceIndex].normal;
-		}
-		if (midNormal == Vector3::Zero) midNormal = Vector3::UnitY;
-		midNormal.Normalize();
+			// TODO:
+			float smoothThr = -1.0 * (60.0 / 90.0);	// 180～0 を、-2～0と考える
 
-		// 中間の法線から、smoothThr 以内の角度差であれば中間を共有（スムージング）し、それより大きければ面の向きに従う
-		for (MqoFacePointRef& facePointRef : vertex.referenced)
-		{
-			MqoFace& face = m_mqoFaceList[facePointRef.faceIndex];
-			
-			if ((Vector3::Dot(face.normal, midNormal) - 1.0) >= smoothThr)
-				face.vertexNormals[facePointRef.pointIndex] = midNormal;
-			else
-				face.vertexNormals[facePointRef.pointIndex] = face.normal;
-		}
+			// 関連するすべての面の中間の法線を求める
+			Vector3 midNormal;
+			for (MqoFacePointRef& facePointRef : vertex.referenced)
+			{
+				midNormal += m_mqoFaceList[facePointRef.faceIndex].normal;
+				//m_mqoFaceList[facePointRef.faceIndex].normal.Print();
+			}
+			midNormal /= vertex.referenced.GetCount();
+			if (midNormal == Vector3::Zero) midNormal = Vector3::UnitY;
+			midNormal.Normalize();
 
-		vertex.referenced.Clear();
+
+			float minAngle = 1;
+			float maxAngle = -1;
+			for (MqoFacePointRef& facePointRef : vertex.referenced)
+			{
+				float d = Vector3::Dot(midNormal, m_mqoFaceList[facePointRef.faceIndex].normal);
+				minAngle = std::min(d, minAngle);
+				maxAngle = std::max(d, maxAngle);
+			}
+			float baseAngle = (maxAngle - minAngle) + 1.0f;	// 0.0 ~ 2.0
+
+			// 関連するすべての面の中間の法線を求める
+			Vector3 smoothNormal;
+			for (MqoFacePointRef& facePointRef : vertex.referenced)
+			{
+				const Vector3& n = m_mqoFaceList[facePointRef.faceIndex].normal;
+				float d = Vector3::Dot(midNormal, n) + 1.0f;	// 0.0 ~ 2.0
+				smoothNormal += n * d;
+			}
+			smoothNormal.Normalize();
+
+			// 中間の法線から、smoothThr 以内の角度差であれば中間を共有（スムージング）し、それより大きければ面の向きに従う
+			for (MqoFacePointRef& facePointRef : vertex.referenced)
+			{
+				MqoFace& face = m_mqoFaceList[facePointRef.faceIndex];
+
+				if ((Vector3::Dot(face.normal, smoothNormal) - 1.0) >= smoothThr)
+					face.vertexNormals[facePointRef.pointIndex] = smoothNormal;
+				else
+					face.vertexNormals[facePointRef.pointIndex] = face.normal;
+			}
+
+			vertex.referenced.Clear();
+		}
 	}
 
 	// マテリアルインデックスでソート
@@ -309,6 +335,7 @@ void MqoImporter::LoadMaterials(StreamReader* reader)
 //------------------------------------------------------------------------------
 void MqoImporter::LoadObject(StreamReader* reader)
 {
+	int vertexIndexOffset = m_mqoVertexList.GetCount();	// この Object チャンクに含まれる Vertex は、全体の何番目から始まるか？
 	int index;
 	String line;
 	while (reader->ReadLine(&line))
@@ -329,7 +356,7 @@ void MqoImporter::LoadObject(StreamReader* reader)
 		{
 			int count = StringTraits::ToInt32(line.c_str() + index + 5);
 			m_mqoFaceList.Reserve(m_mqoFaceList.GetCount() + count);
-			ReadFaceChunk(reader);
+			ReadFaceChunk(reader, vertexIndexOffset);
 		}
 	}
 }
@@ -397,7 +424,7 @@ void MqoImporter::ReadVertexChunk(StreamReader* reader)
 }
 
 //------------------------------------------------------------------------------
-void MqoImporter::ReadFaceChunk(StreamReader* reader)
+void MqoImporter::ReadFaceChunk(StreamReader* reader, int vertexIndexOffset)
 {
 	String line;
 	while (reader->ReadLine(&line))
@@ -431,6 +458,7 @@ void MqoImporter::ReadFaceChunk(StreamReader* reader)
 			else if (StringTraits::Compare(line.c_str() + dataHead, _T("V"), 1, CaseSensitivity::CaseInsensitive) == 0)
 			{
 				ReadInts(StringRef(line, numHead, numEnd - numHead), face.vertexIndices, face.vertexCount);
+				for (int i = 0; i < face.vertexCount; i++) face.vertexIndices[i] += vertexIndexOffset;
 			}
 			// M(%d)	材質インデックス
 			else if (StringTraits::Compare(line.c_str() + dataHead, _T("M"), 1, CaseSensitivity::CaseInsensitive) == 0)

@@ -515,7 +515,9 @@ void Main()
 	//tex1->Clear(Color32::Red);
 	//auto box1 = StaticMesh::CreateBox(Vector3(5, 5, 5));
 	//auto box1 = StaticMesh::CreateTeapot();
-	auto box1 = StaticMesh::Create(_T("D:/Proj/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/MqoTest1.mqo"));
+	//auto box1 = StaticMesh::Create(_T("D:/Proj/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/MqoTest1.mqo"));
+	auto box1 = StaticMesh::Create(_T("C:/Proj/FluoriteSolution/External/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/MqoTest1.mqo"));
+
 	//box1->GetMaterials()->GetAt(0)->SetMaterialTexture(tex1);
 	////box1->SetTone(ToneF(0, 0, 1, 1.0));
 	//gizmo->Setup(Matrix::Identity, box1->GetTransform());//Matrix::MakeTranslation(1, 0, 0));

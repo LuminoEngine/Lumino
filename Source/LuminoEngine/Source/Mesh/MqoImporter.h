@@ -55,7 +55,7 @@ private:
 	void ReadUInts(const StringRef& str, uint32_t* values, int valuesCount);
 	void ReadFloats(const StringRef& str, float* values, int valuesCount);
 	void ReadVertexChunk(StreamReader* reader);
-	void ReadFaceChunk(StreamReader* reader);
+	void ReadFaceChunk(StreamReader* reader, int vertexIndexOffset);
 	void InitMqoFace(MqoFace* face);
 	int AddFaceIndices(MeshResource* mesh, int startIndexBufferIndex, int faceIndex);
 	int PutVertexSource(int faceIndex, int pointIndex);
