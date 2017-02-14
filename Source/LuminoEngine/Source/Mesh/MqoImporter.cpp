@@ -19,6 +19,11 @@ Vector3 TriangleNormal(const Vector3& p0, const Vector3& p1, const Vector3& p2)
 	return Vector3::Normalize(nor);
 }
 
+float DotAngleTo01Angle(float angle)
+{
+	return std::acosf(angle);//std::cosf( 1.0f - ((angle + 1.0f) / 2.0f));//((angle * -1.0f) + 1.0f) / 2.0f;
+}
+
 //==============================================================================
 // MqoImporter
 //==============================================================================
@@ -29,6 +34,24 @@ MqoImporter::MqoImporter()
 	, m_meshVertexCount(0)
 	, m_flipZCoord(true)
 {
+}
+
+double AngleOf2Vector(Vector3 A, Vector3 B)
+{
+	//ベクトルAとBの長さを計算する
+	double length_A = A.GetLength();
+	double length_B = B.GetLength();
+
+	//内積とベクトル長さを使ってcosθを求める
+	double cos_sita = Vector3::Dot(A, B) / (length_A * length_B);
+
+	//cosθからθを求める
+	double sita = acos(cos_sita);
+
+	//ラジアンでなく0～180の角度でほしい場合はコメント外す
+	sita = sita * 180.0 / Math::PI;
+
+	return sita;
 }
 
 //------------------------------------------------------------------------------
@@ -109,11 +132,21 @@ RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathNam
 		face->normal = TriangleNormal(v0.position, v1.position, v2.position);
 	}
 
+	Vector3 v1(1, 2, 0);
+	v1.Normalize();
+
+	float cos_theta = Vector3::Dot(v1, Vector3(0, 1, 0));
+	float d1 = Math::RadiansToDegrees(std::acosf(cos_theta));
+
 	// 法線計算
 	for (MqoVertex& vertex : m_mqoVertexList)
 	{
 		if (!vertex.referenced.IsEmpty())
 		{
+			printf("\n");
+			vertex.position.Print();
+			//smoothNormal.Print();
+
 			// TODO:
 			float smoothThr = -1.0 * (60.0 / 90.0);	// 180～0 を、-2～0と考える
 
@@ -124,30 +157,52 @@ RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathNam
 				midNormal += m_mqoFaceList[facePointRef.faceIndex].normal;
 				//m_mqoFaceList[facePointRef.faceIndex].normal.Print();
 			}
-			midNormal /= vertex.referenced.GetCount();
+			//midNormal /= vertex.referenced.GetCount();
 			if (midNormal == Vector3::Zero) midNormal = Vector3::UnitY;
-			midNormal.Normalize();
+			printf("midNormal:(sum) ", midNormal.GetLength()); midNormal.Print();
+			midNormal = Vector3::Normalize(midNormal);//.Normalize();
 
-
-			float minAngle = 1;
-			float maxAngle = -1;
+			// 一番離れている角度は？
+			//float minAngle = 1;
+			float maxAngle = 0;
 			for (MqoFacePointRef& facePointRef : vertex.referenced)
 			{
 				float d = Vector3::Dot(midNormal, m_mqoFaceList[facePointRef.faceIndex].normal);
-				minAngle = std::min(d, minAngle);
+				d = DotAngleTo01Angle(d);
+				//d *= -1.0f;
+				//d += 1.0f;	// 0.0 ~ 2.0
+				//minAngle = std::min(d, minAngle);
 				maxAngle = std::max(d, maxAngle);
 			}
-			float baseAngle = (maxAngle - minAngle) + 1.0f;	// 0.0 ~ 2.0
+			//float baseAngle = (maxAngle/* - minAngle*/);// +1.0f;	// 0.0 ~ 2.0
+			printf("midNormal:(%f) ", midNormal.GetLength()); midNormal.Print();
+			printf("maxAngle:%f (%f)\n", maxAngle, Math::RadiansToDegrees(maxAngle));
 
 			// 関連するすべての面の中間の法線を求める
 			Vector3 smoothNormal;
-			for (MqoFacePointRef& facePointRef : vertex.referenced)
+			if (Math::NearEqual(maxAngle, 0.0f))
 			{
-				const Vector3& n = m_mqoFaceList[facePointRef.faceIndex].normal;
-				float d = Vector3::Dot(midNormal, n) + 1.0f;	// 0.0 ~ 2.0
-				smoothNormal += n * d;
+				smoothNormal = midNormal;
 			}
-			smoothNormal.Normalize();
+			else
+			{
+				for (MqoFacePointRef& facePointRef : vertex.referenced)
+				{
+					const Vector3& n = m_mqoFaceList[facePointRef.faceIndex].normal;
+					float d = Vector3::Dot(midNormal, n);// +1.0f;	// 0.0 ~ 2.0
+					//printf("da:%f ", d);
+					d = DotAngleTo01Angle(d);
+					d /= maxAngle;
+					printf("d:%f vec:", d); n.Print();
+					//(n * d).Print();
+					smoothNormal += n * d;
+				}
+				//smoothNormal /= vertex.referenced.GetCount();
+				smoothNormal.Normalize();
+			}
+
+			printf("> ");
+			smoothNormal.Print();
 
 			// 中間の法線から、smoothThr 以内の角度差であれば中間を共有（スムージング）し、それより大きければ面の向きに従う
 			for (MqoFacePointRef& facePointRef : vertex.referenced)
