@@ -675,15 +675,15 @@ void SpriteRendererImpl::Flush(SpriteSortMode sortFlags)
 	//memcpy(m_spriteIndexList, mSpriteIndexArraySource, sizeof(*m_spriteIndexList) * mLastSpriteNum);
 
 	// インデックスを並び替える
-	if (sortFlags & SpriteSortMode::Texture)
+	if (sortFlags.TestFlag(SpriteSortMode::Texture))
 	{
-		if (sortFlags & SpriteSortMode::DepthBackToFront)
+		if (sortFlags.TestFlag(SpriteSortMode::DepthBackToFront))
 		{
 			SpriteCmpTexDepthBackToFront cmp;
 			cmp.spriteList = &m_spriteRequestList;
 			std::stable_sort(m_spriteIndexList.begin(), m_spriteIndexList.begin() + spriteCount, cmp);
 		}
-		else if (sortFlags & SpriteSortMode::DepthFrontToBack)
+		else if (sortFlags.TestFlag(SpriteSortMode::DepthFrontToBack))
 		{
 			SpriteCmpTexDepthFrontToBack cmp;
 			cmp.spriteList = &m_spriteRequestList;
@@ -692,13 +692,13 @@ void SpriteRendererImpl::Flush(SpriteSortMode sortFlags)
 	}
 	else
 	{
-		if (sortFlags & SpriteSortMode::DepthBackToFront)
+		if (sortFlags.TestFlag(SpriteSortMode::DepthBackToFront))
 		{
 			SpriteCmpDepthBackToFront cmp;
 			cmp.spriteList = &m_spriteRequestList;
 			std::stable_sort(m_spriteIndexList.begin(), m_spriteIndexList.begin() + spriteCount, cmp);
 		}
-		else if (sortFlags & SpriteSortMode::DepthFrontToBack)
+		else if (sortFlags.TestFlag(SpriteSortMode::DepthFrontToBack))
 		{
 			SpriteCmpDepthFrontToBack cmp;
 			cmp.spriteList = &m_spriteRequestList;

@@ -105,6 +105,25 @@ TEST_F(IntegrationTest_Reflection_ReflectionObject, DelegateEvent)
 	ASSERT_EQ(3, count);
 }
 
+//---------------------------------------------------------------------
+static int g_StackDestructCount = 0;
+TEST_F(IntegrationTest_Reflection_ReflectionObject, StackDestruct)
+{
+	// <Test> 参照カウントが残っている状態でデストラクタが呼ばれたら FatalError になる。
+	class MyObj : public  RefObject
+	{
+	};
+	g_StackDestructCount = 0;
+	Assertion::SetNotifyFataiErrorHandler([](const char* file, int line, const char* message) { g_StackDestructCount++; return true; });
+	{
+		MyObj o1;
+		MyObj o2;
+		o2.AddRef();
+	}
+	Assertion::SetNotifyFataiErrorHandler(nullptr);
+
+	ASSERT_EQ(1, g_StackDestructCount);
+}
 
 //==============================================================================
 class Test_Reflection_Property : public ::testing::Test

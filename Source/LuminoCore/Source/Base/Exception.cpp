@@ -20,11 +20,25 @@
 
 LN_NAMESPACE_BEGIN
 
+namespace detail {
+
+bool NotifyFatalError(const char* file, int line, const char* message)
+{
+	auto h = Assertion::GetNotifyFataiErrorHandler();
+	if (h != nullptr && h(file, line, message)) return true;
+	printf("%s : %s(%d)", message, file, line);
+	*reinterpret_cast<int*>(0) = 0;
+	return true;
+}
+
+} // namespace detail
+
 //==============================================================================
 // Assertion
 //==============================================================================
 
-static Assertion::NotifyVerificationHandler g_notifyVerificationHandler = nullptr;
+static Assertion::NotifyVerificationHandler	g_notifyVerificationHandler = nullptr;
+static Assertion::NotifyFataiErrorHandler	g_notifyFataiErrorHandler = nullptr;
 
 void Assertion::SetNotifyVerificationHandler(NotifyVerificationHandler handler)
 {
@@ -34,6 +48,16 @@ void Assertion::SetNotifyVerificationHandler(NotifyVerificationHandler handler)
 Assertion::NotifyVerificationHandler Assertion::GetNotifyVerificationHandler()
 {
 	return g_notifyVerificationHandler;
+}
+
+void Assertion::SetNotifyFataiErrorHandler(NotifyFataiErrorHandler handler)
+{
+	g_notifyFataiErrorHandler = handler;
+}
+
+Assertion::NotifyFataiErrorHandler Assertion::GetNotifyFataiErrorHandler()
+{
+	return g_notifyFataiErrorHandler;
 }
 
 //==============================================================================

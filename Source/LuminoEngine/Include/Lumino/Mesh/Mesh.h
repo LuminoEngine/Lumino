@@ -73,6 +73,9 @@ public:
 	void SetEdgeWeight(int index, float weight);
 
 
+	void AddMeshSection(const MeshAttribute& section);
+
+	// TODO
 	void AddSections(int count);
 	MeshAttribute* GetSection(int index);
 
@@ -93,10 +96,10 @@ public:
 
 	void AddLine(const Vertex& v1, const Vertex& v2);
 
-	void AddPlane(const Vector2& size, int sliceH, int sliceV);	// TODO: name SquarePlane
+	void AddPlane(const Vector2& size, int sliceH = 1, int sliceV = 1);	// TODO: name SquarePlane
 	void AddBox(const Vector3& size);
-	void AddSphere(float radius, int slices, int stacks);
-	void AddTeapot();
+	void AddSphere(float radius, int slices = 16, int stacks = 16);
+	void AddTeapot(float size, int tessellation = 8);
 	void AddScreenPlane();
 
 	void ReverseFaces();
@@ -170,6 +173,8 @@ LN_INTERNAL_ACCESS:
 	void* TryLockIndexBuffer();
 	void TryGlowVertexBuffers(int requestVertexCount);
 	void TryGlowIndexBuffer(int requestIndexCount);
+	//void* RequestVertexBuffer(int vertexCount, VertexBufferType type);
+	//void* RequestIndexBuffer(int indexCount);
 	void* RequestVertexBufferForAdditional(int additionalVertexCount, VertexBufferType type);
 	uint16_t* RequestIndexBufferForAdditional(int additionalIndexCount);
 
@@ -225,7 +230,7 @@ LN_INTERNAL_ACCESS:
 	void InitializeSphere(detail::GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags);
 	void InitializePlane(detail::GraphicsManager* manager, const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags);
 	void InitializeScreenPlane(detail::GraphicsManager* manager, MeshCreationFlags flags);
-	void InitializeTeapot(detail::GraphicsManager* manager, MeshCreationFlags flags);
+	void InitializeTeapot(detail::GraphicsManager* manager, float size, int tessellation, MeshCreationFlags flags);
 	
 LN_INTERNAL_ACCESS:	// TODO:
 	RefPtr<MeshResource>	m_meshResource;

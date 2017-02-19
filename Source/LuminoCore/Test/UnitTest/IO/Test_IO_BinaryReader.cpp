@@ -12,7 +12,7 @@ protected:
 //------------------------------------------------------------------------------
 TEST_F(Test_IO_BinaryReader, Basic)
 {
-	FileStreamPtr file = FileStream::Create(LN_LOCALFILE("TestData/BinaryReaderTest.dat"), FileOpenMode::Read);
+	RefPtr<FileStream> file = FileStream::Create(LN_LOCALFILE("TestData/BinaryReaderTest.dat"), FileOpenMode::Read);
 	BinaryReader reader(file);
 
 	// 1byte
@@ -55,7 +55,7 @@ TEST_F(Test_IO_BinaryReader, Basic)
 //------------------------------------------------------------------------------
 TEST_F(Test_IO_BinaryReader, BytesSpecified)
 {
-	FileStreamPtr file = FileStream::Create(LN_LOCALFILE("TestData/BinaryReaderTest.dat"), FileOpenMode::Read);
+	RefPtr<FileStream> file = FileStream::Create(LN_LOCALFILE("TestData/BinaryReaderTest.dat"), FileOpenMode::Read);
 	BinaryReader reader(file);
 
 	// 1byte

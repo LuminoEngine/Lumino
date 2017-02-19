@@ -374,25 +374,25 @@ void DiffuseMaterial::Initialize()
 //------------------------------------------------------------------------------
 void DiffuseMaterial::SetDiffuse(const Color& value)
 {
-	SetBuiltinColorParameter(Material::DiffuseParameter, Color::White);
+	SetBuiltinColorParameter(Material::DiffuseParameter, value);
 }
 
 //------------------------------------------------------------------------------
 void DiffuseMaterial::SetAmbient(const Color& value)
 {
-	SetBuiltinColorParameter(Material::AmbientParameter, Color::White);
+	SetBuiltinColorParameter(Material::AmbientParameter, value);
 }
 
 //------------------------------------------------------------------------------
 void DiffuseMaterial::SetSpecular(const Color& value)
 {
-	SetBuiltinColorParameter(Material::SpecularParameter, Color::White);
+	SetBuiltinColorParameter(Material::SpecularParameter, value);
 }
 
 //------------------------------------------------------------------------------
 void DiffuseMaterial::SetEmissive(const Color& value)
 {
-	SetBuiltinColorParameter(Material::EmissiveParameter, Color::White);
+	SetBuiltinColorParameter(Material::EmissiveParameter, value);
 }
 
 //------------------------------------------------------------------------------

@@ -367,7 +367,7 @@ template<> struct Variant::AccessorSelector<String, detail::KindPrimitive>
 };
 template<typename T> struct Variant::AccessorSelector<T, detail::KindEnum>
 {
-	static void SetValue(Variant* v, T value) { v->SetEnumValue(value); }
+	static void SetValue(Variant* v, T value) { v->SetEnumValue((int)value); }
 	static T GetValue(const Variant* v) { return static_cast<typename T::enum_type>(v->GetEnumValue()); }
 };
 template<typename T> struct Variant::AccessorSelector<T, detail::KindReflectionObject>

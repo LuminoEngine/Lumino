@@ -1,5 +1,6 @@
 ﻿
 #include "../Internal.h"
+#include <Lumino/Base/Exception.h>
 #include <Lumino/Base/RefObject.h>
 
 LN_NAMESPACE_BEGIN
@@ -16,6 +17,7 @@ RefObject::RefObject()
 //------------------------------------------------------------------------------
 RefObject::~RefObject()
 {
+	LN_FATAL(m_referenceCount.Get() <= 1, "Object is still referenced.");
 }
 
 //------------------------------------------------------------------------------

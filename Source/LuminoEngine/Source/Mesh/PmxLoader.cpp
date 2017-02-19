@@ -1,4 +1,5 @@
-﻿
+﻿// PMX: https://gist.github.com/felixjones/f8a06bd48f9da9a4539f
+
 #include "../Internal.h"
 #include <Lumino/IO/BinaryReader.h>
 #include "ModelManager.h"

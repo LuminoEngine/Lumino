@@ -409,7 +409,7 @@ bool DummyArchive::TryCreateStream(const PathName& fileFullPath, RefPtr<Stream>*
 
 	FileOpenMode mode = FileOpenMode::Read;
 	if (isDeferring) { mode |= FileOpenMode::Deferring; }
-	FileStreamPtr file = FileStream::Create(fileFullPath, mode);
+	RefPtr<FileStream> file = FileStream::Create(fileFullPath, mode);
 	*outStream = file;
 	return true;
 }

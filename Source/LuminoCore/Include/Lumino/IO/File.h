@@ -82,8 +82,8 @@ public:
 	virtual void Flush();
 
 private:
-	PathName		m_filePath;
-	FileStreamPtr	m_fileStream;
+	PathName			m_filePath;
+	RefPtr<FileStream>	m_fileStream;
 };
 
 class TemporaryFile

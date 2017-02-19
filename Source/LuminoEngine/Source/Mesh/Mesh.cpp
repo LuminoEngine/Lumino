@@ -1,4 +1,7 @@
-﻿
+﻿/*
+	"Section" FStaticMeshSection
+*/
+
 #include "../Internal.h"
 #include "../Graphics/Device/ShaderVariableBase.h"
 #include <Lumino/Graphics/Texture.h>
@@ -282,6 +285,12 @@ void MeshResource::SetEdgeWeight(int index, float weight)
 }
 
 //------------------------------------------------------------------------------
+void MeshResource::AddMeshSection(const MeshAttribute& section)
+{
+	m_attributes.Add(section);
+}
+
+//------------------------------------------------------------------------------
 void MeshResource::AddSections(int count)
 {
 	m_attributes.Resize(m_attributes.GetCount() + count);
@@ -432,14 +441,14 @@ void MeshResource::ReverseFaces()
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::AddTeapot()
+void MeshResource::AddTeapot(float size, int tessellation)
 {
 	int startIndex = GetVertexCount();
 	LN_VERIFY_STATE(startIndex <= UINT16_MAX);
 
 	// setup factory
 	detail::TeapotMeshFactory factory;
-	factory.Initialize(1.0f, 8, Color::White, Matrix::Identity);
+	factory.Initialize(size, tessellation, Color::White, Matrix::Identity);
 
 	// alloc buffers, generate mesh
 	Vertex* vb = (Vertex*)RequestVertexBufferForAdditional(factory.GetVertexCount(), VB_BasicVertices);
@@ -812,11 +821,11 @@ void StaticMeshModel::InitializeScreenPlane(detail::GraphicsManager* manager, Me
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::InitializeTeapot(detail::GraphicsManager* manager, MeshCreationFlags flags)
+void StaticMeshModel::InitializeTeapot(detail::GraphicsManager* manager, float size, int tessellation, MeshCreationFlags flags)
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
 	res->Initialize(manager, flags);
-	res->AddTeapot();
+	res->AddTeapot(size, tessellation);
 	if (flags.TestFlag(MeshCreationFlags::ReverseFaces)) res->ReverseFaces();
 	Initialize(manager, res);
 	AddMaterials(1);

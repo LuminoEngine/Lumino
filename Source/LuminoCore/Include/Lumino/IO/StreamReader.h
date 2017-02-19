@@ -1,6 +1,4 @@
-﻿/**
-	@file	StreamReader.h
-*/
+﻿
 #pragma once
 #include "../Text/Encoding.h"
 #include "../Text/EncodingConverter.h"
@@ -12,8 +10,9 @@ LN_NAMESPACE_BEGIN
 /**
 	@brief	特定のエンコーディングのストリームを文字列として読み込む TextReader です。
 */
-class StreamReader
-	: public TextReader
+template<typename TChar>
+class GenericStreamReader
+	: public GenericTextReader<TChar>
 {
 public:
 	static const int DefaultBufferSize = 1024;
@@ -24,9 +23,9 @@ public:
 		@brief		指定したストリーム用の StreamReader を初期化します。
 		@param[in]	stream		: 読み込み元ストリーム
 		@param[in]	encoding	: 読み込むテキストのエンコーディング
-		@details	encoding が NULL の場合は UTF8Encoding を使用します。
+		@details	encoding が nullptr の場合は UTF8Encoding を使用します。
 	*/
-	StreamReader(Stream* stream, Encoding* encoding = NULL);
+	GenericStreamReader(Stream* stream, Encoding* encoding = nullptr);
 	// TODO: UTF BOM 自動判別
 
 	/**
@@ -35,18 +34,19 @@ public:
 		@param[in]	encoding	: 読み込むテキストのエンコーディング
 		@details	encoding が NULL の場合は UTF8Encoding を使用します。
 	*/
-	StreamReader(const TCHAR* filePath, Encoding* encoding = NULL);
+	GenericStreamReader(const TChar* filePath, Encoding* encoding = nullptr);
 
-	~StreamReader();
+	~GenericStreamReader();
 
 public:
 	Stream* GetStream() const { return m_stream; }
 	
 public:
+	// GenericTextReader interface
 	virtual int Peek();
 	virtual int Read();
-	virtual bool ReadLine(String* line);
-	virtual String ReadToEnd();
+	virtual bool ReadLine(GenericString<TChar>* line);
+	virtual GenericString<TChar> ReadToEnd();
 	virtual bool IsEOF();
 
 private:
@@ -60,5 +60,7 @@ private:
 	int						m_charElementLen;
 	int						m_charPos;			///< 次に読むべき文字がある文字列バッファの位置。有効最大は m_charElementLen - 1
 };
+
+using StreamReader = GenericStreamReader<TCHAR>;
 
 LN_NAMESPACE_END

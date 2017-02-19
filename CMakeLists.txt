@@ -55,6 +55,8 @@ add_subdirectory(Source/Fluorite)
 
 add_subdirectory(Source/LuminoEngine)
 
+add_subdirectory(Source/LuminoLaunch)
+
 # Make postfix.
 #ln_make_postfix(LN_LIB_POSTFIX)
 

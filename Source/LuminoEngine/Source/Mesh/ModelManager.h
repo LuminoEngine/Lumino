@@ -36,6 +36,7 @@ public:
 
 	void Initialize(const ConfigData& configData);
 	void Finalize();
+	FileManager* GetFileManager() const { return m_fileManager; }
 	detail::PhysicsManager* GetPhysicsManager() { return m_physicsManager; }
 	GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
 	Texture2D* GetMMDDefaultToonTexture(int index);
@@ -48,6 +49,8 @@ public:
 
 	Material* GetDefaultMaterial() const;
 	MeshResource* GetUnitBoxMeshResource(bool reverseFaces) const;
+	MeshResource* GetUnitSphereMeshResource(bool reverseFaces) const;
+	MeshResource* GetUnitTeapotMeshResource() const;
 
 private:
 	RefPtr<PmxSkinnedMeshResource> CreateSkinnedMeshResource(const PathName& filePath);
@@ -62,6 +65,9 @@ private:
 	RefPtr<Material>		m_defaultMaterial;
 	RefPtr<MeshResource>	m_unitBoxMeshResource;
 	RefPtr<MeshResource>	m_unitBoxMeshResourceReverseFaces;
+	RefPtr<MeshResource>	m_unitSphereMeshResource;
+	RefPtr<MeshResource>	m_unitSphereMeshResourceReverseFaces;
+	RefPtr<MeshResource>	m_unitTeapotMeshResource;
 };
 
 } // namespace detail

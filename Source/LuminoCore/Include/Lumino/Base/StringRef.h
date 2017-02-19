@@ -33,6 +33,20 @@ public:
 		m_len = str.GetLength();
 		m_string = str.GetCore();
 	}
+	GenericStringRef(const GenericString<TChar>& str, int startIndex)
+		: GenericStringRef()
+	{
+		m_str = str.c_str() + startIndex;
+		m_len = str.GetLength() - startIndex;
+		m_string = str.GetCore();
+	}
+	GenericStringRef(const GenericString<TChar>& str, int startIndex, int length)
+		: GenericStringRef()
+	{
+		m_str = str.c_str() + startIndex;
+		m_len = length;
+		m_string = str.GetCore();
+	}
 	GenericStringRef(const TChar* begin, const TChar* end)
 		: GenericStringRef()
 	{

@@ -390,55 +390,24 @@ namespace Lumino
     public  class StaticMesh
         : VisualNode
     {
-        internal StaticMesh(_LNInternal i) : base(i) {}
-
-        
-    }
-    /// <summary>
-    /// 軸に沿ったボックスのメッシュを表示するクラスです。
-    /// </summary>
-    public  class BoxMesh
-        : StaticMesh
-    {
         /// <summary>
         /// サイズが 1.0 であるボックスのメッシュを作成します。
         /// </summary>
         /// <remarks>
         /// このメッシュは共有リソースです。頂点バッファやインデックスバッファを操作すると、このメソッドで作成したほかのメッシュの形状にも影響します。通常はこれらのリソースを変更するべきではありません。
         /// </remarks>
-        public BoxMesh() : base(_LNInternal.InternalBlock)
+        public static StaticMesh CreateBox()
         {
-            IntPtr outBoxMesh;
-            var result = API.LNBoxMesh_Initialize(out outBoxMesh);
+            IntPtr outReturn;
+            var result = API.LNStaticMesh_CreateBox(out outReturn);
             if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
-            InternalManager.RegisterWrapperObject(this, outBoxMesh); API.LNObject_Release(outBoxMesh);
+            return InternalManager.ReturnObjectHelper<StaticMesh>(outReturn, ref _CreateBox);
         }
 
-        /// <summary>
-        /// 各軸に沿ったサイズを指定してメッシュを作成します。
-        /// </summary>
-        public BoxMesh(Vector3 size) : base(_LNInternal.InternalBlock)
-        {
-            IntPtr outBoxMesh;
-            var result = API.LNBoxMesh_InitializeS(ref size, out outBoxMesh);
-            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
-            InternalManager.RegisterWrapperObject(this, outBoxMesh); API.LNObject_Release(outBoxMesh);
-        }
+        internal StaticMesh(_LNInternal i) : base(i) {}
 
-        /// <summary>
-        /// 各軸に沿ったサイズを指定してメッシュを作成します。
-        /// </summary>
-        public BoxMesh(float width, float height, float depth) : base(_LNInternal.InternalBlock)
-        {
-            IntPtr outBoxMesh;
-            var result = API.LNBoxMesh_InitializeWHD(width, height, depth, out outBoxMesh);
-            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
-            InternalManager.RegisterWrapperObject(this, outBoxMesh); API.LNObject_Release(outBoxMesh);
-        }
+        private static StaticMesh _CreateBox;
 
-        internal BoxMesh(_LNInternal i) : base(i) {}
-
-        
     }
     /// <summary>
     /// 
@@ -544,7 +513,6 @@ namespace Lumino
             var _Sound = new TypeInfo(){ Factory = (handle) =>
             {
                 var obj = new Sound(_LNInternal.InternalBlock);
-                obj.SetHandle(handle);
                 return obj;
             }};
             _typeInfos.Add(_Sound);
@@ -553,7 +521,6 @@ namespace Lumino
             var _Texture = new TypeInfo(){ Factory = (handle) =>
             {
                 var obj = new Texture(_LNInternal.InternalBlock);
-                obj.SetHandle(handle);
                 return obj;
             }};
             _typeInfos.Add(_Texture);
@@ -562,7 +529,6 @@ namespace Lumino
             var _Texture2D = new TypeInfo(){ Factory = (handle) =>
             {
                 var obj = new Texture2D(_LNInternal.InternalBlock);
-                obj.SetHandle(handle);
                 return obj;
             }};
             _typeInfos.Add(_Texture2D);
@@ -571,7 +537,6 @@ namespace Lumino
             var _GraphicsResourceObject = new TypeInfo(){ Factory = (handle) =>
             {
                 var obj = new GraphicsResourceObject(_LNInternal.InternalBlock);
-                obj.SetHandle(handle);
                 return obj;
             }};
             _typeInfos.Add(_GraphicsResourceObject);
@@ -580,7 +545,6 @@ namespace Lumino
             var _SceneNode = new TypeInfo(){ Factory = (handle) =>
             {
                 var obj = new SceneNode(_LNInternal.InternalBlock);
-                obj.SetHandle(handle);
                 return obj;
             }};
             _typeInfos.Add(_SceneNode);
@@ -589,7 +553,6 @@ namespace Lumino
             var _VisualNode = new TypeInfo(){ Factory = (handle) =>
             {
                 var obj = new VisualNode(_LNInternal.InternalBlock);
-                obj.SetHandle(handle);
                 return obj;
             }};
             _typeInfos.Add(_VisualNode);
@@ -598,7 +561,6 @@ namespace Lumino
             var _Sprite = new TypeInfo(){ Factory = (handle) =>
             {
                 var obj = new Sprite(_LNInternal.InternalBlock);
-                obj.SetHandle(handle);
                 return obj;
             }};
             _typeInfos.Add(_Sprite);
@@ -607,7 +569,6 @@ namespace Lumino
             var _Sprite2D = new TypeInfo(){ Factory = (handle) =>
             {
                 var obj = new Sprite2D(_LNInternal.InternalBlock);
-                obj.SetHandle(handle);
                 return obj;
             }};
             _typeInfos.Add(_Sprite2D);
@@ -616,7 +577,6 @@ namespace Lumino
             var _Sprite3D = new TypeInfo(){ Factory = (handle) =>
             {
                 var obj = new Sprite3D(_LNInternal.InternalBlock);
-                obj.SetHandle(handle);
                 return obj;
             }};
             _typeInfos.Add(_Sprite3D);
@@ -625,25 +585,14 @@ namespace Lumino
             var _StaticMesh = new TypeInfo(){ Factory = (handle) =>
             {
                 var obj = new StaticMesh(_LNInternal.InternalBlock);
-                obj.SetHandle(handle);
                 return obj;
             }};
             _typeInfos.Add(_StaticMesh);
             LNStaticMesh_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
 
-            var _BoxMesh = new TypeInfo(){ Factory = (handle) =>
-            {
-                var obj = new BoxMesh(_LNInternal.InternalBlock);
-                obj.SetHandle(handle);
-                return obj;
-            }};
-            _typeInfos.Add(_BoxMesh);
-            LNBoxMesh_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
-
             var _Component = new TypeInfo(){ Factory = (handle) =>
             {
                 var obj = new Component(_LNInternal.InternalBlock);
-                obj.SetHandle(handle);
                 return obj;
             }};
             _typeInfos.Add(_Component);
@@ -652,7 +601,6 @@ namespace Lumino
             var _GameApplication = new TypeInfo(){ Factory = (handle) =>
             {
                 var obj = new GameApplication(_LNInternal.InternalBlock);
-                obj.SetHandle(handle);
                 return obj;
             }};
             _typeInfos.Add(_GameApplication);
@@ -661,7 +609,6 @@ namespace Lumino
             var _GameScene = new TypeInfo(){ Factory = (handle) =>
             {
                 var obj = new GameScene(_LNInternal.InternalBlock);
-                obj.SetHandle(handle);
                 return obj;
             }};
             _typeInfos.Add(_GameScene);
@@ -708,9 +655,6 @@ namespace Lumino
 
         [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
         private static extern void LNStaticMesh_SetBindingTypeInfo(IntPtr data);
-
-        [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
-        private static extern void LNBoxMesh_SetBindingTypeInfo(IntPtr data);
 
         [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
         private static extern void LNComponent_SetBindingTypeInfo(IntPtr data);

@@ -427,7 +427,7 @@ String FileSystem::ReadAllText(const StringRef& filePath, const Encoding* encodi
 //------------------------------------------------------------------------------
 void FileSystem::WriteAllBytes(const TCHAR* filePath, const void* buffer, size_t size)
 {
-	FileStreamPtr stream = FileStream::Create(filePath, FileOpenMode::Write | FileOpenMode::Truncate);
+	RefPtr<FileStream> stream = FileStream::Create(filePath, FileOpenMode::Write | FileOpenMode::Truncate);
 	stream->Write(buffer, size);
 }
 

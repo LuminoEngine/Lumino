@@ -6,26 +6,28 @@
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
-// FileStream
+// GenericFileStream
 //==============================================================================
 
 //------------------------------------------------------------------------------
-FileStreamPtr FileStream::Create(const TCHAR* filePath, FileOpenMode openMode)
+template<typename TChar>
+RefPtr<GenericFileStream<TChar>> GenericFileStream<TChar>::Create(const TChar* filePath, FileOpenMode openMode)
 {
-	FileStreamPtr ptr(LN_NEW FileStream(), false);
+	RefPtr<GenericFileStream<TChar>> ptr(LN_NEW GenericFileStream(), false);
 	ptr->Open(filePath, openMode);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-FileStream::FileStream()
+template<typename TChar>
+GenericFileStream<TChar>::GenericFileStream()
 	: m_stream(nullptr)
 	, m_openModeFlags(FileOpenMode::None)
 {
 }
 
 //------------------------------------------------------------------------------
-//FileStream::FileStream(const TCHAR* filePath, FileOpenMode openMode)
+//GenericFileStream::GenericFileStream(const TChar* filePath, FileOpenMode openMode)
 //	: m_stream(NULL)
 //	, m_openModeFlags(FileOpenMode::None)
 //{
@@ -33,13 +35,15 @@ FileStream::FileStream()
 //}
 
 //------------------------------------------------------------------------------
-FileStream::~FileStream()
+template<typename TChar>
+GenericFileStream<TChar>::~GenericFileStream()
 {
 	Close();
 }
 
 //------------------------------------------------------------------------------
-void FileStream::Open(const TCHAR* filePath, FileOpenMode openMode)
+template<typename TChar>
+void GenericFileStream<TChar>::Open(const TChar* filePath, FileOpenMode openMode)
 {
 	LN_ASSERT( filePath );
 	Close();
@@ -60,7 +64,8 @@ void FileStream::Open(const TCHAR* filePath, FileOpenMode openMode)
 }
 
 //------------------------------------------------------------------------------
-void FileStream::Close()
+template<typename TChar>
+void GenericFileStream<TChar>::Close()
 {
 	if (m_stream != NULL) {
 		fclose(m_stream);
@@ -68,26 +73,30 @@ void FileStream::Close()
 }
 
 //------------------------------------------------------------------------------
-bool FileStream::CanRead() const
+template<typename TChar>
+bool GenericFileStream<TChar>::CanRead() const
 {
 	return (m_openModeFlags.TestFlag(FileOpenMode::Read));
 }
 
 //------------------------------------------------------------------------------
-bool FileStream::CanWrite() const
+template<typename TChar>
+bool GenericFileStream<TChar>::CanWrite() const
 {
 	return (m_openModeFlags.TestFlag(FileOpenMode::Write));
 }
 
 //------------------------------------------------------------------------------
-int64_t FileStream::GetLength() const
+template<typename TChar>
+int64_t GenericFileStream<TChar>::GetLength() const
 {
 	CheckOpen();
 	return (size_t)FileSystem::GetFileSize(m_stream);
 }
 
 //------------------------------------------------------------------------------
-int64_t FileStream::GetPosition() const
+template<typename TChar>
+int64_t GenericFileStream<TChar>::GetPosition() const
 {
 	CheckOpen();
 	// TODO: 64bit 確認 → ftello?
@@ -95,14 +104,16 @@ int64_t FileStream::GetPosition() const
 }
 
 //------------------------------------------------------------------------------
-size_t FileStream::Read(void* buffer, size_t readCount)
+template<typename TChar>
+size_t GenericFileStream<TChar>::Read(void* buffer, size_t readCount)
 {
 	CheckOpen();
 	return fread(buffer, 1, readCount, m_stream);
 }
 
 //------------------------------------------------------------------------------
-void FileStream::Write( const void* data, size_t byteCount )
+template<typename TChar>
+void GenericFileStream<TChar>::Write(const void* data, size_t byteCount)
 {
 	CheckOpen();
 	size_t nWriteSize = fwrite( data, 1, byteCount, m_stream );
@@ -110,7 +121,8 @@ void FileStream::Write( const void* data, size_t byteCount )
 }
 
 //------------------------------------------------------------------------------
-void FileStream::Seek(int64_t offset, SeekOrigin origin)
+template<typename TChar>
+void GenericFileStream<TChar>::Seek(int64_t offset, SeekOrigin origin)
 {
 	CheckOpen();
 
@@ -124,14 +136,16 @@ void FileStream::Seek(int64_t offset, SeekOrigin origin)
 }
 
 //------------------------------------------------------------------------------
-void FileStream::Flush()
+template<typename TChar>
+void GenericFileStream<TChar>::Flush()
 {
 	CheckOpen();
 	fflush(m_stream);
 }
 
 //------------------------------------------------------------------------------
-void FileStream::CheckOpen() const
+template<typename TChar>
+void GenericFileStream<TChar>::CheckOpen() const
 {
 	if (m_openModeFlags.TestFlag(FileOpenMode::Deferring))
 	{
@@ -147,7 +161,8 @@ void FileStream::CheckOpen() const
 }
 
 //------------------------------------------------------------------------------
-void FileStream::Open() const
+template<typename TChar>
+void GenericFileStream<TChar>::Open() const
 {
 	LN_THROW(m_stream == NULL, InvalidOperationException);
 
@@ -190,8 +205,13 @@ void FileStream::Open() const
 	}
 	LN_THROW(mode, ArgumentException);
 
-	errno_t err = _tfopen_s(&m_stream, m_filePath, mode);
+	auto path = String(m_filePath.GetString());
+	errno_t err = _tfopen_s(&m_stream, path.c_str(), mode);
 	LN_THROW(err == 0, FileNotFoundException);
 }
+
+// Instantiate template
+template class GenericFileStream<char>;
+template class GenericFileStream<wchar_t>;
 
 LN_NAMESPACE_END

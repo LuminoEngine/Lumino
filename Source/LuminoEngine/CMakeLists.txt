@@ -321,6 +321,8 @@ set(LN_SOURCES_Mesh
 	Source/Mesh/Common.h
 	Source/Mesh/ModelManager.cpp
 	Source/Mesh/ModelManager.h
+	Source/Mesh/MqoImporter.cpp
+	Source/Mesh/MqoImporter.h
 	Source/Mesh/PmxLoader.cpp
 	Source/Mesh/PmxLoader.h
 	Source/Mesh/PmxSkinnedMesh.cpp
@@ -530,8 +532,6 @@ set(LN_SOURCES_Framework
 	Include/Lumino/Framework/Application.h
 	Include/Lumino/Framework/GameScene.h
 	Source/Framework/Application.cpp
-	Source/Framework/EntryPoint.cpp
-	Source/Framework/EntryPoint.h
 	Source/Framework/GameSceneManager.cpp
 	Source/Framework/GameSceneManager.h
 )
@@ -611,11 +611,6 @@ if (WIN32)
 		Source/Audio/DirectMusic/DirectMusicAudioPlayer.h
 	)
 
-	set(LN_SOURCES_Framework
-		${LN_SOURCES_Framework}
-		Source/Framework/Main_Win32.cpp
-	)
-
 
 elseif (APPLE)
 	set(LN_SOURCES_Platform
@@ -634,12 +629,7 @@ elseif (APPLE)
 		${LN_SOURCES_Graphics_Device}
 		Source/Graphics/Device/OpenGL/NSGLGraphicsDevice.mm
 		Source/Graphics/Device/OpenGL/NSGLGraphicsDevice.h
-	)	
-	set(LN_SOURCES_Framework
-		${LN_SOURCES_Framework}
-		Source/Framework/Main_Mac.cpp
 	)
-
 
 elseif (UNIX)
 	set(LN_SOURCES_Platform

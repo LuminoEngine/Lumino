@@ -115,6 +115,7 @@
 #if defined(LN_OS_WIN32)
 #include "XFileLoader.h"
 #endif
+#include "MqoImporter.h"
 #include "PmxLoader.h"
 //#include "VMDLoader.h"
 #include "ModelManager.h"
@@ -255,7 +256,20 @@ void ModelManager::Initialize(const ConfigData& configData)
 	m_unitBoxMeshResourceReverseFaces->Initialize(m_graphicsManager, MeshCreationFlags::None);
 	m_unitBoxMeshResourceReverseFaces->AddBox(Vector3(1, 1, 1));
 	m_unitBoxMeshResourceReverseFaces->ReverseFaces();
-	
+
+	m_unitSphereMeshResource = RefPtr<MeshResource>::MakeRef();
+	m_unitSphereMeshResource->Initialize(m_graphicsManager, MeshCreationFlags::None);
+	m_unitSphereMeshResource->AddSphere(0.5, 16, 16);
+
+	m_unitSphereMeshResourceReverseFaces = RefPtr<MeshResource>::MakeRef();
+	m_unitSphereMeshResourceReverseFaces->Initialize(m_graphicsManager, MeshCreationFlags::None);
+	m_unitSphereMeshResourceReverseFaces->AddSphere(0.5, 16, 16);
+	m_unitSphereMeshResourceReverseFaces->ReverseFaces();
+
+	m_unitTeapotMeshResource = RefPtr<MeshResource>::MakeRef();
+	m_unitTeapotMeshResource->Initialize(m_graphicsManager, MeshCreationFlags::None);
+	m_unitTeapotMeshResource->AddTeapot(1.0f, 8);
+
 
 	if (g_modelManagerInstance == nullptr)
 	{
@@ -290,6 +304,18 @@ MeshResource* ModelManager::GetUnitBoxMeshResource(bool reverseFaces) const
 }
 
 //------------------------------------------------------------------------------
+MeshResource* ModelManager::GetUnitSphereMeshResource(bool reverseFaces) const
+{
+	return (reverseFaces) ? m_unitSphereMeshResourceReverseFaces : m_unitSphereMeshResource;
+}
+
+//------------------------------------------------------------------------------
+MeshResource* ModelManager::GetUnitTeapotMeshResource() const
+{
+	return m_unitTeapotMeshResource;
+}
+
+//------------------------------------------------------------------------------
 Texture2D* ModelManager::GetMMDDefaultToonTexture(int index)
 { 
 	return m_mmdDefaultToonTexture[index];
@@ -310,13 +336,22 @@ RefPtr<StaticMeshModel> ModelManager::CreateStaticMeshModel(const PathName& file
 {
 
 #if defined(LN_OS_WIN32)
+	RefPtr<StaticMeshModel> mesh;
 	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath), false);
+
+	PathName parentDir = filePath.GetParent();
+	{
+		MqoImporter importer;
+		mesh = importer.Import(this, parentDir, stream);
+		if (mesh != nullptr) return mesh;
+		stream->Seek(0, SeekOrigin_Begin);
+	}
 
 	//PMXLoader loader;
 	//RefPtr<ModelCore> modelCore(loader.Load(this, stream, filePath.GetParent(), true));
 
 	XFileLoader loader;
-	RefPtr<StaticMeshModel> mesh = loader.Load(this, stream, filePath.GetParent(), true, ModelCreationFlag::None);
+	mesh = loader.Load(this, stream, parentDir, true, ModelCreationFlag::None);
 
 	//modelCore->RefreshInitialValues();
 	//modelCore.SafeAddRef();

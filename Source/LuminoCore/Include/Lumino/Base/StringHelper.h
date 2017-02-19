@@ -366,6 +366,9 @@ public:
 	*/
 	template<typename TChar>
 	static double ToDouble(const TChar* str, int len = -1, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
+	
+	template<typename TChar>
+	static float ToFloat(const TChar* str, int len = -1, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
 
 };
 
