@@ -127,6 +127,7 @@ void Main()
 
 	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView();
 	auto thumb = UIThumb::Create();
+	//thumb->SetPosition(PointF(100, 200));
 	thumb->SetSize(Size(30,60));
 	thumb->SetBackground(ColorBrush::Red);
 	//textBlock1->SetText(_T("TextBlock"));
