@@ -49,7 +49,7 @@ void UIContext::Initialize(detail::UIManager* manager)
 	LN_REFOBJ_SET(m_rootStyleTable, m_manager->GetDefaultStyleTable());
 
 	m_mainWindowView = LN_NEW UILayoutView();
-	m_mainWindowView->Initialize(this, m_manager->GetMainWindow()->GetPlatformWindow());
+	m_mainWindowView->Initialize(this, m_manager->GetMainWindow());
 }
 
 //------------------------------------------------------------------------------
@@ -60,6 +60,18 @@ void UIContext::SetFocusElement(UIElement* element)
 		LN_CHECK_STATE(element->IsFocusable());
 	}
 	m_focusElement = element;
+}
+
+//------------------------------------------------------------------------------
+void UIContext::CaptureMouse(UIElement* element)
+{
+	m_manager->GetMainWindow()->CaptureMouse(element);
+}
+
+//------------------------------------------------------------------------------
+void UIContext::ReleaseMouseCapture(UIElement* element)
+{
+	m_manager->GetMainWindow()->ReleaseMouseCapture(element);
 }
 
 //------------------------------------------------------------------------------

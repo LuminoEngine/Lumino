@@ -90,6 +90,7 @@ UIFrameWindow::UIFrameWindow()
 	, m_platformWindow(nullptr)
 	, m_swapChain(nullptr)
 	, m_mainViewport(nullptr)
+	, m_capturedElement(nullptr)
 {
 }
 
@@ -152,6 +153,23 @@ void UIFrameWindow::SetSize(const SizeI& size)
 {
 	LN_FAIL_CHECK_STATE(m_platformWindow != nullptr) return;
 	m_platformWindow->SetSize(size);
+}
+
+//------------------------------------------------------------------------------
+void UIFrameWindow::CaptureMouse(UIElement* element)
+{
+	m_capturedElement = element;
+	//m_platformWindow->CaptureMouse();
+}
+
+//------------------------------------------------------------------------------
+void UIFrameWindow::ReleaseMouseCapture(UIElement* element)
+{
+	if (m_capturedElement == element)
+	{
+		m_capturedElement = nullptr;
+		//m_platformWindow->ReleaseMouseCapture();
+	}
 }
 
 //------------------------------------------------------------------------------

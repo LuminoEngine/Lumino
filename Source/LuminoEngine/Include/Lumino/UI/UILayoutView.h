@@ -33,8 +33,6 @@ LN_INTERNAL_ACCESS:
 	
 	const Size& GetViewPixelSize() const { return m_viewPixelSize; }
 	bool UpdateMouseHover(const PointF& mousePos);
-	//void CaptureMouse(UIElement* element);
-	//void ReleaseMouseCapture(UIElement* element);
 
 
 	// Implements IUIInjectedInputReceiver
@@ -59,14 +57,13 @@ private:
 
 	UILayoutView();
 	virtual ~UILayoutView();
-	void Initialize(UIContext* ownerContext, PlatformWindow* ownerNativeWindow);
+	void Initialize(UIContext* ownerContext, UIFrameWindow* ownerNativeWindow);
 
-	PlatformWindow*		m_ownerNativeWindow;
+	UIFrameWindow*		m_ownerNativeWindow;
 
 	UIContext*			m_ownerContext;
 	//UILayoutRoot*		m_rootElement;
 	UIElement*			m_mouseHoverElement;
-	UIElement*			m_capturedElement;
 
 	PointF				m_mousePosition;
 	MouseClickTracker	m_mouseClickTrackers[8];

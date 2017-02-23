@@ -7,6 +7,7 @@
 #include <Lumino/UI/UIContext.h>
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIStyle.h>
+#include "UIManager.h"
 #include "UIHelper.h"
 
 LN_NAMESPACE_BEGIN
@@ -111,22 +112,18 @@ void UIElement::Focus()
 	}
 }
 
-////------------------------------------------------------------------------------
-////
-////------------------------------------------------------------------------------
-//void UIElement::CaptureMouse()
-//{
-//	m_ownerLayoutView->CaptureMouse(this);
-//}
-//
-////------------------------------------------------------------------------------
-////
-////------------------------------------------------------------------------------
-//void UIElement::ReleaseMouseCapture()
-//{
-//	m_ownerLayoutView->ReleaseMouseCapture(this);
-//}
-//
+//------------------------------------------------------------------------------
+void UIElement::CaptureMouse()
+{
+	GetContext()->CaptureMouse(this);
+}
+
+//------------------------------------------------------------------------------
+void UIElement::ReleaseMouseCapture()
+{
+	GetContext()->ReleaseMouseCapture(this);
+}
+
 //------------------------------------------------------------------------------
 int UIElement::GetVisualChildrenCount() const
 {
@@ -436,6 +433,12 @@ void UIElement::OnUpdatingLayout()
 {
 	// 子要素
 	UIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->OnUpdatingLayout(); });
+}
+
+//------------------------------------------------------------------------------
+UIContext* UIElement::GetContext() const
+{
+	return UIContext::GetMainContext();// TODO
 }
 
 //------------------------------------------------------------------------------

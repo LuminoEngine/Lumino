@@ -62,12 +62,15 @@ LN_INTERNAL_ACCESS:
 	detail::UIManager* GetManager() const { return m_manager; }
 	SwapChain* GetSwapChain() const { return m_swapChain; }
 
+	void CaptureMouse(UIElement* element);
+	void ReleaseMouseCapture(UIElement* element);
 
 	void Render();
 
 	void BeginRendering();
 	void RenderContents();
 	void EndRendering();
+	UIElement*				m_capturedElement;
 
 private:
 	void UpdateViewportTransform();

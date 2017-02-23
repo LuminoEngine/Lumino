@@ -5,6 +5,7 @@
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIElement.h>
 #include <Lumino/UI/UILayoutRoot.h>
+#include <Lumino/UI/UIFrameWindow.h>
 #include "UIManager.h"
 #include "EventArgsPool.h"
 
@@ -20,7 +21,6 @@ UILayoutView::UILayoutView()
 	, m_ownerContext(nullptr)
 	//, m_rootElement(nullptr)
 	, m_mouseHoverElement(nullptr)
-	, m_capturedElement(nullptr)
 	, m_mouseClickTrackers{}
 {
 }
@@ -32,7 +32,7 @@ UILayoutView::~UILayoutView()
 }
 
 //------------------------------------------------------------------------------
-void UILayoutView::Initialize(UIContext* ownerContext, PlatformWindow* ownerNativeWindow)
+void UILayoutView::Initialize(UIContext* ownerContext, UIFrameWindow* ownerNativeWindow)
 {
 	UIContentControl::Initialize(ownerContext->GetManager());
 
@@ -122,27 +122,6 @@ void UILayoutView::ActivateInternal(UIElement* child)
 	m_ownerContext->SetFocusElement(child);
 }
 
-////------------------------------------------------------------------------------
-////
-////------------------------------------------------------------------------------
-//void UILayoutView::CaptureMouse(UIElement* element)
-//{
-//	m_capturedElement = element;
-//	m_ownerNativeWindow->CaptureMouse();
-//}
-//
-////------------------------------------------------------------------------------
-////
-////------------------------------------------------------------------------------
-//void UILayoutView::ReleaseMouseCapture(UIElement* element)
-//{
-//	if (m_capturedElement == element)
-//	{
-//		m_capturedElement = NULL;
-//		m_ownerNativeWindow->ReleaseMouseCapture();
-//	}
-//}
-
 //------------------------------------------------------------------------------
 //bool UILayoutView::InjectViewportSizeChanged(int width, int height)
 //{
@@ -158,10 +137,10 @@ bool UILayoutView::InjectMouseMove(float clientX, float clientY)
 	m_mousePosition.Set(clientX, clientY);
 
 	// キャプチャ中のコントロールがあればそちらに送る
-	if (m_capturedElement != nullptr)
+	if (m_ownerNativeWindow->m_capturedElement != nullptr)
 	{
 		RefPtr<UIMouseEventArgs> args(pool->Create<UIMouseEventArgs>(MouseButtons::None, clientX, clientY, 0), false);
-		return m_capturedElement->OnEvent(detail::UIInternalEventType::MouseMove, args);
+		return m_ownerNativeWindow->m_capturedElement->OnEvent(detail::UIInternalEventType::MouseMove, args);
 	}
 	UpdateMouseHover(PointF(clientX, clientY));
 	if (m_mouseHoverElement == NULL) { return false; }
@@ -193,10 +172,10 @@ bool UILayoutView::InjectMouseButtonDown(MouseButtons button, float clientX, flo
 	tracker.LastTime = curTime;
 
 	// キャプチャ中のコントロールがあればそちらに送る
-	if (m_capturedElement != NULL)
+	if (m_ownerNativeWindow->m_capturedElement != NULL)
 	{
 		RefPtr<UIMouseEventArgs> args(pool->Create<UIMouseEventArgs>(button, clientX, clientY, tracker.ClickCount), false);
-		return m_capturedElement->OnEvent(detail::UIInternalEventType::MouseButtonDown, args);
+		return m_ownerNativeWindow->m_capturedElement->OnEvent(detail::UIInternalEventType::MouseButtonDown, args);
 	}
 	if (m_mouseHoverElement == NULL) { return false; }
 
@@ -212,10 +191,10 @@ bool UILayoutView::InjectMouseButtonUp(MouseButtons button, float clientX, float
 	m_mousePosition.Set(clientX, clientY);
 
 	// キャプチャ中のUI要素があればそちらに送る
-	if (m_capturedElement != nullptr)
+	if (m_ownerNativeWindow->m_capturedElement != nullptr)
 	{
 		RefPtr<UIMouseEventArgs> args(pool->Create<UIMouseEventArgs>(button, clientX, clientY, 0), false);
-		return m_capturedElement->OnEvent(detail::UIInternalEventType::MouseButtonUp, args);
+		return m_ownerNativeWindow->m_capturedElement->OnEvent(detail::UIInternalEventType::MouseButtonUp, args);
 	}
 	// マウス位置にUI要素があればそちらに送る
 	if (m_mouseHoverElement != nullptr)
@@ -232,10 +211,10 @@ bool UILayoutView::InjectMouseWheel(int delta)
 	detail::EventArgsPool* pool = m_ownerContext->GetManager()->GetEventArgsPool();
 
 	// キャプチャ中のUI要素があればそちらに送る
-	if (m_capturedElement != NULL)
+	if (m_ownerNativeWindow->m_capturedElement != NULL)
 	{
 		RefPtr<UIMouseWheelEventArgs> args(pool->Create<UIMouseWheelEventArgs>(delta), false);
-		return m_capturedElement->OnEvent(detail::UIInternalEventType::MouseWheel, args);
+		return m_ownerNativeWindow->m_capturedElement->OnEvent(detail::UIInternalEventType::MouseWheel, args);
 	}
 	// マウス位置にUI要素があればそちらに送る
 	if (m_mouseHoverElement != nullptr)

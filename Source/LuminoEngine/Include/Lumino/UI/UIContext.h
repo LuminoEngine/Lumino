@@ -25,6 +25,10 @@ LN_INTERNAL_ACCESS:
 
 	void SetFocusElement(UIElement* element);
 	UIElement* SetFocusElement() { return m_focusElement; }
+
+	void CaptureMouse(UIElement* element);
+	void ReleaseMouseCapture(UIElement* element);
+
 	void InjectElapsedTime(float elapsedTime);
 	//void AddElement(UIElement* element) { m_allElementList.Add(element); }
 	//void RemoveElement(UIElement* element) { m_allElementList.Remove(element); }

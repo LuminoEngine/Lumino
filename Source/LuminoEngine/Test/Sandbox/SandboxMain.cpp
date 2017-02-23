@@ -8,6 +8,7 @@
 #include <Lumino/Framework/GameScene.h>
 #include <Lumino/UI/UIFrameWindow.h>
 #include <Lumino/UI/UIListBox.h>
+#include <Lumino/UI/UIScrollViewer.h>
 #include <Lumino/Testing/TestHelper.h>
 //#include "../../src/Graphics/Mesh/GizmoModel.h"
 using namespace ln;
@@ -124,10 +125,12 @@ void Main()
 
 
 
-	//auto uiRoot = UIContext::GetMainContext()->GetMainWindowView();
-	//auto textBlock1 = UITextBlock::Create();
+	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView();
+	auto thumb = UIThumb::Create();
+	thumb->SetSize(Size(30,60));
+	thumb->SetBackground(ColorBrush::Red);
 	//textBlock1->SetText(_T("TextBlock"));
-	//uiRoot->SetContent(textBlock1);
+	uiRoot->SetContent(thumb);
 
 
 

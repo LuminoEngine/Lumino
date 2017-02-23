@@ -32,6 +32,9 @@ public:
 	UIMouseEventArgs(MouseButtons button, float x, float y, int clickCount);
 	virtual ~UIMouseEventArgs();
 
+	/** 指定した要素から見た相対的なマウス ポインターの位置を返します。*/
+	PointF GetPosition(UIElement* relativeTo);
+
 public:
 	MouseButtons	button;			/**< ボタンの種類 */
 	float			x;				/**< マウスイベント生成時のマウスの X 座標 (コンテキスト内の座標系) */
