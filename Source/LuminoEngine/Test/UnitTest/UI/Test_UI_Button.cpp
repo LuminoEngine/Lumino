@@ -1,6 +1,7 @@
 #include <TestConfig.h>
 #include <Lumino/UI/UILayoutPanel.h>
 
+
 class Test_UI_Button : public ::testing::Test
 {
 protected:
@@ -11,7 +12,7 @@ protected:
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_Button, Basic)
 {
-	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView();
 	auto button1 = UIButton::Create();
 	button1->SetText(_T("Button"));
 	uiRoot->SetContent(button1);
@@ -48,7 +49,7 @@ TEST_F(Test_UI_FlowLayout, ReverseHorizontal)
 	panel->AddChild(button2);
 	panel->SetOrientation(Orientation::ReverseHorizontal);
 
-	UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot()->SetContent(panel);
+	UIContext::GetMainContext()->GetMainWindowView()->SetContent(panel);
 
 	Engine::Update();
 
@@ -68,7 +69,7 @@ TEST_F(Test_UI_FlowLayout, Margin_Padding)
 	panel->AddChild(button1);
 	panel->AddChild(button2);
 
-	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView();
 	uiRoot->SetContent(panel);
 
 	panel->padding = ThicknessF(5, 10, 15, 20);
@@ -92,7 +93,7 @@ protected:
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_GridLayout, Basic)
 {
-	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView();
 
 	auto grid = UIGridLayout::Create();
 	auto button = UIButton::Create();
@@ -120,7 +121,7 @@ TEST_F(Test_UI_GridLayout, Basic)
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_GridLayout, DefaultLayout)
 {
-	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView();
 
 	auto grid1 = UIGridLayout::Create();
 	auto button1 = UIButton::Create();
@@ -135,7 +136,7 @@ TEST_F(Test_UI_GridLayout, DefaultLayout)
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_GridLayout, Layout)
 {
-	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView();
 
 	auto grid1 = UIGridLayout::Create(4, 4);
 
@@ -197,7 +198,7 @@ TEST_F(Test_UI_GridLayout, Layout)
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_GridLayout, TreeLayout)
 {
-	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView();
 
 	auto grid1 = UIGridLayout::Create(2, 2);
 
@@ -238,7 +239,7 @@ TEST_F(Test_UI_GridLayout, TreeLayout)
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_GridLayout, GridLength)
 {
-	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView();
 
 	auto grid1 = UIGridLayout::Create();
 	grid1->AddColumnDefinition();	// default
@@ -283,7 +284,7 @@ TEST_F(Test_UI_GridLayout, GridLength)
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_GridLayout, MinMax)
 {
-	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView();
 
 	auto grid1 = UIGridLayout::Create();
 

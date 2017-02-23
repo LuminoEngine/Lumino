@@ -115,10 +115,34 @@ void Main()
 	Engine::GetMainViewport()->SetBackgroundColor(Color32::Gray);
 	Engine::GetMainViewport()->SetPlacement(ViewportPlacement::AutoResize);
 
-	Engine::GetDefaultSceneGraph3D()->visibleGridPlane = true;
+	//Engine::GetDefaultSceneGraph3D()->visibleGridPlane = true;
 
 	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
 	Camera::GetMain3DCamera()->SetCameraBehavior(cb);
+
+
+
+
+
+	//auto uiRoot = UIContext::GetMainContext()->GetMainWindowView();
+	//auto textBlock1 = UITextBlock::Create();
+	//textBlock1->SetText(_T("TextBlock"));
+	//uiRoot->SetContent(textBlock1);
+
+
+
+	while (!Engine::IsEndRequested())
+	{
+		Engine::BeginFrameUpdate();
+		if (Engine::BeginRendering())
+		{
+			Engine::Render();
+			Engine::EndRendering();
+		}
+		Engine::EndFrameUpdate();
+	}
+
+
 
 
 	//auto mesh = SkinnedMesh::Create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
@@ -484,6 +508,7 @@ void Main()
 	particle2->SetBlendMode(BlendMode::Add);
 #endif
 
+#if 0
 	//auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
 	//auto listBox = tr::UIListBox::Create();
 	//listBox->AddTextItem(_T("test"));
@@ -578,6 +603,7 @@ void Main()
 	//	}
 	//	//blur->SetBlurStatus(0.9f, Vector2::Zero, 1.02);
 	//}
+#endif
 }
 
 #endif

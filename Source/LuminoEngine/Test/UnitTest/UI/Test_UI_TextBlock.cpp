@@ -18,7 +18,7 @@ TEST_F(Test_UI_TextBlock, DefaultLayout)
 		となる。
 	*/
 
-	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView();
 	auto textBlock1 = UITextBlock::Create();
 	textBlock1->SetText(_T("TextBlock"));
 	uiRoot->SetContent(textBlock1);

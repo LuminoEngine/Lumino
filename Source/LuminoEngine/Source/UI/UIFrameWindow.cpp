@@ -18,65 +18,65 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // UIViewportLayer
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIViewportLayer, ViewportLayer);
-
-//------------------------------------------------------------------------------
-UIViewportLayer::UIViewportLayer(UILayoutView* view)
-	: m_view(view)
-{
-	assert(view != nullptr);
-	SetZIndex(DefaultZIndex);
-}
-
-//------------------------------------------------------------------------------
-UIViewportLayer::~UIViewportLayer()
-{
-}
-
-//------------------------------------------------------------------------------
-void UIViewportLayer::Initialize()
-{
-	auto* manager = m_view->GetOwnerContext()->GetManager();
-
-	// TODO: DrawList は UI Scene 側につくべき
-	m_renderingContext = RefPtr<DrawList>::MakeRef();
-	m_renderingContext->Initialize(manager->GetGraphicsManager());
-
-	// lighting disabled.
-	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
-	internalRenderer->Initialize(manager->GetGraphicsManager());
-	m_internalRenderer = internalRenderer;
-}
-
-//------------------------------------------------------------------------------
-void UIViewportLayer::Render()
-{
-	m_renderingContext->BeginMakeElements(nullptr);
-
-	m_view->Render(m_renderingContext);
-}
-
-//------------------------------------------------------------------------------
-void UIViewportLayer::ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
-{
-	m_renderingContext->EndMakeElements();
-
-	detail::CameraInfo cameraInfo;
-	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
-	cameraInfo.viewPixelSize = GetSize();
-	cameraInfo.viewPosition = Vector3::Zero;
-	cameraInfo.viewMatrix = Matrix::Identity;
-	cameraInfo.projMatrix = Matrix::MakePerspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1);
-	cameraInfo.viewProjMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;
-	cameraInfo.viewFrustum = ViewFrustum(cameraInfo.projMatrix);
-	cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
-	m_internalRenderer->Render(
-		m_renderingContext->GetDrawElementList(),
-		cameraInfo,
-		renderTarget,
-		depthBuffer);
-	m_renderingContext->EndFrame();
-}
+//LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIViewportLayer, ViewportLayer);
+//
+////------------------------------------------------------------------------------
+//UIViewportLayer::UIViewportLayer(UILayoutView* view)
+//	: m_view(view)
+//{
+//	assert(view != nullptr);
+//	SetZIndex(DefaultZIndex);
+//}
+//
+////------------------------------------------------------------------------------
+//UIViewportLayer::~UIViewportLayer()
+//{
+//}
+//
+////------------------------------------------------------------------------------
+//void UIViewportLayer::Initialize()
+//{
+//	auto* manager = m_view->GetOwnerContext()->GetManager();
+//
+//	// TODO: DrawList は UI Scene 側につくべき
+//	m_renderingContext = RefPtr<DrawList>::MakeRef();
+//	m_renderingContext->Initialize(manager->GetGraphicsManager());
+//
+//	// lighting disabled.
+//	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
+//	internalRenderer->Initialize(manager->GetGraphicsManager());
+//	m_internalRenderer = internalRenderer;
+//}
+//
+////------------------------------------------------------------------------------
+//void UIViewportLayer::Render()
+//{
+//	m_renderingContext->BeginMakeElements(nullptr);
+//
+//	m_view->Render(m_renderingContext);
+//}
+//
+////------------------------------------------------------------------------------
+//void UIViewportLayer::ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+//{
+//	m_renderingContext->EndMakeElements();
+//
+//	detail::CameraInfo cameraInfo;
+//	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
+//	cameraInfo.viewPixelSize = GetSize();
+//	cameraInfo.viewPosition = Vector3::Zero;
+//	cameraInfo.viewMatrix = Matrix::Identity;
+//	cameraInfo.projMatrix = Matrix::MakePerspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1);
+//	cameraInfo.viewProjMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;
+//	cameraInfo.viewFrustum = ViewFrustum(cameraInfo.projMatrix);
+//	cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
+//	m_internalRenderer->Render(
+//		m_renderingContext->GetDrawElementList(),
+//		cameraInfo,
+//		renderTarget,
+//		depthBuffer);
+//	m_renderingContext->EndFrame();
+//}
 
 
 //==============================================================================
@@ -119,9 +119,23 @@ void UIFrameWindow::Initialize(detail::UIManager* manager, PlatformWindow* platf
 	m_mainViewport->Initialize(m_manager->GetGraphicsManager());
 
 	// UI Layer
-	m_uiLayer.Attach(LN_NEW UIViewportLayer(view), false);
-	m_uiLayer->Initialize();
-	m_mainViewport->AddViewportLayer(m_uiLayer);
+	//m_uiLayer.Attach(LN_NEW UIViewportLayer(view), false);
+	//m_uiLayer->Initialize();
+	//m_mainViewport->AddViewportLayer(m_uiLayer);
+
+	// init renderer
+	{
+		m_view = view;
+
+		// TODO: DrawList は UI Scene 側につくべき
+		m_renderingContext = RefPtr<DrawList>::MakeRef();
+		m_renderingContext->Initialize(m_manager->GetGraphicsManager());
+	
+		// lighting disabled.
+		auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
+		internalRenderer->Initialize(m_manager->GetGraphicsManager());
+		m_internalRenderer = internalRenderer;
+	}
 
 	// SwapChain のサイズを Viewport へ通知
 	UpdateViewportTransform();
@@ -171,6 +185,13 @@ void UIFrameWindow::RenderContents()
 {
 	Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
 	m_mainViewport->Render(renderer);
+
+
+
+	{
+		m_renderingContext->BeginMakeElements(nullptr);
+		m_view->Render(m_renderingContext);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -178,6 +199,29 @@ void UIFrameWindow::EndRendering()
 {
 	Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
 	m_mainViewport->EndRender(renderer, m_swapChain->GetBackBuffer());
+
+	//void UIViewportLayer::ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+	{
+		m_renderingContext->EndMakeElements();
+	
+		detail::CameraInfo cameraInfo;
+		cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
+		cameraInfo.viewPixelSize = m_mainViewport->GetSize();
+		cameraInfo.viewPosition = Vector3::Zero;
+		cameraInfo.viewMatrix = Matrix::Identity;
+		cameraInfo.projMatrix = Matrix::MakePerspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1);
+		cameraInfo.viewProjMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;
+		cameraInfo.viewFrustum = ViewFrustum(cameraInfo.projMatrix);
+		cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
+		m_internalRenderer->Render(
+			m_renderingContext->GetDrawElementList(),
+			cameraInfo,
+			m_swapChain->GetBackBuffer(),
+			nullptr);
+		m_renderingContext->EndFrame();
+	}
+
+
 
 	m_manager->GetGraphicsManager()->SwitchActiveContext(nullptr);
 	renderer->End();

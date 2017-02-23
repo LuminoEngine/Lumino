@@ -11,29 +11,29 @@ class SwapChain;
 /**
 	@brief		
 */
-class UIViewportLayer
-	: public ViewportLayer
-{
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
-public:
-	static const int DefaultZIndex = 100;
-
-protected:
-	friend class UIFrameWindow;
-	UIViewportLayer(UILayoutView* view);
-	virtual ~UIViewportLayer();
-	virtual DrawList* GetRenderer() override { return nullptr; }
-	virtual void Render() override;
-	virtual void ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
-
-LN_INTERNAL_ACCESS:
-	void Initialize();
-
-private:
-	UILayoutView*		m_view;
-	RefPtr<DrawList>	m_renderingContext;
-	RefPtr<detail::InternalRenderer>	m_internalRenderer;
-};
+//class UIViewportLayer
+//	: public ViewportLayer
+//{
+//	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+//public:
+//	static const int DefaultZIndex = 100;
+//
+//protected:
+//	friend class UIFrameWindow;
+//	UIViewportLayer(UILayoutView* view);
+//	virtual ~UIViewportLayer();
+//	virtual DrawList* GetRenderer() override { return nullptr; }
+//	virtual void Render() override;
+//	virtual void ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+//
+//LN_INTERNAL_ACCESS:
+//	void Initialize();
+//
+//private:
+//	UILayoutView*		m_view;
+//	RefPtr<DrawList>	m_renderingContext;
+//	RefPtr<detail::InternalRenderer>	m_internalRenderer;
+//};
 
 
 /**
@@ -76,7 +76,11 @@ private:
 	PlatformWindow*			m_platformWindow;
 	SwapChain*				m_swapChain;
 	Viewport*				m_mainViewport;
-	RefPtr<UIViewportLayer>	m_uiLayer;
+	//RefPtr<UIViewportLayer>	m_uiLayer;
+
+	UILayoutView*						m_view;
+	RefPtr<DrawList>					m_renderingContext;
+	RefPtr<detail::InternalRenderer>	m_internalRenderer;
 };
 
 

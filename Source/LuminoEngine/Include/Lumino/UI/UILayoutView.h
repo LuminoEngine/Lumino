@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include "UIInjectedInputReceiver.h"
-#include "UIElement.h"
+#include "UIContentControl.h"
 
 LN_NAMESPACE_BEGIN
 class DrawList;
@@ -12,8 +12,8 @@ class PlatformWindow;
 	@details	UILayoutView はネイティブウィンドウと UI システムの接合点となり、
 				UI レイアウトのルート要素を保持します。
 */
-class UILayoutView
-	: public RefObject
+class UILayoutView		// TODO: これ = UILayoutRoot でよい。
+	: public UIContentControl
 	, public IUIInjectedInputReceiver
 {
 public:
@@ -21,9 +21,11 @@ public:
 	/** この要素が関連付けられている UIContext を取得します。*/
 	UIContext* GetOwnerContext() const { return m_ownerContext; }
 
-	UILayoutRoot* GetLayoutRoot() const { return m_rootElement; }
+	//UILayoutRoot* GetLayoutRoot() const { return m_rootElement; }
 
-
+protected:
+	// UIElement interface
+	virtual void ActivateInternal(UIElement* child);
 
 LN_INTERNAL_ACCESS:
 	void UpdateLayout(const Size& viewSize);
@@ -62,7 +64,7 @@ private:
 	PlatformWindow*		m_ownerNativeWindow;
 
 	UIContext*			m_ownerContext;
-	UILayoutRoot*		m_rootElement;
+	//UILayoutRoot*		m_rootElement;
 	UIElement*			m_mouseHoverElement;
 	UIElement*			m_capturedElement;
 
