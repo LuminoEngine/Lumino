@@ -109,11 +109,11 @@ public:
 	/** この要素へのフォーカスの取得を試みます。*/
 	void Focus();
 
-	///** マウスキャプチャを設定します。*/
-	//void CaptureMouse();
+	/** マウスキャプチャを設定します。*/
+	void CaptureMouse();
 
-	///** マウスキャプチャを解除します。*/
-	//void ReleaseMouseCapture();
+	/** マウスキャプチャを解除します。*/
+	void ReleaseMouseCapture();
 
 	/** この要素内の子ビジュアル要素の数を取得します。(論理要素も含めたすべての子要素) */
 	virtual int GetVisualChildrenCount() const override;
@@ -210,6 +210,7 @@ protected:
 
 LN_INTERNAL_ACCESS:
 	detail::UIManager* GetManager() const { return m_manager; }
+	UIContext* GetContext() const;
 	const PointF& GetPositionInternal() const { return position; }
 	const Size& GetSizeInternal() const { return size; }
 	const ThicknessF& GetMargineInternal() const { return margin; }

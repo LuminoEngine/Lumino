@@ -49,8 +49,15 @@ UIMouseEventArgs::~UIMouseEventArgs()
 {
 }
 
+//------------------------------------------------------------------------------
+PointF UIMouseEventArgs::GetPosition(UIElement* relativeTo)
+{
+	// TODO
+	return PointF(x, y);
+}
+
 //==============================================================================
-// UIEventArgs
+// UIKeyEventArgs
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIKeyEventArgs, UIEventArgs)
 

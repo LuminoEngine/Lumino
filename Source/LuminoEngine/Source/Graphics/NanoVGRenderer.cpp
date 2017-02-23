@@ -945,7 +945,7 @@ void NanoVGRenderer::ExecuteCommand(NanoVGCommandList* commandList)
 //------------------------------------------------------------------------------
 void NanoVGRenderer::OnSetState(const DrawElementBatch* state)
 {
-	NanoVGCommandHelper::ExpandState(state->state.GetBrush(), state->state.GetPen(), &m_state);
+	NanoVGCommandHelper::ExpandState(state->GetTransfrom(), state->state.GetBrush(), state->state.GetPen(), &m_state);
 }
 
 //------------------------------------------------------------------------------
@@ -1135,8 +1135,9 @@ void NanoVGCommandHelper::ExecuteCommand(NanoVGCommandList* commandList, NVGcont
 		}
 	}
 }
-void NanoVGCommandHelper::ExpandState(Brush* brush, Pen* pen, NanoVGState* outState)
+void NanoVGCommandHelper::ExpandState(const Matrix& transform, Brush* brush, Pen* pen, NanoVGState* outState)
 {
+	outState->transform = transform;
 	ExpandBrushState(brush, &outState->fillBrush);
 	if (pen != nullptr)
 	{
@@ -1222,6 +1223,10 @@ void NanoVGCommandHelper::ApplyState(NVGcontext* ctx, const NanoVGState* state)
 	nvgLineCap(ctx, state->lineCap);
 	nvgLineJoin(ctx, state->lineJoin);
 	nvgGlobalAlpha(ctx, state->globalAlpha);
+
+	// transform
+	const Matrix& m = state->transform;
+	nvgTransform(ctx, m.m11, m.m21, m.m12, m.m22, m.m41, m.m42);
 }
 NVGpaint NanoVGCommandHelper::GetNVGpaint(NVGcontext* ctx, const NanoVGBrush& brush)
 {

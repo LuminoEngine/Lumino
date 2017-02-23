@@ -11,31 +11,31 @@ class CameraViewportLayer;
 class World2D;
 class World3D;
 
-/**
-	@brief		
-*/
-class UIViewportLayer
-	: public ViewportLayer
-{
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
-public:
-	static const int DefaultZIndex = 100;
-
-LN_CONSTRUCT_ACCESS:
-	UIViewportLayer(UILayoutView* view);
-	virtual ~UIViewportLayer();
-	//virtual DrawList* GetRenderer() override { return nullptr; }
-	virtual void Render() override;
-	virtual void ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
-
-LN_INTERNAL_ACCESS:
-	void Initialize();
-
-private:
-	UILayoutView*		m_view;
-	RefPtr<DrawList>	m_renderingContext;
-	RefPtr<detail::InternalRenderer>	m_internalRenderer;
-};
+///**
+//	@brief		
+//*/
+//class UIViewportLayer
+//	: public ViewportLayer
+//{
+//	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+//public:
+//	static const int DefaultZIndex = 100;
+//
+//LN_CONSTRUCT_ACCESS:
+//	UIViewportLayer(UILayoutView* view);
+//	virtual ~UIViewportLayer();
+//	//virtual DrawList* GetRenderer() override { return nullptr; }
+//	virtual void Render() override;
+//	virtual void ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+//
+//LN_INTERNAL_ACCESS:
+//	void Initialize();
+//
+//private:
+//	UILayoutView*		m_view;
+//	RefPtr<DrawList>	m_renderingContext;
+//	RefPtr<detail::InternalRenderer>	m_internalRenderer;
+//};
 
 
 /**
@@ -63,17 +63,23 @@ LN_INTERNAL_ACCESS:
 	detail::UIManager* GetManager() const { return m_manager; }
 	SwapChain* GetSwapChain() const { return m_swapChain; }
 
-
-
+	// TODO: Engine::Update の外側で、ワールドの描画(コマンドの生成)を許可するようにしたら、これらは1つにまとめてよい。
 	virtual void BeginRendering();
 	virtual void RenderContents();
 	virtual void EndRendering();
 
 private:
+	void Initialize_UIRenderer(UILayoutView* view);
+	void Render_UIRenderer();
+	void ExecuteDrawList_UIRenderer();
 
 	detail::UIManager*		m_manager;
 	PlatformWindow*			m_platformWindow;
 	SwapChain*				m_swapChain;
+
+	UILayoutView*						m_view;
+	RefPtr<DrawList>					m_renderingContext;
+	RefPtr<detail::InternalRenderer>	m_internalRenderer;
 };
 
 
@@ -112,7 +118,7 @@ private:
 	RefPtr<Viewport>			m_mainViewport;		// TODO: 後で Control 化する。直接描画しない
 	RefPtr<CameraViewportLayer>	m_default2DCameraViewportLayer;
 	RefPtr<CameraViewportLayer>	m_default3DCameraViewportLayer;
-	RefPtr<UIViewportLayer>		m_uiLayer;
+	//RefPtr<UIViewportLayer>		m_uiLayer;
 };
 
 

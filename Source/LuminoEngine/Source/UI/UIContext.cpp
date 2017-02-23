@@ -63,6 +63,18 @@ void UIContext::SetFocusElement(UIElement* element)
 }
 
 //------------------------------------------------------------------------------
+void UIContext::CaptureMouse(UIElement* element)
+{
+	// TODO: キャプチャしている element へマウスイベントを流すようにする
+}
+
+//------------------------------------------------------------------------------
+void UIContext::ReleaseMouseCapture(UIElement* element)
+{
+	// TODO: キャプチャしている element へマウスイベントを流すようにする
+}
+
+//------------------------------------------------------------------------------
 void UIContext::InjectElapsedTime(float elapsedTime)
 {
 }

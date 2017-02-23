@@ -85,6 +85,7 @@ struct NanoVGBrush
 
 struct NanoVGState
 {
+	Matrix		transform;
 	NanoVGBrush	fillBrush;
 	NanoVGBrush	strokeBrush;
 	float		strokeWidth;
@@ -134,7 +135,7 @@ public:
 	static void nvgFill(NanoVGCommandList* ctx);
 	static void nvgStroke(NanoVGCommandList* ctx);
 	static void ExecuteCommand(NanoVGCommandList* commandList, NVGcontext* ctx);
-	static void ExpandState(Brush* brush, Pen* pen, NanoVGState* outState);
+	static void ExpandState(const Matrix& transform, Brush* brush, Pen* pen, NanoVGState* outState);
 	static void ExpandBrushState(Brush* brush, NanoVGBrush* outBrush);
 	static void ApplyState(NVGcontext* ctx, const NanoVGState* state);
 	static NVGpaint GetNVGpaint(NVGcontext* ctx, const NanoVGBrush& brush);

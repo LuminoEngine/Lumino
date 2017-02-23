@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include "UIInjectedInputReceiver.h"
-#include "UIElement.h"
+#include "UIContentControl.h"
 
 LN_NAMESPACE_BEGIN
 class DrawList;
@@ -13,15 +13,13 @@ class PlatformWindow;
 				UI レイアウトのルート要素を保持します。
 */
 class UILayoutView
-	: public RefObject
+	: public UIContentControl
 	, public IUIInjectedInputReceiver
 {
 public:
 
 	/** この要素が関連付けられている UIContext を取得します。*/
 	UIContext* GetOwnerContext() const { return m_ownerContext; }
-
-	UILayoutRoot* GetLayoutRoot() const { return m_rootElement; }
 
 
 
@@ -45,6 +43,10 @@ LN_INTERNAL_ACCESS:
 	virtual bool InjectKeyUp(Keys keyCode, ModifierKeys modifierKeys) override;
 	virtual bool InjectTextInput(TCHAR ch) override;
 
+protected:
+	// UIElement interface
+	virtual void ActivateInternal(UIElement* child);
+
 private:
 	friend class UIContext;
 
@@ -62,7 +64,6 @@ private:
 	PlatformWindow*		m_ownerNativeWindow;
 
 	UIContext*			m_ownerContext;
-	UILayoutRoot*		m_rootElement;
 	UIElement*			m_mouseHoverElement;
 	UIElement*			m_capturedElement;
 

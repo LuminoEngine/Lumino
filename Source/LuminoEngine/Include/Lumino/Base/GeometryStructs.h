@@ -112,6 +112,8 @@ public:
 	bool IsZero() const { return (width == 0 && height == 0); }
 	bool IsAnyZero() const { return (width == 0 || height == 0); }
 
+	Size ToFloatSize() const { return Size((float)width, (float)height); }
+
 	bool operator == (const SizeI& obj) const { return (width == obj.width && height == obj.height); }
 	bool operator != (const SizeI& obj) const { return !operator==(obj); }
 };

@@ -17,7 +17,6 @@ LN_NAMESPACE_BEGIN
 UILayoutView::UILayoutView()
 	: m_ownerNativeWindow(nullptr)
 	, m_ownerContext(nullptr)
-	, m_rootElement(nullptr)
 	, m_mouseHoverElement(nullptr)
 	, m_capturedElement(nullptr)
 	, m_mouseClickTrackers{}
@@ -27,18 +26,17 @@ UILayoutView::UILayoutView()
 //------------------------------------------------------------------------------
 UILayoutView::~UILayoutView()
 {
-	LN_SAFE_RELEASE(m_rootElement);
 }
 
 //------------------------------------------------------------------------------
 void UILayoutView::Initialize(UIContext* ownerContext, PlatformWindow* ownerNativeWindow)
 {
+	UIContentControl::Initialize(ownerContext->GetManager());
+
 	m_ownerContext = ownerContext;
 	m_ownerNativeWindow = ownerNativeWindow;
 
-	m_rootElement = LN_NEW UILayoutRoot();
-	m_rootElement->Initialize(m_ownerContext->GetManager(), this);
-	m_rootElement->SetParent(nullptr);
+	SetParent(nullptr);
 }
 
 //------------------------------------------------------------------------------
@@ -46,25 +44,22 @@ void UILayoutView::UpdateLayout(const Size& viewSize)
 {
 	m_viewPixelSize = viewSize;
 
-	if (m_rootElement != nullptr)
+	//if (m_rootElement != nullptr)
 	{
-		m_rootElement->SetSize(m_viewPixelSize);
+		SetSize(m_viewPixelSize);
 
 		// TODO: ここは GetRootStyleTable を使うべき？
 		// 今は UILayoutView::UpdateLayout() からしか呼ばれていないので問題ないが…。
-		m_rootElement->ApplyTemplateHierarchy(GetOwnerContext()->GetRootStyleTable(), nullptr);
+		ApplyTemplateHierarchy(GetOwnerContext()->GetRootStyleTable(), nullptr);
 
-		m_rootElement->UpdateLayout(GetViewPixelSize());
+		UIContentControl::UpdateLayout(GetViewPixelSize());
 	}
 }
 
 //------------------------------------------------------------------------------
 void UILayoutView::Render(DrawList* g)
 {
-	if (m_rootElement != nullptr)
-	{
-		m_rootElement->Render(g);
-	}
+	UIContentControl::Render(g);
 }
 
 //------------------------------------------------------------------------------
@@ -83,9 +78,9 @@ bool UILayoutView::UpdateMouseHover(const PointF& mousePos)
 	//}
 
 	// 通常のウィンドウのイベントを処理する
-	if (m_rootElement != NULL)
+	//if (m_rootElement != NULL)
 	{
-		m_mouseHoverElement = m_rootElement->CheckMouseHoverElement(mousePos);
+		m_mouseHoverElement = CheckMouseHoverElement(mousePos);
 		if (m_mouseHoverElement != nullptr) {
 			goto EXIT;
 		}
@@ -274,6 +269,12 @@ bool UILayoutView::InjectTextInput(TCHAR ch)
 		return m_ownerContext->SetFocusElement()->OnEvent(detail::UIInternalEventType::TextInput, args);
 	}
 	return false;
+}
+
+//------------------------------------------------------------------------------
+void UILayoutView::ActivateInternal(UIElement* child)
+{
+	GetOwnerContext()->SetFocusElement(child);
 }
 
 LN_NAMESPACE_END
