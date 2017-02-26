@@ -141,11 +141,21 @@ public:
 //	const UIEvent*			ownerClass::eventVar = &_init_##eventVar; \
 //	void					ownerClass::_raise_##eventVar(UIElement* obj, UIEventArgs* e) { static_cast<ownerClass*>(obj)->EmitEventSlot(static_cast<ownerClass*>(obj)->slot, static_cast<eventArgs*>(e)); }
 //
+
+using UIEventId = UIEventInfo*;
+
+// [Obsolete]
 #define LN_ROUTED_EVENT(eventArgs, eventInfoVar) \
 	LN_REFLECTION_EVENT_COMMON(UIEventInfo, eventArgs, eventInfoVar);
 
+// [Obsolete]
 #define LN_ROUTED_EVENT_IMPLEMENT(ownerClass, eventArgs, eventInfoVar, name, ev) \
 	LN_REFLECTION_EVENT_IMPLEMENT_COMMON(UIEventInfo, ownerClass, eventArgs, eventInfoVar, name, ev);
 
+#define LN_ROUTED_EVENT2(eventArgs, eventVar) \
+	static const UIEventId eventVar##Id;
+
+#define LN_ROUTED_EVENT_IMPLEMENT2(ownerClass, eventArgs, eventVar) \
+	const UIEventId ownerClass::eventVar##Id = reinterpret_cast<UIEventId>(ln::Hash::CalcHash(#eventVar));
 
 LN_NAMESPACE_END

@@ -159,12 +159,6 @@ protected:
 	/** 要素の視覚状態を切り替えます。*/
 	void GoToVisualState(const StringRef& stateName);
 
-	/** 指定した要素をこの要素にビジュアル子要素として追加します。*/
-	//void AddVisualChild(UIElement* element);
-
-	/** 指定した要素をこの要素のビジュアルツリーから削除します。*/
-	//void RemoveVisualChild(UIElement* element);
-
 	/** フォントによるレイアウト情報を無効化します。次のレイアウト更新パスで、フォント情報が再構築されます。*/
 	void InvalidateFont() { m_invalidateFlags |= detail::InvalidateFlags::Font; }
 	
@@ -183,6 +177,7 @@ protected:
 		@details	派生クラスは finalSize よりも大きいサイズを返すと、描画時に見切れが発生します。
 					また、finalSize には padding プロパティの余白は考慮されません。
 					この余白を正しく反映するためには派生クラスで padding プロパティを参照し、子要素の位置を計算します。
+					親要素は、各子の Arrange を呼び出す必要があります。そうでない場合、子要素はレンダリングされません。
 	*/
 	virtual Size ArrangeOverride(const Size& finalSize) override;
 
@@ -233,7 +228,14 @@ protected:
 LN_PROTECTED_INTERNAL_ACCESS:
 	virtual const HAlignment* GetPriorityContentHAlignment();
 	virtual const VAlignment* GetPriorityContentVAlignment();
+	virtual void GetStyleClassName(String* outSubStateName);
 
+
+	/** 指定した要素をこの要素にビジュアル子要素として追加します。*/
+	void AddVisualChild(UIElement* element);
+
+	/** 指定した要素をこの要素のビジュアルツリーから削除します。*/
+	void RemoveVisualChild(UIElement* element);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	// ILayoutElement interface
@@ -271,6 +273,9 @@ private:
 	String					m_elementName;				// 要素名 ("UITextBlock" など) TODO: いらないかも
 	String					m_currentVisualStateName;
 	UIStylePropertyTable*	m_currentVisualStateStyle;
+
+	UIElement*				m_visualParent;
+	std::shared_ptr<List<RefPtr<UIElement>>>	m_visualChildren;
 
 	// Property
 	//		これらには直接値を設定しないこと。Property::SetValueDirect() を使う。

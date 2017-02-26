@@ -44,8 +44,11 @@ void UIContentControl::SetContent(UIElement* element)
 	//	LN_SAFE_RELEASE(m_contentElement);
 	//}
 
+
 	// êVÇµÇ¢ m_contentElement Çï€éùÇ∑ÇÈ
-	SetVisualTreeRoot(element);
+//	SetVisualTreeRoot(element);
+	//LN_NOTIMPLEMENTED();
+	AddVisualChild(element);
 	LN_REFOBJ_SET(m_contentElement, element);
 	//if (m_contentElement != nullptr)
 	//{

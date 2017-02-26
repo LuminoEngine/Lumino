@@ -135,6 +135,13 @@ void RenderingCommandList::Execute(Driver::IGraphicsDevice* device/*Driver::IRen
 	m_currentRenderer = device->GetRenderer();
 	for (size_t dataIdx : m_commandList)
 	{
+		/*
+		-		cmd	0x14e21ea0 {m_commandList=0xfeeefeee {m_manager=??? m_commandList={m_data=??? } m_commandDataBuffer=...} }	ln::RenderingCommand *
++		__vfptr	0xfeeefeee {???, ???}	void * *
++		m_commandList	0xfeeefeee {m_manager=??? m_commandList={m_data=??? } m_commandDataBuffer={m_core=??? m_capacity=??? ...} ...}	ln::RenderingCommandList *
+		dataIdx	2024	unsigned int
+		※m_commandList は正しい。cmd->m_commandList がおかしい。
+		*/
 		RenderingCommand* cmd = ((RenderingCommand*)GetCommand(dataIdx));
 		cmd->Execute();
 		cmd->~RenderingCommand();

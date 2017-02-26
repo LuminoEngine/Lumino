@@ -155,6 +155,9 @@ public:
 
 	void AddValue(const StringRef& visualStateName, const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time = 0.0, EasingMode easingMode = EasingMode::Linear);
 
+	// e.g) ScrollBar::Horizontal { ... }
+	void AddSubStateStyle(const StringRef& subStateName, UIStyle* style);
+	UIStyle* FindSubStateStyle(const StringRef& subStateName);
 
 LN_INTERNAL_ACCESS:
 	UIStylePropertyTable* FindStylePropertyTable(const String& visualStateName);
@@ -162,8 +165,13 @@ LN_INTERNAL_ACCESS:
 	//void Apply(UIElement* targetElement);
 
 public:	// TODO:
+	using SubStateStylePair = std::pair<String, RefPtr<UIStyle>>;
 
 	SortedArray<String, RefPtr<UIStylePropertyTable>>	m_propertyTableMap;
+
+	UIStyle*				m_subStyleParent;
+	List<SubStateStylePair>	m_subStateStyles;
+
 
 	//UIStyle*	m_lastUpdateParent;
 	//int			m_revisionCount;
@@ -204,9 +212,10 @@ public:
 	void AddStyle(const tr::TypeInfo* targetType, UIStyle* style);
 
 	// 見つからなければ nullptr
-	UIStyle* FindStyle(const tr::TypeInfo* targetType);
+	UIStyle* FindStyle(const tr::TypeInfo* targetType);	// TODO: TypeInfo じゃなくて string にしたい
+	UIStyle* FindStyle(const tr::TypeInfo* targetType, const StringRef& subState);
 
-private:	
+private:
 	typedef const tr::TypeInfo* StyleKey;
 
 	SortedArray<StyleKey, RefPtr<UIStyle>>	m_table;

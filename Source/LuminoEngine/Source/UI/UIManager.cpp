@@ -15,6 +15,7 @@
 #include <Lumino/Graphics/Brush.h>
 #include <Lumino/UI/UITextBlock.h>
 #include <Lumino/UI/UIButton.h>
+#include <Lumino/UI/UIScrollViewer.h>
 #include <Lumino/UI/UIListBox.h>
 
 LN_NAMESPACE_BEGIN
@@ -152,6 +153,18 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 		style->AddValue(tr::UIListBoxItem::NormalState, UIElement::decoratorOpacityId, 0.0f, 0.3);
 		style->AddValue(tr::UIListBoxItem::MouseOverState, UIElement::decoratorOpacityId, 1.0f, 0.3);
 		table->AddStyle(tr::TypeInfo::GetTypeInfo<tr::UIListBoxItem>(), style);
+	}
+	// UIThumb
+	{
+		auto test = UIStyle::Create();
+		test->AddValue(_T(""), UIElement::backgroundId, ColorBrush::DimGray);
+		table->AddStyle(tr::TypeInfo::GetTypeInfo<UIThumb>(), test);
+	}
+	// UIScrollBar
+	{
+		//auto test = UIStyle::Create();
+		//test->AddValue(_T(""), UIElement::backgroundId, ColorBrush::DimGray);
+		//table->AddStyle(tr::TypeInfo::GetTypeInfo<UIScrollBar>(), test);
 	}
 }
 

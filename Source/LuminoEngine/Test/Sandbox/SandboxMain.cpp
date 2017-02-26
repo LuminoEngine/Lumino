@@ -126,12 +126,18 @@ void Main()
 
 
 	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView();
-	auto thumb = UIThumb::Create();
-	//thumb->SetPosition(PointF(100, 200));
-	thumb->SetSize(Size(30,60));
-	thumb->SetBackground(ColorBrush::Red);
-	//textBlock1->SetText(_T("TextBlock"));
-	uiRoot->SetContent(thumb);
+	//auto thumb = UIThumb::Create();
+	////thumb->SetPosition(PointF(100, 200));
+	//thumb->SetSize(Size(30,60));
+	////thumb->SetBackground(ColorBrush::Red);
+	////textBlock1->SetText(_T("TextBlock"));
+	//uiRoot->SetContent(thumb);
+	auto track = UIScrollBar::Create();
+	//track->SetSize(Size(200, NAN));
+	track->SetMaximum(10);
+	track->SetValue(3);
+	track->SetViewportSize(2);
+	uiRoot->SetContent(track);
 
 
 
