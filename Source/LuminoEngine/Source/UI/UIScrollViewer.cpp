@@ -419,6 +419,15 @@ void UIScrollBar::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 }
 
 //------------------------------------------------------------------------------
+void UIScrollBar::GetStyleClassName(String* outSubStateName)
+{
+	if (m_track->GetOrientation() == Orientation::Horizontal)
+		*outSubStateName = _T("Horizontal");
+	else
+		*outSubStateName = _T("Vertical");
+}
+
+//------------------------------------------------------------------------------
 void UIScrollBar::UpdateValue(float horizontalDragDelta, float verticalDragDelta)
 {
 	float valueDelta = m_track->ValueFromDistance(horizontalDragDelta, verticalDragDelta);

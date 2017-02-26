@@ -16,6 +16,10 @@ public:
 	LN_TR_PROPERTY(int, FontSize);			/**< FontSize プロパティの識別子 */
 	LN_TR_PROPERTY(bool, IsFontBold);		/**< IsFontBold プロパティの識別子 */
 	LN_TR_PROPERTY(bool, IsFontItalic);		/**< IsFontItalic プロパティの識別子 */
+	tr::Property<String>			FontFamily;
+	tr::Property<int>			FontSize;
+	tr::Property<bool>			IsFontBold;
+	tr::Property<bool>			IsFontItalic;
 
 public:
 

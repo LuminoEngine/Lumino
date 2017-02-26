@@ -15,6 +15,8 @@ class UIControl
 public:
 	LN_TR_PROPERTY(HAlignment,	HContentAlignment);		/**< HContentAlignment プロパティの識別子 */
 	LN_TR_PROPERTY(VAlignment,	VContentAlignment);		/**< VContentAlignment プロパティの識別子 */
+	tr::Property<HAlignment>			HContentAlignment;
+	tr::Property<VAlignment>			VContentAlignment;
 	
 public:
 	

@@ -103,7 +103,7 @@ Size TextElement::MeasureOverride(const Size& constraint)
 
 //------------------------------------------------------------------------------
 const PointF& TextElement::GetLayoutPosition() const { return m_position; }
-const Size& TextElement::GetLayoutSize() const { return m_size; }
+Size TextElement::GetLayoutSize() const { return m_size; }
 const ThicknessF& TextElement::GetLayoutMargin() const { return m_margin; }
 const ThicknessF& TextElement::GetLayoutPadding() const { return m_padding; }
 AlignmentAnchor TextElement::GetLayoutAnchor() const { return m_anchor; }

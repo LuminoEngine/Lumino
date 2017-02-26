@@ -63,10 +63,10 @@ public:
 	/** @name RenderState */
 	/** @{ */
 
-	LN_TR_PROPERTY(BlendMode, blendMode);
-	LN_TR_PROPERTY(CullingMode, cullingMode);
-	LN_TR_PROPERTY(bool, depthTestEnabled);
-	LN_TR_PROPERTY(bool, depthWriteEnabled);
+	tr::Property<BlendMode>			blendMode;
+	tr::Property<CullingMode>			cullingMode;
+	tr::Property<bool>			depthTestEnabled;
+	tr::Property<bool>			depthWriteEnabled;
 
 
 	//void SetBlendMode(BlendMode mode);

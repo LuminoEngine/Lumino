@@ -16,6 +16,7 @@ class ToneImageEffect
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	LN_TR_PROPERTY(Vector4, Tone);
+	tr::Property<Vector4>			Tone;
 
 public:
 	static ToneImageEffectPtr Create();

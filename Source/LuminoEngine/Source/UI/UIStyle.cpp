@@ -173,6 +173,8 @@ void UIStyle::AddSubStateStyle(const StringRef& subStateName, UIStyle* style)
 {
 	LN_FAIL_CHECK_ARG(style != nullptr) return;
 	LN_FAIL_CHECK_ARG(style->m_subStyleParent == nullptr) return;
+	m_subStateStyles.RemoveIf(	// TODO: 削除じゃなくてマージしたほうがいいか？
+		[subStateName](const SubStateStylePair& pair) { return pair.first == subStateName; });
 	m_subStateStyles.Add({subStateName, style});
 }
 
@@ -267,6 +269,13 @@ void UIStyleTable::AddStyle(const tr::TypeInfo* targetType, UIStyle* style)
 }
 
 //------------------------------------------------------------------------------
+void UIStyleTable::AddStyle(const tr::TypeInfo* targetType, const StringRef& subStateName, UIStyle* style)
+{
+	RefPtr<UIStyle>* s = m_table.Find(targetType);
+	(*s)->AddSubStateStyle(subStateName, style);
+}
+
+//------------------------------------------------------------------------------
 UIStyle* UIStyleTable::FindStyle(const tr::TypeInfo* targetType)
 {
 	LN_CHECK_ARG(targetType != nullptr);
@@ -285,12 +294,12 @@ UIStyle* UIStyleTable::FindStyle(const tr::TypeInfo* targetType)
 }
 
 //------------------------------------------------------------------------------
-UIStyle* UIStyleTable::FindStyle(const tr::TypeInfo* targetType, const StringRef& subState)
+UIStyle* UIStyleTable::FindStyle(const tr::TypeInfo* targetType, const StringRef& subStateName)
 {
 	UIStyle* style = FindStyle(targetType);
 	if (style == nullptr) return nullptr;
-	if (subState.IsEmpty()) return style;
-	return style->FindSubStateStyle(subState);
+	if (subStateName.IsEmpty()) return style;
+	return style->FindSubStateStyle(subStateName);
 }
 
 LN_NAMESPACE_END

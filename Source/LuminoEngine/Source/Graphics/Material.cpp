@@ -23,10 +23,10 @@ MaterialList::~MaterialList()
 // Material
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Material, Object);
-LN_TR_PROPERTY_IMPLEMENT(Material, BlendMode, blendMode, tr::PropertyMetadata(Material::OnRenderStateChanged));
-LN_TR_PROPERTY_IMPLEMENT(Material, CullingMode, cullingMode, tr::PropertyMetadata(Material::OnRenderStateChanged));
-LN_TR_PROPERTY_IMPLEMENT(Material, bool, depthTestEnabled, tr::PropertyMetadata(Material::OnRenderStateChanged));
-LN_TR_PROPERTY_IMPLEMENT(Material, bool, depthWriteEnabled, tr::PropertyMetadata(Material::OnRenderStateChanged));
+//LN_TR_PROPERTY_IMPLEMENT(Material, BlendMode, blendMode, tr::PropertyMetadata(Material::OnRenderStateChanged));
+//LN_TR_PROPERTY_IMPLEMENT(Material, CullingMode, cullingMode, tr::PropertyMetadata(Material::OnRenderStateChanged));
+//LN_TR_PROPERTY_IMPLEMENT(Material, bool, depthTestEnabled, tr::PropertyMetadata(Material::OnRenderStateChanged));
+//LN_TR_PROPERTY_IMPLEMENT(Material, bool, depthWriteEnabled, tr::PropertyMetadata(Material::OnRenderStateChanged));
 
 const String Material::DiffuseParameter(_T("Diffuse"));
 const String Material::AmbientParameter(_T("Ambient"));

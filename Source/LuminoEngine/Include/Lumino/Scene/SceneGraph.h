@@ -134,6 +134,7 @@ class SceneGraph3D
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	LN_TR_PROPERTY(bool, visibleGridPlane);
+	tr::Property<bool>			visibleGridPlane;
 
 	virtual void UpdateFrame(float elapsedTime);
 	virtual SceneNode* GetRootNode() override { return m_defaultRoot; }

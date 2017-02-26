@@ -47,6 +47,10 @@ public:
 	LN_TR_PROPERTY(Quaternion,	rotation);
 	LN_TR_PROPERTY(Vector3,		scale);
 	LN_TR_PROPERTY(Vector3,		center);
+	tr::Property<Vector3>			position;
+	tr::Property<Quaternion>		rotation;
+	tr::Property<Vector3>			scale;
+	tr::Property<Vector3>			center;
 
 public:
 	Transform();

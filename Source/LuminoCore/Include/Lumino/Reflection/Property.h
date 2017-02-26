@@ -293,8 +293,7 @@ public:
 	private: static void											set_##propVar(ln::tr::ReflectionObject* obj, valueType& value); \
 	private: static void											get_##propVar(ln::tr::ReflectionObject* obj, valueType** outValuePtr); \
 	private: static ln::tr::TypedPropertyInitializer<valueType>		init_##propVar; \
-	public:  static const ln::tr::TypedPropertyInfo<valueType>*		propVar##Id; \
-	public:  ::ln::tr::Property<valueType>							propVar;
+	public:  static const ln::tr::TypedPropertyInfo<valueType>*		propVar##Id;
 
 #define LN_TR_PROPERTY_IMPLEMENT(ownerClass, valueType, propVar, metadata) \
 	static ln::tr::TypedPropertyInfo<valueType>		_##propVar##Id(ln::tr::TypeInfo::GetTypeInfo<ownerClass>(), _T(#propVar), nullptr); \

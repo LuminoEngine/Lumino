@@ -21,7 +21,7 @@ ILayoutElement::~ILayoutElement()
 //------------------------------------------------------------------------------
 void ILayoutElement::UpdateLayout(const Size& viewSize)
 {
-	const Size& itemSize = GetLayoutSize();
+	Size itemSize = GetLayoutSize();
 	Size size(
 		Math::IsNaNOrInf(itemSize.width) ? viewSize.width : itemSize.width,
 		Math::IsNaNOrInf(itemSize.height) ? viewSize.height : itemSize.height);
@@ -86,7 +86,7 @@ void ILayoutElement::ArrangeLayout(const RectF& finalLocalRect)
 	if (parentHAlign != nullptr) hAlign = *parentHAlign;
 	if (parentVAlign != nullptr) vAlign = *parentVAlign;
 
-	const Size& layoutSize = GetLayoutSize();
+	Size layoutSize = GetLayoutSize();
 	Size ds;// = GetLayoutDesiredSize();
 	ds.width = Math::IsNaNOrInf(layoutSize.width) ? finalLocalRect.width : layoutSize.width;
 	ds.height = Math::IsNaNOrInf(layoutSize.height) ? finalLocalRect.height : layoutSize.height;
@@ -123,7 +123,7 @@ Size ILayoutElement::MeasureOverride(const Size& constraint)
 	// ユーザー指定のサイズがある場合はそれを返す。
 	// ただし、constraint を超えることはできない。
 
-	const Size& size = GetLayoutSize();
+	Size size = GetLayoutSize();
 	Size desiredSize;
 	// NaN の場合、この要素として必要な最小サイズは 0 となる。
 	desiredSize.width = Math::IsNaNOrInf(size.width) ? 0.0f : size.width;

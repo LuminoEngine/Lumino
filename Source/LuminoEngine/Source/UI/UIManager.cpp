@@ -162,9 +162,17 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 	}
 	// UIScrollBar
 	{
-		//auto test = UIStyle::Create();
-		//test->AddValue(_T(""), UIElement::backgroundId, ColorBrush::DimGray);
-		//table->AddStyle(tr::TypeInfo::GetTypeInfo<UIScrollBar>(), test);
+		auto test = UIStyle::Create();
+		//test->AddValue(_T(""), UIElement::heightId, 20);
+		table->AddStyle(tr::TypeInfo::GetTypeInfo<UIScrollBar>(), test);	// TODO: typeInfo じゃなくて名前指定したい
+
+	}
+	// UIScrollBar::Horizontal
+	{
+		auto test = UIStyle::Create();
+		test->AddValue(_T(""), UIElement::heightId, 30);
+		table->AddStyle(tr::TypeInfo::GetTypeInfo<UIScrollBar>(), _T("Horizontal"), test);	// TODO: typeInfo じゃなくて名前指定したい
+
 	}
 }
 

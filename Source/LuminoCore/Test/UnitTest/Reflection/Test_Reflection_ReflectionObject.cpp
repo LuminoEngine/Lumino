@@ -139,11 +139,16 @@ class PropertyTest1
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	LN_TR_PROPERTY(int, V1);
+	tr::Property<int> V1;
 	LN_TR_PROPERTY(RefTest1*, V2);
+	tr::Property<RefTest1*> V2;
 	LN_TR_PROPERTY(Point, V3);
+	tr::Property<Point> V3;
 	LN_TR_PROPERTY(RefPtr<RefTest2>, V4);
+	tr::Property<RefPtr<RefTest2>> V4;
 	tr::Property<int> V5;	// メタデータを持たないプロパティ
 	LN_TR_PROPERTY(int, V6);
+	tr::Property<int> V6;
 
 public:
 	PropertyTest1()
