@@ -84,6 +84,14 @@ void SceneGraphManager::ReleaseDefaultSceneGraph()
 void SceneGraphManager::UpdateFrameDefaultSceneGraph(float elapsedTime)
 {
 	if (m_default3DSceneGraph != nullptr) {
+		m_default3DSceneGraph->BeginUpdateFrame();
+	}
+	if (m_default2DSceneGraph != nullptr) {
+		m_default2DSceneGraph->BeginUpdateFrame();
+	}
+
+
+	if (m_default3DSceneGraph != nullptr) {
 		m_default3DSceneGraph->UpdateFrame(elapsedTime);
 	}
 	if (m_default2DSceneGraph != nullptr) {

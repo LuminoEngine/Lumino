@@ -53,6 +53,10 @@ public:
 	virtual SceneNode* GetRootNode() = 0;
 	virtual Camera* GetMainCamera() = 0;
 
+
+	DrawList* GetRenderer() const;
+	DrawList* GetDebugRenderer() const;
+
 protected:
 	SceneGraph();
 	virtual ~SceneGraph();
@@ -61,6 +65,8 @@ protected:
 LN_INTERNAL_ACCESS:
 	List<Camera*>* GetAllCameraList() { return &m_allCameraList; }
 	detail::SceneGraphRenderingProfilerInterface& GetRenderingProfiler() { return m_renderingProfiler; }
+
+	void BeginUpdateFrame();
 
 private:
 
@@ -92,6 +98,10 @@ private:
 	MouseState			m_rightMouseState;		///< マウスの右ボタンの状態
 	MouseState			m_middleMouseState;		///< マウスの中ボタンの状態
 	PointI				m_mousePosition;		///< マウスの現在位置
+
+
+	RefPtr<DrawList>	m_renderer;
+	RefPtr<DrawList>	m_debugRenderer;
 
 	detail::SceneGraphRenderingProfilerInterface	m_renderingProfiler;
 };

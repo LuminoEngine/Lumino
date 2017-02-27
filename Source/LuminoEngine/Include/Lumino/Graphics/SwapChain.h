@@ -24,15 +24,7 @@ public:
 	*/
 	RenderTargetTexture* GetBackBuffer();
 
-	/**
-		@brief	バックバッファのサイズを変更します。
-		TODO: 公開しない。サイズ変更は Viewport から。
-	*/
-	void Resize(const SizeI& newSize);
 
-
-
-	void BeginRendering();
 
 	/**
 		@brief	バックバッファのレンダリング結果をフロントバッファに転送します。
@@ -47,6 +39,7 @@ LN_INTERNAL_ACCESS:
 
 	void PostInitialize();
 
+	void MightResizeAndDeviceReset(const SizeI& newSize);
 	void PresentInternal();
 	void WaitForPresent();
 

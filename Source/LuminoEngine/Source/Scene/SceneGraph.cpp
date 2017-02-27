@@ -52,6 +52,18 @@ SceneGraph::~SceneGraph()
 void SceneGraph::CreateCore(SceneGraphManager* manager)
 {
 	LN_REFOBJ_SET(m_manager, manager);
+
+	m_renderer = NewObject<DrawList>(m_manager->GetGraphicsManager());
+	m_debugRenderer = NewObject<DrawList>(m_manager->GetGraphicsManager());
+}
+
+//------------------------------------------------------------------------------
+void SceneGraph::BeginUpdateFrame()
+{
+	// OnRender の外のデバッグ描画などでも使用するため、描画リストのクリアは SceneGraph の更新前でなければならない。
+	// また、出来上がった描画リストを、複数のビューやカメラが描画することを想定する。
+	if (m_renderer != nullptr) m_renderer->BeginMakeElements();
+	if (m_debugRenderer != nullptr) m_debugRenderer->BeginMakeElements();
 }
 
 //------------------------------------------------------------------------------
@@ -159,6 +171,18 @@ bool SceneGraph::InjectMouseWheel(int delta)
 		}
 	}
 	return false;
+}
+
+//------------------------------------------------------------------------------
+DrawList* SceneGraph::GetRenderer() const
+{
+	return m_renderer;
+}
+
+//------------------------------------------------------------------------------
+DrawList* SceneGraph::GetDebugRenderer() const
+{
+	return m_debugRenderer;
 }
 
 

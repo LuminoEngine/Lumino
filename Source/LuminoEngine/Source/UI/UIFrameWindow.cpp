@@ -51,7 +51,7 @@ void UIViewportLayer::Initialize()
 //------------------------------------------------------------------------------
 void UIViewportLayer::Render()
 {
-	m_renderingContext->BeginMakeElements(nullptr);
+	m_renderingContext->BeginMakeElements();
 
 	m_view->Render(m_renderingContext);
 }
@@ -59,8 +59,6 @@ void UIViewportLayer::Render()
 //------------------------------------------------------------------------------
 void UIViewportLayer::ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
-	m_renderingContext->EndMakeElements();
-
 	detail::CameraInfo cameraInfo;
 	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
 	cameraInfo.viewPixelSize = GetSize();
@@ -141,25 +139,8 @@ void UIFrameWindow::SetSize(const SizeI& size)
 }
 
 //------------------------------------------------------------------------------
-//void UIFrameWindow::Render()
-//{
-//	BeginRendering();
-//	RenderContents();
-//	EndRendering();
-//}
-
-//------------------------------------------------------------------------------
 void UIFrameWindow::BeginRendering()
 {
-	// ウィンドウサイズとバックバッファサイズを合わせる
-	const SizeI& windowSize = m_platformWindow->GetSize();
-	if (m_swapChain->GetBackBuffer()->GetSize() != windowSize)
-	{
-		m_swapChain->Resize(windowSize);
-	}
-
-	m_swapChain->BeginRendering();
-
 	Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
 	renderer->Begin();
 
@@ -182,6 +163,9 @@ void UIFrameWindow::EndRendering()
 	m_manager->GetGraphicsManager()->SwitchActiveContext(nullptr);
 	renderer->End();
 	m_swapChain->Present();
+
+	// ウィンドウサイズとバックバッファサイズを合わせる
+	m_swapChain->MightResizeAndDeviceReset(m_platformWindow->GetSize());
 
 	// SwapChain のサイズを Viewport へ通知
 	// ※ SwapChain のサイズが「本当に」変わるタイミングは、描画コマンドが確定する Present の後。

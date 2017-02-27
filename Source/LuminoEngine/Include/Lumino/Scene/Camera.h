@@ -149,7 +149,7 @@ public:
 	tr::GizmoModel* CreateGizmo();
 
 	// ViewportLayer interface
-	virtual DrawList* GetRenderer() override;
+	//virtual DrawList* GetRenderer() override;
 	virtual void Render() override;
 	virtual void OnBeginFrameRender(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 	virtual void ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
@@ -166,7 +166,6 @@ LN_INTERNAL_ACCESS:
 
 private:
 	RefPtr<Camera>		m_hostingCamera;
-	RefPtr<DrawList>	m_renderer;
 	RefPtr<detail::InternalRenderer>	m_internalRenderer;
 	RefPtr<tr::GizmoModel>	m_gizmo;
 };

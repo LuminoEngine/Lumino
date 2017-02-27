@@ -472,7 +472,7 @@ void Viewport::MakeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, 
 //------------------------------------------------------------------------------
 void Viewport::BeginBlitRenderer()
 {
-	m_renderer->BeginMakeElements(nullptr);
+	m_renderer->BeginMakeElements();
 	m_renderer->SetRenderTarget(0, nullptr);
 	m_renderer->SetDepthBuffer(nullptr);
 	m_renderer->SetDepthTestEnabled(false);

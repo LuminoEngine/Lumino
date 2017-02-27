@@ -239,9 +239,6 @@ void CameraViewportLayer::Initialize(SceneGraphManager* manager, Camera* hosting
 	m_hostingCamera = hostingCamera;
 	m_hostingCamera->m_ownerLayer = this;
 
-	m_renderer = RefPtr<DrawList>::MakeRef();
-	m_renderer->Initialize(manager->GetGraphicsManager());
-
 	if (m_hostingCamera->GetProjectionMode() == CameraProjection_3D)
 	{
 		auto internalRenderer = RefPtr<detail::ForwardShadingRenderer>::MakeRef();
@@ -275,10 +272,10 @@ tr::GizmoModel* CameraViewportLayer::CreateGizmo()
 }
 
 //------------------------------------------------------------------------------
-DrawList* CameraViewportLayer::GetRenderer()
-{
-	return m_renderer;
-}
+//DrawList* CameraViewportLayer::GetRenderer()
+//{
+//	return m_renderer;
+//}
 
 //------------------------------------------------------------------------------
 void CameraViewportLayer::Render()
@@ -286,19 +283,22 @@ void CameraViewportLayer::Render()
 	// 描画リストのクリアは、SceneGraph の描画前でなければならない。
 	// 出来上がった描画リストを、複数のレイヤーが描画することを想定する。
 	// TODO: DrawList は Scene 側につくべき
-	m_renderer->BeginMakeElements(m_hostingCamera);
+	//m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->BeginMakeElements();	// TODO: m_hostingCamera->GetOwnerSceneGraph() で描画先シーン取るのはよくない
 
-	m_renderer->Clear(ClearFlags::Depth, Color::White);
+	// TODO: やめよう
+	m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->SetCurrentCamera(m_hostingCamera);
+
+	m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->Clear(ClearFlags::Depth, Color::White);
 
 	// カメラ行列の更新
 	m_hostingCamera->UpdateMatrices(GetSize());
 
 	//m_hostingCamera->GetOwnerSceneGraph()->Render(context, m_hostingCamera);
-	m_hostingCamera->GetOwnerSceneGraph()->Render2(m_renderer, m_hostingCamera);
+	m_hostingCamera->GetOwnerSceneGraph()->Render2(m_hostingCamera->GetOwnerSceneGraph()->GetRenderer(), m_hostingCamera);
 
 	if (m_gizmo != nullptr)
 	{
-		m_gizmo->Render(m_renderer);
+		m_gizmo->Render(m_hostingCamera->GetOwnerSceneGraph()->GetRenderer());
 	}
 }
 
@@ -311,8 +311,6 @@ void CameraViewportLayer::OnBeginFrameRender(RenderTargetTexture* renderTarget, 
 //------------------------------------------------------------------------------
 void CameraViewportLayer::ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
-	m_renderer->EndMakeElements();
-
 	// TODO: float
 	Size targetSize((float)renderTarget->GetWidth(), (float)renderTarget->GetHeight());
 	m_hostingCamera->UpdateMatrices(targetSize);
@@ -327,11 +325,11 @@ void CameraViewportLayer::ExecuteDrawListRendering(RenderTargetTexture* renderTa
 	cameraInfo.viewFrustum = m_hostingCamera->GetViewFrustum();
 	cameraInfo.zSortDistanceBase = m_hostingCamera->GetZSortDistanceBase();
 	m_internalRenderer->Render(
-		m_renderer->GetDrawElementList(),
+		m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->GetDrawElementList(),
 		cameraInfo,
 		renderTarget,
 		depthBuffer);
-	m_renderer->EndFrame();
+	m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->EndFrame();
 }
 
 //------------------------------------------------------------------------------

@@ -22,7 +22,7 @@ protected:
 	friend class UIFrameWindow;
 	UIViewportLayer(UILayoutView* view);
 	virtual ~UIViewportLayer();
-	virtual DrawList* GetRenderer() override { return nullptr; }
+	//virtual DrawList* GetRenderer() override { return nullptr; }
 	virtual void Render() override;
 	virtual void ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 
@@ -63,7 +63,6 @@ LN_INTERNAL_ACCESS:
 	SwapChain* GetSwapChain() const { return m_swapChain; }
 
 
-	void Render();
 
 	void BeginRendering();
 	void RenderContents();

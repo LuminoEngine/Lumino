@@ -43,7 +43,7 @@ public:
 	int GetZIndex() const { return m_zIndex; }
 
 
-	virtual DrawList* GetRenderer() = 0;
+	//virtual DrawList* GetRenderer() = 0;
 
 protected:
 	virtual bool OnPlatformEvent(const PlatformEventArgs& e);
