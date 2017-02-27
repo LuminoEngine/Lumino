@@ -88,6 +88,12 @@ public:
 	{
 		list->RemoveAll([](typename TList::value_type& obj) { return IsGCReady(obj); });
 	}
+
+
+
+	static int32_t GetInternalReferenceCount(RefObject* obj) { return obj->m_internalReferenceCount; }
+	static void AddRefInternal(RefObject* obj) { obj->m_internalReferenceCount++; }
+	static void ReleaseInternal(RefObject* obj) { obj->ReleaseInternal(); }
 };
 
 /**

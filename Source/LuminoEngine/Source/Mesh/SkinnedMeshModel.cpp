@@ -684,7 +684,7 @@ void MmdSkinnedMeshRigidBody::Initialize(SkinnedMeshModel* ownerModel, PmxRigidB
 
 	m_rigidBody = RefPtr<RigidBody>::MakeRef();
 	m_rigidBody->Initialize(collider, data);
-	ownerModel->m_physicsWorld->AddRigidBody(m_rigidBody);
+	ownerModel->m_physicsWorld->AddRigidBodyForMmd(m_rigidBody);
 }
 
 //------------------------------------------------------------------------------
@@ -944,7 +944,7 @@ void MmdSkinnedMeshJoint::Initialize(SkinnedMeshModel* ownerModel, PmxJointResou
 	m_joint->SetAngularLowerLimit(jointResource->RotationLimitLower);
 	m_joint->SetAngularUpperLimit(jointResource->RotationLimitUpper);
 
-	ownerModel->m_physicsWorld->AddJoint(m_joint);
+	ownerModel->m_physicsWorld->AddJointForMmd(m_joint);
 } 
 
 }

@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include <Lumino/MultiThreadingObjectList.h>
 #include <Lumino/Physics/Common.h>
 
 LN_NAMESPACE_BEGIN
@@ -32,8 +33,8 @@ public:
 	void StepSimulation(float elapsedTime);
 	void DrawDebugShapes(IDebugRenderer* renderer);
 
-	void AddRigidBody(RigidBody* rigidBody);
-	void AddJoint(Joint* joint);
+	void AddRigidBodyForMmd(RigidBody* rigidBody);
+	void AddJointForMmd(Joint* joint);
 	void GCPhysicsObjects();
 
 private:
@@ -53,8 +54,10 @@ private:
 	class	btThreadSupportInterface*		m_threadSupportSolver;
 #endif
 
-	List<RefPtr<RigidBody>>				m_rigidBodyList;
-	List<RefPtr<Joint>>					m_jointList;
+	List<RefPtr<RigidBody>>					m_rigidBodyListForMmd;
+	List<RefPtr<Joint>>						m_jointListForMmd;
+
+	MultiThreadingInFrameGCList<RigidBody>	m_rigidBodyList;
 };
 
 class PhysicsManager

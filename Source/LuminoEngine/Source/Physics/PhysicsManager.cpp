@@ -255,7 +255,7 @@ void PhysicsWorld::SetGravity(const Vector3& gravity)
 //------------------------------------------------------------------------------
 void PhysicsWorld::StepSimulation(float elapsedTime)
 {
-	for (RigidBody* body : m_rigidBodyList)
+	for (RigidBody* body : m_rigidBodyListForMmd)
 	{
 		body->SyncBeforeStepSimulation(this);
 	}
@@ -278,7 +278,7 @@ void PhysicsWorld::StepSimulation(float elapsedTime)
 	//	b->SyncAfterStepSimulation();
 	//}
 
-	for (RigidBody* body : m_rigidBodyList)
+	for (RigidBody* body : m_rigidBodyListForMmd)
 	{
 		body->SyncAfterStepSimulation();
 	}
@@ -295,18 +295,18 @@ void PhysicsWorld::DrawDebugShapes(IDebugRenderer* renderer)
 }
 
 //------------------------------------------------------------------------------
-void PhysicsWorld::AddRigidBody(RigidBody* rigidBody)
+void PhysicsWorld::AddRigidBodyForMmd(RigidBody* rigidBody)
 {
 	LN_ASSERT(rigidBody != nullptr);
-	m_rigidBodyList.Add(rigidBody);
+	m_rigidBodyListForMmd.Add(rigidBody);
 	m_btWorld->addRigidBody(rigidBody->GetBtRigidBody(), rigidBody->GetGroup(), rigidBody->GetGroupMask());
 }
 
 //------------------------------------------------------------------------------
-void PhysicsWorld::AddJoint(Joint* joint)
+void PhysicsWorld::AddJointForMmd(Joint* joint)
 {
 	LN_ASSERT(joint != nullptr);
-	m_jointList.Add(joint);
+	m_jointListForMmd.Add(joint);
 	m_btWorld->addConstraint(joint->GetBtConstraint());
 }
 
@@ -314,12 +314,12 @@ void PhysicsWorld::AddJoint(Joint* joint)
 void PhysicsWorld::GCPhysicsObjects()
 {
 	// rigidBody
-	for (auto itr = m_rigidBodyList.begin(); itr != m_rigidBodyList.end();)
+	for (auto itr = m_rigidBodyListForMmd.begin(); itr != m_rigidBodyListForMmd.end();)
 	{
 		if ((*itr)->GetReferenceCount() == 1)
 		{
 			m_btWorld->removeRigidBody((*itr)->GetBtRigidBody());
-			itr = m_rigidBodyList.erase(itr);
+			itr = m_rigidBodyListForMmd.erase(itr);
 		}
 		else
 		{
@@ -328,12 +328,12 @@ void PhysicsWorld::GCPhysicsObjects()
 	}
 
 	// constraint
-	for (auto itr = m_jointList.begin(); itr != m_jointList.end();)
+	for (auto itr = m_jointListForMmd.begin(); itr != m_jointListForMmd.end();)
 	{
 		if ((*itr)->GetReferenceCount() == 1)
 		{
 			m_btWorld->removeConstraint((*itr)->GetBtConstraint());
-			itr = m_jointList.erase(itr);
+			itr = m_jointListForMmd.erase(itr);
 		}
 		else
 		{
