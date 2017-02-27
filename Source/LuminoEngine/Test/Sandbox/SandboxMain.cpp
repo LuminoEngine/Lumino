@@ -541,6 +541,10 @@ void Main()
 	}
 #endif
 
+	auto col1 = BoxCollider::Create(1, 2, 3);
+	//auto body1 = RefPtr<RigidBody>::MakeRef();
+	//body1->ini
+
 	while (!Engine::IsEndRequested())
 	{
 		Engine::BeginFrameUpdate();

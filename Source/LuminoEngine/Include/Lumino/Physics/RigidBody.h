@@ -48,9 +48,8 @@ public:
 	/**
 		@brief		RigidBody オブジェクトを作成します。
 		@param[in]	collider	: 衝突判定形状
-		@details	作成されたオブジェクトは使い終えたら Release() を呼び出して参照を解放する必要があります。
 	*/
-	//static RigidBody* Create(Collider* collider);
+	static RefPtr<RigidBody> Create(Collider* collider);
 
 
 public:

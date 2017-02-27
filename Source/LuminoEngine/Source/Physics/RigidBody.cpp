@@ -14,12 +14,16 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(RigidBody, BodyBase);
 
-//------------------------------------------------------------------------------
-//RigidBody* RigidBody::Create(Collider* collider)
+////------------------------------------------------------------------------------
+//RefPtr<RigidBody> RigidBody::Create(Collider* collider)
 //{
 //	ConfigData data;
-//	RefPtr<RigidBody> obj(LN_NEW RigidBody(), false);
-//	obj->Initialize(GetPhysicsManager(nullptr), collider, data);
+//	auto ptr = RefPtr<RigidBody>::MakeRef();
+//	ptr->Initialize(collider, data);
+//	detail::pysi
+//
+//	 obj(LN_NEW RigidBody(), false);
+//	obj->Initialize(, collider, data);
 //	obj.SafeAddRef();
 //	return obj;
 //}
