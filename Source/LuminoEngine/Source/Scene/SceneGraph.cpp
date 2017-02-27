@@ -55,6 +55,8 @@ void SceneGraph::CreateCore(SceneGraphManager* manager)
 
 	m_renderer = NewObject<DrawList>(m_manager->GetGraphicsManager());
 	m_debugRenderer = NewObject<DrawList>(m_manager->GetGraphicsManager());
+
+	m_debugRendererDefaultMaterial = NewObject<Material>();
 }
 
 //------------------------------------------------------------------------------
@@ -62,8 +64,16 @@ void SceneGraph::BeginUpdateFrame()
 {
 	// OnRender の外のデバッグ描画などでも使用するため、描画リストのクリアは SceneGraph の更新前でなければならない。
 	// また、出来上がった描画リストを、複数のビューやカメラが描画することを想定する。
-	if (m_renderer != nullptr) m_renderer->BeginMakeElements();
-	if (m_debugRenderer != nullptr) m_debugRenderer->BeginMakeElements();
+	if (m_renderer != nullptr)
+	{
+		m_renderer->BeginMakeElements();
+	}
+	if (m_debugRenderer != nullptr)
+	{
+		m_debugRenderer->BeginMakeElements();
+		m_debugRendererDefaultMaterial->SetShader(m_manager->GetGraphicsManager()->GetBuiltinShader(BuiltinShader::Sprite));
+		m_debugRenderer->SetDefaultMaterial(m_debugRendererDefaultMaterial);
+	}
 }
 
 //------------------------------------------------------------------------------

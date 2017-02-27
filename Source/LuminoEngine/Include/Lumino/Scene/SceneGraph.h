@@ -102,6 +102,7 @@ private:
 
 	RefPtr<DrawList>	m_renderer;
 	RefPtr<DrawList>	m_debugRenderer;
+	RefPtr<Material>	m_debugRendererDefaultMaterial;	// TODO: DebugDrawList みたいに派生させてまとめたほうがいいかな・・・
 
 	detail::SceneGraphRenderingProfilerInterface	m_renderingProfiler;
 };

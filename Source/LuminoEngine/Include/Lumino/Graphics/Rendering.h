@@ -576,6 +576,7 @@ LN_INTERNAL_ACCESS:
 	void Initialize(detail::GraphicsManager* manager);
 	detail::GraphicsManager* GetManager() const { return m_manager; }
 	detail::DrawElementList* GetDrawElementList() { return &m_drawElementList; }
+	void SetDefaultMaterial(Material* material);
 	void BeginMakeElements();
 	void EndFrame();
 

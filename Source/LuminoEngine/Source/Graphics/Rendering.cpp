@@ -1207,6 +1207,13 @@ void DrawList::SetDepthWriteEnabled(bool enabled)
 }
 
 //------------------------------------------------------------------------------
+void DrawList::SetDefaultMaterial(Material* material)
+{
+	LN_FAIL_CHECK_ARG(material != nullptr) return;
+	m_defaultMaterial = material;
+}
+
+//------------------------------------------------------------------------------
 void DrawList::BeginMakeElements()
 {
 	m_drawElementList.ClearCommands();

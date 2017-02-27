@@ -329,6 +329,11 @@ void CameraViewportLayer::ExecuteDrawListRendering(RenderTargetTexture* renderTa
 		cameraInfo,
 		renderTarget,
 		depthBuffer);
+	m_internalRenderer->Render(
+		m_hostingCamera->GetOwnerSceneGraph()->GetDebugRenderer()->GetDrawElementList(),
+		cameraInfo,
+		renderTarget,
+		depthBuffer);
 	m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->EndFrame();
 }
 
