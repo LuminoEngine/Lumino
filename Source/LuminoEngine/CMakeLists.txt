@@ -146,6 +146,7 @@ set(LN_SOURCES_Physics
 	Include/Lumino/Physics/Collider.h
 	Include/Lumino/Physics/Common.h
 	Include/Lumino/Physics/Joint.h
+	Include/Lumino/Physics/PhysicsWorld.h
 	Include/Lumino/Physics/RigidBody.h
 	Source/Physics/BodyBase.cpp
 	Source/Physics/BulletUtils.h
@@ -154,6 +155,7 @@ set(LN_SOURCES_Physics
 	Source/Physics/Joint.cpp
 	Source/Physics/PhysicsManager.cpp
 	Source/Physics/PhysicsManager.h
+	Source/Physics/PhysicsWorld.cpp
 	Source/Physics/RigidBody.cpp
 )
 

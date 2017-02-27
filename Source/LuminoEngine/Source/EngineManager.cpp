@@ -145,6 +145,8 @@ EngineManager::EngineManager(const detail::EngineSettings& configData)
 	, m_sceneGraphManager(nullptr)
 	, m_assetsManager(nullptr)
 	, m_diagViewer(nullptr)
+	, m_defaultWorld2D(nullptr)
+	, m_defaultWorld3D(nullptr)
 	, m_frameRenderingSkip(false)
 	, m_frameRenderd(false)
 	, m_commonInitied(false)
@@ -169,6 +171,9 @@ EngineManager::EngineManager(const detail::EngineSettings& configData)
 //------------------------------------------------------------------------------
 EngineManager::~EngineManager()
 {
+	m_defaultWorld2D.SafeRelease();
+	m_defaultWorld3D.SafeRelease();
+
 	LN_SAFE_RELEASE(m_diagViewer);
 
 	if (m_assetsManager != nullptr)
@@ -255,6 +260,9 @@ void EngineManager::Initialize()
 	InitializeAssetsManager();
 
 	EngineDiagCore::Instance.Initialize(this);
+
+	m_defaultWorld2D = NewObject<World>();
+	m_defaultWorld3D = NewObject<World>();
 }
 
 //------------------------------------------------------------------------------
@@ -701,6 +709,18 @@ void EngineManager::ResetFrameDelay()
 void EngineManager::Exit()
 {
 	m_endRequested = true;
+}
+
+//------------------------------------------------------------------------------
+World* EngineManager::GetDefaultWorld2D() const
+{
+	return m_defaultWorld2D;
+}
+
+//------------------------------------------------------------------------------
+World* EngineManager::GetDefaultWorld3D() const
+{
+	return m_defaultWorld3D;
 }
 
 //------------------------------------------------------------------------------

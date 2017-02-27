@@ -25,6 +25,7 @@ class SceneGraphManager;
 class Application;
 class EngineDiagViewer;
 class AssetsManager;
+class World;
 
 namespace detail
 {
@@ -203,6 +204,8 @@ public:
 
 	const FpsController& GetFpsController() const { return m_fpsController; }
 	EngineDiagViewer* GetEngineDiagViewer() const { return m_diagViewer; }
+	World* GetDefaultWorld2D() const;
+	World* GetDefaultWorld3D() const;
 
 protected:
 	EngineManager(const detail::EngineSettings& configData);
@@ -250,6 +253,8 @@ private:
 	AssetsManager*						m_assetsManager;
 
 	EngineDiagViewer*					m_diagViewer;
+	RefPtr<World>						m_defaultWorld2D;
+	RefPtr<World>						m_defaultWorld3D;
 
 	bool								m_frameRenderingSkip;
 	bool								m_frameRenderd;

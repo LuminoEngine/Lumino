@@ -9,6 +9,7 @@
 #include "Graphics/ProfilerRenderer.h"
 #include "Graphics/RenderingThread.h"
 #include "Scene/SceneGraphManager.h"
+#include <Lumino/Physics/PhysicsWorld.h>
 #include <Lumino/UI/UIFrameWindow.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Camera.h>
@@ -99,6 +100,18 @@ void Engine::ResetFrameDelay()
 }
 
 //------------------------------------------------------------------------------
+World* Engine::GetWorld2D()
+{
+	return EngineManager::Instance->GetDefaultWorld2D();
+}
+
+//------------------------------------------------------------------------------
+World* Engine::GetWorld3D()
+{
+	return EngineManager::Instance->GetDefaultWorld3D();
+}
+
+//------------------------------------------------------------------------------
 UIMainWindow* Engine::GetMainWindow()
 {
 	return EngineManager::Instance->GetUIManager()->GetMainWindow();
@@ -137,6 +150,33 @@ SceneGraph3D* Engine::GetDefaultSceneGraph3D()
 Light* Engine::GetMainLight3D()
 {
 	return EngineManager::Instance->GetSceneGraphManager()->GetDefaultSceneGraph3D()->GetMainLight();
+}
+
+//==============================================================================
+// World
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(World, Object);
+
+//------------------------------------------------------------------------------
+World::World()
+{
+}
+
+//------------------------------------------------------------------------------
+World::~World()
+{
+}
+
+//------------------------------------------------------------------------------
+void World::Initialize()
+{
+	m_physicsWorld = NewObject<PhysicsWorld>();
+}
+
+//------------------------------------------------------------------------------
+PhysicsWorld* World::GetPhysicsWorld() const
+{
+	return m_physicsWorld;
 }
 
 LN_NAMESPACE_END
