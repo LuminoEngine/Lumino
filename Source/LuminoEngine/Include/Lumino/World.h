@@ -81,6 +81,7 @@ LN_INTERNAL_ACCESS:
 	SceneGraph3D* GetSceneGraph3D() const;
 	virtual void BeginUpdateFrame() override;
 	virtual void UpdateFrame(float elapsedTime) override;
+	virtual void Render(Camera* camera);
 
 private:
 	RefPtr<PhysicsWorld>	m_physicsWorld;

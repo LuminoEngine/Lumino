@@ -17,14 +17,6 @@ class RigidBody;
 class Joint;
 class PhysicsDebugDrawer;
 
-
-
-class IDebugRenderer
-{
-public:
-	virtual void DrawLine(const Vector3& from, const Vector3& to, const Vector3& fromColor, const Vector3& toColor) = 0;
-};
-
 /**
 	@brief	
 */
@@ -46,6 +38,13 @@ LN_CONSTRUCT_ACCESS:
 	void Initialize();
 
 LN_INTERNAL_ACCESS:
+	class IDebugRenderer
+	{
+	public:
+
+		virtual void DrawLine(const Vector3& from, const Vector3& to, const Vector3& fromColor, const Vector3& toColor) = 0;
+	};
+
 	btDiscreteDynamicsWorld* GetBtWorld() { return m_btWorld; }
 	void StepSimulation(float elapsedTime);
 	void DrawDebugShapes(IDebugRenderer* renderer);

@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.h"
 #include <Lumino/Physics/PhysicsWorld.h>
+#include <Lumino/Graphics/Rendering.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/World.h>
 #include "EngineManager.h"
@@ -172,5 +173,29 @@ void World3D::UpdateFrame(float elapsedTime)
 	}
 }
 
+//------------------------------------------------------------------------------
+void World3D::Render(Camera* camera)
+{
+	World::Render(camera);
+
+
+	if (m_physicsWorld != nullptr)
+	{
+		class DebugRenderer : public PhysicsWorld::IDebugRenderer
+		{
+		public:
+			DrawList* renderer;
+
+			virtual void DrawLine(const Vector3& from, const Vector3& to, const Vector3& fromColor, const Vector3& toColor)
+			{
+				renderer->DrawLinePrimitive(from, Color(fromColor, 1.0f), to, Color(toColor, 1.0f));
+			}
+		};
+		DebugRenderer r;
+		r.renderer = m_sceneGraph->GetDebugRenderer();
+
+		m_physicsWorld->DrawDebugShapes(&r);
+	}
+}
 
 LN_NAMESPACE_END
