@@ -16,7 +16,7 @@ using SkinnedMeshBonePtr = RefPtr<SkinnedMeshBone>;
 
 class RigidBody;	// TODO: MMD でのみ必要
 class DofSpringJoint;		// TODO: MMD でのみ必要
-namespace detail { class PhysicsWorldCore; }	// TODO: MMD でのみ必要
+class PhysicsWorld;	// TODO: MMD でのみ必要
 namespace detail { class MmdSkinnedMeshRigidBody; }
 namespace detail { class MmdSkinnedMeshJoint; }
 class PmxRigidBodyResource;
@@ -101,7 +101,7 @@ LN_INTERNAL_ACCESS:	// TODO:
 	List<SkinnedMeshBone*>			m_ikBoneList;
 
 	// TODO: これは物理演算機能を持つサブクラスを作ったほうがいい気がする
-	RefPtr<detail::PhysicsWorldCore>	m_physicsWorld;
+	RefPtr<PhysicsWorld>	m_physicsWorld;
 	List<RefPtr<detail::MmdSkinnedMeshRigidBody>>	m_rigidBodyList;
 	List<RefPtr<detail::MmdSkinnedMeshJoint>>		m_jointList;
 

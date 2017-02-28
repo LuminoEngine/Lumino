@@ -136,7 +136,7 @@ LN_INTERNAL_ACCESS:
 	uint16_t GetGroupMask() const { return m_groupMask; }
 
 	/// シミュレーション直前更新処理 (メインスレッドから呼ばれる)
-	void SyncBeforeStepSimulation(detail::PhysicsWorldCore* world);
+	void SyncBeforeStepSimulation(PhysicsWorld* world);
 
 	/// シミュレーション直後更新処理 (メインまたは物理更新スレッドから呼ばれる)
 	void SyncAfterStepSimulation();

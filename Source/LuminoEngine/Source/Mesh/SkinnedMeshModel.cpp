@@ -5,6 +5,7 @@
 #include <Lumino/Physics/Collider.h>	// TODO: MMD でのみ必要
 #include <Lumino/Physics/RigidBody.h>	// TODO: MMD でのみ必要
 #include <Lumino/Physics/Joint.h>	// TODO: MMD でのみ必要
+#include <Lumino/Physics/PhysicsWorld.h>	// TODO: MMD でのみ必要
 #include "../Graphics/GraphicsManager.h"
 #include "../Physics/PhysicsManager.h"
 #include "PmxSkinnedMesh.h"
@@ -309,8 +310,8 @@ void SkinnedMeshModel::Initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 
 	//---------------------------------------------------------
 	// 物理演算
-	m_physicsWorld = RefPtr<detail::PhysicsWorldCore>::MakeRef();
-	m_physicsWorld->Initialize(manager->GetPhysicsManager());
+	m_physicsWorld = RefPtr<PhysicsWorld>::MakeRef();
+	m_physicsWorld->Initialize();
 	m_physicsWorld->SetGravity(Vector3(0, -9.80f * 10.0f, 0));
 
 	m_rigidBodyList.Resize(m_meshResource->rigidBodys.GetCount());

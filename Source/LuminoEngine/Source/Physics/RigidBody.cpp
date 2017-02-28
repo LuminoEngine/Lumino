@@ -54,7 +54,7 @@ RigidBody::~RigidBody()
 void RigidBody::Initialize(Collider* collider, const ConfigData& configData)
 {
 	InitializeCore(collider, configData);
-	detail::EngineDomain::GetPhysicsWorld3D()->GetImpl()->AddRigidBodyForMmd(this);
+	detail::EngineDomain::GetPhysicsWorld3D()->AddRigidBodyForMmd(this);
 }
 
 //------------------------------------------------------------------------------
@@ -339,7 +339,7 @@ void RigidBody::ClearForces()
 //------------------------------------------------------------------------------
 // 
 //------------------------------------------------------------------------------
-void RigidBody::SyncBeforeStepSimulation(detail::PhysicsWorldCore* world)
+void RigidBody::SyncBeforeStepSimulation(PhysicsWorld* world)
 {
 	// RigidBodyConstraintFlags
 	if ((m_modifiedFlags & Modified_RigidBodyConstraintFlags) != 0)
