@@ -249,15 +249,16 @@ void PhysicsWorld::DrawDebugShapes(IDebugRenderer* renderer)
 }
 
 //------------------------------------------------------------------------------
-void PhysicsWorld::AddRigidBodyForMmd(RigidBody* rigidBody)
+void PhysicsWorld::AddRigidBody(RigidBody* rigidBody)
 {
 	LN_ASSERT(rigidBody != nullptr);
 	m_rigidBodyListForMmd.Add(rigidBody);
-	m_btWorld->addRigidBody(rigidBody->GetBtRigidBody(), rigidBody->GetGroup(), rigidBody->GetGroupMask());
+	rigidBody->SetOwnerWorld(this);
+	//m_btWorld->addRigidBody(rigidBody->GetBtRigidBody(), rigidBody->GetGroup(), rigidBody->GetGroupMask());
 }
 
 //------------------------------------------------------------------------------
-void PhysicsWorld::AddJointForMmd(Joint* joint)
+void PhysicsWorld::AddJoint(Joint* joint)
 {
 	LN_ASSERT(joint != nullptr);
 	m_jointListForMmd.Add(joint);

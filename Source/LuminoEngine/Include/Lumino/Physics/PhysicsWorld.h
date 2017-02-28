@@ -49,8 +49,8 @@ LN_INTERNAL_ACCESS:
 	void StepSimulation(float elapsedTime);
 	void DrawDebugShapes(IDebugRenderer* renderer);
 
-	void AddRigidBodyForMmd(RigidBody* rigidBody);
-	void AddJointForMmd(Joint* joint);
+	void AddRigidBody(RigidBody* rigidBody);
+	void AddJoint(Joint* joint);
 	void GCPhysicsObjects();
 
 	// AutoAdd interface

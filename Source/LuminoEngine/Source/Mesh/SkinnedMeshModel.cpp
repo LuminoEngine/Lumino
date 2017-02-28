@@ -663,8 +663,7 @@ void MmdSkinnedMeshRigidBody::Initialize(SkinnedMeshModel* ownerModel, PmxRigidB
 	m_offsetBodyToBone = Matrix::MakeTranslation(m_bone->GetCore()->OrgPosition) * m_boneLocalPosition;
 
 	RigidBody::ConfigData data;
-	data.InitialTransform = &initialTransform;
-	data.Scale = scale;
+	data.InitialTransform = initialTransform;
 	data.Group = m_resource->Group;
 	data.GroupMask = m_resource->GroupMask;
 	data.Friction = m_resource->Friction;
@@ -684,8 +683,8 @@ void MmdSkinnedMeshRigidBody::Initialize(SkinnedMeshModel* ownerModel, PmxRigidB
 	}
 
 	m_rigidBody = RefPtr<RigidBody>::MakeRef();
-	m_rigidBody->InitializeCore(collider, data);
-	ownerModel->m_physicsWorld->AddRigidBodyForMmd(m_rigidBody);
+	m_rigidBody->InitializeCore(collider, data, scale);
+	ownerModel->m_physicsWorld->AddRigidBody(m_rigidBody);
 }
 
 //------------------------------------------------------------------------------
@@ -945,7 +944,7 @@ void MmdSkinnedMeshJoint::Initialize(SkinnedMeshModel* ownerModel, PmxJointResou
 	m_joint->SetAngularLowerLimit(jointResource->RotationLimitLower);
 	m_joint->SetAngularUpperLimit(jointResource->RotationLimitUpper);
 
-	ownerModel->m_physicsWorld->AddJointForMmd(m_joint);
+	ownerModel->m_physicsWorld->AddJoint(m_joint);
 } 
 
 }

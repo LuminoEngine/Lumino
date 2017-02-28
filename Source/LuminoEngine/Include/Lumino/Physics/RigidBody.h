@@ -23,7 +23,7 @@ public:
 	    float			Friction;		    ///< 摩擦力
 		float			LinearDamping;	    ///< 移動減
 	    float			AngularDamping;		///< 回転減
-		const Matrix*	InitialTransform;	///< 初期姿勢 (NULL で Identity)
+		Matrix			InitialTransform;	///< 初期姿勢 (NULL で Identity)
 		bool			AdditionalDamping;	///< 減衰の有効
 		bool			KinematicObject;	///< Kinematicオブジェクトとする (質量が 0.0 として扱われ、MotionState の getWorldTransform() が呼ばれるようになる)
 
@@ -38,7 +38,7 @@ public:
 			Friction = 0.5;
 			LinearDamping = 0.0;
 			AngularDamping = 0.0;
-			InitialTransform = NULL;
+			//InitialTransform = NULL;
 			AdditionalDamping = false;
 			KinematicObject = false;
 			Scale = 1.0f;
@@ -129,11 +129,11 @@ LN_INTERNAL_ACCESS:
 
 	/// 初期化 (剛体を受け取ってワールドに追加する) (現行PMD用にpublic。後で protected にする)
 	///		shape		: (BodyBase  削除時に delete される)
-	void InitializeCore(Collider* collider, const ConfigData& configData);
+	void InitializeCore(Collider* collider, const ConfigData& configData, float scale);
 
 	btRigidBody* GetBtRigidBody() { return m_btRigidBody; }
-	uint16_t GetGroup() const { return m_group; }
-	uint16_t GetGroupMask() const { return m_groupMask; }
+	uint16_t GetGroup() const { return m_data.Group; }
+	uint16_t GetGroupMask() const { return m_data.GroupMask; }
 
 	/// シミュレーション直前更新処理 (メインスレッドから呼ばれる)
 	void SyncBeforeStepSimulation(PhysicsWorld* world);
@@ -144,6 +144,7 @@ LN_INTERNAL_ACCESS:
 	void MarkMMDDynamic();
 
 private:
+	void CreateBtRigidBody();
 
 	enum ModifiedFlags
 	{
@@ -154,17 +155,15 @@ private:
 		Modified_Mass = 0x0008,
 		Modified_ApplyForce = 0x0010,
 		Modified_RigidBodyConstraintFlags = 0x0020,
-		
+		Modified_InitialUpdate = 0x8000,
 	};
 
 	struct KinematicMotionState;
 
 	btRigidBody*			m_btRigidBody;
 	Collider*				m_collider;
-	uint16_t				m_group;
-	uint16_t				m_groupMask;
-	Matrix					m_worldTransform;			///< (postUpdate() で設定される)
-	float					m_mass;
+	ConfigData				m_data;
+
 	Vector3					m_appliedForce;
 	RigidBodyConstraintFlags	m_rigidBodyConstraintFlags;
 

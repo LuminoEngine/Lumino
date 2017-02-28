@@ -30,9 +30,6 @@ RigidBody::RigidBody()
 	: BodyBase()
 	, m_btRigidBody(nullptr)
 	, m_collider(nullptr)
-	, m_group(0xffff)
-	, m_groupMask(0xffff)
-	, m_worldTransform()
 	, m_rigidBodyConstraintFlags(RigidBodyConstraintFlags::None)
 	, m_modifiedFlags(Modified_None)
 {
@@ -53,103 +50,32 @@ RigidBody::~RigidBody()
 //------------------------------------------------------------------------------
 void RigidBody::Initialize(Collider* collider, const ConfigData& configData)
 {
-	InitializeCore(collider, configData);
-	detail::EngineDomain::GetPhysicsWorld3D()->AddRigidBodyForMmd(this);
+	LN_CHECK_ARG(collider != nullptr);
+	LN_REFOBJ_SET(m_collider, collider);
+	m_data = configData;
+
+	m_modifiedFlags |= Modified_InitialUpdate;
+	detail::EngineDomain::GetPhysicsWorld3D()->AddRigidBody(this);
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::InitializeCore(Collider* collider, const ConfigData& configData)
+void RigidBody::InitializeCore(Collider* collider, const ConfigData& configData, float scale)
 {
 	LN_CHECK_ARG(collider != nullptr);
-
 	LN_REFOBJ_SET(m_collider, collider);
-
-	// 各初期プロパティ
-	float num = configData.Mass * configData.Scale;
-	float friction;
-	float hitFraction;
-	float linearDamping;
-	float angularDamping;
-	btVector3 localInertia(0.0f, 0.0f, 0.0f);
-	if (configData.KinematicObject)
-	{
-		num = 0.0f;
-		friction = configData.Friction;
-		hitFraction = configData.Restitution;
-		linearDamping = configData.LinearDamping;
-		angularDamping = configData.AngularDamping;
-	}
-	else
-	{
-		collider->GetBtCollisionShape()->calculateLocalInertia(num, localInertia);
-		friction = configData.Friction;
-		hitFraction = configData.Restitution;
-		linearDamping = configData.LinearDamping;
-		angularDamping = configData.AngularDamping;
-	}
-
-	// 初期姿勢と MotionState
-	btTransform initialTransform;
-	if (configData.InitialTransform != nullptr)
-	{
-		initialTransform.setFromOpenGLMatrix((const btScalar*)configData.InitialTransform);
-		initialTransform.getOrigin().setX(initialTransform.getOrigin().x() * configData.Scale);
-		initialTransform.getOrigin().setY(initialTransform.getOrigin().y() * configData.Scale);
-		initialTransform.getOrigin().setZ(initialTransform.getOrigin().z() * configData.Scale);
-		m_worldTransform = *configData.InitialTransform;
-	}
-	else {
-		initialTransform.setIdentity();
-	}
-	btMotionState* motionState;
-	if (configData.KinematicObject)
-	{
-		motionState = new btDefaultMotionState(initialTransform/*initialTransformMatrix * Matrix.Translation(frame.Bone.Position * scale)*/);
-	}
-	else
-	{
-		//motionState = new DefaultMotionState(Matrix.Invert(rigid.BoneLocalPosition) * Matrix.Translation(frame.Bone.Position) * frame.CombinedMatrix);
-		motionState = new btDefaultMotionState(initialTransform/*initialTransformMatrix * Matrix.Translation(frame.Bone.Position * scale)*/);
-	}
-
-	// RigidBody 作成
-	btRigidBody::btRigidBodyConstructionInfo bodyInfo(num, motionState, collider->GetBtCollisionShape(), localInertia);
-	bodyInfo.m_linearDamping = configData.LinearDamping;	// 移動減
-	bodyInfo.m_angularDamping = configData.AngularDamping;	// 回転減
-	bodyInfo.m_restitution = configData.Restitution;	    // 反発力
-	bodyInfo.m_friction = configData.Friction;				// 摩擦力
-	bodyInfo.m_additionalDamping = configData.AdditionalDamping;
-	m_btRigidBody = new btRigidBody(bodyInfo);
-
-	if (configData.KinematicObject)
-	{
-		// CF_KINEMATIC_OBJECT と DISABLE_DEACTIVATION はセット。決まり事。
-		// http://bulletjpn.web.fc2.com/07_RigidBodyDynamics.html
-		m_btRigidBody->setCollisionFlags( /*m_btRigidBody->getCollisionFlags() | */btCollisionObject::CF_KINEMATIC_OBJECT);
-		m_btRigidBody->setActivationState( /*m_btRigidBody->getActivationState() | */DISABLE_DEACTIVATION);
-	}
-	else
-	{
-		m_btRigidBody->setActivationState( /*m_btRigidBody->getActivationState() | */DISABLE_DEACTIVATION);
-	}
-	m_btRigidBody->setSleepingThresholds(0.0f, 0.0f);
-
-	m_group = configData.Group;
-	m_groupMask = configData.GroupMask;
-	m_modifiedFlags = Modified_Activate;
-
-	BodyBase::Initialize(m_btRigidBody);
-
-	m_mass = configData.Mass;
+	m_data = configData;
+	m_data.Scale = scale;
+	m_modifiedFlags |= Modified_InitialUpdate;
+	//CreateBtRigidBody();
 }
 //------------------------------------------------------------------------------
 void RigidBody::SetPosition(const Vector3& position)
 {
-	m_btRigidBody->activate();
+	//m_btRigidBody->activate();
 
-	m_worldTransform.m[3][0] = position.x;
-	m_worldTransform.m[3][1] = position.y;
-	m_worldTransform.m[3][2] = position.z;
+	m_data.InitialTransform.m[3][0] = position.x;
+	m_data.InitialTransform.m[3][1] = position.y;
+	m_data.InitialTransform.m[3][2] = position.z;
 	m_modifiedFlags |= Modified_WorldTransform;	// 姿勢を更新した
 	m_modifiedFlags |= Modified_Activate;		// Activate要求
 
@@ -277,18 +203,14 @@ void RigidBody::setKinematicAlignmentMatrix( const LMatrix& matrix )
 	
 
 //------------------------------------------------------------------------------
-// 
-//------------------------------------------------------------------------------
 void RigidBody::SetMass(float mass)
 {
-	m_mass = mass;
+	m_data.Mass = mass;
 	btVector3 localInertia(0, 0, 0);
-	m_collider->GetBtCollisionShape()->calculateLocalInertia(m_mass, localInertia);
+	m_collider->GetBtCollisionShape()->calculateLocalInertia(m_data.Mass, localInertia);
 	m_modifiedFlags |= Modified_Mass;
 }
 
-//------------------------------------------------------------------------------
-// 
 //------------------------------------------------------------------------------
 void RigidBody::SetConstraintFlags(RigidBodyConstraintFlags flags)
 {
@@ -297,8 +219,6 @@ void RigidBody::SetConstraintFlags(RigidBodyConstraintFlags flags)
 }
 
 //------------------------------------------------------------------------------
-// 
-//------------------------------------------------------------------------------
 void RigidBody::ApplyForce(const Vector3& force)
 {
 	m_appliedForce += force;	// 次のシミュレーションまでの力を総和したい
@@ -306,30 +226,24 @@ void RigidBody::ApplyForce(const Vector3& force)
 }
 
 //------------------------------------------------------------------------------
-// 
-//------------------------------------------------------------------------------
 void RigidBody::Activate()
 {
 	m_modifiedFlags |= Modified_Activate;
 }
 
 //------------------------------------------------------------------------------
-// 
-//------------------------------------------------------------------------------
 void RigidBody::SetWorldTransform(const Matrix& matrix)
 {
-	m_worldTransform = matrix;
+	m_data.InitialTransform = matrix;
 	m_modifiedFlags |= Modified_WorldTransform;
 }
 
 //------------------------------------------------------------------------------
 const Matrix& RigidBody::GetWorldTransform() const
 {
-	return m_worldTransform;
+	return m_data.InitialTransform;
 }
 
-//------------------------------------------------------------------------------
-// 
 //------------------------------------------------------------------------------
 void RigidBody::ClearForces()
 {
@@ -337,10 +251,13 @@ void RigidBody::ClearForces()
 }
 	
 //------------------------------------------------------------------------------
-// 
-//------------------------------------------------------------------------------
 void RigidBody::SyncBeforeStepSimulation(PhysicsWorld* world)
 {
+	if ((m_modifiedFlags & Modified_InitialUpdate) != 0)
+	{
+		CreateBtRigidBody();
+	}
+
 	// RigidBodyConstraintFlags
 	if ((m_modifiedFlags & Modified_RigidBodyConstraintFlags) != 0)
 	{
@@ -381,7 +298,7 @@ void RigidBody::SyncBeforeStepSimulation(PhysicsWorld* world)
 			念のため…ということで、両方の setWorldTransform() を行い、様子を見てみる。
 		*/
 		btTransform transform;
-		transform.setFromOpenGLMatrix((btScalar*)&m_worldTransform);
+		transform.setFromOpenGLMatrix((btScalar*)&m_data.InitialTransform);
 		m_btRigidBody->getMotionState()->setWorldTransform(transform);
 		m_btRigidBody->setWorldTransform(transform);
 	}
@@ -398,8 +315,8 @@ void RigidBody::SyncBeforeStepSimulation(PhysicsWorld* world)
 		 */
 		bool isStatic = m_btRigidBody->isStaticObject();
 		btVector3 inertia;
-		m_btRigidBody->getCollisionShape()->calculateLocalInertia(m_mass, inertia);
-		m_btRigidBody->setMassProps(m_mass, inertia);
+		m_btRigidBody->getCollisionShape()->calculateLocalInertia(m_data.Mass, inertia);
+		m_btRigidBody->setMassProps(m_data.Mass, inertia);
 		if (isStatic != m_btRigidBody->isStaticObject())
 		{
 			world->GetBtWorld()->removeRigidBody(m_btRigidBody);
@@ -436,8 +353,6 @@ void RigidBody::SyncBeforeStepSimulation(PhysicsWorld* world)
 }
 
 //------------------------------------------------------------------------------
-// 
-//------------------------------------------------------------------------------
 void RigidBody::SyncAfterStepSimulation()
 {
 	if (m_btRigidBody->isKinematicObject())
@@ -448,13 +363,92 @@ void RigidBody::SyncAfterStepSimulation()
 	{
 		btTransform transform;
 		m_btRigidBody->getMotionState()->getWorldTransform(transform);
-		transform.getOpenGLMatrix((btScalar*)&m_worldTransform);
+		transform.getOpenGLMatrix((btScalar*)&m_data.InitialTransform);
 	}
 }
 
 void RigidBody::MarkMMDDynamic()
 {
 	m_btRigidBody->setCollisionFlags(m_btRigidBody->getCollisionFlags() & -3);
+}
+
+//------------------------------------------------------------------------------
+void RigidBody::CreateBtRigidBody()
+{
+	// 各初期プロパティ
+	float num = m_data.Mass * m_data.Scale;
+	float friction;
+	float hitFraction;
+	float linearDamping;
+	float angularDamping;
+	btVector3 localInertia(0.0f, 0.0f, 0.0f);
+	if (m_data.KinematicObject)
+	{
+		num = 0.0f;
+		friction = m_data.Friction;
+		hitFraction = m_data.Restitution;
+		linearDamping = m_data.LinearDamping;
+		angularDamping = m_data.AngularDamping;
+	}
+	else
+	{
+		m_collider->GetBtCollisionShape()->calculateLocalInertia(num, localInertia);
+		friction = m_data.Friction;
+		hitFraction = m_data.Restitution;
+		linearDamping = m_data.LinearDamping;
+		angularDamping = m_data.AngularDamping;
+	}
+
+	// 初期姿勢と MotionState
+	btTransform initialTransform;
+	//if (configData.InitialTransform != nullptr)
+	{
+		initialTransform.setFromOpenGLMatrix((const btScalar*)&m_data.InitialTransform);
+		initialTransform.getOrigin().setX(initialTransform.getOrigin().x() * m_data.Scale);
+		initialTransform.getOrigin().setY(initialTransform.getOrigin().y() * m_data.Scale);
+		initialTransform.getOrigin().setZ(initialTransform.getOrigin().z() * m_data.Scale);
+	}
+	//else {
+	//	initialTransform.setIdentity();
+	//}
+	btMotionState* motionState;
+	if (m_data.KinematicObject)
+	{
+		motionState = new btDefaultMotionState(initialTransform/*initialTransformMatrix * Matrix.Translation(frame.Bone.Position * scale)*/);
+	}
+	else
+	{
+		//motionState = new DefaultMotionState(Matrix.Invert(rigid.BoneLocalPosition) * Matrix.Translation(frame.Bone.Position) * frame.CombinedMatrix);
+		motionState = new btDefaultMotionState(initialTransform/*initialTransformMatrix * Matrix.Translation(frame.Bone.Position * scale)*/);
+	}
+
+	// RigidBody 作成
+	btRigidBody::btRigidBodyConstructionInfo bodyInfo(num, motionState, m_collider->GetBtCollisionShape(), localInertia);
+	bodyInfo.m_linearDamping = m_data.LinearDamping;	// 移動減
+	bodyInfo.m_angularDamping = m_data.AngularDamping;	// 回転減
+	bodyInfo.m_restitution = m_data.Restitution;	    // 反発力
+	bodyInfo.m_friction = m_data.Friction;				// 摩擦力
+	bodyInfo.m_additionalDamping = m_data.AdditionalDamping;
+	m_btRigidBody = new btRigidBody(bodyInfo);
+
+	if (m_data.KinematicObject)
+	{
+		// CF_KINEMATIC_OBJECT と DISABLE_DEACTIVATION はセット。決まり事。
+		// http://bulletjpn.web.fc2.com/07_RigidBodyDynamics.html
+		m_btRigidBody->setCollisionFlags( /*m_btRigidBody->getCollisionFlags() | */btCollisionObject::CF_KINEMATIC_OBJECT);
+		m_btRigidBody->setActivationState( /*m_btRigidBody->getActivationState() | */DISABLE_DEACTIVATION);
+	}
+	else
+	{
+		m_btRigidBody->setActivationState( /*m_btRigidBody->getActivationState() | */DISABLE_DEACTIVATION);
+	}
+	m_btRigidBody->setSleepingThresholds(0.0f, 0.0f);
+
+	m_modifiedFlags = Modified_Activate;
+
+	BodyBase::Initialize(m_btRigidBody);
+
+	GetOwnerWorld()->GetBtWorld()->addRigidBody(GetBtRigidBody(), GetGroup(), GetGroupMask());
 }
 
 LN_NAMESPACE_END
