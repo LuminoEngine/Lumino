@@ -7,6 +7,9 @@
 LN_NAMESPACE_BEGIN
 class PlatformWindow;
 class SwapChain;
+class CameraViewportLayer;
+class World2D;
+class World3D;
 
 /**
 	@brief		
@@ -18,8 +21,7 @@ class UIViewportLayer
 public:
 	static const int DefaultZIndex = 100;
 
-protected:
-	friend class UIFrameWindow;
+LN_CONSTRUCT_ACCESS:
 	UIViewportLayer(UILayoutView* view);
 	virtual ~UIViewportLayer();
 	//virtual DrawList* GetRenderer() override { return nullptr; }
@@ -48,7 +50,6 @@ public:
 
 	PlatformWindow* GetPlatformWindow() const { return m_platformWindow; }
 
-	Viewport* GetViewport() const { return m_mainViewport; }
 
 	void SetSize(const SizeI& size);
 
@@ -64,18 +65,15 @@ LN_INTERNAL_ACCESS:
 
 
 
-	void BeginRendering();
-	void RenderContents();
-	void EndRendering();
+	virtual void BeginRendering();
+	virtual void RenderContents();
+	virtual void EndRendering();
 
 private:
-	void UpdateViewportTransform();
 
 	detail::UIManager*		m_manager;
 	PlatformWindow*			m_platformWindow;
 	SwapChain*				m_swapChain;
-	Viewport*				m_mainViewport;
-	RefPtr<UIViewportLayer>	m_uiLayer;
 };
 
 
@@ -88,18 +86,33 @@ class UIMainWindow
 	LN_UI_TYPEINFO_DECLARE();
 public:
 	UIContext* GetMainUIContext() const { return m_mainUIContext; }
+	Viewport* GetViewport() const { return m_mainViewport; }
 
 LN_INTERNAL_ACCESS:
 	UIMainWindow();
 	virtual ~UIMainWindow();
-	void Initialize(detail::UIManager* manager, PlatformWindow* platformWindow);
+	void Initialize(detail::UIManager* manager, PlatformWindow* platformWindow, World2D* defaultWorld2D, World3D* defaultWorld3D);
+
+	CameraViewportLayer* GetDefault2DCameraViewportLayer();
+	CameraViewportLayer* GetDefault3DCameraViewportLayer();
 
 	void InjectElapsedTime(float elapsedTime);
 	void UpdateLayout(const Size& viewSize);	// TODO: ゆくゆくは SwapChain や Viewport も UIFrameWindow にもってくる。そのとき、この viewSize はいらなくなる
 	void RenderUI();
 
+	virtual bool OnEvent(const PlatformEventArgs& e) override;
+	virtual void BeginRendering();
+	virtual void RenderContents();
+	virtual void EndRendering();
+
 private:
-	UIContext*	m_mainUIContext;
+	void UpdateViewportTransform();
+
+	UIContext*					m_mainUIContext;
+	RefPtr<Viewport>			m_mainViewport;		// TODO: 後で Control 化する。直接描画しない
+	RefPtr<CameraViewportLayer>	m_default2DCameraViewportLayer;
+	RefPtr<CameraViewportLayer>	m_default3DCameraViewportLayer;
+	RefPtr<UIViewportLayer>		m_uiLayer;
 };
 
 

@@ -758,8 +758,8 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ParticleEmitter3D, ParticleEmitter);
 ParticleEmitter3DPtr ParticleEmitter3D::Create(SpriteParticleModel* model)
 {
 	auto ptr = ParticleEmitter3DPtr::MakeRef();
-	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), model);
-	SceneGraphManager::Instance->GetDefaultSceneGraph3D()->GetRootNode()->AddChild(ptr);
+	ptr->Initialize(detail::EngineDomain::GetDefaultSceneGraph3D(), model);
+	detail::EngineDomain::GetDefaultSceneGraph3D()->GetRootNode()->AddChild(ptr);
 	return ptr;
 
 }

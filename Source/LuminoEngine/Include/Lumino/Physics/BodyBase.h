@@ -4,7 +4,7 @@
 
 LN_NAMESPACE_BEGIN
 class BodyBase;
-namespace detail { class PhysicsWorld; }
+namespace detail { class PhysicsWorldCore; }
 
 /// 接触点情報
 struct ContactInfo

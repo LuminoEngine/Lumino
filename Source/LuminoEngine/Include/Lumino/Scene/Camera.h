@@ -7,8 +7,10 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 namespace tr { class GizmoModel; }
+class World;
 class CameraViewportLayer;
 using CameraViewportLayerPtr = RefPtr<CameraViewportLayer>;
+
 
 /**
 	@brief
@@ -142,7 +144,7 @@ public:
 	static CameraViewportLayer* GetDefault2D();
 	static CameraViewportLayer* GetDefault3D();
 
-	static CameraViewportLayerPtr Create(Camera* camera);
+	//static CameraViewportLayerPtr Create(Camera* camera);
 
 
 
@@ -151,7 +153,6 @@ public:
 	// ViewportLayer interface
 	//virtual DrawList* GetRenderer() override;
 	virtual void Render() override;
-	virtual void OnBeginFrameRender(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 	virtual void ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 
 protected:
@@ -162,9 +163,10 @@ protected:
 LN_INTERNAL_ACCESS:
 	CameraViewportLayer();
 	virtual ~CameraViewportLayer();
-	void Initialize(SceneGraphManager* manager, Camera* hostingCamera);
+	void Initialize(SceneGraphManager* manager, World* targetWorld, Camera* hostingCamera);
 
 private:
+	World*				m_targetWorld;
 	RefPtr<Camera>		m_hostingCamera;
 	RefPtr<detail::InternalRenderer>	m_internalRenderer;
 	RefPtr<tr::GizmoModel>	m_gizmo;

@@ -94,16 +94,16 @@ private:
 };
 
 //==============================================================================
-// PhysicsWorld
+// PhysicsWorldCore
 //==============================================================================
 
 //------------------------------------------------------------------------------
-PhysicsWorld::PhysicsWorld()
+PhysicsWorldCore::PhysicsWorldCore()
 {
 }
 
 //------------------------------------------------------------------------------
-PhysicsWorld::~PhysicsWorld()
+PhysicsWorldCore::~PhysicsWorldCore()
 {
 	GCPhysicsObjects();
 
@@ -122,7 +122,7 @@ PhysicsWorld::~PhysicsWorld()
 }
 
 //------------------------------------------------------------------------------
-void PhysicsWorld::Initialize(PhysicsManager* manager)
+void PhysicsWorldCore::Initialize(PhysicsManager* manager)
 {
 	LN_CHECK_ARG(manager != nullptr);
 	m_manager = manager;
@@ -247,13 +247,13 @@ void PhysicsWorld::Initialize(PhysicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void PhysicsWorld::SetGravity(const Vector3& gravity)
+void PhysicsWorldCore::SetGravity(const Vector3& gravity)
 {
 	m_btWorld->setGravity(btVector3(gravity.x, gravity.y, gravity.z));
 }
 
 //------------------------------------------------------------------------------
-void PhysicsWorld::StepSimulation(float elapsedTime)
+void PhysicsWorldCore::StepSimulation(float elapsedTime)
 {
 	for (RigidBody* body : m_rigidBodyListForMmd)
 	{
@@ -287,7 +287,7 @@ void PhysicsWorld::StepSimulation(float elapsedTime)
 }
 
 //------------------------------------------------------------------------------
-void PhysicsWorld::DrawDebugShapes(IDebugRenderer* renderer)
+void PhysicsWorldCore::DrawDebugShapes(IDebugRenderer* renderer)
 {
 	m_debugDrawer->SetDebugRenderer(renderer);
 	m_btWorld->getDebugDrawer()->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
@@ -295,7 +295,7 @@ void PhysicsWorld::DrawDebugShapes(IDebugRenderer* renderer)
 }
 
 //------------------------------------------------------------------------------
-void PhysicsWorld::AddRigidBodyForMmd(RigidBody* rigidBody)
+void PhysicsWorldCore::AddRigidBodyForMmd(RigidBody* rigidBody)
 {
 	LN_ASSERT(rigidBody != nullptr);
 	m_rigidBodyListForMmd.Add(rigidBody);
@@ -303,7 +303,7 @@ void PhysicsWorld::AddRigidBodyForMmd(RigidBody* rigidBody)
 }
 
 //------------------------------------------------------------------------------
-void PhysicsWorld::AddJointForMmd(Joint* joint)
+void PhysicsWorldCore::AddJointForMmd(Joint* joint)
 {
 	LN_ASSERT(joint != nullptr);
 	m_jointListForMmd.Add(joint);
@@ -311,7 +311,7 @@ void PhysicsWorld::AddJointForMmd(Joint* joint)
 }
 
 //------------------------------------------------------------------------------
-void PhysicsWorld::GCPhysicsObjects()
+void PhysicsWorldCore::GCPhysicsObjects()
 {
 	// rigidBody
 	for (auto itr = m_rigidBodyListForMmd.begin(); itr != m_rigidBodyListForMmd.end();)
@@ -377,7 +377,7 @@ void PhysicsManager::Finalize()
 //------------------------------------------------------------------------------
 void PhysicsManager::DrawDebugShapesAllWorld(IDebugRenderer* renderer)
 {
-	for (PhysicsWorld* world : m_worldList)
+	for (PhysicsWorldCore* world : m_worldList)
 	{
 		world->DrawDebugShapes(renderer);
 	}

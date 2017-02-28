@@ -512,6 +512,7 @@ set(LN_SOURCES_Engine
 	Include/Lumino/Profiler.h
 	Include/Lumino/RoutedEvent.h
 	Include/Lumino/Version.h
+	Include/Lumino/World.h
 	Source/AssetsManager.cpp
 	Source/AssetsManager.h
 	Source/Engine.cpp
@@ -528,6 +529,7 @@ set(LN_SOURCES_Engine
 	Source/Resource.h
 	Source/RoutedEvent.cpp
 	Source/Version.cpp
+	Source/World.cpp
 )
 
 set(LN_SOURCES_Framework

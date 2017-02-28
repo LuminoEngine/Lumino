@@ -11,6 +11,7 @@ class DrawList;
 class Camera;
 class SceneNode;
 class StaticMeshModel;
+class Material;		// TODO: World temp
 class SceneGraph2D;
 class SceneGraph3D;
 using SceneGraph2DPtr = RefPtr<SceneGraph2D>;
@@ -92,14 +93,14 @@ private:
 	double				m_time;					///< 時間処理の開始通知からの経過時間 (秒)
 	float				m_elapsedTime;			///< 前回フレームからの経過時間 (秒)
 	List<Camera*>		m_allCameraList;
-	LightNodeList		m_renderingLightList;	// 描画ルート以下のライト (他の描画空間にライティングの影響を与えないようにするため)
+	//LightNodeList		m_renderingLightList;	// 描画ルート以下のライト (他の描画空間にライティングの影響を与えないようにするため)
 
 	MouseState			m_leftMouseState;		///< マウスの左ボタンの状態
 	MouseState			m_rightMouseState;		///< マウスの右ボタンの状態
 	MouseState			m_middleMouseState;		///< マウスの中ボタンの状態
 	PointI				m_mousePosition;		///< マウスの現在位置
 
-
+	// TODO: World へ
 	RefPtr<DrawList>	m_renderer;
 	RefPtr<DrawList>	m_debugRenderer;
 	RefPtr<Material>	m_debugRendererDefaultMaterial;	// TODO: DebugDrawList みたいに派生させてまとめたほうがいいかな・・・

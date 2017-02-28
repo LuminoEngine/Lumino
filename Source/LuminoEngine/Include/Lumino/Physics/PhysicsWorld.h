@@ -3,7 +3,7 @@
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
-namespace detail { class PhysicsWorld; }
+namespace detail { class PhysicsWorldCore; }
 
 /**
 	@brief	
@@ -20,8 +20,12 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~PhysicsWorld();
 	void Initialize();
 
+LN_INTERNAL_ACCESS:
+	detail::PhysicsWorldCore* GetImpl() const;
+	void StepSimulation(float elapsedTime);
+
 private:
-	RefPtr<detail::PhysicsWorld>	m_impl;
+	RefPtr<detail::PhysicsWorldCore>	m_impl;
 };
 
 LN_NAMESPACE_END

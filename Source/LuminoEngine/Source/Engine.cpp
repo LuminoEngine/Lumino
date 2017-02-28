@@ -5,11 +5,11 @@
 #include "Input/InputManager.h"
 #include "Audio/AudioManager.h"
 #include <Lumino/Engine.h>
+#include <Lumino/World.h>
 #include "Graphics/RendererImpl.h"
 #include "Graphics/ProfilerRenderer.h"
 #include "Graphics/RenderingThread.h"
 #include "Scene/SceneGraphManager.h"
-#include <Lumino/Physics/PhysicsWorld.h>
 #include <Lumino/UI/UIFrameWindow.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Camera.h>
@@ -125,58 +125,31 @@ Viewport* Engine::GetMainViewport()
 //------------------------------------------------------------------------------
 ViewportLayer* Engine::GetDefault2DLayer()
 {
-	return EngineManager::Instance->GetSceneGraphManager()->GetDefault2DCameraViewportLayer();
+	return EngineManager::Instance->GetUIManager()->GetMainWindow()->GetDefault2DCameraViewportLayer();
 }
 
 //------------------------------------------------------------------------------
 ViewportLayer* Engine::GetDefault3DLayer()
 {
-	return EngineManager::Instance->GetSceneGraphManager()->GetDefault3DCameraViewportLayer();
+	return EngineManager::Instance->GetUIManager()->GetMainWindow()->GetDefault3DCameraViewportLayer();
 }
 
 //------------------------------------------------------------------------------
 SceneGraph2D* Engine::GetDefaultSceneGraph2D()
 {
-	return EngineManager::Instance->GetSceneGraphManager()->GetDefaultSceneGraph2D();
+	return EngineManager::Instance->GetDefaultWorld2D()->GetSceneGraph2D();
 }
 
 //------------------------------------------------------------------------------
 SceneGraph3D* Engine::GetDefaultSceneGraph3D()
 {
-	return EngineManager::Instance->GetSceneGraphManager()->GetDefaultSceneGraph3D();
+	return EngineManager::Instance->GetDefaultWorld3D()->GetSceneGraph3D();
 }
 
 //------------------------------------------------------------------------------
 Light* Engine::GetMainLight3D()
 {
-	return EngineManager::Instance->GetSceneGraphManager()->GetDefaultSceneGraph3D()->GetMainLight();
-}
-
-//==============================================================================
-// World
-//==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(World, Object);
-
-//------------------------------------------------------------------------------
-World::World()
-{
-}
-
-//------------------------------------------------------------------------------
-World::~World()
-{
-}
-
-//------------------------------------------------------------------------------
-void World::Initialize()
-{
-	m_physicsWorld = NewObject<PhysicsWorld>();
-}
-
-//------------------------------------------------------------------------------
-PhysicsWorld* World::GetPhysicsWorld() const
-{
-	return m_physicsWorld;
+	return EngineManager::Instance->GetDefaultWorld3D()->GetSceneGraph3D()->GetMainLight();
 }
 
 LN_NAMESPACE_END

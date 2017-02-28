@@ -4,6 +4,7 @@
 #include <LinearMath/btMotionState.h>
 #include <Lumino/Physics/Collider.h>
 #include <Lumino/Physics/RigidBody.h>
+#include <Lumino/Physics/PhysicsWorld.h>
 #include "BulletUtils.h"
 #include "PhysicsManager.h"
 
@@ -14,19 +15,15 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(RigidBody, BodyBase);
 
-////------------------------------------------------------------------------------
-//RefPtr<RigidBody> RigidBody::Create(Collider* collider)
-//{
-//	ConfigData data;
-//	auto ptr = RefPtr<RigidBody>::MakeRef();
-//	ptr->Initialize(collider, data);
-//	detail::pysi
-//
-//	 obj(LN_NEW RigidBody(), false);
-//	obj->Initialize(, collider, data);
-//	obj.SafeAddRef();
-//	return obj;
-//}
+//------------------------------------------------------------------------------
+RefPtr<RigidBody> RigidBody::Create(Collider* collider)
+{
+	ConfigData data;
+	data.Mass = 1.0f;
+	auto ptr = RefPtr<RigidBody>::MakeRef();
+	ptr->Initialize(collider, data);
+	return ptr;
+}
 
 //------------------------------------------------------------------------------
 RigidBody::RigidBody()
@@ -55,6 +52,13 @@ RigidBody::~RigidBody()
 
 //------------------------------------------------------------------------------
 void RigidBody::Initialize(Collider* collider, const ConfigData& configData)
+{
+	InitializeCore(collider, configData);
+	detail::EngineDomain::GetPhysicsWorld3D()->GetImpl()->AddRigidBodyForMmd(this);
+}
+
+//------------------------------------------------------------------------------
+void RigidBody::InitializeCore(Collider* collider, const ConfigData& configData)
 {
 	LN_CHECK_ARG(collider != nullptr);
 
@@ -335,7 +339,7 @@ void RigidBody::ClearForces()
 //------------------------------------------------------------------------------
 // 
 //------------------------------------------------------------------------------
-void RigidBody::SyncBeforeStepSimulation(detail::PhysicsWorld* world)
+void RigidBody::SyncBeforeStepSimulation(detail::PhysicsWorldCore* world)
 {
 	// RigidBodyConstraintFlags
 	if ((m_modifiedFlags & Modified_RigidBodyConstraintFlags) != 0)

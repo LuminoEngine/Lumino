@@ -20,7 +20,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TextBlock2D, VisualNode);
 TextBlock2DPtr TextBlock2D::Create()
 {
 	auto ptr = TextBlock2DPtr::MakeRef();
-	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph2D());
+	ptr->Initialize(detail::EngineDomain::GetDefaultSceneGraph2D());
 	return ptr;
 }
 
@@ -28,7 +28,7 @@ TextBlock2DPtr TextBlock2D::Create()
 TextBlock2DPtr TextBlock2D::Create(const StringRef& text)
 {
 	auto ptr = TextBlock2DPtr::MakeRef();
-	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph2D());
+	ptr->Initialize(detail::EngineDomain::GetDefaultSceneGraph2D());
 	ptr->SetText(text);
 	return ptr;
 }
@@ -50,7 +50,7 @@ void TextBlock2D::Initialize(SceneGraph* owner)
 {
 	VisualNode::Initialize(owner, 1);
 
-	owner->GetManager()->GetDefaultSceneGraph2D()->GetRootNode()->AddChild(this);
+	owner->GetRootNode()->AddChild(this);
 	SetAutoRemove(true);
 
 	m_paragraph = RefPtr<detail::Paragraph>::MakeRef();

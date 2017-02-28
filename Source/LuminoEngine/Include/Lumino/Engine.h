@@ -73,29 +73,4 @@ public:
 	static Light* GetMainLight3D();
 };
 
-
-
-
-class PhysicsWorld;
-
-/**
-	@brief		
-*/
-class World
-	: public Object
-{
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
-public:
-
-	PhysicsWorld* GetPhysicsWorld() const;
-
-LN_CONSTRUCT_ACCESS:
-	World();
-	virtual ~World();
-	void Initialize();
-
-private:
-	RefPtr<PhysicsWorld>	m_physicsWorld;
-};
-
 LN_NAMESPACE_END

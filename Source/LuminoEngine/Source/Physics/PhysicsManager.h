@@ -18,12 +18,12 @@ public:
 	virtual void DrawLine(const Vector3& from, const Vector3& to, const Vector3& fromColor, const Vector3& toColor) = 0;
 };
 
-class PhysicsWorld
+class PhysicsWorldCore
 	: public RefObject
 {
 public:
-	PhysicsWorld();
-	virtual ~PhysicsWorld();
+	PhysicsWorldCore();
+	virtual ~PhysicsWorldCore();
 	void Initialize(PhysicsManager* manager);
 
 	void SetGravity(const Vector3& gravity);
@@ -73,12 +73,12 @@ public:
 	void Initialize();
 	void Finalize();
 
-	void AddPhysicsWorld(PhysicsWorld* world) { m_worldList.Add(world); }
-	void RemovePhysicsWorld(PhysicsWorld* world) { m_worldList.Remove(world); }
+	void AddPhysicsWorld(PhysicsWorldCore* world) { m_worldList.Add(world); }
+	void RemovePhysicsWorld(PhysicsWorldCore* world) { m_worldList.Remove(world); }
 	void DrawDebugShapesAllWorld(IDebugRenderer* renderer);
 
 private:
-	List<PhysicsWorld*>	m_worldList;
+	List<PhysicsWorldCore*>	m_worldList;
 
 //
 //

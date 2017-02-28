@@ -10,6 +10,7 @@
 #include <Lumino/UI/UIFrameWindow.h>
 #include "EventArgsPool.h"
 #include "UIManager.h"
+#include "../Platform/PlatformManager.h"
 
 // for style definition
 #include <Lumino/Graphics/Brush.h>
@@ -59,7 +60,6 @@ void UIManager::Initialize(const Settings& settings)
 	LN_CHECK_ARG(settings.platformManager != nullptr);
 	LN_CHECK_ARG(settings.graphicsManager != nullptr);
 	LN_CHECK_ARG(settings.assetsManager != nullptr);
-	LN_CHECK_ARG(settings.mainWindow != nullptr);
 
 	m_eventArgsPool = LN_NEW EventArgsPool();
 	m_fileManager = settings.fileManager;
@@ -88,10 +88,6 @@ void UIManager::Initialize(const Settings& settings)
 	m_defaultStyleTable = LN_NEW UIStyleTable();
 	MakeDefaultStyle(m_defaultStyleTable);
 
-	m_mainWindow = LN_NEW UIMainWindow();
-	m_mainWindow->Initialize(this, settings.mainWindow);
-
-
 	if (g_uiManager == nullptr)
 	{
 		g_uiManager = this;
@@ -109,6 +105,22 @@ void UIManager::Finalize()
 	{
 		g_uiManager = nullptr;
 	}
+}
+
+//------------------------------------------------------------------------------
+void UIManager::CreateGameModeMainFrame(World2D* defaultWorld2D, World3D* defaultWorld3D)
+{
+	LN_FAIL_CHECK_STATE(m_mainWindow == nullptr) return;
+
+	m_mainWindow = LN_NEW UIMainWindow();
+	m_mainWindow->Initialize(this, m_platformManager->GetMainWindow(), defaultWorld2D, defaultWorld3D);
+}
+
+//------------------------------------------------------------------------------
+void UIManager::ReleaseGameModeMainFrame()
+{
+	// TODO: MainWindow は UIManager の中で作るのではなく Engine のほうがいい気がしてきた。
+	LN_SAFE_RELEASE(m_mainWindow);
 }
 
 //------------------------------------------------------------------------------

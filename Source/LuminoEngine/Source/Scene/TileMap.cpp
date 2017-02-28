@@ -31,7 +31,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TileMap, VisualNode);
 TileMapPtr TileMap::Create3D()
 {
 	RefPtr<TileMap> obj(LN_NEW TileMap(), false);
-	obj->Create3DCore(SceneGraphManager::Instance->GetDefaultSceneGraph3D());
+	obj->Create3DCore(detail::EngineDomain::GetDefaultSceneGraph3D());
 	return obj;
 }
 
@@ -54,7 +54,7 @@ TileMap::~TileMap()
 void TileMap::Create3DCore(SceneGraph* owner)
 {
 	VisualNode::Initialize(owner, 1);
-	owner->GetManager()->GetDefaultSceneGraph3D()->GetRootNode()->AddChild(this);
+	owner->GetRootNode()->AddChild(this);
 	SetAutoRemove(true);
 	m_renderer = LN_NEW TileMapRenderer(owner->GetManager()->GetGraphicsManager());
 	SetRenderingMode(SceneNodeRenderingMode::NonShaderVisible);

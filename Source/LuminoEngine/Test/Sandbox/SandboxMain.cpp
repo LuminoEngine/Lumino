@@ -542,7 +542,7 @@ void Main()
 #endif
 
 	auto col1 = BoxCollider::Create(1, 2, 3);
-	//auto body1 = RefPtr<RigidBody>::MakeRef();
+	auto body1 = RigidBody::Create(col1);
 	//body1->ini
 
 	while (!Engine::IsEndRequested())
@@ -562,6 +562,8 @@ void Main()
 			Engine::EndRendering();
 		}
 		Engine::EndFrameUpdate();
+
+		body1->GetWorldTransform().GetPosition().Print();
 
 
 		//if (Input::IsTriggered(InputButtons::Ok))

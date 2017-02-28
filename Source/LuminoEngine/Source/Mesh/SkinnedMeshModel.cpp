@@ -309,7 +309,7 @@ void SkinnedMeshModel::Initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 
 	//---------------------------------------------------------
 	// 物理演算
-	m_physicsWorld = RefPtr<detail::PhysicsWorld>::MakeRef();
+	m_physicsWorld = RefPtr<detail::PhysicsWorldCore>::MakeRef();
 	m_physicsWorld->Initialize(manager->GetPhysicsManager());
 	m_physicsWorld->SetGravity(Vector3(0, -9.80f * 10.0f, 0));
 
@@ -683,7 +683,7 @@ void MmdSkinnedMeshRigidBody::Initialize(SkinnedMeshModel* ownerModel, PmxRigidB
 	}
 
 	m_rigidBody = RefPtr<RigidBody>::MakeRef();
-	m_rigidBody->Initialize(collider, data);
+	m_rigidBody->InitializeCore(collider, data);
 	ownerModel->m_physicsWorld->AddRigidBodyForMmd(m_rigidBody);
 }
 

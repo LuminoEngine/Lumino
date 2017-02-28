@@ -7,6 +7,8 @@ class FileManager;
 class AssetsManager;
 class PlatformManager;
 class PlatformWindow;
+class World2D;
+class World3D;
 
 namespace detail
 {
@@ -25,7 +27,6 @@ public:
 		PlatformManager*		platformManager = nullptr;
 		GraphicsManager*		graphicsManager = nullptr;
 		AssetsManager*			assetsManager = nullptr;
-		PlatformWindow*			mainWindow = nullptr;
 		DocumentsManager*		documentsManager = nullptr;
 		PathName				defaultSkinFilePath;
 	};
@@ -40,6 +41,8 @@ public:
 
 	void Initialize(const Settings& settings);
 	void Finalize();
+	void CreateGameModeMainFrame(World2D* defaultWorld2D, World3D* defaultWorld3D);
+	void ReleaseGameModeMainFrame();
 	EventArgsPool* GetEventArgsPool() const { return m_eventArgsPool; }
 	UIStyleTable* GetDefaultStyleTable() const { return m_defaultStyleTable; }
 	AnimationManager* GetAnimationManager() const { return m_animationManager; }

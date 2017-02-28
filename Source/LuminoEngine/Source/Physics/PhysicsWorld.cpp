@@ -24,7 +24,20 @@ PhysicsWorld::~PhysicsWorld()
 //------------------------------------------------------------------------------
 void PhysicsWorld::Initialize()
 {
-	m_impl = NewObject<detail::PhysicsWorld>(detail::PhysicsManager::Instance);
+	m_impl = NewObject<detail::PhysicsWorldCore>(detail::PhysicsManager::Instance);
 }
+
+//------------------------------------------------------------------------------
+detail::PhysicsWorldCore* PhysicsWorld::GetImpl() const
+{
+	return m_impl;
+}
+
+//------------------------------------------------------------------------------
+void PhysicsWorld::StepSimulation(float elapsedTime)	// TODO: deltaTime? https://docs.unrealengine.com/latest/INT/API/Runtime/Engine/Engine/UWorld/Tick/index.html
+{
+	m_impl->StepSimulation(elapsedTime);
+}
+
 
 LN_NAMESPACE_END

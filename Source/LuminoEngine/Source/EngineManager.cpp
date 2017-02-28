@@ -11,6 +11,7 @@
 #include "Input/InputManager.h"
 #include "Audio/AudioManager.h"
 #include <Lumino/Engine.h>
+#include <Lumino/World.h>
 #include "Graphics/RendererImpl.h"
 #include "Graphics/RenderingThread.h"
 #include "Graphics/GraphicsManager.h"
@@ -171,6 +172,11 @@ EngineManager::EngineManager(const detail::EngineSettings& configData)
 //------------------------------------------------------------------------------
 EngineManager::~EngineManager()
 {
+	if (m_uiManager != nullptr)
+	{
+		m_uiManager->ReleaseGameModeMainFrame();
+	}
+
 	m_defaultWorld2D.SafeRelease();
 	m_defaultWorld3D.SafeRelease();
 
@@ -261,8 +267,9 @@ void EngineManager::Initialize()
 
 	EngineDiagCore::Instance.Initialize(this);
 
-	m_defaultWorld2D = NewObject<World>();
-	m_defaultWorld3D = NewObject<World>();
+	m_defaultWorld2D = NewObject<World2D>();
+	m_defaultWorld3D = NewObject<World3D>();
+	m_uiManager->CreateGameModeMainFrame(m_defaultWorld2D, m_defaultWorld3D);
 }
 
 //------------------------------------------------------------------------------
@@ -491,7 +498,6 @@ void EngineManager::InitializeUIManager()
 		data.platformManager = m_platformManager;
 		data.graphicsManager = m_graphicsManager;
 		data.assetsManager = m_assetsManager;
-		data.mainWindow = m_platformManager->GetMainWindow();
 		data.documentsManager = m_documentsManager;
 		data.defaultSkinFilePath = m_configData.defaultSkinFilePath;
 		m_uiManager = LN_NEW detail::UIManager();
@@ -521,7 +527,6 @@ void EngineManager::InitializeSceneGraphManager()
 		data.effectManager = m_effectManager;
 		data.modelManager = m_modelManager;
 		data.documentsManager = m_documentsManager;
-		data.mainViewport = m_uiManager->GetMainWindow()->GetViewport();
 		m_sceneGraphManager = LN_NEW SceneGraphManager(data);
 		m_sceneGraphManager->CreateDefaultSceneGraph();
 		SceneGraphManager::Instance = m_sceneGraphManager;
@@ -610,6 +615,18 @@ void EngineManager::BeginFrameUpdate()
 	if (m_sceneGraphManager != nullptr) {
 		m_sceneGraphManager->UpdateFrameDefaultSceneGraph(deltaTime);
 	}
+
+	if (m_defaultWorld2D != nullptr)
+	{
+		m_defaultWorld2D->BeginUpdateFrame();
+		m_defaultWorld2D->UpdateFrame(deltaTime);
+	}
+	if (m_defaultWorld3D != nullptr)
+	{
+		m_defaultWorld3D->BeginUpdateFrame();
+		m_defaultWorld3D->UpdateFrame(deltaTime);
+	}
+
 
 	if (m_uiManager != nullptr)
 	{
@@ -712,13 +729,13 @@ void EngineManager::Exit()
 }
 
 //------------------------------------------------------------------------------
-World* EngineManager::GetDefaultWorld2D() const
+World2D* EngineManager::GetDefaultWorld2D() const
 {
 	return m_defaultWorld2D;
 }
 
 //------------------------------------------------------------------------------
-World* EngineManager::GetDefaultWorld3D() const
+World3D* EngineManager::GetDefaultWorld3D() const
 {
 	return m_defaultWorld3D;
 }
@@ -752,7 +769,7 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 		}
 		if (m_sceneGraphManager != nullptr)
 		{
-			if (m_sceneGraphManager->GetDefaultSceneGraph3D()->InjectMouseButtonDown(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
+			if (m_defaultWorld3D->GetSceneGraph3D()->InjectMouseButtonDown(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
 		}
 		break;
 	case PlatformEventType::MouseUp:			// マウスボタンが離された
@@ -762,7 +779,7 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 		}
 		if (m_sceneGraphManager != nullptr)
 		{
-			if (m_sceneGraphManager->GetDefaultSceneGraph3D()->InjectMouseButtonUp(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
+			if (m_defaultWorld3D->GetSceneGraph3D()->InjectMouseButtonUp(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
 		}
 		break;
 	case PlatformEventType::MouseMove:		// マウスが移動した
@@ -772,7 +789,7 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 		}
 		if (m_sceneGraphManager != nullptr)
 		{
-			if (m_sceneGraphManager->GetDefaultSceneGraph3D()->InjectMouseMove(e.mouse.x, e.mouse.y)) { return true; }
+			if (m_defaultWorld3D->GetSceneGraph3D()->InjectMouseMove(e.mouse.x, e.mouse.y)) { return true; }
 		}
 		break;
 	case PlatformEventType::MouseWheel:		// マウスホイールが操作された
@@ -782,7 +799,7 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 		}
 		if (m_sceneGraphManager != nullptr)
 		{
-			if (m_sceneGraphManager->GetDefaultSceneGraph3D()->InjectMouseWheel(e.wheel.delta)) { return true; }
+			if (m_defaultWorld3D->GetSceneGraph3D()->InjectMouseWheel(e.wheel.delta)) { return true; }
 		}
 		break;
 	case PlatformEventType::KeyDown:
@@ -848,5 +865,50 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 //		m_effectManager->OnResetDevice();
 //	}
 //}
+
+
+
+//==============================================================================
+// EngineDomain
+//==============================================================================
+namespace detail {
+
+//------------------------------------------------------------------------------
+PhysicsWorld* EngineDomain::GetPhysicsWorld3D()
+{
+	return EngineManager::GetInstance()->GetDefaultWorld3D()->GetPhysicsWorld3D();
+}
+
+//------------------------------------------------------------------------------
+GraphicsManager* EngineDomain::GetGraphicsManager()
+{
+	return EngineManager::GetInstance()->GetGraphicsManager();
+}
+
+//------------------------------------------------------------------------------
+UIManager* EngineDomain::GetUIManager()
+{
+	return EngineManager::GetInstance()->GetUIManager();
+}
+
+//------------------------------------------------------------------------------
+SceneGraphManager* EngineDomain::GetSceneGraphManager()
+{
+	return EngineManager::GetInstance()->GetSceneGraphManager();
+}
+
+//------------------------------------------------------------------------------
+SceneGraph2D* EngineDomain::GetDefaultSceneGraph2D()
+{
+	return EngineManager::GetInstance()->GetDefaultWorld2D()->GetSceneGraph2D();
+}
+
+//------------------------------------------------------------------------------
+SceneGraph3D* EngineDomain::GetDefaultSceneGraph3D()
+{
+	return EngineManager::GetInstance()->GetDefaultWorld3D()->GetSceneGraph3D();
+}
+
+} // namespace detail
 
 LN_NAMESPACE_END

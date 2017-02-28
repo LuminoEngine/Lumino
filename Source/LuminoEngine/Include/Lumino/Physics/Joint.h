@@ -3,7 +3,7 @@
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
-namespace detail { class PhysicsWorld; }
+namespace detail { class PhysicsWorldCore; }
 class RigidBody;
 
 /// ジョイントのベースクラス

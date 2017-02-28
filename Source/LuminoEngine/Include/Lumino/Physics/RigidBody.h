@@ -125,16 +125,18 @@ public:
 LN_INTERNAL_ACCESS:
 	RigidBody();
 	virtual ~RigidBody();
+	void Initialize(Collider* collider, const ConfigData& configData);
+
 	/// 初期化 (剛体を受け取ってワールドに追加する) (現行PMD用にpublic。後で protected にする)
 	///		shape		: (BodyBase  削除時に delete される)
-	void Initialize(Collider* collider, const ConfigData& configData);
+	void InitializeCore(Collider* collider, const ConfigData& configData);
 
 	btRigidBody* GetBtRigidBody() { return m_btRigidBody; }
 	uint16_t GetGroup() const { return m_group; }
 	uint16_t GetGroupMask() const { return m_groupMask; }
 
 	/// シミュレーション直前更新処理 (メインスレッドから呼ばれる)
-	void SyncBeforeStepSimulation(detail::PhysicsWorld* world);
+	void SyncBeforeStepSimulation(detail::PhysicsWorldCore* world);
 
 	/// シミュレーション直後更新処理 (メインまたは物理更新スレッドから呼ばれる)
 	void SyncAfterStepSimulation();
