@@ -162,7 +162,8 @@ public:
 private:
 	ObjectArray	m_objectArray;		///< メインのリスト
 	ObjectArray	m_registerList;		///< メインのリストへの追加待ちリスト
-	ObjectArray	m_unregisterList;	///< メインのリストからの削除待ちリスト
+	ObjectArray	m_unregisterList;	///< メインのリストからの削除待ちリスト (参照カウントは増やさない)
+	ObjectArray	m_removingList;		// メインスレッドで Release して欲しいものリスト
 	Mutex		m_mutex;
 
 public:
@@ -202,13 +203,14 @@ public:
 		assert(std::find(m_unregisterList.begin(), m_unregisterList.end(), obj) == m_unregisterList.end());
 		assert(std::find(m_objectArray.begin(), m_objectArray.end(), obj) != m_objectArray.end());
 
-		// 削除リストに入れる
+		// 削除してほしいリストに入れる
 		m_unregisterList.Add(obj);
-		tr::ReflectionHelper::AddRefInternal(obj);
+		//tr::ReflectionHelper::AddRefInternal(obj);
 	}
 
 	/// 同期
-	void Commit()
+	// 更新処理を呼ぶ前に実行する。更新スレッド用
+	void Commit(std::function<void(TRefObj* obj)> added, std::function<void(TRefObj* obj)> removed)
 	{
 		typename ObjectArray::iterator itr, end;
 
@@ -238,35 +240,62 @@ public:
 				typename ObjectArray::iterator pos = std::find(m_objectArray.begin(), m_objectArray.end(), (*itr));
 				if (pos != m_objectArray.end())
 				{
-					tr::ReflectionHelper::ReleaseInternal(*pos);	// m_unregisterList から外す分
-					tr::ReflectionHelper::ReleaseInternal(*pos);	// m_registerList から外す分
+					//tr::ReflectionHelper::ReleaseInternal(*pos);	// m_unregisterList から外す分
+					// 参照カウントはもうひとつ m_objectArray の分があるが、これはすぐ m_removingList に移すのでデクリメントしない
 					m_objectArray.erase(pos);
+					m_removingList.Add(*pos);
 				}
 			}
 			m_unregisterList.Clear();
 		}
+
+		// Check GC
+		{
+			itr = m_objectArray.begin();
+			end = m_objectArray.end();
+			for (; itr != end;)
+			{
+				// このリストからしか削除されていないものを削除して欲しいオブジェクトリストへ移す
+				if ((*itr)->GetReferenceCount() == 0 && tr::ReflectionHelper::GetInternalReferenceCount(*itr) == 1)
+				{
+					m_removingList.Add(*itr);
+					itr = m_objectArray.erase(itr);
+					end = m_objectArray.end();
+				}
+				else
+				{
+					++itr;
+				}
+			}
+		}
 	}
 
 	/// このリストからしか参照されていないオブジェクトを取り除きます。
-	// (メインスレッド以外から呼び出す用)
+	// (メインスレッドから呼び出す用)
 	void CollectGC()
 	{
 		MutexScopedLock lock(m_mutex);
 
-		typename ObjectArray::iterator itr = m_objectArray.begin();
-		typename ObjectArray::iterator end = m_objectArray.end();
-		for (; itr != end;)
+		for (TRefObj* obj : m_removingList)
 		{
-			if ((*itr)->GetReferenceCount() == 0)
-			{
-				tr::ReflectionHelper::ReleaseInternal(*itr);
-				itr = m_objectArray.erase(itr);
-				end = m_objectArray.end();
-			}
-			else {
-				++itr;
-			}
+			tr::ReflectionHelper::ReleaseInternal(obj);
 		}
+		m_removingList.Clear();
+
+		//typename ObjectArray::iterator itr = m_objectArray.begin();
+		//typename ObjectArray::iterator end = m_objectArray.end();
+		//for (; itr != end;)
+		//{
+		//	if ((*itr)->GetReferenceCount() == 0)
+		//	{
+		//		tr::ReflectionHelper::ReleaseInternal(*itr);
+		//		itr = m_objectArray.erase(itr);
+		//		end = m_objectArray.end();
+		//	}
+		//	else {
+		//		++itr;
+		//	}
+		//}
 	}
 
 	///// 追加予約中配列取得
@@ -302,6 +331,24 @@ public:
 		m_objectArray.Clear();
 	}
 };
+//
+//class IAutoChildManager
+//{
+//LN_PROTECTED_INTERNAL_ACCESS:
+//	virtual void 
+//};
 
+namespace detail {
+
+template<class TManager, class TObject>
+inline void SafeAutoAddChild(TManager* manager, TObject* obj)
+{
+	if (manager != nullptr)
+	{
+		manager->AutoAddChild(obj);
+	}
+}
+
+} // namespace detail
 
 LN_NAMESPACE_END

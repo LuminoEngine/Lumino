@@ -57,7 +57,6 @@ private:
 	List<RefPtr<RigidBody>>					m_rigidBodyListForMmd;
 	List<RefPtr<Joint>>						m_jointListForMmd;
 
-	MultiThreadingInFrameGCList<RigidBody>	m_rigidBodyList;
 };
 
 class PhysicsManager

@@ -3,6 +3,7 @@
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
+class PhysicsWorld;
 class BodyBase;
 namespace detail { class PhysicsWorldCore; }
 
@@ -32,6 +33,8 @@ public:
 	void* GetUserData() const { return m_userData; }
 
 LN_INTERNAL_ACCESS:
+	void SetOwnerWorld(PhysicsWorld* owner);
+	PhysicsWorld* GetOwnerWorld() const;
 	void ClearContactList() { m_contactList.Clear(); }
 	void AddContact(const ContactInfo& contact) { m_contactList.Add(contact); }
 
@@ -41,6 +44,7 @@ protected:
 	void Initialize(btCollisionObject* obj);
 
 private:
+	PhysicsWorld*			m_ownerWorld;
 	void*					m_userData;
 	ContactInfoList			m_contactList;
 };

@@ -13,7 +13,8 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(BodyBase, Object);
 
 //------------------------------------------------------------------------------
 BodyBase::BodyBase()
-	: m_userData(nullptr)
+	: m_ownerWorld(nullptr)
+	, m_userData(nullptr)
 	, m_contactList()
 {
 }
@@ -27,6 +28,18 @@ BodyBase::~BodyBase()
 void BodyBase::Initialize(btCollisionObject* obj)
 {
 	obj->setUserPointer(this);
+}
+
+//------------------------------------------------------------------------------
+void BodyBase::SetOwnerWorld(PhysicsWorld* owner)
+{
+	m_ownerWorld = owner;
+}
+
+//------------------------------------------------------------------------------
+PhysicsWorld* BodyBase::GetOwnerWorld() const
+{
+	return m_ownerWorld;
 }
 
 LN_NAMESPACE_END
