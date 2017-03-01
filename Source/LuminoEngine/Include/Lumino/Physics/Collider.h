@@ -21,16 +21,27 @@ class Collider
 	: public Object
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
-protected:
+
+public:
+
+	/** この Collider が衝突判定のためのトリガーであるかを設定します。初期値は false です。*/
+	void SetTrigger(bool enabled);
+
+	/** この Collider が衝突判定のためのトリガーであるかを取得します。*/
+	bool IsTrigger() const;
+
+LN_CONSTRUCT_ACCESS:
 	Collider();
 	virtual ~Collider();
 	void Initialize(btCollisionShape* shape);
 
 LN_INTERNAL_ACCESS:
-	btCollisionShape* GetBtCollisionShape() { return m_shape; }
+	btCollisionShape* GetBtCollisionShape() const { return m_shape; }
 		
 private:
 	btCollisionShape*	m_shape;
+	Matrix				m_offset;
+	bool				m_isTrigger;
 };
 
 /**

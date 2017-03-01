@@ -2,7 +2,7 @@
 #pragma once
 #include <Lumino/Reflection/ReflectionObject.h>
 
-
+class btTransform;
 class btDynamicsWorld;
 class  btDefaultCollisionConfiguration;
 class  btCollisionDispatcher;
@@ -13,6 +13,8 @@ class  btDiscreteDynamicsWorld;
 class btSoftRigidDynamicsWorld;
 class btCollisionShape;
 class btRigidBody;
+class btGhostObject;
+class btGhostPairCallback;
 class btTypedConstraint;
 class btTriangleIndexVertexArray;
 struct btSoftBodyWorldInfo;

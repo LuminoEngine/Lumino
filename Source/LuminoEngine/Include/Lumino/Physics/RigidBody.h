@@ -174,13 +174,22 @@ LN_INTERNAL_ACCESS:
 	uint16_t GetGroup() const { return m_data.Group; }
 	uint16_t GetGroupMask() const { return m_data.GroupMask; }
 
+	void RefreshRootBtShapes();
+	btCollisionShape* GetRootBtCollisionShape() const;
+	btCollisionObject* GetBtPrimaryObject() const;
+
 	/// シミュレーション直前更新処理 (メインスレッドから呼ばれる)
 	void SyncBeforeStepSimulation(PhysicsWorld* world);
 
 	/// シミュレーション直後更新処理 (メインまたは物理更新スレッドから呼ばれる)
 	void SyncAfterStepSimulation();
 
+	void SetTransformFromMotionState(const btTransform& transform);
+
 	void MarkMMDDynamic();
+
+
+	void OnRemovedFromWorld();
 
 private:
 	void CreateBtRigidBody();
@@ -194,16 +203,25 @@ private:
 		Modified_Mass = 0x0008,
 		Modified_ApplyForce = 0x0010,
 		Modified_RigidBodyConstraintFlags = 0x0020,
+		Modified_Colliders = 0x0040,
 		Modified_InitialUpdate = 0x8000,
 	};
 
 	struct KinematicMotionState;
+	class LocalGhostObject;
 
 	PhysicsWorld*				m_ownerWorld;
 
 
-	btRigidBody*				m_btRigidBody;
-	Collider*					m_collider;
+	btRigidBody*					m_btRigidBody;
+	std::shared_ptr<LocalGhostObject>	m_btGhostObject;
+	
+	List<RefPtr<Collider>>		m_colliders;
+	btCollisionShape*			m_rootBtCollisionShape;
+	btCollisionShape*			m_rootTriggerBtCollisionShape;
+	//bool						m_rootBtCollisionShapeStandalone;
+	//bool						m_rootTriggerBtCollisionShapeStandalone;
+
 	ConfigData					m_data;
 	RigidbodyConstraintFlags	m_constraintFlags;
 

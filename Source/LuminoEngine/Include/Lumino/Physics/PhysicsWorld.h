@@ -67,6 +67,7 @@ private:
 	btSequentialImpulseConstraintSolver*	m_btSolver;
 	btDiscreteDynamicsWorld*				m_btWorld;
 	//btSoftRigidDynamicsWorld*				m_btWorld;
+	btGhostPairCallback*					m_btGhostPairCallback;
 	btSoftBodyWorldInfo*					m_softBodyWorldInfo;
 	PhysicsDebugDrawer*						m_debugDrawer;
 

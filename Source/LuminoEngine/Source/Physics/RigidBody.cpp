@@ -1,5 +1,7 @@
 ﻿
 #include "Internal.h"
+#include <BulletCollision/CollisionShapes/btCollisionShape.h>
+#include <BulletCollision/CollisionDispatch/btGhostObject.h>
 #include <btBulletDynamicsCommon.h>
 #include <LinearMath/btMotionState.h>
 #include <Lumino/Physics/Collider.h>
@@ -11,7 +13,75 @@
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
+// SynchronizeMotionState
+//==============================================================================
+struct SynchronizeMotionState
+	: public btDefaultMotionState
+{
+	RigidBody*	m_owner;
+
+	SynchronizeMotionState(RigidBody* owner, const btTransform& startTrans = btTransform::getIdentity(), const btTransform& centerOfMassOffset = btTransform::getIdentity())
+		: btDefaultMotionState(startTrans, centerOfMassOffset)
+		, m_owner(owner)
+	{
+	}
+
+	virtual void setWorldTransform(const btTransform& centerOfMassWorldTrans) override
+	{
+		btDefaultMotionState::setWorldTransform(centerOfMassWorldTrans);
+		m_owner->SetTransformFromMotionState(centerOfMassWorldTrans);
+	}
+};
+
+//==============================================================================
+// LocalGhostObject
+//==============================================================================
+class RigidBody::LocalGhostObject : public btGhostObject
+{
+public:
+	RigidBody*	m_owner;
+
+	LocalGhostObject(RigidBody* owner)
+		: m_owner(owner)
+	{}
+
+	virtual ~LocalGhostObject()
+	{}
+
+	virtual void addOverlappingObjectInternal(btBroadphaseProxy* otherProxy, btBroadphaseProxy* thisProxy = 0) override
+	{
+		btCollisionObject* otherObject = (btCollisionObject*)otherProxy->m_clientObject;
+		btAssert(otherObject);
+		int index = m_overlappingObjects.findLinearSearch(otherObject);
+		if (index == m_overlappingObjects.size())
+		{
+			//not found
+			m_overlappingObjects.push_back(otherObject);
+
+			// TODO: 通知
+		}
+	}
+
+	virtual void removeOverlappingObjectInternal(btBroadphaseProxy* otherProxy, btDispatcher* dispatcher, btBroadphaseProxy* thisProxy = 0) override
+	{
+		btCollisionObject* otherObject = (btCollisionObject*)otherProxy->m_clientObject;
+		btAssert(otherObject);
+		int index = m_overlappingObjects.findLinearSearch(otherObject);
+		if (index < m_overlappingObjects.size())
+		{
+			m_overlappingObjects[index] = m_overlappingObjects[m_overlappingObjects.size() - 1];
+			m_overlappingObjects.pop_back();
+
+			// TODO: 通知
+		}
+	}
+};
+
+//==============================================================================
 // RigidBody
+/*
+	
+*/
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(RigidBody, Object);
 
@@ -29,7 +99,9 @@ RefPtr<RigidBody> RigidBody::Create(Collider* collider)
 RigidBody::RigidBody()
 	: Object()
 	, m_btRigidBody(nullptr)
-	, m_collider(nullptr)
+	, m_colliders()
+	, m_rootBtCollisionShape(nullptr)
+	, m_rootTriggerBtCollisionShape(nullptr)
 	, m_constraintFlags(RigidbodyConstraintFlags::None)
 	, m_modifiedFlags(Modified_None)
 {
@@ -42,7 +114,6 @@ RigidBody::~RigidBody()
 	{
 		btMotionState* state = m_btRigidBody->getMotionState();
 		LN_SAFE_DELETE(state);
-		LN_SAFE_RELEASE(m_collider);
 		LN_SAFE_DELETE(m_btRigidBody);
 	}
 }
@@ -51,7 +122,7 @@ RigidBody::~RigidBody()
 void RigidBody::Initialize(Collider* collider, const ConfigData& configData)
 {
 	LN_CHECK_ARG(collider != nullptr);
-	LN_REFOBJ_SET(m_collider, collider);
+	m_colliders.Add(collider);
 	m_data = configData;
 
 	m_modifiedFlags |= Modified_InitialUpdate;
@@ -62,7 +133,7 @@ void RigidBody::Initialize(Collider* collider, const ConfigData& configData)
 void RigidBody::InitializeCore(Collider* collider, const ConfigData& configData, float scale)
 {
 	LN_CHECK_ARG(collider != nullptr);
-	LN_REFOBJ_SET(m_collider, collider);
+	m_colliders.Add(collider);
 	m_data = configData;
 	m_data.Scale = scale;
 	m_modifiedFlags |= Modified_InitialUpdate;
@@ -228,7 +299,7 @@ void RigidBody::SetMass(float mass)
 {
 	m_data.Mass = mass;
 	btVector3 localInertia(0, 0, 0);
-	m_collider->GetBtCollisionShape()->calculateLocalInertia(m_data.Mass, localInertia);
+	GetRootBtCollisionShape()->calculateLocalInertia(m_data.Mass, localInertia);
 	m_modifiedFlags |= Modified_Mass;
 }
 
@@ -263,28 +334,64 @@ void RigidBody::ClearForces()
 {
 	m_modifiedFlags |= Modified_ClearForces;
 }
-	
+
+//------------------------------------------------------------------------------
+btCollisionShape* RigidBody::GetRootBtCollisionShape() const
+{
+	return m_rootBtCollisionShape;
+}
+
+//------------------------------------------------------------------------------
+btCollisionObject* RigidBody::GetBtPrimaryObject() const
+{
+	if (m_btRigidBody != nullptr) return m_btRigidBody;
+	if (m_btGhostObject != nullptr) return m_btGhostObject.get();
+	return nullptr;
+}
+
+//------------------------------------------------------------------------------
+void RigidBody::RefreshRootBtShapes()
+{
+	m_rootBtCollisionShape = nullptr;
+	m_rootTriggerBtCollisionShape = nullptr;
+	//m_rootBtCollisionShapeStandalone = false;
+	//m_rootTriggerBtCollisionShapeStandalone = false;
+
+	for (Collider* col : m_colliders)
+	{
+		if (col->IsTrigger())
+		{
+			if (m_rootTriggerBtCollisionShape == nullptr)
+			{
+				m_rootTriggerBtCollisionShape = col->GetBtCollisionShape();
+			}
+			else
+			{
+				// 2つ以上のトリガー Collider が見つかった
+				LN_NOTIMPLEMENTED();
+			}
+		}
+		else
+		{
+			if (m_rootBtCollisionShape == nullptr)
+			{
+				m_rootBtCollisionShape = col->GetBtCollisionShape();
+			}
+			else
+			{
+				// 2つ以上の非トリガー Collider が見つかった
+				LN_NOTIMPLEMENTED();
+			}
+		}
+	}
+}
+
 //------------------------------------------------------------------------------
 void RigidBody::SyncBeforeStepSimulation(PhysicsWorld* world)
 {
 	if ((m_modifiedFlags & Modified_InitialUpdate) != 0)
 	{
 		CreateBtRigidBody();
-	}
-
-	// RigidbodyConstraints
-	if ((m_modifiedFlags & Modified_RigidBodyConstraintFlags) != 0)
-	{
-		btVector3 liner(
-			m_constraintFlags.TestFlag(RigidbodyConstraintFlags::FreezePositionX) ? 0.0f : 1.0f,
-			m_constraintFlags.TestFlag(RigidbodyConstraintFlags::FreezePositionY) ? 0.0f : 1.0f,
-			m_constraintFlags.TestFlag(RigidbodyConstraintFlags::FreezePositionZ) ? 0.0f : 1.0f);
-		btVector3 angler(
-			m_constraintFlags.TestFlag(RigidbodyConstraintFlags::FreezeRotationX) ? 0.0f : 1.0f,
-			m_constraintFlags.TestFlag(RigidbodyConstraintFlags::FreezeRotationY) ? 0.0f : 1.0f,
-			m_constraintFlags.TestFlag(RigidbodyConstraintFlags::FreezeRotationZ) ? 0.0f : 1.0f);
-		m_btRigidBody->setLinearFactor(liner);
-		m_btRigidBody->setAngularFactor(angler);
 	}
 
 	// SetWorldTransform 要求
@@ -313,54 +420,78 @@ void RigidBody::SyncBeforeStepSimulation(PhysicsWorld* world)
 		*/
 		btTransform transform;
 		transform.setFromOpenGLMatrix((btScalar*)&m_data.InitialTransform);
-		m_btRigidBody->getMotionState()->setWorldTransform(transform);
-		m_btRigidBody->setWorldTransform(transform);
-	}
+		GetBtPrimaryObject()->setWorldTransform(transform);
 
-	// Mass
-	if ((m_modifiedFlags & Modified_Mass) != 0)
-	{
-		/* Bullet は StaticObject はシミュレーションから完全に除外している。
-		 * StaticObject でないものは World の m_nonStaticRigidBodies に追加されてシミュレーションの
-		 * 対象となるのだが、このリストに追加されるのは addRigidBody() された時のみ。
-		 * 後から StaticObject であるフラグが変更されても、再度 addRigidBody() しなければ
-		 * シミュレーションの対象とはならない。
-		 * ここでは、setMassProps() の前後でフラグ isStaticObject() が変わった場合、World に追加しなおしている。
-		 */
-		bool isStatic = m_btRigidBody->isStaticObject();
-		btVector3 inertia;
-		m_btRigidBody->getCollisionShape()->calculateLocalInertia(m_data.Mass, inertia);
-		m_btRigidBody->setMassProps(m_data.Mass, inertia);
-		if (isStatic != m_btRigidBody->isStaticObject())
+		if (m_btRigidBody != nullptr)
 		{
-			world->GetBtWorld()->removeRigidBody(m_btRigidBody);
-			world->GetBtWorld()->addRigidBody(m_btRigidBody);
+			m_btRigidBody->getMotionState()->setWorldTransform(transform);
 		}
 	}
 
-	// ClearForces 要求
-	if ((m_modifiedFlags & Modified_ClearForces) != 0)
+	if (m_btRigidBody != nullptr)
 	{
-		m_btRigidBody->setLinearVelocity(btVector3(0.0f, 0.0f, 0.0f));
-		m_btRigidBody->setAngularVelocity(btVector3(0.0f, 0.0f, 0.0f));
-		//m_btRigidBody->setInterpolationLinearVelocity(btVector3(0.0f, 0.0f, 0.0f));
-		//m_btRigidBody->setInterpolationAngularVelocity(btVector3(0.0f, 0.0f, 0.0f));
-		//m_btRigidBody->setInterpolationWorldTransform(m_btRigidBody->getCenterOfMassTransform());
-		m_btRigidBody->clearForces();
-	}
+		// RigidbodyConstraints
+		if ((m_modifiedFlags & Modified_RigidBodyConstraintFlags) != 0)
+		{
+			btVector3 liner(
+				m_constraintFlags.TestFlag(RigidbodyConstraintFlags::FreezePositionX) ? 0.0f : 1.0f,
+				m_constraintFlags.TestFlag(RigidbodyConstraintFlags::FreezePositionY) ? 0.0f : 1.0f,
+				m_constraintFlags.TestFlag(RigidbodyConstraintFlags::FreezePositionZ) ? 0.0f : 1.0f);
+			btVector3 angler(
+				m_constraintFlags.TestFlag(RigidbodyConstraintFlags::FreezeRotationX) ? 0.0f : 1.0f,
+				m_constraintFlags.TestFlag(RigidbodyConstraintFlags::FreezeRotationY) ? 0.0f : 1.0f,
+				m_constraintFlags.TestFlag(RigidbodyConstraintFlags::FreezeRotationZ) ? 0.0f : 1.0f);
+			m_btRigidBody->setLinearFactor(liner);
+			m_btRigidBody->setAngularFactor(angler);
+		}
 
-	// ApplyForce
-	if ((m_modifiedFlags & Modified_ApplyForce) != 0)
-	{
-		m_btRigidBody->applyForce(detail::BulletUtil::LNVector3ToBtVector3(m_appliedForce), btVector3(0,0,0));
-		m_appliedForce = Vector3::Zero;
+		// Mass
+		if ((m_modifiedFlags & Modified_Mass) != 0)
+		{
+			/* Bullet は StaticObject はシミュレーションから完全に除外している。
+			* StaticObject でないものは World の m_nonStaticRigidBodies に追加されてシミュレーションの
+			* 対象となるのだが、このリストに追加されるのは addRigidBody() された時のみ。
+			* 後から StaticObject であるフラグが変更されても、再度 addRigidBody() しなければ
+			* シミュレーションの対象とはならない。
+			* ここでは、setMassProps() の前後でフラグ isStaticObject() が変わった場合、World に追加しなおしている。
+			*/
+			bool isStatic = m_btRigidBody->isStaticObject();
+			btVector3 inertia;
+			m_btRigidBody->getCollisionShape()->calculateLocalInertia(m_data.Mass, inertia);
+			m_btRigidBody->setMassProps(m_data.Mass, inertia);
+
+
+			if (isStatic != m_btRigidBody->isStaticObject())
+			{
+				world->GetBtWorld()->removeRigidBody(m_btRigidBody);
+				world->GetBtWorld()->addRigidBody(m_btRigidBody);
+			}
+		}
+
+		// ClearForces 要求
+		if ((m_modifiedFlags & Modified_ClearForces) != 0)
+		{
+			m_btRigidBody->setLinearVelocity(btVector3(0.0f, 0.0f, 0.0f));
+			m_btRigidBody->setAngularVelocity(btVector3(0.0f, 0.0f, 0.0f));
+			//m_btRigidBody->setInterpolationLinearVelocity(btVector3(0.0f, 0.0f, 0.0f));
+			//m_btRigidBody->setInterpolationAngularVelocity(btVector3(0.0f, 0.0f, 0.0f));
+			//m_btRigidBody->setInterpolationWorldTransform(m_btRigidBody->getCenterOfMassTransform());
+			m_btRigidBody->clearForces();
+		}
+
+		// ApplyForce
+		if ((m_modifiedFlags & Modified_ApplyForce) != 0)
+		{
+			m_btRigidBody->applyForce(detail::BulletUtil::LNVector3ToBtVector3(m_appliedForce), btVector3(0, 0, 0));
+			m_appliedForce = Vector3::Zero;
+		}
+		//m_btRigidBody->applyImpulse
 	}
-	//m_btRigidBody->applyImpulse
 
 	// Activate 要求
 	if ((m_modifiedFlags & Modified_Activate) != 0)
 	{
-		m_btRigidBody->activate();
+		GetBtPrimaryObject()->activate();
 	}
 
 	m_modifiedFlags = Modified_None;
@@ -369,15 +500,28 @@ void RigidBody::SyncBeforeStepSimulation(PhysicsWorld* world)
 //------------------------------------------------------------------------------
 void RigidBody::SyncAfterStepSimulation()
 {
-	if (m_btRigidBody->isKinematicObject())
+	if (m_btRigidBody != nullptr)
 	{
-		// static オブジェクトなので受け取る必要はない
+		if (m_btRigidBody->isKinematicObject())
+		{
+			// static オブジェクトなので受け取る必要はない
+		}
+		else
+		{
+			btTransform transform;
+			m_btRigidBody->getMotionState()->getWorldTransform(transform);
+			transform.getOpenGLMatrix((btScalar*)&m_data.InitialTransform);
+		}
 	}
-	else
+}
+
+//------------------------------------------------------------------------------
+void RigidBody::SetTransformFromMotionState(const btTransform& transform)
+{
+	if (m_btGhostObject != nullptr)
 	{
-		btTransform transform;
-		m_btRigidBody->getMotionState()->getWorldTransform(transform);
-		transform.getOpenGLMatrix((btScalar*)&m_data.InitialTransform);
+		// トリガーオブジェクトの姿勢を transform(剛体) に同期する
+		m_btGhostObject->setWorldTransform(transform);
 	}
 }
 
@@ -387,82 +531,119 @@ void RigidBody::MarkMMDDynamic()
 }
 
 //------------------------------------------------------------------------------
+void RigidBody::OnRemovedFromWorld()
+{
+	// Bullet の World に追加するのは RigidBody クラスの役目なので、除外もここで行う。
+
+	if (m_btRigidBody != nullptr)
+	{
+		GetOwnerWorld()->GetBtWorld()->removeRigidBody(m_btRigidBody);
+	}
+	if (m_btGhostObject != nullptr)
+	{
+		GetOwnerWorld()->GetBtWorld()->removeCollisionObject(m_btGhostObject.get());
+	}
+}
+
+//------------------------------------------------------------------------------
 void RigidBody::CreateBtRigidBody()
 {
-	// 各初期プロパティ
-	float num = m_data.Mass * m_data.Scale;
-	float friction;
-	float hitFraction;
-	float linearDamping;
-	float angularDamping;
-	btVector3 localInertia(0.0f, 0.0f, 0.0f);
-	if (m_data.KinematicObject)
+	// Root btCollisionShape 検索
+	RefreshRootBtShapes();
+
+
+	if (GetRootBtCollisionShape() != nullptr)
 	{
-		num = 0.0f;
-		friction = m_data.Friction;
-		hitFraction = m_data.Restitution;
-		linearDamping = m_data.LinearDamping;
-		angularDamping = m_data.AngularDamping;
-	}
-	else
-	{
-		m_collider->GetBtCollisionShape()->calculateLocalInertia(num, localInertia);
-		friction = m_data.Friction;
-		hitFraction = m_data.Restitution;
-		linearDamping = m_data.LinearDamping;
-		angularDamping = m_data.AngularDamping;
+		// 各初期プロパティ
+		float num = m_data.Mass * m_data.Scale;
+		float friction;
+		float hitFraction;
+		float linearDamping;
+		float angularDamping;
+		btVector3 localInertia(0.0f, 0.0f, 0.0f);
+		if (m_data.KinematicObject)
+		{
+			num = 0.0f;
+			friction = m_data.Friction;
+			hitFraction = m_data.Restitution;
+			linearDamping = m_data.LinearDamping;
+			angularDamping = m_data.AngularDamping;
+		}
+		else
+		{
+			GetRootBtCollisionShape()->calculateLocalInertia(num, localInertia);
+			friction = m_data.Friction;
+			hitFraction = m_data.Restitution;
+			linearDamping = m_data.LinearDamping;
+			angularDamping = m_data.AngularDamping;
+		}
+
+		// 初期姿勢と MotionState
+		btTransform initialTransform;
+		//if (configData.InitialTransform != nullptr)
+		{
+			initialTransform.setFromOpenGLMatrix((const btScalar*)&m_data.InitialTransform);
+			initialTransform.getOrigin().setX(initialTransform.getOrigin().x() * m_data.Scale);
+			initialTransform.getOrigin().setY(initialTransform.getOrigin().y() * m_data.Scale);
+			initialTransform.getOrigin().setZ(initialTransform.getOrigin().z() * m_data.Scale);
+		}
+		//else {
+		//	initialTransform.setIdentity();
+		//}
+		btMotionState* motionState;
+		if (m_data.KinematicObject)
+		{
+			motionState = new SynchronizeMotionState(this, initialTransform/*initialTransformMatrix * Matrix.Translation(frame.Bone.Position * scale)*/);
+		}
+		else
+		{
+			//motionState = new DefaultMotionState(Matrix.Invert(rigid.BoneLocalPosition) * Matrix.Translation(frame.Bone.Position) * frame.CombinedMatrix);
+			motionState = new SynchronizeMotionState(this, initialTransform/*initialTransformMatrix * Matrix.Translation(frame.Bone.Position * scale)*/);
+		}
+
+		// RigidBody 作成
+		btRigidBody::btRigidBodyConstructionInfo bodyInfo(num, motionState, GetRootBtCollisionShape(), localInertia);
+		bodyInfo.m_linearDamping = m_data.LinearDamping;	// 移動減
+		bodyInfo.m_angularDamping = m_data.AngularDamping;	// 回転減
+		bodyInfo.m_restitution = m_data.Restitution;	    // 反発力
+		bodyInfo.m_friction = m_data.Friction;				// 摩擦力
+		bodyInfo.m_additionalDamping = m_data.AdditionalDamping;
+		m_btRigidBody = new btRigidBody(bodyInfo);
+
+		if (m_data.KinematicObject)
+		{
+			// CF_KINEMATIC_OBJECT と DISABLE_DEACTIVATION はセット。決まり事。
+			// http://bulletjpn.web.fc2.com/07_RigidBodyDynamics.html
+			m_btRigidBody->setCollisionFlags( /*m_btRigidBody->getCollisionFlags() | */btCollisionObject::CF_KINEMATIC_OBJECT);
+			m_btRigidBody->setActivationState( /*m_btRigidBody->getActivationState() | */DISABLE_DEACTIVATION);
+		}
+		else
+		{
+			m_btRigidBody->setActivationState( /*m_btRigidBody->getActivationState() | */DISABLE_DEACTIVATION);
+		}
+		m_btRigidBody->setSleepingThresholds(0.0f, 0.0f);
+
+		m_modifiedFlags = Modified_Activate;
+
+		//BodyBase::Initialize(m_btRigidBody);
+
+		GetOwnerWorld()->GetBtWorld()->addRigidBody(GetBtRigidBody(), GetGroup(), GetGroupMask());
 	}
 
-	// 初期姿勢と MotionState
-	btTransform initialTransform;
-	//if (configData.InitialTransform != nullptr)
+	// Collision Trigger
 	{
-		initialTransform.setFromOpenGLMatrix((const btScalar*)&m_data.InitialTransform);
-		initialTransform.getOrigin().setX(initialTransform.getOrigin().x() * m_data.Scale);
-		initialTransform.getOrigin().setY(initialTransform.getOrigin().y() * m_data.Scale);
-		initialTransform.getOrigin().setZ(initialTransform.getOrigin().z() * m_data.Scale);
-	}
-	//else {
-	//	initialTransform.setIdentity();
-	//}
-	btMotionState* motionState;
-	if (m_data.KinematicObject)
-	{
-		motionState = new btDefaultMotionState(initialTransform/*initialTransformMatrix * Matrix.Translation(frame.Bone.Position * scale)*/);
-	}
-	else
-	{
-		//motionState = new DefaultMotionState(Matrix.Invert(rigid.BoneLocalPosition) * Matrix.Translation(frame.Bone.Position) * frame.CombinedMatrix);
-		motionState = new btDefaultMotionState(initialTransform/*initialTransformMatrix * Matrix.Translation(frame.Bone.Position * scale)*/);
-	}
+		m_btGhostObject = nullptr;
+		if (m_rootTriggerBtCollisionShape != nullptr)
+		{
+			m_btGhostObject = std::make_shared<LocalGhostObject>(this);
+			m_btGhostObject->setCollisionShape(m_rootTriggerBtCollisionShape);
 
-	// RigidBody 作成
-	btRigidBody::btRigidBodyConstructionInfo bodyInfo(num, motionState, m_collider->GetBtCollisionShape(), localInertia);
-	bodyInfo.m_linearDamping = m_data.LinearDamping;	// 移動減
-	bodyInfo.m_angularDamping = m_data.AngularDamping;	// 回転減
-	bodyInfo.m_restitution = m_data.Restitution;	    // 反発力
-	bodyInfo.m_friction = m_data.Friction;				// 摩擦力
-	bodyInfo.m_additionalDamping = m_data.AdditionalDamping;
-	m_btRigidBody = new btRigidBody(bodyInfo);
+			// 他のオブジェクトと物理シミュレーションで接触しないことを示す (すり抜ける)
+			m_btGhostObject->setCollisionFlags(m_btGhostObject->getCollisionFlags() & ~btCollisionObject::CF_NO_CONTACT_RESPONSE);
 
-	if (m_data.KinematicObject)
-	{
-		// CF_KINEMATIC_OBJECT と DISABLE_DEACTIVATION はセット。決まり事。
-		// http://bulletjpn.web.fc2.com/07_RigidBodyDynamics.html
-		m_btRigidBody->setCollisionFlags( /*m_btRigidBody->getCollisionFlags() | */btCollisionObject::CF_KINEMATIC_OBJECT);
-		m_btRigidBody->setActivationState( /*m_btRigidBody->getActivationState() | */DISABLE_DEACTIVATION);
+			GetOwnerWorld()->GetBtWorld()->addCollisionObject(m_btGhostObject.get()/*, GetGroup(), GetGroupMask()*/);
+		}
 	}
-	else
-	{
-		m_btRigidBody->setActivationState( /*m_btRigidBody->getActivationState() | */DISABLE_DEACTIVATION);
-	}
-	m_btRigidBody->setSleepingThresholds(0.0f, 0.0f);
-
-	m_modifiedFlags = Modified_Activate;
-
-	//BodyBase::Initialize(m_btRigidBody);
-
-	GetOwnerWorld()->GetBtWorld()->addRigidBody(GetBtRigidBody(), GetGroup(), GetGroupMask());
 }
 
 LN_NAMESPACE_END

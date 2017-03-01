@@ -17,6 +17,8 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Collider, Object);
 //------------------------------------------------------------------------------
 Collider::Collider()
 	: m_shape(nullptr)
+	, m_offset()
+	, m_isTrigger(false)
 {
 }
 
@@ -30,6 +32,18 @@ Collider::~Collider()
 void Collider::Initialize(btCollisionShape* shape)
 {
 	m_shape = shape;
+}
+
+//------------------------------------------------------------------------------
+void Collider::SetTrigger(bool enabled)
+{
+	m_isTrigger = enabled;
+}
+
+//------------------------------------------------------------------------------
+bool Collider::IsTrigger() const
+{
+	return m_isTrigger;
 }
 
 //==============================================================================

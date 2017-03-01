@@ -9,6 +9,7 @@
 #include <BulletSoftBody/btSoftBodyRigidBodyCollisionConfiguration.h>
 #include <BulletMultiThreaded/SpuGatheringCollisionDispatcher.h>
 #include <BulletCollision/CollisionDispatch/btSimulationIslandManager.h>
+#include <BulletCollision/CollisionDispatch/btGhostObject.h>
 // Win32
 //#include <BulletMultiThreaded/Win32ThreadSupport.h>
 //#include <BulletMultiThreaded/SpuNarrowPhaseCollisionTask/SpuGatheringCollisionTask.h>
@@ -98,6 +99,7 @@ PhysicsWorld::~PhysicsWorld()
 	GCPhysicsObjects();
 
 	LN_SAFE_DELETE(m_softBodyWorldInfo);
+	LN_SAFE_DELETE(m_btGhostPairCallback);
 	LN_SAFE_DELETE(m_btWorld);
 	LN_SAFE_DELETE(m_debugDrawer);
 	LN_SAFE_DELETE(m_btSolver);
@@ -188,6 +190,11 @@ void PhysicsWorld::Initialize()
 	// 重力		TODO: 初期値
 	m_btWorld->setGravity(btVector3(0.0f, -9.81f, 0.0f));
 
+
+	m_btGhostPairCallback = new btGhostPairCallback();
+	m_btWorld->getPairCache()->setInternalGhostPairCallback(m_btGhostPairCallback);
+
+
 	m_softBodyWorldInfo = new btSoftBodyWorldInfo();
 	m_softBodyWorldInfo->air_density = 1.2f;
 	m_softBodyWorldInfo->water_density = 0;
@@ -273,7 +280,7 @@ void PhysicsWorld::GCPhysicsObjects()
 	{
 		if ((*itr)->GetReferenceCount() == 1)
 		{
-			m_btWorld->removeRigidBody((*itr)->GetBtRigidBody());
+			(*itr)->OnRemovedFromWorld();
 			itr = m_rigidBodyListForMmd.erase(itr);
 		}
 		else
