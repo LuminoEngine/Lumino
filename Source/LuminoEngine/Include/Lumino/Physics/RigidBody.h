@@ -6,9 +6,44 @@
 LN_NAMESPACE_BEGIN
 class Collider;
 
+LN_ENUM_FLAGS(RigidbodyConstraintFlags)
+{
+	/** 制限なし */
+	None			= 0x0000,
+
+	/** X 軸の移動をさせない */
+	FreezePositionX = 0x0001,
+
+	/** Y 軸の移動をさせない */
+	FreezePositionY = 0x0002,
+
+	/** Z 軸の移動をさせない */
+	FreezePositionZ = 0x0004,
+
+	/** X 軸の回転をさせない */
+	FreezeRotationX = 0x0010,
+
+	/** Y 軸の回転をさせない */
+	FreezeRotationY = 0x0020,
+
+	/** Z 軸の回転をさせない */
+	FreezeRotationZ = 0x0040,
+
+	/** 移動させない */
+	FreezePosition	= 0x0007,
+
+	/** 回転させない */
+	FreezeRotation	= 0x0070,
+
+	/** 移動と回転をさせない */
+	FreezeAll		= 0x0077,
+
+};
+LN_ENUM_FLAGS_DECLARE(RigidbodyConstraintFlags);
+
 /// 剛体のクラス
 class RigidBody
-    : public BodyBase
+    : public Object
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
@@ -63,6 +98,9 @@ public:
 	void SetAngularVelocity(const Vector3& velocity);
 
 
+	/** 物理演算による各軸への影響を受けるかどうかを設定します。*/
+	void SetConstraints(RigidbodyConstraintFlags flags);
+
 #if 0
 	/// 回転の設定
 	void setRotation( const Quaternion& rotation );
@@ -94,7 +132,6 @@ public:
 
 	void SetMass(float mass);
 
-	void SetConstraintFlags(RigidBodyConstraintFlags flags);
 
 	void ApplyForce(const Vector3& force);
 
@@ -131,6 +168,8 @@ LN_INTERNAL_ACCESS:
 	///		shape		: (BodyBase  削除時に delete される)
 	void InitializeCore(Collider* collider, const ConfigData& configData, float scale);
 
+	void SetOwnerWorld(PhysicsWorld* owner);
+	PhysicsWorld* GetOwnerWorld() const;
 	btRigidBody* GetBtRigidBody() { return m_btRigidBody; }
 	uint16_t GetGroup() const { return m_data.Group; }
 	uint16_t GetGroupMask() const { return m_data.GroupMask; }
@@ -160,14 +199,17 @@ private:
 
 	struct KinematicMotionState;
 
-	btRigidBody*			m_btRigidBody;
-	Collider*				m_collider;
-	ConfigData				m_data;
+	PhysicsWorld*				m_ownerWorld;
 
-	Vector3					m_appliedForce;
-	RigidBodyConstraintFlags	m_rigidBodyConstraintFlags;
 
-	uint32_t				m_modifiedFlags;
+	btRigidBody*				m_btRigidBody;
+	Collider*					m_collider;
+	ConfigData					m_data;
+	RigidbodyConstraintFlags	m_constraintFlags;
+
+	Vector3						m_appliedForce;
+
+	uint32_t					m_modifiedFlags;
 };
 
 LN_NAMESPACE_END

@@ -13,7 +13,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // RigidBody
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(RigidBody, BodyBase);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(RigidBody, Object);
 
 //------------------------------------------------------------------------------
 RefPtr<RigidBody> RigidBody::Create(Collider* collider)
@@ -27,10 +27,10 @@ RefPtr<RigidBody> RigidBody::Create(Collider* collider)
 
 //------------------------------------------------------------------------------
 RigidBody::RigidBody()
-	: BodyBase()
+	: Object()
 	, m_btRigidBody(nullptr)
 	, m_collider(nullptr)
-	, m_rigidBodyConstraintFlags(RigidBodyConstraintFlags::None)
+	, m_constraintFlags(RigidbodyConstraintFlags::None)
 	, m_modifiedFlags(Modified_None)
 {
 }
@@ -66,8 +66,20 @@ void RigidBody::InitializeCore(Collider* collider, const ConfigData& configData,
 	m_data = configData;
 	m_data.Scale = scale;
 	m_modifiedFlags |= Modified_InitialUpdate;
-	//CreateBtRigidBody();
 }
+
+//------------------------------------------------------------------------------
+void RigidBody::SetOwnerWorld(PhysicsWorld* owner)
+{
+	m_ownerWorld = owner;
+}
+
+//------------------------------------------------------------------------------
+PhysicsWorld* RigidBody::GetOwnerWorld() const
+{
+	return m_ownerWorld;
+}
+
 //------------------------------------------------------------------------------
 void RigidBody::SetPosition(const Vector3& position)
 {
@@ -103,13 +115,22 @@ void RigidBody::SetPosition(float x, float y, float z)
 //------------------------------------------------------------------------------
 void RigidBody::SetLinearVelocity(const Vector3& velocity)
 {
+	// TODO: m_btRigidBody ここで参照しない
 	m_btRigidBody->setLinearVelocity(detail::BulletUtil::LNVector3ToBtVector3(velocity));
 }
 
 //------------------------------------------------------------------------------
 void RigidBody::SetAngularVelocity(const Vector3& velocity)
 {
+	// TODO: m_btRigidBody ここで参照しない
 	m_btRigidBody->setAngularVelocity(detail::BulletUtil::LNVector3ToBtVector3(velocity));
+}
+
+//------------------------------------------------------------------------------
+void RigidBody::SetConstraints(RigidbodyConstraintFlags flags)
+{
+	m_constraintFlags = flags;
+	m_modifiedFlags |= Modified_RigidBodyConstraintFlags;
 }
 
 
@@ -212,13 +233,6 @@ void RigidBody::SetMass(float mass)
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::SetConstraintFlags(RigidBodyConstraintFlags flags)
-{
-	m_rigidBodyConstraintFlags = flags;
-	m_modifiedFlags |= Modified_RigidBodyConstraintFlags;
-}
-
-//------------------------------------------------------------------------------
 void RigidBody::ApplyForce(const Vector3& force)
 {
 	m_appliedForce += force;	// 次のシミュレーションまでの力を総和したい
@@ -258,19 +272,19 @@ void RigidBody::SyncBeforeStepSimulation(PhysicsWorld* world)
 		CreateBtRigidBody();
 	}
 
-	// RigidBodyConstraintFlags
+	// RigidbodyConstraints
 	if ((m_modifiedFlags & Modified_RigidBodyConstraintFlags) != 0)
 	{
-		btVector3 linearFactor(1.0f, 1.0f, 1.0f);
-		btVector3 angularFactor(1.0f, 1.0f, 1.0f);
-		if (m_rigidBodyConstraintFlags.TestFlag(RigidBodyConstraintFlags::FreezePositionX)) linearFactor.setX(0.0f);
-		if (m_rigidBodyConstraintFlags.TestFlag(RigidBodyConstraintFlags::FreezePositionY)) linearFactor.setY(0.0f);
-		if (m_rigidBodyConstraintFlags.TestFlag(RigidBodyConstraintFlags::FreezePositionZ)) linearFactor.setZ(0.0f);
-		if (m_rigidBodyConstraintFlags.TestFlag(RigidBodyConstraintFlags::FreezeRotationX)) angularFactor.setX(0.0f);
-		if (m_rigidBodyConstraintFlags.TestFlag(RigidBodyConstraintFlags::FreezeRotationY)) angularFactor.setY(0.0f);
-		if (m_rigidBodyConstraintFlags.TestFlag(RigidBodyConstraintFlags::FreezeRotationZ)) angularFactor.setZ(0.0f);
-		m_btRigidBody->setLinearFactor(linearFactor);
-		m_btRigidBody->setAngularFactor(angularFactor);
+		btVector3 liner(
+			m_constraintFlags.TestFlag(RigidbodyConstraintFlags::FreezePositionX) ? 0.0f : 1.0f,
+			m_constraintFlags.TestFlag(RigidbodyConstraintFlags::FreezePositionY) ? 0.0f : 1.0f,
+			m_constraintFlags.TestFlag(RigidbodyConstraintFlags::FreezePositionZ) ? 0.0f : 1.0f);
+		btVector3 angler(
+			m_constraintFlags.TestFlag(RigidbodyConstraintFlags::FreezeRotationX) ? 0.0f : 1.0f,
+			m_constraintFlags.TestFlag(RigidbodyConstraintFlags::FreezeRotationY) ? 0.0f : 1.0f,
+			m_constraintFlags.TestFlag(RigidbodyConstraintFlags::FreezeRotationZ) ? 0.0f : 1.0f);
+		m_btRigidBody->setLinearFactor(liner);
+		m_btRigidBody->setAngularFactor(angler);
 	}
 
 	// SetWorldTransform 要求
@@ -446,7 +460,7 @@ void RigidBody::CreateBtRigidBody()
 
 	m_modifiedFlags = Modified_Activate;
 
-	BodyBase::Initialize(m_btRigidBody);
+	//BodyBase::Initialize(m_btRigidBody);
 
 	GetOwnerWorld()->GetBtWorld()->addRigidBody(GetBtRigidBody(), GetGroup(), GetGroupMask());
 }

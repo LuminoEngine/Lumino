@@ -1,4 +1,5 @@
 ﻿
+#if 0
 #include "../Internal.h"
 #include <btBulletDynamicsCommon.h>
 #include <Lumino/Physics/BodyBase.h>
@@ -43,3 +44,4 @@ PhysicsWorld* BodyBase::GetOwnerWorld() const
 }
 
 LN_NAMESPACE_END
+#endif

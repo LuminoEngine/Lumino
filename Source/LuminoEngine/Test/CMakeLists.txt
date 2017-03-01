@@ -10,6 +10,7 @@ set(LN_TEST_SOURCES
 	UnitTest/Base/Test_Base_Version.cpp
 	UnitTest/IO/Test_IO_ArchiveMaker.cpp
 	UnitTest/IO/Test_IO_ASync.cpp
+	UnitTest/Physics/Test_Physics_3D.cpp
 	UnitTest/Platform/Test_Platform_Clipboard.cpp
 	UnitTest/Imaging/Test_Imaging_Bitmap.cpp
 	UnitTest/Graphics/Test_Graphics.cpp

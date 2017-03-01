@@ -551,6 +551,11 @@ void Main()
 	auto col2 = PlaneCollider::Create();
 	auto body2 = RigidBody::Create(col2);
 	body2->SetMass(0.0f);
+
+	auto col3 = CapsuleCollider::Create(1, 2);
+	auto body3 = RigidBody::Create(col3);
+	body3->SetPosition(0, -10, 0);
+	body3->SetConstraints(RigidbodyConstraintFlags::FreezeRotation);
 #endif
 
 	while (!Engine::IsEndRequested())

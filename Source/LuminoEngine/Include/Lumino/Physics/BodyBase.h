@@ -1,5 +1,7 @@
 ﻿
 #pragma once
+
+#if 0
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
@@ -49,3 +51,4 @@ private:
 };
 
 LN_NAMESPACE_END
+#endif
