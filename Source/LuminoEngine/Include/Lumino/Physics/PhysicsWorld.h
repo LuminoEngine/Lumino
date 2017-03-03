@@ -3,17 +3,8 @@
 #include "../MultiThreadingObjectList.h"
 #include "Common.h"
 
-class btDefaultCollisionConfiguration;
-class btCollisionDispatcher;
-class btDbvtBroadphase;
-//class btAxisSweep3;
-class btSequentialImpulseConstraintSolver;
-class btDiscreteDynamicsWorld;
-//class btSoftRigidDynamicsWorld;
-class btSoftBodyWorldInfo;
-
 LN_NAMESPACE_BEGIN
-class RigidBody;
+class PhysicsObject;
 class Joint;
 class PhysicsDebugDrawer;
 
@@ -49,12 +40,13 @@ LN_INTERNAL_ACCESS:
 	void StepSimulation(float elapsedTime);
 	void DrawDebugShapes(IDebugRenderer* renderer);
 
-	void AddRigidBody(RigidBody* rigidBody);
+	void AddPhysicsObject(PhysicsObject* physicsObject);
 	void AddJoint(Joint* joint);
+	void RemovePhysicsObject(PhysicsObject* physicsObject);
 	void GCPhysicsObjects();
 
 	// AutoAdd interface
-	void AutoAddChild(RigidBody* child);
+	//void AutoAddChild(RigidBody* child);
 
 private:
 	//RefPtr<detail::PhysicsWorldCore>		m_impl;
@@ -71,8 +63,8 @@ private:
 	btSoftBodyWorldInfo*					m_softBodyWorldInfo;
 	PhysicsDebugDrawer*						m_debugDrawer;
 
-	List<RefPtr<RigidBody>>					m_rigidBodyListForMmd;
-	List<RefPtr<Joint>>						m_jointListForMmd;
+	List<RefPtr<PhysicsObject>>				m_physicsObjectList;
+	List<RefPtr<Joint>>						m_jointList;
 };
 
 LN_NAMESPACE_END

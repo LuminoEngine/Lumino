@@ -2,7 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/Mesh/Mesh.h>
 #include <Lumino/Mesh/SkinnedMeshModel.h>
-#include <Lumino/Physics/Collider.h>	// TODO: MMD でのみ必要
+#include <Lumino/Physics/CollisionShape.h>	// TODO: MMD でのみ必要
 #include <Lumino/Physics/RigidBody.h>	// TODO: MMD でのみ必要
 #include <Lumino/Physics/Joint.h>	// TODO: MMD でのみ必要
 #include <Lumino/Physics/PhysicsWorld.h>	// TODO: MMD でのみ必要
@@ -615,19 +615,19 @@ void MmdSkinnedMeshRigidBody::Initialize(SkinnedMeshModel* ownerModel, PmxRigidB
 	}
 
 	// 衝突判定形状
-	ColliderPtr collider;
+	CollisionShapePtr collider;
 	switch (rigidBodyResource->ColShapeData.Type)
 	{
 		case CollisionShapeType_Sphere:
 		{
-			auto c = SphereColliderPtr::MakeRef();
+			auto c = SphereCollisionShapePtr::MakeRef();
 			c->Initialize(m_resource->ColShapeData.Sphere.Radius * scale);
 			collider = c;
 			break;
 		}
 		case CollisionShapeType_Box:
 		{
-			auto c= BoxColliderPtr::MakeRef();
+			auto c = BoxCollisionShapePtr::MakeRef();
 			Vector3 size(m_resource->ColShapeData.Box.Width * scale, m_resource->ColShapeData.Box.Height * scale, m_resource->ColShapeData.Box.Depth * scale);
 			size *= 2.0f;
 			c->Initialize(size);
@@ -636,7 +636,7 @@ void MmdSkinnedMeshRigidBody::Initialize(SkinnedMeshModel* ownerModel, PmxRigidB
 		}
 		case CollisionShapeType_Capsule:
 		{
-			auto c = CapsuleColliderPtr::MakeRef();
+			auto c = CapsuleCollisionShapePtr::MakeRef();
 			c->Initialize(m_resource->ColShapeData.Capsule.Radius * scale, m_resource->ColShapeData.Capsule.Height * scale);
 			collider = c;
 			break;
@@ -684,7 +684,7 @@ void MmdSkinnedMeshRigidBody::Initialize(SkinnedMeshModel* ownerModel, PmxRigidB
 
 	m_rigidBody = RefPtr<RigidBody>::MakeRef();
 	m_rigidBody->InitializeCore(collider, data, scale);
-	ownerModel->m_physicsWorld->AddRigidBody(m_rigidBody);
+	ownerModel->m_physicsWorld->AddPhysicsObject(m_rigidBody);
 }
 
 //------------------------------------------------------------------------------

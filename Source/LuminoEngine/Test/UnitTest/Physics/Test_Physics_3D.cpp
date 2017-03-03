@@ -1,4 +1,4 @@
-#include <TestConfig.h>
+﻿#include <TestConfig.h>
 
 class Test_Physics_3D : public ::testing::Test
 {
@@ -10,12 +10,12 @@ protected:
 //------------------------------------------------------------------------------
 TEST_F(Test_Physics_3D, Basic)
 {
-	// <Test> �n�ʂ������̂ŉ��̂ق��֗����Ă���
+	// <Test> 地面が無いので下のほうへ落ちていく
 	{
-		//auto col1 = BoxCollider::Create(1, 2, 3);
-		//auto body1 = RigidBody::Create(col1);
-		//for (int i = 0; i < 10; i++) Engine::Update();
-		//ASSERT_EQ(true, body1->GetWorldTransform().GetPosition().y < 1);
+		auto shape1 = BoxCollisionShape::Create(1, 2, 3);
+		auto body1 = RigidBody::Create(shape1);
+		for (int i = 0; i < 10; i++) Engine::Update();
+		ASSERT_EQ(true, body1->GetWorldTransform().GetPosition().y < 0);
 	}
 }
 
@@ -24,16 +24,64 @@ TEST_F(Test_Physics_3D, TriggerCollider)
 {
 	// <Test> 
 	{
-		//auto col1 = BoxCollider::Create(1, 1, 1);
-		//col1->SetTrigger(true);
-		//auto col2 = BoxCollider::Create(1, 1, 1);
-		//col2->SetTrigger(true);
-		//auto body1 = RigidBody::Create(col1);
-		//auto body2 = RigidBody::Create(col2);
+		auto col1 = BoxCollisionShape::Create(1, 1, 1);
+		auto col2 = BoxCollisionShape::Create(1, 1, 1);
+		auto body1 = Collider::Create(col1);
+		auto body2 = Collider::Create(col2);
+		body1->SetTrigger(true);
+		body2->SetTrigger(true);
 
-		//Engine::Update();
+		int count1 = 0;
+		int count2 = 0;
+		int count3 = 0;
+		body1->ConnectOnTriggerEnter([&count1](PhysicsObject* obj) { count1++; });
+		body2->ConnectOnTriggerEnter([&count1](PhysicsObject* obj) { count1++; });
+		body1->ConnectOnTriggerStay([&count2](PhysicsObject* obj) { count2++; });
+		body2->ConnectOnTriggerStay([&count2](PhysicsObject* obj) { count2++; });
+		body1->ConnectOnTriggerLeave([&count3](PhysicsObject* obj) { count3++; });
+		body2->ConnectOnTriggerLeave([&count3](PhysicsObject* obj) { count3++; });
 
-		//for (int i = 0; i < 10; i++) 
-		//ASSERT_EQ(true, body1->GetWorldTransform().GetPosition().y < 1);
+		for (int i = 0; i < 10; i++) Engine::Update();
+
+		body1->GetOwnerWorld()->RemovePhysicsObject(body1);
+		body2->GetOwnerWorld()->RemovePhysicsObject(body2);
+
+		ASSERT_EQ(true, body1->GetTransform().IsIdentity());
+		ASSERT_EQ(true, body2->GetTransform().IsIdentity());
+
+		ASSERT_EQ(2, count1);	// 2回の接触開始
+		ASSERT_EQ(20, count2);	// 相互に10フレーム接触し続ける
+		ASSERT_EQ(2, count3);	// 2回の接触終了
+	}
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Physics_3D, MeshCollisionShape)
+{
+	// <Test> YZ 平面で X+ 向きの 四角形 MeshSphere に、左右から剛体をぶつける → 裏表に関係なく、双方に跳ね返る
+	{
+		auto mesh = MeshResource::Create();
+		mesh->AddSquare(
+			Vertex{ Vector3(0, 10, -10) },
+			Vertex{ Vector3(0, -10, -10) },
+			Vertex{ Vector3(0, -10, 10) },
+			Vertex{ Vector3(0, 10, 10) });
+
+		auto s1 = MeshCollisionShape::Create(mesh);
+		auto b1 = Collider::Create(s1);
+
+		auto s2 = BoxCollisionShape::Create(1, 1, 1);
+		auto b2 = RigidBody::Create(s2);
+		b2->SetPosition(3, 0, 5);
+		b2->ApplyImpulse(Vector3(-10, 0, 0));
+
+		auto b3 = RigidBody::Create(s2);
+		b3->SetPosition(-3, 0, -5);
+		b3->ApplyImpulse(Vector3(10, 0, 0));
+
+		for (int i = 0; i < 60; i++)  Engine::Update();
+
+		ASSERT_EQ(true, b2->GetWorldTransform().GetPosition().x > 0);
+		ASSERT_EQ(true, b3->GetWorldTransform().GetPosition().x < 0);
 	}
 }

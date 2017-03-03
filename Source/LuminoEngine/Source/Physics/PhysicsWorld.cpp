@@ -216,9 +216,11 @@ void PhysicsWorld::SetGravity(const Vector3& gravity)
 //------------------------------------------------------------------------------
 void PhysicsWorld::StepSimulation(float elapsedTime)
 {
-	for (RigidBody* body : m_rigidBodyListForMmd)
+	GCPhysicsObjects();
+
+	for (PhysicsObject* obj : m_physicsObjectList)
 	{
-		body->SyncBeforeStepSimulation(this);
+		obj->OnBeforeStepSimulation();
 	}
 
 	const float internalUnit = 1.0f / 60.0f;
@@ -239,9 +241,9 @@ void PhysicsWorld::StepSimulation(float elapsedTime)
 	//	b->SyncAfterStepSimulation();
 	//}
 
-	for (RigidBody* body : m_rigidBodyListForMmd)
+	for (PhysicsObject* obj : m_physicsObjectList)
 	{
-		body->SyncAfterStepSimulation();
+		obj->OnAfterStepSimulation();
 	}
 
 	GCPhysicsObjects();
@@ -256,32 +258,47 @@ void PhysicsWorld::DrawDebugShapes(IDebugRenderer* renderer)
 }
 
 //------------------------------------------------------------------------------
-void PhysicsWorld::AddRigidBody(RigidBody* rigidBody)
+void PhysicsWorld::AddPhysicsObject(PhysicsObject* physicsObject)
 {
-	LN_ASSERT(rigidBody != nullptr);
-	m_rigidBodyListForMmd.Add(rigidBody);
-	rigidBody->SetOwnerWorld(this);
-	//m_btWorld->addRigidBody(rigidBody->GetBtRigidBody(), rigidBody->GetGroup(), rigidBody->GetGroupMask());
+	LN_FAIL_CHECK_ARG(physicsObject != nullptr) return;
+
+	// 別のワールドに属していれば除外する
+	if (physicsObject->GetOwnerWorld() != nullptr)
+		physicsObject->GetOwnerWorld()->RemovePhysicsObject(physicsObject);
+
+	m_physicsObjectList.Add(physicsObject);
+	physicsObject->SetOwnerWorld(this);
 }
 
 //------------------------------------------------------------------------------
 void PhysicsWorld::AddJoint(Joint* joint)
 {
 	LN_ASSERT(joint != nullptr);
-	m_jointListForMmd.Add(joint);
+	m_jointList.Add(joint);
 	m_btWorld->addConstraint(joint->GetBtConstraint());
+}
+
+//------------------------------------------------------------------------------
+void PhysicsWorld::RemovePhysicsObject(PhysicsObject* physicsObject)
+{
+	LN_FAIL_CHECK_ARG(physicsObject != nullptr) return;
+	if (physicsObject->GetOwnerWorld() != this) return;
+
+	m_physicsObjectList.Remove(physicsObject);
+	physicsObject->OnRemovedFromWorld();
+	physicsObject->SetOwnerWorld(nullptr);
 }
 
 //------------------------------------------------------------------------------
 void PhysicsWorld::GCPhysicsObjects()
 {
 	// rigidBody
-	for (auto itr = m_rigidBodyListForMmd.begin(); itr != m_rigidBodyListForMmd.end();)
+	for (auto itr = m_physicsObjectList.begin(); itr != m_physicsObjectList.end();)
 	{
 		if ((*itr)->GetReferenceCount() == 1)
 		{
 			(*itr)->OnRemovedFromWorld();
-			itr = m_rigidBodyListForMmd.erase(itr);
+			itr = m_physicsObjectList.erase(itr);
 		}
 		else
 		{
@@ -290,12 +307,12 @@ void PhysicsWorld::GCPhysicsObjects()
 	}
 
 	// constraint
-	for (auto itr = m_jointListForMmd.begin(); itr != m_jointListForMmd.end();)
+	for (auto itr = m_jointList.begin(); itr != m_jointList.end();)
 	{
 		if ((*itr)->GetReferenceCount() == 1)
 		{
 			m_btWorld->removeConstraint((*itr)->GetBtConstraint());
-			itr = m_jointListForMmd.erase(itr);
+			itr = m_jointList.erase(itr);
 		}
 		else
 		{
