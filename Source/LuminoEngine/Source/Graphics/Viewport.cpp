@@ -184,11 +184,6 @@ void ViewportLayer::PostRender(DrawList* context, RefPtr<RenderTargetTexture>* p
 }
 
 //------------------------------------------------------------------------------
-void ViewportLayer::OnBeginFrameRender(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
-{
-}
-
-//------------------------------------------------------------------------------
 void ViewportLayer::ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	//for (detail::RenderingPass2* pass : m_renderingPasses)
@@ -339,8 +334,6 @@ void Viewport::Render(Details::Renderer* renderer)
 	
 	for (ViewportLayer* layer : *m_viewportLayerList)
 	{
-		//context->SetRenderTarget(0, m_primaryLayerTarget);
-		layer->OnBeginFrameRender(m_primaryLayerTarget, m_depthBuffer);
 		layer->Render();
 	}
 }
@@ -472,7 +465,7 @@ void Viewport::MakeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, 
 //------------------------------------------------------------------------------
 void Viewport::BeginBlitRenderer()
 {
-	m_renderer->BeginMakeElements(nullptr);
+	m_renderer->BeginMakeElements();
 	m_renderer->SetRenderTarget(0, nullptr);
 	m_renderer->SetDepthBuffer(nullptr);
 	m_renderer->SetDepthTestEnabled(false);

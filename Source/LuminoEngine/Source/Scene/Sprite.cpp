@@ -163,7 +163,7 @@ Sprite2D::~Sprite2D()
 //------------------------------------------------------------------------------
 void Sprite2D::Initialize()
 {
-	Sprite::Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph2D());
+	Sprite::Initialize(detail::EngineDomain::GetDefaultSceneGraph2D());
 }
 
 //------------------------------------------------------------------------------
@@ -189,7 +189,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite3D, Sprite);
 Sprite3DPtr Sprite3D::Create()
 {
 	auto obj = Sprite3DPtr::MakeRef();
-	obj->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D());
+	obj->Initialize(detail::EngineDomain::GetDefaultSceneGraph3D());
 	return obj;
 }
 
@@ -197,7 +197,7 @@ Sprite3DPtr Sprite3D::Create()
 Sprite3DPtr Sprite3D::Create(float width, float height)
 {
 	auto obj = Sprite3DPtr::MakeRef();
-	obj->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D());
+	obj->Initialize(detail::EngineDomain::GetDefaultSceneGraph3D());
 	obj->SetSize(Size(width, height));
 	return obj;
 }
@@ -206,7 +206,7 @@ Sprite3DPtr Sprite3D::Create(float width, float height)
 Sprite3DPtr Sprite3D::Create(float width, float height, Texture* texture)
 {
 	auto obj = Sprite3DPtr::MakeRef();
-	obj->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D());
+	obj->Initialize(detail::EngineDomain::GetDefaultSceneGraph3D());
 	obj->SetSize(Size(width, height));
 	obj->SetTexture(texture);
 	return obj;

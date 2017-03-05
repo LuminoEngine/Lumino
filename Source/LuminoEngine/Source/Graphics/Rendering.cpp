@@ -1207,19 +1207,19 @@ void DrawList::SetDepthWriteEnabled(bool enabled)
 }
 
 //------------------------------------------------------------------------------
-void DrawList::BeginMakeElements(Camera* camera)
+void DrawList::SetDefaultMaterial(Material* material)
+{
+	LN_FAIL_CHECK_ARG(material != nullptr) return;
+	m_defaultMaterial = material;
+}
+
+//------------------------------------------------------------------------------
+void DrawList::BeginMakeElements()
 {
 	m_drawElementList.ClearCommands();
 	m_state.Reset();
 	m_defaultMaterial->Reset();
 	m_currentSectionTopElement = nullptr;
-	m_camera = camera;
-}
-
-//------------------------------------------------------------------------------
-void DrawList::EndMakeElements()
-{
-	//m_drawElementList.ResolveCombinedMaterials();
 }
 
 //------------------------------------------------------------------------------

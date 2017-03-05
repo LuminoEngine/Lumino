@@ -8,6 +8,7 @@ class UIMainWindow;
 class SceneGraph2D;
 class SceneGraph3D;
 class Light;
+class World;
 
 /**
 	@brief		アプリケーション全体にかかわる処理を行います。
@@ -60,6 +61,8 @@ public:
 
 
 
+	static World* GetWorld2D();
+	static World* GetWorld3D();
 
 	static UIMainWindow* GetMainWindow();
 	static Viewport* GetMainViewport();

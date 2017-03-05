@@ -4,11 +4,46 @@
 #include "BodyBase.h"
 
 LN_NAMESPACE_BEGIN
-class Collider;
+class CollisionShape;
+
+LN_ENUM_FLAGS(RigidbodyConstraintFlags)
+{
+	/** 制限なし */
+	None			= 0x0000,
+
+	/** X 軸の移動をさせない */
+	FreezePositionX = 0x0001,
+
+	/** Y 軸の移動をさせない */
+	FreezePositionY = 0x0002,
+
+	/** Z 軸の移動をさせない */
+	FreezePositionZ = 0x0004,
+
+	/** X 軸の回転をさせない */
+	FreezeRotationX = 0x0010,
+
+	/** Y 軸の回転をさせない */
+	FreezeRotationY = 0x0020,
+
+	/** Z 軸の回転をさせない */
+	FreezeRotationZ = 0x0040,
+
+	/** 移動させない */
+	FreezePosition	= 0x0007,
+
+	/** 回転させない */
+	FreezeRotation	= 0x0070,
+
+	/** 移動と回転をさせない */
+	FreezeAll		= 0x0077,
+
+};
+LN_ENUM_FLAGS_DECLARE(RigidbodyConstraintFlags);
 
 /// 剛体のクラス
 class RigidBody
-    : public BodyBase
+	: public PhysicsObject
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
@@ -23,7 +58,7 @@ public:
 	    float			Friction;		    ///< 摩擦力
 		float			LinearDamping;	    ///< 移動減
 	    float			AngularDamping;		///< 回転減
-		const Matrix*	InitialTransform;	///< 初期姿勢 (NULL で Identity)
+		Matrix			InitialTransform;	///< 初期姿勢 (NULL で Identity)
 		bool			AdditionalDamping;	///< 減衰の有効
 		bool			KinematicObject;	///< Kinematicオブジェクトとする (質量が 0.0 として扱われ、MotionState の getWorldTransform() が呼ばれるようになる)
 
@@ -38,7 +73,7 @@ public:
 			Friction = 0.5;
 			LinearDamping = 0.0;
 			AngularDamping = 0.0;
-			InitialTransform = NULL;
+			//InitialTransform = NULL;
 			AdditionalDamping = false;
 			KinematicObject = false;
 			Scale = 1.0f;
@@ -48,9 +83,8 @@ public:
 	/**
 		@brief		RigidBody オブジェクトを作成します。
 		@param[in]	collider	: 衝突判定形状
-		@details	作成されたオブジェクトは使い終えたら Release() を呼び出して参照を解放する必要があります。
 	*/
-	//static RigidBody* Create(Collider* collider);
+	static RefPtr<RigidBody> Create(CollisionShape* collider);
 
 
 public:
@@ -63,6 +97,9 @@ public:
 	void SetLinearVelocity(const Vector3& velocity);
 	void SetAngularVelocity(const Vector3& velocity);
 
+
+	/** 物理演算による各軸への影響を受けるかどうかを設定します。*/
+	void SetConstraints(RigidbodyConstraintFlags flags);
 
 #if 0
 	/// 回転の設定
@@ -95,9 +132,16 @@ public:
 
 	void SetMass(float mass);
 
-	void SetConstraintFlags(RigidBodyConstraintFlags flags);
 
 	void ApplyForce(const Vector3& force);
+
+
+	/**
+		瞬間的な力を加えます。
+		@param[in]	force	: 力のベクトル
+	*/
+	void ApplyImpulse(const Vector3& force);
+
 
 	// ApplyForce は、力を与える間毎フレーム継続的に呼び出す必要がある。
 	// そのフレームで与えられたトータルの力を更新する。そのフレームのシミュレーションが終了すれば 0 にリセットされる。
@@ -126,23 +170,32 @@ public:
 LN_INTERNAL_ACCESS:
 	RigidBody();
 	virtual ~RigidBody();
+	void Initialize(CollisionShape* collider, const ConfigData& configData);
+
 	/// 初期化 (剛体を受け取ってワールドに追加する) (現行PMD用にpublic。後で protected にする)
 	///		shape		: (BodyBase  削除時に delete される)
-	void Initialize(Collider* collider, const ConfigData& configData);
+	void InitializeCore(CollisionShape* collider, const ConfigData& configData, float scale);
 
+	//void SetOwnerWorld(PhysicsWorld* owner);
+	//PhysicsWorld* GetOwnerWorld() const;
 	btRigidBody* GetBtRigidBody() { return m_btRigidBody; }
-	uint16_t GetGroup() const { return m_group; }
-	uint16_t GetGroupMask() const { return m_groupMask; }
 
-	/// シミュレーション直前更新処理 (メインスレッドから呼ばれる)
-	void SyncBeforeStepSimulation(detail::PhysicsWorld* world);
+	//void RefreshRootBtShapes();
+	//btCollisionShape* GetRootBtCollisionShape() const;
+	//btCollisionObject* GetBtPrimaryObject() const;
 
-	/// シミュレーション直後更新処理 (メインまたは物理更新スレッドから呼ばれる)
-	void SyncAfterStepSimulation();
+
+	void SetTransformFromMotionState(const btTransform& transform);
 
 	void MarkMMDDynamic();
 
+
+	virtual void OnBeforeStepSimulation();
+	virtual void OnAfterStepSimulation();
+	virtual void OnRemovedFromWorld() override;
+
 private:
+	void CreateBtRigidBody();
 
 	enum ModifiedFlags
 	{
@@ -152,22 +205,29 @@ private:
 		Modified_ClearForces = 0x0004,
 		Modified_Mass = 0x0008,
 		Modified_ApplyForce = 0x0010,
-		Modified_RigidBodyConstraintFlags = 0x0020,
-		
+		Modified_ApplyImpulse = 0x0020,
+		Modified_RigidBodyConstraintFlags = 0x0040,
+		Modified_Colliders = 0x0080,
+		Modified_InitialUpdate = 0x8000,
 	};
 
-	struct KinematicMotionState;
+	//PhysicsWorld*				m_ownerWorld;
+	btRigidBody*				m_btRigidBody;
+	RefPtr<CollisionShape>		m_collisionShape;
+	
+	//List<RefPtr<CollisionShape>>		m_colliders;
+	//btCollisionShape*			m_rootBtCollisionShape;
+	//btCollisionShape*			m_rootTriggerBtCollisionShape;
+	//bool						m_rootBtCollisionShapeStandalone;
+	//bool						m_rootTriggerBtCollisionShapeStandalone;
 
-	btRigidBody*			m_btRigidBody;
-	Collider*				m_collider;
-	uint16_t				m_group;
-	uint16_t				m_groupMask;
-	Matrix					m_worldTransform;			///< (postUpdate() で設定される)
-	float					m_mass;
-	Vector3					m_appliedForce;
-	RigidBodyConstraintFlags	m_rigidBodyConstraintFlags;
+	ConfigData					m_data;
+	RigidbodyConstraintFlags	m_constraintFlags;
 
-	uint32_t				m_modifiedFlags;
+	Vector3						m_appliedForce;
+	Vector3						m_appliedImpulse;
+
+	uint32_t					m_modifiedFlags;
 };
 
 LN_NAMESPACE_END

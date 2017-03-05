@@ -11,11 +11,13 @@
 #include "Lumino/IO/ASyncIOObject.h"
 #include "Lumino/IO/FileManager.h"
 
-#include "Lumino/Physics/Collider.h"
-#include "Lumino/Physics/BodyBase.h"
-#include "Lumino/Physics/Joint.h"
-#include "Lumino/Physics/RigidBody.h"
 #include "Lumino/Physics/Common.h"
+#include "Lumino/Physics/PhysicsWorld.h"
+#include "Lumino/Physics/CollisionShape.h"
+#include "Lumino/Physics/BodyBase.h"
+#include "Lumino/Physics/RigidBody.h"
+#include "Lumino/Physics/Collider.h"
+#include "Lumino/Physics/Joint.h"
 
 #include "Lumino/Graphics/Common.h"
 #include "Lumino/Graphics/Graphics.h"

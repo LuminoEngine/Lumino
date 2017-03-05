@@ -4,6 +4,12 @@
 #include <Lumino/Mesh/GizmoModel.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Camera.h>
+#include <Lumino/World.h>
+
+
+// TODO: CameraViewportLayer::GetDefault2D() あたりを見直せばいらなくなる
+#include <Lumino/UI/UIFrameWindow.h>
+#include "../UI/UIManager.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
@@ -15,13 +21,13 @@ LN_NAMESPACE_SCENE_BEGIN
 //------------------------------------------------------------------------------
 Camera* Camera::GetMain3DCamera()
 {
-	return SceneGraphManager::Instance->GetDefaultSceneGraph3D()->GetMainCamera();
+	return detail::EngineDomain::GetDefaultSceneGraph3D()->GetMainCamera();
 }
 
 //------------------------------------------------------------------------------
 Camera* Camera::GetMain2DCamera()
 {
-	return SceneGraphManager::Instance->GetDefaultSceneGraph2D()->GetMainCamera();
+	return detail::EngineDomain::GetDefaultSceneGraph2D()->GetMainCamera();
 }
 
 //------------------------------------------------------------------------------
@@ -167,30 +173,6 @@ void Camera::UpdateMatrices(const Size& viewSize)
 	m_viewProjMatrixIT = Matrix::MakeTranspose(m_viewProjMatrixI);
 }
 
-
-////------------------------------------------------------------------------------
-////
-////------------------------------------------------------------------------------
-//void Camera::DoMouseMoveR(float dx, float dy, float width, float height)
-//{
-//
-//}
-//
-////------------------------------------------------------------------------------
-////
-////------------------------------------------------------------------------------
-//void Camera::DoMouseMoveM(float offsetX, float offsetY)
-//{
-//
-//}
-//
-////------------------------------------------------------------------------------
-////
-////------------------------------------------------------------------------------
-//void Camera::DoMouseWheel(int pos)
-//{
-//}
-
 //------------------------------------------------------------------------------
 void Camera::OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph* oldOwner)
 {
@@ -208,39 +190,41 @@ void Camera::OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph* oldOwner
 //==============================================================================
 // CameraViewportLayer
 //==============================================================================
+
 //------------------------------------------------------------------------------
 CameraViewportLayer* CameraViewportLayer::GetDefault2D()
 {
-	return SceneGraphManager::Instance->GetDefault2DCameraViewportLayer();
+	return detail::EngineDomain::GetUIManager()->GetMainWindow()->GetDefault2DCameraViewportLayer();
 }
 
 //------------------------------------------------------------------------------
 CameraViewportLayer* CameraViewportLayer::GetDefault3D()
 {
-	return SceneGraphManager::Instance->GetDefault3DCameraViewportLayer();
+	return detail::EngineDomain::GetUIManager()->GetMainWindow()->GetDefault3DCameraViewportLayer();
 }
 
-//------------------------------------------------------------------------------
-CameraViewportLayerPtr CameraViewportLayer::Create(Camera* camera)
-{
-	auto ptr = CameraViewportLayerPtr::MakeRef();
-	ptr->Initialize(SceneGraphManager::Instance, camera);
-	return ptr;
-}
+////------------------------------------------------------------------------------
+//CameraViewportLayerPtr CameraViewportLayer::Create(Camera* camera)
+//{
+//	auto ptr = CameraViewportLayerPtr::MakeRef();
+//	ptr->Initialize(SceneGraphManager::Instance, camera);
+//	return ptr;
+//}
 
 //------------------------------------------------------------------------------
 CameraViewportLayer::CameraViewportLayer()
+	: m_targetWorld(nullptr)
+	, m_hostingCamera(nullptr)
+	, m_debugDrawFlags(WorldDebugDrawFlags::None)
 {
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer::Initialize(SceneGraphManager* manager, Camera* hostingCamera)
+void CameraViewportLayer::Initialize(SceneGraphManager* manager, World* targetWorld, Camera* hostingCamera)
 {
+	m_targetWorld = targetWorld;
 	m_hostingCamera = hostingCamera;
 	m_hostingCamera->m_ownerLayer = this;
-
-	m_renderer = RefPtr<DrawList>::MakeRef();
-	m_renderer->Initialize(manager->GetGraphicsManager());
 
 	if (m_hostingCamera->GetProjectionMode() == CameraProjection_3D)
 	{
@@ -267,52 +251,41 @@ CameraViewportLayer::~CameraViewportLayer()
 }
 
 //------------------------------------------------------------------------------
-tr::GizmoModel* CameraViewportLayer::CreateGizmo()
+void CameraViewportLayer::SetDebugDrawFlags(WorldDebugDrawFlags flags)
 {
-	m_gizmo = RefPtr<tr::GizmoModel>::MakeRef();
-	m_gizmo->Initialize(m_hostingCamera->GetOwnerSceneGraph()->GetManager()->GetGraphicsManager());
-	return m_gizmo;
+	m_debugDrawFlags = flags;
 }
 
 //------------------------------------------------------------------------------
-DrawList* CameraViewportLayer::GetRenderer()
+tr::GizmoModel* CameraViewportLayer::CreateGizmo()
 {
-	return m_renderer;
+	m_gizmo = RefPtr<tr::GizmoModel>::MakeRef();
+	m_gizmo->Initialize(detail::EngineDomain::GetGraphicsManager());
+	return m_gizmo;
 }
 
 //------------------------------------------------------------------------------
 void CameraViewportLayer::Render()
 {
-	// 描画リストのクリアは、SceneGraph の描画前でなければならない。
-	// 出来上がった描画リストを、複数のレイヤーが描画することを想定する。
-	// TODO: DrawList は Scene 側につくべき
-	m_renderer->BeginMakeElements(m_hostingCamera);
+	// TODO: やめよう
+	m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->SetCurrentCamera(m_hostingCamera);
 
-	m_renderer->Clear(ClearFlags::Depth, Color::White);
+	m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->Clear(ClearFlags::Depth, Color::White);
 
 	// カメラ行列の更新
 	m_hostingCamera->UpdateMatrices(GetSize());
 
-	//m_hostingCamera->GetOwnerSceneGraph()->Render(context, m_hostingCamera);
-	m_hostingCamera->GetOwnerSceneGraph()->Render2(m_renderer, m_hostingCamera);
+	m_targetWorld->Render(m_hostingCamera, m_debugDrawFlags);
 
 	if (m_gizmo != nullptr)
 	{
-		m_gizmo->Render(m_renderer);
+		m_gizmo->Render(m_hostingCamera->GetOwnerSceneGraph()->GetRenderer());
 	}
-}
-
-//------------------------------------------------------------------------------
-void CameraViewportLayer::OnBeginFrameRender(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
-{
-//	m_renderer->BeginFrame(renderTarget, depthBuffer);
 }
 
 //------------------------------------------------------------------------------
 void CameraViewportLayer::ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
-	m_renderer->EndMakeElements();
-
 	// TODO: float
 	Size targetSize((float)renderTarget->GetWidth(), (float)renderTarget->GetHeight());
 	m_hostingCamera->UpdateMatrices(targetSize);
@@ -327,11 +300,16 @@ void CameraViewportLayer::ExecuteDrawListRendering(RenderTargetTexture* renderTa
 	cameraInfo.viewFrustum = m_hostingCamera->GetViewFrustum();
 	cameraInfo.zSortDistanceBase = m_hostingCamera->GetZSortDistanceBase();
 	m_internalRenderer->Render(
-		m_renderer->GetDrawElementList(),
+		m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->GetDrawElementList(),
 		cameraInfo,
 		renderTarget,
 		depthBuffer);
-	m_renderer->EndFrame();
+	m_internalRenderer->Render(
+		m_hostingCamera->GetOwnerSceneGraph()->GetDebugRenderer()->GetDrawElementList(),
+		cameraInfo,
+		renderTarget,
+		depthBuffer);
+	m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->EndFrame();
 }
 
 //------------------------------------------------------------------------------

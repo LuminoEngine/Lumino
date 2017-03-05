@@ -44,6 +44,7 @@ public:
 
 	int GetVertexCount() const { return m_vertexUsedCount; }
 	int GetIndexCount() const { return m_indexUsedCount; }
+	int GetTriangleCount() const { return m_indexUsedCount / 3; }
 
 	void SetPosition(int index, const Vector3& position);
 	void SetNormal(int index, const Vector3& normal);
@@ -168,6 +169,7 @@ LN_INTERNAL_ACCESS:
 	void SetIndexInternal(void* indexBuffer, int vertexIndex, int value);
 
 	int GetSubsetCount() const { return m_attributes.GetCount(); }
+	int GetIndexStride() const { return (m_indexBufferInfo.format == IndexBufferFormat_UInt16) ? 2 : 4; }
 
 	void* TryLockVertexBuffer(VertexBufferType type);
 	void* TryLockIndexBuffer();

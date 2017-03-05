@@ -2,9 +2,10 @@
 #include "../Internal.h"
 #include <Lumino/Mesh/Mesh.h>
 #include <Lumino/Mesh/SkinnedMeshModel.h>
-#include <Lumino/Physics/Collider.h>	// TODO: MMD でのみ必要
+#include <Lumino/Physics/CollisionShape.h>	// TODO: MMD でのみ必要
 #include <Lumino/Physics/RigidBody.h>	// TODO: MMD でのみ必要
 #include <Lumino/Physics/Joint.h>	// TODO: MMD でのみ必要
+#include <Lumino/Physics/PhysicsWorld.h>	// TODO: MMD でのみ必要
 #include "../Graphics/GraphicsManager.h"
 #include "../Physics/PhysicsManager.h"
 #include "PmxSkinnedMesh.h"
@@ -309,8 +310,8 @@ void SkinnedMeshModel::Initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 
 	//---------------------------------------------------------
 	// 物理演算
-	m_physicsWorld = RefPtr<detail::PhysicsWorld>::MakeRef();
-	m_physicsWorld->Initialize(manager->GetPhysicsManager());
+	m_physicsWorld = RefPtr<PhysicsWorld>::MakeRef();
+	m_physicsWorld->Initialize();
 	m_physicsWorld->SetGravity(Vector3(0, -9.80f * 10.0f, 0));
 
 	m_rigidBodyList.Resize(m_meshResource->rigidBodys.GetCount());
@@ -614,19 +615,19 @@ void MmdSkinnedMeshRigidBody::Initialize(SkinnedMeshModel* ownerModel, PmxRigidB
 	}
 
 	// 衝突判定形状
-	ColliderPtr collider;
+	CollisionShapePtr collider;
 	switch (rigidBodyResource->ColShapeData.Type)
 	{
 		case CollisionShapeType_Sphere:
 		{
-			auto c = SphereColliderPtr::MakeRef();
+			auto c = SphereCollisionShapePtr::MakeRef();
 			c->Initialize(m_resource->ColShapeData.Sphere.Radius * scale);
 			collider = c;
 			break;
 		}
 		case CollisionShapeType_Box:
 		{
-			auto c= BoxColliderPtr::MakeRef();
+			auto c = BoxCollisionShapePtr::MakeRef();
 			Vector3 size(m_resource->ColShapeData.Box.Width * scale, m_resource->ColShapeData.Box.Height * scale, m_resource->ColShapeData.Box.Depth * scale);
 			size *= 2.0f;
 			c->Initialize(size);
@@ -635,7 +636,7 @@ void MmdSkinnedMeshRigidBody::Initialize(SkinnedMeshModel* ownerModel, PmxRigidB
 		}
 		case CollisionShapeType_Capsule:
 		{
-			auto c = CapsuleColliderPtr::MakeRef();
+			auto c = CapsuleCollisionShapePtr::MakeRef();
 			c->Initialize(m_resource->ColShapeData.Capsule.Radius * scale, m_resource->ColShapeData.Capsule.Height * scale);
 			collider = c;
 			break;
@@ -662,8 +663,7 @@ void MmdSkinnedMeshRigidBody::Initialize(SkinnedMeshModel* ownerModel, PmxRigidB
 	m_offsetBodyToBone = Matrix::MakeTranslation(m_bone->GetCore()->OrgPosition) * m_boneLocalPosition;
 
 	RigidBody::ConfigData data;
-	data.InitialTransform = &initialTransform;
-	data.Scale = scale;
+	data.InitialTransform = initialTransform;
 	data.Group = m_resource->Group;
 	data.GroupMask = m_resource->GroupMask;
 	data.Friction = m_resource->Friction;
@@ -683,8 +683,8 @@ void MmdSkinnedMeshRigidBody::Initialize(SkinnedMeshModel* ownerModel, PmxRigidB
 	}
 
 	m_rigidBody = RefPtr<RigidBody>::MakeRef();
-	m_rigidBody->Initialize(collider, data);
-	ownerModel->m_physicsWorld->AddRigidBody(m_rigidBody);
+	m_rigidBody->InitializeCore(collider, data, scale);
+	ownerModel->m_physicsWorld->AddPhysicsObject(m_rigidBody);
 }
 
 //------------------------------------------------------------------------------

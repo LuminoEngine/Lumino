@@ -59,7 +59,7 @@ TEST_F(Test_Graphics_Rendering, Basic)
 	//{
 	//	Engine::Render();
 
-	//	auto* r = Engine::GetDefault2DLayer()->GetRenderer();
+	//	auto* r = Engine::GetDefaultSceneGraph2D()->GetRenderer();
 	//	r->Clear(ClearFlags::Color, Color::Red);
 	//	auto tex = Texture2D::Create(LN_LOCALFILE("../Scene/TestData/Sprite1.png"));
 	//	r->DrawSprite2D(Size(32, 32), tex, RectF(0, 0, 32, 32), Color::White);
@@ -75,35 +75,29 @@ TEST_F(Test_Graphics_Rendering, Clear)
 {
 	// <Test> 2D ビューのクリア
 	{
-		if (Engine::BeginRendering())
-		{
-			Engine::Render();
-			auto* r1 = Engine::GetDefault2DLayer()->GetRenderer();
-			r1->Clear(ClearFlags::Color, Color::Blue);
-			Engine::EndRendering();
-		}
+		LN_TEST_BEGIN_FRAME;
+		Engine::Render();
+		auto* r1 = Engine::GetDefaultSceneGraph2D()->GetRenderer();
+		r1->Clear(ClearFlags::Color, Color::Blue);
+		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.Clear1.png")));
 	}
 	// <Test> 3D ビューのクリア
 	{
-		if (Engine::BeginRendering())
-		{
-			Engine::Render();
-			auto* r1 = Engine::GetDefault3DLayer()->GetRenderer();
-			r1->Clear(ClearFlags::Color, Color::Red);
-			Engine::EndRendering();
-		}
+		LN_TEST_BEGIN_FRAME;
+		Engine::Render();
+		auto* r1 = Engine::GetDefaultSceneGraph3D()->GetRenderer();
+		r1->Clear(ClearFlags::Color, Color::Red);
+		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.Clear2.png")));
 	}
 	// <Test> 2D、3D ビュークリアの組み合わせ。2D が手前になる
 	{
-		if (Engine::BeginRendering())
-		{
-			Engine::Render();
-			Engine::GetDefault2DLayer()->GetRenderer()->Clear(ClearFlags::Color, Color::Blue);
-			Engine::GetDefault3DLayer()->GetRenderer()->Clear(ClearFlags::Color, Color::Red);
-			Engine::EndRendering();
-		}
+		LN_TEST_BEGIN_FRAME;
+		Engine::Render();
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->Clear(ClearFlags::Color, Color::Blue);
+		Engine::GetDefaultSceneGraph3D()->GetRenderer()->Clear(ClearFlags::Color, Color::Red);
+		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.Clear3.png")));
 	}
 }
@@ -113,14 +107,12 @@ TEST_F(Test_Graphics_Rendering, DrawLinePrimitive)
 {
 	// <Test> 1本
 	{
-		if (Engine::BeginRendering())
-		{
-			Engine::Render();
-			Engine::GetDefault2DLayer()->GetRenderer()->DrawLinePrimitive(
-				Vector3(0, 0, 0), Color::Red,
-				Vector3(50, 50, 0), Color::White);
-			Engine::EndRendering();
-		}
+		LN_TEST_BEGIN_FRAME;
+		Engine::Render();
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawLinePrimitive(
+			Vector3(0, 0, 0), Color::Red,
+			Vector3(50, 50, 0), Color::White);
+		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawLinePrimitive1.png")));
 	}
 	//// <Test> 2本連続
@@ -128,10 +120,10 @@ TEST_F(Test_Graphics_Rendering, DrawLinePrimitive)
 	//	if (Engine::BeginRendering())
 	//	{
 	//		Engine::Render();
-	//		Engine::GetDefault2DLayer()->GetRenderer()->DrawLinePrimitive(
+	//		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawLinePrimitive(
 	//			Vector3(0, 0, 0), Color::Red,
 	//			Vector3(20, 50, 0), Color::White);
-	//		Engine::GetDefault2DLayer()->GetRenderer()->DrawLinePrimitive(
+	//		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawLinePrimitive(
 	//			Vector3(20, 50, 0), Color::Red,
 	//			Vector3(0, 50, 0), Color::Blue);
 	//		Engine::EndRendering();
@@ -144,23 +136,19 @@ TEST_F(Test_Graphics_Rendering, DrawLinePrimitive)
 TEST_F(Test_Graphics_Rendering, DrawSquarePrimitive)
 {
 	{
-		Engine::BeginFrameUpdate();	// update camera transform
-		if (Engine::BeginRendering())
-		{
-			Engine::Render();
-			Engine::GetDefault3DLayer()->GetRenderer()->DrawSquarePrimitive(
-				Vector3(-1, 2, 0), Vector2(0, 0), Color::Red,
-				Vector3(-1, -2, 0), Vector2(0, 1), Color::Green,
-				Vector3(1, 2, 0), Vector2(1, 0), Color::Blue,
-				Vector3(1, -2, 0), Vector2(1, 1), Color::White);
-			Engine::GetDefault2DLayer()->GetRenderer()->DrawSquarePrimitive(
-				Vector3(0, 0, 0), Vector2(0, 0), Color::Red,
-				Vector3(0, 50, 0), Vector2(0, 1), Color::Green,
-				Vector3(50, 0, 0), Vector2(1, 0), Color::Blue,
-				Vector3(50, 50, 0), Vector2(1, 1), Color::White);
-			Engine::EndRendering();
-		}
-		Engine::EndFrameUpdate();
+		LN_TEST_BEGIN_FRAME;
+		Engine::Render();
+		Engine::GetDefaultSceneGraph3D()->GetRenderer()->DrawSquarePrimitive(
+			Vector3(-1, 2, 0), Vector2(0, 0), Color::Red,
+			Vector3(-1, -2, 0), Vector2(0, 1), Color::Green,
+			Vector3(1, 2, 0), Vector2(1, 0), Color::Blue,
+			Vector3(1, -2, 0), Vector2(1, 1), Color::White);
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawSquarePrimitive(
+			Vector3(0, 0, 0), Vector2(0, 0), Color::Red,
+			Vector3(0, 50, 0), Vector2(0, 1), Color::Green,
+			Vector3(50, 0, 0), Vector2(1, 0), Color::Blue,
+			Vector3(50, 50, 0), Vector2(1, 1), Color::White);
+		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSquarePrimitive1_.png"), 95, true));
 	}
 }
@@ -170,19 +158,15 @@ TEST_F(Test_Graphics_Rendering, DrawBox)
 {
 	ScopedCameraPosition cp(5, 5, -5);
 	{
-		Engine::BeginFrameUpdate();	// update camera transform
-		if (Engine::BeginRendering())
-		{
-			Engine::Render();
-			auto r = Engine::GetDefault3DLayer()->GetRenderer();
-			r->DrawBox(Box(1));
-			r->SetTransform(Matrix::MakeTranslation(3, 0, 0));
-			r->DrawBox(Box(2));
-			r->SetTransform(Matrix::MakeRotationY(Math::PI / 4) * Matrix::MakeTranslation(-3, 0, 0));
-			r->DrawBox(Box(2));
-			Engine::EndRendering();
-		}
-		Engine::EndFrameUpdate();
+		LN_TEST_BEGIN_FRAME;
+		Engine::Render();
+		auto r = Engine::GetDefaultSceneGraph3D()->GetRenderer();
+		r->DrawBox(Box(1));
+		r->SetTransform(Matrix::MakeTranslation(3, 0, 0));
+		r->DrawBox(Box(2));
+		r->SetTransform(Matrix::MakeRotationY(Math::PI / 4) * Matrix::MakeTranslation(-3, 0, 0));
+		r->DrawBox(Box(2));
+		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawBox1.png"), 95));
 	}
 }
@@ -192,18 +176,14 @@ TEST_F(Test_Graphics_Rendering, DrawSphere)
 {
 	ScopedCameraPosition cp(3, 3, -3);
 	{
-		Engine::BeginFrameUpdate();	// update camera transform
-		if (Engine::BeginRendering())
-		{
-			Engine::Render();
-			auto context = Engine::GetDefault3DLayer()->GetRenderer();
+		LN_TEST_BEGIN_FRAME;
+		Engine::Render();
+		auto context = Engine::GetDefaultSceneGraph3D()->GetRenderer();
 
-			context->DrawSphere(2, 10, 10, Color::Red);
-			context->DrawSphere(1, 4, 4, Color::Green, Matrix::MakeTranslation(2, 0, 0));
+		context->DrawSphere(2, 10, 10, Color::Red);
+		context->DrawSphere(1, 4, 4, Color::Green, Matrix::MakeTranslation(2, 0, 0));
 
-			Engine::EndRendering();
-		}
-		Engine::EndFrameUpdate();
+		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSphere1.png"), 95));
 	}
 }
@@ -213,21 +193,17 @@ TEST_F(Test_Graphics_Rendering, DrawCylinder)
 {
 	ScopedCameraPosition cp(2, 2, 2);
 	{
-		Engine::BeginFrameUpdate();	// update camera transform
-		if (Engine::BeginRendering())
-		{
-			Engine::Render();
-			auto context = Engine::GetDefault3DLayer()->GetRenderer();
+		LN_TEST_BEGIN_FRAME;
+		Engine::Render();
+		auto context = Engine::GetDefaultSceneGraph3D()->GetRenderer();
 
-			float r = 0.1f;
-			float d = 1.0f;
-			context->DrawCylinder(r, d, 8, 1, Color::Red, Matrix::MakeRotationZ(Math::PIDiv2) * Matrix::MakeTranslation(d / 2, 0, 0));
-			context->DrawCylinder(r, d, 8, 1, Color::Green, Matrix::MakeTranslation(0, d / 2, 0));
-			context->DrawCylinder(r, d, 8, 1, Color::Blue, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(0, 0, d / 2));
+		float r = 0.1f;
+		float d = 1.0f;
+		context->DrawCylinder(r, d, 8, 1, Color::Red, Matrix::MakeRotationZ(Math::PIDiv2) * Matrix::MakeTranslation(d / 2, 0, 0));
+		context->DrawCylinder(r, d, 8, 1, Color::Green, Matrix::MakeTranslation(0, d / 2, 0));
+		context->DrawCylinder(r, d, 8, 1, Color::Blue, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(0, 0, d / 2));
 
-			Engine::EndRendering();
-		}
-		Engine::EndFrameUpdate();
+		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawCylinder1.png"), 95));
 	}
 }
@@ -255,7 +231,7 @@ TEST_F(Test_Graphics_Rendering, DrawMesh)
 	//		if (Engine::BeginRendering())
 	//		{
 	//			Engine::Render();
-	//			Engine::GetDefault3DLayer()->GetRenderer()->DrawMesh(mesh, 0, mesh->GetMeshResource()->GetMaterial(0));
+	//			Engine::GetDefaultSceneGraph3D()->GetRenderer()->DrawMesh(mesh, 0, mesh->GetMeshResource()->GetMaterial(0));
 	//			Engine::EndRendering();
 	//		}
 	//		Engine::EndFrameUpdate();
@@ -266,14 +242,10 @@ TEST_F(Test_Graphics_Rendering, DrawMesh)
 		auto mesh = RefPtr<StaticMeshModel>::MakeRef();
 		mesh->InitializeSphere(detail::GraphicsManager::GetInstance(), 2, 8, 4, MeshCreationFlags::None);
 
-		Engine::BeginFrameUpdate();	// update camera transform
-		if (Engine::BeginRendering())
-		{
-			Engine::Render();
-			Engine::GetDefault3DLayer()->GetRenderer()->DrawMesh(mesh, 0, mesh->GetMaterial(0));
-			Engine::EndRendering();
-		}
-		Engine::EndFrameUpdate();
+		LN_TEST_BEGIN_FRAME;
+		Engine::Render();
+		Engine::GetDefaultSceneGraph3D()->GetRenderer()->DrawMesh(mesh, 0, mesh->GetMaterial(0));
+		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1_1.png"), 95, true));	// 一致率 95%。もし真っ黒になったりしたらわかる
 	}
 }
@@ -284,32 +256,26 @@ TEST_F(Test_Graphics_Rendering, Blit)
 	// <Test> デフォルトのレンダーターターゲットへの転送
 	{
 		auto tex = Texture2D::Create(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png"));
-		if (Engine::BeginRendering())
-		{
-			Engine::Render();
-			Engine::GetDefault2DLayer()->GetRenderer()->Blit(tex);
-			Engine::EndRendering();
-		}
+		LN_TEST_BEGIN_FRAME;
+		Engine::Render();
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->Blit(tex);
+		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png")));
 	}
 	// <Test> 別のレンダーターゲットへの転送
 	{
 		auto tex = Texture2D::Create(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png"));
 		auto rt1 = RenderTargetTexture::Create(tex->GetSize());
-		if (Engine::BeginRendering())
-		{
-			Engine::Render();
-			Engine::GetDefault2DLayer()->GetRenderer()->Blit(tex, rt1, nullptr);
-			Engine::EndRendering();
-		}
+		LN_TEST_BEGIN_FRAME;
+		Engine::Render();
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->Blit(tex, rt1, nullptr);
+		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.Blit1.png")));	// まだこの時点では灰色
 
-		if (Engine::BeginRendering())
-		{
-			Engine::Render();
-			Engine::GetDefault2DLayer()->GetRenderer()->Blit(rt1);
-			Engine::EndRendering();
-		}
+		LN_TEST_BEGIN_FRAME;
+		Engine::Render();
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->Blit(rt1);
+		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png")));
 	}
 }
@@ -322,40 +288,34 @@ TEST_F(Test_Graphics_Rendering, DrawText_)
 
 	// <Issue> フレームをまたいだ連続描画で、後のテキストが表示されない問題
 	{
-		if (Engine::BeginRendering())
-		{
-			Engine::Render();
-			Engine::GetDefault2DLayer()->GetRenderer()->SetFont(font);
-			Engine::GetDefault2DLayer()->GetRenderer()->SetBrush(ColorBrush::White);
-			Engine::GetDefault2DLayer()->GetRenderer()->DrawText_(_T("Lumino"), RectF(0, 0, w, 100), StringFormatFlags::LeftAlignment);
-			Engine::EndRendering();
-		}
+		LN_TEST_BEGIN_FRAME;
+		Engine::Render();
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetFont(font);
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(ColorBrush::White);
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawText_(_T("Lumino"), RectF(0, 0, w, 100), StringFormatFlags::LeftAlignment);
+		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawText1.png")));
 	}
 	{
-		if (Engine::BeginRendering())
-		{
-			Engine::Render();
-			Engine::GetDefault2DLayer()->GetRenderer()->SetFont(font);
-			Engine::GetDefault2DLayer()->GetRenderer()->SetBrush(ColorBrush::White);
-			Engine::GetDefault2DLayer()->GetRenderer()->DrawText_(_T("Text1"), RectF(0, 0, w, 100), StringFormatFlags::LeftAlignment);
-			Engine::GetDefault2DLayer()->GetRenderer()->DrawText_(_T("Text2"), RectF(0, 0, w, 100), StringFormatFlags::CenterAlignment);
-			Engine::GetDefault2DLayer()->GetRenderer()->DrawText_(_T("Text3"), RectF(0, 0, w, 100), StringFormatFlags::RightAlignment);
-			Engine::EndRendering();
-		}
+		LN_TEST_BEGIN_FRAME;
+		Engine::Render();
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetFont(font);
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(ColorBrush::White);
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawText_(_T("Text1"), RectF(0, 0, w, 100), StringFormatFlags::LeftAlignment);
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawText_(_T("Text2"), RectF(0, 0, w, 100), StringFormatFlags::CenterAlignment);
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawText_(_T("Text3"), RectF(0, 0, w, 100), StringFormatFlags::RightAlignment);
+		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawText2.png")));
 	}
 	// <Test> Transform
 	{
-		if (Engine::BeginRendering())
-		{
-			Engine::Render();
-			Engine::GetDefault2DLayer()->GetRenderer()->SetFont(font);
-			Engine::GetDefault2DLayer()->GetRenderer()->SetBrush(ColorBrush::White);
-			Engine::GetDefault2DLayer()->GetRenderer()->SetTransform(Matrix::MakeTranslation(10, 20, 0));
-			Engine::GetDefault2DLayer()->GetRenderer()->DrawText_(_T("Text1"), PointF::Zero);
-			Engine::EndRendering();
-		}
+		LN_TEST_BEGIN_FRAME;
+		Engine::Render();
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetFont(font);
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(ColorBrush::White);
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetTransform(Matrix::MakeTranslation(10, 20, 0));
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawText_(_T("Text1"), PointF::Zero);
+		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawText3.png")));
 	}
 }
@@ -367,73 +327,69 @@ TEST_F(Test_Graphics_Rendering, DrawSprite)
 
 	// <Test>
 	{
-		if (Engine::BeginRendering())
-		{
-			Engine::Render();
+		LN_TEST_BEGIN_FRAME;
+		Engine::Render();
 
-			auto* r = Engine::GetDefault2DLayer()->GetRenderer();
-			r->SetBlendMode(BlendMode::Alpha);
+		auto* r = Engine::GetDefaultSceneGraph2D()->GetRenderer();
+		r->SetBlendMode(BlendMode::Alpha);
 
-			r->DrawSprite(Vector3(48, 0, 10), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);	// 手前
-			r->DrawSprite(Vector3(0, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(32, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(48, 0, 10), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);	// 手前
+		r->DrawSprite(Vector3(0, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(32, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 
-			r->DrawSprite(Vector3(0, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color(1, 0, 0, 1), SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(32, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color(0, 1, 0, 1), SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(64, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color(0, 0, 1, 1), SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(96, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color(1, 0, 0, 0.5), SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(128, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color(1, 0, 0, 0), SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(0, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color(1, 0, 0, 1), SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(32, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color(0, 1, 0, 1), SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(64, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color(0, 0, 1, 1), SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(96, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color(1, 0, 0, 0.5), SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(128, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color(1, 0, 0, 0), SpriteBaseDirection::Basic2D);
 
-			r->DrawSprite(Vector3(0, 64, 0), Size(16, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(16, 64, 0), Size(32, 16), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(16, 80, 0), Size(16, 16), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(0, 64, 0), Size(16, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(16, 64, 0), Size(32, 16), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(16, 80, 0), Size(16, 16), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 
-			r->DrawSprite(Vector3(64, 64, 0), Size(16, 16), Vector2::Zero, tex, RectF(16, 0, 16, 32), Color::White, SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(80, 64, 0), Size(16, 16), Vector2::Zero, tex, RectF(0, 16, 32, 16), Color::White, SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(64, 80, 0), Size(16, 16), Vector2::Zero, tex, RectF(16, 16, 16, 16), Color::White, SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(80, 80, 0), Size(16, 16), Vector2::Zero, tex, RectF(0, 0, 16, 16), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(64, 64, 0), Size(16, 16), Vector2::Zero, tex, RectF(16, 0, 16, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(80, 64, 0), Size(16, 16), Vector2::Zero, tex, RectF(0, 16, 32, 16), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(64, 80, 0), Size(16, 16), Vector2::Zero, tex, RectF(16, 16, 16, 16), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(80, 80, 0), Size(16, 16), Vector2::Zero, tex, RectF(0, 0, 16, 16), Color::White, SpriteBaseDirection::Basic2D);
 
-			r->DrawSprite(Vector3(96, 64, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 16, 32), Color::White, SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(128, 64, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 16), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(96, 64, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 16, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(128, 64, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 16), Color::White, SpriteBaseDirection::Basic2D);
 
-			Engine::EndRendering();
-		}
+		LN_TEST_END_FRAME;
 
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSprite1.png"), 95));
 	}
 
 	// <Test> Sprite の BlendMode
 	{
-		if (Engine::BeginRendering())
-		{
-			Engine::Render();
+		LN_TEST_BEGIN_FRAME;
+		Engine::Render();
 
-			auto* r = Engine::GetDefault2DLayer()->GetRenderer();
+		auto* r = Engine::GetDefaultSceneGraph2D()->GetRenderer();
 
-			r->SetBlendMode(BlendMode::Normal); 
-			r->DrawSprite(Vector3(0, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(64, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(0, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(64, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-			r->DrawSprite(Vector3(0, 64, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->SetBlendMode(BlendMode::Normal); 
+		r->DrawSprite(Vector3(0, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(64, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(0, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(64, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(0, 64, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 			
-			r->SetBlendMode(BlendMode::Normal);
-			r->DrawSprite(Vector3(16, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->SetBlendMode(BlendMode::Normal);
+		r->DrawSprite(Vector3(16, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 
-			r->SetBlendMode(BlendMode::Alpha);
-			r->DrawSprite(Vector3(80, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->SetBlendMode(BlendMode::Alpha);
+		r->DrawSprite(Vector3(80, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 
-			r->SetBlendMode(BlendMode::Add);
-			r->DrawSprite(Vector3(16, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->SetBlendMode(BlendMode::Add);
+		r->DrawSprite(Vector3(16, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 			
-			r->SetBlendMode(BlendMode::Subtract);
-			r->DrawSprite(Vector3(80, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->SetBlendMode(BlendMode::Subtract);
+		r->DrawSprite(Vector3(80, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 
-			r->SetBlendMode(BlendMode::Multiply);
-			r->DrawSprite(Vector3(16, 64, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->SetBlendMode(BlendMode::Multiply);
+		r->DrawSprite(Vector3(16, 64, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 
-			Engine::EndRendering();
-		}
+		LN_TEST_END_FRAME;
 
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSprite2.png")));
 	}
@@ -444,30 +400,26 @@ TEST_F(Test_Graphics_Rendering, DrawRectangle)
 {
 	// <Test> 単色塗りつぶし
 	{
-		if (Engine::BeginRendering())
-		{
-			Engine::Render();
-			Engine::GetDefault2DLayer()->GetRenderer()->SetBrush(ColorBrush::Red);
-			Engine::GetDefault2DLayer()->GetRenderer()->DrawRectangle(RectF(10, 20, 30, 40));
-			Engine::GetDefault2DLayer()->GetRenderer()->DrawRectangle(RectF(110, 20, 30, 40));
-			Engine::GetDefault2DLayer()->GetRenderer()->SetBrush(ColorBrush::Blue);
-			Engine::GetDefault2DLayer()->GetRenderer()->DrawRectangle(RectF(10, 70, 30, 40));
-			Engine::EndRendering();
-		}
+		LN_TEST_BEGIN_FRAME;
+		Engine::Render();
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(ColorBrush::Red);
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawRectangle(RectF(10, 20, 30, 40));
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawRectangle(RectF(110, 20, 30, 40));
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(ColorBrush::Blue);
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawRectangle(RectF(10, 70, 30, 40));
+		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawRectangle1.png")));
 	}
 	// <Issue> もう一度同じことができる
 	{
-		if (Engine::BeginRendering())
-		{
-			Engine::Render();
-			Engine::GetDefault2DLayer()->GetRenderer()->SetBrush(ColorBrush::Red);
-			Engine::GetDefault2DLayer()->GetRenderer()->DrawRectangle(RectF(10, 20, 30, 40));
-			Engine::GetDefault2DLayer()->GetRenderer()->DrawRectangle(RectF(110, 20, 30, 40));
-			Engine::GetDefault2DLayer()->GetRenderer()->SetBrush(ColorBrush::Blue);
-			Engine::GetDefault2DLayer()->GetRenderer()->DrawRectangle(RectF(10, 70, 30, 40));
-			Engine::EndRendering();
-		}
+		LN_TEST_BEGIN_FRAME;
+		Engine::Render();
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(ColorBrush::Red);
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawRectangle(RectF(10, 20, 30, 40));
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawRectangle(RectF(110, 20, 30, 40));
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(ColorBrush::Blue);
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawRectangle(RectF(10, 70, 30, 40));
+		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawRectangle1.png")));
 	}
 }
@@ -495,33 +447,30 @@ TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
 		brush3->SetImageDrawMode(BrushImageDrawMode::BorderFrame);
 		brush3->SetBorderThickness(ThicknessF(8, 8, 8, 8));
 
-		if (Engine::BeginRendering())
-		{
-			Engine::Render();
+		LN_TEST_BEGIN_FRAME;
+		Engine::Render();
 
-			auto* g = Engine::GetDefault2DLayer()->GetRenderer();
-			g->Clear(ClearFlags::All, Color::Gray);
+		auto* g = Engine::GetDefaultSceneGraph2D()->GetRenderer();
+		g->Clear(ClearFlags::All, Color::Gray);
 
-			// 厚さ均一
-			g->SetBrush(brush1);
-			g->DrawRectangle(RectF(0, 0, 43, 63));
+		// 厚さ均一
+		g->SetBrush(brush1);
+		g->DrawRectangle(RectF(0, 0, 43, 63));
 
-			// 厚さ差あり
-			g->SetBrush(brush2);
-			g->DrawRectangle(RectF(60, 0, 43, 63));
+		// 厚さ差あり
+		g->SetBrush(brush2);
+		g->DrawRectangle(RectF(60, 0, 43, 63));
 
-			// 縮退 + 厚さ均一
-			g->SetBrush(brush3);
-			g->DrawRectangle(RectF(0, 80, 6, 4));
+		// 縮退 + 厚さ均一
+		g->SetBrush(brush3);
+		g->DrawRectangle(RectF(0, 80, 6, 4));
 
-			// 縮退 + 厚さ差あり
-			g->SetBrush(brush2);
-			g->DrawRectangle(RectF(60, 80, 6, 4));
+		// 縮退 + 厚さ差あり
+		g->SetBrush(brush2);
+		g->DrawRectangle(RectF(60, 80, 6, 4));
 
-			Engine::EndRendering();
-
-			ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawFrameRectangle1.png")));
-		}
+		LN_TEST_END_FRAME;
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawFrameRectangle1.png")));
 	}
 	
 	// <Test> BorderFrame + Stretch
@@ -546,21 +495,19 @@ TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
 		brush3->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
 		brush3->SetBorderThickness(ThicknessF(8, 8, 8, 8));
 
+		LN_TEST_BEGIN_FRAME;
+		Engine::Render();
 
-		if (Engine::BeginRendering())
-		{
-			Engine::Render();
-
-			auto* g = Engine::GetDefault2DLayer()->GetRenderer();
-			g->Clear(ClearFlags::All, Color::Gray);
-			g->SetBrush(brush1);
-			g->DrawRectangle(RectF(0, 0, 43, 63));
-			g->SetBrush(brush2);
-			g->DrawRectangle(RectF(50, 0, 43, 63));
-			g->SetBrush(brush3);
-			g->DrawRectangle(RectF(100, 0, 43, 63));
-			Engine::EndRendering();
-		}
+		auto* g = Engine::GetDefaultSceneGraph2D()->GetRenderer();
+		g->Clear(ClearFlags::All, Color::Gray);
+		g->SetBrush(brush1);
+		g->DrawRectangle(RectF(0, 0, 43, 63));
+		g->SetBrush(brush2);
+		g->DrawRectangle(RectF(50, 0, 43, 63));
+		g->SetBrush(brush3);
+		g->DrawRectangle(RectF(100, 0, 43, 63));
+		Engine::EndRendering();
+		LN_TEST_END_FRAME;
 
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawFrameRectangle2.png"), 95));
 	}

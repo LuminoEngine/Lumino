@@ -1,158 +1,249 @@
 ﻿
 #include "Internal.h"
-#include <BulletCollision/CollisionShapes/btStaticPlaneShape.h>
-#include <BulletCollision/CollisionShapes/btBoxShape.h>
-#include <BulletCollision/CollisionShapes/btCapsuleShape.h>
-#include <BulletCollision/CollisionShapes/btSphereShape.h>
+#include <BulletCollision/CollisionDispatch/btGhostObject.h>
+#include <btBulletDynamicsCommon.h>
+#include <Lumino/Physics/CollisionShape.h>
+#include <Lumino/Physics/PhysicsWorld.h>
 #include <Lumino/Physics/Collider.h>
-#include "BulletUtils.h"
 
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
+// LocalGhostObject
+//==============================================================================
+class Collider::LocalGhostObject : public btGhostObject
+{
+public:
+	Collider*	m_owner;
+
+	LocalGhostObject(Collider* owner)
+		: m_owner(owner)
+	{}
+
+	virtual ~LocalGhostObject()
+	{}
+
+	virtual void addOverlappingObjectInternal(btBroadphaseProxy* otherProxy, btBroadphaseProxy* thisProxy = 0) override
+	{
+		btCollisionObject* otherObject = (btCollisionObject*)otherProxy->m_clientObject;
+		btAssert(otherObject);
+		int index = m_overlappingObjects.findLinearSearch(otherObject);
+		if (index == m_overlappingObjects.size())
+		{
+			//not found
+			m_overlappingObjects.push_back(otherObject);
+
+			// 通知
+			if (m_owner->IsTrigger())
+			{
+				m_owner->OnTriggerEnter(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
+			}
+		}
+	}
+
+	virtual void removeOverlappingObjectInternal(btBroadphaseProxy* otherProxy, btDispatcher* dispatcher, btBroadphaseProxy* thisProxy = 0) override
+	{
+		btCollisionObject* otherObject = (btCollisionObject*)otherProxy->m_clientObject;
+		btAssert(otherObject);
+		int index = m_overlappingObjects.findLinearSearch(otherObject);
+		if (index < m_overlappingObjects.size())
+		{
+			m_overlappingObjects[index] = m_overlappingObjects[m_overlappingObjects.size() - 1];
+			m_overlappingObjects.pop_back();
+
+			// 通知
+			if (m_owner->IsTrigger())
+			{
+				m_owner->OnTriggerLeave(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
+			}
+		}
+	}
+};
+
+//==============================================================================
 // Collider
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Collider, Object);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Collider, PhysicsObject);
+
+//------------------------------------------------------------------------------
+RefPtr<Collider> Collider::Create(CollisionShape* shape)
+{
+	auto ptr = RefPtr<Collider>::MakeRef();
+	ptr->Initialize();
+	ptr->AddShape(shape);
+	return ptr;
+}
 
 //------------------------------------------------------------------------------
 Collider::Collider()
-	: m_shape(nullptr)
+	: PhysicsObject()
+	, m_btGhostObject(nullptr)
+	, m_shape(nullptr)
+	, m_isTrigger(false)
+	, m_initialUpdate(false)
 {
 }
 
 //------------------------------------------------------------------------------
 Collider::~Collider()
 {
-	LN_SAFE_DELETE(m_shape);
+	DeleteInternalObject();
 }
 
 //------------------------------------------------------------------------------
-void Collider::Initialize(btCollisionShape* shape)
+void Collider::Initialize()
 {
-	m_shape = shape;
-}
-
-//==============================================================================
-// PlaneCollider
-//==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PlaneCollider, Collider);
-	
-//------------------------------------------------------------------------------
-PlaneColliderPtr PlaneCollider::Create(const Vector3& direction)
-{
-	auto ptr = RefPtr<PlaneCollider>::MakeRef();
-	ptr->Initialize(direction);
-	return ptr;
+	PhysicsObject::Initialize();
+	m_initialUpdate = true;
+	detail::EngineDomain::GetPhysicsWorld3D()->AddPhysicsObject(this);
 }
 
 //------------------------------------------------------------------------------
-PlaneCollider::PlaneCollider()
+const Matrix& Collider::GetTransform() const
 {
+	return m_transform;
 }
 
 //------------------------------------------------------------------------------
-PlaneCollider::~PlaneCollider()
+void Collider::AddShape(CollisionShape* shape)
 {
+	LN_FAIL_CHECK_ARG(shape != nullptr) return;
+
+	if (m_shape != nullptr)
+	{
+		// TODO: 今は1つのみ許可
+		LN_NOTIMPLEMENTED();
+	}
+	else
+	{
+		m_shape = shape;
+	}
 }
 
 //------------------------------------------------------------------------------
-void PlaneCollider::Initialize(const Vector3& direction)
+void Collider::SetTrigger(bool enabled)
 {
-	Collider::Initialize(new btStaticPlaneShape(detail::BulletUtil::LNVector3ToBtVector3(Vector3::Normalize(direction)), 0.0f));
-}
-
-//==============================================================================
-// BoxCollider
-//==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(BoxCollider, Collider);
-	
-//------------------------------------------------------------------------------
-BoxColliderPtr BoxCollider::Create(const Vector3& size)
-{
-	auto ptr = RefPtr<BoxCollider>::MakeRef();
-	ptr->Initialize(size);
-	return ptr;
+	m_isTrigger = enabled;
 }
 
 //------------------------------------------------------------------------------
-BoxColliderPtr BoxCollider::Create(float x, float y, float z)
+bool Collider::IsTrigger() const
 {
-	return Create(Vector3(x, y, z));
+	return m_isTrigger;
 }
-	
+
+
 //------------------------------------------------------------------------------
-BoxCollider::BoxCollider()
+void Collider::ConnectOnTriggerEnter(std::function<void(PhysicsObject*)> handler)
 {
+	onTriggerEnter.AddHandler(handler);
 }
 
 //------------------------------------------------------------------------------
-BoxCollider::~BoxCollider()
+void Collider::ConnectOnTriggerLeave(std::function<void(PhysicsObject*)> handler)
 {
+	onTriggerLeave.AddHandler(handler);
 }
 
 //------------------------------------------------------------------------------
-void BoxCollider::Initialize(const Vector3& size)
+void Collider::ConnectOnTriggerStay(std::function<void(PhysicsObject*)> handler)
 {
-	Collider::Initialize(new btBoxShape(detail::BulletUtil::LNVector3ToBtVector3(size * 0.5f)));
-	// ※PMD の剛体サイズは bullet のと同じなので注意
-}
-
-//==============================================================================
-// SphereCollider
-//==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SphereCollider, Collider);
-	
-//------------------------------------------------------------------------------
-SphereColliderPtr SphereCollider::Create(float radius)
-{
-	auto ptr = RefPtr<SphereCollider>::MakeRef();
-	ptr->Initialize(radius);
-	return ptr;
-}
-	
-//------------------------------------------------------------------------------
-SphereCollider::SphereCollider()
-{
+	onTriggerStay.AddHandler(handler);
 }
 
 //------------------------------------------------------------------------------
-SphereCollider::~SphereCollider()
+void Collider::OnBeforeStepSimulation()
 {
+	if (m_initialUpdate)
+	{
+		CreateInternalObject();
+		m_initialUpdate = false;
+	}
+
+	// btCollisionObject::CF_NO_CONTACT_RESPONSE が付加されると、
+	// 他のオブジェクトと物理シミュレーションで接触しないことを示す (すり抜ける)
+	int flags = m_btGhostObject->getCollisionFlags();
+	m_btGhostObject->setCollisionFlags(
+		m_isTrigger ?
+		flags | btCollisionObject::CF_NO_CONTACT_RESPONSE :
+		flags & ~btCollisionObject::CF_NO_CONTACT_RESPONSE);
+
+	// set shape
+	if (m_shape != nullptr)
+	{
+		if (m_btGhostObject->getCollisionShape() != m_shape->GetBtCollisionShape())
+		{
+			m_btGhostObject->setCollisionShape(m_shape->GetBtCollisionShape());
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
-void SphereCollider::Initialize(float radius)
+void Collider::OnAfterStepSimulation()
 {
-	Collider::Initialize(new btSphereShape(radius));
-}
+	// get transform
+	m_btGhostObject->getWorldTransform().getOpenGLMatrix((btScalar*)&m_transform);
 
-//==============================================================================
-// CapsuleCollider
-//==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(CapsuleCollider, Collider);
-
-//------------------------------------------------------------------------------
-CapsuleColliderPtr CapsuleCollider::Create(float radius, float height)
-{
-	auto ptr = RefPtr<CapsuleCollider>::MakeRef();
-	ptr->Initialize(radius, height);
-	return ptr;
-}
-
-//------------------------------------------------------------------------------
-CapsuleCollider::CapsuleCollider()
-{
+	// notify OnTriggerStay
+	if (IsTrigger())
+	{
+		int count = m_btGhostObject->getNumOverlappingObjects();
+		for (int i = 0; i < count; i++)
+		{
+			btCollisionObject* btObj = m_btGhostObject->getOverlappingObject(i);
+			OnTriggerStay(reinterpret_cast<PhysicsObject*>(btObj->getUserPointer()));
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
-CapsuleCollider::~CapsuleCollider()
+void Collider::OnRemovedFromWorld()
 {
+	// Bullet の World に追加するのはこのクラスの役目なので、除外もここで行う。
+	if (m_btGhostObject != nullptr)
+	{
+		GetOwnerWorld()->GetBtWorld()->removeCollisionObject(m_btGhostObject);
+	}
 }
 
 //------------------------------------------------------------------------------
-void CapsuleCollider::Initialize(float radius, float height)
+void Collider::OnTriggerEnter(PhysicsObject* otherObject)
 {
-	Collider::Initialize(new btCapsuleShape(radius, height));
+	onTriggerEnter.Raise(otherObject);
+}
+
+//------------------------------------------------------------------------------
+void Collider::OnTriggerLeave(PhysicsObject* otherObject)
+{
+	onTriggerLeave.Raise(otherObject);
+}
+
+//------------------------------------------------------------------------------
+void Collider::OnTriggerStay(PhysicsObject* otherObject)
+{
+	onTriggerStay.Raise(otherObject);
+}
+
+//------------------------------------------------------------------------------
+void Collider::CreateInternalObject()
+{
+	DeleteInternalObject();
+
+	// 現状、この時点で必ず m_shape が無ければならない。
+	LN_ASSERT(m_shape != nullptr);
+
+	m_btGhostObject = new LocalGhostObject(this);
+	m_btGhostObject->setCollisionShape(m_shape->GetBtCollisionShape());
+	m_btGhostObject->setUserPointer(this);
+
+
+	GetOwnerWorld()->GetBtWorld()->addCollisionObject(m_btGhostObject, GetCollisionFilterGroup(), GetCollisionFilterMask());
+}
+
+//------------------------------------------------------------------------------
+void Collider::DeleteInternalObject()
+{
+	LN_SAFE_DELETE(m_btGhostObject);
 }
 
 LN_NAMESPACE_END

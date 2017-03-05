@@ -38,10 +38,30 @@ public:
 	static bool CheckScreenShot(const TCHAR* filePath, int passRate = 99, bool save = false);	// 基本的に 99% 一致していれば良い。グラボによって、色成分+-1 くらいの誤差がある (Radeon HD8490)
 	static void WaitRendering();
 
+
+	static void BeginFrame()
+	{
+		Engine::BeginFrameUpdate();
+		if (!Engine::BeginRendering())
+		{
+			LN_UNREACHABLE();
+		}
+	}
+
+	static void EndFrame()
+	{
+		Engine::EndRendering();
+		Engine::EndFrameUpdate();
+	}
+
 protected:
 	virtual void SetUp();
 	virtual void TearDown();
 };
+
+// テスト。あえてマクロにしたほうが処理の境界がわかりやすい？
+#define LN_TEST_BEGIN_FRAME		TestEnv::BeginFrame()
+#define LN_TEST_END_FRAME		TestEnv::EndFrame()
 
 
 inline PathName Test_GetTempFilePath(const TCHAR* fileName)

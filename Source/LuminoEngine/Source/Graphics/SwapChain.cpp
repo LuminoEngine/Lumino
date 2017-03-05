@@ -86,19 +86,25 @@ RenderTargetTexture* SwapChain::GetBackBuffer()
 }
 
 //------------------------------------------------------------------------------
-void SwapChain::Resize(const SizeI& newSize)
+void SwapChain::Present()
 {
-	m_deviceObj->Resize(newSize);
-	m_backColorBuffer->AttachDefaultBackBuffer(m_deviceObj->GetBackBuffer());
-	// ※ここではまだ深度バッファはリサイズしない。Present を終えた後に行う。
+	m_manager->PresentSwapChain(this);
 }
 
 //------------------------------------------------------------------------------
-void SwapChain::BeginRendering()
+void SwapChain::MightResizeAndDeviceReset(const SizeI& newSize)
 {
-	/*
-		この関数はフレームの描画開始時に呼び出す。
+	// Resize
+	if (GetBackBuffer()->GetSize() != newSize)
+	{
+		m_deviceObj->Resize(newSize);
+		m_backColorBuffer->AttachDefaultBackBuffer(m_deviceObj->GetBackBuffer());
+		// ※ここではまだ深度バッファはリサイズしない。Present を終えた後に行う。
+	}
 
+
+
+	/*
 		デバイスロストの確認は、描画コマンドを作り始める前に行わなければならない。
 		作り終わった後では、例えばバックバッファをリサイズしてリセットしたとき、
 		その時点で作られている描画コマンドは古いサイズのバックバッファへの描画を前提としていることになる。
@@ -149,12 +155,6 @@ void SwapChain::BeginRendering()
 
 		}
 	}
-}
-
-//------------------------------------------------------------------------------
-void SwapChain::Present()
-{
-	m_manager->PresentSwapChain(this);
 }
 
 //------------------------------------------------------------------------------

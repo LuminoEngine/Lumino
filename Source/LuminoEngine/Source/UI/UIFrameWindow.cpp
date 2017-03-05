@@ -7,6 +7,9 @@
 #include <Lumino/UI/UIContext.h>
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIFrameWindow.h>
+#include <Lumino/Scene/Camera.h>
+#include <Lumino/World.h>
+#include <Lumino/Scene/SceneGraph.h>
 #include "UIManager.h"
 #include "../Graphics/GraphicsManager.h"
 #include "../Graphics/RendererImpl.h"
@@ -51,7 +54,7 @@ void UIViewportLayer::Initialize()
 //------------------------------------------------------------------------------
 void UIViewportLayer::Render()
 {
-	m_renderingContext->BeginMakeElements(nullptr);
+	m_renderingContext->BeginMakeElements();
 
 	m_view->Render(m_renderingContext);
 }
@@ -59,8 +62,6 @@ void UIViewportLayer::Render()
 //------------------------------------------------------------------------------
 void UIViewportLayer::ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
-	m_renderingContext->EndMakeElements();
-
 	detail::CameraInfo cameraInfo;
 	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
 	cameraInfo.viewPixelSize = GetSize();
@@ -89,7 +90,6 @@ UIFrameWindow::UIFrameWindow()
 	: m_manager(nullptr)
 	, m_platformWindow(nullptr)
 	, m_swapChain(nullptr)
-	, m_mainViewport(nullptr)
 {
 }
 
@@ -97,7 +97,6 @@ UIFrameWindow::UIFrameWindow()
 UIFrameWindow::~UIFrameWindow()
 {
 	m_platformWindow->DetachEventListener(this);
-	LN_SAFE_RELEASE(m_mainViewport);
 	LN_SAFE_RELEASE(m_swapChain);
 	LN_SAFE_RELEASE(m_platformWindow);
 }
@@ -113,24 +112,12 @@ void UIFrameWindow::Initialize(detail::UIManager* manager, PlatformWindow* platf
 	LN_REFOBJ_SET(m_swapChain, swapChain);
 
 	m_platformWindow->AttachEventListener(this, 0);
-
-	// MainViewport
-	m_mainViewport = LN_NEW Viewport();
-	m_mainViewport->Initialize(m_manager->GetGraphicsManager());
-
-	// UI Layer
-	m_uiLayer.Attach(LN_NEW UIViewportLayer(view), false);
-	m_uiLayer->Initialize();
-	m_mainViewport->AddViewportLayer(m_uiLayer);
-
-	// SwapChain のサイズを Viewport へ通知
-	UpdateViewportTransform();
 }
 
 //------------------------------------------------------------------------------
 bool UIFrameWindow::OnEvent(const PlatformEventArgs& e)
 {
-	return m_mainViewport->DoPlatformEvent(e);
+	return false;
 }
 
 //------------------------------------------------------------------------------
@@ -141,60 +128,30 @@ void UIFrameWindow::SetSize(const SizeI& size)
 }
 
 //------------------------------------------------------------------------------
-//void UIFrameWindow::Render()
-//{
-//	BeginRendering();
-//	RenderContents();
-//	EndRendering();
-//}
-
-//------------------------------------------------------------------------------
 void UIFrameWindow::BeginRendering()
 {
-	// ウィンドウサイズとバックバッファサイズを合わせる
-	const SizeI& windowSize = m_platformWindow->GetSize();
-	if (m_swapChain->GetBackBuffer()->GetSize() != windowSize)
-	{
-		m_swapChain->Resize(windowSize);
-	}
-
-	m_swapChain->BeginRendering();
-
 	Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
 	renderer->Begin();
 
-	m_mainViewport->BeginRender(renderer, m_swapChain->GetBackBuffer()->GetSize());
 }
 
 //------------------------------------------------------------------------------
 void UIFrameWindow::RenderContents()
 {
-	Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
-	m_mainViewport->Render(renderer);
 }
 
 //------------------------------------------------------------------------------
 void UIFrameWindow::EndRendering()
 {
 	Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
-	m_mainViewport->EndRender(renderer, m_swapChain->GetBackBuffer());
 
 	m_manager->GetGraphicsManager()->SwitchActiveContext(nullptr);
 	renderer->End();
 	m_swapChain->Present();
 
-	// SwapChain のサイズを Viewport へ通知
-	// ※ SwapChain のサイズが「本当に」変わるタイミングは、描画コマンドが確定する Present の後。
-	//    フレーム更新の最初で行ってもよいが、この時点で行ってもよい。
-	UpdateViewportTransform();
-}
+	// ウィンドウサイズとバックバッファサイズを合わせる
+	m_swapChain->MightResizeAndDeviceReset(m_platformWindow->GetSize());
 
-//------------------------------------------------------------------------------
-void UIFrameWindow::UpdateViewportTransform()
-{
-	const SizeI& bbSize = m_swapChain->GetBackBuffer()->GetSize();
-	Size viewSize((float)bbSize.width, (float)bbSize.height);
-	m_mainViewport->UpdateLayersTransform(viewSize);
 }
 
 
@@ -206,17 +163,21 @@ LN_UI_TYPEINFO_IMPLEMENT(UIMainWindow, UIFrameWindow)
 //------------------------------------------------------------------------------
 UIMainWindow::UIMainWindow()
 	: m_mainUIContext(nullptr)
+	, m_mainViewport(nullptr)
+	, m_uiLayer(nullptr)
 {
 }
 
 //------------------------------------------------------------------------------
 UIMainWindow::~UIMainWindow()
 {
+	m_mainViewport->RemoveViewportLayer(m_default2DCameraViewportLayer);
+	m_mainViewport->RemoveViewportLayer(m_default3DCameraViewportLayer);
 	LN_SAFE_RELEASE(m_mainUIContext);
 }
 
 //------------------------------------------------------------------------------
-void UIMainWindow::Initialize(detail::UIManager* manager, PlatformWindow* platformWindow)
+void UIMainWindow::Initialize(detail::UIManager* manager, PlatformWindow* platformWindow, World2D* defaultWorld2D, World3D* defaultWorld3D)
 {
 	LN_CHECK_ARG(manager != nullptr);
 
@@ -225,9 +186,34 @@ void UIMainWindow::Initialize(detail::UIManager* manager, PlatformWindow* platfo
 
 	UIFrameWindow::Initialize(manager, platformWindow, manager->GetGraphicsManager()->GetMainSwapChain(), m_mainUIContext->GetMainWindowView());
 
+	// MainViewport
+	m_mainViewport = LN_NEW Viewport();
+	m_mainViewport->Initialize(GetManager()->GetGraphicsManager());
 
-	//m_mainUIContext->GetMainWindowView()->InjectViewportSizeChanged(
-	//	platformWindow->GetSize().width, platformWindow->GetSize().height);
+	m_default3DCameraViewportLayer = RefPtr<CameraViewportLayer>::MakeRef();
+	m_default3DCameraViewportLayer->Initialize(detail::EngineDomain::GetSceneGraphManager(), defaultWorld3D, defaultWorld3D->GetSceneGraph3D()->GetMainCamera());
+	m_mainViewport->AddViewportLayer(m_default3DCameraViewportLayer);
+
+	m_default2DCameraViewportLayer = RefPtr<CameraViewportLayer>::MakeRef();
+	m_default2DCameraViewportLayer->Initialize(detail::EngineDomain::GetSceneGraphManager(), defaultWorld2D, defaultWorld2D->GetSceneGraph2D()->GetMainCamera());
+	m_mainViewport->AddViewportLayer(m_default2DCameraViewportLayer);
+
+	// UI Layer
+	m_uiLayer.Attach(LN_NEW UIViewportLayer(m_mainUIContext->GetMainWindowView()), false);
+	m_uiLayer->Initialize();
+	m_mainViewport->AddViewportLayer(m_uiLayer);
+
+	// SwapChain のサイズを Viewport へ通知
+	UpdateViewportTransform();
+}
+
+CameraViewportLayer* UIMainWindow::GetDefault2DCameraViewportLayer()
+{
+	return m_default2DCameraViewportLayer;
+}
+CameraViewportLayer* UIMainWindow::GetDefault3DCameraViewportLayer()
+{
+	return m_default3DCameraViewportLayer;
 }
 
 //------------------------------------------------------------------------------
@@ -247,6 +233,43 @@ void UIMainWindow::RenderUI()
 {
 }
 
+//------------------------------------------------------------------------------
+bool UIMainWindow::OnEvent(const PlatformEventArgs& e)
+{
+	return m_mainViewport->DoPlatformEvent(e);
+}
+void UIMainWindow::BeginRendering()
+{
+	UIFrameWindow::BeginRendering();
+
+	Details::Renderer* renderer = GetManager()->GetGraphicsManager()->GetRenderer();
+	m_mainViewport->BeginRender(renderer, GetSwapChain()->GetBackBuffer()->GetSize());
+}
+void UIMainWindow::RenderContents()
+{
+	Details::Renderer* renderer = GetManager()->GetGraphicsManager()->GetRenderer();
+	m_mainViewport->Render(renderer);
+
+	UIFrameWindow::RenderContents();
+}
+void UIMainWindow::EndRendering()
+{
+	Details::Renderer* renderer = GetManager()->GetGraphicsManager()->GetRenderer();
+	m_mainViewport->EndRender(renderer, GetSwapChain()->GetBackBuffer());
+
+	UIFrameWindow::EndRendering();
+
+	// SwapChain のサイズを Viewport へ通知
+	// ※ SwapChain のサイズが「本当に」変わるタイミングは、描画コマンドが確定する Present の後。
+	//    フレーム更新の最初で行ってもよいが、この時点で行ってもよい。
+	UpdateViewportTransform();
+}
+void UIMainWindow::UpdateViewportTransform()
+{
+	const SizeI& bbSize = GetSwapChain()->GetBackBuffer()->GetSize();
+	Size viewSize((float)bbSize.width, (float)bbSize.height);
+	m_mainViewport->UpdateLayersTransform(viewSize);
+}
 
 //==============================================================================
 // UINativeHostWindow

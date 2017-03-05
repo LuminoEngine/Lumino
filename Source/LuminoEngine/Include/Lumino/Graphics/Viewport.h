@@ -43,7 +43,7 @@ public:
 	int GetZIndex() const { return m_zIndex; }
 
 
-	virtual DrawList* GetRenderer() = 0;
+	//virtual DrawList* GetRenderer() = 0;
 
 protected:
 	virtual bool OnPlatformEvent(const PlatformEventArgs& e);
@@ -64,7 +64,6 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	/// 後描画
 	void PostRender(DrawList* context, RefPtr<RenderTargetTexture>* primaryLayerTarget, RefPtr<RenderTargetTexture>* secondaryLayerTarget);
 
-	virtual void OnBeginFrameRender(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
 	virtual void ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
 
 private:

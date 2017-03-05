@@ -28,12 +28,6 @@ SceneGraphManager::SceneGraphManager(const ConfigData& configData)
 	, m_effectManager(configData.effectManager)
 	, m_modelManager(configData.modelManager)
 	, m_documentsManager(configData.documentsManager)
-	//, m_rootNode(NULL)
-	, m_default3DSceneGraph(nullptr)
-	, m_default2DSceneGraph(nullptr)
-	, m_default3DCameraViewportLayer(nullptr)
-	, m_default2DCameraViewportLayer(nullptr)
-	, m_mainViewport(configData.mainViewport)
 {
 	m_dummyWhiteTexture = m_graphicsManager->GetDummyWhiteTexture();
 }
@@ -46,49 +40,19 @@ SceneGraphManager::~SceneGraphManager()
 //------------------------------------------------------------------------------
 void SceneGraphManager::CreateDefaultSceneGraph()
 {
-#if 0
-	RefPtr<MMDSceneGraph> sg(LN_NEW MMDSceneGraph(), false);
-	sg->CreateCore(this);
-	sg.SafeAddRef();
-	m_default3DSceneGraph = sg;
-#endif
-
-	m_default2DSceneGraph = RefPtr<SceneGraph2D>::MakeRef();
-	m_default2DSceneGraph->CreateCore(this);
-
-	m_default3DSceneGraph = RefPtr<SceneGraph3D>::MakeRef();
-	m_default3DSceneGraph->CreateCore(this);
-
-	m_default3DCameraViewportLayer = LN_NEW CameraViewportLayer();
-	m_default3DCameraViewportLayer->Initialize(this, m_default3DSceneGraph->GetMainCamera());
-	m_mainViewport->AddViewportLayer(m_default3DCameraViewportLayer);
-
-	m_default2DCameraViewportLayer = LN_NEW CameraViewportLayer();
-	m_default2DCameraViewportLayer->Initialize(this, m_default2DSceneGraph->GetMainCamera());
-	m_mainViewport->AddViewportLayer(m_default2DCameraViewportLayer);
+	// TODO: いらない
 }
 
 //------------------------------------------------------------------------------
 void SceneGraphManager::ReleaseDefaultSceneGraph()
 {
-	m_mainViewport->RemoveViewportLayer(m_default3DCameraViewportLayer);
-	LN_SAFE_RELEASE(m_default3DCameraViewportLayer);
-	m_mainViewport->RemoveViewportLayer(m_default2DCameraViewportLayer);
-	LN_SAFE_RELEASE(m_default2DCameraViewportLayer);
-
-	m_default2DSceneGraph.SafeRelease();
-	m_default3DSceneGraph.SafeRelease();
+	// TODO: いらない
 }
 
 //------------------------------------------------------------------------------
 void SceneGraphManager::UpdateFrameDefaultSceneGraph(float elapsedTime)
 {
-	if (m_default3DSceneGraph != nullptr) {
-		m_default3DSceneGraph->UpdateFrame(elapsedTime);
-	}
-	if (m_default2DSceneGraph != nullptr) {
-		m_default2DSceneGraph->UpdateFrame(elapsedTime);
-	}
+	// TODO: いらない
 }
 
 //------------------------------------------------------------------------------

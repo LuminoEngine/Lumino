@@ -35,6 +35,14 @@ public:
 		return btQuaternion(q.x, q.y, q.z, q.w);
 	}
 
+	static Matrix BtTransformToLNMatrix(const btTransform& t)
+	{
+		Matrix out;
+		t.getOpenGLMatrix((btScalar*)&out);
+		return out;
+	}
+
+
 	static void DumpBtVector3(const btVector3& v)
 	{
 		printf("Vector3\n%f, %f, %f\n", v.x(), v.y(), v.z());

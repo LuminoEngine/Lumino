@@ -1,9 +1,11 @@
 ﻿
 #pragma once
+#include <atomic>
 #include "../Threading/AtomicCounter.h"
 
 LN_NAMESPACE_BEGIN
 class RefObject;
+namespace tr { class ReflectionHelper; }
 
 /// 参照カウントのインクリメント
 #ifndef LN_SAFE_ADDREF
@@ -48,11 +50,16 @@ public:
 	virtual int32_t Release();
 
 protected:
-    Atomic		m_referenceCount;	///< 参照カウント	TODO: atomic<> の方が高速
+    Atomic					m_referenceCount;	///< 参照カウント	TODO: atomic<> の方が高速
 
 private:
 	LN_DISALLOW_COPY_AND_ASSIGN(RefObject);
 
+	void ReleaseInternal();
+
+	std::atomic<int32_t>	m_internalReferenceCount;
+
+	friend class tr::ReflectionHelper;
 };
 
 //namespace detail

@@ -576,9 +576,8 @@ LN_INTERNAL_ACCESS:
 	void Initialize(detail::GraphicsManager* manager);
 	detail::GraphicsManager* GetManager() const { return m_manager; }
 	detail::DrawElementList* GetDrawElementList() { return &m_drawElementList; }
-	Camera* GetCurrentCamera() const { return m_camera; }
-	void BeginMakeElements(Camera* camera);
-	void EndMakeElements();
+	void SetDefaultMaterial(Material* material);
+	void BeginMakeElements();
 	void EndFrame();
 
 	const detail::BatchStateBlock& GetState() const { return m_state; }
@@ -593,6 +592,10 @@ LN_INTERNAL_ACCESS:
 	void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material);
 	void BlitInternal(Texture* source, RenderTargetTexture* dest, const Matrix& transform, Material* material);
 	void DrawFrameRectangle(const RectF& rect);
+
+	// TODO: 本質的に DrawList に持たせるべきではない。一応今は一時変数的な扱いでしかないので被害は少ないが・・・
+	void SetCurrentCamera(Camera* camera) { m_camera = camera; }
+	Camera* GetCurrentCamera() const { return m_camera; }
 
 private:
 	detail::GraphicsManager*		m_manager;

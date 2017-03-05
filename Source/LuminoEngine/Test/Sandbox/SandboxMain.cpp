@@ -112,7 +112,7 @@ void Main()
 	//EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
 	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
 	Engine::Initialize();
-	Engine::GetMainViewport()->SetBackgroundColor(Color32::Gray);
+	//Engine::GetMainViewport()->SetBackgroundColor(Color32::Gray);
 	Engine::GetMainViewport()->SetPlacement(ViewportPlacement::AutoResize);
 
 	Engine::GetDefaultSceneGraph3D()->visibleGridPlane = true;
@@ -516,7 +516,7 @@ void Main()
 	//auto box1 = StaticMesh::CreateBox(Vector3(5, 5, 5));
 	//auto box1 = StaticMesh::CreateTeapot();
 	//auto box1 = StaticMesh::Create(_T("D:/Proj/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/MqoTest1.mqo"));
-	auto box1 = StaticMesh::Create(_T("C:/Proj/FluoriteSolution/External/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/MqoTest1.mqo"));
+	//auto box1 = StaticMesh::Create(_T("C:/Proj/FluoriteSolution/External/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/Plant1.mqo"));
 
 	//box1->GetMaterials()->GetAt(0)->SetMaterialTexture(tex1);
 	////box1->SetTone(ToneF(0, 0, 1, 1.0));
@@ -541,6 +541,13 @@ void Main()
 	}
 #endif
 
+#if 1
+	auto col1 = BoxCollisionShape::Create(1, 2, 3);
+	auto body1 = RigidBody::Create(col1);
+	body1->SetPosition(10, 0, 0);
+#endif
+	//static_cast<CameraViewportLayer*>(Engine::GetDefault3DLayer())->SetDebugDrawFlags(WorldDebugDrawFlags::PhysicsInfo);
+
 	while (!Engine::IsEndRequested())
 	{
 		Engine::BeginFrameUpdate();
@@ -548,11 +555,18 @@ void Main()
 		{
 			Engine::Render();
 
+
+			Engine::GetDefaultSceneGraph3D()->GetDebugRenderer()->DrawLinePrimitive(
+				Vector3(0, 0, 0), Color::Red,
+				Vector3(5, 5, 5), Color::White);
+
 			//gizmo->Render(Engine::GetDefault3DLayer()->GetRenderer());
 
 			Engine::EndRendering();
 		}
 		Engine::EndFrameUpdate();
+
+		//body1->GetWorldTransform().GetPosition().Print();
 
 
 		//if (Input::IsTriggered(InputButtons::Ok))

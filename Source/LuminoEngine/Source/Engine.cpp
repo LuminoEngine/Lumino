@@ -5,6 +5,7 @@
 #include "Input/InputManager.h"
 #include "Audio/AudioManager.h"
 #include <Lumino/Engine.h>
+#include <Lumino/World.h>
 #include "Graphics/RendererImpl.h"
 #include "Graphics/ProfilerRenderer.h"
 #include "Graphics/RenderingThread.h"
@@ -99,6 +100,18 @@ void Engine::ResetFrameDelay()
 }
 
 //------------------------------------------------------------------------------
+World* Engine::GetWorld2D()
+{
+	return EngineManager::Instance->GetDefaultWorld2D();
+}
+
+//------------------------------------------------------------------------------
+World* Engine::GetWorld3D()
+{
+	return EngineManager::Instance->GetDefaultWorld3D();
+}
+
+//------------------------------------------------------------------------------
 UIMainWindow* Engine::GetMainWindow()
 {
 	return EngineManager::Instance->GetUIManager()->GetMainWindow();
@@ -112,31 +125,31 @@ Viewport* Engine::GetMainViewport()
 //------------------------------------------------------------------------------
 ViewportLayer* Engine::GetDefault2DLayer()
 {
-	return EngineManager::Instance->GetSceneGraphManager()->GetDefault2DCameraViewportLayer();
+	return EngineManager::Instance->GetUIManager()->GetMainWindow()->GetDefault2DCameraViewportLayer();
 }
 
 //------------------------------------------------------------------------------
 ViewportLayer* Engine::GetDefault3DLayer()
 {
-	return EngineManager::Instance->GetSceneGraphManager()->GetDefault3DCameraViewportLayer();
+	return EngineManager::Instance->GetUIManager()->GetMainWindow()->GetDefault3DCameraViewportLayer();
 }
 
 //------------------------------------------------------------------------------
 SceneGraph2D* Engine::GetDefaultSceneGraph2D()
 {
-	return EngineManager::Instance->GetSceneGraphManager()->GetDefaultSceneGraph2D();
+	return EngineManager::Instance->GetDefaultWorld2D()->GetSceneGraph2D();
 }
 
 //------------------------------------------------------------------------------
 SceneGraph3D* Engine::GetDefaultSceneGraph3D()
 {
-	return EngineManager::Instance->GetSceneGraphManager()->GetDefaultSceneGraph3D();
+	return EngineManager::Instance->GetDefaultWorld3D()->GetSceneGraph3D();
 }
 
 //------------------------------------------------------------------------------
 Light* Engine::GetMainLight3D()
 {
-	return EngineManager::Instance->GetSceneGraphManager()->GetDefaultSceneGraph3D()->GetMainLight();
+	return EngineManager::Instance->GetDefaultWorld3D()->GetSceneGraph3D()->GetMainLight();
 }
 
 LN_NAMESPACE_END

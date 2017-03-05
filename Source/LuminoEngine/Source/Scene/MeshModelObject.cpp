@@ -20,7 +20,7 @@ SkinnedMeshPtr SkinnedMesh::Create(const StringRef& filePath)
 {
 	auto ptr = SkinnedMeshPtr::MakeRef();
 	auto mesh = SceneGraphManager::Instance->GetModelManager()->CreateSkinnedMeshModel(filePath);
-	ptr->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), mesh);
+	ptr->Initialize(detail::EngineDomain::GetDefaultSceneGraph3D(), mesh);
 	return ptr;
 }
 
@@ -48,7 +48,7 @@ void SkinnedMesh::Initialize(SceneGraph* ownerSceneGraph, SkinnedMeshModel* mesh
 	m_materialList->CopyShared(meshModel->m_mesh->m_materials, true);
 
 
-	ownerSceneGraph->GetManager()->GetDefaultSceneGraph3D()->GetRootNode()->AddChild(this);
+	ownerSceneGraph->GetRootNode()->AddChild(this);
 	SetAutoRemove(true);
 
 

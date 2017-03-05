@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "../World.h"
 #include "../Graphics/Viewport.h"
 #include "../Graphics/Rendering.h"
 #include "SceneNode.h"
@@ -9,6 +10,7 @@ LN_NAMESPACE_SCENE_BEGIN
 namespace tr { class GizmoModel; }
 class CameraViewportLayer;
 using CameraViewportLayerPtr = RefPtr<CameraViewportLayer>;
+
 
 /**
 	@brief
@@ -142,16 +144,15 @@ public:
 	static CameraViewportLayer* GetDefault2D();
 	static CameraViewportLayer* GetDefault3D();
 
-	static CameraViewportLayerPtr Create(Camera* camera);
+	//static CameraViewportLayerPtr Create(Camera* camera);
 
-
+	void SetDebugDrawFlags(WorldDebugDrawFlags flags);
 
 	tr::GizmoModel* CreateGizmo();
 
 	// ViewportLayer interface
-	virtual DrawList* GetRenderer() override;
+	//virtual DrawList* GetRenderer() override;
 	virtual void Render() override;
-	virtual void OnBeginFrameRender(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 	virtual void ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 
 protected:
@@ -162,13 +163,14 @@ protected:
 LN_INTERNAL_ACCESS:
 	CameraViewportLayer();
 	virtual ~CameraViewportLayer();
-	void Initialize(SceneGraphManager* manager, Camera* hostingCamera);
+	void Initialize(SceneGraphManager* manager, World* targetWorld, Camera* hostingCamera);
 
 private:
+	World*				m_targetWorld;
 	RefPtr<Camera>		m_hostingCamera;
-	RefPtr<DrawList>	m_renderer;
 	RefPtr<detail::InternalRenderer>	m_internalRenderer;
 	RefPtr<tr::GizmoModel>	m_gizmo;
+	WorldDebugDrawFlags		m_debugDrawFlags;
 };
 
 /**

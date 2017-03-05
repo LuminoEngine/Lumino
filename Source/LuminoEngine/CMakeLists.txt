@@ -144,16 +144,20 @@ set(LN_SOURCES_Audio
 set(LN_SOURCES_Physics
 	Include/Lumino/Physics/BodyBase.h
 	Include/Lumino/Physics/Collider.h
+	Include/Lumino/Physics/CollisionShape.h
 	Include/Lumino/Physics/Common.h
 	Include/Lumino/Physics/Joint.h
+	Include/Lumino/Physics/PhysicsWorld.h
 	Include/Lumino/Physics/RigidBody.h
 	Source/Physics/BodyBase.cpp
 	Source/Physics/BulletUtils.h
 	Source/Physics/Collider.cpp
+	Source/Physics/CollisionShape.cpp
 	Source/Physics/Internal.h
 	Source/Physics/Joint.cpp
 	Source/Physics/PhysicsManager.cpp
 	Source/Physics/PhysicsManager.h
+	Source/Physics/PhysicsWorld.cpp
 	Source/Physics/RigidBody.cpp
 )
 
@@ -510,6 +514,7 @@ set(LN_SOURCES_Engine
 	Include/Lumino/Profiler.h
 	Include/Lumino/RoutedEvent.h
 	Include/Lumino/Version.h
+	Include/Lumino/World.h
 	Source/AssetsManager.cpp
 	Source/AssetsManager.h
 	Source/Engine.cpp
@@ -526,6 +531,7 @@ set(LN_SOURCES_Engine
 	Source/Resource.h
 	Source/RoutedEvent.cpp
 	Source/Version.cpp
+	Source/World.cpp
 )
 
 set(LN_SOURCES_Framework

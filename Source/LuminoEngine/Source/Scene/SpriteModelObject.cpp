@@ -20,7 +20,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SpriteModelObject, VisualNode);
 RefPtr<SpriteModelObject> SpriteModelObject::Create(const String& filePath)
 {
 	RefPtr<SpriteModelObject> obj(LN_NEW SpriteModelObject(), false);
-	obj->Initialize(SceneGraphManager::Instance->GetDefaultSceneGraph3D(), filePath);
+	obj->Initialize(ln::detail::EngineDomain::GetDefaultSceneGraph3D(), filePath);
 	return obj;
 }
 
@@ -58,7 +58,7 @@ void SpriteModelObject::Initialize(SceneGraph* owner, const String& filePath)
 	//	manager->GetDefault2DSceneGraph()->GetRootNode()->AddChild(this);
 	//}
 	//else {
-		owner->GetManager()->GetDefaultSceneGraph3D()->GetRootNode()->AddChild(this);
+		owner->GetRootNode()->AddChild(this);
 		SetAutoRemove(true);
 	//}
 }
