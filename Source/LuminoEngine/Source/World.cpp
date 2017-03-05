@@ -39,7 +39,7 @@ void World::UpdateFrame(float elapsedTime)
 }
 
 //------------------------------------------------------------------------------
-void World::Render(Camera* camera)
+void World::Render(Camera* camera, WorldDebugDrawFlags debugDrawFlags)
 {
 	SceneGraph* scene = GetSceneGraph();
 	if (scene != nullptr)
@@ -174,27 +174,29 @@ void World3D::UpdateFrame(float elapsedTime)
 }
 
 //------------------------------------------------------------------------------
-void World3D::Render(Camera* camera)
+void World3D::Render(Camera* camera, WorldDebugDrawFlags debugDrawFlags)
 {
-	World::Render(camera);
+	World::Render(camera, debugDrawFlags);
 
-
-	if (m_physicsWorld != nullptr)
+	if (debugDrawFlags.TestFlag(WorldDebugDrawFlags::PhysicsInfo))
 	{
-		class DebugRenderer : public PhysicsWorld::IDebugRenderer
+		if (m_physicsWorld != nullptr)
 		{
-		public:
-			DrawList* renderer;
-
-			virtual void DrawLine(const Vector3& from, const Vector3& to, const Vector3& fromColor, const Vector3& toColor)
+			class DebugRenderer : public PhysicsWorld::IDebugRenderer
 			{
-				renderer->DrawLinePrimitive(from, Color(fromColor, 1.0f), to, Color(toColor, 1.0f));
-			}
-		};
-		DebugRenderer r;
-		r.renderer = m_sceneGraph->GetDebugRenderer();
+			public:
+				DrawList* renderer;
 
-		m_physicsWorld->DrawDebugShapes(&r);
+				virtual void DrawLine(const Vector3& from, const Vector3& to, const Vector3& fromColor, const Vector3& toColor)
+				{
+					renderer->DrawLinePrimitive(from, Color(fromColor, 1.0f), to, Color(toColor, 1.0f));
+				}
+			};
+			DebugRenderer r;
+			r.renderer = m_sceneGraph->GetDebugRenderer();
+
+			m_physicsWorld->DrawDebugShapes(&r);
+		}
 	}
 }
 

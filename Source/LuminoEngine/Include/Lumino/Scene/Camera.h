@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "../World.h"
 #include "../Graphics/Viewport.h"
 #include "../Graphics/Rendering.h"
 #include "SceneNode.h"
@@ -7,7 +8,6 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 namespace tr { class GizmoModel; }
-class World;
 class CameraViewportLayer;
 using CameraViewportLayerPtr = RefPtr<CameraViewportLayer>;
 
@@ -146,7 +146,7 @@ public:
 
 	//static CameraViewportLayerPtr Create(Camera* camera);
 
-
+	void SetDebugDrawFlags(WorldDebugDrawFlags flags);
 
 	tr::GizmoModel* CreateGizmo();
 
@@ -170,6 +170,7 @@ private:
 	RefPtr<Camera>		m_hostingCamera;
 	RefPtr<detail::InternalRenderer>	m_internalRenderer;
 	RefPtr<tr::GizmoModel>	m_gizmo;
+	WorldDebugDrawFlags		m_debugDrawFlags;
 };
 
 /**

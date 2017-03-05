@@ -546,6 +546,7 @@ void Main()
 	auto body1 = RigidBody::Create(col1);
 	body1->SetPosition(10, 0, 0);
 #endif
+	//static_cast<CameraViewportLayer*>(Engine::GetDefault3DLayer())->SetDebugDrawFlags(WorldDebugDrawFlags::PhysicsInfo);
 
 	while (!Engine::IsEndRequested())
 	{

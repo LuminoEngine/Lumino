@@ -8,6 +8,14 @@ class SceneGraph2D;
 class SceneGraph3D;
 class PhysicsWorld;
 
+/** */
+LN_ENUM_FLAGS(WorldDebugDrawFlags)
+{
+	None = 0x0000,
+	PhysicsInfo = 0x0001,
+};
+LN_ENUM_FLAGS_DECLARE(WorldDebugDrawFlags)
+
 /**
 	@brief		
 */
@@ -29,7 +37,7 @@ LN_CONSTRUCT_ACCESS:
 LN_INTERNAL_ACCESS:
 	virtual void BeginUpdateFrame();
 	virtual void UpdateFrame(float elapsedTime);
-	virtual void Render(Camera* camera);
+	virtual void Render(Camera* camera, WorldDebugDrawFlags debugDrawFlags);
 	void ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
 };
 
@@ -81,7 +89,7 @@ LN_INTERNAL_ACCESS:
 	SceneGraph3D* GetSceneGraph3D() const;
 	virtual void BeginUpdateFrame() override;
 	virtual void UpdateFrame(float elapsedTime) override;
-	virtual void Render(Camera* camera);
+	virtual void Render(Camera* camera, WorldDebugDrawFlags debugDrawFlags);
 
 private:
 	RefPtr<PhysicsWorld>	m_physicsWorld;

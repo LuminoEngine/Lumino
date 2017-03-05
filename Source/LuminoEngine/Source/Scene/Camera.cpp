@@ -215,6 +215,7 @@ CameraViewportLayer* CameraViewportLayer::GetDefault3D()
 CameraViewportLayer::CameraViewportLayer()
 	: m_targetWorld(nullptr)
 	, m_hostingCamera(nullptr)
+	, m_debugDrawFlags(WorldDebugDrawFlags::None)
 {
 }
 
@@ -250,6 +251,12 @@ CameraViewportLayer::~CameraViewportLayer()
 }
 
 //------------------------------------------------------------------------------
+void CameraViewportLayer::SetDebugDrawFlags(WorldDebugDrawFlags flags)
+{
+	m_debugDrawFlags = flags;
+}
+
+//------------------------------------------------------------------------------
 tr::GizmoModel* CameraViewportLayer::CreateGizmo()
 {
 	m_gizmo = RefPtr<tr::GizmoModel>::MakeRef();
@@ -268,7 +275,7 @@ void CameraViewportLayer::Render()
 	// カメラ行列の更新
 	m_hostingCamera->UpdateMatrices(GetSize());
 
-	m_targetWorld->Render(m_hostingCamera);
+	m_targetWorld->Render(m_hostingCamera, m_debugDrawFlags);
 
 	if (m_gizmo != nullptr)
 	{
