@@ -363,6 +363,7 @@ TEST_F(Test_Graphics_Rendering, DrawSprite)
 	// <Test> Sprite の BlendMode
 	{
 		LN_TEST_BEGIN_FRAME;
+		Engine::Render();
 
 		auto* r = Engine::GetDefaultSceneGraph2D()->GetRenderer();
 
