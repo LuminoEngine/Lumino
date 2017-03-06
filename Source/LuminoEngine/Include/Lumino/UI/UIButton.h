@@ -24,11 +24,12 @@ public:
 
 	void SetText(const StringRef& text);
 
-protected:
+LN_CONSTRUCT_ACCESS:
 	UIButton();
 	virtual ~UIButton();
 	void Initialize(detail::UIManager* manager);
 
+protected:
 	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e) override;
 
 	virtual void OnClick(UIMouseEventArgs* e);

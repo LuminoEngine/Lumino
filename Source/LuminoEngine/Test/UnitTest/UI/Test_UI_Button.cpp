@@ -48,11 +48,14 @@ TEST_F(Test_UI_FlowLayout, ReverseHorizontal)
 	panel->AddChild(button2);
 	panel->SetOrientation(Orientation::ReverseHorizontal);
 
-	UIContext::GetMainContext()->GetMainWindowView()->SetContent(panel);
+	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView();
+	uiRoot->SetContent(panel);
 
 	Engine::Update();
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_FlowLayout.ReverseHorizontal1.png"), 99, true));
+
+	uiRoot->SetContent(nullptr);	// å„énññ
 }
 
 //------------------------------------------------------------------------------
@@ -77,6 +80,8 @@ TEST_F(Test_UI_FlowLayout, Margin_Padding)
 	Engine::Update();
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_FlowLayout.Margin_Padding1.png")));
+
+	uiRoot->SetContent(nullptr);	// å„énññ
 }
 
 

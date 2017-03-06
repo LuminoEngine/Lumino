@@ -132,6 +132,8 @@ UIStylePtr UIStyle::Create()
 
 //------------------------------------------------------------------------------
 UIStyle::UIStyle()
+	: m_subStyleParent(nullptr)
+	, m_subStateStyles()
 	//: m_lastUpdateParent(nullptr)
 	//m_revisionCount(0)
 	//: m_margin(ThicknessF(0, 0, 0, 0))
@@ -164,6 +166,23 @@ void UIStyle::AddValue(const StringRef& visualStateName, const tr::PropertyInfo*
 	}
 
 	table->AddValue(targetProperty, value, time, easingMode);
+}
+
+//------------------------------------------------------------------------------
+void UIStyle::AddSubStateStyle(const StringRef& subStateName, UIStyle* style)
+{
+	LN_FAIL_CHECK_ARG(style != nullptr) return;
+	LN_FAIL_CHECK_ARG(style->m_subStyleParent == nullptr) return;
+	m_subStateStyles.Add({ subStateName, style });
+}
+
+//------------------------------------------------------------------------------
+UIStyle* UIStyle::FindSubStateStyle(const StringRef& subStateName)
+{
+	SubStateStylePair* pair = m_subStateStyles.Find(
+		[subStateName](const SubStateStylePair& pair) { return pair.first == subStateName; });
+	if (pair == nullptr) return nullptr;
+	return pair->second;
 }
 
 //------------------------------------------------------------------------------
@@ -263,6 +282,15 @@ UIStyle* UIStyleTable::FindStyle(const tr::TypeInfo* targetType)
 		return FindStyle(targetType->GetBaseClass());
 	}
 	return nullptr;
+}
+
+//------------------------------------------------------------------------------
+UIStyle* UIStyleTable::FindStyle(const tr::TypeInfo* targetType, const StringRef& subState)
+{
+	UIStyle* style = FindStyle(targetType);
+	if (style == nullptr) return nullptr;
+	if (subState.IsEmpty()) return style;
+	return style->FindSubStateStyle(subState);
 }
 
 LN_NAMESPACE_END

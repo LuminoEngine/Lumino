@@ -30,20 +30,23 @@ protected:
 	void Initialize(detail::UIManager* manager);
 
 	// UIElement interface
-	virtual int GetVisualChildrenCount() const override;
-	virtual ILayoutElement* GetVisualChild(int index) const override;
+	//virtual int GetVisualChildrenCount() const override;
+	//virtual ILayoutElement* GetVisualChild(int index) const override;
 	virtual Size MeasureOverride(const Size& constraint) override;
 	virtual Size ArrangeOverride(const Size& finalSize) override;
 	virtual const VAlignment* GetPriorityContentVAlignment() override;
 	virtual const HAlignment* GetPriorityContentHAlignment() override;
 
 LN_INTERNAL_ACCESS:
-	void SetVisualTreeRoot(UIElement* element);
-	UIElement* GetVisualTreeRoot() { return m_visualTreeRoot; }
+	int GetLayoutChildrenCount() const { return GetVisualChildrenCount(); }
+	ILayoutElement* GetLayoutChild(int index) const { return GetVisualChild(index); }
+
+	//void SetVisualTreeRoot(UIElement* element);
+	//UIElement* GetVisualTreeRoot() { return m_visualTreeRoot; }
 
 private:
 
-	UIElement*	m_visualTreeRoot;
+	//UIElement*	m_visualTreeRoot;
 };
 
 LN_NAMESPACE_END

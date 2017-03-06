@@ -39,7 +39,8 @@ UIElementCollection* UIItemsControl::GetItems() const
 void UIItemsControl::SetItemsHostPanel(UILayoutPanel* panel)
 {
 	LN_CHECK_ARG(panel != nullptr);
-	SetVisualTreeRoot(panel);
+	//SetVisualTreeRoot(panel);
+	LN_NOTIMPLEMENTED();
 	m_itemsHostPanel = panel;
 }
 

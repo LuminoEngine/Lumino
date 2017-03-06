@@ -45,6 +45,8 @@ UIElement::UIElement()
 	, m_parent(nullptr)
 	, m_localStyle(nullptr)
 	, m_currentVisualStateStyle(nullptr)
+	, m_visualParent(nullptr)
+	, m_visualChildren(nullptr)
 	, position(PointF(0, 0))
 	, size(Size(NAN, NAN))
 	, margin(ThicknessF(0, 0, 0, 0))
@@ -126,12 +128,22 @@ void UIElement::ReleaseMouseCapture()
 //------------------------------------------------------------------------------
 int UIElement::GetVisualChildrenCount() const
 {
+	if (m_visualChildren != nullptr)
+	{
+		return m_visualChildren->GetCount();
+	}
+
 	return 0;
 }
 
 //------------------------------------------------------------------------------
 ILayoutElement* UIElement::GetVisualChild(int index) const
 {
+	if (m_visualChildren != nullptr)
+	{
+		return m_visualChildren->GetAt(index);
+	}
+
 	LN_THROW(0, InvalidOperationException);
 	return nullptr;
 }
@@ -139,8 +151,11 @@ ILayoutElement* UIElement::GetVisualChild(int index) const
 //------------------------------------------------------------------------------
 void UIElement::RaiseEvent(const UIEventInfo* ev, UIElement* sender, UIEventArgs* e)
 {
-	e->sender = sender;
-	RaiseEventInternal(ev, e);
+	//if (m_parent != nullptr)
+	{
+		e->sender = sender;
+		RaiseEventInternal(ev, e);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -378,7 +393,11 @@ void UIElement::ApplyTemplateHierarchy(UIStyleTable* styleTable, UIStyleProperty
 	// VisualState の変更がある場合
 	if (m_invalidateFlags.TestFlag(detail::InvalidateFlags::VisualState))
 	{
-		UIStyle* style = styleTable->FindStyle(tr::TypeInfo::GetTypeInfo(this));
+		String subStateName;
+		GetStyleClassName(&subStateName);
+
+		UIStyle* style = styleTable->FindStyle(tr::TypeInfo::GetTypeInfo(this), subStateName);
+
 		if (style != nullptr)
 		{
 			m_currentVisualStateStyle = style->FindStylePropertyTable(m_currentVisualStateName);
@@ -501,6 +520,12 @@ const VAlignment* UIElement::GetPriorityContentVAlignment()
 }
 
 //------------------------------------------------------------------------------
+void UIElement::GetStyleClassName(String* outSubStateName)
+{
+	*outSubStateName = String::GetEmpty();
+}
+
+//------------------------------------------------------------------------------
 void UIElement::RaiseEventInternal(const UIEventInfo* ev, UIEventArgs* e)
 {
 	LN_CHECK_ARG(ev != nullptr);
@@ -516,10 +541,36 @@ void UIElement::RaiseEventInternal(const UIEventInfo* ev, UIEventArgs* e)
 	if (e->handled) return;
 
 	// bubble
-	if (m_parent != nullptr)
+	if (m_visualParent != nullptr)
 	{
-		m_parent->RaiseEventInternal(ev, e);
+		m_visualParent->RaiseEventInternal(ev, e);
 	}
+}
+
+//------------------------------------------------------------------------------
+void UIElement::AddVisualChild(UIElement* element)
+{
+	LN_FAIL_CHECK_ARG(element != nullptr) return;
+	LN_FAIL_CHECK_ARG(element->m_visualParent == nullptr) return;
+
+	// リストが作成されていなければ、ここで始めて作る (省メモリ)
+	if (m_visualChildren == nullptr)
+	{
+		m_visualChildren = std::make_shared<List<RefPtr<UIElement>>>();
+	}
+
+	m_visualChildren->Add(element);
+	element->m_visualParent = this;
+}
+
+//------------------------------------------------------------------------------
+void UIElement::RemoveVisualChild(UIElement* element)
+{
+	LN_FAIL_CHECK_ARG(element != nullptr) return;
+	if (m_visualChildren == nullptr) return;
+
+	m_visualChildren->Remove(element);
+	element->m_visualParent = nullptr;
 }
 
 //------------------------------------------------------------------------------

@@ -349,6 +349,56 @@ inline void SafeAutoAddChild(TManager* manager, TObject* obj)
 	}
 }
 
+
+template<class TObject>
+class InternalRefGCList
+	: public Collection<TObject*>
+{
+public:
+
+	void CollectGC()
+	{
+		for (int i = GetCount() - 1; i >= 0; i--)
+		{
+			TObject* ptr = GetAt(i);
+			if (ptr->GetReferenceCount() == 0 && tr::ReflectionHelper::GetInternalReferenceCount(ptr) == 1)
+			{
+				RemoveAt(i);
+			}
+		}
+	}
+
+private:
+
+	virtual void InsertItem(int index, const value_type& item) override
+	{
+		Collection<TObject>::InsertItem(index, item);
+		tr::ReflectionHelper::AddRefInternal(item);
+	}
+
+	virtual void ClearItems() override
+	{
+		for (TObject* ptr : *this)
+		{
+			tr::ReflectionHelper::ReleaseInternal(ptr);
+		}
+
+		Collection<TObject>::ClearItems();
+	}
+
+	virtual void RemoveItem(int index) override
+	{
+		tr::ReflectionHelper::ReleaseInternal(GetAt(index));
+		Collection<TObject>::RemoveItem(index);
+	}
+
+	virtual void SetItem(int index, const value_type& item) override
+	{
+		Collection<TObject>::SetItem(index, item);
+		tr::ReflectionHelper::AddRefInternal(item);
+	}
+};
+
 } // namespace detail
 
 LN_NAMESPACE_END

@@ -1,7 +1,7 @@
-
+ï»¿
 #include "Internal.h"
-#include <Lumino/UI/UIContext.h>		// TODO: ‚¢‚ç‚È‚¢‚©‚à
-#include <Lumino/UI/UILayoutView.h>		// TODO: ‚¢‚ç‚È‚¢‚©‚à
+#include <Lumino/UI/UIContext.h>		// TODO: ã„ã‚‰ãªã„ã‹ã‚‚
+#include <Lumino/UI/UILayoutView.h>		// TODO: ã„ã‚‰ãªã„ã‹ã‚‚
 #include <Lumino/UI/UILayoutPanel.h>
 #include <Lumino/UI/UIContentControl.h>
 
@@ -37,16 +37,23 @@ void UIContentControl::Initialize(detail::UIManager* manager)
 //------------------------------------------------------------------------------
 void UIContentControl::SetContent(UIElement* element)
 {
-	//// Šù‚É content ‚ğ‚Á‚Ä‚¢‚ê‚Îæ‚èœ‚¢‚Ä‚¨‚­
-	//if (m_contentElement != nullptr && m_contentHost != nullptr)
-	//{
-	//	m_contentHost->RemoveChild(m_contentElement);
-	//	LN_SAFE_RELEASE(m_contentElement);
-	//}
+	// æ—¢ã« content ã‚’æŒã£ã¦ã„ã‚Œã°å–ã‚Šé™¤ã„ã¦ãŠã
+	if (m_contentElement != nullptr && m_contentElement != element)
+	{
+		RemoveVisualChild(m_contentElement);
+		LN_SAFE_RELEASE(m_contentElement);
+	}
+	m_contentElement = nullptr;
 
-	// V‚µ‚¢ m_contentElement ‚ğ•Û‚·‚é
-	SetVisualTreeRoot(element);
-	LN_REFOBJ_SET(m_contentElement, element);
+	// æ–°ã—ã„ m_contentElement ã‚’ä¿æŒã™ã‚‹
+	//    SetVisualTreeRoot(element);
+	//LN_NOTIMPLEMENTED();
+	if (element != nullptr)
+	{
+		AddVisualChild(element);
+		LN_REFOBJ_SET(m_contentElement, element);
+		m_contentElement = element;
+	}
 	//if (m_contentElement != nullptr)
 	//{
 	//	m_contentElementModified = true;
@@ -56,15 +63,15 @@ void UIContentControl::SetContent(UIElement* element)
 //------------------------------------------------------------------------------
 //void UIContentControl::OnUpdatingLayout()
 //{
-//	// VisualTree ‚ª–³‚¯‚ê‚Î’P‚È‚é Panel ‚ğì‚Á‚Ä m_contentHost ‚Æ‚µ‚Äg‚¤B
-//	// ‚±‚Ì“_‚Å VisualTree ‚ª–³‚¢‚Æ‚¢‚¤‚±‚Æ‚ÍAStyle ‚ğŒŸõ‚Å‚«‚È‚©‚Á‚½‚©A
-//	// Style ‚Ì‚Â Template ‚É Host ‚Æ‚È‚ê‚é Panel ‚ªŠÜ‚Ü‚ê‚Ä‚¢‚È‚©‚Á‚½‚Æ‚¢‚¤‚±‚ÆB
+//	// VisualTree ãŒç„¡ã‘ã‚Œã°å˜ãªã‚‹ Panel ã‚’ä½œã£ã¦ m_contentHost ã¨ã—ã¦ä½¿ã†ã€‚
+//	// ã“ã®æ™‚ç‚¹ã§ VisualTree ãŒç„¡ã„ã¨ã„ã†ã“ã¨ã¯ã€Style ã‚’æ¤œç´¢ã§ããªã‹ã£ãŸã‹ã€
+//	// Style ã®æŒã¤ Template ã« Host ã¨ãªã‚Œã‚‹ Panel ãŒå«ã¾ã‚Œã¦ã„ãªã‹ã£ãŸã¨ã„ã†ã“ã¨ã€‚
 //	if (GetVisualTreeRoot() == nullptr)
 //	{
 //		auto panel = RefPtr<UIPanel>::MakeRef();
 //		panel->Initialize(GetManager());
 //
-//		// ContentAlignment İ’è
+//		// ContentAlignment è¨­å®š
 //		panel->SetVerticalAlignment(GetVerticalContentAlignment());
 //		panel->SetHorizontalAlignment(GetHorizontalContentAlignment());
 //
@@ -72,12 +79,12 @@ void UIContentControl::SetContent(UIElement* element)
 //		SetVisualTreeRoot(m_contentHost);
 //	}
 //
-//	// m_contentHost ‚É m_contentElement ‚ğ’Ç‰Á‚·‚é
+//	// m_contentHost ã« m_contentElement ã‚’è¿½åŠ ã™ã‚‹
 //	if (m_contentElementModified)
 //	{
 //		m_contentHost->AddChild(m_contentElement);
 //
-//		// —v‘fƒcƒŠ[‚É“ü‚Á‚½‚Ì‚ÅƒXƒ^ƒCƒ‹‚ğXV‚·‚é
+//		// è¦ç´ ãƒ„ãƒªãƒ¼ã«å…¥ã£ãŸã®ã§ã‚¹ã‚¿ã‚¤ãƒ«ã‚’æ›´æ–°ã™ã‚‹
 //		//m_contentHost->ApplyTemplateHierarchy(GetOwnerLayoutView()->GetOwnerContext()->GetRootStyleTable(), GetLocalStyle());
 //		m_contentElementModified = false;
 //	}
