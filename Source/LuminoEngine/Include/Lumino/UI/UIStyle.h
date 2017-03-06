@@ -212,11 +212,11 @@ public:
 	virtual ~UIStyleTable();
 
 	void AddStyle(const tr::TypeInfo* targetType, UIStyle* style);
+	void AddStyle(const tr::TypeInfo* targetType, const StringRef& subStateName, UIStyle* style);
 
 	// 見つからなければ nullptr
 	UIStyle* FindStyle(const tr::TypeInfo* targetType);	// TODO: TypeInfo じゃなくて string にしたい
-	UIStyle* FindStyle(const tr::TypeInfo* targetType, const StringRef& subState);
-
+	UIStyle* FindStyle(const tr::TypeInfo* targetType, const StringRef& subStateName);
 
 private:	
 	typedef const tr::TypeInfo* StyleKey;

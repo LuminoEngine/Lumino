@@ -239,7 +239,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 LN_PROTECTED_INTERNAL_ACCESS:
 	// ILayoutElement interface
 	virtual const PointF& GetLayoutPosition() const override;
-	virtual const Size& GetLayoutSize() const override;
+	virtual Size GetLayoutSize() const override;
 	virtual const ThicknessF& GetLayoutMargin() const override;
 	virtual const ThicknessF& GetLayoutPadding() const override;
 	virtual AlignmentAnchor GetLayoutAnchor() const override;

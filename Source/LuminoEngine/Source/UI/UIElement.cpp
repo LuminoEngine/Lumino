@@ -575,7 +575,7 @@ void UIElement::RemoveVisualChild(UIElement* element)
 
 //------------------------------------------------------------------------------
 const PointF& UIElement::GetLayoutPosition() const { return position; }
-const Size& UIElement::GetLayoutSize() const { return size; }
+Size UIElement::GetLayoutSize() const { return size; }
 const ThicknessF& UIElement::GetLayoutMargin() const { return margin; }
 const ThicknessF& UIElement::GetLayoutPadding() const { return padding; }
 AlignmentAnchor UIElement::GetLayoutAnchor() const { return anchor; }
