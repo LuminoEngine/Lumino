@@ -238,7 +238,7 @@ void UIMainWindow::Initialize(detail::UIManager* manager, PlatformWindow* platfo
 	UIFrameWindow::Initialize(manager, platformWindow, manager->GetGraphicsManager()->GetMainSwapChain(), m_mainUIContext->GetMainWindowView());
 
 	// MainViewport
-	m_mainViewport = LN_NEW Viewport();
+	m_mainViewport = RefPtr<Viewport>::MakeRef();
 	m_mainViewport->Initialize(GetManager()->GetGraphicsManager());
 
 	m_default3DCameraViewportLayer = RefPtr<CameraViewportLayer>::MakeRef();
