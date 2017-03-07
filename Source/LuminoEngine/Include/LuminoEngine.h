@@ -14,7 +14,7 @@
 #include "Lumino/Physics/Common.h"
 #include "Lumino/Physics/PhysicsWorld.h"
 #include "Lumino/Physics/CollisionShape.h"
-#include "Lumino/Physics/BodyBase.h"
+#include "Lumino/Physics/PhysicsObject.h"
 #include "Lumino/Physics/RigidBody.h"
 #include "Lumino/Physics/Collider.h"
 #include "Lumino/Physics/Joint.h"

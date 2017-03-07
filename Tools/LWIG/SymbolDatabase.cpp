@@ -410,6 +410,17 @@ ConstantInfoPtr SymbolDatabase::CreateConstantFromLiteralString(const String& va
 		info->type = PredefinedTypes::nullptrType;
 		info->value = nullptr;
 	}
+	else if (valueStr.Contains('.'))
+	{
+		info->type = PredefinedTypes::floatType;
+		info->value = StringTraits::ToFloat(valueStr.c_str());
+	}
+	else
+	{
+		info->type = PredefinedTypes::intType;
+		info->value = StringTraits::ToInt32(valueStr.c_str());
+	}
+
 	return info;
 }
 

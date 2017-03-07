@@ -134,19 +134,19 @@ bool Collider::IsTrigger() const
 
 
 //------------------------------------------------------------------------------
-void Collider::ConnectOnTriggerEnter(std::function<void(PhysicsObject*)> handler)
+void Collider::ConnectOnTriggerEnter(Delegate<void(PhysicsObject*)> handler)
 {
 	onTriggerEnter.AddHandler(handler);
 }
 
 //------------------------------------------------------------------------------
-void Collider::ConnectOnTriggerLeave(std::function<void(PhysicsObject*)> handler)
+void Collider::ConnectOnTriggerLeave(Delegate<void(PhysicsObject*)> handler)
 {
 	onTriggerLeave.AddHandler(handler);
 }
 
 //------------------------------------------------------------------------------
-void Collider::ConnectOnTriggerStay(std::function<void(PhysicsObject*)> handler)
+void Collider::ConnectOnTriggerStay(Delegate<void(PhysicsObject*)> handler)
 {
 	onTriggerStay.AddHandler(handler);
 }

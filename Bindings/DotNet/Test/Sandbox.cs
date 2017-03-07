@@ -13,7 +13,7 @@ namespace Test
         {
             Engine.Initialize();
 
-            var box1 = StaticMesh.CreateBox();//new BoxMesh();
+            //var box1 = StaticMesh.CreateBox();//new BoxMesh();
 
             while (Engine.Update())
             {

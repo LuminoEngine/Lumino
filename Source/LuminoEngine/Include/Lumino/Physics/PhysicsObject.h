@@ -1,6 +1,5 @@
 ﻿
 #pragma once
-
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
@@ -10,6 +9,7 @@ class PhysicsWorld;
 /**
 	@brief	
 */
+LN_CLASS()
 class PhysicsObject
 	: public Object
 {

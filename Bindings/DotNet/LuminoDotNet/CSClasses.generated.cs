@@ -390,24 +390,9 @@ namespace Lumino
     public  class StaticMesh
         : VisualNode
     {
-        /// <summary>
-        /// サイズが 1.0 であるボックスのメッシュを作成します。
-        /// </summary>
-        /// <remarks>
-        /// このメッシュは共有リソースです。頂点バッファやインデックスバッファを操作すると、このメソッドで作成したほかのメッシュの形状にも影響します。通常はこれらのリソースを変更するべきではありません。
-        /// </remarks>
-        public static StaticMesh CreateBox()
-        {
-            IntPtr outReturn;
-            var result = API.LNStaticMesh_CreateBox(out outReturn);
-            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
-            return InternalManager.ReturnObjectHelper<StaticMesh>(outReturn, ref _CreateBox);
-        }
-
         internal StaticMesh(_LNInternal i) : base(i) {}
 
-        private static StaticMesh _CreateBox;
-
+        
     }
     /// <summary>
     /// 
@@ -491,6 +476,68 @@ namespace Lumino
         }
 
         internal GameScene(_LNInternal i) : base(i) {}
+
+        
+    }
+    /// <summary>
+    /// 衝突判定のためのオブジェクト形状のベースクラスです。
+    /// </summary>
+    public  class CollisionShape
+        : Object
+    {
+        internal CollisionShape(_LNInternal i) : base(i) {}
+
+        
+    }
+    /// <summary>
+    /// 箱型の衝突判定形状です。
+    /// </summary>
+    public  class BoxCollisionShape
+        : CollisionShape
+    {
+        /// <summary>
+        /// BoxCollisionShape オブジェクトを作成します。@param[in]	x, y, z	: 各辺の幅
+        /// </summary>
+        public BoxCollisionShape(Vector3 size) : base(_LNInternal.InternalBlock)
+        {
+            IntPtr outBoxCollisionShape;
+            var result = API.LNBoxCollisionShape_Initialize(ref size, out outBoxCollisionShape);
+            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            InternalManager.RegisterWrapperObject(this, outBoxCollisionShape); API.LNObject_Release(outBoxCollisionShape);
+        }
+
+        internal BoxCollisionShape(_LNInternal i) : base(i) {}
+
+        
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    public  class PhysicsObject
+        : Object
+    {
+        internal PhysicsObject(_LNInternal i) : base(i) {}
+
+        
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    public  class Collider
+        : PhysicsObject
+    {
+        /// <summary>
+        /// 他の Collider または RigidBody が、この Collider との接触している間呼び出されます。
+        /// </summary>
+        protected Collider() : base(_LNInternal.InternalBlock)
+        {
+            IntPtr outCollider;
+            var result = API.LNCollider_Initialize(out outCollider);
+            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            InternalManager.RegisterWrapperObject(this, outCollider); API.LNObject_Release(outCollider);
+        }
+
+        internal Collider(_LNInternal i) : base(i) {}
 
         
     }
@@ -614,7 +661,39 @@ namespace Lumino
             _typeInfos.Add(_GameScene);
             LNGameScene_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
 
-            API.LNGameScene_OnStart_SetOverrideCaller(GameScene.OnStart_OverrideCallback);
+            API.LNGameScene_OnStart_SetOverrideCaller(GameScene.OnStart_OverrideCallback);            var _CollisionShape = new TypeInfo(){ Factory = (handle) =>
+            {
+                var obj = new CollisionShape(_LNInternal.InternalBlock);
+                return obj;
+            }};
+            _typeInfos.Add(_CollisionShape);
+            LNCollisionShape_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
+
+            var _BoxCollisionShape = new TypeInfo(){ Factory = (handle) =>
+            {
+                var obj = new BoxCollisionShape(_LNInternal.InternalBlock);
+                return obj;
+            }};
+            _typeInfos.Add(_BoxCollisionShape);
+            LNBoxCollisionShape_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
+
+            var _PhysicsObject = new TypeInfo(){ Factory = (handle) =>
+            {
+                var obj = new PhysicsObject(_LNInternal.InternalBlock);
+                return obj;
+            }};
+            _typeInfos.Add(_PhysicsObject);
+            LNPhysicsObject_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
+
+            var _Collider = new TypeInfo(){ Factory = (handle) =>
+            {
+                var obj = new Collider(_LNInternal.InternalBlock);
+                return obj;
+            }};
+            _typeInfos.Add(_Collider);
+            LNCollider_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
+
+
         }
 
         public static TypeInfo GetTypeInfoByHandle(IntPtr handle)
@@ -664,6 +743,18 @@ namespace Lumino
 
         [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
         private static extern void LNGameScene_SetBindingTypeInfo(IntPtr data);
+
+        [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+        private static extern void LNCollisionShape_SetBindingTypeInfo(IntPtr data);
+
+        [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+        private static extern void LNBoxCollisionShape_SetBindingTypeInfo(IntPtr data);
+
+        [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+        private static extern void LNPhysicsObject_SetBindingTypeInfo(IntPtr data);
+
+        [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+        private static extern void LNCollider_SetBindingTypeInfo(IntPtr data);
 
 
     }

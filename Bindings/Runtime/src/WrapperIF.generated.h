@@ -122,5 +122,37 @@ public:
 };
 GameScene_OnStart_OverrideCaller LNGameScene::m_OnStart_OverrideCaller = nullptr;
 
+class LNCollisionShape : public CollisionShape
+{
+public:
+
+
+
+};
+
+class LNBoxCollisionShape : public BoxCollisionShape
+{
+public:
+
+
+
+};
+
+class LNPhysicsObject : public PhysicsObject
+{
+public:
+
+
+
+};
+
+class LNCollider : public Collider
+{
+public:
+
+
+
+};
+
 
 

@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 
@@ -18,8 +18,9 @@ using CapsuleCollisionShapePtr = RefPtr<CapsuleCollisionShape>;
 using MeshCollisionShapePtr = RefPtr<MeshCollisionShape>;
 
 /**
-	@brief	Õ“Ë”»’è‚Ì‚½‚ß‚ÌƒIƒuƒWƒFƒNƒgŒ`ó‚Ìƒx[ƒXƒNƒ‰ƒX‚Å‚·B
+	@brief	è¡çªåˆ¤å®šã®ãŸã‚ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå½¢çŠ¶ã®ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
 */
+LN_CLASS()
 class CollisionShape
 	: public Object
 {
@@ -27,10 +28,10 @@ class CollisionShape
 
 public:
 
-	/** ‚±‚Ì CollisionShape ‚ªÕ“Ë”»’è‚Ì‚½‚ß‚ÌƒgƒŠƒK[‚Å‚ ‚é‚©‚ğİ’è‚µ‚Ü‚·B‰Šú’l‚Í false ‚Å‚·B*/
+	/** ã“ã® CollisionShape ãŒè¡çªåˆ¤å®šã®ãŸã‚ã®ãƒˆãƒªã‚¬ãƒ¼ã§ã‚ã‚‹ã‹ã‚’è¨­å®šã—ã¾ã™ã€‚åˆæœŸå€¤ã¯ false ã§ã™ã€‚*/
 	void SetTrigger(bool enabled);
 
-	/** ‚±‚Ì CollisionShape ‚ªÕ“Ë”»’è‚Ì‚½‚ß‚ÌƒgƒŠƒK[‚Å‚ ‚é‚©‚ğæ“¾‚µ‚Ü‚·B*/
+	/** ã“ã® CollisionShape ãŒè¡çªåˆ¤å®šã®ãŸã‚ã®ãƒˆãƒªã‚¬ãƒ¼ã§ã‚ã‚‹ã‹ã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	bool IsTrigger() const;
 
 LN_CONSTRUCT_ACCESS:
@@ -48,7 +49,7 @@ private:
 };
 
 /**
-	@brief	–³ŒÀ•½–Ê‚ÌÕ“Ë”»’èŒ`ó‚Å‚·B
+	@brief	ç„¡é™å¹³é¢ã®è¡çªåˆ¤å®šå½¢çŠ¶ã§ã™ã€‚
 */
 class PlaneCollisionShape
 	: public CollisionShape
@@ -57,8 +58,8 @@ class PlaneCollisionShape
 public:
 	
 	/**
-		@brief		PlaneCollisionShape ƒIƒuƒWƒFƒNƒg‚ğì¬‚µ‚Ü‚·B
-		@param[in]	direction	: –Ê‚Ì³–Ê•ûŒü (È—ª‚µ‚½ê‡‚Í Y+ •ûŒü)
+		@brief		PlaneCollisionShape ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆã—ã¾ã™ã€‚
+		@param[in]	direction	: é¢ã®æ­£é¢æ–¹å‘ (çœç•¥ã—ãŸå ´åˆã¯ Y+ æ–¹å‘)
 	*/
 	static PlaneCollisionShapePtr Create(const Vector3& direction = Vector3::UnitY);
 	
@@ -69,8 +70,9 @@ LN_INTERNAL_ACCESS:
 };
 
 /**
-	@brief	” Œ^‚ÌÕ“Ë”»’èŒ`ó‚Å‚·B
+	@brief	ç®±å‹ã®è¡çªåˆ¤å®šå½¢çŠ¶ã§ã™ã€‚
 */
+LN_CLASS()
 class BoxCollisionShape
 	: public CollisionShape
 {
@@ -78,25 +80,27 @@ class BoxCollisionShape
 public:
 	
 	/**
-		@brief		BoxCollisionShape ƒIƒuƒWƒFƒNƒg‚ğì¬‚µ‚Ü‚·B
-		@param[in]	size	: Še•Ó‚Ì•
+		@brief		BoxCollisionShape ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆã—ã¾ã™ã€‚
+		@param[in]	size	: å„è¾ºã®å¹…
 	*/
 	static BoxCollisionShapePtr Create(const Vector3& size);
 	
 	/**
-		@brief		BoxCollisionShape ƒIƒuƒWƒFƒNƒg‚ğì¬‚µ‚Ü‚·B
-		@param[in]	x, y, z	: Še•Ó‚Ì•
+		@brief		BoxCollisionShape ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆã—ã¾ã™ã€‚
+		@param[in]	x, y, z	: å„è¾ºã®å¹…
 	*/
 	static BoxCollisionShapePtr Create(float x, float y, float z);
 
-LN_INTERNAL_ACCESS:
+LN_CONSTRUCT_ACCESS:
 	BoxCollisionShape();
 	virtual ~BoxCollisionShape();
+
+	LN_METHOD()
 	void Initialize(const Vector3& size);
 };
 
 /**
-	@brief	‹…Œ^‚ÌÕ“Ë”»’èŒ`ó‚Å‚·B
+	@brief	çƒå‹ã®è¡çªåˆ¤å®šå½¢çŠ¶ã§ã™ã€‚
 */
 class SphereCollisionShape
 	: public CollisionShape
@@ -105,19 +109,19 @@ class SphereCollisionShape
 public:
 	
 	/**
-		@brief		CapsuleCollisionShape ƒIƒuƒWƒFƒNƒg‚ğì¬‚µ‚Ü‚·B
-		@param[in]	radius	: ”¼Œa
+		@brief		CapsuleCollisionShape ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆã—ã¾ã™ã€‚
+		@param[in]	radius	: åŠå¾„
 	*/
 	static SphereCollisionShapePtr Create(float radius);
 
-LN_INTERNAL_ACCESS:
+LN_CONSTRUCT_ACCESS:
 	SphereCollisionShape();
 	virtual ~SphereCollisionShape();
 	void Initialize(float radius);
 };
 
 /**
-	@brief	ƒJƒvƒZƒ‹Œ^‚ÌÕ“Ë”»’èŒ`ó‚Å‚·B
+	@brief	ã‚«ãƒ—ã‚»ãƒ«å‹ã®è¡çªåˆ¤å®šå½¢çŠ¶ã§ã™ã€‚
 */
 class CapsuleCollisionShape
 	: public CollisionShape
@@ -126,13 +130,13 @@ class CapsuleCollisionShape
 public:
 	
 	/**
-		@brief		CapsuleCollisionShape ƒIƒuƒWƒFƒNƒg‚ğì¬‚µ‚Ü‚·B
-		@param[in]	radius	: ”¼Œa
-		@param[in]	height	: ‚‚³
+		@brief		CapsuleCollisionShape ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆã—ã¾ã™ã€‚
+		@param[in]	radius	: åŠå¾„
+		@param[in]	height	: é«˜ã•
 	*/
 	static CapsuleCollisionShapePtr Create(float radius, float height);
 
-LN_INTERNAL_ACCESS:
+LN_CONSTRUCT_ACCESS:
 	CapsuleCollisionShape();
 	virtual ~CapsuleCollisionShape();
 	void Initialize(float radius, float height);
@@ -149,11 +153,11 @@ class MeshCollisionShape
 public:
 	
 	/**
-		@brief		MeshCollisionShape ƒIƒuƒWƒFƒNƒg‚ğì¬‚µ‚Ü‚·B
+		@brief		MeshCollisionShape ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆã—ã¾ã™ã€‚
 	*/
 	static MeshCollisionShapePtr Create(MeshResource* mesh);
 
-LN_INTERNAL_ACCESS:
+LN_CONSTRUCT_ACCESS:
 	MeshCollisionShape();
 	virtual ~MeshCollisionShape();
 	void Initialize(MeshResource* mesh);

@@ -1,6 +1,6 @@
 ﻿
 #include "../Internal.h"
-#include <Lumino/Physics/BodyBase.h>
+#include <Lumino/Physics/PhysicsObject.h>
 
 LN_NAMESPACE_BEGIN
 

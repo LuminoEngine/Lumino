@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include "Common.h"
-#include "BodyBase.h"
+#include "PhysicsObject.h"
 
 LN_NAMESPACE_BEGIN
 class CollisionShape;
@@ -9,6 +9,7 @@ class CollisionShape;
 /**
 	@brief	
 */
+LN_CLASS()
 class Collider
 	: public PhysicsObject
 {
@@ -36,13 +37,13 @@ public:
 
 
 	/** OnTriggerEnter イベントの通知を受け取るコールバックを登録します。*/
-	void ConnectOnTriggerEnter(std::function<void(PhysicsObject*)> handler);
+	void ConnectOnTriggerEnter(Delegate<void(PhysicsObject*)> handler);
 
 	/** OnTriggerLeave イベントの通知を受け取るコールバックを登録します。*/
-	void ConnectOnTriggerLeave(std::function<void(PhysicsObject*)> handler);
+	void ConnectOnTriggerLeave(Delegate<void(PhysicsObject*)> handler);
 
 	/** OnTriggerStay イベントの通知を受け取るコールバックを登録します。*/
-	void ConnectOnTriggerStay(std::function<void(PhysicsObject*)> handler);
+	void ConnectOnTriggerStay(Delegate<void(PhysicsObject*)> handler);
 
 protected:
 	virtual void OnBeforeStepSimulation() override;
@@ -61,6 +62,8 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	Collider();
 	virtual ~Collider();
+
+	LN_METHOD()
 	void Initialize();
 
 private:

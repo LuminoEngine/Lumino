@@ -82,10 +82,10 @@ public:
 	/**
 		@brief	ルーティングイベントのハンドラを追加します。
 	*/
-	void operator += (const std::function<void(TArgs*)>& handler)
-	{
-		AddHandler(handler);
-	}
+	//void operator += (const std::function<void(TArgs*)>& handler)
+	//{
+	//	AddHandler(handler);
+	//}
 
 	void operator += (const Delegate<void(TArgs*)>& handler)
 	{
@@ -165,10 +165,10 @@ public:
 		AddHandler(handler);
 	}
 
-	void operator += (const std::function<void(TArgs...)>& handler)	// void operator += (const DelegateType& handler) だけだと暗黙変換が効かずコンパイルエラーとなっていたため用意
-	{
-		AddHandler(DelegateType(handler));
-	}
+	//void operator += (const std::function<void(TArgs...)>& handler)	// void operator += (const DelegateType& handler) だけだと暗黙変換が効かずコンパイルエラーとなっていたため用意
+	//{
+	//	AddHandler(DelegateType(handler));
+	//}
 
 	void operator -= (const DelegateType& handler)
 	{
