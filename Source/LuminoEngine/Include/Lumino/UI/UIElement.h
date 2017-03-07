@@ -24,7 +24,8 @@ class UIElement
 
 public:
 	LN_TR_PROPERTY(PointF,				position);				/**< Position プロパティの識別子 */
-	LN_TR_PROPERTY(Size,				size);					/**< Size プロパティの識別子 */
+	LN_TR_PROPERTY(float,				width);
+	LN_TR_PROPERTY(float,				height);
 	LN_TR_PROPERTY(ThicknessF,			margin);
 	LN_TR_PROPERTY(ThicknessF,			padding);
 	LN_TR_PROPERTY(AlignmentAnchor,		anchor);				/**< Anchor プロパティの識別子 */
@@ -34,6 +35,19 @@ public:
 	LN_TR_PROPERTY(BrushPtr,			foreground);			/**< Foreground プロパティの識別子 */
 	LN_TR_PROPERTY(BrushPtr,			decoratorBackground);	/**< DecoratorBackground プロパティの識別子 */
 	LN_TR_PROPERTY(float,				decoratorOpacity);		/**< Foreground プロパティの識別子 */
+	tr::Property<PointF>				position;
+	tr::Property<float>					width;
+	tr::Property<float>					height;
+	tr::Property<ThicknessF>			margin;
+	tr::Property<ThicknessF>			padding;
+	tr::Property<AlignmentAnchor>		anchor;
+
+	tr::Property<HAlignment>			hAlignment;
+	tr::Property<VAlignment>			vAlignment;
+	tr::Property<BrushPtr>				background;
+	tr::Property<BrushPtr>				foreground;
+	tr::Property<BrushPtr>				decoratorBackground;
+	tr::Property<float>					decoratorOpacity;
 
 	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseEnterEvent);				/**< MouseEnter ルーティングイベントの識別子 */
 	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseLeaveEvent);				/**< MouseLeave ルーティングイベントの識別子 */
@@ -67,8 +81,13 @@ public:
 	void SetPosition(const PointF& value) { tr::PropertyInfo::SetPropertyValueDirect<PointF>(this, positionId, value); }
 	const PointF& GetPosition() const { return tr::PropertyInfo::GetPropertyValueDirect<PointF>(this, positionId); }
 
-	void SetSize(const Size& value) { tr::PropertyInfo::SetPropertyValueDirect<Size>(this, sizeId, value); }
-	const Size& GetSize() const { return tr::PropertyInfo::GetPropertyValueDirect<Size>(this, sizeId); }
+	void SetWidth(float value) { tr::PropertyInfo::SetPropertyValueDirect<float>(this, widthId, value); }
+	float GetWidth() const { return tr::PropertyInfo::GetPropertyValueDirect<float>(this, widthId); }
+
+	void SetHeight(float value) { tr::PropertyInfo::SetPropertyValueDirect<float>(this, heightId, value); }
+	float GetHeight() const { return tr::PropertyInfo::GetPropertyValueDirect<float>(this, heightId); }
+
+	void SetSize(const Size& value) { SetWidth(value.width); SetHeight(value.height); }
 
 	void SetAnchor(AlignmentAnchor value) { tr::PropertyInfo::SetPropertyValueDirect<AlignmentAnchor>(this, anchorId, value); }
 	AlignmentAnchor GetAnchor() const { return tr::PropertyInfo::GetPropertyValueDirect<AlignmentAnchor>(this, anchorId); }
@@ -207,7 +226,7 @@ LN_INTERNAL_ACCESS:
 	detail::UIManager* GetManager() const { return m_manager; }
 	UIContext* GetContext() const;
 	const PointF& GetPositionInternal() const { return position; }
-	const Size& GetSizeInternal() const { return size; }
+	Size GetSizeInternal() const { return Size(width, height); }
 	const ThicknessF& GetMargineInternal() const { return margin; }
 	AlignmentAnchor GetAnchorInternal() const { return anchor; }
 	const BrushPtr& GetForegroundInternal() const { return foreground; }

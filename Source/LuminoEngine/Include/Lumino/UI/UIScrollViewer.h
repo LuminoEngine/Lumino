@@ -206,12 +206,13 @@ LN_CONSTRUCT_ACCESS:
 protected:
 	// UIElement interface
 	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e) override;
+	virtual void GetStyleClassName(String* outSubStateName);
 
 private:
 	void UpdateValue(float horizontalDragDelta, float verticalDragDelta);
 
-	RefPtr<UITrack>    m_track;
-	float            m_dragStartValue;
+	RefPtr<UITrack>		m_track;
+	float				m_dragStartValue;
 };
 
 /**

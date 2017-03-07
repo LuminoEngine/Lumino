@@ -8,29 +8,29 @@ class IArchive;
 
 
 
-
-
-
-template<typename TEnum>
-class EnumFlags
-{
-public:
-	typedef TEnum enum_type;
-
-	//EnumFlags()
-};
-
-#define LN_DECLARE_FLAGS(Flags, Enum) typedef EnumFlags<Enum> Flags;
-
-#define LN_DECLARE_OPERATORS_FOR_FLAGS(FlagsEnumClass) \
-	inline EnumFlags<FlagsEnumClass::enum_type> operator|(FlagsEnameType::enum_type f1, FlagsEnumClass::enum_type f2) throw() \
-	{ \
-		return EnumFlags<FlagsEnumClass::enum_type>(f1) | f2; \
-	}
-	//inline EnumFlags<FlagsEnumClass::enum_type> operator|(FlagsEnumClass::enum_type f1, EnumFlags<FlagsEnumClass::enum_type> f2) throw() \
-	//{ \
-	//	return f2 | f1; \
-	//}
+//
+//
+//
+//template<typename TEnum>
+//class EnumFlags
+//{
+//public:
+//	typedef TEnum enum_type;
+//
+//	//EnumFlags()
+//};
+//
+//#define LN_DECLARE_FLAGS(Flags, Enum) typedef EnumFlags<Enum> Flags;
+//
+//#define LN_DECLARE_OPERATORS_FOR_FLAGS(FlagsEnumClass) \
+//	inline EnumFlags<FlagsEnumClass::enum_type> operator|(FlagsEnameType::enum_type f1, FlagsEnumClass::enum_type f2) throw() \
+//	{ \
+//		return EnumFlags<FlagsEnumClass::enum_type>(f1) | f2; \
+//	}
+//	//inline EnumFlags<FlagsEnumClass::enum_type> operator|(FlagsEnumClass::enum_type f1, EnumFlags<FlagsEnumClass::enum_type> f2) throw() \
+//	//{ \
+//	//	return f2 | f1; \
+//	//}
 
 /** ファイルを開く際のアクセスモードを表します。*/
 LN_ENUM_FLAGS(FileOpenMode)

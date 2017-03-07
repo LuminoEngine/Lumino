@@ -264,3 +264,143 @@ TEST_F(Test_Base_Enum, FlagsParse)
 		ASSERT_EQ(TestFlags::Option2 | TestFlags::Option3, v1);
 	}
 }
+
+
+
+
+/*
+	if (flags1 == 0x03) のような比較はできません。
+	if (flags1 == ((TestFlags1)0x03)) のように型を合わせます。
+*/
+
+
+//==============================================================================
+class Test_Base_EnumFlags : public ::testing::Test
+{
+protected:
+	virtual void SetUp() {}
+	virtual void TearDown() {}
+};
+
+enum class TestFlags1
+{
+	Option0 = 0x00,
+	Option1 = 0x01,
+	Option2 = 0x02,
+	Option3 = 0x04,
+};
+LN_ENUM_FLAGS_OPERATORS(TestFlags1);
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Base_EnumFlags, Basic)
+{
+	EnumFlags<TestFlags1> flags1 = TestFlags1::Option1 | TestFlags1::Option2;
+	ASSERT_EQ(((TestFlags1)0x03), flags1);
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Base_EnumFlags, FlagsOperators)
+{
+	// <Test> 初期化できる。
+	{
+		EnumFlags<TestFlags1> v1 = TestFlags1::Option1;
+		EnumFlags<TestFlags1> v2(TestFlags1::Option2);
+		ASSERT_EQ(TestFlags1::Option1, v1);
+		ASSERT_EQ(TestFlags1::Option2, v2);
+	}
+	// <Test> operator =
+	{
+		EnumFlags<TestFlags1> v1;
+		v1 = TestFlags1::Option1;
+		ASSERT_EQ(TestFlags1::Option1, v1);
+	}
+	// <Test> operator ==
+	{
+		EnumFlags<TestFlags1> v1 = TestFlags1::Option1;
+		EnumFlags<TestFlags1> v2 = TestFlags1::Option2;
+		ASSERT_TRUE(v1 == TestFlags1::Option1);
+		ASSERT_FALSE(v1 == TestFlags1::Option2);
+		//ASSERT_TRUE(TestFlags1::Option1 == v1);	// TODO: Not Implemented
+		//ASSERT_FALSE(TestFlags1::Option2 == v1);	// TODO: Not Implemented
+		ASSERT_TRUE(v1 == v1);
+		ASSERT_FALSE(v2 == v1);
+	}
+	// <Test> operator !=
+	{
+		EnumFlags<TestFlags1> v1 = TestFlags1::Option1;
+		EnumFlags<TestFlags1> v2 = TestFlags1::Option2;
+		ASSERT_FALSE(v1 != TestFlags1::Option1);
+		ASSERT_TRUE(v1 != TestFlags1::Option2);
+		//ASSERT_FALSE(TestFlags1::Option1 != v1);	// TODO: Not Implemented
+		//ASSERT_TRUE(TestFlags1::Option2 != v1);	// TODO: Not Implemented
+		ASSERT_FALSE(v1 != v1);
+		ASSERT_TRUE(v2 != v1);
+	}
+	// <Test> operator |
+	{
+		EnumFlags<TestFlags1> v1;
+		EnumFlags<TestFlags1> v2 = TestFlags1::Option2;
+		v1 = TestFlags1::Option1 | TestFlags1::Option2;
+		ASSERT_EQ(TestFlags1::Option1 | TestFlags1::Option2, v1);
+
+		v1 = TestFlags1::Option1;
+		v1 = v1 | v2;
+		ASSERT_EQ(TestFlags1::Option1 | TestFlags1::Option2, v1);
+
+		// どちらの辺でもOK
+		v1 = TestFlags1::Option1;
+		v1 = v1 | TestFlags1::Option2;
+		//v1 = TestFlags1::Option3 | v1;	// TODO: Not Implemented
+		ASSERT_EQ(TestFlags1::Option1 | TestFlags1::Option2/* | TestFlags1::Option3*/, v1);
+	}
+	// <Test> operator &
+	{
+		EnumFlags<TestFlags1> v1;
+		v1 = TestFlags1::Option1 & TestFlags1::Option2;
+		ASSERT_EQ(TestFlags1::Option0, v1);
+
+		EnumFlags<TestFlags1> v2 = TestFlags1::Option1;
+		v1 = TestFlags1::Option1;
+		v1 = v1 & v2;
+		ASSERT_EQ(TestFlags1::Option1, v1);
+
+		// どちらの辺でもOK
+		v1 = TestFlags1::Option1 | TestFlags1::Option2 | TestFlags1::Option3;
+		v1 = v1 & TestFlags1::Option2;
+		v1 = TestFlags1::Option3 & v1;
+		ASSERT_EQ(TestFlags1::Option0, v1);
+	}
+	// <Test> operator &=
+	{
+		EnumFlags<TestFlags1> v1 = TestFlags1::Option1 | TestFlags1::Option2;
+		v1 &= TestFlags1::Option1;
+		ASSERT_EQ(TestFlags1::Option1, v1);
+
+		EnumFlags<TestFlags1> v2 = TestFlags1::Option2;
+		v1 &= v2;
+		ASSERT_EQ(TestFlags1::Option0, v1);
+	}
+	// <Test> operator |=
+	{
+		EnumFlags<TestFlags1> v1;
+		v1 |= TestFlags1::Option1;
+		ASSERT_EQ(TestFlags1::Option1, v1);
+
+		EnumFlags<TestFlags1> v2 = TestFlags1::Option2;
+		v1 |= v2;
+		ASSERT_EQ(TestFlags1::Option1 | TestFlags1::Option2, v1);
+	}
+	// <Test> &= ~ でフラグを落とす。
+	{
+		EnumFlags<TestFlags1> v1 = TestFlags1::Option1 | TestFlags1::Option2;
+
+		v1 &= ~TestFlags1::Option3;
+		ASSERT_EQ(TestFlags1::Option1 | TestFlags1::Option2, v1);	// 変化無し
+
+		v1 &= ~TestFlags1::Option2;
+		ASSERT_EQ(TestFlags1::Option1, v1);	// Option2 が消えている
+
+		v1 &= ~v1;							// 自分自身で落としてみる
+		ASSERT_EQ(TestFlags1::Option0, v1);	// 全部消えている
+	}
+}

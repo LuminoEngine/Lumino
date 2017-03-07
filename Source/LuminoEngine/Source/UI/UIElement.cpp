@@ -18,7 +18,8 @@ LN_UI_TYPEINFO_IMPLEMENT(UIElement, tr::ReflectionObject);
 
 // Property definition
 LN_TR_PROPERTY_IMPLEMENT(UIElement, PointF, position, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(UIElement, Size, size, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(UIElement, float, width, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(UIElement, float, height, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(UIElement, ThicknessF, margin, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(UIElement, ThicknessF, padding, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(UIElement, AlignmentAnchor, anchor, tr::PropertyMetadata());
@@ -48,7 +49,8 @@ UIElement::UIElement()
 	, m_visualParent(nullptr)
 	, m_visualChildren(nullptr)
 	, position(PointF(0, 0))
-	, size(Size(NAN, NAN))
+	, width(NAN)
+	, height(NAN)
 	, margin(ThicknessF(0, 0, 0, 0))
 	, padding(ThicknessF(0, 0, 0, 0))
 	, anchor(AlignmentAnchor::None)
@@ -575,7 +577,7 @@ void UIElement::RemoveVisualChild(UIElement* element)
 
 //------------------------------------------------------------------------------
 const PointF& UIElement::GetLayoutPosition() const { return position; }
-Size UIElement::GetLayoutSize() const { return size; }
+Size UIElement::GetLayoutSize() const { return Size(width, height); }
 const ThicknessF& UIElement::GetLayoutMargin() const { return margin; }
 const ThicknessF& UIElement::GetLayoutPadding() const { return padding; }
 AlignmentAnchor UIElement::GetLayoutAnchor() const { return anchor; }
