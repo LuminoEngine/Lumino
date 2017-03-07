@@ -37,12 +37,15 @@ public:
 
 
 	/** OnTriggerEnter イベントの通知を受け取るコールバックを登録します。*/
+	LN_METHOD(Event)
 	void ConnectOnTriggerEnter(Delegate<void(PhysicsObject*)> handler);
 
 	/** OnTriggerLeave イベントの通知を受け取るコールバックを登録します。*/
+	LN_METHOD(Event)
 	void ConnectOnTriggerLeave(Delegate<void(PhysicsObject*)> handler);
 
 	/** OnTriggerStay イベントの通知を受け取るコールバックを登録します。*/
+	LN_METHOD(Event)
 	void ConnectOnTriggerStay(Delegate<void(PhysicsObject*)> handler);
 
 protected:

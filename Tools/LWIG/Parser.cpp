@@ -234,7 +234,20 @@ void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
 
 	// param range
 	auto lparen = std::find_if(paramEnd, decl.end, [](Token* t) { return t->EqualChar('('); });
-	auto rparen = std::find_if(lparen, decl.end, [](Token* t) { return t->EqualChar(')'); });
+	TokenItr rparen;
+	{
+		int level = 1;
+		for (auto itr = lparen + 1; itr != decl.end; ++itr)
+		{
+			if ((*itr)->EqualChar('(')) level++;
+			if ((*itr)->EqualChar(')')) level--;
+			if (level == 0)
+			{
+				rparen = itr;
+				break;
+			}
+		}
+	}
 
 	// return type .. method name
 	auto declTokens = tr::MakeEnumerator::from(paramEnd, lparen)
@@ -333,6 +346,7 @@ void HeaderParser::ParseParamsDecl(TokenItr begin, TokenItr end, MethodInfoPtr p
 
 	// , または =(デフォルト引数) の直前を引数名とする
 	auto name = paramEnd - 1;
+	
 
 	String typeName;
 	int pointerLevel;
@@ -371,15 +385,31 @@ void HeaderParser::ParseParamType(TokenItr begin, TokenItr end, String* outName,
 	int pointerLevel = 0;
 	bool hasConst = false;
 	bool hasVirtual = false;
+	bool isDelegate = false;
 	for (auto itr = begin; itr != typeEnd; ++itr)
 	{
 		if ((*itr)->EqualChar('*')) pointerLevel++;
 		if ((*itr)->EqualString("const")) hasConst = true;
 		if ((*itr)->EqualString("virtual")) hasVirtual = true;
 		if ((*itr)->GetTokenGroup() == TokenGroup::Identifier || (*itr)->GetTokenGroup() == TokenGroup::Keyword) typeName = itr;
+	
+		if ((*itr)->EqualString("Delegate"))
+		{
+			isDelegate = true;
+			break;
+		}
 	}
 
-	*outName = String((*typeName)->GetString());
+	if (isDelegate)
+	{
+		String name;
+		for (auto itr = begin; itr != typeEnd; ++itr) name += String((*itr)->GetString());
+		*outName = name;
+	}
+	else
+	{
+		*outName = String((*typeName)->GetString());
+	}
 	*outPointerLevel = pointerLevel;
 	*outHasConst = hasConst;
 	*outHasVirtual = hasVirtual;

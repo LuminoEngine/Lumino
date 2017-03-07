@@ -37,6 +37,11 @@ bool MetadataInfo::HasKey(const StringRef& key)
 //==============================================================================
 void MethodInfo::LinkParameters()
 {
+	if (metadata->HasKey("Event"))
+	{
+		Console::WriteLine("is event");
+	}
+
 	for (auto& paramInfo : parameters)
 	{
 		paramInfo->type = g_database.FindTypeInfo(paramInfo->typeRawName);
