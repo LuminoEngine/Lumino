@@ -529,34 +529,34 @@ namespace Lumino
         /// <summary>
         /// OnTriggerEnter イベントの通知を受け取るコールバックを登録します。
         /// </summary>
-        public void ConnectOnTriggerEnter(CollisionEventHandler handler)
+        public EventConnection ConnectOnTriggerEnter(CollisionEventHandler handler)
         {
-            
-            var result = API.LNCollider_ConnectOnTriggerEnter(Handle, (handler != null) ? handler.Handle : IntPtr.Zero);
+            IntPtr outReturn;
+            var result = API.LNCollider_ConnectOnTriggerEnter(Handle, (handler != null) ? handler.Handle : IntPtr.Zero, out outReturn);
             if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
-            
+            return InternalManager.ReturnObjectHelper<EventConnection>(outReturn, ref _ConnectOnTriggerEnter);
         }
 
         /// <summary>
         /// OnTriggerLeave イベントの通知を受け取るコールバックを登録します。
         /// </summary>
-        public void ConnectOnTriggerLeave(CollisionEventHandler handler)
+        public EventConnection ConnectOnTriggerLeave(CollisionEventHandler handler)
         {
-            
-            var result = API.LNCollider_ConnectOnTriggerLeave(Handle, (handler != null) ? handler.Handle : IntPtr.Zero);
+            IntPtr outReturn;
+            var result = API.LNCollider_ConnectOnTriggerLeave(Handle, (handler != null) ? handler.Handle : IntPtr.Zero, out outReturn);
             if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
-            
+            return InternalManager.ReturnObjectHelper<EventConnection>(outReturn, ref _ConnectOnTriggerLeave);
         }
 
         /// <summary>
         /// OnTriggerStay イベントの通知を受け取るコールバックを登録します。
         /// </summary>
-        public void ConnectOnTriggerStay(CollisionEventHandler handler)
+        public EventConnection ConnectOnTriggerStay(CollisionEventHandler handler)
         {
-            
-            var result = API.LNCollider_ConnectOnTriggerStay(Handle, (handler != null) ? handler.Handle : IntPtr.Zero);
+            IntPtr outReturn;
+            var result = API.LNCollider_ConnectOnTriggerStay(Handle, (handler != null) ? handler.Handle : IntPtr.Zero, out outReturn);
             if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
-            
+            return InternalManager.ReturnObjectHelper<EventConnection>(outReturn, ref _ConnectOnTriggerStay);
         }
 
         /// <summary>
@@ -572,7 +572,10 @@ namespace Lumino
 
         internal Collider(_LNInternal i) : base(i) {}
 
-        
+        private  EventConnection _ConnectOnTriggerEnter;
+private  EventConnection _ConnectOnTriggerLeave;
+private  EventConnection _ConnectOnTriggerStay;
+
     }
 
 

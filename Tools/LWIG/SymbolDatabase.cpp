@@ -10,6 +10,7 @@ TypeInfoPtr	PredefinedTypes::uint32Type;
 TypeInfoPtr	PredefinedTypes::floatType;
 TypeInfoPtr	PredefinedTypes::stringType;
 TypeInfoPtr	PredefinedTypes::objectType;
+TypeInfoPtr	PredefinedTypes::EventConnectionType;
 
 //==============================================================================
 // MetadataInfo
@@ -475,6 +476,9 @@ void SymbolDatabase::InitializePredefineds()
 
 	predefineds.Add(std::make_shared<TypeInfo>(_T("Object")));
 	PredefinedTypes::objectType = predefineds.GetLast();
+
+	predefineds.Add(std::make_shared<TypeInfo>(_T("EventConnection")));
+	PredefinedTypes::EventConnectionType = predefineds.GetLast();
 }
 
 TypeInfoPtr SymbolDatabase::FindTypeInfo(StringRef typeName)
@@ -498,6 +502,7 @@ TypeInfoPtr SymbolDatabase::FindTypeInfo(StringRef typeName)
 		return *type;
 
 	if (typeName == _T("StringRef")) return PredefinedTypes::stringType;
+	if (typeName == _T("EventConnection")) return PredefinedTypes::EventConnectionType;
 
 	LN_THROW(0, InvalidOperationException, "Undefined type: %s", typeName.ToString().c_str());
 	return nullptr;

@@ -220,6 +220,7 @@ public:
 	static TypeInfoPtr	floatType;
 	static TypeInfoPtr	stringType;
 	static TypeInfoPtr	objectType;
+	static TypeInfoPtr	EventConnectionType;
 };
 
 class SymbolDatabase

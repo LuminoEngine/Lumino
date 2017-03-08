@@ -215,11 +215,17 @@ String WrapperIFGenerator::GenerateWrapperIFClasses()
 
 					// make params
 					OutputBuffer params;
+					OutputBuffer funcParams;
 					OutputBuffer args;
 					for (auto& paramInfo : invokeMethod->parameters)
 					{
-						params.AppendCommad("{0} {1}", MakeCppTypeName(paramInfo->type), paramInfo->name);
-						args.AppendCommad("{0}", paramInfo->name);
+						params.AppendCommad("{0} {1}", MakeCApiParamTypeName(invokeMethod, paramInfo), paramInfo->name);
+						funcParams.AppendCommad("{0} {1}", MakeCppTypeName(paramInfo->type), paramInfo->name);
+
+						if (paramInfo->type->IsClass())
+							args.AppendCommad("LWIG_TO_HANDLE({0})", paramInfo->name);
+						else
+							args.AppendCommad("{0}", paramInfo->name);
 					}
 					m_eventWrappers.AppendLine("Event<void(LNHandle self, {0})> {1};", params.ToString(), MakeEventWrapperMemberVariableName(methodInfo));
 
@@ -231,7 +237,7 @@ String WrapperIFGenerator::GenerateWrapperIFClasses()
 						"    {2}.Raise(LWIG_TO_HANDLE(this), {3});\n"
 						"}}\n",
 						methodInfo->name,
-						params.ToString(),
+						funcParams.ToString(),
 						MakeEventWrapperMemberVariableName(methodInfo),
 						args.ToString());
 
