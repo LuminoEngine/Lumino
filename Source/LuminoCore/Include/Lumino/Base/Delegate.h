@@ -11,9 +11,9 @@
 LN_NAMESPACE_BEGIN
 
 template<typename>
-class Event;
+class Event2;
 template<typename TRet, typename... TArgs>
-class Event<TRet(TArgs...)>;
+class Event2<TRet(TArgs...)>;
 
 template<typename>
 class Delegate {};
@@ -118,7 +118,7 @@ private:
 
 public:
 
-	using EventType = Event<TRet(TArgs...)>;
+	using EventType = Event2<TRet(TArgs...)>;
 
 	/** デフォルトコンストラクタ */
 	Delegate()

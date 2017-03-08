@@ -286,17 +286,17 @@ public:
 
     }
 
-    Event<void(LNHandle self, PhysicsObject* obj)> m_ConnectOnTriggerEnter_EventWrapper;
+    Event2<void(LNHandle self, PhysicsObject* obj)> m_ConnectOnTriggerEnter_EventWrapper;
     void ConnectOnTriggerEnter_EventCallback(PhysicsObject* obj)
     {
         m_ConnectOnTriggerEnter_EventWrapper.Raise(LWIG_TO_HANDLE(this), obj);
     }
-    Event<void(LNHandle self, PhysicsObject* obj)> m_ConnectOnTriggerLeave_EventWrapper;
+    Event2<void(LNHandle self, PhysicsObject* obj)> m_ConnectOnTriggerLeave_EventWrapper;
     void ConnectOnTriggerLeave_EventCallback(PhysicsObject* obj)
     {
         m_ConnectOnTriggerLeave_EventWrapper.Raise(LWIG_TO_HANDLE(this), obj);
     }
-    Event<void(LNHandle self, PhysicsObject* obj)> m_ConnectOnTriggerStay_EventWrapper;
+    Event2<void(LNHandle self, PhysicsObject* obj)> m_ConnectOnTriggerStay_EventWrapper;
     void ConnectOnTriggerStay_EventCallback(PhysicsObject* obj)
     {
         m_ConnectOnTriggerStay_EventWrapper.Raise(LWIG_TO_HANDLE(this), obj);

@@ -47,15 +47,15 @@ public:
 
 	/** OnTriggerEnter イベントの通知を受け取るコールバックを登録します。*/
 	LN_METHOD(Event)
-	void ConnectOnTriggerEnter(CollisionEventHandler handler);
+	EventConnection ConnectOnTriggerEnter(CollisionEventHandler handler);
 
 	/** OnTriggerLeave イベントの通知を受け取るコールバックを登録します。*/
 	LN_METHOD(Event)
-	void ConnectOnTriggerLeave(CollisionEventHandler handler);
+	EventConnection ConnectOnTriggerLeave(CollisionEventHandler handler);
 
 	/** OnTriggerStay イベントの通知を受け取るコールバックを登録します。*/
 	LN_METHOD(Event)
-	void ConnectOnTriggerStay(CollisionEventHandler handler);
+	EventConnection ConnectOnTriggerStay(CollisionEventHandler handler);
 
 protected:
 	virtual void OnBeforeStepSimulation() override;
@@ -63,7 +63,7 @@ protected:
 	virtual void OnRemovedFromWorld() override;
 
 	/** 他の Collider または RigidBody が、この Collider との接触を開始したときに呼び出されます。*/
-	virtual void OnTriggerEnter(PhysicsObject* otherObject);
+	void OnTriggerEnter(PhysicsObject* otherObject);
 
 	/** 他の Collider または RigidBody が、この Collider との接触を終了したときに呼び出されます。*/
 	virtual void OnTriggerLeave(PhysicsObject* otherObject);
@@ -93,9 +93,6 @@ private:
 	CollisionEventHandler::EventType	onTriggerEnter;
 	CollisionEventHandler::EventType	onTriggerLeave;
 	CollisionEventHandler::EventType	onTriggerStay;
-	//Event<CollisionEventHandler>	onTriggerEnter;
-	//Event<CollisionEventHandler>	onTriggerLeave;
-	//Event<CollisionEventHandler>	onTriggerStay;
 };
 
 LN_NAMESPACE_END

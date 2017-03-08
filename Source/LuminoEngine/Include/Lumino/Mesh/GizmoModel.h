@@ -41,11 +41,11 @@ public:
 
 	void AddOnTargetTransformChanged(const std::function<void(GizmoModel*)>& handler)
 	{
-		m_onTargetTransformChanged.AddHandler(handler);
+		m_onTargetTransformChanged.Connect(handler);
 	}
 	void AddOnSubmitEditing(const std::function<void(GizmoModel*)>& handler)
 	{
-		m_onSubmitEditing.AddHandler(handler);
+		m_onSubmitEditing.Connect(handler);
 	}
 	
 LN_INTERNAL_ACCESS:
@@ -113,8 +113,8 @@ private:
 	Matrix					m_draggingStartGizmoTransform;
 	PointI					m_draggingStartViewPixelPoint;
 
-	Event<void(GizmoModel*)>	m_onTargetTransformChanged;
-	Event<void(GizmoModel*)>	m_onSubmitEditing;
+	Event2<void(GizmoModel*)>	m_onTargetTransformChanged;
+	Event2<void(GizmoModel*)>	m_onSubmitEditing;
 };
 
 } // namespace tr

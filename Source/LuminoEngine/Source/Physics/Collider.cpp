@@ -134,21 +134,21 @@ bool Collider::IsTrigger() const
 
 
 //------------------------------------------------------------------------------
-void Collider::ConnectOnTriggerEnter(CollisionEventHandler handler)
+EventConnection Collider::ConnectOnTriggerEnter(CollisionEventHandler handler)
 {
-	onTriggerEnter.AddHandler(handler);
+	return onTriggerEnter.Connect(handler);
 }
 
 //------------------------------------------------------------------------------
-void Collider::ConnectOnTriggerLeave(CollisionEventHandler handler)
+EventConnection Collider::ConnectOnTriggerLeave(CollisionEventHandler handler)
 {
-	onTriggerLeave.AddHandler(handler);
+	return onTriggerLeave.Connect(handler);
 }
 
 //------------------------------------------------------------------------------
-void Collider::ConnectOnTriggerStay(CollisionEventHandler handler)
+EventConnection Collider::ConnectOnTriggerStay(CollisionEventHandler handler)
 {
-	onTriggerStay.AddHandler(handler);
+	return onTriggerStay.Connect(handler);
 }
 
 //------------------------------------------------------------------------------
