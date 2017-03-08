@@ -93,6 +93,13 @@ void HeaderParser::ParseFile(const PathName& path)
 			return input.Success(Decl{ _T("method"), r1.GetMatchBegin(), r2.GetMatchEnd() });
 		}
 
+		static ParserResult<Decl> Parse_LN_DELEGATE(ParserContext input)
+		{
+			LN_PARSE_RESULT(r1, TokenString("LN_DELEGATE"));
+			LN_PARSE_RESULT(r2, UntilMore(Parser<Decl>(Parse_EmptyDecl2)));
+			return input.Success(Decl{ _T("delegate"), r1.GetMatchBegin(), r2.GetMatchEnd() });
+		}
+
 		static ParserResult<Decl> Parse_DocumentComment(ParserContext input)
 		{
 			LN_PARSE_RESULT(r1, Token(TokenGroup::Comment));
@@ -108,7 +115,15 @@ void HeaderParser::ParseFile(const PathName& path)
 
 		static ParserResult<List<Decl>> Parse_File(ParserContext input)
 		{
-			LN_PARSE(r1, Many(Parser<Decl>(Parse_LN_ENUM) || Parser<Decl>(Parse_LN_CLASS) || Parser<Decl>(Parse_LN_STRUCT) || Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment) || Parser<Decl>(Parse_AccessLevel)));
+			LN_PARSE(r1, Many(
+				Parser<Decl>(Parse_LN_ENUM) ||
+				Parser<Decl>(Parse_LN_CLASS) ||
+				Parser<Decl>(Parse_LN_STRUCT) ||
+				Parser<Decl>(Parse_LN_DELEGATE) ||
+				Parser<Decl>(Parse_EmptyDecl2) ||
+				Parser<Decl>(Parse_LocalBlock) ||
+				Parser<Decl>(Parse_DocumentComment) ||
+				Parser<Decl>(Parse_AccessLevel)));
 			return input.Success(r1);
 		}
 
@@ -126,6 +141,7 @@ void HeaderParser::ParseFile(const PathName& path)
 				token->EqualString("LN_CLASS", 8) ||
 				token->EqualString("LN_FIELD", 8) ||
 				token->EqualString("LN_METHOD", 9) ||
+				token->EqualString("LN_DELEGATE", 11) ||
 				token->EqualChar(':') ||// token->EqualString("public", 6) || token->EqualString("protected", 9) || token->EqualString("private", 6) || token->EqualString("LN_INTERNAL_ACCESS", 18) ||
 				token->GetTokenGroup() == TokenGroup::Eof;	// TODO: これが無くてもいいようにしたい。今はこれがないと、Many中にEOFしたときOutOfRangeする
 		}
@@ -147,6 +163,7 @@ void HeaderParser::ParseFile(const PathName& path)
 		if (decl1.type == "Struct") ParseStructDecl(decl1);
 		if (decl1.type == "class") ParseClassDecl(decl1);
 		if (decl1.type == "enum") ParseEnumDecl(decl1);
+		if (decl1.type == "delegate") ParseDelegateDecl(decl1);
 		
 		for (auto decl2 : decl1.decls)
 		{
@@ -323,21 +340,21 @@ void HeaderParser::ParseParamListDecl(TokenItr begin, TokenItr end, MethodInfoPt
 {
 	auto paramBegin = begin + 1;
 	auto itr = paramBegin;
-	bool isDelegate = false;
+	//bool isDelegate = false;
 	for (; itr < end; ++itr)
 	{
-		if ((*itr)->EqualString(_T("Delegate")))
-		{
-			isDelegate = true;	// 今解析中の引数は Delegate である
-		}
+		//if ((*itr)->EqualString(_T("Delegate")))
+		//{
+		//	isDelegate = true;	// 今解析中の引数は Delegate である
+		//}
 
 		if ((*itr)->EqualChar(','))
 		{
-			ParseParamDecl(paramBegin, itr, parent, isDelegate);
+			ParseParamDecl(paramBegin, itr, parent, false);
 			paramBegin = itr + 1;
 		}
 	}
-	if (paramBegin != end) ParseParamDecl(paramBegin, end, parent, isDelegate);
+	if (paramBegin != end) ParseParamDecl(paramBegin, end, parent, false);
 }
 
 //------------------------------------------------------------------------------
@@ -356,30 +373,31 @@ void HeaderParser::ParseParamDecl(TokenItr begin, TokenItr end, MethodInfoPtr pa
 	TokenItr paramEnd;
 	if (isDelegate)
 	{
-		paramEnd = end;
+		LN_UNREACHABLE();
+		//paramEnd = end;
 
-		// , の直前を引数名とする
-		auto name = paramEnd - 1;
+		//// , の直前を引数名とする
+		//auto name = paramEnd - 1;
 
-		// "void(int, int)" の (...) を探す
-		auto paramListBegin = std::find_if(begin, end, [](Token* t) { return t->EqualChar('('); }) + 1;
-		auto paramListEnd = std::find_if(begin, end, [](Token* t) { return t->EqualChar(')'); });
+		//// "void(int, int)" の (...) を探す
+		//auto paramListBegin = std::find_if(begin, end, [](Token* t) { return t->EqualChar('('); }) + 1;
+		//auto paramListEnd = std::find_if(begin, end, [](Token* t) { return t->EqualChar(')'); });
 
-		// Delegate クラスを作る
-		auto delegateInfo = std::make_shared<TypeInfo>();
-		delegateInfo->isDelegate = true;
-		delegateInfo->name = (*name)->GetString();
+		//// Delegate クラスを作る
+		//auto delegateInfo = std::make_shared<TypeInfo>();
+		//delegateInfo->isDelegate = true;
+		//delegateInfo->name = (*name)->GetString();
 
-		// Delegate クラスに Invoke メソッドを追加する
-		auto involeMethodInfo = std::make_shared<MethodInfo>();
-		involeMethodInfo->owner = delegateInfo;
-		involeMethodInfo->name = "Invoke";
-		delegateInfo->declaredMethods.Add(involeMethodInfo);
+		//// Delegate クラスに Invoke メソッドを追加する
+		//auto involeMethodInfo = std::make_shared<MethodInfo>();
+		//involeMethodInfo->owner = delegateInfo;
+		//involeMethodInfo->name = "Invoke";
+		//delegateInfo->declaredMethods.Add(involeMethodInfo);
 
-		// 引数リストを解析する
-		ParseParamListDecl(paramListBegin, paramListEnd, involeMethodInfo);
+		//// 引数リストを解析する
+		//ParseParamListDecl(paramListBegin, paramListEnd, involeMethodInfo);
 
-		Console::WriteLine(delegateInfo->name);
+		//Console::WriteLine(delegateInfo->name);
 	}
 	// 普通の引数の場合
 	else
@@ -704,6 +722,57 @@ void HeaderParser::ParseEnumMemberDecl(TokenItr begin, TokenItr end, TypeInfoPtr
 	parent->declaredConstants.Add(info);
 
 	m_currentEnumValue++;
+}
+
+//------------------------------------------------------------------------------
+// end = ';'
+// LN_DELEGATE() using CollisionEventHandler = Delegate<void(PhysicsObject* obj)>;
+void HeaderParser::ParseDelegateDecl(const Decl& decl)
+{
+	// parse "LN_DELEGATE()"
+	auto paramEnd = ParseMetadataDecl(decl.begin, decl.end);
+
+	// '=' を探す。また、その直前の識別子を delegate 名とする。
+	TokenItr equal;
+	TokenItr name;
+	for (auto itr = paramEnd; itr != decl.end; ++itr)
+	{
+		if ((*itr)->GetTokenGroup() == TokenGroup::Identifier)
+		{
+			name = itr;
+		}
+		if ((*itr)->EqualChar('='))
+		{
+			equal = itr;
+			break;
+		}
+	}
+
+	// '(' を探す
+	auto lparen = std::find_if(equal, decl.end, [](Token* t) { return t->EqualChar('('); });
+
+	// ')' を探す
+	auto rparen = std::find_if(lparen, decl.end, [](Token* t) { return t->EqualChar(')'); });
+
+	// Delegate クラスを作る
+	auto delegateInfo = std::make_shared<TypeInfo>();
+	delegateInfo->isDelegate = true;
+	delegateInfo->document = MoveLastDocument();
+	delegateInfo->metadata = MoveLastMetadata();
+	delegateInfo->name = (*name)->GetString();
+	m_database->delegates.Add(delegateInfo);
+
+	// Delegate クラスに Invoke メソッドを追加する
+	auto invokeMethodInfo = std::make_shared<MethodInfo>();
+	invokeMethodInfo->owner = delegateInfo;
+	invokeMethodInfo->document = std::make_shared<DocumentInfo>();
+	invokeMethodInfo->metadata = std::make_shared<MetadataInfo>();
+	invokeMethodInfo->returnTypeRawName = "void";
+	invokeMethodInfo->name = "Invoke";
+	delegateInfo->declaredMethods.Add(invokeMethodInfo);
+
+	// 引数リストを解析する
+	ParseParamListDecl(lparen, rparen, invokeMethodInfo);
 }
 
 void HeaderParser::ParseDocument(const Decl& decl)

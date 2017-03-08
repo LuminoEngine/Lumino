@@ -215,10 +215,10 @@ public:
 		return ConnectInternal(handler);
 	}
 
-	EventConnection Connect(const std::function<TRet(TArgs...)>& handler)
-	{
-		return ConnectInternal(handler);
-	}
+	//EventConnection Connect(const std::function<TRet(TArgs...)>& handler)
+	//{
+	//	return ConnectInternal(handler);
+	//}
 
 	void Clear() LN_NOEXCEPT
 	{
@@ -391,6 +391,22 @@ TEST_F(Test_Base_EventConnection, Raise)
 		ASSERT_EQ(44, g_Value);
 	}
 }
+
+using TestHandler1 = Delegate<void(int)>;
+
+//---------------------------------------------------------------------
+//TEST_F(Test_Base_EventConnection, DelegateTypedef)
+//{
+//	g_Value = 0;
+//	Event2<TestHandler1> ev01;
+//	Class1 c1;
+//	{
+//		ev01.Connect(CreateDelegate(&c1, &Class1::Callback01_1));
+//		ev01.Raise(2);
+//		ASSERT_EQ(2, g_Value);
+//	}
+//
+//}
 
 #else
 static int g_Value = 0;

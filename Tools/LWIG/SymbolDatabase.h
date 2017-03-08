@@ -2,7 +2,7 @@
 #pragma once
 #include <memory>
 #include <unordered_map>
-#include <Lumino/Base/Enumerable.h>
+#include "Common.h"
 
 //class Type
 //{
@@ -137,6 +137,7 @@ public:
 
 	bool IsOverloadChild() const { return overloadParent != nullptr; }
 	bool IsRuntimeInitializer() const { return metadata->HasKey(_T("RuntimeInitializer")); }
+	bool IsEventSetter() const { return metadata->HasKey(_T("Event")); }
 
 	void LinkParameters();
 	void ExpandCAPIParameters();
@@ -228,6 +229,7 @@ public:
 	List<TypeInfoPtr>	structs;
 	List<TypeInfoPtr>	classes;
 	List<TypeInfoPtr>	enums;
+	List<TypeInfoPtr>	delegates;
 
 	void Link();
 

@@ -527,6 +527,39 @@ namespace Lumino
         : PhysicsObject
     {
         /// <summary>
+        /// OnTriggerEnter イベントの通知を受け取るコールバックを登録します。
+        /// </summary>
+        public void ConnectOnTriggerEnter(CollisionEventHandler handler)
+        {
+            
+            var result = API.LNCollider_ConnectOnTriggerEnter(Handle, (handler != null) ? handler.Handle : IntPtr.Zero);
+            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            
+        }
+
+        /// <summary>
+        /// OnTriggerLeave イベントの通知を受け取るコールバックを登録します。
+        /// </summary>
+        public void ConnectOnTriggerLeave(CollisionEventHandler handler)
+        {
+            
+            var result = API.LNCollider_ConnectOnTriggerLeave(Handle, (handler != null) ? handler.Handle : IntPtr.Zero);
+            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            
+        }
+
+        /// <summary>
+        /// OnTriggerStay イベントの通知を受け取るコールバックを登録します。
+        /// </summary>
+        public void ConnectOnTriggerStay(CollisionEventHandler handler)
+        {
+            
+            var result = API.LNCollider_ConnectOnTriggerStay(Handle, (handler != null) ? handler.Handle : IntPtr.Zero);
+            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            
+        }
+
+        /// <summary>
         /// 他の Collider または RigidBody が、この Collider との接触している間呼び出されます。
         /// </summary>
         protected Collider() : base(_LNInternal.InternalBlock)

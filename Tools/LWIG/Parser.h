@@ -36,6 +36,7 @@ private:
 	void ParseClassDecl(const Decl& decl);
 	void ParseEnumDecl(const Decl& decl);
 	void ParseEnumMemberDecl(TokenItr begin, TokenItr end, TypeInfoPtr parent);
+	void ParseDelegateDecl(const Decl& decl);
 	void ParseDocument(const Decl& decl);
 	void ParseAccessLevel(const Decl& decl);
 

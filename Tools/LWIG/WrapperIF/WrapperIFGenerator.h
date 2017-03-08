@@ -3,7 +3,7 @@
 #include "../OutputBuffer.h"
 class SymbolDatabase;
 
-/** WrapperIFGenerator */
+/** CŒ¾Œê‚Ì—p‚Ì API ‚ğo—Í‚·‚é */
 class WrapperIFGenerator
 {
 public:
@@ -20,6 +20,11 @@ private:
 	StringA MakeCppTypeName(TypeInfoPtr typeInfo);
 	String MakeDocumentComment(DocumentInfoPtr doc);
 
+	String MakeEventWrapperMemberVariableName(MethodInfoPtr connectMethod);
+
 	SymbolDatabase*	m_database;
+
+	OutputBuffer	m_eventWrapperConnectExps;
+	OutputBuffer	m_eventWrappers;
 };
 

@@ -343,6 +343,24 @@ LN_API void LNPhysicsObject_SetBindingTypeInfo(void* data)
 {
     tr::TypeInfo::GetTypeInfo<PhysicsObject>()->SetBindingTypeInfo(data);
 }
+LN_API LNResultCode LNCollider_ConnectOnTriggerEnter(LNHandle self, LNCollisionEventHandler callback)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    //LWIG_TO_OBJECT(LNCollider, self)->m_ConnectOnTriggerEnter_EventWrapper.Connect(callback);
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API LNResultCode LNCollider_ConnectOnTriggerLeave(LNHandle self, LNCollisionEventHandler callback)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    //LWIG_TO_OBJECT(LNCollider, self)->m_ConnectOnTriggerLeave_EventWrapper.Connect(callback);
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API LNResultCode LNCollider_ConnectOnTriggerStay(LNHandle self, LNCollisionEventHandler callback)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    //LWIG_TO_OBJECT(LNCollider, self)->m_ConnectOnTriggerStay_EventWrapper.Connect(callback);
+    LWIG_FUNC_TRY_END_RETURN;
+}
 LN_API LNResultCode LNCollider_Initialize(LNHandle* outCollider)
 {
     LWIG_FUNC_TRY_BEGIN;

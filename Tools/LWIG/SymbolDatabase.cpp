@@ -357,6 +357,20 @@ void SymbolDatabase::Link()
 	//		constantInfo->type = FindTypeInfo(constantInfo->typeRawName);
 	//	}
 	//}
+
+	// delegates
+	for (auto classInfo : delegates)
+	{
+		for (auto methodInfo : classInfo->declaredMethods)
+		{
+			methodInfo->returnType = FindTypeInfo(methodInfo->returnTypeRawName);
+
+			methodInfo->LinkParameters();
+			methodInfo->ExpandCAPIParameters();
+		}
+
+		classInfo->Link();
+	}
 }
 
 tr::Enumerator<MethodInfoPtr> SymbolDatabase::GetAllMethods()
@@ -478,6 +492,10 @@ TypeInfoPtr SymbolDatabase::FindTypeInfo(StringRef typeName)
 
 	type = enums.Find([typeName](TypeInfoPtr type) { return type->name == typeName; });
 	if (type != nullptr) return *type;
+
+	type = delegates.Find([typeName](TypeInfoPtr type) { return type->name == typeName; });
+	if (type != nullptr)
+		return *type;
 
 	if (typeName == _T("StringRef")) return PredefinedTypes::stringType;
 

@@ -2,6 +2,7 @@
 set(LN_SOURCES
 	LWIG.PCH.cpp
 	LWIG.PCH.h
+	Common.h
 	Global.h
 	Main.cpp
 	OutputBuffer.cpp

@@ -13,6 +13,8 @@ class CollisionShape;
 LN_DELEGATE()
 using CollisionEventHandler = Delegate<void(PhysicsObject* obj)>;
 
+
+
 /**
 	@brief	
 */
@@ -88,9 +90,12 @@ private:
 	bool					m_isTrigger;
 	bool					m_initialUpdate;
 
-	Event<CollisionEventHandler>	onTriggerEnter;
-	Event<CollisionEventHandler>	onTriggerLeave;
-	Event<CollisionEventHandler>	onTriggerStay;
+	CollisionEventHandler::EventType	onTriggerEnter;
+	CollisionEventHandler::EventType	onTriggerLeave;
+	CollisionEventHandler::EventType	onTriggerStay;
+	//Event<CollisionEventHandler>	onTriggerEnter;
+	//Event<CollisionEventHandler>	onTriggerLeave;
+	//Event<CollisionEventHandler>	onTriggerStay;
 };
 
 LN_NAMESPACE_END

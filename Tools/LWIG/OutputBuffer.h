@@ -15,7 +15,7 @@ public:
 	void Clear();
 
 	/** インデントレベルをひとつ増やす */
-	void IncreaseIndent();
+	void IncreaseIndent(int count = 1);
 
 	/** インデントレベルをひとつ減らす */
 	void DecreaseIndent();
