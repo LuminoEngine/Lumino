@@ -307,6 +307,15 @@ namespace Lumino
         public extern static ResultCode LNBoxCollisionShape_Initialize(ref Vector3 size, out IntPtr outBoxCollisionShape);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNCollider_AddShape(IntPtr collider, IntPtr shape);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNCollider_SetTrigger(IntPtr collider, bool enabled);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNCollider_IsTrigger(IntPtr collider, out bool outReturn);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNCollider_ConnectOnTriggerEnter(IntPtr collider, LNCollisionEventHandler handler);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]

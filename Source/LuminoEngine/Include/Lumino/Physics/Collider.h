@@ -36,12 +36,15 @@ public:
 	const Matrix& GetTransform() const;
 
 	/** 衝突判定形状を追加します。*/
+	LN_METHOD()
 	void AddShape(CollisionShape* shape);
 
 	/** この Collider が衝突判定のためのトリガーであるかを設定します。初期値は false です。*/
+	LN_METHOD(Property)
 	void SetTrigger(bool enabled);
 
 	/** この Collider が衝突判定のためのトリガーであるかを取得します。*/
+	LN_METHOD(Property)
 	bool IsTrigger() const;
 
 

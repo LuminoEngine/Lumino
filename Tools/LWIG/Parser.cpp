@@ -142,6 +142,7 @@ void HeaderParser::ParseFile(const PathName& path)
 				token->EqualString("LN_FIELD", 8) ||
 				token->EqualString("LN_METHOD", 9) ||
 				token->EqualString("LN_DELEGATE", 11) ||
+				//token->EqualString("LN_CONSTRUCT_ACCESS", 19) ||
 				token->EqualChar(':') ||// token->EqualString("public", 6) || token->EqualString("protected", 9) || token->EqualString("private", 6) || token->EqualString("LN_INTERNAL_ACCESS", 18) ||
 				token->GetTokenGroup() == TokenGroup::Eof;	// TODO: これが無くてもいいようにしたい。今はこれがないと、Many中にEOFしたときOutOfRangeする
 		}
@@ -852,6 +853,7 @@ void HeaderParser::ParseAccessLevel(const Decl& decl)
 	if ((*t)->EqualString("protected")) m_currentAccessLevel = AccessLevel::Protected;
 	if ((*t)->EqualString("private")) m_currentAccessLevel = AccessLevel::Private;
 	if ((*t)->EqualString("internal")) m_currentAccessLevel = AccessLevel::Internal;
+	if ((*t)->EqualString("LN_CONSTRUCT_ACCESS")) m_currentAccessLevel = AccessLevel::Public;
 }
 
 DocumentInfoPtr HeaderParser::MoveLastDocument()
