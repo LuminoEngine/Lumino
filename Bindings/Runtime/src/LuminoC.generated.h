@@ -57,6 +57,6 @@ typedef enum tagLNTextureFormat
 } LNTextureFormat;
 
 
-typedef void (*LNCollisionEventHandler)(LNHandle collisioneventhandler, LNHandle obj);
+typedef void (*LNCollisionEventHandler)(LNHandle sender, LNHandle obj);
 
 

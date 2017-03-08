@@ -531,10 +531,10 @@ namespace Lumino
         /// </summary>
         public EventConnection ConnectOnTriggerEnter(CollisionEventHandler handler)
         {
-            IntPtr outReturn;
-            var result = API.LNCollider_ConnectOnTriggerEnter(Handle, (handler != null) ? handler.Handle : IntPtr.Zero, out outReturn);
+            
+            var result = API.LNCollider_ConnectOnTriggerEnter(Handle, (handler != null) ? handler.Handle : IntPtr.Zero);
             if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
-            return InternalManager.ReturnObjectHelper<EventConnection>(outReturn, ref _ConnectOnTriggerEnter);
+            
         }
 
         /// <summary>
@@ -542,10 +542,10 @@ namespace Lumino
         /// </summary>
         public EventConnection ConnectOnTriggerLeave(CollisionEventHandler handler)
         {
-            IntPtr outReturn;
-            var result = API.LNCollider_ConnectOnTriggerLeave(Handle, (handler != null) ? handler.Handle : IntPtr.Zero, out outReturn);
+            
+            var result = API.LNCollider_ConnectOnTriggerLeave(Handle, (handler != null) ? handler.Handle : IntPtr.Zero);
             if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
-            return InternalManager.ReturnObjectHelper<EventConnection>(outReturn, ref _ConnectOnTriggerLeave);
+            
         }
 
         /// <summary>
@@ -553,10 +553,10 @@ namespace Lumino
         /// </summary>
         public EventConnection ConnectOnTriggerStay(CollisionEventHandler handler)
         {
-            IntPtr outReturn;
-            var result = API.LNCollider_ConnectOnTriggerStay(Handle, (handler != null) ? handler.Handle : IntPtr.Zero, out outReturn);
+            
+            var result = API.LNCollider_ConnectOnTriggerStay(Handle, (handler != null) ? handler.Handle : IntPtr.Zero);
             if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
-            return InternalManager.ReturnObjectHelper<EventConnection>(outReturn, ref _ConnectOnTriggerStay);
+            
         }
 
         /// <summary>
@@ -572,10 +572,7 @@ namespace Lumino
 
         internal Collider(_LNInternal i) : base(i) {}
 
-        private  EventConnection _ConnectOnTriggerEnter;
-private  EventConnection _ConnectOnTriggerLeave;
-private  EventConnection _ConnectOnTriggerStay;
-
+        
     }
 
 

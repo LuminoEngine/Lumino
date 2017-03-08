@@ -85,7 +85,18 @@ void MethodInfo::ExpandCAPIParameters()
 				info->isThis = true;
 				capiParameters.Add(info);
 			}
-			else if (!isConstructor)
+			else if (isConstructor)
+			{
+			}
+			else if (owner->isDelegate)
+			{
+				auto info = std::make_shared<ParameterInfo>();
+				info->name = _T("sender");
+				info->type = PredefinedTypes::objectType;
+				info->isThis = true;
+				capiParameters.Add(info);
+			}
+			else
 			{
 				auto info = std::make_shared<ParameterInfo>();
 				info->name = owner->name.ToLower();
@@ -104,7 +115,11 @@ void MethodInfo::ExpandCAPIParameters()
 	}
 
 	// return value
-	if (!returnType->isVoid)
+	if (returnType->isVoid || returnType == PredefinedTypes::EventConnectionType)
+	{
+		// "void", "EventConnection" は戻り値扱いしない
+	}
+	else
 	{
 		auto info = std::make_shared<ParameterInfo>();
 		info->name = "outReturn";

@@ -9,6 +9,8 @@ namespace Lumino
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate ResultCode LNGameScene_OnStart_OverrideCaller(IntPtr gamescene);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void LNCollisionEventHandler(IntPtr sender, IntPtr obj);
 
 
     /// <summary>
@@ -305,13 +307,13 @@ namespace Lumino
         public extern static ResultCode LNBoxCollisionShape_Initialize(ref Vector3 size, out IntPtr outBoxCollisionShape);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static ResultCode LNCollider_ConnectOnTriggerEnter(IntPtr collider, IntPtr handler, out IntPtr outReturn);
+        public extern static ResultCode LNCollider_ConnectOnTriggerEnter(IntPtr collider, LNCollisionEventHandler handler);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static ResultCode LNCollider_ConnectOnTriggerLeave(IntPtr collider, IntPtr handler, out IntPtr outReturn);
+        public extern static ResultCode LNCollider_ConnectOnTriggerLeave(IntPtr collider, LNCollisionEventHandler handler);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static ResultCode LNCollider_ConnectOnTriggerStay(IntPtr collider, IntPtr handler, out IntPtr outReturn);
+        public extern static ResultCode LNCollider_ConnectOnTriggerStay(IntPtr collider, LNCollisionEventHandler handler);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNCollider_Initialize(out IntPtr outCollider);
