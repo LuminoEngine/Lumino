@@ -300,17 +300,7 @@ void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
 	}
 
 	// mehod params
-	auto paramBegin = lparen + 1;
-	auto itr = paramBegin;
-	for (; itr < rparen; ++itr)
-	{
-		if ((*itr)->EqualChar(','))
-		{
-			ParseParamsDecl(paramBegin, itr, info);
-			paramBegin = itr + 1;
-		}
-	}
-	if (paramBegin != rparen) ParseParamsDecl(paramBegin, rparen, info);
+	ParseParamListDecl(lparen, rparen, info);
 
 	// method attribute
 	{
@@ -326,38 +316,98 @@ void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
 	}
 }
 
-// end = ',' | ')'
-void HeaderParser::ParseParamsDecl(TokenItr begin, TokenItr end, MethodInfoPtr parent)
+//------------------------------------------------------------------------------
+//	begin	=	'('
+//	end		=	')'
+void HeaderParser::ParseParamListDecl(TokenItr begin, TokenItr end, MethodInfoPtr parent)
 {
+	auto paramBegin = begin + 1;
+	auto itr = paramBegin;
+	bool isDelegate = false;
+	for (; itr < end; ++itr)
+	{
+		if ((*itr)->EqualString(_T("Delegate")))
+		{
+			isDelegate = true;	// 今解析中の引数は Delegate である
+		}
+
+		if ((*itr)->EqualChar(','))
+		{
+			ParseParamDecl(paramBegin, itr, parent, isDelegate);
+			paramBegin = itr + 1;
+		}
+	}
+	if (paramBegin != end) ParseParamDecl(paramBegin, end, parent, isDelegate);
+}
+
+//------------------------------------------------------------------------------
+// 仮引数1つ分の解析
+// end = ',' | ')'
+void HeaderParser::ParseParamDecl(TokenItr begin, TokenItr end, MethodInfoPtr parent, bool isDelegate)
+{
+	// Identifier, Keyword, Operator, ArithmeticLiteral だけのリストにする
 	auto declTokens = tr::MakeEnumerator::from(begin, end)
 		.Where([](Token* t) { return t->GetTokenGroup() == TokenGroup::Identifier || t->GetTokenGroup() == TokenGroup::Keyword || t->GetTokenGroup() == TokenGroup::Operator || t->GetTokenGroup() == TokenGroup::ArithmeticLiteral; })
 		.ToList();
 	
 	auto info = std::make_shared<ParameterInfo>();
 
-	auto paramEnd = std::find_if(declTokens.begin(), declTokens.end(), [](Token* t) { return t->EqualChar('='); });
-	if (paramEnd != declTokens.end())
+	// Delegate の場合
+	TokenItr paramEnd;
+	if (isDelegate)
 	{
-		// デフォルト引数の解析
-		String value;
-		for (auto itr = paramEnd + 1; itr < declTokens.end(); ++itr) value += (*itr)->GetString();
-		info->rawDefaultValue = value;
+		paramEnd = end;
+
+		// , の直前を引数名とする
+		auto name = paramEnd - 1;
+
+		// "void(int, int)" の (...) を探す
+		auto paramListBegin = std::find_if(begin, end, [](Token* t) { return t->EqualChar('('); }) + 1;
+		auto paramListEnd = std::find_if(begin, end, [](Token* t) { return t->EqualChar(')'); });
+
+		// Delegate クラスを作る
+		auto delegateInfo = std::make_shared<TypeInfo>();
+		delegateInfo->isDelegate = true;
+		delegateInfo->name = (*name)->GetString();
+
+		// Delegate クラスに Invoke メソッドを追加する
+		auto involeMethodInfo = std::make_shared<MethodInfo>();
+		involeMethodInfo->owner = delegateInfo;
+		involeMethodInfo->name = "Invoke";
+		delegateInfo->declaredMethods.Add(involeMethodInfo);
+
+		// 引数リストを解析する
+		ParseParamListDecl(paramListBegin, paramListEnd, involeMethodInfo);
+
+		Console::WriteLine(delegateInfo->name);
 	}
+	// 普通の引数の場合
+	else
+	{
+		paramEnd = std::find_if(declTokens.begin(), declTokens.end(), [](Token* t) { return t->EqualChar('='); });
+		if (paramEnd != declTokens.end())
+		{
+			// デフォルト引数の解析
+			String value;
+			for (auto itr = paramEnd + 1; itr < declTokens.end(); ++itr) value += (*itr)->GetString();
+			info->rawDefaultValue = value;
+		}
 
-	// , または =(デフォルト引数) の直前を引数名とする
-	auto name = paramEnd - 1;
-	
+		// , または =(デフォルト引数) の直前を引数名とする
+		auto name = paramEnd - 1;
 
-	String typeName;
-	int pointerLevel;
-	bool hasConst;
-	bool hasVirtual;
-	ParseParamType(declTokens.begin(), paramEnd - 1, &typeName, &pointerLevel, &hasConst, &hasVirtual);
 
-	info->name = String((*name)->GetString());
-	info->typeRawName = typeName;
-	info->isIn = hasConst;
-	info->isOut = (!hasConst && pointerLevel > 0);
+		String typeName;
+		int pointerLevel;
+		bool hasConst;
+		bool hasVirtual;
+		ParseParamType(declTokens.begin(), paramEnd - 1, &typeName, &pointerLevel, &hasConst, &hasVirtual);
+
+		info->name = String((*name)->GetString());
+		info->typeRawName = typeName;
+		info->isIn = hasConst;
+		info->isOut = (!hasConst && pointerLevel > 0);
+	}
 	parent->parameters.Add(info);
 
 	// copydoc 用シグネチャの抽出
@@ -385,31 +435,15 @@ void HeaderParser::ParseParamType(TokenItr begin, TokenItr end, String* outName,
 	int pointerLevel = 0;
 	bool hasConst = false;
 	bool hasVirtual = false;
-	bool isDelegate = false;
 	for (auto itr = begin; itr != typeEnd; ++itr)
 	{
 		if ((*itr)->EqualChar('*')) pointerLevel++;
 		if ((*itr)->EqualString("const")) hasConst = true;
 		if ((*itr)->EqualString("virtual")) hasVirtual = true;
 		if ((*itr)->GetTokenGroup() == TokenGroup::Identifier || (*itr)->GetTokenGroup() == TokenGroup::Keyword) typeName = itr;
-	
-		if ((*itr)->EqualString("Delegate"))
-		{
-			isDelegate = true;
-			break;
-		}
 	}
 
-	if (isDelegate)
-	{
-		String name;
-		for (auto itr = begin; itr != typeEnd; ++itr) name += String((*itr)->GetString());
-		*outName = name;
-	}
-	else
-	{
-		*outName = String((*typeName)->GetString());
-	}
+	*outName = String((*typeName)->GetString());
 	*outPointerLevel = pointerLevel;
 	*outHasConst = hasConst;
 	*outHasVirtual = hasVirtual;

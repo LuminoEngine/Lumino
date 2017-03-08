@@ -183,6 +183,7 @@ public:
 	bool			isVoid = false;
 	bool				isPrimitive = false;
 	bool					isEnum = false;
+	bool					isDelegate = false;
 	List<FieldInfoPtr>		declaredFields;
 	List<MethodInfoPtr>		declaredMethods;
 	List<PropertyInfoPtr>	declaredProperties;

@@ -7,6 +7,13 @@ LN_NAMESPACE_BEGIN
 class CollisionShape;
 
 /**
+	@brief		衝突判定に関係するイベントを処理するハンドラです。
+	@param[in]	obj		: 衝突した PhysicsObject
+*/
+LN_DELEGATE()
+using CollisionEventHandler = Delegate<void(PhysicsObject* obj)>;
+
+/**
 	@brief	
 */
 LN_CLASS()
@@ -38,15 +45,15 @@ public:
 
 	/** OnTriggerEnter イベントの通知を受け取るコールバックを登録します。*/
 	LN_METHOD(Event)
-	void ConnectOnTriggerEnter(Delegate<void(PhysicsObject*)> handler);
+	void ConnectOnTriggerEnter(CollisionEventHandler handler);
 
 	/** OnTriggerLeave イベントの通知を受け取るコールバックを登録します。*/
 	LN_METHOD(Event)
-	void ConnectOnTriggerLeave(Delegate<void(PhysicsObject*)> handler);
+	void ConnectOnTriggerLeave(CollisionEventHandler handler);
 
 	/** OnTriggerStay イベントの通知を受け取るコールバックを登録します。*/
 	LN_METHOD(Event)
-	void ConnectOnTriggerStay(Delegate<void(PhysicsObject*)> handler);
+	void ConnectOnTriggerStay(CollisionEventHandler handler);
 
 protected:
 	virtual void OnBeforeStepSimulation() override;
@@ -81,9 +88,9 @@ private:
 	bool					m_isTrigger;
 	bool					m_initialUpdate;
 
-	Event<void(PhysicsObject*)>	onTriggerEnter;
-	Event<void(PhysicsObject*)>	onTriggerLeave;
-	Event<void(PhysicsObject*)>	onTriggerStay;
+	Event<CollisionEventHandler>	onTriggerEnter;
+	Event<CollisionEventHandler>	onTriggerLeave;
+	Event<CollisionEventHandler>	onTriggerStay;
 };
 
 LN_NAMESPACE_END

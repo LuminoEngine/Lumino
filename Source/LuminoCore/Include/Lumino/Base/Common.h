@@ -194,6 +194,7 @@
 #define LN_FIELD(...)
 #define LN_METHOD(...)
 #define LN_PROPERTY(...)
+#define LN_DELEGATE(...)
 
 //----------------------------------------------------------------------
 // Base include
