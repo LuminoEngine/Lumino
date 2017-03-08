@@ -56,7 +56,7 @@ private:
 	detail::EventConnectionDataBase*				m_connectionData;
 
 	template<typename>
-	friend class Event2;
+	friend class Event;
 };
 
 
@@ -65,18 +65,18 @@ private:
 	@brief	イベントがトリガーされたときに通知を受け取るメソッドコールバックを登録するためのクラスです。
 */
 template<typename>
-class Event2 {};
+class Event {};
 template<typename TRet, typename... TArgs>
-class Event2<TRet(TArgs...)>
+class Event<TRet(TArgs...)>
 {
 public:
 	typedef Delegate<TRet(TArgs...)> DelegateType;
 
-	Event2()
+	Event()
 		: m_internalData(std::make_shared<EventInternalData>())
 	{}
 
-	~Event2()
+	~Event()
 	{
 		Clear();
 	}

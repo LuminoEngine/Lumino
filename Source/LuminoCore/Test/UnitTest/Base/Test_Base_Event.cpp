@@ -152,7 +152,7 @@ TEST_F(Test_Base_EventConnection, Basic)
 	Class1 c1, c2;
 	g_Value = 0;
 
-	Event2<void(int)> ev01;
+	Event<void(int)> ev01;
 	ev01.Connect(CreateDelegate(&c1, &Class1::Callback01_1));
 	ev01.Raise(5);
 	ASSERT_EQ(5, g_Value);
@@ -179,22 +179,22 @@ TEST_F(Test_Base_EventConnection, MultiArgs)
 	Class1 c1;
 	g_Value = 0;
 
-	Event2<void(int)> ev01;
+	Event<void(int)> ev01;
 	ev01.Connect(CreateDelegate(&c1, &Class1::Callback01_1));
 	ev01.Raise(5);
 	ASSERT_EQ(5, g_Value);
 
-	Event2<void(int, int)> ev02;
+	Event<void(int, int)> ev02;
 	ev02.Connect(CreateDelegate(&c1, &Class1::Callback02_1));
 	ev02.Raise(6, 6);
 	ASSERT_EQ(11, g_Value);
 
-	Event2<void(int, int, int)> ev03;
+	Event<void(int, int, int)> ev03;
 	ev03.Connect(CreateDelegate(&c1, &Class1::Callback03_1));
 	ev03.Raise(7, 7, 7);
 	ASSERT_EQ(18, g_Value);
 
-	Event2<void(int, int, int, int)> ev04;
+	Event<void(int, int, int, int)> ev04;
 	ev04.Connect(CreateDelegate(&c1, &Class1::Callback04_1));
 	ev04.Raise(8, 8, 8, 8);
 	ASSERT_EQ(26, g_Value);
@@ -205,7 +205,7 @@ TEST_F(Test_Base_EventConnection, Raise)
 {
 	g_Value = 0;
 	Class1 c1;
-	Event2<void(int)> ev01;
+	Event<void(int)> ev01;
 	EventConnection conn;
 
 	// <Test> 1つのイベントハンドラを呼び出せること。

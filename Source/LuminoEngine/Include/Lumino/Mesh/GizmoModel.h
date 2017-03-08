@@ -113,8 +113,8 @@ private:
 	Matrix					m_draggingStartGizmoTransform;
 	PointI					m_draggingStartViewPixelPoint;
 
-	Event2<void(GizmoModel*)>	m_onTargetTransformChanged;
-	Event2<void(GizmoModel*)>	m_onSubmitEditing;
+	Event<void(GizmoModel*)>	m_onTargetTransformChanged;
+	Event<void(GizmoModel*)>	m_onSubmitEditing;
 };
 
 } // namespace tr
