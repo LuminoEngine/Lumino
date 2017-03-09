@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include "UIInjectedInputReceiver.h"
-#include "UIContentControl.h"
+#include "UIItemsControl.h"
 
 LN_NAMESPACE_BEGIN
 class DrawList;
@@ -13,7 +13,7 @@ class PlatformWindow;
 				UI レイアウトのルート要素を保持します。
 */
 class UILayoutView
-	: public UIContentControl
+	: public UIItemsControl
 	, public IUIInjectedInputReceiver
 {
 public:

@@ -18,6 +18,11 @@ public:
 
 	UIElementCollection* GetItems() const;
 
+	void SetContent(UIElement* element)
+	{
+		m_items->Add(element);
+	}
+
 protected:
 	UIItemsControl();
 	virtual ~UIItemsControl();

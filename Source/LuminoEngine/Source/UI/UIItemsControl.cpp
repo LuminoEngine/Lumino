@@ -27,6 +27,9 @@ void UIItemsControl::Initialize(detail::UIManager* manager)
 {
 	UIElement::Initialize(manager);
 	m_items = RefPtr<UIElementCollection>::MakeRef(this);
+
+	auto panel = NewObject<UILayoutPanel>(manager);
+	SetItemsHostPanel(panel);
 }
 
 //------------------------------------------------------------------------------
@@ -38,10 +41,19 @@ UIElementCollection* UIItemsControl::GetItems() const
 //------------------------------------------------------------------------------
 void UIItemsControl::SetItemsHostPanel(UILayoutPanel* panel)
 {
-	LN_CHECK_ARG(panel != nullptr);
-	//SetVisualTreeRoot(panel);
-	LN_NOTIMPLEMENTED();
-	m_itemsHostPanel = panel;
+	// ä˘Ç…éùÇ¡ÇƒÇ¢ÇÍÇŒéÊÇËèúÇ¢ÇƒÇ®Ç≠
+	if (m_itemsHostPanel != nullptr && m_itemsHostPanel != panel)
+	{
+		RemoveVisualChild(m_itemsHostPanel);
+		m_itemsHostPanel = nullptr;
+	}
+
+	// êVÇµÇ≠ï€éùÇ∑ÇÈ
+	if (panel != nullptr)
+	{
+		AddVisualChild(panel);
+		m_itemsHostPanel = panel;
+	}
 }
 
 //------------------------------------------------------------------------------

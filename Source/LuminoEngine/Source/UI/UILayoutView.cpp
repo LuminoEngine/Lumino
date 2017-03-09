@@ -31,7 +31,7 @@ UILayoutView::~UILayoutView()
 //------------------------------------------------------------------------------
 void UILayoutView::Initialize(UIContext* ownerContext, PlatformWindow* ownerNativeWindow)
 {
-	UIContentControl::Initialize(ownerContext->GetManager());
+	UIItemsControl::Initialize(ownerContext->GetManager());
 
 	m_ownerContext = ownerContext;
 	m_ownerNativeWindow = ownerNativeWindow;
@@ -52,14 +52,14 @@ void UILayoutView::UpdateLayout(const Size& viewSize)
 		// 今は UILayoutView::UpdateLayout() からしか呼ばれていないので問題ないが…。
 		ApplyTemplateHierarchy(GetOwnerContext()->GetRootStyleTable(), nullptr);
 
-		UIContentControl::UpdateLayout(GetViewPixelSize());
+		UIItemsControl::UpdateLayout(GetViewPixelSize());
 	}
 }
 
 //------------------------------------------------------------------------------
 void UILayoutView::Render(DrawList* g)
 {
-	UIContentControl::Render(g);
+	UIItemsControl::Render(g);
 }
 
 //------------------------------------------------------------------------------
