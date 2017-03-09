@@ -15,7 +15,7 @@ public:
 	static UIContext* GetMainContext();
 
 public:
-	UILayoutView* GetMainWindowView() { return m_mainWindowView; }
+	//UILayoutView* GetMainWindowView() { return m_mainWindowView; }
 	UIStyleTable* GetRootStyleTable() { return m_rootStyleTable; }
 
 LN_INTERNAL_ACCESS:
@@ -38,7 +38,7 @@ private:
 
 	detail::UIManager*	m_manager;
 	UIStyleTable*		m_rootStyleTable;
-	UILayoutView*		m_mainWindowView;
+	//UILayoutView*		m_mainWindowView;
 	UIElement*			m_focusElement;
 	//List<UIElement*>	m_allElementList;
 };

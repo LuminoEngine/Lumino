@@ -44,6 +44,10 @@ LN_INTERNAL_ACCESS:
 	virtual bool InjectTextInput(TCHAR ch) override;
 
 protected:
+	UILayoutView();
+	virtual ~UILayoutView();
+	void Initialize(UIContext* ownerContext, PlatformWindow* ownerNativeWindow);
+
 	// UIElement interface
 	virtual void ActivateInternal(UIElement* child);
 
@@ -57,9 +61,6 @@ private:
 		UIElement*	HoverElement = nullptr;
 	};
 
-	UILayoutView();
-	virtual ~UILayoutView();
-	void Initialize(UIContext* ownerContext, PlatformWindow* ownerNativeWindow);
 
 	PlatformWindow*		m_ownerNativeWindow;
 

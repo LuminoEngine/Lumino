@@ -13,6 +13,7 @@
 using namespace ln;
 
 
+void UIControlsGallery();
 
 
 
@@ -84,6 +85,9 @@ void Main()
 #ifdef _WIN32
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
+
+	//UIControlsGallery();
+	//return;
 
 
 	//class Foo{
@@ -551,7 +555,7 @@ void Main()
 #endif
 	//static_cast<CameraViewportLayer*>(Engine::GetDefault3DLayer())->SetDebugDrawFlags(WorldDebugDrawFlags::PhysicsInfo);
 
-	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView();
+	auto uiRoot = Engine::GetMainWindow();
 	//auto thumb = UIThumb::Create();
 	////thumb->SetPosition(PointF(100, 200));
 	//thumb->SetSize(Size(30,60));

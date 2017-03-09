@@ -58,6 +58,7 @@ ln_add_pch(LuminoEngine_Test "Test.PCH.h" "UnitTest/Test.PCH.cpp")
 #===============================================================================
 set(LN_SANDBOX_SOURCES
 	Sandbox/SandboxMain.cpp
+	Sandbox/UIControlsGallery.cpp
 )
 
 add_executable(LuminoSandbox ${LN_SANDBOX_SOURCES})

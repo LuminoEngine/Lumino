@@ -752,7 +752,7 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 	UILayoutView* uiView = nullptr;
 	if (m_uiManager != nullptr)
 	{
-		uiView = m_uiManager->GetMainWindow()->GetMainUIContext()->GetMainWindowView();
+		uiView = m_uiManager->GetMainWindow();
 	}
 
 

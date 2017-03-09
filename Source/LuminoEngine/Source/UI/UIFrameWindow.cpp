@@ -18,71 +18,10 @@
 
 LN_NAMESPACE_BEGIN
 
-////==============================================================================
-//// UIViewportLayer
-////==============================================================================
-//LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIViewportLayer, ViewportLayer);
-//
-////------------------------------------------------------------------------------
-//UIViewportLayer::UIViewportLayer(UILayoutView* view)
-//	: m_view(view)
-//{
-//	assert(view != nullptr);
-//	SetZIndex(DefaultZIndex);
-//}
-//
-////------------------------------------------------------------------------------
-//UIViewportLayer::~UIViewportLayer()
-//{
-//}
-//
-////------------------------------------------------------------------------------
-//void UIViewportLayer::Initialize()
-//{
-//	auto* manager = m_view->GetOwnerContext()->GetManager();
-//
-//	// TODO: DrawList は UI Scene 側につくべき
-//	m_renderingContext = RefPtr<DrawList>::MakeRef();
-//	m_renderingContext->Initialize(manager->GetGraphicsManager());
-//
-//	// lighting disabled.
-//	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
-//	internalRenderer->Initialize(manager->GetGraphicsManager());
-//	m_internalRenderer = internalRenderer;
-//}
-//
-////------------------------------------------------------------------------------
-//void UIViewportLayer::Render()
-//{
-//	m_renderingContext->BeginMakeElements();
-//
-//	m_view->Render(m_renderingContext);
-//}
-//
-////------------------------------------------------------------------------------
-//void UIViewportLayer::ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
-//{
-//	detail::CameraInfo cameraInfo;
-//	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
-//	cameraInfo.viewPixelSize = GetSize();
-//	cameraInfo.viewPosition = Vector3::Zero;
-//	cameraInfo.viewMatrix = Matrix::Identity;
-//	cameraInfo.projMatrix = Matrix::MakePerspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1);
-//	cameraInfo.viewProjMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;
-//	cameraInfo.viewFrustum = ViewFrustum(cameraInfo.projMatrix);
-//	cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
-//	m_internalRenderer->Render(
-//		m_renderingContext->GetDrawElementList(),
-//		cameraInfo,
-//		renderTarget,
-//		depthBuffer);
-//	m_renderingContext->EndFrame();
-//}
-
 //==============================================================================
 // UIFrameWindow
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIFrameWindow, Object)
+LN_UI_TYPEINFO_IMPLEMENT(UIFrameWindow, UILayoutView)
 
 //------------------------------------------------------------------------------
 UIFrameWindow::UIFrameWindow()
@@ -101,7 +40,7 @@ UIFrameWindow::~UIFrameWindow()
 }
 
 //------------------------------------------------------------------------------
-void UIFrameWindow::Initialize(detail::UIManager* manager, PlatformWindow* platformWindow, SwapChain* swapChain, UILayoutView* view)
+void UIFrameWindow::Initialize(detail::UIManager* manager, PlatformWindow* platformWindow, SwapChain* swapChain, UIContext* context)
 {
 	LN_CHECK_ARG(manager != nullptr);
 	LN_CHECK_ARG(platformWindow != nullptr);
@@ -110,9 +49,11 @@ void UIFrameWindow::Initialize(detail::UIManager* manager, PlatformWindow* platf
 	LN_REFOBJ_SET(m_platformWindow, platformWindow);
 	LN_REFOBJ_SET(m_swapChain, swapChain);
 
+	UILayoutView::Initialize(context, platformWindow);
+
 	m_platformWindow->AttachEventListener(this, 0);
 
-	Initialize_UIRenderer(view);
+	Initialize_UIRenderer();
 }
 
 //------------------------------------------------------------------------------
@@ -159,10 +100,9 @@ void UIFrameWindow::EndRendering()
 }
 
 //------------------------------------------------------------------------------
-void UIFrameWindow::Initialize_UIRenderer(UILayoutView* view)
+void UIFrameWindow::Initialize_UIRenderer()
 {
-	m_view = view;
-	auto* manager = m_view->GetOwnerContext()->GetManager();
+	auto* manager = GetOwnerContext()->GetManager();
 
 	m_renderingContext = RefPtr<DrawList>::MakeRef();
 	m_renderingContext->Initialize(manager->GetGraphicsManager());
@@ -178,7 +118,7 @@ void UIFrameWindow::Render_UIRenderer()
 {
 	m_renderingContext->BeginMakeElements();
 
-	m_view->Render(m_renderingContext);
+	UILayoutView::Render(m_renderingContext);
 }
 
 //------------------------------------------------------------------------------
@@ -235,7 +175,7 @@ void UIMainWindow::Initialize(detail::UIManager* manager, PlatformWindow* platfo
 	m_mainUIContext = LN_NEW UIContext();
 	m_mainUIContext->Initialize(manager);
 
-	UIFrameWindow::Initialize(manager, platformWindow, manager->GetGraphicsManager()->GetMainSwapChain(), m_mainUIContext->GetMainWindowView());
+	UIFrameWindow::Initialize(manager, platformWindow, manager->GetGraphicsManager()->GetMainSwapChain(), m_mainUIContext);
 
 	// MainViewport
 	m_mainViewport = RefPtr<Viewport>::MakeRef();
@@ -276,7 +216,7 @@ void UIMainWindow::InjectElapsedTime(float elapsedTime)
 //------------------------------------------------------------------------------
 void UIMainWindow::UpdateLayout(const Size& viewSize)
 {
-	m_mainUIContext->GetMainWindowView()->UpdateLayout(viewSize);
+	UIFrameWindow::UpdateLayout(viewSize);
 }
 
 //------------------------------------------------------------------------------
@@ -367,7 +307,7 @@ void UINativeHostWindow::Initialize(detail::UIManager* manager, intptr_t windowH
 	m_mainUIContext = LN_NEW UIContext();
 	m_mainUIContext->Initialize(manager);
 
-	UIFrameWindow::Initialize(manager, window, swap, m_mainUIContext->GetMainWindowView());
+	UIFrameWindow::Initialize(manager, window, swap, m_mainUIContext);
 }
 
 //------------------------------------------------------------------------------

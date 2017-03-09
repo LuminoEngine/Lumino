@@ -29,7 +29,7 @@ UIContext* UIContext::GetMainContext()
 UIContext::UIContext()
 	: m_manager(nullptr)
 	, m_rootStyleTable(nullptr)
-	, m_mainWindowView(nullptr)
+	//, m_mainWindowView(nullptr)
 	, m_focusElement(nullptr)
 {
 }
@@ -37,7 +37,7 @@ UIContext::UIContext()
 //------------------------------------------------------------------------------
 UIContext::~UIContext()
 {
-	LN_SAFE_RELEASE(m_mainWindowView);
+	//LN_SAFE_RELEASE(m_mainWindowView);
 	LN_SAFE_RELEASE(m_rootStyleTable);
 }
 
@@ -48,8 +48,8 @@ void UIContext::Initialize(detail::UIManager* manager)
 
 	LN_REFOBJ_SET(m_rootStyleTable, m_manager->GetDefaultStyleTable());
 
-	m_mainWindowView = LN_NEW UILayoutView();
-	m_mainWindowView->Initialize(this, m_manager->GetMainWindow()->GetPlatformWindow());
+	//m_mainWindowView = LN_NEW UILayoutView();
+	//m_mainWindowView->Initialize(this, m_manager->GetMainWindow()->GetPlatformWindow());
 }
 
 //------------------------------------------------------------------------------

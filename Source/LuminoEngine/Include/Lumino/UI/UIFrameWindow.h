@@ -3,6 +3,7 @@
 #include "../Platform/EventListener.h"
 #include "../Graphics/Viewport.h"
 #include "UIElement.h"
+#include "UILayoutView.h"
 
 LN_NAMESPACE_BEGIN
 class PlatformWindow;
@@ -11,38 +12,12 @@ class CameraViewportLayer;
 class World2D;
 class World3D;
 
-///**
-//	@brief		
-//*/
-//class UIViewportLayer
-//	: public ViewportLayer
-//{
-//	LN_TR_REFLECTION_TYPEINFO_DECLARE();
-//public:
-//	static const int DefaultZIndex = 100;
-//
-//LN_CONSTRUCT_ACCESS:
-//	UIViewportLayer(UILayoutView* view);
-//	virtual ~UIViewportLayer();
-//	//virtual DrawList* GetRenderer() override { return nullptr; }
-//	virtual void Render() override;
-//	virtual void ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
-//
-//LN_INTERNAL_ACCESS:
-//	void Initialize();
-//
-//private:
-//	UILayoutView*		m_view;
-//	RefPtr<DrawList>	m_renderingContext;
-//	RefPtr<detail::InternalRenderer>	m_internalRenderer;
-//};
-
 
 /**
 	@brief		
 */
 class UIFrameWindow
-	: public Object
+	: public UILayoutView
 	, public IEventListener
 {
 	LN_UI_TYPEINFO_DECLARE();
@@ -56,7 +31,7 @@ public:
 protected:
 	UIFrameWindow();
 	virtual ~UIFrameWindow();
-	void Initialize(detail::UIManager* manager, PlatformWindow* platformWindow, SwapChain* swapChain, UILayoutView* view);
+	void Initialize(detail::UIManager* manager, PlatformWindow* platformWindow, SwapChain* swapChain, UIContext* context);
 	virtual bool OnEvent(const PlatformEventArgs& e) override;
 
 LN_INTERNAL_ACCESS:
@@ -69,7 +44,7 @@ LN_INTERNAL_ACCESS:
 	virtual void EndRendering();
 
 private:
-	void Initialize_UIRenderer(UILayoutView* view);
+	void Initialize_UIRenderer();
 	void Render_UIRenderer();
 	void ExecuteDrawList_UIRenderer();
 
@@ -77,7 +52,6 @@ private:
 	PlatformWindow*			m_platformWindow;
 	SwapChain*				m_swapChain;
 
-	UILayoutView*						m_view;
 	RefPtr<DrawList>					m_renderingContext;
 	RefPtr<detail::InternalRenderer>	m_internalRenderer;
 };
@@ -118,7 +92,6 @@ private:
 	RefPtr<Viewport>			m_mainViewport;		// TODO: 後で Control 化する。直接描画しない
 	RefPtr<CameraViewportLayer>	m_default2DCameraViewportLayer;
 	RefPtr<CameraViewportLayer>	m_default3DCameraViewportLayer;
-	//RefPtr<UIViewportLayer>		m_uiLayer;
 };
 
 
