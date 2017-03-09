@@ -567,7 +567,7 @@ void Main()
 	track->SetMaximum(10);
 	track->SetValue(3);
 	track->SetViewportSize(2);
-	uiRoot->SetContent(track);
+	uiRoot->AddChild(track);
 
 
 	while (!Engine::IsEndRequested())

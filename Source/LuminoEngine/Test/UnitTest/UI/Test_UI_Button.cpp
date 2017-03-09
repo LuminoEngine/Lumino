@@ -1,4 +1,4 @@
-#include <TestConfig.h>
+ï»¿#include <TestConfig.h>
 #include <Lumino/UI/UILayoutPanel.h>
 
 class Test_UI_Button : public ::testing::Test
@@ -14,13 +14,13 @@ TEST_F(Test_UI_Button, Basic)
 	auto uiRoot = Engine::GetMainWindow();
 	auto button1 = UIButton::Create();
 	button1->SetText(_T("Button"));
-	uiRoot->SetContent(button1);
+	uiRoot->AddChild(button1);
 
 	while (Engine::Update())
 	{
 	}
 
-
+	uiRoot->RemoveChild(button1);
 }
 
 
@@ -49,13 +49,13 @@ TEST_F(Test_UI_FlowLayout, ReverseHorizontal)
 	panel->SetOrientation(Orientation::ReverseHorizontal);
 
 	auto uiRoot = Engine::GetMainWindow();
-	uiRoot->SetContent(panel);
+	uiRoot->AddChild(panel);
 
 	Engine::Update();
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_FlowLayout.ReverseHorizontal1.png"), 99, true));
 
-	uiRoot->SetContent(nullptr);	// ŒãŽn––
+	uiRoot->RemoveChild(panel);	// å¾Œå§‹æœ«
 }
 
 //------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ TEST_F(Test_UI_FlowLayout, Margin_Padding)
 	panel->AddChild(button2);
 
 	auto uiRoot = Engine::GetMainWindow();
-	uiRoot->SetContent(panel);
+	uiRoot->AddChild(panel);
 
 	panel->padding = ThicknessF(5, 10, 15, 20);
 	button2->margin = ThicknessF(5, 10, 15, 20);
@@ -81,7 +81,7 @@ TEST_F(Test_UI_FlowLayout, Margin_Padding)
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_FlowLayout.Margin_Padding1.png")));
 
-	uiRoot->SetContent(nullptr);	// ŒãŽn––
+	uiRoot->RemoveChild(panel);	// å¾Œå§‹æœ«
 }
 
 
@@ -103,7 +103,7 @@ TEST_F(Test_UI_GridLayout, Basic)
 	auto button = UIButton::Create();
 	button->SetSize(Size(32, 32));
 	grid->AddChild(button);
-	uiRoot->SetContent(grid);
+	uiRoot->AddChild(grid);
 
 	tr::WeakRefPtr<UIButton> ref = button;
 
@@ -111,14 +111,14 @@ TEST_F(Test_UI_GridLayout, Basic)
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.Basic1.png")));
 
-	// button ‚ÌŽQÆ‚ðØ‚Á‚Ä‚à‚Ü‚¾¶‚«‚Ä‚¢‚é
+	// button ã®å‚ç…§ã‚’åˆ‡ã£ã¦ã‚‚ã¾ã ç”Ÿãã¦ã„ã‚‹
 	button.SafeRelease();
 	ASSERT_EQ(true, ref.IsAlive());
-	// grid ‚ÌŽQÆ‚ðØ‚Á‚Ä‚à‚Ü‚¾¶‚«‚Ä‚¢‚é
+	// grid ã®å‚ç…§ã‚’åˆ‡ã£ã¦ã‚‚ã¾ã ç”Ÿãã¦ã„ã‚‹
 	grid.SafeRelease();
 	ASSERT_EQ(true, ref.IsAlive());
-	// root ‚©‚ç‚ÌŽQÆ‚ðØ‚é‚Æ‚æ‚¤‚â‚­íœ‚³‚ê‚é
-	uiRoot->SetContent(nullptr);
+	// root ã‹ã‚‰ã®å‚ç…§ã‚’åˆ‡ã‚‹ã¨ã‚ˆã†ã‚„ãå‰Šé™¤ã•ã‚Œã‚‹
+	uiRoot->GetItems()->Clear();
 	ASSERT_EQ(false, ref.IsAlive());
 }
 
@@ -130,11 +130,13 @@ TEST_F(Test_UI_GridLayout, DefaultLayout)
 	auto grid1 = UIGridLayout::Create();
 	auto button1 = UIButton::Create();
 	grid1->AddChild(button1);
-	uiRoot->SetContent(grid1);
+	uiRoot->AddChild(grid1);
 
 	Engine::Update();
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.DefaultLayout1.png")));
+
+	uiRoot->RemoveChild(grid1);
 }
 
 //------------------------------------------------------------------------------
@@ -192,11 +194,12 @@ TEST_F(Test_UI_GridLayout, Layout)
 	button9->SetLayoutRowSpan(2);
 	grid1->AddChild(button9);
 
-	uiRoot->SetContent(grid1);
+	uiRoot->AddChild(grid1);
 
 	Engine::Update();
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.Layout1.png")));
+	uiRoot->RemoveChild(grid1);
 }
 
 //------------------------------------------------------------------------------
@@ -233,11 +236,12 @@ TEST_F(Test_UI_GridLayout, TreeLayout)
 	grids[2]->SetLayoutColumn(1);
 	grids[2]->SetLayoutRowSpan(2);
 
-	uiRoot->SetContent(grid1);
+	uiRoot->AddChild(grid1);
 
 	Engine::Update();
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.TreeLayout1.png")));
+	uiRoot->RemoveChild(grid1);
 }
 
 //------------------------------------------------------------------------------
@@ -277,12 +281,13 @@ TEST_F(Test_UI_GridLayout, GridLength)
 	grid1->AddChild(button4);
 
 
-	uiRoot->SetContent(grid1);
+	uiRoot->AddChild(grid1);
 
 	Engine::Update();
 
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.GridLength1.png")));
+	uiRoot->RemoveChild(grid1);
 }
 
 //------------------------------------------------------------------------------
@@ -292,7 +297,7 @@ TEST_F(Test_UI_GridLayout, MinMax)
 
 	auto grid1 = UIGridLayout::Create();
 
-	uiRoot->SetContent(grid1);
+	uiRoot->AddChild(grid1);
 	grid1->AddColumnDefinition(GridLengthType::Auto, 1.0f, 20.0f, 30.0f);
 	grid1->AddColumnDefinition(GridLengthType::Auto, 1.0f, 20.0f, 30.0f);
 	grid1->AddColumnDefinition(GridLengthType::Auto, 1.0f, 20.0f, 30.0f);
@@ -329,5 +334,6 @@ TEST_F(Test_UI_GridLayout, MinMax)
 	Engine::Update();
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.MinMax1.png")));
+	uiRoot->RemoveChild(grid1);
 }
 

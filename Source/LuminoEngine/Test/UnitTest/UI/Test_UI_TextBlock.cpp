@@ -21,10 +21,11 @@ TEST_F(Test_UI_TextBlock, DefaultLayout)
 	auto uiRoot = Engine::GetMainWindow();
 	auto textBlock1 = UITextBlock::Create();
 	textBlock1->SetText(_T("TextBlock"));
-	uiRoot->SetContent(textBlock1);
+	uiRoot->AddChild(textBlock1);
 
 	Engine::Update();
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_TextBlock.Basic.png")));
+	uiRoot->RemoveChild(textBlock1);
 }
 

@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Internal.h"
 #include <Lumino/UI/UIItemsControl.h>
 #include <Lumino/UI/UILayoutPanel.h>
@@ -30,6 +30,11 @@ void UIItemsControl::Initialize(detail::UIManager* manager)
 
 	auto panel = NewObject<UILayoutPanel>(manager);
 	SetItemsHostPanel(panel);
+
+
+	// TODO:
+	//SetVContentAlignment(VAlignment::Stretch);
+	//SetHContentAlignment(HAlignment::Stretch);
 }
 
 //------------------------------------------------------------------------------
@@ -39,16 +44,28 @@ UIElementCollection* UIItemsControl::GetItems() const
 }
 
 //------------------------------------------------------------------------------
+void UIItemsControl::AddChild(UIElement* element)
+{
+	m_items->Add(element);
+}
+
+//------------------------------------------------------------------------------
+void UIItemsControl::RemoveChild(UIElement* element)
+{
+	m_items->Remove(element);
+}
+
+//------------------------------------------------------------------------------
 void UIItemsControl::SetItemsHostPanel(UILayoutPanel* panel)
 {
-	// Šù‚ÉŽ‚Á‚Ä‚¢‚ê‚ÎŽæ‚èœ‚¢‚Ä‚¨‚­
+	// æ—¢ã«æŒã£ã¦ã„ã‚Œã°å–ã‚Šé™¤ã„ã¦ãŠã
 	if (m_itemsHostPanel != nullptr && m_itemsHostPanel != panel)
 	{
 		RemoveVisualChild(m_itemsHostPanel);
 		m_itemsHostPanel = nullptr;
 	}
 
-	// V‚µ‚­•ÛŽ‚·‚é
+	// æ–°ã—ãä¿æŒã™ã‚‹
 	if (panel != nullptr)
 	{
 		AddVisualChild(panel);
@@ -59,7 +76,7 @@ void UIItemsControl::SetItemsHostPanel(UILayoutPanel* panel)
 //------------------------------------------------------------------------------
 //int UIItemsControl::GetVisualChildrenCount() const
 //{
-//	return 1;	// ItemsHostPanel 1‚Â•ª
+//	return 1;	// ItemsHostPanel 1ã¤åˆ†
 //}
 //
 ////------------------------------------------------------------------------------
@@ -108,13 +125,13 @@ void UIItemsControl::OnChildCollectionChanged(const tr::ChildCollectionChangedAr
 			LN_NOTIMPLEMENTED();
 			break;
 		case tr::NotifyCollectionChangedAction::Remove:
-			LN_NOTIMPLEMENTED();
+			m_itemsHostPanel->GetChildren()->RemoveAt(e.oldStartingIndex);
 			break;
 		case tr::NotifyCollectionChangedAction::Replace:
 			LN_NOTIMPLEMENTED();
 			break;
 		case tr::NotifyCollectionChangedAction::Reset:
-			LN_NOTIMPLEMENTED();
+			m_itemsHostPanel->GetChildren()->Clear();
 			break;
 		default:
 			break;

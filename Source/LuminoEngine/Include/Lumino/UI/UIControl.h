@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "UIElement.h"
 
@@ -6,15 +6,14 @@ LN_NAMESPACE_BEGIN
 
 /**
 	@brief		
-	@note		ƒRƒ“ƒgƒ[ƒ‹‚Í VisualTree ‚Ìƒ‹[ƒg‚ğ‚Â‚±‚Æ‚ª‚Å‚«‚éB
 */
 class UIControl
 	: public UIElement
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:
-	LN_TR_PROPERTY(HAlignment,	HContentAlignment);		/**< HContentAlignment ƒvƒƒpƒeƒB‚Ì¯•Êq */
-	LN_TR_PROPERTY(VAlignment,	VContentAlignment);		/**< VContentAlignment ƒvƒƒpƒeƒB‚Ì¯•Êq */
+	LN_TR_PROPERTY(HAlignment,	HContentAlignment);		/**< HContentAlignment ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®è­˜åˆ¥å­ */
+	LN_TR_PROPERTY(VAlignment,	VContentAlignment);		/**< VContentAlignment ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®è­˜åˆ¥å­ */
 	tr::Property<HAlignment>	HContentAlignment;
 	tr::Property<VAlignment>	VContentAlignment;
 

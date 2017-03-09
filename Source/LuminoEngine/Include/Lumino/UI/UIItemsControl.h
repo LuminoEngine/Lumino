@@ -18,10 +18,9 @@ public:
 
 	UIElementCollection* GetItems() const;
 
-	void SetContent(UIElement* element)
-	{
-		m_items->Add(element);
-	}
+	void AddChild(UIElement* element);
+	void RemoveChild(UIElement* element);
+
 
 protected:
 	UIItemsControl();
