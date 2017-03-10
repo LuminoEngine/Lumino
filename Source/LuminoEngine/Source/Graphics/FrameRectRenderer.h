@@ -96,7 +96,7 @@ public:
 	void Initialize(GraphicsManager* manager);
 
 	void SetViewInfo(const Matrix& viewProj);
-	void SetState(TextureBrush* brush);
+	void SetState(Brush* brush);
 
 	void Draw(const Matrix& transform, const RectF& rect);
 
@@ -107,13 +107,13 @@ public:
 	virtual void OnSetState(const DrawElementBatch* state);
 
 private:
-	void SetState(TextureBrush* brush, const Matrix& world, const Matrix& viewProj);
+	void SetState(Brush* brush, const Matrix& world, const Matrix& viewProj);
 
 	GraphicsManager*		m_manager;
 	FrameRectRendererCore*	m_core;
 
 	Matrix					m_viewProj;
-	RefPtr<TextureBrush>	m_brush;
+	RefPtr<Brush>	m_brush;
 
 	//FrameRectRendererState	m_state;
 };

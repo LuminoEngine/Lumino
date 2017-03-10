@@ -157,14 +157,7 @@ UIStyle::~UIStyle()
 //------------------------------------------------------------------------------
 void UIStyle::AddValue(const StringRef& visualStateName, const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time, EasingMode easingMode)
 {
-	RefPtr<UIStylePropertyTable> table;
-	if (!m_propertyTableMap.TryGetValue(visualStateName, &table))
-	{
-		table = RefPtr<UIStylePropertyTable>::MakeRef();
-		table->Initialize(visualStateName);
-		m_propertyTableMap.Add(visualStateName, table);
-	}
-
+	auto* table = GetPropertyTable(visualStateName);
 	table->AddValue(targetProperty, value, time, easingMode);
 }
 
@@ -185,6 +178,19 @@ UIStyle* UIStyle::FindSubStateStyle(const StringRef& subStateName)
 		[subStateName](const SubStateStylePair& pair) { return pair.first == subStateName; });
 	if (pair == nullptr) return nullptr;
 	return pair->second;
+}
+
+//------------------------------------------------------------------------------
+UIStylePropertyTable* UIStyle::GetPropertyTable(const StringRef& visualStateName)
+{
+	RefPtr<UIStylePropertyTable> table;
+	if (!m_propertyTableMap.TryGetValue(visualStateName, &table))
+	{
+		table = RefPtr<UIStylePropertyTable>::MakeRef();
+		table->Initialize(visualStateName);
+		m_propertyTableMap.Add(visualStateName, table);
+	}
+	return table;
 }
 
 //------------------------------------------------------------------------------

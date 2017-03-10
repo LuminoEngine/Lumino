@@ -205,8 +205,6 @@ set(LN_SOURCES_Graphics
 	Source/Graphics/FrameCapturer.cpp
 	Source/Graphics/FrameRectRenderer.cpp
 	Source/Graphics/FrameRectRenderer.h
-	Source/Graphics/GeometryRenderer.cpp
-	Source/Graphics/GeometryRenderer.h
 	Source/Graphics/Graphics.cpp
 	Source/Graphics/GraphicsException.cpp
 	Source/Graphics/GraphicsManager.cpp

@@ -90,9 +90,9 @@ void TextRendererCore::SetState(const Matrix& world, const Matrix& viewProj, con
 void TextRendererCore::Render(const GlyphRunData* dataList, int dataCount, FontGlyphTextureCache* cache, Brush* fillBrush)
 {
 	Color color = Color::White;
-	if (fillBrush != nullptr && fillBrush->GetType() == BrushType_SolidColor)
+	if (fillBrush != nullptr)
 	{
-		color = static_cast<ColorBrush*>(fillBrush)->GetColor();
+		color = fillBrush->GetColor();
 	}
 
 	Driver::ITexture* srcTexture = cache->GetGlyphsFillTexture();
@@ -404,12 +404,6 @@ void TextRenderer::FlushInternal(FontGlyphTextureCache* cache)
 //------------------------------------------------------------------------------
 void TextRenderer::CheckUpdateState()	// あらゆる Draw の直前にやりたいこと
 {
-	if (m_fillBrush != nullptr && m_fillBrush->GetType() != BrushType_SolidColor)
-	{
-		LN_NOTIMPLEMENTED();
-	}
-
-
 	if (m_stateModified)
 	{
 		LN_ENQUEUE_RENDER_COMMAND_4(

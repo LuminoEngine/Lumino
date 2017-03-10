@@ -1589,8 +1589,7 @@ public:
 void DrawList::DrawRectangle(const RectF& rect)
 {
 	if (m_state.state.state.GetBrush() != nullptr &&
-		m_state.state.state.GetBrush()->GetType() == BrushType_Texture &&
-		(static_cast<TextureBrush*>(m_state.state.state.GetBrush())->GetImageDrawMode() == BrushImageDrawMode::BoxFrame || static_cast<TextureBrush*>(m_state.state.state.GetBrush())->GetImageDrawMode() == BrushImageDrawMode::BorderFrame))
+		(m_state.state.state.GetBrush()->GetImageDrawMode() == BrushImageDrawMode::BoxFrame || m_state.state.state.GetBrush()->GetImageDrawMode() == BrushImageDrawMode::BorderFrame))
 	{
 		DrawFrameRectangle(rect);
 		return;

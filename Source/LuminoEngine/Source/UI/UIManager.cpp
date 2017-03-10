@@ -130,13 +130,12 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 	{
 		auto test = UIStyle::Create();
 		test->AddValue(_T(""), UITextBlock::FontSizeId, 20);
-		test->AddValue(_T(""), UITextBlock::foregroundId, ColorBrush::Black);
+		test->AddValue(_T(""), UITextBlock::foregroundId, Brush::Black);
 		table->AddStyle(tr::TypeInfo::GetTypeInfo<UITextBlock>(), test);
 	}
 	// UIButton
 	{
-		auto brush = RefPtr<TextureBrush>::MakeRef();
-		brush->Create(m_defaultSkinTexture);
+		auto brush = TextureBrush::Create(m_defaultSkinTexture);
 		brush->SetSourceRect(0, 0, 32, 32);
 		brush->SetBorderThickness(8, 8, 8, 8);
 		brush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
@@ -145,10 +144,20 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 		auto test = UIStyle::Create();
 		test->AddValue(_T(""), UIElement::backgroundId, brush);
 		table->AddStyle(tr::TypeInfo::GetTypeInfo<UIButton>(), test);
+
+		// UIButton.Normal
+		{
+			auto table = test->GetPropertyTable(UIButton::NormalState);
+			table->AddValue(UIElement::decoratorBackgroundId, Brush::DimGray);
+		}
+		// UIButton.MouseOver
+		{
+			auto table = test->GetPropertyTable(UIButton::MouseOverState);
+			table->AddValue(UIElement::decoratorBackgroundId, Brush::Green);
+		}
 	}
 	{
-		auto brush = RefPtr<TextureBrush>::MakeRef();
-		brush->Create(m_defaultSkinTexture);
+		auto brush = TextureBrush::Create(m_defaultSkinTexture);
 		brush->SetSourceRect(0, 32, 32, 32);
 		brush->SetBorderThickness(8, 8, 8, 8);
 		brush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
@@ -161,7 +170,7 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 
 	{
 		auto style = UIStyle::Create();
-		style->AddValue(tr::UIListBoxItem::NormalState, UIElement::decoratorBackgroundId, ColorBrush::Green);
+		style->AddValue(tr::UIListBoxItem::NormalState, UIElement::decoratorBackgroundId, Brush::Green);
 		style->AddValue(tr::UIListBoxItem::NormalState, UIElement::decoratorOpacityId, 0.0f, 0.3);
 		style->AddValue(tr::UIListBoxItem::MouseOverState, UIElement::decoratorOpacityId, 1.0f, 0.3);
 		table->AddStyle(tr::TypeInfo::GetTypeInfo<tr::UIListBoxItem>(), style);
@@ -170,7 +179,7 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 	// UIThumb
 	{
 		auto test = UIStyle::Create();
-		test->AddValue(_T(""), UIElement::backgroundId, ColorBrush::DimGray);
+		test->AddValue(_T(""), UIElement::backgroundId, Brush::DimGray);
 		table->AddStyle(tr::TypeInfo::GetTypeInfo<UIThumb>(), test);
 	}
 	// UIScrollBar

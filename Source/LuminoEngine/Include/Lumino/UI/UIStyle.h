@@ -120,7 +120,7 @@ class UIStylePropertyTable
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	void AddValue(const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time, EasingMode easingMode);
+	void AddValue(const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time = 0.0, EasingMode easingMode = EasingMode::Linear);
 
 LN_INTERNAL_ACCESS:
 	UIStylePropertyTable();
@@ -158,6 +158,8 @@ public:
 	// e.g) ScrollBar::Horizontal { ... }
 	void AddSubStateStyle(const StringRef& subStateName, UIStyle* style);
 	UIStyle* FindSubStateStyle(const StringRef& subStateName);
+
+	UIStylePropertyTable* GetPropertyTable(const StringRef& visualStateName);
 
 
 LN_INTERNAL_ACCESS:

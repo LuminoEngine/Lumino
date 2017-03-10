@@ -9,9 +9,11 @@ LN_NAMESPACE_BEGIN
 // UIControl
 //==============================================================================
 LN_UI_TYPEINFO_IMPLEMENT(UIControl, UIElement);
-
 LN_TR_PROPERTY_IMPLEMENT(UIControl, HAlignment, HContentAlignment, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(UIControl, VAlignment, VContentAlignment, tr::PropertyMetadata());
+
+const String UIControl::NormalState = _T("Normal");
+const String UIControl::MouseOverState = _T("MouseOver");
 
 //------------------------------------------------------------------------------
 UIControl::UIControl()
@@ -29,6 +31,7 @@ UIControl::~UIControl()
 void UIControl::Initialize(detail::UIManager* manager)
 {
 	UIElement::Initialize(manager);
+	GoToVisualState(NormalState);
 }
 
 ////------------------------------------------------------------------------------
@@ -90,6 +93,19 @@ const VAlignment* UIControl::GetPriorityContentVAlignment()
 {
 	if (VContentAlignment.Get() == VAlignment::Stretch) return nullptr;
 	return &VContentAlignment.Get();
+}
+
+//------------------------------------------------------------------------------
+void UIControl::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
+{
+	if (ev == UIElement::MouseEnterEvent)
+	{
+		GoToVisualState(MouseOverState);
+	}
+	else if (ev == UIElement::MouseLeaveEvent)
+	{
+		GoToVisualState(NormalState);
+	}
 }
 
 //------------------------------------------------------------------------------

@@ -305,15 +305,6 @@ LN_ENUM_FLAGS(SpriteSortMode)
 };
 LN_ENUM_FLAGS_DECLARE(SpriteSortMode);
 
-
-enum BrushType
-{
-	BrushType_Unknown = 0,
-	BrushType_SolidColor,
-	BrushType_Texture,
-};
-
-
 /// テキストの配置方法
 LN_ENUM(TextAlignment)
 {

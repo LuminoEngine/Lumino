@@ -71,7 +71,7 @@ void TextElement::Initialize(DocumentsManager* manager)
 	m_fontData.IsAntiAlias = true;
 	m_fontDataModified = true;
 
-	m_foreground = ColorBrush::Black;
+	m_foreground = Brush::Black;
 }
 
 //------------------------------------------------------------------------------

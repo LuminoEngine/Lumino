@@ -17,6 +17,9 @@ public:
 	tr::Property<HAlignment>	HContentAlignment;
 	tr::Property<VAlignment>	VContentAlignment;
 
+	static const String NormalState;
+	static const String MouseOverState;
+
 public:
 	
 	void SetHContentAlignment(HAlignment value) { tr::PropertyInfo::SetPropertyValueDirect<HAlignment>(this, HContentAlignmentId, value); }
@@ -37,6 +40,7 @@ protected:
 	virtual Size ArrangeOverride(const Size& finalSize) override;
 	virtual const VAlignment* GetPriorityContentVAlignment() override;
 	virtual const HAlignment* GetPriorityContentHAlignment() override;
+	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e) override;
 
 LN_INTERNAL_ACCESS:
 	int GetLayoutChildrenCount() const { return GetVisualChildrenCount(); }

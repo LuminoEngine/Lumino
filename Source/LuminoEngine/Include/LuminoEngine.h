@@ -55,6 +55,7 @@
 #include "Lumino/UI/UIContext.h"
 #include "Lumino/UI/UILayoutView.h"
 #include "Lumino/UI/UILayoutRoot.h"
+#include "Lumino/UI/UILayoutPanel.h"
 #include "Lumino/UI/UIScrollViewer.h"
 #include "Lumino/UI/UITextBlock.h"
 #include "Lumino/UI/UIButton.h"

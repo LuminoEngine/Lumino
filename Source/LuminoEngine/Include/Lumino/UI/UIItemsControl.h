@@ -21,12 +21,12 @@ public:
 	void AddChild(UIElement* element);
 	void RemoveChild(UIElement* element);
 
+	void SetLayoutPanel(UILayoutPanel* panel);
 
 protected:
 	UIItemsControl();
 	virtual ~UIItemsControl();
 	void Initialize(detail::UIManager* manager);
-	void SetItemsHostPanel(UILayoutPanel* panel);
 
 	// UIElement interface
 	//virtual int GetVisualChildrenCount() const override;

@@ -29,7 +29,7 @@ void UIItemsControl::Initialize(detail::UIManager* manager)
 	m_items = RefPtr<UIElementCollection>::MakeRef(this);
 
 	auto panel = NewObject<UILayoutPanel>(manager);
-	SetItemsHostPanel(panel);
+	SetLayoutPanel(panel);
 
 
 	// TODO:
@@ -56,7 +56,7 @@ void UIItemsControl::RemoveChild(UIElement* element)
 }
 
 //------------------------------------------------------------------------------
-void UIItemsControl::SetItemsHostPanel(UILayoutPanel* panel)
+void UIItemsControl::SetLayoutPanel(UILayoutPanel* panel)
 {
 	// 既に持っていれば取り除いておく
 	if (m_itemsHostPanel != nullptr && m_itemsHostPanel != panel)

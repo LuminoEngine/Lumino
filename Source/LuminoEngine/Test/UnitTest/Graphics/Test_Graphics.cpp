@@ -291,7 +291,7 @@ TEST_F(Test_Graphics_Rendering, DrawText_)
 		LN_TEST_BEGIN_FRAME;
 		Engine::Render();
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetFont(font);
-		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(ColorBrush::White);
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(Brush::White);
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawText_(_T("Lumino"), RectF(0, 0, w, 100), StringFormatFlags::LeftAlignment);
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawText1.png")));
@@ -300,7 +300,7 @@ TEST_F(Test_Graphics_Rendering, DrawText_)
 		LN_TEST_BEGIN_FRAME;
 		Engine::Render();
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetFont(font);
-		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(ColorBrush::White);
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(Brush::White);
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawText_(_T("Text1"), RectF(0, 0, w, 100), StringFormatFlags::LeftAlignment);
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawText_(_T("Text2"), RectF(0, 0, w, 100), StringFormatFlags::CenterAlignment);
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawText_(_T("Text3"), RectF(0, 0, w, 100), StringFormatFlags::RightAlignment);
@@ -312,7 +312,7 @@ TEST_F(Test_Graphics_Rendering, DrawText_)
 		LN_TEST_BEGIN_FRAME;
 		Engine::Render();
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetFont(font);
-		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(ColorBrush::White);
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(Brush::White);
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetTransform(Matrix::MakeTranslation(10, 20, 0));
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawText_(_T("Text1"), PointF::Zero);
 		LN_TEST_END_FRAME;
@@ -402,10 +402,10 @@ TEST_F(Test_Graphics_Rendering, DrawRectangle)
 	{
 		LN_TEST_BEGIN_FRAME;
 		Engine::Render();
-		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(ColorBrush::Red);
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(Brush::Red);
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawRectangle(RectF(10, 20, 30, 40));
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawRectangle(RectF(110, 20, 30, 40));
-		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(ColorBrush::Blue);
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(Brush::Blue);
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawRectangle(RectF(10, 70, 30, 40));
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawRectangle1.png")));
@@ -414,10 +414,10 @@ TEST_F(Test_Graphics_Rendering, DrawRectangle)
 	{
 		LN_TEST_BEGIN_FRAME;
 		Engine::Render();
-		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(ColorBrush::Red);
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(Brush::Red);
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawRectangle(RectF(10, 20, 30, 40));
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawRectangle(RectF(110, 20, 30, 40));
-		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(ColorBrush::Blue);
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(Brush::Blue);
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawRectangle(RectF(10, 70, 30, 40));
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawRectangle1.png")));

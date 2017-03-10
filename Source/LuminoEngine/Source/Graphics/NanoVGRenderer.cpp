@@ -1163,39 +1163,29 @@ void NanoVGCommandHelper::ExpandBrushState(Brush* brush, NanoVGBrush* outBrush)
 {
 	if (brush != nullptr)
 	{
-		switch (brush->GetType())
+		if (brush->IsSolidColor())
 		{
-			case BrushType_SolidColor:
-			{
-				ColorBrush* b = static_cast<ColorBrush*>(brush);
-				outBrush->type = NanoVGBrushType::SolidColor;
-				outBrush->SolidColorInfo.color.r = b->GetColor().r;
-				outBrush->SolidColorInfo.color.g = b->GetColor().g;
-				outBrush->SolidColorInfo.color.b = b->GetColor().b;
-				outBrush->SolidColorInfo.color.a = b->GetColor().a;
-				break;
-			}
-			case BrushType_Texture:
-			{
-				TextureBrush* b = static_cast<TextureBrush*>(brush);
-				outBrush->type = NanoVGBrushType::ImagePattern;
-				outBrush->ImagePatternInfo.ox = b->GetSourceRect().x;
-				outBrush->ImagePatternInfo.oy = b->GetSourceRect().y;
-				outBrush->ImagePatternInfo.ex = b->GetSourceRect().width;
-				outBrush->ImagePatternInfo.ey = b->GetSourceRect().height;
-				outBrush->ImagePatternInfo.angle = 0;
-				outBrush->ImagePatternInfo.alpha = 1.0f;
-				outBrush->imagePatternTexture = b->GetTexture()->ResolveDeviceObject();
-				break;
-			}
-			default:
-				assert(0);
-				break;
+			Brush* b = brush;
+			outBrush->type = NanoVGBrushType::SolidColor;
+			outBrush->SolidColorInfo.color.r = brush->GetColor().r;
+			outBrush->SolidColorInfo.color.g = brush->GetColor().g;
+			outBrush->SolidColorInfo.color.b = brush->GetColor().b;
+			outBrush->SolidColorInfo.color.a = brush->GetColor().a;
+		}
+		else
+		{
+			outBrush->type = NanoVGBrushType::ImagePattern;
+			outBrush->ImagePatternInfo.ox = brush->GetSourceRect().x;
+			outBrush->ImagePatternInfo.oy = brush->GetSourceRect().y;
+			outBrush->ImagePatternInfo.ex = brush->GetSourceRect().width;
+			outBrush->ImagePatternInfo.ey = brush->GetSourceRect().height;
+			outBrush->ImagePatternInfo.angle = 0;
+			outBrush->ImagePatternInfo.alpha = 1.0f;
+			outBrush->imagePatternTexture = brush->GetTexture()->ResolveDeviceObject();
 		}
 	}
 	else
 	{
-		ColorBrush* b = static_cast<ColorBrush*>(brush);
 		outBrush->type = NanoVGBrushType::SolidColor;
 		outBrush->SolidColorInfo.color.r = 0;
 		outBrush->SolidColorInfo.color.g = 0;

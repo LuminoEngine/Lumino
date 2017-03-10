@@ -410,13 +410,13 @@ void FrameRectRenderer::SetViewInfo(const Matrix& viewProj)
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRenderer::SetState(TextureBrush* brush)
+void FrameRectRenderer::SetState(Brush* brush)
 {
 	m_brush = brush;
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRenderer::SetState(TextureBrush* brush, const Matrix& world, const Matrix& viewProj)	// TODO: world いらない
+void FrameRectRenderer::SetState(Brush* brush, const Matrix& world, const Matrix& viewProj)	// TODO: world いらない
 {
 	LN_CHECK_ARG(brush != nullptr);
 
@@ -462,7 +462,7 @@ void FrameRectRenderer::Flush()
 //------------------------------------------------------------------------------
 void FrameRectRenderer::OnSetState(const DrawElementBatch* state)
 {
-	SetState(static_cast<TextureBrush*>(state->state.GetBrush()));
+	SetState(state->state.GetBrush());
 }
 
 } // namespace detail

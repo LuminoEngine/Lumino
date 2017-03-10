@@ -14,9 +14,6 @@ namespace tr
 //==============================================================================
 LN_UI_TYPEINFO_IMPLEMENT(UIListBoxItem, UIContentControl)
 
-const String UIListBoxItem::NormalState = _T("Normal");
-const String UIListBoxItem::MouseOverState = _T("MouseOver");
-
 //------------------------------------------------------------------------------
 UIListBoxItem::UIListBoxItem()
 {
@@ -34,19 +31,6 @@ void UIListBoxItem::Initialize(ln::detail::UIManager* manager)
 	SetHContentAlignment(HAlignment::Left);
 	SetHAlignment(HAlignment::Stretch);
 	GoToVisualState(NormalState);
-}
-
-//------------------------------------------------------------------------------
-void UIListBoxItem::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
-{
-	if (ev == UIElement::MouseEnterEvent)
-	{
-		GoToVisualState(MouseOverState);
-	}
-	else if (ev == UIElement::MouseLeaveEvent)
-	{
-		GoToVisualState(NormalState);
-	}
 }
 
 //==============================================================================
@@ -84,7 +68,7 @@ void UIListBox::Initialize(ln::detail::UIManager* manager)
 	panel->Initialize(manager);
 	panel->SetHAlignment(HAlignment::Stretch);
 	panel->SetVAlignment(VAlignment::Stretch);
-	SetItemsHostPanel(panel);
+	SetLayoutPanel(panel);
 	GoToVisualState(NormalState);
 }
 
