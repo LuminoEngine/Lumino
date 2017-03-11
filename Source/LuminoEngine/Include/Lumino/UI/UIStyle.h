@@ -152,6 +152,10 @@ public:
 public:
 	UIStyle();
 	virtual ~UIStyle();
+	void Initialize();
+
+	void AddValue(const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time = 0.0, EasingMode easingMode = EasingMode::Linear);
+
 
 	void AddValue(const StringRef& visualStateName, const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time = 0.0, EasingMode easingMode = EasingMode::Linear);
 	
@@ -162,15 +166,38 @@ public:
 	UIStylePropertyTable* GetPropertyTable(const StringRef& visualStateName);
 
 
+
 LN_INTERNAL_ACCESS:
 	UIStylePropertyTable* FindStylePropertyTable(const String& visualStateName);
 	//detail::InvalidateFlags UpdateInherit(UIStyle* parent);
 	//void Apply(UIElement* targetElement);
 
+	detail::InvalidateFlags MergeActiveStylePropertyTables(UIStylePropertyTable* store, const List<String>& visualStateNames)
+	{
+		detail::InvalidateFlags invalidateFlags = detail::InvalidateFlags::None;
+
+		invalidateFlags |= store->UpdateInherit(m_basePropertyTable);
+
+		UIStylePropertyTable* lastActiveStyle = nullptr;
+		for (auto& pair : m_visualStatePropertyTableList)
+		{
+			const String& name = pair.first;
+			if (visualStateNames.Contains(name))
+			{
+				invalidateFlags |= store->UpdateInherit(pair.second);
+			}
+		}
+		return invalidateFlags;
+	}
+
 public:	// TODO:
+	using VisualStateStylePair = std::pair<String, RefPtr<UIStylePropertyTable>>;
 	using SubStateStylePair = std::pair<String, RefPtr<UIStyle>>;
 
-	SortedArray<String, RefPtr<UIStylePropertyTable>>	m_propertyTableMap;
+	RefPtr<UIStylePropertyTable>	m_basePropertyTable;
+
+	//SortedArray<String, RefPtr<UIStylePropertyTable>>	m_propertyTableMap;
+	List<VisualStateStylePair>	m_visualStatePropertyTableList;
 
 	UIStyle*					m_subStyleParent;
 	List<SubStateStylePair>		m_subStateStyles;

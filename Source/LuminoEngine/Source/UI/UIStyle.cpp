@@ -127,7 +127,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIStyle, Object);
 //------------------------------------------------------------------------------
 UIStylePtr UIStyle::Create()
 {
-	return UIStylePtr::MakeRef();
+	return NewObject<UIStyle>();//UIStylePtr::MakeRef();
 }
 
 //------------------------------------------------------------------------------
@@ -150,8 +150,21 @@ UIStyle::UIStyle()
 }
 
 //------------------------------------------------------------------------------
+void UIStyle::Initialize()
+{
+	m_basePropertyTable = RefPtr<UIStylePropertyTable>::MakeRef();
+	m_basePropertyTable->Initialize(_T(""));
+}
+
+//------------------------------------------------------------------------------
 UIStyle::~UIStyle()
 {
+}
+
+//------------------------------------------------------------------------------
+void UIStyle::AddValue(const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time, EasingMode easingMode)
+{
+	m_basePropertyTable->AddValue(targetProperty, value, time, easingMode);
 }
 
 //------------------------------------------------------------------------------
@@ -183,25 +196,32 @@ UIStyle* UIStyle::FindSubStateStyle(const StringRef& subStateName)
 //------------------------------------------------------------------------------
 UIStylePropertyTable* UIStyle::GetPropertyTable(const StringRef& visualStateName)
 {
-	RefPtr<UIStylePropertyTable> table;
-	if (!m_propertyTableMap.TryGetValue(visualStateName, &table))
+	auto* ptr = m_visualStatePropertyTableList.Find([visualStateName](const VisualStateStylePair& pair) { return pair.first == visualStateName; });
+	if (ptr != nullptr)
 	{
-		table = RefPtr<UIStylePropertyTable>::MakeRef();
-		table->Initialize(visualStateName);
-		m_propertyTableMap.Add(visualStateName, table);
+		return ptr->second;
 	}
-	return table;
+	else
+	{
+		auto table = RefPtr<UIStylePropertyTable>::MakeRef();
+		table->Initialize(visualStateName);
+		m_visualStatePropertyTableList.Add(VisualStateStylePair{ visualStateName, table });
+		return table;
+	}
 }
 
 //------------------------------------------------------------------------------
 UIStylePropertyTable* UIStyle::FindStylePropertyTable(const String& visualStateName)
 {
-	RefPtr<UIStylePropertyTable> table;
-	if (m_propertyTableMap.TryGetValue(visualStateName, &table))
+	auto* ptr = m_visualStatePropertyTableList.Find([visualStateName](const VisualStateStylePair& pair) { return pair.first == visualStateName; });
+	if (ptr != nullptr)
 	{
-		return table;
+		return ptr->second;
 	}
-	return false;
+	else
+	{
+		return nullptr;
+	}
 }
 
 //------------------------------------------------------------------------------

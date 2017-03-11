@@ -19,6 +19,12 @@ public:
 
 	static const String NormalState;
 	static const String MouseOverState;
+	static const String PressedState;
+	static const String DisabledState;
+	static const String UnfocusedState;
+	static const String FocusedState;
+	static const String ValidState;
+	static const String InvalidState;
 
 public:
 	

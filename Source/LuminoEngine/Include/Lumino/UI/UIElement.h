@@ -11,6 +11,63 @@
 LN_NAMESPACE_BEGIN
 class DrawList;
 class UIStylePropertyTable;
+class UIVisualStateManager;
+
+class UIVisualStateManager
+	: public Object
+{
+private:
+	struct Group
+	{
+		int				index;
+		String			name;
+		List<String>	stateNames;
+	};
+
+	List<Group>		groups;
+	List<String>	activeStateNames;
+
+public:
+	void RegisterVisualState(const StringRef& groupName, const StringRef& stateName)
+	{
+		Group* group = groups.Find([groupName](const Group& g) { return g.name == groupName; });
+		if (group == nullptr)
+		{
+			groups.Add(Group{ groups.GetCount(), groupName });
+			activeStateNames.Add(stateName);
+			group = &groups.GetLast();
+		}
+		group->stateNames.Add(stateName);
+	}
+
+	void GoToVisualState(const StringRef& stateName)
+	{
+		Group* group = FindGroup(stateName);//groups.Find([stateName](const Group& g) { return g.stateNames.Contains([stateName](const String& name) { return name == stateName; }); });
+		LN_FAIL_CHECK_STATE(group != nullptr) return;
+		activeStateNames[group->index] = stateName;
+	}
+
+LN_CONSTRUCT_ACCESS:
+	void Initialize()
+	{
+	}
+
+	Group* FindGroup(const StringRef& stateName)
+	{
+		for (auto& g : groups)
+		{
+			for (auto& s : g.stateNames)
+			{
+				if (s == stateName)
+					return &g;
+			}
+		}
+		return nullptr;
+	}
+
+LN_INTERNAL_ACCESS:
+	const List<String>& GetActiveStateNames() const { return activeStateNames; }
+};
 
 /**
 	@brief		
@@ -231,7 +288,8 @@ LN_INTERNAL_ACCESS:
 	AlignmentAnchor GetAnchorInternal() const { return anchor; }
 	const BrushPtr& GetForegroundInternal() const { return foreground; }
 	void SetParent(UIElement* parent);
-	const String& GetCurrentVisualStateName() const { return m_currentVisualStateName; }
+	UIVisualStateManager* GetVisualStateManager();
+	//const String& GetCurrentVisualStateName() const { return m_currentVisualStateName; }
 	//AnchorInfo* GetAnchorInfo() {return &m_anchorInfo; }
 	detail::InvalidateFlags GetInvalidateFlags() const { return m_invalidateFlags; }
 	UIElement* CheckMouseHoverElement(const PointF& globalPt);
@@ -275,7 +333,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 
 
 private:
-	void UpdateLocalStyleAndApplyProperties(UIStylePropertyTable* parentStyle, UIStylePropertyTable* currentStateStyle);
+	void UpdateLocalStyleAndApplyProperties(UIStyleTable* styleTable, UIStylePropertyTable* parentStyle);
 
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
 	void RaiseEventInternal(const UIEventInfo* ev, UIEventArgs* e);
@@ -289,7 +347,8 @@ private:
 	RectF					m_finalLocalRect;		// 描画に使用する最終境界矩形 (グローバル座標系=RootFrame のローカル座標系)
 	RectF					m_finalGlobalRect;
 	String					m_elementName;				// 要素名 ("UITextBlock" など) TODO: いらないかも
-	String					m_currentVisualStateName;
+	RefPtr<UIVisualStateManager>	m_visualStateManager;
+	//String					m_currentVisualStateName;
 	UIStylePropertyTable*	m_currentVisualStateStyle;
 
 	UIElement*                m_visualParent;

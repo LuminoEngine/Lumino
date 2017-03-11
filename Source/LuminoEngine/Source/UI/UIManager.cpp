@@ -145,6 +145,10 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 		test->AddValue(_T(""), UIElement::backgroundId, brush);
 		table->AddStyle(tr::TypeInfo::GetTypeInfo<UIButton>(), test);
 
+		// UIButton
+		{
+			test->AddValue(UIElement::decoratorBackgroundId, Brush::DimGray);
+		}
 		// UIButton.Normal
 		{
 			auto table = test->GetPropertyTable(UIButton::NormalState);
@@ -170,7 +174,7 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 
 	{
 		auto style = UIStyle::Create();
-		style->AddValue(tr::UIListBoxItem::NormalState, UIElement::decoratorBackgroundId, Brush::Green);
+           		style->AddValue(tr::UIListBoxItem::NormalState, UIElement::decoratorBackgroundId, Brush::Green);
 		style->AddValue(tr::UIListBoxItem::NormalState, UIElement::decoratorOpacityId, 0.0f, 0.3);
 		style->AddValue(tr::UIListBoxItem::MouseOverState, UIElement::decoratorOpacityId, 1.0f, 0.3);
 		table->AddStyle(tr::TypeInfo::GetTypeInfo<tr::UIListBoxItem>(), style);

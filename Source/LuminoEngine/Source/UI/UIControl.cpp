@@ -12,8 +12,17 @@ LN_UI_TYPEINFO_IMPLEMENT(UIControl, UIElement);
 LN_TR_PROPERTY_IMPLEMENT(UIControl, HAlignment, HContentAlignment, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(UIControl, VAlignment, VContentAlignment, tr::PropertyMetadata());
 
+static const String CommonStates = _T("CommonStates");
+static const String FocusStates = _T("FocusStates");
+static const String ValidationStates = _T("ValidationStates");
 const String UIControl::NormalState = _T("Normal");
 const String UIControl::MouseOverState = _T("MouseOver");
+const String UIControl::PressedState = _T("Pressed");
+const String UIControl::DisabledState = _T("Disabled");
+const String UIControl::UnfocusedState = _T("Unfocused");
+const String UIControl::FocusedState = _T("Focused");
+const String UIControl::ValidState = _T("Valid");
+const String UIControl::InvalidState = _T("Invalid");
 
 //------------------------------------------------------------------------------
 UIControl::UIControl()
@@ -31,6 +40,9 @@ UIControl::~UIControl()
 void UIControl::Initialize(detail::UIManager* manager)
 {
 	UIElement::Initialize(manager);
+	auto* vsm = GetVisualStateManager();
+	vsm->RegisterVisualState(CommonStates, NormalState);
+	vsm->RegisterVisualState(CommonStates, MouseOverState);
 	GoToVisualState(NormalState);
 }
 

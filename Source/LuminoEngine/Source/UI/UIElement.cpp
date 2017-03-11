@@ -11,6 +11,7 @@
 
 LN_NAMESPACE_BEGIN
 
+
 //==============================================================================
 // UIElement
 //==============================================================================
@@ -83,7 +84,7 @@ void UIElement::Initialize(detail::UIManager* manager)
 
 	m_localStyle = LN_NEW UIStylePropertyTable();
 
-	GoToVisualState(String::GetEmpty());
+	//GoToVisualState(String::GetEmpty());
 }
 
 //------------------------------------------------------------------------------
@@ -99,8 +100,19 @@ int UIElement::GetLayoutRowSpan() const { return m_gridLayoutInfo.layoutRowSpan;
 //------------------------------------------------------------------------------
 void UIElement::GoToVisualState(const StringRef& stateName)
 {
-	m_currentVisualStateName = stateName;
+	GetVisualStateManager()->GoToVisualState(stateName);
+	//m_currentVisualStateName = stateName;
 	m_invalidateFlags |= detail::InvalidateFlags::VisualState;
+}
+
+//------------------------------------------------------------------------------
+UIVisualStateManager* UIElement::GetVisualStateManager()
+{
+	if (m_visualStateManager == nullptr)
+	{
+		m_visualStateManager = NewObject<UIVisualStateManager>();
+	}
+	return m_visualStateManager;
 }
 
 //------------------------------------------------------------------------------
@@ -390,29 +402,9 @@ void UIElement::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 //------------------------------------------------------------------------------
 void UIElement::ApplyTemplateHierarchy(UIStyleTable* styleTable, UIStylePropertyTable* parentStyle)
 {
-	// TODO: styleTable は多分 Context のルート固定でよい。
-
-	// VisualState の変更がある場合
-	if (m_invalidateFlags.TestFlag(detail::InvalidateFlags::VisualState))
-	{
-		String subStateName;
-		GetStyleClassName(&subStateName);
-
-		UIStyle* style = styleTable->FindStyle(tr::TypeInfo::GetTypeInfo(this), subStateName);
-
-		if (style != nullptr)
-		{
-			m_currentVisualStateStyle = style->FindStylePropertyTable(m_currentVisualStateName);
-		}
-		else
-		{
-			m_currentVisualStateStyle = nullptr;
-		}
-		m_invalidateFlags &= ~detail::InvalidateFlags::VisualState;
-	}
 
 	// Style 更新
-	UpdateLocalStyleAndApplyProperties(parentStyle, m_currentVisualStateStyle);
+	UpdateLocalStyleAndApplyProperties(styleTable, parentStyle);
 
 	// 子要素
 	UIStylePropertyTable* localStyle = m_localStyle;
@@ -420,20 +412,58 @@ void UIElement::ApplyTemplateHierarchy(UIStyleTable* styleTable, UIStyleProperty
 }
 
 //------------------------------------------------------------------------------
-void UIElement::UpdateLocalStyleAndApplyProperties(UIStylePropertyTable* parentStyle, UIStylePropertyTable* currentStateStyle)
+void UIElement::UpdateLocalStyleAndApplyProperties(UIStyleTable* styleTable, UIStylePropertyTable* parentStyle)
 {
 	LN_CHECK_STATE(m_localStyle != nullptr);
+
+
+	// TODO: styleTable は多分 Context のルート固定でよい。
 
 	// parent → state の順で local へマージする
 	// TODO: このへんのコピーが時間かかりそうならリビジョンカウント使うとか対策する。毎フレームやってるから多分重い。
 	detail::InvalidateFlags invalidate = detail::InvalidateFlags::None;
 	if (parentStyle != nullptr)       invalidate |= m_localStyle->UpdateInherit(parentStyle);
-	if (currentStateStyle != nullptr) invalidate |= m_localStyle->UpdateInherit(currentStateStyle);
+	//if (currentStateStyle != nullptr) invalidate |= m_localStyle->UpdateInherit(currentStateStyle);
+
+
+
+	// VisualState の変更がある場合
+	if (m_invalidateFlags.TestFlag(detail::InvalidateFlags::VisualState))
+	{
+
+
+		String subStateName;
+		GetStyleClassName(&subStateName);
+
+
+		UIStyle* style = styleTable->FindStyle(tr::TypeInfo::GetTypeInfo(this), subStateName);
+		if (style != nullptr)
+		{
+			auto* vm = GetVisualStateManager();
+			invalidate |= style->MergeActiveStylePropertyTables(m_localStyle, vm->GetActiveStateNames());
+
+			//for (auto& stateName : vm->GetActiveStateNames())
+			//{
+			//	auto* st = style->FindStylePropertyTable(stateName);
+			//	if (st != nullptr) invalidate |= m_localStyle->UpdateInherit(st);
+			//}
+			//m_currentVisualStateStyle = style->FindStylePropertyTable(m_currentVisualStateName);
+		}
+		//else
+		//{
+		//	m_currentVisualStateStyle = nullptr;
+		//}
+
+
+		m_invalidateFlags &= ~detail::InvalidateFlags::VisualState;
+	}
+
 
 	if (invalidate != detail::InvalidateFlags::None)
 	{
 		OnUpdateStyle(m_localStyle, invalidate);
 	}
+
 }
 
 //------------------------------------------------------------------------------
