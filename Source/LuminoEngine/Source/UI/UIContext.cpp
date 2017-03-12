@@ -59,7 +59,21 @@ void UIContext::SetFocusElement(UIElement* element)
 	{
 		LN_CHECK_STATE(element->IsFocusable());
 	}
-	m_focusElement = element;
+
+	if (m_focusElement != element)
+	{
+		if (m_focusElement != nullptr)
+		{
+			m_focusElement->CallOnLostFocus();
+		}
+
+		m_focusElement = element;
+
+		if (m_focusElement != nullptr)
+		{
+			m_focusElement->CallOnGotFocus();
+		}
+	}
 }
 
 //------------------------------------------------------------------------------

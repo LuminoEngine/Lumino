@@ -4,6 +4,8 @@
 #include <Lumino/Reflection/ReflectionEventArgs.h>
 
 LN_NAMESPACE_BEGIN
+class UIEventArgs;
+using UIEventArgsPtr = RefPtr<UIEventArgs>;
 
 /**
 	@brief		
@@ -13,6 +15,8 @@ class UIEventArgs
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
+	static UIEventArgsPtr Create(Object* sender, bool caching = true);
+
 	UIEventArgs();
 	virtual ~UIEventArgs();
 

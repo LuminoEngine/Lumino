@@ -114,6 +114,8 @@ public:
 	LN_ROUTED_EVENT(UIMouseEventArgs,	KeyDownEvent);					/**< KeyDown ルーティングイベントの識別子 */
 	LN_ROUTED_EVENT(UIMouseEventArgs,	KeyUpEvent);					/**< KeyUp ルーティングイベントの識別子 */
 	LN_ROUTED_EVENT(UIKeyEventArgs,		TextInputEvent);				/**< TextInput ルーティングイベントの識別子 */
+	LN_ROUTED_EVENT(UIEventArgs, GotFocusEvent);
+	LN_ROUTED_EVENT(UIEventArgs, LostFocusEvent);
 
 public:
 	//--------------------------------------------------------------------------
@@ -128,6 +130,8 @@ public:
 	UIEvent<UIKeyEventArgs>			KeyDown;		/**< この要素がフォーカスを持っている時にキーボードのキーが押されると発生します。*/
 	UIEvent<UIKeyEventArgs>			KeyUp;			/**< この要素がフォーカスを持っている時にキーボードのキーが離されると発生します。*/
 	UIEvent<UIKeyEventArgs>			TextInput;		/**< キー操作により文字が入力されると発生します。*/
+	UIEvent<UIEventArgs>			GotFocus;
+	UIEvent<UIEventArgs>			LostFocus;
 
 	/** @} */
 
@@ -273,6 +277,8 @@ protected:
 	virtual void OnKeyDown(UIKeyEventArgs* e);
 	virtual void OnKeyUp(UIKeyEventArgs* e);
 	virtual void OnTextInput(UIKeyEventArgs* e);
+	virtual void OnGotFocus(UIEventArgs* e);
+	virtual void OnLostFocus(UIEventArgs* e);
 
 	virtual void OnUpdateStyle(UIStylePropertyTable* localStyle, detail::InvalidateFlags invalidateFlags);
 	virtual void OnUpdatingLayout();
@@ -296,6 +302,10 @@ LN_INTERNAL_ACCESS:
 	virtual void ActivateInternal(UIElement* child);
 	virtual bool OnEvent(detail::UIInternalEventType type, UIEventArgs* args);
 	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e);
+	void CallOnGotFocus();
+	void CallOnLostFocus();
+
+
 	void UpdateLayout(const Size& viewSize) override;
 	void Render(DrawList* g);
 

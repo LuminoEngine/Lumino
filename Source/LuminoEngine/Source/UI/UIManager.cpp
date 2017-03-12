@@ -151,6 +151,11 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 			auto* st = s->GetPropertyTable();
 			st->background = RefPtr<Brush>::StaticCast(brush);
 		}
+		// UIButton.Focused
+		{
+			auto* st = s->GetPropertyTable(UIButton::FocusedState);
+			st->background = Brush::Red;
+		}
 		// UIButton.MouseOver
 		{
 			auto* st = s->GetPropertyTable(UIButton::MouseOverState);

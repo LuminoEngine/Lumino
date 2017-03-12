@@ -43,7 +43,15 @@ void UIControl::Initialize(detail::UIManager* manager)
 	auto* vsm = GetVisualStateManager();
 	vsm->RegisterVisualState(CommonStates, NormalState);
 	vsm->RegisterVisualState(CommonStates, MouseOverState);
+	vsm->RegisterVisualState(FocusStates, UnfocusedState);
+	vsm->RegisterVisualState(FocusStates, FocusedState);
 	GoToVisualState(NormalState);
+}
+
+//------------------------------------------------------------------------------
+bool UIControl::IsFocusable() const
+{
+	return true;
 }
 
 ////------------------------------------------------------------------------------
@@ -119,6 +127,19 @@ void UIControl::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 		GoToVisualState(NormalState);
 	}
 }
+
+//------------------------------------------------------------------------------
+void UIControl::OnGotFocus(UIEventArgs* e)
+{
+	GoToVisualState(FocusedState);
+}
+
+//------------------------------------------------------------------------------
+void UIControl::OnLostFocus(UIEventArgs* e)
+{
+	GoToVisualState(UnfocusedState);
+}
+
 
 //------------------------------------------------------------------------------
 //void UIControl::SetVisualTreeRoot(UIElement* element)

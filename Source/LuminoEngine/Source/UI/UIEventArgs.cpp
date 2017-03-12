@@ -1,6 +1,8 @@
 ﻿
 #include "Internal.h"
 #include <Lumino/UI/UIEventArgs.h>
+#include "EventArgsPool.h"
+#include "UIManager.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -8,6 +10,21 @@ LN_NAMESPACE_BEGIN
 // UIEventArgs
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIEventArgs, tr::ReflectionEventArgs)
+
+//------------------------------------------------------------------------------
+UIEventArgsPtr UIEventArgs::Create(Object* sender, bool caching)
+{
+	if (caching)
+	{
+		detail::EventArgsPool* pool = detail::UIManager::GetInstance()->GetEventArgsPool();
+		return UIEventArgsPtr(pool->Create<UIEventArgs>(), false);
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+		return nullptr;
+	}
+}
 
 //------------------------------------------------------------------------------
 UIEventArgs::UIEventArgs()

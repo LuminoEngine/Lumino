@@ -40,6 +40,8 @@ LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIMouseEventArgs, MouseUpEvent, "MouseUp", 
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIKeyEventArgs, KeyDownEvent, "KeyDown", KeyDown);
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIKeyEventArgs, KeyUpEvent, "KeyUp", KeyUp);
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIKeyEventArgs, TextInputEvent, "TextInput", TextInput);
+LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIEventArgs, GotFocusEvent, "GotFocus", GotFocus);
+LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIEventArgs, LostFocusEvent, "LostFocus", LostFocus);
 
 //------------------------------------------------------------------------------
 UIElement::UIElement()
@@ -238,6 +240,8 @@ void UIElement::OnMouseUp(UIMouseEventArgs* e) { if (!e->handled) { RaiseEvent(M
 void UIElement::OnKeyDown(UIKeyEventArgs* e) { if (!e->handled) { RaiseEvent(KeyDownEvent, this, e); } }
 void UIElement::OnKeyUp(UIKeyEventArgs* e) { if (!e->handled) { RaiseEvent(KeyUpEvent, this, e); } }
 void UIElement::OnTextInput(UIKeyEventArgs* e) { if (!e->handled) { RaiseEvent(TextInputEvent, this, e); } }
+void UIElement::OnGotFocus(UIEventArgs* e) { }
+void UIElement::OnLostFocus(UIEventArgs* e) { }
 
 //------------------------------------------------------------------------------
 void UIElement::OnMouseEnter(UIMouseEventArgs* e)
@@ -302,9 +306,12 @@ UIElement* UIElement::CheckMouseHoverElement(const PointF& globalPt)
 // child : Activate の発生元となった UIElement
 void UIElement::ActivateInternal(UIElement* child)
 {
-	if (m_parent != nullptr)
+	UIElement* parent = m_parent;
+	if (parent == nullptr) parent = m_visualParent;
+
+	if (parent != nullptr)
 	{
-		m_parent->ActivateInternal(child);
+		parent->ActivateInternal(child);
 	}
 }
 
@@ -375,6 +382,18 @@ bool UIElement::OnEvent(detail::UIInternalEventType type, UIEventArgs* args)
 // (UI要素作成時のイベントハンドラの new や AddHandler をする必要がなくなる)
 void UIElement::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 {
+}
+
+//------------------------------------------------------------------------------
+void UIElement::CallOnGotFocus()
+{
+	OnGotFocus(UIEventArgs::Create(this));
+}
+
+//------------------------------------------------------------------------------
+void UIElement::CallOnLostFocus()
+{
+	OnLostFocus(UIEventArgs::Create(this));
 }
 
 //------------------------------------------------------------------------------
