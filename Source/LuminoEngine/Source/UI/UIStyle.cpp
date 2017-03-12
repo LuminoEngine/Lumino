@@ -39,42 +39,43 @@ void UIStylePropertyTable::Initialize(const StringRef& visualStateName)
 }
 
 //------------------------------------------------------------------------------
-void UIStylePropertyTable::AddValue(const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time, EasingMode easingMode)
-{
-	m_attributes.Add(UIStyleAttribute(targetProperty, value, time, easingMode));
-}
+//void UIStylePropertyTable::AddValue(const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time, EasingMode easingMode)
+//{
+//	m_attributes.Add(UIStyleAttribute(targetProperty, value, time, easingMode));
+//}
 
 //------------------------------------------------------------------------------
 detail::InvalidateFlags UIStylePropertyTable::UpdateInherit(UIStylePropertyTable* parent)
 {
 	bool changed = false;
+	changed |= background.UpdateInherit(parent->background);
 
-	// parent が持っている値のうち、同じ targetProperty のものを探す。そんなに数は多くないはずなので線形探索。
-	for (UIStyleAttribute& parentAttr : parent->m_attributes)
-	{
-		parentAttr.m_mergedMark = false;
+	//// parent が持っている値のうち、同じ targetProperty のものを探す。そんなに数は多くないはずなので線形探索。
+	//for (UIStyleAttribute& parentAttr : parent->m_attributes)
+	//{
+	//	parentAttr.m_mergedMark = false;
 
-		for (UIStyleAttribute& attr : m_attributes)
-		{
-			if (attr.m_targetProperty == parentAttr.m_targetProperty)
-			{
-				changed |= attr.UpdateInherit(parentAttr);
-				parentAttr.m_mergedMark = true;
-				break;
-			}
-		}
-	}
+	//	for (UIStyleAttribute& attr : m_attributes)
+	//	{
+	//		if (attr.m_targetProperty == parentAttr.m_targetProperty)
+	//		{
+	//			changed |= attr.UpdateInherit(parentAttr);
+	//			parentAttr.m_mergedMark = true;
+	//			break;
+	//		}
+	//	}
+	//}
 
-	// parent が持っている値のうち、同じ targetProperty ではなかったものを単なる参照として継承する。
-	m_parentRefAttributes.Clear();
-	for (UIStyleAttribute& parentAttr : parent->m_attributes)
-	{
-		if (!parentAttr.m_mergedMark)
-		{
-			m_parentRefAttributes.Add(&parentAttr);
-			changed = true;	// TODO: ほとんど毎回更新されたことになってしまう。リビジョンカウント必須かな・・
-		}
-	}
+	//// parent が持っている値のうち、同じ targetProperty ではなかったものを単なる参照として継承する。
+	//m_parentRefAttributes.Clear();
+	//for (UIStyleAttribute& parentAttr : parent->m_attributes)
+	//{
+	//	if (!parentAttr.m_mergedMark)
+	//	{
+	//		m_parentRefAttributes.Add(&parentAttr);
+	//		changed = true;	// TODO: ほとんど毎回更新されたことになってしまう。リビジョンカウント必須かな・・
+	//	}
+	//}
 
 	return (changed) ? detail::InvalidateFlags::All : detail::InvalidateFlags::None;
 }
@@ -82,41 +83,42 @@ detail::InvalidateFlags UIStylePropertyTable::UpdateInherit(UIStylePropertyTable
 //------------------------------------------------------------------------------
 void UIStylePropertyTable::Apply(UIElement* targetElement, bool useTransitionAnimation)
 {
-	for (UIStyleAttribute& setter : m_attributes)
-	{
-		ApplyInternal(targetElement, setter, useTransitionAnimation);
-	}
-	for (UIStyleAttribute* setter : m_parentRefAttributes)
-	{
-		ApplyInternal(targetElement, *setter, useTransitionAnimation);
-	}
+	targetElement->SetBackground(background.value);
+	//for (UIStyleAttribute& setter : m_attributes)
+	//{
+	//	ApplyInternal(targetElement, setter, useTransitionAnimation);
+	//}
+	//for (UIStyleAttribute* setter : m_parentRefAttributes)
+	//{
+	//	ApplyInternal(targetElement, *setter, useTransitionAnimation);
+	//}
 }
 
 //------------------------------------------------------------------------------
-void UIStylePropertyTable::ApplyInternal(UIElement* targetElement, const UIStyleAttribute& setter, bool useTransitionAnimation)
-{
-	if (!useTransitionAnimation || setter.time == 0.0)
-	{
-		tr::PropertyInfo::SetPropertyValue(targetElement, setter.m_targetProperty, setter.value);
-	}
-	else
-	{
-		// アニメーション
-		if (setter.value.GetType() == tr::VariantType::Float)
-		{
-			float now = tr::PropertyInfo::GetPropertyValueDirect<float>(targetElement, setter.m_targetProperty);
-			float target = tr::Variant::Cast<float>(setter.value);
-
-			auto anim = ValueEasingCurve<float>::Create(target, setter.time, setter.easingMode);
-			AnimationClock* ac = targetElement->GetManager()->GetAnimationManager()->StartPropertyAnimation(targetElement);
-			ac->AddAnimationCurve(anim.Get(), targetElement, static_cast<const tr::TypedPropertyInfo<float>*>(setter.m_targetProperty), now);
-		}
-		else
-		{
-			LN_NOTIMPLEMENTED();
-		}
-	}
-}
+//void UIStylePropertyTable::ApplyInternal(UIElement* targetElement, const UIStyleAttribute& setter, bool useTransitionAnimation)
+//{
+//	if (!useTransitionAnimation || setter.time == 0.0)
+//	{
+//		tr::PropertyInfo::SetPropertyValue(targetElement, setter.m_targetProperty, setter.value);
+//	}
+//	else
+//	{
+//		// アニメーション
+//		if (setter.value.GetType() == tr::VariantType::Float)
+//		{
+//			float now = tr::PropertyInfo::GetPropertyValueDirect<float>(targetElement, setter.m_targetProperty);
+//			float target = tr::Variant::Cast<float>(setter.value);
+//
+//			auto anim = ValueEasingCurve<float>::Create(target, setter.time, setter.easingMode);
+//			AnimationClock* ac = targetElement->GetManager()->GetAnimationManager()->StartPropertyAnimation(targetElement);
+//			ac->AddAnimationCurve(anim.Get(), targetElement, static_cast<const tr::TypedPropertyInfo<float>*>(setter.m_targetProperty), now);
+//		}
+//		else
+//		{
+//			LN_NOTIMPLEMENTED();
+//		}
+//	}
+//}
 
 
 //==============================================================================
@@ -161,18 +163,18 @@ UIStyle::~UIStyle()
 {
 }
 
-//------------------------------------------------------------------------------
-void UIStyle::AddValue(const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time, EasingMode easingMode)
-{
-	m_basePropertyTable->AddValue(targetProperty, value, time, easingMode);
-}
-
-//------------------------------------------------------------------------------
-void UIStyle::AddValue(const StringRef& visualStateName, const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time, EasingMode easingMode)
-{
-	auto* table = GetPropertyTable(visualStateName);
-	table->AddValue(targetProperty, value, time, easingMode);
-}
+////------------------------------------------------------------------------------
+//void UIStyle::AddValue(const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time, EasingMode easingMode)
+//{
+//	m_basePropertyTable->AddValue(targetProperty, value, time, easingMode);
+//}
+//
+////------------------------------------------------------------------------------
+//void UIStyle::AddValue(const StringRef& visualStateName, const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time, EasingMode easingMode)
+//{
+//	auto* table = GetPropertyTable(visualStateName);
+//	table->AddValue(targetProperty, value, time, easingMode);
+//}
 
 //------------------------------------------------------------------------------
 void UIStyle::AddSubStateStyle(const StringRef& subStateName, UIStyle* style)
@@ -191,6 +193,12 @@ UIStyle* UIStyle::FindSubStateStyle(const StringRef& subStateName)
 		[subStateName](const SubStateStylePair& pair) { return pair.first == subStateName; });
 	if (pair == nullptr) return nullptr;
 	return pair->second;
+}
+
+//------------------------------------------------------------------------------
+UIStylePropertyTable* UIStyle::GetPropertyTable()
+{
+	return m_basePropertyTable;
 }
 
 //------------------------------------------------------------------------------
@@ -326,6 +334,22 @@ UIStyle* UIStyleTable::FindStyle(const tr::TypeInfo* targetType, const StringRef
 	if (style == nullptr) return nullptr;
 	if (subStateName.IsEmpty()) return style;
 	return style->FindSubStateStyle(subStateName);
+}
+
+//------------------------------------------------------------------------------
+UIStyle* UIStyleTable::GetStyle(const tr::TypeInfo* targetType)
+{
+	RefPtr<UIStyle>* s = m_table.Find(targetType);
+	if (s == nullptr)
+	{
+		auto s2 = NewObject<UIStyle>();
+		m_table.Add(targetType, s2);
+		return s2;
+	}
+	else
+	{
+		return s->Get();
+	}
 }
 
 LN_NAMESPACE_END

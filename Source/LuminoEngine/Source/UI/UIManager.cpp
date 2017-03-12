@@ -127,12 +127,12 @@ void UIManager::ReleaseGameModeMainFrame()
 //------------------------------------------------------------------------------
 void UIManager::MakeDefaultStyle(UIStyleTable* table)
 {
-	{
-		auto test = UIStyle::Create();
-		test->AddValue(_T(""), UITextBlock::FontSizeId, 20);
-		test->AddValue(_T(""), UITextBlock::foregroundId, Brush::Black);
-		table->AddStyle(tr::TypeInfo::GetTypeInfo<UITextBlock>(), test);
-	}
+	//{
+	//	auto test = UIStyle::Create();
+	//	test->AddValue(_T(""), UITextBlock::FontSizeId, 20);
+	//	test->AddValue(_T(""), UITextBlock::foregroundId, Brush::Black);
+	//	table->AddStyle(tr::TypeInfo::GetTypeInfo<UITextBlock>(), test);
+	//}
 	// UIButton
 	{
 		auto brush = TextureBrush::Create(m_defaultSkinTexture);
@@ -141,51 +141,48 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 		brush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
 		brush->SetWrapMode(BrushWrapMode::Stretch);
 
-		auto test = UIStyle::Create();
-		test->AddValue(_T(""), UIElement::backgroundId, brush);
-		table->AddStyle(tr::TypeInfo::GetTypeInfo<UIButton>(), test);
+		//auto test = UIStyle::Create();
+		//test->AddValue(_T(""), UIElement::backgroundId, brush);
+		//table->AddStyle(tr::TypeInfo::GetTypeInfo<UIButton>(), test);
 
+		auto* s = table->GetStyle(tr::TypeInfo::GetTypeInfo<UIButton>());
 		// UIButton
 		{
-			test->AddValue(UIElement::decoratorBackgroundId, Brush::DimGray);
-		}
-		// UIButton.Normal
-		{
-			auto table = test->GetPropertyTable(UIButton::NormalState);
-			table->AddValue(UIElement::decoratorBackgroundId, Brush::DimGray);
+			auto* st = s->GetPropertyTable();
+			st->background = RefPtr<Brush>::StaticCast(brush);
 		}
 		// UIButton.MouseOver
 		{
-			auto table = test->GetPropertyTable(UIButton::MouseOverState);
-			table->AddValue(UIElement::decoratorBackgroundId, Brush::Green);
+			auto* st = s->GetPropertyTable(UIButton::MouseOverState);
+			st->background = Brush::Green;
 		}
 	}
-	{
-		auto brush = TextureBrush::Create(m_defaultSkinTexture);
-		brush->SetSourceRect(0, 32, 32, 32);
-		brush->SetBorderThickness(8, 8, 8, 8);
-		brush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
-		brush->SetWrapMode(BrushWrapMode::Stretch);
+	//{
+	//	auto brush = TextureBrush::Create(m_defaultSkinTexture);
+	//	brush->SetSourceRect(0, 32, 32, 32);
+	//	brush->SetBorderThickness(8, 8, 8, 8);
+	//	brush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
+	//	brush->SetWrapMode(BrushWrapMode::Stretch);
 
-		auto style = UIStyle::Create();
-		style->AddValue(tr::UIListBox::NormalState, UIElement::backgroundId, brush);
-		table->AddStyle(tr::TypeInfo::GetTypeInfo<tr::UIListBox>(), style);
-	}
+	//	auto style = UIStyle::Create();
+	//	style->AddValue(tr::UIListBox::NormalState, UIElement::backgroundId, brush);
+	//	table->AddStyle(tr::TypeInfo::GetTypeInfo<tr::UIListBox>(), style);
+	//}
 
-	{
-		auto style = UIStyle::Create();
-           		style->AddValue(tr::UIListBoxItem::NormalState, UIElement::decoratorBackgroundId, Brush::Green);
-		style->AddValue(tr::UIListBoxItem::NormalState, UIElement::decoratorOpacityId, 0.0f, 0.3);
-		style->AddValue(tr::UIListBoxItem::MouseOverState, UIElement::decoratorOpacityId, 1.0f, 0.3);
-		table->AddStyle(tr::TypeInfo::GetTypeInfo<tr::UIListBoxItem>(), style);
-	}
-	
-	// UIThumb
-	{
-		auto test = UIStyle::Create();
-		test->AddValue(_T(""), UIElement::backgroundId, Brush::DimGray);
-		table->AddStyle(tr::TypeInfo::GetTypeInfo<UIThumb>(), test);
-	}
+	//{
+	//	auto style = UIStyle::Create();
+ //          		style->AddValue(tr::UIListBoxItem::NormalState, UIElement::decoratorBackgroundId, Brush::Green);
+	//	style->AddValue(tr::UIListBoxItem::NormalState, UIElement::decoratorOpacityId, 0.0f, 0.3);
+	//	style->AddValue(tr::UIListBoxItem::MouseOverState, UIElement::decoratorOpacityId, 1.0f, 0.3);
+	//	table->AddStyle(tr::TypeInfo::GetTypeInfo<tr::UIListBoxItem>(), style);
+	//}
+	//
+	//// UIThumb
+	//{
+	//	auto test = UIStyle::Create();
+	//	test->AddValue(_T(""), UIElement::backgroundId, Brush::DimGray);
+	//	table->AddStyle(tr::TypeInfo::GetTypeInfo<UIThumb>(), test);
+	//}
 	// UIScrollBar
 	{
 		//auto test = UIStyle::Create();

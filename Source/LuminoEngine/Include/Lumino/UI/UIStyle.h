@@ -9,7 +9,7 @@ LN_NAMESPACE_BEGIN
 class UIStyle;
 using UIStylePtr = RefPtr<UIStyle>;
 
-#if 0
+#if 1
 template<typename T>
 class UIStyleAttribute
 {
@@ -54,9 +54,7 @@ public:
 	//EasingMode	easingMode;
 	//double		time;
 };
-#endif
-
-
+#else
 class UIStyleAttribute
 {
 public:
@@ -110,6 +108,9 @@ public:
 
 	bool				m_mergedMark;	// UIStylePropertyTable::UpdateInherit の中で使う作業用変数
 };
+#endif
+
+
 
 
 /**
@@ -120,7 +121,7 @@ class UIStylePropertyTable
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	void AddValue(const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time = 0.0, EasingMode easingMode = EasingMode::Linear);
+	//void AddValue(const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time = 0.0, EasingMode easingMode = EasingMode::Linear);
 
 LN_INTERNAL_ACCESS:
 	UIStylePropertyTable();
@@ -130,13 +131,34 @@ LN_INTERNAL_ACCESS:
 	void Apply(UIElement* targetElement, bool useTransitionAnimation);
 
 private:
-	void ApplyInternal(UIElement* targetElement, const UIStyleAttribute& setter, bool useTransitionAnimation);
+	//void ApplyInternal(UIElement* targetElement, bool useTransitionAnimation);
+	//void ApplyInternal(UIElement* targetElement, const UIStyleAttribute& setter, bool useTransitionAnimation);
 
 	String						m_visualStateName;
-	List<UIStyleAttribute>		m_attributes;
+	//List<UIStyleAttribute>		m_attributes;
 
 	//UIStylePropertyTable*		m_lastInheritedParent;
-	List<UIStyleAttribute*>	m_parentRefAttributes;
+	//List<UIStyleAttribute*>	m_parentRefAttributes;
+public:
+
+	//UIStyleAttribute<ThicknessF>			m_margin;
+	//UIStyleAttribute<ThicknessF>			m_padding;
+	//UIStyleAttribute<VAlignment>		m_verticalAlignment;
+	//UIStyleAttribute<HAlignment>	m_horizontalAlignment;
+	UIStyleAttribute<BrushPtr>				background;
+	//UIStyleAttribute<BrushPtr>				foreground;
+	//UIStyleAttribute<TexturePtr>			m_image;
+
+	//UIStyleAttribute<RefPtr<Pen>>			m_borderLeft;
+	//UIStyleAttribute<RefPtr<Pen>>			m_borderRight;
+	//UIStyleAttribute<RefPtr<Pen>>			m_borderTop;
+	//UIStyleAttribute<RefPtr<Pen>>			m_borderBottom;
+	//UIStyleAttribute<FontPtr>				m_font;
+
+	//UIStyleAttribute<String>				m_fontFamily;
+	//UIStyleAttribute<int>					m_fontSize;
+	//UIStyleAttribute<bool>					m_fontBold;
+	//UIStyleAttribute<bool>					m_fontItalic;
 };
 
 /**
@@ -154,15 +176,16 @@ public:
 	virtual ~UIStyle();
 	void Initialize();
 
-	void AddValue(const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time = 0.0, EasingMode easingMode = EasingMode::Linear);
+	//void AddValue(const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time = 0.0, EasingMode easingMode = EasingMode::Linear);
 
 
-	void AddValue(const StringRef& visualStateName, const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time = 0.0, EasingMode easingMode = EasingMode::Linear);
+	//void AddValue(const StringRef& visualStateName, const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time = 0.0, EasingMode easingMode = EasingMode::Linear);
 	
 	// e.g) ScrollBar::Horizontal { ... }
 	void AddSubStateStyle(const StringRef& subStateName, UIStyle* style);
 	UIStyle* FindSubStateStyle(const StringRef& subStateName);
 
+	UIStylePropertyTable* GetPropertyTable();
 	UIStylePropertyTable* GetPropertyTable(const StringRef& visualStateName);
 
 
@@ -208,24 +231,6 @@ public:	// TODO:
 	//int			m_revisionCount;
 
 
-	//UIStyleAttribute<ThicknessF>			m_margin;
-	//UIStyleAttribute<ThicknessF>			m_padding;
-	//UIStyleAttribute<VerticalAlignment>		m_verticalAlignment;
-	//UIStyleAttribute<HorizontalAlignment>	m_horizontalAlignment;
-	//UIStyleAttribute<BrushPtr>				m_background;
-	//UIStyleAttribute<BrushPtr>				m_foreground;
-	//UIStyleAttribute<TexturePtr>			m_image;
-
-	////UIStyleAttribute<RefPtr<Pen>>			m_borderLeft;
-	////UIStyleAttribute<RefPtr<Pen>>			m_borderRight;
-	////UIStyleAttribute<RefPtr<Pen>>			m_borderTop;
-	////UIStyleAttribute<RefPtr<Pen>>			m_borderBottom;
-	////UIStyleAttribute<FontPtr>				m_font;
-
-	//UIStyleAttribute<String>				m_fontFamily;
-	//UIStyleAttribute<int>					m_fontSize;
-	//UIStyleAttribute<bool>					m_fontBold;
-	//UIStyleAttribute<bool>					m_fontItalic;
 
 };
 
@@ -246,6 +251,8 @@ public:
 	// 見つからなければ nullptr
 	UIStyle* FindStyle(const tr::TypeInfo* targetType);	// TODO: TypeInfo じゃなくて string にしたい
 	UIStyle* FindStyle(const tr::TypeInfo* targetType, const StringRef& subStateName);
+
+	UIStyle* GetStyle(const tr::TypeInfo* targetType);
 
 private:	
 	typedef const tr::TypeInfo* StyleKey;
