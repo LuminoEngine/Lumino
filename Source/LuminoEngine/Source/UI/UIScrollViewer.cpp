@@ -490,8 +490,8 @@ RefPtr<UIScrollViewer> UIScrollViewer::Create()
 
 //------------------------------------------------------------------------------
 UIScrollViewer::UIScrollViewer()
-	: m_verticalScrollBar(nullptr)
-	, m_horizontalScrollBar(nullptr)
+	: m_horizontalScrollBar(nullptr)
+	, m_verticalScrollBar(nullptr)
 {
 }
 
@@ -505,10 +505,12 @@ void UIScrollViewer::Initialize(detail::UIManager* manager)
 {
 	UIItemsControl::Initialize(manager);
 
-	m_verticalScrollBar = NewObject<UIScrollBar>(manager);
 	m_horizontalScrollBar = NewObject<UIScrollBar>(manager);
-	AddVisualChild(m_verticalScrollBar);
+	m_horizontalScrollBar->SetOrientation(Orientation::Horizontal);
+	m_verticalScrollBar = NewObject<UIScrollBar>(manager);
+	m_verticalScrollBar->SetOrientation(Orientation::Vertical);
 	AddVisualChild(m_horizontalScrollBar);
+	AddVisualChild(m_verticalScrollBar);
 }
 
 //------------------------------------------------------------------------------
@@ -516,8 +518,8 @@ Size UIScrollViewer::MeasureOverride(const Size& constraint)
 {
 	Size desiredSize = UIControl::MeasureOverride(constraint);
 
-	//desiredSize.height += 16;
-	//desiredSize.width += 16;
+	desiredSize.width += m_verticalScrollBar->GetWidth();
+	desiredSize.height += m_horizontalScrollBar->GetHeight();
 
 	return desiredSize;
 }
@@ -525,7 +527,26 @@ Size UIScrollViewer::MeasureOverride(const Size& constraint)
 //------------------------------------------------------------------------------
 Size UIScrollViewer::ArrangeOverride(const Size& finalSize)
 {
-	return UIControl::ArrangeOverride(finalSize);
+	Size actualSize  = UIControl::ArrangeOverride(finalSize);
+
+	float barWidth = m_verticalScrollBar->GetWidth();
+	float barHeight = m_verticalScrollBar->GetWidth();
+
+	RectF rc;
+
+	rc.width = barWidth;
+	rc.height = finalSize.height - barHeight;
+	rc.x = finalSize.width - barWidth;
+	rc.y = 0;
+	m_verticalScrollBar->ArrangeLayout(rc);
+
+	rc.width = finalSize.width - barWidth;
+	rc.height = barHeight;
+	rc.x = 0;
+	rc.y = finalSize.height - barHeight;
+	m_horizontalScrollBar->ArrangeLayout(rc);
+
+	return actualSize;
 }
 
 //------------------------------------------------------------------------------

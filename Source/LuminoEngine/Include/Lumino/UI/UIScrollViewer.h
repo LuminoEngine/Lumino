@@ -343,8 +343,8 @@ protected:
 	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e) override;
 
 private:
-	RefPtr<UIScrollBar>        m_verticalScrollBar;
 	RefPtr<UIScrollBar>        m_horizontalScrollBar;
+	RefPtr<UIScrollBar>        m_verticalScrollBar;
 };
 
 

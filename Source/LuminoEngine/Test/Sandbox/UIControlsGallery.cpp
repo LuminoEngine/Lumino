@@ -34,6 +34,11 @@ void UIControlsGallery()
 	scrollBar1->SetViewportSize(2);
 	mainWindow->AddChild(scrollBar1);
 
+	auto scrollViewer1 = UIScrollViewer::Create();
+	scrollViewer1->SetSize(Size(100, 100));
+	scrollViewer1->SetBackground(Brush::Red);
+	mainWindow->AddChild(scrollViewer1);
+
 	while (Engine::Update())
 	{
 	}
