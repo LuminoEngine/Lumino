@@ -325,6 +325,10 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIScrollEventArgs, UIEventArgs)
 //==============================================================================
 LN_UI_TYPEINFO_IMPLEMENT(UIScrollBar, UIControl)
 
+const String UIScrollBar::OrientationStates = _T("OrientationStates");
+const String UIScrollBar::HorizontalState = _T("Horizontal");
+const String UIScrollBar::VerticalState = _T("Vertical");
+
 //------------------------------------------------------------------------------
 RefPtr<UIScrollBar> UIScrollBar::Create()
 {
@@ -350,8 +354,40 @@ void UIScrollBar::Initialize(detail::UIManager* manager)
 {
 	UIControl::Initialize(manager);
 
+	// register VisualState
+	auto* vsm = GetVisualStateManager();
+	vsm->RegisterVisualState(OrientationStates, HorizontalState);
+	vsm->RegisterVisualState(OrientationStates, VerticalState);
+
 	m_track = NewObject<UITrack>(manager);
 	AddVisualChild(m_track);
+
+	SetOrientation(Orientation::Horizontal);
+}
+
+//------------------------------------------------------------------------------
+void UIScrollBar::SetOrientation(Orientation orientation)
+{
+	m_track->SetOrientation(orientation);
+
+	switch (orientation)
+	{
+	case Orientation::Horizontal:
+		GoToVisualState(HorizontalState);
+		break;
+	case Orientation::Vertical:
+		GoToVisualState(VerticalState);
+		break;
+	default:
+		LN_NOTIMPLEMENTED();
+		break;
+	}
+}
+
+//------------------------------------------------------------------------------
+Orientation UIScrollBar::GetOrientation() const
+{
+	return m_track->GetOrientation();
 }
 
 //------------------------------------------------------------------------------
@@ -418,13 +454,13 @@ void UIScrollBar::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 }
 
 //------------------------------------------------------------------------------
-void UIScrollBar::GetStyleClassName(String* outSubStateName)
-{
-	if (m_track->GetOrientation() == Orientation::Horizontal)
-		*outSubStateName = _T("Horizontal");
-	else
-		*outSubStateName = _T("Vertical");
-}
+//void UIScrollBar::GetStyleClassName(String* outSubStateName)
+//{
+//	if (m_track->GetOrientation() == Orientation::Horizontal)
+//		*outSubStateName = _T("Horizontal");
+//	else
+//		*outSubStateName = _T("Vertical");
+//}
 
 //------------------------------------------------------------------------------
 void UIScrollBar::UpdateValue(float horizontalDragDelta, float verticalDragDelta)

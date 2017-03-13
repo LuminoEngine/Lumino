@@ -14,27 +14,59 @@ template<typename T>
 class UIStyleAttribute
 {
 public:
-	UIStyleAttribute() : value(), isSet(false), m_modified(true) {}
-	UIStyleAttribute(const T& v) : value(v), isSet(false), m_modified(true) {}
-	UIStyleAttribute(const UIStyleAttribute& v) : value(v.value), isSet(v.isSet), m_modified(true) {}
+	UIStyleAttribute()
+		: value()
+		, isSet(false)
+		, m_modified(true)
+		, m_hasValue(false)
+	{}
+
+	UIStyleAttribute(const T& v)
+		: value(v)
+		, isSet(true)
+		, m_modified(true)
+		, m_hasValue(true)
+	{}
+
+	UIStyleAttribute(const UIStyleAttribute& v)
+		: value(v.value)
+		, isSet(v.isSet)
+		, m_modified(true)
+		, m_hasValue(v.m_hasValue)
+	{}
 
 	operator const T&() const { return value; }
-	UIStyleAttribute& operator=(const T& v) { value = v; isSet = true; m_modified = true; return *this; }
-	UIStyleAttribute& operator=(const UIStyleAttribute& other) { value = other.value; isSet = other.isSet; m_modified = true; return *this; }
+
+	UIStyleAttribute& operator=(const T& v)
+	{
+		value = v;
+		isSet = true;
+		m_modified = true;
+		m_hasValue = true;
+		return *this;
+	}
+
+	UIStyleAttribute& operator=(const UIStyleAttribute& other)
+	{
+		value = other.value;
+		isSet = other.isSet;
+		m_modified = true;
+		m_hasValue = other.m_hasValue;
+		return *this;
+	}
 
 	bool UpdateInherit(const UIStyleAttribute& parent)
 	{
+		m_hasValue = false;
+
 		if (isSet)
 		{
 			bool changed = m_modified;
 			m_modified = false;
+			m_hasValue = true;
 			return changed;
 		}
-		else if (!parent.isSet)
-		{
-			return false;
-		}
-		else
+		else if (parent.m_hasValue)
 		{
 			bool changed = false;
 			if (value != parent.value)
@@ -42,13 +74,36 @@ public:
 				value = parent.value;
 				changed = true;
 			}
+			m_hasValue = true;
 			return changed;
 		}
+		else
+		{
+			return false;
+		}
+		//else if (!parent.isSet)
+		//{
+		//	return false;
+		//}
+		//else
+		//{
+		//	bool changed = false;
+		//	if (value != parent.value)
+		//	{
+		//		value = parent.value;
+		//		changed = true;
+		//	}
+		//	return changed;
+		//}
 	}
+
+	bool HasValue() const { return m_hasValue; }
 
 	T		value;
 	bool	isSet;
 	bool	m_modified;
+
+	bool	m_hasValue;		// 直値or継承によりなんらかの値を持っているか
 
 
 	//EasingMode	easingMode;
@@ -248,18 +303,19 @@ public:
 	UIStyleTable();
 	virtual ~UIStyleTable();
 
-	void AddStyle(const tr::TypeInfo* targetType, UIStyle* style);
-	void AddStyle(const tr::TypeInfo* targetType, const StringRef& subStateName, UIStyle* style);
+	//void AddStyle(const tr::TypeInfo* targetType, UIStyle* style);
+	//void AddStyle(const tr::TypeInfo* targetType, const StringRef& subStateName, UIStyle* style);
 
-	// 見つからなければ nullptr
-	UIStyle* FindStyle(const tr::TypeInfo* targetType);	// TODO: TypeInfo じゃなくて string にしたい
+	// 見つからなければ nullptr (ベースクラス情報も使用して検索する)
+	UIStyle* FindStyle(const tr::TypeInfo* targetType);
 	UIStyle* FindStyle(const tr::TypeInfo* targetType, const StringRef& subStateName);
 
-	UIStyle* GetStyle(const tr::TypeInfo* targetType);
-	UIStyle* GetStyle(const tr::TypeInfo* targetType, const StringRef& subStateName);
+	UIStyle* GetStyle(const StringRef& typeName);
+	//UIStyle* GetStyle(const tr::TypeInfo* targetType, const StringRef& subStateName);
 
 private:	
-	typedef const tr::TypeInfo* StyleKey;
+	//typedef const tr::TypeInfo* StyleKey;
+	using StyleKey = String;
 
 	SortedArray<StyleKey, RefPtr<UIStyle>>	m_table;
 };

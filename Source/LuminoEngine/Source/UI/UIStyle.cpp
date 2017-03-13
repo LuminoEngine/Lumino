@@ -48,6 +48,8 @@ void UIStylePropertyTable::Initialize(const StringRef& visualStateName)
 detail::InvalidateFlags UIStylePropertyTable::UpdateInherit(UIStylePropertyTable* parent)
 {
 	bool changed = false;
+	changed |= width.UpdateInherit(parent->width);
+	changed |= height.UpdateInherit(parent->height);
 	changed |= background.UpdateInherit(parent->background);
 
 	//// parent が持っている値のうち、同じ targetProperty のものを探す。そんなに数は多くないはずなので線形探索。
@@ -83,10 +85,12 @@ detail::InvalidateFlags UIStylePropertyTable::UpdateInherit(UIStylePropertyTable
 //------------------------------------------------------------------------------
 void UIStylePropertyTable::Apply(UIElement* targetElement, bool useTransitionAnimation)
 {
-	if (width.isSet)
+	if (width.HasValue())
 		targetElement->SetWidth(width);
-	if (height.isSet) targetElement->SetHeight(height);
-	if (background.isSet) targetElement->SetBackground(background.value);
+	if (height.HasValue())
+		targetElement->SetHeight(height);
+	if (background.HasValue())
+		targetElement->SetBackground(background.value);
 	//for (UIStyleAttribute& setter : m_attributes)
 	//{
 	//	ApplyInternal(targetElement, setter, useTransitionAnimation);
@@ -298,26 +302,26 @@ UIStyleTable::~UIStyleTable()
 {
 }
 
-//------------------------------------------------------------------------------
-void UIStyleTable::AddStyle(const tr::TypeInfo* targetType, UIStyle* style)
-{
-	LN_CHECK_ARG(style != nullptr);
-	m_table.Add(targetType, style);
-}
-
-//------------------------------------------------------------------------------
-void UIStyleTable::AddStyle(const tr::TypeInfo* targetType, const StringRef& subStateName, UIStyle* style)
-{
-	RefPtr<UIStyle>* s = m_table.Find(targetType);
-	(*s)->AddSubStateStyle(subStateName, style);
-}
+////------------------------------------------------------------------------------
+//void UIStyleTable::AddStyle(const tr::TypeInfo* targetType, UIStyle* style)
+//{
+//	LN_CHECK_ARG(style != nullptr);
+//	m_table.Add(targetType, style);
+//}
+//
+////------------------------------------------------------------------------------
+//void UIStyleTable::AddStyle(const tr::TypeInfo* targetType, const StringRef& subStateName, UIStyle* style)
+//{
+//	RefPtr<UIStyle>* s = m_table.Find(targetType);
+//	(*s)->AddSubStateStyle(subStateName, style);
+//}
 
 //------------------------------------------------------------------------------
 UIStyle* UIStyleTable::FindStyle(const tr::TypeInfo* targetType)
 {
 	LN_CHECK_ARG(targetType != nullptr);
 
-	RefPtr<UIStyle>* s = m_table.Find(targetType);
+	RefPtr<UIStyle>* s = m_table.Find(targetType->GetName());
 	if (s != nullptr)
 	{
 		return s->Get();
@@ -340,13 +344,13 @@ UIStyle* UIStyleTable::FindStyle(const tr::TypeInfo* targetType, const StringRef
 }
 
 //------------------------------------------------------------------------------
-UIStyle* UIStyleTable::GetStyle(const tr::TypeInfo* targetType)
+UIStyle* UIStyleTable::GetStyle(const StringRef& typeName)
 {
-	RefPtr<UIStyle>* s = m_table.Find(targetType);
+	RefPtr<UIStyle>* s = m_table.Find(typeName);
 	if (s == nullptr)
 	{
 		auto s2 = NewObject<UIStyle>();
-		m_table.Add(targetType, s2);
+		m_table.Add(typeName, s2);
 		return s2;
 	}
 	else

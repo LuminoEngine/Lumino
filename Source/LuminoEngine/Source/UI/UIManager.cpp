@@ -145,7 +145,7 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 		//test->AddValue(_T(""), UIElement::backgroundId, brush);
 		//table->AddStyle(tr::TypeInfo::GetTypeInfo<UIButton>(), test);
 
-		auto* s = table->GetStyle(tr::TypeInfo::GetTypeInfo<UIButton>());
+		auto* s = table->GetStyle(tr::TypeInfo::GetTypeInfo<UIButton>()->GetName());
 		// UIButton
 		{
 			auto* st = s->GetPropertyTable();
@@ -164,7 +164,7 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 	}
 	// UIThumb
 	{
-		auto* style = table->GetStyle(tr::TypeInfo::GetTypeInfo<UIThumb>());
+		auto* style = table->GetStyle(tr::TypeInfo::GetTypeInfo<UIThumb>()->GetName());
 		// UIThumb
 		{
 			auto* props = style->GetPropertyTable();
@@ -173,11 +173,23 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 	}
 	// UIScrollBar
 	{
-		auto* style = table->GetStyle(tr::TypeInfo::GetTypeInfo<UIScrollBar>());
+		auto* style = table->GetStyle(tr::TypeInfo::GetTypeInfo<UIScrollBar>()->GetName());
 		// UIScrollBar
 		{
 			auto* props = style->GetPropertyTable();
 			props->background = Brush::DimGray;
+		}
+		// UIScrollBar.Horizontal
+		{
+			auto* props = style->GetPropertyTable(UIScrollBar::HorizontalState);
+			props->height = 16.0f;
+			props->background = Brush::Blue;
+		}
+		// UIScrollBar.Vertical
+		{
+			auto* props = style->GetPropertyTable(UIScrollBar::VerticalState);
+			props->width = 16.0f;
+			props->background = Brush::Black;
 		}
 	}
 

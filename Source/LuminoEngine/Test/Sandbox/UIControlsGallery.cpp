@@ -28,7 +28,7 @@ void UIControlsGallery()
 	mainWindow->AddChild(thumb1);
 
 	auto scrollBar1 = UIScrollBar::Create();
-	scrollBar1->SetSize(Size(Math::NaN, 32));
+	//scrollBar1->SetSize(Size(Math::NaN, 32));
 	scrollBar1->SetMaximum(10);
 	scrollBar1->SetValue(3);
 	scrollBar1->SetViewportSize(2);
