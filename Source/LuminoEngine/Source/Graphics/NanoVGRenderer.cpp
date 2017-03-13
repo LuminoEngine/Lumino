@@ -1,4 +1,26 @@
-﻿
+﻿/*
+
+頂点バッファを作る系
+lnnvg__renderFill
+	glnvg__convertPaint
+lnnvg__renderStroke
+lnnvg__renderTriangles
+
+
+実際に描画する
+lnnvg__renderFlush
+	glnvg__fill
+		glnvg__setUniforms
+		DrawPrimitive
+	glnvg__convexFill
+		glnvg__setUniforms
+		DrawPrimitive
+	glnvg__stroke
+		glnvg__setUniforms
+		DrawPrimitive
+
+
+*/
 #include "Internal.h"
 #include <math.h>
 #include <Lumino/Graphics/Texture.h>
