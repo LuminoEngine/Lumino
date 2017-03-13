@@ -425,7 +425,7 @@ void FrameRectRenderer::SetState(Brush* brush, const Matrix& world, const Matrix
 	state.viewProjTransform = viewProj;
 	state.imageDrawMode = brush->GetImageDrawMode();
 	state.borderThickness = brush->GetBorderThickness();
-	state.srcRect = brush->GetSourceRect();
+	state.srcRect = RectI::FromFloatRect(brush->GetSourceRect());
 	state.wrapMode = brush->GetWrapMode();
 	state.texture = (brush->GetTexture() != nullptr) ? brush->GetTexture()->ResolveDeviceObject() : nullptr;
 	LN_CHECK_STATE(state.texture != nullptr);

@@ -162,6 +162,25 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 			st->background = Brush::Green;
 		}
 	}
+	// UIThumb
+	{
+		auto* style = table->GetStyle(tr::TypeInfo::GetTypeInfo<UIThumb>());
+		// UIThumb
+		{
+			auto* props = style->GetPropertyTable();
+			props->background = Brush::Blue;
+		}
+	}
+	// UIScrollBar
+	{
+		auto* style = table->GetStyle(tr::TypeInfo::GetTypeInfo<UIScrollBar>());
+		// UIScrollBar
+		{
+			auto* props = style->GetPropertyTable();
+			props->background = Brush::DimGray;
+		}
+	}
+
 	//{
 	//	auto brush = TextureBrush::Create(m_defaultSkinTexture);
 	//	brush->SetSourceRect(0, 32, 32, 32);
@@ -182,17 +201,7 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 	//	table->AddStyle(tr::TypeInfo::GetTypeInfo<tr::UIListBoxItem>(), style);
 	//}
 	//
-	//// UIThumb
-	//{
-	//	auto test = UIStyle::Create();
-	//	test->AddValue(_T(""), UIElement::backgroundId, Brush::DimGray);
-	//	table->AddStyle(tr::TypeInfo::GetTypeInfo<UIThumb>(), test);
-	//}
-	// UIScrollBar
-	{
-		//auto test = UIStyle::Create();
-		//test->AddValue(_T(""), UIElement::backgroundId, ColorBrush::DimGray);
-	}
+	
 
 }
 

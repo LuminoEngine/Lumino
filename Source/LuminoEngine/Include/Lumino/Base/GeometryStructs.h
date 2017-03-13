@@ -320,6 +320,8 @@ public:
 
 	void Clip(const RectI& rect) { GeometryStructsHelper::Clip(this, rect); }
 
+	static RectI FromFloatRect(const RectF& rect) { return RectI((float)rect.x, (float)rect.y, (float)rect.width, (float)rect.height); }
+
 	bool operator == (const RectI& right) const { return (x == right.x && y == right.y && width == right.width && height == right.height); }
 	bool operator != (const RectI& right) const { return !operator==(right); }
 };

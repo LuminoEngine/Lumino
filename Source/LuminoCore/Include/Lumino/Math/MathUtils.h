@@ -12,10 +12,10 @@ LN_NAMESPACE_BEGIN
 class LUMINO_EXPORT Math
 {
 public:
-
-	static const float PI;			///< 円周率	(3.14159265...)
-	static const float PI2;			///< 円周率 * 2	(3.14159265...)
-	static const float PIDiv2;		///< 円周率 / 2
+	static const float NaN;			/**< NaN (Not-a-Number: 非数) */
+	static const float PI;			/**< 円周率	(3.14159265...) */
+	static const float PI2;			/**< 円周率 * 2	(3.14159265...) */
+	static const float PIDiv2;		/**< 円周率 / 2 */
 
 public:
 

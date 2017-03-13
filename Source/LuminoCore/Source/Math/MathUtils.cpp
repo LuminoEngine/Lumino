@@ -1,6 +1,7 @@
 ﻿
 #include <math.h>
 #include <float.h>
+#include <limits>
 
 // 標準ヘッダの math.h と被るので Utils を付けている
 #include "../../include/Lumino/Math/MathUtils.h"
@@ -11,6 +12,7 @@ LN_NAMESPACE_BEGIN
 // Math
 //==============================================================================
 
+const float Math::NaN		= std::numeric_limits<float>::quiet_NaN();
 const float Math::PI		= 3.1415926535897932384626433832795f;
 const float Math::PI2		= 6.283185307f;
 const float Math::PIDiv2	= 1.570796327f;

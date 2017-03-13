@@ -433,10 +433,10 @@ set(LN_SOURCES_UI
 	Include/Lumino/UI/UIEvent.h
 	Include/Lumino/UI/UIEventArgs.h
 	Include/Lumino/UI/UIFrameWindow.h
+	Include/Lumino/UI/UIImage.h
 	Include/Lumino/UI/UIInjectedInputReceiver.h
 	Include/Lumino/UI/UIItemsControl.h
 	Include/Lumino/UI/UILayoutPanel.h
-	Include/Lumino/UI/UILayoutRoot.h
 	Include/Lumino/UI/UILayoutView.h
 	Include/Lumino/UI/UIListBox.h
 	Include/Lumino/UI/UIScrollViewer.h
@@ -459,9 +459,9 @@ set(LN_SOURCES_UI
 	Source/UI/UIEventArgs.cpp
 	Source/UI/UIFrameWindow.cpp
 	Source/UI/UIHelper.h
+	Source/UI/UIImage.cpp
 	Source/UI/UIItemsControl.cpp
 	Source/UI/UILayoutPanel.cpp
-	Source/UI/UILayoutRoot.cpp
 	Source/UI/UILayoutView.cpp
 	Source/UI/UIListBox.cpp
 	Source/UI/UIManager.cpp

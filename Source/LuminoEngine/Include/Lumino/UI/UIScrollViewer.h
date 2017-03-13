@@ -2,6 +2,7 @@
 #pragma once
 #include "UIElement.h"
 #include "UIButton.h"
+#include "UIItemsControl.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -308,7 +309,7 @@ public:
 	@brief
 */
 class UIScrollViewer
-	: public UIControl
+	: public UIItemsControl
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:

@@ -66,7 +66,7 @@ enum NVGcreateFlags
 	NVG_DEBUG = 1 << 2,
 };
 
-Driver::ITexture* LNNVGcontext_GetTexture(LNNVGcontext* ctx, int index);
+Driver::ITexture* LNNVGcontext_GetTexture(LNNVGcontext* ctx, int imageId);
 
 //==============================================================================
 //
@@ -329,6 +329,7 @@ static int glnvg__convertPaint(GLNVGcontext* gl, GLNVGfragUniforms* frag, NVGpai
 		// NVG_IMAGE_FLIPY などのフラグは無し。フォーマットも RGBA 固定。 
 		frag->type = NSVG_SHADER_FILLIMG;
 		frag->texType = 0;
+		nvgTransformInverse(invxform, paint->xform);
 	}
 	else
 	{
@@ -411,9 +412,9 @@ private:
 	RefPtr<Driver::IVertexBuffer>		m_vertexBuffer;
 };
 
-Driver::ITexture* LNNVGcontext_GetTexture(LNNVGcontext* ctx, int index)
+Driver::ITexture* LNNVGcontext_GetTexture(LNNVGcontext* ctx, int imageId)
 {
-	return ctx->textureList[index];
+	return ctx->textureList[imageId - 1];
 }
 
 //------------------------------------------------------------------------------
@@ -431,7 +432,7 @@ static void glnvg__setUniforms(GLNVGcontext* gl, int uniformOffset, int image)
 
 	lnc->varViewSize->SetVector(Vector4(lnc->view[0], lnc->view[1], 0, 0));
 	if (image != 0)
-		lnc->varTex->SetTexture(lnc->textureList[image]);
+		lnc->varTex->SetTexture(LNNVGcontext_GetTexture(lnc, image));
 	else
 		lnc->varTex->SetTexture(nullptr);
 }
@@ -734,6 +735,7 @@ static void lnnvg__renderFlush(void* uptr, NVGcompositeOperationState compositeO
 }
 
 //------------------------------------------------------------------------------
+// bounds	: bounds[4]. 
 static void lnnvg__renderFill(void* uptr, NVGpaint* paint, NVGscissor* scissor, float fringe,
 	const float* bounds, const NVGpath* paths, int npaths)
 {
@@ -807,6 +809,12 @@ static void lnnvg__renderFill(void* uptr, NVGpaint* paint, NVGscissor* scissor, 
 		// Fill shader
 		glnvg__convertPaint(gl, nvg__fragUniformPtr(gl, call->uniformOffset), paint, scissor, fringe, fringe, -1.0f);
 	}
+	
+	// NanoVG 用のシェーダを使いつつ、テクスチャ転送元の左上が、ジオメトリの境界矩形の左上になるようにしたい。
+	// サンプルのままだと絶対座標での左上 (0, 0) がテクスチャ転送元の原点になってしまう。
+	GLNVGfragUniforms* flags = nvg__fragUniformPtr(gl, call->uniformOffset);
+	flags->paintMat[8] = -bounds[0];
+	flags->paintMat[9] = -bounds[1];
 
 	return;
 
@@ -820,6 +828,7 @@ error:
 static void lnnvg__renderStroke(void* uptr, NVGpaint* paint, NVGscissor* scissor, float fringe,
 	float strokeWidth, const NVGpath* paths, int npaths)
 {
+	assert(0);
 }
 
 //------------------------------------------------------------------------------
@@ -1174,11 +1183,12 @@ void NanoVGCommandHelper::ExpandBrushState(Brush* brush, NanoVGBrush* outBrush)
 		}
 		else
 		{
+			RectF rc = static_cast<TextureBrush*>(brush)->GetActualSourceRect();
 			outBrush->type = NanoVGBrushType::ImagePattern;
-			outBrush->ImagePatternInfo.ox = brush->GetSourceRect().x;
-			outBrush->ImagePatternInfo.oy = brush->GetSourceRect().y;
-			outBrush->ImagePatternInfo.ex = brush->GetSourceRect().width;
-			outBrush->ImagePatternInfo.ey = brush->GetSourceRect().height;
+			outBrush->ImagePatternInfo.ox = rc.x;
+			outBrush->ImagePatternInfo.oy = rc.y;
+			outBrush->ImagePatternInfo.ex = rc.width;
+			outBrush->ImagePatternInfo.ey = rc.height;
 			outBrush->ImagePatternInfo.angle = 0;
 			outBrush->ImagePatternInfo.alpha = 1.0f;
 			outBrush->imagePatternTexture = brush->GetTexture()->ResolveDeviceObject();
@@ -1240,7 +1250,7 @@ NVGpaint NanoVGCommandHelper::GetNVGpaint(NVGcontext* ctx, const NanoVGBrush& br
 		case NanoVGBrushType::ImagePattern:
 		{
 			auto& info = brush.ImagePatternInfo;
-			return nvgImagePattern(ctx, info.ox, info.oy, info.ex, info.ey, info.alpha, lnnvg__AddImageTexture(ctx, brush.imagePatternTexture), info.alpha);
+			return nvgImagePattern(ctx, info.ox, info.oy, info.ex, info.ey, 0.0f, lnnvg__AddImageTexture(ctx, brush.imagePatternTexture), info.alpha);
 		}
 	}
 	assert(0);

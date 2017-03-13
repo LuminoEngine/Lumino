@@ -83,7 +83,10 @@ detail::InvalidateFlags UIStylePropertyTable::UpdateInherit(UIStylePropertyTable
 //------------------------------------------------------------------------------
 void UIStylePropertyTable::Apply(UIElement* targetElement, bool useTransitionAnimation)
 {
-	targetElement->SetBackground(background.value);
+	if (width.isSet)
+		targetElement->SetWidth(width);
+	if (height.isSet) targetElement->SetHeight(height);
+	if (background.isSet) targetElement->SetBackground(background.value);
 	//for (UIStyleAttribute& setter : m_attributes)
 	//{
 	//	ApplyInternal(targetElement, setter, useTransitionAnimation);
@@ -351,5 +354,10 @@ UIStyle* UIStyleTable::GetStyle(const tr::TypeInfo* targetType)
 		return s->Get();
 	}
 }
+
+//------------------------------------------------------------------------------
+//UIStyle* UIStyleTable::GetStyle(const tr::TypeInfo* targetType, const StringRef& subStateName)
+//{
+//}
 
 LN_NAMESPACE_END

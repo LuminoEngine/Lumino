@@ -87,6 +87,7 @@ void UIElement::Initialize(detail::UIManager* manager)
 	m_localStyle = LN_NEW UIStylePropertyTable();
 
 	//GoToVisualState(String::GetEmpty());
+	m_invalidateFlags |= detail::InvalidateFlags::VisualState;
 }
 
 //------------------------------------------------------------------------------
@@ -222,8 +223,6 @@ void UIElement::OnRender(DrawList* g)
 	}
 	if (decoratorBackground.Get() != nullptr)
 	{
-		printf("%f\n", m_combinedOpacity * decoratorOpacity.Get());
-
 		g->SetBrush(decoratorBackground.Get());
 		//g->SetOpacity(m_combinedOpacity * m_decoratorOpacity);
 		g->DrawRectangle(RectF(0, 0, m_finalLocalRect.GetSize()));
@@ -458,6 +457,8 @@ void UIElement::UpdateLocalStyleAndApplyProperties(UIStyleTable* styleTable, UIS
 		UIStyle* style = styleTable->FindStyle(tr::TypeInfo::GetTypeInfo(this), subStateName);
 		if (style != nullptr)
 		{
+
+
 			auto* vm = GetVisualStateManager();
 			invalidate |= style->MergeActiveStylePropertyTables(m_localStyle, vm->GetActiveStateNames());
 

@@ -1,4 +1,4 @@
-
+ï»¿
 #include <LuminoEngine.h>
 using namespace ln;
 
@@ -17,8 +17,22 @@ void UIControlsGallery()
 	auto button2 = UIButton::Create();
 	button2->SetSize(Size(80, 32));
 	mainWindow->AddChild(button2);
-	button2->Focus();	// TODO: AddChild ‚µ‚½Œã‚Å‚È‚¢‚ÆƒtƒH[ƒJƒXŽ‚Ä‚È‚¢B‚±‚ê‚Å‚¢‚¢‚ÌH
+	button2->Focus();	// TODO: AddChild ã—ãŸå¾Œã§ãªã„ã¨ãƒ•ã‚©ãƒ¼ã‚«ã‚¹æŒã¦ãªã„ã€‚ã“ã‚Œã§ã„ã„ã®ï¼Ÿ
 
+	auto image1 = UIImage::Create(_T("C:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/img2.png"));
+	image1->SetSize(Size(64, 64));
+	mainWindow->AddChild(image1);
+
+	auto thumb1 = UIThumb::Create();
+	thumb1->SetSize(Size(80, 32));
+	mainWindow->AddChild(thumb1);
+
+	auto scrollBar1 = UIScrollBar::Create();
+	scrollBar1->SetSize(Size(Math::NaN, 32));
+	scrollBar1->SetMaximum(10);
+	scrollBar1->SetValue(3);
+	scrollBar1->SetViewportSize(2);
+	mainWindow->AddChild(scrollBar1);
 
 	while (Engine::Update())
 	{

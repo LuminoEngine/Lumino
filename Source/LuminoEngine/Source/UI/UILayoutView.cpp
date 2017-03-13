@@ -4,7 +4,6 @@
 #include <Lumino/UI/UIContext.h>
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIElement.h>
-#include <Lumino/UI/UILayoutRoot.h>
 #include "UIManager.h"
 #include "EventArgsPool.h"
 

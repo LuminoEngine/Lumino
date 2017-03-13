@@ -1,31 +1,4 @@
 ﻿/*
-	ScrollViewer の概要
-	https://msdn.microsoft.com/ja-jp/library/ms750665(v=vs.110).aspx
-
-	ScrollViewer の各種プロパティ
-	http://smart-pda.net/wp7/tips/scrollviewer_tips/
-
-	ScrollViewer はメソッド呼び出しを (一般的には一度コマンドキューに溜め込んで) 
-	ScrollViewer.ScrollInfo に通知する。
-	ScrollViewer が子要素のオフセットを計算するのではない点に注意。
-	
-	ScrollContentPresenter は Child(IScrollInfo) を、TemplatedParent(ScrollViewer).ScrollInfo にセットする。
-	(HookupScrollingComponents で検索)
-
-	IScrollInfo は StackPanel や DocumentViewer、TextBoxView 等として実装される。
-	実際に子要素のオフセットを計算するのはこれらのクラス。
-	これを実現するために、各クラス ScrollData という内部クラスを持っている。
-
-
-	ListBox の Temlate は2パターン。
-	ItemsPresenter を使う方法と、使わない方法。
-
-	使わない場合は Panel の IsItemsHost を true にする。この場合、VisualTree に ItemsPresenter は現れない。自動生成されたりしない。
-	
-	使う場合、ScrollContentPresenter の子は ItemsPresenter になる。
-	その ItemsPresenter の子は、Panel になる。
-	このとき、その Panel が IScrollInfo を実装していれば、スクロール操作の対象になる。
-	ちなみに、ItemsPresenter は IScrollInfo ではない。
 
 */
 #include "../Internal.h"

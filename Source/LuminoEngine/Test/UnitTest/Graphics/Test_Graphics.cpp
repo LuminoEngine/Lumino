@@ -430,19 +430,19 @@ TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
 	// <Test> BorderFrame + Tile
 	{
 		auto brush1 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
-		brush1->SetSourceRect(RectI(0, 192, 32, 32));
+		brush1->SetSourceRect(0, 192, 32, 32);
 		brush1->SetWrapMode(BrushWrapMode::Tile);
 		brush1->SetImageDrawMode(BrushImageDrawMode::BorderFrame);
 		brush1->SetBorderThickness(ThicknessF(8, 8, 8, 8));
 
 		auto brush2 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
-		brush2->SetSourceRect(RectI(0, 160, 32, 32));
+		brush2->SetSourceRect(0, 160, 32, 32);
 		brush2->SetWrapMode(BrushWrapMode::Tile);
 		brush2->SetImageDrawMode(BrushImageDrawMode::BorderFrame);
 		brush2->SetBorderThickness(ThicknessF(0, 2, 4, 8));
 
 		auto brush3 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
-		brush3->SetSourceRect(RectI(0, 160, 32, 32));
+		brush3->SetSourceRect(0, 160, 32, 32);
 		brush3->SetWrapMode(BrushWrapMode::Tile);
 		brush3->SetImageDrawMode(BrushImageDrawMode::BorderFrame);
 		brush3->SetBorderThickness(ThicknessF(8, 8, 8, 8));
@@ -478,19 +478,19 @@ TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
 	// <Test> BoxFrame + Tile
 	{
 		auto brush1 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
-		brush1->SetSourceRect(RectI(0, 192, 32, 32));
+		brush1->SetSourceRect(0, 192, 32, 32);
 		brush1->SetWrapMode(BrushWrapMode::Stretch);
 		brush1->SetImageDrawMode(BrushImageDrawMode::BorderFrame);
 		brush1->SetBorderThickness(ThicknessF(8, 8, 8, 8));
 
 		auto brush2 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
-		brush2->SetSourceRect(RectI(0, 192, 32, 32));
+		brush2->SetSourceRect(0, 192, 32, 32);
 		brush2->SetWrapMode(BrushWrapMode::Stretch);
 		brush2->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
 		brush2->SetBorderThickness(ThicknessF(8, 8, 8, 8));
 
 		auto brush3 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
-		brush3->SetSourceRect(RectI(0, 192, 32, 32));
+		brush3->SetSourceRect(0, 192, 32, 32);
 		brush3->SetWrapMode(BrushWrapMode::Tile);
 		brush3->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
 		brush3->SetBorderThickness(ThicknessF(8, 8, 8, 8));

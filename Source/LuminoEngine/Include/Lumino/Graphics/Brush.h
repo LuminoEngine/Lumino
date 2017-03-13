@@ -50,9 +50,10 @@ public:
 	void SetTexture(Texture* texture);
 	Texture* GetTexture() const;
 
-	void SetSourceRect(const RectI& rect) { m_srcRect = rect; }
-	void SetSourceRect(int x, int y, int width, int height) { m_srcRect.Set(x, y, width, height); }
-	const RectI& GetSourceRect() const { return m_srcRect; }
+	/** ピクセル単位で指定します。規定値は NaN です。これは、テクスチャ全体を転送することを示します。*/
+	void SetSourceRect(const RectF& rect) { m_srcRect = rect; }
+	void SetSourceRect(float x, float y, float width, float height) { m_srcRect.Set(x, y, width, height); }
+	const RectF& GetSourceRect() const { return m_srcRect; }
 
 
 	void SetWrapMode(BrushWrapMode mode) { m_wrapMode = mode; }
@@ -69,6 +70,7 @@ LN_CONSTRUCT_ACCESS:
 	Brush();
 	Brush(const Color& color);
 	virtual ~Brush();
+	void Initialize();
 
 LN_INTERNAL_ACCESS:
 	bool IsSolidColor() const { return m_texture.IsNull(); }
@@ -77,7 +79,7 @@ LN_INTERNAL_ACCESS:
 private:
 	Color				m_color;
 	RefPtr<Texture>		m_texture;
-	RectI				m_srcRect;	///< 初期値は (0, 0, INT_MAX, INT_MAX) で、全体を転送することを表す
+	RectF				m_srcRect;
 	BrushWrapMode		m_wrapMode;
 	BrushImageDrawMode	m_imageDrawMode;
 	ThicknessF			m_borderThickness;
@@ -96,8 +98,11 @@ public:
 LN_CONSTRUCT_ACCESS:
 	TextureBrush();
 	virtual ~TextureBrush();
+	void Initialize();
 	void Initialize(const StringRef& filePath);
 	void Initialize(Texture* texture);
+	RectF GetActualSourceRect() const;
+	Size GetSize() const;
 };
 
 

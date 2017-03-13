@@ -141,6 +141,9 @@ private:
 	//List<UIStyleAttribute*>	m_parentRefAttributes;
 public:
 
+	UIStyleAttribute<float>				width;
+	UIStyleAttribute<float>				height;
+
 	//UIStyleAttribute<ThicknessF>			m_margin;
 	//UIStyleAttribute<ThicknessF>			m_padding;
 	//UIStyleAttribute<VAlignment>		m_verticalAlignment;
@@ -253,6 +256,7 @@ public:
 	UIStyle* FindStyle(const tr::TypeInfo* targetType, const StringRef& subStateName);
 
 	UIStyle* GetStyle(const tr::TypeInfo* targetType);
+	UIStyle* GetStyle(const tr::TypeInfo* targetType, const StringRef& subStateName);
 
 private:	
 	typedef const tr::TypeInfo* StyleKey;

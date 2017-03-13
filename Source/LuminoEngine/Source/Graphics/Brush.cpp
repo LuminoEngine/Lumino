@@ -30,7 +30,7 @@ Brush*	Brush::DimGray = &g_ColorBrush_DimGray;
 Brush::Brush()
 	: m_color(0, 0, 0, 1.0f)
 	, m_texture(nullptr)
-	, m_srcRect(0, 0, INT_MAX, INT_MAX)
+	, m_srcRect(Math::NaN, Math::NaN, Math::NaN, Math::NaN)
 	, m_wrapMode(BrushWrapMode::Stretch)
 	, m_imageDrawMode(BrushImageDrawMode::Image)
 	, m_borderThickness()
@@ -49,6 +49,10 @@ Brush::~Brush()
 {
 }
 
+//------------------------------------------------------------------------------
+void Brush::Initialize()
+{
+}
 
 //------------------------------------------------------------------------------
 void Brush::SetTexture(Texture* texture)
@@ -91,8 +95,15 @@ TextureBrush::~TextureBrush()
 }
 
 //------------------------------------------------------------------------------
+void TextureBrush::Initialize()
+{
+	Brush::Initialize();
+}
+
+//------------------------------------------------------------------------------
 void TextureBrush::Initialize(const StringRef& filePath)
 {
+	Brush::Initialize();
 	auto texture = Texture2D::Create(filePath, TextureFormat::R8G8B8A8, false);		//TODO: GraphicsManager?
 	SetTexture(texture);
 }
@@ -100,7 +111,29 @@ void TextureBrush::Initialize(const StringRef& filePath)
 //------------------------------------------------------------------------------
 void TextureBrush::Initialize(Texture* texture)
 {
+	Brush::Initialize();
 	SetTexture(texture);
+}
+
+//------------------------------------------------------------------------------
+RectF TextureBrush::GetActualSourceRect() const
+{
+	Size textureSize(0, 0);
+	Texture* texture = GetTexture();
+	if (texture != nullptr) textureSize = texture->GetSize().ToFloatSize();
+
+	const RectF& rc = GetSourceRect();
+	return RectF(
+		(Math::IsNaNOrInf(rc.x)) ? 0.0f : rc.x,
+		(Math::IsNaNOrInf(rc.y)) ? 0.0f : rc.y,
+		(Math::IsNaNOrInf(rc.width)) ? textureSize.width : rc.width,
+		(Math::IsNaNOrInf(rc.height)) ? textureSize.height : rc.height);
+}
+
+//------------------------------------------------------------------------------
+Size TextureBrush::GetSize() const
+{
+	return GetActualSourceRect().GetSize();
 }
 
 #if 0

@@ -442,7 +442,7 @@ void UIScrollBar::UpdateValue(float horizontalDragDelta, float verticalDragDelta
 //==============================================================================
 // UIScrollViewer
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIScrollViewer, UIControl)
+LN_UI_TYPEINFO_IMPLEMENT(UIScrollViewer, UIItemsControl)
 
 //------------------------------------------------------------------------------
 RefPtr<UIScrollViewer> UIScrollViewer::Create()
@@ -467,7 +467,7 @@ UIScrollViewer::~UIScrollViewer()
 //------------------------------------------------------------------------------
 void UIScrollViewer::Initialize(detail::UIManager* manager)
 {
-	UIControl::Initialize(manager);
+	UIItemsControl::Initialize(manager);
 
 	m_verticalScrollBar = NewObject<UIScrollBar>(manager);
 	m_horizontalScrollBar = NewObject<UIScrollBar>(manager);
@@ -478,7 +478,12 @@ void UIScrollViewer::Initialize(detail::UIManager* manager)
 //------------------------------------------------------------------------------
 Size UIScrollViewer::MeasureOverride(const Size& constraint)
 {
-	return UIControl::MeasureOverride(constraint);
+	Size desiredSize = UIControl::MeasureOverride(constraint);
+
+	//desiredSize.height += 16;
+	//desiredSize.width += 16;
+
+	return desiredSize;
 }
 
 //------------------------------------------------------------------------------
