@@ -29,7 +29,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------------
-	static Size UILayoutPanel_ArrangeOverride(TPanel* panel, const Size& finalSize)
+	static Size UILayoutPanel_ArrangeOverride(TPanel* panel, const Vector2& offset, const Size& finalSize)
 	{
 		int childCount = panel->GetLayoutChildrenCount();
 		for (int i = 0; i < childCount; i++)
@@ -38,7 +38,7 @@ public:
 			Size childDesiredSize = child->GetLayoutDesiredSize();
 			childDesiredSize.width = std::max(finalSize.width, childDesiredSize.width);
 			childDesiredSize.height = std::max(finalSize.height, childDesiredSize.height);
-			child->ArrangeLayout(RectF(0, 0, childDesiredSize));
+			child->ArrangeLayout(RectF(offset.x, offset.y, childDesiredSize));
 		}
 		return finalSize;
 	}

@@ -39,6 +39,10 @@ void UIControlsGallery()
 	scrollViewer1->SetBackground(Brush::Red);
 	mainWindow->AddChild(scrollViewer1);
 
+	auto image2 = UIImage::Create(_T("C:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/img2.png"));
+	image2->SetSize(Size(200, 200));
+	scrollViewer1->AddChild(image2);
+
 	while (Engine::Update())
 	{
 	}

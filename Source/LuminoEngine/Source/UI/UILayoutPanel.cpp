@@ -67,7 +67,9 @@ Size UILayoutPanel::MeasureOverride(const Size& constraint)
 //------------------------------------------------------------------------------
 Size UILayoutPanel::ArrangeOverride(const Size& finalSize)
 {
-	return detail::LayoutImpl<UILayoutPanel>::UILayoutPanel_ArrangeOverride(this, finalSize);
+	Vector2 pixelOffset = -m_scrollOffset;
+
+	return detail::LayoutImpl<UILayoutPanel>::UILayoutPanel_ArrangeOverride(this, pixelOffset, finalSize);
 }
 
 //------------------------------------------------------------------------------
@@ -93,6 +95,16 @@ int UILayoutPanel::GetLayoutGridColumnDefinitionCount() { return 0; }
 detail::GridDefinitionData* UILayoutPanel::GetLayoutGridColumnDefinition(int index) { return nullptr; }
 int UILayoutPanel::GetLayoutGridRowDefinitionCount() { return 0; }
 detail::GridDefinitionData* UILayoutPanel::GetLayoutGridRowDefinition(int index) { return nullptr; }
+
+//------------------------------------------------------------------------------
+float UILayoutPanel::GetExtentWidth() const { return GetDesiredSize().width; }
+float UILayoutPanel::GetExtentHeight() const { return GetDesiredSize().height; }
+float UILayoutPanel::GetViewportWidth() const { return GetLayoutFinalLocalRect().width; }
+float UILayoutPanel::GetViewportHeight() const { return GetLayoutFinalLocalRect().height; }
+void UILayoutPanel::SetHorizontalOffset(float offset) { m_scrollOffset.x = offset; }
+float UILayoutPanel::GetHorizontalOffset() const { return m_scrollOffset.x; }
+void UILayoutPanel::SetVerticalOffset(float offset) { m_scrollOffset.y = offset; }
+float UILayoutPanel::GetVerticalOffset() const { return m_scrollOffset.y; }
 
 //==============================================================================
 // UIStackPanel

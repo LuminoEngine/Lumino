@@ -1,6 +1,7 @@
 
 #include "Internal.h"
 #include <Lumino/UI/UIScrollViewer.h>
+#include <Lumino/UI/UILayoutPanel.h>
 #include "UIManager.h"
 #include "EventArgsPool.h"
 
@@ -320,10 +321,48 @@ void UITrack::CalcScrollBarComponentsSize(
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIScrollEventArgs, UIEventArgs)
 
+//------------------------------------------------------------------------------
+UIScrollEventArgsPtr UIScrollEventArgs::Create(Object* sender, float newValue, ScrollEventType type, bool caching)
+{
+	if (caching)
+	{
+		detail::EventArgsPool* pool = detail::UIManager::GetInstance()->GetEventArgsPool();
+		RefPtr<UIScrollEventArgs> ptr(pool->Create<UIScrollEventArgs>(), false);
+		ptr->Initialize(sender, newValue, type);
+		return ptr;
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+		return nullptr;
+	}
+}
+
+//------------------------------------------------------------------------------
+UIScrollEventArgs::UIScrollEventArgs()
+	: newValue(0.0f)
+	, type(ScrollEventType::ThumbTrack)
+{
+}
+
+//------------------------------------------------------------------------------
+UIScrollEventArgs::~UIScrollEventArgs()
+{
+}
+
+//------------------------------------------------------------------------------
+void UIScrollEventArgs::Initialize(Object* sender, float newValue_, ScrollEventType type_)
+{
+	sender = sender;
+	newValue = newValue_;
+	type = type_;
+}
+
 //==============================================================================
 // UIScrollBar
 //==============================================================================
 LN_UI_TYPEINFO_IMPLEMENT(UIScrollBar, UIControl)
+LN_ROUTED_EVENT_IMPLEMENT2(UIScrollBar, UIScrollEventArgs, ScrollEvent);
 
 const String UIScrollBar::OrientationStates = _T("OrientationStates");
 const String UIScrollBar::HorizontalState = _T("Horizontal");
@@ -449,6 +488,28 @@ void UIScrollBar::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 	{
 		auto* e2 = static_cast<UIDragDeltaEventArgs*>(e);
 		UpdateValue(e2->horizontalChange, e2->verticalChange);
+
+		auto args = UIScrollEventArgs::Create(this, m_track->GetValue(), ScrollEventType::ThumbTrack);
+		RaiseEvent(ScrollEventId, this, args);
+
+		//switch (m_track->GetOrientation())
+		//{
+		//case Orientation::Horizontal:
+
+		//	break;
+		//case Orientation::Vertical:
+		//	break;
+		//case Orientation::ReverseHorizontal:
+		//case Orientation::ReverseVertical:
+		//default:
+		//	LN_NOTIMPLEMENTED();
+		//	break;
+		//}
+	}
+	else if (ev == UIThumb::DragCompletedEventId)
+	{
+		auto args = UIScrollEventArgs::Create(this, m_track->GetValue(), ScrollEventType::EndScroll);
+		RaiseEvent(ScrollEventId, this, args);
 	}
 	UIControl::OnRoutedEvent(ev, e);
 }
@@ -492,6 +553,7 @@ RefPtr<UIScrollViewer> UIScrollViewer::Create()
 UIScrollViewer::UIScrollViewer()
 	: m_horizontalScrollBar(nullptr)
 	, m_verticalScrollBar(nullptr)
+	, m_scrollTarget(nullptr)
 {
 }
 
@@ -527,10 +589,15 @@ Size UIScrollViewer::MeasureOverride(const Size& constraint)
 //------------------------------------------------------------------------------
 Size UIScrollViewer::ArrangeOverride(const Size& finalSize)
 {
-	Size actualSize  = UIControl::ArrangeOverride(finalSize);
-
 	float barWidth = m_verticalScrollBar->GetWidth();
-	float barHeight = m_verticalScrollBar->GetWidth();
+	float barHeight = m_horizontalScrollBar->GetHeight();
+
+
+	Size childArea(finalSize.width - barWidth, finalSize.height - barHeight);
+	Size actualSize = UIControl::ArrangeOverride(childArea);
+
+	// TODO: ˆÈ‰ºAUIControl::ArrangeOverride ‚Å Arraynge ‚³‚ê‚½‚ ‚Æ‚³‚ç‚É‚µ‚Ä‚¢‚é‚Ì‚ÅAª‚Ì‚ª–³‘Ê‚É‚È‚éB
+
 
 	RectF rc;
 
@@ -546,6 +613,25 @@ Size UIScrollViewer::ArrangeOverride(const Size& finalSize)
 	rc.y = finalSize.height - barHeight;
 	m_horizontalScrollBar->ArrangeLayout(rc);
 
+	if (m_scrollTarget != nullptr)
+	{
+		m_horizontalScrollBar->SetMinimum(0.0f);
+		m_horizontalScrollBar->SetMaximum(m_scrollTarget->GetExtentWidth());
+		m_horizontalScrollBar->SetViewportSize(m_scrollTarget->GetViewportWidth());
+		m_verticalScrollBar->SetMinimum(0.0f);
+		m_verticalScrollBar->SetMaximum(m_scrollTarget->GetExtentHeight());
+		m_verticalScrollBar->SetViewportSize(m_scrollTarget->GetViewportHeight());
+	}
+	else
+	{
+		m_horizontalScrollBar->SetMinimum(0.0f);
+		m_horizontalScrollBar->SetMaximum(0.0f);
+		m_horizontalScrollBar->SetViewportSize(0.0f);
+		m_verticalScrollBar->SetMinimum(0.0f);
+		m_verticalScrollBar->SetMaximum(0.0f);
+		m_verticalScrollBar->SetViewportSize(0.0f);
+	}
+
 	return actualSize;
 }
 
@@ -553,6 +639,29 @@ Size UIScrollViewer::ArrangeOverride(const Size& finalSize)
 void UIScrollViewer::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 {
 	UIControl::OnRoutedEvent(ev, e);
+
+	if (ev == UIScrollBar::ScrollEventId)
+	{
+		auto* e2 = static_cast<UIScrollEventArgs*>(e);
+
+		if (m_scrollTarget != nullptr)
+		{
+			if (e->sender == m_horizontalScrollBar)
+			{
+				m_scrollTarget->SetHorizontalOffset(e2->newValue);
+			}
+			else if (e->sender == m_verticalScrollBar)
+			{
+				m_scrollTarget->SetVerticalOffset(e2->newValue);
+			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+void UIScrollViewer::OnLayoutPanelChanged(UILayoutPanel* newPanel)
+{
+	m_scrollTarget = newPanel;
 }
 
 

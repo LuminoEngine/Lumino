@@ -89,7 +89,7 @@ Size UIControl::MeasureOverride(const Size& constraint)
 //------------------------------------------------------------------------------
 Size UIControl::ArrangeOverride(const Size& finalSize)
 {
-	return detail::LayoutImpl<UIControl>::UILayoutPanel_ArrangeOverride(this, finalSize);
+	return detail::LayoutImpl<UIControl>::UILayoutPanel_ArrangeOverride(this, Vector2::Zero, finalSize);
 	//RectF childFinal(0, 0, finalSize);
 	//if (m_visualTreeRoot != nullptr)
 	//{

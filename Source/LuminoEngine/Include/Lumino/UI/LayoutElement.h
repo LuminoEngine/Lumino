@@ -39,7 +39,7 @@ protected:
 	virtual const Size& GetLayoutDesiredSize() const = 0;
 	virtual void SetLayoutDesiredSize(const Size& size) = 0;
 	virtual void SetLayoutFinalLocalRect(const RectF& rect) = 0;
-	virtual const RectF& GetLayoutFinalLocalRect() = 0;
+	virtual const RectF& GetLayoutFinalLocalRect() const = 0;
 	virtual void SetLayoutFinalGlobalRect(const RectF& rect) = 0;
 
 	virtual int GetVisualChildrenCount() const = 0;

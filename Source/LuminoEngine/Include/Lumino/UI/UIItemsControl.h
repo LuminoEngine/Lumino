@@ -28,6 +28,8 @@ protected:
 	virtual ~UIItemsControl();
 	void Initialize(detail::UIManager* manager);
 
+	virtual void OnLayoutPanelChanged(UILayoutPanel* newPanel);
+
 	// UIElement interface
 	//virtual int GetVisualChildrenCount() const override;
 	//virtual UIElement* GetVisualChild(int index) const override;

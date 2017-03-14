@@ -338,7 +338,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual const Size& GetLayoutDesiredSize() const override;
 	virtual void SetLayoutDesiredSize(const Size& size) override;
 	virtual void SetLayoutFinalLocalRect(const RectF& rect) override;
-	virtual const RectF& GetLayoutFinalLocalRect() override;
+	virtual const RectF& GetLayoutFinalLocalRect() const override;
 	virtual void SetLayoutFinalGlobalRect(const RectF& rect) override;
 
 

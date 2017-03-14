@@ -58,6 +58,9 @@ void UIItemsControl::RemoveChild(UIElement* element)
 //------------------------------------------------------------------------------
 void UIItemsControl::SetLayoutPanel(UILayoutPanel* panel)
 {
+	UILayoutPanel* oldPanel = m_itemsHostPanel;
+	UILayoutPanel* newPanel = panel;
+
 	// 既に持っていれば取り除いておく
 	if (m_itemsHostPanel != nullptr && m_itemsHostPanel != panel)
 	{
@@ -70,6 +73,12 @@ void UIItemsControl::SetLayoutPanel(UILayoutPanel* panel)
 	{
 		AddVisualChild(panel);
 		m_itemsHostPanel = panel;
+	}
+
+	// 変更通知
+	if (oldPanel != newPanel)
+	{
+		OnLayoutPanelChanged(newPanel);
 	}
 }
 
@@ -111,6 +120,12 @@ void UIItemsControl::SetLayoutPanel(UILayoutPanel* panel)
 //
 //	return finalSize;
 //}
+
+
+//------------------------------------------------------------------------------
+void UIItemsControl::OnLayoutPanelChanged(UILayoutPanel* newPanel)
+{
+}
 
 //------------------------------------------------------------------------------
 void UIItemsControl::OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e)

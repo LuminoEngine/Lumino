@@ -639,7 +639,7 @@ const VAlignment* UIElement::GetLayoutContentVAlignment() { return GetPriorityCo
 const Size& UIElement::GetLayoutDesiredSize() const { return m_desiredSize; }
 void UIElement::SetLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
 void UIElement::SetLayoutFinalLocalRect(const RectF& rect) { m_finalLocalRect = rect; }
-const RectF& UIElement::GetLayoutFinalLocalRect() { return m_finalLocalRect; }
+const RectF& UIElement::GetLayoutFinalLocalRect() const { return m_finalLocalRect; }
 void UIElement::SetLayoutFinalGlobalRect(const RectF& rect) { m_finalGlobalRect = rect; }
 
 LN_NAMESPACE_END
