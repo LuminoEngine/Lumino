@@ -44,6 +44,8 @@ void UIControl::Initialize(detail::UIManager* manager)
 	auto* vsm = GetVisualStateManager();
 	vsm->RegisterVisualState(CommonStates, NormalState);
 	vsm->RegisterVisualState(CommonStates, MouseOverState);
+	vsm->RegisterVisualState(CommonStates, PressedState);
+	vsm->RegisterVisualState(CommonStates, DisabledState);
 	vsm->RegisterVisualState(FocusStates, UnfocusedState);
 	vsm->RegisterVisualState(FocusStates, FocusedState);
 	GoToVisualState(NormalState);
@@ -196,6 +198,7 @@ const VAlignment* UIControl::GetPriorityContentVAlignment()
 //------------------------------------------------------------------------------
 void UIControl::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 {
+	// TODO: ここでやるべきではない。MFC なら PreTranslate 相当なので。On～で行う。
 	if (ev == UIElement::MouseEnterEvent)
 	{
 		GoToVisualState(MouseOverState);
@@ -204,6 +207,8 @@ void UIControl::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 	{
 		GoToVisualState(NormalState);
 	}
+
+	UIElement::OnRoutedEvent(ev, e);
 }
 
 //------------------------------------------------------------------------------

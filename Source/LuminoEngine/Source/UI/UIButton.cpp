@@ -52,24 +52,40 @@ void UIButton::SetText(const StringRef& text)
 //------------------------------------------------------------------------------
 void UIButton::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 {
-	if (ev == UIElement::MouseUpEvent)
-	{
-		OnClick(static_cast<UIMouseEventArgs*>(e));
-	}
-	else if (ev == UIElement::MouseLeaveEvent)
-	{
-	}
-
 	UIContentControl::OnRoutedEvent(ev, e);
 }
 
 //------------------------------------------------------------------------------
-void UIButton::OnClick(UIMouseEventArgs* e)
+void UIButton::OnClick()
 {
-	if (!e->handled)
+	RaiseEvent(ClickEvent, this, UIEventArgs::Create(this));
+}
+
+//------------------------------------------------------------------------------
+void UIButton::OnMouseDown(UIMouseEventArgs* e)
+{
+	m_isPressed = true;
+	Focus();
+	CaptureMouse();
+	GoToVisualState(PressedState);
+	e->handled = true;
+
+	UIContentControl::OnMouseDown(e);
+}
+
+//------------------------------------------------------------------------------
+void UIButton::OnMouseUp(UIMouseEventArgs* e)
+{
+	if (m_isPressed)
 	{
-		RaiseEvent(ClickEvent, this, e);
+		m_isPressed = false;
+		ReleaseMouseCapture();
+		GoToVisualState(MouseOverState);
+		OnClick();
+		e->handled = true;
 	}
+
+	UIContentControl::OnMouseUp(e);
 }
 
 LN_NAMESPACE_END

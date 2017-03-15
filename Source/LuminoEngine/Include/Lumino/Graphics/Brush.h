@@ -56,7 +56,7 @@ public:
 	const RectF& GetSourceRect() const { return m_srcRect; }
 
 
-	void SetWrapMode(BrushWrapMode mode) { m_wrapMode = mode; }
+	void SetWrapMode(BrushWrapMode mode) { m_wrapMode = mode; }	// TODO: name: ImageWrapMode
 	BrushWrapMode GetWrapMode() const { return m_wrapMode; }
 
 	void SetImageDrawMode(BrushImageDrawMode mode) { m_imageDrawMode = mode; }
@@ -94,6 +94,7 @@ class TextureBrush
 public:
 	static RefPtr<TextureBrush> Create(const StringRef& filePath);
 	static RefPtr<TextureBrush> Create(Texture* texture);
+	static RefPtr<TextureBrush> Create(Texture* texture, BrushImageDrawMode drawMode, const RectF& sourceRect, const ThicknessF& borderThickness, BrushWrapMode wrapMode);
 
 LN_CONSTRUCT_ACCESS:
 	TextureBrush();

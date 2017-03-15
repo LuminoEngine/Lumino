@@ -30,11 +30,15 @@ LN_CONSTRUCT_ACCESS:
 	void Initialize(detail::UIManager* manager);
 
 protected:
-	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e) override;
+	virtual void OnClick();
 
-	virtual void OnClick(UIMouseEventArgs* e);
+	// UIElement interface
+	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e) override;
+	virtual void OnMouseDown(UIMouseEventArgs* e) override;
+	virtual void OnMouseUp(UIMouseEventArgs* e) override;
 
 private:
+	bool	m_isPressed;
 };
 
 LN_NAMESPACE_END

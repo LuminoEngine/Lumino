@@ -233,12 +233,12 @@ void UIElement::OnRender(DrawList* g)
 }
 
 //------------------------------------------------------------------------------
-void UIElement::OnMouseMove(UIMouseEventArgs* e) { if (!e->handled) { RaiseEvent(MouseMoveEvent, this, e); } }
-void UIElement::OnMouseDown(UIMouseEventArgs* e) { if (!e->handled) { RaiseEvent(MouseDownEvent, this, e); } }
-void UIElement::OnMouseUp(UIMouseEventArgs* e) { if (!e->handled) { RaiseEvent(MouseUpEvent, this, e); } }
-void UIElement::OnKeyDown(UIKeyEventArgs* e) { if (!e->handled) { RaiseEvent(KeyDownEvent, this, e); } }
-void UIElement::OnKeyUp(UIKeyEventArgs* e) { if (!e->handled) { RaiseEvent(KeyUpEvent, this, e); } }
-void UIElement::OnTextInput(UIKeyEventArgs* e) { if (!e->handled) { RaiseEvent(TextInputEvent, this, e); } }
+void UIElement::OnMouseMove(UIMouseEventArgs* e) { }
+void UIElement::OnMouseDown(UIMouseEventArgs* e) { }
+void UIElement::OnMouseUp(UIMouseEventArgs* e) { }
+void UIElement::OnKeyDown(UIKeyEventArgs* e) { }
+void UIElement::OnKeyUp(UIKeyEventArgs* e) { }
+void UIElement::OnTextInput(UIKeyEventArgs* e) { }
 void UIElement::OnGotFocus(UIEventArgs* e) { }
 void UIElement::OnLostFocus(UIEventArgs* e) { }
 
@@ -252,7 +252,7 @@ void UIElement::OnMouseEnter(UIMouseEventArgs* e)
 
 	m_isMouseOver = true;
 
-	if (!e->handled) { RaiseEvent(MouseEnterEvent, this, e); }
+	//if (!e->handled) { RaiseEvent(MouseEnterEvent, this, e); }
 }
 
 //------------------------------------------------------------------------------
@@ -268,7 +268,7 @@ void UIElement::OnMouseLeave(UIMouseEventArgs* e)
 
 	m_isMouseOver = false;
 
-	if (!e->handled) { RaiseEvent(MouseLeaveEvent, this, e); }
+	//if (!e->handled) { RaiseEvent(MouseLeaveEvent, this, e); }
 }
 
 //------------------------------------------------------------------------------
@@ -338,40 +338,38 @@ bool UIElement::OnEvent(detail::UIInternalEventType type, UIEventArgs* args)
 	case detail::UIInternalEventType::Unknown:
 		break;
 	case detail::UIInternalEventType::MouseMove:
-		if (m_isEnabled) { OnMouseMove(static_cast<UIMouseEventArgs*>(args)); }
+		if (m_isEnabled) RaiseEvent(MouseMoveEvent, this, args);
 		break;
 	case detail::UIInternalEventType::MouseButtonDown:
-		if (m_isEnabled) { OnMouseDown(static_cast<UIMouseEventArgs*>(args)); }
+		if (m_isEnabled) RaiseEvent(MouseDownEvent, this, args);
 		break;
 	case detail::UIInternalEventType::MouseButtonUp:
-		if (m_isEnabled) { OnMouseUp(static_cast<UIMouseEventArgs*>(args)); }
+		if (m_isEnabled) RaiseEvent(MouseUpEvent, this, args);
 		break;
 	case detail::UIInternalEventType::MouseWheel:
+		LN_NOTIMPLEMENTED();
 		break;
 	case detail::UIInternalEventType::KeyDown:
-		if (m_isEnabled) { OnKeyDown(static_cast<UIKeyEventArgs*>(args)); }
+		if (m_isEnabled) RaiseEvent(KeyDownEvent, this, args);
 		break;
 	case detail::UIInternalEventType::KeyUp:
-		if (m_isEnabled) { OnKeyUp(static_cast<UIKeyEventArgs*>(args)); }
+		if (m_isEnabled) RaiseEvent(KeyUpEvent, this, args);
 		break;
 	case detail::UIInternalEventType::TextInput:
-		if (m_isEnabled) { OnTextInput(static_cast<UIKeyEventArgs*>(args)); }
+		if (m_isEnabled) RaiseEvent(TextInputEvent, this, args);
 		break;
 	case detail::UIInternalEventType::ElapsedTime:
 		break;
 	case detail::UIInternalEventType::MouseEnter:	// TODO: 親領域
-		if (m_isEnabled) { OnMouseEnter(static_cast<UIMouseEventArgs*>(args)); }
+		if (m_isEnabled) RaiseEvent(MouseEnterEvent, this, args);
 		break;
 	case detail::UIInternalEventType::MouseLeave:	// TODO: 親領域
-		if (m_isEnabled) { OnMouseLeave(static_cast<UIMouseEventArgs*>(args)); }
+		if (m_isEnabled) RaiseEvent(MouseLeaveEvent, this, args);
 		break;
 	default:
-		break;
+		break; 
 	}
 
-	//if (type == EventType_MouseMove) {
-	//	//RaiseEvent<MouseEventArgs>(MouseMoveEvent, this, (MouseEventArgs*)args);
-	//}
 	return args->handled;
 }
 
@@ -381,6 +379,38 @@ bool UIElement::OnEvent(detail::UIInternalEventType type, UIEventArgs* args)
 // (UI要素作成時のイベントハンドラの new や AddHandler をする必要がなくなる)
 void UIElement::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 {
+	if (ev == MouseMoveEvent)
+	{
+		OnMouseMove(static_cast<UIMouseEventArgs*>(e));
+	}
+	else if (ev == MouseDownEvent)
+	{
+		OnMouseDown(static_cast<UIMouseEventArgs*>(e));
+	}
+	else if (ev == MouseUpEvent)
+	{
+		OnMouseUp(static_cast<UIMouseEventArgs*>(e));
+	}
+	else if (ev == KeyDownEvent)
+	{
+		OnKeyDown(static_cast<UIKeyEventArgs*>(e));
+	}
+	else if (ev == KeyUpEvent)
+	{
+		OnKeyUp(static_cast<UIKeyEventArgs*>(e));
+	}
+	else if (ev == TextInputEvent)
+	{
+		OnTextInput(static_cast<UIKeyEventArgs*>(e));
+	}
+	else if (ev == MouseEnterEvent)
+	{
+		OnMouseEnter(static_cast<UIMouseEventArgs*>(e));
+	}
+	else if (ev == MouseLeaveEvent)
+	{
+		OnMouseLeave(static_cast<UIMouseEventArgs*>(e));
+	}
 }
 
 //------------------------------------------------------------------------------

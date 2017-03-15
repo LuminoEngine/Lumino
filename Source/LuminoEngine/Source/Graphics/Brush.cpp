@@ -84,6 +84,17 @@ RefPtr<TextureBrush> TextureBrush::Create(Texture* texture)
 }
 
 //------------------------------------------------------------------------------
+RefPtr<TextureBrush> TextureBrush::Create(Texture* texture, BrushImageDrawMode drawMode, const RectF& sourceRect, const ThicknessF& borderThickness, BrushWrapMode wrapMode)
+{
+	auto ptr = NewObject<TextureBrush>(texture);
+	ptr->SetImageDrawMode(drawMode);
+	ptr->SetSourceRect(sourceRect);
+	ptr->SetBorderThickness(borderThickness);
+	ptr->SetWrapMode(wrapMode);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
 TextureBrush::TextureBrush()
 	: Brush()
 {

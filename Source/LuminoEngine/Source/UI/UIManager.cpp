@@ -135,32 +135,52 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 	//}
 	// UIButton
 	{
-		auto brush = TextureBrush::Create(m_defaultSkinTexture);
-		brush->SetSourceRect(0, 0, 32, 32);
-		brush->SetBorderThickness(8, 8, 8, 8);
-		brush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
-		brush->SetWrapMode(BrushWrapMode::Stretch);
+		auto buttonNormalBrush = TextureBrush::Create(m_defaultSkinTexture);
+		buttonNormalBrush->SetSourceRect(0, 0, 32, 32);
+		buttonNormalBrush->SetBorderThickness(8, 8, 8, 8);
+		buttonNormalBrush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
+		buttonNormalBrush->SetWrapMode(BrushWrapMode::Stretch);
 
-		//auto test = UIStyle::Create();
-		//test->AddValue(_T(""), UIElement::backgroundId, brush);
-		//table->AddStyle(tr::TypeInfo::GetTypeInfo<UIButton>(), test);
+		auto buttonMouseOverBrush = TextureBrush::Create(m_defaultSkinTexture);
+		buttonMouseOverBrush->SetSourceRect(32, 0, 32, 32);
+		buttonMouseOverBrush->SetBorderThickness(8, 8, 8, 8);
+		buttonMouseOverBrush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
+		buttonMouseOverBrush->SetWrapMode(BrushWrapMode::Stretch);
+
+		auto buttonFocusedBrush = TextureBrush::Create(m_defaultSkinTexture);
+		buttonFocusedBrush->SetSourceRect(64, 0, 32, 32);
+		buttonFocusedBrush->SetBorderThickness(8, 8, 8, 8);
+		buttonFocusedBrush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
+		buttonFocusedBrush->SetWrapMode(BrushWrapMode::Stretch);
+
+		auto buttonPressedBrush = TextureBrush::Create(m_defaultSkinTexture);
+		buttonPressedBrush->SetSourceRect(96, 0, 32, 32);
+		buttonPressedBrush->SetBorderThickness(8, 8, 8, 8);
+		buttonPressedBrush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
+		buttonPressedBrush->SetWrapMode(BrushWrapMode::Stretch);
 
 		auto* s = table->GetStyle(tr::TypeInfo::GetTypeInfo<UIButton>()->GetName());
 		// UIButton
 		{
 			auto* st = s->GetPropertyTable();
-			st->background = RefPtr<Brush>::StaticCast(brush);
+			st->background = RefPtr<Brush>::StaticCast(buttonNormalBrush);
 		}
 		// UIButton.Focused
 		{
 			auto* st = s->GetPropertyTable(UIButton::FocusedState);
-			st->background = Brush::Red;
+			st->background = RefPtr<Brush>::StaticCast(buttonFocusedBrush);
 		}
 		// UIButton.MouseOver
 		{
 			auto* st = s->GetPropertyTable(UIButton::MouseOverState);
-			st->background = Brush::Green;
+			st->background = RefPtr<Brush>::StaticCast(buttonMouseOverBrush);
 		}
+		// UIButton.Pressed
+		{
+			auto* st = s->GetPropertyTable(UIButton::PressedState);
+			st->background = RefPtr<Brush>::StaticCast(buttonPressedBrush);
+		}
+
 	}
 	// UIThumb
 	{

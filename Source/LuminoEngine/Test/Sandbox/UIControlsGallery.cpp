@@ -12,6 +12,7 @@ void UIControlsGallery()
 
 	auto button1 = UIButton::Create();
 	button1->SetSize(Size(80, 32));
+	//button1->SetText(_T("Button1"));
 	mainWindow->AddChild(button1);
 
 	auto button2 = UIButton::Create();
