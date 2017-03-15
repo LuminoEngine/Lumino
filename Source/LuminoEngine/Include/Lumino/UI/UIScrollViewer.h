@@ -242,7 +242,7 @@ private:
 	@brief
 */
 class UIScrollViewer
-	: public UIItemsControl
+	: public UIControl
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:

@@ -33,7 +33,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	@brief
 */
 class UIListBox
-	: public UIItemsControl
+	: public UIControl
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:

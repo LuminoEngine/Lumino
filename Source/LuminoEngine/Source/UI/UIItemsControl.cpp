@@ -5,6 +5,7 @@
 
 LN_NAMESPACE_BEGIN
 
+#if 0
 //==============================================================================
 // UIItemsControl
 //==============================================================================
@@ -152,5 +153,6 @@ void UIItemsControl::OnChildCollectionChanged(const tr::ChildCollectionChangedAr
 			break;
 	}
 }
+#endif
 
 LN_NAMESPACE_END

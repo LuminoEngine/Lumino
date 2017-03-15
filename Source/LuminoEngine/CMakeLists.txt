@@ -443,6 +443,7 @@ set(LN_SOURCES_UI
 	Include/Lumino/UI/UIStyle.h
 	Include/Lumino/UI/UITextBlock.h
 	Include/Lumino/UI/UITextElement.h
+	Include/Lumino/UI/UITreeView.h
 	Include/Lumino/UI/UITypeInfo.h
 	Include/Lumino/UI/UIWindow.h
 	Source/UI/EventArgsPool.h
@@ -470,6 +471,7 @@ set(LN_SOURCES_UI
 	Source/UI/UIStyle.cpp
 	Source/UI/UITextBlock.cpp
 	Source/UI/UITextElement.cpp
+	Source/UI/UITreeView.cpp
 	Source/UI/UITypeInfo.cpp
 	Source/UI/UIWindow.cpp
 )

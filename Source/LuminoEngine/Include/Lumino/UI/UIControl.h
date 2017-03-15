@@ -1,14 +1,18 @@
 ﻿
 #pragma once
 #include "UIElement.h"
+#include "UIElementCollection.h"
 
 LN_NAMESPACE_BEGIN
+class UIElementCollection;
+class UILayoutPanel;
 
 /**
 	@brief		
 */
 class UIControl
 	: public UIElement
+	, public tr::IUIElementCollectionOwner
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:
@@ -36,6 +40,16 @@ public:
 	
 	virtual bool IsFocusable() const;
 
+
+
+	UIElementCollection* GetItems() const;
+
+	void AddChild(UIElement* element);
+	void RemoveChild(UIElement* element);
+
+	void SetLayoutPanel(UILayoutPanel* panel);
+	UILayoutPanel* GetLayoutPanel() const;
+
 protected:
 	UIControl();
 	virtual ~UIControl();
@@ -52,6 +66,13 @@ protected:
 	virtual void OnGotFocus(UIEventArgs* e) override;
 	virtual void OnLostFocus(UIEventArgs* e) override;
 
+
+	virtual void OnLayoutPanelChanged(UILayoutPanel* newPanel);
+
+	// IUIElementCollectionOwner interface
+	virtual void OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e) override;
+
+
 LN_INTERNAL_ACCESS:
 	int GetLayoutChildrenCount() const { return GetVisualChildrenCount(); }
 	ILayoutElement* GetLayoutChild(int index) const { return GetVisualChild(index); }
@@ -60,6 +81,8 @@ LN_INTERNAL_ACCESS:
 	//UIElement* GetVisualTreeRoot() { return m_visualTreeRoot; }
 
 private:
+	RefPtr<UIElementCollection>		m_items;
+	RefPtr<UILayoutPanel>			m_itemsHostPanel;
 
 	//UIElement*	m_visualTreeRoot;
 };

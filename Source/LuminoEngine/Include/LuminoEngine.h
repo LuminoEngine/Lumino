@@ -59,6 +59,7 @@
 #include "Lumino/UI/UIScrollViewer.h"
 #include "Lumino/UI/UITextBlock.h"
 #include "Lumino/UI/UIButton.h"
+#include "Lumino/UI/UITreeView.h"
 
 #include "Lumino/TileMap/TileSet.h"
 #include "Lumino/TileMap/TileLayer.h"

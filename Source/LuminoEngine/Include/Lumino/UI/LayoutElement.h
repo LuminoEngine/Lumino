@@ -6,6 +6,7 @@
 
 LN_NAMESPACE_BEGIN
 namespace detail { template<class TPanel> class LayoutImpl; }
+namespace detail { class LayoutHelper; }
 
 /** グリッドレイアウトのセルサイズを指定する値の種類です。*/
 enum class GridLengthType
@@ -61,6 +62,7 @@ protected:
 	virtual ~ILayoutElement();
 
 	template<class TPanel> friend class detail::LayoutImpl;
+	friend class detail::LayoutHelper;
 };
 
 
@@ -132,6 +134,9 @@ struct GridLayoutInfo
 class LayoutHelper
 {
 public:
+
+	// 単純に element のサイズによった Measure を行う。MeasureOverride() の中で使用することを想定している。
+	static Size MeasureElement(ILayoutElement* element, const Size& constraint);
 
 	//static void ForEachVisualChildren(UIElement* element, std::function<void(UIElement* child)> func)
 	//{

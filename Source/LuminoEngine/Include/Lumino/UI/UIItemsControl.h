@@ -6,6 +6,7 @@
 LN_NAMESPACE_BEGIN
 class UILayoutPanel;
 
+#if 0
 /**
 	@brief		
 */
@@ -43,5 +44,6 @@ private:
 	RefPtr<UIElementCollection>	m_items;
 	RefPtr<UILayoutPanel>			m_itemsHostPanel;
 };
+#endif
 
 LN_NAMESPACE_END

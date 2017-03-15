@@ -123,15 +123,7 @@ Size ILayoutElement::MeasureOverride(const Size& constraint)
 	// ユーザー指定のサイズがある場合はそれを返す。
 	// ただし、constraint を超えることはできない。
 
-	Size size = GetLayoutSize();
-	Size desiredSize;
-	// NaN の場合、この要素として必要な最小サイズは 0 となる。
-	desiredSize.width = Math::IsNaNOrInf(size.width) ? 0.0f : size.width;
-	desiredSize.height = Math::IsNaNOrInf(size.height) ? 0.0f : size.height;
-	desiredSize.width = std::min(desiredSize.width, constraint.width);
-	desiredSize.height = std::min(desiredSize.height, constraint.height);
-
-	return desiredSize;
+	return detail::LayoutHelper::MeasureElement(this, constraint);
 }
 
 //------------------------------------------------------------------------------
@@ -174,5 +166,29 @@ void ILayoutElement::UpdateTransformHierarchy(const RectF& parentGlobalRect)
 	//UIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->UpdateTransformHierarchy(); });
 
 }
+
+//==============================================================================
+// LayoutHelper
+//==============================================================================
+
+//------------------------------------------------------------------------------
+namespace detail {
+
+//------------------------------------------------------------------------------
+Size LayoutHelper::MeasureElement(ILayoutElement* element, const Size& constraint)
+{
+	Size size = element->GetLayoutSize();
+	Size desiredSize;
+	// NaN の場合、この要素として必要な最小サイズは 0 となる。
+	desiredSize.width = Math::IsNaNOrInf(size.width) ? 0.0f : size.width;
+	desiredSize.height = Math::IsNaNOrInf(size.height) ? 0.0f : size.height;
+	desiredSize.width = std::min(desiredSize.width, constraint.width);
+	desiredSize.height = std::min(desiredSize.height, constraint.height);
+
+	return desiredSize;
+}
+
+} // namespace detail
+
 
 LN_NAMESPACE_END

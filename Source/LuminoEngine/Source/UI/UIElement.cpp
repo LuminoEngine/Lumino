@@ -618,7 +618,8 @@ void UIElement::AddVisualChild(UIElement* element)
 //------------------------------------------------------------------------------
 void UIElement::RemoveVisualChild(UIElement* element)
 {
-	LN_FAIL_CHECK_ARG(element != nullptr) return;
+	//LN_FAIL_CHECK_ARG(element != nullptr) return;
+	if (element == nullptr) return;
 	if (m_visualChildren == nullptr) return;
 
 	m_visualChildren->Remove(element);

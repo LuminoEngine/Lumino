@@ -36,7 +36,7 @@ void UIListBoxItem::Initialize(ln::detail::UIManager* manager)
 //==============================================================================
 // UIListBox
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIListBox, UIItemsControl)
+LN_UI_TYPEINFO_IMPLEMENT(UIListBox, UIControl)
 
 const String UIListBox::NormalState = _T("Normal");
 
@@ -61,7 +61,7 @@ UIListBox::~UIListBox()
 //------------------------------------------------------------------------------
 void UIListBox::Initialize(ln::detail::UIManager* manager)
 {
-	UIItemsControl::Initialize(manager);
+	UIControl::Initialize(manager);
 	SetHContentAlignment(HAlignment::Stretch);
 
 	auto panel = RefPtr<UIStackPanel>::MakeRef();

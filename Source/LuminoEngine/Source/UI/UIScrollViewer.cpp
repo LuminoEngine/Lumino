@@ -539,7 +539,7 @@ void UIScrollBar::UpdateValue(float horizontalDragDelta, float verticalDragDelta
 //==============================================================================
 // UIScrollViewer
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIScrollViewer, UIItemsControl)
+LN_UI_TYPEINFO_IMPLEMENT(UIScrollViewer, UIControl)
 
 //------------------------------------------------------------------------------
 RefPtr<UIScrollViewer> UIScrollViewer::Create()
@@ -565,7 +565,7 @@ UIScrollViewer::~UIScrollViewer()
 //------------------------------------------------------------------------------
 void UIScrollViewer::Initialize(detail::UIManager* manager)
 {
-	UIItemsControl::Initialize(manager);
+	UIControl::Initialize(manager);
 
 	m_horizontalScrollBar = NewObject<UIScrollBar>(manager);
 	m_horizontalScrollBar->SetOrientation(Orientation::Horizontal);

@@ -13,7 +13,7 @@ class PlatformWindow;
 				UI レイアウトのルート要素を保持します。
 */
 class UILayoutView
-	: public UIItemsControl
+	: public UIControl
 	, public IUIInjectedInputReceiver
 {
 public:

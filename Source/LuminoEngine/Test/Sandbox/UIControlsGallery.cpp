@@ -43,6 +43,11 @@ void UIControlsGallery()
 	image2->SetSize(Size(200, 200));
 	scrollViewer1->AddChild(image2);
 
+
+
+	
+
+
 	while (Engine::Update())
 	{
 	}

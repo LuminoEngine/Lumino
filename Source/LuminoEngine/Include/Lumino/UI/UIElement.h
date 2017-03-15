@@ -257,7 +257,9 @@ protected:
 		@details	派生クラスは finalSize よりも大きいサイズを返すと、描画時に見切れが発生します。
 					また、finalSize には padding プロパティの余白は考慮されません。
 					この余白を正しく反映するためには派生クラスで padding プロパティを参照し、子要素の位置を計算します。
-					親要素は、各子要素の Arrange を呼び出し、適切に配置する必要があります。そうでない場合、子要素はレンダリングされません。
+
+					親要素は、各子要素の Arrange を呼び出し、適切に配置する必要があります。
+					そうでない場合、子要素はレンダリングされません。(UIElement::ArrangeOverride() は、子要素の配置は行いません)
 	*/
 	virtual Size ArrangeOverride(const Size& finalSize) override;
 
