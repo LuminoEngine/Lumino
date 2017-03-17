@@ -589,6 +589,9 @@ public:
 	template<typename... TArgs>
 	static GenericString Format(const Locale& locale, const GenericStringRef<TChar>& format, const TArgs&... args);	/**< @overload Format */
 
+
+	size_t GetHashCode() const;
+
 	/**
 		@brief		String に格納されているデータへのポインタを返します。
 		@details	返されたポインタは、文字列を構成する文字にアクセスして変更するために使用することができます。

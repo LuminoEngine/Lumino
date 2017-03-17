@@ -240,8 +240,8 @@ public:
 	//void AddValue(const StringRef& visualStateName, const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time = 0.0, EasingMode easingMode = EasingMode::Linear);
 	
 	// e.g) ScrollBar::Horizontal { ... }
-	void AddSubStateStyle(const StringRef& subStateName, UIStyle* style);
-	UIStyle* FindSubStateStyle(const StringRef& subStateName);
+	//void AddSubStateStyle(const StringRef& subStateName, UIStyle* style);
+	//UIStyle* FindSubStateStyle(const StringRef& subStateName);
 
 	UIStylePropertyTable* GetPropertyTable();
 	UIStylePropertyTable* GetPropertyTable(const StringRef& visualStateName);
@@ -280,8 +280,8 @@ public:	// TODO:
 	//SortedArray<String, RefPtr<UIStylePropertyTable>>	m_propertyTableMap;
 	List<VisualStateStylePair>	m_visualStatePropertyTableList;
 
-	UIStyle*					m_subStyleParent;
-	List<SubStateStylePair>		m_subStateStyles;
+	//UIStyle*					m_subStyleParent;
+	//List<SubStateStylePair>		m_subStateStyles;
 
 
 
@@ -306,18 +306,24 @@ public:
 	//void AddStyle(const tr::TypeInfo* targetType, UIStyle* style);
 	//void AddStyle(const tr::TypeInfo* targetType, const StringRef& subStateName, UIStyle* style);
 
-	// 見つからなければ nullptr (ベースクラス情報も使用して検索する)
-	UIStyle* FindStyle(const tr::TypeInfo* targetType);
-	UIStyle* FindStyle(const tr::TypeInfo* targetType, const StringRef& subStateName);
 
 	UIStyle* GetStyle(const StringRef& typeName);
+	UIStyle* GetSubControlStyle(const StringRef& subControlOwnerName, const StringRef& subControlName);
 	//UIStyle* GetStyle(const tr::TypeInfo* targetType, const StringRef& subStateName);
+
+LN_INTERNAL_ACCESS:
+
+	// 見つからなければ nullptr (ベースクラス情報も使用して検索する)
+	UIStyle* FindStyle(const tr::TypeInfo* targetType/*, const StringRef& subControlOwnerName, const StringRef& subControlName*/);
+	UIStyle* FindSubControlStyle(const StringRef& subControlOwnerName, const StringRef& subControlName);
+	//UIStyle* FindStyle(const tr::TypeInfo* targetType, const StringRef& subStateName);
 
 private:	
 	//typedef const tr::TypeInfo* StyleKey;
-	using StyleKey = String;
+	using StyleKey = size_t;
 
 	SortedArray<StyleKey, RefPtr<UIStyle>>	m_table;
+	SortedArray<StyleKey, RefPtr<UIStyle>>	m_subControlStyleTable;
 };
 
 LN_NAMESPACE_END

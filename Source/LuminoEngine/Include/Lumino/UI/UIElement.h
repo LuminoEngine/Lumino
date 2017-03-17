@@ -297,6 +297,8 @@ LN_INTERNAL_ACCESS:
 	const BrushPtr& GetForegroundInternal() const { return foreground; }
 	void SetParent(UIElement* parent);
 	UIVisualStateManager* GetVisualStateManager();
+	void SetStyleSubControlName(const StringRef& ownerControlName, const StringRef& subControlName) { m_styleSubControlOwnerName = ownerControlName; m_styleSubControlName = subControlName; }
+	//const String& GetStyleSubControlName() const { return m_styleSubControlName; }
 	//const String& GetCurrentVisualStateName() const { return m_currentVisualStateName; }
 	//AnchorInfo* GetAnchorInfo() {return &m_anchorInfo; }
 	detail::InvalidateFlags GetInvalidateFlags() const { return m_invalidateFlags; }
@@ -317,7 +319,7 @@ protected:
 LN_PROTECTED_INTERNAL_ACCESS:
 	virtual const HAlignment* GetPriorityContentHAlignment();
 	virtual const VAlignment* GetPriorityContentVAlignment();
-	virtual void GetStyleClassName(String* outSubStateName);
+	//virtual void GetStyleClassName(String* outSubStateName);
 
 	/** 指定した要素をこの要素にビジュアル子要素として追加します。*/
 	void AddVisualChild(UIElement* element);
@@ -360,6 +362,8 @@ private:
 	RectF					m_finalGlobalRect;
 	String					m_elementName;				// 要素名 ("UITextBlock" など) TODO: いらないかも
 	RefPtr<UIVisualStateManager>	m_visualStateManager;
+	String							m_styleSubControlOwnerName;
+	String							m_styleSubControlName;
 	//String					m_currentVisualStateName;
 	UIStylePropertyTable*	m_currentVisualStateStyle;
 

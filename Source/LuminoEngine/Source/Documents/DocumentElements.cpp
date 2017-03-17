@@ -30,6 +30,14 @@ void Document::Initialize(DocumentsManager* manager)
 	m_manager = manager;
 }
 
+//------------------------------------------------------------------------------
+void Document::SetText(const StringRef& text)
+{
+	m_blockList.Clear();
+
+
+}
+
 
 //==============================================================================
 // TextElement
@@ -99,6 +107,12 @@ Size TextElement::MeasureOverride(const Size& constraint)
 		m_fontDataModified = false;
 	}
 	return ILayoutElement::MeasureOverride(constraint);
+}
+
+//------------------------------------------------------------------------------
+InternalTextElementType TextElement::GetInternalTextElementType() const
+{
+	return InternalTextElementType::Common;
 }
 
 //------------------------------------------------------------------------------
@@ -301,6 +315,44 @@ Size Run::MeasureOverride(const Size& constraint)
 void Run::Render(const Matrix& transform, IDocumentsRenderer* renderer)
 {
 	renderer->OnDrawGlyphRun(transform, GetForeground(), m_glyphRun, PointF::Zero);
+}
+
+
+//==============================================================================
+// LineBreak
+//==============================================================================
+//------------------------------------------------------------------------------
+InternalTextElementType LineBreak::GetInternalTextElementType() const
+{
+	return InternalTextElementType::LineBreak;
+}
+
+
+
+
+
+
+//==============================================================================
+// ParagraphViewer
+//==============================================================================
+
+//------------------------------------------------------------------------------
+void ParagraphViewer::RebuildVisualLineList()
+{
+	//m_visualLineList.Clear();
+
+	//m_visualLineList.Add(NewObject<VisualLine>());
+	//VisualLine* lastLine = m_visualLineList.GetLast();
+	//for (const RefPtr<TextElement>& element : m_paragraph->GetChildElements())
+	//{
+	//	lastLine->m_visualTextElementList.Add(NewObject<VisualTextElement>());
+
+	//	if (element->GetInternalTextElementType() == InternalTextElementType::LineBreak)
+	//	{
+	//		m_visualLineList.Add(NewObject<VisualLine>());
+	//		VisualLine* lastLine = m_visualLineList.GetLast();
+	//	}
+	//}
 }
 
 } // namespace detail

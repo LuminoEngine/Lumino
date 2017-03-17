@@ -7,6 +7,10 @@ void UIControlsGallery()
 {
 	Engine::Initialize();
 
+
+	auto text = TextBlock2D::Create(_T("Hello, world!"));
+
+#if 0
 	auto* mainWindow = Engine::GetMainWindow();
 	mainWindow->SetLayoutPanel(UIStackPanel::Create());
 
@@ -19,6 +23,12 @@ void UIControlsGallery()
 	button2->SetSize(Size(80, 32));
 	mainWindow->AddChild(button2);
 	button2->Focus();	// TODO: AddChild した後でないとフォーカス持てない。これでいいの？
+
+	// TODO: 描画時、Brush が変わってない？
+	auto image3 = UIImage::Create(_T("C:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/img2.png"));
+	image3->SetSize(Size(20, 20));
+	button2->AddChild(image3);
+
 
 	auto image1 = UIImage::Create(_T("C:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/img2.png"));
 	image1->SetSize(Size(64, 64));
@@ -44,7 +54,7 @@ void UIControlsGallery()
 	image2->SetSize(Size(200, 200));
 	scrollViewer1->AddChild(image2);
 
-
+#endif
 
 	
 

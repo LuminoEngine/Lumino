@@ -133,9 +133,9 @@ private:
 	float				m_maximum;
 	float				m_density;
 	float				m_viewportSize;
-	RefPtr<UIButton>	m_pageUpButton;
+	RefPtr<UIButton>	m_decreaseButton;
 	RefPtr<UIThumb>		m_thumb;
-	RefPtr<UIButton>	m_pageDownButton;
+	RefPtr<UIButton>	m_increaseButton;
 
 };
 
@@ -229,12 +229,16 @@ LN_CONSTRUCT_ACCESS:
 protected:
 	// UIElement interface
 	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e) override;
+	virtual Size MeasureOverride(const Size& constraint) override;
+	virtual Size ArrangeOverride(const Size& finalSize) override;
 	//virtual void GetStyleClassName(String* outSubStateName);
 
 private:
 	void UpdateValue(float horizontalDragDelta, float verticalDragDelta);
 
 	RefPtr<UITrack>		m_track;
+	RefPtr<UIButton>	m_lineUpButton;
+	RefPtr<UIButton>	m_lineDownButton;
 	float				m_dragStartValue;
 };
 

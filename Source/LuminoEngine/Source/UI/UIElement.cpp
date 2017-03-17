@@ -479,17 +479,15 @@ void UIElement::UpdateLocalStyleAndApplyProperties(UIStyleTable* styleTable, UIS
 	if (m_invalidateFlags.TestFlag(detail::InvalidateFlags::VisualState))
 	{
 
+		auto* vm = GetVisualStateManager();
 
-		String subStateName;
-		GetStyleClassName(&subStateName);
+		//String subStateName;
+		//GetStyleClassName(&subStateName);
 
 
-		UIStyle* style = styleTable->FindStyle(tr::TypeInfo::GetTypeInfo(this), subStateName);
+		UIStyle* style = styleTable->FindStyle(tr::TypeInfo::GetTypeInfo(this)/*, GetStyleSubControlName()*/);
 		if (style != nullptr)
 		{
-
-
-			auto* vm = GetVisualStateManager();
 			invalidate |= style->MergeActiveStylePropertyTables(m_localStyle, vm->GetActiveStateNames());
 
 			//for (auto& stateName : vm->GetActiveStateNames())
@@ -504,6 +502,11 @@ void UIElement::UpdateLocalStyleAndApplyProperties(UIStyleTable* styleTable, UIS
 		//	m_currentVisualStateStyle = nullptr;
 		//}
 
+		style = styleTable->FindSubControlStyle(m_styleSubControlOwnerName, m_styleSubControlName);
+		if (style != nullptr)
+		{
+			invalidate |= style->MergeActiveStylePropertyTables(m_localStyle, vm->GetActiveStateNames());
+		}
 
 		m_invalidateFlags &= ~detail::InvalidateFlags::VisualState;
 	}
@@ -602,10 +605,10 @@ const VAlignment* UIElement::GetPriorityContentVAlignment()
 }
 
 //------------------------------------------------------------------------------
-void UIElement::GetStyleClassName(String* outSubStateName)
-{
-	*outSubStateName = String::GetEmpty();
-}
+//void UIElement::GetStyleClassName(String* outSubStateName)
+//{
+//	*outSubStateName = String::GetEmpty();
+//}
 
 //------------------------------------------------------------------------------
 void UIElement::RaiseEventInternal(const UIEventInfo* ev, UIEventArgs* e)

@@ -8,6 +8,13 @@ LN_NAMESPACE_BEGIN
 namespace detail {
 class DocumentsManager;
 class Inline;
+class Block;
+
+enum class InternalTextElementType
+{
+	Common,
+	LineBreak,
+};
 
 /**
 	@brief
@@ -20,8 +27,12 @@ public:
 	virtual ~Document();
 	void Initialize(DocumentsManager* manager);
 
+	// 現在の内容をすべて破棄して、新しい1つの Paragraph を作る
+	void SetText(const StringRef& text);
+
 private:
-	DocumentsManager*	m_manager;
+	DocumentsManager*		m_manager;
+	List<RefPtr<Block>>		m_blockList;
 };
 
 /**
@@ -102,6 +113,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 
 LN_INTERNAL_ACCESS:
 	DocumentsManager* GetManager() const { return m_manager; }
+	virtual InternalTextElementType GetInternalTextElementType() const;
 	void SetParent(TextElement* parent) { m_parent = parent; }
 	TextElement* GetParent() const { return m_parent; }
 	const Size& GetDesiredSize() const { return m_desiredSize; }
@@ -147,6 +159,9 @@ public:
 protected:
 	virtual Size MeasureOverride(const Size& constraint) override;
 	virtual Size ArrangeOverride(const Size& finalSize) override;
+
+LN_INTERNAL_ACCESS:
+	const List<RefPtr<TextElement>>& GetChildElements() const { return m_childElements; }
 
 private:
 	List<RefPtr<TextElement>>	m_childElements;
@@ -221,6 +236,82 @@ public:
 private:
 	// Inline List
 };
+
+
+/**
+	@brief
+*/
+class LineBreak
+	: public Inline
+{
+public:
+	LineBreak();
+	virtual ~LineBreak();
+	void Initialize(DocumentsManager* manager);
+
+private:
+	virtual InternalTextElementType GetInternalTextElementType() const;
+};
+
+
+
+
+class VisualTextElement
+	: public Object
+{
+public:
+	//TextElement*	m_element;
+	int				m_documentLength;	// Document 上での TextLength
+
+};
+
+
+
+// 物理行
+class VisualLine
+	: public Object
+{
+public:
+
+private:
+public:	// TODO:
+	List<RefPtr<VisualTextElement>>	m_visualTextElementList;
+};
+
+
+/**
+	@brief
+	@note	今は float(ブロックの横並び) などを考えない。とすると、Paragraph 単位でデータモデル組んだほうがわかりやすい。
+*/
+class ParagraphViewer
+	: public Object
+{
+public:
+	void SetParagraph(Paragraph* paragraph);
+
+private:
+	void RebuildVisualLineList();
+
+	RefPtr<Paragraph>			m_paragraph;
+	List<RefPtr<VisualLine>>	m_visualLineList;
+};
+
+/**
+	@brief
+*/
+class DocumentViewer
+	: public Object
+{
+public:
+
+private:
+};
+
+
+
+
+
+
 
 } // namespace detail
 LN_NAMESPACE_END

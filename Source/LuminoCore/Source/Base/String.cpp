@@ -963,6 +963,14 @@ const GenericString<TChar>& GenericString<TChar>::GetEmpty()
 
 //------------------------------------------------------------------------------
 template<typename TChar>
+size_t GenericString<TChar>::GetHashCode() const
+{
+	if (GetLength() == 0) return 0;
+	return ln::Hash::CalcHash(c_str(), GetLength());
+}
+
+//------------------------------------------------------------------------------
+template<typename TChar>
 TChar* GenericString<TChar>::GetData()
 {
 	Realloc();

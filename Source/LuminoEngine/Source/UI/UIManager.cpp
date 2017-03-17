@@ -160,7 +160,7 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 		buttonPressedBrush->SetWrapMode(BrushWrapMode::Stretch);
 
 		auto* s = table->GetStyle(tr::TypeInfo::GetTypeInfo<UIButton>()->GetName());
-		// UIButton
+		// base
 		{
 			auto* st = s->GetPropertyTable();
 			st->background = RefPtr<Brush>::StaticCast(buttonNormalBrush);
@@ -184,13 +184,48 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 	}
 	// UIThumb
 	{
+		auto thumbBrush = TextureBrush::Create(m_defaultSkinTexture);
+		thumbBrush->SetSourceRect(32, 64, 32, 32);
+		thumbBrush->SetBorderThickness(8, 8, 8, 8);
+		thumbBrush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
+		thumbBrush->SetWrapMode(BrushWrapMode::Stretch);
+
 		auto* style = table->GetStyle(tr::TypeInfo::GetTypeInfo<UIThumb>()->GetName());
-		// UIThumb
+		// base
 		{
 			auto* props = style->GetPropertyTable();
-			props->background = Brush::Blue;
+			props->background = RefPtr<Brush>::StaticCast(thumbBrush);
 		}
 	}
+
+	// UITrack
+	{
+		auto* style = table->GetStyle(_T("UITrack"));
+		// base
+		{
+			auto* props = style->GetPropertyTable();
+			props->background = Brush::DimGray;
+		}
+	}
+	// UITrack::DecreaseButton
+	{
+		auto* style = table->GetSubControlStyle(_T("UITrack"), _T("DecreaseButton"));
+		// base
+		{
+			auto* props = style->GetPropertyTable();
+			props->background = nullptr;	// transparency
+		}
+	}
+	// UITrack::IncreaseButton
+	{
+		auto* style = table->GetSubControlStyle(_T("UITrack"), _T("IncreaseButton"));
+		// base
+		{
+			auto* props = style->GetPropertyTable();
+			props->background = nullptr;	// transparency
+		}
+	}
+
 	// UIScrollBar
 	{
 		auto* style = table->GetStyle(tr::TypeInfo::GetTypeInfo<UIScrollBar>()->GetName());
@@ -203,15 +238,49 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 		{
 			auto* props = style->GetPropertyTable(UIScrollBar::HorizontalState);
 			props->height = 16.0f;
-			props->background = Brush::Blue;
+			//props->background = Brush::Blue;
 		}
 		// UIScrollBar.Vertical
 		{
 			auto* props = style->GetPropertyTable(UIScrollBar::VerticalState);
 			props->width = 16.0f;
-			props->background = Brush::Black;
+			//props->background = Brush::Black;
 		}
 	}
+	// UIScrollBar::LineUpButton
+	{
+		auto buttonNormalBrush = TextureBrush::Create(m_defaultSkinTexture);
+		buttonNormalBrush->SetSourceRect(0, 32, 32, 32);
+		buttonNormalBrush->SetBorderThickness(8, 8, 8, 8);
+		buttonNormalBrush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
+
+		auto buttonMouseOverBrush = TextureBrush::Create(m_defaultSkinTexture);
+		buttonMouseOverBrush->SetSourceRect(32, 32, 32, 32);
+		buttonMouseOverBrush->SetBorderThickness(8, 8, 8, 8);
+		buttonMouseOverBrush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
+
+		auto* style = table->GetSubControlStyle(_T("UIScrollBar"), _T("LineUpButton"));
+		// base
+		{
+			auto* props = style->GetPropertyTable();
+			props->background = RefPtr<Brush>::StaticCast(buttonNormalBrush);
+		}
+		// UIScrollBar::LineUpButton.MouseOver
+		{
+			auto* props = style->GetPropertyTable(UIButton::MouseOverState);
+			props->background = RefPtr<Brush>::StaticCast(buttonMouseOverBrush);
+		}
+	}
+	// UIScrollBar::LineDownButton
+	{
+		auto* style = table->GetSubControlStyle(_T("UIScrollBar"), _T("LineDownButton"));
+		// base
+		{
+			auto* props = style->GetPropertyTable();
+			props->background = nullptr;
+		}
+	}
+
 
 	//{
 	//	auto brush = TextureBrush::Create(m_defaultSkinTexture);

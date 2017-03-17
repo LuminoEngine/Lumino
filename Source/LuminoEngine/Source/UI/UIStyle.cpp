@@ -141,8 +141,8 @@ UIStylePtr UIStyle::Create()
 
 //------------------------------------------------------------------------------
 UIStyle::UIStyle()
-	: m_subStyleParent(nullptr)
-	, m_subStateStyles()
+	//: m_subStyleParent(nullptr)
+	//, m_subStateStyles()
 	//: m_lastUpdateParent(nullptr)
 	//m_revisionCount(0)
 	//: m_margin(ThicknessF(0, 0, 0, 0))
@@ -184,23 +184,23 @@ UIStyle::~UIStyle()
 //}
 
 //------------------------------------------------------------------------------
-void UIStyle::AddSubStateStyle(const StringRef& subStateName, UIStyle* style)
-{
-	LN_FAIL_CHECK_ARG(style != nullptr) return;
-	LN_FAIL_CHECK_ARG(style->m_subStyleParent == nullptr) return;
-	m_subStateStyles.RemoveIf(    // TODO: 削除じゃなくてマージしたほうがいいか？
-		[subStateName](const SubStateStylePair& pair) { return pair.first == subStateName; });
-	m_subStateStyles.Add({ subStateName, style });
-}
-
-//------------------------------------------------------------------------------
-UIStyle* UIStyle::FindSubStateStyle(const StringRef& subStateName)
-{
-	SubStateStylePair* pair = m_subStateStyles.Find(
-		[subStateName](const SubStateStylePair& pair) { return pair.first == subStateName; });
-	if (pair == nullptr) return nullptr;
-	return pair->second;
-}
+//void UIStyle::AddSubStateStyle(const StringRef& subStateName, UIStyle* style)
+//{
+//	LN_FAIL_CHECK_ARG(style != nullptr) return;
+//	LN_FAIL_CHECK_ARG(style->m_subStyleParent == nullptr) return;
+//	m_subStateStyles.RemoveIf(    // TODO: 削除じゃなくてマージしたほうがいいか？
+//		[subStateName](const SubStateStylePair& pair) { return pair.first == subStateName; });
+//	m_subStateStyles.Add({ subStateName, style });
+//}
+//
+////------------------------------------------------------------------------------
+//UIStyle* UIStyle::FindSubStateStyle(const StringRef& subStateName)
+//{
+//	SubStateStylePair* pair = m_subStateStyles.Find(
+//		[subStateName](const SubStateStylePair& pair) { return pair.first == subStateName; });
+//	if (pair == nullptr) return nullptr;
+//	return pair->second;
+//}
 
 //------------------------------------------------------------------------------
 UIStylePropertyTable* UIStyle::GetPropertyTable()
@@ -315,42 +315,17 @@ UIStyleTable::~UIStyleTable()
 //	RefPtr<UIStyle>* s = m_table.Find(targetType);
 //	(*s)->AddSubStateStyle(subStateName, style);
 //}
-
-//------------------------------------------------------------------------------
-UIStyle* UIStyleTable::FindStyle(const tr::TypeInfo* targetType)
-{
-	LN_CHECK_ARG(targetType != nullptr);
-
-	RefPtr<UIStyle>* s = m_table.Find(targetType->GetName());
-	if (s != nullptr)
-	{
-		return s->Get();
-	}
-	else if (targetType->GetBaseClass() != nullptr)
-	{
-		// ベースクラスで再帰検索
-		return FindStyle(targetType->GetBaseClass());
-	}
-	return nullptr;
-}
-
-//------------------------------------------------------------------------------
-UIStyle* UIStyleTable::FindStyle(const tr::TypeInfo* targetType, const StringRef& subStateName)
-{
-	UIStyle* style = FindStyle(targetType);
-	if (style == nullptr) return nullptr;
-	if (subStateName.IsEmpty()) return style;
-	return style->FindSubStateStyle(subStateName);
-}
-
 //------------------------------------------------------------------------------
 UIStyle* UIStyleTable::GetStyle(const StringRef& typeName)
 {
-	RefPtr<UIStyle>* s = m_table.Find(typeName);
+	StyleKey key = typeName.GetHashCode()/* + subControlName.GetHashCode()*/;
+	if (key == 0) return nullptr;
+
+	RefPtr<UIStyle>* s = m_table.Find(key);
 	if (s == nullptr)
 	{
 		auto s2 = NewObject<UIStyle>();
-		m_table.Add(typeName, s2);
+		m_table.Add(key, s2);
 		return s2;
 	}
 	else
@@ -360,8 +335,70 @@ UIStyle* UIStyleTable::GetStyle(const StringRef& typeName)
 }
 
 //------------------------------------------------------------------------------
+UIStyle* UIStyleTable::GetSubControlStyle(const StringRef& subControlOwnerName, const StringRef& subControlName)
+{
+	StyleKey key = subControlOwnerName.GetHashCode() + subControlName.GetHashCode();
+	if (key == 0) return nullptr;
+
+	RefPtr<UIStyle>* s = m_subControlStyleTable.Find(key);
+	if (s == nullptr)
+	{
+		auto s2 = NewObject<UIStyle>();
+		m_subControlStyleTable.Add(key, s2);
+		return s2;
+	}
+	else
+	{
+		return s->Get();
+	}
+}
+
+
+//------------------------------------------------------------------------------
 //UIStyle* UIStyleTable::GetStyle(const tr::TypeInfo* targetType, const StringRef& subStateName)
 //{
 //}
+
+//------------------------------------------------------------------------------
+UIStyle* UIStyleTable::FindStyle(const tr::TypeInfo* targetType/*, const StringRef& subControlName*/)
+{
+	LN_CHECK_ARG(targetType != nullptr);
+
+	StyleKey key = targetType->GetName().GetHashCode();// +subControlName.GetHashCode();
+	RefPtr<UIStyle>* s = m_table.Find(key);
+	if (s != nullptr)
+	{
+		return s->Get();
+	}
+	else if (targetType->GetBaseClass() != nullptr)
+	{
+		// ベースクラスで再帰検索
+		return FindStyle(targetType->GetBaseClass()/*, subControlName*/);
+	}
+	return nullptr;
+}
+
+//------------------------------------------------------------------------------
+UIStyle* UIStyleTable::FindSubControlStyle(const StringRef& subControlOwnerName, const StringRef& subControlName)
+{
+	StyleKey key = subControlOwnerName.GetHashCode() + subControlName.GetHashCode();
+
+	RefPtr<UIStyle>* s = m_subControlStyleTable.Find(key);
+	if (s != nullptr)
+		return s->Get();
+	else
+		return nullptr;
+}
+
+//------------------------------------------------------------------------------
+//UIStyle* UIStyleTable::FindStyle(const tr::TypeInfo* targetType, const StringRef& subStateName)
+//{
+//	UIStyle* style = FindStyle(targetType);
+//	return style;
+//	//if (style == nullptr) return nullptr;
+//	//if (subStateName.IsEmpty()) return style;
+//	//return style->FindSubStateStyle(subStateName);
+//}
+//
 
 LN_NAMESPACE_END
