@@ -1,7 +1,7 @@
 
 #include "Internal.h"
 #include <Lumino/Graphics/Rendering.h>
-#include "../Documents/DocumentElements.h"
+#include <Lumino/Documents/Documents.h>
 #include <Lumino/UI/UITextBox.h>
 #include "UIManager.h"
 
@@ -37,8 +37,8 @@ void UITextBox::Initialize(detail::UIManager* manager)
 	//SetHAlignment(HAlignment::Center);
 	//SetVAlignment(VAlignment::Center);
 
-	m_document = NewObject<detail::Document>();
-	//m_documentView = NewObject<detail::DocumentView>(m_document);
+	m_document = NewObject<tr::Document>();
+	m_documentView = NewObject<tr::DocumentView>(m_document);
 }
 
 //------------------------------------------------------------------------------

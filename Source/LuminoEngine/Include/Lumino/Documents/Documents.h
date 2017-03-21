@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "../UI/LayoutElement.h"
 #include "Common.h"
@@ -18,7 +18,7 @@ enum class InternalTextElementType
 class DocumentSelection
 {
 public:
-	int	start;		///< text.GetLength() ‚Í—LŒø’lBSelect(text.GetLength(), 0) ‚ÅƒRƒ“ƒeƒ“ƒc‚Ì––”ö‚ÉƒLƒƒƒŒƒbƒg‚ğˆÚ“®‚·‚é
+	int	start;		///< text.GetLength() ã¯æœ‰åŠ¹å€¤ã€‚Select(text.GetLength(), 0) ã§ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã®æœ«å°¾ã«ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã‚’ç§»å‹•ã™ã‚‹
 	int length;
 
 public:
@@ -39,7 +39,7 @@ public:
 	virtual ~Document();
 	void Initialize();
 
-	// Œ»İ‚Ì“à—e‚ğ‚·‚×‚Ä”jŠü‚µ‚ÄAV‚µ‚¢1‚Â‚Ì Paragraph ‚ğì‚é
+	// ç¾åœ¨ã®å†…å®¹ã‚’ã™ã¹ã¦ç ´æ£„ã—ã¦ã€æ–°ã—ã„1ã¤ã® Paragraph ã‚’ä½œã‚‹
 	void SetText(const StringRef& text);
 
 LN_INTERNAL_ACCESS:
@@ -60,34 +60,34 @@ class TextElement
 {
 public:
 
-	/** ƒtƒHƒ“ƒgƒtƒ@ƒ~ƒŠ–¼‚ğİ’è‚µ‚Ü‚·B*/
+	/** ãƒ•ã‚©ãƒ³ãƒˆãƒ•ã‚¡ãƒŸãƒªåã‚’è¨­å®šã—ã¾ã™ã€‚*/
 	void SetFontFamily(const StringRef& value) { m_fontData.Family = value; m_fontDataModified = true; }
 
-	/** ƒtƒHƒ“ƒgƒtƒ@ƒ~ƒŠ–¼‚ğæ“¾‚µ‚Ü‚·B*/
+	/** ãƒ•ã‚©ãƒ³ãƒˆãƒ•ã‚¡ãƒŸãƒªåã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	const String& GetFontFamily() const { return m_fontData.Family; }
 
-	/** ƒtƒHƒ“ƒgƒTƒCƒY‚ğİ’è‚µ‚Ü‚·B*/
+	/** ãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚ºã‚’è¨­å®šã—ã¾ã™ã€‚*/
 	void SetFontSize(int value) { m_fontData.Size = value; m_fontDataModified = true; }
 
-	/** ƒtƒHƒ“ƒgƒTƒCƒY‚ğæ“¾‚µ‚Ü‚·B*/
+	/** ãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚ºã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	int GetFontSize() const { return m_fontData.Size; }
 
-	/** ƒtƒHƒ“ƒg‚Ì‘¾š—L–³‚ğİ’è‚µ‚Ü‚·B*/
+	/** ãƒ•ã‚©ãƒ³ãƒˆã®å¤ªå­—æœ‰ç„¡ã‚’è¨­å®šã—ã¾ã™ã€‚*/
 	void SetFontBold(bool value) { m_fontData.IsBold = value; m_fontDataModified = true; }
 
-	/** ƒtƒHƒ“ƒg‚Ì‘¾š—L–³‚ğæ“¾‚µ‚Ü‚·B*/
+	/** ãƒ•ã‚©ãƒ³ãƒˆã®å¤ªå­—æœ‰ç„¡ã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	bool IsFontBold() const { return m_fontData.IsBold; }
 
-	/** ƒtƒHƒ“ƒg‚ÌƒCƒ^ƒŠƒbƒN‘Ì—L–³‚ğİ’è‚µ‚Ü‚·B*/
+	/** ãƒ•ã‚©ãƒ³ãƒˆã®ã‚¤ã‚¿ãƒªãƒƒã‚¯ä½“æœ‰ç„¡ã‚’è¨­å®šã—ã¾ã™ã€‚*/
 	void SetFontItalic(bool value) { m_fontData.IsItalic = value; m_fontDataModified = true; }
 
-	/** ƒtƒHƒ“ƒg‚ÌƒCƒ^ƒŠƒbƒN‘Ì—L–³‚ğæ“¾‚µ‚Ü‚·B*/
+	/** ãƒ•ã‚©ãƒ³ãƒˆã®ã‚¤ã‚¿ãƒªãƒƒã‚¯ä½“æœ‰ç„¡ã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	bool IsFontItalic() const { return m_fontData.IsItalic; }
 
-	/** ƒtƒHƒ“ƒg‚ÌƒAƒ“ƒ`ƒGƒCƒŠƒAƒX—L–³‚ğİ’è‚µ‚Ü‚·B*/
+	/** ãƒ•ã‚©ãƒ³ãƒˆã®ã‚¢ãƒ³ãƒã‚¨ã‚¤ãƒªã‚¢ã‚¹æœ‰ç„¡ã‚’è¨­å®šã—ã¾ã™ã€‚*/
 	void SetFontAntiAlias(bool value) { m_fontData.IsAntiAlias = value; m_fontDataModified = true; }
 
-	/** ƒtƒHƒ“ƒg‚ÌƒAƒ“ƒ`ƒGƒCƒŠƒAƒX—L–³‚ğæ“¾‚µ‚Ü‚·B*/
+	/** ãƒ•ã‚©ãƒ³ãƒˆã®ã‚¢ãƒ³ãƒã‚¨ã‚¤ãƒªã‚¢ã‚¹æœ‰ç„¡ã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	bool IsFontAntiAlias() const { return m_fontData.IsAntiAlias; }
 
 	Brush* GetForeground() const;
@@ -117,7 +117,7 @@ private:
 };
 
 /**
-	@brief	ƒRƒ“ƒeƒ“ƒc‚ğƒOƒ‹[ƒv‰»‚µ‚Ä’i—‚É‚·‚é‚½‚ß‚Ég—p‚³‚ê‚éB
+	@brief	ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã‚’ã‚°ãƒ«ãƒ¼ãƒ—åŒ–ã—ã¦æ®µè½ã«ã™ã‚‹ãŸã‚ã«ä½¿ç”¨ã•ã‚Œã‚‹ã€‚
 */
 class Block
 	: public TextElement
@@ -141,7 +141,7 @@ private:
 };
 
 /**
-	@brief	ƒRƒ“ƒeƒ“ƒc‚ğƒOƒ‹[ƒv‰»‚µ‚Ä’i—‚É‚·‚é‚½‚ß‚Ég—p‚³‚ê‚éB
+	@brief	ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã‚’ã‚°ãƒ«ãƒ¼ãƒ—åŒ–ã—ã¦æ®µè½ã«ã™ã‚‹ãŸã‚ã«ä½¿ç”¨ã•ã‚Œã‚‹ã€‚
 */
 class Paragraph
 	: public Block
@@ -226,18 +226,22 @@ private:
 
 
 
-class VisualTextElement
+// Inline ã® Visual è¦ç´ 
+class VisualInline
 	: public Object
 {
 public:
+
+	RefPtr<Inline>	m_inline;
+
 	//TextElement*	m_element;
-	int				m_documentLength;	// Document ã‚Å‚Ì TextLength
+	//int				m_documentLength;	// Document ä¸Šã§ã® TextLength
 
 };
 
 
 
-// •¨—s
+// ç‰©ç†è¡Œ
 class VisualLine
 	: public Object
 {
@@ -249,20 +253,17 @@ public:	// TODO:
 };
 
 
-/**
-	@brief
-	@note	¡‚Í float(ƒuƒƒbƒN‚Ì‰¡•À‚Ñ) ‚È‚Ç‚ğl‚¦‚È‚¢B‚Æ‚·‚é‚ÆAParagraph ’PˆÊ‚Åƒf[ƒ^ƒ‚ƒfƒ‹‘g‚ñ‚¾‚Ù‚¤‚ª‚í‚©‚è‚â‚·‚¢B
-*/
+// Block ã® Visual è¦ç´ 
 class VisualBlock
 	: public Object
 {
 public:
-	void SetParagraph(Paragraph* paragraph);
+	void SetBlock(Block* block);
 
 private:
 	void RebuildVisualLineList();
 
-	RefPtr<Paragraph>			m_paragraph;
+	RefPtr<Block>				m_block;
 	List<RefPtr<VisualLine>>	m_visualLineList;
 };
 
@@ -272,9 +273,15 @@ class DocumentView
 {
 public:
 
-private:
+LN_CONSTRUCT_ACCESS:
+	DocumentView() = default;
+	virtual ~DocumentView() = default;
 	void Initialize(Document* document);
 
+LN_INTERNAL_ACCESS:
+	void Render(const Matrix& transform, ln::detail::IDocumentsRenderer* renderer);
+
+private:
 	Document*	m_document;
 };
 

@@ -3,8 +3,8 @@
 #include "UITextElement.h"
 
 LN_NAMESPACE_BEGIN
-namespace detail { class Document; }
-namespace detail { class DocumentView; }
+namespace tr { class Document; }
+namespace tr { class DocumentView; }
 class UITextBox;
 using UITextBoxPtr = RefPtr<UITextBox>;
 
@@ -33,8 +33,8 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual void OnRender(DrawList* g) override;
 
 private:
-	RefPtr<detail::Document>		m_document;
-	RefPtr<detail::DocumentView>	m_documentView;
+	RefPtr<tr::Document>		m_document;
+	RefPtr<tr::DocumentView>	m_documentView;
 };
 
 LN_NAMESPACE_END

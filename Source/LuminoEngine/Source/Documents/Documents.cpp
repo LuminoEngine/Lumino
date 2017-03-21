@@ -335,6 +335,12 @@ InternalTextElementType LineBreak::GetInternalTextElementType() const
 //==============================================================================
 
 //------------------------------------------------------------------------------
+void VisualBlock::SetBlock(Block* block)
+{
+	m_block = block;
+}
+
+//------------------------------------------------------------------------------
 void VisualBlock::RebuildVisualLineList()
 {
 	//m_visualLineList.Clear();
@@ -361,6 +367,12 @@ void VisualBlock::RebuildVisualLineList()
 void DocumentView::Initialize(Document* document)
 {
 	m_document = document;
+}
+
+//------------------------------------------------------------------------------
+void DocumentView::Render(const Matrix& transform, ln::detail::IDocumentsRenderer* renderer)
+{
+
 }
 
 } // namespace tr
