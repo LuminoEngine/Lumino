@@ -58,6 +58,7 @@
 #include "Lumino/UI/UILayoutPanel.h"
 #include "Lumino/UI/UIScrollViewer.h"
 #include "Lumino/UI/UITextBlock.h"
+#include "Lumino/UI/UITextBox.h"
 #include "Lumino/UI/UIButton.h"
 #include "Lumino/UI/UITreeView.h"
 

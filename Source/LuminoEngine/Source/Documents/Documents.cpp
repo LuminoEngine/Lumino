@@ -3,10 +3,10 @@
 #include <Lumino/Graphics/Brush.h>
 #include <Lumino/Graphics/Text/GlyphRun.h>
 #include "DocumentsManager.h"
-#include "DocumentElements.h"
+#include <Lumino/Documents/Documents.h>
 
 LN_NAMESPACE_BEGIN
-namespace detail {
+namespace tr {
 
 //==============================================================================
 // Document
@@ -26,7 +26,7 @@ Document::~Document()
 //------------------------------------------------------------------------------
 void Document::Initialize()
 {
-	m_manager = detail::DocumentsManager::GetInstance();
+	m_manager = ln::detail::DocumentsManager::GetInstance();
 }
 
 //------------------------------------------------------------------------------
@@ -121,16 +121,6 @@ TextElement::TextElement()
 	, m_fontData()
 	, m_foreground(nullptr)
 	, m_fontDataModified(false)
-	, m_position()
-	, m_size(NAN, NAN)
-	, m_margin()
-	, m_padding()
-	, m_anchor(AlignmentAnchor::None)
-	, m_horizontalAlignment(HAlignment::Left)
-	, m_verticalAlignment(VAlignment::Top)
-	, m_parent(nullptr)
-	, m_desiredSize()
-	, m_finalLocalRect()
 {
 }
 
@@ -142,7 +132,7 @@ TextElement::~TextElement()
 //------------------------------------------------------------------------------
 void TextElement::Initialize()
 {
-	m_manager = detail::DocumentsManager::GetInstance();
+	m_manager = ln::detail::DocumentsManager::GetInstance();
 	m_fontData.Family = String::GetEmpty();
 	m_fontData.Size = 20;
 	m_fontData.IsBold = false;
@@ -160,54 +150,16 @@ Brush* TextElement::GetForeground() const
 }
 
 //------------------------------------------------------------------------------
-void TextElement::OnFontDataChanged(const FontData& newData)
+void TextElement::OnFontDataChanged(const ln::detail::FontData& newData)
 {
 }
 
-//------------------------------------------------------------------------------
-void TextElement::Render(const Matrix& transform, IDocumentsRenderer* renderer)
-{
-}
-
-//------------------------------------------------------------------------------
-Size TextElement::MeasureOverride(const Size& constraint)
-{
-	if (m_fontDataModified)
-	{
-		OnFontDataChanged(m_fontData);
-		m_fontDataModified = false;
-	}
-	return ILayoutElement::MeasureOverride(constraint);
-}
 
 //------------------------------------------------------------------------------
 InternalTextElementType TextElement::GetInternalTextElementType() const
 {
 	return InternalTextElementType::Common;
 }
-
-//------------------------------------------------------------------------------
-const PointF& TextElement::GetLayoutPosition() const { return m_position; }
-Size TextElement::GetLayoutSize() const { return m_size; }
-const ThicknessF& TextElement::GetLayoutMargin() const { return m_margin; }
-const ThicknessF& TextElement::GetLayoutPadding() const { return m_padding; }
-AlignmentAnchor TextElement::GetLayoutAnchor() const { return m_anchor; }
-HAlignment TextElement::GetLayoutHAlignment() const { return m_horizontalAlignment; }
-VAlignment TextElement::GetLayoutVAlignment() const { return m_verticalAlignment; }
-ILayoutElement* TextElement::GetLayoutParent() const { return m_parent; }
-const HAlignment* TextElement::GetLayoutContentHAlignment() { return nullptr; }
-const VAlignment* TextElement::GetLayoutContentVAlignment() { return nullptr; }
-const Size& TextElement::GetLayoutDesiredSize() const { return m_desiredSize; }
-void TextElement::SetLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
-void TextElement::SetLayoutFinalLocalRect(const RectF& rect) { m_finalLocalRect = rect; }
-const RectF& TextElement::GetLayoutFinalLocalRect() const { return m_finalLocalRect; }
-void TextElement::SetLayoutFinalGlobalRect(const RectF& rect) { m_finalGlobalRect = rect; }
-int TextElement::GetVisualChildrenCount() const { return 0; }
-ILayoutElement* TextElement::GetVisualChild(int index) const { return nullptr; }
-int TextElement::GetLayoutColumn() const { return m_gridLayoutInfo.layoutColumn; }
-int TextElement::GetLayoutRow() const { return m_gridLayoutInfo.layoutRow; }
-int TextElement::GetLayoutColumnSpan() const { return m_gridLayoutInfo.layoutColumnSpan; }
-int TextElement::GetLayoutRowSpan() const { return m_gridLayoutInfo.layoutRowSpan; }
 
 
 //==============================================================================
@@ -255,49 +207,6 @@ void Block::ClearInlines()
 {
 	for (TextElement* child : m_inlines) child->SetParent(nullptr);
 	m_inlines.Clear();
-}
-
-//------------------------------------------------------------------------------
-void Block::Render(const Matrix& transform, IDocumentsRenderer* renderer)
-{
-	for (TextElement* child : m_inlines) child->Render(transform, renderer);
-}
-
-//------------------------------------------------------------------------------
-Size Block::MeasureOverride(const Size& constraint)
-{
-	Size childDesirdSize;
-	for (TextElement* child : m_inlines)
-	{
-		// TODO: とりあえず 左から右へのフロー
-		//Size size = child->MeasureOverride(constraint);
-		child->MeasureLayout(constraint);
-		Size size = child->GetLayoutDesiredSize();
-		childDesirdSize.width += size.width;
-		childDesirdSize.height = std::max(childDesirdSize.height, size.height);
-	}
-
-	Size desirdSize = TextElement::MeasureOverride(constraint);
-	return Size::Max(desirdSize, childDesirdSize);
-}
-
-//------------------------------------------------------------------------------
-Size Block::ArrangeOverride(const Size& finalSize)
-{
-	float prevChildSize = 0;
-	RectF childRect;
-	for (TextElement* child : m_inlines)
-	{
-		// TODO: とりあえず 左から右へのフロー
-		Size childDesiredSize = child->GetDesiredSize();
-		childRect.x += prevChildSize;
-		prevChildSize = childDesiredSize.width;
-		childRect.width = prevChildSize;
-		childRect.height = std::max(childRect.height, childDesiredSize.height);
-		child->ArrangeLayout(childRect);
-	}
-
-	return Size::Min(finalSize, childRect.GetSize());
 }
 
 //==============================================================================
@@ -385,25 +294,8 @@ void Run::SetText(const StringRef& text)
 }
 
 //------------------------------------------------------------------------------
-void Run::OnFontDataChanged(const FontData& newData)
+void Run::OnFontDataChanged(const ln::detail::FontData& newData)
 {
-}
-
-//------------------------------------------------------------------------------
-Size Run::MeasureOverride(const Size& constraint)
-{
-	Size size = Inline::MeasureOverride(constraint);
-	const SizeI& runSize = m_glyphRun->GetRenderSize();
-
-	size.width = std::max(size.width, (float)runSize.width);
-	size.height = std::max(size.height, (float)runSize.height);
-	return size;
-}
-
-//------------------------------------------------------------------------------
-void Run::Render(const Matrix& transform, IDocumentsRenderer* renderer)
-{
-	renderer->OnDrawGlyphRun(transform, GetForeground(), m_glyphRun, PointF::Zero);
 }
 
 
@@ -471,5 +363,5 @@ void DocumentView::Initialize(Document* document)
 	m_document = document;
 }
 
-} // namespace detail
+} // namespace tr
 LN_NAMESPACE_END

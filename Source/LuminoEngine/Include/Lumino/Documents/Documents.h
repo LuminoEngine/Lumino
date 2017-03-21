@@ -1,12 +1,11 @@
 
 #pragma once
-#include <Lumino/Documents/Common.h>
-#include <Lumino/UI/LayoutElement.h>
-#include "../Graphics/GraphicsManager.h"
+#include "../UI/LayoutElement.h"
+#include "Common.h"
 
 LN_NAMESPACE_BEGIN
-namespace detail {
-class DocumentsManager;
+namespace detail { class DocumentsManager; }
+namespace tr {
 class Inline;
 class Block;
 
@@ -49,8 +48,8 @@ LN_INTERNAL_ACCESS:
 private:
 	void Replace(int offset, int length, const UTF32* text, int len);
 
-	DocumentsManager*		m_manager;
-	List<RefPtr<Block>>		m_blockList;
+	ln::detail::DocumentsManager*		m_manager;
+	List<RefPtr<Block>>				m_blockList;
 };
 
 /**
@@ -58,7 +57,6 @@ private:
 */
 class TextElement
 	: public Object
-	, public ILayoutElement
 {
 public:
 
@@ -94,37 +92,9 @@ public:
 
 	Brush* GetForeground() const;
 
-
-	virtual void Render(const Matrix& transform, IDocumentsRenderer* renderer);
-
 LN_PROTECTED_INTERNAL_ACCESS:
-	virtual void OnFontDataChanged(const FontData& newData);
+	virtual void OnFontDataChanged(const ln::detail::FontData& newData);
 
-	// ILayoutElement interface
-	virtual const PointF& GetLayoutPosition() const override;
-	virtual Size GetLayoutSize() const override;
-	virtual const ThicknessF& GetLayoutMargin() const override;
-	virtual const ThicknessF& GetLayoutPadding() const override;
-	virtual AlignmentAnchor GetLayoutAnchor() const override;
-	virtual HAlignment GetLayoutHAlignment() const override;
-	virtual VAlignment GetLayoutVAlignment() const override;
-	virtual ILayoutElement* GetLayoutParent() const override;
-	virtual const HAlignment* GetLayoutContentHAlignment() override;
-	virtual const VAlignment* GetLayoutContentVAlignment() override;
-	virtual const Size& GetLayoutDesiredSize() const override;
-	virtual void SetLayoutDesiredSize(const Size& size) override;
-	virtual void SetLayoutFinalLocalRect(const RectF& rect) override;
-	virtual const RectF& GetLayoutFinalLocalRect() const override;
-	virtual void SetLayoutFinalGlobalRect(const RectF& rect) override;
-	virtual int GetVisualChildrenCount() const override;
-	virtual ILayoutElement* GetVisualChild(int index) const override;
-	virtual int GetLayoutColumn() const override;
-	virtual int GetLayoutRow() const override;
-	virtual int GetLayoutColumnSpan() const override;
-	virtual int GetLayoutRowSpan() const override;
-
-	// ILayoutElement interface
-	virtual Size MeasureOverride(const Size& constraint) override;
 
 LN_CONSTRUCT_ACCESS:
 	TextElement();
@@ -132,32 +102,18 @@ LN_CONSTRUCT_ACCESS:
 	void Initialize();
 
 LN_INTERNAL_ACCESS:
-	DocumentsManager* GetManager() const { return m_manager; }
+	ln::detail::DocumentsManager* GetManager() const { return m_manager; }
 	virtual InternalTextElementType GetInternalTextElementType() const;
 	void SetParent(TextElement* parent) { m_parent = parent; }
 	TextElement* GetParent() const { return m_parent; }
-	const Size& GetDesiredSize() const { return m_desiredSize; }
-	const Size& GetRenderSize() const { return m_finalLocalRect.GetSize(); }
 
 private:
-	DocumentsManager*		m_manager;
-	FontData				m_fontData;
+	ln::detail::DocumentsManager*		m_manager;
+	TextElement*						m_parent;
+	ln::detail::FontData				m_fontData;
 	RefPtr<Brush>			m_foreground;
 	bool					m_fontDataModified;
 
-	// layout data
-	PointF					m_position;
-	Size					m_size;
-	ThicknessF				m_margin;
-	ThicknessF				m_padding;
-	AlignmentAnchor			m_anchor;
-	HAlignment				m_horizontalAlignment;
-	VAlignment				m_verticalAlignment;
-	TextElement*			m_parent;
-	Size					m_desiredSize;
-	RectF					m_finalLocalRect;
-	RectF					m_finalGlobalRect;
-	detail::GridLayoutInfo	m_gridLayoutInfo;
 };
 
 /**
@@ -174,11 +130,7 @@ public:
 	void AddInline(Inline* inl);
 	void ClearInlines();
 
-	virtual void Render(const Matrix& transform, IDocumentsRenderer* renderer);
-
 protected:
-	virtual Size MeasureOverride(const Size& constraint) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
 
 LN_INTERNAL_ACCESS:
 	void InsertInlines(int index, const List<RefPtr<Inline>>& inlines);
@@ -233,11 +185,7 @@ public:
 
 protected:
 	// TextElement interface
-	virtual void OnFontDataChanged(const FontData& newData) override;
-	virtual void Render(const Matrix& transform, IDocumentsRenderer* renderer) override;
-
-	// ILayoutElement interface
-	virtual Size MeasureOverride(const Size& constraint);
+	virtual void OnFontDataChanged(const ln::detail::FontData& newData) override;
 
 private:
 	GenericStringBuilderCore<UTF32>	m_text;
@@ -332,9 +280,5 @@ private:
 
 
 
-
-
-
-
-} // namespace detail
+} // namespace tr
 LN_NAMESPACE_END

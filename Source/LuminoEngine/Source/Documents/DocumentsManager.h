@@ -16,6 +16,8 @@ public:
 		GraphicsManager*	graphicsManager = nullptr;
 	};
 
+	static DocumentsManager* GetInstance(DocumentsManager* priority = nullptr);
+
 public:
 	DocumentsManager();
 	virtual ~DocumentsManager();

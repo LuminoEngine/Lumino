@@ -64,6 +64,15 @@ RawFont* GlyphRun::GetFont() const
 }
 
 //------------------------------------------------------------------------------
+void GlyphRun::SetText(const UTF32* str, int len)
+{
+	m_utf32Text.Clear();
+	m_utf32Text.Append(str, len);
+	m_modifiedRenderSize = true;
+	m_modifiedItems = true;
+}
+
+//------------------------------------------------------------------------------
 void GlyphRun::SetText(const StringRef& text)
 {
 	EncodingConverter* conv = m_manager->GetFontManager()->GetTCharToUTF32Converter();

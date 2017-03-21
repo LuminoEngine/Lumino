@@ -54,17 +54,17 @@ void TextBlock2D::Initialize(SceneGraph* owner)
 	SetAutoRemove(true);
 
 	m_paragraph = RefPtr<detail::Paragraph>::MakeRef();
-	m_paragraph->Initialize(owner->GetManager()->GetDocumentsManager());
+	m_paragraph->Initialize();
 }
 
 //------------------------------------------------------------------------------
 void TextBlock2D::SetText(const StringRef& text)
 {
-	m_paragraph->ClearChildElements();
+	m_paragraph->ClearInlines();
 	auto run = RefPtr<detail::Run>::MakeRef();
-	run->Initialize(GetOwnerSceneGraph()->GetManager()->GetDocumentsManager());
+	run->Initialize();
 	run->SetText(text);
-	m_paragraph->AddChildElement(run);
+	m_paragraph->AddInline(run);
 }
 
 //------------------------------------------------------------------------------

@@ -96,6 +96,14 @@ public:
 		m_data->m_vector.insert(m_data->m_vector.begin() + index, item);
 	}
 
+	/** 指定したインデックスの位置に要素を挿入します。*/
+	void InsertRange(int index, const List<T>& items)
+	{
+		LN_THROW(0 <= index && index <= GetCount(), OutOfRangeException);	// Count と同じインデックスを指定できる
+		CheckDetachShared();
+		m_data->m_vector.insert(m_data->m_vector.begin() + index, items.m_data->m_vector.begin(), items.m_data->m_vector.end());
+	}
+
 	/** 全ての要素を削除します。*/
 	void Clear()
 	{

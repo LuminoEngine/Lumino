@@ -30,6 +30,7 @@ class GlyphRun
 public:
 	void SetFont(RawFont* font);
 	RawFont* GetFont() const;
+	void SetText(const UTF32* str, int len);	// TODO: internal
 	void SetText(const StringRef& text);
 	void SetTextAlignment(TextAlignment align);	// TODO: Run に持たせるべき？
 	const SizeI& GetRenderSize();

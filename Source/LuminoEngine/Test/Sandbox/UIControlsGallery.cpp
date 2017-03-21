@@ -7,8 +7,22 @@ void UIControlsGallery()
 {
 	Engine::Initialize();
 
+	auto* mainWindow = Engine::GetMainWindow();
+	mainWindow->SetLayoutPanel(UIStackPanel::Create());
 
-	auto text = TextBlock2D::Create(_T("Hello, world!"));
+	auto text = UITextBlock::Create();//TextBlock2D::Create(_T("Hello, world!"));
+	text->SetText(_T("Hello"));
+	text->foreground = Brush::Blue;
+	mainWindow->AddChild(text);
+
+	auto textbox1 = UITextBox::Create();
+	textbox1->SetWidth(300);
+	textbox1->SetHeight(32);
+	textbox1->SetBackground(Brush::Gray);
+	textbox1->SetText(_T("Hello, world!"));
+	textbox1->foreground = Brush::Blue;
+	mainWindow->AddChild(textbox1);
+	
 
 #if 0
 	auto* mainWindow = Engine::GetMainWindow();

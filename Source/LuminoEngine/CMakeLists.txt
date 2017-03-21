@@ -442,6 +442,7 @@ set(LN_SOURCES_UI
 	Include/Lumino/UI/UIScrollViewer.h
 	Include/Lumino/UI/UIStyle.h
 	Include/Lumino/UI/UITextBlock.h
+	Include/Lumino/UI/UITextBox.h
 	Include/Lumino/UI/UITextElement.h
 	Include/Lumino/UI/UITreeView.h
 	Include/Lumino/UI/UITypeInfo.h
@@ -470,6 +471,7 @@ set(LN_SOURCES_UI
 	Source/UI/UIScrollViewer.cpp
 	Source/UI/UIStyle.cpp
 	Source/UI/UITextBlock.cpp
+	Source/UI/UITextBox.cpp
 	Source/UI/UITextElement.cpp
 	Source/UI/UITreeView.cpp
 	Source/UI/UITypeInfo.cpp
@@ -478,8 +480,10 @@ set(LN_SOURCES_UI
 
 set(LN_SOURCES_Documents
 	Include/Lumino/Documents/Common.h
+	Include/Lumino/Documents/Documents.h
 	Source/Documents/DocumentElements.cpp
 	Source/Documents/DocumentElements.h
+	Source/Documents/Documents.cpp
 	Source/Documents/DocumentsManager.cpp
 	Source/Documents/DocumentsManager.h
 	Source/Documents/Internal.h
