@@ -59,12 +59,16 @@ Size UITextBox::MeasureOverride(const Size& availableSize)
 		//size.height = std::max(size.height, textSize.height);
 	}
 
+	m_documentView->MeasureLayout(availableSize);
+
 	return size;
 }
 
 //------------------------------------------------------------------------------
 Size UITextBox::ArrangeOverride(const Size& finalSize)
 {
+	m_documentView->ArrangeLayout(RectF(0, 0, finalSize));
+
 	return UITextElement::ArrangeOverride(finalSize);
 }
 
@@ -72,6 +76,9 @@ Size UITextBox::ArrangeOverride(const Size& finalSize)
 void UITextBox::OnRender(DrawList* g)
 {
 	UITextElement::OnRender(g);
+
+	g->SetFont(GetActiveFont());	// TODO:
+	m_documentView->Render(g);
 	//g->SetFont(GetActiveFont());
 	//g->SetBrush(GetForegroundInternal());
 	//g->DrawText_(m_text, PointF::Zero);

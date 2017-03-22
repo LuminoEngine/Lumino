@@ -5,6 +5,8 @@
 
 LN_NAMESPACE_BEGIN
 namespace detail { class DocumentsManager; }
+class DrawList;
+
 namespace tr {
 class Inline;
 class Block;
@@ -12,6 +14,7 @@ class Block;
 enum class InternalTextElementType
 {
 	Common,
+	TextRun,
 	LineBreak,
 };
 
@@ -28,11 +31,40 @@ public:
 	{}
 };
 
+
+class DocumentContentElement
+	: public Object
+{
+protected:
+	DocumentContentElement()
+		: m_parent(nullptr)
+		, m_thisRevision(0)
+		, m_childrenRevision(0)
+	{}
+
+
+	void SetThisRevision(int rev) { m_thisRevision = rev; }
+	void SetChildrenRevision(int rev) { m_childrenRevision = rev; }
+
+LN_INTERNAL_ACCESS:
+	void SetParentContent(DocumentContentElement* parent) { m_parent = parent; IncreaseRevision(); }
+	int GetThisRevision() const { return m_thisRevision; }
+	int GetChildrenRevision() const { return m_childrenRevision; }
+	void IncreaseRevision() { m_thisRevision++; if (m_parent != nullptr) { m_parent->m_childrenRevision++; } }
+
+private:
+	DocumentContentElement*		m_parent;
+	int							m_thisRevision;
+	int							m_childrenRevision;
+};
+
+
+
 /**
 	@brief
 */
 class Document
-	: public Object
+	: public DocumentContentElement
 {
 public:
 	Document();
@@ -44,11 +76,12 @@ public:
 
 LN_INTERNAL_ACCESS:
 	void Replace(int offset, int length, const StringRef& text);
+	const List<RefPtr<Block>>& GetBlocks() const { return m_blockList; }
 
 private:
-	void Replace(int offset, int length, const UTF32* text, int len);
+	void ReplaceInternal(int offset, int length, const UTF32* text, int len);
 
-	ln::detail::DocumentsManager*		m_manager;
+	ln::detail::DocumentsManager*	m_manager;
 	List<RefPtr<Block>>				m_blockList;
 };
 
@@ -56,7 +89,7 @@ private:
 	@brief
 */
 class TextElement
-	: public Object
+	: public DocumentContentElement
 {
 public:
 
@@ -104,16 +137,24 @@ LN_CONSTRUCT_ACCESS:
 LN_INTERNAL_ACCESS:
 	ln::detail::DocumentsManager* GetManager() const { return m_manager; }
 	virtual InternalTextElementType GetInternalTextElementType() const;
-	void SetParent(TextElement* parent) { m_parent = parent; }
-	TextElement* GetParent() const { return m_parent; }
+	//void SetParent(TextElement* parent) { m_parent = parent; }
+	//TextElement* GetParent() const { return m_parent; }
+	//int GetThisRevision() const { return m_thisRevision; }
+	//int GetChildrenRevision() const { return m_childrenRevision; }
+	bool IsDeleted() const { return m_deleted; }
 
 private:
 	ln::detail::DocumentsManager*		m_manager;
-	TextElement*						m_parent;
+	//TextElement*						m_parent;
 	ln::detail::FontData				m_fontData;
 	RefPtr<Brush>			m_foreground;
 	bool					m_fontDataModified;
 
+
+	//int								m_thisRevision;
+	//int								m_childrenRevision;
+
+	bool					m_deleted;
 };
 
 /**
@@ -186,10 +227,15 @@ public:
 protected:
 	// TextElement interface
 	virtual void OnFontDataChanged(const ln::detail::FontData& newData) override;
+	virtual InternalTextElementType GetInternalTextElementType() const;
+
+LN_INTERNAL_ACCESS:
+	const UTF32* GetText() const { return m_text.c_str(); }
+	int GetLength() const { return m_text.GetLength(); }
 
 private:
 	GenericStringBuilderCore<UTF32>	m_text;
-	RefPtr<GlyphRun>				m_glyphRun;
+	//RefPtr<GlyphRun>				m_glyphRun;
 };
 
 /**
@@ -226,63 +272,130 @@ private:
 
 
 
-// Inline の Visual 要素
-class VisualInline
+
+
+
+
+class VisualBlock;
+
+
+
+// 1文字分 の Visual 要素
+class VisualGlyph
 	: public Object
 {
 public:
 
+	RectF	m_localRect;
+
+LN_CONSTRUCT_ACCESS:
+	VisualGlyph();
+	virtual ~VisualGlyph();
+	void Initialize();
+
+LN_INTERNAL_ACCESS:
+	//void MeasureLayout(const Size& availableSize);
+	//void ArrangeLayout(const RectF& finalLocalRect);
+	//const Size& GetDesiredSize() const { return m_desiredSize; }
+
+	void Render(DrawList* renderer);
+
+private:
+	//Size	m_desiredSize;
+};
+
+
+// Visual 要素
+class VisualTextElement
+	: public DocumentContentElement
+{
+public:
+
+protected:
+	VisualTextElement();
+	virtual ~VisualTextElement();
+
+	//int							m_thisRevision;
+	//int							m_childrenRevision;
+
+};
+
+// Inline の Visual 要素
+class VisualInline
+	: public VisualTextElement
+{
+public:
+
+LN_CONSTRUCT_ACCESS:
+	VisualInline();
+	virtual ~VisualInline();
+	void Initialize(Inline* inl);
+
+LN_INTERNAL_ACCESS:
+	void MeasureLayout(const Size& availableSize, VisualBlock* rootBlock);
+	//void ArrangeLayout(const RectF& finalLocalRect);
+	//void Render(const Matrix& transform, ln::detail::IDocumentsRenderer* renderer);
+
+private:
 	RefPtr<Inline>	m_inline;
 
 	//TextElement*	m_element;
 	//int				m_documentLength;	// Document 上での TextLength
-
-};
-
+	RefPtr<GlyphRun>	m_glyphRun;
 
 
-// 物理行
-class VisualLine
-	: public Object
-{
-public:
-
-private:
-public:	// TODO:
-	List<RefPtr<VisualTextElement>>	m_visualTextElementList;
 };
 
 
 // Block の Visual 要素
 class VisualBlock
-	: public Object
+	: public VisualTextElement
 {
 public:
 	void SetBlock(Block* block);
+
+	bool IsModelDeleted() const;
+
+LN_CONSTRUCT_ACCESS:
+	VisualBlock();
+	virtual ~VisualBlock();
+	void Initialize(Block* block);
+
+LN_INTERNAL_ACCESS:
+	void MeasureLayout(const Size& availableSize);
+	void ArrangeLayout(const RectF& finalLocalRect);
+	void Render(DrawList* renderer);
+	void AddVisualGlyph(VisualGlyph* glyph) { m_visualGlyphs.Add(glyph); }
 
 private:
 	void RebuildVisualLineList();
 
 	RefPtr<Block>				m_block;
-	List<RefPtr<VisualLine>>	m_visualLineList;
+	List<RefPtr<VisualInline>>	m_visualInlines;
+	List<RefPtr<VisualGlyph>>	m_visualGlyphs;
 };
 
 //
 class DocumentView
-	: public Object
+	: public DocumentContentElement
 {
 public:
 
 LN_CONSTRUCT_ACCESS:
-	DocumentView() = default;
-	virtual ~DocumentView() = default;
+	DocumentView();
+	virtual ~DocumentView();
 	void Initialize(Document* document);
 
 LN_INTERNAL_ACCESS:
-	void Render(const Matrix& transform, ln::detail::IDocumentsRenderer* renderer);
+	void MeasureLayout(const Size& availableSize);
+	void ArrangeLayout(const RectF& finalLocalRect);
+	void Render(DrawList* renderer);
 
 private:
-	Document*	m_document;
+	Document*					m_document;
+	//int							m_thisRevision;
+	//int							m_childrenRevision;
+	List<RefPtr<VisualBlock>>	m_visualBlocks;
 };
 
 
