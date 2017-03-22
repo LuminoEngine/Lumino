@@ -193,9 +193,20 @@ set(LN_SOURCES_Graphics
 	Include/Lumino/Graphics/ImageEffect/BlurImageEffect.h
 	Include/Lumino/Graphics/ImageEffect/ScreenMotionBlurImageEffect.h
 	Include/Lumino/Graphics/ImageEffect/ToneImageEffect.h
-	../../External//GL/glew.c
-	../../External//nanovg/nanovg.c
-	../../External//nanovg/nanovg.h
+	../../External/GL/glew.c
+	../../External/nanovg/nanovg.c
+	../../External/nanovg/nanovg.h
+	../../External/glues/source/glues.h
+	../../External/glues/source/libtess/tessmono.c
+	../../External/glues/source/libtess/dict.c
+	../../External/glues/source/libtess/geom.c
+	../../External/glues/source/libtess/memalloc.c
+	../../External/glues/source/libtess/mesh.c
+	../../External/glues/source/libtess/normal.c
+	../../External/glues/source/libtess/priorityq.c
+	../../External/glues/source/libtess/render.c
+	../../External/glues/source/libtess/sweep.c
+	../../External/glues/source/libtess/tess.c
 	Source/Base/GeometryStructs.cpp
 	Source/Graphics/Bitmap.cpp
 	Source/Graphics/BitmapPainter.cpp
@@ -285,6 +296,8 @@ set(LN_SOURCES_Graphics_Text
 	Source/Graphics/Text/FontManager.h
 	Source/Graphics/Text/FreeTypeFont.cpp
 	Source/Graphics/Text/FreeTypeFont.h
+	Source/Graphics/Text/FreeTypeFontTessellator.cpp
+	Source/Graphics/Text/FreeTypeFontTessellator.h
 	Source/Graphics/Text/GlyphRun.cpp
 	Source/Graphics/Text/TextLayoutEngine.cpp
 	Source/Graphics/Text/TextLayoutEngine.h

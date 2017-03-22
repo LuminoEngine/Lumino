@@ -765,7 +765,7 @@ int StringTraits::CheckNewLineSequence(const T* start, const T* end)
 template int StringTraits::CheckNewLineSequence<byte_t>(const byte_t* start, const byte_t* end);
 template int StringTraits::CheckNewLineSequence<char>(const char* start, const char* end);
 template int StringTraits::CheckNewLineSequence<wchar_t>(const wchar_t* start, const wchar_t* end);
-template int StringTraits::CheckNewLineSequence<char32_t>(const char32_t* start, const char32_t* end);
+template int StringTraits::CheckNewLineSequence<UTF32>(const UTF32* start, const UTF32* end);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
@@ -787,7 +787,7 @@ bool StringTraits::IndexOfNewLineSequence(const TChar* start, const TChar* end, 
 }
 template bool StringTraits::IndexOfNewLineSequence<char>(const char* start, const char* end, int* outIndex, int* outNewLineCodeCount);
 template bool StringTraits::IndexOfNewLineSequence<wchar_t>(const wchar_t* start, const wchar_t* end, int* outIndex, int* outNewLineCodeCount);
-template bool StringTraits::IndexOfNewLineSequence<char32_t>(const char32_t* start, const char32_t* end, int* outIndex, int* outNewLineCodeCount);
+template bool StringTraits::IndexOfNewLineSequence<UTF32>(const UTF32* start, const UTF32* end, int* outIndex, int* outNewLineCodeCount);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
