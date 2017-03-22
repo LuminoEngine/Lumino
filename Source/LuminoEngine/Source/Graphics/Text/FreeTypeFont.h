@@ -89,7 +89,11 @@ public:
 
 	virtual FontManager* GetManager() const { return m_manager; }
 
-private:
+	FTC_FaceID GetFTCFaceId() const { return m_ftFaceID; }
+	FT_Face GetFTFace() const { return m_ftFace; }
+	FT_Int GetFTCacheMapIndex() const { return m_ftCacheMapIndex; }
+
+LN_INTERNAL_ACCESS:	// TODO
 	void Dispose();
 	void UpdateFont();
 	void RefreshBitmap(Bitmap* bitmap, FT_Bitmap* ftBitmap);

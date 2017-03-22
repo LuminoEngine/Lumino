@@ -1,11 +1,61 @@
 ﻿
+#define LN_INTERNAL_ACCESS				public
+#define LN_CONSTRUCT_ACCESS				public
+#define LN_PROTECTED_INTERNAL_ACCESS	public
 #include <LuminoEngine.h>
+
+#include "../../../../External/glues/source/glues.h"
+#include "../../Source/Graphics/Text/FreeTypeFontTessellator.h"
+
 using namespace ln;
+
+
+GLvoid /*CALLBACK*/ tessBegin(GLenum type, void *tessellationSetAddress) {
+	//TessellationSet &tessellationSet = *static_cast<TessellationSet *>(tessellationSetAddress);
+	//tessellationSet.Type = type;
+	//tessellationSet.IntermediateVertexIndex1 = -1;
+	//tessellationSet.IntermediateVertexIndex2 = -1;
+}
+
+GLvoid /*CALLBACK*/ tessEnd(void *tessellationSetAddress) {
+	//TessellationSet &tessellationSet = *static_cast<TessellationSet *>(tessellationSetAddress);
+}
+
+GLvoid /*CALLBACK*/ tessVertex(void *vertexData, void *tessellationSetAddress) {
+	//TessellationSet &tessellationSet = *static_cast<TessellationSet *>(tessellationSetAddress);
+
+}
+GLvoid /*CALLBACK*/ tessCombine(
+	GLdouble coords[3], void *vertexData[4], GLfloat weight[4], void **newVertexData,
+	void *tessellationSetAddress
+	) {
+}
 
 
 void UIControlsGallery()
 {
 	Engine::Initialize();
+
+
+
+
+	auto font = Font::GetDefault();
+
+	detail::Filled filled;
+	filled.Initialize();
+	filled.renderGlyph(static_cast<detail::FreeTypeFont*>(font->ResolveRawFont()), 'A');
+
+
+
+
+
+
+
+
+
+
+
+
 
 	auto* mainWindow = Engine::GetMainWindow();
 	mainWindow->SetLayoutPanel(UIStackPanel::Create());
@@ -22,6 +72,65 @@ void UIControlsGallery()
 	textbox1->SetText(_T("Hello, world!"));
 	textbox1->foreground = Brush::Blue;
 	mainWindow->AddChild(textbox1);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	GLUtesselator *tessellator = ::gluNewTess();
+
+	::gluTessCallback(tessellator, GLU_TESS_BEGIN_DATA, (GLvoid (*)())tessBegin);
+	::gluTessCallback(tessellator, GLU_TESS_END_DATA, (GLvoid (*)())tessEnd);
+	::gluTessCallback(tessellator, GLU_TESS_VERTEX_DATA, (GLvoid (*)())tessVertex);
+	::gluTessCallback(tessellator, GLU_TESS_COMBINE_DATA, (GLvoid (*)())tessCombine);
+
+	// The character is announced to the tessellator as one polygon (though, technically,
+	// it could be several disjoint polygon shapes, which however is ok with the
+	// OpenGL GLU tessellator).
+	::gluTessBeginPolygon(tessellator, nullptr/*&tessellationSet*/);
+
+	// Iterate over all of the character's outlines and send these to the tessellator
+	//for each(VectorFontCharacterContent::Outline outline in characterContent->Outlines) {
+		::gluTessBeginContour(tessellator);
+
+		//for(
+		//	int index = outline.StartVertexIndex;
+		//	index < (outline.StartVertexIndex + outline.VertexCount);
+		//++index
+		//	) {
+		//	GLdouble coords[3] = {
+		//		static_cast<double>(tessellationSet.Vertices[index].first),
+		//		static_cast<double>(tessellationSet.Vertices[index].second),
+		//		0.0
+		//	};
+		GLfloat coords[3] = {0, 0, 0};
+
+			::gluTessVertex(tessellator, coords, nullptr/*tessellationSet.Indices[index]*/);
+		//}
+
+		::gluTessEndContour(tessellator);
+	//}
+
+	::gluTessEndPolygon(tessellator);
+	::gluDeleteTess(tessellator);
 	
 
 #if 0
