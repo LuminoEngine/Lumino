@@ -37,21 +37,41 @@ void UIControlsGallery()
 	Engine::Initialize();
 
 
+	Engine::GetDefaultSceneGraph3D()->visibleGridPlane = true;
+
+	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
+	Camera::GetMain3DCamera()->SetCameraBehavior(cb);
 
 
 	auto font = Font::GetDefault();
 
 	detail::Filled filled;
 	filled.Initialize();
-	filled.renderGlyph(static_cast<detail::FreeTypeFont*>(font->ResolveRawFont()), 'A');
+	filled.DecomposeOutlineVertices(static_cast<detail::FreeTypeFont*>(font->ResolveRawFont()), 'A');
+	filled.Tessellate();
 
 
+	auto meshRes = MeshResource::Create();
+	meshRes->ResizeVertexBuffer(filled.m_vertexList.GetCount());
+	meshRes->AddSections(1);
+	meshRes->GetSection(0)->MaterialIndex = 0;
+	meshRes->GetSection(0)->StartIndex = 0;
+	meshRes->GetSection(0)->PrimitiveNum = filled.m_triangleIndexList.GetCount() / 3;
+	meshRes->GetSection(0)->primitiveType = PrimitiveType_TriangleList;
+	for (int i = 0; i < filled.m_vertexList.GetCount(); i++)
+	{
+		meshRes->SetPosition(i, filled.m_vertexList[i]);
+	}
+	meshRes->ResizeIndexBuffer(filled.m_triangleIndexList.GetCount(), IndexBufferFormat_UInt16);
+	for (int i = 0; i < filled.m_triangleIndexList.GetCount(); i++)
+	{
+		meshRes->SetIndex(i, filled.m_triangleIndexList[i]);
+	}
 
+	auto mesh1 = NewObject<StaticMeshModel>(meshRes->m_manager, meshRes);
+	mesh1->AddMaterial(DiffuseMaterial::Create());
 
-
-
-
-
+	auto mesh2 = StaticMesh::Create(mesh1);
 
 
 

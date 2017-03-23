@@ -13,6 +13,14 @@ LN_NAMESPACE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(StaticMesh, VisualNode);
 
 //------------------------------------------------------------------------------
+RefPtr<StaticMesh> StaticMesh::Create(StaticMeshModel* staticMeshModel)
+{
+	auto ptr = RefPtr<StaticMesh>::MakeRef();
+	ptr->Initialize(detail::EngineDomain::GetDefaultSceneGraph3D(), staticMeshModel);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
 RefPtr<StaticMesh> StaticMesh::Create(const StringRef& filePath)
 {
 	auto ptr = RefPtr<StaticMesh>::MakeRef();

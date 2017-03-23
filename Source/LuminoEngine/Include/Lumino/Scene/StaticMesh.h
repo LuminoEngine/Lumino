@@ -14,6 +14,9 @@ class StaticMesh
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
+
+	static RefPtr<StaticMesh> Create(StaticMeshModel* staticMeshModel);
+
 	static RefPtr<StaticMesh> Create(const StringRef& filePath);
 
 	static RefPtr<StaticMesh> CreatePlane(const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags = MeshCreationFlags::None);

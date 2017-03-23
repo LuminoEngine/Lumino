@@ -81,9 +81,15 @@ class Filled
 {
 public:
 	void Initialize();
+
+	void DecomposeOutlineVertices(FreeTypeFont* font, UTF32 utf32code);
+
+	void Tessellate();
+
+
 	void renderGlyph(FreeTypeFont* font, UTF32 ch);
 
-private:
+public:
 	enum Coordinates {
 		X, //!< The X component of space
 		Y, //!< The Y component of space
@@ -125,6 +131,28 @@ private:
 	}
 
 
+	struct ContourOutline
+	{
+		int	startIndex = 0;
+		int	indexCount = 0;
+	};
+
+	List<ContourOutline>	m_contourOutlineList;
+	List<Vector3>			m_vertexList;
+
+
+	struct Contour
+	{
+		int	primitiveType;	// GLenum (GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP, or GL_TRIANGLES)
+
+		// TriangleFan と、TriangleStrip の後続頂点のインデックス。三角形を構成する1つめの頂点番号。
+		int	intermediateVertexIndex1;
+
+		// TriangleFan と、TriangleStrip の後続頂点のインデックス。三角形を構成する2つめの頂点番号。
+		int	intermediateVertexIndex2;
+	};
+	List<Contour>	m_contourList;
+	List<uint16_t>	m_triangleIndexList;	// 要素数は3の倍数となる
 
 
 
@@ -136,7 +164,7 @@ protected:
 	//! Until I can figure out how to shift the glyph outside the context
 	//! of this class, I guess this has got to stay (but it is redundant
 	//! to extrusion_.depth_)
-	GLfloat depth_offset_;
+	//GLfloat depth_offset_;
 
 public:
 	///*!
@@ -171,17 +199,15 @@ public:
 protected:
 	
 private:
-	static int ftMoveToCallback(FT_Vector* to, Filled* filled);
-	static int ftLineToCallback(FT_Vector* to, Filled* filled);
-	static int ftConicToCallback(FT_Vector* control, FT_Vector* to, Filled* filled);
-	static int ftCubicToCallback(FT_Vector* control1, FT_Vector* control2,FT_Vector* to, Filled* filled);
+	static int ftMoveToCallback(FT_Vector* to, Filled* thisData);
+	static int ftLineToCallback(FT_Vector* to, Filled* thisData);
+	static int ftConicToCallback(FT_Vector* control, FT_Vector* to, Filled* thisData);
+	static int ftCubicToCallback(FT_Vector* control1, FT_Vector* control2, FT_Vector* to, Filled* thisData);
 
-	static void beginCallback(GLenum primitiveType);
-	static void endCallback();
-	static void vertexDataCallback(VertexInfo* vertex, void* userData);
-	static void combineCallback(GLdouble coords[3], void* vertex_data[4],
-		GLfloat weight[4], void** out_data,
-		Filled* filled);
+	static void tessBeginCallback(GLenum primitiveType, Filled* thisData);
+	static void tessEndCallback(Filled* thisData);
+	static void vertexDataCallback(void* vertexData, Filled* thisData);
+	static void combineCallback(GLdouble coords[3], void* vertex_data[4], GLfloat weight[4], void** out_data, Filled* thisData);
 	static void errorCallback(GLenum error_code);
 };
 

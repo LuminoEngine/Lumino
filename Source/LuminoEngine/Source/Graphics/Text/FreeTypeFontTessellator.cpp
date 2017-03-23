@@ -9,20 +9,6 @@ LN_NAMESPACE_BEGIN
 namespace detail {
 
 
-	//Filled::Filled(const char* filename, float point_size, FT_UInt resolution)
-	//	: Polygonal(filename, point_size, resolution)
-	//{
-	//	if (!isValid()) return;
-
-	//	init();
-	//}
-
-	//Filled::Filled(FT_Face face, float point_size, FT_UInt resolution)
-	//	: Polygonal(face, point_size, resolution)
-	//{
-	//	init();
-	//}
-
 
 	Vector3 Filled::FTVectorToLNVector(const FT_Vector* ftVec)
 	{
@@ -34,8 +20,6 @@ namespace detail {
 
 	void Filled::Initialize()
 	{
-		depth_offset_ = 0;
-
 		m_ftOutlineFuncs.move_to = (FT_Outline_MoveTo_Func)ftMoveToCallback;
 		m_ftOutlineFuncs.line_to = (FT_Outline_LineTo_Func)ftLineToCallback;
 		m_ftOutlineFuncs.conic_to = (FT_Outline_ConicTo_Func)ftConicToCallback;
@@ -45,8 +29,8 @@ namespace detail {
 
 		m_gluTesselator = gluNewTess();
 
-		gluTessCallback(m_gluTesselator, GLU_TESS_BEGIN, (GLUTessCallback)beginCallback);
-		gluTessCallback(m_gluTesselator, GLU_TESS_END, (GLUTessCallback)endCallback);
+		gluTessCallback(m_gluTesselator, GLU_TESS_BEGIN_DATA, (GLUTessCallback)tessBeginCallback);
+		gluTessCallback(m_gluTesselator, GLU_TESS_END_DATA, (GLUTessCallback)tessEndCallback);
 		gluTessCallback(m_gluTesselator, GLU_TESS_VERTEX_DATA, (GLUTessCallback)vertexDataCallback);
 		gluTessCallback(m_gluTesselator, GLU_TESS_COMBINE_DATA, (GLUTessCallback)combineCallback);
 		gluTessCallback(m_gluTesselator, GLU_TESS_ERROR, (GLUTessCallback)errorCallback);
@@ -57,6 +41,361 @@ namespace detail {
 		gluDeleteTess(m_gluTesselator);
 	}
 
+
+void Filled::DecomposeOutlineVertices(FreeTypeFont* font, UTF32 utf32code)
+{
+	font->UpdateFont();
+	FT_Face face = font->GetFTFace();
+
+	//FT_OutlineGlyph g;
+	//FT_Error error = FT_Get_Glyph(face->glyph, (FT_Glyph*)&g);
+
+	FT_UInt glyphIndex = FTC_CMapCache_Lookup(
+		font->GetManager()->GetFTCacheMapCache(),
+		font->GetFTCFaceId(),
+		font->GetFTCacheMapIndex(),
+		utf32code);
+
+	//FT_Glyph glyph;
+	FT_OutlineGlyph g;
+	FTC_ImageTypeRec imageType = {};
+	imageType.face_id = font->GetFTCFaceId();
+	imageType.height = 12;
+	imageType.width = 0;
+	imageType.flags = 0;
+	FT_Error error = FTC_ImageCache_Lookup(
+		font->GetManager()->GetFTCImageCache(),
+		&imageType,
+		glyphIndex,
+		(FT_Glyph*)&g,
+		NULL);
+
+
+	m_vectorScale = 0.5f;//(m_pointSize * m_resolution) / (72. * face->units_per_EM);
+
+
+
+	error = FT_Outline_Decompose(&g->outline, &m_ftOutlineFuncs, this);
+
+	//FT_Done_Glyph((FT_Glyph)g);
+
+
+	// 1つ前の Outline があれば、頂点数を確定させる
+	if (!m_contourOutlineList.IsEmpty())
+	{
+		ContourOutline& outline = m_contourOutlineList.GetLast();
+		outline.indexCount = m_vertexList.GetCount() - outline.startIndex;
+	}
+}
+
+
+// ポイントを移動するだけ。まだ点は置かない。
+int Filled::ftMoveToCallback(FT_Vector* to, Filled* thisData)
+{
+	// 1つ前の Outline があれば、頂点数を確定させる
+	if (!thisData->m_contourOutlineList.IsEmpty())
+	{
+		ContourOutline& outline = thisData->m_contourOutlineList.GetLast();
+		outline.indexCount = thisData->m_vertexList.GetCount() - outline.startIndex;
+	}
+
+	// 新しい Contour を開始する
+	ContourOutline contour;
+	contour.startIndex = thisData->m_vertexList.GetCount();
+	thisData->m_contourOutlineList.Add(contour);
+
+	thisData->m_lastVertex = FTVectorToLNVector(to);
+	//printf("moveto ");
+	//thisData->m_lastVertex.Print();
+	return 0;
+}
+
+int Filled::ftLineToCallback(FT_Vector* to, Filled* thisData)
+{
+	Vector3 v = FTVectorToLNVector(to);
+
+	thisData->m_vertexList.Add(v * thisData->m_vectorScale);
+
+	thisData->m_lastVertex = v;
+	//thisData->m_lastVertex.Print();
+	return 0;
+}
+
+int Filled::ftConicToCallback(FT_Vector* control, FT_Vector* to, Filled* thisData)
+{
+	Vector3 to_vertex = FTVectorToLNVector(to);
+	Vector3 control_vertex = FTVectorToLNVector(control);
+
+	double b[2], c[2], d[2], f[2], df[2], d2f[2];
+
+	b[X] = thisData->m_lastVertex.x - 2 * control_vertex.x +
+		to_vertex.x;
+	b[Y] = thisData->m_lastVertex.y - 2 * control_vertex.y +
+		to_vertex.y;
+
+	c[X] = -2 * thisData->m_lastVertex.x + 2 * control_vertex.x;
+	c[Y] = -2 * thisData->m_lastVertex.y + 2 * control_vertex.y;
+
+	d[X] = thisData->m_lastVertex.x;
+	d[Y] = thisData->m_lastVertex.y;
+
+	f[X] = d[X];
+	f[Y] = d[Y];
+	df[X] = c[X] * thisData->m_delta1 + b[X] * thisData->m_delta2;
+	df[Y] = c[Y] * thisData->m_delta1 + b[Y] * thisData->m_delta2;
+	d2f[X] = 2 * b[X] * thisData->m_delta2;
+	d2f[Y] = 2 * b[Y] * thisData->m_delta2;
+
+	for (unsigned int i = 0; i < thisData->m_tessellationStep - 1; i++)
+	{
+		f[X] += df[X];
+		f[Y] += df[Y];
+
+		Vector3 v(f[0], f[1], 0);
+		v *= thisData->m_vectorScale;
+		thisData->m_vertexList.Add(v);
+
+		df[X] += d2f[X];
+		df[Y] += d2f[Y];
+	}
+
+	Vector3 v = FTVectorToLNVector(to);
+	v *= thisData->m_vectorScale;
+	thisData->m_vertexList.Add(v);
+
+	thisData->m_lastVertex = to_vertex;
+
+	return 0;
+}
+
+int Filled::ftCubicToCallback(FT_Vector* control1, FT_Vector* control2, FT_Vector* to, Filled* thisData)
+{
+	Vector3 to_vertex = FTVectorToLNVector(to);
+	Vector3 control1_vertex = FTVectorToLNVector(control1);
+	Vector3 control2_vertex = FTVectorToLNVector(control2);
+
+	double a[2], b[2], c[2], d[2], f[2], df[2], d2f[2], d3f[2];
+
+	a[X] = -thisData->m_lastVertex.x + 3 * control1_vertex.x
+		- 3 * control2_vertex.x + to_vertex.x;
+	a[Y] = -thisData->m_lastVertex.y + 3 * control1_vertex.y
+		- 3 * control2_vertex.y + to_vertex.y;
+
+	b[X] = 3 * thisData->m_lastVertex.x - 6 * control1_vertex.x +
+		3 * control2_vertex.x;
+	b[Y] = 3 * thisData->m_lastVertex.y - 6 * control1_vertex.y +
+		3 * control2_vertex.y;
+
+	c[X] = -3 * thisData->m_lastVertex.x + 3 * control1_vertex.x;
+	c[Y] = -3 * thisData->m_lastVertex.y + 3 * control1_vertex.y;
+
+	d[X] = thisData->m_lastVertex.x;
+	d[Y] = thisData->m_lastVertex.y;
+
+	f[X] = d[X];
+	f[Y] = d[Y];
+	df[X] = c[X] * thisData->m_delta1 + b[X] * thisData->m_delta2
+		+ a[X] * thisData->m_delta3;
+	df[Y] = c[Y] * thisData->m_delta1 + b[Y] * thisData->m_delta2
+		+ a[Y] * thisData->m_delta3;
+	d2f[X] = 2 * b[X] * thisData->m_delta2 + 6 * a[X] * thisData->m_delta3;
+	d2f[Y] = 2 * b[Y] * thisData->m_delta2 + 6 * a[Y] * thisData->m_delta3;
+	d3f[X] = 6 * a[X] * thisData->m_delta3;
+	d3f[Y] = 6 * a[Y] * thisData->m_delta3;
+
+	for (unsigned int i = 0; i < thisData->m_tessellationStep - 1; i++)
+	{
+		f[X] += df[X];
+		f[Y] += df[Y];
+
+		Vector3 v(f[0], f[1], 0);
+		v *= thisData->m_vectorScale;
+		thisData->m_vertexList.Add(v);
+
+		df[X] += d2f[X];
+		df[Y] += d2f[Y];
+		d2f[X] += d3f[X];
+		d2f[Y] += d3f[Y];
+	}
+
+	Vector3 v = FTVectorToLNVector(to);
+	v *= thisData->m_vectorScale;
+	thisData->m_vertexList.Add(v);
+
+	thisData->m_lastVertex = to_vertex;
+
+	return 0;
+}
+
+
+void Filled::Tessellate()
+{
+	::gluTessBeginPolygon(m_gluTesselator, this);
+
+	for (const ContourOutline& outline : m_contourOutlineList)
+	{
+		::gluTessBeginContour(m_gluTesselator);
+
+		for (int i = 0; i < outline.indexCount; i++)
+		{
+			int vertexIndex = outline.startIndex + i;
+			const Vector3& v = m_vertexList[vertexIndex];
+			GLfloat coords[3] = {v.x, v.y, 0};
+			::gluTessVertex(m_gluTesselator, coords, reinterpret_cast<void*>(vertexIndex));
+		}
+
+		::gluTessEndContour(m_gluTesselator);
+	}
+
+	::gluTessEndPolygon(m_gluTesselator);
+}
+
+
+void Filled::tessBeginCallback(GLenum primitiveType, Filled* thisData)
+{
+	Contour c;
+	c.primitiveType = primitiveType;
+	c.intermediateVertexIndex1 = -1;
+	c.intermediateVertexIndex2 = -1;
+	thisData->m_contourList.Add(c);
+}
+
+void Filled::tessEndCallback(Filled* thisData)
+{
+}
+
+// vertex : gluTessVertex() の data
+// 点は時計回りで送られてくるようだ。
+void Filled::vertexDataCallback(void* vertexData, Filled* thisData)
+{
+	Contour* contour = &thisData->m_contourList.GetLast();
+	int vertexIndex = reinterpret_cast<int>(vertexData);
+
+	switch (contour->primitiveType)
+	{
+		// 通常の三角形リスト。3頂点が順に送られてくる。
+		case GL_TRIANGLES:
+		{
+			if (contour->intermediateVertexIndex1 == -1)
+			{
+				// 1つめの点
+				contour->intermediateVertexIndex1 = vertexIndex;
+				contour->intermediateVertexIndex2 = -1;
+			}
+			else if (contour->intermediateVertexIndex2 == -1)
+			{
+				// 2つめの点
+				contour->intermediateVertexIndex2 = vertexIndex;
+			}
+			else
+			{
+				// 3つの点ができあがった
+				thisData->m_triangleIndexList.Add(contour->intermediateVertexIndex1);
+				thisData->m_triangleIndexList.Add(vertexIndex);
+				thisData->m_triangleIndexList.Add(contour->intermediateVertexIndex2);
+				contour->intermediateVertexIndex1 = -1;
+			}
+			break;
+		}
+		// TriangleStrip は最後の2点を再利用する。
+		case GL_TRIANGLE_STRIP:
+		{
+			if (contour->intermediateVertexIndex1 == -1)
+			{
+				contour->intermediateVertexIndex1 = vertexIndex;
+			}
+			else if (contour->intermediateVertexIndex2 == -1)
+			{
+				contour->intermediateVertexIndex2 = vertexIndex;
+			}
+			else
+			{
+#if 1
+
+				if (thisData->m_triangleIndexList.GetCount() & 1)	// 奇数回
+				{
+					thisData->m_triangleIndexList.Add(contour->intermediateVertexIndex1);
+					thisData->m_triangleIndexList.Add(contour->intermediateVertexIndex2);
+					thisData->m_triangleIndexList.Add(vertexIndex);
+				}
+				else	// 偶数回 (初回含む)
+				{
+					thisData->m_triangleIndexList.Add(contour->intermediateVertexIndex1);
+					thisData->m_triangleIndexList.Add(vertexIndex);
+					thisData->m_triangleIndexList.Add(contour->intermediateVertexIndex2);
+				}
+				contour->intermediateVertexIndex1 = contour->intermediateVertexIndex2;
+				contour->intermediateVertexIndex2 = vertexIndex;
+#else
+				if (thisData->m_triangleIndexList.GetCount() & 1)	// 奇数回
+				{
+					thisData->m_triangleIndexList.Add(contour->intermediateVertexIndex1);
+					thisData->m_triangleIndexList.Add(vertexIndex);
+					thisData->m_triangleIndexList.Add(contour->intermediateVertexIndex2);
+				}
+				else	// 偶数回 (初回含む)
+				{
+					thisData->m_triangleIndexList.Add(contour->intermediateVertexIndex1);
+					thisData->m_triangleIndexList.Add(contour->intermediateVertexIndex2);
+					thisData->m_triangleIndexList.Add(vertexIndex);
+
+
+					thisData->m_vertexList[contour->intermediateVertexIndex1].Print();
+					thisData->m_vertexList[contour->intermediateVertexIndex2].Print();
+					thisData->m_vertexList[vertexIndex].Print();
+
+				}
+				contour->intermediateVertexIndex1 = contour->intermediateVertexIndex2;
+				contour->intermediateVertexIndex2 = vertexIndex;
+#endif
+			}
+			break;
+		}
+		// TriangleFan は、最初の点をずっと再利用する。
+		case GL_TRIANGLE_FAN:
+		{
+			if (contour->intermediateVertexIndex1 == -1)
+			{
+				contour->intermediateVertexIndex1 = vertexIndex;
+			}
+			else if (contour->intermediateVertexIndex2 == -1)
+			{
+				contour->intermediateVertexIndex2 = vertexIndex;
+			}
+			else
+			{
+				thisData->m_triangleIndexList.Add(contour->intermediateVertexIndex1);
+				thisData->m_triangleIndexList.Add(vertexIndex);
+				thisData->m_triangleIndexList.Add(contour->intermediateVertexIndex2);
+				contour->intermediateVertexIndex2 = vertexIndex;
+			}
+			break;
+		}
+	}
+}
+
+void Filled::combineCallback(GLdouble coords[3], void* vertex_data[4], GLfloat weight[4], void** out_data, Filled* thisData)
+{
+	(void)vertex_data;
+	(void)weight;
+	//    std::cerr << "called combine" << std::endl;
+	//VertexInfo* vertex = new VertexInfo(coords);
+	//*out_data = vertex;
+	//filled->extraVertices().push_back(vertex);
+	LN_ASSERT(0);
+}
+
+void Filled::errorCallback(GLenum error_code)
+{
+	//std::cerr << "hmm. error during tessellation?:" << gluErrorString(error_code) << std::endl;
+}
+
+
+
+
+
+
+#if 0
 	void Filled::renderGlyph(FreeTypeFont* font, UTF32 utf32code)
 	{
 		//FT_Error error = FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
@@ -233,7 +572,7 @@ namespace detail {
 		//vertex->v_[X] *= filled->m_vectorScale;
 		//vertex->v_[Y] *= filled->m_vectorScale;
 
-		gluTessVertex(filled->m_gluTesselator, (GLfloat*)&vertex, nullptr/*vertex*/);
+		gluTessVertex(filled->m_gluTesselator, (GLfloat*)&vertex, (void*)1);//nullptr/*vertex*/);
 
 		//filled->vertices_.push_back(vertex);
 
@@ -394,7 +733,9 @@ namespace detail {
 
 	void Filled::beginCallback(GLenum primitiveType)
 	{
+		printf("");
 		//GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP, or GL_TRIANGLES
+		
 	}
 
 	void Filled::endCallback()
@@ -402,6 +743,7 @@ namespace detail {
 
 	}
 
+	// vertex : gluTessVertex() の data
 	void Filled::vertexDataCallback(VertexInfo* vertex, void* userData)
 	{
 		//glVertex3dv(vertex->v_);
@@ -424,6 +766,7 @@ namespace detail {
 	{
 		//std::cerr << "hmm. error during tessellation?:" << gluErrorString(error_code) << std::endl;
 	}
+#endif
 
 } // namespace detail
 LN_NAMESPACE_END
