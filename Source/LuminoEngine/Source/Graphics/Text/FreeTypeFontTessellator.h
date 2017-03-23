@@ -84,7 +84,11 @@ public:
 
 	void DecomposeOutlineVertices(FreeTypeFont* font, UTF32 utf32code);
 
+	void CalculateExtrusion();
+
 	void Tessellate();
+
+	void MakeEdgeStroke();
 
 
 	void renderGlyph(FreeTypeFont* font, UTF32 ch);
@@ -107,9 +111,20 @@ public:
 	bool contour_open_;	// 新しい輪郭が始まったかどうか。
 
 
-	using VertexInfo = Vector3;
+	//using VertexInfo = Vector3;
+	struct VertexInfo
+	{
+		Vector2	pos;
+		Vector2	extrusion;	// 押し出し方向
+		float	alpha;
+
+		VertexInfo(const Vector2& pos_)
+			: pos(pos_)
+			, alpha(1.0f)
+		{}
+	};
 	
-	VertexInfo	m_lastVertex;	// テッセレーションプロセス内で最後に処理した制御点
+	Vector2		m_lastVertex;	// テッセレーションプロセス内で最後に処理した制御点
 	float		m_vectorScale;
 
 
@@ -120,7 +135,7 @@ public:
 	float	m_delta2;
 	float	m_delta3;
 
-	static Vector3 FTVectorToLNVector(const FT_Vector* ftVec);
+	static Vector2 FTVectorToLNVector(const FT_Vector* ftVec);
 
 	void setTessellationSteps(int steps)
 	{
@@ -138,7 +153,7 @@ public:
 	};
 
 	List<ContourOutline>	m_contourOutlineList;
-	List<Vector3>			m_vertexList;
+	List<VertexInfo>		m_vertexList;
 
 
 	struct Contour

@@ -49,7 +49,7 @@ void UIControlsGallery()
 	filled.Initialize();
 	filled.DecomposeOutlineVertices(static_cast<detail::FreeTypeFont*>(font->ResolveRawFont()), 'A');
 	filled.Tessellate();
-
+	filled.MakeEdgeStroke();
 
 	auto meshRes = MeshResource::Create();
 	meshRes->ResizeVertexBuffer(filled.m_vertexList.GetCount());
@@ -60,7 +60,9 @@ void UIControlsGallery()
 	meshRes->GetSection(0)->primitiveType = PrimitiveType_TriangleList;
 	for (int i = 0; i < filled.m_vertexList.GetCount(); i++)
 	{
-		meshRes->SetPosition(i, filled.m_vertexList[i]);
+		meshRes->SetPosition(i, Vector3(filled.m_vertexList[i].pos, 0.0f));
+		meshRes->SetColor(i, Color(0, 0, 0, filled.m_vertexList[i].alpha));
+		//filled.m_vertexList[i].Print();
 	}
 	meshRes->ResizeIndexBuffer(filled.m_triangleIndexList.GetCount(), IndexBufferFormat_UInt16);
 	for (int i = 0; i < filled.m_triangleIndexList.GetCount(); i++)
@@ -69,7 +71,9 @@ void UIControlsGallery()
 	}
 
 	auto mesh1 = NewObject<StaticMeshModel>(meshRes->m_manager, meshRes);
-	mesh1->AddMaterial(DiffuseMaterial::Create());
+	auto mat1 = DiffuseMaterial::Create();
+	mat1->blendMode = BlendMode::Alpha;
+	mesh1->AddMaterial(mat1);
 
 	auto mesh2 = StaticMesh::Create(mesh1);
 

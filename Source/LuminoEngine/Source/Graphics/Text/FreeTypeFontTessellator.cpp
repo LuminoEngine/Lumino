@@ -10,12 +10,11 @@ namespace detail {
 
 
 
-	Vector3 Filled::FTVectorToLNVector(const FT_Vector* ftVec)
+	Vector2 Filled::FTVectorToLNVector(const FT_Vector* ftVec)
 	{
-		return Vector3(
+		return Vector2(
 			(double)(ftVec->x / 64) + (double)(ftVec->x % 64) / 64.,
-			(double)(ftVec->y / 64) + (double)(ftVec->y % 64) / 64.,
-			0);
+			(double)(ftVec->y / 64) + (double)(ftVec->y % 64) / 64.);
 	}
 
 	void Filled::Initialize()
@@ -86,6 +85,8 @@ void Filled::DecomposeOutlineVertices(FreeTypeFont* font, UTF32 utf32code)
 		ContourOutline& outline = m_contourOutlineList.GetLast();
 		outline.indexCount = m_vertexList.GetCount() - outline.startIndex;
 	}
+
+	CalculateExtrusion();
 }
 
 
@@ -112,7 +113,7 @@ int Filled::ftMoveToCallback(FT_Vector* to, Filled* thisData)
 
 int Filled::ftLineToCallback(FT_Vector* to, Filled* thisData)
 {
-	Vector3 v = FTVectorToLNVector(to);
+	Vector2 v = FTVectorToLNVector(to);
 
 	thisData->m_vertexList.Add(v * thisData->m_vectorScale);
 
@@ -123,8 +124,8 @@ int Filled::ftLineToCallback(FT_Vector* to, Filled* thisData)
 
 int Filled::ftConicToCallback(FT_Vector* control, FT_Vector* to, Filled* thisData)
 {
-	Vector3 to_vertex = FTVectorToLNVector(to);
-	Vector3 control_vertex = FTVectorToLNVector(control);
+	Vector2 to_vertex = FTVectorToLNVector(to);
+	Vector2 control_vertex = FTVectorToLNVector(control);
 
 	double b[2], c[2], d[2], f[2], df[2], d2f[2];
 
@@ -151,7 +152,7 @@ int Filled::ftConicToCallback(FT_Vector* control, FT_Vector* to, Filled* thisDat
 		f[X] += df[X];
 		f[Y] += df[Y];
 
-		Vector3 v(f[0], f[1], 0);
+		Vector2 v(f[0], f[1]);
 		v *= thisData->m_vectorScale;
 		thisData->m_vertexList.Add(v);
 
@@ -159,7 +160,7 @@ int Filled::ftConicToCallback(FT_Vector* control, FT_Vector* to, Filled* thisDat
 		df[Y] += d2f[Y];
 	}
 
-	Vector3 v = FTVectorToLNVector(to);
+	Vector2 v = FTVectorToLNVector(to);
 	v *= thisData->m_vectorScale;
 	thisData->m_vertexList.Add(v);
 
@@ -170,9 +171,9 @@ int Filled::ftConicToCallback(FT_Vector* control, FT_Vector* to, Filled* thisDat
 
 int Filled::ftCubicToCallback(FT_Vector* control1, FT_Vector* control2, FT_Vector* to, Filled* thisData)
 {
-	Vector3 to_vertex = FTVectorToLNVector(to);
-	Vector3 control1_vertex = FTVectorToLNVector(control1);
-	Vector3 control2_vertex = FTVectorToLNVector(control2);
+	Vector2 to_vertex = FTVectorToLNVector(to);
+	Vector2 control1_vertex = FTVectorToLNVector(control1);
+	Vector2 control2_vertex = FTVectorToLNVector(control2);
 
 	double a[2], b[2], c[2], d[2], f[2], df[2], d2f[2], d3f[2];
 
@@ -208,7 +209,7 @@ int Filled::ftCubicToCallback(FT_Vector* control1, FT_Vector* control2, FT_Vecto
 		f[X] += df[X];
 		f[Y] += df[Y];
 
-		Vector3 v(f[0], f[1], 0);
+		Vector2 v(f[0], f[1]);
 		v *= thisData->m_vectorScale;
 		thisData->m_vertexList.Add(v);
 
@@ -218,7 +219,7 @@ int Filled::ftCubicToCallback(FT_Vector* control1, FT_Vector* control2, FT_Vecto
 		d2f[Y] += d3f[Y];
 	}
 
-	Vector3 v = FTVectorToLNVector(to);
+	Vector2 v = FTVectorToLNVector(to);
 	v *= thisData->m_vectorScale;
 	thisData->m_vertexList.Add(v);
 
@@ -227,6 +228,40 @@ int Filled::ftCubicToCallback(FT_Vector* control1, FT_Vector* control2, FT_Vecto
 	return 0;
 }
 
+
+void Filled::CalculateExtrusion()
+{
+	for (const ContourOutline& outline : m_contourOutlineList)
+	{
+		int end = outline.startIndex + outline.indexCount;
+		for (int i = outline.startIndex; i < end; i++)
+		{
+			int iPrev = i - 1;
+			if (iPrev < outline.startIndex) iPrev = end - 1;
+			int iNext = i + 1;
+			if (iNext >= end) iNext = outline.startIndex;
+
+			auto& cur = m_vertexList[i];
+			auto& prev = m_vertexList[iPrev];
+			auto& next = m_vertexList[iNext];
+
+			Vector2 d0 = Vector2::Normalize(cur.pos - prev.pos);//cur.pos - prev.pos;//
+			Vector2 d1 = Vector2::Normalize(next.pos - cur.pos);//next.pos - cur.pos;//
+			//Vector2 v = prev.pos.x * next.pos.y - next.pos.x * prev.pos.y;
+			//Vector2::clo
+			float dlx0, dly0, dlx1, dly1, dmr2, cross, limit;
+			dlx0 = d0.y;//p0->dy;
+			dly0 = -d0.x;
+			dlx1 = d1.y;
+			dly1 = -d1.x;
+			// Calculate extrusions
+			// 進行方向の左側をさす
+			cur.extrusion.x = -(dlx0 + dlx1) * 0.5f;
+			cur.extrusion.y = -(dly0 + dly1) * 0.5f;
+			cur.extrusion.Normalize();
+		}
+	}
+}
 
 void Filled::Tessellate()
 {
@@ -239,7 +274,7 @@ void Filled::Tessellate()
 		for (int i = 0; i < outline.indexCount; i++)
 		{
 			int vertexIndex = outline.startIndex + i;
-			const Vector3& v = m_vertexList[vertexIndex];
+			const Vector2& v = m_vertexList[vertexIndex].pos;
 			GLfloat coords[3] = {v.x, v.y, 0};
 			::gluTessVertex(m_gluTesselator, coords, reinterpret_cast<void*>(vertexIndex));
 		}
@@ -250,6 +285,76 @@ void Filled::Tessellate()
 	::gluTessEndPolygon(m_gluTesselator);
 }
 
+
+void Filled::MakeEdgeStroke()
+{
+	for (const ContourOutline& outline : m_contourOutlineList)
+	{
+		int end = outline.startIndex + outline.indexCount;
+
+		float extRate = 0.075;
+
+		int i = outline.startIndex;
+		auto& cur = m_vertexList[i];
+
+		int iNextExt = 0;
+		int iStartExt = m_vertexList.GetCount();
+		int iCurExt = m_vertexList.GetCount();
+		m_vertexList.Add(cur.pos + cur.extrusion * extRate);
+		m_vertexList.GetLast().alpha = 0.0f;
+
+
+
+		for (int i = outline.startIndex; i < end; i++)
+		{
+			//int iPrev = i - 1;
+			//if (iPrev < outline.startIndex) iPrev = end - 1;
+			int iNext = i + 1;
+			if (iNext >= end) iNext = outline.startIndex;
+
+
+
+
+			auto& next = m_vertexList[iNext];
+
+			if (iNext != outline.startIndex)	// start は押し出し済み
+			{
+				// next のを押し出す
+				iNextExt = m_vertexList.GetCount();
+				m_vertexList.Add(next.pos + next.extrusion * extRate);
+				m_vertexList.GetLast().alpha = 0.0f;
+			}
+			else
+			{
+				iNextExt = iStartExt;
+			}
+
+			auto& cur = m_vertexList[i];
+
+
+			int i0 = i;
+			int i1 = iNext;
+			int i2 = iCurExt;
+			int i3 = iNextExt;
+
+			m_triangleIndexList.Add(i0);
+			m_triangleIndexList.Add(i1);
+			m_triangleIndexList.Add(i2);
+
+			m_triangleIndexList.Add(i2);
+			m_triangleIndexList.Add(i1);
+			m_triangleIndexList.Add(i3);
+			//Vector2 p0 = cur.pos;
+			//Vector2 p1 = next.pos;
+			//Vector2 p2 = m_vertexList[iCurExt].pos;
+
+			iCurExt = iNextExt;
+		}
+
+
+		//return;
+	}
+}
 
 void Filled::tessBeginCallback(GLenum primitiveType, Filled* thisData)
 {
