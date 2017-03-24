@@ -19,6 +19,8 @@ namespace detail {
 
 	void Filled::Initialize()
 	{
+		m_tessellationStep = 3;
+
 		m_ftOutlineFuncs.move_to = (FT_Outline_MoveTo_Func)ftMoveToCallback;
 		m_ftOutlineFuncs.line_to = (FT_Outline_LineTo_Func)ftLineToCallback;
 		m_ftOutlineFuncs.conic_to = (FT_Outline_ConicTo_Func)ftConicToCallback;
@@ -27,6 +29,11 @@ namespace detail {
 		m_ftOutlineFuncs.delta = 0;
 
 		m_gluTesselator = gluNewTess();
+
+		// デフォルトは GLU_TESS_WINDING_ODD.
+		// ただ、これだと凸面が重なるようなグリフで想定外の穴抜けが発生する。(メイリオの"驚" がわかりやすい)
+		// とりあえず GLU_TESS_WINDING_NONZERO で全部埋めるようにする。
+		gluTessProperty(m_gluTesselator, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO);
 
 		gluTessCallback(m_gluTesselator, GLU_TESS_BEGIN_DATA, (GLUTessCallback)tessBeginCallback);
 		gluTessCallback(m_gluTesselator, GLU_TESS_END_DATA, (GLUTessCallback)tessEndCallback);
@@ -59,7 +66,7 @@ void Filled::DecomposeOutlineVertices(FreeTypeFont* font, UTF32 utf32code)
 	FT_OutlineGlyph g;
 	FTC_ImageTypeRec imageType = {};
 	imageType.face_id = font->GetFTCFaceId();
-	imageType.height = 12;
+	imageType.height = font->GetSize();
 	imageType.width = 0;
 	imageType.flags = 0;
 	FT_Error error = FTC_ImageCache_Lookup(
@@ -70,7 +77,7 @@ void Filled::DecomposeOutlineVertices(FreeTypeFont* font, UTF32 utf32code)
 		NULL);
 
 
-	m_vectorScale = 0.5f;//(m_pointSize * m_resolution) / (72. * face->units_per_EM);
+	m_vectorScale = 0.15f;//(m_pointSize * m_resolution) / (72. * face->units_per_EM);
 
 
 
@@ -362,6 +369,7 @@ void Filled::tessBeginCallback(GLenum primitiveType, Filled* thisData)
 	c.primitiveType = primitiveType;
 	c.intermediateVertexIndex1 = -1;
 	c.intermediateVertexIndex2 = -1;
+	c.faceCount = 0;
 	thisData->m_contourList.Add(c);
 }
 
@@ -417,7 +425,7 @@ void Filled::vertexDataCallback(void* vertexData, Filled* thisData)
 			{
 #if 1
 
-				if (thisData->m_triangleIndexList.GetCount() & 1)	// 奇数回
+				if (contour->faceCount & 1)	// 奇数回
 				{
 					thisData->m_triangleIndexList.Add(contour->intermediateVertexIndex1);
 					thisData->m_triangleIndexList.Add(contour->intermediateVertexIndex2);
@@ -429,8 +437,10 @@ void Filled::vertexDataCallback(void* vertexData, Filled* thisData)
 					thisData->m_triangleIndexList.Add(vertexIndex);
 					thisData->m_triangleIndexList.Add(contour->intermediateVertexIndex2);
 				}
+
 				contour->intermediateVertexIndex1 = contour->intermediateVertexIndex2;
 				contour->intermediateVertexIndex2 = vertexIndex;
+				contour->faceCount++;
 #else
 				if (thisData->m_triangleIndexList.GetCount() & 1)	// 奇数回
 				{
@@ -479,7 +489,7 @@ void Filled::vertexDataCallback(void* vertexData, Filled* thisData)
 	}
 }
 
-void Filled::combineCallback(GLdouble coords[3], void* vertex_data[4], GLfloat weight[4], void** out_data, Filled* thisData)
+void Filled::combineCallback(GLfloat coords[3], void* vertex_data[4], GLfloat weight[4], void** out_data, Filled* thisData)
 {
 	(void)vertex_data;
 	(void)weight;
@@ -487,7 +497,16 @@ void Filled::combineCallback(GLdouble coords[3], void* vertex_data[4], GLfloat w
 	//VertexInfo* vertex = new VertexInfo(coords);
 	//*out_data = vertex;
 	//filled->extraVertices().push_back(vertex);
-	LN_ASSERT(0);
+	//LN_ASSERT(0);
+
+	VertexInfo v(Vector2(coords[0], coords[1]));
+	thisData->m_vertexList.Add(v);
+	*out_data = reinterpret_cast<void*>(thisData->m_vertexList.GetCount()-1);
+
+	//int vertexIndex = outline.startIndex + i;
+	//const Vector2& v = m_vertexList[vertexIndex].pos;
+	//GLfloat coords[3] = { v.x, v.y, 0 };
+	//::gluTessVertex(m_gluTesselator, coords, reinterpret_cast<void*>(vertexIndex));
 }
 
 void Filled::errorCallback(GLenum error_code)

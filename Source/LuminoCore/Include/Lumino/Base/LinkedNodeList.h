@@ -42,8 +42,8 @@ public:
 
 	void Clear()
 	{
-		TNode* n = m_dummy->m_next;
-		TNode* t;
+		LinkedNode* n = m_dummy->m_next;
+		LinkedNode* t;
 		while (n != m_dummy)
 		{
 			t = n->m_next;
@@ -61,8 +61,8 @@ public:
 		if (node == nullptr) return;
 		LN_FAIL_CHECK_ARG(node->m_prev == nullptr && node->m_next == nullptr) return;	// already added
 
-		TNode* prev = m_dummy->m_prev;
-		TNode* next = m_dummy;
+		LinkedNode* prev = m_dummy->m_prev;
+		LinkedNode* next = m_dummy;
 		node->m_prev = prev;
 		node->m_next = next;
 		prev->m_next = node;
@@ -84,7 +84,7 @@ public:
 
 	TNode* PopFront()
 	{
-		TNode* node = m_dummy->m_next;
+		LinkedNode* node = m_dummy->m_next;
 		if (node == m_dummy) return nullptr;	// empty
 
 		node->m_prev->m_next = node->m_next;
@@ -92,6 +92,8 @@ public:
 		node->m_prev = nullptr;
 		node->m_next = nullptr;
 		m_size--;
+
+		return static_cast<TNode*>(node);
 	}
 
 private:

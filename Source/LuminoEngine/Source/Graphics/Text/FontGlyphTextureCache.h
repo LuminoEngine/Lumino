@@ -128,7 +128,7 @@ public:
 	int GetMaxCount() const { return m_glyphInfoList.GetCount(); }
 
 	// callby main thread
-	Handle GetGlyphInfo(char32_t utf32, bool* outFlushRequested);
+	Handle GetGlyphInfo(char32_t utf32Code, bool* outFlushRequested);
 	void OnFlush();	// メインスレッドで Flush したときにはこれを呼ぶ
 
 	// callby rendering thread
@@ -142,6 +142,7 @@ private:
 	class GryphInfo : public LinkedNode
 	{
 	public:
+		char32_t utf32Code;
 		int idIndex;
 	};
 
@@ -156,7 +157,9 @@ private:
 	// main thread resource
 	List<GryphInfo>						m_glyphInfoList;		// fixed instance list
 	std::unordered_map<char32_t, int>	m_glyphInfoIndexMap;
-	Stack<int>							m_freeIndexStack;
+	int									m_freeIndexCount;
+	//Stack<int>							m_freeIndexStack;
+	LinkedNodeList<GryphInfo>			m_olderInfoList;
 	std::vector<bool>					m_inFlushUsedFlags;		// TODO: List<bool> 1度の Flush 間で、そのインデックスが使われたかどうか
 	int									m_inFlushUsedCount;		// m_inFlushUsedFlags の中の true 数 (最大数に到達したら Flush が必要)
 

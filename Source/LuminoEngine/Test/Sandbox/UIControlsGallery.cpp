@@ -44,10 +44,12 @@ void UIControlsGallery()
 
 
 	auto font = Font::GetDefault();
+	font->SetSize(50);
 
 	detail::Filled filled;
 	filled.Initialize();
-	filled.DecomposeOutlineVertices(static_cast<detail::FreeTypeFont*>(font->ResolveRawFont()), 'Q');
+	filled.setTessellationSteps(3);
+	filled.DecomposeOutlineVertices(static_cast<detail::FreeTypeFont*>(font->ResolveRawFont()), U'読');
 	filled.Tessellate();
 	filled.MakeEdgeStroke();
 

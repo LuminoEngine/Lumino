@@ -165,6 +165,8 @@ public:
 
 		// TriangleFan と、TriangleStrip の後続頂点のインデックス。三角形を構成する2つめの頂点番号。
 		int	intermediateVertexIndex2;
+
+		int faceCount;
 	};
 	List<Contour>	m_contourList;
 	List<uint16_t>	m_triangleIndexList;	// 要素数は3の倍数となる
@@ -222,7 +224,7 @@ private:
 	static void tessBeginCallback(GLenum primitiveType, Filled* thisData);
 	static void tessEndCallback(Filled* thisData);
 	static void vertexDataCallback(void* vertexData, Filled* thisData);
-	static void combineCallback(GLdouble coords[3], void* vertex_data[4], GLfloat weight[4], void** out_data, Filled* thisData);
+	static void combineCallback(GLfloat coords[3], void* vertex_data[4], GLfloat weight[4], void** out_data, Filled* thisData);
 	static void errorCallback(GLenum error_code);
 };
 

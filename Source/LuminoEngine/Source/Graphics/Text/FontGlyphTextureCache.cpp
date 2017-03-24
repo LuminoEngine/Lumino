@@ -350,36 +350,72 @@ void VectorFontGlyphCache::Initialize(GraphicsManager* manager, int maxSize)
 	m_glyphInfoList.Resize(maxSize);
 	m_inFlushUsedFlags.resize(maxSize);
 	m_gryphBufferDataList.Resize(maxSize);
+	m_freeIndexCount = maxSize;
 	for (int i = 0; i < maxSize; i++)
 	{
 		m_glyphInfoList[i].idIndex = i;
-		m_freeIndexStack.Push(i);
+		//m_freeIndexStack.Push(i);
 	}
 
 	ResetUsedFlags();
 }
 
 //------------------------------------------------------------------------------
-VectorFontGlyphCache::Handle VectorFontGlyphCache::GetGlyphInfo(char32_t utf32, bool* outFlushRequested)
+VectorFontGlyphCache::Handle VectorFontGlyphCache::GetGlyphInfo(char32_t utf32Code, bool* outFlushRequested)
 {
 	int infoIndex = -1;
-	auto itr = m_glyphInfoIndexMap.find(utf32);
+	auto itr = m_glyphInfoIndexMap.find(utf32Code);
 	if (itr != m_glyphInfoIndexMap.end())
 	{
 		infoIndex = itr->second;
 	}
 	else
 	{
-		// 空いてるインデックスを取りだす
-		infoIndex = m_freeIndexStack.GetTop();
-		m_freeIndexStack.Pop();
+		if (m_freeIndexCount > 0)
+		{
+			// 空いてるインデックスを取りだす
+			infoIndex = m_freeIndexCount - 1;
+			m_freeIndexCount--;
+			//m_freeIndexStack.GetTop();
+			//m_freeIndexStack.Pop();
+		}
+		else
+		{
+			// 最も古いものを選択
+			GryphInfo* info = m_olderInfoList.PopFront();
+			infoIndex = info->idIndex;
+			m_glyphInfoIndexMap.erase(info->utf32Code);
+		}
 
 		// キャッシュマップに登録
-		CachedGlyphInfo info;
-		info.index = cacheIndex;
-		info.size = glyphBitmap->GlyphBitmap->GetSize();
-		m_cachedGlyphInfoMap[ch] = info;
+		m_glyphInfoIndexMap[utf32Code] = infoIndex;
+
+		// レンダリングスレッドへデータを送る
+		{
+			//RenderBulkData outlineList(&m_glyphLayoutDataList[0], sizeof(TextRendererCore::GlyphRunData) * dataCount);
+			//RenderBulkData vertexList(&m_glyphLayoutDataList[0], sizeof(TextRendererCore::GlyphRunData) * dataCount);
+
+			//LN_ENQUEUE_RENDER_COMMAND_3(
+			//	XXXX, m_manager,
+			//	VectorFontGlyphCache*, this_,
+			//	RenderBulkData, outlineList,
+			//	RenderBulkData, vertexList,
+			//	{
+			//		m_core->Render(
+			//			(TextRendererCore::GlyphRunData*)dataListData.GetData(),
+			//			dataCount,
+			//			cache,
+			//			m_fillBrush);
+			//	});
+		}
 	}
+
+	GryphInfo* info = &m_glyphInfoList[infoIndex];
+	info->utf32Code = utf32Code;
+
+	// 最新とする
+	m_olderInfoList.Remove(info);
+	m_olderInfoList.Add(info);
 
 	// 今回、cacheIndex を使うことをマーク
 	if (!m_inFlushUsedFlags[infoIndex])
@@ -402,33 +438,6 @@ VectorFontGlyphCache::Handle VectorFontGlyphCache::GetGlyphInfo(char32_t utf32, 
 	}
 
 	return infoIndex;
-
-
-
-
-	if (0)
-	{
-		//新しく作る
-
-
-		
-
-		RenderBulkData outlineList(&m_glyphLayoutDataList[0], sizeof(TextRendererCore::GlyphRunData) * dataCount);
-		RenderBulkData vertexList(&m_glyphLayoutDataList[0], sizeof(TextRendererCore::GlyphRunData) * dataCount);
-
-		LN_ENQUEUE_RENDER_COMMAND_3(
-			XXXX, m_manager,
-			VectorFontGlyphCache*, this_,
-			RenderBulkData, outlineList,
-			RenderBulkData, vertexList,
-			{
-				m_core->Render(
-				(TextRendererCore::GlyphRunData*)dataListData.GetData(),
-				dataCount,
-				cache,
-				m_fillBrush);
-			});
-	}
 }
 
 //------------------------------------------------------------------------------
