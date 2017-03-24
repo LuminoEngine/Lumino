@@ -49,7 +49,7 @@ void UIControlsGallery()
 	detail::Filled filled;
 	filled.Initialize();
 	filled.setTessellationSteps(3);
-	filled.DecomposeOutlineVertices(static_cast<detail::FreeTypeFont*>(font->ResolveRawFont()), U'読');
+	filled.DecomposeOutlineVertices(static_cast<detail::FreeTypeFont*>(font->ResolveRawFont()), U'驚');
 	filled.Tessellate();
 	filled.MakeEdgeStroke();
 

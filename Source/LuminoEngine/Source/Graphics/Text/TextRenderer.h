@@ -153,60 +153,31 @@ public:
 	void Initialize(GraphicsManager* manager);
 };
 
-//
-//class VectorTextRenderer
-//	: public RefObject
-//	, public detail::IRendererPloxy
-//{
-//public:
-//	VectorTextRenderer();
-//	virtual ~VectorTextRenderer();
-//	void Initialize(GraphicsManager* manager);
-//
-//	void SetTransform(const Matrix& matrix);
-//
-//
-//	/**
-//		@brief		スプライトの描画を要求します。
-//		@param[in]	position	: 
-//		@param[in]	center		: 
-//		@param[in]	size		: 
-//		@param[in]	texture		: 
-//		@param[in]	srcRect		: 
-//		@param[in]	color		: 
-//	*/
-//	void DrawRequest2D(
-//		const Vector3& position,
-//		const Vector2& size,
-//		const Vector2& anchorRatio,
-//		Texture* texture,
-//		const RectF& srcRect,
-//		const Color& color);
-//
-//	void DrawRequest(
-//		const Vector3& position,
-//		const Vector2& anchorRatio,
-//		const Vector2& size,
-//		Texture* texture,
-//		const RectF& srcRect,
-//		const Color& color,
-//		SpriteBaseDirection baseDirection);
-//
-//	virtual bool IsStandaloneShader() const { return false; }
-//	virtual void Flush() override;
-//	virtual void OnActivated() override {}
-//	virtual void OnDeactivated() override { Flush(); }
-//
-//	GraphicsManager* GetManager() const { return m_manager; }
-//
-//	static void MakeBoundingSphere(const Vector2& size, SpriteBaseDirection baseDir, detail::Sphere* sphere);
-//
-//LN_INTERNAL_ACCESS:
-//	GraphicsManager*	m_manager;
-//	SpriteRendererImpl*	m_internal;
-//	SpriteSortMode		m_spriteSortMode;
-//};
-//
+
+class VectorTextRenderer
+	: public RefObject
+	, public detail::IRendererPloxy
+{
+public:
+	VectorTextRenderer();
+	virtual ~VectorTextRenderer();
+	void Initialize(GraphicsManager* manager);
+
+	void DrawChar(const Matrix& transform, TCHAR ch, const PointF& position);
+
+	virtual bool IsStandaloneShader() const { return false; }
+	virtual void Flush() override;
+	virtual void OnActivated() override {}
+	virtual void OnDeactivated() override { Flush(); }
+	virtual void OnSetState(const DrawElementBatch* state);
+
+	GraphicsManager* GetManager() const { return m_manager; }
+
+LN_INTERNAL_ACCESS:
+	GraphicsManager*				m_manager;
+	RefPtr<VectorTextRendererCore>	m_core;
+};
+
 } // namespace detail
 
 #if 0

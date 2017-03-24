@@ -128,6 +128,9 @@ void InternalContext::Initialize(detail::GraphicsManager* manager)
 	m_textRenderer = RefPtr<TextRenderer>::MakeRef();
 	m_textRenderer->Initialize(manager);
 
+	m_vectorTextRenderer = RefPtr<VectorTextRenderer>::MakeRef();
+	m_vectorTextRenderer->Initialize(manager);
+
 	m_nanoVGRenderer = RefPtr<NanoVGRenderer>::MakeRef();
 	m_nanoVGRenderer->Initialize(manager);
 
@@ -181,6 +184,13 @@ TextRenderer* InternalContext::BeginTextRenderer()
 {
 	SwitchActiveRenderer(m_textRenderer);
 	return m_textRenderer;
+}
+
+//------------------------------------------------------------------------------
+VectorTextRenderer* InternalContext::BeginVectorTextRenderer()
+{
+	SwitchActiveRenderer(m_vectorTextRenderer);
+	return m_vectorTextRenderer;
 }
 
 //------------------------------------------------------------------------------
@@ -1514,6 +1524,27 @@ void DrawList::DrawText_(const StringRef& text, const RectF& rect, StringFormatF
 	e->text = text;
 	e->rect = rect;
 	e->flags = flags;
+	//e->boundingSphere = ;	// TODO
+}
+
+//------------------------------------------------------------------------------
+void DrawList::DrawChar(TCHAR ch, const PointF& position)
+{
+	class DrawElement_DrawChar : public detail::DrawElement
+	{
+	public:
+		TCHAR ch;
+		PointF position;
+
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		{
+			context->BeginVectorTextRenderer()->DrawChar(GetTransform(oenerList), ch, position);
+		}
+	};
+
+	auto* e = ResolveDrawElement<DrawElement_DrawChar>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_vectorTextRenderer, nullptr);
+	e->ch = ch;
+	e->position = position;
 	//e->boundingSphere = ;	// TODO
 }
 

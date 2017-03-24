@@ -45,6 +45,7 @@ class BlitRenderer;
 class MeshRendererProxy;
 class SpriteRenderer;
 class TextRenderer;
+class VectorTextRenderer;
 class NanoVGRenderer;
 class FrameRectRenderer;
 class DrawElementBatch;
@@ -100,6 +101,7 @@ public:
 	MeshRendererProxy* BeginMeshRenderer();
 	SpriteRenderer* BeginSpriteRenderer();
 	TextRenderer* BeginTextRenderer();
+	VectorTextRenderer* BeginVectorTextRenderer();
 	NanoVGRenderer* BeginNanoVGRenderer();
 	FrameRectRenderer* BeginFrameRectRenderer();
 
@@ -119,6 +121,7 @@ private:
 	RefPtr<MeshRendererProxy>	m_meshRenderer;
 	RefPtr<SpriteRenderer>		m_spriteRenderer;
 	RefPtr<TextRenderer>		m_textRenderer;
+	RefPtr<VectorTextRenderer>	m_vectorTextRenderer;
 	RefPtr<NanoVGRenderer>		m_nanoVGRenderer;
 	RefPtr<FrameRectRenderer>	m_frameRectRenderer;
 	const DrawElementBatch*		m_currentStatePtr;
@@ -557,6 +560,8 @@ public:
 
 	void DrawText_(const StringRef& text, const PointF& position);
 	void DrawText_(const StringRef& text, const RectF& rect, StringFormatFlags flags);
+
+	void DrawChar(TCHAR ch, const PointF& position);
 
 	void DrawSprite(
 		const Vector3& position,

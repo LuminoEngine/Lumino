@@ -82,6 +82,7 @@ void UITextBox::OnRender(DrawList* g)
 	//g->SetFont(GetActiveFont());
 	//g->SetBrush(GetForegroundInternal());
 	//g->DrawText_(m_text, PointF::Zero);
+	g->DrawChar('A', PointF(0, 0));
 }
 
 LN_NAMESPACE_END

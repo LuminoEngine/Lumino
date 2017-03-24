@@ -420,6 +420,64 @@ void TextRenderer::CheckUpdateState()	// あらゆる Draw の直前にやりた
 	}
 }
 
+
+
+//==============================================================================
+// VectorTextRendererCore
+//==============================================================================
+//------------------------------------------------------------------------------
+VectorTextRendererCore::VectorTextRendererCore()
+{
+}
+
+//------------------------------------------------------------------------------
+VectorTextRendererCore::~VectorTextRendererCore()
+{
+}
+
+//------------------------------------------------------------------------------
+void VectorTextRendererCore::Initialize(GraphicsManager* manager)
+{
+}
+
+
+//==============================================================================
+// VectorTextRenderer
+//==============================================================================
+//------------------------------------------------------------------------------
+VectorTextRenderer::VectorTextRenderer()
+{
+}
+
+//------------------------------------------------------------------------------
+VectorTextRenderer::~VectorTextRenderer()
+{
+}
+
+//------------------------------------------------------------------------------
+void VectorTextRenderer::Initialize(GraphicsManager* manager)
+{
+	m_manager = manager;
+	m_core = RefPtr<VectorTextRendererCore>::MakeRef();
+	m_core->Initialize(m_manager);
+}
+
+//------------------------------------------------------------------------------
+void VectorTextRenderer::DrawChar(const Matrix& transform, TCHAR ch, const PointF& position)
+{
+
+}
+
+//------------------------------------------------------------------------------
+void VectorTextRenderer::Flush()
+{
+}
+
+//------------------------------------------------------------------------------
+void VectorTextRenderer::OnSetState(const DrawElementBatch* state)
+{
+}
+
 } // namespace detail
 
 #if 0
