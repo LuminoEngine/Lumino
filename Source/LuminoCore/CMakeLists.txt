@@ -52,6 +52,7 @@ set(LN_SOURCES_Base
 	Include/Lumino/Base/Exception.h
 	Include/Lumino/Base/Formatter.h
 	Include/Lumino/Base/Hash.h
+	Include/Lumino/Base/LinkedNodeList.h
 	Include/Lumino/Base/List.h
 	Include/Lumino/Base/List.inl
 	Include/Lumino/Base/Locale.h

@@ -47,7 +47,7 @@ void UIControlsGallery()
 
 	detail::Filled filled;
 	filled.Initialize();
-	filled.DecomposeOutlineVertices(static_cast<detail::FreeTypeFont*>(font->ResolveRawFont()), 'A');
+	filled.DecomposeOutlineVertices(static_cast<detail::FreeTypeFont*>(font->ResolveRawFont()), 'Q');
 	filled.Tessellate();
 	filled.MakeEdgeStroke();
 

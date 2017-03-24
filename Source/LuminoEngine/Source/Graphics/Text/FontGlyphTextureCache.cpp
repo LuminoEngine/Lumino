@@ -9,6 +9,7 @@
 #include <Lumino/Graphics/BitmapPainter.h>
 #include <Lumino/Graphics/Utils.h>
 #include <Lumino/Graphics/Texture.h>
+#include "../RenderingCommand.h"
 #include "../GraphicsManager.h"
 #include "../Device/GraphicsDriverInterface.h"
 #include "FontGlyphTextureCache.h"
@@ -326,6 +327,125 @@ void FontGlyphTextureCache::Measure(const UTF32* text, int length, TextLayoutRes
 	m_layoutEngine.LayoutText(text, length, LayoutTextOptions::All, outResult);	// TODO: RenderSize だけでもいいかも？
 }
 
+
+
+//==============================================================================
+// VectorFontGlyphCache
+//==============================================================================
+
+//------------------------------------------------------------------------------
+VectorFontGlyphCache::VectorFontGlyphCache()
+{
+}
+
+//------------------------------------------------------------------------------
+VectorFontGlyphCache::~VectorFontGlyphCache()
+{
+}
+
+//------------------------------------------------------------------------------
+void VectorFontGlyphCache::Initialize(GraphicsManager* manager, int maxSize)
+{
+	m_manager = manager;
+	m_glyphInfoList.Resize(maxSize);
+	m_inFlushUsedFlags.resize(maxSize);
+	m_gryphBufferDataList.Resize(maxSize);
+	for (int i = 0; i < maxSize; i++)
+	{
+		m_glyphInfoList[i].idIndex = i;
+		m_freeIndexStack.Push(i);
+	}
+
+	ResetUsedFlags();
+}
+
+//------------------------------------------------------------------------------
+VectorFontGlyphCache::Handle VectorFontGlyphCache::GetGlyphInfo(char32_t utf32, bool* outFlushRequested)
+{
+	int infoIndex = -1;
+	auto itr = m_glyphInfoIndexMap.find(utf32);
+	if (itr != m_glyphInfoIndexMap.end())
+	{
+		infoIndex = itr->second;
+	}
+	else
+	{
+		// 空いてるインデックスを取りだす
+		infoIndex = m_freeIndexStack.GetTop();
+		m_freeIndexStack.Pop();
+
+		// キャッシュマップに登録
+		CachedGlyphInfo info;
+		info.index = cacheIndex;
+		info.size = glyphBitmap->GlyphBitmap->GetSize();
+		m_cachedGlyphInfoMap[ch] = info;
+	}
+
+	// 今回、cacheIndex を使うことをマーク
+	if (!m_inFlushUsedFlags[infoIndex])
+	{
+		m_inFlushUsedFlags[infoIndex] = true;
+		m_inFlushUsedCount++;
+	}
+
+	// キャッシュが一杯になっていないかチェック。
+	// 一杯になってたら、異なる文字が max 個書かれようとしているということ。
+	// 呼び出し元に Flush してもらわないと、一部の文字が描画できないことになる。
+	if (m_inFlushUsedCount == GetMaxCount())
+	{
+		ResetUsedFlags();
+		*outFlushRequested = true;
+	}
+	else
+	{
+		*outFlushRequested = false;
+	}
+
+	return infoIndex;
+
+
+
+
+	if (0)
+	{
+		//新しく作る
+
+
+		
+
+		RenderBulkData outlineList(&m_glyphLayoutDataList[0], sizeof(TextRendererCore::GlyphRunData) * dataCount);
+		RenderBulkData vertexList(&m_glyphLayoutDataList[0], sizeof(TextRendererCore::GlyphRunData) * dataCount);
+
+		LN_ENQUEUE_RENDER_COMMAND_3(
+			XXXX, m_manager,
+			VectorFontGlyphCache*, this_,
+			RenderBulkData, outlineList,
+			RenderBulkData, vertexList,
+			{
+				m_core->Render(
+				(TextRendererCore::GlyphRunData*)dataListData.GetData(),
+				dataCount,
+				cache,
+				m_fillBrush);
+			});
+	}
+}
+
+//------------------------------------------------------------------------------
+void VectorFontGlyphCache::OnFlush()
+{
+	ResetUsedFlags();
+}
+
+//------------------------------------------------------------------------------
+void VectorFontGlyphCache::ResetUsedFlags()
+{
+	for (int i = 0; i < GetMaxCount(); i++)
+	{
+		m_inFlushUsedFlags[i] = false;
+	}
+	m_inFlushUsedCount = 0;
+}
 
 } // namespace detail
 LN_NAMESPACE_END

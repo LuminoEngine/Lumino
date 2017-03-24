@@ -1,10 +1,12 @@
 ﻿
 #pragma once
+#include <unordered_map>
 #include <Lumino/Base/Cache.h>
-#include <Lumino/Graphics/Color.h>
+#include <Lumino/Base/LinkedNodeList.h>
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Text/Font.h>
+#include <Lumino/Graphics/Vertex.h>
 #include "TextLayoutEngine.h"	// TODO
 
 LN_NAMESPACE_BEGIN
@@ -83,6 +85,85 @@ private:
 
 
 };
+
+
+
+
+
+
+
+
+
+
+
+//template<typename T>
+//class FixedCache
+//{
+//public:
+//	
+//
+//private:
+//	std::unordered_map<char32_t, int>	m_glyphInfoIndexMap;
+//};
+
+
+struct VectorFontOutline
+{
+	int	startIndex = 0;
+	int	vertexCount = 0;
+};
+
+
+
+
+class VectorFontGlyphCache
+	: public RefObject
+{
+public:
+	using Handle = int;
+
+	VectorFontGlyphCache();
+	virtual ~VectorFontGlyphCache();
+	void Initialize(GraphicsManager* manager, int maxSize);
+	int GetMaxCount() const { return m_glyphInfoList.GetCount(); }
+
+	// callby main thread
+	Handle GetGlyphInfo(char32_t utf32, bool* outFlushRequested);
+	void OnFlush();	// メインスレッドで Flush したときにはこれを呼ぶ
+
+	// callby rendering thread
+	int GetTriangleCount(Handle info);
+	void GenerateMesh(Handle info, const Vector3& positionOffset, const Matrix& transform, Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex);
+
+private:
+	void ResetUsedFlags();
+	void MakePolygons(Handle info, const VectorFontOutline* outlines, int outlineSize, const Vector3* vertices, int vertexSize);
+	
+	class GryphInfo : public LinkedNode
+	{
+	public:
+		int idIndex;
+	};
+
+	struct GryphBufferData
+	{
+		List<Vector3>	vertices;
+		List<uint16_t>	indices;
+	};
+
+	GraphicsManager*					m_manager;
+
+	// main thread resource
+	List<GryphInfo>						m_glyphInfoList;		// fixed instance list
+	std::unordered_map<char32_t, int>	m_glyphInfoIndexMap;
+	Stack<int>							m_freeIndexStack;
+	std::vector<bool>					m_inFlushUsedFlags;		// TODO: List<bool> 1度の Flush 間で、そのインデックスが使われたかどうか
+	int									m_inFlushUsedCount;		// m_inFlushUsedFlags の中の true 数 (最大数に到達したら Flush が必要)
+
+	// rendering thread resource
+	List<GryphBufferData>				m_gryphBufferDataList;	// fixed instance list
+};
+
 
 } // namespace detail
 LN_NAMESPACE_END
