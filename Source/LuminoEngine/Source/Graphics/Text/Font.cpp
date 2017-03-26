@@ -193,6 +193,7 @@ RawFontPtr RawFont::GetDefaultFont()
 //------------------------------------------------------------------------------
 RawFont::RawFont()
 	: m_glyphTextureCache(nullptr)
+	, m_vectorGlyphCache(nullptr)
 {
 }
 
@@ -200,6 +201,7 @@ RawFont::RawFont()
 RawFont::~RawFont()
 {
 	LN_SAFE_RELEASE(m_glyphTextureCache);
+	LN_SAFE_RELEASE(m_vectorGlyphCache);
 }
 
 //------------------------------------------------------------------------------
@@ -221,6 +223,17 @@ detail::FontGlyphTextureCache* RawFont::GetGlyphTextureCache()
 		m_glyphTextureCache->Initialize(GetManager()->GetGraphicsManager(), this);
 	}
 	return m_glyphTextureCache;
+}
+
+//------------------------------------------------------------------------------
+detail::VectorFontGlyphCache* RawFont::GetVectorGlyphCache()
+{
+	if (m_vectorGlyphCache == nullptr)
+	{
+		m_vectorGlyphCache = LN_NEW detail::VectorFontGlyphCache();
+		m_vectorGlyphCache->Initialize(GetManager()->GetGraphicsManager(), this, 2048);	// TODO
+	}
+	return m_vectorGlyphCache;
 }
 
 LN_NAMESPACE_GRAPHICS_END

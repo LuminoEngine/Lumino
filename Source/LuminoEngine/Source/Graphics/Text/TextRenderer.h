@@ -140,6 +140,7 @@ private:
 
 struct VectorGlyphData
 {
+	int		cacheGlyphInfoHandle;
 	Matrix	transform;
 	PointF	position;
 };
@@ -151,6 +152,13 @@ public:
 	VectorTextRendererCore();
 	virtual ~VectorTextRendererCore();
 	void Initialize(GraphicsManager* manager);
+
+	void Render(const VectorGlyphData* dataList, int dataCount, VectorFontGlyphCache* cache, Brush* fillBrush);
+
+private:
+	GraphicsManager*		m_manager;
+	Driver::IVertexBuffer*	m_vertexBuffer;
+	Driver::IIndexBuffer*	m_indexBuffer;
 };
 
 
@@ -176,6 +184,9 @@ public:
 LN_INTERNAL_ACCESS:
 	GraphicsManager*				m_manager;
 	RefPtr<VectorTextRendererCore>	m_core;
+	RefPtr<RawFont>					m_currentFont;
+	RefPtr<Brush>					m_fillBrush;
+	List<VectorGlyphData>			m_bufferingCache;
 };
 
 } // namespace detail

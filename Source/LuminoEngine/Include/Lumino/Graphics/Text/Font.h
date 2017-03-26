@@ -8,6 +8,7 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail { class FontManager; }
 namespace detail { class FontGlyphTextureCache; }
+namespace detail { class VectorFontGlyphCache; }
 class Bitmap;
 class Font;
 class RawFont;
@@ -162,6 +163,29 @@ class RawFont
 public:
 	static const int DefaultSize = 20;
 
+	struct OutlineInfo
+	{
+		int	startIndex;
+		int	vertexCount;
+	};
+
+	struct FontOutlineVertex
+	{
+		Vector2	pos;
+		float	alpha;
+
+		FontOutlineVertex(const Vector2& pos_)
+			: alpha(1.0f)
+		{}
+	};
+
+	struct VectorGlyphInfo
+	{
+		List<FontOutlineVertex>	vertices;
+		List<OutlineInfo>		outlines;
+		List<uint16_t>			triangleIndices;	// 要素数は3の倍数となる
+	};
+
 	static RawFontPtr GetDefaultFont();
 
 	static RawFontPtr Create();
@@ -249,6 +273,9 @@ public:
 	//virtual FontGlyphData* LookupGlyphData(UTF32 utf32code, FontGlyphData* prevData) = 0;
 
 
+	virtual bool IsOutlineSupported() const = 0;
+	virtual void DecomposeOutline(UTF32 utf32code, RawFont::VectorGlyphInfo* outInfo) = 0;
+
 	virtual detail::FontManager* GetManager() const = 0;
 
 
@@ -258,9 +285,12 @@ protected:
 
 LN_INTERNAL_ACCESS:
 	detail::FontGlyphTextureCache* GetGlyphTextureCache();
+	detail::VectorFontGlyphCache* GetVectorGlyphCache();
 
 private:
 	detail::FontGlyphTextureCache*	m_glyphTextureCache;
+	detail::VectorFontGlyphCache*	m_vectorGlyphCache;
+
 };
 
 LN_NAMESPACE_GRAPHICS_END

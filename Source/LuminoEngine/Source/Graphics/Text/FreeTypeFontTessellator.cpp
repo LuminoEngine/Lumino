@@ -892,5 +892,181 @@ void Filled::errorCallback(GLenum error_code)
 	}
 #endif
 
+
+
+//==============================================================================
+// FontOutlineTessellator
+//==============================================================================
+
+//------------------------------------------------------------------------------
+FontOutlineTessellator::FontOutlineTessellator()
+{
+	m_gluTesselator = gluNewTess();
+
+	// デフォルトは GLU_TESS_WINDING_ODD.
+	// ただ、これだと凸面が重なるようなグリフで想定外の穴抜けが発生する。(メイリオの"驚" がわかりやすい)
+	// とりあえず GLU_TESS_WINDING_NONZERO で全部埋めるようにする。
+	gluTessProperty(m_gluTesselator, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO);
+
+	gluTessCallback(m_gluTesselator, GLU_TESS_BEGIN_DATA, (GLUTessCallback)BeginCallback);
+	gluTessCallback(m_gluTesselator, GLU_TESS_END_DATA, (GLUTessCallback)EndCallback);
+	gluTessCallback(m_gluTesselator, GLU_TESS_VERTEX_DATA, (GLUTessCallback)VertexDataCallback);
+	gluTessCallback(m_gluTesselator, GLU_TESS_COMBINE_DATA, (GLUTessCallback)CombineCallback);
+	gluTessCallback(m_gluTesselator, GLU_TESS_ERROR, (GLUTessCallback)ErrorCallback);
+}
+
+//------------------------------------------------------------------------------
+FontOutlineTessellator::~FontOutlineTessellator()
+{
+	gluDeleteTess(m_gluTesselator);
+}
+
+//------------------------------------------------------------------------------
+void FontOutlineTessellator::Tessellate(RawFont::VectorGlyphInfo* info)
+{
+	TessellatingState state;
+	state.thisPtr = this;
+	state.glyphInfo = info;
+
+	::gluTessBeginPolygon(m_gluTesselator, &state);
+
+	for (auto& outline : info->outlines)
+	{
+		::gluTessBeginContour(m_gluTesselator);
+
+		for (int i = 0; i < outline.vertexCount; i++)
+		{
+			int vertexIndex = outline.startIndex + i;
+			const Vector2& v = info->vertices[vertexIndex].pos;
+			GLfloat coords[3] = { v.x, v.y, 0 };
+			::gluTessVertex(m_gluTesselator, coords, reinterpret_cast<void*>(vertexIndex));
+		}
+
+		::gluTessEndContour(m_gluTesselator);
+	}
+
+	::gluTessEndPolygon(m_gluTesselator);
+}
+
+//------------------------------------------------------------------------------
+void FontOutlineTessellator::BeginCallback(GLenum primitiveType, TessellatingState* state)
+{
+	Contour c;
+	c.primitiveType = primitiveType;
+	c.intermediateVertexIndex1 = -1;
+	c.intermediateVertexIndex2 = -1;
+	c.faceCount = 0;
+	state->contourList.Add(c);
+}
+
+//------------------------------------------------------------------------------
+void FontOutlineTessellator::EndCallback(TessellatingState* state)
+{
+
+}
+
+//------------------------------------------------------------------------------
+// vertex : gluTessVertex() の data
+// 点は時計回りで送られてくるようだ。
+void FontOutlineTessellator::VertexDataCallback(void* vertexData, TessellatingState* state)
+{
+	Contour* contour = &state->contourList.GetLast();
+	int vertexIndex = reinterpret_cast<int>(vertexData);
+
+	switch (contour->primitiveType)
+	{
+		// 通常の三角形リスト。3頂点が順に送られてくる。
+		case GL_TRIANGLES:
+		{
+			if (contour->intermediateVertexIndex1 == -1)
+			{
+				// 1つめの点
+				contour->intermediateVertexIndex1 = vertexIndex;
+				contour->intermediateVertexIndex2 = -1;
+			}
+			else if (contour->intermediateVertexIndex2 == -1)
+			{
+				// 2つめの点
+				contour->intermediateVertexIndex2 = vertexIndex;
+			}
+			else
+			{
+				// 3つの点ができあがった
+				state->glyphInfo->triangleIndices.Add(contour->intermediateVertexIndex1);
+				state->glyphInfo->triangleIndices.Add(vertexIndex);
+				state->glyphInfo->triangleIndices.Add(contour->intermediateVertexIndex2);
+				contour->intermediateVertexIndex1 = -1;
+			}
+			break;
+		}
+		// TriangleStrip は最後の2点を再利用する。
+		case GL_TRIANGLE_STRIP:
+		{
+			if (contour->intermediateVertexIndex1 == -1)
+			{
+				contour->intermediateVertexIndex1 = vertexIndex;
+			}
+			else if (contour->intermediateVertexIndex2 == -1)
+			{
+				contour->intermediateVertexIndex2 = vertexIndex;
+			}
+			else
+			{
+				if (contour->faceCount & 1)	// 奇数回
+				{
+					state->glyphInfo->triangleIndices.Add(contour->intermediateVertexIndex1);
+					state->glyphInfo->triangleIndices.Add(contour->intermediateVertexIndex2);
+					state->glyphInfo->triangleIndices.Add(vertexIndex);
+				}
+				else	// 偶数回 (初回含む)
+				{
+					state->glyphInfo->triangleIndices.Add(contour->intermediateVertexIndex1);
+					state->glyphInfo->triangleIndices.Add(vertexIndex);
+					state->glyphInfo->triangleIndices.Add(contour->intermediateVertexIndex2);
+				}
+
+				contour->intermediateVertexIndex1 = contour->intermediateVertexIndex2;
+				contour->intermediateVertexIndex2 = vertexIndex;
+				contour->faceCount++;
+			}
+			break;
+		}
+		// TriangleFan は、最初の点をずっと再利用する。
+		case GL_TRIANGLE_FAN:
+		{
+			if (contour->intermediateVertexIndex1 == -1)
+			{
+				contour->intermediateVertexIndex1 = vertexIndex;
+			}
+			else if (contour->intermediateVertexIndex2 == -1)
+			{
+				contour->intermediateVertexIndex2 = vertexIndex;
+			}
+			else
+			{
+				state->glyphInfo->triangleIndices.Add(contour->intermediateVertexIndex1);
+				state->glyphInfo->triangleIndices.Add(vertexIndex);
+				state->glyphInfo->triangleIndices.Add(contour->intermediateVertexIndex2);
+				contour->intermediateVertexIndex2 = vertexIndex;
+			}
+			break;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+void FontOutlineTessellator::CombineCallback(GLfloat coords[3], void* vertex_data[4], GLfloat weight[4], void** out_data, TessellatingState* state)
+{
+	RawFont::FontOutlineVertex v(Vector2(coords[0], coords[1]));
+	state->glyphInfo->vertices.Add(v);
+	*out_data = reinterpret_cast<void*>(state->glyphInfo->vertices.GetCount() - 1);
+}
+
+//------------------------------------------------------------------------------
+void FontOutlineTessellator::ErrorCallback(GLenum error_code)
+{
+	LN_ASSERT(0);	// TODO:
+}
+
 } // namespace detail
 LN_NAMESPACE_END

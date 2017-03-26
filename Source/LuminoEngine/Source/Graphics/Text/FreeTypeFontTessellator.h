@@ -228,5 +228,52 @@ private:
 	static void errorCallback(GLenum error_code);
 };
 
+
+
+
+class FontOutlineTessellator
+{
+public:
+	FontOutlineTessellator();
+	~FontOutlineTessellator();
+
+	void Tessellate(RawFont::VectorGlyphInfo* info);
+
+private:
+	typedef void(*GLUTessCallback)();
+
+	struct Contour
+	{
+		int	primitiveType;	// GLenum (GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP, or GL_TRIANGLES)
+
+							// TriangleFan と、TriangleStrip の後続頂点のインデックス。三角形を構成する1つめの頂点番号。
+		int	intermediateVertexIndex1;
+
+		// TriangleFan と、TriangleStrip の後続頂点のインデックス。三角形を構成する2つめの頂点番号。
+		int	intermediateVertexIndex2;
+
+		int faceCount;
+
+	};
+
+	struct TessellatingState
+	{
+		FontOutlineTessellator*		thisPtr;
+		RawFont::VectorGlyphInfo*	glyphInfo;
+		List<Contour>				contourList;
+	};
+
+
+	static void BeginCallback(GLenum primitiveType, TessellatingState* state);
+	static void EndCallback(TessellatingState* state);
+	static void VertexDataCallback(void* vertexData, TessellatingState* state);
+	static void CombineCallback(GLfloat coords[3], void* vertex_data[4], GLfloat weight[4], void** out_data, TessellatingState* state);
+	static void ErrorCallback(GLenum error_code);
+
+
+
+	GLUtesselator*		m_gluTesselator;
+};
+
 } // namespace detail
 LN_NAMESPACE_END

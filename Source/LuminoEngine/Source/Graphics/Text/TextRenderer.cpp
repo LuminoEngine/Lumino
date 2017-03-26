@@ -427,19 +427,36 @@ void TextRenderer::CheckUpdateState()	// あらゆる Draw の直前にやりた
 //==============================================================================
 //------------------------------------------------------------------------------
 VectorTextRendererCore::VectorTextRendererCore()
+	: m_manager(nullptr)
+	, m_vertexBuffer(nullptr)
+	, m_indexBuffer(nullptr)
 {
 }
 
 //------------------------------------------------------------------------------
 VectorTextRendererCore::~VectorTextRendererCore()
 {
+	LN_SAFE_RELEASE(m_vertexBuffer);
+	LN_SAFE_RELEASE(m_indexBuffer);
 }
 
 //------------------------------------------------------------------------------
 void VectorTextRendererCore::Initialize(GraphicsManager* manager)
 {
+	m_manager = manager;
+
+	const int MaxCount = 4096;
+
+	auto* device = m_manager->GetGraphicsDevice();
+	m_vertexBuffer = device->CreateVertexBuffer(sizeof(Vertex) * MaxCount * 3, nullptr, ResourceUsage::Dynamic);
+	m_indexBuffer = device->CreateIndexBuffer(MaxCount * 3, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 }
 
+//------------------------------------------------------------------------------
+void VectorTextRendererCore::Render(const VectorGlyphData* dataList, int dataCount, VectorFontGlyphCache* cache, Brush* fillBrush)
+{
+
+}
 
 //==============================================================================
 // VectorTextRenderer
@@ -465,17 +482,56 @@ void VectorTextRenderer::Initialize(GraphicsManager* manager)
 //------------------------------------------------------------------------------
 void VectorTextRenderer::DrawChar(const Matrix& transform, TCHAR ch, const PointF& position)
 {
+	VectorFontGlyphCache* glyphCache = m_currentFont->GetVectorGlyphCache();
 
+	bool flush = false;
+	VectorGlyphData data;
+	data.cacheGlyphInfoHandle = glyphCache->GetGlyphInfo(ch, &flush);
+	data.transform = transform;
+	data.position = position;
+
+	m_bufferingCache.Add(data);
+
+	if (flush)
+	{
+		Flush();
+	}
 }
 
 //------------------------------------------------------------------------------
 void VectorTextRenderer::Flush()
 {
+	if (!m_bufferingCache.IsEmpty())
+	{
+		int dataCount = m_bufferingCache.GetCount();
+		RenderBulkData dataListData(&m_bufferingCache[0], sizeof(VectorGlyphData) * dataCount);
+		VectorFontGlyphCache* glyphCache = m_currentFont->GetVectorGlyphCache();
+
+		LN_ENQUEUE_RENDER_COMMAND_5(
+			VectorTextRenderer_Flush, m_manager,
+			VectorTextRendererCore*, m_core,
+			RenderBulkData, dataListData,
+			int, dataCount,
+			RefPtr<VectorFontGlyphCache>, glyphCache,
+			RefPtr<Brush>, m_fillBrush,
+			{
+				m_core->Render(
+					(VectorGlyphData*)dataListData.GetData(),
+					dataCount,
+					glyphCache,
+					m_fillBrush);
+			});
+
+		m_bufferingCache.Clear();
+	}
 }
 
 //------------------------------------------------------------------------------
 void VectorTextRenderer::OnSetState(const DrawElementBatch* state)
 {
+	if (state == nullptr) return;
+	m_currentFont = state->state.GetFont()->ResolveRawFont();
+	m_fillBrush = state->state.GetBrush();
 }
 
 } // namespace detail

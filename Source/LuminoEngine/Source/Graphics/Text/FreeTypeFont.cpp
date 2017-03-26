@@ -139,6 +139,13 @@ FreeTypeFont::FreeTypeFont(FontManager* manager)
 	m_glyphData.CopyOutlineGlyph = NULL;
 
 	FT_Stroker_New(m_manager->GetFTLibrary(), &m_ftStroker);
+
+	m_ftOutlineFuncs.move_to = (FT_Outline_MoveTo_Func)ftMoveToCallback;
+	m_ftOutlineFuncs.line_to = (FT_Outline_LineTo_Func)ftLineToCallback;
+	m_ftOutlineFuncs.conic_to = (FT_Outline_ConicTo_Func)ftConicToCallback;
+	m_ftOutlineFuncs.cubic_to = (FT_Outline_CubicTo_Func)ftCubicToCallback;
+	m_ftOutlineFuncs.shift = 0;
+	m_ftOutlineFuncs.delta = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -465,6 +472,193 @@ FontGlyphBitmap* FreeTypeFont::LookupGlyphBitmap(UTF32 utf32code, int strokeSize
 	}
 
 	return &m_fontGlyphBitmap;
+}
+
+//------------------------------------------------------------------------------
+void FreeTypeFont::DecomposeOutline(UTF32 utf32code, RawFont::VectorGlyphInfo* outInfo)
+{
+	UpdateFont();
+
+	FT_UInt glyphIndex = FTC_CMapCache_Lookup(
+		m_manager->GetFTCacheMapCache(),
+		m_ftFaceID,
+		m_ftCacheMapIndex,
+		utf32code);
+
+	FT_OutlineGlyph glyph;
+	FT_Error err = FTC_ImageCache_Lookup(
+		m_manager->GetFTCImageCache(),
+		&m_ftImageType,
+		glyphIndex,
+		(FT_Glyph*)&glyph,
+		NULL);
+	LN_THROW(err == 0, InvalidOperationException, "failed FTC_ImageCache_Lookup : %d\n", err);
+
+	DecomposingState state;
+	state.thisData = this;
+	state.outlines = &outInfo->outlines;
+	state.vertices = &outInfo->vertices;
+	state.vectorScale = 1.0f;		// TODO:
+	state.tessellationStep = 4;		// TODO:
+	state.delta1 = 1. / (double)state.tessellationStep;
+	state.delta2 = state.delta1 * state.delta1;
+	state.delta3 = state.delta2 * state.delta1;
+	FT_Error error = FT_Outline_Decompose(&glyph->outline, &m_ftOutlineFuncs, &state);
+	LN_FAIL_CHECK_STATE(error == 0) return;
+
+
+	// 1つ前の Outline があれば、頂点数を確定させる
+	if (!state.outlines->IsEmpty())
+	{
+		auto& outline = state.outlines->GetLast();
+		outline.vertexCount = state.vertices->GetCount() - outline.startIndex;
+	}
+}
+
+//------------------------------------------------------------------------------
+int FreeTypeFont::ftMoveToCallback(FT_Vector* to, DecomposingState* state)
+{
+	// 1つ前の Outline があれば、頂点数を確定させる
+	if (!state->outlines->IsEmpty())
+	{
+		auto& outline = state->outlines->GetLast();
+		outline.vertexCount = state->vertices->GetCount() - outline.startIndex;
+	}
+
+	// 新しい Outline を開始する
+	OutlineInfo outline;
+	outline.startIndex = state->vertices->GetCount();
+	state->outlines->Add(outline);
+
+	state->lastVertex = FTVectorToLNVector(to);
+	return 0;
+}
+
+//------------------------------------------------------------------------------
+int FreeTypeFont::ftLineToCallback(FT_Vector* to, DecomposingState* state)
+{
+	Vector2 v = FTVectorToLNVector(to);
+	state->vertices->Add(v * state->vectorScale);
+	state->lastVertex = v;
+	return 0;
+}
+
+//------------------------------------------------------------------------------
+int FreeTypeFont::ftConicToCallback(FT_Vector* control, FT_Vector* to, DecomposingState* state)
+{
+	enum Coordinates { X, Y };
+
+	Vector2 to_vertex = FTVectorToLNVector(to);
+	Vector2 control_vertex = FTVectorToLNVector(control);
+
+	double b[2], c[2], d[2], f[2], df[2], d2f[2];
+
+	b[X] = state->lastVertex.x - 2 * control_vertex.x + to_vertex.x;
+	b[Y] = state->lastVertex.y - 2 * control_vertex.y + to_vertex.y;
+
+	c[X] = -2 * state->lastVertex.x + 2 * control_vertex.x;
+	c[Y] = -2 * state->lastVertex.y + 2 * control_vertex.y;
+
+	d[X] = state->lastVertex.x;
+	d[Y] = state->lastVertex.y;
+
+	f[X] = d[X];
+	f[Y] = d[Y];
+	df[X] = c[X] * state->delta1 + b[X] * state->delta2;
+	df[Y] = c[Y] * state->delta1 + b[Y] * state->delta2;
+	d2f[X] = 2 * b[X] * state->delta2;
+	d2f[Y] = 2 * b[Y] * state->delta2;
+
+	for (unsigned int i = 0; i < state->tessellationStep - 1; i++)
+	{
+		f[X] += df[X];
+		f[Y] += df[Y];
+
+		Vector2 v(f[0], f[1]);
+		v *= state->vectorScale;
+		state->vertices->Add(v);
+
+		df[X] += d2f[X];
+		df[Y] += d2f[Y];
+	}
+
+	Vector2 v = FTVectorToLNVector(to);
+	v *= state->vectorScale;
+	state->vertices->Add(v);
+
+	state->lastVertex = to_vertex;
+
+	return 0;
+}
+
+//------------------------------------------------------------------------------
+int FreeTypeFont::ftCubicToCallback(FT_Vector* control1, FT_Vector* control2, FT_Vector* to, DecomposingState* state)
+{
+	enum Coordinates { X, Y };
+
+	Vector2 to_vertex = FTVectorToLNVector(to);
+	Vector2 control1_vertex = FTVectorToLNVector(control1);
+	Vector2 control2_vertex = FTVectorToLNVector(control2);
+
+	double a[2], b[2], c[2], d[2], f[2], df[2], d2f[2], d3f[2];
+
+	a[X] = -state->lastVertex.x + 3 * control1_vertex.x
+		- 3 * control2_vertex.x + to_vertex.x;
+	a[Y] = -state->lastVertex.y + 3 * control1_vertex.y
+		- 3 * control2_vertex.y + to_vertex.y;
+
+	b[X] = 3 * state->lastVertex.x - 6 * control1_vertex.x +
+		3 * control2_vertex.x;
+	b[Y] = 3 * state->lastVertex.y - 6 * control1_vertex.y +
+		3 * control2_vertex.y;
+
+	c[X] = -3 * state->lastVertex.x + 3 * control1_vertex.x;
+	c[Y] = -3 * state->lastVertex.y + 3 * control1_vertex.y;
+
+	d[X] = state->lastVertex.x;
+	d[Y] = state->lastVertex.y;
+
+	f[X] = d[X];
+	f[Y] = d[Y];
+	df[X] = c[X] * state->delta1 + b[X] * state->delta2
+		+ a[X] * state->delta3;
+	df[Y] = c[Y] * state->delta1 + b[Y] * state->delta2
+		+ a[Y] * state->delta3;
+	d2f[X] = 2 * b[X] * state->delta2 + 6 * a[X] * state->delta3;
+	d2f[Y] = 2 * b[Y] * state->delta2 + 6 * a[Y] * state->delta3;
+	d3f[X] = 6 * a[X] * state->delta3;
+	d3f[Y] = 6 * a[Y] * state->delta3;
+
+	for (unsigned int i = 0; i < state->tessellationStep - 1; i++)
+	{
+		f[X] += df[X];
+		f[Y] += df[Y];
+
+		Vector2 v(f[0], f[1]);
+		v *= state->vectorScale;
+		state->vertices->Add(v);
+
+		df[X] += d2f[X];
+		df[Y] += d2f[Y];
+		d2f[X] += d3f[X];
+		d2f[Y] += d3f[Y];
+	}
+
+	Vector2 v = FTVectorToLNVector(to);
+	v *= state->vectorScale;
+	state->vertices->Add(v);
+
+	state->lastVertex = to_vertex;
+
+	return 0;
+}
+
+//------------------------------------------------------------------------------
+Vector2 FreeTypeFont::FTVectorToLNVector(const FT_Vector* ftVec)
+{
+	return Vector2(
+		(double)(ftVec->x / 64) + (double)(ftVec->x % 64) / 64.,
+		(double)(ftVec->y / 64) + (double)(ftVec->y % 64) / 64.);
 }
 
 //------------------------------------------------------------------------------

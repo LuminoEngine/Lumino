@@ -13,6 +13,7 @@
 #include "../GraphicsManager.h"
 #include "../Device/GraphicsDriverInterface.h"
 #include "FontGlyphTextureCache.h"
+#include "FreeTypeFontTessellator.h"
 
 LN_NAMESPACE_BEGIN
 namespace detail {
@@ -344,9 +345,10 @@ VectorFontGlyphCache::~VectorFontGlyphCache()
 }
 
 //------------------------------------------------------------------------------
-void VectorFontGlyphCache::Initialize(GraphicsManager* manager, int maxSize)
+void VectorFontGlyphCache::Initialize(GraphicsManager* manager, RawFont* font, int maxSize)
 {
 	m_manager = manager;
+	m_font = font;
 	m_glyphInfoList.Resize(maxSize);
 	m_inFlushUsedFlags.resize(maxSize);
 	m_gryphBufferDataList.Resize(maxSize);
@@ -390,23 +392,29 @@ VectorFontGlyphCache::Handle VectorFontGlyphCache::GetGlyphInfo(char32_t utf32Co
 		// キャッシュマップに登録
 		m_glyphInfoIndexMap[utf32Code] = infoIndex;
 
+		RawFont::VectorGlyphInfo info;
+		m_font->DecomposeOutline(utf32Code, &info);
+		
+
 		// レンダリングスレッドへデータを送る
 		{
-			//RenderBulkData outlineList(&m_glyphLayoutDataList[0], sizeof(TextRendererCore::GlyphRunData) * dataCount);
-			//RenderBulkData vertexList(&m_glyphLayoutDataList[0], sizeof(TextRendererCore::GlyphRunData) * dataCount);
-
-			//LN_ENQUEUE_RENDER_COMMAND_3(
-			//	XXXX, m_manager,
-			//	VectorFontGlyphCache*, this_,
-			//	RenderBulkData, outlineList,
-			//	RenderBulkData, vertexList,
-			//	{
-			//		m_core->Render(
-			//			(TextRendererCore::GlyphRunData*)dataListData.GetData(),
-			//			dataCount,
-			//			cache,
-			//			m_fillBrush);
-			//	});
+			RenderBulkData vertexList(&info.vertices[0], sizeof(RawFont::FontOutlineVertex) * info.vertices.GetCount());
+			RenderBulkData outlineList(&info.outlines[0], sizeof(RawFont::OutlineInfo) * info.outlines.GetCount());
+			VectorFontGlyphCache* this_ = this;
+			LN_ENQUEUE_RENDER_COMMAND_4(
+				RegisterPolygons, m_manager,
+				VectorFontGlyphCache*, this_,
+				Handle, infoIndex,
+				RenderBulkData, vertexList,
+				RenderBulkData, outlineList,
+				{
+					this_->RegisterPolygons(
+						infoIndex,
+						reinterpret_cast<const RawFont::FontOutlineVertex*>(vertexList.GetData()),
+						vertexList.GetSize() / sizeof(RawFont::FontOutlineVertex),
+						reinterpret_cast<const RawFont::OutlineInfo*>(outlineList.GetData()),
+						outlineList.GetSize() / sizeof(RawFont::OutlineInfo));
+				});
 		}
 	}
 
@@ -454,6 +462,14 @@ void VectorFontGlyphCache::ResetUsedFlags()
 		m_inFlushUsedFlags[i] = false;
 	}
 	m_inFlushUsedCount = 0;
+}
+
+//------------------------------------------------------------------------------
+void VectorFontGlyphCache::RegisterPolygons(Handle info, const RawFont::FontOutlineVertex* vertices, int vertexSize, const RawFont::OutlineInfo* outlines, int outlineSize)
+{
+	//FontOutlineTessellator tess;	// TODO: インスタンスはメンバに持っておいたほうが malloc 少なくなっていいかな？
+	//tess.Tessellate(&info);
+
 }
 
 } // namespace detail

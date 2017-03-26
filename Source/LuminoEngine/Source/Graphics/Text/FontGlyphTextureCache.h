@@ -107,13 +107,13 @@ private:
 //};
 
 
-struct VectorFontOutline
-{
-	int	startIndex = 0;
-	int	vertexCount = 0;
-};
-
-
+//struct VectorFontOutline
+//{
+//	int	startIndex = 0;
+//	int	vertexCount = 0;
+//};
+//
+//
 
 
 class VectorFontGlyphCache
@@ -124,7 +124,7 @@ public:
 
 	VectorFontGlyphCache();
 	virtual ~VectorFontGlyphCache();
-	void Initialize(GraphicsManager* manager, int maxSize);
+	void Initialize(GraphicsManager* manager, RawFont* font, int maxSize);
 	int GetMaxCount() const { return m_glyphInfoList.GetCount(); }
 
 	// callby main thread
@@ -137,7 +137,7 @@ public:
 
 private:
 	void ResetUsedFlags();
-	void MakePolygons(Handle info, const VectorFontOutline* outlines, int outlineSize, const Vector3* vertices, int vertexSize);
+	void RegisterPolygons(Handle info, const RawFont::FontOutlineVertex* vertices, int vertexSize, const RawFont::OutlineInfo* outlines, int outlineSize);
 	
 	class GryphInfo : public LinkedNode
 	{
@@ -153,6 +153,7 @@ private:
 	};
 
 	GraphicsManager*					m_manager;
+	RawFont*							m_font;
 
 	// main thread resource
 	List<GryphInfo>						m_glyphInfoList;		// fixed instance list

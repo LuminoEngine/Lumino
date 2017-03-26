@@ -87,6 +87,10 @@ public:
 	virtual FontGlyphBitmap* LookupGlyphBitmap(UTF32 utf32code, int strokeSize);
 	//virtual FontGlyphData* LookupGlyphData(UTF32 utf32code, FontGlyphData* prevData);
 
+
+	virtual bool IsOutlineSupported() const override { return true; }
+	virtual void DecomposeOutline(UTF32 utf32code, RawFont::VectorGlyphInfo* outInfo) override;
+
 	virtual FontManager* GetManager() const { return m_manager; }
 
 	FTC_FaceID GetFTCFaceId() const { return m_ftFaceID; }
@@ -102,6 +106,25 @@ LN_INTERNAL_ACCESS:	// TODO
 	bool IsOutLineMetrix() const;
 	void GetOutlineTextMetrix();
 	void GetBitmapTextMetrix();
+
+	// FT_Outline_Funcs callbacks
+	struct DecomposingState
+	{
+		FreeTypeFont*				thisData;
+		List<OutlineInfo>*			outlines;
+		List<FontOutlineVertex>*	vertices;
+		Vector2						lastVertex;
+		float						vectorScale;
+		int							tessellationStep;
+		float						delta1;
+		float						delta2;
+		float						delta3;
+	};
+	static int ftMoveToCallback(FT_Vector* to, DecomposingState* state);
+	static int ftLineToCallback(FT_Vector* to, DecomposingState* state);
+	static int ftConicToCallback(FT_Vector* control, FT_Vector* to, DecomposingState* state);
+	static int ftCubicToCallback(FT_Vector* control1, FT_Vector* control2, FT_Vector* to, DecomposingState* state);
+	static Vector2 FTVectorToLNVector(const FT_Vector* ftVec);
 
 private:
 	FontManager*		m_manager;
@@ -126,6 +149,8 @@ private:
 
 	FreeTypeGlyphLocation	m_fontGlyphLocation;
 	FreeTypeGlyphBitmap		m_fontGlyphBitmap;
+
+	FT_Outline_Funcs		m_ftOutlineFuncs;
 
 	// TODO: いらないかも
 	FreeTypeGlyphData	m_glyphData;		///< LookupGlyphData() の戻り値として公開されるデータ
