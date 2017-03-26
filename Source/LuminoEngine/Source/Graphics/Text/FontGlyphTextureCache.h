@@ -132,12 +132,13 @@ public:
 	void OnFlush();	// メインスレッドで Flush したときにはこれを呼ぶ
 
 	// callby rendering thread
-	int GetTriangleCount(Handle info);
+	int GetVertexCount(Handle info);
+	int GetIndexCount(Handle info);
 	void GenerateMesh(Handle info, const Vector3& positionOffset, const Matrix& transform, Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex);
 
 private:
 	void ResetUsedFlags();
-	void RegisterPolygons(Handle info, const RawFont::FontOutlineVertex* vertices, int vertexSize, const RawFont::OutlineInfo* outlines, int outlineSize);
+	void RegisterPolygons(Handle infoIndex, const RawFont::FontOutlineVertex* vertices, int vertexSize, const RawFont::OutlineInfo* outlines, int outlineSize);
 	
 	class GryphInfo : public LinkedNode
 	{
@@ -146,11 +147,11 @@ private:
 		int idIndex;
 	};
 
-	struct GryphBufferData
-	{
-		List<Vector3>	vertices;
-		List<uint16_t>	indices;
-	};
+	//struct GryphBufferData
+	//{
+	//	List<Vector3>	vertices;
+	//	List<uint16_t>	indices;
+	//};
 
 	GraphicsManager*					m_manager;
 	RawFont*							m_font;
@@ -165,7 +166,7 @@ private:
 	int									m_inFlushUsedCount;		// m_inFlushUsedFlags の中の true 数 (最大数に到達したら Flush が必要)
 
 	// rendering thread resource
-	List<GryphBufferData>				m_gryphBufferDataList;	// fixed instance list
+	List<RawFont::VectorGlyphInfo>		m_gryphBufferDataList;	// fixed instance list
 };
 
 

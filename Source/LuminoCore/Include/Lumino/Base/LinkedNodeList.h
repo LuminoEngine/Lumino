@@ -73,7 +73,7 @@ public:
 	void Remove(TNode* node)
 	{
 		if (node == nullptr) return;
-		LN_FAIL_CHECK_ARG(node->m_prev != nullptr && node->m_next != nullptr) return;	// already removed
+		if (node->m_prev == nullptr || node->m_next == nullptr) return;	// already removed
 
 		node->m_prev->m_next = node->m_next;
 		node->m_next->m_prev = node->m_prev;

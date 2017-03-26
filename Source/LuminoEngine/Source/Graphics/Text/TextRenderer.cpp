@@ -9,6 +9,7 @@
 #include <Lumino/Graphics/GraphicsException.h>
 #include <Lumino/Graphics/Brush.h>
 #include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Graphics/VertexDeclaration.h>
 #include "../Device/GraphicsDriverInterface.h"
 #include "../RendererImpl.h"
 #include "../RenderingCommand.h"
@@ -445,17 +446,76 @@ void VectorTextRendererCore::Initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 
-	const int MaxCount = 4096;
-
 	auto* device = m_manager->GetGraphicsDevice();
-	m_vertexBuffer = device->CreateVertexBuffer(sizeof(Vertex) * MaxCount * 3, nullptr, ResourceUsage::Dynamic);
-	m_indexBuffer = device->CreateIndexBuffer(MaxCount * 3, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
+	m_renderer = device->GetRenderer();
+
+	//const int MaxCount = 4096;
+
+	m_vertexCache.Reserve(4096);
+	m_indexCache.Reserve(4096);
+
+	//auto* device = m_manager->GetGraphicsDevice();
+	//m_vertexBuffer = device->CreateVertexBuffer(sizeof(Vertex) * MaxCount * 3, nullptr, ResourceUsage::Dynamic);
+	//m_indexBuffer = device->CreateIndexBuffer(MaxCount * 3, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
+}
+
+//------------------------------------------------------------------------------
+void VectorTextRendererCore::RequestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex)
+{
+	assert(vb != nullptr);
+	assert(ib != nullptr);
+	*outBeginVertexIndex = m_vertexCache.GetCount();
+	*vb = m_vertexCache.Request(vertexCount);
+	*ib = m_indexCache.Request(indexCount);
 }
 
 //------------------------------------------------------------------------------
 void VectorTextRendererCore::Render(const VectorGlyphData* dataList, int dataCount, VectorFontGlyphCache* cache, Brush* fillBrush)
 {
+	for (int i = 0; i < dataCount; i++)
+	{
+		Vertex* vb;
+		uint16_t* ib;
+		uint16_t beginVertexIndex;
+		RequestBuffers(
+			cache->GetVertexCount(dataList[i].cacheGlyphInfoHandle),
+			cache->GetIndexCount(dataList[i].cacheGlyphInfoHandle),
+			&vb, &ib, &beginVertexIndex);
+		cache->GenerateMesh(
+			dataList[i].cacheGlyphInfoHandle, Vector3(dataList[i].position.x, dataList[i].position.y, 0), dataList[i].transform,
+			vb, ib, beginVertexIndex);
+	}
 
+	// TODO: このへん PrimitiveRenderer と同じ。共通にできないか？
+	{
+		// サイズが足りなければ再作成
+		auto* device = m_manager->GetGraphicsDevice();
+		if (m_vertexBuffer == nullptr || m_vertexBuffer->GetByteCount() < m_vertexCache.GetBufferUsedByteCount())
+		{
+			LN_SAFE_RELEASE(m_vertexBuffer);
+			m_vertexBuffer = device->CreateVertexBuffer(m_vertexCache.GetBufferUsedByteCount(), nullptr, ResourceUsage::Dynamic);
+		}
+		if (m_indexBuffer == nullptr || m_indexBuffer->GetByteCount() < m_indexCache.GetBufferUsedByteCount())
+		{
+			LN_SAFE_RELEASE(m_indexBuffer);
+			m_indexBuffer = device->CreateIndexBuffer(m_indexCache.GetBufferUsedByteCount(), nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
+		}
+
+		// 描画する
+		m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
+		m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
+
+		{
+			m_renderer->SetVertexDeclaration(m_manager->GetDefaultVertexDeclaration()->GetDeviceObject());
+			m_renderer->SetVertexBuffer(0, m_vertexBuffer);
+			m_renderer->SetIndexBuffer(m_indexBuffer);
+			m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
+		}
+
+		// キャッシュクリア
+		m_vertexCache.Clear();
+		m_indexCache.Clear();
+	}
 }
 
 //==============================================================================
@@ -530,7 +590,14 @@ void VectorTextRenderer::Flush()
 void VectorTextRenderer::OnSetState(const DrawElementBatch* state)
 {
 	if (state == nullptr) return;
-	m_currentFont = state->state.GetFont()->ResolveRawFont();
+	if (state->state.GetFont() != nullptr)
+	{
+		m_currentFont = state->state.GetFont()->ResolveRawFont();
+	}
+	else
+	{
+		m_currentFont = nullptr;
+	}
 	m_fillBrush = state->state.GetBrush();
 }
 

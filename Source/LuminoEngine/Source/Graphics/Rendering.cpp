@@ -1229,6 +1229,7 @@ void DrawList::BeginMakeElements()
 	m_drawElementList.ClearCommands();
 	m_state.Reset();
 	m_defaultMaterial->Reset();
+	//m_defaultMaterial->cullingMode = CullingMode::None;
 	m_currentSectionTopElement = nullptr;
 }
 

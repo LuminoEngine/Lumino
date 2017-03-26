@@ -163,19 +163,22 @@ class RawFont
 public:
 	static const int DefaultSize = 20;
 
+	// POD
 	struct OutlineInfo
 	{
 		int	startIndex;
 		int	vertexCount;
 	};
 
+	// POD
 	struct FontOutlineVertex
 	{
 		Vector2	pos;
 		float	alpha;
 
 		FontOutlineVertex(const Vector2& pos_)
-			: alpha(1.0f)
+			: pos(pos_)
+			, alpha(1.0f)
 		{}
 	};
 

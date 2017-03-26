@@ -395,6 +395,10 @@ VectorFontGlyphCache::Handle VectorFontGlyphCache::GetGlyphInfo(char32_t utf32Co
 		RawFont::VectorGlyphInfo info;
 		m_font->DecomposeOutline(utf32Code, &info);
 		
+		for (auto& ii : info.vertices)
+		{
+			ii.pos.Print();
+		}
 
 		// レンダリングスレッドへデータを送る
 		{
@@ -455,6 +459,37 @@ void VectorFontGlyphCache::OnFlush()
 }
 
 //------------------------------------------------------------------------------
+int VectorFontGlyphCache::GetVertexCount(Handle info)
+{
+	return m_gryphBufferDataList[info].vertices.GetCount();
+}
+
+//------------------------------------------------------------------------------
+int VectorFontGlyphCache::GetIndexCount(Handle info)
+{
+	return m_gryphBufferDataList[info].triangleIndices.GetCount();
+}
+
+//------------------------------------------------------------------------------
+void VectorFontGlyphCache::GenerateMesh(Handle infoIndex, const Vector3& positionOffset, const Matrix& transform, Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+{
+	auto* info = &m_gryphBufferDataList[infoIndex];
+	bool isIdent = transform.IsIdentity();
+	for (int i = 0; i < info->vertices.GetCount(); i++)
+	{
+		outVertices[i].position = Vector3(info->vertices[i].pos, 0.0f);
+		outVertices[i].color = Color(0, 0, 0, 1);
+
+		if (!isIdent) outVertices[i].position.TransformCoord(transform);
+		outVertices[i].position += positionOffset;
+	}
+	for (int i = 0; i < info->triangleIndices.GetCount(); i++)
+	{
+		outIndices[i] = beginIndex + info->triangleIndices[i];
+	}
+}
+
+//------------------------------------------------------------------------------
 void VectorFontGlyphCache::ResetUsedFlags()
 {
 	for (int i = 0; i < GetMaxCount(); i++)
@@ -465,11 +500,27 @@ void VectorFontGlyphCache::ResetUsedFlags()
 }
 
 //------------------------------------------------------------------------------
-void VectorFontGlyphCache::RegisterPolygons(Handle info, const RawFont::FontOutlineVertex* vertices, int vertexSize, const RawFont::OutlineInfo* outlines, int outlineSize)
+void VectorFontGlyphCache::RegisterPolygons(Handle infoIndex, const RawFont::FontOutlineVertex* vertices, int vertexSize, const RawFont::OutlineInfo* outlines, int outlineSize)
 {
-	//FontOutlineTessellator tess;	// TODO: インスタンスはメンバに持っておいたほうが malloc 少なくなっていいかな？
-	//tess.Tessellate(&info);
 
+	auto* info = &m_gryphBufferDataList[infoIndex];
+
+	// TODO: AddRange
+	info->vertices.Clear();
+	info->vertices.Reserve(vertexSize);
+	for (int i = 0; i < vertexSize; i++)
+	{
+		info->vertices.Add(vertices[i]);
+	}
+	info->outlines.Clear();
+	info->outlines.Reserve(outlineSize);
+	for (int i = 0; i < outlineSize; i++)
+	{
+		info->outlines.Add(outlines[i]);
+	}
+
+	FontOutlineTessellator tess;	// TODO: インスタンスはメンバに持っておいたほうが malloc 少なくなっていいかな？
+	tess.Tessellate(info);
 }
 
 } // namespace detail

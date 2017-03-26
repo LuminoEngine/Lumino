@@ -932,7 +932,8 @@ void FreeTypeFont::UpdateImageFlags()
 	}
 	// アウトライン OFF
 	else {
-		m_ftImageType.flags = FT_LOAD_RENDER;
+		// TODO: FT_LOAD_RENDER がついていると、アウトラインが取れない。
+		//m_ftImageType.flags = FT_LOAD_RENDER;
 	}
 	// アンチエイリアス ON
 	if (m_fontData.IsAntiAlias) {

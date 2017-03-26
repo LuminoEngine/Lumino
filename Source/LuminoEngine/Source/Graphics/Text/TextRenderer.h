@@ -6,6 +6,8 @@
 #include "../RenderingCommand.h"
 
 LN_NAMESPACE_BEGIN
+struct Vertex;
+
 namespace detail {
 
 class TextRendererCore
@@ -153,12 +155,16 @@ public:
 	virtual ~VectorTextRendererCore();
 	void Initialize(GraphicsManager* manager);
 
+	void RequestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex);
 	void Render(const VectorGlyphData* dataList, int dataCount, VectorFontGlyphCache* cache, Brush* fillBrush);
 
 private:
 	GraphicsManager*		m_manager;
+	Driver::IRenderer*		m_renderer;
 	Driver::IVertexBuffer*	m_vertexBuffer;
 	Driver::IIndexBuffer*	m_indexBuffer;
+	CacheBuffer<Vertex>		m_vertexCache;
+	CacheBuffer<uint16_t>	m_indexCache;
 };
 
 
