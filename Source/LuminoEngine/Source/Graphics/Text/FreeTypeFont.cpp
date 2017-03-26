@@ -475,6 +475,12 @@ FontGlyphBitmap* FreeTypeFont::LookupGlyphBitmap(UTF32 utf32code, int strokeSize
 }
 
 //------------------------------------------------------------------------------
+/*
+	返す頂点は、ベースラインを 0 として、Y+ 方向を上とする座標系で表される。
+	例えば A の下辺は 0、g の下辺は 0 より小さい。
+	https://www.freetype.org/freetype2/docs/tutorial/step2.html
+	http://w3.kcua.ac.jp/~fujiwara/infosci/font.html
+*/
 void FreeTypeFont::DecomposeOutline(UTF32 utf32code, RawFont::VectorGlyphInfo* outInfo)
 {
 	UpdateFont();

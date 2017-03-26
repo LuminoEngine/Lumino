@@ -335,8 +335,6 @@ void SceneGraph3D::CreateGridContents()
 	mesh->GetSection(0)->PrimitiveNum = 2;
 	mesh->GetSection(0)->primitiveType = PrimitiveType_TriangleList;
 
-
-	// シェーダ (DrawingContext3D)
 	static const byte_t shaderCode[] =
 	{
 #include "Resource/InfinitePlaneGrid.lfx.h"
