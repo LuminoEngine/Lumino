@@ -45,7 +45,7 @@ void MaterialList2::Initialize(int subMaterialCount, bool createMainMaterial)
 //------------------------------------------------------------------------------
 void MaterialList2::CopyShared(MaterialList* srcList, bool createMainMaterial)
 {
-	LN_CHECK_ARG(srcList != nullptr);
+	if (LN_CHECK_ARG(srcList != nullptr)) return;
 
 	Resize(srcList->GetCount());
 	for (int i = 0; i < srcList->GetCount(); ++i)
@@ -109,13 +109,13 @@ tr::ReflectionObjectList<Material*>* VisualNode::GetMaterials() const
 //------------------------------------------------------------------------------
 void VisualNode::SetOpacity(float opacity, int subsetIndex)
 {
-	LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr);
+	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
 	// TODO: サブマテリアルの設定
 	m_materialList->GetMainMaterial()->SetOpacity(opacity);
 }
 void VisualNode::SetColorScale(const Color& color, int subsetIndex)
 {
-	LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr);
+	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
 	// TODO: サブマテリアルの設定
 	m_materialList->GetMainMaterial()->SetColorScale(color);
 }
@@ -133,19 +133,19 @@ void VisualNode::SetColor(int r, int g, int b, int a)
 }
 void VisualNode::SetBlendColor(const Color& color, int subsetIndex)
 {
-	LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr);
+	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
 	// TODO: サブマテリアルの設定
 	m_materialList->GetMainMaterial()->SetBlendColor(color);
 }
 void VisualNode::SetTone(const ToneF& tone, int subsetIndex)
 {
-	LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr);
+	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
 	// TODO: サブマテリアルの設定
 	m_materialList->GetMainMaterial()->SetTone(tone);
 }
 void VisualNode::SetShader(Shader* shader, int subsetIndex)
 {
-	LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr);
+	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
 	// TODO: サブマテリアルの設定
 	m_materialList->GetMainMaterial()->SetShader(shader);
 }

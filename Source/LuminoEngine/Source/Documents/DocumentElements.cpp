@@ -234,8 +234,8 @@ void Block::Initialize()
 //------------------------------------------------------------------------------
 void Block::AddInline(Inline* inl)
 {
-	LN_CHECK_ARG(inl != nullptr);
-	LN_CHECK_ARG(inl->GetParent() == nullptr);
+	if (LN_CHECK_ARG(inl != nullptr)) return;
+	if (LN_CHECK_ARG(inl->GetParent() == nullptr)) return;
 	m_inlines.Add(inl);
 	inl->SetParent(this);
 }

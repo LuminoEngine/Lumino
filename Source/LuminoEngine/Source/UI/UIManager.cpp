@@ -56,11 +56,11 @@ UIManager::~UIManager()
 //------------------------------------------------------------------------------
 void UIManager::Initialize(const Settings& settings)
 {
-	LN_CHECK_ARG(settings.fileManager != nullptr);
-	LN_CHECK_ARG(settings.animationManager != nullptr);
-	LN_CHECK_ARG(settings.platformManager != nullptr);
-	LN_CHECK_ARG(settings.graphicsManager != nullptr);
-	LN_CHECK_ARG(settings.assetsManager != nullptr);
+	if (LN_CHECK_ARG(settings.fileManager != nullptr)) return;
+	if (LN_CHECK_ARG(settings.animationManager != nullptr)) return;
+	if (LN_CHECK_ARG(settings.platformManager != nullptr)) return;
+	if (LN_CHECK_ARG(settings.graphicsManager != nullptr)) return;
+	if (LN_CHECK_ARG(settings.assetsManager != nullptr)) return;
 
 	m_eventArgsPool = LN_NEW EventArgsPool();
 	m_fileManager = settings.fileManager;
@@ -111,7 +111,7 @@ void UIManager::Finalize()
 //------------------------------------------------------------------------------
 void UIManager::CreateGameModeMainFrame(World2D* defaultWorld2D, World3D* defaultWorld3D)
 {
-	LN_FAIL_CHECK_STATE(m_mainWindow == nullptr) return;
+	if (LN_CHECK_STATE(m_mainWindow == nullptr)) return;
 
 	m_mainWindow = LN_NEW UIMainWindow();
 	m_mainWindow->Initialize(this, m_platformManager->GetMainWindow(), defaultWorld2D, defaultWorld3D);

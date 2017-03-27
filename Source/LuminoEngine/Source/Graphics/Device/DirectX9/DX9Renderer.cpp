@@ -397,7 +397,7 @@ void DX9Renderer::OnClear(ClearFlags flags, const Color& color, float z, uint8_t
 	//   していない場合、エラーとならないがクリアされない。
 	if (m_currentDepthBuffer != nullptr)
 	{
-		LN_CHECK_STATE(m_currentRenderTargets[0]->GetSize() == m_currentDepthBuffer->GetSize());
+		if (LN_CHECK_STATE(m_currentRenderTargets[0]->GetSize() == m_currentDepthBuffer->GetSize())) return;
 	}
 
 	const SizeI& viewSize = m_currentRenderTargets[0]->GetSize();

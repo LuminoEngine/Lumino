@@ -65,7 +65,7 @@ Font::Font()
 //------------------------------------------------------------------------------
 void Font::Initialize(detail::GraphicsManager* manager, RawFont* builtinRawFont)
 {
-	LN_CHECK_ARG(manager != nullptr);
+	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
 
 	if (builtinRawFont != nullptr)
@@ -83,7 +83,7 @@ Font::~Font()
 //------------------------------------------------------------------------------
 void Font::SetFamily(const String& familyName)
 {
-	LN_CHECK_STATE(!m_builtin);
+	if (LN_CHECK_STATE(!m_builtin)) return;
 	m_fontInfo.Family = familyName;
 	m_rawFont = nullptr;
 }
@@ -97,7 +97,7 @@ const String& Font::GetFamily() const
 //------------------------------------------------------------------------------
 void Font::SetSize(int size)
 {
-	LN_CHECK_STATE(!m_builtin);
+	if (LN_CHECK_STATE(!m_builtin)) return;
 	m_fontInfo.Size = size;
 	m_rawFont = nullptr;
 }
@@ -111,7 +111,7 @@ int Font::GetSize() const
 //------------------------------------------------------------------------------
 void Font::SetBold(bool enabled)
 {
-	LN_CHECK_STATE(!m_builtin);
+	if (LN_CHECK_STATE(!m_builtin)) return;
 	m_fontInfo.IsBold = enabled;
 	m_rawFont = nullptr;
 }
@@ -125,7 +125,7 @@ bool Font::IsBold() const
 //------------------------------------------------------------------------------
 void Font::SetItalic(bool enabled)
 {
-	LN_CHECK_STATE(!m_builtin);
+	if (LN_CHECK_STATE(!m_builtin)) return;
 	m_fontInfo.IsItalic = enabled;
 	m_rawFont = nullptr;
 }
@@ -139,7 +139,7 @@ bool Font::IsItalic() const
 //------------------------------------------------------------------------------
 void Font::SetAntiAlias(bool enabled)
 {
-	LN_CHECK_STATE(!m_builtin);
+	if (LN_CHECK_STATE(!m_builtin)) return;
 	m_fontInfo.IsAntiAlias = enabled;
 	m_rawFont = nullptr;
 }

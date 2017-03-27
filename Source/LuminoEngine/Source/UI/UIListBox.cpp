@@ -84,7 +84,7 @@ UIListBoxItemPtr UIListBox::AddTextItem(const String& text)
 //------------------------------------------------------------------------------
 UIListBoxItemPtr UIListBox::AddItem(UIElement* item)
 {
-	LN_CHECK_ARG(item != nullptr);
+	if (LN_CHECK_ARG(item != nullptr)) return nullptr;
 
 	// 受け取った item を UIListBoxItem でラップして、UIListBoxItem をリストに入れる
 	auto listItem = RefPtr<UIListBoxItem>::MakeRef();

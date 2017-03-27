@@ -84,7 +84,7 @@ void TileMapRenderer::SetTransform(const Matrix& world, const Matrix& viewProj)
 //------------------------------------------------------------------------------
 void TileMapRenderer::Draw(DrawList* context, TileMapModel* tileMap, const RectF& boundingRect, const ViewFrustum& cameraFrustum, int priority)
 {
-	LN_CHECK_ARG(tileMap != nullptr);
+	if (LN_CHECK_ARG(tileMap != nullptr)) return;
 	m_context = context;
 	//m_spriteRenderer = spriteRenderer;
 
@@ -198,8 +198,8 @@ void TileMapRenderer::End()
 //------------------------------------------------------------------------------
 void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, TileSet* tileSet, const BoundingRect& renderRange, int priority)
 {
-	LN_CHECK_ARG(layer != nullptr);
-	LN_CHECK_ARG(tileSet != nullptr);
+	if (LN_CHECK_ARG(layer != nullptr)) return;
+	if (LN_CHECK_ARG(tileSet != nullptr)) return;
 
 	int tileCount = (renderRange.right - renderRange.left) * (renderRange.bottom - renderRange.top);
 	tileCount = std::min(tileCount, m_maxTileCount);

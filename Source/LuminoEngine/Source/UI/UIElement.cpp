@@ -77,7 +77,7 @@ UIElement::~UIElement()
 //------------------------------------------------------------------------------
 void UIElement::Initialize(detail::UIManager* manager)
 {
-	LN_CHECK_ARG(manager != nullptr);
+	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
 	m_invalidateFlags |= detail::InvalidateFlags::Initializing;
 
@@ -462,7 +462,7 @@ void UIElement::ApplyTemplateHierarchy(UIStyleTable* styleTable, UIStyleProperty
 //------------------------------------------------------------------------------
 void UIElement::UpdateLocalStyleAndApplyProperties(UIStyleTable* styleTable, UIStylePropertyTable* parentStyle)
 {
-	LN_CHECK_STATE(m_localStyle != nullptr);
+	if (LN_CHECK_STATE(m_localStyle != nullptr)) return;
 
 
 	// TODO: styleTable は多分 Context のルート固定でよい。
@@ -613,8 +613,8 @@ const VAlignment* UIElement::GetPriorityContentVAlignment()
 //------------------------------------------------------------------------------
 void UIElement::RaiseEventInternal(const UIEventInfo* ev, UIEventArgs* e)
 {
-	LN_CHECK_ARG(ev != nullptr);
-	LN_CHECK_ARG(e != nullptr);
+	if (LN_CHECK_ARG(ev != nullptr)) return;
+	if (LN_CHECK_ARG(e != nullptr)) return;
 
 	// まずは this に通知
 	OnRoutedEvent(ev, e);
@@ -635,8 +635,8 @@ void UIElement::RaiseEventInternal(const UIEventInfo* ev, UIEventArgs* e)
 //------------------------------------------------------------------------------
 void UIElement::AddVisualChild(UIElement* element)
 {
-	LN_FAIL_CHECK_ARG(element != nullptr) return;
-	LN_FAIL_CHECK_ARG(element->m_visualParent == nullptr) return;
+	if (LN_CHECK_ARG(element != nullptr)) return;
+	if (LN_CHECK_ARG(element->m_visualParent == nullptr)) return;
 
 	// リストが作成されていなければ、ここで始めて作る (省メモリ)
 	if (m_visualChildren == nullptr)

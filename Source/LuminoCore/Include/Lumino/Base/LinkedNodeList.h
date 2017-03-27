@@ -59,7 +59,7 @@ public:
 	void Add(TNode* node)
 	{
 		if (node == nullptr) return;
-		LN_FAIL_CHECK_ARG(node->m_prev == nullptr && node->m_next == nullptr) return;	// already added
+		if (LN_CHECK_ARG(node->m_prev == nullptr && node->m_next == nullptr)) return;	// already added
 
 		LinkedNode* prev = m_dummy->m_prev;
 		LinkedNode* next = m_dummy;

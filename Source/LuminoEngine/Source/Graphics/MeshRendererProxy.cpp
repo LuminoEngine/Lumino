@@ -28,7 +28,7 @@ MeshRendererProxy::~MeshRendererProxy()
 //------------------------------------------------------------------------------
 void MeshRendererProxy::Initialize(GraphicsManager* manager)
 {
-	LN_CHECK_ARG(manager != nullptr);
+	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
 
 	Driver::IGraphicsDevice* device = m_manager->GetGraphicsDevice();
@@ -38,7 +38,7 @@ void MeshRendererProxy::Initialize(GraphicsManager* manager)
 //------------------------------------------------------------------------------
 void MeshRendererProxy::DrawMesh(MeshResource* mesh, int startIndex, int primitiveCount, PrimitiveType primitiveType)
 {
-	LN_CHECK_ARG(mesh != nullptr);
+	if (LN_CHECK_ARG(mesh != nullptr)) return;
 	auto* _this = this;
 	
 	VertexDeclaration* decls;

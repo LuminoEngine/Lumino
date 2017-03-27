@@ -65,7 +65,7 @@ const String& TypeInfo::GetName() const
 //------------------------------------------------------------------------------
 void TypeInfo::RegisterProperty(PropertyInfo* prop)
 {
-	LN_CHECK_ARG(!prop->m_registerd);
+	if (LN_CHECK_ARG(!prop->m_registerd)) return;
 	m_propertyList.Add(prop);
 	prop->m_registerd = true;
 }
@@ -78,14 +78,15 @@ PropertyInfo* TypeInfo::FindProperty(size_t memberOffset) const
 		if (prop->m_memberOffset == memberOffset)
 			return prop;
 	}
-	LN_CHECK_STATE(0);
+
+	LN_UNREACHABLE();
 	return nullptr;
 }
 
 //------------------------------------------------------------------------------
 void TypeInfo::RegisterReflectionEvent(ReflectionEventInfo* ev)
 {
-	LN_CHECK_ARG(!ev->m_registerd);
+	if (LN_CHECK_ARG(!ev->m_registerd)) return;
 	m_routedEventList.Add(ev);
 	ev->m_registerd = true;
 }

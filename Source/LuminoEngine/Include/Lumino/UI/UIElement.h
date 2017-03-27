@@ -43,7 +43,7 @@ public:
 	void GoToVisualState(const StringRef& stateName)
 	{
 		Group* group = FindGroup(stateName);//groups.Find([stateName](const Group& g) { return g.stateNames.Contains([stateName](const String& name) { return name == stateName; }); });
-		LN_FAIL_CHECK_STATE(group != nullptr) return;
+		if (LN_CHECK_STATE(group != nullptr)) return;
 		activeStateNames[group->index] = stateName;
 	}
 

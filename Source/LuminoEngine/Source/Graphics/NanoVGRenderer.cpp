@@ -961,7 +961,7 @@ void NanoVGRenderer::Initialize(GraphicsManager* manager)
 //------------------------------------------------------------------------------
 void NanoVGRenderer::ExecuteCommand(NanoVGCommandList* commandList)
 {
-	LN_CHECK_ARG(commandList != nullptr);
+	if (LN_CHECK_ARG(commandList != nullptr)) return;
 
 	NanoVGRenderer* _this = this;
 	LN_ENQUEUE_RENDER_COMMAND_3(

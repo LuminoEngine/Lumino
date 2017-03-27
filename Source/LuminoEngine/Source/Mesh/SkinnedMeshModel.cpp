@@ -163,7 +163,7 @@ public:
 				euler = localRot.ToEulerAngles(type, &locked);
 				if (locked)
 				{
-					LN_CHECK_STATE(0);	// あり得ないはずだが…。localRotの要素がすべて0とか。
+					LN_UNREACHABLE();	// あり得ないはずだが…。localRotの要素がすべて0とか。
 				}
 			}
 		}
@@ -204,8 +204,8 @@ SkinnedMeshModel::~SkinnedMeshModel()
 //------------------------------------------------------------------------------
 void SkinnedMeshModel::Initialize(detail::GraphicsManager* manager, PmxSkinnedMeshResource* sharingMesh)
 {
-	LN_CHECK_ARG(manager != nullptr);
-	LN_CHECK_ARG(sharingMesh != nullptr);
+	if (LN_CHECK_ARG(manager != nullptr)) return;
+	if (LN_CHECK_ARG(sharingMesh != nullptr)) return;
 
 	m_mesh = Object::MakeRef<StaticMeshModel>(manager, sharingMesh);
 
@@ -512,8 +512,8 @@ PmxBoneResource* SkinnedMeshBone::GetCore() const
 //------------------------------------------------------------------------------
 void SkinnedMeshBone::AddChildBone(SkinnedMeshBone* bone)
 {
-	LN_CHECK_ARG(bone != nullptr);
-	LN_CHECK_ARG(bone->m_parent == nullptr);
+	if (LN_CHECK_ARG(bone != nullptr)) return;
+	if (LN_CHECK_ARG(bone->m_parent == nullptr)) return;
 	m_children.Add(bone);
 	bone->m_parent = this;
 }
@@ -565,7 +565,7 @@ const String& SkinnedMeshBone::GetAnimationTargetName() const
 //------------------------------------------------------------------------------
 void SkinnedMeshBone::SetAnimationTargetValue(ValueType type, const void* value)
 {
-	LN_CHECK_ARG(type == ValueType_SQTTransform);
+	if (LN_CHECK_ARG(type == ValueType_SQTTransform)) return;
 	m_localTransform = *((AttitudeTransform*)value);
 }
 
@@ -878,8 +878,8 @@ MmdSkinnedMeshJoint::~MmdSkinnedMeshJoint()
 //------------------------------------------------------------------------------
 void MmdSkinnedMeshJoint::Initialize(SkinnedMeshModel* ownerModel, PmxJointResource* jointResource)
 {
-	LN_CHECK_ARG(ownerModel != nullptr);
-	LN_CHECK_ARG(jointResource != nullptr);
+	if (LN_CHECK_ARG(ownerModel != nullptr)) return;
+	if (LN_CHECK_ARG(jointResource != nullptr)) return;
 
 	MmdSkinnedMeshRigidBody* bodyA = ownerModel->m_rigidBodyList[jointResource->RigidBodyAIndex];
 	MmdSkinnedMeshRigidBody* bodyB = ownerModel->m_rigidBodyList[jointResource->RigidBodyBIndex];

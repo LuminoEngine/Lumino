@@ -192,7 +192,7 @@ void Block::Initialize()
 //------------------------------------------------------------------------------
 void Block::AddInline(Inline* inl)
 {
-	LN_CHECK_ARG(inl != nullptr);
+	if (LN_CHECK_ARG(inl != nullptr)) return;
 	m_inlines.Add(inl);
 	inl->SetParentContent(this);
 	IncreaseRevision();

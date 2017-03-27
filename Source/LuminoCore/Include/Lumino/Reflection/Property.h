@@ -151,7 +151,7 @@ public:
 
 	void SetValueDirect(ReflectionObject* target, const TValue& value, PropertySetSource source) const
 	{
-		LN_CHECK_STATE(m_setter != nullptr);
+		if (LN_CHECK_STATE(m_setter != nullptr)) return;
 		m_setter(target, const_cast<TValue&>(value));
 		//NotifyPropertyChanged(target, this, source);
 	}
@@ -244,8 +244,8 @@ public:
 template<typename TValue>
 void PropertyInfo::SetPropertyValueDirect(ReflectionObject* obj, const PropertyInfo* prop, const TValue& value, PropertySetSource source)
 {
-	LN_CHECK_ARG(obj != nullptr);
-	LN_CHECK_ARG(prop != nullptr);
+	if (LN_CHECK_ARG(obj != nullptr)) return;
+	if (LN_CHECK_ARG(prop != nullptr)) return;
 	auto t = static_cast<const TypedPropertyInfo<TValue>*>(prop);
 	t->SetValueDirect(obj, value, source);
 }
@@ -254,8 +254,8 @@ void PropertyInfo::SetPropertyValueDirect(ReflectionObject* obj, const PropertyI
 template<typename TValue>
 const TValue& PropertyInfo::GetPropertyValueDirect(const ReflectionObject* obj, const PropertyInfo* prop)
 {
-	LN_CHECK_ARG(obj != nullptr);
-	LN_CHECK_ARG(prop != nullptr);
+	LN_VERIFY_ARG(obj != nullptr);
+	LN_VERIFY_ARG(prop != nullptr);
 	auto t = static_cast<const TypedPropertyInfo<TValue>*>(prop);
 	return t->GetValueDirect(obj);
 }

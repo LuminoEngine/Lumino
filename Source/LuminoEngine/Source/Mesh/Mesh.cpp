@@ -55,7 +55,7 @@ MeshResource::~MeshResource()
 //------------------------------------------------------------------------------
 void MeshResource::Initialize(detail::GraphicsManager* manager, MeshCreationFlags flags)
 {
-	LN_CHECK_ARG(manager != nullptr);
+	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
 	m_usage = (flags.TestFlag(MeshCreationFlags::DynamicBuffers)) ? ResourceUsage::Dynamic : ResourceUsage::Static;
 
@@ -117,7 +117,7 @@ void MeshResource::SetIndexInternal(void* indexBuffer, int index, int vertexInde
 //------------------------------------------------------------------------------
 void MeshResource::SetPosition(int index, const Vector3& position)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
+	if (LN_CHECK_RANGE(index, 0, m_vertexUsedCount)) return;
 	Vertex* v = (Vertex*)TryLockVertexBuffer(VB_BasicVertices);
 	v[index].position = position;
 }
@@ -125,7 +125,7 @@ void MeshResource::SetPosition(int index, const Vector3& position)
 //------------------------------------------------------------------------------
 void MeshResource::SetNormal(int index, const Vector3& normal)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
+	if (LN_CHECK_RANGE(index, 0, m_vertexUsedCount)) return;
 	Vertex* v = (Vertex*)TryLockVertexBuffer(VB_BasicVertices);
 	v[index].normal = normal;
 }
@@ -133,7 +133,7 @@ void MeshResource::SetNormal(int index, const Vector3& normal)
 //------------------------------------------------------------------------------
 void MeshResource::SetUV(int index, const Vector2& uv)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
+	if (LN_CHECK_RANGE(index, 0, m_vertexUsedCount)) return;
 	Vertex* v = (Vertex*)TryLockVertexBuffer(VB_BasicVertices);
 	v[index].uv = uv;
 }
@@ -141,7 +141,7 @@ void MeshResource::SetUV(int index, const Vector2& uv)
 //------------------------------------------------------------------------------
 void MeshResource::SetColor(int index, const Color& color)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
+	if (LN_CHECK_RANGE(index, 0, m_vertexUsedCount)) return;
 	Vertex* v = (Vertex*)TryLockVertexBuffer(VB_BasicVertices);
 	v[index].color = color;
 }
@@ -149,7 +149,7 @@ void MeshResource::SetColor(int index, const Color& color)
 //------------------------------------------------------------------------------
 const Vector3& MeshResource::GetPosition(int index)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
+	if (LN_CHECK_RANGE(index, 0, m_vertexUsedCount)) return Vector3::Zero;
 	Vertex* v = (Vertex*)TryLockVertexBuffer(VB_BasicVertices);
 	return v[index].position;
 }
@@ -157,7 +157,7 @@ const Vector3& MeshResource::GetPosition(int index)
 //------------------------------------------------------------------------------
 void MeshResource::SetBlendWeight(int index, int blendIndex, float value)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
+	if (LN_CHECK_RANGE(index, 0, m_vertexUsedCount)) return;
 	BlendWeight* v = (BlendWeight*)TryLockVertexBuffer(VB_BlendWeights);
 	v[index].weights[blendIndex] = value;
 }
@@ -165,7 +165,7 @@ void MeshResource::SetBlendWeight(int index, int blendIndex, float value)
 //------------------------------------------------------------------------------
 void MeshResource::SetBlendWeights(int index, float v0, float v1, float v2, float v3)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
+	if (LN_CHECK_RANGE(index, 0, m_vertexUsedCount)) return;
 	BlendWeight* v = (BlendWeight*)TryLockVertexBuffer(VB_BlendWeights);
 	v[index].weights[0] = v0;
 	v[index].weights[1] = v1;
@@ -176,7 +176,7 @@ void MeshResource::SetBlendWeights(int index, float v0, float v1, float v2, floa
 //------------------------------------------------------------------------------
 void MeshResource::GetBlendWeights(int index, float* out0, float* out1, float* out2, float* out3)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
+	if (LN_CHECK_RANGE(index, 0, m_vertexUsedCount)) return;
 	BlendWeight* v = (BlendWeight*)TryLockVertexBuffer(VB_BlendWeights);
 	if (out0 != nullptr) *out0 = v[index].weights[0];
 	if (out1 != nullptr) *out1 = v[index].weights[1];
@@ -187,7 +187,7 @@ void MeshResource::GetBlendWeights(int index, float* out0, float* out1, float* o
 //------------------------------------------------------------------------------
 void MeshResource::SetBlendIndex(int index, int blendIndex, float value)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
+	if (LN_CHECK_RANGE(index, 0, m_vertexUsedCount)) return;
 	BlendWeight* v = (BlendWeight*)TryLockVertexBuffer(VB_BlendWeights);
 	v[index].indices[blendIndex] = value;
 }
@@ -195,7 +195,7 @@ void MeshResource::SetBlendIndex(int index, int blendIndex, float value)
 //------------------------------------------------------------------------------
 void MeshResource::SetBlendIndices(int index, float v0, float v1, float v2, float v3)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
+	if (LN_CHECK_RANGE(index, 0, m_vertexUsedCount)) return;
 	BlendWeight* v = (BlendWeight*)TryLockVertexBuffer(VB_BlendWeights);
 	v[index].indices[0] = v0;
 	v[index].indices[1] = v1;
@@ -206,7 +206,7 @@ void MeshResource::SetBlendIndices(int index, float v0, float v1, float v2, floa
 //------------------------------------------------------------------------------
 void MeshResource::GetBlendIndices(int index, int* out0, int* out1, int* out2, int* out3)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
+	if (LN_CHECK_RANGE(index, 0, m_vertexUsedCount)) return;
 	BlendWeight* v = (BlendWeight*)TryLockVertexBuffer(VB_BlendWeights);
 	if (out0 != nullptr) *out0 = (int)v[index].indices[0];
 	if (out1 != nullptr) *out1 = (int)v[index].indices[1];
@@ -223,7 +223,7 @@ void MeshResource::SetIndex(int index, int vertexIndex)
 //------------------------------------------------------------------------------
 void MeshResource::SetAdditionalUV(int index, int additionalUVIndex, const Vector4& uv)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
+	if (LN_CHECK_RANGE(index, 0, m_vertexUsedCount)) return;
 	AdditionalUVs* v = (AdditionalUVs*)TryLockVertexBuffer(VB_AdditionalUVs);
 	v[index].uv[additionalUVIndex] = uv;
 }
@@ -231,7 +231,7 @@ void MeshResource::SetAdditionalUV(int index, int additionalUVIndex, const Vecto
 //------------------------------------------------------------------------------
 void MeshResource::SetSdefC(int index, const Vector4& value)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
+	if (LN_CHECK_RANGE(index, 0, m_vertexUsedCount)) return;
 	SdefInfo* v = (SdefInfo*)TryLockVertexBuffer(VB_SdefInfo);
 	v[index].sdefC = value;
 }
@@ -239,7 +239,7 @@ void MeshResource::SetSdefC(int index, const Vector4& value)
 //------------------------------------------------------------------------------
 const Vector4& MeshResource::GetSdefC(int index)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
+	if (LN_CHECK_RANGE(index, 0, m_vertexUsedCount)) return Vector4::Zero;
 	SdefInfo* v = (SdefInfo*)TryLockVertexBuffer(VB_SdefInfo);
 	return v[index].sdefC;
 }
@@ -247,7 +247,7 @@ const Vector4& MeshResource::GetSdefC(int index)
 //------------------------------------------------------------------------------
 void MeshResource::SetSdefR0(int index, const Vector3& value)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
+	if (LN_CHECK_RANGE(index, 0, m_vertexUsedCount)) return;
 	SdefInfo* v = (SdefInfo*)TryLockVertexBuffer(VB_SdefInfo);
 	v[index].sdefR0 = value;
 }
@@ -255,7 +255,7 @@ void MeshResource::SetSdefR0(int index, const Vector3& value)
 //------------------------------------------------------------------------------
 const Vector3& MeshResource::GetSdefR0(int index)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
+	if (LN_CHECK_RANGE(index, 0, m_vertexUsedCount)) return Vector3::Zero;
 	SdefInfo* v = (SdefInfo*)TryLockVertexBuffer(VB_SdefInfo);
 	return v[index].sdefR0;
 }
@@ -263,7 +263,7 @@ const Vector3& MeshResource::GetSdefR0(int index)
 //------------------------------------------------------------------------------
 void MeshResource::SetSdefR1(int index, const Vector3& value)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
+	if (LN_CHECK_RANGE(index, 0, m_vertexUsedCount)) return;
 	SdefInfo* v = (SdefInfo*)TryLockVertexBuffer(VB_SdefInfo);
 	v[index].sdefR1 = value;
 }
@@ -271,7 +271,7 @@ void MeshResource::SetSdefR1(int index, const Vector3& value)
 //------------------------------------------------------------------------------
 const Vector3& MeshResource::GetSdefR1(int index)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
+	if (LN_CHECK_RANGE(index, 0, m_vertexUsedCount)) return Vector3::Zero;
 	SdefInfo* v = (SdefInfo*)TryLockVertexBuffer(VB_SdefInfo);
 	return v[index].sdefR1;
 }
@@ -279,7 +279,7 @@ const Vector3& MeshResource::GetSdefR1(int index)
 //------------------------------------------------------------------------------
 void MeshResource::SetEdgeWeight(int index, float weight)
 {
-	LN_CHECK_RANGE(index, 0, m_vertexUsedCount);
+	if (LN_CHECK_RANGE(index, 0, m_vertexUsedCount)) return;
 	MmdExtra* v = (MmdExtra*)TryLockVertexBuffer(VB_MmdExtra);
 	v[index].edgeWeight = weight;
 }
@@ -337,8 +337,8 @@ void MeshResource::AddSquare(const Vertex* virtices)
 //------------------------------------------------------------------------------
 void MeshResource::AddLine(const Vertex& v1, const Vertex& v2)
 {
-	LN_FAIL_CHECK_STATE(!m_attributes.IsEmpty()) return;
-	LN_FAIL_CHECK_STATE(m_attributes.GetLast().primitiveType == PrimitiveType_LineList) return;
+	if (LN_CHECK_STATE(!m_attributes.IsEmpty())) return;
+	if (LN_CHECK_STATE(m_attributes.GetLast().primitiveType == PrimitiveType_LineList)) return;
 
 	int beginIndex = GetVertexCount();
 	Vertex* v = (Vertex*)RequestVertexBufferForAdditional(2, VB_BasicVertices);
@@ -459,7 +459,7 @@ void MeshResource::AddTeapot(float size, int tessellation)
 //------------------------------------------------------------------------------
 void* MeshResource::TryLockVertexBuffer(VertexBufferType type)
 {
-	LN_FAIL_CHECK_STATE(m_vertexUsedCount > 0) return nullptr;
+	if (LN_CHECK_STATE(m_vertexUsedCount > 0)) return nullptr;
 
 	const size_t strideTable[VB_Count] =
 	{
@@ -506,7 +506,7 @@ void* MeshResource::TryLockVertexBuffer(VertexBufferType type)
 //------------------------------------------------------------------------------
 void* MeshResource::TryLockIndexBuffer()
 {
-	LN_FAIL_CHECK_STATE(m_indexUsedCount > 0) return nullptr;
+	if (LN_CHECK_STATE(m_indexUsedCount > 0)) return nullptr;
 
 	//if (m_usage == ResourceUsage::Dynamic)
 	{
@@ -586,8 +586,8 @@ uint16_t* MeshResource::RequestIndexBufferForAdditional(int additionalIndexCount
 	int begin = GetIndexCount();
 	int newCount = begin + additionalIndexCount;
 
-	LN_FAIL_CHECK_STATE(m_indexBufferInfo.buffer == nullptr || m_indexBufferInfo.buffer->GetIndexStride() == 2) return nullptr;
-	LN_FAIL_CHECK_STATE(newCount <= UINT16_MAX) return nullptr;
+	if (LN_CHECK_STATE(m_indexBufferInfo.buffer == nullptr || m_indexBufferInfo.buffer->GetIndexStride() == 2)) return nullptr;
+	if (LN_CHECK_STATE(newCount <= UINT16_MAX)) return nullptr;
 
 	TryGlowIndexBuffer(newCount);
 	m_indexUsedCount = newCount;
@@ -757,8 +757,8 @@ void StaticMeshModel::Initialize(detail::GraphicsManager* manager)
 //------------------------------------------------------------------------------
 void StaticMeshModel::Initialize(detail::GraphicsManager* manager, MeshResource* sharingMesh)
 {
-	LN_CHECK_ARG(manager != nullptr);
-	LN_CHECK_ARG(sharingMesh != nullptr);
+	if (LN_CHECK_ARG(manager != nullptr)) return;
+	if (LN_CHECK_ARG(sharingMesh != nullptr)) return;
 
 	// メッシュ(バッファ類)は共有する
 	m_meshResource = sharingMesh;

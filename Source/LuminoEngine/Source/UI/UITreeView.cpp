@@ -142,7 +142,6 @@ void UITreeView::Initialize(ln::detail::UIManager* manager)
 ////------------------------------------------------------------------------------
 //UITreeViewItemPtr UITreeView::AddItem(UIElement* item)
 //{
-//	LN_CHECK_ARG(item != nullptr);
 //
 //	// 受け取った item を UITreeViewItem でラップして、UITreeViewItem をリストに入れる
 //	auto listItem = RefPtr<UITreeViewItem>::MakeRef();

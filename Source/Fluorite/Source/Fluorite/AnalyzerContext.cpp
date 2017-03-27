@@ -29,7 +29,7 @@ TokenStore::~TokenStore()
 //------------------------------------------------------------------------------
 void TokenStore::Reserve(int count)
 {
-	LN_FAIL_CHECK_STATE(m_tokenStore.IsEmpty()) return;
+	if (LN_CHECK_STATE(m_tokenStore.IsEmpty())) return;
 	m_tokenStore.Reserve(count);
 }
 
@@ -124,7 +124,7 @@ InputFile* AnalyzerContext::RegisterInputFile(const PathNameA& filePath)
 //------------------------------------------------------------------------------
 InputFile* AnalyzerContext::RegisterInputMemoryCode(const PathNameA& filePath, const char* code, int length)
 {
-	LN_CHECK_ARG(code != nullptr);
+	if (LN_CHECK_ARG(code != nullptr)) return nullptr;
 	auto ptr = RefPtr<InputFile>::MakeRef(filePath, code, length);
 	m_inputFileList.Add(ptr);
 	return ptr;
@@ -148,7 +148,7 @@ void AnalyzerContext::LexAll()
 //------------------------------------------------------------------------------
 void AnalyzerContext::LexFile(InputFile* file)
 {
-	LN_FAIL_CHECK_ARG(file != nullptr) return;
+	if (LN_CHECK_ARG(file != nullptr)) return;
 	ResetFileDiagnostics(file);
 	auto lexer = CreateLexer(file);
 	lexer->Tokenize(file);
@@ -166,8 +166,8 @@ void AnalyzerContext::PreprocessAll()
 //------------------------------------------------------------------------------
 void AnalyzerContext::PreprocessFile(InputFile* file)
 {
-	LN_FAIL_CHECK_ARG(file != nullptr) return;
-	LN_FAIL_CHECK_ARG(file->GetCategory() != InputFileCategory::CompileUnit) return;
+	if (LN_CHECK_ARG(file != nullptr)) return;
+	if (LN_CHECK_ARG(file->GetCategory() != InputFileCategory::CompileUnit)) return;
 
 	LN_NOTIMPLEMENTED();
 }

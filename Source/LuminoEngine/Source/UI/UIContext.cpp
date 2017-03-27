@@ -57,7 +57,7 @@ void UIContext::SetFocusElement(UIElement* element)
 {
 	if (element != nullptr)
 	{
-		LN_CHECK_STATE(element->IsFocusable());
+		if (LN_CHECK_STATE(element->IsFocusable())) return;
 	}
 
 	if (m_focusElement != element)

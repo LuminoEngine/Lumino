@@ -27,7 +27,7 @@ public:
 	virtual int64_t GetPosition() const { LN_THROW(0, InvalidOperationException); return 0; }
 	virtual size_t Read(void* buffer, size_t byteCount)
 	{
-		LN_CHECK_STATE(m_side == ReadSide);
+		if (LN_CHECK_STATE(m_side == ReadSide)) return 0;
 
 		DWORD bytesRead = 0;
 
@@ -43,7 +43,7 @@ public:
 	}
 	virtual void Write(const void* data, size_t byteCount)
 	{
-		LN_CHECK_STATE(m_side == WriteSide);
+		if (LN_CHECK_STATE(m_side == WriteSide)) return;
 
 		DWORD bytesWrite = 0;
 		BOOL bRes = ::WriteFile(m_hPipe, data, (DWORD)byteCount, &bytesWrite, NULL);

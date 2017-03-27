@@ -336,8 +336,8 @@ int StringTraits::LastIndexOf(const TChar* str1, int str1Len, const TChar* str2,
 		return (str2Len == 0) ? 0 : -1;
 	}
 
-	LN_CHECK_ARG(startIndex >= 0);			// startIndex は 0 以上でなければならない。
-	LN_CHECK_ARG(startIndex < str1Len);		// startIndex は str1 の長さを超えてはならない。
+	if (LN_CHECK_ARG(startIndex >= 0)) return -1;			// startIndex は 0 以上でなければならない。
+	if (LN_CHECK_ARG(startIndex < str1Len)) return -1;		// startIndex は str1 の長さを超えてはならない。
 
 	// 検索文字数が 0 の場合は必ず検索開始位置でヒットする (strstr と同じ動作)
 	if (str2Len == 0 && count >= 0 && startIndex - count + 1 >= 0) {
@@ -346,7 +346,7 @@ int StringTraits::LastIndexOf(const TChar* str1, int str1Len, const TChar* str2,
 
 	const TChar* pos = str1 + startIndex;							// 検索範囲の末尾の文字を指す。
 	const TChar* end = (count < 0) ? str1 : pos - (count - 1);		// 検索範囲の先頭の文字を指す。
-	LN_CHECK_ARG(end <= pos);										// 末尾と先頭が逆転してないこと。
+	if (LN_CHECK_ARG(end <= pos)) return -1;						// 末尾と先頭が逆転してないこと。
 
 	if (pos - end < (str2Len-1)) {
 		return -1;	// 検索範囲が検索文字数よりも少ない場合は見つかるはずがない
@@ -484,10 +484,10 @@ template int StringTraits::Compare<wchar_t>(wchar_t ch1, wchar_t ch2, CaseSensit
 template<typename TChar>
 void StringTraits::Trim(const TChar* begin, int length, const TChar** outBegin, int* outLength)
 {
-	LN_CHECK_ARG(begin != nullptr);
-	LN_CHECK_ARG(length >= 0);
-	LN_CHECK_ARG(outBegin != nullptr);
-	LN_CHECK_ARG(outLength != nullptr);
+	if (LN_CHECK_ARG(begin != nullptr)) return;
+	if (LN_CHECK_ARG(length >= 0)) return;
+	if (LN_CHECK_ARG(outBegin != nullptr)) return;
+	if (LN_CHECK_ARG(outLength != nullptr)) return;
 
 	if (length == 0) {
 		*outBegin = begin;

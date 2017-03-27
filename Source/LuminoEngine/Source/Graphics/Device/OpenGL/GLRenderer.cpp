@@ -44,8 +44,8 @@ void GLRenderer::Activate()
 	// FBO や他にも共有できないものがある
 	// http://stackoverflow.com/questions/16782279/how-to-render-to-an-fbo-on-a-shared-context
 
-	LN_FAIL_CHECK_STATE(m_vertexArray == 0) return;
-	LN_FAIL_CHECK_STATE(m_framebuffer == 0) return;
+	if (LN_CHECK_STATE(m_vertexArray == 0)) return;
+	if (LN_CHECK_STATE(m_framebuffer == 0)) return;
 
 	glGenVertexArrays(1, &m_vertexArray);
 	glGenFramebuffers(1, &m_framebuffer);

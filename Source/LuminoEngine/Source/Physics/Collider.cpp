@@ -107,7 +107,7 @@ const Matrix& Collider::GetTransform() const
 //------------------------------------------------------------------------------
 void Collider::AddShape(CollisionShape* shape)
 {
-	LN_FAIL_CHECK_ARG(shape != nullptr) return;
+	if (LN_CHECK_ARG(shape != nullptr)) return;
 
 	if (m_shape != nullptr)
 	{

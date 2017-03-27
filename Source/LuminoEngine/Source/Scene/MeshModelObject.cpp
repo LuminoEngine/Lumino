@@ -40,7 +40,7 @@ SkinnedMesh::~SkinnedMesh()
 //------------------------------------------------------------------------------
 void SkinnedMesh::Initialize(SceneGraph* ownerSceneGraph, SkinnedMeshModel* meshModel)
 {
-	LN_CHECK_ARG(meshModel != nullptr);
+	if (LN_CHECK_ARG(meshModel != nullptr)) return;
 	m_meshModel = meshModel;
 
 	VisualNode::Initialize(ownerSceneGraph, meshModel->m_mesh->m_materials->GetCount());

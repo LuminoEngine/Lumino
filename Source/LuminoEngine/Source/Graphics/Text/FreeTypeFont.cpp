@@ -510,7 +510,7 @@ void FreeTypeFont::DecomposeOutline(UTF32 utf32code, RawFont::VectorGlyphInfo* o
 	state.delta2 = state.delta1 * state.delta1;
 	state.delta3 = state.delta2 * state.delta1;
 	FT_Error error = FT_Outline_Decompose(&glyph->outline, &m_ftOutlineFuncs, &state);
-	LN_FAIL_CHECK_STATE(error == 0) return;
+	if (LN_CHECK_STATE(error == 0)) return;
 
 
 	// 1つ前の Outline があれば、頂点数を確定させる

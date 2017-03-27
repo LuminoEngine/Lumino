@@ -10,9 +10,9 @@ class SemaphoreImpl
 public:
 	SemaphoreImpl(int initialCount, int maxCount)
 	{
-		LN_CHECK_ARG(initialCount >= 0);
-		LN_CHECK_ARG(maxCount >= 1);
-		LN_CHECK_ARG(initialCount <= maxCount);
+		if (LN_CHECK_ARG(initialCount >= 0)) return;
+		if (LN_CHECK_ARG(maxCount >= 1)) return;
+		if (LN_CHECK_ARG(initialCount <= maxCount)) return;
 		m_handle = ::CreateSemaphore(NULL, initialCount, maxCount, NULL);
 	}
 

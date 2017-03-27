@@ -168,7 +168,7 @@ void TextWriter::Write(double value)
 	// TODO: 64桁以上だと失敗する
 	TCHAR buf[64];
 	int len = StringTraits::tsnprintf_l(buf, 64, _T("%lf"), m_locale.GetNativeLocale(), value);
-	LN_FAIL_CHECK_STATE(len > 0) return;
+	if (LN_CHECK_STATE(len > 0)) return;
 	WriteInternal(buf, len);
 }
 

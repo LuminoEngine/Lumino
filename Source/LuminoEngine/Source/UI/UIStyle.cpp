@@ -305,7 +305,6 @@ UIStyleTable::~UIStyleTable()
 ////------------------------------------------------------------------------------
 //void UIStyleTable::AddStyle(const tr::TypeInfo* targetType, UIStyle* style)
 //{
-//	LN_CHECK_ARG(style != nullptr);
 //	m_table.Add(targetType, style);
 //}
 //
@@ -362,7 +361,7 @@ UIStyle* UIStyleTable::GetSubControlStyle(const StringRef& subControlOwnerName, 
 //------------------------------------------------------------------------------
 UIStyle* UIStyleTable::FindStyle(const tr::TypeInfo* targetType/*, const StringRef& subControlName*/)
 {
-	LN_CHECK_ARG(targetType != nullptr);
+	if (LN_CHECK_ARG(targetType != nullptr)) return nullptr;
 
 	StyleKey key = targetType->GetName().GetHashCode();// +subControlName.GetHashCode();
 	RefPtr<UIStyle>* s = m_table.Find(key);

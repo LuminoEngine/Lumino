@@ -24,7 +24,7 @@ void JsonDocument::Parse(const String& text)
 }
 void JsonDocument::Parse(const TCHAR* text, int len)
 {
-	LN_CHECK_ARG(text != nullptr);
+	if (LN_CHECK_ARG(text != nullptr)) return;
 
 	StringReader textReader(String(text, (len < 0) ? (int)StringTraits::tcslen(text) : len));
 	Parse(&textReader);
@@ -75,9 +75,9 @@ bool JsonHelper::IsValueType(JsonValueType type)
 //------------------------------------------------------------------------------
 JsonParseResult JsonHelper::LoadElement(JsonDocument2* doc, JsonReader2* reader, JsonElement2** outElement)
 {
-	LN_FAIL_CHECK_ARG(doc != nullptr) return JsonParseResult::Error;
-	LN_FAIL_CHECK_ARG(reader != nullptr) return JsonParseResult::Error;
-	LN_FAIL_CHECK_ARG(outElement != nullptr) return JsonParseResult::Error;
+	if (LN_CHECK_ARG(doc != nullptr)) return JsonParseResult::Error;
+	if (LN_CHECK_ARG(reader != nullptr)) return JsonParseResult::Error;
+	if (LN_CHECK_ARG(outElement != nullptr)) return JsonParseResult::Error;
 
 	JsonToken type = reader->GetTokenType();
 	if (type == JsonToken::StartObject)
@@ -103,7 +103,7 @@ JsonParseResult JsonHelper::LoadElement(JsonDocument2* doc, JsonReader2* reader,
 	}
 	else
 	{
-		LN_FAIL_CHECK(0, InvalidFormatException) return JsonParseResult::Error;
+		if (LN_CHECK(0, InvalidFormatException)) return JsonParseResult::Error;
 	}
 	return JsonParseResult::Success;
 }
@@ -206,35 +206,35 @@ bool JsonValue2::IsNull() const
 //------------------------------------------------------------------------------
 bool JsonValue2::GetBool() const
 {
-	LN_FAIL_CHECK_STATE(GetType() == JsonValueType::Bool) return false;
+	if (LN_CHECK_STATE(GetType() == JsonValueType::Bool)) return false;
 	return m_bool;
 }
 
 //------------------------------------------------------------------------------
 int32_t JsonValue2::GetInt32() const
 {
-	LN_FAIL_CHECK_STATE(GetType() == JsonValueType::Int32) return false;
+	if (LN_CHECK_STATE(GetType() == JsonValueType::Int32)) return 0;
 	return m_int32;
 }
 
 //------------------------------------------------------------------------------
 int64_t JsonValue2::GetInt64() const
 {
-	LN_FAIL_CHECK_STATE(GetType() == JsonValueType::Int64) return false;
+	if (LN_CHECK_STATE(GetType() == JsonValueType::Int64)) return 0;
 	return m_int64;
 }
 
 //------------------------------------------------------------------------------
 float JsonValue2::GetFloat() const
 {
-	LN_FAIL_CHECK_STATE(GetType() == JsonValueType::Float) return false;
+	if (LN_CHECK_STATE(GetType() == JsonValueType::Float)) return 0;
 	return m_float;
 }
 
 //------------------------------------------------------------------------------
 double JsonValue2::GetDouble() const
 {
-	LN_FAIL_CHECK_STATE(GetType() == JsonValueType::Double) return false;
+	if (LN_CHECK_STATE(GetType() == JsonValueType::Double)) return 0;
 	return m_double;
 }
 
@@ -259,7 +259,7 @@ void JsonValue2::CheckRelease()
 //------------------------------------------------------------------------------
 void JsonValue2::OnSave(JsonWriter* writer)
 {
-	LN_FAIL_CHECK_ARG(writer != nullptr) return;
+	if (LN_CHECK_ARG(writer != nullptr)) return;
 	switch (GetType())
 	{
 		case JsonValueType::Null:
@@ -284,7 +284,7 @@ void JsonValue2::OnSave(JsonWriter* writer)
 			writer->WriteString(m_stringCore->c_str(), m_stringCore->length());
 			break;
 		default:
-			LN_FAIL_CHECK_STATE(0) return;
+			LN_UNREACHABLE();
 			break;
 	}
 }
@@ -292,7 +292,7 @@ void JsonValue2::OnSave(JsonWriter* writer)
 //------------------------------------------------------------------------------
 JsonParseResult JsonValue2::OnLoad(JsonReader2* reader)
 {
-	LN_FAIL_CHECK_ARG(reader != nullptr) return JsonParseResult::Error;
+	if (LN_CHECK_ARG(reader != nullptr)) return JsonParseResult::Error;
 
 	switch (reader->GetTokenType())
 	{
@@ -318,7 +318,7 @@ JsonParseResult JsonValue2::OnLoad(JsonReader2* reader)
 			SetString(reader->GetValue());
 			break;
 		default:
-			LN_FAIL_CHECK(0, InvalidFormatException) return JsonParseResult::Error;
+			LN_UNREACHABLE();
 			break;
 	}
 	return JsonParseResult::Success;
@@ -408,7 +408,7 @@ JsonObject2* JsonArray2::AddObject()
 //------------------------------------------------------------------------------
 void JsonArray2::OnSave(JsonWriter* writer)
 {
-	LN_FAIL_CHECK_ARG(writer != nullptr) return;
+	if (LN_CHECK_ARG(writer != nullptr)) return;
 	writer->WriteStartArray();
 	for (JsonElement2* item : m_itemList)
 	{
@@ -420,7 +420,7 @@ void JsonArray2::OnSave(JsonWriter* writer)
 //------------------------------------------------------------------------------
 JsonParseResult JsonArray2::OnLoad(JsonReader2* reader)
 {
-	LN_FAIL_CHECK_ARG(reader != nullptr) return JsonParseResult::Error;
+	if (LN_CHECK_ARG(reader != nullptr)) return JsonParseResult::Error;
 
 	// この時点で reader は StartArray('[') を指している
 
@@ -533,7 +533,7 @@ JsonElement2* JsonObject2::Find(const StringRef& name)
 //------------------------------------------------------------------------------
 void JsonObject2::OnSave(JsonWriter* writer)
 {
-	LN_FAIL_CHECK_ARG(writer != nullptr) return;
+	if (LN_CHECK_ARG(writer != nullptr)) return;
 
 	writer->WriteStartObject();
 
@@ -549,7 +549,7 @@ void JsonObject2::OnSave(JsonWriter* writer)
 //------------------------------------------------------------------------------
 JsonParseResult JsonObject2::OnLoad(JsonReader2* reader)
 {
-	LN_FAIL_CHECK_ARG(reader != nullptr) return JsonParseResult::Error;
+	if (LN_CHECK_ARG(reader != nullptr)) return JsonParseResult::Error;
 
 	// この時点で reader は StartObject('{') を指している
 
@@ -642,7 +642,7 @@ void JsonElementCache::Finalize()
 //------------------------------------------------------------------------------
 JsonElement2* JsonElementCache::Alloc(size_t size)
 {
-	LN_FAIL_CHECK_ARG(size <= BufferSize) return nullptr;
+	if (LN_CHECK_ARG(size <= BufferSize)) return nullptr;
 
 	BufferInfo* cur = &m_buffers.GetLast();
 	if (cur->buffer.GetSize() - cur->used < size)
@@ -724,10 +724,10 @@ void JsonDocument2::Load(const StringRef& filePath)
 	JsonReader2 jr(&r);
 
 	bool result = jr.Read();
-	LN_FAIL_CHECK(result, InvalidFormatException) return;
+	if (LN_CHECK(result, InvalidFormatException)) return;
 
 	JsonToken type = jr.GetTokenType();
-	LN_FAIL_CHECK(type == JsonToken::StartObject, InvalidFormatException) return;
+	if (LN_CHECK(type == JsonToken::StartObject, InvalidFormatException)) return;
 
 	JsonElement2::Load(&jr);
 }

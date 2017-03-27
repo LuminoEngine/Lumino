@@ -29,7 +29,7 @@ void Variant::SetNullPtr(std::nullptr_t value)
 }
 std::nullptr_t Variant::GetNullPtr() const
 {
-	LN_CHECK_STATE(m_type == VariantType::Null);
+	if (LN_CHECK_STATE(m_type == VariantType::Null)) return nullptr;
 	return nullptr;
 }
 void Variant::SetBool(bool value)
@@ -40,7 +40,7 @@ void Variant::SetBool(bool value)
 }
 bool Variant::GetBool() const
 {
-	LN_CHECK_STATE(m_type == VariantType::Bool);
+	if (LN_CHECK_STATE(m_type == VariantType::Bool)) return false;
 	return m_bool;
 }
 void Variant::SetArithmetic(int32_t value)
@@ -92,7 +92,7 @@ void Variant::SetString(const String& value)
 }
 String Variant::GetString() const
 {
-	LN_CHECK_STATE(m_type == VariantType::String);
+	if (LN_CHECK_STATE(m_type == VariantType::String)) return String::GetEmpty();
 	String str;
 	str.Attach(m_string);
 	return str;
@@ -105,12 +105,12 @@ void Variant::SetEnumValue(EnumValueType value)
 }
 EnumValueType Variant::GetEnumValue() const
 {
-	LN_CHECK_STATE(m_type == VariantType::Enum);
+	if (LN_CHECK_STATE(m_type == VariantType::Enum)) return 0;
 	return m_enum;
 }
 void Variant::SetStruct(const void* value, size_t size, const std::type_info& typeInfo)
 {
-	LN_CHECK_ARG(size <= sizeof(m_struct));
+	if (LN_CHECK_ARG(size <= sizeof(m_struct))) return;
 	m_type = VariantType::Struct;
 	memcpy(m_struct, value, size);
 	m_structSize = size;
@@ -118,7 +118,7 @@ void Variant::SetStruct(const void* value, size_t size, const std::type_info& ty
 }
 const void* Variant::GetStruct() const
 {
-	LN_CHECK_STATE(m_type == VariantType::Struct);
+	if (LN_CHECK_STATE(m_type == VariantType::Struct)) return nullptr;
 	return (const void*)m_struct;
 }
 void Variant::SetReflectionObject(ReflectionObject* obj)
@@ -130,7 +130,7 @@ void Variant::SetReflectionObject(ReflectionObject* obj)
 ReflectionObject* Variant::GetReflectionObject() const
 {
 	if (m_type == VariantType::Null) return nullptr;
-	LN_CHECK_STATE(m_type == VariantType::Object || m_type == VariantType::ArrayObject);	// List も Object の一部。
+	if (LN_CHECK_STATE(m_type == VariantType::Object || m_type == VariantType::ArrayObject)) return nullptr;	// List も Object の一部。
 	return m_object;
 }
 void Variant::SetReflectionArrayObject(ReflectionArrayObject* obj)
@@ -142,7 +142,7 @@ void Variant::SetReflectionArrayObject(ReflectionArrayObject* obj)
 ReflectionArrayObject* Variant::GetReflectionArrayObject() const
 {
 	if (m_type == VariantType::Null) return nullptr;
-	LN_CHECK_STATE(m_type == VariantType::ArrayObject);
+	if (LN_CHECK_STATE(m_type == VariantType::ArrayObject)) return nullptr;
 	return m_arrayObject;
 }
 

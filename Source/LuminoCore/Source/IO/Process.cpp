@@ -147,21 +147,21 @@ bool Process::WaitForExit(int timeoutMSec)
 //------------------------------------------------------------------------------
 StreamWriter* Process::GetStandardInput() const
 {
-	LN_CHECK_STATE(m_standardInputWriter != nullptr);
+	if (LN_CHECK_STATE(m_standardInputWriter != nullptr)) return nullptr;
 	return m_standardInputWriter;
 }
 
 //------------------------------------------------------------------------------
 StreamReader* Process::GetStandardOutput() const
 {
-	LN_CHECK_STATE(m_standardOutputReader != nullptr);
+	if (LN_CHECK_STATE(m_standardOutputReader != nullptr)) return nullptr;
 	return m_standardOutputReader;
 }
 
 //------------------------------------------------------------------------------
 StreamReader* Process::GetStandardError() const
 {
-	LN_CHECK_STATE(m_standardErrorReader != nullptr);
+	if (LN_CHECK_STATE(m_standardErrorReader != nullptr)) return nullptr;
 	return m_standardErrorReader;
 }
 
@@ -191,7 +191,7 @@ int Process::GetExitCode()
 //------------------------------------------------------------------------------
 void Process::BeginOutputReadLine()
 {
-	LN_CHECK_STATE(m_standardOutputReader != nullptr);
+	if (LN_CHECK_STATE(m_standardOutputReader != nullptr)) return;
 
 	// 読み取りスレッドを立てる
 #ifdef LN_CPP11
@@ -205,7 +205,7 @@ void Process::BeginOutputReadLine()
 //------------------------------------------------------------------------------
 void Process::BeginErrorReadLine()
 {
-	LN_CHECK_STATE(m_standardErrorReader != nullptr);
+	if (LN_CHECK_STATE(m_standardErrorReader != nullptr)) return;
 
 	// 読み取りスレッドを立てる
 #ifdef LN_CPP11

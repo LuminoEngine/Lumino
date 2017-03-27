@@ -65,8 +65,8 @@ DofSpringJoint::~DofSpringJoint()
 //------------------------------------------------------------------------------
 void DofSpringJoint::Initialize(RigidBody* bodyA, RigidBody* bodyB, const Matrix& localOffsetA, const Matrix& localOffsetB)
 {
-	LN_CHECK_ARG(bodyA != nullptr);
-	LN_CHECK_ARG(bodyB != nullptr);
+	if (LN_CHECK_ARG(bodyA != nullptr)) return;
+	if (LN_CHECK_ARG(bodyB != nullptr)) return;
 	m_bodyA = bodyA;
 	m_bodyB = bodyB;
 

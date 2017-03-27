@@ -208,7 +208,7 @@ Material* SpriteParticleModel::GetMaterial() const
 //------------------------------------------------------------------------------
 void SpriteParticleModel::SetSubParticle(SpriteParticleModel* particle)
 {
-	LN_FAIL_CHECK_ARG(particle != this) return;	// this は NG。無限再帰する
+	if (LN_CHECK_ARG(particle != this)) return;	// this は NG。無限再帰する
 	m_childModel = particle;
 	m_sourceDataType = ParticleSourceDataType::Particle;
 }
@@ -247,7 +247,7 @@ RefPtr<detail::SpriteParticleModelInstance> SpriteParticleModel::CreateInstane()
 //------------------------------------------------------------------------------
 void SpriteParticleModel::UpdateInstance(detail::SpriteParticleModelInstance* instance, float deltaTime, const Matrix& emitterTransform)
 {
-	LN_FAIL_CHECK_STATE(m_oneSpawnDeltaTime > 0.0f) return;
+	if (LN_CHECK_STATE(m_oneSpawnDeltaTime > 0.0f)) return;
 
 	instance->BeginUpdate(deltaTime);
 
@@ -721,7 +721,7 @@ ParticleEmitter::~ParticleEmitter()
 //------------------------------------------------------------------------------
 void ParticleEmitter::Initialize(SceneGraph* owner, SpriteParticleModel* model)
 {
-	LN_FAIL_CHECK_ARG(model != nullptr);
+	if (LN_CHECK_ARG(model != nullptr)) return;
 
 	VisualNode::Initialize(owner, 1);
 	m_model = model;

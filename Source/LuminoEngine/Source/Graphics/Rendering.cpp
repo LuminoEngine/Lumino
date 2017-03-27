@@ -1146,7 +1146,7 @@ DrawList::~DrawList()
 //------------------------------------------------------------------------------
 void DrawList::Initialize(detail::GraphicsManager* manager)
 {
-	LN_CHECK_ARG(manager != nullptr);
+	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
 	m_state.Reset();
 
@@ -1219,7 +1219,7 @@ void DrawList::SetDepthWriteEnabled(bool enabled)
 //------------------------------------------------------------------------------
 void DrawList::SetDefaultMaterial(Material* material)
 {
-	LN_FAIL_CHECK_ARG(material != nullptr) return;
+	if (LN_CHECK_ARG(material != nullptr)) return;
 	m_defaultMaterial = material;
 }
 
@@ -1646,7 +1646,7 @@ void DrawList::AddDynamicLightInfo(detail::DynamicLightInfo* lightInfo)
 //------------------------------------------------------------------------------
 void DrawList::PushMetadata(const DrawElementMetadata* metadata)
 {
-	LN_CHECK_STATE(m_metadata == nullptr);
+	if (LN_CHECK_STATE(m_metadata == nullptr)) return;
 	m_metadata = metadata;
 	// TODO: stack
 }

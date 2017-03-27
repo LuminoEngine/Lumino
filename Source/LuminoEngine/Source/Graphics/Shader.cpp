@@ -81,7 +81,7 @@ ShaderSemanticsManager::ShaderSemanticsManager()
 //------------------------------------------------------------------------------
 void ShaderSemanticsManager::Initialize(GraphicsManager* manager)
 {
-	LN_CHECK_ARG(manager != nullptr);
+	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
 }
 

@@ -42,9 +42,9 @@ UIFrameWindow::~UIFrameWindow()
 //------------------------------------------------------------------------------
 void UIFrameWindow::Initialize(detail::UIManager* manager, PlatformWindow* platformWindow, SwapChain* swapChain, UIContext* context)
 {
-	LN_CHECK_ARG(manager != nullptr);
-	LN_CHECK_ARG(platformWindow != nullptr);
-	LN_CHECK_ARG(swapChain != nullptr);
+	if (LN_CHECK_ARG(manager != nullptr)) return;
+	if (LN_CHECK_ARG(platformWindow != nullptr)) return;
+	if (LN_CHECK_ARG(swapChain != nullptr)) return;
 	m_manager = manager;
 	LN_REFOBJ_SET(m_platformWindow, platformWindow);
 	LN_REFOBJ_SET(m_swapChain, swapChain);
@@ -65,7 +65,7 @@ bool UIFrameWindow::OnEvent(const PlatformEventArgs& e)
 //------------------------------------------------------------------------------
 void UIFrameWindow::SetSize(const SizeI& size)
 {
-	LN_FAIL_CHECK_STATE(m_platformWindow != nullptr) return;
+	if (LN_CHECK_STATE(m_platformWindow != nullptr)) return;
 	m_platformWindow->SetSize(size);
 }
 
@@ -170,7 +170,7 @@ UIMainWindow::~UIMainWindow()
 //------------------------------------------------------------------------------
 void UIMainWindow::Initialize(detail::UIManager* manager, PlatformWindow* platformWindow, World2D* defaultWorld2D, World3D* defaultWorld3D)
 {
-	LN_CHECK_ARG(manager != nullptr);
+	if (LN_CHECK_ARG(manager != nullptr)) return;
 
 	m_mainUIContext = LN_NEW UIContext();
 	m_mainUIContext->Initialize(manager);
@@ -289,8 +289,8 @@ UINativeHostWindow::~UINativeHostWindow()
 //------------------------------------------------------------------------------
 void UINativeHostWindow::Initialize(detail::UIManager* manager, intptr_t windowHandle)
 {
-	LN_CHECK_ARG(manager != nullptr);
-	LN_CHECK_ARG(windowHandle != 0);
+	if (LN_CHECK_ARG(manager != nullptr)) return;
+	if (LN_CHECK_ARG(windowHandle != 0)) return;
 
 	WindowCreationSettings ws;
 	//ws.title;		// TODO

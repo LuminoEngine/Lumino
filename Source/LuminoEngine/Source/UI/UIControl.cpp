@@ -251,7 +251,7 @@ void UIControl::OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e
 	switch (e.action)
 	{
 	case tr::NotifyCollectionChangedAction::Add:
-		LN_CHECK_STATE(e.newItems.GetCount() == 1);	// TODO
+		if (LN_CHECK_STATE(e.newItems.GetCount() == 1)) return;	// TODO
 		m_itemsHostPanel->GetChildren()->Insert(e.newStartingIndex, e.newItems.GetAt(0));
 		break;
 	case tr::NotifyCollectionChangedAction::Move:

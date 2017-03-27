@@ -199,7 +199,7 @@ static void RemoveDirectoryImpl(LPCWSTR lpPathName)
 //------------------------------------------------------------------------------
 uint64_t FileSystem::GetFileSize(const TCHAR* filePath)
 {
-	LN_CHECK_ARG(filePath != nullptr);
+	if (LN_CHECK_ARG(filePath != nullptr)) return 0;
 	struct _stat stat_buf;
 	int r = _tstat(filePath, &stat_buf);
 	LN_THROW(r == 0, FileNotFoundException);

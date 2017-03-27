@@ -26,7 +26,7 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 void Engine::Initialize()
 {
-	LN_CHECK_STATE(EngineManager::Instance == nullptr);
+	if (LN_CHECK_STATE(EngineManager::Instance == nullptr)) return;
 	EngineManager::Instance = EngineManager::Create(detail::EngineSettings::instance);
 	EngineManager::Instance->Initialize();
 }
@@ -40,14 +40,14 @@ void Engine::Terminate()
 //------------------------------------------------------------------------------
 bool Engine::Update()
 {
-	LN_CHECK_STATE(EngineManager::Instance != nullptr);
+	if (LN_CHECK_STATE(EngineManager::Instance != nullptr)) return false;
 	return EngineManager::Instance->UpdateUnitily();
 }
 
 //------------------------------------------------------------------------------
 void Engine::BeginFrameUpdate()
 {
-	LN_CHECK_STATE(EngineManager::Instance != nullptr);
+	if (LN_CHECK_STATE(EngineManager::Instance != nullptr)) return;
 	EngineManager::Instance->BeginFrameUpdate();
 }
 

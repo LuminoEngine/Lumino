@@ -33,8 +33,8 @@ WorldObject::~WorldObject()
 //------------------------------------------------------------------------------
 void WorldObject::AddComponent(Component* component)
 {
-	LN_FAIL_CHECK_ARG(component != nullptr) return;
-	LN_FAIL_CHECK_ARG(component->m_owner == nullptr) return;
+	if (LN_CHECK_ARG(component != nullptr)) return;
+	if (LN_CHECK_ARG(component->m_owner == nullptr)) return;
 	component->Attach(this);
 	m_components.Add(component);
 }
@@ -107,7 +107,7 @@ void GameScene::OnTerminate()
 //------------------------------------------------------------------------------
 void GameScene::AddGameObject(WorldObject* obj)
 {
-	LN_FAIL_CHECK_ARG(obj != nullptr) return;
+	if (LN_CHECK_ARG(obj != nullptr)) return;
 	m_gameObjectList.Add(obj);
 }
 
@@ -154,7 +154,7 @@ void GameSceneManager::Finalize()
 //------------------------------------------------------------------------------
 void GameSceneManager::GotoScene(GameScene* scene)
 {
-	LN_FAIL_CHECK_ARG(scene != nullptr) return;
+	if (LN_CHECK_ARG(scene != nullptr)) return;
 	EventCommsnd c;
 	c.type = EventType::Goto;
 	c.scene = scene;
@@ -164,7 +164,7 @@ void GameSceneManager::GotoScene(GameScene* scene)
 //------------------------------------------------------------------------------
 void GameSceneManager::CallScene(GameScene* scene)
 {
-	LN_FAIL_CHECK_ARG(scene != nullptr) return;
+	if (LN_CHECK_ARG(scene != nullptr)) return;
 	EventCommsnd c;
 	c.type = EventType::Call;
 	c.scene = scene;
@@ -174,7 +174,7 @@ void GameSceneManager::CallScene(GameScene* scene)
 //------------------------------------------------------------------------------
 void GameSceneManager::ReturnScene()
 {
-	LN_FAIL_CHECK_STATE(m_activeScene != nullptr) return;
+	if (LN_CHECK_STATE(m_activeScene != nullptr)) return;
 	EventCommsnd c;
 	c.type = EventType::Return;
 	c.scene = nullptr;

@@ -35,7 +35,7 @@ GlyphRun::~GlyphRun()
 //------------------------------------------------------------------------------
 void GlyphRun::Initialize(detail::GraphicsManager* manager)
 {
-	LN_CHECK_ARG(manager != nullptr);
+	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
 	m_layoutEngine = LN_NEW detail::TextLayoutEngine();
 	m_layoutEngine->SetFont(m_manager->GetFontManager()->GetDefaultRawFont());
