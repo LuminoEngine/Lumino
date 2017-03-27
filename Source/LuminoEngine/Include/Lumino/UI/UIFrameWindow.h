@@ -8,10 +8,10 @@
 LN_NAMESPACE_BEGIN
 class PlatformWindow;
 class SwapChain;
+class DrawingContext;
 class CameraViewportLayer;
 class World2D;
 class World3D;
-
 
 /**
 	@brief		
@@ -52,7 +52,7 @@ private:
 	PlatformWindow*			m_platformWindow;
 	SwapChain*				m_swapChain;
 
-	RefPtr<DrawList>					m_renderingContext;
+	RefPtr<DrawingContext>				m_drawingContext;
 	RefPtr<detail::InternalRenderer>	m_internalRenderer;
 };
 

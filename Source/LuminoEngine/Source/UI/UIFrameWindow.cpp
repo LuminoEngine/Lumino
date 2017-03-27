@@ -3,7 +3,7 @@
 #include <Lumino/Platform/PlatformWindow.h>
 #include <Lumino/Graphics/SwapChain.h>
 #include <Lumino/Graphics/Viewport.h>
-#include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/UI/UIContext.h>
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIFrameWindow.h>
@@ -104,8 +104,7 @@ void UIFrameWindow::Initialize_UIRenderer()
 {
 	auto* manager = GetOwnerContext()->GetManager();
 
-	m_renderingContext = RefPtr<DrawList>::MakeRef();
-	m_renderingContext->Initialize(manager->GetGraphicsManager());
+	m_drawingContext = NewObject<DrawingContext>();
 
 	// lighting disabled.
 	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
@@ -116,9 +115,9 @@ void UIFrameWindow::Initialize_UIRenderer()
 //------------------------------------------------------------------------------
 void UIFrameWindow::Render_UIRenderer()
 {
-	m_renderingContext->BeginMakeElements();
+	m_drawingContext->BeginMakeElements();
 
-	UILayoutView::Render(m_renderingContext);
+	UILayoutView::Render(m_drawingContext);
 }
 
 //------------------------------------------------------------------------------
@@ -137,11 +136,11 @@ void UIFrameWindow::ExecuteDrawList_UIRenderer()
 	cameraInfo.viewFrustum = ViewFrustum(cameraInfo.projMatrix);
 	cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
 	m_internalRenderer->Render(
-		m_renderingContext->GetDrawElementList(),
+		m_drawingContext->GetDrawElementList(),
 		cameraInfo,
 		renderTarget,
 		depthBuffer);
-	m_renderingContext->EndFrame();
+	m_drawingContext->EndFrame();
 }
 
 

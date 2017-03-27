@@ -21,6 +21,7 @@ DrawingContext::~DrawingContext()
 //------------------------------------------------------------------------------
 void DrawingContext::Initialize()
 {
+	DrawList::Initialize(detail::EngineDomain::GetGraphicsManager());
 }
 
 LN_NAMESPACE_END

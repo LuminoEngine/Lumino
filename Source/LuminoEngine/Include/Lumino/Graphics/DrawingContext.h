@@ -8,7 +8,7 @@ LN_NAMESPACE_BEGIN
 	@brief	
 */
 class DrawingContext
-	: public Object
+	: public DrawList
 {
 public:
 
