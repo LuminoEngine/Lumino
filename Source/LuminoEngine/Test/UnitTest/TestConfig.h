@@ -50,7 +50,7 @@ public:
 
 	static void EndFrame()
 	{
-		Engine::EndRendering();
+		Engine::PresentFrame();
 	}
 
 protected:

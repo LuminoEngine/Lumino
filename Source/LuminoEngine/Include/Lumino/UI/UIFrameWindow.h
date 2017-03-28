@@ -33,6 +33,7 @@ protected:
 	virtual ~UIFrameWindow();
 	void Initialize(detail::UIManager* manager, PlatformWindow* platformWindow, SwapChain* swapChain, UIContext* context);
 	virtual bool OnEvent(const PlatformEventArgs& e) override;
+	virtual void OnPresentRenderingContexts();
 
 LN_INTERNAL_ACCESS:
 	detail::UIManager* GetManager() const { return m_manager; }
@@ -67,6 +68,9 @@ class UIMainWindow
 public:
 	UIContext* GetMainUIContext() const { return m_mainUIContext; }
 	Viewport* GetViewport() const { return m_mainViewport; }
+
+protected:
+	virtual void OnPresentRenderingContexts() override;
 
 LN_INTERNAL_ACCESS:
 	UIMainWindow();

@@ -107,13 +107,12 @@ public:
 LN_INTERNAL_ACCESS:	// TODO: いまはとりあえず内部用途
 	Viewport();
 	virtual ~Viewport();
-	void Initialize(detail::GraphicsManager* manager);
+	void Initialize(detail::GraphicsManager* manager, const SizeI& viewSize);
 	detail::GraphicsManager* GetManager() const { return m_manager; }
 
 	// call from UIFrameWindow
 	void UpdateLayersTransform(const Size& viewSize);
 	bool DoPlatformEvent(const PlatformEventArgs& e);
-	void BeginRender(Details::Renderer* renderer, const SizeI& viewSize);
 	void Render(Details::Renderer* renderer);
 	void PresentRenderingContexts(Details::Renderer* renderer, RenderTargetTexture* renderTarget);
 

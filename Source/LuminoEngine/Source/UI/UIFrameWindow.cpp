@@ -63,6 +63,11 @@ bool UIFrameWindow::OnEvent(const PlatformEventArgs& e)
 }
 
 //------------------------------------------------------------------------------
+void UIFrameWindow::OnPresentRenderingContexts()
+{
+}
+
+//------------------------------------------------------------------------------
 void UIFrameWindow::SetSize(const SizeI& size)
 {
 	if (LN_CHECK_STATE(m_platformWindow != nullptr)) return;
@@ -72,8 +77,6 @@ void UIFrameWindow::SetSize(const SizeI& size)
 //------------------------------------------------------------------------------
 void UIFrameWindow::BeginRendering()
 {
-	Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
-	renderer->Begin();
 
 }
 
@@ -86,9 +89,14 @@ void UIFrameWindow::RenderContents()
 //------------------------------------------------------------------------------
 void UIFrameWindow::PresentRenderingContexts()
 {
+	Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
+	renderer->Begin();
+
 	ExecuteDrawList_UIRenderer();
 
-	Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
+	OnPresentRenderingContexts();
+
+	//Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
 
 	m_manager->GetGraphicsManager()->SwitchActiveContext(nullptr);
 	renderer->End();
@@ -178,7 +186,7 @@ void UIMainWindow::Initialize(detail::UIManager* manager, PlatformWindow* platfo
 
 	// MainViewport
 	m_mainViewport = RefPtr<Viewport>::MakeRef();
-	m_mainViewport->Initialize(GetManager()->GetGraphicsManager());
+	m_mainViewport->Initialize(GetManager()->GetGraphicsManager(), platformWindow->GetSize());
 
 	m_default3DCameraViewportLayer = RefPtr<CameraViewportLayer>::MakeRef();
 	m_default3DCameraViewportLayer->Initialize(detail::EngineDomain::GetSceneGraphManager(), defaultWorld3D, defaultWorld3D->GetSceneGraph3D()->GetMainCamera());
@@ -231,9 +239,6 @@ bool UIMainWindow::OnEvent(const PlatformEventArgs& e)
 void UIMainWindow::BeginRendering()
 {
 	UIFrameWindow::BeginRendering();
-
-	Details::Renderer* renderer = GetManager()->GetGraphicsManager()->GetRenderer();
-	m_mainViewport->BeginRender(renderer, GetSwapChain()->GetBackBuffer()->GetSize());
 }
 void UIMainWindow::RenderContents()
 {
@@ -242,11 +247,17 @@ void UIMainWindow::RenderContents()
 
 	UIFrameWindow::RenderContents();
 }
-void UIMainWindow::PresentRenderingContexts()
+
+void UIMainWindow::OnPresentRenderingContexts()
 {
+	UIFrameWindow::OnPresentRenderingContexts();
+
 	Details::Renderer* renderer = GetManager()->GetGraphicsManager()->GetRenderer();
 	m_mainViewport->PresentRenderingContexts(renderer, GetSwapChain()->GetBackBuffer());
+}
 
+void UIMainWindow::PresentRenderingContexts()
+{
 	UIFrameWindow::PresentRenderingContexts();
 
 	// SwapChain のサイズを Viewport へ通知
@@ -254,6 +265,7 @@ void UIMainWindow::PresentRenderingContexts()
 	//    フレーム更新の最初で行ってもよいが、この時点で行ってもよい。
 	UpdateViewportTransform();
 }
+
 void UIMainWindow::UpdateViewportTransform()
 {
 	const SizeI& bbSize = GetSwapChain()->GetBackBuffer()->GetSize();

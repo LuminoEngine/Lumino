@@ -87,13 +87,15 @@ void Main()
 #endif
 	Engine::Initialize();
 
+	Engine::GetMainViewport()->SetBackgroundColor(Color::Gray);
+
 	do
 	{
 		Engine::FrameUpdate();
 		if (Engine::BeginRendering())
 		{
 			Engine::Render();
-			Engine::EndRendering();
+			Engine::PresentFrame();
 		}
 
 	} while (!Engine::IsEndRequested());
@@ -596,7 +598,7 @@ void Main()
 
 			//gizmo->Render(Engine::GetDefault3DLayer()->GetRenderer());
 
-			Engine::EndRendering();
+			Engine::PresentFrame();
 		}
 
 		//body1->GetWorldTransform().GetPosition().Print();

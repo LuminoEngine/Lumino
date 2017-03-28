@@ -506,7 +506,7 @@ TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
 		g->DrawRectangle(RectF(50, 0, 43, 63));
 		g->SetBrush(brush3);
 		g->DrawRectangle(RectF(100, 0, 43, 63));
-		Engine::EndRendering();
+		Engine::PresentFrame();
 		LN_TEST_END_FRAME;
 
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawFrameRectangle2.png"), 95));

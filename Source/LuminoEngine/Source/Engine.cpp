@@ -58,15 +58,15 @@ bool Engine::BeginRendering()
 }
 
 //------------------------------------------------------------------------------
-void Engine::EndRendering()
-{
-	EngineManager::Instance->EndRendering();
-}
-
-//------------------------------------------------------------------------------
 void Engine::Render()
 {
 	EngineManager::Instance->Render();
+}
+
+//------------------------------------------------------------------------------
+void Engine::PresentFrame()
+{
+	EngineManager::Instance->PresentFrame();
 }
 
 //------------------------------------------------------------------------------

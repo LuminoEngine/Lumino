@@ -201,7 +201,7 @@ Viewport::~Viewport()
 }
 
 //------------------------------------------------------------------------------
-void Viewport::Initialize(detail::GraphicsManager* manager)
+void Viewport::Initialize(detail::GraphicsManager* manager, const SizeI& viewSize)
 {
 	m_manager = manager;
 	//m_renderTarget = renderTarget;
@@ -217,6 +217,7 @@ void Viewport::Initialize(detail::GraphicsManager* manager)
 	//m_pass = RefPtr<detail::RenderingPass2>::MakeRef();
 	//m_pass->Initialize(manager);
 
+	TryRemakeLayerTargets(viewSize);
 }
 
 //------------------------------------------------------------------------------
@@ -275,12 +276,6 @@ bool Viewport::DoPlatformEvent(const PlatformEventArgs& e)
 }
 
 //------------------------------------------------------------------------------
-void Viewport::BeginRender(Details::Renderer* renderer, const SizeI& viewSize)
-{
-	TryRemakeLayerTargets(viewSize);
-}
-
-//------------------------------------------------------------------------------
 void Viewport::Render(Details::Renderer* renderer)
 {
 	renderer->SetRenderTarget(0, m_primaryLayerTarget);
@@ -319,6 +314,8 @@ void Viewport::PresentRenderingContexts(Details::Renderer* renderer, RenderTarge
 	BeginBlitRenderer();
 	m_renderer->Blit(m_primaryLayerTarget, viewBoxTransform);
 	FlushBlitRenderer(renderTarget);
+
+	TryRemakeLayerTargets(SizeI(m_size.width, m_size.height));
 }
 
 //------------------------------------------------------------------------------
@@ -331,7 +328,7 @@ void Viewport::TryRemakeLayerTargets(const SizeI& ownerViewPixelSize)
 	if (m_primaryLayerTarget == nullptr)
 	{
 		create = true;
-		newSize = SizeI((float)m_size.width, (float)m_size.height);
+		newSize = ownerViewPixelSize;//SizeI((float)m_size.width, (float)m_size.height);
 	}
 
 	// 自動リサイズONで、描画先とサイズが異なるなら再作成

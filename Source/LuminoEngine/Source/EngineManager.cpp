@@ -550,7 +550,7 @@ bool EngineManager::UpdateUnitily()
 	if (BeginRendering())
 	{
 		Render();
-		EndRendering();
+		PresentFrame();
 	}
 	return !IsEndRequested();
 }
@@ -670,14 +670,6 @@ bool EngineManager::BeginRendering()
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::EndRendering()
-{
-	if (m_graphicsManager == nullptr || m_frameRenderingSkip) return;
-
-	m_uiManager->GetMainWindow()->PresentRenderingContexts();
-}
-
-//------------------------------------------------------------------------------
 void EngineManager::Render()
 {
 	if (m_graphicsManager != nullptr)
@@ -699,6 +691,19 @@ void EngineManager::Render()
 
 		//g->PopState();
 	}
+}
+
+//------------------------------------------------------------------------------
+void EngineManager::EndRendering()
+{
+}
+
+//------------------------------------------------------------------------------
+void EngineManager::PresentFrame()
+{
+	if (m_graphicsManager == nullptr || m_frameRenderingSkip) return;
+
+	m_uiManager->GetMainWindow()->PresentRenderingContexts();
 }
 
 //------------------------------------------------------------------------------

@@ -186,8 +186,9 @@ public:
 
 	void FrameUpdate();
 	bool BeginRendering();
-	void EndRendering();
 	void Render();
+	void EndRendering();
+	void PresentFrame();
 	void ResetFrameDelay();
 	bool IsEndRequested() const { return m_endRequested; }
 	void Exit();
