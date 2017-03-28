@@ -80,12 +80,12 @@ void UIFrameWindow::BeginRendering()
 //------------------------------------------------------------------------------
 void UIFrameWindow::RenderContents()
 {
+	Render_UIRenderer();
 }
 
 //------------------------------------------------------------------------------
-void UIFrameWindow::EndRendering()
+void UIFrameWindow::PresentRenderingContexts()
 {
-	Render_UIRenderer();
 	ExecuteDrawList_UIRenderer();
 
 	Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
@@ -242,12 +242,12 @@ void UIMainWindow::RenderContents()
 
 	UIFrameWindow::RenderContents();
 }
-void UIMainWindow::EndRendering()
+void UIMainWindow::PresentRenderingContexts()
 {
 	Details::Renderer* renderer = GetManager()->GetGraphicsManager()->GetRenderer();
-	m_mainViewport->EndRender(renderer, GetSwapChain()->GetBackBuffer());
+	m_mainViewport->PresentRenderingContexts(renderer, GetSwapChain()->GetBackBuffer());
 
-	UIFrameWindow::EndRendering();
+	UIFrameWindow::PresentRenderingContexts();
 
 	// SwapChain のサイズを Viewport へ通知
 	// ※ SwapChain のサイズが「本当に」変わるタイミングは、描画コマンドが確定する Present の後。
@@ -310,11 +310,11 @@ void UINativeHostWindow::Initialize(detail::UIManager* manager, intptr_t windowH
 }
 
 //------------------------------------------------------------------------------
-void UINativeHostWindow::Render()
-{
-	UIFrameWindow::BeginRendering();
-	UIFrameWindow::RenderContents();
-	UIFrameWindow::EndRendering();
-}
+//void UINativeHostWindow::Render()
+//{
+//	UIFrameWindow::BeginRendering();
+//	UIFrameWindow::RenderContents();
+//	UIFrameWindow::PresentRenderingContexts();
+//}
 
 LN_NAMESPACE_END

@@ -41,7 +41,7 @@ LN_INTERNAL_ACCESS:
 	// TODO: Engine::Update の外側で、ワールドの描画(コマンドの生成)を許可するようにしたら、これらは1つにまとめてよい。
 	virtual void BeginRendering();
 	virtual void RenderContents();
-	virtual void EndRendering();
+	virtual void PresentRenderingContexts();
 
 private:
 	void Initialize_UIRenderer();
@@ -81,9 +81,9 @@ LN_INTERNAL_ACCESS:
 	void RenderUI();
 
 	virtual bool OnEvent(const PlatformEventArgs& e) override;
-	virtual void BeginRendering();
-	virtual void RenderContents();
-	virtual void EndRendering();
+	virtual void BeginRendering() override;
+	virtual void RenderContents() override;
+	virtual void PresentRenderingContexts() override;
 
 private:
 	void UpdateViewportTransform();
@@ -118,7 +118,7 @@ public:
 public:
 
 	/** ホストされたネイティブウィンドウへ描画を行います。*/
-	void Render();
+	//void Render();
 
 LN_INTERNAL_ACCESS:
 	UINativeHostWindow();

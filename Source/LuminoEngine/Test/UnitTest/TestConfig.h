@@ -41,7 +41,7 @@ public:
 
 	static void BeginFrame()
 	{
-		Engine::BeginFrameUpdate();
+		Engine::FrameUpdate();
 		if (!Engine::BeginRendering())
 		{
 			LN_UNREACHABLE();
@@ -51,7 +51,6 @@ public:
 	static void EndFrame()
 	{
 		Engine::EndRendering();
-		Engine::EndFrameUpdate();
 	}
 
 protected:

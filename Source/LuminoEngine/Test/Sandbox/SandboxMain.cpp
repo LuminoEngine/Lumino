@@ -85,8 +85,20 @@ void Main()
 #ifdef _WIN32
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
+	Engine::Initialize();
 
-	UIControlsGallery();
+	do
+	{
+		Engine::FrameUpdate();
+		if (Engine::BeginRendering())
+		{
+			Engine::Render();
+			Engine::EndRendering();
+		}
+
+	} while (!Engine::IsEndRequested());
+
+	//UIControlsGallery();
 	return;
 
 
@@ -572,7 +584,7 @@ void Main()
 
 	while (!Engine::IsEndRequested())
 	{
-		Engine::BeginFrameUpdate();
+		Engine::FrameUpdate();
 		if (Engine::BeginRendering())
 		{
 			Engine::Render();
@@ -586,7 +598,6 @@ void Main()
 
 			Engine::EndRendering();
 		}
-		Engine::EndFrameUpdate();
 
 		//body1->GetWorldTransform().GetPosition().Print();
 

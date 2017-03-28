@@ -546,26 +546,17 @@ void EngineManager::InitializeAssetsManager()
 //------------------------------------------------------------------------------
 bool EngineManager::UpdateUnitily()
 {
-	BeginFrameUpdate();
-	try
+	FrameUpdate();
+	if (BeginRendering())
 	{
-		if (BeginRendering())
-		{
-			Render();
-			EndRendering();
-		}
-		EndFrameUpdate();
-	}
-	catch (...)
-	{
-		EndFrameUpdate();
-		throw;
+		Render();
+		EndRendering();
 	}
 	return !IsEndRequested();
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::BeginFrameUpdate()
+void EngineManager::FrameUpdate()
 {
 	m_fpsController.Process();
 
@@ -641,12 +632,6 @@ void EngineManager::BeginFrameUpdate()
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::EndFrameUpdate()
-{
-
-}
-
-//------------------------------------------------------------------------------
 bool EngineManager::BeginRendering()
 {
 	m_frameRenderingSkip = true;
@@ -689,7 +674,7 @@ void EngineManager::EndRendering()
 {
 	if (m_graphicsManager == nullptr || m_frameRenderingSkip) return;
 
-	m_uiManager->GetMainWindow()->EndRendering();
+	m_uiManager->GetMainWindow()->PresentRenderingContexts();
 }
 
 //------------------------------------------------------------------------------

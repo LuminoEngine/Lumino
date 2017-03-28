@@ -184,8 +184,7 @@ public:
 
 	bool UpdateUnitily();
 
-	void BeginFrameUpdate();
-	void EndFrameUpdate();
+	void FrameUpdate();
 	bool BeginRendering();
 	void EndRendering();
 	void Render();

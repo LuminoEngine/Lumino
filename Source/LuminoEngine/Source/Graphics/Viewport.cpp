@@ -138,42 +138,6 @@ bool ViewportLayer::OnPlatformEvent(const PlatformEventArgs& e)
 }
 
 //------------------------------------------------------------------------------
-void ViewportLayer::PreRender(const SizeI& ownerViewPixelSize)
-{
-	//bool create = false;
-	//SizeI newSize;
-
-	//// 初回、まだ作成されていなければ作りたい
-	//if (m_primaryLayerTarget == nullptr)
-	//{
-	//	create = true;
-	//	newSize = SizeI((float)m_size.width, (float)m_size.height);
-	//}
-
-	//// 自動リサイズONで、描画先とサイズが異なるなら再作成
-	//if (m_placement == ViewportLayerPlacement::AutoResize && ownerViewPixelSize != m_primaryLayerTarget->GetSize())
-	//{
-	//	newSize = ownerViewPixelSize;
-	//	create = true;
-	//}
-
-	//if (create)
-	//{
-	//	// RenderTargetTexture
-	//	// TODO: できればこういうのは Resize 関数を作りたい。作り直したくない
-	//	// TODO: というか UE4 みたいにキャッシュしたい
-	//	m_primaryLayerTarget = RefPtr<RenderTargetTexture>::MakeRef();
-	//	m_primaryLayerTarget->CreateImpl(m_owner->GetManager(), newSize, 1, TextureFormat::R8G8B8X8);
-	//	m_secondaryLayerTarget = RefPtr<RenderTargetTexture>::MakeRef();
-	//	m_secondaryLayerTarget->CreateImpl(m_owner->GetManager(), newSize, 1, TextureFormat::R8G8B8X8);
-
-	//	// DepthBuffer
-	//	m_depthBuffer = RefPtr<DepthBuffer>::MakeRef();
-	//	m_depthBuffer->CreateImpl(m_owner->GetManager(), newSize, TextureFormat::D24S8);
-	//}
-}
-
-//------------------------------------------------------------------------------
 void ViewportLayer::PostRender(DrawList* context, RefPtr<RenderTargetTexture>* primaryLayerTarget, RefPtr<RenderTargetTexture>* secondaryLayerTarget)
 {
 	for (ImageEffect* e : *m_imageEffects)
@@ -314,11 +278,6 @@ bool Viewport::DoPlatformEvent(const PlatformEventArgs& e)
 void Viewport::BeginRender(Details::Renderer* renderer, const SizeI& viewSize)
 {
 	TryRemakeLayerTargets(viewSize);
-
-	for (ViewportLayer* layer : *m_viewportLayerList)
-	{
-		layer->PreRender(viewSize);
-	}
 }
 
 //------------------------------------------------------------------------------
@@ -339,9 +298,8 @@ void Viewport::Render(Details::Renderer* renderer)
 }
 
 //------------------------------------------------------------------------------
-void Viewport::EndRender(Details::Renderer* renderer, RenderTargetTexture* renderTarget)
+void Viewport::PresentRenderingContexts(Details::Renderer* renderer, RenderTargetTexture* renderTarget)
 {
-
 	// 全てのレイヤーの描画リストを実行し m_primaryLayerTarget へ書き込む
 	for (ViewportLayer* layer : *m_viewportLayerList)
 	{

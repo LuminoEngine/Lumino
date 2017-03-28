@@ -53,7 +53,6 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual ~ViewportLayer();
 	void SetOwner(Viewport* owner) { m_owner = owner; }
 	virtual void UpdateTransform(const Size& viewSize);
-	void PreRender(const SizeI& ownerViewPixelSize);
 	
 //protected:
 
@@ -116,7 +115,7 @@ LN_INTERNAL_ACCESS:	// TODO: いまはとりあえず内部用途
 	bool DoPlatformEvent(const PlatformEventArgs& e);
 	void BeginRender(Details::Renderer* renderer, const SizeI& viewSize);
 	void Render(Details::Renderer* renderer);
-	void EndRender(Details::Renderer* renderer, RenderTargetTexture* renderTarget);
+	void PresentRenderingContexts(Details::Renderer* renderer, RenderTargetTexture* renderTarget);
 
 private:
 	void TryRemakeLayerTargets(const SizeI& ownerViewPixelSize);

@@ -45,16 +45,10 @@ bool Engine::Update()
 }
 
 //------------------------------------------------------------------------------
-void Engine::BeginFrameUpdate()
+void Engine::FrameUpdate()
 {
 	if (LN_CHECK_STATE(EngineManager::Instance != nullptr)) return;
-	EngineManager::Instance->BeginFrameUpdate();
-}
-
-//------------------------------------------------------------------------------
-void Engine::EndFrameUpdate()
-{
-	EngineManager::Instance->EndFrameUpdate();
+	EngineManager::Instance->FrameUpdate();
 }
 
 //------------------------------------------------------------------------------
