@@ -13,6 +13,7 @@
 #include "UIManager.h"
 #include "../Graphics/GraphicsManager.h"
 #include "../Graphics/RendererImpl.h"
+#include "../Graphics/RenderingThread.h"
 #include "../Platform/PlatformManager.h"
 #include "../Platform/PlatformWindowManagerBase.h"
 
@@ -28,6 +29,7 @@ UIFrameWindow::UIFrameWindow()
 	: m_manager(nullptr)
 	, m_platformWindow(nullptr)
 	, m_swapChain(nullptr)
+	, m_delayedRenderingSkip(false)
 {
 }
 
@@ -75,12 +77,6 @@ void UIFrameWindow::SetSize(const SizeI& size)
 }
 
 //------------------------------------------------------------------------------
-void UIFrameWindow::BeginRendering()
-{
-
-}
-
-//------------------------------------------------------------------------------
 void UIFrameWindow::RenderContents()
 {
 	Render_UIRenderer();
@@ -100,7 +96,31 @@ void UIFrameWindow::PresentRenderingContexts()
 
 	m_manager->GetGraphicsManager()->SwitchActiveContext(nullptr);
 	renderer->End();
-	m_swapChain->Present();
+
+	// Present
+	{
+		bool skip = false;
+		if (m_delayedRenderingSkip)
+		{
+			if (m_manager->GetGraphicsManager()->GetRenderingType() == GraphicsRenderingType::Threaded)
+			{
+				if (m_manager->GetGraphicsManager()->GetRenderingThread()->IsRunning())
+				{
+					skip = true;
+				}
+			}
+			else
+			{
+				// TODO: 上からフレーム遅延しているかをもらうのがいいかも。
+				LN_NOTIMPLEMENTED();
+			}
+		}
+
+		if (!skip)
+		{
+			m_swapChain->Present();
+		}
+	}
 
 	// ウィンドウサイズとバックバッファサイズを合わせる
 	m_swapChain->MightResizeAndDeviceReset(m_platformWindow->GetSize());
@@ -236,10 +256,7 @@ bool UIMainWindow::OnEvent(const PlatformEventArgs& e)
 {
 	return m_mainViewport->DoPlatformEvent(e);
 }
-void UIMainWindow::BeginRendering()
-{
-	UIFrameWindow::BeginRendering();
-}
+
 void UIMainWindow::RenderContents()
 {
 	Details::Renderer* renderer = GetManager()->GetGraphicsManager()->GetRenderer();

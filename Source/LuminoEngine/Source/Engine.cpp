@@ -52,10 +52,10 @@ void Engine::FrameUpdate()
 }
 
 //------------------------------------------------------------------------------
-bool Engine::BeginRendering()
-{
-	return EngineManager::Instance->BeginRendering();
-}
+//bool Engine::BeginRendering()
+//{
+//	return EngineManager::Instance->BeginRendering();
+//}
 
 //------------------------------------------------------------------------------
 void Engine::Render()

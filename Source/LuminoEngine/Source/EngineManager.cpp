@@ -148,7 +148,7 @@ EngineManager::EngineManager(const detail::EngineSettings& configData)
 	, m_diagViewer(nullptr)
 	, m_defaultWorld2D(nullptr)
 	, m_defaultWorld3D(nullptr)
-	, m_frameRenderingSkip(false)
+	//, m_frameRenderingSkip(false)
 	, m_frameRenderd(false)
 	, m_commonInitied(false)
 	, m_endRequested(false)
@@ -270,6 +270,7 @@ void EngineManager::Initialize()
 	m_defaultWorld2D = NewObject<World2D>();
 	m_defaultWorld3D = NewObject<World3D>();
 	m_uiManager->CreateGameModeMainFrame(m_defaultWorld2D, m_defaultWorld3D);
+	m_uiManager->GetMainWindow()->SetDelayedRenderingSkip(m_configData.delayedRenderingSkip);
 }
 
 //------------------------------------------------------------------------------
@@ -502,6 +503,7 @@ void EngineManager::InitializeUIManager()
 		data.defaultSkinFilePath = m_configData.defaultSkinFilePath;
 		m_uiManager = LN_NEW detail::UIManager();
 		m_uiManager->Initialize(data);
+
 	}
 }
 
@@ -547,7 +549,7 @@ void EngineManager::InitializeAssetsManager()
 bool EngineManager::UpdateUnitily()
 {
 	FrameUpdate();
-	if (BeginRendering())
+	//if (BeginRendering())
 	{
 		Render();
 		PresentFrame();
@@ -632,42 +634,41 @@ void EngineManager::FrameUpdate()
 }
 
 //------------------------------------------------------------------------------
-bool EngineManager::BeginRendering()
-{
-	m_frameRenderingSkip = true;
-	if (m_graphicsManager == nullptr || m_uiManager == nullptr) return nullptr;
-
-	// 描画遅延の確認
-	bool skip = false;
-	if (m_graphicsManager->GetRenderingType() == GraphicsRenderingType::Threaded)
-	{
-		if (m_configData.delayedRenderingSkip &&
-			m_graphicsManager->GetRenderingThread()->IsRunning())
-		{
-			skip = true;
-		}
-	}
-	else {
-		// TODO:
-	}
-
-	if (skip)
-		return false;
-
-	m_frameRenderingSkip = false;
-
-
-
-	//if (m_effectManager != nullptr) {
-	//	m_effectManager->PreRender();	// Effekseer の更新スレッドを開始するのはここ
-	//	// TODO: これも UIMainWindow::BeginRendring の中かなぁ・・・
-	//}
-
-	m_uiManager->GetMainWindow()->BeginRendering();
-
-	m_frameRenderd = true;
-	return true;
-}
+//bool EngineManager::BeginRendering()
+//{
+//	m_frameRenderingSkip = true;
+//	if (m_graphicsManager == nullptr || m_uiManager == nullptr) return nullptr;
+//
+//	// 描画遅延の確認
+//	bool skip = false;
+//	if (m_graphicsManager->GetRenderingType() == GraphicsRenderingType::Threaded)
+//	{
+//		if (m_configData.delayedRenderingSkip &&
+//			m_graphicsManager->GetRenderingThread()->IsRunning())
+//		{
+//			skip = true;
+//		}
+//	}
+//	else {
+//		// TODO:
+//	}
+//
+//	if (skip)
+//		return false;
+//
+//	m_frameRenderingSkip = false;
+//
+//
+//
+//	//if (m_effectManager != nullptr) {
+//	//	m_effectManager->PreRender();	// Effekseer の更新スレッドを開始するのはここ
+//	//	// TODO: これも UIMainWindow::BeginRendring の中かなぁ・・・
+//	//}
+//
+//
+//	m_frameRenderd = true;
+//	return true;
+//}
 
 //------------------------------------------------------------------------------
 void EngineManager::Render()
@@ -701,7 +702,7 @@ void EngineManager::EndRendering()
 //------------------------------------------------------------------------------
 void EngineManager::PresentFrame()
 {
-	if (m_graphicsManager == nullptr || m_frameRenderingSkip) return;
+	if (m_graphicsManager == nullptr/* || m_frameRenderingSkip*/) return;
 
 	m_uiManager->GetMainWindow()->PresentRenderingContexts();
 }

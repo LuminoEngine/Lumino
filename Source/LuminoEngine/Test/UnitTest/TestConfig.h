@@ -42,10 +42,6 @@ public:
 	static void BeginFrame()
 	{
 		Engine::FrameUpdate();
-		if (!Engine::BeginRendering())
-		{
-			LN_UNREACHABLE();
-		}
 	}
 
 	static void EndFrame()

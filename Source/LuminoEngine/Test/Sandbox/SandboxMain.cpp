@@ -92,7 +92,7 @@ void Main()
 	do
 	{
 		Engine::FrameUpdate();
-		if (Engine::BeginRendering())
+		//if (Engine::BeginRendering())
 		{
 			Engine::Render();
 			Engine::PresentFrame();
@@ -587,7 +587,7 @@ void Main()
 	while (!Engine::IsEndRequested())
 	{
 		Engine::FrameUpdate();
-		if (Engine::BeginRendering())
+		//if (Engine::BeginRendering())
 		{
 			Engine::Render();
 

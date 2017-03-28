@@ -38,9 +38,8 @@ protected:
 LN_INTERNAL_ACCESS:
 	detail::UIManager* GetManager() const { return m_manager; }
 	SwapChain* GetSwapChain() const { return m_swapChain; }
+	void SetDelayedRenderingSkip(bool enabled) { m_delayedRenderingSkip = enabled; }
 
-	// TODO: Engine::Update の外側で、ワールドの描画(コマンドの生成)を許可するようにしたら、これらは1つにまとめてよい。
-	virtual void BeginRendering();
 	virtual void RenderContents();
 	virtual void PresentRenderingContexts();
 
@@ -55,6 +54,7 @@ private:
 
 	RefPtr<DrawingContext>				m_drawingContext;
 	RefPtr<detail::InternalRenderer>	m_internalRenderer;
+	bool								m_delayedRenderingSkip;
 };
 
 
@@ -85,7 +85,6 @@ LN_INTERNAL_ACCESS:
 	void RenderUI();
 
 	virtual bool OnEvent(const PlatformEventArgs& e) override;
-	virtual void BeginRendering() override;
 	virtual void RenderContents() override;
 	virtual void PresentRenderingContexts() override;
 

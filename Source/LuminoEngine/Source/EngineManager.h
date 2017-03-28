@@ -185,7 +185,7 @@ public:
 	bool UpdateUnitily();
 
 	void FrameUpdate();
-	bool BeginRendering();
+	//bool BeginRendering();
 	void Render();
 	void EndRendering();
 	void PresentFrame();
@@ -257,7 +257,7 @@ private:
 	RefPtr<World2D>						m_defaultWorld2D;
 	RefPtr<World3D>						m_defaultWorld3D;
 
-	bool								m_frameRenderingSkip;
+	//bool								m_frameRenderingSkip;
 	bool								m_frameRenderd;
 	bool								m_commonInitied;
 	bool								m_endRequested;
