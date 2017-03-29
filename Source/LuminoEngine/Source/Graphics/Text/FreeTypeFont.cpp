@@ -491,14 +491,12 @@ void FreeTypeFont::DecomposeOutline(UTF32 utf32code, RawFont::VectorGlyphInfo* o
 		m_ftCacheMapIndex,
 		utf32code);
 
-	FT_OutlineGlyph glyph;
-	FT_Error err = FTC_ImageCache_Lookup(
-		m_manager->GetFTCImageCache(),
-		&m_ftImageType,
-		glyphIndex,
-		(FT_Glyph*)&glyph,
-		NULL);
-	LN_THROW(err == 0, InvalidOperationException, "failed FTC_ImageCache_Lookup : %d\n", err);
+	// グリフメトリクスにアクセスするため、グリフスロット(m_ftFace->glyph) に glyphIndex で示すグリフの情報をロードする
+	FT_Error err = FT_Load_Glyph(m_ftFace, glyphIndex, FT_LOAD_DEFAULT);
+	if (LN_CHECK_STATE(err == 0)) return;
+
+	// TODO: FT_Load_Glyph で m_ftFace->glyph 自体はキャッシュされないので、（glyphIndex に同じ値を渡しても同じ値を際ロードする）最後のインデックスをこっち側で覚えておくと効率いいかも。
+	// すぐ後でメトリクス欲しいとき。
 
 	DecomposingState state;
 	state.thisData = this;
@@ -509,7 +507,7 @@ void FreeTypeFont::DecomposeOutline(UTF32 utf32code, RawFont::VectorGlyphInfo* o
 	state.delta1 = 1. / (double)state.tessellationStep;
 	state.delta2 = state.delta1 * state.delta1;
 	state.delta3 = state.delta2 * state.delta1;
-	FT_Error error = FT_Outline_Decompose(&glyph->outline, &m_ftOutlineFuncs, &state);
+	FT_Error error = FT_Outline_Decompose(&m_ftFace->glyph->outline, &m_ftOutlineFuncs, &state);
 	if (LN_CHECK_STATE(error == 0)) return;
 
 
@@ -519,6 +517,8 @@ void FreeTypeFont::DecomposeOutline(UTF32 utf32code, RawFont::VectorGlyphInfo* o
 		auto& outline = state.outlines->GetLast();
 		outline.vertexCount = state.vertices->GetCount() - outline.startIndex;
 	}
+
+	// FT_Done_Glyph
 }
 
 //------------------------------------------------------------------------------

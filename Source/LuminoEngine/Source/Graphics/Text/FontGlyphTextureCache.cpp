@@ -478,6 +478,7 @@ void VectorFontGlyphCache::GenerateMesh(Handle infoIndex, const Vector3& positio
 	for (int i = 0; i < info->vertices.GetCount(); i++)
 	{
 		outVertices[i].position = Vector3(info->vertices[i].pos, 0.0f);
+		//outVertices[i].position.y *= -1;
 		outVertices[i].color = Color(0, 0, 0, 1);
 
 		if (!isIdent) outVertices[i].position.TransformCoord(transform);

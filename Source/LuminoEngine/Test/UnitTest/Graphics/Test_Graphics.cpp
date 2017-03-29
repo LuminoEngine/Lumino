@@ -57,7 +57,7 @@ TEST_F(Test_Graphics_Rendering, Basic)
 
 	//if (Engine::BeginRendering())
 	//{
-	//	Engine::Render();
+	//	Engine::RenderFrame();
 
 	//	auto* r = Engine::GetDefaultSceneGraph2D()->GetRenderer();
 	//	r->Clear(ClearFlags::Color, Color::Red);
@@ -76,7 +76,7 @@ TEST_F(Test_Graphics_Rendering, Clear)
 	// <Test> 2D ビューのクリア
 	{
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 		auto* r1 = Engine::GetDefaultSceneGraph2D()->GetRenderer();
 		r1->Clear(ClearFlags::Color, Color::Blue);
 		LN_TEST_END_FRAME;
@@ -85,7 +85,7 @@ TEST_F(Test_Graphics_Rendering, Clear)
 	// <Test> 3D ビューのクリア
 	{
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 		auto* r1 = Engine::GetDefaultSceneGraph3D()->GetRenderer();
 		r1->Clear(ClearFlags::Color, Color::Red);
 		LN_TEST_END_FRAME;
@@ -94,7 +94,7 @@ TEST_F(Test_Graphics_Rendering, Clear)
 	// <Test> 2D、3D ビュークリアの組み合わせ。2D が手前になる
 	{
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->Clear(ClearFlags::Color, Color::Blue);
 		Engine::GetDefaultSceneGraph3D()->GetRenderer()->Clear(ClearFlags::Color, Color::Red);
 		LN_TEST_END_FRAME;
@@ -108,7 +108,7 @@ TEST_F(Test_Graphics_Rendering, DrawLinePrimitive)
 	// <Test> 1本
 	{
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawLinePrimitive(
 			Vector3(0, 0, 0), Color::Red,
 			Vector3(50, 50, 0), Color::White);
@@ -119,7 +119,7 @@ TEST_F(Test_Graphics_Rendering, DrawLinePrimitive)
 	//{
 	//	if (Engine::BeginRendering())
 	//	{
-	//		Engine::Render();
+	//		Engine::RenderFrame();
 	//		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawLinePrimitive(
 	//			Vector3(0, 0, 0), Color::Red,
 	//			Vector3(20, 50, 0), Color::White);
@@ -137,7 +137,7 @@ TEST_F(Test_Graphics_Rendering, DrawSquarePrimitive)
 {
 	{
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 		Engine::GetDefaultSceneGraph3D()->GetRenderer()->DrawSquarePrimitive(
 			Vector3(-1, 2, 0), Vector2(0, 0), Color::Red,
 			Vector3(-1, -2, 0), Vector2(0, 1), Color::Green,
@@ -159,7 +159,7 @@ TEST_F(Test_Graphics_Rendering, DrawBox)
 	ScopedCameraPosition cp(5, 5, -5);
 	{
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 		auto r = Engine::GetDefaultSceneGraph3D()->GetRenderer();
 		r->DrawBox(Box(1));
 		r->SetTransform(Matrix::MakeTranslation(3, 0, 0));
@@ -177,7 +177,7 @@ TEST_F(Test_Graphics_Rendering, DrawSphere)
 	ScopedCameraPosition cp(3, 3, -3);
 	{
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 		auto context = Engine::GetDefaultSceneGraph3D()->GetRenderer();
 
 		context->DrawSphere(2, 10, 10, Color::Red);
@@ -194,7 +194,7 @@ TEST_F(Test_Graphics_Rendering, DrawCylinder)
 	ScopedCameraPosition cp(2, 2, 2);
 	{
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 		auto context = Engine::GetDefaultSceneGraph3D()->GetRenderer();
 
 		float r = 0.1f;
@@ -230,7 +230,7 @@ TEST_F(Test_Graphics_Rendering, DrawMesh)
 	//		Engine::BeginFrameUpdate();	// update camera transform
 	//		if (Engine::BeginRendering())
 	//		{
-	//			Engine::Render();
+	//			Engine::RenderFrame();
 	//			Engine::GetDefaultSceneGraph3D()->GetRenderer()->DrawMesh(mesh, 0, mesh->GetMeshResource()->GetMaterial(0));
 	//			Engine::EndRendering();
 	//		}
@@ -243,7 +243,7 @@ TEST_F(Test_Graphics_Rendering, DrawMesh)
 		mesh->InitializeSphere(detail::GraphicsManager::GetInstance(), 2, 8, 4, MeshCreationFlags::None);
 
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 		Engine::GetDefaultSceneGraph3D()->GetRenderer()->DrawMesh(mesh, 0, mesh->GetMaterial(0));
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1_1.png"), 95, true));	// 一致率 95%。もし真っ黒になったりしたらわかる
@@ -257,7 +257,7 @@ TEST_F(Test_Graphics_Rendering, Blit)
 	{
 		auto tex = Texture2D::Create(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png"));
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->Blit(tex);
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png")));
@@ -267,13 +267,13 @@ TEST_F(Test_Graphics_Rendering, Blit)
 		auto tex = Texture2D::Create(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png"));
 		auto rt1 = RenderTargetTexture::Create(tex->GetSize());
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->Blit(tex, rt1, nullptr);
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.Blit1.png")));	// まだこの時点では灰色
 
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->Blit(rt1);
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png")));
@@ -289,7 +289,7 @@ TEST_F(Test_Graphics_Rendering, DrawText_)
 	// <Issue> フレームをまたいだ連続描画で、後のテキストが表示されない問題
 	{
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetFont(font);
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(Brush::White);
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawText_(_T("Lumino"), RectF(0, 0, w, 100), StringFormatFlags::LeftAlignment);
@@ -298,7 +298,7 @@ TEST_F(Test_Graphics_Rendering, DrawText_)
 	}
 	{
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetFont(font);
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(Brush::White);
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawText_(_T("Text1"), RectF(0, 0, w, 100), StringFormatFlags::LeftAlignment);
@@ -310,7 +310,7 @@ TEST_F(Test_Graphics_Rendering, DrawText_)
 	// <Test> Transform
 	{
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetFont(font);
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(Brush::White);
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetTransform(Matrix::MakeTranslation(10, 20, 0));
@@ -328,7 +328,7 @@ TEST_F(Test_Graphics_Rendering, DrawSprite)
 	// <Test>
 	{
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 
 		auto* r = Engine::GetDefaultSceneGraph2D()->GetRenderer();
 		r->SetBlendMode(BlendMode::Alpha);
@@ -363,7 +363,7 @@ TEST_F(Test_Graphics_Rendering, DrawSprite)
 	// <Test> Sprite の BlendMode
 	{
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 
 		auto* r = Engine::GetDefaultSceneGraph2D()->GetRenderer();
 
@@ -401,7 +401,7 @@ TEST_F(Test_Graphics_Rendering, DrawRectangle)
 	// <Test> 単色塗りつぶし
 	{
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(Brush::Red);
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawRectangle(RectF(10, 20, 30, 40));
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawRectangle(RectF(110, 20, 30, 40));
@@ -413,7 +413,7 @@ TEST_F(Test_Graphics_Rendering, DrawRectangle)
 	// <Issue> もう一度同じことができる
 	{
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(Brush::Red);
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawRectangle(RectF(10, 20, 30, 40));
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawRectangle(RectF(110, 20, 30, 40));
@@ -448,7 +448,7 @@ TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
 		brush3->SetBorderThickness(ThicknessF(8, 8, 8, 8));
 
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 
 		auto* g = Engine::GetDefaultSceneGraph2D()->GetRenderer();
 		g->Clear(ClearFlags::All, Color::Gray);
@@ -496,7 +496,7 @@ TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
 		brush3->SetBorderThickness(ThicknessF(8, 8, 8, 8));
 
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 
 		auto* g = Engine::GetDefaultSceneGraph2D()->GetRenderer();
 		g->Clear(ClearFlags::All, Color::Gray);
@@ -523,6 +523,31 @@ TEST_F(Test_Graphics_Rendering, ZSort)
 	s2->SetPosition(0, 0, 1);	// 奥
 	Engine::Update();
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.ZSort1.png"), 90));
+}
+
+
+//==============================================================================
+class Test_Graphics_DrawingContext : public ::testing::Test
+{
+protected:
+	virtual void SetUp() {}
+	virtual void TearDown() {}
+};
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_DrawingContext, DrawChar)
+{
+	{
+		LN_TEST_BEGIN_FRAME;
+		Engine::RenderFrame();
+		auto* dc = Engine::GetDefaultSceneGraph2D()->GetRenderer();
+		//auto* dc = Engine::GetMainWindow()->GetDrawingContext();
+		dc->Clear(ClearFlags::Color, Color::Blue);
+		dc->SetBrush(Brush::Black);
+		dc->DrawChar('g', PointF(100, 100));
+		LN_TEST_END_FRAME;
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_DrawingContext.DrawChar1.png"), 90, true));
+	}
 }
 
 //==============================================================================

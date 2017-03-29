@@ -199,7 +199,7 @@ public:
 	Pen* GetPen() const { return nullptr; }	// TODO
 
 	void SetFont(Font* font);
-	Font* GetFont() const;
+	Font* GetFont() const;		// not null (default font)
 
 
 LN_INTERNAL_ACCESS:

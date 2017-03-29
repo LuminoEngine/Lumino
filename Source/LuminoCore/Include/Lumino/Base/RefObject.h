@@ -206,7 +206,8 @@ public:
 	/// ->
     T* operator -> () const
     {
-        LN_ASSERT(m_ptr != nullptr );
+		if (m_ptr == nullptr)
+			LN_ASSERT(m_ptr != nullptr );
         return static_cast<T*>(m_ptr);
     }
 

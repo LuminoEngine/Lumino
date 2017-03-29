@@ -12,6 +12,7 @@
 #include "MeshRendererProxy.h"
 #include "SpriteRenderer.h"
 #include "Text/TextRenderer.h"
+#include "Text/FontManager.h"
 #include "NanoVGRenderer.h"
 #include "FrameRectRenderer.h"
 #include "../Mesh/MeshFactory.h"
@@ -1228,8 +1229,9 @@ void DrawList::BeginMakeElements()
 {
 	m_drawElementList.ClearCommands();
 	m_state.Reset();
+	m_state.state.state.SetFont(m_manager->GetFontManager()->GetDefaultFont());
 	m_defaultMaterial->Reset();
-	//m_defaultMaterial->cullingMode = CullingMode::None;
+	m_defaultMaterial->cullingMode = CullingMode::None;
 	m_currentSectionTopElement = nullptr;
 }
 

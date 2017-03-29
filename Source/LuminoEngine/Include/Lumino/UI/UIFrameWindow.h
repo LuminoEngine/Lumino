@@ -25,6 +25,7 @@ public:
 
 	PlatformWindow* GetPlatformWindow() const { return m_platformWindow; }
 
+	DrawingContext* GetDrawingContext() const;
 
 	void SetSize(const SizeI& size);
 

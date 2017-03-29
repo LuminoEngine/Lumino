@@ -41,7 +41,7 @@ public:
 
 	static void BeginFrame()
 	{
-		Engine::FrameUpdate();
+		Engine::UpdateFrame();
 	}
 
 	static void EndFrame()

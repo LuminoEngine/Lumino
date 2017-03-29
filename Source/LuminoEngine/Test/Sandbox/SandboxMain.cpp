@@ -91,10 +91,10 @@ void Main()
 
 	do
 	{
-		Engine::FrameUpdate();
+		Engine::UpdateFrame();
 		//if (Engine::BeginRendering())
 		{
-			Engine::Render();
+			Engine::RenderFrame();
 			Engine::PresentFrame();
 		}
 
@@ -586,10 +586,10 @@ void Main()
 
 	while (!Engine::IsEndRequested())
 	{
-		Engine::FrameUpdate();
+		Engine::UpdateFrame();
 		//if (Engine::BeginRendering())
 		{
-			Engine::Render();
+			Engine::RenderFrame();
 
 
 			Engine::GetDefaultSceneGraph3D()->GetDebugRenderer()->DrawLinePrimitive(

@@ -184,9 +184,9 @@ public:
 
 	bool UpdateUnitily();
 
-	void FrameUpdate();
+	void UpdateFrame();
 	//bool BeginRendering();
-	void Render();
+	void RenderFrame();
 	void EndRendering();
 	void PresentFrame();
 	void ResetFrameDelay();

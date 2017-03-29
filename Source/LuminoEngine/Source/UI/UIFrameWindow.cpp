@@ -59,6 +59,12 @@ void UIFrameWindow::Initialize(detail::UIManager* manager, PlatformWindow* platf
 }
 
 //------------------------------------------------------------------------------
+DrawingContext* UIFrameWindow::GetDrawingContext() const
+{
+	return m_drawingContext;
+}
+
+//------------------------------------------------------------------------------
 bool UIFrameWindow::OnEvent(const PlatformEventArgs& e)
 {
 	return false;

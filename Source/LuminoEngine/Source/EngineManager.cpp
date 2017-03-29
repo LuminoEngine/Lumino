@@ -548,17 +548,17 @@ void EngineManager::InitializeAssetsManager()
 //------------------------------------------------------------------------------
 bool EngineManager::UpdateUnitily()
 {
-	FrameUpdate();
+	UpdateFrame();
 	//if (BeginRendering())
 	{
-		Render();
+		RenderFrame();
 		PresentFrame();
 	}
 	return !IsEndRequested();
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::FrameUpdate()
+void EngineManager::UpdateFrame()
 {
 	m_fpsController.Process();
 
@@ -671,7 +671,7 @@ void EngineManager::FrameUpdate()
 //}
 
 //------------------------------------------------------------------------------
-void EngineManager::Render()
+void EngineManager::RenderFrame()
 {
 	if (m_graphicsManager != nullptr)
 	{

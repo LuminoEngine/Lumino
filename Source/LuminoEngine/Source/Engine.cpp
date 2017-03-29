@@ -45,10 +45,10 @@ bool Engine::Update()
 }
 
 //------------------------------------------------------------------------------
-void Engine::FrameUpdate()
+void Engine::UpdateFrame()
 {
 	if (LN_CHECK_STATE(EngineManager::Instance != nullptr)) return;
-	EngineManager::Instance->FrameUpdate();
+	EngineManager::Instance->UpdateFrame();
 }
 
 //------------------------------------------------------------------------------
@@ -58,9 +58,9 @@ void Engine::FrameUpdate()
 //}
 
 //------------------------------------------------------------------------------
-void Engine::Render()
+void Engine::RenderFrame()
 {
-	EngineManager::Instance->Render();
+	EngineManager::Instance->RenderFrame();
 }
 
 //------------------------------------------------------------------------------
@@ -110,6 +110,7 @@ UIMainWindow* Engine::GetMainWindow()
 {
 	return EngineManager::Instance->GetUIManager()->GetMainWindow();
 }
+
 //------------------------------------------------------------------------------
 Viewport* Engine::GetMainViewport()
 {
