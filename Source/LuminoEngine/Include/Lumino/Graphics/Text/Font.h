@@ -187,6 +187,7 @@ public:
 	{
 		Vector2	pos;
 		float	alpha;
+		Vector2	extrusion;	// 押し出し方向
 
 		FontOutlineVertex(const Vector2& pos_)
 			: pos(pos_)

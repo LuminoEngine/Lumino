@@ -395,11 +395,6 @@ VectorFontGlyphCache::Handle VectorFontGlyphCache::GetGlyphInfo(char32_t utf32Co
 		RawFont::VectorGlyphInfo info;
 		m_font->DecomposeOutline(utf32Code, &info);
 		
-		for (auto& ii : info.vertices)
-		{
-			ii.pos.Print();
-		}
-
 		// レンダリングスレッドへデータを送る
 		{
 			RenderBulkData vertexList(&info.vertices[0], sizeof(RawFont::FontOutlineVertex) * info.vertices.GetCount());
@@ -479,7 +474,7 @@ void VectorFontGlyphCache::GenerateMesh(Handle infoIndex, const Vector3& baselin
 	{
 		outVertices[i].position = Vector3(info->vertices[i].pos, 0.0f);
 		outVertices[i].position.y *= -1;
-		outVertices[i].color = Color(0, 0, 0, 1);
+		outVertices[i].color = Color(0, 0, 0, info->vertices[i].alpha);
 
 		if (!isIdent) outVertices[i].position.TransformCoord(transform);
 		outVertices[i].position += baselineOrigin;
@@ -522,6 +517,9 @@ void VectorFontGlyphCache::RegisterPolygons(Handle infoIndex, const RawFont::Fon
 
 	FontOutlineTessellator tess;	// TODO: インスタンスはメンバに持っておいたほうが malloc 少なくなっていいかな？
 	tess.Tessellate(info);
+
+	FontOutlineStroker stroker;
+	stroker.MakeStroke(info);
 }
 
 } // namespace detail

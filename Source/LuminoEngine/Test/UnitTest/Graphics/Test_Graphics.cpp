@@ -559,6 +559,7 @@ TEST_F(Test_Graphics_DrawingContext, DrawText_)
 		auto* dc = Engine::GetDefaultSceneGraph2D()->GetRenderer();
 		dc->Clear(ClearFlags::Color, Color::White);
 		dc->SetBrush(Brush::Black);
+		dc->SetBlendMode(BlendMode::Alpha);
 		dc->DrawText2(_T("ABij"), RectF(100, 100, 100, 100));
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_DrawingContext.DrawText1.png"), 90, true));

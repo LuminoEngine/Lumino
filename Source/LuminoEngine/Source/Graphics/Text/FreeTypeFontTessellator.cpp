@@ -1068,5 +1068,162 @@ void FontOutlineTessellator::ErrorCallback(GLenum error_code)
 	LN_ASSERT(0);	// TODO:
 }
 
+
+//==============================================================================
+// FontOutlineStroker
+//==============================================================================
+//------------------------------------------------------------------------------
+void FontOutlineStroker::MakeStroke(RawFont::VectorGlyphInfo* info)
+{
+	m_info = info;
+	CalculateExtrusion();
+	MakeAntiAliasStroke();
+}
+
+//------------------------------------------------------------------------------
+void FontOutlineStroker::CalculateExtrusion()
+{
+	for (const auto& outline : m_info->outlines)
+	{
+		int end = outline.startIndex + outline.vertexCount;
+		for (int i = outline.startIndex; i < end; i++)
+		{
+			int iPrev = i - 1;
+			if (iPrev < outline.startIndex) iPrev = end - 1;
+			int iNext = i + 1;
+			if (iNext >= end) iNext = outline.startIndex;
+
+			auto& cur = m_info->vertices[i];
+			auto& prev = m_info->vertices[iPrev];
+			auto& next = m_info->vertices[iNext];
+
+			cur.pos += 0.5;
+
+			Vector2 d0 = Vector2::Normalize(cur.pos - prev.pos);//cur.pos - prev.pos;//
+			Vector2 d1 = Vector2::Normalize(next.pos - cur.pos);//next.pos - cur.pos;//
+			//Vector2 v = prev.pos.x * next.pos.y - next.pos.x * prev.pos.y;
+			//Vector2::clo
+			float dlx0, dly0, dlx1, dly1, dmr2, cross, limit;
+			dlx0 = d0.y;//p0->dy;
+			dly0 = -d0.x;
+			dlx1 = d1.y;
+			dly1 = -d1.x;
+			// Calculate extrusions
+			// 進行方向の左側をさす
+			cur.extrusion.x = -(dlx0 + dlx1) * 0.5f;
+			cur.extrusion.y = 0;//-(dly0 + dly1) * 0.5f;
+			cur.extrusion.Normalize();
+
+			//cur.extrusion.x *= 0.75;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+void FontOutlineStroker::MakeAntiAliasStroke()
+{
+	for (const auto& outline : m_info->outlines)
+	{
+		int end = outline.startIndex + outline.vertexCount;
+
+		float extRate = 0.8f;//0.5f;//1.0;//0.075;
+
+		int i = outline.startIndex;
+		auto& cur = m_info->vertices[i];
+
+		int iNextExt = 0;
+		int iStartExt = m_info->vertices.GetCount();
+		int iCurExt = m_info->vertices.GetCount();
+
+
+
+
+		//if (Math::NearEqual(cur.extrusion.x, 0.0f) || Math::NearEqual(cur.extrusion.y, 0.0f))
+		//{
+		//	m_info->vertices.Add(cur.pos);
+		//	m_info->vertices.GetLast().alpha = 0.0f;
+		//}
+		//else
+		{
+			m_info->vertices.Add(cur.pos + cur.extrusion * extRate);
+			m_info->vertices.GetLast().alpha = 0.0f;
+		}
+
+
+		m_info->vertices[i].pos -= m_info->vertices[i].extrusion * extRate * 0.5;
+		//{
+		//	m_info->vertices[i].pos -= m_info->vertices[i].extrusion * extRate;
+		//}
+
+		for (int i = outline.startIndex; i < end; i++)
+		{
+			//int iPrev = i - 1;
+			//if (iPrev < outline.startIndex) iPrev = end - 1;
+			int iNext = i + 1;
+			if (iNext >= end) iNext = outline.startIndex;
+
+
+
+			auto& cur = m_info->vertices[i];
+
+			auto& next = m_info->vertices[iNext];
+
+
+			//float extRate = 0.8f * cur.extrusion.y;
+
+			if (iNext != outline.startIndex)	// start は押し出し済み
+			{
+				// next のを押し出す
+				iNextExt = m_info->vertices.GetCount();
+
+				//if (Math::NearEqual(next.pos.x - cur.pos.x, 0.0f) || Math::NearEqual(next.pos.y - cur.pos.y, 0.0f))
+				//{
+				//	m_info->vertices.Add(next.pos);
+				//	m_info->vertices.GetLast().alpha = 0.0f;
+				//}
+				//else
+				{
+					m_info->vertices.Add(next.pos + next.extrusion * extRate);
+					m_info->vertices.GetLast().alpha = 0.0f;
+				}
+
+				//m_info->vertices.Add(next.pos + next.extrusion * extRate);
+				//m_info->vertices.GetLast().alpha = 0.0f;
+
+
+				m_info->vertices[iNext].pos -= m_info->vertices[iNext].extrusion * extRate * 0.5;
+
+			}
+			else
+			{
+				iNextExt = iStartExt;
+			}
+
+
+
+			int i0 = i;
+			int i1 = iNext;
+			int i2 = iCurExt;
+			int i3 = iNextExt;
+
+			m_info->triangleIndices.Add(i0);
+			m_info->triangleIndices.Add(i1);
+			m_info->triangleIndices.Add(i2);
+
+			m_info->triangleIndices.Add(i2);
+			m_info->triangleIndices.Add(i1);
+			m_info->triangleIndices.Add(i3);
+			//Vector2 p0 = cur.pos;
+			//Vector2 p1 = next.pos;
+			//Vector2 p2 = m_vertexList[iCurExt].pos;
+
+			iCurExt = iNextExt;
+		}
+
+
+		//return;
+	}
+}
+
 } // namespace detail
 LN_NAMESPACE_END

@@ -275,5 +275,18 @@ private:
 	GLUtesselator*		m_gluTesselator;
 };
 
+class FontOutlineStroker
+{
+public:
+
+	void MakeStroke(RawFont::VectorGlyphInfo* info);
+
+private:
+	void CalculateExtrusion();
+	void MakeAntiAliasStroke();
+	
+	RawFont::VectorGlyphInfo* m_info;
+};
+
 } // namespace detail
 LN_NAMESPACE_END
