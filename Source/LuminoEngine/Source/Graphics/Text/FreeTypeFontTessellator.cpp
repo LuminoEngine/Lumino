@@ -1083,6 +1083,11 @@ void FontOutlineStroker::MakeStroke(RawFont::VectorGlyphInfo* info)
 //------------------------------------------------------------------------------
 void FontOutlineStroker::CalculateExtrusion()
 {
+	for (auto& v : m_info->vertices)
+	{
+		v.pos += 0.5;
+	}
+
 	for (const auto& outline : m_info->outlines)
 	{
 		int end = outline.startIndex + outline.vertexCount;
@@ -1097,7 +1102,7 @@ void FontOutlineStroker::CalculateExtrusion()
 			auto& prev = m_info->vertices[iPrev];
 			auto& next = m_info->vertices[iNext];
 
-			cur.pos += 0.5;
+			//cur.pos.x += 0.5;
 
 			Vector2 d0 = Vector2::Normalize(cur.pos - prev.pos);//cur.pos - prev.pos;//
 			Vector2 d1 = Vector2::Normalize(next.pos - cur.pos);//next.pos - cur.pos;//
@@ -1111,10 +1116,13 @@ void FontOutlineStroker::CalculateExtrusion()
 			// Calculate extrusions
 			// is•ûŒü‚Ì¶‘¤‚ð‚³‚·
 			cur.extrusion.x = -(dlx0 + dlx1) * 0.5f;
-			cur.extrusion.y = 0;//-(dly0 + dly1) * 0.5f;
+			cur.extrusion.y = -(dly0 + dly1) * 0.5f;
 			cur.extrusion.Normalize();
 
-			//cur.extrusion.x *= 0.75;
+			cur.extrusion2 = cur.extrusion;
+			cur.extrusion2.y = 0;
+			//cur.extrusion2.Normalize();
+			//cur.extrusion *= 0.5;
 		}
 	}
 }
@@ -1126,7 +1134,8 @@ void FontOutlineStroker::MakeAntiAliasStroke()
 	{
 		int end = outline.startIndex + outline.vertexCount;
 
-		float extRate = 0.8f;//0.5f;//1.0;//0.075;
+		float extRate = 0.85;//0.075;0.5f;//
+		float extRateIn = 0.3f;
 
 		int i = outline.startIndex;
 		auto& cur = m_info->vertices[i];
@@ -1145,12 +1154,12 @@ void FontOutlineStroker::MakeAntiAliasStroke()
 		//}
 		//else
 		{
-			m_info->vertices.Add(cur.pos + cur.extrusion * extRate);
+			m_info->vertices.Add(cur.pos + cur.extrusion2 * extRate);
 			m_info->vertices.GetLast().alpha = 0.0f;
 		}
 
 
-		m_info->vertices[i].pos -= m_info->vertices[i].extrusion * extRate * 0.5;
+		m_info->vertices[i].pos -= m_info->vertices[i].extrusion2 * extRateIn;
 		//{
 		//	m_info->vertices[i].pos -= m_info->vertices[i].extrusion * extRate;
 		//}
@@ -1183,7 +1192,7 @@ void FontOutlineStroker::MakeAntiAliasStroke()
 				//}
 				//else
 				{
-					m_info->vertices.Add(next.pos + next.extrusion * extRate);
+					m_info->vertices.Add(next.pos + next.extrusion2 * extRate);
 					m_info->vertices.GetLast().alpha = 0.0f;
 				}
 
@@ -1191,7 +1200,7 @@ void FontOutlineStroker::MakeAntiAliasStroke()
 				//m_info->vertices.GetLast().alpha = 0.0f;
 
 
-				m_info->vertices[iNext].pos -= m_info->vertices[iNext].extrusion * extRate * 0.5;
+				m_info->vertices[iNext].pos -= m_info->vertices[iNext].extrusion2 * extRateIn;
 
 			}
 			else

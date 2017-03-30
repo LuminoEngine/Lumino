@@ -27,6 +27,7 @@ FontPtr Font::Create()
 FontPtr Font::Create(const String& family)
 {
 	auto ptr = FontPtr::MakeRef();
+	ptr->Initialize(detail::GraphicsManager::GetInstance(), nullptr);
 	ptr->SetFamily(family);
 	return ptr;
 }
