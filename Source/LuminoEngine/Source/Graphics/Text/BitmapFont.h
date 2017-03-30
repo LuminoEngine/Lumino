@@ -29,8 +29,11 @@ public:
 	virtual int GetLineSpacing() { return m_charHeight; }
 	virtual FontGlyphLocation* AdvanceKerning(UTF32 utf32code, int strokeSize, FontGlyphLocation* prevData);
 	virtual FontGlyphBitmap* LookupGlyphBitmap(UTF32 utf32code, int strokeSize);
+	virtual void GetGlobalMetrics(FontGlobalMertics* outMetrics) override;
 	virtual bool IsOutlineSupported() const override { return false; }
 	virtual void DecomposeOutline(UTF32 utf32code, RawFont::VectorGlyphInfo* outInfo) override { }
+	virtual Vector2 GetKerning(UTF32 prev, UTF32 next) override { return Vector2::Zero; }
+	virtual void GetGlyphMetrics(UTF32 utf32Code, FontGlyphMertics* outMetrics) override;
 	virtual FontManager* GetManager() const { return m_manager; }
 
 private:

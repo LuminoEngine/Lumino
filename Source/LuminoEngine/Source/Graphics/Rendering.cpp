@@ -1231,7 +1231,7 @@ void DrawList::BeginMakeElements()
 	m_state.Reset();
 	m_state.state.state.SetFont(m_manager->GetFontManager()->GetDefaultFont());
 	m_defaultMaterial->Reset();
-	m_defaultMaterial->cullingMode = CullingMode::None;
+	//m_defaultMaterial->cullingMode = CullingMode::None;
 	m_currentSectionTopElement = nullptr;
 }
 
@@ -1541,14 +1541,48 @@ void DrawList::DrawChar(TCHAR ch, const PointF& position)
 
 		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
 		{
-			context->BeginVectorTextRenderer()->DrawChar(GetTransform(oenerList), ch, position);
+			context->BeginVectorTextRenderer()->DrawChar(GetTransform(oenerList), ch, RectF(position, 0, 0), TextLayoutOptions::None);
 		}
 	};
+
+	// TODO: UTF32 変換
 
 	auto* e = ResolveDrawElement<DrawElement_DrawChar>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_vectorTextRenderer, nullptr);
 	e->ch = ch;
 	e->position = position;
 	//e->boundingSphere = ;	// TODO
+}
+
+//------------------------------------------------------------------------------
+void DrawList::DrawText2(const StringRef& text, const RectF& rect)
+{
+	class DrawElement_DrawString : public detail::DrawElement
+	{
+	public:
+		detail::CommandDataCache::DataHandle utf32DataHandle;
+		int length;
+		RectF rect;
+
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		{
+			context->BeginVectorTextRenderer()->DrawString(
+				GetTransform(oenerList), 
+				(const UTF32*)oenerList->GetExtData(utf32DataHandle),
+				length,
+				rect,
+				TextLayoutOptions::None);
+		}
+	};
+
+	const ByteBuffer& utf32Data = m_manager->GetFontManager()->GetTCharToUTF32Converter()->Convert(text.GetBegin(), text.GetLength() * sizeof(TCHAR));
+
+	auto* e = ResolveDrawElement<DrawElement_DrawString>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_vectorTextRenderer, nullptr);
+	e->utf32DataHandle = m_drawElementList.AllocExtData(utf32Data.GetSize());
+	e->length = utf32Data.GetSize() / sizeof(UTF32);
+	e->rect = rect;
+	//e->boundingSphere = ;	// TODO
+
+	memcpy(m_drawElementList.GetExtData(e->utf32DataHandle), utf32Data.GetConstData(), utf32Data.GetSize());
 }
 
 //------------------------------------------------------------------------------

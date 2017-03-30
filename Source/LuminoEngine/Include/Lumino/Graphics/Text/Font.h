@@ -151,6 +151,18 @@ struct FontGlyphData
 	
 };
 
+// https://www.freetype.org/freetype2/docs/tutorial/step2.html
+struct FontGlobalMertics
+{
+	float	ascender;
+	float	descender;
+	float	lineSpace;		// 1行の最大高さ。次の行までの間隔。
+};
+
+struct FontGlyphMertics
+{
+	Vector2	advance;		// 次の文字までのベースライン間隔
+};
 
 /**
 	@brief		
@@ -276,8 +288,11 @@ public:
 	//virtual FontGlyphData* LookupGlyphData(UTF32 utf32code, FontGlyphData* prevData) = 0;
 
 
+	virtual void GetGlobalMetrics(FontGlobalMertics* outMetrix) = 0;
 	virtual bool IsOutlineSupported() const = 0;
 	virtual void DecomposeOutline(UTF32 utf32code, RawFont::VectorGlyphInfo* outInfo) = 0;
+	virtual Vector2 GetKerning(UTF32 prev, UTF32 next) = 0;
+	virtual void GetGlyphMetrics(UTF32 utf32Code, FontGlyphMertics* outMetrics) = 0;
 
 	virtual detail::FontManager* GetManager() const = 0;
 

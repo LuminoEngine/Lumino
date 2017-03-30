@@ -79,7 +79,7 @@ public:
 	virtual bool IsAntiAlias() const { return m_fontData.IsAntiAlias; }
 
 	virtual RawFontPtr Copy() const;
-	virtual int GetLineSpacing() { UpdateFont(); return m_lineHeight; }
+	virtual int GetLineSpacing() { UpdateFont(); return m_lineHeight; }	// TODO: [Obsolete]
 	//virtual Size GetTextSize(const char* text, int length);	// TODO: GetTextSize もいらなそう。UTF32 のだけあればいいかも？
 	//virtual Size GetTextSize(const wchar_t* text, int length);
 	//virtual Size GetTextSize(const UTF32* text, int length);
@@ -87,9 +87,11 @@ public:
 	virtual FontGlyphBitmap* LookupGlyphBitmap(UTF32 utf32code, int strokeSize);
 	//virtual FontGlyphData* LookupGlyphData(UTF32 utf32code, FontGlyphData* prevData);
 
-
+	virtual void GetGlobalMetrics(FontGlobalMertics* outMetrics) override;
 	virtual bool IsOutlineSupported() const override { return true; }
 	virtual void DecomposeOutline(UTF32 utf32code, RawFont::VectorGlyphInfo* outInfo) override;
+	virtual Vector2 GetKerning(UTF32 prev, UTF32 next) override;
+	virtual void GetGlyphMetrics(UTF32 utf32Code, FontGlyphMertics* outMetrics) override;
 
 	virtual FontManager* GetManager() const { return m_manager; }
 

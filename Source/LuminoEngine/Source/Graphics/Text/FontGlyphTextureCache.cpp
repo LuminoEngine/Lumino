@@ -471,18 +471,18 @@ int VectorFontGlyphCache::GetIndexCount(Handle info)
 }
 
 //------------------------------------------------------------------------------
-void VectorFontGlyphCache::GenerateMesh(Handle infoIndex, const Vector3& positionOffset, const Matrix& transform, Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+void VectorFontGlyphCache::GenerateMesh(Handle infoIndex, const Vector3& baselineOrigin, const Matrix& transform, Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
 {
 	auto* info = &m_gryphBufferDataList[infoIndex];
 	bool isIdent = transform.IsIdentity();
 	for (int i = 0; i < info->vertices.GetCount(); i++)
 	{
 		outVertices[i].position = Vector3(info->vertices[i].pos, 0.0f);
-		//outVertices[i].position.y *= -1;
+		outVertices[i].position.y *= -1;
 		outVertices[i].color = Color(0, 0, 0, 1);
 
 		if (!isIdent) outVertices[i].position.TransformCoord(transform);
-		outVertices[i].position += positionOffset;
+		outVertices[i].position += baselineOrigin;
 	}
 	for (int i = 0; i < info->triangleIndices.GetCount(); i++)
 	{

@@ -134,7 +134,7 @@ public:
 	// callby rendering thread
 	int GetVertexCount(Handle info);
 	int GetIndexCount(Handle info);
-	void GenerateMesh(Handle info, const Vector3& positionOffset, const Matrix& transform, Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex);
+	void GenerateMesh(Handle info, const Vector3& baselineOrigin, const Matrix& transform, Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex);
 
 private:
 	void ResetUsedFlags();

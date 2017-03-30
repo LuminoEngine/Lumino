@@ -178,6 +178,22 @@ FontGlyphBitmap* BitmapFont::LookupGlyphBitmap(UTF32 utf32code, int strokeSize)
 	return &m_fontGlyphBitmap;
 }
 
+//------------------------------------------------------------------------------
+void BitmapFont::GetGlobalMetrics(FontGlobalMertics* outMetrics)
+{
+	if (LN_CHECK_ARG(outMetrics != nullptr)) return;
+	outMetrics->ascender = m_charHeight;
+	outMetrics->descender = 0;
+	outMetrics->lineSpace = m_charHeight;
+}
+
+//------------------------------------------------------------------------------
+void BitmapFont::GetGlyphMetrics(UTF32 utf32Code, FontGlyphMertics* outMetrics)
+{
+	if (LN_CHECK_ARG(outMetrics != nullptr)) return;
+	outMetrics->advance.x = m_charWidth;
+	outMetrics->advance.y = m_charHeight;
+}
 
 } // namespace detail
 LN_NAMESPACE_END

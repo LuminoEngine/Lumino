@@ -475,9 +475,19 @@ FontGlyphBitmap* FreeTypeFont::LookupGlyphBitmap(UTF32 utf32code, int strokeSize
 }
 
 //------------------------------------------------------------------------------
+void FreeTypeFont::GetGlobalMetrics(FontGlobalMertics* outMetrics)
+{
+	if (LN_CHECK_ARG(outMetrics != nullptr)) return;
+	UpdateFont();
+	outMetrics->ascender = m_ftFace->size->metrics.ascender >> 6;
+	outMetrics->descender = m_ftFace->size->metrics.descender >> 6;
+	outMetrics->lineSpace = outMetrics->ascender - outMetrics->descender;
+}
+
+//------------------------------------------------------------------------------
 /*
 	返す頂点は、ベースラインを 0 として、Y+ 方向を上とする座標系で表される。
-	例えば A の下辺は 0、g の下辺は 0 より小さい。
+	例えば 'A' の下辺は 0、'g' の下辺は 0 より小さい。
 	https://www.freetype.org/freetype2/docs/tutorial/step2.html
 	http://w3.kcua.ac.jp/~fujiwara/infosci/font.html
 */
@@ -485,11 +495,9 @@ void FreeTypeFont::DecomposeOutline(UTF32 utf32code, RawFont::VectorGlyphInfo* o
 {
 	UpdateFont();
 
-	FT_UInt glyphIndex = FTC_CMapCache_Lookup(
-		m_manager->GetFTCacheMapCache(),
-		m_ftFaceID,
-		m_ftCacheMapIndex,
-		utf32code);
+	// get glyph index
+	FT_UInt glyphIndex = FTC_CMapCache_Lookup(m_manager->GetFTCacheMapCache(), m_ftFaceID, m_ftCacheMapIndex, utf32code);
+	if (LN_CHECK_STATE(glyphIndex != 0)) return;
 
 	// グリフメトリクスにアクセスするため、グリフスロット(m_ftFace->glyph) に glyphIndex で示すグリフの情報をロードする
 	FT_Error err = FT_Load_Glyph(m_ftFace, glyphIndex, FT_LOAD_DEFAULT);
@@ -519,6 +527,48 @@ void FreeTypeFont::DecomposeOutline(UTF32 utf32code, RawFont::VectorGlyphInfo* o
 	}
 
 	// FT_Done_Glyph
+}
+
+//------------------------------------------------------------------------------
+Vector2 FreeTypeFont::GetKerning(UTF32 prev, UTF32 next)
+{
+	UpdateFont();
+
+	if (FT_HAS_KERNING(m_ftFace))
+	{
+		FT_UInt glyphIndex1 = FTC_CMapCache_Lookup(m_manager->GetFTCacheMapCache(), m_ftFaceID, m_ftCacheMapIndex, prev);
+		if (LN_CHECK_STATE(glyphIndex1 != 0)) return Vector2::Zero;
+
+		FT_UInt glyphIndex2 = FTC_CMapCache_Lookup(m_manager->GetFTCacheMapCache(), m_ftFaceID, m_ftCacheMapIndex, next);
+		if (LN_CHECK_STATE(glyphIndex2 != 0)) return Vector2::Zero;
+
+		FT_Vector delta;
+		FT_Error err = FT_Get_Kerning(m_ftFace, glyphIndex1, glyphIndex2, ft_kerning_default, &delta);
+		if (LN_CHECK_STATE(err == 0)) return Vector2::Zero;
+
+		return Vector2(delta.x >> 6, delta.y >> 6);
+	}
+	else
+	{
+		return Vector2::Zero;
+	}
+}
+
+//------------------------------------------------------------------------------
+void FreeTypeFont::GetGlyphMetrics(UTF32 utf32Code, FontGlyphMertics* outMetrics)
+{
+	if (LN_CHECK_ARG(outMetrics != nullptr)) return;
+
+	// get glyph index
+	FT_UInt glyphIndex = FTC_CMapCache_Lookup(m_manager->GetFTCacheMapCache(), m_ftFaceID, m_ftCacheMapIndex, utf32Code);
+	if (LN_CHECK_STATE(glyphIndex != 0)) return;
+
+	// グリフメトリクスにアクセスするため、グリフスロット(m_ftFace->glyph) に glyphIndex で示すグリフの情報をロードする
+	FT_Error err = FT_Load_Glyph(m_ftFace, glyphIndex, FT_LOAD_DEFAULT);
+	if (LN_CHECK_STATE(err == 0)) return;
+
+	outMetrics->advance.x = m_ftFace->glyph->advance.x >> 6;
+	outMetrics->advance.y = m_ftFace->glyph->advance.y >> 6;
 }
 
 //------------------------------------------------------------------------------

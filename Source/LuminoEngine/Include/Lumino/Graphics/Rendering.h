@@ -289,7 +289,9 @@ public:
 		return t;
 	}
 
-	byte_t* AllocExtData(size_t size) { return m_extDataCache.GetData(m_extDataCache.AllocData(size)); }
+	//byte_t* AllocExtData(size_t size) { return m_extDataCache.GetData(m_extDataCache.AllocData(size)); }
+	CommandDataCache::DataHandle AllocExtData(size_t size) { return m_extDataCache.AllocData(size); }
+	void* GetExtData(CommandDataCache::DataHandle handle) { return m_extDataCache.GetData(handle); }
 
 	//void ResolveCombinedMaterials();
 
@@ -562,6 +564,7 @@ public:
 	void DrawText_(const StringRef& text, const RectF& rect, StringFormatFlags flags);
 
 	void DrawChar(TCHAR ch, const PointF& position);
+	void DrawText2(const StringRef& text, const RectF& rect);
 
 	void DrawSprite(
 		const Vector3& position,

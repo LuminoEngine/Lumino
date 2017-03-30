@@ -305,6 +305,12 @@ LN_ENUM_FLAGS(SpriteSortMode)
 };
 LN_ENUM_FLAGS_DECLARE(SpriteSortMode);
 
+enum class TextLayoutOptions
+{
+	None				= 0x0000,
+	Baselining			= 0x0001,
+};
+
 /// テキストの配置方法
 LN_ENUM(TextAlignment)
 {

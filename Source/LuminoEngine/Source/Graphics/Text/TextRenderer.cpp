@@ -449,14 +449,8 @@ void VectorTextRendererCore::Initialize(GraphicsManager* manager)
 	auto* device = m_manager->GetGraphicsDevice();
 	m_renderer = device->GetRenderer();
 
-	//const int MaxCount = 4096;
-
 	m_vertexCache.Reserve(4096);
 	m_indexCache.Reserve(4096);
-
-	//auto* device = m_manager->GetGraphicsDevice();
-	//m_vertexBuffer = device->CreateVertexBuffer(sizeof(Vertex) * MaxCount * 3, nullptr, ResourceUsage::Dynamic);
-	//m_indexBuffer = device->CreateIndexBuffer(MaxCount * 3, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 }
 
 //------------------------------------------------------------------------------
@@ -482,7 +476,7 @@ void VectorTextRendererCore::Render(const VectorGlyphData* dataList, int dataCou
 			cache->GetIndexCount(dataList[i].cacheGlyphInfoHandle),
 			&vb, &ib, &beginVertexIndex);
 		cache->GenerateMesh(
-			dataList[i].cacheGlyphInfoHandle, Vector3(dataList[i].position.x, dataList[i].position.y, 0), dataList[i].transform,
+			dataList[i].cacheGlyphInfoHandle, Vector3(dataList[i].origin.x, dataList[i].origin.y, 0), dataList[i].transform,
 			vb, ib, beginVertexIndex);
 	}
 
@@ -547,17 +541,35 @@ void VectorTextRenderer::Initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void VectorTextRenderer::DrawChar(const Matrix& transform, TCHAR ch, const PointF& position)
+void VectorTextRenderer::DrawString(const Matrix& transform, const UTF32* str, int length, const RectF& rect, TextLayoutOptions options)
+{
+	TextLayoutEngine2 layout;
+	layout.Layout(m_currentFont, str, length, rect, options, &m_layoutResult);
+	DrawInternal(transform);
+}
+
+//------------------------------------------------------------------------------
+void VectorTextRenderer::DrawChar(const Matrix& transform, UTF32 ch, const RectF& rect, TextLayoutOptions options)
+{
+	TextLayoutEngine2 layout;
+	layout.Layout(m_currentFont, &ch, 1, rect, options, &m_layoutResult);
+	DrawInternal(transform);
+}
+
+//------------------------------------------------------------------------------
+void VectorTextRenderer::DrawInternal(const Matrix& transform)
 {
 	VectorFontGlyphCache* glyphCache = m_currentFont->GetVectorGlyphCache();
 
 	bool flush = false;
-	VectorGlyphData data;
-	data.cacheGlyphInfoHandle = glyphCache->GetGlyphInfo(ch, &flush);
-	data.transform = transform;
-	data.position = position;
-
-	m_bufferingCache.Add(data);
+	for (auto& item : m_layoutResult.items)
+	{
+		VectorGlyphData data;
+		data.cacheGlyphInfoHandle = glyphCache->GetGlyphInfo(item.ch, &flush);
+		data.transform = transform;
+		data.origin = PointF(item.columnBaseline, item.lineBaseline);
+		m_bufferingCache.Add(data);
+	}
 
 	if (flush)
 	{

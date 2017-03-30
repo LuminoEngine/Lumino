@@ -4,6 +4,7 @@
 #include <Lumino/Graphics/Text/Font.h>
 #include <Lumino/Graphics/Text/GlyphRun.h>
 #include "../RenderingCommand.h"
+#include "TextLayoutEngine.h"
 
 LN_NAMESPACE_BEGIN
 struct Vertex;
@@ -144,7 +145,7 @@ struct VectorGlyphData
 {
 	int		cacheGlyphInfoHandle;
 	Matrix	transform;
-	PointF	position;
+	PointF	origin;		// baseline origin
 };
 
 class VectorTextRendererCore
@@ -177,7 +178,8 @@ public:
 	virtual ~VectorTextRenderer();
 	void Initialize(GraphicsManager* manager);
 
-	void DrawChar(const Matrix& transform, TCHAR ch, const PointF& position);
+	void DrawString(const Matrix& transform, const UTF32* str, int length, const RectF& rect, TextLayoutOptions options);
+	void DrawChar(const Matrix& transform, UTF32 ch, const RectF& rect, TextLayoutOptions options);
 
 	virtual bool IsStandaloneShader() const { return false; }
 	virtual void Flush() override;
@@ -187,12 +189,16 @@ public:
 
 	GraphicsManager* GetManager() const { return m_manager; }
 
+private:
+	void DrawInternal(const Matrix& transform);
+
 LN_INTERNAL_ACCESS:
 	GraphicsManager*				m_manager;
 	RefPtr<VectorTextRendererCore>	m_core;
 	RefPtr<RawFont>					m_currentFont;
 	RefPtr<Brush>					m_fillBrush;
 	List<VectorGlyphData>			m_bufferingCache;
+	TextLayoutEngine2::ResultData	m_layoutResult;
 };
 
 } // namespace detail

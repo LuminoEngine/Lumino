@@ -550,6 +550,21 @@ TEST_F(Test_Graphics_DrawingContext, DrawChar)
 	}
 }
 
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_DrawingContext, DrawText_)
+{
+	{
+		LN_TEST_BEGIN_FRAME;
+		Engine::RenderFrame();
+		auto* dc = Engine::GetDefaultSceneGraph2D()->GetRenderer();
+		dc->Clear(ClearFlags::Color, Color::White);
+		dc->SetBrush(Brush::Black);
+		dc->DrawText2(_T("ABij"), RectF(100, 100, 100, 100));
+		LN_TEST_END_FRAME;
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_DrawingContext.DrawText1.png"), 90, true));
+	}
+}
+
 //==============================================================================
 class Test_Graphics_Texture : public ::testing::Test
 {
