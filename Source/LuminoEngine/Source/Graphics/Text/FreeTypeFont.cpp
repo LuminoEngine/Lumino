@@ -537,16 +537,20 @@ Vector2 FreeTypeFont::GetKerning(UTF32 prev, UTF32 next)
 	if (FT_HAS_KERNING(m_ftFace))
 	{
 		FT_UInt glyphIndex1 = FTC_CMapCache_Lookup(m_manager->GetFTCacheMapCache(), m_ftFaceID, m_ftCacheMapIndex, prev);
-		if (LN_CHECK_STATE(glyphIndex1 != 0)) return Vector2::Zero;
-
 		FT_UInt glyphIndex2 = FTC_CMapCache_Lookup(m_manager->GetFTCacheMapCache(), m_ftFaceID, m_ftCacheMapIndex, next);
-		if (LN_CHECK_STATE(glyphIndex2 != 0)) return Vector2::Zero;
+		if (glyphIndex1 == 0 || glyphIndex2 == 0)
+		{
+			// newline, whitespace ...
+			return Vector2::Zero;
+		}
+		else
+		{
+			FT_Vector delta;
+			FT_Error err = FT_Get_Kerning(m_ftFace, glyphIndex1, glyphIndex2, ft_kerning_default, &delta);
+			if (LN_CHECK_STATE(err == 0)) return Vector2::Zero;
 
-		FT_Vector delta;
-		FT_Error err = FT_Get_Kerning(m_ftFace, glyphIndex1, glyphIndex2, ft_kerning_default, &delta);
-		if (LN_CHECK_STATE(err == 0)) return Vector2::Zero;
-
-		return Vector2(delta.x >> 6, delta.y >> 6);
+			return Vector2(delta.x >> 6, delta.y >> 6);
+		}
 	}
 	else
 	{

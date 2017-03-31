@@ -771,17 +771,18 @@ template int StringTraits::CheckNewLineSequence<UTF32>(const UTF32* start, const
 template<typename TChar>
 bool StringTraits::IndexOfNewLineSequence(const TChar* start, const TChar* end, int* outIndex, int* outNewLineCodeCount)
 {
-	while (start < end)
+	const TChar* pos = start;
+	while (pos < end)
 	{
-		int count = CheckNewLineSequence(start, end);
+		int count = CheckNewLineSequence(pos, end);
 		if (count != 0)
 		{
-			if (outIndex != NULL) { *outIndex = (end - start) - 1; }
-			if (outNewLineCodeCount != NULL) { *outNewLineCodeCount = count; }
+			if (outIndex != nullptr) { *outIndex = (pos - start); }
+			if (outNewLineCodeCount != nullptr) { *outNewLineCodeCount = count; }
 			return true;
 		}
 
-		start++;
+		pos++;
 	}
 	return false;
 }

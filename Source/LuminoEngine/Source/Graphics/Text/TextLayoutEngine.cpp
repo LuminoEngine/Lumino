@@ -236,8 +236,8 @@ void TextLayoutEngine2::LayoutTextHorizontal(const UTF32* text, int length)
 		if (StringTraits::IndexOfNewLineSequence(lineBegin, end, &nlPos, &nlLen))
 		{
 			LayoutLineHorizontal(lineBegin, nlPos);
-			lineBegin += nlLen;
-			m_currentLineBaseline += m_globalMetrics.ascender;;
+			lineBegin += nlPos + nlLen;
+			m_currentLineBaseline += m_globalMetrics.ascender;
 		}
 		else
 		{

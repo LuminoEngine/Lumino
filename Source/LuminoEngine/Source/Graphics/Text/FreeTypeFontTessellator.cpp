@@ -1134,7 +1134,7 @@ void FontOutlineStroker::MakeAntiAliasStroke()
 	{
 		int end = outline.startIndex + outline.vertexCount;
 
-		float extRate = 0.85;//0.075;0.5f;//
+		float extRate = 1.0;//0.85;//0.075;0.5f;//
 		float extRateIn = 0.3f;
 
 		int i = outline.startIndex;
