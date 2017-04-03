@@ -1201,15 +1201,15 @@ void DrawList::SetBrush(Brush* brush)
 //------------------------------------------------------------------------------
 void DrawList::SetFont(Font* font)
 {
+	font = (font != nullptr) ? font : m_manager->GetFontManager()->GetDefaultFont();
+
 	m_state.state.state.SetFont(font);
 }
 
 //------------------------------------------------------------------------------
 void DrawList::SetBlendMode(BlendMode mode)
 {
-	//m_state.state.state.SetBlendMode(mode);
-	//m_defaultMaterial->SetBlendMode(mode);
-	m_defaultMaterial->blendMode = mode;
+	m_defaultMaterial->SetBlendMode(mode);
 }
 
 //------------------------------------------------------------------------------
@@ -1221,13 +1221,13 @@ void DrawList::SetBlendMode(BlendMode mode)
 //------------------------------------------------------------------------------
 void DrawList::SetDepthTestEnabled(bool enabled)
 {
-	m_defaultMaterial->depthTestEnabled = enabled;
+	m_defaultMaterial->SetDepthTestEnabled(enabled);
 }
 
 //------------------------------------------------------------------------------
 void DrawList::SetDepthWriteEnabled(bool enabled)
 {
-	m_defaultMaterial->depthWriteEnabled = enabled;
+	m_defaultMaterial->SetDepthWriteEnabled(enabled);
 }
 
 //------------------------------------------------------------------------------

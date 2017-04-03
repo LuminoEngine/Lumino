@@ -13,7 +13,7 @@
 #include "../GraphicsManager.h"
 #include "../Device/GraphicsDriverInterface.h"
 #include "FontGlyphTextureCache.h"
-#include "FreeTypeFontTessellator.h"
+#include "FontOutlineTessellator.h"
 
 LN_NAMESPACE_BEGIN
 namespace detail {
@@ -356,7 +356,6 @@ void VectorFontGlyphCache::Initialize(GraphicsManager* manager, RawFont* font, i
 	for (int i = 0; i < maxSize; i++)
 	{
 		m_glyphInfoList[i].idIndex = i;
-		//m_freeIndexStack.Push(i);
 	}
 
 	ResetUsedFlags();

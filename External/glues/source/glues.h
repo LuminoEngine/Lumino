@@ -55,16 +55,19 @@
    #error "Platform is unsupported"
 #endif
 
-#ifndef APIENTRYP
-   #define APIENTRYP APIENTRY *
-#endif /* APIENTRYP */
+#endif
+
+#if defined(_WIN32)
+	#include <Windows.h>
 #endif
 
 
-
-
-#define APIENTRY
-#define APIENTRYP
+#ifndef APIENTRY
+	#define APIENTRY
+#endif /* APIENTRYP */
+#ifndef APIENTRYP
+   #define APIENTRYP APIENTRY *
+#endif /* APIENTRYP */
 #define GLAPI
 typedef unsigned char GLboolean;
 typedef unsigned char GLubyte;

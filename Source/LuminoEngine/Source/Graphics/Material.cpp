@@ -198,6 +198,34 @@ void Material::SetColorParameter(const StringRef& name, float r, float g, float 
 	SetColorParameter(name, Color(r, g, b, a));
 }
 
+//------------------------------------------------------------------------------
+void Material::SetBlendMode(BlendMode mode)
+{
+	blendMode = mode;
+	m_revisionCount++;
+}
+
+//------------------------------------------------------------------------------
+void Material::SetCullingMode(CullingMode mode)
+{
+	cullingMode = mode;
+	m_revisionCount++;
+}
+
+//------------------------------------------------------------------------------
+void Material::SetDepthTestEnabled(bool enabled)
+{
+	depthTestEnabled = enabled;
+	m_revisionCount++;
+}
+
+//------------------------------------------------------------------------------
+void Material::SetDepthWriteEnabled(bool enabled)
+{
+	depthWriteEnabled = enabled;
+	m_revisionCount++;
+}
+
 ////------------------------------------------------------------------------------
 //void Material::SetBlendMode(BlendMode mode)
 //{
@@ -468,10 +496,10 @@ void CombinedMaterial::Combine(Material* parent, Material* owner, Material* owne
 		m_tone = source1->GetTone();
 		CopyUserValueTable(source1);
 		// TODO
-		m_blendMode = source1->blendMode;
-		m_cullingMode = source1->cullingMode;
-		m_depthTestEnabled = source1->depthTestEnabled;
-		m_depthWriteEnabled = source1->depthWriteEnabled;
+		m_blendMode = source1->GetBlendMode();
+		m_cullingMode = source1->GetCullingMode();
+		m_depthTestEnabled = source1->IsDepthTestEnabled();
+		m_depthWriteEnabled = source1->IsDepthWriteEnabled();
 
 		// source2 (base があるなら owner を後からマージ)
 		if (source2 != nullptr)

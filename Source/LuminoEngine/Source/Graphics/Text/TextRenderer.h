@@ -102,7 +102,6 @@ public:
 
 	void SetTransform(const Matrix& matrix);
 	void SetViewInfo(const Matrix& viewProj, const SizeI& viewPixelSize);
-	void SetState(Font* font, Brush* fillBrush);
 
 	void DrawGlyphRun(const Matrix& transform, const PointI& position, GlyphRun* glyphRun);
 	void DrawGlyphRun(const Matrix& transform, const PointF& position, GlyphRun* glyphRun);	// SetFont 無視

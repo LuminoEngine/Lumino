@@ -93,29 +93,6 @@ private:
 
 
 
-
-
-
-//template<typename T>
-//class FixedCache
-//{
-//public:
-//	
-//
-//private:
-//	std::unordered_map<char32_t, int>	m_glyphInfoIndexMap;
-//};
-
-
-//struct VectorFontOutline
-//{
-//	int	startIndex = 0;
-//	int	vertexCount = 0;
-//};
-//
-//
-
-
 class VectorFontGlyphCache
 	: public RefObject
 {
@@ -147,12 +124,6 @@ private:
 		int idIndex;
 	};
 
-	//struct GryphBufferData
-	//{
-	//	List<Vector3>	vertices;
-	//	List<uint16_t>	indices;
-	//};
-
 	GraphicsManager*					m_manager;
 	RawFont*							m_font;
 
@@ -160,7 +131,6 @@ private:
 	List<GryphInfo>						m_glyphInfoList;		// fixed instance list
 	std::unordered_map<char32_t, int>	m_glyphInfoIndexMap;
 	int									m_freeIndexCount;
-	//Stack<int>							m_freeIndexStack;
 	LinkedNodeList<GryphInfo>			m_olderInfoList;
 	std::vector<bool>					m_inFlushUsedFlags;		// TODO: List<bool> 1度の Flush 間で、そのインデックスが使われたかどうか
 	int									m_inFlushUsedCount;		// m_inFlushUsedFlags の中の true 数 (最大数に到達したら Flush が必要)

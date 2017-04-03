@@ -71,6 +71,11 @@ bool UIFrameWindow::OnEvent(const PlatformEventArgs& e)
 }
 
 //------------------------------------------------------------------------------
+void UIFrameWindow::OnRenderContents()
+{
+}
+
+//------------------------------------------------------------------------------
 void UIFrameWindow::OnPresentRenderingContexts()
 {
 }
@@ -151,7 +156,7 @@ void UIFrameWindow::Initialize_UIRenderer()
 void UIFrameWindow::Render_UIRenderer()
 {
 	m_drawingContext->BeginMakeElements();
-
+	OnRenderContents();
 	UILayoutView::Render(m_drawingContext);
 }
 
@@ -264,13 +269,14 @@ bool UIMainWindow::OnEvent(const PlatformEventArgs& e)
 	return m_mainViewport->DoPlatformEvent(e);
 }
 
-void UIMainWindow::RenderContents()
+void UIMainWindow::OnRenderContents()
 {
 
-	UIFrameWindow::RenderContents();
+	//UIFrameWindow::RenderContents();
 
 	Details::Renderer* renderer = GetManager()->GetGraphicsManager()->GetRenderer();
 	m_mainViewport->Render(GetDrawingContext(), renderer, GetSwapChain()->GetBackBuffer()->GetSize());
+
 }
 
 void UIMainWindow::OnPresentRenderingContexts()

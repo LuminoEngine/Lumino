@@ -241,22 +241,6 @@ void TextRenderer::SetViewInfo(const Matrix& viewProj, const SizeI& viewPixelSiz
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::SetState(Font* font, Brush* fillBrush)
-{
-	RawFont* rawFont = (font != nullptr) ? font->ResolveRawFont() : nullptr;
-	if (m_font != rawFont)
-	{
-		m_font = rawFont;
-		m_stateModified = true;
-	}
-	if (m_fillBrush != fillBrush)
-	{
-		m_fillBrush = fillBrush;
-		m_stateModified = true;
-	}
-}
-
-//------------------------------------------------------------------------------
 void TextRenderer::DrawGlyphRun(const Matrix& transform, const PointI& position, GlyphRun* glyphRun)
 {
 	DrawGlyphRun(transform, PointF((float)position.x, (float)position.y), glyphRun);
@@ -370,7 +354,25 @@ void TextRenderer::OnSetState(const DrawElementBatch* state)
 {
 	if (state != nullptr)
 	{
-		SetState(state->state.GetFont(), state->state.GetBrush());
+		Font* font = state->state.GetFont();
+		LN_ASSERT(font != nullptr);
+
+		RawFont* rawFont = font->ResolveRawFont();
+		if (m_font != rawFont)
+		{
+			m_font = rawFont;
+
+			// TODO: 必要ないかも？
+			m_stateModified = true;
+		}
+		if (m_fillBrush != state->state.GetBrush())
+		{
+			m_fillBrush = state->state.GetBrush();
+
+			// TODO: 必要ないかも？
+			m_stateModified = true;
+		}
+
 	}
 }
 

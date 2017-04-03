@@ -151,25 +151,25 @@ void VisualNode::SetShader(Shader* shader, int subsetIndex)
 }
 
 //------------------------------------------------------------------------------
-void VisualNode::SetBlendMode(BlendMode mode) { GetMainMaterial()->blendMode = mode; }
+void VisualNode::SetBlendMode(BlendMode mode) { GetMainMaterial()->SetBlendMode(mode); }
 
 //------------------------------------------------------------------------------
 //BlendMode VisualNode::GetBlendMode() const { return GetMainMaterial()->GetBlendMode(); }
 
 //------------------------------------------------------------------------------
-void VisualNode::SetCullingMode(CullingMode mode) { GetMainMaterial()->cullingMode = mode; }
+void VisualNode::SetCullingMode(CullingMode mode) { GetMainMaterial()->SetCullingMode(mode); }
 
 //------------------------------------------------------------------------------
 //CullingMode VisualNode::GetCullingMode() const { return GetMainMaterial()->GetCullingMode(); }
 
 //------------------------------------------------------------------------------
-void VisualNode::SetDepthTestEnabled(bool enabled) { GetMainMaterial()->depthTestEnabled = enabled; }
+void VisualNode::SetDepthTestEnabled(bool enabled) { GetMainMaterial()->SetDepthTestEnabled(enabled); }
 
 //------------------------------------------------------------------------------
 //bool VisualNode::IsDepthTestEnabled() const { return GetMainMaterial()->IsDepthTestEnabled(); }
 
 //------------------------------------------------------------------------------
-void VisualNode::SetDepthWriteEnabled(bool enabled) { GetMainMaterial()->depthWriteEnabled = enabled; }
+void VisualNode::SetDepthWriteEnabled(bool enabled) { GetMainMaterial()->SetDepthWriteEnabled(enabled); }
 
 //------------------------------------------------------------------------------
 //bool VisualNode::IsDepthWriteEnabled() const { return GetMainMaterial()->IsDepthWriteEnabled(); }

@@ -606,47 +606,30 @@ int FreeTypeFont::ftLineToCallback(FT_Vector* to, DecomposingState* state)
 //------------------------------------------------------------------------------
 int FreeTypeFont::ftConicToCallback(FT_Vector* control, FT_Vector* to, DecomposingState* state)
 {
-	enum Coordinates { X, Y };
+	Vector2 toVertex = FTVectorToLNVector(to);
+	Vector2 controlVertex = FTVectorToLNVector(control);
 
-	Vector2 to_vertex = FTVectorToLNVector(to);
-	Vector2 control_vertex = FTVectorToLNVector(control);
+	Vector2 b = state->lastVertex - 2.0f * controlVertex + toVertex;
+	Vector2 c = -2.0f * state->lastVertex + 2.0f * controlVertex;
+	Vector2 d = state->lastVertex;
+	Vector2 f = d;
+	Vector2 df = c * state->delta1 + b * state->delta2;
+	Vector2 d2f = 2.0f * b * state->delta2;
 
-	double b[2], c[2], d[2], f[2], df[2], d2f[2];
-
-	b[X] = state->lastVertex.x - 2 * control_vertex.x + to_vertex.x;
-	b[Y] = state->lastVertex.y - 2 * control_vertex.y + to_vertex.y;
-
-	c[X] = -2 * state->lastVertex.x + 2 * control_vertex.x;
-	c[Y] = -2 * state->lastVertex.y + 2 * control_vertex.y;
-
-	d[X] = state->lastVertex.x;
-	d[Y] = state->lastVertex.y;
-
-	f[X] = d[X];
-	f[Y] = d[Y];
-	df[X] = c[X] * state->delta1 + b[X] * state->delta2;
-	df[Y] = c[Y] * state->delta1 + b[Y] * state->delta2;
-	d2f[X] = 2 * b[X] * state->delta2;
-	d2f[Y] = 2 * b[Y] * state->delta2;
-
-	for (unsigned int i = 0; i < state->tessellationStep - 1; i++)
+	for (int i = 0; i < state->tessellationStep - 1; i++)
 	{
-		f[X] += df[X];
-		f[Y] += df[Y];
+		f += df;
 
-		Vector2 v(f[0], f[1]);
-		v *= state->vectorScale;
+		Vector2 v = f * state->vectorScale;
 		state->vertices->Add(v);
 
-		df[X] += d2f[X];
-		df[Y] += d2f[Y];
+		df += d2f;
 	}
 
-	Vector2 v = FTVectorToLNVector(to);
-	v *= state->vectorScale;
+	Vector2 v = FTVectorToLNVector(to) * state->vectorScale;
 	state->vertices->Add(v);
 
-	state->lastVertex = to_vertex;
+	state->lastVertex = toVertex;
 
 	return 0;
 }
@@ -654,61 +637,34 @@ int FreeTypeFont::ftConicToCallback(FT_Vector* control, FT_Vector* to, Decomposi
 //------------------------------------------------------------------------------
 int FreeTypeFont::ftCubicToCallback(FT_Vector* control1, FT_Vector* control2, FT_Vector* to, DecomposingState* state)
 {
-	enum Coordinates { X, Y };
+	Vector2 toVertex = FTVectorToLNVector(to);
+	Vector2 control1Vertex = FTVectorToLNVector(control1);
+	Vector2 control2Vertex = FTVectorToLNVector(control2);
 
-	Vector2 to_vertex = FTVectorToLNVector(to);
-	Vector2 control1_vertex = FTVectorToLNVector(control1);
-	Vector2 control2_vertex = FTVectorToLNVector(control2);
+	Vector2 a = -state->lastVertex + 3.0f * control1Vertex - 3.0f * control2Vertex + toVertex;
+	Vector2 b = 3.0f * state->lastVertex - 6.0f * control1Vertex + 3.0f * control2Vertex;
+	Vector2 c = -3.0f * state->lastVertex + 3.0f * control1Vertex;
+	Vector2 d = state->lastVertex;
+	Vector2 f = d;
+	Vector2 df = c * state->delta1 + b * state->delta2 + a * state->delta3;
+	Vector2 d2f = 2.0f * b * state->delta2 + 6.0f * a * state->delta3;
+	Vector2 d3f = 6.0f * a * state->delta3;
 
-	double a[2], b[2], c[2], d[2], f[2], df[2], d2f[2], d3f[2];
-
-	a[X] = -state->lastVertex.x + 3 * control1_vertex.x
-		- 3 * control2_vertex.x + to_vertex.x;
-	a[Y] = -state->lastVertex.y + 3 * control1_vertex.y
-		- 3 * control2_vertex.y + to_vertex.y;
-
-	b[X] = 3 * state->lastVertex.x - 6 * control1_vertex.x +
-		3 * control2_vertex.x;
-	b[Y] = 3 * state->lastVertex.y - 6 * control1_vertex.y +
-		3 * control2_vertex.y;
-
-	c[X] = -3 * state->lastVertex.x + 3 * control1_vertex.x;
-	c[Y] = -3 * state->lastVertex.y + 3 * control1_vertex.y;
-
-	d[X] = state->lastVertex.x;
-	d[Y] = state->lastVertex.y;
-
-	f[X] = d[X];
-	f[Y] = d[Y];
-	df[X] = c[X] * state->delta1 + b[X] * state->delta2
-		+ a[X] * state->delta3;
-	df[Y] = c[Y] * state->delta1 + b[Y] * state->delta2
-		+ a[Y] * state->delta3;
-	d2f[X] = 2 * b[X] * state->delta2 + 6 * a[X] * state->delta3;
-	d2f[Y] = 2 * b[Y] * state->delta2 + 6 * a[Y] * state->delta3;
-	d3f[X] = 6 * a[X] * state->delta3;
-	d3f[Y] = 6 * a[Y] * state->delta3;
-
-	for (unsigned int i = 0; i < state->tessellationStep - 1; i++)
+	for (int i = 0; i < state->tessellationStep - 1; i++)
 	{
-		f[X] += df[X];
-		f[Y] += df[Y];
+		f += df;
 
-		Vector2 v(f[0], f[1]);
-		v *= state->vectorScale;
+		Vector2 v = f * state->vectorScale;
 		state->vertices->Add(v);
 
-		df[X] += d2f[X];
-		df[Y] += d2f[Y];
-		d2f[X] += d3f[X];
-		d2f[Y] += d3f[Y];
+		df += d2f;
+		d2f += d3f;
 	}
 
-	Vector2 v = FTVectorToLNVector(to);
-	v *= state->vectorScale;
+	Vector2 v = FTVectorToLNVector(to) * state->vectorScale;
 	state->vertices->Add(v);
 
-	state->lastVertex = to_vertex;
+	state->lastVertex = toVertex;
 
 	return 0;
 }

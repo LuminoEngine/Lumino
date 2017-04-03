@@ -582,6 +582,8 @@ void UIElement::UpdateTransformHierarchy(const RectF& parentGlobalRect)
 //------------------------------------------------------------------------------
 void UIElement::Render(DrawList* g)
 {
+	//g->Clear(ClearFlags::Color, Color::White);
+
 	Matrix mat;
 	mat.Translate(m_finalGlobalRect.x, m_finalGlobalRect.y, 0);
 	g->SetTransform(mat);

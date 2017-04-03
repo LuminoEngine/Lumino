@@ -34,6 +34,7 @@ protected:
 	virtual ~UIFrameWindow();
 	void Initialize(detail::UIManager* manager, PlatformWindow* platformWindow, SwapChain* swapChain, UIContext* context);
 	virtual bool OnEvent(const PlatformEventArgs& e) override;
+	virtual void OnRenderContents();
 	virtual void OnPresentRenderingContexts();
 
 LN_INTERNAL_ACCESS:
@@ -86,7 +87,7 @@ LN_INTERNAL_ACCESS:
 	void RenderUI();
 
 	virtual bool OnEvent(const PlatformEventArgs& e) override;
-	virtual void RenderContents() override;
+	virtual void OnRenderContents() override;
 	virtual void PresentRenderingContexts() override;
 
 private:

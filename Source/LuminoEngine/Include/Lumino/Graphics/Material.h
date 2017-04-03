@@ -63,15 +63,19 @@ public:
 	/** @name RenderState */
 	/** @{ */
 
+private:
 	tr::Property<BlendMode>		blendMode;
 	tr::Property<CullingMode>	cullingMode;
 	tr::Property<bool>			depthTestEnabled;
 	tr::Property<bool>			depthWriteEnabled;
 
+public:
 
+	void SetBlendMode(BlendMode mode);
+	BlendMode GetBlendMode() const { return blendMode; }
 
-	//void SetBlendMode(BlendMode mode);
-	//void SetCullingMode(CullingMode mode);
+	void SetCullingMode(CullingMode mode);
+	CullingMode GetCullingMode() const { return cullingMode; }
 
 	/** @} */
 
@@ -79,8 +83,11 @@ public:
 	/** @name DepthStencilState */
 	/** @{ */
 
-	//void SetDepthTestEnabled(bool enabled);
-	//void SetDepthWriteEnabled(bool enabled);
+	void SetDepthTestEnabled(bool enabled);
+	bool IsDepthTestEnabled() const { return depthTestEnabled; }
+
+	void SetDepthWriteEnabled(bool enabled);
+	bool IsDepthWriteEnabled() const { return depthWriteEnabled; }
 
 	/** @} */
 

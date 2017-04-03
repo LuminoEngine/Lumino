@@ -360,8 +360,8 @@ void SceneGraph3D::CreateGridContents()
 	}
 	m_gridPlane->GetMaterial(0)->SetMaterialTexture(gridTex);
 
-	m_gridPlane->GetMaterial(0)->blendMode = BlendMode::Alpha;
-	m_gridPlane->GetMaterial(0)->depthWriteEnabled = false;
+	m_gridPlane->GetMaterial(0)->SetBlendMode(BlendMode::Alpha);
+	m_gridPlane->GetMaterial(0)->SetDepthWriteEnabled(false);
 }
 
 //------------------------------------------------------------------------------

@@ -296,10 +296,10 @@ set(LN_SOURCES_Graphics_Text
 	Source/Graphics/Text/FontGlyphTextureCache.h
 	Source/Graphics/Text/FontManager.cpp
 	Source/Graphics/Text/FontManager.h
+	Source/Graphics/Text/FontOutlineTessellator.cpp
+	Source/Graphics/Text/FontOutlineTessellator.h
 	Source/Graphics/Text/FreeTypeFont.cpp
 	Source/Graphics/Text/FreeTypeFont.h
-	Source/Graphics/Text/FreeTypeFontTessellator.cpp
-	Source/Graphics/Text/FreeTypeFontTessellator.h
 	Source/Graphics/Text/GlyphRun.cpp
 	Source/Graphics/Text/TextLayoutEngine.cpp
 	Source/Graphics/Text/TextLayoutEngine.h
