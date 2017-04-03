@@ -73,7 +73,7 @@ void UIControlsGallery()
 	auto textbox1 = UITextBox::Create();
 	textbox1->SetWidth(300);
 	textbox1->SetHeight(32);
-	//textbox1->SetBackground(Brush::Gray);
+	textbox1->SetBackground(Brush::Gray);
 	textbox1->SetText(_T("Hello, world!"));
 	textbox1->foreground = Brush::Blue;
 	mainWindow->AddChild(textbox1);

@@ -376,27 +376,56 @@ InternalTextElementType LineBreak::GetInternalTextElementType() const
 // VisualTextElement
 //==============================================================================
 
+////------------------------------------------------------------------------------
+//VisualGlyph::VisualGlyph()
+//{
+//}
+//
+////------------------------------------------------------------------------------
+//VisualGlyph::~VisualGlyph()
+//{
+//}
+//
+////------------------------------------------------------------------------------
+//void VisualGlyph::Initialize()
+//{
+//}
+//
+////------------------------------------------------------------------------------
+//void VisualGlyph::Render(DrawList* renderer)
+//{
+//	renderer->SetBrush(Brush::Red);
+//	renderer->DrawRectangle(m_localRect);
+//}
+
+
+//==============================================================================
+// VisualTextFragment
+//==============================================================================
+
 //------------------------------------------------------------------------------
-VisualGlyph::VisualGlyph()
+VisualTextFragment::VisualTextFragment()
 {
 }
 
 //------------------------------------------------------------------------------
-VisualGlyph::~VisualGlyph()
+VisualTextFragment::~VisualTextFragment()
 {
 }
 
 //------------------------------------------------------------------------------
-void VisualGlyph::Initialize()
+void VisualTextFragment::Initialize()
 {
 }
 
 //------------------------------------------------------------------------------
-void VisualGlyph::Render(DrawList* renderer)
+void VisualTextFragment::Render(DrawList* renderer)
 {
 	renderer->SetBrush(Brush::Red);
-	renderer->DrawRectangle(m_localRect);
+	//renderer->DrawRectangle(m_localRect);
+	renderer->DrawGlyphRun(PointF(), m_glyphRun);
 }
+
 
 //==============================================================================
 // VisualTextElement
@@ -441,39 +470,43 @@ void VisualInline::Initialize(Inline* inl)
 void VisualInline::MeasureLayout(const Size& availableSize, VisualBlock* rootBlock)
 {
 	// update this
+	// Block 下の Inline のうち1つでも変更があれば、Block 下の全ての Inline は再更新が必要になる
 	if (GetThisRevision() != m_inline->GetThisRevision())
 	{
 		// Model が Run なら GlyphRun を作っておく
 		if (m_inline->GetInternalTextElementType() == InternalTextElementType::TextRun)
 		{
-			if (m_glyphRun == nullptr)
+			//if (m_glyphRun == nullptr)
 			{
-				m_glyphRun = RefPtr<GlyphRun>::MakeRef();
-				m_glyphRun->Initialize(ln::detail::EngineDomain::GetGraphicsManager());
+				auto frag = NewObject<VisualTextFragment>();	// TODO: キャッシュしたい
+				frag->m_glyphRun = RefPtr<GlyphRun>::MakeRef();
+				frag->m_glyphRun->Initialize(ln::detail::EngineDomain::GetGraphicsManager());
+
+				auto* run = static_cast<Run*>(m_inline.Get());
+				frag->m_glyphRun->SetText(run->GetText(), run->GetLength());
+
+				rootBlock->AddVisualFragment(frag);
 			}
 
-			auto* run = static_cast<Run*>(m_inline.Get());
-			m_glyphRun->SetText(run->GetText(), run->GetLength());
 		}
 
 		SetThisRevision(m_inline->GetThisRevision());
 	}
 
-	// Block 下の Inline のうち1つでも変更があれば、Block 下の全ての Inline は再更新が必要になる
-	if (m_glyphRun != nullptr)
-	{
-		auto& items = m_glyphRun->RequestLayoutItems();
-		for (auto& item : items)
-		{
-			auto g = NewObject<VisualGlyph>();	// TODO: キャッシュしたい
-			g->m_localRect.Set(
-				item.Location.BitmapTopLeftPosition.x,
-				item.Location.BitmapTopLeftPosition.y,
-				item.Location.BitmapSize.width,
-				item.Location.BitmapSize.height);
-			rootBlock->AddVisualGlyph(g);
-		}
-	}
+	//if (m_glyphRun != nullptr)
+	//{
+	//	auto& items = m_glyphRun->RequestLayoutItems();
+	//	for (auto& item : items)
+	//	{
+	//		auto g = NewObject<VisualTextFragment>();	// TODO: キャッシュしたい
+	//		g->m_localRect.Set(
+	//			item.Location.BitmapTopLeftPosition.x,
+	//			item.Location.BitmapTopLeftPosition.y,
+	//			item.Location.BitmapSize.width,
+	//			item.Location.BitmapSize.height);
+	//		rootBlock->AddVisualFragment(g);
+	//	}
+	//}
 
 	// update children
 	if (GetChildrenRevision() != m_inline->GetChildrenRevision())
@@ -567,7 +600,7 @@ void VisualBlock::MeasureLayout(const Size& availableSize)
 	// update children
 	if (GetChildrenRevision() != m_block->GetChildrenRevision())
 	{
-		m_visualGlyphs.Clear();
+		m_visualFragments.Clear();
 
 		for (auto& inl : m_visualInlines)
 		{
@@ -586,7 +619,7 @@ void VisualBlock::ArrangeLayout(const RectF& finalLocalRect)
 //------------------------------------------------------------------------------
 void VisualBlock::Render(DrawList* renderer)
 {
-	for (auto& glyph : m_visualGlyphs)
+	for (auto& glyph : m_visualFragments)
 	{
 		glyph->Render(renderer);
 	}

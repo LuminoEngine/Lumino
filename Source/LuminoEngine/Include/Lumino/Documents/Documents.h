@@ -281,16 +281,43 @@ class VisualBlock;
 
 
 // 1文字分 の Visual 要素
-class VisualGlyph
+//class VisualGlyph
+//	: public Object
+//{
+//public:
+//
+//	RectF	m_localRect;
+//
+//LN_CONSTRUCT_ACCESS:
+//	VisualGlyph();
+//	virtual ~VisualGlyph();
+//	void Initialize();
+//
+//LN_INTERNAL_ACCESS:
+//	//void MeasureLayout(const Size& availableSize);
+//	//void ArrangeLayout(const RectF& finalLocalRect);
+//	//const Size& GetDesiredSize() const { return m_desiredSize; }
+//
+//	void Render(DrawList* renderer);
+//
+//private:
+//	//Size	m_desiredSize;
+//};
+
+
+
+// type : text, image...
+class VisualTextFragment
 	: public Object
 {
 public:
 
 	RectF	m_localRect;
+	RefPtr<GlyphRun>	m_glyphRun;
 
 LN_CONSTRUCT_ACCESS:
-	VisualGlyph();
-	virtual ~VisualGlyph();
+	VisualTextFragment();
+	virtual ~VisualTextFragment();
 	void Initialize();
 
 LN_INTERNAL_ACCESS:
@@ -334,14 +361,13 @@ LN_CONSTRUCT_ACCESS:
 LN_INTERNAL_ACCESS:
 	void MeasureLayout(const Size& availableSize, VisualBlock* rootBlock);
 	//void ArrangeLayout(const RectF& finalLocalRect);
-	//void Render(const Matrix& transform, ln::detail::IDocumentsRenderer* renderer);
+	void Render(const Matrix& transform, ln::detail::IDocumentsRenderer* renderer);
 
 private:
 	RefPtr<Inline>	m_inline;
 
 	//TextElement*	m_element;
 	//int				m_documentLength;	// Document 上での TextLength
-	RefPtr<GlyphRun>	m_glyphRun;
 
 
 };
@@ -365,14 +391,14 @@ LN_INTERNAL_ACCESS:
 	void MeasureLayout(const Size& availableSize);
 	void ArrangeLayout(const RectF& finalLocalRect);
 	void Render(DrawList* renderer);
-	void AddVisualGlyph(VisualGlyph* glyph) { m_visualGlyphs.Add(glyph); }
+	void AddVisualFragment(VisualTextFragment* glyph) { m_visualFragments.Add(glyph); }
 
 private:
 	void RebuildVisualLineList();
 
-	RefPtr<Block>				m_block;
-	List<RefPtr<VisualInline>>	m_visualInlines;
-	List<RefPtr<VisualGlyph>>	m_visualGlyphs;
+	RefPtr<Block>						m_block;
+	List<RefPtr<VisualInline>>			m_visualInlines;
+	List<RefPtr<VisualTextFragment>>	m_visualFragments;
 };
 
 //
