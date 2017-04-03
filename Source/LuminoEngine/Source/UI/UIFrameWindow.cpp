@@ -94,9 +94,10 @@ void UIFrameWindow::PresentRenderingContexts()
 	Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
 	renderer->Begin();
 
-	ExecuteDrawList_UIRenderer();
 
 	OnPresentRenderingContexts();
+
+	ExecuteDrawList_UIRenderer();
 
 	//Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
 
@@ -265,10 +266,11 @@ bool UIMainWindow::OnEvent(const PlatformEventArgs& e)
 
 void UIMainWindow::RenderContents()
 {
-	Details::Renderer* renderer = GetManager()->GetGraphicsManager()->GetRenderer();
-	m_mainViewport->Render(renderer);
 
 	UIFrameWindow::RenderContents();
+
+	Details::Renderer* renderer = GetManager()->GetGraphicsManager()->GetRenderer();
+	m_mainViewport->Render(GetDrawingContext(), renderer, GetSwapChain()->GetBackBuffer()->GetSize());
 }
 
 void UIMainWindow::OnPresentRenderingContexts()
@@ -276,7 +278,10 @@ void UIMainWindow::OnPresentRenderingContexts()
 	UIFrameWindow::OnPresentRenderingContexts();
 
 	Details::Renderer* renderer = GetManager()->GetGraphicsManager()->GetRenderer();
-	m_mainViewport->PresentRenderingContexts(renderer, GetSwapChain()->GetBackBuffer());
+
+	m_mainViewport->PresentRenderingContexts(GetDrawingContext(), renderer, GetSwapChain()->GetBackBuffer());
+
+
 }
 
 void UIMainWindow::PresentRenderingContexts()

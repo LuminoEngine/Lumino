@@ -284,7 +284,7 @@ void CameraViewportLayer::Render()
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer::ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void CameraViewportLayer::ExecuteDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	// TODO: float
 	Size targetSize((float)renderTarget->GetWidth(), (float)renderTarget->GetHeight());
@@ -299,16 +299,28 @@ void CameraViewportLayer::ExecuteDrawListRendering(RenderTargetTexture* renderTa
 	cameraInfo.viewProjMatrix = m_hostingCamera->GetViewProjectionMatrix();
 	cameraInfo.viewFrustum = m_hostingCamera->GetViewFrustum();
 	cameraInfo.zSortDistanceBase = m_hostingCamera->GetZSortDistanceBase();
-	m_internalRenderer->Render(
+	parentDrawList->RenderSubDrawList(
 		m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->GetDrawElementList(),
 		cameraInfo,
+		m_internalRenderer,
 		renderTarget,
 		depthBuffer);
-	m_internalRenderer->Render(
+	parentDrawList->RenderSubDrawList(
 		m_hostingCamera->GetOwnerSceneGraph()->GetDebugRenderer()->GetDrawElementList(),
 		cameraInfo,
+		m_internalRenderer,
 		renderTarget,
 		depthBuffer);
+	//m_internalRenderer->Render(
+	//	m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->GetDrawElementList(),
+	//	cameraInfo,
+	//	renderTarget,
+	//	depthBuffer);
+	//m_internalRenderer->Render(
+	//	m_hostingCamera->GetOwnerSceneGraph()->GetDebugRenderer()->GetDrawElementList(),
+	//	cameraInfo,
+	//	renderTarget,
+	//	depthBuffer);
 	m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->EndFrame();
 }
 

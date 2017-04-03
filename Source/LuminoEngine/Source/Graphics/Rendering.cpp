@@ -223,11 +223,15 @@ SpriteRenderer* InternalContext::GetSpriteRenderer()
 }
 
 //------------------------------------------------------------------------------
-void InternalContext::SetCurrentStatePtr(const DrawElementBatch* state)
+void InternalContext::ApplyStatus(DrawElementBatch* state, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
 {
 	m_currentStatePtr = state;
+	m_currentStatePtr->ApplyStatus(this, defaultRenderTarget, defaultDepthBuffer);
+
 	if (m_current != nullptr)
+	{
 		m_current->OnSetState(m_currentStatePtr);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -379,6 +383,13 @@ void BatchState::ApplyStatus(InternalContext* context, CombinedMaterial* combine
 	}
 	// FrameBuffer
 	{
+		if (defaultRenderTarget == nullptr && defaultDepthBuffer == nullptr)
+		{
+			// TODO: 子DrawListが実行された後のステート復帰。
+			// もしかしたらオプションにはできないかもしれない。
+			return;
+		}
+
 		for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
 		{
 			if (i == 0 && m_renderTargets[i] == nullptr)
@@ -705,6 +716,9 @@ void InternalRenderer::Render(
 	RenderTargetTexture* defaultRenderTarget,
 	DepthBuffer* defaultDepthBuffer)
 {
+	elementList->SetDefaultRenderTarget(defaultRenderTarget);
+	elementList->SetDefaultDepthBuffer(defaultDepthBuffer);
+
 	OnPreRender(elementList);
 
 	InternalContext* context = m_manager->GetInternalContext();
@@ -785,8 +799,7 @@ void InternalRenderer::Render(
 				context->Flush();
 				currentBatchIndex = element->batchIndex;
 				currentState = elementList->GetBatch(currentBatchIndex);
-				currentState->ApplyStatus(context, defaultRenderTarget, defaultDepthBuffer);
-				context->SetCurrentStatePtr(currentState);
+				context->ApplyStatus(currentState, defaultRenderTarget, defaultDepthBuffer);
 			}
 
 			// 固定の内部シェーダを使わない場合はいろいろ設定する
@@ -1851,6 +1864,36 @@ void DrawList::DrawFrameRectangle(const RectF& rect)
 	auto* ptr = ResolveDrawElement<DrawElement_DrawFrameRectangle>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_frameRectRenderer, nullptr);
 	ptr->rect = rect;
 	// TODO: カリング
+}
+
+//------------------------------------------------------------------------------
+void DrawList::RenderSubDrawList(detail::DrawElementList* elementList, const detail::CameraInfo& cameraInfo, detail::InternalRenderer* renderer, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
+{
+	class DrawElement_RenderSubDrawList : public detail::DrawElement
+	{
+	public:
+		detail::DrawElementList* elementList;
+		detail::CameraInfo cameraInfo;
+		detail::InternalRenderer* renderer;
+		RefPtr<RenderTargetTexture>	defaultRenderTarget;
+		RefPtr<DepthBuffer> defaultDepthBuffer;
+
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		{
+			// TODO: scoped change block
+			auto* status = context->GetCurrentStatus();
+
+			renderer->Render(elementList, cameraInfo, defaultRenderTarget, defaultDepthBuffer);
+
+			context->ApplyStatus(status, oenerList->GetDefaultRenderTarget(), oenerList->GetDefaultDepthBuffer());
+		}
+	};
+	auto* e = ResolveDrawElement<DrawElement_RenderSubDrawList>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_frameRectRenderer, nullptr);
+	e->elementList = elementList;
+	e->cameraInfo = cameraInfo;
+	e->renderer = renderer;
+	e->defaultRenderTarget = defaultRenderTarget;
+	e->defaultDepthBuffer = defaultDepthBuffer;
 }
 
 LN_NAMESPACE_END

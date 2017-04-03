@@ -153,7 +153,7 @@ public:
 	// ViewportLayer interface
 	//virtual DrawList* GetRenderer() override;
 	virtual void Render() override;
-	virtual void ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	virtual void ExecuteDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 
 protected:
 	// ViewportLayer interface

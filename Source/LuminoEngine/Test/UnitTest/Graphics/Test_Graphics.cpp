@@ -557,7 +557,7 @@ TEST_F(Test_Graphics_DrawingContext, DrawText_)
 	{
 		LN_TEST_BEGIN_FRAME;
 		Engine::RenderFrame();
-		auto* dc = Engine::GetDefaultSceneGraph2D()->GetRenderer();
+		auto* dc = Engine::GetMainWindow()->GetDrawingContext();
 		dc->Clear(ClearFlags::Color, Color::White);
 		dc->SetBrush(Brush::Gray);
 		//dc->SetFont(f);

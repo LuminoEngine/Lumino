@@ -63,7 +63,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	/// 後描画
 	void PostRender(DrawList* context, RefPtr<RenderTargetTexture>* primaryLayerTarget, RefPtr<RenderTargetTexture>* secondaryLayerTarget);
 
-	virtual void ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
+	virtual void ExecuteDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
 
 private:
 	Viewport*					m_owner;
@@ -113,8 +113,8 @@ LN_INTERNAL_ACCESS:	// TODO: いまはとりあえず内部用途
 	// call from UIFrameWindow
 	void UpdateLayersTransform(const Size& viewSize);
 	bool DoPlatformEvent(const PlatformEventArgs& e);
-	void Render(Details::Renderer* renderer);
-	void PresentRenderingContexts(Details::Renderer* renderer, RenderTargetTexture* renderTarget);
+	void Render(DrawList* parentDrawList, Details::Renderer* renderer, const SizeI& targetSize);
+	void PresentRenderingContexts(DrawList* parentDrawList, Details::Renderer* renderer, RenderTargetTexture* renderTarget);
 
 private:
 	void TryRemakeLayerTargets(const SizeI& ownerViewPixelSize);

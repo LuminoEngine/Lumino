@@ -76,6 +76,8 @@ struct CameraInfo
 	Matrix		viewProjMatrix;
 	ViewFrustum	viewFrustum;
 	ZSortDistanceBase	zSortDistanceBase;
+
+	// POD
 };
 
 // 描画要素単位のデータに関する情報

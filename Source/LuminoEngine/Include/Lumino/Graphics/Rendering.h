@@ -106,7 +106,8 @@ public:
 	FrameRectRenderer* BeginFrameRectRenderer();
 
 	void SetViewInfo(const Size& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix);
-	void SetCurrentStatePtr(const DrawElementBatch* state);
+	void ApplyStatus(DrawElementBatch* state, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
+	DrawElementBatch* GetCurrentStatus() const { return m_currentStatePtr; }
 	detail::SpriteRenderer* GetSpriteRenderer();
 
 	void Flush();
@@ -124,7 +125,7 @@ private:
 	RefPtr<VectorTextRenderer>	m_vectorTextRenderer;
 	RefPtr<NanoVGRenderer>		m_nanoVGRenderer;
 	RefPtr<FrameRectRenderer>	m_frameRectRenderer;
-	const DrawElementBatch*		m_currentStatePtr;
+	DrawElementBatch*			m_currentStatePtr;
 
 	friend class ::ln::DrawList;
 };
@@ -298,6 +299,13 @@ public:
 	void AddDynamicLightInfo(DynamicLightInfo* lightInfo);
 	const List<RefPtr<DynamicLightInfo>>& GetDynamicLightList() const { return m_dynamicLightList; }
 
+
+	// default settings
+	void SetDefaultRenderTarget(RenderTargetTexture* value) { m_defaultRenderTarget = value; }
+	RenderTargetTexture* GetDefaultRenderTarget() const { return m_defaultRenderTarget; }
+	void SetDefaultDepthBuffer(DepthBuffer* value) { m_depthBuffer = value; }
+	DepthBuffer* GetDefaultDepthBuffer() const { return m_depthBuffer; }
+
 private:
 	void PostAddCommandInternal(const BatchState& state, Material* availableMaterial, const Matrix& transform, DrawElement* element);
 
@@ -307,6 +315,9 @@ private:
 
 	detail::CombinedMaterialCache	m_combinedMaterialCache;
 	List<RefPtr<DynamicLightInfo>>	m_dynamicLightList;
+
+	RefPtr<RenderTargetTexture>		m_defaultRenderTarget;
+	RefPtr<DepthBuffer>				m_depthBuffer;
 };
 
 
@@ -600,6 +611,7 @@ LN_INTERNAL_ACCESS:
 	void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material);
 	void BlitInternal(Texture* source, RenderTargetTexture* dest, const Matrix& transform, Material* material);
 	void DrawFrameRectangle(const RectF& rect);
+	void RenderSubDrawList(detail::DrawElementList* elementList, const detail::CameraInfo& cameraInfo, detail::InternalRenderer* renderer, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
 
 	// TODO: 本質的に DrawList に持たせるべきではない。一応今は一時変数的な扱いでしかないので被害は少ないが・・・
 	void SetCurrentCamera(Camera* camera) { m_camera = camera; }

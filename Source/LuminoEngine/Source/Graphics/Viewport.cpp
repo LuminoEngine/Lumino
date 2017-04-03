@@ -148,12 +148,8 @@ void ViewportLayer::PostRender(DrawList* context, RefPtr<RenderTargetTexture>* p
 }
 
 //------------------------------------------------------------------------------
-void ViewportLayer::ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void ViewportLayer::ExecuteDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
-	//for (detail::RenderingPass2* pass : m_renderingPasses)
-	//{
-	//	OnRenderDrawElementList(renderTarget, depthBuffer, pass);
-	//}
 }
 
 //------------------------------------------------------------------------------
@@ -276,7 +272,7 @@ bool Viewport::DoPlatformEvent(const PlatformEventArgs& e)
 }
 
 //------------------------------------------------------------------------------
-void Viewport::Render(Details::Renderer* renderer)
+void Viewport::Render(DrawList* parentDrawList, Details::Renderer* renderer, const SizeI& targetSize)
 {
 	renderer->SetRenderTarget(0, m_primaryLayerTarget);
 	renderer->SetDepthBuffer(m_depthBuffer);
@@ -290,30 +286,39 @@ void Viewport::Render(Details::Renderer* renderer)
 	{
 		layer->Render();
 	}
-}
 
-//------------------------------------------------------------------------------
-void Viewport::PresentRenderingContexts(Details::Renderer* renderer, RenderTargetTexture* renderTarget)
-{
+
 	// 全てのレイヤーの描画リストを実行し m_primaryLayerTarget へ書き込む
 	for (ViewportLayer* layer : *m_viewportLayerList)
 	{
-		layer->ExecuteDrawListRendering(m_primaryLayerTarget, m_depthBuffer);
-		
-		BeginBlitRenderer();
-		layer->PostRender(m_renderer, &m_primaryLayerTarget, &m_secondaryLayerTarget);
-		FlushBlitRenderer(renderTarget);
+		layer->ExecuteDrawListRendering(parentDrawList, m_primaryLayerTarget, m_depthBuffer);
+
+		// TODO: Posteffect
+		//BeginBlitRenderer();
+		//layer->PostRender(m_renderer, &m_primaryLayerTarget, &m_secondaryLayerTarget);
+		//FlushBlitRenderer(renderTarget);
 	}
+
 
 	Matrix viewBoxTransform = Matrix::Identity;
 	if (m_placement == ViewportPlacement::ViewBox)
 	{
-		MakeViewBoxTransform(renderTarget->GetSize(), m_primaryLayerTarget->GetSize(), &viewBoxTransform);
+		MakeViewBoxTransform(targetSize, m_primaryLayerTarget->GetSize(), &viewBoxTransform);
 	}
 
-	BeginBlitRenderer();
-	m_renderer->Blit(m_primaryLayerTarget, viewBoxTransform);
-	FlushBlitRenderer(renderTarget);
+	//BeginBlitRenderer();
+	//m_renderer->Blit(m_primaryLayerTarget, viewBoxTransform);
+	//FlushBlitRenderer(renderTarget);
+
+	parentDrawList->Blit(m_primaryLayerTarget, viewBoxTransform);
+
+
+
+}
+
+//------------------------------------------------------------------------------
+void Viewport::PresentRenderingContexts(DrawList* parentDrawList, Details::Renderer* renderer, RenderTargetTexture* renderTarget)
+{
 
 	TryRemakeLayerTargets(SizeI(m_size.width, m_size.height));
 }
