@@ -5,7 +5,97 @@
 #include <Lumino/UI/UITextBox.h>
 #include "UIManager.h"
 
+#include "../Graphics/GraphicsManager.h"
+#include "../Graphics/Text/FontManager.h"
+
 LN_NAMESPACE_BEGIN
+
+class UITextDocumentLine
+	//: public tr::DocumentContentElement
+	: public Object
+{
+
+};
+
+class UITextDocument
+	: public tr::DocumentContentElement
+{
+public:
+	void UITextDocument::Replace(int offset, int length, const StringRef& text);
+
+LN_CONSTRUCT_ACCESS:
+	UITextDocument();
+	virtual ~UITextDocument();
+	void Initialize();
+
+private:
+	void ReplaceInternal(int offset, int length, const UTF32* text, int len);
+
+	detail::UIManager*					m_manager;
+	List<RefPtr<UITextDocumentLine>>	m_lines;
+};
+
+
+//class UITextVisualElement
+//	: public Object
+//{
+//
+//};
+
+class UITextVisualLine
+	: public Object
+{
+
+private:
+	int		m_revision;
+};
+
+
+
+class UITextArea	// TODO: AvalonDock “I‚É‚Í "View"
+	: public Object
+{
+
+private:
+	RefPtr<UITextDocument>			m_document;
+	List<RefPtr<UITextVisualLine>>	m_visualLines;
+	int								m_revision;
+};
+
+//==============================================================================
+// UITextDocument
+//==============================================================================
+
+//------------------------------------------------------------------------------
+UITextDocument::UITextDocument()
+{
+}
+
+//------------------------------------------------------------------------------
+UITextDocument::~UITextDocument()
+{
+}
+
+//------------------------------------------------------------------------------
+void UITextDocument::Initialize()
+{
+	m_manager = detail::EngineDomain::GetUIManager();
+}
+
+//------------------------------------------------------------------------------
+void UITextDocument::Replace(int offset, int length, const StringRef& text)
+{
+	// UTF32 ‚Ö•ÏŠ·
+	const ByteBuffer& utf32Buf = m_manager->GetGraphicsManager()->GetFontManager()->GetTCharToUTF32Converter()->Convert(text.GetBegin(), sizeof(TCHAR) * text.GetLength());
+	int len = utf32Buf.GetSize() / sizeof(UTF32);
+	ReplaceInternal(offset, length, (const UTF32*)utf32Buf.GetConstData(), len);
+}
+
+//------------------------------------------------------------------------------
+void UITextDocument::ReplaceInternal(int offset, int length, const UTF32* text, int len)
+{
+
+}
 
 //==============================================================================
 // UITextBox
