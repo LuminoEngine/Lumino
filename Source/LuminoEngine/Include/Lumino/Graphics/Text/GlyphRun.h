@@ -38,6 +38,7 @@ public:
 LN_INTERNAL_ACCESS:
 	GlyphRun();
 	virtual ~GlyphRun();
+	void Initialize();
 	void Initialize(detail::GraphicsManager* manager);
 	const List<TextLayoutResultItem>& RequestLayoutItems();
 	detail::FontGlyphTextureCache* LookupFontGlyphTextureCache();

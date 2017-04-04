@@ -234,7 +234,10 @@ void UIElement::OnRender(DrawList* g)
 
 //------------------------------------------------------------------------------
 void UIElement::OnMouseMove(UIMouseEventArgs* e) { }
-void UIElement::OnMouseDown(UIMouseEventArgs* e) { }
+void UIElement::OnMouseDown(UIMouseEventArgs* e)
+{
+	Focus();
+}
 void UIElement::OnMouseUp(UIMouseEventArgs* e) { }
 void UIElement::OnKeyDown(UIKeyEventArgs* e) { }
 void UIElement::OnKeyUp(UIKeyEventArgs* e) { }

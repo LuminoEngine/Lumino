@@ -7,6 +7,7 @@ namespace tr { class Document; }
 namespace tr { class DocumentView; }
 class UITextBox;
 using UITextBoxPtr = RefPtr<UITextBox>;
+class UITextArea;
 
 /**
 	@brief		
@@ -22,6 +23,10 @@ public:
 public:
 	void SetText(const StringRef& text);
 
+	virtual bool IsFocusable() const;
+
+protected:
+	virtual void OnTextInput(UIKeyEventArgs* e);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	UITextBox();
@@ -33,8 +38,9 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual void OnRender(DrawList* g) override;
 
 private:
-	RefPtr<tr::Document>		m_document;
-	RefPtr<tr::DocumentView>	m_documentView;
+	//RefPtr<tr::Document>		m_document;
+	//RefPtr<tr::DocumentView>	m_documentView;
+	RefPtr<UITextArea>			m_textArea;
 };
 
 LN_NAMESPACE_END

@@ -33,6 +33,12 @@ GlyphRun::~GlyphRun()
 }
 
 //------------------------------------------------------------------------------
+void GlyphRun::Initialize()
+{
+	Initialize(detail::EngineDomain::GetGraphicsManager());
+}
+
+//------------------------------------------------------------------------------
 void GlyphRun::Initialize(detail::GraphicsManager* manager)
 {
 	if (LN_CHECK_ARG(manager != nullptr)) return;
