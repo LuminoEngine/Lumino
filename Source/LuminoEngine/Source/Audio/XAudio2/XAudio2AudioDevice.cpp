@@ -75,28 +75,28 @@ bool XAudio2AudioDevice::Initialize(/* const ConfigData& configData */)
 		return false;
 	}
 
-	Logger::WriteLine("get XAudio2AudioDevice information...");
+	ln::Logger::WriteLine("get XAudio2AudioDevice information...");
 
 	// デバイス詳細情報の確認
 	XAUDIO2_DEVICE_DETAILS details;
 	hr = m_XAudio->GetDeviceDetails(0, &details);
 	if (SUCCEEDED(hr))
 	{
-		Logger::WriteLine(L"    DeviceID    : %s", details.DeviceID);
-		Logger::WriteLine(L"    DisplayName : %s", details.DisplayName);
-		Logger::WriteLine(L"    Role        : %d", details.Role);
-		Logger::WriteLine(L"    OutputFormat ( WAVEFORMATEX )");
-		Logger::WriteLine("        Format ID       : %hu", details.OutputFormat.Format.wFormatTag);
-		Logger::WriteLine("        Channels        : %hu", details.OutputFormat.Format.nChannels);
-		Logger::WriteLine("        SamplesPerSec   : %lu", details.OutputFormat.Format.nSamplesPerSec);
-		Logger::WriteLine("        AvgBytesPerSec  : %lu", details.OutputFormat.Format.nAvgBytesPerSec);
-		Logger::WriteLine("        BlockAlign      : %hu", details.OutputFormat.Format.nBlockAlign);
-		Logger::WriteLine("        BitsPerSample   : %hu", details.OutputFormat.Format.wBitsPerSample);
-		Logger::WriteLine("        ExtraSize       : %hu", details.OutputFormat.Format.cbSize);
+		ln::Logger::WriteLine(L"    DeviceID    : %s", details.DeviceID);
+		ln::Logger::WriteLine(L"    DisplayName : %s", details.DisplayName);
+		ln::Logger::WriteLine(L"    Role        : %d", details.Role);
+		ln::Logger::WriteLine(L"    OutputFormat ( WAVEFORMATEX )");
+		ln::Logger::WriteLine("        Format ID       : %hu", details.OutputFormat.Format.wFormatTag);
+		ln::Logger::WriteLine("        Channels        : %hu", details.OutputFormat.Format.nChannels);
+		ln::Logger::WriteLine("        SamplesPerSec   : %lu", details.OutputFormat.Format.nSamplesPerSec);
+		ln::Logger::WriteLine("        AvgBytesPerSec  : %lu", details.OutputFormat.Format.nAvgBytesPerSec);
+		ln::Logger::WriteLine("        BlockAlign      : %hu", details.OutputFormat.Format.nBlockAlign);
+		ln::Logger::WriteLine("        BitsPerSample   : %hu", details.OutputFormat.Format.wBitsPerSample);
+		ln::Logger::WriteLine("        ExtraSize       : %hu", details.OutputFormat.Format.cbSize);
     }
     else
     {
-		Logger::WriteLine("failed to get information.");
+		ln::Logger::WriteLine("failed to get information.");
     }
 
     // チャンネル数記憶

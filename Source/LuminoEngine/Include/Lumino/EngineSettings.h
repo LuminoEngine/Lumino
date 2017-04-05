@@ -45,6 +45,9 @@ public:
 #ifdef LN_OS_WIN32
 	/** ユーザー指定のメインウィンドウのウィンドウハンドルを設定します。*/
 	static void SetUserWindowHandle(intptr_t hWnd);
+
+	/** 既に作成済みの IDirect3DDevice9 インターフェイスを利用する場合、そのポインタを指定します。*/
+	static void SetD3D9Device(void* device);
 #endif
 };
 

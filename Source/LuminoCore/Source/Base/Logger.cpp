@@ -437,4 +437,109 @@ void Logger::WriteLine(const wchar_t* format, ...) throw()
 
 }
 
+
+
+
+
+
+
+
+
+
+namespace detail {
+
+//==============================================================================
+// LogRecord
+//==============================================================================
+//------------------------------------------------------------------------------
+LogRecord::LogRecord(LogLevel level, const char* file, const char* func, int line)
+	: m_level(level)
+	, m_file(file)
+	, m_func(func)
+	, m_line(line)
+	, m_threadId(Thread::GetCurrentThreadId())
+{
+	LogHelper::GetTime(&m_time);
+}
+
+//------------------------------------------------------------------------------
+LogRecord& LogRecord::operator<<(const wchar_t* str)
+{
+	StringA s = StringA::FromNativeCharString(str);
+	m_message << s.c_str();
+	return *this;
+}
+
+//==============================================================================
+// Logger
+//==============================================================================
+static Logger g_logger;
+static bool g_logEnabled = true;
+static std::string g_logFilePath = "LuminoLog.txt";
+static LogLevel g_maxLevel = LogLevel::Info;
+
+//------------------------------------------------------------------------------
+static const char* GetLogLevelString(LogLevel level)
+{
+	switch (level)
+	{
+	case LogLevel::Fatal:
+		return "Fatal";
+	case LogLevel::Error:
+		return "Error";
+	case LogLevel::Warning:
+		return "Warning";
+	case LogLevel::Info:
+		return "Info";
+	case LogLevel::Debug:
+		return "Debug";
+	case LogLevel::Verbose:
+		return "Verbose";
+	default:
+		return "";
+	}
+}
+
+//------------------------------------------------------------------------------
+Logger* Logger::GetInstance()
+{
+	if (!g_logEnabled) return nullptr;
+	return &g_logger;
+}
+
+//------------------------------------------------------------------------------
+bool Logger::CheckLevel(LogLevel level)
+{
+	return level <= g_maxLevel;
+}
+
+//------------------------------------------------------------------------------
+void Logger::operator+=(const LogRecord& record)
+{
+	if (!g_logFile.IsOpend())
+	{
+		g_logFile.Open(g_logFilePath.c_str());
+	}
+
+	tm t;
+	char date[64];
+	LogHelper::GetLocalTime(&t, &record.GetTime().time);
+	strftime(date, sizeof(date), "%Y/%m/%d %H:%M:%S", &t);
+
+	g_logSS.str("");							// バッファをクリアする。
+	g_logSS.clear(std::stringstream::goodbit);	// ストリームの状態をクリアする。この行がないと意図通りに動作しない
+	g_logSS << date << " ";
+	g_logSS << std::setw(5) << std::left << GetLogLevelString(record.GetLevel()) << " ";
+	g_logSS << "[" << record.GetThreadId() << "]";
+	g_logSS << "[" << record.GetFunc() << "(" << record.GetLine() << ")] ";
+	g_logSS << record.GetMessage() << std::endl;
+
+	auto str = g_logSS.str();
+	g_logFile.Write(str.c_str(), str.length());
+}
+
+
+} // namespace detail
+
+
 LN_NAMESPACE_END

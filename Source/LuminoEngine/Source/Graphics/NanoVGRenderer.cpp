@@ -202,7 +202,7 @@ static int glnvg__maxi(int a, int b)
 
 static void glnvg__checkError(GLNVGcontext* gl, const char* str)
 {
-	LN_LOG_WARNING(str);
+	LN_LOG_WARNING << str;
 }
 
 static GLNVGcall* glnvg__allocCall(GLNVGcontext* gl)

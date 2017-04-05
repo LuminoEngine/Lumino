@@ -105,6 +105,12 @@ void EngineSettings::SetUserWindowHandle(intptr_t hWnd)	// Qt とかは windows.
 	detail::EngineSettings::instance.userMainWindow = hWnd;
 }
 
+//------------------------------------------------------------------------------
+void EngineSettings::SetD3D9Device(void* device)
+{
+	detail::EngineSettings::instance.D3D9Device = device;
+}
+
 //==============================================================================
 // EngineManager
 //==============================================================================
@@ -286,6 +292,8 @@ void EngineManager::InitializeCommon()
 			Logger::Initialize(LogFileName);
 			//Logger2::Initialize("log.txt");
 			//LN_LOG_INFO("Lumino 1.0.0");
+			LN_LOG_INFO << "Lumino 1.0.0";
+			LN_LOG_INFO << L"Lumino 1.0.0";
 		}
 		m_commonInitied = true;
 	}

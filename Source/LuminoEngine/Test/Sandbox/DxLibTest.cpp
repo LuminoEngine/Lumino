@@ -1,10 +1,10 @@
-
+ï»¿
 #include "DxLib.h"
 #include <d3d9.h>
 
 #include <LuminoEngine.h>
 //#include <LuminoDxLib.h>
-//using namespace ln;
+using namespace ln;
 
 int PlayerX, PlayerY;
 int PlayerGraph;
@@ -76,45 +76,44 @@ int DxLibMain()
 #ifdef _WIN32
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
-	// DX ƒ‰ƒCƒuƒ‰ƒŠ‚Ì‰Šú‰»
+	// DX ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®åˆæœŸåŒ–
 	bool isFullScreen = false;
 	ChangeWindowMode(TRUE);
 	SetDrawScreen(DX_SCREEN_BACK);
 	//SetUseDirect3D9Ex(FALSE);
-	SetUseDirect3DVersion(DX_DIRECT3D_9);	// DirectX9‚ğg—p‚·‚é‚æ‚¤‚É‚·‚éB
+	SetUseDirect3DVersion(DX_DIRECT3D_9);	// DirectX9ã‚’ä½¿ç”¨ã™ã‚‹ã‚ˆã†ã«ã™ã‚‹ã€‚
 	if (DxLib_Init() == -1 || SetDrawScreen(DX_SCREEN_BACK)) return -1;
 
-	// ƒtƒ‹ƒXƒNƒŠ[ƒ“ƒEƒCƒ“ƒhƒE‚ÌØ‚è‘Ö‚¦‚ÅƒŠƒ\[ƒX‚ªÁ‚¦‚é‚Ì‚ğ–h‚®B
+	// ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã‚¦ã‚¤ãƒ³ãƒ‰ã‚¦ã®åˆ‡ã‚Šæ›¿ãˆã§ãƒªã‚½ãƒ¼ã‚¹ãŒæ¶ˆãˆã‚‹ã®ã‚’é˜²ãã€‚
 	SetChangeScreenModeGraphicsSystemResetFlag(FALSE);
 
-	// Zƒoƒbƒtƒ@‚ğ—LŒø‚É‚·‚éB
+	// Zãƒãƒƒãƒ•ã‚¡ã‚’æœ‰åŠ¹ã«ã™ã‚‹ã€‚
 	SetUseZBuffer3D(TRUE);
 
-	// Zƒoƒbƒtƒ@‚Ö‚Ì‘‚«‚İ‚ğ—LŒø‚É‚·‚éB
+	// Zãƒãƒƒãƒ•ã‚¡ã¸ã®æ›¸ãè¾¼ã¿ã‚’æœ‰åŠ¹ã«ã™ã‚‹ã€‚
 	SetWriteZBuffer3D(TRUE);
 
 	SetHookWinProc(HookDxLibMessage);
 
 	//printf("%p\n", GetUseDirect3DDevice9());
 
-	// Lumino ‰Šú‰»
-	//ApplicationSettings appData;
-	//appData.GraphicsAPI = GraphicsAPI::DirectX9;
-	//appData.RenderingType = RenderingType::Immediate;
-	//appData.UserMainWindow = GetMainWindowHandle();
-	//appData.D3D9Device = (IDirect3DDevice9*)GetUseDirect3DDevice9();
-	//Application::Initialize(appData);
+	// Lumino åˆæœŸåŒ–
+	EngineSettings::SetGraphicsAPI(GraphicsAPI::DirectX9);
+	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Immediate);
+	EngineSettings::SetUserWindowHandle((intptr_t)GetMainWindowHandle());
+	EngineSettings::SetD3D9Device((IDirect3DDevice9*)GetUseDirect3DDevice9());
+	Engine::Initialize();
 
-	// ƒfƒoƒCƒXƒƒXƒg‚ÌƒR[ƒ‹ƒoƒbƒNİ’è(ƒtƒ‹ƒXƒNƒŠ[ƒ“ƒEƒCƒ“ƒhƒEØ‚è‘Ö‚¦‚Ì‚½‚ß‚É•K—v)
+	// ãƒ‡ãƒã‚¤ã‚¹ãƒ­ã‚¹ãƒˆæ™‚ã®ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯è¨­å®š(ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã‚¦ã‚¤ãƒ³ãƒ‰ã‚¦åˆ‡ã‚Šæ›¿ãˆã®ãŸã‚ã«å¿…è¦)
 	SetGraphicsDeviceLostCallbackFunction(DeviceLostFunction, NULL);
 	SetGraphicsDeviceRestoreCallbackFunction(DeviceRestoreFunction, NULL);
 
-	// TODO: DxLib ƒA[ƒJƒCƒu‚©‚ç‚Ìƒ[ƒh
+	// TODO: DxLib ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ã‹ã‚‰ã®ãƒ­ãƒ¼ãƒ‰
 
-	// ƒOƒ‰ƒtƒBƒbƒN‚Ìƒ[ƒh
+	// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã®ãƒ­ãƒ¼ãƒ‰
 	//PlayerGraph = LoadGraph("Player.bmp");
 
-	// ƒLƒƒƒ‰ƒNƒ^[‚Ì‰ŠúˆÊ’u‚ğƒZƒbƒg
+	// ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®åˆæœŸä½ç½®ã‚’ã‚»ãƒƒãƒˆ
 	PlayerX = 0;
 	PlayerY = 0;
 
@@ -154,19 +153,19 @@ int DxLibMain()
 //#endif
 
 
-	// ƒ‹[ƒv
+	// ãƒ«ãƒ¼ãƒ—
 	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)
 	{
 		printf("a\n");
-		// ‰æ–Ê‚ğ‰Šú‰»‚·‚é
+		// ç”»é¢ã‚’åˆæœŸåŒ–ã™ã‚‹
 		ClearDrawScreen();
 
 		DrawBox(0, 0, 640, 480, GetColor(0, 0, 255), TRUE);
 
-		// ‰½‚Å‚à‚¢‚¢‚Ì‚ÅTransFrag‚ğ—LŒø‚É‚µ‚Ä‰æ‘œ‚ğ•`‰æ‚·‚éB
+		// ä½•ã§ã‚‚ã„ã„ã®ã§TransFragã‚’æœ‰åŠ¹ã«ã—ã¦ç”»åƒã‚’æç”»ã™ã‚‹ã€‚
 		DrawGraph(0, 0, dummyGraph, TRUE);
 
-		// ’¸“_ƒoƒbƒtƒ@‚É—­‚Ü‚Á‚½’¸“_ƒf[ƒ^‚ğ“f‚«o‚·
+		// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã«æºœã¾ã£ãŸé ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’åãå‡ºã™
 		RenderVertex();
 
 
@@ -182,13 +181,13 @@ int DxLibMain()
 		//Renderer::EndRendering();
 
 
-		// DXƒ‰ƒCƒuƒ‰ƒŠ‚Ìİ’è‚ğ–ß‚·B
+		// DXãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®è¨­å®šã‚’æˆ»ã™ã€‚
 		RefreshDxLibDirect3DSetting();
 
-		// — ‰æ–Ê‚Ì“à—e‚ğ•\‰æ–Ê‚É”½‰f‚³‚¹‚é
+		// è£ç”»é¢ã®å†…å®¹ã‚’è¡¨ç”»é¢ã«åæ˜ ã•ã›ã‚‹
 		ScreenFlip();
 
-		// ƒtƒ‹ƒXƒNƒŠ[ƒ“Ø‚è‘Ö‚¦
+		// ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åˆ‡ã‚Šæ›¿ãˆ
 		if (CheckHitKey(KEY_INPUT_F1) && !isFullScreen)
 		{
 			ChangeWindowMode(FALSE);
@@ -209,6 +208,7 @@ int DxLibMain()
 
 	//Graphics::ChangeDirectX9Device(NULL);
 	//Application::Finalize();
+	Engine::Terminate();
 
 	{
 		auto* d = (IDirect3DDevice9*)GetUseDirect3DDevice9();
@@ -221,7 +221,7 @@ int DxLibMain()
 
 
 #if 0
-	// ‰Šú‰»
+	// åˆæœŸåŒ–
 	ChangeWindowMode(TRUE);
 	SetUseDirect3D9Ex(FALSE);
 	SetGraphMode(640, 480, 32);
@@ -237,48 +237,48 @@ int DxLibMain()
 	Application* app = Application::Create(appData);
 
 
-	// ƒfƒoƒCƒXƒƒXƒg‚ÌƒR[ƒ‹ƒoƒbƒNİ’è(ƒtƒ‹ƒXƒNƒŠ[ƒ“ƒEƒCƒ“ƒhƒEØ‚è‘Ö‚¦‚Ì‚½‚ß‚É•K—v)
+	// ãƒ‡ãƒã‚¤ã‚¹ãƒ­ã‚¹ãƒˆæ™‚ã®ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯è¨­å®š(ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã‚¦ã‚¤ãƒ³ãƒ‰ã‚¦åˆ‡ã‚Šæ›¿ãˆã®ãŸã‚ã«å¿…è¦)
 	SetGraphicsDeviceLostCallbackFunction(DeviceLostFunction, NULL);
 	SetGraphicsDeviceRestoreCallbackFunction(DeviceRestoreFunction, NULL);
 
-	// TODO: DxLib ƒA[ƒJƒCƒu‚©‚ç‚Ìƒ[ƒh
+	// TODO: DxLib ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ã‹ã‚‰ã®ãƒ­ãƒ¼ãƒ‰
 
-	// ƒOƒ‰ƒtƒBƒbƒN‚Ìƒ[ƒh
+	// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã®ãƒ­ãƒ¼ãƒ‰
 	//PlayerGraph = LoadGraph("Player.bmp");
 
-	// ƒLƒƒƒ‰ƒNƒ^[‚Ì‰ŠúˆÊ’u‚ğƒZƒbƒg
+	// ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®åˆæœŸä½ç½®ã‚’ã‚»ãƒƒãƒˆ
 	PlayerX = 0;
 	PlayerY = 0;
 
 
 	int dummyGraph = MakeGraph(32, 32);
 
-	// ƒ‹[ƒv
+	// ãƒ«ãƒ¼ãƒ—
 	bool isFullScreen = false;
 	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)
 	{
-		// ƒL[“ü—Íæ“¾
+		// ã‚­ãƒ¼å…¥åŠ›å–å¾—
 		int Key = GetJoypadInputState(DX_INPUT_KEY_PAD1);
 
-		// ã‚ğ‰Ÿ‚µ‚Ä‚¢‚½‚çã‚Éi‚Ş
+		// ä¸Šã‚’æŠ¼ã—ã¦ã„ãŸã‚‰ä¸Šã«é€²ã‚€
 		if (Key & PAD_INPUT_UP) PlayerY -= 3;
 
-		// ‰º‚ğ‰Ÿ‚µ‚Ä‚¢‚½‚ç‰º‚Éi‚Ş
+		// ä¸‹ã‚’æŠ¼ã—ã¦ã„ãŸã‚‰ä¸‹ã«é€²ã‚€
 		if (Key & PAD_INPUT_DOWN) PlayerY += 3;
 
-		// ‰E‚ğ‰Ÿ‚µ‚Ä‚¢‚½‚ç‰E‚Éi‚Ş
+		// å³ã‚’æŠ¼ã—ã¦ã„ãŸã‚‰å³ã«é€²ã‚€
 		if (Key & PAD_INPUT_RIGHT) PlayerX += 3;
 
-		// ¶‚ğ‰Ÿ‚µ‚Ä‚¢‚½‚ç¶‚Éi‚Ş
+		// å·¦ã‚’æŠ¼ã—ã¦ã„ãŸã‚‰å·¦ã«é€²ã‚€
 		if (Key & PAD_INPUT_LEFT) PlayerX -= 3;
 
-		// ‰æ–Ê‚ğ‰Šú‰»‚·‚é
+		// ç”»é¢ã‚’åˆæœŸåŒ–ã™ã‚‹
 		ClearDrawScreen();
 
-		// ‰½‚Å‚à‚¢‚¢‚Ì‚ÅTransFrag‚ğ—LŒø‚É‚µ‚Ä‰æ‘œ‚ğ•`‰æ‚·‚éB
+		// ä½•ã§ã‚‚ã„ã„ã®ã§TransFragã‚’æœ‰åŠ¹ã«ã—ã¦ç”»åƒã‚’æç”»ã™ã‚‹ã€‚
 		DrawGraph(0, 0, dummyGraph, TRUE);
 
-		// ’¸“_ƒoƒbƒtƒ@‚É—­‚Ü‚Á‚½’¸“_ƒf[ƒ^‚ğ“f‚«o‚·
+		// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã«æºœã¾ã£ãŸé ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’åãå‡ºã™
 		RenderVertex();
 
 
@@ -286,19 +286,19 @@ int DxLibMain()
 
 
 
-		// ƒvƒŒƒCƒ„[‚ğ•`‰æ‚·‚é
+		// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’æç”»ã™ã‚‹
 		//DrawGraph(PlayerX, PlayerY, PlayerGraph, TRUE);
 
 		app->Render();
 
 
-		// DXƒ‰ƒCƒuƒ‰ƒŠ‚Ìİ’è‚ğ–ß‚·B
+		// DXãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®è¨­å®šã‚’æˆ»ã™ã€‚
 		RefreshDxLibDirect3DSetting();
 
-		// — ‰æ–Ê‚Ì“à—e‚ğ•\‰æ–Ê‚É”½‰f‚³‚¹‚é
+		// è£ç”»é¢ã®å†…å®¹ã‚’è¡¨ç”»é¢ã«åæ˜ ã•ã›ã‚‹
 		ScreenFlip();
 
-		// ƒtƒ‹ƒXƒNƒŠ[ƒ“Ø‚è‘Ö‚¦
+		// ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åˆ‡ã‚Šæ›¿ãˆ
 		if (CheckHitKey(KEY_INPUT_F1) && !isFullScreen)
 		{
 			ChangeWindowMode(FALSE);
