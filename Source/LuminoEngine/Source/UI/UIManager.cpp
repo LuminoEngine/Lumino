@@ -118,6 +118,15 @@ void UIManager::CreateGameModeMainFrame(World2D* defaultWorld2D, World3D* defaul
 }
 
 //------------------------------------------------------------------------------
+//void UIManager::CreateWrapModeMainFrame(void* window, World2D* defaultWorld2D, World3D* defaultWorld3D)
+//{
+//	if (LN_CHECK_STATE(m_mainWindow == nullptr)) return;
+//
+//	m_mainWindow = LN_NEW UINativeHostWindow();
+//	m_mainWindow->Initialize(this, )
+//}
+
+//------------------------------------------------------------------------------
 void UIManager::ReleaseGameModeMainFrame()
 {
 	// TODO: MainWindow は UIManager の中で作るのではなく Engine のほうがいい気がしてきた。

@@ -292,8 +292,8 @@ void EngineManager::InitializeCommon()
 			Logger::Initialize(LogFileName);
 			//Logger2::Initialize("log.txt");
 			//LN_LOG_INFO("Lumino 1.0.0");
-			LN_LOG_INFO << "Lumino 1.0.0";
-			LN_LOG_INFO << L"Lumino 1.0.0";
+			//LN_LOG_INFO << "Lumino 1.0.0";
+			//LN_LOG_INFO << L"Lumino 1.0.0";
 		}
 		m_commonInitied = true;
 	}
@@ -635,8 +635,11 @@ void EngineManager::UpdateFrame()
 
 		{	// プロファイリング範囲
 			ScopedProfilerSection prof(Profiler::Group_MainThread, Profiler::Section_MainThread_GUILayput);
-			const SizeI& size = m_graphicsManager->GetMainSwapChain()->GetBackBuffer()->GetSize();
-			m_uiManager->GetMainWindow()->UpdateLayout(Size(static_cast<float>(size.width), static_cast<float>(size.height)));
+			//const SizeI& size = m_graphicsManager->GetMainSwapChain()->GetBackBuffer()->GetSize();
+			//m_uiManager->GetMainWindow()->UpdateLayout(Size(static_cast<float>(size.width), static_cast<float>(size.height)));
+			
+			// TODO: 内部に閉じ込める
+			m_uiManager->GetMainWindow()->UpdateLayout(m_uiManager->GetMainWindow()->GetPlatformWindow()->GetSize().ToFloatSize());
 		}
 	}
 }

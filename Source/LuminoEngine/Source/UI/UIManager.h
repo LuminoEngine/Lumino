@@ -42,6 +42,7 @@ public:
 	void Initialize(const Settings& settings);
 	void Finalize();
 	void CreateGameModeMainFrame(World2D* defaultWorld2D, World3D* defaultWorld3D);
+	//void CreateWrapModeMainFrame(void* window, World2D* defaultWorld2D, World3D* defaultWorld3D);
 	void ReleaseGameModeMainFrame();
 	EventArgsPool* GetEventArgsPool() const { return m_eventArgsPool; }
 	UIStyleTable* GetDefaultStyleTable() const { return m_defaultStyleTable; }

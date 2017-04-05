@@ -156,7 +156,7 @@ int DxLibMain()
 	// ループ
 	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)
 	{
-		printf("a\n");
+		//printf("a\n");
 		// 画面を初期化する
 		ClearDrawScreen();
 
@@ -179,6 +179,12 @@ int DxLibMain()
 		//UI::RenderAllContext();
 
 		//Renderer::EndRendering();
+		//GetUseDirect3D11BackBufferTexture2D
+		Engine::UpdateFrame();
+		Engine::RenderFrame();
+		auto* dc = Engine::GetMainWindow()->GetDrawingContext();
+		dc->Clear(ClearFlags::Color, Color::White);
+		Engine::PresentFrame();
 
 
 		// DXライブラリの設定を戻す。

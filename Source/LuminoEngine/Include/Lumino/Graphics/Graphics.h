@@ -50,4 +50,11 @@ public:
 	static void ChangeDirectX9Device(void* id3d9device);
 };
 
+//class GraphicsPlatformSupport
+//{
+//public:
+//	// IDirect3DSurface9
+//	static RenderTargetTexturePtr CreateRenderTargetFromD3D9Surface(void* surface);
+//};
+
 LN_NAMESPACE_END

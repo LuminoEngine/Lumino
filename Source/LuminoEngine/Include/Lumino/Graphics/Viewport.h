@@ -114,7 +114,7 @@ LN_INTERNAL_ACCESS:	// TODO: いまはとりあえず内部用途
 	void UpdateLayersTransform(const Size& viewSize);
 	bool DoPlatformEvent(const PlatformEventArgs& e);
 	void Render(DrawList* parentDrawList, Details::Renderer* renderer, const SizeI& targetSize);
-	void PresentRenderingContexts(DrawList* parentDrawList, Details::Renderer* renderer, RenderTargetTexture* renderTarget);
+	void PresentRenderingContexts();
 
 private:
 	void TryRemakeLayerTargets(const SizeI& ownerViewPixelSize);

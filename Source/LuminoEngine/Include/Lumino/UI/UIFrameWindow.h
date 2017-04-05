@@ -49,6 +49,7 @@ private:
 	void Initialize_UIRenderer();
 	void Render_UIRenderer();
 	void ExecuteDrawList_UIRenderer();
+	bool IsStandaloneSwapChain() const { return m_swapChain != nullptr; }
 
 	detail::UIManager*		m_manager;
 	PlatformWindow*			m_platformWindow;

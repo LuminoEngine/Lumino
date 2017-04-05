@@ -69,33 +69,6 @@ public:
 };
 
 
-/** ログのユーティリティです。*/
-class Logger2
-{
-public:
-
-	/**
-		@brief		ログ機能を初期化し、ログファイルを新規作成します。
-		@param[in]	filePath	: ログファイルのパス
-		@return		true=成功 / false=失敗
-	*/
-	static void Initialize(const StringRef& filePath);
-
-	/**
-		@brief		通知レベルを指定して書式指定メッセージを書き込みます。
-		@param[in]	level	: 通知レベル (指定しない場合は Level_Info)
-		@details	ログ機能が初期化されていない場合は何もしません。
-	*/
-
-
-	template<typename TChar, typename... TArgs>
-	static void WriteLine(LogLevel level, const char* file, const char* func, int line, const TChar* format, const TArgs&... args) { WriteLineInternal(level, file, func, line, GenericString<TChar>::Format(format, args...)); }
-
-private:
-	static void WriteLineInternal(LogLevel level, const char* file, const char* func, int line, const StringA& message);
-	static void WriteLineInternal(LogLevel level, const char* file, const char* func, int line, const StringW& message);
-	static const char* GetLogLevelString(LogLevel level);
-};
 
 namespace detail {
 
@@ -113,27 +86,12 @@ class LogRecord
 {
 public:
 	LogRecord(LogLevel level, const char* file, const char* func, int line);
-
-	//void SetMessage(const StringRefA& message) { m_message = message; }
-
 	const LogTime& GetTime() const { return m_time; }
-
 	LogLevel GetLevel() const { return m_level; }
-
-	//const StringA& GetMessage() const { return m_message; }
-
-	const char* GetMessage() const
-	{
-		m_messageStr = m_message.str();
-		return m_messageStr.c_str();
-	}
-
+	const char* GetMessage() const;
 	const char* GetFile() const { return m_file; }
-
 	const char* GetFunc() const { return m_func; }
-
 	int GetLine() const { return m_line; }
-
 	unsigned int GetThreadId() const { return m_threadId; }
 
 
@@ -147,24 +105,21 @@ public:
 	}
 
 private:
-	LogTime			m_time;
-	LogLevel		m_level;
-	const char*		m_file;
-	const char*		m_func;
-	int				m_line;
-	unsigned int	m_threadId;
+	LogTime				m_time;
+	LogLevel			m_level;
+	const char*			m_file;
+	const char*			m_func;
+	int					m_line;
+	unsigned int		m_threadId;
 	std::stringstream	m_message;
 	mutable std::string m_messageStr;
-	//StringA			m_message;
 };
 
 class Logger
 {
 public:
 	static Logger* GetInstance();
-
 	bool CheckLevel(LogLevel level);
-
 	void operator+=(const LogRecord& record);
 };
 

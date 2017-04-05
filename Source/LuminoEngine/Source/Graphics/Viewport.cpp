@@ -274,9 +274,9 @@ bool Viewport::DoPlatformEvent(const PlatformEventArgs& e)
 //------------------------------------------------------------------------------
 void Viewport::Render(DrawList* parentDrawList, Details::Renderer* renderer, const SizeI& targetSize)
 {
-	renderer->SetRenderTarget(0, m_primaryLayerTarget);
-	renderer->SetDepthBuffer(m_depthBuffer);
-	renderer->Clear(ClearFlags::All, m_backgroundColor, 1.0f, 0x00);
+	//renderer->SetRenderTarget(0, m_primaryLayerTarget);
+	//renderer->SetDepthBuffer(m_depthBuffer);
+	//renderer->Clear(ClearFlags::All, m_backgroundColor, 1.0f, 0x00);
 
 	// ZIndex でソート
 	std::stable_sort(m_viewportLayerList->begin(), m_viewportLayerList->end(),
@@ -317,7 +317,7 @@ void Viewport::Render(DrawList* parentDrawList, Details::Renderer* renderer, con
 }
 
 //------------------------------------------------------------------------------
-void Viewport::PresentRenderingContexts(DrawList* parentDrawList, Details::Renderer* renderer, RenderTargetTexture* renderTarget)
+void Viewport::PresentRenderingContexts()
 {
 
 	TryRemakeLayerTargets(SizeI(m_size.width, m_size.height));

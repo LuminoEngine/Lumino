@@ -46,7 +46,6 @@ void UIFrameWindow::Initialize(detail::UIManager* manager, PlatformWindow* platf
 {
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	if (LN_CHECK_ARG(platformWindow != nullptr)) return;
-	if (LN_CHECK_ARG(swapChain != nullptr)) return;
 	m_manager = manager;
 	LN_REFOBJ_SET(m_platformWindow, platformWindow);
 	LN_REFOBJ_SET(m_swapChain, swapChain);
@@ -109,7 +108,9 @@ void UIFrameWindow::PresentRenderingContexts()
 	m_manager->GetGraphicsManager()->SwitchActiveContext(nullptr);
 	renderer->End();
 
+
 	// Present
+	if (m_swapChain != nullptr)
 	{
 		bool skip = false;
 		if (m_delayedRenderingSkip)
@@ -132,11 +133,10 @@ void UIFrameWindow::PresentRenderingContexts()
 		{
 			m_swapChain->Present();
 		}
+
+		// ウィンドウサイズとバックバッファサイズを合わせる
+		m_swapChain->MightResizeAndDeviceReset(m_platformWindow->GetSize());
 	}
-
-	// ウィンドウサイズとバックバッファサイズを合わせる
-	m_swapChain->MightResizeAndDeviceReset(m_platformWindow->GetSize());
-
 }
 
 //------------------------------------------------------------------------------
@@ -163,12 +163,27 @@ void UIFrameWindow::Render_UIRenderer()
 //------------------------------------------------------------------------------
 void UIFrameWindow::ExecuteDrawList_UIRenderer()
 {
-	RenderTargetTexture* renderTarget = m_swapChain->GetBackBuffer();
+	RenderTargetTexture* renderTarget = nullptr;
 	DepthBuffer* depthBuffer = nullptr;
+	Size viewPixelSize;
+
+	if (m_swapChain != nullptr)
+	{
+		renderTarget = m_swapChain->GetBackBuffer();
+		viewPixelSize = renderTarget->GetSize().ToFloatSize();
+	}
+	else
+	{
+		// TODO: 暫定。バックバッファサイズが望ましい。
+		// 描画スレッドを使わないなら、Device から直接とっても良い。
+		// 描画スレッドを使うなら、Lumino を使用するフレームワークからサイズをもらわなければならない。
+		//		この時もらうサイズは、次の描画スレッドの描画で使用されるバックバッファのサイズである。
+		viewPixelSize = GetPlatformWindow()->GetSize().ToFloatSize();
+	}
 	
 	detail::CameraInfo cameraInfo;
 	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
-	cameraInfo.viewPixelSize = renderTarget->GetSize().ToFloatSize();
+	cameraInfo.viewPixelSize = viewPixelSize;
 	cameraInfo.viewPosition = Vector3::Zero;
 	cameraInfo.viewMatrix = Matrix::Identity;
 	cameraInfo.projMatrix = Matrix::MakePerspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1);
@@ -275,7 +290,7 @@ void UIMainWindow::OnRenderContents()
 	//UIFrameWindow::RenderContents();
 
 	Details::Renderer* renderer = GetManager()->GetGraphicsManager()->GetRenderer();
-	m_mainViewport->Render(GetDrawingContext(), renderer, GetSwapChain()->GetBackBuffer()->GetSize());
+	m_mainViewport->Render(GetDrawingContext(), renderer, GetPlatformWindow()->GetSize()/*GetSwapChain()->GetBackBuffer()->GetSize()*/);
 
 }
 
@@ -285,7 +300,7 @@ void UIMainWindow::OnPresentRenderingContexts()
 
 	Details::Renderer* renderer = GetManager()->GetGraphicsManager()->GetRenderer();
 
-	m_mainViewport->PresentRenderingContexts(GetDrawingContext(), renderer, GetSwapChain()->GetBackBuffer());
+	m_mainViewport->PresentRenderingContexts();
 
 
 }
@@ -302,9 +317,18 @@ void UIMainWindow::PresentRenderingContexts()
 
 void UIMainWindow::UpdateViewportTransform()
 {
-	const SizeI& bbSize = GetSwapChain()->GetBackBuffer()->GetSize();
-	Size viewSize((float)bbSize.width, (float)bbSize.height);
-	m_mainViewport->UpdateLayersTransform(viewSize);
+	//Size viewSize;
+
+	//SwapChain* swapChain = GetSwapChain();
+	//if (swapChain != nullptr)
+	//{
+	//	const SizeI& bbSize = GetSwapChain()->GetBackBuffer()->GetSize();
+	//	viewSize.width = bbSize;
+	//	viewSize.height = bbSize;
+	//}
+
+	SizeI size = GetPlatformWindow()->GetSize();
+	m_mainViewport->UpdateLayersTransform(size.ToFloatSize());
 }
 
 //==============================================================================

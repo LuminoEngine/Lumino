@@ -63,15 +63,15 @@ void DX9GraphicsDevice::Initialize(const ConfigData& configData)
 	// DLL 読み込み
 	DX9Module::Initialize(); 
 
+	// Direct3D 作成
+	m_direct3D = DX9Module::Direct3DCreate9(D3D_SDK_VERSION);
+	LN_THROW(m_direct3D != NULL, InvalidOperationException);
+
+	// デバイスの性能チェック
+	CheckDeviceInformation();
+
 	if (configData.D3D9Device == NULL)
 	{
-		// Direct3D 作成
-		m_direct3D = DX9Module::Direct3DCreate9(D3D_SDK_VERSION);
-		LN_THROW(m_direct3D != NULL, InvalidOperationException);
-
-		// デバイスの性能チェック
-		CheckDeviceInformation();
-
 		// デフォルトの SwapChain
 		m_defaultSwapChain = LN_NEW DX9SwapChain();
 		m_defaultSwapChain->InitializeDefault(this, m_mainWindow, configData.BackbufferSize);
@@ -96,6 +96,8 @@ void DX9GraphicsDevice::Initialize(const ConfigData& configData)
 	{
 		m_dxDevice = configData.D3D9Device;
 		m_dxDevice->AddRef();
+
+		LN_LOG_INFO << "user IDirect3DDevice9 specified.";
 	}
 
 	// ID3DXEffectPool
