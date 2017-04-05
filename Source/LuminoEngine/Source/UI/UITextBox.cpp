@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Internal.h"
 #include <Lumino/Graphics/Rendering.h>
 #include <Lumino/Graphics/Text/GlyphRun.h>
@@ -27,7 +27,7 @@ public:
 	static const UTF32 EofCode = '\0';
 	static const UTF32 NlCode = '\n';
 
-	int GetLength() const { return m_text.GetLength()/* + 1*/; }	//// LineDelimiter •ª‚Ì +1
+	int GetLength() const { return m_text.GetLength()/* + 1*/; }	//// LineDelimiter åˆ†ã® +1
 	bool IsEmpty() const { return m_text.IsEmpty(); }
 
 LN_CONSTRUCT_ACCESS:
@@ -48,7 +48,7 @@ LN_INTERNAL_ACCESS:
 	int GetRevision() const { return m_revision; }
 
 private:
-	GenericStringBuilderCore<UTF32>	m_text;				// \n ‚ğŠÜ‚Ş
+	GenericStringBuilderCore<UTF32>	m_text;				// \n ã‚’å«ã‚€
 	LineDelimiter					m_lineDelimiter;
 	int								m_revision;
 };
@@ -76,60 +76,13 @@ private:
 	UITextDocumentLine* FindLineFromOffset(int offset);
 
 	detail::UIManager*					m_manager;
-	List<RefPtr<UITextDocumentLine>>	m_lines;		// •K‚¸1‚Â“ü‚Á‚Ä‚¢‚éB
+	List<RefPtr<UITextDocumentLine>>	m_lines;		// å¿…ãš1ã¤å…¥ã£ã¦ã„ã‚‹ã€‚
 	int									m_revision;
 };
 
 
-//class UITextVisualElement
-//	: public Object
-//{
-//
-//};
 
 
-// •¨—s
-class UITextVisualLine
-	: public Object
-{
-public:
-
-LN_CONSTRUCT_ACCESS:
-	UITextVisualLine();
-	virtual ~UITextVisualLine();
-	void Initialize();
-
-LN_INTERNAL_ACCESS:
-	void AddGlyphRun(GlyphRun* run) { m_glyphRuns.Add(run); }
-	void Render(DrawList* g);
-
-private:
-	List<RefPtr<GlyphRun>>	m_glyphRuns;
-};
-
-// •¨—s‚Ì‚Ü‚Æ‚Ü‚è
-class UITextVisualLineBlock
-	: public Object
-{
-public:
-	bool IsModified() const;
-	UITextDocumentLine* GetDocumentLine() const { return m_documentLine; }
-
-	void BuildVisualLines(Font* font);
-
-LN_CONSTRUCT_ACCESS:
-	UITextVisualLineBlock();
-	virtual ~UITextVisualLineBlock();
-	void Initialize(UITextDocumentLine* documentLine);
-
-LN_INTERNAL_ACCESS:
-	void Render(DrawList* g);
-
-private:
-	RefPtr<UITextDocumentLine>		m_documentLine;
-	int								m_revision;
-	List<RefPtr<UITextVisualLine>>	m_visualLines;
-};
 
 struct UITextVisualPosition
 {
@@ -138,14 +91,92 @@ struct UITextVisualPosition
 };
 
 
+// ç‰©ç†è¡Œ
+class UITextVisualLine
+	: public Object
+{
+public:
+	const Size& GetRenderSize() const { return m_renderRect.GetSize(); }
+	const RectF& GetRenderRect() const { return m_renderRect; }
+
+LN_CONSTRUCT_ACCESS:
+	UITextVisualLine();
+	virtual ~UITextVisualLine();
+	void Initialize();
+
+LN_INTERNAL_ACCESS:
+	void SetStartDocumentTextOffset(int offset) { m_startDocumentTextOffset = offset; }
+	int GetStartDocumentTextOffset() const { return  m_startDocumentTextOffset; }
+	void AddGlyphRun(GlyphRun* run);
+	void SetVisualLineIndex(int index) { m_visualLineIndex = index; }
+	void SetRenderPt(const PointF& pt) { m_renderRect.SetLocation(pt); }
+	void Render(DrawList* g);
+	RectF GetGlyphAreaGlobalRect(int column);	// é«˜ã•=è¡Œé«˜ã•
+	bool TestHitFromGlobalPoint(const PointF& pt, UITextVisualPosition* outPos);
+	int GetTextLength() const { return m_textLength; }
+
+private:
+	List<RefPtr<GlyphRun>>	m_glyphRuns;
+	int						m_startDocumentTextOffset;
+	int						m_textLength;		// LineDelim ã‚‚å«ã‚€ã€‚ãŸã ã—ã€æŠ˜ã‚Šè¿”ã—ãªã©ã§ã®æ”¹è¡Œã«ã¯å«ã¾ãªã„
+	int						m_visualLineIndex;
+	RectF					m_renderRect;	// TextArea åº§æ¨™ç³»
+	//float					m_renderTop;
+	//Size					m_renderSize;
+};
+
+// ç‰©ç†è¡Œã®ã¾ã¨ã¾ã‚Š
+class UITextVisualLineBlock
+	: public Object
+{
+public:
+	bool IsModified() const;
+	UITextDocumentLine* GetDocumentLine() const { return m_documentLine; }
+
+	int GetVisualLinesCount() const { return m_visualLines.GetCount(); }
+	UITextVisualLine* GetVisualLine(int index) const { return m_visualLines[index]; }
+
+	//float GetRenderTop() const { return m_renderTop; }
+	//float GetRenderHeight() const { return m_renderSize.width; }
+	const RectF& GetRenderRect() const { return m_renderRect; }
+
+	void BuildVisualLines(Font* font, int startDocumentTextOffset, int visualLineIndex, const PointF& renderPt);
+
+LN_CONSTRUCT_ACCESS:
+	UITextVisualLineBlock();
+	virtual ~UITextVisualLineBlock();
+	void Initialize(UITextDocumentLine* documentLine);
+
+LN_INTERNAL_ACCESS:
+	void Render(DrawList* g);
+	const List<RefPtr<UITextVisualLine>>& GetVisualLines() const { return m_visualLines; }
+
+private:
+	RefPtr<UITextDocumentLine>		m_documentLine;
+	int								m_revision;
+	List<RefPtr<UITextVisualLine>>	m_visualLines;
+	RectF							m_renderRect;	// TextArea åº§æ¨™ç³»
+	//float							m_renderTop;
+	//Size							m_renderSize;
+};
+
+
+
 
 class UITextAreaCaret
 	: public Object
 {
+public:
+	void SetVisualPosition(const UITextVisualPosition& pos) { m_position = pos; }
+
 LN_CONSTRUCT_ACCESS:
 	UITextAreaCaret();
 	virtual ~UITextAreaCaret();
 	void Initialize();
+	const UITextVisualPosition& GetVisualPosition() const { return m_position; }
+
+private:
+	UITextVisualPosition	m_position;
 };
 
 
@@ -155,6 +186,7 @@ class UITextArea
 
 public:
 	UITextDocument* GetDocument() const { return m_document; }
+	UITextAreaCaret* GetCaret() const { return m_caret; }
 
 	Size Measure(const Size& availableSize, Font* font);
 	Size Arrange(const Size& finalSize);
@@ -164,6 +196,10 @@ LN_CONSTRUCT_ACCESS:
 	UITextArea();
 	virtual ~UITextArea();
 	void Initialize();
+	UITextVisualLine* FindVisualLine(int lineIndex);
+	RectF GetGlyphGlobalRectFromVisualPosition(const UITextVisualPosition& pos);
+	void GetVisualPositionFromRenderPosition(const PointF& pt, UITextVisualPosition* outPos);
+	int GetDocumentTextOffset(const UITextVisualPosition& pos);
 
 private:
 	RefPtr<UITextDocument>				m_document;
@@ -216,14 +252,14 @@ void UITextDocumentLine::RemoveInternal(int offset, int length)
 	if (rangeEnd > m_text.GetLength()) rangeEnd = m_text.GetLength();
 
 	UTF32 empty[] = { 0 };
-	m_text.Replace(rangeBegin, rangeEnd - rangeBegin, empty, 0);	// TODO: •’Ê‚É Remove ŠÖ”‚Æ‚©ì‚Á‚½‚Ù‚¤‚ªƒpƒtƒH[ƒ}ƒ“ƒX‚æ‚³‚»‚¤
+	m_text.Replace(rangeBegin, rangeEnd - rangeBegin, empty, 0);	// TODO: æ™®é€šã« Remove é–¢æ•°ã¨ã‹ä½œã£ãŸã»ã†ãŒãƒ‘ãƒ•ã‚©ãƒ¼ãƒãƒ³ã‚¹ã‚ˆã•ãã†
 	m_revision++;
 }
 
 //------------------------------------------------------------------------------
 void UITextDocumentLine::InsertText(int offset, const UTF32* text, int len)
 {
-	m_text.Replace(offset, 0, text, len);	// TODO: •’Ê‚É Insert ŠÖ”‚Æ‚©ì‚Á‚½‚Ù‚¤‚ªƒpƒtƒH[ƒ}ƒ“ƒX‚æ‚³‚»‚¤
+	m_text.Replace(offset, 0, text, len);	// TODO: æ™®é€šã« Insert é–¢æ•°ã¨ã‹ä½œã£ãŸã»ã†ãŒãƒ‘ãƒ•ã‚©ãƒ¼ãƒãƒ³ã‚¹ã‚ˆã•ãã†
 	m_revision++;
 }
 
@@ -261,14 +297,14 @@ void UITextDocument::Initialize()
 {
 	m_manager = detail::EngineDomain::GetUIManager();
 
-	m_lines.Add(NewObject<UITextDocumentLine>());	// ‹ólineBEOFB	// TODO: cache
+	m_lines.Add(NewObject<UITextDocumentLine>());	// ç©ºlineã€‚EOFã€‚	// TODO: cache
 	m_revision++;
 }
 
 //------------------------------------------------------------------------------
 void UITextDocument::Replace(int offset, int length, const StringRef& text)
 {
-	// UTF32 ‚Ö•ÏŠ·
+	// UTF32 ã¸å¤‰æ›
 	const ByteBuffer& utf32Buf = m_manager->GetGraphicsManager()->GetFontManager()->GetTCharToUTF32Converter()->Convert(text.GetBegin(), sizeof(TCHAR) * text.GetLength());
 	int len = utf32Buf.GetSize() / sizeof(UTF32);
 	ReplaceInternal(offset, length, (const UTF32*)utf32Buf.GetConstData(), len);
@@ -307,7 +343,7 @@ void UITextDocument::RemoveInternal(int offset, int length)
 		{
 			if (m_lines.GetCount() == 1)
 			{
-				// ÅŒã‚Ì1‚Â‚È‚ç Remove ‚Í‚¹‚¸A‹ós‚É‚·‚é
+				// æœ€å¾Œã®1ã¤ãªã‚‰ Remove ã¯ã›ãšã€ç©ºè¡Œã«ã™ã‚‹
 				m_lines[i]->Clear();
 			}
 			else
@@ -333,12 +369,12 @@ void UITextDocument::InsertInternal(int offset, const UTF32* text, int len)
 	int lineInsertIndex = FindLineIndexFromOffset(offset, &offsetFromLineHead);
 	//if (lineInsertIndex < 0)
 	//{
-	//	m_lines.Add(NewObject<UITextDocumentLine>());	// ‹ólineBEOFB	// TODO: cache
+	//	m_lines.Add(NewObject<UITextDocumentLine>());	// ç©ºlineã€‚EOFã€‚	// TODO: cache
 	//	lineInsertIndex = 0;
 	//}
 	RefPtr<UITextDocumentLine> firstLine = m_lines[lineInsertIndex];
 
-	// ‚Ü‚¸‘S•” Insert ‚·‚é
+	// ã¾ãšå…¨éƒ¨ Insert ã™ã‚‹
 	firstLine->InsertText(offsetFromLineHead, text, len);
 	
 
@@ -347,13 +383,13 @@ void UITextDocument::InsertInternal(int offset, const UTF32* text, int len)
 
 
 
-	// ‰üs‚ªŠÜ‚Ü‚ê‚Ä‚¢‚é‚©H
+	// æ”¹è¡ŒãŒå«ã¾ã‚Œã¦ã„ã‚‹ã‹ï¼Ÿ
 	const UTF32* begin = firstLine->GetText();
-	const UTF32* end = begin + firstLine->GetTextLength2() - 1;	// UITextDocumentLine ©‘Ì‚Ì Delim ‚ÍŠÜ‚Ü‚È‚¢
+	const UTF32* end = begin + firstLine->GetTextLength2() - 1;	// UITextDocumentLine è‡ªä½“ã® Delim ã¯å«ã¾ãªã„
 	int firstNLPos, nlLen;
 	if (StringTraits::IndexOfNewLineSequence(begin, end, &firstNLPos, &nlLen))
 	{
-		// ¡‚Ì Line ‚ğÌ‚Ä‚é
+		// ä»Šã® Line ã‚’æ¨ã¦ã‚‹
 		m_lines.RemoveAt(lineInsertIndex);
 
 
@@ -361,7 +397,7 @@ void UITextDocument::InsertInternal(int offset, const UTF32* text, int len)
 
 		//begin += firstNLPos + nlLen;
 
-		// Œã‘±‚Ì‰üs‚Å•ªŠ„‚µAV‚µ‚¢ UITextDocumentLine ‚ğì‚Á‚Ä‚¢‚­
+		// å¾Œç¶šã®æ”¹è¡Œã§åˆ†å‰²ã—ã€æ–°ã—ã„ UITextDocumentLine ã‚’ä½œã£ã¦ã„ã
 		{
 			const UTF32* lineBegin = begin;
 			while (lineBegin < end)
@@ -432,6 +468,7 @@ UITextDocumentLine* UITextDocument::FindLineFromOffset(int offset)
 
 //------------------------------------------------------------------------------
 UITextVisualLine::UITextVisualLine()
+	: m_textLength(0)
 {
 }
 
@@ -446,6 +483,19 @@ void UITextVisualLine::Initialize()
 }
 
 //------------------------------------------------------------------------------
+void UITextVisualLine::AddGlyphRun(GlyphRun* run)
+{
+	m_glyphRuns.Add(run);
+	m_textLength += run->GetTextLength();
+
+	// â€»æ¨ªæ›¸ã
+	{
+		m_renderRect.width += static_cast<float>(run->GetRenderSize().width);
+		m_renderRect.height = std::max(m_renderRect.height, static_cast<float>(run->GetRenderSize().height));
+	}
+}
+
+//------------------------------------------------------------------------------
 void UITextVisualLine::Render(DrawList* g)
 {
 	for (auto& run : m_glyphRuns)
@@ -454,6 +504,54 @@ void UITextVisualLine::Render(DrawList* g)
 	}
 }
 
+//------------------------------------------------------------------------------
+RectF UITextVisualLine::GetGlyphAreaGlobalRect(int column)
+{
+	RectF rect(0, m_renderRect.y, 0, m_renderRect.height);
+	int count = 0;
+	for (auto& run : m_glyphRuns)
+	{
+		if (column < (count + run->GetTextLength()))
+		{
+			int localIndex = column - count;
+			auto& items = run->RequestLayoutItems();
+			rect.x = items[localIndex].Location.BitmapTopLeftPosition.x;
+			rect.width = items[localIndex].Location.BitmapSize.width;
+			return rect;
+		}
+		count += run->GetTextLength();
+	}
+	return rect;
+}
+
+//------------------------------------------------------------------------------
+bool UITextVisualLine::TestHitFromGlobalPoint(const PointF& pt, UITextVisualPosition* outPos)
+{
+	if (m_renderRect.Contains(pt))
+	{
+		PointF localPt(pt.x - m_renderRect.x, pt.y - m_renderRect.y);
+		int glyphIndex = 0;
+
+		PointF flow(0, 0);
+		for (auto& run : m_glyphRuns)
+		{
+			for (auto& item : run->RequestLayoutItems())
+			{
+				RectF rc(flow, static_cast<float>(item.Location.BitmapSize.width), static_cast<float>(item.Location.BitmapSize.height));
+				if (rc.Contains(localPt))
+				{
+					outPos->line = m_visualLineIndex;
+					outPos->column = glyphIndex;
+					return true;
+				}
+
+				flow.x += item.Location.BitmapSize.width;
+				glyphIndex++;
+			}
+		}
+	}
+	return false;
+}
 
 //==============================================================================
 // UITextVisualLineBlock
@@ -483,19 +581,29 @@ bool UITextVisualLineBlock::IsModified() const
 }
 
 //------------------------------------------------------------------------------
-void UITextVisualLineBlock::BuildVisualLines(Font* font)
+void UITextVisualLineBlock::BuildVisualLines(Font* font, int startDocumentTextOffset, int visualLineIndex, const PointF& renderPt)
 {
 	m_visualLines.Clear();
+	m_renderRect = RectF(renderPt, 0, 0);
+	//m_renderTop = renderTop;
+	//m_renderSize = Size::Zero;
 
 	auto run = NewObject<GlyphRun>();	// TODO: cache
 	run->SetFont(font->ResolveRawFont());
 	run->SetText(m_documentLine->GetText(), m_documentLine->GetTextLength2());
 
 	auto line = NewObject<UITextVisualLine>();	// TODO: cache
+	line->SetStartDocumentTextOffset(startDocumentTextOffset);
 	line->AddGlyphRun(run);
+	line->SetVisualLineIndex(visualLineIndex);
+	line->SetRenderPt(renderPt);
 	m_visualLines.Add(line);
 
-	// TODO: Ü‚è•Ô‚µ‚Ì’²®‚âƒnƒCƒ‰ƒCƒg‚Í‚±‚±‚ÅB
+	// TODO: ã„ã¾ã¯ç‰©ç†è¡Œã¯1ã¤ã—ã‹ä½œã‚‰ãªã„ã®ã§
+	m_renderRect = line->GetRenderRect();
+
+
+	// TODO: æŠ˜ã‚Šè¿”ã—ã®èª¿æ•´ã‚„ãƒã‚¤ãƒ©ã‚¤ãƒˆã¯ã“ã“ã§ã€‚
 }
 
 //------------------------------------------------------------------------------
@@ -525,6 +633,8 @@ UITextAreaCaret::~UITextAreaCaret()
 //------------------------------------------------------------------------------
 void UITextAreaCaret::Initialize()
 {
+	m_position.line = 0;
+	m_position.column = 0;
 }
 
 
@@ -553,11 +663,11 @@ void UITextArea::Initialize()
 //------------------------------------------------------------------------------
 Size UITextArea::Measure(const Size& availableSize, Font* font)
 {
-	// •¨—sƒŠƒXƒg‚ÌXV‚ª•K—vH
+	// ç‰©ç†è¡Œãƒªã‚¹ãƒˆã®æ›´æ–°ãŒå¿…è¦ï¼Ÿ
 	if (m_revision != m_document->GetRevision())
 	{
-		// ‚±‚Ìó‘Ô‚Å revision ‚É·‚ª‚ ‚é‚à‚Ì‚Íˆê“xíœ‚·‚éB
-		// ÀÛ‚É‚Ííœ‚³‚ê‚Ä‚¨‚ç‚¸•ÏX‚³‚ê‚½‚¾‚¯‚©‚à‚µ‚ê‚È‚¢‚ªAŠÈ—ª‰»‚Ì‚½‚ß‚Éˆê“xíœ‚·‚éB
+		// ã“ã®çŠ¶æ…‹ã§ revision ã«å·®ãŒã‚ã‚‹ã‚‚ã®ã¯ä¸€åº¦å‰Šé™¤ã™ã‚‹ã€‚
+		// å®Ÿéš›ã«ã¯å‰Šé™¤ã•ã‚Œã¦ãŠã‚‰ãšå¤‰æ›´ã•ã‚ŒãŸã ã‘ã‹ã‚‚ã—ã‚Œãªã„ãŒã€ç°¡ç•¥åŒ–ã®ãŸã‚ã«ä¸€åº¦å‰Šé™¤ã™ã‚‹ã€‚
 		for (int i = m_visualLineBlocks.GetCount() - 1; i >= 0; i--)
 		{
 			if (m_visualLineBlocks[i]->IsModified())
@@ -592,11 +702,18 @@ Size UITextArea::Measure(const Size& availableSize, Font* font)
 
 
 
-
+	
 	{
+		int documentTextOffset = 0;
+		int visualLineIndex = 0;
+		PointF renderPt = PointF::Zero;
 		for (auto& block : m_visualLineBlocks)
 		{
-			block->BuildVisualLines(font);
+			block->BuildVisualLines(font, documentTextOffset, visualLineIndex, renderPt);
+
+			documentTextOffset += block->GetDocumentLine()->GetLength();
+			visualLineIndex += block->GetVisualLinesCount();
+			renderPt.y += block->GetRenderRect().height;
 		}
 	}
 
@@ -617,6 +734,62 @@ void UITextArea::Render(DrawList* g)
 	{
 		block->Render(g);
 	}
+
+
+	// TODO: æ¯å›æ¤œç´¢ã™ã‚‹ã®ã‚‚æ™‚é–“ã‹ã‹ã‚Šãã†ãƒ»ãƒ»ãƒ»
+	RectF caretRect = GetGlyphGlobalRectFromVisualPosition(m_caret->GetVisualPosition());
+	caretRect.width = 1;
+
+	g->DrawRectangle(caretRect);
+}
+
+//------------------------------------------------------------------------------
+UITextVisualLine* UITextArea::FindVisualLine(int lineIndex)
+{
+	int lineOffset = 0;
+	for (int i = 0; i < m_visualLineBlocks.GetCount(); i++)
+	{
+		int linesCount = m_visualLineBlocks[i]->GetVisualLinesCount();
+		if (lineIndex < (lineOffset + linesCount))
+		{
+			int localIndex = lineIndex - lineOffset;
+			return m_visualLineBlocks[i]->GetVisualLine(localIndex);
+		}
+		lineOffset += linesCount;
+	}
+	return nullptr;
+}
+
+//------------------------------------------------------------------------------
+RectF UITextArea::GetGlyphGlobalRectFromVisualPosition(const UITextVisualPosition& pos)
+{
+	auto* visualLine = FindVisualLine(pos.line);
+	return visualLine->GetGlyphAreaGlobalRect(pos.column);
+}
+
+//------------------------------------------------------------------------------
+void UITextArea::GetVisualPositionFromRenderPosition(const PointF& pt, UITextVisualPosition* outPos)
+{
+	outPos->line = 0;
+	outPos->column = 0;
+
+	for (auto& block : m_visualLineBlocks)
+	{
+		for (auto& line : block->GetVisualLines())
+		{
+			if (line->TestHitFromGlobalPoint(pt, outPos))
+			{
+				return;
+			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+int UITextArea::GetDocumentTextOffset(const UITextVisualPosition& pos)
+{
+	auto* line = FindVisualLine(pos.line);
+	return line->GetStartDocumentTextOffset() + pos.column;
 }
 
 
@@ -679,9 +852,21 @@ bool UITextBox::IsFocusable() const
 }
 
 //------------------------------------------------------------------------------
+void UITextBox::OnMouseDown(UIMouseEventArgs* e)
+{
+	UITextVisualPosition pos;
+	m_textArea->GetVisualPositionFromRenderPosition(e->GetPosition(this), &pos);
+	m_textArea->GetCaret()->SetVisualPosition(pos);
+
+	UITextElement::OnMouseDown(e);
+}
+
+//------------------------------------------------------------------------------
 void UITextBox::OnTextInput(UIKeyEventArgs* e)
 {
-	m_textArea->GetDocument()->Replace(0, 0, StringRef(&e->charCode, 1));
+	m_textArea->GetDocument()->Replace(
+		m_textArea->GetDocumentTextOffset(m_textArea->GetCaret()->GetVisualPosition()),
+		0, StringRef(&e->charCode, 1));
 }
 
 //------------------------------------------------------------------------------

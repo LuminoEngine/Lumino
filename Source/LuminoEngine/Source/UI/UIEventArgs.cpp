@@ -1,8 +1,10 @@
 ﻿
 #include "Internal.h"
 #include <Lumino/UI/UIEventArgs.h>
+#include <Lumino/UI/UIElement.h>
 #include "EventArgsPool.h"
 #include "UIManager.h"
+
 
 LN_NAMESPACE_BEGIN
 
@@ -69,8 +71,8 @@ UIMouseEventArgs::~UIMouseEventArgs()
 //------------------------------------------------------------------------------
 PointF UIMouseEventArgs::GetPosition(UIElement* relativeTo)
 {
-	// TODO
-	return PointF(x, y);
+	const RectF& rc = relativeTo->GetFinalGlobalRect();
+	return PointF(x - rc.x, y - rc.y);
 }
 
 //==============================================================================

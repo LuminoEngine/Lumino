@@ -26,7 +26,8 @@ public:
 	virtual bool IsFocusable() const;
 
 protected:
-	virtual void OnTextInput(UIKeyEventArgs* e);
+	virtual void OnMouseDown(UIMouseEventArgs* e) override;
+	virtual void OnTextInput(UIKeyEventArgs* e) override;
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	UITextBox();
