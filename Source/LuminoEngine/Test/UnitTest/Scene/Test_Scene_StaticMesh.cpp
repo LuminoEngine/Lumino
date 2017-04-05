@@ -1,5 +1,7 @@
 ﻿#include <TestConfig.h>
 
+#if 0
+
 class Test_Scene_StaticMesh : public ::testing::Test
 {
 protected:
@@ -103,3 +105,5 @@ TEST_F(Test_Scene_StaticMesh, TeapotMesh)
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_StaticMesh.TeapotMesh1.png"), 95, true));
 	}
 }
+
+#endif

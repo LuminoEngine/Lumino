@@ -90,11 +90,11 @@ void TextRendererCore::SetState(const Matrix& world, const Matrix& viewProj, con
 //------------------------------------------------------------------------------
 void TextRendererCore::Render(const GlyphRunData* dataList, int dataCount, FontGlyphTextureCache* cache, Brush* fillBrush)
 {
-	Color color = Color::White;
-	if (fillBrush != nullptr)
-	{
-		color = fillBrush->GetColor();
-	}
+	//Color color = Color::White;
+	//if (fillBrush != nullptr)
+	//{
+	Color color = fillBrush->GetColor();
+	//}
 
 	Driver::ITexture* srcTexture = cache->GetGlyphsFillTexture();
 	Size texSizeInv(1.0f / srcTexture->GetRealSize().width, 1.0f / srcTexture->GetRealSize().height);
@@ -373,6 +373,7 @@ void TextRenderer::OnSetState(const DrawElementBatch* state)
 			m_stateModified = true;
 		}
 
+		LN_ASSERT(m_fillBrush != nullptr);
 	}
 }
 
@@ -391,7 +392,7 @@ void TextRenderer::FlushInternal(FontGlyphTextureCache* cache)
 		RenderBulkData, dataListData,
 		int, dataCount,
 		RefPtr<FontGlyphTextureCache>, cache,
-		RefPtr<Brush>, m_fillBrush,
+		RefPtr<Brush>, m_fillBrush,	// TODO: Brush をそのまま描画スレッドに持ち込むのは危険。変更される。
 		{
 			m_core->Render(
 				(TextRendererCore::GlyphRunData*)dataListData.GetData(),

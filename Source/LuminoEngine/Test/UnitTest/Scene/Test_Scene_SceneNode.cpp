@@ -29,6 +29,7 @@ TEST_F(Test_Scene_SceneNode, Visible)
 	}
 }
 
+#if 0
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_SceneNode, DepthTest)
 {
@@ -67,6 +68,7 @@ TEST_F(Test_Scene_SceneNode, DepthTest)
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_SceneNode.DepthTest2.png"), 95));	// åãâ ÇÕÅ™Ç∆ìØÇ∂
 	}
 }
+#endif
 
 //------------------------------------------------------------------------------
 //TEST_F(Test_Scene_SceneNode, MaterialUtilities)

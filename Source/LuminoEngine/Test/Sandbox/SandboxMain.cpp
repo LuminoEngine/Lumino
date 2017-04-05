@@ -14,7 +14,7 @@ using namespace ln;
 
 
 void UIControlsGallery();
-
+int DxLibMain();
 
 
 
@@ -100,7 +100,8 @@ void Main()
 
 	//} while (!Engine::IsEndRequested());
 
-	UIControlsGallery();
+	//UIControlsGallery();
+	DxLibMain();
 	return;
 
 

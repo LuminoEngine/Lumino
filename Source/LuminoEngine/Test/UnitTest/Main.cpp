@@ -166,10 +166,10 @@ GTEST_API_ int main(int argc, char **argv)
 #endif
 	setlocale(LC_ALL, "");
 
-#if 0	// 部分的にテストを実行したりする
+#if 1	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_Graphics_DrawingContext.DrawText_"
+		"--gtest_filter=Test_UI_TextBlock.DefaultLayout"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);

@@ -1195,6 +1195,7 @@ DepthBuffer* DrawList::GetDepthBuffer() const
 //------------------------------------------------------------------------------
 void DrawList::SetBrush(Brush* brush)
 {
+	brush = (brush != nullptr) ? brush : Brush::Black;
 	m_state.state.state.SetBrush(brush);
 }
 
@@ -1242,7 +1243,9 @@ void DrawList::BeginMakeElements()
 {
 	m_drawElementList.ClearCommands();
 	m_state.Reset();
-	m_state.state.state.SetFont(m_manager->GetFontManager()->GetDefaultFont());
+	SetBrush(nullptr);
+	SetFont(nullptr);
+	//m_state.state.state.SetFont(m_manager->GetFontManager()->GetDefaultFont());
 	m_defaultMaterial->Reset();
 	//m_defaultMaterial->cullingMode = CullingMode::None;
 	m_currentSectionTopElement = nullptr;
