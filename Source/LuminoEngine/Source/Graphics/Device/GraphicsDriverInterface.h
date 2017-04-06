@@ -81,6 +81,7 @@ public:
 	virtual ISwapChain* GetDefaultSwapChain() = 0;
 	
 	/// 描画インターフェイスの取得
+	/// 保持してはなりません。
 	virtual IRenderer* GetRenderer() = 0;
 
 	virtual IVertexDeclaration* CreateVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;

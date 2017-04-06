@@ -127,9 +127,9 @@ int DxLibMain()
 		printf("%p ref:%d\n", d, d->Release());
 	}
 
-	Graphics::ChangeDirectX9Device(NULL);
+	//Graphics::ChangeDirectX9Device(NULL);
 
-	Graphics::ChangeDirectX9Device((IDirect3DDevice9*)GetUseDirect3DDevice9());
+	//Graphics::ChangeDirectX9Device((IDirect3DDevice9*)GetUseDirect3DDevice9());
 //
 //#if 1
 //	GCPtr<GUIContext> context1 = GUIContext::Create();
@@ -152,6 +152,10 @@ int DxLibMain()
 //	button1->SetEnabled(false);
 //#endif
 
+	auto uiRoot = Engine::GetMainWindow();
+	auto textBlock1 = UITextBlock::Create();
+	textBlock1->SetText(_T("TextBlock"));
+	uiRoot->AddChild(textBlock1);
 
 	// ループ
 	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)
@@ -183,7 +187,9 @@ int DxLibMain()
 		Engine::UpdateFrame();
 		Engine::RenderFrame();
 		auto* dc = Engine::GetMainWindow()->GetDrawingContext();
-		dc->Clear(ClearFlags::Color, Color::White);
+		//dc->Clear(ClearFlags::Color, Color::AliceBlue);
+		//dc->SetDepthTestEnabled(false);
+		dc->DrawText_(_T("ln"), PointF::Zero);
 		Engine::PresentFrame();
 
 

@@ -110,7 +110,12 @@ GraphicsManager::~GraphicsManager()
 {
 	LN_SAFE_RELEASE(m_defaultVertexDeclaration);
 	LN_SAFE_RELEASE(m_bitmapTextRenderer);
-	LN_SAFE_RELEASE(m_textRendererCore);
+
+	if (m_textRendererCore != nullptr)
+	{
+		m_textRendererCore->Finalize();
+		LN_SAFE_RELEASE(m_textRendererCore);
+	}
 	m_dymmyWhiteTexture.SafeRelease();
 	LN_SAFE_RELEASE(m_dummyDeviceTexture);
 	LN_SAFE_RELEASE(m_mainSwapChain);

@@ -12,7 +12,7 @@ struct Vertex;
 namespace detail {
 
 class TextRendererCore
-	: public RefObject
+	: public GraphicsResourceObject
 {
 public:
 	struct GlyphRunData
@@ -59,8 +59,12 @@ private:
 	void InternalDrawRectangle(const Matrix& transform, const RectF& rect, const RectF& srcUVRect, const Color& color);
 	void Flush(FontGlyphTextureCache* cache);
 
-	GraphicsManager*		m_manager;
-	Driver::IRenderer*		m_renderer;
+	virtual void OnChangeDevice(Driver::IGraphicsDevice* device) override;
+	void CreateDeviceResources();
+	void ReleaseDeviceResources();
+
+	//GraphicsManager*		m_manager;
+	//Driver::IRenderer*		m_renderer;
 	RefPtr<Driver::IVertexDeclaration>	m_vertexDeclaration;
 	Driver::IVertexBuffer*	m_vertexBuffer;
 	Driver::IIndexBuffer*	m_indexBuffer;

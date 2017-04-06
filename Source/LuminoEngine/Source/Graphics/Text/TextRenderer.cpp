@@ -35,9 +35,7 @@ static const size_t g_TextRenderer_fx_Len = LN_ARRAY_SIZE_OF(g_TextRenderer_fx_D
 
 //------------------------------------------------------------------------------
 TextRendererCore::TextRendererCore()
-	: m_manager(nullptr)
-	, m_renderer(nullptr)
-	, m_vertexBuffer(nullptr)
+	: m_vertexBuffer(nullptr)
 	, m_indexBuffer(nullptr)
 {
 }
@@ -45,19 +43,31 @@ TextRendererCore::TextRendererCore()
 //------------------------------------------------------------------------------
 TextRendererCore::~TextRendererCore()
 {
-	LN_SAFE_RELEASE(m_shader.shader);
-	LN_SAFE_RELEASE(m_vertexBuffer);
-	LN_SAFE_RELEASE(m_indexBuffer);
+	ReleaseDeviceResources();
 }
 
 //------------------------------------------------------------------------------
 void TextRendererCore::Initialize(GraphicsManager* manager)
 {
-	m_manager = manager;
+	GraphicsResourceObject::Initialize(manager);
+	CreateDeviceResources();
+}
+
+//------------------------------------------------------------------------------
+void TextRendererCore::OnChangeDevice(Driver::IGraphicsDevice* device)
+{
+	if (device == nullptr)
+		ReleaseDeviceResources();
+	else
+		CreateDeviceResources();
+}
+
+//------------------------------------------------------------------------------
+void TextRendererCore::CreateDeviceResources()
+{
 	const int DefaultFaceCount = 512;
 
 	auto* device = m_manager->GetGraphicsDevice();
-	m_renderer = device->GetRenderer();
 	m_vertexDeclaration.Attach(device->CreateVertexDeclaration(Vertex::Elements(), Vertex::ElementCount));
 	m_vertexBuffer = device->CreateVertexBuffer(sizeof(Vertex) * DefaultFaceCount * 4, nullptr, ResourceUsage::Dynamic);
 	m_indexBuffer = device->CreateIndexBuffer(DefaultFaceCount * 6, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
@@ -76,6 +86,14 @@ void TextRendererCore::Initialize(GraphicsManager* manager)
 	m_shader.varTexture = m_shader.shader->GetVariableByName(_T("g_texture"));
 	//m_shader.varGlyphMaskSampler = m_shader.shader->GetVariableByName(_T("g_glyphMaskTexture"));
 	m_shader.varPixelStep = m_shader.shader->GetVariableByName(_T("g_pixelStep"));
+}
+
+//------------------------------------------------------------------------------
+void TextRendererCore::ReleaseDeviceResources()
+{
+	LN_SAFE_RELEASE(m_shader.shader);
+	LN_SAFE_RELEASE(m_vertexBuffer);
+	LN_SAFE_RELEASE(m_indexBuffer);
 }
 
 //------------------------------------------------------------------------------
@@ -154,14 +172,16 @@ void TextRendererCore::Flush(FontGlyphTextureCache* cache)
 {
 	if (m_indexCache.GetCount() == 0) { return; }
 
+	auto* renderer = m_manager->GetGraphicsDevice()->GetRenderer();
+
 	// ビットマップフォントからの描画なので、アルファブレンドONでなければ真っ白矩形になってしまう。
 	// ・・・が、TextRendererCore のような低レベルでステートを強制変更してしまうのはいかがなものか・・・。
-	RenderState oldState = m_renderer->GetRenderState();
+	RenderState oldState = renderer->GetRenderState();
 	RenderState newState = oldState;
 	newState.alphaBlendEnabled = true;
 	newState.sourceBlend = BlendFactor::SourceAlpha;
 	newState.destinationBlend = BlendFactor::InverseSourceAlpha;
-	m_renderer->SetRenderState(newState);
+	renderer->SetRenderState(newState);
 
 
 
@@ -171,18 +191,18 @@ void TextRendererCore::Flush(FontGlyphTextureCache* cache)
 	m_shader.varTone->SetVector((Vector4&)m_tone);
 	m_shader.varTexture->SetTexture(cache->GetGlyphsFillTexture());
 	//m_shader.varGlyphMaskSampler->SetTexture(m_glyphsMaskTexture);
-	m_renderer->SetShaderPass(m_shader.pass);
-	m_renderer->SetVertexDeclaration(m_vertexDeclaration);
-	m_renderer->SetVertexBuffer(0, m_vertexBuffer);
-	m_renderer->SetIndexBuffer(m_indexBuffer);
-	m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
+	renderer->SetShaderPass(m_shader.pass);
+	renderer->SetVertexDeclaration(m_vertexDeclaration);
+	renderer->SetVertexBuffer(0, m_vertexBuffer);
+	renderer->SetIndexBuffer(m_indexBuffer);
+	renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
 
 	// キャッシュクリア
 	m_vertexCache.Clear();
 	m_indexCache.Clear();
 
 	// 変更したステートを元に戻す
-	m_renderer->SetRenderState(oldState);
+	renderer->SetRenderState(oldState);
 }
 
 
