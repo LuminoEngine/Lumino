@@ -318,7 +318,8 @@ void Viewport::Render(DrawList* parentDrawList, const SizeI& targetSize)
 	parentDrawList->SetDepthBuffer(oldDepthBuffer);
 	parentDrawList->Blit(m_primaryLayerTarget, viewBoxTransform);
 
-
+	// TODO: 暫定。Blit の中で深度書き込みしないようにしてほしいかも。
+	parentDrawList->Clear(ClearFlags::Depth, Color());
 
 }
 

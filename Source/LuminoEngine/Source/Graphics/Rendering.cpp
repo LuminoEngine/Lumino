@@ -727,6 +727,9 @@ void InternalRenderer::Render(
 	// 視点に関する情報の設定
 	context->SetViewInfo(cameraInfo.viewPixelSize, cameraInfo.viewMatrix, cameraInfo.projMatrix);
 
+	// ライブラリ外部への書き込み対応
+	//context->BeginBaseRenderer()->Clear(ClearFlags::Depth/* | ClearFlags::Stencil*/, Color());
+
 	// 視錘台カリング
 	for (int i = 0; i < elementList->GetElementCount(); ++i)
 	{

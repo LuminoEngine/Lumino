@@ -127,9 +127,9 @@ int DxLibMain()
 		printf("%p ref:%d\n", d, d->Release());
 	}
 
-	//Graphics::ChangeDirectX9Device(NULL);
+	Graphics::ChangeDirectX9Device(NULL);
 
-	//Graphics::ChangeDirectX9Device((IDirect3DDevice9*)GetUseDirect3DDevice9());
+	Graphics::ChangeDirectX9Device((IDirect3DDevice9*)GetUseDirect3DDevice9());
 //
 //#if 1
 //	GCPtr<GUIContext> context1 = GUIContext::Create();
@@ -186,10 +186,11 @@ int DxLibMain()
 		//GetUseDirect3D11BackBufferTexture2D
 		Engine::UpdateFrame();
 		Engine::RenderFrame();
-		auto* dc = Engine::GetMainWindow()->GetDrawingContext();
-		//dc->Clear(ClearFlags::Color, Color::AliceBlue);
-		//dc->SetDepthTestEnabled(false);
-		dc->DrawText_(_T("ln"), PointF::Zero);
+		//auto* dc = Engine::GetMainWindow()->GetDrawingContext();
+		////dc->Clear(ClearFlags::Color, Color::AliceBlue);
+		////dc->SetDepthTestEnabled(false);
+		////dc->SetDepthWriteEnabled(false);
+		//dc->DrawText_(_T("ln"), PointF::Zero);
 		Engine::PresentFrame();
 
 
