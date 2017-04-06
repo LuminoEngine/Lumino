@@ -383,12 +383,12 @@ void BatchState::ApplyStatus(InternalContext* context, CombinedMaterial* combine
 	}
 	// FrameBuffer
 	{
-		if (defaultRenderTarget == nullptr && defaultDepthBuffer == nullptr)
-		{
-			// TODO: 子DrawListが実行された後のステート復帰。
-			// もしかしたらオプションにはできないかもしれない。
-			return;
-		}
+		//if (defaultRenderTarget == nullptr && defaultDepthBuffer == nullptr)
+		//{
+		//	// TODO: 子DrawListが実行された後のステート復帰。
+		//	// もしかしたらオプションにはできないかもしれない。
+		//	return;
+		//}
 
 		for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
 		{

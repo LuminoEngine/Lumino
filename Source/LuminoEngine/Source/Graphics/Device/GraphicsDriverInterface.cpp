@@ -155,7 +155,7 @@ void IRenderer::Clear(ClearFlags flags, const Color& color, float z, uint8_t ste
 	if (newFlags == ClearFlags::None) return;
 
 	FlushStates();
-	OnClear(flags, color, z, stencil);
+	OnClear(newFlags, color, z, stencil);
 }
 
 //------------------------------------------------------------------------------
