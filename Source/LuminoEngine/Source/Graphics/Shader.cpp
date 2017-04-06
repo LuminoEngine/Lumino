@@ -456,6 +456,10 @@ void Shader::Initialize(detail::GraphicsManager* manager, const void* code, int 
 	m_deviceObj = m_manager->GetGraphicsDevice()->CreateShader(newCode.c_str(), newCode.GetLength(), &result);
 	LN_THROW(m_deviceObj != nullptr, CompilationException, result);
 
+
+	// ライブラリ外部からの DeviceContext 再設定に備えてコードを保存する
+	m_sourceCode.Alloc(newCode.c_str(), newCode.GetLength());
+
 	PostInitialize();
 }
 
@@ -891,8 +895,8 @@ ShaderVariable::ShaderVariable(Shader* owner, Driver::IShaderVariable* deviceObj
 	, m_textureValue(NULL)
 	, m_modified(true)
 {
-	const String& name = deviceObj->GetName();
-	m_nameHash = Hash::CalcHash(name.c_str(), name.GetLength());
+	m_name = deviceObj->GetName();
+	m_nameHash = Hash::CalcHash(m_name.c_str(), m_name.GetLength());
 
 	// 初期値として保持しておく
 	m_value = deviceObj->GetValue();
@@ -921,7 +925,7 @@ ShaderVariableType ShaderVariable::GetType() const
 //------------------------------------------------------------------------------
 const String& ShaderVariable::GetName() const
 {
-	return m_deviceObj->GetName();
+	return m_name;
 }
 
 //------------------------------------------------------------------------------

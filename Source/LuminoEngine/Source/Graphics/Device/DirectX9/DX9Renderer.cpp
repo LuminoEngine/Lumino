@@ -23,10 +23,13 @@ DX9Renderer::DX9Renderer(DX9GraphicsDevice* device)
 	, m_currentIndexBuffer(NULL)
 	, m_currentDepthBuffer(NULL)
 	, m_currentShaderPass(NULL)
+	, m_defaultRenderTargets()
+	, m_defaultDepthBuffer(nullptr)
 	, m_sceneBegan(false)
 	, m_restorationStates(true)
 {
 	memset(m_currentRenderTargets, 0, sizeof(m_currentRenderTargets));
+	memset(m_defaultRenderTargets, 0, sizeof(m_defaultRenderTargets));
 
 	m_dxDevice = device->GetIDirect3DDevice9();
 
@@ -163,6 +166,12 @@ void DX9Renderer::OnEnterRenderState()
 
 		device->GetTexture(0, &m_state_pTexture);
 		device->GetFVF(&m_state_FVF);
+
+		for (int i = 0; i < Graphics::MaxMultiRenderTargets; i++)
+		{
+			device->GetRenderTarget(i, &m_defaultRenderTargets[i]);
+		}
+		device->GetDepthStencilSurface(&m_defaultDepthBuffer);
 	}
 
 	RestoreStatus();
@@ -171,9 +180,7 @@ void DX9Renderer::OnEnterRenderState()
 	OnUpdateDepthStencilState(m_currentDepthStencilState, m_currentDepthStencilState, true);
 	for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
 	{
-		if (i != 0 || m_currentRenderTargets[i] != NULL) {	// 0 に NULL を指定することはできない。なのでやむを得ず何もしない
-			InternalSetRenderTarget(i, m_currentRenderTargets[i], true);
-		}
+		InternalSetRenderTarget(i, m_currentRenderTargets[i], true);
 	}
 	InternalSetDepthBuffer(m_currentDepthBuffer, true);
 	//InternalSetViewport(m_currentViewportRect, true);
@@ -231,6 +238,15 @@ void DX9Renderer::OnLeaveRenderState()
 		LN_SAFE_RELEASE(m_state_pTexture);
 
 		device->SetFVF(m_state_FVF);
+
+
+		for (int i = 0; i < Graphics::MaxMultiRenderTargets; i++)
+		{
+			device->SetRenderTarget(i, m_defaultRenderTargets[i]);
+			LN_SAFE_RELEASE(m_defaultRenderTargets[i]);
+		}
+		device->SetDepthStencilSurface(m_defaultDepthBuffer);
+		LN_SAFE_RELEASE(m_defaultDepthBuffer);
 	}
 }
 
@@ -506,12 +522,13 @@ void DX9Renderer::InternalSetRenderTarget(int index, ITexture* texture, bool res
 {
 	if (m_currentRenderTargets[index] != texture || reset)
 	{
-		if (texture) {
-			LN_THROW((texture->GetTextureType() == TextureType_RenderTarget), ArgumentException);
+		if (texture)
+		{
 			LN_COMCALL(m_dxDevice->SetRenderTarget(index, ((DX9TextureBase*)texture)->GetIDirect3DSurface9()));
 		}
-		else {
-			LN_COMCALL(m_dxDevice->SetRenderTarget(index, NULL));
+		else
+		{
+			LN_COMCALL(m_dxDevice->SetRenderTarget(index, m_defaultRenderTargets[index]));
 		}
 		LN_REFOBJ_SET(m_currentRenderTargets[index], static_cast<DX9RenderTargetTexture*>(texture));
 
@@ -528,12 +545,13 @@ void DX9Renderer::InternalSetDepthBuffer(ITexture* texture, bool reset)
 {
 	if (m_currentDepthBuffer != texture || reset)
 	{
-		if (texture) {
-			LN_THROW((texture->GetTextureType() == TextureType_DepthBuffer), ArgumentException);
+		if (texture)
+		{
 			m_dxDevice->SetDepthStencilSurface(((DX9TextureBase*)texture)->GetIDirect3DSurface9());
 		}
-		else {
-			m_dxDevice->SetDepthStencilSurface(NULL);
+		else
+		{
+			m_dxDevice->SetDepthStencilSurface(m_defaultDepthBuffer);
 		}
 		LN_REFOBJ_SET(m_currentDepthBuffer, static_cast<DX9DepthBuffer*>(texture));
 	}

@@ -127,9 +127,9 @@ int DxLibMain()
 		printf("%p ref:%d\n", d, d->Release());
 	}
 
-//	Graphics::ChangeDirectX9Device(NULL);
-//
-//	Graphics::ChangeDirectX9Device((IDirect3DDevice9*)GetUseDirect3DDevice9());
+	Graphics::ChangeDirectX9Device(NULL);
+
+	Graphics::ChangeDirectX9Device((IDirect3DDevice9*)GetUseDirect3DDevice9());
 //
 //#if 1
 //	GCPtr<GUIContext> context1 = GUIContext::Create();

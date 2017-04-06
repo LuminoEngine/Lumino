@@ -412,7 +412,18 @@ void Texture2D::SetData(const void* data)
 //------------------------------------------------------------------------------
 void Texture2D::OnChangeDevice(Driver::IGraphicsDevice* device)
 {
-	LN_NOTIMPLEMENTED();
+	if (device == nullptr)
+	{
+		TryLock();
+		m_deviceObj->GetData(RectI(0, 0, m_size), m_primarySurface2->GetBitmapBuffer()->GetData());
+		LN_SAFE_RELEASE(m_deviceObj);
+	}
+	else
+	{
+		m_deviceObj = device->CreateTexture(m_primarySurface2->GetSize(), m_mipmap, m_format, m_primarySurface2->GetBitmapBuffer()->GetConstData());
+	}
+
+
 	//if (device == NULL)
 	//{
 	//	// Immediate のときは Lock で取得する必要がある。Deferred のときは m_primarySurface が持っている。

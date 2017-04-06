@@ -290,7 +290,7 @@ void UIMainWindow::OnRenderContents()
 	//UIFrameWindow::RenderContents();
 
 	Details::Renderer* renderer = GetManager()->GetGraphicsManager()->GetRenderer();
-	m_mainViewport->Render(GetDrawingContext(), renderer, GetPlatformWindow()->GetSize()/*GetSwapChain()->GetBackBuffer()->GetSize()*/);
+	m_mainViewport->Render(GetDrawingContext(), GetPlatformWindow()->GetSize()/*GetSwapChain()->GetBackBuffer()->GetSize()*/);
 
 }
 

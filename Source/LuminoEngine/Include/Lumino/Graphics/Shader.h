@@ -429,6 +429,7 @@ private:
 	ShaderVariable(Shader* owner, Driver::IShaderVariable* deviceObj);
 	virtual ~ShaderVariable();
 	Shader*						m_owner;
+	String						m_name;
 	Driver::IShaderVariable*	m_deviceObj;
 	uint32_t					m_nameHash;
 	ShaderValue					m_value;

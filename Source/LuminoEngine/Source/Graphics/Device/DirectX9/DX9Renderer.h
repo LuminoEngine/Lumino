@@ -67,6 +67,12 @@ private:
 	DX9DepthBuffer*			m_currentDepthBuffer;
 	DX9ShaderPass*			m_currentShaderPass;
 
+	// OnEnterRenderState() 時点で IDirect3DDevice9 から取り出すフレームバッファ。
+	// SetRenderTarget() で nullptr が指定された場合、これを使用する。
+	// これはライブラリ外部で用意されたフレームバッファに書き込むための機能。
+	IDirect3DSurface9*		m_defaultRenderTargets[Graphics::MaxMultiRenderTargets];
+	IDirect3DSurface9*		m_defaultDepthBuffer;
+
 	DWORD	m_state_FVF;
 	DWORD	m_state_D3DRS_ALPHABLENDENABLE;
 	DWORD	m_state_D3DRS_BLENDOP;

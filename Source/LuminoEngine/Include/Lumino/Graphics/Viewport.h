@@ -113,7 +113,7 @@ LN_INTERNAL_ACCESS:	// TODO: いまはとりあえず内部用途
 	// call from UIFrameWindow
 	void UpdateLayersTransform(const Size& viewSize);
 	bool DoPlatformEvent(const PlatformEventArgs& e);
-	void Render(DrawList* parentDrawList, Details::Renderer* renderer, const SizeI& targetSize);
+	void Render(DrawList* parentDrawList, const SizeI& targetSize);
 	void PresentRenderingContexts();
 
 private:

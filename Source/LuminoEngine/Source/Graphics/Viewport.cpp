@@ -272,11 +272,14 @@ bool Viewport::DoPlatformEvent(const PlatformEventArgs& e)
 }
 
 //------------------------------------------------------------------------------
-void Viewport::Render(DrawList* parentDrawList, Details::Renderer* renderer, const SizeI& targetSize)
+void Viewport::Render(DrawList* parentDrawList, const SizeI& targetSize)
 {
-	//renderer->SetRenderTarget(0, m_primaryLayerTarget);
-	//renderer->SetDepthBuffer(m_depthBuffer);
-	//renderer->Clear(ClearFlags::All, m_backgroundColor, 1.0f, 0x00);
+	auto* oldRenderTarget = parentDrawList->GetRenderTarget(0);
+	auto* oldDepthBuffer = parentDrawList->GetDepthBuffer();
+
+	parentDrawList->SetRenderTarget(0, m_primaryLayerTarget);
+	parentDrawList->SetDepthBuffer(m_depthBuffer);
+	parentDrawList->Clear(ClearFlags::All, m_backgroundColor, 1.0f, 0x00);
 
 	// ZIndex でソート
 	std::stable_sort(m_viewportLayerList->begin(), m_viewportLayerList->end(),
@@ -310,6 +313,9 @@ void Viewport::Render(DrawList* parentDrawList, Details::Renderer* renderer, con
 	//m_renderer->Blit(m_primaryLayerTarget, viewBoxTransform);
 	//FlushBlitRenderer(renderTarget);
 
+
+	parentDrawList->SetRenderTarget(0, oldRenderTarget);
+	parentDrawList->SetDepthBuffer(oldDepthBuffer);
 	parentDrawList->Blit(m_primaryLayerTarget, viewBoxTransform);
 
 
