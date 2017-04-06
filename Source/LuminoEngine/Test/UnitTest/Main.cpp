@@ -6,32 +6,11 @@
 //------------------------------------------------------------------------------
 void TestEnv::SetUp()
 {
-	Logger::Initialize(_T("test_log.txt"));
-
-	int scale = 1;
-	EngineSettings::SetMainWindowSize(SizeI(160 * scale, 120 * scale));
-	EngineSettings::SetMainBackBufferSize(SizeI(160 * scale, 120 * scale));
-	EngineSettings::SetGraphicsAPI(GraphicsAPI::DirectX9);//GraphicsAPI::OpenGL);//
-	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
-	//settings.graphicsAPI = GraphicsAPI::DirectX9; //GraphicsAPI::OpenGL;//
-	//settings.renderingType = GraphicsRenderingType::Immediate; //RenderingType::Deferred;//
-	detail::EngineSettings::instance.defaultSkinFilePath = LN_LOCALFILE("UI/Data/Skin.png");
-	Engine::Initialize();
-
-	// テストしやすいように固定フレームレートにする
-	Engine::SetFrameUpdateMode(FrameUpdateMode::Fixed);
-
-	RawFont::RegisterFontFile(LN_LOCALFILE("../../../../Tools/VLGothic/VL-Gothic-Regular.ttf"));
-	RawFont::GetDefaultFont()->SetName(_T("VL Gothic"));
-
-	// 背景はグレーにしておくと加算合成のテストとか、いろいろ都合がよい
-	Engine::GetMainViewport()->SetBackgroundColor(Color32::Gray);
 }
 
 //------------------------------------------------------------------------------
 void TestEnv::TearDown()
 {
-	Engine::Terminate();
 }
 
 //------------------------------------------------------------------------------
@@ -158,6 +137,30 @@ void TestEnv::WaitRendering()
 	Engine::GetMainWindow()->GetSwapChain()->WaitForPresent();
 }
 
+
+
+
+
+
+
+
+
+
+//------------------------------------------------------------------------------
+void EngineInitalize()
+{
+	Engine::Initialize();
+
+	// テストしやすいように固定フレームレートにする
+	Engine::SetFrameUpdateMode(FrameUpdateMode::Fixed);
+
+	RawFont::RegisterFontFile(LN_LOCALFILE("../../../../Tools/VLGothic/VL-Gothic-Regular.ttf"));
+	RawFont::GetDefaultFont()->SetName(_T("VL Gothic"));
+
+	// 背景はグレーにしておくと加算合成のテストとか、いろいろ都合がよい
+	Engine::GetMainViewport()->SetBackgroundColor(Color32::Gray);
+}
+
 //------------------------------------------------------------------------------
 GTEST_API_ int main(int argc, char **argv)
 {
@@ -178,6 +181,37 @@ GTEST_API_ int main(int argc, char **argv)
 #endif
 	::testing::AddGlobalTestEnvironment(new TestEnv());
 
+
+
+
+	{
+		Logger::Initialize(_T("test_log.txt"));
+
+		int scale = 1;
+		EngineSettings::SetMainWindowSize(SizeI(160 * scale, 120 * scale));
+		EngineSettings::SetMainBackBufferSize(SizeI(160 * scale, 120 * scale));
+		EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
+		detail::EngineSettings::instance.defaultSkinFilePath = LN_LOCALFILE("UI/Data/Skin.png");
+	}
+
+	{
+		EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
+
+		EngineInitalize();
+		int r = RUN_ALL_TESTS();
+		Engine::Terminate();
+		if (r != 0) return r;
+	}
+	{
+		EngineSettings::SetGraphicsAPI(GraphicsAPI::DirectX9);
+
+		EngineInitalize();
+		int r = RUN_ALL_TESTS();
+		Engine::Terminate();
+		if (r != 0) return r;
+	}
+
 	//RUN_ALL_TESTS();
-	return RUN_ALL_TESTS();
+	//return RUN_ALL_TESTS();
+	return 0;
 }

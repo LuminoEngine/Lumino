@@ -126,6 +126,7 @@ LN_ENUM_DECLARE(GraphicsAPI);
 
 LN_ENUM_FLAGS(ClearFlags)
 {
+	None	= 0x0000,
 	Color	= 0x0001,					///< カラーバッファをクリアします。
 	Depth	= 0x0002,					///< 深度バッファをクリアします。
 	Stencil = 0x0004,					///< ステンシルバッファをクリアします。

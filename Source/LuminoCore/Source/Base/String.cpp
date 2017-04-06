@@ -219,6 +219,7 @@ GenericString<TChar>::GenericString(const GenericPathName<TChar>& path)
 
 template<typename TChar>
 GenericString<TChar>::GenericString(GenericString&& str) LN_NOEXCEPT
+	: m_string(nullptr)
 {
 	*this = std::move(str);
 }
@@ -338,6 +339,7 @@ GenericString<TChar>& GenericString<TChar>::operator=(GenericString&& right) LN_
 {
 	if (m_string != right.m_string)
 	{
+		LN_SAFE_RELEASE(m_string);
 		m_string = right.m_string;
 		right.m_string = nullptr;
 	}

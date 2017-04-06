@@ -1,7 +1,6 @@
 ﻿
 #pragma once 
 #include <Lumino/Graphics/Common.h>
-#include <Lumino/Graphics/Graphics.h>
 #include <Lumino/Graphics/RenderState.h>
 #include "../GraphicsDriverInterface.h"
 #include "DX9Texture.h"
@@ -23,48 +22,29 @@ public:
 	DX9Renderer(DX9GraphicsDevice* device);
 	virtual ~DX9Renderer();
 
-public:
 	DX9ShaderPass* GetCurrentShaderPass() { return m_currentShaderPass; }
 	void SetCurrentShaderPass(DX9ShaderPass* pass);
 	void OnLostDevice();
 	void OnResetDevice();
-	//void TryBeginScene();
-	//void TryEndScene();
-
-public:
-	virtual void Begin();
-	virtual void End();
-	virtual void SetRenderTarget(int index, ITexture* texture);
-	virtual ITexture* GetRenderTarget(int index);
-	virtual void SetDepthBuffer(ITexture* texture);
-	//virtual ITexture* GetDepthBuffer();
-	//virtual void SetViewport(const RectI& rect);
-	//virtual const RectI& GetViewport();
 
 private:
 	void RestoreStatus();
 	virtual void OnEnterRenderState() override;
 	virtual void OnLeaveRenderState() override;
+	virtual void OnBeginRendering() override;
+	virtual void OnEndRendering() override;
+	virtual void OnUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, ITexture* depthBuffer) override;
 	virtual	void OnUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset) override;
 	virtual	void OnUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset) override;
 	virtual void OnUpdatePrimitiveData(IVertexDeclaration* decls, const List<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer) override;
 	virtual void OnClear(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
 	virtual void OnDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) override;
 	virtual void OnDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) override;
-	
-	void InternalSetRenderTarget(int index, ITexture* texture, bool reset);
-	void InternalSetDepthBuffer(ITexture* texture, bool reset);
-	//void InternalSetViewport(const RectI& rect, bool reset);
-	void InternalSetIndexBuffer(IIndexBuffer* indexBuffer, bool reset);
 
 private:
 	DX9GraphicsDevice*		m_owner;
 	IDirect3DDevice9*		m_dxDevice;
 	//RectI					m_currentViewportRect;
-	//DX9VertexBuffer*		m_currentVertexBuffer;
-	DX9IndexBuffer*			m_currentIndexBuffer;
-	DX9RenderTargetTexture*	m_currentRenderTargets[Graphics::MaxMultiRenderTargets];
-	DX9DepthBuffer*			m_currentDepthBuffer;
 	DX9ShaderPass*			m_currentShaderPass;
 
 	// OnEnterRenderState() 時点で IDirect3DDevice9 から取り出すフレームバッファ。
@@ -98,7 +78,6 @@ private:
 
 	IDirect3DBaseTexture9*	m_state_pTexture;
 
-	bool					m_sceneBegan;
 	bool					m_restorationStates;
 };
 

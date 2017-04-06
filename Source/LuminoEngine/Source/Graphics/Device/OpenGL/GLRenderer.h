@@ -31,19 +31,12 @@ public:
 
 	GLuint GetVertexArrayObject();
 
-public:
-	virtual void Begin();
-	virtual void End();
-	virtual void SetRenderTarget(int index, ITexture* texture);
-	virtual ITexture* GetRenderTarget(int index);
-	virtual void SetDepthBuffer(ITexture* texture);
-	//virtual ITexture* GetDepthBuffer();
-	//virtual void SetViewport(const RectI& rect);
-	//virtual const RectI& GetViewport();
-
 protected:
 	virtual void OnEnterRenderState() override;
 	virtual void OnLeaveRenderState() override;
+	virtual void OnBeginRendering() override;
+	virtual void OnEndRendering() override;
+	virtual void OnUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, ITexture* depthBuffer) override;
 	virtual	void OnUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset) override;
 	virtual	void OnUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset) override;
 	virtual void OnUpdatePrimitiveData(IVertexDeclaration* decls, const List<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer) override;
@@ -51,21 +44,17 @@ protected:
 	virtual void OnDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) override;
 	virtual void OnDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) override;
 
-	void UpdateFrameBuffer();
+private:
 	void UpdateVAO();
 	void UpdateVertexAttribPointer();
 	void GetPrimitiveInfo(PrimitiveType primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount);
 
-private:
 	RectI					m_currentViewportRect;
 	GLVertexBuffer*			m_currentVertexBuffer;
 	GLIndexBuffer*			m_currentIndexBuffer;
-	GLRenderTargetTexture*	m_currentRenderTargets[Graphics::MaxMultiRenderTargets];
-	GLDepthBuffer*			m_currentDepthBuffer;
 	GLShaderPass*			m_currentShaderPass;
 	GLuint					m_vertexArray;
 	GLuint					m_framebuffer;
-	bool					m_modifiedFrameBuffer;
 };
 
 } // namespace Driver
