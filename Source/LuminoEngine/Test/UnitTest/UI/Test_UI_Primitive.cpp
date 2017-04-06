@@ -1,5 +1,6 @@
 ﻿#include <TestConfig.h>
 
+//==============================================================================
 class Test_UI_TextBlock : public ::testing::Test
 {
 protected:
@@ -27,5 +28,27 @@ TEST_F(Test_UI_TextBlock, DefaultLayout)
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_TextBlock.Basic.png")));
 	uiRoot->RemoveChild(textBlock1);
+}
+
+
+//==============================================================================
+class Test_UI_Image : public ::testing::Test
+{
+protected:
+	virtual void SetUp() {}
+	virtual void TearDown() {}
+};
+
+//------------------------------------------------------------------------------
+TEST_F(Test_UI_Image, Basic)
+{
+	auto uiRoot = Engine::GetMainWindow();
+	auto image1 = UIImage::Create(LN_LOCALFILE("../Graphics/TestData/Sprite2.png"));
+	uiRoot->AddChild(image1);
+
+	Engine::Update();
+
+	//ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_Image.Basic1.png"), 99, true));
+	uiRoot->RemoveChild(image1);
 }
 

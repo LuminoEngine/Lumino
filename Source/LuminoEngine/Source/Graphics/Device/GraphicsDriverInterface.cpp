@@ -147,15 +147,8 @@ void IRenderer::Clear(ClearFlags flags, const Color& color, float z, uint8_t ste
 		if (LN_CHECK_STATE(m_currentRenderTargets[0]->GetSize() == m_currentDepthBuffer->GetSize())) return;
 	}
 
-	// 本当に必要なフラグを求める
-	ClearFlags newFlags = ClearFlags::None;
-	if (flags.TestFlag(ClearFlags::Color)) newFlags |= ClearFlags::Color;
-	if (m_currentDepthBuffer && flags.TestFlag(ClearFlags::Depth)) newFlags |= (ClearFlags::Depth);
-	if (m_currentDepthBuffer && flags.TestFlag(ClearFlags::Stencil)) newFlags |= (ClearFlags::Stencil);
-	if (newFlags == ClearFlags::None) return;
-
 	FlushStates();
-	OnClear(newFlags, color, z, stencil);
+	OnClear(flags, color, z, stencil);
 }
 
 //------------------------------------------------------------------------------

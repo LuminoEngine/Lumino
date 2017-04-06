@@ -28,7 +28,7 @@ set(LN_TEST_SOURCES
 	UnitTest/Scene/Test_Scene_StaticMesh.cpp
 	UnitTest/Scene/Test_Scene_SceneNode.cpp
 	UnitTest/UI/Test_UI_Button.cpp
-	UnitTest/UI/Test_UI_TextBlock.cpp
+	UnitTest/UI/Test_UI_Primitive.cpp
 )
 
 if (MSVC_VERSION GREATER 1800)		# (MSVC > vs2013)

@@ -109,6 +109,12 @@ void DX9Renderer::OnEnterRenderState()
 			device->GetRenderTarget(i, &m_defaultRenderTargets[i]);
 		}
 		device->GetDepthStencilSurface(&m_defaultDepthBuffer);
+
+
+
+
+		//D3DCOLOR dxc = 0;
+		//LN_COMCALL(m_dxDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER, dxc, 0, 0));
 	}
 
 	RestoreStatus();
@@ -382,10 +388,13 @@ void DX9Renderer::OnClear(ClearFlags flags, const Color& color, float z, uint8_t
 	//D3DVIEWPORT9 vp = { 0, 0, viewSize.width, viewSize.height, 0.0f, 1.0f };
 	//LN_COMCALL(m_dxDevice->SetViewport(&vp));
 
+
+	bool hasDepth = (GetDepthBuffer() != nullptr || m_defaultDepthBuffer != nullptr);
+
 	DWORD flag = 0;
 	if (flags.TestFlag(ClearFlags::Color)) flag |= D3DCLEAR_TARGET;
-	if (flags.TestFlag(ClearFlags::Depth)) flag |= (D3DCLEAR_ZBUFFER);
-	if (flags.TestFlag(ClearFlags::Stencil)) flag |= (D3DCLEAR_STENCIL);
+	if (hasDepth && flags.TestFlag(ClearFlags::Depth)) flag |= (D3DCLEAR_ZBUFFER);
+	if (hasDepth && flags.TestFlag(ClearFlags::Stencil)) flag |= (D3DCLEAR_STENCIL);
 	if (flag == 0) return;
 
 	Color32 c;

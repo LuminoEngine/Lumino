@@ -172,7 +172,7 @@ GTEST_API_ int main(int argc, char **argv)
 #if 1	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_UI_TextBlock.DefaultLayout"
+		"--gtest_filter=Test_UI_Image.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);
@@ -195,7 +195,7 @@ GTEST_API_ int main(int argc, char **argv)
 	}
 
 	{
-		EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
+		EngineSettings::SetGraphicsAPI(GraphicsAPI::DirectX9);
 
 		EngineInitalize();
 		int r = RUN_ALL_TESTS();
@@ -203,7 +203,7 @@ GTEST_API_ int main(int argc, char **argv)
 		if (r != 0) return r;
 	}
 	{
-		EngineSettings::SetGraphicsAPI(GraphicsAPI::DirectX9);
+		EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
 
 		EngineInitalize();
 		int r = RUN_ALL_TESTS();
