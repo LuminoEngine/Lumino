@@ -1,16 +1,24 @@
-
+﻿
 #pragma once
 #include "Rendering.h"
 
 LN_NAMESPACE_BEGIN
 
 /**
-	@brief	
+	@brief	矩形、テキスト、イメージなどのオブジェクトを描画するための機能を提供します。
 */
 class DrawingContext
 	: public DrawList
 {
 public:
+
+	/**
+		@brief		指定したテクスチャを描画します。
+		@param[in]	destRect	: 描画先の領域
+		@param[in]	texture		: 描画するテクスチャ
+		@param[in]	sourceRect	: 描画するテクスチャの転送領域
+	*/
+	void DrawTexture(const RectF& destRect, Texture* texture, const RectF& sourceRect);
 
 LN_CONSTRUCT_ACCESS:
 	DrawingContext();

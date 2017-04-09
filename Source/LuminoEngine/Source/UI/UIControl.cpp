@@ -52,7 +52,7 @@ void UIControl::Initialize(detail::UIManager* manager)
 
 
 	m_items = RefPtr<UIElementCollection>::MakeRef(this);
-	auto panel = NewObject<UILayoutPanel>(manager);
+	auto panel = NewObject<UIAbsoluteLayout>(manager);
 	SetLayoutPanel(panel);
 }
 

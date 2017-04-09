@@ -56,7 +56,7 @@ void UILayoutView::UpdateLayout(const Size& viewSize)
 }
 
 //------------------------------------------------------------------------------
-void UILayoutView::Render(DrawList* g)
+void UILayoutView::Render(DrawingContext* g)
 {
 	UIControl::Render(g);
 }

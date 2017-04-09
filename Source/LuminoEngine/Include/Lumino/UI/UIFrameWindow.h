@@ -42,7 +42,7 @@ LN_INTERNAL_ACCESS:
 	SwapChain* GetSwapChain() const { return m_swapChain; }
 	void SetDelayedRenderingSkip(bool enabled) { m_delayedRenderingSkip = enabled; }
 
-	virtual void RenderContents();
+	void RenderContents();
 	virtual void PresentRenderingContexts();
 
 private:

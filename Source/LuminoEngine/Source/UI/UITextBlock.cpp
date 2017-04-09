@@ -1,6 +1,6 @@
 
 #include "Internal.h"
-#include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/UI/UITextBlock.h>
 #include "UIManager.h"
 
@@ -65,7 +65,7 @@ Size UITextBlock::ArrangeOverride(const Size& finalSize)
 }
 
 //------------------------------------------------------------------------------
-void UITextBlock::OnRender(DrawList* g)
+void UITextBlock::OnRender(DrawingContext* g)
 {
 	g->SetFont(GetActiveFont());
 	g->SetBrush(GetForegroundInternal());

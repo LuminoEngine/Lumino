@@ -36,7 +36,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 
 	virtual Size MeasureOverride(const Size& availableSize) override;
 	virtual Size ArrangeOverride(const Size& finalSize) override;
-	virtual void OnRender(DrawList* g) override;
+	virtual void OnRender(DrawingContext* g) override;
 
 private:
 	//RefPtr<tr::Document>		m_document;

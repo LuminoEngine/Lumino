@@ -5,10 +5,10 @@
 
 LN_NAMESPACE_BEGIN
 class UIStackPanel;
-class UICanvas;
+class UIAbsoluteLayout;
 class UIGridLayout;
 using UIStackPanelPtr = RefPtr<UIStackPanel>;
-using UICanvasPtr = RefPtr<UICanvas>;
+using UIAbsoluteLayoutPtr = RefPtr<UIAbsoluteLayout>;
 using UIGridLayoutPtr = RefPtr<UIGridLayout>;
 
 
@@ -185,16 +185,16 @@ private:
 /**
 	@brief		
 */
-class UICanvas
+class UIAbsoluteLayout
 	: public UILayoutPanel
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:
-	static UICanvasPtr Create();
+	static UIAbsoluteLayoutPtr Create();
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	UICanvas();
-	virtual ~UICanvas();
+	UIAbsoluteLayout();
+	virtual ~UIAbsoluteLayout();
 	void Initialize(detail::UIManager* manager);
 
 	// UIElement interface

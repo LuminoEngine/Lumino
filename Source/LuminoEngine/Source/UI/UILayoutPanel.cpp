@@ -150,42 +150,42 @@ Size UIStackPanel::ArrangeOverride(const Size& finalSize)
 
 
 //==============================================================================
-// UICanvas
+// UIAbsoluteLayout
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UICanvas, UILayoutPanel)
+LN_UI_TYPEINFO_IMPLEMENT(UIAbsoluteLayout, UILayoutPanel)
 
 //------------------------------------------------------------------------------
-UICanvasPtr UICanvas::Create()
+UIAbsoluteLayoutPtr UIAbsoluteLayout::Create()
 {
-	auto ptr = UICanvasPtr::MakeRef();
+	auto ptr = UIAbsoluteLayoutPtr::MakeRef();
 	ptr->Initialize(detail::UIManager::GetInstance());
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-UICanvas::UICanvas()
+UIAbsoluteLayout::UIAbsoluteLayout()
 {
 }
 
 //------------------------------------------------------------------------------
-UICanvas::~UICanvas()
+UIAbsoluteLayout::~UIAbsoluteLayout()
 {
 }
 
 //------------------------------------------------------------------------------
-void UICanvas::Initialize(detail::UIManager* manager)
+void UIAbsoluteLayout::Initialize(detail::UIManager* manager)
 {
 	UILayoutPanel::Initialize(manager);
 }
 
 //------------------------------------------------------------------------------
-Size UICanvas::MeasureOverride(const Size& constraint)
+Size UIAbsoluteLayout::MeasureOverride(const Size& constraint)
 {
 	return UILayoutPanel::MeasureOverride(constraint);
 }
 
 //------------------------------------------------------------------------------
-Size UICanvas::ArrangeOverride(const Size& finalSize)
+Size UIAbsoluteLayout::ArrangeOverride(const Size& finalSize)
 {
 	//ThicknessF canvas;
 	

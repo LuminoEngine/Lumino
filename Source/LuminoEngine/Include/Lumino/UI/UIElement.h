@@ -9,7 +9,7 @@
 #include "LayoutElement.h"
 
 LN_NAMESPACE_BEGIN
-class DrawList;
+class DrawingContext;
 class UIStylePropertyTable;
 class UIVisualStateManager;
 
@@ -269,7 +269,7 @@ protected:
 	/**
 		@brief	この要素の描画を行います。
 	*/
-	virtual void OnRender(DrawList* g);
+	virtual void OnRender(DrawingContext* g);
 
 	virtual void OnMouseMove(UIMouseEventArgs* e);
 	virtual void OnMouseDown(UIMouseEventArgs* e);
@@ -312,7 +312,7 @@ LN_INTERNAL_ACCESS:
 
 
 	void UpdateLayout(const Size& viewSize) override;
-	void Render(DrawList* g);
+	void Render(DrawingContext* g);
 
 protected:
 	virtual void UpdateTransformHierarchy(const RectF& parentGlobalRect) override;

@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.h"
-#include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/Graphics/Text/GlyphRun.h>
 #include <Lumino/Documents/Documents.h>
 #include <Lumino/UI/UITextBox.h>
@@ -110,7 +110,7 @@ LN_INTERNAL_ACCESS:
 	void AddGlyphRun(GlyphRun* run);
 	void SetVisualLineIndex(int index) { m_visualLineIndex = index; }
 	void SetRenderPt(const PointF& pt) { m_renderRect.SetLocation(pt); }
-	void Render(DrawList* g);
+	void Render(DrawingContext* g);
 	RectF GetGlyphAreaGlobalRect(int column);	// 高さ=行高さ
 	bool TestHitFromGlobalPoint(const PointF& pt, UITextVisualPosition* outPos);
 	int GetTextLength() const { return m_textLength; }
@@ -148,7 +148,7 @@ LN_CONSTRUCT_ACCESS:
 	void Initialize(UITextDocumentLine* documentLine);
 
 LN_INTERNAL_ACCESS:
-	void Render(DrawList* g);
+	void Render(DrawingContext* g);
 	const List<RefPtr<UITextVisualLine>>& GetVisualLines() const { return m_visualLines; }
 
 private:
@@ -190,7 +190,7 @@ public:
 
 	Size Measure(const Size& availableSize, Font* font);
 	Size Arrange(const Size& finalSize);
-	void Render(DrawList* g);
+	void Render(DrawingContext* g);
 
 LN_CONSTRUCT_ACCESS:
 	UITextArea();
@@ -496,7 +496,7 @@ void UITextVisualLine::AddGlyphRun(GlyphRun* run)
 }
 
 //------------------------------------------------------------------------------
-void UITextVisualLine::Render(DrawList* g)
+void UITextVisualLine::Render(DrawingContext* g)
 {
 	for (auto& run : m_glyphRuns)
 	{
@@ -607,7 +607,7 @@ void UITextVisualLineBlock::BuildVisualLines(Font* font, int startDocumentTextOf
 }
 
 //------------------------------------------------------------------------------
-void UITextVisualLineBlock::Render(DrawList* g)
+void UITextVisualLineBlock::Render(DrawingContext* g)
 {
 	for (auto& line : m_visualLines)
 	{
@@ -728,7 +728,7 @@ Size UITextArea::Arrange(const Size& finalSize)
 }
 
 //------------------------------------------------------------------------------
-void UITextArea::Render(DrawList* g)
+void UITextArea::Render(DrawingContext* g)
 {
 	for (auto& block : m_visualLineBlocks)
 	{
@@ -895,7 +895,7 @@ Size UITextBox::ArrangeOverride(const Size& finalSize)
 }
 
 //------------------------------------------------------------------------------
-void UITextBox::OnRender(DrawList* g)
+void UITextBox::OnRender(DrawingContext* g)
 {
 	UITextElement::OnRender(g);
 

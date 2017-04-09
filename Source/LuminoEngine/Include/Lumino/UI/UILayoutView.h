@@ -4,7 +4,7 @@
 #include "UIItemsControl.h"
 
 LN_NAMESPACE_BEGIN
-class DrawList;
+class DrawingContext;
 class PlatformWindow;
 
 /**
@@ -25,7 +25,7 @@ public:
 
 LN_INTERNAL_ACCESS:
 	void UpdateLayout(const Size& viewSize);
-	void Render(DrawList* g);
+	void Render(DrawingContext* g);
 	
 	const Size& GetViewPixelSize() const { return m_viewPixelSize; }
 	bool UpdateMouseHover(const PointF& mousePos);

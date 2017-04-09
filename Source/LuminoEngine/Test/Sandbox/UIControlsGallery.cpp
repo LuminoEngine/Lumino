@@ -4,11 +4,7 @@
 #define LN_PROTECTED_INTERNAL_ACCESS	public
 #include <LuminoEngine.h>
 
-//#include "../../../../External/glues/source/glues.h"
-//#include "../../Source/Graphics/Text/FontOutlineTessellator.h"
-
 using namespace ln;
-
 
 void UIControlsGallery()
 {
@@ -70,15 +66,20 @@ void UIControlsGallery()
 	//text->foreground = Brush::Blue;
 	//mainWindow->AddChild(text);
 
-	auto textbox1 = UITextBox::Create();
-	textbox1->SetWidth(300);
-	textbox1->SetHeight(32);
-	textbox1->SetBackground(Brush::Gray);
-	textbox1->SetText(_T("Hello, world!"));
-	textbox1->foreground = Brush::Blue;
-	mainWindow->AddChild(textbox1);
+	//auto textbox1 = UITextBox::Create();
+	//textbox1->SetWidth(300);
+	//textbox1->SetHeight(32);
+	//textbox1->SetBackground(Brush::Gray);
+	//textbox1->SetText(_T("Hello, world!"));
+	//textbox1->foreground = Brush::Blue;
+	//mainWindow->AddChild(textbox1);
 
 
+	auto comboBox = tr::UIComboBox::Create();
+	comboBox->SetWidth(300);
+	comboBox->SetHeight(32);
+	comboBox->SetBackground(Brush::Gray);
+	mainWindow->AddChild(comboBox);
 
 
 	

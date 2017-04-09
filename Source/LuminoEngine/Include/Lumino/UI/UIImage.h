@@ -16,10 +16,13 @@ public:
 	static RefPtr<UIImage> Create(const StringRef& filePath);
 
 
-	virtual void OnRender(DrawList* g) override
-	{
-		UIElement::OnRender(g);
-	}
+	void SetStretchType(StretchMode mode);
+	StretchMode GetStretchType();
+
+protected:
+	virtual Size MeasureOverride(const Size& availableSize) override;
+	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual void OnRender(DrawingContext* g) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIImage();
@@ -28,7 +31,11 @@ LN_CONSTRUCT_ACCESS:
 	void Initialize(const StringRef& filePath);
 
 private:
-	RefPtr<TextureBrush>	m_brush;
+	Size MeasureInternal(Size contentSize);
+
+	//RefPtr<TextureBrush>	m_brush;
+	RefPtr<Texture>			m_texture;
+	StretchMode				m_stretchMode;
 };
 
 LN_NAMESPACE_END

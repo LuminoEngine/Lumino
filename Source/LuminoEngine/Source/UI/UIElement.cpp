@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.h"
 #include <math.h>
-#include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/UI/UIEventArgs.h>
 #include <Lumino/UI/UIElement.h>
 #include <Lumino/UI/UIContext.h>
@@ -211,7 +211,7 @@ void UIElement::OnLayoutUpdated()
 }
 
 //------------------------------------------------------------------------------
-void UIElement::OnRender(DrawList* g)
+void UIElement::OnRender(DrawingContext* g)
 {
 	g->SetBlendMode(BlendMode::Alpha);
 
@@ -583,7 +583,7 @@ void UIElement::UpdateTransformHierarchy(const RectF& parentGlobalRect)
 }
 
 //------------------------------------------------------------------------------
-void UIElement::Render(DrawList* g)
+void UIElement::Render(DrawingContext* g)
 {
 	//g->Clear(ClearFlags::Color, Color::White);
 

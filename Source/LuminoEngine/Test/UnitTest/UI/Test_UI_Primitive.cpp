@@ -48,7 +48,7 @@ TEST_F(Test_UI_Image, Basic)
 
 	Engine::Update();
 
-	//ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_Image.Basic1.png"), 99, true));
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_Image.Basic1.png")));
 	uiRoot->RemoveChild(image1);
 }
 

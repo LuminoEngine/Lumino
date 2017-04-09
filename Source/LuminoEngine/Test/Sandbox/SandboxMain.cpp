@@ -100,7 +100,7 @@ void Main()
 
 	//} while (!Engine::IsEndRequested());
 
-	//UIControlsGallery();
+	UIControlsGallery();
 	//DxLibMain();
 	return;
 

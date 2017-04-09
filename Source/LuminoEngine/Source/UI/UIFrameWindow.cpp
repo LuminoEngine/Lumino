@@ -77,6 +77,7 @@ void UIFrameWindow::OnRenderContents()
 //------------------------------------------------------------------------------
 void UIFrameWindow::OnPresentRenderingContexts()
 {
+	ExecuteDrawList_UIRenderer();
 }
 
 //------------------------------------------------------------------------------
@@ -95,19 +96,16 @@ void UIFrameWindow::RenderContents()
 //------------------------------------------------------------------------------
 void UIFrameWindow::PresentRenderingContexts()
 {
-	Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
-	renderer->Begin();
+	// Render
+	{
+		Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
+		renderer->Begin();
 
+		OnPresentRenderingContexts();
 
-	OnPresentRenderingContexts();
-
-	ExecuteDrawList_UIRenderer();
-
-	//Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
-
-	m_manager->GetGraphicsManager()->SwitchActiveContext(nullptr);
-	renderer->End();
-
+		m_manager->GetGraphicsManager()->SwitchActiveContext(nullptr);
+		renderer->End();
+	}
 
 	// Present
 	if (m_swapChain != nullptr)
@@ -286,23 +284,19 @@ bool UIMainWindow::OnEvent(const PlatformEventArgs& e)
 
 void UIMainWindow::OnRenderContents()
 {
-
-	//UIFrameWindow::RenderContents();
-
 	Details::Renderer* renderer = GetManager()->GetGraphicsManager()->GetRenderer();
 	m_mainViewport->Render(GetDrawingContext(), GetPlatformWindow()->GetSize()/*GetSwapChain()->GetBackBuffer()->GetSize()*/);
-
 }
 
 void UIMainWindow::OnPresentRenderingContexts()
 {
-	UIFrameWindow::OnPresentRenderingContexts();
 
 	Details::Renderer* renderer = GetManager()->GetGraphicsManager()->GetRenderer();
 
 	m_mainViewport->PresentRenderingContexts();
 
 
+	UIFrameWindow::OnPresentRenderingContexts();
 }
 
 void UIMainWindow::PresentRenderingContexts()
@@ -378,13 +372,5 @@ void UINativeHostWindow::Initialize(detail::UIManager* manager, intptr_t windowH
 
 	UIFrameWindow::Initialize(manager, window, swap, m_mainUIContext);
 }
-
-//------------------------------------------------------------------------------
-//void UINativeHostWindow::Render()
-//{
-//	UIFrameWindow::BeginRendering();
-//	UIFrameWindow::RenderContents();
-//	UIFrameWindow::PresentRenderingContexts();
-//}
 
 LN_NAMESPACE_END
