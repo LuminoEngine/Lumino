@@ -1,9 +1,12 @@
 
 #include "Internal.h"
 #include <Lumino/UI/UITextBlock.h>
+#include <Lumino/UI/UIScrollViewer.h>
 #include <Lumino/UI/UIComboBox.h>
 #include <Lumino/UI/UILayoutPanel.h>	// TODO: stackpanel にするかも
+#include <Lumino/UI/UILayoutView.h>
 #include "UIManager.h"
+#include "UIHelper.h"
 
 LN_NAMESPACE_BEGIN
 namespace tr
@@ -25,10 +28,71 @@ UIPopup::~UIPopup()
 }
 
 //------------------------------------------------------------------------------
-void UIPopup::Initialize(ln::detail::UIManager* manager)
+void UIPopup::Initialize()
 {
-	UIContentControl::Initialize(manager);
+	UIElement::Initialize(ln::detail::EngineDomain::GetUIManager());
 }
+
+//------------------------------------------------------------------------------
+void UIPopup::SetContent(UIElement* element)
+{
+	if (m_content == element) return;
+
+	m_content = element;
+
+	// 既に持っていれば取り除いておく
+	if (m_content != nullptr)
+	{
+		RemoveVisualChild(m_content);
+		m_content = nullptr;
+	}
+
+	// 新しく保持する
+	if (element != nullptr)
+	{
+		AddVisualChild(element);
+		m_content = element;
+	}
+}
+
+//------------------------------------------------------------------------------
+void UIPopup::Open()
+{
+	UIElement* root = UIHelper::GetLayoutRoot(this);
+	if (root != nullptr)
+	{
+		UILayoutView* rootView = static_cast<UILayoutView*>(root);
+		rootView->OpenPopup(this);
+	}
+}
+
+//------------------------------------------------------------------------------
+Size UIPopup::MeasureOverride(const Size& constraint)
+{
+	// Popup は常にサイズ 0 となる。
+	// また、子要素のレイアウトは行わない。
+	// 子要素のレイアウトを行うのは別途、Popup 専用のレイアウトフェーズ。
+	return Size();
+}
+
+//------------------------------------------------------------------------------
+Size UIPopup::ArrangeOverride(const Size& finalSize)
+{
+	return UIElement::ArrangeOverride(finalSize);
+}
+
+//------------------------------------------------------------------------------
+void UIPopup::UpdateLayoutForInPlacePopup(const Size& viewSize)
+{
+	m_content->UpdateLayout(viewSize);
+	//m_content->MeasureLayout(viewSize);
+
+	////TODO: このへんでchildの位置を決める
+
+	//m_content->ArrangeLayout(RectF(0, 0, viewSize));
+	//m_content->UpdateTransformHierarchy(RectF(0, 0, viewSize));
+}
+
 
 //==============================================================================
 // UIComboBoxItem
@@ -81,7 +145,17 @@ UIComboBox::~UIComboBox()
 //------------------------------------------------------------------------------
 void UIComboBox::Initialize(ln::detail::UIManager* manager)
 {
-	UIControl::Initialize(manager);
+	UIControl::Initialize();
+
+	m_popup = NewObject<UIPopup>();
+	AddVisualChild(m_popup);
+
+	m_scrollViewer = NewObject<UIScrollViewer>();
+	m_scrollViewer->SetWidth(100);	// TODO:
+	m_scrollViewer->SetHeight(30);
+	m_scrollViewer->SetBackground(Brush::Blue);
+	m_popup->SetContent(m_scrollViewer);
+
 	SetHContentAlignment(HAlignment::Stretch);
 
 	auto panel = RefPtr<UIStackPanel>::MakeRef();
@@ -117,6 +191,7 @@ void UIComboBox::Initialize(ln::detail::UIManager* manager)
 //------------------------------------------------------------------------------
 void UIComboBox::OnMouseDown(UIMouseEventArgs* e)
 {
+	m_popup->Open();
 	UIControl::OnMouseDown(e);
 }
 

@@ -38,8 +38,9 @@ UIControl::~UIControl()
 }
 
 //------------------------------------------------------------------------------
-void UIControl::Initialize(detail::UIManager* manager)
+void UIControl::Initialize()
 {
+	detail::UIManager* manager = detail::EngineDomain::GetUIManager();
 	UIElement::Initialize(manager);
 	auto* vsm = GetVisualStateManager();
 	vsm->RegisterVisualState(CommonStates, NormalState);

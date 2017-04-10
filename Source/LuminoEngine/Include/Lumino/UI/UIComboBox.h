@@ -4,6 +4,8 @@
 #include "UIContentControl.h"
 
 LN_NAMESPACE_BEGIN
+class UIScrollViewer;
+
 namespace tr
 {
 class UIComboBoxItem;
@@ -16,15 +18,28 @@ using UIComboBoxPtr = RefPtr<UIComboBox>;
 	@brief
 */
 class UIPopup
-	: public UIContentControl
+	: public UIElement
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:
+	void SetContent(UIElement* element);
 
-LN_PROTECTED_INTERNAL_ACCESS:
+	void Open();
+
+protected:
+	virtual Size MeasureOverride(const Size& constraint) override;
+	virtual Size ArrangeOverride(const Size& finalSize) override;
+
+LN_CONSTRUCT_ACCESS:
 	UIPopup();
 	virtual ~UIPopup();
-	void Initialize(ln::detail::UIManager* manager);
+	void Initialize();
+
+LN_INTERNAL_ACCESS:
+	void UpdateLayoutForInPlacePopup(const Size& viewSize);
+
+private:
+	RefPtr<UIElement>	m_content;
 };
 
 
@@ -37,7 +52,7 @@ class UIComboBoxItem
 	LN_UI_TYPEINFO_DECLARE();
 public:
 
-LN_PROTECTED_INTERNAL_ACCESS:
+LN_CONSTRUCT_ACCESS :
 	UIComboBoxItem();
 	virtual ~UIComboBoxItem();
 	void Initialize(ln::detail::UIManager* manager);
@@ -60,12 +75,14 @@ public:
 protected:
 	virtual void OnMouseDown(UIMouseEventArgs* e) override;
 
-LN_PROTECTED_INTERNAL_ACCESS:
+LN_CONSTRUCT_ACCESS:
 	UIComboBox();
 	virtual ~UIComboBox();
 	void Initialize(ln::detail::UIManager* manager);
 
 private:
+	RefPtr<UIScrollViewer>	m_scrollViewer;
+	RefPtr<UIPopup>			m_popup;
 };
 
 } // namespace tr

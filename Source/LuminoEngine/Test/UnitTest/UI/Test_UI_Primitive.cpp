@@ -42,6 +42,11 @@ protected:
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_Image, Basic)
 {
+	/*
+		WPF の Image はデフォルトでは Stratch だが、Lumino は None。
+		経験的にだが、スケーリングしないで使うことのほうが多い。
+	*/
+
 	auto uiRoot = Engine::GetMainWindow();
 	auto image1 = UIImage::Create(LN_LOCALFILE("../Graphics/TestData/Sprite2.png"));
 	uiRoot->AddChild(image1);

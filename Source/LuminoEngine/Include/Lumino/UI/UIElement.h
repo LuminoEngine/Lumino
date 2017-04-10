@@ -309,7 +309,8 @@ LN_INTERNAL_ACCESS:
 	void CallOnGotFocus();
 	void CallOnLostFocus();
 	const RectF& GetFinalGlobalRect() const { return m_finalGlobalRect; }
-
+	virtual detail::SpcialUIElementType GetSpcialUIElementType() const;
+	UIElement* GetVisualParent() const { return m_visualParent; }
 
 	void UpdateLayout(const Size& viewSize) override;
 	void Render(DrawingContext* g);

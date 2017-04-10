@@ -28,7 +28,7 @@ UITreeViewItem::~UITreeViewItem()
 //------------------------------------------------------------------------------
 void UITreeViewItem::Initialize(ln::detail::UIManager* manager)
 {
-	UIControl::Initialize(manager);
+	UIControl::Initialize();
 	SetHContentAlignment(HAlignment::Left);
 	SetHAlignment(HAlignment::Stretch);
 	GoToVisualState(NormalState);
@@ -119,7 +119,7 @@ UITreeView::~UITreeView()
 //------------------------------------------------------------------------------
 void UITreeView::Initialize(ln::detail::UIManager* manager)
 {
-	UIControl::Initialize(manager);
+	UIControl::Initialize();
 	SetHContentAlignment(HAlignment::Stretch);
 
 	auto panel = RefPtr<UIStackPanel>::MakeRef();

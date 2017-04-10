@@ -4,10 +4,47 @@
 #include <Lumino/UI/UIContext.h>
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIElement.h>
+#include <Lumino/UI/UIComboBox.h>	// TODO: UIPopup
 #include "UIManager.h"
 #include "EventArgsPool.h"
 
 LN_NAMESPACE_BEGIN
+
+
+//==============================================================================
+// UILayoutView
+//==============================================================================
+namespace detail {
+
+//------------------------------------------------------------------------------
+UIPopuoContainer::UIPopuoContainer()
+{
+}
+
+//------------------------------------------------------------------------------
+UIPopuoContainer::~UIPopuoContainer()
+{
+}
+
+//------------------------------------------------------------------------------
+void UIPopuoContainer::Initialize()
+{
+}
+
+//------------------------------------------------------------------------------
+void UIPopuoContainer::SetPopup(ln::tr::UIPopup* popup)
+{
+	m_popup = popup;
+}
+
+//------------------------------------------------------------------------------
+ln::tr::UIPopup* UIPopuoContainer::GetPopup() const
+{
+	return m_popup;
+}
+
+} // namespace detail
+
 
 //==============================================================================
 // UILayoutView
@@ -30,7 +67,7 @@ UILayoutView::~UILayoutView()
 //------------------------------------------------------------------------------
 void UILayoutView::Initialize(UIContext* ownerContext, PlatformWindow* ownerNativeWindow)
 {
-	UIControl::Initialize(ownerContext->GetManager());
+	UIControl::Initialize();
 
 	m_ownerContext = ownerContext;
 	m_ownerNativeWindow = ownerNativeWindow;
@@ -52,6 +89,12 @@ void UILayoutView::UpdateLayout(const Size& viewSize)
 		ApplyTemplateHierarchy(GetOwnerContext()->GetRootStyleTable(), nullptr);
 
 		UIControl::UpdateLayout(GetViewPixelSize());
+
+
+		for (auto& popup : m_popupContainers)
+		{
+			popup->GetPopup()->UpdateLayoutForInPlacePopup(GetViewPixelSize());
+		}
 	}
 }
 
@@ -59,6 +102,11 @@ void UILayoutView::UpdateLayout(const Size& viewSize)
 void UILayoutView::Render(DrawingContext* g)
 {
 	UIControl::Render(g);
+
+	for (auto& popup : m_popupContainers)
+	{
+		popup->GetPopup()->Render(g);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -104,6 +152,20 @@ EXIT:
 		}
 	}
 	return false;
+}
+
+//------------------------------------------------------------------------------
+void UILayoutView::OpenPopup(tr::UIPopup* popup)
+{
+	auto container = NewObject<detail::UIPopuoContainer>();
+	container->SetPopup(popup);
+	m_popupContainers.Add(container);
+}
+
+//------------------------------------------------------------------------------
+void UILayoutView::ClosePopup(tr::UIPopup* popup)
+{
+	m_popupContainers.RemoveIf([popup](const RefPtr<detail::UIPopuoContainer>& ptr) { return ptr->GetPopup() == popup; });
 }
 
 ////------------------------------------------------------------------------------
@@ -274,6 +336,12 @@ bool UILayoutView::InjectTextInput(TCHAR ch)
 void UILayoutView::ActivateInternal(UIElement* child)
 {
 	GetOwnerContext()->SetFocusElement(child);
+}
+
+//------------------------------------------------------------------------------
+detail::SpcialUIElementType UILayoutView::GetSpcialUIElementType() const
+{
+	return detail::SpcialUIElementType::LayoutRoot;
 }
 
 LN_NAMESPACE_END

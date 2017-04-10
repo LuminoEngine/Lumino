@@ -79,12 +79,14 @@ void UILayoutPanel::OnChildCollectionChanged(const tr::ChildCollectionChangedArg
 	for (UIElement* element : e.newItems)
 	{
 		element->SetParent(this);
+		AddVisualChild(element);
 	}
 
 	// 削除されたものたち
 	for (UIElement* element : e.oldItems)
 	{
 		element->SetParent(nullptr);
+		RemoveVisualChild(element);
 	}
 }
 

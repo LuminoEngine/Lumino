@@ -28,7 +28,7 @@ UIContentControl::~UIContentControl()
 //------------------------------------------------------------------------------
 void UIContentControl::Initialize(detail::UIManager* manager)
 {
-	UIControl::Initialize(manager);
+	UIControl::Initialize();
 
 	SetVContentAlignment(VAlignment::Stretch);
 	SetHContentAlignment(HAlignment::Stretch);

@@ -397,7 +397,7 @@ UIScrollBar::~UIScrollBar()
 //------------------------------------------------------------------------------
 void UIScrollBar::Initialize(detail::UIManager* manager)
 {
-	UIControl::Initialize(manager);
+	UIControl::Initialize();
 
 	// register VisualState
 	auto* vsm = GetVisualStateManager();
@@ -600,7 +600,7 @@ LN_UI_TYPEINFO_IMPLEMENT(UIScrollViewer, UIControl)
 RefPtr<UIScrollViewer> UIScrollViewer::Create()
 {
 	auto ptr = RefPtr<UIScrollViewer>::MakeRef();
-	ptr->Initialize(ln::detail::UIManager::GetInstance());
+	ptr->Initialize();
 	return ptr;
 }
 
@@ -618,9 +618,10 @@ UIScrollViewer::~UIScrollViewer()
 }
 
 //------------------------------------------------------------------------------
-void UIScrollViewer::Initialize(detail::UIManager* manager)
+void UIScrollViewer::Initialize()
 {
-	UIControl::Initialize(manager);
+	auto* manager = detail::EngineDomain::GetUIManager();
+	UIControl::Initialize();
 
 	m_horizontalScrollBar = NewObject<UIScrollBar>(manager);
 	m_horizontalScrollBar->SetOrientation(Orientation::Horizontal);

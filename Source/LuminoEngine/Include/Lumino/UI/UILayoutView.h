@@ -6,6 +6,28 @@
 LN_NAMESPACE_BEGIN
 class DrawingContext;
 class PlatformWindow;
+namespace tr { class UIPopup; }
+
+namespace detail {
+
+
+class UIPopuoContainer
+	: public Object
+{
+public:
+	void SetPopup(ln::tr::UIPopup* popup);
+	ln::tr::UIPopup* GetPopup() const;
+
+LN_CONSTRUCT_ACCESS:
+	UIPopuoContainer();
+	virtual ~UIPopuoContainer();
+	void Initialize();
+
+private:
+	RefPtr<ln::tr::UIPopup>	m_popup;
+};
+
+} // namespace detail
 
 /**
 	@brief		
@@ -33,6 +55,11 @@ LN_INTERNAL_ACCESS:
 	//void ReleaseMouseCapture(UIElement* element);
 
 
+	// Popup
+	void OpenPopup(tr::UIPopup* popup);
+	void ClosePopup(tr::UIPopup* popup);
+
+
 	// Implements IUIInjectedInputReceiver
 	//virtual bool InjectViewportSizeChanged(int width, int height) override;
 	virtual bool InjectMouseMove(float clientX, float clientY) override;
@@ -50,6 +77,9 @@ protected:
 
 	// UIElement interface
 	virtual void ActivateInternal(UIElement* child);
+
+LN_INTERNAL_ACCESS:
+	virtual detail::SpcialUIElementType GetSpcialUIElementType() const;
 
 private:
 	friend class UIContext;
@@ -72,6 +102,8 @@ private:
 	MouseClickTracker	m_mouseClickTrackers[8];
 
 	Size				m_viewPixelSize;
+
+	List<RefPtr<detail::UIPopuoContainer>>	m_popupContainers;
 };
 
 LN_NAMESPACE_END

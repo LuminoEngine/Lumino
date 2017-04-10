@@ -18,6 +18,19 @@ public:
 		}
 	}
 
+	static UIElement* GetLayoutRoot(UIElement* element)
+	{
+		while (element != nullptr)
+		{
+			if (element->GetSpcialUIElementType() == detail::SpcialUIElementType::LayoutRoot)
+			{
+				return element;
+			}
+			element = element->GetVisualParent();
+		}
+		return nullptr;
+	}
+
 	//static void AdjustHorizontalAlignment(const Size& arrangeSize, const SizeF& desiredSize, HorizontalAlignment align, RectF* outRect)
 	//{
 	//	switch (align)

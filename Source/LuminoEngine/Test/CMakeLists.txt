@@ -29,6 +29,7 @@ set(LN_TEST_SOURCES
 	UnitTest/Scene/Test_Scene_SceneNode.cpp
 	UnitTest/UI/Test_UI_Button.cpp
 	UnitTest/UI/Test_UI_Primitive.cpp
+	UnitTest/UI/Test_UI_System.cpp
 )
 
 if (MSVC_VERSION GREATER 1800)		# (MSVC > vs2013)

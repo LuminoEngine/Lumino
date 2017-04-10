@@ -61,7 +61,7 @@ UIListBox::~UIListBox()
 //------------------------------------------------------------------------------
 void UIListBox::Initialize(ln::detail::UIManager* manager)
 {
-	UIControl::Initialize(manager);
+	UIControl::Initialize();
 	SetHContentAlignment(HAlignment::Stretch);
 
 	auto panel = RefPtr<UIStackPanel>::MakeRef();

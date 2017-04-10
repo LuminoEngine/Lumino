@@ -130,6 +130,12 @@ LN_ENUM_FLAGS(InvalidateFlags)
 };
 LN_ENUM_FLAGS_DECLARE(InvalidateFlags);
 
+enum class SpcialUIElementType
+{
+	Common,
+	LayoutRoot,
+};
+
 } // namespace detail
 
 LN_NAMESPACE_END

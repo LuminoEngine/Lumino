@@ -50,11 +50,8 @@ public:
 	void SetLayoutPanel(UILayoutPanel* panel);
 	UILayoutPanel* GetLayoutPanel() const;
 
-protected:
-	UIControl();
-	virtual ~UIControl();
-	void Initialize(detail::UIManager* manager);
 
+protected:
 	// UIElement interface
 	//virtual int GetVisualChildrenCount() const override;
 	//virtual ILayoutElement* GetVisualChild(int index) const override;
@@ -72,6 +69,10 @@ protected:
 	// IUIElementCollectionOwner interface
 	virtual void OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e) override;
 
+LN_CONSTRUCT_ACCESS:
+	UIControl();
+	virtual ~UIControl();
+	void Initialize();
 
 LN_INTERNAL_ACCESS:
 	int GetLayoutChildrenCount() const { return GetVisualChildrenCount(); }
@@ -86,5 +87,6 @@ private:
 
 	//UIElement*	m_visualTreeRoot;
 };
+
 
 LN_NAMESPACE_END

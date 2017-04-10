@@ -555,6 +555,12 @@ void UIElement::UpdateLayout(const Size& viewSize)
 }
 
 //------------------------------------------------------------------------------
+detail::SpcialUIElementType UIElement::GetSpcialUIElementType() const
+{
+	return detail::SpcialUIElementType::Common;
+}
+
+//------------------------------------------------------------------------------
 void UIElement::UpdateTransformHierarchy(const RectF& parentGlobalRect)
 {
 	if (m_parent != nullptr)

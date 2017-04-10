@@ -256,7 +256,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIScrollViewer();
 	virtual ~UIScrollViewer();
-	void Initialize(detail::UIManager* manager);
+	void Initialize();
 
 protected:
 	// UIElement interface
