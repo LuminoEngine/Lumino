@@ -333,12 +333,6 @@ bool UILayoutView::InjectTextInput(TCHAR ch)
 }
 
 //------------------------------------------------------------------------------
-void UILayoutView::ActivateInternal(UIElement* child)
-{
-	
-}
-
-//------------------------------------------------------------------------------
 detail::SpcialUIElementType UILayoutView::GetSpcialUIElementType() const
 {
 	return detail::SpcialUIElementType::LayoutRoot;

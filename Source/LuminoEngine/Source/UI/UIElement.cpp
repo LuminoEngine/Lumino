@@ -137,10 +137,6 @@ void UIElement::Focus()
 	if (IsFocusable())
 	{
 		GetContext()->SetFocusElement(this);
-		//if (m_parent != nullptr)
-		//{
-		//	m_parent->ActivateInternal(this);
-		//}
 	}
 }
 
@@ -322,19 +318,6 @@ UIElement* UIElement::CheckMouseHoverElement(const PointF& globalPt)
 		return this;
 	}
 	return NULL;
-}
-
-//------------------------------------------------------------------------------
-// child : Activate の発生元となった UIElement
-void UIElement::ActivateInternal(UIElement* child)
-{
-	//UIElement* parent = m_parent;
-	//if (parent == nullptr) parent = m_visualParent;
-
-	//if (parent != nullptr)
-	//{
-	//	parent->ActivateInternal(child);
-	//}
 }
 
 //------------------------------------------------------------------------------

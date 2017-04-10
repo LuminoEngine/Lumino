@@ -321,7 +321,6 @@ LN_INTERNAL_ACCESS:
 	//AnchorInfo* GetAnchorInfo() {return &m_anchorInfo; }
 	detail::InvalidateFlags GetInvalidateFlags() const { return m_invalidateFlags; }
 	UIElement* CheckMouseHoverElement(const PointF& globalPt);
-	virtual void ActivateInternal(UIElement* child);
 	virtual bool OnEvent(detail::UIInternalEventType type, UIEventArgs* args);
 	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e);
 	void CallOnGotFocus();

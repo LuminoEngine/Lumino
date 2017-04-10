@@ -75,9 +75,6 @@ protected:
 	virtual ~UILayoutView();
 	void Initialize(UIContext* ownerContext, PlatformWindow* ownerNativeWindow);
 
-	// UIElement interface
-	virtual void ActivateInternal(UIElement* child);
-
 LN_INTERNAL_ACCESS:
 	virtual detail::SpcialUIElementType GetSpcialUIElementType() const;
 
