@@ -335,7 +335,7 @@ bool UILayoutView::InjectTextInput(TCHAR ch)
 //------------------------------------------------------------------------------
 void UILayoutView::ActivateInternal(UIElement* child)
 {
-	GetOwnerContext()->SetFocusElement(child);
+	
 }
 
 //------------------------------------------------------------------------------

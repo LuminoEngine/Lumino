@@ -13,6 +13,13 @@ class DrawingContext;
 class UIStylePropertyTable;
 class UIVisualStateManager;
 
+/**
+	@brief		特定のイベントデータを持たない、UIイベントを処理するハンドラです。
+	@param[in]	e		: イベントのデータ
+*/
+LN_DELEGATE()
+using UIEventHandler = Delegate<void(UIEventArgs* e)>;
+
 class UIVisualStateManager
 	: public Object
 {
@@ -216,6 +223,8 @@ public:
 	float GetActualWidth() const { return m_finalLocalRect.width; }
 	float GetActualHeight() const { return m_finalLocalRect.height; }
 
+	bool HasFocus() const { return m_hasFocus; }
+
 	//--------------------------------------------------------------------------
 	/** @name Grid layout */
 	/** @{ */
@@ -230,6 +239,15 @@ public:
 	virtual int GetLayoutRowSpan() const override;
 
 	/** @} */
+
+	
+	/** OnGotFocus イベントの通知を受け取るコールバックを登録します。*/
+	LN_METHOD(Event)
+	EventConnection ConnectOnGotFocus(UIEventHandler handler);
+	
+	/** OnLostFocus イベントの通知を受け取るコールバックを登録します。*/
+	LN_METHOD(Event)
+	EventConnection ConnectOnLostFocus(UIEventHandler handler);
 
 protected:
 	UIElement();
@@ -401,6 +419,10 @@ private:
 	detail::InvalidateFlags	m_invalidateFlags;
 	bool					m_isEnabled;
 	bool					m_isMouseOver;
+	bool					m_hasFocus;
+
+	UIEventHandler::EventType	m_onGotFocus;
+	UIEventHandler::EventType	m_onLostFocus;
 };
 
 LN_NAMESPACE_END

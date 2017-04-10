@@ -18,6 +18,27 @@ public:
 		}
 	}
 
+	template<typename TPred>
+	static UIElement* FindVisualAncestor(UIElement* element, TPred pred)
+	{
+		if (LN_CHECK_ARG(element != nullptr)) return nullptr;
+
+		while (true)
+		{
+			element = element->GetVisualParent();
+			if (element == nullptr)
+			{
+				break;
+			}
+
+			if (pred(element))
+			{
+				return element;
+			}
+		}
+		return nullptr;
+	}
+
 	static UIElement* GetLayoutRoot(UIElement* element)
 	{
 		while (element != nullptr)

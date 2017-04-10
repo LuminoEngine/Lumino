@@ -65,6 +65,7 @@ UIElement::UIElement()
 	, m_combinedOpacity(0.0f)
 	, m_isEnabled(true)
 	, m_isMouseOver(nullptr)
+	, m_hasFocus(false)
 {
 }
 
@@ -101,6 +102,18 @@ void UIElement::SetLayoutRowSpan(int span) { m_gridLayoutInfo.layoutRowSpan = sp
 int UIElement::GetLayoutRowSpan() const { return m_gridLayoutInfo.layoutRowSpan; }
 
 //------------------------------------------------------------------------------
+EventConnection UIElement::ConnectOnGotFocus(UIEventHandler handler)
+{
+	return m_onGotFocus.Connect(handler);
+}
+
+//------------------------------------------------------------------------------
+EventConnection UIElement::ConnectOnLostFocus(UIEventHandler handler)
+{
+	return m_onLostFocus.Connect(handler);
+}
+
+//------------------------------------------------------------------------------
 void UIElement::GoToVisualState(const StringRef& stateName)
 {
 	GetVisualStateManager()->GoToVisualState(stateName);
@@ -123,10 +136,11 @@ void UIElement::Focus()
 {
 	if (IsFocusable())
 	{
-		if (m_parent != nullptr)
-		{
-			m_parent->ActivateInternal(this);
-		}
+		GetContext()->SetFocusElement(this);
+		//if (m_parent != nullptr)
+		//{
+		//	m_parent->ActivateInternal(this);
+		//}
 	}
 }
 
@@ -242,8 +256,14 @@ void UIElement::OnMouseUp(UIMouseEventArgs* e) { }
 void UIElement::OnKeyDown(UIKeyEventArgs* e) { }
 void UIElement::OnKeyUp(UIKeyEventArgs* e) { }
 void UIElement::OnTextInput(UIKeyEventArgs* e) { }
-void UIElement::OnGotFocus(UIEventArgs* e) { }
-void UIElement::OnLostFocus(UIEventArgs* e) { }
+void UIElement::OnGotFocus(UIEventArgs* e)
+{
+	m_onGotFocus.Raise(e);
+}
+void UIElement::OnLostFocus(UIEventArgs* e)
+{
+	m_onLostFocus.Raise(e);
+}
 
 //------------------------------------------------------------------------------
 void UIElement::OnMouseEnter(UIMouseEventArgs* e)
@@ -308,13 +328,13 @@ UIElement* UIElement::CheckMouseHoverElement(const PointF& globalPt)
 // child : Activate の発生元となった UIElement
 void UIElement::ActivateInternal(UIElement* child)
 {
-	UIElement* parent = m_parent;
-	if (parent == nullptr) parent = m_visualParent;
+	//UIElement* parent = m_parent;
+	//if (parent == nullptr) parent = m_visualParent;
 
-	if (parent != nullptr)
-	{
-		parent->ActivateInternal(child);
-	}
+	//if (parent != nullptr)
+	//{
+	//	parent->ActivateInternal(child);
+	//}
 }
 
 //------------------------------------------------------------------------------
@@ -419,12 +439,16 @@ void UIElement::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 //------------------------------------------------------------------------------
 void UIElement::CallOnGotFocus()
 {
+	LN_ASSERT(!m_hasFocus);
+	m_hasFocus = true;
 	OnGotFocus(UIEventArgs::Create(this));
 }
 
 //------------------------------------------------------------------------------
 void UIElement::CallOnLostFocus()
 {
+	LN_ASSERT(m_hasFocus);
+	m_hasFocus = false;
 	OnLostFocus(UIEventArgs::Create(this));
 }
 

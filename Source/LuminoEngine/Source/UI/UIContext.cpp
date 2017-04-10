@@ -12,6 +12,7 @@
 #include "../Graphics/GraphicsManager.h"
 #include <Lumino/Graphics/GraphicsContext.h>
 #include "UIManager.h"
+#include "UIHelper.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -60,20 +61,51 @@ void UIContext::SetFocusElement(UIElement* element)
 		if (LN_CHECK_STATE(element->IsFocusable())) return;
 	}
 
-	if (m_focusElement != element)
+	UIElement* focusedBranchRoot = UIHelper::FindVisualAncestor(element, [](UIElement* e) { return e->HasFocus() || e->GetSpcialUIElementType() == detail::SpcialUIElementType::LayoutRoot; });
+	if (LN_CHECK_STATE(focusedBranchRoot != nullptr)) return;
+	
+	if (m_focusElement != nullptr)
 	{
-		if (m_focusElement != nullptr)
+		if (m_focusElement->IsFocusable()) m_focusElement->CallOnLostFocus();
+		UIHelper::FindVisualAncestor(m_focusElement, [focusedBranchRoot](UIElement* e)
 		{
-			m_focusElement->CallOnLostFocus();
-		}
-
-		m_focusElement = element;
-
-		if (m_focusElement != nullptr)
-		{
-			m_focusElement->CallOnGotFocus();
-		}
+			if (e == focusedBranchRoot) return true;
+			if (e->IsFocusable()) e->CallOnLostFocus();
+			return false;
+		});
 	}
+
+	if (element->IsFocusable()) element->CallOnGotFocus();
+	UIHelper::FindVisualAncestor(element, [focusedBranchRoot](UIElement* e)
+	{
+		if (e == focusedBranchRoot) return true;
+		if (e->IsFocusable()) e->CallOnGotFocus();
+		return false;
+	});
+
+	// 初回用
+	if (!focusedBranchRoot->HasFocus())
+	{
+		focusedBranchRoot->CallOnGotFocus();
+	}
+
+	m_focusElement = element;
+
+
+	//if (m_focusElement != element)
+	//{
+	//	if (m_focusElement != nullptr)
+	//	{
+	//		m_focusElement->CallOnLostFocus();
+	//	}
+
+	//	m_focusElement = element;
+
+	//	if (m_focusElement != nullptr)
+	//	{
+	//		m_focusElement->CallOnGotFocus();
+	//	}
+	//}
 }
 
 //------------------------------------------------------------------------------

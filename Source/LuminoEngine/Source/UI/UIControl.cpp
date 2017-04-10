@@ -216,12 +216,14 @@ void UIControl::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 void UIControl::OnGotFocus(UIEventArgs* e)
 {
 	GoToVisualState(FocusedState);
+	UIElement::OnGotFocus(e);
 }
 
 //------------------------------------------------------------------------------
 void UIControl::OnLostFocus(UIEventArgs* e)
 {
 	GoToVisualState(UnfocusedState);
+	UIElement::OnLostFocus(e);
 }
 
 
