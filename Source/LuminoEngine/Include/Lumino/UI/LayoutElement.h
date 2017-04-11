@@ -147,7 +147,7 @@ public:
 	//	}
 	//}
 
-	static void AdjustHorizontalAlignment(const Size& areaSize, const Size& desiredSize, HAlignment align, RectF* outRect)
+	static void AdjustHorizontalAlignment(const Size& areaSize, const Size& desiredSize, bool widthNan, HAlignment align, RectF* outRect)
 	{
 		switch (align)
 		{
@@ -164,13 +164,24 @@ public:
 			outRect->width = desiredSize.width;
 			break;
 		case HAlignment::Stretch:
-			outRect->x = 0;
-			outRect->width = areaSize.width;
+			if (widthNan)
+			{
+				outRect->x = 0;
+				outRect->width = areaSize.width;
+			}
+			else
+			{
+				outRect->x = (areaSize.width - desiredSize.width) / 2;
+				outRect->width = desiredSize.width;
+			}
+
+			//outRect->x = 0;
+			//outRect->width = areaSize.width;
 			break;
 		}
 	}
 
-	static void AdjustVerticalAlignment(const Size& areaSize, const Size& desiredSize, VAlignment align, RectF* outRect)
+	static void AdjustVerticalAlignment(const Size& areaSize, const Size& desiredSize, bool heightNan, VAlignment align, RectF* outRect)
 	{
 		switch (align)
 		{
@@ -187,8 +198,17 @@ public:
 			outRect->height = desiredSize.height;
 			break;
 		case VAlignment::Stretch:
-			outRect->y = 0;
-			outRect->height = areaSize.height;
+			if (heightNan)
+			{
+				outRect->y = 0;
+				outRect->height = areaSize.height;
+			}
+			else
+			{
+				outRect->y = (areaSize.height - desiredSize.height) / 2;
+				outRect->height = desiredSize.height;
+			}
+
 			break;
 		}
 	}

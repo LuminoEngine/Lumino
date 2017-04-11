@@ -208,9 +208,10 @@ Size UIAbsoluteLayout::ArrangeOverride(const Size& finalSize)
 		//}
 		
 		const Size& desiredSize = child->GetDesiredSize();
-		Size size = child->GetSizeInternal();
-		size.width = Math::IsNaN(size.width) ? desiredSize.width : size.width;
-		size.height = Math::IsNaN(size.height) ? desiredSize.height : size.height;
+		Size layoutSize = child->GetSizeInternal();
+		Size size;
+		size.width = Math::IsNaN(layoutSize.width) ? desiredSize.width : layoutSize.width;
+		size.height = Math::IsNaN(layoutSize.height) ? desiredSize.height : layoutSize.height;
 
 		RectF childRect(child->GetPositionInternal(), size/*child->GetSizeInternal()*/);
 		AlignmentAnchor anchor = child->GetAnchorInternal();
@@ -284,6 +285,10 @@ Size UIAbsoluteLayout::ArrangeOverride(const Size& finalSize)
 		}
 		else
 		{
+			if (Math::IsNaN(layoutSize.width))
+				childRect.width = finalSize.width;
+			if (Math::IsNaN(layoutSize.height))
+				childRect.height = finalSize.height;
 			child->ArrangeLayout(childRect);
 		}
 	}

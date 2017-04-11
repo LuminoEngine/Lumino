@@ -91,7 +91,6 @@ void ILayoutElement::ArrangeLayout(const RectF& finalLocalRect)
 	if (parentVAlign != nullptr) vAlign = *parentVAlign;
 #endif
 
-	//Size layoutSize = GetLayoutSize();
 	//Size ds;// = GetLayoutDesiredSize();
 	//ds.width = Math::IsNaNOrInf(layoutSize.width) ? finalLocalRect.width : layoutSize.width;
 	//ds.height = Math::IsNaNOrInf(layoutSize.height) ? finalLocalRect.height : layoutSize.height;
@@ -99,16 +98,19 @@ void ILayoutElement::ArrangeLayout(const RectF& finalLocalRect)
 	LN_ASSERT(!Math::IsNaNOrInf(ds.width));
 	LN_ASSERT(!Math::IsNaNOrInf(ds.height));
 
+	// DesiredSize は Margin 考慮済み
+
 	// Alignment で調整する領域は、margin 領域も含む
 	const ThicknessF& margin = GetLayoutMargin();
 	float marginWidth = margin.Left + margin.Right;
 	float marginHeight = margin.Top + margin.Bottom;
-	ds.width += marginWidth;
-	ds.height += marginHeight;
+	//ds.width += marginWidth;
+	//ds.height += marginHeight;
 
+	Size layoutSize = GetLayoutSize();
 	RectF arrangeRect;
-	detail::LayoutHelper::AdjustHorizontalAlignment(areaSize, ds, hAlign, &arrangeRect);
-	detail::LayoutHelper::AdjustVerticalAlignment(areaSize, ds, vAlign, &arrangeRect);
+	detail::LayoutHelper::AdjustHorizontalAlignment(areaSize, ds, Math::IsNaN(layoutSize.width), hAlign, &arrangeRect);
+	detail::LayoutHelper::AdjustVerticalAlignment(areaSize, ds, Math::IsNaN(layoutSize.height), vAlign, &arrangeRect);
 
 	// Margin を考慮する (0 以下には出来ない)
 	arrangeRect.width = std::max(arrangeRect.width - marginWidth, 0.0f);

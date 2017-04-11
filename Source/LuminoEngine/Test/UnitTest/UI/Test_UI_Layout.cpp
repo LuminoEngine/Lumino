@@ -38,6 +38,7 @@ TEST_F(Test_UI_StackPanel, HorizontalAlignment)
 {
 	auto uiRoot = Engine::GetMainWindow();
 	auto panel = UIStackPanel::Create();
+	panel->SetOrientation(Orientation::Vertical);
 	panel->SetSize(uiRoot->GetSize());
 	panel->SetBackground(Brush::Blue);
 	uiRoot->AddChild(panel);
@@ -46,21 +47,62 @@ TEST_F(Test_UI_StackPanel, HorizontalAlignment)
 	auto button2 = UIButton::Create();
 	auto button3 = UIButton::Create();
 	auto button4 = UIButton::Create();
+	auto button5 = UIButton::Create();
 	button1->SetHAlignment(HAlignment::Stretch);
 	button2->SetHAlignment(HAlignment::Left);
 	button3->SetHAlignment(HAlignment::Right);
 	button4->SetHAlignment(HAlignment::Center);
-	button1->SetSize(Size(32, 16));
+	button5->SetHAlignment(HAlignment::Stretch);
+	button1->SetHeight(16);
 	button2->SetSize(Size(32, 16));
 	button3->SetSize(Size(32, 16));
 	button4->SetSize(Size(32, 16));
+	button5->SetSize(Size(32, 16));
 	panel->AddChild(button1);
 	panel->AddChild(button2);
 	panel->AddChild(button3);
 	panel->AddChild(button4);
+	panel->AddChild(button5);
 
 	Engine::Update();
-	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_FlowLayout.HorizontalAlignment1.png"), 99, true));
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_FlowLayout.HorizontalAlignment1.png")));
+
+	uiRoot->RemoveChild(panel);	// 後始末
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_UI_StackPanel, VerticalAlignment)
+{
+	auto uiRoot = Engine::GetMainWindow();
+	auto panel = UIStackPanel::Create();
+	panel->SetOrientation(Orientation::Horizontal);
+	panel->SetSize(uiRoot->GetSize());
+	panel->SetBackground(Brush::Blue);
+	uiRoot->AddChild(panel);
+
+	auto button1 = UIButton::Create();
+	auto button2 = UIButton::Create();
+	auto button3 = UIButton::Create();
+	auto button4 = UIButton::Create();
+	auto button5 = UIButton::Create();
+	button1->SetVAlignment(VAlignment::Stretch);
+	button2->SetVAlignment(VAlignment::Top);
+	button3->SetVAlignment(VAlignment::Bottom);
+	button4->SetVAlignment(VAlignment::Center);
+	button5->SetVAlignment(VAlignment::Stretch);
+	button1->SetWidth(16);
+	button2->SetSize(Size(16, 32));
+	button3->SetSize(Size(16, 32));
+	button4->SetSize(Size(16, 32));
+	button5->SetSize(Size(16, 32));
+	panel->AddChild(button1);
+	panel->AddChild(button2);
+	panel->AddChild(button3);
+	panel->AddChild(button4);
+	panel->AddChild(button5);
+
+	Engine::Update();
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_FlowLayout.VerticalAlignment1.png")));
 
 	uiRoot->RemoveChild(panel);	// 後始末
 }
@@ -68,25 +110,23 @@ TEST_F(Test_UI_StackPanel, HorizontalAlignment)
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_StackPanel, ReverseHorizontal)
 {
+	auto uiRoot = Engine::GetMainWindow();
 	auto panel = UIStackPanel::Create();
+	panel->SetSize(uiRoot->GetSize());
+	panel->SetBackground(Brush::Blue);
+	panel->SetOrientation(Orientation::ReverseHorizontal);
+	uiRoot->AddChild(panel);
+
 	auto button1 = UIButton::Create();
 	auto button2 = UIButton::Create();
-	button1->SetSize(Size(40, 20));
-	button1->margin = ThicknessF(5, 5, 5, 5);
-	button2->SetSize(Size(40, 30));
-	button2->margin = ThicknessF(5, 5, 5, 5);
-
-	panel->padding = ThicknessF(5, 5, 5, 5);
+	button1->SetSize(Size(20, 20));
+	button2->SetSize(Size(30, 30));
 	panel->AddChild(button1);
 	panel->AddChild(button2);
-	panel->SetOrientation(Orientation::ReverseHorizontal);
-
-	auto uiRoot = Engine::GetMainWindow();
-	uiRoot->AddChild(panel);
 
 	Engine::Update();
 
-	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_FlowLayout.ReverseHorizontal1.png"), 99, true));
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_FlowLayout.ReverseHorizontal1.png")));
 
 	uiRoot->RemoveChild(panel);	// 後始末
 }
@@ -97,14 +137,13 @@ TEST_F(Test_UI_StackPanel, Margin_Padding)
 	auto uiRoot = Engine::GetMainWindow();
 	auto panel = UIStackPanel::Create();
 	panel->SetSize(uiRoot->GetSize());
+	panel->SetBackground(Brush::Blue);
 	uiRoot->AddChild(panel);
 
 	auto button1 = UIButton::Create();
 	auto button2 = UIButton::Create();
-	button1->SetSize(Size(80, 32));
-	button2->SetSize(Size(80, 32));
-	button1->SetHAlignment(HAlignment::Left);
-	button2->SetHAlignment(HAlignment::Right);
+	button1->SetHeight(16);
+	button2->SetHeight(16);
 	panel->AddChild(button1);
 	panel->AddChild(button2);
 
@@ -137,9 +176,11 @@ TEST_F(Test_UI_GridLayout, Basic)
 	auto button = UIButton::Create();
 	button->SetSize(Size(32, 32));
 	grid->AddChild(button);
+	grid->SetBackground(Brush::Blue);
 	uiRoot->AddChild(grid);
 
 	tr::WeakRefPtr<UIButton> ref = button;
+	UIGridLayout* gridPtr = grid;
 
 	Engine::Update();
 
@@ -152,7 +193,7 @@ TEST_F(Test_UI_GridLayout, Basic)
 	grid.SafeRelease();
 	ASSERT_EQ(true, ref.IsAlive());
 	// root からの参照を切るとようやく削除される
-	uiRoot->GetItems()->Clear();
+	uiRoot->RemoveChild(gridPtr);
 	ASSERT_EQ(false, ref.IsAlive());
 }
 

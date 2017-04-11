@@ -204,12 +204,12 @@ void UIElement::ArrangeLayout(const RectF& finalLocalRect)
 	Size ds = GetLayoutDesiredSize();
 	if (parentHAlign != nullptr)
 	{
-		detail::LayoutHelper::AdjustHorizontalAlignment(finalLocalRect.GetSize(), ds, *parentHAlign, &alignd);
+		detail::LayoutHelper::AdjustHorizontalAlignment(finalLocalRect.GetSize(), ds, true, *parentHAlign, &alignd);
 		alignd.x += finalLocalRect.x;
 	}
 	if (parentHAlign != nullptr)
 	{
-		detail::LayoutHelper::AdjustVerticalAlignment(finalLocalRect.GetSize(), ds, *parentVAlign, &alignd);
+		detail::LayoutHelper::AdjustVerticalAlignment(finalLocalRect.GetSize(), ds, true, *parentVAlign, &alignd);
 		alignd.y += finalLocalRect.y;
 	}
 

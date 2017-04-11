@@ -81,8 +81,8 @@ void UIControl::AddChild(UIElement* element)
 //------------------------------------------------------------------------------
 void UIControl::RemoveChild(UIElement* element)
 {
-	m_items->Remove(element);
 	element->SetLogicalParent(nullptr);
+	m_items->Remove(element);
 }
 
 //------------------------------------------------------------------------------

@@ -317,6 +317,7 @@ LN_INTERNAL_ACCESS:
 	detail::UIManager* GetManager() const { return m_manager; }
 	UIContext* GetContext() const;
 	const PointF& GetPositionInternal() const { return position; }
+	void SetSizeInternal(const Size& size) { width = size.width; height = size.height; }
 	Size GetSizeInternal() const { return Size(width, height); }
 	const ThicknessF& GetMargineInternal() const { return margin; }
 	AlignmentAnchor GetAnchorInternal() const { return anchor; }

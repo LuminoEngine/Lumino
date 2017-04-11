@@ -81,11 +81,11 @@ void UIFrameWindow::OnPresentRenderingContexts()
 }
 
 //------------------------------------------------------------------------------
-void UIFrameWindow::SetSize(const SizeI& size)
-{
-	if (LN_CHECK_STATE(m_platformWindow != nullptr)) return;
-	m_platformWindow->SetSize(size);
-}
+//void UIFrameWindow::SetSize(const SizeI& size)
+//{
+//	if (LN_CHECK_STATE(m_platformWindow != nullptr)) return;
+//	m_platformWindow->SetSize(size);
+//}
 
 //------------------------------------------------------------------------------
 void UIFrameWindow::RenderContents()
@@ -245,6 +245,8 @@ void UIMainWindow::Initialize(detail::UIManager* manager, PlatformWindow* platfo
 	//m_uiLayer.Attach(LN_NEW UIViewportLayer(m_mainUIContext->GetMainWindowView()), false);
 	//m_uiLayer->Initialize();
 	//m_mainViewport->AddViewportLayer(m_uiLayer);
+
+	SetSizeInternal(platformWindow->GetSize().ToFloatSize());
 
 	// SwapChain のサイズを Viewport へ通知
 	UpdateViewportTransform();

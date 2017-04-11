@@ -27,7 +27,7 @@ public:
 
 	DrawingContext* GetDrawingContext() const;
 
-	void SetSize(const SizeI& size);
+	//void SetSize(const SizeI& size);
 
 protected:
 	UIFrameWindow();

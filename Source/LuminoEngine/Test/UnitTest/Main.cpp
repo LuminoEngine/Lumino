@@ -172,7 +172,7 @@ GTEST_API_ int main(int argc, char **argv)
 #if 1	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_UI_StackPanel.HorizontalAlignment"
+		"--gtest_filter=Test_UI_GridLayout.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);
@@ -202,14 +202,14 @@ GTEST_API_ int main(int argc, char **argv)
 		Engine::Terminate();
 		if (r != 0) return r;
 	}
-	{
-		EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
+	//{
+	//	EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
 
-		EngineInitalize();
-		int r = RUN_ALL_TESTS();
-		Engine::Terminate();
-		if (r != 0) return r;
-	}
+	//	EngineInitalize();
+	//	int r = RUN_ALL_TESTS();
+	//	Engine::Terminate();
+	//	if (r != 0) return r;
+	//}
 
 	//RUN_ALL_TESTS();
 	//return RUN_ALL_TESTS();
