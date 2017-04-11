@@ -124,4 +124,31 @@ void UIButton::Initialize()
 	UIButtonBase::Initialize();
 }
 
+//==============================================================================
+// UIToggleButton
+//==============================================================================
+LN_UI_TYPEINFO_IMPLEMENT(UIToggleButton, UIButtonBase);
+
+//------------------------------------------------------------------------------
+RefPtr<UIToggleButton> UIToggleButton::Create()
+{
+	return NewObject<UIToggleButton>();
+}
+
+//------------------------------------------------------------------------------
+UIToggleButton::UIToggleButton()
+{
+}
+
+//------------------------------------------------------------------------------
+UIToggleButton::~UIToggleButton()
+{
+}
+
+//------------------------------------------------------------------------------
+void UIToggleButton::Initialize()
+{
+	UIButtonBase::Initialize();
+}
+
 LN_NAMESPACE_END

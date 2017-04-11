@@ -68,39 +68,20 @@ LN_CONSTRUCT_ACCESS:
 };
 
 
-///**
-//	@brief		
-//*/
-//class UIToggleButton
-//	: public UIContentControl
-//{
-//	LN_UI_TYPEINFO_DECLARE();
-//public:
-//	LN_ROUTED_EVENT(UIMouseEventArgs, ClickEvent);		/**< Click ルーティングイベントの識別子 */
-//
-//public:
-//	static UIButtonPtr Create();
-//
-//public:
-//	UIEvent<UIMouseEventArgs>		click;		/**< */
-//
-//	void SetText(const StringRef& text);
-//
-//LN_CONSTRUCT_ACCESS:
-//	UIButton();
-//	virtual ~UIButton();
-//	void Initialize(detail::UIManager* manager);
-//
-//protected:
-//	virtual void OnClick();
-//
-//	// UIElement interface
-//	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e) override;
-//	virtual void OnMouseDown(UIMouseEventArgs* e) override;
-//	virtual void OnMouseUp(UIMouseEventArgs* e) override;
-//
-//private:
-//	bool	m_isPressed;
-//};
+/**
+	@brief		
+*/
+class UIToggleButton
+	: public UIButtonBase
+{
+	LN_UI_TYPEINFO_DECLARE();
+public:
+	static RefPtr<UIToggleButton> Create();
+
+LN_CONSTRUCT_ACCESS:
+	UIToggleButton();
+	virtual ~UIToggleButton();
+	void Initialize();
+};
 
 LN_NAMESPACE_END
