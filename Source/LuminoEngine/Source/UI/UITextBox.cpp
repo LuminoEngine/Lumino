@@ -802,7 +802,7 @@ LN_UI_TYPEINFO_IMPLEMENT(UITextBox, UITextElement)
 UITextBoxPtr UITextBox::Create()
 {
 	auto ptr = RefPtr<UITextBox>::MakeRef();
-	ptr->Initialize(detail::UIManager::GetInstance());
+	ptr->Initialize();
 	return ptr;
 }
 
@@ -817,9 +817,9 @@ UITextBox::~UITextBox()
 }
 
 //------------------------------------------------------------------------------
-void UITextBox::Initialize(detail::UIManager* manager)
+void UITextBox::Initialize()
 {
-	UITextElement::Initialize(manager);
+	UITextElement::Initialize();
 	//SetHAlignment(HAlignment::Center);
 	//SetVAlignment(VAlignment::Center);
 

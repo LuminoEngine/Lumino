@@ -61,6 +61,28 @@ void UIControlsGallery()
 	auto* mainWindow = Engine::GetMainWindow();
 	mainWindow->SetLayoutPanel(UIStackPanel::Create());
 
+	auto grid1 = UIGridLayout::Create(1, 1);
+	mainWindow->AddChild(grid1);
+
+	// Button
+	{
+		auto stack1 = UIStackPanel::Create();
+
+		auto text1 = UITextBlock::Create();
+		text1->SetText(_T("Button"));
+		stack1->AddChild(text1);
+
+		auto button1 = UIButton::Create();
+		//button1->SetWidth(80);
+		//button1->SetHeight(24);
+		button1->SetText(_T("Button2"));
+		stack1->AddChild(button1);
+
+		grid1->AddChild(stack1);
+
+		// TODO: テキストサイズに合わせる(サイズ省略)
+	}
+
 	//auto text = UITextBlock::Create();//TextBlock2D::Create(_T("Hello, world!"));
 	//text->SetText(_T("Hello"));
 	//text->foreground = Brush::Blue;
@@ -75,11 +97,11 @@ void UIControlsGallery()
 	//mainWindow->AddChild(textbox1);
 
 
-	auto comboBox = tr::UIComboBox::Create();
-	comboBox->SetWidth(300);
-	comboBox->SetHeight(32);
-	comboBox->SetBackground(Brush::Gray);
-	mainWindow->AddChild(comboBox);
+	//auto comboBox = tr::UIComboBox::Create();
+	//comboBox->SetWidth(300);
+	//comboBox->SetHeight(32);
+	//comboBox->SetBackground(Brush::Gray);
+	//mainWindow->AddChild(comboBox);
 
 
 	

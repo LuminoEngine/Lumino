@@ -40,8 +40,7 @@ UIControl::~UIControl()
 //------------------------------------------------------------------------------
 void UIControl::Initialize()
 {
-	detail::UIManager* manager = detail::EngineDomain::GetUIManager();
-	UIElement::Initialize(manager);
+	UIElement::Initialize();
 	auto* vsm = GetVisualStateManager();
 	vsm->RegisterVisualState(CommonStates, NormalState);
 	vsm->RegisterVisualState(CommonStates, MouseOverState);
@@ -51,9 +50,12 @@ void UIControl::Initialize()
 	vsm->RegisterVisualState(FocusStates, FocusedState);
 	GoToVisualState(NormalState);
 
+	HContentAlignment = HAlignment::Stretch;
+	VContentAlignment = VAlignment::Stretch;
+
 
 	m_items = RefPtr<UIElementCollection>::MakeRef(this);
-	auto panel = NewObject<UIAbsoluteLayout>(manager);
+	auto panel = NewObject<UIAbsoluteLayout>();
 	SetLayoutPanel(panel);
 }
 
@@ -73,12 +75,14 @@ UIElementCollection* UIControl::GetItems() const
 void UIControl::AddChild(UIElement* element)
 {
 	m_items->Add(element);
+	element->SetLogicalParent(this);
 }
 
 //------------------------------------------------------------------------------
 void UIControl::RemoveChild(UIElement* element)
 {
 	m_items->Remove(element);
+	element->SetLogicalParent(nullptr);
 }
 
 //------------------------------------------------------------------------------

@@ -78,6 +78,10 @@ void ILayoutElement::ArrangeLayout(const RectF& finalLocalRect)
 
 	const Size& areaSize = finalLocalRect.GetSize();
 
+#if 1
+	HAlignment		hAlign = GetLayoutHAlignment();
+	VAlignment		vAlign = GetLayoutVAlignment();
+#else
 	ILayoutElement* parent = GetLayoutParent();
 	HAlignment		hAlign = GetLayoutHAlignment();
 	VAlignment		vAlign = GetLayoutVAlignment();
@@ -85,11 +89,15 @@ void ILayoutElement::ArrangeLayout(const RectF& finalLocalRect)
 	const VAlignment* parentVAlign = (parent != nullptr) ? parent->GetLayoutContentVAlignment() : nullptr;
 	if (parentHAlign != nullptr) hAlign = *parentHAlign;
 	if (parentVAlign != nullptr) vAlign = *parentVAlign;
+#endif
 
-	Size layoutSize = GetLayoutSize();
-	Size ds;// = GetLayoutDesiredSize();
-	ds.width = Math::IsNaNOrInf(layoutSize.width) ? finalLocalRect.width : layoutSize.width;
-	ds.height = Math::IsNaNOrInf(layoutSize.height) ? finalLocalRect.height : layoutSize.height;
+	//Size layoutSize = GetLayoutSize();
+	//Size ds;// = GetLayoutDesiredSize();
+	//ds.width = Math::IsNaNOrInf(layoutSize.width) ? finalLocalRect.width : layoutSize.width;
+	//ds.height = Math::IsNaNOrInf(layoutSize.height) ? finalLocalRect.height : layoutSize.height;
+	Size ds = GetLayoutDesiredSize();
+	LN_ASSERT(!Math::IsNaNOrInf(ds.width));
+	LN_ASSERT(!Math::IsNaNOrInf(ds.height));
 
 	// Alignment で調整する領域は、margin 領域も含む
 	const ThicknessF& margin = GetLayoutMargin();

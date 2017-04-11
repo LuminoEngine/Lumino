@@ -22,26 +22,28 @@ UILayoutPanel::~UILayoutPanel()
 }
 
 //------------------------------------------------------------------------------
-void UILayoutPanel::Initialize(detail::UIManager* manager)
+void UILayoutPanel::Initialize()
 {
-	UIElement::Initialize(manager);
+	UIElement::Initialize();
 	m_children = RefPtr<UIElementCollection>::MakeRef(this);
 
 	// Panel 系のデフォルトは Stretch
-	SetHAlignment(HAlignment::Stretch);
-	SetVAlignment(VAlignment::Stretch);
+	//SetHAlignment(HAlignment::Stretch);
+	//SetVAlignment(VAlignment::Stretch);
 }
 
 //------------------------------------------------------------------------------
 void UILayoutPanel::AddChild(UIElement* element)
 {
 	m_children->Add(element);
+	element->SetLogicalParent(this);
 }
 
 //------------------------------------------------------------------------------
 void UILayoutPanel::RemoveChild(UIElement* element)
 {
 	m_children->Remove(element);
+	element->SetLogicalParent(nullptr);
 }
 
 //------------------------------------------------------------------------------
@@ -75,17 +77,22 @@ Size UILayoutPanel::ArrangeOverride(const Size& finalSize)
 //------------------------------------------------------------------------------
 void UILayoutPanel::OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e)
 {
+	/*
+		ListBox や Button からコンテンツを追加する場合もこの関数が呼ばれる。
+		このときは VisualChild として追加する。LogicalChild ではない点に注意。
+	*/
+
 	// 新しく追加されたものたち
 	for (UIElement* element : e.newItems)
 	{
-		element->SetParent(this);
+		//element->SetParent(this);
 		AddVisualChild(element);
 	}
 
 	// 削除されたものたち
 	for (UIElement* element : e.oldItems)
 	{
-		element->SetParent(nullptr);
+		//element->SetParent(nullptr);
 		RemoveVisualChild(element);
 	}
 }
@@ -117,7 +124,7 @@ LN_UI_TYPEINFO_IMPLEMENT(UIStackPanel, UILayoutPanel)
 UIStackPanelPtr UIStackPanel::Create()
 {
 	auto ptr = RefPtr<UIStackPanel>::MakeRef();
-	ptr->Initialize(detail::UIManager::GetInstance());
+	ptr->Initialize();
 	return ptr;
 }
 
@@ -133,15 +140,17 @@ UIStackPanel::~UIStackPanel()
 }
 
 //------------------------------------------------------------------------------
-void UIStackPanel::Initialize(detail::UIManager* manager)
+void UIStackPanel::Initialize()
 {
-	UILayoutPanel::Initialize(manager);
+	UILayoutPanel::Initialize();
 }
 
 //------------------------------------------------------------------------------
 Size UIStackPanel::MeasureOverride(const Size& constraint)
 {
-	return detail::LayoutImpl<UIStackPanel>::UIStackPanel_MeasureOverride(this, constraint, m_orientation);
+	return Size::Max(
+		detail::LayoutImpl<UIStackPanel>::UIStackPanel_MeasureOverride(this, constraint, m_orientation),
+		UIElement::MeasureOverride(constraint));
 }
 
 //------------------------------------------------------------------------------
@@ -160,7 +169,7 @@ LN_UI_TYPEINFO_IMPLEMENT(UIAbsoluteLayout, UILayoutPanel)
 UIAbsoluteLayoutPtr UIAbsoluteLayout::Create()
 {
 	auto ptr = UIAbsoluteLayoutPtr::MakeRef();
-	ptr->Initialize(detail::UIManager::GetInstance());
+	ptr->Initialize();
 	return ptr;
 }
 
@@ -175,9 +184,9 @@ UIAbsoluteLayout::~UIAbsoluteLayout()
 }
 
 //------------------------------------------------------------------------------
-void UIAbsoluteLayout::Initialize(detail::UIManager* manager)
+void UIAbsoluteLayout::Initialize()
 {
-	UILayoutPanel::Initialize(manager);
+	UILayoutPanel::Initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -203,7 +212,7 @@ Size UIAbsoluteLayout::ArrangeOverride(const Size& finalSize)
 		size.width = Math::IsNaN(size.width) ? desiredSize.width : size.width;
 		size.height = Math::IsNaN(size.height) ? desiredSize.height : size.height;
 
-		RectF childRect(child->GetPositionInternal(), child->GetSizeInternal());
+		RectF childRect(child->GetPositionInternal(), size/*child->GetSizeInternal()*/);
 		AlignmentAnchor anchor = child->GetAnchorInternal();
 		
 		if (anchor != AlignmentAnchor::None)
@@ -398,7 +407,7 @@ LN_UI_TYPEINFO_IMPLEMENT(UIGridLayout, UILayoutPanel)
 UIGridLayoutPtr UIGridLayout::Create()
 {
 	auto ptr = UIGridLayoutPtr::MakeRef();
-	ptr->Initialize(detail::UIManager::GetInstance());
+	ptr->Initialize();
 	return ptr;
 }
 
@@ -406,7 +415,7 @@ UIGridLayoutPtr UIGridLayout::Create()
 UIGridLayoutPtr UIGridLayout::Create(int columnCount, int rowCount)
 {
 	auto ptr = UIGridLayoutPtr::MakeRef();
-	ptr->Initialize(detail::UIManager::GetInstance());
+	ptr->Initialize();
 	ptr->SetGridSize(columnCount, rowCount);
 	return ptr;
 }
@@ -424,9 +433,9 @@ UIGridLayout::~UIGridLayout()
 }
 
 //------------------------------------------------------------------------------
-void UIGridLayout::Initialize(detail::UIManager* manager)
+void UIGridLayout::Initialize()
 {
-	UILayoutPanel::Initialize(manager);
+	UILayoutPanel::Initialize();
 }
 
 //------------------------------------------------------------------------------

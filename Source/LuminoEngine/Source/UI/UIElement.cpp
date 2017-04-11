@@ -46,7 +46,7 @@ LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIEventArgs, LostFocusEvent, "LostFocus", L
 //------------------------------------------------------------------------------
 UIElement::UIElement()
 	: m_manager(nullptr)
-	, m_parent(nullptr)
+	, m_logicalParent(nullptr)
 	, m_localStyle(nullptr)
 	, m_currentVisualStateStyle(nullptr)
 	, m_visualParent(nullptr)
@@ -76,10 +76,9 @@ UIElement::~UIElement()
 }
 
 //------------------------------------------------------------------------------
-void UIElement::Initialize(detail::UIManager* manager)
+void UIElement::Initialize()
 {
-	if (LN_CHECK_ARG(manager != nullptr)) return;
-	m_manager = manager;
+	m_manager = detail::EngineDomain::GetUIManager();
 	m_invalidateFlags |= detail::InvalidateFlags::Initializing;
 
 	// 要素名を覚えておく。末端のサブクラスの名前となる。
@@ -198,7 +197,24 @@ void UIElement::MeasureLayout(const Size& availableSize)
 //------------------------------------------------------------------------------
 void UIElement::ArrangeLayout(const RectF& finalLocalRect)
 {
-	ILayoutElement::ArrangeLayout(finalLocalRect);
+	const HAlignment* parentHAlign = (m_logicalParent != nullptr) ? m_logicalParent->GetLayoutContentHAlignment() : nullptr;
+	const VAlignment* parentVAlign = (m_logicalParent != nullptr) ? m_logicalParent->GetLayoutContentVAlignment() : nullptr;
+
+	RectF alignd = finalLocalRect;
+	Size ds = GetLayoutDesiredSize();
+	if (parentHAlign != nullptr)
+	{
+		detail::LayoutHelper::AdjustHorizontalAlignment(finalLocalRect.GetSize(), ds, *parentHAlign, &alignd);
+		alignd.x += finalLocalRect.x;
+	}
+	if (parentHAlign != nullptr)
+	{
+		detail::LayoutHelper::AdjustVerticalAlignment(finalLocalRect.GetSize(), ds, *parentVAlign, &alignd);
+		alignd.y += finalLocalRect.y;
+	}
+
+
+	ILayoutElement::ArrangeLayout(alignd/*finalLocalRect*/);
 
 	OnLayoutUpdated();
 }
@@ -265,8 +281,9 @@ void UIElement::OnLostFocus(UIEventArgs* e)
 void UIElement::OnMouseEnter(UIMouseEventArgs* e)
 {
 	// 親にもマウスがはじめて乗ったのであれば親にも通知する
-	if (m_parent != NULL && !m_parent->m_isMouseOver) {
-		m_parent->OnMouseEnter(e);
+	if (m_visualParent != nullptr && !m_visualParent->m_isMouseOver)
+	{
+		m_visualParent->OnMouseEnter(e);
 	}
 
 	m_isMouseOver = true;
@@ -278,10 +295,11 @@ void UIElement::OnMouseEnter(UIMouseEventArgs* e)
 void UIElement::OnMouseLeave(UIMouseEventArgs* e)
 {
 	// 親にもマウスが乗ったことになっていれば、ヒットテストをした上で通知する
-	if (m_parent != NULL && m_parent->m_isMouseOver)
+	if (m_visualParent != nullptr && m_visualParent->m_isMouseOver)
 	{
-		if (!m_parent->m_finalGlobalRect.Contains(PointF(e->x, e->y))) {
-			m_parent->OnMouseLeave(e);
+		if (!m_visualParent->m_finalGlobalRect.Contains(PointF(e->x, e->y)))
+		{
+			m_visualParent->OnMouseLeave(e);
 		}
 	}
 
@@ -291,15 +309,15 @@ void UIElement::OnMouseLeave(UIMouseEventArgs* e)
 }
 
 //------------------------------------------------------------------------------
-void UIElement::SetParent(UIElement* parent)
+void UIElement::SetLogicalParent(UIElement* parent)
 {
 	if (parent != nullptr)
 	{
 		// 既に親があるとき、新しい親をつけることはできない
-		LN_THROW(GetParent() == nullptr, InvalidOperationException, "the child elements of already other elements.");
+		LN_THROW(GetLogicalParent() == nullptr, InvalidOperationException, "the child elements of already other elements.");
 	}
 
-	m_parent = parent;
+	m_logicalParent = parent;
 }
 
 //------------------------------------------------------------------------------
@@ -570,11 +588,11 @@ detail::SpcialUIElementType UIElement::GetSpcialUIElementType() const
 //------------------------------------------------------------------------------
 void UIElement::UpdateTransformHierarchy(const RectF& parentGlobalRect)
 {
-	if (m_parent != nullptr)
+	if (m_visualParent != nullptr)
 	{
 		//m_finalGlobalRect.x = m_parent->m_finalGlobalRect.x + m_finalLocalRect.x;
 		//m_finalGlobalRect.y = m_parent->m_finalGlobalRect.y + m_finalLocalRect.y;
-		m_combinedOpacity = m_parent->m_combinedOpacity * m_opacity;	// 不透明度もココで混ぜてしまう
+		m_combinedOpacity = m_visualParent->m_combinedOpacity * m_opacity;	// 不透明度もココで混ぜてしまう
 	}
 	else
 	{
@@ -685,7 +703,7 @@ const ThicknessF& UIElement::GetLayoutPadding() const { return padding; }
 AlignmentAnchor UIElement::GetLayoutAnchor() const { return anchor; }
 HAlignment UIElement::GetLayoutHAlignment() const { return hAlignment; }
 VAlignment UIElement::GetLayoutVAlignment() const { return vAlignment; }
-ILayoutElement* UIElement::GetLayoutParent() const { return m_parent; }
+ILayoutElement* UIElement::GetLayoutParent() const { return m_visualParent; }
 const HAlignment* UIElement::GetLayoutContentHAlignment() { return GetPriorityContentHAlignment(); }
 const VAlignment* UIElement::GetLayoutContentVAlignment() { return GetPriorityContentVAlignment(); }
 const Size& UIElement::GetLayoutDesiredSize() const { return m_desiredSize; }

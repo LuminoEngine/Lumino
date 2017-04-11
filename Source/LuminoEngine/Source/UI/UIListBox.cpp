@@ -25,9 +25,9 @@ UIListBoxItem::~UIListBoxItem()
 }
 
 //------------------------------------------------------------------------------
-void UIListBoxItem::Initialize(ln::detail::UIManager* manager)
+void UIListBoxItem::Initialize()
 {
-	UIContentControl::Initialize(manager);
+	UIContentControl::Initialize();
 	SetHContentAlignment(HAlignment::Left);
 	SetHAlignment(HAlignment::Stretch);
 	GoToVisualState(NormalState);
@@ -44,7 +44,7 @@ const String UIListBox::NormalState = _T("Normal");
 UIListBoxPtr UIListBox::Create()
 {
 	auto ptr = UIListBoxPtr::MakeRef();
-	ptr->Initialize(ln::detail::UIManager::GetInstance());
+	ptr->Initialize();
 	return ptr;
 }
 
@@ -59,13 +59,13 @@ UIListBox::~UIListBox()
 }
 
 //------------------------------------------------------------------------------
-void UIListBox::Initialize(ln::detail::UIManager* manager)
+void UIListBox::Initialize()
 {
 	UIControl::Initialize();
 	SetHContentAlignment(HAlignment::Stretch);
 
 	auto panel = RefPtr<UIStackPanel>::MakeRef();
-	panel->Initialize(manager);
+	panel->Initialize();
 	panel->SetHAlignment(HAlignment::Stretch);
 	panel->SetVAlignment(VAlignment::Stretch);
 	SetLayoutPanel(panel);
@@ -76,7 +76,7 @@ void UIListBox::Initialize(ln::detail::UIManager* manager)
 UIListBoxItemPtr UIListBox::AddTextItem(const String& text)
 {
 	auto textBlock = RefPtr<UITextBlock>::MakeRef();
-	textBlock->Initialize(GetManager());
+	textBlock->Initialize();
 	textBlock->SetText(text);
 	return AddItem(textBlock);
 }
@@ -88,7 +88,7 @@ UIListBoxItemPtr UIListBox::AddItem(UIElement* item)
 
 	// 受け取った item を UIListBoxItem でラップして、UIListBoxItem をリストに入れる
 	auto listItem = RefPtr<UIListBoxItem>::MakeRef();
-	listItem->Initialize(GetManager());
+	listItem->Initialize();
 	listItem->SetContent(item);
 	GetItems()->Add(listItem);
 	return listItem;

@@ -1,6 +1,7 @@
 ﻿#include <TestConfig.h>
 #include <Lumino/UI/UILayoutPanel.h>
 
+#if 0
 class Test_UI_Button : public ::testing::Test
 {
 protected:
@@ -22,10 +23,10 @@ TEST_F(Test_UI_Button, Basic)
 
 	uiRoot->RemoveChild(button1);
 }
-
+#endif
 
 //==============================================================================
-class Test_UI_FlowLayout : public ::testing::Test
+class Test_UI_StackPanel : public ::testing::Test
 {
 protected:
 	virtual void SetUp() {}
@@ -33,7 +34,39 @@ protected:
 };
 
 //------------------------------------------------------------------------------
-TEST_F(Test_UI_FlowLayout, ReverseHorizontal)
+TEST_F(Test_UI_StackPanel, HorizontalAlignment)
+{
+	auto uiRoot = Engine::GetMainWindow();
+	auto panel = UIStackPanel::Create();
+	panel->SetSize(uiRoot->GetSize());
+	panel->SetBackground(Brush::Blue);
+	uiRoot->AddChild(panel);
+
+	auto button1 = UIButton::Create();
+	auto button2 = UIButton::Create();
+	auto button3 = UIButton::Create();
+	auto button4 = UIButton::Create();
+	button1->SetHAlignment(HAlignment::Stretch);
+	button2->SetHAlignment(HAlignment::Left);
+	button3->SetHAlignment(HAlignment::Right);
+	button4->SetHAlignment(HAlignment::Center);
+	button1->SetSize(Size(32, 16));
+	button2->SetSize(Size(32, 16));
+	button3->SetSize(Size(32, 16));
+	button4->SetSize(Size(32, 16));
+	panel->AddChild(button1);
+	panel->AddChild(button2);
+	panel->AddChild(button3);
+	panel->AddChild(button4);
+
+	Engine::Update();
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_FlowLayout.HorizontalAlignment1.png"), 99, true));
+
+	uiRoot->RemoveChild(panel);	// 後始末
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_UI_StackPanel, ReverseHorizontal)
 {
 	auto panel = UIStackPanel::Create();
 	auto button1 = UIButton::Create();
@@ -59,9 +92,13 @@ TEST_F(Test_UI_FlowLayout, ReverseHorizontal)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_UI_FlowLayout, Margin_Padding)
+TEST_F(Test_UI_StackPanel, Margin_Padding)
 {
+	auto uiRoot = Engine::GetMainWindow();
 	auto panel = UIStackPanel::Create();
+	panel->SetSize(uiRoot->GetSize());
+	uiRoot->AddChild(panel);
+
 	auto button1 = UIButton::Create();
 	auto button2 = UIButton::Create();
 	button1->SetSize(Size(80, 32));
@@ -70,9 +107,6 @@ TEST_F(Test_UI_FlowLayout, Margin_Padding)
 	button2->SetHAlignment(HAlignment::Right);
 	panel->AddChild(button1);
 	panel->AddChild(button2);
-
-	auto uiRoot = Engine::GetMainWindow();
-	uiRoot->AddChild(panel);
 
 	panel->padding = ThicknessF(5, 10, 15, 20);
 	button2->margin = ThicknessF(5, 10, 15, 20);

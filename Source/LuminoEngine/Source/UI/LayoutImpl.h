@@ -43,7 +43,6 @@ public:
 		return finalSize;
 	}
 
-
 	//------------------------------------------------------------------------------
 	static Size UIStackPanel_MeasureOverride(ILayoutPanel* panel, const Size& constraint, Orientation orientation)
 	{

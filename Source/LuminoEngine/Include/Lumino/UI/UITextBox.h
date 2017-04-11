@@ -32,7 +32,7 @@ protected:
 LN_PROTECTED_INTERNAL_ACCESS:
 	UITextBox();
 	virtual ~UITextBox();
-	void Initialize(detail::UIManager* manager);
+	void Initialize();
 
 	virtual Size MeasureOverride(const Size& availableSize) override;
 	virtual Size ArrangeOverride(const Size& finalSize) override;

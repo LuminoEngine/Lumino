@@ -16,10 +16,9 @@ public:
 LN_INTERNAL_ACCESS:	// TODO: いまはとりあえず内部用途
 	UIWindow();
 	virtual ~UIWindow();
-	void InitializeDefault(detail::UIManager* manager);
+	void InitializeDefault();
 
 private:
-	detail::UIManager*	m_manager;
 };
 
 LN_NAMESPACE_END

@@ -26,7 +26,7 @@ UITreeViewItem::~UITreeViewItem()
 }
 
 //------------------------------------------------------------------------------
-void UITreeViewItem::Initialize(ln::detail::UIManager* manager)
+void UITreeViewItem::Initialize()
 {
 	UIControl::Initialize();
 	SetHContentAlignment(HAlignment::Left);
@@ -102,7 +102,7 @@ const String UITreeView::NormalState = _T("Normal");
 UITreeViewPtr UITreeView::Create()
 {
 	auto ptr = UITreeViewPtr::MakeRef();
-	ptr->Initialize(ln::detail::UIManager::GetInstance());
+	ptr->Initialize();
 	return ptr;
 }
 
@@ -117,13 +117,13 @@ UITreeView::~UITreeView()
 }
 
 //------------------------------------------------------------------------------
-void UITreeView::Initialize(ln::detail::UIManager* manager)
+void UITreeView::Initialize()
 {
 	UIControl::Initialize();
 	SetHContentAlignment(HAlignment::Stretch);
 
 	auto panel = RefPtr<UIStackPanel>::MakeRef();
-	panel->Initialize(manager);
+	panel->Initialize();
 	panel->SetHAlignment(HAlignment::Stretch);
 	panel->SetVAlignment(VAlignment::Stretch);
 	SetLayoutPanel(panel);

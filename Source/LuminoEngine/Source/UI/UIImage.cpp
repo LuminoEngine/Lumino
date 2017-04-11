@@ -90,13 +90,7 @@ UIImage::~UIImage()
 //------------------------------------------------------------------------------
 void UIImage::Initialize()
 {
-	UIElement::Initialize(detail::EngineDomain::GetUIManager());
-	//m_brush = NewObject<TextureBrush>();
-	//SetBackground(m_brush);
-
-
-
-
+	UIElement::Initialize();
 }
 
 //------------------------------------------------------------------------------

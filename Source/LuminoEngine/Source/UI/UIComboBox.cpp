@@ -30,7 +30,7 @@ UIPopup::~UIPopup()
 //------------------------------------------------------------------------------
 void UIPopup::Initialize()
 {
-	UIElement::Initialize(ln::detail::EngineDomain::GetUIManager());
+	UIElement::Initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -110,9 +110,9 @@ UIComboBoxItem::~UIComboBoxItem()
 }
 
 //------------------------------------------------------------------------------
-void UIComboBoxItem::Initialize(ln::detail::UIManager* manager)
+void UIComboBoxItem::Initialize()
 {
-	UIContentControl::Initialize(manager);
+	UIContentControl::Initialize();
 	SetHContentAlignment(HAlignment::Left);
 	SetHAlignment(HAlignment::Stretch);
 	GoToVisualState(NormalState);
@@ -128,7 +128,7 @@ LN_UI_TYPEINFO_IMPLEMENT(UIComboBox, UIControl)
 UIComboBoxPtr UIComboBox::Create()
 {
 	auto ptr = UIComboBoxPtr::MakeRef();
-	ptr->Initialize(ln::detail::UIManager::GetInstance());
+	ptr->Initialize();
 	return ptr;
 }
 
@@ -143,7 +143,7 @@ UIComboBox::~UIComboBox()
 }
 
 //------------------------------------------------------------------------------
-void UIComboBox::Initialize(ln::detail::UIManager* manager)
+void UIComboBox::Initialize()
 {
 	UIControl::Initialize();
 
@@ -159,7 +159,7 @@ void UIComboBox::Initialize(ln::detail::UIManager* manager)
 	SetHContentAlignment(HAlignment::Stretch);
 
 	auto panel = RefPtr<UIStackPanel>::MakeRef();
-	panel->Initialize(manager);
+	panel->Initialize();
 	panel->SetHAlignment(HAlignment::Stretch);
 	panel->SetVAlignment(VAlignment::Stretch);
 	SetLayoutPanel(panel);

@@ -55,7 +55,7 @@ public:
 LN_CONSTRUCT_ACCESS :
 	UIComboBoxItem();
 	virtual ~UIComboBoxItem();
-	void Initialize(ln::detail::UIManager* manager);
+	void Initialize();
 };
 
 /**
@@ -78,7 +78,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	UIComboBox();
 	virtual ~UIComboBox();
-	void Initialize(ln::detail::UIManager* manager);
+	void Initialize();
 
 private:
 	RefPtr<UIScrollViewer>	m_scrollViewer;

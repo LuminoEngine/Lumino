@@ -2,90 +2,126 @@
 #include "Internal.h"
 #include <Lumino/UI/UITextBlock.h>
 #include <Lumino/UI/UIButton.h>
+#include <Lumino/UI/UILayoutPanel.h>
 #include "UIManager.h"
 
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
-// UIButton
+// UIButtonBase
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIButton, UIContentControl);
-
-// Event definition
-LN_ROUTED_EVENT_IMPLEMENT(UIButton, UIMouseEventArgs, ClickEvent, "Click", click);
+LN_UI_TYPEINFO_IMPLEMENT(UIButtonBase, UIControl);
 
 //------------------------------------------------------------------------------
-UIButtonPtr UIButton::Create()
+UIButtonBase::UIButtonBase()
+	: m_clickMode(ClickMode::Release)
+	, m_isPressed(false)
 {
-	auto ptr = UIButtonPtr::MakeRef();
-	ptr->Initialize(detail::UIManager::GetInstance());
-	return ptr;
+}
+
+//------------------------------------------------------------------------------
+UIButtonBase::~UIButtonBase()
+{
+}
+
+//------------------------------------------------------------------------------
+void UIButtonBase::Initialize()
+{
+	UIControl::Initialize();
+
+	HContentAlignment = HAlignment::Center;
+	VContentAlignment = VAlignment::Center;
+
+	// TODO: UIControl::Initialize() の中でも作ってるから、そっちが無駄になる。
+	// UIControl では何も作らなくてもいいかも。null の場合、UILayoutPanel と同じレイアウトにするとか。
+	SetLayoutPanel(NewObject<UIStackPanel>());
+}
+
+//------------------------------------------------------------------------------
+void UIButtonBase::SetText(const StringRef& text)
+{
+	auto textBlock = UITextBlockPtr::MakeRef();
+	textBlock->Initialize();
+	textBlock->SetText(text);
+	AddChild(textBlock);
+}
+
+//------------------------------------------------------------------------------
+EventConnection UIButtonBase::ConnectOnGotFocus(UIEventHandler handler)
+{
+	return m_onClick.Connect(handler);
+}
+
+//------------------------------------------------------------------------------
+void UIButtonBase::OnClick(UIEventArgs* e)
+{
+	m_onClick.Raise(e);
+	//RaiseEvent(ClickEvent, this, UIEventArgs::Create(this));
+}
+
+//------------------------------------------------------------------------------
+void UIButtonBase::OnMouseDown(UIMouseEventArgs* e)
+{
+	if (m_clickMode == ClickMode::Release)
+	{
+		m_isPressed = true;
+		Focus();
+		CaptureMouse();
+		GoToVisualState(PressedState);
+		e->handled = true;
+	}
+	else if (m_clickMode == ClickMode::Press)
+	{
+		OnClick(e);
+		e->handled = true;
+	}
+
+	UIControl::OnMouseDown(e);
+}
+
+//------------------------------------------------------------------------------
+void UIButtonBase::OnMouseUp(UIMouseEventArgs* e)
+{
+	if (m_clickMode == ClickMode::Release)
+	{
+		if (m_isPressed)
+		{
+			m_isPressed = false;
+			ReleaseMouseCapture();
+			GoToVisualState(MouseOverState);
+			OnClick(e);
+			e->handled = true;
+		}
+	}
+
+	UIControl::OnMouseUp(e);
+}
+
+//==============================================================================
+// UIButton
+//==============================================================================
+LN_UI_TYPEINFO_IMPLEMENT(UIButton, UIButtonBase);
+
+//------------------------------------------------------------------------------
+RefPtr<UIButton> UIButton::Create()
+{
+	return NewObject<UIButton>();
 }
 
 //------------------------------------------------------------------------------
 UIButton::UIButton()
 {
-
 }
 
 //------------------------------------------------------------------------------
 UIButton::~UIButton()
 {
-
 }
 
 //------------------------------------------------------------------------------
-void UIButton::Initialize(detail::UIManager* manager)
+void UIButton::Initialize()
 {
-	UIContentControl::Initialize(manager);
-}
-
-//------------------------------------------------------------------------------
-void UIButton::SetText(const StringRef& text)
-{
-	auto textBlock = UITextBlockPtr::MakeRef();
-	textBlock->Initialize(GetManager());
-	textBlock->SetText(text);
-	SetContent(textBlock);
-}
-
-//------------------------------------------------------------------------------
-void UIButton::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
-{
-	UIContentControl::OnRoutedEvent(ev, e);
-}
-
-//------------------------------------------------------------------------------
-void UIButton::OnClick()
-{
-	RaiseEvent(ClickEvent, this, UIEventArgs::Create(this));
-}
-
-//------------------------------------------------------------------------------
-void UIButton::OnMouseDown(UIMouseEventArgs* e)
-{
-	m_isPressed = true;
-	Focus();
-	CaptureMouse();
-	GoToVisualState(PressedState);
-	e->handled = true;
-
-	UIContentControl::OnMouseDown(e);
-}
-
-//------------------------------------------------------------------------------
-void UIButton::OnMouseUp(UIMouseEventArgs* e)
-{
-	if (m_isPressed)
-	{
-		m_isPressed = false;
-		ReleaseMouseCapture();
-		GoToVisualState(MouseOverState);
-		OnClick();
-		e->handled = true;
-	}
-
-	UIContentControl::OnMouseUp(e);
+	UIButtonBase::Initialize();
 }
 
 LN_NAMESPACE_END

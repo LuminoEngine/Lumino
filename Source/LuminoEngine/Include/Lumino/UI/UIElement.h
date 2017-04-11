@@ -20,6 +20,13 @@ class UIVisualStateManager;
 LN_DELEGATE()
 using UIEventHandler = Delegate<void(UIEventArgs* e)>;
 
+/**
+	@brief		特定のイベントデータを持たない、UIイベントを処理するハンドラです。
+	@param[in]	e		: イベントのデータ
+*/
+LN_DELEGATE()
+using UIMouseEventHandler = Delegate<void(UIMouseEventArgs* e)>;
+
 class UIVisualStateManager
 	: public Object
 {
@@ -156,6 +163,7 @@ public:
 	float GetHeight() const { return tr::PropertyInfo::GetPropertyValueDirect<float>(this, heightId); }
 
 	void SetSize(const Size& value) { SetWidth(value.width); SetHeight(value.height); }
+	Size GetSize() const { return Size(width, height); }
 
 	void SetAnchor(AlignmentAnchor value) { tr::PropertyInfo::SetPropertyValueDirect<AlignmentAnchor>(this, anchorId, value); }
 	AlignmentAnchor GetAnchor() const { return tr::PropertyInfo::GetPropertyValueDirect<AlignmentAnchor>(this, anchorId); }
@@ -180,7 +188,7 @@ public:
 	const String& GetKeyName() const { return m_keyName; }
 
 	/** 論理上の親要素を取得します。*/
-	UIElement* GetParent() const { return m_parent; }
+	UIElement* GetLogicalParent() const { return m_logicalParent; }
 
 	//void SetSize(const Size& size) { m_size = size; }
 
@@ -252,7 +260,7 @@ public:
 protected:
 	UIElement();
 	virtual ~UIElement();
-	void Initialize(detail::UIManager* manager);
+	void Initialize();
 
 	/** 要素の視覚状態を切り替えます。*/
 	void GoToVisualState(const StringRef& stateName);
@@ -263,7 +271,7 @@ protected:
 	/**
 		@brief		この要素を表示するために必要なサイズを計測します。
 		@params[in]	constraint	: この要素を配置できる領域の最大サイズ。通常は親要素のサイズが渡されます。
-		@return		この要素のレイアウトの際に必要となる最低限のサイズ。この要素のサイズと、全ての子要素のサイズに基づき決定します。Inf であってはなりません。
+		@return		この要素のレイアウトの際に必要となる最低限のサイズ。この要素のサイズと、全ての子要素のサイズに基づき決定します。NaN や Inf であってはなりません。
 		@details	constraint は、ScrollViewer 等のコンテンツとなった場合は Infinity が渡されることがあります。
 	*/
 	virtual Size MeasureOverride(const Size& constraint) override;
@@ -313,7 +321,7 @@ LN_INTERNAL_ACCESS:
 	const ThicknessF& GetMargineInternal() const { return margin; }
 	AlignmentAnchor GetAnchorInternal() const { return anchor; }
 	const BrushPtr& GetForegroundInternal() const { return foreground; }
-	void SetParent(UIElement* parent);
+	void SetLogicalParent(UIElement* parent);
 	UIVisualStateManager* GetVisualStateManager();
 	void SetStyleSubControlName(const StringRef& ownerControlName, const StringRef& subControlName) { m_styleSubControlOwnerName = ownerControlName; m_styleSubControlName = subControlName; }
 	//const String& GetStyleSubControlName() const { return m_styleSubControlName; }
@@ -374,7 +382,7 @@ private:
 	detail::UIManager*		m_manager;
 	//UILayoutView*			m_ownerLayoutView;
 	String					m_keyName;
-	UIElement*				m_parent;	// TODO: logical parent
+	UIElement*				m_logicalParent;
 	UIStylePropertyTable*	m_localStyle;			// 内部的に使用されるスタイル。親や VisualState から取得したスタイルをマージしたもの。
 	Size					m_desiredSize;			// MeasureLayout() で決定されるこのコントロールの要求サイズ
 	RectF					m_finalLocalRect;		// 描画に使用する最終境界矩形 (グローバル座標系=RootFrame のローカル座標系)

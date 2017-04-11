@@ -26,7 +26,7 @@ UIContentControl::~UIContentControl()
 }
 
 //------------------------------------------------------------------------------
-void UIContentControl::Initialize(detail::UIManager* manager)
+void UIContentControl::Initialize()
 {
 	UIControl::Initialize();
 

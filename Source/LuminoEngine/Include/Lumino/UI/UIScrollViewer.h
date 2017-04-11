@@ -44,7 +44,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIThumb();
 	virtual ~UIThumb();
-	void Initialize(detail::UIManager* manager);
+	void Initialize();
 
 protected:
 	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e) override;
@@ -111,7 +111,7 @@ LN_CONSTRUCT_ACCESS:
 
 	UITrack();
 	virtual ~UITrack();
-	void Initialize(detail::UIManager* manager);
+	void Initialize();
 
 protected:
 	// UIElement interface
@@ -224,7 +224,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIScrollBar();
 	virtual ~UIScrollBar();
-	void Initialize(detail::UIManager* manager);
+	void Initialize();
 
 protected:
 	// UIElement interface

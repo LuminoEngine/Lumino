@@ -25,7 +25,7 @@ LN_ROUTED_EVENT_IMPLEMENT2(UIThumb, UIDragDeltaEventArgs, DragCanceledEvent);
 RefPtr<UIThumb> UIThumb::Create()
 {
 	auto ptr = RefPtr<UIThumb>::MakeRef();
-	ptr->Initialize(ln::detail::UIManager::GetInstance());
+	ptr->Initialize();
 	return ptr;
 }
 
@@ -42,9 +42,9 @@ UIThumb::~UIThumb()
 }
 
 //------------------------------------------------------------------------------
-void UIThumb::Initialize(detail::UIManager* manager)
+void UIThumb::Initialize()
 {
-	UIElement::Initialize(manager);
+	UIElement::Initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -55,7 +55,7 @@ void UIThumb::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 		if (!m_isDragging)
 		{
 			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);
-			PointF pos = mouseEvent->GetPosition(GetParent());
+			PointF pos = mouseEvent->GetPosition(GetVisualParent());
 
 			m_lastScreenPosition = pos;
 			m_isDragging = true;
@@ -77,7 +77,7 @@ void UIThumb::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 		if (m_isDragging)
 		{
 			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);
-			PointF pos = mouseEvent->GetPosition(GetParent());
+			PointF pos = mouseEvent->GetPosition(GetVisualParent());
 
 			m_isDragging = false;
 			ReleaseMouseCapture();
@@ -99,7 +99,7 @@ void UIThumb::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 		if (m_isDragging)
 		{
 			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);
-			PointF pos = mouseEvent->GetPosition(GetParent());
+			PointF pos = mouseEvent->GetPosition(GetVisualParent());
 
 			// ドラッグ中イベント
 			detail::EventArgsPool* pool = GetManager()->GetEventArgsPool();
@@ -125,7 +125,7 @@ LN_UI_TYPEINFO_IMPLEMENT(UITrack, UIElement)
 RefPtr<UITrack> UITrack::Create()
 {
 	auto ptr = RefPtr<UITrack>::MakeRef();
-	ptr->Initialize(ln::detail::UIManager::GetInstance());
+	ptr->Initialize();
 	return ptr;
 }
 
@@ -149,13 +149,13 @@ UITrack::~UITrack()
 }
 
 //------------------------------------------------------------------------------
-void UITrack::Initialize(detail::UIManager* manager)
+void UITrack::Initialize()
 {
-	UIElement::Initialize(manager);
+	UIElement::Initialize();
 
-	m_decreaseButton = NewObject<UIButton>(manager);
-	m_thumb = NewObject<UIThumb>(manager);
-	m_increaseButton = NewObject<UIButton>(manager);
+	m_decreaseButton = NewObject<UIButton>();
+	m_thumb = NewObject<UIThumb>();
+	m_increaseButton = NewObject<UIButton>();
 
 	m_decreaseButton->SetStyleSubControlName(tr::TypeInfo::GetTypeInfo<UITrack>()->GetName(), _T("DecreaseButton"));
 	m_increaseButton->SetStyleSubControlName(tr::TypeInfo::GetTypeInfo<UITrack>()->GetName(), _T("IncreaseButton"));
@@ -376,7 +376,7 @@ const String UIScrollBar::VerticalState = _T("Vertical");
 RefPtr<UIScrollBar> UIScrollBar::Create()
 {
 	auto ptr = RefPtr<UIScrollBar>::MakeRef();
-	ptr->Initialize(ln::detail::UIManager::GetInstance());
+	ptr->Initialize();
 	return ptr;
 }
 
@@ -395,7 +395,7 @@ UIScrollBar::~UIScrollBar()
 }
 
 //------------------------------------------------------------------------------
-void UIScrollBar::Initialize(detail::UIManager* manager)
+void UIScrollBar::Initialize()
 {
 	UIControl::Initialize();
 
@@ -404,9 +404,9 @@ void UIScrollBar::Initialize(detail::UIManager* manager)
 	vsm->RegisterVisualState(OrientationStates, HorizontalState);
 	vsm->RegisterVisualState(OrientationStates, VerticalState);
 
-	m_track = NewObject<UITrack>(manager);
-	m_lineUpButton = NewObject<UIButton>(manager);
-	m_lineDownButton = NewObject<UIButton>(manager);
+	m_track = NewObject<UITrack>();
+	m_lineUpButton = NewObject<UIButton>();
+	m_lineDownButton = NewObject<UIButton>();
 	AddVisualChild(m_track);
 	AddVisualChild(m_lineUpButton);
 	AddVisualChild(m_lineDownButton);
@@ -620,12 +620,11 @@ UIScrollViewer::~UIScrollViewer()
 //------------------------------------------------------------------------------
 void UIScrollViewer::Initialize()
 {
-	auto* manager = detail::EngineDomain::GetUIManager();
 	UIControl::Initialize();
 
-	m_horizontalScrollBar = NewObject<UIScrollBar>(manager);
+	m_horizontalScrollBar = NewObject<UIScrollBar>();
 	m_horizontalScrollBar->SetOrientation(Orientation::Horizontal);
-	m_verticalScrollBar = NewObject<UIScrollBar>(manager);
+	m_verticalScrollBar = NewObject<UIScrollBar>();
 	m_verticalScrollBar->SetOrientation(Orientation::Vertical);
 	AddVisualChild(m_horizontalScrollBar);
 	AddVisualChild(m_verticalScrollBar);

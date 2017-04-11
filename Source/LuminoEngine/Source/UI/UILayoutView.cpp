@@ -71,8 +71,6 @@ void UILayoutView::Initialize(UIContext* ownerContext, PlatformWindow* ownerNati
 
 	m_ownerContext = ownerContext;
 	m_ownerNativeWindow = ownerNativeWindow;
-
-	SetParent(nullptr);
 }
 
 //------------------------------------------------------------------------------

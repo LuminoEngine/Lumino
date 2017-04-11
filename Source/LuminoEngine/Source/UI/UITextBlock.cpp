@@ -15,7 +15,7 @@ LN_UI_TYPEINFO_IMPLEMENT(UITextBlock, UITextElement)
 UITextBlockPtr UITextBlock::Create()
 {
 	auto ptr = UITextBlockPtr::MakeRef();
-	ptr->Initialize(detail::UIManager::GetInstance());
+	ptr->Initialize();
 	return ptr;
 }
 
@@ -30,11 +30,11 @@ UITextBlock::~UITextBlock()
 }
 
 //------------------------------------------------------------------------------
-void UITextBlock::Initialize(detail::UIManager* manager)
+void UITextBlock::Initialize()
 {
-	UITextElement::Initialize(manager);
-	SetHAlignment(HAlignment::Center);
-	SetVAlignment(VAlignment::Center);
+	UITextElement::Initialize();
+	//SetHAlignment(HAlignment::Center);
+	//SetVAlignment(VAlignment::Center);
 }
 
 //------------------------------------------------------------------------------
