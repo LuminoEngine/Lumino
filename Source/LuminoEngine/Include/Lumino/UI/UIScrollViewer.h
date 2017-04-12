@@ -107,6 +107,8 @@ public:
 	/** 距離を値に変換します。*/
 	float ValueFromDistance(float horizontal, float vertical);
 
+	UIThumb* GetThumb() const;
+
 LN_CONSTRUCT_ACCESS:
 
 	UITrack();
@@ -120,6 +122,12 @@ protected:
 
 private:
 	void CoerceLength(float& componentLength, float trackLength);
+	void CalcSliderComponentsSize(
+		const Size& arrangeSize,
+		bool isVertical,
+		float* outDecreaseButtonLength,
+		float* outThumbLength,
+		float* outIncreaseButtonLength);
 	void CalcScrollBarComponentsSize(
 		float trackLength,
 		float viewportSize,

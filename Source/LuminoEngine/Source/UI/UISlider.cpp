@@ -99,6 +99,7 @@ RefPtr<UISlider> UISlider::Create()
 
 //------------------------------------------------------------------------------
 UISlider::UISlider()
+	: m_dragStartValue(0)
 {
 }
 
@@ -118,7 +119,10 @@ void UISlider::Initialize()
 	vsm->RegisterVisualState(UIVisualStates::OrientationGroup, UIVisualStates::VerticalState);
 
 	m_track = NewObject<UITrack>();
-	m_track->SetBackground(Brush::Red);
+	m_track->SetBackground(Brush::Red);		// TODO:
+	m_track->GetThumb()->SetSize(Size(16, 20));
+	m_track->GetThumb()->SetBackground(Brush::Green);
+	//m_track->SetViewportSize(Math::NaN);
 	AddVisualChild(m_track);
 }
 
@@ -152,12 +156,12 @@ void UISlider::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 {
 	if (ev == UIThumb::DragStartedEventId)
 	{
-		//m_dragStartValue = m_track->GetValue();
+		m_dragStartValue = m_track->GetValue();
 	}
 	else if (ev == UIThumb::DragDeltaEventId)
 	{
 		auto* e2 = static_cast<UIDragDeltaEventArgs*>(e);
-		float newValue = GetValue() + m_track->ValueFromDistance(e2->horizontalChange, e2->verticalChange);
+		float newValue = m_dragStartValue + m_track->ValueFromDistance(e2->horizontalChange, e2->verticalChange);
 		UpdateValue(newValue);
 		//auto* e2 = static_cast<UIDragDeltaEventArgs*>(e);
 		//UpdateValue(e2->horizontalChange, e2->verticalChange);

@@ -85,6 +85,7 @@ private:
 	void UpdateValue(float value);
 
 	RefPtr<UITrack>		m_track;
+	float				m_dragStartValue;
 };
 
 

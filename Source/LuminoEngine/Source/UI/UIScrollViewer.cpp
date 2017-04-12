@@ -181,8 +181,17 @@ float UITrack::ValueFromDistance(float horizontal, float vertical)
 }
 
 //------------------------------------------------------------------------------
+UIThumb* UITrack::GetThumb() const
+{
+	return m_thumb;
+}
+
+//------------------------------------------------------------------------------
 Size UITrack::MeasureOverride(const Size& constraint)
 {
+	m_decreaseButton->MeasureLayout(constraint);
+	m_thumb->MeasureLayout(constraint);
+	m_increaseButton->MeasureLayout(constraint);
 	return UIElement::MeasureOverride(constraint);
 }
 
@@ -197,8 +206,7 @@ Size UITrack::ArrangeOverride(const Size& finalSize)
 	if (Math::IsNaN(m_viewportSize))
 	{
 		// ビューサイズが関係ない場合の計算。つまり、Slider コントロール用
-		//CalcSliderComponentsSize
-		LN_NOTIMPLEMENTED();
+		CalcSliderComponentsSize(finalSize, (m_orientation == Orientation::Vertical), &decreaseButtonLength, &thumbLength, &increaseButtonLength);
 	}
 	else
 	{
@@ -272,6 +280,50 @@ void UITrack::CoerceLength(float& componentLength, float trackLength)
 	{
 		componentLength = trackLength;
 	}
+}
+
+//------------------------------------------------------------------------------
+void UITrack::CalcSliderComponentsSize(
+	const Size& arrangeSize,
+	bool isVertical,
+	float* outDecreaseButtonLength,
+	float* outThumbLength,
+	float* outIncreaseButtonLength)
+{
+	float min = m_minimum;
+	float range = std::max(0.0f, m_maximum - min);
+	float offset = std::min(range, m_value - min);
+
+	float trackLength;
+	float thumbLength;
+
+	if (isVertical)
+	{
+		trackLength = arrangeSize.height;
+		thumbLength = (m_thumb == nullptr) ? 0 : m_thumb->GetLayoutDesiredSize().height;
+	}
+	else
+	{
+		trackLength = arrangeSize.width;
+		thumbLength = (m_thumb == nullptr) ? 0 : m_thumb->GetLayoutDesiredSize().width;
+	}
+
+	CoerceLength(thumbLength, trackLength);
+
+	float remainingTrackLength = trackLength - thumbLength;
+
+	float decreaseButtonLength = remainingTrackLength * offset / range;
+	CoerceLength(decreaseButtonLength, remainingTrackLength);
+
+	float increaseButtonLength = remainingTrackLength - decreaseButtonLength;
+	CoerceLength(increaseButtonLength, remainingTrackLength);
+
+
+	*outDecreaseButtonLength = decreaseButtonLength;
+	*outThumbLength = thumbLength;
+	*outIncreaseButtonLength = increaseButtonLength;
+
+	m_density = range / remainingTrackLength;
 }
 
 //------------------------------------------------------------------------------
