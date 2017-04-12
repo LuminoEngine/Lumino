@@ -21,14 +21,14 @@ public:
 	tr::Property<HAlignment>	HContentAlignment;
 	tr::Property<VAlignment>	VContentAlignment;
 
-	static const String NormalState;
-	static const String MouseOverState;
-	static const String PressedState;
-	static const String DisabledState;
-	static const String UnfocusedState;
-	static const String FocusedState;
-	static const String ValidState;
-	static const String InvalidState;
+	//static const String NormalState;
+	//static const String MouseOverState;
+	//static const String PressedState;
+	//static const String DisabledState;
+	//static const String UnfocusedState;
+	//static const String FocusedState;
+	//static const String ValidState;
+	//static const String InvalidState;
 
 public:
 	

@@ -67,7 +67,7 @@ void UIButtonBase::OnMouseDown(UIMouseEventArgs* e)
 		m_isPressed = true;
 		Focus();
 		CaptureMouse();
-		GoToVisualState(PressedState);
+		GoToVisualState(UIVisualStates::PressedState);
 		e->handled = true;
 	}
 	else if (m_clickMode == ClickMode::Press)
@@ -88,7 +88,7 @@ void UIButtonBase::OnMouseUp(UIMouseEventArgs* e)
 		{
 			m_isPressed = false;
 			ReleaseMouseCapture();
-			GoToVisualState(MouseOverState);
+			GoToVisualState(UIVisualStates::MouseOverState);
 			OnClick(e);
 			e->handled = true;
 		}
@@ -129,6 +129,9 @@ void UIButton::Initialize()
 //==============================================================================
 LN_UI_TYPEINFO_IMPLEMENT(UIToggleButton, UIButtonBase);
 
+const String UIToggleButton::CheckedState = _T("Checked");
+const String UIToggleButton::UncheckedState = _T("Unchecked");
+
 //------------------------------------------------------------------------------
 RefPtr<UIToggleButton> UIToggleButton::Create()
 {
@@ -137,6 +140,7 @@ RefPtr<UIToggleButton> UIToggleButton::Create()
 
 //------------------------------------------------------------------------------
 UIToggleButton::UIToggleButton()
+	: m_isChecked(false)
 {
 }
 
@@ -149,6 +153,28 @@ UIToggleButton::~UIToggleButton()
 void UIToggleButton::Initialize()
 {
 	UIButtonBase::Initialize();
+
+	auto* vsm = GetVisualStateManager();
+	vsm->RegisterVisualState(UIVisualStates::CommonGroup, CheckedState);
+	vsm->RegisterVisualState(UIVisualStates::CommonGroup, UncheckedState);
 }
+
+//------------------------------------------------------------------------------
+void UIToggleButton::OnClick(UIEventArgs* e)
+{
+	m_isChecked = !m_isChecked;
+
+	if (m_isChecked)
+	{
+		GoToVisualState(CheckedState);
+	}
+	else
+	{
+		GoToVisualState(UncheckedState);
+	}
+
+	UIButtonBase::OnClick(e);
+}
+
 
 LN_NAMESPACE_END

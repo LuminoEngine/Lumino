@@ -76,12 +76,21 @@ class UIToggleButton
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:
+	static const String CheckedState;
+	static const String UncheckedState;
+
 	static RefPtr<UIToggleButton> Create();
+
+protected:
+	virtual void OnClick(UIEventArgs* e);
 
 LN_CONSTRUCT_ACCESS:
 	UIToggleButton();
 	virtual ~UIToggleButton();
 	void Initialize();
+
+private:
+	bool	m_isChecked;
 };
 
 LN_NAMESPACE_END

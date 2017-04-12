@@ -61,25 +61,25 @@ void UIContext::SetFocusElement(UIElement* element)
 		if (LN_CHECK_STATE(element->IsFocusable())) return;
 	}
 
-	UIElement* focusedBranchRoot = UIHelper::FindVisualAncestor(element, [](UIElement* e) { return e->HasFocus() || e->GetSpcialUIElementType() == detail::SpcialUIElementType::LayoutRoot; });
+	UIElement* focusedBranchRoot = UIHelper::FindVisualAncestor(element, true, [](UIElement* e) { return e->HasFocus() || e->GetSpcialUIElementType() == detail::SpcialUIElementType::LayoutRoot; });
 	if (LN_CHECK_STATE(focusedBranchRoot != nullptr)) return;
 	
 	if (m_focusElement != nullptr)
 	{
-		if (m_focusElement->IsFocusable()) m_focusElement->CallOnLostFocus();
-		UIHelper::FindVisualAncestor(m_focusElement, [focusedBranchRoot](UIElement* e)
+		if (m_focusElement->IsFocusable() && m_focusElement->HasFocus()) m_focusElement->CallOnLostFocus();
+		UIHelper::FindVisualAncestor(m_focusElement, false, [focusedBranchRoot](UIElement* e)
 		{
 			if (e == focusedBranchRoot) return true;
-			if (e->IsFocusable()) e->CallOnLostFocus();
+			if (e->IsFocusable() && e->HasFocus()) e->CallOnLostFocus();
 			return false;
 		});
 	}
 
-	if (element->IsFocusable()) element->CallOnGotFocus();
-	UIHelper::FindVisualAncestor(element, [focusedBranchRoot](UIElement* e)
+	if (element->IsFocusable() && !element->HasFocus()) element->CallOnGotFocus();
+	UIHelper::FindVisualAncestor(element, false, [focusedBranchRoot](UIElement* e)
 	{
 		if (e == focusedBranchRoot) return true;
-		if (e->IsFocusable()) e->CallOnGotFocus();
+		if (e->IsFocusable() && !e->HasFocus()) e->CallOnGotFocus();
 		return false;
 	});
 

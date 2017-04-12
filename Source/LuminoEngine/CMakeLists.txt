@@ -456,6 +456,7 @@ set(LN_SOURCES_UI
 	Include/Lumino/UI/UILayoutView.h
 	Include/Lumino/UI/UIListBox.h
 	Include/Lumino/UI/UIScrollViewer.h
+	Include/Lumino/UI/UISlider.h
 	Include/Lumino/UI/UIStyle.h
 	Include/Lumino/UI/UITextBlock.h
 	Include/Lumino/UI/UITextBox.h
@@ -486,6 +487,7 @@ set(LN_SOURCES_UI
 	Source/UI/UIManager.cpp
 	Source/UI/UIManager.h
 	Source/UI/UIScrollViewer.cpp
+	Source/UI/UISlider.cpp
 	Source/UI/UIStyle.cpp
 	Source/UI/UITextBlock.cpp
 	Source/UI/UITextBox.cpp

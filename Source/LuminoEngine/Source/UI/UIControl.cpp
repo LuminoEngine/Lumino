@@ -13,18 +13,6 @@ LN_UI_TYPEINFO_IMPLEMENT(UIControl, UIElement);
 LN_TR_PROPERTY_IMPLEMENT(UIControl, HAlignment, HContentAlignment, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(UIControl, VAlignment, VContentAlignment, tr::PropertyMetadata());
 
-static const String CommonStates = _T("CommonStates");
-static const String FocusStates = _T("FocusStates");
-static const String ValidationStates = _T("ValidationStates");
-const String UIControl::NormalState = _T("Normal");
-const String UIControl::MouseOverState = _T("MouseOver");
-const String UIControl::PressedState = _T("Pressed");
-const String UIControl::DisabledState = _T("Disabled");
-const String UIControl::UnfocusedState = _T("Unfocused");
-const String UIControl::FocusedState = _T("Focused");
-const String UIControl::ValidState = _T("Valid");
-const String UIControl::InvalidState = _T("Invalid");
-
 //------------------------------------------------------------------------------
 UIControl::UIControl()
 	//: m_visualTreeRoot(nullptr)
@@ -42,13 +30,13 @@ void UIControl::Initialize()
 {
 	UIElement::Initialize();
 	auto* vsm = GetVisualStateManager();
-	vsm->RegisterVisualState(CommonStates, NormalState);
-	vsm->RegisterVisualState(CommonStates, MouseOverState);
-	vsm->RegisterVisualState(CommonStates, PressedState);
-	vsm->RegisterVisualState(CommonStates, DisabledState);
-	vsm->RegisterVisualState(FocusStates, UnfocusedState);
-	vsm->RegisterVisualState(FocusStates, FocusedState);
-	GoToVisualState(NormalState);
+	vsm->RegisterVisualState(UIVisualStates::CommonGroup, UIVisualStates::NormalState);
+	vsm->RegisterVisualState(UIVisualStates::CommonGroup, UIVisualStates::MouseOverState);
+	vsm->RegisterVisualState(UIVisualStates::CommonGroup, UIVisualStates::PressedState);
+	vsm->RegisterVisualState(UIVisualStates::CommonGroup, UIVisualStates::DisabledState);
+	vsm->RegisterVisualState(UIVisualStates::FocusGroup, UIVisualStates::UnfocusedState);
+	vsm->RegisterVisualState(UIVisualStates::FocusGroup, UIVisualStates::FocusedState);
+	GoToVisualState(UIVisualStates::NormalState);
 
 	HContentAlignment = HAlignment::Stretch;
 	VContentAlignment = VAlignment::Stretch;
@@ -206,11 +194,11 @@ void UIControl::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 	// TODO: ここでやるべきではない。MFC なら PreTranslate 相当なので。On～で行う。
 	if (ev == UIElement::MouseEnterEvent)
 	{
-		GoToVisualState(MouseOverState);
+		GoToVisualState(UIVisualStates::MouseOverState);
 	}
 	else if (ev == UIElement::MouseLeaveEvent)
 	{
-		GoToVisualState(NormalState);
+		GoToVisualState(UIVisualStates::NormalState);
 	}
 
 	UIElement::OnRoutedEvent(ev, e);
@@ -219,14 +207,14 @@ void UIControl::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 //------------------------------------------------------------------------------
 void UIControl::OnGotFocus(UIEventArgs* e)
 {
-	GoToVisualState(FocusedState);
+	GoToVisualState(UIVisualStates::FocusedState);
 	UIElement::OnGotFocus(e);
 }
 
 //------------------------------------------------------------------------------
 void UIControl::OnLostFocus(UIEventArgs* e)
 {
-	GoToVisualState(UnfocusedState);
+	GoToVisualState(UIVisualStates::UnfocusedState);
 	UIElement::OnLostFocus(e);
 }
 

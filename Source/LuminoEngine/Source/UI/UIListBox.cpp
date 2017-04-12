@@ -30,7 +30,7 @@ void UIListBoxItem::Initialize()
 	UIContentControl::Initialize();
 	SetHContentAlignment(HAlignment::Left);
 	SetHAlignment(HAlignment::Stretch);
-	GoToVisualState(NormalState);
+	GoToVisualState(UIVisualStates::NormalState);
 }
 
 //==============================================================================

@@ -19,9 +19,18 @@ public:
 	}
 
 	template<typename TPred>
-	static UIElement* FindVisualAncestor(UIElement* element, TPred pred)
+	static UIElement* FindVisualAncestor(UIElement* element, bool self, TPred pred)
 	{
 		if (LN_CHECK_ARG(element != nullptr)) return nullptr;
+
+		// 自分もチェックするか
+		if (self)
+		{
+			if (pred(element))
+			{
+				return element;
+			}
+		}
 
 		while (true)
 		{

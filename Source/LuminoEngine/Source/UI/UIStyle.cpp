@@ -226,6 +226,12 @@ UIStylePropertyTable* UIStyle::GetPropertyTable(const StringRef& visualStateName
 }
 
 //------------------------------------------------------------------------------
+void UIStyle::SetBaseOnStyle(UIStyle* style)
+{
+	m_baseOn = style;
+}
+
+//------------------------------------------------------------------------------
 UIStylePropertyTable* UIStyle::FindStylePropertyTable(const String& visualStateName)
 {
 	auto* ptr = m_visualStatePropertyTableList.Find([visualStateName](const VisualStateStylePair& pair) { return pair.first == visualStateName; });

@@ -83,6 +83,28 @@ LN_INTERNAL_ACCESS:
 	const List<String>& GetActiveStateNames() const { return activeStateNames; }
 };
 
+class UIVisualStates
+{
+public:
+	static const String CommonGroup;
+	static const String FocusGroup;
+	//static const String ValidationStates;
+
+	static const String NormalState;
+	static const String MouseOverState;
+	static const String PressedState;
+	static const String DisabledState;
+	static const String UnfocusedState;
+	static const String FocusedState;
+	static const String ValidState;
+	static const String InvalidState;
+
+
+	static const String OrientationGroup;
+	static const String HorizontalState;
+	static const String VerticalState;
+};
+
 /**
 	@brief		
 	@details	

@@ -115,7 +115,7 @@ void UIComboBoxItem::Initialize()
 	UIContentControl::Initialize();
 	SetHContentAlignment(HAlignment::Left);
 	SetHAlignment(HAlignment::Stretch);
-	GoToVisualState(NormalState);
+	GoToVisualState(UIVisualStates::NormalState);
 }
 
 //==============================================================================
@@ -163,7 +163,7 @@ void UIComboBox::Initialize()
 	panel->SetHAlignment(HAlignment::Stretch);
 	panel->SetVAlignment(VAlignment::Stretch);
 	SetLayoutPanel(panel);
-	GoToVisualState(NormalState);
+	GoToVisualState(UIVisualStates::NormalState);
 }
 
 //------------------------------------------------------------------------------

@@ -78,6 +78,15 @@ void UIControlsGallery()
 		button1->SetText(_T("Button2"));
 		stack1->AddChild(button1);
 
+		auto button2 = UIToggleButton::Create();
+		button2->SetText(_T("Button2"));
+		stack1->AddChild(button2);
+
+		auto slider1 = UISlider::Create();
+		slider1->SetHeight(32);
+		stack1->AddChild(slider1);
+
+
 		grid1->AddChild(stack1);
 
 		// TODO: テキストサイズに合わせる(サイズ省略)

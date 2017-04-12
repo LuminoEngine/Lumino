@@ -31,7 +31,7 @@ void UITreeViewItem::Initialize()
 	UIControl::Initialize();
 	SetHContentAlignment(HAlignment::Left);
 	SetHAlignment(HAlignment::Stretch);
-	GoToVisualState(NormalState);
+	GoToVisualState(UIVisualStates::NormalState);
 }
 
 //------------------------------------------------------------------------------
@@ -96,8 +96,6 @@ Size UITreeViewItem::ArrangeOverride(const Size& finalSize)
 //==============================================================================
 LN_UI_TYPEINFO_IMPLEMENT(UITreeView, UIControl)
 
-const String UITreeView::NormalState = _T("Normal");
-
 //------------------------------------------------------------------------------
 UITreeViewPtr UITreeView::Create()
 {
@@ -127,7 +125,7 @@ void UITreeView::Initialize()
 	panel->SetHAlignment(HAlignment::Stretch);
 	panel->SetVAlignment(VAlignment::Stretch);
 	SetLayoutPanel(panel);
-	GoToVisualState(NormalState);
+	GoToVisualState(UIVisualStates::NormalState);
 }
 
 ////------------------------------------------------------------------------------

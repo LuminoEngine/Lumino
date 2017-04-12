@@ -246,7 +246,7 @@ public:
 	UIStylePropertyTable* GetPropertyTable();
 	UIStylePropertyTable* GetPropertyTable(const StringRef& visualStateName);
 
-
+	void SetBaseOnStyle(UIStyle* style);
 
 LN_INTERNAL_ACCESS:
 	UIStylePropertyTable* FindStylePropertyTable(const String& visualStateName);
@@ -257,8 +257,15 @@ LN_INTERNAL_ACCESS:
 	{
 		detail::InvalidateFlags invalidateFlags = detail::InvalidateFlags::None;
 
+		// 継承元に再帰
+		if (m_baseOn != nullptr)
+		{
+			invalidateFlags |= m_baseOn->MergeActiveStylePropertyTables(store, visualStateNames);
+		}
+
 		invalidateFlags |= store->UpdateInherit(m_basePropertyTable);
 
+		// このあたりの処理で、あとから追加されたスタイルが優先されることになる
 		UIStylePropertyTable* lastActiveStyle = nullptr;
 		for (auto& pair : m_visualStatePropertyTableList)
 		{
@@ -274,6 +281,9 @@ LN_INTERNAL_ACCESS:
 public:	// TODO:
 	using VisualStateStylePair = std::pair<String, RefPtr<UIStylePropertyTable>>;
 	using SubStateStylePair = std::pair<String, RefPtr<UIStyle>>;
+
+
+	RefPtr<UIStyle>	m_baseOn;
 
 	RefPtr<UIStylePropertyTable>	m_basePropertyTable;
 

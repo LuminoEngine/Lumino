@@ -176,21 +176,39 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 		}
 		// UIButton.Focused
 		{
-			auto* st = s->GetPropertyTable(UIButton::FocusedState);
+			auto* st = s->GetPropertyTable(UIVisualStates::FocusedState);
 			st->background = RefPtr<Brush>::StaticCast(buttonFocusedBrush);
 		}
 		// UIButton.MouseOver
 		{
-			auto* st = s->GetPropertyTable(UIButton::MouseOverState);
+			auto* st = s->GetPropertyTable(UIVisualStates::MouseOverState);
 			st->background = RefPtr<Brush>::StaticCast(buttonMouseOverBrush);
 		}
 		// UIButton.Pressed
 		{
-			auto* st = s->GetPropertyTable(UIButton::PressedState);
+			auto* st = s->GetPropertyTable(UIVisualStates::PressedState);
 			st->background = RefPtr<Brush>::StaticCast(buttonPressedBrush);
 		}
-
 	}
+
+	// UIToggleButton : UIButton
+	{
+		auto* style = table->GetStyle(_T("UIToggleButton"));
+		style->SetBaseOnStyle(table->GetStyle(_T("UIButton")));
+
+		// UIToggleButton.Checked
+		{
+			auto* props = style->GetPropertyTable(UIToggleButton::CheckedState);
+			props->background = Brush::Blue;
+		}
+		// UIToggleButton.Unchecked
+		{
+			auto* props = style->GetPropertyTable(UIToggleButton::UncheckedState);
+			props->background = Brush::Red;
+		}
+	}
+
+
 	// UIThumb
 	{
 		auto thumbBrush = TextureBrush::Create(m_defaultSkinTexture);
@@ -276,7 +294,7 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 		}
 		// UIScrollBar::LineUpButton.MouseOver
 		{
-			auto* props = style->GetPropertyTable(UIButton::MouseOverState);
+			auto* props = style->GetPropertyTable(UIVisualStates::MouseOverState);
 			props->background = RefPtr<Brush>::StaticCast(buttonMouseOverBrush);
 		}
 	}

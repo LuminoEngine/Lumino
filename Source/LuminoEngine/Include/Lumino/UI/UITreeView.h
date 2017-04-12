@@ -43,9 +43,6 @@ class UITreeView
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:
-	static const String NormalState;
-
-public:
 	static UITreeViewPtr Create();
 
 //public:
