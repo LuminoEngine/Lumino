@@ -3,14 +3,14 @@
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
-class InputBinding;
-class KeyboardBinding;
-class MouseBinding;
-class GamepadBinding;
-using InputBindingPtr = RefPtr<InputBinding>;
-using KeyboardBindingPtr = RefPtr<KeyboardBinding>;
-using MouseBindingPtr = RefPtr<MouseBinding>;
-using GamepadBindingPtr = RefPtr<GamepadBinding>;
+class InputGesture;
+class KeyboardGesture;
+class MouseGesture;
+class GamepadGesture;
+using InputGesturePtr = RefPtr<InputGesture>;
+using KeyboardGesturePtr = RefPtr<KeyboardGesture>;
+using MouseGesturePtr = RefPtr<MouseGesture>;
+using GamepadGesturePtr = RefPtr<GamepadGesture>;
 
 /** マウスによって実行されるアクション */
 enum class MouseAction
@@ -84,7 +84,7 @@ enum class GamepadElement
 /**
 	@brief	ユーザー入力となる入力デバイス操作を定義するためのベースクラスです。
 */
-class InputBinding
+class InputGesture
 	: public Object
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
@@ -93,9 +93,9 @@ public:
 	float GetScale() const { return 1.0f; }	// TODO
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	InputBinding();
-	virtual ~InputBinding();
-	virtual detail::InputBindingType GetType() const = 0;
+	InputGesture();
+	virtual ~InputGesture();
+	virtual detail::InputGestureType GetType() const = 0;
 
 private:
 	float						m_minValidMThreshold;
@@ -104,18 +104,18 @@ private:
 /**
 	@brief	ユーザー入力となるキーボード操作の組み合わせを定義します。
 */
-class KeyboardBinding
-	: public InputBinding
+class KeyboardGesture
+	: public InputGesture
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
 	/**
-		@brief		MouseBinding オブジェクトを作成します。
+		@brief		MouseGesture オブジェクトを作成します。
 		@param[in]	key				: 関連付けられるキー
 		@param[in]	modifierKeys	: 関連付けられる修飾キー
 	*/
-	static KeyboardBindingPtr Create(Keys key, ModifierKeys modifierKeys = ModifierKeys::None);
+	static KeyboardGesturePtr Create(Keys key, ModifierKeys modifierKeys = ModifierKeys::None);
 
 public:
 
@@ -126,9 +126,9 @@ public:
 	ModifierKeys GetModifierKeys() const { return m_modifierKeys; }
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	KeyboardBinding(Keys key, ModifierKeys modifierKeys);
-	virtual ~KeyboardBinding();
-	virtual detail::InputBindingType GetType() const override;
+	KeyboardGesture(Keys key, ModifierKeys modifierKeys);
+	virtual ~KeyboardGesture();
+	virtual detail::InputGestureType GetType() const override;
 
 private:
 	Keys			m_key;
@@ -138,18 +138,18 @@ private:
 /**
 	@brief	ユーザー入力となるマウス操作の組み合わせを定義します。
 */
-class MouseBinding
-	: public InputBinding
+class MouseGesture
+	: public InputGesture
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
 	/**
-		@brief		MouseBinding オブジェクトを作成します。
+		@brief		MouseGesture オブジェクトを作成します。
 		@param[in]	mouseAction		: 関連付けられるマウス操作
 		@param[in]	modifierKeys	: 関連付けられる修飾キー
 	*/
-	static MouseBindingPtr Create(MouseAction mouseAction, ModifierKeys modifierKeys = ModifierKeys::None);
+	static MouseGesturePtr Create(MouseAction mouseAction, ModifierKeys modifierKeys = ModifierKeys::None);
 
 public:
 
@@ -160,9 +160,9 @@ public:
 	ModifierKeys GetModifierKeys() const { return m_modifierKeys; }
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	MouseBinding(MouseAction mouseAction, ModifierKeys modifierKeys);
-	virtual ~MouseBinding();
-	virtual detail::InputBindingType GetType() const override;
+	MouseGesture(MouseAction mouseAction, ModifierKeys modifierKeys);
+	virtual ~MouseGesture();
+	virtual detail::InputGestureType GetType() const override;
 
 private:
 	MouseAction		m_mouseAction;
@@ -172,17 +172,17 @@ private:
 /**
 	@brief	ユーザー入力となるゲームパッド操作の組み合わせを定義します。
 */
-class GamepadBinding
-	: public InputBinding
+class GamepadGesture
+	: public InputGesture
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
 	/**
-		@brief		GamepadBinding オブジェクトを作成します。
+		@brief		GamepadGesture オブジェクトを作成します。
 		@param[in]	element		: 関連付けられるゲームパッド操作
 	*/
-	static GamepadBindingPtr Create(GamepadElement element);
+	static GamepadGesturePtr Create(GamepadElement element);
 
 public:
 
@@ -190,9 +190,9 @@ public:
 	GamepadElement GetElement() const { return m_element; }
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	GamepadBinding(GamepadElement element);
-	virtual ~GamepadBinding();
-	virtual detail::InputBindingType GetType() const override;
+	GamepadGesture(GamepadElement element);
+	virtual ~GamepadGesture();
+	virtual detail::InputGestureType GetType() const override;
 
 private:
 	GamepadElement		m_element;

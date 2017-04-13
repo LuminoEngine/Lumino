@@ -41,15 +41,15 @@ float Input::GetAxisValue(const StringRef& buttonName)
 }
 
 //------------------------------------------------------------------------------
-void Input::AddButtonBinding(const StringRef& buttonName, InputBinding* binding)
+void Input::AddButtonBinding(const StringRef& buttonName, InputGesture* gesture)
 {
-	return detail::InputManager::GetInstance()->GetVirtualPad(0)->AddBinding(buttonName, binding);
+	return detail::InputManager::GetInstance()->GetVirtualPad(0)->AddBinding(buttonName, gesture);
 }
 
 //------------------------------------------------------------------------------
-void Input::RemoveBinding(InputBinding* binding)
+void Input::RemoveBinding(InputGesture* gesture)
 {
-	return detail::InputManager::GetInstance()->GetVirtualPad(0)->RemoveBinding(binding);
+	return detail::InputManager::GetInstance()->GetVirtualPad(0)->RemoveBinding(gesture);
 }
 
 //------------------------------------------------------------------------------

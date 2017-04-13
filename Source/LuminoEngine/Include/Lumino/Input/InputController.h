@@ -21,8 +21,8 @@ public:
 	bool IsRepeated(const StringRef& bindingName) const;
 	float GetAxisValue(const StringRef& bindingName) const;
 
-	void AddBinding(const StringRef& buttonName, InputBinding* binding);
-	void RemoveBinding(InputBinding* binding);
+	void AddBinding(const StringRef& buttonName, InputGesture* gesture);
+	void RemoveBinding(InputGesture* gesture);
 	void ClearBindings();
 	void SetRepeatInterval(int start, int step);
 
@@ -35,7 +35,7 @@ private:
 	struct BindingSlot
 	{
 		String					name;
-		RefPtr<InputBinding>	binding;
+		RefPtr<InputGesture>	gesture;
 	};
 
 	struct InputState
