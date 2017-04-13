@@ -9,6 +9,7 @@
 #include <Lumino/UI/UIStyle.h>
 #include <Lumino/UI/UIFrameWindow.h>
 #include <Lumino/UI/UICommands.h>
+#include <Lumino/Input/InputBinding.h>
 #include "EventArgsPool.h"
 #include "UIManager.h"
 #include "../Platform/PlatformManager.h"
@@ -142,6 +143,8 @@ void UIManager::CreateGlobalCommands()
 	auto cmd = NewObject<UIRoutedCommand>();
 	m_allGlobalCommands.Add(cmd);
 	UIApplicationCommands::Paste = cmd;
+	auto g = KeyboardGesture::Create(Keys::V, ModifierKeys::Control);
+	m_allGlobalCommandBindings.Add(NewObject<UICommandBinding>(cmd, g));
 }
 
 //------------------------------------------------------------------------------

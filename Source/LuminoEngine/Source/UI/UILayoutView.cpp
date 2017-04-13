@@ -5,6 +5,8 @@
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIElement.h>
 #include <Lumino/UI/UIComboBox.h>	// TODO: UIPopup
+#include <Lumino/UI/UICommands.h>
+#include <Lumino/Input/InputBinding.h>
 #include "UIManager.h"
 #include "EventArgsPool.h"
 
@@ -296,6 +298,32 @@ bool UILayoutView::InjectKeyDown(Keys keyCode, ModifierKeys modifierKeys)
 	// フォーカスを持っているUI要素に送る
 	if (m_ownerContext->SetFocusElement() != nullptr)
 	{
+		UIRoutedCommand* command = nullptr;
+		{
+			auto& bindings = GetManager()->GetGlobalCommandBindings();
+			for (auto& b : bindings)
+			{
+				if (b->GetGesture()->GetType() == detail::InputGestureType::Keyboard)
+				{
+					auto* kb = static_cast<KeyboardGesture*>(b->GetGesture());
+					if (kb->GetKey() == keyCode && kb->GetModifierKeys() == modifierKeys)
+					{
+						command = b->GetCommand();
+					}
+				}
+			}
+		}
+		if (command != nullptr)
+		{
+			detail::EventArgsPool* pool = m_ownerContext->GetManager()->GetEventArgsPool();
+			RefPtr<UICommandEventArgs> args(pool->Create<UICommandEventArgs>(), false);
+			args->command = command;
+			m_ownerContext->SetFocusElement()->OnExecuteCommand(args);
+			if (args->handled) return true;
+		}
+
+
+
 		detail::EventArgsPool* pool = m_ownerContext->GetManager()->GetEventArgsPool();
 		RefPtr<UIKeyEventArgs> args(pool->Create<UIKeyEventArgs>(keyCode, modifierKeys), false);
 		return m_ownerContext->SetFocusElement()->OnEvent(detail::UIInternalEventType::KeyDown, args);

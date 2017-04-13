@@ -10,6 +10,7 @@ class PlatformWindow;
 class World2D;
 class World3D;
 class UIRoutedCommand;
+class UICommandBinding;
 
 namespace detail
 {
@@ -52,6 +53,7 @@ public:
 	GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
 	AssetsManager* GetAssetsManager() const { return m_assetsManager; }
 	UIMainWindow* GetMainWindow() const { return m_mainWindow; }
+	const List<RefPtr<UICommandBinding>>& GetGlobalCommandBindings() const { return m_allGlobalCommandBindings; }
 
 private:
 	void CreateGlobalCommands();
@@ -67,6 +69,8 @@ private:
 	UIStyleTable*		m_defaultStyleTable;
 	UIMainWindow*		m_mainWindow;
 	List<RefPtr<UIRoutedCommand>>		m_allGlobalCommands;
+	List<RefPtr<UICommandBinding>>		m_allGlobalCommandBindings;
+
 };
 
 } // namespace detail

@@ -463,6 +463,11 @@ void UIElement::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 }
 
 //------------------------------------------------------------------------------
+void UIElement::OnExecuteCommand(UICommandEventArgs* e)
+{
+}
+
+//------------------------------------------------------------------------------
 void UIElement::CallOnGotFocus()
 {
 	LN_ASSERT(!m_hasFocus);

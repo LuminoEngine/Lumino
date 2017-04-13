@@ -1,8 +1,4 @@
-﻿/*
-	[2016/10/2]
-		BindingSlot は、InputBinding は UE4 に合わせて名前を持たせないようにしたため、
-		入力ソースとの対応付けを行うために必要。
-*/
+﻿
 #include "../Internal.h"
 #include <Lumino/Input/InputController.h>
 #include "InputManager.h"

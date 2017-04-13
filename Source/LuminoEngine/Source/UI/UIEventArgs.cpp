@@ -123,4 +123,20 @@ UIMouseWheelEventArgs::~UIMouseWheelEventArgs()
 {
 }
 
+//==============================================================================
+// UICommandEventArgs
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UICommandEventArgs, UIEventArgs)
+
+//------------------------------------------------------------------------------
+UICommandEventArgs::UICommandEventArgs()
+	: command(nullptr)
+{
+}
+
+//------------------------------------------------------------------------------
+UICommandEventArgs::~UICommandEventArgs()
+{
+}
+
 LN_NAMESPACE_END

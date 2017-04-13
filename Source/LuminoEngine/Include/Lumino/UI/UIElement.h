@@ -12,6 +12,7 @@ LN_NAMESPACE_BEGIN
 class DrawingContext;
 class UIStylePropertyTable;
 class UIVisualStateManager;
+class UIRoutedCommand;
 
 /**
 	@brief		特定のイベントデータを持たない、UIイベントを処理するハンドラです。
@@ -376,6 +377,8 @@ LN_PROTECTED_INTERNAL_ACCESS:
 
 	/** 指定した要素をこの要素のビジュアルツリーから削除します。*/
 	void RemoveVisualChild(UIElement* element);
+
+	virtual void OnExecuteCommand(UICommandEventArgs* e);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	// ILayoutElement interface
