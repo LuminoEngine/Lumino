@@ -220,7 +220,7 @@ public:
 	PointF GetBottomRight() const { return PointF(GetRight(), GetBottom()); }
 
 	/** 左上隅の位置を設定します。*/
-	void SetLocation(const PointF& pt) { x = pt.x; y = pt.y; }
+	void SetLocation(const PointF& pt) { x = pt.x; y = pt.y; }	// TODO: Pos?
 
 	/** 左上隅の位置を取得します。*/
 	PointF GetLocation() const { return PointF(x, y); }

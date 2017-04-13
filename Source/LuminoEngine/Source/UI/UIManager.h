@@ -9,6 +9,7 @@ class PlatformManager;
 class PlatformWindow;
 class World2D;
 class World3D;
+class UIRoutedCommand;
 
 namespace detail
 {
@@ -53,6 +54,7 @@ public:
 	UIMainWindow* GetMainWindow() const { return m_mainWindow; }
 
 private:
+	void CreateGlobalCommands();
 	void MakeDefaultStyle(UIStyleTable* table);
 
 	EventArgsPool*		m_eventArgsPool;
@@ -64,6 +66,7 @@ private:
 	RefPtr<Texture2D>	m_defaultSkinTexture;
 	UIStyleTable*		m_defaultStyleTable;
 	UIMainWindow*		m_mainWindow;
+	List<RefPtr<UIRoutedCommand>>		m_allGlobalCommands;
 };
 
 } // namespace detail

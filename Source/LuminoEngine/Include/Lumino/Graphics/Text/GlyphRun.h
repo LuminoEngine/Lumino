@@ -8,6 +8,11 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail { class FontGlyphTextureCache; }
 namespace detail { class TextLayoutEngine; }
 
+struct GlyphHit
+{
+	int	index;
+};
+
 // TODO: detail
 struct TextLayoutResultItem
 {
@@ -34,6 +39,12 @@ public:
 	void SetText(const StringRef& text);
 	void SetTextAlignment(TextAlignment align);	// TODO: Run に持たせるべき？
 	const SizeI& GetRenderSize();
+
+	/** 行頭からの指定した距離に対応する文字ヒットを取得します。*/
+	bool GetCharacterHitFromDistance(const PointF& pos, GlyphHit* outResult);
+	
+	/** 行頭から指定した文字までの距離を取得します。*/
+	bool GetDistanceFromCharacterHit(int index, PointF* outPos);
 
 LN_INTERNAL_ACCESS:
 	GlyphRun();

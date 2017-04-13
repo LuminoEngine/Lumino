@@ -441,6 +441,7 @@ set(LN_SOURCES_UI
 	Include/Lumino/UI/LayoutElement.h
 	Include/Lumino/UI/UIButton.h
 	Include/Lumino/UI/UIComboBox.h
+	Include/Lumino/UI/UICommands.h
 	Include/Lumino/UI/UIContentControl.h
 	Include/Lumino/UI/UIContext.h
 	Include/Lumino/UI/UIControl.h
@@ -470,6 +471,7 @@ set(LN_SOURCES_UI
 	Source/UI/LayoutImpl.h
 	Source/UI/UIButton.cpp
 	Source/UI/UIComboBox.cpp
+	Source/UI/UICommands.cpp
 	Source/UI/UIContentControl.cpp
 	Source/UI/UIContext.cpp
 	Source/UI/UIControl.cpp

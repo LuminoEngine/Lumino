@@ -281,7 +281,13 @@ void UIElement::OnRender(DrawingContext* g)
 void UIElement::OnMouseMove(UIMouseEventArgs* e) { }
 void UIElement::OnMouseDown(UIMouseEventArgs* e)
 {
-	Focus();
+	if (IsFocusable())
+	{
+		Focus();
+
+		// フォーカスを持ている要素はここで処理済みとする。そうしないと、ルート要素までルーティングされてしまう。
+		e->handled = true;
+	}
 }
 void UIElement::OnMouseUp(UIMouseEventArgs* e) { }
 void UIElement::OnKeyDown(UIKeyEventArgs* e) { }

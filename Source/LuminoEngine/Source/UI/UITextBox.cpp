@@ -174,9 +174,12 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~UITextAreaCaret();
 	void Initialize();
 	const UITextVisualPosition& GetVisualPosition() const { return m_position; }
+	void SetRenderRectangle(const RectF& rect) { m_renderRectangle = rect; }
+	const RectF& GetRenderRectangle() const { return m_renderRectangle; }
 
 private:
 	UITextVisualPosition	m_position;
+	RectF					m_renderRectangle;
 };
 
 
@@ -862,6 +865,14 @@ void UITextBox::OnMouseDown(UIMouseEventArgs* e)
 }
 
 //------------------------------------------------------------------------------
+void UITextBox::OnKeyDown(UIKeyEventArgs* e)
+{
+	
+
+	UITextElement::OnKeyDown(e);
+}
+
+//------------------------------------------------------------------------------
 void UITextBox::OnTextInput(UIKeyEventArgs* e)
 {
 	m_textArea->GetDocument()->Replace(
@@ -906,6 +917,252 @@ void UITextBox::OnRender(DrawingContext* g)
 	//g->SetBrush(GetForegroundInternal());
 	//g->DrawText_(m_text, PointF::Zero);
 	//g->DrawChar('g', PointF(0, 0));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class UISimpleTextArea
+	: public UITextElement
+{
+public:
+	UITextAreaCaret* GetCaret() const { return m_caret; }
+
+	void Replace(int offset, int length, const StringRef& text);
+
+	Size Measure(const Size& availableSize, Font* font, detail::UIManager* manager);
+
+	virtual bool IsFocusable() const { return true; }
+protected:
+	virtual void OnMouseDown(UIMouseEventArgs* e) override;
+	virtual void OnTextInput(UIKeyEventArgs* e) override;
+
+	virtual Size MeasureOverride(const Size& availableSize) override;
+	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual void OnRender(DrawingContext* g) override;
+
+LN_CONSTRUCT_ACCESS:
+	UISimpleTextArea();
+	virtual ~UISimpleTextArea();
+	void Initialize();
+	//UITextVisualLine* FindVisualLine(int lineIndex);
+	//RectF GetGlyphGlobalRectFromVisualPosition(const UITextVisualPosition& pos);
+	//void GetVisualPositionFromRenderPosition(const PointF& pt, UITextVisualPosition* outPos);
+	//int GetDocumentTextOffset(const UITextVisualPosition& pos);
+
+private:
+	void UpdateCaretRectangle();
+
+	GenericStringBuilderCore<UTF32>	m_rawText;
+	RefPtr<GlyphRun>				m_glyphRun;
+	RefPtr<UITextAreaCaret>			m_caret;
+	RefPtr<Brush>					m_caretBrush;
+	bool							m_invalidateGlyphRun;
+};
+
+
+//==============================================================================
+// UISimpleTextArea
+//==============================================================================
+//------------------------------------------------------------------------------
+UISimpleTextArea::UISimpleTextArea()
+	: m_invalidateGlyphRun(true)
+{
+}
+
+//------------------------------------------------------------------------------
+UISimpleTextArea::~UISimpleTextArea()
+{
+}
+
+//------------------------------------------------------------------------------
+void UISimpleTextArea::Initialize()
+{
+	UITextElement::Initialize();
+	m_glyphRun = NewObject<GlyphRun>();
+	m_caret = NewObject<UITextAreaCaret>();
+	m_caretBrush = Brush::Black;
+}
+
+//------------------------------------------------------------------------------
+void UISimpleTextArea::Replace(int offset, int length, const StringRef& text)
+{
+	// to UTF32
+	const ByteBuffer& utf32Buf = GetManager()->GetGraphicsManager()->GetFontManager()->GetTCharToUTF32Converter()->Convert(text.GetBegin(), sizeof(TCHAR) * text.GetLength());
+	int len = utf32Buf.GetSize() / sizeof(UTF32);
+
+
+	//m_rawText.Replace(offset, length, text.GetBegin(), text.GetLength());
+	m_rawText.Replace(offset, length, (const UTF32*)utf32Buf.GetConstData(), len);
+	m_invalidateGlyphRun = true;
+
+	UITextVisualPosition pos = { 0, offset + len };
+	m_caret->SetVisualPosition(pos);
+}
+
+//------------------------------------------------------------------------------
+void UISimpleTextArea::OnMouseDown(UIMouseEventArgs* e)
+{
+	//UITextVisualPosition pos;
+	//m_textArea->GetVisualPositionFromRenderPosition(e->GetPosition(this), &pos);
+	//m_textArea->GetCaret()->SetVisualPosition(pos);
+
+	UITextElement::OnMouseDown(e);
+}
+
+//------------------------------------------------------------------------------
+void UISimpleTextArea::OnTextInput(UIKeyEventArgs* e)
+{
+	//m_textArea->GetDocument()->Replace(
+	//	m_textArea->GetDocumentTextOffset(m_textArea->GetCaret()->GetVisualPosition()),
+	//	0, StringRef(&e->charCode, 1));
+
+	Replace(m_caret->GetVisualPosition().column, 0, StringRef(&e->charCode, 1));
+	UITextElement::OnTextInput(e);
+}
+
+//------------------------------------------------------------------------------
+Size UISimpleTextArea::MeasureOverride(const Size& availableSize)
+{
+	Size ds = UITextElement::MeasureOverride(availableSize);
+	return Size::Max(ds, Measure(availableSize, GetActiveFont(), GetManager()));
+}
+
+//------------------------------------------------------------------------------
+Size UISimpleTextArea::ArrangeOverride(const Size& finalSize)
+{
+	return UITextElement::ArrangeOverride(finalSize);
+}
+
+//------------------------------------------------------------------------------
+void UISimpleTextArea::OnRender(DrawingContext* g)
+{
+	UITextElement::OnRender(g);
+
+	g->SetFont(GetActiveFont());	// TODO:
+	g->SetBrush(Brush::Red);
+
+	g->DrawGlyphRun(PointF(0, 0), m_glyphRun);
+
+	g->SetBrush(m_caretBrush);
+	g->DrawRectangle(m_caret->GetRenderRectangle());
+	//g->SetFont(GetActiveFont());
+	//g->SetBrush(GetForegroundInternal());
+	//g->DrawText_(m_text, PointF::Zero);
+	//g->DrawChar('g', PointF(0, 0));
+}
+
+//------------------------------------------------------------------------------
+Size UISimpleTextArea::Measure(const Size& availableSize, Font* font, detail::UIManager* manager)
+{
+	m_glyphRun->SetFont(font->ResolveRawFont());
+	if (m_invalidateGlyphRun)
+	{
+
+		//m_glyphRun->SetText((const UTF32*)utf32Buf.GetConstData(), len);
+		m_glyphRun->SetText(m_rawText.c_str(), m_rawText.GetLength());
+		m_invalidateGlyphRun = false;
+
+
+		UpdateCaretRectangle();
+	}
+
+	return m_glyphRun->GetRenderSize().ToFloatSize();
+}
+
+//------------------------------------------------------------------------------
+void UISimpleTextArea::UpdateCaretRectangle()
+{
+	RectF rect(0, 0, 1, m_glyphRun->GetRenderSize().height);
+	PointF pos;
+	if (m_glyphRun->GetDistanceFromCharacterHit(m_caret->GetVisualPosition().column, &pos))
+	{
+		pos.x += 1;	// 少しだけ間を空けて見やすくする
+		rect.SetLocation(pos);
+	}
+	m_caret->SetRenderRectangle(rect);
+}
+
+
+//==============================================================================
+// UITextField
+//==============================================================================
+LN_UI_TYPEINFO_IMPLEMENT(UITextField, UITextElement)
+
+//------------------------------------------------------------------------------
+RefPtr<UITextField> UITextField::Create()
+{
+	return NewObject<UITextField>();
+}
+
+//------------------------------------------------------------------------------
+UITextField::UITextField()
+{
+}
+
+//------------------------------------------------------------------------------
+UITextField::~UITextField()
+{
+}
+
+//------------------------------------------------------------------------------
+void UITextField::Initialize()
+{
+	UIControl::Initialize();
+	m_textArea = NewObject<UISimpleTextArea>();
+
+	m_textArea->SetBackground(Brush::Blue);
+	AddVisualChild(m_textArea);
+}
+
+//------------------------------------------------------------------------------
+void UITextField::SetText(const StringRef& text)
+{
+	m_textArea->Replace(0, 0, text);
+}
+
+//------------------------------------------------------------------------------
+bool UITextField::IsFocusable() const
+{
+	return true;
+}
+
+//------------------------------------------------------------------------------
+Size UITextField::MeasureOverride(const Size& availableSize)
+{
+	m_textArea->MeasureLayout(availableSize);
+	return UIControl::MeasureOverride(availableSize);
+}
+
+//------------------------------------------------------------------------------
+Size UITextField::ArrangeOverride(const Size& finalSize)
+{
+	m_textArea->ArrangeLayout(RectF(0, 0, finalSize));
+	return UIControl::ArrangeOverride(finalSize);
 }
 
 LN_NAMESPACE_END

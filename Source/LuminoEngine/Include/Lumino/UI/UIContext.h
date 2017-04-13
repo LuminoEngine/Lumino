@@ -24,7 +24,7 @@ LN_INTERNAL_ACCESS:
 	void Initialize(detail::UIManager* manager);
 
 	void SetFocusElement(UIElement* element);
-	UIElement* SetFocusElement() { return m_focusElement; }
+	UIElement* SetFocusElement() { return m_focusElement; }	// キーボードフォーカス
 
 	void CaptureMouse(UIElement* element);
 	void ReleaseMouseCapture(UIElement* element);

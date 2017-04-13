@@ -86,6 +86,12 @@ void UIControlsGallery()
 		slider1->SetHeight(32);
 		stack1->AddChild(slider1);
 
+		auto field1 = UITextField::Create();
+		field1->SetWidth(200);
+		field1->SetHeight(32);
+		field1->SetText(_T("field"));
+		field1->SetBackground(Brush::Gray);
+		stack1->AddChild(field1);
 
 		grid1->AddChild(stack1);
 
