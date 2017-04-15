@@ -314,7 +314,7 @@ TEST_F(Test_Graphics_Rendering, DrawText_)
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetFont(font);
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetBrush(Brush::White);
 		Engine::GetDefaultSceneGraph2D()->GetRenderer()->SetTransform(Matrix::MakeTranslation(10, 20, 0));
-		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawText_(_T("Text1"), PointF::Zero);
+		Engine::GetDefaultSceneGraph2D()->GetRenderer()->DrawText_(_T("Text1"), PointF());
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawText3.png")));
 	}

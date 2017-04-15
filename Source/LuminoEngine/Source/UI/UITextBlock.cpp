@@ -69,7 +69,7 @@ void UITextBlock::OnRender(DrawingContext* g)
 {
 	g->SetFont(GetActiveFont());
 	g->SetBrush(GetForegroundInternal());
-	g->DrawText_(m_text, PointF::Zero);
+	g->DrawText_(m_text, PointF());
 }
 
 LN_NAMESPACE_END

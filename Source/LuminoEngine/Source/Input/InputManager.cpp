@@ -74,24 +74,24 @@ void InputManager::Initialize(const Settings& settings)
 	m_defaultVirtualPads[0] = pad;
 	m_defaultVirtualPads[0]->AddRef();
 
-	pad->AddBinding(InputButtons::Left,		KeyboardGesture::Create(Keys::Left));
-	pad->AddBinding(InputButtons::Right,	KeyboardGesture::Create(Keys::Right));
-	pad->AddBinding(InputButtons::Up,		KeyboardGesture::Create(Keys::Up));
-	pad->AddBinding(InputButtons::Down,		KeyboardGesture::Create(Keys::Down));
-	pad->AddBinding(InputButtons::Ok,		KeyboardGesture::Create(Keys::Z));
-	pad->AddBinding(InputButtons::Cancel,	KeyboardGesture::Create(Keys::X));
+	pad->AddBinding(InputButtons::Left,		KeyboardBinding::Create(Keys::Left));
+	pad->AddBinding(InputButtons::Right,	KeyboardBinding::Create(Keys::Right));
+	pad->AddBinding(InputButtons::Up,		KeyboardBinding::Create(Keys::Up));
+	pad->AddBinding(InputButtons::Down,		KeyboardBinding::Create(Keys::Down));
+	pad->AddBinding(InputButtons::Ok,		KeyboardBinding::Create(Keys::Z));
+	pad->AddBinding(InputButtons::Cancel,	KeyboardBinding::Create(Keys::X));
 
-	pad->AddBinding(InputButtons::Left,		GamepadGesture::Create(GamepadElement::PovLeft));
-	pad->AddBinding(InputButtons::Right,	GamepadGesture::Create(GamepadElement::PovRight));
-	pad->AddBinding(InputButtons::Up,		GamepadGesture::Create(GamepadElement::PovUp));
-	pad->AddBinding(InputButtons::Down,		GamepadGesture::Create(GamepadElement::PovDown));
+	pad->AddBinding(InputButtons::Left,		GamepadBinding::Create(GamepadElement::PovLeft));
+	pad->AddBinding(InputButtons::Right,	GamepadBinding::Create(GamepadElement::PovRight));
+	pad->AddBinding(InputButtons::Up,		GamepadBinding::Create(GamepadElement::PovUp));
+	pad->AddBinding(InputButtons::Down,		GamepadBinding::Create(GamepadElement::PovDown));
 
-	pad->AddBinding(InputButtons::Left,		GamepadGesture::Create(GamepadElement::Axis1Minus));
-	pad->AddBinding(InputButtons::Right,	GamepadGesture::Create(GamepadElement::Axis1Plus));
-	pad->AddBinding(InputButtons::Up,		GamepadGesture::Create(GamepadElement::Axis2Minus));
-	pad->AddBinding(InputButtons::Down,		GamepadGesture::Create(GamepadElement::Axis2Plus));
-	pad->AddBinding(InputButtons::Ok,		GamepadGesture::Create(GamepadElement::Button1));
-	pad->AddBinding(InputButtons::Cancel,	GamepadGesture::Create(GamepadElement::Button2));
+	pad->AddBinding(InputButtons::Left,		GamepadBinding::Create(GamepadElement::Axis1Minus));
+	pad->AddBinding(InputButtons::Right,	GamepadBinding::Create(GamepadElement::Axis1Plus));
+	pad->AddBinding(InputButtons::Up,		GamepadBinding::Create(GamepadElement::Axis2Minus));
+	pad->AddBinding(InputButtons::Down,		GamepadBinding::Create(GamepadElement::Axis2Plus));
+	pad->AddBinding(InputButtons::Ok,		GamepadBinding::Create(GamepadElement::Button1));
+	pad->AddBinding(InputButtons::Cancel,	GamepadBinding::Create(GamepadElement::Button2));
 
 	if (g_inputManager == nullptr) {
 		g_inputManager = this;
@@ -140,29 +140,29 @@ void InputManager::OnEvent(const PlatformEventArgs& e)
 }
 
 //------------------------------------------------------------------------------
-float InputManager::GetVirtualButtonState(InputGesture* gesture, bool keyboard, bool mouse, int joyNumber)
+float InputManager::GetVirtualButtonState(InputBinding* binding, bool keyboard, bool mouse, int joyNumber)
 {
 	// キーボード
-	if (keyboard && gesture->GetType() == detail::InputGestureType::Keyboard)
+	if (keyboard && binding->GetType() == detail::InputBindingType::Keyboard)
 	{
-		auto* b = static_cast<KeyboardGesture*>(gesture);
+		auto* b = static_cast<KeyboardBinding*>(binding);
 		if (b->GetModifierKeys() != ModifierKeys::None) { LN_NOTIMPLEMENTED(); }
 		return m_inputDriver->QueryKeyState(b->GetKey()) ? 1.0f : 0.0f;
 	}
 	// マウス
-	if (mouse && gesture->GetType() == detail::InputGestureType::Mouse)
+	if (mouse && binding->GetType() == detail::InputBindingType::Mouse)
 	{
-		auto* b = static_cast<MouseGesture*>(gesture);
+		auto* b = static_cast<MouseBinding*>(binding);
 		if (b->GetModifierKeys() != ModifierKeys::None) { LN_NOTIMPLEMENTED(); }
 		return m_inputDriver->QueryMouseState(b->GetMouseAction()) ? 1.0f : 0.0f;
 	}
 
 	// ゲームパッド
-	if (gesture->GetType() == detail::InputGestureType::Gamepad)
+	if (binding->GetType() == detail::InputBindingType::Gamepad)
 	{
 		if (joyNumber >= m_inputDriver->GetJoystickCount()) return 0.0f;
 
-		auto b = static_cast<GamepadGesture*>(gesture);
+		auto b = static_cast<GamepadBinding*>(binding);
 		int e = (int)b->GetElement();
 		// ボタン
 		if ((int)GamepadElement::Button1 <= e && e <= (int)GamepadElement::Button16)

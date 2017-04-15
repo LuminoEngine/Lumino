@@ -54,6 +54,7 @@
 
 #include "Lumino/UI/UIFrameWindow.h"
 #include "Lumino/UI/UIContext.h"
+#include "Lumino/UI/UIWindow.h"
 #include "Lumino/UI/UIImage.h"
 #include "Lumino/UI/UILayoutView.h"
 #include "Lumino/UI/UILayoutPanel.h"

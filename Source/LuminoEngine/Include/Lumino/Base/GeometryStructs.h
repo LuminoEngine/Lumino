@@ -36,9 +36,18 @@ public:
 	bool operator != (const GenericPoint<T>& obj) const { return !operator==(obj); }
 };
 
-using PointF = GenericPoint<float>;
+//using PointF = GenericPoint<float>;
 using PointI = GenericPoint<int>;
 
+
+struct PointF : public GenericPoint<float>
+{
+public:
+	PointF() {}
+	PointF(const Vector2& v) { Set(v.x, v.y); }
+	PointF(float x, float y) { Set(x, y); }
+	operator const Vector2&() const { return *reinterpret_cast<const Vector2*>(this); }
+};
 
 /** 2次元上のオブジェクトサイズを表します。*/
 LN_STRUCT()

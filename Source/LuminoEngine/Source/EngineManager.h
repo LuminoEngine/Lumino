@@ -51,7 +51,7 @@ public:
 	/** エンジンのアクセラレータキー */
 	struct EngineAcceleratorKeys
 	{
-		InputGesturePtr	toggleShowDiag;
+		InputBindingPtr	toggleShowDiag;
 	};
 
 
@@ -153,7 +153,7 @@ public:
 	{
 #ifdef LN_DEBUG
 		engineLogEnabled = true;
-		acceleratorKeys.toggleShowDiag = KeyboardGesture::Create(Keys::F3);
+		acceleratorKeys.toggleShowDiag = KeyboardBinding::Create(Keys::F3);
 #endif
 		//engineAcceleratorKeys[(int)EngineAcceleratorKey::ToggleShowDiag] = Key::F3;
 	}

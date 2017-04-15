@@ -403,7 +403,7 @@ Size Run::MeasureOverride(const Size& constraint)
 //------------------------------------------------------------------------------
 void Run::Render(const Matrix& transform, IDocumentsRenderer* renderer)
 {
-	renderer->OnDrawGlyphRun(transform, GetForeground(), m_glyphRun, PointF::Zero);
+	renderer->OnDrawGlyphRun(transform, GetForeground(), m_glyphRun, PointF());
 }
 
 

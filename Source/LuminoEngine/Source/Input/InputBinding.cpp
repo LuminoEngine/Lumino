@@ -5,110 +5,110 @@
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
-// InputGesture
+// InputBinding
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(InputGesture, tr::ReflectionObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(InputBinding, tr::ReflectionObject);
 
 //------------------------------------------------------------------------------
-InputGesture::InputGesture()
+InputBinding::InputBinding()
 	: m_minValidMThreshold(0.2f)
 {
 }
 
 //------------------------------------------------------------------------------
-InputGesture::~InputGesture()
+InputBinding::~InputBinding()
 {
 }
 
 //==============================================================================
-// KeyboardGesture
+// KeyboardBinding
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(KeyboardGesture, InputGesture);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(KeyboardBinding, InputBinding);
 
 //------------------------------------------------------------------------------
-KeyboardGesturePtr KeyboardGesture::Create(Keys key, ModifierKeys modifierKeys)
+KeyboardBindingPtr KeyboardBinding::Create(Keys key, ModifierKeys modifierKeys)
 {
-	auto ptr = KeyboardGesturePtr::MakeRef(key, modifierKeys);
+	auto ptr = KeyboardBindingPtr::MakeRef(key, modifierKeys);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-KeyboardGesture::KeyboardGesture(Keys key, ModifierKeys modifierKeys)
+KeyboardBinding::KeyboardBinding(Keys key, ModifierKeys modifierKeys)
 	: m_key(key)
 	, m_modifierKeys(modifierKeys)
 {
 }
 
 //------------------------------------------------------------------------------
-KeyboardGesture::~KeyboardGesture()
+KeyboardBinding::~KeyboardBinding()
 {
 }
 
 //------------------------------------------------------------------------------
-detail::InputGestureType KeyboardGesture::GetType() const
+detail::InputBindingType KeyboardBinding::GetType() const
 {
-	return detail::InputGestureType::Keyboard;
+	return detail::InputBindingType::Keyboard;
 }
 
 
 //==============================================================================
-// MouseGesture
+// MouseBinding
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(MouseGesture, InputGesture);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(MouseBinding, InputBinding);
 
 //------------------------------------------------------------------------------
-MouseGesturePtr MouseGesture::Create(MouseAction mouseAction, ModifierKeys modifierKeys)
+MouseBindingPtr MouseBinding::Create(MouseAction mouseAction, ModifierKeys modifierKeys)
 {
-	auto ptr = MouseGesturePtr::MakeRef(mouseAction, modifierKeys);
+	auto ptr = MouseBindingPtr::MakeRef(mouseAction, modifierKeys);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-MouseGesture::MouseGesture(MouseAction mouseAction, ModifierKeys modifierKeys)
+MouseBinding::MouseBinding(MouseAction mouseAction, ModifierKeys modifierKeys)
 	: m_mouseAction(mouseAction)
 	, m_modifierKeys(modifierKeys)
 {
 }
 
 //------------------------------------------------------------------------------
-MouseGesture::~MouseGesture()
+MouseBinding::~MouseBinding()
 {
 }
 
 //------------------------------------------------------------------------------
-detail::InputGestureType MouseGesture::GetType() const
+detail::InputBindingType MouseBinding::GetType() const
 {
-	return detail::InputGestureType::Mouse;
+	return detail::InputBindingType::Mouse;
 }
 
 
 //==============================================================================
-// GamepadGesture
+// GamepadBinding
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(GamepadGesture, InputGesture);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(GamepadBinding, InputBinding);
 
 //------------------------------------------------------------------------------
-GamepadGesturePtr GamepadGesture::Create(GamepadElement element)
+GamepadBindingPtr GamepadBinding::Create(GamepadElement element)
 {
-	auto ptr = GamepadGesturePtr::MakeRef(element);
+	auto ptr = GamepadBindingPtr::MakeRef(element);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-GamepadGesture::GamepadGesture(GamepadElement element)
+GamepadBinding::GamepadBinding(GamepadElement element)
 	: m_element(element)
 {
 }
 
 //------------------------------------------------------------------------------
-GamepadGesture::~GamepadGesture()
+GamepadBinding::~GamepadBinding()
 {
 }
 
 //------------------------------------------------------------------------------
-detail::InputGestureType GamepadGesture::GetType() const
+detail::InputBindingType GamepadBinding::GetType() const
 {
-	return detail::InputGestureType::Gamepad;
+	return detail::InputBindingType::Gamepad;
 }
 
 LN_NAMESPACE_END

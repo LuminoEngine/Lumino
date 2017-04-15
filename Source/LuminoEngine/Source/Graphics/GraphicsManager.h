@@ -25,6 +25,7 @@ namespace detail {
 class InternalContext;
 class TextRendererCore;
 class FontGlyphTextureCache;
+class ShapesRendererCommandListCache;
 class NanoVGCommandListCache;
 
 
@@ -138,6 +139,7 @@ public:
 	bool IsPlatformTextureLoading() { return m_platformTextureLoading; }
 	RenderingCommandList* GetPrimaryRenderingCommandList();
 	TextRendererCore* GetTextRendererCore() { return m_textRendererCore; }
+	const RefPtr<ShapesRendererCommandListCache>& GetShapesRendererCommandListCache() const { return m_shapesRendererCommandListCache; }
 	const RefPtr<NanoVGCommandListCache>& GetNanoVGCommandListCache() const { return m_nanoVGCommandListCache; }
 	Driver::ITexture* GetDummyDeviceTexture() { return m_dummyDeviceTexture; }
 	const RefPtr<Texture2D>& GetDummyWhiteTexture() { return m_dymmyWhiteTexture; }
@@ -176,6 +178,7 @@ private:
 	BitmapTextRenderer*				m_bitmapTextRenderer;
 	ShaderVariableCommitSerializeHelper	m_shaderVariableCommitSerializeHelper;
 
+	RefPtr<ShapesRendererCommandListCache>	m_shapesRendererCommandListCache;
 	RefPtr<NanoVGCommandListCache>	m_nanoVGCommandListCache;
 
 	Driver::ITexture*				m_dummyDeviceTexture;

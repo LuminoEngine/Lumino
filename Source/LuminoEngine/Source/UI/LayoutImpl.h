@@ -238,7 +238,7 @@ public:
 
 		// "*" 指定である Column/Row の最終サイズを確定させ、
 		// 全セルのオフセット (位置) も確定させる
-		PointF totalOffset = PointF::Zero;
+		PointF totalOffset;
 		for (int iCol = 0; iCol < colDefCount; iCol++)
 		{
 			auto* col = basePanel->GetLayoutGridColumnDefinition(iCol);

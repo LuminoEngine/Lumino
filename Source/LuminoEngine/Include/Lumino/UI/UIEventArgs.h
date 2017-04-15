@@ -6,7 +6,6 @@
 LN_NAMESPACE_BEGIN
 class UIEventArgs;
 using UIEventArgsPtr = RefPtr<UIEventArgs>;
-class UIRoutedCommand;
 
 /**
 	@brief		
@@ -79,21 +78,6 @@ public:
 
 public:
 	int			wheel;			/**< マウスホイールの回転回数 (正または負の回数) */
-};
-
-/**
-	@brief	
-*/
-class UICommandEventArgs
-	: public UIEventArgs
-{
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
-public:
-	UICommandEventArgs();
-	virtual ~UICommandEventArgs();
-
-public:
-	UIRoutedCommand*	command;
 };
 
 LN_NAMESPACE_END

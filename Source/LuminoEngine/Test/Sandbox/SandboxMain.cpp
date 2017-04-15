@@ -87,6 +87,37 @@ void Main()
 #endif
 
 
+
+	//{
+	//	StreamWriter w(_T("C:\\LocalProj\\DT10\\12.0.0\\master_maerge\\result.csv"));
+	//	for (auto& data : results)
+	//	{
+	//		if (!data.parents.IsEmpty())
+	//		{
+	//			w.Write(data.path + _T(","));
+	//			for (auto& p : data.parents)
+	//			{
+	//				w.WriteFormat(_T("{0}  "), p);
+	//			}
+	//			w.WriteLine();
+	//		}
+	//	}
+	//}
+
+	//{
+	//	StreamWriter w(_T("C:\\LocalProj\\DT10\\12.0.0\\master_maerge\\result2.csv"));
+	//	for (auto& data : results)
+	//	{
+	//		if (data.parents.IsEmpty())
+	//		{
+	//			w.WriteLine(data.path);
+	//		}
+	//	}
+	//}
+
+
+	return
+
 	//Engine::Initialize();
 
 	//Engine::GetMainViewport()->SetBackgroundColor(Color::Gray);
@@ -217,8 +248,8 @@ void Main()
 
 	EngineDiag::SetDisplayMode(EngineDiagDisplayMode::FpsSummary);
 
-	Input::AddButtonBinding(_T("AA"), KeyboardGesture::Create(Keys::C));
-	Input::AddButtonBinding(_T("GG"), KeyboardGesture::Create(Keys::A));
+	Input::AddButtonBinding(_T("AA"), KeyboardBinding::Create(Keys::C));
+	Input::AddButtonBinding(_T("GG"), KeyboardBinding::Create(Keys::A));
 
 	//auto spr1 = Sprite2D::Create(_T("D:/Proj/LuminoStudio/Engine/External/Lumino/test/UnitTest/Graphics/TestData/Sprite2.png"));
 

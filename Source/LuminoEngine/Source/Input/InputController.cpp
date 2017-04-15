@@ -1,4 +1,8 @@
-﻿
+﻿/*
+	[2016/10/2]
+		BindingSlot は、InputBinding は UE4 に合わせて名前を持たせないようにしたため、
+		入力ソースとの対応付けを行うために必要。
+*/
 #include "../Internal.h"
 #include <Lumino/Input/InputController.h>
 #include "InputManager.h"
@@ -77,9 +81,9 @@ float InputController::GetAxisValue(const StringRef& bindingName) const
 }
 
 //------------------------------------------------------------------------------
-void InputController::AddBinding(const StringRef& buttonName, InputGesture* gesture)
+void InputController::AddBinding(const StringRef& buttonName, InputBinding* binding)
 {
-	BindingSlot slot = { buttonName, gesture };
+	BindingSlot slot = { buttonName, binding };
 	m_bindingSlots.Add(slot);
 
 	// まだ登録したことがない名前であれば InputState を作る。そうでなければ参照カウントを増やす。
@@ -99,9 +103,9 @@ void InputController::AddBinding(const StringRef& buttonName, InputGesture* gest
 }
 
 //------------------------------------------------------------------------------
-void InputController::RemoveBinding(InputGesture* gesture)
+void InputController::RemoveBinding(InputBinding* binding)
 {
-	int index = m_bindingSlots.IndexOf([gesture](const BindingSlot& slot) { return slot.gesture == gesture; });
+	int index = m_bindingSlots.IndexOf([binding](const BindingSlot& slot) { return slot.binding == binding; });
 	if (index < 0) return;
 
 	const String& name = m_bindingSlots[index].name;
@@ -121,7 +125,7 @@ void InputController::ClearBindings()
 	List<BindingSlot> list = m_bindingSlots;
 	for (int i = list.GetCount() - 1; i >= 0; ++i)	// 後ろから回した方がちょっと削除の効率がいい
 	{
-		RemoveBinding(list[i].gesture);
+		RemoveBinding(list[i].binding);
 	}
 }
 
@@ -148,18 +152,18 @@ void InputController::UpdateFrame()
 	// m_inputStatus に現在の入力値を展開する
 	for (const BindingSlot& slot : m_bindingSlots)
 	{
-		InputGesture* gesture = slot.gesture;
+		InputBinding* binding = slot.binding;
 
 		float v = m_manager->GetVirtualButtonState(
-			gesture,
+			binding,
 			(m_attachedDevices & detail::InputDeviceID_Keyboard) != 0,
 			(m_attachedDevices & detail::InputDeviceID_Mouse) != 0,
 			GetJoyNumber());
 		InputState* state = m_inputStatus.Find(slot.name);
 		if (state != nullptr)
 		{
-			v *= gesture->GetScale();
-			if (v >= gesture->GetMinValidMThreshold()) {
+			v *= binding->GetScale();
+			if (v >= binding->GetMinValidMThreshold()) {
 				state->current = std::max(state->current, v);	// Binding が重複したとか、とりあえず大きい方を使う
 			}
 		}

@@ -3,10 +3,7 @@
 #include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/Graphics/Text/GlyphRun.h>
 #include <Lumino/Documents/Documents.h>
-#include <Lumino/Platform/Clipboard.h>
 #include <Lumino/UI/UITextBox.h>
-#include <Lumino/UI/UICommands.h>
-#include <Lumino/UI/UIFrameWindow.h>
 #include "UIManager.h"
 
 #include "../Graphics/GraphicsManager.h"
@@ -712,7 +709,7 @@ Size UITextArea::Measure(const Size& availableSize, Font* font)
 	{
 		int documentTextOffset = 0;
 		int visualLineIndex = 0;
-		PointF renderPt = PointF::Zero;
+		PointF renderPt;
 		for (auto& block : m_visualLineBlocks)
 		{
 			block->BuildVisualLines(font, documentTextOffset, visualLineIndex, renderPt);
@@ -963,7 +960,6 @@ public:
 protected:
 	virtual void OnMouseDown(UIMouseEventArgs* e) override;
 	virtual void OnTextInput(UIKeyEventArgs* e) override;
-	virtual void OnExecuteCommand(UICommandEventArgs* e) override;
 
 	virtual Size MeasureOverride(const Size& availableSize) override;
 	virtual Size ArrangeOverride(const Size& finalSize) override;
@@ -1047,20 +1043,6 @@ void UISimpleTextArea::OnTextInput(UIKeyEventArgs* e)
 
 	Replace(m_caret->GetVisualPosition().column, 0, StringRef(&e->charCode, 1));
 	UITextElement::OnTextInput(e);
-}
-
-//------------------------------------------------------------------------------
-void UISimpleTextArea::OnExecuteCommand(UICommandEventArgs* e)
-{
-	if (e->command == UIApplicationCommands::Paste)
-	{
-		String text = Clipboard::GetText(GetManager()->GetMainWindow()->GetPlatformWindow());
-		Replace(m_caret->GetVisualPosition().column, 0, text);
-		e->handled = true;
-		return;
-	}
-
-	UITextElement::OnExecuteCommand(e);
 }
 
 //------------------------------------------------------------------------------

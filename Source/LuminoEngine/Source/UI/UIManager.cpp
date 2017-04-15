@@ -9,7 +9,6 @@
 #include <Lumino/UI/UIStyle.h>
 #include <Lumino/UI/UIFrameWindow.h>
 #include <Lumino/UI/UICommands.h>
-#include <Lumino/Input/InputBinding.h>
 #include "EventArgsPool.h"
 #include "UIManager.h"
 #include "../Platform/PlatformManager.h"
@@ -143,8 +142,6 @@ void UIManager::CreateGlobalCommands()
 	auto cmd = NewObject<UIRoutedCommand>();
 	m_allGlobalCommands.Add(cmd);
 	UIApplicationCommands::Paste = cmd;
-	auto g = KeyboardGesture::Create(Keys::V, ModifierKeys::Control);
-	m_allGlobalCommandBindings.Add(NewObject<UICommandBinding>(cmd, g));
 }
 
 //------------------------------------------------------------------------------
@@ -156,6 +153,15 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 	//	test->AddValue(_T(""), UITextBlock::foregroundId, Brush::Black);
 	//	table->AddStyle(tr::TypeInfo::GetTypeInfo<UITextBlock>(), test);
 	//}
+
+
+	auto boarderNormalBrush = TextureBrush::Create(m_defaultSkinTexture);
+	boarderNormalBrush->SetSourceRect(0, 32, 32, 32);
+	boarderNormalBrush->SetBorderThickness(8, 8, 8, 8);
+	boarderNormalBrush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
+	boarderNormalBrush->SetWrapMode(BrushWrapMode::Stretch);
+
+
 	// UIButton
 	{
 		auto buttonNormalBrush = TextureBrush::Create(m_defaultSkinTexture);
@@ -322,6 +328,33 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 		}
 	}
 
+	// UITextField
+	{
+		auto* style = table->GetStyle(_T("UITextField"));
+		// base
+		{
+			auto* props = style->GetPropertyTable();
+			props->background = RefPtr<Brush>::StaticCast(boarderNormalBrush);
+		}
+	}
+	// UIWindow
+	{
+		auto* style = table->GetStyle(_T("UIWindow"));
+		// base
+		{
+			auto* props = style->GetPropertyTable();
+			props->background = RefPtr<Brush>::StaticCast(boarderNormalBrush);
+		}
+	}
+	// UIWindow::LineDownButton
+	{
+		auto* style = table->GetSubControlStyle(_T("UIWindow"), _T("ContentHost"));
+		// base
+		{
+			auto* props = style->GetPropertyTable();
+			//props->background = nullptr;
+		}
+	}
 
 	//{
 	//	auto brush = TextureBrush::Create(m_defaultSkinTexture);

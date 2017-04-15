@@ -12,7 +12,6 @@ LN_NAMESPACE_BEGIN
 class DrawingContext;
 class UIStylePropertyTable;
 class UIVisualStateManager;
-class UIRoutedCommand;
 
 /**
 	@brief		特定のイベントデータを持たない、UIイベントを処理するハンドラです。
@@ -300,7 +299,7 @@ protected:
 	virtual Size MeasureOverride(const Size& constraint) override;
 
 	/**
-		@brief		子要素の配置を確定し、この要素の最終サイズを返します。
+		@brief		Visual 子要素の配置を確定し、この要素の最終サイズを返します。
 		@param[in]	finalSize	: 親要素がこの要素に対して割り当てた領域のサイズ。
 		@return		要素の最終サイズ。要素の描画時にこのサイズを使用します。
 		@details	派生クラスは finalSize よりも大きいサイズを返すと、描画時に見切れが発生します。
@@ -377,8 +376,6 @@ LN_PROTECTED_INTERNAL_ACCESS:
 
 	/** 指定した要素をこの要素のビジュアルツリーから削除します。*/
 	void RemoveVisualChild(UIElement* element);
-
-	virtual void OnExecuteCommand(UICommandEventArgs* e);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	// ILayoutElement interface

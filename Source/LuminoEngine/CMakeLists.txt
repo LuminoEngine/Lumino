@@ -260,6 +260,8 @@ set(LN_SOURCES_Graphics
 	Source/Graphics/ImageEffect/BlurImageEffect.cpp
 	Source/Graphics/ImageEffect/ScreenMotionBlurImageEffect.cpp
 	Source/Graphics/ImageEffect/ToneImageEffect.cpp
+	Source/Graphics/Rendering/ShapesRenderer.cpp
+	Source/Graphics/Rendering/ShapesRenderer.h
 )
 set(LN_SOURCES_Graphics_Device
 	Source/Graphics/Device/GraphicsDriverInterface.cpp

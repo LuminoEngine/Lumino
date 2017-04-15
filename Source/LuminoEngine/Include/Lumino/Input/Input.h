@@ -39,12 +39,12 @@ public:
 	/**
 		@brief		ボタンのアクションマッピングを追加します。
 	*/
-	static void AddButtonBinding(const StringRef& buttonName, InputGesture* gesture);
+	static void AddButtonBinding(const StringRef& buttonName, InputBinding* binding);
 
 	/**
 		@brief		アクションマッピングを除外します。
 	*/
-	static void RemoveBinding(InputGesture* gesture);
+	static void RemoveBinding(InputBinding* binding);
 
 	/**
 		@brief		全てのアクションマッピングを削除します。

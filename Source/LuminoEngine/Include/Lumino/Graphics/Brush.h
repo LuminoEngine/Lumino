@@ -19,6 +19,21 @@ enum class BrushImageDrawMode
 	BorderFrame,	/**< 3x3 のボーダーを描画する。中央は描画しない。*/
 };
 
+namespace Driver { class ITexture; }
+namespace detail {
+
+struct BrushRawData
+{
+	Color						color;
+	RefPtr<Driver::ITexture>	texture;
+	RectF						srcRect;
+	BrushWrapMode				wrapMode;
+	BrushImageDrawMode			imageDrawMode;
+	ThicknessF					borderThickness;
+};
+
+} // namespace detail
+
 /**
 	@brief		
 */
@@ -75,6 +90,7 @@ LN_CONSTRUCT_ACCESS:
 LN_INTERNAL_ACCESS:
 	bool IsSolidColor() const { return m_texture.IsNull(); }
 	bool IsTextureBrush() const { return !m_texture.IsNull(); }
+	void GetRawData(detail::BrushRawData* outData) const;
 
 private:
 	Color				m_color;

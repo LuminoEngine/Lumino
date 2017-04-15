@@ -6,6 +6,7 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "ContextInterface.h"
+#include "Material.h"
 
 LN_NAMESPACE_BEGIN
 class Pen;
@@ -46,6 +47,7 @@ class MeshRendererProxy;
 class SpriteRenderer;
 class TextRenderer;
 class VectorTextRenderer;
+class ShapesRenderer;
 class NanoVGRenderer;
 class FrameRectRenderer;
 class DrawElementBatch;
@@ -102,6 +104,7 @@ public:
 	SpriteRenderer* BeginSpriteRenderer();
 	TextRenderer* BeginTextRenderer();
 	VectorTextRenderer* BeginVectorTextRenderer();
+	ShapesRenderer* BeginShapesRenderer();
 	NanoVGRenderer* BeginNanoVGRenderer();
 	FrameRectRenderer* BeginFrameRectRenderer();
 
@@ -112,7 +115,7 @@ public:
 
 	void Flush();
 
-private:
+LN_INTERNAL_ACCESS:
 	void SwitchActiveRenderer(detail::IRendererPloxy* renderer);
 
 	IRendererPloxy*				m_current;
@@ -123,6 +126,7 @@ private:
 	RefPtr<SpriteRenderer>		m_spriteRenderer;
 	RefPtr<TextRenderer>		m_textRenderer;
 	RefPtr<VectorTextRenderer>	m_vectorTextRenderer;
+	RefPtr<ShapesRenderer>		m_shapesRenderer;
 	RefPtr<NanoVGRenderer>		m_nanoVGRenderer;
 	RefPtr<FrameRectRenderer>	m_frameRectRenderer;
 	DrawElementBatch*			m_currentStatePtr;
@@ -660,6 +664,41 @@ private:
 	void SetStencilPassOp(StencilOp op);
 #endif
 };
+
+
+//------------------------------------------------------------------------------
+template<typename TElement>
+inline TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer, Material* userMaterial)
+{
+	Material* availableMaterial = (userMaterial != nullptr) ? userMaterial : m_defaultMaterial.Get();
+
+	// これを決定してから比較を行う
+	m_state.state.SetStandaloneShaderRenderer(renderer->IsStandaloneShader());
+
+	m_state.state.m_rendererId = reinterpret_cast<intptr_t>(renderer);
+
+	const DrawElementMetadata* userMetadata = GetMetadata();
+	const DrawElementMetadata* metadata = (userMetadata != nullptr) ? userMetadata : &DrawElementMetadata::Default;
+
+	// 何か前回追加された DrawElement があり、それと DrawingSectionId、State が一致するならそれに対して追記できる
+	if (sectionId != detail::DrawingSectionId::None &&
+		m_currentSectionTopElement != nullptr &&
+		m_currentSectionTopElement->drawingSectionId == sectionId &&
+		m_currentSectionTopElement->metadata.Equals(*metadata) &&
+		m_drawElementList.GetBatch(m_currentSectionTopElement->batchIndex)->Equal(m_state.state.state, availableMaterial, m_state.state.GetTransfrom()))
+	{
+		return static_cast<TElement*>(m_currentSectionTopElement);
+	}
+
+	// DrawElement を新しく作る
+	TElement* element = m_drawElementList.AddCommand<TElement>(m_state.state.state, availableMaterial, m_state.state.GetTransfrom());
+	//element->OnJoindDrawList(m_state.transfrom);
+	element->drawingSectionId = sectionId;
+	element->metadata = *metadata;
+	m_currentSectionTopElement = element;
+	return element;
+}
+
 
 LN_NAMESPACE_END
 

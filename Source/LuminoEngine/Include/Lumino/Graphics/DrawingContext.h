@@ -20,6 +20,12 @@ public:
 	*/
 	void DrawTexture(const RectF& destRect, Texture* texture, const RectF& sourceRect);
 
+	void DrawBoxBorder(
+		const RectF& rect, const ThicknessF& thickness,
+		const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor);
+
+	void DrawBoxShadow(const RectF& rect, const Color& color, float blur, float width, bool inset);
+
 LN_CONSTRUCT_ACCESS:
 	DrawingContext();
 	virtual ~DrawingContext();

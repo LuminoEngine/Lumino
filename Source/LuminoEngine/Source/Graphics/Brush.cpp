@@ -2,6 +2,7 @@
 #include "Internal.h"
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Brush.h>
+#include "Device/GraphicsDriverInterface.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -66,6 +67,17 @@ Texture* Brush::GetTexture() const
 	return m_texture;
 }
 
+//------------------------------------------------------------------------------
+void Brush::GetRawData(detail::BrushRawData* outData) const
+{
+	if (LN_CHECK_ARG(outData != nullptr)) return;
+	outData->color = m_color;
+	outData->texture = (m_texture != nullptr) ? m_texture->ResolveDeviceObject() : nullptr;
+	outData->srcRect = m_srcRect;
+	outData->wrapMode = m_wrapMode;
+	outData->imageDrawMode = m_imageDrawMode;
+	outData->borderThickness = m_borderThickness;
+}
 
 //==============================================================================
 // TextureBrush

@@ -17,6 +17,24 @@ void UIControlsGallery()
 	Camera::GetMain3DCamera()->SetCameraBehavior(cb);
 
 
+	auto* mainWindow = Engine::GetMainWindow();
+
+	auto win1 = UIWindow::Create();
+	win1->SetWidth(200);
+	win1->SetHeight(100);
+	//win1->SetBackground(Brush::DimGray);
+	mainWindow->AddChild(win1);
+
+
+	auto grid1 = UIGridLayout::Create(1, 1);
+	win1->AddChild(grid1);
+	auto stack1 = UIStackPanel::Create();
+	grid1->AddChild(stack1);
+
+	auto text1 = UITextBlock::Create();
+	text1->SetText(_T("text"));
+	stack1->AddChild(text1);
+
 #if 0
 	auto font = Font::GetDefault();
 	font->SetSize(50);
@@ -57,7 +75,7 @@ void UIControlsGallery()
 
 
 
-
+#if 0
 	auto* mainWindow = Engine::GetMainWindow();
 	mainWindow->SetLayoutPanel(UIStackPanel::Create());
 
@@ -97,6 +115,7 @@ void UIControlsGallery()
 
 		// TODO: テキストサイズに合わせる(サイズ省略)
 	}
+#endif
 
 	//auto text = UITextBlock::Create();//TextBlock2D::Create(_T("Hello, world!"));
 	//text->SetText(_T("Hello"));

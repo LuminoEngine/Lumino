@@ -22,7 +22,7 @@ enum InputDeviceID
 	InputDeviceID_Joystick3 = 0x0020,
 };
 
-enum class InputGestureType
+enum class InputBindingType
 {
 	Keyboard,
 	Mouse,
