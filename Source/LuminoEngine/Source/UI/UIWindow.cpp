@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.h"
+#include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/UI/UILayoutPanel.h>
 #include <Lumino/UI/UIWindow.h>
 
@@ -98,6 +99,14 @@ void UIWindow::OnLayoutPanelChanged(UILayoutPanel* newPanel)
 	}
 
 	UIControl::OnLayoutPanelChanged(newPanel);
+}
+
+//------------------------------------------------------------------------------
+void UIWindow::OnRender(DrawingContext* g)
+{
+	UIControl::OnRender(g);
+	g->DrawBoxBorder(RectF(10, 10, 300, 200), ThicknessF(10, 10, 10, 10), Color::Red, Color::Green, Color::Blue, Color::Cyan, 10, 10, 10, 10);	// TODO:
+
 }
 
 LN_NAMESPACE_END

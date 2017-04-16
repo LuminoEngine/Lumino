@@ -185,58 +185,159 @@ void ShapesRendererCore::ExtractBasePoints(ShapesRendererCommandList* commandLis
 		{
 			case ShapesRendererCommandList::Cmd_DrawBoxBorder:
 			{
-				float il = cmd[1];
-				float it = cmd[2];
-				float ir = cmd[1] + cmd[3];
-				float ib = cmd[2] + cmd[4];
-				float ol = il - cmd[5];
-				float ot = it - cmd[6];
-				float or = ir + cmd[7];
-				float ob = ib + cmd[8];
+				//float l[3] = { cmd[1], cmd[1] - cmd[5],  };
+				//float l[3];
+				//float t[3];
+				//float r[3];
+				//float b[3];
 				float ltRad = cmd[25];
 				float rtRad = cmd[26];
 				float lbRad = cmd[27];
 				float rbRad = cmd[28];
+
+				//// basis
+				//l[1] = cmd[1];
+				//t[1] = cmd[2];
+				//r[1] = cmd[1] + cmd[3];
+				//b[1] = cmd[2] + cmd[4];
+
+				//// outer
+				//l[0] = l[1] - cmd[5];
+				//t[0] = t[1] - cmd[6];
+				//r[0] = r[1] + cmd[7];
+				//b[0] = b[1] + cmd[8];
+
+				//// inner
+				//l[2] = l[1] + ltRad;
+				//t[2] = t[1] + ltRad;
+				//r[2] = r[1] + ltRad;
+				//b[2] = b[1] + ltRad;
+
+				Vector2 lt[3];
+				Vector2 rt[3];
+				Vector2 lb[3];
+				Vector2 rb[3];
+				// basis
+				lt[1] = Vector2(cmd[1], cmd[2]);
+				rt[1] = Vector2(cmd[1] + cmd[3], cmd[2]);
+				lb[1] = Vector2(cmd[1], cmd[2] + cmd[4]);
+				rb[1] = Vector2(cmd[1] + cmd[3], cmd[2] + cmd[4]);
+				// outer
+				lt[0] = Vector2(lt[1].x - cmd[5], lt[1].y - cmd[6]);
+				rt[0] = Vector2(rt[1].x + cmd[7], rt[1].y - cmd[6]);
+				lb[0] = Vector2(lb[1].x - cmd[5], lb[1].y + cmd[8]);
+				rb[0] = Vector2(rb[1].x + cmd[7], rb[1].y + cmd[8]);
+				// inner
+				lt[2] = Vector2(lt[1].x + ltRad, lt[1].y + ltRad);
+				rt[2] = Vector2(rt[1].x - rtRad, rt[1].y + rtRad);
+				lb[2] = Vector2(lb[1].x + lbRad, lb[1].y - lbRad);
+				rb[2] = Vector2(rb[1].x - rbRad, rb[1].y - rbRad);
+
 				const float rtir = 0.55228f;	// https://cat-in-136.github.io/2014/03/bezier-1-kappa.html
+				const int tess = 8;
 				if (0){	// left
-					auto* path = AddPath();
-					path->color = Color(cmd[9], cmd[10], cmd[11], cmd[12]);
+					//auto* path = AddPath();
+					//path->color = Color(cmd[9], cmd[10], cmd[11], cmd[12]);
 
-					// left-curve
-					m_points.Add({ Vector3(ol, ot, 0) });	// left-top
+					//// left-curve
+					//m_points.Add({ Vector3(ol, ot, 0) });	// left-top
 
-					
+					//
 
-					m_points.Add({ Vector3(ol, ob, 0) });	// left-bottom
-					m_points.Add({ Vector3(il, ib, 0) });	// right-bottom
-					m_points.Add({ Vector3(il, it, 0) });	// right-top
-					EndPath(path, true);
+					//m_points.Add({ Vector3(ol, ob, 0) });	// left-bottom
+					//m_points.Add({ Vector3(il, ib, 0) });	// right-bottom
+					//m_points.Add({ Vector3(il, it, 0) });	// right-top
+					//EndPath(path, true);
 				}
 				{	// top
 					auto* path = AddPath();
 					path->color = Color(cmd[13], cmd[14], cmd[15], cmd[16]);
-					m_points.Add({ Vector3(ol, ot, 0) });	// left-top
+					//m_points.Add({ Vector3(lt[1].x, lt[0].y, 0) });	// left-top
 
-					Vector2 cp2(il - ltRad * rtir, ot), cp3(ol, it - ltRad * rtir);
-					int tess = 4;
-					float incr = 0.5 / tess;
-					for (float t = 0.0f; t < 0.5f; t += incr)
+					//Vector2 cp2(il - ltRad * rtir, ot), cp3(ol, it - ltRad * rtir);
+					//int tess = 4;
+					//float incr = 0.5 / tess;
+					//for (float t = 0.0f; t < 0.5f; t += incr)
+					//{
+					//	m_points.Add({ Vector3(
+					//		Math::CubicBezier(il, cp2.x, cp3.x, ol, t),
+					//		Math::CubicBezier(ot, cp2.y, cp3.y, it, t),
+					//		0) });
+					//}
+					//m_points.Add({ Vector3(
+					//	Math::CubicBezier(il, cp2.x, cp3.x, ol, 0.5f),
+					//	Math::CubicBezier(ot, cp2.y, cp3.y, it, 0.5f),
+					//	0) });
+						Vector2 lt_st(lt[2].x, lt[0].y);
+						Vector2 lt_et(lt[0].x, lt[2].y);
+						Vector2 lt_cp2(lt_st.x - (lt_st.x - lt_et.x) * rtir, lt_st.y);
+						Vector2 lt_cp3(lt_et.x, lt_et.y - (lt_et.y - lt_st.y) * rtir);
 					{
+					//	float t = 0;
+					//	float step = 0.5 / tess;
+					//	for (; t < 0.5f; t += step)
+					//	{
+					//		//m_points.Add({ Vector3(
+					//		//	Math::CubicBezier(st.x, cp2.x, cp3.x, et.x, t),
+					//		//	Math::CubicBezier(st.y, cp2.y, cp3.y, et.y, t),
+					//		//	0) });
+					//	}
+						float t = 1;
 						m_points.Add({ Vector3(
-							Math::CubicBezier(il, cp2.x, cp3.x, ol, t),
-							Math::CubicBezier(ot, cp2.y, cp3.y, it, t),
+							Math::CubicBezier(lt_st.x, lt_cp2.x, lt_cp3.x, lt_et.x, t),
+							Math::CubicBezier(lt_st.y, lt_cp2.y, lt_cp3.y, lt_et.y, t),
 							0) });
 					}
-					m_points.Add({ Vector3(
-						Math::CubicBezier(il, cp2.x, cp3.x, ol, 0.5f),
-						Math::CubicBezier(ot, cp2.y, cp3.y, it, 0.5f),
-						0) });
 
 
+					//m_points.Add({ Vector3(lt[1].x, lt[1].y, 0) });	// left-bottom
 
-					m_points.Add({ Vector3(il, it, 0) });	// left-bottom
-					m_points.Add({ Vector3(ir, it, 0) });	// right-bottom
-					m_points.Add({ Vector3(or, ot, 0) });	// right-top
+					{
+						Vector2 st(lt[2].x, lt[1].y);
+						Vector2 et(lt[1].x, lt[2].y);
+						Vector2 cp2(st.x - (st.x - et.x) * rtir, st.y);
+						Vector2 cp3(et.x, et.y - (et.y - st.y) * rtir);
+						float t = 1;
+						float step = 1.0 / tess;
+						for (; t > 0.0f; t -= step)
+						{
+							m_points.Add({ Vector3(
+								Math::CubicBezier(st.x, cp2.x, cp3.x, et.x, t),
+								Math::CubicBezier(st.y, cp2.y, cp3.y, et.y, t),
+								0) });
+						}
+						t = 0.0f;
+						//m_points.Add({ Vector3(
+						//	Math::CubicBezier(st.x, cp2.x, cp3.x, et.x, t),
+						//	Math::CubicBezier(st.y, cp2.y, cp3.y, et.y, t),
+						//	0) });
+
+						//m_points.Add({ Vector3(st.x, st.y + 50, 0) });
+						m_points.Add({ Vector3(st.x, st.y, 0) });
+					}
+					//m_points.Add({ Vector3(lt[1].x - 10, lt[0].y + 5, 0) });
+					//m_points.Add({ Vector3(lt[1].x - 10, lt[1].y + 5, 0) });
+
+					m_points.Add({ Vector3(rt[1].x, rt[1].y, 0) });	// right-bottom
+					m_points.Add({ Vector3(rt[0].x, rt[0].y, 0) });	// right-top
+
+					//m_points.Add({ Vector3(lt[1].x, lt[0].y, 0) });	// left-top
+					{
+						float t = 0;
+						float step = 1.f / tess;
+						//for (; t < 1; t += step)
+						for (int i = 0; i < tess; i++)
+						{
+							t = step * i;
+							m_points.Add({ Vector3(
+								Math::CubicBezier(lt_st.x, lt_cp2.x, lt_cp3.x, lt_et.x, t),
+								Math::CubicBezier(lt_st.y, lt_cp2.y, lt_cp3.y, lt_et.y, t),
+								0) });
+						}
+						// t=1 ‚Íì¬Ï‚Ý
+					}
+
+
 					EndPath(path, true);
 				}
 				//{	// right
