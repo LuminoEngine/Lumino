@@ -149,4 +149,11 @@ float Math::CatmullRom(float v1, float v2, float v3, float v4, float t)
 	return (2.0f*v2 - 2.0f*v3 + d1 + d2)*t*t*t + (-3.0f*v2 + 3.0f*v3 - 2.0f*d1 - d2)*t*t + d1*t + v2;
 }
 
+//------------------------------------------------------------------------------
+float Math::CubicBezier(float v1, float v2, float v3, float v4, float t)
+{
+	float tp = 1.f - t;
+	return t*t*t*v4 + 3.f*t*t*tp*v3 + 3.f*t*tp*tp*v2 + tp*tp*tp*v1;
+}
+
 LN_NAMESPACE_END

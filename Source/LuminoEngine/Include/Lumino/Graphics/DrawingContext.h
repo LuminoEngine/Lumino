@@ -22,7 +22,8 @@ public:
 
 	void DrawBoxBorder(
 		const RectF& rect, const ThicknessF& thickness,
-		const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor);
+		const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor,
+		float ltRad, float rtRad, float lbRad, float rbRad);
 
 	void DrawBoxShadow(const RectF& rect, const Color& color, float blur, float width, bool inset);
 

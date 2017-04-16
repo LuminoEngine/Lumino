@@ -17,7 +17,8 @@ namespace detail {
 //------------------------------------------------------------------------------
 void ShapesRendererCommandList::AddDrawBoxBorder(
 	float x, float y, float w, float h, float l, float t, float r, float b,
-	const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor)
+	const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor,
+	float ltRad, float rtRad, float lbRad, float rbRad)
 {
 	float cmd[] =
 	{
@@ -27,6 +28,8 @@ void ShapesRendererCommandList::AddDrawBoxBorder(
 		topColor.r, topColor.g, topColor.b, topColor.a,
 		rightColor.r, rightColor.g, rightColor.b, rightColor.a,
 		bottomColor.r, bottomColor.g, bottomColor.b, bottomColor.a,
+		// [25]
+		ltRad, rtRad, lbRad, rbRad
 	};
 	AllocData(sizeof(cmd), cmd);
 }
@@ -190,42 +193,70 @@ void ShapesRendererCore::ExtractBasePoints(ShapesRendererCommandList* commandLis
 				float ot = it - cmd[6];
 				float or = ir + cmd[7];
 				float ob = ib + cmd[8];
-				{	// left
+				float ltRad = cmd[25];
+				float rtRad = cmd[26];
+				float lbRad = cmd[27];
+				float rbRad = cmd[28];
+				const float rtir = 0.55228f;	// https://cat-in-136.github.io/2014/03/bezier-1-kappa.html
+				if (0){	// left
 					auto* path = AddPath();
 					path->color = Color(cmd[9], cmd[10], cmd[11], cmd[12]);
+
+					// left-curve
 					m_points.Add({ Vector3(ol, ot, 0) });	// left-top
+
+					
+
 					m_points.Add({ Vector3(ol, ob, 0) });	// left-bottom
-					m_points.Add({ Vector3(il, it, 0) });	// right-bottom
-					m_points.Add({ Vector3(il, ib, 0) });	// right-top
+					m_points.Add({ Vector3(il, ib, 0) });	// right-bottom
+					m_points.Add({ Vector3(il, it, 0) });	// right-top
 					EndPath(path, true);
 				}
 				{	// top
 					auto* path = AddPath();
 					path->color = Color(cmd[13], cmd[14], cmd[15], cmd[16]);
 					m_points.Add({ Vector3(ol, ot, 0) });	// left-top
+
+					Vector2 cp2(il - ltRad * rtir, ot), cp3(ol, it - ltRad * rtir);
+					int tess = 4;
+					float incr = 0.5 / tess;
+					for (float t = 0.0f; t < 0.5f; t += incr)
+					{
+						m_points.Add({ Vector3(
+							Math::CubicBezier(il, cp2.x, cp3.x, ol, t),
+							Math::CubicBezier(ot, cp2.y, cp3.y, it, t),
+							0) });
+					}
+					m_points.Add({ Vector3(
+						Math::CubicBezier(il, cp2.x, cp3.x, ol, 0.5f),
+						Math::CubicBezier(ot, cp2.y, cp3.y, it, 0.5f),
+						0) });
+
+
+
 					m_points.Add({ Vector3(il, it, 0) });	// left-bottom
 					m_points.Add({ Vector3(ir, it, 0) });	// right-bottom
 					m_points.Add({ Vector3(or, ot, 0) });	// right-top
 					EndPath(path, true);
 				}
-				{	// right
-					auto* path = AddPath();
-					path->color = Color(cmd[17], cmd[18], cmd[19], cmd[20]);
-					m_points.Add({ Vector3(ir, it, 0) });	// left-top
-					m_points.Add({ Vector3(ir, ib, 0) });	// left-bottom
-					m_points.Add({ Vector3(or, ob, 0) });	// right-bottom
-					m_points.Add({ Vector3(or, ot, 0) });	// right-top
-					EndPath(path, true);
-				}
-				{	// bottom
-					auto* path = AddPath();
-					path->color = Color(cmd[21], cmd[22], cmd[23], cmd[24]);
-					m_points.Add({ Vector3(il, ib, 0) });	// left-top
-					m_points.Add({ Vector3(ol, ob, 0) });	// left-bottom
-					m_points.Add({ Vector3(or, ob, 0) });	// right-bottom
-					m_points.Add({ Vector3(ir, ib, 0) });	// right-top
-					EndPath(path, true);
-				}
+				//{	// right
+				//	auto* path = AddPath();
+				//	path->color = Color(cmd[17], cmd[18], cmd[19], cmd[20]);
+				//	m_points.Add({ Vector3(ir, it, 0) });	// left-top
+				//	m_points.Add({ Vector3(ir, ib, 0) });	// left-bottom
+				//	m_points.Add({ Vector3(or, ob, 0) });	// right-bottom
+				//	m_points.Add({ Vector3(or, ot, 0) });	// right-top
+				//	EndPath(path, true);
+				//}
+				//{	// bottom
+				//	auto* path = AddPath();
+				//	path->color = Color(cmd[21], cmd[22], cmd[23], cmd[24]);
+				//	m_points.Add({ Vector3(il, ib, 0) });	// left-top
+				//	m_points.Add({ Vector3(ol, ob, 0) });	// left-bottom
+				//	m_points.Add({ Vector3(or, ob, 0) });	// right-bottom
+				//	m_points.Add({ Vector3(ir, ib, 0) });	// right-top
+				//	EndPath(path, true);
+				//}
 				break;
 			}
 			default:

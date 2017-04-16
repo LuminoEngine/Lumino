@@ -100,7 +100,18 @@ public:
 		@details	t は通常、0.0～1.0 を指定します。
 	*/
 	static float CatmullRom(float v1, float v2, float v3, float v4, float t);
-
+	
+	/**
+		@brief		3次ベジェ 補間を実行します。
+		@param[in]	v1	: 始点
+		@param[in]	v2	: 1番目の制御点
+		@param[in]	v3	: 2番目の制御点
+		@param[in]	v4	: 終点
+		@param[in]	t	: 加重係数
+		@return		補間結果の値
+		@details	t は通常、0.0～1.0 を指定します。
+	*/
+	static float CubicBezier(float v1, float v2, float v3, float v4, float t);
 };
 
 LN_NAMESPACE_END

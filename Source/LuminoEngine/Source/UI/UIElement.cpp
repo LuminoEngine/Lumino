@@ -647,8 +647,8 @@ void UIElement::Render(DrawingContext* g)
 	mat.Translate(m_finalGlobalRect.x, m_finalGlobalRect.y, 0);
 	g->SetTransform(mat);
 
-	g->DrawBoxBorder(RectF(10, 20, 30, 40), ThicknessF(1, 2, 3, 4), Color::Red, Color::Green, Color::Blue, Color::Cyan);	// TODO:
-	g->DrawBoxShadow(RectF(10, 20, 30, 40), Color::Black, 5, 5, false);
+	g->DrawBoxBorder(RectF(50, 50, 300, 200), ThicknessF(10, 10, 10, 10), Color::Red, Color::Green, Color::Blue, Color::Cyan, 10, 10, 10, 10);	// TODO:
+	//g->DrawBoxShadow(RectF(10, 20, 300, 400), Color::Black, 5, 5, false);
 	OnRender(g);
 
 	// 子要素
