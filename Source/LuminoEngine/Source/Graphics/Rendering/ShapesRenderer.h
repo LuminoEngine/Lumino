@@ -65,6 +65,7 @@ private:
 	void ExtractBasePoints(ShapesRendererCommandList* commandList);
 	void CalcExtrudedDirection();
 	void ExpandFill();
+	void PlotBasePointsBezier(const Vector2& first, const Vector2& firstCpDir, const Vector2& last, const Vector2& lastCpDir, float firstT, float lastT);
 
 	GraphicsManager*		m_manager;
 	Driver::IVertexBuffer*	m_vertexBuffer;
