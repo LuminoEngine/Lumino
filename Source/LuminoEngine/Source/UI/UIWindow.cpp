@@ -105,7 +105,11 @@ void UIWindow::OnLayoutPanelChanged(UILayoutPanel* newPanel)
 void UIWindow::OnRender(DrawingContext* g)
 {
 	UIControl::OnRender(g);
-	g->DrawBoxBorder(RectF(10, 10, 300, 200), ThicknessF(10, 10, 10, 10), Color::Red, Color::Green, Color::Blue, Color::Cyan, 10, 10, 10, 10);	// TODO:
+	g->SetBlendMode(BlendMode::Alpha);
+	g->SetBrush(Brush::White);
+	g->DrawBoxBorder(
+		RectF(10, 10, 300, 200), ThicknessF(3, 3, 3, 3), Color::Red, Color::Green, Color::Blue, Color::Cyan, 10, 10, 10, 10,
+		Color::Gray, 5, 5, false);	// TODO:
 
 }
 

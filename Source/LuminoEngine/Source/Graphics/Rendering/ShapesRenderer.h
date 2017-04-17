@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/Graphics/Brush.h>
 #include <Lumino/Graphics/Vertex.h>
@@ -7,11 +7,11 @@
 LN_NAMESPACE_BEGIN
 namespace detail {
 
-// ‚È‚ºƒRƒ}ƒ“ƒh‚ª•K—v‚È‚Ì‚©HDrawList ‚â RenderingCommand ‚Å‚Í‚¾‚ß‚È‚Ì‚©H
-//		LineTo ‚ğl‚¦‚Ä‚İ‚ê‚Î‚í‚©‚è‚â‚·‚¢B
-//		“_‚ğ1‚Â‘Å‚Â‚Ì‚ÉADrawElement ‚ğ‚P‚Âì‚è‚½‚¢‚©HNo.
-//		‚±‚ÌƒRƒ}ƒ“ƒh‚ÍAShapesRenderer “à‚ÅƒvƒŠƒ~ƒeƒBƒu‚ğƒLƒƒƒbƒVƒ…‚·‚é‚½‚ß‚Ì‚à‚Ì‚Å‚ ‚éB
-//		‚¿‚È‚İ‚ÉARenderingCommand ‚Í•`‰æƒXƒŒƒbƒh—LŒø‚Å‚µ‚©“­‚©‚È‚¢‚Ì‚Å˜_ŠOB
+// ãªãœã‚³ãƒãƒ³ãƒ‰ãŒå¿…è¦ãªã®ã‹ï¼ŸDrawList ã‚„ RenderingCommand ã§ã¯ã ã‚ãªã®ã‹ï¼Ÿ
+//		LineTo ã‚’è€ƒãˆã¦ã¿ã‚Œã°ã‚ã‹ã‚Šã‚„ã™ã„ã€‚
+//		ç‚¹ã‚’1ã¤æ‰“ã¤ã®ã«ã€DrawElement ã‚’ï¼‘ã¤ä½œã‚ŠãŸã„ã‹ï¼ŸNo.
+//		ã“ã®ã‚³ãƒãƒ³ãƒ‰ã¯ã€ShapesRenderer å†…ã§ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ã‚’ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã™ã‚‹ãŸã‚ã®ã‚‚ã®ã§ã‚ã‚‹ã€‚
+//		ã¡ãªã¿ã«ã€RenderingCommand ã¯æç”»ã‚¹ãƒ¬ãƒƒãƒ‰æœ‰åŠ¹ã§ã—ã‹åƒã‹ãªã„ã®ã§è«–å¤–ã€‚
 class ShapesRendererCommandList
 	: public CommandDataCache
 {
@@ -23,7 +23,7 @@ public:
 		Cmd_DrawBoxShadow,
 	};
 
-	void AddDrawBoxBorder(float x, float y, float w, float h, float l, float t, float r, float b, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, float ltRad, float rtRad, float lbRad, float rbRad);
+	void AddDrawBoxBorder(float x, float y, float w, float h, float l, float t, float r, float b, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, float ltRad, float rtRad, float lbRad, float rbRad, const Color& shadowColor, float shadowBlur, float shadowWidth, bool shadowInset);
 	void AddDrawBoxShadow(float x, float y, float w, float h, const Color& color, float blur, float width, bool inset);
 };
 
@@ -45,35 +45,55 @@ public:
 	void RenderCommandList(ShapesRendererCommandList* commandList, detail::BrushRawData* fillBrush);
 
 private:
+	enum class PathType
+	{
+		Convex,
+		Strip2Point,	// TODO: æœªä½¿ç”¨ã«ãªã‚Šãã†
+		Strip3Point,	// ã“ã‚Œã¯ AA ã§ããªã„ã€‚ã‚·ãƒ£ãƒ‰ã‚¦ç”¨
+	};
+
 	struct Path
 	{
-		int		pointStart;
-		int		pointCount;
-		Color	color;
-		bool	close;
+		PathType	type;
+		int			pointStart;
+		int			pointCount;
+		Color		color;
 	};
 
 	struct BasePoint
 	{
-		Vector3	pos;
+		Vector2	pos;
+		Vector2	exDir;	// æŠ¼ã—å‡ºã—æ–¹å‘ (right-dir)
+	};
+
+	struct OutlinePoint
+	{
+		Vector2	pos;
+		Vector2	exDir;	// æŠ¼ã—å‡ºã—æ–¹å‘ (AntiAlias ç”¨)
+		float	alpha;
 	};
 
 	void ReleaseCommandList(ShapesRendererCommandList* commandList);
 	void RequestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex);
-	Path* AddPath();
-	void EndPath(Path* path, bool close);
+	Path* AddPath(PathType type, const Color& color);
+	void EndPath(Path* path);
 	void ExtractBasePoints(ShapesRendererCommandList* commandList);
 	void CalcExtrudedDirection();
-	void ExpandFill();
-	void PlotBasePointsBezier(const Vector2& first, const Vector2& firstCpDir, const Vector2& last, const Vector2& lastCpDir, float firstT, float lastT);
+	void ExpandVertices(const Path& path);
+	void ExpandFill(const Path& path);
+	void ExpandStrip2PointStroke(const Path& path);
+	void ExpandStrip3PointStroke(const Path& path);
+	void ExpandAntiAliasStroke(const Path& path, int startIndex);
+	void PlotCornerBasePointsBezier(const Vector2& first, const Vector2& firstCpDir, const Vector2& last, const Vector2& lastCpDir, float firstT, float lastT, const Vector2& center);
 
-	GraphicsManager*		m_manager;
-	Driver::IVertexBuffer*	m_vertexBuffer;
-	Driver::IIndexBuffer*	m_indexBuffer;
-	CacheBuffer<BasePoint>	m_points;
-	List<Path>				m_pathes;
-	CacheBuffer<Vertex>		m_vertexCache;
-	CacheBuffer<uint16_t>	m_indexCache;
+	GraphicsManager*			m_manager;
+	Driver::IVertexBuffer*		m_vertexBuffer;
+	Driver::IIndexBuffer*		m_indexBuffer;
+	CacheBuffer<BasePoint>		m_basePoints;
+	CacheBuffer<OutlinePoint>	m_outlinePoints;
+	List<Path>					m_pathes;
+	CacheBuffer<Vertex>			m_vertexCache;
+	CacheBuffer<uint16_t>		m_indexCache;
 };
 
 class ShapesRenderer

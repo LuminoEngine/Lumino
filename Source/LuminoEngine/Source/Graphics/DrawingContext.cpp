@@ -60,14 +60,16 @@ void DrawingContext::DrawTexture(const RectF& destRect, Texture* texture, const 
 void DrawingContext::DrawBoxBorder(
 	const RectF& rect, const ThicknessF& thickness,
 	const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor,
-	float ltRad, float rtRad, float lbRad, float rbRad)
+	float ltRad, float rtRad, float lbRad, float rbRad,
+	const Color& shadowColor, float shadowBlur, float shadowWidth, bool shadowInset)
 {
 	auto* ptr = ResolveDrawElement<DrawElement_DrawShapesRendererCommandList>(detail::DrawingSectionId::NanoVG, GetManager()->GetInternalContext()->m_shapesRenderer, nullptr);
 	auto* list = ptr->GetGCommandList(this);
 	list->AddDrawBoxBorder(
 		rect.x, rect.y, rect.width, rect.height, thickness.Left, thickness.Top, thickness.Right, thickness.Bottom,
 		leftColor, topColor, rightColor, bottomColor,
-		ltRad, rtRad, lbRad, rbRad);
+		ltRad, rtRad, lbRad, rbRad,
+		shadowColor, shadowBlur, shadowWidth, shadowInset);
 }
 
 //------------------------------------------------------------------------------

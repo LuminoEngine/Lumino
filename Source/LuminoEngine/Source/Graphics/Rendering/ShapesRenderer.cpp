@@ -1,4 +1,4 @@
-
+Ôªø
 #include "../Internal.h"
 #include <Lumino/Graphics/Brush.h>
 #include <Lumino/Graphics/Rendering.h>
@@ -18,7 +18,8 @@ namespace detail {
 void ShapesRendererCommandList::AddDrawBoxBorder(
 	float x, float y, float w, float h, float l, float t, float r, float b,
 	const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor,
-	float ltRad, float rtRad, float lbRad, float rbRad)
+	float ltRad, float rtRad, float lbRad, float rbRad,
+	const Color& shadowColor, float shadowBlur, float shadowWidth, bool shadowInset)
 {
 	float cmd[] =
 	{
@@ -29,7 +30,10 @@ void ShapesRendererCommandList::AddDrawBoxBorder(
 		rightColor.r, rightColor.g, rightColor.b, rightColor.a,
 		bottomColor.r, bottomColor.g, bottomColor.b, bottomColor.a,
 		// [25]
-		ltRad, rtRad, lbRad, rbRad
+		ltRad, rtRad, lbRad, rbRad,
+		// [29]
+		shadowColor.r, shadowColor.g, shadowColor.b, shadowColor.a,
+		shadowBlur, shadowWidth, (shadowInset) ? 1.0f : 0.0f,
 	};
 	AllocData(sizeof(cmd), cmd);
 }
@@ -64,7 +68,8 @@ ShapesRendererCore::ShapesRendererCore()
 	: m_manager(nullptr)
 	, m_vertexBuffer(nullptr)
 	, m_indexBuffer(nullptr)
-	, m_points()
+	, m_basePoints()
+	, m_outlinePoints()
 	, m_vertexCache()
 	, m_indexCache()
 {
@@ -81,7 +86,8 @@ ShapesRendererCore::~ShapesRendererCore()
 void ShapesRendererCore::Initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
-	m_points.Reserve(4096);
+	m_basePoints.Reserve(4096);
+	m_outlinePoints.Reserve(4096);
 	m_vertexCache.Reserve(4096);
 	m_indexCache.Reserve(4096);
 }
@@ -101,7 +107,23 @@ void ShapesRendererCore::RenderCommandList(ShapesRendererCommandList* commandLis
 {
 	ExtractBasePoints(commandList);
 	CalcExtrudedDirection();
-	ExpandFill();
+
+
+	for (int iPath = 0; iPath < m_pathes.GetCount(); iPath++)
+	{
+		switch (m_pathes[iPath].type)
+		{
+		case PathType::Convex:
+			ExpandFill(m_pathes[iPath]);
+			break;
+		case PathType::Strip2Point:
+			ExpandStrip2PointStroke(m_pathes[iPath]);
+			break;
+		case PathType::Strip3Point:
+			ExpandStrip3PointStroke(m_pathes[iPath]);
+			break;
+		}
+	}
 
 	//for (int i = 0; i < dataCount; i++)
 	//{
@@ -117,11 +139,11 @@ void ShapesRendererCore::RenderCommandList(ShapesRendererCommandList* commandLis
 	//		vb, ib, beginVertexIndex);
 	//}
 
-	// TODO: Ç±ÇÃÇ÷ÇÒ PrimitiveRenderer Ç∆ìØÇ∂ÅBã§í Ç…Ç≈Ç´Ç»Ç¢Ç©ÅH
+	// TODO: „Åì„ÅÆ„Å∏„Çì PrimitiveRenderer „Å®Âêå„Åò„ÄÇÂÖ±ÈÄö„Å´„Åß„Åç„Å™„ÅÑ„ÅãÔºü
 	{
 		Driver::IRenderer* renderer = m_manager->GetGraphicsDevice()->GetRenderer();
 
-		// ÉTÉCÉYÇ™ë´ÇËÇ»ÇØÇÍÇŒçƒçÏê¨
+		// „Çµ„Ç§„Ç∫„ÅåË∂≥„Çä„Å™„Åë„Çå„Å∞ÂÜç‰ΩúÊàê
 		auto* device = m_manager->GetGraphicsDevice();
 		if (m_vertexBuffer == nullptr || m_vertexBuffer->GetByteCount() < m_vertexCache.GetBufferUsedByteCount())
 		{
@@ -134,7 +156,7 @@ void ShapesRendererCore::RenderCommandList(ShapesRendererCommandList* commandLis
 			m_indexBuffer = device->CreateIndexBuffer(m_indexCache.GetBufferUsedByteCount(), nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 		}
 
-		// ï`âÊÇ∑ÇÈ
+		// ÊèèÁîª„Åô„Çã
 		m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
 		m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
 
@@ -146,10 +168,11 @@ void ShapesRendererCore::RenderCommandList(ShapesRendererCommandList* commandLis
 		}
 	}
 
-	// ÉLÉÉÉbÉVÉÖÉNÉäÉA
+	// „Ç≠„É£„ÉÉ„Ç∑„É•„ÇØ„É™„Ç¢
 	m_vertexCache.Clear();
 	m_indexCache.Clear();
-	m_points.Clear();
+	m_basePoints.Clear();
+	m_outlinePoints.Clear();
 	m_pathes.Clear();
 }
 
@@ -161,17 +184,16 @@ void ShapesRendererCore::ReleaseCommandList(ShapesRendererCommandList* commandLi
 }
 
 //------------------------------------------------------------------------------
-ShapesRendererCore::Path* ShapesRendererCore::AddPath()
+ShapesRendererCore::Path* ShapesRendererCore::AddPath(PathType type, const Color& color)
 {
-	m_pathes.Add(Path{ m_points.GetCount(), 0, Color(0, 0, 0, 1) });
+	m_pathes.Add(Path{ type, m_outlinePoints.GetCount(), 0, color });
 	return &m_pathes.GetLast();
 }
 
 //------------------------------------------------------------------------------
-void ShapesRendererCore::EndPath(Path* path, bool close)
+void ShapesRendererCore::EndPath(Path* path)
 {
-	path->pointCount = m_points.GetCount() - path->pointStart;
-	path->close = close;
+	path->pointCount = m_outlinePoints.GetCount() - path->pointStart;
 }
 
 //------------------------------------------------------------------------------
@@ -185,10 +207,26 @@ void ShapesRendererCore::ExtractBasePoints(ShapesRendererCommandList* commandLis
 		{
 			case ShapesRendererCommandList::Cmd_DrawBoxBorder:
 			{
+				// Component „ÅÆÂßãÁÇπ„Å®ÁµÇÁÇπ„ÅØ„ÄÅÂâçÂæå„ÅÆ Component „ÅÆ„Åù„Çå„Å®Èáç„Å™„Å£„Å¶„ÅÑ„Çã
+				struct BaseComponent
+				{
+					int	firstPoint;
+					int lastPoint;
+				};
+				BaseComponent baseComponents[4];
+
 				float ltRad = cmd[25];
 				float rtRad = cmd[26];
 				float lbRad = cmd[27];
 				float rbRad = cmd[28];
+
+				Color shadowColor(cmd[29], cmd[30], cmd[31], cmd[32]);
+				float shadowBlur = cmd[33];
+				float shadowWidth = cmd[34];
+				bool shadowInset = (cmd[35] != 0.0f);
+
+				float shadowFill = (shadowWidth - shadowBlur);
+				float shadowBlurWidth = (shadowWidth - shadowBlur) + shadowBlur * 2;
 
 				Vector2 lt[3];
 				Vector2 rt[3];
@@ -210,149 +248,141 @@ void ShapesRendererCore::ExtractBasePoints(ShapesRendererCommandList* commandLis
 				lb[2] = Vector2(lb[1].x + lbRad, lb[1].y - lbRad);
 				rb[2] = Vector2(rb[1].x - rbRad, rb[1].y - rbRad);
 
-				const float rtir = 0.55228f;	// https://cat-in-136.github.io/2014/03/bezier-1-kappa.html
-				const int tess = 8;
-				{	// left
-					auto* path = AddPath();
-					path->color = Color(cmd[9], cmd[10], cmd[11], cmd[12]);
 
-					// left-top
-					PlotBasePointsBezier(Vector2(lt[2].x, lt[0].y), Vector2(-1, 0), Vector2(lt[0].x, lt[2].y), Vector2(0, -1), 0.5, 1.0);
-					// left-bottom
-					PlotBasePointsBezier(Vector2(lb[0].x, lb[2].y), Vector2(0,  1), Vector2(lb[2].x, lb[0].y), Vector2(-1, 0), 0.0, 0.5);
-					// right-bottom
-					PlotBasePointsBezier(Vector2(lb[2].x, lb[1].y), Vector2(0, -1), Vector2(lb[1].x, lb[2].y), Vector2(0,  1), 0.5, 1);
-					// right-top
-					PlotBasePointsBezier(Vector2(lt[1].x, lt[2].y), Vector2(0, -1), Vector2(lt[2].x, lt[1].y), Vector2(-1, 0), 0.0, 1.0);
+				// left-side component
+				baseComponents[0].firstPoint = m_basePoints.GetCount();
+				// left-top
+				PlotCornerBasePointsBezier(Vector2(lt[2].x, lt[1].y), Vector2(-1, 0), Vector2(lt[1].x, lt[2].y), Vector2(0, -1), 0.5, 1.0, lt[2]);
+				// left-bottom
+				PlotCornerBasePointsBezier(Vector2(lb[1].x, lb[2].y), Vector2(0, 1), Vector2(lb[2].x, lb[1].y), Vector2(-1, 0), 0.0, 0.5, lb[2]);
+				baseComponents[0].lastPoint = m_basePoints.GetCount() - 1;
 
+				// bottom-side component
+				baseComponents[1].firstPoint = m_basePoints.GetCount();
+				// left-bottom
+				PlotCornerBasePointsBezier(Vector2(lb[1].x, lb[2].y), Vector2(0,  1), Vector2(lb[2].x, lb[1].y), Vector2(-1,  0), 0.5, 1.0, lb[2]);
+				// right-bottom
+				PlotCornerBasePointsBezier(Vector2(rb[2].x, rb[1].y), Vector2(1,  0), Vector2(rb[1].x, rb[2].y), Vector2(0, 1), 0.0, 0.5, rb[2]);
+				baseComponents[1].lastPoint = m_basePoints.GetCount() - 1;
 
-					//// left-curve
-					//m_points.Add({ Vector3(ol, ot, 0) });	// left-top
+				// right-side component
+				baseComponents[2].firstPoint = m_basePoints.GetCount();
+				// right-bottom
+				PlotCornerBasePointsBezier(Vector2(rb[2].x, rb[1].y), Vector2(1,  0), Vector2(rb[1].x, rb[2].y), Vector2(0, 1), 0.5, 1.0, rb[2]);
+				// right-top
+				PlotCornerBasePointsBezier(Vector2(rt[1].x, rt[2].y), Vector2(0, -1), Vector2(rt[2].x, rt[1].y), Vector2(1, 0), 0.0, 0.5, rt[2]);
+				baseComponents[2].lastPoint = m_basePoints.GetCount() - 1;
 
-					//
+				// top-side component
+				baseComponents[3].firstPoint = m_basePoints.GetCount();
+				// right-top
+				PlotCornerBasePointsBezier(Vector2(rt[1].x, rt[2].y), Vector2(0, -1), Vector2(rt[2].x, rt[1].y), Vector2(1, 0), 0.5, 1.0, rt[2]);
+				// left-top
+				PlotCornerBasePointsBezier(Vector2(lt[2].x, lt[1].y), Vector2(-1, 0), Vector2(lt[1].x, lt[2].y), Vector2(0, -1), 0.0, 0.5, lt[2]);
+				baseComponents[3].lastPoint = m_basePoints.GetCount() - 1;
 
-					//m_points.Add({ Vector3(ol, ob, 0) });	// left-bottom
-					//m_points.Add({ Vector3(il, ib, 0) });	// right-bottom
-					//m_points.Add({ Vector3(il, it, 0) });	// right-top
-					EndPath(path, true);
+				// shadows
+				for (int iComp = 0; iComp < 4; iComp++)
+				{
+					auto* path = AddPath(PathType::Strip3Point, shadowColor);
+					for (int i = baseComponents[iComp].firstPoint; i <= baseComponents[iComp].lastPoint; i++)
+					{
+						BasePoint& pt = m_basePoints.GetAt(i);
+						// left-dir
+						m_outlinePoints.Add({ pt.pos, pt.exDir, 1.0f });
+						// right-dir
+						m_outlinePoints.Add({ pt.pos + pt.exDir * shadowFill, pt.exDir, 1.0f });
+						// right-dir
+						m_outlinePoints.Add({ pt.pos + pt.exDir * shadowBlurWidth, pt.exDir, 0.0f });
+					}
+					EndPath(path);
 				}
-				{	// top
-					auto* path = AddPath();
-					path->color = Color(cmd[13], cmd[14], cmd[15], cmd[16]);
-					//m_points.Add({ Vector3(lt[1].x, lt[0].y, 0) });	// left-top
 
-					//Vector2 cp2(il - ltRad * rtir, ot), cp3(ol, it - ltRad * rtir);
-					//int tess = 4;
-					//float incr = 0.5 / tess;
-					//for (float t = 0.0f; t < 0.5f; t += incr)
-					//{
-					//	m_points.Add({ Vector3(
-					//		Math::CubicBezier(il, cp2.x, cp3.x, ol, t),
-					//		Math::CubicBezier(ot, cp2.y, cp3.y, it, t),
-					//		0) });
-					//}
-					//m_points.Add({ Vector3(
-					//	Math::CubicBezier(il, cp2.x, cp3.x, ol, 0.5f),
-					//	Math::CubicBezier(ot, cp2.y, cp3.y, it, 0.5f),
-					//	0) });
-					//	Vector2 lt_st(lt[2].x, lt[0].y);
-					//	Vector2 lt_et(lt[0].x, lt[2].y);
-					//	Vector2 lt_cp2(lt_st.x - (lt_st.x - lt_et.x) * rtir, lt_st.y);
-					//	Vector2 lt_cp3(lt_et.x, lt_et.y - (lt_et.y - lt_st.y) * rtir);
-					//{
-					////	float t = 0;
-					////	float step = 0.5 / tess;
-					////	for (; t < 0.5f; t += step)
-					////	{
-					////		//m_points.Add({ Vector3(
-					////		//	Math::CubicBezier(st.x, cp2.x, cp3.x, et.x, t),
-					////		//	Math::CubicBezier(st.y, cp2.y, cp3.y, et.y, t),
-					////		//	0) });
-					////	}
-					//	float t = 1;
-					//	m_points.Add({ Vector3(
-					//		Math::CubicBezier(lt_st.x, lt_cp2.x, lt_cp3.x, lt_et.x, t),
-					//		Math::CubicBezier(lt_st.y, lt_cp2.y, lt_cp3.y, lt_et.y, t),
-					//		0) });
-					//}
-
-
-					//m_points.Add({ Vector3(lt[1].x, lt[1].y, 0) });	// left-bottom
-
-					//{
-					//	Vector2 st(lt[2].x, lt[1].y);
-					//	Vector2 et(lt[1].x, lt[2].y);
-					//	Vector2 cp2(st.x - (st.x - et.x) * rtir, st.y);
-					//	Vector2 cp3(et.x, et.y - (et.y - st.y) * rtir);
-					//	float t = 1;
-					//	float step = 1.0 / tess;
-					//	for (; t > 0.0f; t -= step)
-					//	{
-					//		m_points.Add({ Vector3(
-					//			Math::CubicBezier(st.x, cp2.x, cp3.x, et.x, t),
-					//			Math::CubicBezier(st.y, cp2.y, cp3.y, et.y, t),
-					//			0) });
-					//	}
-					//	t = 0.0f;
-					//	//m_points.Add({ Vector3(
-					//	//	Math::CubicBezier(st.x, cp2.x, cp3.x, et.x, t),
-					//	//	Math::CubicBezier(st.y, cp2.y, cp3.y, et.y, t),
-					//	//	0) });
-
-					//	//m_points.Add({ Vector3(st.x, st.y + 50, 0) });
-					//	m_points.Add({ Vector3(st.x, st.y, 0) });
-					//}
-					//m_points.Add({ Vector3(lt[1].x - 10, lt[0].y + 5, 0) });
-					//m_points.Add({ Vector3(lt[1].x - 10, lt[1].y + 5, 0) });
-
-					// left-bottom
-					PlotBasePointsBezier(Vector2(lt[1].x, lt[2].y), Vector2(0, -1), Vector2(lt[2].x, lt[1].y), Vector2(-1, 0), 0.5, 1);
-				
-					m_points.Add({ Vector3(rt[1].x, rt[1].y, 0) });	// right-bottom
-					m_points.Add({ Vector3(rt[0].x, rt[0].y, 0) });	// right-top
-
-					// left-top
-					PlotBasePointsBezier(Vector2(lt[2].x, lt[0].y), Vector2(-1, 0), Vector2(lt[0].x, lt[2].y), Vector2(0, -1), 0, 0.5);
-
-					//	Vector2 lt_st();
-					//	Vector2 lt_et();
-					//m_points.Add({ Vector3(lt[1].x, lt[0].y, 0) });	// left-top
-					//{
-					//	float t = 0;
-					//	float step = 1.f / tess;
-					//	//for (; t < 1; t += step)
-					//	for (int i = 0; i < tess; i++)
-					//	{
-					//		t = step * i;
-					//		m_points.Add({ Vector3(
-					//			Math::CubicBezier(lt_st.x, lt_cp2.x, lt_cp3.x, lt_et.x, t),
-					//			Math::CubicBezier(lt_st.y, lt_cp2.y, lt_cp3.y, lt_et.y, t),
-					//			0) });
-					//	}
-					//	// t=1 ÇÕçÏê¨çœÇ›
-					//}
-
-
-					EndPath(path, true);
+				// center box
+				{
+					auto* path = AddPath(PathType::Convex, Color::White);
+					for (int iComp = 0; iComp < 4; iComp++)
+					{
+						for (int i = baseComponents[iComp].firstPoint; i < baseComponents[iComp].lastPoint; i++)	// ÁµÇÁÇπ„ÅØÊ¨°„ÅÆ Componet „ÅÆÈñãÂßãÁÇπ„Å®‰∏ÄËá¥„Åô„Çã„ÅÆ„ÅßÂøÖË¶Å„Å™„ÅÑ
+						{
+							m_outlinePoints.Add({ m_basePoints.GetAt(i).pos, m_basePoints.GetAt(i).exDir, 1.0f });
+						}
+					}
+					EndPath(path);
 				}
-				//{	// right
-				//	auto* path = AddPath();
-				//	path->color = Color(cmd[17], cmd[18], cmd[19], cmd[20]);
-				//	m_points.Add({ Vector3(ir, it, 0) });	// left-top
-				//	m_points.Add({ Vector3(ir, ib, 0) });	// left-bottom
-				//	m_points.Add({ Vector3(or, ob, 0) });	// right-bottom
-				//	m_points.Add({ Vector3(or, ot, 0) });	// right-top
-				//	EndPath(path, true);
-				//}
-				//{	// bottom
-				//	auto* path = AddPath();
-				//	path->color = Color(cmd[21], cmd[22], cmd[23], cmd[24]);
-				//	m_points.Add({ Vector3(il, ib, 0) });	// left-top
-				//	m_points.Add({ Vector3(ol, ob, 0) });	// left-bottom
-				//	m_points.Add({ Vector3(or, ob, 0) });	// right-bottom
-				//	m_points.Add({ Vector3(ir, ib, 0) });	// right-top
-				//	EndPath(path, true);
-				//}
+
+				// ‚ÄªÂè≥‰∏ã„ÅÆ„Ç≥„Éº„Éä„Éº„ÅåÂ∞è„Åï„ÅÑ„Å®„Åã„ÄÅ„Å°„Çá„Å£„Å®„ÇÜ„Åå„Çì„ÅßË¶ã„Åà„Çã„ÅÆ„ÅØ DX9 „Ç∑„Çß„Éº„ÉÄ„Åß 0.5px „Ç™„Éï„Çª„ÉÉ„Éà„ÅåËÄÉÊÖÆ„Åï„Çå„Å¶„ÅÑ„Å™„ÅÑ„Åì„Å®„ÅåÂéüÂõ†„ÄÇ
+
+
+				// left border
+				{
+					auto* path = AddPath(PathType::Convex, Color(cmd[9], cmd[10], cmd[11], cmd[12]));
+
+					for (int i = baseComponents[0].firstPoint; i <= baseComponents[0].lastPoint; i++)
+					{
+						BasePoint& pt = m_basePoints.GetAt(i);
+						// right-dir
+						m_outlinePoints.Add({ pt.pos + pt.exDir * cmd[5], pt.exDir, 1.0f });
+					}
+					for (int i = baseComponents[0].lastPoint; i >= baseComponents[0].firstPoint; i--)
+					{
+						BasePoint& pt = m_basePoints.GetAt(i);
+						// left-dir
+						m_outlinePoints.Add({ pt.pos, -pt.exDir, 1.0f });
+					}
+					EndPath(path);
+				}
+				// bottom border
+				{
+					auto* path = AddPath(PathType::Convex, Color(cmd[21], cmd[22], cmd[23], cmd[24]));
+					for (int i = baseComponents[1].firstPoint; i <= baseComponents[1].lastPoint; i++)
+					{
+						BasePoint& pt = m_basePoints.GetAt(i);
+						// right-dir
+						m_outlinePoints.Add({ pt.pos + pt.exDir * cmd[8], pt.exDir, 1.0f });
+					}
+					for (int i = baseComponents[1].lastPoint; i >= baseComponents[1].firstPoint; i--)
+					{
+						BasePoint& pt = m_basePoints.GetAt(i);
+						// left-dir
+						m_outlinePoints.Add({ pt.pos, -pt.exDir, 1.0f });
+					}
+					EndPath(path);
+				}
+				// right border
+				{
+					auto* path = AddPath(PathType::Convex, Color(cmd[17], cmd[18], cmd[19], cmd[20]));
+					for (int i = baseComponents[2].firstPoint; i <= baseComponents[2].lastPoint; i++)
+					{
+						BasePoint& pt = m_basePoints.GetAt(i);
+						// right-dir
+						m_outlinePoints.Add({ pt.pos + pt.exDir * cmd[7], pt.exDir, 1.0f });
+					}
+					for (int i = baseComponents[2].lastPoint; i >= baseComponents[2].firstPoint; i--)
+					{
+						BasePoint& pt = m_basePoints.GetAt(i);
+						// left-dir
+						m_outlinePoints.Add({ pt.pos, -pt.exDir, 1.0f });
+					}
+					EndPath(path);
+				}
+				// top border
+				{
+					auto* path = AddPath(PathType::Convex, Color(cmd[13], cmd[14], cmd[15], cmd[16]));
+					for (int i = baseComponents[3].firstPoint; i <= baseComponents[3].lastPoint; i++)
+					{
+						BasePoint& pt = m_basePoints.GetAt(i);
+						// right-dir
+						m_outlinePoints.Add({ pt.pos + pt.exDir * cmd[6], pt.exDir, 1.0f });
+					}
+					for (int i = baseComponents[3].lastPoint; i >= baseComponents[3].firstPoint; i--)
+					{
+						BasePoint& pt = m_basePoints.GetAt(i);
+						// left-dir
+						m_outlinePoints.Add({ pt.pos, -pt.exDir, 1.0f });
+					}
+					EndPath(path);
+				}
 				break;
 			}
 			default:
@@ -369,98 +399,202 @@ void ShapesRendererCore::CalcExtrudedDirection()
 }
 
 //------------------------------------------------------------------------------
-void ShapesRendererCore::ExpandFill()
+void ShapesRendererCore::ExpandVertices(const Path& path)
 {
-	for (int iPath = 0; iPath < m_pathes.GetCount(); iPath++)
+	for (int i = 0; i < path.pointCount; i++)
 	{
-		const Path& path = m_pathes.GetAt(iPath);
-		int pointCount = path.pointCount;
-
-		// make VertexBuffer
-		for (int i = 0; i < pointCount; i++)
-		{
-			const BasePoint& pt = m_points.GetAt(path.pointStart + i);
-			Vertex v;
-			v.position = pt.pos;
-			v.color = path.color;
-			//v.uv.x = (pt.point.x - posMin.x) * uvSpan.x;
-			//v.uv.y = (pt.point.y - posMin.y) * uvSpan.y;
-			m_vertexCache.Add(v);
-		}
-
-		// make IndexBuffer (îΩéûåvâÒÇË)
-		int ib = path.pointStart;
-		int i0 = 0;
-		int i1 = 1;
-		int i2 = pointCount - 1;
-		for (int iPt = 0; iPt < pointCount - 2; iPt++)
-		{
-			m_indexCache.Add(ib + i0);
-			m_indexCache.Add(ib + i1);
-			m_indexCache.Add(ib + i2);
-
-			if (iPt & 1) {	// äÔêîâÒ
-				i0 = i2;
-				--i2;
-			}
-			else {	// ãÙêîâÒ
-				i0 = i1;
-				++i1;
-			}
-			/*
-				Å™ÇÃäTóvÅF
-				í∏ì_ÇÕîΩéûåvâÒÇËÇ…ï¿ÇÒÇ≈Ç¢ÇÈÇ±Ç∆ÇëOíÒÇ∆ÇµÅA
-				ëOå„ÇªÇÍÇºÇÍÇÃï˚å¸Ç©ÇÁÉJÅ[É\ÉãÇêiÇﬂÇÈÇÊÇ§Ç…ÇµÇƒéOäpå`ÇçÏÇ¡ÇƒÇ¢Ç≠ÅB
-
-				- 0âÒñ⁄ÅA0,1,5 ÇåãÇ‘
-				0-5 4
-				|/
-				1 2 3
-
-				- 1âÒñ⁄ÅA1,2,5 ÇåãÇ‘
-				0-5 4
-				|/|
-				1-2 3
-
-				- 3âÒñ⁄ÅA5,2,4 ÇåãÇ‘
-				0-5-4
-				|/|/
-				1-2 3
-
-				- 4âÒñ⁄ÅA2,3,4 ÇåãÇ‘
-				0-5-4
-				|/|/|
-				1-2-3
-			*/
-		}
+		const OutlinePoint& pt = m_outlinePoints.GetAt(path.pointStart + i);
+		Vertex v;
+		v.position = Vector3(pt.pos, 0);
+		v.color = path.color;
+		v.color.a *= pt.alpha;
+		m_vertexCache.Add(v);
 	}
 }
 
 //------------------------------------------------------------------------------
-void ShapesRendererCore::PlotBasePointsBezier(const Vector2& first, const Vector2& firstCpDir, const Vector2& last, const Vector2& lastCpDir, float firstT, float lastT)
+void ShapesRendererCore::ExpandFill(const Path& path)
+{
+	int startIndex = m_vertexCache.GetCount();
+
+	ExpandVertices(path);
+
+	// make IndexBuffer (ÂèçÊôÇË®àÂõû„Çä)
+	int ib = startIndex;
+	int i0 = 0;
+	int i1 = 1;
+	int i2 = path.pointCount - 1;
+	for (int iPt = 0; iPt < path.pointCount - 2; iPt++)
+	{
+		m_indexCache.Add(ib + i0);
+		m_indexCache.Add(ib + i1);
+		m_indexCache.Add(ib + i2);
+
+		if (iPt & 1) {	// Â•áÊï∞Âõû
+			i0 = i2;
+			--i2;
+		}
+		else {	// ÂÅ∂Êï∞Âõû
+			i0 = i1;
+			++i1;
+		}
+		/*
+			‚Üë„ÅÆÊ¶ÇË¶ÅÔºö
+			È†ÇÁÇπ„ÅØÂèçÊôÇË®àÂõû„Çä„Å´‰∏¶„Çì„Åß„ÅÑ„Çã„Åì„Å®„ÇíÂâçÊèê„Å®„Åó„ÄÅ
+			ÂâçÂæå„Åù„Çå„Åû„Çå„ÅÆÊñπÂêë„Åã„Çâ„Ç´„Éº„ÇΩ„É´„ÇíÈÄ≤„ÇÅ„Çã„Çà„ÅÜ„Å´„Åó„Å¶‰∏âËßíÂΩ¢„Çí‰Ωú„Å£„Å¶„ÅÑ„Åè„ÄÇ
+
+			- 0ÂõûÁõÆ„ÄÅ0,1,5 „ÇíÁµê„Å∂
+			0-5 4
+			|/
+			1 2 3
+
+			- 1ÂõûÁõÆ„ÄÅ1,2,5 „ÇíÁµê„Å∂
+			0-5 4
+			|/|
+			1-2 3
+
+			- 3ÂõûÁõÆ„ÄÅ5,2,4 „ÇíÁµê„Å∂
+			0-5-4
+			|/|/
+			1-2 3
+
+			- 4ÂõûÁõÆ„ÄÅ2,3,4 „ÇíÁµê„Å∂
+			0-5-4
+			|/|/|
+			1-2-3
+		*/
+	}
+
+	ExpandAntiAliasStroke(path, startIndex);
+}
+
+//------------------------------------------------------------------------------
+void ShapesRendererCore::ExpandStrip2PointStroke(const Path& path)
+{
+	/*
+		0-2-4
+		|/|/|	-> front
+		1-3-5
+	*/
+
+	int startIndex = m_vertexCache.GetCount();
+
+	ExpandVertices(path);
+
+	for (int i = 0; i < (path.pointCount / 2) - 1; i++)
+	{
+		int ib = startIndex + i * 2;
+		m_indexCache.Add(ib + 0);
+		m_indexCache.Add(ib + 1);
+		m_indexCache.Add(ib + 2);
+		m_indexCache.Add(ib + 2);
+		m_indexCache.Add(ib + 1);
+		m_indexCache.Add(ib + 3);
+	}
+}
+
+//------------------------------------------------------------------------------
+void ShapesRendererCore::ExpandStrip3PointStroke(const Path& path)
+{
+	/*
+		0-3-6
+		|/|/|
+		1-4-7	-> front
+		|/|/|
+		2-5-8
+	*/
+	int startIndex = m_vertexCache.GetCount();
+
+	ExpandVertices(path);
+
+	for (int i = 0; i < (path.pointCount / 3) - 1; i++)
+	{
+		int ib = startIndex + i * 3;
+		m_indexCache.Add(ib + 0);
+		m_indexCache.Add(ib + 1);
+		m_indexCache.Add(ib + 3);
+
+		m_indexCache.Add(ib + 3);
+		m_indexCache.Add(ib + 1);
+		m_indexCache.Add(ib + 4);
+
+		m_indexCache.Add(ib + 1);
+		m_indexCache.Add(ib + 2);
+		m_indexCache.Add(ib + 4);
+
+		m_indexCache.Add(ib + 4);
+		m_indexCache.Add(ib + 2);
+		m_indexCache.Add(ib + 5);
+	}
+}
+
+//------------------------------------------------------------------------------
+void ShapesRendererCore::ExpandAntiAliasStroke(const Path& path, int startIndex)
+{
+	const float ext = 0.75f;
+
+	// Âá∏Èù¢Âë®Âõ≤„ÇíÂè≥Âõû„Çä„Åô„Çã„ÄÇÂè≥„Å´Êäº„ÅóÂá∫„Åô„ÄÇ
+	int startAA = m_vertexCache.GetCount();
+
+	for (int i = 0; i < path.pointCount; i++)
+	{
+		//int vi = startIndex + i;
+
+		const OutlinePoint& pt = m_outlinePoints.GetAt(path.pointStart + i);
+		Vertex v;
+		v.position = Vector3(pt.pos + pt.exDir * ext, 0);
+		v.color = path.color;
+		v.color.a = 0;
+		m_vertexCache.Add(v);
+	}
+	
+	/*
+		0-1-2	- base
+		|/|/|	-> front
+		3-4-5	- ext
+	*/
+
+	for (int i = 0; i < path.pointCount - 1; i++)
+	{
+		int b = startIndex + i;
+		int e = startAA + i;
+
+		m_indexCache.Add(b + 0);
+		m_indexCache.Add(e + 0);
+		m_indexCache.Add(b + 1);
+
+		m_indexCache.Add(b + 1);
+		m_indexCache.Add(e + 0);
+		m_indexCache.Add(e + 1);
+	}
+}
+
+//------------------------------------------------------------------------------
+void ShapesRendererCore::PlotCornerBasePointsBezier(const Vector2& first, const Vector2& firstCpDir, const Vector2& last, const Vector2& lastCpDir, float firstT, float lastT, const Vector2& center)
 {
 	LN_ASSERT(firstT < lastT);
-	//Vector2 st(lt[2].x, lt[1].y);
-	//Vector2 et(lt[1].x, lt[2].y);
 	const int tess = 8;
 	const float rtir = 0.55228f;	// https://cat-in-136.github.io/2014/03/bezier-1-kappa.html
-	//Vector2 d = last - first;
 	Vector2 d(std::abs(last.x - first.x), std::abs(last.y - first.y));
-	Vector2 cp2 = (first) + (d * firstCpDir) * rtir;//(first.x - std::abs(last.x - first.x) * rtir, first.y);
+	Vector2 cp2 = (first) + (d * firstCpDir) * rtir;
 	Vector2 cp3 = (last) + (d * lastCpDir) * rtir;
 	float step = (lastT - firstT) / tess;
 	for (int i = 0; i < tess; i++)
 	{
 		float t = firstT + (step * i);
-		m_points.Add({ Vector3(
+		BasePoint pt;
+		pt.pos = Vector2(
 			Math::CubicBezier(first.x, cp2.x, cp3.x, last.x, t),
-			Math::CubicBezier(first.y, cp2.y, cp3.y, last.y, t),
-			0) });
+			Math::CubicBezier(first.y, cp2.y, cp3.y, last.y, t));
+		pt.exDir = Vector2::Normalize(pt.pos - center);
+		m_basePoints.Add(pt);
 	}
-	m_points.Add({ Vector3(
+	BasePoint pt;
+	pt.pos = Vector2(
 		Math::CubicBezier(first.x, cp2.x, cp3.x, last.x, lastT),
-		Math::CubicBezier(first.y, cp2.y, cp3.y, last.y, lastT),
-		0) });
+		Math::CubicBezier(first.y, cp2.y, cp3.y, last.y, lastT));
+	pt.exDir = Vector2::Normalize(pt.pos - center);
+	m_basePoints.Add(pt);
 }
 
 //==============================================================================
