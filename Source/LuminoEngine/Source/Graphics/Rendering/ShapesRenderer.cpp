@@ -1,4 +1,8 @@
 ﻿
+/*
+	- [ ] inset border
+	- [ ] 1px anti alias
+*/
 #include "../Internal.h"
 #include <Lumino/Graphics/Brush.h>
 #include <Lumino/Graphics/Rendering.h>
@@ -214,6 +218,7 @@ void ShapesRendererCore::ExtractBasePoints(ShapesRendererCommandList* commandLis
 					int lastPoint;
 				};
 				BaseComponent baseComponents[4];
+				BaseComponent shadowComponents[4];
 
 				float ltRad = cmd[25];
 				float rtRad = cmd[26];
@@ -225,13 +230,13 @@ void ShapesRendererCore::ExtractBasePoints(ShapesRendererCommandList* commandLis
 				float shadowWidth = cmd[34];
 				bool shadowInset = (cmd[35] != 0.0f);
 
-				float shadowFill = (shadowWidth - shadowBlur);
-				float shadowBlurWidth = (shadowWidth - shadowBlur) + shadowBlur * 2;
+				float shadowFill = shadowBlur * 2/*(shadowWidth - shadowBlur)*/;
+				float shadowBlurWidth = (shadowWidth - shadowBlur) + shadowBlur * 2;	// base からシャドウのもっとも外側まで
 
-				Vector2 lt[3];
-				Vector2 rt[3];
-				Vector2 lb[3];
-				Vector2 rb[3];
+				Vector2 lt[4];
+				Vector2 rt[4];
+				Vector2 lb[4];
+				Vector2 rb[4];
 				// basis
 				lt[1] = Vector2(cmd[1], cmd[2]);
 				rt[1] = Vector2(cmd[1] + cmd[3], cmd[2]);
@@ -247,55 +252,122 @@ void ShapesRendererCore::ExtractBasePoints(ShapesRendererCommandList* commandLis
 				rt[2] = Vector2(rt[1].x - rtRad, rt[1].y + rtRad);
 				lb[2] = Vector2(lb[1].x + lbRad, lb[1].y - lbRad);
 				rb[2] = Vector2(rb[1].x - rbRad, rb[1].y - rbRad);
+				// shadow outer
+				lt[3] = Vector2(lt[1].x - shadowBlurWidth, lt[1].y - shadowBlurWidth);
+				rt[3] = Vector2(rt[1].x + shadowBlurWidth, rt[1].y - shadowBlurWidth);
+				lb[3] = Vector2(lb[1].x - shadowBlurWidth, lb[1].y + shadowBlurWidth);
+				rb[3] = Vector2(rb[1].x + shadowBlurWidth, rb[1].y + shadowBlurWidth);
 
 
 				// left-side component
 				baseComponents[0].firstPoint = m_basePoints.GetCount();
 				// left-top
-				PlotCornerBasePointsBezier(Vector2(lt[2].x, lt[1].y), Vector2(-1, 0), Vector2(lt[1].x, lt[2].y), Vector2(0, -1), 0.5, 1.0, lt[2]);
+				if (ltRad == 0.0f)
+					m_basePoints.Add({ lt[1] , Vector2::Normalize(lt[0] - lt[1]) });
+				else
+					PlotCornerBasePointsBezier(Vector2(lt[2].x, lt[1].y), Vector2(-1, 0), Vector2(lt[1].x, lt[2].y), Vector2(0, -1), 0.5, 1.0, lt[2]);
 				// left-bottom
-				PlotCornerBasePointsBezier(Vector2(lb[1].x, lb[2].y), Vector2(0, 1), Vector2(lb[2].x, lb[1].y), Vector2(-1, 0), 0.0, 0.5, lb[2]);
+				if (lbRad == 0.0f)
+					m_basePoints.Add({ lb[1] , Vector2::Normalize(lb[0] - lb[1]) });
+				else
+					PlotCornerBasePointsBezier(Vector2(lb[1].x, lb[2].y), Vector2(0, 1), Vector2(lb[2].x, lb[1].y), Vector2(-1, 0), 0.0, 0.5, lb[2]);
 				baseComponents[0].lastPoint = m_basePoints.GetCount() - 1;
 
 				// bottom-side component
 				baseComponents[1].firstPoint = m_basePoints.GetCount();
 				// left-bottom
-				PlotCornerBasePointsBezier(Vector2(lb[1].x, lb[2].y), Vector2(0,  1), Vector2(lb[2].x, lb[1].y), Vector2(-1,  0), 0.5, 1.0, lb[2]);
+				if (lbRad == 0.0f)
+					m_basePoints.Add({ lb[1] , Vector2::Normalize(lb[0] - lb[1]) });
+				else
+					PlotCornerBasePointsBezier(Vector2(lb[1].x, lb[2].y), Vector2(0,  1), Vector2(lb[2].x, lb[1].y), Vector2(-1,  0), 0.5, 1.0, lb[2]);
 				// right-bottom
-				PlotCornerBasePointsBezier(Vector2(rb[2].x, rb[1].y), Vector2(1,  0), Vector2(rb[1].x, rb[2].y), Vector2(0, 1), 0.0, 0.5, rb[2]);
+				if (rbRad == 0.0f)
+					m_basePoints.Add({ rb[1] , Vector2::Normalize(rb[0] - rb[1]) });
+				else
+					PlotCornerBasePointsBezier(Vector2(rb[2].x, rb[1].y), Vector2(1,  0), Vector2(rb[1].x, rb[2].y), Vector2(0, 1), 0.0, 0.5, rb[2]);
 				baseComponents[1].lastPoint = m_basePoints.GetCount() - 1;
 
 				// right-side component
 				baseComponents[2].firstPoint = m_basePoints.GetCount();
 				// right-bottom
-				PlotCornerBasePointsBezier(Vector2(rb[2].x, rb[1].y), Vector2(1,  0), Vector2(rb[1].x, rb[2].y), Vector2(0, 1), 0.5, 1.0, rb[2]);
+				if (rbRad == 0.0f)
+					m_basePoints.Add({ rb[1] , Vector2::Normalize(rb[0] - rb[1]) });
+				else
+					PlotCornerBasePointsBezier(Vector2(rb[2].x, rb[1].y), Vector2(1,  0), Vector2(rb[1].x, rb[2].y), Vector2(0, 1), 0.5, 1.0, rb[2]);
 				// right-top
-				PlotCornerBasePointsBezier(Vector2(rt[1].x, rt[2].y), Vector2(0, -1), Vector2(rt[2].x, rt[1].y), Vector2(1, 0), 0.0, 0.5, rt[2]);
+				if (rtRad == 0.0f)
+					m_basePoints.Add({ rt[1] , Vector2::Normalize(rt[0] - rt[1]) });
+				else
+					PlotCornerBasePointsBezier(Vector2(rt[1].x, rt[2].y), Vector2(0, -1), Vector2(rt[2].x, rt[1].y), Vector2(1, 0), 0.0, 0.5, rt[2]);
 				baseComponents[2].lastPoint = m_basePoints.GetCount() - 1;
 
 				// top-side component
 				baseComponents[3].firstPoint = m_basePoints.GetCount();
 				// right-top
-				PlotCornerBasePointsBezier(Vector2(rt[1].x, rt[2].y), Vector2(0, -1), Vector2(rt[2].x, rt[1].y), Vector2(1, 0), 0.5, 1.0, rt[2]);
+				if (rtRad == 0.0f)
+					m_basePoints.Add({ rt[1] , Vector2::Normalize(rt[0] - rt[1]) });
+				else
+					PlotCornerBasePointsBezier(Vector2(rt[1].x, rt[2].y), Vector2(0, -1), Vector2(rt[2].x, rt[1].y), Vector2(1, 0), 0.5, 1.0, rt[2]);
 				// left-top
-				PlotCornerBasePointsBezier(Vector2(lt[2].x, lt[1].y), Vector2(-1, 0), Vector2(lt[1].x, lt[2].y), Vector2(0, -1), 0.0, 0.5, lt[2]);
+				if (ltRad == 0.0f)
+					m_basePoints.Add({ lt[1] , Vector2::Normalize(lt[0] - lt[1]) });
+				else
+					PlotCornerBasePointsBezier(Vector2(lt[2].x, lt[1].y), Vector2(-1, 0), Vector2(lt[1].x, lt[2].y), Vector2(0, -1), 0.0, 0.5, lt[2]);
 				baseComponents[3].lastPoint = m_basePoints.GetCount() - 1;
 
+
+				// left-side component
+				shadowComponents[0].firstPoint = m_basePoints.GetCount();
+				// left-top
+				PlotCornerBasePointsBezier(Vector2(lt[2].x, lt[3].y), Vector2(-1, 0), Vector2(lt[3].x, lt[2].y), Vector2(0, -1), 0.5, 1.0, lt[2]);
+				// left-bottom
+				PlotCornerBasePointsBezier(Vector2(lb[3].x, lb[2].y), Vector2(0, 1), Vector2(lb[2].x, lb[3].y), Vector2(-1, 0), 0.0, 0.5, lb[2]);
+				shadowComponents[0].lastPoint = m_basePoints.GetCount() - 1;
+
+				// bottom-side component
+				shadowComponents[1].firstPoint = m_basePoints.GetCount();
+				// left-bottom
+				PlotCornerBasePointsBezier(Vector2(lb[3].x, lb[2].y), Vector2(0, 1), Vector2(lb[2].x, lb[3].y), Vector2(-1, 0), 0.5, 1.0, lb[2]);
+				// right-bottom
+				PlotCornerBasePointsBezier(Vector2(rb[2].x, rb[3].y), Vector2(1, 0), Vector2(rb[3].x, rb[2].y), Vector2(0, 1), 0.0, 0.5, rb[2]);
+				shadowComponents[1].lastPoint = m_basePoints.GetCount() - 1;
+
+				// right-side component
+				shadowComponents[2].firstPoint = m_basePoints.GetCount();
+				// right-bottom
+				PlotCornerBasePointsBezier(Vector2(rb[2].x, rb[3].y), Vector2(1, 0), Vector2(rb[3].x, rb[2].y), Vector2(0, 1), 0.5, 1.0, rb[2]);
+				// right-top
+				PlotCornerBasePointsBezier(Vector2(rt[3].x, rt[2].y), Vector2(0, -1), Vector2(rt[2].x, rt[3].y), Vector2(1, 0), 0.0, 0.5, rt[2]);
+				shadowComponents[2].lastPoint = m_basePoints.GetCount() - 1;
+
+				// top-side component
+				shadowComponents[3].firstPoint = m_basePoints.GetCount();
+				// right-top
+				PlotCornerBasePointsBezier(Vector2(rt[3].x, rt[2].y), Vector2(0, -1), Vector2(rt[2].x, rt[3].y), Vector2(1, 0), 0.5, 1.0, rt[2]);
+				// left-top
+				PlotCornerBasePointsBezier(Vector2(lt[2].x, lt[3].y), Vector2(-1, 0), Vector2(lt[3].x, lt[2].y), Vector2(0, -1), 0.0, 0.5, lt[2]);
+				shadowComponents[3].lastPoint = m_basePoints.GetCount() - 1;
+
 				// shadows
-				for (int iComp = 0; iComp < 4; iComp++)
+				if (!shadowInset)
 				{
-					auto* path = AddPath(PathType::Strip3Point, shadowColor);
-					for (int i = baseComponents[iComp].firstPoint; i <= baseComponents[iComp].lastPoint; i++)
+					for (int iComp = 0; iComp < 4; iComp++)
 					{
-						BasePoint& pt = m_basePoints.GetAt(i);
-						// left-dir
-						m_outlinePoints.Add({ pt.pos, pt.exDir, 1.0f });
-						// right-dir
-						m_outlinePoints.Add({ pt.pos + pt.exDir * shadowFill, pt.exDir, 1.0f });
-						// right-dir
-						m_outlinePoints.Add({ pt.pos + pt.exDir * shadowBlurWidth, pt.exDir, 0.0f });
+						auto* path = AddPath(PathType::Strip3Point, shadowColor);
+						for (int i = shadowComponents[iComp].firstPoint; i <= shadowComponents[iComp].lastPoint; i++)
+						{
+							BasePoint& pt = m_basePoints.GetAt(i);
+							
+							// left-dir
+							m_outlinePoints.Add({ pt.pos - pt.exDir * shadowBlurWidth, pt.exDir, 1.0f });
+							// right-dir
+							m_outlinePoints.Add({ pt.pos - pt.exDir * shadowFill, pt.exDir, 1.0f });
+							// right-dir
+							m_outlinePoints.Add({ pt.pos, pt.exDir, 0.0f });
+							
+						}
+						EndPath(path);
 					}
-					EndPath(path);
 				}
 
 				// center box
@@ -312,6 +384,29 @@ void ShapesRendererCore::ExtractBasePoints(ShapesRendererCommandList* commandLis
 				}
 
 				// ※右下のコーナーが小さいとか、ちょっとゆがんで見えるのは DX9 シェーダで 0.5px オフセットが考慮されていないことが原因。
+
+
+
+
+
+				if (shadowInset)
+				{
+					// shadows
+					for (int iComp = 0; iComp < 4; iComp++)
+					{
+						auto* path = AddPath(PathType::Strip3Point, shadowColor);
+						for (int i = shadowComponents[iComp].firstPoint; i <= shadowComponents[iComp].lastPoint; i++)
+						{
+							BasePoint& pt = m_basePoints.GetAt(i);
+							m_outlinePoints.Add({ pt.pos - pt.exDir * shadowBlurWidth - pt.exDir * shadowBlurWidth, pt.exDir, 0.0f });
+							m_outlinePoints.Add({ pt.pos - pt.exDir * shadowBlurWidth - pt.exDir * (shadowBlurWidth - shadowFill), pt.exDir, 1.0f });
+							m_outlinePoints.Add({ pt.pos - pt.exDir * shadowBlurWidth, pt.exDir, 1.0f });
+
+						}
+						EndPath(path);
+					}
+				}
+
 
 
 				// left border
@@ -405,7 +500,7 @@ void ShapesRendererCore::ExpandVertices(const Path& path)
 	{
 		const OutlinePoint& pt = m_outlinePoints.GetAt(path.pointStart + i);
 		Vertex v;
-		v.position = Vector3(pt.pos, 0);
+		v.position = Vector3(pt.pos/*  + 0.5f*/, 0);
 		v.color = path.color;
 		v.color.a *= pt.alpha;
 		m_vertexCache.Add(v);

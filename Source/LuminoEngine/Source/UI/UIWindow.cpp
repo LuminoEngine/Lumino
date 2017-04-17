@@ -107,9 +107,15 @@ void UIWindow::OnRender(DrawingContext* g)
 	UIControl::OnRender(g);
 	g->SetBlendMode(BlendMode::Alpha);
 	g->SetBrush(Brush::White);
+	//g->DrawBoxBorder(
+	//	RectF(10, 10, 300, 200), ThicknessF(3, 3, 3, 3), Color::Red, Color::Green, Color::Blue, Color::Cyan, 0, 10, 20, 30,
+	//	Color::Gray, 5, 5, false);	// TODO:
+
+	Color c = Color::LightSkyBlue;
+	c.a = 0.25;
 	g->DrawBoxBorder(
-		RectF(10, 10, 300, 200), ThicknessF(3, 3, 3, 3), Color::Red, Color::Green, Color::Blue, Color::Cyan, 10, 10, 10, 10,
-		Color::Gray, 5, 5, false);	// TODO:
+		RectF(10, 10, 300, 50), ThicknessF(1, 1, 1, 1), Color::LightSkyBlue, Color::LightSkyBlue, Color::LightSkyBlue, Color::LightSkyBlue, 30, 0, 0, 30,
+		c, 5, 5, true);	// TODO:
 
 }
 
