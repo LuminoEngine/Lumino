@@ -427,6 +427,37 @@ public:
 	bool operator != (const ThicknessF& obj) const { return !operator==(obj); }
 };
 
+
+/**
+	@brief	四角形の角の半径を表します。
+*/
+struct CornerRadius
+{
+public:
+
+	/** 左上角の半径 */
+	float topLeft;
+
+	/** 右上角の半径 */
+	float topRight;
+
+	/** 右下角の半径 */
+	float bottomRight;
+
+	/** 左下角の半径 */
+	float bottomLeft;
+
+public:
+	/** すべての要素を 0 で初期化します。 */
+	CornerRadius();
+
+	/** すべての要素を uniformRadius で初期化します。 */
+	CornerRadius(float uniformRadius);
+
+	/** 各要素の値を指定して初期化します。 */
+	CornerRadius(float topLeft, float topRight, float bottomRight, float bottomLeft);
+};
+
 namespace detail
 {
 

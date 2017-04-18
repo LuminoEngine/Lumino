@@ -4,6 +4,41 @@
 
 LN_NAMESPACE_BEGIN
 
+enum class BorderDirection
+{
+	Inside,
+	Outside,
+};
+
+enum class ShadowDirection
+{
+	Inside,
+	Outside,
+};
+
+namespace detail {
+
+struct BoxBorderData
+{
+	ThicknessF		borderThickness;
+	CornerRadius	cornerRadius;
+	Color			leftBorderColor;
+	Color			topBorderColor;
+	Color			rightBorderColor;
+	Color			bottomBorderColor;
+	BorderDirection	borderDirection;
+};
+
+struct BoxShadowData
+{
+	Color			shadowColor;
+	float			shadowBlur;
+	float			shadowWidth;
+	ShadowDirection	shadowDirection;
+};
+
+} // namespace detail
+
 /**
 	@brief	矩形、テキスト、イメージなどのオブジェクトを描画するための機能を提供します。
 */
@@ -23,8 +58,8 @@ public:
 	void DrawBoxBorder(
 		const RectF& rect, const ThicknessF& thickness,
 		const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor,
-		float ltRad, float rtRad, float lbRad, float rbRad,
-		const Color& shadowColor, float shadowBlur, float shadowWidth, bool shadowInset);
+		float ltRad, float rtRad, float lbRad, float rbRad, BorderDirection borderDirection,
+		const Color& shadowColor, float shadowBlur, float shadowWidth, ShadowDirection shadowDirection);
 
 	void DrawBoxShadow(const RectF& rect, const Color& color, float blur, float width, bool inset);
 

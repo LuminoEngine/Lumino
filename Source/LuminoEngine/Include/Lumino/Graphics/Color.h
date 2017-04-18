@@ -435,6 +435,8 @@ public:
 
 	static Color FromString(const StringRef& str);
 
+	Color WithAlpha(float alpha) const { return Color(r, g, b, alpha); }
+
 public:
 	//ColorF& operator = (const ColorF& src) { r = src.r; g = src.g; b = src.b; a = src.a; return *this; }
 

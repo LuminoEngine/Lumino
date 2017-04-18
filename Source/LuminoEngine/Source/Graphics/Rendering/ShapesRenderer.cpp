@@ -22,7 +22,7 @@ void ShapesRendererCommandList::AddDrawBoxBorder(
 	float x, float y, float w, float h, float l, float t, float r, float b,
 	const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor,
 	float ltRad, float rtRad, float lbRad, float rbRad,
-	const Color& shadowColor, float shadowBlur, float shadowWidth, bool shadowInset)
+	const Color& shadowColor, float shadowBlur, float shadowWidth, bool shadowInset, bool borderInset)
 {
 	float cmd[] =
 	{
@@ -36,7 +36,7 @@ void ShapesRendererCommandList::AddDrawBoxBorder(
 		ltRad, rtRad, lbRad, rbRad,
 		// [29]
 		shadowColor.r, shadowColor.g, shadowColor.b, shadowColor.a,
-		shadowBlur, shadowWidth, (shadowInset) ? 1.0f : 0.0f,
+		shadowBlur, shadowWidth, (shadowInset) ? 1.0f : 0.0f, (borderInset) ? 1.0f : 0.0f,
 	};
 	AllocData(sizeof(cmd), cmd);
 }
@@ -221,8 +221,6 @@ void ShapesRendererCore::ExtractBasePoints(ShapesRendererCommandList* commandLis
 				BaseComponent baseComponents[4];
 				BaseComponent shadowComponents[4];
 
-				float borderExtSign = -1.0f;
-				PathWinding borderWinding = PathWinding::CW;
 
 				float ltRad = cmd[25];
 				float rtRad = cmd[26];
@@ -233,6 +231,15 @@ void ShapesRendererCore::ExtractBasePoints(ShapesRendererCommandList* commandLis
 				float shadowBlur = cmd[33];
 				float shadowWidth = cmd[34];
 				bool shadowInset = (cmd[35] != 0.0f);
+				bool borderInset = (cmd[36] != 0.0f);
+
+				float borderExtSign = 1.0f;
+				PathWinding borderWinding = PathWinding::CCW;
+				if (borderInset)
+				{
+					borderExtSign = -1.0f;
+					borderWinding = PathWinding::CW;
+				}
 
 				float shadowFill = shadowBlur * 2/*(shadowWidth - shadowBlur)*/;
 				float shadowBlurWidth = (shadowWidth - shadowBlur) + shadowBlur * 2;	// base からシャドウのもっとも外側まで
@@ -422,13 +429,13 @@ void ShapesRendererCore::ExtractBasePoints(ShapesRendererCommandList* commandLis
 					{
 						BasePoint& pt = m_basePoints.GetAt(i);
 						// right-dir
-						m_outlinePoints.Add({ GetExtPos(pt, borderExtSign, cmd[5]), GetAAExtDir(pt), 1.0f });
+						m_outlinePoints.Add({ GetExtPos(pt, borderExtSign, cmd[5]), borderExtSign * GetAAExtDir(pt), 1.0f });
 					}
 					for (int i = baseComponents[0].lastPoint; i >= baseComponents[0].firstPoint; i--)
 					{
 						BasePoint& pt = m_basePoints.GetAt(i);
 						// left-dir
-						m_outlinePoints.Add({ pt.pos, -GetAAExtDir(pt), 1.0f });
+						m_outlinePoints.Add({ pt.pos, borderExtSign * -GetAAExtDir(pt), 1.0f });
 					}
 					EndPath(path);
 				}
@@ -439,13 +446,13 @@ void ShapesRendererCore::ExtractBasePoints(ShapesRendererCommandList* commandLis
 					{
 						BasePoint& pt = m_basePoints.GetAt(i);
 						// right-dir
-						m_outlinePoints.Add({ GetExtPos(pt, borderExtSign, cmd[8]), GetAAExtDir(pt), 1.0f });
+						m_outlinePoints.Add({ GetExtPos(pt, borderExtSign, cmd[8]), borderExtSign * GetAAExtDir(pt), 1.0f });
 					}
 					for (int i = baseComponents[1].lastPoint; i >= baseComponents[1].firstPoint; i--)
 					{
 						BasePoint& pt = m_basePoints.GetAt(i);
 						// left-dir
-						m_outlinePoints.Add({ pt.pos, -GetAAExtDir(pt), 1.0f });
+						m_outlinePoints.Add({ pt.pos, borderExtSign * -GetAAExtDir(pt), 1.0f });
 					}
 					EndPath(path);
 				}
@@ -456,13 +463,13 @@ void ShapesRendererCore::ExtractBasePoints(ShapesRendererCommandList* commandLis
 					{
 						BasePoint& pt = m_basePoints.GetAt(i);
 						// right-dir
-						m_outlinePoints.Add({ GetExtPos(pt, borderExtSign, cmd[7]), GetAAExtDir(pt), 1.0f });
+						m_outlinePoints.Add({ GetExtPos(pt, borderExtSign, cmd[7]), borderExtSign * GetAAExtDir(pt), 1.0f });
 					}
 					for (int i = baseComponents[2].lastPoint; i >= baseComponents[2].firstPoint; i--)
 					{
 						BasePoint& pt = m_basePoints.GetAt(i);
 						// left-dir
-						m_outlinePoints.Add({ pt.pos, -GetAAExtDir(pt), 1.0f });
+						m_outlinePoints.Add({ pt.pos, borderExtSign * -GetAAExtDir(pt), 1.0f });
 					}
 					EndPath(path);
 				}
@@ -473,13 +480,13 @@ void ShapesRendererCore::ExtractBasePoints(ShapesRendererCommandList* commandLis
 					{
 						BasePoint& pt = m_basePoints.GetAt(i);
 						// right-dir
-						m_outlinePoints.Add({ GetExtPos(pt, borderExtSign, cmd[6]), GetAAExtDir(pt), 1.0f });
+						m_outlinePoints.Add({ GetExtPos(pt, borderExtSign, cmd[6]), borderExtSign * GetAAExtDir(pt), 1.0f });
 					}
 					for (int i = baseComponents[3].lastPoint; i >= baseComponents[3].firstPoint; i--)
 					{
 						BasePoint& pt = m_basePoints.GetAt(i);
 						// left-dir
-						m_outlinePoints.Add({ pt.pos, -GetAAExtDir(pt), 1.0f });
+						m_outlinePoints.Add({ pt.pos, borderExtSign * -GetAAExtDir(pt), 1.0f });
 					}
 					EndPath(path);
 				}
@@ -684,7 +691,10 @@ void ShapesRendererCore::ExpandAntiAliasStroke(const Path& path, int startIndex)
 		OutlinePoint& pt = m_outlinePoints.GetAt(path.pointStart + i);
 
 		Vector2 extDir(0, 0);
-		if (!Math::NearEqual(pt.exDirAA.x, 1.0f) && !Math::NearEqual(pt.exDirAA.y, 1.0f))
+		if (std::abs(pt.exDirAA.x) > 0.9f || std::abs(pt.exDirAA.y) > 0.9f)
+		{
+		}
+		else
 		{
 			extDir = pt.exDirAA;
 		}
@@ -717,13 +727,26 @@ void ShapesRendererCore::ExpandAntiAliasStroke(const Path& path, int startIndex)
 		int b = startIndex + i;
 		int e = startAA + i;
 
-		m_indexCache.Add(b + 0);
-		m_indexCache.Add(e + 0);
-		m_indexCache.Add(b + 1);
+		if (path.winding == PathWinding::CCW)
+		{
+			m_indexCache.Add(b + 0);
+			m_indexCache.Add(e + 0);
+			m_indexCache.Add(b + 1);
 
-		m_indexCache.Add(b + 1);
-		m_indexCache.Add(e + 0);
-		m_indexCache.Add(e + 1);
+			m_indexCache.Add(b + 1);
+			m_indexCache.Add(e + 0);
+			m_indexCache.Add(e + 1);
+		}
+		else
+		{
+			m_indexCache.Add(b + 0);
+			m_indexCache.Add(b + 1);
+			m_indexCache.Add(e + 0);
+
+			m_indexCache.Add(b + 1);
+			m_indexCache.Add(e + 1);
+			m_indexCache.Add(e + 0);
+		}
 	}
 }
 
