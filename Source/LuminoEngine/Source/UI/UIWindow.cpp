@@ -112,10 +112,16 @@ void UIWindow::OnRender(DrawingContext* g)
 	//	Color::Gray, 5, 5, false);	// TODO:
 
 	Color c = Color::LightSkyBlue;
+	Color c2 = Color::Gray;
 	c.a = 0.25;
+	c2.a = 0.25;
 	g->DrawBoxBorder(
 		RectF(10, 10, 300, 50), ThicknessF(1, 1, 1, 1), Color::LightSkyBlue, Color::LightSkyBlue, Color::LightSkyBlue, Color::LightSkyBlue, 30, 0, 0, 30,
-		c, 5, 5, true);	// TODO:
+		c, 5, 5, false);	// TODO:
+
+	g->DrawBoxBorder(
+		RectF(10, 70, 300, 50), ThicknessF(8, 2, 8, 8), Color::LightSkyBlue, Color::BlueViolet, Color::Orange, Color::GreenYellow, 30, 0, 0, 30,
+		c2, 5, 5, false);	// TODO:
 
 }
 

@@ -52,30 +52,39 @@ private:
 		Strip3Point,	// これは AA できない。シャドウ用
 	};
 
+	enum class PathWinding
+	{
+		CCW,	// 反時計回り (基本)
+		CW,
+	};
+
 	struct Path
 	{
 		PathType	type;
 		int			pointStart;
 		int			pointCount;
 		Color		color;
+		PathWinding	winding;
 	};
 
 	struct BasePoint
 	{
 		Vector2	pos;
-		Vector2	exDir;	// 押し出し方向 (right-dir)
+		Vector2	exDir;	// 押し出し方向 (right-dir)	※radius=0の場合は 長さ1ではない (√2)
+		bool	enabledAA;
+		bool	exDirect;
 	};
 
 	struct OutlinePoint
 	{
 		Vector2	pos;
-		Vector2	exDir;	// 押し出し方向 (AntiAlias 用)
+		Vector2	exDirAA;	// 押し出し方向 (AntiAlias 用)
 		float	alpha;
 	};
 
 	void ReleaseCommandList(ShapesRendererCommandList* commandList);
 	void RequestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex);
-	Path* AddPath(PathType type, const Color& color);
+	Path* AddPath(PathType type, const Color& color, PathWinding winding = PathWinding::CCW);
 	void EndPath(Path* path);
 	void ExtractBasePoints(ShapesRendererCommandList* commandList);
 	void CalcExtrudedDirection();
@@ -85,6 +94,8 @@ private:
 	void ExpandStrip3PointStroke(const Path& path);
 	void ExpandAntiAliasStroke(const Path& path, int startIndex);
 	void PlotCornerBasePointsBezier(const Vector2& first, const Vector2& firstCpDir, const Vector2& last, const Vector2& lastCpDir, float firstT, float lastT, const Vector2& center);
+	Vector2 GetExtPos(const BasePoint& pt, float borderExtSign, float widht) const { return (pt.exDirect) ? pt.pos + pt.exDir * borderExtSign : pt.pos + pt.exDir * borderExtSign * widht; }
+	Vector2 GetAAExtDir(const BasePoint& pt) const { return (pt.enabledAA) ? pt.exDir : Vector2::Zero; }
 
 	GraphicsManager*			m_manager;
 	Driver::IVertexBuffer*		m_vertexBuffer;
