@@ -5,6 +5,7 @@ set(LN_TEST_SOURCES
 	UnitTest/Test.PCH.cpp
 	UnitTest/Test.PCH.h
 	UnitTest/TestConfig.h
+	UnitTest/Animation/Test_Animation.cpp
 	UnitTest/Base/Test_Base_GeometryStructs.cpp
 	UnitTest/Base/Test_Base_Uuid.cpp
 	UnitTest/Base/Test_Base_Version.cpp

@@ -15,6 +15,7 @@ struct AnimationClockArgs
 	tr::PropertyInfo*	targetProperty;
 };
 
+
 /**
 	@brief		
 */

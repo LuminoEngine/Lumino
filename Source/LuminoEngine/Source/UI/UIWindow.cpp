@@ -95,7 +95,7 @@ void UIWindow::OnLayoutPanelChanged(UILayoutPanel* newPanel)
 	{
 		newPanel->SetStyleSubControlName(_T("UIWindow"), _T("ContentHost"));
 
-		//newPanel->margin = ThicknessF(0, 30, 0, 0);
+		newPanel->margin = ThicknessF(0, 30, 0, 0);
 	}
 
 	UIControl::OnLayoutPanelChanged(newPanel);
@@ -105,33 +105,33 @@ void UIWindow::OnLayoutPanelChanged(UILayoutPanel* newPanel)
 void UIWindow::OnRender(DrawingContext* g)
 {
 	UIControl::OnRender(g);
-	g->SetBlendMode(BlendMode::Alpha);
-	g->SetBrush(Brush::White);
+	//g->SetBlendMode(BlendMode::Alpha);
+	//g->SetBrush(Brush::White);
+	////g->DrawBoxBorder(
+	////	RectF(10, 10, 300, 200), ThicknessF(3, 3, 3, 3), Color::Red, Color::Green, Color::Blue, Color::Cyan, 0, 10, 20, 30,
+	////	Color::Gray, 5, 5, false);	// TODO:
+
+	//Color c = Color::LightSkyBlue;
+	//Color c2 = Color::Gray;
+	//c.a = 0.25;
+	//c2.a = 0.25;
 	//g->DrawBoxBorder(
-	//	RectF(10, 10, 300, 200), ThicknessF(3, 3, 3, 3), Color::Red, Color::Green, Color::Blue, Color::Cyan, 0, 10, 20, 30,
-	//	Color::Gray, 5, 5, false);	// TODO:
+	//	RectF(10, 10, 300, 50), ThicknessF(1, 2, 4, 8),
+	//	Color::LightSkyBlue, Color::LightSkyBlue, Color::LightSkyBlue, Color::LightSkyBlue,
+	//	0, 0, 0, 0, BorderDirection::Inside,
+	//	c, 5, 5, ShadowDirection::Outside);	// TODO:
 
-	Color c = Color::LightSkyBlue;
-	Color c2 = Color::Gray;
-	c.a = 0.25;
-	c2.a = 0.25;
-	g->DrawBoxBorder(
-		RectF(10, 10, 300, 50), ThicknessF(1, 2, 4, 8),
-		Color::LightSkyBlue, Color::LightSkyBlue, Color::LightSkyBlue, Color::LightSkyBlue,
-		0, 0, 0, 0, BorderDirection::Inside,
-		c, 5, 5, ShadowDirection::Outside);	// TODO:
+	//g->DrawBoxBorder(
+	//	RectF(10, 100, 300, 50), ThicknessF(1, 1, 1, 1),
+	//	Color::LawnGreen, Color::LightSkyBlue, Color::Gray, Color::OrangeRed,
+	//	30, 0, 0, 30, BorderDirection::Inside,
+	//	c2, 5, 5, ShadowDirection::Outside);	// TODO:
 
-	g->DrawBoxBorder(
-		RectF(10, 100, 300, 50), ThicknessF(1, 1, 1, 1),
-		Color::LawnGreen, Color::LightSkyBlue, Color::Gray, Color::OrangeRed,
-		30, 0, 0, 30, BorderDirection::Inside,
-		c2, 5, 5, ShadowDirection::Outside);	// TODO:
-
-	g->DrawBoxBorder(
-		RectF(10, 200, 300, 50), ThicknessF(1, 1, 1, 1),
-		Color::OrangeRed, Color::OrangeRed, Color::OrangeRed, Color::OrangeRed,
-		20, 20, 20, 20, BorderDirection::Inside,
-		Color::OrangeRed.WithAlpha(0.25), 5, 5, ShadowDirection::Outside);	// TODO:
+	//g->DrawBoxBorder(
+	//	RectF(10, 200, 300, 50), ThicknessF(1, 1, 1, 1),
+	//	Color::OrangeRed, Color::OrangeRed, Color::OrangeRed, Color::OrangeRed,
+	//	20, 20, 20, 20, BorderDirection::Inside,
+	//	Color::OrangeRed.WithAlpha(0.25), 5, 5, ShadowDirection::Outside);	// TODO:
 
 	//g->DrawBoxBorder(
 	//	RectF(10, 70, 300, 50), ThicknessF(8, 2, 8, 8),
