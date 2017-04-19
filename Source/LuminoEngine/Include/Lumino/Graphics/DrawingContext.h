@@ -4,18 +4,6 @@
 
 LN_NAMESPACE_BEGIN
 
-enum class BorderDirection
-{
-	Inside,
-	Outside,
-};
-
-enum class ShadowDirection
-{
-	Inside,
-	Outside,
-};
-
 namespace detail {
 
 struct BoxBorderData
@@ -56,12 +44,17 @@ public:
 	void DrawTexture(const RectF& destRect, Texture* texture, const RectF& sourceRect);
 
 	void DrawBoxBorder(
+		const RectF& rect, const ThicknessF& thickness, const CornerRadius& cornerRadius,
+		const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor,
+		BorderDirection borderDirection);
+
+	void DrawBoxBorder(
 		const RectF& rect, const ThicknessF& thickness,
 		const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor,
 		float ltRad, float rtRad, float lbRad, float rbRad, BorderDirection borderDirection,
 		const Color& shadowColor, float shadowBlur, float shadowWidth, ShadowDirection shadowDirection);
 
-	void DrawBoxShadow(const RectF& rect, const Color& color, float blur, float width, bool inset);
+	void DrawBoxShadow(const RectF& rect, const CornerRadius& cornerRadius, const Color& color, float blur, float width, ShadowDirection shadowDirection);
 
 LN_CONSTRUCT_ACCESS:
 	DrawingContext();

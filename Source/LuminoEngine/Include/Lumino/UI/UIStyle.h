@@ -97,6 +97,11 @@ public:
 		//}
 	}
 
+	bool Merge(const UIStyleAttribute& source)
+	{
+		return UpdateInherit(source);	// やることは同じ
+	}
+
 	bool HasValue() const { return m_hasValue; }
 
 	T		value;
@@ -183,6 +188,7 @@ LN_INTERNAL_ACCESS:
 	virtual ~UIStylePropertyTable();
 	void Initialize(const StringRef& visualStateName);
 	detail::InvalidateFlags UpdateInherit(UIStylePropertyTable* parent);
+	detail::InvalidateFlags Merge(UIStylePropertyTable* source);
 	void Apply(UIElement* targetElement, bool useTransitionAnimation);
 
 private:
@@ -217,6 +223,15 @@ public:
 	//UIStyleAttribute<int>					m_fontSize;
 	//UIStyleAttribute<bool>					m_fontBold;
 	//UIStyleAttribute<bool>					m_fontItalic;
+
+
+	UIStyleAttribute<ThicknessF>		borderThickness;
+	UIStyleAttribute<CornerRadius>		cornerRadius;
+	UIStyleAttribute<Color>				leftBorderColor;
+	UIStyleAttribute<Color>				topBorderColor;
+	UIStyleAttribute<Color>				rightBorderColor;
+	UIStyleAttribute<Color>				bottomBorderColor;
+	UIStyleAttribute<BorderDirection>	borderDirection;
 };
 
 /**
@@ -263,7 +278,7 @@ LN_INTERNAL_ACCESS:
 			invalidateFlags |= m_baseOn->MergeActiveStylePropertyTables(store, visualStateNames);
 		}
 
-		invalidateFlags |= store->UpdateInherit(m_basePropertyTable);
+		invalidateFlags |= store->Merge(m_basePropertyTable);
 
 		// このあたりの処理で、あとから追加されたスタイルが優先されることになる
 		UIStylePropertyTable* lastActiveStyle = nullptr;
@@ -272,7 +287,7 @@ LN_INTERNAL_ACCESS:
 			const String& name = pair.first;
 			if (visualStateNames.Contains(name))
 			{
-				invalidateFlags |= store->UpdateInherit(pair.second);
+				invalidateFlags |= store->Merge(pair.second);
 			}
 		}
 		return invalidateFlags;

@@ -154,6 +154,7 @@ void UIFrameWindow::Initialize_UIRenderer()
 void UIFrameWindow::Render_UIRenderer()
 {
 	m_drawingContext->BeginMakeElements();
+	m_drawingContext->SetBlendMode(BlendMode::Alpha);
 	OnRenderContents();
 	UILayoutView::Render(m_drawingContext);
 }

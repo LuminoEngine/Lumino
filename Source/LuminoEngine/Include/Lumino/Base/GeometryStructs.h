@@ -456,6 +456,9 @@ public:
 
 	/** 各要素の値を指定して初期化します。 */
 	CornerRadius(float topLeft, float topRight, float bottomRight, float bottomLeft);
+
+	bool operator == (const CornerRadius& rhs) const { return topLeft == rhs.topLeft && topRight == rhs.topRight && bottomRight == rhs.bottomRight && bottomLeft == rhs.bottomLeft; }
+	bool operator != (const CornerRadius& rhs) const { return !operator==(rhs); }
 };
 
 namespace detail

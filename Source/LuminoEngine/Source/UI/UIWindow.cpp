@@ -106,20 +106,28 @@ void UIWindow::OnRender(DrawingContext* g)
 {
 	UIControl::OnRender(g);
 	//g->SetBlendMode(BlendMode::Alpha);
-	//g->SetBrush(Brush::White);
-	////g->DrawBoxBorder(
-	////	RectF(10, 10, 300, 200), ThicknessF(3, 3, 3, 3), Color::Red, Color::Green, Color::Blue, Color::Cyan, 0, 10, 20, 30,
-	////	Color::Gray, 5, 5, false);	// TODO:
+	////g->SetBrush(Brush::White);
+	//////g->DrawBoxBorder(
+	//////	RectF(10, 10, 300, 200), ThicknessF(3, 3, 3, 3), Color::Red, Color::Green, Color::Blue, Color::Cyan, 0, 10, 20, 30,
+	//////	Color::Gray, 5, 5, false);	// TODO:
 
-	//Color c = Color::LightSkyBlue;
-	//Color c2 = Color::Gray;
-	//c.a = 0.25;
-	//c2.a = 0.25;
+	////Color c = Color::LightSkyBlue;
+	////Color c2 = Color::Gray;
+	////c.a = 0.25;
+	////c2.a = 0.25;
 	//g->DrawBoxBorder(
-	//	RectF(10, 10, 300, 50), ThicknessF(1, 2, 4, 8),
+	//	RectF(10, 10, 200, 50), ThicknessF(1, 2, 4, 8), CornerRadius(0, 0, 0, 0),
 	//	Color::LightSkyBlue, Color::LightSkyBlue, Color::LightSkyBlue, Color::LightSkyBlue,
-	//	0, 0, 0, 0, BorderDirection::Inside,
-	//	c, 5, 5, ShadowDirection::Outside);	// TODO:
+	//	BorderDirection::Outside);	// TODO:
+	//g->DrawBoxBorder(
+	//	RectF(250, 10, 200, 50), ThicknessF(1, 1, 1, 1), CornerRadius(10, 0, 10, 20),
+	//	Color::LightSkyBlue, Color::LightSkyBlue, Color::LightSkyBlue, Color::LightSkyBlue,
+	//	BorderDirection::Outside);	// TODO:
+
+	//g->DrawBoxShadow(
+	//	RectF(10, 100, 200, 50), CornerRadius(0, 20, 0, 0),
+	//	Color::LightSkyBlue, 5, 5,
+	//	ShadowDirection::Outside);	// TODO:
 
 	//g->DrawBoxBorder(
 	//	RectF(10, 100, 300, 50), ThicknessF(1, 1, 1, 1),

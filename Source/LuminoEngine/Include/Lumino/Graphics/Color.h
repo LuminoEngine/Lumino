@@ -445,6 +445,9 @@ public:
 
 	//ColorF& operator = (const LVector4& vec) { r = vec.X; g = vec.Y; b = vec.Z; a = vec.W; return *this; }
 
+	bool operator == (const Color& color) const { return r == color.r && g == color.g && b == color.b && a == color.a; }
+	bool operator != (const Color& color) const { return !operator==(color); }
+
 	operator const Vector4&() { return *reinterpret_cast<Vector4*>(this); }
 	operator const Vector4&() const { return *reinterpret_cast<const Vector4*>(this); }
 };

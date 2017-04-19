@@ -48,9 +48,6 @@ void UIStylePropertyTable::Initialize(const StringRef& visualStateName)
 detail::InvalidateFlags UIStylePropertyTable::UpdateInherit(UIStylePropertyTable* parent)
 {
 	bool changed = false;
-	changed |= width.UpdateInherit(parent->width);
-	changed |= height.UpdateInherit(parent->height);
-	changed |= background.UpdateInherit(parent->background);
 
 	//// parent が持っている値のうち、同じ targetProperty のものを探す。そんなに数は多くないはずなので線形探索。
 	//for (UIStyleAttribute& parentAttr : parent->m_attributes)
@@ -80,6 +77,31 @@ detail::InvalidateFlags UIStylePropertyTable::UpdateInherit(UIStylePropertyTable
 	//}
 
 	return (changed) ? detail::InvalidateFlags::All : detail::InvalidateFlags::None;
+}
+
+//------------------------------------------------------------------------------
+detail::InvalidateFlags UIStylePropertyTable::Merge(UIStylePropertyTable* source)
+{
+	detail::InvalidateFlags flags = detail::InvalidateFlags::None;
+	{
+		bool changed = false;
+		changed |= width.UpdateInherit(source->width);
+		changed |= height.UpdateInherit(source->height);
+		if (changed) flags |= detail::InvalidateFlags::Layout;
+	}
+	{
+		bool changed = false;
+		changed |= background.UpdateInherit(source->background);
+		changed |= borderThickness.Merge(source->borderThickness);
+		changed |= cornerRadius.Merge(source->cornerRadius);
+		changed |= leftBorderColor.Merge(source->leftBorderColor);
+		changed |= topBorderColor.Merge(source->topBorderColor);
+		changed |= rightBorderColor.Merge(source->rightBorderColor);
+		changed |= bottomBorderColor.Merge(source->bottomBorderColor);
+		changed |= borderDirection.Merge(source->borderDirection);
+		if (changed) flags |= detail::InvalidateFlags::Rendering;
+	}
+	return flags;
 }
 
 //------------------------------------------------------------------------------

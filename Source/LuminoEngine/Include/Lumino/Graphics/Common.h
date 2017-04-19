@@ -363,6 +363,18 @@ enum class BuiltinShader
 	LegacyDiffuse,		// Lambert Shading
 };
 
+enum class BorderDirection
+{
+	Inside,
+	Outside,
+};
+
+enum class ShadowDirection
+{
+	Inside,
+	Outside,
+};
+
 namespace Driver
 {
 	class IGraphicsDevice;
