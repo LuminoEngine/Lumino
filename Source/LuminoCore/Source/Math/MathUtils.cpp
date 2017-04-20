@@ -13,6 +13,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 const float Math::NaN		= std::numeric_limits<float>::quiet_NaN();
+const float Math::Inf		= std::numeric_limits<float>::infinity();
 const float Math::PI		= 3.1415926535897932384626433832795f;
 const float Math::PI2		= 6.283185307f;
 const float Math::PIDiv2	= 1.570796327f;

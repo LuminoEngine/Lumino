@@ -66,7 +66,7 @@ LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIEventArgs, LostFocusEvent, "LostFocus", L
 UIElement::UIElement()
 	: m_manager(nullptr)
 	, m_minSize(0, 0)
-	, m_maxSize(INFINITY, INFINITY)
+	, m_maxSize(Math::Inf, Math::Inf)
 	, m_logicalParent(nullptr)
 	, m_localStyle(nullptr)
 	, m_currentVisualStateStyle(nullptr)
@@ -228,7 +228,7 @@ void UIElement::ArrangeLayout(const RectF& finalLocalRect)
 		detail::LayoutHelper::AdjustHorizontalAlignment(finalLocalRect.GetSize(), ds, true, *parentHAlign, &alignd);
 		alignd.x += finalLocalRect.x;
 	}
-	if (parentHAlign != nullptr)
+	if (parentVAlign != nullptr)
 	{
 		detail::LayoutHelper::AdjustVerticalAlignment(finalLocalRect.GetSize(), ds, true, *parentVAlign, &alignd);
 		alignd.y += finalLocalRect.y;
@@ -260,7 +260,7 @@ void UIElement::OnLayoutUpdated()
 //------------------------------------------------------------------------------
 void UIElement::OnRender(DrawingContext* g)
 {
-	g->SetBlendMode(BlendMode::Alpha);
+	//g->SetBlendMode(BlendMode::Alpha);
 
 	if (background.Get() != nullptr)
 	{
@@ -275,7 +275,15 @@ void UIElement::OnRender(DrawingContext* g)
 		g->DrawRectangle(RectF(0, 0, m_finalLocalRect.GetSize()));
 	}
 
-	g->SetBlendMode(BlendMode::Normal);	// TODO: old
+	g->DrawBoxBorder(
+		RectF(0, 0, m_finalGlobalRect.GetSize()), ThicknessF(1, 1, 1, 1), CornerRadius(),
+		Color::Gray, Color::Gray, Color::Gray, Color::Gray,
+		BorderDirection::Inside);
+	//g->DrawBoxBorder(
+	//	RectF(10, 10, 200, 50), ThicknessF(1, 2, 4, 8), CornerRadius(0, 0, 0, 0),
+	//	Color::LightSkyBlue, Color::LightSkyBlue, Color::LightSkyBlue, Color::LightSkyBlue,
+	//	BorderDirection::Inside);	// TODO:
+	//g->SetBlendMode(BlendMode::Normal);	// TODO: old
 
 }
 
@@ -648,6 +656,8 @@ void UIElement::Render(DrawingContext* g)
 	Matrix mat;
 	mat.Translate(m_finalGlobalRect.x, m_finalGlobalRect.y, 0);
 	g->SetTransform(mat);
+
+
 
 	//g->DrawBoxBorder(RectF(50, 50, 300, 200), ThicknessF(10, 10, 10, 10), Color::Red, Color::Green, Color::Blue, Color::Cyan, 10, 10, 10, 10);	// TODO:
 	//g->DrawBoxShadow(RectF(10, 20, 300, 400), Color::Black, 5, 5, false);

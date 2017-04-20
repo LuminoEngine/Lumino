@@ -14,6 +14,8 @@
 LN_NAMESPACE_BEGIN
 namespace detail {
 
+static const int g_finalOffset = 0;
+
 //==============================================================================
 // ShapesRendererCommandList
 //==============================================================================
@@ -268,13 +270,13 @@ void ShapesRendererCore::ExtractBasePoints(ShapesRendererCommandList* commandLis
 					if (borderInset)
 					{
 						// left-dir
-						for (int i = component.lastPoint; i >= component.firstPoint; i--)
+						for (int i = component.firstPoint; i <= component.lastPoint; i++)
 						{
 							BasePoint& pt = m_basePoints.GetAt(i);
 							m_outlinePoints.Add({ pt.pos, GetAAExtDir(pt), 1.0f });
 						}
 						// right-dir
-						for (int i = component.firstPoint; i <= component.lastPoint; i++)
+						for (int i = component.lastPoint; i >= component.firstPoint; i--)
 						{
 							BasePoint& pt = m_basePoints.GetAt(i);
 							m_outlinePoints.Add({ GetExtPos(pt, -1.0f, intos[iInfo].width), -GetAAExtDir(pt), 1.0f });
@@ -807,7 +809,7 @@ void ShapesRendererCore::ExpandVertices(const Path& path)
 	{
 		const OutlinePoint& pt = m_outlinePoints.GetAt(path.pointStart + i);
 		Vertex v;
-		v.position = Vector3(pt.pos  + 0.5f, 0);
+		v.position = Vector3(pt.pos + g_finalOffset, 0);
 		v.color = path.color;
 		v.color.a *= pt.alpha;
 		m_vertexCache.Add(v);
@@ -1002,10 +1004,10 @@ void ShapesRendererCore::ExpandAntiAliasStroke(const Path& path, int startIndex)
 
 		pt.pos -= extDir * ext;
 
-		m_vertexCache.GetAt(startIndex + i).position = Vector3(pt.pos + 0.5f, 0);
+		m_vertexCache.GetAt(startIndex + i).position = Vector3(pt.pos + g_finalOffset, 0);
 
 		Vertex v;
-		v.position = Vector3(pt.pos + extDir * extAA + 0.5f, 0);
+		v.position = Vector3(pt.pos + extDir * extAA + g_finalOffset, 0);
 		v.color = path.color;
 		v.color.a = 0;
 		m_vertexCache.Add(v);

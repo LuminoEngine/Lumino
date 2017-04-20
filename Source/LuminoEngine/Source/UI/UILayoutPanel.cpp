@@ -192,19 +192,23 @@ void UIAbsoluteLayout::Initialize()
 //------------------------------------------------------------------------------
 Size UIAbsoluteLayout::MeasureOverride(const Size& constraint)
 {
-	return UILayoutPanel::MeasureOverride(constraint);
+	//return UILayoutPanel::MeasureOverride(constraint);
+	
 	// LayoutPanel ではなく、UIElement の MeasureOverride を実施 (this のサイズを測る)
-	//Size size = UIElement::MeasureOverride(constraint);
+	Size size = UIElement::MeasureOverride(constraint);
 
-	//Size childMaxSize(0, 0);
-	//for (UIElement* child : *GetChildren())
-	//{
-	//	const Size& desiredSize = child->GetDesiredSize();
-	//	const PointF& pos = child->GetPositionInternal();
+	Size childMaxSize(0, 0);
+	for (UIElement* child : *GetChildren())
+	{
+		child->MeasureLayout(constraint);
+		const Size& desiredSize = child->GetDesiredSize();
+		const PointF& pos = child->GetPositionInternal();
 
-	//	childMaxSize.width  = std::max(childMaxSize.width,  pos.x + desiredSize.width);
-	//	childMaxSize.height = std::max(childMaxSize.height, pos.y + desiredSize.height);
-	//}
+		childMaxSize.width  = std::max(childMaxSize.width,  pos.x + desiredSize.width);
+		childMaxSize.height = std::max(childMaxSize.height, pos.y + desiredSize.height);
+	}
+
+	return Size::Max(size, childMaxSize);
 
 	//if (Math::IsNaN(size.width)) size.width = 
 

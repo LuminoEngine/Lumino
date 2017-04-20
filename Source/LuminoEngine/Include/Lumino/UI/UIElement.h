@@ -142,6 +142,15 @@ public:
 	tr::Property<BrushPtr>				decoratorBackground;
 	tr::Property<float>					decoratorOpacity;
 
+	// Border
+	//tr::Property<ThicknessF>			borderThickness;
+	//tr::Property<CornerRadius>			cornerRadius;
+	//tr::Property<Color>					leftBorderColor;
+	//tr::Property<Color>					topBorderColor;
+	//tr::Property<Color>					rightBorderColor;
+	//tr::Property<Color>					bottomBorderColor;
+	//tr::Property<BorderDirection>		borderDirection;
+
 	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseEnterEvent);				/**< MouseEnter ルーティングイベントの識別子 */
 	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseLeaveEvent);				/**< MouseLeave ルーティングイベントの識別子 */
 	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseMoveEvent);				/**< MouseMove ルーティングイベントの識別子 */
