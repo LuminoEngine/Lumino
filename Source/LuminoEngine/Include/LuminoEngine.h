@@ -63,6 +63,7 @@
 #include "Lumino/UI/UITextBlock.h"
 #include "Lumino/UI/UITextBox.h"
 #include "Lumino/UI/UIButton.h"
+#include "Lumino/UI/UIListBox.h"
 #include "Lumino/UI/UIComboBox.h"
 #include "Lumino/UI/UITreeView.h"
 

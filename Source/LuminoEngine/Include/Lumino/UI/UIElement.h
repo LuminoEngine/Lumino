@@ -187,6 +187,14 @@ public:
 	void SetSize(const Size& value) { SetWidth(value.width); SetHeight(value.height); }
 	Size GetSize() const { return Size(width, height); }
 
+	void SetMinWidth(float value) { m_minSize.width = value; }
+
+	void SetMinHeight(float value) { m_minSize.height = value; }
+
+	void SetMaxWidth(float value) { m_maxSize.width = value; }
+
+	void SetMaxHeight(float value) { m_maxSize.height = value; }
+
 	void SetAnchor(AlignmentAnchor value) { tr::PropertyInfo::SetPropertyValueDirect<AlignmentAnchor>(this, anchorId, value); }
 	AlignmentAnchor GetAnchor() const { return tr::PropertyInfo::GetPropertyValueDirect<AlignmentAnchor>(this, anchorId); }
 
@@ -386,6 +394,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual AlignmentAnchor GetLayoutAnchor() const override;
 	virtual HAlignment GetLayoutHAlignment() const override;
 	virtual VAlignment GetLayoutVAlignment() const override;
+	virtual void GetLayoutMinMaxInfo(Size* outMin, Size* outMax) const override;
 	virtual ILayoutElement* GetLayoutParent() const override;
 	virtual const HAlignment* GetLayoutContentHAlignment() override;
 	virtual const VAlignment* GetLayoutContentVAlignment() override;
@@ -405,6 +414,8 @@ private:
 	detail::UIManager*		m_manager;
 	//UILayoutView*			m_ownerLayoutView;
 	String					m_keyName;
+	Size					m_minSize;
+	Size					m_maxSize;
 	UIElement*				m_logicalParent;
 	UIStylePropertyTable*	m_localStyle;			// 内部的に使用されるスタイル。親や VisualState から取得したスタイルをマージしたもの。
 	Size					m_desiredSize;			// MeasureLayout() で決定されるこのコントロールの要求サイズ

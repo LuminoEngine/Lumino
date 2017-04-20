@@ -4,8 +4,6 @@
 #include "UIContentControl.h"
 
 LN_NAMESPACE_BEGIN
-namespace tr
-{
 class UIListBoxItem;
 class UIListBox;
 using UIListBoxItemPtr = RefPtr<UIListBoxItem>;
@@ -18,7 +16,7 @@ using UIListBoxPtr = RefPtr<UIListBox>;
 				ÇªÇÍÇºÇÍÇÃ Item ÇÃèÛë‘ÇçXêVÇ∑ÇÈÅB
 */
 class UIListBoxItem
-	: public UIContentControl
+	: public UIControl
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:
@@ -54,5 +52,4 @@ LN_PROTECTED_INTERNAL_ACCESS:
 private:
 };
 
-} // namespace tr
 LN_NAMESPACE_END

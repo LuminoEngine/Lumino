@@ -195,6 +195,13 @@ Size LayoutHelper::MeasureElement(ILayoutElement* element, const Size& constrain
 	desiredSize.width = std::min(desiredSize.width, constraint.width);
 	desiredSize.height = std::min(desiredSize.height, constraint.height);
 
+	Size minSize, maxSize;
+	element->GetLayoutMinMaxInfo(&minSize, &maxSize);
+	if (!Math::IsNaNOrInf(minSize.width)) desiredSize.width = std::max(desiredSize.width, minSize.width);
+	if (!Math::IsNaNOrInf(minSize.height)) desiredSize.height = std::max(desiredSize.height, minSize.height);
+	if (!Math::IsNaNOrInf(maxSize.width)) desiredSize.width = std::min(desiredSize.width, maxSize.width);
+	if (!Math::IsNaNOrInf(maxSize.height)) desiredSize.height = std::min(desiredSize.height, maxSize.height);
+
 	return desiredSize;
 }
 

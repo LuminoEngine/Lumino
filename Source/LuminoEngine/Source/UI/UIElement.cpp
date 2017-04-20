@@ -65,6 +65,8 @@ LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIEventArgs, LostFocusEvent, "LostFocus", L
 //------------------------------------------------------------------------------
 UIElement::UIElement()
 	: m_manager(nullptr)
+	, m_minSize(0, 0)
+	, m_maxSize(INFINITY, INFINITY)
 	, m_logicalParent(nullptr)
 	, m_localStyle(nullptr)
 	, m_currentVisualStateStyle(nullptr)
@@ -730,6 +732,7 @@ const ThicknessF& UIElement::GetLayoutPadding() const { return padding; }
 AlignmentAnchor UIElement::GetLayoutAnchor() const { return anchor; }
 HAlignment UIElement::GetLayoutHAlignment() const { return hAlignment; }
 VAlignment UIElement::GetLayoutVAlignment() const { return vAlignment; }
+void UIElement::GetLayoutMinMaxInfo(Size* outMin, Size* outMax) const { *outMin = m_minSize; *outMax = m_maxSize; }
 ILayoutElement* UIElement::GetLayoutParent() const { return m_visualParent; }
 const HAlignment* UIElement::GetLayoutContentHAlignment() { return GetPriorityContentHAlignment(); }
 const VAlignment* UIElement::GetLayoutContentVAlignment() { return GetPriorityContentVAlignment(); }

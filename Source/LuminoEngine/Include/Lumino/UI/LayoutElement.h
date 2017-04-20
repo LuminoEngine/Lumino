@@ -34,6 +34,7 @@ protected:
 	virtual AlignmentAnchor GetLayoutAnchor() const = 0;
 	virtual HAlignment GetLayoutHAlignment() const = 0;
 	virtual VAlignment GetLayoutVAlignment() const = 0;
+	virtual void GetLayoutMinMaxInfo(Size* outMin, Size* outMax) const = 0;
 	virtual ILayoutElement* GetLayoutParent() const = 0;
 	virtual const HAlignment* GetLayoutContentHAlignment() = 0;
 	virtual const VAlignment* GetLayoutContentVAlignment() = 0;

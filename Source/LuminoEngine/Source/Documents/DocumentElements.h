@@ -108,6 +108,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual AlignmentAnchor GetLayoutAnchor() const override;
 	virtual HAlignment GetLayoutHAlignment() const override;
 	virtual VAlignment GetLayoutVAlignment() const override;
+	virtual void GetLayoutMinMaxInfo(Size* outMin, Size* outMax) const override;
 	virtual ILayoutElement* GetLayoutParent() const override;
 	virtual const HAlignment* GetLayoutContentHAlignment() override;
 	virtual const VAlignment* GetLayoutContentVAlignment() override;

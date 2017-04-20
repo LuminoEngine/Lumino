@@ -193,13 +193,51 @@ void UIAbsoluteLayout::Initialize()
 Size UIAbsoluteLayout::MeasureOverride(const Size& constraint)
 {
 	return UILayoutPanel::MeasureOverride(constraint);
+	// LayoutPanel ではなく、UIElement の MeasureOverride を実施 (this のサイズを測る)
+	//Size size = UIElement::MeasureOverride(constraint);
+
+	//Size childMaxSize(0, 0);
+	//for (UIElement* child : *GetChildren())
+	//{
+	//	const Size& desiredSize = child->GetDesiredSize();
+	//	const PointF& pos = child->GetPositionInternal();
+
+	//	childMaxSize.width  = std::max(childMaxSize.width,  pos.x + desiredSize.width);
+	//	childMaxSize.height = std::max(childMaxSize.height, pos.y + desiredSize.height);
+	//}
+
+	//if (Math::IsNaN(size.width)) size.width = 
+
+	//Size desiredSize = baseCallback(static_cast<TPanel*>(panel), constraint);
+	//int childCount = panel->GetLayoutChildrenCount();
+	//for (int i = 0; i < childCount; i++)
+	//{
+	//	ILayoutElement* child = panel->GetLayoutChild(i);
+	//	PointF pos = child->GetPositionInternal();
+
+	//	child->MeasureLayout(constraint);
+	//	const Size& childDesiredSize = child->GetLayoutDesiredSize();
+
+	//	desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
+	//	desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
+	//}
+	//return desiredSize;
+
+
+	//Size size = UILayoutPanel::MeasureOverride(constraint);
+	//
+	//for (UIElement* child : *GetChildren())
+	//{
+
+	//}
+
+	//return size;
 }
 
 //------------------------------------------------------------------------------
 Size UIAbsoluteLayout::ArrangeOverride(const Size& finalSize)
 {
 	//ThicknessF canvas;
-	
 	
 	for (UIElement* child : *GetChildren())
 	{

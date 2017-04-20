@@ -19,21 +19,32 @@ void UIControlsGallery()
 
 	auto* mainWindow = Engine::GetMainWindow();
 
-	auto win1 = UIWindow::Create();
-	win1->SetWidth(200);
-	win1->SetHeight(100);
-	//win1->SetBackground(Brush::DimGray);
-	mainWindow->AddChild(win1);
+
+	auto listBox1 = UIListBox::Create();
+	mainWindow->AddChild(listBox1);
+
+	listBox1->AddTextItem(_T("スプライト"));
+	listBox1->AddTextItem(_T("UI"));
+
+	//auto grid1 = UIGridLayout::Create(1, 1);
+	//win1->AddChild(grid1);
 
 
-	auto grid1 = UIGridLayout::Create(1, 1);
-	win1->AddChild(grid1);
-	auto stack1 = UIStackPanel::Create();
-	grid1->AddChild(stack1);
+	//auto win1 = UIWindow::Create();
+	//win1->SetWidth(200);
+	//win1->SetHeight(100);
+	////win1->SetBackground(Brush::DimGray);
+	//mainWindow->AddChild(win1);
 
-	auto text1 = UITextBlock::Create();
-	text1->SetText(_T("text"));
-	stack1->AddChild(text1);
+
+	//auto grid1 = UIGridLayout::Create(1, 1);
+	//win1->AddChild(grid1);
+	//auto stack1 = UIStackPanel::Create();
+	//grid1->AddChild(stack1);
+
+	//auto text1 = UITextBlock::Create();
+	//text1->SetText(_T("text"));
+	//stack1->AddChild(text1);
 
 #if 0
 	auto font = Font::GetDefault();

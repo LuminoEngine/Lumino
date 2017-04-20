@@ -6,13 +6,11 @@
 #include "UIManager.h"
 
 LN_NAMESPACE_BEGIN
-namespace tr
-{
 
 //==============================================================================
 // UIListBoxItem
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIListBoxItem, UIContentControl)
+LN_UI_TYPEINFO_IMPLEMENT(UIListBoxItem, UIControl)
 
 //------------------------------------------------------------------------------
 UIListBoxItem::UIListBoxItem()
@@ -27,10 +25,13 @@ UIListBoxItem::~UIListBoxItem()
 //------------------------------------------------------------------------------
 void UIListBoxItem::Initialize()
 {
-	UIContentControl::Initialize();
+	UIControl::Initialize();
 	SetHContentAlignment(HAlignment::Left);
 	SetHAlignment(HAlignment::Stretch);
 	GoToVisualState(UIVisualStates::NormalState);
+
+	// TODO:
+	SetMinHeight(16);
 }
 
 //==============================================================================
@@ -89,10 +90,9 @@ UIListBoxItemPtr UIListBox::AddItem(UIElement* item)
 	// 受け取った item を UIListBoxItem でラップして、UIListBoxItem をリストに入れる
 	auto listItem = RefPtr<UIListBoxItem>::MakeRef();
 	listItem->Initialize();
-	listItem->SetContent(item);
-	GetItems()->Add(listItem);
+	listItem->AddChild(item);
+	AddChild(listItem);
 	return listItem;
 }
 
-} // namespace tr
 LN_NAMESPACE_END
