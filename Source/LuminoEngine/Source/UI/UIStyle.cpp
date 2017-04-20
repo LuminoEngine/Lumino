@@ -92,13 +92,13 @@ detail::InvalidateFlags UIStylePropertyTable::Merge(UIStylePropertyTable* source
 	{
 		bool changed = false;
 		changed |= background.UpdateInherit(source->background);
-		changed |= borderThickness.Merge(source->borderThickness);
-		changed |= cornerRadius.Merge(source->cornerRadius);
-		changed |= leftBorderColor.Merge(source->leftBorderColor);
-		changed |= topBorderColor.Merge(source->topBorderColor);
-		changed |= rightBorderColor.Merge(source->rightBorderColor);
-		changed |= bottomBorderColor.Merge(source->bottomBorderColor);
-		changed |= borderDirection.Merge(source->borderDirection);
+		changed |= borderThickness.Inherit(source->borderThickness);
+		changed |= cornerRadius.Inherit(source->cornerRadius);
+		changed |= leftBorderColor.Inherit(source->leftBorderColor);
+		changed |= topBorderColor.Inherit(source->topBorderColor);
+		changed |= rightBorderColor.Inherit(source->rightBorderColor);
+		changed |= bottomBorderColor.Inherit(source->bottomBorderColor);
+		changed |= borderDirection.Inherit(source->borderDirection);
 		if (changed) flags |= detail::InvalidateFlags::Rendering;
 	}
 	return flags;

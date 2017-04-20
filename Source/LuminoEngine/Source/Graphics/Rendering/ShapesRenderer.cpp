@@ -14,7 +14,7 @@
 LN_NAMESPACE_BEGIN
 namespace detail {
 
-static const int g_finalOffset = 0;
+static const int g_finalOffset = 0.0;
 
 //==============================================================================
 // ShapesRendererCommandList
@@ -269,13 +269,13 @@ void ShapesRendererCore::ExtractBasePoints(ShapesRendererCommandList* commandLis
 
 					if (borderInset)
 					{
-						// left-dir
+						// right-dir
 						for (int i = component.firstPoint; i <= component.lastPoint; i++)
 						{
 							BasePoint& pt = m_basePoints.GetAt(i);
 							m_outlinePoints.Add({ pt.pos, GetAAExtDir(pt), 1.0f });
 						}
-						// right-dir
+						// left-dir
 						for (int i = component.lastPoint; i >= component.firstPoint; i--)
 						{
 							BasePoint& pt = m_basePoints.GetAt(i);
@@ -959,7 +959,6 @@ void ShapesRendererCore::ExpandStrip3PointStroke(const Path& path)
 //------------------------------------------------------------------------------
 void ShapesRendererCore::ExpandAntiAliasStroke(const Path& path, int startIndex)
 {
-	//return;
 	const float ext = 0.25f;
 	const float extAA = 0.5f;
 

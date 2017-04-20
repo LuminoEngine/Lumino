@@ -154,6 +154,7 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 	//	table->AddStyle(tr::TypeInfo::GetTypeInfo<UITextBlock>(), test);
 	//}
 
+	auto containerBackground = SolidColorBrush::Create(Color::White, 0.3);
 
 	auto boarderNormalBrush = TextureBrush::Create(m_defaultSkinTexture);
 	boarderNormalBrush->SetSourceRect(0, 32, 32, 32);
@@ -325,6 +326,17 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 		{
 			auto* props = style->GetPropertyTable();
 			props->background = nullptr;
+		}
+	}
+	// UIListBox
+	{
+		auto* style = table->GetStyle(_T("UIListBox"));
+		// base
+		{
+			auto* props = style->GetPropertyTable();
+			//props->background = RefPtr<Brush>::StaticCast(containerBackground);
+			//props->background = RefPtr<Brush>::StaticCast(boarderNormalBrush);
+			props->borderThickness = ThicknessF(100);
 		}
 	}
 

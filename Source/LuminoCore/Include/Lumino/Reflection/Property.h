@@ -414,6 +414,22 @@ LN_INTERNAL_ACCESS:
 			Hash::CalcHash(reinterpret_cast<const char*>(&m_valueSource), sizeof(m_valueSource));
 	}
 
+	bool Inherit(const Property& parent)
+	{
+		if (m_valueSource <= PropertySetSource::ByInherit)
+		{
+			bool changed = false;
+			if (m_value != parent.m_value)
+			{
+				m_value = parent.m_value;
+				changed = true;
+			}
+			m_valueSource = PropertySetSource::ByInherit;
+			return changed;
+		}
+		return false;
+	}
+
 private:
 	LN_DISALLOW_COPY_AND_ASSIGN(Property);
 

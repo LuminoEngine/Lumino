@@ -401,7 +401,10 @@ public:
 		@brief	すべての要素を 0 で初期化します。
 	*/
 	ThicknessF() { Set(0, 0, 0, 0); }
-	
+
+	/** すべての要素を uniformLength で初期化します。 */
+	ThicknessF(float uniformLength) { Set(uniformLength, uniformLength, uniformLength, uniformLength); }
+
 	/**
 		@brief	左右共通の幅及び上下共通の幅を指定して初期化します。
 	*/
@@ -418,6 +421,9 @@ public:
 		@brief	各要素を設定します。
 	*/
 	void Set(float left, float top, float right, float bottom) { Left = left; Top = top; Right = right; Bottom = bottom; }
+
+	/** 要素がすべて 0 かを判定します。*/
+	bool IsZero() const { return (Left == 0 && Top == 0 && Right == 0 && Bottom == 0); }
 
 	void ToArray(float* buf) const { buf[0] = Left; buf[1] = Top; buf[2] = Right; buf[3] = Bottom; }
 	static ThicknessF FromArray(const float* buf) { return ThicknessF(buf[0], buf[1], buf[2], buf[3]); }

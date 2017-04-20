@@ -80,6 +80,46 @@ void Brush::GetRawData(detail::BrushRawData* outData) const
 }
 
 //==============================================================================
+// SolidColorBrush
+//==============================================================================
+
+//------------------------------------------------------------------------------
+RefPtr<SolidColorBrush> SolidColorBrush::Create(const Color& color)
+{
+	return NewObject<SolidColorBrush>(color);
+}
+
+//------------------------------------------------------------------------------
+RefPtr<SolidColorBrush> SolidColorBrush::Create(const Color& rgb, float a)
+{
+	return NewObject<SolidColorBrush>(rgb, a);
+}
+
+//------------------------------------------------------------------------------
+SolidColorBrush::SolidColorBrush()
+{
+}
+
+//------------------------------------------------------------------------------
+SolidColorBrush::~SolidColorBrush()
+{
+}
+
+//------------------------------------------------------------------------------
+void SolidColorBrush::Initialize(const Color& color)
+{
+	Brush::Initialize();
+	SetColor(color);
+}
+
+//------------------------------------------------------------------------------
+void SolidColorBrush::Initialize(const Color& rgb, float a)
+{
+	Brush::Initialize();
+	SetColor(rgb.WithAlpha(a));
+}
+
+//==============================================================================
 // TextureBrush
 //==============================================================================
 

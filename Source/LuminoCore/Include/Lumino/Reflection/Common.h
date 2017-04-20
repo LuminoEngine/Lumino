@@ -17,7 +17,7 @@ struct PropertyInstanceData;
 enum class PropertySetSource
 {
 	Default = 0,
-	ByStyle = 1,
+	ByInherit = 1,
 	ByLocal = 2,
 	ByAnimation = 3,
 };

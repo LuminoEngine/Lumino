@@ -21,6 +21,7 @@ void UIControlsGallery()
 
 
 	auto listBox1 = UIListBox::Create();
+	listBox1->SetWidth(200);
 	mainWindow->AddChild(listBox1);
 
 	listBox1->AddTextItem(_T("スプライト"));

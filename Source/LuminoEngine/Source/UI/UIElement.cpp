@@ -275,10 +275,14 @@ void UIElement::OnRender(DrawingContext* g)
 		g->DrawRectangle(RectF(0, 0, m_finalLocalRect.GetSize()));
 	}
 
-	g->DrawBoxBorder(
-		RectF(0, 0, m_finalGlobalRect.GetSize()), ThicknessF(1, 1, 1, 1), CornerRadius(),
-		Color::Gray, Color::Gray, Color::Gray, Color::Gray,
-		BorderDirection::Inside);
+	if (!m_localStyle->borderThickness.Get().IsZero())
+	{
+		g->DrawBoxBorder(
+			RectF(0, 0, m_finalGlobalRect.GetSize()), m_localStyle->borderThickness.Get(), CornerRadius(),
+			Color::Gray, Color::Gray, Color::Gray, Color::Gray,
+			BorderDirection::Outside);
+	}
+
 	//g->DrawBoxBorder(
 	//	RectF(10, 10, 200, 50), ThicknessF(1, 2, 4, 8), CornerRadius(0, 0, 0, 0),
 	//	Color::LightSkyBlue, Color::LightSkyBlue, Color::LightSkyBlue, Color::LightSkyBlue,

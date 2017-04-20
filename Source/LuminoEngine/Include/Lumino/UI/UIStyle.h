@@ -224,14 +224,14 @@ public:
 	//UIStyleAttribute<bool>					m_fontBold;
 	//UIStyleAttribute<bool>					m_fontItalic;
 
-
-	UIStyleAttribute<ThicknessF>		borderThickness;
-	UIStyleAttribute<CornerRadius>		cornerRadius;
-	UIStyleAttribute<Color>				leftBorderColor;
-	UIStyleAttribute<Color>				topBorderColor;
-	UIStyleAttribute<Color>				rightBorderColor;
-	UIStyleAttribute<Color>				bottomBorderColor;
-	UIStyleAttribute<BorderDirection>	borderDirection;
+	// TODO: Property はちょっとサイズ大きいので、SimpleProperty とか変更通知持たないのを作りたい
+	tr::Property<ThicknessF>		borderThickness;
+	tr::Property<CornerRadius>		cornerRadius;
+	tr::Property<Color>				leftBorderColor;
+	tr::Property<Color>				topBorderColor;
+	tr::Property<Color>				rightBorderColor;
+	tr::Property<Color>				bottomBorderColor;
+	tr::Property<BorderDirection>	borderDirection;
 };
 
 /**

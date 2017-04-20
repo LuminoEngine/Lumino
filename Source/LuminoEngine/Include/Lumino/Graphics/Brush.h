@@ -102,6 +102,23 @@ private:
 };
 
 /**
+	@brief		図形を純色で塗りつぶすためのブラシです。
+*/
+class SolidColorBrush
+	: public Brush
+{
+public:
+	static RefPtr<SolidColorBrush> Create(const Color& color);
+	static RefPtr<SolidColorBrush> Create(const Color& rgb, float a);
+
+LN_CONSTRUCT_ACCESS:
+	SolidColorBrush();
+	virtual ~SolidColorBrush();
+	void Initialize(const Color& color);
+	void Initialize(const Color& rgb, float a);
+};
+
+/**
 	@brief		
 */
 class TextureBrush
