@@ -45,7 +45,7 @@ LN_TR_PROPERTY_IMPLEMENT(UIElement, ThicknessF, padding, tr::PropertyMetadata())
 LN_TR_PROPERTY_IMPLEMENT(UIElement, AlignmentAnchor, anchor, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(UIElement, HAlignment, hAlignment, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(UIElement, VAlignment, vAlignment, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, background, tr::PropertyMetadata());
+//LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, background, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, foreground, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, decoratorBackground, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(UIElement, float, decoratorOpacity, tr::PropertyMetadata());
@@ -120,6 +120,20 @@ void UIElement::SetLayoutColumnSpan(int span) { m_gridLayoutInfo.layoutColumnSpa
 int UIElement::GetLayoutColumnSpan() const { return m_gridLayoutInfo.layoutColumnSpan; }
 void UIElement::SetLayoutRowSpan(int span) { m_gridLayoutInfo.layoutRowSpan = span; }
 int UIElement::GetLayoutRowSpan() const { return m_gridLayoutInfo.layoutRowSpan; }
+
+//------------------------------------------------------------------------------
+void UIElement::SetBackground(Brush* value)
+{
+	m_localStyle->background = value;
+	//tr::PropertyInfo::SetPropertyValueDirect<BrushPtr>(this, backgroundId, value);
+}
+
+//------------------------------------------------------------------------------
+Brush* UIElement::GetBackground() const
+{
+	return m_localStyle->background.Get();
+	//return tr::PropertyInfo::GetPropertyValueDirect<BrushPtr>(this, backgroundId);
+}
 
 //------------------------------------------------------------------------------
 EventConnection UIElement::ConnectOnGotFocus(UIEventHandler handler)
@@ -262,17 +276,21 @@ void UIElement::OnRender(DrawingContext* g)
 {
 	//g->SetBlendMode(BlendMode::Alpha);
 
-	if (background.Get() != nullptr)
+	//if (background.Get() != nullptr)
+	if (m_localStyle->background.Get() != nullptr)
 	{
-		g->SetBrush(background.Get());
+		g->SetBrush(m_localStyle->background.Get());
 		//g->SetOpacity(m_combinedOpacity);
-		g->DrawRectangle(RectF(0, 0, m_finalLocalRect.GetSize()));
+		//g->DrawRectangle(RectF(0, 0, m_finalLocalRect.GetSize()));
+		g->DrawBoxBackground(RectF(0, 0, m_finalLocalRect.GetSize()), CornerRadius());
+
+		
 	}
 	if (decoratorBackground.Get() != nullptr)
 	{
-		g->SetBrush(decoratorBackground.Get());
-		//g->SetOpacity(m_combinedOpacity * m_decoratorOpacity);
-		g->DrawRectangle(RectF(0, 0, m_finalLocalRect.GetSize()));
+		//g->SetBrush(decoratorBackground.Get());
+		////g->SetOpacity(m_combinedOpacity * m_decoratorOpacity);
+		//g->DrawRectangle(RectF(0, 0, m_finalLocalRect.GetSize()));
 	}
 
 	if (!m_localStyle->borderThickness.Get().IsZero())
@@ -282,13 +300,6 @@ void UIElement::OnRender(DrawingContext* g)
 			Color::Gray, Color::Gray, Color::Gray, Color::Gray,
 			BorderDirection::Outside);
 	}
-
-	//g->DrawBoxBorder(
-	//	RectF(10, 10, 200, 50), ThicknessF(1, 2, 4, 8), CornerRadius(0, 0, 0, 0),
-	//	Color::LightSkyBlue, Color::LightSkyBlue, Color::LightSkyBlue, Color::LightSkyBlue,
-	//	BorderDirection::Inside);	// TODO:
-	//g->SetBlendMode(BlendMode::Normal);	// TODO: old
-
 }
 
 //------------------------------------------------------------------------------

@@ -430,6 +430,12 @@ LN_INTERNAL_ACCESS:
 		return false;
 	}
 
+LN_INTERNAL_ACCESS:
+	void SetValueSource(PropertySetSource source)
+	{
+		m_valueSource = source;
+	}
+
 private:
 	LN_DISALLOW_COPY_AND_ASSIGN(Property);
 

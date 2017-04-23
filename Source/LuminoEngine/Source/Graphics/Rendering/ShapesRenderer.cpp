@@ -19,6 +19,21 @@ static const int g_finalOffset = 0.0;
 //==============================================================================
 // ShapesRendererCommandList
 //==============================================================================
+
+//------------------------------------------------------------------------------
+void ShapesRendererCommandList::AddDrawBoxBackground(const RectF& rect, const CornerRadius& cornerRadius)
+{
+	float cmd[] =
+	{
+		(float)Cmd_DrawBoxBackground,
+		// [1]
+		rect.x, rect.y, rect.width, rect.height,
+		// [5]
+		cornerRadius.topLeft, cornerRadius.topRight, cornerRadius.bottomLeft, cornerRadius.bottomRight,
+	};
+	AllocData(sizeof(cmd), cmd);
+}
+
 //------------------------------------------------------------------------------
 void ShapesRendererCommandList::AddDrawBoxBorder(
 	float x, float y, float w, float h, float l, float t, float r, float b,
@@ -144,16 +159,23 @@ void ShapesRendererCore::RenderCommandList(ShapesRendererCommandList* commandLis
 
 	for (int iPath = 0; iPath < m_pathes.GetCount(); iPath++)
 	{
-		switch (m_pathes[iPath].type)
+		Path& path = m_pathes[iPath];
+
+		if (path.attribute == PathAttribute::Background)
+		{
+			path.color *= fillBrush->color;
+		}
+
+		switch (path.type)
 		{
 		case PathType::Convex:
-			ExpandFill(m_pathes[iPath]);
+			ExpandFill(path);
 			break;
 		case PathType::Strip2Point:
-			ExpandStrip2PointStroke(m_pathes[iPath]);
+			ExpandStrip2PointStroke(path);
 			break;
 		case PathType::Strip3Point:
-			ExpandStrip3PointStroke(m_pathes[iPath]);
+			ExpandStrip3PointStroke(path);
 			break;
 		}
 	}
@@ -217,9 +239,9 @@ void ShapesRendererCore::ReleaseCommandList(ShapesRendererCommandList* commandLi
 }
 
 //------------------------------------------------------------------------------
-ShapesRendererCore::Path* ShapesRendererCore::AddPath(PathType type, const Color& color, PathWinding winding)
+ShapesRendererCore::Path* ShapesRendererCore::AddPath(PathType type, const Color& color, PathWinding winding, PathAttribute attribute)
 {
-	m_pathes.Add(Path{ type, m_outlinePoints.GetCount(), 0, color, winding });
+	m_pathes.Add(Path{ type, m_outlinePoints.GetCount(), 0, color, winding, attribute });
 	return &m_pathes.GetLast();
 }
 
@@ -238,6 +260,32 @@ void ShapesRendererCore::ExtractBasePoints(ShapesRendererCommandList* commandLis
 		float* cmd = (float*)commandList->GetDataByIndex(i);
 		switch ((int)cmd[0])
 		{
+			//------------------------------------------------------------------
+			case ShapesRendererCommandList::Cmd_DrawBoxBackground:
+			{
+				BorderComponent components[4];
+				MakeBasePointsAndBorderComponent(
+					RectF(cmd[1], cmd[2], cmd[3], cmd[4]),
+					ThicknessF(0, 0, 0, 0),
+					CornerRadius(cmd[5], cmd[6], cmd[7], cmd[8]),
+					components);
+
+				// center box
+				{
+					auto* path = AddPath(PathType::Convex, Color::White, PathWinding::CCW, PathAttribute::Background);
+					for (int iComp = 0; iComp < 4; iComp++)
+					{
+						for (int i = components[iComp].firstPoint; i < components[iComp].lastPoint; i++)	// 終点は次の Componet の開始点と一致するので必要ない
+						{
+							BasePoint& pt = m_basePoints.GetAt(i);
+							m_outlinePoints.Add({ pt.pos, GetAAExtDir(pt), 1.0f });
+						}
+					}
+					EndPath(path);
+				}
+				break;
+			}
+			//------------------------------------------------------------------
 			case ShapesRendererCommandList::Cmd_DrawBoxBorder2:
 			{
 				BorderComponent components[4];
@@ -818,22 +866,7 @@ void ShapesRendererCore::ExpandVertices(const Path& path)
 
 //------------------------------------------------------------------------------
 void ShapesRendererCore::ExpandFill(const Path& path)
-{/*
-
-	for (int i = 0; i < path.pointCount / 2; i++)
-	{
-		OutlinePoint& p1 = m_outlinePoints.GetAt(path.pointStart + i);
-		OutlinePoint& p2 = m_outlinePoints.GetAt(path.pointStart + (path.pointCount / 2) + i);
-		if ((p1.pos - p2.pos).GetLength() < 2.0f)
-		{
-			p1.alpha = 0.5f;
-			p2.alpha = 0.5f;
-		}
-	}
-*/
-
-
-
+{
 	int startIndex = m_vertexCache.GetCount();
 
 	ExpandVertices(path);

@@ -25,6 +25,9 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIStylePropertyTable, Object);
 UIStylePropertyTable::UIStylePropertyTable()
 	//: m_lastInheritedParent(nullptr)
 {
+	// 初期状態を ByInherit にしておく。
+	// こうすることで、MergeActiveStylePropertyTables() で 有効な VisualStyle が1つも無いときに各プロパティがデフォルト値に戻るようにする。
+	background.SetValueSource(tr::PropertySetSource::ByInherit);
 }
 
 //------------------------------------------------------------------------------
@@ -91,7 +94,7 @@ detail::InvalidateFlags UIStylePropertyTable::Merge(UIStylePropertyTable* source
 	}
 	{
 		bool changed = false;
-		changed |= background.UpdateInherit(source->background);
+		changed |= background.Inherit(source->background);
 		changed |= borderThickness.Inherit(source->borderThickness);
 		changed |= cornerRadius.Inherit(source->cornerRadius);
 		changed |= leftBorderColor.Inherit(source->leftBorderColor);
@@ -111,8 +114,8 @@ void UIStylePropertyTable::Apply(UIElement* targetElement, bool useTransitionAni
 		targetElement->SetWidth(width);
 	if (height.HasValue())
 		targetElement->SetHeight(height);
-	if (background.HasValue())
-		targetElement->SetBackground(background.value);
+	//if (background.HasValue())
+	//	targetElement->SetBackground(background.value);
 	//for (UIStyleAttribute& setter : m_attributes)
 	//{
 	//	ApplyInternal(targetElement, setter, useTransitionAnimation);
@@ -428,4 +431,51 @@ UIStyle* UIStyleTable::FindSubControlStyle(const StringRef& subControlOwnerName,
 //}
 //
 
+//==============================================================================
+// UIColors
+//==============================================================================
+
+static bool				g_colorsInit = false;
+static Color			g_colors[UIColors::MaxIndex][UIColors::MaxDepth];
+static SolidColorBrush	g_brushes[UIColors::MaxIndex][UIColors::MaxDepth];
+
+//------------------------------------------------------------------------------
+static const void InitColors()
+{
+	if (!g_colorsInit)
+	{
+#define LN_COLOR_DEF(name, depth, r, g, b)	g_colors[(int)UIColorIndex::name][depth] = Color(((float)r) / 255.0f, ((float)g) / 255.0f, ((float)b) / 255.0f, 1.0f);
+#include "UIColorsDefine.inl"
+#undef LN_COLOR_DEF
+
+		for (int i = 0; i < UIColors::MaxDepth; i++) g_colors[(int)UIColorIndex::Black][i] = Color(0, 0, 0, 1);
+		for (int i = 0; i < UIColors::MaxDepth; i++) g_colors[(int)UIColorIndex::White][i] = Color(1, 1, 1, 1);
+
+		for (int i = 0; i < UIColors::MaxIndex; i++)
+		{
+			for (int j = 0; j < UIColors::MaxDepth; j++)
+			{
+				g_brushes[i][j].Initialize(g_colors[i][j]);
+			}
+		}
+
+		g_colorsInit = true;
+	}
+}
+
+//------------------------------------------------------------------------------
+const Color& UIColors::GetColor(UIColorIndex index, int depth)
+{
+	if (LN_CHECK_RANGE(depth, 0, UIColors::MaxDepth)) return Color::Black;
+	InitColors();
+	return g_colors[(int)index][depth];
+}
+
+//------------------------------------------------------------------------------
+SolidColorBrush* UIColors::GetBrush(UIColorIndex index, int depth)
+{
+	if (LN_CHECK_RANGE(depth, 0, UIColors::MaxDepth)) return nullptr;
+	InitColors();
+	return &g_brushes[(int)index][depth];
+}
 LN_NAMESPACE_END

@@ -38,18 +38,16 @@ void ILayoutElement::UpdateLayout(const Size& viewSize)
 //------------------------------------------------------------------------------
 void ILayoutElement::MeasureLayout(const Size& availableSize)
 {
-	//// 無効情報フラグをこの要素に伝播させる
-	//if (m_parent != nullptr)
-	//{
-	//	// フォントは MeasureOverride() の中で更新する
-	//	m_invalidateFlags |= (m_parent->m_invalidateFlags & detail::InvalidateFlags::Font);
-	//}
-
 	// 親要素から子要素を配置できる範囲(availableSize)を受け取り、DesiredSize を更新する。
 	// ① Pane ―[measure()   … この範囲内なら配置できるよ]→ Button
 	// ② Pane ←[DesiredSize … じゃあこのサイズでお願いします]― Button		※この時点で inf を返すこともあり得る。
 	// ③ Pane ―[arrange()   … 他の子要素との兼ね合いで最終サイズはコレで]→ Button
 	// http://www.kanazawa-net.ne.jp/~pmansato/wpf/wpf_ctrl_arrange.htm
+
+	
+	// [WPF] DesiredSize は Mergin を含む。例えば、Width=200, Mergin=10,0,0,0 なら DesiredSize は 210 となる。
+	// [WPF] MeasureOverride() の引数の Size には、Mergin は含まない。Widht=200 なら 200 がそのまま渡る。
+	// Padding も関係ない。逆にいうと、MeasureOverride() の中では Padding を考慮してサイズを返さなければならない。
 
 	// Margin を考慮する
 	const ThicknessF& margin = GetLayoutMargin();

@@ -209,7 +209,7 @@ public:
 	//UIStyleAttribute<ThicknessF>			m_padding;
 	//UIStyleAttribute<VAlignment>		m_verticalAlignment;
 	//UIStyleAttribute<HAlignment>	m_horizontalAlignment;
-	UIStyleAttribute<BrushPtr>				background;
+	tr::Property<BrushPtr>				background;
 	//UIStyleAttribute<BrushPtr>				foreground;
 	//UIStyleAttribute<TexturePtr>			m_image;
 
@@ -349,6 +349,46 @@ private:
 
 	SortedArray<StyleKey, RefPtr<UIStyle>>	m_table;
 	SortedArray<StyleKey, RefPtr<UIStyle>>	m_subControlStyleTable;
+};
+
+enum class UIColorIndex
+{
+	Red,
+	Pink,
+	Purple,
+	DeepPurple,
+	Indigo,
+	Blue,
+	LightBlue,
+	Cyan,
+	Teal,
+	Green,
+	LightGreen,
+	Lime,
+	Yellow,
+	Amber,
+	Orange,
+	DeepOrange,
+	Brown,
+	Grey,
+	Black,
+	White,
+};
+
+/**
+	@brief
+*/
+class UIColors
+{
+public:
+	static const int MaxDepth = 10;
+	static const int MaxIndex = 20;
+
+	/** 色を取得します。*/
+	static const Color& GetColor(UIColorIndex index, int depth = 5);
+
+	/** SolidColorBrush を取得します。*/
+	static SolidColorBrush* GetBrush(UIColorIndex index, int depth = 5);
 };
 
 LN_NAMESPACE_END

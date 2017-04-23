@@ -124,7 +124,7 @@ public:
 	LN_TR_PROPERTY(AlignmentAnchor,		anchor);				/**< Anchor プロパティの識別子 */
 	LN_TR_PROPERTY(HAlignment,			hAlignment);			/**< HAlignment プロパティの識別子 */
 	LN_TR_PROPERTY(VAlignment,			vAlignment);			/**< VAlignment プロパティの識別子 */
-	LN_TR_PROPERTY(BrushPtr,			background);			/**< Background プロパティの識別子 */
+	//LN_TR_PROPERTY(BrushPtr,			background);			/**< Background プロパティの識別子 */
 	LN_TR_PROPERTY(BrushPtr,			foreground);			/**< Foreground プロパティの識別子 */
 	LN_TR_PROPERTY(BrushPtr,			decoratorBackground);	/**< DecoratorBackground プロパティの識別子 */
 	LN_TR_PROPERTY(float,				decoratorOpacity);		/**< Foreground プロパティの識別子 */
@@ -137,7 +137,7 @@ public:
 
 	tr::Property<HAlignment>			hAlignment;
 	tr::Property<VAlignment>			vAlignment;
-	tr::Property<BrushPtr>				background;
+	//tr::Property<BrushPtr>				background;
 	tr::Property<BrushPtr>				foreground;
 	tr::Property<BrushPtr>				decoratorBackground;
 	tr::Property<float>					decoratorOpacity;
@@ -213,8 +213,8 @@ public:
 	void SetVAlignment(VAlignment value) { tr::PropertyInfo::SetPropertyValueDirect<VAlignment>(this, vAlignmentId, value); }
 	VAlignment GetVAlignment() const { return tr::PropertyInfo::GetPropertyValueDirect<VAlignment>(this, vAlignmentId); }
 
-	void SetBackground(Brush* value) { tr::PropertyInfo::SetPropertyValueDirect<BrushPtr>(this, backgroundId, value); }
-	Brush* GetBackground() const { return tr::PropertyInfo::GetPropertyValueDirect<BrushPtr>(this, backgroundId); }
+	void SetBackground(Brush* value);
+	Brush* GetBackground() const;
 
 
 	/** @} */
@@ -310,7 +310,8 @@ protected:
 	/**
 		@brief		この要素を表示するために必要なサイズを計測します。
 		@params[in]	constraint	: この要素を配置できる領域の最大サイズ。通常は親要素のサイズが渡されます。
-		@return		この要素のレイアウトの際に必要となる最低限のサイズ。この要素のサイズと、全ての子要素のサイズに基づき決定します。NaN や Inf であってはなりません。
+		@return		この要素のレイアウトの際に必要となる最低限のサイズ。
+					この要素のサイズと、全ての子要素のサイズに基づき決定します。NaN や Inf であってはなりません。
 		@details	constraint は、ScrollViewer 等のコンテンツとなった場合は Infinity が渡されることがあります。
 	*/
 	virtual Size MeasureOverride(const Size& constraint) override;

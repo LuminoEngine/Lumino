@@ -109,6 +109,12 @@ RefPtr<UIButton> UIButton::Create()
 }
 
 //------------------------------------------------------------------------------
+RefPtr<UIButton> UIButton::Create(const StringRef& text, float width, float height)
+{
+	return NewObject<UIButton>(text, width, height);
+}
+
+//------------------------------------------------------------------------------
 UIButton::UIButton()
 {
 }
@@ -122,6 +128,15 @@ UIButton::~UIButton()
 void UIButton::Initialize()
 {
 	UIButtonBase::Initialize();
+}
+
+//------------------------------------------------------------------------------
+void UIButton::Initialize(const StringRef& text, float width, float height)
+{
+	UIButtonBase::Initialize();
+	SetText(text);
+	SetWidth(width);
+	SetHeight(height);
 }
 
 //==============================================================================

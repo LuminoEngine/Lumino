@@ -1222,6 +1222,12 @@ void DrawList::SetFont(Font* font)
 }
 
 //------------------------------------------------------------------------------
+//void DrawList::SetShader(Shader* shader)
+//{
+//	m_defaultMaterial->SetShader(shader);
+//}
+
+//------------------------------------------------------------------------------
 void DrawList::SetBlendMode(BlendMode mode)
 {
 	m_defaultMaterial->SetBlendMode(mode);

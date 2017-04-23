@@ -208,7 +208,7 @@ Size UIAbsoluteLayout::MeasureOverride(const Size& constraint)
 		childMaxSize.height = std::max(childMaxSize.height, pos.y + desiredSize.height);
 	}
 
-	return Size::Max(size, childMaxSize);
+	return Size::Min(constraint, Size::Max(size, childMaxSize));
 
 	//if (Math::IsNaN(size.width)) size.width = 
 
@@ -250,10 +250,10 @@ Size UIAbsoluteLayout::ArrangeOverride(const Size& finalSize)
 		//}
 		
 		const Size& desiredSize = child->GetDesiredSize();
-		Size layoutSize = child->GetSizeInternal();
-		Size size;
-		size.width = Math::IsNaN(layoutSize.width) ? desiredSize.width : layoutSize.width;
-		size.height = Math::IsNaN(layoutSize.height) ? desiredSize.height : layoutSize.height;
+		//Size layoutSize = child->GetSizeInternal();
+		Size size = desiredSize;
+		//size.width = Math::IsNaN(layoutSize.width) ? desiredSize.width : layoutSize.width;
+		//size.height = Math::IsNaN(layoutSize.height) ? desiredSize.height : layoutSize.height;
 
 		RectF childRect(child->GetPositionInternal(), size/*child->GetSizeInternal()*/);
 		AlignmentAnchor anchor = child->GetAnchorInternal();
@@ -261,7 +261,38 @@ Size UIAbsoluteLayout::ArrangeOverride(const Size& finalSize)
 		if (anchor != AlignmentAnchor::None)
 		{
 			const ThicknessF& margin = GetMargineInternal();
-			
+			//float l = childRect.GetLeft(), t = childRect.GetTop(), r = childRect.GetRight(), b = childRect.GetBottom();
+
+			//if (anchor.TestFlag(AlignmentAnchor::LeftOffsets))
+			//	l = margin.Left;
+			//else if (anchor.TestFlag(AlignmentAnchor::LeftRatios))
+			//	l = finalSize.width * margin.Left;
+
+			//if (anchor.TestFlag(AlignmentAnchor::TopOffsets))
+			//	t = margin.Top;
+			//else if (anchor.TestFlag(AlignmentAnchor::TopRatios))
+			//	t = finalSize.height * margin.Top;
+
+			//if (anchor.TestFlag(AlignmentAnchor::RightOffsets))
+			//	r = finalSize.width - margin.Right;
+			//else if (anchor.TestFlag(AlignmentAnchor::RightRatios))
+			//	r = finalSize.width - (finalSize.width * margin.Right);
+
+			//if (anchor.TestFlag(AlignmentAnchor::BottomOffsets))
+			//	b = finalSize.height - margin.Bottom;
+			//else if (anchor.TestFlag(AlignmentAnchor::BottomRatios))
+			//	b = finalSize.height - (finalSize.height * margin.Bottom);
+
+			//if (anchor.TestFlag(AlignmentAnchor::HCenter))
+			//	childRect.x = (finalSize.width - childRect.width) / 2;
+
+			//if (anchor.TestFlag(AlignmentAnchor::VCenter))
+			//	childRect.y = (finalSize.height - childRect.height) / 2;
+
+			//childRect.Set(l, t, r - l, b - t);
+
+			//child->ArrangeLayout(childRect);
+#if 1
 			float l = NAN, t = NAN, r = NAN, b = NAN;
 			if (anchor.TestFlag(AlignmentAnchor::LeftOffsets))
 				l = margin.Left;
@@ -280,7 +311,7 @@ Size UIAbsoluteLayout::ArrangeOverride(const Size& finalSize)
 			
 			if (anchor.TestFlag(AlignmentAnchor::BottomOffsets))
 				b = finalSize.height - margin.Bottom;
-			else if (anchor.TestFlag(AlignmentAnchor::RightRatios))
+			else if (anchor.TestFlag(AlignmentAnchor::BottomRatios))
 				b = finalSize.height - (finalSize.height * margin.Bottom);
 
 			if (anchor.TestFlag(AlignmentAnchor::HCenter))
@@ -324,13 +355,14 @@ Size UIAbsoluteLayout::ArrangeOverride(const Size& finalSize)
 			}
 
 			child->ArrangeLayout(childRect);
+#endif
 		}
 		else
 		{
-			if (Math::IsNaN(layoutSize.width))
-				childRect.width = finalSize.width;
-			if (Math::IsNaN(layoutSize.height))
-				childRect.height = finalSize.height;
+			//if (Math::IsNaN(layoutSize.width))
+			//	childRect.width = finalSize.width;
+			//if (Math::IsNaN(layoutSize.height))
+			//	childRect.height = finalSize.height;
 			child->ArrangeLayout(childRect);
 		}
 	}

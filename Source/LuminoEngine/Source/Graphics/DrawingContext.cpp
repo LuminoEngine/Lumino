@@ -57,6 +57,14 @@ void DrawingContext::DrawTexture(const RectF& destRect, Texture* texture, const 
 }
 
 //------------------------------------------------------------------------------
+void DrawingContext::DrawBoxBackground(const RectF& rect, const CornerRadius& cornerRadius)
+{
+	auto* ptr = ResolveDrawElement<DrawElement_DrawShapesRendererCommandList>(detail::DrawingSectionId::NanoVG, GetManager()->GetInternalContext()->m_shapesRenderer, nullptr);
+	auto* list = ptr->GetGCommandList(this);
+	list->AddDrawBoxBackground(rect, cornerRadius);
+}
+
+//------------------------------------------------------------------------------
 void DrawingContext::DrawBoxBorder(
 	const RectF& rect, const ThicknessF& thickness, const CornerRadius& cornerRadius,
 	const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor,

@@ -248,6 +248,8 @@ set(LN_SOURCES_Graphics
 	Source/Graphics/RenderTargetTextureCache.h
 	Source/Graphics/SamplerState.cpp
 	Source/Graphics/Shader.cpp
+	Source/Graphics/ShaderAnalyzer.cpp
+	Source/Graphics/ShaderAnalyzer.h
 	Source/Graphics/SpriteRenderer.cpp
 	Source/Graphics/SpriteRenderer.h
 	Source/Graphics/SwapChain.cpp
@@ -472,6 +474,7 @@ set(LN_SOURCES_UI
 	Source/UI/LayoutElement.cpp
 	Source/UI/LayoutImpl.h
 	Source/UI/UIButton.cpp
+	Source/UI/UIColorsDefine.inl
 	Source/UI/UIComboBox.cpp
 	Source/UI/UICommands.cpp
 	Source/UI/UIContentControl.cpp
@@ -821,6 +824,7 @@ endif()
 set(LN_INCLUDE_DIRECTORIES
 	${PROJECT_SOURCE_DIR}/Include
 	${PROJECT_SOURCE_DIR}/../LuminoCore/Include
+	${PROJECT_SOURCE_DIR}/../Fluorite/Include
 	../../External
 	../../External/glfw-3.1.2/include
 )
@@ -870,7 +874,7 @@ add_library(LuminoEngine STATIC ${LN_SOURCES})
 set_target_properties(LuminoEngine PROPERTIES OUTPUT_NAME "LuminoEngine${LN_LIB_POSTFIX}")
 set_target_properties(LuminoEngine PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
 target_include_directories(LuminoEngine PUBLIC ${LN_DEPENDENCIES_INCLUDES})
-target_link_libraries(LuminoEngine ${LN_LINK_LIBS} ${LN_DEPENDENCIES_LIBRARIES})
+target_link_libraries(LuminoEngine Fluorite ${LN_LINK_LIBS} ${LN_DEPENDENCIES_LIBRARIES})
 ln_add_pch(LuminoEngine "LuminoEngine.PCH.h" "Source/LuminoEngine.PCH.cpp")
 
 # Unit test.

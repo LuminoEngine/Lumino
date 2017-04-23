@@ -73,4 +73,29 @@ private:
 	RefPtr<StaticMeshModel>	m_mesh;
 };
 
+
+
+/**
+	@brief		
+*/
+LN_CLASS()
+class Rectangle
+	: public VisualNode		// TODO: Shape とか？
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+
+	static RefPtr<Rectangle> Create(const RectF& rect);
+
+
+LN_CONSTRUCT_ACCESS:
+	Rectangle();
+	virtual ~Rectangle();
+	void Initialize(const RectF& rect);
+	virtual void OnRender2(DrawList* renderer) override;
+
+private:
+	RectF	m_rect;
+};
+
 LN_NAMESPACE_END

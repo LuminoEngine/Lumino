@@ -165,4 +165,46 @@ void StaticMesh::OnRender2(DrawList* renderer)
 	}
 }
 
+//==============================================================================
+// Rectangle
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Rectangle, VisualNode);
+
+//------------------------------------------------------------------------------
+RefPtr<Rectangle> Rectangle::Create(const RectF& rect)
+{
+	return NewObject<Rectangle>(rect);
+}
+
+//------------------------------------------------------------------------------
+Rectangle::Rectangle()
+{
+}
+
+//------------------------------------------------------------------------------
+Rectangle::~Rectangle()
+{
+}
+
+//------------------------------------------------------------------------------
+void Rectangle::Initialize(const RectF& rect)
+{
+	VisualNode::Initialize(detail::EngineDomain::GetDefaultSceneGraph3D(), 1);
+	detail::EngineDomain::GetDefaultSceneGraph3D()->GetRootNode()->AddChild(this);
+	SetAutoRemove(true);
+
+	m_rect = rect;
+}
+
+//------------------------------------------------------------------------------
+void Rectangle::OnRender2(DrawList* renderer)
+{
+	//renderer->SetShader(GetPrimaryShader());
+	renderer->DrawSquarePrimitive(
+		Vector3(m_rect.GetTopLeft(), 0), Vector2(0, 0), Color::White,
+		Vector3(m_rect.GetTopRight(), 0), Vector2(1, 0), Color::White,
+		Vector3(m_rect.GetBottomLeft(), 0), Vector2(0, 1), Color::White,
+		Vector3(m_rect.GetBottomRight(), 0), Vector2(1, 1), Color::White);
+}
+
 LN_NAMESPACE_END

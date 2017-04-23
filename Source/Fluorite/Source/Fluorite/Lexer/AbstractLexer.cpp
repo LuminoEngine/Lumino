@@ -50,17 +50,19 @@ ResultState AbstractLexer::Tokenize(InputFile* file)
 {
 	assert(file != nullptr);
 	m_inputFile = file;
-	return Tokenize(file->GetCodeBuffer(), file->GetTokenListInternal(), file->GetDiag());
+	const char* code = (const char*)file->GetCodeBuffer()->GetConstData();
+	int length = (file->GetCodeBuffer()->GetSize() / sizeof(char));
+	return Tokenize(code, length, file->GetTokenListInternal(), file->GetDiag());
 }
 
 //------------------------------------------------------------------------------
-ResultState AbstractLexer::Tokenize(const ByteBuffer* buffer, TokenList* outTokenList, DiagnosticsItemSet* diag)
+ResultState AbstractLexer::Tokenize(const char* code, int length, TokenList* outTokenList, DiagnosticsItemSet* diag)
 {
-	assert(buffer != nullptr);
+	assert(code != nullptr);
 	assert(outTokenList != nullptr);
 	assert(diag != nullptr);
 
-	m_inputBuffer = buffer;
+	m_inputBuffer = code;
 	//m_tokenList = outTokenList;
 	m_diag = diag;
 	m_currentLineNumber = 1;
@@ -74,8 +76,8 @@ ResultState AbstractLexer::Tokenize(const ByteBuffer* buffer, TokenList* outToke
 
 	// 解析メイン
 	Range r;
-	r.pos = (const char*)buffer->GetConstData();
-	r.end = r.pos + (buffer->GetSize() / sizeof(char));
+	r.pos = code;
+	r.end = r.pos + length;
 	while (r.pos < r.end)
 	{
 		int len = ReadToken(r);
@@ -138,7 +140,7 @@ void AbstractLexer::AddToken(TokenGroup group, const char* bufBegin, const char*
 {
 	Token* token = m_inputFile->CreateToken();
 
-	const char* begin = (const char*)m_inputBuffer->GetConstData();
+	const char* begin = m_inputBuffer;
 	*token = Token(m_inputFile, group, bufBegin - begin, bufEnd - begin, tokenType);
 }
 
@@ -153,7 +155,7 @@ bool AbstractLexer::EqualsString(Token* token, const char* str, int length) cons
 {
 	// TODO: 普通に Token::EqualXXXX使っていいと思う
 	if (token->GetLength() != length) return false;
-	const char* begin = (const char*)m_inputBuffer->GetConstData();
+	const char* begin = m_inputBuffer;
 	return StringTraits::StrNCmp(begin + token->GetBeginLoc(), str, length) == 0;	// TODO: Case
 }
 

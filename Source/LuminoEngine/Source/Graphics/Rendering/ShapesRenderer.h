@@ -16,16 +16,16 @@ class ShapesRendererCommandList
 	: public CommandDataCache
 {
 public:
-
 	enum Command
 	{
+		Cmd_DrawBoxBackground,
 		Cmd_DrawBoxBorder,
 		Cmd_DrawBoxBorder2,
 		Cmd_DrawBoxShadow,
 	};
 
+	void AddDrawBoxBackground(const RectF& rect, const CornerRadius& cornerRadius);
 	void AddDrawBoxBorder(float x, float y, float w, float h, float l, float t, float r, float b, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, float ltRad, float rtRad, float lbRad, float rbRad, const Color& shadowColor, float shadowBlur, float shadowWidth, bool shadowInset, bool borderInset);
-
 	void AddDrawBoxBorder2(const RectF& rect, const ThicknessF& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const CornerRadius& cornerRadius, bool borderInset);
 	void AddDrawBoxShadow(const RectF& rect, const CornerRadius& cornerRadius, const Color& color, float blur, float width, bool inset);
 };
@@ -61,13 +61,20 @@ private:
 		CW,
 	};
 
+	enum class PathAttribute
+	{
+		None,
+		Background,		// ブラシの色を適用するかどうか
+	};
+
 	struct Path
 	{
-		PathType	type;
-		int			pointStart;
-		int			pointCount;
-		Color		color;
-		PathWinding	winding;
+		PathType		type;
+		int				pointStart;
+		int				pointCount;
+		Color			color;
+		PathWinding		winding;
+		PathAttribute	attribute;
 	};
 
 	struct BorderComponent
@@ -93,7 +100,7 @@ private:
 
 	void ReleaseCommandList(ShapesRendererCommandList* commandList);
 	void RequestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex);
-	Path* AddPath(PathType type, const Color& color, PathWinding winding = PathWinding::CCW);
+	Path* AddPath(PathType type, const Color& color, PathWinding winding = PathWinding::CCW, PathAttribute attribute = PathAttribute::None);
 	void EndPath(Path* path);
 	void ExtractBasePoints(ShapesRendererCommandList* commandList);
 	void MakeBasePointsAndBorderComponent(const RectF& rect, const ThicknessF& thickness, const CornerRadius& cornerRadius, BorderComponent components[4]);

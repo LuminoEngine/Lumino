@@ -35,8 +35,9 @@ public:
 
 	ResultState Tokenize(InputFile* file);
 
+
 protected:
-	ResultState Tokenize(const ByteBuffer* buffer, TokenList* outTokenList, DiagnosticsItemSet* diag);
+	ResultState Tokenize(const char* code, int length, TokenList* outTokenList, DiagnosticsItemSet* diag);
 	virtual int ReadToken(const Range& buffer) = 0;
 	virtual void PollingToken(Token* newToken);
 
@@ -56,7 +57,7 @@ protected:
 
 private:
 	InputFile*			m_inputFile;
-	const ByteBuffer*	m_inputBuffer;
+	const char*			m_inputBuffer;
 	//TokenList*			m_tokenList;
 	DiagnosticsItemSet*	m_diag;
 	int					m_currentLineNumber;	// 0Å`

@@ -226,6 +226,10 @@ private:
 	mutable bool				m_hashDirty;
 };
 
+class BuiltinEffectData
+{
+
+};
 
 class DrawElementBatch
 {
@@ -526,6 +530,8 @@ public:
 
 	void SetBrush(Brush* brush);
 	void SetFont(Font* font);
+
+	//void SetShader(Shader* shader);
 
 	void Clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
 	

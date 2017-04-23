@@ -43,6 +43,9 @@ public:
 	*/
 	void DrawTexture(const RectF& destRect, Texture* texture, const RectF& sourceRect);
 
+
+	void DrawBoxBackground(const RectF& rect, const CornerRadius& cornerRadius);
+
 	void DrawBoxBorder(
 		const RectF& rect, const ThicknessF& thickness, const CornerRadius& cornerRadius,
 		const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor,

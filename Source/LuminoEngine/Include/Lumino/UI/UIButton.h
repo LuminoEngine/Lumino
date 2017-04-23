@@ -60,11 +60,13 @@ class UIButton
 	LN_UI_TYPEINFO_DECLARE();
 public:
 	static RefPtr<UIButton> Create();
+	static RefPtr<UIButton> Create(const StringRef& text, float width, float height);
 
 LN_CONSTRUCT_ACCESS:
 	UIButton();
 	virtual ~UIButton();
 	void Initialize();
+	void Initialize(const StringRef& text, float width, float height);
 };
 
 

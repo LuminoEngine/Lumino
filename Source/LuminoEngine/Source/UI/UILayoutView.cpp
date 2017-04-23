@@ -149,6 +149,7 @@ EXIT:
 			return m_mouseHoverElement->OnEvent(detail::UIInternalEventType::MouseEnter, args);
 		}
 	}
+
 	return false;
 }
 

@@ -24,8 +24,19 @@ void UIControlsGallery()
 	listBox1->SetWidth(200);
 	mainWindow->AddChild(listBox1);
 
-	listBox1->AddTextItem(_T("スプライト"));
+	auto item = listBox1->AddTextItem(_T("スプライト"));
+	auto button1 = UIButton::Create(_T(">"), 20, 20);
+	//button1->SetPosition(PointF(2, 0));
+	button1->margin = ThicknessF(2);
+	button1->SetAnchor(AlignmentAnchor::RightOffsets | AlignmentAnchor::VCenter);
+	item->AddChild(button1);
+
 	listBox1->AddTextItem(_T("UI"));
+
+	auto shader = Shader::Create(StringRef(_T("D:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/Sandbox/SSBasic2D.fx")), true);
+	auto rect = Rectangle::Create(RectF(0, 0, 3, 1));
+	rect->SetShader(shader);
+	//rect->SetAngles(Math::PI/2, 0, 0);
 
 	//auto grid1 = UIGridLayout::Create(1, 1);
 	//win1->AddChild(grid1);
@@ -203,6 +214,7 @@ void UIControlsGallery()
 
 	while (Engine::Update())
 	{
+		//printf("----\n");
 	}
 
 	Engine::Terminate();

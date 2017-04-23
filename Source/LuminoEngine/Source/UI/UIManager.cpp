@@ -155,6 +155,7 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 	//}
 
 	auto containerBackground = SolidColorBrush::Create(Color::White, 0.3);
+	auto containerItemMouseOver = SolidColorBrush::Create(UIColors::GetColor(UIColorIndex::LightGreen, 5), 0.5f);
 
 	auto boarderNormalBrush = TextureBrush::Create(m_defaultSkinTexture);
 	boarderNormalBrush->SetSourceRect(0, 32, 32, 32);
@@ -192,8 +193,9 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 		auto* s = table->GetStyle(tr::TypeInfo::GetTypeInfo<UIButton>()->GetName());
 		// base
 		{
-			auto* st = s->GetPropertyTable();
-			st->background = RefPtr<Brush>::StaticCast(buttonNormalBrush);
+			auto* props = s->GetPropertyTable();
+			//st->background = RefPtr<Brush>::StaticCast(buttonNormalBrush);
+			props->borderThickness = ThicknessF(1);
 		}
 		// UIButton.Focused
 		{
@@ -334,9 +336,26 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 		// base
 		{
 			auto* props = style->GetPropertyTable();
-			//props->background = RefPtr<Brush>::StaticCast(containerBackground);
-			//props->background = RefPtr<Brush>::StaticCast(boarderNormalBrush);
-			props->borderThickness = ThicknessF(100);
+			props->background = RefPtr<Brush>::StaticCast(containerBackground);
+			props->borderThickness = ThicknessF(1);
+		}
+		// UIListBox.MouseOver
+		//{
+		//	auto* props = style->GetPropertyTable(UIVisualStates::MouseOverState);
+		//	props->background = RefPtr<Brush>::StaticCast(containerItemMouseOver);
+		//}
+	}
+	// UIListBoxItem
+	{
+		auto* style = table->GetStyle(_T("UIListBoxItem"));
+		// base
+		{
+			auto* props = style->GetPropertyTable();
+		}
+		// UIListBoxItem.MouseOver
+		{
+			auto* props = style->GetPropertyTable(UIVisualStates::MouseOverState);
+			props->background = RefPtr<Brush>::StaticCast(containerItemMouseOver);
 		}
 	}
 
