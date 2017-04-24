@@ -460,12 +460,22 @@ void DrawElementBatch::SetCombinedMaterial(CombinedMaterial* value)
 }
 
 //------------------------------------------------------------------------------
+void DrawElementBatch::SetBuiltinEffect(const BuiltinEffectData& data)
+{
+	if (!m_builtinEffectData.Equals(data))
+	{
+		m_builtinEffectData = data;
+		m_hashDirty = true;
+	}
+}
+
+//------------------------------------------------------------------------------
 void DrawElementBatch::SetStandaloneShaderRenderer(bool enabled)
 {
 	if (m_standaloneShaderRenderer != enabled)
 	{
 		m_standaloneShaderRenderer = enabled;
-		m_hashDirty = true;
+		m_builtinEffectDataDirty = true;
 	}
 }
 
@@ -526,6 +536,9 @@ void DrawElementBatch::Reset()
 
 	m_hashCode = 0;
 	m_hashDirty = true;
+
+	m_builtinEffectDataHashCode = 0;
+	m_builtinEffectDataDirty = true;
 }
 
 //------------------------------------------------------------------------------
@@ -546,6 +559,17 @@ size_t DrawElementBatch::GetHashCode() const
 		m_hashCode += hs;
 	}
 	return m_hashCode;
+}
+
+//------------------------------------------------------------------------------
+size_t DrawElementBatch::GetBuiltinEffectDataHashCode() const
+{
+	if (m_builtinEffectDataDirty)
+	{
+		m_builtinEffectDataHashCode = false;
+		m_builtinEffectDataHashCode = m_builtinEffectData.GetHashCode();
+	}
+	return m_builtinEffectDataHashCode;
 }
 
 //==============================================================================

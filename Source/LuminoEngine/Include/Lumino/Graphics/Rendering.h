@@ -228,10 +228,28 @@ private:
 
 struct BuiltinEffectData
 {
-	RefPtr<Shader>	shader;
+	RefPtr<Shader>	shader;		// default shader (on VisualNode, マテリアルの shader が null のときに使われる)
 	Color			colorScale;
 	Color			blendColor;
 	ToneF			tone;
+
+	bool Equals(const BuiltinEffectData& rhs) const
+	{
+		return	shader == rhs.shader &&
+				colorScale == rhs.colorScale &&
+				blendColor == rhs.blendColor &&
+				tone == rhs.tone;
+	}
+
+	uint32_t GetHashCode() const
+	{
+		uint32_t hash = 0;
+		hash += reinterpret_cast<intptr_t>(shader.Get());
+		hash += Hash::CalcHash(reinterpret_cast<const char*>(&colorScale), sizeof(colorScale));	// TODO: template
+		hash += Hash::CalcHash(reinterpret_cast<const char*>(&blendColor), sizeof(blendColor));
+		hash += Hash::CalcHash(reinterpret_cast<const char*>(&tone), sizeof(tone));
+		return hash;
+	}
 };
 
 class DrawElementBatch
@@ -245,6 +263,9 @@ public:
 	void SetCombinedMaterial(CombinedMaterial* value);
 	CombinedMaterial* GetCombinedMaterial() const { return m_combinedMaterial; }
 
+
+	void SetBuiltinEffect(const BuiltinEffectData& data);
+
 	void SetStandaloneShaderRenderer(bool enabled);
 	bool IsStandaloneShaderRenderer() const;
 
@@ -252,6 +273,7 @@ public:
 	void Reset();
 	void ApplyStatus(InternalContext* context, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
 	size_t GetHashCode() const;
+	size_t GetBuiltinEffectDataHashCode() const;
 
 	intptr_t				m_rendererId;
 
@@ -265,6 +287,11 @@ private:
 	bool					m_standaloneShaderRenderer;
 	mutable size_t			m_hashCode;
 	mutable bool			m_hashDirty;
+
+	BuiltinEffectData		m_builtinEffectData;
+	mutable size_t			m_builtinEffectDataHashCode;
+	mutable bool			m_builtinEffectDataDirty;
+
 };
 
 class BatchStateBlock

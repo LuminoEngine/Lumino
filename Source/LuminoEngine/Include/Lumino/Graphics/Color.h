@@ -515,7 +515,8 @@ public:
 	friend ToneF operator / (const ToneF& v1, float v2);
 	friend ToneF operator / (float v1, const ToneF& v2);
 
-	bool operator != (const ToneF& tone) { return r != tone.r || g != tone.g || b != tone.b || gray != tone.gray; }
+	bool operator == (const ToneF& tone) const { return r == tone.r && g == tone.g && b == tone.b && gray == tone.gray; }
+	bool operator != (const ToneF& tone) const { return r != tone.r || g != tone.g || b != tone.b || gray != tone.gray; }
 };
 
 //------------------------------------------------------------------------------
