@@ -47,13 +47,16 @@ TEST_F(Test_UI_Image, Basic)
 		経験的にだが、スケーリングしないで使うことのほうが多い。
 	*/
 
-	auto uiRoot = Engine::GetMainWindow();
-	auto image1 = UIImage::Create(LN_LOCALFILE("../Graphics/TestData/Sprite2.png"));
-	uiRoot->AddChild(image1);
+	// <Test> アルファブレンドは最初から有効
+	{
+		auto uiRoot = Engine::GetMainWindow();
+		auto image1 = UIImage::Create(LN_LOCALFILE("../Graphics/TestData/Sprite2.png"));
+		uiRoot->AddChild(image1);
 
-	Engine::Update();
+		Engine::Update();
 
-	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_Image.Basic1.png")));
-	uiRoot->RemoveChild(image1);
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_Image.Basic1.png")));
+		uiRoot->RemoveChild(image1);
+	}
 }
 

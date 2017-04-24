@@ -46,6 +46,7 @@ public:
 	//void CreateWrapModeMainFrame(void* window, World2D* defaultWorld2D, World3D* defaultWorld3D);
 	void ReleaseGameModeMainFrame();
 	EventArgsPool* GetEventArgsPool() const { return m_eventArgsPool; }
+	const RefPtr<Texture2D>& GetDefaultSkinTexture() const { return m_defaultSkinTexture; }
 	UIStyleTable* GetDefaultStyleTable() const { return m_defaultStyleTable; }
 	AnimationManager* GetAnimationManager() const { return m_animationManager; }
 	PlatformManager* GetPlatformManager() const { return m_platformManager; }

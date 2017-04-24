@@ -75,7 +75,7 @@ void Material::Initialize()
 //------------------------------------------------------------------------------
 void Material::Reset()
 {
-	m_builtin.shader = nullptr;
+	m_shader = nullptr;
 	// TODO: とりあえず
 	blendMode = BlendMode::Normal;
 	cullingMode = CullingMode::Back;
@@ -100,7 +100,7 @@ RefPtr<Material> Material::CopyShared() const
 {
 	auto m = RefPtr<Material>::MakeRef();
 	m->Initialize();	// TODO: base
-	m->m_builtin = m_builtin;
+	m->m_shader = m_shader;
 	//m->m_shader = m_shader;
 	////m->m_valueList = m_valueList;
 	////m->m_linkedVariableList = m_linkedVariableList;
@@ -137,13 +137,17 @@ RefPtr<Material> Material::CopyShared() const
 //------------------------------------------------------------------------------
 void Material::SetShader(Shader* shader)
 {
-	if (m_builtin.shader != shader)
+	if (m_shader != shader)
 	{
-		m_builtin.shader = shader;
-		//m_shaderModified = true;
-		//m_modifiedForMaterialInstance = true;
+		m_shader = shader;
 		m_revisionCount++;
 	}
+}
+
+//------------------------------------------------------------------------------
+Shader* Material::GetShader() const
+{
+	return m_shader;
 }
 
 //------------------------------------------------------------------------------
@@ -303,7 +307,7 @@ uint32_t Material::GetHashCode()
 
 		//m_hashCode += Hash::CalcHash(reinterpret_cast<const char*>(&m_builtin), sizeof(m_builtin));
 
-		m_hashCode += reinterpret_cast<intptr_t>(m_builtin.shader.Get());
+		m_hashCode += reinterpret_cast<intptr_t>(m_shader.Get());
 		m_hashCode += blendMode.GetHashCode();
 		m_hashCode += cullingMode.GetHashCode();
 		m_hashCode += depthTestEnabled.GetHashCode();
@@ -443,7 +447,7 @@ namespace detail {
 
 //------------------------------------------------------------------------------
 CombinedMaterial::CombinedMaterial()
-	: m_builtinParameters()
+	: m_shader(nullptr)
 	, m_colorScale(Color::White)
 	, m_blendColor(Color(0, 0, 0, 1))
 	, m_tone()
@@ -489,7 +493,7 @@ void CombinedMaterial::Combine(Material* parent, Material* owner, Material* owne
 		Material* source2 = (ownerBase != nullptr) ? owner : nullptr;
 
 		// source1
-		m_builtinParameters = source1->m_builtin;
+		m_shader = source1->m_shader;
 		m_colorScale = source1->GetColorScale();
 		m_colorScale.a *= source1->GetOpacity();
 		m_blendColor = source1->GetBlendColor();
@@ -504,7 +508,7 @@ void CombinedMaterial::Combine(Material* parent, Material* owner, Material* owne
 		// source2 (base があるなら owner を後からマージ)
 		if (source2 != nullptr)
 		{
-			if (m_builtinParameters.shader == nullptr) m_builtinParameters.shader = source2->GetShader();
+			if (m_shader == nullptr) m_shader = source2->GetShader();
 			m_colorScale.MultiplyClamp(source2->GetColorScale());
 			m_colorScale.a *= source2->GetOpacity();
 			m_blendColor.AddClamp(source2->GetBlendColor());
@@ -515,7 +519,7 @@ void CombinedMaterial::Combine(Material* parent, Material* owner, Material* owne
 		// parent
 		if (parent != nullptr)
 		{
-			if (m_builtinParameters.shader == nullptr) m_builtinParameters.shader = parent->GetShader();
+			if (m_shader == nullptr) m_shader = parent->GetShader();
 			m_colorScale.MultiplyClamp(parent->GetColorScale());
 			m_colorScale.a *= parent->GetOpacity();
 			m_blendColor.AddClamp(parent->GetBlendColor());

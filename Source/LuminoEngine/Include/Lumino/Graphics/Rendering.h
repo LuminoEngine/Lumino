@@ -226,9 +226,12 @@ private:
 	mutable bool				m_hashDirty;
 };
 
-class BuiltinEffectData
+struct BuiltinEffectData
 {
-
+	RefPtr<Shader>	shader;
+	Color			colorScale;
+	Color			blendColor;
+	ToneF			tone;
 };
 
 class DrawElementBatch
@@ -529,6 +532,8 @@ public:
 
 
 	void SetBrush(Brush* brush);
+	Brush* GetBrush() const;
+
 	void SetFont(Font* font);
 
 	//void SetShader(Shader* shader);

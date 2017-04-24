@@ -2,6 +2,7 @@
 #include <Lumino/UI/UIFrameWindow.h>
 #include "../../../Source/EngineManager.h"
 #include "../../../Source/Graphics/GraphicsManager.h"
+#include "../../../Source/UI/UIManager.h"
 
 //------------------------------------------------------------------------------
 void TestEnv::SetUp()
@@ -159,6 +160,25 @@ void EngineInitalize()
 
 	// 背景はグレーにしておくと加算合成のテストとか、いろいろ都合がよい
 	Engine::GetMainViewport()->SetBackgroundColor(Color32::Gray);
+
+
+
+	{
+		auto buttonNormalBrush = TextureBrush::Create(detail::UIManager::GetInstance()->GetDefaultSkinTexture());
+		buttonNormalBrush->SetSourceRect(0, 0, 32, 32);
+		buttonNormalBrush->SetBorderThickness(8, 8, 8, 8);
+		buttonNormalBrush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
+		buttonNormalBrush->SetWrapMode(BrushWrapMode::Stretch);
+
+		auto* res = detail::UIManager::GetInstance()->GetDefaultStyleTable();
+		auto* style = res->GetStyle(_T("UIButton"));
+		// base
+		{
+			auto* props = style->GetPropertyTable();
+			props->background = RefPtr<Brush>::StaticCast(buttonNormalBrush);
+			props->borderThickness = ThicknessF(0);
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -172,7 +192,7 @@ GTEST_API_ int main(int argc, char **argv)
 #if 0	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_Animation.*"
+		"--gtest_filter=Test_UI_Image.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);
@@ -180,9 +200,6 @@ GTEST_API_ int main(int argc, char **argv)
 	testing::InitGoogleTest(&argc, argv);
 #endif
 	::testing::AddGlobalTestEnvironment(new TestEnv());
-
-
-
 
 	{
 		Logger::Initialize(_T("test_log.txt"));
@@ -202,14 +219,14 @@ GTEST_API_ int main(int argc, char **argv)
 		Engine::Terminate();
 		if (r != 0) return r;
 	}
-	{
-		EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
+	//{
+	//	EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
 
-		EngineInitalize();
-		int r = RUN_ALL_TESTS();
-		Engine::Terminate();
-		if (r != 0) return r;
-	}
+	//	EngineInitalize();
+	//	int r = RUN_ALL_TESTS();
+	//	Engine::Terminate();
+	//	if (r != 0) return r;
+	//}
 
 	//RUN_ALL_TESTS();
 	//return RUN_ALL_TESTS();

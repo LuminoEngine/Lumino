@@ -16,16 +16,6 @@ using DiffuseMaterialPtr = RefPtr<DiffuseMaterial>;
 namespace detail {
 
 class CombinedMaterial;
-struct BuiltinParameters
-{
-	RefPtr<Shader>	shader;
-	//BlendMode		blendMode;
-	//CullingMode		cullingMode;
-	////FillMode		fill;
-	//bool			alphaTest;
-	//bool			depthTestEnabled;
-	//bool			depthWriteEnabled;
-};
 
 } // namespace detail
 
@@ -49,7 +39,7 @@ public:
 
 public:
 	void SetShader(Shader* shader);
-	Shader* GetShader() const { return m_builtin.shader; }
+	Shader* GetShader() const;
 	
 	void SetIntParameter(const StringRef& name, int value);
 	void SetFloatParameter(const StringRef& name, float value);
@@ -165,7 +155,7 @@ private:
 
 
 LN_INTERNAL_ACCESS:
-	detail::BuiltinParameters	m_builtin;
+	RefPtr<Shader>						m_shader;
 	int									m_revisionCount;
 	uint32_t							m_hashCode;
 
@@ -231,8 +221,7 @@ public:
 	CombinedMaterial();
 	virtual ~CombinedMaterial();
 
-	//Shader*			m_shader;
-	BuiltinParameters	m_builtinParameters;
+	RefPtr<Shader>	m_shader;
 	Color			m_colorScale;	// 乗算結合済み (opacity 込み)
 	Color			m_blendColor;	// 加算結合済み
 	ToneF			m_tone;			// 加算結合済み

@@ -451,7 +451,6 @@ void Shader::Initialize(detail::GraphicsManager* manager, const void* code, int 
 		analyzer.AnalyzeLNFX((const char*)code, length);
 		auto cc = analyzer.MakeHLSLCode();
 
-		FileSystem::WriteAllBytes("code.c", cc.data(), cc.size());
 		newCode.Append(cc.data(), cc.size());
 	}
 	else

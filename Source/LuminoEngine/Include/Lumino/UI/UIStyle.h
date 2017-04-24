@@ -268,30 +268,7 @@ LN_INTERNAL_ACCESS:
 	//detail::InvalidateFlags UpdateInherit(UIStyle* parent);
 	//void Apply(UIElement* targetElement);
 
-	detail::InvalidateFlags MergeActiveStylePropertyTables(UIStylePropertyTable* store, const List<String>& visualStateNames)
-	{
-		detail::InvalidateFlags invalidateFlags = detail::InvalidateFlags::None;
-
-		// 継承元に再帰
-		if (m_baseOn != nullptr)
-		{
-			invalidateFlags |= m_baseOn->MergeActiveStylePropertyTables(store, visualStateNames);
-		}
-
-		invalidateFlags |= store->Merge(m_basePropertyTable);
-
-		// このあたりの処理で、あとから追加されたスタイルが優先されることになる
-		UIStylePropertyTable* lastActiveStyle = nullptr;
-		for (auto& pair : m_visualStatePropertyTableList)
-		{
-			const String& name = pair.first;
-			if (visualStateNames.Contains(name))
-			{
-				invalidateFlags |= store->Merge(pair.second);
-			}
-		}
-		return invalidateFlags;
-	}
+	detail::InvalidateFlags MergeActiveStylePropertyTables(UIStylePropertyTable* store, const List<String>& visualStateNames);
 
 public:	// TODO:
 	using VisualStateStylePair = std::pair<String, RefPtr<UIStylePropertyTable>>;

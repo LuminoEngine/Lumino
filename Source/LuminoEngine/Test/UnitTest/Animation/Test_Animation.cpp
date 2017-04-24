@@ -226,8 +226,5 @@ TEST_F(Test_Animation, Basic)
 
 
 
-
-	printf("");
-
 }
 

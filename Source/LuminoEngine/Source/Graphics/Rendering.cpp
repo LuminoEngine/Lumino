@@ -1098,9 +1098,9 @@ RenderingPass2::~RenderingPass2()
 void RenderingPass2::SelectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy)
 {
 	outPolicy->shader = nullptr;
-	if (material != nullptr && material->m_builtinParameters.shader != nullptr)
+	if (material != nullptr && material->m_shader != nullptr)
 	{
-		outPolicy->shader = material->m_builtinParameters.shader;
+		outPolicy->shader = material->m_shader;
 	}
 	else
 	{
@@ -1211,6 +1211,12 @@ void DrawList::SetBrush(Brush* brush)
 {
 	brush = (brush != nullptr) ? brush : Brush::Black;
 	m_state.state.state.SetBrush(brush);
+}
+
+//------------------------------------------------------------------------------
+Brush* DrawList::GetBrush() const
+{
+	return m_state.state.state.GetBrush();
 }
 
 //------------------------------------------------------------------------------

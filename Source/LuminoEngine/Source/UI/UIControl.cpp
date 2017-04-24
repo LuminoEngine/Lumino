@@ -74,29 +74,48 @@ void UIControl::RemoveChild(UIElement* element)
 }
 
 //------------------------------------------------------------------------------
-void UIControl::SetLayoutPanel(UILayoutPanel* panel)
+void UIControl::ClearChildren()
 {
-	UILayoutPanel* oldPanel = m_itemsHostPanel;
-	UILayoutPanel* newPanel = panel;
-
-	// 既に持っていれば取り除いておく
-	if (m_itemsHostPanel != nullptr && m_itemsHostPanel != panel)
+	for (auto* c : *m_items)
 	{
-		RemoveVisualChild(m_itemsHostPanel);
-		m_itemsHostPanel = nullptr;
+		c->SetLogicalParent(nullptr);
 	}
+	m_items->Clear();
+}
 
-	// 新しく保持する
-	if (panel != nullptr)
+//------------------------------------------------------------------------------
+void UIControl::SetLayoutPanel(UILayoutPanel* newPanel)
+{
+	if (newPanel != m_itemsHostPanel)
 	{
-		AddVisualChild(panel);
-		m_itemsHostPanel = panel;
-	}
+		// 既に持っていれば取り除いておく
+		if (m_itemsHostPanel != nullptr)
+		{
+			for (auto* c : *m_items)
+			{
+				m_itemsHostPanel->GetChildren()->Remove(c);
+			}
 
-	// 変更通知
-	if (oldPanel != newPanel)
-	{
-		OnLayoutPanelChanged(newPanel);
+			RemoveVisualChild(m_itemsHostPanel);
+			m_itemsHostPanel = nullptr;
+		}
+
+		// 新しく保持する
+		if (newPanel != nullptr)
+		{
+			AddVisualChild(newPanel);
+			m_itemsHostPanel = newPanel;
+
+			for (auto* c : *m_items)
+			{
+				m_itemsHostPanel->GetChildren()->Add(c);
+			}
+		}
+
+		// 変更通知
+		OnLayoutPanelChanged(m_itemsHostPanel);
+
+		//m_invalidateItemsHostPanel = true;
 	}
 }
 
@@ -123,6 +142,13 @@ UILayoutPanel* UIControl::GetLayoutPanel() const
 //------------------------------------------------------------------------------
 Size UIControl::MeasureOverride(const Size& constraint)
 {
+	//if (m_invalidateItemsHostPanel)
+	//{
+
+	//	m_invalidateItemsHostPanel = false;
+	//}
+
+
 #if 1
 	Size desiredSize = UIElement::MeasureOverride(constraint);
 

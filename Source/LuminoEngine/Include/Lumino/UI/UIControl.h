@@ -46,6 +46,7 @@ public:
 
 	void AddChild(UIElement* element);
 	void RemoveChild(UIElement* element);
+	void ClearChildren();
 
 	void SetLayoutPanel(UILayoutPanel* panel);
 	UILayoutPanel* GetLayoutPanel() const;
@@ -84,6 +85,8 @@ LN_INTERNAL_ACCESS:
 private:
 	RefPtr<UIElementCollection>		m_items;
 	RefPtr<UILayoutPanel>			m_itemsHostPanel;
+
+	//bool							m_invalidateItemsHostPanel;
 
 	//UIElement*	m_visualTreeRoot;
 };
