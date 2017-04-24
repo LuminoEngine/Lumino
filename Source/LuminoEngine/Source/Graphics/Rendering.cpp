@@ -1241,10 +1241,10 @@ void DrawList::SetFont(Font* font)
 }
 
 //------------------------------------------------------------------------------
-//void DrawList::SetShader(Shader* shader)
-//{
-//	m_defaultMaterial->SetShader(shader);
-//}
+void DrawList::SetShader(Shader* shader)
+{
+	m_defaultMaterial->SetShader(shader);
+}
 
 //------------------------------------------------------------------------------
 void DrawList::SetBlendMode(BlendMode mode)
@@ -1733,6 +1733,11 @@ void DrawList::DrawRectangle(const RectF& rect)
 	//ptr->rect = rect;
 	// TODO: カリング
 	
+}
+
+void DrawList::DrawScreenRectangle()
+{
+	Blit(nullptr);
 }
 
 //------------------------------------------------------------------------------

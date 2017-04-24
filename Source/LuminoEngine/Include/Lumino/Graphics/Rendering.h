@@ -535,7 +535,7 @@ public:
 
 	void SetFont(Font* font);
 
-	//void SetShader(Shader* shader);
+	void SetShader(Shader* shader);
 
 	void Clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
 	
@@ -602,6 +602,8 @@ public:
 		Material* material = nullptr);
 
 	void DrawRectangle(const RectF& rect);
+
+	void DrawScreenRectangle();
 
 LN_INTERNAL_ACCESS:
 	DrawList();

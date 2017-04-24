@@ -626,9 +626,10 @@ void Main()
 			Engine::RenderFrame();
 
 
-			Engine::GetDefaultSceneGraph3D()->GetDebugRenderer()->DrawLinePrimitive(
-				Vector3(0, 0, 0), Color::Red,
-				Vector3(5, 5, 5), Color::White);
+			//Engine::GetDefaultSceneGraph3D()->GetRenderer()->DrawLinePrimitive(
+			//	Vector3(0, 0, 0), Color::Red,
+			//	Vector3(5, 5, 5), Color::White);
+
 
 			//gizmo->Render(Engine::GetDefault3DLayer()->GetRenderer());
 

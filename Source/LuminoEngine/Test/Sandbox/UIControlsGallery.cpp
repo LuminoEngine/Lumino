@@ -33,9 +33,9 @@ void UIControlsGallery()
 
 	listBox1->AddTextItem(_T("UI"));
 
-	auto shader = Shader::Create(StringRef(_T("C:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/Sandbox/SSBasic2D.fx")), true);
-	auto rect = Rectangle::Create(RectF(0, 0, 3, 1));
-	rect->SetShader(shader);
+	auto shader = Shader::Create(StringRef(_T("D:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/Sandbox/SSBasic2D.fx")), true);
+	//auto rect = Rectangle::Create(RectF(0, 0, 3, 1));
+	//rect->SetShader(shader);
 	//rect->SetAngles(Math::PI/2, 0, 0);
 
 	//auto grid1 = UIGridLayout::Create(1, 1);
@@ -209,13 +209,29 @@ void UIControlsGallery()
 
 #endif
 
-	
-
-
-	while (Engine::Update())
+	float t = 0;
+	while (!Engine::IsEndRequested())
 	{
-		//printf("----\n");
+		Engine::UpdateFrame();
+			Engine::RenderFrame();
+
+			Engine::GetDefaultSceneGraph3D()->GetRenderer()->SetShader(shader);
+			Engine::GetDefaultSceneGraph3D()->GetRenderer()->DrawScreenRectangle();
+			
+		//Engine::GetDefaultSceneGraph3D()->GetDebugRenderer()->DrawLinePrimitive(
+		//	Vector3(0, 0, 0), Color::Red,
+		//	Vector3(5, 5, 5), Color::White);
+
+			t += 0.016;
+			shader->FindVariable(_T("time"))->SetFloat(t);
+
+		Engine::PresentFrame();
 	}
+
+	//while (Engine::Update())
+	//{
+	//	//printf("----\n");
+	//}
 
 	Engine::Terminate();
 
