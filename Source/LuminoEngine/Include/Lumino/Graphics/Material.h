@@ -17,6 +17,130 @@ namespace detail {
 
 class CombinedMaterial;
 
+
+struct BuiltinEffectData
+{
+public:
+	static const BuiltinEffectData DefaultData;
+
+	BuiltinEffectData()
+	{
+		m_shader = nullptr;
+		m_opacity = 1.0f;
+		m_colorScale = Color(1, 1, 1, 1);
+		m_blendColor = Color(0, 0, 0, 0);
+		m_tone = ToneF(0, 0, 0, 0);
+		m_hashCode = 0;
+		m_hashDirty = true;
+	}
+
+	void Reset()
+	{
+		SetShader(nullptr);
+		SetOpacity(1.0f);
+		SetColorScale(Color(1, 1, 1, 1));
+		SetBlendColor(Color(0, 0, 0, 0));
+		SetTone(ToneF(0, 0, 0, 0));
+	}
+
+	void SetShader(Shader* value)
+	{
+		if (m_shader != value)
+		{
+			m_shader = value;
+			m_hashDirty = true;
+		}
+	}
+
+	Shader* GetShader() const
+	{
+		return m_shader;
+	}
+
+	void SetOpacity(float value)
+	{
+		if (m_opacity != value)
+		{
+			m_opacity = value;
+			m_hashDirty = true;
+		}
+	}
+
+	float GetOpacity() const
+	{
+		return m_opacity;
+	}
+
+	void SetColorScale(const Color& value)
+	{
+		if (m_colorScale != value)
+		{
+			m_colorScale = value;
+			m_hashDirty = true;
+		}
+	}
+
+	const Color& GetColorScale() const
+	{
+		return m_colorScale;
+	}
+
+	void SetBlendColor(const Color& value)
+	{
+		if (m_blendColor != value)
+		{
+			m_blendColor = value;
+			m_hashDirty = true;
+		}
+	}
+
+	const Color& GetBlendColor() const
+	{
+		return m_blendColor;
+	}
+
+	void SetTone(const ToneF& value)
+	{
+		if (m_tone != value)
+		{
+			m_tone = value;
+			m_hashDirty = true;
+		}
+	}
+
+	const ToneF& GetTone() const
+	{
+		return m_tone;
+	}
+
+	bool Equals(const BuiltinEffectData& rhs) const
+	{
+		return	m_shader == rhs.m_shader &&
+			m_colorScale == rhs.m_colorScale &&
+			m_blendColor == rhs.m_blendColor &&
+			m_tone == rhs.m_tone;
+	}
+
+	uint32_t GetHashCode() const
+	{
+		uint32_t hash = 0;
+		hash += reinterpret_cast<intptr_t>(m_shader.Get());
+		hash += Hash::CalcHash(reinterpret_cast<const char*>(&m_colorScale), sizeof(m_colorScale));	// TODO: template
+		hash += Hash::CalcHash(reinterpret_cast<const char*>(&m_blendColor), sizeof(m_blendColor));
+		hash += Hash::CalcHash(reinterpret_cast<const char*>(&m_tone), sizeof(m_tone));
+		return hash;
+	}
+
+private:
+	RefPtr<Shader>	m_shader;		// default shader (on VisualNode, マテリアルの shader が null のときに使われる)
+	float			m_opacity;
+	Color			m_colorScale;
+	Color			m_blendColor;
+	ToneF			m_tone;
+	mutable size_t	m_hashCode;
+	mutable bool	m_hashDirty;
+};
+
 } // namespace detail
 
 /**
@@ -113,22 +237,23 @@ LN_INTERNAL_ACCESS:
 
 public:	// TODO:
 
+	// TODO: 他の Builtin パラーメータを追い出したのでこれだけになってしまった。普通のメンバ変数でいいのでは？
 	void SetMaterialTexture(Texture* v);
 	Texture* GetMaterialTexture(Texture* defaultValue) const;
 
-	void SetOpacity(float v);
-	float GetOpacity() const;
+	//void SetOpacity(float v);
+	//float GetOpacity() const;
 
-	void SetColorScale(const Color& v);
-	Color GetColorScale() const;
+	//void SetColorScale(const Color& v);
+	//Color GetColorScale() const;
 
-	void SetBlendColor(const Color& v);
-	Color GetBlendColor() const;
+	//void SetBlendColor(const Color& v);
+	//Color GetBlendColor() const;
 
-	void SetTone(const ToneF& v);
-	ToneF GetTone() const;
+	//void SetTone(const ToneF& v);
+	//ToneF GetTone() const;
 
-	Matrix GetUVTransform() const { /*auto* v = FindShaderValueConst(_T("UVTransform")); return (v) ? v->GetMatrix() : */ return Matrix::Identity; }
+	//Matrix GetUVTransform() const { /*auto* v = FindShaderValueConst(_T("UVTransform")); return (v) ? v->GetMatrix() : */ return Matrix::Identity; }
 
 	//Color GetColor(const StringRef& name, const Color& defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? Color(v->GetVector()) : defaultValue; }
 	//float GetFloat(const StringRef& name, float defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? v->GetFloat() : defaultValue; }
@@ -238,7 +363,7 @@ public:
 	bool			m_depthTestEnabled;
 	bool			m_depthWriteEnabled;
 
-	void Combine(Material* parent, Material* owner, Material* ownerBase);
+	void Combine(Material* owner, Material* ownerBase, const BuiltinEffectData& builtinEffectData);
 	void ApplyUserShaderValeues(Shader* targetShader);
 
 	uint32_t GetSourceHashCode() const { return m_lastSourceHashCode; }

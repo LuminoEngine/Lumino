@@ -452,6 +452,8 @@ void Shader::Initialize(detail::GraphicsManager* manager, const void* code, int 
 		auto cc = analyzer.MakeHLSLCode();
 
 		newCode.Append(cc.data(), cc.size());
+
+		//FileSystem::WriteAllBytes(_T("code.c"), cc.data(), cc.size());
 	}
 	else
 	{

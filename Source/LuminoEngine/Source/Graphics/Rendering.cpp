@@ -475,7 +475,7 @@ void DrawElementBatch::SetStandaloneShaderRenderer(bool enabled)
 	if (m_standaloneShaderRenderer != enabled)
 	{
 		m_standaloneShaderRenderer = enabled;
-		m_builtinEffectDataDirty = true;
+		m_hashDirty = true;
 	}
 }
 
@@ -486,13 +486,14 @@ bool DrawElementBatch::IsStandaloneShaderRenderer() const
 }
 
 //------------------------------------------------------------------------------
-bool DrawElementBatch::Equal(const BatchState& state_, Material* material, const Matrix& transfrom) const
+bool DrawElementBatch::Equal(const BatchState& state_, Material* material, const Matrix& transfrom, const BuiltinEffectData& effectData) const
 {
 	assert(m_combinedMaterial != nullptr);
 	return
 		state.GetHashCode() == state_.GetHashCode() &&
 		m_combinedMaterial->GetSourceHashCode() == material->GetHashCode() &&
-		m_transfrom == transfrom;
+		m_transfrom == transfrom &&
+		m_builtinEffectData.GetHashCode() == effectData.GetHashCode();
 //#if 1
 //	return GetHashCode() == obj.GetHashCode();
 //#else
@@ -536,9 +537,6 @@ void DrawElementBatch::Reset()
 
 	m_hashCode = 0;
 	m_hashDirty = true;
-
-	m_builtinEffectDataHashCode = 0;
-	m_builtinEffectDataDirty = true;
 }
 
 //------------------------------------------------------------------------------
@@ -561,16 +559,6 @@ size_t DrawElementBatch::GetHashCode() const
 	return m_hashCode;
 }
 
-//------------------------------------------------------------------------------
-size_t DrawElementBatch::GetBuiltinEffectDataHashCode() const
-{
-	if (m_builtinEffectDataDirty)
-	{
-		m_builtinEffectDataHashCode = false;
-		m_builtinEffectDataHashCode = m_builtinEffectData.GetHashCode();
-	}
-	return m_builtinEffectDataHashCode;
-}
 
 //==============================================================================
 // DrawElement
@@ -677,19 +665,20 @@ void DrawElementList::ClearCommands()
 }
 
 //------------------------------------------------------------------------------
-void DrawElementList::PostAddCommandInternal(const BatchState& state, Material* availableMaterial, const Matrix& transform, DrawElement* element)
+void DrawElementList::PostAddCommandInternal(const BatchState& state, Material* availableMaterial, const Matrix& transform, const BuiltinEffectData& effectData, DrawElement* element)
 {
-	if (m_batchList.IsEmpty() || !m_batchList.GetLast().Equal(state, availableMaterial, transform))
+	if (m_batchList.IsEmpty() || !m_batchList.GetLast().Equal(state, availableMaterial, transform, effectData))
 	{
 		// CombinedMaterial を作る
 		CombinedMaterial* cm = m_combinedMaterialCache.QueryCommandList();
-		cm->Combine(nullptr, availableMaterial, nullptr);	// TODO
+		cm->Combine(nullptr, availableMaterial, effectData);	// TODO
 
 		// 新しく DrawElementBatch を作る
 		m_batchList.Add(DrawElementBatch());
 		m_batchList.GetLast().state = state;
 		m_batchList.GetLast().SetCombinedMaterial(cm);
 		m_batchList.GetLast().SetTransfrom(transform);
+		m_batchList.GetLast().SetBuiltinEffect(effectData);
 	}
 	element->batchIndex = m_batchList.GetCount() - 1;
 }
@@ -1289,6 +1278,12 @@ void DrawList::SetDefaultMaterial(Material* material)
 }
 
 //------------------------------------------------------------------------------
+void DrawList::SetBuiltinEffectData(const detail::BuiltinEffectData& data)
+{
+	m_builtinEffectData = data;
+}
+
+//------------------------------------------------------------------------------
 void DrawList::BeginMakeElements()
 {
 	m_drawElementList.ClearCommands();
@@ -1297,6 +1292,7 @@ void DrawList::BeginMakeElements()
 	SetFont(nullptr);
 	//m_state.state.state.SetFont(m_manager->GetFontManager()->GetDefaultFont());
 	m_defaultMaterial->Reset();
+	m_builtinEffectData.Reset();
 	//m_defaultMaterial->cullingMode = CullingMode::None;
 	m_currentSectionTopElement = nullptr;
 }
@@ -1323,7 +1319,7 @@ void DrawList::SetTransform(const Matrix& transform)
 //------------------------------------------------------------------------------
 void DrawList::Clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
-	auto* ptr = m_drawElementList.AddCommand<detail::ClearElement>(m_state.state.state, m_defaultMaterial, Matrix::Identity);
+	auto* ptr = m_drawElementList.AddCommand<detail::ClearElement>(m_state.state.state, m_defaultMaterial, Matrix::Identity, m_builtinEffectData);
 	ptr->flags = flags;
 	ptr->color = color;
 	ptr->z = z;

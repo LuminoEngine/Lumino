@@ -95,8 +95,8 @@ void Sprite::SetAnchorPoint(float ratioX, float ratioY)
 void Sprite::RenderSprite(DrawList* renderer, SpriteBaseDirection dir)
 {
 	Material* mat = GetMainMaterial();
-	Color colorScale = mat->GetColorScale();
-	colorScale.a *= mat->GetOpacity();
+	Color colorScale = GetColorScale();
+	colorScale.a *= GetOpacity();
 	renderer->SetTransform(m_combinedGlobalMatrix);
 	renderer->DrawSprite(Vector3::Zero, m_renderSize, m_anchor, GetTexture(), m_renderSourceRect, colorScale, dir, GetMainMaterial());
 }

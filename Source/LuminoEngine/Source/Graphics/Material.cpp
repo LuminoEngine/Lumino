@@ -6,6 +6,15 @@ LN_NAMESPACE_BEGIN
 
 
 //==============================================================================
+// BuiltinEffectData
+//==============================================================================
+namespace detail {
+
+const BuiltinEffectData BuiltinEffectData::DefaultData;
+
+} // namespace detail
+
+//==============================================================================
 // MaterialList
 //==============================================================================
 
@@ -345,34 +354,34 @@ void Material::SetMaterialTexture(Texture* v)
 }
 Texture* Material::GetMaterialTexture(Texture* defaultValue) const { auto itr = m_builtinValueMap.find(MaterialTextureHash); return (itr != m_builtinValueMap.end()) ? itr->second.GetManagedTexture() : defaultValue; }
 
-void Material::SetOpacity(float v)
-{
-	m_builtinValueMap[OpacityHash].SetFloat(v);
-	m_revisionCount++;
-}
-float Material::GetOpacity() const { auto itr = m_builtinValueMap.find(OpacityHash); return (itr != m_builtinValueMap.end()) ? itr->second.GetFloat() : 1.0f; }
-
-void Material::SetColorScale(const Color& v)
-{
-	m_builtinValueMap[ColorScaleHash].SetVector(v);
-	m_revisionCount++;
-}
-Color Material::GetColorScale() const { auto itr = m_builtinValueMap.find(ColorScaleHash); return (itr != m_builtinValueMap.end()) ? Color(itr->second.GetVector()) : DefaultColorScale; }
-
-void Material::SetBlendColor(const Color& v)
-{
-	m_builtinValueMap[BlendColorHash].SetVector(v);
-	m_revisionCount++;
-}
-Color Material::GetBlendColor() const { auto itr = m_builtinValueMap.find(BlendColorHash); return (itr != m_builtinValueMap.end()) ? Color(itr->second.GetVector()) : DefaultBlendColor; }
-
-void Material::SetTone(const ToneF& v)
-{
-	m_builtinValueMap[ToneHash].SetVector(v);
-	m_revisionCount++;
-}
-ToneF Material::GetTone() const { auto itr = m_builtinValueMap.find(ToneHash); return (itr != m_builtinValueMap.end()) ? ToneF(itr->second.GetVector()) : DefaultTone; }
-
+//void Material::SetOpacity(float v)
+//{
+//	m_builtinValueMap[OpacityHash].SetFloat(v);
+//	m_revisionCount++;
+//}
+//float Material::GetOpacity() const { auto itr = m_builtinValueMap.find(OpacityHash); return (itr != m_builtinValueMap.end()) ? itr->second.GetFloat() : 1.0f; }
+//
+//void Material::SetColorScale(const Color& v)
+//{
+//	m_builtinValueMap[ColorScaleHash].SetVector(v);
+//	m_revisionCount++;
+//}
+//Color Material::GetColorScale() const { auto itr = m_builtinValueMap.find(ColorScaleHash); return (itr != m_builtinValueMap.end()) ? Color(itr->second.GetVector()) : DefaultColorScale; }
+//
+//void Material::SetBlendColor(const Color& v)
+//{
+//	m_builtinValueMap[BlendColorHash].SetVector(v);
+//	m_revisionCount++;
+//}
+//Color Material::GetBlendColor() const { auto itr = m_builtinValueMap.find(BlendColorHash); return (itr != m_builtinValueMap.end()) ? Color(itr->second.GetVector()) : DefaultBlendColor; }
+//
+//void Material::SetTone(const ToneF& v)
+//{
+//	m_builtinValueMap[ToneHash].SetVector(v);
+//	m_revisionCount++;
+//}
+//ToneF Material::GetTone() const { auto itr = m_builtinValueMap.find(ToneHash); return (itr != m_builtinValueMap.end()) ? ToneF(itr->second.GetVector()) : DefaultTone; }
+//
 
 //==============================================================================
 // DiffuseMaterial
@@ -470,7 +479,7 @@ CombinedMaterial::~CombinedMaterial()
 }
 
 //------------------------------------------------------------------------------
-void CombinedMaterial::Combine(Material* parent, Material* owner, Material* ownerBase)
+void CombinedMaterial::Combine(Material* owner, Material* ownerBase, const BuiltinEffectData& builtinEffectData)
 {
 	//bool modified = false;
 	//if (owner == nullptr || owner != owner || owner->m_modifiedForMaterialInstance)
@@ -483,7 +492,6 @@ void CombinedMaterial::Combine(Material* parent, Material* owner, Material* owne
 	//}
 
 	uint32_t hashCode = 0;
-	if (parent != nullptr)		hashCode |= parent->GetHashCode();
 	if (owner != nullptr)		hashCode |= owner->GetHashCode();
 	if (ownerBase != nullptr)	hashCode |= ownerBase->GetHashCode();
 
@@ -494,10 +502,10 @@ void CombinedMaterial::Combine(Material* parent, Material* owner, Material* owne
 
 		// source1
 		m_shader = source1->m_shader;
-		m_colorScale = source1->GetColorScale();
-		m_colorScale.a *= source1->GetOpacity();
-		m_blendColor = source1->GetBlendColor();
-		m_tone = source1->GetTone();
+		m_colorScale = builtinEffectData.GetColorScale();
+		m_colorScale.a *= builtinEffectData.GetOpacity();
+		m_blendColor = builtinEffectData.GetBlendColor();
+		m_tone = builtinEffectData.GetTone();
 		CopyUserValueTable(source1);
 		// TODO
 		m_blendMode = source1->GetBlendMode();
@@ -509,22 +517,22 @@ void CombinedMaterial::Combine(Material* parent, Material* owner, Material* owne
 		if (source2 != nullptr)
 		{
 			if (m_shader == nullptr) m_shader = source2->GetShader();
-			m_colorScale.MultiplyClamp(source2->GetColorScale());
-			m_colorScale.a *= source2->GetOpacity();
-			m_blendColor.AddClamp(source2->GetBlendColor());
-			m_tone.AddClamp(source2->GetTone());
+			//m_colorScale.MultiplyClamp(source2->GetColorScale());
+			//m_colorScale.a *= source2->GetOpacity();
+			//m_blendColor.AddClamp(source2->GetBlendColor());
+			//m_tone.AddClamp(source2->GetTone());
 			MergeUserValueTable(source2);
 		}
 
 		// parent
-		if (parent != nullptr)
-		{
-			if (m_shader == nullptr) m_shader = parent->GetShader();
-			m_colorScale.MultiplyClamp(parent->GetColorScale());
-			m_colorScale.a *= parent->GetOpacity();
-			m_blendColor.AddClamp(parent->GetBlendColor());
-			m_tone.AddClamp(parent->GetTone());
-		}
+		//if (parent != nullptr)
+		//{
+		//	if (m_shader == nullptr) m_shader = parent->GetShader();
+		//	m_colorScale.MultiplyClamp(parent->GetColorScale());
+		//	m_colorScale.a *= parent->GetOpacity();
+		//	m_blendColor.AddClamp(parent->GetBlendColor());
+		//	m_tone.AddClamp(parent->GetTone());
+		//}
 
 		// Material params (from base only. not parent inherit)
 		// TODO: 文字列検索とかしまくっている。いろいろ最適化の余地ある
@@ -545,6 +553,11 @@ void CombinedMaterial::Combine(Material* parent, Material* owner, Material* owne
 			m_emissive = source1->GetBuiltinColor(EmissiveHash, Material::DefaultEmissive);
 			m_power = source1->GetBuiltinFloat(PowerHash, Material::DefaultPower);
 			m_mainTexture = source1->GetMaterialTexture(nullptr);
+		}
+
+		if (m_shader == nullptr)
+		{
+			m_shader = builtinEffectData.GetShader();
 		}
 
 		m_lastSourceHashCode = hashCode;

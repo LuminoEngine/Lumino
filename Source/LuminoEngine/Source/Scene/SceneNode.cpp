@@ -2,6 +2,7 @@
 #include "../Internal.h"
 #include <float.h>
 #include "SceneGraphManager.h"
+#include <Lumino/Graphics/Rendering.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/SceneNode.h>
 #include <Lumino/Framework/GameScene.h>
@@ -182,6 +183,7 @@ void SceneNode::Render2(DrawList* renderer)
 
 	if (m_isVisible)
 	{
+		renderer->SetBuiltinEffectData(m_builtinEffectData);
 		OnRender2(renderer);
 		GetOwnerSceneGraph()->GetRenderingProfiler().IncreaseNodeDrawCount();
 	}

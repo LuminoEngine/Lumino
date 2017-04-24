@@ -226,32 +226,6 @@ private:
 	mutable bool				m_hashDirty;
 };
 
-struct BuiltinEffectData
-{
-	RefPtr<Shader>	shader;		// default shader (on VisualNode, マテリアルの shader が null のときに使われる)
-	Color			colorScale;
-	Color			blendColor;
-	ToneF			tone;
-
-	bool Equals(const BuiltinEffectData& rhs) const
-	{
-		return	shader == rhs.shader &&
-				colorScale == rhs.colorScale &&
-				blendColor == rhs.blendColor &&
-				tone == rhs.tone;
-	}
-
-	uint32_t GetHashCode() const
-	{
-		uint32_t hash = 0;
-		hash += reinterpret_cast<intptr_t>(shader.Get());
-		hash += Hash::CalcHash(reinterpret_cast<const char*>(&colorScale), sizeof(colorScale));	// TODO: template
-		hash += Hash::CalcHash(reinterpret_cast<const char*>(&blendColor), sizeof(blendColor));
-		hash += Hash::CalcHash(reinterpret_cast<const char*>(&tone), sizeof(tone));
-		return hash;
-	}
-};
-
 class DrawElementBatch
 {
 public:
@@ -269,7 +243,7 @@ public:
 	void SetStandaloneShaderRenderer(bool enabled);
 	bool IsStandaloneShaderRenderer() const;
 
-	bool Equal(const BatchState& state, Material* material, const Matrix& transfrom) const;
+	bool Equal(const BatchState& state, Material* material, const Matrix& transfrom, const BuiltinEffectData& effectData) const;
 	void Reset();
 	void ApplyStatus(InternalContext* context, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
 	size_t GetHashCode() const;
@@ -289,8 +263,6 @@ private:
 	mutable bool			m_hashDirty;
 
 	BuiltinEffectData		m_builtinEffectData;
-	mutable size_t			m_builtinEffectDataHashCode;
-	mutable bool			m_builtinEffectDataDirty;
 
 };
 
@@ -320,11 +292,11 @@ public:
 	void ClearCommands();
 
 	template<typename T, typename... TArgs>
-	T* AddCommand(const BatchState& state, Material* availableMaterial, const Matrix& transform, TArgs... args)
+	T* AddCommand(const BatchState& state, Material* availableMaterial, const Matrix& transform, const BuiltinEffectData& effectData, TArgs... args)
 	{
 		auto handle = m_commandDataCache.AllocData(sizeof(T));
 		T* t = new (m_commandDataCache.GetData(handle))T(args...);
-		PostAddCommandInternal(state, availableMaterial, transform, t);
+		PostAddCommandInternal(state, availableMaterial, transform, effectData, t);
 		return t;
 	}
 
@@ -345,7 +317,7 @@ public:
 	DepthBuffer* GetDefaultDepthBuffer() const { return m_depthBuffer; }
 
 private:
-	void PostAddCommandInternal(const BatchState& state, Material* availableMaterial, const Matrix& transform, DrawElement* element);
+	void PostAddCommandInternal(const BatchState& state, Material* availableMaterial, const Matrix& transform, const BuiltinEffectData& effectData, DrawElement* element);
 
 	CommandDataCache		m_commandDataCache;
 	CommandDataCache		m_extDataCache;
@@ -638,6 +610,7 @@ LN_INTERNAL_ACCESS:
 	detail::GraphicsManager* GetManager() const { return m_manager; }
 	detail::DrawElementList* GetDrawElementList() { return &m_drawElementList; }
 	void SetDefaultMaterial(Material* material);
+	void SetBuiltinEffectData(const detail::BuiltinEffectData& data);
 	void BeginMakeElements();
 	void EndFrame();
 
@@ -664,6 +637,8 @@ private:
 	
 	detail::BatchStateBlock			m_state;
 	RefPtr<Material>				m_defaultMaterial;
+
+	detail::BuiltinEffectData		m_builtinEffectData;
 
 	detail::DrawElementList			m_drawElementList;
 
@@ -723,13 +698,13 @@ inline TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId
 		m_currentSectionTopElement != nullptr &&
 		m_currentSectionTopElement->drawingSectionId == sectionId &&
 		m_currentSectionTopElement->metadata.Equals(*metadata) &&
-		m_drawElementList.GetBatch(m_currentSectionTopElement->batchIndex)->Equal(m_state.state.state, availableMaterial, m_state.state.GetTransfrom()))
+		m_drawElementList.GetBatch(m_currentSectionTopElement->batchIndex)->Equal(m_state.state.state, availableMaterial, m_state.state.GetTransfrom(), m_builtinEffectData))
 	{
 		return static_cast<TElement*>(m_currentSectionTopElement);
 	}
 
 	// DrawElement を新しく作る
-	TElement* element = m_drawElementList.AddCommand<TElement>(m_state.state.state, availableMaterial, m_state.state.GetTransfrom());
+	TElement* element = m_drawElementList.AddCommand<TElement>(m_state.state.state, availableMaterial, m_state.state.GetTransfrom(), m_builtinEffectData);
 	//element->OnJoindDrawList(m_state.transfrom);
 	element->drawingSectionId = sectionId;
 	element->metadata = *metadata;

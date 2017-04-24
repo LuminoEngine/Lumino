@@ -457,7 +457,7 @@ public:
 /**
 	@brief	色調を定義します。
 */
-class ToneF
+class ToneF	// TODO: ColorTone とかのほうがいいかな？
 {
 public:
 	static const ToneF Zero;	///< ToneF(0, 0, 0, 0);

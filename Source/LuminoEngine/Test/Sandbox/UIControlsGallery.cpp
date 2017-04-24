@@ -33,7 +33,7 @@ void UIControlsGallery()
 
 	listBox1->AddTextItem(_T("UI"));
 
-	auto shader = Shader::Create(StringRef(_T("D:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/Sandbox/SSBasic2D.fx")), true);
+	auto shader = Shader::Create(StringRef(_T("C:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/Sandbox/SSBasic2D.fx")), true);
 	auto rect = Rectangle::Create(RectF(0, 0, 3, 1));
 	rect->SetShader(shader);
 	//rect->SetAngles(Math::PI/2, 0, 0);

@@ -107,17 +107,24 @@ tr::ReflectionObjectList<Material*>* VisualNode::GetMaterials() const
 }
 
 //------------------------------------------------------------------------------
-void VisualNode::SetOpacity(float opacity, int subsetIndex)
+void VisualNode::SetOpacity(float value, int subsetIndex)
 {
 	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
 	// TODO: サブマテリアルの設定
-	m_materialList->GetMainMaterial()->SetOpacity(opacity);
+	//m_materialList->GetMainMaterial()->SetOpacity(opacity);
+	m_builtinEffectData.SetOpacity(value);
 }
-void VisualNode::SetColorScale(const Color& color, int subsetIndex)
+float VisualNode::GetOpacity() const
+{
+	return m_builtinEffectData.GetOpacity();
+}
+
+void VisualNode::SetColorScale(const Color& value, int subsetIndex)
 {
 	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
 	// TODO: サブマテリアルの設定
-	m_materialList->GetMainMaterial()->SetColorScale(color);
+	//m_materialList->GetMainMaterial()->SetColorScale(color);
+	m_builtinEffectData.SetColorScale(value);
 }
 void VisualNode::SetColorScale(float r, float g, float b, float a, int subsetIndex)
 {
@@ -131,23 +138,30 @@ void VisualNode::SetColor(int r, int g, int b, int a)
 {
 	SetColor(Color32(r, g, b, a));
 }
+const Color& VisualNode::GetColorScale() const
+{
+	return m_builtinEffectData.GetColorScale();
+}
 void VisualNode::SetBlendColor(const Color& color, int subsetIndex)
 {
 	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
 	// TODO: サブマテリアルの設定
-	m_materialList->GetMainMaterial()->SetBlendColor(color);
+	//m_materialList->GetMainMaterial()->SetBlendColor(color);
+	m_builtinEffectData.SetBlendColor(color);
 }
 void VisualNode::SetTone(const ToneF& tone, int subsetIndex)
 {
 	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
 	// TODO: サブマテリアルの設定
-	m_materialList->GetMainMaterial()->SetTone(tone);
+	//m_materialList->GetMainMaterial()->SetTone(tone);
+	m_builtinEffectData.SetTone(tone);
 }
-void VisualNode::SetShader(Shader* shader, int subsetIndex)
+void VisualNode::SetShader(Shader* value, int subsetIndex)
 {
 	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
 	// TODO: サブマテリアルの設定
-	m_materialList->GetMainMaterial()->SetShader(shader);
+	//m_materialList->GetMainMaterial()->SetShader(shader);
+	m_builtinEffectData.SetShader(value);
 }
 
 //------------------------------------------------------------------------------

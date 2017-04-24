@@ -188,7 +188,7 @@ std::vector<char> ShaderAnalyzer::MakeHLSLCode() const
 			sb.Append("ui.Color     = i.Color;");
 			sb.Append(StringA::Format("LN_SURFACE_OUTPUT uo = {0}(ui);", info.funcName));
 			sb.Append("LN_PS_OUTPUT_SURFACE o;");
-			sb.Append("o.Color = i.Color;");
+			sb.Append("o.Color = uo.Albedo;");
 			sb.Append("return o;");
 			sb.Append("}");
 

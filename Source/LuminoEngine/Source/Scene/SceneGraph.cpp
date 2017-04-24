@@ -89,6 +89,9 @@ void SceneGraph::Render2(DrawList* renderer, Camera* camera)
 	GetRenderingProfiler().BeginSession();
 	GetRootNode()->Render2(renderer);
 	GetRenderingProfiler().EndSession();
+
+	// reset status
+	renderer->SetBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
 }
 
 //------------------------------------------------------------------------------

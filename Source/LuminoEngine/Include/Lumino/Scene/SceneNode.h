@@ -4,6 +4,7 @@
 #include <Lumino/Base/String.h>
 #include <Lumino/BindingSupport.h>
 #include <Lumino/Graphics/Shader.h>
+#include <Lumino/Graphics/Material.h>
 #include <Lumino/Game/Component.h>
 //#include "MME/MMESceneObject.h"
 
@@ -135,10 +136,10 @@ public:
 
 
 	// MME の CONTROLOBJECT アノテーション関係
-	virtual const Matrix& GetMatrix() const { return m_combinedGlobalMatrix; }
-	virtual float GetOpacity() const { return 0.0f; }
-	virtual const Matrix& FindFrameMarix(const String& name) const { return Matrix::Identity; }	// TODO
-	virtual float FindMorphBlend(const String& name) const { return 0.0f; }	// TODO
+	//virtual const Matrix& GetMatrix() const { return m_combinedGlobalMatrix; }
+	//virtual float GetOpacity() const { return 0.0f; }
+	//virtual const Matrix& FindFrameMarix(const String& name) const { return Matrix::Identity; }	// TODO
+	//virtual float FindMorphBlend(const String& name) const { return 0.0f; }	// TODO
 	//virtual LightNodeList* GetAffectLightList() { return NULL; }
 
 protected:
@@ -182,6 +183,8 @@ protected:
 
 	//friend class MMERenderingPass;	// TODO: VisualNode に持ってくべきかも。ついでに friend も何とかしたい
 	//detail::RenderingPassClientData	m_renderingPassClientDataList[detail::MaxRenderingPass];
+
+	detail::BuiltinEffectData	m_builtinEffectData;
 
 private:
 	bool				m_isVisible;
