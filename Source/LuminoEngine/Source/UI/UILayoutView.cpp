@@ -110,7 +110,6 @@ void UILayoutView::Render(DrawingContext* g)
 //------------------------------------------------------------------------------
 bool UILayoutView::UpdateMouseHover(const PointF& mousePos)
 {
-	detail::EventArgsPool* pool = m_ownerContext->GetManager()->GetEventArgsPool();
 	UIElement* old = m_mouseHoverElement;
 
 	// TODO:IME側のイベントを処理する
@@ -137,15 +136,17 @@ EXIT:
 	// 新旧それぞれの Element に MouseLeave、MouseEnter イベントを送る
 	if (m_mouseHoverElement != old)
 	{
-		RefPtr<UIMouseEventArgs> args(pool->Create<UIMouseEventArgs>(MouseButtons::None, mousePos.x, mousePos.y, 0), false);
-		if (old != nullptr) {
+		auto args = UIMouseEventArgs::Create(MouseButtons::None, mousePos.x, mousePos.y, 0, true);
+		if (old != nullptr)
+		{
 			old->OnEvent(detail::UIInternalEventType::MouseLeave, args);
 		}
 
 		// ↑の MouseLeave イベントとで使いまわしているのでリセットを忘れずに
 		args->handled = false;
 
-		if (m_mouseHoverElement != nullptr) {
+		if (m_mouseHoverElement != nullptr)
+		{
 			return m_mouseHoverElement->OnEvent(detail::UIInternalEventType::MouseEnter, args);
 		}
 	}
@@ -198,28 +199,24 @@ void UILayoutView::ClosePopup(tr::UIPopup* popup)
 //------------------------------------------------------------------------------
 bool UILayoutView::InjectMouseMove(float clientX, float clientY)
 {
-	detail::EventArgsPool* pool = m_ownerContext->GetManager()->GetEventArgsPool();
-
 	m_mousePosition.Set(clientX, clientY);
 
 	// キャプチャ中のコントロールがあればそちらに送る
 	if (m_capturedElement != nullptr)
 	{
-		RefPtr<UIMouseEventArgs> args(pool->Create<UIMouseEventArgs>(MouseButtons::None, clientX, clientY, 0), false);
+		auto args = UIMouseEventArgs::Create(MouseButtons::None, clientX, clientY, 0, true);
 		return m_capturedElement->OnEvent(detail::UIInternalEventType::MouseMove, args);
 	}
 	UpdateMouseHover(PointF(clientX, clientY));
-	if (m_mouseHoverElement == NULL) { return false; }
+	if (m_mouseHoverElement == nullptr) return false;
 
-	RefPtr<UIMouseEventArgs> args(pool->Create<UIMouseEventArgs>(MouseButtons::None, clientX, clientY, 0), false);
+	auto args = UIMouseEventArgs::Create(MouseButtons::None, clientX, clientY, 0, true);
 	return m_mouseHoverElement->OnEvent(detail::UIInternalEventType::MouseMove, args);
 }
 
 //------------------------------------------------------------------------------
 bool UILayoutView::InjectMouseButtonDown(MouseButtons button, float clientX, float clientY)
 {
-	detail::EventArgsPool* pool = m_ownerContext->GetManager()->GetEventArgsPool();
-
 	m_mousePosition.Set(clientX, clientY);
 
 	// マウスクリック回数の処理
@@ -238,34 +235,32 @@ bool UILayoutView::InjectMouseButtonDown(MouseButtons button, float clientX, flo
 	tracker.LastTime = curTime;
 
 	// キャプチャ中のコントロールがあればそちらに送る
-	if (m_capturedElement != NULL)
+	if (m_capturedElement != nullptr)
 	{
-		RefPtr<UIMouseEventArgs> args(pool->Create<UIMouseEventArgs>(button, clientX, clientY, tracker.ClickCount), false);
+		auto args = UIMouseEventArgs::Create(button, clientX, clientY, tracker.ClickCount, true);
 		return m_capturedElement->OnEvent(detail::UIInternalEventType::MouseButtonDown, args);
 	}
-	if (m_mouseHoverElement == NULL) { return false; }
+	if (m_mouseHoverElement == nullptr) return false;
 
-	RefPtr<UIMouseEventArgs> args(pool->Create<UIMouseEventArgs>(button, clientX, clientY, tracker.ClickCount), false);
+	auto args = UIMouseEventArgs::Create(button, clientX, clientY, tracker.ClickCount, true);
 	return m_mouseHoverElement->OnEvent(detail::UIInternalEventType::MouseButtonDown, args);
 }
 
 //------------------------------------------------------------------------------
 bool UILayoutView::InjectMouseButtonUp(MouseButtons button, float clientX, float clientY)
 {
-	detail::EventArgsPool* pool = m_ownerContext->GetManager()->GetEventArgsPool();
-
 	m_mousePosition.Set(clientX, clientY);
 
 	// キャプチャ中のUI要素があればそちらに送る
 	if (m_capturedElement != nullptr)
 	{
-		RefPtr<UIMouseEventArgs> args(pool->Create<UIMouseEventArgs>(button, clientX, clientY, 0), false);
+		auto args = UIMouseEventArgs::Create(button, clientX, clientY, 0, true);
 		return m_capturedElement->OnEvent(detail::UIInternalEventType::MouseButtonUp, args);
 	}
 	// マウス位置にUI要素があればそちらに送る
 	if (m_mouseHoverElement != nullptr)
 	{
-		RefPtr<UIMouseEventArgs> args(pool->Create<UIMouseEventArgs>(button, clientX, clientY, 0), false);
+		auto args = UIMouseEventArgs::Create(button, clientX, clientY, 0, true);
 		return m_mouseHoverElement->OnEvent(detail::UIInternalEventType::MouseButtonUp, args);
 	}
 	return false;
@@ -274,18 +269,16 @@ bool UILayoutView::InjectMouseButtonUp(MouseButtons button, float clientX, float
 //------------------------------------------------------------------------------
 bool UILayoutView::InjectMouseWheel(int delta)
 {
-	detail::EventArgsPool* pool = m_ownerContext->GetManager()->GetEventArgsPool();
-
 	// キャプチャ中のUI要素があればそちらに送る
-	if (m_capturedElement != NULL)
+	if (m_capturedElement != nullptr)
 	{
-		RefPtr<UIMouseWheelEventArgs> args(pool->Create<UIMouseWheelEventArgs>(delta), false);
+		auto args = UIMouseWheelEventArgs::Create(delta, true);
 		return m_capturedElement->OnEvent(detail::UIInternalEventType::MouseWheel, args);
 	}
 	// マウス位置にUI要素があればそちらに送る
 	if (m_mouseHoverElement != nullptr)
 	{
-		RefPtr<UIMouseWheelEventArgs> args(pool->Create<UIMouseWheelEventArgs>(delta), false);
+		auto args = UIMouseWheelEventArgs::Create(delta, true);
 		return m_mouseHoverElement->OnEvent(detail::UIInternalEventType::MouseWheel, args);
 	}
 	return false;
@@ -297,8 +290,7 @@ bool UILayoutView::InjectKeyDown(Keys keyCode, ModifierKeys modifierKeys)
 	// フォーカスを持っているUI要素に送る
 	if (m_ownerContext->SetFocusElement() != nullptr)
 	{
-		detail::EventArgsPool* pool = m_ownerContext->GetManager()->GetEventArgsPool();
-		RefPtr<UIKeyEventArgs> args(pool->Create<UIKeyEventArgs>(keyCode, modifierKeys), false);
+		auto args = UIKeyEventArgs::Create(keyCode, modifierKeys, 0, true);
 		return m_ownerContext->SetFocusElement()->OnEvent(detail::UIInternalEventType::KeyDown, args);
 	}
 	return false;
@@ -310,8 +302,7 @@ bool UILayoutView::InjectKeyUp(Keys keyCode, ModifierKeys modifierKeys)
 	// フォーカスを持っているUI要素に送る
 	if (m_ownerContext->SetFocusElement() != nullptr)
 	{
-		detail::EventArgsPool* pool = m_ownerContext->GetManager()->GetEventArgsPool();
-		RefPtr<UIKeyEventArgs> args(pool->Create<UIKeyEventArgs>(keyCode, modifierKeys), false);
+		auto args = UIKeyEventArgs::Create(keyCode, modifierKeys, 0, true);
 		return m_ownerContext->SetFocusElement()->OnEvent(detail::UIInternalEventType::KeyUp, args);
 	}
 	return false;
@@ -323,9 +314,7 @@ bool UILayoutView::InjectTextInput(TCHAR ch)
 	// フォーカスを持っているUI要素に送る
 	if (m_ownerContext->SetFocusElement() != nullptr)
 	{
-		detail::EventArgsPool* pool = m_ownerContext->GetManager()->GetEventArgsPool();
-		RefPtr<UIKeyEventArgs> args(pool->Create<UIKeyEventArgs>(Keys::Unknown, ModifierKeys::None), false);
-		args->charCode = ch;
+		auto args = UIKeyEventArgs::Create(Keys::Unknown, ModifierKeys::None, ch, true);
 		return m_ownerContext->SetFocusElement()->OnEvent(detail::UIInternalEventType::TextInput, args);
 	}
 	return false;

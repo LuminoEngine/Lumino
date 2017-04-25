@@ -875,9 +875,10 @@ void UITextBox::OnKeyDown(UIKeyEventArgs* e)
 //------------------------------------------------------------------------------
 void UITextBox::OnTextInput(UIKeyEventArgs* e)
 {
+	TCHAR ch = e->GetCharCode();
 	m_textArea->GetDocument()->Replace(
 		m_textArea->GetDocumentTextOffset(m_textArea->GetCaret()->GetVisualPosition()),
-		0, StringRef(&e->charCode, 1));
+		0, StringRef(ch, 1));
 }
 
 //------------------------------------------------------------------------------
@@ -1041,7 +1042,8 @@ void UISimpleTextArea::OnTextInput(UIKeyEventArgs* e)
 	//	m_textArea->GetDocumentTextOffset(m_textArea->GetCaret()->GetVisualPosition()),
 	//	0, StringRef(&e->charCode, 1));
 
-	Replace(m_caret->GetVisualPosition().column, 0, StringRef(&e->charCode, 1));
+	TCHAR ch = e->GetCharCode();
+	Replace(m_caret->GetVisualPosition().column, 0, StringRef(&ch, 1));
 	UITextElement::OnTextInput(e);
 }
 

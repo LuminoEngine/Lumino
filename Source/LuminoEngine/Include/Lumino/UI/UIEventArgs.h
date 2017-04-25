@@ -19,6 +19,7 @@ public:
 
 	UIEventArgs();
 	virtual ~UIEventArgs();
+	void Initialize();
 
 public:
 	tr::ReflectionObject*	sender;
@@ -32,18 +33,31 @@ class UIMouseEventArgs
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	UIMouseEventArgs();
-	UIMouseEventArgs(MouseButtons button, float x, float y, int clickCount);
-	virtual ~UIMouseEventArgs();
+
+	/** UIMouseEventArgs のインスタンスを作成します。*/
+	static RefPtr<UIMouseEventArgs> Create(MouseButtons button, float x, float y, int clickCount, bool caching = true);
+
+	/** ボタンの種類を取得します。*/
+	MouseButtons GetMouseButtons() const { return m_button; }
+
+	/** マウスイベント生成時のマウスの座標を取得します。*/
+	const PointF& GetPosition() const { return m_position; }
+
+	/** ボタンがクリックされた回数を取得します。(ダブルクリックやトリプルクリックを区別するために使用する。最大3まで) */
+	int GetClickCount() const { return m_clickCount; }
 
 	/** 指定した要素から見た相対的なマウス ポインターの位置を返します。*/
-	PointF GetPosition(UIElement* relativeTo);
+	PointF GetPosition(UIElement* relativeTo) const;
 
-public:
-	MouseButtons	button;			/**< ボタンの種類 */
-	float			x;				/**< マウスイベント生成時のマウスの X 座標 (ルートウィンドウ内の座標系) */
-	float			y;				/**< マウスイベント生成時のマウスの Y 座標 (ルートウィンドウ内の座標系) */
-	int				clickCount;		/**< ボタンがクリックされた回数。ダブルクリックやトリプルクリックを区別するために使用する。最大3まで。 */
+LN_CONSTRUCT_ACCESS:
+	UIMouseEventArgs();
+	virtual ~UIMouseEventArgs();
+	void Initialize(MouseButtons button, float x, float y, int clickCount);
+
+private:
+	MouseButtons	m_button;
+	PointF			m_position;
+	int				m_clickCount;
 };
 
 /**
@@ -54,14 +68,28 @@ class UIKeyEventArgs
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	UIKeyEventArgs();
-	UIKeyEventArgs(Keys keyCode, ModifierKeys modifierKeys);
-	virtual ~UIKeyEventArgs();
 
-public:
-	Keys			keyCode;		/**< キーコード */
-	ModifierKeys	modifierKeys;	/** 修飾キー */
-	TCHAR			charCode;		/**< TextInput イベントにより通知された場合、その文字コードが格納されます。*/
+	/** UIKeyEventArgs のインスタンスを作成します。 */
+	static RefPtr<UIKeyEventArgs> Create(Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode, bool caching = true);
+
+	/** キーコードを取得します。 */
+	Keys GetKey() const { return m_keyCode; }
+
+	/** 修飾キーを取得します。 */
+	ModifierKeys GetModifierKeys() const { return m_modifierKeys; }
+
+	/** TextInput イベントにより通知された場合、その文字コードを取得します。 */
+	TCHAR GetCharCode() const { return m_charCode; }
+
+LN_CONSTRUCT_ACCESS:
+	UIKeyEventArgs();
+	virtual ~UIKeyEventArgs();
+	void Initialize(Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode);
+
+private:
+	Keys			m_keyCode;
+	ModifierKeys	m_modifierKeys;
+	TCHAR			m_charCode;
 };
 
 /**
@@ -72,12 +100,20 @@ class UIMouseWheelEventArgs
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
+
+	/** UIMouseWheelEventArgs のインスタンスを作成します。 */
+	static RefPtr<UIMouseWheelEventArgs> Create(int delta, bool caching = true);
+
+	/** マウスホイールの回転回数を取得します。 (正または負の回数) */
+	int GetKey() const { return m_delta; }
+
+LN_CONSTRUCT_ACCESS:
 	UIMouseWheelEventArgs();
-	UIMouseWheelEventArgs(int delta);
 	virtual ~UIMouseWheelEventArgs();
+	void Initialize(int delta);
 
 public:
-	int			wheel;			/**< マウスホイールの回転回数 (正または負の回数) */
+	int		m_delta;
 };
 
 LN_NAMESPACE_END

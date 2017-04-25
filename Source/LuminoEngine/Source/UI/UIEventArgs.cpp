@@ -5,7 +5,6 @@
 #include "EventArgsPool.h"
 #include "UIManager.h"
 
-
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
@@ -40,26 +39,38 @@ UIEventArgs::~UIEventArgs()
 {
 }
 
+//------------------------------------------------------------------------------
+void UIEventArgs::Initialize()
+{
+}
+
 //==============================================================================
 // UIMouseEventArgs
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIMouseEventArgs, UIEventArgs)
 
 //------------------------------------------------------------------------------
-UIMouseEventArgs::UIMouseEventArgs()
-	: button(MouseButtons::None)
-	, x(0)
-	, y(0)
-	, clickCount(0)
+RefPtr<UIMouseEventArgs> UIMouseEventArgs::Create(MouseButtons button, float x, float y, int clickCount, bool caching)
 {
+	if (caching)
+	{
+		detail::EventArgsPool* pool = detail::UIManager::GetInstance()->GetEventArgsPool();
+		RefPtr<UIMouseEventArgs> ptr(pool->Create<UIMouseEventArgs>(), false);
+		ptr->Initialize(button, x, y, clickCount);
+		return ptr;
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+		return nullptr;
+	}
 }
 
 //------------------------------------------------------------------------------
-UIMouseEventArgs::UIMouseEventArgs(MouseButtons button_, float x_, float y_, int clickCount_)
-	: button(button_)
-	, x(x_)
-	, y(y_)
-	, clickCount(clickCount_)
+UIMouseEventArgs::UIMouseEventArgs()
+	: m_button(MouseButtons::None)
+	, m_position(0, 0)
+	, m_clickCount(0)
 {
 }
 
@@ -69,10 +80,20 @@ UIMouseEventArgs::~UIMouseEventArgs()
 }
 
 //------------------------------------------------------------------------------
-PointF UIMouseEventArgs::GetPosition(UIElement* relativeTo)
+void UIMouseEventArgs::Initialize(MouseButtons button, float x, float y, int clickCount)
+{
+	UIEventArgs::Initialize();
+	m_button = button;
+	m_position.x = x;
+	m_position.y = y;
+	m_clickCount = clickCount;
+}
+
+//------------------------------------------------------------------------------
+PointF UIMouseEventArgs::GetPosition(UIElement* relativeTo) const
 {
 	const RectF& rc = relativeTo->GetFinalGlobalRect();
-	return PointF(x - rc.x, y - rc.y);
+	return PointF(m_position.x - rc.x, m_position.y - rc.y);
 }
 
 //==============================================================================
@@ -81,18 +102,27 @@ PointF UIMouseEventArgs::GetPosition(UIElement* relativeTo)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIKeyEventArgs, UIEventArgs)
 
 //------------------------------------------------------------------------------
-UIKeyEventArgs::UIKeyEventArgs()
-	: keyCode(Keys::Unknown)
-	, modifierKeys(ModifierKeys::None)
-	, charCode(0x00)
+RefPtr<UIKeyEventArgs> UIKeyEventArgs::Create(Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode, bool caching)
 {
+	if (caching)
+	{
+		detail::EventArgsPool* pool = detail::UIManager::GetInstance()->GetEventArgsPool();
+		RefPtr<UIKeyEventArgs> ptr(pool->Create<UIKeyEventArgs>(), false);
+		ptr->Initialize(keyCode, modifierKeys, charCode);
+		return ptr;
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+		return nullptr;
+	}
 }
 
 //------------------------------------------------------------------------------
-UIKeyEventArgs::UIKeyEventArgs(Keys keyCode_, ModifierKeys modifierKeys_)
-	: keyCode(keyCode_)
-	, modifierKeys(modifierKeys_)
-	, charCode(0x00)
+UIKeyEventArgs::UIKeyEventArgs()
+	: m_keyCode(Keys::Unknown)
+	, m_modifierKeys(ModifierKeys::None)
+	, m_charCode(0)
 {
 }
 
@@ -101,26 +131,53 @@ UIKeyEventArgs::~UIKeyEventArgs()
 {
 }
 
+//------------------------------------------------------------------------------
+void UIKeyEventArgs::Initialize(Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode)
+{
+	UIEventArgs::Initialize();
+	m_keyCode = keyCode;
+	m_modifierKeys = modifierKeys;
+	m_charCode = charCode;
+}
+
 //==============================================================================
 // UIMouseWheelEventArgs
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIMouseWheelEventArgs, UIEventArgs)
 
 //------------------------------------------------------------------------------
-UIMouseWheelEventArgs::UIMouseWheelEventArgs()
-	: wheel(0)
+RefPtr<UIMouseWheelEventArgs> UIMouseWheelEventArgs::Create(int delta, bool caching)
 {
+	if (caching)
+	{
+		detail::EventArgsPool* pool = detail::UIManager::GetInstance()->GetEventArgsPool();
+		RefPtr<UIMouseWheelEventArgs> ptr(pool->Create<UIMouseWheelEventArgs>(), false);
+		ptr->Initialize(delta);
+		return ptr;
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+		return nullptr;
+	}
 }
 
 //------------------------------------------------------------------------------
-UIMouseWheelEventArgs::UIMouseWheelEventArgs(int wheel_)
-	: wheel(wheel_)
+UIMouseWheelEventArgs::UIMouseWheelEventArgs()
+	: m_delta(0)
 {
 }
 
 //------------------------------------------------------------------------------
 UIMouseWheelEventArgs::~UIMouseWheelEventArgs()
 {
+}
+
+//------------------------------------------------------------------------------
+void UIMouseWheelEventArgs::Initialize(int delta)
+{
+	UIEventArgs::Initialize();
+	m_delta = delta;
 }
 
 LN_NAMESPACE_END

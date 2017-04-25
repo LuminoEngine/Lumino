@@ -347,7 +347,7 @@ void UIElement::OnMouseLeave(UIMouseEventArgs* e)
 	// 親にもマウスが乗ったことになっていれば、ヒットテストをした上で通知する
 	if (m_visualParent != nullptr && m_visualParent->m_isMouseOver)
 	{
-		if (!m_visualParent->m_finalGlobalRect.Contains(PointF(e->x, e->y)))
+		if (!m_visualParent->m_finalGlobalRect.Contains(e->GetPosition()))
 		{
 			m_visualParent->OnMouseLeave(e);
 		}
