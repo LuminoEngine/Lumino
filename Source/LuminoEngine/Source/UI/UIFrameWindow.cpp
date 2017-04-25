@@ -236,13 +236,13 @@ void UIMainWindow::Initialize(detail::UIManager* manager, PlatformWindow* platfo
 	m_mainViewport = RefPtr<Viewport>::MakeRef();
 	m_mainViewport->Initialize(GetManager()->GetGraphicsManager(), platformWindow->GetSize());
 
-	m_default3DCameraViewportLayer = RefPtr<CameraViewportLayer>::MakeRef();
-	m_default3DCameraViewportLayer->Initialize(detail::EngineDomain::GetSceneGraphManager(), defaultWorld3D, defaultWorld3D->GetSceneGraph3D()->GetMainCamera());
-	m_mainViewport->AddViewportLayer(m_default3DCameraViewportLayer);
+	//m_default3DCameraViewportLayer = RefPtr<CameraViewportLayer>::MakeRef();
+	//m_default3DCameraViewportLayer->Initialize(detail::EngineDomain::GetSceneGraphManager(), defaultWorld3D, defaultWorld3D->GetSceneGraph3D()->GetMainCamera());
+	//m_mainViewport->AddViewportLayer(m_default3DCameraViewportLayer);
 
-	m_default2DCameraViewportLayer = RefPtr<CameraViewportLayer>::MakeRef();
-	m_default2DCameraViewportLayer->Initialize(detail::EngineDomain::GetSceneGraphManager(), defaultWorld2D, defaultWorld2D->GetSceneGraph2D()->GetMainCamera());
-	m_mainViewport->AddViewportLayer(m_default2DCameraViewportLayer);
+	//m_default2DCameraViewportLayer = RefPtr<CameraViewportLayer>::MakeRef();
+	//m_default2DCameraViewportLayer->Initialize(detail::EngineDomain::GetSceneGraphManager(), defaultWorld2D, defaultWorld2D->GetSceneGraph2D()->GetMainCamera());
+	//m_mainViewport->AddViewportLayer(m_default2DCameraViewportLayer);
 
 	// UI Layer
 	//m_uiLayer.Attach(LN_NEW UIViewportLayer(m_mainUIContext->GetMainWindowView()), false);
@@ -257,6 +257,11 @@ void UIMainWindow::Initialize(detail::UIManager* manager, PlatformWindow* platfo
 	m_mainUIViewport = NewObject<UIViewport>();
 	m_mainUIViewport->SetBackbufferSize(platformWindow->GetSize().width, platformWindow->GetSize().height);	// TODO: EngineSettings からもらう
 	AddVisualChild(m_mainUIViewport);
+
+	m_cameraViewportLayer3D = NewObject<CameraViewportLayer2>(defaultWorld3D, defaultWorld3D->GetSceneGraph3D()->GetMainCamera());
+	m_mainUIViewport->AddViewportLayer(m_cameraViewportLayer3D);
+	m_cameraViewportLayer2D = NewObject<CameraViewportLayer2>(defaultWorld2D, defaultWorld2D->GetSceneGraph2D()->GetMainCamera());
+	m_mainUIViewport->AddViewportLayer(m_cameraViewportLayer2D);
 
 	SetLayoutPanel(panel);
 

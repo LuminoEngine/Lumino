@@ -3,6 +3,7 @@
 #include "../World.h"
 #include "../Graphics/Viewport.h"
 #include "../Graphics/Rendering.h"
+#include "../UI/UIViewport.h"
 #include "SceneNode.h"
 
 LN_NAMESPACE_BEGIN
@@ -171,6 +172,33 @@ private:
 	RefPtr<detail::InternalRenderer>	m_internalRenderer;
 	RefPtr<tr::GizmoModel>	m_gizmo;
 	WorldDebugDrawFlags		m_debugDrawFlags;
+};
+
+
+/**
+	@brief
+*/
+class CameraViewportLayer2
+	: public UIViewportLayer
+{
+public:
+	void SetDebugDrawFlags(WorldDebugDrawFlags flags);
+
+	virtual void Render() override;
+	virtual void ExecuteDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+
+protected:
+
+LN_INTERNAL_ACCESS:
+	CameraViewportLayer2();
+	virtual ~CameraViewportLayer2();
+	void Initialize(World* targetWorld, Camera* hostingCamera);
+
+private:
+	World*								m_targetWorld;
+	RefPtr<Camera>						m_hostingCamera;
+	RefPtr<detail::InternalRenderer>	m_internalRenderer;
+	WorldDebugDrawFlags					m_debugDrawFlags;
 };
 
 /**

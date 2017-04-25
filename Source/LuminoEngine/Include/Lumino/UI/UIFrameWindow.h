@@ -10,6 +10,7 @@ class PlatformWindow;
 class SwapChain;
 class DrawingContext;
 class CameraViewportLayer;
+class CameraViewportLayer2;
 class World2D;
 class World3D;
 class UIViewport;
@@ -105,6 +106,8 @@ private:
 
 
 	RefPtr<UIViewport>			m_mainUIViewport;
+	RefPtr<CameraViewportLayer2>	m_cameraViewportLayer2D;
+	RefPtr<CameraViewportLayer2>	m_cameraViewportLayer3D;
 };
 
 

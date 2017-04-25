@@ -369,6 +369,96 @@ bool CameraViewportLayer::OnPlatformEvent(const PlatformEventArgs& e)
 }
 
 //==============================================================================
+// CameraViewportLayer2
+//==============================================================================
+
+//------------------------------------------------------------------------------
+CameraViewportLayer2::CameraViewportLayer2()
+	: m_targetWorld(nullptr)
+	, m_hostingCamera(nullptr)
+	, m_debugDrawFlags(WorldDebugDrawFlags::None)
+{
+}
+
+//------------------------------------------------------------------------------
+void CameraViewportLayer2::Initialize(World* targetWorld, Camera* hostingCamera)
+{
+	m_targetWorld = targetWorld;
+	m_hostingCamera = hostingCamera;
+	//m_hostingCamera->m_ownerLayer = this;
+
+	if (m_hostingCamera->GetProjectionMode() == CameraProjection_3D)
+	{
+		auto internalRenderer = RefPtr<detail::ForwardShadingRenderer>::MakeRef();
+		internalRenderer->Initialize(detail::EngineDomain::GetGraphicsManager());
+		m_internalRenderer = internalRenderer;
+	}
+	else
+	{
+		auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
+		internalRenderer->Initialize(detail::EngineDomain::GetGraphicsManager());
+		m_internalRenderer = internalRenderer;
+	}
+}
+
+//------------------------------------------------------------------------------
+CameraViewportLayer2::~CameraViewportLayer2()
+{
+	m_hostingCamera->m_ownerLayer = nullptr;
+}
+
+//------------------------------------------------------------------------------
+void CameraViewportLayer2::SetDebugDrawFlags(WorldDebugDrawFlags flags)
+{
+	m_debugDrawFlags = flags;
+}
+
+//------------------------------------------------------------------------------
+void CameraViewportLayer2::Render()
+{
+	// TODO: やめよう
+	m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->SetCurrentCamera(m_hostingCamera);
+
+	m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->Clear(ClearFlags::Depth, Color::White);
+
+	// カメラ行列の更新
+	m_hostingCamera->UpdateMatrices(GetOwnerViewport()->GetViewSize());
+
+	m_targetWorld->Render(m_hostingCamera, m_debugDrawFlags);
+}
+
+//------------------------------------------------------------------------------
+void CameraViewportLayer2::ExecuteDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+{
+	// TODO: float
+	Size targetSize((float)renderTarget->GetWidth(), (float)renderTarget->GetHeight());
+	m_hostingCamera->UpdateMatrices(targetSize);
+
+	detail::CameraInfo cameraInfo;
+	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.Get());
+	cameraInfo.viewPixelSize = targetSize;
+	cameraInfo.viewPosition = m_hostingCamera->GetCombinedGlobalMatrix().GetPosition();
+	cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
+	cameraInfo.projMatrix = m_hostingCamera->GetProjectionMatrix();
+	cameraInfo.viewProjMatrix = m_hostingCamera->GetViewProjectionMatrix();
+	cameraInfo.viewFrustum = m_hostingCamera->GetViewFrustum();
+	cameraInfo.zSortDistanceBase = m_hostingCamera->GetZSortDistanceBase();
+	parentDrawList->RenderSubDrawList(
+		m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->GetDrawElementList(),
+		cameraInfo,
+		m_internalRenderer,
+		renderTarget,
+		depthBuffer);
+	parentDrawList->RenderSubDrawList(
+		m_hostingCamera->GetOwnerSceneGraph()->GetDebugRenderer()->GetDrawElementList(),
+		cameraInfo,
+		m_internalRenderer,
+		renderTarget,
+		depthBuffer);
+	m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->EndFrame();
+}
+
+//==============================================================================
 // CameraBehavior
 //==============================================================================
 //------------------------------------------------------------------------------

@@ -28,7 +28,7 @@ UIViewport::~UIViewport()
 void UIViewport::Initialize()
 {
 	UIElement::Initialize();
-	m_backgroundColor = Color::Blue;
+	m_backgroundColor = Color::Blue;	// TODO:
 }
 
 //------------------------------------------------------------------------------
@@ -36,6 +36,22 @@ void UIViewport::SetBackbufferSize(int width, int height)
 {
 	m_backbufferSize.Set(width, height);
 }
+
+//------------------------------------------------------------------------------
+void UIViewport::AddViewportLayer(UIViewportLayer* layer)
+{
+	m_viewportLayerList.Add(layer);
+	layer->m_owner = this;
+}
+
+//------------------------------------------------------------------------------
+//void UIViewport::RemoveViewportLayer(ViewportLayer* layer)
+//{
+//	if (m_viewportLayerList->Remove(RefPtr<ViewportLayer>(layer)))
+//	{
+//		layer->SetOwner(nullptr);
+//	}
+//}
 
 //------------------------------------------------------------------------------
 bool UIViewport::OnEvent(detail::UIInternalEventType type, UIEventArgs* args)
@@ -77,9 +93,36 @@ void UIViewport::OnRender(DrawingContext* g)
 	g->Clear(ClearFlags::All, m_backgroundColor, 1.0f, 0);
 
 
+
+
+
+	for (auto& layer : m_viewportLayerList)
+	{
+		layer->Render();
+	}
+
+
+	// 全てのレイヤーの描画リストを実行し m_primaryLayerTarget へ書き込む
+	for (auto& layer : m_viewportLayerList)
+	{
+		layer->ExecuteDrawListRendering(g, m_primaryLayerTarget, m_depthBuffer);
+
+		// TODO: Posteffect
+		//BeginBlitRenderer();
+		//layer->PostRender(m_renderer, &m_primaryLayerTarget, &m_secondaryLayerTarget);
+		//FlushBlitRenderer(renderTarget);
+	}
+
+
+
+
+
 	g->SetRenderTarget(0, oldRT);
 	g->SetDepthBuffer(oldDB);
 	g->Blit(m_primaryLayerTarget);	// TODO: 転送先指定
+
+	// TODO: 暫定。Blit の中で深度書き込みしないようにしてほしいかも。
+	g->Clear(ClearFlags::Depth, Color());
 
 	UIElement::OnRender(g);
 }
@@ -120,6 +163,8 @@ void UIViewport::UpdateFramebufferSizeIfNeeded(const SizeI& viewSize)
 		// DepthBuffer
 		m_depthBuffer = RefPtr<DepthBuffer>::MakeRef();
 		m_depthBuffer->CreateImpl(GetManager()->GetGraphicsManager(), newSize, TextureFormat::D24S8);
+
+		m_viewSize = newSize.ToFloatSize();
 	}
 }
 
@@ -181,4 +226,23 @@ void UIViewport::MakeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize
 	mat->Scale(new_w / dw, new_h / dh, 1.0f);
 #endif
 }
+
+
+//==============================================================================
+// UIViewportLayer
+//==============================================================================
+//LN_UI_TYPEINFO_IMPLEMENT(UIViewportLayer, Object);
+
+//------------------------------------------------------------------------------
+UIViewportLayer::UIViewportLayer()
+	: Object()
+	, m_owner(nullptr)
+{
+}
+
+//------------------------------------------------------------------------------
+UIViewportLayer::~UIViewportLayer()
+{
+}
+
 LN_NAMESPACE_END
