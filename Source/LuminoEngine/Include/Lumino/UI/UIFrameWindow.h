@@ -6,10 +6,10 @@
 #include "UILayoutView.h"
 
 LN_NAMESPACE_BEGIN
+namespace detail { class InternalRenderer; }
 class PlatformWindow;
 class SwapChain;
 class DrawingContext;
-class CameraViewportLayer;
 class CameraViewportLayer2;
 class World2D;
 class World3D;
@@ -72,7 +72,7 @@ class UIMainWindow
 	LN_UI_TYPEINFO_DECLARE();
 public:
 	UIContext* GetMainUIContext() const { return m_mainUIContext; }
-	Viewport* GetViewport() const { return m_mainViewport; }
+	UIViewport* GetViewport() const;
 
 protected:
 	virtual void OnPresentRenderingContexts() override;
@@ -83,14 +83,11 @@ LN_INTERNAL_ACCESS:
 	virtual ~UIMainWindow();
 	void Initialize(detail::UIManager* manager, PlatformWindow* platformWindow, World2D* defaultWorld2D, World3D* defaultWorld3D);
 
-	CameraViewportLayer* GetDefault2DCameraViewportLayer();
-	CameraViewportLayer* GetDefault3DCameraViewportLayer();
-
 	void InjectElapsedTime(float elapsedTime);
 	void UpdateLayout(const Size& viewSize);	// TODO: ゆくゆくは SwapChain や Viewport も UIFrameWindow にもってくる。そのとき、この viewSize はいらなくなる
 	void RenderUI();
 
-	virtual bool OnEvent(const PlatformEventArgs& e) override;
+	//virtual bool OnEvent(const PlatformEventArgs& e) override;
 	virtual void OnRenderContents() override;
 	virtual void PresentRenderingContexts() override;
 
@@ -99,13 +96,8 @@ LN_INTERNAL_ACCESS:
 private:
 	void UpdateViewportTransform();
 
-	UIContext*					m_mainUIContext;
-	RefPtr<Viewport>			m_mainViewport;		// TODO: 後で Control 化する。直接描画しない
-	RefPtr<CameraViewportLayer>	m_default2DCameraViewportLayer;
-	RefPtr<CameraViewportLayer>	m_default3DCameraViewportLayer;
-
-
-	RefPtr<UIViewport>			m_mainUIViewport;
+	UIContext*						m_mainUIContext;
+	RefPtr<UIViewport>				m_mainUIViewport;
 	RefPtr<CameraViewportLayer2>	m_cameraViewportLayer2D;
 	RefPtr<CameraViewportLayer2>	m_cameraViewportLayer3D;
 };

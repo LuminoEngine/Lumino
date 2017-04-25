@@ -6,6 +6,16 @@
 #include "ImageEffect/ImageEffect.h"
 
 LN_NAMESPACE_BEGIN
+
+/** Viewport の配置方法 */
+enum class ViewportPlacement
+{
+	Stretch,		/**< 転送先領域全体に拡大または縮小する */
+	AutoResize,		/**< 転送先領域と同じピクセルサイズになるよう自動的にリサイズする */
+	ViewBox,		/**< 転送元領域のアスペクト比が維持されるように余白を挿入する */
+};
+
+#if 0
 namespace detail { class InternalRenderer; }
 namespace detail { class RenderingPass2; }
 struct PlatformEventArgs;
@@ -17,13 +27,6 @@ public:
 	RenderTargetTexture* RequestRenderTarget(int width, int height);
 };
 
-/** Viewport の配置方法 */
-enum class ViewportPlacement
-{
-	Stretch,		/**< 転送先領域全体に拡大または縮小する */
-	AutoResize,		/**< 転送先領域と同じピクセルサイズになるよう自動的にリサイズする */
-	ViewBox,		/**< 転送元領域のアスペクト比が維持されるように余白を挿入する */
-};
 
 
 
@@ -156,5 +159,6 @@ private:
 //	virtual ~MainViewport();
 //	void Initialize(detail::GraphicsManager* manager, RenderTarget* renderTarget);
 //};
+#endif
 
 LN_NAMESPACE_END

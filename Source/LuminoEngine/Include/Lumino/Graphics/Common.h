@@ -102,8 +102,6 @@ typedef RefPtr<ScreenMotionBlurImageEffect>	ScreenMotionBlurImageEffectPtr;
 class ToneImageEffect;
 typedef RefPtr<ToneImageEffect>	ToneImageEffectPtr;
 
-class Viewport;
-class ViewportLayer;
 class ImageEffect;
 typedef tr::ReflectionObjectList<ImageEffect*>	ImageEffectList;
 

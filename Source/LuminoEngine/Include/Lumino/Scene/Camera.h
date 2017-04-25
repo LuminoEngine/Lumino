@@ -9,8 +9,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 namespace tr { class GizmoModel; }
-class CameraViewportLayer;
-using CameraViewportLayerPtr = RefPtr<CameraViewportLayer>;
+class CameraViewportLayer2;
 
 
 /**
@@ -102,7 +101,7 @@ LN_INTERNAL_ACCESS:
 	void Initialize(SceneGraph* owner, CameraProjection proj);
 	CameraProjection GetProjectionMode() const { return m_projectionMode; }
 
-	CameraViewportLayer*	m_ownerLayer;
+	CameraViewportLayer2*	m_ownerLayer;
 
 	CameraProjection	m_projectionMode;
 
@@ -135,6 +134,7 @@ private:
 	Matrix				m_viewProjMatrixIT;	///< ビュー行列とプロジェクション行列の積 (Inverse * Transpose)
 };
 
+#if 0
 /**
 	@brief
 */
@@ -173,7 +173,7 @@ private:
 	RefPtr<tr::GizmoModel>	m_gizmo;
 	WorldDebugDrawFlags		m_debugDrawFlags;
 };
-
+#endif
 
 /**
 	@brief
@@ -193,6 +193,7 @@ LN_INTERNAL_ACCESS:
 	CameraViewportLayer2();
 	virtual ~CameraViewportLayer2();
 	void Initialize(World* targetWorld, Camera* hostingCamera);
+	const Size& GetViewSize() const;
 
 private:
 	World*								m_targetWorld;

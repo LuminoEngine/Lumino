@@ -5,6 +5,7 @@
 
 LN_NAMESPACE_BEGIN
 class UIMainWindow;
+class UIViewport;
 class SceneGraph2D;
 class SceneGraph3D;
 class Light;
@@ -65,9 +66,9 @@ public:
 	static World* GetWorld3D();
 
 	static UIMainWindow* GetMainWindow();
-	static Viewport* GetMainViewport();
-	static ViewportLayer* GetDefault2DLayer();
-	static ViewportLayer* GetDefault3DLayer();
+	static UIViewport* GetMainViewport();
+	//static ViewportLayer* GetDefault2DLayer();
+	//static ViewportLayer* GetDefault3DLayer();
 	static SceneGraph2D* GetDefaultSceneGraph2D();
 	static SceneGraph3D* GetDefaultSceneGraph3D();
 	static Light* GetMainLight3D();

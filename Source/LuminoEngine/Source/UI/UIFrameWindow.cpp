@@ -209,16 +209,12 @@ LN_UI_TYPEINFO_IMPLEMENT(UIMainWindow, UIFrameWindow)
 //------------------------------------------------------------------------------
 UIMainWindow::UIMainWindow()
 	: m_mainUIContext(nullptr)
-	, m_mainViewport(nullptr)
-	//, m_uiLayer(nullptr)
 {
 }
 
 //------------------------------------------------------------------------------
 UIMainWindow::~UIMainWindow()
 {
-	m_mainViewport->RemoveViewportLayer(m_default2DCameraViewportLayer);
-	m_mainViewport->RemoveViewportLayer(m_default3DCameraViewportLayer);
 	LN_SAFE_RELEASE(m_mainUIContext);
 }
 
@@ -232,22 +228,6 @@ void UIMainWindow::Initialize(detail::UIManager* manager, PlatformWindow* platfo
 
 	UIFrameWindow::Initialize(manager, platformWindow, manager->GetGraphicsManager()->GetMainSwapChain(), m_mainUIContext);
 
-	// MainViewport
-	m_mainViewport = RefPtr<Viewport>::MakeRef();
-	m_mainViewport->Initialize(GetManager()->GetGraphicsManager(), platformWindow->GetSize());
-
-	//m_default3DCameraViewportLayer = RefPtr<CameraViewportLayer>::MakeRef();
-	//m_default3DCameraViewportLayer->Initialize(detail::EngineDomain::GetSceneGraphManager(), defaultWorld3D, defaultWorld3D->GetSceneGraph3D()->GetMainCamera());
-	//m_mainViewport->AddViewportLayer(m_default3DCameraViewportLayer);
-
-	//m_default2DCameraViewportLayer = RefPtr<CameraViewportLayer>::MakeRef();
-	//m_default2DCameraViewportLayer->Initialize(detail::EngineDomain::GetSceneGraphManager(), defaultWorld2D, defaultWorld2D->GetSceneGraph2D()->GetMainCamera());
-	//m_mainViewport->AddViewportLayer(m_default2DCameraViewportLayer);
-
-	// UI Layer
-	//m_uiLayer.Attach(LN_NEW UIViewportLayer(m_mainUIContext->GetMainWindowView()), false);
-	//m_uiLayer->Initialize();
-	//m_mainViewport->AddViewportLayer(m_uiLayer);
 
 
 	// TODO: m_mainUIViewport を VisualTree の先頭に入れたい対策。InsertVisualTree とかほしいなぁ。。。
@@ -272,13 +252,10 @@ void UIMainWindow::Initialize(detail::UIManager* manager, PlatformWindow* platfo
 	UpdateViewportTransform();
 }
 
-CameraViewportLayer* UIMainWindow::GetDefault2DCameraViewportLayer()
+//------------------------------------------------------------------------------
+UIViewport* UIMainWindow::GetViewport() const
 {
-	return m_default2DCameraViewportLayer;
-}
-CameraViewportLayer* UIMainWindow::GetDefault3DCameraViewportLayer()
-{
-	return m_default3DCameraViewportLayer;
+	return m_mainUIViewport;
 }
 
 //------------------------------------------------------------------------------
@@ -308,26 +285,12 @@ Size UIMainWindow::ArrangeOverride(const Size& finalSize)
 	return renderSize;
 }
 
-//------------------------------------------------------------------------------
-bool UIMainWindow::OnEvent(const PlatformEventArgs& e)
-{
-	return m_mainViewport->DoPlatformEvent(e);
-}
-
 void UIMainWindow::OnRenderContents()
 {
-	Details::Renderer* renderer = GetManager()->GetGraphicsManager()->GetRenderer();
-	m_mainViewport->Render(GetDrawingContext(), GetPlatformWindow()->GetSize()/*GetSwapChain()->GetBackBuffer()->GetSize()*/);
 }
 
 void UIMainWindow::OnPresentRenderingContexts()
 {
-
-	Details::Renderer* renderer = GetManager()->GetGraphicsManager()->GetRenderer();
-
-	m_mainViewport->PresentRenderingContexts();
-
-
 	UIFrameWindow::OnPresentRenderingContexts();
 }
 
@@ -353,8 +316,8 @@ void UIMainWindow::UpdateViewportTransform()
 	//	viewSize.height = bbSize;
 	//}
 
-	SizeI size = GetPlatformWindow()->GetSize();
-	m_mainViewport->UpdateLayersTransform(size.ToFloatSize());
+	//SizeI size = GetPlatformWindow()->GetSize();
+	//m_mainViewport->UpdateLayersTransform(size.ToFloatSize());
 }
 
 //==============================================================================

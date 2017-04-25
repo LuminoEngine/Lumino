@@ -88,14 +88,14 @@ void Camera::SetCameraBehavior(CameraBehavior* behavior)
 //------------------------------------------------------------------------------
 Vector3 Camera::WorldToViewportPoint(const Vector3& position) const
 {
-	const Size& size = m_ownerLayer->GetSize();
+	const Size& size = m_ownerLayer->GetViewSize();
 	return Vector3::Project(position, m_viewProjMatrix, 0.0f, 0.0f, size.width, size.height, m_nearClip, m_farClip);
 }
 
 //------------------------------------------------------------------------------
 Vector3 Camera::ViewportToWorldPoint(const Vector3& position) const
 {
-	const Size& size = m_ownerLayer->GetSize();
+	const Size& size = m_ownerLayer->GetViewSize();
 	Vector3 v;
 	v.x = (((position.x - 0) / size.width) * 2.0f) - 1.0f;
 	v.y = -((((position.y - 0) / size.height) * 2.0f) - 1.0f);
@@ -187,6 +187,7 @@ void Camera::OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph* oldOwner
 	}
 }
 
+#if 0
 //==============================================================================
 // CameraViewportLayer
 //==============================================================================
@@ -367,6 +368,7 @@ bool CameraViewportLayer::OnPlatformEvent(const PlatformEventArgs& e)
 	}
 	return false;
 }
+#endif
 
 //==============================================================================
 // CameraViewportLayer2
@@ -385,7 +387,7 @@ void CameraViewportLayer2::Initialize(World* targetWorld, Camera* hostingCamera)
 {
 	m_targetWorld = targetWorld;
 	m_hostingCamera = hostingCamera;
-	//m_hostingCamera->m_ownerLayer = this;
+	m_hostingCamera->m_ownerLayer = this;
 
 	if (m_hostingCamera->GetProjectionMode() == CameraProjection_3D)
 	{
@@ -399,6 +401,12 @@ void CameraViewportLayer2::Initialize(World* targetWorld, Camera* hostingCamera)
 		internalRenderer->Initialize(detail::EngineDomain::GetGraphicsManager());
 		m_internalRenderer = internalRenderer;
 	}
+}
+
+//------------------------------------------------------------------------------
+const Size& CameraViewportLayer2::GetViewSize() const
+{
+	return GetOwnerViewport()->GetViewSize();
 }
 
 //------------------------------------------------------------------------------

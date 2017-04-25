@@ -32,6 +32,18 @@ void UIViewport::Initialize()
 }
 
 //------------------------------------------------------------------------------
+void UIViewport::SetViewBackgroundColor(const Color& color)
+{
+	m_backgroundColor = color;
+}
+
+//------------------------------------------------------------------------------
+void UIViewport::SetPlacement(ViewportPlacement placement)
+{
+	m_placement = placement;
+}
+
+//------------------------------------------------------------------------------
 void UIViewport::SetBackbufferSize(int width, int height)
 {
 	m_backbufferSize.Set(width, height);

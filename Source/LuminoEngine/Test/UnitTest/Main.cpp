@@ -159,7 +159,7 @@ void EngineInitalize()
 	RawFont::GetDefaultFont()->SetName(_T("VL Gothic"));
 
 	// 背景はグレーにしておくと加算合成のテストとか、いろいろ都合がよい
-	Engine::GetMainViewport()->SetBackgroundColor(Color32::Gray);
+	Engine::GetMainViewport()->SetViewBackgroundColor(Color32::Gray);
 
 
 
