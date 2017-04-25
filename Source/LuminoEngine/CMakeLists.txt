@@ -468,6 +468,7 @@ set(LN_SOURCES_UI
 	Include/Lumino/UI/UITextElement.h
 	Include/Lumino/UI/UITreeView.h
 	Include/Lumino/UI/UITypeInfo.h
+	Include/Lumino/UI/UIViewport.h
 	Include/Lumino/UI/UIWindow.h
 	Source/UI/EventArgsPool.h
 	Source/UI/Internal.h
@@ -501,6 +502,7 @@ set(LN_SOURCES_UI
 	Source/UI/UITextElement.cpp
 	Source/UI/UITreeView.cpp
 	Source/UI/UITypeInfo.cpp
+	Source/UI/UIViewport.cpp
 	Source/UI/UIWindow.cpp
 )
 
