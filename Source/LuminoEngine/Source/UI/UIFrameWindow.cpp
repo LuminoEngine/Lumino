@@ -7,6 +7,8 @@
 #include <Lumino/UI/UIContext.h>
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIFrameWindow.h>
+#include <Lumino/UI/UIViewport.h>
+#include <Lumino/UI/UILayoutPanel.h>
 #include <Lumino/Scene/Camera.h>
 #include <Lumino/World.h>
 #include <Lumino/Scene/SceneGraph.h>
@@ -247,6 +249,18 @@ void UIMainWindow::Initialize(detail::UIManager* manager, PlatformWindow* platfo
 	//m_uiLayer->Initialize();
 	//m_mainViewport->AddViewportLayer(m_uiLayer);
 
+
+	// TODO: m_mainUIViewport を VisualTree の先頭に入れたい対策。InsertVisualTree とかほしいなぁ。。。
+	RefPtr<UILayoutPanel> panel = GetLayoutPanel();
+	SetLayoutPanel(nullptr);
+
+	m_mainUIViewport = NewObject<UIViewport>();
+	m_mainUIViewport->SetBackbufferSize(platformWindow->GetSize().width, platformWindow->GetSize().height);	// TODO: EngineSettings からもらう
+	AddVisualChild(m_mainUIViewport);
+
+	SetLayoutPanel(panel);
+
+
 	SetSizeInternal(platformWindow->GetSize().ToFloatSize());
 
 	// SwapChain のサイズを Viewport へ通知
@@ -277,6 +291,16 @@ void UIMainWindow::UpdateLayout(const Size& viewSize)
 //------------------------------------------------------------------------------
 void UIMainWindow::RenderUI()
 {
+}
+
+//------------------------------------------------------------------------------
+Size UIMainWindow::ArrangeOverride(const Size& finalSize)
+{
+	Size renderSize = UIFrameWindow::ArrangeOverride(finalSize);
+
+	m_mainUIViewport->ArrangeLayout(RectF(0, 0, renderSize));
+
+	return renderSize;
 }
 
 //------------------------------------------------------------------------------

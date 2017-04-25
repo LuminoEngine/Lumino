@@ -212,7 +212,11 @@ public:
     }
 
     /// convert
-	operator T*			() const { return static_cast<T*>(m_ptr); }
+	operator T*			() const
+	{
+		// ここでコンパイルエラーとなる場合、T の定義があるヘッダファイルを include しているか確認すること。
+		return static_cast<T*>(m_ptr);
+	}
     //operator const T*	() const { return static_cast<T*>(m_ptr); }
 
 protected:

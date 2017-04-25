@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.h"
-#include <Lumino/UI/UIViewport.h>
+#include <Lumino/UI/UIViewport.h>"
+#include <Lumino/Graphics/DrawingContext.h>
 #include "UIManager.h"
 
 LN_NAMESPACE_BEGIN
@@ -64,6 +65,21 @@ void UIViewport::OnRender(DrawingContext* g)
 
 		UpdateFramebufferSizeIfNeeded(bakcbufferSize);
 	}
+
+
+	//TODO: state push/pop
+
+	RefPtr<RenderTargetTexture> oldRT = g->GetRenderTarget(0);
+	RefPtr<DepthBuffer> oldDB = g->GetDepthBuffer();
+
+	g->SetRenderTarget(0, m_primaryLayerTarget);
+	g->SetDepthBuffer(m_depthBuffer);
+	g->Clear(ClearFlags::All, m_backgroundColor, 1.0f, 0);
+
+
+	g->SetRenderTarget(0, oldRT);
+	g->SetDepthBuffer(oldDB);
+	g->Blit(m_primaryLayerTarget);	// TODO: 転送先指定
 
 	UIElement::OnRender(g);
 }

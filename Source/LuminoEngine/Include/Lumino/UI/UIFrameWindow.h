@@ -12,6 +12,7 @@ class DrawingContext;
 class CameraViewportLayer;
 class World2D;
 class World3D;
+class UIViewport;
 
 /**
 	@brief		
@@ -74,6 +75,7 @@ public:
 
 protected:
 	virtual void OnPresentRenderingContexts() override;
+	virtual Size ArrangeOverride(const Size& finalSize) override;
 
 LN_INTERNAL_ACCESS:
 	UIMainWindow();
@@ -91,6 +93,8 @@ LN_INTERNAL_ACCESS:
 	virtual void OnRenderContents() override;
 	virtual void PresentRenderingContexts() override;
 
+
+
 private:
 	void UpdateViewportTransform();
 
@@ -98,6 +102,9 @@ private:
 	RefPtr<Viewport>			m_mainViewport;		// TODO: 後で Control 化する。直接描画しない
 	RefPtr<CameraViewportLayer>	m_default2DCameraViewportLayer;
 	RefPtr<CameraViewportLayer>	m_default3DCameraViewportLayer;
+
+
+	RefPtr<UIViewport>			m_mainUIViewport;
 };
 
 
