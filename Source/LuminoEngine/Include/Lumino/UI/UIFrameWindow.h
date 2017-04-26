@@ -91,7 +91,8 @@ LN_INTERNAL_ACCESS:
 	virtual void OnRenderContents() override;
 	virtual void PresentRenderingContexts() override;
 
-
+	CameraViewportLayer2* GetDefaultCameraViewportLayer2D() const;
+	CameraViewportLayer2* GetDefaultCameraViewportLayer3D() const;
 
 private:
 	void UpdateViewportTransform();

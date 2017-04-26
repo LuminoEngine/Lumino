@@ -78,7 +78,7 @@ void InputManager::Initialize(const Settings& settings)
 	pad->AddBinding(InputButtons::Right,	KeyboardBinding::Create(Keys::Right));
 	pad->AddBinding(InputButtons::Up,		KeyboardBinding::Create(Keys::Up));
 	pad->AddBinding(InputButtons::Down,		KeyboardBinding::Create(Keys::Down));
-	pad->AddBinding(InputButtons::Ok,		KeyboardBinding::Create(Keys::Z));
+	pad->AddBinding(InputButtons::OK,		KeyboardBinding::Create(Keys::Z));
 	pad->AddBinding(InputButtons::Cancel,	KeyboardBinding::Create(Keys::X));
 
 	pad->AddBinding(InputButtons::Left,		GamepadBinding::Create(GamepadElement::PovLeft));
@@ -90,7 +90,7 @@ void InputManager::Initialize(const Settings& settings)
 	pad->AddBinding(InputButtons::Right,	GamepadBinding::Create(GamepadElement::Axis1Plus));
 	pad->AddBinding(InputButtons::Up,		GamepadBinding::Create(GamepadElement::Axis2Minus));
 	pad->AddBinding(InputButtons::Down,		GamepadBinding::Create(GamepadElement::Axis2Plus));
-	pad->AddBinding(InputButtons::Ok,		GamepadBinding::Create(GamepadElement::Button1));
+	pad->AddBinding(InputButtons::OK,		GamepadBinding::Create(GamepadElement::Button1));
 	pad->AddBinding(InputButtons::Cancel,	GamepadBinding::Create(GamepadElement::Button2));
 
 	if (g_inputManager == nullptr) {

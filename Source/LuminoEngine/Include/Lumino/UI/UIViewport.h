@@ -5,6 +5,7 @@
 
 LN_NAMESPACE_BEGIN
 class UIViewportLayer;
+class PostEffect;
 
 /**
 	@brief		
@@ -22,6 +23,7 @@ public:
 	const Size& GetViewSize() const { return m_viewSize; }
 
 	void SetViewBackgroundColor(const Color& color);
+	const Color& GetViewBackgroundColor() const { return m_backgroundColor; }
 
 	/** ビューポートの配置方法を設定します。*/
 	void SetPlacement(ViewportPlacement placement);
@@ -65,6 +67,7 @@ class UIViewportLayer
 	//LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	UIViewport* GetOwnerViewport() const { return m_owner; }
+	void AddPostEffect(PostEffect* postEffect);
 
 protected:
 	UIViewportLayer();
@@ -74,8 +77,33 @@ protected:
 	virtual void ExecuteDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) = 0;
 
 private:
-	UIViewport*	m_owner;
+	void PostRender(DrawList* context, RefPtr<RenderTargetTexture>* primaryLayerTarget, RefPtr<RenderTargetTexture>* secondaryLayerTarget);
+
+	UIViewport*					m_owner;
+	List<RefPtr<PostEffect>>	m_postEffects;
 	friend class UIViewport;
+};
+
+/**
+	@brief
+*/
+class PostEffect
+	: public Object
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+	UIViewportLayer* GetOwnerLayer() const { return m_ownerLayer; }
+
+protected:
+	PostEffect();
+	virtual ~PostEffect();
+	void Initialize();
+
+	virtual void OnRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) = 0;
+
+private:
+	UIViewportLayer*	m_ownerLayer;
+	friend class UIViewportLayer;
 };
 
 LN_NAMESPACE_END

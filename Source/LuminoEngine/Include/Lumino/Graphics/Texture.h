@@ -188,6 +188,7 @@ public:
 LN_INTERNAL_ACCESS:
 	RenderTargetTexture();
 	virtual ~RenderTargetTexture();
+	void Initialize(const SizeI& size, int mipLevels, TextureFormat format);
 	void CreateImpl(detail::GraphicsManager* manager, const SizeI& size, int mipLevels, TextureFormat format);
 	void CreateCore(detail::GraphicsManager* manager, bool isDefaultBackBuffer);
 	void AttachDefaultBackBuffer(Driver::ITexture* deviceObj);

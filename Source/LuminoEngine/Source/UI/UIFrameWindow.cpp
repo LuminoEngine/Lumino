@@ -320,6 +320,18 @@ void UIMainWindow::UpdateViewportTransform()
 	//m_mainViewport->UpdateLayersTransform(size.ToFloatSize());
 }
 
+//------------------------------------------------------------------------------
+CameraViewportLayer2* UIMainWindow::GetDefaultCameraViewportLayer2D() const
+{
+	return m_cameraViewportLayer2D;
+}
+
+//------------------------------------------------------------------------------
+CameraViewportLayer2* UIMainWindow::GetDefaultCameraViewportLayer3D() const
+{
+	return m_cameraViewportLayer3D;
+}
+
 //==============================================================================
 // UINativeHostWindow
 //==============================================================================

@@ -1,0 +1,42 @@
+
+float	g_Factor;
+
+sampler g_MaterialSampler = sampler_state
+{
+	texture = <ln_MaterialTexture>;
+	MinFilter = POINT;
+	MagFilter = POINT;
+	MipFilter = NONE;
+	AddressU  = CLAMP;
+	AddressV  = CLAMP;
+};
+
+texture g_FreezedTexture;
+sampler g_FreezedSampler = sampler_state
+{
+    Texture = <g_FreezedTexture>;
+    MinFilter = None;
+    MagFilter = None;
+};
+
+
+LN_SURFACE_OUTPUT BasicSS(LN_SURFACE_INPUT input)
+{
+	LN_SURFACE_OUTPUT o;
+	o.Albedo = tex2D(g_MaterialSampler, input.TexCoord);
+	o.Albedo.rgb = lerp(
+		o.Albedo.rgb,
+		tex2D(g_FreezedSampler, input.TexCoord).rgb,
+		(1.0 - g_Factor));
+	return o;
+}
+
+technique MainTechnique
+{
+	pass P0
+	{
+		VertexShader = LN_SURFACE_VS(LN_SurfaceVS());
+		PixelShader	 = LN_SURFACE_PS(BasicSS());
+	}
+}
+

@@ -589,6 +589,12 @@ RenderTargetTexture::RenderTargetTexture()
 }
 
 //------------------------------------------------------------------------------
+void RenderTargetTexture::Initialize(const SizeI& size, int mipLevels, TextureFormat format)
+{
+	CreateImpl(detail::EngineDomain::GetGraphicsManager(), size, mipLevels, format);
+}
+
+//------------------------------------------------------------------------------
 void RenderTargetTexture::CreateImpl(detail::GraphicsManager* manager, const SizeI& size, int mipLevels, TextureFormat format)
 {
 	GraphicsResourceObject::Initialize(manager);

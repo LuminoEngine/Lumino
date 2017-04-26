@@ -374,6 +374,7 @@ set(LN_SOURCES_Scene
 	Include/Lumino/Scene/StaticMesh.h
 	Include/Lumino/Scene/TextBlock.h
 	Include/Lumino/Scene/TileMap.h
+	Include/Lumino/Scene/TransitionPostEffect.h
 	Include/Lumino/Scene/VisualNode.h
 #	Include/Lumino/Scene/MME/MMESceneObject.h
 	Source/Scene/Camera.cpp
@@ -400,6 +401,7 @@ set(LN_SOURCES_Scene
 	Source/Scene/StaticMesh.cpp
 	Source/Scene/TextBlock.cpp
 	Source/Scene/TileMap.cpp
+	Source/Scene/TransitionPostEffect.cpp
 	Source/Scene/VisualNode.cpp
 	../../External/ssbpLib/ssShader_frag.h
 	../../External/ssbpLib/SS5Player.cpp

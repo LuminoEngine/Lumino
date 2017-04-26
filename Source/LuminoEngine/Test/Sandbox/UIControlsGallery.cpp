@@ -34,7 +34,7 @@ void UIControlsGallery()
 	listBox1->AddTextItem(_T("UI"));
 
 	
-	auto shader = Shader::Create(StringRef(_T("D:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/Sandbox/SSBasic2D.fx")), true);
+	auto shader = Shader::Create(StringRef(_T("C:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/Sandbox/SSBasic2D.fx")), true);
 	//auto rect = Rectangle::Create(RectF(0, 0, 3, 1));
 	//rect->SetShader(shader);
 	//rect->SetAngles(Math::PI/2, 0, 0);
@@ -58,6 +58,10 @@ void UIControlsGallery()
 	//auto text1 = UITextBlock::Create();
 	//text1->SetText(_T("text"));
 	//stack1->AddChild(text1);
+
+	auto ps1 = TransitionPostEffect::Create();
+	Engine::GetDefault3DLayer()->AddPostEffect(ps1);
+	
 
 #if 0
 	auto font = Font::GetDefault();
@@ -214,6 +218,13 @@ void UIControlsGallery()
 	while (!Engine::IsEndRequested())
 	{
 		Engine::UpdateFrame();
+
+		if (Input::IsTriggered(InputButtons::OK))
+		{
+			ps1->Transition(1, nullptr, 0);
+		}
+
+
 			Engine::RenderFrame();
 
 			Engine::GetDefaultSceneGraph3D()->GetRenderer()->SetShader(shader);

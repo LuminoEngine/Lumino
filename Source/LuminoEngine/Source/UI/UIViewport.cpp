@@ -119,10 +119,8 @@ void UIViewport::OnRender(DrawingContext* g)
 	{
 		layer->ExecuteDrawListRendering(g, m_primaryLayerTarget, m_depthBuffer);
 
-		// TODO: Posteffect
-		//BeginBlitRenderer();
-		//layer->PostRender(m_renderer, &m_primaryLayerTarget, &m_secondaryLayerTarget);
-		//FlushBlitRenderer(renderTarget);
+		// Posteffect
+		layer->PostRender(g, &m_primaryLayerTarget, &m_secondaryLayerTarget);
 	}
 
 
@@ -256,5 +254,44 @@ UIViewportLayer::UIViewportLayer()
 UIViewportLayer::~UIViewportLayer()
 {
 }
+
+//------------------------------------------------------------------------------
+void UIViewportLayer::AddPostEffect(PostEffect* postEffect)
+{
+	m_postEffects.Add(postEffect);
+	postEffect->m_ownerLayer = this;
+}
+
+//------------------------------------------------------------------------------
+void UIViewportLayer::PostRender(DrawList* context, RefPtr<RenderTargetTexture>* primaryLayerTarget, RefPtr<RenderTargetTexture>* secondaryLayerTarget)
+{
+	for (auto& e : m_postEffects)
+	{
+		e->OnRender(context, *primaryLayerTarget, *secondaryLayerTarget);
+		std::swap(*primaryLayerTarget, *secondaryLayerTarget);
+	}
+}
+
+//==============================================================================
+// PostEffect
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PostEffect, Object);
+
+//------------------------------------------------------------------------------
+PostEffect::PostEffect()
+	: Object()
+{
+}
+
+//------------------------------------------------------------------------------
+PostEffect::~PostEffect()
+{
+}
+
+//------------------------------------------------------------------------------
+void PostEffect::Initialize()
+{
+}
+
 
 LN_NAMESPACE_END

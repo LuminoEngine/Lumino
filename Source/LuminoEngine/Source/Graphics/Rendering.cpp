@@ -1247,6 +1247,12 @@ void DrawList::SetShader(Shader* shader)
 }
 
 //------------------------------------------------------------------------------
+Shader* DrawList::GetShader() const
+{
+	return m_defaultMaterial->GetShader();
+}
+
+//------------------------------------------------------------------------------
 void DrawList::SetBlendMode(BlendMode mode)
 {
 	m_defaultMaterial->SetBlendMode(mode);
