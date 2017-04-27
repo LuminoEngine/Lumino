@@ -58,6 +58,8 @@ class LuminoEngineRule : ModuleRule
                 //new { DirName = "build_msvc120x64u_MT", VSTarget = "Visual Studio 12 Win64", Unicode = "ON" },
                 new { DirName = "Build_MSVC140x86_MT", VSTarget = "Visual Studio 14", Unicode = "OFF", Platform="Win32", MSVCStaticRuntime = "ON" },
                 new { DirName = "Build_MSVC140x86U_MT", VSTarget = "Visual Studio 14", Unicode = "ON", Platform="Win32", MSVCStaticRuntime = "ON" },
+                new { DirName = "Build_MSVC140x86_MD", VSTarget = "Visual Studio 14", Unicode = "OFF", Platform="Win32", MSVCStaticRuntime = "OFF" },
+                new { DirName = "Build_MSVC140x86U_MD", VSTarget = "Visual Studio 14", Unicode = "ON", Platform="Win32", MSVCStaticRuntime = "OFF" },
                 //new { DirName = "build_msvc140x64_MT", VSTarget = "Visual Studio 14 Win64", Unicode = "OFF" },
                 //new { DirName = "build_msvc140x64u_MT", VSTarget = "Visual Studio 14 Win64", Unicode = "ON" },
             };
