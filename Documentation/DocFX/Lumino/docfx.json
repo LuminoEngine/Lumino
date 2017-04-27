@@ -28,6 +28,8 @@
         "files": [
           "articles/**.md",
           "articles/**/toc.yml",
+          "samples/**.md",
+          "samples/**/toc.yml",
           "toc.yml",
           "*.md"
         ],
@@ -59,11 +61,19 @@
         ]
       }
     ],
+
+    "globalMetadata": {
+      "_appTitle": "docfx seed website",
+      "_enableSearch": true
+    },
+
+
     "dest": "_site",
     "globalMetadataFiles": [],
     "fileMetadataFiles": [],
     "template": [
-      "default"
+      "default",
+      "template"
     ],
     "postProcessors": [],
     "noLangKeyword": false
