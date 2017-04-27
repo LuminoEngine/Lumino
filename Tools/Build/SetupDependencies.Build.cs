@@ -20,12 +20,27 @@ class SetupDependencies : ModuleRule
         var zipPath = builder.LuminoRootDir + "External/LuminoDependencies.zip";
         var extraName = builder.LuminoRootDir + "External";
 
+        Logger.WriteLine("Downloading dependencies...");
         var wc = new System.Net.WebClient();
         wc.DownloadFile(
-            "https://github.com/lriki/LuminoDependencies/releases/download/v1/LuminoDependencies.zip",
+            "http://nnmy.sakura.ne.jp/archive/dependencies/LuminoDependencies.zip",
             zipPath);
         wc.Dispose();
 
+        Logger.WriteLine("Extracting...");
         ZipFile.ExtractToDirectory(zipPath, extraName);
+
+
+        // .lib
+        Logger.WriteLine("copy dependencies lib files...");
+        foreach (string dir in Directory.GetDirectories(builder.LuminoRootDir + "External/LuminoDependencies"))
+        {
+            // 今のところ LuminoDependencies/ライブラリ名/lib でフォルダ構成は統一されている。
+            string libDir = dir + "/lib";
+            if (Directory.Exists(libDir))
+            {
+                Utils.CopyDirectory(libDir, builder.LuminoRootDir + "lib");
+            }
+        }
     }
 }

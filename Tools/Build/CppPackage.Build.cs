@@ -42,16 +42,16 @@ class CppPackageRule : ModuleRule
         Utils.CopyDirectory(Path.Combine(builder.LuminoRootDir, "Source/LuminoEngine/Include"), releaseIncludeDir, true);
 
         // .lib
-        Logger.WriteLine("copy dependencies lib files...");
-        foreach (string dir in Directory.GetDirectories(builder.LuminoRootDir + "External/LuminoDependencies"))
-        {
-            // 今のところ LuminoDependencies/ライブラリ名/lib でフォルダ構成は統一されている。
-            string libDir = dir + "/lib";
-            if (Directory.Exists(libDir))
-            {
-                Utils.CopyDirectory(libDir, releaseDir + "Lib");
-            }
-        }
+        //Logger.WriteLine("copy dependencies lib files...");
+        //foreach (string dir in Directory.GetDirectories(builder.LuminoRootDir + "External/LuminoDependencies"))
+        //{
+        //    // 今のところ LuminoDependencies/ライブラリ名/lib でフォルダ構成は統一されている。
+        //    string libDir = dir + "/lib";
+        //    if (Directory.Exists(libDir))
+        //    {
+        //        Utils.CopyDirectory(libDir, releaseDir + "Lib");
+        //    }
+        //}
 
         // .lib
         Logger.WriteLine("copy lib files...");

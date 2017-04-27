@@ -15,7 +15,7 @@ namespace LuminoBuild
 
             var builder = new LuminoBuildTool.Builder();
             builder.VersionString = "0.3.0a1";
-            builder.LuminoRootDir = Path.GetFullPath(Path.Combine(exeDir, "../../../..")) + "/"; // .sln のあるフォルダ
+            builder.LuminoRootDir = Path.GetFullPath(Path.Combine(exeDir, "../../../../..")) + "/"; // .sln のあるフォルダ
             builder.LuminoBuildDir = builder.LuminoRootDir + "Build/";
             builder.LuminoBindingsDir = builder.LuminoRootDir + "Bindings/";
             builder.LuminoLibDir = builder.LuminoRootDir + "lib/";

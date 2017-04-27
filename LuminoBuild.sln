@@ -1,7 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuminoBuild", "build\LuminoBuild\LuminoBuild.csproj", "{CAC7E632-8C14-4BA4-9281-160E62A7D381}"
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.7
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuminoBuild", "Tools\Build\LuminoBuild\LuminoBuild.csproj", "{CAC7E632-8C14-4BA4-9281-160E62A7D381}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,5 +15,8 @@ Global
 		{CAC7E632-8C14-4BA4-9281-160E62A7D381}.Debug|x86.Build.0 = Debug|x86
 		{CAC7E632-8C14-4BA4-9281-160E62A7D381}.Release|x86.ActiveCfg = Release|x86
 		{CAC7E632-8C14-4BA4-9281-160E62A7D381}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

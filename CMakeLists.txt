@@ -3,8 +3,8 @@ project (Lumino)
 
 include(Source/LuminoCore/CMake/LNCommon.cmake NO_POLICY_SCOPE)
 
-set(LN_DEPENDENCIES_ROOT_DIR "${PROJECT_SOURCE_DIR}/external/LuminoDependencies/")
-include(external/LuminoDependencies/LuminoDependencies.cmake)
+set(LN_DEPENDENCIES_ROOT_DIR "${PROJECT_SOURCE_DIR}/External/LuminoDependencies/")
+include(External/LuminoDependencies/LuminoDependencies.cmake)
 
 set(LN_STATIC_LIB_OUTPUT_NAME "Lumino")
 set(LN_LINK_LIBS "")
