@@ -25,7 +25,7 @@ TEST_F(Test_Graphics_MeshResource, AddSquare)
 			Vertex{ Vector3(2, 2, 0), Vector2(0, 0), Vector3(0, 0, 1), Color::White });
 
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 		Engine::GetDefaultSceneGraph3D()->GetRenderer()->DrawMesh(mesh, 0, material);
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_MeshResource.AddSquare1.png"), 95));
@@ -42,7 +42,7 @@ TEST_F(Test_Graphics_MeshResource, AddSquare)
 			Vertex{ Vector3(0, 0, 0), Vector2(0, 0), Vector3(0, 0, 1), Color::Blue },
 			Vertex{ Vector3(0, 2, 0), Vector2(0, 0), Vector3(0, 0, 1), Color::White });
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 		Engine::GetDefaultSceneGraph3D()->GetRenderer()->DrawMesh(mesh, 0, material);
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_MeshResource.AddSquare2.png"), 95));
@@ -54,7 +54,7 @@ TEST_F(Test_Graphics_MeshResource, AddSquare)
 			Vertex{ Vector3(2, 0, 0), Vector2(0, 0), Vector3(0, 0, 1), Color::Blue },
 			Vertex{ Vector3(2, 2, 0), Vector2(0, 0), Vector3(0, 0, 1), Color::White });
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 		Engine::GetDefaultSceneGraph3D()->GetRenderer()->DrawMesh(mesh, 0, material);
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_MeshResource.AddSquare3.png"), 95));
@@ -79,7 +79,7 @@ TEST_F(Test_Graphics_MeshResource, Clear)
 			Vertex{ Vector3(0, 0, 0), Vector2(0, 0), Vector3(0, 0, 1), Color::Blue },
 			Vertex{ Vector3(0, 2, 0), Vector2(0, 0), Vector3(0, 0, 1), Color::White });
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 		Engine::GetDefaultSceneGraph3D()->GetRenderer()->DrawMesh(mesh, 0, material);
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_MeshResource.Clear1.png"), 95));
@@ -92,7 +92,7 @@ TEST_F(Test_Graphics_MeshResource, Clear)
 			Vertex{ Vector3(2, 0, 0), Vector2(0, 0), Vector3(0, 0, 1), Color::Blue },
 			Vertex{ Vector3(2, 2, 0), Vector2(0, 0), Vector3(0, 0, 1), Color::White });
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 		Engine::GetDefaultSceneGraph3D()->GetRenderer()->DrawMesh(mesh, 0, material);
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_MeshResource.Clear2.png"), 95));
@@ -116,7 +116,7 @@ TEST_F(Test_Graphics_MeshResource, AddLine)
 			Vertex{ Vector3(2, 0, 0), Vector2(0, 0), Vector3(0, 0, 1), Color::Green });
 
 		LN_TEST_BEGIN_FRAME;
-		Engine::Render();
+		Engine::RenderFrame();
 		Engine::GetDefaultSceneGraph3D()->GetRenderer()->DrawMesh(mesh, 0, material);
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_MeshResource.AddLine1.png"), 95));

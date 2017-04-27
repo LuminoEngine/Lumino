@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <cstdio>
 #include <fcntl.h>
@@ -184,68 +184,6 @@ private:
 static LogFile				g_logFile;
 static Mutex				g_logMutex;
 static std::stringstream	g_logSS;
-
-//------------------------------------------------------------------------------
-void Logger2::Initialize(const StringRef& filePath)
-{
-	StringA path(filePath);
-	g_logFile.Open(path.c_str());
-}
-
-//------------------------------------------------------------------------------
-void Logger2::WriteLineInternal(LogLevel level, const char* file, const char* func, int line, const StringA& message)
-{
-	if (g_logFile.IsOpend())
-	{
-		LogRecord record(level, file, func, line);
-		record.SetMessage(message);
-
-		tm t;
-		char date[64];
-		LogHelper::GetLocalTime(&t, &record.GetTime().time);
-		//strftime(date, sizeof(date), "%Y/%m/%d %a %H:%M:%S", &t);
-		strftime(date, sizeof(date), "%Y/%m/%d %H:%M:%S", &t);
-
-		g_logSS.str("");							// ƒoƒbƒtƒ@‚ğƒNƒŠƒA‚·‚éB
-		g_logSS.clear(std::stringstream::goodbit);	// ƒXƒgƒŠ[ƒ€‚Ìó‘Ô‚ğƒNƒŠƒA‚·‚éB‚±‚Ìs‚ª‚È‚¢‚ÆˆÓ}’Ê‚è‚É“®ì‚µ‚È‚¢
-		g_logSS << date << " ";
-		g_logSS << std::setw(5) << std::left << GetLogLevelString(level) << " ";
-		g_logSS << "[" << record.GetThreadId() << "]";
-		g_logSS << "[" << record.GetFunc() << "(" << record.GetLine() << ")] ";
-		g_logSS << record.GetMessage().c_str() << std::endl;
-
-		auto str = g_logSS.str();
-		g_logFile.Write(str.c_str(), str.length());
-	}
-}
-
-//------------------------------------------------------------------------------
-void Logger2::WriteLineInternal(LogLevel level, const char* file, const char* func, int line, const StringW& message)
-{
-	WriteLineInternal(level, file, func, line, message.ToStringA());
-}
-
-//------------------------------------------------------------------------------
-const char* Logger2::GetLogLevelString(LogLevel level)
-{
-	switch (level)
-	{
-	case LogLevel::Fatal:
-		return "Fatal";
-	case LogLevel::Error:
-		return "Error";
-	case LogLevel::Warning:
-		return "Warning";
-	case LogLevel::Info:
-		return "Info";
-	case LogLevel::Debug:
-		return "Debug";
-	case LogLevel::Verbose:
-		return "Verbose";
-	default:
-		return "";
-	}
-}
 
 
 
@@ -436,5 +374,117 @@ void Logger::WriteLine(const wchar_t* format, ...) throw()
 	}
 
 }
+
+
+
+
+
+
+
+
+
+
+namespace detail {
+
+//==============================================================================
+// LogRecord
+//==============================================================================
+//------------------------------------------------------------------------------
+LogRecord::LogRecord(LogLevel level, const char* file, const char* func, int line)
+	: m_level(level)
+	, m_file(file)
+	, m_func(func)
+	, m_line(line)
+	, m_threadId(Thread::GetCurrentThreadId())
+{
+	LogHelper::GetTime(&m_time);
+}
+
+//------------------------------------------------------------------------------
+const char* LogRecord::GetMessage() const
+{
+	m_messageStr = m_message.str();
+	return m_messageStr.c_str();
+}
+
+//------------------------------------------------------------------------------
+LogRecord& LogRecord::operator<<(const wchar_t* str)
+{
+	StringA s = StringA::FromNativeCharString(str);
+	m_message << s.c_str();
+	return *this;
+}
+
+//==============================================================================
+// Logger
+//==============================================================================
+static Logger g_logger;
+static bool g_logEnabled = true;
+static std::string g_logFilePath = "LuminoLog.txt";
+static LogLevel g_maxLevel = LogLevel::Info;
+
+//------------------------------------------------------------------------------
+static const char* GetLogLevelString(LogLevel level)
+{
+	switch (level)
+	{
+	case LogLevel::Fatal:
+		return "Fatal";
+	case LogLevel::Error:
+		return "Error";
+	case LogLevel::Warning:
+		return "Warning";
+	case LogLevel::Info:
+		return "Info";
+	case LogLevel::Debug:
+		return "Debug";
+	case LogLevel::Verbose:
+		return "Verbose";
+	default:
+		return "";
+	}
+}
+
+//------------------------------------------------------------------------------
+Logger* Logger::GetInstance()
+{
+	if (!g_logEnabled) return nullptr;
+	return &g_logger;
+}
+
+//------------------------------------------------------------------------------
+bool Logger::CheckLevel(LogLevel level)
+{
+	return level <= g_maxLevel;
+}
+
+//------------------------------------------------------------------------------
+void Logger::operator+=(const LogRecord& record)
+{
+	if (!g_logFile.IsOpend())
+	{
+		g_logFile.Open(g_logFilePath.c_str());
+	}
+
+	tm t;
+	char date[64];
+	LogHelper::GetLocalTime(&t, &record.GetTime().time);
+	strftime(date, sizeof(date), "%Y/%m/%d %H:%M:%S", &t);
+
+	g_logSS.str("");							// ãƒãƒƒãƒ•ã‚¡ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹ã€‚
+	g_logSS.clear(std::stringstream::goodbit);	// ã‚¹ãƒˆãƒªãƒ¼ãƒ ã®çŠ¶æ…‹ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹ã€‚ã“ã®è¡ŒãŒãªã„ã¨æ„å›³é€šã‚Šã«å‹•ä½œã—ãªã„
+	g_logSS << date << " ";
+	g_logSS << std::setw(5) << std::left << GetLogLevelString(record.GetLevel()) << " ";
+	g_logSS << "[" << record.GetThreadId() << "]";
+	g_logSS << "[" << record.GetFunc() << "(" << record.GetLine() << ")] ";
+	g_logSS << record.GetMessage() << std::endl;
+
+	auto str = g_logSS.str();
+	g_logFile.Write(str.c_str(), str.length());
+}
+
+
+} // namespace detail
+
 
 LN_NAMESPACE_END

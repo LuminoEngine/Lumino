@@ -105,12 +105,6 @@ void ShaderVariableBase::SetBool(bool value)
 }
 
 //------------------------------------------------------------------------------
-bool ShaderVariableBase::GetBool()
-{
-	return m_value.GetBool();
-}
-
-//------------------------------------------------------------------------------
 void ShaderVariableBase::SetBoolArray(const bool* values, int count)
 {
 	m_value.SetBoolArray(values, count);
@@ -125,22 +119,10 @@ void ShaderVariableBase::SetInt(int value)
 }
 
 //------------------------------------------------------------------------------
-int ShaderVariableBase::GetInt()
-{
-	return m_value.GetInt();
-}
-
-//------------------------------------------------------------------------------
 void ShaderVariableBase::SetFloat(float value)
 {
 	m_value.SetFloat(value);
 	m_modifid = true;
-}
-
-//------------------------------------------------------------------------------
-float ShaderVariableBase::GetFloat()
-{
-	return m_value.GetFloat();
 }
 
 //------------------------------------------------------------------------------
@@ -158,22 +140,10 @@ void ShaderVariableBase::SetVector(const Vector4& vec)
 }
 
 //------------------------------------------------------------------------------
-const Vector4& ShaderVariableBase::GetVector()
-{
-	return m_value.GetVector();
-}
-
-//------------------------------------------------------------------------------
 void ShaderVariableBase::SetVectorArray(const Vector4* vectors, int count)
 {
 	m_value.SetVectorArray(vectors, count);
 	m_modifid = true;
-}
-
-//------------------------------------------------------------------------------
-const Vector4* ShaderVariableBase::GetVectorArray()
-{
-	return m_value.GetVectorArray();
 }
 
 //------------------------------------------------------------------------------
@@ -184,12 +154,6 @@ void ShaderVariableBase::SetMatrix(const Matrix& matrix)
 }
 
 //------------------------------------------------------------------------------
-const Matrix& ShaderVariableBase::GetMatrix()
-{
-	return m_value.GetMatrix();
-}
-
-//------------------------------------------------------------------------------
 void ShaderVariableBase::SetMatrixArray(const Matrix* matrices, int count)
 {
 	m_value.SetMatrixArray(matrices, count);
@@ -197,22 +161,10 @@ void ShaderVariableBase::SetMatrixArray(const Matrix* matrices, int count)
 }
 
 //------------------------------------------------------------------------------
-const Matrix* ShaderVariableBase::GetMatrixArray()
-{
-	return m_value.GetMatrixArray();
-}
-
-//------------------------------------------------------------------------------
 void ShaderVariableBase::SetTexture(ITexture* texture)
 {
 	m_value.SetDeviceTexture(texture);
 	m_modifid = true;
-}
-
-//------------------------------------------------------------------------------
-ITexture* ShaderVariableBase::GetTexture()
-{
-	return m_value.GetDeviceTexture();
 }
 
 //------------------------------------------------------------------------------
@@ -227,34 +179,6 @@ void ShaderVariableBase::SetString(const String& str)
 {
 	m_value.SetString(str);
 	m_modifid = true;
-}
-
-//------------------------------------------------------------------------------
-const TCHAR* ShaderVariableBase::GetString()
-{
-	return m_value.GetString();
-}
-
-//------------------------------------------------------------------------------
-void ShaderVariableBase::OnLostDevice()
-{
-}
-
-//------------------------------------------------------------------------------
-void ShaderVariableBase::OnResetDevice()
-{
-	switch (m_desc.Type)
-	{
-	case ShaderVariableType_Bool:			SetBool(m_value.GetBool()); break;
-	case ShaderVariableType_Int:			SetInt(m_value.GetInt()); break;
-	case ShaderVariableType_Float:			SetFloat(m_value.GetFloat()); break;
-	case ShaderVariableType_Vector:			SetVector(m_value.GetVector()); break;
-	case ShaderVariableType_VectorArray:	SetVectorArray(m_value.GetVectorArray(), m_value.GetArrayLength()); break;
-	case ShaderVariableType_Matrix:			SetMatrix(m_value.GetMatrix()); break;
-	case ShaderVariableType_MatrixArray:	SetMatrixArray(m_value.GetMatrixArray(), m_value.GetArrayLength()); break;
-	case ShaderVariableType_DeviceTexture:		SetTexture(m_value.GetDeviceTexture()); break;
-	//case ShaderVariableType_String:			SetString(m_value.String); break;
-	}
 }
 
 } // namespace Driver

@@ -24,10 +24,90 @@ Document::~Document()
 }
 
 //------------------------------------------------------------------------------
-void Document::Initialize(DocumentsManager* manager)
+void Document::Initialize()
 {
-	LN_CHECK_ARG(manager != nullptr);
-	m_manager = manager;
+	m_manager = detail::DocumentsManager::GetInstance();
+}
+
+//------------------------------------------------------------------------------
+void Document::SetText(const StringRef& text)
+{
+	m_blockList.Clear();
+
+
+}
+
+//------------------------------------------------------------------------------
+void Document::Replace(int offset, int length, const StringRef& text)
+{
+	// UTF32 へ変換
+	const ByteBuffer& utf32Buf = m_manager->GetTCharToUTF32Converter()->Convert(text.GetBegin(), sizeof(TCHAR) * text.GetLength());
+	int len = utf32Buf.GetSize() / sizeof(UTF32);
+	Replace(offset, length, (const UTF32*)utf32Buf.GetConstData(), len);
+}
+
+//------------------------------------------------------------------------------
+void Document::Replace(int offset, int length, const UTF32* text, int len)
+{
+	LN_ASSERT(offset == 0 && length == 0);	// TODO: まだ
+
+	// text を Run と LineBrake のリストにする
+	List<RefPtr<Inline>> inlines;
+	{
+		const UTF32* pos = text;
+		const UTF32* end = pos + len;
+		int nlIndex = 0;
+		int nlCount = 0;
+		while (StringTraits::IndexOfNewLineSequence(pos, end, &nlIndex, &nlCount))
+		{
+			inlines.Add(NewObject<Run>(pos, nlIndex).Get());
+			inlines.Add(NewObject<LineBreak>().Get());
+			pos += (nlIndex + nlCount);	// 改行文字の次の文字を指す
+		}
+		if (pos != end)
+		{
+			inlines.Add(NewObject<Run>(pos, nlIndex).Get());
+		}
+	}
+
+	// TODO: Insert 先を割る
+	int localInsertPoint = 0;
+	LN_ASSERT(m_blockList.IsEmpty());	// TODO
+	RefPtr<Block> parentBlock = NewObject<Paragraph>();
+	m_blockList.Add(parentBlock);
+
+	parentBlock->InsertInlines(localInsertPoint, inlines);
+
+
+	// TODO: マージする
+
+	
+	//// Insert 先検索
+	//if (0)
+	//{
+
+	//}
+	//else
+	//{
+
+	//	m_blockList.Add();
+	//}
+
+
+
+
+
+	//int beginLineNumber, beginPosFromLineHead;
+	//int endLineNumber, endPosFromLineHead;
+	//GetLineNumber(sel->Start, &beginLineNumber, &beginPosFromLineHead);
+	//GetLineNumber(sel->Start + sel->Length, &endLineNumber, &endPosFromLineHead);
+	//if (beginLineNumber == endLineNumber) {
+	//	m_lineSegments[beginLineNumber]->Replace(beginPosFromLineHead, sel->Length, text, len);
+	//}
+	//else
+	//{
+	//	LN_THROW(0, NotImplementedException);
+	//}
 }
 
 
@@ -60,10 +140,9 @@ TextElement::~TextElement()
 }
 
 //------------------------------------------------------------------------------
-void TextElement::Initialize(DocumentsManager* manager)
+void TextElement::Initialize()
 {
-	LN_CHECK_ARG(manager != nullptr);
-	m_manager = manager;
+	m_manager = detail::DocumentsManager::GetInstance();
 	m_fontData.Family = String::GetEmpty();
 	m_fontData.Size = 20;
 	m_fontData.IsBold = false;
@@ -71,7 +150,7 @@ void TextElement::Initialize(DocumentsManager* manager)
 	m_fontData.IsAntiAlias = true;
 	m_fontDataModified = true;
 
-	m_foreground = ColorBrush::Black;
+	m_foreground = Brush::Black;
 }
 
 //------------------------------------------------------------------------------
@@ -102,20 +181,27 @@ Size TextElement::MeasureOverride(const Size& constraint)
 }
 
 //------------------------------------------------------------------------------
+InternalTextElementType TextElement::GetInternalTextElementType() const
+{
+	return InternalTextElementType::Common;
+}
+
+//------------------------------------------------------------------------------
 const PointF& TextElement::GetLayoutPosition() const { return m_position; }
-const Size& TextElement::GetLayoutSize() const { return m_size; }
+Size TextElement::GetLayoutSize() const { return m_size; }
 const ThicknessF& TextElement::GetLayoutMargin() const { return m_margin; }
 const ThicknessF& TextElement::GetLayoutPadding() const { return m_padding; }
 AlignmentAnchor TextElement::GetLayoutAnchor() const { return m_anchor; }
 HAlignment TextElement::GetLayoutHAlignment() const { return m_horizontalAlignment; }
 VAlignment TextElement::GetLayoutVAlignment() const { return m_verticalAlignment; }
+void TextElement::GetLayoutMinMaxInfo(Size* outMin, Size* outMax) const { *outMin = Size::Zero, outMax->Set(INFINITY, INFINITY); }	// TODO:
 ILayoutElement* TextElement::GetLayoutParent() const { return m_parent; }
 const HAlignment* TextElement::GetLayoutContentHAlignment() { return nullptr; }
 const VAlignment* TextElement::GetLayoutContentVAlignment() { return nullptr; }
 const Size& TextElement::GetLayoutDesiredSize() const { return m_desiredSize; }
 void TextElement::SetLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
 void TextElement::SetLayoutFinalLocalRect(const RectF& rect) { m_finalLocalRect = rect; }
-const RectF& TextElement::GetLayoutFinalLocalRect() { return m_finalLocalRect; }
+const RectF& TextElement::GetLayoutFinalLocalRect() const { return m_finalLocalRect; }
 void TextElement::SetLayoutFinalGlobalRect(const RectF& rect) { m_finalGlobalRect = rect; }
 int TextElement::GetVisualChildrenCount() const { return 0; }
 ILayoutElement* TextElement::GetVisualChild(int index) const { return nullptr; }
@@ -141,38 +227,48 @@ Block::~Block()
 }
 
 //------------------------------------------------------------------------------
-void Block::Initialize(DocumentsManager* manager)
+void Block::Initialize()
 {
-	TextElement::Initialize(manager);
+	TextElement::Initialize();
 }
 
 //------------------------------------------------------------------------------
-void Block::AddChildElement(TextElement* inl)
+void Block::AddInline(Inline* inl)
 {
-	LN_CHECK_ARG(inl != nullptr);
-	LN_CHECK_ARG(inl->GetParent() == nullptr);
-	m_childElements.Add(inl);
+	if (LN_CHECK_ARG(inl != nullptr)) return;
+	if (LN_CHECK_ARG(inl->GetParent() == nullptr)) return;
+	m_inlines.Add(inl);
 	inl->SetParent(this);
 }
 
 //------------------------------------------------------------------------------
-void Block::ClearChildElements()
+void Block::InsertInlines(int index, const List<RefPtr<Inline>>& inlines)
 {
-	for (TextElement* child : m_childElements) child->SetParent(nullptr);
-	m_childElements.Clear();
+	m_inlines.InsertRange(index, inlines);
+	for (Inline* inl : inlines)
+	{
+		inl->SetParent(this);
+	}
+}
+
+//------------------------------------------------------------------------------
+void Block::ClearInlines()
+{
+	for (TextElement* child : m_inlines) child->SetParent(nullptr);
+	m_inlines.Clear();
 }
 
 //------------------------------------------------------------------------------
 void Block::Render(const Matrix& transform, IDocumentsRenderer* renderer)
 {
-	for (TextElement* child : m_childElements) child->Render(transform, renderer);
+	for (TextElement* child : m_inlines) child->Render(transform, renderer);
 }
 
 //------------------------------------------------------------------------------
 Size Block::MeasureOverride(const Size& constraint)
 {
 	Size childDesirdSize;
-	for (TextElement* child : m_childElements)
+	for (TextElement* child : m_inlines)
 	{
 		// TODO: とりあえず 左から右へのフロー
 		//Size size = child->MeasureOverride(constraint);
@@ -191,7 +287,7 @@ Size Block::ArrangeOverride(const Size& finalSize)
 {
 	float prevChildSize = 0;
 	RectF childRect;
-	for (TextElement* child : m_childElements)
+	for (TextElement* child : m_inlines)
 	{
 		// TODO: とりあえず 左から右へのフロー
 		Size childDesiredSize = child->GetDesiredSize();
@@ -220,9 +316,9 @@ Paragraph::~Paragraph()
 }
 
 //------------------------------------------------------------------------------
-void Paragraph::Initialize(DocumentsManager* manager)
+void Paragraph::Initialize()
 {
-	TextElement::Initialize(manager);
+	Block::Initialize();
 }
 
 
@@ -242,9 +338,9 @@ Inline::~Inline()
 }
 
 //------------------------------------------------------------------------------
-void Inline::Initialize(DocumentsManager* manager)
+void Inline::Initialize()
 {
-	TextElement::Initialize(manager);
+	TextElement::Initialize();
 }
 
 
@@ -264,13 +360,21 @@ Run::~Run()
 }
 
 //------------------------------------------------------------------------------
-void Run::Initialize(DocumentsManager* manager)
+void Run::Initialize()
 {
-	Inline::Initialize(manager);
+	Inline::Initialize();
 
 	// TODO: 本当に画面に表示されている分だけ作ればいろいろ節約できそう
 	m_glyphRun = RefPtr<GlyphRun>::MakeRef();
-	m_glyphRun->Initialize(manager->GetGraphicsManager());
+	m_glyphRun->Initialize(GetManager()->GetGraphicsManager());
+}
+
+//------------------------------------------------------------------------------
+void Run::Initialize(const UTF32* str, int len)
+{
+	Initialize();
+
+	m_glyphRun->SetText(str, len);
 }
 
 //------------------------------------------------------------------------------
@@ -300,7 +404,72 @@ Size Run::MeasureOverride(const Size& constraint)
 //------------------------------------------------------------------------------
 void Run::Render(const Matrix& transform, IDocumentsRenderer* renderer)
 {
-	renderer->OnDrawGlyphRun(transform, GetForeground(), m_glyphRun, PointF::Zero);
+	renderer->OnDrawGlyphRun(transform, GetForeground(), m_glyphRun, PointF());
+}
+
+
+//==============================================================================
+// LineBreak
+//==============================================================================
+
+//------------------------------------------------------------------------------
+LineBreak::LineBreak()
+{
+}
+
+//------------------------------------------------------------------------------
+LineBreak::~LineBreak()
+{
+}
+
+//------------------------------------------------------------------------------
+void LineBreak::Initialize()
+{
+	Inline::Initialize();
+}
+
+//------------------------------------------------------------------------------
+InternalTextElementType LineBreak::GetInternalTextElementType() const
+{
+	return InternalTextElementType::LineBreak;
+}
+
+
+
+
+
+
+//==============================================================================
+// VisualBlock
+//==============================================================================
+
+//------------------------------------------------------------------------------
+void VisualBlock::RebuildVisualLineList()
+{
+	//m_visualLineList.Clear();
+
+	//m_visualLineList.Add(NewObject<VisualLine>());
+	//VisualLine* lastLine = m_visualLineList.GetLast();
+	//for (const RefPtr<TextElement>& element : m_paragraph->GetChildElements())
+	//{
+	//	lastLine->m_visualTextElementList.Add(NewObject<VisualTextElement>());
+
+	//	if (element->GetInternalTextElementType() == InternalTextElementType::LineBreak)
+	//	{
+	//		m_visualLineList.Add(NewObject<VisualLine>());
+	//		VisualLine* lastLine = m_visualLineList.GetLast();
+	//	}
+	//}
+}
+
+//==============================================================================
+// DocumentView
+//==============================================================================
+
+//------------------------------------------------------------------------------
+void DocumentView::Initialize(Document* document)
+{
+	m_document = document;
 }
 
 } // namespace detail

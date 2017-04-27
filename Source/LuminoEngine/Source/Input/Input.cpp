@@ -67,7 +67,7 @@ const String InputButtons::Left = _T("left");
 const String InputButtons::Right = _T("right");
 const String InputButtons::Up = _T("up");
 const String InputButtons::Down = _T("down");
-const String InputButtons::Ok = _T("ok");
+const String InputButtons::OK = _T("ok");
 const String InputButtons::Cancel = _T("cancel");
 
 LN_NAMESPACE_END

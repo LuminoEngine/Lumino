@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include "Common.h"
-#include "BodyBase.h"
+#include "PhysicsObject.h"
 
 LN_NAMESPACE_BEGIN
 class CollisionShape;

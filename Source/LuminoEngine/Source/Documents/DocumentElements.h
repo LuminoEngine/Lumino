@@ -8,6 +8,26 @@ LN_NAMESPACE_BEGIN
 namespace detail {
 class DocumentsManager;
 class Inline;
+class Block;
+
+enum class InternalTextElementType
+{
+	Common,
+	LineBreak,
+};
+
+class DocumentSelection
+{
+public:
+	int	start;		///< text.GetLength() は有効値。Select(text.GetLength(), 0) でコンテンツの末尾にキャレットを移動する
+	int length;
+
+public:
+	DocumentSelection()
+		: start(0)
+		, length(0)
+	{}
+};
 
 /**
 	@brief
@@ -18,10 +38,19 @@ class Document
 public:
 	Document();
 	virtual ~Document();
-	void Initialize(DocumentsManager* manager);
+	void Initialize();
+
+	// 現在の内容をすべて破棄して、新しい1つの Paragraph を作る
+	void SetText(const StringRef& text);
+
+LN_INTERNAL_ACCESS:
+	void Replace(int offset, int length, const StringRef& text);
 
 private:
-	DocumentsManager*	m_manager;
+	void Replace(int offset, int length, const UTF32* text, int len);
+
+	DocumentsManager*		m_manager;
+	List<RefPtr<Block>>		m_blockList;
 };
 
 /**
@@ -32,9 +61,6 @@ class TextElement
 	, public ILayoutElement
 {
 public:
-	TextElement();
-	virtual ~TextElement();
-	void Initialize(DocumentsManager* manager);
 
 	/** フォントファミリ名を設定します。*/
 	void SetFontFamily(const StringRef& value) { m_fontData.Family = value; m_fontDataModified = true; }
@@ -76,19 +102,20 @@ LN_PROTECTED_INTERNAL_ACCESS:
 
 	// ILayoutElement interface
 	virtual const PointF& GetLayoutPosition() const override;
-	virtual const Size& GetLayoutSize() const override;
+	virtual Size GetLayoutSize() const override;
 	virtual const ThicknessF& GetLayoutMargin() const override;
 	virtual const ThicknessF& GetLayoutPadding() const override;
 	virtual AlignmentAnchor GetLayoutAnchor() const override;
 	virtual HAlignment GetLayoutHAlignment() const override;
 	virtual VAlignment GetLayoutVAlignment() const override;
+	virtual void GetLayoutMinMaxInfo(Size* outMin, Size* outMax) const override;
 	virtual ILayoutElement* GetLayoutParent() const override;
 	virtual const HAlignment* GetLayoutContentHAlignment() override;
 	virtual const VAlignment* GetLayoutContentVAlignment() override;
 	virtual const Size& GetLayoutDesiredSize() const override;
 	virtual void SetLayoutDesiredSize(const Size& size) override;
 	virtual void SetLayoutFinalLocalRect(const RectF& rect) override;
-	virtual const RectF& GetLayoutFinalLocalRect() override;
+	virtual const RectF& GetLayoutFinalLocalRect() const override;
 	virtual void SetLayoutFinalGlobalRect(const RectF& rect) override;
 	virtual int GetVisualChildrenCount() const override;
 	virtual ILayoutElement* GetVisualChild(int index) const override;
@@ -100,8 +127,14 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	// ILayoutElement interface
 	virtual Size MeasureOverride(const Size& constraint) override;
 
+LN_CONSTRUCT_ACCESS:
+	TextElement();
+	virtual ~TextElement();
+	void Initialize();
+
 LN_INTERNAL_ACCESS:
 	DocumentsManager* GetManager() const { return m_manager; }
+	virtual InternalTextElementType GetInternalTextElementType() const;
 	void SetParent(TextElement* parent) { m_parent = parent; }
 	TextElement* GetParent() const { return m_parent; }
 	const Size& GetDesiredSize() const { return m_desiredSize; }
@@ -137,10 +170,10 @@ class Block
 public:
 	Block();
 	virtual ~Block();
-	void Initialize(DocumentsManager* manager);
+	void Initialize();
 
-	void AddChildElement(TextElement* inl);
-	void ClearChildElements();
+	void AddInline(Inline* inl);
+	void ClearInlines();
 
 	virtual void Render(const Matrix& transform, IDocumentsRenderer* renderer);
 
@@ -148,8 +181,12 @@ protected:
 	virtual Size MeasureOverride(const Size& constraint) override;
 	virtual Size ArrangeOverride(const Size& finalSize) override;
 
+LN_INTERNAL_ACCESS:
+	void InsertInlines(int index, const List<RefPtr<Inline>>& inlines);
+	const List<RefPtr<Inline>>& GetInlines() const { return m_inlines; }
+
 private:
-	List<RefPtr<TextElement>>	m_childElements;
+	List<RefPtr<Inline>>	m_inlines;
 };
 
 /**
@@ -161,7 +198,7 @@ class Paragraph
 public:
 	Paragraph();
 	virtual ~Paragraph();
-	void Initialize(DocumentsManager* manager);
+	void Initialize();
 
 
 private:
@@ -176,7 +213,7 @@ class Inline
 public:
 	Inline();
 	virtual ~Inline();
-	void Initialize(DocumentsManager* manager);
+	void Initialize();
 
 private:
 };
@@ -190,7 +227,8 @@ class Run
 public:
 	Run();
 	virtual ~Run();
-	void Initialize(DocumentsManager* manager);
+	void Initialize();
+	void Initialize(const UTF32* str, int len);
 
 	void SetText(const StringRef& text);
 
@@ -216,11 +254,88 @@ class Span
 public:
 	Span();
 	virtual ~Span();
-	void Initialize(DocumentsManager* manager);
+	void Initialize();
 
 private:
 	// Inline List
 };
+
+
+/**
+	@brief
+*/
+class LineBreak
+	: public Inline
+{
+public:
+	LineBreak();
+	virtual ~LineBreak();
+	void Initialize();
+
+private:
+	virtual InternalTextElementType GetInternalTextElementType() const;
+};
+
+
+
+
+class VisualTextElement
+	: public Object
+{
+public:
+	//TextElement*	m_element;
+	int				m_documentLength;	// Document 上での TextLength
+
+};
+
+
+
+// 物理行
+class VisualLine
+	: public Object
+{
+public:
+
+private:
+public:	// TODO:
+	List<RefPtr<VisualTextElement>>	m_visualTextElementList;
+};
+
+
+/**
+	@brief
+	@note	今は float(ブロックの横並び) などを考えない。とすると、Paragraph 単位でデータモデル組んだほうがわかりやすい。
+*/
+class VisualBlock
+	: public Object
+{
+public:
+	void SetParagraph(Paragraph* paragraph);
+
+private:
+	void RebuildVisualLineList();
+
+	RefPtr<Paragraph>			m_paragraph;
+	List<RefPtr<VisualLine>>	m_visualLineList;
+};
+
+//
+class DocumentView
+	: public Object
+{
+public:
+
+private:
+	void Initialize(Document* document);
+
+	Document*	m_document;
+};
+
+
+
+
+
+
 
 } // namespace detail
 LN_NAMESPACE_END

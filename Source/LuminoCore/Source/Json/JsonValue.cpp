@@ -93,7 +93,7 @@ void JsonValue::SetBool(bool value)
 //------------------------------------------------------------------------------
 bool JsonValue::GetBool() const
 {
-	LN_CHECK_STATE(m_type == JsonType::Bool);
+	if (LN_CHECK_STATE(m_type == JsonType::Bool)) return false;
 	return m_bool;
 }
 
@@ -108,7 +108,7 @@ void JsonValue::SetDouble(double value)
 //------------------------------------------------------------------------------
 double JsonValue::GetDouble() const
 {
-	LN_CHECK_STATE(m_type == JsonType::Double);
+	if (LN_CHECK_STATE(m_type == JsonType::Double)) return 0.0;
 	return m_double;
 }
 
@@ -123,7 +123,7 @@ void JsonValue::SetString(const String& str)
 //------------------------------------------------------------------------------
 const String& JsonValue::GetString() const
 {
-	LN_CHECK_STATE(m_type == JsonType::String && m_string != NULL);
+	if (LN_CHECK_STATE(m_type == JsonType::String && m_string != NULL)) return String::GetEmpty();
 	return *m_string;
 }
 
@@ -138,26 +138,26 @@ void JsonValue::SetArray()
 //------------------------------------------------------------------------------
 int JsonValue::GetItemCount() const
 {
-	LN_CHECK_STATE(m_type == JsonType::Array && m_valueList != NULL);
+	if (LN_CHECK_STATE(m_type == JsonType::Array && m_valueList != NULL)) return 0;
 	return m_valueList->GetCount();
 }
 
 //------------------------------------------------------------------------------
 void JsonValue::AddItem(const JsonValue& value)
 {
-	LN_CHECK_STATE(m_type == JsonType::Array && m_valueList != NULL);
+	if (LN_CHECK_STATE(m_type == JsonType::Array && m_valueList != NULL)) return;
 	m_valueList->Add(value);
 }
 
 //------------------------------------------------------------------------------
 JsonValue& JsonValue::operator[](int index)
 {
-	LN_CHECK_STATE(m_type == JsonType::Array && m_valueList != NULL);
+	LN_VERIFY_STATE(m_type == JsonType::Array && m_valueList != NULL);
 	return m_valueList->GetAt(index);
 }
 const JsonValue& JsonValue::operator[](int index) const
 {
-	LN_CHECK_STATE(m_type == JsonType::Array && m_valueList != NULL);
+	LN_VERIFY_STATE(m_type == JsonType::Array && m_valueList != NULL);
 	return m_valueList->GetAt(index);
 }
 
@@ -172,14 +172,14 @@ void JsonValue::SetObject()
 //------------------------------------------------------------------------------
 int JsonValue::GetMemberCount() const
 {
-	LN_CHECK_STATE(m_type == JsonType::Object && m_memberList != NULL);
+	if (LN_CHECK_STATE(m_type == JsonType::Object && m_memberList != NULL)) return 0;
 	return m_memberList->GetCount();
 }
 
 //------------------------------------------------------------------------------
 void JsonValue::AddMember(const String& name, const JsonValue& value)
 {
-	LN_CHECK_STATE(m_type == JsonType::Object && m_memberList != NULL);
+	if (LN_CHECK_STATE(m_type == JsonType::Object && m_memberList != NULL)) return;
 	JsonMember m;
 	m.Name = name;
 	m.Value = value;

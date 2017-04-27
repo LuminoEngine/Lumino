@@ -78,7 +78,7 @@ void InputManager::Initialize(const Settings& settings)
 	pad->AddBinding(InputButtons::Right,	KeyboardBinding::Create(Keys::Right));
 	pad->AddBinding(InputButtons::Up,		KeyboardBinding::Create(Keys::Up));
 	pad->AddBinding(InputButtons::Down,		KeyboardBinding::Create(Keys::Down));
-	pad->AddBinding(InputButtons::Ok,		KeyboardBinding::Create(Keys::Z));
+	pad->AddBinding(InputButtons::OK,		KeyboardBinding::Create(Keys::Z));
 	pad->AddBinding(InputButtons::Cancel,	KeyboardBinding::Create(Keys::X));
 
 	pad->AddBinding(InputButtons::Left,		GamepadBinding::Create(GamepadElement::PovLeft));
@@ -90,7 +90,7 @@ void InputManager::Initialize(const Settings& settings)
 	pad->AddBinding(InputButtons::Right,	GamepadBinding::Create(GamepadElement::Axis1Plus));
 	pad->AddBinding(InputButtons::Up,		GamepadBinding::Create(GamepadElement::Axis2Minus));
 	pad->AddBinding(InputButtons::Down,		GamepadBinding::Create(GamepadElement::Axis2Plus));
-	pad->AddBinding(InputButtons::Ok,		GamepadBinding::Create(GamepadElement::Button1));
+	pad->AddBinding(InputButtons::OK,		GamepadBinding::Create(GamepadElement::Button1));
 	pad->AddBinding(InputButtons::Cancel,	GamepadBinding::Create(GamepadElement::Button2));
 
 	if (g_inputManager == nullptr) {
@@ -170,7 +170,7 @@ float InputManager::GetVirtualButtonState(InputBinding* binding, bool keyboard, 
 			int number = e - (int)GamepadElement::Button1;
 			JoystickDeviceState state;
 			m_inputDriver->GetJoystickState(joyNumber, &state);
-			LN_CHECK_RANGE(number, 0, JoystickDeviceState::MaxButtons);
+			if (LN_CHECK_RANGE(number, 0, JoystickDeviceState::MaxButtons)) return 0.0f;
 			return state.Buttons[number] ? 1.0f : 0.0f;
 		}
 		// POV
@@ -190,7 +190,7 @@ float InputManager::GetVirtualButtonState(InputBinding* binding, bool keyboard, 
 			int number = e - (int)GamepadElement::Axis1;
 			JoystickDeviceState state;
 			m_inputDriver->GetJoystickState(joyNumber, &state);
-			LN_CHECK_RANGE(number, 0, JoystickDeviceState::MaxAxis);
+			if (LN_CHECK_RANGE(number, 0, JoystickDeviceState::MaxAxis)) return 0.0f;
 			return state.Axes[number];
 		}
 		// Axis 0.0 .. 1.0
@@ -201,7 +201,7 @@ float InputManager::GetVirtualButtonState(InputBinding* binding, bool keyboard, 
 
 			JoystickDeviceState state;
 			m_inputDriver->GetJoystickState(joyNumber, &state);
-			LN_CHECK_RANGE(number, 0, JoystickDeviceState::MaxAxis);
+			if (LN_CHECK_RANGE(number, 0, JoystickDeviceState::MaxAxis)) return 0.0f;
 			return state.Axes[number] * sign;
 		}
 	}

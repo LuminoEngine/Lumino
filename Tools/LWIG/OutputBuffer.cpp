@@ -24,9 +24,9 @@ void OutputBuffer::Clear()
 	m_state = State::LineHead;
 }
 
-void OutputBuffer::IncreaseIndent()
+void OutputBuffer::IncreaseIndent(int count)
 {
-	m_indentLevel++;
+	m_indentLevel += count;
 	m_indent.Clear();
 	for (int i = 0; i < m_indentLevel; i++)
 		m_indent += _T("    ");

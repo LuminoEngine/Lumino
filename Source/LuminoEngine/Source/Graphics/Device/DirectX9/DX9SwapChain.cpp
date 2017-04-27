@@ -78,7 +78,7 @@ void DX9SwapChain::OnLostDevice()
 //------------------------------------------------------------------------------
 void DX9SwapChain::OnResetDevice()
 {
-	LN_CHECK_STATE(m_dxSwapChain == nullptr);
+	if (LN_CHECK_STATE(m_dxSwapChain == nullptr)) return;
 
 	IDirect3DDevice9* dxDevice = m_graphicsDevice->GetIDirect3DDevice9();
 	if (m_isDefault)

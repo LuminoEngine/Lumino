@@ -61,7 +61,7 @@ public:
 
 	virtual bool ShowDialog(PlatformWindow* parent) override
 	{
-		LN_CHECK_ARG(parent != nullptr);
+		if (LN_CHECK_ARG(parent != nullptr)) return false;
 		auto* win32Window = static_cast<Win32PlatformWindow*>(parent);
 		HWND hParent = win32Window->GetWindowHandle();
 		HRESULT hr = m_fileDialog->Show(hParent);

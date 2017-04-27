@@ -3,6 +3,7 @@
 #include <Lumino/Graphics/RenderState.h>
 #include <Lumino/Graphics/Common.h>
 #include <Lumino/Graphics/Color.h>
+#include <Lumino/Graphics/Graphics.h>
 
 LN_NAMESPACE_BEGIN
 class EngineDiagCore;
@@ -80,6 +81,7 @@ public:
 	virtual ISwapChain* GetDefaultSwapChain() = 0;
 	
 	/// 描画インターフェイスの取得
+	/// 保持してはなりません。
 	virtual IRenderer* GetRenderer() = 0;
 
 	virtual IVertexDeclaration* CreateVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;
@@ -170,25 +172,20 @@ public:
 	void EnterRenderState();
 	void LeaveRenderState();
 
-	virtual void Begin() = 0;
-	virtual void End() = 0;
+	void Begin();
+	void End();
+
+
+	void SetRenderTarget(int index, ITexture* target);
+	ITexture* GetRenderTarget(int index);
+	void SetDepthBuffer(ITexture* buffer);
+	ITexture* GetDepthBuffer();
 
 	void SetRenderState(const RenderState& state) { m_requestedRenderState = state; }
 	const RenderState& GetRenderState() { return m_requestedRenderState; }
 	virtual void SetDepthStencilState(const DepthStencilState& state) { m_requestedDepthStencilState = state; }
 	const DepthStencilState& GetDepthStencilState() { return m_requestedDepthStencilState; }
 
-	/// レンダリングターゲットの設定
-	virtual void SetRenderTarget(int index, ITexture* texture) = 0;
-
-	/// レンダリングターゲットの取得
-	virtual ITexture* GetRenderTarget(int index) = 0;
-
-	/// 深度バッファの設定
-	virtual void SetDepthBuffer(ITexture* texture) = 0;
-
-	/// 深度バッファの取得
-	//virtual ITexture* GetDepthBuffer() = 0;
 
 	/// ビューポート矩形の設定
 	//virtual void SetViewport(const RectI& rect) = 0;
@@ -197,14 +194,17 @@ public:
 	//virtual const RectI& GetViewport() = 0;
 
 	void SetVertexDeclaration(IVertexDeclaration* vertexDeclaration);
+	IVertexDeclaration* GetVertexDeclaration() const;
 
 	/// 頂点バッファの設定
 	void SetVertexBuffer(int streamIndex, IVertexBuffer* vertexBuffer);
+	IVertexBuffer* GetVertexBuffer(int streamIndex);
 
 	/// インデックスバッファの設定
 	void SetIndexBuffer(IIndexBuffer* indexBuffer);
 
 	void SetShaderPass(IShaderPass* pass);
+
 
 	/// 設定されている各種バッファをクリアする
 	void Clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
@@ -223,6 +223,9 @@ protected:
 
 	virtual void OnEnterRenderState() = 0;
 	virtual void OnLeaveRenderState() = 0;
+	virtual void OnBeginRendering() = 0;
+	virtual void OnEndRendering() = 0;
+	virtual void OnUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, ITexture* depthBuffer) = 0;
 	virtual	void OnUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset) = 0;
 	virtual	void OnUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset) = 0;
 	virtual void OnUpdatePrimitiveData(IVertexDeclaration* decls, const List<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer) = 0;
@@ -233,18 +236,21 @@ protected:
 private:
 	void FlushStates();
 
-protected:	// TODO: private
 	enum ModifiedFlags
 	{
 		Modified_None				= 0x0000,
 		Modified_VertexDeclaration	= 0x0001,
 		Modified_VertexBuffer		= 0x0002,
 		Modified_IndexBuffer		= 0x0004,
+		Modified_FrameBuffer		= 0x0008,
 		Modified_All				= 0xFFFFFFFF,
 	};
 
 	EngineDiagCore*					m_diag;
 	uint32_t						m_modifiedFlags;
+
+	RefPtr<ITexture>				m_currentRenderTargets[Graphics::MaxMultiRenderTargets];
+	RefPtr<ITexture>				m_currentDepthBuffer;
 	RenderState						m_requestedRenderState;
 	RenderState						m_currentRenderState;
 	DepthStencilState				m_requestedDepthStencilState;
@@ -253,6 +259,7 @@ protected:	// TODO: private
 	List<RefPtr<IVertexBuffer>>		m_currentVertexBuffers;
 	RefPtr<IIndexBuffer>			m_currentIndexBuffer;
 	RefPtr<IShaderPass>				m_currentShaderPass;
+	bool							m_rendering;
 };
 
 /// 頂点宣言

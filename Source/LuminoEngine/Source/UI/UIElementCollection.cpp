@@ -37,6 +37,7 @@ void UIElementCollection::InsertItem(int index, const value_type& item)
 		m_oldItemsCache, 0,
 	};
 	m_owner->OnChildCollectionChanged(e);
+	m_newItemsCache.Clear();
 }
 
 //------------------------------------------------------------------------------
@@ -72,6 +73,7 @@ void UIElementCollection::RemoveItem(int index)
 		m_oldItemsCache, index,
 	};
 	m_owner->OnChildCollectionChanged(e);
+	m_oldItemsCache.Clear();
 }
 
 //------------------------------------------------------------------------------
@@ -91,6 +93,8 @@ void UIElementCollection::SetItem(int index, const value_type& item)
 		m_oldItemsCache, index,
 	};
 	m_owner->OnChildCollectionChanged(e);
+	m_newItemsCache.Clear();
+	m_oldItemsCache.Clear();
 }
 
 LN_NAMESPACE_END

@@ -33,12 +33,12 @@ public:
 
     T& Get() 
 	{
-		LN_FAIL_CHECK_STATE(m_isSet) return m_value;
+		if (LN_CHECK_STATE(m_isSet)) return m_value;
         return m_value;
 	}
 	const T& Get() const
 	{
-		LN_FAIL_CHECK_STATE(m_isSet) return m_value;
+		if (LN_CHECK_STATE(m_isSet)) return m_value;
 		return m_value;
 	}
 

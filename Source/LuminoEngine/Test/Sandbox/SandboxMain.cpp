@@ -13,7 +13,8 @@
 using namespace ln;
 
 
-
+void UIControlsGallery();
+int DxLibMain();
 
 
 
@@ -81,6 +82,61 @@ void Main()
 
 void Main()
 {
+#ifdef _WIN32
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+
+
+
+	//{
+	//	StreamWriter w(_T("C:\\LocalProj\\DT10\\12.0.0\\master_maerge\\result.csv"));
+	//	for (auto& data : results)
+	//	{
+	//		if (!data.parents.IsEmpty())
+	//		{
+	//			w.Write(data.path + _T(","));
+	//			for (auto& p : data.parents)
+	//			{
+	//				w.WriteFormat(_T("{0}  "), p);
+	//			}
+	//			w.WriteLine();
+	//		}
+	//	}
+	//}
+
+	//{
+	//	StreamWriter w(_T("C:\\LocalProj\\DT10\\12.0.0\\master_maerge\\result2.csv"));
+	//	for (auto& data : results)
+	//	{
+	//		if (data.parents.IsEmpty())
+	//		{
+	//			w.WriteLine(data.path);
+	//		}
+	//	}
+	//}
+
+
+	return
+
+	//Engine::Initialize();
+
+	//Engine::GetMainViewport()->SetBackgroundColor(Color::Gray);
+
+	//do
+	//{
+	//	Engine::UpdateFrame();
+	//	//if (Engine::BeginRendering())
+	//	{
+	//		Engine::RenderFrame();
+	//		Engine::PresentFrame();
+	//	}
+
+	//} while (!Engine::IsEndRequested());
+
+	UIControlsGallery();
+	//DxLibMain();
+	return;
+
 
 	//class Foo{
 	//public:
@@ -119,7 +175,6 @@ void Main()
 
 	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
 	Camera::GetMain3DCamera()->SetCameraBehavior(cb);
-
 
 	//auto mesh = SkinnedMesh::Create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
 
@@ -541,30 +596,45 @@ void Main()
 	}
 #endif
 
-#if 1
+#if 0
 	auto col1 = BoxCollisionShape::Create(1, 2, 3);
 	auto body1 = RigidBody::Create(col1);
 	body1->SetPosition(10, 0, 0);
 #endif
 	//static_cast<CameraViewportLayer*>(Engine::GetDefault3DLayer())->SetDebugDrawFlags(WorldDebugDrawFlags::PhysicsInfo);
 
+	auto uiRoot = Engine::GetMainWindow();
+	//auto thumb = UIThumb::Create();
+	////thumb->SetPosition(PointF(100, 200));
+	//thumb->SetSize(Size(30,60));
+	////thumb->SetBackground(ColorBrush::Red);
+	////textBlock1->SetText(_T("TextBlock"));
+	//uiRoot->SetContent(thumb);
+	auto track = UIScrollBar::Create();
+	//track->SetSize(Size(200, NAN));
+	track->SetMaximum(10);
+	track->SetValue(3);
+	track->SetViewportSize(2);
+	uiRoot->AddChild(track);
+
+
 	while (!Engine::IsEndRequested())
 	{
-		Engine::BeginFrameUpdate();
-		if (Engine::BeginRendering())
+		Engine::UpdateFrame();
+		//if (Engine::BeginRendering())
 		{
-			Engine::Render();
+			Engine::RenderFrame();
 
 
-			Engine::GetDefaultSceneGraph3D()->GetDebugRenderer()->DrawLinePrimitive(
-				Vector3(0, 0, 0), Color::Red,
-				Vector3(5, 5, 5), Color::White);
+			//Engine::GetDefaultSceneGraph3D()->GetRenderer()->DrawLinePrimitive(
+			//	Vector3(0, 0, 0), Color::Red,
+			//	Vector3(5, 5, 5), Color::White);
+
 
 			//gizmo->Render(Engine::GetDefault3DLayer()->GetRenderer());
 
-			Engine::EndRendering();
+			Engine::PresentFrame();
 		}
-		Engine::EndFrameUpdate();
 
 		//body1->GetWorldTransform().GetPosition().Print();
 

@@ -13,7 +13,7 @@ LN_NAMESPACE_BEGIN
 BinaryWriter::BinaryWriter(Stream* stream)
 	: m_stream(nullptr)
 {
-	LN_CHECK_ARG(stream != nullptr);
+	if (LN_CHECK_ARG(stream != nullptr)) return;
 	LN_REFOBJ_SET(m_stream, stream);
 }
 

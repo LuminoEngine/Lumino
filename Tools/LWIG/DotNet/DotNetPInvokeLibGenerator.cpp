@@ -21,6 +21,12 @@ void DotNetPInvokeLibGenerator::Generate()
 				delegatesText.Append("public delegate ResultCode {0}({1});", methodInfo->GetCApiSetOverrideCallbackTypeName(), MakePInvokeMethodDeclParamList(methodInfo)).NewLine();
 			}
 		}
+
+		for (auto& delegateInfo : g_database.delegates)
+		{
+			delegatesText.Append("[UnmanagedFunctionPointer(CallingConvention.Cdecl)]").NewLine();
+			delegatesText.Append("public delegate void LN{0}({1});", delegateInfo->name, MakePInvokeMethodDeclParamList(delegateInfo->declaredMethods[0])).NewLine();
+		}
 	}
 
 	// enums
@@ -104,6 +110,7 @@ String DotNetPInvokeLibGenerator::MakeParamTypeName(ParameterInfoPtr paramInfo)
 
 	if (paramInfo->type->isStruct) return m + paramInfo->type->name;
 	if (paramInfo->type->isEnum) return m + paramInfo->type->name;
+	if (paramInfo->type->isDelegate) return m + "LN" + paramInfo->type->name;
 
 	return m + "IntPtr";//typeInfo->name;
 }

@@ -1022,6 +1022,19 @@ TEST_F(Test_Base_String, unordered_map)
 		std::hash<ln::StringW> hash2;
 		ASSERT_NE(hash2(StringW("key1")), hash2(StringW("key2")));
 	}
+	// <Test>
+	{
+		StringA key1 = "key1";
+		StringRefA key1ref(key1);
+		StringA key2 = "key2";
+		StringRefA key2ref(key2);
+
+		std::unordered_map<StringA, int> map1;
+		map1[key1ref] = 1;
+		map1.insert(std::pair<StringA, int>(key2ref, 2));
+		ASSERT_EQ(1, map1[key1ref]);
+		ASSERT_EQ(2, map1.find(key2ref)->second);
+	}
 }
 
 //------------------------------------------------------------------------------

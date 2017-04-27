@@ -27,6 +27,7 @@ FontPtr Font::Create()
 FontPtr Font::Create(const String& family)
 {
 	auto ptr = FontPtr::MakeRef();
+	ptr->Initialize(detail::GraphicsManager::GetInstance(), nullptr);
 	ptr->SetFamily(family);
 	return ptr;
 }
@@ -65,7 +66,7 @@ Font::Font()
 //------------------------------------------------------------------------------
 void Font::Initialize(detail::GraphicsManager* manager, RawFont* builtinRawFont)
 {
-	LN_CHECK_ARG(manager != nullptr);
+	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
 
 	if (builtinRawFont != nullptr)
@@ -83,7 +84,7 @@ Font::~Font()
 //------------------------------------------------------------------------------
 void Font::SetFamily(const String& familyName)
 {
-	LN_CHECK_STATE(!m_builtin);
+	if (LN_CHECK_STATE(!m_builtin)) return;
 	m_fontInfo.Family = familyName;
 	m_rawFont = nullptr;
 }
@@ -97,7 +98,7 @@ const String& Font::GetFamily() const
 //------------------------------------------------------------------------------
 void Font::SetSize(int size)
 {
-	LN_CHECK_STATE(!m_builtin);
+	if (LN_CHECK_STATE(!m_builtin)) return;
 	m_fontInfo.Size = size;
 	m_rawFont = nullptr;
 }
@@ -111,7 +112,7 @@ int Font::GetSize() const
 //------------------------------------------------------------------------------
 void Font::SetBold(bool enabled)
 {
-	LN_CHECK_STATE(!m_builtin);
+	if (LN_CHECK_STATE(!m_builtin)) return;
 	m_fontInfo.IsBold = enabled;
 	m_rawFont = nullptr;
 }
@@ -125,7 +126,7 @@ bool Font::IsBold() const
 //------------------------------------------------------------------------------
 void Font::SetItalic(bool enabled)
 {
-	LN_CHECK_STATE(!m_builtin);
+	if (LN_CHECK_STATE(!m_builtin)) return;
 	m_fontInfo.IsItalic = enabled;
 	m_rawFont = nullptr;
 }
@@ -139,7 +140,7 @@ bool Font::IsItalic() const
 //------------------------------------------------------------------------------
 void Font::SetAntiAlias(bool enabled)
 {
-	LN_CHECK_STATE(!m_builtin);
+	if (LN_CHECK_STATE(!m_builtin)) return;
 	m_fontInfo.IsAntiAlias = enabled;
 	m_rawFont = nullptr;
 }
@@ -193,6 +194,7 @@ RawFontPtr RawFont::GetDefaultFont()
 //------------------------------------------------------------------------------
 RawFont::RawFont()
 	: m_glyphTextureCache(nullptr)
+	, m_vectorGlyphCache(nullptr)
 {
 }
 
@@ -200,6 +202,7 @@ RawFont::RawFont()
 RawFont::~RawFont()
 {
 	LN_SAFE_RELEASE(m_glyphTextureCache);
+	LN_SAFE_RELEASE(m_vectorGlyphCache);
 }
 
 //------------------------------------------------------------------------------
@@ -221,6 +224,17 @@ detail::FontGlyphTextureCache* RawFont::GetGlyphTextureCache()
 		m_glyphTextureCache->Initialize(GetManager()->GetGraphicsManager(), this);
 	}
 	return m_glyphTextureCache;
+}
+
+//------------------------------------------------------------------------------
+detail::VectorFontGlyphCache* RawFont::GetVectorGlyphCache()
+{
+	if (m_vectorGlyphCache == nullptr)
+	{
+		m_vectorGlyphCache = LN_NEW detail::VectorFontGlyphCache();
+		m_vectorGlyphCache->Initialize(GetManager()->GetGraphicsManager(), this, 2048);	// TODO
+	}
+	return m_vectorGlyphCache;
 }
 
 LN_NAMESPACE_GRAPHICS_END

@@ -65,7 +65,7 @@ public:
 	static const String Right;
 	static const String Up;
 	static const String Down;
-	static const String Ok;
+	static const String OK;
 	static const String Cancel;
 };
 

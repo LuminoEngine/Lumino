@@ -11,6 +11,7 @@
 #include <Lumino/Graphics/Rendering.h>	// TODO: for LightInfo
 #include "RendererImpl.h"
 #include "RenderingCommand.h"
+#include "ShaderAnalyzer.h"
 
 #define LN_CALL_SHADER_COMMAND(func, command, ...) \
 	if (m_owner->GetManager()->GetRenderingType() == GraphicsRenderingType::Threaded) { \
@@ -81,7 +82,7 @@ ShaderSemanticsManager::ShaderSemanticsManager()
 //------------------------------------------------------------------------------
 void ShaderSemanticsManager::Initialize(GraphicsManager* manager)
 {
-	LN_CHECK_ARG(manager != nullptr);
+	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
 }
 
@@ -348,10 +349,10 @@ ShaderPtr Shader::GetBuiltinShader(BuiltinShader shader)
 }
 
 //------------------------------------------------------------------------------
-RefPtr<Shader> Shader::Create(const StringRef& filePath)
+RefPtr<Shader> Shader::Create(const StringRef& filePath, bool useTRSS)
 {
 	RefPtr<Shader> obj(LN_NEW Shader(), false);
-	obj->Initialize(detail::GraphicsManager::GetInstance(), filePath);
+	obj->Initialize(detail::GraphicsManager::GetInstance(), filePath, useTRSS);
 	return obj;
 }
 
@@ -417,14 +418,14 @@ Shader::~Shader()
 }
 
 //------------------------------------------------------------------------------
-void Shader::Initialize(detail::GraphicsManager* manager, const StringRef& filePath)
+void Shader::Initialize(detail::GraphicsManager* manager, const StringRef& filePath, bool useTRSS)
 {
 	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath), false);
 	ByteBuffer buf((size_t)stream->GetLength() + 1, false);
 	stream->Read(buf.GetData(), buf.GetSize());
 	buf[(size_t)stream->GetLength()] = 0x00;
 
-	Initialize(manager, buf.GetConstData(), buf.GetSize());
+	Initialize(manager, buf.GetConstData(), buf.GetSize(), useTRSS);
 
 	//GraphicsResourceObject::Initialize(manager);
 	//
@@ -439,22 +440,37 @@ void Shader::Initialize(detail::GraphicsManager* manager, const StringRef& fileP
 }
 
 //------------------------------------------------------------------------------
-void Shader::Initialize(detail::GraphicsManager* manager, const void* code, int length)
+void Shader::Initialize(detail::GraphicsManager* manager, const void* code, int length, bool useTRSS)
 {
 	GraphicsResourceObject::Initialize(manager);
 
-	// ヘッダコード先頭に追加する
-	
 	StringBuilderA newCode;
-	newCode.Append(manager->GetCommonShaderHeader().c_str());
-	newCode.Append("#line 5");
-	newCode.Append(StringA::GetNewLine().c_str());
-	newCode.Append((const char*)code, length);
-	newCode.Append("\n");	// 最後には改行を入れておく。環境によっては改行がないとエラーになる。しかもエラーなのにエラー文字列が出ないこともある。
+	if (useTRSS)
+	{
+		detail::ShaderAnalyzer analyzer;
+		analyzer.AnalyzeLNFX((const char*)code, length);
+		auto cc = analyzer.MakeHLSLCode();
+
+		newCode.Append(cc.data(), cc.size());
+
+		//FileSystem::WriteAllBytes(_T("code.c"), cc.data(), cc.size());
+	}
+	else
+	{
+		// ヘッダコード先頭に追加する
+		newCode.Append(manager->GetCommonShaderHeader().c_str());
+		newCode.Append("#line 5");
+		newCode.Append(StringA::GetNewLine().c_str());
+		newCode.Append((const char*)code, length);
+		newCode.Append("\n");	// 最後には改行を入れておく。環境によっては改行がないとエラーになる。しかもエラーなのにエラー文字列が出ないこともある。
+	}
 
 	ShaderCompileResult result;
 	m_deviceObj = m_manager->GetGraphicsDevice()->CreateShader(newCode.c_str(), newCode.GetLength(), &result);
 	LN_THROW(m_deviceObj != nullptr, CompilationException, result);
+
+	// ライブラリ外部からの DeviceContext 再設定に備えてコードを保存する
+	m_sourceCode.Alloc(newCode.c_str(), newCode.GetLength());
 
 	PostInitialize();
 }
@@ -891,8 +907,8 @@ ShaderVariable::ShaderVariable(Shader* owner, Driver::IShaderVariable* deviceObj
 	, m_textureValue(NULL)
 	, m_modified(true)
 {
-	const String& name = deviceObj->GetName();
-	m_nameHash = Hash::CalcHash(name.c_str(), name.GetLength());
+	m_name = deviceObj->GetName();
+	m_nameHash = Hash::CalcHash(m_name.c_str(), m_name.GetLength());
 
 	// 初期値として保持しておく
 	m_value = deviceObj->GetValue();
@@ -921,7 +937,7 @@ ShaderVariableType ShaderVariable::GetType() const
 //------------------------------------------------------------------------------
 const String& ShaderVariable::GetName() const
 {
-	return m_deviceObj->GetName();
+	return m_name;
 }
 
 //------------------------------------------------------------------------------

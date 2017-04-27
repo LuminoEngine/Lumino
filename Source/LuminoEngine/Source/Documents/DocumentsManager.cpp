@@ -9,6 +9,14 @@ namespace detail {
 // DocumentsManager
 //==============================================================================
 
+static DocumentsManager* g_manager = nullptr;
+
+//------------------------------------------------------------------------------
+DocumentsManager* DocumentsManager::GetInstance(DocumentsManager* priority)
+{
+	return (priority != nullptr) ? priority : g_manager;
+}
+
 //------------------------------------------------------------------------------
 DocumentsManager::DocumentsManager()
 	: m_graphicsManager(nullptr)
@@ -20,6 +28,7 @@ DocumentsManager::DocumentsManager()
 //------------------------------------------------------------------------------
 DocumentsManager::~DocumentsManager()
 {
+	g_manager = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -30,6 +39,8 @@ void DocumentsManager::Initialize(const ConfigData& configData)
 	m_TCharToUTF32Converter.SetSourceEncoding(Encoding::GetTCharEncoding());
 	m_UTF32ToTCharConverter.SetDestinationEncoding(Encoding::GetTCharEncoding());
 	m_UTF32ToTCharConverter.SetSourceEncoding(Encoding::GetUTF32Encoding());
+
+	g_manager = this;
 }
 
 } // namespace detail

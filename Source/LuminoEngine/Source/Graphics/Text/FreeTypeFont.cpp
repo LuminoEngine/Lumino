@@ -139,6 +139,13 @@ FreeTypeFont::FreeTypeFont(FontManager* manager)
 	m_glyphData.CopyOutlineGlyph = NULL;
 
 	FT_Stroker_New(m_manager->GetFTLibrary(), &m_ftStroker);
+
+	m_ftOutlineFuncs.move_to = (FT_Outline_MoveTo_Func)ftMoveToCallback;
+	m_ftOutlineFuncs.line_to = (FT_Outline_LineTo_Func)ftLineToCallback;
+	m_ftOutlineFuncs.conic_to = (FT_Outline_ConicTo_Func)ftConicToCallback;
+	m_ftOutlineFuncs.cubic_to = (FT_Outline_CubicTo_Func)ftCubicToCallback;
+	m_ftOutlineFuncs.shift = 0;
+	m_ftOutlineFuncs.delta = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -468,6 +475,209 @@ FontGlyphBitmap* FreeTypeFont::LookupGlyphBitmap(UTF32 utf32code, int strokeSize
 }
 
 //------------------------------------------------------------------------------
+void FreeTypeFont::GetGlobalMetrics(FontGlobalMertics* outMetrics)
+{
+	if (LN_CHECK_ARG(outMetrics != nullptr)) return;
+	UpdateFont();
+	outMetrics->ascender = m_ftFace->size->metrics.ascender >> 6;
+	outMetrics->descender = m_ftFace->size->metrics.descender >> 6;
+	outMetrics->lineSpace = outMetrics->ascender - outMetrics->descender;
+}
+
+//------------------------------------------------------------------------------
+/*
+	返す頂点は、ベースラインを 0 として、Y+ 方向を上とする座標系で表される。
+	例えば 'A' の下辺は 0、'g' の下辺は 0 より小さい。
+	https://www.freetype.org/freetype2/docs/tutorial/step2.html
+	http://w3.kcua.ac.jp/~fujiwara/infosci/font.html
+*/
+void FreeTypeFont::DecomposeOutline(UTF32 utf32code, RawFont::VectorGlyphInfo* outInfo)
+{
+	UpdateFont();
+
+	// get glyph index
+	FT_UInt glyphIndex = FTC_CMapCache_Lookup(m_manager->GetFTCacheMapCache(), m_ftFaceID, m_ftCacheMapIndex, utf32code);
+	if (LN_CHECK_STATE(glyphIndex != 0)) return;
+
+	// グリフメトリクスにアクセスするため、グリフスロット(m_ftFace->glyph) に glyphIndex で示すグリフの情報をロードする
+	FT_Error err = FT_Load_Glyph(m_ftFace, glyphIndex, FT_LOAD_DEFAULT);
+	if (LN_CHECK_STATE(err == 0)) return;
+
+	// TODO: FT_Load_Glyph で m_ftFace->glyph 自体はキャッシュされないので、（glyphIndex に同じ値を渡しても同じ値を際ロードする）最後のインデックスをこっち側で覚えておくと効率いいかも。
+	// すぐ後でメトリクス欲しいとき。
+
+	DecomposingState state;
+	state.thisData = this;
+	state.outlines = &outInfo->outlines;
+	state.vertices = &outInfo->vertices;
+	state.vectorScale = 1.0f;		// TODO:
+	state.tessellationStep = 4;		// TODO:
+	state.delta1 = 1. / (double)state.tessellationStep;
+	state.delta2 = state.delta1 * state.delta1;
+	state.delta3 = state.delta2 * state.delta1;
+	FT_Error error = FT_Outline_Decompose(&m_ftFace->glyph->outline, &m_ftOutlineFuncs, &state);
+	if (LN_CHECK_STATE(error == 0)) return;
+
+
+	// 1つ前の Outline があれば、頂点数を確定させる
+	if (!state.outlines->IsEmpty())
+	{
+		auto& outline = state.outlines->GetLast();
+		outline.vertexCount = state.vertices->GetCount() - outline.startIndex;
+	}
+
+	// FT_Done_Glyph
+}
+
+//------------------------------------------------------------------------------
+Vector2 FreeTypeFont::GetKerning(UTF32 prev, UTF32 next)
+{
+	UpdateFont();
+
+	if (FT_HAS_KERNING(m_ftFace))
+	{
+		FT_UInt glyphIndex1 = FTC_CMapCache_Lookup(m_manager->GetFTCacheMapCache(), m_ftFaceID, m_ftCacheMapIndex, prev);
+		FT_UInt glyphIndex2 = FTC_CMapCache_Lookup(m_manager->GetFTCacheMapCache(), m_ftFaceID, m_ftCacheMapIndex, next);
+		if (glyphIndex1 == 0 || glyphIndex2 == 0)
+		{
+			// newline, whitespace ...
+			return Vector2::Zero;
+		}
+		else
+		{
+			FT_Vector delta;
+			FT_Error err = FT_Get_Kerning(m_ftFace, glyphIndex1, glyphIndex2, ft_kerning_default, &delta);
+			if (LN_CHECK_STATE(err == 0)) return Vector2::Zero;
+
+			return Vector2(delta.x >> 6, delta.y >> 6);
+		}
+	}
+	else
+	{
+		return Vector2::Zero;
+	}
+}
+
+//------------------------------------------------------------------------------
+void FreeTypeFont::GetGlyphMetrics(UTF32 utf32Code, FontGlyphMertics* outMetrics)
+{
+	if (LN_CHECK_ARG(outMetrics != nullptr)) return;
+
+	// get glyph index
+	FT_UInt glyphIndex = FTC_CMapCache_Lookup(m_manager->GetFTCacheMapCache(), m_ftFaceID, m_ftCacheMapIndex, utf32Code);
+	if (LN_CHECK_STATE(glyphIndex != 0)) return;
+
+	// グリフメトリクスにアクセスするため、グリフスロット(m_ftFace->glyph) に glyphIndex で示すグリフの情報をロードする
+	FT_Error err = FT_Load_Glyph(m_ftFace, glyphIndex, FT_LOAD_DEFAULT);
+	if (LN_CHECK_STATE(err == 0)) return;
+
+	outMetrics->advance.x = m_ftFace->glyph->advance.x >> 6;
+	outMetrics->advance.y = m_ftFace->glyph->advance.y >> 6;
+}
+
+//------------------------------------------------------------------------------
+int FreeTypeFont::ftMoveToCallback(FT_Vector* to, DecomposingState* state)
+{
+	// 1つ前の Outline があれば、頂点数を確定させる
+	if (!state->outlines->IsEmpty())
+	{
+		auto& outline = state->outlines->GetLast();
+		outline.vertexCount = state->vertices->GetCount() - outline.startIndex;
+	}
+
+	// 新しい Outline を開始する
+	OutlineInfo outline;
+	outline.startIndex = state->vertices->GetCount();
+	state->outlines->Add(outline);
+
+	state->lastVertex = FTVectorToLNVector(to);
+	return 0;
+}
+
+//------------------------------------------------------------------------------
+int FreeTypeFont::ftLineToCallback(FT_Vector* to, DecomposingState* state)
+{
+	Vector2 v = FTVectorToLNVector(to);
+	state->vertices->Add(v * state->vectorScale);
+	state->lastVertex = v;
+	return 0;
+}
+
+//------------------------------------------------------------------------------
+int FreeTypeFont::ftConicToCallback(FT_Vector* control, FT_Vector* to, DecomposingState* state)
+{
+	Vector2 toVertex = FTVectorToLNVector(to);
+	Vector2 controlVertex = FTVectorToLNVector(control);
+
+	Vector2 b = state->lastVertex - 2.0f * controlVertex + toVertex;
+	Vector2 c = -2.0f * state->lastVertex + 2.0f * controlVertex;
+	Vector2 d = state->lastVertex;
+	Vector2 f = d;
+	Vector2 df = c * state->delta1 + b * state->delta2;
+	Vector2 d2f = 2.0f * b * state->delta2;
+
+	for (int i = 0; i < state->tessellationStep - 1; i++)
+	{
+		f += df;
+
+		Vector2 v = f * state->vectorScale;
+		state->vertices->Add(v);
+
+		df += d2f;
+	}
+
+	Vector2 v = FTVectorToLNVector(to) * state->vectorScale;
+	state->vertices->Add(v);
+
+	state->lastVertex = toVertex;
+
+	return 0;
+}
+
+//------------------------------------------------------------------------------
+int FreeTypeFont::ftCubicToCallback(FT_Vector* control1, FT_Vector* control2, FT_Vector* to, DecomposingState* state)
+{
+	Vector2 toVertex = FTVectorToLNVector(to);
+	Vector2 control1Vertex = FTVectorToLNVector(control1);
+	Vector2 control2Vertex = FTVectorToLNVector(control2);
+
+	Vector2 a = -state->lastVertex + 3.0f * control1Vertex - 3.0f * control2Vertex + toVertex;
+	Vector2 b = 3.0f * state->lastVertex - 6.0f * control1Vertex + 3.0f * control2Vertex;
+	Vector2 c = -3.0f * state->lastVertex + 3.0f * control1Vertex;
+	Vector2 d = state->lastVertex;
+	Vector2 f = d;
+	Vector2 df = c * state->delta1 + b * state->delta2 + a * state->delta3;
+	Vector2 d2f = 2.0f * b * state->delta2 + 6.0f * a * state->delta3;
+	Vector2 d3f = 6.0f * a * state->delta3;
+
+	for (int i = 0; i < state->tessellationStep - 1; i++)
+	{
+		f += df;
+
+		Vector2 v = f * state->vectorScale;
+		state->vertices->Add(v);
+
+		df += d2f;
+		d2f += d3f;
+	}
+
+	Vector2 v = FTVectorToLNVector(to) * state->vectorScale;
+	state->vertices->Add(v);
+
+	state->lastVertex = toVertex;
+
+	return 0;
+}
+
+//------------------------------------------------------------------------------
+Vector2 FreeTypeFont::FTVectorToLNVector(const FT_Vector* ftVec)
+{
+	return Vector2(
+		(double)(ftVec->x / 64) + (double)(ftVec->x % 64) / 64.,
+		(double)(ftVec->y / 64) + (double)(ftVec->y % 64) / 64.);
+}
+
+//------------------------------------------------------------------------------
 #if 0
 FontGlyphData* FreeTypeFont::LookupGlyphData(UTF32 utf32code, FontGlyphData* prevData_)
 {
@@ -738,6 +948,7 @@ void FreeTypeFont::UpdateImageFlags()
 	}
 	// アウトライン OFF
 	else {
+		// TODO: FT_LOAD_RENDER がついていると、アウトラインが取れない。
 		m_ftImageType.flags = FT_LOAD_RENDER;
 	}
 	// アンチエイリアス ON

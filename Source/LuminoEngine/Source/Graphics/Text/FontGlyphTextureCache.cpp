@@ -9,9 +9,11 @@
 #include <Lumino/Graphics/BitmapPainter.h>
 #include <Lumino/Graphics/Utils.h>
 #include <Lumino/Graphics/Texture.h>
+#include "../RenderingCommand.h"
 #include "../GraphicsManager.h"
 #include "../Device/GraphicsDriverInterface.h"
 #include "FontGlyphTextureCache.h"
+#include "FontOutlineTessellator.h"
 
 LN_NAMESPACE_BEGIN
 namespace detail {
@@ -326,6 +328,198 @@ void FontGlyphTextureCache::Measure(const UTF32* text, int length, TextLayoutRes
 	m_layoutEngine.LayoutText(text, length, LayoutTextOptions::All, outResult);	// TODO: RenderSize だけでもいいかも？
 }
 
+
+
+//==============================================================================
+// VectorFontGlyphCache
+//==============================================================================
+
+//------------------------------------------------------------------------------
+VectorFontGlyphCache::VectorFontGlyphCache()
+{
+}
+
+//------------------------------------------------------------------------------
+VectorFontGlyphCache::~VectorFontGlyphCache()
+{
+}
+
+//------------------------------------------------------------------------------
+void VectorFontGlyphCache::Initialize(GraphicsManager* manager, RawFont* font, int maxSize)
+{
+	m_manager = manager;
+	m_font = font;
+	m_glyphInfoList.Resize(maxSize);
+	m_inFlushUsedFlags.resize(maxSize);
+	m_gryphBufferDataList.Resize(maxSize);
+	m_freeIndexCount = maxSize;
+	for (int i = 0; i < maxSize; i++)
+	{
+		m_glyphInfoList[i].idIndex = i;
+	}
+
+	ResetUsedFlags();
+}
+
+//------------------------------------------------------------------------------
+VectorFontGlyphCache::Handle VectorFontGlyphCache::GetGlyphInfo(char32_t utf32Code, bool* outFlushRequested)
+{
+	int infoIndex = -1;
+	auto itr = m_glyphInfoIndexMap.find(utf32Code);
+	if (itr != m_glyphInfoIndexMap.end())
+	{
+		infoIndex = itr->second;
+	}
+	else
+	{
+		if (m_freeIndexCount > 0)
+		{
+			// 空いてるインデックスを取りだす
+			infoIndex = m_freeIndexCount - 1;
+			m_freeIndexCount--;
+			//m_freeIndexStack.GetTop();
+			//m_freeIndexStack.Pop();
+		}
+		else
+		{
+			// 最も古いものを選択
+			GryphInfo* info = m_olderInfoList.PopFront();
+			infoIndex = info->idIndex;
+			m_glyphInfoIndexMap.erase(info->utf32Code);
+		}
+
+		// キャッシュマップに登録
+		m_glyphInfoIndexMap[utf32Code] = infoIndex;
+
+		RawFont::VectorGlyphInfo info;
+		m_font->DecomposeOutline(utf32Code, &info);
+		
+		// レンダリングスレッドへデータを送る
+		{
+			RenderBulkData vertexList(&info.vertices[0], sizeof(RawFont::FontOutlineVertex) * info.vertices.GetCount());
+			RenderBulkData outlineList(&info.outlines[0], sizeof(RawFont::OutlineInfo) * info.outlines.GetCount());
+			VectorFontGlyphCache* this_ = this;
+			LN_ENQUEUE_RENDER_COMMAND_4(
+				RegisterPolygons, m_manager,
+				VectorFontGlyphCache*, this_,
+				Handle, infoIndex,
+				RenderBulkData, vertexList,
+				RenderBulkData, outlineList,
+				{
+					this_->RegisterPolygons(
+						infoIndex,
+						reinterpret_cast<const RawFont::FontOutlineVertex*>(vertexList.GetData()),
+						vertexList.GetSize() / sizeof(RawFont::FontOutlineVertex),
+						reinterpret_cast<const RawFont::OutlineInfo*>(outlineList.GetData()),
+						outlineList.GetSize() / sizeof(RawFont::OutlineInfo));
+				});
+		}
+	}
+
+	GryphInfo* info = &m_glyphInfoList[infoIndex];
+	info->utf32Code = utf32Code;
+
+	// 最新とする
+	m_olderInfoList.Remove(info);
+	m_olderInfoList.Add(info);
+
+	// 今回、cacheIndex を使うことをマーク
+	if (!m_inFlushUsedFlags[infoIndex])
+	{
+		m_inFlushUsedFlags[infoIndex] = true;
+		m_inFlushUsedCount++;
+	}
+
+	// キャッシュが一杯になっていないかチェック。
+	// 一杯になってたら、異なる文字が max 個書かれようとしているということ。
+	// 呼び出し元に Flush してもらわないと、一部の文字が描画できないことになる。
+	if (m_inFlushUsedCount == GetMaxCount())
+	{
+		ResetUsedFlags();
+		*outFlushRequested = true;
+	}
+	else
+	{
+		*outFlushRequested = false;
+	}
+
+	return infoIndex;
+}
+
+//------------------------------------------------------------------------------
+void VectorFontGlyphCache::OnFlush()
+{
+	ResetUsedFlags();
+}
+
+//------------------------------------------------------------------------------
+int VectorFontGlyphCache::GetVertexCount(Handle info)
+{
+	return m_gryphBufferDataList[info].vertices.GetCount();
+}
+
+//------------------------------------------------------------------------------
+int VectorFontGlyphCache::GetIndexCount(Handle info)
+{
+	return m_gryphBufferDataList[info].triangleIndices.GetCount();
+}
+
+//------------------------------------------------------------------------------
+void VectorFontGlyphCache::GenerateMesh(Handle infoIndex, const Vector3& baselineOrigin, const Matrix& transform, Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+{
+	auto* info = &m_gryphBufferDataList[infoIndex];
+	bool isIdent = transform.IsIdentity();
+	for (int i = 0; i < info->vertices.GetCount(); i++)
+	{
+		outVertices[i].position = Vector3(info->vertices[i].pos, 0.0f);
+		outVertices[i].position.y *= -1;
+		outVertices[i].color = Color(0.25, 0.25, 0.25, info->vertices[i].alpha);
+
+		if (!isIdent) outVertices[i].position.TransformCoord(transform);
+		outVertices[i].position += baselineOrigin;
+	}
+	for (int i = 0; i < info->triangleIndices.GetCount(); i++)
+	{
+		outIndices[i] = beginIndex + info->triangleIndices[i];
+	}
+}
+
+//------------------------------------------------------------------------------
+void VectorFontGlyphCache::ResetUsedFlags()
+{
+	for (int i = 0; i < GetMaxCount(); i++)
+	{
+		m_inFlushUsedFlags[i] = false;
+	}
+	m_inFlushUsedCount = 0;
+}
+
+//------------------------------------------------------------------------------
+void VectorFontGlyphCache::RegisterPolygons(Handle infoIndex, const RawFont::FontOutlineVertex* vertices, int vertexSize, const RawFont::OutlineInfo* outlines, int outlineSize)
+{
+
+	auto* info = &m_gryphBufferDataList[infoIndex];
+
+	// TODO: AddRange
+	info->vertices.Clear();
+	info->vertices.Reserve(vertexSize);
+	for (int i = 0; i < vertexSize; i++)
+	{
+		info->vertices.Add(vertices[i]);
+	}
+	info->outlines.Clear();
+	info->outlines.Reserve(outlineSize);
+	for (int i = 0; i < outlineSize; i++)
+	{
+		info->outlines.Add(outlines[i]);
+	}
+
+	FontOutlineTessellator tess;	// TODO: インスタンスはメンバに持っておいたほうが malloc 少なくなっていいかな？
+	tess.Tessellate(info);
+
+	FontOutlineStroker stroker;
+	stroker.MakeStroke(info);
+}
 
 } // namespace detail
 LN_NAMESPACE_END

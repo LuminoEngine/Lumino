@@ -447,7 +447,7 @@ void DirectMusicManager::InternalInitialize(const ConfigData& configData)
 void DirectMusicManager::InitPerformance()
 {
 #ifdef LN_OUT_LOG
-	Logger::WriteLine("initialize IDirectMusicPerformance8 ...");
+	ln::Logger::WriteLine("initialize IDirectMusicPerformance8 ...");
 #endif
 
     IDirectMusicPerformance8* performance = NULL;
@@ -473,7 +473,7 @@ void DirectMusicManager::InitPerformance()
     }
 
 #ifdef LN_OUT_LOG
-	Logger::WriteLine("lock IDirectMusicPerformance8");
+	ln::Logger::WriteLine("lock IDirectMusicPerformance8");
 #endif
 
     m_mutex.Lock();
@@ -485,7 +485,7 @@ void DirectMusicManager::InitPerformance()
     m_performanceInited.SetTrue();
 
 #ifdef LN_OUT_LOG
-	Logger::WriteLine("success initialize IDirectMusicPerformance8");
+	ln::Logger::WriteLine("success initialize IDirectMusicPerformance8");
 #endif
 }
 

@@ -18,6 +18,49 @@ public:
 		}
 	}
 
+	template<typename TPred>
+	static UIElement* FindVisualAncestor(UIElement* element, bool self, TPred pred)
+	{
+		if (LN_CHECK_ARG(element != nullptr)) return nullptr;
+
+		// 自分もチェックするか
+		if (self)
+		{
+			if (pred(element))
+			{
+				return element;
+			}
+		}
+
+		while (true)
+		{
+			element = element->GetVisualParent();
+			if (element == nullptr)
+			{
+				break;
+			}
+
+			if (pred(element))
+			{
+				return element;
+			}
+		}
+		return nullptr;
+	}
+
+	static UIElement* GetLayoutRoot(UIElement* element)
+	{
+		while (element != nullptr)
+		{
+			if (element->GetSpcialUIElementType() == detail::SpcialUIElementType::LayoutRoot)
+			{
+				return element;
+			}
+			element = element->GetVisualParent();
+		}
+		return nullptr;
+	}
+
 	//static void AdjustHorizontalAlignment(const Size& arrangeSize, const SizeF& desiredSize, HorizontalAlignment align, RectF* outRect)
 	//{
 	//	switch (align)

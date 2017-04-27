@@ -383,7 +383,7 @@ void Renderer::VerifyFrameBuffers()
 	// レンダリングターゲットと深度バッファのサイズが一致している必要がある。
 	if (m_currentDepthBuffer != nullptr)
 	{
-		LN_CHECK_STATE(m_currentRenderTargets[0]->GetSize() == m_currentDepthBuffer->GetSize());
+		if (LN_CHECK_STATE(m_currentRenderTargets[0]->GetSize() == m_currentDepthBuffer->GetSize())) return;
 	}
 }
 

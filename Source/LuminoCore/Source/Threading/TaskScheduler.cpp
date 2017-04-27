@@ -58,7 +58,7 @@ int TaskScheduler::GetMaxConcurrencyLevel() const
 //------------------------------------------------------------------------------
 void TaskScheduler::QueueTask(Task* task)
 {
-	LN_CHECK_ARG(task != nullptr);
+	if (LN_CHECK_ARG(task != nullptr)) return;
 
 	MutexScopedLock lock(m_taskQueueLock);
 	m_taskQueue.push_back(task);

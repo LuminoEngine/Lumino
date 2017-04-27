@@ -217,7 +217,7 @@ SpriteRendererImpl::~SpriteRendererImpl()
 //------------------------------------------------------------------------------
 void SpriteRendererImpl::Initialize(GraphicsManager* manager, int maxSpriteCount)
 {
-	LN_CHECK_ARG(manager != nullptr);
+	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
 	m_maxSprites = maxSpriteCount;
 	auto* device = manager->GetGraphicsDevice();

@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Internal.h"
 #include <Lumino/UI/LayoutElement.h>
 
@@ -21,13 +21,13 @@ ILayoutElement::~ILayoutElement()
 //------------------------------------------------------------------------------
 void ILayoutElement::UpdateLayout(const Size& viewSize)
 {
-	const Size& itemSize = GetLayoutSize();
+	Size itemSize = GetLayoutSize();
 	Size size(
 		Math::IsNaNOrInf(itemSize.width) ? viewSize.width : itemSize.width,
 		Math::IsNaNOrInf(itemSize.height) ? viewSize.height : itemSize.height);
 
-	// ƒTƒCƒY‚ª’è‚Ü‚Á‚Ä‚¢‚È‚¢ê‡‚ÍƒŒƒCƒAƒEƒg‚ðŒˆ’è‚Å‚«‚È‚¢
-	// TODO: —áŠO‚Ì•û‚ª—Ç‚¢‚©‚àH
+	// ã‚µã‚¤ã‚ºãŒå®šã¾ã£ã¦ã„ãªã„å ´åˆã¯ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’æ±ºå®šã§ããªã„
+	// TODO: ä¾‹å¤–ã®æ–¹ãŒè‰¯ã„ã‹ã‚‚ï¼Ÿ
 	//if (Math::IsNaNOrInf(m_size.Width) || Math::IsNaNOrInf(m_size.Height)) { return; }
 
 	MeasureLayout(size);
@@ -38,20 +38,18 @@ void ILayoutElement::UpdateLayout(const Size& viewSize)
 //------------------------------------------------------------------------------
 void ILayoutElement::MeasureLayout(const Size& availableSize)
 {
-	//// –³Œøî•ñƒtƒ‰ƒO‚ð‚±‚Ì—v‘f‚É“`”d‚³‚¹‚é
-	//if (m_parent != nullptr)
-	//{
-	//	// ƒtƒHƒ“ƒg‚Í MeasureOverride() ‚Ì’†‚ÅXV‚·‚é
-	//	m_invalidateFlags |= (m_parent->m_invalidateFlags & detail::InvalidateFlags::Font);
-	//}
-
-	// e—v‘f‚©‚çŽq—v‘f‚ð”z’u‚Å‚«‚é”ÍˆÍ(availableSize)‚ðŽó‚¯Žæ‚èADesiredSize ‚ðXV‚·‚éB
-	// ‡@ Pane \[measure()   c ‚±‚Ì”ÍˆÍ“à‚È‚ç”z’u‚Å‚«‚é‚æ]¨ Button
-	// ‡A Pane ©[DesiredSize c ‚¶‚á‚ ‚±‚ÌƒTƒCƒY‚Å‚¨Šè‚¢‚µ‚Ü‚·]\ Button		¦‚±‚ÌŽž“_‚Å inf ‚ð•Ô‚·‚±‚Æ‚à‚ ‚è“¾‚éB
-	// ‡B Pane \[arrange()   c ‘¼‚ÌŽq—v‘f‚Æ‚ÌŒ“‚Ë‡‚¢‚ÅÅIƒTƒCƒY‚ÍƒRƒŒ‚Å]¨ Button
+	// è¦ªè¦ç´ ã‹ã‚‰å­è¦ç´ ã‚’é…ç½®ã§ãã‚‹ç¯„å›²(availableSize)ã‚’å—ã‘å–ã‚Šã€DesiredSize ã‚’æ›´æ–°ã™ã‚‹ã€‚
+	// â‘  Pane â€•[measure()   â€¦ ã“ã®ç¯„å›²å†…ãªã‚‰é…ç½®ã§ãã‚‹ã‚ˆ]â†’ Button
+	// â‘¡ Pane â†[DesiredSize â€¦ ã˜ã‚ƒã‚ã“ã®ã‚µã‚¤ã‚ºã§ãŠé¡˜ã„ã—ã¾ã™]â€• Button		â€»ã“ã®æ™‚ç‚¹ã§ inf ã‚’è¿”ã™ã“ã¨ã‚‚ã‚ã‚Šå¾—ã‚‹ã€‚
+	// â‘¢ Pane â€•[arrange()   â€¦ ä»–ã®å­è¦ç´ ã¨ã®å…¼ã­åˆã„ã§æœ€çµ‚ã‚µã‚¤ã‚ºã¯ã‚³ãƒ¬ã§]â†’ Button
 	// http://www.kanazawa-net.ne.jp/~pmansato/wpf/wpf_ctrl_arrange.htm
 
-	// Margin ‚ðl—¶‚·‚é
+	
+	// [WPF] DesiredSize ã¯ Mergin ã‚’å«ã‚€ã€‚ä¾‹ãˆã°ã€Width=200, Mergin=10,0,0,0 ãªã‚‰ DesiredSize ã¯ 210 ã¨ãªã‚‹ã€‚
+	// [WPF] MeasureOverride() ã®å¼•æ•°ã® Size ã«ã¯ã€Mergin ã¯å«ã¾ãªã„ã€‚Widht=200 ãªã‚‰ 200 ãŒãã®ã¾ã¾æ¸¡ã‚‹ã€‚
+	// Padding ã‚‚é–¢ä¿‚ãªã„ã€‚é€†ã«ã„ã†ã¨ã€MeasureOverride() ã®ä¸­ã§ã¯ Padding ã‚’è€ƒæ…®ã—ã¦ã‚µã‚¤ã‚ºã‚’è¿”ã•ãªã‘ã‚Œã°ãªã‚‰ãªã„ã€‚
+
+	// Margin ã‚’è€ƒæ…®ã™ã‚‹
 	const ThicknessF& margin = GetLayoutMargin();
 	float marginWidth = margin.Left + margin.Right;
 	float marginHeight = margin.Top + margin.Bottom;
@@ -61,7 +59,7 @@ void ILayoutElement::MeasureLayout(const Size& availableSize)
 
 	Size desiredSize = MeasureOverride(localAvailableSize);
 
-	// Margin ‚ðl—¶‚·‚é
+	// Margin ã‚’è€ƒæ…®ã™ã‚‹
 	desiredSize.width += marginWidth;
 	desiredSize.height += marginHeight;
 
@@ -71,13 +69,17 @@ void ILayoutElement::MeasureLayout(const Size& availableSize)
 //------------------------------------------------------------------------------
 void ILayoutElement::ArrangeLayout(const RectF& finalLocalRect)
 {
-	// finalLocalRect ‚Í‚±‚Ì—v‘f‚ð”z’u‚Å‚«‚é—ÌˆæƒTƒCƒYB‚ÆAe—v‘f“à‚Å‚ÌƒIƒtƒZƒbƒgB
-	// —v‘f‚É’¼ÚÝ’è‚³‚ê‚Ä‚¢‚éƒTƒCƒY‚æ‚è‚à‘å‚«‚¢‚±‚Æ‚à‚ ‚éB
-	// TODO: HorizontalAlignment “™‚ðl—¶‚µ‚ÄAÅI“I‚ÈÀ•W‚ÆƒTƒCƒY‚ðŒˆ’è‚·‚éB
-	//		 ‚±‚Ì—v‘f‚ÌƒTƒCƒY‚ªÈ—ª‚³‚ê‚Ä‚¢‚ê‚ÎAStretch ‚È‚çƒTƒCƒY‚ÍÅ‘å‚ÉA‚»‚êˆÈŠO‚È‚çÅ¬‚É‚È‚éB
+	// finalLocalRect ã¯ã“ã®è¦ç´ ã‚’é…ç½®ã§ãã‚‹é ˜åŸŸã‚µã‚¤ã‚ºã€‚ã¨ã€è¦ªè¦ç´ å†…ã§ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆã€‚
+	// è¦ç´ ã«ç›´æŽ¥è¨­å®šã•ã‚Œã¦ã„ã‚‹ã‚µã‚¤ã‚ºã‚ˆã‚Šã‚‚å¤§ãã„ã“ã¨ã‚‚ã‚ã‚‹ã€‚
+	// TODO: HorizontalAlignment ç­‰ã‚’è€ƒæ…®ã—ã¦ã€æœ€çµ‚çš„ãªåº§æ¨™ã¨ã‚µã‚¤ã‚ºã‚’æ±ºå®šã™ã‚‹ã€‚
+	//		 ã“ã®è¦ç´ ã®ã‚µã‚¤ã‚ºãŒçœç•¥ã•ã‚Œã¦ã„ã‚Œã°ã€Stretch ãªã‚‰ã‚µã‚¤ã‚ºã¯æœ€å¤§ã«ã€ãã‚Œä»¥å¤–ãªã‚‰æœ€å°ã«ãªã‚‹ã€‚
 
 	const Size& areaSize = finalLocalRect.GetSize();
 
+#if 1
+	HAlignment		hAlign = GetLayoutHAlignment();
+	VAlignment		vAlign = GetLayoutVAlignment();
+#else
 	ILayoutElement* parent = GetLayoutParent();
 	HAlignment		hAlign = GetLayoutHAlignment();
 	VAlignment		vAlign = GetLayoutVAlignment();
@@ -85,24 +87,30 @@ void ILayoutElement::ArrangeLayout(const RectF& finalLocalRect)
 	const VAlignment* parentVAlign = (parent != nullptr) ? parent->GetLayoutContentVAlignment() : nullptr;
 	if (parentHAlign != nullptr) hAlign = *parentHAlign;
 	if (parentVAlign != nullptr) vAlign = *parentVAlign;
+#endif
 
-	const Size& layoutSize = GetLayoutSize();
-	Size ds;// = GetLayoutDesiredSize();
-	ds.width = Math::IsNaNOrInf(layoutSize.width) ? finalLocalRect.width : layoutSize.width;
-	ds.height = Math::IsNaNOrInf(layoutSize.height) ? finalLocalRect.height : layoutSize.height;
+	//Size ds;// = GetLayoutDesiredSize();
+	//ds.width = Math::IsNaNOrInf(layoutSize.width) ? finalLocalRect.width : layoutSize.width;
+	//ds.height = Math::IsNaNOrInf(layoutSize.height) ? finalLocalRect.height : layoutSize.height;
+	Size ds = GetLayoutDesiredSize();
+	LN_ASSERT(!Math::IsNaNOrInf(ds.width));
+	LN_ASSERT(!Math::IsNaNOrInf(ds.height));
 
-	// Alignment ‚Å’²®‚·‚é—Ìˆæ‚ÍAmargin —Ìˆæ‚àŠÜ‚Þ
+	// DesiredSize ã¯ Margin è€ƒæ…®æ¸ˆã¿
+
+	// Alignment ã§èª¿æ•´ã™ã‚‹é ˜åŸŸã¯ã€margin é ˜åŸŸã‚‚å«ã‚€
 	const ThicknessF& margin = GetLayoutMargin();
 	float marginWidth = margin.Left + margin.Right;
 	float marginHeight = margin.Top + margin.Bottom;
-	ds.width += marginWidth;
-	ds.height += marginHeight;
+	//ds.width += marginWidth;
+	//ds.height += marginHeight;
 
+	Size layoutSize = GetLayoutSize();
 	RectF arrangeRect;
-	detail::LayoutHelper::AdjustHorizontalAlignment(areaSize, ds, hAlign, &arrangeRect);
-	detail::LayoutHelper::AdjustVerticalAlignment(areaSize, ds, vAlign, &arrangeRect);
+	detail::LayoutHelper::AdjustHorizontalAlignment(areaSize, ds, Math::IsNaN(layoutSize.width), hAlign, &arrangeRect);
+	detail::LayoutHelper::AdjustVerticalAlignment(areaSize, ds, Math::IsNaN(layoutSize.height), vAlign, &arrangeRect);
 
-	// Margin ‚ðl—¶‚·‚é (0 ˆÈ‰º‚É‚Ío—ˆ‚È‚¢)
+	// Margin ã‚’è€ƒæ…®ã™ã‚‹ (0 ä»¥ä¸‹ã«ã¯å‡ºæ¥ãªã„)
 	arrangeRect.width = std::max(arrangeRect.width - marginWidth, 0.0f);
 	arrangeRect.height = std::max(arrangeRect.height - marginHeight, 0.0f);
 
@@ -119,19 +127,11 @@ void ILayoutElement::ArrangeLayout(const RectF& finalLocalRect)
 //------------------------------------------------------------------------------
 Size ILayoutElement::MeasureOverride(const Size& constraint)
 {
-	// –ß‚è’l‚ÍAconstraint ‚Ì§ŒÀ‚Ì’†‚ÅAŽq—v‘f‚ðƒŒƒCƒAƒEƒg‚·‚é‚½‚ß‚É•K—v‚ÈÅ¬ƒTƒCƒYB
-	// ƒ†[ƒU[Žw’è‚ÌƒTƒCƒY‚ª‚ ‚éê‡‚Í‚»‚ê‚ð•Ô‚·B
-	// ‚½‚¾‚µAconstraint ‚ð’´‚¦‚é‚±‚Æ‚Í‚Å‚«‚È‚¢B
+	// æˆ»ã‚Šå€¤ã¯ã€constraint ã®åˆ¶é™ã®ä¸­ã§ã€å­è¦ç´ ã‚’ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã™ã‚‹ãŸã‚ã«å¿…è¦ãªæœ€å°ã‚µã‚¤ã‚ºã€‚
+	// ãƒ¦ãƒ¼ã‚¶ãƒ¼æŒ‡å®šã®ã‚µã‚¤ã‚ºãŒã‚ã‚‹å ´åˆã¯ãã‚Œã‚’è¿”ã™ã€‚
+	// ãŸã ã—ã€constraint ã‚’è¶…ãˆã‚‹ã“ã¨ã¯ã§ããªã„ã€‚
 
-	const Size& size = GetLayoutSize();
-	Size desiredSize;
-	// NaN ‚Ìê‡A‚±‚Ì—v‘f‚Æ‚µ‚Ä•K—v‚ÈÅ¬ƒTƒCƒY‚Í 0 ‚Æ‚È‚éB
-	desiredSize.width = Math::IsNaNOrInf(size.width) ? 0.0f : size.width;
-	desiredSize.height = Math::IsNaNOrInf(size.height) ? 0.0f : size.height;
-	desiredSize.width = std::min(desiredSize.width, constraint.width);
-	desiredSize.height = std::min(desiredSize.height, constraint.height);
-
-	return desiredSize;
+	return detail::LayoutHelper::MeasureElement(this, constraint);
 }
 
 //------------------------------------------------------------------------------
@@ -149,7 +149,7 @@ void ILayoutElement::UpdateTransformHierarchy(const RectF& parentGlobalRect)
 	//{
 	finalGlobalRect.x = parentGlobalRect.x + localRect.x;
 	finalGlobalRect.y = parentGlobalRect.y + localRect.y;
-		//m_combinedOpacity = m_parent->m_combinedOpacity * m_opacity;	// •s“§–¾“x‚àƒRƒR‚Å¬‚º‚Ä‚µ‚Ü‚¤
+		//m_combinedOpacity = m_parent->m_combinedOpacity * m_opacity;	// ä¸é€æ˜Žåº¦ã‚‚ã‚³ã‚³ã§æ··ãœã¦ã—ã¾ã†
 	//}
 	//else
 	//{
@@ -170,9 +170,40 @@ void ILayoutElement::UpdateTransformHierarchy(const RectF& parentGlobalRect)
 		child->UpdateTransformHierarchy(finalGlobalRect);
 	}
 
-	// Žq—v‘f
+	// å­è¦ç´ 
 	//UIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->UpdateTransformHierarchy(); });
 
 }
+
+//==============================================================================
+// LayoutHelper
+//==============================================================================
+
+//------------------------------------------------------------------------------
+namespace detail {
+
+//------------------------------------------------------------------------------
+Size LayoutHelper::MeasureElement(ILayoutElement* element, const Size& constraint)
+{
+	Size size = element->GetLayoutSize();
+	Size desiredSize;
+	// NaN ã®å ´åˆã€ã“ã®è¦ç´ ã¨ã—ã¦å¿…è¦ãªæœ€å°ã‚µã‚¤ã‚ºã¯ 0 ã¨ãªã‚‹ã€‚
+	desiredSize.width = Math::IsNaNOrInf(size.width) ? 0.0f : size.width;
+	desiredSize.height = Math::IsNaNOrInf(size.height) ? 0.0f : size.height;
+	desiredSize.width = std::min(desiredSize.width, constraint.width);
+	desiredSize.height = std::min(desiredSize.height, constraint.height);
+
+	Size minSize, maxSize;
+	element->GetLayoutMinMaxInfo(&minSize, &maxSize);
+	if (!Math::IsNaNOrInf(minSize.width)) desiredSize.width = std::max(desiredSize.width, minSize.width);
+	if (!Math::IsNaNOrInf(minSize.height)) desiredSize.height = std::max(desiredSize.height, minSize.height);
+	if (!Math::IsNaNOrInf(maxSize.width)) desiredSize.width = std::min(desiredSize.width, maxSize.width);
+	if (!Math::IsNaNOrInf(maxSize.height)) desiredSize.height = std::min(desiredSize.height, maxSize.height);
+
+	return desiredSize;
+}
+
+} // namespace detail
+
 
 LN_NAMESPACE_END

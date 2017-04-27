@@ -96,6 +96,14 @@ public:
 		m_data->m_vector.insert(m_data->m_vector.begin() + index, item);
 	}
 
+	/** 指定したインデックスの位置に要素を挿入します。*/
+	void InsertRange(int index, const List<T>& items)
+	{
+		LN_THROW(0 <= index && index <= GetCount(), OutOfRangeException);	// Count と同じインデックスを指定できる
+		CheckDetachShared();
+		m_data->m_vector.insert(m_data->m_vector.begin() + index, items.m_data->m_vector.begin(), items.m_data->m_vector.end());
+	}
+
 	/** 全ての要素を削除します。*/
 	void Clear()
 	{
@@ -161,7 +169,6 @@ public:
 	/** 配列用のメモリを指定したサイズで確保します。*/
 	void Reserve(int count)
 	{
-		LN_CHECK_ARG(count >= 0);
 		CheckDetachShared();
 		m_data->m_vector.reserve(count);
 	}
@@ -169,7 +176,6 @@ public:
 	/** 配列の要素数を変更します。*/
 	void Resize(int count)
 	{
-		LN_CHECK_ARG(count >= 0);
 		CheckDetachShared();
 		m_data->m_vector.resize(count);
 	}
@@ -265,7 +271,7 @@ public:
 	/** 先頭要素の参照を返します。*/
 	reference GetFront()
 	{
-		LN_CHECK_STATE(!IsEmpty());
+		LN_VERIFY_STATE(!IsEmpty());
 		CheckDetachShared();
 		return m_data->m_vector.front();
 	}
@@ -273,14 +279,14 @@ public:
 	/** 先頭要素の参照を返します。*/
 	const_reference GetFront() const
 	{
-		LN_CHECK_STATE(!IsEmpty());
+		LN_VERIFY_STATE(!IsEmpty());
 		return m_data->m_vector.front();
 	}
 
 	/** 終端要素の参照を返します。*/
 	reference GetLast()
 	{
-		LN_CHECK_STATE(!IsEmpty());
+		LN_VERIFY_STATE(!IsEmpty());
 		CheckDetachShared();
 		return m_data->m_vector.back();
 	}
@@ -288,7 +294,7 @@ public:
 	/** 終端要素の参照を返します。*/
 	const_reference GetLast() const
 	{
-		LN_CHECK_STATE(!IsEmpty());
+		LN_VERIFY_STATE(!IsEmpty());
 		return m_data->m_vector.back();
 	}
 

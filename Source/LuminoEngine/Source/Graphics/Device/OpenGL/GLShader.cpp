@@ -443,9 +443,9 @@ ShaderCompileResultLevel GLSLUtils::MakeShaderProgram(const char* vsCode, size_t
 //------------------------------------------------------------------------------
 void GLSLUtils::AnalyzeLNBasicShaderCode(const char* code, size_t codeLen, GLuint type, const char* entryName, CodeRange* outCode)
 {
-	LN_FAIL_CHECK_ARG(code != nullptr) return;
-	LN_FAIL_CHECK_ARG(entryName != nullptr) return;
-	LN_FAIL_CHECK_ARG(outCode != nullptr) return;
+	if (LN_CHECK_ARG(code != nullptr)) return;
+	if (LN_CHECK_ARG(entryName != nullptr)) return;
+	if (LN_CHECK_ARG(outCode != nullptr)) return;
 	outCode->code = nullptr;
 	outCode->length = 0;
 
@@ -465,10 +465,10 @@ void GLSLUtils::AnalyzeLNBasicShaderCode(const char* code, size_t codeLen, GLuin
 
 	// find begin - end
 	int codeBegin = StringTraits::IndexOf(code, codeLen, ifdef.c_str(), -1);
-	LN_FAIL_CHECK_FORMAT(codeBegin >= 0) return;
+	if (LN_CHECK_FORMAT(codeBegin >= 0)) return;
 	//int codeEnd = StringTraits::IndexOf(code, codeLen, "LN_GLSL_END", 11, codeBegin);
 	int codeEnd = StringTraits::IndexOf(code, codeLen, endKey.c_str(), endKey.GetLength(), codeBegin);
-	LN_FAIL_CHECK_FORMAT(codeEnd >= 0) return;
+	if (LN_CHECK_FORMAT(codeEnd >= 0)) return;
 
 	// make range
 	const char* begin = code + codeBegin + ifdef.GetLength();
@@ -1071,7 +1071,7 @@ void GLShaderVariable::ConvertVariableTypeGLToLN(const char* name, GLenum gl_typ
 			desc->Type = ShaderVariableType_MatrixArray;
 			break;
 		default:
-			LN_UNREACHABLE() return;
+			LN_UNREACHABLE();
 			break;
 		}
 	}

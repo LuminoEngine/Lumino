@@ -24,11 +24,11 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	UITextBlock();
 	virtual ~UITextBlock();
-	void Initialize(detail::UIManager* manager);
+	void Initialize();
 
 	virtual Size MeasureOverride(const Size& availableSize) override;
 	virtual Size ArrangeOverride(const Size& finalSize) override;
-	virtual void OnRender(DrawList* g) override;
+	virtual void OnRender(DrawingContext* g) override;
 
 private:
 	String	m_text;

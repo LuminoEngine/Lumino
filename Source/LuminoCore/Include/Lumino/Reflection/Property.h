@@ -151,7 +151,7 @@ public:
 
 	void SetValueDirect(ReflectionObject* target, const TValue& value, PropertySetSource source) const
 	{
-		LN_CHECK_STATE(m_setter != nullptr);
+		if (LN_CHECK_STATE(m_setter != nullptr)) return;
 		m_setter(target, const_cast<TValue&>(value));
 		//NotifyPropertyChanged(target, this, source);
 	}
@@ -244,8 +244,8 @@ public:
 template<typename TValue>
 void PropertyInfo::SetPropertyValueDirect(ReflectionObject* obj, const PropertyInfo* prop, const TValue& value, PropertySetSource source)
 {
-	LN_CHECK_ARG(obj != nullptr);
-	LN_CHECK_ARG(prop != nullptr);
+	if (LN_CHECK_ARG(obj != nullptr)) return;
+	if (LN_CHECK_ARG(prop != nullptr)) return;
 	auto t = static_cast<const TypedPropertyInfo<TValue>*>(prop);
 	t->SetValueDirect(obj, value, source);
 }
@@ -254,8 +254,8 @@ void PropertyInfo::SetPropertyValueDirect(ReflectionObject* obj, const PropertyI
 template<typename TValue>
 const TValue& PropertyInfo::GetPropertyValueDirect(const ReflectionObject* obj, const PropertyInfo* prop)
 {
-	LN_CHECK_ARG(obj != nullptr);
-	LN_CHECK_ARG(prop != nullptr);
+	LN_VERIFY_ARG(obj != nullptr);
+	LN_VERIFY_ARG(prop != nullptr);
 	auto t = static_cast<const TypedPropertyInfo<TValue>*>(prop);
 	return t->GetValueDirect(obj);
 }
@@ -293,8 +293,7 @@ public:
 	private: static void											set_##propVar(ln::tr::ReflectionObject* obj, valueType& value); \
 	private: static void											get_##propVar(ln::tr::ReflectionObject* obj, valueType** outValuePtr); \
 	private: static ln::tr::TypedPropertyInitializer<valueType>		init_##propVar; \
-	public:  static const ln::tr::TypedPropertyInfo<valueType>*		propVar##Id; \
-	public:  ::ln::tr::Property<valueType>							propVar;
+	public:  static const ln::tr::TypedPropertyInfo<valueType>*		propVar##Id;
 
 #define LN_TR_PROPERTY_IMPLEMENT(ownerClass, valueType, propVar, metadata) \
 	static ln::tr::TypedPropertyInfo<valueType>		_##propVar##Id(ln::tr::TypeInfo::GetTypeInfo<ownerClass>(), _T(#propVar), nullptr); \
@@ -413,6 +412,28 @@ LN_INTERNAL_ACCESS:
 		return
 			Hash::CalcHash(reinterpret_cast<const char*>(&m_value), sizeof(m_value)) +
 			Hash::CalcHash(reinterpret_cast<const char*>(&m_valueSource), sizeof(m_valueSource));
+	}
+
+	bool Inherit(const Property& parent)
+	{
+		if (m_valueSource <= PropertySetSource::ByInherit)
+		{
+			bool changed = false;
+			if (m_value != parent.m_value)
+			{
+				m_value = parent.m_value;
+				changed = true;
+			}
+			m_valueSource = PropertySetSource::ByInherit;
+			return changed;
+		}
+		return false;
+	}
+
+LN_INTERNAL_ACCESS:
+	void SetValueSource(PropertySetSource source)
+	{
+		m_valueSource = source;
 	}
 
 private:

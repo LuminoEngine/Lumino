@@ -84,5 +84,42 @@ private:
 	LayoutTextOptions	m_layoutTextOptions;
 };
 
+
+
+
+
+
+class TextLayoutEngine2
+{
+public:
+	struct ResultItem
+	{
+		UTF32				ch;
+		float				columnBaseline;	// 横書きの場合はX方向のベースラインの位置  https://www.freetype.org/freetype2/docs/tutorial/step2.html
+		float				lineBaseline;	// 横書きの場合はY方向のベースラインの位置
+	};
+
+	struct ResultData
+	{
+		Size				areaSize;
+		List<ResultItem>	items;
+	};
+
+	void Layout(RawFont* font, const UTF32* text, int length, const RectF& layoutArea, TextLayoutOptions options, ResultData* outResult);
+
+private:
+	void LayoutTextHorizontal(const UTF32* text, int length);
+	void LayoutLineHorizontal(const UTF32* text, int length);
+
+	RawFont*			m_font;
+	FontGlobalMertics	m_globalMetrics;
+	TextLayoutOptions	m_options;
+	ResultData*			m_result;
+	float				m_currentLineBaseline;
+};
+
+
+
+
 } // namespace detail
 LN_NAMESPACE_END

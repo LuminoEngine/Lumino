@@ -1,4 +1,26 @@
-﻿
+﻿/*
+
+頂点バッファを作る系
+lnnvg__renderFill
+	glnvg__convertPaint
+lnnvg__renderStroke
+lnnvg__renderTriangles
+
+
+実際に描画する
+lnnvg__renderFlush
+	glnvg__fill
+		glnvg__setUniforms
+		DrawPrimitive
+	glnvg__convexFill
+		glnvg__setUniforms
+		DrawPrimitive
+	glnvg__stroke
+		glnvg__setUniforms
+		DrawPrimitive
+
+
+*/
 #include "Internal.h"
 #include <math.h>
 #include <Lumino/Graphics/Texture.h>
@@ -66,7 +88,7 @@ enum NVGcreateFlags
 	NVG_DEBUG = 1 << 2,
 };
 
-Driver::ITexture* LNNVGcontext_GetTexture(LNNVGcontext* ctx, int index);
+Driver::ITexture* LNNVGcontext_GetTexture(LNNVGcontext* ctx, int imageId);
 
 //==============================================================================
 //
@@ -180,7 +202,7 @@ static int glnvg__maxi(int a, int b)
 
 static void glnvg__checkError(GLNVGcontext* gl, const char* str)
 {
-	LN_LOG_WARNING(str);
+	LN_LOG_WARNING << str;
 }
 
 static GLNVGcall* glnvg__allocCall(GLNVGcontext* gl)
@@ -329,6 +351,7 @@ static int glnvg__convertPaint(GLNVGcontext* gl, GLNVGfragUniforms* frag, NVGpai
 		// NVG_IMAGE_FLIPY などのフラグは無し。フォーマットも RGBA 固定。 
 		frag->type = NSVG_SHADER_FILLIMG;
 		frag->texType = 0;
+		nvgTransformInverse(invxform, paint->xform);
 	}
 	else
 	{
@@ -411,9 +434,9 @@ private:
 	RefPtr<Driver::IVertexBuffer>		m_vertexBuffer;
 };
 
-Driver::ITexture* LNNVGcontext_GetTexture(LNNVGcontext* ctx, int index)
+Driver::ITexture* LNNVGcontext_GetTexture(LNNVGcontext* ctx, int imageId)
 {
-	return ctx->textureList[index];
+	return ctx->textureList[imageId - 1];
 }
 
 //------------------------------------------------------------------------------
@@ -431,7 +454,7 @@ static void glnvg__setUniforms(GLNVGcontext* gl, int uniformOffset, int image)
 
 	lnc->varViewSize->SetVector(Vector4(lnc->view[0], lnc->view[1], 0, 0));
 	if (image != 0)
-		lnc->varTex->SetTexture(lnc->textureList[image]);
+		lnc->varTex->SetTexture(LNNVGcontext_GetTexture(lnc, image));
 	else
 		lnc->varTex->SetTexture(nullptr);
 }
@@ -734,6 +757,7 @@ static void lnnvg__renderFlush(void* uptr, NVGcompositeOperationState compositeO
 }
 
 //------------------------------------------------------------------------------
+// bounds	: bounds[4]. 
 static void lnnvg__renderFill(void* uptr, NVGpaint* paint, NVGscissor* scissor, float fringe,
 	const float* bounds, const NVGpath* paths, int npaths)
 {
@@ -807,6 +831,12 @@ static void lnnvg__renderFill(void* uptr, NVGpaint* paint, NVGscissor* scissor, 
 		// Fill shader
 		glnvg__convertPaint(gl, nvg__fragUniformPtr(gl, call->uniformOffset), paint, scissor, fringe, fringe, -1.0f);
 	}
+	
+	// NanoVG 用のシェーダを使いつつ、テクスチャ転送元の左上が、ジオメトリの境界矩形の左上になるようにしたい。
+	// サンプルのままだと絶対座標での左上 (0, 0) がテクスチャ転送元の原点になってしまう。
+	GLNVGfragUniforms* flags = nvg__fragUniformPtr(gl, call->uniformOffset);
+	flags->paintMat[8] = -bounds[0];
+	flags->paintMat[9] = -bounds[1];
 
 	return;
 
@@ -820,6 +850,7 @@ error:
 static void lnnvg__renderStroke(void* uptr, NVGpaint* paint, NVGscissor* scissor, float fringe,
 	float strokeWidth, const NVGpath* paths, int npaths)
 {
+	assert(0);
 }
 
 //------------------------------------------------------------------------------
@@ -930,7 +961,7 @@ void NanoVGRenderer::Initialize(GraphicsManager* manager)
 //------------------------------------------------------------------------------
 void NanoVGRenderer::ExecuteCommand(NanoVGCommandList* commandList)
 {
-	LN_CHECK_ARG(commandList != nullptr);
+	if (LN_CHECK_ARG(commandList != nullptr)) return;
 
 	NanoVGRenderer* _this = this;
 	LN_ENQUEUE_RENDER_COMMAND_3(
@@ -945,7 +976,7 @@ void NanoVGRenderer::ExecuteCommand(NanoVGCommandList* commandList)
 //------------------------------------------------------------------------------
 void NanoVGRenderer::OnSetState(const DrawElementBatch* state)
 {
-	NanoVGCommandHelper::ExpandState(state->state.GetBrush(), state->state.GetPen(), &m_state);
+	NanoVGCommandHelper::ExpandState(state->GetTransfrom(), state->state.GetBrush(), state->state.GetPen(), &m_state);
 }
 
 //------------------------------------------------------------------------------
@@ -1135,8 +1166,9 @@ void NanoVGCommandHelper::ExecuteCommand(NanoVGCommandList* commandList, NVGcont
 		}
 	}
 }
-void NanoVGCommandHelper::ExpandState(Brush* brush, Pen* pen, NanoVGState* outState)
+void NanoVGCommandHelper::ExpandState(const Matrix& transform, Brush* brush, Pen* pen, NanoVGState* outState)
 {
+	outState->transform = transform;
 	ExpandBrushState(brush, &outState->fillBrush);
 	if (pen != nullptr)
 	{
@@ -1162,39 +1194,30 @@ void NanoVGCommandHelper::ExpandBrushState(Brush* brush, NanoVGBrush* outBrush)
 {
 	if (brush != nullptr)
 	{
-		switch (brush->GetType())
+		if (brush->IsSolidColor())
 		{
-			case BrushType_SolidColor:
-			{
-				ColorBrush* b = static_cast<ColorBrush*>(brush);
-				outBrush->type = NanoVGBrushType::SolidColor;
-				outBrush->SolidColorInfo.color.r = b->GetColor().r;
-				outBrush->SolidColorInfo.color.g = b->GetColor().g;
-				outBrush->SolidColorInfo.color.b = b->GetColor().b;
-				outBrush->SolidColorInfo.color.a = b->GetColor().a;
-				break;
-			}
-			case BrushType_Texture:
-			{
-				TextureBrush* b = static_cast<TextureBrush*>(brush);
-				outBrush->type = NanoVGBrushType::ImagePattern;
-				outBrush->ImagePatternInfo.ox = b->GetSourceRect().x;
-				outBrush->ImagePatternInfo.oy = b->GetSourceRect().y;
-				outBrush->ImagePatternInfo.ex = b->GetSourceRect().width;
-				outBrush->ImagePatternInfo.ey = b->GetSourceRect().height;
-				outBrush->ImagePatternInfo.angle = 0;
-				outBrush->ImagePatternInfo.alpha = 1.0f;
-				outBrush->imagePatternTexture = b->GetTexture()->ResolveDeviceObject();
-				break;
-			}
-			default:
-				assert(0);
-				break;
+			Brush* b = brush;
+			outBrush->type = NanoVGBrushType::SolidColor;
+			outBrush->SolidColorInfo.color.r = brush->GetColor().r;
+			outBrush->SolidColorInfo.color.g = brush->GetColor().g;
+			outBrush->SolidColorInfo.color.b = brush->GetColor().b;
+			outBrush->SolidColorInfo.color.a = brush->GetColor().a;
+		}
+		else
+		{
+			RectF rc = static_cast<TextureBrush*>(brush)->GetActualSourceRect();
+			outBrush->type = NanoVGBrushType::ImagePattern;
+			outBrush->ImagePatternInfo.ox = rc.x;
+			outBrush->ImagePatternInfo.oy = rc.y;
+			outBrush->ImagePatternInfo.ex = rc.width;
+			outBrush->ImagePatternInfo.ey = rc.height;
+			outBrush->ImagePatternInfo.angle = 0;
+			outBrush->ImagePatternInfo.alpha = 1.0f;
+			outBrush->imagePatternTexture = brush->GetTexture()->ResolveDeviceObject();
 		}
 	}
 	else
 	{
-		ColorBrush* b = static_cast<ColorBrush*>(brush);
 		outBrush->type = NanoVGBrushType::SolidColor;
 		outBrush->SolidColorInfo.color.r = 0;
 		outBrush->SolidColorInfo.color.g = 0;
@@ -1222,6 +1245,10 @@ void NanoVGCommandHelper::ApplyState(NVGcontext* ctx, const NanoVGState* state)
 	nvgLineCap(ctx, state->lineCap);
 	nvgLineJoin(ctx, state->lineJoin);
 	nvgGlobalAlpha(ctx, state->globalAlpha);
+
+	// transform
+	const Matrix& m = state->transform;
+	nvgTransform(ctx, m.m11, m.m21, m.m12, m.m22, m.m41, m.m42);
 }
 NVGpaint NanoVGCommandHelper::GetNVGpaint(NVGcontext* ctx, const NanoVGBrush& brush)
 {
@@ -1245,7 +1272,7 @@ NVGpaint NanoVGCommandHelper::GetNVGpaint(NVGcontext* ctx, const NanoVGBrush& br
 		case NanoVGBrushType::ImagePattern:
 		{
 			auto& info = brush.ImagePatternInfo;
-			return nvgImagePattern(ctx, info.ox, info.oy, info.ex, info.ey, info.alpha, lnnvg__AddImageTexture(ctx, brush.imagePatternTexture), info.alpha);
+			return nvgImagePattern(ctx, info.ox, info.oy, info.ex, info.ey, 0.0f, lnnvg__AddImageTexture(ctx, brush.imagePatternTexture), info.alpha);
 		}
 	}
 	assert(0);

@@ -49,69 +49,53 @@
 //#define LN_DO_CHECK_ASSERT
 #define LN_DO_CHECK_THROW
 
-#if defined(LN_DO_CHECK_ASSERT)
-	#define LN_CHECK_ARG(expression)	assert(expression);
-	#define LN_CHECK_STATE(expression)	assert(expression);
-	#define LN_CHECK_RANGE(value, begin, end)	assert(begin <= value && value < end);
-#elif defined(LN_DO_CHECK_THROW)
-	#define LN_CHECK_ARG(expression)			LN_THROW(expression, ::ln::ArgumentException, #expression);
-	#define LN_CHECK_STATE(expression)			LN_THROW(expression, ::ln::InvalidOperationException, #expression);
-	#define LN_CHECK_RANGE(value, begin, end)	LN_THROW(begin <= value && value < end, ::ln::OutOfRangeException);
-#elif
-	#define LN_CHECK_ARG(expression)
-	#define LN_CHECK_STATE(expression)
-#endif
 
-
-//
-#define LN_NOTIMPLEMENTED(...)	LN_THROW(0, ln::NotImplementedException, __VA_ARGS__);
 
 
 // 式を評価し、結果が false であれば、後続のブロックを実行する
 
+
 /*
+	
 	Use case:
 
 	int Func(int* ptr)
 	{
 		// 引数をチェックしてすぐ return する場合
-		LN_FAIL_CHECK_ARG(ptr != nullptr) return -1;
+		if (LN_CHECK_ARG(ptr != nullptr)) return -1;
 
 		// メンバ変数をチェックしてすぐ return する場合
-		LN_FAIL_CHECK_STATE(m_state != 0) return -1;
+		if (LN_CHECK_STATE(m_state != 0)) return -1;
 
 		// そのまま続行しても問題ないが、一応問題としてマークしておきたい場合
 		int len = printf();
-		LN_FAIL_CHECK_STATE(len != 0);
+		LN_CHECK_STATE(len != 0);
 
 		// 他の関数の戻り値のエラーチェック
 		FILE* fp = fopen();
-		LN_FAIL_CHECK_STATE(fp != NULL) return -1;
+		if (LN_CHECK_STATE(fp != NULL)) return -1;
 
 		// 通過禁止
-		LN_FAIL_CHECK(0, InvalidFormatException);
+		LN_UNREACHABLE();
+	}
+
+	const Object& At(int index)
+	{
+		LN_VERIFY(index >= 0);
 	}
 */
 #if defined(LN_DO_CHECK_ASSERT)
-#define LN_FAIL_CHECK(expression, exception)		if ((!(expression)) && ln::detail::NotifyAssert([](){ assert(!#expression); }))
-#define LN_FAIL_CHECK_ARG(expression, ...)			if ((!(expression)) && ln::detail::NotifyAssert([](){ assert(!#expression); }))
-#define LN_FAIL_CHECK_STATE(expression, ...)		if ((!(expression)) && ln::detail::NotifyAssert([](){ assert(!#expression); }))
-#define LN_FAIL_CHECK_FORMAT(expression, ...)		if ((!(expression)) && ln::detail::NotifyAssert([](){ assert(!#expression); }))
-#define LN_UNREACHABLE()							assert(0);
+#define LN_CHECK(expression, exception, ...)		((!(expression)) && ln::detail::NotifyAssert([](){ assert(!#expression); }))
 #elif defined(LN_DO_CHECK_THROW)
-#define LN_FAIL_CHECK(expression, exception, ...)	if ((!(expression)) && ln::detail::NotifyException<exception>(__FILE__, __LINE__, __VA_ARGS__))
-#define LN_FAIL_CHECK_ARG(expression, ...)			if ((!(expression)) && ln::detail::NotifyException<::ln::ArgumentException>(__FILE__, __LINE__, __VA_ARGS__))
-#define LN_FAIL_CHECK_STATE(expression, ...)		if ((!(expression)) && ln::detail::NotifyException<::ln::InvalidOperationException>(__FILE__, __LINE__, __VA_ARGS__))
-#define LN_FAIL_CHECK_FORMAT(expression, ...)		if ((!(expression)) && ln::detail::NotifyException<::ln::InvalidFormatException>(__FILE__, __LINE__, __VA_ARGS__))
-#define LN_UNREACHABLE()							ln::detail::NotifyException<::ln::InvalidOperationException>(__FILE__, __LINE__);
+#define LN_CHECK(expression, exception, ...)		(!(expression)) && ln::detail::NotifyException<exception>(__FILE__, __LINE__, __VA_ARGS__)
 #else
-#define LN_FAIL_CHECK(expression, exception)		if (!(expression))
-#define LN_FAIL_CHECK_ARG(expression, ...)			if (!(expression))
-#define LN_FAIL_CHECK_STATE(expression, ...)		if (!(expression))
-#define LN_FAIL_CHECK_FORMAT(expression, ...)		if (!(expression))
-#define LN_UNREACHABLE()							
+#define LN_FAIL_CHECK(expression, exception)		(!(expression))
 #endif
 
+#define LN_CHECK_ARG(expression, ...)				LN_CHECK(expression, ::ln::ArgumentException, __VA_ARGS__)
+#define LN_CHECK_STATE(expression, ...)				LN_CHECK(expression, ::ln::InvalidOperationException, __VA_ARGS__)
+#define LN_CHECK_FORMAT(expression, ...)			LN_CHECK(expression, ::ln::InvalidFormatException, __VA_ARGS__)
+#define LN_CHECK_RANGE(value, begin, end)			LN_CHECK(begin <= value && value < end, ::ln::OutOfRangeException)
 
 #define LN_FATAL(expression, message)				{ if (!(expression)) ln::detail::NotifyFatalError(__FILE__, __LINE__, message); }
 #define LN_VERIFY(expression, exception, ...)		{ if (!(expression)) ln::detail::NotifyException<exception>(__FILE__, __LINE__, __VA_ARGS__); }
@@ -119,8 +103,8 @@
 #define LN_VERIFY_STATE(expression, ...)			{ if (!(expression)) ln::detail::NotifyException<::ln::InvalidOperationException>(__FILE__, __LINE__, __VA_ARGS__); }
 #define LN_VERIFY_FORMAT(expression, ...)			{ if (!(expression)) ln::detail::NotifyException<::ln::InvalidFormatException>(__FILE__, __LINE__, __VA_ARGS__); }
 
-
-
+#define LN_UNREACHABLE()							LN_VERIFY(0, ::ln::InvalidOperationException)
+#define LN_NOTIMPLEMENTED()							LN_VERIFY(0, ln::NotImplementedException)
 
 LN_NAMESPACE_BEGIN
 

@@ -45,7 +45,7 @@ WaveDecoder::~WaveDecoder()
 //------------------------------------------------------------------------------
 void WaveDecoder::Create(Stream* stream)
 {
-	LN_CHECK_ARG(stream != nullptr);
+	if (LN_CHECK_ARG(stream != nullptr)) return;
 	LN_REFOBJ_SET(m_stream, stream);
 
 	// 念のためファイルポインタを先頭に戻す

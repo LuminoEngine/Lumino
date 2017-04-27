@@ -206,12 +206,17 @@ public:
 	/// ->
     T* operator -> () const
     {
-        LN_ASSERT(m_ptr != nullptr );
+		if (m_ptr == nullptr)
+			LN_ASSERT(m_ptr != nullptr );
         return static_cast<T*>(m_ptr);
     }
 
     /// convert
-	operator T*			() const { return static_cast<T*>(m_ptr); }
+	operator T*			() const
+	{
+		// ここでコンパイルエラーとなる場合、T の定義があるヘッダファイルを include しているか確認すること。
+		return static_cast<T*>(m_ptr);
+	}
     //operator const T*	() const { return static_cast<T*>(m_ptr); }
 
 protected:

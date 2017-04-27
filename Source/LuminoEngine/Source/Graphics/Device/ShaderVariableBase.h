@@ -35,35 +35,23 @@ protected:
 
 public:
 	// IShaderVariable
-	virtual ShaderVariableType GetType() const { return m_desc.Type; }
-	virtual const String& GetName() const { return m_name; }
-	virtual const String& GetSemanticName() const { return m_semanticName; }
-	virtual int GetMatrixRows() const { return m_desc.Rows; }
-	virtual int GetMatrixColumns() const { return m_desc.Columns; }
-	virtual int GetArrayElements() const { return m_desc.Elements; }
-	virtual void SetBool(bool value);
-	virtual bool GetBool();
-	virtual void SetBoolArray(const bool* values, int count);
-	virtual void SetInt(int value);
-	virtual int GetInt();
-	virtual void SetFloat(float value);
-	virtual float GetFloat();
-	virtual void SetFloatArray(const float* values, int count);
-	virtual void SetVector(const Vector4& vec);
-	virtual const Vector4& GetVector();
-	virtual void SetVectorArray(const Vector4* vectors, int count);
-	virtual const Vector4* GetVectorArray();
-	virtual void SetMatrix(const Matrix& matrix);
-	virtual const Matrix& GetMatrix();
-	virtual void SetMatrixArray(const Matrix* matrices, int count);
-	virtual const Matrix* GetMatrixArray();
-	virtual void SetTexture(ITexture* texture);
-	virtual ITexture* GetTexture();
-	virtual const TCHAR* GetString();
-	virtual const ShaderValue& GetValue() const { return m_value; }
-	// IDeviceObject
-	virtual void OnLostDevice();
-	virtual void OnResetDevice();
+	virtual ShaderVariableType GetType() const override { return m_desc.Type; }
+	virtual const String& GetName() const override { return m_name; }
+	virtual const String& GetSemanticName() const override { return m_semanticName; }
+	virtual int GetMatrixRows() const override { return m_desc.Rows; }
+	virtual int GetMatrixColumns() const override { return m_desc.Columns; }
+	virtual int GetArrayElements() const override { return m_desc.Elements; }
+	virtual void SetBool(bool value) override;
+	virtual void SetBoolArray(const bool* values, int count) override;
+	virtual void SetInt(int value) override;
+	virtual void SetFloat(float value) override;
+	virtual void SetFloatArray(const float* values, int count) override;
+	virtual void SetVector(const Vector4& vec) override;
+	virtual void SetVectorArray(const Vector4* vectors, int count) override;
+	virtual void SetMatrix(const Matrix& matrix) override;
+	virtual void SetMatrixArray(const Matrix* matrices, int count) override;
+	virtual void SetTexture(ITexture* texture) override;
+	virtual const ShaderValue& GetValue() const override { return m_value; }
 
 	void SetString(const char* str);
 	void SetString(const String& str);

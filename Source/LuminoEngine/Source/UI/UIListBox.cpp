@@ -6,16 +6,11 @@
 #include "UIManager.h"
 
 LN_NAMESPACE_BEGIN
-namespace tr
-{
 
 //==============================================================================
 // UIListBoxItem
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIListBoxItem, UIContentControl)
-
-const String UIListBoxItem::NormalState = _T("Normal");
-const String UIListBoxItem::MouseOverState = _T("MouseOver");
+LN_UI_TYPEINFO_IMPLEMENT(UIListBoxItem, UIControl)
 
 //------------------------------------------------------------------------------
 UIListBoxItem::UIListBoxItem()
@@ -28,31 +23,21 @@ UIListBoxItem::~UIListBoxItem()
 }
 
 //------------------------------------------------------------------------------
-void UIListBoxItem::Initialize(ln::detail::UIManager* manager)
+void UIListBoxItem::Initialize()
 {
-	UIContentControl::Initialize(manager);
+	UIControl::Initialize();
 	SetHContentAlignment(HAlignment::Left);
 	SetHAlignment(HAlignment::Stretch);
-	GoToVisualState(NormalState);
-}
+	GoToVisualState(UIVisualStates::NormalState);
 
-//------------------------------------------------------------------------------
-void UIListBoxItem::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
-{
-	if (ev == UIElement::MouseEnterEvent)
-	{
-		GoToVisualState(MouseOverState);
-	}
-	else if (ev == UIElement::MouseLeaveEvent)
-	{
-		GoToVisualState(NormalState);
-	}
+	// TODO:
+	SetMinHeight(16);
 }
 
 //==============================================================================
 // UIListBox
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIListBox, UIItemsControl)
+LN_UI_TYPEINFO_IMPLEMENT(UIListBox, UIControl)
 
 const String UIListBox::NormalState = _T("Normal");
 
@@ -60,7 +45,7 @@ const String UIListBox::NormalState = _T("Normal");
 UIListBoxPtr UIListBox::Create()
 {
 	auto ptr = UIListBoxPtr::MakeRef();
-	ptr->Initialize(ln::detail::UIManager::GetInstance());
+	ptr->Initialize();
 	return ptr;
 }
 
@@ -75,16 +60,16 @@ UIListBox::~UIListBox()
 }
 
 //------------------------------------------------------------------------------
-void UIListBox::Initialize(ln::detail::UIManager* manager)
+void UIListBox::Initialize()
 {
-	UIItemsControl::Initialize(manager);
+	UIControl::Initialize();
 	SetHContentAlignment(HAlignment::Stretch);
 
 	auto panel = RefPtr<UIStackPanel>::MakeRef();
-	panel->Initialize(manager);
+	panel->Initialize();
 	panel->SetHAlignment(HAlignment::Stretch);
 	panel->SetVAlignment(VAlignment::Stretch);
-	SetItemsHostPanel(panel);
+	SetLayoutPanel(panel);
 	GoToVisualState(NormalState);
 }
 
@@ -92,7 +77,7 @@ void UIListBox::Initialize(ln::detail::UIManager* manager)
 UIListBoxItemPtr UIListBox::AddTextItem(const String& text)
 {
 	auto textBlock = RefPtr<UITextBlock>::MakeRef();
-	textBlock->Initialize(GetManager());
+	textBlock->Initialize();
 	textBlock->SetText(text);
 	return AddItem(textBlock);
 }
@@ -100,15 +85,14 @@ UIListBoxItemPtr UIListBox::AddTextItem(const String& text)
 //------------------------------------------------------------------------------
 UIListBoxItemPtr UIListBox::AddItem(UIElement* item)
 {
-	LN_CHECK_ARG(item != nullptr);
+	if (LN_CHECK_ARG(item != nullptr)) return nullptr;
 
 	// 受け取った item を UIListBoxItem でラップして、UIListBoxItem をリストに入れる
 	auto listItem = RefPtr<UIListBoxItem>::MakeRef();
-	listItem->Initialize(GetManager());
-	listItem->SetContent(item);
-	GetItems()->Add(listItem);
+	listItem->Initialize();
+	listItem->AddChild(item);
+	AddChild(listItem);
 	return listItem;
 }
 
-} // namespace tr
 LN_NAMESPACE_END

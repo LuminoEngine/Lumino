@@ -4,7 +4,6 @@
 #include "Detail.h"
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Graphics/Texture.h>
-#include <Lumino/Graphics/Material.h>
 #include "SceneNode.h"
 
 LN_NAMESPACE_BEGIN
@@ -30,23 +29,24 @@ public:
 	tr::ReflectionObjectList<Material*>* GetMaterials() const;
 
 	/** メインマテリアルの不透明度を設定します。(default: 1.0)*/
-	void SetOpacity(float opacity, int subsetIndex = -1);
+	void SetOpacity(float value, int subsetIndex = -1);
+	float GetOpacity() const;
 
 
 	/** メインマテリアルのカラースケールを設定します。(default: )*/
 	/// 乗算色の設定TODO: Color32
-	void SetColorScale(const Color& color, int subsetIndex = -1);
+	void SetColorScale(const Color& value, int subsetIndex = -1);
 	void SetColorScale(float r, float g, float b, float a = 1.0f, int subsetIndex = -1);
+	const Color& GetColorScale() const;
 
-
-	void SetColor(const Color32& color);
+	void SetColor(const Color32& value);
 	void SetColor(int r, int g, int b, int a = 255);
 
 	/// ブレンドカラーの設定 TODO: Color32
-	void SetBlendColor(const Color& color, int subsetIndex = -1);
+	void SetBlendColor(const Color& value, int subsetIndex = -1);
 
 	/// 色調の設定 TODO: Tone32
-	void SetTone(const ToneF& tone, int subsetIndex = -1);
+	void SetTone(const ToneF& value, int subsetIndex = -1);
 
 
 	///// UV 変換行列の設定
@@ -56,7 +56,7 @@ public:
 	//const Matrix& GetUVTransform(int subsetIndex = -1)  const { return m_visualNodeParams.GetSubsetParams(subsetIndex).UVTransform; }
 
 	/// シェーダの設定
-	void SetShader(Shader* shader, int subsetIndex = -1);
+	void SetShader(Shader* value, int subsetIndex = -1);
 
 	/** @} */
 
@@ -123,6 +123,8 @@ LN_PROTECTED_INTERNAL_ACCESS:
 
 protected:
 	RefPtr<MaterialList2>	m_materialList;
+
+private:
 };
 
 

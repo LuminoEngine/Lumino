@@ -4,8 +4,6 @@
 #include "UIContentControl.h"
 
 LN_NAMESPACE_BEGIN
-namespace tr
-{
 class UIListBoxItem;
 class UIListBox;
 using UIListBoxItemPtr = RefPtr<UIListBoxItem>;
@@ -18,27 +16,22 @@ using UIListBoxPtr = RefPtr<UIListBox>;
 				ÇªÇÍÇºÇÍÇÃ Item ÇÃèÛë‘ÇçXêVÇ∑ÇÈÅB
 */
 class UIListBoxItem
-	: public UIContentControl
+	: public UIControl
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:
-	static const String NormalState;
-	static const String MouseOverState;
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	UIListBoxItem();
 	virtual ~UIListBoxItem();
-	void Initialize(ln::detail::UIManager* manager);
-
-protected:
-	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e) override;
+	void Initialize();
 };
 
 /**
 	@brief
 */
 class UIListBox
-	: public UIItemsControl
+	: public UIControl
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:
@@ -54,10 +47,9 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	UIListBox();
 	virtual ~UIListBox();
-	void Initialize(ln::detail::UIManager* manager);
+	void Initialize();
 
 private:
 };
 
-} // namespace tr
 LN_NAMESPACE_END

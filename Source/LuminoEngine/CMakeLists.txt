@@ -142,14 +142,14 @@ set(LN_SOURCES_Audio
 )
 
 set(LN_SOURCES_Physics
-	Include/Lumino/Physics/BodyBase.h
+	Include/Lumino/Physics/PhysicsObject.h
 	Include/Lumino/Physics/Collider.h
 	Include/Lumino/Physics/CollisionShape.h
 	Include/Lumino/Physics/Common.h
 	Include/Lumino/Physics/Joint.h
 	Include/Lumino/Physics/PhysicsWorld.h
 	Include/Lumino/Physics/RigidBody.h
-	Source/Physics/BodyBase.cpp
+	Source/Physics/PhysicsObject.cpp
 	Source/Physics/BulletUtils.h
 	Source/Physics/Collider.cpp
 	Source/Physics/CollisionShape.cpp
@@ -169,6 +169,7 @@ set(LN_SOURCES_Graphics
 	Include/Lumino/Graphics/Color.h
 	Include/Lumino/Graphics/Common.h
 	Include/Lumino/Graphics/ContextInterface.h
+	Include/Lumino/Graphics/DrawingContext.h
 	Include/Lumino/Graphics/FrameCapturer.h
 	Include/Lumino/Graphics/Graphics.h
 	Include/Lumino/Graphics/GraphicsException.h
@@ -193,20 +194,30 @@ set(LN_SOURCES_Graphics
 	Include/Lumino/Graphics/ImageEffect/BlurImageEffect.h
 	Include/Lumino/Graphics/ImageEffect/ScreenMotionBlurImageEffect.h
 	Include/Lumino/Graphics/ImageEffect/ToneImageEffect.h
-	../../External//GL/glew.c
-	../../External//nanovg/nanovg.c
-	../../External//nanovg/nanovg.h
+	../../External/GL/glew.c
+	../../External/nanovg/nanovg.c
+	../../External/nanovg/nanovg.h
+	../../External/glues/source/glues.h
+	../../External/glues/source/libtess/tessmono.c
+	../../External/glues/source/libtess/dict.c
+	../../External/glues/source/libtess/geom.c
+	../../External/glues/source/libtess/memalloc.c
+	../../External/glues/source/libtess/mesh.c
+	../../External/glues/source/libtess/normal.c
+	../../External/glues/source/libtess/priorityq.c
+	../../External/glues/source/libtess/render.c
+	../../External/glues/source/libtess/sweep.c
+	../../External/glues/source/libtess/tess.c
 	Source/Base/GeometryStructs.cpp
 	Source/Graphics/Bitmap.cpp
 	Source/Graphics/BitmapPainter.cpp
 	Source/Graphics/Brush.cpp
 	Source/Graphics/Color.cpp
 	Source/Graphics/ContextInterface.cpp
+	Source/Graphics/DrawingContext.cpp
 	Source/Graphics/FrameCapturer.cpp
 	Source/Graphics/FrameRectRenderer.cpp
 	Source/Graphics/FrameRectRenderer.h
-	Source/Graphics/GeometryRenderer.cpp
-	Source/Graphics/GeometryRenderer.h
 	Source/Graphics/Graphics.cpp
 	Source/Graphics/GraphicsException.cpp
 	Source/Graphics/GraphicsManager.cpp
@@ -237,6 +248,8 @@ set(LN_SOURCES_Graphics
 	Source/Graphics/RenderTargetTextureCache.h
 	Source/Graphics/SamplerState.cpp
 	Source/Graphics/Shader.cpp
+	Source/Graphics/ShaderAnalyzer.cpp
+	Source/Graphics/ShaderAnalyzer.h
 	Source/Graphics/SpriteRenderer.cpp
 	Source/Graphics/SpriteRenderer.h
 	Source/Graphics/SwapChain.cpp
@@ -249,6 +262,8 @@ set(LN_SOURCES_Graphics
 	Source/Graphics/ImageEffect/BlurImageEffect.cpp
 	Source/Graphics/ImageEffect/ScreenMotionBlurImageEffect.cpp
 	Source/Graphics/ImageEffect/ToneImageEffect.cpp
+	Source/Graphics/Rendering/ShapesRenderer.cpp
+	Source/Graphics/Rendering/ShapesRenderer.h
 )
 set(LN_SOURCES_Graphics_Device
 	Source/Graphics/Device/GraphicsDriverInterface.cpp
@@ -285,6 +300,8 @@ set(LN_SOURCES_Graphics_Text
 	Source/Graphics/Text/FontGlyphTextureCache.h
 	Source/Graphics/Text/FontManager.cpp
 	Source/Graphics/Text/FontManager.h
+	Source/Graphics/Text/FontOutlineTessellator.cpp
+	Source/Graphics/Text/FontOutlineTessellator.h
 	Source/Graphics/Text/FreeTypeFont.cpp
 	Source/Graphics/Text/FreeTypeFont.h
 	Source/Graphics/Text/GlyphRun.cpp
@@ -357,6 +374,7 @@ set(LN_SOURCES_Scene
 	Include/Lumino/Scene/StaticMesh.h
 	Include/Lumino/Scene/TextBlock.h
 	Include/Lumino/Scene/TileMap.h
+	Include/Lumino/Scene/TransitionPostEffect.h
 	Include/Lumino/Scene/VisualNode.h
 #	Include/Lumino/Scene/MME/MMESceneObject.h
 	Source/Scene/Camera.cpp
@@ -383,6 +401,7 @@ set(LN_SOURCES_Scene
 	Source/Scene/StaticMesh.cpp
 	Source/Scene/TextBlock.cpp
 	Source/Scene/TileMap.cpp
+	Source/Scene/TransitionPostEffect.cpp
 	Source/Scene/VisualNode.cpp
 	../../External/ssbpLib/ssShader_frag.h
 	../../External/ssbpLib/SS5Player.cpp
@@ -427,6 +446,8 @@ set(LN_SOURCES_UI
 	Include/Lumino/UI/Detail.h
 	Include/Lumino/UI/LayoutElement.h
 	Include/Lumino/UI/UIButton.h
+	Include/Lumino/UI/UIComboBox.h
+	Include/Lumino/UI/UICommands.h
 	Include/Lumino/UI/UIContentControl.h
 	Include/Lumino/UI/UIContext.h
 	Include/Lumino/UI/UIControl.h
@@ -435,22 +456,30 @@ set(LN_SOURCES_UI
 	Include/Lumino/UI/UIEvent.h
 	Include/Lumino/UI/UIEventArgs.h
 	Include/Lumino/UI/UIFrameWindow.h
+	Include/Lumino/UI/UIImage.h
 	Include/Lumino/UI/UIInjectedInputReceiver.h
 	Include/Lumino/UI/UIItemsControl.h
 	Include/Lumino/UI/UILayoutPanel.h
-	Include/Lumino/UI/UILayoutRoot.h
 	Include/Lumino/UI/UILayoutView.h
 	Include/Lumino/UI/UIListBox.h
+	Include/Lumino/UI/UIScrollViewer.h
+	Include/Lumino/UI/UISlider.h
 	Include/Lumino/UI/UIStyle.h
 	Include/Lumino/UI/UITextBlock.h
+	Include/Lumino/UI/UITextBox.h
 	Include/Lumino/UI/UITextElement.h
+	Include/Lumino/UI/UITreeView.h
 	Include/Lumino/UI/UITypeInfo.h
+	Include/Lumino/UI/UIViewport.h
 	Include/Lumino/UI/UIWindow.h
 	Source/UI/EventArgsPool.h
 	Source/UI/Internal.h
 	Source/UI/LayoutElement.cpp
 	Source/UI/LayoutImpl.h
 	Source/UI/UIButton.cpp
+	Source/UI/UIColorsDefine.inl
+	Source/UI/UIComboBox.cpp
+	Source/UI/UICommands.cpp
 	Source/UI/UIContentControl.cpp
 	Source/UI/UIContext.cpp
 	Source/UI/UIControl.cpp
@@ -460,24 +489,31 @@ set(LN_SOURCES_UI
 	Source/UI/UIEventArgs.cpp
 	Source/UI/UIFrameWindow.cpp
 	Source/UI/UIHelper.h
+	Source/UI/UIImage.cpp
 	Source/UI/UIItemsControl.cpp
 	Source/UI/UILayoutPanel.cpp
-	Source/UI/UILayoutRoot.cpp
 	Source/UI/UILayoutView.cpp
 	Source/UI/UIListBox.cpp
 	Source/UI/UIManager.cpp
 	Source/UI/UIManager.h
+	Source/UI/UIScrollViewer.cpp
+	Source/UI/UISlider.cpp
 	Source/UI/UIStyle.cpp
 	Source/UI/UITextBlock.cpp
+	Source/UI/UITextBox.cpp
 	Source/UI/UITextElement.cpp
+	Source/UI/UITreeView.cpp
 	Source/UI/UITypeInfo.cpp
+	Source/UI/UIViewport.cpp
 	Source/UI/UIWindow.cpp
 )
 
 set(LN_SOURCES_Documents
 	Include/Lumino/Documents/Common.h
+	Include/Lumino/Documents/Documents.h
 	Source/Documents/DocumentElements.cpp
 	Source/Documents/DocumentElements.h
+	Source/Documents/Documents.cpp
 	Source/Documents/DocumentsManager.cpp
 	Source/Documents/DocumentsManager.h
 	Source/Documents/Internal.h
@@ -792,6 +828,7 @@ endif()
 set(LN_INCLUDE_DIRECTORIES
 	${PROJECT_SOURCE_DIR}/Include
 	${PROJECT_SOURCE_DIR}/../LuminoCore/Include
+	${PROJECT_SOURCE_DIR}/../Fluorite/Include
 	../../External
 	../../External/glfw-3.1.2/include
 )
@@ -841,7 +878,7 @@ add_library(LuminoEngine STATIC ${LN_SOURCES})
 set_target_properties(LuminoEngine PROPERTIES OUTPUT_NAME "LuminoEngine${LN_LIB_POSTFIX}")
 set_target_properties(LuminoEngine PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
 target_include_directories(LuminoEngine PUBLIC ${LN_DEPENDENCIES_INCLUDES})
-target_link_libraries(LuminoEngine ${LN_LINK_LIBS} ${LN_DEPENDENCIES_LIBRARIES})
+target_link_libraries(LuminoEngine Fluorite ${LN_LINK_LIBS} ${LN_DEPENDENCIES_LIBRARIES})
 ln_add_pch(LuminoEngine "LuminoEngine.PCH.h" "Source/LuminoEngine.PCH.cpp")
 
 # Unit test.

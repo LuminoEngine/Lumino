@@ -12,6 +12,8 @@
 #include "MeshRendererProxy.h"
 #include "SpriteRenderer.h"
 #include "Text/TextRenderer.h"
+#include "Text/FontManager.h"
+#include "Rendering/ShapesRenderer.h"
 #include "NanoVGRenderer.h"
 #include "FrameRectRenderer.h"
 #include "../Mesh/MeshFactory.h"
@@ -128,6 +130,12 @@ void InternalContext::Initialize(detail::GraphicsManager* manager)
 	m_textRenderer = RefPtr<TextRenderer>::MakeRef();
 	m_textRenderer->Initialize(manager);
 
+	m_vectorTextRenderer = RefPtr<VectorTextRenderer>::MakeRef();
+	m_vectorTextRenderer->Initialize(manager);
+
+	m_shapesRenderer = RefPtr<ShapesRenderer>::MakeRef();
+	m_shapesRenderer->Initialize(manager);
+
 	m_nanoVGRenderer = RefPtr<NanoVGRenderer>::MakeRef();
 	m_nanoVGRenderer->Initialize(manager);
 
@@ -184,6 +192,20 @@ TextRenderer* InternalContext::BeginTextRenderer()
 }
 
 //------------------------------------------------------------------------------
+VectorTextRenderer* InternalContext::BeginVectorTextRenderer()
+{
+	SwitchActiveRenderer(m_vectorTextRenderer);
+	return m_vectorTextRenderer;
+}
+
+//------------------------------------------------------------------------------
+ShapesRenderer* InternalContext::BeginShapesRenderer()
+{
+	SwitchActiveRenderer(m_shapesRenderer);
+	return m_shapesRenderer;
+}
+
+//------------------------------------------------------------------------------
 NanoVGRenderer* InternalContext::BeginNanoVGRenderer()
 {
 	SwitchActiveRenderer(m_nanoVGRenderer);
@@ -212,11 +234,15 @@ SpriteRenderer* InternalContext::GetSpriteRenderer()
 }
 
 //------------------------------------------------------------------------------
-void InternalContext::SetCurrentStatePtr(const DrawElementBatch* state)
+void InternalContext::ApplyStatus(DrawElementBatch* state, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
 {
 	m_currentStatePtr = state;
+	m_currentStatePtr->ApplyStatus(this, defaultRenderTarget, defaultDepthBuffer);
+
 	if (m_current != nullptr)
+	{
 		m_current->OnSetState(m_currentStatePtr);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -368,6 +394,13 @@ void BatchState::ApplyStatus(InternalContext* context, CombinedMaterial* combine
 	}
 	// FrameBuffer
 	{
+		//if (defaultRenderTarget == nullptr && defaultDepthBuffer == nullptr)
+		//{
+		//	// TODO: 子DrawListが実行された後のステート復帰。
+		//	// もしかしたらオプションにはできないかもしれない。
+		//	return;
+		//}
+
 		for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
 		{
 			if (i == 0 && m_renderTargets[i] == nullptr)
@@ -427,6 +460,16 @@ void DrawElementBatch::SetCombinedMaterial(CombinedMaterial* value)
 }
 
 //------------------------------------------------------------------------------
+void DrawElementBatch::SetBuiltinEffect(const BuiltinEffectData& data)
+{
+	if (!m_builtinEffectData.Equals(data))
+	{
+		m_builtinEffectData = data;
+		m_hashDirty = true;
+	}
+}
+
+//------------------------------------------------------------------------------
 void DrawElementBatch::SetStandaloneShaderRenderer(bool enabled)
 {
 	if (m_standaloneShaderRenderer != enabled)
@@ -443,13 +486,14 @@ bool DrawElementBatch::IsStandaloneShaderRenderer() const
 }
 
 //------------------------------------------------------------------------------
-bool DrawElementBatch::Equal(const BatchState& state_, Material* material, const Matrix& transfrom) const
+bool DrawElementBatch::Equal(const BatchState& state_, Material* material, const Matrix& transfrom, const BuiltinEffectData& effectData) const
 {
 	assert(m_combinedMaterial != nullptr);
 	return
 		state.GetHashCode() == state_.GetHashCode() &&
 		m_combinedMaterial->GetSourceHashCode() == material->GetHashCode() &&
-		m_transfrom == transfrom;
+		m_transfrom == transfrom &&
+		m_builtinEffectData.GetHashCode() == effectData.GetHashCode();
 //#if 1
 //	return GetHashCode() == obj.GetHashCode();
 //#else
@@ -514,6 +558,7 @@ size_t DrawElementBatch::GetHashCode() const
 	}
 	return m_hashCode;
 }
+
 
 //==============================================================================
 // DrawElement
@@ -620,19 +665,20 @@ void DrawElementList::ClearCommands()
 }
 
 //------------------------------------------------------------------------------
-void DrawElementList::PostAddCommandInternal(const BatchState& state, Material* availableMaterial, const Matrix& transform, DrawElement* element)
+void DrawElementList::PostAddCommandInternal(const BatchState& state, Material* availableMaterial, const Matrix& transform, const BuiltinEffectData& effectData, DrawElement* element)
 {
-	if (m_batchList.IsEmpty() || !m_batchList.GetLast().Equal(state, availableMaterial, transform))
+	if (m_batchList.IsEmpty() || !m_batchList.GetLast().Equal(state, availableMaterial, transform, effectData))
 	{
 		// CombinedMaterial を作る
 		CombinedMaterial* cm = m_combinedMaterialCache.QueryCommandList();
-		cm->Combine(nullptr, availableMaterial, nullptr);	// TODO
+		cm->Combine(nullptr, availableMaterial, effectData);	// TODO
 
 		// 新しく DrawElementBatch を作る
 		m_batchList.Add(DrawElementBatch());
 		m_batchList.GetLast().state = state;
 		m_batchList.GetLast().SetCombinedMaterial(cm);
 		m_batchList.GetLast().SetTransfrom(transform);
+		m_batchList.GetLast().SetBuiltinEffect(effectData);
 	}
 	element->batchIndex = m_batchList.GetCount() - 1;
 }
@@ -694,6 +740,9 @@ void InternalRenderer::Render(
 	RenderTargetTexture* defaultRenderTarget,
 	DepthBuffer* defaultDepthBuffer)
 {
+	elementList->SetDefaultRenderTarget(defaultRenderTarget);
+	elementList->SetDefaultDepthBuffer(defaultDepthBuffer);
+
 	OnPreRender(elementList);
 
 	InternalContext* context = m_manager->GetInternalContext();
@@ -701,6 +750,9 @@ void InternalRenderer::Render(
 
 	// 視点に関する情報の設定
 	context->SetViewInfo(cameraInfo.viewPixelSize, cameraInfo.viewMatrix, cameraInfo.projMatrix);
+
+	// ライブラリ外部への書き込み対応
+	//context->BeginBaseRenderer()->Clear(ClearFlags::Depth/* | ClearFlags::Stencil*/, Color());
 
 	// 視錘台カリング
 	for (int i = 0; i < elementList->GetElementCount(); ++i)
@@ -774,8 +826,7 @@ void InternalRenderer::Render(
 				context->Flush();
 				currentBatchIndex = element->batchIndex;
 				currentState = elementList->GetBatch(currentBatchIndex);
-				currentState->ApplyStatus(context, defaultRenderTarget, defaultDepthBuffer);
-				context->SetCurrentStatePtr(currentState);
+				context->ApplyStatus(currentState, defaultRenderTarget, defaultDepthBuffer);
 			}
 
 			// 固定の内部シェーダを使わない場合はいろいろ設定する
@@ -1060,9 +1111,9 @@ RenderingPass2::~RenderingPass2()
 void RenderingPass2::SelectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy)
 {
 	outPolicy->shader = nullptr;
-	if (material != nullptr && material->m_builtinParameters.shader != nullptr)
+	if (material != nullptr && material->m_shader != nullptr)
 	{
-		outPolicy->shader = material->m_builtinParameters.shader;
+		outPolicy->shader = material->m_shader;
 	}
 	else
 	{
@@ -1136,7 +1187,7 @@ DrawList::~DrawList()
 //------------------------------------------------------------------------------
 void DrawList::Initialize(detail::GraphicsManager* manager)
 {
-	LN_CHECK_ARG(manager != nullptr);
+	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
 	m_state.Reset();
 
@@ -1171,21 +1222,40 @@ DepthBuffer* DrawList::GetDepthBuffer() const
 //------------------------------------------------------------------------------
 void DrawList::SetBrush(Brush* brush)
 {
+	brush = (brush != nullptr) ? brush : Brush::Black;
 	m_state.state.state.SetBrush(brush);
+}
+
+//------------------------------------------------------------------------------
+Brush* DrawList::GetBrush() const
+{
+	return m_state.state.state.GetBrush();
 }
 
 //------------------------------------------------------------------------------
 void DrawList::SetFont(Font* font)
 {
+	font = (font != nullptr) ? font : m_manager->GetFontManager()->GetDefaultFont();
+
 	m_state.state.state.SetFont(font);
+}
+
+//------------------------------------------------------------------------------
+void DrawList::SetShader(Shader* shader)
+{
+	m_defaultMaterial->SetShader(shader);
+}
+
+//------------------------------------------------------------------------------
+Shader* DrawList::GetShader() const
+{
+	return m_defaultMaterial->GetShader();
 }
 
 //------------------------------------------------------------------------------
 void DrawList::SetBlendMode(BlendMode mode)
 {
-	//m_state.state.state.SetBlendMode(mode);
-	//m_defaultMaterial->SetBlendMode(mode);
-	m_defaultMaterial->blendMode = mode;
+	m_defaultMaterial->SetBlendMode(mode);
 }
 
 //------------------------------------------------------------------------------
@@ -1197,20 +1267,26 @@ void DrawList::SetBlendMode(BlendMode mode)
 //------------------------------------------------------------------------------
 void DrawList::SetDepthTestEnabled(bool enabled)
 {
-	m_defaultMaterial->depthTestEnabled = enabled;
+	m_defaultMaterial->SetDepthTestEnabled(enabled);
 }
 
 //------------------------------------------------------------------------------
 void DrawList::SetDepthWriteEnabled(bool enabled)
 {
-	m_defaultMaterial->depthWriteEnabled = enabled;
+	m_defaultMaterial->SetDepthWriteEnabled(enabled);
 }
 
 //------------------------------------------------------------------------------
 void DrawList::SetDefaultMaterial(Material* material)
 {
-	LN_FAIL_CHECK_ARG(material != nullptr) return;
+	if (LN_CHECK_ARG(material != nullptr)) return;
 	m_defaultMaterial = material;
+}
+
+//------------------------------------------------------------------------------
+void DrawList::SetBuiltinEffectData(const detail::BuiltinEffectData& data)
+{
+	m_builtinEffectData = data;
 }
 
 //------------------------------------------------------------------------------
@@ -1218,7 +1294,12 @@ void DrawList::BeginMakeElements()
 {
 	m_drawElementList.ClearCommands();
 	m_state.Reset();
+	SetBrush(nullptr);
+	SetFont(nullptr);
+	//m_state.state.state.SetFont(m_manager->GetFontManager()->GetDefaultFont());
 	m_defaultMaterial->Reset();
+	m_builtinEffectData.Reset();
+	//m_defaultMaterial->cullingMode = CullingMode::None;
 	m_currentSectionTopElement = nullptr;
 }
 
@@ -1244,7 +1325,7 @@ void DrawList::SetTransform(const Matrix& transform)
 //------------------------------------------------------------------------------
 void DrawList::Clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
-	auto* ptr = m_drawElementList.AddCommand<detail::ClearElement>(m_state.state.state, m_defaultMaterial, Matrix::Identity);
+	auto* ptr = m_drawElementList.AddCommand<detail::ClearElement>(m_state.state.state, m_defaultMaterial, Matrix::Identity, m_builtinEffectData);
 	ptr->flags = flags;
 	ptr->color = color;
 	ptr->z = z;
@@ -1518,6 +1599,61 @@ void DrawList::DrawText_(const StringRef& text, const RectF& rect, StringFormatF
 }
 
 //------------------------------------------------------------------------------
+void DrawList::DrawChar(TCHAR ch, const PointF& position)
+{
+	class DrawElement_DrawChar : public detail::DrawElement
+	{
+	public:
+		TCHAR ch;
+		PointF position;
+
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		{
+			context->BeginVectorTextRenderer()->DrawChar(GetTransform(oenerList), ch, RectF(position, 0, 0), TextLayoutOptions::None);
+		}
+	};
+
+	// TODO: UTF32 変換
+
+	auto* e = ResolveDrawElement<DrawElement_DrawChar>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_vectorTextRenderer, nullptr);
+	e->ch = ch;
+	e->position = position;
+	//e->boundingSphere = ;	// TODO
+}
+
+//------------------------------------------------------------------------------
+void DrawList::DrawText2(const StringRef& text, const RectF& rect)
+{
+	class DrawElement_DrawString : public detail::DrawElement
+	{
+	public:
+		detail::CommandDataCache::DataHandle utf32DataHandle;
+		int length;
+		RectF rect;
+
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		{
+			context->BeginVectorTextRenderer()->DrawString(
+				GetTransform(oenerList), 
+				(const UTF32*)oenerList->GetExtData(utf32DataHandle),
+				length,
+				rect,
+				TextLayoutOptions::None);
+		}
+	};
+
+	const ByteBuffer& utf32Data = m_manager->GetFontManager()->GetTCharToUTF32Converter()->Convert(text.GetBegin(), text.GetLength() * sizeof(TCHAR));
+
+	auto* e = ResolveDrawElement<DrawElement_DrawString>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_vectorTextRenderer, nullptr);
+	e->utf32DataHandle = m_drawElementList.AllocExtData(utf32Data.GetSize());
+	e->length = utf32Data.GetSize() / sizeof(UTF32);
+	e->rect = rect;
+	//e->boundingSphere = ;	// TODO
+
+	memcpy(m_drawElementList.GetExtData(e->utf32DataHandle), utf32Data.GetConstData(), utf32Data.GetSize());
+}
+
+//------------------------------------------------------------------------------
 void DrawList::DrawSprite(
 	const Vector3& position,
 	const Size& size,
@@ -1589,8 +1725,7 @@ public:
 void DrawList::DrawRectangle(const RectF& rect)
 {
 	if (m_state.state.state.GetBrush() != nullptr &&
-		m_state.state.state.GetBrush()->GetType() == BrushType_Texture &&
-		(static_cast<TextureBrush*>(m_state.state.state.GetBrush())->GetImageDrawMode() == BrushImageDrawMode::BoxFrame || static_cast<TextureBrush*>(m_state.state.state.GetBrush())->GetImageDrawMode() == BrushImageDrawMode::BorderFrame))
+		(m_state.state.state.GetBrush()->GetImageDrawMode() == BrushImageDrawMode::BoxFrame || m_state.state.state.GetBrush()->GetImageDrawMode() == BrushImageDrawMode::BorderFrame))
 	{
 		DrawFrameRectangle(rect);
 		return;
@@ -1606,6 +1741,11 @@ void DrawList::DrawRectangle(const RectF& rect)
 	
 }
 
+void DrawList::DrawScreenRectangle()
+{
+	Blit(nullptr);
+}
+
 //------------------------------------------------------------------------------
 void DrawList::AddDynamicLightInfo(detail::DynamicLightInfo* lightInfo)
 {
@@ -1615,7 +1755,7 @@ void DrawList::AddDynamicLightInfo(detail::DynamicLightInfo* lightInfo)
 //------------------------------------------------------------------------------
 void DrawList::PushMetadata(const DrawElementMetadata* metadata)
 {
-	LN_CHECK_STATE(m_metadata == nullptr);
+	if (LN_CHECK_STATE(m_metadata == nullptr)) return;
 	m_metadata = metadata;
 	// TODO: stack
 }
@@ -1631,39 +1771,39 @@ void DrawList::PopMetadata()
 {
 	m_metadata = nullptr;
 }
-
-//------------------------------------------------------------------------------
-template<typename TElement>
-TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer, Material* userMaterial)
-{
-	Material* availableMaterial = (userMaterial != nullptr) ? userMaterial : m_defaultMaterial.Get();
-
-	// これを決定してから比較を行う
-	m_state.state.SetStandaloneShaderRenderer(renderer->IsStandaloneShader());
-
-	m_state.state.m_rendererId = reinterpret_cast<intptr_t>(renderer);
-
-	const DrawElementMetadata* userMetadata = GetMetadata();
-	const DrawElementMetadata* metadata = (userMetadata != nullptr) ? userMetadata : &DrawElementMetadata::Default;
-
-	// 何か前回追加された DrawElement があり、それと DrawingSectionId、State が一致するならそれに対して追記できる
-	if (sectionId != detail::DrawingSectionId::None &&
-		m_currentSectionTopElement != nullptr &&
-		m_currentSectionTopElement->drawingSectionId == sectionId &&
-		m_currentSectionTopElement->metadata.Equals(*metadata) &&
-		m_drawElementList.GetBatch(m_currentSectionTopElement->batchIndex)->Equal(m_state.state.state, availableMaterial, m_state.state.GetTransfrom()))
-	{
-		return static_cast<TElement*>(m_currentSectionTopElement);
-	}
-
-	// DrawElement を新しく作る
-	TElement* element = m_drawElementList.AddCommand<TElement>(m_state.state.state, availableMaterial, m_state.state.GetTransfrom());
-	//element->OnJoindDrawList(m_state.transfrom);
-	element->drawingSectionId = sectionId;
-	element->metadata = *metadata;
-	m_currentSectionTopElement = element;
-	return element;
-}
+//
+////------------------------------------------------------------------------------
+//template<typename TElement>
+//TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer, Material* userMaterial)
+//{
+//	Material* availableMaterial = (userMaterial != nullptr) ? userMaterial : m_defaultMaterial.Get();
+//
+//	// これを決定してから比較を行う
+//	m_state.state.SetStandaloneShaderRenderer(renderer->IsStandaloneShader());
+//
+//	m_state.state.m_rendererId = reinterpret_cast<intptr_t>(renderer);
+//
+//	const DrawElementMetadata* userMetadata = GetMetadata();
+//	const DrawElementMetadata* metadata = (userMetadata != nullptr) ? userMetadata : &DrawElementMetadata::Default;
+//
+//	// 何か前回追加された DrawElement があり、それと DrawingSectionId、State が一致するならそれに対して追記できる
+//	if (sectionId != detail::DrawingSectionId::None &&
+//		m_currentSectionTopElement != nullptr &&
+//		m_currentSectionTopElement->drawingSectionId == sectionId &&
+//		m_currentSectionTopElement->metadata.Equals(*metadata) &&
+//		m_drawElementList.GetBatch(m_currentSectionTopElement->batchIndex)->Equal(m_state.state.state, availableMaterial, m_state.state.GetTransfrom()))
+//	{
+//		return static_cast<TElement*>(m_currentSectionTopElement);
+//	}
+//
+//	// DrawElement を新しく作る
+//	TElement* element = m_drawElementList.AddCommand<TElement>(m_state.state.state, availableMaterial, m_state.state.GetTransfrom());
+//	//element->OnJoindDrawList(m_state.transfrom);
+//	element->drawingSectionId = sectionId;
+//	element->metadata = *metadata;
+//	m_currentSectionTopElement = element;
+//	return element;
+//}
 
 //------------------------------------------------------------------------------
 void DrawList::DrawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Material* material)
@@ -1784,6 +1924,36 @@ void DrawList::DrawFrameRectangle(const RectF& rect)
 	auto* ptr = ResolveDrawElement<DrawElement_DrawFrameRectangle>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_frameRectRenderer, nullptr);
 	ptr->rect = rect;
 	// TODO: カリング
+}
+
+//------------------------------------------------------------------------------
+void DrawList::RenderSubDrawList(detail::DrawElementList* elementList, const detail::CameraInfo& cameraInfo, detail::InternalRenderer* renderer, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
+{
+	class DrawElement_RenderSubDrawList : public detail::DrawElement
+	{
+	public:
+		detail::DrawElementList* elementList;
+		detail::CameraInfo cameraInfo;
+		detail::InternalRenderer* renderer;
+		RefPtr<RenderTargetTexture>	defaultRenderTarget;
+		RefPtr<DepthBuffer> defaultDepthBuffer;
+
+		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		{
+			// TODO: scoped change block
+			auto* status = context->GetCurrentStatus();
+
+			renderer->Render(elementList, cameraInfo, defaultRenderTarget, defaultDepthBuffer);
+
+			context->ApplyStatus(status, oenerList->GetDefaultRenderTarget(), oenerList->GetDefaultDepthBuffer());
+		}
+	};
+	auto* e = ResolveDrawElement<DrawElement_RenderSubDrawList>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_frameRectRenderer, nullptr);
+	e->elementList = elementList;
+	e->cameraInfo = cameraInfo;
+	e->renderer = renderer;
+	e->defaultRenderTarget = defaultRenderTarget;
+	e->defaultDepthBuffer = defaultDepthBuffer;
 }
 
 LN_NAMESPACE_END

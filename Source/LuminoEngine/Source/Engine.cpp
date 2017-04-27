@@ -26,7 +26,7 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 void Engine::Initialize()
 {
-	LN_CHECK_STATE(EngineManager::Instance == nullptr);
+	if (LN_CHECK_STATE(EngineManager::Instance == nullptr)) return;
 	EngineManager::Instance = EngineManager::Create(detail::EngineSettings::instance);
 	EngineManager::Instance->Initialize();
 }
@@ -40,39 +40,33 @@ void Engine::Terminate()
 //------------------------------------------------------------------------------
 bool Engine::Update()
 {
-	LN_CHECK_STATE(EngineManager::Instance != nullptr);
+	if (LN_CHECK_STATE(EngineManager::Instance != nullptr)) return false;
 	return EngineManager::Instance->UpdateUnitily();
 }
 
 //------------------------------------------------------------------------------
-void Engine::BeginFrameUpdate()
+void Engine::UpdateFrame()
 {
-	LN_CHECK_STATE(EngineManager::Instance != nullptr);
-	EngineManager::Instance->BeginFrameUpdate();
+	if (LN_CHECK_STATE(EngineManager::Instance != nullptr)) return;
+	EngineManager::Instance->UpdateFrame();
 }
 
 //------------------------------------------------------------------------------
-void Engine::EndFrameUpdate()
+//bool Engine::BeginRendering()
+//{
+//	return EngineManager::Instance->BeginRendering();
+//}
+
+//------------------------------------------------------------------------------
+void Engine::RenderFrame()
 {
-	EngineManager::Instance->EndFrameUpdate();
+	EngineManager::Instance->RenderFrame();
 }
 
 //------------------------------------------------------------------------------
-bool Engine::BeginRendering()
+void Engine::PresentFrame()
 {
-	return EngineManager::Instance->BeginRendering();
-}
-
-//------------------------------------------------------------------------------
-void Engine::EndRendering()
-{
-	EngineManager::Instance->EndRendering();
-}
-
-//------------------------------------------------------------------------------
-void Engine::Render()
-{
-	EngineManager::Instance->Render();
+	EngineManager::Instance->PresentFrame();
 }
 
 //------------------------------------------------------------------------------
@@ -116,22 +110,23 @@ UIMainWindow* Engine::GetMainWindow()
 {
 	return EngineManager::Instance->GetUIManager()->GetMainWindow();
 }
+
 //------------------------------------------------------------------------------
-Viewport* Engine::GetMainViewport()
+UIViewport* Engine::GetMainViewport()
 {
 	return EngineManager::Instance->GetUIManager()->GetMainWindow()->GetViewport();
 }
 
 //------------------------------------------------------------------------------
-ViewportLayer* Engine::GetDefault2DLayer()
+UIViewportLayer* Engine::GetDefault2DLayer()
 {
-	return EngineManager::Instance->GetUIManager()->GetMainWindow()->GetDefault2DCameraViewportLayer();
+	return EngineManager::Instance->GetUIManager()->GetMainWindow()->GetDefaultCameraViewportLayer2D();
 }
 
 //------------------------------------------------------------------------------
-ViewportLayer* Engine::GetDefault3DLayer()
+UIViewportLayer* Engine::GetDefault3DLayer()
 {
-	return EngineManager::Instance->GetUIManager()->GetMainWindow()->GetDefault3DCameraViewportLayer();
+	return EngineManager::Instance->GetUIManager()->GetMainWindow()->GetDefaultCameraViewportLayer3D();
 }
 
 //------------------------------------------------------------------------------

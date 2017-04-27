@@ -18,8 +18,6 @@ class Camera;
 class Light;
 class EffectBatchRendererNode;
 
-class CameraViewportLayer;
-
 class Sprite3D;
 typedef RefPtr<Sprite3D>	Sprite3DPtr;
 class Sprite2D;

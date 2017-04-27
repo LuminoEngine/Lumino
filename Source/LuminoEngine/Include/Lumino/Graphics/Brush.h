@@ -19,18 +19,128 @@ enum class BrushImageDrawMode
 	BorderFrame,	/**< 3x3 のボーダーを描画する。中央は描画しない。*/
 };
 
+namespace Driver { class ITexture; }
+namespace detail {
+
+struct BrushRawData
+{
+	Color						color;
+	RefPtr<Driver::ITexture>	texture;
+	RectF						srcRect;
+	BrushWrapMode				wrapMode;
+	BrushImageDrawMode			imageDrawMode;
+	ThicknessF					borderThickness;
+};
+
+} // namespace detail
+
+/**
+	@brief		
+*/
 class Brush
 	: public Object
 {
 public:
-	Brush();
-	virtual ~Brush();
+	static Brush*	White;
+	static Brush*	Black;
+	static Brush*	Gray;
+	static Brush*	Red;
+	static Brush*	Green;
+	static Brush*	Blue;
+	static Brush*	DimGray;
 
 public:
-	virtual BrushType GetType() const = 0;	// TODO: 非virtual にしたい
+	//static RefPtr<Brush> Create(const StringRef& filePath);
+
+
+
+
+	void SetColor(const Color& color) { m_color = color; }
+	const Color& GetColor() const { return m_color; }
+
+
+
+
+
+	void SetTexture(Texture* texture);
+	Texture* GetTexture() const;
+
+	/** ピクセル単位で指定します。規定値は NaN です。これは、テクスチャ全体を転送することを示します。*/
+	void SetSourceRect(const RectF& rect) { m_srcRect = rect; }
+	void SetSourceRect(float x, float y, float width, float height) { m_srcRect.Set(x, y, width, height); }
+	const RectF& GetSourceRect() const { return m_srcRect; }
+
+
+	void SetWrapMode(BrushWrapMode mode) { m_wrapMode = mode; }	// TODO: name: ImageWrapMode
+	BrushWrapMode GetWrapMode() const { return m_wrapMode; }
+
+	void SetImageDrawMode(BrushImageDrawMode mode) { m_imageDrawMode = mode; }
+	BrushImageDrawMode GetImageDrawMode() const { return m_imageDrawMode; }
+
+	void SetBorderThickness(const ThicknessF& thickness) { m_borderThickness = thickness; }
+	void SetBorderThickness(float left, float top, float right, float bottom) { m_borderThickness.Set(left, top, right, bottom); }
+	const ThicknessF& GetBorderThickness() const { return m_borderThickness; }
+
+LN_CONSTRUCT_ACCESS:
+	Brush();
+	Brush(const Color& color);
+	virtual ~Brush();
+	void Initialize();
+
+LN_INTERNAL_ACCESS:
+	bool IsSolidColor() const { return m_texture.IsNull(); }
+	bool IsTextureBrush() const { return !m_texture.IsNull(); }
+	void GetRawData(detail::BrushRawData* outData) const;
+
+private:
+	Color				m_color;
+	RefPtr<Texture>		m_texture;
+	RectF				m_srcRect;
+	BrushWrapMode		m_wrapMode;
+	BrushImageDrawMode	m_imageDrawMode;
+	ThicknessF			m_borderThickness;
+};
+
+/**
+	@brief		図形を純色で塗りつぶすためのブラシです。
+*/
+class SolidColorBrush
+	: public Brush
+{
+public:
+	static RefPtr<SolidColorBrush> Create(const Color& color);
+	static RefPtr<SolidColorBrush> Create(const Color& rgb, float a);
+
+LN_CONSTRUCT_ACCESS:
+	SolidColorBrush();
+	virtual ~SolidColorBrush();
+	void Initialize(const Color& color);
+	void Initialize(const Color& rgb, float a);
+};
+
+/**
+	@brief		
+*/
+class TextureBrush
+	: public Brush
+{
+public:
+	static RefPtr<TextureBrush> Create(const StringRef& filePath);
+	static RefPtr<TextureBrush> Create(Texture* texture);
+	static RefPtr<TextureBrush> Create(Texture* texture, BrushImageDrawMode drawMode, const RectF& sourceRect, const ThicknessF& borderThickness, BrushWrapMode wrapMode);
+
+LN_CONSTRUCT_ACCESS:
+	TextureBrush();
+	virtual ~TextureBrush();
+	void Initialize();
+	void Initialize(const StringRef& filePath);
+	void Initialize(Texture* texture);
+	RectF GetActualSourceRect() const;
+	Size GetSize() const;
 };
 
 
+#if 0
 /**
 	@brief		
 */
@@ -38,13 +148,6 @@ class ColorBrush	// TODO: SolidColorBrush
 	: public Brush
 {
 public:
-	static ColorBrush*	White;
-	static ColorBrush*	Black;
-	static ColorBrush*	Gray;
-	static ColorBrush*	Red;
-	static ColorBrush*	Green;
-	static ColorBrush*	Blue;
-	static ColorBrush*	DimGray;
 
 public:
 	ColorBrush(const Color32& color);
@@ -53,13 +156,10 @@ public:
 	virtual ~ColorBrush();
 
 public:
-	void SetColor(const Color& color) { m_color = color; }
-	const Color& GetColor() const { return m_color; }
 
 	virtual BrushType GetType() const { return BrushType_SolidColor; }
 
 private:
-	Color	m_color;
 };
 
 /// Bitmap はソフト的な描画処理を行うため、BitmapBrush という名前はつかわない
@@ -77,35 +177,13 @@ public:
 public:
 	void Create(const TCHAR* filePath, detail::GraphicsManager* manager);
 	void Create(Texture* texture);
-	void SetTexture(Texture* texture);
-	Texture* GetTexture() const;
-
-	void SetSourceRect(const RectI& rect) { m_srcRect = rect; }
-	void SetSourceRect(int x, int y, int width, int height) { m_srcRect.Set(x, y, width, height); }
-	const RectI& GetSourceRect() const { return m_srcRect; }
-
-
-	void SetWrapMode(BrushWrapMode mode) { m_wrapMode = mode; }
-	BrushWrapMode GetWrapMode() const { return m_wrapMode; }
-
-	void SetImageDrawMode(BrushImageDrawMode mode) { m_imageDrawMode = mode; }
-	BrushImageDrawMode GetImageDrawMode() const { return m_imageDrawMode; }
-
-	void SetBorderThickness(const ThicknessF& thickness) { m_borderThickness = thickness; }
-	void SetBorderThickness(float left, float top, float right, float bottom) { m_borderThickness.Set(left, top, right, bottom); }
-	const ThicknessF& GetBorderThickness() const { return m_borderThickness; }
 	
 
 	virtual BrushType GetType() const { return BrushType_Texture; }
 
 private:
-	RefPtr<Texture>		m_texture;
-	RectI				m_srcRect;	///< 初期値は (0, 0, INT_MAX, INT_MAX) で、全体を転送することを表す
-	BrushWrapMode		m_wrapMode;
-	BrushImageDrawMode	m_imageDrawMode;
-	ThicknessF			m_borderThickness;
 };
-
+#endif
 
 /**
 	@brief	図形の枠線の描画方法を表します。

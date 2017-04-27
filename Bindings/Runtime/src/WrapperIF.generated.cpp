@@ -273,12 +273,6 @@ LN_API void LNSprite3D_SetBindingTypeInfo(void* data)
 {
     tr::TypeInfo::GetTypeInfo<Sprite3D>()->SetBindingTypeInfo(data);
 }
-LN_API LNResultCode LNStaticMesh_CreateBox(LNHandle* outReturn)
-{
-    LWIG_FUNC_TRY_BEGIN;
-    *outReturn = LWIG_TO_HANDLE(StaticMesh::CreateBox());
-    LWIG_FUNC_TRY_END_RETURN;
-}
 LN_API void LNStaticMesh_SetBindingTypeInfo(void* data)
 {
     tr::TypeInfo::GetTypeInfo<StaticMesh>()->SetBindingTypeInfo(data);
@@ -330,6 +324,70 @@ LN_API LNResultCode LNGameScene_Initialize(LNHandle* outGameScene)
 LN_API void LNGameScene_SetBindingTypeInfo(void* data)
 {
     tr::TypeInfo::GetTypeInfo<GameScene>()->SetBindingTypeInfo(data);
+}
+LN_API void LNCollisionShape_SetBindingTypeInfo(void* data)
+{
+    tr::TypeInfo::GetTypeInfo<CollisionShape>()->SetBindingTypeInfo(data);
+}
+LN_API LNResultCode LNBoxCollisionShape_Initialize(const LNVector3* size, LNHandle* outBoxCollisionShape)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    LWIG_CREATE_OBJECT(outBoxCollisionShape, LNBoxCollisionShape, Initialize, *reinterpret_cast<const Vector3*>(size));
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API void LNBoxCollisionShape_SetBindingTypeInfo(void* data)
+{
+    tr::TypeInfo::GetTypeInfo<BoxCollisionShape>()->SetBindingTypeInfo(data);
+}
+LN_API void LNPhysicsObject_SetBindingTypeInfo(void* data)
+{
+    tr::TypeInfo::GetTypeInfo<PhysicsObject>()->SetBindingTypeInfo(data);
+}
+LN_API LNResultCode LNCollider_AddShape(LNHandle collider, LNHandle shape)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    (LWIG_TO_OBJECT(LNCollider, collider)->AddShape(LWIG_TO_OBJECT(CollisionShape, shape)));
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API LNResultCode LNCollider_SetTrigger(LNHandle collider, bool enabled)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    (LWIG_TO_OBJECT(LNCollider, collider)->SetTrigger(enabled));
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API LNResultCode LNCollider_IsTrigger(LNHandle collider, bool* outReturn)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    *outReturn = (LWIG_TO_OBJECT(LNCollider, collider)->IsTrigger());
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API LNResultCode LNCollider_ConnectOnTriggerEnter(LNHandle self, LNCollisionEventHandler callback)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    LWIG_TO_OBJECT(LNCollider, self)->m_ConnectOnTriggerEnter_EventWrapper.Connect(callback);
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API LNResultCode LNCollider_ConnectOnTriggerLeave(LNHandle self, LNCollisionEventHandler callback)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    LWIG_TO_OBJECT(LNCollider, self)->m_ConnectOnTriggerLeave_EventWrapper.Connect(callback);
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API LNResultCode LNCollider_ConnectOnTriggerStay(LNHandle self, LNCollisionEventHandler callback)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    LWIG_TO_OBJECT(LNCollider, self)->m_ConnectOnTriggerStay_EventWrapper.Connect(callback);
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API LNResultCode LNCollider_Initialize(LNHandle* outCollider)
+{
+    LWIG_FUNC_TRY_BEGIN;
+    LWIG_CREATE_OBJECT(outCollider, LNCollider, Initialize, );
+    LWIG_FUNC_TRY_END_RETURN;
+}
+LN_API void LNCollider_SetBindingTypeInfo(void* data)
+{
+    tr::TypeInfo::GetTypeInfo<Collider>()->SetBindingTypeInfo(data);
 }
 
 

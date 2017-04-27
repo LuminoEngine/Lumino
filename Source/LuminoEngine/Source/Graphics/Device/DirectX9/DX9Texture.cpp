@@ -32,7 +32,7 @@ DX9TextureBase::~DX9TextureBase()
 //------------------------------------------------------------------------------
 void DX9TextureBase::GetData(const RectI& rect, void* outData)
 {
-	LN_FAIL_CHECK_STATE(0);
+	LN_UNREACHABLE();
 }
 
 //==============================================================================
@@ -242,7 +242,7 @@ void DX9Texture::SetSubData3D(const Box32& box, const void* data, size_t dataByt
 //------------------------------------------------------------------------------
 void DX9Texture::GetData(const RectI& rect, void* outData)
 {
-	LN_FAIL_CHECK_ARG(outData != nullptr) return;
+	if (LN_CHECK_ARG(outData != nullptr)) return;
 
 	if (rect != RectI(0, 0, m_realSize))
 	{
@@ -363,7 +363,7 @@ void DX9Texture3D::SetSubData(const PointI& point, const void* data, size_t data
 //------------------------------------------------------------------------------
 void DX9Texture3D::SetSubData3D(const Box32& box, const void* data, size_t dataBytes)
 {
-	LN_CHECK_ARG(data != nullptr);
+	if (LN_CHECK_ARG(data != nullptr)) return;
 	if (dataBytes == 0) return;
 
 	D3DBOX d3dBox;

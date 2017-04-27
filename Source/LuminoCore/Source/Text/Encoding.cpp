@@ -259,10 +259,10 @@ void Encoding::Convert(
 	void* dest_, size_t destByteCount, Encoder* destEncoder,
 	EncodingConversionResult* result)
 {
-	LN_CHECK_ARG(srcDecoder != nullptr);
-	LN_CHECK_ARG(srcDecoder->CanRemain());
-	LN_CHECK_ARG(destEncoder != nullptr);
-	LN_CHECK_ARG(destEncoder->CanRemain());
+	if (LN_CHECK_ARG(srcDecoder != nullptr)) return;
+	if (LN_CHECK_ARG(srcDecoder->CanRemain())) return;
+	if (LN_CHECK_ARG(destEncoder != nullptr)) return;
+	if (LN_CHECK_ARG(destEncoder->CanRemain())) return;
 
 	const size_t BufferingElements = 512;
 	UTF16 utf16[BufferingElements];
@@ -317,7 +317,7 @@ void Encoding::Convert(
 //------------------------------------------------------------------------------
 size_t Encoding::CheckPreamble(const void* buffer, size_t bufferSize) const
 {
-	LN_CHECK_ARG(buffer == nullptr);
+	if (LN_CHECK_ARG(buffer == nullptr)) return 0;
 
 	const char* bom = (const char*)GetPreamble();
 	size_t bomLen = strlen(bom);

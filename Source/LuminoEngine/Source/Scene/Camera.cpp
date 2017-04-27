@@ -88,14 +88,14 @@ void Camera::SetCameraBehavior(CameraBehavior* behavior)
 //------------------------------------------------------------------------------
 Vector3 Camera::WorldToViewportPoint(const Vector3& position) const
 {
-	const Size& size = m_ownerLayer->GetSize();
+	const Size& size = m_ownerLayer->GetViewSize();
 	return Vector3::Project(position, m_viewProjMatrix, 0.0f, 0.0f, size.width, size.height, m_nearClip, m_farClip);
 }
 
 //------------------------------------------------------------------------------
 Vector3 Camera::ViewportToWorldPoint(const Vector3& position) const
 {
-	const Size& size = m_ownerLayer->GetSize();
+	const Size& size = m_ownerLayer->GetViewSize();
 	Vector3 v;
 	v.x = (((position.x - 0) / size.width) * 2.0f) - 1.0f;
 	v.y = -((((position.y - 0) / size.height) * 2.0f) - 1.0f);
@@ -187,6 +187,7 @@ void Camera::OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph* oldOwner
 	}
 }
 
+#if 0
 //==============================================================================
 // CameraViewportLayer
 //==============================================================================
@@ -284,7 +285,7 @@ void CameraViewportLayer::Render()
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer::ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void CameraViewportLayer::ExecuteDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	// TODO: float
 	Size targetSize((float)renderTarget->GetWidth(), (float)renderTarget->GetHeight());
@@ -299,16 +300,28 @@ void CameraViewportLayer::ExecuteDrawListRendering(RenderTargetTexture* renderTa
 	cameraInfo.viewProjMatrix = m_hostingCamera->GetViewProjectionMatrix();
 	cameraInfo.viewFrustum = m_hostingCamera->GetViewFrustum();
 	cameraInfo.zSortDistanceBase = m_hostingCamera->GetZSortDistanceBase();
-	m_internalRenderer->Render(
+	parentDrawList->RenderSubDrawList(
 		m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->GetDrawElementList(),
 		cameraInfo,
+		m_internalRenderer,
 		renderTarget,
 		depthBuffer);
-	m_internalRenderer->Render(
+	parentDrawList->RenderSubDrawList(
 		m_hostingCamera->GetOwnerSceneGraph()->GetDebugRenderer()->GetDrawElementList(),
 		cameraInfo,
+		m_internalRenderer,
 		renderTarget,
 		depthBuffer);
+	//m_internalRenderer->Render(
+	//	m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->GetDrawElementList(),
+	//	cameraInfo,
+	//	renderTarget,
+	//	depthBuffer);
+	//m_internalRenderer->Render(
+	//	m_hostingCamera->GetOwnerSceneGraph()->GetDebugRenderer()->GetDrawElementList(),
+	//	cameraInfo,
+	//	renderTarget,
+	//	depthBuffer);
 	m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->EndFrame();
 }
 
@@ -354,6 +367,103 @@ bool CameraViewportLayer::OnPlatformEvent(const PlatformEventArgs& e)
 		}
 	}
 	return false;
+}
+#endif
+
+//==============================================================================
+// CameraViewportLayer2
+//==============================================================================
+
+//------------------------------------------------------------------------------
+CameraViewportLayer2::CameraViewportLayer2()
+	: m_targetWorld(nullptr)
+	, m_hostingCamera(nullptr)
+	, m_debugDrawFlags(WorldDebugDrawFlags::None)
+{
+}
+
+//------------------------------------------------------------------------------
+void CameraViewportLayer2::Initialize(World* targetWorld, Camera* hostingCamera)
+{
+	m_targetWorld = targetWorld;
+	m_hostingCamera = hostingCamera;
+	m_hostingCamera->m_ownerLayer = this;
+
+	if (m_hostingCamera->GetProjectionMode() == CameraProjection_3D)
+	{
+		auto internalRenderer = RefPtr<detail::ForwardShadingRenderer>::MakeRef();
+		internalRenderer->Initialize(detail::EngineDomain::GetGraphicsManager());
+		m_internalRenderer = internalRenderer;
+	}
+	else
+	{
+		auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
+		internalRenderer->Initialize(detail::EngineDomain::GetGraphicsManager());
+		m_internalRenderer = internalRenderer;
+	}
+}
+
+//------------------------------------------------------------------------------
+const Size& CameraViewportLayer2::GetViewSize() const
+{
+	return GetOwnerViewport()->GetViewSize();
+}
+
+//------------------------------------------------------------------------------
+CameraViewportLayer2::~CameraViewportLayer2()
+{
+	m_hostingCamera->m_ownerLayer = nullptr;
+}
+
+//------------------------------------------------------------------------------
+void CameraViewportLayer2::SetDebugDrawFlags(WorldDebugDrawFlags flags)
+{
+	m_debugDrawFlags = flags;
+}
+
+//------------------------------------------------------------------------------
+void CameraViewportLayer2::Render()
+{
+	// TODO: やめよう
+	m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->SetCurrentCamera(m_hostingCamera);
+
+	m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->Clear(ClearFlags::Depth, Color::White);
+
+	// カメラ行列の更新
+	m_hostingCamera->UpdateMatrices(GetOwnerViewport()->GetViewSize());
+
+	m_targetWorld->Render(m_hostingCamera, m_debugDrawFlags);
+}
+
+//------------------------------------------------------------------------------
+void CameraViewportLayer2::ExecuteDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+{
+	// TODO: float
+	Size targetSize((float)renderTarget->GetWidth(), (float)renderTarget->GetHeight());
+	m_hostingCamera->UpdateMatrices(targetSize);
+
+	detail::CameraInfo cameraInfo;
+	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.Get());
+	cameraInfo.viewPixelSize = targetSize;
+	cameraInfo.viewPosition = m_hostingCamera->GetCombinedGlobalMatrix().GetPosition();
+	cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
+	cameraInfo.projMatrix = m_hostingCamera->GetProjectionMatrix();
+	cameraInfo.viewProjMatrix = m_hostingCamera->GetViewProjectionMatrix();
+	cameraInfo.viewFrustum = m_hostingCamera->GetViewFrustum();
+	cameraInfo.zSortDistanceBase = m_hostingCamera->GetZSortDistanceBase();
+	parentDrawList->RenderSubDrawList(
+		m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->GetDrawElementList(),
+		cameraInfo,
+		m_internalRenderer,
+		renderTarget,
+		depthBuffer);
+	parentDrawList->RenderSubDrawList(
+		m_hostingCamera->GetOwnerSceneGraph()->GetDebugRenderer()->GetDrawElementList(),
+		cameraInfo,
+		m_internalRenderer,
+		renderTarget,
+		depthBuffer);
+	m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->EndFrame();
 }
 
 //==============================================================================

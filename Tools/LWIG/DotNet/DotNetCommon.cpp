@@ -89,5 +89,13 @@ String DotNetCommon::MakeLiteral(ConstantInfoPtr constantInfo)
 	{
 		return constantInfo->type->name + "." + constantInfo->name;
 	}
+	if (constantInfo->type == PredefinedTypes::intType)
+	{
+		return String::Format("{0}", tr::Variant::Cast<int>(constantInfo->value));
+	}
+	if (constantInfo->type == PredefinedTypes::floatType)
+	{
+		return String::Format("{0}f", tr::Variant::Cast<float>(constantInfo->value));
+	}
 	return "";
 }

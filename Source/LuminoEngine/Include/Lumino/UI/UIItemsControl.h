@@ -6,6 +6,7 @@
 LN_NAMESPACE_BEGIN
 class UILayoutPanel;
 
+#if 0
 /**
 	@brief		
 */
@@ -18,11 +19,17 @@ public:
 
 	UIElementCollection* GetItems() const;
 
+	void AddChild(UIElement* element);
+	void RemoveChild(UIElement* element);
+
+	void SetLayoutPanel(UILayoutPanel* panel);
+
 protected:
 	UIItemsControl();
 	virtual ~UIItemsControl();
 	void Initialize(detail::UIManager* manager);
-	void SetItemsHostPanel(UILayoutPanel* panel);
+
+	virtual void OnLayoutPanelChanged(UILayoutPanel* newPanel);
 
 	// UIElement interface
 	//virtual int GetVisualChildrenCount() const override;
@@ -37,5 +44,6 @@ private:
 	RefPtr<UIElementCollection>	m_items;
 	RefPtr<UILayoutPanel>			m_itemsHostPanel;
 };
+#endif
 
 LN_NAMESPACE_END

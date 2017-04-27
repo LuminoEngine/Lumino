@@ -347,7 +347,7 @@ void Texture2D::SetPixel(int x, int y, const Color& color)
 //------------------------------------------------------------------------------
 void Texture2D::Blit(int x, int y, Texture2D* srcTexture, const RectI& srcRect)
 {
-	LN_FAIL_CHECK_ARG(srcTexture != nullptr) return;
+	if (LN_CHECK_ARG(srcTexture != nullptr)) return;
 	if (srcTexture->m_primarySurface2 == nullptr)
 	{
 		// TODO: ITexture から読み取るべきかもしれない
@@ -389,7 +389,7 @@ void Texture2D::LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const RectI& re
 //------------------------------------------------------------------------------
 void Texture2D::SetSubData(const PointI& offset, Bitmap* bitmap)
 {
-	LN_CHECK_ARG(bitmap != nullptr);
+	if (LN_CHECK_ARG(bitmap != nullptr)) return;
 
 	// TODO: 現状、ピクセルフォーマットが一致していることが前提
 	if (bitmap->GetPixelFormat() != Utils::TranslatePixelFormat(m_deviceObj->GetTextureFormat())) {
@@ -404,7 +404,6 @@ void Texture2D::SetSubData(const PointI& offset, Bitmap* bitmap)
 void Texture2D::SetData(const void* data)
 {
 	LN_NOTIMPLEMENTED();
-	//LN_CHECK_ARG(data != NULL);
 	//// TODO: m_primarySurface にもセット
 	//LN_CALL_TEXTURE_COMMAND(SetSubData, SetSubDataTextureCommand,
 	//	offset, data, m_primarySurface->GetBitmapBuffer()->GetSize(), m_deviceObj->GetSize());
@@ -413,7 +412,18 @@ void Texture2D::SetData(const void* data)
 //------------------------------------------------------------------------------
 void Texture2D::OnChangeDevice(Driver::IGraphicsDevice* device)
 {
-	LN_NOTIMPLEMENTED();
+	if (device == nullptr)
+	{
+		TryLock();
+		m_deviceObj->GetData(RectI(0, 0, m_size), m_primarySurface2->GetBitmapBuffer()->GetData());
+		LN_SAFE_RELEASE(m_deviceObj);
+	}
+	else
+	{
+		m_deviceObj = device->CreateTexture(m_primarySurface2->GetSize(), m_mipmap, m_format, m_primarySurface2->GetBitmapBuffer()->GetConstData());
+	}
+
+
 	//if (device == NULL)
 	//{
 	//	// Immediate のときは Lock で取得する必要がある。Deferred のときは m_primarySurface が持っている。
@@ -576,6 +586,12 @@ RenderTargetTexture::RenderTargetTexture()
 	, m_isDefaultBackBuffer(false)
 	, m_usedCacheOnFrame(false)
 {
+}
+
+//------------------------------------------------------------------------------
+void RenderTargetTexture::Initialize(const SizeI& size, int mipLevels, TextureFormat format)
+{
+	CreateImpl(detail::EngineDomain::GetGraphicsManager(), size, mipLevels, format);
 }
 
 //------------------------------------------------------------------------------

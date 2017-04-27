@@ -41,7 +41,7 @@ GLGraphicsDevice::~GLGraphicsDevice()
 //------------------------------------------------------------------------------
 void GLGraphicsDevice::Initialize(const ConfigData& configData)
 {
-	LN_FAIL_CHECK_ARG(configData.mainWindow != nullptr) return;
+	if (LN_CHECK_ARG(configData.mainWindow != nullptr)) return;
 
 	m_mainWindow = configData.mainWindow;
 	m_deviceState = DeviceState_Enabled;

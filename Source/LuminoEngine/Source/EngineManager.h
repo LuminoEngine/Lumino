@@ -184,11 +184,11 @@ public:
 
 	bool UpdateUnitily();
 
-	void BeginFrameUpdate();
-	void EndFrameUpdate();
-	bool BeginRendering();
+	void UpdateFrame();
+	//bool BeginRendering();
+	void RenderFrame();
 	void EndRendering();
-	void Render();
+	void PresentFrame();
 	void ResetFrameDelay();
 	bool IsEndRequested() const { return m_endRequested; }
 	void Exit();
@@ -257,7 +257,7 @@ private:
 	RefPtr<World2D>						m_defaultWorld2D;
 	RefPtr<World3D>						m_defaultWorld3D;
 
-	bool								m_frameRenderingSkip;
+	//bool								m_frameRenderingSkip;
 	bool								m_frameRenderd;
 	bool								m_commonInitied;
 	bool								m_endRequested;

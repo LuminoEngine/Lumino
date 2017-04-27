@@ -19,13 +19,10 @@ namespace Driver
 GLRenderer::GLRenderer()
 	: m_currentVertexBuffer(NULL)
 	, m_currentIndexBuffer(NULL)
-	, m_currentDepthBuffer(NULL)
 	, m_currentShaderPass(NULL)
 	, m_vertexArray(0)
 	, m_framebuffer(0)
-	, m_modifiedFrameBuffer(false)
 {
-	memset(m_currentRenderTargets, 0, sizeof(m_currentRenderTargets));
 }
 
 //------------------------------------------------------------------------------
@@ -44,8 +41,8 @@ void GLRenderer::Activate()
 	// FBO や他にも共有できないものがある
 	// http://stackoverflow.com/questions/16782279/how-to-render-to-an-fbo-on-a-shared-context
 
-	LN_FAIL_CHECK_STATE(m_vertexArray == 0) return;
-	LN_FAIL_CHECK_STATE(m_framebuffer == 0) return;
+	if (LN_CHECK_STATE(m_vertexArray == 0)) return;
+	if (LN_CHECK_STATE(m_framebuffer == 0)) return;
 
 	glGenVertexArrays(1, &m_vertexArray);
 	glGenFramebuffers(1, &m_framebuffer);
@@ -67,12 +64,6 @@ void GLRenderer::Deactivate()
 
 	LN_SAFE_RELEASE(m_currentVertexBuffer);
 	LN_SAFE_RELEASE(m_currentIndexBuffer);
-
-	for (int i = 0; i < Graphics::MaxMultiRenderTargets; i++)
-	{
-		LN_SAFE_RELEASE(m_currentRenderTargets[i]);
-	}
-	LN_SAFE_RELEASE(m_currentDepthBuffer);
 }
 
 //------------------------------------------------------------------------------
@@ -82,44 +73,32 @@ GLuint GLRenderer::GetVertexArrayObject()
 	return m_vertexArray;
 }
 
-//------------------------------------------------------------------------------
-void GLRenderer::Begin()
-{
-
-}
-
-//------------------------------------------------------------------------------
-void GLRenderer::End()
-{
-
-}
-
-//------------------------------------------------------------------------------
-void GLRenderer::SetRenderTarget(int index, ITexture* texture)
-{
-	if (texture != nullptr) {
-		LN_THROW((texture->GetTextureType() == TextureType_RenderTarget), ArgumentException);
-	}
-	LN_REFOBJ_SET(m_currentRenderTargets[index], static_cast<GLRenderTargetTexture*>(texture));
-	m_modifiedFrameBuffer = true;
-}
-
-//------------------------------------------------------------------------------
-ITexture* GLRenderer::GetRenderTarget(int index)
-{
-	return m_currentRenderTargets[index];
-}
-
-//------------------------------------------------------------------------------
-void GLRenderer::SetDepthBuffer(ITexture* texture)
-{
-	if (texture != nullptr)
-	{
-		LN_THROW((texture->GetTextureType() == TextureType_DepthBuffer), ArgumentException);
-	}
-	LN_REFOBJ_SET(m_currentDepthBuffer, static_cast<GLDepthBuffer*>(texture));
-	m_modifiedFrameBuffer = true;
-}
+////------------------------------------------------------------------------------
+//void GLRenderer::SetRenderTarget(int index, ITexture* texture)
+//{
+//	if (texture != nullptr) {
+//		LN_THROW((texture->GetTextureType() == TextureType_RenderTarget), ArgumentException);
+//	}
+//	LN_REFOBJ_SET(m_currentRenderTargets[index], static_cast<GLRenderTargetTexture*>(texture));
+//	m_modifiedFrameBuffer = true;
+//}
+//
+////------------------------------------------------------------------------------
+//ITexture* GLRenderer::GetRenderTarget(int index)
+//{
+//	return m_currentRenderTargets[index];
+//}
+//
+////------------------------------------------------------------------------------
+//void GLRenderer::SetDepthBuffer(ITexture* texture)
+//{
+//	if (texture != nullptr)
+//	{
+//		LN_THROW((texture->GetTextureType() == TextureType_DepthBuffer), ArgumentException);
+//	}
+//	LN_REFOBJ_SET(m_currentDepthBuffer, static_cast<GLDepthBuffer*>(texture));
+//	m_modifiedFrameBuffer = true;
+//}
 
 //------------------------------------------------------------------------------
 //ITexture* GLRenderer::GetDepthBuffer()
@@ -139,12 +118,75 @@ void GLRenderer::SetDepthBuffer(ITexture* texture)
 //------------------------------------------------------------------------------
 void GLRenderer::OnEnterRenderState()
 {
-
 }
 
 //------------------------------------------------------------------------------
 void GLRenderer::OnLeaveRenderState()
 {
+}
+
+//------------------------------------------------------------------------------
+void GLRenderer::OnBeginRendering()
+{
+}
+
+//------------------------------------------------------------------------------
+void GLRenderer::OnEndRendering()
+{
+}
+
+//------------------------------------------------------------------------------
+void GLRenderer::OnUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, ITexture* depthBuffer)
+{
+
+	//auto cc =wglGetCurrentContext();
+	glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer); LN_CHECK_GLERROR();
+
+
+	//const SizeI& size = m_currentRenderTargets[0]->GetSize();
+	//glViewport(0, 0, size.width, size.height);
+	//LN_CHECK_GLERROR();
+
+
+	// カラーバッファ
+	for (int i = 0; i < renderTargetsCount; ++i)
+	{
+		// マルチターゲットの参考:http://ramemiso.hateblo.jp/entry/2013/10/20/001909
+		if (renderTargets[i] != NULL)
+		{
+			// カラーバッファをセットする
+			glFramebufferTexture2D(
+				GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D,
+				static_cast<GLTextureBase*>(renderTargets[i])->GetGLTexture(), 0);
+			LN_CHECK_GLERROR();
+		}
+		else
+		{
+			// カラーバッファを取り外す
+			glFramebufferTexture2D(
+				GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D,
+				0, 0);
+			LN_CHECK_GLERROR();
+		}
+	}
+
+	// 深度バッファ
+	if (depthBuffer != NULL)
+	{
+		// 深度バッファをセットする
+		glFramebufferRenderbuffer(
+			GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,//GL_DEPTH_STENCIL_ATTACHMENT,
+			GL_RENDERBUFFER, static_cast<GLTextureBase*>(depthBuffer)->GetGLTexture());
+		LN_CHECK_GLERROR();
+	}
+	else
+	{
+		// 深度バッファを取り外す
+		glFramebufferRenderbuffer(
+			GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+			GL_RENDERBUFFER, 0);
+		LN_CHECK_GLERROR();
+	}
 
 }
 
@@ -333,9 +375,6 @@ void GLRenderer::OnUpdatePrimitiveData(IVertexDeclaration* decls, const List<Ref
 //------------------------------------------------------------------------------
 void GLRenderer::OnClear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
-	// フレームバッファを最新にする
-	UpdateFrameBuffer();
-
 	glDepthMask(GL_TRUE);	LN_CHECK_GLERROR();   // これがないと Depth が正常にクリアされない
 
 	glClearColor(color.r, color.g, color.b, color.a); LN_CHECK_GLERROR();
@@ -377,7 +416,6 @@ void GLRenderer::OnDrawPrimitive(PrimitiveType primitive, int startVertex, int p
 	// 描画に必要な情報を最新にする
 	//UpdateRenderState(m_requestedRenderState, m_justSawReset);
 	//UpdateDepthStencilState(m_requestedDepthStencilState, m_justSawReset);
-	UpdateFrameBuffer();
 	UpdateVAO();
 	UpdateVertexAttribPointer();
 
@@ -402,7 +440,7 @@ void GLRenderer::OnDrawPrimitive(PrimitiveType primitive, int startVertex, int p
 	// 後始末 (解除)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -418,7 +456,6 @@ void GLRenderer::OnDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex,
 	// 描画に必要な情報を最新にする
 	//UpdateRenderState(m_requestedRenderState, m_justSawReset);
 	//UpdateDepthStencilState(m_requestedDepthStencilState, m_justSawReset);
-	UpdateFrameBuffer();
 	UpdateVAO();
 	UpdateVertexAttribPointer();
 
@@ -443,66 +480,7 @@ void GLRenderer::OnDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex,
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-//------------------------------------------------------------------------------
-void GLRenderer::UpdateFrameBuffer()
-{
-	//auto cc =wglGetCurrentContext();
-	glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer); LN_CHECK_GLERROR();
-    
-    if (m_modifiedFrameBuffer)
-	{
-		const SizeI& size = m_currentRenderTargets[0]->GetSize();
-		glViewport(0, 0, size.width, size.height);
-		LN_CHECK_GLERROR();
-
-
-        // カラーバッファ
-		for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
-		{
-			// マルチターゲットの参考:http://ramemiso.hateblo.jp/entry/2013/10/20/001909
-			if (m_currentRenderTargets[i] != NULL)
-			{
-				// カラーバッファをセットする
-				glFramebufferTexture2D(
-					GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D,
-					m_currentRenderTargets[i]->GetGLTexture(), 0);
-				LN_CHECK_GLERROR();
-			}
-			else
-			{
-				// カラーバッファを取り外す
-				glFramebufferTexture2D(
-					GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D,
-					0, 0);
-				LN_CHECK_GLERROR();
-			}
-		}
-        
-		// 深度バッファ
-		if (m_currentDepthBuffer != NULL)
-        {
-			// 深度バッファをセットする
-			glFramebufferRenderbuffer(
-				GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,//GL_DEPTH_STENCIL_ATTACHMENT,
-				GL_RENDERBUFFER, m_currentDepthBuffer->GetGLTexture());
-			LN_CHECK_GLERROR();
-		}
-		else
-		{
-			// 深度バッファを取り外す
-			glFramebufferRenderbuffer(
-				GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-				GL_RENDERBUFFER, 0);
-			LN_CHECK_GLERROR();
-		}
-
-
-	}
-	m_modifiedFrameBuffer = false;
-    
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -524,7 +502,7 @@ void GLRenderer::UpdateVertexAttribPointer()
 {
 	if (m_currentShaderPass == nullptr) return;
 
-	GLVertexDeclaration* glDecls = static_cast<GLVertexDeclaration*>(m_currentVertexDeclaration.Get());
+	GLVertexDeclaration* glDecls = static_cast<GLVertexDeclaration*>(GetVertexDeclaration());
 
 	// シェーダの頂点属性の更新
 	const List<LNGLVertexElement>& elements = glDecls->GetVertexElements();

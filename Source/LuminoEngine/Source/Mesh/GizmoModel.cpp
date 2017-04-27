@@ -45,8 +45,8 @@ void GizmoModel::Initialize(ln::detail::GraphicsManager* manager)
 {
 	m_tmat = RefPtr<Material>::MakeRef();
 	m_tmat->Initialize();
-	m_tmat->blendMode = BlendMode::Alpha;
-	m_tmat->cullingMode = CullingMode::None;
+	m_tmat->SetBlendMode(BlendMode::Alpha);
+	m_tmat->SetCullingMode(CullingMode::None);
 }
 
 //------------------------------------------------------------------------------

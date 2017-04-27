@@ -11,7 +11,7 @@ public:
 	using BaseMeasureOverrideCallback = Size(*)(TPanel* panel, const Size& constraint);
 
 	//------------------------------------------------------------------------------
-	static Size UILayoutPanel_MeasureOverride(ILayoutPanel* panel, const Size& constraint, BaseMeasureOverrideCallback baseCallback)
+	static Size UILayoutPanel_MeasureOverride(TPanel* panel, const Size& constraint, BaseMeasureOverrideCallback baseCallback)
 	{
 		Size desiredSize = baseCallback(static_cast<TPanel*>(panel), constraint);
 		int childCount = panel->GetLayoutChildrenCount();
@@ -29,7 +29,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------------
-	static Size UILayoutPanel_ArrangeOverride(ILayoutPanel* panel, const Size& finalSize)
+	static Size UILayoutPanel_ArrangeOverride(TPanel* panel, const Vector2& offset, const Size& finalSize)
 	{
 		int childCount = panel->GetLayoutChildrenCount();
 		for (int i = 0; i < childCount; i++)
@@ -38,11 +38,10 @@ public:
 			Size childDesiredSize = child->GetLayoutDesiredSize();
 			childDesiredSize.width = std::max(finalSize.width, childDesiredSize.width);
 			childDesiredSize.height = std::max(finalSize.height, childDesiredSize.height);
-			child->ArrangeLayout(RectF(0, 0, childDesiredSize));
+			child->ArrangeLayout(RectF(offset.x, offset.y, childDesiredSize));
 		}
 		return finalSize;
 	}
-
 
 	//------------------------------------------------------------------------------
 	static Size UIStackPanel_MeasureOverride(ILayoutPanel* panel, const Size& constraint, Orientation orientation)
@@ -239,7 +238,7 @@ public:
 
 		// "*" 指定である Column/Row の最終サイズを確定させ、
 		// 全セルのオフセット (位置) も確定させる
-		PointF totalOffset = PointF::Zero;
+		PointF totalOffset;
 		for (int iCol = 0; iCol < colDefCount; iCol++)
 		{
 			auto* col = basePanel->GetLayoutGridColumnDefinition(iCol);

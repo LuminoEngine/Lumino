@@ -156,7 +156,7 @@ void IndexBuffer::Resize(int indexCount, IndexBufferFormat format)
 {
 	if (!m_initialUpdate)
 	{
-		LN_CHECK_STATE(m_usage == ResourceUsage::Dynamic);
+		if (LN_CHECK_STATE(m_usage == ResourceUsage::Dynamic)) return;
 	}
 	m_indexCount = indexCount;
 	m_format = format;

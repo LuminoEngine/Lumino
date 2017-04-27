@@ -89,6 +89,9 @@ void SceneGraph::Render2(DrawList* renderer, Camera* camera)
 	GetRenderingProfiler().BeginSession();
 	GetRootNode()->Render2(renderer);
 	GetRenderingProfiler().EndSession();
+
+	// reset status
+	renderer->SetBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
 }
 
 //------------------------------------------------------------------------------
@@ -335,8 +338,6 @@ void SceneGraph3D::CreateGridContents()
 	mesh->GetSection(0)->PrimitiveNum = 2;
 	mesh->GetSection(0)->primitiveType = PrimitiveType_TriangleList;
 
-
-	// シェーダ (DrawingContext3D)
 	static const byte_t shaderCode[] =
 	{
 #include "Resource/InfinitePlaneGrid.lfx.h"
@@ -362,8 +363,8 @@ void SceneGraph3D::CreateGridContents()
 	}
 	m_gridPlane->GetMaterial(0)->SetMaterialTexture(gridTex);
 
-	m_gridPlane->GetMaterial(0)->blendMode = BlendMode::Alpha;
-	m_gridPlane->GetMaterial(0)->depthWriteEnabled = false;
+	m_gridPlane->GetMaterial(0)->SetBlendMode(BlendMode::Alpha);
+	m_gridPlane->GetMaterial(0)->SetDepthWriteEnabled(false);
 }
 
 //------------------------------------------------------------------------------

@@ -5,6 +5,7 @@
 */
 #include "../Internal.h"
 #include <Lumino/Base/StringRef.h>
+#include <Lumino/Base/Hash.h>
 #include <Lumino/IO/PathName.h>
 #include "../Text/UTF8Encoding.h"
 #ifdef LN_OS_WIN32
@@ -57,6 +58,14 @@ int GenericStringRef<wchar_t>::CopyToLocal8Bit(char* dest, int destLen) const
 	//{
 	//	std::wcsrtombs(dest, &wstr, mbstr.size(), &state);
 	//}
+}
+
+//------------------------------------------------------------------------------
+template<typename TChar>
+size_t GenericStringRef<TChar>::GetHashCode() const
+{
+	if (m_str == nullptr || m_len == 0) return 0;
+	return Hash::CalcHash(GetBegin(), GetLength());
 }
 
 // テンプレートのインスタンス化

@@ -9,6 +9,7 @@ class PlatformManager;
 class PlatformWindow;
 class World2D;
 class World3D;
+class UIRoutedCommand;
 
 namespace detail
 {
@@ -42,8 +43,10 @@ public:
 	void Initialize(const Settings& settings);
 	void Finalize();
 	void CreateGameModeMainFrame(World2D* defaultWorld2D, World3D* defaultWorld3D);
+	//void CreateWrapModeMainFrame(void* window, World2D* defaultWorld2D, World3D* defaultWorld3D);
 	void ReleaseGameModeMainFrame();
 	EventArgsPool* GetEventArgsPool() const { return m_eventArgsPool; }
+	const RefPtr<Texture2D>& GetDefaultSkinTexture() const { return m_defaultSkinTexture; }
 	UIStyleTable* GetDefaultStyleTable() const { return m_defaultStyleTable; }
 	AnimationManager* GetAnimationManager() const { return m_animationManager; }
 	PlatformManager* GetPlatformManager() const { return m_platformManager; }
@@ -52,6 +55,7 @@ public:
 	UIMainWindow* GetMainWindow() const { return m_mainWindow; }
 
 private:
+	void CreateGlobalCommands();
 	void MakeDefaultStyle(UIStyleTable* table);
 
 	EventArgsPool*		m_eventArgsPool;
@@ -63,6 +67,7 @@ private:
 	RefPtr<Texture2D>	m_defaultSkinTexture;
 	UIStyleTable*		m_defaultStyleTable;
 	UIMainWindow*		m_mainWindow;
+	List<RefPtr<UIRoutedCommand>>		m_allGlobalCommands;
 };
 
 } // namespace detail

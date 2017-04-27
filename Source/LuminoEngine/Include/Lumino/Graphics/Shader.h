@@ -76,6 +76,8 @@ struct CameraInfo
 	Matrix		viewProjMatrix;
 	ViewFrustum	viewFrustum;
 	ZSortDistanceBase	zSortDistanceBase;
+
+	// POD
 };
 
 // 描画要素単位のデータに関する情報
@@ -161,14 +163,14 @@ public:
 		@brief		シェーダコードが記述されたテキストファイルをコンパイルし、Shader を作成します。
 		@param[in]	filePath		: ファイルパス
 	*/
-	static RefPtr<Shader> Create(const StringRef& filePath);
+	static RefPtr<Shader> Create(const StringRef& filePath, bool useTRSS = false);
 
 	/**
 		@brief		メモリ上に展開されたテキストデータをコンパイルし、Shader を作成します。
 		@param[in]	code			: シェーダコード文字列
 		@param[in]	length			: 文字列の長さ (-1 で 終端 \0 まで)
 	*/
-	static RefPtr<Shader> Create(const char* code, int length = -1);
+	static RefPtr<Shader> Create(const char* code, int length);
 	
 	///**
 	//	@brief		文字列をコンパイルし、シェーダを作成します。
@@ -240,8 +242,8 @@ protected:
 LN_INTERNAL_ACCESS:
 	friend class RenderingCommandList;
 	Shader();
-	void Initialize(detail::GraphicsManager* manager, const StringRef& filePath);
-	void Initialize(detail::GraphicsManager* manager, const void* code, int length);
+	void Initialize(detail::GraphicsManager* manager, const StringRef& filePath, bool useTRSS = false);
+	void Initialize(detail::GraphicsManager* manager, const void* code, int length, bool useTRSS = false);
 	void PostInitialize();
 	void SetModifiedVariables(bool modified) { m_modifiedVariables = modified; }
 	bool IsModifiedVariables() const { return m_modifiedVariables; }
@@ -427,6 +429,7 @@ private:
 	ShaderVariable(Shader* owner, Driver::IShaderVariable* deviceObj);
 	virtual ~ShaderVariable();
 	Shader*						m_owner;
+	String						m_name;
 	Driver::IShaderVariable*	m_deviceObj;
 	uint32_t					m_nameHash;
 	ShaderValue					m_value;

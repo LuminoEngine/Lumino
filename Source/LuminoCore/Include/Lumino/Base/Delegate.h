@@ -11,6 +11,11 @@
 LN_NAMESPACE_BEGIN
 
 template<typename>
+class Event;
+template<typename TRet, typename... TArgs>
+class Event<TRet(TArgs...)>;
+
+template<typename>
 class Delegate {};
 template<typename TRet, typename... TArgs>
 class Delegate<TRet(TArgs...)>
@@ -113,6 +118,8 @@ private:
 
 public:
 
+	using EventType = Event<TRet(TArgs...)>;
+
 	/** デフォルトコンストラクタ */
 	Delegate()
 		: m_holder(nullptr)
@@ -134,7 +141,14 @@ public:
 	{}
 
 	/** static 関数用・ラムダ式用のコンストラクタ */
-	Delegate(const std::function<TRet(TArgs...)>& func)
+	//Delegate(const std::function<TRet(TArgs...)>& func)
+	//	: m_holder(LN_NEW FuncObjHolder(func))
+	//	, m_type(HolderType::FuncObj)
+	//{}
+
+	/** static 関数用・ラムダ式用のコンストラクタ */
+	template<typename TFunc>
+	Delegate(const TFunc& func)
 		: m_holder(LN_NEW FuncObjHolder(func))
 		, m_type(HolderType::FuncObj)
 	{}
@@ -207,13 +221,13 @@ public:
 	//}
 
 	/** ラムダ式・関数オブジェクトを割り当てます。*/
-	Delegate& operator = (const std::function<TRet(TArgs...)>& func)
-	{
-		Detach();
-		m_holder = LN_NEW FuncObjHolder(func);
-		m_type = HolderType::FuncObj;
-		return *this;
-	}
+	//Delegate& operator = (const std::function<TRet(TArgs...)>& func)
+	//{
+	//	Detach();
+	//	m_holder = LN_NEW FuncObjHolder(func);
+	//	m_type = HolderType::FuncObj;
+	//	return *this;
+	//}
 
 	/** 比較 */
 	bool operator==(std::nullptr_t left) const

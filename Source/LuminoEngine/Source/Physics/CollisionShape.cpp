@@ -200,8 +200,8 @@ MeshCollisionShape::~MeshCollisionShape()
 //------------------------------------------------------------------------------
 void MeshCollisionShape::Initialize(MeshResource* mesh)
 {
-	LN_FAIL_CHECK_ARG(mesh != nullptr) return;
-	LN_FAIL_CHECK_STATE(m_btMeshData == nullptr) return;
+	if (LN_CHECK_ARG(mesh != nullptr)) return;
+	if (LN_CHECK_STATE(m_btMeshData == nullptr)) return;
 
 	void* vb = mesh->TryLockVertexBuffer(MeshResource::VB_BasicVertices);
 	void* ib = mesh->TryLockIndexBuffer();

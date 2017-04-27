@@ -107,7 +107,7 @@ const Matrix& Collider::GetTransform() const
 //------------------------------------------------------------------------------
 void Collider::AddShape(CollisionShape* shape)
 {
-	LN_FAIL_CHECK_ARG(shape != nullptr) return;
+	if (LN_CHECK_ARG(shape != nullptr)) return;
 
 	if (m_shape != nullptr)
 	{
@@ -134,21 +134,21 @@ bool Collider::IsTrigger() const
 
 
 //------------------------------------------------------------------------------
-void Collider::ConnectOnTriggerEnter(std::function<void(PhysicsObject*)> handler)
+EventConnection Collider::ConnectOnTriggerEnter(CollisionEventHandler handler)
 {
-	onTriggerEnter.AddHandler(handler);
+	return onTriggerEnter.Connect(handler);
 }
 
 //------------------------------------------------------------------------------
-void Collider::ConnectOnTriggerLeave(std::function<void(PhysicsObject*)> handler)
+EventConnection Collider::ConnectOnTriggerLeave(CollisionEventHandler handler)
 {
-	onTriggerLeave.AddHandler(handler);
+	return onTriggerLeave.Connect(handler);
 }
 
 //------------------------------------------------------------------------------
-void Collider::ConnectOnTriggerStay(std::function<void(PhysicsObject*)> handler)
+EventConnection Collider::ConnectOnTriggerStay(CollisionEventHandler handler)
 {
-	onTriggerStay.AddHandler(handler);
+	return onTriggerStay.Connect(handler);
 }
 
 //------------------------------------------------------------------------------

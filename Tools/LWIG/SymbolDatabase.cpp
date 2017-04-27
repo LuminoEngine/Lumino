@@ -10,6 +10,7 @@ TypeInfoPtr	PredefinedTypes::uint32Type;
 TypeInfoPtr	PredefinedTypes::floatType;
 TypeInfoPtr	PredefinedTypes::stringType;
 TypeInfoPtr	PredefinedTypes::objectType;
+TypeInfoPtr	PredefinedTypes::EventConnectionType;
 
 //==============================================================================
 // MetadataInfo
@@ -37,6 +38,11 @@ bool MetadataInfo::HasKey(const StringRef& key)
 //==============================================================================
 void MethodInfo::LinkParameters()
 {
+	if (metadata->HasKey("Event"))
+	{
+		Console::WriteLine("is event");
+	}
+
 	for (auto& paramInfo : parameters)
 	{
 		paramInfo->type = g_database.FindTypeInfo(paramInfo->typeRawName);
@@ -79,7 +85,18 @@ void MethodInfo::ExpandCAPIParameters()
 				info->isThis = true;
 				capiParameters.Add(info);
 			}
-			else if (!isConstructor)
+			else if (isConstructor)
+			{
+			}
+			else if (owner->isDelegate)
+			{
+				auto info = std::make_shared<ParameterInfo>();
+				info->name = _T("sender");
+				info->type = PredefinedTypes::objectType;
+				info->isThis = true;
+				capiParameters.Add(info);
+			}
+			else
 			{
 				auto info = std::make_shared<ParameterInfo>();
 				info->name = owner->name.ToLower();
@@ -98,7 +115,11 @@ void MethodInfo::ExpandCAPIParameters()
 	}
 
 	// return value
-	if (!returnType->isVoid)
+	if (returnType->isVoid || returnType == PredefinedTypes::EventConnectionType)
+	{
+		// "void", "EventConnection" は戻り値扱いしない
+	}
+	else
 	{
 		auto info = std::make_shared<ParameterInfo>();
 		info->name = "outReturn";
@@ -352,6 +373,20 @@ void SymbolDatabase::Link()
 	//		constantInfo->type = FindTypeInfo(constantInfo->typeRawName);
 	//	}
 	//}
+
+	// delegates
+	for (auto classInfo : delegates)
+	{
+		for (auto methodInfo : classInfo->declaredMethods)
+		{
+			methodInfo->returnType = FindTypeInfo(methodInfo->returnTypeRawName);
+
+			methodInfo->LinkParameters();
+			methodInfo->ExpandCAPIParameters();
+		}
+
+		classInfo->Link();
+	}
 }
 
 tr::Enumerator<MethodInfoPtr> SymbolDatabase::GetAllMethods()
@@ -410,6 +445,17 @@ ConstantInfoPtr SymbolDatabase::CreateConstantFromLiteralString(const String& va
 		info->type = PredefinedTypes::nullptrType;
 		info->value = nullptr;
 	}
+	else if (valueStr.Contains('.'))
+	{
+		info->type = PredefinedTypes::floatType;
+		info->value = StringTraits::ToFloat(valueStr.c_str());
+	}
+	else
+	{
+		info->type = PredefinedTypes::intType;
+		info->value = StringTraits::ToInt32(valueStr.c_str());
+	}
+
 	return info;
 }
 
@@ -445,6 +491,9 @@ void SymbolDatabase::InitializePredefineds()
 
 	predefineds.Add(std::make_shared<TypeInfo>(_T("Object")));
 	PredefinedTypes::objectType = predefineds.GetLast();
+
+	predefineds.Add(std::make_shared<TypeInfo>(_T("EventConnection")));
+	PredefinedTypes::EventConnectionType = predefineds.GetLast();
 }
 
 TypeInfoPtr SymbolDatabase::FindTypeInfo(StringRef typeName)
@@ -463,7 +512,12 @@ TypeInfoPtr SymbolDatabase::FindTypeInfo(StringRef typeName)
 	type = enums.Find([typeName](TypeInfoPtr type) { return type->name == typeName; });
 	if (type != nullptr) return *type;
 
+	type = delegates.Find([typeName](TypeInfoPtr type) { return type->name == typeName; });
+	if (type != nullptr)
+		return *type;
+
 	if (typeName == _T("StringRef")) return PredefinedTypes::stringType;
+	if (typeName == _T("EventConnection")) return PredefinedTypes::EventConnectionType;
 
 	LN_THROW(0, InvalidOperationException, "Undefined type: %s", typeName.ToString().c_str());
 	return nullptr;

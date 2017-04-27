@@ -1,11 +1,33 @@
 ﻿
 #pragma once
 #include "UIInjectedInputReceiver.h"
-#include "UIElement.h"
+#include "UIItemsControl.h"
 
 LN_NAMESPACE_BEGIN
-class DrawList;
+class DrawingContext;
 class PlatformWindow;
+namespace tr { class UIPopup; }
+
+namespace detail {
+
+
+class UIPopuoContainer
+	: public Object
+{
+public:
+	void SetPopup(ln::tr::UIPopup* popup);
+	ln::tr::UIPopup* GetPopup() const;
+
+LN_CONSTRUCT_ACCESS:
+	UIPopuoContainer();
+	virtual ~UIPopuoContainer();
+	void Initialize();
+
+private:
+	RefPtr<ln::tr::UIPopup>	m_popup;
+};
+
+} // namespace detail
 
 /**
 	@brief		
@@ -13,7 +35,7 @@ class PlatformWindow;
 				UI レイアウトのルート要素を保持します。
 */
 class UILayoutView
-	: public RefObject
+	: public UIControl
 	, public IUIInjectedInputReceiver
 {
 public:
@@ -21,18 +43,21 @@ public:
 	/** この要素が関連付けられている UIContext を取得します。*/
 	UIContext* GetOwnerContext() const { return m_ownerContext; }
 
-	UILayoutRoot* GetLayoutRoot() const { return m_rootElement; }
-
 
 
 LN_INTERNAL_ACCESS:
 	void UpdateLayout(const Size& viewSize);
-	void Render(DrawList* g);
+	void Render(DrawingContext* g);
 	
 	const Size& GetViewPixelSize() const { return m_viewPixelSize; }
 	bool UpdateMouseHover(const PointF& mousePos);
 	//void CaptureMouse(UIElement* element);
 	//void ReleaseMouseCapture(UIElement* element);
+
+
+	// Popup
+	void OpenPopup(tr::UIPopup* popup);
+	void ClosePopup(tr::UIPopup* popup);
 
 
 	// Implements IUIInjectedInputReceiver
@@ -45,6 +70,14 @@ LN_INTERNAL_ACCESS:
 	virtual bool InjectKeyUp(Keys keyCode, ModifierKeys modifierKeys) override;
 	virtual bool InjectTextInput(TCHAR ch) override;
 
+protected:
+	UILayoutView();
+	virtual ~UILayoutView();
+	void Initialize(UIContext* ownerContext, PlatformWindow* ownerNativeWindow);
+
+LN_INTERNAL_ACCESS:
+	virtual detail::SpcialUIElementType GetSpcialUIElementType() const;
+
 private:
 	friend class UIContext;
 
@@ -55,14 +88,10 @@ private:
 		UIElement*	HoverElement = nullptr;
 	};
 
-	UILayoutView();
-	virtual ~UILayoutView();
-	void Initialize(UIContext* ownerContext, PlatformWindow* ownerNativeWindow);
 
 	PlatformWindow*		m_ownerNativeWindow;
 
 	UIContext*			m_ownerContext;
-	UILayoutRoot*		m_rootElement;
 	UIElement*			m_mouseHoverElement;
 	UIElement*			m_capturedElement;
 
@@ -70,6 +99,8 @@ private:
 	MouseClickTracker	m_mouseClickTrackers[8];
 
 	Size				m_viewPixelSize;
+
+	List<RefPtr<detail::UIPopuoContainer>>	m_popupContainers;
 };
 
 LN_NAMESPACE_END

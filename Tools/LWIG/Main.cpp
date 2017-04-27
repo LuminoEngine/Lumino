@@ -31,6 +31,9 @@ int main()
 		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Game/Component.h",
 		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Framework/Application.h",
 		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Framework/GameScene.h",
+		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Physics/CollisionShape.h",
+		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Physics/PhysicsObject.h",
+		LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Physics/Collider.h",
 	};
 
 	g_templateDir = LUMINO_ROOT_DIR"/Tools/LWIG/";

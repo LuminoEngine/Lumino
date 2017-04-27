@@ -388,7 +388,7 @@ void FrameCapturer::StopRecording()
 //------------------------------------------------------------------------------
 void FrameCapturer::Record()
 {
-	LN_CHECK_STATE(m_capturerTarget != nullptr);
+	if (LN_CHECK_STATE(m_capturerTarget != nullptr)) return;
 
 
 	RefPtr<FrameCapturer> fc = this;

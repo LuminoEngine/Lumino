@@ -21,6 +21,48 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
+
+
+
+/** テクスチャのピクセルフォーマット */
+LN_ENUM_()
+enum class TextureFormat
+{
+	/** Unknown */
+	Unknown = 0,
+
+	/** 32 ビットのアルファ付きフォーマット (GPUネイティブフォーマット。D3D_FMT_A8B8G8R8, DXGI_FORMAT_R8G8B8A8_UNORM) */
+	R8G8B8A8,
+
+	/** 32 ビットのアルファ無しフォーマット */
+	R8G8B8X8,
+
+	/** 32 ビットのアルファ付きフォーマット (GDI互換フォーマット。MME 互換のために定義している) */
+	B8G8R8A8,
+
+	/** 32 ビットのアルファ無しフォーマット */
+	B8G8R8X8,
+
+	/** 64 ビットの浮動小数点フォーマット */
+	R16G16B16A16_Float,
+
+	/** 128 ビットの浮動小数点フォーマット */
+	R32G32B32A32_Float,
+
+	/** 16 ビットの浮動小数点フォーマット */
+	R16_Float,
+
+	/** 32 ビットの浮動小数点フォーマット */
+	R32_Float,
+
+	/** S8 32 ビットの深度バッファフォーマット */
+	D24S8,
+
+	//_Count,					///< (terminator)
+
+};
+
+
 namespace detail { class GraphicsManager; }
 
 class RenderState;
@@ -60,8 +102,6 @@ typedef RefPtr<ScreenMotionBlurImageEffect>	ScreenMotionBlurImageEffectPtr;
 class ToneImageEffect;
 typedef RefPtr<ToneImageEffect>	ToneImageEffectPtr;
 
-class Viewport;
-class ViewportLayer;
 class ImageEffect;
 typedef tr::ReflectionObjectList<ImageEffect*>	ImageEffectList;
 
@@ -84,6 +124,7 @@ LN_ENUM_DECLARE(GraphicsAPI);
 
 LN_ENUM_FLAGS(ClearFlags)
 {
+	None	= 0x0000,
 	Color	= 0x0001,					///< カラーバッファをクリアします。
 	Depth	= 0x0002,					///< 深度バッファをクリアします。
 	Stencil = 0x0004,					///< ステンシルバッファをクリアします。
@@ -153,43 +194,6 @@ enum IndexBufferFormat
 	IndexBufferFormat_UInt32,
 };
 
-/** テクスチャのピクセルフォーマット */
-LN_ENUM_()
-enum class TextureFormat
-{
-	/** Unknown */
-	Unknown = 0,
-
-	/** 32 ビットのアルファ付きフォーマット (GPUネイティブフォーマット。D3D_FMT_A8B8G8R8, DXGI_FORMAT_R8G8B8A8_UNORM) */
-	R8G8B8A8,
-	
-	/** 32 ビットのアルファ無しフォーマット */
-	R8G8B8X8,
-	
-	/** 32 ビットのアルファ付きフォーマット (GDI互換フォーマット。MME 互換のために定義している) */
-	B8G8R8A8,
-
-	/** 32 ビットのアルファ無しフォーマット */
-	B8G8R8X8,
-	
-	/** 64 ビットの浮動小数点フォーマット */
-	R16G16B16A16_Float,
-
-	/** 128 ビットの浮動小数点フォーマット */
-	R32G32B32A32_Float,
-
-	/** 16 ビットの浮動小数点フォーマット */
-	R16_Float,
-
-	/** 32 ビットの浮動小数点フォーマット */
-	R32_Float,
-
-	/** S8 32 ビットの深度バッファフォーマット */
-	D24S8,
-
-	//_Count,					///< (terminator)
-
-};
 /*
 	↑の定数のRGBA の並びは、実際のメモリ上のバイトシーケンス。エンディアンは関係ない。
 
@@ -300,14 +304,11 @@ LN_ENUM_FLAGS(SpriteSortMode)
 };
 LN_ENUM_FLAGS_DECLARE(SpriteSortMode);
 
-
-enum BrushType
+enum class TextLayoutOptions
 {
-	BrushType_Unknown = 0,
-	BrushType_SolidColor,
-	BrushType_Texture,
+	None				= 0x0000,
+	Baselining			= 0x0001,
 };
-
 
 /// テキストの配置方法
 LN_ENUM(TextAlignment)
@@ -358,6 +359,18 @@ enum class BuiltinShader
 {
 	Sprite,
 	LegacyDiffuse,		// Lambert Shading
+};
+
+enum class BorderDirection
+{
+	Inside,
+	Outside,
+};
+
+enum class ShadowDirection
+{
+	Inside,
+	Outside,
 };
 
 namespace Driver

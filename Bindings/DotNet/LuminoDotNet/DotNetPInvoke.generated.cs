@@ -9,6 +9,8 @@ namespace Lumino
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate ResultCode LNGameScene_OnStart_OverrideCaller(IntPtr gamescene);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void LNCollisionEventHandler(IntPtr sender, IntPtr obj);
 
 
     /// <summary>
@@ -284,9 +286,6 @@ namespace Lumino
         public extern static ResultCode LNSprite2D_InitializeT(IntPtr texture, out IntPtr outSprite2D);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static ResultCode LNStaticMesh_CreateBox(out IntPtr outReturn);
-
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNGameApplication_Run(IntPtr gameapplication, IntPtr initialScene);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
@@ -303,6 +302,30 @@ namespace Lumino
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static ResultCode LNGameScene_Initialize(out IntPtr outGameScene);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNBoxCollisionShape_Initialize(ref Vector3 size, out IntPtr outBoxCollisionShape);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNCollider_AddShape(IntPtr collider, IntPtr shape);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNCollider_SetTrigger(IntPtr collider, bool enabled);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNCollider_IsTrigger(IntPtr collider, out bool outReturn);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNCollider_ConnectOnTriggerEnter(IntPtr collider, LNCollisionEventHandler handler);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNCollider_ConnectOnTriggerLeave(IntPtr collider, LNCollisionEventHandler handler);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNCollider_ConnectOnTriggerStay(IntPtr collider, LNCollisionEventHandler handler);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static ResultCode LNCollider_Initialize(out IntPtr outCollider);
 
 
 

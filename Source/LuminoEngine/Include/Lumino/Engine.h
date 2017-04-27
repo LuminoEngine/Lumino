@@ -5,6 +5,8 @@
 
 LN_NAMESPACE_BEGIN
 class UIMainWindow;
+class UIViewport;
+class UIViewportLayer;
 class SceneGraph2D;
 class SceneGraph3D;
 class Light;
@@ -38,11 +40,11 @@ public:
 	LN_METHOD()
 	static bool Update();
 
-	static void BeginFrameUpdate();
-	static void EndFrameUpdate();
-	static bool BeginRendering();	// TODO: 描画リスト作成開始前に描画中かを判定しても、描画リスト作成中に並列描画できない。十分にリソースを活用できていない。
-	static void EndRendering();
-	static void Render();
+	static void UpdateFrame();
+	//static bool BeginRendering();	// TODO: 描画リスト作成開始前に描画中かを判定しても、描画リスト作成中に並列描画できない。十分にリソースを活用できていない。
+	
+	static void RenderFrame();
+	static void PresentFrame();
 	static bool IsEndRequested();
 	static void Exit();
 	static void SetFrameUpdateMode(FrameUpdateMode mode);
@@ -65,9 +67,9 @@ public:
 	static World* GetWorld3D();
 
 	static UIMainWindow* GetMainWindow();
-	static Viewport* GetMainViewport();
-	static ViewportLayer* GetDefault2DLayer();
-	static ViewportLayer* GetDefault3DLayer();
+	static UIViewport* GetMainViewport();
+	static UIViewportLayer* GetDefault2DLayer();
+	static UIViewportLayer* GetDefault3DLayer();
 	static SceneGraph2D* GetDefaultSceneGraph2D();
 	static SceneGraph3D* GetDefaultSceneGraph3D();
 	static Light* GetMainLight3D();

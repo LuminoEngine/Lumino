@@ -9,8 +9,101 @@
 #include "LayoutElement.h"
 
 LN_NAMESPACE_BEGIN
-class DrawList;
+class DrawingContext;
 class UIStylePropertyTable;
+class UIVisualStateManager;
+
+/**
+	@brief		特定のイベントデータを持たない、UIイベントを処理するハンドラです。
+	@param[in]	e		: イベントのデータ
+*/
+LN_DELEGATE()
+using UIEventHandler = Delegate<void(UIEventArgs* e)>;
+
+/**
+	@brief		特定のイベントデータを持たない、UIイベントを処理するハンドラです。
+	@param[in]	e		: イベントのデータ
+*/
+LN_DELEGATE()
+using UIMouseEventHandler = Delegate<void(UIMouseEventArgs* e)>;
+
+class UIVisualStateManager
+	: public Object
+{
+private:
+	struct Group
+	{
+		int				index;
+		String			name;
+		List<String>	stateNames;
+	};
+
+	List<Group>		groups;
+	List<String>	activeStateNames;
+
+public:
+	void RegisterVisualState(const StringRef& groupName, const StringRef& stateName)
+	{
+		Group* group = groups.Find([groupName](const Group& g) { return g.name == groupName; });
+		if (group == nullptr)
+		{
+			groups.Add(Group{ groups.GetCount(), groupName });
+			activeStateNames.Add(stateName);
+			group = &groups.GetLast();
+		}
+		group->stateNames.Add(stateName);
+	}
+
+	void GoToVisualState(const StringRef& stateName)
+	{
+		Group* group = FindGroup(stateName);//groups.Find([stateName](const Group& g) { return g.stateNames.Contains([stateName](const String& name) { return name == stateName; }); });
+		if (LN_CHECK_STATE(group != nullptr)) return;
+		activeStateNames[group->index] = stateName;
+	}
+
+LN_CONSTRUCT_ACCESS:
+	void Initialize()
+	{
+	}
+
+	Group* FindGroup(const StringRef& stateName)
+	{
+		for (auto& g : groups)
+		{
+			for (auto& s : g.stateNames)
+			{
+				if (s == stateName)
+					return &g;
+			}
+		}
+		return nullptr;
+	}
+
+LN_INTERNAL_ACCESS:
+	const List<String>& GetActiveStateNames() const { return activeStateNames; }
+};
+
+class UIVisualStates
+{
+public:
+	static const String CommonGroup;
+	static const String FocusGroup;
+	//static const String ValidationStates;
+
+	static const String NormalState;
+	static const String MouseOverState;
+	static const String PressedState;
+	static const String DisabledState;
+	static const String UnfocusedState;
+	static const String FocusedState;
+	static const String ValidState;
+	static const String InvalidState;
+
+
+	static const String OrientationGroup;
+	static const String HorizontalState;
+	static const String VerticalState;
+};
 
 /**
 	@brief		
@@ -24,16 +117,39 @@ class UIElement
 
 public:
 	LN_TR_PROPERTY(PointF,				position);				/**< Position プロパティの識別子 */
-	LN_TR_PROPERTY(Size,				size);					/**< Size プロパティの識別子 */
+	LN_TR_PROPERTY(float,				width);
+	LN_TR_PROPERTY(float,				height);
 	LN_TR_PROPERTY(ThicknessF,			margin);
 	LN_TR_PROPERTY(ThicknessF,			padding);
 	LN_TR_PROPERTY(AlignmentAnchor,		anchor);				/**< Anchor プロパティの識別子 */
 	LN_TR_PROPERTY(HAlignment,			hAlignment);			/**< HAlignment プロパティの識別子 */
 	LN_TR_PROPERTY(VAlignment,			vAlignment);			/**< VAlignment プロパティの識別子 */
-	LN_TR_PROPERTY(BrushPtr,			background);			/**< Background プロパティの識別子 */
+	//LN_TR_PROPERTY(BrushPtr,			background);			/**< Background プロパティの識別子 */
 	LN_TR_PROPERTY(BrushPtr,			foreground);			/**< Foreground プロパティの識別子 */
 	LN_TR_PROPERTY(BrushPtr,			decoratorBackground);	/**< DecoratorBackground プロパティの識別子 */
 	LN_TR_PROPERTY(float,				decoratorOpacity);		/**< Foreground プロパティの識別子 */
+	tr::Property<PointF>				position;
+	tr::Property<float>					width;
+	tr::Property<float>					height;
+	tr::Property<ThicknessF>			margin;
+	tr::Property<ThicknessF>			padding;
+	tr::Property<AlignmentAnchor>		anchor;
+
+	tr::Property<HAlignment>			hAlignment;
+	tr::Property<VAlignment>			vAlignment;
+	//tr::Property<BrushPtr>				background;
+	tr::Property<BrushPtr>				foreground;
+	tr::Property<BrushPtr>				decoratorBackground;
+	tr::Property<float>					decoratorOpacity;
+
+	// Border
+	//tr::Property<ThicknessF>			borderThickness;
+	//tr::Property<CornerRadius>			cornerRadius;
+	//tr::Property<Color>					leftBorderColor;
+	//tr::Property<Color>					topBorderColor;
+	//tr::Property<Color>					rightBorderColor;
+	//tr::Property<Color>					bottomBorderColor;
+	//tr::Property<BorderDirection>		borderDirection;
 
 	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseEnterEvent);				/**< MouseEnter ルーティングイベントの識別子 */
 	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseLeaveEvent);				/**< MouseLeave ルーティングイベントの識別子 */
@@ -43,6 +159,8 @@ public:
 	LN_ROUTED_EVENT(UIMouseEventArgs,	KeyDownEvent);					/**< KeyDown ルーティングイベントの識別子 */
 	LN_ROUTED_EVENT(UIMouseEventArgs,	KeyUpEvent);					/**< KeyUp ルーティングイベントの識別子 */
 	LN_ROUTED_EVENT(UIKeyEventArgs,		TextInputEvent);				/**< TextInput ルーティングイベントの識別子 */
+	LN_ROUTED_EVENT(UIEventArgs, GotFocusEvent);
+	LN_ROUTED_EVENT(UIEventArgs, LostFocusEvent);
 
 public:
 	//--------------------------------------------------------------------------
@@ -57,6 +175,8 @@ public:
 	UIEvent<UIKeyEventArgs>			KeyDown;		/**< この要素がフォーカスを持っている時にキーボードのキーが押されると発生します。*/
 	UIEvent<UIKeyEventArgs>			KeyUp;			/**< この要素がフォーカスを持っている時にキーボードのキーが離されると発生します。*/
 	UIEvent<UIKeyEventArgs>			TextInput;		/**< キー操作により文字が入力されると発生します。*/
+	UIEvent<UIEventArgs>			GotFocus;
+	UIEvent<UIEventArgs>			LostFocus;
 
 	/** @} */
 
@@ -67,8 +187,22 @@ public:
 	void SetPosition(const PointF& value) { tr::PropertyInfo::SetPropertyValueDirect<PointF>(this, positionId, value); }
 	const PointF& GetPosition() const { return tr::PropertyInfo::GetPropertyValueDirect<PointF>(this, positionId); }
 
-	void SetSize(const Size& value) { tr::PropertyInfo::SetPropertyValueDirect<Size>(this, sizeId, value); }
-	const Size& GetSize() const { return tr::PropertyInfo::GetPropertyValueDirect<Size>(this, sizeId); }
+	void SetWidth(float value) { tr::PropertyInfo::SetPropertyValueDirect<float>(this, widthId, value); }
+	float GetWidth() const { return tr::PropertyInfo::GetPropertyValueDirect<float>(this, widthId); }
+
+	void SetHeight(float value) { tr::PropertyInfo::SetPropertyValueDirect<float>(this, heightId, value); }
+	float GetHeight() const { return tr::PropertyInfo::GetPropertyValueDirect<float>(this, heightId); }
+
+	void SetSize(const Size& value) { SetWidth(value.width); SetHeight(value.height); }
+	Size GetSize() const { return Size(width, height); }
+
+	void SetMinWidth(float value) { m_minSize.width = value; }
+
+	void SetMinHeight(float value) { m_minSize.height = value; }
+
+	void SetMaxWidth(float value) { m_maxSize.width = value; }
+
+	void SetMaxHeight(float value) { m_maxSize.height = value; }
 
 	void SetAnchor(AlignmentAnchor value) { tr::PropertyInfo::SetPropertyValueDirect<AlignmentAnchor>(this, anchorId, value); }
 	AlignmentAnchor GetAnchor() const { return tr::PropertyInfo::GetPropertyValueDirect<AlignmentAnchor>(this, anchorId); }
@@ -79,8 +213,8 @@ public:
 	void SetVAlignment(VAlignment value) { tr::PropertyInfo::SetPropertyValueDirect<VAlignment>(this, vAlignmentId, value); }
 	VAlignment GetVAlignment() const { return tr::PropertyInfo::GetPropertyValueDirect<VAlignment>(this, vAlignmentId); }
 
-	void SetBackground(Brush* value) { tr::PropertyInfo::SetPropertyValueDirect<BrushPtr>(this, backgroundId, value); }
-	Brush* GetBackground() const { return tr::PropertyInfo::GetPropertyValueDirect<BrushPtr>(this, backgroundId); }
+	void SetBackground(Brush* value);
+	Brush* GetBackground() const;
 
 
 	/** @} */
@@ -93,7 +227,7 @@ public:
 	const String& GetKeyName() const { return m_keyName; }
 
 	/** 論理上の親要素を取得します。*/
-	UIElement* GetParent() const { return m_parent; }
+	UIElement* GetLogicalParent() const { return m_logicalParent; }
 
 	//void SetSize(const Size& size) { m_size = size; }
 
@@ -109,11 +243,11 @@ public:
 	/** この要素へのフォーカスの取得を試みます。*/
 	void Focus();
 
-	///** マウスキャプチャを設定します。*/
-	//void CaptureMouse();
+	/** マウスキャプチャを設定します。*/
+	void CaptureMouse();
 
-	///** マウスキャプチャを解除します。*/
-	//void ReleaseMouseCapture();
+	/** マウスキャプチャを解除します。*/
+	void ReleaseMouseCapture();
 
 	/** この要素内の子ビジュアル要素の数を取得します。(論理要素も含めたすべての子要素) */
 	virtual int GetVisualChildrenCount() const override;
@@ -136,6 +270,8 @@ public:
 	float GetActualWidth() const { return m_finalLocalRect.width; }
 	float GetActualHeight() const { return m_finalLocalRect.height; }
 
+	bool HasFocus() const { return m_hasFocus; }
+
 	//--------------------------------------------------------------------------
 	/** @name Grid layout */
 	/** @{ */
@@ -151,19 +287,22 @@ public:
 
 	/** @} */
 
+	
+	/** OnGotFocus イベントの通知を受け取るコールバックを登録します。*/
+	LN_METHOD(Event)
+	EventConnection ConnectOnGotFocus(UIEventHandler handler);
+	
+	/** OnLostFocus イベントの通知を受け取るコールバックを登録します。*/
+	LN_METHOD(Event)
+	EventConnection ConnectOnLostFocus(UIEventHandler handler);
+
 protected:
 	UIElement();
 	virtual ~UIElement();
-	void Initialize(detail::UIManager* manager);
+	void Initialize();
 
 	/** 要素の視覚状態を切り替えます。*/
 	void GoToVisualState(const StringRef& stateName);
-
-	/** 指定した要素をこの要素にビジュアル子要素として追加します。*/
-	//void AddVisualChild(UIElement* element);
-
-	/** 指定した要素をこの要素のビジュアルツリーから削除します。*/
-	//void RemoveVisualChild(UIElement* element);
 
 	/** フォントによるレイアウト情報を無効化します。次のレイアウト更新パスで、フォント情報が再構築されます。*/
 	void InvalidateFont() { m_invalidateFlags |= detail::InvalidateFlags::Font; }
@@ -171,18 +310,22 @@ protected:
 	/**
 		@brief		この要素を表示するために必要なサイズを計測します。
 		@params[in]	constraint	: この要素を配置できる領域の最大サイズ。通常は親要素のサイズが渡されます。
-		@return		この要素のレイアウトの際に必要となる最低限のサイズ。この要素のサイズと、全ての子要素のサイズに基づき決定します。Inf であってはなりません。
+		@return		この要素のレイアウトの際に必要となる最低限のサイズ。
+					この要素のサイズと、全ての子要素のサイズに基づき決定します。NaN や Inf であってはなりません。
 		@details	constraint は、ScrollViewer 等のコンテンツとなった場合は Infinity が渡されることがあります。
 	*/
 	virtual Size MeasureOverride(const Size& constraint) override;
 
 	/**
-		@brief		子要素の配置を確定し、この要素の最終サイズを返します。
+		@brief		Visual 子要素の配置を確定し、この要素の最終サイズを返します。
 		@param[in]	finalSize	: 親要素がこの要素に対して割り当てた領域のサイズ。
 		@return		要素の最終サイズ。要素の描画時にこのサイズを使用します。
 		@details	派生クラスは finalSize よりも大きいサイズを返すと、描画時に見切れが発生します。
 					また、finalSize には padding プロパティの余白は考慮されません。
 					この余白を正しく反映するためには派生クラスで padding プロパティを参照し、子要素の位置を計算します。
+
+					親要素は、各子要素の Arrange を呼び出し、適切に配置する必要があります。
+					そうでない場合、子要素はレンダリングされません。(UIElement::ArrangeOverride() は、子要素の配置は行いません)
 	*/
 	virtual Size ArrangeOverride(const Size& finalSize) override;
 
@@ -192,7 +335,7 @@ protected:
 	/**
 		@brief	この要素の描画を行います。
 	*/
-	virtual void OnRender(DrawList* g);
+	virtual void OnRender(DrawingContext* g);
 
 	virtual void OnMouseMove(UIMouseEventArgs* e);
 	virtual void OnMouseDown(UIMouseEventArgs* e);
@@ -202,6 +345,8 @@ protected:
 	virtual void OnKeyDown(UIKeyEventArgs* e);
 	virtual void OnKeyUp(UIKeyEventArgs* e);
 	virtual void OnTextInput(UIKeyEventArgs* e);
+	virtual void OnGotFocus(UIEventArgs* e);
+	virtual void OnLostFocus(UIEventArgs* e);
 
 	virtual void OnUpdateStyle(UIStylePropertyTable* localStyle, detail::InvalidateFlags invalidateFlags);
 	virtual void OnUpdatingLayout();
@@ -210,21 +355,31 @@ protected:
 
 LN_INTERNAL_ACCESS:
 	detail::UIManager* GetManager() const { return m_manager; }
+	UIContext* GetContext() const;
 	const PointF& GetPositionInternal() const { return position; }
-	const Size& GetSizeInternal() const { return size; }
+	void SetSizeInternal(const Size& size) { width = size.width; height = size.height; }
+	Size GetSizeInternal() const { return Size(width, height); }
 	const ThicknessF& GetMargineInternal() const { return margin; }
 	AlignmentAnchor GetAnchorInternal() const { return anchor; }
 	const BrushPtr& GetForegroundInternal() const { return foreground; }
-	void SetParent(UIElement* parent);
-	const String& GetCurrentVisualStateName() const { return m_currentVisualStateName; }
+	void SetLogicalParent(UIElement* parent);
+	UIVisualStateManager* GetVisualStateManager();
+	void SetStyleSubControlName(const StringRef& ownerControlName, const StringRef& subControlName) { m_styleSubControlOwnerName = ownerControlName; m_styleSubControlName = subControlName; }
+	//const String& GetStyleSubControlName() const { return m_styleSubControlName; }
+	//const String& GetCurrentVisualStateName() const { return m_currentVisualStateName; }
 	//AnchorInfo* GetAnchorInfo() {return &m_anchorInfo; }
 	detail::InvalidateFlags GetInvalidateFlags() const { return m_invalidateFlags; }
 	UIElement* CheckMouseHoverElement(const PointF& globalPt);
-	virtual void ActivateInternal(UIElement* child);
 	virtual bool OnEvent(detail::UIInternalEventType type, UIEventArgs* args);
 	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e);
+	void CallOnGotFocus();
+	void CallOnLostFocus();
+	const RectF& GetFinalGlobalRect() const { return m_finalGlobalRect; }
+	virtual detail::SpcialUIElementType GetSpcialUIElementType() const;
+	UIElement* GetVisualParent() const { return m_visualParent; }
+
 	void UpdateLayout(const Size& viewSize) override;
-	void Render(DrawList* g);
+	void Render(DrawingContext* g);
 
 protected:
 	virtual void UpdateTransformHierarchy(const RectF& parentGlobalRect) override;
@@ -232,29 +387,36 @@ protected:
 LN_PROTECTED_INTERNAL_ACCESS:
 	virtual const HAlignment* GetPriorityContentHAlignment();
 	virtual const VAlignment* GetPriorityContentVAlignment();
+	//virtual void GetStyleClassName(String* outSubStateName);
 
+	/** 指定した要素をこの要素にビジュアル子要素として追加します。*/
+	void AddVisualChild(UIElement* element);
+
+	/** 指定した要素をこの要素のビジュアルツリーから削除します。*/
+	void RemoveVisualChild(UIElement* element);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	// ILayoutElement interface
 	virtual const PointF& GetLayoutPosition() const override;
-	virtual const Size& GetLayoutSize() const override;
+	virtual Size GetLayoutSize() const override;
 	virtual const ThicknessF& GetLayoutMargin() const override;
 	virtual const ThicknessF& GetLayoutPadding() const override;
 	virtual AlignmentAnchor GetLayoutAnchor() const override;
 	virtual HAlignment GetLayoutHAlignment() const override;
 	virtual VAlignment GetLayoutVAlignment() const override;
+	virtual void GetLayoutMinMaxInfo(Size* outMin, Size* outMax) const override;
 	virtual ILayoutElement* GetLayoutParent() const override;
 	virtual const HAlignment* GetLayoutContentHAlignment() override;
 	virtual const VAlignment* GetLayoutContentVAlignment() override;
 	virtual const Size& GetLayoutDesiredSize() const override;
 	virtual void SetLayoutDesiredSize(const Size& size) override;
 	virtual void SetLayoutFinalLocalRect(const RectF& rect) override;
-	virtual const RectF& GetLayoutFinalLocalRect() override;
+	virtual const RectF& GetLayoutFinalLocalRect() const override;
 	virtual void SetLayoutFinalGlobalRect(const RectF& rect) override;
 
 
 private:
-	void UpdateLocalStyleAndApplyProperties(UIStylePropertyTable* parentStyle, UIStylePropertyTable* currentStateStyle);
+	void UpdateLocalStyleAndApplyProperties(UIStyleTable* styleTable, UIStylePropertyTable* parentStyle);
 
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
 	void RaiseEventInternal(const UIEventInfo* ev, UIEventArgs* e);
@@ -262,14 +424,22 @@ private:
 	detail::UIManager*		m_manager;
 	//UILayoutView*			m_ownerLayoutView;
 	String					m_keyName;
-	UIElement*				m_parent;
+	Size					m_minSize;
+	Size					m_maxSize;
+	UIElement*				m_logicalParent;
 	UIStylePropertyTable*	m_localStyle;			// 内部的に使用されるスタイル。親や VisualState から取得したスタイルをマージしたもの。
 	Size					m_desiredSize;			// MeasureLayout() で決定されるこのコントロールの要求サイズ
 	RectF					m_finalLocalRect;		// 描画に使用する最終境界矩形 (グローバル座標系=RootFrame のローカル座標系)
 	RectF					m_finalGlobalRect;
 	String					m_elementName;				// 要素名 ("UITextBlock" など) TODO: いらないかも
-	String					m_currentVisualStateName;
+	RefPtr<UIVisualStateManager>	m_visualStateManager;
+	String							m_styleSubControlOwnerName;
+	String							m_styleSubControlName;
+	//String					m_currentVisualStateName;
 	UIStylePropertyTable*	m_currentVisualStateStyle;
+
+	UIElement*                m_visualParent;
+	std::shared_ptr<List<RefPtr<UIElement>>>    m_visualChildren;
 
 	// Property
 	//		これらには直接値を設定しないこと。Property::SetValueDirect() を使う。
@@ -300,6 +470,10 @@ private:
 	detail::InvalidateFlags	m_invalidateFlags;
 	bool					m_isEnabled;
 	bool					m_isMouseOver;
+	bool					m_hasFocus;
+
+	UIEventHandler::EventType	m_onGotFocus;
+	UIEventHandler::EventType	m_onLostFocus;
 };
 
 LN_NAMESPACE_END

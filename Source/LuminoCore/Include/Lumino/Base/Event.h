@@ -1,12 +1,69 @@
 ﻿
 #pragma once
+#include <memory>
 #include "../Base/List.h"
 #include "../Base/Delegate.h"
 
-#ifdef LN_CPP11
 
 LN_NAMESPACE_BEGIN
 
+namespace detail {
+
+struct EventConnectionDataBase
+{
+	bool	m_active;
+};
+
+struct EventInternalDataBase
+{
+	virtual void OnDisconnect(EventConnectionDataBase* conn) = 0;
+};
+
+} // namespace detail
+
+
+
+
+/**
+	@brief	イベントハンドラの状態を追跡します。必要に応じて、イベントから切断するために使用します。
+*/
+class EventConnection
+{
+public:
+	EventConnection()
+		: m_internalData(nullptr)
+		, m_connectionData(nullptr)
+	{}
+
+	/** イベントハンドラとイベントを切断します。*/
+	void Disconnect()
+	{
+		if (m_internalData != nullptr)
+		{
+			m_internalData->OnDisconnect(m_connectionData);
+		}
+	}
+
+private:
+	EventConnection(const std::shared_ptr<detail::EventInternalDataBase>& internalData, detail::EventConnectionDataBase* connectionData)
+		: m_internalData(internalData)
+		, m_connectionData(connectionData)
+	{
+		m_connectionData->m_active = true;
+	}
+
+	std::shared_ptr<detail::EventInternalDataBase>	m_internalData;
+	detail::EventConnectionDataBase*				m_connectionData;
+
+	template<typename>
+	friend class Event;
+};
+
+
+
+/**
+	@brief	イベントがトリガーされたときに通知を受け取るメソッドコールバックを登録するためのクラスです。
+*/
 template<typename>
 class Event {};
 template<typename TRet, typename... TArgs>
@@ -15,48 +72,55 @@ class Event<TRet(TArgs...)>
 public:
 	typedef Delegate<TRet(TArgs...)> DelegateType;
 
-public:
-	void AddHandler(const DelegateType& handler)
+	Event()
+		: m_internalData(std::make_shared<EventInternalData>())
+	{}
+
+	~Event()
 	{
-		m_handlerList.Add(handler);
+		Clear();
 	}
 
-	void RemoveHandler(const DelegateType& handler)
+	EventConnection Connect(const DelegateType& handler)
 	{
-		m_handlerList.Remove(handler);
+		return ConnectInternal(handler);
 	}
 
-	void Clear()
+	//EventConnection Connect(const std::function<TRet(TArgs...)>& handler)
+	//{
+	//	return ConnectInternal(handler);
+	//}
+
+	void Clear() LN_NOEXCEPT
 	{
-		m_handlerList.Clear();
+		m_internalData->connectionDataList.Clear();
+	}
+
+	bool IsEmpty() const
+	{
+		return m_internalData->connectionDataList.IsEmpty();
 	}
 
 	void Raise(TArgs... args)
 	{
 		if (!IsEmpty())
 		{
-			int count = m_handlerList.GetCount();
-			for (int i = 0; i < count - 1; ++i)
+			for (auto& data : m_internalData->connectionDataList)
 			{
-				m_handlerList[i].Call(args...);
+				if (data->m_active) data->handler.Call(args...);
 			}
-			return m_handlerList[count - 1].Call(args...);	// 戻り値を戻すのは最後の1つ。(.NET の動作)
 		}
 	}
 
-	bool IsEmpty() const
+
+	EventConnection operator += (const DelegateType& handler)
 	{
-		return m_handlerList.IsEmpty();
+		return ConnectInternal(handler);
 	}
 
-	void operator += (const DelegateType& handler)
+	EventConnection operator += (const std::function<TRet(TArgs...)>& handler)
 	{
-		AddHandler(handler);
-	}
-
-	void operator -= (const DelegateType& handler)
-	{
-		RemoveHandler(handler);
+		return ConnectInternal(handler);
 	}
 
 	void operator () (TArgs... args)
@@ -65,45 +129,52 @@ public:
 	}
 
 private:
-	List<DelegateType> m_handlerList;
+	struct EventConnectionData : public detail::EventConnectionDataBase
+	{
+		DelegateType	handler;
+	};
+
+	struct EventInternalData : public detail::EventInternalDataBase
+	{
+		List<std::shared_ptr<EventConnectionData>>	connectionDataList;
+
+		virtual void OnDisconnect(detail::EventConnectionDataBase* conn)
+		{
+			// check memory not released
+			bool released = true;
+			for (auto& data : connectionDataList)
+			{
+				if (data.get() == conn) released = false;
+			}
+			if (!released)
+			{
+				conn->m_active = false;
+			}
+		}
+	};
+
+	EventConnection ConnectInternal(const DelegateType& handler)
+	{
+		auto connectionData = RequestFreeConnectionData();
+		connectionData->handler = handler;
+		return EventConnection(m_internalData, connectionData.get());
+	}
+
+	std::shared_ptr<EventConnectionData> RequestFreeConnectionData()
+	{
+		for (auto& data : m_internalData->connectionDataList)
+		{
+			if (!data->m_active) return data;
+		}
+
+		auto newData = std::make_shared<EventConnectionData>();
+		m_internalData->connectionDataList.Add(newData);
+		return newData;
+	}
+
+	std::shared_ptr<EventInternalData>	m_internalData;
 };
 
-LN_NAMESPACE_END
 
-#else
-LN_NAMESPACE_BEGIN
-
-#define LN_EVENT_CLASS_NAME				Event01
-#define LN_EVENT_DELEGATE_CLASS_NAME	Delegate01
-#define LN_EVENT_TEMPLATE_ARGS			typename A1
-#define LN_EVENT_ARGS_DECL				A1 a1
-#define LN_EVENT_CALL_ARGS				a1
-#define LN_EVENT_TEMPLATE_TYPES			A1
-#include "Event.inl"
-
-#define LN_EVENT_CLASS_NAME				Event02
-#define LN_EVENT_DELEGATE_CLASS_NAME	Delegate02
-#define LN_EVENT_TEMPLATE_ARGS			typename A1, typename A2
-#define LN_EVENT_ARGS_DECL				A1 a1, A2 a2
-#define LN_EVENT_CALL_ARGS				a1, a2
-#define LN_EVENT_TEMPLATE_TYPES			A1, A2
-#include "Event.inl"
-
-#define LN_EVENT_CLASS_NAME				Event03
-#define LN_EVENT_DELEGATE_CLASS_NAME	Delegate03
-#define LN_EVENT_TEMPLATE_ARGS			typename A1, typename A2, typename A3
-#define LN_EVENT_ARGS_DECL				A1 a1, A2 a2, A3 a3
-#define LN_EVENT_CALL_ARGS				a1, a2, a3
-#define LN_EVENT_TEMPLATE_TYPES			A1, A2, A3
-#include "Event.inl"
-
-#define LN_EVENT_CLASS_NAME				Event04
-#define LN_EVENT_DELEGATE_CLASS_NAME	Delegate04
-#define LN_EVENT_TEMPLATE_ARGS			typename A1, typename A2, typename A3, typename A4
-#define LN_EVENT_ARGS_DECL				A1 a1, A2 a2, A3 a3, A4 a4
-#define LN_EVENT_CALL_ARGS				a1, a2, a3, a4
-#define LN_EVENT_TEMPLATE_TYPES			A1, A2, A3, A4
-#include "Event.inl"
 
 LN_NAMESPACE_END
-#endif

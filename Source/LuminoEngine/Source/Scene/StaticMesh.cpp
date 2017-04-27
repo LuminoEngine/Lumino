@@ -13,6 +13,14 @@ LN_NAMESPACE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(StaticMesh, VisualNode);
 
 //------------------------------------------------------------------------------
+RefPtr<StaticMesh> StaticMesh::Create(StaticMeshModel* staticMeshModel)
+{
+	auto ptr = RefPtr<StaticMesh>::MakeRef();
+	ptr->Initialize(detail::EngineDomain::GetDefaultSceneGraph3D(), staticMeshModel);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
 RefPtr<StaticMesh> StaticMesh::Create(const StringRef& filePath)
 {
 	auto ptr = RefPtr<StaticMesh>::MakeRef();
@@ -133,7 +141,7 @@ StaticMesh::~StaticMesh()
 //------------------------------------------------------------------------------
 void StaticMesh::Initialize(SceneGraph* owner, StaticMeshModel* meshModel)
 {
-	LN_CHECK_ARG(meshModel != nullptr);
+	if (LN_CHECK_ARG(meshModel != nullptr)) return;
 	m_mesh = meshModel;
 
 	VisualNode::Initialize(owner, m_mesh->GetSubsetCount());
@@ -155,6 +163,48 @@ void StaticMesh::OnRender2(DrawList* renderer)
 	{
 		renderer->DrawMesh(m, i, GetMaterials()->GetAt(i));
 	}
+}
+
+//==============================================================================
+// Rectangle
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Rectangle, VisualNode);
+
+//------------------------------------------------------------------------------
+RefPtr<Rectangle> Rectangle::Create(const RectF& rect)
+{
+	return NewObject<Rectangle>(rect);
+}
+
+//------------------------------------------------------------------------------
+Rectangle::Rectangle()
+{
+}
+
+//------------------------------------------------------------------------------
+Rectangle::~Rectangle()
+{
+}
+
+//------------------------------------------------------------------------------
+void Rectangle::Initialize(const RectF& rect)
+{
+	VisualNode::Initialize(detail::EngineDomain::GetDefaultSceneGraph3D(), 1);
+	detail::EngineDomain::GetDefaultSceneGraph3D()->GetRootNode()->AddChild(this);
+	SetAutoRemove(true);
+
+	m_rect = rect;
+}
+
+//------------------------------------------------------------------------------
+void Rectangle::OnRender2(DrawList* renderer)
+{
+	//renderer->SetShader(GetPrimaryShader());
+	renderer->DrawSquarePrimitive(
+		Vector3(m_rect.GetTopLeft(), 0), Vector2(0, 0), Color::White,
+		Vector3(m_rect.GetTopRight(), 0), Vector2(1, 0), Color::White,
+		Vector3(m_rect.GetBottomLeft(), 0), Vector2(0, 1), Color::White,
+		Vector3(m_rect.GetBottomRight(), 0), Vector2(1, 1), Color::White);
 }
 
 LN_NAMESPACE_END

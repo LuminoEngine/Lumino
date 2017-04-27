@@ -14,7 +14,6 @@ class UIElement;
 class UIWindow;
 class UIFrameWindow;
 class UIMainWindow;
-class UILayoutRoot;
 
 /** 縦方向の表示位置を示します。*/
 LN_ENUM(VAlignment)
@@ -69,6 +68,22 @@ LN_ENUM(Orientation)
 };
 LN_ENUM_DECLARE(Orientation);
 
+/** コンテンツのサイズを変更する方法を示します。*/
+enum class StretchMode
+{
+	/** コンテンツの現在のサイズを維持します。*/
+	None,
+
+	/** 割り当てられた広さを埋めるようにコンテンツのサイズを変更します。 縦横比は維持されません。*/
+	Fill,
+
+	/** 割り当てられた広さに収まるようにコンテンツのサイズを変更しますが、元の縦横比が維持されます。*/
+	Uniform,
+
+	/** 割り当てられた広さを埋めるようにコンテンツのサイズを変更しますが、元の縦横比が維持されます。 ソース コンテンツの縦横比が対象の四角形の縦横比と異なる場合は、ソース コンテンツが対象の四角形に収まるように切り取られます。*/
+	UniformToFill,
+};
+
 namespace detail
 {
 class UIManager;
@@ -114,6 +129,12 @@ LN_ENUM_FLAGS(InvalidateFlags)
 	All = 0xFFFFFFFF,
 };
 LN_ENUM_FLAGS_DECLARE(InvalidateFlags);
+
+enum class SpcialUIElementType
+{
+	Common,
+	LayoutRoot,
+};
 
 } // namespace detail
 

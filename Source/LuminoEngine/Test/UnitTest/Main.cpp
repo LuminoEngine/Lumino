@@ -2,36 +2,16 @@
 #include <Lumino/UI/UIFrameWindow.h>
 #include "../../../Source/EngineManager.h"
 #include "../../../Source/Graphics/GraphicsManager.h"
+#include "../../../Source/UI/UIManager.h"
 
 //------------------------------------------------------------------------------
 void TestEnv::SetUp()
 {
-	Logger::Initialize(_T("test_log.txt"));
-
-	int scale = 1;
-	EngineSettings::SetMainWindowSize(SizeI(160 * scale, 120 * scale));
-	EngineSettings::SetMainBackBufferSize(SizeI(160 * scale, 120 * scale));
-	EngineSettings::SetGraphicsAPI(GraphicsAPI::DirectX9);//GraphicsAPI::OpenGL);//
-	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
-	//settings.graphicsAPI = GraphicsAPI::DirectX9; //GraphicsAPI::OpenGL;//
-	//settings.renderingType = GraphicsRenderingType::Immediate; //RenderingType::Deferred;//
-	detail::EngineSettings::instance.defaultSkinFilePath = LN_LOCALFILE("UI/Data/Skin.png");
-	Engine::Initialize();
-
-	// テストしやすいように固定フレームレートにする
-	Engine::SetFrameUpdateMode(FrameUpdateMode::Fixed);
-
-	RawFont::RegisterFontFile(LN_LOCALFILE("../../../../Tools/VLGothic/VL-Gothic-Regular.ttf"));
-	RawFont::GetDefaultFont()->SetName(_T("VL Gothic"));
-
-	// 背景はグレーにしておくと加算合成のテストとか、いろいろ都合がよい
-	Engine::GetMainViewport()->SetBackgroundColor(Color32::Gray);
 }
 
 //------------------------------------------------------------------------------
 void TestEnv::TearDown()
 {
-	Engine::Terminate();
 }
 
 //------------------------------------------------------------------------------
@@ -158,6 +138,49 @@ void TestEnv::WaitRendering()
 	Engine::GetMainWindow()->GetSwapChain()->WaitForPresent();
 }
 
+
+
+
+
+
+
+
+
+
+//------------------------------------------------------------------------------
+void EngineInitalize()
+{
+	Engine::Initialize();
+
+	// テストしやすいように固定フレームレートにする
+	Engine::SetFrameUpdateMode(FrameUpdateMode::Fixed);
+
+	RawFont::RegisterFontFile(LN_LOCALFILE("../../../../Tools/VLGothic/VL-Gothic-Regular.ttf"));
+	RawFont::GetDefaultFont()->SetName(_T("VL Gothic"));
+
+	// 背景はグレーにしておくと加算合成のテストとか、いろいろ都合がよい
+	Engine::GetMainViewport()->SetViewBackgroundColor(Color32::Gray);
+
+
+
+	{
+		auto buttonNormalBrush = TextureBrush::Create(detail::UIManager::GetInstance()->GetDefaultSkinTexture());
+		buttonNormalBrush->SetSourceRect(0, 0, 32, 32);
+		buttonNormalBrush->SetBorderThickness(8, 8, 8, 8);
+		buttonNormalBrush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
+		buttonNormalBrush->SetWrapMode(BrushWrapMode::Stretch);
+
+		auto* res = detail::UIManager::GetInstance()->GetDefaultStyleTable();
+		auto* style = res->GetStyle(_T("UIButton"));
+		// base
+		{
+			auto* props = style->GetPropertyTable();
+			props->background = RefPtr<Brush>::StaticCast(buttonNormalBrush);
+			props->borderThickness = ThicknessF(0);
+		}
+	}
+}
+
 //------------------------------------------------------------------------------
 GTEST_API_ int main(int argc, char **argv)
 {
@@ -166,10 +189,10 @@ GTEST_API_ int main(int argc, char **argv)
 #endif
 	setlocale(LC_ALL, "");
 
-#if 1	// 部分的にテストを実行したりする
+#if 0	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_Graphics_Rendering.DrawSprite"
+		"--gtest_filter=Test_Scene_Sprite.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);
@@ -177,5 +200,35 @@ GTEST_API_ int main(int argc, char **argv)
 	testing::InitGoogleTest(&argc, argv);
 #endif
 	::testing::AddGlobalTestEnvironment(new TestEnv());
-	return RUN_ALL_TESTS();
+
+	{
+		Logger::Initialize(_T("test_log.txt"));
+
+		int scale = 1;
+		EngineSettings::SetMainWindowSize(SizeI(160 * scale, 120 * scale));
+		EngineSettings::SetMainBackBufferSize(SizeI(160 * scale, 120 * scale));
+		EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
+		detail::EngineSettings::instance.defaultSkinFilePath = LN_LOCALFILE("UI/Data/Skin.png");
+	}
+
+	{
+		EngineSettings::SetGraphicsAPI(GraphicsAPI::DirectX9);
+
+		EngineInitalize();
+		int r = RUN_ALL_TESTS();
+		Engine::Terminate();
+		if (r != 0) return r;
+	}
+	//{
+	//	EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
+
+	//	EngineInitalize();
+	//	int r = RUN_ALL_TESTS();
+	//	Engine::Terminate();
+	//	if (r != 0) return r;
+	//}
+
+	//RUN_ALL_TESTS();
+	//return RUN_ALL_TESTS();
+	return 0;
 }

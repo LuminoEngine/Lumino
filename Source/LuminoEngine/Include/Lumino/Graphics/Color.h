@@ -435,6 +435,8 @@ public:
 
 	static Color FromString(const StringRef& str);
 
+	Color WithAlpha(float alpha) const { return Color(r, g, b, alpha); }
+
 public:
 	//ColorF& operator = (const ColorF& src) { r = src.r; g = src.g; b = src.b; a = src.a; return *this; }
 
@@ -443,6 +445,11 @@ public:
 
 	//ColorF& operator = (const LVector4& vec) { r = vec.X; g = vec.Y; b = vec.Z; a = vec.W; return *this; }
 
+	Color& operator *= (const Color& rhs) { r *= rhs.r; g *= rhs.g; b *= rhs.b; a *= rhs.a; return *this; }
+
+	bool operator == (const Color& color) const { return r == color.r && g == color.g && b == color.b && a == color.a; }
+	bool operator != (const Color& color) const { return !operator==(color); }
+
 	operator const Vector4&() { return *reinterpret_cast<Vector4*>(this); }
 	operator const Vector4&() const { return *reinterpret_cast<const Vector4*>(this); }
 };
@@ -450,7 +457,7 @@ public:
 /**
 	@brief	色調を定義します。
 */
-class ToneF
+class ToneF	// TODO: ColorTone とかのほうがいいかな？
 {
 public:
 	static const ToneF Zero;	///< ToneF(0, 0, 0, 0);
@@ -508,7 +515,8 @@ public:
 	friend ToneF operator / (const ToneF& v1, float v2);
 	friend ToneF operator / (float v1, const ToneF& v2);
 
-	bool operator != (const ToneF& tone) { return r != tone.r || g != tone.g || b != tone.b || gray != tone.gray; }
+	bool operator == (const ToneF& tone) const { return r == tone.r && g == tone.g && b == tone.b && gray == tone.gray; }
+	bool operator != (const ToneF& tone) const { return r != tone.r || g != tone.g || b != tone.b || gray != tone.gray; }
 };
 
 //------------------------------------------------------------------------------

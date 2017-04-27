@@ -1,7 +1,6 @@
 ﻿
 #pragma once
-#include "UIElement.h"
-//#include "../Graphics/Viewport.h"
+#include "UIControl.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -9,17 +8,26 @@ LN_NAMESPACE_BEGIN
 	@brief		
 */
 class UIWindow
-	: public Object
+	: public UIControl
 {
+	LN_UI_TYPEINFO_DECLARE();
 public:
+	static RefPtr<UIWindow> Create();
 
-LN_INTERNAL_ACCESS:	// TODO: いまはとりあえず内部用途
+protected:
+	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e) override;
+	virtual void OnLayoutPanelChanged(UILayoutPanel* newPanel) override;
+	virtual void OnRender(DrawingContext* g) override;
+
+LN_CONSTRUCT_ACCESS:
 	UIWindow();
 	virtual ~UIWindow();
-	void InitializeDefault(detail::UIManager* manager);
+	void Initialize();
 
 private:
-	detail::UIManager*	m_manager;
+	Vector2	m_dragStartWindowPosition;
+	Vector2	m_dragStartLocalPosition;
+	bool	m_isDragging;
 };
 
 LN_NAMESPACE_END

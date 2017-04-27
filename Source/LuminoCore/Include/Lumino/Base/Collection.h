@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "List.h"
 
@@ -19,8 +19,8 @@ struct CollectionTraits<T*>
 };
 
 /**
-	@brief		ƒRƒŒƒNƒVƒ‡ƒ“‚ÌŠî–{ƒNƒ‰ƒX
-	@details	Collection ‚ÍAŒp³‚µ‚Ä“Æ©‚ÌƒRƒŒƒNƒVƒ‡ƒ“‚ğ’è‹`‚·‚é‚±‚Æ‚ğ‘z’è‚µ‚½ Array ƒNƒ‰ƒX‚Ìƒ‰ƒbƒp[‚Å‚·B
+	@brief		ã‚³ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã®åŸºæœ¬ã‚¯ãƒ©ã‚¹
+	@details	Collection ã¯ã€ç¶™æ‰¿ã—ã¦ç‹¬è‡ªã®ã‚³ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã‚’å®šç¾©ã™ã‚‹ã“ã¨ã‚’æƒ³å®šã—ãŸ Array ã‚¯ãƒ©ã‚¹ã®ãƒ©ãƒƒãƒ‘ãƒ¼ã§ã™ã€‚
 */
 template<typename T, typename TAllocator = detail::StlAllocator<T> >
 class Collection
@@ -41,10 +41,10 @@ public:
 
 public:
 
-	/** ‹ó‚ÌƒRƒŒƒNƒVƒ‡ƒ“‚ğ‰Šú‰»‚µ‚Ü‚·B*/
+	/** ç©ºã®ã‚³ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã‚’åˆæœŸåŒ–ã—ã¾ã™ã€‚*/
 	Collection() {}
 
-	/** ƒfƒXƒgƒ‰ƒNƒ^ */
+	/** ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ */
 	virtual ~Collection()
 	{
 		Clear();
@@ -52,43 +52,43 @@ public:
 
 public:
 
-	/** ƒRƒŒƒNƒVƒ‡ƒ“‚ª‹ó‚Å‚ ‚é‚©‚ğŠm”F‚µ‚Ü‚·B*/
+	/** ã‚³ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ãŒç©ºã§ã‚ã‚‹ã‹ã‚’ç¢ºèªã—ã¾ã™ã€‚*/
 	bool IsEmpty() const
 	{
 		return m_array.IsEmpty();
 	}
 
-	/** Ši”[‚³‚ê‚Ä‚¢‚é—v‘f‚Ì”‚ğæ“¾‚µ‚Ü‚·B*/
+	/** æ ¼ç´ã•ã‚Œã¦ã„ã‚‹è¦ç´ ã®æ•°ã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	int GetCount() const
 	{
 		return m_array.GetCount();
 	}
 
-	/** ––”ö‚É—v‘f‚ğ’Ç‰Á‚µ‚Ü‚·B*/
+	/** æœ«å°¾ã«è¦ç´ ã‚’è¿½åŠ ã—ã¾ã™ã€‚*/
 	//void Add(value_type& item)
 	//{
 	//	InsertItem(GetCount(), item);
 	//}
 
-	/** ––”ö‚É—v‘f‚ğ’Ç‰Á‚µ‚Ü‚·B*/
+	/** æœ«å°¾ã«è¦ç´ ã‚’è¿½åŠ ã—ã¾ã™ã€‚*/
 	void Add(const value_type& item)
 	{
 		InsertItem(GetCount(), item);
 	}
 
-	/** w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚ÌˆÊ’u‚É—v‘f‚ğ‘}“ü‚µ‚Ü‚·B*/
+	/** æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®ä½ç½®ã«è¦ç´ ã‚’æŒ¿å…¥ã—ã¾ã™ã€‚*/
 	void Insert(int index, const value_type& item)
 	{
 		InsertItem(index, item);
 	}
 
-	/** w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚ÌˆÊ’u‚É—v‘f‚ğ‘}“ü‚µ‚Ü‚·B*/
+	/** æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®ä½ç½®ã«è¦ç´ ã‚’æŒ¿å…¥ã—ã¾ã™ã€‚*/
 	//void Insert(int index, const T& item)
 	//{
 	//	InsertItemConst(index, item);
 	//}
 
-	/** item ‚Éˆê’v‚·‚éÅ‰‚Ì—v‘f‚ğíœ‚µ‚Ü‚·B(³í‚Éíœ‚³‚ê‚½ê‡‚Í true ‚ğ•Ô‚·B—v‘f‚ªŒ©‚Â‚©‚ç‚È‚¯‚ê‚Î false ‚ğ•Ô‚·)*/
+	/** item ã«ä¸€è‡´ã™ã‚‹æœ€åˆã®è¦ç´ ã‚’å‰Šé™¤ã—ã¾ã™ã€‚(æ­£å¸¸ã«å‰Šé™¤ã•ã‚ŒãŸå ´åˆã¯ true ã‚’è¿”ã™ã€‚è¦ç´ ãŒè¦‹ã¤ã‹ã‚‰ãªã‘ã‚Œã° false ã‚’è¿”ã™)*/
 	bool Remove(const T& item)
 	{
 		int index = m_array.IndexOf(item);
@@ -97,26 +97,26 @@ public:
 		return true;
 	}
 
-	/** w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚É‚ ‚é—v‘f‚ğíœ‚µ‚Ü‚·B*/
+	/** æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã«ã‚ã‚‹è¦ç´ ã‚’å‰Šé™¤ã—ã¾ã™ã€‚*/
 	void RemoveAt(int index)
 	{
 		RemoveItem(index);
 	}
 
-	/** ‘S‚Ä‚Ì—v‘f‚ğíœ‚µ‚Ü‚·B*/
+	/** å…¨ã¦ã®è¦ç´ ã‚’å‰Šé™¤ã—ã¾ã™ã€‚*/
 	void Clear()
 	{
 		ClearItems();
 	}
 
-	/** ”z—ñ—p‚Ìƒƒ‚ƒŠ‚ğw’è‚µ‚½ƒTƒCƒY‚ÅŠm•Û‚µ‚Ü‚·B*/
+	/** é…åˆ—ç”¨ã®ãƒ¡ãƒ¢ãƒªã‚’æŒ‡å®šã—ãŸã‚µã‚¤ã‚ºã§ç¢ºä¿ã—ã¾ã™ã€‚*/
 	void Reserve(int size) { m_array.Reserve(size); }
 
 
-	/** ”z—ñ‚Ì—v‘f”‚ğ•ÏX‚µ‚Ü‚·B*/
+	/** é…åˆ—ã®è¦ç´ æ•°ã‚’å¤‰æ›´ã—ã¾ã™ã€‚*/
 	void Resize(int count)
 	{
-		LN_CHECK_ARG(count >= 0);
+		if (LN_CHECK_ARG(count >= 0)) return;
 
 		int d = GetCount() - count;
 		if (d > 0)
@@ -129,57 +129,57 @@ public:
 		m_array.Resize(count);
 	}
 
-	/** w’è‚µ‚½—v‘f‚ª‚±‚Ì”z—ñ“à‚É‘¶İ‚·‚é‚©‚Ç‚¤‚©‚ğ”»’f‚µ‚Ü‚·B*/
+	/** æŒ‡å®šã—ãŸè¦ç´ ãŒã“ã®é…åˆ—å†…ã«å­˜åœ¨ã™ã‚‹ã‹ã©ã†ã‹ã‚’åˆ¤æ–­ã—ã¾ã™ã€‚*/
 	bool Contains(const T& item) const
 	{
 		return m_array.Contains(item);
 	}
 
-	/** w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚ª‚±‚Ì”z—ñ‚Ì‹«ŠE‚Ì”ÍˆÍŠO‚©‚ğŠm”F‚µ‚Ü‚·B*/
+	/** æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãŒã“ã®é…åˆ—ã®å¢ƒç•Œã®ç¯„å›²å¤–ã‹ã‚’ç¢ºèªã—ã¾ã™ã€‚*/
 	bool IsOutOfRange(int index) const
 	{
 		return m_array.IsOutOfRange(index);
 	}
 
 	/**
-		@brief		—v‘f‚ğw’è‚µ‚½ˆÊ’u‚©‚çŒŸõ‚µAÅ‰‚ÉŒ©‚Â‚©‚Á‚½ƒCƒ“ƒfƒbƒNƒX‚ğ•Ô‚µ‚Ü‚·B
-		@param[in]	item		: ŒŸõ‚·‚é—v‘f
-		@param[in]	startIndex	: ŒŸõ‚ğŠJn‚·‚éƒCƒ“ƒfƒbƒNƒX (È—ª‚µ‚½ê‡‚Íæ“ª‚©‚ç)
-		@return		ŒŸõ‚µ‚½—v‘f‚ªÅ‰‚ÉŒ»‚ê‚½ˆÊ’uBŒ©‚Â‚©‚ç‚È‚©‚Á‚½ê‡‚Í -1B
+		@brief		è¦ç´ ã‚’æŒ‡å®šã—ãŸä½ç½®ã‹ã‚‰æ¤œç´¢ã—ã€æœ€åˆã«è¦‹ã¤ã‹ã£ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è¿”ã—ã¾ã™ã€‚
+		@param[in]	item		: æ¤œç´¢ã™ã‚‹è¦ç´ 
+		@param[in]	startIndex	: æ¤œç´¢ã‚’é–‹å§‹ã™ã‚‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ (çœç•¥ã—ãŸå ´åˆã¯å…ˆé ­ã‹ã‚‰)
+		@return		æ¤œç´¢ã—ãŸè¦ç´ ãŒæœ€åˆã«ç¾ã‚ŒãŸä½ç½®ã€‚è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸå ´åˆã¯ -1ã€‚
 	*/
 	int IndexOf(const T& item, int startIndex = 0) const
 	{
 		return m_array.IndexOf(item, startIndex);
 	}
 
-	/** w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚É—v‘f‚ğİ’è‚µ‚Ü‚·B*/
+	/** æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã«è¦ç´ ã‚’è¨­å®šã—ã¾ã™ã€‚*/
 	void SetAt(int index, const T& item) { SetItem(index, item); }
 
-	/** w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚É‚ ‚é—v‘f‚Ö‚ÌQÆ‚ğæ“¾‚µ‚Ü‚·B*/
+	/** æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã«ã‚ã‚‹è¦ç´ ã¸ã®å‚ç…§ã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	reference GetAt(int index) { return m_array.GetAt(index); }
 
-	/** w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚É‚ ‚é—v‘f‚Ö‚ÌQÆ‚ğæ“¾‚µ‚Ü‚·B*/
+	/** æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã«ã‚ã‚‹è¦ç´ ã¸ã®å‚ç…§ã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	const_reference GetAt(int index) const { return m_array.GetAt(index); }
 
-	/** æ“ª—v‘f‚ÌQÆ‚ğ•Ô‚µ‚Ü‚·B*/
+	/** å…ˆé ­è¦ç´ ã®å‚ç…§ã‚’è¿”ã—ã¾ã™ã€‚*/
 	reference GetFront() { return m_array.GetFront(); }
 
-	/** æ“ª—v‘f‚ÌQÆ‚ğ•Ô‚µ‚Ü‚·B*/
+	/** å…ˆé ­è¦ç´ ã®å‚ç…§ã‚’è¿”ã—ã¾ã™ã€‚*/
 	const_reference GetFront() const { return m_array.GetFront(); }
 
-	/** I’[—v‘f‚ÌQÆ‚ğ•Ô‚µ‚Ü‚·B*/
+	/** çµ‚ç«¯è¦ç´ ã®å‚ç…§ã‚’è¿”ã—ã¾ã™ã€‚*/
 	reference GetLast() { return m_array.GetLast(); }
 
-	/** I’[—v‘f‚ÌQÆ‚ğ•Ô‚µ‚Ü‚·B*/
+	/** çµ‚ç«¯è¦ç´ ã®å‚ç…§ã‚’è¿”ã—ã¾ã™ã€‚*/
 	const_reference GetLast() const { return m_array.GetLast(); }
 
-	/** w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚É‚ ‚é—v‘f‚Ö‚ÌQÆ‚ğæ“¾‚µ‚Ü‚·B*/
+	/** æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã«ã‚ã‚‹è¦ç´ ã¸ã®å‚ç…§ã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	//reference operator[] (int index)
 	//{
 	//	return m_array[index];
 	//}
 
-	/** w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚É‚ ‚é—v‘f‚Ö‚ÌQÆ‚ğæ“¾‚µ‚Ü‚·B*/
+	/** æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã«ã‚ã‚‹è¦ç´ ã¸ã®å‚ç…§ã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	const_reference operator[] (int index) const
 	{
 		return m_array[index];
@@ -264,37 +264,37 @@ public:
 
 protected:
 
-	/** w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚ÌˆÊ’u‚É—v‘f‚ğ‘}“ü‚µ‚Ü‚·B*/
+	/** æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®ä½ç½®ã«è¦ç´ ã‚’æŒ¿å…¥ã—ã¾ã™ã€‚*/
 	virtual void InsertItem(int index, const value_type& item)
 	{
 		m_array.Insert(index, item);
 	}
 
-	/** w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚ÌˆÊ’u‚É—v‘f‚ğ‘}“ü‚µ‚Ü‚·B*/
+	/** æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®ä½ç½®ã«è¦ç´ ã‚’æŒ¿å…¥ã—ã¾ã™ã€‚*/
 	//virtual void InsertItemConst(int index, value_type& item)
 	//{
 	//	m_array.Insert(index, item);
 	//}
 
-	/** ‘S‚Ä‚Ì—v‘f‚ğíœ‚µ‚Ü‚·B*/
+	/** å…¨ã¦ã®è¦ç´ ã‚’å‰Šé™¤ã—ã¾ã™ã€‚*/
 	virtual void ClearItems()
 	{
 		m_array.Clear();
 	}
 
-	/** w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚É‚ ‚é—v‘f‚ğíœ‚µ‚Ü‚·B*/
+	/** æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã«ã‚ã‚‹è¦ç´ ã‚’å‰Šé™¤ã—ã¾ã™ã€‚*/
 	virtual void RemoveItem(int index)
 	{
 		m_array.RemoveAt(index);
 	}
 
-	/** w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒXˆÊ’u‚É‚ ‚é—v‘f‚ğ’u‚«Š·‚¦‚Ü‚·B*/
+	/** æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ä½ç½®ã«ã‚ã‚‹è¦ç´ ã‚’ç½®ãæ›ãˆã¾ã™ã€‚*/
 	virtual void SetItem(int index, const value_type& item)
 	{
 		m_array.SetAt(index, item);
 	}
 
-	/** w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒXˆÊ’u‚É‚ ‚é—v‘f‚ğ’u‚«Š·‚¦‚Ü‚·B*/
+	/** æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ä½ç½®ã«ã‚ã‚‹è¦ç´ ã‚’ç½®ãæ›ãˆã¾ã™ã€‚*/
 	//virtual void SetItemConst(int index, const value_type& item)
 	//{
 	//	m_array.SetAt(index, item);

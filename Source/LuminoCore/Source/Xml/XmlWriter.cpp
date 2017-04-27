@@ -38,7 +38,7 @@ void XmlWriter::Initialize(TextWriter* textWriter)
 //------------------------------------------------------------------------------
 void XmlWriter::WriteStartDocument()
 {
-	LN_CHECK_STATE(m_state == State_Start);
+	if (LN_CHECK_STATE(m_state == State_Start)) return;
 
 	m_textWriter->Write(_T("<?xml "));
 	m_textWriter->Write(_T("version=\"1.0\""));
@@ -72,8 +72,8 @@ void XmlWriter::WriteStartElement(const String& name)
 //------------------------------------------------------------------------------
 void XmlWriter::WriteEndElement()
 {
-	LN_CHECK_STATE(!m_elementStack.IsEmpty());
-	LN_CHECK_STATE(m_state == State_Prolog || m_state == State_StartElement || m_state == State_Attribute || m_state == State_Text);
+	if (LN_CHECK_STATE(!m_elementStack.IsEmpty())) return;
+	if (LN_CHECK_STATE(m_state == State_Prolog || m_state == State_StartElement || m_state == State_Attribute || m_state == State_Text)) return;
 
 	PreWrite(XmlNodeType::EndElement);
 	if (m_state == State_StartElement || m_state == State_Attribute) {
@@ -144,7 +144,7 @@ void XmlWriter::WriteElementString(const String& elementName, const String& text
 //------------------------------------------------------------------------------
 void XmlWriter::WriteStartAttribute(const String& name)
 {
-	LN_CHECK_STATE(m_state == State_StartElement || m_state == State_Attribute);
+	if (LN_CHECK_STATE(m_state == State_StartElement || m_state == State_Attribute)) return;
 
 	m_textWriter->Write(_T(' '));
 	m_textWriter->Write(name);

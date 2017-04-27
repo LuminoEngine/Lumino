@@ -6,6 +6,7 @@
 
 LN_NAMESPACE_BEGIN
 namespace detail { template<class TPanel> class LayoutImpl; }
+namespace detail { class LayoutHelper; }
 
 /** グリッドレイアウトのセルサイズを指定する値の種類です。*/
 enum class GridLengthType
@@ -27,19 +28,20 @@ public:
 
 protected:
 	virtual const PointF& GetLayoutPosition() const = 0;
-	virtual const Size& GetLayoutSize() const = 0;
+	virtual Size GetLayoutSize() const = 0;
 	virtual const ThicknessF& GetLayoutMargin() const = 0;
 	virtual const ThicknessF& GetLayoutPadding() const = 0;
 	virtual AlignmentAnchor GetLayoutAnchor() const = 0;
 	virtual HAlignment GetLayoutHAlignment() const = 0;
 	virtual VAlignment GetLayoutVAlignment() const = 0;
+	virtual void GetLayoutMinMaxInfo(Size* outMin, Size* outMax) const = 0;
 	virtual ILayoutElement* GetLayoutParent() const = 0;
 	virtual const HAlignment* GetLayoutContentHAlignment() = 0;
 	virtual const VAlignment* GetLayoutContentVAlignment() = 0;
 	virtual const Size& GetLayoutDesiredSize() const = 0;
 	virtual void SetLayoutDesiredSize(const Size& size) = 0;
 	virtual void SetLayoutFinalLocalRect(const RectF& rect) = 0;
-	virtual const RectF& GetLayoutFinalLocalRect() = 0;
+	virtual const RectF& GetLayoutFinalLocalRect() const = 0;
 	virtual void SetLayoutFinalGlobalRect(const RectF& rect) = 0;
 
 	virtual int GetVisualChildrenCount() const = 0;
@@ -61,6 +63,7 @@ protected:
 	virtual ~ILayoutElement();
 
 	template<class TPanel> friend class detail::LayoutImpl;
+	friend class detail::LayoutHelper;
 };
 
 
@@ -133,6 +136,9 @@ class LayoutHelper
 {
 public:
 
+	// 単純に element のサイズによった Measure を行う。MeasureOverride() の中で使用することを想定している。
+	static Size MeasureElement(ILayoutElement* element, const Size& constraint);
+
 	//static void ForEachVisualChildren(UIElement* element, std::function<void(UIElement* child)> func)
 	//{
 	//	int count = element->GetVisualChildrenCount();
@@ -142,7 +148,7 @@ public:
 	//	}
 	//}
 
-	static void AdjustHorizontalAlignment(const Size& areaSize, const Size& desiredSize, HAlignment align, RectF* outRect)
+	static void AdjustHorizontalAlignment(const Size& areaSize, const Size& desiredSize, bool widthNan, HAlignment align, RectF* outRect)
 	{
 		switch (align)
 		{
@@ -159,7 +165,7 @@ public:
 			outRect->width = desiredSize.width;
 			break;
 		case HAlignment::Stretch:
-			if (Math::IsNaN(desiredSize.width))
+			if (widthNan)
 			{
 				outRect->x = 0;
 				outRect->width = areaSize.width;
@@ -169,11 +175,14 @@ public:
 				outRect->x = (areaSize.width - desiredSize.width) / 2;
 				outRect->width = desiredSize.width;
 			}
+
+			//outRect->x = 0;
+			//outRect->width = areaSize.width;
 			break;
 		}
 	}
 
-	static void AdjustVerticalAlignment(const Size& areaSize, const Size& desiredSize, VAlignment align, RectF* outRect)
+	static void AdjustVerticalAlignment(const Size& areaSize, const Size& desiredSize, bool heightNan, VAlignment align, RectF* outRect)
 	{
 		switch (align)
 		{
@@ -190,7 +199,7 @@ public:
 			outRect->height = desiredSize.height;
 			break;
 		case VAlignment::Stretch:
-			if (Math::IsNaN(desiredSize.height))
+			if (heightNan)
 			{
 				outRect->y = 0;
 				outRect->height = areaSize.height;
@@ -200,6 +209,7 @@ public:
 				outRect->y = (areaSize.height - desiredSize.height) / 2;
 				outRect->height = desiredSize.height;
 			}
+
 			break;
 		}
 	}

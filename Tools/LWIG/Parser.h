@@ -30,11 +30,13 @@ private:
 	void ParseStructDecl(const Decl& decl);
 	void ParseFieldDecl(const Decl& decl, TypeInfoPtr parent);
 	void ParseMethodDecl(const Decl& decl, TypeInfoPtr parent);
-	void ParseParamsDecl(TokenItr begin, TokenItr end, MethodInfoPtr parent);
+	void ParseParamListDecl(TokenItr begin, TokenItr end, MethodInfoPtr parent);
+	void ParseParamDecl(TokenItr begin, TokenItr end, MethodInfoPtr parent, bool isDelegate);
 	void ParseParamType(TokenItr begin, TokenItr end, String* outName, int* outPointerLevel, bool* outHasConst, bool* outHasVirtual);
 	void ParseClassDecl(const Decl& decl);
 	void ParseEnumDecl(const Decl& decl);
 	void ParseEnumMemberDecl(TokenItr begin, TokenItr end, TypeInfoPtr parent);
+	void ParseDelegateDecl(const Decl& decl);
 	void ParseDocument(const Decl& decl);
 	void ParseAccessLevel(const Decl& decl);
 

@@ -33,7 +33,7 @@ Sprite::~Sprite()
 //------------------------------------------------------------------------------
 void Sprite::Initialize(SceneGraph* owner)
 {
-	LN_FAIL_CHECK_ARG(owner != nullptr) return;
+	if (LN_CHECK_ARG(owner != nullptr)) return;
 
 	VisualNode::Initialize(owner, 1);
 	m_srcRect.Set(0, 0, -1, -1);
@@ -48,7 +48,7 @@ void Sprite::Initialize(SceneGraph* owner)
 //------------------------------------------------------------------------------
 void Sprite::SetTexture(Texture* texture)
 {
-	LN_FAIL_CHECK_ARG(m_materialList != nullptr) return;
+	if (LN_CHECK_ARG(m_materialList != nullptr)) return;
 	m_materialList->GetAt(0)->SetMaterialTexture(texture);
 	UpdateVertexData();
 }
@@ -62,7 +62,7 @@ void Sprite::SetSize(const Size& size)
 //------------------------------------------------------------------------------
 Texture* Sprite::GetTexture() const
 {
-	LN_FAIL_CHECK_ARG(m_materialList != nullptr) return nullptr;
+	if (LN_CHECK_ARG(m_materialList != nullptr)) return nullptr;
 	return m_materialList->GetAt(0)->GetMaterialTexture(nullptr);
 }
 
@@ -95,8 +95,8 @@ void Sprite::SetAnchorPoint(float ratioX, float ratioY)
 void Sprite::RenderSprite(DrawList* renderer, SpriteBaseDirection dir)
 {
 	Material* mat = GetMainMaterial();
-	Color colorScale = mat->GetColorScale();
-	colorScale.a *= mat->GetOpacity();
+	Color colorScale = GetColorScale();
+	colorScale.a *= GetOpacity();
 	renderer->SetTransform(m_combinedGlobalMatrix);
 	renderer->DrawSprite(Vector3::Zero, m_renderSize, m_anchor, GetTexture(), m_renderSourceRect, colorScale, dir, GetMainMaterial());
 }

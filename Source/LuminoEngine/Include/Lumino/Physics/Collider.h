@@ -1,14 +1,24 @@
 ﻿
 #pragma once
 #include "Common.h"
-#include "BodyBase.h"
+#include "PhysicsObject.h"
 
 LN_NAMESPACE_BEGIN
 class CollisionShape;
 
 /**
+	@brief		衝突判定に関係するイベントを処理するハンドラです。
+	@param[in]	obj		: 衝突した PhysicsObject
+*/
+LN_DELEGATE()
+using CollisionEventHandler = Delegate<void(PhysicsObject* obj)>;
+
+
+
+/**
 	@brief	
 */
+LN_CLASS()
 class Collider
 	: public PhysicsObject
 {
@@ -26,23 +36,29 @@ public:
 	const Matrix& GetTransform() const;
 
 	/** 衝突判定形状を追加します。*/
+	LN_METHOD()
 	void AddShape(CollisionShape* shape);
 
 	/** この Collider が衝突判定のためのトリガーであるかを設定します。初期値は false です。*/
+	LN_METHOD(Property)
 	void SetTrigger(bool enabled);
 
 	/** この Collider が衝突判定のためのトリガーであるかを取得します。*/
+	LN_METHOD(Property)
 	bool IsTrigger() const;
 
 
 	/** OnTriggerEnter イベントの通知を受け取るコールバックを登録します。*/
-	void ConnectOnTriggerEnter(std::function<void(PhysicsObject*)> handler);
+	LN_METHOD(Event)
+	EventConnection ConnectOnTriggerEnter(CollisionEventHandler handler);
 
 	/** OnTriggerLeave イベントの通知を受け取るコールバックを登録します。*/
-	void ConnectOnTriggerLeave(std::function<void(PhysicsObject*)> handler);
+	LN_METHOD(Event)
+	EventConnection ConnectOnTriggerLeave(CollisionEventHandler handler);
 
 	/** OnTriggerStay イベントの通知を受け取るコールバックを登録します。*/
-	void ConnectOnTriggerStay(std::function<void(PhysicsObject*)> handler);
+	LN_METHOD(Event)
+	EventConnection ConnectOnTriggerStay(CollisionEventHandler handler);
 
 protected:
 	virtual void OnBeforeStepSimulation() override;
@@ -50,7 +66,7 @@ protected:
 	virtual void OnRemovedFromWorld() override;
 
 	/** 他の Collider または RigidBody が、この Collider との接触を開始したときに呼び出されます。*/
-	virtual void OnTriggerEnter(PhysicsObject* otherObject);
+	void OnTriggerEnter(PhysicsObject* otherObject);
 
 	/** 他の Collider または RigidBody が、この Collider との接触を終了したときに呼び出されます。*/
 	virtual void OnTriggerLeave(PhysicsObject* otherObject);
@@ -61,6 +77,8 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	Collider();
 	virtual ~Collider();
+
+	LN_METHOD()
 	void Initialize();
 
 private:
@@ -75,9 +93,9 @@ private:
 	bool					m_isTrigger;
 	bool					m_initialUpdate;
 
-	Event<void(PhysicsObject*)>	onTriggerEnter;
-	Event<void(PhysicsObject*)>	onTriggerLeave;
-	Event<void(PhysicsObject*)>	onTriggerStay;
+	CollisionEventHandler::EventType	onTriggerEnter;
+	CollisionEventHandler::EventType	onTriggerLeave;
+	CollisionEventHandler::EventType	onTriggerStay;
 };
 
 LN_NAMESPACE_END

@@ -20,19 +20,13 @@ DX9Renderer::DX9Renderer(DX9GraphicsDevice* device)
 	: m_owner(device)
 	, m_dxDevice(NULL)
 	//, m_currentViewportRect()
-	, m_currentIndexBuffer(NULL)
-	, m_currentDepthBuffer(NULL)
 	, m_currentShaderPass(NULL)
-	, m_sceneBegan(false)
+	, m_defaultDepthBuffer(nullptr)
 	, m_restorationStates(true)
 {
-	memset(m_currentRenderTargets, 0, sizeof(m_currentRenderTargets));
+	memset(m_defaultRenderTargets, 0, sizeof(m_defaultRenderTargets));
 
 	m_dxDevice = device->GetIDirect3DDevice9();
-
-	D3DVIEWPORT9 vp;
-	m_dxDevice->GetViewport(&vp);
-	//SetViewport(RectI(0, 0, vp.Width, vp.Height));
 
 	OnResetDevice();
 }
@@ -40,12 +34,6 @@ DX9Renderer::DX9Renderer(DX9GraphicsDevice* device)
 //------------------------------------------------------------------------------
 DX9Renderer::~DX9Renderer()
 {
-	LN_SAFE_RELEASE(m_currentIndexBuffer);
-	LN_SAFE_RELEASE(m_currentDepthBuffer);
-	for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
-	{
-		LN_SAFE_RELEASE(m_currentRenderTargets[i]);
-	}
 }
 
 //------------------------------------------------------------------------------
@@ -65,51 +53,6 @@ void DX9Renderer::OnResetDevice()
 }
 
 //------------------------------------------------------------------------------
-void DX9Renderer::Begin()
-{
-	if (m_owner->IsStandalone()) {
-		m_dxDevice->BeginScene();
-	}
-	m_sceneBegan = true;
-}
-
-//------------------------------------------------------------------------------
-void DX9Renderer::End()
-{
-	if (m_sceneBegan)
-	{
-		if (m_owner->IsStandalone()) {
-			m_dxDevice->EndScene();
-		}
-		m_sceneBegan = false;
-	}
-}
-
-//------------------------------------------------------------------------------
-void DX9Renderer::SetRenderTarget(int index, ITexture* texture)
-{
-	InternalSetRenderTarget(index, texture, false);
-}
-
-//------------------------------------------------------------------------------
-ITexture* DX9Renderer::GetRenderTarget(int index)
-{
-	return m_currentRenderTargets[index];
-}
-
-//------------------------------------------------------------------------------
-void DX9Renderer::SetDepthBuffer(ITexture* texture)
-{
-	InternalSetDepthBuffer(texture, false);
-}
-
-////------------------------------------------------------------------------------
-//void DX9Renderer::SetViewport(const RectI& rect)
-//{
-//	InternalSetViewport(rect, false);
-//}
-
-//------------------------------------------------------------------------------
 void DX9Renderer::RestoreStatus()
 {
 	// プログラム実行中、特に変化しないステートはここで設定してしまう
@@ -127,9 +70,6 @@ void DX9Renderer::RestoreStatus()
 
 	m_dxDevice->SetTexture(0, NULL);
 	m_dxDevice->SetFVF(0);
-
-	OnUpdateRenderState(m_currentRenderState, m_currentRenderState, true);
-	OnUpdateDepthStencilState(m_currentDepthStencilState, m_currentDepthStencilState, true);
 }
 
 //------------------------------------------------------------------------------
@@ -163,24 +103,21 @@ void DX9Renderer::OnEnterRenderState()
 
 		device->GetTexture(0, &m_state_pTexture);
 		device->GetFVF(&m_state_FVF);
+
+		for (int i = 0; i < Graphics::MaxMultiRenderTargets; i++)
+		{
+			device->GetRenderTarget(i, &m_defaultRenderTargets[i]);
+		}
+		device->GetDepthStencilSurface(&m_defaultDepthBuffer);
+
+
+
+
+		//D3DCOLOR dxc = 0;
+		//LN_COMCALL(m_dxDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER, dxc, 0, 0));
 	}
 
 	RestoreStatus();
-
-	OnUpdateRenderState(m_currentRenderState, m_currentRenderState, true);
-	OnUpdateDepthStencilState(m_currentDepthStencilState, m_currentDepthStencilState, true);
-	for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
-	{
-		if (i != 0 || m_currentRenderTargets[i] != NULL) {	// 0 に NULL を指定することはできない。なのでやむを得ず何もしない
-			InternalSetRenderTarget(i, m_currentRenderTargets[i], true);
-		}
-	}
-	InternalSetDepthBuffer(m_currentDepthBuffer, true);
-	//InternalSetViewport(m_currentViewportRect, true);
-	//	InternalSetVertexBuffer(0, m_currentVertexBuffer, true);
-	InternalSetIndexBuffer(m_currentIndexBuffer, true);
-
-	// TODO: ↑Luminoが管理するステートの設定はIRendererにもってく
 }
 
 //------------------------------------------------------------------------------
@@ -231,6 +168,59 @@ void DX9Renderer::OnLeaveRenderState()
 		LN_SAFE_RELEASE(m_state_pTexture);
 
 		device->SetFVF(m_state_FVF);
+
+
+		for (int i = 0; i < Graphics::MaxMultiRenderTargets; i++)
+		{
+			device->SetRenderTarget(i, m_defaultRenderTargets[i]);
+			LN_SAFE_RELEASE(m_defaultRenderTargets[i]);
+		}
+		device->SetDepthStencilSurface(m_defaultDepthBuffer);
+		LN_SAFE_RELEASE(m_defaultDepthBuffer);
+	}
+}
+
+//------------------------------------------------------------------------------
+void DX9Renderer::OnBeginRendering()
+{
+	if (m_owner->IsStandalone())
+	{
+		m_dxDevice->BeginScene();
+	}
+}
+
+//------------------------------------------------------------------------------
+void DX9Renderer::OnEndRendering()
+{
+	if (m_owner->IsStandalone())
+	{
+		m_dxDevice->EndScene();
+	}
+}
+
+//------------------------------------------------------------------------------
+void DX9Renderer::OnUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, ITexture* depthBuffer)
+{
+	for (int i = 0; i < renderTargetsCount; i++)
+	{
+		if (renderTargets[i] != nullptr)
+		{
+			LN_COMCALL(m_dxDevice->SetRenderTarget(i, static_cast<DX9TextureBase*>(renderTargets[i])->GetIDirect3DSurface9()));
+		}
+		else
+		{
+			LN_COMCALL(m_dxDevice->SetRenderTarget(i, m_defaultRenderTargets[i]));
+		}
+	}
+
+
+	if (depthBuffer != nullptr)
+	{
+		m_dxDevice->SetDepthStencilSurface(static_cast<DX9TextureBase*>(depthBuffer)->GetIDirect3DSurface9());
+	}
+	else
+	{
+		m_dxDevice->SetDepthStencilSurface(m_defaultDepthBuffer);
 	}
 }
 
@@ -387,28 +377,25 @@ void DX9Renderer::OnUpdatePrimitiveData(IVertexDeclaration* decls, const List<Re
 	}
 
 	// IndexBuffer
-	InternalSetIndexBuffer(indexBuffer, false);
+	DX9IndexBuffer* ib = static_cast<DX9IndexBuffer*>(indexBuffer);
+	LN_COMCALL(m_dxDevice->SetIndices((ib) ? ib->GetDxIndexBuffer() : NULL));
 }
 
 //------------------------------------------------------------------------------
 void DX9Renderer::OnClear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
-	// ※レンダリングターゲットと深度バッファのサイズが一致している必要がある。
-	//   していない場合、エラーとならないがクリアされない。
-	if (m_currentDepthBuffer != nullptr)
-	{
-		LN_CHECK_STATE(m_currentRenderTargets[0]->GetSize() == m_currentDepthBuffer->GetSize());
-	}
+	//const SizeI& viewSize = m_currentRenderTargets[0]->GetSize();
+	//D3DVIEWPORT9 vp = { 0, 0, viewSize.width, viewSize.height, 0.0f, 1.0f };
+	//LN_COMCALL(m_dxDevice->SetViewport(&vp));
 
-	const SizeI& viewSize = m_currentRenderTargets[0]->GetSize();
-	D3DVIEWPORT9 vp = { 0, 0, viewSize.width, viewSize.height, 0.0f, 1.0f };
-	LN_COMCALL(m_dxDevice->SetViewport(&vp));
+
+	bool hasDepth = (GetDepthBuffer() != nullptr || m_defaultDepthBuffer != nullptr);
 
 	DWORD flag = 0;
-	if (flags.TestFlag(ClearFlags::Color)) { flag |= D3DCLEAR_TARGET; }
-	if (m_currentDepthBuffer && flags.TestFlag(ClearFlags::Depth)) { flag |= (D3DCLEAR_ZBUFFER); }
-	if (m_currentDepthBuffer && flags.TestFlag(ClearFlags::Stencil)) { flag |= (D3DCLEAR_STENCIL); }
-	if (flag == 0) { return; }
+	if (flags.TestFlag(ClearFlags::Color)) flag |= D3DCLEAR_TARGET;
+	if (hasDepth && flags.TestFlag(ClearFlags::Depth)) flag |= (D3DCLEAR_ZBUFFER);
+	if (hasDepth && flags.TestFlag(ClearFlags::Stencil)) flag |= (D3DCLEAR_STENCIL);
+	if (flag == 0) return;
 
 	Color32 c;
 	c.r = static_cast<uint8_t>(color.r * 255);
@@ -422,11 +409,11 @@ void DX9Renderer::OnClear(ClearFlags flags, const Color& color, float z, uint8_t
 //------------------------------------------------------------------------------
 void DX9Renderer::OnDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
 {
-	const SizeI& viewSize = m_currentRenderTargets[0]->GetSize();
-	D3DVIEWPORT9 vp = { 0, 0, viewSize.width, viewSize.height, 0.0f, 1.0f };
-	LN_COMCALL(m_dxDevice->SetViewport(&vp));
+	//const SizeI& viewSize = m_currentRenderTargets[0]->GetSize();
+	//D3DVIEWPORT9 vp = { 0, 0, viewSize.width, viewSize.height, 0.0f, 1.0f };
+	//LN_COMCALL(m_dxDevice->SetViewport(&vp));
 
-	DX9VertexDeclaration* decl = static_cast<DX9VertexDeclaration*>(m_currentVertexDeclaration.Get());
+	DX9VertexDeclaration* decl = static_cast<DX9VertexDeclaration*>(GetVertexDeclaration());
 
 	D3DPRIMITIVETYPE dx_prim = D3DPT_TRIANGLELIST;
 	switch (primitive)
@@ -458,14 +445,14 @@ void DX9Renderer::OnDrawPrimitive(PrimitiveType primitive, int startVertex, int 
 //------------------------------------------------------------------------------
 void DX9Renderer::OnDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
 {
-	const SizeI& viewSize = m_currentRenderTargets[0]->GetSize();
-	D3DVIEWPORT9 vp = { 0, 0, viewSize.width, viewSize.height, 0.0f, 1.0f };
-	LN_COMCALL(m_dxDevice->SetViewport(&vp));
+	//const SizeI& viewSize = m_currentRenderTargets[0]->GetSize();
+	//D3DVIEWPORT9 vp = { 0, 0, viewSize.width, viewSize.height, 0.0f, 1.0f };
+	//LN_COMCALL(m_dxDevice->SetViewport(&vp));
 
-	DX9VertexDeclaration* decl = static_cast<DX9VertexDeclaration*>(m_currentVertexDeclaration.Get());
+	DX9VertexDeclaration* decl = static_cast<DX9VertexDeclaration*>(GetVertexDeclaration());
 
-	// TODO: とりあえず 0 番ストリームで頂点数を計る
-	size_t vertexCount = m_currentVertexBuffers[0]->GetByteCount() / decl->GetVertexStride(0);
+	// 0 番ストリームで頂点数を計る
+	size_t vertexCount = GetVertexBuffer(0)->GetByteCount() / decl->GetVertexStride(0);
 
 	D3DPRIMITIVETYPE dx_prim = D3DPT_TRIANGLELIST;
 	switch (primitive)
@@ -501,43 +488,6 @@ void DX9Renderer::OnDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex
 			primitiveCount));
 }
 
-//------------------------------------------------------------------------------
-void DX9Renderer::InternalSetRenderTarget(int index, ITexture* texture, bool reset)
-{
-	if (m_currentRenderTargets[index] != texture || reset)
-	{
-		if (texture) {
-			LN_THROW((texture->GetTextureType() == TextureType_RenderTarget), ArgumentException);
-			LN_COMCALL(m_dxDevice->SetRenderTarget(index, ((DX9TextureBase*)texture)->GetIDirect3DSurface9()));
-		}
-		else {
-			LN_COMCALL(m_dxDevice->SetRenderTarget(index, NULL));
-		}
-		LN_REFOBJ_SET(m_currentRenderTargets[index], static_cast<DX9RenderTargetTexture*>(texture));
-
-		//// index 0 の場合はビューポートを再設定
-		//if (index == 0)
-		//{
-		//	SetViewport(RectI(PointI(0, 0), m_currentRenderTargets[0]->GetSize()));
-		//}
-	}
-}
-
-//------------------------------------------------------------------------------
-void DX9Renderer::InternalSetDepthBuffer(ITexture* texture, bool reset)
-{
-	if (m_currentDepthBuffer != texture || reset)
-	{
-		if (texture) {
-			LN_THROW((texture->GetTextureType() == TextureType_DepthBuffer), ArgumentException);
-			m_dxDevice->SetDepthStencilSurface(((DX9TextureBase*)texture)->GetIDirect3DSurface9());
-		}
-		else {
-			m_dxDevice->SetDepthStencilSurface(NULL);
-		}
-		LN_REFOBJ_SET(m_currentDepthBuffer, static_cast<DX9DepthBuffer*>(texture));
-	}
-}
 
 ////------------------------------------------------------------------------------
 //void DX9Renderer::InternalSetViewport(const RectI& rect, bool reset)
@@ -553,18 +503,6 @@ void DX9Renderer::InternalSetDepthBuffer(ITexture* texture, bool reset)
 //	LN_COMCALL(m_dxDevice->SetViewport(&viewport));
 //	m_currentViewportRect = rect;
 //}
-
-//------------------------------------------------------------------------------
-void DX9Renderer::InternalSetIndexBuffer(IIndexBuffer* indexBuffer, bool reset)
-{
-	if (m_currentIndexBuffer != indexBuffer || reset)
-	{
-		DX9IndexBuffer* ib = static_cast<DX9IndexBuffer*>(indexBuffer);
-		LN_COMCALL(m_dxDevice->SetIndices((ib) ? ib->GetDxIndexBuffer() : NULL));
-		LN_REFOBJ_SET(m_currentIndexBuffer, ib);
-	}
-}
-
 
 } // namespace Driver
 LN_NAMESPACE_GRAPHICS_END

@@ -120,6 +120,8 @@ public:
 	/** この文字列参照のコピーを持つ文字列を作成します。*/
 	GenericString<TChar> ToString() const;
 
+	size_t GetHashCode() const;
+
 private:
 	const TChar*						m_str;
 	int									m_pos;

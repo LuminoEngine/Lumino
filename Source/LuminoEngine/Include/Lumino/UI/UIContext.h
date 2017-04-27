@@ -15,7 +15,7 @@ public:
 	static UIContext* GetMainContext();
 
 public:
-	UILayoutView* GetMainWindowView() { return m_mainWindowView; }
+	//UILayoutView* GetMainWindowView() { return m_mainWindowView; }
 	UIStyleTable* GetRootStyleTable() { return m_rootStyleTable; }
 
 LN_INTERNAL_ACCESS:
@@ -24,7 +24,11 @@ LN_INTERNAL_ACCESS:
 	void Initialize(detail::UIManager* manager);
 
 	void SetFocusElement(UIElement* element);
-	UIElement* SetFocusElement() { return m_focusElement; }
+	UIElement* SetFocusElement() { return m_focusElement; }	// キーボードフォーカス
+
+	void CaptureMouse(UIElement* element);
+	void ReleaseMouseCapture(UIElement* element);
+
 	void InjectElapsedTime(float elapsedTime);
 	//void AddElement(UIElement* element) { m_allElementList.Add(element); }
 	//void RemoveElement(UIElement* element) { m_allElementList.Remove(element); }
@@ -34,7 +38,7 @@ private:
 
 	detail::UIManager*	m_manager;
 	UIStyleTable*		m_rootStyleTable;
-	UILayoutView*		m_mainWindowView;
+	//UILayoutView*		m_mainWindowView;
 	UIElement*			m_focusElement;
 	//List<UIElement*>	m_allElementList;
 };

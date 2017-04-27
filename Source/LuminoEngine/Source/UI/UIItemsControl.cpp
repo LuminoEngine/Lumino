@@ -1,10 +1,11 @@
-
+﻿
 #include "Internal.h"
 #include <Lumino/UI/UIItemsControl.h>
 #include <Lumino/UI/UILayoutPanel.h>
 
 LN_NAMESPACE_BEGIN
 
+#if 0
 //==============================================================================
 // UIItemsControl
 //==============================================================================
@@ -25,8 +26,16 @@ UIItemsControl::~UIItemsControl()
 //------------------------------------------------------------------------------
 void UIItemsControl::Initialize(detail::UIManager* manager)
 {
-	UIElement::Initialize(manager);
+	UIControl::Initialize(manager);
 	m_items = RefPtr<UIElementCollection>::MakeRef(this);
+
+	auto panel = NewObject<UILayoutPanel>(manager);
+	SetLayoutPanel(panel);
+
+
+	// TODO:
+	//SetVContentAlignment(VAlignment::Stretch);
+	//SetHContentAlignment(HAlignment::Stretch);
 }
 
 //------------------------------------------------------------------------------
@@ -36,17 +45,48 @@ UIElementCollection* UIItemsControl::GetItems() const
 }
 
 //------------------------------------------------------------------------------
-void UIItemsControl::SetItemsHostPanel(UILayoutPanel* panel)
+void UIItemsControl::AddChild(UIElement* element)
 {
-	LN_CHECK_ARG(panel != nullptr);
-	SetVisualTreeRoot(panel);
-	m_itemsHostPanel = panel;
+	m_items->Add(element);
+}
+
+//------------------------------------------------------------------------------
+void UIItemsControl::RemoveChild(UIElement* element)
+{
+	m_items->Remove(element);
+}
+
+//------------------------------------------------------------------------------
+void UIItemsControl::SetLayoutPanel(UILayoutPanel* panel)
+{
+	UILayoutPanel* oldPanel = m_itemsHostPanel;
+	UILayoutPanel* newPanel = panel;
+
+	// 既に持っていれば取り除いておく
+	if (m_itemsHostPanel != nullptr && m_itemsHostPanel != panel)
+	{
+		RemoveVisualChild(m_itemsHostPanel);
+		m_itemsHostPanel = nullptr;
+	}
+
+	// 新しく保持する
+	if (panel != nullptr)
+	{
+		AddVisualChild(panel);
+		m_itemsHostPanel = panel;
+	}
+
+	// 変更通知
+	if (oldPanel != newPanel)
+	{
+		OnLayoutPanelChanged(newPanel);
+	}
 }
 
 //------------------------------------------------------------------------------
 //int UIItemsControl::GetVisualChildrenCount() const
 //{
-//	return 1;	// ItemsHostPanel 1��
+//	return 1;	// ItemsHostPanel 1つ分
 //}
 //
 ////------------------------------------------------------------------------------
@@ -82,6 +122,12 @@ void UIItemsControl::SetItemsHostPanel(UILayoutPanel* panel)
 //	return finalSize;
 //}
 
+
+//------------------------------------------------------------------------------
+void UIItemsControl::OnLayoutPanelChanged(UILayoutPanel* newPanel)
+{
+}
+
 //------------------------------------------------------------------------------
 void UIItemsControl::OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e)
 {
@@ -95,17 +141,18 @@ void UIItemsControl::OnChildCollectionChanged(const tr::ChildCollectionChangedAr
 			LN_NOTIMPLEMENTED();
 			break;
 		case tr::NotifyCollectionChangedAction::Remove:
-			LN_NOTIMPLEMENTED();
+			m_itemsHostPanel->GetChildren()->RemoveAt(e.oldStartingIndex);
 			break;
 		case tr::NotifyCollectionChangedAction::Replace:
 			LN_NOTIMPLEMENTED();
 			break;
 		case tr::NotifyCollectionChangedAction::Reset:
-			LN_NOTIMPLEMENTED();
+			m_itemsHostPanel->GetChildren()->Clear();
 			break;
 		default:
 			break;
 	}
 }
+#endif
 
 LN_NAMESPACE_END

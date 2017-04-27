@@ -2,6 +2,7 @@
 
 #define LN_INTERNAL_ACCESS				public
 #define LN_PROTECTED_INTERNAL_ACCESS	public
+#define LN_CONSTRUCT_ACCESS				public
 
 #include <gtest/gtest.h>
 #include <LuminoCore.h>

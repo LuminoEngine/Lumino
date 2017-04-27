@@ -5,6 +5,8 @@ using System.Text;
 
 namespace Lumino
 {
+%Delegates%
+
 %Classes%
 
 

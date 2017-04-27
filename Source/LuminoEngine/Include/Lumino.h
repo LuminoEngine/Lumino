@@ -2,7 +2,7 @@
 #pragma once
 #include "LuminoEngine.h"
 
-#if defined(_WIN32)
+#if defined(_WIN32) && !defined(LUMINO_LINK_LIBRARY_DISABLED)
 	#pragma comment(lib, "imagehlp.lib")
 	#pragma comment(lib, "msacm32.lib")
 	#pragma comment(lib, "Opengl32.lib")

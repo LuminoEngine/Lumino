@@ -4,12 +4,15 @@
 #include <Lumino/Graphics/Text/Font.h>
 #include <Lumino/Graphics/Text/GlyphRun.h>
 #include "../RenderingCommand.h"
+#include "TextLayoutEngine.h"
 
 LN_NAMESPACE_BEGIN
+struct Vertex;
+
 namespace detail {
 
 class TextRendererCore
-	: public RefObject
+	: public GraphicsResourceObject
 {
 public:
 	struct GlyphRunData
@@ -56,8 +59,12 @@ private:
 	void InternalDrawRectangle(const Matrix& transform, const RectF& rect, const RectF& srcUVRect, const Color& color);
 	void Flush(FontGlyphTextureCache* cache);
 
-	GraphicsManager*		m_manager;
-	Driver::IRenderer*		m_renderer;
+	virtual void OnChangeDevice(Driver::IGraphicsDevice* device) override;
+	void CreateDeviceResources();
+	void ReleaseDeviceResources();
+
+	//GraphicsManager*		m_manager;
+	//Driver::IRenderer*		m_renderer;
 	RefPtr<Driver::IVertexDeclaration>	m_vertexDeclaration;
 	Driver::IVertexBuffer*	m_vertexBuffer;
 	Driver::IIndexBuffer*	m_indexBuffer;
@@ -99,7 +106,6 @@ public:
 
 	void SetTransform(const Matrix& matrix);
 	void SetViewInfo(const Matrix& viewProj, const SizeI& viewPixelSize);
-	void SetState(Font* font, Brush* fillBrush);
 
 	void DrawGlyphRun(const Matrix& transform, const PointI& position, GlyphRun* glyphRun);
 	void DrawGlyphRun(const Matrix& transform, const PointF& position, GlyphRun* glyphRun);	// SetFont 無視
@@ -131,6 +137,71 @@ private:
 	RefPtr<Brush>		m_fillBrush;
 	bool				m_stateModified;
 	bool				m_flushRequested;
+};
+
+
+
+
+
+
+struct VectorGlyphData
+{
+	int		cacheGlyphInfoHandle;
+	Matrix	transform;
+	PointF	origin;		// baseline origin
+};
+
+class VectorTextRendererCore
+	: public RefObject
+{
+public:
+	VectorTextRendererCore();
+	virtual ~VectorTextRendererCore();
+	void Initialize(GraphicsManager* manager);
+
+	void RequestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex);
+	void Render(const VectorGlyphData* dataList, int dataCount, VectorFontGlyphCache* cache, Brush* fillBrush);
+
+private:
+	GraphicsManager*		m_manager;
+	Driver::IRenderer*		m_renderer;
+	Driver::IVertexBuffer*	m_vertexBuffer;
+	Driver::IIndexBuffer*	m_indexBuffer;
+	CacheBuffer<Vertex>		m_vertexCache;
+	CacheBuffer<uint16_t>	m_indexCache;
+};
+
+
+class VectorTextRenderer
+	: public RefObject
+	, public detail::IRendererPloxy
+{
+public:
+	VectorTextRenderer();
+	virtual ~VectorTextRenderer();
+	void Initialize(GraphicsManager* manager);
+
+	void DrawString(const Matrix& transform, const UTF32* str, int length, const RectF& rect, TextLayoutOptions options);
+	void DrawChar(const Matrix& transform, UTF32 ch, const RectF& rect, TextLayoutOptions options);
+
+	virtual bool IsStandaloneShader() const { return false; }
+	virtual void Flush() override;
+	virtual void OnActivated() override {}
+	virtual void OnDeactivated() override { Flush(); }
+	virtual void OnSetState(const DrawElementBatch* state);
+
+	GraphicsManager* GetManager() const { return m_manager; }
+
+private:
+	void DrawInternal(const Matrix& transform);
+
+LN_INTERNAL_ACCESS:
+	GraphicsManager*				m_manager;
+	RefPtr<VectorTextRendererCore>	m_core;
+	RefPtr<RawFont>					m_currentFont;
+	RefPtr<Brush>					m_fillBrush;
+	List<VectorGlyphData>			m_bufferingCache;
+	TextLayoutEngine2::ResultData	m_layoutResult;
 };
 
 } // namespace detail

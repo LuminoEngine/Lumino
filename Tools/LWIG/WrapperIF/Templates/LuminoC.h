@@ -21,3 +21,5 @@ typedef intptr_t LNUserData;
 
 %Enums%
 
+%Delegates%
+

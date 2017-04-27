@@ -42,7 +42,7 @@ void JsonReader::Parse(const TCHAR* text, int len)
 //------------------------------------------------------------------------------
 void JsonReader::Parse(TextReader* textReader)
 {
-	LN_CHECK_ARG(textReader != nullptr);
+	if (LN_CHECK_ARG(textReader != nullptr)) return;
 
 	m_reader = textReader;
 
@@ -559,35 +559,35 @@ const String& JsonReader2::GetPropertyName() const
 //------------------------------------------------------------------------------
 bool JsonReader2::GetBoolValue() const
 {
-	LN_FAIL_CHECK_STATE(m_currentToken.type == JsonToken::Boolean) return false;
+	if (LN_CHECK_STATE(m_currentToken.type == JsonToken::Boolean)) return false;
 	return m_valueData.m_bool;
 }
 
 //------------------------------------------------------------------------------
 int32_t JsonReader2::GetInt32Value() const
 {
-	LN_FAIL_CHECK_STATE(m_currentToken.type == JsonToken::Int32) return 0;
+	if (LN_CHECK_STATE(m_currentToken.type == JsonToken::Int32)) return 0;
 	return m_valueData.m_int32;
 }
 
 //------------------------------------------------------------------------------
 int64_t JsonReader2::GetInt64Value() const
 {
-	LN_FAIL_CHECK_STATE(m_currentToken.type == JsonToken::Int64) return 0;
+	if (LN_CHECK_STATE(m_currentToken.type == JsonToken::Int64)) return 0;
 	return m_valueData.m_int64;
 }
 
 //------------------------------------------------------------------------------
 float JsonReader2::GetFloatValue() const
 {
-	LN_FAIL_CHECK_STATE(m_currentToken.type == JsonToken::Float) return 0;
+	if (LN_CHECK_STATE(m_currentToken.type == JsonToken::Float)) return 0;
 	return m_valueData.m_float;
 }
 
 //------------------------------------------------------------------------------
 double JsonReader2::GetDoubleValue() const
 {
-	LN_FAIL_CHECK_STATE(m_currentToken.type == JsonToken::Double) return 0;
+	if (LN_CHECK_STATE(m_currentToken.type == JsonToken::Double)) return 0;
 	return m_valueData.m_double;
 }
 

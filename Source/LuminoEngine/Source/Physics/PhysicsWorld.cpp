@@ -260,7 +260,7 @@ void PhysicsWorld::DrawDebugShapes(IDebugRenderer* renderer)
 //------------------------------------------------------------------------------
 void PhysicsWorld::AddPhysicsObject(PhysicsObject* physicsObject)
 {
-	LN_FAIL_CHECK_ARG(physicsObject != nullptr) return;
+	if (LN_CHECK_ARG(physicsObject != nullptr)) return;
 
 	// 別のワールドに属していれば除外する
 	if (physicsObject->GetOwnerWorld() != nullptr)
@@ -281,7 +281,7 @@ void PhysicsWorld::AddJoint(Joint* joint)
 //------------------------------------------------------------------------------
 void PhysicsWorld::RemovePhysicsObject(PhysicsObject* physicsObject)
 {
-	LN_FAIL_CHECK_ARG(physicsObject != nullptr) return;
+	if (LN_CHECK_ARG(physicsObject != nullptr)) return;
 	if (physicsObject->GetOwnerWorld() != this) return;
 
 	m_physicsObjectList.Remove(physicsObject);

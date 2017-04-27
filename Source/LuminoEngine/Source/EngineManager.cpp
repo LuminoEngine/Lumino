@@ -105,6 +105,12 @@ void EngineSettings::SetUserWindowHandle(intptr_t hWnd)	// Qt とかは windows.
 	detail::EngineSettings::instance.userMainWindow = hWnd;
 }
 
+//------------------------------------------------------------------------------
+void EngineSettings::SetD3D9Device(void* device)
+{
+	detail::EngineSettings::instance.D3D9Device = device;
+}
+
 //==============================================================================
 // EngineManager
 //==============================================================================
@@ -148,7 +154,7 @@ EngineManager::EngineManager(const detail::EngineSettings& configData)
 	, m_diagViewer(nullptr)
 	, m_defaultWorld2D(nullptr)
 	, m_defaultWorld3D(nullptr)
-	, m_frameRenderingSkip(false)
+	//, m_frameRenderingSkip(false)
 	, m_frameRenderd(false)
 	, m_commonInitied(false)
 	, m_endRequested(false)
@@ -270,6 +276,7 @@ void EngineManager::Initialize()
 	m_defaultWorld2D = NewObject<World2D>();
 	m_defaultWorld3D = NewObject<World3D>();
 	m_uiManager->CreateGameModeMainFrame(m_defaultWorld2D, m_defaultWorld3D);
+	m_uiManager->GetMainWindow()->SetDelayedRenderingSkip(m_configData.delayedRenderingSkip);
 }
 
 //------------------------------------------------------------------------------
@@ -285,6 +292,8 @@ void EngineManager::InitializeCommon()
 			Logger::Initialize(LogFileName);
 			//Logger2::Initialize("log.txt");
 			//LN_LOG_INFO("Lumino 1.0.0");
+			//LN_LOG_INFO << "Lumino 1.0.0";
+			//LN_LOG_INFO << L"Lumino 1.0.0";
 		}
 		m_commonInitied = true;
 	}
@@ -502,6 +511,7 @@ void EngineManager::InitializeUIManager()
 		data.defaultSkinFilePath = m_configData.defaultSkinFilePath;
 		m_uiManager = LN_NEW detail::UIManager();
 		m_uiManager->Initialize(data);
+
 	}
 }
 
@@ -546,26 +556,17 @@ void EngineManager::InitializeAssetsManager()
 //------------------------------------------------------------------------------
 bool EngineManager::UpdateUnitily()
 {
-	BeginFrameUpdate();
-	try
+	UpdateFrame();
+	//if (BeginRendering())
 	{
-		if (BeginRendering())
-		{
-			Render();
-			EndRendering();
-		}
-		EndFrameUpdate();
-	}
-	catch (...)
-	{
-		EndFrameUpdate();
-		throw;
+		RenderFrame();
+		PresentFrame();
 	}
 	return !IsEndRequested();
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::BeginFrameUpdate()
+void EngineManager::UpdateFrame()
 {
 	m_fpsController.Process();
 
@@ -634,66 +635,54 @@ void EngineManager::BeginFrameUpdate()
 
 		{	// プロファイリング範囲
 			ScopedProfilerSection prof(Profiler::Group_MainThread, Profiler::Section_MainThread_GUILayput);
-			const SizeI& size = m_graphicsManager->GetMainSwapChain()->GetBackBuffer()->GetSize();
-			m_uiManager->GetMainWindow()->UpdateLayout(Size(static_cast<float>(size.width), static_cast<float>(size.height)));
+			//const SizeI& size = m_graphicsManager->GetMainSwapChain()->GetBackBuffer()->GetSize();
+			//m_uiManager->GetMainWindow()->UpdateLayout(Size(static_cast<float>(size.width), static_cast<float>(size.height)));
+			
+			// TODO: 内部に閉じ込める
+			m_uiManager->GetMainWindow()->UpdateLayout(m_uiManager->GetMainWindow()->GetPlatformWindow()->GetSize().ToFloatSize());
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::EndFrameUpdate()
-{
-
-}
-
-//------------------------------------------------------------------------------
-bool EngineManager::BeginRendering()
-{
-	m_frameRenderingSkip = true;
-	if (m_graphicsManager == nullptr || m_uiManager == nullptr) return nullptr;
-
-	// 描画遅延の確認
-	bool skip = false;
-	if (m_graphicsManager->GetRenderingType() == GraphicsRenderingType::Threaded)
-	{
-		if (m_configData.delayedRenderingSkip &&
-			m_graphicsManager->GetRenderingThread()->IsRunning())
-		{
-			skip = true;
-		}
-	}
-	else {
-		// TODO:
-	}
-
-	if (skip)
-		return false;
-
-	m_frameRenderingSkip = false;
-
-
-
-	//if (m_effectManager != nullptr) {
-	//	m_effectManager->PreRender();	// Effekseer の更新スレッドを開始するのはここ
-	//	// TODO: これも UIMainWindow::BeginRendring の中かなぁ・・・
-	//}
-
-	m_uiManager->GetMainWindow()->BeginRendering();
-
-	m_frameRenderd = true;
-	return true;
-}
+//bool EngineManager::BeginRendering()
+//{
+//	m_frameRenderingSkip = true;
+//	if (m_graphicsManager == nullptr || m_uiManager == nullptr) return nullptr;
+//
+//	// 描画遅延の確認
+//	bool skip = false;
+//	if (m_graphicsManager->GetRenderingType() == GraphicsRenderingType::Threaded)
+//	{
+//		if (m_configData.delayedRenderingSkip &&
+//			m_graphicsManager->GetRenderingThread()->IsRunning())
+//		{
+//			skip = true;
+//		}
+//	}
+//	else {
+//		// TODO:
+//	}
+//
+//	if (skip)
+//		return false;
+//
+//	m_frameRenderingSkip = false;
+//
+//
+//
+//	//if (m_effectManager != nullptr) {
+//	//	m_effectManager->PreRender();	// Effekseer の更新スレッドを開始するのはここ
+//	//	// TODO: これも UIMainWindow::BeginRendring の中かなぁ・・・
+//	//}
+//
+//
+//	m_frameRenderd = true;
+//	return true;
+//}
 
 //------------------------------------------------------------------------------
-void EngineManager::EndRendering()
-{
-	if (m_graphicsManager == nullptr || m_frameRenderingSkip) return;
-
-	m_uiManager->GetMainWindow()->EndRendering();
-}
-
-//------------------------------------------------------------------------------
-void EngineManager::Render()
+void EngineManager::RenderFrame()
 {
 	if (m_graphicsManager != nullptr)
 	{
@@ -714,6 +703,19 @@ void EngineManager::Render()
 
 		//g->PopState();
 	}
+}
+
+//------------------------------------------------------------------------------
+void EngineManager::EndRendering()
+{
+}
+
+//------------------------------------------------------------------------------
+void EngineManager::PresentFrame()
+{
+	if (m_graphicsManager == nullptr/* || m_frameRenderingSkip*/) return;
+
+	m_uiManager->GetMainWindow()->PresentRenderingContexts();
 }
 
 //------------------------------------------------------------------------------
@@ -752,7 +754,7 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 	UILayoutView* uiView = nullptr;
 	if (m_uiManager != nullptr)
 	{
-		uiView = m_uiManager->GetMainWindow()->GetMainUIContext()->GetMainWindowView();
+		uiView = m_uiManager->GetMainWindow();
 	}
 
 

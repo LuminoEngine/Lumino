@@ -33,9 +33,15 @@ GlyphRun::~GlyphRun()
 }
 
 //------------------------------------------------------------------------------
+void GlyphRun::Initialize()
+{
+	Initialize(detail::EngineDomain::GetGraphicsManager());
+}
+
+//------------------------------------------------------------------------------
 void GlyphRun::Initialize(detail::GraphicsManager* manager)
 {
-	LN_CHECK_ARG(manager != nullptr);
+	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
 	m_layoutEngine = LN_NEW detail::TextLayoutEngine();
 	m_layoutEngine->SetFont(m_manager->GetFontManager()->GetDefaultRawFont());
@@ -61,6 +67,15 @@ void GlyphRun::SetFont(RawFont* font)
 RawFont* GlyphRun::GetFont() const
 {
 	return m_layoutEngine->GetFont();
+}
+
+//------------------------------------------------------------------------------
+void GlyphRun::SetText(const UTF32* str, int len)
+{
+	m_utf32Text.Clear();
+	m_utf32Text.Append(str, len);
+	m_modifiedRenderSize = true;
+	m_modifiedItems = true;
 }
 
 //------------------------------------------------------------------------------
@@ -98,6 +113,49 @@ const SizeI& GlyphRun::GetRenderSize()
 		m_modifiedRenderSize = false;
 	}
 	return m_glyphData.AreaSize;
+}
+
+//------------------------------------------------------------------------------
+bool GlyphRun::GetCharacterHitFromDistance(const PointF& pos, GlyphHit* outResult)
+{
+	UpdateTextLayoutItem();
+
+	Size area = m_glyphData.AreaSize.ToFloatSize();
+	if (0.0f <= pos.x && pos.x <= area.width &&		// TODO: Contains とかの関数にしたい
+		0.0f <= pos.y && pos.y <= area.height)
+	{
+		for (auto& item : m_glyphData.Items)
+		{
+			if (item.Location.BitmapTopLeftPosition.x <= pos.x && pos.x <= item.Location.BitmapTopLeftPosition.x + item.Location.BitmapSize.width &&
+				item.Location.BitmapTopLeftPosition.y <= pos.y && pos.y <= item.Location.BitmapTopLeftPosition.y + item.Location.BitmapSize.height)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+//------------------------------------------------------------------------------
+bool GlyphRun::GetDistanceFromCharacterHit(int index, PointF* outPos)
+{
+	UpdateTextLayoutItem();
+
+	if (index < 0 || m_glyphData.Items.IsEmpty())
+	{
+		outPos->Set(0, 0);
+	}
+	else if (index >= m_glyphData.Items.GetCount())
+	{
+		outPos->x = m_glyphData.Items.GetLast().Location.BitmapTopLeftPosition.x + m_glyphData.Items.GetLast().Location.BitmapSize.width;
+		outPos->y = 0;
+	}
+	else
+	{
+		outPos->x = m_glyphData.Items[index].Location.BitmapTopLeftPosition.x;
+		outPos->y = 0;
+	}
+	return true;
 }
 
 //------------------------------------------------------------------------------

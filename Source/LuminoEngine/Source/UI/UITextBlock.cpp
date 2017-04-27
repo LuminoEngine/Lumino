@@ -1,6 +1,6 @@
 
 #include "Internal.h"
-#include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/UI/UITextBlock.h>
 #include "UIManager.h"
 
@@ -15,7 +15,7 @@ LN_UI_TYPEINFO_IMPLEMENT(UITextBlock, UITextElement)
 UITextBlockPtr UITextBlock::Create()
 {
 	auto ptr = UITextBlockPtr::MakeRef();
-	ptr->Initialize(detail::UIManager::GetInstance());
+	ptr->Initialize();
 	return ptr;
 }
 
@@ -30,11 +30,11 @@ UITextBlock::~UITextBlock()
 }
 
 //------------------------------------------------------------------------------
-void UITextBlock::Initialize(detail::UIManager* manager)
+void UITextBlock::Initialize()
 {
-	UITextElement::Initialize(manager);
-	SetHAlignment(HAlignment::Center);
-	SetVAlignment(VAlignment::Center);
+	UITextElement::Initialize();
+	//SetHAlignment(HAlignment::Center);
+	//SetVAlignment(VAlignment::Center);
 }
 
 //------------------------------------------------------------------------------
@@ -65,11 +65,11 @@ Size UITextBlock::ArrangeOverride(const Size& finalSize)
 }
 
 //------------------------------------------------------------------------------
-void UITextBlock::OnRender(DrawList* g)
+void UITextBlock::OnRender(DrawingContext* g)
 {
 	g->SetFont(GetActiveFont());
 	g->SetBrush(GetForegroundInternal());
-	g->DrawText_(m_text, PointF::Zero);
+	g->DrawText_(m_text, PointF());
 }
 
 LN_NAMESPACE_END

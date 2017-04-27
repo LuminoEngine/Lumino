@@ -28,7 +28,7 @@ NlGraphPin* NlGraphNode::CreatePin(NlGraphPinCategory category, NlGraphPinDirect
 	{
 		if (direction == NlGraphPinDirection::Input)
 		{
-			LN_FAIL_CHECK_STATE(m_inputCommandFlowPin == nullptr) return nullptr;
+			if (LN_CHECK_STATE(m_inputCommandFlowPin == nullptr)) return nullptr;
 			m_inputCommandFlowPin = NlGraphPinPtr::MakeRef();
 			m_inputCommandFlowPin->Initialize(this, category, direction);
 			return m_inputCommandFlowPin;
@@ -108,7 +108,7 @@ void NlGraphPin::Initialize(NlGraphNode* ownerNode, NlGraphPinCategory category,
 //------------------------------------------------------------------------------
 NlGraphNode* NlGraphPin::GetLinkedToNode()
 {
-	LN_FAIL_CHECK_STATE(m_linkedTo.GetCount() <= 1) return nullptr;
+	if (LN_CHECK_STATE(m_linkedTo.GetCount() <= 1)) return nullptr;
 	if (m_linkedTo.IsEmpty()) return nullptr;
 	return m_linkedTo[0]->GetOwnerNode();
 }
@@ -116,9 +116,9 @@ NlGraphNode* NlGraphPin::GetLinkedToNode()
 //------------------------------------------------------------------------------
 void NlGraphPin::MakeLinkTo(NlGraphPin* toPin)
 {
-	LN_FAIL_CHECK_ARG(toPin != nullptr) return;
-	LN_FAIL_CHECK_STATE(!m_linkedTo.Contains(toPin)) return;
-	LN_FAIL_CHECK_STATE(!toPin->m_linkedTo.Contains(this)) return;
+	if (LN_CHECK_ARG(toPin != nullptr)) return;
+	if (LN_CHECK_STATE(!m_linkedTo.Contains(toPin))) return;
+	if (LN_CHECK_STATE(!toPin->m_linkedTo.Contains(this))) return;
 
 	// ‘o•ûŒüÚ‘±
 	m_linkedTo.Add(toPin);
@@ -128,7 +128,7 @@ void NlGraphPin::MakeLinkTo(NlGraphPin* toPin)
 //------------------------------------------------------------------------------
 void NlGraphPin::BreakLinkTo(NlGraphPin* toPin)
 {
-	LN_FAIL_CHECK_ARG(toPin != nullptr) return;
+	if (LN_CHECK_ARG(toPin != nullptr)) return;
 
 	m_linkedTo.Remove(toPin);
 	toPin->m_linkedTo.Remove(this);
@@ -142,17 +142,17 @@ NlVariant* NlGraphPin::GetValueCache() const
 //------------------------------------------------------------------------------
 void NlGraphPin::SetInlineValue(NlVariant* value)
 {
-	LN_FAIL_CHECK_ARG(value != nullptr) return;
-	LN_FAIL_CHECK_STATE(m_category == NlGraphPinCategory::DataFlow) return;
-	LN_FAIL_CHECK_STATE(m_direction == NlGraphPinDirection::Output) return;
+	if (LN_CHECK_ARG(value != nullptr)) return;
+	if (LN_CHECK_STATE(m_category == NlGraphPinCategory::DataFlow)) return;
+	if (LN_CHECK_STATE(m_direction == NlGraphPinDirection::Output)) return;
 	m_valueCache = value;
 }
 
 //------------------------------------------------------------------------------
 NlVariant* NlGraphPin::GetInputValue() const
 {
-	LN_FAIL_CHECK_STATE(m_category == NlGraphPinCategory::DataFlow) return nullptr;
-	LN_FAIL_CHECK_STATE(m_direction == NlGraphPinDirection::Input) return nullptr;
+	if (LN_CHECK_STATE(m_category == NlGraphPinCategory::DataFlow)) return nullptr;
+	if (LN_CHECK_STATE(m_direction == NlGraphPinDirection::Input)) return nullptr;
 	if (m_linkedTo.IsEmpty())
 	{
 		return GetValueCache();
@@ -203,7 +203,7 @@ void NlContext::CallInterface(NlGraphInterface* inter)
 //------------------------------------------------------------------------------
 void NlContext::Goto(NlGraphPin* nextFlowPin)
 {
-	LN_FAIL_CHECK_ARG(nextFlowPin != nullptr) return;
+	if (LN_CHECK_ARG(nextFlowPin != nullptr)) return;
 
 	m_pc = nullptr;
 	NlGraphNode* next = nextFlowPin->GetLinkedToNode();
@@ -223,7 +223,7 @@ void NlContext::GotoNode(NlGraphNode* next)
 {
 	if (next != nullptr)
 	{
-		LN_FAIL_CHECK_ARG(next->GetCategory() == NlGraphNodeCategory::Command)
+		if (LN_CHECK_ARG(next->GetCategory() == NlGraphNodeCategory::Command))
 		{
 			m_pc = nullptr;
 			return;
@@ -236,7 +236,7 @@ void NlContext::GotoNode(NlGraphNode* next)
 //------------------------------------------------------------------------------
 void NlContext::Step()
 {
-	LN_FAIL_CHECK_STATE(m_pc != nullptr) return;
+	if (LN_CHECK_STATE(m_pc != nullptr)) return;
 	m_pc->Execute(this);
 }
 
@@ -247,7 +247,7 @@ void NlContext::Step()
 //------------------------------------------------------------------------------
 void NlGraph::AddGraphNode(NlGraphNode* node)
 {
-	LN_FAIL_CHECK_ARG(node != nullptr) return;
+	if (LN_CHECK_ARG(node != nullptr)) return;
 	m_nodeList.Add(node);
 }
 

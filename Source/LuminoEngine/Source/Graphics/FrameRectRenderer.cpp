@@ -410,25 +410,25 @@ void FrameRectRenderer::SetViewInfo(const Matrix& viewProj)
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRenderer::SetState(TextureBrush* brush)
+void FrameRectRenderer::SetState(Brush* brush)
 {
 	m_brush = brush;
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRenderer::SetState(TextureBrush* brush, const Matrix& world, const Matrix& viewProj)	// TODO: world いらない
+void FrameRectRenderer::SetState(Brush* brush, const Matrix& world, const Matrix& viewProj)	// TODO: world いらない
 {
-	LN_CHECK_ARG(brush != nullptr);
+	if (LN_CHECK_ARG(brush != nullptr)) return;
 
 	FrameRectRendererState state;
 	//state.worldTransform = world;
 	state.viewProjTransform = viewProj;
 	state.imageDrawMode = brush->GetImageDrawMode();
 	state.borderThickness = brush->GetBorderThickness();
-	state.srcRect = brush->GetSourceRect();
+	state.srcRect = RectI::FromFloatRect(brush->GetSourceRect());
 	state.wrapMode = brush->GetWrapMode();
 	state.texture = (brush->GetTexture() != nullptr) ? brush->GetTexture()->ResolveDeviceObject() : nullptr;
-	LN_CHECK_STATE(state.texture != nullptr);
+	if (LN_CHECK_STATE(state.texture != nullptr)) return;
 
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		SetState, m_manager,
@@ -462,7 +462,7 @@ void FrameRectRenderer::Flush()
 //------------------------------------------------------------------------------
 void FrameRectRenderer::OnSetState(const DrawElementBatch* state)
 {
-	SetState(static_cast<TextureBrush*>(state->state.GetBrush()));
+	SetState(state->state.GetBrush());
 }
 
 } // namespace detail

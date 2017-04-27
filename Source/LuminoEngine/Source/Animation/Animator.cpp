@@ -227,7 +227,7 @@ AnimationLayer::AnimationLayer(Animator* owner)
 //------------------------------------------------------------------------------
 void AnimationLayer::CreateStateAndAttachClip(AnimationClip* animationClip)
 {
-	LN_CHECK_ARG(animationClip != nullptr);
+	if (LN_CHECK_ARG(animationClip != nullptr)) return;
 
 	auto state = RefPtr<AnimationState>::MakeRef(animationClip);
 	m_animationStateList.Add(animationClip->GetName(), state);
@@ -237,7 +237,7 @@ void AnimationLayer::CreateStateAndAttachClip(AnimationClip* animationClip)
 //------------------------------------------------------------------------------
 void AnimationLayer::RemoveStateByClip(AnimationClip* animationClip)
 {
-	LN_CHECK_ARG(animationClip != nullptr);
+	if (LN_CHECK_ARG(animationClip != nullptr)) return;
 	LN_THROW(0, NotImplementedException);
 }
 

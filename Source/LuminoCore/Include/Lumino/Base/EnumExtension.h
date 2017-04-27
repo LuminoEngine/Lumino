@@ -1,4 +1,4 @@
-/**
+ï»¿/**
 	@file	EnumExtension.h
 */
 /**
@@ -17,7 +17,7 @@
 #ifndef LN_DOXYGEN
 
 /**
-	@brief	Šg’£ enum Œ^‚ğ’è‹`‚µ‚Ü‚·B
+	@brief	æ‹¡å¼µ enum å‹ã‚’å®šç¾©ã—ã¾ã™ã€‚
 	@see	Doc_EnumExtension_1
 */
 #define LN_ENUM(enumName) \
@@ -27,7 +27,7 @@
 enum _##enumName
 
 /**
-	@brief	Šg’£ enum Œ^‚ğ’è‹`‚µ‚Ü‚·B
+	@brief	æ‹¡å¼µ enum å‹ã‚’å®šç¾©ã—ã¾ã™ã€‚
 	@see	Doc_EnumExtension_1
 */
 #define LN_ENUM_DECLARE(enumName) \
@@ -48,7 +48,7 @@ enum _##enumName
 	};
 
 /**
-	@brief	Šg’£ enum Œ^‚ÌŒ^î•ñ‚ÉƒAƒNƒZƒX‚·‚é‹@”\‚ğ’è‹`‚µ‚Ü‚·B
+	@brief	æ‹¡å¼µ enum å‹ã®å‹æƒ…å ±ã«ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹æ©Ÿèƒ½ã‚’å®šç¾©ã—ã¾ã™ã€‚
 	@see	Doc_EnumExtension_1
 */
 #define LN_ENUM_REFLECTION(enumName, ...) \
@@ -62,7 +62,7 @@ public: \
 	static bool TryParse(const TCHAR* str, enumName* outValue) { return GetEnumParser().TryParse(str, (outValue) ? (int*)&outValue->m_value : NULL); }
 
 /**
-	@brief	ƒrƒbƒgƒtƒB[ƒ‹ƒh‚Æ‚µ‚Äƒtƒ‰ƒO‚Ì‘g‚İ‡‚í‚¹‚ğ•\‚· Šg’£ enum Œ^‚ğ’è‹`‚µ‚Ü‚·B
+	@brief	ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã¨ã—ã¦ãƒ•ãƒ©ã‚°ã®çµ„ã¿åˆã‚ã›ã‚’è¡¨ã™ æ‹¡å¼µ enum å‹ã‚’å®šç¾©ã—ã¾ã™ã€‚
 	@see	Doc_EnumExtension_1
 */
 #define LN_ENUM_FLAGS(enumName) \
@@ -72,7 +72,7 @@ public: \
 enum _##enumName
 
 /**
-	@brief	ƒrƒbƒgƒtƒB[ƒ‹ƒh‚Æ‚µ‚Äƒtƒ‰ƒO‚Ì‘g‚İ‡‚í‚¹‚ğ•\‚· Šg’£ enum Œ^‚ğ’è‹`‚µ‚Ü‚·B
+	@brief	ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã¨ã—ã¦ãƒ•ãƒ©ã‚°ã®çµ„ã¿åˆã‚ã›ã‚’è¡¨ã™ æ‹¡å¼µ enum å‹ã‚’å®šç¾©ã—ã¾ã™ã€‚
 	@see	Doc_EnumExtension_1
 */
 #define LN_ENUM_FLAGS_DECLARE(enumName) \
@@ -121,7 +121,7 @@ enum _##enumName
 	inline enumName operator~(enumName::enum_type v) throw() { enumName value; value.m_value = (~((int)v)); return value; }
 
 /**
-	@brief	Šg’£ enum Œ^‚ÌŒ^î•ñ‚ÉƒAƒNƒZƒX‚·‚é‹@”\‚ğ’è‹`‚µ‚Ü‚·BLN_ENUM_FLAGS ‚Å’è‹`‚µ‚½ enum ‚É‘Î‚µ‚Äg—p‚µ‚Ü‚·B
+	@brief	æ‹¡å¼µ enum å‹ã®å‹æƒ…å ±ã«ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹æ©Ÿèƒ½ã‚’å®šç¾©ã—ã¾ã™ã€‚LN_ENUM_FLAGS ã§å®šç¾©ã—ãŸ enum ã«å¯¾ã—ã¦ä½¿ç”¨ã—ã¾ã™ã€‚
 	@see	Doc_EnumExtension_1
 */
 #define LN_ENUM_FLAGS_REFLECTION(enumName, ...) \
@@ -139,7 +139,7 @@ LN_NAMESPACE_BEGIN
 typedef int EnumValueType;
 	
 /**
-	@brief	Šg’£ enum Œ^‚Ìƒx[ƒXƒNƒ‰ƒX‚Å‚·B
+	@brief	æ‹¡å¼µ enum å‹ã®ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
 */
 class Enum
 {
@@ -158,7 +158,7 @@ public:
 	template<typename TEnum>
 	struct EnumParser
 	{
-	// LN_ENUM_DECLARE ƒ}ƒNƒ‚ª”ñí‚É’·‚­‚È‚é‚Ì‚ğ”ğ‚¯‚é‚½‚ßA•”•ª“I‚ÉƒNƒ‰ƒX‰»‚µ‚½
+	// LN_ENUM_DECLARE ãƒã‚¯ãƒ­ãŒéå¸¸ã«é•·ããªã‚‹ã®ã‚’é¿ã‘ã‚‹ãŸã‚ã€éƒ¨åˆ†çš„ã«ã‚¯ãƒ©ã‚¹åŒ–ã—ãŸ
 
 		struct Pair { String name; TEnum value; };
 		typedef typename ::ln::List<Pair> PairList;
@@ -166,7 +166,7 @@ public:
 
 		static PairListReference GetMemberList()
 		{
-			static PairList members; return members;	// ƒwƒbƒ_ include ‚¾‚¯‚ÅÏ‚Ü‚·‚½‚ßAstatic •Ï”‚ÍŠÖ”“à‚É•Â‚¶‚ß‚Ä‚¨‚­
+			static PairList members; return members;	// ãƒ˜ãƒƒãƒ€ include ã ã‘ã§æ¸ˆã¾ã™ãŸã‚ã€static å¤‰æ•°ã¯é–¢æ•°å†…ã«é–‰ã˜è¾¼ã‚ã¦ãŠã
 		}
 		void Init(const TEnum* values, int valuesCount, const char* argNames)
 		{
@@ -227,14 +227,14 @@ public:
 		static String ToString(int value, const TCHAR* separator)
 		{
 			PairListReference members = EnumParser<TEnum>::GetMemberList();
-			// æ‚ÉŠ®‘Sˆê’v‚ğ’T‚· (White=Red|Green|Blue ‚Ì‚æ‚¤‚Èƒpƒ^[ƒ“—p)
+			// å…ˆã«å®Œå…¨ä¸€è‡´ã‚’æ¢ã™ (White=Red|Green|Blue ã®ã‚ˆã†ãªãƒ‘ã‚¿ãƒ¼ãƒ³ç”¨)
 			for (int i = 0; i < members.GetCount(); ++i)
 			{
 				if (members[i].value == value) {
 					return members[i].name;
 				}
 			}
-			// Š®‘Sˆê’v‚ª–³‚¯‚ê‚Î•¡”‚Ìƒtƒ‰ƒO‚ğŒ‹‡‚·‚é
+			// å®Œå…¨ä¸€è‡´ãŒç„¡ã‘ã‚Œã°è¤‡æ•°ã®ãƒ•ãƒ©ã‚°ã‚’çµåˆã™ã‚‹
 			String out;
 			for (int i = 0; i < members.GetCount(); ++i)
 			{
@@ -268,47 +268,47 @@ public:
 			{
 				switch (state)
 				{
-				case 0:	// ¯•Êq‚ğŒŸõ’†
+				case 0:	// è­˜åˆ¥å­ã‚’æ¤œç´¢ä¸­
 					if (isalnum(*pos)) {
 						tokenBegin = pos;
-						state = 1;		// ¯•Êq‚Ì‰ğÍ‚Ö
+						state = 1;		// è­˜åˆ¥å­ã®è§£æã¸
 					}
 					else if (isspace(*pos)) {
-						// Œp‘±‚·‚é
+						// ç¶™ç¶šã™ã‚‹
 					}
 					else {
-						return false;	// •s³‚È•¶š‚ªŒ©‚Â‚©‚Á‚½
+						return false;	// ä¸æ­£ãªæ–‡å­—ãŒè¦‹ã¤ã‹ã£ãŸ
 					}
 					break;
 
-				case 1:	// ¯•Êq‚ğ‰ğÍ’†
+				case 1:	// è­˜åˆ¥å­ã‚’è§£æä¸­
 					if (isalnum(*pos)) {
-						// Œp‘±‚·‚é
+						// ç¶™ç¶šã™ã‚‹
 					}
 					else {
-						// ¯•ÊqŠm’è
+						// è­˜åˆ¥å­ç¢ºå®š
 						int value;
 						if (TryParseInternal(tokenBegin, (pos - tokenBegin), &value)) {
 							(*outValue) |= value;
 						}
 						else {
-							// ƒƒ“ƒo‚Å‚Í‚È‚¢¯•Ê’l‚ªŒ©‚Â‚©‚Á‚½B‚Æ‚è‚ ‚¦‚¸–³‹B
+							// ãƒ¡ãƒ³ãƒã§ã¯ãªã„è­˜åˆ¥å€¤ãŒè¦‹ã¤ã‹ã£ãŸã€‚ã¨ã‚Šã‚ãˆãšç„¡è¦–ã€‚
 						}
 						tokenBegin = NULL;
-						state = 2;		// ƒZƒpƒŒ[ƒ^‚ÌŒŸõ‚Ö
-						--pos;			// ‚±‚Ì“_‚Å | ‚ğw‚µ‚Ä‚¢‚é‚©‚à‚µ‚ê‚È‚¢‚Ì‚Å–ß‚µ‚Ä‚¨‚­
+						state = 2;		// ã‚»ãƒ‘ãƒ¬ãƒ¼ã‚¿ã®æ¤œç´¢ã¸
+						--pos;			// ã“ã®æ™‚ç‚¹ã§ | ã‚’æŒ‡ã—ã¦ã„ã‚‹ã‹ã‚‚ã—ã‚Œãªã„ã®ã§æˆ»ã—ã¦ãŠã
 					}
 					break;
 
-				case 2:	// ƒZƒpƒŒ[ƒ^‚ğŒŸõ’†
+				case 2:	// ã‚»ãƒ‘ãƒ¬ãƒ¼ã‚¿ã‚’æ¤œç´¢ä¸­
 					if (*pos == separator) {
-						state = 0;		// ¯•Êq‚ÌŒŸõ‚Ö
+						state = 0;		// è­˜åˆ¥å­ã®æ¤œç´¢ã¸
 					}
 					else if (isspace(*pos)) {
-						// Œp‘±‚·‚é
+						// ç¶™ç¶šã™ã‚‹
 					}
 					else {
-						return false;	// •s³‚È•¶š‚ªŒ©‚Â‚©‚Á‚½
+						return false;	// ä¸æ­£ãªæ–‡å­—ãŒè¦‹ã¤ã‹ã£ãŸ
 					}
 					break;
 				}
@@ -316,7 +316,7 @@ public:
 				++pos;
 			}
 
-			// I’[‚ª¯•Êq‚ÅI‚í‚Á‚Ä‚¢‚½ê‡‚Í‚»‚Ì•ª‚ğ“Ç‚İæ‚é
+			// çµ‚ç«¯ãŒè­˜åˆ¥å­ã§çµ‚ã‚ã£ã¦ã„ãŸå ´åˆã¯ãã®åˆ†ã‚’èª­ã¿å–ã‚‹
 			if (tokenBegin != NULL)
 			{
 				int value;
@@ -324,7 +324,7 @@ public:
 					(*outValue) |= value;
 				}
 				else {
-					// ƒƒ“ƒo‚Å‚Í‚È‚¢¯•Ê’l‚ªŒ©‚Â‚©‚Á‚½B‚Æ‚è‚ ‚¦‚¸–³‹B
+					// ãƒ¡ãƒ³ãƒã§ã¯ãªã„è­˜åˆ¥å€¤ãŒè¦‹ã¤ã‹ã£ãŸã€‚ã¨ã‚Šã‚ãˆãšç„¡è¦–ã€‚
 				}
 			}
 
@@ -356,5 +356,234 @@ public:
 #define LN_ENUM_FLAGS_DECLARE(enumName)
 #define LN_ENUM_FLAGS_REFLECTION(enumName, ...)
 #endif	// LN_DOXYGEN
+
+
+
+/**
+	@brief	scoped enum ã§ç°¡å˜ãªãƒ“ãƒƒãƒˆæ¼”ç®—ã‚’ã‚µãƒãƒ¼ãƒˆã™ã‚‹ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£ã§ã™ã€‚
+*/
+template<typename TEnum, typename TStorage = uint32_t>
+class EnumFlags
+{
+public:
+	EnumFlags()
+		: m_value(0)
+	{}
+					
+	EnumFlags(TEnum value)
+	{
+		m_value = static_cast<TStorage>(value);
+	}
+
+	EnumFlags(const EnumFlags<TEnum, TStorage>& value)
+	{
+		m_value = value.m_value;
+	}
+
+	explicit EnumFlags(TStorage value)
+	{
+		m_value = value;
+	}
+
+	/** æŒ‡å®šã—ãŸãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ãŒè¨­å®šã•ã‚Œã¦ã„ã‚‹ã‹ã©ã†ã‹ã‚’åˆ¤æ–­ã—ã¾ã™ã€‚ */
+	bool HasFlag(TEnum value) const
+	{
+		return (m_value & static_cast<TStorage>(value)) == static_cast<TStorage>(value);
+	}
+
+	/** æŒ‡å®šã—ãŸãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã‚’è¿½åŠ ã—ã¾ã™ã€‚*/
+	void SetFlag(TEnum value)
+	{
+		m_value = static_cast<TStorage>(value);
+	}
+
+	/** æŒ‡å®šã—ãŸãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã‚’é™¤å¤–ã—ã¾ã™ã€‚*/
+	void ClearFlag(TEnum value)
+	{
+		m_value &= ~static_cast<TStorage>(value);
+	}
+
+	bool operator==(TEnum rhs) const
+	{
+		return m_value == static_cast<TStorage>(rhs);
+	}
+
+	bool operator==(const EnumFlags<TEnum, TStorage>& rhs) const
+	{
+		return m_value == rhs.m_value;
+	}
+
+	bool operator==(bool rhs) const
+	{
+		return ((bool)*this) == rhs;
+	}
+
+	bool operator!=(TEnum rhs) const
+	{
+		return m_value != static_cast<TStorage>(rhs);
+	}
+
+	bool operator!=(const EnumFlags<TEnum, TStorage>& rhs) const
+	{
+		return m_value != rhs.m_value;
+	}
+
+	EnumFlags<TEnum, TStorage>& operator= (TEnum rhs)
+	{
+		m_value = static_cast<TStorage>(rhs);
+
+		return *this;
+	}
+
+	EnumFlags<TEnum, TStorage>& operator= (const EnumFlags<TEnum, TStorage>& rhs)
+	{
+		m_value = rhs.m_value;
+
+		return *this;
+	}
+
+	EnumFlags<TEnum, TStorage>& operator|= (TEnum rhs)
+	{
+		m_value |= static_cast<TStorage>(rhs);
+
+		return *this;
+	}
+
+	EnumFlags<TEnum, TStorage>& operator|= (const EnumFlags<TEnum, TStorage>& rhs)
+	{
+		m_value |= rhs.m_value;
+
+		return *this;
+	}
+
+	EnumFlags<TEnum, TStorage> operator| (TEnum rhs) const
+	{
+		EnumFlags<TEnum, TStorage> out(*this);
+		out |= rhs;
+
+		return out;
+	}
+
+	EnumFlags<TEnum, TStorage> operator| (const EnumFlags<TEnum, TStorage>& rhs) const
+	{
+		EnumFlags<TEnum, TStorage> out(*this);
+		out |= rhs;
+
+		return out;
+	}
+
+	EnumFlags<TEnum, TStorage>& operator&= (TEnum rhs)
+	{
+		m_value &= static_cast<TStorage>(rhs);
+
+		return *this;
+	}
+
+	EnumFlags<TEnum, TStorage>& operator&= (const EnumFlags<TEnum, TStorage>& rhs)
+	{
+		m_value &= rhs.m_value;
+
+		return *this;
+	}
+
+	EnumFlags<TEnum, TStorage> operator& (TEnum rhs) const
+	{
+		EnumFlags<TEnum, TStorage> out = *this;
+		out.m_value &= static_cast<TStorage>(rhs);
+
+		return out;
+	}
+
+	EnumFlags<TEnum, TStorage> operator& (const EnumFlags<TEnum, TStorage>& rhs) const
+	{
+		EnumFlags<TEnum, TStorage> out = *this;
+		out.m_value &= rhs.m_value;
+
+		return out;
+	}
+
+	EnumFlags<TEnum, TStorage>& operator^= (TEnum rhs)
+	{
+		m_value ^= static_cast<TStorage>(rhs);
+
+		return *this;
+	}
+
+	EnumFlags<TEnum, TStorage>& operator^= (const EnumFlags<TEnum, TStorage>& rhs)
+	{
+		m_value ^= rhs.m_value;
+
+		return *this;
+	}
+
+	EnumFlags<TEnum, TStorage> operator^ (TEnum rhs) const
+	{
+		EnumFlags<TEnum, TStorage> out = *this;
+		out.m_value ^= static_cast<TStorage>(rhs);
+
+		return out;
+	}
+
+	EnumFlags<TEnum, TStorage> operator^ (const EnumFlags<TEnum, TStorage>& rhs) const
+	{
+		EnumFlags<TEnum, TStorage> out = *this;
+		out.m_value ^= rhs.m_value;
+
+		return out;
+	}
+
+	EnumFlags<TEnum, TStorage> operator~ () const
+	{
+		EnumFlags<TEnum, TStorage> out;
+		out.m_value = (TStorage)~m_value;
+
+		return out;
+	}
+
+	operator bool() const
+	{
+		return m_value ? true : false;
+	}
+
+	explicit operator uint8_t() const
+	{
+		return static_cast<uint8_t>(m_value);
+	}
+
+	explicit operator uint16_t() const
+	{
+		return static_cast<uint16_t>(m_value);
+	}
+
+	explicit operator uint32_t() const
+	{
+		return static_cast<uint32_t>(m_value);
+	}
+
+	friend EnumFlags<TEnum, TStorage> operator&(TEnum a, EnumFlags<TEnum, TStorage> &b) LN_NOEXCEPT
+	{
+		EnumFlags<TEnum, TStorage> out;
+		out.m_value = static_cast<TStorage>(a)& b.m_value;
+		return out;
+	}
+
+	friend bool operator == (TEnum a, const EnumFlags<TEnum, TStorage>& b) LN_NOEXCEPT
+	{
+		return static_cast<TStorage>(a) == b.m_value;
+	}
+
+private:
+	TStorage m_value;
+};
+
+/** EnumFlags ã‚¯ãƒ©ã‚¹ã®ãŸã‚ã®æ¼”ç®—å­ã‚’å®šç¾©ã—ã¾ã™ã€‚*/
+#define LN_ENUM_FLAGS_OPERATORS(TEnum) \
+	LN_ENUM_FLAGS_OPERATORS_EXT(TEnum, uint32_t)
+
+/** EnumFlags ã‚¯ãƒ©ã‚¹ã®ãŸã‚ã®æ¼”ç®—å­ã‚’å®šç¾©ã—ã¾ã™ã€‚*/
+#define LN_ENUM_FLAGS_OPERATORS_EXT(TEnum, TStorage) \
+	inline EnumFlags<TEnum, TStorage> operator|(TEnum a, TEnum b) { EnumFlags<TEnum, TStorage> r(a); r |= b; return r; } \
+	inline EnumFlags<TEnum, TStorage> operator&(TEnum a, TEnum b) { EnumFlags<TEnum, TStorage> r(a); r &= b; return r; } \
+	inline EnumFlags<TEnum, TStorage> operator~(TEnum a) { return ~EnumFlags<TEnum, TStorage>(a); }
 
 LN_NAMESPACE_END

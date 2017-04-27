@@ -19,7 +19,7 @@ public:
 protected:
 	UIContentControl();
 	virtual ~UIContentControl();
-	void Initialize(detail::UIManager* manager);
+	void Initialize();
 	//virtual void OnUpdatingLayout() override;
 
 

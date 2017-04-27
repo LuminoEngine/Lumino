@@ -2,6 +2,7 @@
 #include "../Internal.h"
 #include <float.h>
 #include "SceneGraphManager.h"
+#include <Lumino/Graphics/Rendering.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/SceneNode.h>
 #include <Lumino/Framework/GameScene.h>
@@ -91,7 +92,7 @@ void SceneNode::SetName(const String& name)
 //------------------------------------------------------------------------------
 void SceneNode::AddChild(SceneNode* child)
 {
-	LN_CHECK_ARG(child != nullptr);
+	if (LN_CHECK_ARG(child != nullptr)) return;
 
 	// 別のノードの子であれば外す
 	// ※ WPF などでは既に別ノードの子であれば例外するが、この SceneGraph ではしない。
@@ -111,7 +112,7 @@ void SceneNode::AddChild(SceneNode* child)
 //------------------------------------------------------------------------------
 void SceneNode::RemoveChild(SceneNode* child)
 {
-	LN_CHECK_ARG(child != nullptr);
+	if (LN_CHECK_ARG(child != nullptr)) return;
 	if (child->m_parentNode == this)
 	{
 		m_children->Remove(child);
@@ -182,6 +183,7 @@ void SceneNode::Render2(DrawList* renderer)
 
 	if (m_isVisible)
 	{
+		renderer->SetBuiltinEffectData(m_builtinEffectData);
 		OnRender2(renderer);
 		GetOwnerSceneGraph()->GetRenderingProfiler().IncreaseNodeDrawCount();
 	}

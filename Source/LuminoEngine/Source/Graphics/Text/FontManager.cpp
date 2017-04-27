@@ -222,7 +222,7 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 			e.CollectionIndex = 0;
 			m_ttfDataEntryMap.insert(TTFDataEntryPair(key, e));
 
-			Logger::WriteLine("Registered font file. [%s]", face->family_name);
+			ln::Logger::WriteLine("Registered font file. [%s]", face->family_name);
 
 			//// 初回登録の場合はデフォルトフォント名として登録する
 			//if (m_ttfDataEntryMap.size() == 1) {
@@ -259,7 +259,7 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 				e.CollectionIndex = i;
 				m_ttfDataEntryMap.insert(TTFDataEntryPair(key, e));
 
-				Logger::WriteLine("Registered font file. [%s]", face->family_name);
+				ln::Logger::WriteLine("Registered font file. [%s]", face->family_name);
 
 				//// 初回登録の場合はデフォルトフォント名として登録する
 				//if (m_ttfDataEntryMap.size() == 1) {

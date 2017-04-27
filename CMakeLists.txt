@@ -57,6 +57,8 @@ add_subdirectory(Source/LuminoEngine)
 
 add_subdirectory(Source/LuminoLaunch)
 
+add_subdirectory(Samples)
+
 # Make postfix.
 #ln_make_postfix(LN_LIB_POSTFIX)
 

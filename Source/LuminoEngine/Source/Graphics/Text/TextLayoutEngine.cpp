@@ -202,5 +202,81 @@ void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const
 	}
 }
 
+
+
+
+
+
+
+
+//------------------------------------------------------------------------------
+void TextLayoutEngine2::Layout(RawFont* font, const UTF32* text, int length, const RectF& layoutArea, TextLayoutOptions options, ResultData* outResult)
+{
+	m_font = font;
+	m_options = options;
+	m_result = outResult;
+
+	m_font->GetGlobalMetrics(&m_globalMetrics);
+	m_currentLineBaseline = m_globalMetrics.ascender;
+
+	m_result->areaSize = Size::Zero;
+	m_result->items.Clear();
+
+	LayoutTextHorizontal(text, length);
+}
+
+//------------------------------------------------------------------------------
+void TextLayoutEngine2::LayoutTextHorizontal(const UTF32* text, int length)
+{
+	const UTF32* lineBegin = text;
+	const UTF32* end = text + length;
+	while (lineBegin < end)
+	{
+		int nlPos, nlLen;
+		if (StringTraits::IndexOfNewLineSequence(lineBegin, end, &nlPos, &nlLen))
+		{
+			LayoutLineHorizontal(lineBegin, nlPos);
+			lineBegin += nlPos + nlLen;
+			m_currentLineBaseline += m_globalMetrics.ascender;
+		}
+		else
+		{
+			break;
+		}
+	}
+	if (lineBegin != end)
+	{
+		LayoutLineHorizontal(lineBegin, end - lineBegin);
+	}
+}
+
+//------------------------------------------------------------------------------
+void TextLayoutEngine2::LayoutLineHorizontal(const UTF32* text, int length)
+{
+	ResultItem item;
+	const UTF32* prev = nullptr;
+	int x = 0;
+	for (int i = 0; i < length; ++i)
+	{
+		if (prev != nullptr)
+		{
+			Vector2 delta = m_font->GetKerning(*prev, text[i]);
+			x -= delta.x;
+		}
+
+		item.ch = text[i];
+		item.columnBaseline = x;
+		item.lineBaseline = m_currentLineBaseline;
+		m_result->items.Add(item);
+
+		FontGlyphMertics metrics;
+		m_font->GetGlyphMetrics(text[i], &metrics);
+		x += metrics.advance.x;
+
+		prev = text + i;
+	}
+}
+
+
 } // namespace detail
 LN_NAMESPACE_END

@@ -101,5 +101,16 @@ void Graphics::ChangeDirectX9Device(void* id3d9device)
 #endif
 }
 
+//------------------------------------------------------------------------------
+//RenderTargetTexturePtr GraphicsPlatformSupport::CreateRenderTargetFromD3D9Surface(void* surface)
+//{
+//	auto* device = dynamic_cast<Driver::DX9GraphicsDevice*>(detail::EngineDomain::GetGraphicsManager()->GetGraphicsDevice());
+//	if (LN_CHECK_STATE(device != nullptr)) return nullptr;
+//
+//	auto* ptr = LN_NEW Driver::DX9BackBufferTexture(device);
+//	ptr->Reset((IDirect3DSurface9*)surface);
+//
+//}
+
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

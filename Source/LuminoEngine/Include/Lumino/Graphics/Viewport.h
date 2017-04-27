@@ -6,6 +6,16 @@
 #include "ImageEffect/ImageEffect.h"
 
 LN_NAMESPACE_BEGIN
+
+/** Viewport の配置方法 */
+enum class ViewportPlacement
+{
+	Stretch,		/**< 転送先領域全体に拡大または縮小する */
+	AutoResize,		/**< 転送先領域と同じピクセルサイズになるよう自動的にリサイズする */
+	ViewBox,		/**< 転送元領域のアスペクト比が維持されるように余白を挿入する */
+};
+
+#if 0
 namespace detail { class InternalRenderer; }
 namespace detail { class RenderingPass2; }
 struct PlatformEventArgs;
@@ -17,13 +27,6 @@ public:
 	RenderTargetTexture* RequestRenderTarget(int width, int height);
 };
 
-/** Viewport の配置方法 */
-enum class ViewportPlacement
-{
-	Stretch,		/**< 転送先領域全体に拡大または縮小する */
-	AutoResize,		/**< 転送先領域と同じピクセルサイズになるよう自動的にリサイズする */
-	ViewBox,		/**< レイヤーのサイズが維持されるように余白を挿入する */
-};
 
 
 
@@ -53,7 +56,6 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual ~ViewportLayer();
 	void SetOwner(Viewport* owner) { m_owner = owner; }
 	virtual void UpdateTransform(const Size& viewSize);
-	void PreRender(const SizeI& ownerViewPixelSize);
 	
 //protected:
 
@@ -64,7 +66,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	/// 後描画
 	void PostRender(DrawList* context, RefPtr<RenderTargetTexture>* primaryLayerTarget, RefPtr<RenderTargetTexture>* secondaryLayerTarget);
 
-	virtual void ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
+	virtual void ExecuteDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
 
 private:
 	Viewport*					m_owner;
@@ -108,15 +110,14 @@ public:
 LN_INTERNAL_ACCESS:	// TODO: いまはとりあえず内部用途
 	Viewport();
 	virtual ~Viewport();
-	void Initialize(detail::GraphicsManager* manager);
+	void Initialize(detail::GraphicsManager* manager, const SizeI& viewSize);
 	detail::GraphicsManager* GetManager() const { return m_manager; }
 
 	// call from UIFrameWindow
 	void UpdateLayersTransform(const Size& viewSize);
 	bool DoPlatformEvent(const PlatformEventArgs& e);
-	void BeginRender(Details::Renderer* renderer, const SizeI& viewSize);
-	void Render(Details::Renderer* renderer);
-	void EndRender(Details::Renderer* renderer, RenderTargetTexture* renderTarget);
+	void Render(DrawList* parentDrawList, const SizeI& targetSize);
+	void PresentRenderingContexts();
 
 private:
 	void TryRemakeLayerTargets(const SizeI& ownerViewPixelSize);
@@ -158,5 +159,6 @@ private:
 //	virtual ~MainViewport();
 //	void Initialize(detail::GraphicsManager* manager, RenderTarget* renderTarget);
 //};
+#endif
 
 LN_NAMESPACE_END

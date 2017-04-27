@@ -5,6 +5,7 @@ set(LN_TEST_SOURCES
 	UnitTest/Test.PCH.cpp
 	UnitTest/Test.PCH.h
 	UnitTest/TestConfig.h
+	UnitTest/Animation/Test_Animation.cpp
 	UnitTest/Base/Test_Base_GeometryStructs.cpp
 	UnitTest/Base/Test_Base_Uuid.cpp
 	UnitTest/Base/Test_Base_Version.cpp
@@ -27,8 +28,9 @@ set(LN_TEST_SOURCES
 	UnitTest/Scene/Test_Scene_SpriteParticle.cpp
 	UnitTest/Scene/Test_Scene_StaticMesh.cpp
 	UnitTest/Scene/Test_Scene_SceneNode.cpp
-	UnitTest/UI/Test_UI_Button.cpp
-	UnitTest/UI/Test_UI_TextBlock.cpp
+	UnitTest/UI/Test_UI_Layout.cpp
+	UnitTest/UI/Test_UI_Primitive.cpp
+	UnitTest/UI/Test_UI_System.cpp
 )
 
 if (MSVC_VERSION GREATER 1800)		# (MSVC > vs2013)
@@ -58,6 +60,7 @@ ln_add_pch(LuminoEngine_Test "Test.PCH.h" "UnitTest/Test.PCH.cpp")
 #===============================================================================
 set(LN_SANDBOX_SOURCES
 	Sandbox/SandboxMain.cpp
+	Sandbox/UIControlsGallery.cpp
 )
 
 add_executable(LuminoSandbox ${LN_SANDBOX_SOURCES})
