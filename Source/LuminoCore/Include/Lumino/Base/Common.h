@@ -122,6 +122,9 @@
 			protected
 #endif
 
+
+#define LN_CONSTRUCT_ACCESS2 template<class T, typename... TArgs> friend ln::RefPtr<T> ln::NewObject(TArgs&&... args); protected
+
 #ifdef LN_UNICODE
 	#define LN_AFX_FUNCNAME(name) name##W
 #else

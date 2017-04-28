@@ -50,8 +50,6 @@ class GameScene
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 protected:
-	GameScene();
-	virtual ~GameScene();
 
 	/** 開始処理 */
 	LN_METHOD()
@@ -63,7 +61,13 @@ protected:
 	/// 終了処理
 	virtual void OnTerminate();
 
-LN_INTERNAL_ACCESS:
+	
+
+LN_CONSTRUCT_ACCESS2:
+	GameScene();
+	virtual ~GameScene();
+
+	/** Initialize */
 	LN_METHOD()
 	void Initialize();
 
