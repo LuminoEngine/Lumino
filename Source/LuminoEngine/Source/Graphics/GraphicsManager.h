@@ -142,7 +142,8 @@ public:
 	const RefPtr<ShapesRendererCommandListCache>& GetShapesRendererCommandListCache() const { return m_shapesRendererCommandListCache; }
 	const RefPtr<NanoVGCommandListCache>& GetNanoVGCommandListCache() const { return m_nanoVGCommandListCache; }
 	Driver::ITexture* GetDummyDeviceTexture() { return m_dummyDeviceTexture; }
-	const RefPtr<Texture2D>& GetDummyWhiteTexture() { return m_dymmyWhiteTexture; }
+	const RefPtr<Texture2D>& GetDummyBlackTexture() const { return m_dymmyBlackTexture; }
+	const RefPtr<Texture2D>& GetDummyWhiteTexture() const { return m_dymmyWhiteTexture; }
 	VertexDeclaration* GetDefaultVertexDeclaration() const { return m_defaultVertexDeclaration; }
 	ShaderVariableCommitSerializeHelper* GetShaderVariableCommitSerializeHelper() { return &m_shaderVariableCommitSerializeHelper; }
 	InternalContext* GetInternalContext() const;
@@ -181,10 +182,11 @@ private:
 	RefPtr<ShapesRendererCommandListCache>	m_shapesRendererCommandListCache;
 	RefPtr<NanoVGCommandListCache>	m_nanoVGCommandListCache;
 
-	Driver::ITexture*				m_dummyDeviceTexture;
-	RefPtr<Texture2D>				m_dymmyWhiteTexture;
-	VertexDeclaration*				m_defaultVertexDeclaration;
-	bool							m_platformTextureLoading;
+	Driver::ITexture*						m_dummyDeviceTexture;
+	RefPtr<Texture2D>						m_dymmyBlackTexture;
+	RefPtr<Texture2D>						m_dymmyWhiteTexture;
+	VertexDeclaration*						m_defaultVertexDeclaration;
+	bool									m_platformTextureLoading;
 };
 
 } // namespace detail

@@ -75,7 +75,7 @@ class Texture2D
 public:
 
 	/**
-		指定したサイズのテクスチャを作成します。
+		@brief		指定したサイズのテクスチャを作成します。
 		@param[in]	width		: テクスチャの幅 (ピクセル単位)
 		@param[in]	height		: テクスチャの高さ (ピクセル単位)
 		@param[in]	format		: テクスチャのピクセルフォーマット
@@ -84,7 +84,7 @@ public:
 	static Texture2DPtr Create(int width, int height, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
 	
 	/**
-		指定したサイズのテクスチャを作成します。
+		@brief		指定したサイズのテクスチャを作成します。
 		@param[in]	size		: テクスチャサイズ (ピクセル単位)
 		@param[in]	format		: テクスチャのピクセルフォーマット
 		@param[in]	mipmap		: ミップマップの有無
@@ -92,7 +92,7 @@ public:
 	static Texture2DPtr Create(const SizeI& size, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
 
 	/**
-		ファイルからテクスチャを作成します。
+		@brief		ファイルからテクスチャを作成します。
 		@param[in]	filePath	: ファイルパス
 		@param[in]	format		: テクスチャのピクセルフォーマット
 		@param[in]	mipmap		: ミップマップの有無
@@ -100,7 +100,7 @@ public:
 	static Texture2DPtr Create(const StringRef& filePath, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
 
 	/**
-		画像ファイルデータのストリームを指定してテクスチャを作成します。
+		@brief		画像ファイルデータのストリームを指定してテクスチャを作成します。
 		@param[in]	stream		: 画像ファイルデータのストリーム
 		@param[in]	format		: テクスチャのピクセルフォーマット
 		@param[in]	mipmap		: ミップマップの有無
@@ -108,7 +108,7 @@ public:
 	static Texture2DPtr Create(Stream* stream, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
 
 	/**
-		メモリ上に展開された画像ファイルデータからテクスチャを作成します。
+		@brief		メモリ上に展開された画像ファイルデータからテクスチャを作成します。
 		@param[in]	data		: 画像ファイルデータの先頭アドレス
 		@param[in]	size		: データのバイト数
 		@param[in]	format		: テクスチャのピクセルフォーマット
@@ -117,8 +117,14 @@ public:
 	static Texture2DPtr Create(const void* data, size_t size, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
 	
 	/**
-		白い小さなテクスチャを取得します。
-		@detail		このテクスチャにの全ピクセルは不透明な白 Color32(255, 255, 255, 255) です。
+		@brief		黒い小さなテクスチャを取得します。
+		@detail		このテクスチャの全ピクセルは不透明な白 Color(0, 0, 0, 1) です。
+	*/
+	static Texture2DPtr GetBlackTexture();
+	
+	/**
+		@brief		白い小さなテクスチャを取得します。
+		@detail		このテクスチャの全ピクセルは不透明な白 Color(1, 1, 1, 1) です。
 	*/
 	static Texture2DPtr GetWhiteTexture();
 

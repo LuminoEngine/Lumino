@@ -40,9 +40,9 @@ void WorldObject::AddComponent(Component* component)
 }
 
 //------------------------------------------------------------------------------
-void WorldObject::OnStart()
-{
-}
+//void WorldObject::OnStart()
+//{
+//}
 
 //------------------------------------------------------------------------------
 void WorldObject::OnUpdate()

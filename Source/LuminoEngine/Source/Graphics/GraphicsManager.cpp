@@ -95,6 +95,7 @@ GraphicsManager::GraphicsManager()
 	, m_mainSwapChain(nullptr)
 	, m_renderingType(GraphicsRenderingType::Immediate)
 	, m_dummyDeviceTexture(nullptr)
+	, m_dymmyBlackTexture(nullptr)
 	, m_dymmyWhiteTexture(nullptr)
 	, m_renderer(nullptr)
 	, m_renderingThread(nullptr)
@@ -117,6 +118,7 @@ GraphicsManager::~GraphicsManager()
 		m_textRendererCore->Finalize();
 		LN_SAFE_RELEASE(m_textRendererCore);
 	}
+	m_dymmyBlackTexture.SafeRelease();
 	m_dymmyWhiteTexture.SafeRelease();
 	LN_SAFE_RELEASE(m_dummyDeviceTexture);
 	LN_SAFE_RELEASE(m_mainSwapChain);
@@ -300,7 +302,12 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 		g_GraphicsManagerInstance = this;
 	}
 
+	// black texture
+	m_dymmyBlackTexture = RefPtr<Texture2D>::MakeRef();
+	m_dymmyBlackTexture->Initialize(SizeI(32, 32), TextureFormat::R8G8B8A8, false, ResourceUsage::Static);
+	m_dymmyBlackTexture->Clear(Color32::Black);
 
+	// white texture
 	m_dymmyWhiteTexture = RefPtr<Texture2D>::MakeRef();
 	m_dymmyWhiteTexture->Initialize(SizeI(32, 32), TextureFormat::R8G8B8A8, false, ResourceUsage::Static);
 	m_dymmyWhiteTexture->Clear(Color32::White);

@@ -115,15 +115,11 @@
 #ifndef LN_PROTECTED_INTERNAL_ACCESS
 	#define LN_PROTECTED_INTERNAL_ACCESS	protected
 #endif
+
 #ifndef LN_CONSTRUCT_ACCESS
-	#define LN_CONSTRUCT_ACCESS \
-		template<class T, typename... TArgs> \
-		friend ln::RefPtr<T> ln::NewObject(TArgs&&... args); \
-			protected
+	#define LN_CONSTRUCT_ACCESS					protected
 #endif
 
-
-#define LN_CONSTRUCT_ACCESS2 template<class T, typename... TArgs> friend ln::RefPtr<T> ln::NewObject(TArgs&&... args); protected
 
 #ifdef LN_UNICODE
 	#define LN_AFX_FUNCNAME(name) name##W

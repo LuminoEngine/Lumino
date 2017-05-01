@@ -16,6 +16,7 @@ UIViewport::UIViewport()
 	: UIElement()
 	, m_backbufferSize(0, 0)
 	, m_placement(ViewportPlacement::Stretch)
+	, m_backgroundColor(Color::White)
 {
 }
 
@@ -28,7 +29,6 @@ UIViewport::~UIViewport()
 void UIViewport::Initialize()
 {
 	UIElement::Initialize();
-	m_backgroundColor = Color::Blue;	// TODO:
 }
 
 //------------------------------------------------------------------------------

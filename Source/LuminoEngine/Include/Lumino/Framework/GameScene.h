@@ -27,7 +27,7 @@ public:
 	void AddComponent(Component* component);
 
 	/// 開始処理
-	virtual void OnStart();
+	//virtual void OnStart();
 
 	/// フレーム更新
 	virtual void OnUpdate();
@@ -63,7 +63,7 @@ protected:
 
 	
 
-LN_CONSTRUCT_ACCESS2:
+LN_CONSTRUCT_ACCESS:
 	GameScene();
 	virtual ~GameScene();
 

@@ -16,6 +16,7 @@ namespace tr
 #define LN_TR_REFLECTION_TYPEINFO_DECLARE_COMMON(typeInfo) \
 	private: \
 		template<typename T> friend class ln::RefPtr; \
+		template<class T, typename... TArgs> friend ln::RefPtr<T> ln::NewObject(TArgs&&... args); \
 		friend class ln::tr::ReflectionHelper; \
 		friend class ln::tr::ReflectionObject; \
 		static typeInfo							lnref_typeInfo; \

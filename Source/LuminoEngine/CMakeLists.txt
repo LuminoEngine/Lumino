@@ -369,7 +369,7 @@ set(LN_SOURCES_Scene
 	Include/Lumino/Scene/SceneNode.h
 	Include/Lumino/Scene/SceneTR.h
 	Include/Lumino/Scene/Sprite.h
-	Include/Lumino/Scene/SpriteModelObject.h
+	#Include/Lumino/Scene/SpriteModelObject.h
 	Include/Lumino/Scene/Particle.h
 	Include/Lumino/Scene/StaticMesh.h
 	Include/Lumino/Scene/TextBlock.h
@@ -396,30 +396,30 @@ set(LN_SOURCES_Scene
 	Source/Scene/SceneNode.cpp
 	Source/Scene/SceneTR.cpp
 	Source/Scene/Sprite.cpp
-	Source/Scene/SpriteModelObject.cpp
+	#Source/Scene/SpriteModelObject.cpp
 	Source/Scene/Particle.cpp
 	Source/Scene/StaticMesh.cpp
 	Source/Scene/TextBlock.cpp
 	Source/Scene/TileMap.cpp
 	Source/Scene/TransitionPostEffect.cpp
 	Source/Scene/VisualNode.cpp
-	../../External/ssbpLib/ssShader_frag.h
-	../../External/ssbpLib/SS5Player.cpp
-	../../External/ssbpLib/SS5Player.h
-	../../External/ssbpLib/SS5PlayerData.h
-	../../External/ssbpLib/SS5PlayerPlatform.cpp
-	../../External/ssbpLib/SS5PlayerPlatform.h
-	../../External/ssbpLib/SS5PlayerTypes.h
-	../../External/ssbpLib/common/Animator/ssplayer_PartState.h
-	../../External/ssbpLib/common/Animator/ssplayer_cellmap.h
-	../../External/ssbpLib/common/Animator/ssplayer_effect.cpp
-	../../External/ssbpLib/common/Animator/ssplayer_effect.h
-	../../External/ssbpLib/common/Animator/ssplayer_effectfunction.cpp
-	../../External/ssbpLib/common/Animator/ssplayer_effectfunction.h
-	../../External/ssbpLib/common/Animator/ssplayer_macro.h
-	../../External/ssbpLib/common/Animator/ssplayer_matrix.cpp
-	../../External/ssbpLib/common/Animator/ssplayer_matrix.h
-	../../External/ssbpLib/common/Animator/ssplayer_PartState.cpp
+	#../../External/ssbpLib/ssShader_frag.h
+	#../../External/ssbpLib/SS5Player.cpp
+	#../../External/ssbpLib/SS5Player.h
+	#../../External/ssbpLib/SS5PlayerData.h
+	#../../External/ssbpLib/SS5PlayerPlatform.cpp
+	#../../External/ssbpLib/SS5PlayerPlatform.h
+	#../../External/ssbpLib/SS5PlayerTypes.h
+	#../../External/ssbpLib/common/Animator/ssplayer_PartState.h
+	#../../External/ssbpLib/common/Animator/ssplayer_cellmap.h
+	#../../External/ssbpLib/common/Animator/ssplayer_effect.cpp
+	#../../External/ssbpLib/common/Animator/ssplayer_effect.h
+	#../../External/ssbpLib/common/Animator/ssplayer_effectfunction.cpp
+	#../../External/ssbpLib/common/Animator/ssplayer_effectfunction.h
+	#../../External/ssbpLib/common/Animator/ssplayer_macro.h
+	#../../External/ssbpLib/common/Animator/ssplayer_matrix.cpp
+	#../../External/ssbpLib/common/Animator/ssplayer_matrix.h
+	#../../External/ssbpLib/common/Animator/ssplayer_PartState.cpp
 )
 set(LN_SOURCES_Scene_MMD
 	Source/Scene/MME/MmdMaterial.cpp
