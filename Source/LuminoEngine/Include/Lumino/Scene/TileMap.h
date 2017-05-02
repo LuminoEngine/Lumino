@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#if 0
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Tilemap/TileMapRenderer.h>
 #include "VisualNode.h"
@@ -12,7 +13,7 @@ class TileMapRenderer;
 	@brief	
 */
 class TileMap
-	: public VisualNode
+	: public VisualComponent
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
@@ -76,7 +77,7 @@ namespace Scene
 //*/
 //==============================================================================
 class Tilemap
-    : public VisualNode
+    : public VisualComponent
 {
 public:
 	static const int DefaultTilePixelSize = 32;
@@ -145,4 +146,5 @@ private:
 //==============================================================================
 //
 //==============================================================================
+#endif
 #endif

@@ -7,13 +7,13 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
-/// Light
-class Light
+/// LightComponent
+class LightComponent
 	: public SceneNode
 {
 public:
-	Light();
-	virtual ~Light();
+	LightComponent();
+	virtual ~LightComponent();
 	void Initialize(SceneGraph* owner, LightType type);
 
 public:
@@ -84,7 +84,7 @@ protected:
 	virtual void OnRender2(DrawList* renderer) override;
 
 private:
-	friend class VisualNode;
+	friend class VisualComponent;
 
 	//LightType			m_type;				///< ライトの種類
 	//Color	m_diffuse;			///< ディフューズカラー

@@ -13,8 +13,10 @@ void UIControlsGallery()
 
 	Engine::GetDefaultSceneGraph3D()->visibleGridPlane = true;
 
+	Engine::GetWorld3D()->SetVisibleGridPlane(true);
+
 	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
-	Camera::GetMain3DCamera()->SetCameraBehavior(cb);
+	CameraComponent::GetMain3DCamera()->SetCameraBehavior(cb);
 
 
 	auto* mainWindow = Engine::GetMainWindow();
@@ -98,7 +100,7 @@ void UIControlsGallery()
 	mat1->SetBlendMode(BlendMode::Alpha);
 	mesh1->AddMaterial(mat1);
 
-	auto mesh2 = StaticMesh::Create(mesh1);
+	auto mesh2 = StaticMeshComponent::Create(mesh1);
 #endif
 
 
@@ -145,7 +147,7 @@ void UIControlsGallery()
 	}
 #endif
 
-	//auto text = UITextBlock::Create();//TextBlock2D::Create(_T("Hello, world!"));
+	//auto text = UITextBlock::Create();//TextBlock2DComponent::Create(_T("Hello, world!"));
 	//text->SetText(_T("Hello"));
 	//text->foreground = Brush::Blue;
 	//mainWindow->AddChild(text);
@@ -227,8 +229,8 @@ void UIControlsGallery()
 
 			Engine::RenderFrame();
 
-			Engine::GetDefaultSceneGraph3D()->GetRenderer()->SetShader(shader);
-			Engine::GetDefaultSceneGraph3D()->GetRenderer()->DrawScreenRectangle();
+			//Engine::GetDefaultSceneGraph3D()->GetRenderer()->SetShader(shader);
+			//Engine::GetDefaultSceneGraph3D()->GetRenderer()->DrawScreenRectangle();
 			
 		//Engine::GetDefaultSceneGraph3D()->GetDebugRenderer()->DrawLinePrimitive(
 		//	Vector3(0, 0, 0), Color::Red,

@@ -4,24 +4,23 @@
 
 LN_NAMESPACE_BEGIN
 class SkinnedMeshModel;
-class SkinnedMesh;
-using SkinnedMeshPtr = RefPtr<SkinnedMesh>;
+class SkinnedMeshComponent;
 
 /**
 	@brief
 */
-class SkinnedMesh
-	: public VisualNode
+class SkinnedMeshComponent
+	: public VisualComponent
 {
 public:
-	static SkinnedMeshPtr Create(const StringRef& filePath);
+	static RefPtr<SkinnedMeshComponent> Create(const StringRef& filePath);
 
 public:
 	SkinnedMeshModel* GetSkinnedMeshModel() const;
 
 LN_INTERNAL_ACCESS:
-	SkinnedMesh();
-	virtual ~SkinnedMesh();
+	SkinnedMeshComponent();
+	virtual ~SkinnedMeshComponent();
 	void Initialize(SceneGraph* ownerSceneGraph, SkinnedMeshModel* meshModel);
 	virtual void OnUpdateFrame(float elapsedTime) override;
 	virtual void OnRender2(DrawList* renderer) override;
@@ -44,7 +43,7 @@ LN_NAMESPACE_END
 //	@brief		
 //*/
 //class MeshModelObject
-//	: public VisualNode
+//	: public VisualComponent
 //{
 //public:
 //	static RefPtr<MeshModelObject> Create(const StringRef& filePath);

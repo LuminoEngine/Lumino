@@ -15,13 +15,13 @@ class CameraViewportLayer2;
 /**
 	@brief
 */
-class Camera
+class CameraComponent
 	: public SceneNode
 {
 public:
-	static Camera* GetMain3DCamera();
+	static CameraComponent* GetMain3DCamera();
 
-	static Camera* GetMain2DCamera();
+	static CameraComponent* GetMain2DCamera();
 
 
 public:
@@ -96,8 +96,8 @@ protected:
 	virtual void OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph* oldOwner) override;
 
 LN_INTERNAL_ACCESS:
-	Camera();
-	virtual ~Camera();
+	CameraComponent();
+	virtual ~CameraComponent();
 	void Initialize(SceneGraph* owner, CameraProjection proj);
 	CameraProjection GetProjectionMode() const { return m_projectionMode; }
 
@@ -192,12 +192,12 @@ protected:
 LN_INTERNAL_ACCESS:
 	CameraViewportLayer2();
 	virtual ~CameraViewportLayer2();
-	void Initialize(World* targetWorld, Camera* hostingCamera);
+	void Initialize(World* targetWorld, CameraComponent* hostingCamera);
 	const Size& GetViewSize() const;
 
 private:
 	World*								m_targetWorld;
-	RefPtr<Camera>						m_hostingCamera;
+	RefPtr<CameraComponent>				m_hostingCamera;
 	RefPtr<detail::InternalRenderer>	m_internalRenderer;
 	WorldDebugDrawFlags					m_debugDrawFlags;
 };
@@ -212,8 +212,8 @@ public:
 	CameraBehavior();
 	virtual ~CameraBehavior();
 
-	void SetTargetCamera(Camera* camera) { m_targetCamera = camera; }
-	Camera* GetTargetCamera() const { return m_targetCamera; }
+	void SetTargetCamera(CameraComponent* camera) { m_targetCamera = camera; }
+	CameraComponent* GetTargetCamera() const { return m_targetCamera; }
 
 	virtual bool InjectMouseMove(int x, int y) = 0;
 	virtual bool InjectMouseButtonDown(MouseButtons button, int x, int y) = 0;
@@ -221,7 +221,7 @@ public:
 	virtual bool InjectMouseWheel(int delta) = 0;
 
 private:
-	Camera* m_targetCamera;
+	CameraComponent* m_targetCamera;
 };
 
 /**

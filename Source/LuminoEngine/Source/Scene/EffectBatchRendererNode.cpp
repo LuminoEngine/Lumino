@@ -1,5 +1,5 @@
 ﻿
-#pragma once
+#if 0
 #include "Internal.h"
 #include <Lumino/Scene/Camera.h>
 #include "../Effect/EffectManager.h"
@@ -27,9 +27,10 @@ EffectBatchRendererNode::~EffectBatchRendererNode()
 //------------------------------------------------------------------------------
 void EffectBatchRendererNode::Initialize(SceneGraph* owner, detail::EffectManager* effectManager)
 {
-	VisualNode::Initialize(owner, 1);
+	VisualComponent::Initialize(owner, 1);
 	m_effectManager = effectManager;
 }
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
+#endif

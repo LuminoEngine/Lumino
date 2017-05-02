@@ -388,8 +388,6 @@ set(LN_SOURCES_Scene
 	Source/Scene/Light.cpp
 	Source/Scene/MeshModelObject.cpp
 #	Source/Scene/MMDSceneGraph.cpp
-	Source/Scene/RenderingPass.cpp
-	Source/Scene/RenderingPass.h
 	Source/Scene/SceneGraph.cpp
 	Source/Scene/SceneGraphManager.cpp
 	Source/Scene/SceneGraphManager.h

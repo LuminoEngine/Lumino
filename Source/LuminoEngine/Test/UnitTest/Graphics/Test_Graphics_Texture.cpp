@@ -24,7 +24,7 @@ TEST_F(Test_Graphics_Texture, SetSubData)
 	//texture->Blt(0, 0, fb->GlyphBitmap);
 	texture->Blt(28, 0, fb->GlyphBitmap);
 
-	auto sprite = Sprite2D::Create(texture);
+	auto sprite = Sprite2DComponent::Create(texture);
 
 
 

@@ -2,7 +2,9 @@
 #pragma once
 
 LN_NAMESPACE_BEGIN
-class Camera;
+class DrawList;
+class StaticMeshModel;
+class CameraComponent;
 class SceneGraph;
 class SceneGraph2D;
 class SceneGraph3D;
@@ -37,7 +39,7 @@ LN_CONSTRUCT_ACCESS:
 LN_INTERNAL_ACCESS:
 	virtual void BeginUpdateFrame();
 	virtual void UpdateFrame(float elapsedTime);
-	virtual void Render(Camera* camera, WorldDebugDrawFlags debugDrawFlags);
+	virtual void Render(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags);
 	void ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
 };
 
@@ -75,6 +77,7 @@ class World3D
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
+	void SetVisibleGridPlane(bool visible) { m_visibleGridPlane = visible; }
 
 protected:
 	virtual SceneGraph* GetSceneGraph() override;
@@ -89,11 +92,17 @@ LN_INTERNAL_ACCESS:
 	SceneGraph3D* GetSceneGraph3D() const;
 	virtual void BeginUpdateFrame() override;
 	virtual void UpdateFrame(float elapsedTime) override;
-	virtual void Render(Camera* camera, WorldDebugDrawFlags debugDrawFlags);
+	virtual void Render(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags);
 
 private:
+	void CreateGridPlane();
+	void RenderGridPlane(DrawList* renderer, CameraComponent* camera);
+	void AdjustGridPlane(CameraComponent* camera);
+
 	RefPtr<PhysicsWorld>	m_physicsWorld;
 	RefPtr<SceneGraph3D>	m_sceneGraph;
+	RefPtr<StaticMeshModel>	m_gridPlane;
+	bool					m_visibleGridPlane;
 };
 
 LN_NAMESPACE_END

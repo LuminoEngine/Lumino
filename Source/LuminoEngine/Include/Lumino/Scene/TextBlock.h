@@ -6,14 +6,14 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 namespace detail { class Paragraph; }
-class TextBlock2D;
-using TextBlock2DPtr = RefPtr<TextBlock2D>;
+class TextBlock2DComponent;
+using TextBlock2DComponentPtr = RefPtr<TextBlock2DComponent>;
 
 /**
 	@brief
 */
-class TextBlock2D
-	: public VisualNode
+class TextBlock2DComponent
+	: public VisualComponent
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
@@ -21,12 +21,12 @@ public:
 	/**
 		@brief		
 	*/
-	static TextBlock2DPtr Create();
+	static TextBlock2DComponentPtr Create();
 
 	/**
 		@brief		
 	*/
-	static TextBlock2DPtr Create(const StringRef& text);
+	static TextBlock2DComponentPtr Create(const StringRef& text);
 
 public:
 
@@ -43,8 +43,8 @@ public:
 	void SetAnchorPoint(float ratioX, float ratioY);		/**< @overload SetAnchorPoint */
 
 protected:
-	TextBlock2D();
-	virtual ~TextBlock2D();
+	TextBlock2DComponent();
+	virtual ~TextBlock2DComponent();
 	void Initialize(SceneGraph* owner);
 
 	virtual void UpdateFrameHierarchy(SceneNode* parent, float deltaTime) override;

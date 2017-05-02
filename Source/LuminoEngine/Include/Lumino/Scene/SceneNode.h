@@ -181,7 +181,7 @@ protected:
 
 	friend class DrawingLayer;
 
-	//friend class MMERenderingPass;	// TODO: VisualNode に持ってくべきかも。ついでに friend も何とかしたい
+	//friend class MMERenderingPass;	// TODO: VisualComponent に持ってくべきかも。ついでに friend も何とかしたい
 	//detail::RenderingPassClientData	m_renderingPassClientDataList[detail::MaxRenderingPass];
 
 	detail::BuiltinEffectData	m_builtinEffectData;

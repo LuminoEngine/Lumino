@@ -84,6 +84,7 @@
 #include "Internal.h"
 #include <Lumino/Scene/GpuParticle.h>
 
+#if 0
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
@@ -108,3 +109,4 @@ void GpuParticle::Initialize(SceneGraphManager* manager)
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
+#endif

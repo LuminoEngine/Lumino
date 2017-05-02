@@ -10,9 +10,9 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 class MaterialList2;
 
-/// VisualNode
+/// VisualComponent
 LN_CLASS()
-class VisualNode
+class VisualComponent
 	: public SceneNode
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
@@ -109,8 +109,8 @@ public:
 
 
 protected:
-	VisualNode();
-	virtual ~VisualNode();
+	VisualComponent();
+	virtual ~VisualComponent();
 	void Initialize(SceneGraph* owner, int subsetCount);	// TODO: ここでサブセット数渡す必要はないかな
 
 LN_INTERNAL_ACCESS:

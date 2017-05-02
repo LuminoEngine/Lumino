@@ -6,12 +6,17 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
+class Sprite3DComponent;
+typedef RefPtr<Sprite3DComponent>	Sprite3DComponentPtr;
+class Sprite2DComponent;
+typedef RefPtr<Sprite2DComponent>	Sprite2DComponentPtr;
+
 /**
 	@brief		スプライトの抽象クラスです。スプライトオブジェクトを作成するには Sprite2D または Sprite3D クラス使用します。
 */
 LN_CLASS()
-class Sprite
-	: public VisualNode
+class SpriteComponent
+	: public VisualComponent
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
@@ -58,8 +63,8 @@ public:
 	//FlipMode GetFlipMode() const { return m_flipMode; }
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	Sprite();
-	virtual ~Sprite();
+	SpriteComponent();
+	virtual ~SpriteComponent();
 	void Initialize(SceneGraph* owner);
 	void RenderSprite(DrawList* renderer, SpriteBaseDirection dir);
 
@@ -78,8 +83,8 @@ private:
 	@brief	2D 空間に配置されるスプライトのクラスです。
 */
 LN_CLASS()
-class Sprite2D
-	: public Sprite
+class Sprite2DComponent
+	: public SpriteComponent
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
@@ -88,7 +93,7 @@ public:
 		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
 		@detail		作成されたスプライトは、デフォルトの 2D シーングラフ に追加されます。
 	*/
-	static Sprite2DPtr Create();
+	static Sprite2DComponentPtr Create();
 	
 	/**
 		@brief		指定したファイルパスのテクスチャを読み込み、スプライトを作成します。
@@ -96,7 +101,7 @@ public:
 		@detail		作成されたスプライトは、デフォルトの 2D シーングラフ に追加されます。
 					スプライトのサイズは、読み込んだテクスチャのサイズとなります。
 	*/
-	static Sprite2DPtr Create(const StringRef& filePath);
+	static Sprite2DComponentPtr Create(const StringRef& filePath);
 	
 	/**
 		@brief		テクスチャを指定してスプライトを作成します。
@@ -104,11 +109,11 @@ public:
 		@detail		作成されたスプライトは、デフォルトの 2D シーングラフ に追加されます。
 					スプライトのサイズは、指定したテクスチャのサイズとなります。
 	*/
-	static Sprite2DPtr Create(Texture* texture);
+	static Sprite2DComponentPtr Create(Texture* texture);
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	Sprite2D();
-	virtual ~Sprite2D();
+	Sprite2DComponent();
+	virtual ~Sprite2DComponent();
 	LN_METHOD()
 	void Initialize();
 	LN_METHOD()
@@ -120,8 +125,8 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	@brief	3D 空間に配置されるスプライトのクラスです。
 */
 LN_CLASS()
-class Sprite3D
-	: public Sprite
+class Sprite3DComponent
+	: public SpriteComponent
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
@@ -130,7 +135,7 @@ public:
 		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
 		@detail		作成されたスプライトは、デフォルトの 3D シーングラフ に追加されます。
 	*/
-	static Sprite3DPtr Create();
+	static Sprite3DComponentPtr Create();
 	
 	
 	/**
@@ -139,7 +144,7 @@ public:
 		@param[in]	height		: スプライトの高さ
 		@detail		作成されたスプライトは、デフォルトの 3D シーングラフ に追加されます。
 	*/
-	static Sprite3DPtr Create(float width, float height);
+	static Sprite3DComponentPtr Create(float width, float height);
 	
 	/**
 		@brief		サイズとテクスチャを指定してスプライトを作成します。
@@ -148,11 +153,11 @@ public:
 		@param[in]	texture		: スプライトが表示するテクスチャ
 		@detail		作成されたスプライトは、デフォルトの 3D シーングラフ に追加されます。
 	*/
-	static Sprite3DPtr Create(float width, float height, Texture* texture);
+	static Sprite3DComponentPtr Create(float width, float height, Texture* texture);
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	Sprite3D();
-	virtual ~Sprite3D();
+	Sprite3DComponent();
+	virtual ~Sprite3DComponent();
 	void Initialize(SceneGraph* owner);
 	virtual void OnRender2(DrawList* renderer) override;
 };

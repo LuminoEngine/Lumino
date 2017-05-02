@@ -235,7 +235,7 @@ LN_API void LNSceneNode_SetBindingTypeInfo(void* data)
 }
 LN_API void LNVisualNode_SetBindingTypeInfo(void* data)
 {
-    tr::TypeInfo::GetTypeInfo<VisualNode>()->SetBindingTypeInfo(data);
+    tr::TypeInfo::GetTypeInfo<VisualComponent>()->SetBindingTypeInfo(data);
 }
 LN_API LNResultCode LNSprite_SetTexture(LNHandle sprite, LNHandle texture)
 {
@@ -251,7 +251,7 @@ LN_API LNResultCode LNSprite_GetTexture(LNHandle sprite, LNHandle* outReturn)
 }
 LN_API void LNSprite_SetBindingTypeInfo(void* data)
 {
-    tr::TypeInfo::GetTypeInfo<Sprite>()->SetBindingTypeInfo(data);
+    tr::TypeInfo::GetTypeInfo<SpriteComponent>()->SetBindingTypeInfo(data);
 }
 LN_API LNResultCode LNSprite2D_Initialize(LNHandle* outSprite2D)
 {
@@ -267,15 +267,15 @@ LN_API LNResultCode LNSprite2D_InitializeT(LNHandle texture, LNHandle* outSprite
 }
 LN_API void LNSprite2D_SetBindingTypeInfo(void* data)
 {
-    tr::TypeInfo::GetTypeInfo<Sprite2D>()->SetBindingTypeInfo(data);
+    tr::TypeInfo::GetTypeInfo<Sprite2DComponent>()->SetBindingTypeInfo(data);
 }
 LN_API void LNSprite3D_SetBindingTypeInfo(void* data)
 {
-    tr::TypeInfo::GetTypeInfo<Sprite3D>()->SetBindingTypeInfo(data);
+    tr::TypeInfo::GetTypeInfo<Sprite3DComponent>()->SetBindingTypeInfo(data);
 }
 LN_API void LNStaticMesh_SetBindingTypeInfo(void* data)
 {
-    tr::TypeInfo::GetTypeInfo<StaticMesh>()->SetBindingTypeInfo(data);
+    tr::TypeInfo::GetTypeInfo<StaticMeshComponent>()->SetBindingTypeInfo(data);
 }
 LN_API void LNComponent_SetBindingTypeInfo(void* data)
 {

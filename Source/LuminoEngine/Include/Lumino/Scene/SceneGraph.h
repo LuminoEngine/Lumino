@@ -8,7 +8,7 @@
 LN_NAMESPACE_BEGIN
 class SceneGraphManager;	// TODO: detail
 class DrawList;
-class Camera;
+class CameraComponent;
 class SceneNode;
 class StaticMeshModel;
 class Material;		// TODO: World temp
@@ -36,7 +36,7 @@ public:
 	float GetElapsedTime() const { return m_elapsedTime; }
 
 	/// 描画
-	virtual void Render2(DrawList* renderer, Camera* camera);
+	virtual void Render2(DrawList* renderer, CameraComponent* camera);
 
 	/// マウス移動イベントを通知する (ViewPane の左上を 0,0 とした座標を指定する)
 	bool InjectMouseMove(int x, int y);
@@ -52,7 +52,7 @@ public:
 	SceneGraphManager* GetManager() const { return m_manager; }
 	virtual void UpdateFrame(float deltaTime);
 	virtual SceneNode* GetRootNode() = 0;
-	virtual Camera* GetMainCamera() = 0;
+	virtual CameraComponent* GetMainCamera() = 0;
 
 
 	DrawList* GetRenderer() const;
@@ -64,7 +64,7 @@ protected:
 	void CreateCore(SceneGraphManager* manager);
 
 LN_INTERNAL_ACCESS:
-	List<Camera*>* GetAllCameraList() { return &m_allCameraList; }
+	List<CameraComponent*>* GetAllCameraList() { return &m_allCameraList; }
 	detail::SceneGraphRenderingProfilerInterface& GetRenderingProfiler() { return m_renderingProfiler; }
 
 	void BeginUpdateFrame();
@@ -92,7 +92,7 @@ private:
 
 	double				m_time;					///< 時間処理の開始通知からの経過時間 (秒)
 	float				m_elapsedTime;			///< 前回フレームからの経過時間 (秒)
-	List<Camera*>		m_allCameraList;
+	List<CameraComponent*>		m_allCameraList;
 	//LightNodeList		m_renderingLightList;	// 描画ルート以下のライト (他の描画空間にライティングの影響を与えないようにするため)
 
 	MouseState			m_leftMouseState;		///< マウスの左ボタンの状態
@@ -123,7 +123,7 @@ public:
 
 	virtual void UpdateFrame(float elapsedTime);
 	virtual SceneNode* GetRootNode() override { return m_defaultRoot; }
-	virtual Camera* GetMainCamera() override { return m_defaultCamera; }
+	virtual CameraComponent* GetMainCamera() override { return m_defaultCamera; }
 	//virtual List<RenderingPass*>* GetRenderingPasses() override { return &m_renderingPasses; }
 
 public:
@@ -133,7 +133,7 @@ public:
 
 private:
 	SceneNode*				m_defaultRoot;
-	Camera*					m_defaultCamera;
+	CameraComponent*					m_defaultCamera;
 	//List<RenderingPass*>	m_renderingPasses;
 };
 
@@ -150,25 +150,22 @@ public:
 
 	virtual void UpdateFrame(float elapsedTime);
 	virtual SceneNode* GetRootNode() override { return m_defaultRoot; }
-	virtual Camera* GetMainCamera() override { return m_defaultCamera; }
-	Light* GetMainLight() const;
+	virtual CameraComponent* GetMainCamera() override { return m_defaultCamera; }
+	LightComponent* GetMainLight() const;
 	//virtual List<RenderingPass*>* GetRenderingPasses() override { return &m_renderingPasses; }
 
 public:
 	SceneGraph3D();
 	virtual ~SceneGraph3D();
 	void CreateCore(SceneGraphManager* manager);
-	virtual void Render2(DrawList* renderer, Camera* camera) override;
+	virtual void Render2(DrawList* renderer, CameraComponent* camera) override;
 
 private:
-	void CreateGridContents();
-	void AdjustGridMesh(Camera* camera);
 
 	SceneNode*				m_defaultRoot;
-	Camera*					m_defaultCamera;
-	RefPtr<Light>			m_defaultLight;
+	CameraComponent*					m_defaultCamera;
+	RefPtr<LightComponent>			m_defaultLight;
 
-	RefPtr<StaticMeshModel>	m_gridPlane;
 };
 
 LN_NAMESPACE_END

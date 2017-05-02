@@ -12,38 +12,38 @@
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
-// SkinnedMesh
+// SkinnedMeshComponent
 //==============================================================================
 
 //------------------------------------------------------------------------------
-SkinnedMeshPtr SkinnedMesh::Create(const StringRef& filePath)
+RefPtr<SkinnedMeshComponent> SkinnedMeshComponent::Create(const StringRef& filePath)
 {
-	auto ptr = SkinnedMeshPtr::MakeRef();
+	auto ptr = RefPtr<SkinnedMeshComponent>::MakeRef();
 	auto mesh = SceneGraphManager::Instance->GetModelManager()->CreateSkinnedMeshModel(filePath);
 	ptr->Initialize(detail::EngineDomain::GetDefaultSceneGraph3D(), mesh);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-SkinnedMesh::SkinnedMesh()
+SkinnedMeshComponent::SkinnedMeshComponent()
 	: m_meshModel()
 {
 
 }
 
 //------------------------------------------------------------------------------
-SkinnedMesh::~SkinnedMesh()
+SkinnedMeshComponent::~SkinnedMeshComponent()
 {
 
 }
 
 //------------------------------------------------------------------------------
-void SkinnedMesh::Initialize(SceneGraph* ownerSceneGraph, SkinnedMeshModel* meshModel)
+void SkinnedMeshComponent::Initialize(SceneGraph* ownerSceneGraph, SkinnedMeshModel* meshModel)
 {
 	if (LN_CHECK_ARG(meshModel != nullptr)) return;
 	m_meshModel = meshModel;
 
-	VisualNode::Initialize(ownerSceneGraph, meshModel->m_mesh->m_materials->GetCount());
+	VisualComponent::Initialize(ownerSceneGraph, meshModel->m_mesh->m_materials->GetCount());
 
 	m_materialList->CopyShared(meshModel->m_mesh->m_materials, true);
 
@@ -55,13 +55,13 @@ void SkinnedMesh::Initialize(SceneGraph* ownerSceneGraph, SkinnedMeshModel* mesh
 }
 
 //------------------------------------------------------------------------------
-SkinnedMeshModel* SkinnedMesh::GetSkinnedMeshModel() const
+SkinnedMeshModel* SkinnedMeshComponent::GetSkinnedMeshModel() const
 {
 	return m_meshModel;
 }
 
 //------------------------------------------------------------------------------
-void SkinnedMesh::OnUpdateFrame(float elapsedTime)
+void SkinnedMeshComponent::OnUpdateFrame(float elapsedTime)
 {
 	m_meshModel->SetWorldTransform(m_combinedGlobalMatrix);
 
@@ -107,7 +107,7 @@ void SkinnedMesh::OnUpdateFrame(float elapsedTime)
 //}
 
 //------------------------------------------------------------------------------
-void SkinnedMesh::OnRender2(DrawList* renderer)
+void SkinnedMeshComponent::OnRender2(DrawList* renderer)
 {
 	StaticMeshModel* mesh = m_meshModel->m_mesh;
 	int subsetCount = mesh->GetSubsetCount();
@@ -154,7 +154,7 @@ LN_NAMESPACE_END
 //{
 //	m_model.Attach(LN_NEW Model(), false);
 //	m_model->Create(owner->GetManager()->GetModelManager(), filePath);
-//	VisualNode::Initialize(owner, m_model->GetSubsetCount());
+//	VisualComponent::Initialize(owner, m_model->GetSubsetCount());
 //
 //	// マテリアルをコピーする (急ぎ足で作ったから、もっとちゃんと考えた方が良いと思う)
 //	//for (int i = 0; i < m_model->GetSubsetCount(); i++)

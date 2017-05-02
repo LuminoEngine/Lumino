@@ -6,11 +6,11 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 //==============================================================================
-// Light
+// LightComponent
 //==============================================================================
 
 //------------------------------------------------------------------------------
-Light::Light()
+LightComponent::LightComponent()
 	: SceneNode()
 	, m_lightInfo(false)
 	, m_enabled(true)
@@ -22,12 +22,12 @@ Light::Light()
 }
 
 //------------------------------------------------------------------------------
-Light::~Light()
+LightComponent::~LightComponent()
 {
 }
 
 //------------------------------------------------------------------------------
-void Light::Initialize(SceneGraph* owner, LightType type)
+void LightComponent::Initialize(SceneGraph* owner, LightType type)
 {
 	SceneNode::Initialize(owner);
 	m_lightInfo = RefPtr<detail::DynamicLightInfo>::MakeRef();
@@ -45,7 +45,7 @@ void Light::Initialize(SceneGraph* owner, LightType type)
 }
 
 //------------------------------------------------------------------------------
-void Light::UpdateMatrices(/*const Size& viewSize*/)
+void LightComponent::UpdateMatrices(/*const Size& viewSize*/)
 {
 	// 正面方向
 	Vector3 direction = Vector3::TransformCoord(Vector3(0, 0, 1), m_combinedGlobalMatrix);
@@ -79,7 +79,7 @@ void Light::UpdateMatrices(/*const Size& viewSize*/)
 }
 
 //------------------------------------------------------------------------------
-void Light::OnRender2(DrawList* renderer)
+void LightComponent::OnRender2(DrawList* renderer)
 {
 	if (m_enabled)
 	{

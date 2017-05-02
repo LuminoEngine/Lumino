@@ -19,8 +19,8 @@ TEST_F(Test_Scene_SceneNode, Visible)
 		int defaultCount = Engine::GetDefaultSceneGraph2D()->GetRenderingProfiler().GetLastFrameData()->nodeDrawCount;
 
 		auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
-		auto sprite1 = Sprite2D::Create(tex);
-		auto sprite2 = Sprite2D::Create(tex);
+		auto sprite1 = Sprite2DComponent::Create(tex);
+		auto sprite2 = Sprite2DComponent::Create(tex);
 
 		sprite1->SetVisible(false);
 
@@ -40,8 +40,8 @@ TEST_F(Test_Scene_SceneNode, DepthTest)
 
 	// <Test> デフォルトでは深度テスト&深度書き込みは有効。
 	{
-		auto box1 = StaticMesh::CreateBox(Vector3(1, 2, 3));
-		auto box2 = StaticMesh::CreateBox(Vector3(2, 1, 1));
+		auto box1 = StaticMeshComponent::CreateBox(Vector3(1, 2, 3));
+		auto box2 = StaticMeshComponent::CreateBox(Vector3(2, 1, 1));
 		box1->GetMaterials()->GetAt(0)->SetMaterialTexture(tex1);
 		box2->GetMaterials()->GetAt(0)->SetMaterialTexture(tex2);
 		Engine::Update();
@@ -49,8 +49,8 @@ TEST_F(Test_Scene_SceneNode, DepthTest)
 	}
 	// <Test> 深度テスト無効
 	{
-		auto s1 = Sprite3D::Create(5, 5, tex1);
-		auto s2 = Sprite3D::Create(5, 5, tex2);
+		auto s1 = Sprite3DComponent::Create(5, 5, tex1);
+		auto s2 = Sprite3DComponent::Create(5, 5, tex2);
 		s1->SetAngles(0, Math::PI / 4, 0);
 		s2->SetAngles(0, -Math::PI / 4, 0);
 		s2->SetDepthTestEnabled(false);
@@ -59,8 +59,8 @@ TEST_F(Test_Scene_SceneNode, DepthTest)
 	}
 	// <Test> 深度書き込み無効
 	{
-		auto s1 = Sprite3D::Create(5, 5, tex1);
-		auto s2 = Sprite3D::Create(5, 5, tex2);
+		auto s1 = Sprite3DComponent::Create(5, 5, tex1);
+		auto s2 = Sprite3DComponent::Create(5, 5, tex2);
 		s1->SetAngles(0, Math::PI / 4, 0);
 		s1->SetDepthWriteEnabled(false);
 		s2->SetAngles(0, -Math::PI / 4, 0);
@@ -75,8 +75,8 @@ TEST_F(Test_Scene_SceneNode, DepthTest)
 //{
 //
 //	auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
-//	auto sprite1 = Sprite2D::Create(tex);
-//	//auto sprite2 = Sprite2D::Create(tex);
+//	auto sprite1 = Sprite2DComponent::Create(tex);
+//	//auto sprite2 = Sprite2DComponent::Create(tex);
 //
 //	sprite1->SetOpacity(0.25f);
 //

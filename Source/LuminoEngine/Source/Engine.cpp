@@ -94,13 +94,13 @@ void Engine::ResetFrameDelay()
 }
 
 //------------------------------------------------------------------------------
-World* Engine::GetWorld2D()
+World2D* Engine::GetWorld2D()
 {
 	return EngineManager::Instance->GetDefaultWorld2D();
 }
 
 //------------------------------------------------------------------------------
-World* Engine::GetWorld3D()
+World3D* Engine::GetWorld3D()
 {
 	return EngineManager::Instance->GetDefaultWorld3D();
 }
@@ -142,7 +142,7 @@ SceneGraph3D* Engine::GetDefaultSceneGraph3D()
 }
 
 //------------------------------------------------------------------------------
-Light* Engine::GetMainLight3D()
+LightComponent* Engine::GetMainLight3D()
 {
 	return EngineManager::Instance->GetDefaultWorld3D()->GetSceneGraph3D()->GetMainLight();
 }

@@ -16,7 +16,7 @@ class MeshResource;
 class StaticMeshModel;
 class DrawList;
 
-class Camera;
+class CameraComponent;
 
 
 enum class DrawElementCategory
@@ -632,8 +632,8 @@ LN_INTERNAL_ACCESS:
 	void RenderSubDrawList(detail::DrawElementList* elementList, const detail::CameraInfo& cameraInfo, detail::InternalRenderer* renderer, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
 
 	// TODO: 本質的に DrawList に持たせるべきではない。一応今は一時変数的な扱いでしかないので被害は少ないが・・・
-	void SetCurrentCamera(Camera* camera) { m_camera = camera; }
-	Camera* GetCurrentCamera() const { return m_camera; }
+	void SetCurrentCamera(CameraComponent* camera) { m_camera = camera; }
+	CameraComponent* GetCurrentCamera() const { return m_camera; }
 
 private:
 	detail::GraphicsManager*		m_manager;
@@ -649,7 +649,7 @@ private:
 	//detail::DrawElementBatch		m_stateInSection;
 	const DrawElementMetadata*		m_metadata;
 
-	Camera*							m_camera;
+	CameraComponent*							m_camera;
 
 #if 0
 	/** アルファブレンドの有無 (default: false) */

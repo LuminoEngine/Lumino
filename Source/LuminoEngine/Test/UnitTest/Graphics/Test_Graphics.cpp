@@ -517,8 +517,8 @@ TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
 TEST_F(Test_Graphics_Rendering, ZSort)
 {
 	auto t1 = Texture2D::Create(LN_LOCALFILE("TestData/Sprite2.png"));
-	auto s1 = Sprite3D::Create(5, 5, t1);
-	auto s2 = Sprite3D::Create(8, 2, t1);
+	auto s1 = Sprite3DComponent::Create(5, 5, t1);
+	auto s2 = Sprite3DComponent::Create(8, 2, t1);
 	s1->SetPosition(0, 0, 0);	// 手前
 	s2->SetPosition(0, 0, 1);	// 奥
 	Engine::Update();
@@ -586,7 +586,7 @@ TEST_F(Test_Graphics_Texture, Blit)
 	tex2->Blit(20 * 2, 20 * 2, tex1, RectI(8 * 2, 14 * 2, 8, 14));
 	tex2->Blit(20 * 3, 20 * 3, tex1, RectI(8 * 3, 14 * 3, 8, 14));
 
-	auto sprite = Sprite2D::Create(tex2);
+	auto sprite = Sprite2DComponent::Create(tex2);
 	sprite->SetBlendMode(BlendMode::Alpha);
 	Engine::Update();
 
@@ -602,7 +602,7 @@ TEST_F(Test_Graphics_Texture, DrawText)
 	texture->DrawText(_T("Center"), RectI(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Center);
 	texture->DrawText(_T("Rigth"), RectI(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Right);
 	//texture->DrawText("Justify", Rect(0, 32, 120, 160), font, Color32::White, Color32::White, 0, TextAlignment::Justify);
-	auto sprite = Sprite2D::Create(texture);
+	auto sprite = Sprite2DComponent::Create(texture);
 	sprite->SetBlendMode(BlendMode::Alpha);
 	Engine::Update();
 
@@ -618,7 +618,7 @@ TEST_F(Test_Graphics_Texture, Issues)
 		auto font = Font::Create();
 		auto texture = Texture2D::Create(160, 120);
 		texture->DrawText(_T("__________"), RectI(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
-		auto sprite = Sprite2D::Create(texture);
+		auto sprite = Sprite2DComponent::Create(texture);
 		Engine::Update();
 
 		texture->Clear(Color32(0, 0, 0, 0));

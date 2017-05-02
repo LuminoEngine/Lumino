@@ -80,8 +80,8 @@ public:	// internal
 
 	void OnNodeRename(SceneNode* node, const String& oldName, const String& newName);
 
-	void AddLight(Light* light);
-	List<Camera*>* GetAllCameraList() { return &m_allCameraList; }
+	void AddLight(LightComponent* light);
+	List<CameraComponent*>* GetAllCameraList() { return &m_allCameraList; }
 
 	/// 指定した座標に近いライトを取得する (取得する数は outList の要素数。あらかじめ Resize() しておくこと)
 	void SelectLight(Vector3* pos, LightNodeList* outList);
@@ -103,9 +103,9 @@ private:
 
 	//Stack<int>							m_renderingPassIDStack;	///< (0～MaxRenderingPass-1)
 	NodeNameMap							m_nodeNameMap;			///< ノードを名前で検索するためのマップ
-	LightNodeList						m_lightNodeList;		///< 全ての Light のリスト
+	LightNodeList						m_lightNodeList;		///< 全ての LightComponent のリスト
 
-	List<Camera*>	m_allCameraList;
+	List<CameraComponent*>	m_allCameraList;
 
 
 	//CameraViewportLayer*	m_default2DCameraViewportLayer;
