@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 #include "../Common.h"
 #include "../Game/Component.h"
@@ -28,16 +28,16 @@ public:
 
 	void AddComponent(Component* component);
 
-	/// �J�n����
+	/// 開始処理
 	//virtual void OnStart();
 
-	/// �t���[���X�V
+	/// フレーム更新
 	virtual void OnUpdate();
 
 
 	virtual void OnRender(DrawList* context);
 
-	/// �I������
+	/// 終了処理
 	virtual void OnDestroy();
 
 LN_INTERNAL_ACCESS:
@@ -56,6 +56,38 @@ private:
 	bool						m_isAutoRelease;
 
 	friend class World;
+};
+
+/**
+	@brief		
+	@detail		このクラスのインスタンスは作成されると、現在のアクティブな 2D シーンに追加されます。
+*/
+class WorldObject2D
+	: public WorldObject
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+
+LN_CONSTRUCT_ACCESS2:
+	WorldObject2D();
+	virtual ~WorldObject2D();
+	void Initialize();
+};
+
+/**
+	@brief		
+	@detail		このクラスのインスタンスは作成されると、現在のアクティブな 3D シーンに追加されます。
+*/
+class WorldObject3D
+	: public WorldObject
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+
+LN_CONSTRUCT_ACCESS2:
+	WorldObject3D();
+	virtual ~WorldObject3D();
+	void Initialize();
 };
 
 LN_NAMESPACE_END

@@ -120,6 +120,9 @@
 	#define LN_CONSTRUCT_ACCESS					protected
 #endif
 
+#define LN_CONSTRUCT_ACCESS2					protected
+
+
 
 #ifdef LN_UNICODE
 	#define LN_AFX_FUNCNAME(name) name##W

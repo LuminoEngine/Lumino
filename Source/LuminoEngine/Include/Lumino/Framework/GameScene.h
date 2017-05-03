@@ -30,7 +30,7 @@ protected:
 
 	
 
-LN_CONSTRUCT_ACCESS:
+LN_CONSTRUCT_ACCESS2:
 	GameScene();
 	virtual ~GameScene();
 

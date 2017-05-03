@@ -798,6 +798,11 @@ void Camera::Initialize(SceneGraph* owner, CameraProjection proj)
 	}
 }
 
+//------------------------------------------------------------------------------
+CameraComponent* Camera::GetCameraComponent() const
+{
+	return m_component;
+}
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END

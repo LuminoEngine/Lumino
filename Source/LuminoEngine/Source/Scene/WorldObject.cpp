@@ -1,5 +1,6 @@
 
 #include "../Internal.h"
+#include <Lumino/World.h>
 #include <Lumino/Scene/WorldObject.h>
 #include "../Framework/GameSceneManager.h"
 
@@ -129,6 +130,52 @@ void WorldObject::ReleaseComponents()
 	for (auto& c : m_components)
 		c->Detach();
 	m_components.Clear();
+}
+
+
+//==============================================================================
+// WorldObject2D
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(WorldObject2D, WorldObject);
+
+//------------------------------------------------------------------------------
+WorldObject2D::WorldObject2D()
+{
+}
+
+//------------------------------------------------------------------------------
+WorldObject2D::~WorldObject2D()
+{
+}
+
+//------------------------------------------------------------------------------
+void WorldObject2D::Initialize()
+{
+	WorldObject::Initialize();
+	detail::EngineDomain::GetDefaultWorld2D()->AddWorldObject(this, true);
+}
+
+
+//==============================================================================
+// WorldObject3D
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(WorldObject3D, WorldObject);
+
+//------------------------------------------------------------------------------
+WorldObject3D::WorldObject3D()
+{
+}
+
+//------------------------------------------------------------------------------
+WorldObject3D::~WorldObject3D()
+{
+}
+
+//------------------------------------------------------------------------------
+void WorldObject3D::Initialize()
+{
+	WorldObject::Initialize();
+	detail::EngineDomain::GetDefaultWorld3D()->AddWorldObject(this, true);
 }
 
 LN_NAMESPACE_END

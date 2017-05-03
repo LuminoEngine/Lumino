@@ -259,6 +259,7 @@ class Camera
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
+	CameraComponent* GetCameraComponent() const;
 
 LN_CONSTRUCT_ACCESS:
 	Camera();
@@ -266,7 +267,6 @@ LN_CONSTRUCT_ACCESS:
 	void Initialize(SceneGraph* owner, CameraProjection proj);
 
 LN_INTERNAL_ACCESS:
-	const RefPtr<CameraComponent>& GetCameraComponent() const { return m_component; }
 
 private:
 	RefPtr<CameraComponent>	m_component;
