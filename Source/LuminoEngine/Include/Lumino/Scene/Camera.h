@@ -5,6 +5,7 @@
 #include "../Graphics/Rendering.h"
 #include "../UI/UIViewport.h"
 #include "SceneNode.h"
+#include "WorldObject.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
@@ -94,6 +95,9 @@ public:	// internal
 
 protected:
 	virtual void OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph* oldOwner) override;
+
+	// Component interface
+	virtual void OnUpdate() override;
 
 LN_INTERNAL_ACCESS:
 	CameraComponent();
@@ -243,6 +247,29 @@ private:
 	PointI	m_prevPos;
 	bool	m_RDrag;
 	bool	m_MDrag;
+};
+
+
+
+/**
+	@brief
+*/
+class Camera
+	: public WorldObject
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+
+LN_CONSTRUCT_ACCESS:
+	Camera();
+	virtual ~Camera();
+	void Initialize(SceneGraph* owner, CameraProjection proj);
+
+LN_INTERNAL_ACCESS:
+	const RefPtr<CameraComponent>& GetCameraComponent() const { return m_component; }
+
+private:
+	RefPtr<CameraComponent>	m_component;
 };
 
 LN_NAMESPACE_SCENE_END

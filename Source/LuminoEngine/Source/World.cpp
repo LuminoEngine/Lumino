@@ -49,9 +49,10 @@ DrawList* World::GetDebugRenderer() const
 }
 
 //------------------------------------------------------------------------------
-void World::AddWorldObject(WorldObject* obj)
+void World::AddWorldObject(WorldObject* obj, bool autoRelease)
 {
-	m_worldObjectList.Add(obj);
+	m_rootWorldObjectList.Add(obj);
+	obj->m_isAutoRelease = autoRelease;
 }
 
 //------------------------------------------------------------------------------
@@ -74,12 +75,16 @@ void World::BeginUpdateFrame()
 //------------------------------------------------------------------------------
 void World::UpdateFrame(float elapsedTime)
 {
+	for (auto& obj : m_rootWorldObjectList)
+	{
+		obj->UpdateFrame();
+	}
 }
 
 //------------------------------------------------------------------------------
 void World::Render(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags)
 {
-	for (auto& obj : m_worldObjectList)
+	for (auto& obj : m_rootWorldObjectList)
 	{
 		obj->Render(m_renderer);
 	}
@@ -115,6 +120,9 @@ void World2D::Initialize()
 
 	m_sceneGraph = RefPtr<SceneGraph2D>::MakeRef();
 	m_sceneGraph->CreateCore(EngineManager::GetInstance()->GetSceneGraphManager());
+
+	m_mainCamera = NewObject<Camera>(m_sceneGraph, CameraProjection_2D);
+	AddWorldObject(m_mainCamera, true);
 }
 
 //------------------------------------------------------------------------------
@@ -136,6 +144,12 @@ SceneGraph2D* World2D::GetSceneGraph2D() const
 }
 
 //------------------------------------------------------------------------------
+Camera* World2D::GetMainCamera() const
+{
+	return m_mainCamera;
+}
+
+//------------------------------------------------------------------------------
 //detail::SceneGraphRenderingProfilerInterface& World2D::GetRenderingProfiler()
 //{
 //	return m_sceneGraph->GetRenderingProfiler();
@@ -146,17 +160,19 @@ void World2D::BeginUpdateFrame()
 {
 	World::BeginUpdateFrame();
 
-	if (m_sceneGraph != nullptr) {
-		m_sceneGraph->BeginUpdateFrame();
-	}
+	//if (m_sceneGraph != nullptr) {
+	//	m_sceneGraph->BeginUpdateFrame();
+	//}
 }
 
 //------------------------------------------------------------------------------
 void World2D::UpdateFrame(float elapsedTime)
 {
-	if (m_sceneGraph != nullptr) {
-		m_sceneGraph->UpdateFrame(elapsedTime);
-	}
+	World::UpdateFrame(elapsedTime);
+
+	//if (m_sceneGraph != nullptr) {
+	//	m_sceneGraph->UpdateFrame(elapsedTime);
+	//}
 }
 
 //------------------------------------------------------------------------------
@@ -193,6 +209,9 @@ void World3D::Initialize()
 	m_sceneGraph = RefPtr<SceneGraph3D>::MakeRef();
 	m_sceneGraph->CreateCore(EngineManager::GetInstance()->GetSceneGraphManager());
 
+	m_mainCamera = NewObject<Camera>(m_sceneGraph, CameraProjection_3D);
+	AddWorldObject(m_mainCamera, true);
+
 	CreateGridPlane();
 }
 
@@ -221,6 +240,12 @@ SceneGraph3D* World3D::GetSceneGraph3D() const
 }
 
 //------------------------------------------------------------------------------
+Camera* World3D::GetMainCamera() const
+{
+	return m_mainCamera;
+}
+
+//------------------------------------------------------------------------------
 //detail::SceneGraphRenderingProfilerInterface& World3D::GetRenderingProfiler()
 //{
 //	return m_sceneGraph->GetRenderingProfiler();
@@ -231,24 +256,26 @@ void World3D::BeginUpdateFrame()
 {
 	World::BeginUpdateFrame();
 
-	if (m_sceneGraph != nullptr)
-	{
-		m_sceneGraph->BeginUpdateFrame();
-	}
+	//if (m_sceneGraph != nullptr)
+	//{
+	//	m_sceneGraph->BeginUpdateFrame();
+	//}
 }
 
 //------------------------------------------------------------------------------
 void World3D::UpdateFrame(float elapsedTime)
 {
+	World::UpdateFrame(elapsedTime);
+
 	if (m_physicsWorld != nullptr)
 	{
 		m_physicsWorld->StepSimulation(elapsedTime);
 	}
 
-	if (m_sceneGraph != nullptr)
-	{
-		m_sceneGraph->UpdateFrame(elapsedTime);
-	}
+	//if (m_sceneGraph != nullptr)
+	//{
+	//	m_sceneGraph->UpdateFrame(elapsedTime);
+	//}
 }
 
 //------------------------------------------------------------------------------

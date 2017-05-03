@@ -237,8 +237,6 @@ LN_CONSTRUCT_ACCESS:
 	VisualObject();
 	virtual ~VisualObject();
 	void Initialize();
-
-private:
 };
 
 LN_NAMESPACE_SCENE_END

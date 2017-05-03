@@ -7,6 +7,7 @@ class Material;
 class DrawList;
 class StaticMeshModel;
 class CameraComponent;
+class Camera;
 class SceneGraph;
 class SceneGraph2D;
 class SceneGraph3D;
@@ -42,13 +43,13 @@ LN_CONSTRUCT_ACCESS:
 	void Initialize();
 
 LN_INTERNAL_ACCESS:
-	void AddWorldObject(WorldObject* obj);
+	void AddWorldObject(WorldObject* obj, bool autoRelease /*= false*/);
 	virtual void BeginUpdateFrame();
 	virtual void UpdateFrame(float elapsedTime);
 	virtual void Render(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags);
 	void ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
 
-	List<RefPtr<WorldObject>>	m_worldObjectList;
+	List<RefPtr<WorldObject>>	m_rootWorldObjectList;
 	RefPtr<DrawList>			m_renderer;
 	RefPtr<DrawList>			m_debugRenderer;
 	RefPtr<Material>			m_debugRendererDefaultMaterial;	// TODO: DebugDrawList みたいに派生させてまとめたほうがいいかな・・・
@@ -73,14 +74,15 @@ LN_CONSTRUCT_ACCESS:
 	void Initialize();
 
 LN_INTERNAL_ACCESS:
-	//virtual detail::SceneGraphRenderingProfilerInterface& GetRenderingProfiler() override;
 	SceneGraph2D* GetSceneGraph2D() const;
+	Camera* GetMainCamera() const;
 	virtual void BeginUpdateFrame() override;
 	virtual void UpdateFrame(float elapsedTime) override;
 	virtual void Render(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags) override;
 
 private:
 	RefPtr<SceneGraph2D>		m_sceneGraph;
+	RefPtr<Camera>				m_mainCamera;
 };
 
 /**
@@ -105,7 +107,7 @@ LN_CONSTRUCT_ACCESS:
 LN_INTERNAL_ACCESS:
 	PhysicsWorld* GetPhysicsWorld3D() const;
 	SceneGraph3D* GetSceneGraph3D() const;
-	//virtual detail::SceneGraphRenderingProfilerInterface& GetRenderingProfiler() override;
+	Camera* GetMainCamera() const;
 	virtual void BeginUpdateFrame() override;
 	virtual void UpdateFrame(float elapsedTime) override;
 	virtual void Render(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags) override;
@@ -115,10 +117,11 @@ private:
 	void RenderGridPlane(DrawList* renderer, CameraComponent* camera);
 	void AdjustGridPlane(CameraComponent* camera);
 
-	RefPtr<PhysicsWorld>	m_physicsWorld;
-	RefPtr<SceneGraph3D>	m_sceneGraph;
-	RefPtr<StaticMeshModel>	m_gridPlane;
-	bool					m_visibleGridPlane;
+	RefPtr<PhysicsWorld>		m_physicsWorld;
+	RefPtr<SceneGraph3D>		m_sceneGraph;
+	RefPtr<Camera>				m_mainCamera;
+	RefPtr<StaticMeshModel>		m_gridPlane;
+	bool						m_visibleGridPlane;
 };
 
 LN_NAMESPACE_END

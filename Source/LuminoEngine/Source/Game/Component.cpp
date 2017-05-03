@@ -66,6 +66,12 @@ void Component::Detach()
 }
 
 //------------------------------------------------------------------------------
+void Component::UpdateFrame()
+{
+	OnUpdate();
+}
+
+//------------------------------------------------------------------------------
 void Component::Render(DrawList* context)
 {
 	OnRender(context);

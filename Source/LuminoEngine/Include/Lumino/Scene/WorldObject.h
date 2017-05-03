@@ -34,15 +34,26 @@ public:
 	/// フレーム更新
 	virtual void OnUpdate();
 
-	/// 終了処理
-	virtual void OnDestroy();
 
 	virtual void OnRender(DrawList* context);
 
+	/// 終了処理
+	virtual void OnDestroy();
+
+LN_INTERNAL_ACCESS:
+	const Matrix& GetCombinedGlobalMatrix() const { return m_combinedGlobalMatrix; }
+
 private:
+	void UpdateFrame();
 	void Render(DrawList* context);
 	void ReleaseComponents();
-	List<RefPtr<Component>>	m_components;
+
+	List<RefPtr<Component>>		m_components;
+
+	List<RefPtr<WorldObject>>	m_children;
+	WorldObject*				m_parent;
+	Matrix						m_combinedGlobalMatrix;
+	bool						m_isAutoRelease;
 
 	friend class World;
 };

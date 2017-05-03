@@ -32,6 +32,7 @@ public:
 private:
 	void Attach(WorldObject* owner);
 	void Detach();
+	void UpdateFrame();
 	virtual void Render(DrawList* context);
 
 	WorldObject*	m_owner;
@@ -43,7 +44,7 @@ private:
 /**
 	@brief		
 */
-class Transform
+class Transform	// TODO: name TransformComponent
 	: public Component
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();

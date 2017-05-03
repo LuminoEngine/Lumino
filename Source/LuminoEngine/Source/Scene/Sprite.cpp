@@ -5,6 +5,7 @@
 #include "SceneGraphManager.h"
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Sprite.h>
+#include <Lumino/World.h>
 #include "../Graphics/PrimitiveRenderer.h"	// todo
 
 LN_NAMESPACE_BEGIN
@@ -273,6 +274,7 @@ void Sprite2D::Initialize()
 {
 	VisualObject::Initialize();
 	m_component = Sprite2DComponent::Create();
+	detail::EngineDomain::GetDefaultWorld2D()->AddWorldObject(this, true);
 }
 
 //------------------------------------------------------------------------------
@@ -280,6 +282,7 @@ void Sprite2D::Initialize(const StringRef& filePath)
 {
 	VisualObject::Initialize();
 	m_component = Sprite2DComponent::Create(filePath);
+	detail::EngineDomain::GetDefaultWorld2D()->AddWorldObject(this, true);
 }
 
 //------------------------------------------------------------------------------
@@ -287,10 +290,62 @@ void Sprite2D::Initialize(Texture* texture)
 {
 	VisualObject::Initialize();
 	m_component = Sprite2DComponent::Create(texture);
+	detail::EngineDomain::GetDefaultWorld2D()->AddWorldObject(this, true);
 }
 
 //------------------------------------------------------------------------------
 VisualComponent* Sprite2D::GetMainVisualComponent() const
+{
+	return m_component;
+}
+
+
+//==============================================================================
+// Sprite3D
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite3D, VisualObject);
+
+//------------------------------------------------------------------------------
+RefPtr<Sprite3D> Sprite3D::Create()
+{
+	return NewObject<Sprite3D>();
+}
+
+//------------------------------------------------------------------------------
+RefPtr<Sprite3D> Sprite3D::Create(float width, float height, Texture* texture)
+{
+	return NewObject<Sprite3D>(width, height, texture);
+}
+
+//------------------------------------------------------------------------------
+Sprite3D::Sprite3D()
+	: m_component(nullptr)
+{
+}
+
+//------------------------------------------------------------------------------
+Sprite3D::~Sprite3D()
+{
+}
+
+//------------------------------------------------------------------------------
+void Sprite3D::Initialize()
+{
+	VisualObject::Initialize();
+	m_component = Sprite3DComponent::Create();
+	detail::EngineDomain::GetDefaultWorld3D()->AddWorldObject(this, true);
+}
+
+//------------------------------------------------------------------------------
+void Sprite3D::Initialize(float width, float height, Texture* texture)
+{
+	VisualObject::Initialize();
+	m_component = Sprite3DComponent::Create(width, height, texture);
+	detail::EngineDomain::GetDefaultWorld3D()->AddWorldObject(this, true);
+}
+
+//------------------------------------------------------------------------------
+VisualComponent* Sprite3D::GetMainVisualComponent() const
 {
 	return m_component;
 }

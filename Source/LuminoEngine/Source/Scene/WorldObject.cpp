@@ -14,12 +14,16 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(WorldObject, Object);
 WorldObjectPtr WorldObject::Create()
 {
 	auto ptr = WorldObjectPtr::MakeRef();
-	detail::GameSceneManager::GetInstance()->GetActiveScene()->AddGameObject(ptr);
+	//detail::GameSceneManager::GetInstance()->GetActiveScene()->AddGameObject(ptr);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
 WorldObject::WorldObject()
+	: m_children()
+	, m_parent(nullptr)
+	, m_combinedGlobalMatrix()
+	, m_isAutoRelease(false)
 {
 }
 
@@ -57,14 +61,55 @@ void WorldObject::OnUpdate()
 }
 
 //------------------------------------------------------------------------------
+void WorldObject::OnRender(DrawList* context)
+{
+
+}
+
+//------------------------------------------------------------------------------
 void WorldObject::OnDestroy()
 {
 }
 
 //------------------------------------------------------------------------------
-void WorldObject::OnRender(DrawList* context)
+void WorldObject::UpdateFrame()
 {
+	Matrix localMatrix = transform.GetTransformMatrix();
 
+	// グローバル行列結合
+	if (m_parent != nullptr)
+	{
+		m_combinedGlobalMatrix = localMatrix * m_parent->m_combinedGlobalMatrix;
+	}
+	else
+	{
+		m_combinedGlobalMatrix = localMatrix;
+	}
+
+	OnUpdate();
+
+	for (auto& c : m_components)
+	{
+		c->UpdateFrame();
+	}
+
+	// 子ノード更新
+	int count = m_children.GetCount();
+	for (int i = 0; i < count; )
+	{
+		WorldObject* obj = m_children.GetAt(i);
+		obj->UpdateFrame();
+
+		if (obj->m_isAutoRelease && obj->GetReferenceCount() == 1)
+		{
+			m_children.RemoveAt(i);
+			count = m_children.GetCount();
+		}
+		else
+		{
+			++i;
+		}
+	}
 }
 
 //------------------------------------------------------------------------------

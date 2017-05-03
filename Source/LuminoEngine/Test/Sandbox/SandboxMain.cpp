@@ -87,17 +87,17 @@ void Main()
 #endif
 
 
-	Engine::Initialize();
+	//Engine::Initialize();
 
-	auto sprite = Sprite2D::Create(_T("D:/tmp/110220c_as019.png"));
+	//auto sprite = Sprite2D::Create(_T("D:/tmp/110220c_as019.png"));
 
-	while (Engine::Update())
-	{
-	}
+	//while (Engine::Update())
+	//{
+	//}
 
-	Engine::Terminate();
+	//Engine::Terminate();
 
-	return;
+	//return;
 
 	UIControlsGallery();
 	//DxLibMain();

@@ -209,6 +209,7 @@ void SceneNode::OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph* oldOw
 //------------------------------------------------------------------------------
 void SceneNode::OnUpdate()
 {
+	Component::OnUpdate();
 }
 
 //==============================================================================

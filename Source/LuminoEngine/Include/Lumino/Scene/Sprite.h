@@ -215,5 +215,58 @@ private:
 	RefPtr<Sprite2DComponent>	m_component;
 };
 
+/**
+	@brief	3D 空間に配置されるスプライトのクラスです。
+*/
+LN_CLASS()
+class Sprite3D
+	: public VisualObject
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+	
+	/**
+		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
+		@detail		作成されたスプライトは、デフォルトの 3D シーングラフ に追加されます。
+	*/
+	static RefPtr<Sprite3D> Create();
+	
+	
+	/**
+		@brief		サイズを指定して、テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
+		@param[in]	width		: スプライトの幅
+		@param[in]	height		: スプライトの高さ
+		@detail		作成されたスプライトは、デフォルトの 3D シーングラフ に追加されます。
+	*/
+	//static RefPtr<Sprite3D> Create(float width, float height);
+	
+	/**
+		@brief		サイズとテクスチャを指定してスプライトを作成します。
+		@param[in]	width		: スプライトの幅
+		@param[in]	height		: スプライトの高さ
+		@param[in]	texture		: スプライトが表示するテクスチャ
+		@detail		作成されたスプライトは、デフォルトの 3D シーングラフ に追加されます。
+	*/
+	static RefPtr<Sprite3D> Create(float width, float height, Texture* texture);
+
+
+protected:
+	virtual VisualComponent* GetMainVisualComponent() const override;
+
+LN_CONSTRUCT_ACCESS:
+	Sprite3D();
+	virtual ~Sprite3D();
+
+	LN_METHOD()
+	void Initialize();
+
+	LN_METHOD()
+	void Initialize(float width, float height, Texture* texture);
+
+private:
+	RefPtr<Sprite3DComponent>	m_component;
+};
+
+
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END

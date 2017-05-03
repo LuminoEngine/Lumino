@@ -187,6 +187,13 @@ void CameraComponent::OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph*
 	}
 }
 
+//------------------------------------------------------------------------------
+void CameraComponent::OnUpdate()
+{
+	SceneNode::OnUpdate();
+	m_combinedGlobalMatrix = GetOwnerObject()->GetCombinedGlobalMatrix();
+}
+
 #if 0
 //==============================================================================
 // CameraViewportLayer
@@ -755,6 +762,42 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseWheel(int delta)
 	camera->SetPosition(camera->GetLookAt() + view);
 	return true;
 }
+
+
+//==============================================================================
+// Camera
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Camera, WorldObject);
+
+//------------------------------------------------------------------------------
+Camera::Camera()
+	: WorldObject()
+	, m_component(nullptr)
+{
+}
+
+//------------------------------------------------------------------------------
+Camera::~Camera()
+{
+}
+
+//------------------------------------------------------------------------------
+void Camera::Initialize(SceneGraph* owner, CameraProjection proj)
+{
+	WorldObject::Initialize();
+	m_component = NewObject<CameraComponent>(owner, proj);
+	AddComponent(m_component);
+
+	if (proj == CameraProjection_2D)
+	{
+		transform.position = Vector3(0, 0, 0);
+	}
+	else if (proj == CameraProjection_3D)
+	{
+		transform.position = Vector3(0, 1.0f, -10.0f);	// Unity based.
+	}
+}
+
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
