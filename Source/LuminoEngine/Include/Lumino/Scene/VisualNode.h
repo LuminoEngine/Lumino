@@ -5,6 +5,7 @@
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Graphics/Texture.h>
 #include "SceneNode.h"
+#include "WorldObject.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
@@ -28,35 +29,72 @@ public:
 
 	tr::ReflectionObjectList<Material*>* GetMaterials() const;
 
-	/** メインマテリアルの不透明度を設定します。(default: 1.0)*/
-	void SetOpacity(float value, int subsetIndex = -1);
+
+
+
+	/** 不透明度を設定します。(default: 1.0) */
+	void SetOpacity(float value);
+
+	/** 不透明度を取得します。 */
 	float GetOpacity() const;
 
+	/** カラースケールを設定します。(default: Color(1, 1, 1, 1)) */
+	void SetColorScale(const Color& value);
 
-	/** メインマテリアルのカラースケールを設定します。(default: )*/
-	/// 乗算色の設定TODO: Color32
-	void SetColorScale(const Color& value, int subsetIndex = -1);
-	void SetColorScale(float r, float g, float b, float a = 1.0f, int subsetIndex = -1);
+	/** カラースケールを取得します。 */
 	const Color& GetColorScale() const;
 
-	void SetColor(const Color32& value);
-	void SetColor(int r, int g, int b, int a = 255);
+	/** ブレンドカラーを設定します。(default: Color(0, 0, 0, 0)) */
+	void SetBlendColor(const Color& value);
 
-	/// ブレンドカラーの設定 TODO: Color32
-	void SetBlendColor(const Color& value, int subsetIndex = -1);
+	/** ブレンドカラーを取得します。 */
+	const Color& GetBlendColor() const;
 
-	/// 色調の設定 TODO: Tone32
-	void SetTone(const ToneF& value, int subsetIndex = -1);
+	/** 色調を設定します。(default: Tone(0, 0, 0, 0)) */
+	void SetTone(const ToneF& value);
+
+	/** 色調を取得します。 */
+	const ToneF& GetTone() const;
+
+	/** シェーダを設定します。(default: nullptr) */
+	void SetShader(Shader* value);
+
+	/** シェーダを取得します。 */
+	Shader* GetShader() const;
 
 
-	///// UV 変換行列の設定
-	//void SetUVTransform(const Matrix& matrix, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).UVTransform = matrix; }
 
-	///// UV 変換行列の設定
-	//const Matrix& GetUVTransform(int subsetIndex = -1)  const { return m_visualNodeParams.GetSubsetParams(subsetIndex).UVTransform; }
 
-	/// シェーダの設定
-	void SetShader(Shader* value, int subsetIndex = -1);
+
+	///** メインマテリアルの不透明度を設定します。(default: 1.0)*/
+	//void SetOpacity(float value, int subsetIndex = -1);
+	//float GetOpacity() const;
+
+
+	///** メインマテリアルのカラースケールを設定します。(default: )*/
+	///// 乗算色の設定TODO: Color32
+	//void SetColorScale(const Color& value, int subsetIndex = -1);
+	//void SetColorScale(float r, float g, float b, float a = 1.0f, int subsetIndex = -1);
+	//const Color& GetColorScale() const;
+
+	//void SetColor(const Color32& value);
+	//void SetColor(int r, int g, int b, int a = 255);
+
+	///// ブレンドカラーの設定 TODO: Color32
+	//void SetBlendColor(const Color& value, int subsetIndex = -1);
+
+	///// 色調の設定 TODO: Tone32
+	//void SetTone(const ToneF& value, int subsetIndex = -1);
+
+
+	/////// UV 変換行列の設定
+	////void SetUVTransform(const Matrix& matrix, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).UVTransform = matrix; }
+
+	/////// UV 変換行列の設定
+	////const Matrix& GetUVTransform(int subsetIndex = -1)  const { return m_visualNodeParams.GetSubsetParams(subsetIndex).UVTransform; }
+
+	///// シェーダの設定
+	//void SetShader(Shader* value, int subsetIndex = -1);
 
 	/** @} */
 
@@ -116,7 +154,6 @@ protected:
 LN_INTERNAL_ACCESS:
 	MaterialList2* GetMaterialList() { return m_materialList; }
 	Shader* GetPrimaryShader() const;
-	//void Render(SceneGraphRenderingContext* dc);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	virtual detail::SceneNodeDefaultShaderClass GetShaderClass() { return detail::SceneNodeDefaultShaderClass_StaticMesh; }
@@ -125,6 +162,7 @@ protected:
 	RefPtr<MaterialList2>	m_materialList;
 
 private:
+	void Render(DrawList* context) override;
 };
 
 
@@ -145,6 +183,62 @@ LN_INTERNAL_ACCESS:
 	
 LN_INTERNAL_ACCESS:
 	RefPtr<Material>				m_mainMaterial;
+};
+
+
+
+
+/**
+	@brief		
+*/
+class VisualObject
+	: public WorldObject
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+
+	/** 不透明度を設定します。(default: 1.0) */
+	void SetOpacity(float value);
+
+	/** 不透明度を取得します。 */
+	float GetOpacity() const;
+
+	/** カラースケールを設定します。(default: Color(1, 1, 1, 1)) */
+	void SetColorScale(const Color& value);
+
+	/** カラースケールを設定します。(default: Color(1, 1, 1, 1)) */
+	void SetColorScale(float r, float g, float b, float a = 1.0f);
+
+	/** カラースケールを取得します。 */
+	const Color& GetColorScale() const;
+
+	/** ブレンドカラーを設定します。(default: Color(0, 0, 0, 0)) */
+	void SetBlendColor(const Color& value);
+
+	/** ブレンドカラーを取得します。 */
+	const Color& GetBlendColor() const;
+
+	/** 色調を設定します。(default: Tone(0, 0, 0, 0)) */
+	void SetTone(const ToneF& value);
+
+	/** 色調を取得します。 */
+	const ToneF& GetTone() const;
+
+	/** シェーダを設定します。(default: nullptr) */
+	void SetShader(Shader* value);
+
+	/** シェーダを取得します。 */
+	Shader* GetShader() const;
+
+protected:
+	virtual VisualComponent* GetMainVisualComponent() const = 0;
+
+LN_CONSTRUCT_ACCESS:
+	VisualObject();
+	virtual ~VisualObject();
+	void Initialize();
+
+private:
 };
 
 LN_NAMESPACE_SCENE_END

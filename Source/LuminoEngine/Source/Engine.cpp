@@ -129,17 +129,17 @@ UIViewportLayer* Engine::GetDefault3DLayer()
 	return EngineManager::Instance->GetUIManager()->GetMainWindow()->GetDefaultCameraViewportLayer3D();
 }
 
-//------------------------------------------------------------------------------
-SceneGraph2D* Engine::GetDefaultSceneGraph2D()
-{
-	return EngineManager::Instance->GetDefaultWorld2D()->GetSceneGraph2D();
-}
-
-//------------------------------------------------------------------------------
-SceneGraph3D* Engine::GetDefaultSceneGraph3D()
-{
-	return EngineManager::Instance->GetDefaultWorld3D()->GetSceneGraph3D();
-}
+////------------------------------------------------------------------------------
+//SceneGraph2D* Engine::GetDefaultSceneGraph2D()
+//{
+//	return EngineManager::Instance->GetDefaultWorld2D()->GetSceneGraph2D();
+//}
+//
+////------------------------------------------------------------------------------
+//SceneGraph3D* Engine::GetDefaultSceneGraph3D()
+//{
+//	return EngineManager::Instance->GetDefaultWorld3D()->GetSceneGraph3D();
+//}
 
 //------------------------------------------------------------------------------
 LightComponent* Engine::GetMainLight3D()

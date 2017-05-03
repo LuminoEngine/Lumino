@@ -2,6 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/Game/Component.h>
 #include <Lumino/Framework/GameScene.h>
+#include <Lumino/Scene/WorldObject.h>
 
 LN_NAMESPACE_BEGIN
 
@@ -44,6 +45,11 @@ void Component::OnUpdate()
 }
 
 //------------------------------------------------------------------------------
+void Component::OnRender(DrawList* context)
+{
+}
+
+//------------------------------------------------------------------------------
 void Component::Attach(WorldObject* owner)
 {
 	m_owner = owner;
@@ -57,6 +63,12 @@ void Component::Detach()
 	OnDetaching();
 	m_owner = nullptr;
 	transfotm = nullptr;
+}
+
+//------------------------------------------------------------------------------
+void Component::Render(DrawList* context)
+{
+	OnRender(context);
 }
 
 //==============================================================================

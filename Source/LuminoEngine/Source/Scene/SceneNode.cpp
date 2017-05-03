@@ -5,6 +5,7 @@
 #include <Lumino/Graphics/Rendering.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/SceneNode.h>
+#include <Lumino/Scene/WorldObject.h>
 #include <Lumino/Framework/GameScene.h>
 
 LN_NAMESPACE_BEGIN
@@ -185,7 +186,7 @@ void SceneNode::Render2(DrawList* renderer)
 	{
 		renderer->SetBuiltinEffectData(m_builtinEffectData);
 		OnRender2(renderer);
-		GetOwnerSceneGraph()->GetRenderingProfiler().IncreaseNodeDrawCount();
+		//GetOwnerSceneGraph()->GetRenderingProfiler().IncreaseNodeDrawCount();
 	}
 }
 

@@ -425,9 +425,9 @@ void CameraViewportLayer2::SetDebugDrawFlags(WorldDebugDrawFlags flags)
 void CameraViewportLayer2::Render()
 {
 	// TODO: やめよう
-	m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->SetCurrentCamera(m_hostingCamera);
+	m_targetWorld->GetRenderer()->SetCurrentCamera(m_hostingCamera);
 
-	m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->Clear(ClearFlags::Depth, Color::White);
+	m_targetWorld->GetRenderer()->Clear(ClearFlags::Depth, Color::White);
 
 	// カメラ行列の更新
 	m_hostingCamera->UpdateMatrices(GetOwnerViewport()->GetViewSize());
@@ -452,18 +452,18 @@ void CameraViewportLayer2::ExecuteDrawListRendering(DrawList* parentDrawList, Re
 	cameraInfo.viewFrustum = m_hostingCamera->GetViewFrustum();
 	cameraInfo.zSortDistanceBase = m_hostingCamera->GetZSortDistanceBase();
 	parentDrawList->RenderSubDrawList(
-		m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->GetDrawElementList(),
+		m_targetWorld->GetRenderer()->GetDrawElementList(),
 		cameraInfo,
 		m_internalRenderer,
 		renderTarget,
 		depthBuffer);
 	parentDrawList->RenderSubDrawList(
-		m_hostingCamera->GetOwnerSceneGraph()->GetDebugRenderer()->GetDrawElementList(),
+		m_targetWorld->GetRenderer()->GetDrawElementList(),
 		cameraInfo,
 		m_internalRenderer,
 		renderTarget,
 		depthBuffer);
-	m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->EndFrame();
+	m_targetWorld->GetRenderer()->EndFrame();
 }
 
 //==============================================================================

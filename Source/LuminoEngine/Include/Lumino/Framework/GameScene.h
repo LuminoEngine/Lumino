@@ -5,40 +5,7 @@
 
 LN_NAMESPACE_BEGIN
 class WorldObject;
-using WorldObjectPtr = RefPtr<WorldObject>;
 namespace detail { class GameSceneManager; }
-
-/**
-	@brief		
-*/
-class WorldObject
-	: public Object
-{
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
-public:
-	Transform	transform;
-
-public:
-	static WorldObjectPtr Create();
-
-	WorldObject();
-	virtual ~WorldObject();
-
-	void AddComponent(Component* component);
-
-	/// 開始処理
-	//virtual void OnStart();
-
-	/// フレーム更新
-	virtual void OnUpdate();
-
-	/// 終了処理
-	virtual void OnDestroy();
-
-private:
-	void ReleaseComponents();
-	List<RefPtr<Component>>	m_components;
-};
 
 /**
 	@brief		ゲームシーンのベースクラスです。
@@ -75,7 +42,7 @@ private:
 	void AddGameObject(WorldObject* obj);
 	void Update();
 
-	List<WorldObjectPtr>	m_gameObjectList;
+	List<RefPtr<WorldObject>>	m_gameObjectList;
 
 	friend class WorldObject;
 	friend class detail::GameSceneManager;

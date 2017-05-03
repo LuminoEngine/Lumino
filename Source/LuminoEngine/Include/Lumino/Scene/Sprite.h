@@ -162,5 +162,58 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual void OnRender2(DrawList* renderer) override;
 };
 
+
+/**
+	@brief	2D 空間に配置されるスプライトのクラスです。
+*/
+LN_CLASS()
+class Sprite2D
+	: public VisualObject
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+	
+	/**
+		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
+		@detail		作成されたスプライトは、デフォルトの 2D シーングラフ に追加されます。
+	*/
+	static RefPtr<Sprite2D> Create();
+	
+	/**
+		@brief		指定したファイルパスのテクスチャを読み込み、スプライトを作成します。
+		@param[in]	filePath	: 画像ファイルのファイルパス
+		@detail		作成されたスプライトは、デフォルトの 2D シーングラフ に追加されます。
+					スプライトのサイズは、読み込んだテクスチャのサイズとなります。
+	*/
+	static RefPtr<Sprite2D> Create(const StringRef& filePath);
+	
+	/**
+		@brief		テクスチャを指定してスプライトを作成します。
+		@param[in]	texture		: スプライトが表示するテクスチャ
+		@detail		作成されたスプライトは、デフォルトの 2D シーングラフ に追加されます。
+					スプライトのサイズは、指定したテクスチャのサイズとなります。
+	*/
+	static RefPtr<Sprite2D> Create(Texture* texture);
+
+protected:
+	virtual VisualComponent* GetMainVisualComponent() const override;
+
+LN_CONSTRUCT_ACCESS:
+	Sprite2D();
+	virtual ~Sprite2D();
+
+	LN_METHOD()
+	void Initialize();
+
+	LN_METHOD()
+	void Initialize(const StringRef& filePath);
+
+	LN_METHOD()
+	void Initialize(Texture* texture);
+
+private:
+	RefPtr<Sprite2DComponent>	m_component;
+};
+
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END

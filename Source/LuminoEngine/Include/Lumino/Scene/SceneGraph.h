@@ -55,8 +55,8 @@ public:
 	virtual CameraComponent* GetMainCamera() = 0;
 
 
-	DrawList* GetRenderer() const;
-	DrawList* GetDebugRenderer() const;
+	//DrawList* GetRenderer() const;
+	//DrawList* GetDebugRenderer() const;
 
 protected:
 	SceneGraph();
@@ -65,7 +65,7 @@ protected:
 
 LN_INTERNAL_ACCESS:
 	List<CameraComponent*>* GetAllCameraList() { return &m_allCameraList; }
-	detail::SceneGraphRenderingProfilerInterface& GetRenderingProfiler() { return m_renderingProfiler; }
+	//detail::SceneGraphRenderingProfilerInterface& GetRenderingProfiler() { return m_renderingProfiler; }
 
 	void BeginUpdateFrame();
 
@@ -100,12 +100,8 @@ private:
 	MouseState			m_middleMouseState;		///< マウスの中ボタンの状態
 	PointI				m_mousePosition;		///< マウスの現在位置
 
-	// TODO: World へ
-	RefPtr<DrawList>	m_renderer;
-	RefPtr<DrawList>	m_debugRenderer;
-	RefPtr<Material>	m_debugRendererDefaultMaterial;	// TODO: DebugDrawList みたいに派生させてまとめたほうがいいかな・・・
 
-	detail::SceneGraphRenderingProfilerInterface	m_renderingProfiler;
+	//detail::SceneGraphRenderingProfilerInterface	m_renderingProfiler;
 };
 
 

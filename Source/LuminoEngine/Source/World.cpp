@@ -6,6 +6,8 @@
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Camera.h>
 #include <Lumino/World.h>
+#include <Lumino/Scene/WorldObject.h>
+#include "Graphics/GraphicsManager.h"
 #include "EngineManager.h"
 
 LN_NAMESPACE_BEGIN
@@ -28,11 +30,45 @@ World::~World()
 //------------------------------------------------------------------------------
 void World::Initialize()
 {
+	m_renderer = NewObject<DrawList>(detail::EngineDomain::GetGraphicsManager());
+	m_debugRenderer = NewObject<DrawList>(detail::EngineDomain::GetGraphicsManager());
+
+	m_debugRendererDefaultMaterial = NewObject<Material>();
+}
+
+//------------------------------------------------------------------------------
+DrawList* World::GetRenderer() const
+{
+	return m_renderer;
+}
+
+//------------------------------------------------------------------------------
+DrawList* World::GetDebugRenderer() const
+{
+	return m_debugRenderer;
+}
+
+//------------------------------------------------------------------------------
+void World::AddWorldObject(WorldObject* obj)
+{
+	m_worldObjectList.Add(obj);
 }
 
 //------------------------------------------------------------------------------
 void World::BeginUpdateFrame()
 {
+	// OnRender の外のデバッグ描画などでも使用するため、描画リストのクリアは SceneGraph の更新前でなければならない。
+	// また、出来上がった描画リストを、複数のビューやカメラが描画することを想定する。
+	if (m_renderer != nullptr)
+	{
+		m_renderer->BeginMakeElements();
+	}
+	if (m_debugRenderer != nullptr)
+	{
+		m_debugRenderer->BeginMakeElements();
+		m_debugRendererDefaultMaterial->SetShader(detail::EngineDomain::GetGraphicsManager()->GetBuiltinShader(BuiltinShader::Sprite));
+		m_debugRenderer->SetDefaultMaterial(m_debugRendererDefaultMaterial);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -43,11 +79,13 @@ void World::UpdateFrame(float elapsedTime)
 //------------------------------------------------------------------------------
 void World::Render(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags)
 {
-	SceneGraph* scene = GetSceneGraph();
-	if (scene != nullptr)
+	for (auto& obj : m_worldObjectList)
 	{
-		scene->Render2(scene->GetRenderer(), camera);
+		obj->Render(m_renderer);
 	}
+
+	// reset status
+	m_renderer->SetBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
 }
 
 //------------------------------------------------------------------------------
@@ -80,10 +118,16 @@ void World2D::Initialize()
 }
 
 //------------------------------------------------------------------------------
-SceneGraph* World2D::GetSceneGraph()
-{
-	return GetSceneGraph2D();
-}
+//SceneGraph* World2D::GetSceneGraph()
+//{
+//	return GetSceneGraph2D();
+//}
+
+////------------------------------------------------------------------------------
+//DrawList* World2D::GetRenderer() const
+//{
+//	return GetSceneGraph2D()->GetRenderer();
+//}
 
 //------------------------------------------------------------------------------
 SceneGraph2D* World2D::GetSceneGraph2D() const
@@ -91,10 +135,17 @@ SceneGraph2D* World2D::GetSceneGraph2D() const
 	return m_sceneGraph;
 }
 
+//------------------------------------------------------------------------------
+//detail::SceneGraphRenderingProfilerInterface& World2D::GetRenderingProfiler()
+//{
+//	return m_sceneGraph->GetRenderingProfiler();
+//}
 
 //------------------------------------------------------------------------------
 void World2D::BeginUpdateFrame()
 {
+	World::BeginUpdateFrame();
+
 	if (m_sceneGraph != nullptr) {
 		m_sceneGraph->BeginUpdateFrame();
 	}
@@ -106,6 +157,14 @@ void World2D::UpdateFrame(float elapsedTime)
 	if (m_sceneGraph != nullptr) {
 		m_sceneGraph->UpdateFrame(elapsedTime);
 	}
+}
+
+//------------------------------------------------------------------------------
+void World2D::Render(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags)
+{
+	World::Render(camera, debugDrawFlags);
+
+	m_sceneGraph->Render2(GetRenderer(), camera);
 }
 
 //==============================================================================
@@ -138,11 +197,17 @@ void World3D::Initialize()
 }
 
 //------------------------------------------------------------------------------
-SceneGraph* World3D::GetSceneGraph()
-{
-	return GetSceneGraph3D();
-}
+//SceneGraph* World3D::GetSceneGraph()
+//{
+//	return GetSceneGraph3D();
+//}
 
+////------------------------------------------------------------------------------
+//DrawList* World3D::GetRenderer() const
+//{
+//	return GetSceneGraph3D()->GetRenderer();
+//}
+//
 //------------------------------------------------------------------------------
 PhysicsWorld* World3D::GetPhysicsWorld3D() const
 {
@@ -156,8 +221,16 @@ SceneGraph3D* World3D::GetSceneGraph3D() const
 }
 
 //------------------------------------------------------------------------------
+//detail::SceneGraphRenderingProfilerInterface& World3D::GetRenderingProfiler()
+//{
+//	return m_sceneGraph->GetRenderingProfiler();
+//}
+
+//------------------------------------------------------------------------------
 void World3D::BeginUpdateFrame()
 {
+	World::BeginUpdateFrame();
+
 	if (m_sceneGraph != nullptr)
 	{
 		m_sceneGraph->BeginUpdateFrame();
@@ -183,7 +256,9 @@ void World3D::Render(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags
 {
 	World::Render(camera, debugDrawFlags);
 
-	RenderGridPlane(m_sceneGraph->GetRenderer(), camera);
+	m_sceneGraph->Render2(GetRenderer(), camera);
+
+	RenderGridPlane(GetRenderer(), camera);
 
 	if (debugDrawFlags.TestFlag(WorldDebugDrawFlags::PhysicsInfo))
 	{
@@ -200,7 +275,7 @@ void World3D::Render(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags
 				}
 			};
 			DebugRenderer r;
-			r.renderer = m_sceneGraph->GetDebugRenderer();
+			r.renderer = GetDebugRenderer();
 
 			m_physicsWorld->DrawDebugShapes(&r);
 		}

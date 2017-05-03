@@ -87,51 +87,17 @@ void Main()
 #endif
 
 
+	Engine::Initialize();
 
-	//{
-	//	StreamWriter w(_T("C:\\LocalProj\\DT10\\12.0.0\\master_maerge\\result.csv"));
-	//	for (auto& data : results)
-	//	{
-	//		if (!data.parents.IsEmpty())
-	//		{
-	//			w.Write(data.path + _T(","));
-	//			for (auto& p : data.parents)
-	//			{
-	//				w.WriteFormat(_T("{0}  "), p);
-	//			}
-	//			w.WriteLine();
-	//		}
-	//	}
-	//}
+	auto sprite = Sprite2D::Create(_T("D:/tmp/110220c_as019.png"));
 
-	//{
-	//	StreamWriter w(_T("C:\\LocalProj\\DT10\\12.0.0\\master_maerge\\result2.csv"));
-	//	for (auto& data : results)
-	//	{
-	//		if (data.parents.IsEmpty())
-	//		{
-	//			w.WriteLine(data.path);
-	//		}
-	//	}
-	//}
+	while (Engine::Update())
+	{
+	}
 
+	Engine::Terminate();
 
-	return
-
-	//Engine::Initialize();
-
-	//Engine::GetMainViewport()->SetBackgroundColor(Color::Gray);
-
-	//do
-	//{
-	//	Engine::UpdateFrame();
-	//	//if (Engine::BeginRendering())
-	//	{
-	//		Engine::RenderFrame();
-	//		Engine::PresentFrame();
-	//	}
-
-	//} while (!Engine::IsEndRequested());
+	return;
 
 	UIControlsGallery();
 	//DxLibMain();
@@ -171,7 +137,7 @@ void Main()
 	//Engine::GetMainViewport()->SetBackgroundColor(Color32::Gray);
 	Engine::GetMainViewport()->SetPlacement(ViewportPlacement::AutoResize);
 
-	Engine::GetDefaultSceneGraph3D()->visibleGridPlane = true;
+	//Engine::GetDefaultSceneGraph3D()->visibleGridPlane = true;
 
 	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
 	CameraComponent::GetMain3DCamera()->SetCameraBehavior(cb);

@@ -186,8 +186,8 @@ protected:
 
 	detail::BuiltinEffectData	m_builtinEffectData;
 
-private:
 	bool				m_isVisible;
+private:
 };
 
 class SceneNodeList

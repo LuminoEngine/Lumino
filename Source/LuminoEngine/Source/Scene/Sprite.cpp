@@ -233,5 +233,67 @@ void Sprite3DComponent::OnRender2(DrawList* renderer)
 	RenderSprite(renderer, SpriteBaseDirection::ZMinus);
 }
 
+
+//==============================================================================
+// Sprite2D
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite2D, VisualObject);
+
+//------------------------------------------------------------------------------
+RefPtr<Sprite2D> Sprite2D::Create()
+{
+	return NewObject<Sprite2D>();
+}
+
+//------------------------------------------------------------------------------
+RefPtr<Sprite2D> Sprite2D::Create(const StringRef& filePath)
+{
+	return NewObject<Sprite2D>(filePath);
+}
+
+//------------------------------------------------------------------------------
+RefPtr<Sprite2D> Sprite2D::Create(Texture* texture)
+{
+	return NewObject<Sprite2D>(texture);
+}
+
+//------------------------------------------------------------------------------
+Sprite2D::Sprite2D()
+	: m_component(nullptr)
+{
+}
+
+//------------------------------------------------------------------------------
+Sprite2D::~Sprite2D()
+{
+}
+
+//------------------------------------------------------------------------------
+void Sprite2D::Initialize()
+{
+	VisualObject::Initialize();
+	m_component = Sprite2DComponent::Create();
+}
+
+//------------------------------------------------------------------------------
+void Sprite2D::Initialize(const StringRef& filePath)
+{
+	VisualObject::Initialize();
+	m_component = Sprite2DComponent::Create(filePath);
+}
+
+//------------------------------------------------------------------------------
+void Sprite2D::Initialize(Texture* texture)
+{
+	VisualObject::Initialize();
+	m_component = Sprite2DComponent::Create(texture);
+}
+
+//------------------------------------------------------------------------------
+VisualComponent* Sprite2D::GetMainVisualComponent() const
+{
+	return m_component;
+}
+
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END

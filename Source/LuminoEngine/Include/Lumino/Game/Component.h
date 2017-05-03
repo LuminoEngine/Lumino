@@ -3,8 +3,10 @@
 #include "../Common.h"
 
 LN_NAMESPACE_BEGIN
+class DrawList;
 class WorldObject;
 class Transform;
+class VisualComponent;
 
 /**
 	@brief		
@@ -25,14 +27,17 @@ public:
 	virtual void OnAttached();
 	virtual void OnDetaching();
 	virtual void OnUpdate();
+	virtual void OnRender(DrawList* context);
 
 private:
 	void Attach(WorldObject* owner);
 	void Detach();
+	virtual void Render(DrawList* context);
 
 	WorldObject*	m_owner;
 
 	friend class WorldObject;
+	friend class VisualComponent;
 };
 
 /**

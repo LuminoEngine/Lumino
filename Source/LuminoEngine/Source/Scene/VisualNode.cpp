@@ -106,62 +106,122 @@ tr::ReflectionObjectList<Material*>* VisualComponent::GetMaterials() const
 }
 
 //------------------------------------------------------------------------------
-void VisualComponent::SetOpacity(float value, int subsetIndex)
+void VisualComponent::SetOpacity(float value)
 {
-	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
-	// TODO: サブマテリアルの設定
-	//m_materialList->GetMainMaterial()->SetOpacity(opacity);
 	m_builtinEffectData.SetOpacity(value);
 }
+
+//------------------------------------------------------------------------------
 float VisualComponent::GetOpacity() const
 {
 	return m_builtinEffectData.GetOpacity();
 }
 
-void VisualComponent::SetColorScale(const Color& value, int subsetIndex)
+//------------------------------------------------------------------------------
+void VisualComponent::SetColorScale(const Color& value)
 {
-	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
-	// TODO: サブマテリアルの設定
-	//m_materialList->GetMainMaterial()->SetColorScale(color);
 	m_builtinEffectData.SetColorScale(value);
 }
-void VisualComponent::SetColorScale(float r, float g, float b, float a, int subsetIndex)
-{
-	SetColorScale(Color(r, g, b, a));
-}
-void VisualComponent::SetColor(const Color32& color)
-{
-	SetColorScale(Color(color));
-}
-void VisualComponent::SetColor(int r, int g, int b, int a)
-{
-	SetColor(Color32(r, g, b, a));
-}
+
+//------------------------------------------------------------------------------
 const Color& VisualComponent::GetColorScale() const
 {
 	return m_builtinEffectData.GetColorScale();
 }
-void VisualComponent::SetBlendColor(const Color& color, int subsetIndex)
+
+//------------------------------------------------------------------------------
+void VisualComponent::SetBlendColor(const Color& value)
 {
-	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
-	// TODO: サブマテリアルの設定
-	//m_materialList->GetMainMaterial()->SetBlendColor(color);
-	m_builtinEffectData.SetBlendColor(color);
+	m_builtinEffectData.SetBlendColor(value);
 }
-void VisualComponent::SetTone(const ToneF& tone, int subsetIndex)
+
+//------------------------------------------------------------------------------
+const Color& VisualComponent::GetBlendColor() const
 {
-	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
-	// TODO: サブマテリアルの設定
-	//m_materialList->GetMainMaterial()->SetTone(tone);
-	m_builtinEffectData.SetTone(tone);
+	return m_builtinEffectData.GetBlendColor();
 }
-void VisualComponent::SetShader(Shader* value, int subsetIndex)
+
+//------------------------------------------------------------------------------
+void VisualComponent::SetTone(const ToneF& value)
 {
-	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
-	// TODO: サブマテリアルの設定
-	//m_materialList->GetMainMaterial()->SetShader(shader);
+	m_builtinEffectData.SetTone(value);
+}
+
+//------------------------------------------------------------------------------
+const ToneF& VisualComponent::GetTone() const
+{
+	return m_builtinEffectData.GetTone();
+}
+
+//------------------------------------------------------------------------------
+void VisualComponent::SetShader(Shader* value)
+{
 	m_builtinEffectData.SetShader(value);
 }
+
+//------------------------------------------------------------------------------
+Shader* VisualComponent::GetShader() const
+{
+	return m_builtinEffectData.GetShader();
+}
+
+////------------------------------------------------------------------------------
+//void VisualComponent::SetOpacity(float value, int subsetIndex)
+//{
+//	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
+//	// TODO: サブマテリアルの設定
+//	//m_materialList->GetMainMaterial()->SetOpacity(opacity);
+//	m_builtinEffectData.SetOpacity(value);
+//}
+//float VisualComponent::GetOpacity() const
+//{
+//	return m_builtinEffectData.GetOpacity();
+//}
+//
+//void VisualComponent::SetColorScale(const Color& value, int subsetIndex)
+//{
+//	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
+//	// TODO: サブマテリアルの設定
+//	//m_materialList->GetMainMaterial()->SetColorScale(color);
+//	m_builtinEffectData.SetColorScale(value);
+//}
+//void VisualComponent::SetColorScale(float r, float g, float b, float a, int subsetIndex)
+//{
+//	SetColorScale(Color(r, g, b, a));
+//}
+//void VisualComponent::SetColor(const Color32& color)
+//{
+//	SetColorScale(Color(color));
+//}
+//void VisualComponent::SetColor(int r, int g, int b, int a)
+//{
+//	SetColor(Color32(r, g, b, a));
+//}
+//const Color& VisualComponent::GetColorScale() const
+//{
+//	return m_builtinEffectData.GetColorScale();
+//}
+//void VisualComponent::SetBlendColor(const Color& color, int subsetIndex)
+//{
+//	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
+//	// TODO: サブマテリアルの設定
+//	//m_materialList->GetMainMaterial()->SetBlendColor(color);
+//	m_builtinEffectData.SetBlendColor(color);
+//}
+//void VisualComponent::SetTone(const ToneF& tone, int subsetIndex)
+//{
+//	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
+//	// TODO: サブマテリアルの設定
+//	//m_materialList->GetMainMaterial()->SetTone(tone);
+//	m_builtinEffectData.SetTone(tone);
+//}
+//void VisualComponent::SetShader(Shader* value, int subsetIndex)
+//{
+//	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
+//	// TODO: サブマテリアルの設定
+//	//m_materialList->GetMainMaterial()->SetShader(shader);
+//	m_builtinEffectData.SetShader(value);
+//}
 
 //------------------------------------------------------------------------------
 void VisualComponent::SetBlendMode(BlendMode mode) { GetMainMaterial()->SetBlendMode(mode); }
@@ -208,6 +268,105 @@ Shader* VisualComponent::GetPrimaryShader() const
 {
 	// TODO: main が無ければ [0] のをつかう
 	return m_materialList->GetMainMaterial()->GetShader();
+}
+
+//------------------------------------------------------------------------------
+void VisualComponent::Render(DrawList* context)
+{
+	if (m_isVisible)
+	{
+		context->SetBuiltinEffectData(m_builtinEffectData);
+		OnRender(context);
+	}
+}
+
+
+
+//==============================================================================
+// VisualObject
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(VisualObject, WorldObject);
+
+//------------------------------------------------------------------------------
+VisualObject::VisualObject()
+{
+}
+
+//------------------------------------------------------------------------------
+VisualObject::~VisualObject()
+{
+}
+
+//------------------------------------------------------------------------------
+void VisualObject::Initialize()
+{
+	WorldObject::Initialize();
+}
+
+//------------------------------------------------------------------------------
+void VisualObject::SetOpacity(float value)
+{
+	GetMainVisualComponent()->SetOpacity(value);
+}
+
+//------------------------------------------------------------------------------
+float VisualObject::GetOpacity() const
+{
+	return GetMainVisualComponent()->GetOpacity();
+}
+
+//------------------------------------------------------------------------------
+void VisualObject::SetColorScale(const Color& value)
+{
+	GetMainVisualComponent()->SetColorScale(value);
+}
+
+//------------------------------------------------------------------------------
+void VisualObject::SetColorScale(float r, float g, float b, float a)
+{
+	SetColorScale(Color(r, g, b, a));
+}
+
+//------------------------------------------------------------------------------
+const Color& VisualObject::GetColorScale() const
+{
+	return GetMainVisualComponent()->GetColorScale();
+}
+
+//------------------------------------------------------------------------------
+void VisualObject::SetBlendColor(const Color& value)
+{
+	GetMainVisualComponent()->SetBlendColor(value);
+}
+
+//------------------------------------------------------------------------------
+const Color& VisualObject::GetBlendColor() const
+{
+	return GetMainVisualComponent()->GetBlendColor();
+}
+
+//------------------------------------------------------------------------------
+void VisualObject::SetTone(const ToneF& value)
+{
+	GetMainVisualComponent()->SetTone(value);
+}
+
+//------------------------------------------------------------------------------
+const ToneF& VisualObject::GetTone() const
+{
+	return GetMainVisualComponent()->GetTone();
+}
+
+//------------------------------------------------------------------------------
+void VisualObject::SetShader(Shader* value)
+{
+	GetMainVisualComponent()->SetShader(value);
+}
+
+//------------------------------------------------------------------------------
+Shader* VisualObject::GetShader() const
+{
+	return GetMainVisualComponent()->GetShader();
 }
 
 LN_NAMESPACE_SCENE_END

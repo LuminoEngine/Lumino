@@ -376,6 +376,7 @@ set(LN_SOURCES_Scene
 	Include/Lumino/Scene/TileMap.h
 	Include/Lumino/Scene/TransitionPostEffect.h
 	Include/Lumino/Scene/VisualNode.h
+	Include/Lumino/Scene/WorldObject.h
 #	Include/Lumino/Scene/MME/MMESceneObject.h
 	Source/Scene/Camera.cpp
 	Source/Scene/Internal.h
@@ -401,6 +402,7 @@ set(LN_SOURCES_Scene
 	Source/Scene/TileMap.cpp
 	Source/Scene/TransitionPostEffect.cpp
 	Source/Scene/VisualNode.cpp
+	Source/Scene/WorldObject.cpp
 	#../../External/ssbpLib/ssShader_frag.h
 	#../../External/ssbpLib/SS5Player.cpp
 	#../../External/ssbpLib/SS5Player.h

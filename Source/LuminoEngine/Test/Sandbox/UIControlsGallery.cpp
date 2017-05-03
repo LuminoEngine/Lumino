@@ -11,7 +11,7 @@ void UIControlsGallery()
 	Engine::Initialize();
 
 
-	Engine::GetDefaultSceneGraph3D()->visibleGridPlane = true;
+	//Engine::GetDefaultSceneGraph3D()->visibleGridPlane = true;
 
 	Engine::GetWorld3D()->SetVisibleGridPlane(true);
 
@@ -36,7 +36,7 @@ void UIControlsGallery()
 	listBox1->AddTextItem(_T("UI"));
 
 	
-	auto shader = Shader::Create(StringRef(_T("C:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/Sandbox/SSBasic2D.fx")), true);
+	//auto shader = Shader::Create(StringRef(_T("C:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/Sandbox/SSBasic2D.fx")), true);
 	//auto rect = Rectangle::Create(RectF(0, 0, 3, 1));
 	//rect->SetShader(shader);
 	//rect->SetAngles(Math::PI/2, 0, 0);
@@ -237,7 +237,7 @@ void UIControlsGallery()
 		//	Vector3(5, 5, 5), Color::White);
 
 			t += 0.016;
-			shader->FindVariable(_T("time"))->SetFloat(t);
+			//shader->FindVariable(_T("time"))->SetFloat(t);
 
 		Engine::PresentFrame();
 	}
