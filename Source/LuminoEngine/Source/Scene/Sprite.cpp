@@ -238,7 +238,54 @@ void Sprite3DComponent::OnRender2(DrawList* renderer)
 //==============================================================================
 // Sprite2D
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite2D, VisualObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SpriteBase, VisualObject);
+
+//------------------------------------------------------------------------------
+SpriteBase::SpriteBase()
+	: VisualObject()
+{
+}
+
+//------------------------------------------------------------------------------
+SpriteBase::~SpriteBase()
+{
+}
+
+//------------------------------------------------------------------------------
+void SpriteBase::Initialize()
+{
+	VisualObject::Initialize();
+}
+
+//------------------------------------------------------------------------------
+void SpriteBase::SetTexture(Texture* texture)
+{
+	GetSpriteComponent()->SetTexture(texture);
+}
+
+//------------------------------------------------------------------------------
+Texture* SpriteBase::GetTexture() const
+{
+	return GetSpriteComponent()->GetTexture();
+}
+
+//------------------------------------------------------------------------------
+void SpriteBase::SetTextureRect(const RectF& rect)
+{
+	GetSpriteComponent()->SetTextureRect(rect);
+}
+
+//------------------------------------------------------------------------------
+const RectF& SpriteBase::GetTextureRect() const
+{
+	return GetSpriteComponent()->GetTextureRect();
+}
+
+
+//==============================================================================
+// Sprite2D
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite2D, SpriteBase);
 
 //------------------------------------------------------------------------------
 RefPtr<Sprite2D> Sprite2D::Create()
@@ -260,7 +307,8 @@ RefPtr<Sprite2D> Sprite2D::Create(Texture* texture)
 
 //------------------------------------------------------------------------------
 Sprite2D::Sprite2D()
-	: m_component(nullptr)
+	: SpriteBase()
+	, m_component(nullptr)
 {
 }
 
@@ -272,7 +320,7 @@ Sprite2D::~Sprite2D()
 //------------------------------------------------------------------------------
 void Sprite2D::Initialize()
 {
-	VisualObject::Initialize();
+	SpriteBase::Initialize();
 	m_component = Sprite2DComponent::Create();
 	detail::EngineDomain::GetDefaultWorld2D()->AddWorldObject(this, true);
 }
@@ -280,7 +328,7 @@ void Sprite2D::Initialize()
 //------------------------------------------------------------------------------
 void Sprite2D::Initialize(const StringRef& filePath)
 {
-	VisualObject::Initialize();
+	SpriteBase::Initialize();
 	m_component = Sprite2DComponent::Create(filePath);
 	detail::EngineDomain::GetDefaultWorld2D()->AddWorldObject(this, true);
 }
@@ -288,7 +336,7 @@ void Sprite2D::Initialize(const StringRef& filePath)
 //------------------------------------------------------------------------------
 void Sprite2D::Initialize(Texture* texture)
 {
-	VisualObject::Initialize();
+	SpriteBase::Initialize();
 	m_component = Sprite2DComponent::Create(texture);
 	detail::EngineDomain::GetDefaultWorld2D()->AddWorldObject(this, true);
 }
@@ -299,11 +347,17 @@ VisualComponent* Sprite2D::GetMainVisualComponent() const
 	return m_component;
 }
 
+//------------------------------------------------------------------------------
+SpriteComponent* Sprite2D::GetSpriteComponent() const
+{
+	return m_component;
+}
+
 
 //==============================================================================
 // Sprite3D
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite3D, VisualObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite3D, SpriteBase);
 
 //------------------------------------------------------------------------------
 RefPtr<Sprite3D> Sprite3D::Create()
@@ -319,7 +373,8 @@ RefPtr<Sprite3D> Sprite3D::Create(float width, float height, Texture* texture)
 
 //------------------------------------------------------------------------------
 Sprite3D::Sprite3D()
-	: m_component(nullptr)
+	: SpriteBase()
+	, m_component(nullptr)
 {
 }
 
@@ -331,7 +386,7 @@ Sprite3D::~Sprite3D()
 //------------------------------------------------------------------------------
 void Sprite3D::Initialize()
 {
-	VisualObject::Initialize();
+	SpriteBase::Initialize();
 	m_component = Sprite3DComponent::Create();
 	detail::EngineDomain::GetDefaultWorld3D()->AddWorldObject(this, true);
 }
@@ -339,7 +394,7 @@ void Sprite3D::Initialize()
 //------------------------------------------------------------------------------
 void Sprite3D::Initialize(float width, float height, Texture* texture)
 {
-	VisualObject::Initialize();
+	SpriteBase::Initialize();
 	m_component = Sprite3DComponent::Create(width, height, texture);
 	detail::EngineDomain::GetDefaultWorld3D()->AddWorldObject(this, true);
 }
@@ -349,6 +404,13 @@ VisualComponent* Sprite3D::GetMainVisualComponent() const
 {
 	return m_component;
 }
+
+//------------------------------------------------------------------------------
+SpriteComponent* Sprite3D::GetSpriteComponent() const
+{
+	return m_component;
+}
+
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END

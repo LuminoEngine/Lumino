@@ -164,11 +164,48 @@ LN_PROTECTED_INTERNAL_ACCESS:
 
 
 /**
+	@brief	スプライトオブジェクトのベースクラスです。
+*/
+LN_CLASS()
+class SpriteBase
+	: public VisualObject
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+	
+	/** スプライトが表示するテクスチャを設定します。 */
+	LN_METHOD(Property)
+	void SetTexture(Texture* texture);
+	
+	/** スプライトが表示するテクスチャを取得します。 */
+	LN_METHOD(Property)
+	Texture* GetTexture() const;
+
+	/** テクスチャのどの部分を表示するかを示す転送矩形を設定します。(ピクセル単位) デフォルトは Rect::Empty で、テクスチャ全体を転送することを示します。 */
+	LN_METHOD(Property)
+	void SetTextureRect(const RectF& rect);
+
+	/** テクスチャのどの部分を表示するかを示す転送矩形を取得します。(ピクセル単位) */
+	LN_METHOD(Property)
+	const RectF& GetTextureRect() const;
+
+protected:
+	virtual SpriteComponent* GetSpriteComponent() const = 0;
+
+LN_CONSTRUCT_ACCESS:
+	SpriteBase();
+	virtual ~SpriteBase();
+
+	LN_METHOD()
+	void Initialize();
+};
+
+/**
 	@brief	2D 空間に配置されるスプライトのクラスです。
 */
 LN_CLASS()
 class Sprite2D
-	: public VisualObject
+	: public SpriteBase
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
@@ -197,6 +234,7 @@ public:
 
 protected:
 	virtual VisualComponent* GetMainVisualComponent() const override;
+	virtual SpriteComponent* GetSpriteComponent() const override;
 
 LN_CONSTRUCT_ACCESS:
 	Sprite2D();
@@ -220,7 +258,7 @@ private:
 */
 LN_CLASS()
 class Sprite3D
-	: public VisualObject
+	: public SpriteBase
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
@@ -252,6 +290,7 @@ public:
 
 protected:
 	virtual VisualComponent* GetMainVisualComponent() const override;
+	virtual SpriteComponent* GetSpriteComponent() const override;
 
 LN_CONSTRUCT_ACCESS:
 	Sprite3D();
