@@ -55,8 +55,7 @@ RefPtr<UIMouseEventArgs> UIMouseEventArgs::Create(MouseButtons button, float x, 
 	if (caching)
 	{
 		detail::EventArgsPool* pool = detail::UIManager::GetInstance()->GetEventArgsPool();
-		RefPtr<UIMouseEventArgs> ptr(pool->Create<UIMouseEventArgs>(), false);
-		ptr->Initialize(button, x, y, clickCount);
+		RefPtr<UIMouseEventArgs> ptr(pool->Create<UIMouseEventArgs>(button, x, y, clickCount), false);
 		return ptr;
 	}
 	else
@@ -107,8 +106,7 @@ RefPtr<UIKeyEventArgs> UIKeyEventArgs::Create(Keys keyCode, ModifierKeys modifie
 	if (caching)
 	{
 		detail::EventArgsPool* pool = detail::UIManager::GetInstance()->GetEventArgsPool();
-		RefPtr<UIKeyEventArgs> ptr(pool->Create<UIKeyEventArgs>(), false);
-		ptr->Initialize(keyCode, modifierKeys, charCode);
+		RefPtr<UIKeyEventArgs> ptr(pool->Create<UIKeyEventArgs>(keyCode, modifierKeys, charCode), false);
 		return ptr;
 	}
 	else
@@ -151,8 +149,7 @@ RefPtr<UIMouseWheelEventArgs> UIMouseWheelEventArgs::Create(int delta, bool cach
 	if (caching)
 	{
 		detail::EventArgsPool* pool = detail::UIManager::GetInstance()->GetEventArgsPool();
-		RefPtr<UIMouseWheelEventArgs> ptr(pool->Create<UIMouseWheelEventArgs>(), false);
-		ptr->Initialize(delta);
+		RefPtr<UIMouseWheelEventArgs> ptr(pool->Create<UIMouseWheelEventArgs>(delta), false);
 		return ptr;
 	}
 	else

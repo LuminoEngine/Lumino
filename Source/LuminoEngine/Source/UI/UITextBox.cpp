@@ -173,6 +173,8 @@ LN_CONSTRUCT_ACCESS:
 	UITextAreaCaret();
 	virtual ~UITextAreaCaret();
 	void Initialize();
+
+LN_INTERNAL_ACCESS:
 	const UITextVisualPosition& GetVisualPosition() const { return m_position; }
 	void SetRenderRectangle(const RectF& rect) { m_renderRectangle = rect; }
 	const RectF& GetRenderRectangle() const { return m_renderRectangle; }
@@ -199,6 +201,8 @@ LN_CONSTRUCT_ACCESS:
 	UITextArea();
 	virtual ~UITextArea();
 	void Initialize();
+
+LN_INTERNAL_ACCESS:
 	UITextVisualLine* FindVisualLine(int lineIndex);
 	RectF GetGlyphGlobalRectFromVisualPosition(const UITextVisualPosition& pos);
 	void GetVisualPositionFromRenderPosition(const PointF& pt, UITextVisualPosition* outPos);

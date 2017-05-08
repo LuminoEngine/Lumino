@@ -28,9 +28,9 @@ class CppPackageRule : ModuleRule
     /// </summary>
     public override void Build(Builder builder)
     {
-        string releaseDir = builder.LuminoPackageReleaseDir + "LuminoCpp_" + builder.VersionString + "/";
+        string releaseDir = builder.LuminoPackageReleaseDir + "LuminoCpp/";
         string pkgSrcDir = builder.LuminoPackageDir + "PackageSource/Cpp/";
-        string zipFilePath = builder.LuminoPackageReleaseDir + "LuminoCpp_" + builder.VersionString + ".zip";
+        string zipFilePath = builder.LuminoPackageReleaseDir + "LuminoCpp.zip";
         bool vs2013 = Directory.Exists(builder.LuminoLibDir + "MSVC120");
         
         Directory.CreateDirectory(releaseDir);
@@ -83,7 +83,7 @@ class CppPackageRule : ModuleRule
         Utils.CopyFile(builder.LuminoPackageSourceDir + "ReleaseNote.txt", builder.LuminoPackageReleaseDir);
 
         // .zip に圧縮する
-        Logger.WriteLine("compressing files...");
-        Utils.CreateZipFile(releaseDir, zipFilePath);
+        //Logger.WriteLine("compressing files...");
+        //Utils.CreateZipFile(releaseDir, zipFilePath);
     }
 }

@@ -16,7 +16,6 @@ namespace tr
 #define LN_TR_REFLECTION_TYPEINFO_DECLARE_COMMON(typeInfo) \
 	private: \
 		template<typename T> friend class ln::RefPtr; \
-		template<class T, typename... TArgs> friend ln::RefPtr<T> ln::NewObject(TArgs&&... args); \
 		friend class ln::tr::ReflectionHelper; \
 		friend class ln::tr::ReflectionObject; \
 		static typeInfo							lnref_typeInfo; \
@@ -262,6 +261,13 @@ RefPtr<T> NewObject(TArgs&&... args)
 	auto ptr = RefPtr<T>(new T(), false);
 	ptr->Initialize(std::forward<TArgs>(args)...);
 	return ptr;
+}
+
+template<class T, typename... TArgs>
+void PlacementNewObject(void* ptr, TArgs&&... args)
+{
+	new (ptr)T();
+	static_cast<T*>(ptr)->Initialize(std::forward<TArgs>(args)...);
 }
 
 LN_NAMESPACE_END

@@ -2,7 +2,6 @@
 #pragma once
 #define LN_INTERNAL_ACCESS				public
 #define LN_PROTECTED_INTERNAL_ACCESS	public
-#define LN_CONSTRUCT_ACCESS				public
 #include <LuminoEngine.h>
 
 
@@ -20,7 +19,7 @@ using namespace ln;
 #define LWIG_TO_INDEX(h)			static_cast<int>( h )
 #define LWIG_TO_HANDLE(obj)			LFManager::CheckRegisterObject(obj)
 
-#define LWIG_CREATE_OBJECT(out, type, initFunc, ...)	{ auto ptr = RefPtr<type>::MakeRef(); ptr->initFunc(__VA_ARGS__); ptr->PostInitialize(); *out = LFManager::CheckRegisterObject(ptr); }
+#define LWIG_CREATE_OBJECT(out, type, initFunc, ...)	{ auto ptr = ln::NewObject<type>(__VA_ARGS__); ptr->PostInitialize(); *out = LFManager::CheckRegisterObject(ptr); }
 
 // bool → LNBool
 #define LNOTE_BOOL_TO_LNBOOL( x )	( x ) ? LN_TRUE : LN_FALSE

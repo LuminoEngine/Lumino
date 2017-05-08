@@ -11,21 +11,13 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 // Brush
 //==============================================================================
 
-// 以前は ColorF の static 変数を参照していたが、それだと初期化の順によってはこちらの値がすべて 0,0,0,0 になってしまうことがあった
-static Brush g_ColorBrush_White(Color(1.0, 1.0, 1.0, 1.0));
-static Brush g_ColorBrush_Black(Color(0.0, 0.0, 0.0, 1.0));
-static Brush g_ColorBrush_Gray(Color(0.5, 0.5, 0.5, 1.0));
-static Brush g_ColorBrush_Red(Color(1.0, 0.0, 0.0, 1.0));
-static Brush g_ColorBrush_Green(Color(0.0, 1.0, 0.0, 1.0));
-static Brush g_ColorBrush_Blue(Color(0.0, 0.0, 1.0, 1.0));
-static Brush g_ColorBrush_DimGray(Color(0.25, 0.25, 0.25, 1.0));
-Brush*	Brush::White = &g_ColorBrush_White;
-Brush*	Brush::Black = &g_ColorBrush_Black;
-Brush*	Brush::Gray = &g_ColorBrush_Gray;
-Brush*	Brush::Red = &g_ColorBrush_Red;
-Brush*	Brush::Green = &g_ColorBrush_Green;
-Brush*	Brush::Blue = &g_ColorBrush_Blue;
-Brush*	Brush::DimGray = &g_ColorBrush_DimGray;
+Brush*	Brush::White = nullptr;
+Brush*	Brush::Black = nullptr;
+Brush*	Brush::Gray = nullptr;
+Brush*	Brush::Red = nullptr;
+Brush*	Brush::Green = nullptr;
+Brush*	Brush::Blue = nullptr;
+Brush*	Brush::DimGray = nullptr;
 
 //------------------------------------------------------------------------------
 Brush::Brush()

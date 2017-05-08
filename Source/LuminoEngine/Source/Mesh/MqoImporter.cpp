@@ -358,8 +358,7 @@ void MqoImporter::LoadMaterials(StreamReader* reader)
 		Color c;
 		c.a = color.a;
 
-		auto material = RefPtr<DiffuseMaterial>::MakeRef();
-		material->Initialize();
+		auto material = NewObject<DiffuseMaterial>();
 
 		c.r = diffuse * color.r;
 		c.g = diffuse * color.g;

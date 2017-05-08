@@ -68,7 +68,7 @@ class WorldObject2D
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
-LN_CONSTRUCT_ACCESS2:
+LN_CONSTRUCT_ACCESS:
 	WorldObject2D();
 	virtual ~WorldObject2D();
 	void Initialize();
@@ -84,7 +84,7 @@ class WorldObject3D
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
-LN_CONSTRUCT_ACCESS2:
+LN_CONSTRUCT_ACCESS:
 	WorldObject3D();
 	virtual ~WorldObject3D();
 	void Initialize();

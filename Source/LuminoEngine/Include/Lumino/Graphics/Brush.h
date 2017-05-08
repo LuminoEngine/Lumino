@@ -135,6 +135,8 @@ LN_CONSTRUCT_ACCESS:
 	void Initialize();
 	void Initialize(const StringRef& filePath);
 	void Initialize(Texture* texture);
+
+LN_INTERNAL_ACCESS:
 	RectF GetActualSourceRect() const;
 	Size GetSize() const;
 };

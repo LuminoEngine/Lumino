@@ -17,6 +17,7 @@ class GraphicsContext;
 class TextRenderer;
 class BitmapTextRenderer;
 class SwapChain;
+class SolidColorBrush;
 namespace detail { class ContextInterface; }
 namespace detail { class PhysicsManager; }
 
@@ -154,6 +155,8 @@ public:
 	void PresentSwapChain(SwapChain* swapChain);
 
 private:
+	void CreateGlobalObjects();
+
 	AnimationManager*				m_animationManager;
 	FileManager*					m_fileManager;
 	PhysicsManager*					m_physicsManager;
@@ -185,6 +188,8 @@ private:
 	Driver::ITexture*						m_dummyDeviceTexture;
 	RefPtr<Texture2D>						m_dymmyBlackTexture;
 	RefPtr<Texture2D>						m_dymmyWhiteTexture;
+	List<RefPtr<SolidColorBrush>>			m_globalBrushes;
+
 	VertexDeclaration*						m_defaultVertexDeclaration;
 	bool									m_platformTextureLoading;
 };

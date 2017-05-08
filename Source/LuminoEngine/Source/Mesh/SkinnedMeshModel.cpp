@@ -266,12 +266,10 @@ void SkinnedMeshModel::Initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 
 		// ボーン行列を書き込むところを作る
 		m_skinningMatrices.Resize(boneCount);
-		m_skinningMatricesTexture = RefPtr<Texture2D>::MakeRef();
-		m_skinningMatricesTexture->Initialize(SizeI(4, boneCount), TextureFormat::R32G32B32A32_Float, false, ResourceUsage::Static);	// TODO: Dynamic、NoManaged
+		m_skinningMatricesTexture = NewObject<Texture2D>(SizeI(4, boneCount), TextureFormat::R32G32B32A32_Float, false, ResourceUsage::Static);	// TODO: Dynamic、NoManaged
 
 		m_skinningLocalQuaternions.Resize(boneCount);
-		m_skinningLocalQuaternionsTexture = RefPtr<Texture2D>::MakeRef();
-		m_skinningLocalQuaternionsTexture->Initialize(SizeI(1, boneCount), TextureFormat::R32G32B32A32_Float, false, ResourceUsage::Static);	// TODO: Dynamic、NoManaged
+		m_skinningLocalQuaternionsTexture = NewObject<Texture2D>(SizeI(1, boneCount), TextureFormat::R32G32B32A32_Float, false, ResourceUsage::Static);	// TODO: Dynamic、NoManaged
 
 		// アニメーション管理
 		m_animator = RefPtr<Animator>::MakeRef();
@@ -310,8 +308,7 @@ void SkinnedMeshModel::Initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 
 	//---------------------------------------------------------
 	// 物理演算
-	m_physicsWorld = RefPtr<PhysicsWorld>::MakeRef();
-	m_physicsWorld->Initialize();
+	m_physicsWorld = NewObject<PhysicsWorld>();
 	m_physicsWorld->SetGravity(Vector3(0, -9.80f * 10.0f, 0));
 
 	m_rigidBodyList.Resize(m_meshResource->rigidBodys.GetCount());
@@ -620,25 +617,19 @@ void MmdSkinnedMeshRigidBody::Initialize(SkinnedMeshModel* ownerModel, PmxRigidB
 	{
 		case CollisionShapeType_Sphere:
 		{
-			auto c = SphereCollisionShapePtr::MakeRef();
-			c->Initialize(m_resource->ColShapeData.Sphere.Radius * scale);
-			collider = c;
+			collider = NewObject<SphereCollisionShape>(m_resource->ColShapeData.Sphere.Radius * scale);
 			break;
 		}
 		case CollisionShapeType_Box:
 		{
-			auto c = BoxCollisionShapePtr::MakeRef();
 			Vector3 size(m_resource->ColShapeData.Box.Width * scale, m_resource->ColShapeData.Box.Height * scale, m_resource->ColShapeData.Box.Depth * scale);
 			size *= 2.0f;
-			c->Initialize(size);
-			collider = c;
+			collider = NewObject<BoxCollisionShape>(size);
 			break;
 		}
 		case CollisionShapeType_Capsule:
 		{
-			auto c = CapsuleCollisionShapePtr::MakeRef();
-			c->Initialize(m_resource->ColShapeData.Capsule.Radius * scale, m_resource->ColShapeData.Capsule.Height * scale);
-			collider = c;
+			collider = NewObject<CapsuleCollisionShape>(m_resource->ColShapeData.Capsule.Radius * scale, m_resource->ColShapeData.Capsule.Height * scale);
 			break;
 		}
 	}

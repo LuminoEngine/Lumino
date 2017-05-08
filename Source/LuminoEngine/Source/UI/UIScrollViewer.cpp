@@ -383,8 +383,7 @@ UIScrollEventArgsPtr UIScrollEventArgs::Create(Object* sender, float newValue, S
 	if (caching)
 	{
 		detail::EventArgsPool* pool = detail::UIManager::GetInstance()->GetEventArgsPool();
-		RefPtr<UIScrollEventArgs> ptr(pool->Create<UIScrollEventArgs>(), false);
-		ptr->Initialize(sender, newValue, type);
+		RefPtr<UIScrollEventArgs> ptr(pool->Create<UIScrollEventArgs>(sender, newValue, type), false);
 		return ptr;
 	}
 	else
