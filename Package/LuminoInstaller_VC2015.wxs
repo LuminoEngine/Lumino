@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-    <Product Id="499FDE66-FE07-4180-94E8-5A7BF690BEEF" Name="Lumino" Language="1041" Version="0.0.0.1" Manufacturer="Lumino" UpgradeCode="B4FA9721-2EF8-405F-BBEE-D6D49415B127" Codepage="932">
-        <Package Description="Lumino Installer" Comments="Lumino Installer" InstallerVersion="200" Compressed="yes" SummaryCodepage="932" />
+    <Product Id="499FDE66-FE07-4180-94E8-5A7BF690BEEF" Name="Lumino for Visual C++ 2015" Language="1041" Version="0.0.0.1" Manufacturer="Lumino" UpgradeCode="B4FA9721-2EF8-405F-BBEE-D6D49415B127" Codepage="932">
+        <Package Description="Lumino installer" Comments="Lumino installer" InstallerVersion="200" Compressed="yes" SummaryCodepage="932" />
         <Media Id="1" Cabinet="simple.cab" EmbedCab="yes" />
         <Directory Id="TARGETDIR" Name="SourceDir">
             <Directory Id="ProgramFilesFolder" Name="PFiles">
-                <Directory Id="LUMINO_DIR" Name="Lumino" />
+                <Directory Id="LUMINO_DIR" Name="Lumino">
+                    <Directory Id="LUMINO_MSVC2015" Name="MSVC2015" />
+                </Directory>
             </Directory>
         </Directory>
         <Feature Id="DefaultFeature" Title="Main Feature" Level="1">

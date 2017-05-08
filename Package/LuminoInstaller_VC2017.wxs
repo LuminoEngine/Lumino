@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Product Id="6F45F9FB-9E6D-4751-A98D-9D0942639E7C" Name="Lumino for Visual C++ 2017" Language="1041" Version="0.0.0.1" Manufacturer="Lumino" UpgradeCode="9733E20F-1D72-4667-85D2-2E633652C860" Codepage="932">
+        <Package Description="Lumino installer" Comments="Lumino installer" InstallerVersion="200" Compressed="yes" />
+        <Media Id="1" Cabinet="simple.cab" EmbedCab="yes" />
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="ProgramFilesFolder" Name="PFiles">
+                <Directory Id="LUMINO_DIR" Name="Lumino">
+                    <Directory Id="LUMINO_MSVC2017" Name="MSVC2017" />
+                </Directory>
+            </Directory>
+        </Directory>
+        <Feature Id="DefaultFeature" Title="Main Feature" Level="1">
+        </Feature>
+        <UI />
+        <UIRef Id="WixUI_Minimal" />
+    </Product>
+</Wix>
