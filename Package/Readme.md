@@ -1,5 +1,20 @@
+ï»¿
+PackageSource ãƒ•ã‚©ãƒ«ãƒ€ã«ã¯ã€é…å¸ƒã™ã‚‹ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ã«å«ã‚ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ç½®ã„ã¦ãŠãã€‚
 
-PackageSource ƒtƒHƒ‹ƒ_‚É‚ÍA”z•z‚·‚éƒpƒbƒP[ƒW‚ÉŠÜ‚ß‚éƒtƒ@ƒCƒ‹‚ğ’u‚¢‚Ä‚¨‚­B
+ä¾‹ãˆã°ã€ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã‚¹ã‚¯ãƒªãƒ—ãƒˆã‚„ Readme ã®ã‚½ãƒ¼ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ãªã©ã€‚
 
-—á‚¦‚ÎAƒCƒ“ƒXƒg[ƒ‹ƒXƒNƒŠƒvƒg‚â Readme ‚Ìƒ\[ƒXƒtƒ@ƒCƒ‹‚È‚ÇB
+
+
+"C:\Program Files (x86)\WiX Toolset v3.11\bin\heat" dir Release/Lumino -dr LUMINO_DIR -cg LuminoFiles -gg -g1 -sfrag -srd  -var "var.LuminoFilesDir" -out LuminoFiles.wxs
+
+heat" dir <ãƒ•ã‚©ãƒ«ãƒ€ãƒ‘ã‚¹> -dr <é–¢é€£ä»˜ã‘ã‚‹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªID> -cg <ComponentGroupã®åå‰> -gg -g1 -sfrag -srd  -var <SourceDirã‚’ç½®ãæ›ãˆã‚‹å¤‰æ•°> -out <å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«å>
+
+
+http://www.02.246.ne.jp/~torutk/windows/wixandwixedit.html#SEC2
+
+```
+"C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe" -nologo LuminoInstaller.wxs
+"C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe" -nologo -dLuminoFilesDir=Release/Lumino LuminoFiles.wxs
+```
+"C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe" -nologo -ext WixUIExtension -cultures:ja-jp LuminoInstaller.wixobj LuminoFiles.wixobj -out LuminoInstaller.msi
 

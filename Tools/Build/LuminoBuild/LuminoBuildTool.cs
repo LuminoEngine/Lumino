@@ -326,8 +326,10 @@ namespace LuminoBuildTool
         {
             if (Utils.IsWin32)
             {
-                var regkey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\MSBuild\ToolsVersions\14.0");
-                return (string)regkey.GetValue("MSBuildToolsPath") + "MSBuild.exe";
+                //var regkey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\MSBuild\ToolsVersions\14.0");
+                //return (string)regkey.GetValue("MSBuildToolsPath") + "MSBuild.exe";
+                var regkey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Wow6432Node\Microsoft\VisualStudio\SxS\VS7");
+                return (string)regkey.GetValue("15.0") + @"MSBuild\15.0\Bin\MSBuild.exe";
             }
             else
             {
