@@ -106,6 +106,7 @@ ProcessImpl::ProcessImpl()
 	, m_crashed(false)
 	, m_disposed(false)
 {
+	memset(&m_processInfo, 0, sizeof(m_processInfo));
 }
 
 //------------------------------------------------------------------------------

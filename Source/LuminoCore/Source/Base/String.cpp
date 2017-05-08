@@ -219,6 +219,7 @@ GenericString<TChar>::GenericString(const GenericPathName<TChar>& path)
 
 template<typename TChar>
 GenericString<TChar>::GenericString(GenericString&& str) LN_NOEXCEPT
+	: m_string(nullptr)
 {
 	*this = std::move(str);
 }
