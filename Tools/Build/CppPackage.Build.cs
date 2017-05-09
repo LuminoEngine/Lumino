@@ -46,9 +46,9 @@ class CppPackageRule : ModuleRule
 
         if (vsTarget.HasFlag(VSBuildFlags.VS2013))
         {
-            string releaseDir = builder.LuminoPackageReleaseDir + "Lumino_MSVC2013/";
+            string releaseDir = builder.LuminoPackageReleaseDir + "MSVC2013/";
             Directory.CreateDirectory(releaseDir);
-            CopyCommonFiles(builder, releaseDir);
+            CopyCommonFiles(builder, releaseDir, builder.LuminoLibDir + "MSVC120");
 
             Logger.WriteLine("copy other files...");
             Directory.CreateDirectory(releaseDir + "Tools/VS2013ProjectTemplate");
@@ -57,9 +57,9 @@ class CppPackageRule : ModuleRule
 
         if (vsTarget.HasFlag(VSBuildFlags.VS2015))
         {
-            string releaseDir = builder.LuminoPackageReleaseDir + "Lumino_MSVC2015/";
+            string releaseDir = builder.LuminoPackageReleaseDir + "MSVC2015/";
             Directory.CreateDirectory(releaseDir);
-            CopyCommonFiles(builder, releaseDir);
+            CopyCommonFiles(builder, releaseDir, builder.LuminoLibDir + "MSVC140");
 
             Logger.WriteLine("copy other files...");
             Directory.CreateDirectory(releaseDir + "Tools/VS2015ProjectTemplate");
@@ -68,9 +68,9 @@ class CppPackageRule : ModuleRule
 
         if (vsTarget.HasFlag(VSBuildFlags.VS2017))
         {
-            string releaseDir = builder.LuminoPackageReleaseDir + "Lumino_MSVC2017/";
+            string releaseDir = builder.LuminoPackageReleaseDir + "MSVC2017/";
             Directory.CreateDirectory(releaseDir);
-            CopyCommonFiles(builder, releaseDir);
+            CopyCommonFiles(builder, releaseDir, builder.LuminoLibDir + "MSVC150");
         }
 
         // .zip に圧縮する
@@ -78,9 +78,9 @@ class CppPackageRule : ModuleRule
         //Utils.CreateZipFile(releaseDir, zipFilePath);
     }
 
-    void CopyCommonFiles(Builder builder, string releaseDir)
+    void CopyCommonFiles(Builder builder, string releaseDir, string libTargetDir)
     {
-        string pkgSrcDir = builder.LuminoPackageDir + "PackageSource/Cpp/";
+        string pkgSrcDir = builder.LuminoPackageDir + "PackageSource/";
 
         // include
         Logger.WriteLine("copy include files...");
@@ -90,8 +90,8 @@ class CppPackageRule : ModuleRule
 
         // .lib
         Logger.WriteLine("copy lib files...");
-        Utils.CopyDirectory(builder.LuminoLibDir, releaseDir + "Lib", true, "*.lib");
-        Utils.CopyDirectory(builder.LuminoLibDir, releaseDir + "Lib", true, "*.dll");
+        Utils.CopyDirectory(libTargetDir, releaseDir + "Lib", true, "*.lib");
+        Utils.CopyDirectory(libTargetDir, releaseDir + "Lib", true, "*.dll");
 
         // Readme.txt (バージョン名を埋め込む)
         string text = File.ReadAllText(pkgSrcDir + "Readme.template.txt");

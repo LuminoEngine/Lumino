@@ -71,9 +71,8 @@ link_libraries(LuminoCore)
 #-------------------------------------------------------------------------------
 # Fluorite
 add_library(Fluorite STATIC ${LN_FL_SOURCES})
-set_target_properties(Fluorite PROPERTIES OUTPUT_NAME "Fluorite${LN_LIB_POSTFIX}")
+ln_add_common_property(Fluorite)
 set_target_properties(Fluorite PROPERTIES INCLUDE_DIRECTORIES "${LN_FL_INCLUDE_DIRECTORIES}")
-set_target_properties(Fluorite PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
 
 # test
 add_subdirectory(test)

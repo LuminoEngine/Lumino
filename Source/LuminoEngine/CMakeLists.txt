@@ -875,8 +875,7 @@ endif()
 
 # LuminoEngine
 add_library(LuminoEngine STATIC ${LN_SOURCES})
-set_target_properties(LuminoEngine PROPERTIES OUTPUT_NAME "LuminoEngine${LN_LIB_POSTFIX}")
-set_target_properties(LuminoEngine PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
+ln_add_common_property(LuminoEngine)
 target_include_directories(LuminoEngine PUBLIC ${LN_DEPENDENCIES_INCLUDES})
 target_link_libraries(LuminoEngine Fluorite ${LN_LINK_LIBS} ${LN_DEPENDENCIES_LIBRARIES})
 ln_add_pch(LuminoEngine "LuminoEngine.PCH.h" "Source/LuminoEngine.PCH.cpp")

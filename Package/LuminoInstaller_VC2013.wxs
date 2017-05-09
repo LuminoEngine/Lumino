@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
     <Product Id="04EE82F4-184E-4B3E-A039-2ED43A384986" Name="Lumino for Visual C++ 2013" Language="1041" Version="0.0.0.1" Manufacturer="Lumino" UpgradeCode="412164B5-AD5C-4FFA-B444-2257B07D63AD" Codepage="932">
-        <Package Description="Lumino installer" Comments="Lumino installer" InstallerVersion="200" Compressed="yes" />
+        <Package Description="Lumino installer" Comments="Lumino installer" InstallerVersion="200" Compressed="yes" SummaryCodepage="932" />
         <Media Id="1" Cabinet="simple.cab" EmbedCab="yes" />
         <Directory Id="TARGETDIR" Name="SourceDir">
             <Directory Id="ProgramFilesFolder" Name="PFiles">
                 <Directory Id="LUMINO_DIR" Name="Lumino">
                     <Directory Id="LUMINO_MSVC2013" Name="MSVC2013" />
+                    <Component Id="LuminoCommon" Guid="710FE3EF-400B-4EA5-ABC5-4AD735C85DDA">
+                        <CreateFolder />
+                        <Environment Id="LuminoInstallDir" Name="LuminoInstallDir" System="yes" Permanent="no" Action="set" Part="all" Value="[LUMINO_DIR]" />
+                    </Component>
                 </Directory>
             </Directory>
         </Directory>
         <Feature Id="DefaultFeature" Title="Main Feature" Level="1">
+            <ComponentGroupRef Id="LuminoFiles" />
+            <ComponentRef Id="LuminoCommon" />
         </Feature>
         <UI />
         <UIRef Id="WixUI_Minimal" />
+        <WixVariable Id="WixUIBannerBmp" Value="PackageSource/InstallBanner.bmp" />
+        <WixVariable Id="WixUIDialogBmp" Value="PackageSource/InstallDialog.bmp" />
+        <WixVariable Id="WixUILicenseRtf" Value="PackageSource/license-jp.rtf" />
+        <Icon Id="icon.ico" SourceFile="../Documentation/Logo/icon.ico" />
+        <Property Id="ARPPRODUCTICON" Value="icon.ico" />
     </Product>
 </Wix>

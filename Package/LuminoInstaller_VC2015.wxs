@@ -7,11 +7,15 @@
             <Directory Id="ProgramFilesFolder" Name="PFiles">
                 <Directory Id="LUMINO_DIR" Name="Lumino">
                     <Directory Id="LUMINO_MSVC2015" Name="MSVC2015" />
+                    <Component Id="Common" Guid="0D76E94E-F95F-4AFE-9FD7-6503B9BF55F5">
+                        <Environment Id="LuminoInstallDir" Name="LuminoInstallDir" System="yes" Permanent="no" Action="set" Part="all" Value="[LUMINO_DIR]" />
+                    </Component>
                 </Directory>
             </Directory>
         </Directory>
         <Feature Id="DefaultFeature" Title="Main Feature" Level="1">
             <ComponentGroupRef Id="LuminoFiles" />
+            <ComponentRef Id="Common" />
         </Feature>
         <UI />
         <UIRef Id="WixUI_Minimal" />

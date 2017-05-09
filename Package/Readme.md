@@ -15,15 +15,15 @@ http://www.02.246.ne.jp/~torutk/windows/wixandwixedit.html#SEC2
 
 
 ```
-"C:\Program Files (x86)\WiX Toolset v3.11\bin\heat" dir Release/Lumino/Lumino_MSVC2013 -dr LUMINO_MSVC2013 -cg LuminoFiles -gg -g1 -sfrag -srd  -var "var.LuminoFilesDir" -out LuminoFiles.wxs
+"C:\Program Files (x86)\WiX Toolset v3.11\bin\heat" dir Release/Lumino/MSVC2013 -dr LUMINO_MSVC2013 -cg LuminoFiles -gg -g1 -sfrag -srd  -var "var.LuminoFilesDir" -out obj/Files.wxs
 
 ```
 
 ```
-"C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe" -nologo LuminoInstaller.wxs
-"C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe" -nologo -dLuminoFilesDir=Release/Lumino LuminoFiles.wxs
+"C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe" -nologo LuminoInstaller_VC2013.wxs -out obj/LuminoInstaller.wixobj
+"C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe" -nologo -dLuminoFilesDir=Release/Lumino/MSVC2013 obj/Files.wxs -out obj/Files.wixobj
 ```
-"C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe" -nologo -ext WixUIExtension -cultures:ja-jp LuminoInstaller.wixobj LuminoFiles.wixobj -out LuminoInstaller.msi
+"C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe" -nologo -ext WixUIExtension -cultures:ja-jp obj/LuminoInstaller.wixobj obj/Files.wixobj -pdbout out/LuminoInstaller.wixpdb -out Release/LuminoInstaller.msi
 
 
 --------------------
@@ -33,4 +33,26 @@ http://www.02.246.ne.jp/~torutk/windows/wixandwixedit.html#SEC2
 
 
 
+```
+"C:\Program Files (x86)\WiX Toolset v3.11\bin\heat" dir Release/Lumino/MSVC2013 -dr LUMINO_DIR -cg LuminoFiles -gg -g1 -sfrag -srd  -var "var.LuminoFilesDir" -out LuminoFiles.wxs
+
+"C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe" -nologo LuminoInstaller_VC2013.wxs -out LuminoInstaller.wixobj
+"C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe" -nologo -dLuminoFilesDir=C:\Proj\LN\HC1\External\Lumino\Package\Release\Lumino\MSVC2013 LuminoFiles.wxs -out LuminoFiles.wixobj
+
+"C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe" -nologo -ext WixUIExtension -cultures:ja-jp LuminoInstaller.wixobj LuminoFiles.wixobj -out LuminoInstaller.msi
+
+```
+
+
+```
+"C:\Program Files (x86)\WiX Toolset v3.11\bin\heat" dir Release/Lumino/MSVC2013 -dr LUMINO_MSVC2013 -cg LuminoFiles -gg -g1 -sfrag -srd -var "var.LuminoFilesDir" -out LuminoFiles.wxs
+
+"C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe" -nologo LuminoInstaller_VC2013.wxs -out LuminoInstaller.wixobj
+"C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe" -nologo -dLuminoFilesDir=Release/Lumino/MSVC2013 LuminoFiles.wxs -out LuminoFiles.wixobj
+
+"C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe" -nologo -ext WixUIExtension -cultures:ja-jp LuminoInstaller.wixobj LuminoFiles.wixobj -out LuminoInstaller.msi
+
+```
+
+msiexec /i LuminoInstaller.msi /l*vx logfile.txt
 
