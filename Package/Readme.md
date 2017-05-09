@@ -56,3 +56,13 @@ http://www.02.246.ne.jp/~torutk/windows/wixandwixedit.html#SEC2
 
 msiexec /i LuminoInstaller.msi /l*vx logfile.txt
 
+
+
+https://code.msdn.microsoft.com/windowsdesktop/Programmatically-retrieve-186b12c0
+
+Wix - How do I set property conditionally
+http://stackoverflow.com/questions/26753632/wix-how-do-i-set-property-conditionally
+
+SetProperty エレメント
+http://cml.s10.xrea.com/ej/WiX/xsd/wix_xsd_setproperty.htm
+

@@ -3,6 +3,30 @@
     <Product Id="04EE82F4-184E-4B3E-A039-2ED43A384986" Name="Lumino for Visual C++ 2013" Language="1041" Version="0.0.0.1" Manufacturer="Lumino" UpgradeCode="412164B5-AD5C-4FFA-B444-2257B07D63AD" Codepage="932">
         <Package Description="Lumino installer" Comments="Lumino installer" InstallerVersion="200" Compressed="yes" SummaryCodepage="932" />
         <Media Id="1" Cabinet="simple.cab" EmbedCab="yes" />
+        
+        
+        
+        
+        <Property Id="VS2013_IDE_DIR">
+          <RegistrySearch
+            Id="VS2013_IDE_SEARCH"
+            Root="HKLM"
+            Key="SOFTWARE\Microsoft\VisualStudio\12.0"
+            Name="InstallDir"
+            Type="directory" />
+        </Property>
+        <Property Id="VS2013_IDE_DIR_X64">
+          <RegistrySearch
+            Id="VS2013_IDE_SEARCH_X64"
+            Root="HKLM"
+            Key="SOFTWARE\Wow6432Node\Microsoft\VisualStudio\12.0"
+            Name="InstallDir"
+            Type="directory" />
+        </Property>
+        <SetProperty Id="VS2013_IDE_DIR" After="AppSearch" Value="[VS2013_IDE_DIR_X64]" Sequence="first" >
+          <![CDATA[VS2013_IDE_DIR_X64<>""]]>
+        </SetProperty>
+        
         <Directory Id="TARGETDIR" Name="SourceDir">
             <Directory Id="ProgramFilesFolder" Name="PFiles">
                 <Directory Id="LUMINO_DIR" Name="Lumino">
@@ -12,11 +36,25 @@
                         <Environment Id="LuminoInstallDir" Name="LuminoInstallDir" System="yes" Permanent="no" Action="set" Part="all" Value="[LUMINO_DIR]" />
                     </Component>
                 </Directory>
+                
+                
+                <Directory Id="VS2013_IDE_DIR">
+                  <Directory Id="VS2013_IDE_DIR_PROJECT_TEMPLATES" Name="ProjectTemplates">
+                    <Directory Id="VS2013_IDE_DIR_PROJECT_TEMPLATES_VC" Name="VC">
+                      <Directory Id="VS2013_IDE_DIR_PROJECT_TEMPLATES_VC_WIN32" Name="Win32">
+                        <Component Id="LuminoProjectTemplate_MSVC2013_Component" Guid="9F7FAC5C-80AE-4e0c-9349-3B99D86F33D6">
+                          <File Id="LuminoProjectTemplate_MSVC2013" Compressed="default" Source="Release/Lumino/MSVC2013/Tools/VS2013ProjectTemplate/LuminoProjectCpp.zip" />
+                        </Component>
+                      </Directory>
+                    </Directory>
+                  </Directory>
+                </Directory>
             </Directory>
         </Directory>
         <Feature Id="DefaultFeature" Title="Main Feature" Level="1">
             <ComponentGroupRef Id="LuminoFiles" />
             <ComponentRef Id="LuminoCommon" />
+            <ComponentRef Id="LuminoProjectTemplate_MSVC2013_Component" />
         </Feature>
         <UI />
         <UIRef Id="WixUI_Minimal" />
@@ -25,5 +63,6 @@
         <WixVariable Id="WixUILicenseRtf" Value="PackageSource/license-jp.rtf" />
         <Icon Id="icon.ico" SourceFile="../Documentation/Logo/icon.ico" />
         <Property Id="ARPPRODUCTICON" Value="icon.ico" />
+        
     </Product>
 </Wix>
