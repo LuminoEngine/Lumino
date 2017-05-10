@@ -71,6 +71,11 @@ class CppPackageRule : ModuleRule
             string releaseDir = builder.LuminoPackageReleaseDir + "MSVC2017/";
             Directory.CreateDirectory(releaseDir);
             CopyCommonFiles(builder, releaseDir, builder.LuminoLibDir + "MSVC150");
+
+            Logger.WriteLine("copy other files...");
+            Directory.CreateDirectory(releaseDir + "Tools/VS2017ProjectTemplate");
+            Utils.CreateZipFile(builder.LuminoToolsDir + "VS2017ProjectTemplate/LuminoProjectCpp", releaseDir + "Tools/VS2017ProjectTemplate/LuminoProjectCpp.zip", false);
+
         }
 
         // .zip に圧縮する

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-    <Product Id="174BEA6E-BE1D-46B1-B363-EAA03ABED741" Name="Lumino for Visual C++ 2013" Language="1041" Version="0.0.0.1" Manufacturer="Lumino" UpgradeCode="412164B5-AD5C-4FFA-B444-2257B07D63AD" Codepage="932">
+    <Product Id="%%ProductGUID%%" Name="Lumino for Visual C++ 2013" Language="1041" Version="%%Version%%" Manufacturer="Lumino" UpgradeCode="412164B5-AD5C-4FFA-B444-2257B07D63AD" Codepage="932">
         <Package Description="Lumino installer" Comments="Lumino installer" InstallerVersion="200" Compressed="yes" SummaryCodepage="932" />
         <Media Id="1" Cabinet="simple.cab" EmbedCab="yes" />
         
@@ -26,7 +26,7 @@
                 <!-- VisualStudio ProjectTemplates -->
                 <Directory Id="VS2013_PROJECT_TEMPLATE_DIR">
                     <Component Id="LuminoProjectTemplate_MSVC2013_Component" Guid="6CD90604-F0AB-4832-92A9-4902AD1ED2C7">
-                        <File Id="LuminoProjectTemplate_MSVC2013" Compressed="default" Source="Release/Lumino/MSVC2013/Tools/VS2013ProjectTemplate/LuminoProjectCpp.zip" />
+                        <File Id="LuminoProjectTemplate_MSVC2013" Compressed="default" Source="$(var.LuminoFilesDir)/Tools/VS2013ProjectTemplate/LuminoProjectCpp.zip" />
                     </Component>
                 </Directory>
             </Directory>
@@ -40,10 +40,10 @@
 
         <UI />
         <UIRef Id="WixUI_Minimal" />
-        <WixVariable Id="WixUIBannerBmp" Value="PackageSource/InstallBanner.bmp" />
-        <WixVariable Id="WixUIDialogBmp" Value="PackageSource/InstallDialog.bmp" />
-        <WixVariable Id="WixUILicenseRtf" Value="PackageSource/license-jp.rtf" />
-        <Icon Id="icon.ico" SourceFile="../Documentation/Logo/icon.ico" />
+        <WixVariable Id="WixUIBannerBmp" Value="$(var.PackageSourceDir)/InstallBanner.bmp" />
+        <WixVariable Id="WixUIDialogBmp" Value="$(var.PackageSourceDir)/InstallDialog.bmp" />
+        <WixVariable Id="WixUILicenseRtf" Value="$(var.PackageSourceDir)/license-jp.rtf" />
+        <Icon Id="icon.ico" SourceFile="$(var.PackageSourceDir)/icon.ico" />
         <Property Id="ARPPRODUCTICON" Value="icon.ico" />
         
     </Product>

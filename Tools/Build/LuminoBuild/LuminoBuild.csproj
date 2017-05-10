@@ -49,6 +49,9 @@
     <Compile Include="..\LuminoRuby.Build.cs">
       <Link>Rules\LuminoRuby.Build.cs</Link>
     </Compile>
+    <Compile Include="..\MakeInstaller.Build.cs">
+      <Link>Rules\MakeInstaller.Build.cs</Link>
+    </Compile>
     <Compile Include="..\MakeVSProjects.Build.cs">
       <Link>Rules\MakeVSProjects.Build.cs</Link>
     </Compile>

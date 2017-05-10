@@ -11,6 +11,10 @@ namespace LuminoBuildTool
 	class Builder
     {
         public string VersionString;
+        public string InstallerProductGUID_MSVC2013;
+        public string InstallerProductGUID_MSVC2015;
+        public string InstallerProductGUID_MSVC2017;
+
         public string LuminoRootDir;
         public string LuminoBuildDir;
         public string LuminoBindingsDir;
@@ -20,6 +24,7 @@ namespace LuminoBuildTool
         public string LuminoPackageDir;
         public string LuminoPackageSourceDir;
         public string LuminoPackageReleaseDir;
+        public string LuminoDependenciesDir;
         public List<ModuleRule> Rules = new List<ModuleRule>();
 
         public void Execute(string commands)
@@ -206,6 +211,17 @@ namespace LuminoBuildTool
         {
             File.Delete(zipFilePath);
             ZipFile.CreateFromDirectory(dirPath, zipFilePath, CompressionLevel.Optimal, includeBaseDirectory);
+        }
+
+        /// <summary>
+        /// フォルダから .zip を作る
+        /// </summary>
+        public static void ExtractZipFile(string zipFilePath, string dirPath)
+        {
+            if (!Directory.Exists(dirPath))
+            {
+                ZipFile.ExtractToDirectory(zipFilePath, dirPath);
+            }
         }
 
         /// <summary>

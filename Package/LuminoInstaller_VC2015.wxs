@@ -3,21 +3,45 @@
     <Product Id="499FDE66-FE07-4180-94E8-5A7BF690BEEF" Name="Lumino for Visual C++ 2015" Language="1041" Version="0.0.0.1" Manufacturer="Lumino" UpgradeCode="B4FA9721-2EF8-405F-BBEE-D6D49415B127" Codepage="932">
         <Package Description="Lumino installer" Comments="Lumino installer" InstallerVersion="200" Compressed="yes" SummaryCodepage="932" />
         <Media Id="1" Cabinet="simple.cab" EmbedCab="yes" />
+
+        <Property Id="VS2015_PROJECT_TEMPLATE_DIR">
+            <RegistrySearch
+                Id="VS2015_PROJECT_TEMPLATE_DIR_SEARCH"
+                Root="HKCU"
+                Key="Software\Microsoft\VisualStudio\14.0"
+                Name="UserProjectTemplatesLocation"
+                Type="directory" />
+        </Property>
+
         <Directory Id="TARGETDIR" Name="SourceDir">
             <Directory Id="ProgramFilesFolder" Name="PFiles">
+                <!-- Program Files -->
                 <Directory Id="LUMINO_DIR" Name="Lumino">
                     <Directory Id="LUMINO_MSVC2015" Name="MSVC2015" />
-                    <Component Id="Common" Guid="0D76E94E-F95F-4AFE-9FD7-6503B9BF55F5">
+                    <Component Id="LuminoCommon" Guid="0D76E94E-F95F-4AFE-9FD7-6503B9BF55F5">
+                        <CreateFolder />
                         <Environment Id="LuminoInstallDir" Name="LuminoInstallDir" System="yes" Permanent="no" Action="set" Part="all" Value="[LUMINO_DIR]" />
+                    </Component>
+                </Directory>
+                <!-- VisualStudio ProjectTemplates -->
+                <Directory Id="VS2015_PROJECT_TEMPLATE_DIR">
+                    <Component Id="LuminoProjectTemplate_MSVC2015_Component" Guid="5D1F1D81-84CE-4fed-9D20-15D4B2749306">
+                        <File Id="LuminoProjectTemplate_MSVC2015" Compressed="default" Source="Release/Lumino/MSVC2015/Tools/VS2015ProjectTemplate/LuminoProjectCpp.zip" />
                     </Component>
                 </Directory>
             </Directory>
         </Directory>
         <Feature Id="DefaultFeature" Title="Main Feature" Level="1">
             <ComponentGroupRef Id="LuminoFiles" />
-            <ComponentRef Id="Common" />
+            <ComponentRef Id="LuminoCommon" />
+            <ComponentRef Id="LuminoProjectTemplate_MSVC2015_Component" />
         </Feature>
         <UI />
         <UIRef Id="WixUI_Minimal" />
+        <WixVariable Id="WixUIBannerBmp" Value="PackageSource/InstallBanner.bmp" />
+        <WixVariable Id="WixUIDialogBmp" Value="PackageSource/InstallDialog.bmp" />
+        <WixVariable Id="WixUILicenseRtf" Value="PackageSource/license-jp.rtf" />
+        <Icon Id="icon.ico" SourceFile="../Documentation/Logo/icon.ico" />
+        <Property Id="ARPPRODUCTICON" Value="icon.ico" />
     </Product>
 </Wix>

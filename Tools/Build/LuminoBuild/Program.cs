@@ -12,9 +12,14 @@ namespace LuminoBuild
         {
             Assembly thisAssembly = Assembly.GetEntryAssembly();
             string exeDir = Path.GetDirectoryName(thisAssembly.Location);
-
+            
             var builder = new LuminoBuildTool.Builder();
-            builder.VersionString = "0.4.0a1";
+
+            builder.VersionString = "0.3.0";
+            builder.InstallerProductGUID_MSVC2013 = "174BEA6E-BE1D-46B1-B363-EAA03ABED741";
+            builder.InstallerProductGUID_MSVC2015 = "499FDE66-FE07-4180-94E8-5A7BF690BEEF";
+            builder.InstallerProductGUID_MSVC2017 = "6F45F9FB-9E6D-4751-A98D-9D0942639E7C";
+
             builder.LuminoRootDir = Path.GetFullPath(Path.Combine(exeDir, "../../../../..")) + "/"; // .sln のあるフォルダ
             builder.LuminoBuildDir = builder.LuminoRootDir + "Build/";
             builder.LuminoBindingsDir = builder.LuminoRootDir + "Bindings/";
@@ -24,6 +29,7 @@ namespace LuminoBuild
             builder.LuminoPackageDir = builder.LuminoRootDir + "Package/";
             builder.LuminoPackageSourceDir = builder.LuminoRootDir + "Package/PackageSource/";
             builder.LuminoPackageReleaseDir = builder.LuminoRootDir + "Package/Release/Lumino/";
+            builder.LuminoDependenciesDir = builder.LuminoRootDir + "External/LuminoDependencies/";
 
             builder.Rules = new List<LuminoBuildTool.ModuleRule>();
             builder.Rules.Add(new SetupDependencies());
@@ -36,6 +42,7 @@ namespace LuminoBuild
             builder.Rules.Add(new RubyPackageRule());
             builder.Rules.Add(new LuminoCRule());
             builder.Rules.Add(new CPackageRule());
+            builder.Rules.Add(new MakeInstaller());
             if (Utils.IsWin32) builder.Rules.Add(new LuminoHSPRule());
             if (Utils.IsWin32) builder.Rules.Add(new HSPPackageRule());
 
