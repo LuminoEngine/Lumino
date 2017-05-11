@@ -521,7 +521,7 @@ void VisualInline::MeasureLayout(const Size& availableSize, VisualBlock* rootBlo
 }
 
 ////------------------------------------------------------------------------------
-//void VisualInline::ArrangeLayout(const RectF& finalLocalRect)
+//void VisualInline::ArrangeLayout(const Rect& finalLocalRect)
 //{
 //}
 //
@@ -612,7 +612,7 @@ void VisualBlock::MeasureLayout(const Size& availableSize)
 }
 
 //------------------------------------------------------------------------------
-void VisualBlock::ArrangeLayout(const RectF& finalLocalRect)
+void VisualBlock::ArrangeLayout(const Rect& finalLocalRect)
 {
 }
 
@@ -684,7 +684,7 @@ void DocumentView::MeasureLayout(const Size& availableSize)
 }
 
 //------------------------------------------------------------------------------
-void DocumentView::ArrangeLayout(const RectF& finalLocalRect)
+void DocumentView::ArrangeLayout(const Rect& finalLocalRect)
 {
 }
 

@@ -97,7 +97,7 @@ class UITextVisualLine
 {
 public:
 	const Size& GetRenderSize() const { return m_renderRect.GetSize(); }
-	const RectF& GetRenderRect() const { return m_renderRect; }
+	const Rect& GetRenderRect() const { return m_renderRect; }
 
 LN_CONSTRUCT_ACCESS:
 	UITextVisualLine();
@@ -111,7 +111,7 @@ LN_INTERNAL_ACCESS:
 	void SetVisualLineIndex(int index) { m_visualLineIndex = index; }
 	void SetRenderPt(const PointF& pt) { m_renderRect.SetLocation(pt); }
 	void Render(DrawingContext* g);
-	RectF GetGlyphAreaGlobalRect(int column);	// 高さ=行高さ
+	Rect GetGlyphAreaGlobalRect(int column);	// 高さ=行高さ
 	bool TestHitFromGlobalPoint(const PointF& pt, UITextVisualPosition* outPos);
 	int GetTextLength() const { return m_textLength; }
 
@@ -120,7 +120,7 @@ private:
 	int						m_startDocumentTextOffset;
 	int						m_textLength;		// LineDelim も含む。ただし、折り返しなどでの改行には含まない
 	int						m_visualLineIndex;
-	RectF					m_renderRect;	// TextArea 座標系
+	Rect					m_renderRect;	// TextArea 座標系
 	//float					m_renderTop;
 	//Size					m_renderSize;
 };
@@ -138,7 +138,7 @@ public:
 
 	//float GetRenderTop() const { return m_renderTop; }
 	//float GetRenderHeight() const { return m_renderSize.width; }
-	const RectF& GetRenderRect() const { return m_renderRect; }
+	const Rect& GetRenderRect() const { return m_renderRect; }
 
 	void BuildVisualLines(Font* font, int startDocumentTextOffset, int visualLineIndex, const PointF& renderPt);
 
@@ -155,7 +155,7 @@ private:
 	RefPtr<UITextDocumentLine>		m_documentLine;
 	int								m_revision;
 	List<RefPtr<UITextVisualLine>>	m_visualLines;
-	RectF							m_renderRect;	// TextArea 座標系
+	Rect							m_renderRect;	// TextArea 座標系
 	//float							m_renderTop;
 	//Size							m_renderSize;
 };
@@ -176,12 +176,12 @@ LN_CONSTRUCT_ACCESS:
 
 LN_INTERNAL_ACCESS:
 	const UITextVisualPosition& GetVisualPosition() const { return m_position; }
-	void SetRenderRectangle(const RectF& rect) { m_renderRectangle = rect; }
-	const RectF& GetRenderRectangle() const { return m_renderRectangle; }
+	void SetRenderRectangle(const Rect& rect) { m_renderRectangle = rect; }
+	const Rect& GetRenderRectangle() const { return m_renderRectangle; }
 
 private:
 	UITextVisualPosition	m_position;
-	RectF					m_renderRectangle;
+	Rect					m_renderRectangle;
 };
 
 
@@ -204,7 +204,7 @@ LN_CONSTRUCT_ACCESS:
 
 LN_INTERNAL_ACCESS:
 	UITextVisualLine* FindVisualLine(int lineIndex);
-	RectF GetGlyphGlobalRectFromVisualPosition(const UITextVisualPosition& pos);
+	Rect GetGlyphGlobalRectFromVisualPosition(const UITextVisualPosition& pos);
 	void GetVisualPositionFromRenderPosition(const PointF& pt, UITextVisualPosition* outPos);
 	int GetDocumentTextOffset(const UITextVisualPosition& pos);
 
@@ -512,9 +512,9 @@ void UITextVisualLine::Render(DrawingContext* g)
 }
 
 //------------------------------------------------------------------------------
-RectF UITextVisualLine::GetGlyphAreaGlobalRect(int column)
+Rect UITextVisualLine::GetGlyphAreaGlobalRect(int column)
 {
-	RectF rect(0, m_renderRect.y, 0, m_renderRect.height);
+	Rect rect(0, m_renderRect.y, 0, m_renderRect.height);
 	int count = 0;
 	for (auto& run : m_glyphRuns)
 	{
@@ -544,7 +544,7 @@ bool UITextVisualLine::TestHitFromGlobalPoint(const PointF& pt, UITextVisualPosi
 		{
 			for (auto& item : run->RequestLayoutItems())
 			{
-				RectF rc(flow, static_cast<float>(item.Location.BitmapSize.width), static_cast<float>(item.Location.BitmapSize.height));
+				Rect rc(flow, static_cast<float>(item.Location.BitmapSize.width), static_cast<float>(item.Location.BitmapSize.height));
 				if (rc.Contains(localPt))
 				{
 					outPos->line = m_visualLineIndex;
@@ -591,7 +591,7 @@ bool UITextVisualLineBlock::IsModified() const
 void UITextVisualLineBlock::BuildVisualLines(Font* font, int startDocumentTextOffset, int visualLineIndex, const PointF& renderPt)
 {
 	m_visualLines.Clear();
-	m_renderRect = RectF(renderPt, 0, 0);
+	m_renderRect = Rect(renderPt, 0, 0);
 	//m_renderTop = renderTop;
 	//m_renderSize = Size::Zero;
 
@@ -744,7 +744,7 @@ void UITextArea::Render(DrawingContext* g)
 
 
 	// TODO: 毎回検索するのも時間かかりそう・・・
-	RectF caretRect = GetGlyphGlobalRectFromVisualPosition(m_caret->GetVisualPosition());
+	Rect caretRect = GetGlyphGlobalRectFromVisualPosition(m_caret->GetVisualPosition());
 	caretRect.width = 1;
 
 	g->DrawRectangle(caretRect);
@@ -768,7 +768,7 @@ UITextVisualLine* UITextArea::FindVisualLine(int lineIndex)
 }
 
 //------------------------------------------------------------------------------
-RectF UITextArea::GetGlyphGlobalRectFromVisualPosition(const UITextVisualPosition& pos)
+Rect UITextArea::GetGlyphGlobalRectFromVisualPosition(const UITextVisualPosition& pos)
 {
 	auto* visualLine = FindVisualLine(pos.line);
 	return visualLine->GetGlyphAreaGlobalRect(pos.column);
@@ -975,7 +975,7 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~UISimpleTextArea();
 	void Initialize();
 	//UITextVisualLine* FindVisualLine(int lineIndex);
-	//RectF GetGlyphGlobalRectFromVisualPosition(const UITextVisualPosition& pos);
+	//Rect GetGlyphGlobalRectFromVisualPosition(const UITextVisualPosition& pos);
 	//void GetVisualPositionFromRenderPosition(const PointF& pt, UITextVisualPosition* outPos);
 	//int GetDocumentTextOffset(const UITextVisualPosition& pos);
 
@@ -1103,7 +1103,7 @@ Size UISimpleTextArea::Measure(const Size& availableSize, Font* font, detail::UI
 //------------------------------------------------------------------------------
 void UISimpleTextArea::UpdateCaretRectangle()
 {
-	RectF rect(0, 0, 1, m_glyphRun->GetRenderSize().height);
+	Rect rect(0, 0, 1, m_glyphRun->GetRenderSize().height);
 	PointF pos;
 	if (m_glyphRun->GetDistanceFromCharacterHit(m_caret->GetVisualPosition().column, &pos))
 	{
@@ -1167,7 +1167,7 @@ Size UITextField::MeasureOverride(const Size& availableSize)
 //------------------------------------------------------------------------------
 Size UITextField::ArrangeOverride(const Size& finalSize)
 {
-	m_textArea->ArrangeLayout(RectF(0, 0, finalSize));
+	m_textArea->ArrangeLayout(Rect(0, 0, finalSize));
 	return UIControl::ArrangeOverride(finalSize);
 }
 

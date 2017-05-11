@@ -91,7 +91,7 @@ void UIMouseEventArgs::Initialize(MouseButtons button, float x, float y, int cli
 //------------------------------------------------------------------------------
 PointF UIMouseEventArgs::GetPosition(UIElement* relativeTo) const
 {
-	const RectF& rc = relativeTo->GetFinalGlobalRect();
+	const Rect& rc = relativeTo->GetFinalGlobalRect();
 	return PointF(m_position.x - rc.x, m_position.y - rc.y);
 }
 

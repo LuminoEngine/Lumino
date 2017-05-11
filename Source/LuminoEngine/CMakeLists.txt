@@ -3,9 +3,6 @@ project (LuminoEngine)
 
 include(${PROJECT_SOURCE_DIR}/../LuminoCore/CMake/LNCommon.cmake NO_POLICY_SCOPE)
 
-set(LN_DEPENDENCIES_ROOT_DIR "${PROJECT_SOURCE_DIR}/../../External/LuminoDependencies/")
-include(${PROJECT_SOURCE_DIR}/../../External/LuminoDependencies/LuminoDependencies.cmake)
-
 set(LN_LINK_LIBS "")
 set(LN_UNIT_TEST_LINK_LIBS "")
 

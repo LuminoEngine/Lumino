@@ -114,9 +114,9 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual const VAlignment* GetLayoutContentVAlignment() override;
 	virtual const Size& GetLayoutDesiredSize() const override;
 	virtual void SetLayoutDesiredSize(const Size& size) override;
-	virtual void SetLayoutFinalLocalRect(const RectF& rect) override;
-	virtual const RectF& GetLayoutFinalLocalRect() const override;
-	virtual void SetLayoutFinalGlobalRect(const RectF& rect) override;
+	virtual void SetLayoutFinalLocalRect(const Rect& rect) override;
+	virtual const Rect& GetLayoutFinalLocalRect() const override;
+	virtual void SetLayoutFinalGlobalRect(const Rect& rect) override;
 	virtual int GetVisualChildrenCount() const override;
 	virtual ILayoutElement* GetVisualChild(int index) const override;
 	virtual int GetLayoutColumn() const override;
@@ -156,8 +156,8 @@ private:
 	VAlignment				m_verticalAlignment;
 	TextElement*			m_parent;
 	Size					m_desiredSize;
-	RectF					m_finalLocalRect;
-	RectF					m_finalGlobalRect;
+	Rect					m_finalLocalRect;
+	Rect					m_finalGlobalRect;
 	detail::GridLayoutInfo	m_gridLayoutInfo;
 };
 

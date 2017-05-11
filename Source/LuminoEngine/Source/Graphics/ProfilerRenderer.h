@@ -34,7 +34,7 @@ private:
 	detail::GraphicsManager*	m_manager;
 	Profiler*					m_profiler;
 	RefPtr<RawFont>				m_font;
-	RectF						m_windowRect;
+	Rect						m_windowRect;
 };
 
 LN_NAMESPACE_GRAPHICS_END

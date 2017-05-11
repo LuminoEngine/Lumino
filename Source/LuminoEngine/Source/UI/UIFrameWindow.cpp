@@ -280,7 +280,7 @@ Size UIMainWindow::ArrangeOverride(const Size& finalSize)
 {
 	Size renderSize = UIFrameWindow::ArrangeOverride(finalSize);
 
-	m_mainUIViewport->ArrangeLayout(RectF(0, 0, renderSize));
+	m_mainUIViewport->ArrangeLayout(Rect(0, 0, renderSize));
 
 	return renderSize;
 }

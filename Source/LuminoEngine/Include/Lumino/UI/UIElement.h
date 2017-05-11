@@ -260,7 +260,7 @@ public:
 
 
 	virtual void MeasureLayout(const Size& availableSize) override;
-	virtual void ArrangeLayout(const RectF& finalLocalRect) override;
+	virtual void ArrangeLayout(const Rect& finalLocalRect) override;
 
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
 	void RaiseEvent(const UIEventInfo* ev, UIElement* sender, UIEventArgs* e);
@@ -374,7 +374,7 @@ LN_INTERNAL_ACCESS:
 	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e);
 	void CallOnGotFocus();
 	void CallOnLostFocus();
-	const RectF& GetFinalGlobalRect() const { return m_finalGlobalRect; }
+	const Rect& GetFinalGlobalRect() const { return m_finalGlobalRect; }
 	virtual detail::SpcialUIElementType GetSpcialUIElementType() const;
 	UIElement* GetVisualParent() const { return m_visualParent; }
 
@@ -382,7 +382,7 @@ LN_INTERNAL_ACCESS:
 	void Render(DrawingContext* g);
 
 protected:
-	virtual void UpdateTransformHierarchy(const RectF& parentGlobalRect) override;
+	virtual void UpdateTransformHierarchy(const Rect& parentGlobalRect) override;
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	virtual const HAlignment* GetPriorityContentHAlignment();
@@ -410,9 +410,9 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual const VAlignment* GetLayoutContentVAlignment() override;
 	virtual const Size& GetLayoutDesiredSize() const override;
 	virtual void SetLayoutDesiredSize(const Size& size) override;
-	virtual void SetLayoutFinalLocalRect(const RectF& rect) override;
-	virtual const RectF& GetLayoutFinalLocalRect() const override;
-	virtual void SetLayoutFinalGlobalRect(const RectF& rect) override;
+	virtual void SetLayoutFinalLocalRect(const Rect& rect) override;
+	virtual const Rect& GetLayoutFinalLocalRect() const override;
+	virtual void SetLayoutFinalGlobalRect(const Rect& rect) override;
 
 
 private:
@@ -429,8 +429,8 @@ private:
 	UIElement*				m_logicalParent;
 	UIStylePropertyTable*	m_localStyle;			// 内部的に使用されるスタイル。親や VisualState から取得したスタイルをマージしたもの。
 	Size					m_desiredSize;			// MeasureLayout() で決定されるこのコントロールの要求サイズ
-	RectF					m_finalLocalRect;		// 描画に使用する最終境界矩形 (グローバル座標系=RootFrame のローカル座標系)
-	RectF					m_finalGlobalRect;
+	Rect					m_finalLocalRect;		// 描画に使用する最終境界矩形 (グローバル座標系=RootFrame のローカル座標系)
+	Rect					m_finalGlobalRect;
 	String					m_elementName;				// 要素名 ("UITextBlock" など) TODO: いらないかも
 	RefPtr<UIVisualStateManager>	m_visualStateManager;
 	String							m_styleSubControlOwnerName;

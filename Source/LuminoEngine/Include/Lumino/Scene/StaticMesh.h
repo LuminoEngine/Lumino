@@ -85,17 +85,17 @@ class Rectangle
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
-	static RefPtr<Rectangle> Create(const RectF& rect);
+	static RefPtr<Rectangle> Create(const Rect& rect);
 
 
 LN_CONSTRUCT_ACCESS:
 	Rectangle();
 	virtual ~Rectangle();
-	void Initialize(const RectF& rect);
+	void Initialize(const Rect& rect);
 	virtual void OnRender2(DrawList* renderer) override;
 
 private:
-	RectF	m_rect;
+	Rect	m_rect;
 };
 
 LN_NAMESPACE_END

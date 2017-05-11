@@ -200,9 +200,9 @@ const HAlignment* TextElement::GetLayoutContentHAlignment() { return nullptr; }
 const VAlignment* TextElement::GetLayoutContentVAlignment() { return nullptr; }
 const Size& TextElement::GetLayoutDesiredSize() const { return m_desiredSize; }
 void TextElement::SetLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
-void TextElement::SetLayoutFinalLocalRect(const RectF& rect) { m_finalLocalRect = rect; }
-const RectF& TextElement::GetLayoutFinalLocalRect() const { return m_finalLocalRect; }
-void TextElement::SetLayoutFinalGlobalRect(const RectF& rect) { m_finalGlobalRect = rect; }
+void TextElement::SetLayoutFinalLocalRect(const Rect& rect) { m_finalLocalRect = rect; }
+const Rect& TextElement::GetLayoutFinalLocalRect() const { return m_finalLocalRect; }
+void TextElement::SetLayoutFinalGlobalRect(const Rect& rect) { m_finalGlobalRect = rect; }
 int TextElement::GetVisualChildrenCount() const { return 0; }
 ILayoutElement* TextElement::GetVisualChild(int index) const { return nullptr; }
 int TextElement::GetLayoutColumn() const { return m_gridLayoutInfo.layoutColumn; }
@@ -286,7 +286,7 @@ Size Block::MeasureOverride(const Size& constraint)
 Size Block::ArrangeOverride(const Size& finalSize)
 {
 	float prevChildSize = 0;
-	RectF childRect;
+	Rect childRect;
 	for (TextElement* child : m_inlines)
 	{
 		// TODO: とりあえず 左から右へのフロー

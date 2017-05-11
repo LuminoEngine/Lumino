@@ -60,31 +60,31 @@ struct LNRectF
 LN_API LNResultCode LNRectF_RectF(LNRectF* rectf)
 {
     LWIG_FUNC_TRY_BEGIN;
-    new (reinterpret_cast<RectF*>(rectf)) RectF();
+    new (reinterpret_cast<Rect*>(rectf)) Rect();
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNRectF_RectFXYWH(LNRectF* rectf, float x, float y, float width, float height)
 {
     LWIG_FUNC_TRY_BEGIN;
-    new (reinterpret_cast<RectF*>(rectf)) RectF(x, y, width, height);
+    new (reinterpret_cast<Rect*>(rectf)) Rect(x, y, width, height);
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNRectF_GetLeft(const LNRectF* rectf, float* outReturn)
 {
     LWIG_FUNC_TRY_BEGIN;
-    *outReturn = (reinterpret_cast<const RectF*>(rectf)->GetLeft());
+    *outReturn = (reinterpret_cast<const Rect*>(rectf)->GetLeft());
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNRectF_SetSize(LNRectF* rectf, const LNSize* size)
 {
     LWIG_FUNC_TRY_BEGIN;
-    (reinterpret_cast<RectF*>(rectf)->SetSize(*reinterpret_cast<const Size*>(size)));
+    (reinterpret_cast<Rect*>(rectf)->SetSize(*reinterpret_cast<const Size*>(size)));
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNRectF_GetSize(const LNRectF* rectf, LNSize* outReturn)
 {
     LWIG_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LNSize&>(reinterpret_cast<const RectF*>(rectf)->GetSize());
+    *outReturn = reinterpret_cast<const LNSize&>(reinterpret_cast<const Rect*>(rectf)->GetSize());
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNEngine_Initialize()

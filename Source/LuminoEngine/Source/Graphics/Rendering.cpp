@@ -1572,17 +1572,17 @@ void DrawList::DrawGlyphRun(const PointF& position, GlyphRun* glyphRun)
 //------------------------------------------------------------------------------
 void DrawList::DrawText_(const StringRef& text, const PointF& position)
 {
-	DrawText_(text, RectF(position, FLT_MAX, FLT_MAX), StringFormatFlags::LeftAlignment);
+	DrawText_(text, Rect(position, FLT_MAX, FLT_MAX), StringFormatFlags::LeftAlignment);
 }
 
 //------------------------------------------------------------------------------
-void DrawList::DrawText_(const StringRef& text, const RectF& rect, StringFormatFlags flags)
+void DrawList::DrawText_(const StringRef& text, const Rect& rect, StringFormatFlags flags)
 {
 	class DrawElement_DrawText : public detail::DrawElement
 	{
 	public:
 		String text;	// TODO: BlukData
-		RectF rect;
+		Rect rect;
 		StringFormatFlags flags;
 
 		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
@@ -1609,7 +1609,7 @@ void DrawList::DrawChar(TCHAR ch, const PointF& position)
 
 		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
 		{
-			context->BeginVectorTextRenderer()->DrawChar(GetTransform(oenerList), ch, RectF(position, 0, 0), TextLayoutOptions::None);
+			context->BeginVectorTextRenderer()->DrawChar(GetTransform(oenerList), ch, Rect(position, 0, 0), TextLayoutOptions::None);
 		}
 	};
 
@@ -1622,14 +1622,14 @@ void DrawList::DrawChar(TCHAR ch, const PointF& position)
 }
 
 //------------------------------------------------------------------------------
-void DrawList::DrawText2(const StringRef& text, const RectF& rect)
+void DrawList::DrawText2(const StringRef& text, const Rect& rect)
 {
 	class DrawElement_DrawString : public detail::DrawElement
 	{
 	public:
 		detail::CommandDataCache::DataHandle utf32DataHandle;
 		int length;
-		RectF rect;
+		Rect rect;
 
 		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
 		{
@@ -1659,7 +1659,7 @@ void DrawList::DrawSprite(
 	const Size& size,
 	const Vector2& anchor,
 	Texture* texture,
-	const RectF& srcRect,
+	const Rect& srcRect,
 	const Color& color,
 	SpriteBaseDirection baseDirection,
 	Material* material)
@@ -1671,7 +1671,7 @@ void DrawList::DrawSprite(
 		Vector2 size;
 		Vector2 anchorRatio;
 		RefPtr<Texture> texture;
-		RectF srcRect;
+		Rect srcRect;
 		Color color;
 		SpriteBaseDirection baseDirection;
 
@@ -1722,7 +1722,7 @@ public:
 	}
 };
 
-void DrawList::DrawRectangle(const RectF& rect)
+void DrawList::DrawRectangle(const Rect& rect)
 {
 	if (m_state.state.state.GetBrush() != nullptr &&
 		(m_state.state.state.GetBrush()->GetImageDrawMode() == BrushImageDrawMode::BoxFrame || m_state.state.state.GetBrush()->GetImageDrawMode() == BrushImageDrawMode::BorderFrame))
@@ -1909,12 +1909,12 @@ void DrawList::BlitInternal(Texture* source, RenderTargetTexture* dest, const Ma
 }
 
 //------------------------------------------------------------------------------
-void DrawList::DrawFrameRectangle(const RectF& rect)
+void DrawList::DrawFrameRectangle(const Rect& rect)
 {
 	class DrawElement_DrawFrameRectangle : public detail::DrawElement
 	{
 	public:
-		RectF rect;
+		Rect rect;
 		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
 		{
 			auto* r = context->BeginFrameRectRenderer();

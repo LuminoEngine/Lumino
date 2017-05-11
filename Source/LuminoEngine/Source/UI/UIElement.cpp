@@ -230,12 +230,12 @@ void UIElement::MeasureLayout(const Size& availableSize)
 }
 
 //------------------------------------------------------------------------------
-void UIElement::ArrangeLayout(const RectF& finalLocalRect)
+void UIElement::ArrangeLayout(const Rect& finalLocalRect)
 {
 	const HAlignment* parentHAlign = (m_logicalParent != nullptr) ? m_logicalParent->GetLayoutContentHAlignment() : nullptr;
 	const VAlignment* parentVAlign = (m_logicalParent != nullptr) ? m_logicalParent->GetLayoutContentVAlignment() : nullptr;
 
-	RectF alignd = finalLocalRect;
+	Rect alignd = finalLocalRect;
 	Size ds = GetLayoutDesiredSize();
 	if (parentHAlign != nullptr)
 	{
@@ -281,8 +281,8 @@ void UIElement::OnRender(DrawingContext* g)
 	{
 		g->SetBrush(m_localStyle->background.Get());
 		//g->SetOpacity(m_combinedOpacity);
-		//g->DrawRectangle(RectF(0, 0, m_finalLocalRect.GetSize()));
-		g->DrawBoxBackground(RectF(0, 0, m_finalLocalRect.GetSize()), CornerRadius());
+		//g->DrawRectangle(Rect(0, 0, m_finalLocalRect.GetSize()));
+		g->DrawBoxBackground(Rect(0, 0, m_finalLocalRect.GetSize()), CornerRadius());
 
 		
 	}
@@ -290,13 +290,13 @@ void UIElement::OnRender(DrawingContext* g)
 	{
 		//g->SetBrush(decoratorBackground.Get());
 		////g->SetOpacity(m_combinedOpacity * m_decoratorOpacity);
-		//g->DrawRectangle(RectF(0, 0, m_finalLocalRect.GetSize()));
+		//g->DrawRectangle(Rect(0, 0, m_finalLocalRect.GetSize()));
 	}
 
 	if (!m_localStyle->borderThickness.Get().IsZero())
 	{
 		g->DrawBoxBorder(
-			RectF(0, 0, m_finalGlobalRect.GetSize()), m_localStyle->borderThickness.Get(), CornerRadius(),
+			Rect(0, 0, m_finalGlobalRect.GetSize()), m_localStyle->borderThickness.Get(), CornerRadius(),
 			Color::Gray, Color::Gray, Color::Gray, Color::Gray,
 			BorderDirection::Outside);
 	}
@@ -636,7 +636,7 @@ detail::SpcialUIElementType UIElement::GetSpcialUIElementType() const
 }
 
 //------------------------------------------------------------------------------
-void UIElement::UpdateTransformHierarchy(const RectF& parentGlobalRect)
+void UIElement::UpdateTransformHierarchy(const Rect& parentGlobalRect)
 {
 	if (m_visualParent != nullptr)
 	{
@@ -674,8 +674,8 @@ void UIElement::Render(DrawingContext* g)
 
 
 
-	//g->DrawBoxBorder(RectF(50, 50, 300, 200), ThicknessF(10, 10, 10, 10), Color::Red, Color::Green, Color::Blue, Color::Cyan, 10, 10, 10, 10);	// TODO:
-	//g->DrawBoxShadow(RectF(10, 20, 300, 400), Color::Black, 5, 5, false);
+	//g->DrawBoxBorder(Rect(50, 50, 300, 200), ThicknessF(10, 10, 10, 10), Color::Red, Color::Green, Color::Blue, Color::Cyan, 10, 10, 10, 10);	// TODO:
+	//g->DrawBoxShadow(Rect(10, 20, 300, 400), Color::Black, 5, 5, false);
 	OnRender(g);
 
 	// 子要素
@@ -763,8 +763,8 @@ const HAlignment* UIElement::GetLayoutContentHAlignment() { return GetPriorityCo
 const VAlignment* UIElement::GetLayoutContentVAlignment() { return GetPriorityContentVAlignment(); }
 const Size& UIElement::GetLayoutDesiredSize() const { return m_desiredSize; }
 void UIElement::SetLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
-void UIElement::SetLayoutFinalLocalRect(const RectF& rect) { m_finalLocalRect = rect; }
-const RectF& UIElement::GetLayoutFinalLocalRect() const { return m_finalLocalRect; }
-void UIElement::SetLayoutFinalGlobalRect(const RectF& rect) { m_finalGlobalRect = rect; }
+void UIElement::SetLayoutFinalLocalRect(const Rect& rect) { m_finalLocalRect = rect; }
+const Rect& UIElement::GetLayoutFinalLocalRect() const { return m_finalLocalRect; }
+void UIElement::SetLayoutFinalGlobalRect(const Rect& rect) { m_finalGlobalRect = rect; }
 
 LN_NAMESPACE_END

@@ -81,7 +81,7 @@ include_directories(
 	${PROJECT_SOURCE_DIR}/../LuminoEngine/Include
 )
 
-add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
-ln_add_common_property(LuminoEngine)
-ln_add_pch(${PROJECT_NAME} "LuminoLaunch.PCH.h" "Source/LuminoLaunch.PCH.cpp")
+add_library(LuminoLaunch STATIC ${LN_SOURCES})
+ln_add_common_property(LuminoLaunch)
+ln_add_pch(LuminoLaunch "LuminoLaunch.PCH.h" "Source/LuminoLaunch.PCH.cpp")
 

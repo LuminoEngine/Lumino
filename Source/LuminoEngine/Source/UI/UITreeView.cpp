@@ -80,11 +80,11 @@ Size UITreeViewItem::ArrangeOverride(const Size& finalSize)
 
 	// Header
 	Size headerSize = m_header->GetDesiredSize();
-	RectF headerRect(expanderSize.width, 0, finalSize.width - expanderSize.width, std::max(expanderSize.height, headerSize.height));
+	Rect headerRect(expanderSize.width, 0, finalSize.width - expanderSize.width, std::max(expanderSize.height, headerSize.height));
 	m_header->ArrangeLayout(headerRect);
 	
 	// Items
-	RectF itemsRect(expanderSize.width, headerRect.height, finalSize.width - expanderSize.width, finalSize.height - headerRect.height);
+	Rect itemsRect(expanderSize.width, headerRect.height, finalSize.width - expanderSize.width, finalSize.height - headerRect.height);
 	GetLayoutPanel()->ArrangeLayout(itemsRect);
 
 	return finalSize;

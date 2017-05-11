@@ -128,7 +128,7 @@ RefPtr<TextureBrush> TextureBrush::Create(Texture* texture)
 }
 
 //------------------------------------------------------------------------------
-RefPtr<TextureBrush> TextureBrush::Create(Texture* texture, BrushImageDrawMode drawMode, const RectF& sourceRect, const ThicknessF& borderThickness, BrushWrapMode wrapMode)
+RefPtr<TextureBrush> TextureBrush::Create(Texture* texture, BrushImageDrawMode drawMode, const Rect& sourceRect, const ThicknessF& borderThickness, BrushWrapMode wrapMode)
 {
 	auto ptr = NewObject<TextureBrush>(texture);
 	ptr->SetImageDrawMode(drawMode);
@@ -171,14 +171,14 @@ void TextureBrush::Initialize(Texture* texture)
 }
 
 //------------------------------------------------------------------------------
-RectF TextureBrush::GetActualSourceRect() const
+Rect TextureBrush::GetActualSourceRect() const
 {
 	Size textureSize(0, 0);
 	Texture* texture = GetTexture();
 	if (texture != nullptr) textureSize = texture->GetSize().ToFloatSize();
 
-	const RectF& rc = GetSourceRect();
-	return RectF(
+	const Rect& rc = GetSourceRect();
+	return Rect(
 		(Math::IsNaNOrInf(rc.x)) ? 0.0f : rc.x,
 		(Math::IsNaNOrInf(rc.y)) ? 0.0f : rc.y,
 		(Math::IsNaNOrInf(rc.width)) ? textureSize.width : rc.width,

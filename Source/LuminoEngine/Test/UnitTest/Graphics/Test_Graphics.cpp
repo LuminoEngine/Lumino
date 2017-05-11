@@ -62,7 +62,7 @@ TEST_F(Test_Graphics_Rendering, Basic)
 	//	auto* r = Engine::GetWorld2D()->GetRenderer();
 	//	r->Clear(ClearFlags::Color, Color::Red);
 	//	auto tex = Texture2D::Create(LN_LOCALFILE("../Scene/TestData/Sprite1.png"));
-	//	r->DrawSprite2D(Size(32, 32), tex, RectF(0, 0, 32, 32), Color::White);
+	//	r->DrawSprite2D(Size(32, 32), tex, Rect(0, 0, 32, 32), Color::White);
 
 	//	Engine::EndRendering();
 	//}
@@ -292,7 +292,7 @@ TEST_F(Test_Graphics_Rendering, DrawText_)
 		Engine::RenderFrame();
 		Engine::GetWorld2D()->GetRenderer()->SetFont(font);
 		Engine::GetWorld2D()->GetRenderer()->SetBrush(Brush::White);
-		Engine::GetWorld2D()->GetRenderer()->DrawText_(_T("Lumino"), RectF(0, 0, w, 100), StringFormatFlags::LeftAlignment);
+		Engine::GetWorld2D()->GetRenderer()->DrawText_(_T("Lumino"), Rect(0, 0, w, 100), StringFormatFlags::LeftAlignment);
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawText1.png")));
 	}
@@ -301,9 +301,9 @@ TEST_F(Test_Graphics_Rendering, DrawText_)
 		Engine::RenderFrame();
 		Engine::GetWorld2D()->GetRenderer()->SetFont(font);
 		Engine::GetWorld2D()->GetRenderer()->SetBrush(Brush::White);
-		Engine::GetWorld2D()->GetRenderer()->DrawText_(_T("Text1"), RectF(0, 0, w, 100), StringFormatFlags::LeftAlignment);
-		Engine::GetWorld2D()->GetRenderer()->DrawText_(_T("Text2"), RectF(0, 0, w, 100), StringFormatFlags::CenterAlignment);
-		Engine::GetWorld2D()->GetRenderer()->DrawText_(_T("Text3"), RectF(0, 0, w, 100), StringFormatFlags::RightAlignment);
+		Engine::GetWorld2D()->GetRenderer()->DrawText_(_T("Text1"), Rect(0, 0, w, 100), StringFormatFlags::LeftAlignment);
+		Engine::GetWorld2D()->GetRenderer()->DrawText_(_T("Text2"), Rect(0, 0, w, 100), StringFormatFlags::CenterAlignment);
+		Engine::GetWorld2D()->GetRenderer()->DrawText_(_T("Text3"), Rect(0, 0, w, 100), StringFormatFlags::RightAlignment);
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawText2.png")));
 	}
@@ -333,27 +333,27 @@ TEST_F(Test_Graphics_Rendering, DrawSprite)
 		auto* r = Engine::GetWorld2D()->GetRenderer();
 		r->SetBlendMode(BlendMode::Alpha);
 
-		r->DrawSprite(Vector3(48, 0, 10), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);	// 手前
-		r->DrawSprite(Vector3(0, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(32, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(48, 0, 10), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);	// 手前
+		r->DrawSprite(Vector3(0, 0, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(32, 0, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 
-		r->DrawSprite(Vector3(0, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color(1, 0, 0, 1), SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(32, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color(0, 1, 0, 1), SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(64, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color(0, 0, 1, 1), SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(96, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color(1, 0, 0, 0.5), SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(128, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color(1, 0, 0, 0), SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(0, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color(1, 0, 0, 1), SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(32, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color(0, 1, 0, 1), SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(64, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color(0, 0, 1, 1), SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(96, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color(1, 0, 0, 0.5), SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(128, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color(1, 0, 0, 0), SpriteBaseDirection::Basic2D);
 
-		r->DrawSprite(Vector3(0, 64, 0), Size(16, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(16, 64, 0), Size(32, 16), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(16, 80, 0), Size(16, 16), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(0, 64, 0), Size(16, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(16, 64, 0), Size(32, 16), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(16, 80, 0), Size(16, 16), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 
-		r->DrawSprite(Vector3(64, 64, 0), Size(16, 16), Vector2::Zero, tex, RectF(16, 0, 16, 32), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(80, 64, 0), Size(16, 16), Vector2::Zero, tex, RectF(0, 16, 32, 16), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(64, 80, 0), Size(16, 16), Vector2::Zero, tex, RectF(16, 16, 16, 16), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(80, 80, 0), Size(16, 16), Vector2::Zero, tex, RectF(0, 0, 16, 16), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(64, 64, 0), Size(16, 16), Vector2::Zero, tex, Rect(16, 0, 16, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(80, 64, 0), Size(16, 16), Vector2::Zero, tex, Rect(0, 16, 32, 16), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(64, 80, 0), Size(16, 16), Vector2::Zero, tex, Rect(16, 16, 16, 16), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(80, 80, 0), Size(16, 16), Vector2::Zero, tex, Rect(0, 0, 16, 16), Color::White, SpriteBaseDirection::Basic2D);
 
-		r->DrawSprite(Vector3(96, 64, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 16, 32), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(128, 64, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 16), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(96, 64, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 16, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(128, 64, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 16), Color::White, SpriteBaseDirection::Basic2D);
 
 		LN_TEST_END_FRAME;
 
@@ -368,26 +368,26 @@ TEST_F(Test_Graphics_Rendering, DrawSprite)
 		auto* r = Engine::GetWorld2D()->GetRenderer();
 
 		r->SetBlendMode(BlendMode::Normal); 
-		r->DrawSprite(Vector3(0, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(64, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(0, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(64, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(0, 64, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(0, 0, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(64, 0, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(0, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(64, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(0, 64, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 			
 		r->SetBlendMode(BlendMode::Normal);
-		r->DrawSprite(Vector3(16, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(16, 0, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 
 		r->SetBlendMode(BlendMode::Alpha);
-		r->DrawSprite(Vector3(80, 0, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(80, 0, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 
 		r->SetBlendMode(BlendMode::Add);
-		r->DrawSprite(Vector3(16, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(16, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 			
 		r->SetBlendMode(BlendMode::Subtract);
-		r->DrawSprite(Vector3(80, 32, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(80, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 
 		r->SetBlendMode(BlendMode::Multiply);
-		r->DrawSprite(Vector3(16, 64, 0), Size(32, 32), Vector2::Zero, tex, RectF(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(16, 64, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
 
 		LN_TEST_END_FRAME;
 
@@ -403,10 +403,10 @@ TEST_F(Test_Graphics_Rendering, DrawRectangle)
 		LN_TEST_BEGIN_FRAME;
 		Engine::RenderFrame();
 		Engine::GetWorld2D()->GetRenderer()->SetBrush(Brush::Red);
-		Engine::GetWorld2D()->GetRenderer()->DrawRectangle(RectF(10, 20, 30, 40));
-		Engine::GetWorld2D()->GetRenderer()->DrawRectangle(RectF(110, 20, 30, 40));
+		Engine::GetWorld2D()->GetRenderer()->DrawRectangle(Rect(10, 20, 30, 40));
+		Engine::GetWorld2D()->GetRenderer()->DrawRectangle(Rect(110, 20, 30, 40));
 		Engine::GetWorld2D()->GetRenderer()->SetBrush(Brush::Blue);
-		Engine::GetWorld2D()->GetRenderer()->DrawRectangle(RectF(10, 70, 30, 40));
+		Engine::GetWorld2D()->GetRenderer()->DrawRectangle(Rect(10, 70, 30, 40));
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawRectangle1.png")));
 	}
@@ -415,10 +415,10 @@ TEST_F(Test_Graphics_Rendering, DrawRectangle)
 		LN_TEST_BEGIN_FRAME;
 		Engine::RenderFrame();
 		Engine::GetWorld2D()->GetRenderer()->SetBrush(Brush::Red);
-		Engine::GetWorld2D()->GetRenderer()->DrawRectangle(RectF(10, 20, 30, 40));
-		Engine::GetWorld2D()->GetRenderer()->DrawRectangle(RectF(110, 20, 30, 40));
+		Engine::GetWorld2D()->GetRenderer()->DrawRectangle(Rect(10, 20, 30, 40));
+		Engine::GetWorld2D()->GetRenderer()->DrawRectangle(Rect(110, 20, 30, 40));
 		Engine::GetWorld2D()->GetRenderer()->SetBrush(Brush::Blue);
-		Engine::GetWorld2D()->GetRenderer()->DrawRectangle(RectF(10, 70, 30, 40));
+		Engine::GetWorld2D()->GetRenderer()->DrawRectangle(Rect(10, 70, 30, 40));
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawRectangle1.png")));
 	}
@@ -455,19 +455,19 @@ TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
 
 		// 厚さ均一
 		g->SetBrush(brush1);
-		g->DrawRectangle(RectF(0, 0, 43, 63));
+		g->DrawRectangle(Rect(0, 0, 43, 63));
 
 		// 厚さ差あり
 		g->SetBrush(brush2);
-		g->DrawRectangle(RectF(60, 0, 43, 63));
+		g->DrawRectangle(Rect(60, 0, 43, 63));
 
 		// 縮退 + 厚さ均一
 		g->SetBrush(brush3);
-		g->DrawRectangle(RectF(0, 80, 6, 4));
+		g->DrawRectangle(Rect(0, 80, 6, 4));
 
 		// 縮退 + 厚さ差あり
 		g->SetBrush(brush2);
-		g->DrawRectangle(RectF(60, 80, 6, 4));
+		g->DrawRectangle(Rect(60, 80, 6, 4));
 
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawFrameRectangle1.png")));
@@ -501,11 +501,11 @@ TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
 		auto* g = Engine::GetWorld2D()->GetRenderer();
 		g->Clear(ClearFlags::All, Color::Gray);
 		g->SetBrush(brush1);
-		g->DrawRectangle(RectF(0, 0, 43, 63));
+		g->DrawRectangle(Rect(0, 0, 43, 63));
 		g->SetBrush(brush2);
-		g->DrawRectangle(RectF(50, 0, 43, 63));
+		g->DrawRectangle(Rect(50, 0, 43, 63));
 		g->SetBrush(brush3);
-		g->DrawRectangle(RectF(100, 0, 43, 63));
+		g->DrawRectangle(Rect(100, 0, 43, 63));
 		Engine::PresentFrame();
 		LN_TEST_END_FRAME;
 
@@ -562,7 +562,7 @@ TEST_F(Test_Graphics_DrawingContext, DrawText_)
 		dc->SetBrush(Brush::Gray);
 		//dc->SetFont(f);
 		dc->SetBlendMode(BlendMode::Alpha);
-		dc->DrawText2(_T("テッセレーションとアウトラ\nインフォントの描画ができ\nるようになったんだね！\nすごーい！"), RectF(100, 100, 100, 100));
+		dc->DrawText2(_T("テッセレーションとアウトラ\nインフォントの描画ができ\nるようになったんだね！\nすごーい！"), Rect(100, 100, 100, 100));
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_DrawingContext.DrawText1.png"), 90, true));
 	}

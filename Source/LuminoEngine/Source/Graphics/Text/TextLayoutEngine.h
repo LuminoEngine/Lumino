@@ -105,7 +105,7 @@ public:
 		List<ResultItem>	items;
 	};
 
-	void Layout(RawFont* font, const UTF32* text, int length, const RectF& layoutArea, TextLayoutOptions options, ResultData* outResult);
+	void Layout(RawFont* font, const UTF32* text, int length, const Rect& layoutArea, TextLayoutOptions options, ResultData* outResult);
 
 private:
 	void LayoutTextHorizontal(const UTF32* text, int length);

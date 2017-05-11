@@ -25,7 +25,7 @@ private:
 	PlatformWindow*			m_mainWindow;
 	String					m_originalMainWindowTitle;
 	RefPtr<Font>			m_font;
-	RectF					m_windowRect;
+	Rect					m_windowRect;
 	EngineDiagDisplayMode	m_displayMode;
 
 	static const int		DisplayModeCycle = 3;

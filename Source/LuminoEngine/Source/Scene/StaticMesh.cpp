@@ -171,7 +171,7 @@ void StaticMeshComponent::OnRender2(DrawList* renderer)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Rectangle, VisualComponent);
 
 //------------------------------------------------------------------------------
-RefPtr<Rectangle> Rectangle::Create(const RectF& rect)
+RefPtr<Rectangle> Rectangle::Create(const Rect& rect)
 {
 	return NewObject<Rectangle>(rect);
 }
@@ -187,7 +187,7 @@ Rectangle::~Rectangle()
 }
 
 //------------------------------------------------------------------------------
-void Rectangle::Initialize(const RectF& rect)
+void Rectangle::Initialize(const Rect& rect)
 {
 	VisualComponent::Initialize(detail::EngineDomain::GetDefaultSceneGraph3D(), 1);
 	detail::EngineDomain::GetDefaultSceneGraph3D()->GetRootNode()->AddChild(this);

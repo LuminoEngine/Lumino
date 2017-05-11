@@ -88,7 +88,7 @@ void SpriteRenderer::DrawRequest2D(
 	const Vector2& size,
 	const Vector2& anchorRatio,
 	Texture* texture,
-	const RectF& srcRect,
+	const Rect& srcRect,
 	const Color& color)
 {
 	SpriteColorTable ct = { { color, color, color, color } };
@@ -100,7 +100,7 @@ void SpriteRenderer::DrawRequest2D(
 		const Vector2, size,
 		const Vector2, anchorRatio,
 		RefPtr<Driver::ITexture>, deviceTexture,
-		const RectF, srcRect,
+		const Rect, srcRect,
 		SpriteColorTable, ct,
 		{
 			m_internal->DrawRequestInternal(position, size, anchorRatio, deviceTexture, srcRect, ct, SpriteBaseDirection::Basic2D);
@@ -113,7 +113,7 @@ void SpriteRenderer::DrawRequest(
 	const Vector2& size,
 	const Vector2& anchorRatio,
 	Texture* texture,
-	const RectF& srcRect,
+	const Rect& srcRect,
 	const Color& color,
 	SpriteBaseDirection baseDirection)
 {
@@ -126,7 +126,7 @@ void SpriteRenderer::DrawRequest(
 		const Vector2, size,
 		const Vector2, anchorRatio,
 		RefPtr<Driver::ITexture>, deviceTexture,
-		const RectF, srcRect,
+		const Rect, srcRect,
 		SpriteColorTable, ct,
 		SpriteBaseDirection, baseDirection,
 		{
@@ -355,7 +355,7 @@ void SpriteRendererImpl::DrawRequestInternal(
     const Vector2& size,
 	const Vector2& anchorRatio,
 	Driver::ITexture* texture,
-    const RectF& srcRect,
+    const Rect& srcRect,
 	const SpriteColorTable& colorTable,
 	SpriteBaseDirection baseDir)
 {
@@ -486,7 +486,7 @@ void SpriteRendererImpl::DrawRequestInternal(
 		// テクスチャ座標
 		const SizeI& texSize = texture->GetRealSize();
 		Vector2 texSizeInv(1.0f / texSize.width, 1.0f / texSize.height);
-		RectF sr(srcRect);
+		Rect sr(srcRect);
 		float l = sr.x * texSizeInv.x;
 		float t = sr.y * texSizeInv.y;
 		float r = (sr.x + sr.width) * texSizeInv.x;

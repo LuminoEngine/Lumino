@@ -215,7 +215,7 @@ Size UITrack::ArrangeOverride(const Size& finalSize)
 
 	if (m_orientation == Orientation::Horizontal)
 	{
-		RectF rect(0.0f, 0.0f, 0.0f, finalSize.height);
+		Rect rect(0.0f, 0.0f, 0.0f, finalSize.height);
 
 		// PageUp Button
 		if (m_decreaseButton != nullptr)
@@ -241,7 +241,7 @@ Size UITrack::ArrangeOverride(const Size& finalSize)
 	}
 	else
 	{
-		RectF rect(0.0f, 0.0f, finalSize.width, 0.0f);
+		Rect rect(0.0f, 0.0f, finalSize.width, 0.0f);
 
 		// PageUp Button
 		if (m_decreaseButton != nullptr)
@@ -603,14 +603,14 @@ Size UIScrollBar::ArrangeOverride(const Size& finalSize)
 	case Orientation::Horizontal:
 		upSize = m_lineUpButton->GetDesiredSize();
 		downSize = m_lineUpButton->GetDesiredSize();
-		m_lineUpButton->ArrangeLayout(RectF(0, 0, upSize.width, finalSize.height));
-		m_lineDownButton->ArrangeLayout(RectF(finalSize.width - downSize.width, 0, downSize.width, finalSize.height));
-		m_track->ArrangeLayout(RectF(upSize.width, 0, finalSize.width - upSize.width - downSize.width, finalSize.height));
+		m_lineUpButton->ArrangeLayout(Rect(0, 0, upSize.width, finalSize.height));
+		m_lineDownButton->ArrangeLayout(Rect(finalSize.width - downSize.width, 0, downSize.width, finalSize.height));
+		m_track->ArrangeLayout(Rect(upSize.width, 0, finalSize.width - upSize.width - downSize.width, finalSize.height));
 		break;
 	case Orientation::Vertical:
-		m_track->ArrangeLayout(RectF(0, 0, finalSize));
-		m_lineUpButton->ArrangeLayout(RectF(0, 0, finalSize.width, m_lineUpButton->GetDesiredSize().height));
-		m_lineDownButton->ArrangeLayout(RectF(0, finalSize.height - m_lineDownButton->GetDesiredSize().height, finalSize.width, m_lineDownButton->GetDesiredSize().height));
+		m_track->ArrangeLayout(Rect(0, 0, finalSize));
+		m_lineUpButton->ArrangeLayout(Rect(0, 0, finalSize.width, m_lineUpButton->GetDesiredSize().height));
+		m_lineDownButton->ArrangeLayout(Rect(0, finalSize.height - m_lineDownButton->GetDesiredSize().height, finalSize.width, m_lineDownButton->GetDesiredSize().height));
 		break;
 	default:
 		LN_NOTIMPLEMENTED();
@@ -703,7 +703,7 @@ Size UIScrollViewer::ArrangeOverride(const Size& finalSize)
 	Size actualSize = UIControl::ArrangeOverride(childArea);
 
 
-	RectF rc;
+	Rect rc;
 
 	rc.width = barWidth;
 	rc.height = finalSize.height - barHeight;

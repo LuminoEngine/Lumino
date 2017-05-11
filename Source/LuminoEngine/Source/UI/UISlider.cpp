@@ -206,10 +206,10 @@ Size UISlider::ArrangeOverride(const Size& finalSize)
 	switch (orientation)
 	{
 	case Orientation::Horizontal:
-		m_track->ArrangeLayout(RectF(0, 0, finalSize));
+		m_track->ArrangeLayout(Rect(0, 0, finalSize));
 		break;
 	case Orientation::Vertical:
-		m_track->ArrangeLayout(RectF(0, 0, finalSize));
+		m_track->ArrangeLayout(Rect(0, 0, finalSize));
 		break;
 	default:
 		LN_NOTIMPLEMENTED();

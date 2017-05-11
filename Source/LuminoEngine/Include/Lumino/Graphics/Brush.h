@@ -26,7 +26,7 @@ struct BrushRawData
 {
 	Color						color;
 	RefPtr<Driver::ITexture>	texture;
-	RectF						srcRect;
+	Rect						srcRect;
 	BrushWrapMode				wrapMode;
 	BrushImageDrawMode			imageDrawMode;
 	ThicknessF					borderThickness;
@@ -66,9 +66,9 @@ public:
 	Texture* GetTexture() const;
 
 	/** ピクセル単位で指定します。規定値は NaN です。これは、テクスチャ全体を転送することを示します。*/
-	void SetSourceRect(const RectF& rect) { m_srcRect = rect; }
+	void SetSourceRect(const Rect& rect) { m_srcRect = rect; }
 	void SetSourceRect(float x, float y, float width, float height) { m_srcRect.Set(x, y, width, height); }
-	const RectF& GetSourceRect() const { return m_srcRect; }
+	const Rect& GetSourceRect() const { return m_srcRect; }
 
 
 	void SetWrapMode(BrushWrapMode mode) { m_wrapMode = mode; }	// TODO: name: ImageWrapMode
@@ -95,7 +95,7 @@ LN_INTERNAL_ACCESS:
 private:
 	Color				m_color;
 	RefPtr<Texture>		m_texture;
-	RectF				m_srcRect;
+	Rect				m_srcRect;
 	BrushWrapMode		m_wrapMode;
 	BrushImageDrawMode	m_imageDrawMode;
 	ThicknessF			m_borderThickness;
@@ -127,7 +127,7 @@ class TextureBrush
 public:
 	static RefPtr<TextureBrush> Create(const StringRef& filePath);
 	static RefPtr<TextureBrush> Create(Texture* texture);
-	static RefPtr<TextureBrush> Create(Texture* texture, BrushImageDrawMode drawMode, const RectF& sourceRect, const ThicknessF& borderThickness, BrushWrapMode wrapMode);
+	static RefPtr<TextureBrush> Create(Texture* texture, BrushImageDrawMode drawMode, const Rect& sourceRect, const ThicknessF& borderThickness, BrushWrapMode wrapMode);
 
 LN_CONSTRUCT_ACCESS:
 	TextureBrush();
@@ -137,7 +137,7 @@ LN_CONSTRUCT_ACCESS:
 	void Initialize(Texture* texture);
 
 LN_INTERNAL_ACCESS:
-	RectF GetActualSourceRect() const;
+	Rect GetActualSourceRect() const;
 	Size GetSize() const;
 };
 

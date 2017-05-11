@@ -262,7 +262,7 @@ void PrimitiveRenderer::DrawSquare(
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRenderer::DrawRectangle(const RectF& rect)
+void PrimitiveRenderer::DrawRectangle(const Rect& rect)
 {
 	float l = rect.GetLeft();
 	float t = rect.GetTop();

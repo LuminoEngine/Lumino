@@ -184,7 +184,7 @@ Size UIControl::ArrangeOverride(const Size& finalSize)
 	Size childDesiredSize = m_itemsHostPanel->GetLayoutDesiredSize();
 	childDesiredSize.width = std::max(finalSize.width, childDesiredSize.width);
 	childDesiredSize.height = std::max(finalSize.height, childDesiredSize.height);
-	m_itemsHostPanel->ArrangeLayout(RectF(0.0f, 0.0f, childDesiredSize));
+	m_itemsHostPanel->ArrangeLayout(Rect(0.0f, 0.0f, childDesiredSize));
 	return finalSize;
 #else
 	return detail::LayoutImpl<UIControl>::UILayoutPanel_ArrangeOverride(this, Vector2::Zero, finalSize);
