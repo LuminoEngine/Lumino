@@ -42,5 +42,8 @@ class SetupDependencies : ModuleRule
                 Utils.CopyDirectory(libDir, builder.LuminoRootDir + "lib");
             }
         }
+
+        // extract Tools
+        Utils.ExtractZipFile(builder.LuminoDependenciesDir + "Tools/wix311-binaries.zip", builder.LuminoDependenciesDir + "Tools/wix311-binaries");
     }
 }

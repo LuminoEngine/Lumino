@@ -17,8 +17,6 @@ class MakeInstaller : ModuleRule
 
     public override void Build(Builder builder)
     {
-        Utils.ExtractZipFile(builder.LuminoDependenciesDir + "Tools/wix311-binaries.zip", builder.LuminoDependenciesDir + "Tools/wix311-binaries");
-
         string heat = builder.LuminoDependenciesDir + "Tools/wix311-binaries/heat";
         string candle = builder.LuminoDependenciesDir + "Tools/wix311-binaries/candle";
         string light = builder.LuminoDependenciesDir + "Tools/wix311-binaries/light";
@@ -28,9 +26,9 @@ class MakeInstaller : ModuleRule
 
         var targets = new[]
         {
-            new { ContentFilesDir = builder.LuminoPackageDir + "Release/Lumino/MSVC2013", WXSFileTemplate = builder.LuminoPackageSourceDir + "Installer/LuminoInstaller_MSVC2013.wxs.template", TargetDirId = "LUMINO_MSVC2013", Output = "LuminoInstaller_MSVC2013.msi" },
-            new { ContentFilesDir = builder.LuminoPackageDir + "Release/Lumino/MSVC2015", WXSFileTemplate = builder.LuminoPackageSourceDir + "Installer/LuminoInstaller_MSVC2015.wxs.template", TargetDirId = "LUMINO_MSVC2015", Output = "LuminoInstaller_MSVC2015.msi" },
-            new { ContentFilesDir = builder.LuminoPackageDir + "Release/Lumino/MSVC2017", WXSFileTemplate = builder.LuminoPackageSourceDir + "Installer/LuminoInstaller_MSVC2017.wxs.template", TargetDirId = "LUMINO_MSVC2017", Output = "LuminoInstaller_MSVC2017.msi" },
+            new { ContentFilesDir = builder.LuminoPackageDir + "Release/Lumino/MSVC2013", WXSFileTemplate = builder.LuminoPackageSourceDir + "Installer/LuminoInstaller_MSVC2013.wxs.template", TargetDirId = "LUMINO_MSVC2013", ProductGUID = builder.InstallerProductGUID_MSVC2013, Output = "LuminoInstaller_MSVC2013.msi" },
+            new { ContentFilesDir = builder.LuminoPackageDir + "Release/Lumino/MSVC2015", WXSFileTemplate = builder.LuminoPackageSourceDir + "Installer/LuminoInstaller_MSVC2015.wxs.template", TargetDirId = "LUMINO_MSVC2015", ProductGUID = builder.InstallerProductGUID_MSVC2015, Output = "LuminoInstaller_MSVC2015.msi" },
+            new { ContentFilesDir = builder.LuminoPackageDir + "Release/Lumino/MSVC2017", WXSFileTemplate = builder.LuminoPackageSourceDir + "Installer/LuminoInstaller_MSVC2017.wxs.template", TargetDirId = "LUMINO_MSVC2017", ProductGUID = builder.InstallerProductGUID_MSVC2017, Output = "LuminoInstaller_MSVC2017.msi" },
         };
 
 
@@ -43,7 +41,7 @@ class MakeInstaller : ModuleRule
 
             string text = File.ReadAllText(t.WXSFileTemplate);
             text = text.Replace("%%Version%%", builder.VersionString);
-            text = text.Replace("%%ProductGUID%%", builder.VersionString);
+            text = text.Replace("%%ProductGUID%%", t.ProductGUID);
             File.WriteAllText(installerWXS, text);
             
             string args = string.Format(
@@ -59,7 +57,7 @@ class MakeInstaller : ModuleRule
             args = string.Format("-nologo {0} -dLuminoFilesDir={1} -dPackageSourceDir={2} -out {0}.wixobj", contentFilesWXS, t.ContentFilesDir, pkgSrcInstallerDir);
             Utils.CallProcess(candle, args);
 
-            args = string.Format("-nologo -ext WixUIExtension -cultures:ja-jp {0}.wixobj {1}.wixobj -pdbout {0}.wixpdb -out {2}", installerWXS, contentFilesWXS, builder.LuminoPackageReleaseDir + t.Output);
+            args = string.Format("-nologo -v -ext WixUIExtension -cultures:ja-jp {0}.wixobj {1}.wixobj -pdbout {0}.wixpdb -out {2}", installerWXS, contentFilesWXS, builder.LuminoPackageReleaseDir + t.Output);
             Utils.CallProcess(light, args);
         }
     }
