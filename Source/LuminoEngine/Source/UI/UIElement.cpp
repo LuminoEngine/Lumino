@@ -215,7 +215,8 @@ void UIElement::RaiseEvent(const UIEventInfo* ev, UIElement* sender, UIEventArgs
 	//if (m_parent != nullptr)
 	{
 		e->sender = sender;
-		RaiseEventInternal(ev, e);
+		e->m_type = ev;
+		RaiseEventInternal(e);
 	}
 }
 
@@ -451,8 +452,9 @@ bool UIElement::OnEvent(detail::UIInternalEventType type, UIEventArgs* args)
 // this でハンドリングしたいルーティングイベントが発生したとき、イベント経由ではなく
 // 通常の仮想関数で通知することで、パフォーマンスの向上を図る。
 // (UI要素作成時のイベントハンドラの new や AddHandler をする必要がなくなる)
-void UIElement::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
+void UIElement::OnRoutedEvent(UIEventArgs* e)
 {
+	auto ev = e->GetType();
 	if (ev == MouseMoveEvent)
 	{
 		OnMouseMove(static_cast<UIMouseEventArgs*>(e));
@@ -492,7 +494,7 @@ void UIElement::CallOnGotFocus()
 {
 	LN_ASSERT(!m_hasFocus);
 	m_hasFocus = true;
-	OnGotFocus(UIEventArgs::Create(this));
+	OnGotFocus(UIEventArgs::Create(GotFocusEvent, this));
 }
 
 //------------------------------------------------------------------------------
@@ -500,7 +502,7 @@ void UIElement::CallOnLostFocus()
 {
 	LN_ASSERT(m_hasFocus);
 	m_hasFocus = false;
-	OnLostFocus(UIEventArgs::Create(this));
+	OnLostFocus(UIEventArgs::Create(LostFocusEvent, this));
 }
 
 //------------------------------------------------------------------------------
@@ -701,24 +703,23 @@ const VAlignment* UIElement::GetPriorityContentVAlignment()
 //}
 
 //------------------------------------------------------------------------------
-void UIElement::RaiseEventInternal(const UIEventInfo* ev, UIEventArgs* e)
+void UIElement::RaiseEventInternal(UIEventArgs* e)
 {
-	if (LN_CHECK_ARG(ev != nullptr)) return;
 	if (LN_CHECK_ARG(e != nullptr)) return;
 
 	// まずは this に通知
-	OnRoutedEvent(ev, e);
+	OnRoutedEvent(e);
 	if (e->handled) return;
 
 	// this に AddHandler されているイベントハンドラを呼び出す
 	tr::TypeInfo* thisType = tr::TypeInfo::GetTypeInfo(this);
-	thisType->InvokeReflectionEvent(this, ev, e);
+	thisType->InvokeReflectionEvent(this, e->GetType(), e);
 	if (e->handled) return;
 
 	// bubble
 	if (m_visualParent != nullptr)
 	{
-		m_visualParent->RaiseEventInternal(ev, e);
+		m_visualParent->RaiseEventInternal(e);
 	}
 }
 

@@ -60,7 +60,7 @@ protected:
 	virtual Size ArrangeOverride(const Size& finalSize) override;
 	virtual const VAlignment* GetPriorityContentVAlignment() override;
 	virtual const HAlignment* GetPriorityContentHAlignment() override;
-	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e) override;
+	virtual void OnRoutedEvent(UIEventArgs* e) override;
 	virtual void OnGotFocus(UIEventArgs* e) override;
 	virtual void OnLostFocus(UIEventArgs* e) override;
 

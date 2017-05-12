@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Internal.h"
 #include <Lumino/UI/UIScrollViewer.h>
 #include <Lumino/UI/UILayoutPanel.h>
@@ -48,9 +48,9 @@ void UIThumb::Initialize()
 }
 
 //------------------------------------------------------------------------------
-void UIThumb::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
+void UIThumb::OnRoutedEvent(UIEventArgs* e)
 {
-	if (ev == UIElement::MouseDownEvent)
+	if (e->GetType() == UIElement::MouseDownEvent)
 	{
 		if (!m_isDragging)
 		{
@@ -61,9 +61,9 @@ void UIThumb::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 			m_isDragging = true;
 			CaptureMouse();
 
-			// ƒhƒ‰ƒbƒOŠJŽnƒCƒxƒ“ƒg
+			// ãƒ‰ãƒ©ãƒƒã‚°é–‹å§‹ã‚¤ãƒ™ãƒ³ãƒˆ
 			detail::EventArgsPool* pool = GetManager()->GetEventArgsPool();
-			RefPtr<UIDragDeltaEventArgs> args(pool->Create<UIDragDeltaEventArgs>(), false);
+			RefPtr<UIDragDeltaEventArgs> args(pool->Create<UIDragDeltaEventArgs>(DragStartedEventId), false);
 			args->horizontalChange = pos.x - m_lastScreenPosition.x;
 			args->verticalChange = pos.y - m_lastScreenPosition.y;
 			OnDragStarted(args);
@@ -72,7 +72,7 @@ void UIThumb::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 			return;
 		}
 	}
-	else if (ev == UIElement::MouseUpEvent)
+	else if (e->GetType() == UIElement::MouseUpEvent)
 	{
 		if (m_isDragging)
 		{
@@ -82,10 +82,10 @@ void UIThumb::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 			m_isDragging = false;
 			ReleaseMouseCapture();
 
-			// ƒhƒ‰ƒbƒOI—¹ƒCƒxƒ“ƒg
-			// TODO: template ‰»
+			// ãƒ‰ãƒ©ãƒƒã‚°çµ‚äº†ã‚¤ãƒ™ãƒ³ãƒˆ
+			// TODO: template åŒ–
 			detail::EventArgsPool* pool = GetManager()->GetEventArgsPool();
-			RefPtr<UIDragDeltaEventArgs> args(pool->Create<UIDragDeltaEventArgs>(), false);
+			RefPtr<UIDragDeltaEventArgs> args(pool->Create<UIDragDeltaEventArgs>(DragCompletedEventId), false);
 			args->horizontalChange = pos.x - m_lastScreenPosition.x;
 			args->verticalChange = pos.y - m_lastScreenPosition.y;
 			OnDragCompleted(args);
@@ -94,16 +94,16 @@ void UIThumb::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 			return;
 		}
 	}
-	else if (ev == UIElement::MouseMoveEvent)
+	else if (e->GetType() == UIElement::MouseMoveEvent)
 	{
 		if (m_isDragging)
 		{
 			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);
 			PointF pos = mouseEvent->GetPosition(GetVisualParent());
 
-			// ƒhƒ‰ƒbƒO’†ƒCƒxƒ“ƒg
+			// ãƒ‰ãƒ©ãƒƒã‚°ä¸­ã‚¤ãƒ™ãƒ³ãƒˆ
 			detail::EventArgsPool* pool = GetManager()->GetEventArgsPool();
-			RefPtr<UIDragDeltaEventArgs> args(pool->Create<UIDragDeltaEventArgs>(), false);
+			RefPtr<UIDragDeltaEventArgs> args(pool->Create<UIDragDeltaEventArgs>(DragDeltaEventId), false);
 			args->horizontalChange = pos.x - m_lastScreenPosition.x;
 			args->verticalChange = pos.y - m_lastScreenPosition.y;
 			OnDragDelta(args);
@@ -113,7 +113,7 @@ void UIThumb::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 		}
 	}
 
-	UIElement::OnRoutedEvent(ev, e);
+	UIElement::OnRoutedEvent(e);
 }
 
 //==============================================================================
@@ -205,7 +205,7 @@ Size UITrack::ArrangeOverride(const Size& finalSize)
 
 	if (Math::IsNaN(m_viewportSize))
 	{
-		// ƒrƒ…[ƒTƒCƒY‚ªŠÖŒW‚È‚¢ê‡‚ÌŒvŽZB‚Â‚Ü‚èASlider ƒRƒ“ƒgƒ[ƒ‹—p
+		// ãƒ“ãƒ¥ãƒ¼ã‚µã‚¤ã‚ºãŒé–¢ä¿‚ãªã„å ´åˆã®è¨ˆç®—ã€‚ã¤ã¾ã‚Šã€Slider ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ç”¨
 		CalcSliderComponentsSize(finalSize, (m_orientation == Orientation::Vertical), &decreaseButtonLength, &thumbLength, &increaseButtonLength);
 	}
 	else
@@ -335,7 +335,7 @@ void UITrack::CalcScrollBarComponentsSize(
 	float* outIncreaseButtonLength)
 {
 	/*
-	ViewportSize ‚ÉŽg—p‚³‚ê‚é’PˆÊ‚ÍAƒRƒ“ƒeƒ“ƒc‚Ì’·‚³‚ð‹Lq‚·‚é‚½‚ß‚ÉŽg—p‚³‚ê‚é’PˆÊ‚Æ“¯‚¶‚Å‚·B
+	ViewportSize ã«ä½¿ç”¨ã•ã‚Œã‚‹å˜ä½ã¯ã€ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã®é•·ã•ã‚’è¨˜è¿°ã™ã‚‹ãŸã‚ã«ä½¿ç”¨ã•ã‚Œã‚‹å˜ä½ã¨åŒã˜ã§ã™ã€‚
 	https://msdn.microsoft.com/ja-jp/library/system.windows.controls.primitives.scrollbar.viewportsize%28v=vs.110%29.aspx
 
 	https://msdn.microsoft.com/ja-jp/library/system.windows.controls.primitives.track.maximum%28v=vs.110%29.aspx
@@ -343,18 +343,18 @@ void UITrack::CalcScrollBarComponentsSize(
 
 	float min = m_minimum;
 	float range = std::max(0.0f, m_maximum - min);
-	float offset = std::min(range, m_value - min);            // m_value ‚ÌˆÊ’u
-	float extent = std::max(0.0f, range) + viewportSize;    // ƒRƒ“ƒeƒ“ƒc‘S‘Ì‚ÌƒTƒCƒY
+	float offset = std::min(range, m_value - min);            // m_value ã®ä½ç½®
+	float extent = std::max(0.0f, range) + viewportSize;    // ã‚³ãƒ³ãƒ†ãƒ³ãƒ„å…¨ä½“ã®ã‚µã‚¤ã‚º
 
 	//float trackLength = finalLength;
 	float thumbMinLength = 16.0f;
 
-	// Thumb ƒTƒCƒY‚ðŒvŽZ‚·‚é
-	float thumbLength = trackLength * viewportSize / extent;    // ƒRƒ“ƒeƒ“ƒc‘S‘Ì‚Ì“àA‚Ç‚Ì•”•ª‚ð•\Ž¦‚µ‚Ä‚¢‚é‚Ì‚©A‚»‚ÌŠ„‡‚Å Thumb ‚Ì’·‚³‚ðì‚é
+	// Thumb ã‚µã‚¤ã‚ºã‚’è¨ˆç®—ã™ã‚‹
+	float thumbLength = trackLength * viewportSize / extent;    // ã‚³ãƒ³ãƒ†ãƒ³ãƒ„å…¨ä½“ã®å†…ã€ã©ã®éƒ¨åˆ†ã‚’è¡¨ç¤ºã—ã¦ã„ã‚‹ã®ã‹ã€ãã®å‰²åˆã§ Thumb ã®é•·ã•ã‚’ä½œã‚‹
 	CoerceLength(thumbLength, trackLength);
 	thumbLength = std::max(thumbMinLength, thumbLength);
 
-	// Žc‚è‚Ì•”•ª‚ÌƒTƒCƒY
+	// æ®‹ã‚Šã®éƒ¨åˆ†ã®ã‚µã‚¤ã‚º
 	float remainingTrackLength = trackLength - thumbLength;
 
 	// DecreaseButton
@@ -546,13 +546,13 @@ float UIScrollBar::GetViewportSize() const
 }
 
 //------------------------------------------------------------------------------
-void UIScrollBar::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
+void UIScrollBar::OnRoutedEvent(UIEventArgs* e)
 {
-	if (ev == UIThumb::DragStartedEventId)
+	if (e->GetType() == UIThumb::DragStartedEventId)
 	{
 		m_dragStartValue = m_track->GetValue();
 	}
-	else if (ev == UIThumb::DragDeltaEventId)
+	else if (e->GetType() == UIThumb::DragDeltaEventId)
 	{
 		auto* e2 = static_cast<UIDragDeltaEventArgs*>(e);
 		UpdateValue(e2->horizontalChange, e2->verticalChange);
@@ -574,12 +574,12 @@ void UIScrollBar::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 		//	break;
 		//}
 	}
-	else if (ev == UIThumb::DragCompletedEventId)
+	else if (e->GetType() == UIThumb::DragCompletedEventId)
 	{
 		auto args = UIScrollEventArgs::Create(this, m_track->GetValue(), ScrollEventType::EndScroll);
 		RaiseEvent(ScrollEventId, this, args);
 	}
-	UIControl::OnRoutedEvent(ev, e);
+	UIControl::OnRoutedEvent(e);
 }
 
 //------------------------------------------------------------------------------
@@ -740,11 +740,11 @@ Size UIScrollViewer::ArrangeOverride(const Size& finalSize)
 }
 
 //------------------------------------------------------------------------------
-void UIScrollViewer::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
+void UIScrollViewer::OnRoutedEvent(UIEventArgs* e)
 {
-	UIControl::OnRoutedEvent(ev, e);
+	UIControl::OnRoutedEvent(e);
 
-	if (ev == UIScrollBar::ScrollEventId)
+	if (e->GetType() == UIScrollBar::ScrollEventId)
 	{
 		auto* e2 = static_cast<UIScrollEventArgs*>(e);
 

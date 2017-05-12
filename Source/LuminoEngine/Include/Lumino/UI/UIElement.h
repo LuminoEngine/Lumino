@@ -371,7 +371,7 @@ LN_INTERNAL_ACCESS:
 	detail::InvalidateFlags GetInvalidateFlags() const { return m_invalidateFlags; }
 	UIElement* CheckMouseHoverElement(const PointF& globalPt);
 	virtual bool OnEvent(detail::UIInternalEventType type, UIEventArgs* args);
-	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e);
+	virtual void OnRoutedEvent(UIEventArgs* e);
 	void CallOnGotFocus();
 	void CallOnLostFocus();
 	const Rect& GetFinalGlobalRect() const { return m_finalGlobalRect; }
@@ -419,7 +419,7 @@ private:
 	void UpdateLocalStyleAndApplyProperties(UIStyleTable* styleTable, UIStylePropertyTable* parentStyle);
 
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
-	void RaiseEventInternal(const UIEventInfo* ev, UIEventArgs* e);
+	void RaiseEventInternal(UIEventArgs* e);
 
 	detail::UIManager*		m_manager;
 	//UILayoutView*			m_ownerLayoutView;

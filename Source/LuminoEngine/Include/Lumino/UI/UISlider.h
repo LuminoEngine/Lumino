@@ -72,7 +72,7 @@ public:
 
 protected:
 	// UIElement interface
-	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e) override;
+	virtual void OnRoutedEvent(UIEventArgs* e) override;
 	virtual Size MeasureOverride(const Size& constraint) override;
 	virtual Size ArrangeOverride(const Size& finalSize) override;
 
