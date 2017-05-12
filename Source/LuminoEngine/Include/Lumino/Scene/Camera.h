@@ -192,6 +192,7 @@ public:
 	virtual void ExecuteDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 
 protected:
+	virtual void OnRoutedEvent(UIEventArgs* e) override;
 
 LN_INTERNAL_ACCESS:
 	CameraViewportLayer2();

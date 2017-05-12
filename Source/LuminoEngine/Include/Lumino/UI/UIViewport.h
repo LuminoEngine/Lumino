@@ -73,6 +73,7 @@ protected:
 	UIViewportLayer();
 	virtual ~UIViewportLayer();
 
+	virtual void OnRoutedEvent(UIEventArgs* e);
 	virtual void Render() = 0;
 	virtual void ExecuteDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) = 0;
 

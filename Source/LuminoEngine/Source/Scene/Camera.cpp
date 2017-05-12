@@ -473,6 +473,15 @@ void CameraViewportLayer2::ExecuteDrawListRendering(DrawList* parentDrawList, Re
 	m_targetWorld->GetRenderer()->EndFrame();
 }
 
+//------------------------------------------------------------------------------
+void CameraViewportLayer2::OnRoutedEvent(UIEventArgs* e)
+{
+	m_targetWorld->OnUIEvent(e);
+	if (e->handled) return;
+
+	UIViewportLayer::OnRoutedEvent(e);
+}
+
 //==============================================================================
 // CameraBehavior
 //==============================================================================

@@ -71,6 +71,13 @@ void UIViewport::OnRoutedEvent(UIEventArgs* e)
 	// UI 要素は通常 UIViewport の上に張り付けられる。
 	// デフォルトの MainWindow などは全体に UILayoutPanel が乗るので、
 	// 通常のイベントではなく RoutedEvent でなければハンドリングできない。
+
+	for (auto& layer : m_viewportLayerList)
+	{
+		layer->OnRoutedEvent(e);
+		if (e->handled) return;
+	}
+
 	return UIElement::OnRoutedEvent(e);
 }
 
@@ -263,6 +270,11 @@ void UIViewportLayer::AddPostEffect(PostEffect* postEffect)
 {
 	m_postEffects.Add(postEffect);
 	postEffect->m_ownerLayer = this;
+}
+
+//------------------------------------------------------------------------------
+void UIViewportLayer::OnRoutedEvent(UIEventArgs* e)
+{
 }
 
 //------------------------------------------------------------------------------

@@ -13,6 +13,7 @@ class SceneGraph2D;
 class SceneGraph3D;
 class PhysicsWorld;
 class WorldObject;
+class UIEventArgs;
 
 /** */
 LN_ENUM_FLAGS(WorldDebugDrawFlags)
@@ -48,6 +49,7 @@ LN_INTERNAL_ACCESS:
 	virtual void UpdateFrame(float elapsedTime);
 	virtual void Render(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags);
 	void ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
+	virtual void OnUIEvent(UIEventArgs* e);
 
 	List<RefPtr<WorldObject>>	m_rootWorldObjectList;
 	RefPtr<DrawList>			m_renderer;
