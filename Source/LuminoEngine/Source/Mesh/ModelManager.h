@@ -60,7 +60,7 @@ private:
 	PhysicsManager*		m_physicsManager;
 	GraphicsManager*	m_graphicsManager;
 	//RefPtr<CacheManager>				m_cacheManager;
-	std::array<Texture2D*, 10>	m_mmdDefaultToonTexture;
+	std::array<RefPtr<Texture2D>, 10>	m_mmdDefaultToonTexture;
 
 	RefPtr<Material>		m_defaultMaterial;
 	RefPtr<MeshResource>	m_unitBoxMeshResource;

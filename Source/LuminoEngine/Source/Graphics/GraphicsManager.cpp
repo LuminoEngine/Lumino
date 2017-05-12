@@ -507,7 +507,7 @@ void GraphicsManager::CreateGlobalObjects()
 	m_dymmyBlackTexture->Clear(Color32::Black);
 
 	// white texture
-	m_dymmyBlackTexture = NewObject<Texture2D>(SizeI(32, 32), TextureFormat::R8G8B8A8, false, ResourceUsage::Static);
+	m_dymmyWhiteTexture = NewObject<Texture2D>(SizeI(32, 32), TextureFormat::R8G8B8A8, false, ResourceUsage::Static);
 	m_dymmyWhiteTexture->Clear(Color32::White);
 }
 

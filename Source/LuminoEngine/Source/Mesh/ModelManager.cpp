@@ -270,9 +270,9 @@ void ModelManager::Initialize(const ConfigData& configData)
 //------------------------------------------------------------------------------
 void ModelManager::Finalize()
 {
-	for (Texture2D* tex : m_mmdDefaultToonTexture)
+	for (auto tex : m_mmdDefaultToonTexture)
 	{
-		tex->Release();
+		tex.SafeRelease();
 	}
 
 	if (g_modelManagerInstance == this)

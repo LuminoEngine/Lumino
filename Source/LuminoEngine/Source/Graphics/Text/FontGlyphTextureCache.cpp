@@ -35,7 +35,6 @@ FontGlyphTextureCache::FontGlyphTextureCache()
 //------------------------------------------------------------------------------
 FontGlyphTextureCache::~FontGlyphTextureCache()
 {
-	LN_SAFE_RELEASE(m_fillGlyphsTexture);
 }
 
 //------------------------------------------------------------------------------

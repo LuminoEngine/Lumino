@@ -97,7 +97,9 @@ public:
 	{
 		TEventArgs* e = static_cast<TEventArgs* >(Find(tr::TypeInfo::GetTypeInfo<TEventArgs>()));
 		if (e == nullptr) {
-			Register(NewObject<TEventArgs>(args...));
+			auto eRef = NewObject<TEventArgs>(args...);
+			Register(eRef);
+			e = eRef;
 		}
 		else {
 			static_cast<UIEventArgs*>(e)->~UIEventArgs();

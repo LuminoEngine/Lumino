@@ -6,7 +6,7 @@ docfx build
 
 Preview
 ```
-docfx build
+docfx --serve
 ```
 http://localhost:8080
 
