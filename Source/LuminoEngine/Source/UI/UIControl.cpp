@@ -29,6 +29,8 @@ UIControl::~UIControl()
 void UIControl::Initialize()
 {
 	UIElement::Initialize();
+	SetFocusable(true);
+
 	auto* vsm = GetVisualStateManager();
 	vsm->RegisterVisualState(UIVisualStates::CommonGroup, UIVisualStates::NormalState);
 	vsm->RegisterVisualState(UIVisualStates::CommonGroup, UIVisualStates::MouseOverState);
@@ -45,12 +47,6 @@ void UIControl::Initialize()
 	m_items = RefPtr<UIElementCollection>::MakeRef(this);
 	auto panel = NewObject<UIAbsoluteLayout>();
 	SetLayoutPanel(panel);
-}
-
-//------------------------------------------------------------------------------
-bool UIControl::IsFocusable() const
-{
-	return true;
 }
 
 //------------------------------------------------------------------------------

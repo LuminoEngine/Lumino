@@ -231,8 +231,14 @@ public:
 
 	//void SetSize(const Size& size) { m_size = size; }
 
+	void SetFocusable(bool value) { m_isFocusable = value; }
+
 	/** この要素がフォーカスを得ることができるかを確認します。*/
-	virtual bool IsFocusable() const { return false; }
+	bool IsFocusable() const { return m_isFocusable; }
+
+	void SetHitTestVisible(bool value) { m_isHitTestVisible = value; }
+
+	bool IsHitTestVisible() const { return m_isHitTestVisible; }
 
 	/** レイアウト処理の測定パスの実行中にこの要素が計算したサイズを取得します。この値は子要素が親要素へ要求する、子要素自身の最低サイズです。*/
 	const Size& GetDesiredSize() const { return m_desiredSize; }
@@ -470,6 +476,8 @@ private:
 	detail::InvalidateFlags	m_invalidateFlags;
 	bool					m_isEnabled;
 	bool					m_isMouseOver;
+	bool					m_isHitTestVisible;
+	bool					m_isFocusable;
 	bool					m_hasFocus;
 
 	UIEventHandler::EventType	m_onGotFocus;

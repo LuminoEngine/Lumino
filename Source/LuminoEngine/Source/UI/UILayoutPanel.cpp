@@ -25,6 +25,7 @@ UILayoutPanel::~UILayoutPanel()
 void UILayoutPanel::Initialize()
 {
 	UIElement::Initialize();
+	SetHitTestVisible(false);
 	m_children = RefPtr<UIElementCollection>::MakeRef(this);
 
 	// Panel 系のデフォルトは Stretch

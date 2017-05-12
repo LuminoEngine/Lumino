@@ -25,8 +25,6 @@ public:
 public:
 	void SetText(const StringRef& text);
 
-	virtual bool IsFocusable() const;
-
 protected:
 	virtual void OnMouseDown(UIMouseEventArgs* e) override;
 	virtual void OnKeyDown(UIKeyEventArgs* e) override;
@@ -63,7 +61,6 @@ public:
 public:
 	void SetText(const StringRef& text);
 
-	virtual bool IsFocusable() const;
 
 protected:
 

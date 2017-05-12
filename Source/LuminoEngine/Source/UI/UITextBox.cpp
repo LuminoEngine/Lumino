@@ -827,6 +827,7 @@ UITextBox::~UITextBox()
 void UITextBox::Initialize()
 {
 	UITextElement::Initialize();
+	SetFocusable(true);
 	//SetHAlignment(HAlignment::Center);
 	//SetVAlignment(VAlignment::Center);
 
@@ -850,12 +851,6 @@ void UITextBox::Initialize()
 void UITextBox::SetText(const StringRef& text)
 {
 	m_textArea->GetDocument()->Replace(0, 0, text);	// TODO:
-}
-
-//------------------------------------------------------------------------------
-bool UITextBox::IsFocusable() const
-{
-	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -961,7 +956,6 @@ public:
 
 	Size Measure(const Size& availableSize, Font* font, detail::UIManager* manager);
 
-	virtual bool IsFocusable() const { return true; }
 protected:
 	virtual void OnMouseDown(UIMouseEventArgs* e) override;
 	virtual void OnTextInput(UIKeyEventArgs* e) override;
@@ -1008,6 +1002,7 @@ UISimpleTextArea::~UISimpleTextArea()
 void UISimpleTextArea::Initialize()
 {
 	UITextElement::Initialize();
+	SetFocusable(true);
 	m_glyphRun = NewObject<GlyphRun>();
 	m_caret = NewObject<UITextAreaCaret>();
 	m_caretBrush = Brush::Black;
@@ -1139,6 +1134,7 @@ UITextField::~UITextField()
 void UITextField::Initialize()
 {
 	UIControl::Initialize();
+	SetFocusable(true);
 	m_textArea = NewObject<UISimpleTextArea>();
 
 	m_textArea->SetBackground(Brush::Blue);
@@ -1149,12 +1145,6 @@ void UITextField::Initialize()
 void UITextField::SetText(const StringRef& text)
 {
 	m_textArea->Replace(0, 0, text);
-}
-
-//------------------------------------------------------------------------------
-bool UITextField::IsFocusable() const
-{
-	return true;
 }
 
 //------------------------------------------------------------------------------

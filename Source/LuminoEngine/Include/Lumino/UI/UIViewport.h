@@ -34,7 +34,7 @@ public:
 	void AddViewportLayer(UIViewportLayer* layer);
 
 protected:
-	virtual bool OnEvent(detail::UIInternalEventType type, UIEventArgs* args) override;
+	virtual void OnRoutedEvent(UIEventArgs* e) override;
 	virtual Size ArrangeOverride(const Size& finalSize) override;
 	virtual void OnRender(DrawingContext* g) override;
 

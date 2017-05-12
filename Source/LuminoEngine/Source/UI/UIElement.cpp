@@ -86,6 +86,8 @@ UIElement::UIElement()
 	, m_combinedOpacity(0.0f)
 	, m_isEnabled(true)
 	, m_isMouseOver(nullptr)
+	, m_isHitTestVisible(true)
+	, m_isFocusable(false)
 	, m_hasFocus(false)
 {
 }
@@ -380,13 +382,17 @@ UIElement* UIElement::CheckMouseHoverElement(const PointF& globalPt)
 	for (int i = count - 1; i >= 0; i--)
 	{
 		UIElement* e = static_cast<UIElement*>(GetVisualChild(i))->CheckMouseHoverElement(globalPt);
-		if (e != NULL) { return e; }
+		if (e != nullptr) return e;
 	}
 
-	if (m_finalGlobalRect.Contains(globalPt)) {
-		return this;
+	if (m_isHitTestVisible)
+	{
+		if (m_finalGlobalRect.Contains(globalPt)) {
+			return this;
+		}
 	}
-	return NULL;
+
+	return nullptr;
 }
 
 //------------------------------------------------------------------------------

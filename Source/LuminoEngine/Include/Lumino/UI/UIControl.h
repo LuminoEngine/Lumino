@@ -38,8 +38,6 @@ public:
 	void SetVContentAlignment(VAlignment value) { tr::PropertyInfo::SetPropertyValueDirect<VAlignment>(this, VContentAlignmentId, value); }
 	VAlignment GetVContentAlignment() const { return tr::PropertyInfo::GetPropertyValueDirect<VAlignment>(this, VContentAlignmentId); }
 	
-	virtual bool IsFocusable() const;
-
 
 
 	UIElementCollection* GetItems() const;

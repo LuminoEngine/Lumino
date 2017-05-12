@@ -66,9 +66,12 @@ void UIViewport::AddViewportLayer(UIViewportLayer* layer)
 //}
 
 //------------------------------------------------------------------------------
-bool UIViewport::OnEvent(detail::UIInternalEventType type, UIEventArgs* args)
+void UIViewport::OnRoutedEvent(UIEventArgs* e)
 {
-	return UIElement::OnEvent(type, args);
+	// UI 要素は通常 UIViewport の上に張り付けられる。
+	// デフォルトの MainWindow などは全体に UILayoutPanel が乗るので、
+	// 通常のイベントではなく RoutedEvent でなければハンドリングできない。
+	return UIElement::OnRoutedEvent(e);
 }
 
 //------------------------------------------------------------------------------
