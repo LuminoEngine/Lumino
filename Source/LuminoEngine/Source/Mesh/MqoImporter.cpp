@@ -1,4 +1,7 @@
-﻿
+﻿/*
+	Mqo ファイル Note
+	- 面は時計回りを表とする。
+*/
 #include "../Internal.h"
 #include <iostream>
 #include <Lumino/Text/Encoding.h>
@@ -123,12 +126,13 @@ RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathNam
 			LN_NOTIMPLEMENTED();
 		}
 
+		// ついでに面法線を計算しておく
 		MqoVertex& v0 = m_mqoVertexList[face->vertexIndices[0]];
 		MqoVertex& v1 = m_mqoVertexList[face->vertexIndices[1]];
 		MqoVertex& v2 = m_mqoVertexList[face->vertexIndices[2]];
-		v0.referenced.Add(MqoFacePointRef{ i, 0, 0 });
-		v1.referenced.Add(MqoFacePointRef{ i, 1, 0 });
-		v2.referenced.Add(MqoFacePointRef{ i, 2, 0 });
+		//v0.referenced.Add(MqoFacePointRef{ i, 0, 0 });
+		//v1.referenced.Add(MqoFacePointRef{ i, 1, 0 });
+		//v2.referenced.Add(MqoFacePointRef{ i, 2, 0 });
 		face->normal = TriangleNormal(v0.position, v1.position, v2.position);
 	}
 
@@ -139,85 +143,88 @@ RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathNam
 	float d1 = Math::RadiansToDegrees(std::acosf(cos_theta));
 
 	// 法線計算
-	for (MqoVertex& vertex : m_mqoVertexList)
-	{
-		if (!vertex.referenced.IsEmpty())
-		{
-			printf("\n");
-			vertex.position.Print();
-			//smoothNormal.Print();
+	//for (MqoVertex& vertex : m_mqoVertexList)
+	//{
+	//	if (!vertex.referenced.IsEmpty())
+	//	{
+	//		printf("\n");
+	//		vertex.position.Print();
+	//		//smoothNormal.Print();
 
-			// TODO:
-			float smoothThr = -1.0 * (60.0 / 90.0);	// 180～0 を、-2～0と考える
+	//		// TODO:
+	//		float smoothThr = -1.0 * (60.0 / 90.0);	// 180～0 を、-2～0と考える
 
-			// 関連するすべての面の中間の法線を求める
-			Vector3 midNormal;
-			for (MqoFacePointRef& facePointRef : vertex.referenced)
-			{
-				midNormal += m_mqoFaceList[facePointRef.faceIndex].normal;
-				//m_mqoFaceList[facePointRef.faceIndex].normal.Print();
-			}
-			//midNormal /= vertex.referenced.GetCount();
-			if (midNormal == Vector3::Zero) midNormal = Vector3::UnitY;
-			printf("midNormal:(sum) ", midNormal.GetLength()); midNormal.Print();
-			midNormal = Vector3::Normalize(midNormal);//.Normalize();
+	//		// 関連するすべての面の中間の法線を求める
+	//		Vector3 midNormal;
+	//		for (MqoFacePointRef& facePointRef : vertex.referenced)
+	//		{
+	//			midNormal += m_mqoFaceList[facePointRef.faceIndex].normal;
+	//			//m_mqoFaceList[facePointRef.faceIndex].normal.Print();
+	//		}
+	//		//midNormal /= vertex.referenced.GetCount();
+	//		if (midNormal == Vector3::Zero) midNormal = Vector3::UnitY;
+	//		printf("midNormal:(sum) ", midNormal.GetLength()); midNormal.Print();
+	//		midNormal = Vector3::Normalize(midNormal);//.Normalize();
 
-			// 一番離れている角度は？
-			//float minAngle = 1;
-			float maxAngle = 0;
-			for (MqoFacePointRef& facePointRef : vertex.referenced)
-			{
-				float d = Vector3::Dot(midNormal, m_mqoFaceList[facePointRef.faceIndex].normal);
-				d = DotAngleTo01Angle(d);
-				//d *= -1.0f;
-				//d += 1.0f;	// 0.0 ~ 2.0
-				//minAngle = std::min(d, minAngle);
-				maxAngle = std::max(d, maxAngle);
-			}
-			//float baseAngle = (maxAngle/* - minAngle*/);// +1.0f;	// 0.0 ~ 2.0
-			printf("midNormal:(%f) ", midNormal.GetLength()); midNormal.Print();
-			printf("maxAngle:%f (%f)\n", maxAngle, Math::RadiansToDegrees(maxAngle));
+	//		// 一番離れている角度は？
+	//		//float minAngle = 1;
+	//		float maxAngle = 0;
+	//		for (MqoFacePointRef& facePointRef : vertex.referenced)
+	//		{
+	//			float d = Vector3::Dot(midNormal, m_mqoFaceList[facePointRef.faceIndex].normal);
+	//			d = DotAngleTo01Angle(d);
+	//			//d *= -1.0f;
+	//			//d += 1.0f;	// 0.0 ~ 2.0
+	//			//minAngle = std::min(d, minAngle);
+	//			maxAngle = std::max(d, maxAngle);
+	//		}
+	//		//float baseAngle = (maxAngle/* - minAngle*/);// +1.0f;	// 0.0 ~ 2.0
+	//		printf("midNormal:(%f) ", midNormal.GetLength()); midNormal.Print();
+	//		printf("maxAngle:%f (%f)\n", maxAngle, Math::RadiansToDegrees(maxAngle));
 
-			// 関連するすべての面の中間の法線を求める
-			Vector3 smoothNormal;
-			if (Math::NearEqual(maxAngle, 0.0f))
-			{
-				smoothNormal = midNormal;
-			}
-			else
-			{
-				for (MqoFacePointRef& facePointRef : vertex.referenced)
-				{
-					const Vector3& n = m_mqoFaceList[facePointRef.faceIndex].normal;
-					float d = Vector3::Dot(midNormal, n);// +1.0f;	// 0.0 ~ 2.0
-					//printf("da:%f ", d);
-					d = DotAngleTo01Angle(d);
-					d /= maxAngle;
-					printf("d:%f vec:", d); n.Print();
-					//(n * d).Print();
-					smoothNormal += n * d;
-				}
-				//smoothNormal /= vertex.referenced.GetCount();
-				smoothNormal.Normalize();
-			}
+	//		// 関連するすべての面の中間の法線を求める
+	//		Vector3 smoothNormal;
+	//		if (Math::NearEqual(maxAngle, 0.0f))
+	//		{
+	//			smoothNormal = midNormal;
+	//		}
+	//		else
+	//		{
+	//			for (MqoFacePointRef& facePointRef : vertex.referenced)
+	//			{
+	//				const Vector3& n = m_mqoFaceList[facePointRef.faceIndex].normal;
+	//				float d = Vector3::Dot(midNormal, n);// +1.0f;	// 0.0 ~ 2.0
+	//				//printf("da:%f ", d);
+	//				d = DotAngleTo01Angle(d);
+	//				d /= maxAngle;
+	//				printf("d:%f vec:", d); n.Print();
+	//				//(n * d).Print();
+	//				smoothNormal += n * d;
+	//			}
+	//			//smoothNormal /= vertex.referenced.GetCount();
+	//			smoothNormal.Normalize();
+	//		}
 
-			printf("> ");
-			smoothNormal.Print();
+	//		printf("> ");
+	//		smoothNormal.Print();
 
-			// 中間の法線から、smoothThr 以内の角度差であれば中間を共有（スムージング）し、それより大きければ面の向きに従う
-			for (MqoFacePointRef& facePointRef : vertex.referenced)
-			{
-				MqoFace& face = m_mqoFaceList[facePointRef.faceIndex];
+	//		// 中間の法線から、smoothThr 以内の角度差であれば中間を共有（スムージング）し、それより大きければ面の向きに従う
+	//		for (MqoFacePointRef& facePointRef : vertex.referenced)
+	//		{
+	//			MqoFace& face = m_mqoFaceList[facePointRef.faceIndex];
 
-				if ((Vector3::Dot(face.normal, smoothNormal) - 1.0) >= smoothThr)
-					face.vertexNormals[facePointRef.pointIndex] = smoothNormal;
-				else
-					face.vertexNormals[facePointRef.pointIndex] = face.normal;
-			}
+	//			if ((Vector3::Dot(face.normal, smoothNormal) - 1.0) >= smoothThr)
+	//				face.vertexNormals[facePointRef.pointIndex] = smoothNormal;
+	//			else
+	//				face.vertexNormals[facePointRef.pointIndex] = face.normal;
+	//		}
 
-			vertex.referenced.Clear();
-		}
-	}
+	//		vertex.referenced.Clear();
+	//	}
+	//}
+
+	MakeMqoFaceRefsAndEdge();
+	MakeMqoFacePointNormals();
 
 	// マテリアルインデックスでソート
 	// (MqoVertex::referencedFaceIndices はもう使えなくなる)
@@ -539,6 +546,145 @@ void MqoImporter::ReadFaceChunk(StreamReader* reader, int vertexIndexOffset)
 
 
 		m_mqoFaceList.Add(face);
+	}
+}
+
+//------------------------------------------------------------------------------
+void MqoImporter::MakeMqoFaceRefsAndEdge()
+{
+	// 各面3頂点として MqoFaceRef,MqoEdge を作っておく
+	m_mqoFaceRefBuffer.Resize(m_mqoFaceList.GetCount() * 3);
+	m_mqoEdgeBuffer.Resize(m_mqoFaceList.GetCount() * 3);
+	int mqoFaceRefBufferUsed = 0;
+	int mqoEdgeBufferUsed = 0;
+
+	// 各 MqoVertex に、その頂点を参照する面を示す MqoFaceRef を詰めていく
+	for (int iFace = 0; iFace < m_mqoFaceList.GetCount(); iFace++)
+	{
+		MqoFace* mqoFace = &m_mqoFaceList[iFace];
+
+		LN_ASSERT(mqoFace->vertexCount == 3);
+		for (int iVertex = 0; iVertex < mqoFace->vertexCount; iVertex++)
+		{
+			MqoFaceRef* newRef = &m_mqoFaceRefBuffer[mqoFaceRefBufferUsed];
+			mqoFaceRefBufferUsed++;
+
+			MqoVertex* mqoVertex = &m_mqoVertexList[mqoFace->vertexIndices[iVertex]];
+			newRef->face = mqoFace;
+			newRef->next = mqoVertex->faces;
+			mqoVertex->faces = newRef;
+		}
+
+		// エッジ情報を作る
+		{
+			MqoEdge* e1 = &m_mqoEdgeBuffer[mqoEdgeBufferUsed];
+			mqoEdgeBufferUsed++;
+			e1->ownerFace = mqoFace;
+			e1->index0 = 0;
+			e1->index1 = 1;
+			mqoFace->edges[0] = e1;
+
+			MqoEdge* e2 = &m_mqoEdgeBuffer[mqoEdgeBufferUsed];
+			mqoEdgeBufferUsed++;
+			e2->ownerFace = mqoFace;
+			e2->index0 = 1;
+			e2->index1 = 2;
+			mqoFace->edges[1] = e2;
+
+			MqoEdge* e3 = &m_mqoEdgeBuffer[mqoEdgeBufferUsed];
+			mqoEdgeBufferUsed++;
+			e3->ownerFace = mqoFace;
+			e3->index0 = 2;
+			e3->index1 = 0;
+			mqoFace->edges[2] = e3;
+		}
+	}
+
+	// 隣接辺を検索する
+	for (int iEdge = 0; iEdge < m_mqoEdgeBuffer.GetCount(); iEdge++)
+	{
+		MqoEdge* edge = &m_mqoEdgeBuffer[iEdge];
+
+		// もう見つかっている場合は検索しなくてよい
+		if (edge->adjacent != nullptr) continue;
+
+		// edge に関係しそうな面をすべて捜査する
+		MqoFace* ownerFace = edge->ownerFace;
+		for (int iVertex = 0; iVertex < ownerFace->vertexCount; iVertex++)
+		{
+			MqoVertex* vertex = &m_mqoVertexList[ownerFace->vertexIndices[iVertex]];
+			MqoFaceRef* faceRef = vertex->faces;
+			while (faceRef != nullptr)
+			{
+				MqoFace* otherFace = faceRef->face;
+				if (otherFace != ownerFace)
+				{
+					// ここから、edge に関係しそうな面のうち1つの処理
+
+					for (int iOtherEdge = 0; iOtherEdge < 3; iOtherEdge++)
+					{
+						MqoEdge* otherEdge = otherFace->edges[iOtherEdge];
+						int t0 = edge->ownerFace->vertexIndices[edge->index0];
+						int t1 = edge->ownerFace->vertexIndices[edge->index1];
+						int o0 = otherEdge->ownerFace->vertexIndices[otherEdge->index0];
+						int o1 = otherEdge->ownerFace->vertexIndices[otherEdge->index1];
+
+						if ((o0 == t0 && o1 == t1) ||
+							(o1 == t0 && o0 == t1))
+						{
+							// 同じ頂点を参照する Edge を見つけた
+							edge->adjacent = otherEdge;
+
+							// 相手方にもついでに設定
+							// (この方法だと、1つの辺から2つ以上の面が生えている場合にただしく法線が計算されない。最後に見つけたエッジとの補間になる)
+							otherEdge->adjacent = edge;
+							break;
+						}
+					}
+				}
+				if (edge->adjacent != nullptr) break;
+
+				faceRef = faceRef->next;
+			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+void MqoImporter::MakeMqoFacePointNormals()
+{
+	float smoothThr = Math::DegreesToRadians(60.0f);
+
+	for (int iEdge = 0; iEdge < m_mqoEdgeBuffer.GetCount(); iEdge++)
+	{
+		MqoEdge* edge = &m_mqoEdgeBuffer[iEdge];
+
+		bool smoothing = false;
+		if (edge->adjacent != nullptr)
+		{
+			float d = Vector3::Dot(edge->ownerFace->normal, edge->adjacent->ownerFace->normal);
+			if (DotAngleTo01Angle(d) < smoothThr)
+			{
+				Vector3 normal = edge->ownerFace->normal + edge->adjacent->ownerFace->normal;
+				edge->ownerFace->vertexNormals[edge->index0] += normal;
+				edge->ownerFace->vertexNormals[edge->index1] += normal;
+				smoothing = true;
+			}
+		}
+		if (!smoothing)
+		{
+			edge->ownerFace->vertexNormals[edge->index0] += edge->ownerFace->normal;
+			edge->ownerFace->vertexNormals[edge->index1] += edge->ownerFace->normal;
+		}
+	}
+
+
+	for (int iFace = 0; iFace < m_mqoFaceList.GetCount(); iFace++)
+	{
+		MqoFace* mqoFace = &m_mqoFaceList[iFace];
+		mqoFace->vertexNormals[0].Normalize();
+		mqoFace->vertexNormals[1].Normalize();
+		mqoFace->vertexNormals[2].Normalize();
 	}
 }
 

@@ -63,7 +63,9 @@ void UIControlsGallery()
 	auto ps1 = TransitionPostEffect::Create();
 	Engine::GetDefault3DLayer()->AddPostEffect(ps1);
 	
-
+	//auto box1 = StaticMeshComponent::Create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/Plant1.mqo"));
+	auto box1 = StaticMeshComponent::Create(_T("D:/Documents/Modeling/test.mqo"));
+	
 #if 0
 	auto font = Font::GetDefault();
 	font->SetSize(50);
