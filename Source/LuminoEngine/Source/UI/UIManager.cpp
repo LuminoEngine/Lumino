@@ -94,7 +94,7 @@ void UIManager::Initialize(const Settings& settings)
 		g_uiManager = this;
 	}
 
-	CreateGlobalCommands();
+	CreateGlobalObjects();
 }
 
 //------------------------------------------------------------------------------
@@ -136,8 +136,13 @@ void UIManager::ReleaseGameModeMainFrame()
 }
 
 //------------------------------------------------------------------------------
-void UIManager::CreateGlobalCommands()
+void UIManager::CreateGlobalObjects()
 {
+	UIEvents::MouseMoveEvent = UIEventManager::RegisterEvent();
+	UIEvents::MouseDownEvent = UIEventManager::RegisterEvent();
+	UIEvents::MouseUpEvent = UIEventManager::RegisterEvent();
+	UIEvents::MouseWheelEvent = UIEventManager::RegisterEvent();
+
 	auto cmd = NewObject<UIRoutedCommand>();
 	m_allGlobalCommands.Add(cmd);
 	UIApplicationCommands::Paste = cmd;

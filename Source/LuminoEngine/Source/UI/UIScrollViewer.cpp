@@ -50,7 +50,7 @@ void UIThumb::Initialize()
 //------------------------------------------------------------------------------
 void UIThumb::OnRoutedEvent(UIEventArgs* e)
 {
-	if (e->GetType() == UIElement::MouseDownEvent)
+	if (e->GetType() == UIEvents::MouseDownEvent)
 	{
 		if (!m_isDragging)
 		{
@@ -72,7 +72,7 @@ void UIThumb::OnRoutedEvent(UIEventArgs* e)
 			return;
 		}
 	}
-	else if (e->GetType() == UIElement::MouseUpEvent)
+	else if (e->GetType() == UIEvents::MouseUpEvent)
 	{
 		if (m_isDragging)
 		{
@@ -94,7 +94,7 @@ void UIThumb::OnRoutedEvent(UIEventArgs* e)
 			return;
 		}
 	}
-	else if (e->GetType() == UIElement::MouseMoveEvent)
+	else if (e->GetType() == UIEvents::MouseMoveEvent)
 	{
 		if (m_isDragging)
 		{

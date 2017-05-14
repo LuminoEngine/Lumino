@@ -158,4 +158,29 @@ using UIEventId = UIEventInfo*;
 #define LN_ROUTED_EVENT_IMPLEMENT2(ownerClass, eventArgs, eventVar) \
     const UIEventId ownerClass::eventVar##Id = reinterpret_cast<UIEventId>(ln::Hash::CalcHash(#eventVar));
 
+
+/** */
+class UIEventManager
+{
+public:
+	static UIEventType RegisterEvent();
+};
+
+/** */
+class UIEvents
+{
+public:
+	/** MouseMove ルーティングイベントの識別子 (UIMouseEventArgs) */
+	static UIEventType	MouseMoveEvent;
+
+	/** MouseDown ルーティングイベントの識別子 (UIMouseEventArgs) */
+	static UIEventType	MouseDownEvent;
+
+	/** MouseUp ルーティングイベントの識別子 (UIMouseEventArgs) */
+	static UIEventType	MouseUpEvent;
+
+	/** MouseWheel ルーティングイベントの識別子 (UIMouseWheelEventArgs) */
+	static UIEventType	MouseWheelEvent;
+};
+
 LN_NAMESPACE_END

@@ -5,7 +5,7 @@
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Camera.h>
 #include <Lumino/World.h>
-#include <Lumino/UI/UIElement.h>
+#include <Lumino/UI/UIEvent.h>
 
 // TODO: CameraViewportLayer::GetDefault2D() あたりを見直せばいらなくなる
 #include <Lumino/UI/UIFrameWindow.h>
@@ -197,7 +197,7 @@ void CameraComponent::OnUpdate()
 //------------------------------------------------------------------------------
 void CameraComponent::OnUIEvent(UIEventArgs* e)
 {
-	if (e->GetType() == UIElement::MouseDownEvent)
+	if (e->GetType() == UIEvents::MouseDownEvent)
 	{
 		if (GetCameraBehavior() != nullptr)
 		{
@@ -206,7 +206,7 @@ void CameraComponent::OnUIEvent(UIEventArgs* e)
 			GetCameraBehavior()->InjectMouseButtonDown(me->GetMouseButtons(), pos.x, pos.y);
 		}
 	}
-	else if (e->GetType() == UIElement::MouseUpEvent)
+	else if (e->GetType() == UIEvents::MouseUpEvent)
 	{
 		if (GetCameraBehavior() != nullptr)
 		{
@@ -215,13 +215,23 @@ void CameraComponent::OnUIEvent(UIEventArgs* e)
 			GetCameraBehavior()->InjectMouseButtonUp(me->GetMouseButtons(), pos.x, pos.y);
 		}
 	}
-	else if (e->GetType() == UIElement::MouseMoveEvent)
+	else if (e->GetType() == UIEvents::MouseMoveEvent)
 	{
 		if (GetCameraBehavior() != nullptr)
 		{
 			auto* me = static_cast<UIMouseEventArgs*>(e);
 			auto pos = me->GetPosition(me->sender);
 			GetCameraBehavior()->InjectMouseMove(pos.x, pos.y);
+		}
+	}
+	else if (e->GetType() == UIEvents::MouseMoveEvent)
+	{
+		if (GetCameraBehavior() != nullptr)
+		{
+			if (GetCameraBehavior() != nullptr) {
+				auto* me = static_cast<UIMouseWheelEventArgs*>(e);
+				GetCameraBehavior()->InjectMouseWheel(me->GetDelta());
+			}
 		}
 	}
 	else
@@ -797,14 +807,14 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseButtonUp(MouseButtons button, i
 bool CylinderMouseMoveCameraBehavior::InjectMouseWheel(int delta)
 {
 	CameraComponent* camera = GetTargetCamera();
-	Vector3 view = camera->GetPosition() - camera->GetLookAt();
+	Vector3 view = camera->GetTransform()->position.Get() - camera->GetLookAt();
 	if (delta >= 0) {
 		view *= 0.9f;
 	}
 	else {
 		view *= 1.1f;
 	}
-	camera->SetPosition(camera->GetLookAt() + view);
+	camera->GetTransform()->position = (camera->GetLookAt() + view);
 	return true;
 }
 

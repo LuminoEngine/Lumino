@@ -114,7 +114,7 @@ public:
 	static RefPtr<UIMouseWheelEventArgs> Create(UIEventType type, int delta, bool caching = true);
 
 	/** マウスホイールの回転回数を取得します。 (正または負の回数) */
-	int GetKey() const { return m_delta; }
+	int GetDelta() const { return m_delta; }
 
 LN_CONSTRUCT_ACCESS:
 	UIMouseWheelEventArgs();

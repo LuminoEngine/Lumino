@@ -204,13 +204,13 @@ bool UILayoutView::InjectMouseMove(float clientX, float clientY)
 	// キャプチャ中のコントロールがあればそちらに送る
 	if (m_capturedElement != nullptr)
 	{
-		auto args = UIMouseEventArgs::Create(UIElement::MouseMoveEvent, MouseButtons::None, clientX, clientY, 0, true);
+		auto args = UIMouseEventArgs::Create(UIEvents::MouseMoveEvent, MouseButtons::None, clientX, clientY, 0, true);
 		return m_capturedElement->OnEvent(detail::UIInternalEventType::MouseMove, args);
 	}
 	UpdateMouseHover(PointF(clientX, clientY));
 	if (m_mouseHoverElement == nullptr) return false;
 
-	auto args = UIMouseEventArgs::Create(UIElement::MouseMoveEvent, MouseButtons::None, clientX, clientY, 0, true);
+	auto args = UIMouseEventArgs::Create(UIEvents::MouseMoveEvent, MouseButtons::None, clientX, clientY, 0, true);
 	return m_mouseHoverElement->OnEvent(detail::UIInternalEventType::MouseMove, args);
 }
 
@@ -237,12 +237,12 @@ bool UILayoutView::InjectMouseButtonDown(MouseButtons button, float clientX, flo
 	// キャプチャ中のコントロールがあればそちらに送る
 	if (m_capturedElement != nullptr)
 	{
-		auto args = UIMouseEventArgs::Create(UIElement::MouseDownEvent, button, clientX, clientY, tracker.ClickCount, true);
+		auto args = UIMouseEventArgs::Create(UIEvents::MouseDownEvent, button, clientX, clientY, tracker.ClickCount, true);
 		return m_capturedElement->OnEvent(detail::UIInternalEventType::MouseButtonDown, args);
 	}
 	if (m_mouseHoverElement == nullptr) return false;
 
-	auto args = UIMouseEventArgs::Create(UIElement::MouseDownEvent, button, clientX, clientY, tracker.ClickCount, true);
+	auto args = UIMouseEventArgs::Create(UIEvents::MouseDownEvent, button, clientX, clientY, tracker.ClickCount, true);
 	return m_mouseHoverElement->OnEvent(detail::UIInternalEventType::MouseButtonDown, args);
 }
 
@@ -254,13 +254,13 @@ bool UILayoutView::InjectMouseButtonUp(MouseButtons button, float clientX, float
 	// キャプチャ中のUI要素があればそちらに送る
 	if (m_capturedElement != nullptr)
 	{
-		auto args = UIMouseEventArgs::Create(UIElement::MouseUpEvent, button, clientX, clientY, 0, true);
+		auto args = UIMouseEventArgs::Create(UIEvents::MouseUpEvent, button, clientX, clientY, 0, true);
 		return m_capturedElement->OnEvent(detail::UIInternalEventType::MouseButtonUp, args);
 	}
 	// マウス位置にUI要素があればそちらに送る
 	if (m_mouseHoverElement != nullptr)
 	{
-		auto args = UIMouseEventArgs::Create(UIElement::MouseUpEvent, button, clientX, clientY, 0, true);
+		auto args = UIMouseEventArgs::Create(UIEvents::MouseUpEvent, button, clientX, clientY, 0, true);
 		return m_mouseHoverElement->OnEvent(detail::UIInternalEventType::MouseButtonUp, args);
 	}
 	return false;
@@ -272,13 +272,13 @@ bool UILayoutView::InjectMouseWheel(int delta)
 	// キャプチャ中のUI要素があればそちらに送る
 	if (m_capturedElement != nullptr)
 	{
-		auto args = UIMouseWheelEventArgs::Create(nullptr, delta, true);	// TODO: type
+		auto args = UIMouseWheelEventArgs::Create(UIEvents::MouseWheelEvent, delta, true);
 		return m_capturedElement->OnEvent(detail::UIInternalEventType::MouseWheel, args);
 	}
 	// マウス位置にUI要素があればそちらに送る
 	if (m_mouseHoverElement != nullptr)
 	{
-		auto args = UIMouseWheelEventArgs::Create(nullptr, delta, true);	// TODO: type
+		auto args = UIMouseWheelEventArgs::Create(UIEvents::MouseWheelEvent, delta, true);
 		return m_mouseHoverElement->OnEvent(detail::UIInternalEventType::MouseWheel, args);
 	}
 	return false;

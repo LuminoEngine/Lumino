@@ -28,4 +28,26 @@ LN_NAMESPACE_BEGIN
 //
 //}
 
+//==============================================================================
+// UIEventManager
+//==============================================================================
+//static List<UIEventInfo> g_eventInfoList;
+static int g_eventInfoList = 0;
+// TODO: いまは取り急ぎイベントの種類を識別するものがほしい。あとでちゃんと詳細情報詰めておく
+
+//------------------------------------------------------------------------------
+UIEventType UIEventManager::RegisterEvent()
+{
+	g_eventInfoList++;
+	return reinterpret_cast<UIEventType>(g_eventInfoList);
+}
+
+//==============================================================================
+// UIEvents
+//==============================================================================
+UIEventType	UIEvents::MouseMoveEvent = 0;
+UIEventType	UIEvents::MouseDownEvent = 0;
+UIEventType	UIEvents::MouseUpEvent = 0;
+UIEventType	UIEvents::MouseWheelEvent = 0;
+
 LN_NAMESPACE_END
