@@ -30,6 +30,12 @@ WorldObject* Component::GetOwnerObject() const
 }
 
 //------------------------------------------------------------------------------
+Transform* Component::GetTransform() const
+{
+	return &m_owner->transform;
+}
+
+//------------------------------------------------------------------------------
 void Component::OnAttached()
 {
 }

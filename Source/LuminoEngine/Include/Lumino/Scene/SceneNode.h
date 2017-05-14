@@ -40,7 +40,7 @@ public:
 	void SetTransform(const AttitudeTransform& transform) { m_transform = transform; }
 
 	/// ワールド変換行列の取得
-	const AttitudeTransform& GetTransform() const { return m_transform; }
+	//const AttitudeTransform& GetTransform() const { return m_transform; }
 
 	/** 位置を設定します。*/
 	LN_METHOD(Property)

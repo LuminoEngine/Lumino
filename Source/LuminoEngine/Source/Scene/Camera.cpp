@@ -597,7 +597,7 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseMove(int x, int y)
 		CameraComponent* camera = GetTargetCamera();
 		Vector3 view;
 		Vector3 vup = camera->GetUpDirection();
-		Vector3 pos = camera->GetPosition();
+		Vector3 pos = camera->GetTransform()->position;
 		Vector3 look_at = camera->GetLookAt();
 		vup.Normalize();
 
@@ -693,7 +693,7 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseMove(int x, int y)
 			pos += view;
 		}
 
-		camera->SetPosition(pos);
+		camera->GetTransform()->position = pos;
 
 		m_prevPos.x = x;
 		m_prevPos.y = y;

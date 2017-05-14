@@ -24,6 +24,7 @@ public:
 	Component();
 	virtual ~Component();
 	WorldObject* GetOwnerObject() const;
+	Transform* GetTransform() const;
 
 	virtual void OnAttached();
 	virtual void OnDetaching();
