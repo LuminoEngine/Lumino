@@ -5,7 +5,7 @@
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Camera.h>
 #include <Lumino/World.h>
-
+#include <Lumino/UI/UIElement.h>
 
 // TODO: CameraViewportLayer::GetDefault2D() あたりを見直せばいらなくなる
 #include <Lumino/UI/UIFrameWindow.h>
@@ -21,13 +21,13 @@ LN_NAMESPACE_SCENE_BEGIN
 //------------------------------------------------------------------------------
 CameraComponent* CameraComponent::GetMain3DCamera()
 {
-	return detail::EngineDomain::GetDefaultSceneGraph3D()->GetMainCamera();
+	return detail::EngineDomain::GetDefaultWorld3D()->GetMainCamera()->GetCameraComponent();
 }
 
 //------------------------------------------------------------------------------
 CameraComponent* CameraComponent::GetMain2DCamera()
 {
-	return detail::EngineDomain::GetDefaultSceneGraph2D()->GetMainCamera();
+	return detail::EngineDomain::GetDefaultWorld2D()->GetMainCamera()->GetCameraComponent();
 }
 
 //------------------------------------------------------------------------------
@@ -192,6 +192,42 @@ void CameraComponent::OnUpdate()
 {
 	SceneNode::OnUpdate();
 	m_combinedGlobalMatrix = GetOwnerObject()->GetCombinedGlobalMatrix();
+}
+
+//------------------------------------------------------------------------------
+void CameraComponent::OnUIEvent(UIEventArgs* e)
+{
+	if (e->GetType() == UIElement::MouseDownEvent)
+	{
+		if (GetCameraBehavior() != nullptr)
+		{
+			auto* me = static_cast<UIMouseEventArgs*>(e);
+			auto pos = me->GetPosition(me->sender);
+			GetCameraBehavior()->InjectMouseButtonDown(me->GetMouseButtons(), pos.x, pos.y);
+		}
+	}
+	else if (e->GetType() == UIElement::MouseUpEvent)
+	{
+		if (GetCameraBehavior() != nullptr)
+		{
+			auto* me = static_cast<UIMouseEventArgs*>(e);
+			auto pos = me->GetPosition(me->sender);
+			GetCameraBehavior()->InjectMouseButtonUp(me->GetMouseButtons(), pos.x, pos.y);
+		}
+	}
+	else if (e->GetType() == UIElement::MouseMoveEvent)
+	{
+		if (GetCameraBehavior() != nullptr)
+		{
+			auto* me = static_cast<UIMouseEventArgs*>(e);
+			auto pos = me->GetPosition(me->sender);
+			GetCameraBehavior()->InjectMouseMove(pos.x, pos.y);
+		}
+	}
+	else
+	{
+		Component::OnUIEvent(e);
+	}
 }
 
 #if 0

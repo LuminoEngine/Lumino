@@ -98,6 +98,7 @@ protected:
 
 	// Component interface
 	virtual void OnUpdate() override;
+	virtual void OnUIEvent(UIEventArgs* e) override;
 
 LN_INTERNAL_ACCESS:
 	CameraComponent();

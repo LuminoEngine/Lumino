@@ -2,6 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/World.h>
 #include <Lumino/Scene/WorldObject.h>
+#include <Lumino/UI/UIEventArgs.h>
 #include "../Framework/GameSceneManager.h"
 
 LN_NAMESPACE_BEGIN
@@ -70,6 +71,16 @@ void WorldObject::OnRender(DrawList* context)
 //------------------------------------------------------------------------------
 void WorldObject::OnDestroy()
 {
+}
+
+//------------------------------------------------------------------------------
+void WorldObject::OnUIEvent(UIEventArgs* e)
+{
+	for (auto& c : m_components)
+	{
+		c->OnUIEvent(e);
+		if (e->handled) return;
+	}
 }
 
 //------------------------------------------------------------------------------

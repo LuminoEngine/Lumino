@@ -50,6 +50,11 @@ void Component::OnRender(DrawList* context)
 }
 
 //------------------------------------------------------------------------------
+void Component::OnUIEvent(UIEventArgs* e)
+{
+}
+
+//------------------------------------------------------------------------------
 void Component::Attach(WorldObject* owner)
 {
 	m_owner = owner;

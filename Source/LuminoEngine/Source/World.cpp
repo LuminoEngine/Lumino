@@ -101,6 +101,11 @@ void World::ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuf
 //------------------------------------------------------------------------------
 void World::OnUIEvent(UIEventArgs* e)
 {
+	for (auto& obj : m_rootWorldObjectList)
+	{
+		obj->OnUIEvent(e);
+		if (e->handled) return;
+	}
 }
 
 //==============================================================================

@@ -26,7 +26,7 @@ public:
 	void Initialize(UIEventType type);
 
 public:
-	tr::ReflectionObject*	sender;
+	UIElement*	sender;
 
 private:
 	UIEventType m_type;

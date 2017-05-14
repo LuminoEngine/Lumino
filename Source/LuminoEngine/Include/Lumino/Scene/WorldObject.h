@@ -85,6 +85,9 @@ public:
 	/// 終了処理
 	virtual void OnDestroy();
 
+protected:
+	virtual void OnUIEvent(UIEventArgs* e);
+
 LN_INTERNAL_ACCESS:
 	const Matrix& GetCombinedGlobalMatrix() const { return m_combinedGlobalMatrix; }
 

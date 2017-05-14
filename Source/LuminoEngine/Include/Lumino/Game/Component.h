@@ -7,6 +7,7 @@ class DrawList;
 class WorldObject;
 class Transform;
 class VisualComponent;
+class UIEventArgs;
 
 /**
 	@brief		
@@ -28,6 +29,9 @@ public:
 	virtual void OnDetaching();
 	virtual void OnUpdate();
 	virtual void OnRender(DrawList* context);
+
+protected:
+	virtual void OnUIEvent(UIEventArgs* e);
 
 private:
 	void Attach(WorldObject* owner);
