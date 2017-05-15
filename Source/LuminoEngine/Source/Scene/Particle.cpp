@@ -737,8 +737,8 @@ void ParticleEmitterComponent::Initialize(SceneGraph* owner, SpriteParticleModel
 //------------------------------------------------------------------------------
 void ParticleEmitterComponent::OnUpdateFrame(float deltaTime)
 {
-	m_instance->m_worldTransform = GetCombinedGlobalMatrix();
-	m_model->UpdateInstance(m_instance, deltaTime, GetCombinedGlobalMatrix());
+	m_instance->m_worldTransform = GetOwnerObject()->transform.GetWorldMatrix();
+	m_model->UpdateInstance(m_instance, deltaTime, m_instance->m_worldTransform);
 }
 
 //------------------------------------------------------------------------------
@@ -746,7 +746,7 @@ void ParticleEmitterComponent::OnRender2(DrawList* renderer)
 {
 	// TODO: name RenderInstance
 	Vector4 dir = renderer->GetCurrentCamera()->GetDirectionInternal();
-	m_model->Render(renderer, m_instance, GetCombinedGlobalMatrix(), renderer->GetCurrentCamera()->GetPosition(), dir.GetXYZ(), renderer->GetCurrentCamera()->GetViewMatrixI(), m_materialList->GetAt(0));
+	m_model->Render(renderer, m_instance, GetOwnerObject()->transform.GetWorldMatrix(), renderer->GetCurrentCamera()->GetPosition(), dir.GetXYZ(), renderer->GetCurrentCamera()->GetViewMatrixI(), m_materialList->GetAt(0));
 }
 
 //==============================================================================

@@ -106,14 +106,16 @@ Vector3 CameraComponent::ViewportToWorldPoint(const Vector3& position) const
 //------------------------------------------------------------------------------
 void CameraComponent::UpdateMatrices(const Size& viewSize)
 {
+	const Matrix& worldMatrix = GetOwnerObject()->transform.GetWorldMatrix();
+
 	// 2D モード
 	if (m_projectionMode == CameraProjection_2D)
 	{
 		// 正面方向
-		Vector3 direction = Vector3::TransformCoord(Vector3(0, 0, 1), m_combinedGlobalMatrix);
+		Vector3 direction = Vector3::TransformCoord(Vector3(0, 0, 1), worldMatrix);
 		m_direction = Vector4(direction, 0.0f);
 
-		m_viewMatrix = m_combinedGlobalMatrix;
+		m_viewMatrix = worldMatrix;
 		m_projMatrix = Matrix::MakePerspective2DLH(viewSize.width, viewSize.height, m_nearClip, m_farClip);
 
 		
@@ -136,17 +138,17 @@ void CameraComponent::UpdateMatrices(const Size& viewSize)
 		// 注視点
 		Vector3 lookAt;
 		if (m_directionMode == CameraDirection::LookAt &&
-			m_combinedGlobalMatrix.GetPosition() != m_lookAt)	// 位置と注視点が同じだと、Matrix::MakeLookAt で NAN になる
+			worldMatrix.GetPosition() != m_lookAt)	// 位置と注視点が同じだと、Matrix::MakeLookAt で NAN になる
 		{
 			lookAt = m_lookAt;
 		}
 		else
 		{
-			lookAt = Vector3::TransformCoord(Vector3(0, 0, 1), m_combinedGlobalMatrix);
+			lookAt = Vector3::TransformCoord(Vector3(0, 0, 1), worldMatrix);
 		}
 
 		// ビュー行列
-		m_viewMatrix = Matrix::MakeLookAtLH(m_combinedGlobalMatrix.GetPosition(), lookAt, m_upDirection);
+		m_viewMatrix = Matrix::MakeLookAtLH(worldMatrix.GetPosition(), lookAt, m_upDirection);
 
 		// プロジェクション行列の更新
 		// https://sites.google.com/site/mmereference/home/Annotations-and-Semantics-of-the-parameter/2-1-geometry-translation
@@ -155,7 +157,7 @@ void CameraComponent::UpdateMatrices(const Size& viewSize)
 		m_viewProjMatrix = m_viewMatrix * m_projMatrix;
 
 		// 正面方向
-		Vector3 d = lookAt - m_combinedGlobalMatrix.GetPosition();
+		Vector3 d = lookAt - worldMatrix.GetPosition();
 		d.Normalize();
 		m_direction = Vector4(d, 0.0f);
 	}
@@ -191,7 +193,6 @@ void CameraComponent::OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph*
 void CameraComponent::OnUpdate()
 {
 	SceneNode::OnUpdate();
-	m_combinedGlobalMatrix = GetOwnerObject()->GetCombinedGlobalMatrix();
 }
 
 //------------------------------------------------------------------------------
@@ -498,7 +499,7 @@ void CameraViewportLayer2::ExecuteDrawListRendering(DrawList* parentDrawList, Re
 	detail::CameraInfo cameraInfo;
 	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.Get());
 	cameraInfo.viewPixelSize = targetSize;
-	cameraInfo.viewPosition = m_hostingCamera->GetCombinedGlobalMatrix().GetPosition();
+	cameraInfo.viewPosition = m_hostingCamera->GetTransform()->GetWorldMatrix().GetPosition();
 	cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
 	cameraInfo.projMatrix = m_hostingCamera->GetProjectionMatrix();
 	cameraInfo.viewProjMatrix = m_hostingCamera->GetViewProjectionMatrix();

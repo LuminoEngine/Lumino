@@ -141,17 +141,17 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 	localMatrix.Translate(m_transform.translation);
 
 	// グローバル行列結合
-	if (parent != nullptr)
-		m_combinedGlobalMatrix = localMatrix * parent->m_combinedGlobalMatrix;
-	else
-		m_combinedGlobalMatrix = localMatrix;
+	//if (parent != nullptr)
+	//	m_combinedGlobalMatrix = localMatrix * parent->m_combinedGlobalMatrix;
+	//else
+	//	m_combinedGlobalMatrix = localMatrix;
 
-	// Component
-	WorldObject* owner = GetOwnerObject();
-	if (owner != nullptr)
-	{
-		m_combinedGlobalMatrix *= owner->transform.GetTransformMatrix();
-	}
+	//// Component
+	//WorldObject* owner = GetOwnerObject();
+	//if (owner != nullptr)
+	//{
+	//	m_combinedGlobalMatrix *= owner->transform.GetTransformMatrix();
+	//}
 
 	OnUpdateFrame(deltaTime);
 

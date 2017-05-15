@@ -87,19 +87,19 @@ void Main()
 #endif
 
 
-	//Engine::Initialize();
+	Engine::Initialize();
 
-	//auto sprite = Sprite2D::Create(_T("C:/Proj/LN/HC1/External/Lumino/Documentation/Logo/icon32.png"));
-	//sprite->SetPosition(10, 20);
+	auto sprite = Sprite2D::Create(_T("C:/Proj/LN/HC1/External/Lumino/Documentation/Logo/icon32.png"));
+	sprite->SetPosition(10, 20);
 
 
-	//while (Engine::Update())
-	//{
-	//}
+	while (Engine::Update())
+	{
+	}
 
-	//Engine::Terminate();
+	Engine::Terminate();
 
-	//return;
+	return;
 
 	UIControlsGallery();
 	//DxLibMain();

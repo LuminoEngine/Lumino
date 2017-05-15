@@ -156,7 +156,7 @@ void StaticMeshComponent::Initialize(SceneGraph* owner, StaticMeshModel* meshMod
 //------------------------------------------------------------------------------
 void StaticMeshComponent::OnRender2(DrawList* renderer)
 {
-	renderer->SetTransform(m_combinedGlobalMatrix);
+	renderer->SetTransform(GetOwnerObject()->transform.GetWorldMatrix());
 
 	MeshResource* m = m_mesh->GetMeshResource();
 	for (int i = 0; i < m->GetSubsetCount(); i++)

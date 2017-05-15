@@ -89,7 +89,7 @@ protected:
 	virtual void OnUIEvent(UIEventArgs* e);
 
 LN_INTERNAL_ACCESS:
-	const Matrix& GetCombinedGlobalMatrix() const { return m_combinedGlobalMatrix; }
+	//const Matrix& GetCombinedGlobalMatrix() const { return m_combinedGlobalMatrix; }
 
 private:
 	void UpdateFrame();
@@ -100,7 +100,7 @@ private:
 
 	List<RefPtr<WorldObject>>	m_children;
 	WorldObject*				m_parent;
-	Matrix						m_combinedGlobalMatrix;
+	//Matrix						m_combinedGlobalMatrix;
 	bool						m_isAutoRelease;
 
 	friend class World;

@@ -73,7 +73,21 @@ public:
 
 	Matrix GetTransformMatrix() const;
 
+	/**
+		@brief		ワールド行列を取得します。
+		@details	ローカルおよび親トランスフォームから各フレームで自動的に再計算されます。
+					UpdateWorldMatrix（）を使用すると、次のフレームの前に強制的に更新することができます。
+	*/
+	const Matrix& GetWorldMatrix() const { return m_worldMatrix; }
+	
+	/**
+		@brief		ワールド行列を更新します。
+	*/
+	void UpdateWorldMatrix();
+
 private:
+	Transform*	m_parent;
+	Matrix		m_worldMatrix;
 };
 
 LN_NAMESPACE_END

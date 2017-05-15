@@ -63,7 +63,8 @@ SkinnedMeshModel* SkinnedMeshComponent::GetSkinnedMeshModel() const
 //------------------------------------------------------------------------------
 void SkinnedMeshComponent::OnUpdateFrame(float elapsedTime)
 {
-	m_meshModel->SetWorldTransform(m_combinedGlobalMatrix);
+	// TODO: OnLateUpdate へ
+	m_meshModel->SetWorldTransform(GetOwnerObject()->transform.GetWorldMatrix());
 
 	m_meshModel->GetAnimator()->AdvanceTime(elapsedTime);
 	//static bool init = false;

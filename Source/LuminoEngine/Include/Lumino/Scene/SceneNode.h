@@ -154,7 +154,7 @@ LN_INTERNAL_ACCESS:
 	void Initialize(SceneGraph* owner);
 	void SetAutoRemove(bool enabled) { m_isAutoRemove = enabled; }
 	bool IsAutoRemove() const { return m_isAutoRemove; }
-	const Matrix& GetCombinedGlobalMatrix() const { return m_combinedGlobalMatrix; }
+	//const Matrix& GetCombinedGlobalMatrix() const { return m_combinedGlobalMatrix; }
 
 private:
 	void SetOwnerSceneGraph(SceneGraph* owner);
@@ -177,7 +177,7 @@ protected:
 	RefPtr<SceneNodeList>	m_children;
 	SceneNode*			m_parentNode;
 
-	Matrix				m_combinedGlobalMatrix;
+	//Matrix				m_combinedGlobalMatrix;
 
 	friend class DrawingLayer;
 

@@ -110,7 +110,7 @@ void TextBlock2DComponent::OnRender2(DrawList* renderer)
 	r.renderer = renderer;
 
 	const Size& size = m_paragraph->GetRenderSize();
-	m_paragraph->Render(Matrix::MakeTranslation(-size.width * m_anchor.x, -size.height * m_anchor.y, 0) * m_combinedGlobalMatrix, &r);
+	m_paragraph->Render(Matrix::MakeTranslation(-size.width * m_anchor.x, -size.height * m_anchor.y, 0) * GetOwnerObject()->transform.GetWorldMatrix(), &r);
 }
 
 //------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <Lumino/World.h>
 #include <Lumino/Scene/WorldObject.h>
@@ -24,7 +24,7 @@ WorldObjectPtr WorldObject::Create()
 WorldObject::WorldObject()
 	: m_children()
 	, m_parent(nullptr)
-	, m_combinedGlobalMatrix()
+	//, m_combinedGlobalMatrix()
 	, m_isAutoRelease(false)
 {
 }
@@ -86,26 +86,29 @@ void WorldObject::OnUIEvent(UIEventArgs* e)
 //------------------------------------------------------------------------------
 void WorldObject::UpdateFrame()
 {
-	Matrix localMatrix = transform.GetTransformMatrix();
+	//Matrix localMatrix = transform.GetTransformMatrix();
 
-	// ƒOƒ[ƒoƒ‹s—ñŒ‹‡
-	if (m_parent != nullptr)
-	{
-		m_combinedGlobalMatrix = localMatrix * m_parent->m_combinedGlobalMatrix;
-	}
-	else
-	{
-		m_combinedGlobalMatrix = localMatrix;
-	}
+	//// ã‚°ãƒ­ãƒ¼ãƒãƒ«è¡Œåˆ—çµåˆ
+	//if (m_parent != nullptr)
+	//{
+	//	m_combinedGlobalMatrix = localMatrix * m_parent->m_combinedGlobalMatrix;
+	//}
+	//else
+	//{
+	//	m_combinedGlobalMatrix = localMatrix;
+	//}
+
 
 	OnUpdate();
+
+	transform.UpdateWorldMatrix();
 
 	for (auto& c : m_components)
 	{
 		c->UpdateFrame();
 	}
 
-	// qƒm[ƒhXV
+	// å­ãƒãƒ¼ãƒ‰æ›´æ–°
 	int count = m_children.GetCount();
 	for (int i = 0; i < count; )
 	{

@@ -101,6 +101,8 @@ Transform::Transform()
 	: position(Vector3::Zero)
 	, rotation(Quaternion::Identity)
 	, scale(Vector3::Ones)
+	, m_parent(nullptr)
+	, m_worldMatrix()
 {
 }
 
@@ -125,6 +127,17 @@ void Transform::Translate(float x, float y, float z)
 Matrix Transform::GetTransformMatrix() const
 {
 	return Matrix::MakeAffineTransformation(scale, center, rotation, position);
+}
+
+//------------------------------------------------------------------------------
+void Transform::UpdateWorldMatrix()
+{
+	Matrix localMatrix = Matrix::MakeAffineTransformation(scale, center, rotation, position);
+
+	if (m_parent != nullptr)
+		m_worldMatrix = localMatrix * m_parent->GetWorldMatrix();
+	else
+		m_worldMatrix = localMatrix;
 }
 
 LN_NAMESPACE_END
