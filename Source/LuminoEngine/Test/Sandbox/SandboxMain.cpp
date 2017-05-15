@@ -89,7 +89,9 @@ void Main()
 
 	//Engine::Initialize();
 
-	//auto sprite = Sprite2D::Create(_T("D:/tmp/110220c_as019.png"));
+	//auto sprite = Sprite2D::Create(_T("C:/Proj/LN/HC1/External/Lumino/Documentation/Logo/icon32.png"));
+	//sprite->SetPosition(10, 20);
+
 
 	//while (Engine::Update())
 	//{

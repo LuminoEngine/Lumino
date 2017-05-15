@@ -97,7 +97,7 @@ void SpriteComponent::RenderSprite(DrawList* renderer, SpriteBaseDirection dir)
 	Material* mat = GetMainMaterial();
 	Color colorScale = GetColorScale();
 	colorScale.a *= GetOpacity();
-	renderer->SetTransform(m_combinedGlobalMatrix);
+	renderer->SetTransform(GetOwnerObject()->GetCombinedGlobalMatrix());
 	renderer->DrawSprite(Vector3::Zero, m_renderSize, m_anchor, GetTexture(), m_renderSourceRect, colorScale, dir, GetMainMaterial());
 }
 
@@ -322,6 +322,7 @@ void Sprite2D::Initialize()
 {
 	SpriteBase::Initialize();
 	m_component = Sprite2DComponent::Create();
+	AddComponent(m_component);
 	detail::EngineDomain::GetDefaultWorld2D()->AddWorldObject(this, true);
 }
 
@@ -330,6 +331,7 @@ void Sprite2D::Initialize(const StringRef& filePath)
 {
 	SpriteBase::Initialize();
 	m_component = Sprite2DComponent::Create(filePath);
+	AddComponent(m_component);
 	detail::EngineDomain::GetDefaultWorld2D()->AddWorldObject(this, true);
 }
 
@@ -338,6 +340,7 @@ void Sprite2D::Initialize(Texture* texture)
 {
 	SpriteBase::Initialize();
 	m_component = Sprite2DComponent::Create(texture);
+	AddComponent(m_component);
 	detail::EngineDomain::GetDefaultWorld2D()->AddWorldObject(this, true);
 }
 
@@ -388,6 +391,7 @@ void Sprite3D::Initialize()
 {
 	SpriteBase::Initialize();
 	m_component = Sprite3DComponent::Create();
+	AddComponent(m_component);
 	detail::EngineDomain::GetDefaultWorld3D()->AddWorldObject(this, true);
 }
 
@@ -396,6 +400,7 @@ void Sprite3D::Initialize(float width, float height, Texture* texture)
 {
 	SpriteBase::Initialize();
 	m_component = Sprite3DComponent::Create(width, height, texture);
+	AddComponent(m_component);
 	detail::EngineDomain::GetDefaultWorld3D()->AddWorldObject(this, true);
 }
 
