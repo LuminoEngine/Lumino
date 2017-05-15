@@ -41,10 +41,10 @@ public:
 	/**
 		@brief		テクスチャのどの部分を表示するかを示す転送矩形を設定します。(ピクセル単位)
 	*/
-	void SetTextureRect(const Rect& rect);
-	void SetTextureRect(float x, float y, float width, float height);	/**< @overload SetAnchorPoint */
+	void SetSourceRect(const Rect& rect);
+	void SetSourceRect(float x, float y, float width, float height);	/**< @overload SetSourceRect */
 
-	const Rect& GetTextureRect() const { return m_srcRect; }
+	const Rect& GetSourceRect() const { return m_srcRect; }
 
 	/** 
 		@brief		スプライトの原点を設定します。
@@ -183,11 +183,11 @@ public:
 
 	/** テクスチャのどの部分を表示するかを示す転送矩形を設定します。(ピクセル単位) デフォルトは Rect::Empty で、テクスチャ全体を転送することを示します。 */
 	LN_METHOD(Property)
-	void SetTextureRect(const Rect& rect);
+	void SetSourceRect(const Rect& rect);
 
 	/** テクスチャのどの部分を表示するかを示す転送矩形を取得します。(ピクセル単位) */
 	LN_METHOD(Property)
-	const Rect& GetTextureRect() const;
+	const Rect& GetSourceRect() const;
 
 protected:
 	virtual SpriteComponent* GetSpriteComponent() const = 0;

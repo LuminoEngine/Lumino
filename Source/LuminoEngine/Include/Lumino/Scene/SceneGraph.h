@@ -144,7 +144,7 @@ public:
 	virtual void UpdateFrame(float elapsedTime);
 	virtual SceneNode* GetRootNode() override { return m_defaultRoot; }
 	//virtual CameraComponent* GetMainCamera() override { return m_defaultCamera; }
-	LightComponent* GetMainLight() const;
+	//LightComponent* GetMainLight() const;
 	//virtual List<RenderingPass*>* GetRenderingPasses() override { return &m_renderingPasses; }
 
 public:

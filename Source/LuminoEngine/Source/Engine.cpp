@@ -142,9 +142,9 @@ UIViewportLayer* Engine::GetDefault3DLayer()
 //}
 
 //------------------------------------------------------------------------------
-LightComponent* Engine::GetMainLight3D()
-{
-	return EngineManager::Instance->GetDefaultWorld3D()->GetSceneGraph3D()->GetMainLight();
-}
+//LightComponent* Engine::GetMainLight3D()
+//{
+//	return EngineManager::Instance->GetDefaultWorld3D()->GetSceneGraph3D()->GetMainLight();
+//}
 
 LN_NAMESPACE_END

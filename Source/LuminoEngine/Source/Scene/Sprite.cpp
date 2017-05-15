@@ -67,16 +67,16 @@ Texture* SpriteComponent::GetTexture() const
 }
 
 //------------------------------------------------------------------------------
-void SpriteComponent::SetTextureRect(const Rect& rect)
+void SpriteComponent::SetSourceRect(const Rect& rect)
 {
 	m_srcRect = rect;
 	UpdateVertexData();
 }
 
 //------------------------------------------------------------------------------
-void SpriteComponent::SetTextureRect(float x, float y, float width, float height)
+void SpriteComponent::SetSourceRect(float x, float y, float width, float height)
 {
-	SetTextureRect(Rect(x, y, width, height));
+	SetSourceRect(Rect(x, y, width, height));
 }
 
 //------------------------------------------------------------------------------
@@ -270,15 +270,15 @@ Texture* SpriteBase::GetTexture() const
 }
 
 //------------------------------------------------------------------------------
-void SpriteBase::SetTextureRect(const Rect& rect)
+void SpriteBase::SetSourceRect(const Rect& rect)
 {
-	GetSpriteComponent()->SetTextureRect(rect);
+	GetSpriteComponent()->SetSourceRect(rect);
 }
 
 //------------------------------------------------------------------------------
-const Rect& SpriteBase::GetTextureRect() const
+const Rect& SpriteBase::GetSourceRect() const
 {
-	return GetSpriteComponent()->GetTextureRect();
+	return GetSpriteComponent()->GetSourceRect();
 }
 
 

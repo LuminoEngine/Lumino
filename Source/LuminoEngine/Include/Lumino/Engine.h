@@ -74,7 +74,7 @@ public:
 	static UIViewportLayer* GetDefault3DLayer();
 	//static SceneGraph2D* GetDefaultSceneGraph2D();
 	//static SceneGraph3D* GetDefaultSceneGraph3D();
-	static LightComponent* GetMainLight3D();
+	//static LightComponent* GetMainLight3D();
 };
 
 LN_NAMESPACE_END
