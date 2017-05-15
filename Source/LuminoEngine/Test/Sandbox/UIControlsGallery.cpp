@@ -2,6 +2,7 @@
 #define LN_INTERNAL_ACCESS				public
 #define LN_PROTECTED_INTERNAL_ACCESS	public
 #include <LuminoEngine.h>
+#include <Lumino/Testing/TestHelper.h>
 
 using namespace ln;
 
@@ -63,8 +64,10 @@ void UIControlsGallery()
 	auto ps1 = TransitionPostEffect::Create();
 	Engine::GetDefault3DLayer()->AddPostEffect(ps1);
 	
-	//auto box1 = StaticMeshComponent::Create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/Plant1.mqo"));
-	auto box1 = StaticMeshComponent::Create(_T("D:/Documents/Modeling/test.mqo"));
+	auto box1 = StaticMeshComponent::Create(LN_LOCALFILE("Assets/Plant1.mqo"));
+	//auto box1 = StaticMeshComponent::Create(_T("D:/Documents/Modeling/test.mqo"));
+	auto mesh1 = NewObject<WorldObject3D>();
+	mesh1->AddComponent(box1);
 	
 #if 0
 	auto font = Font::GetDefault();

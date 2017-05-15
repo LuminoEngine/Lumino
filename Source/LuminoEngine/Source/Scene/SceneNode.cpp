@@ -175,22 +175,6 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 }
 
 //------------------------------------------------------------------------------
-void SceneNode::Render2(DrawList* renderer)
-{
-	for (int i = 0; i < m_children->GetCount(); ++i)
-	{
-		m_children->GetAt(i)->Render2(renderer);
-	}
-
-	if (m_isVisible)
-	{
-		renderer->SetBuiltinEffectData(m_builtinEffectData);
-		OnRender2(renderer);
-		//GetOwnerSceneGraph()->GetRenderingProfiler().IncreaseNodeDrawCount();
-	}
-}
-
-//------------------------------------------------------------------------------
 void SceneNode::OnRender2(DrawList* renderer)
 {
 }

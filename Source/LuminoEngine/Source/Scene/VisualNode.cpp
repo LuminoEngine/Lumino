@@ -277,6 +277,7 @@ void VisualComponent::Render(DrawList* context)
 	{
 		context->SetBuiltinEffectData(m_builtinEffectData);
 		OnRender(context);
+		OnRender2(context);
 	}
 }
 

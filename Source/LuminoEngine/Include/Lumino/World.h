@@ -8,6 +8,7 @@ class DrawList;
 class StaticMeshModel;
 class CameraComponent;
 class Camera;
+class Light;
 class SceneGraph;
 class SceneGraph2D;
 class SceneGraph3D;
@@ -122,6 +123,7 @@ private:
 	RefPtr<PhysicsWorld>		m_physicsWorld;
 	RefPtr<SceneGraph3D>		m_sceneGraph;
 	RefPtr<Camera>				m_mainCamera;
+	RefPtr<Light>				m_mainLight;
 	RefPtr<StaticMeshModel>		m_gridPlane;
 	bool						m_visibleGridPlane;
 };

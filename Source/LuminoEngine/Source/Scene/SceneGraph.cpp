@@ -66,17 +66,6 @@ void SceneGraph::UpdateFrame(float deltaTime)
 }
 
 //------------------------------------------------------------------------------
-void SceneGraph::Render2(DrawList* renderer, CameraComponent* camera)
-{
-	//GetRenderingProfiler().BeginSession();
-	GetRootNode()->Render2(renderer);
-	//GetRenderingProfiler().EndSession();
-
-	// reset status
-	renderer->SetBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
-}
-
-//------------------------------------------------------------------------------
 bool SceneGraph::InjectMouseMove(int x, int y)
 {
 	// シェーダ系
@@ -283,12 +272,6 @@ void SceneGraph3D::UpdateFrame(float elapsedTime)
 {
 	SceneGraph::UpdateFrame(elapsedTime);
 	m_defaultRoot->UpdateFrameHierarchy(nullptr, elapsedTime);
-}
-
-//------------------------------------------------------------------------------
-void SceneGraph3D::Render2(DrawList* renderer, CameraComponent* camera)
-{
-	SceneGraph::Render2(renderer, camera);
 }
 
 LN_NAMESPACE_SCENE_END

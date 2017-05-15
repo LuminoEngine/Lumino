@@ -5,6 +5,7 @@
 #include <Lumino/Mesh/Mesh.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Camera.h>
+#include <Lumino/Scene/Light.h>
 #include <Lumino/World.h>
 #include <Lumino/Scene/WorldObject.h>
 #include "Graphics/GraphicsManager.h"
@@ -189,8 +190,6 @@ void World2D::UpdateFrame(float elapsedTime)
 void World2D::Render(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags)
 {
 	World::Render(camera, debugDrawFlags);
-
-	m_sceneGraph->Render2(GetRenderer(), camera);
 }
 
 //==============================================================================
@@ -221,6 +220,9 @@ void World3D::Initialize()
 
 	m_mainCamera = NewObject<Camera>(m_sceneGraph, CameraProjection_3D);
 	AddWorldObject(m_mainCamera, true);
+
+	m_mainLight = NewObject<Light>(m_sceneGraph);
+	AddWorldObject(m_mainLight, true);
 
 	CreateGridPlane();
 }
@@ -292,8 +294,6 @@ void World3D::UpdateFrame(float elapsedTime)
 void World3D::Render(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags)
 {
 	World::Render(camera, debugDrawFlags);
-
-	m_sceneGraph->Render2(GetRenderer(), camera);
 
 	RenderGridPlane(GetRenderer(), camera);
 

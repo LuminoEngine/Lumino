@@ -131,7 +131,6 @@ public:
 	virtual void UpdateFrameHierarchy(SceneNode* parent, float deltaTime);
 
 
-	void Render2(DrawList* renderer);
 	virtual void OnRender2(DrawList* renderer);
 
 

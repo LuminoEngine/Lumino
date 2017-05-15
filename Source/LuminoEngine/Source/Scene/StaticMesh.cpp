@@ -199,7 +199,6 @@ void Rectangle::Initialize(const Rect& rect)
 //------------------------------------------------------------------------------
 void Rectangle::OnRender2(DrawList* renderer)
 {
-	//renderer->SetShader(GetPrimaryShader());
 	renderer->DrawSquarePrimitive(
 		Vector3(m_rect.GetTopLeft(), 0), Vector2(0, 0), Color::White,
 		Vector3(m_rect.GetTopRight(), 0), Vector2(1, 0), Color::White,

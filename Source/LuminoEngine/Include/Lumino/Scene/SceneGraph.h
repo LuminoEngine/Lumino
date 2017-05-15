@@ -35,9 +35,6 @@ public:
 	/// 前回フレームからの経過時間を取得する (秒)
 	float GetElapsedTime() const { return m_elapsedTime; }
 
-	/// 描画
-	virtual void Render2(DrawList* renderer, CameraComponent* camera);
-
 	/// マウス移動イベントを通知する (ViewPane の左上を 0,0 とした座標を指定する)
 	bool InjectMouseMove(int x, int y);
 
@@ -52,7 +49,7 @@ public:
 	SceneGraphManager* GetManager() const { return m_manager; }
 	virtual void UpdateFrame(float deltaTime);
 	virtual SceneNode* GetRootNode() = 0;
-	virtual CameraComponent* GetMainCamera() = 0;
+	//virtual CameraComponent* GetMainCamera() = 0;
 
 
 	//DrawList* GetRenderer() const;
@@ -119,7 +116,7 @@ public:
 
 	virtual void UpdateFrame(float elapsedTime);
 	virtual SceneNode* GetRootNode() override { return m_defaultRoot; }
-	virtual CameraComponent* GetMainCamera() override { return m_defaultCamera; }
+	//virtual CameraComponent* GetMainCamera() override { return m_defaultCamera; }
 	//virtual List<RenderingPass*>* GetRenderingPasses() override { return &m_renderingPasses; }
 
 public:
@@ -146,7 +143,7 @@ public:
 
 	virtual void UpdateFrame(float elapsedTime);
 	virtual SceneNode* GetRootNode() override { return m_defaultRoot; }
-	virtual CameraComponent* GetMainCamera() override { return m_defaultCamera; }
+	//virtual CameraComponent* GetMainCamera() override { return m_defaultCamera; }
 	LightComponent* GetMainLight() const;
 	//virtual List<RenderingPass*>* GetRenderingPasses() override { return &m_renderingPasses; }
 
@@ -154,7 +151,6 @@ public:
 	SceneGraph3D();
 	virtual ~SceneGraph3D();
 	void CreateCore(SceneGraphManager* manager);
-	virtual void Render2(DrawList* renderer, CameraComponent* camera) override;
 
 private:
 

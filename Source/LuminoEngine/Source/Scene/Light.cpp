@@ -82,7 +82,7 @@ void LightComponent::UpdateMatrices(/*const Size& viewSize*/)
 }
 
 //------------------------------------------------------------------------------
-void LightComponent::OnRender2(DrawList* renderer)
+void LightComponent::OnRender(DrawList* renderer)
 {
 	if (m_enabled)
 	{
@@ -90,6 +90,37 @@ void LightComponent::OnRender2(DrawList* renderer)
 		m_lightInfo->transform = GetOwnerObject()->transform.GetWorldMatrix();
 		renderer->AddDynamicLightInfo(m_lightInfo);
 	}
+}
+
+//==============================================================================
+// Light
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Light, WorldObject);
+
+//------------------------------------------------------------------------------
+Light::Light()
+	: WorldObject()
+	, m_component(nullptr)
+{
+}
+
+//------------------------------------------------------------------------------
+Light::~Light()
+{
+}
+
+//------------------------------------------------------------------------------
+void Light::Initialize(SceneGraph* owner)
+{
+	WorldObject::Initialize();
+	m_component = NewObject<LightComponent>(owner, LightType_Directional);
+	AddComponent(m_component);
+}
+
+//------------------------------------------------------------------------------
+LightComponent* Light::GetLightComponent() const
+{
+	return m_component;
 }
 
 LN_NAMESPACE_SCENE_END
