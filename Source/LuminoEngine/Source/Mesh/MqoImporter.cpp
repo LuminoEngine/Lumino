@@ -134,6 +134,10 @@ RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathNam
 		//v1.referenced.Add(MqoFacePointRef{ i, 1, 0 });
 		//v2.referenced.Add(MqoFacePointRef{ i, 2, 0 });
 		face->normal = TriangleNormal(v0.position, v1.position, v2.position);
+
+		face->points[0].vertexIndex = face->vertexIndices[0];
+		face->points[1].vertexIndex = face->vertexIndices[1];
+		face->points[2].vertexIndex = face->vertexIndices[2];
 	}
 
 	Vector3 v1(1, 2, 0);
@@ -232,9 +236,83 @@ RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathNam
 
 	auto mesh = RefPtr<MeshResource>::MakeRef();
 	mesh->Initialize(manager->GetGraphicsManager(), MeshCreationFlags::None);
-	mesh->ResizeIndexBuffer(m_meshIndexCount);
 
-	// インデックスバッファを作りつつ、MqoVertex::referenced を作る
+	// 頂点バッファを作る
+	// (頂点バッファにつめる頂点はグループが基点となる)
+	mesh->ResizeVertexBuffer(m_mqoFaceList.GetCount() * 3);
+	int iVertex = 0;
+	for (int iFace = 0; iFace < m_mqoFaceList.GetCount(); iFace++)
+	{
+		MqoFace* mqoFace = &m_mqoFaceList[iFace];
+		LN_ASSERT(mqoFace->vertexCount == 3);
+		for (int iPoint = 0; iPoint < mqoFace->vertexCount; iPoint++)
+		{
+			auto& point = mqoFace->points[iPoint];
+			auto* group = point.group;
+			if (group->outputVertexIndex < 0)	// 重複登録の対策。まだ1度も走査されていなければ頂点バッファに書き込む
+			{
+				auto& v = m_mqoVertexList[group->vertexIndex];
+				Vector3 normal = group->normal;
+				//if (m_flipZCoord) normal.z *= -1.0f;
+
+				mesh->SetPosition(iVertex, v.position);
+				mesh->SetNormal(iVertex, normal);
+				mesh->SetUV(iVertex, mqoFace->uv[iPoint]);
+				mesh->SetColor(iVertex, Color::White);	// TODO: 頂点色
+				group->outputVertexIndex = iVertex;
+				iVertex++;
+			}
+		}
+	}
+
+	// インデックスバッファを作る
+	mesh->ResizeIndexBuffer(m_meshIndexCount);
+	int iIndex = 0;
+	auto* firstGroup =& m_mqoFacePointGroupBuffer.GetAt(0);
+	for (int iFace = 0; iFace < m_mqoFaceList.GetCount(); iFace++)
+	{
+		MqoFace* mqoFace = &m_mqoFaceList[iFace];
+		LN_ASSERT(mqoFace->vertexCount == 3);
+		for (int iPoint = 0; iPoint < mqoFace->vertexCount; iPoint++)
+		{
+			int i = mqoFace->points[iPoint].group->outputVertexIndex;//mqoFace->points[iPoint].group - firstGroup;
+			LN_ASSERT(i >= 0);
+
+			mesh->SetIndex(iIndex, i/* iFace * 3 + iPoint*/);
+			iIndex++;
+		}
+	}
+
+
+
+	//mesh->ResizeVertexBuffer(m_mqoFacePointGroupBuffer.GetCount());
+	//for (int iGroup = 0; iGroup < m_mqoFacePointGroupBuffer.GetCount(); iGroup++)
+	//{
+	//	auto& group = m_mqoFacePointGroupBuffer.GetAt(iGroup);
+	//	auto& v = m_mqoVertexList[group.vertexIndex];
+
+	//	Vector3 normal = group.normal;
+	//	if (m_flipZCoord) normal.z *= -1.0f;
+
+	//	mesh->SetPosition(group.vertexIndex, v.position);
+	//	mesh->SetNormal(group.vertexIndex, normal);
+	//	mesh->SetUV(group.vertexIndex, m_mqoFaceList[ref.faceIndex].uv[ref.pointIndex]);
+	//	mesh->SetColor(group.vertexIndex, Color::White);	// TODO: 頂点色
+
+	//	//Vector3& normal = m_mqoFaceList[ref.faceIndex].vertexNormals[ref.pointIndex];
+	////		//if (m_flipZCoord) normal.z *= -1.0f;
+
+	////		mesh->SetPosition(ref.meshVertexNumber, vertex.position);
+	////		mesh->SetNormal(ref.meshVertexNumber, Vector3::UnitY/*normal*/);
+	////		mesh->SetUV(ref.meshVertexNumber, m_mqoFaceList[ref.faceIndex].uv[ref.pointIndex]);
+	////		// TODO: 頂点色
+	////		mesh->SetColor(ref.meshVertexNumber, Color::White);
+	//}
+
+	// インデックスバッファを作る
+	//mesh->ResizeIndexBuffer(m_meshIndexCount);
+
+	//// インデックスバッファを作りつつ、MqoVertex::referenced を作る
 	{
 		MeshAttribute sec;
 		sec.MaterialIndex = 0;
@@ -254,30 +332,30 @@ RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathNam
 				sec.PrimitiveNum = 0;
 			}
 
-			next += AddFaceIndices(mesh, next, iFace);
+			//next += AddFaceIndices(mesh, next, iFace);
 			sec.PrimitiveNum += face.vertexCount - 2;
 		}
 		mesh->AddMeshSection(sec);
 	}
 
-	// 頂点バッファを作る
-	mesh->ResizeVertexBuffer(m_meshVertexCount);
-	for (MqoVertex& vertex : m_mqoVertexList)
-	{
-		if (m_flipZCoord) vertex.position.z *= -1.0f;
+	//// 頂点バッファを作る
+	//mesh->ResizeVertexBuffer(m_meshVertexCount);
+	//for (MqoVertex& vertex : m_mqoVertexList)
+	//{
+	//	if (m_flipZCoord) vertex.position.z *= -1.0f;
 
-		for (MqoFacePointRef& ref : vertex.referenced)
-		{
-			Vector3& normal = m_mqoFaceList[ref.faceIndex].vertexNormals[ref.pointIndex];
-			if (m_flipZCoord) normal.z *= -1.0f;
+	//	for (MqoFacePointRef& ref : vertex.referenced)
+	//	{
+	//		//Vector3& normal = m_mqoFaceList[ref.faceIndex].vertexNormals[ref.pointIndex];
+	//		//if (m_flipZCoord) normal.z *= -1.0f;
 
-			mesh->SetPosition(ref.meshVertexNumber, vertex.position);
-			mesh->SetNormal(ref.meshVertexNumber, normal);
-			mesh->SetUV(ref.meshVertexNumber, m_mqoFaceList[ref.faceIndex].uv[ref.pointIndex]);
-			// TODO: 頂点色
-			mesh->SetColor(ref.meshVertexNumber, Color::White);
-		}
-	}
+	//		mesh->SetPosition(ref.meshVertexNumber, vertex.position);
+	//		mesh->SetNormal(ref.meshVertexNumber, Vector3::UnitY/*normal*/);
+	//		mesh->SetUV(ref.meshVertexNumber, m_mqoFaceList[ref.faceIndex].uv[ref.pointIndex]);
+	//		// TODO: 頂点色
+	//		mesh->SetColor(ref.meshVertexNumber, Color::White);
+	//	}
+	//}
 
 	m_model->SetMeshResource(mesh);
 	return m_model;
@@ -555,6 +633,8 @@ void MqoImporter::MakeMqoFaceRefsAndEdge()
 	// 各面3頂点として MqoFaceRef,MqoEdge を作っておく
 	m_mqoFaceRefBuffer.Resize(m_mqoFaceList.GetCount() * 3);
 	m_mqoEdgeBuffer.Resize(m_mqoFaceList.GetCount() * 3);
+	m_mqoFacePointRefBuffer_ForGroup.Reserve(m_mqoFaceList.GetCount() * 3);
+	m_mqoFacePointGroupBuffer.Reserve(m_mqoFaceList.GetCount() * 3);
 	int mqoFaceRefBufferUsed = 0;
 	int mqoEdgeBufferUsed = 0;
 
@@ -580,22 +660,22 @@ void MqoImporter::MakeMqoFaceRefsAndEdge()
 			MqoEdge* e1 = &m_mqoEdgeBuffer[mqoEdgeBufferUsed];
 			mqoEdgeBufferUsed++;
 			e1->ownerFace = mqoFace;
-			e1->index0 = 0;
-			e1->index1 = 1;
+			e1->point0 = &mqoFace->points[0];
+			e1->point1 = &mqoFace->points[1];
 			mqoFace->edges[0] = e1;
 
 			MqoEdge* e2 = &m_mqoEdgeBuffer[mqoEdgeBufferUsed];
 			mqoEdgeBufferUsed++;
 			e2->ownerFace = mqoFace;
-			e2->index0 = 1;
-			e2->index1 = 2;
+			e2->point0 = &mqoFace->points[1];
+			e2->point1 = &mqoFace->points[2];
 			mqoFace->edges[1] = e2;
 
 			MqoEdge* e3 = &m_mqoEdgeBuffer[mqoEdgeBufferUsed];
 			mqoEdgeBufferUsed++;
 			e3->ownerFace = mqoFace;
-			e3->index0 = 2;
-			e3->index1 = 0;
+			e3->point0 = &mqoFace->points[2];
+			e3->point1 = &mqoFace->points[0];
 			mqoFace->edges[2] = e3;
 		}
 	}
@@ -624,20 +704,33 @@ void MqoImporter::MakeMqoFaceRefsAndEdge()
 					for (int iOtherEdge = 0; iOtherEdge < 3; iOtherEdge++)
 					{
 						MqoEdge* otherEdge = otherFace->edges[iOtherEdge];
-						int t0 = edge->ownerFace->vertexIndices[edge->index0];
-						int t1 = edge->ownerFace->vertexIndices[edge->index1];
-						int o0 = otherEdge->ownerFace->vertexIndices[otherEdge->index0];
-						int o1 = otherEdge->ownerFace->vertexIndices[otherEdge->index1];
+						int t0 = edge->point0->vertexIndex;//edge->ownerFace->vertexIndices[edge->index0];
+						int t1 = edge->point1->vertexIndex;// edge->ownerFace->vertexIndices[edge->index1];
+						int o0 = otherEdge->point0->vertexIndex;//otherEdge->ownerFace->vertexIndices[otherEdge->index0];
+						int o1 = otherEdge->point1->vertexIndex; //otherEdge->ownerFace->vertexIndices[otherEdge->index1];
 
-						if ((o0 == t0 && o1 == t1) ||
-							(o1 == t0 && o0 == t1))
+						if ((o0 == t0 && o1 == t1))
 						{
 							// 同じ頂点を参照する Edge を見つけた
 							edge->adjacent = otherEdge;
-
+							edge->adjacentPoint0 = otherEdge->point0;
+							edge->adjacentPoint1 = otherEdge->point1;
 							// 相手方にもついでに設定
-							// (この方法だと、1つの辺から2つ以上の面が生えている場合にただしく法線が計算されない。最後に見つけたエッジとの補間になる)
 							otherEdge->adjacent = edge;
+							otherEdge->adjacentPoint0 = edge->point0;
+							otherEdge->adjacentPoint1 = edge->point1;
+							break;
+						}
+						else if (o1 == t0 && o0 == t1)	// こっちが一般的。↑の if に入る場合は裏表反転しているかもしれない。
+						{
+							// 同じ頂点を参照する Edge を見つけた
+							edge->adjacent = otherEdge;
+							edge->adjacentPoint0 = otherEdge->point1;
+							edge->adjacentPoint1 = otherEdge->point0;
+							// 相手方にもついでに設定
+							otherEdge->adjacent = edge;
+							otherEdge->adjacentPoint0 = edge->point1;
+							otherEdge->adjacentPoint1 = edge->point0;
 							break;
 						}
 					}
@@ -665,26 +758,88 @@ void MqoImporter::MakeMqoFacePointNormals()
 			float d = Vector3::Dot(edge->ownerFace->normal, edge->adjacent->ownerFace->normal);
 			if (DotAngleTo01Angle(d) < smoothThr)
 			{
-				Vector3 normal = edge->ownerFace->normal + edge->adjacent->ownerFace->normal;
-				edge->ownerFace->vertexNormals[edge->index0] += normal;
-				edge->ownerFace->vertexNormals[edge->index1] += normal;
+				// スムージングする。エッジ両端の点に対してグループを作る
+				MakeMqoFacePointGroup(edge);
 				smoothing = true;
 			}
 		}
 		if (!smoothing)
 		{
-			edge->ownerFace->vertexNormals[edge->index0] += edge->ownerFace->normal;
-			edge->ownerFace->vertexNormals[edge->index1] += edge->ownerFace->normal;
+			// スムージングされない。独立した法線となる。
+			if (edge->point0->group == nullptr)
+			{
+				edge->point0->group = m_mqoFacePointGroupBuffer.Request(1);
+				edge->point0->group->vertexIndex = edge->point0->vertexIndex;
+				edge->point0->group->normal = edge->ownerFace->normal;
+			}
+			if (edge->point1->group == nullptr)
+			{
+				edge->point1->group = m_mqoFacePointGroupBuffer.Request(1);
+				edge->point1->group->vertexIndex = edge->point1->vertexIndex;
+				edge->point1->group->normal = edge->ownerFace->normal;
+			}
+
+			//edge->ownerFace->points[edge->index0]->group = m_mqoFacePointGroupBuffer.Request(1);
+			//edge->ownerFace->groups[edge->index1] = m_mqoFacePointGroupBuffer.Request(1);
+			//edge->ownerFace->groups[edge->index0]->normal = edge->ownerFace->normal;
+			//edge->ownerFace->groups[edge->index1]->normal = edge->ownerFace->normal;
+			//edge->ownerFace->vertexNormals[edge->index0] += edge->ownerFace->normal;
+			//edge->ownerFace->vertexNormals[edge->index1] += edge->ownerFace->normal;
 		}
 	}
 
-
-	for (int iFace = 0; iFace < m_mqoFaceList.GetCount(); iFace++)
+	for (int iGroup = 0; iGroup < m_mqoFacePointGroupBuffer.GetCount(); iGroup++)
 	{
-		MqoFace* mqoFace = &m_mqoFaceList[iFace];
-		mqoFace->vertexNormals[0].Normalize();
-		mqoFace->vertexNormals[1].Normalize();
-		mqoFace->vertexNormals[2].Normalize();
+		m_mqoFacePointGroupBuffer.GetAt(iGroup).normal.Normalize();
+	}
+
+	//for (int iFace = 0; iFace < m_mqoFaceList.GetCount(); iFace++)
+	//{
+	//	MqoFace* mqoFace = &m_mqoFaceList[iFace];
+	//	mqoFace->vertexNormals[0].Normalize();
+	//	mqoFace->vertexNormals[1].Normalize();
+	//	mqoFace->vertexNormals[2].Normalize();
+	//}
+}
+
+//------------------------------------------------------------------------------
+// edge と 対となる edge の両端の点をグループ化する
+void MqoImporter::MakeMqoFacePointGroup(MqoEdge* edge)
+{
+	//LN_ASSERT(edge->point0->group == nullptr);
+	//LN_ASSERT(edge->point1->group == nullptr);
+
+	// 両方グループが出来上がっているのはなんかおかしい
+	//LN_ASSERT(!(edge->point0->group != nullptr && edge->adjacentPoint0->group != nullptr));
+	//LN_ASSERT(!(edge->point1->group != nullptr && edge->adjacentPoint1->group != nullptr));
+
+	{
+		MqoFacePointGroup* g = edge->point0->group;			// まず片方のグループを見る
+		if (g == nullptr) g = edge->adjacentPoint0->group;	// まだ作られていなければもう片方を見る
+		if (g == nullptr)									// どちらも作られていなければ新しくグループを作る
+		{
+			g = m_mqoFacePointGroupBuffer.Request(1);
+			g->vertexIndex = edge->point0->vertexIndex;
+		}
+
+		g->normal += edge->ownerFace->normal;//edge->ownerFace->normal + edge->adjacent->ownerFace->normal;
+
+		edge->point0->group = g;
+		//edge->adjacentPoint0->group = g;
+	}
+	{
+		MqoFacePointGroup* g = edge->point1->group;			// まず片方のグループを見る
+		if (g == nullptr) g = edge->adjacentPoint1->group;	// まだ作られていなければもう片方を見る
+		if (g == nullptr)									// どちらも作られていなければ新しくグループを作る
+		{
+			g = m_mqoFacePointGroupBuffer.Request(1);
+			g->vertexIndex = edge->point1->vertexIndex;
+		}
+
+		g->normal += edge->ownerFace->normal;// +edge->adjacent->ownerFace->normal;
+
+		edge->point1->group = g;
+		//edge->adjacentPoint1->group = g;
 	}
 }
 
@@ -772,7 +927,7 @@ bool MqoImporter::EqualsFacePoint(const MqoFace* face1, int pointIndex1, const M
 	if (face1->vertexIndices[pointIndex1] != face2->vertexIndices[pointIndex2]) return false;
 	if (face1->uv[pointIndex1] != face2->uv[pointIndex2]) return false;
 	if (face1->colors[pointIndex1] != face2->colors[pointIndex2]) return false;
-	if (face1->vertexNormals[pointIndex1] != face2->vertexNormals[pointIndex2]) return false;
+	//if (face1->vertexNormals[pointIndex1] != face2->vertexNormals[pointIndex2]) return false;
 	return true;
 }
 

@@ -117,7 +117,7 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 	// <Issues> デフォルトのサンプラステートの繰り返しモードは Repert になる。
 	{
 		auto sprite1 = Sprite2DComponent::Create(LN_LOCALFILE("TestData/Sprite1.png"));
-		sprite1->SetTextureRect(32, 0, 32, 32);
+		sprite1->SetSourceRect(32, 0, 32, 32);
 		Engine::Update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Scene_Sprite.Issues_Volkoff_1.png")));
 	}
