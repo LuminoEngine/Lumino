@@ -100,6 +100,7 @@ private:
 		//MqoFacePointRef*		points = nullptr;		// 点のリスト
 		int						vertexIndex;	// 頂点番号
 		Vector3					normal;					// スムージングされた法線
+		int						pointsCount = 0;
 		int						outputVertexIndex = -1;	// 最終的な頂点バッファに出力した頂点番号 (0 以上になることで、既に出力されていることも表す)
 	};
 

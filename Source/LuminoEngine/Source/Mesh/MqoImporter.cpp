@@ -746,7 +746,7 @@ void MqoImporter::MakeMqoFaceRefsAndEdge()
 //------------------------------------------------------------------------------
 void MqoImporter::MakeMqoFacePointNormals()
 {
-	float smoothThr = Math::DegreesToRadians(60.0f);
+	float smoothThr = Math::DegreesToRadians(90.0f);
 
 	for (int iEdge = 0; iEdge < m_mqoEdgeBuffer.GetCount(); iEdge++)
 	{
@@ -771,12 +771,14 @@ void MqoImporter::MakeMqoFacePointNormals()
 				edge->point0->group = m_mqoFacePointGroupBuffer.Request(1);
 				edge->point0->group->vertexIndex = edge->point0->vertexIndex;
 				edge->point0->group->normal = edge->ownerFace->normal;
+				edge->point0->group->pointsCount = 1;
 			}
 			if (edge->point1->group == nullptr)
 			{
 				edge->point1->group = m_mqoFacePointGroupBuffer.Request(1);
 				edge->point1->group->vertexIndex = edge->point1->vertexIndex;
 				edge->point1->group->normal = edge->ownerFace->normal;
+				edge->point1->group->pointsCount = 1;
 			}
 
 			//edge->ownerFace->points[edge->index0]->group = m_mqoFacePointGroupBuffer.Request(1);
@@ -790,7 +792,9 @@ void MqoImporter::MakeMqoFacePointNormals()
 
 	for (int iGroup = 0; iGroup < m_mqoFacePointGroupBuffer.GetCount(); iGroup++)
 	{
-		m_mqoFacePointGroupBuffer.GetAt(iGroup).normal.Normalize();
+		MqoFacePointGroup& g = m_mqoFacePointGroupBuffer.GetAt(iGroup);
+		g.normal /= g.pointsCount;
+		g.normal.Normalize();
 	}
 
 	//for (int iFace = 0; iFace < m_mqoFaceList.GetCount(); iFace++)
@@ -814,29 +818,33 @@ void MqoImporter::MakeMqoFacePointGroup(MqoEdge* edge)
 	//LN_ASSERT(!(edge->point1->group != nullptr && edge->adjacentPoint1->group != nullptr));
 
 	{
-		MqoFacePointGroup* g = edge->point0->group;			// まず片方のグループを見る
-		if (g == nullptr) g = edge->adjacentPoint0->group;	// まだ作られていなければもう片方を見る
+		MqoFacePointGroup* g = edge->adjacentPoint0->group;			// まず片方のグループを見る
+		if (g == nullptr) g = edge->point0->group;	// まだ作られていなければもう片方を見る
 		if (g == nullptr)									// どちらも作られていなければ新しくグループを作る
 		{
 			g = m_mqoFacePointGroupBuffer.Request(1);
 			g->vertexIndex = edge->point0->vertexIndex;
+			g->pointsCount = 1;	// 初回の追加では両端の2つが関連付けられる。もうひとつは↓で++
 		}
 
-		g->normal += edge->ownerFace->normal;//edge->ownerFace->normal + edge->adjacent->ownerFace->normal;
+		g->normal = edge->ownerFace->normal;// Vector3::UnitY;////edge->ownerFace->normal + edge->adjacent->ownerFace->normal;
+		g->pointsCount++;
 
 		edge->point0->group = g;
 		//edge->adjacentPoint0->group = g;
 	}
 	{
-		MqoFacePointGroup* g = edge->point1->group;			// まず片方のグループを見る
-		if (g == nullptr) g = edge->adjacentPoint1->group;	// まだ作られていなければもう片方を見る
+		MqoFacePointGroup* g = edge->adjacentPoint1->group;			// まず片方のグループを見る
+		if (g == nullptr) g = edge->point1->group;	// まだ作られていなければもう片方を見る
 		if (g == nullptr)									// どちらも作られていなければ新しくグループを作る
 		{
 			g = m_mqoFacePointGroupBuffer.Request(1);
 			g->vertexIndex = edge->point1->vertexIndex;
+			g->pointsCount = 1;	// 初回の追加では両端の2つが関連付けられる。もうひとつは↓で++
 		}
 
-		g->normal += edge->ownerFace->normal;// +edge->adjacent->ownerFace->normal;
+		g->normal = edge->ownerFace->normal;// Vector3::UnitY; //// +edge->adjacent->ownerFace->normal;
+		g->pointsCount++;
 
 		edge->point1->group = g;
 		//edge->adjacentPoint1->group = g;
