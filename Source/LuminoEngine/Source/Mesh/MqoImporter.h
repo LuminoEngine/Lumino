@@ -16,6 +16,7 @@ public:
 	RefPtr<StaticMeshModel> Import(ModelManager* manager, const PathName& parentDir, Stream* stream);
 
 private:
+	struct MqoFace;
 	struct MqoFacePointRef;
 	struct MqoFaceRef;
 	struct MqoEdge;
@@ -24,9 +25,12 @@ private:
 	// 面上の点
 	struct MqoFacePoint
 	{
+		MqoFace*			face;
 		int					vertexIndex;			// オリジナルの頂点番号
 		Vector3				normal;					// 頂点法線
 		MqoFacePointGroup*	group = nullptr;		// 面上の点がどのグループに属しているか
+		MqoFacePoint*		prev = nullptr;			// リスト構造の前のノード
+		MqoFacePoint*		next = nullptr;			// リスト構造の次のノード
 	};
 
 	struct MqoFace
@@ -87,17 +91,16 @@ private:
 		MqoFacePoint*			adjacentPoint1 = nullptr;	// point1 に対する隣接辺上の point
 	};
 
-	struct MqoFacePointRef2
-	{
-		MqoFace*				face;
-		int						pointIndex;
-		MqoFacePointRef*		next = nullptr;			// リスト構造の次のノード
-	};
+	//struct MqoFacePointRef2
+	//{
+	//	MqoFacePoint*			point = nullptr;
+	//	MqoFacePointRef2*		next = nullptr;			// リスト構造の次のノード
+	//};
 
 	// スムージングの判定で、法線を共有する Face 上の点をまとめる (関係する頂点が1つしかなくてもグループを作る)
 	struct MqoFacePointGroup
 	{
-		//MqoFacePointRef*		points = nullptr;		// 点のリスト
+		MqoFacePoint*			points = nullptr;		// 点のリスト
 		int						vertexIndex;	// 頂点番号
 		Vector3					normal;					// スムージングされた法線
 		int						pointsCount = 0;
@@ -123,7 +126,7 @@ private:
 
 	void MakeMqoFaceRefsAndEdge();
 	void MakeMqoFacePointNormals();
-	void MakeMqoFacePointGroup(MqoEdge* edge);
+	void MakeMqoFacePointGroup(MqoFacePoint* p0, MqoFacePoint* p1/*MqoEdge* edge*/);
 
 	void InitMqoFace(MqoFace* face);
 	int AddFaceIndices(MeshResource* mesh, int startIndexBufferIndex, int faceIndex);
@@ -142,7 +145,7 @@ private:
 
 	List<MqoFaceRef>				m_mqoFaceRefBuffer;
 	List<MqoEdge>					m_mqoEdgeBuffer;
-	CacheBuffer<MqoFacePointRef2>	m_mqoFacePointRefBuffer_ForGroup;
+	//CacheBuffer<MqoFacePointRef2>	m_mqoFacePointRefBuffer_ForGroup;
 	CacheBuffer<MqoFacePointGroup>	m_mqoFacePointGroupBuffer;
 };
 

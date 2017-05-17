@@ -64,7 +64,9 @@ void UIControlsGallery()
 	auto ps1 = TransitionPostEffect::Create();
 	Engine::GetDefault3DLayer()->AddPostEffect(ps1);
 	
-	auto box1 = StaticMeshComponent::Create(LN_LOCALFILE("Assets/cube.mqo"));
+	//auto box1 = StaticMeshComponent::Create(LN_LOCALFILE("Assets/cube.mqo"));
+	//auto box1 = StaticMeshComponent::Create(LN_LOCALFILE("Assets/cylinder2.mqo"));
+	auto box1 = StaticMeshComponent::Create(LN_LOCALFILE("Assets/Plant1.mqo"));
 	//auto box1 = StaticMeshComponent::Create(_T("D:/Documents/Modeling/test.mqo"));
 	auto mesh1 = NewObject<WorldObject3D>();
 	mesh1->AddComponent(box1);
