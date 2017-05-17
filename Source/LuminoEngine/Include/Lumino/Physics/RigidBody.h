@@ -194,6 +194,10 @@ LN_INTERNAL_ACCESS:
 	virtual void OnAfterStepSimulation();
 	virtual void OnRemovedFromWorld() override;
 
+
+	// Component interface
+	virtual void OnUpdate();
+
 private:
 	void CreateBtRigidBody();
 

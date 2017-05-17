@@ -7,11 +7,12 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // PhysicsObject
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PhysicsObject, Object);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PhysicsObject, Component);
 
 //------------------------------------------------------------------------------
 PhysicsObject::PhysicsObject()
-	: m_ownerWorld(nullptr)
+	: Component()
+	, m_ownerWorld(nullptr)
 	, m_collisionFilterGroup(0xFFFF)
 	, m_collisionFilterMask(0xFFFF)
 {
