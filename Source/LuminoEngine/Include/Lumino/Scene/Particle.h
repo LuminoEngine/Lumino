@@ -324,22 +324,20 @@ public: // TODO
 };
 
 
-class ParticleEmitter;
-class ParticleEmitter3D;
-using ParticleEmitterPtr = RefPtr<ParticleEmitter>;
-using ParticleEmitter3DPtr = RefPtr<ParticleEmitter3D>;
+class ParticleEmitterComponent;
+class ParticleEmitter3DComponent;
 
 /**
 	パーティクルエミッタのクラスです。
 	@detail		パーティクルエミッタは、実際に表示されるパーティクルの放出点となる VisualNode です。
 */
-class ParticleEmitter
-	: public VisualNode
+class ParticleEmitterComponent
+	: public VisualComponent
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 protected:
-	ParticleEmitter();
-	virtual ~ParticleEmitter();
+	ParticleEmitterComponent();
+	virtual ~ParticleEmitterComponent();
 	void Initialize(SceneGraph* owner, SpriteParticleModel* model);
 
 	virtual void OnUpdateFrame(float deltaTime) override;
@@ -351,16 +349,16 @@ private:
 };
 
 /** 3D 空間に配置されるパーティクルエミッタです。*/
-class ParticleEmitter3D
-	: public ParticleEmitter
+class ParticleEmitter3DComponent
+	: public ParticleEmitterComponent
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static ParticleEmitter3DPtr Create(SpriteParticleModel* model);
+	static RefPtr<ParticleEmitter3DComponent> Create(SpriteParticleModel* model);
 
 protected:
-	ParticleEmitter3D();
-	virtual ~ParticleEmitter3D();
+	ParticleEmitter3DComponent();
+	virtual ~ParticleEmitter3DComponent();
 };
 
 LN_NAMESPACE_SCENE_END

@@ -141,6 +141,12 @@ Texture2DPtr Texture2D::Create(const void* data, size_t size, TextureFormat form
 }
 
 //------------------------------------------------------------------------------
+Texture2DPtr Texture2D::GetBlackTexture()
+{
+	return detail::GraphicsManager::GetInstance()->GetDummyBlackTexture();
+}
+
+//------------------------------------------------------------------------------
 Texture2DPtr Texture2D::GetWhiteTexture()
 {
 	return detail::GraphicsManager::GetInstance()->GetDummyWhiteTexture();

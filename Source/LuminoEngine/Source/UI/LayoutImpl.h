@@ -38,7 +38,7 @@ public:
 			Size childDesiredSize = child->GetLayoutDesiredSize();
 			childDesiredSize.width = std::max(finalSize.width, childDesiredSize.width);
 			childDesiredSize.height = std::max(finalSize.height, childDesiredSize.height);
-			child->ArrangeLayout(RectF(offset.x, offset.y, childDesiredSize));
+			child->ArrangeLayout(Rect(offset.x, offset.y, childDesiredSize));
 		}
 		return finalSize;
 	}
@@ -91,7 +91,7 @@ public:
 
 		float prevChildSize = 0;
 		float rPos = 0;
-		RectF childRect(padding.Left, padding.Top, 0, 0);
+		Rect childRect(padding.Left, padding.Top, 0, 0);
 		int childCount = basePanel->GetLayoutChildrenCount();
 		for (int i = 0; i < childCount; i++)
 		{
@@ -283,7 +283,7 @@ public:
 			rowSpan = std::min(rowSpan, rowIdx + rowDefCount);	// 最大値制限
 
 			// Span を考慮してサイズを確定
-			RectF rect = RectF(padding.Left, padding.Top, 0, 0);
+			Rect rect = Rect(padding.Left, padding.Top, 0, 0);
 			if (colDefCount == 0)	// is empty
 			{
 				rect.width = childrenBoundSize.width;

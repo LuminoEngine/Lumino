@@ -35,7 +35,6 @@ FontGlyphTextureCache::FontGlyphTextureCache()
 //------------------------------------------------------------------------------
 FontGlyphTextureCache::~FontGlyphTextureCache()
 {
-	LN_SAFE_RELEASE(m_fillGlyphsTexture);
 }
 
 //------------------------------------------------------------------------------
@@ -55,10 +54,7 @@ void FontGlyphTextureCache::Initialize(GraphicsManager* manager, RawFont* font)
 	int w = m_glyphWidthCount * m_font->GetLineSpacing();	//TODO ビットマップが収まるサイズは要チェック
 
 	// キャッシュ用テクスチャ作成
-	//m_glyphsFillTexture = m_manager->GetGraphicsDevice()->CreateTexture(SizeI(w, w), 1, TextureFormat::R8G8B8A8, nullptr);
-	//m_glyphsFillTexture = Texture2D::Create(SizeI(w, w), TextureFormat_R8G8B8A8, 1);	// TODO: GraphicsManager?
-	m_fillGlyphsTexture = LN_NEW Texture2D();
-	m_fillGlyphsTexture->Initialize(SizeI(w, w), TextureFormat::R8G8B8A8, false, ResourceUsage::Dynamic);
+	m_fillGlyphsTexture = NewObject<Texture2D>(SizeI(w, w), TextureFormat::R8G8B8A8, false, ResourceUsage::Dynamic);
 
 	// 検索に使う情報をリセット
 	m_curPrimUsedFlags.resize(m_maxCacheGlyphs);

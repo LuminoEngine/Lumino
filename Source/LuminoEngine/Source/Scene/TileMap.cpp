@@ -1,4 +1,5 @@
 ﻿
+#if 0
 #include "../Internal.h"
 #include <Lumino/Graphics/GraphicsContext.h>
 #include "SceneGraphManager.h"
@@ -16,7 +17,7 @@ LN_NAMESPACE_SCENE_BEGIN
 //==============================================================================
 // TileMap
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TileMap, VisualNode);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TileMap, VisualComponent);
 
 //------------------------------------------------------------------------------
 //TileMap* TileMap::Create()
@@ -37,7 +38,7 @@ TileMapPtr TileMap::Create3D()
 
 //------------------------------------------------------------------------------
 TileMap::TileMap()
-	: VisualNode()
+	: VisualComponent()
 	, m_renderer(nullptr)
 	, m_tileMap(nullptr)
 {
@@ -53,7 +54,7 @@ TileMap::~TileMap()
 //------------------------------------------------------------------------------
 void TileMap::Create3DCore(SceneGraph* owner)
 {
-	VisualNode::Initialize(owner, 1);
+	VisualComponent::Initialize(owner, 1);
 	owner->GetRootNode()->AddChild(this);
 	SetAutoRemove(true);
 	m_renderer = LN_NEW TileMapRenderer(owner->GetManager()->GetGraphicsManager());
@@ -361,7 +362,7 @@ private:
 //
 //----------------------------------------------------------------------
 TileMap::TileMap( SceneGraph* scene_ )
-    : VisualNode         ( scene_ )
+    : VisualComponent( scene_ )
     , mTilesetTexture   ( NULL )
     //, mXSize            ( 0 )
     //, mYSize            ( 0 )
@@ -463,3 +464,4 @@ void TileMap::update( float elapsedTime )
 } // namespace LNote
 #endif
 
+#endif

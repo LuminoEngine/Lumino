@@ -24,7 +24,7 @@ class ILayoutElement
 public:
 	virtual void UpdateLayout(const Size& viewSize);
 	virtual void MeasureLayout(const Size& availableSize);
-	virtual void ArrangeLayout(const RectF& finalLocalRect);
+	virtual void ArrangeLayout(const Rect& finalLocalRect);
 
 protected:
 	virtual const PointF& GetLayoutPosition() const = 0;
@@ -40,9 +40,9 @@ protected:
 	virtual const VAlignment* GetLayoutContentVAlignment() = 0;
 	virtual const Size& GetLayoutDesiredSize() const = 0;
 	virtual void SetLayoutDesiredSize(const Size& size) = 0;
-	virtual void SetLayoutFinalLocalRect(const RectF& rect) = 0;
-	virtual const RectF& GetLayoutFinalLocalRect() const = 0;
-	virtual void SetLayoutFinalGlobalRect(const RectF& rect) = 0;
+	virtual void SetLayoutFinalLocalRect(const Rect& rect) = 0;
+	virtual const Rect& GetLayoutFinalLocalRect() const = 0;
+	virtual void SetLayoutFinalGlobalRect(const Rect& rect) = 0;
 
 	virtual int GetVisualChildrenCount() const = 0;
 	virtual ILayoutElement* GetVisualChild(int index) const = 0;
@@ -56,7 +56,7 @@ protected:
 
 	virtual Size MeasureOverride(const Size& constraint);
 	virtual Size ArrangeOverride(const Size& finalSize);
-	virtual void UpdateTransformHierarchy(const RectF& parentGlobalRect);
+	virtual void UpdateTransformHierarchy(const Rect& parentGlobalRect);
 
 protected:
 	ILayoutElement();
@@ -148,7 +148,7 @@ public:
 	//	}
 	//}
 
-	static void AdjustHorizontalAlignment(const Size& areaSize, const Size& desiredSize, bool widthNan, HAlignment align, RectF* outRect)
+	static void AdjustHorizontalAlignment(const Size& areaSize, const Size& desiredSize, bool widthNan, HAlignment align, Rect* outRect)
 	{
 		switch (align)
 		{
@@ -182,7 +182,7 @@ public:
 		}
 	}
 
-	static void AdjustVerticalAlignment(const Size& areaSize, const Size& desiredSize, bool heightNan, VAlignment align, RectF* outRect)
+	static void AdjustVerticalAlignment(const Size& areaSize, const Size& desiredSize, bool heightNan, VAlignment align, Rect* outRect)
 	{
 		switch (align)
 		{

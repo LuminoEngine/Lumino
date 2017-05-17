@@ -79,12 +79,11 @@ void UIManager::Initialize(const Settings& settings)
 		};
 		MemoryStream defaultSkinStream(defaultSkin_data, LN_ARRAY_SIZE_OF(defaultSkin_data));
 		m_defaultSkinTexture = RefPtr<Texture2D>::MakeRef();
-		m_defaultSkinTexture->Initialize(&defaultSkinStream, TextureFormat::R8G8B8A8, false);
+		m_defaultSkinTexture = NewObject<Texture2D>(&defaultSkinStream, TextureFormat::R8G8B8A8, false);
 	}
 	else
 	{
-		m_defaultSkinTexture = RefPtr<Texture2D>::MakeRef();
-		m_defaultSkinTexture->Initialize(settings.defaultSkinFilePath, TextureFormat::R8G8B8A8, false);
+		m_defaultSkinTexture = NewObject<Texture2D>(settings.defaultSkinFilePath, TextureFormat::R8G8B8A8, false);
 	}
 
 	m_defaultStyleTable = LN_NEW UIStyleTable();
@@ -95,7 +94,7 @@ void UIManager::Initialize(const Settings& settings)
 		g_uiManager = this;
 	}
 
-	CreateGlobalCommands();
+	CreateGlobalObjects();
 }
 
 //------------------------------------------------------------------------------
@@ -137,8 +136,13 @@ void UIManager::ReleaseGameModeMainFrame()
 }
 
 //------------------------------------------------------------------------------
-void UIManager::CreateGlobalCommands()
+void UIManager::CreateGlobalObjects()
 {
+	UIEvents::MouseMoveEvent = UIEventManager::RegisterEvent();
+	UIEvents::MouseDownEvent = UIEventManager::RegisterEvent();
+	UIEvents::MouseUpEvent = UIEventManager::RegisterEvent();
+	UIEvents::MouseWheelEvent = UIEventManager::RegisterEvent();
+
 	auto cmd = NewObject<UIRoutedCommand>();
 	m_allGlobalCommands.Add(cmd);
 	UIApplicationCommands::Paste = cmd;

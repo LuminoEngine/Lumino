@@ -1,8 +1,8 @@
 ﻿
 #define LN_INTERNAL_ACCESS				public
-#define LN_CONSTRUCT_ACCESS				public
 #define LN_PROTECTED_INTERNAL_ACCESS	public
 #include <LuminoEngine.h>
+#include <Lumino/Testing/TestHelper.h>
 
 using namespace ln;
 
@@ -11,10 +11,12 @@ void UIControlsGallery()
 	Engine::Initialize();
 
 
-	Engine::GetDefaultSceneGraph3D()->visibleGridPlane = true;
+	//Engine::GetDefaultSceneGraph3D()->visibleGridPlane = true;
+
+	Engine::GetWorld3D()->SetVisibleGridPlane(true);
 
 	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
-	Camera::GetMain3DCamera()->SetCameraBehavior(cb);
+	CameraComponent::GetMain3DCamera()->SetCameraBehavior(cb);
 
 
 	auto* mainWindow = Engine::GetMainWindow();
@@ -34,7 +36,7 @@ void UIControlsGallery()
 	listBox1->AddTextItem(_T("UI"));
 
 	
-	auto shader = Shader::Create(StringRef(_T("C:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/Sandbox/SSBasic2D.fx")), true);
+	//auto shader = Shader::Create(StringRef(_T("C:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/Sandbox/SSBasic2D.fx")), true);
 	//auto rect = Rectangle::Create(RectF(0, 0, 3, 1));
 	//rect->SetShader(shader);
 	//rect->SetAngles(Math::PI/2, 0, 0);
@@ -62,7 +64,13 @@ void UIControlsGallery()
 	auto ps1 = TransitionPostEffect::Create();
 	Engine::GetDefault3DLayer()->AddPostEffect(ps1);
 	
-
+	//auto box1 = StaticMeshComponent::Create(LN_LOCALFILE("Assets/cube.mqo"));
+	//auto box1 = StaticMeshComponent::Create(LN_LOCALFILE("Assets/cylinder2.mqo"));
+	auto box1 = StaticMeshComponent::Create(LN_LOCALFILE("Assets/Plant1.mqo"));
+	//auto box1 = StaticMeshComponent::Create(_T("D:/Documents/Modeling/test.mqo"));
+	auto mesh1 = NewObject<WorldObject3D>();
+	mesh1->AddComponent(box1);
+	
 #if 0
 	auto font = Font::GetDefault();
 	font->SetSize(50);
@@ -98,7 +106,7 @@ void UIControlsGallery()
 	mat1->SetBlendMode(BlendMode::Alpha);
 	mesh1->AddMaterial(mat1);
 
-	auto mesh2 = StaticMesh::Create(mesh1);
+	auto mesh2 = StaticMeshComponent::Create(mesh1);
 #endif
 
 
@@ -145,7 +153,7 @@ void UIControlsGallery()
 	}
 #endif
 
-	//auto text = UITextBlock::Create();//TextBlock2D::Create(_T("Hello, world!"));
+	//auto text = UITextBlock::Create();//TextBlock2DComponent::Create(_T("Hello, world!"));
 	//text->SetText(_T("Hello"));
 	//text->foreground = Brush::Blue;
 	//mainWindow->AddChild(text);
@@ -227,15 +235,15 @@ void UIControlsGallery()
 
 			Engine::RenderFrame();
 
-			Engine::GetDefaultSceneGraph3D()->GetRenderer()->SetShader(shader);
-			Engine::GetDefaultSceneGraph3D()->GetRenderer()->DrawScreenRectangle();
+			//Engine::GetDefaultSceneGraph3D()->GetRenderer()->SetShader(shader);
+			//Engine::GetDefaultSceneGraph3D()->GetRenderer()->DrawScreenRectangle();
 			
 		//Engine::GetDefaultSceneGraph3D()->GetDebugRenderer()->DrawLinePrimitive(
 		//	Vector3(0, 0, 0), Color::Red,
 		//	Vector3(5, 5, 5), Color::White);
 
 			t += 0.016;
-			shader->FindVariable(_T("time"))->SetFloat(t);
+			//shader->FindVariable(_T("time"))->SetFloat(t);
 
 		Engine::PresentFrame();
 	}

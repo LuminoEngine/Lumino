@@ -81,8 +81,7 @@ include_directories(
 	${PROJECT_SOURCE_DIR}/../LuminoEngine/Include
 )
 
-add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}${LN_LIB_POSTFIX}")
-set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
-ln_add_pch(${PROJECT_NAME} "LuminoLaunch.PCH.h" "Source/LuminoLaunch.PCH.cpp")
+add_library(LuminoLaunch STATIC ${LN_SOURCES})
+ln_add_common_property(LuminoLaunch)
+ln_add_pch(LuminoLaunch "LuminoLaunch.PCH.h" "Source/LuminoLaunch.PCH.cpp")
 

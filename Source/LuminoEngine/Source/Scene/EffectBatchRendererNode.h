@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#if 0
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Scene/VisualNode.h>
 
@@ -8,7 +9,7 @@ LN_NAMESPACE_SCENE_BEGIN
 namespace detail { class EffectManager; }
 
 class EffectBatchRendererNode
-	: public VisualNode
+	: public VisualComponent
 {
 public:
 	EffectBatchRendererNode();
@@ -23,3 +24,4 @@ private:
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
+#endif

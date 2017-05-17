@@ -6,6 +6,8 @@
 LN_NAMESPACE_BEGIN
 class UIEventArgs;
 using UIEventArgsPtr = RefPtr<UIEventArgs>;
+class UIEventInfo;
+using UIEventType = const UIEventInfo*;
 
 /**
 	@brief		
@@ -15,14 +17,21 @@ class UIEventArgs
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static UIEventArgsPtr Create(Object* sender, bool caching = true);
+	static UIEventArgsPtr Create(UIEventType type, Object* sender, bool caching = true);
+
+	UIEventType GetType() const { return m_type; }
 
 	UIEventArgs();
 	virtual ~UIEventArgs();
-	void Initialize();
+	void Initialize(UIEventType type);
 
 public:
-	tr::ReflectionObject*	sender;
+	UIElement*	sender;
+
+private:
+	UIEventType m_type;
+
+	friend class UIElement;
 };
 
 /**
@@ -35,7 +44,7 @@ class UIMouseEventArgs
 public:
 
 	/** UIMouseEventArgs のインスタンスを作成します。*/
-	static RefPtr<UIMouseEventArgs> Create(MouseButtons button, float x, float y, int clickCount, bool caching = true);
+	static RefPtr<UIMouseEventArgs> Create(UIEventType type, MouseButtons button, float x, float y, int clickCount, bool caching = true);
 
 	/** ボタンの種類を取得します。*/
 	MouseButtons GetMouseButtons() const { return m_button; }
@@ -52,7 +61,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIMouseEventArgs();
 	virtual ~UIMouseEventArgs();
-	void Initialize(MouseButtons button, float x, float y, int clickCount);
+	void Initialize(UIEventType type, MouseButtons button, float x, float y, int clickCount);
 
 private:
 	MouseButtons	m_button;
@@ -70,7 +79,7 @@ class UIKeyEventArgs
 public:
 
 	/** UIKeyEventArgs のインスタンスを作成します。 */
-	static RefPtr<UIKeyEventArgs> Create(Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode, bool caching = true);
+	static RefPtr<UIKeyEventArgs> Create(UIEventType type, Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode, bool caching = true);
 
 	/** キーコードを取得します。 */
 	Keys GetKey() const { return m_keyCode; }
@@ -84,7 +93,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIKeyEventArgs();
 	virtual ~UIKeyEventArgs();
-	void Initialize(Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode);
+	void Initialize(UIEventType type, Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode);
 
 private:
 	Keys			m_keyCode;
@@ -102,15 +111,15 @@ class UIMouseWheelEventArgs
 public:
 
 	/** UIMouseWheelEventArgs のインスタンスを作成します。 */
-	static RefPtr<UIMouseWheelEventArgs> Create(int delta, bool caching = true);
+	static RefPtr<UIMouseWheelEventArgs> Create(UIEventType type, int delta, bool caching = true);
 
 	/** マウスホイールの回転回数を取得します。 (正または負の回数) */
-	int GetKey() const { return m_delta; }
+	int GetDelta() const { return m_delta; }
 
 LN_CONSTRUCT_ACCESS:
 	UIMouseWheelEventArgs();
 	virtual ~UIMouseWheelEventArgs();
-	void Initialize(int delta);
+	void Initialize(UIEventType type, int delta);
 
 public:
 	int		m_delta;

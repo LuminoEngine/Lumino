@@ -39,7 +39,7 @@ public:
 		const Vector2& size,
 		const Vector2& anchorRatio,
 		Driver::ITexture* texture,
-		const RectF& srcRect,
+		const Rect& srcRect,
 		const SpriteColorTable& colorTable,
 		SpriteBaseDirection baseDir);
 
@@ -187,7 +187,7 @@ public:
 		const Vector2& size,
 		const Vector2& anchorRatio,
 		Texture* texture,
-		const RectF& srcRect,
+		const Rect& srcRect,
 		const Color& color);
 
 	void DrawRequest(
@@ -195,7 +195,7 @@ public:
 		const Vector2& anchorRatio,
 		const Vector2& size,
 		Texture* texture,
-		const RectF& srcRect,
+		const Rect& srcRect,
 		const Color& color,
 		SpriteBaseDirection baseDirection);
 

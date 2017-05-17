@@ -31,8 +31,8 @@ void ILayoutElement::UpdateLayout(const Size& viewSize)
 	//if (Math::IsNaNOrInf(m_size.Width) || Math::IsNaNOrInf(m_size.Height)) { return; }
 
 	MeasureLayout(size);
-	ArrangeLayout(RectF(0, 0, size.width, size.height));
-	UpdateTransformHierarchy(RectF(0, 0, size));
+	ArrangeLayout(Rect(0, 0, size.width, size.height));
+	UpdateTransformHierarchy(Rect(0, 0, size));
 }
 
 //------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ void ILayoutElement::MeasureLayout(const Size& availableSize)
 }
 
 //------------------------------------------------------------------------------
-void ILayoutElement::ArrangeLayout(const RectF& finalLocalRect)
+void ILayoutElement::ArrangeLayout(const Rect& finalLocalRect)
 {
 	// finalLocalRect はこの要素を配置できる領域サイズ。と、親要素内でのオフセット。
 	// 要素に直接設定されているサイズよりも大きいこともある。
@@ -106,7 +106,7 @@ void ILayoutElement::ArrangeLayout(const RectF& finalLocalRect)
 	//ds.height += marginHeight;
 
 	Size layoutSize = GetLayoutSize();
-	RectF arrangeRect;
+	Rect arrangeRect;
 	detail::LayoutHelper::AdjustHorizontalAlignment(areaSize, ds, Math::IsNaN(layoutSize.width), hAlign, &arrangeRect);
 	detail::LayoutHelper::AdjustVerticalAlignment(areaSize, ds, Math::IsNaN(layoutSize.height), vAlign, &arrangeRect);
 
@@ -116,7 +116,7 @@ void ILayoutElement::ArrangeLayout(const RectF& finalLocalRect)
 
 
 	Size renderSize = ArrangeOverride(arrangeRect.GetSize());
-	RectF thisFinalLocalRect;
+	Rect thisFinalLocalRect;
 	thisFinalLocalRect.x = finalLocalRect.x + margin.Left + arrangeRect.x;
 	thisFinalLocalRect.y = finalLocalRect.y + margin.Top + arrangeRect.y;
 	thisFinalLocalRect.width = renderSize.width;
@@ -141,10 +141,10 @@ Size ILayoutElement::ArrangeOverride(const Size& finalSize)
 }
 
 //------------------------------------------------------------------------------
-void ILayoutElement::UpdateTransformHierarchy(const RectF& parentGlobalRect)
+void ILayoutElement::UpdateTransformHierarchy(const Rect& parentGlobalRect)
 {
-	const RectF& localRect = GetLayoutFinalLocalRect();
-	RectF finalGlobalRect;
+	const Rect& localRect = GetLayoutFinalLocalRect();
+	Rect finalGlobalRect;
 	//if (m_parent != nullptr)
 	//{
 	finalGlobalRect.x = parentGlobalRect.x + localRect.x;

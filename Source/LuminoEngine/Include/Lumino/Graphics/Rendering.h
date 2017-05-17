@@ -16,7 +16,7 @@ class MeshResource;
 class StaticMeshModel;
 class DrawList;
 
-class Camera;
+class CameraComponent;
 
 
 enum class DrawElementCategory
@@ -587,22 +587,22 @@ public:
 	void DrawGlyphRun(const PointF& position, GlyphRun* glyphRun);
 
 	void DrawText_(const StringRef& text, const PointF& position);
-	void DrawText_(const StringRef& text, const RectF& rect, StringFormatFlags flags);
+	void DrawText_(const StringRef& text, const Rect& rect, StringFormatFlags flags);
 
 	void DrawChar(TCHAR ch, const PointF& position);
-	void DrawText2(const StringRef& text, const RectF& rect);
+	void DrawText2(const StringRef& text, const Rect& rect);
 
 	void DrawSprite(
 		const Vector3& position,
 		const Size& size,
 		const Vector2& anchor,
 		Texture* texture,
-		const RectF& srcRect,
+		const Rect& srcRect,
 		const Color& color,
 		SpriteBaseDirection baseDirection,
 		Material* material = nullptr);
 
-	void DrawRectangle(const RectF& rect);
+	void DrawRectangle(const Rect& rect);
 
 	void DrawScreenRectangle();
 
@@ -628,12 +628,12 @@ LN_INTERNAL_ACCESS:
 	void DrawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Material* material);
 	void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material);
 	void BlitInternal(Texture* source, RenderTargetTexture* dest, const Matrix& transform, Material* material);
-	void DrawFrameRectangle(const RectF& rect);
+	void DrawFrameRectangle(const Rect& rect);
 	void RenderSubDrawList(detail::DrawElementList* elementList, const detail::CameraInfo& cameraInfo, detail::InternalRenderer* renderer, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
 
 	// TODO: 本質的に DrawList に持たせるべきではない。一応今は一時変数的な扱いでしかないので被害は少ないが・・・
-	void SetCurrentCamera(Camera* camera) { m_camera = camera; }
-	Camera* GetCurrentCamera() const { return m_camera; }
+	void SetCurrentCamera(CameraComponent* camera) { m_camera = camera; }
+	CameraComponent* GetCurrentCamera() const { return m_camera; }
 
 private:
 	detail::GraphicsManager*		m_manager;
@@ -649,7 +649,7 @@ private:
 	//detail::DrawElementBatch		m_stateInSection;
 	const DrawElementMetadata*		m_metadata;
 
-	Camera*							m_camera;
+	CameraComponent*							m_camera;
 
 #if 0
 	/** アルファブレンドの有無 (default: false) */

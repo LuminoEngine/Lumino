@@ -3,17 +3,18 @@
 #include "../Graphics/Color.h"
 #include "../Graphics/Rendering.h"	// for DynamicLightInfo
 #include "SceneNode.h"
+#include "WorldObject.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
-/// Light
-class Light
+/// LightComponent
+class LightComponent
 	: public SceneNode
 {
 public:
-	Light();
-	virtual ~Light();
+	LightComponent();
+	virtual ~LightComponent();
 	void Initialize(SceneGraph* owner, LightType type);
 
 public:
@@ -81,10 +82,10 @@ public:	// internal
 	//const Matrix& GetViewProjectionMatrixIT() const { return m_viewProjMatrixIT; }
 
 protected:
-	virtual void OnRender2(DrawList* renderer) override;
+	virtual void OnRender(DrawList* renderer) override;
 
 private:
-	friend class VisualNode;
+	friend class VisualComponent;
 
 	//LightType			m_type;				///< ライトの種類
 	//Color	m_diffuse;			///< ディフューズカラー
@@ -113,6 +114,28 @@ private:
 	//Matrix				m_viewProjMatrixIT;	///< ビュー行列とプロジェクション行列の積 (Inverse * Transpose)
 
 	float				m_tmpDistance;		///< ノードに近いライトを検索するときの作業用変数
+};
+
+
+/**
+	@brief
+*/
+class Light
+	: public WorldObject
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+	LightComponent* GetLightComponent() const;
+
+LN_CONSTRUCT_ACCESS:
+	Light();
+	virtual ~Light();
+	void Initialize(SceneGraph* owner);
+
+LN_INTERNAL_ACCESS:
+
+private:
+	RefPtr<LightComponent>	m_component;
 };
 
 LN_NAMESPACE_SCENE_END

@@ -24,7 +24,7 @@ HugePlanePtr HugePlane::Create(const Vector3& direction)
 
 //------------------------------------------------------------------------------
 HugePlane::HugePlane()
-	: VisualNode()
+	: VisualComponent()
 {
 }
 
@@ -36,7 +36,7 @@ HugePlane::~HugePlane()
 //------------------------------------------------------------------------------
 void HugePlane::Initialize(SceneGraph* sceneGraph, const Vector3& direction)
 {
-	VisualNode::Initialize(sceneGraph, 1);
+	VisualComponent::Initialize(sceneGraph, 1);
 	sceneGraph->GetRootNode()->AddChild(this);
 	SetAutoRemove(true);
 

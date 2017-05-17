@@ -51,13 +51,13 @@ void DrawingContext::Initialize()
 }
 
 //------------------------------------------------------------------------------
-void DrawingContext::DrawTexture(const RectF& destRect, Texture* texture, const RectF& sourceRect)
+void DrawingContext::DrawTexture(const Rect& destRect, Texture* texture, const Rect& sourceRect)
 {
 	DrawSprite(Vector3(destRect.x, destRect.y, 0), destRect.GetSize(), Vector2(0, 0), texture, sourceRect, Color::White, SpriteBaseDirection::Basic2D, nullptr);
 }
 
 //------------------------------------------------------------------------------
-void DrawingContext::DrawBoxBackground(const RectF& rect, const CornerRadius& cornerRadius)
+void DrawingContext::DrawBoxBackground(const Rect& rect, const CornerRadius& cornerRadius)
 {
 	Brush* brush = GetBrush();
 	if (brush != nullptr &&
@@ -75,7 +75,7 @@ void DrawingContext::DrawBoxBackground(const RectF& rect, const CornerRadius& co
 
 //------------------------------------------------------------------------------
 void DrawingContext::DrawBoxBorder(
-	const RectF& rect, const ThicknessF& thickness, const CornerRadius& cornerRadius,
+	const Rect& rect, const ThicknessF& thickness, const CornerRadius& cornerRadius,
 	const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor,
 	BorderDirection borderDirection)
 {
@@ -89,7 +89,7 @@ void DrawingContext::DrawBoxBorder(
 
 //------------------------------------------------------------------------------
 void DrawingContext::DrawBoxBorder(
-	const RectF& rect, const ThicknessF& thickness,
+	const Rect& rect, const ThicknessF& thickness,
 	const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor,
 	float ltRad, float rtRad, float lbRad, float rbRad, BorderDirection borderDirection,
 	const Color& shadowColor, float shadowBlur, float shadowWidth, ShadowDirection shadowDirection)
@@ -104,7 +104,7 @@ void DrawingContext::DrawBoxBorder(
 }
 
 //------------------------------------------------------------------------------
-void DrawingContext::DrawBoxShadow(const RectF& rect, const CornerRadius& cornerRadius, const Color& color, float blur, float width, ShadowDirection shadowDirection)
+void DrawingContext::DrawBoxShadow(const Rect& rect, const CornerRadius& cornerRadius, const Color& color, float blur, float width, ShadowDirection shadowDirection)
 {
 	auto* ptr = ResolveDrawElement<DrawElement_DrawShapesRendererCommandList>(detail::DrawingSectionId::NanoVG, GetManager()->GetInternalContext()->m_shapesRenderer, nullptr);
 	auto* list = ptr->GetGCommandList(this);

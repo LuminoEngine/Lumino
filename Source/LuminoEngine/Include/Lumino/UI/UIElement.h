@@ -153,9 +153,9 @@ public:
 
 	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseEnterEvent);				/**< MouseEnter ルーティングイベントの識別子 */
 	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseLeaveEvent);				/**< MouseLeave ルーティングイベントの識別子 */
-	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseMoveEvent);				/**< MouseMove ルーティングイベントの識別子 */
-	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseDownEvent);				/**< MouseDown ルーティングイベントの識別子 */
-	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseUpEvent);					/**< MouseUp ルーティングイベントの識別子 */
+	//LN_ROUTED_EVENT(UIMouseEventArgs,	MouseMoveEvent);				/**< MouseMove ルーティングイベントの識別子 */
+	//LN_ROUTED_EVENT(UIMouseEventArgs,	MouseDownEvent);				/**< MouseDown ルーティングイベントの識別子 */
+	//LN_ROUTED_EVENT(UIMouseEventArgs,	MouseUpEvent);					/**< MouseUp ルーティングイベントの識別子 */
 	LN_ROUTED_EVENT(UIMouseEventArgs,	KeyDownEvent);					/**< KeyDown ルーティングイベントの識別子 */
 	LN_ROUTED_EVENT(UIMouseEventArgs,	KeyUpEvent);					/**< KeyUp ルーティングイベントの識別子 */
 	LN_ROUTED_EVENT(UIKeyEventArgs,		TextInputEvent);				/**< TextInput ルーティングイベントの識別子 */
@@ -231,8 +231,14 @@ public:
 
 	//void SetSize(const Size& size) { m_size = size; }
 
+	void SetFocusable(bool value) { m_isFocusable = value; }
+
 	/** この要素がフォーカスを得ることができるかを確認します。*/
-	virtual bool IsFocusable() const { return false; }
+	bool IsFocusable() const { return m_isFocusable; }
+
+	void SetHitTestVisible(bool value) { m_isHitTestVisible = value; }
+
+	bool IsHitTestVisible() const { return m_isHitTestVisible; }
 
 	/** レイアウト処理の測定パスの実行中にこの要素が計算したサイズを取得します。この値は子要素が親要素へ要求する、子要素自身の最低サイズです。*/
 	const Size& GetDesiredSize() const { return m_desiredSize; }
@@ -260,7 +266,7 @@ public:
 
 
 	virtual void MeasureLayout(const Size& availableSize) override;
-	virtual void ArrangeLayout(const RectF& finalLocalRect) override;
+	virtual void ArrangeLayout(const Rect& finalLocalRect) override;
 
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
 	void RaiseEvent(const UIEventInfo* ev, UIElement* sender, UIEventArgs* e);
@@ -371,10 +377,10 @@ LN_INTERNAL_ACCESS:
 	detail::InvalidateFlags GetInvalidateFlags() const { return m_invalidateFlags; }
 	UIElement* CheckMouseHoverElement(const PointF& globalPt);
 	virtual bool OnEvent(detail::UIInternalEventType type, UIEventArgs* args);
-	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e);
+	virtual void OnRoutedEvent(UIEventArgs* e);
 	void CallOnGotFocus();
 	void CallOnLostFocus();
-	const RectF& GetFinalGlobalRect() const { return m_finalGlobalRect; }
+	const Rect& GetFinalGlobalRect() const { return m_finalGlobalRect; }
 	virtual detail::SpcialUIElementType GetSpcialUIElementType() const;
 	UIElement* GetVisualParent() const { return m_visualParent; }
 
@@ -382,7 +388,7 @@ LN_INTERNAL_ACCESS:
 	void Render(DrawingContext* g);
 
 protected:
-	virtual void UpdateTransformHierarchy(const RectF& parentGlobalRect) override;
+	virtual void UpdateTransformHierarchy(const Rect& parentGlobalRect) override;
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	virtual const HAlignment* GetPriorityContentHAlignment();
@@ -410,16 +416,16 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual const VAlignment* GetLayoutContentVAlignment() override;
 	virtual const Size& GetLayoutDesiredSize() const override;
 	virtual void SetLayoutDesiredSize(const Size& size) override;
-	virtual void SetLayoutFinalLocalRect(const RectF& rect) override;
-	virtual const RectF& GetLayoutFinalLocalRect() const override;
-	virtual void SetLayoutFinalGlobalRect(const RectF& rect) override;
+	virtual void SetLayoutFinalLocalRect(const Rect& rect) override;
+	virtual const Rect& GetLayoutFinalLocalRect() const override;
+	virtual void SetLayoutFinalGlobalRect(const Rect& rect) override;
 
 
 private:
 	void UpdateLocalStyleAndApplyProperties(UIStyleTable* styleTable, UIStylePropertyTable* parentStyle);
 
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
-	void RaiseEventInternal(const UIEventInfo* ev, UIEventArgs* e);
+	void RaiseEventInternal(UIEventArgs* e);
 
 	detail::UIManager*		m_manager;
 	//UILayoutView*			m_ownerLayoutView;
@@ -429,8 +435,8 @@ private:
 	UIElement*				m_logicalParent;
 	UIStylePropertyTable*	m_localStyle;			// 内部的に使用されるスタイル。親や VisualState から取得したスタイルをマージしたもの。
 	Size					m_desiredSize;			// MeasureLayout() で決定されるこのコントロールの要求サイズ
-	RectF					m_finalLocalRect;		// 描画に使用する最終境界矩形 (グローバル座標系=RootFrame のローカル座標系)
-	RectF					m_finalGlobalRect;
+	Rect					m_finalLocalRect;		// 描画に使用する最終境界矩形 (グローバル座標系=RootFrame のローカル座標系)
+	Rect					m_finalGlobalRect;
 	String					m_elementName;				// 要素名 ("UITextBlock" など) TODO: いらないかも
 	RefPtr<UIVisualStateManager>	m_visualStateManager;
 	String							m_styleSubControlOwnerName;
@@ -470,6 +476,8 @@ private:
 	detail::InvalidateFlags	m_invalidateFlags;
 	bool					m_isEnabled;
 	bool					m_isMouseOver;
+	bool					m_isHitTestVisible;
+	bool					m_isFocusable;
 	bool					m_hasFocus;
 
 	UIEventHandler::EventType	m_onGotFocus;

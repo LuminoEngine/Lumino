@@ -6,6 +6,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
+#if 0
 namespace detail
 {
 
@@ -79,7 +80,7 @@ private:
 };
 
 } // namespace detail 
-
+#endif
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
 

@@ -16,7 +16,7 @@ protected:
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Pmx, Basic)
 {
-	auto mesh = SkinnedMesh::Create(_T("D:/MMD/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
+	auto mesh = SkinnedMeshComponent::Create(_T("D:/MMD/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
 	//auto clip = AnimationClip::Create(_T("D:/MMD/モーション/Love&Joy/love&joyお面無しver.vmd"));
 	//auto clip = AnimationClip::Create(_T("D:/MMD/モーション/Zigg-Zagg/ZZ-MikuV2.vmd"));
 	auto clip1 = AnimationClip::Create(_T("D:/MMD/モーション/走歩スv2.2full/歩く/A01_SO_女の子歩き_s591_p40.vmd"));
@@ -59,7 +59,7 @@ TEST_F(Test_Graphics_Pmx, Skinning)
 {
 	auto shader = MMEShader::Create(LN_LOCALFILE("../../../src/Scene/Resource/ForwardRenderingSkinnedMesh3D.fx"));
 	//auto shader = MMEShader::Create(LN_LOCALFILE("TestData/BasicForwardRendering.fx"));
-	auto mesh = StaticMesh::CreatePlane(Vector2(8, 8), 8, 8);
+	auto mesh = StaticMeshComponent::CreatePlane(Vector2(8, 8), 8, 8);
 	auto res = mesh->GetStaticMeshModel()->GetMeshResource();
 
 	for (int i = 0; i < res->GetVertexCount(); ++i)

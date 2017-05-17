@@ -132,7 +132,7 @@ public:
 	}
 
 private:
-	RefPtr<Shader>	m_shader;		// default shader (on VisualNode, マテリアルの shader が null のときに使われる)
+	RefPtr<Shader>	m_shader;		// default shader (on VisualComponent, マテリアルの shader が null のときに使われる)
 	float			m_opacity;
 	Color			m_colorScale;
 	Color			m_blendColor;

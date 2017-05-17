@@ -29,6 +29,8 @@ UIControl::~UIControl()
 void UIControl::Initialize()
 {
 	UIElement::Initialize();
+	SetFocusable(true);
+
 	auto* vsm = GetVisualStateManager();
 	vsm->RegisterVisualState(UIVisualStates::CommonGroup, UIVisualStates::NormalState);
 	vsm->RegisterVisualState(UIVisualStates::CommonGroup, UIVisualStates::MouseOverState);
@@ -45,12 +47,6 @@ void UIControl::Initialize()
 	m_items = RefPtr<UIElementCollection>::MakeRef(this);
 	auto panel = NewObject<UIAbsoluteLayout>();
 	SetLayoutPanel(panel);
-}
-
-//------------------------------------------------------------------------------
-bool UIControl::IsFocusable() const
-{
-	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -184,7 +180,7 @@ Size UIControl::ArrangeOverride(const Size& finalSize)
 	Size childDesiredSize = m_itemsHostPanel->GetLayoutDesiredSize();
 	childDesiredSize.width = std::max(finalSize.width, childDesiredSize.width);
 	childDesiredSize.height = std::max(finalSize.height, childDesiredSize.height);
-	m_itemsHostPanel->ArrangeLayout(RectF(0.0f, 0.0f, childDesiredSize));
+	m_itemsHostPanel->ArrangeLayout(Rect(0.0f, 0.0f, childDesiredSize));
 	return finalSize;
 #else
 	return detail::LayoutImpl<UIControl>::UILayoutPanel_ArrangeOverride(this, Vector2::Zero, finalSize);
@@ -215,19 +211,19 @@ const VAlignment* UIControl::GetPriorityContentVAlignment()
 }
 
 //------------------------------------------------------------------------------
-void UIControl::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
+void UIControl::OnRoutedEvent(UIEventArgs* e)
 {
 	// TODO: ここでやるべきではない。MFC なら PreTranslate 相当なので。On～で行う。
-	if (ev == UIElement::MouseEnterEvent)
+	if (e->GetType() == UIElement::MouseEnterEvent)
 	{
 		GoToVisualState(UIVisualStates::MouseOverState);
 	}
-	else if (ev == UIElement::MouseLeaveEvent)
+	else if (e->GetType() == UIElement::MouseLeaveEvent)
 	{
 		GoToVisualState(UIVisualStates::NormalState);
 	}
 
-	UIElement::OnRoutedEvent(ev, e);
+	UIElement::OnRoutedEvent(e);
 }
 
 //------------------------------------------------------------------------------

@@ -96,13 +96,14 @@ public:
 	TEventArgs* Create(TArgs... args)
 	{
 		TEventArgs* e = static_cast<TEventArgs* >(Find(tr::TypeInfo::GetTypeInfo<TEventArgs>()));
-		if (e == NULL) {
-			e = LN_NEW TEventArgs(args...);
-			Register(e);
+		if (e == nullptr) {
+			auto eRef = NewObject<TEventArgs>(args...);
+			Register(eRef);
+			e = eRef;
 		}
 		else {
-			e->~TEventArgs();
-			new (e)TEventArgs(args...);
+			static_cast<UIEventArgs*>(e)->~UIEventArgs();
+			PlacementNewObject<TEventArgs>(e, args...);
 		}
 		e->handled = false;
 		e->AddRef();
@@ -136,6 +137,7 @@ private:
 		{
 			list = LN_NEW EventArgsList();
 			m_pool.Add(tr::TypeInfo::GetTypeInfo(e), list);
+			e->AddRef();
 		}
 		list->Add(e);
 	}

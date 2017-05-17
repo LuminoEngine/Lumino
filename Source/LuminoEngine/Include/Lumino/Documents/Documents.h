@@ -286,7 +286,7 @@ class VisualBlock;
 //{
 //public:
 //
-//	RectF	m_localRect;
+//	Rect	m_localRect;
 //
 //LN_CONSTRUCT_ACCESS:
 //	VisualGlyph();
@@ -295,7 +295,7 @@ class VisualBlock;
 //
 //LN_INTERNAL_ACCESS:
 //	//void MeasureLayout(const Size& availableSize);
-//	//void ArrangeLayout(const RectF& finalLocalRect);
+//	//void ArrangeLayout(const Rect& finalLocalRect);
 //	//const Size& GetDesiredSize() const { return m_desiredSize; }
 //
 //	void Render(DrawList* renderer);
@@ -312,7 +312,7 @@ class VisualTextFragment
 {
 public:
 
-	RectF	m_localRect;
+	Rect	m_localRect;
 	RefPtr<GlyphRun>	m_glyphRun;
 
 LN_CONSTRUCT_ACCESS:
@@ -322,7 +322,7 @@ LN_CONSTRUCT_ACCESS:
 
 LN_INTERNAL_ACCESS:
 	//void MeasureLayout(const Size& availableSize);
-	//void ArrangeLayout(const RectF& finalLocalRect);
+	//void ArrangeLayout(const Rect& finalLocalRect);
 	//const Size& GetDesiredSize() const { return m_desiredSize; }
 
 	void Render(DrawList* renderer);
@@ -360,7 +360,7 @@ LN_CONSTRUCT_ACCESS:
 
 LN_INTERNAL_ACCESS:
 	void MeasureLayout(const Size& availableSize, VisualBlock* rootBlock);
-	//void ArrangeLayout(const RectF& finalLocalRect);
+	//void ArrangeLayout(const Rect& finalLocalRect);
 	void Render(const Matrix& transform, ln::detail::IDocumentsRenderer* renderer);
 
 private:
@@ -389,7 +389,7 @@ LN_CONSTRUCT_ACCESS:
 
 LN_INTERNAL_ACCESS:
 	void MeasureLayout(const Size& availableSize);
-	void ArrangeLayout(const RectF& finalLocalRect);
+	void ArrangeLayout(const Rect& finalLocalRect);
 	void Render(DrawList* renderer);
 	void AddVisualFragment(VisualTextFragment* glyph) { m_visualFragments.Add(glyph); }
 
@@ -414,7 +414,7 @@ LN_CONSTRUCT_ACCESS:
 
 LN_INTERNAL_ACCESS:
 	void MeasureLayout(const Size& availableSize);
-	void ArrangeLayout(const RectF& finalLocalRect);
+	void ArrangeLayout(const Rect& finalLocalRect);
 	void Render(DrawList* renderer);
 
 private:

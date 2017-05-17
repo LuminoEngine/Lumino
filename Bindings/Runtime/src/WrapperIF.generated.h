@@ -87,7 +87,7 @@ public:
 
 };
 
-class LNVisualNode : public VisualNode
+class LNVisualNode : public VisualComponent
 {
 public:
 
@@ -103,7 +103,7 @@ public:
 
 };
 
-class LNSprite : public Sprite
+class LNSprite : public SpriteComponent
 {
 public:
 
@@ -119,7 +119,7 @@ public:
 
 };
 
-class LNSprite2D : public Sprite2D
+class LNSprite2D : public Sprite2DComponent
 {
 public:
 
@@ -135,7 +135,7 @@ public:
 
 };
 
-class LNSprite3D : public Sprite3D
+class LNSprite3D : public Sprite3DComponent
 {
 public:
 
@@ -151,7 +151,7 @@ public:
 
 };
 
-class LNStaticMesh : public StaticMesh
+class LNStaticMesh : public StaticMeshComponent
 {
 public:
 
@@ -274,7 +274,7 @@ public:
 
 };
 
-class LNCollider : public Collider
+class LNCollider : public CollisionBody
 {
 public:
 

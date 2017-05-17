@@ -25,6 +25,7 @@ UILayoutPanel::~UILayoutPanel()
 void UILayoutPanel::Initialize()
 {
 	UIElement::Initialize();
+	SetHitTestVisible(false);
 	m_children = RefPtr<UIElementCollection>::MakeRef(this);
 
 	// Panel 系のデフォルトは Stretch
@@ -255,7 +256,7 @@ Size UIAbsoluteLayout::ArrangeOverride(const Size& finalSize)
 		//size.width = Math::IsNaN(layoutSize.width) ? desiredSize.width : layoutSize.width;
 		//size.height = Math::IsNaN(layoutSize.height) ? desiredSize.height : layoutSize.height;
 
-		RectF childRect(child->GetPositionInternal(), size/*child->GetSizeInternal()*/);
+		Rect childRect(child->GetPositionInternal(), size/*child->GetSizeInternal()*/);
 		AlignmentAnchor anchor = child->GetAnchorInternal();
 		
 		if (anchor != AlignmentAnchor::None)

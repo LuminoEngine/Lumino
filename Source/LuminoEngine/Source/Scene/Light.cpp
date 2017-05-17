@@ -1,16 +1,17 @@
 ﻿
 #include "../Internal.h"
 #include <Lumino/Scene/Light.h>
+#include <Lumino/Scene/WorldObject.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 //==============================================================================
-// Light
+// LightComponent
 //==============================================================================
 
 //------------------------------------------------------------------------------
-Light::Light()
+LightComponent::LightComponent()
 	: SceneNode()
 	, m_lightInfo(false)
 	, m_enabled(true)
@@ -22,12 +23,12 @@ Light::Light()
 }
 
 //------------------------------------------------------------------------------
-Light::~Light()
+LightComponent::~LightComponent()
 {
 }
 
 //------------------------------------------------------------------------------
-void Light::Initialize(SceneGraph* owner, LightType type)
+void LightComponent::Initialize(SceneGraph* owner, LightType type)
 {
 	SceneNode::Initialize(owner);
 	m_lightInfo = RefPtr<detail::DynamicLightInfo>::MakeRef();
@@ -45,17 +46,19 @@ void Light::Initialize(SceneGraph* owner, LightType type)
 }
 
 //------------------------------------------------------------------------------
-void Light::UpdateMatrices(/*const Size& viewSize*/)
+void LightComponent::UpdateMatrices(/*const Size& viewSize*/)
 {
+	const Matrix& worldMatrix = GetOwnerObject()->transform.GetWorldMatrix();
+
 	// 正面方向
-	Vector3 direction = Vector3::TransformCoord(Vector3(0, 0, 1), m_combinedGlobalMatrix);
+	Vector3 direction = Vector3::TransformCoord(Vector3(0, 0, 1), worldMatrix);
 
 	// 注視点
-	Vector3 lookAt = m_combinedGlobalMatrix.GetPosition() + direction;
+	Vector3 lookAt = worldMatrix.GetPosition() + direction;
 
 	// ビュー行列
 	Vector3 up = Vector3(0, 1, 0);
-	m_viewMatrix = Matrix::MakeLookAtLH(m_combinedGlobalMatrix.GetPosition(), lookAt, up);
+	m_viewMatrix = Matrix::MakeLookAtLH(worldMatrix.GetPosition(), lookAt, up);
 
 	// プロジェクション行列の更新
 	// TODO: 視野角とnear,far
@@ -79,14 +82,45 @@ void Light::UpdateMatrices(/*const Size& viewSize*/)
 }
 
 //------------------------------------------------------------------------------
-void Light::OnRender2(DrawList* renderer)
+void LightComponent::OnRender(DrawList* renderer)
 {
 	if (m_enabled)
 	{
 		UpdateMatrices();
-		m_lightInfo->transform = m_combinedGlobalMatrix;
+		m_lightInfo->transform = GetOwnerObject()->transform.GetWorldMatrix();
 		renderer->AddDynamicLightInfo(m_lightInfo);
 	}
+}
+
+//==============================================================================
+// Light
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Light, WorldObject);
+
+//------------------------------------------------------------------------------
+Light::Light()
+	: WorldObject()
+	, m_component(nullptr)
+{
+}
+
+//------------------------------------------------------------------------------
+Light::~Light()
+{
+}
+
+//------------------------------------------------------------------------------
+void Light::Initialize(SceneGraph* owner)
+{
+	WorldObject::Initialize();
+	m_component = NewObject<LightComponent>(owner, LightType_Directional);
+	AddComponent(m_component);
+}
+
+//------------------------------------------------------------------------------
+LightComponent* Light::GetLightComponent() const
+{
+	return m_component;
 }
 
 LN_NAMESPACE_SCENE_END

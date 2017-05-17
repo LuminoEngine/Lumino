@@ -47,7 +47,7 @@ LN_CONSTRUCT_ACCESS:
 	void Initialize();
 
 protected:
-	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e) override;
+	virtual void OnRoutedEvent(UIEventArgs* e) override;
 	virtual void OnDragStarted(UIDragDeltaEventArgs* e) { if (!e->handled) { RaiseEvent(DragStartedEventId, this, e); } }
 	virtual void OnDragDelta(UIDragDeltaEventArgs* e) { if (!e->handled) { RaiseEvent(DragDeltaEventId, this, e); } }
 	virtual void OnDragCompleted(UIDragDeltaEventArgs* e) { if (!e->handled) { RaiseEvent(DragCompletedEventId, this, e); } }
@@ -236,7 +236,7 @@ LN_CONSTRUCT_ACCESS:
 
 protected:
 	// UIElement interface
-	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e) override;
+	virtual void OnRoutedEvent(UIEventArgs* e) override;
 	virtual Size MeasureOverride(const Size& constraint) override;
 	virtual Size ArrangeOverride(const Size& finalSize) override;
 	//virtual void GetStyleClassName(String* outSubStateName);
@@ -270,7 +270,7 @@ protected:
 	// UIElement interface
 	virtual Size MeasureOverride(const Size& constraint) override;
 	virtual Size ArrangeOverride(const Size& finalSize) override;
-	virtual void OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e) override;
+	virtual void OnRoutedEvent(UIEventArgs* e) override;
 
 	// UIControl interface
 	virtual void OnLayoutPanelChanged(UILayoutPanel* newPanel) override;

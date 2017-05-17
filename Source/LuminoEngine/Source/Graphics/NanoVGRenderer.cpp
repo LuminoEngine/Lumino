@@ -1205,7 +1205,7 @@ void NanoVGCommandHelper::ExpandBrushState(Brush* brush, NanoVGBrush* outBrush)
 		}
 		else
 		{
-			RectF rc = static_cast<TextureBrush*>(brush)->GetActualSourceRect();
+			Rect rc = static_cast<TextureBrush*>(brush)->GetActualSourceRect();
 			outBrush->type = NanoVGBrushType::ImagePattern;
 			outBrush->ImagePatternInfo.ox = rc.x;
 			outBrush->ImagePatternInfo.oy = rc.y;

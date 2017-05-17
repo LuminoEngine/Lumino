@@ -150,11 +150,11 @@ public:
 
 /** 2次元の矩形を表すクラスです。*/
 LN_STRUCT()
-class RectF
+struct Rect
 {
 public:
-	static const RectF	Zero;	/**< (0, 0, 0, 0) */
-	static const RectF	Empty;	/**< (0, 0, -1, -1) */
+	static const Rect	Zero;	/**< (0, 0, 0, 0) */
+	static const Rect	Empty;	/**< (0, 0, -1, -1) */
 
 public:
 
@@ -178,23 +178,23 @@ public:
 
 	/** すべての要素を 0 で初期化します。*/
 	LN_METHOD()
-	RectF() { Set(0, 0, 0, 0); }
+	Rect() { Set(0, 0, 0, 0); }
 
 	/** 位置とサイズを指定して初期化します。*/
 	LN_METHOD()
-	RectF(float x, float y, float width, float height) { Set(x, y, width, height); }
+	Rect(float x, float y, float width, float height) { Set(x, y, width, height); }
 	
 	/** 位置とサイズを指定して初期化します。*/
-	RectF(const PointF& point, const Size& size) { Set(point.x, point.y, size.width, size.height); }
+	Rect(const PointF& point, const Size& size) { Set(point.x, point.y, size.width, size.height); }
 
 	/** 位置とサイズを指定して初期化します。*/
-	RectF(float x, float y, const Size& size) { Set(x, y, size.width, size.height); }
+	Rect(float x, float y, const Size& size) { Set(x, y, size.width, size.height); }
 
 	/** 位置とサイズを指定して初期化します。 */
-	RectF(const PointF& point, float width, float height) { Set(point.x, point.y, width, height); }
+	Rect(const PointF& point, float width, float height) { Set(point.x, point.y, width, height); }
 
 	/** 指定した矩形をコピーして初期化します。*/
-	RectF(const RectF& rect) { Set(rect.x, rect.y, rect.width, rect.height); }
+	Rect(const Rect& rect) { Set(rect.x, rect.y, rect.width, rect.height); }
 
 public:
 
@@ -264,7 +264,7 @@ public:
 	/**
 		@brief	指定した矩形全体が、この矩形内部に含まれているかを判定します。
 	*/
-	bool Contains(const RectF& rect) const
+	bool Contains(const Rect& rect) const
 	{
 		if (IsEmpty() || rect.IsEmpty()) {
 			return false;
@@ -279,7 +279,7 @@ public:
 	/**
 		@brief	指定した矩形に収まるように、この矩形をクリッピングします。
 	*/
-	void Clip(const RectF& rect)
+	void Clip(const Rect& rect)
 	{
 		GeometryStructsHelper::Clip(this, rect);
 	}
@@ -298,8 +298,8 @@ public:
 	}
 
 public:
-	bool operator == (const RectF& obj) const { return (x == obj.x && y == obj.y && width == obj.width && height == obj.height); }
-	bool operator != (const RectF& obj) const { return !operator==(obj); }
+	bool operator == (const Rect& obj) const { return (x == obj.x && y == obj.y && width == obj.width && height == obj.height); }
+	bool operator != (const Rect& obj) const { return !operator==(obj); }
 };
 
 // 内部用
@@ -330,7 +330,7 @@ public:
 
 	void Clip(const RectI& rect) { GeometryStructsHelper::Clip(this, rect); }
 
-	static RectI FromFloatRect(const RectF& rect) { return RectI((float)rect.x, (float)rect.y, (float)rect.width, (float)rect.height); }
+	static RectI FromFloatRect(const Rect& rect) { return RectI((float)rect.x, (float)rect.y, (float)rect.width, (float)rect.height); }
 
 	bool operator == (const RectI& right) const { return (x == right.x && y == right.y && width == right.width && height == right.height); }
 	bool operator != (const RectI& right) const { return !operator==(right); }

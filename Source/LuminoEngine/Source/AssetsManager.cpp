@@ -64,8 +64,7 @@ Texture2DPtr AssetsManager::LoadTexture(const StringRef& filePath)
 	if (ptr != nullptr) { return Texture2DPtr(ptr, false); }
 
 	// TODO: mipmap ON にしたい。ただ、サンプラステートを変更しないとならないようなので動作確認してから。
-	Texture2DPtr ref = Texture2DPtr::MakeRef();
-	ref->Initialize(filePath, TextureFormat::R8G8B8A8, false);
+	auto ref = NewObject<Texture2D>(filePath, TextureFormat::R8G8B8A8, false);
 
 	m_textureCache->RegisterCacheObject(key, ref);
 	return ref;

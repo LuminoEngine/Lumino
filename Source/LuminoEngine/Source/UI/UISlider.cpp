@@ -152,13 +152,13 @@ Orientation UISlider::GetOrientation() const
 }
 
 //------------------------------------------------------------------------------
-void UISlider::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
+void UISlider::OnRoutedEvent(UIEventArgs* e)
 {
-	if (ev == UIThumb::DragStartedEventId)
+	if (e->GetType() == UIThumb::DragStartedEventId)
 	{
 		m_dragStartValue = m_track->GetValue();
 	}
-	else if (ev == UIThumb::DragDeltaEventId)
+	else if (e->GetType() == UIThumb::DragDeltaEventId)
 	{
 		auto* e2 = static_cast<UIDragDeltaEventArgs*>(e);
 		float newValue = m_dragStartValue + m_track->ValueFromDistance(e2->horizontalChange, e2->verticalChange);
@@ -183,12 +183,12 @@ void UISlider::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 		//	break;
 		//}
 	}
-	else if (ev == UIThumb::DragCompletedEventId)
+	else if (e->GetType() == UIThumb::DragCompletedEventId)
 	{
 		//auto args = UIScrollEventArgs::Create(this, m_track->GetValue(), ScrollEventType::EndScroll);
 		//RaiseEvent(ScrollEventId, this, args);
 	}
-	UIControl::OnRoutedEvent(ev, e);
+	UIControl::OnRoutedEvent(e);
 }
 
 //------------------------------------------------------------------------------
@@ -206,10 +206,10 @@ Size UISlider::ArrangeOverride(const Size& finalSize)
 	switch (orientation)
 	{
 	case Orientation::Horizontal:
-		m_track->ArrangeLayout(RectF(0, 0, finalSize));
+		m_track->ArrangeLayout(Rect(0, 0, finalSize));
 		break;
 	case Orientation::Vertical:
-		m_track->ArrangeLayout(RectF(0, 0, finalSize));
+		m_track->ArrangeLayout(Rect(0, 0, finalSize));
 		break;
 	default:
 		LN_NOTIMPLEMENTED();

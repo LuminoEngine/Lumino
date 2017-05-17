@@ -13,21 +13,17 @@ class SceneGraph;
 class Layer;
 class DrawingLayer;
 class SceneNode;
-class VisualNode;
-class Camera;
-class Light;
+class VisualComponent;
+class CameraComponent;
+class LightComponent;
 class EffectBatchRendererNode;
 
-class Sprite3D;
-typedef RefPtr<Sprite3D>	Sprite3DPtr;
-class Sprite2D;
-typedef RefPtr<Sprite2D>	Sprite2DPtr;
 class TileMap;
 typedef RefPtr<TileMap>		TileMapPtr;
 
 class CameraBehavior;
 
-typedef List<Light*>			LightNodeList;
+typedef List<LightComponent*>			LightNodeList;
 
 /// ノード種別
 enum SceneNodeType

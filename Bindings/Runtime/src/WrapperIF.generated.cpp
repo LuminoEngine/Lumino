@@ -60,31 +60,31 @@ struct LNRectF
 LN_API LNResultCode LNRectF_RectF(LNRectF* rectf)
 {
     LWIG_FUNC_TRY_BEGIN;
-    new (reinterpret_cast<RectF*>(rectf)) RectF();
+    new (reinterpret_cast<Rect*>(rectf)) Rect();
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNRectF_RectFXYWH(LNRectF* rectf, float x, float y, float width, float height)
 {
     LWIG_FUNC_TRY_BEGIN;
-    new (reinterpret_cast<RectF*>(rectf)) RectF(x, y, width, height);
+    new (reinterpret_cast<Rect*>(rectf)) Rect(x, y, width, height);
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNRectF_GetLeft(const LNRectF* rectf, float* outReturn)
 {
     LWIG_FUNC_TRY_BEGIN;
-    *outReturn = (reinterpret_cast<const RectF*>(rectf)->GetLeft());
+    *outReturn = (reinterpret_cast<const Rect*>(rectf)->GetLeft());
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNRectF_SetSize(LNRectF* rectf, const LNSize* size)
 {
     LWIG_FUNC_TRY_BEGIN;
-    (reinterpret_cast<RectF*>(rectf)->SetSize(*reinterpret_cast<const Size*>(size)));
+    (reinterpret_cast<Rect*>(rectf)->SetSize(*reinterpret_cast<const Size*>(size)));
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNRectF_GetSize(const LNRectF* rectf, LNSize* outReturn)
 {
     LWIG_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LNSize&>(reinterpret_cast<const RectF*>(rectf)->GetSize());
+    *outReturn = reinterpret_cast<const LNSize&>(reinterpret_cast<const Rect*>(rectf)->GetSize());
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNEngine_Initialize()
@@ -235,7 +235,7 @@ LN_API void LNSceneNode_SetBindingTypeInfo(void* data)
 }
 LN_API void LNVisualNode_SetBindingTypeInfo(void* data)
 {
-    tr::TypeInfo::GetTypeInfo<VisualNode>()->SetBindingTypeInfo(data);
+    tr::TypeInfo::GetTypeInfo<VisualComponent>()->SetBindingTypeInfo(data);
 }
 LN_API LNResultCode LNSprite_SetTexture(LNHandle sprite, LNHandle texture)
 {
@@ -251,7 +251,7 @@ LN_API LNResultCode LNSprite_GetTexture(LNHandle sprite, LNHandle* outReturn)
 }
 LN_API void LNSprite_SetBindingTypeInfo(void* data)
 {
-    tr::TypeInfo::GetTypeInfo<Sprite>()->SetBindingTypeInfo(data);
+    tr::TypeInfo::GetTypeInfo<SpriteComponent>()->SetBindingTypeInfo(data);
 }
 LN_API LNResultCode LNSprite2D_Initialize(LNHandle* outSprite2D)
 {
@@ -267,15 +267,15 @@ LN_API LNResultCode LNSprite2D_InitializeT(LNHandle texture, LNHandle* outSprite
 }
 LN_API void LNSprite2D_SetBindingTypeInfo(void* data)
 {
-    tr::TypeInfo::GetTypeInfo<Sprite2D>()->SetBindingTypeInfo(data);
+    tr::TypeInfo::GetTypeInfo<Sprite2DComponent>()->SetBindingTypeInfo(data);
 }
 LN_API void LNSprite3D_SetBindingTypeInfo(void* data)
 {
-    tr::TypeInfo::GetTypeInfo<Sprite3D>()->SetBindingTypeInfo(data);
+    tr::TypeInfo::GetTypeInfo<Sprite3DComponent>()->SetBindingTypeInfo(data);
 }
 LN_API void LNStaticMesh_SetBindingTypeInfo(void* data)
 {
-    tr::TypeInfo::GetTypeInfo<StaticMesh>()->SetBindingTypeInfo(data);
+    tr::TypeInfo::GetTypeInfo<StaticMeshComponent>()->SetBindingTypeInfo(data);
 }
 LN_API void LNComponent_SetBindingTypeInfo(void* data)
 {
@@ -387,7 +387,7 @@ LN_API LNResultCode LNCollider_Initialize(LNHandle* outCollider)
 }
 LN_API void LNCollider_SetBindingTypeInfo(void* data)
 {
-    tr::TypeInfo::GetTypeInfo<Collider>()->SetBindingTypeInfo(data);
+    tr::TypeInfo::GetTypeInfo<CollisionBody>()->SetBindingTypeInfo(data);
 }
 
 

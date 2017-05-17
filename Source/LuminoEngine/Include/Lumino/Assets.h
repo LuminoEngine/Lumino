@@ -11,6 +11,7 @@ class Assets
 {
 public:
 
+
 	static Texture2DPtr LoadTexture(const StringRef& filePath);
 
 };

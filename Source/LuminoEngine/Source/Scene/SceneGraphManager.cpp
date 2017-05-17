@@ -4,7 +4,6 @@
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Scene/SceneNode.h>
 #include "SceneGraphManager.h"
-#include "RenderingPass.h"
 
 // TODO: 移動
 #include <Lumino/Scene/Camera.h>

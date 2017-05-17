@@ -7,10 +7,12 @@ LN_NAMESPACE_BEGIN
 class UIMainWindow;
 class UIViewport;
 class UIViewportLayer;
-class SceneGraph2D;
-class SceneGraph3D;
-class Light;
+//class SceneGraph2D;
+//class SceneGraph3D;
+class LightComponent;
 class World;
+class World2D;
+class World3D;
 
 /**
 	@brief		アプリケーション全体にかかわる処理を行います。
@@ -63,16 +65,16 @@ public:
 
 
 
-	static World* GetWorld2D();
-	static World* GetWorld3D();
+	static World2D* GetWorld2D();
+	static World3D* GetWorld3D();
 
 	static UIMainWindow* GetMainWindow();
 	static UIViewport* GetMainViewport();
 	static UIViewportLayer* GetDefault2DLayer();
 	static UIViewportLayer* GetDefault3DLayer();
-	static SceneGraph2D* GetDefaultSceneGraph2D();
-	static SceneGraph3D* GetDefaultSceneGraph3D();
-	static Light* GetMainLight3D();
+	//static SceneGraph2D* GetDefaultSceneGraph2D();
+	//static SceneGraph3D* GetDefaultSceneGraph3D();
+	//static LightComponent* GetMainLight3D();
 };
 
 LN_NAMESPACE_END

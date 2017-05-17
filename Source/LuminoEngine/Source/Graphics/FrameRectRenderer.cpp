@@ -85,7 +85,7 @@ void FrameRectRendererCore::SetState(const FrameRectRendererState& state)
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRendererCore::Draw(const Matrix& transform, const RectF& rect)
+void FrameRectRendererCore::Draw(const Matrix& transform, const Rect& rect)
 {
 	if (rect.IsEmpty()) return;
 
@@ -104,7 +104,7 @@ void FrameRectRendererCore::Draw(const Matrix& transform, const RectF& rect)
 	// Inner
 	if (m_state.imageDrawMode == BrushImageDrawMode::BoxFrame)
 	{
-		RectF dstRect = rect;
+		Rect dstRect = rect;
 		dstRect.x += m_state.borderThickness.Left;
 		dstRect.y += m_state.borderThickness.Top;
 		dstRect.width -= m_state.borderThickness.Right + m_state.borderThickness.Left;
@@ -119,7 +119,7 @@ void FrameRectRendererCore::Draw(const Matrix& transform, const RectF& rect)
 		Size texSize((float)srcTexture->GetRealSize().width, (float)srcTexture->GetRealSize().height);
 		texSize.width = 1.0f / texSize.width;
 		texSize.height = 1.0f / texSize.height;
-		RectF uvSrcRect(srcRect.x * texSize.width, srcRect.y * texSize.height, srcRect.width * texSize.width, srcRect.height * texSize.height);
+		Rect uvSrcRect(srcRect.x * texSize.width, srcRect.y * texSize.height, srcRect.width * texSize.width, srcRect.height * texSize.height);
 
 		PutRectangle(dstRect, srcRect, uvSrcRect, srcTexture, m_state.wrapMode);
 	}
@@ -166,7 +166,7 @@ void FrameRectRendererCore::RequestBuffers(int faceCount)
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRendererCore::PutRectangleStretch(const RectF& rect, const RectF& srcUVRect)
+void FrameRectRendererCore::PutRectangleStretch(const Rect& rect, const Rect& srcUVRect)
 {
 	if (rect.IsEmpty()) { return; }		// 矩形がつぶれているので書く必要はない
 
@@ -196,7 +196,7 @@ void FrameRectRendererCore::PutRectangleStretch(const RectF& rect, const RectF& 
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRendererCore::PutRectangleTiling(const RectF& rect, const RectI& srcPixelRect, const RectF& srcUVRect, Driver::ITexture* srcTexture)
+void FrameRectRendererCore::PutRectangleTiling(const Rect& rect, const RectI& srcPixelRect, const Rect& srcUVRect, Driver::ITexture* srcTexture)
 {
 	if (rect.IsEmpty()) return;		// 矩形がつぶれているので書く必要はない
 
@@ -231,7 +231,7 @@ void FrameRectRendererCore::PutRectangleTiling(const RectF& rect, const RectI& s
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRendererCore::PutRectangle(const RectF& rect, const RectI& srcPixelRect, const RectF& srcUVRect, Driver::ITexture* srcTexture, BrushWrapMode wrapMode)
+void FrameRectRendererCore::PutRectangle(const Rect& rect, const RectI& srcPixelRect, const Rect& srcUVRect, Driver::ITexture* srcTexture, BrushWrapMode wrapMode)
 {
 	if (wrapMode == BrushWrapMode::Stretch)
 	{
@@ -244,7 +244,7 @@ void FrameRectRendererCore::PutRectangle(const RectF& rect, const RectI& srcPixe
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRendererCore::PutFrameRectangle(const RectF& rect, const ThicknessF& borderThickness, Driver::ITexture* srcTexture, RectI srcRect, BrushWrapMode wrapMode)
+void FrameRectRendererCore::PutFrameRectangle(const Rect& rect, const ThicknessF& borderThickness, Driver::ITexture* srcTexture, RectI srcRect, BrushWrapMode wrapMode)
 {
 	if (srcRect.IsEmpty()) return;
 	assert(srcTexture != nullptr);
@@ -262,7 +262,7 @@ void FrameRectRendererCore::PutFrameRectangle(const RectF& rect, const Thickness
 	Size texSize((float)srcTexture->GetRealSize().width, (float)srcTexture->GetRealSize().height);
 	texSize.width = 1.0f / texSize.width;
 	texSize.height = 1.0f / texSize.height;
-	RectF uvSrcRect(srcRect.x * texSize.width, srcRect.y * texSize.height, srcRect.width * texSize.width, srcRect.height * texSize.height);
+	Rect uvSrcRect(srcRect.x * texSize.width, srcRect.y * texSize.height, srcRect.width * texSize.width, srcRect.height * texSize.height);
 
 	ThicknessF dstFrame;
 	ThicknessF uvFrame;
@@ -297,10 +297,10 @@ void FrameRectRendererCore::PutFrameRectangle(const RectF& rect, const Thickness
 		srcFrame.Bottom = (int)baseThickness.Bottom;
 	}
 
-	RectF outerRect = rect;
-	RectF innerRect(outerRect.x + dstFrame.Left, outerRect.y + dstFrame.Top, outerRect.width - (dstFrame.Left + dstFrame.Right), outerRect.height - (dstFrame.Top + dstFrame.Bottom));
-	RectF outerUVRect = uvSrcRect;
-	RectF innerUVRect(outerUVRect.x + uvFrame.Left, outerUVRect.y + uvFrame.Top, outerUVRect.width - (uvFrame.Left + uvFrame.Right), outerUVRect.height - (uvFrame.Top + uvFrame.Bottom));
+	Rect outerRect = rect;
+	Rect innerRect(outerRect.x + dstFrame.Left, outerRect.y + dstFrame.Top, outerRect.width - (dstFrame.Left + dstFrame.Right), outerRect.height - (dstFrame.Top + dstFrame.Bottom));
+	Rect outerUVRect = uvSrcRect;
+	Rect innerUVRect(outerUVRect.x + uvFrame.Left, outerUVRect.y + uvFrame.Top, outerUVRect.width - (uvFrame.Left + uvFrame.Right), outerUVRect.height - (uvFrame.Top + uvFrame.Bottom));
 	RectI  outerSrcRect = srcRect;
 	RectI  innerSrcRect(outerSrcRect.x + srcFrame.Left, outerSrcRect.y + srcFrame.Top, outerSrcRect.width - (srcFrame.Left + srcFrame.Right), outerSrcRect.height - (srcFrame.Top + srcFrame.Bottom));
 
@@ -308,72 +308,72 @@ void FrameRectRendererCore::PutFrameRectangle(const RectF& rect, const Thickness
 	//		□　□
 	//		□□□
 	PutRectangle(
-		RectF(outerRect.GetLeft(), outerRect.GetTop(), dstFrame.Left, dstFrame.Top),
+		Rect(outerRect.GetLeft(), outerRect.GetTop(), dstFrame.Left, dstFrame.Top),
 		RectI(outerSrcRect.GetLeft(), outerSrcRect.GetTop(), srcFrame.Left, srcFrame.Top),
-		RectF(outerUVRect.GetLeft(), outerUVRect.GetTop(), uvFrame.Left, uvFrame.Top),
+		Rect(outerUVRect.GetLeft(), outerUVRect.GetTop(), uvFrame.Left, uvFrame.Top),
 		srcTexture, wrapMode);
 
 	// 上	□■□
 	//		□　□
 	//		□□□
 	PutRectangle(
-		RectF(innerRect.GetLeft(), outerRect.GetTop(), innerRect.width, dstFrame.Top),
+		Rect(innerRect.GetLeft(), outerRect.GetTop(), innerRect.width, dstFrame.Top),
 		RectI(innerSrcRect.GetLeft(), outerSrcRect.GetTop(), innerSrcRect.width, srcFrame.Top),
-		RectF(innerUVRect.GetLeft(), outerUVRect.GetTop(), innerUVRect.width, uvFrame.Top),
+		Rect(innerUVRect.GetLeft(), outerUVRect.GetTop(), innerUVRect.width, uvFrame.Top),
 		srcTexture, wrapMode);
 
 	// 右上	□□■
 	//		□　□
 	//		□□□
 	PutRectangle(
-		RectF(innerRect.GetRight(), outerRect.GetTop(), dstFrame.Right, dstFrame.Top),
+		Rect(innerRect.GetRight(), outerRect.GetTop(), dstFrame.Right, dstFrame.Top),
 		RectI(innerSrcRect.GetRight(), outerSrcRect.GetTop(), srcFrame.Right, srcFrame.Top),
-		RectF(innerUVRect.GetRight(), outerUVRect.GetTop(), uvFrame.Right, uvFrame.Top),
+		Rect(innerUVRect.GetRight(), outerUVRect.GetTop(), uvFrame.Right, uvFrame.Top),
 		srcTexture, wrapMode);
 
 	// 右	□□□
 	//		□　■
 	//		□□□
 	PutRectangle(
-		RectF(innerRect.GetRight(), innerRect.GetTop(), dstFrame.Right, innerRect.height),
+		Rect(innerRect.GetRight(), innerRect.GetTop(), dstFrame.Right, innerRect.height),
 		RectI(innerSrcRect.GetRight(), innerSrcRect.GetTop(), srcFrame.Right, innerSrcRect.height),
-		RectF(innerUVRect.GetRight(), innerUVRect.GetTop(), uvFrame.Right, innerUVRect.height),
+		Rect(innerUVRect.GetRight(), innerUVRect.GetTop(), uvFrame.Right, innerUVRect.height),
 		srcTexture, wrapMode);
 
 	// 右下	□□□
 	//		□　□
 	//		□□■
 	PutRectangle(
-		RectF(innerRect.GetRight(), innerRect.GetBottom(), dstFrame.Right, dstFrame.Bottom),
+		Rect(innerRect.GetRight(), innerRect.GetBottom(), dstFrame.Right, dstFrame.Bottom),
 		RectI(innerSrcRect.GetRight(), innerSrcRect.GetBottom(), srcFrame.Right, srcFrame.Bottom),
-		RectF(innerUVRect.GetRight(), innerUVRect.GetBottom(), uvFrame.Right, uvFrame.Bottom),
+		Rect(innerUVRect.GetRight(), innerUVRect.GetBottom(), uvFrame.Right, uvFrame.Bottom),
 		srcTexture, wrapMode);
 
 	// 下	□□□
 	//		□　□
 	//		□■□
 	PutRectangle(
-		RectF(innerRect.GetLeft(), innerRect.GetBottom(), innerRect.width, dstFrame.Bottom),
+		Rect(innerRect.GetLeft(), innerRect.GetBottom(), innerRect.width, dstFrame.Bottom),
 		RectI(innerSrcRect.GetLeft(), innerSrcRect.GetBottom(), innerSrcRect.width, srcFrame.Bottom),
-		RectF(innerUVRect.GetLeft(), innerUVRect.GetBottom(), innerUVRect.width, uvFrame.Bottom),
+		Rect(innerUVRect.GetLeft(), innerUVRect.GetBottom(), innerUVRect.width, uvFrame.Bottom),
 		srcTexture, wrapMode);
 
 	// 左下	□□□
 	//		□　□
 	//		■□□
 	PutRectangle(
-		RectF(outerRect.GetLeft(), innerRect.GetBottom(), dstFrame.Left, dstFrame.Bottom),
+		Rect(outerRect.GetLeft(), innerRect.GetBottom(), dstFrame.Left, dstFrame.Bottom),
 		RectI(outerSrcRect.GetLeft(), innerSrcRect.GetBottom(), srcFrame.Left, srcFrame.Bottom),
-		RectF(outerUVRect.GetLeft(), innerUVRect.GetBottom(), uvFrame.Left, uvFrame.Bottom),
+		Rect(outerUVRect.GetLeft(), innerUVRect.GetBottom(), uvFrame.Left, uvFrame.Bottom),
 		srcTexture, wrapMode);
 
 	// 左	□□□
 	//		■　□
 	//		□□□
 	PutRectangle(
-		RectF(outerRect.GetLeft(), innerRect.GetTop(), dstFrame.Left, innerRect.height),
+		Rect(outerRect.GetLeft(), innerRect.GetTop(), dstFrame.Left, innerRect.height),
 		RectI(outerSrcRect.GetLeft(), innerSrcRect.GetTop(), srcFrame.Left, innerSrcRect.height),
-		RectF(outerUVRect.GetLeft(), innerUVRect.GetTop(), uvFrame.Left, innerUVRect.height),
+		Rect(outerUVRect.GetLeft(), innerUVRect.GetTop(), uvFrame.Left, innerUVRect.height),
 		srcTexture, wrapMode);
 }
 
@@ -440,7 +440,7 @@ void FrameRectRenderer::SetState(Brush* brush, const Matrix& world, const Matrix
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRenderer::Draw(const Matrix& transform, const RectF& rect)
+void FrameRectRenderer::Draw(const Matrix& transform, const Rect& rect)
 {
 	SetState(m_brush, Matrix::Identity, m_viewProj);
 
@@ -448,7 +448,7 @@ void FrameRectRenderer::Draw(const Matrix& transform, const RectF& rect)
 		Draw, m_manager,
 		FrameRectRendererCore*, m_core,
 		Matrix, transform,
-		RectF, rect,
+		Rect, rect,
 		{
 			m_core->Draw(transform, rect);
 		});

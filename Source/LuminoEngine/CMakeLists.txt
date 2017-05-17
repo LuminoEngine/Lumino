@@ -3,9 +3,6 @@ project (LuminoEngine)
 
 include(${PROJECT_SOURCE_DIR}/../LuminoCore/CMake/LNCommon.cmake NO_POLICY_SCOPE)
 
-set(LN_DEPENDENCIES_ROOT_DIR "${PROJECT_SOURCE_DIR}/../../External/LuminoDependencies/")
-include(${PROJECT_SOURCE_DIR}/../../External/LuminoDependencies/LuminoDependencies.cmake)
-
 set(LN_LINK_LIBS "")
 set(LN_UNIT_TEST_LINK_LIBS "")
 
@@ -143,7 +140,7 @@ set(LN_SOURCES_Audio
 
 set(LN_SOURCES_Physics
 	Include/Lumino/Physics/PhysicsObject.h
-	Include/Lumino/Physics/Collider.h
+	Include/Lumino/Physics/CollisionBody.h
 	Include/Lumino/Physics/CollisionShape.h
 	Include/Lumino/Physics/Common.h
 	Include/Lumino/Physics/Joint.h
@@ -151,7 +148,7 @@ set(LN_SOURCES_Physics
 	Include/Lumino/Physics/RigidBody.h
 	Source/Physics/PhysicsObject.cpp
 	Source/Physics/BulletUtils.h
-	Source/Physics/Collider.cpp
+	Source/Physics/CollisionBody.cpp
 	Source/Physics/CollisionShape.cpp
 	Source/Physics/Internal.h
 	Source/Physics/Joint.cpp
@@ -369,13 +366,14 @@ set(LN_SOURCES_Scene
 	Include/Lumino/Scene/SceneNode.h
 	Include/Lumino/Scene/SceneTR.h
 	Include/Lumino/Scene/Sprite.h
-	Include/Lumino/Scene/SpriteModelObject.h
+	#Include/Lumino/Scene/SpriteModelObject.h
 	Include/Lumino/Scene/Particle.h
 	Include/Lumino/Scene/StaticMesh.h
 	Include/Lumino/Scene/TextBlock.h
 	Include/Lumino/Scene/TileMap.h
 	Include/Lumino/Scene/TransitionPostEffect.h
 	Include/Lumino/Scene/VisualNode.h
+	Include/Lumino/Scene/WorldObject.h
 #	Include/Lumino/Scene/MME/MMESceneObject.h
 	Source/Scene/Camera.cpp
 	Source/Scene/Internal.h
@@ -388,38 +386,37 @@ set(LN_SOURCES_Scene
 	Source/Scene/Light.cpp
 	Source/Scene/MeshModelObject.cpp
 #	Source/Scene/MMDSceneGraph.cpp
-	Source/Scene/RenderingPass.cpp
-	Source/Scene/RenderingPass.h
 	Source/Scene/SceneGraph.cpp
 	Source/Scene/SceneGraphManager.cpp
 	Source/Scene/SceneGraphManager.h
 	Source/Scene/SceneNode.cpp
 	Source/Scene/SceneTR.cpp
 	Source/Scene/Sprite.cpp
-	Source/Scene/SpriteModelObject.cpp
+	#Source/Scene/SpriteModelObject.cpp
 	Source/Scene/Particle.cpp
 	Source/Scene/StaticMesh.cpp
 	Source/Scene/TextBlock.cpp
 	Source/Scene/TileMap.cpp
 	Source/Scene/TransitionPostEffect.cpp
 	Source/Scene/VisualNode.cpp
-	../../External/ssbpLib/ssShader_frag.h
-	../../External/ssbpLib/SS5Player.cpp
-	../../External/ssbpLib/SS5Player.h
-	../../External/ssbpLib/SS5PlayerData.h
-	../../External/ssbpLib/SS5PlayerPlatform.cpp
-	../../External/ssbpLib/SS5PlayerPlatform.h
-	../../External/ssbpLib/SS5PlayerTypes.h
-	../../External/ssbpLib/common/Animator/ssplayer_PartState.h
-	../../External/ssbpLib/common/Animator/ssplayer_cellmap.h
-	../../External/ssbpLib/common/Animator/ssplayer_effect.cpp
-	../../External/ssbpLib/common/Animator/ssplayer_effect.h
-	../../External/ssbpLib/common/Animator/ssplayer_effectfunction.cpp
-	../../External/ssbpLib/common/Animator/ssplayer_effectfunction.h
-	../../External/ssbpLib/common/Animator/ssplayer_macro.h
-	../../External/ssbpLib/common/Animator/ssplayer_matrix.cpp
-	../../External/ssbpLib/common/Animator/ssplayer_matrix.h
-	../../External/ssbpLib/common/Animator/ssplayer_PartState.cpp
+	Source/Scene/WorldObject.cpp
+	#../../External/ssbpLib/ssShader_frag.h
+	#../../External/ssbpLib/SS5Player.cpp
+	#../../External/ssbpLib/SS5Player.h
+	#../../External/ssbpLib/SS5PlayerData.h
+	#../../External/ssbpLib/SS5PlayerPlatform.cpp
+	#../../External/ssbpLib/SS5PlayerPlatform.h
+	#../../External/ssbpLib/SS5PlayerTypes.h
+	#../../External/ssbpLib/common/Animator/ssplayer_PartState.h
+	#../../External/ssbpLib/common/Animator/ssplayer_cellmap.h
+	#../../External/ssbpLib/common/Animator/ssplayer_effect.cpp
+	#../../External/ssbpLib/common/Animator/ssplayer_effect.h
+	#../../External/ssbpLib/common/Animator/ssplayer_effectfunction.cpp
+	#../../External/ssbpLib/common/Animator/ssplayer_effectfunction.h
+	#../../External/ssbpLib/common/Animator/ssplayer_macro.h
+	#../../External/ssbpLib/common/Animator/ssplayer_matrix.cpp
+	#../../External/ssbpLib/common/Animator/ssplayer_matrix.h
+	#../../External/ssbpLib/common/Animator/ssplayer_PartState.cpp
 )
 set(LN_SOURCES_Scene_MMD
 	Source/Scene/MME/MmdMaterial.cpp
@@ -875,8 +872,7 @@ endif()
 
 # LuminoEngine
 add_library(LuminoEngine STATIC ${LN_SOURCES})
-set_target_properties(LuminoEngine PROPERTIES OUTPUT_NAME "LuminoEngine${LN_LIB_POSTFIX}")
-set_target_properties(LuminoEngine PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
+ln_add_common_property(LuminoEngine)
 target_include_directories(LuminoEngine PUBLIC ${LN_DEPENDENCIES_INCLUDES})
 target_link_libraries(LuminoEngine Fluorite ${LN_LINK_LIBS} ${LN_DEPENDENCIES_LIBRARIES})
 ln_add_pch(LuminoEngine "LuminoEngine.PCH.h" "Source/LuminoEngine.PCH.cpp")

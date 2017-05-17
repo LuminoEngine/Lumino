@@ -238,9 +238,9 @@ void UIMainWindow::Initialize(detail::UIManager* manager, PlatformWindow* platfo
 	m_mainUIViewport->SetBackbufferSize(platformWindow->GetSize().width, platformWindow->GetSize().height);	// TODO: EngineSettings からもらう
 	AddVisualChild(m_mainUIViewport);
 
-	m_cameraViewportLayer3D = NewObject<CameraViewportLayer2>(defaultWorld3D, defaultWorld3D->GetSceneGraph3D()->GetMainCamera());
+	m_cameraViewportLayer3D = NewObject<CameraViewportLayer2>(defaultWorld3D, defaultWorld3D->GetMainCamera()->GetCameraComponent());
 	m_mainUIViewport->AddViewportLayer(m_cameraViewportLayer3D);
-	m_cameraViewportLayer2D = NewObject<CameraViewportLayer2>(defaultWorld2D, defaultWorld2D->GetSceneGraph2D()->GetMainCamera());
+	m_cameraViewportLayer2D = NewObject<CameraViewportLayer2>(defaultWorld2D, defaultWorld2D->GetMainCamera()->GetCameraComponent());
 	m_mainUIViewport->AddViewportLayer(m_cameraViewportLayer2D);
 
 	SetLayoutPanel(panel);
@@ -280,7 +280,7 @@ Size UIMainWindow::ArrangeOverride(const Size& finalSize)
 {
 	Size renderSize = UIFrameWindow::ArrangeOverride(finalSize);
 
-	m_mainUIViewport->ArrangeLayout(RectF(0, 0, renderSize));
+	m_mainUIViewport->ArrangeLayout(Rect(0, 0, renderSize));
 
 	return renderSize;
 }

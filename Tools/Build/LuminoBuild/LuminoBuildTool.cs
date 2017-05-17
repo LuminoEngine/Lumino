@@ -11,6 +11,10 @@ namespace LuminoBuildTool
 	class Builder
     {
         public string VersionString;
+        public string InstallerProductGUID_MSVC2013;
+        public string InstallerProductGUID_MSVC2015;
+        public string InstallerProductGUID_MSVC2017;
+
         public string LuminoRootDir;
         public string LuminoBuildDir;
         public string LuminoBindingsDir;
@@ -20,6 +24,7 @@ namespace LuminoBuildTool
         public string LuminoPackageDir;
         public string LuminoPackageSourceDir;
         public string LuminoPackageReleaseDir;
+        public string LuminoDependenciesDir;
         public List<ModuleRule> Rules = new List<ModuleRule>();
 
         public void Execute(string commands)
@@ -209,6 +214,17 @@ namespace LuminoBuildTool
         }
 
         /// <summary>
+        /// フォルダから .zip を作る
+        /// </summary>
+        public static void ExtractZipFile(string zipFilePath, string dirPath)
+        {
+            if (!Directory.Exists(dirPath))
+            {
+                ZipFile.ExtractToDirectory(zipFilePath, dirPath);
+            }
+        }
+
+        /// <summary>
         /// 指定した名前のコマンドが使用できるか確認する
         /// </summary>
         /// <returns><c>true</c>, if program was existsed, <c>false</c> otherwise.</returns>
@@ -326,8 +342,10 @@ namespace LuminoBuildTool
         {
             if (Utils.IsWin32)
             {
-                var regkey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\MSBuild\ToolsVersions\14.0");
-                return (string)regkey.GetValue("MSBuildToolsPath") + "MSBuild.exe";
+                //var regkey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\MSBuild\ToolsVersions\14.0");
+                //return (string)regkey.GetValue("MSBuildToolsPath") + "MSBuild.exe";
+                var regkey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Wow6432Node\Microsoft\VisualStudio\SxS\VS7");
+                return (string)regkey.GetValue("15.0") + @"MSBuild\15.0\Bin\MSBuild.exe";
             }
             else
             {

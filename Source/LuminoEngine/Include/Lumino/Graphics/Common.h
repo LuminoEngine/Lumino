@@ -455,7 +455,7 @@ public:
 private:
 	void TryGlow(int requestCount)
 	{
-		if (m_count + requestCount > m_capacity)
+		if (/*m_count + */requestCount > m_capacity)
 		{
 			Reserve(m_capacity * 2);
 		}

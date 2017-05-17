@@ -3,7 +3,6 @@
 #include <Lumino/Graphics/GraphicsContext.h>
 #include <Lumino/Graphics/Rendering.h>
 #include "SceneGraphManager.h"
-#include "RenderingPass.h"
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/TextBlock.h>
 #include "../Documents/DocumentElements.h"
@@ -12,43 +11,43 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 //==============================================================================
-// TextBlock2D
+// TextBlock2DComponent
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TextBlock2D, VisualNode);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TextBlock2DComponent, VisualComponent);
 
 //------------------------------------------------------------------------------
-TextBlock2DPtr TextBlock2D::Create()
+TextBlock2DComponentPtr TextBlock2DComponent::Create()
 {
-	auto ptr = TextBlock2DPtr::MakeRef();
+	auto ptr = TextBlock2DComponentPtr::MakeRef();
 	ptr->Initialize(detail::EngineDomain::GetDefaultSceneGraph2D());
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-TextBlock2DPtr TextBlock2D::Create(const StringRef& text)
+TextBlock2DComponentPtr TextBlock2DComponent::Create(const StringRef& text)
 {
-	auto ptr = TextBlock2DPtr::MakeRef();
+	auto ptr = TextBlock2DComponentPtr::MakeRef();
 	ptr->Initialize(detail::EngineDomain::GetDefaultSceneGraph2D());
 	ptr->SetText(text);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-TextBlock2D::TextBlock2D()
-	: VisualNode()
+TextBlock2DComponent::TextBlock2DComponent()
+	: VisualComponent()
 	, m_paragraph(nullptr)
 {
 }
 
 //------------------------------------------------------------------------------
-TextBlock2D::~TextBlock2D()
+TextBlock2DComponent::~TextBlock2DComponent()
 {
 }
 
 //------------------------------------------------------------------------------
-void TextBlock2D::Initialize(SceneGraph* owner)
+void TextBlock2DComponent::Initialize(SceneGraph* owner)
 {
-	VisualNode::Initialize(owner, 1);
+	VisualComponent::Initialize(owner, 1);
 
 	owner->GetRootNode()->AddChild(this);
 	SetAutoRemove(true);
@@ -58,7 +57,7 @@ void TextBlock2D::Initialize(SceneGraph* owner)
 }
 
 //------------------------------------------------------------------------------
-void TextBlock2D::SetText(const StringRef& text)
+void TextBlock2DComponent::SetText(const StringRef& text)
 {
 	m_paragraph->ClearInlines();
 	auto run = RefPtr<detail::Run>::MakeRef();
@@ -68,34 +67,34 @@ void TextBlock2D::SetText(const StringRef& text)
 }
 
 //------------------------------------------------------------------------------
-void TextBlock2D::SetAnchorPoint(const Vector2& ratio)
+void TextBlock2DComponent::SetAnchorPoint(const Vector2& ratio)
 {
 	m_anchor = ratio;
 }
 
 //------------------------------------------------------------------------------
-void TextBlock2D::SetAnchorPoint(float ratioX, float ratioY)
+void TextBlock2DComponent::SetAnchorPoint(float ratioX, float ratioY)
 {
 	m_anchor.Set(ratioX, ratioY);
 }
 
 //------------------------------------------------------------------------------
-void TextBlock2D::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
+void TextBlock2DComponent::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 {
-	VisualNode::UpdateFrameHierarchy(parent, deltaTime);
+	VisualComponent::UpdateFrameHierarchy(parent, deltaTime);
 	m_paragraph->UpdateLayout(Size::MaxValue);
 	//m_paragraph->MeasureLayout(Size::MaxValue);
 	//m_paragraph->ArrangeLayout(RectF(0, 0, Size::MaxValue));
 }
 
 //------------------------------------------------------------------------------
-detail::Sphere TextBlock2D::GetBoundingSphere()
+detail::Sphere TextBlock2DComponent::GetBoundingSphere()
 {
-	return VisualNode::GetBoundingSphere();
+	return VisualComponent::GetBoundingSphere();
 }
 
 //------------------------------------------------------------------------------
-void TextBlock2D::OnRender2(DrawList* renderer)
+void TextBlock2DComponent::OnRender2(DrawList* renderer)
 {
 	struct LocalRenderer : detail::IDocumentsRenderer
 	{
@@ -111,11 +110,11 @@ void TextBlock2D::OnRender2(DrawList* renderer)
 	r.renderer = renderer;
 
 	const Size& size = m_paragraph->GetRenderSize();
-	m_paragraph->Render(Matrix::MakeTranslation(-size.width * m_anchor.x, -size.height * m_anchor.y, 0) * m_combinedGlobalMatrix, &r);
+	m_paragraph->Render(Matrix::MakeTranslation(-size.width * m_anchor.x, -size.height * m_anchor.y, 0) * GetOwnerObject()->transform.GetWorldMatrix(), &r);
 }
 
 //------------------------------------------------------------------------------
-//void TextBlock2D::OnRender(SceneGraphRenderingContext* dc)
+//void TextBlock2DComponent::OnRender(SceneGraphRenderingContext* dc)
 //{
 //	const Size& size = m_paragraph->GetRenderSize();
 //	m_paragraph->Render(Matrix::MakeTranslation(-size.width * m_anchor.x, -size.height * m_anchor.y, 0) * m_combinedGlobalMatrix, dc);

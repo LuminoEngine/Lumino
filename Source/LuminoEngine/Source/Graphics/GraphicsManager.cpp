@@ -95,6 +95,7 @@ GraphicsManager::GraphicsManager()
 	, m_mainSwapChain(nullptr)
 	, m_renderingType(GraphicsRenderingType::Immediate)
 	, m_dummyDeviceTexture(nullptr)
+	, m_dymmyBlackTexture(nullptr)
 	, m_dymmyWhiteTexture(nullptr)
 	, m_renderer(nullptr)
 	, m_renderingThread(nullptr)
@@ -117,6 +118,7 @@ GraphicsManager::~GraphicsManager()
 		m_textRendererCore->Finalize();
 		LN_SAFE_RELEASE(m_textRendererCore);
 	}
+	m_dymmyBlackTexture.SafeRelease();
 	m_dymmyWhiteTexture.SafeRelease();
 	LN_SAFE_RELEASE(m_dummyDeviceTexture);
 	LN_SAFE_RELEASE(m_mainSwapChain);
@@ -300,10 +302,7 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 		g_GraphicsManagerInstance = this;
 	}
 
-
-	m_dymmyWhiteTexture = RefPtr<Texture2D>::MakeRef();
-	m_dymmyWhiteTexture->Initialize(SizeI(32, 32), TextureFormat::R8G8B8A8, false, ResourceUsage::Static);
-	m_dymmyWhiteTexture->Clear(Color32::White);
+	CreateGlobalObjects();
 }
 
 
@@ -478,42 +477,39 @@ void GraphicsManager::PresentSwapChain(SwapChain* swapChain)
 }
 
 //------------------------------------------------------------------------------
-//uint64_t GraphicsManager::CalcFontSettingHash(const FontData& fontData)
-//{
-//	uint32_t v[2];
-//	v[0] = Hash::CalcHash(fontData.Family.c_str());
-//
-//	uint8_t* v2 = (uint8_t*)&v[1];
-//	v2[0] = fontData.Size;
-//	//v2[1] = fontData.EdgeSize;
-//	v2[3] =
-//		(((fontData.IsBold) ? 1 : 0)) |
-//		(((fontData.IsItalic) ? 1 : 0) << 1) |
-//		(((fontData.IsAntiAlias) ? 1 : 0) << 2);
-//
-//	return *((uint64_t*)&v);
-//}
-
-
-//------------------------------------------------------------------------------
 RenderingCommandList* GraphicsManager::GetPrimaryRenderingCommandList()
 {
 	return m_renderer->m_primaryCommandList;
 }
 
 //------------------------------------------------------------------------------
-//RawFont* GraphicsManager::FontData::CreateFontFromData(FontManager* m) const
-//{
-//	RawFont* font = LN_NEW FreeTypeFont(m);
-//	font->SetName(Family);
-//	font->SetSize(Size);
-//	//font->SetEdgeSize(EdgeSize);
-//	font->SetBold(IsBold);
-//	font->SetItalic(IsItalic);
-//	font->SetAntiAlias(IsAntiAlias);
-//	return font;
-//}
+void GraphicsManager::CreateGlobalObjects()
+{
+	// 作成の式を簡単にするためのヘルパー
+	auto colorBrush = [this](const Color& c)
+	{
+		auto brush = NewObject<SolidColorBrush>(c);
+		this->m_globalBrushes.Add(brush);
+		return brush;
+	};
 
+	// brushes
+	Brush::White = colorBrush(Color(1.0, 1.0, 1.0, 1.0));
+	Brush::Black = colorBrush(Color(0.0, 0.0, 0.0, 1.0));
+	Brush::Gray = colorBrush(Color(0.5, 0.5, 0.5, 1.0));
+	Brush::Red = colorBrush(Color(1.0, 0.0, 0.0, 1.0));
+	Brush::Green = colorBrush(Color(0.0, 1.0, 0.0, 1.0));
+	Brush::Blue = colorBrush(Color(0.0, 0.0, 1.0, 1.0));
+	Brush::DimGray = colorBrush(Color(0.25, 0.25, 0.25, 1.0));
+
+	// black texture
+	m_dymmyBlackTexture = NewObject<Texture2D>(SizeI(32, 32), TextureFormat::R8G8B8A8, false, ResourceUsage::Static);
+	m_dymmyBlackTexture->Clear(Color32::Black);
+
+	// white texture
+	m_dymmyWhiteTexture = NewObject<Texture2D>(SizeI(32, 32), TextureFormat::R8G8B8A8, false, ResourceUsage::Static);
+	m_dymmyWhiteTexture->Clear(Color32::White);
+}
 
 //==============================================================================
 // ShaderVariableCommitSerializeHelper

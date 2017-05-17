@@ -94,13 +94,13 @@ void Engine::ResetFrameDelay()
 }
 
 //------------------------------------------------------------------------------
-World* Engine::GetWorld2D()
+World2D* Engine::GetWorld2D()
 {
 	return EngineManager::Instance->GetDefaultWorld2D();
 }
 
 //------------------------------------------------------------------------------
-World* Engine::GetWorld3D()
+World3D* Engine::GetWorld3D()
 {
 	return EngineManager::Instance->GetDefaultWorld3D();
 }
@@ -129,22 +129,22 @@ UIViewportLayer* Engine::GetDefault3DLayer()
 	return EngineManager::Instance->GetUIManager()->GetMainWindow()->GetDefaultCameraViewportLayer3D();
 }
 
-//------------------------------------------------------------------------------
-SceneGraph2D* Engine::GetDefaultSceneGraph2D()
-{
-	return EngineManager::Instance->GetDefaultWorld2D()->GetSceneGraph2D();
-}
+////------------------------------------------------------------------------------
+//SceneGraph2D* Engine::GetDefaultSceneGraph2D()
+//{
+//	return EngineManager::Instance->GetDefaultWorld2D()->GetSceneGraph2D();
+//}
+//
+////------------------------------------------------------------------------------
+//SceneGraph3D* Engine::GetDefaultSceneGraph3D()
+//{
+//	return EngineManager::Instance->GetDefaultWorld3D()->GetSceneGraph3D();
+//}
 
 //------------------------------------------------------------------------------
-SceneGraph3D* Engine::GetDefaultSceneGraph3D()
-{
-	return EngineManager::Instance->GetDefaultWorld3D()->GetSceneGraph3D();
-}
-
-//------------------------------------------------------------------------------
-Light* Engine::GetMainLight3D()
-{
-	return EngineManager::Instance->GetDefaultWorld3D()->GetSceneGraph3D()->GetMainLight();
-}
+//LightComponent* Engine::GetMainLight3D()
+//{
+//	return EngineManager::Instance->GetDefaultWorld3D()->GetSceneGraph3D()->GetMainLight();
+//}
 
 LN_NAMESPACE_END

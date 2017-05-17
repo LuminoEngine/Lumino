@@ -1,4 +1,4 @@
-#include <TestConfig.h>
+ï»¿#include <TestConfig.h>
 #include <Lumino/Scene/StaticMesh.h>
 
 class Test_Scene_SceneNode : public ::testing::Test
@@ -8,28 +8,28 @@ protected:
 	virtual void TearDown() {}
 };
 
+#if 0
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_SceneNode, Visible)
 {
-	// <Test> Visible ƒvƒƒpƒeƒB‚ª false ‚Ìê‡‚ÍAƒhƒ[ƒR[ƒ‹©‘ÌŒÄ‚Ño‚³‚ê‚È‚¢‚±‚ÆB
+	// <Test> Visible ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãŒ false ã®å ´åˆã¯ã€ãƒ‰ãƒ­ãƒ¼ã‚³ãƒ¼ãƒ«è‡ªä½“å‘¼ã³å‡ºã•ã‚Œãªã„ã“ã¨ã€‚
 	{
-		// 1“x‘‚¢‚ÄA‰Šúó‘Ô‚Ì‚Æ‚«‚Ì•`‰æ”‚ğŠo‚¦‚Ä‚¨‚­
+		// 1åº¦æ›¸ã„ã¦ã€åˆæœŸçŠ¶æ…‹ã®ã¨ãã®æç”»æ•°ã‚’è¦šãˆã¦ãŠã
 		Engine::Update();
 		//int defaultCount = EngineDiag::GetVisualNodeDrawCount();
-		int defaultCount = Engine::GetDefaultSceneGraph2D()->GetRenderingProfiler().GetLastFrameData()->nodeDrawCount;
+		int defaultCount = Engine::GetWorld2D()->GetRenderingProfiler().GetLastFrameData()->nodeDrawCount;
 
 		auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
-		auto sprite1 = Sprite2D::Create(tex);
-		auto sprite2 = Sprite2D::Create(tex);
+		auto sprite1 = Sprite2DComponent::Create(tex);
+		auto sprite2 = Sprite2DComponent::Create(tex);
 
 		sprite1->SetVisible(false);
 
 		Engine::Update();
-		ASSERT_EQ(defaultCount + 1, Engine::GetDefaultSceneGraph2D()->GetRenderingProfiler().GetLastFrameData()->nodeDrawCount);
+		ASSERT_EQ(defaultCount + 1, Engine::GetWorld2D()->GetRenderingProfiler().GetLastFrameData()->nodeDrawCount);
 	}
 }
 
-#if 0
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_SceneNode, DepthTest)
 {
@@ -38,34 +38,34 @@ TEST_F(Test_Scene_SceneNode, DepthTest)
 	tex1->Clear(Color32::Red);
 	tex2->Clear(Color32::Blue);
 
-	// <Test> ƒfƒtƒHƒ‹ƒg‚Å‚Í[“xƒeƒXƒg&[“x‘‚«‚İ‚Í—LŒøB
+	// <Test> ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§ã¯æ·±åº¦ãƒ†ã‚¹ãƒˆ&æ·±åº¦æ›¸ãè¾¼ã¿ã¯æœ‰åŠ¹ã€‚
 	{
-		auto box1 = StaticMesh::CreateBox(Vector3(1, 2, 3));
-		auto box2 = StaticMesh::CreateBox(Vector3(2, 1, 1));
+		auto box1 = StaticMeshComponent::CreateBox(Vector3(1, 2, 3));
+		auto box2 = StaticMeshComponent::CreateBox(Vector3(2, 1, 1));
 		box1->GetMaterials()->GetAt(0)->SetMaterialTexture(tex1);
 		box2->GetMaterials()->GetAt(0)->SetMaterialTexture(tex2);
 		Engine::Update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_SceneNode.DepthTest1.png")));
 	}
-	// <Test> [“xƒeƒXƒg–³Œø
+	// <Test> æ·±åº¦ãƒ†ã‚¹ãƒˆç„¡åŠ¹
 	{
-		auto s1 = Sprite3D::Create(5, 5, tex1);
-		auto s2 = Sprite3D::Create(5, 5, tex2);
+		auto s1 = Sprite3DComponent::Create(5, 5, tex1);
+		auto s2 = Sprite3DComponent::Create(5, 5, tex2);
 		s1->SetAngles(0, Math::PI / 4, 0);
 		s2->SetAngles(0, -Math::PI / 4, 0);
 		s2->SetDepthTestEnabled(false);
 		Engine::Update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_SceneNode.DepthTest2.png"), 95));
 	}
-	// <Test> [“x‘‚«‚İ–³Œø
+	// <Test> æ·±åº¦æ›¸ãè¾¼ã¿ç„¡åŠ¹
 	{
-		auto s1 = Sprite3D::Create(5, 5, tex1);
-		auto s2 = Sprite3D::Create(5, 5, tex2);
+		auto s1 = Sprite3DComponent::Create(5, 5, tex1);
+		auto s2 = Sprite3DComponent::Create(5, 5, tex2);
 		s1->SetAngles(0, Math::PI / 4, 0);
 		s1->SetDepthWriteEnabled(false);
 		s2->SetAngles(0, -Math::PI / 4, 0);
 		Engine::Update();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_SceneNode.DepthTest2.png"), 95));	// Œ‹‰Ê‚Íª‚Æ“¯‚¶
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_SceneNode.DepthTest2.png"), 95));	// çµæœã¯â†‘ã¨åŒã˜
 	}
 }
 #endif
@@ -75,8 +75,8 @@ TEST_F(Test_Scene_SceneNode, DepthTest)
 //{
 //
 //	auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
-//	auto sprite1 = Sprite2D::Create(tex);
-//	//auto sprite2 = Sprite2D::Create(tex);
+//	auto sprite1 = Sprite2DComponent::Create(tex);
+//	//auto sprite2 = Sprite2DComponent::Create(tex);
 //
 //	sprite1->SetOpacity(0.25f);
 //

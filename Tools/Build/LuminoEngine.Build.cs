@@ -2,9 +2,38 @@ using System;
 using System.IO;
 using LuminoBuildTool;
 
+class CMakeTargetInfo
+{
+    public string DirName;
+    public string VSTarget;
+    public string Unicode;
+    public string Platform;
+    public string MSVCStaticRuntime;
+}
+
 class LuminoEngineRule : ModuleRule
 {
     public string _msbuild;
+
+    public static CMakeTargetInfo[] targets = new CMakeTargetInfo[]
+    {
+        new CMakeTargetInfo { DirName = "Build_MSVC120x86_MT", VSTarget = "Visual Studio 12", Unicode = "OFF", Platform="Win32", MSVCStaticRuntime = "ON" },
+        //new CMakeTargetInfo { DirName = "Build_MSVC120x86U_MT", VSTarget = "Visual Studio 12", Unicode = "ON", Platform="Win32", MSVCStaticRuntime = "ON" },
+        //new CMakeTargetInfo { DirName = "Build_MSVC120x86_MD", VSTarget = "Visual Studio 12", Unicode = "OFF", Platform="Win32", MSVCStaticRuntime = "OFF" },
+        //new CMakeTargetInfo { DirName = "Build_MSVC120x86U_MD", VSTarget = "Visual Studio 12", Unicode = "ON", Platform="Win32", MSVCStaticRuntime = "OFF" },
+        //new { DirName = "build_msvc120x64_MT", VSTarget = "Visual Studio 12 Win64", Unicode = "OFF" },
+        //new { DirName = "build_msvc120x64u_MT", VSTarget = "Visual Studio 12 Win64", Unicode = "ON" },
+        new CMakeTargetInfo { DirName = "Build_MSVC140x86_MT", VSTarget = "Visual Studio 14", Unicode = "OFF", Platform="Win32", MSVCStaticRuntime = "ON" },
+        //new CMakeTargetInfo { DirName = "Build_MSVC140x86U_MT", VSTarget = "Visual Studio 14", Unicode = "ON", Platform="Win32", MSVCStaticRuntime = "ON" },
+        //new CMakeTargetInfo { DirName = "Build_MSVC140x86_MD", VSTarget = "Visual Studio 14", Unicode = "OFF", Platform="Win32", MSVCStaticRuntime = "OFF" },
+        //new CMakeTargetInfo { DirName = "Build_MSVC140x86U_MD", VSTarget = "Visual Studio 14", Unicode = "ON", Platform="Win32", MSVCStaticRuntime = "OFF" },
+        //new { DirName = "build_msvc140x64_MT", VSTarget = "Visual Studio 14 Win64", Unicode = "OFF" },
+        //new { DirName = "build_msvc140x64u_MT", VSTarget = "Visual Studio 14 Win64", Unicode = "ON" },
+        new CMakeTargetInfo { DirName = "Build_MSVC150x86_MT", VSTarget = "Visual Studio 15", Unicode = "OFF", Platform="Win32", MSVCStaticRuntime = "ON" },
+        //new CMakeTargetInfo { DirName = "Build_MSVC150x86U_MT", VSTarget = "Visual Studio 15", Unicode = "ON", Platform="Win32", MSVCStaticRuntime = "ON" },
+        //new CMakeTargetInfo { DirName = "Build_MSVC150x86_MD", VSTarget = "Visual Studio 15", Unicode = "OFF", Platform="Win32", MSVCStaticRuntime = "OFF" },
+        //new CMakeTargetInfo { DirName = "Build_MSVC150x86U_MD", VSTarget = "Visual Studio 15", Unicode = "ON", Platform="Win32", MSVCStaticRuntime = "OFF" },
+    };
 
     /// <summary>
     /// ルールを実行するためのコマンド名
@@ -48,21 +77,6 @@ class LuminoEngineRule : ModuleRule
 
         if (Utils.IsWin32)
         {
-            var targets = new []
-            {
-                new { DirName = "Build_MSVC120x86_MT", VSTarget = "Visual Studio 12", Unicode = "OFF", Platform="Win32", MSVCStaticRuntime = "ON" },
-                new { DirName = "Build_MSVC120x86U_MT", VSTarget = "Visual Studio 12", Unicode = "ON", Platform="Win32", MSVCStaticRuntime = "ON" },
-                new { DirName = "Build_MSVC120x86_MD", VSTarget = "Visual Studio 12", Unicode = "OFF", Platform="Win32", MSVCStaticRuntime = "OFF" },
-                new { DirName = "Build_MSVC120x86U_MD", VSTarget = "Visual Studio 12", Unicode = "ON", Platform="Win32", MSVCStaticRuntime = "OFF" },
-                //new { DirName = "build_msvc120x64_MT", VSTarget = "Visual Studio 12 Win64", Unicode = "OFF" },
-                //new { DirName = "build_msvc120x64u_MT", VSTarget = "Visual Studio 12 Win64", Unicode = "ON" },
-                new { DirName = "Build_MSVC140x86_MT", VSTarget = "Visual Studio 14", Unicode = "OFF", Platform="Win32", MSVCStaticRuntime = "ON" },
-                new { DirName = "Build_MSVC140x86U_MT", VSTarget = "Visual Studio 14", Unicode = "ON", Platform="Win32", MSVCStaticRuntime = "ON" },
-                new { DirName = "Build_MSVC140x86_MD", VSTarget = "Visual Studio 14", Unicode = "OFF", Platform="Win32", MSVCStaticRuntime = "OFF" },
-                new { DirName = "Build_MSVC140x86U_MD", VSTarget = "Visual Studio 14", Unicode = "ON", Platform="Win32", MSVCStaticRuntime = "OFF" },
-                //new { DirName = "build_msvc140x64_MT", VSTarget = "Visual Studio 14 Win64", Unicode = "OFF" },
-                //new { DirName = "build_msvc140x64u_MT", VSTarget = "Visual Studio 14 Win64", Unicode = "ON" },
-            };
 
             // cmake で .sln を作ってビルドする
             foreach (var t in targets)

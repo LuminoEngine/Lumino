@@ -12,7 +12,7 @@ LN_NAMESPACE_SCENE_BEGIN
 //==============================================================================
 // Grid
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Grid, VisualNode);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Grid, VisualComponent);
 
 //------------------------------------------------------------------------------
 GridPtr Grid::Create3D()
@@ -36,7 +36,7 @@ Grid::~Grid()
 //------------------------------------------------------------------------------
 void Grid::Initialize(SceneGraph* owner)
 {
-	VisualNode::Initialize(owner, 1);
+	VisualComponent::Initialize(owner, 1);
 }
 
 //------------------------------------------------------------------------------

@@ -210,7 +210,7 @@ void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const
 
 
 //------------------------------------------------------------------------------
-void TextLayoutEngine2::Layout(RawFont* font, const UTF32* text, int length, const RectF& layoutArea, TextLayoutOptions options, ResultData* outResult)
+void TextLayoutEngine2::Layout(RawFont* font, const UTF32* text, int length, const Rect& layoutArea, TextLayoutOptions options, ResultData* outResult)
 {
 	m_font = font;
 	m_options = options;

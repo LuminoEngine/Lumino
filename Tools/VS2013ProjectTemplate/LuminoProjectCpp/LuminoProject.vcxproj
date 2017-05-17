@@ -59,13 +59,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(LuminoInstallDir)Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(LuminoInstallDir)Lib\MSVC120_x86_MT\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(LuminoInstallDir)MSVC2013\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LuminoInstallDir)MSVC2013\Lib\x86_MT;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(LuminoInstallDir)Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(LuminoInstallDir)Lib\MSVC120_x86_MT\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(LuminoInstallDir)MSVC2013\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LuminoInstallDir)MSVC2013\Lib\x86_MT;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

@@ -5,6 +5,7 @@
 #include <Lumino/Graphics/Rendering.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/SceneNode.h>
+#include <Lumino/Scene/WorldObject.h>
 #include <Lumino/Framework/GameScene.h>
 
 LN_NAMESPACE_BEGIN
@@ -140,17 +141,17 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 	localMatrix.Translate(m_transform.translation);
 
 	// グローバル行列結合
-	if (parent != nullptr)
-		m_combinedGlobalMatrix = localMatrix * parent->m_combinedGlobalMatrix;
-	else
-		m_combinedGlobalMatrix = localMatrix;
+	//if (parent != nullptr)
+	//	m_combinedGlobalMatrix = localMatrix * parent->m_combinedGlobalMatrix;
+	//else
+	//	m_combinedGlobalMatrix = localMatrix;
 
-	// Component
-	WorldObject* owner = GetOwnerObject();
-	if (owner != nullptr)
-	{
-		m_combinedGlobalMatrix *= owner->transform.GetTransformMatrix();
-	}
+	//// Component
+	//WorldObject* owner = GetOwnerObject();
+	//if (owner != nullptr)
+	//{
+	//	m_combinedGlobalMatrix *= owner->transform.GetTransformMatrix();
+	//}
 
 	OnUpdateFrame(deltaTime);
 
@@ -174,22 +175,6 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 }
 
 //------------------------------------------------------------------------------
-void SceneNode::Render2(DrawList* renderer)
-{
-	for (int i = 0; i < m_children->GetCount(); ++i)
-	{
-		m_children->GetAt(i)->Render2(renderer);
-	}
-
-	if (m_isVisible)
-	{
-		renderer->SetBuiltinEffectData(m_builtinEffectData);
-		OnRender2(renderer);
-		GetOwnerSceneGraph()->GetRenderingProfiler().IncreaseNodeDrawCount();
-	}
-}
-
-//------------------------------------------------------------------------------
 void SceneNode::OnRender2(DrawList* renderer)
 {
 }
@@ -208,6 +193,7 @@ void SceneNode::OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph* oldOw
 //------------------------------------------------------------------------------
 void SceneNode::OnUpdate()
 {
+	Component::OnUpdate();
 }
 
 //==============================================================================

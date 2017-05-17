@@ -10,7 +10,7 @@ class HugePlane;
 using HugePlanePtr = RefPtr<HugePlane>;
 
 class HugePlane
-	: public VisualNode
+	: public VisualComponent
 {
 public:
 	static HugePlanePtr Create(const Vector3& direction);

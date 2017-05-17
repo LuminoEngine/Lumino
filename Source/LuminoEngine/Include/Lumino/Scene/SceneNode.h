@@ -40,7 +40,7 @@ public:
 	void SetTransform(const AttitudeTransform& transform) { m_transform = transform; }
 
 	/// ワールド変換行列の取得
-	const AttitudeTransform& GetTransform() const { return m_transform; }
+	//const AttitudeTransform& GetTransform() const { return m_transform; }
 
 	/** 位置を設定します。*/
 	LN_METHOD(Property)
@@ -131,7 +131,6 @@ public:
 	virtual void UpdateFrameHierarchy(SceneNode* parent, float deltaTime);
 
 
-	void Render2(DrawList* renderer);
 	virtual void OnRender2(DrawList* renderer);
 
 
@@ -154,7 +153,7 @@ LN_INTERNAL_ACCESS:
 	void Initialize(SceneGraph* owner);
 	void SetAutoRemove(bool enabled) { m_isAutoRemove = enabled; }
 	bool IsAutoRemove() const { return m_isAutoRemove; }
-	const Matrix& GetCombinedGlobalMatrix() const { return m_combinedGlobalMatrix; }
+	//const Matrix& GetCombinedGlobalMatrix() const { return m_combinedGlobalMatrix; }
 
 private:
 	void SetOwnerSceneGraph(SceneGraph* owner);
@@ -177,17 +176,17 @@ protected:
 	RefPtr<SceneNodeList>	m_children;
 	SceneNode*			m_parentNode;
 
-	Matrix				m_combinedGlobalMatrix;
+	//Matrix				m_combinedGlobalMatrix;
 
 	friend class DrawingLayer;
 
-	//friend class MMERenderingPass;	// TODO: VisualNode に持ってくべきかも。ついでに friend も何とかしたい
+	//friend class MMERenderingPass;	// TODO: VisualComponent に持ってくべきかも。ついでに friend も何とかしたい
 	//detail::RenderingPassClientData	m_renderingPassClientDataList[detail::MaxRenderingPass];
 
 	detail::BuiltinEffectData	m_builtinEffectData;
 
-private:
 	bool				m_isVisible;
+private:
 };
 
 class SceneNodeList

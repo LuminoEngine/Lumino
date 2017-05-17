@@ -461,9 +461,18 @@ UIStyle* UIStyleTable::FindSubControlStyle(const StringRef& subControlOwnerName,
 // UIColors
 //==============================================================================
 
-static bool				g_colorsInit = false;
-static Color			g_colors[UIColors::MaxIndex][UIColors::MaxDepth];
-static SolidColorBrush	g_brushes[UIColors::MaxIndex][UIColors::MaxDepth];
+class GlobalSolidColorBrush
+	: public SolidColorBrush
+{
+public:
+	GlobalSolidColorBrush() = default;
+	virtual ~GlobalSolidColorBrush() = default;
+	void Initialize(const Color& color) { SolidColorBrush::Initialize(color); }
+};
+
+static bool						g_colorsInit = false;
+static Color					g_colors[UIColors::MaxIndex][UIColors::MaxDepth];
+static GlobalSolidColorBrush	g_brushes[UIColors::MaxIndex][UIColors::MaxDepth];
 
 //------------------------------------------------------------------------------
 static const void InitColors()

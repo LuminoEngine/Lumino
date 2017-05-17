@@ -263,5 +263,12 @@ RefPtr<T> NewObject(TArgs&&... args)
 	return ptr;
 }
 
+template<class T, typename... TArgs>
+void PlacementNewObject(void* ptr, TArgs&&... args)
+{
+	new (ptr)T();
+	static_cast<T*>(ptr)->Initialize(std::forward<TArgs>(args)...);
+}
+
 LN_NAMESPACE_END
 

@@ -40,10 +40,19 @@ option(LN_USE_EXTERNAL_Effekseer "" ON)
 # lib postfix
 if (LN_USE_UNICODE_CHAR_SET)
 	set(LN_LIB_POSTFIX "U")
+	set(LN_STATIC_LIB_POSTFIX "U")
 endif()
 
 # output dir
 set(LN_LIB_OUTPUT_DIR "${PROJECT_SOURCE_DIR}/${LN_LIB_OUTPUT_LOCAL_DIR}")
+
+macro(ln_add_common_property projectName)
+	set_target_properties(${projectName} PROPERTIES OUTPUT_NAME "${projectName}${LN_STATIC_LIB_POSTFIX}")
+	set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
+	set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${LN_LIB_OUTPUT_DIR}")
+	set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${LN_LIB_OUTPUT_DIR}")
+	set_target_properties(${projectName} PROPERTIES PREFIX "")
+endmacro()
 
 #------------------------------------------------------------------------------
 # External
@@ -81,8 +90,8 @@ endif()
 
 #------------------------------
 #
-add_subdirectory(bindings/Runtime)
-#add_subdirectory(bindings/C/Test)
+add_subdirectory(Bindings/Runtime)
+#add_subdirectory(Bindings/C/Test)
 if (MSVC)
 	#add_subdirectory(tools/ArchiveMaker)
 endif()

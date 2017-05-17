@@ -55,7 +55,7 @@ public:
 	virtual void OnStart() override
 	{
 		auto player = WorldObject::Create();
-		player->AddComponent(Sprite2D::Create(_T("C:/LocalProj/設計ツール/dll_48x48.png")));
+		player->AddComponent(Sprite2DComponent::Create(_T("C:/LocalProj/設計ツール/dll_48x48.png")));
 		player->AddComponent(NewObject<Simple2DCharacterController>());
 	}
 
@@ -87,51 +87,19 @@ void Main()
 #endif
 
 
-
-	//{
-	//	StreamWriter w(_T("C:\\LocalProj\\DT10\\12.0.0\\master_maerge\\result.csv"));
-	//	for (auto& data : results)
-	//	{
-	//		if (!data.parents.IsEmpty())
-	//		{
-	//			w.Write(data.path + _T(","));
-	//			for (auto& p : data.parents)
-	//			{
-	//				w.WriteFormat(_T("{0}  "), p);
-	//			}
-	//			w.WriteLine();
-	//		}
-	//	}
-	//}
-
-	//{
-	//	StreamWriter w(_T("C:\\LocalProj\\DT10\\12.0.0\\master_maerge\\result2.csv"));
-	//	for (auto& data : results)
-	//	{
-	//		if (data.parents.IsEmpty())
-	//		{
-	//			w.WriteLine(data.path);
-	//		}
-	//	}
-	//}
-
-
-	return
-
 	//Engine::Initialize();
 
-	//Engine::GetMainViewport()->SetBackgroundColor(Color::Gray);
+	//auto sprite = Sprite2D::Create(_T("C:/Proj/LN/HC1/External/Lumino/Documentation/Logo/icon32.png"));
+	//sprite->SetPosition(10, 20);
 
-	//do
+
+	//while (Engine::Update())
 	//{
-	//	Engine::UpdateFrame();
-	//	//if (Engine::BeginRendering())
-	//	{
-	//		Engine::RenderFrame();
-	//		Engine::PresentFrame();
-	//	}
+	//}
 
-	//} while (!Engine::IsEndRequested());
+	//Engine::Terminate();
+
+	//return;
 
 	UIControlsGallery();
 	//DxLibMain();
@@ -171,22 +139,22 @@ void Main()
 	//Engine::GetMainViewport()->SetBackgroundColor(Color32::Gray);
 	Engine::GetMainViewport()->SetPlacement(ViewportPlacement::AutoResize);
 
-	Engine::GetDefaultSceneGraph3D()->visibleGridPlane = true;
+	//Engine::GetDefaultSceneGraph3D()->visibleGridPlane = true;
 
 	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
-	Camera::GetMain3DCamera()->SetCameraBehavior(cb);
+	CameraComponent::GetMain3DCamera()->SetCameraBehavior(cb);
 
-	//auto mesh = SkinnedMesh::Create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
+	//auto mesh = SkinnedMeshComponent::Create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
 
 	//auto tex = Texture2D::Create("D:/Proj/Volkoff/External/Lumino/test/UnitTest/Scene/TestData/Dice1.png");
-	//auto sprite1 = Sprite3D::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
-	//auto sprite2 = Sprite3D::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
-	//auto sprite3 = Sprite3D::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
-	//auto sprite4 = Sprite3D::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
-	//auto sprite5 = Sprite3D::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
-	//auto sprite6 = Sprite3D::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
+	//auto sprite1 = Sprite3DComponent::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
+	//auto sprite2 = Sprite3DComponent::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
+	//auto sprite3 = Sprite3DComponent::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
+	//auto sprite4 = Sprite3DComponent::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
+	//auto sprite5 = Sprite3DComponent::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
+	//auto sprite6 = Sprite3DComponent::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
 
-	//auto mesh = StaticMesh::CreateSphere(2, 4, 4);
+	//auto mesh = StaticMeshComponent::CreateSphere(2, 4, 4);
 
 #if 0
 	auto blur = ScreenMotionBlurImageEffect::Create();
@@ -210,7 +178,7 @@ void Main()
 
 #if 0
 	//Engine::GetMainLight3D()->SetPosition();
-	auto mLogoSprite = Sprite2D::Create(_T("D:/Proj/Volkoff/Volkoff/Data/Graphics/Frontend/Logo_1.png"));
+	auto mLogoSprite = Sprite2DComponent::Create(_T("D:/Proj/Volkoff/Volkoff/Data/Graphics/Frontend/Logo_1.png"));
 
 	int map[5*5] =
 	{
@@ -251,9 +219,9 @@ void Main()
 	Input::AddButtonBinding(_T("AA"), KeyboardBinding::Create(Keys::C));
 	Input::AddButtonBinding(_T("GG"), KeyboardBinding::Create(Keys::A));
 
-	//auto spr1 = Sprite2D::Create(_T("D:/Proj/LuminoStudio/Engine/External/Lumino/test/UnitTest/Graphics/TestData/Sprite2.png"));
+	//auto spr1 = Sprite2DComponent::Create(_T("D:/Proj/LuminoStudio/Engine/External/Lumino/test/UnitTest/Graphics/TestData/Sprite2.png"));
 
-	//auto text = TextBlock2D::Create(_T("Hello, world!"));
+	//auto text = TextBlock2DComponent::Create(_T("Hello, world!"));
 
 #if 0
 
@@ -551,7 +519,7 @@ void Main()
 
 	//auto gizmo = static_cast<CameraViewportLayer*>(Engine::GetDefault3DLayer())->CreateGizmo();
 
-	//auto sp = Sprite3D::Create(2, 2, Texture2D::Create(_T("D:/GameProjects/Chronicles/110220c_as019.jpg")));
+	//auto sp = Sprite3DComponent::Create(2, 2, Texture2D::Create(_T("D:/GameProjects/Chronicles/110220c_as019.jpg")));
 	//sp->SetTone(ToneF(0, 0, 1, 1.0));
 	//gizmo->Setup(Matrix::Identity, sp->GetTransform());//Matrix::MakeTranslation(1, 0, 0));
 	//
@@ -568,27 +536,27 @@ void Main()
 
 	//auto tex1 = Texture2D::Create(32, 32);
 	//tex1->Clear(Color32::Red);
-	//auto box1 = StaticMesh::CreateBox(Vector3(5, 5, 5));
-	//auto box1 = StaticMesh::CreateTeapot();
-	//auto box1 = StaticMesh::Create(_T("D:/Proj/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/MqoTest1.mqo"));
-	//auto box1 = StaticMesh::Create(_T("C:/Proj/FluoriteSolution/External/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/Plant1.mqo"));
+	//auto box1 = StaticMeshComponent::CreateBox(Vector3(5, 5, 5));
+	//auto box1 = StaticMeshComponent::CreateTeapot();
+	//auto box1 = StaticMeshComponent::Create(_T("D:/Proj/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/MqoTest1.mqo"));
+	//auto box1 = StaticMeshComponent::Create(_T("C:/Proj/FluoriteSolution/External/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/Plant1.mqo"));
 
 	//box1->GetMaterials()->GetAt(0)->SetMaterialTexture(tex1);
 	////box1->SetTone(ToneF(0, 0, 1, 1.0));
 	//gizmo->Setup(Matrix::Identity, box1->GetTransform());//Matrix::MakeTranslation(1, 0, 0));
 
-	//auto mesh3 = StaticMesh::CreatePlane(Vector2(3, 3), 1, 1);
+	//auto mesh3 = StaticMeshComponent::CreatePlane(Vector2(3, 3), 1, 1);
 	//mesh3->SetPosition(-2, 0, 0);
 
 #if 0
-	List<RefPtr<StaticMesh>> boxList;
+	List<RefPtr<StaticMeshComponent>> boxList;
 	for (int z = 0; z < 10; z++)
 	{
 		for (int y = 0; y < 10; y++)
 		{
 			for (int x = 0; x < 10; x++)
 			{
-				auto mesh2 = StaticMesh::CreateBox();
+				auto mesh2 = StaticMeshComponent::CreateBox();
 				mesh2->SetPosition(x * 2, y * 2, z * 2);
 				boxList.Add(mesh2);
 			}

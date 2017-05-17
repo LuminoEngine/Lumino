@@ -1,6 +1,5 @@
 ﻿
 #include "../Internal.h"
-#include "RenderingPass.h"
 #include <Lumino/Graphics/GraphicsContext.h>
 #include <Lumino/Scene/Camera.h>
 #include <Lumino/Scene/Light.h>
@@ -72,22 +71,22 @@ Material* MaterialList2::GetMainMaterial() const
 
 
 //==============================================================================
-// VisualNode
+// VisualComponent
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(VisualNode, SceneNode);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(VisualComponent, SceneNode);
 
 //------------------------------------------------------------------------------
-VisualNode::VisualNode()
+VisualComponent::VisualComponent()
 {
 }
 
 //------------------------------------------------------------------------------
-VisualNode::~VisualNode()
+VisualComponent::~VisualComponent()
 {
 }
 
 //------------------------------------------------------------------------------
-void VisualNode::Initialize(SceneGraph* owner, int subsetCount)
+void VisualComponent::Initialize(SceneGraph* owner, int subsetCount)
 {
 	SceneNode::Initialize(owner);
 	m_materialList = RefPtr<MaterialList2>::MakeRef();
@@ -95,101 +94,161 @@ void VisualNode::Initialize(SceneGraph* owner, int subsetCount)
 }
 
 //------------------------------------------------------------------------------
-Material* VisualNode::GetMainMaterial() const
+Material* VisualComponent::GetMainMaterial() const
 {
 	return m_materialList->GetMainMaterial();
 }
 
 //------------------------------------------------------------------------------
-tr::ReflectionObjectList<Material*>* VisualNode::GetMaterials() const
+tr::ReflectionObjectList<Material*>* VisualComponent::GetMaterials() const
 {
 	return m_materialList;
 }
 
 //------------------------------------------------------------------------------
-void VisualNode::SetOpacity(float value, int subsetIndex)
+void VisualComponent::SetOpacity(float value)
 {
-	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
-	// TODO: サブマテリアルの設定
-	//m_materialList->GetMainMaterial()->SetOpacity(opacity);
 	m_builtinEffectData.SetOpacity(value);
 }
-float VisualNode::GetOpacity() const
+
+//------------------------------------------------------------------------------
+float VisualComponent::GetOpacity() const
 {
 	return m_builtinEffectData.GetOpacity();
 }
 
-void VisualNode::SetColorScale(const Color& value, int subsetIndex)
+//------------------------------------------------------------------------------
+void VisualComponent::SetColorScale(const Color& value)
 {
-	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
-	// TODO: サブマテリアルの設定
-	//m_materialList->GetMainMaterial()->SetColorScale(color);
 	m_builtinEffectData.SetColorScale(value);
 }
-void VisualNode::SetColorScale(float r, float g, float b, float a, int subsetIndex)
-{
-	SetColorScale(Color(r, g, b, a));
-}
-void VisualNode::SetColor(const Color32& color)
-{
-	SetColorScale(Color(color));
-}
-void VisualNode::SetColor(int r, int g, int b, int a)
-{
-	SetColor(Color32(r, g, b, a));
-}
-const Color& VisualNode::GetColorScale() const
+
+//------------------------------------------------------------------------------
+const Color& VisualComponent::GetColorScale() const
 {
 	return m_builtinEffectData.GetColorScale();
 }
-void VisualNode::SetBlendColor(const Color& color, int subsetIndex)
+
+//------------------------------------------------------------------------------
+void VisualComponent::SetBlendColor(const Color& value)
 {
-	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
-	// TODO: サブマテリアルの設定
-	//m_materialList->GetMainMaterial()->SetBlendColor(color);
-	m_builtinEffectData.SetBlendColor(color);
+	m_builtinEffectData.SetBlendColor(value);
 }
-void VisualNode::SetTone(const ToneF& tone, int subsetIndex)
+
+//------------------------------------------------------------------------------
+const Color& VisualComponent::GetBlendColor() const
 {
-	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
-	// TODO: サブマテリアルの設定
-	//m_materialList->GetMainMaterial()->SetTone(tone);
-	m_builtinEffectData.SetTone(tone);
+	return m_builtinEffectData.GetBlendColor();
 }
-void VisualNode::SetShader(Shader* value, int subsetIndex)
+
+//------------------------------------------------------------------------------
+void VisualComponent::SetTone(const ToneF& value)
 {
-	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
-	// TODO: サブマテリアルの設定
-	//m_materialList->GetMainMaterial()->SetShader(shader);
+	m_builtinEffectData.SetTone(value);
+}
+
+//------------------------------------------------------------------------------
+const ToneF& VisualComponent::GetTone() const
+{
+	return m_builtinEffectData.GetTone();
+}
+
+//------------------------------------------------------------------------------
+void VisualComponent::SetShader(Shader* value)
+{
 	m_builtinEffectData.SetShader(value);
 }
 
 //------------------------------------------------------------------------------
-void VisualNode::SetBlendMode(BlendMode mode) { GetMainMaterial()->SetBlendMode(mode); }
+Shader* VisualComponent::GetShader() const
+{
+	return m_builtinEffectData.GetShader();
+}
+
+////------------------------------------------------------------------------------
+//void VisualComponent::SetOpacity(float value, int subsetIndex)
+//{
+//	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
+//	// TODO: サブマテリアルの設定
+//	//m_materialList->GetMainMaterial()->SetOpacity(opacity);
+//	m_builtinEffectData.SetOpacity(value);
+//}
+//float VisualComponent::GetOpacity() const
+//{
+//	return m_builtinEffectData.GetOpacity();
+//}
+//
+//void VisualComponent::SetColorScale(const Color& value, int subsetIndex)
+//{
+//	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
+//	// TODO: サブマテリアルの設定
+//	//m_materialList->GetMainMaterial()->SetColorScale(color);
+//	m_builtinEffectData.SetColorScale(value);
+//}
+//void VisualComponent::SetColorScale(float r, float g, float b, float a, int subsetIndex)
+//{
+//	SetColorScale(Color(r, g, b, a));
+//}
+//void VisualComponent::SetColor(const Color32& color)
+//{
+//	SetColorScale(Color(color));
+//}
+//void VisualComponent::SetColor(int r, int g, int b, int a)
+//{
+//	SetColor(Color32(r, g, b, a));
+//}
+//const Color& VisualComponent::GetColorScale() const
+//{
+//	return m_builtinEffectData.GetColorScale();
+//}
+//void VisualComponent::SetBlendColor(const Color& color, int subsetIndex)
+//{
+//	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
+//	// TODO: サブマテリアルの設定
+//	//m_materialList->GetMainMaterial()->SetBlendColor(color);
+//	m_builtinEffectData.SetBlendColor(color);
+//}
+//void VisualComponent::SetTone(const ToneF& tone, int subsetIndex)
+//{
+//	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
+//	// TODO: サブマテリアルの設定
+//	//m_materialList->GetMainMaterial()->SetTone(tone);
+//	m_builtinEffectData.SetTone(tone);
+//}
+//void VisualComponent::SetShader(Shader* value, int subsetIndex)
+//{
+//	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
+//	// TODO: サブマテリアルの設定
+//	//m_materialList->GetMainMaterial()->SetShader(shader);
+//	m_builtinEffectData.SetShader(value);
+//}
 
 //------------------------------------------------------------------------------
-//BlendMode VisualNode::GetBlendMode() const { return GetMainMaterial()->GetBlendMode(); }
+void VisualComponent::SetBlendMode(BlendMode mode) { GetMainMaterial()->SetBlendMode(mode); }
 
 //------------------------------------------------------------------------------
-void VisualNode::SetCullingMode(CullingMode mode) { GetMainMaterial()->SetCullingMode(mode); }
+//BlendMode VisualComponent::GetBlendMode() const { return GetMainMaterial()->GetBlendMode(); }
 
 //------------------------------------------------------------------------------
-//CullingMode VisualNode::GetCullingMode() const { return GetMainMaterial()->GetCullingMode(); }
+void VisualComponent::SetCullingMode(CullingMode mode) { GetMainMaterial()->SetCullingMode(mode); }
 
 //------------------------------------------------------------------------------
-void VisualNode::SetDepthTestEnabled(bool enabled) { GetMainMaterial()->SetDepthTestEnabled(enabled); }
+//CullingMode VisualComponent::GetCullingMode() const { return GetMainMaterial()->GetCullingMode(); }
 
 //------------------------------------------------------------------------------
-//bool VisualNode::IsDepthTestEnabled() const { return GetMainMaterial()->IsDepthTestEnabled(); }
+void VisualComponent::SetDepthTestEnabled(bool enabled) { GetMainMaterial()->SetDepthTestEnabled(enabled); }
 
 //------------------------------------------------------------------------------
-void VisualNode::SetDepthWriteEnabled(bool enabled) { GetMainMaterial()->SetDepthWriteEnabled(enabled); }
+//bool VisualComponent::IsDepthTestEnabled() const { return GetMainMaterial()->IsDepthTestEnabled(); }
 
 //------------------------------------------------------------------------------
-//bool VisualNode::IsDepthWriteEnabled() const { return GetMainMaterial()->IsDepthWriteEnabled(); }
+void VisualComponent::SetDepthWriteEnabled(bool enabled) { GetMainMaterial()->SetDepthWriteEnabled(enabled); }
 
 //------------------------------------------------------------------------------
-void VisualNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
+//bool VisualComponent::IsDepthWriteEnabled() const { return GetMainMaterial()->IsDepthWriteEnabled(); }
+
+//------------------------------------------------------------------------------
+void VisualComponent::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 {
 	// TODO: 描画関係のデータは UpdateFrame でやるべきではないような気もする。
 	//m_materialList->UpdateMaterialInstances(m_ownerSceneGraph);
@@ -198,17 +257,117 @@ void VisualNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 }
 
 //------------------------------------------------------------------------------
-detail::Sphere VisualNode::GetBoundingSphere()
+detail::Sphere VisualComponent::GetBoundingSphere()
 {
 	const detail::Sphere s{ Vector3::Zero, -1 };
 	return s;
 }
 
 //------------------------------------------------------------------------------
-Shader* VisualNode::GetPrimaryShader() const
+Shader* VisualComponent::GetPrimaryShader() const
 {
 	// TODO: main が無ければ [0] のをつかう
 	return m_materialList->GetMainMaterial()->GetShader();
+}
+
+//------------------------------------------------------------------------------
+void VisualComponent::Render(DrawList* context)
+{
+	if (m_isVisible)
+	{
+		context->SetBuiltinEffectData(m_builtinEffectData);
+		OnRender(context);
+		OnRender2(context);
+	}
+}
+
+
+
+//==============================================================================
+// VisualObject
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(VisualObject, WorldObject);
+
+//------------------------------------------------------------------------------
+VisualObject::VisualObject()
+{
+}
+
+//------------------------------------------------------------------------------
+VisualObject::~VisualObject()
+{
+}
+
+//------------------------------------------------------------------------------
+void VisualObject::Initialize()
+{
+	WorldObject::Initialize();
+}
+
+//------------------------------------------------------------------------------
+void VisualObject::SetOpacity(float value)
+{
+	GetMainVisualComponent()->SetOpacity(value);
+}
+
+//------------------------------------------------------------------------------
+float VisualObject::GetOpacity() const
+{
+	return GetMainVisualComponent()->GetOpacity();
+}
+
+//------------------------------------------------------------------------------
+void VisualObject::SetColorScale(const Color& value)
+{
+	GetMainVisualComponent()->SetColorScale(value);
+}
+
+//------------------------------------------------------------------------------
+void VisualObject::SetColorScale(float r, float g, float b, float a)
+{
+	SetColorScale(Color(r, g, b, a));
+}
+
+//------------------------------------------------------------------------------
+const Color& VisualObject::GetColorScale() const
+{
+	return GetMainVisualComponent()->GetColorScale();
+}
+
+//------------------------------------------------------------------------------
+void VisualObject::SetBlendColor(const Color& value)
+{
+	GetMainVisualComponent()->SetBlendColor(value);
+}
+
+//------------------------------------------------------------------------------
+const Color& VisualObject::GetBlendColor() const
+{
+	return GetMainVisualComponent()->GetBlendColor();
+}
+
+//------------------------------------------------------------------------------
+void VisualObject::SetTone(const ToneF& value)
+{
+	GetMainVisualComponent()->SetTone(value);
+}
+
+//------------------------------------------------------------------------------
+const ToneF& VisualObject::GetTone() const
+{
+	return GetMainVisualComponent()->GetTone();
+}
+
+//------------------------------------------------------------------------------
+void VisualObject::SetShader(Shader* value)
+{
+	GetMainVisualComponent()->SetShader(value);
+}
+
+//------------------------------------------------------------------------------
+Shader* VisualObject::GetShader() const
+{
+	return GetMainVisualComponent()->GetShader();
 }
 
 LN_NAMESPACE_SCENE_END

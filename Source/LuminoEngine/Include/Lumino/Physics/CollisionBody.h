@@ -19,7 +19,7 @@ using CollisionEventHandler = Delegate<void(PhysicsObject* obj)>;
 	@brief	
 */
 LN_CLASS()
-class Collider
+class CollisionBody
 	: public PhysicsObject
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
@@ -29,7 +29,7 @@ public:
 		@brief		RigidBody オブジェクトを作成します。
 		@param[in]	shape	: 衝突判定形状
 	*/
-	static RefPtr<Collider> Create(CollisionShape* shape);
+	static RefPtr<CollisionBody> Create(CollisionShape* shape);
 
 
 	/** 現在の姿勢を取得します。*/
@@ -39,11 +39,11 @@ public:
 	LN_METHOD()
 	void AddShape(CollisionShape* shape);
 
-	/** この Collider が衝突判定のためのトリガーであるかを設定します。初期値は false です。*/
+	/** この CollisionBody が衝突判定のためのトリガーであるかを設定します。初期値は false です。*/
 	LN_METHOD(Property)
 	void SetTrigger(bool enabled);
 
-	/** この Collider が衝突判定のためのトリガーであるかを取得します。*/
+	/** この CollisionBody が衝突判定のためのトリガーであるかを取得します。*/
 	LN_METHOD(Property)
 	bool IsTrigger() const;
 
@@ -65,18 +65,18 @@ protected:
 	virtual void OnAfterStepSimulation() override;
 	virtual void OnRemovedFromWorld() override;
 
-	/** 他の Collider または RigidBody が、この Collider との接触を開始したときに呼び出されます。*/
+	/** 他の CollisionBody または RigidBody が、この CollisionBody との接触を開始したときに呼び出されます。*/
 	void OnTriggerEnter(PhysicsObject* otherObject);
 
-	/** 他の Collider または RigidBody が、この Collider との接触を終了したときに呼び出されます。*/
+	/** 他の CollisionBody または RigidBody が、この CollisionBody との接触を終了したときに呼び出されます。*/
 	virtual void OnTriggerLeave(PhysicsObject* otherObject);
 
-	/** 他の Collider または RigidBody が、この Collider との接触している間呼び出されます。*/
+	/** 他の CollisionBody または RigidBody が、この Collider との接触している間呼び出されます。*/
 	virtual void OnTriggerStay(PhysicsObject* otherObject);
 
 LN_CONSTRUCT_ACCESS:
-	Collider();
-	virtual ~Collider();
+	CollisionBody();
+	virtual ~CollisionBody();
 
 	LN_METHOD()
 	void Initialize();

@@ -911,6 +911,18 @@ SceneGraph3D* EngineDomain::GetDefaultSceneGraph3D()
 	return EngineManager::GetInstance()->GetDefaultWorld3D()->GetSceneGraph3D();
 }
 
+//------------------------------------------------------------------------------
+World2D* EngineDomain::GetDefaultWorld2D()
+{
+	return EngineManager::GetInstance()->GetDefaultWorld2D();
+}
+
+//------------------------------------------------------------------------------
+World3D* EngineDomain::GetDefaultWorld3D()
+{
+	return EngineManager::GetInstance()->GetDefaultWorld3D();
+}
+
 } // namespace detail
 
 LN_NAMESPACE_END

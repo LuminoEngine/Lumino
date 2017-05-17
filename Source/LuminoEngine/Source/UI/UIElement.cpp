@@ -53,9 +53,9 @@ LN_TR_PROPERTY_IMPLEMENT(UIElement, float, decoratorOpacity, tr::PropertyMetadat
 // Event definition
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIMouseEventArgs, MouseEnterEvent, "MouseEnter", MouseEnter);
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIMouseEventArgs, MouseLeaveEvent, "MouseLeave", MouseLeave);
-LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIMouseEventArgs, MouseMoveEvent, "MouseMove", MouseMove);
-LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIMouseEventArgs, MouseDownEvent, "MouseDown", MouseDown);
-LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIMouseEventArgs, MouseUpEvent, "MouseUp", MouseUp);
+//LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIMouseEventArgs, MouseMoveEvent, "MouseMove", MouseMove);
+//LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIMouseEventArgs, MouseDownEvent, "MouseDown", MouseDown);
+//LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIMouseEventArgs, MouseUpEvent, "MouseUp", MouseUp);
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIKeyEventArgs, KeyDownEvent, "KeyDown", KeyDown);
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIKeyEventArgs, KeyUpEvent, "KeyUp", KeyUp);
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIKeyEventArgs, TextInputEvent, "TextInput", TextInput);
@@ -86,6 +86,8 @@ UIElement::UIElement()
 	, m_combinedOpacity(0.0f)
 	, m_isEnabled(true)
 	, m_isMouseOver(nullptr)
+	, m_isHitTestVisible(true)
+	, m_isFocusable(false)
 	, m_hasFocus(false)
 {
 }
@@ -215,7 +217,8 @@ void UIElement::RaiseEvent(const UIEventInfo* ev, UIElement* sender, UIEventArgs
 	//if (m_parent != nullptr)
 	{
 		e->sender = sender;
-		RaiseEventInternal(ev, e);
+		e->m_type = ev;
+		RaiseEventInternal(e);
 	}
 }
 
@@ -230,12 +233,12 @@ void UIElement::MeasureLayout(const Size& availableSize)
 }
 
 //------------------------------------------------------------------------------
-void UIElement::ArrangeLayout(const RectF& finalLocalRect)
+void UIElement::ArrangeLayout(const Rect& finalLocalRect)
 {
 	const HAlignment* parentHAlign = (m_logicalParent != nullptr) ? m_logicalParent->GetLayoutContentHAlignment() : nullptr;
 	const VAlignment* parentVAlign = (m_logicalParent != nullptr) ? m_logicalParent->GetLayoutContentVAlignment() : nullptr;
 
-	RectF alignd = finalLocalRect;
+	Rect alignd = finalLocalRect;
 	Size ds = GetLayoutDesiredSize();
 	if (parentHAlign != nullptr)
 	{
@@ -281,8 +284,8 @@ void UIElement::OnRender(DrawingContext* g)
 	{
 		g->SetBrush(m_localStyle->background.Get());
 		//g->SetOpacity(m_combinedOpacity);
-		//g->DrawRectangle(RectF(0, 0, m_finalLocalRect.GetSize()));
-		g->DrawBoxBackground(RectF(0, 0, m_finalLocalRect.GetSize()), CornerRadius());
+		//g->DrawRectangle(Rect(0, 0, m_finalLocalRect.GetSize()));
+		g->DrawBoxBackground(Rect(0, 0, m_finalLocalRect.GetSize()), CornerRadius());
 
 		
 	}
@@ -290,13 +293,13 @@ void UIElement::OnRender(DrawingContext* g)
 	{
 		//g->SetBrush(decoratorBackground.Get());
 		////g->SetOpacity(m_combinedOpacity * m_decoratorOpacity);
-		//g->DrawRectangle(RectF(0, 0, m_finalLocalRect.GetSize()));
+		//g->DrawRectangle(Rect(0, 0, m_finalLocalRect.GetSize()));
 	}
 
 	if (!m_localStyle->borderThickness.Get().IsZero())
 	{
 		g->DrawBoxBorder(
-			RectF(0, 0, m_finalGlobalRect.GetSize()), m_localStyle->borderThickness.Get(), CornerRadius(),
+			Rect(0, 0, m_finalGlobalRect.GetSize()), m_localStyle->borderThickness.Get(), CornerRadius(),
 			Color::Gray, Color::Gray, Color::Gray, Color::Gray,
 			BorderDirection::Outside);
 	}
@@ -379,13 +382,17 @@ UIElement* UIElement::CheckMouseHoverElement(const PointF& globalPt)
 	for (int i = count - 1; i >= 0; i--)
 	{
 		UIElement* e = static_cast<UIElement*>(GetVisualChild(i))->CheckMouseHoverElement(globalPt);
-		if (e != NULL) { return e; }
+		if (e != nullptr) return e;
 	}
 
-	if (m_finalGlobalRect.Contains(globalPt)) {
-		return this;
+	if (m_isHitTestVisible)
+	{
+		if (m_finalGlobalRect.Contains(globalPt)) {
+			return this;
+		}
 	}
-	return NULL;
+
+	return nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -412,16 +419,16 @@ bool UIElement::OnEvent(detail::UIInternalEventType type, UIEventArgs* args)
 	case detail::UIInternalEventType::Unknown:
 		break;
 	case detail::UIInternalEventType::MouseMove:
-		if (m_isEnabled) RaiseEvent(MouseMoveEvent, this, args);
+		if (m_isEnabled) RaiseEvent(UIEvents::MouseMoveEvent, this, args);
 		break;
 	case detail::UIInternalEventType::MouseButtonDown:
-		if (m_isEnabled) RaiseEvent(MouseDownEvent, this, args);
+		if (m_isEnabled) RaiseEvent(UIEvents::MouseDownEvent, this, args);
 		break;
 	case detail::UIInternalEventType::MouseButtonUp:
-		if (m_isEnabled) RaiseEvent(MouseUpEvent, this, args);
+		if (m_isEnabled) RaiseEvent(UIEvents::MouseUpEvent, this, args);
 		break;
 	case detail::UIInternalEventType::MouseWheel:
-		LN_NOTIMPLEMENTED();
+		if (m_isEnabled) RaiseEvent(UIEvents::MouseWheelEvent, this, args);
 		break;
 	case detail::UIInternalEventType::KeyDown:
 		if (m_isEnabled) RaiseEvent(KeyDownEvent, this, args);
@@ -451,17 +458,18 @@ bool UIElement::OnEvent(detail::UIInternalEventType type, UIEventArgs* args)
 // this でハンドリングしたいルーティングイベントが発生したとき、イベント経由ではなく
 // 通常の仮想関数で通知することで、パフォーマンスの向上を図る。
 // (UI要素作成時のイベントハンドラの new や AddHandler をする必要がなくなる)
-void UIElement::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
+void UIElement::OnRoutedEvent(UIEventArgs* e)
 {
-	if (ev == MouseMoveEvent)
+	auto ev = e->GetType();
+	if (ev == UIEvents::MouseMoveEvent)
 	{
 		OnMouseMove(static_cast<UIMouseEventArgs*>(e));
 	}
-	else if (ev == MouseDownEvent)
+	else if (ev == UIEvents::MouseDownEvent)
 	{
 		OnMouseDown(static_cast<UIMouseEventArgs*>(e));
 	}
-	else if (ev == MouseUpEvent)
+	else if (ev == UIEvents::MouseUpEvent)
 	{
 		OnMouseUp(static_cast<UIMouseEventArgs*>(e));
 	}
@@ -492,7 +500,7 @@ void UIElement::CallOnGotFocus()
 {
 	LN_ASSERT(!m_hasFocus);
 	m_hasFocus = true;
-	OnGotFocus(UIEventArgs::Create(this));
+	OnGotFocus(UIEventArgs::Create(GotFocusEvent, this));
 }
 
 //------------------------------------------------------------------------------
@@ -500,7 +508,7 @@ void UIElement::CallOnLostFocus()
 {
 	LN_ASSERT(m_hasFocus);
 	m_hasFocus = false;
-	OnLostFocus(UIEventArgs::Create(this));
+	OnLostFocus(UIEventArgs::Create(LostFocusEvent, this));
 }
 
 //------------------------------------------------------------------------------
@@ -636,7 +644,7 @@ detail::SpcialUIElementType UIElement::GetSpcialUIElementType() const
 }
 
 //------------------------------------------------------------------------------
-void UIElement::UpdateTransformHierarchy(const RectF& parentGlobalRect)
+void UIElement::UpdateTransformHierarchy(const Rect& parentGlobalRect)
 {
 	if (m_visualParent != nullptr)
 	{
@@ -674,8 +682,8 @@ void UIElement::Render(DrawingContext* g)
 
 
 
-	//g->DrawBoxBorder(RectF(50, 50, 300, 200), ThicknessF(10, 10, 10, 10), Color::Red, Color::Green, Color::Blue, Color::Cyan, 10, 10, 10, 10);	// TODO:
-	//g->DrawBoxShadow(RectF(10, 20, 300, 400), Color::Black, 5, 5, false);
+	//g->DrawBoxBorder(Rect(50, 50, 300, 200), ThicknessF(10, 10, 10, 10), Color::Red, Color::Green, Color::Blue, Color::Cyan, 10, 10, 10, 10);	// TODO:
+	//g->DrawBoxShadow(Rect(10, 20, 300, 400), Color::Black, 5, 5, false);
 	OnRender(g);
 
 	// 子要素
@@ -701,24 +709,23 @@ const VAlignment* UIElement::GetPriorityContentVAlignment()
 //}
 
 //------------------------------------------------------------------------------
-void UIElement::RaiseEventInternal(const UIEventInfo* ev, UIEventArgs* e)
+void UIElement::RaiseEventInternal(UIEventArgs* e)
 {
-	if (LN_CHECK_ARG(ev != nullptr)) return;
 	if (LN_CHECK_ARG(e != nullptr)) return;
 
 	// まずは this に通知
-	OnRoutedEvent(ev, e);
+	OnRoutedEvent(e);
 	if (e->handled) return;
 
 	// this に AddHandler されているイベントハンドラを呼び出す
 	tr::TypeInfo* thisType = tr::TypeInfo::GetTypeInfo(this);
-	thisType->InvokeReflectionEvent(this, ev, e);
+	thisType->InvokeReflectionEvent(this, e->GetType(), e);
 	if (e->handled) return;
 
 	// bubble
 	if (m_visualParent != nullptr)
 	{
-		m_visualParent->RaiseEventInternal(ev, e);
+		m_visualParent->RaiseEventInternal(e);
 	}
 }
 
@@ -763,8 +770,8 @@ const HAlignment* UIElement::GetLayoutContentHAlignment() { return GetPriorityCo
 const VAlignment* UIElement::GetLayoutContentVAlignment() { return GetPriorityContentVAlignment(); }
 const Size& UIElement::GetLayoutDesiredSize() const { return m_desiredSize; }
 void UIElement::SetLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
-void UIElement::SetLayoutFinalLocalRect(const RectF& rect) { m_finalLocalRect = rect; }
-const RectF& UIElement::GetLayoutFinalLocalRect() const { return m_finalLocalRect; }
-void UIElement::SetLayoutFinalGlobalRect(const RectF& rect) { m_finalGlobalRect = rect; }
+void UIElement::SetLayoutFinalLocalRect(const Rect& rect) { m_finalLocalRect = rect; }
+const Rect& UIElement::GetLayoutFinalLocalRect() const { return m_finalLocalRect; }
+void UIElement::SetLayoutFinalGlobalRect(const Rect& rect) { m_finalGlobalRect = rect; }
 
 LN_NAMESPACE_END

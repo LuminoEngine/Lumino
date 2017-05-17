@@ -703,27 +703,27 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 }
 
 //==============================================================================
-// ParticleEmitter
+// ParticleEmitterComponent
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ParticleEmitter, VisualNode);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ParticleEmitterComponent, VisualComponent);
 
 //------------------------------------------------------------------------------
-ParticleEmitter::ParticleEmitter()
+ParticleEmitterComponent::ParticleEmitterComponent()
 	: m_model(nullptr)
 {
 }
 
 //------------------------------------------------------------------------------
-ParticleEmitter::~ParticleEmitter()
+ParticleEmitterComponent::~ParticleEmitterComponent()
 {
 }
 
 //------------------------------------------------------------------------------
-void ParticleEmitter::Initialize(SceneGraph* owner, SpriteParticleModel* model)
+void ParticleEmitterComponent::Initialize(SceneGraph* owner, SpriteParticleModel* model)
 {
 	if (LN_CHECK_ARG(model != nullptr)) return;
 
-	VisualNode::Initialize(owner, 1);
+	VisualComponent::Initialize(owner, 1);
 	m_model = model;
 	m_model->Commit();
 	m_instance = m_model->CreateInstane();
@@ -735,29 +735,29 @@ void ParticleEmitter::Initialize(SceneGraph* owner, SpriteParticleModel* model)
 }
 
 //------------------------------------------------------------------------------
-void ParticleEmitter::OnUpdateFrame(float deltaTime)
+void ParticleEmitterComponent::OnUpdateFrame(float deltaTime)
 {
-	m_instance->m_worldTransform = GetCombinedGlobalMatrix();
-	m_model->UpdateInstance(m_instance, deltaTime, GetCombinedGlobalMatrix());
+	m_instance->m_worldTransform = GetOwnerObject()->transform.GetWorldMatrix();
+	m_model->UpdateInstance(m_instance, deltaTime, m_instance->m_worldTransform);
 }
 
 //------------------------------------------------------------------------------
-void ParticleEmitter::OnRender2(DrawList* renderer)
+void ParticleEmitterComponent::OnRender2(DrawList* renderer)
 {
 	// TODO: name RenderInstance
 	Vector4 dir = renderer->GetCurrentCamera()->GetDirectionInternal();
-	m_model->Render(renderer, m_instance, GetCombinedGlobalMatrix(), renderer->GetCurrentCamera()->GetPosition(), dir.GetXYZ(), renderer->GetCurrentCamera()->GetViewMatrixI(), m_materialList->GetAt(0));
+	m_model->Render(renderer, m_instance, GetOwnerObject()->transform.GetWorldMatrix(), renderer->GetCurrentCamera()->GetPosition(), dir.GetXYZ(), renderer->GetCurrentCamera()->GetViewMatrixI(), m_materialList->GetAt(0));
 }
 
 //==============================================================================
-// ParticleEmitter3D
+// ParticleEmitter3DComponent
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ParticleEmitter3D, ParticleEmitter);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ParticleEmitter3DComponent, ParticleEmitterComponent);
 
 //------------------------------------------------------------------------------
-ParticleEmitter3DPtr ParticleEmitter3D::Create(SpriteParticleModel* model)
+RefPtr<ParticleEmitter3DComponent> ParticleEmitter3DComponent::Create(SpriteParticleModel* model)
 {
-	auto ptr = ParticleEmitter3DPtr::MakeRef();
+	auto ptr = RefPtr<ParticleEmitter3DComponent>::MakeRef();
 	ptr->Initialize(detail::EngineDomain::GetDefaultSceneGraph3D(), model);
 	detail::EngineDomain::GetDefaultSceneGraph3D()->GetRootNode()->AddChild(ptr);
 	return ptr;
@@ -765,12 +765,12 @@ ParticleEmitter3DPtr ParticleEmitter3D::Create(SpriteParticleModel* model)
 }
 
 //------------------------------------------------------------------------------
-ParticleEmitter3D::ParticleEmitter3D()
+ParticleEmitter3DComponent::ParticleEmitter3DComponent()
 {
 }
 
 //------------------------------------------------------------------------------
-ParticleEmitter3D::~ParticleEmitter3D()
+ParticleEmitter3DComponent::~ParticleEmitter3DComponent()
 {
 }
 

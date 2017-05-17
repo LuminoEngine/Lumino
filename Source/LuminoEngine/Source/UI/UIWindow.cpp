@@ -37,9 +37,9 @@ void UIWindow::Initialize()
 }
 
 //------------------------------------------------------------------------------
-void UIWindow::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
+void UIWindow::OnRoutedEvent(UIEventArgs* e)
 {
-	if (ev == UIElement::MouseDownEvent)
+	if (e->GetType() == UIEvents::MouseDownEvent)
 	{
 		if (!m_isDragging)
 		{
@@ -55,7 +55,7 @@ void UIWindow::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 			return;
 		}
 	}
-	else if (ev == UIElement::MouseUpEvent)
+	else if (e->GetType() == UIEvents::MouseUpEvent)
 	{
 		if (m_isDragging)
 		{
@@ -69,7 +69,7 @@ void UIWindow::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 			return;
 		}
 	}
-	else if (ev == UIElement::MouseMoveEvent)
+	else if (e->GetType() == UIEvents::MouseMoveEvent)
 	{
 		if (m_isDragging)
 		{
@@ -85,7 +85,7 @@ void UIWindow::OnRoutedEvent(const UIEventInfo* ev, UIEventArgs* e)
 		}
 	}
 
-	UIElement::OnRoutedEvent(ev, e);
+	UIElement::OnRoutedEvent(e);
 }
 
 //------------------------------------------------------------------------------

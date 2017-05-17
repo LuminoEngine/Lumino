@@ -55,7 +55,7 @@ public:
 	UIMainWindow* GetMainWindow() const { return m_mainWindow; }
 
 private:
-	void CreateGlobalCommands();
+	void CreateGlobalObjects();
 	void MakeDefaultStyle(UIStyleTable* table);
 
 	EventArgsPool*		m_eventArgsPool;

@@ -119,7 +119,7 @@ void UIImage::OnRender(DrawingContext* g)
 {
 	UIElement::OnRender(g);
 
-	g->DrawTexture(GetFinalGlobalRect(), m_texture, RectF(0, 0, 32, 32));	// TODO:
+	g->DrawTexture(GetFinalGlobalRect(), m_texture, Rect(0, 0, 32, 32));	// TODO:
 }
 
 //------------------------------------------------------------------------------

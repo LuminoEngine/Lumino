@@ -11,21 +11,13 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 // Brush
 //==============================================================================
 
-// 以前は ColorF の static 変数を参照していたが、それだと初期化の順によってはこちらの値がすべて 0,0,0,0 になってしまうことがあった
-static Brush g_ColorBrush_White(Color(1.0, 1.0, 1.0, 1.0));
-static Brush g_ColorBrush_Black(Color(0.0, 0.0, 0.0, 1.0));
-static Brush g_ColorBrush_Gray(Color(0.5, 0.5, 0.5, 1.0));
-static Brush g_ColorBrush_Red(Color(1.0, 0.0, 0.0, 1.0));
-static Brush g_ColorBrush_Green(Color(0.0, 1.0, 0.0, 1.0));
-static Brush g_ColorBrush_Blue(Color(0.0, 0.0, 1.0, 1.0));
-static Brush g_ColorBrush_DimGray(Color(0.25, 0.25, 0.25, 1.0));
-Brush*	Brush::White = &g_ColorBrush_White;
-Brush*	Brush::Black = &g_ColorBrush_Black;
-Brush*	Brush::Gray = &g_ColorBrush_Gray;
-Brush*	Brush::Red = &g_ColorBrush_Red;
-Brush*	Brush::Green = &g_ColorBrush_Green;
-Brush*	Brush::Blue = &g_ColorBrush_Blue;
-Brush*	Brush::DimGray = &g_ColorBrush_DimGray;
+Brush*	Brush::White = nullptr;
+Brush*	Brush::Black = nullptr;
+Brush*	Brush::Gray = nullptr;
+Brush*	Brush::Red = nullptr;
+Brush*	Brush::Green = nullptr;
+Brush*	Brush::Blue = nullptr;
+Brush*	Brush::DimGray = nullptr;
 
 //------------------------------------------------------------------------------
 Brush::Brush()
@@ -136,7 +128,7 @@ RefPtr<TextureBrush> TextureBrush::Create(Texture* texture)
 }
 
 //------------------------------------------------------------------------------
-RefPtr<TextureBrush> TextureBrush::Create(Texture* texture, BrushImageDrawMode drawMode, const RectF& sourceRect, const ThicknessF& borderThickness, BrushWrapMode wrapMode)
+RefPtr<TextureBrush> TextureBrush::Create(Texture* texture, BrushImageDrawMode drawMode, const Rect& sourceRect, const ThicknessF& borderThickness, BrushWrapMode wrapMode)
 {
 	auto ptr = NewObject<TextureBrush>(texture);
 	ptr->SetImageDrawMode(drawMode);
@@ -179,14 +171,14 @@ void TextureBrush::Initialize(Texture* texture)
 }
 
 //------------------------------------------------------------------------------
-RectF TextureBrush::GetActualSourceRect() const
+Rect TextureBrush::GetActualSourceRect() const
 {
 	Size textureSize(0, 0);
 	Texture* texture = GetTexture();
 	if (texture != nullptr) textureSize = texture->GetSize().ToFloatSize();
 
-	const RectF& rc = GetSourceRect();
-	return RectF(
+	const Rect& rc = GetSourceRect();
+	return Rect(
 		(Math::IsNaNOrInf(rc.x)) ? 0.0f : rc.x,
 		(Math::IsNaNOrInf(rc.y)) ? 0.0f : rc.y,
 		(Math::IsNaNOrInf(rc.width)) ? textureSize.width : rc.width,

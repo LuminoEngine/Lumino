@@ -21,7 +21,7 @@ static const int g_finalOffset = 0.0;
 //==============================================================================
 
 //------------------------------------------------------------------------------
-void ShapesRendererCommandList::AddDrawBoxBackground(const RectF& rect, const CornerRadius& cornerRadius)
+void ShapesRendererCommandList::AddDrawBoxBackground(const Rect& rect, const CornerRadius& cornerRadius)
 {
 	float cmd[] =
 	{
@@ -59,7 +59,7 @@ void ShapesRendererCommandList::AddDrawBoxBorder(
 }
 
 //------------------------------------------------------------------------------s
-void ShapesRendererCommandList::AddDrawBoxBorder2(const RectF& rect, const ThicknessF& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const CornerRadius& cornerRadius, bool borderInset)
+void ShapesRendererCommandList::AddDrawBoxBorder2(const Rect& rect, const ThicknessF& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const CornerRadius& cornerRadius, bool borderInset)
 {
 	float cmd[] =
 	{
@@ -81,7 +81,7 @@ void ShapesRendererCommandList::AddDrawBoxBorder2(const RectF& rect, const Thick
 }
 
 //------------------------------------------------------------------------------
-void ShapesRendererCommandList::AddDrawBoxShadow(const RectF& rect, const CornerRadius& cornerRadius, const Color& color, float blur, float width, bool inset)
+void ShapesRendererCommandList::AddDrawBoxShadow(const Rect& rect, const CornerRadius& cornerRadius, const Color& color, float blur, float width, bool inset)
 {
 	float cmd[] =
 	{
@@ -265,7 +265,7 @@ void ShapesRendererCore::ExtractBasePoints(ShapesRendererCommandList* commandLis
 			{
 				BorderComponent components[4];
 				MakeBasePointsAndBorderComponent(
-					RectF(cmd[1], cmd[2], cmd[3], cmd[4]),
+					Rect(cmd[1], cmd[2], cmd[3], cmd[4]),
 					ThicknessF(0, 0, 0, 0),
 					CornerRadius(cmd[5], cmd[6], cmd[7], cmd[8]),
 					components);
@@ -290,7 +290,7 @@ void ShapesRendererCore::ExtractBasePoints(ShapesRendererCommandList* commandLis
 			{
 				BorderComponent components[4];
 				MakeBasePointsAndBorderComponent(
-					RectF(cmd[1], cmd[2], cmd[3], cmd[4]),
+					Rect(cmd[1], cmd[2], cmd[3], cmd[4]),
 					ThicknessF(cmd[5], cmd[6], cmd[7], cmd[8]),
 					CornerRadius(cmd[25], cmd[26], cmd[27], cmd[28]),
 					components);
@@ -760,7 +760,7 @@ void ShapesRendererCore::ExtractBasePoints(ShapesRendererCommandList* commandLis
 }
 
 //------------------------------------------------------------------------------
-void ShapesRendererCore::MakeBasePointsAndBorderComponent(const RectF& rect, const ThicknessF& thickness, const CornerRadius& cornerRadius, BorderComponent components[4])
+void ShapesRendererCore::MakeBasePointsAndBorderComponent(const Rect& rect, const ThicknessF& thickness, const CornerRadius& cornerRadius, BorderComponent components[4])
 {
 	float tlRad = cornerRadius.topLeft;
 	float trRad = cornerRadius.topRight;

@@ -120,13 +120,13 @@ void TextRendererCore::Render(const GlyphRunData* dataList, int dataCount, FontG
 	{
 		// TODO: 以下、srcFillRect, srcOutlineRectを使った方が良い気がする
 		const GlyphRunData& data = dataList[i];
-		RectF uvSrcRect((float)data.srcRect.x, (float)data.srcRect.y, (float)data.srcRect.width, (float)data.srcRect.height);
+		Rect uvSrcRect((float)data.srcRect.x, (float)data.srcRect.y, (float)data.srcRect.width, (float)data.srcRect.height);
 		uvSrcRect.x *= texSizeInv.width;
 		uvSrcRect.width *= texSizeInv.width;
 		uvSrcRect.y *= texSizeInv.height;
 		uvSrcRect.height *= texSizeInv.height;
 
-		RectF dstRect(data.Position, (float)data.srcRect.width, (float)data.srcRect.height);
+		Rect dstRect(data.Position, (float)data.srcRect.width, (float)data.srcRect.height);
 		InternalDrawRectangle(data.transform, dstRect, uvSrcRect, color);
 	}
 
@@ -134,7 +134,7 @@ void TextRendererCore::Render(const GlyphRunData* dataList, int dataCount, FontG
 }
 
 //------------------------------------------------------------------------------
-void TextRendererCore::InternalDrawRectangle(const Matrix& transform, const RectF& rect, const RectF& srcUVRect, const Color& color)
+void TextRendererCore::InternalDrawRectangle(const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color)
 {
 	if (rect.IsEmpty()) { return; }		// 矩形がつぶれているので書く必要はない
 
@@ -292,7 +292,7 @@ void TextRenderer::DrawString(const Matrix& transform, const TCHAR* str, int len
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::DrawString(const Matrix& transform, const TCHAR* str, int length, const RectF& rect, StringFormatFlags flags)
+void TextRenderer::DrawString(const Matrix& transform, const TCHAR* str, int length, const Rect& rect, StringFormatFlags flags)
 {
 	length = (length < 0) ? StringTraits::tcslen(str) : length;
 
@@ -564,7 +564,7 @@ void VectorTextRenderer::Initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void VectorTextRenderer::DrawString(const Matrix& transform, const UTF32* str, int length, const RectF& rect, TextLayoutOptions options)
+void VectorTextRenderer::DrawString(const Matrix& transform, const UTF32* str, int length, const Rect& rect, TextLayoutOptions options)
 {
 	TextLayoutEngine2 layout;
 	layout.Layout(m_currentFont, str, length, rect, options, &m_layoutResult);
@@ -572,7 +572,7 @@ void VectorTextRenderer::DrawString(const Matrix& transform, const UTF32* str, i
 }
 
 //------------------------------------------------------------------------------
-void VectorTextRenderer::DrawChar(const Matrix& transform, UTF32 ch, const RectF& rect, TextLayoutOptions options)
+void VectorTextRenderer::DrawChar(const Matrix& transform, UTF32 ch, const Rect& rect, TextLayoutOptions options)
 {
 	TextLayoutEngine2 layout;
 	layout.Layout(m_currentFont, &ch, 1, rect, options, &m_layoutResult);

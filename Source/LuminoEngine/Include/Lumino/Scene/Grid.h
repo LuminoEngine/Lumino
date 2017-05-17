@@ -13,7 +13,7 @@ using GridPtr = RefPtr<Grid>;
 	@brief
 */
 class Grid
-	: public VisualNode		// TODO: Visual である必要ない気もするが・・・
+	: public VisualComponent		// TODO: Visual である必要ない気もするが・・・
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:

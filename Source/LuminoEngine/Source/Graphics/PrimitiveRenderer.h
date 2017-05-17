@@ -69,7 +69,7 @@ public:
 		const Vector3& position3, const Vector2& uv3, const Color& color3,
 		const Vector3& position4, const Vector2& uv4, const Color& color4);
 
-	void DrawRectangle(const RectF& rect);
+	void DrawRectangle(const Rect& rect);
 
 
 	template<class TFactory>
