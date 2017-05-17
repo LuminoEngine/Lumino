@@ -289,6 +289,15 @@ void RigidBody::ClearForces()
 //------------------------------------------------------------------------------
 void RigidBody::OnBeforeStepSimulation()
 {
+	auto* transform = GetTransform();
+	if (transform != nullptr)
+	{
+		if (m_data.KinematicObject)
+		{
+			m_data.InitialTransform = transform->GetWorldMatrix();
+		}
+	}
+
 	if ((m_modifiedFlags & Modified_InitialUpdate) != 0)
 	{
 		CreateBtRigidBody();
@@ -418,6 +427,20 @@ void RigidBody::OnAfterStepSimulation()
 			transform.getOpenGLMatrix((btScalar*)&m_data.InitialTransform);
 		}
 	}
+
+	auto* transform = GetTransform();
+	if (transform != nullptr)
+	{
+		if (m_data.KinematicObject)
+		{
+		}
+		else
+		{
+			auto& t = m_btRigidBody->getWorldTransform();
+			transform->position = detail::BulletUtil::btVector3ToLNVector3(t.getOrigin());
+			transform->rotation = detail::BulletUtil::btQuaternionToLNQuaternion(t.getRotation());
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -455,20 +478,7 @@ void RigidBody::OnUpdate()
 {
 	PhysicsObject::OnUpdate();
 
-	auto* transform = GetTransform();
-	if (transform != nullptr)
-	{
-		if (m_data.KinematicObject)
-		{
-			m_data.InitialTransform = transform->GetWorldMatrix();
-		}
-		else
-		{
-			auto& t = m_btRigidBody->getWorldTransform();
-			transform->position = detail::BulletUtil::btVector3ToLNVector3(t.getOrigin());
-			transform->rotation = detail::BulletUtil::btQuaternionToLNQuaternion(t.getRotation());
-		}
-	}
+	
 }
 
 //------------------------------------------------------------------------------
