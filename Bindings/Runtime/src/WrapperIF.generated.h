@@ -274,7 +274,7 @@ public:
 
 };
 
-class LNCollider : public Collider
+class LNCollider : public CollisionBody
 {
 public:
 

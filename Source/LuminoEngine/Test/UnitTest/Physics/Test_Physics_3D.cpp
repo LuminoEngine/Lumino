@@ -26,8 +26,8 @@ TEST_F(Test_Physics_3D, TriggerCollider)
 	{
 		auto col1 = BoxCollisionShape::Create(1, 1, 1);
 		auto col2 = BoxCollisionShape::Create(1, 1, 1);
-		auto body1 = Collider::Create(col1);
-		auto body2 = Collider::Create(col2);
+		auto body1 = CollisionBody::Create(col1);
+		auto body2 = CollisionBody::Create(col2);
 		body1->SetTrigger(true);
 		body2->SetTrigger(true);
 
@@ -68,7 +68,7 @@ TEST_F(Test_Physics_3D, MeshCollisionShape)
 			Vertex{ Vector3(0, 10, 10) });
 
 		auto s1 = MeshCollisionShape::Create(mesh);
-		auto b1 = Collider::Create(s1);
+		auto b1 = CollisionBody::Create(s1);
 
 		auto s2 = BoxCollisionShape::Create(1, 1, 1);
 		auto b2 = RigidBody::Create(s2);

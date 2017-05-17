@@ -140,7 +140,7 @@ set(LN_SOURCES_Audio
 
 set(LN_SOURCES_Physics
 	Include/Lumino/Physics/PhysicsObject.h
-	Include/Lumino/Physics/Collider.h
+	Include/Lumino/Physics/CollisionBody.h
 	Include/Lumino/Physics/CollisionShape.h
 	Include/Lumino/Physics/Common.h
 	Include/Lumino/Physics/Joint.h
@@ -148,7 +148,7 @@ set(LN_SOURCES_Physics
 	Include/Lumino/Physics/RigidBody.h
 	Source/Physics/PhysicsObject.cpp
 	Source/Physics/BulletUtils.h
-	Source/Physics/Collider.cpp
+	Source/Physics/CollisionBody.cpp
 	Source/Physics/CollisionShape.cpp
 	Source/Physics/Internal.h
 	Source/Physics/Joint.cpp

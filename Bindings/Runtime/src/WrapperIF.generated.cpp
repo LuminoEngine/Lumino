@@ -387,7 +387,7 @@ LN_API LNResultCode LNCollider_Initialize(LNHandle* outCollider)
 }
 LN_API void LNCollider_SetBindingTypeInfo(void* data)
 {
-    tr::TypeInfo::GetTypeInfo<Collider>()->SetBindingTypeInfo(data);
+    tr::TypeInfo::GetTypeInfo<CollisionBody>()->SetBindingTypeInfo(data);
 }
 
 

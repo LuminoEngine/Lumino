@@ -4,19 +4,19 @@
 #include <btBulletDynamicsCommon.h>
 #include <Lumino/Physics/CollisionShape.h>
 #include <Lumino/Physics/PhysicsWorld.h>
-#include <Lumino/Physics/Collider.h>
+#include <Lumino/Physics/CollisionBody.h>
 
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
 // LocalGhostObject
 //==============================================================================
-class Collider::LocalGhostObject : public btGhostObject
+class CollisionBody::LocalGhostObject : public btGhostObject
 {
 public:
-	Collider*	m_owner;
+	CollisionBody*	m_owner;
 
-	LocalGhostObject(Collider* owner)
+	LocalGhostObject(CollisionBody* owner)
 		: m_owner(owner)
 	{}
 
@@ -61,21 +61,21 @@ public:
 };
 
 //==============================================================================
-// Collider
+// CollisionBody
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Collider, PhysicsObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(CollisionBody, PhysicsObject);
 
 //------------------------------------------------------------------------------
-RefPtr<Collider> Collider::Create(CollisionShape* shape)
+RefPtr<CollisionBody> CollisionBody::Create(CollisionShape* shape)
 {
-	auto ptr = RefPtr<Collider>::MakeRef();
+	auto ptr = RefPtr<CollisionBody>::MakeRef();
 	ptr->Initialize();
 	ptr->AddShape(shape);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-Collider::Collider()
+CollisionBody::CollisionBody()
 	: PhysicsObject()
 	, m_btGhostObject(nullptr)
 	, m_shape(nullptr)
@@ -85,13 +85,13 @@ Collider::Collider()
 }
 
 //------------------------------------------------------------------------------
-Collider::~Collider()
+CollisionBody::~CollisionBody()
 {
 	DeleteInternalObject();
 }
 
 //------------------------------------------------------------------------------
-void Collider::Initialize()
+void CollisionBody::Initialize()
 {
 	PhysicsObject::Initialize();
 	m_initialUpdate = true;
@@ -99,13 +99,13 @@ void Collider::Initialize()
 }
 
 //------------------------------------------------------------------------------
-const Matrix& Collider::GetTransform() const
+const Matrix& CollisionBody::GetTransform() const
 {
 	return m_transform;
 }
 
 //------------------------------------------------------------------------------
-void Collider::AddShape(CollisionShape* shape)
+void CollisionBody::AddShape(CollisionShape* shape)
 {
 	if (LN_CHECK_ARG(shape != nullptr)) return;
 
@@ -121,38 +121,38 @@ void Collider::AddShape(CollisionShape* shape)
 }
 
 //------------------------------------------------------------------------------
-void Collider::SetTrigger(bool enabled)
+void CollisionBody::SetTrigger(bool enabled)
 {
 	m_isTrigger = enabled;
 }
 
 //------------------------------------------------------------------------------
-bool Collider::IsTrigger() const
+bool CollisionBody::IsTrigger() const
 {
 	return m_isTrigger;
 }
 
 
 //------------------------------------------------------------------------------
-EventConnection Collider::ConnectOnTriggerEnter(CollisionEventHandler handler)
+EventConnection CollisionBody::ConnectOnTriggerEnter(CollisionEventHandler handler)
 {
 	return onTriggerEnter.Connect(handler);
 }
 
 //------------------------------------------------------------------------------
-EventConnection Collider::ConnectOnTriggerLeave(CollisionEventHandler handler)
+EventConnection CollisionBody::ConnectOnTriggerLeave(CollisionEventHandler handler)
 {
 	return onTriggerLeave.Connect(handler);
 }
 
 //------------------------------------------------------------------------------
-EventConnection Collider::ConnectOnTriggerStay(CollisionEventHandler handler)
+EventConnection CollisionBody::ConnectOnTriggerStay(CollisionEventHandler handler)
 {
 	return onTriggerStay.Connect(handler);
 }
 
 //------------------------------------------------------------------------------
-void Collider::OnBeforeStepSimulation()
+void CollisionBody::OnBeforeStepSimulation()
 {
 	if (m_initialUpdate)
 	{
@@ -179,7 +179,7 @@ void Collider::OnBeforeStepSimulation()
 }
 
 //------------------------------------------------------------------------------
-void Collider::OnAfterStepSimulation()
+void CollisionBody::OnAfterStepSimulation()
 {
 	// get transform
 	m_btGhostObject->getWorldTransform().getOpenGLMatrix((btScalar*)&m_transform);
@@ -197,7 +197,7 @@ void Collider::OnAfterStepSimulation()
 }
 
 //------------------------------------------------------------------------------
-void Collider::OnRemovedFromWorld()
+void CollisionBody::OnRemovedFromWorld()
 {
 	// Bullet の World に追加するのはこのクラスの役目なので、除外もここで行う。
 	if (m_btGhostObject != nullptr)
@@ -207,25 +207,25 @@ void Collider::OnRemovedFromWorld()
 }
 
 //------------------------------------------------------------------------------
-void Collider::OnTriggerEnter(PhysicsObject* otherObject)
+void CollisionBody::OnTriggerEnter(PhysicsObject* otherObject)
 {
 	onTriggerEnter.Raise(otherObject);
 }
 
 //------------------------------------------------------------------------------
-void Collider::OnTriggerLeave(PhysicsObject* otherObject)
+void CollisionBody::OnTriggerLeave(PhysicsObject* otherObject)
 {
 	onTriggerLeave.Raise(otherObject);
 }
 
 //------------------------------------------------------------------------------
-void Collider::OnTriggerStay(PhysicsObject* otherObject)
+void CollisionBody::OnTriggerStay(PhysicsObject* otherObject)
 {
 	onTriggerStay.Raise(otherObject);
 }
 
 //------------------------------------------------------------------------------
-void Collider::CreateInternalObject()
+void CollisionBody::CreateInternalObject()
 {
 	DeleteInternalObject();
 
@@ -241,7 +241,7 @@ void Collider::CreateInternalObject()
 }
 
 //------------------------------------------------------------------------------
-void Collider::DeleteInternalObject()
+void CollisionBody::DeleteInternalObject()
 {
 	LN_SAFE_DELETE(m_btGhostObject);
 }
