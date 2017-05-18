@@ -97,6 +97,8 @@ public:
 
 	virtual bool TryGetArray(const StringRef& name, ISerializeElement** outValue) = 0;
 
+
+
 	// Value
 	virtual SerializationValueType GetSerializationValueType() const = 0;
 	virtual bool GetSerializeValueBool() const = 0;
@@ -111,13 +113,53 @@ public:
 	virtual float GetSerializeValueFloat() const = 0;
 	virtual double GetSerializeValueDouble() const = 0;
 	virtual String GetSerializeValueString() const = 0;
+	//virtual bool SetSerializeValueBool() const = 0;
+	//virtual int8_t SetSerializeValueInt8() const = 0;
+	//virtual int16_t SetSerializeValueInt16() const = 0;
+	//virtual int32_t SetSerializeValueInt32() const = 0;
+	//virtual int64_t SetSerializeValueInt64() const = 0;
+	//virtual uint8_t SetSerializeValueUInt8() const = 0;
+	//virtual uint16_t SetSerializeValueUInt16() const = 0;
+	//virtual uint32_t SetSerializeValueUInt32() const = 0;
+	//virtual uint64_t SetSerializeValueUInt64() const = 0;
+	//virtual float SetSerializeValueFloat() const = 0;
+	//virtual double SetSerializeValueDouble() const = 0;
+	//virtual String SetSerializeValueString() const = 0;
+	
 
 	// Array
 	virtual int GetSerializeElementCount() const = 0;
 	virtual ISerializeElement* GetSerializeElement(int index) const = 0;
+	virtual void AddSerializeItemValue(SerializationValueType type, const void* value) = 0;
+	virtual ISerializeElement* AddSerializeItemNewArray() = 0;
+	virtual ISerializeElement* AddSerializeItemNewObject() = 0;
 
 	// Object
 	virtual ISerializeElement* FindSerializeElement(const StringRef& name) const = 0;
+	virtual void AddSerializeMemberValue(const StringRef& name, SerializationValueType type, const void* value) = 0;
+	virtual ISerializeElement* AddSerializeMemberNewArray(const StringRef& name) = 0;
+	virtual ISerializeElement* AddSerializeMemberNewObject(const StringRef& name) = 0;
+
+
+//#define LN_DEFINE_ValueAccessor(type, cppType) \
+//	virtual cppType GetSerializeValue##type() const = 0; \
+//	virtual cppType AddSerializeValueItem##type(cppType value) = 0; \
+//	virtual cppType AddSerializeValueMember##type(const StringRef& name, cppType value) = 0;
+//
+//	LN_DEFINE_ValueAccessor(Bool, bool);
+//	LN_DEFINE_ValueAccessor(Int8, int8_t);
+//	LN_DEFINE_ValueAccessor(Int16, int16_t);
+//	LN_DEFINE_ValueAccessor(Int32, int32_t);
+//	LN_DEFINE_ValueAccessor(Int64, int64_t);
+//	LN_DEFINE_ValueAccessor(UInt8, uint8_t);
+//	LN_DEFINE_ValueAccessor(UInt16, uint16_t);
+//	LN_DEFINE_ValueAccessor(UInt32, uint32_t);
+//	LN_DEFINE_ValueAccessor(UInt64, uint64_t);
+//	LN_DEFINE_ValueAccessor(Float, float);
+//	LN_DEFINE_ValueAccessor(Double, double);
+//	LN_DEFINE_ValueAccessor(String, String);
+//
+//#undef LN_DEFINE_ValueAccessor
 };
 
 /**
@@ -217,61 +259,68 @@ private:
 	}
 	template<typename T> void WriteValue(const StringRef& name, List<T>& obj)	 // non]intrusive Object
 	{
-	}
-
-
-
-	void ReadValue(const StringRef& name, bool& value);
-	void ReadValue(const StringRef& name, int8_t& value);
-	void ReadValue(const StringRef& name, int16_t& value);
-	void ReadValue(const StringRef& name, int32_t& value) { m_currentObject->TryGetValueInt32(name, &value); }	// TODO: Error
-	void ReadValue(const StringRef& name, int64_t value);
-	void ReadValue(const StringRef& name, uint8_t& value);
-	void ReadValue(const StringRef& name, uint16_t& value);
-	void ReadValue(const StringRef& name, uint32_t& value);
-	void ReadValue(const StringRef& name, uint64_t& value);
-	void ReadValue(const StringRef& name, float& value);
-	void ReadValue(const StringRef& name, double& value);
-	void ReadValue(const StringRef& name, String& value) { m_currentObject->TryGetValueString(name, &value); }	// TODO: Error
-	template<typename T> void ReadValue(const StringRef& name, T& obj)	 // non]intrusive Object
-	{
-		ISerializeElement* so;
-		if (!m_currentObject->TryGetObject(name, &so)) return;
-
-		auto* old = m_currentObject;
-		m_currentObject = so;
-		obj.lnsl_SerializeImpl(*this);
-		m_currentObject = old;
-	}
-	template<typename T> void ReadValue(const StringRef& name, List<T>& value)	 // non]intrusive Object
-	{
-		ISerializeElement* arrayElement;
-		if (!m_currentObject->TryGetArray(name, &arrayElement)) return;
-
-		int count = arrayElement->GetSerializeElementCount();
-		for (int i = 0; i < count; i++)
+		ISerializeElement* ary = m_currentObject->AddSerializeMemberNewArray(name);
+		for (int i = 0; i < obj.GetCount(); i++)
 		{
-			auto* element = arrayElement->GetSerializeElement(i);
-
-			T raw;
-			if (TryGetValue(element, &raw))
-			{
-				value.Add(raw);
-			}
-			else
-			{
-				LN_NOTIMPLEMENTED();
-			}
+			AddItemValue(ary, obj[i]);
 		}
-
-		//auto* old = m_currentObject;
-		//m_currentObject = so;
-		//obj.lnsl_SerializeImpl(*this);
-		//m_currentObject = old;
 	}
 
 
-#define LN_DEFINE_TryGetValue(type, cppType) static bool TryGetValue(ISerializeElement* element, cppType* value) { if (element->GetSerializationValueType() == SerializationValueType::type) { *value = element->GetSerializeValue##type(); return true; } return false; }
+
+	//void ReadValue(const StringRef& name, bool& value);
+	//void ReadValue(const StringRef& name, int8_t& value);
+	//void ReadValue(const StringRef& name, int16_t& value);
+	//void ReadValue(const StringRef& name, int32_t& value) { m_currentObject->TryGetValueInt32(name, &value); }	// TODO: Error
+	//void ReadValue(const StringRef& name, int64_t value);
+	//void ReadValue(const StringRef& name, uint8_t& value);
+	//void ReadValue(const StringRef& name, uint16_t& value);
+	//void ReadValue(const StringRef& name, uint32_t& value);
+	//void ReadValue(const StringRef& name, uint64_t& value);
+	//void ReadValue(const StringRef& name, float& value);
+	//void ReadValue(const StringRef& name, double& value);
+	//void ReadValue(const StringRef& name, String& value) { m_currentObject->TryGetValueString(name, &value); }	// TODO: Error
+	//template<typename T> void ReadValue(const StringRef& name, T& obj)	 // non]intrusive Object
+	//{
+	//	ISerializeElement* so;
+	//	if (!m_currentObject->TryGetObject(name, &so)) return;
+
+	//	auto* old = m_currentObject;
+	//	m_currentObject = so;
+	//	obj.lnsl_SerializeImpl(*this);
+	//	m_currentObject = old;
+	//}
+	//template<typename T> void ReadValue(const StringRef& name, List<T>& value)	 // non]intrusive Object
+	//{
+	//	ISerializeElement* arrayElement;
+	//	if (!m_currentObject->TryGetArray(name, &arrayElement)) return;
+
+	//	int count = arrayElement->GetSerializeElementCount();
+	//	for (int i = 0; i < count; i++)
+	//	{
+	//		auto* element = arrayElement->GetSerializeElement(i);
+
+	//		T raw;
+	//		if (TryGetValue(element, &raw))
+	//		{
+	//			value.Add(raw);
+	//		}
+	//		else
+	//		{
+	//			LN_NOTIMPLEMENTED();
+	//		}
+	//	}
+
+	//	//auto* old = m_currentObject;
+	//	//m_currentObject = so;
+	//	//obj.lnsl_SerializeImpl(*this);
+	//	//m_currentObject = old;
+	//}
+
+
+#define LN_DEFINE_TryGetValue(type, cppType) \
+	static bool TryGetValue(ISerializeElement* element, cppType* value) { if (element->GetSerializationValueType() == SerializationValueType::type) { *value = element->GetSerializeValue##type(); return true; } return false; } \
+	static void AddItemValue(ISerializeElement* arrayElement, cppType value) { arrayElement->AddSerializeItemValue(SerializationValueType::type, &value); }
 
 	LN_DEFINE_TryGetValue(Bool, bool);
 	LN_DEFINE_TryGetValue(Int8, int8_t);
@@ -287,6 +336,33 @@ private:
 	LN_DEFINE_TryGetValue(String, String);
 
 #undef LN_DEFINE_TryGetValue
+
+	// for other struct type
+	template<typename T>
+	void AddItemValue(ISerializeElement* arrayElement, T& value)
+	{
+		ISerializeElement* objectElement = arrayElement->AddSerializeItemNewObject();
+
+		auto* old = m_currentObject;
+		m_currentObject = objectElement;
+		value.lnsl_SerializeImpl(*this);
+		m_currentObject = old;
+	}
+	// for ln::Object type
+	template<typename T>
+	void AddItemValue(ISerializeElement* arrayElement, RefPtr<T>& value)
+	{
+		ISerializeElement* objectElement = arrayElement->AddSerializeItemNewObject();
+
+		auto* old = m_currentObject;
+		m_currentObject = objectElement;
+		value->lnsl_SerializeImpl(*this);
+		m_currentObject = old;
+	}
+
+
+
+
 	template<typename T>
 	bool TryGetValue(ISerializeElement* element, RefPtr<T>* value)
 	{

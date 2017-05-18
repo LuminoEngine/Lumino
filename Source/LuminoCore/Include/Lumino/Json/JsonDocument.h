@@ -111,7 +111,13 @@ protected:
 	virtual float GetSerializeValueFloat() const override { return 0; }
 	virtual double GetSerializeValueDouble() const override { return 0; }
 	virtual String GetSerializeValueString() const override { return String::GetEmpty(); }
+	virtual void AddSerializeItemValue(SerializationValueType type, const void* value) override {}
+	virtual ISerializeElement* AddSerializeItemNewArray() override { return nullptr; }
+	virtual ISerializeElement* AddSerializeItemNewObject() override { return nullptr; }
 	virtual ISerializeElement* FindSerializeElement(const StringRef& name) const override { return nullptr; }
+	virtual void AddSerializeMemberValue(const StringRef& name, SerializationValueType type, const void* value) override {}
+	virtual ISerializeElement* AddSerializeMemberNewArray(const StringRef& name) override { return nullptr; }
+	virtual ISerializeElement* AddSerializeMemberNewObject(const StringRef& name) override { return nullptr; }
 
 LN_INTERNAL_ACCESS:
 	JsonDocument2* GetOwnerDocument() const { return m_ownerDoc; }
@@ -215,6 +221,9 @@ protected:
 	virtual SerializationElementType GetSerializationElementType() const override { return SerializationElementType::Array; }
 	virtual int GetSerializeElementCount() const override { return GetElementCount(); }
 	virtual ISerializeElement* GetSerializeElement(int index) const override { return GetElement(index); }
+	virtual void AddSerializeItemValue(SerializationValueType type, const void* value) override;
+	virtual ISerializeElement* AddSerializeItemNewArray() override;
+	virtual ISerializeElement* AddSerializeItemNewObject() override;
 
 private:
 	JsonArray2(JsonDocument2* ownerDoc);
@@ -264,6 +273,9 @@ protected:
 	virtual bool TryGetObject(const StringRef& name, ISerializeElement** outValue) override;
 	virtual bool TryGetArray(const StringRef& name, ISerializeElement** outValue) override;
 	virtual ISerializeElement* FindSerializeElement(const StringRef& name) const override;
+	virtual void AddSerializeMemberValue(const StringRef& name, SerializationValueType type, const void* value) override;
+	virtual ISerializeElement* AddSerializeMemberNewArray(const StringRef& name) override;
+	virtual ISerializeElement* AddSerializeMemberNewObject(const StringRef& name) override;
 
 LN_INTERNAL_ACCESS:
 	void Finalize() { m_memberList.Clear(); }
@@ -338,6 +350,8 @@ public:
 	void Save(const StringRef& filePath, JsonFormatting formatting = JsonFormatting::None);
 
 	void Load(const StringRef& filePath);
+
+	String ToString(JsonFormatting formatting = JsonFormatting::None);
 
 protected:
 	virtual ISerializeElement* GetRootObject() override;

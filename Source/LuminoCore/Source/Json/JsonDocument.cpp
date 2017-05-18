@@ -4,6 +4,7 @@
 #include <Lumino/IO/StringReader.h>
 #include <Lumino/IO/StreamReader.h>
 #include <Lumino/IO/StreamWriter.h>
+#include <Lumino/IO/StringWriter.h>
 #include <Lumino/Json/JsonHandler.h>
 #include <Lumino/Json/JsonReader.h>
 #include <Lumino/Json/JsonWriter.h>
@@ -455,6 +456,41 @@ JsonParseResult JsonArray2::OnLoad(JsonReader2* reader)
 	return JsonParseResult::Success;
 }
 
+//------------------------------------------------------------------------------
+void JsonArray2::AddSerializeItemValue(SerializationValueType type, const void* value)
+{
+	switch (type)
+	{
+	case ln::tr::SerializationValueType::Bool: AddBool(*static_cast<const bool*>(value)); break;
+	case ln::tr::SerializationValueType::Int8: AddInt32(*static_cast<const int8_t*>(value)); break;
+	case ln::tr::SerializationValueType::Int16: AddInt32(*static_cast<const int16_t*>(value)); break;
+	case ln::tr::SerializationValueType::Int32: AddInt32(*static_cast<const int32_t*>(value)); break;
+	case ln::tr::SerializationValueType::Int64: AddInt64(*static_cast<const int64_t*>(value)); break;
+	case ln::tr::SerializationValueType::UInt8: AddInt32(*static_cast<const uint8_t*>(value)); break;
+	case ln::tr::SerializationValueType::UInt16: AddInt32(*static_cast<const uint16_t*>(value)); break;
+	case ln::tr::SerializationValueType::UInt32: AddInt32(*static_cast<const uint32_t*>(value)); break;
+	case ln::tr::SerializationValueType::UInt64: AddInt64(*static_cast<const uint64_t*>(value)); break;
+	case ln::tr::SerializationValueType::Float: AddFloat(*static_cast<const float*>(value)); break;
+	case ln::tr::SerializationValueType::Double: AddDouble(*static_cast<const double*>(value)); break;
+	case ln::tr::SerializationValueType::String: AddString(*static_cast<const String*>(value)); break;
+	default:
+		LN_UNREACHABLE();
+		break;
+	}
+}
+
+//------------------------------------------------------------------------------
+ISerializeElement* JsonArray2::AddSerializeItemNewArray()
+{
+	return AddArray();
+}
+
+//------------------------------------------------------------------------------
+ISerializeElement* JsonArray2::AddSerializeItemNewObject()
+{
+	return AddObject();
+}
+
 //==============================================================================
 // JsonObject2
 //==============================================================================
@@ -642,6 +678,35 @@ ISerializeElement* JsonObject2::FindSerializeElement(const StringRef& name) cons
 {
 	return Find(name);
 }
+void JsonObject2::AddSerializeMemberValue(const StringRef& name, SerializationValueType type, const void* value)
+{
+	switch (type)
+	{
+	case ln::tr::SerializationValueType::Bool: AddMemberBool(name, *static_cast<const bool*>(value)); break;
+	case ln::tr::SerializationValueType::Int8: AddMemberInt32(name, *static_cast<const int8_t*>(value)); break;
+	case ln::tr::SerializationValueType::Int16: AddMemberInt32(name, *static_cast<const int16_t*>(value)); break;
+	case ln::tr::SerializationValueType::Int32: AddMemberInt32(name, *static_cast<const int32_t*>(value)); break;
+	case ln::tr::SerializationValueType::Int64: AddMemberInt64(name, *static_cast<const int64_t*>(value)); break;
+	case ln::tr::SerializationValueType::UInt8: AddMemberInt32(name, *static_cast<const uint8_t*>(value)); break;
+	case ln::tr::SerializationValueType::UInt16: AddMemberInt32(name, *static_cast<const uint16_t*>(value)); break;
+	case ln::tr::SerializationValueType::UInt32: AddMemberInt32(name, *static_cast<const uint32_t*>(value)); break;
+	case ln::tr::SerializationValueType::UInt64: AddMemberInt64(name, *static_cast<const uint64_t*>(value)); break;
+	case ln::tr::SerializationValueType::Float: AddMemberFloat(name, *static_cast<const float*>(value)); break;
+	case ln::tr::SerializationValueType::Double: AddMemberDouble(name, *static_cast<const double*>(value)); break;
+	case ln::tr::SerializationValueType::String: AddMemberString(name, *static_cast<const String*>(value)); break;
+	default:
+		LN_UNREACHABLE();
+		break;
+	}
+}
+ISerializeElement* JsonObject2::AddSerializeMemberNewArray(const StringRef& name)
+{
+	return AddMemberArray(name);
+}
+ISerializeElement* JsonObject2::AddSerializeMemberNewObject(const StringRef& name)
+{
+	return AddMemberObject(name);
+}
 
 //==============================================================================
 // JsonElementCache
@@ -759,6 +824,16 @@ void JsonDocument2::Load(const StringRef& filePath)
 	if (LN_CHECK(type == JsonToken::StartObject, InvalidFormatException)) return;
 
 	JsonElement2::Load(&jr);
+}
+
+//------------------------------------------------------------------------------
+String JsonDocument2::ToString(JsonFormatting formatting)
+{
+	StringWriter w;
+	JsonWriter jw(&w);
+	jw.SetFormatting(formatting);
+	JsonElement2::Save(&jw);
+	return w.ToString();
 }
 
 //------------------------------------------------------------------------------

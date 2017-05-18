@@ -74,7 +74,41 @@ public:
 };
 TEST_F(Test_Serialization, List)
 {
-	// <Test> primitive type values.
+	// <Test> write primitive type values.
+	{
+		tr::JsonDocument2 doc;
+		tr::Archive ar(&doc, tr::ArchiveMode::Save);
+
+		List<int>	m_list1 = { 1, 2, 3 };
+		ar & tr::MakeNVP(_T("list1"), m_list1);
+
+		ASSERT_EQ(_T("{\"list1\":[1,2,3]}"), doc.ToString());
+	}
+	// <Test> write struct type values.
+	{
+		tr::JsonDocument2 doc;
+		tr::Archive ar(&doc, tr::ArchiveMode::Save);
+
+		List<TestObject2>	m_list1 = { TestObject2{ 1 }, TestObject2{ 2 }, TestObject2{ 3 } };
+		ar & tr::MakeNVP(_T("list1"), m_list1);
+
+		ASSERT_EQ(_T("{\"list1\":[{\"value\":1},{\"value\":2},{\"value\":3}]}"), doc.ToString());
+	}
+	// <Test> write ln::Object type values.
+	{
+		tr::JsonDocument2 doc;
+		tr::Archive ar(&doc, tr::ArchiveMode::Save);
+
+		List <RefPtr<TestObject3>> m_list1 = { NewObject<TestObject3>(), NewObject<TestObject3>(), NewObject<TestObject3>() };
+		m_list1[0]->m_value = 1;
+		m_list1[1]->m_value = 2;
+		m_list1[2]->m_value = 3;
+		ar & tr::MakeNVP(_T("list1"), m_list1);
+
+		ASSERT_EQ(_T("{\"list1\":[{\"value\":1},{\"value\":2},{\"value\":3}]}"), doc.ToString());
+	}
+
+	// <Test> read primitive type values.
 	{
 		tr::JsonDocument2 doc;
 		doc.Load(LN_LOCALFILE("TestData/Test_Serialization_List1.json"));
@@ -88,7 +122,7 @@ TEST_F(Test_Serialization, List)
 		ASSERT_EQ(2, m_list1[1]);
 		ASSERT_EQ(3, m_list1[2]);
 	}
-	// <Test> struct type values.
+	// <Test> read struct type values.
 	{
 		tr::JsonDocument2 doc;
 		doc.Load(LN_LOCALFILE("TestData/Test_Serialization_List2.json"));
@@ -102,7 +136,7 @@ TEST_F(Test_Serialization, List)
 		ASSERT_EQ(6, m_list1[1].m_value);
 		ASSERT_EQ(7, m_list1[2].m_value);
 	}
-	// <Test> ln::Object type values.
+	// <Test> read ln::Object type values.
 	{
 		tr::JsonDocument2 doc;
 		doc.Load(LN_LOCALFILE("TestData/Test_Serialization_List2.json"));
