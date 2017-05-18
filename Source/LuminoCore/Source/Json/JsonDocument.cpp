@@ -324,6 +324,23 @@ JsonParseResult JsonValue2::OnLoad(JsonReader2* reader)
 	return JsonParseResult::Success;
 }
 
+//------------------------------------------------------------------------------
+SerializationValueType JsonValue2::GetSerializationValueType() const
+{
+	switch (GetType())
+	{
+	case JsonValueType::Null: return SerializationValueType::Null;
+	case JsonValueType::Bool: return SerializationValueType::Bool;
+	case JsonValueType::Int32: return SerializationValueType::Int32;
+	case JsonValueType::Int64: return SerializationValueType::Int64;
+	case JsonValueType::Float: return SerializationValueType::Float;
+	case JsonValueType::Double: return SerializationValueType::Double;
+	case JsonValueType::String: return SerializationValueType::String;
+	default:
+		LN_UNREACHABLE();
+		return SerializationValueType::Null;
+	}
+}
 
 //==============================================================================
 // JsonObject2
@@ -523,7 +540,7 @@ JsonObject2* JsonObject2::AddMemberObject(const StringRef& name)
 }
 
 //------------------------------------------------------------------------------
-JsonElement2* JsonObject2::Find(const StringRef& name)
+JsonElement2* JsonObject2::Find(const StringRef& name) const
 {
 	Member* m = m_memberList.Find([name](const Member& m) { return m.name == name; });
 	if (m == nullptr) return nullptr;
@@ -588,7 +605,7 @@ JsonValue2* JsonObject2::GetValue(const StringRef& name)
 //------------------------------------------------------------------------------
 void JsonObject2::SetValueInt32(const StringRef& name, int32_t value) { AddMemberInt32(name, value); }
 void JsonObject2::SetValueString(const StringRef& name, const String& value) { AddMemberString(name, value); }
-ISerializeObjectElement* JsonObject2::AddObject(const StringRef& name)  { return AddMemberObject(name); }
+ISerializeElement* JsonObject2::AddObject(const StringRef& name)  { return AddMemberObject(name); }
 bool JsonObject2::TryGetValueInt32(const StringRef& name, int32_t* outValue)
 {
 	auto* v = Find(name);
@@ -605,13 +622,25 @@ bool JsonObject2::TryGetValueString(const StringRef& name, String* outValue)
 	*outValue = static_cast<JsonValue2*>(v)->GetString();
 	return true;
 }
-bool JsonObject2::TryGetObject(const StringRef& name, ISerializeObjectElement** outValue)
+bool JsonObject2::TryGetObject(const StringRef& name, ISerializeElement** outValue)
 {
 	auto* v = Find(name);
 	if (v == nullptr) return false;
 	if (v->GetType() != JsonValueType::Object) return false;
 	*outValue = static_cast<JsonObject2*>(v);
 	return true;
+}
+bool JsonObject2::TryGetArray(const StringRef& name, ISerializeElement** outValue)
+{
+	auto* v = Find(name);
+	if (v == nullptr) return false;
+	if (v->GetType() != JsonValueType::Array) return false;
+	*outValue = static_cast<JsonArray2*>(v);
+	return true;
+}
+ISerializeElement* JsonObject2::FindSerializeElement(const StringRef& name) const
+{
+	return Find(name);
 }
 
 //==============================================================================
@@ -733,7 +762,7 @@ void JsonDocument2::Load(const StringRef& filePath)
 }
 
 //------------------------------------------------------------------------------
-ISerializeObjectElement* JsonDocument2::GetRootObject() { return this; }
+ISerializeElement* JsonDocument2::GetRootObject() { return this; }
 
 } // namespace tr
 LN_NAMESPACE_END
