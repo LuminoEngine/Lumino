@@ -9,7 +9,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // UIViewport
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIViewport, UIElement);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIViewport, UIElement);
 
 //------------------------------------------------------------------------------
 UIViewport::UIViewport()
@@ -251,7 +251,7 @@ void UIViewport::MakeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize
 //==============================================================================
 // UIViewportLayer
 //==============================================================================
-//LN_UI_TYPEINFO_IMPLEMENT(UIViewportLayer, Object);
+//LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIViewportLayer, Object);
 
 //------------------------------------------------------------------------------
 UIViewportLayer::UIViewportLayer()

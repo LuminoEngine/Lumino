@@ -132,6 +132,7 @@ public:
 	{
 		virtual void DoSet(TypeInfo* typeInfo) = 0;
 	};
+	template<class T>
 	struct ClassVersion : public ConstructArg
 	{
 		ClassVersion(int version)
@@ -141,6 +142,7 @@ public:
 		virtual void DoSet(TypeInfo* typeInfo) override
 		{
 			typeInfo->m_serializeClassVersion = m_version;
+			typeInfo->m_factory = ::tr::detail::ObjectFactorySelector<T, std::is_abstract<T>::type>::GetFactory();
 		}
 
 		int m_version;
@@ -175,7 +177,7 @@ public:
 		HasLocalValueFlagsGetter getter,
 		BindingTypeInfoSetter bindingTypeInfoSetter,
 		BindingTypeInfoGetter bindingTypeInfoGetter,
-		detail::ObjectFactory factory,
+		//detail::ObjectFactory factory,
 		std::initializer_list<ConstructArgHolder> args);
 
 	virtual ~TypeInfo() = default;

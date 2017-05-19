@@ -16,7 +16,7 @@ class PostEffect;
 class UIViewport
 	: public UIElement
 {
-	LN_UI_TYPEINFO_DECLARE();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
 	/** */

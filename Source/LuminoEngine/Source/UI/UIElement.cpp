@@ -34,7 +34,7 @@ const String UIVisualStates::VerticalState = _T("Vertical");
 //==============================================================================
 // UIElement
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIElement, tr::ReflectionObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIElement, tr::ReflectionObject);
 
 // Property definition
 LN_TR_PROPERTY_IMPLEMENT(UIElement, PointF, position, tr::PropertyMetadata());

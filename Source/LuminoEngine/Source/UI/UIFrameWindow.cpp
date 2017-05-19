@@ -24,7 +24,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // UIFrameWindow
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIFrameWindow, UILayoutView)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIFrameWindow, UILayoutView)
 
 //------------------------------------------------------------------------------
 UIFrameWindow::UIFrameWindow()
@@ -204,7 +204,7 @@ void UIFrameWindow::ExecuteDrawList_UIRenderer()
 //==============================================================================
 // UIMainWindow
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIMainWindow, UIFrameWindow)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIMainWindow, UIFrameWindow)
 
 //------------------------------------------------------------------------------
 UIMainWindow::UIMainWindow()
@@ -335,7 +335,7 @@ CameraViewportLayer2* UIMainWindow::GetDefaultCameraViewportLayer3D() const
 //==============================================================================
 // UINativeHostWindow
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UINativeHostWindow, UIFrameWindow)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UINativeHostWindow, UIFrameWindow)
 
 //------------------------------------------------------------------------------
 UINativeHostWindowPtr UINativeHostWindow::Create(intptr_t windowHandle)

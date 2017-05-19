@@ -7,7 +7,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // UIRoutedCommand
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIRoutedCommand, Object)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIRoutedCommand, Object)
 
 //------------------------------------------------------------------------------
 UIRoutedCommand::UIRoutedCommand()

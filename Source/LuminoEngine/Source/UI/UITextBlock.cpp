@@ -9,7 +9,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // UITextBlock
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UITextBlock, UITextElement)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UITextBlock, UITextElement)
 
 //------------------------------------------------------------------------------
 UITextBlockPtr UITextBlock::Create()

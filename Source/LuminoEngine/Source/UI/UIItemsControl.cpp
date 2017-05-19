@@ -9,7 +9,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // UIItemsControl
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIItemsControl, UIElement);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIItemsControl, UIElement);
 
 //------------------------------------------------------------------------------
 UIItemsControl::UIItemsControl()

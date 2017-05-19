@@ -11,7 +11,7 @@ LN_NAMESPACE_BEGIN
 class UIContentControl
 	: public UIControl
 {
-	LN_UI_TYPEINFO_DECLARE();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
 	void SetContent(UIElement* element);

@@ -99,13 +99,13 @@ TypeInfo::TypeInfo(
 	HasLocalValueFlagsGetter getter,
 	BindingTypeInfoSetter bindingTypeInfoSetter,
 	BindingTypeInfoGetter bindingTypeInfoGetter,
-	detail::ObjectFactory factory,
+	//detail::ObjectFactory factory,
 	std::initializer_list<ConstructArgHolder> args)
 	: m_name(className)
 	, m_baseClass(baseClass)
 	, m_bindingTypeInfoSetter(bindingTypeInfoSetter)
 	, m_bindingTypeInfoGetter(bindingTypeInfoGetter)
-	, m_factory(factory)
+	, m_factory(nullptr)
 	, m_serializeClassVersion(0)
 	, m_internalGroup(0)
 {

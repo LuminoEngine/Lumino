@@ -51,7 +51,7 @@ bool ReflectionHelper::IsGCReady(ReflectionObject* obj)
 //==============================================================================
 // ReflectionObject
 //==============================================================================
-ln::tr::TypeInfo				ReflectionObject::lnref_typeInfo(_T("ReflectionObject"), nullptr, nullptr, nullptr, nullptr, nullptr, {});
+ln::tr::TypeInfo				ReflectionObject::lnref_typeInfo(_T("ReflectionObject"), nullptr, nullptr, nullptr, nullptr, {});
 ln::tr::TypeInfo*				ReflectionObject::lnref_GetThisTypeInfo() const { return &lnref_typeInfo; }
 
 //------------------------------------------------------------------------------

@@ -9,7 +9,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // UILayoutPanel
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UILayoutPanel, UIElement)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UILayoutPanel, UIElement)
 
 //------------------------------------------------------------------------------
 UILayoutPanel::UILayoutPanel()
@@ -119,7 +119,7 @@ float UILayoutPanel::GetVerticalOffset() const { return m_scrollOffset.y; }
 //==============================================================================
 // UIStackPanel
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIStackPanel, UILayoutPanel)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIStackPanel, UILayoutPanel)
 
 //------------------------------------------------------------------------------
 UIStackPanelPtr UIStackPanel::Create()
@@ -164,7 +164,7 @@ Size UIStackPanel::ArrangeOverride(const Size& finalSize)
 //==============================================================================
 // UIAbsoluteLayout
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIAbsoluteLayout, UILayoutPanel)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIAbsoluteLayout, UILayoutPanel)
 
 //------------------------------------------------------------------------------
 UIAbsoluteLayoutPtr UIAbsoluteLayout::Create()
@@ -481,7 +481,7 @@ public:
 //==============================================================================
 // UIGridLayout
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIGridLayout, UILayoutPanel)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIGridLayout, UILayoutPanel)
 
 //------------------------------------------------------------------------------
 UIGridLayoutPtr UIGridLayout::Create()

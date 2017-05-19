@@ -12,7 +12,7 @@ namespace tr
 //==============================================================================
 // UITreeViewItem
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UITreeViewItem, UIControl)
+	LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UITreeViewItem, UIControl)
 
 //------------------------------------------------------------------------------
 UITreeViewItem::UITreeViewItem()
@@ -94,7 +94,7 @@ Size UITreeViewItem::ArrangeOverride(const Size& finalSize)
 //==============================================================================
 // UITreeView
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UITreeView, UIControl)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UITreeView, UIControl)
 
 //------------------------------------------------------------------------------
 UITreeViewPtr UITreeView::Create()

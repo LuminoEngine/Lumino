@@ -10,7 +10,7 @@ LN_NAMESPACE_BEGIN
 class UIRoutedCommand
 	: public Object
 {
-	LN_UI_TYPEINFO_DECLARE();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	static RefPtr<UIRoutedCommand> Create();
 
