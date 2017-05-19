@@ -10,7 +10,7 @@ LN_NAMESPACE_BEGIN
 class UITextElement
 	: public UIElement
 {
-	LN_UI_TYPEINFO_DECLARE();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	LN_TR_PROPERTY(String, FontFamily);		/**< FontFamily プロパティの識別子 */
 	LN_TR_PROPERTY(int, FontSize);			/**< FontSize プロパティの識別子 */

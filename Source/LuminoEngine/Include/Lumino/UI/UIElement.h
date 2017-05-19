@@ -113,7 +113,7 @@ class UIElement
 	: public AnimatableObject
 	, public ILayoutElement
 {
-	LN_UI_TYPEINFO_DECLARE();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 
 public:
 	LN_TR_PROPERTY(PointF,				position);				/**< Position プロパティの識別子 */

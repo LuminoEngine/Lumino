@@ -1,5 +1,7 @@
 ﻿
 #include "../Internal.h"
+#include <unordered_map>
+#include <map>
 #include <Lumino/Reflection/Notify.h>
 #include <Lumino/Reflection/TypeInfo.h>
 #include <Lumino/Reflection/ReflectionEventArgs.h>
@@ -7,8 +9,57 @@
 #include <Lumino/Reflection/Property.h>
 
 LN_NAMESPACE_BEGIN
-namespace tr
+namespace tr {
+
+
+//==============================================================================
+// TypeInfoManager
+//==============================================================================
+class TypeInfoManager
 {
+public:
+	// VS2017 で map や unordered_map を static 領域に置くと落ちてしまうようなので、インスタンスはヒープに置く
+	static TypeInfoManager* GetInstance()
+	{
+		//if (m_instance == nullptr)
+		//	m_instance = std::make_shared<TypeInfoManager>();
+		static TypeInfoManager m_instance;
+		return &m_instance;
+		//return m_instance.get();
+	}
+
+	void RegisterTypeInfo(TypeInfo* typeInfo)
+	{
+		//mp = std::make_shared<std::unordered_map<std::string, int>>();
+		//(*mp)["abc"] = 123;
+		//m_typeInfo.insert(std::pair<String, TypeInfo*>(typeInfo->GetName(), typeInfo));
+		m_typeInfo[typeInfo->GetName()] = typeInfo;
+		//mp["abc"] = 123;
+	}
+
+	TypeInfo* FindTypeInfo(const StringRef& typeName)
+	{
+		auto itr = m_typeInfo.find(typeName);
+		return (itr != m_typeInfo.end()) ? itr->second : nullptr;
+	}
+
+	~TypeInfoManager()
+	{
+
+	}
+
+private:
+	//static std::shared_ptr<TypeInfoManager>	m_instance;
+
+		//std::unordered_map<std::string, int>
+	 //mp;    //  文字列 → 整数 のハッシュ連想配列
+	std::unordered_map<String, TypeInfo*>	m_typeInfo;
+	//std::map<std::string, TypeInfo*>	m_typeInfo;
+};
+
+//std::shared_ptr<TypeInfoManager> TypeInfoManager::m_instance;
+
+//static TypeInfoManager g_typeInfoManager;
 
 //==============================================================================
 // ReflectionHelper
@@ -47,13 +98,25 @@ TypeInfo::TypeInfo(
 	TypeInfo* baseClass,
 	HasLocalValueFlagsGetter getter,
 	BindingTypeInfoSetter bindingTypeInfoSetter,
-	BindingTypeInfoGetter bindingTypeInfoGetter)
+	BindingTypeInfoGetter bindingTypeInfoGetter,
+	//detail::ObjectFactory factory,
+	std::initializer_list<ConstructArgHolder> args)
 	: m_name(className)
 	, m_baseClass(baseClass)
 	, m_bindingTypeInfoSetter(bindingTypeInfoSetter)
 	, m_bindingTypeInfoGetter(bindingTypeInfoGetter)
+	, m_factory(nullptr)
+	, m_serializeClassVersion(0)
 	, m_internalGroup(0)
 {
+	TypeInfoManager::GetInstance()->RegisterTypeInfo(this);
+	for (auto& arg : args) arg.m_arg.DoSet(this);
+}
+
+//------------------------------------------------------------------------------
+TypeInfo* TypeInfo::FindTypeInfo(const StringRef& name)
+{
+	return TypeInfoManager::GetInstance()->FindTypeInfo(name);
 }
 
 //------------------------------------------------------------------------------
@@ -134,6 +197,13 @@ void TypeInfo::InitializeProperties(ReflectionObject* obj)
 		prop->m_owner = obj;
 		prop->m_propId = info;
 	}
+}
+
+//------------------------------------------------------------------------------
+RefPtr<Object> TypeInfo::CreateInstance()
+{
+	if (LN_CHECK_STATE(m_factory != nullptr)) return nullptr;
+	return m_factory();
 }
 
 namespace detail

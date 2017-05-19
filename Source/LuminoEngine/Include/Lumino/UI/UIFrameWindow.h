@@ -22,7 +22,7 @@ class UIFrameWindow
 	: public UILayoutView
 	, public IEventListener
 {
-	LN_UI_TYPEINFO_DECLARE();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
 	PlatformWindow* GetPlatformWindow() const { return m_platformWindow; }
@@ -69,7 +69,7 @@ private:
 class UIMainWindow
 	: public UIFrameWindow
 {
-	LN_UI_TYPEINFO_DECLARE();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	UIContext* GetMainUIContext() const { return m_mainUIContext; }
 	UIViewport* GetViewport() const;
@@ -115,7 +115,7 @@ using UINativeHostWindowPtr = RefPtr<UINativeHostWindow>;
 class UINativeHostWindow
 	: public UIFrameWindow
 {
-	LN_UI_TYPEINFO_DECLARE();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
 	/**

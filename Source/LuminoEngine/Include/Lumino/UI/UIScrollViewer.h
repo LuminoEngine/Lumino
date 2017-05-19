@@ -31,7 +31,7 @@ public:
 class UIThumb
 	: public UIElement
 {
-	LN_UI_TYPEINFO_DECLARE();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	LN_ROUTED_EVENT2(UIDragDeltaEventArgs, DragStartedEvent);		/**< マウスドラッグを開始したときに発生するイベントを表します。*/
     LN_ROUTED_EVENT2(UIDragDeltaEventArgs, DragDeltaEvent);			/**< マウスドラッグ中に発生するイベントを表します。*/
@@ -69,7 +69,7 @@ private:
 class UITrack
 	: public UIElement
 {
-	LN_UI_TYPEINFO_DECLARE();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	static RefPtr<UITrack> Create();
 public:
@@ -183,7 +183,7 @@ public:
 class UIScrollBar
 	: public UIControl
 {
-	LN_UI_TYPEINFO_DECLARE();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	LN_ROUTED_EVENT2(UIScrollEventArgs, ScrollEvent);
 
@@ -256,7 +256,7 @@ private:
 class UIScrollViewer
 	: public UIControl
 {
-	LN_UI_TYPEINFO_DECLARE();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
 	static RefPtr<UIScrollViewer> Create();

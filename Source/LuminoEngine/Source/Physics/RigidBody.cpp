@@ -451,6 +451,27 @@ void RigidBody::OnRemovedFromWorld()
 }
 
 //------------------------------------------------------------------------------
+void RigidBody::OnUpdate()
+{
+	PhysicsObject::OnUpdate();
+
+	auto* transform = GetTransform();
+	if (transform != nullptr)
+	{
+		if (m_data.KinematicObject)
+		{
+			m_data.InitialTransform = transform->GetWorldMatrix();
+		}
+		else
+		{
+			auto& t = m_btRigidBody->getWorldTransform();
+			transform->position = detail::BulletUtil::btVector3ToLNVector3(t.getOrigin());
+			transform->rotation = detail::BulletUtil::btQuaternionToLNQuaternion(t.getRotation());
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
 void RigidBody::CreateBtRigidBody()
 {
 	// 各初期プロパティ

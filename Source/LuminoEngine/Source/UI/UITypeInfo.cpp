@@ -7,20 +7,20 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // UITypeInfo
 //==============================================================================
-static const intptr_t UITypeInfo_InternalGroup = 1;
-
-//------------------------------------------------------------------------------
-UITypeInfo::UITypeInfo(
-	const TCHAR* className,
-	TypeInfo* baseClass,
-	HasLocalValueFlagsGetter getter,
-	BindingTypeInfoSetter bindingTypeInfoSetter,
-	BindingTypeInfoGetter bindingTypeInfoGetter)
-	: tr::TypeInfo(className, baseClass, getter, bindingTypeInfoSetter, bindingTypeInfoGetter)
-{
-	SetInternalGroup(UITypeInfo_InternalGroup);
-}
-
+//static const intptr_t UITypeInfo_InternalGroup = 1;
+//
+////------------------------------------------------------------------------------
+//UITypeInfo::UITypeInfo(
+//	const TCHAR* className,
+//	TypeInfo* baseClass,
+//	HasLocalValueFlagsGetter getter,
+//	BindingTypeInfoSetter bindingTypeInfoSetter,
+//	BindingTypeInfoGetter bindingTypeInfoGetter)
+//	: tr::TypeInfo(className, baseClass, getter, bindingTypeInfoSetter, bindingTypeInfoGetter)
+//{
+//	SetInternalGroup(UITypeInfo_InternalGroup);
+//}
+//
 ////------------------------------------------------------------------------------
 ////
 ////------------------------------------------------------------------------------

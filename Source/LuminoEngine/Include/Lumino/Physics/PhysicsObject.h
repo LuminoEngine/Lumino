@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "../Game/Component.h"
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
@@ -11,7 +12,7 @@ class PhysicsWorld;
 */
 LN_CLASS()
 class PhysicsObject
-	: public Object
+	: public Component
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 

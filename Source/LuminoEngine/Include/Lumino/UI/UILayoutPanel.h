@@ -112,7 +112,7 @@ class UILayoutPanel
 	, public detail::ILayoutPanel
 	, public IScrollInfo
 {
-	LN_UI_TYPEINFO_DECLARE();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	void AddChild(UIElement* element);
 	void RemoveChild(UIElement* element);
@@ -161,7 +161,7 @@ private:
 class UIStackPanel
 	: public UILayoutPanel
 {
-	LN_UI_TYPEINFO_DECLARE();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	static UIStackPanelPtr Create();
 
@@ -188,7 +188,7 @@ private:
 class UIAbsoluteLayout
 	: public UILayoutPanel
 {
-	LN_UI_TYPEINFO_DECLARE();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	static UIAbsoluteLayoutPtr Create();
 
@@ -211,7 +211,7 @@ private:
 class UIGridLayout
 	: public UILayoutPanel
 {
-	LN_UI_TYPEINFO_DECLARE();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
 	/**

@@ -15,7 +15,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIDragDeltaEventArgs, UIEventArgs)
 //==============================================================================
 // UIThumb
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIThumb, UIElement)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIThumb, UIElement)
 LN_ROUTED_EVENT_IMPLEMENT2(UIThumb, UIDragDeltaEventArgs, DragStartedEvent);
 LN_ROUTED_EVENT_IMPLEMENT2(UIThumb, UIDragDeltaEventArgs, DragDeltaEvent);
 LN_ROUTED_EVENT_IMPLEMENT2(UIThumb, UIDragDeltaEventArgs, DragCompletedEvent);
@@ -119,7 +119,7 @@ void UIThumb::OnRoutedEvent(UIEventArgs* e)
 //==============================================================================
 // UITrack
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UITrack, UIElement)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UITrack, UIElement)
 
 //------------------------------------------------------------------------------
 RefPtr<UITrack> UITrack::Create()
@@ -416,7 +416,7 @@ void UIScrollEventArgs::Initialize(Object* sender, float newValue_, ScrollEventT
 //==============================================================================
 // UIScrollBar
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIScrollBar, UIControl)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIScrollBar, UIControl)
 LN_ROUTED_EVENT_IMPLEMENT2(UIScrollBar, UIScrollEventArgs, ScrollEvent);
 
 const String UIScrollBar::OrientationStates = _T("OrientationStates");
@@ -645,7 +645,7 @@ void UIScrollBar::UpdateValue(float horizontalDragDelta, float verticalDragDelta
 //==============================================================================
 // UIScrollViewer
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIScrollViewer, UIControl)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIScrollViewer, UIControl)
 
 //------------------------------------------------------------------------------
 RefPtr<UIScrollViewer> UIScrollViewer::Create()

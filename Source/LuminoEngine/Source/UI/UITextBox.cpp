@@ -803,7 +803,7 @@ int UITextArea::GetDocumentTextOffset(const UITextVisualPosition& pos)
 //==============================================================================
 // UITextBox
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UITextBox, UITextElement)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UITextBox, UITextElement)
 
 //------------------------------------------------------------------------------
 UITextBoxPtr UITextBox::Create()
@@ -1112,7 +1112,7 @@ void UISimpleTextArea::UpdateCaretRectangle()
 //==============================================================================
 // UITextField
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UITextField, UITextElement)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UITextField, UITextElement)
 
 //------------------------------------------------------------------------------
 RefPtr<UITextField> UITextField::Create()

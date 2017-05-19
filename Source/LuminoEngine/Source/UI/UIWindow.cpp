@@ -9,7 +9,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // UIWindow
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIWindow, UIControl)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIWindow, UIControl)
 
 //------------------------------------------------------------------------------
 RefPtr<UIWindow> UIWindow::Create()

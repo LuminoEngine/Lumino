@@ -18,7 +18,7 @@ using UIListBoxPtr = RefPtr<UIListBox>;
 class UIListBoxItem
 	: public UIControl
 {
-	LN_UI_TYPEINFO_DECLARE();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
 LN_PROTECTED_INTERNAL_ACCESS:
@@ -33,7 +33,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 class UIListBox
 	: public UIControl
 {
-	LN_UI_TYPEINFO_DECLARE();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	static const String NormalState;
 

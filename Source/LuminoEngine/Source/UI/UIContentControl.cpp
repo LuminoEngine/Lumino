@@ -10,7 +10,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // UIContentControl
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIContentControl, UIElement);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIContentControl, UIElement);
 
 //------------------------------------------------------------------------------
 UIContentControl::UIContentControl()

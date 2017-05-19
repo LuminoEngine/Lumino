@@ -10,7 +10,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // UIListBoxItem
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIListBoxItem, UIControl)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIListBoxItem, UIControl)
 
 //------------------------------------------------------------------------------
 UIListBoxItem::UIListBoxItem()
@@ -37,7 +37,7 @@ void UIListBoxItem::Initialize()
 //==============================================================================
 // UIListBox
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIListBox, UIControl)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIListBox, UIControl)
 
 const String UIListBox::NormalState = _T("Normal");
 

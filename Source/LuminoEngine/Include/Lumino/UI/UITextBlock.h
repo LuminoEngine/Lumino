@@ -12,7 +12,7 @@ using UITextBlockPtr = RefPtr<UITextBlock>;
 class UITextBlock
 	: public UITextElement
 {
-	LN_UI_TYPEINFO_DECLARE();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
 	static UITextBlockPtr Create();

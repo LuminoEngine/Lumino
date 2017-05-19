@@ -15,7 +15,7 @@ namespace tr
 //==============================================================================
 // UIPopup
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIPopup, UIContentControl)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIPopup, UIContentControl)
 
 //------------------------------------------------------------------------------
 UIPopup::UIPopup()
@@ -97,7 +97,7 @@ void UIPopup::UpdateLayoutForInPlacePopup(const Size& viewSize)
 //==============================================================================
 // UIComboBoxItem
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIComboBoxItem, UIContentControl)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIComboBoxItem, UIContentControl)
 
 //------------------------------------------------------------------------------
 UIComboBoxItem::UIComboBoxItem()
@@ -121,7 +121,7 @@ void UIComboBoxItem::Initialize()
 //==============================================================================
 // UIComboBox
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIComboBox, UIControl)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIComboBox, UIControl)
 
 
 //------------------------------------------------------------------------------

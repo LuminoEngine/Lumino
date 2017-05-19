@@ -11,7 +11,7 @@ class UITrack;
 class UIRangeBase
 	: public UIControl
 {
-	LN_UI_TYPEINFO_DECLARE();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
 	/** スクロール位置に対する値を設定します。*/
@@ -60,7 +60,7 @@ private:
 class UISlider
 	: public UIRangeBase
 {
-	LN_UI_TYPEINFO_DECLARE();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	static RefPtr<UISlider> Create();
 

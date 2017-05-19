@@ -9,7 +9,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // UIRangeBase
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIRangeBase, UIControl);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIRangeBase, UIControl);
 
 //------------------------------------------------------------------------------
 UIRangeBase::UIRangeBase()
@@ -89,7 +89,7 @@ void UIRangeBase::OnMinimumChanged(float oldMinimum, float newMinimum)
 //==============================================================================
 // UISlider
 //==============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UISlider, UIRangeBase);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UISlider, UIRangeBase);
 
 //------------------------------------------------------------------------------
 RefPtr<UISlider> UISlider::Create()

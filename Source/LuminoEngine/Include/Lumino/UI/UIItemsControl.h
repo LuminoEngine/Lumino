@@ -14,7 +14,7 @@ class UIItemsControl
 	: public UIControl
 	, public tr::IUIElementCollectionOwner
 {
-	LN_UI_TYPEINFO_DECLARE();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
 	UIElementCollection* GetItems() const;

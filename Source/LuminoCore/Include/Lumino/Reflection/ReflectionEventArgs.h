@@ -28,7 +28,7 @@ public:
 class PropertyChangedEventArgs
 	: public ReflectionEventArgs
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	//LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	PropertyChangedEventArgs(const PropertyInfo* prop, PropertySetSource cause);
 	virtual ~PropertyChangedEventArgs();
