@@ -128,6 +128,31 @@ public:
 	typedef uint8_t RevisionCount;
 	static const int MaxProperties = sizeof(LocalValueHavingFlags) * 8;
 
+	struct ConstructArg
+	{
+		virtual void DoSet(TypeInfo* typeInfo) = 0;
+	};
+	struct ClassVersion : public ConstructArg
+	{
+		ClassVersion(int version)
+			: m_version(version)
+		{}
+
+		virtual void DoSet(TypeInfo* typeInfo) override
+		{
+			typeInfo->m_serializeClassVersion = m_version;
+		}
+
+		int m_version;
+	};
+	struct ConstructArgHolder
+	{
+		ConstructArgHolder(ConstructArg& arg)
+			: m_arg(arg)
+		{}
+		ConstructArg& m_arg;
+	};
+
 public:
 	
 	/**
@@ -150,7 +175,8 @@ public:
 		HasLocalValueFlagsGetter getter,
 		BindingTypeInfoSetter bindingTypeInfoSetter,
 		BindingTypeInfoGetter bindingTypeInfoGetter,
-		detail::ObjectFactory factory);
+		detail::ObjectFactory factory,
+		std::initializer_list<ConstructArgHolder> args);
 
 	virtual ~TypeInfo() = default;
 	
@@ -197,6 +223,7 @@ public:
 
 
 	RefPtr<ReflectionObject> CreateInstance();
+	int GetSerializeClassVersion() const { return m_serializeClassVersion; }
 
 protected:
 	void SetInternalGroup(intptr_t group) { m_internalGroup = group; }
@@ -211,6 +238,8 @@ private:
 	BindingTypeInfoSetter		m_bindingTypeInfoSetter;
 	BindingTypeInfoGetter		m_bindingTypeInfoGetter;
 	detail::ObjectFactory		m_factory;
+
+	int							m_serializeClassVersion;
 
 	intptr_t					m_internalGroup;
 };

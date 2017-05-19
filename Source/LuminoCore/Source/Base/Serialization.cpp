@@ -37,7 +37,7 @@ namespace tr {
 //==============================================================================
 const TCHAR* Archive::ClassNameKey = _T("_ln_class_name");
 const TCHAR* Archive::ClassVersionKey = _T("_ln_class_version");
-const TCHAR* Archive::ClassBaseDefaultNameKey = _T("_ln_base_class");
+const TCHAR* Archive::ClassBaseDefaultNameKey = _T("_ln_class_base");
 
 //------------------------------------------------------------------------------
 RefPtr<ReflectionObject> Archive::CreateObject(const String& className, TypeInfo* requestedType)

@@ -77,7 +77,7 @@ public:
 public:
 	int m_value;
 };
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TestObject3, Object);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TestObject3, Object, tr::TypeInfo::ClassVersion(1));
 
 TEST_F(Test_Serialization, List)
 {
@@ -244,7 +244,7 @@ public:
 public:
 	int m_value2;
 };
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TestObject4, TestObject3);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TestObject4, TestObject3, tr::TypeInfo::ClassVersion(2));
 
 TEST_F(Test_Serialization, Reflection)
 {

@@ -457,7 +457,13 @@ private:
 	{
 		if (m_refrectionSupported)
 		{
-			TypeInfo* typeInfo = TypeInfo::GetTypeInfo(&obj);
+			TypeInfo* typeInfo;
+
+			if (callBase)
+				typeInfo = TypeInfo::GetTypeInfo<T>();
+			else
+				typeInfo = TypeInfo::GetTypeInfo(&obj);
+
 			String typeName = typeInfo->GetName();
 			int version = T::lnsl_GetClassVersion();
 			m_currentObject->AddSerializeMemberValue(ClassNameKey, SerializationValueType::String, &typeName);
@@ -525,6 +531,7 @@ private:
 	bool						m_refrectionSupported;
 
 };
+
 
 #define LN_SERIALIZE(ar, version, classVersion) \
 	static const int lnsl_GetClassVersion() { return classVersion; } \
