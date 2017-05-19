@@ -252,7 +252,7 @@ public:
 	int m_value2;
 	int ver2;
 };
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TestObject4, TestObject3, tr::TypeInfo::ClassVersion(2));
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TestObject4, TestObject3, ClassVersion(2));
 
 TEST_F(Test_Serialization, Reflection)
 {

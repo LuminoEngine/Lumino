@@ -269,7 +269,7 @@ private:
 	void ProcessRead(const KeyInfo& key, T && value)
 	{
 		ISerializeElement* element = m_currentObject->FindSerializeElement(key.name);
-		TryGetValue(element, &value);
+		TryGetValue(element, &value, key.callBase);
 	}
 
 	//void WriteValue(const TCHAR* name, SerializableObject* obj);
@@ -366,7 +366,7 @@ private:
 
 
 #define LN_DEFINE_TryGetValue(type, cppType) \
-	static bool TryGetValue(ISerializeElement* element, cppType* value) { if (element->GetSerializationValueType() == SerializationValueType::type) { *value = element->GetSerializeValue##type(); return true; } return false; } \
+	static bool TryGetValue(ISerializeElement* element, cppType* value, bool) { if (element->GetSerializationValueType() == SerializationValueType::type) { *value = element->GetSerializeValue##type(); return true; } return false; } \
 	static void AddItemValue(ISerializeElement* arrayElement, cppType value) { arrayElement->AddSerializeItemValue(SerializationValueType::type, &value); }
 
 	LN_DEFINE_TryGetValue(Bool, bool);
@@ -413,16 +413,16 @@ private:
 
 
 	template<typename T>
-	bool TryGetValue(ISerializeElement* element, RefPtr<T>* value)
+	bool TryGetValue(ISerializeElement* element, RefPtr<T>* value, bool callBase)
 	{
 		auto* old = m_currentObject;
 		m_currentObject = element;
-		CallLoad(value);
+		CallLoad(value, callBase);
 		m_currentObject = old;
 		return true;
 	}
 	template<typename T>
-	bool TryGetValue(ISerializeElement* arrayElement, List<T>* value)
+	bool TryGetValue(ISerializeElement* arrayElement, List<T>* value, bool)
 	{
 		int count = arrayElement->GetSerializeElementCount();
 		for (int i = 0; i < count; i++)
@@ -430,7 +430,7 @@ private:
 			auto* element = arrayElement->GetSerializeElement(i);
 
 			T raw;
-			if (TryGetValue(element, &raw))
+			if (TryGetValue(element, &raw, false))
 			{
 				value->Add(raw);
 			}
@@ -442,7 +442,7 @@ private:
 		return true;
 	}
 	template<typename T>
-	bool TryGetValue(ISerializeElement* element, T* value)
+	bool TryGetValue(ISerializeElement* element, T* value, bool)
 	{
 		auto* old = m_currentObject;
 		m_currentObject = element;
@@ -496,7 +496,7 @@ private:
 			{
 				String className;
 				int classVersion;
-				if (TryGetValue(classNameElement, &className) && TryGetValue(classVersionElement, &classVersion))
+				if (TryGetValue(classNameElement, &className, false) && TryGetValue(classVersionElement, &classVersion, false))
 				{
 					TypeInfo* typeInfo = TypeInfo::GetTypeInfo<T>();
 					if (callBase)
