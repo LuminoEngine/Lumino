@@ -289,18 +289,18 @@ private:
 	{
 		auto* old = m_currentObject;
 		m_currentObject = m_currentObject->AddObject(key.name);
-		obj.lnsl_SerializeImpl(*this, T::lnsl_GetClassVersion());
+		obj.Serialize(*this, 0);
 		//if (key.callBase)
-		//	obj.T::lnsl_SerializeImpl(*this, T::lnsl_GetClassVersion());
+		//	obj.T::Serialize(*this, T::lnsl_GetClassVersion());
 		//else
-		//	obj.lnsl_SerializeImpl(*this, T::lnsl_GetClassVersion());
+		//	obj.Serialize(*this, T::lnsl_GetClassVersion());
 		m_currentObject = old;
 	}
 	template<typename T> void WriteValue(const KeyInfo& key, RefPtr<T>& value)	 // non]intrusive Object
 	{
 		auto* old = m_currentObject;
 		m_currentObject = m_currentObject->AddObject(key.name);
-		//obj.lnsl_SerializeImpl(*this, T::lnsl_GetClassVersion());
+		//obj.Serialize(*this, T::lnsl_GetClassVersion());
 		CallSave(*value, key.callBase);
 		m_currentObject = old;
 	}
@@ -334,7 +334,7 @@ private:
 
 	//	auto* old = m_currentObject;
 	//	m_currentObject = so;
-	//	obj.lnsl_SerializeImpl(*this);
+	//	obj.Serialize(*this);
 	//	m_currentObject = old;
 	//}
 	//template<typename T> void ReadValue(const StringRef& name, List<T>& value)	 // non]intrusive Object
@@ -360,7 +360,7 @@ private:
 
 	//	//auto* old = m_currentObject;
 	//	//m_currentObject = so;
-	//	//obj.lnsl_SerializeImpl(*this);
+	//	//obj.Serialize(*this);
 	//	//m_currentObject = old;
 	//}
 
@@ -392,7 +392,7 @@ private:
 
 		auto* old = m_currentObject;
 		m_currentObject = objectElement;
-		value.lnsl_SerializeImpl(*this, T::lnsl_GetClassVersion());
+		value.Serialize(*this, 0);
 		//CallSave(value);
 		m_currentObject = old;
 	}
@@ -404,7 +404,7 @@ private:
 
 		auto* old = m_currentObject;
 		m_currentObject = objectElement;
-		//value->lnsl_SerializeImpl(*this, T::lnsl_GetClassVersion());
+		//value->Serialize(*this, T::lnsl_GetClassVersion());
 		CallSave(*value, false);
 		m_currentObject = old;
 	}
@@ -446,7 +446,7 @@ private:
 	{
 		auto* old = m_currentObject;
 		m_currentObject = element;
-		value->lnsl_SerializeImpl(*this, T::lnsl_GetClassVersion());
+		value->Serialize(*this, 0);
 		m_currentObject = old;
 		return true;
 	}
@@ -460,28 +460,32 @@ private:
 			TypeInfo* typeInfo;
 
 			if (callBase)
+			{
 				typeInfo = TypeInfo::GetTypeInfo<T>();
+			}
 			else
+			{
 				typeInfo = TypeInfo::GetTypeInfo(&obj);
+			}
 
 			String typeName = typeInfo->GetName();
-			int version = T::lnsl_GetClassVersion();
+			int version = typeInfo->GetSerializeClassVersion();
 			m_currentObject->AddSerializeMemberValue(ClassNameKey, SerializationValueType::String, &typeName);
 			m_currentObject->AddSerializeMemberValue(ClassVersionKey, SerializationValueType::Int32, &version);
 
 			if (callBase)
-				obj.T::lnsl_SerializeImpl(*this, version);
+				obj.T::Serialize(*this, version);
 			else
-				obj.lnsl_SerializeImpl(*this, version);
+				obj.Serialize(*this, version);
 		}
 		else
 		{
-			obj.lnsl_SerializeImpl(*this, 0);
+			obj.Serialize(*this, 0);
 		}
 	}
 
 	template<typename T>
-	void CallLoad(RefPtr<T>* value)
+	void CallLoad(RefPtr<T>* value, bool callBase)
 	{
 		bool loaded = false;
 		if (m_refrectionSupported)
@@ -495,8 +499,15 @@ private:
 				if (TryGetValue(classNameElement, &className) && TryGetValue(classVersionElement, &classVersion))
 				{
 					TypeInfo* typeInfo = TypeInfo::GetTypeInfo<T>();
-					(*value) = RefPtr<T>::StaticCast(CreateObject(className, typeInfo));
-					(*value)->lnsl_SerializeImpl(*this, classVersion);
+					if (callBase)
+					{
+						(*value)->T::Serialize(*this, classVersion);
+					}
+					else
+					{
+						(*value) = RefPtr<T>::StaticCast(CreateObject(className, typeInfo));
+						(*value)->Serialize(*this, classVersion);
+					}
 					loaded = true;
 				}
 			}
@@ -505,7 +516,7 @@ private:
 		if (!loaded)
 		{
 			(*value) = NewObject<T>();
-			(*value)->lnsl_SerializeImpl(*this, 0);
+			(*value)->Serialize(*this, 0);
 		}
 	}
 /*
@@ -533,9 +544,9 @@ private:
 };
 
 
-#define LN_SERIALIZE(ar, version, classVersion) \
-	static const int lnsl_GetClassVersion() { return classVersion; } \
-	virtual void lnsl_SerializeImpl(tr::Archive& ar, int version)
+//#define LN_SERIALIZE(ar, version, classVersion) \
+//	static const int lnsl_GetClassVersion() { return classVersion; } \
+//	virtual void Serialize(tr::Archive& ar, int version)
 
 } // namespace tr
 LN_NAMESPACE_END

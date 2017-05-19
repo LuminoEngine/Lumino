@@ -21,9 +21,11 @@ public:
 	// VS2017 で map や unordered_map を static 領域に置くと落ちてしまうようなので、インスタンスはヒープに置く
 	static TypeInfoManager* GetInstance()
 	{
-		if (m_instance == nullptr)
-			m_instance = std::make_shared<TypeInfoManager>();
-		return m_instance.get();
+		//if (m_instance == nullptr)
+		//	m_instance = std::make_shared<TypeInfoManager>();
+		static TypeInfoManager m_instance;
+		return &m_instance;
+		//return m_instance.get();
 	}
 
 	void RegisterTypeInfo(TypeInfo* typeInfo)
@@ -41,15 +43,21 @@ public:
 		return (itr != m_typeInfo.end()) ? itr->second : nullptr;
 	}
 
+	~TypeInfoManager()
+	{
+
+	}
+
 private:
-	static std::shared_ptr<TypeInfoManager>	m_instance;
+	//static std::shared_ptr<TypeInfoManager>	m_instance;
+
 		//std::unordered_map<std::string, int>
 	 //mp;    //  文字列 → 整数 のハッシュ連想配列
 	std::unordered_map<String, TypeInfo*>	m_typeInfo;
 	//std::map<std::string, TypeInfo*>	m_typeInfo;
 };
 
-std::shared_ptr<TypeInfoManager> TypeInfoManager::m_instance;
+//std::shared_ptr<TypeInfoManager> TypeInfoManager::m_instance;
 
 //static TypeInfoManager g_typeInfoManager;
 

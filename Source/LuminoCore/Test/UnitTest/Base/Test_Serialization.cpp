@@ -9,7 +9,8 @@ class TestObject1
 public:
 
 	//void lnsl_SerializeImpl(tr::Archive& ar)
-	LN_SERIALIZE(ar, version, 1)
+	//LN_SERIALIZE(ar, version, 1)
+	virtual void Serialize(tr::Archive& ar, int version)
 	{
 		ar & tr::MakeNVP(_T("value1"), m_value1);
 	}
@@ -54,7 +55,8 @@ class TestObject2
 {
 public:
 	//void lnsl_SerializeImpl(tr::Archive& ar)
-	LN_SERIALIZE(ar, version, 1)
+	//LN_SERIALIZE(ar, version, 1)
+	virtual void Serialize(tr::Archive& ar, int version)
 	{
 		ar & tr::MakeNVP(_T("value"), m_value);
 	}
@@ -69,13 +71,16 @@ class TestObject3 : public Object
 public:
 	void Initialize() {}
 	//void lnsl_SerializeImpl(tr::Archive& ar)
-	LN_SERIALIZE(ar, version, 1)
+	//LN_SERIALIZE(ar, version, 1)
+	virtual void Serialize(tr::Archive& ar, int version)
 	{
+		ver1 = version;
 		ar & tr::MakeNVP(_T("value"), m_value);
 	}
 
 public:
 	int m_value;
+	int ver1;
 };
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TestObject3, Object, tr::TypeInfo::ClassVersion(1));
 
@@ -235,14 +240,17 @@ class TestObject4 : public TestObject3
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	void Initialize() {}
-	LN_SERIALIZE(ar, version, 2)
+	//LN_SERIALIZE(ar, version, 2)
+	virtual void Serialize(tr::Archive& ar, int version)
 	{
+		ver2 = version;
 		ar & tr::MakeNVPBaseObject<TestObject3>(this);
 		ar & tr::MakeNVP(_T("value2"), m_value2);
 	}
 
 public:
 	int m_value2;
+	int ver2;
 };
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TestObject4, TestObject3, tr::TypeInfo::ClassVersion(2));
 
@@ -308,9 +316,12 @@ TEST_F(Test_Serialization, Reflection)
 			auto* obj2 = dynamic_cast<TestObject4*>(m_list1[1].Get());
 			auto* obj3 = dynamic_cast<TestObject4*>(m_list1[2].Get());
 			ASSERT_EQ(3, m_list1.GetCount());
-			ASSERT_EQ(1, m_list1[0]->m_value);
-			ASSERT_EQ(2, m_list1[1]->m_value);
-			ASSERT_EQ(3, m_list1[2]->m_value);
+			ASSERT_EQ(1, obj1->m_value); ASSERT_EQ(1, obj1->ver1);
+			ASSERT_EQ(4, obj1->m_value2); ASSERT_EQ(2, obj1->ver2);
+			ASSERT_EQ(2, obj2->m_value); ASSERT_EQ(1, obj2->ver1);
+			ASSERT_EQ(5, obj2->m_value2); ASSERT_EQ(2, obj2->ver2);
+			ASSERT_EQ(3, obj3->m_value); ASSERT_EQ(1, obj3->ver1);
+			ASSERT_EQ(6, obj3->m_value2); ASSERT_EQ(2, obj3->ver2);
 		}
 	}
 }
