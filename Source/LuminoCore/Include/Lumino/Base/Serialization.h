@@ -6,6 +6,7 @@ LN_NAMESPACE_BEGIN
 template <class T> class RefPtr;
 
 namespace tr {
+class ReflectionObject;
 
 enum class ArchiveMode
 {
@@ -186,18 +187,13 @@ public:
 	//	return *self;
 	//}
 
-	Archive(ISerializationeStore* stream, ArchiveMode mode)
+	Archive(ISerializationeStore* stream, ArchiveMode mode, bool refrectionSupported)
 		: m_mode(mode)
 		, m_stream(stream)
+		, m_refrectionSupported(refrectionSupported)
 	{
 		m_currentObject = m_stream->GetRootObject();
 	}
-
-	//template<class T>
-	//void Serialze(T* obj)
-	//{
-	//	obj->lnsl_SerializeImpl(*this);
-	//}
 
 	template<class TRef>
 	Archive& operator & (const NameValuePair<TRef>& nvp)
@@ -206,7 +202,15 @@ public:
 		return *this;
 	}
 
+protected:
+	//virtual RefPtr<ReflectionObject> CreateObject()
+	//{
+
+	//}
+
 private:
+	static const TCHAR* ClassNameKey;
+	static const TCHAR* ClassVersionKey;
 
 	template<typename T> void Process(const TCHAR* name, T && value)
 	{
@@ -254,7 +258,7 @@ private:
 	{
 		auto* old = m_currentObject;
 		m_currentObject = m_currentObject->AddObject(name);
-		obj.lnsl_SerializeImpl(*this);
+		obj.lnsl_SerializeImpl(*this, T::lnsl_GetClassVersion());
 		m_currentObject = old;
 	}
 	template<typename T> void WriteValue(const StringRef& name, List<T>& obj)	 // non]intrusive Object
@@ -345,7 +349,8 @@ private:
 
 		auto* old = m_currentObject;
 		m_currentObject = objectElement;
-		value.lnsl_SerializeImpl(*this);
+		value.lnsl_SerializeImpl(*this, T::lnsl_GetClassVersion());
+		//CallSave(value);
 		m_currentObject = old;
 	}
 	// for ln::Object type
@@ -356,7 +361,8 @@ private:
 
 		auto* old = m_currentObject;
 		m_currentObject = objectElement;
-		value->lnsl_SerializeImpl(*this);
+		//value->lnsl_SerializeImpl(*this, T::lnsl_GetClassVersion());
+		CallSave(*value);
 		m_currentObject = old;
 	}
 
@@ -369,7 +375,7 @@ private:
 		auto* old = m_currentObject;
 		m_currentObject = element;
 		(*value) = NewObject<T>();
-		(*value)->lnsl_SerializeImpl(*this);
+		(*value)->lnsl_SerializeImpl(*this, T::lnsl_GetClassVersion());
 		m_currentObject = old;
 		return true;
 	}
@@ -398,9 +404,28 @@ private:
 	{
 		auto* old = m_currentObject;
 		m_currentObject = element;
-		value->lnsl_SerializeImpl(*this);
+		value->lnsl_SerializeImpl(*this, T::lnsl_GetClassVersion());
 		m_currentObject = old;
 		return true;
+	}
+
+
+	template<typename T>
+	void CallSave(T& obj)
+	{
+		if (m_refrectionSupported)
+		{
+			TypeInfo* typeInfo = TypeInfo::GetTypeInfo(&obj);
+			String typeName = typeInfo->GetName();
+			int version = T::lnsl_GetClassVersion();
+			m_currentObject->AddSerializeMemberValue(ClassNameKey, SerializationValueType::String, &typeName);
+			m_currentObject->AddSerializeMemberValue(ClassVersionKey, SerializationValueType::Int32, &version);
+			obj.lnsl_SerializeImpl(*this, version);
+		}
+		else
+		{
+			obj.lnsl_SerializeImpl(*this, 0);
+		}
 	}
 
 /*
@@ -423,8 +448,13 @@ private:
 	ArchiveMode					m_mode;
 	ISerializationeStore*		m_stream;
 	ISerializeElement*			m_currentObject;
+	bool						m_refrectionSupported;
 
 };
+
+#define LN_SERIALIZE(ar, version, classVersion) \
+	static const int lnsl_GetClassVersion() { return classVersion; } \
+	void lnsl_SerializeImpl(tr::Archive& ar, int version)
 
 } // namespace tr
 LN_NAMESPACE_END

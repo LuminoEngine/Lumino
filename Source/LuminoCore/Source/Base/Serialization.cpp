@@ -34,6 +34,8 @@ namespace tr {
 //==============================================================================
 // Archive
 //==============================================================================
+const TCHAR* Archive::ClassNameKey = _T("_ln_class_name");
+const TCHAR* Archive::ClassVersionKey = _T("_ln_class_version");
 
 ////------------------------------------------------------------------------------
 //Archive::Archive(const PathName& filePath, ArchiveMode mode)

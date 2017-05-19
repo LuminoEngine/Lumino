@@ -1,5 +1,7 @@
 ﻿
 #include "../Internal.h"
+//#include <unordered_map>
+#include <map>
 #include <Lumino/Reflection/Notify.h>
 #include <Lumino/Reflection/TypeInfo.h>
 #include <Lumino/Reflection/ReflectionEventArgs.h>
@@ -7,8 +9,29 @@
 #include <Lumino/Reflection/Property.h>
 
 LN_NAMESPACE_BEGIN
-namespace tr
+namespace tr {
+
+
+//==============================================================================
+// TypeInfoManager
+//==============================================================================
+class TypeInfoManager
 {
+public:
+	void RegisterTypeInfo(TypeInfo* typeInfo)
+	{
+		//m_typeInfo.insert(std::pair<String, TypeInfo*>(typeInfo->GetName(), typeInfo));
+		//m_typeInfo[std::string(typeInfo->GetName().c_str())] = typeInfo;
+	}
+
+
+
+private:
+	//std::unordered_map<std::string, TypeInfo*>	m_typeInfo;
+	std::map<std::string, TypeInfo*>	m_typeInfo;
+};
+
+static TypeInfoManager g_typeInfoManager;
 
 //==============================================================================
 // ReflectionHelper
@@ -47,13 +70,16 @@ TypeInfo::TypeInfo(
 	TypeInfo* baseClass,
 	HasLocalValueFlagsGetter getter,
 	BindingTypeInfoSetter bindingTypeInfoSetter,
-	BindingTypeInfoGetter bindingTypeInfoGetter)
+	BindingTypeInfoGetter bindingTypeInfoGetter,
+	detail::ObjectFactory factory)
 	: m_name(className)
 	, m_baseClass(baseClass)
 	, m_bindingTypeInfoSetter(bindingTypeInfoSetter)
 	, m_bindingTypeInfoGetter(bindingTypeInfoGetter)
+	, m_factory(factory)
 	, m_internalGroup(0)
 {
+	g_typeInfoManager.RegisterTypeInfo(this);
 }
 
 //------------------------------------------------------------------------------
@@ -134,6 +160,13 @@ void TypeInfo::InitializeProperties(ReflectionObject* obj)
 		prop->m_owner = obj;
 		prop->m_propId = info;
 	}
+}
+
+//------------------------------------------------------------------------------
+RefPtr<Object> TypeInfo::CreateInstance()
+{
+	if (LN_CHECK_STATE(m_factory != nullptr)) return nullptr;
+	return m_factory();
 }
 
 namespace detail

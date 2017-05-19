@@ -14,6 +14,8 @@ typedef uint32_t LocalValueHavingFlags;
 
 namespace detail
 {
+	using ObjectFactory = RefPtr<ReflectionObject>(*)();
+
 	// 1つの ReflectionObject に対して1つ作られる
 	class WeakRefInfo final
 	{
@@ -26,6 +28,24 @@ namespace detail
 		WeakRefInfo();
 		void AddRef();
 		void Release();
+	};
+
+	// get instance factory
+	template<class TObject, class TIsAbstract> struct ObjectFactorySelector
+	{};
+	template<class TObject> struct ObjectFactorySelector<TObject, std::false_type>
+	{
+		static ObjectFactory GetFactory()
+		{
+			return []() { return RefPtr<ReflectionObject>::StaticCast(NewObject<TObject>()); };
+		}
+	};
+	template<class TObject> struct ObjectFactorySelector<TObject, std::true_type>
+	{
+		static ObjectFactory GetFactory()
+		{
+			return nullptr;
+		}
 	};
 }
 
@@ -127,7 +147,8 @@ public:
 		TypeInfo* baseClass,
 		HasLocalValueFlagsGetter getter,
 		BindingTypeInfoSetter bindingTypeInfoSetter,
-		BindingTypeInfoGetter bindingTypeInfoGetter);
+		BindingTypeInfoGetter bindingTypeInfoGetter,
+		detail::ObjectFactory factory);
 
 	virtual ~TypeInfo() = default;
 	
@@ -172,6 +193,9 @@ public:
 
 	void InitializeProperties(ReflectionObject* obj);
 
+
+	RefPtr<ReflectionObject> CreateInstance();
+
 protected:
 	void SetInternalGroup(intptr_t group) { m_internalGroup = group; }
 
@@ -184,6 +208,7 @@ private:
 	List<ReflectionEventInfo*>	m_routedEventList;			// この型のクラスがもつReflectionEventのリスト
 	BindingTypeInfoSetter		m_bindingTypeInfoSetter;
 	BindingTypeInfoGetter		m_bindingTypeInfoGetter;
+	detail::ObjectFactory		m_factory;
 
 	intptr_t					m_internalGroup;
 };
