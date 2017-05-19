@@ -776,13 +776,14 @@ JsonDocument2::~JsonDocument2()
 	m_cache.Finalize();
 }
 
-////------------------------------------------------------------------------------
-//void JsonDocument2::Parse(const String& text)
-//{
-//	StringReader textReader(text);
-//	Parse(&textReader);
-//}
-//
+//------------------------------------------------------------------------------
+void JsonDocument2::Parse(const String& text)
+{
+	StringReader textReader(text);
+	JsonReader2 jr(&textReader);
+	ParseInternal(&jr);
+}
+
 ////------------------------------------------------------------------------------
 //void JsonDocument2::Parse(const TCHAR* text, int len)
 //{
@@ -816,14 +817,7 @@ void JsonDocument2::Load(const StringRef& filePath)
 {
 	StreamReader r(filePath.GetBegin());	// TODO: end
 	JsonReader2 jr(&r);
-
-	bool result = jr.Read();
-	if (LN_CHECK(result, InvalidFormatException)) return;
-
-	JsonToken type = jr.GetTokenType();
-	if (LN_CHECK(type == JsonToken::StartObject, InvalidFormatException)) return;
-
-	JsonElement2::Load(&jr);
+	ParseInternal(&jr);
 }
 
 //------------------------------------------------------------------------------
@@ -838,6 +832,18 @@ String JsonDocument2::ToString(JsonFormatting formatting)
 
 //------------------------------------------------------------------------------
 ISerializeElement* JsonDocument2::GetRootObject() { return this; }
+
+//------------------------------------------------------------------------------
+void JsonDocument2::ParseInternal(JsonReader2* reader)
+{
+	bool result = reader->Read();
+	if (LN_CHECK(result, InvalidFormatException)) return;
+
+	JsonToken type = reader->GetTokenType();
+	if (LN_CHECK(type == JsonToken::StartObject, InvalidFormatException)) return;
+
+	JsonElement2::Load(reader);
+}
 
 } // namespace tr
 LN_NAMESPACE_END

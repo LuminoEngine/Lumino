@@ -1,6 +1,6 @@
 ﻿
 #include "../Internal.h"
-//#include <unordered_map>
+#include <unordered_map>
 #include <map>
 #include <Lumino/Reflection/Notify.h>
 #include <Lumino/Reflection/TypeInfo.h>
@@ -18,20 +18,40 @@ namespace tr {
 class TypeInfoManager
 {
 public:
-	void RegisterTypeInfo(TypeInfo* typeInfo)
+	// VS2017 で map や unordered_map を static 領域に置くと落ちてしまうようなので、インスタンスはヒープに置く
+	static TypeInfoManager* GetInstance()
 	{
-		//m_typeInfo.insert(std::pair<String, TypeInfo*>(typeInfo->GetName(), typeInfo));
-		//m_typeInfo[std::string(typeInfo->GetName().c_str())] = typeInfo;
+		if (m_instance == nullptr)
+			m_instance = std::make_shared<TypeInfoManager>();
+		return m_instance.get();
 	}
 
+	void RegisterTypeInfo(TypeInfo* typeInfo)
+	{
+		//mp = std::make_shared<std::unordered_map<std::string, int>>();
+		//(*mp)["abc"] = 123;
+		//m_typeInfo.insert(std::pair<String, TypeInfo*>(typeInfo->GetName(), typeInfo));
+		m_typeInfo[typeInfo->GetName()] = typeInfo;
+		//mp["abc"] = 123;
+	}
 
+	TypeInfo* FindTypeInfo(const StringRef& typeName)
+	{
+		auto itr = m_typeInfo.find(typeName);
+		return (itr != m_typeInfo.end()) ? itr->second : nullptr;
+	}
 
 private:
-	//std::unordered_map<std::string, TypeInfo*>	m_typeInfo;
-	std::map<std::string, TypeInfo*>	m_typeInfo;
+	static std::shared_ptr<TypeInfoManager>	m_instance;
+		//std::unordered_map<std::string, int>
+	 //mp;    //  文字列 → 整数 のハッシュ連想配列
+	std::unordered_map<String, TypeInfo*>	m_typeInfo;
+	//std::map<std::string, TypeInfo*>	m_typeInfo;
 };
 
-static TypeInfoManager g_typeInfoManager;
+std::shared_ptr<TypeInfoManager> TypeInfoManager::m_instance;
+
+//static TypeInfoManager g_typeInfoManager;
 
 //==============================================================================
 // ReflectionHelper
@@ -79,7 +99,13 @@ TypeInfo::TypeInfo(
 	, m_factory(factory)
 	, m_internalGroup(0)
 {
-	g_typeInfoManager.RegisterTypeInfo(this);
+	TypeInfoManager::GetInstance()->RegisterTypeInfo(this);
+}
+
+//------------------------------------------------------------------------------
+TypeInfo* TypeInfo::FindTypeInfo(const StringRef& name)
+{
+	return TypeInfoManager::GetInstance()->FindTypeInfo(name);
 }
 
 //------------------------------------------------------------------------------

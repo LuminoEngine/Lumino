@@ -141,6 +141,8 @@ public:
 	template<class T>
 	static TypeInfo* GetTypeInfo();
 
+	static TypeInfo* FindTypeInfo(const StringRef& name);
+
 public:
 	TypeInfo(
 		const TCHAR* className,

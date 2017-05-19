@@ -7,14 +7,13 @@ template <class T> class RefPtr;
 
 namespace tr {
 class ReflectionObject;
+class TypeInfo;
 
 enum class ArchiveMode
 {
 	Save,
 	Load,
 };
-
-
 
 /**
 	@brief
@@ -38,6 +37,26 @@ NameValuePair<TRef> MakeNVP(const TCHAR* name, TRef& valueRef)
 	return NameValuePair<TRef>(name, valueRef);
 }
 
+
+
+template<typename TThis>
+class NameValuePairBaseObject
+{
+public:
+	const TCHAR* name;
+	TThis* value;
+
+	NameValuePairBaseObject(const TCHAR* n, TThis* v) : name(n), value(v) {}
+
+private:
+	NameValuePairBaseObject & operator=(NameValuePairBaseObject const &) = delete;
+};
+
+template<typename TThis>
+NameValuePairBaseObject<TThis> MakeNVPBaseObject(TThis* value)
+{
+	return NameValuePairBaseObject<TThis>(Archive::ClassBaseDefaultNameKey, value);
+}
 
 ///**
 //	@brief
@@ -178,7 +197,17 @@ public:
 */
 class Archive
 {
+
+	struct KeyInfo
+	{
+		StringRef name;
+		bool callBase;
+	};
+
 public:
+	static const TCHAR* ClassNameKey;
+	static const TCHAR* ClassVersionKey;
+	static const TCHAR* ClassBaseDefaultNameKey;
 	//Archive(const PathName& filePath, ArchiveMode mode);
 
 	//template<typename T> Archive& operator&(T && arg)
@@ -198,29 +227,31 @@ public:
 	template<class TRef>
 	Archive& operator & (const NameValuePair<TRef>& nvp)
 	{
-		Process(nvp.name, nvp.value);
+		Process(KeyInfo{ nvp.name, false }, nvp.value);
+		return *this;
+	}
+
+	template<class TThis>
+	Archive& operator & (const NameValuePairBaseObject<TThis>& nvp)
+	{
+		Process(KeyInfo{ nvp.name, true }, RefPtr<TThis>(nvp.value));
 		return *this;
 	}
 
 protected:
-	//virtual RefPtr<ReflectionObject> CreateObject()
-	//{
-
-	//}
+	virtual RefPtr<ReflectionObject> CreateObject(const String& className, TypeInfo* requestedType);
 
 private:
-	static const TCHAR* ClassNameKey;
-	static const TCHAR* ClassVersionKey;
 
-	template<typename T> void Process(const TCHAR* name, T && value)
+	template<typename T> void Process(const KeyInfo& key, T && value)
 	{
 		switch (m_mode)
 		{
 		case ArchiveMode::Save:
-			ProcessWrite(name, value);
+			ProcessWrite(key, value);
 			break;
 		case ArchiveMode::Load:
-			ProcessRead(name, value);
+			ProcessRead(key, value);
 			break;
 		default:
 			assert(0);
@@ -229,41 +260,53 @@ private:
 	}
 
 	template<typename T>
-	void ProcessWrite(const TCHAR* name, T && value)
+	void ProcessWrite(const KeyInfo& key, T && value)
 	{
-		WriteValue(name, value);
+		WriteValue(key, value);
 	}
 
 	template<typename T>
-	void ProcessRead(const TCHAR* name, T && value)
+	void ProcessRead(const KeyInfo& key, T && value)
 	{
-		ISerializeElement* element = m_currentObject->FindSerializeElement(name);
+		ISerializeElement* element = m_currentObject->FindSerializeElement(key.name);
 		TryGetValue(element, &value);
 	}
 
 	//void WriteValue(const TCHAR* name, SerializableObject* obj);
-	void WriteValue(const StringRef& name, bool value);
-	void WriteValue(const StringRef& name, int8_t value);
-	void WriteValue(const StringRef& name, int16_t value);
-	void WriteValue(const StringRef& name, int32_t value) { m_currentObject->SetValueInt32(name, value); }
-	void WriteValue(const StringRef& name, int64_t value);
-	void WriteValue(const StringRef& name, uint8_t value);
-	void WriteValue(const StringRef& name, uint16_t value);
-	void WriteValue(const StringRef& name, uint32_t value);
-	void WriteValue(const StringRef& name, uint64_t value);
-	void WriteValue(const StringRef& name, float value);
-	void WriteValue(const StringRef& name, double value);
-	void WriteValue(const StringRef& name, String& value) { m_currentObject->SetValueString(name, value); }
-	template<typename T> void WriteValue(const StringRef& name, T& obj)	 // nonÅ]intrusive Object
+	void WriteValue(const KeyInfo& key, bool value);
+	void WriteValue(const KeyInfo& key, int8_t value);
+	void WriteValue(const KeyInfo& key, int16_t value);
+	void WriteValue(const KeyInfo& key, int32_t value) { m_currentObject->SetValueInt32(key.name, value); }
+	void WriteValue(const KeyInfo& key, int64_t value);
+	void WriteValue(const KeyInfo& key, uint8_t value);
+	void WriteValue(const KeyInfo& key, uint16_t value);
+	void WriteValue(const KeyInfo& key, uint32_t value);
+	void WriteValue(const KeyInfo& key, uint64_t value);
+	void WriteValue(const KeyInfo& key, float value);
+	void WriteValue(const KeyInfo& key, double value);
+	void WriteValue(const KeyInfo& key, String& value) { m_currentObject->SetValueString(key.name, value); }
+	template<typename T> void WriteValue(const KeyInfo& key, T& obj)	 // nonÅ]intrusive Object
 	{
 		auto* old = m_currentObject;
-		m_currentObject = m_currentObject->AddObject(name);
+		m_currentObject = m_currentObject->AddObject(key.name);
 		obj.lnsl_SerializeImpl(*this, T::lnsl_GetClassVersion());
+		//if (key.callBase)
+		//	obj.T::lnsl_SerializeImpl(*this, T::lnsl_GetClassVersion());
+		//else
+		//	obj.lnsl_SerializeImpl(*this, T::lnsl_GetClassVersion());
 		m_currentObject = old;
 	}
-	template<typename T> void WriteValue(const StringRef& name, List<T>& obj)	 // nonÅ]intrusive Object
+	template<typename T> void WriteValue(const KeyInfo& key, RefPtr<T>& value)	 // nonÅ]intrusive Object
 	{
-		ISerializeElement* ary = m_currentObject->AddSerializeMemberNewArray(name);
+		auto* old = m_currentObject;
+		m_currentObject = m_currentObject->AddObject(key.name);
+		//obj.lnsl_SerializeImpl(*this, T::lnsl_GetClassVersion());
+		CallSave(*value, key.callBase);
+		m_currentObject = old;
+	}
+	template<typename T> void WriteValue(const KeyInfo& key, List<T>& obj)	 // nonÅ]intrusive Object
+	{
+		ISerializeElement* ary = m_currentObject->AddSerializeMemberNewArray(key.name);
 		for (int i = 0; i < obj.GetCount(); i++)
 		{
 			AddItemValue(ary, obj[i]);
@@ -362,7 +405,7 @@ private:
 		auto* old = m_currentObject;
 		m_currentObject = objectElement;
 		//value->lnsl_SerializeImpl(*this, T::lnsl_GetClassVersion());
-		CallSave(*value);
+		CallSave(*value, false);
 		m_currentObject = old;
 	}
 
@@ -374,8 +417,7 @@ private:
 	{
 		auto* old = m_currentObject;
 		m_currentObject = element;
-		(*value) = NewObject<T>();
-		(*value)->lnsl_SerializeImpl(*this, T::lnsl_GetClassVersion());
+		CallLoad(value);
 		m_currentObject = old;
 		return true;
 	}
@@ -411,7 +453,7 @@ private:
 
 
 	template<typename T>
-	void CallSave(T& obj)
+	void CallSave(T& obj, bool callBase)
 	{
 		if (m_refrectionSupported)
 		{
@@ -420,7 +462,11 @@ private:
 			int version = T::lnsl_GetClassVersion();
 			m_currentObject->AddSerializeMemberValue(ClassNameKey, SerializationValueType::String, &typeName);
 			m_currentObject->AddSerializeMemberValue(ClassVersionKey, SerializationValueType::Int32, &version);
-			obj.lnsl_SerializeImpl(*this, version);
+
+			if (callBase)
+				obj.T::lnsl_SerializeImpl(*this, version);
+			else
+				obj.lnsl_SerializeImpl(*this, version);
 		}
 		else
 		{
@@ -428,6 +474,34 @@ private:
 		}
 	}
 
+	template<typename T>
+	void CallLoad(RefPtr<T>* value)
+	{
+		bool loaded = false;
+		if (m_refrectionSupported)
+		{
+			ISerializeElement* classNameElement = m_currentObject->FindSerializeElement(ClassNameKey);
+			ISerializeElement* classVersionElement = m_currentObject->FindSerializeElement(ClassVersionKey);
+			if (classNameElement != nullptr && classVersionElement != nullptr)
+			{
+				String className;
+				int classVersion;
+				if (TryGetValue(classNameElement, &className) && TryGetValue(classVersionElement, &classVersion))
+				{
+					TypeInfo* typeInfo = TypeInfo::GetTypeInfo<T>();
+					(*value) = RefPtr<T>::StaticCast(CreateObject(className, typeInfo));
+					(*value)->lnsl_SerializeImpl(*this, classVersion);
+					loaded = true;
+				}
+			}
+		}
+		
+		if (!loaded)
+		{
+			(*value) = NewObject<T>();
+			(*value)->lnsl_SerializeImpl(*this, 0);
+		}
+	}
 /*
 	static bool TryGetValue(ISerializeElement* element, bool* value) { if (element->GetSerializationValueType() == SerializationValueType::Bool) { *value = element->GetSerializeValueBool(); return true; } return false; }
 
@@ -454,7 +528,7 @@ private:
 
 #define LN_SERIALIZE(ar, version, classVersion) \
 	static const int lnsl_GetClassVersion() { return classVersion; } \
-	void lnsl_SerializeImpl(tr::Archive& ar, int version)
+	virtual void lnsl_SerializeImpl(tr::Archive& ar, int version)
 
 } // namespace tr
 LN_NAMESPACE_END

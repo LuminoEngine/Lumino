@@ -333,7 +333,7 @@ public:
 	///*
 	//	@brief	指定した JSON 形式文字列を解析し、ドキュメントを構築します。
 	//*/
-	//void Parse(const String& text);
+	void Parse(const String& text);
 
 	///*
 	//	@brief	指定した JSON 形式文字列を解析し、ドキュメントを構築します。
@@ -351,6 +351,7 @@ public:
 
 	void Load(const StringRef& filePath);
 
+
 	String ToString(JsonFormatting formatting = JsonFormatting::None);
 
 protected:
@@ -366,6 +367,8 @@ LN_INTERNAL_ACCESS:
 	}
 
 private:
+	void ParseInternal(JsonReader2* reader);
+
 	detail::JsonElementCache	m_cache;
 };
 

@@ -25,6 +25,7 @@ non‐intrusive Object のシリアライズ扱いにする。
 
 */
 #include "../Internal.h"
+#include <Lumino/Reflection/TypeInfo.h>
 #include <Lumino/Base/Serialization.h>
 //#include <Lumino/IO/FileStream.h>
 
@@ -36,6 +37,22 @@ namespace tr {
 //==============================================================================
 const TCHAR* Archive::ClassNameKey = _T("_ln_class_name");
 const TCHAR* Archive::ClassVersionKey = _T("_ln_class_version");
+const TCHAR* Archive::ClassBaseDefaultNameKey = _T("_ln_base_class");
+
+//------------------------------------------------------------------------------
+RefPtr<ReflectionObject> Archive::CreateObject(const String& className, TypeInfo* requestedType)
+{
+	if (className == requestedType->GetName())
+	{
+		// 格納したい変数の型と同じなら型情報を総検索する必要は無い
+		return requestedType->CreateInstance();
+	}
+	else
+	{
+		auto* typeInfo = TypeInfo::FindTypeInfo(className);
+		return typeInfo->CreateInstance();
+	}
+}
 
 ////------------------------------------------------------------------------------
 //Archive::Archive(const PathName& filePath, ArchiveMode mode)

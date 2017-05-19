@@ -96,7 +96,10 @@ TEST_F(Test_Serialization, List)
 		tr::JsonDocument2 doc;
 		tr::Archive ar(&doc, tr::ArchiveMode::Save, false);
 
-		List<TestObject2>	m_list1 = { TestObject2{ 1 }, TestObject2{ 2 }, TestObject2{ 3 } };
+		List<TestObject2>	m_list1 = { TestObject2(), TestObject2(), TestObject2() };
+		m_list1[0].m_value = 1;
+		m_list1[1].m_value = 2;
+		m_list1[2].m_value = 3;
 		ar & tr::MakeNVP(_T("list1"), m_list1);
 
 		ASSERT_EQ(_T("{\"list1\":[{\"value\":1},{\"value\":2},{\"value\":3}]}"), doc.ToString());
@@ -161,58 +164,58 @@ TEST_F(Test_Serialization, List)
 }
 
 //------------------------------------------------------------------------------
-using Test_Factory = RefPtr<Object>(*)();
-
-
-//template<typename T, typename isAbstract>
-//static Test_Factory GetFactory();
-
-template<class TObject, class TIsAbstract> struct Test_GetFactory {};
-
-
-template<class T>
-class Test_TypeInfo;
-
-class TestObject4 : public Object
-{
-public:
-	static Test_TypeInfo<TestObject4> info;
-
-	void Initialize() {}
-};
-
-template<class TObject> struct Test_GetFactory<TObject, std::false_type>
-{
-	static Test_Factory GetFactory()
-	{
-		return []() { return RefPtr<Object>::StaticCast(NewObject<TObject>()); };
-	}
-};
-template<class TObject> struct Test_GetFactory<TObject, std::true_type>
-{
-	static Test_Factory GetFactory()
-	{
-		return nullptr;
-	}
-};
-
-
-template<class T>
-class Test_TypeInfo
-{
-public:
-	Test_Factory m_factory;
-
-	Test_TypeInfo()
-		: m_factory(Test_GetFactory<T, std::is_abstract<T>::type>::GetFactory())
-	{
-		printf("aa");
-	}
-
-};
-
-
-Test_TypeInfo<TestObject4> TestObject4::info;
+//using Test_Factory = RefPtr<Object>(*)();
+//
+//
+////template<typename T, typename isAbstract>
+////static Test_Factory GetFactory();
+//
+//template<class TObject, class TIsAbstract> struct Test_GetFactory {};
+//
+//
+//template<class T>
+//class Test_TypeInfo;
+//
+//class TestObject4 : public Object
+//{
+//public:
+//	static Test_TypeInfo<TestObject4> info;
+//
+//	void Initialize() {}
+//};
+//
+//template<class TObject> struct Test_GetFactory<TObject, std::false_type>
+//{
+//	static Test_Factory GetFactory()
+//	{
+//		return []() { return RefPtr<Object>::StaticCast(NewObject<TObject>()); };
+//	}
+//};
+//template<class TObject> struct Test_GetFactory<TObject, std::true_type>
+//{
+//	static Test_Factory GetFactory()
+//	{
+//		return nullptr;
+//	}
+//};
+//
+//
+//template<class T>
+//class Test_TypeInfo
+//{
+//public:
+//	Test_Factory m_factory;
+//
+//	Test_TypeInfo()
+//		: m_factory(Test_GetFactory<T, std::is_abstract<T>::type>::GetFactory())
+//	{
+//		printf("aa");
+//	}
+//
+//};
+//
+//
+//Test_TypeInfo<TestObject4> TestObject4::info;
 
 //template<>
 //static Test_Factory GetFactory<TestObject4, std::false_type::value>()
@@ -226,7 +229,88 @@ Test_TypeInfo<TestObject4> TestObject4::info;
 //	return nullptr;
 //}
 
-TEST_F(Test_Serialization, SubClass)
-{
 
+class TestObject4 : public TestObject3
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+	void Initialize() {}
+	LN_SERIALIZE(ar, version, 2)
+	{
+		ar & tr::MakeNVPBaseObject<TestObject3>(this);
+		ar & tr::MakeNVP(_T("value2"), m_value2);
+	}
+
+public:
+	int m_value2;
+};
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TestObject4, TestObject3);
+
+TEST_F(Test_Serialization, Reflection)
+{
+	// <Test> simply
+	{
+		String json;
+		{
+			tr::JsonDocument2 doc;
+			tr::Archive ar(&doc, tr::ArchiveMode::Save, true);
+
+			List <RefPtr<TestObject3>> m_list1 = { NewObject<TestObject3>(), NewObject<TestObject3>(), NewObject<TestObject3>() };
+			m_list1[0]->m_value = 1;
+			m_list1[1]->m_value = 2;
+			m_list1[2]->m_value = 3;
+			ar & tr::MakeNVP(_T("list1"), m_list1);
+
+			json = doc.ToString();
+		}
+		{
+			tr::JsonDocument2 doc;
+			doc.Parse(json);
+			tr::Archive ar(&doc, tr::ArchiveMode::Load, true);
+
+			List <RefPtr<TestObject3>> m_list1;
+			ar & tr::MakeNVP(_T("list1"), m_list1);
+
+			ASSERT_EQ(3, m_list1.GetCount());
+			ASSERT_EQ(1, m_list1[0]->m_value);
+			ASSERT_EQ(2, m_list1[1]->m_value);
+			ASSERT_EQ(3, m_list1[2]->m_value);
+		}
+	}
+
+	// <Test>
+	{
+		String json;
+		{
+			tr::JsonDocument2 doc;
+			tr::Archive ar(&doc, tr::ArchiveMode::Save, true);
+
+			auto obj1 = NewObject<TestObject4>();
+			auto obj2 = NewObject<TestObject4>();
+			auto obj3 = NewObject<TestObject4>();
+			obj1->m_value = 1; obj1->m_value2 = 4;
+			obj2->m_value = 2; obj2->m_value2 = 5;
+			obj3->m_value = 3; obj3->m_value2 = 6;
+			List <RefPtr<TestObject3>> m_list1 = { obj1.Get(), obj2.Get(), obj3.Get() };
+			ar & tr::MakeNVP(_T("list1"), m_list1);
+
+			json = doc.ToString(tr::JsonFormatting::Indented);
+		}
+		{
+			tr::JsonDocument2 doc;
+			doc.Parse(json);
+			tr::Archive ar(&doc, tr::ArchiveMode::Load, true);
+
+			List <RefPtr<TestObject3>> m_list1;
+			ar & tr::MakeNVP(_T("list1"), m_list1);
+
+			auto* obj1 = dynamic_cast<TestObject4*>(m_list1[0].Get());
+			auto* obj2 = dynamic_cast<TestObject4*>(m_list1[1].Get());
+			auto* obj3 = dynamic_cast<TestObject4*>(m_list1[2].Get());
+			ASSERT_EQ(3, m_list1.GetCount());
+			ASSERT_EQ(1, m_list1[0]->m_value);
+			ASSERT_EQ(2, m_list1[1]->m_value);
+			ASSERT_EQ(3, m_list1[2]->m_value);
+		}
+	}
 }
