@@ -13,6 +13,7 @@ class LightComponent;
 class World;
 class World2D;
 class World3D;
+class Camera;
 
 /**
 	@brief		アプリケーション全体にかかわる処理を行います。
@@ -67,6 +68,7 @@ public:
 
 	static World2D* GetWorld2D();
 	static World3D* GetWorld3D();
+	static Camera* GetCamera3D();
 
 	static UIMainWindow* GetMainWindow();
 	static UIViewport* GetMainViewport();

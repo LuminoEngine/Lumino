@@ -706,6 +706,8 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseMove(int x, int y)
 
 		camera->GetTransform()->position = pos;
 
+		camera->GetTransform()->LookAt(look_at);	// TODO: tmp
+
 		m_prevPos.x = x;
 		m_prevPos.y = y;
 		return true;

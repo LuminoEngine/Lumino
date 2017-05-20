@@ -71,6 +71,8 @@ public:
 	void Translate(const Vector3& translation);
 	void Translate(float x, float y, float z = 0.0f);
 
+	void LookAt(const Vector3& target, const Vector3& up = Vector3::UnitY);
+
 	Matrix GetTransformMatrix() const;
 
 	/**

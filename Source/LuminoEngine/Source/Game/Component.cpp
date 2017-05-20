@@ -124,6 +124,20 @@ void Transform::Translate(float x, float y, float z)
 }
 
 //------------------------------------------------------------------------------
+void Transform::LookAt(const Vector3& target, const Vector3& up)
+{
+	Vector3 f = Vector3::Normalize(target - position.Get());
+	Vector3 s = Vector3::Normalize(Vector3::Cross(up, f));
+	Vector3 u = Vector3::Cross(f, s);
+	Matrix mat(
+		s.x, s.y, s.z, 0.0f,
+		u.x, u.y, u.z, 0.0f,
+		f.x, f.y, f.z, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f);
+	rotation = Quaternion::MakeFromRotationMatrix(mat);
+}
+
+//------------------------------------------------------------------------------
 Matrix Transform::GetTransformMatrix() const
 {
 	return Matrix::MakeAffineTransformation(scale, center, rotation, position);

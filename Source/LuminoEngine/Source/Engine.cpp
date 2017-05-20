@@ -106,6 +106,12 @@ World3D* Engine::GetWorld3D()
 }
 
 //------------------------------------------------------------------------------
+Camera* Engine::GetCamera3D()
+{
+	return EngineManager::Instance->GetDefaultWorld3D()->GetMainCamera();
+}
+
+//------------------------------------------------------------------------------
 UIMainWindow* Engine::GetMainWindow()
 {
 	return EngineManager::Instance->GetUIManager()->GetMainWindow();
