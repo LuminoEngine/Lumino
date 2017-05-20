@@ -512,7 +512,7 @@ void CameraViewportLayer2::ExecuteDrawListRendering(DrawList* parentDrawList, Re
 		renderTarget,
 		depthBuffer);
 	parentDrawList->RenderSubDrawList(
-		m_targetWorld->GetRenderer()->GetDrawElementList(),
+		m_targetWorld->GetDebugRenderer()->GetDrawElementList(),
 		cameraInfo,
 		m_internalRenderer,
 		renderTarget,
