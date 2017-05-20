@@ -34,6 +34,10 @@ public:
 	/** この CollisionShape が衝突判定のためのトリガーであるかを取得します。*/
 	bool IsTrigger() const;
 
+	void SetCenter(const Vector3& offset) { m_offset = offset; }
+
+	const Vector3& GetCenter() const { return m_offset; }
+
 LN_CONSTRUCT_ACCESS:
 	CollisionShape();
 	virtual ~CollisionShape();
@@ -44,7 +48,7 @@ LN_INTERNAL_ACCESS:
 		
 private:
 	btCollisionShape*	m_shape;
-	Matrix				m_offset;
+	Vector3				m_offset;
 	bool				m_isTrigger;
 };
 
