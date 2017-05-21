@@ -439,8 +439,14 @@ void RigidBody::OnAfterStepSimulation()
 		else
 		{
 			auto& t = m_btRigidBody->getWorldTransform();
-			transform->position = detail::BulletUtil::btVector3ToLNVector3(t.getOrigin());
-			transform->rotation = detail::BulletUtil::btQuaternionToLNQuaternion(t.getRotation());
+			if (!(((int)(m_constraintFlags & RigidbodyConstraintFlags::FreezePosition)) == RigidbodyConstraintFlags::FreezePosition))
+			{
+				transform->position = detail::BulletUtil::btVector3ToLNVector3(t.getOrigin());
+			}
+			if (!(((int)(m_constraintFlags & RigidbodyConstraintFlags::FreezeRotation)) == RigidbodyConstraintFlags::FreezeRotation))
+			{
+				transform->rotation = detail::BulletUtil::btQuaternionToLNQuaternion(t.getRotation());
+			}
 		}
 	}
 }

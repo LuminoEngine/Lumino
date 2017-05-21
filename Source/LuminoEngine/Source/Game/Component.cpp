@@ -112,6 +112,12 @@ Transform::~Transform()
 }
 
 //------------------------------------------------------------------------------
+Vector3 Transform::GetFront() const
+{
+	return Vector3::Transform(Vector3::UnitZ, rotation.Get());
+}
+
+//------------------------------------------------------------------------------
 void Transform::Translate(const Vector3& translation)
 {
 	position = position.Get() + translation;
