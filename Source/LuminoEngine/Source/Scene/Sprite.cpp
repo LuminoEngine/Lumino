@@ -22,6 +22,7 @@ SpriteComponent::SpriteComponent()
 	, m_size()
 	, m_srcRect()
 	, m_flipMode(FlipMode_None)
+	, m_texture(nullptr)
 {
 }
 
@@ -35,11 +36,13 @@ void SpriteComponent::Initialize(SceneGraph* owner)
 {
 	if (LN_CHECK_ARG(owner != nullptr)) return;
 
-	VisualComponent::Initialize(owner, 1);
+	VisualComponent::Initialize(owner/*, 1*/);
 	m_srcRect.Set(0, 0, -1, -1);
 	SetSize(Size(-1, -1));
 
 	SetBlendMode(BlendMode::Alpha);
+
+	m_material = NewObject<Material>();
 
 	owner->GetRootNode()->AddChild(this);
 	SetAutoRemove(true);
@@ -48,8 +51,9 @@ void SpriteComponent::Initialize(SceneGraph* owner)
 //------------------------------------------------------------------------------
 void SpriteComponent::SetTexture(Texture* texture)
 {
-	if (LN_CHECK_ARG(m_materialList != nullptr)) return;
-	m_materialList->GetAt(0)->SetMaterialTexture(texture);
+	//if (LN_CHECK_ARG(m_materialList != nullptr)) return;
+	//m_materialList->GetAt(0)->SetMaterialTexture(texture);
+	m_texture = texture;
 	UpdateVertexData();
 }
 
@@ -62,8 +66,9 @@ void SpriteComponent::SetSize(const Size& size)
 //------------------------------------------------------------------------------
 Texture* SpriteComponent::GetTexture() const
 {
-	if (LN_CHECK_ARG(m_materialList != nullptr)) return nullptr;
-	return m_materialList->GetAt(0)->GetMaterialTexture(nullptr);
+	//if (LN_CHECK_ARG(m_materialList != nullptr)) return nullptr;
+	//return m_materialList->GetAt(0)->GetMaterialTexture(nullptr);
+	return m_texture;
 }
 
 //------------------------------------------------------------------------------
@@ -94,11 +99,20 @@ void SpriteComponent::SetAnchorPoint(float ratioX, float ratioY)
 //------------------------------------------------------------------------------
 void SpriteComponent::RenderSprite(DrawList* renderer, SpriteBaseDirection dir)
 {
-	Material* mat = GetMainMaterial();
+	//Material* mat = GetMainMaterial();
 	Color colorScale = GetColorScale();
 	colorScale.a *= GetOpacity();
 	renderer->SetTransform(GetOwnerObject()->transform.GetWorldMatrix());
-	renderer->DrawSprite(Vector3::Zero, m_renderSize, m_anchor, GetTexture(), m_renderSourceRect, colorScale, dir, GetBillboardType(), GetMainMaterial());
+	renderer->DrawSprite(
+		Vector3::Zero,
+		m_renderSize,
+		m_anchor,
+		GetTexture(),
+		m_renderSourceRect,
+		colorScale,
+		dir,
+		GetBillboardType(),
+		m_material);
 }
 
 //------------------------------------------------------------------------------

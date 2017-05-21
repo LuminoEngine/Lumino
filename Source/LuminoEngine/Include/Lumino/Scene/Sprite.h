@@ -71,12 +71,14 @@ LN_PROTECTED_INTERNAL_ACCESS:
 private:
 	void UpdateVertexData();
 
-	Size		m_size;
-	Rect		m_srcRect;
-	Vector2		m_anchor;
-	FlipMode	m_flipMode;
-	Size		m_renderSize;
-	Rect		m_renderSourceRect;
+	Size				m_size;
+	Rect				m_srcRect;
+	Vector2				m_anchor;
+	FlipMode			m_flipMode;
+	RefPtr<Texture>		m_texture;
+	RefPtr<Material>	m_material;
+	Size				m_renderSize;
+	Rect				m_renderSourceRect;
 };
 
 /**

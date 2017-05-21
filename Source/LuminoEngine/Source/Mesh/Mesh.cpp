@@ -761,7 +761,7 @@ void StaticMeshModel::Initialize(detail::GraphicsManager* manager, MeshResource*
 	if (LN_CHECK_ARG(sharingMesh != nullptr)) return;
 
 	// メッシュ(バッファ類)は共有する
-	m_meshResource = sharingMesh;
+	m_meshResources.Add(sharingMesh);
 
 	m_materials = RefPtr<MaterialList>::MakeRef();
 
@@ -832,9 +832,16 @@ void StaticMeshModel::InitializeTeapot(detail::GraphicsManager* manager, float s
 }
 
 //------------------------------------------------------------------------------
-int StaticMeshModel::GetSubsetCount() const
+//int StaticMeshModel::GetSubsetCount() const
+//{
+//	return m_meshResource->GetSubsetCount();
+//}
+
+//------------------------------------------------------------------------------
+MeshResource* StaticMeshModel::FindMesh(const StringRef& name)
 {
-	return m_meshResource->GetSubsetCount();
+	auto mesh = m_meshResources.Find([name](MeshResource* mesh) { return mesh->GetName() == name; });
+	return (mesh != nullptr) ? *mesh : nullptr;
 }
 
 //------------------------------------------------------------------------------

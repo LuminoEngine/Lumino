@@ -367,9 +367,12 @@ void RigidBody::OnBeforeStepSimulation()
 			* ここでは、setMassProps() の前後でフラグ isStaticObject() が変わった場合、World に追加しなおしている。
 			*/
 			bool isStatic = m_btRigidBody->isStaticObject();
-			btVector3 inertia;
-			m_btRigidBody->getCollisionShape()->calculateLocalInertia(m_data.Mass, inertia);
-			m_btRigidBody->setMassProps(m_data.Mass, inertia);
+			if (m_data.Mass != 0.0f)
+			{
+				btVector3 inertia;
+				m_btRigidBody->getCollisionShape()->calculateLocalInertia(m_data.Mass, inertia);
+				m_btRigidBody->setMassProps(m_data.Mass, inertia);
+			}
 
 
 			if (isStatic != m_btRigidBody->isStaticObject())
@@ -539,7 +542,10 @@ void RigidBody::CreateBtRigidBody()
 	}
 	else
 	{
-		shape->calculateLocalInertia(num, localInertia);
+		if (num != 0.0f)
+		{
+			shape->calculateLocalInertia(num, localInertia);
+		}
 		friction = m_data.Friction;
 		hitFraction = m_data.Restitution;
 		linearDamping = m_data.LinearDamping;

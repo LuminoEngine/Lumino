@@ -25,9 +25,9 @@ public:
 	/** @name Main material utilities. */
 	/** @{ */
 
-	Material* GetMainMaterial() const;
+	//Material* GetMainMaterial() const;
 
-	tr::ReflectionObjectList<Material*>* GetMaterials() const;
+	//tr::ReflectionObjectList<Material*>* GetMaterials() const;
 
 
 
@@ -149,20 +149,26 @@ public:
 protected:
 	VisualComponent();
 	virtual ~VisualComponent();
-	void Initialize(SceneGraph* owner, int subsetCount);	// TODO: ここでサブセット数渡す必要はないかな
+	void Initialize(SceneGraph* owner/*, int subsetCount*/);	// TODO: ここでサブセット数渡す必要はないかな
 
 LN_INTERNAL_ACCESS:
-	MaterialList2* GetMaterialList() { return m_materialList; }
-	Shader* GetPrimaryShader() const;
+	//MaterialList2* GetMaterialList() { return m_materialList; }
+	//Shader* GetPrimaryShader() const;
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	virtual detail::SceneNodeDefaultShaderClass GetShaderClass() { return detail::SceneNodeDefaultShaderClass_StaticMesh; }
 
-protected:
-	RefPtr<MaterialList2>	m_materialList;
+//protected:
+//	RefPtr<MaterialList2>	m_materialList;
 
 private:
 	void Render(DrawList* context) override;
+
+	// TODO: Renderer への設定がまだ
+	BlendMode	m_blendMode;
+	CullingMode	m_cullingMode;
+	bool		m_depthTestEnabled;
+	bool		m_depthWriteEnabled;
 };
 
 

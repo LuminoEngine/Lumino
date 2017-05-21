@@ -41,6 +41,11 @@ public:
 	static MeshResourcePtr Create();
 
 public:
+	/** 名前を設定します。*/
+	void SetName(const StringRef& name) { m_name = name; }
+
+	/** 名前を取得します。*/
+	const String& GetName() const { return m_name; }
 
 	int GetVertexCount() const { return m_vertexUsedCount; }
 	int GetIndexCount() const { return m_indexUsedCount; }
@@ -189,6 +194,7 @@ private:
 
 LN_INTERNAL_ACCESS:	// TODO:
 	detail::GraphicsManager*	m_manager;
+	String						m_name;
 	ResourceUsage				m_usage;
 
 	int							m_vertexCapacity;
@@ -214,10 +220,14 @@ class StaticMeshModel
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
-	void SetMeshResource(MeshResource* meshResource) { m_meshResource = meshResource; }
-	MeshResource* GetMeshResource() const { return m_meshResource; }
+	//void SetMeshResource(MeshResource* meshResource) { m_meshResource = meshResource; }
+	void AddMeshResource(MeshResource* meshResource) { m_meshResources.Add(meshResource); }
+	MeshResource* GetMeshResource(int index) const { return m_meshResources[index]; }
+	int GetMeshResourceCount() const { return m_meshResources.GetCount(); }
 
-	int GetSubsetCount() const;
+	MeshResource* FindMesh(const StringRef& name);
+
+	//int GetSubsetCount() const;
 
 	void AddMaterials(int count);
 	void AddMaterial(Material* material);
@@ -235,8 +245,8 @@ LN_INTERNAL_ACCESS:
 	void InitializeTeapot(detail::GraphicsManager* manager, float size, int tessellation, MeshCreationFlags flags);
 	
 LN_INTERNAL_ACCESS:	// TODO:
-	RefPtr<MeshResource>	m_meshResource;
-	RefPtr<MaterialList>	m_materials;
+	List<RefPtr<MeshResource>>	m_meshResources;
+	RefPtr<MaterialList>		m_materials;
 };
 
 LN_NAMESPACE_END

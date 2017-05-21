@@ -43,9 +43,9 @@ void SkinnedMeshComponent::Initialize(SceneGraph* ownerSceneGraph, SkinnedMeshMo
 	if (LN_CHECK_ARG(meshModel != nullptr)) return;
 	m_meshModel = meshModel;
 
-	VisualComponent::Initialize(ownerSceneGraph, meshModel->m_mesh->m_materials->GetCount());
+	VisualComponent::Initialize(ownerSceneGraph/*, meshModel->m_mesh->m_materials->GetCount()*/);
 
-	m_materialList->CopyShared(meshModel->m_mesh->m_materials, true);
+	//m_materialList->CopyShared(meshModel->m_mesh->m_materials, true);
 
 
 	ownerSceneGraph->GetRootNode()->AddChild(this);
@@ -111,11 +111,25 @@ void SkinnedMeshComponent::OnUpdateFrame(float elapsedTime)
 void SkinnedMeshComponent::OnRender2(DrawList* renderer)
 {
 	StaticMeshModel* mesh = m_meshModel->m_mesh;
-	int subsetCount = mesh->GetSubsetCount();
-	for (int i = 0; i < subsetCount; i++)
+
+
+	for (int iMesh = 0; iMesh < mesh->GetMeshResourceCount(); iMesh++)
 	{
-		renderer->DrawMesh(mesh, i, mesh->GetMaterial(i));
+		MeshResource* m = mesh->GetMeshResource(iMesh);
+		for (int i = 0; i < m->GetSubsetCount(); i++)
+		{
+			MeshAttribute attr;
+			m->GetMeshAttribute(i, &attr);
+			renderer->DrawMesh(m, i, mesh->GetMaterial(attr.MaterialIndex));
+			//renderer->DrawMesh(m, i, /*GetMaterials()->GetAt(i)*/);
+		}
 	}
+
+	//int subsetCount = mesh->GetSubsetCount();
+	//for (int i = 0; i < subsetCount; i++)
+	//{
+	//	renderer->DrawMesh(mesh, i, mesh->GetMaterial(i));
+	//}
 }
 
 LN_NAMESPACE_END
