@@ -723,15 +723,17 @@ void ParticleEmitterComponent::Initialize(SceneGraph* owner, SpriteParticleModel
 {
 	if (LN_CHECK_ARG(model != nullptr)) return;
 
-	VisualComponent::Initialize(owner, 1);
+	VisualComponent::Initialize(owner/*, 1*/);
 	m_model = model;
 	m_model->Commit();
 	m_instance = m_model->CreateInstane();
 
 	// TODO: なんか良くないやり方な気がする・・・	共有マテリアルは変更禁止にしたほうがいいと思う
 	// TODO: main にはんえいされない
-	m_materialList->SetAt(0, m_model->GetMaterial());
-	m_materialList->m_mainMaterial = m_model->GetMaterial();
+	//m_materialList->SetAt(0, m_model->GetMaterial());
+	//m_materialList->m_mainMaterial = m_model->GetMaterial();
+
+	m_material = NewObject<Material>();
 }
 
 //------------------------------------------------------------------------------
@@ -746,7 +748,14 @@ void ParticleEmitterComponent::OnRender2(DrawList* renderer)
 {
 	// TODO: name RenderInstance
 	Vector4 dir = renderer->GetCurrentCamera()->GetDirectionInternal();
-	m_model->Render(renderer, m_instance, GetOwnerObject()->transform.GetWorldMatrix(), renderer->GetCurrentCamera()->GetPosition(), dir.GetXYZ(), renderer->GetCurrentCamera()->GetViewMatrixI(), m_materialList->GetAt(0));
+	m_model->Render(
+		renderer,
+		m_instance,
+		GetOwnerObject()->transform.GetWorldMatrix(),
+		renderer->GetCurrentCamera()->GetPosition(),
+		dir.GetXYZ(),
+		renderer->GetCurrentCamera()->GetViewMatrixI(),
+		m_material);
 }
 
 //==============================================================================

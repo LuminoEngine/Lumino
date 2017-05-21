@@ -346,6 +346,7 @@ protected:
 private:
 	RefPtr<SpriteParticleModel>					m_model;
 	RefPtr<detail::SpriteParticleModelInstance>	m_instance;
+	RefPtr<Material>							m_material;
 };
 
 /** 3D 空間に配置されるパーティクルエミッタです。*/

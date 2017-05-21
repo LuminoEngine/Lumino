@@ -577,7 +577,7 @@ public:
 	void DrawCone(float radius, float height, int slices = 8, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity);
 
 	void DrawMesh(MeshResource* mesh, int subsetIndex, Material* material);
-	void DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material);
+	//void DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material);
 
 	void Blit(Texture* source);
 	void Blit(Texture* source, const Matrix& transform);
@@ -627,7 +627,7 @@ LN_INTERNAL_ACCESS:
 
 	template<typename TElement> TElement* ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer, Material* userMaterial);
 	void DrawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Material* material);
-	void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material);
+	//void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material);
 	void BlitInternal(Texture* source, RenderTargetTexture* dest, const Matrix& transform, Material* material);
 	void DrawFrameRectangle(const Rect& rect);
 	void RenderSubDrawList(detail::DrawElementList* elementList, const detail::CameraInfo& cameraInfo, detail::InternalRenderer* renderer, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);

@@ -328,7 +328,7 @@ void World3D::CreateGridPlane()
 	// 適当な四角形メッシュ
 	m_gridPlane = RefPtr<StaticMeshModel>::MakeRef();
 	m_gridPlane->InitializeScreenPlane(gm, MeshCreationFlags::DynamicBuffers);
-	MeshResource* mesh = m_gridPlane->GetMeshResource();
+	MeshResource* mesh = m_gridPlane->GetMeshResource(0);
 	mesh->AddSections(1);
 	mesh->GetSection(0)->MaterialIndex = 0;
 	mesh->GetSection(0)->StartIndex = 0;
@@ -374,7 +374,7 @@ void World3D::RenderGridPlane(DrawList* renderer, CameraComponent* camera)
 		DrawElementMetadata metadata;
 		metadata.priority = (int)DepthPriority::Foreground;
 		renderer->PushMetadata(&metadata);
-		renderer->DrawMesh(m_gridPlane, 0, m_gridPlane->GetMaterial(0));
+		renderer->DrawMesh(m_gridPlane->GetMeshResource(0), 0, m_gridPlane->GetMaterial(0));
 		renderer->PopMetadata();
 	}
 }
@@ -435,7 +435,7 @@ void World3D::AdjustGridPlane(CameraComponent* camera)
 		maxPos = Vector3::Max(p, maxPos);
 	}
 
-	MeshResource* mesh = m_gridPlane->GetMeshResource();
+	MeshResource* mesh = m_gridPlane->GetMeshResource(0);
 	mesh->SetPosition(0, Vector3(minPos.x, 0, maxPos.z));
 	mesh->SetPosition(1, Vector3(minPos.x, 0, minPos.z));
 	mesh->SetPosition(2, Vector3(maxPos.x, 0, maxPos.z));

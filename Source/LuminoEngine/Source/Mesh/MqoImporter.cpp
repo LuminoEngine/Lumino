@@ -77,8 +77,6 @@ void MqoObject::Smoothing()
 		//v2.referenced.Add(MqoFacePointRef{ i, 2, 0 });
 		face->normal = TriangleNormal(v0.position, v1.position, v2.position);
 
-		//face->normal.Print();
-
 
 		face->points[0].vertexIndex = face->vertexIndices[0];
 		face->points[1].vertexIndex = face->vertexIndices[1];
@@ -109,6 +107,7 @@ RefPtr<MeshResource> MqoObject::CreateMeshResource()
 {
 	auto mesh = RefPtr<MeshResource>::MakeRef();
 	mesh->Initialize(EngineDomain::GetGraphicsManager(), MeshCreationFlags::None);
+	mesh->SetName(m_name);
 
 	// 頂点バッファを作る
 	// (頂点バッファにつめる頂点はグループが基点となる)
@@ -128,12 +127,6 @@ RefPtr<MeshResource> MqoObject::CreateMeshResource()
 				Vector3 normal = group->normal;
 				//if (m_flipZCoord) normal.z *= -1.0f;
 
-				normal.Print();
-
-				if (std::abs(normal.x) > 100)
-				{
-					printf("");
-				}
 
 				mesh->SetPosition(iVertex, v.position);
 				mesh->SetNormal(iVertex, normal);
@@ -270,6 +263,7 @@ void MqoObject::MakeMqoFaceRefsAndEdge()
 		// エッジ情報を作る
 		{
 			MqoEdge* e1 = &m_importer->m_mqoEdgeBuffer[mqoEdgeBufferUsed];
+			memset(e1, 0, sizeof(MqoEdge));
 			mqoEdgeBufferUsed++;
 			e1->ownerFace = mqoFace;
 			e1->point0 = &mqoFace->points[0];
@@ -277,6 +271,7 @@ void MqoObject::MakeMqoFaceRefsAndEdge()
 			mqoFace->edges[0] = e1;
 
 			MqoEdge* e2 = &m_importer->m_mqoEdgeBuffer[mqoEdgeBufferUsed];
+			memset(e2, 0, sizeof(MqoEdge));
 			mqoEdgeBufferUsed++;
 			e2->ownerFace = mqoFace;
 			e2->point0 = &mqoFace->points[1];
@@ -284,6 +279,7 @@ void MqoObject::MakeMqoFaceRefsAndEdge()
 			mqoFace->edges[1] = e2;
 
 			MqoEdge* e3 = &m_importer->m_mqoEdgeBuffer[mqoEdgeBufferUsed];
+			memset(e3, 0, sizeof(MqoEdge));
 			mqoEdgeBufferUsed++;
 			e3->ownerFace = mqoFace;
 			e3->point0 = &mqoFace->points[2];
@@ -426,8 +422,6 @@ void MqoObject::MakeMqoFacePointNormals()
 				point = point->next;
 			}
 			LN_ASSERT(count > 0);
-
-			printf("count:%d\n", count);
 
 			g.normal = normal / count;
 			g.normal.Normalize();
@@ -639,7 +633,7 @@ RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathNam
 		int index = line.IndexOf(_T("Material"));
 		if (index > -1)
 		{
-			int count = StringTraits::ToInt32(line.c_str() + index + 9);
+			//int count = StringTraits::ToInt32(line.c_str() + index + 9);
 			LoadMaterials(&reader);
 		}
 
@@ -647,15 +641,20 @@ RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathNam
 		index = line.IndexOf(_T("Object"));
 		if (index > -1)
 		{
-			int count = StringTraits::ToInt32(line.c_str() + index + 7);
-			LoadObject(&reader);
+			//int count = StringTraits::ToInt32(line.c_str() + index + 7);
+
+			int nameBegin = line.IndexOf(_T('"'), index + 6) + 1;
+			int nameEnd = line.IndexOf(_T('"'), nameBegin);
+
+
+			LoadObject(&reader, line.Mid(nameBegin, nameEnd - nameBegin));
 		}
 	}
 
 	for (auto& obj : m_mqoObjectList)
 	{
 		obj->Smoothing();
-		m_model->SetMeshResource(obj->CreateMeshResource());	// TODO: 複数
+		m_model->AddMeshResource(obj->CreateMeshResource());
 	}
 
 
@@ -774,10 +773,11 @@ void MqoImporter::LoadMaterials(StreamReader* reader)
 }
 
 //------------------------------------------------------------------------------
-void MqoImporter::LoadObject(StreamReader* reader)
+void MqoImporter::LoadObject(StreamReader* reader, const String& name)
 {
 	auto mqoObject = RefPtr<MqoObject>::MakeRef();
 	mqoObject->m_importer = this;
+	mqoObject->m_name = name;
 
 	//int vertexIndexOffset = m_mqoVertexList.GetCount();	// この Object チャンクに含まれる Vertex は、全体の何番目から始まるか？
 	int index;
