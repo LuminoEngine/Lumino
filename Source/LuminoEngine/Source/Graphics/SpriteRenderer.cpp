@@ -89,33 +89,8 @@ void SpriteRenderer::DrawRequest2D(
 	const Vector2& anchorRatio,
 	Texture* texture,
 	const Rect& srcRect,
-	const Color& color)
-{
-	SpriteColorTable ct = { { color, color, color, color } };
-	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->ResolveDeviceObject() : nullptr;
-	LN_ENQUEUE_RENDER_COMMAND_7(
-		SpriteRenderer_SetTransform, m_manager,
-		SpriteRendererImpl*, m_internal,
-		const Vector3, position,
-		const Vector2, size,
-		const Vector2, anchorRatio,
-		RefPtr<Driver::ITexture>, deviceTexture,
-		const Rect, srcRect,
-		SpriteColorTable, ct,
-		{
-			m_internal->DrawRequestInternal(position, size, anchorRatio, deviceTexture, srcRect, ct, SpriteBaseDirection::Basic2D);
-		});
-}
-
-//------------------------------------------------------------------------------
-void SpriteRenderer::DrawRequest(
-	const Vector3& position,
-	const Vector2& size,
-	const Vector2& anchorRatio,
-	Texture* texture,
-	const Rect& srcRect,
 	const Color& color,
-	SpriteBaseDirection baseDirection)
+	BillboardType billboardType)
 {
 	SpriteColorTable ct = { { color, color, color, color } };
 	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->ResolveDeviceObject() : nullptr;
@@ -128,9 +103,46 @@ void SpriteRenderer::DrawRequest(
 		RefPtr<Driver::ITexture>, deviceTexture,
 		const Rect, srcRect,
 		SpriteColorTable, ct,
-		SpriteBaseDirection, baseDirection,
+		BillboardType, billboardType,
 		{
-			m_internal->DrawRequestInternal(position, size, anchorRatio, deviceTexture, srcRect, ct, baseDirection);
+			m_internal->DrawRequestInternal(position, size, anchorRatio, deviceTexture, srcRect, ct, SpriteBaseDirection::Basic2D, billboardType);
+		});
+}
+
+//------------------------------------------------------------------------------
+void SpriteRenderer::DrawRequest(
+	const Vector3& position,
+	const Vector2& size,
+	const Vector2& anchorRatio,
+	Texture* texture,
+	const Rect& srcRect,
+	const Color& color,
+	SpriteBaseDirection baseDirection,
+	BillboardType billboardType)
+{
+	SpriteColorTable ct = { { color, color, color, color } };
+	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->ResolveDeviceObject() : nullptr;
+
+	struct Options
+	{
+		SpriteBaseDirection baseDirection;
+		BillboardType billboardType;
+	} opt;
+	opt.baseDirection = baseDirection;
+	opt.billboardType = billboardType;
+
+	LN_ENQUEUE_RENDER_COMMAND_8(
+		SpriteRenderer_SetTransform, m_manager,
+		SpriteRendererImpl*, m_internal,
+		const Vector3, position,
+		const Vector2, size,
+		const Vector2, anchorRatio,
+		RefPtr<Driver::ITexture>, deviceTexture,
+		const Rect, srcRect,
+		SpriteColorTable, ct,
+		Options, opt,
+		{
+			m_internal->DrawRequestInternal(position, size, anchorRatio, deviceTexture, srcRect, ct, opt.baseDirection, opt.billboardType);
 		});
 }
 
@@ -357,7 +369,8 @@ void SpriteRendererImpl::DrawRequestInternal(
 	Driver::ITexture* texture,
     const Rect& srcRect,
 	const SpriteColorTable& colorTable,
-	SpriteBaseDirection baseDir)
+	SpriteBaseDirection baseDir,
+	BillboardType billboardType)
 {
 	LN_THROW(m_spriteRequestListUsedCount < m_maxSprites, InvalidOperationException);
 
@@ -437,11 +450,34 @@ void SpriteRendererImpl::DrawRequestInternal(
 	Matrix mat = m_transformMatrix.GetRotationMatrix();
 
 
-	// ビルボード (Scene から使う場合は SceneNode が面倒見てるので、Scene 以外で必要になるまで保留…)
-	if (0)
+	// ビルボード
+	if (billboardType == BillboardType::ToCameraPoint)
 	{
-		// TODO:
-		//mat.setMul3x3( mViewInverseMatrix );
+		Vector3 f = Vector3::Normalize(m_viewPosition - position);
+		Vector3 r = Vector3::Normalize(Vector3::Cross(Vector3::UnitY, f));
+		Vector3 u = Vector3::Cross(f, r);
+		mat = Matrix(
+			r.x, r.y, r.z, 0.0f,
+			u.x, u.y, u.z, 0.0f,
+			f.x, f.y, f.z, 0.0f,
+			0.0f, 0.0f, 0.0f, 1.0f);
+	}
+	else if (billboardType == BillboardType::ToScreen)
+	{
+		// ↑がカメラ位置を基準にするのに対し、こちらはビュー平面に垂直に交差する点を基準とする。
+
+		// ビュー平面との距離
+		float d = Vector3::Dot(position - m_viewPosition, m_viewDirection);
+
+		// left-hand coord
+		Vector3 f = Vector3::Normalize(m_viewDirection * d);
+		Vector3 r = Vector3::Normalize(Vector3::Cross(Vector3::UnitY, f));
+		Vector3 u = Vector3::Cross(f, r);
+		mat = Matrix(
+			r.x, r.y, r.z, 0.0f,
+			u.x, u.y, u.z, 0.0f,
+			f.x, f.y, f.z, 0.0f,
+			0.0f, 0.0f, 0.0f, 1.0f);
 	}
 	// ビルボード・Y 軸のみに適用
 	else if (0)

@@ -52,18 +52,8 @@ enum CameraProjection
 /** カメラの向きの指定方法 */
 enum class CameraDirection
 {
-	LookAt,			/**< SetLookAt() により注視点を指定する */
-	Transform,		/**< 姿勢の正面方向を向く */
-};
-
-/// ビルボードの計算方法
-enum BillboardType
-{
-	BillboardType_None = 0,		///< ビルボードの計算を行わない
-	BillboardType_Front,		///< カメラ (ビュー行列) に対して正面を向く
-	BillboardType_RotY,			///< Y 軸回転のみ行う
-
-	BillboardType_Max,			///< (Terminator)
+	LookAt,					/**< SetLookAt() により注視点を指定する */
+	Transform,				/**< 姿勢の正面方向を向く */
 };
 
 /// 反転方法

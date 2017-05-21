@@ -1662,6 +1662,7 @@ void DrawList::DrawSprite(
 	const Rect& srcRect,
 	const Color& color,
 	SpriteBaseDirection baseDirection,
+	BillboardType billboardType,
 	Material* material)
 {
 	class DrawElement_DrawSprite : public detail::DrawElement
@@ -1674,12 +1675,13 @@ void DrawList::DrawSprite(
 		Rect srcRect;
 		Color color;
 		SpriteBaseDirection baseDirection;
+		BillboardType billboardType;
 
 		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
 		{
 			auto* r = context->BeginSpriteRenderer();
 			r->SetTransform(GetTransform(oenerList));
-			r->DrawRequest(position, size, anchorRatio, texture, srcRect, color, baseDirection);
+			r->DrawRequest(position, size, anchorRatio, texture, srcRect, color, baseDirection, billboardType);
 		}
 	};
 
@@ -1691,6 +1693,7 @@ void DrawList::DrawSprite(
 	ptr->srcRect = srcRect;
 	ptr->color = color;
 	ptr->baseDirection = baseDirection;
+	ptr->billboardType = billboardType;
 	detail::SpriteRenderer::MakeBoundingSphere(ptr->size, baseDirection, &ptr->boundingSphere);
 	ptr->boundingSphere.center += m_state.state.GetTransfrom().GetPosition();	// TODO: 他と共通化
 }
