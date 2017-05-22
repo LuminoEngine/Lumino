@@ -72,7 +72,7 @@ class RefPtrBase {};
 	@brief		RefObject 用 スマートポインタ
 */
 template <class T>
-class RefPtr final : public /*detail::*/RefPtrBase
+class RefPtr : public /*detail::*/RefPtrBase
 {
 public:
 	typedef T* PtrType;
