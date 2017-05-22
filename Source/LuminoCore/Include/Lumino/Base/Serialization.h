@@ -238,6 +238,12 @@ public:
 		return *this;
 	}
 
+	//template<class T>
+	//void Serialize(const )
+	//{
+
+	//}
+
 protected:
 	virtual RefPtr<ReflectionObject> CreateObject(const String& className, TypeInfo* requestedType);
 
@@ -273,7 +279,7 @@ private:
 	}
 
 	//void WriteValue(const TCHAR* name, SerializableObject* obj);
-	void WriteValue(const KeyInfo& key, bool value);
+	void WriteValue(const KeyInfo& key, bool value) { m_currentObject->AddSerializeMemberValue(key.name, SerializationValueType::Bool, &value); }
 	void WriteValue(const KeyInfo& key, int8_t value);
 	void WriteValue(const KeyInfo& key, int16_t value);
 	void WriteValue(const KeyInfo& key, int32_t value) { m_currentObject->SetValueInt32(key.name, value); }
