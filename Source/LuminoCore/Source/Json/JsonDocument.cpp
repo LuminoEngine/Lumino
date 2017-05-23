@@ -674,6 +674,10 @@ bool JsonObject2::TryGetArray(const StringRef& name, ISerializeElement** outValu
 	*outValue = static_cast<JsonArray2*>(v);
 	return true;
 }
+const String& JsonObject2::GetSerializeElementName(int index) const
+{
+	return m_memberList[index].name;
+}
 ISerializeElement* JsonObject2::FindSerializeElement(const StringRef& name) const
 {
 	return Find(name);
