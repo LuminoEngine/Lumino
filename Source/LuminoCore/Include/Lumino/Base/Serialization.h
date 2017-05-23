@@ -40,6 +40,7 @@ public:
 	void SetList();
 	void SetMap();
 
+
 private:
 	void ResetType(ScVariantType type);
 	void ReleaseValue();
@@ -66,7 +67,10 @@ public:
 	ScVariantType GetType() const;
 
 	void SetInt(int value);
+	int GetInt() const;
+
 	void SetString(const StringRef& value);
+	const String& GetString() const;
 
 	void SaveInternal(ISerializeElement* value);
 	void LoadInternal(ISerializeElement* value);
@@ -414,7 +418,7 @@ private:
 	void AddMemberValue(const KeyInfo& key, uint16_t value);
 	void AddMemberValue(const KeyInfo& key, uint32_t value);
 	void AddMemberValue(const KeyInfo& key, uint64_t value);
-	void AddMemberValue(const KeyInfo& key, float value);
+	void AddMemberValue(const KeyInfo& key, float value) { m_currentObject->AddSerializeMemberValue(key.name, SerializationValueType::Float, &value); }
 	void AddMemberValue(const KeyInfo& key, double value);
 	void AddMemberValue(const KeyInfo& key, String& value) { m_currentObject->SetValueString(key.name, value); }
 	template<typename T> void AddMemberValue(const KeyInfo& key, T& obj)	 // nonÅ]intrusive Object
@@ -613,11 +617,56 @@ private:
 			m_currentObject = old;
 		}
 	}
+	template<typename T> void AddItemValue(ISerializeElement* arrayElement, List<T>& obj)	 // nonÅ]intrusive Object
+	{
+		ISerializeElement* ary = arrayElement->AddSerializeItemNewArray();
+		for (int i = 0; i < obj.GetCount(); i++)
+		{
+			AddItemValue(ary, obj[i]);
+		}
+	}
 	void AddItemValue(ISerializeElement* arrayElement, ScVariant& value)
 	{
-		LN_NOTIMPLEMENTED();
+		if (value.m_core == nullptr || value.m_core->m_type == ScVariantType::Unknown)
+		{
+			LN_NOTIMPLEMENTED();
+		}
+		else
+		{
+			switch (value.m_core->m_type)
+			{
+			case ScVariantType::Bool:
+				AddItemValue(arrayElement, value.m_core->m_bool);
+				break;
+			case ScVariantType::Int:
+				AddItemValue(arrayElement, value.m_core->m_int);
+				break;
+			case ScVariantType::Float:
+				AddItemValue(arrayElement, value.m_core->m_float);
+				break;
+			case ScVariantType::String:
+				AddItemValue(arrayElement, *value.m_core->m_string);
+				break;
+			case ScVariantType::List:
+				AddItemValue(arrayElement, *value.m_core->m_list);
+				break;
+			case ScVariantType::Map:
+				AddItemValue(arrayElement, *value.m_core->m_map);
+				break;
+			default:
+				LN_UNREACHABLE();
+				break;
+			}
+		}
 	}
-
+	template<typename T> void AddItemValue(ISerializeElement* arrayElement, std::unordered_map<String, T>& obj)	 // nonÅ]intrusive Object
+	{
+		ISerializeElement* objectElement = arrayElement->AddSerializeItemNewObject();
+		auto* old = m_currentObject;
+		m_currentObject = objectElement;
+		DoSaveObjectType(obj, false);
+		m_currentObject = old;
+	}
 
 
 	template<typename T>
@@ -791,4 +840,7 @@ private:
 //	virtual void Serialize(tr::Archive& ar, int version)
 
 } // namespace tr
+
+#define LN_NVP(var)	ln::tr::MakeNVP(#var, var)
+
 LN_NAMESPACE_END
