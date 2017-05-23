@@ -203,24 +203,40 @@ TEST_F(Test_Serialization, Variant)
 	{
 		auto t1 = NewObject<TkMVMovementData3>();
 		t1->ignore = true;
-
-		auto c1 = NewObject<TkMVEventCommand3>();
-		c1->code = 100;
-		tr::ScVariant v1;
-		tr::ScVariant v2;
-		v1.SetInt(20);
-		v2.SetString(_T("test"));
-		c1->params.Add(v1);
-		c1->params.Add(v2);
-
-		t1->commands.Add(c1);
+		{
+			auto c1 = NewObject<TkMVEventCommand3>();
+			c1->code = 100;
+			tr::ScVariant v1;
+			tr::ScVariant v2;
+			v1.SetInt(20);
+			v2.SetString(_T("test"));
+			c1->params.Add(v1);
+			c1->params.Add(v2);
+			t1->commands.Add(c1);
+		}
+		{
+			auto c1 = NewObject<TkMVEventCommand3>();
+			c1->code = 200;
+			tr::ScVariant v1;
+			tr::ScVariant v2;
+			v1.SetInt(120);
+			v2.SetString(_T("test2"));
+			c1->params.Add(v1);
+			c1->params.Add(v2);
+			t1->commands.Add(c1);
+		}
 		json = tr::JsonSerializer::Save(t1);
 	}
 	// load
 	{
 		auto t2 = tr::JsonSerializer::LoadObject<TkMVMovementData3>(json);
 		ASSERT_EQ(true, t2->ignore);
-		//ASSERT_EQ(100, t2->volume);
+		ASSERT_EQ(100, t2->commands[0]->code);
+		ASSERT_EQ(20, t2->commands[0]->params[0].GetInt());
+		ASSERT_EQ(_T("test"), t2->commands[0]->params[1].GetString());
+		ASSERT_EQ(200, t2->commands[1]->code);
+		ASSERT_EQ(120, t2->commands[1]->params[0].GetInt());
+		ASSERT_EQ(_T("test2"), t2->commands[1]->params[1].GetString());
 	}
 }
 

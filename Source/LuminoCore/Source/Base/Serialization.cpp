@@ -145,10 +145,24 @@ void ScVariant::SetInt(int value)
 }
 
 //------------------------------------------------------------------------------
+int ScVariant::GetInt() const
+{
+	if (LN_CHECK_STATE(m_core->m_type == ScVariantType::Int)) return 0;
+	return m_core->m_int;
+}
+
+//------------------------------------------------------------------------------
 void ScVariant::SetString(const StringRef& value)
 {
 	if (m_core == nullptr) m_core = NewObject<ScVariantCore>();
 	m_core->SetString(value);
+}
+
+//------------------------------------------------------------------------------
+const String& ScVariant::GetString() const
+{
+	if (LN_CHECK_STATE(m_core->m_type == ScVariantType::String)) return String::GetEmpty();
+	return *m_core->m_string;
 }
 
 //------------------------------------------------------------------------------
@@ -183,43 +197,43 @@ void ScVariant::LoadInternal(ISerializeElement* value)
 				break;
 			case SerializationValueType::Int8:
 				m_core->ResetType(ScVariantType::Int);
-				m_core->m_bool = value->GetSerializeValueInt8();
+				m_core->m_int = value->GetSerializeValueInt8();
 				break;
 			case SerializationValueType::Int16:
 				m_core->ResetType(ScVariantType::Int);
-				m_core->m_bool = value->GetSerializeValueInt16();
+				m_core->m_int = value->GetSerializeValueInt16();
 				break;
 			case SerializationValueType::Int32:
 				m_core->ResetType(ScVariantType::Int);
-				m_core->m_bool = value->GetSerializeValueInt32();
+				m_core->m_int = value->GetSerializeValueInt32();
 				break;
 			case SerializationValueType::Int64:
 				m_core->ResetType(ScVariantType::Int);
-				m_core->m_bool = value->GetSerializeValueInt64();
+				m_core->m_int = value->GetSerializeValueInt64();
 				break;
 			case SerializationValueType::UInt8:
 				m_core->ResetType(ScVariantType::Int);
-				m_core->m_bool = value->GetSerializeValueUInt8();
+				m_core->m_int = value->GetSerializeValueUInt8();
 				break;
 			case SerializationValueType::UInt16:
 				m_core->ResetType(ScVariantType::Int);
-				m_core->m_bool = value->GetSerializeValueUInt16();
+				m_core->m_int = value->GetSerializeValueUInt16();
 				break;
 			case SerializationValueType::UInt32:
 				m_core->ResetType(ScVariantType::Int);
-				m_core->m_bool = value->GetSerializeValueUInt32();
+				m_core->m_int = value->GetSerializeValueUInt32();
 				break;
 			case SerializationValueType::UInt64:
 				m_core->ResetType(ScVariantType::Int);
-				m_core->m_bool = value->GetSerializeValueUInt64();
+				m_core->m_int = value->GetSerializeValueUInt64();
 				break;
 			case SerializationValueType::Float:
 				m_core->ResetType(ScVariantType::Float);
-				m_core->m_bool = value->GetSerializeValueFloat();
+				m_core->m_float = value->GetSerializeValueFloat();
 				break;
 			case SerializationValueType::Double:
 				m_core->ResetType(ScVariantType::Float);
-				m_core->m_bool = value->GetSerializeValueDouble();
+				m_core->m_float = value->GetSerializeValueDouble();
 				break;
 			case SerializationValueType::String:
 				m_core->SetString(value->GetSerializeValueString());
