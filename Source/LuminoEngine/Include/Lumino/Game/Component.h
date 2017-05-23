@@ -67,9 +67,13 @@ public:
 	Transform();
 	virtual ~Transform();
 
+	Vector3 GetFront() const;
+
 	/** 指定した方向と距離に移動します。*/
 	void Translate(const Vector3& translation);
 	void Translate(float x, float y, float z = 0.0f);
+
+	void LookAt(const Vector3& target, const Vector3& up = Vector3::UnitY);
 
 	Matrix GetTransformMatrix() const;
 

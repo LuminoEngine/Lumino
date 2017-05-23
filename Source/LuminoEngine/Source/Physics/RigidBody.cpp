@@ -55,6 +55,7 @@ RigidBody::RigidBody()
 	: PhysicsObject()
 	, m_btRigidBody(nullptr)
 	, m_collisionShape(nullptr)
+	, m_btCompoundShape(nullptr)
 	, m_constraintFlags(RigidbodyConstraintFlags::None)
 	, m_modifiedFlags(Modified_None)
 {
@@ -69,6 +70,7 @@ RigidBody::~RigidBody()
 		LN_SAFE_DELETE(state);
 		LN_SAFE_DELETE(m_btRigidBody);
 	}
+	LN_SAFE_DELETE(m_btCompoundShape);
 }
 
 //------------------------------------------------------------------------------
@@ -242,8 +244,8 @@ void RigidBody::setKinematicAlignmentMatrix( const LMatrix& matrix )
 void RigidBody::SetMass(float mass)
 {
 	m_data.Mass = mass;
-	btVector3 localInertia(0, 0, 0);
-	m_collisionShape->GetBtCollisionShape()->calculateLocalInertia(m_data.Mass, localInertia);
+	//btVector3 localInertia(0, 0, 0);
+	//m_collisionShape->GetBtCollisionShape()->calculateLocalInertia(m_data.Mass, localInertia);
 	m_modifiedFlags |= Modified_Mass;
 }
 
@@ -289,6 +291,15 @@ void RigidBody::ClearForces()
 //------------------------------------------------------------------------------
 void RigidBody::OnBeforeStepSimulation()
 {
+	auto* transform = GetTransform();
+	if (transform != nullptr)
+	{
+		if (m_data.KinematicObject)
+		{
+			m_data.InitialTransform = transform->GetWorldMatrix();
+		}
+	}
+
 	if ((m_modifiedFlags & Modified_InitialUpdate) != 0)
 	{
 		CreateBtRigidBody();
@@ -418,6 +429,26 @@ void RigidBody::OnAfterStepSimulation()
 			transform.getOpenGLMatrix((btScalar*)&m_data.InitialTransform);
 		}
 	}
+
+	auto* transform = GetTransform();
+	if (transform != nullptr)
+	{
+		if (m_data.KinematicObject)
+		{
+		}
+		else
+		{
+			auto& t = m_btRigidBody->getWorldTransform();
+			if (!(((int)(m_constraintFlags & RigidbodyConstraintFlags::FreezePosition)) == RigidbodyConstraintFlags::FreezePosition))
+			{
+				transform->position = detail::BulletUtil::btVector3ToLNVector3(t.getOrigin());
+			}
+			if (!(((int)(m_constraintFlags & RigidbodyConstraintFlags::FreezeRotation)) == RigidbodyConstraintFlags::FreezeRotation))
+			{
+				transform->rotation = detail::BulletUtil::btQuaternionToLNQuaternion(t.getRotation());
+			}
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -455,25 +486,42 @@ void RigidBody::OnUpdate()
 {
 	PhysicsObject::OnUpdate();
 
-	auto* transform = GetTransform();
-	if (transform != nullptr)
-	{
-		if (m_data.KinematicObject)
-		{
-			m_data.InitialTransform = transform->GetWorldMatrix();
-		}
-		else
-		{
-			auto& t = m_btRigidBody->getWorldTransform();
-			transform->position = detail::BulletUtil::btVector3ToLNVector3(t.getOrigin());
-			transform->rotation = detail::BulletUtil::btQuaternionToLNQuaternion(t.getRotation());
-		}
-	}
+	
 }
 
 //------------------------------------------------------------------------------
 void RigidBody::CreateBtRigidBody()
 {
+	btCollisionShape* shape;
+	if (m_collisionShape->GetCenter() != Vector3::Zero)
+	{
+		if (m_btCompoundShape == nullptr)
+		{
+			m_btCompoundShape = new btCompoundShape();
+		}
+		else
+		{
+			for (int i = m_btCompoundShape->getNumChildShapes() - 1; i >= 0; i--)
+			{
+				m_btCompoundShape->removeChildShapeByIndex(i);
+			}
+		}
+
+		btTransform t;
+		t.setBasis(btMatrix3x3::getIdentity());
+		t.setOrigin(detail::BulletUtil::LNVector3ToBtVector3(m_collisionShape->GetCenter()));
+		m_btCompoundShape->addChildShape(t, m_collisionShape->GetBtCollisionShape());
+
+		shape = m_btCompoundShape;
+	}
+	else
+	{
+		shape = m_collisionShape->GetBtCollisionShape();
+	}
+
+
+
+
 	// 各初期プロパティ
 	float num = m_data.Mass * m_data.Scale;
 	float friction;
@@ -491,7 +539,7 @@ void RigidBody::CreateBtRigidBody()
 	}
 	else
 	{
-		m_collisionShape->GetBtCollisionShape()->calculateLocalInertia(num, localInertia);
+		shape->calculateLocalInertia(num, localInertia);
 		friction = m_data.Friction;
 		hitFraction = m_data.Restitution;
 		linearDamping = m_data.LinearDamping;
@@ -522,7 +570,7 @@ void RigidBody::CreateBtRigidBody()
 	}
 
 	// RigidBody 作成
-	btRigidBody::btRigidBodyConstructionInfo bodyInfo(num, motionState, m_collisionShape->GetBtCollisionShape(), localInertia);
+	btRigidBody::btRigidBodyConstructionInfo bodyInfo(num, motionState, shape, localInertia);
 	bodyInfo.m_linearDamping = m_data.LinearDamping;	// 移動減
 	bodyInfo.m_angularDamping = m_data.AngularDamping;	// 回転減
 	bodyInfo.m_restitution = m_data.Restitution;	    // 反発力

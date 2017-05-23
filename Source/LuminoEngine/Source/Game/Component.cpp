@@ -32,7 +32,7 @@ WorldObject* Component::GetOwnerObject() const
 //------------------------------------------------------------------------------
 Transform* Component::GetTransform() const
 {
-	return &m_owner->transform;
+	return (m_owner != nullptr) ? &m_owner->transform : nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -112,6 +112,12 @@ Transform::~Transform()
 }
 
 //------------------------------------------------------------------------------
+Vector3 Transform::GetFront() const
+{
+	return Vector3::Transform(Vector3::UnitZ, rotation.Get());
+}
+
+//------------------------------------------------------------------------------
 void Transform::Translate(const Vector3& translation)
 {
 	position = position.Get() + translation;
@@ -121,6 +127,23 @@ void Transform::Translate(const Vector3& translation)
 void Transform::Translate(float x, float y, float z)
 {
 	Translate(Vector3(x, y, z));
+}
+
+//------------------------------------------------------------------------------
+void Transform::LookAt(const Vector3& target, const Vector3& up)
+{
+	if (target == position.Get()) return;
+
+	// left-hand coord
+	Vector3 f = Vector3::Normalize(target - position.Get());
+	Vector3 s = Vector3::Normalize(Vector3::Cross(up, f));
+	Vector3 u = Vector3::Cross(f, s);
+	Matrix mat(
+		s.x, s.y, s.z, 0.0f,
+		u.x, u.y, u.z, 0.0f,
+		f.x, f.y, f.z, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f);
+	rotation = Quaternion::MakeFromRotationMatrix(mat);
 }
 
 //------------------------------------------------------------------------------

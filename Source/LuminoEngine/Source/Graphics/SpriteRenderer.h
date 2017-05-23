@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include <Lumino/Graphics/Common.h>
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Graphics/ContextInterface.h>
 
@@ -41,7 +42,8 @@ public:
 		Driver::ITexture* texture,
 		const Rect& srcRect,
 		const SpriteColorTable& colorTable,
-		SpriteBaseDirection baseDir);
+		SpriteBaseDirection baseDir,
+		BillboardType billboardType);
 
 
 private:
@@ -188,7 +190,8 @@ public:
 		const Vector2& anchorRatio,
 		Texture* texture,
 		const Rect& srcRect,
-		const Color& color);
+		const Color& color,
+		BillboardType billboardType);
 
 	void DrawRequest(
 		const Vector3& position,
@@ -197,7 +200,8 @@ public:
 		Texture* texture,
 		const Rect& srcRect,
 		const Color& color,
-		SpriteBaseDirection baseDirection);
+		SpriteBaseDirection baseDirection,
+		BillboardType billboardType);
 
 	virtual bool IsStandaloneShader() const { return true; }
 	virtual void Flush() override;

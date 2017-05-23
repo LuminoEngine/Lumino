@@ -58,6 +58,8 @@ TEST_F(Test_Physics_3D, TriggerCollider)
 //------------------------------------------------------------------------------
 TEST_F(Test_Physics_3D, MeshCollisionShape)
 {
+	//dynamic_cast<ln::CameraViewportLayer2*>(ln::Engine::GetDefault3DLayer())->SetDebugDrawFlags(ln::WorldDebugDrawFlags::PhysicsInfo);
+
 	// <Test> YZ 平面で X+ 向きの 四角形 MeshSphere に、左右から剛体をぶつける → 裏表に関係なく、双方に跳ね返る
 	{
 		auto mesh = MeshResource::Create();

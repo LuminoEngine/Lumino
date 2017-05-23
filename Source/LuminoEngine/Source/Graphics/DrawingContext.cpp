@@ -53,7 +53,7 @@ void DrawingContext::Initialize()
 //------------------------------------------------------------------------------
 void DrawingContext::DrawTexture(const Rect& destRect, Texture* texture, const Rect& sourceRect)
 {
-	DrawSprite(Vector3(destRect.x, destRect.y, 0), destRect.GetSize(), Vector2(0, 0), texture, sourceRect, Color::White, SpriteBaseDirection::Basic2D, nullptr);
+	DrawSprite(Vector3(destRect.x, destRect.y, 0), destRect.GetSize(), Vector2(0, 0), texture, sourceRect, Color::White, SpriteBaseDirection::Basic2D, BillboardType::None, nullptr);
 }
 
 //------------------------------------------------------------------------------

@@ -218,6 +218,7 @@ private:
 	//PhysicsWorld*				m_ownerWorld;
 	btRigidBody*				m_btRigidBody;
 	RefPtr<CollisionShape>		m_collisionShape;
+	btCompoundShape*			m_btCompoundShape;
 	
 	//List<RefPtr<CollisionShape>>		m_colliders;
 	//btCollisionShape*			m_rootBtCollisionShape;

@@ -600,6 +600,7 @@ public:
 		const Rect& srcRect,
 		const Color& color,
 		SpriteBaseDirection baseDirection,
+		BillboardType billboardType,
 		Material* material = nullptr);
 
 	void DrawRectangle(const Rect& rect);

@@ -12,6 +12,7 @@ class  btSequentialImpulseConstraintSolver;
 class  btDiscreteDynamicsWorld;
 class btSoftRigidDynamicsWorld;
 class btCollisionShape;
+class btCompoundShape;
 class btRigidBody;
 class btGhostObject;
 class btGhostPairCallback;

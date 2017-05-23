@@ -304,6 +304,15 @@ LN_ENUM_FLAGS(SpriteSortMode)
 };
 LN_ENUM_FLAGS_DECLARE(SpriteSortMode);
 
+/** ビルボードの計算方法 */
+enum class BillboardType
+{
+	None,					/**< ビルボードの計算を行わない */
+	ToCameraPoint,			/**< カメラ (ビュー行列) に対して正面を向く */
+	ToScreen,				/**<  */
+	RotY,					/**< Y 軸回転のみ行う */
+};
+
 enum class TextLayoutOptions
 {
 	None				= 0x0000,

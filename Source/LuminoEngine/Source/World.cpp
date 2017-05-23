@@ -277,12 +277,13 @@ void World3D::BeginUpdateFrame()
 //------------------------------------------------------------------------------
 void World3D::UpdateFrame(float elapsedTime)
 {
-	World::UpdateFrame(elapsedTime);
-
 	if (m_physicsWorld != nullptr)
 	{
 		m_physicsWorld->StepSimulation(elapsedTime);
 	}
+
+	World::UpdateFrame(elapsedTime);
+
 
 	//if (m_sceneGraph != nullptr)
 	//{
