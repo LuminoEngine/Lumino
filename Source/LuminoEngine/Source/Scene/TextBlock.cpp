@@ -47,7 +47,7 @@ TextBlock2DComponent::~TextBlock2DComponent()
 //------------------------------------------------------------------------------
 void TextBlock2DComponent::Initialize(SceneGraph* owner)
 {
-	VisualComponent::Initialize(owner, 1);
+	VisualComponent::Initialize(owner/*, 1*/);
 
 	owner->GetRootNode()->AddChild(this);
 	SetAutoRemove(true);

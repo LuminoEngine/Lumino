@@ -54,7 +54,7 @@ RefPtr<StaticMeshComponent> StaticMeshComponent::CreateBox()
 {
 	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
 	mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager());
-	mesh->SetMeshResource(detail::ModelManager::GetInstance()->GetUnitBoxMeshResource(MeshCreationFlags::None));
+	mesh->AddMeshResource(detail::ModelManager::GetInstance()->GetUnitBoxMeshResource(MeshCreationFlags::None));
 	mesh->AddMaterial(detail::ModelManager::GetInstance()->GetDefaultMaterial());
 
 	auto ptr = RefPtr<StaticMeshComponent>::MakeRef();
@@ -84,7 +84,7 @@ RefPtr<StaticMeshComponent> StaticMeshComponent::CreateSphere()
 {
 	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
 	mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager());
-	mesh->SetMeshResource(detail::ModelManager::GetInstance()->GetUnitSphereMeshResource(MeshCreationFlags::None));
+	mesh->AddMeshResource(detail::ModelManager::GetInstance()->GetUnitSphereMeshResource(MeshCreationFlags::None));
 	mesh->AddMaterial(detail::ModelManager::GetInstance()->GetDefaultMaterial());
 
 	auto ptr = RefPtr<StaticMeshComponent>::MakeRef();
@@ -108,7 +108,7 @@ RefPtr<StaticMeshComponent> StaticMeshComponent::CreateTeapot()
 {
 	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
 	mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager());
-	mesh->SetMeshResource(detail::ModelManager::GetInstance()->GetUnitTeapotMeshResource());
+	mesh->AddMeshResource(detail::ModelManager::GetInstance()->GetUnitTeapotMeshResource());
 	mesh->AddMaterial(detail::ModelManager::GetInstance()->GetDefaultMaterial());
 
 	auto ptr = RefPtr<StaticMeshComponent>::MakeRef();
@@ -144,9 +144,9 @@ void StaticMeshComponent::Initialize(SceneGraph* owner, StaticMeshModel* meshMod
 	if (LN_CHECK_ARG(meshModel != nullptr)) return;
 	m_mesh = meshModel;
 
-	VisualComponent::Initialize(owner, m_mesh->GetSubsetCount());
+	VisualComponent::Initialize(owner);
 
-	m_materialList->CopyShared(m_mesh->m_materials, true);
+	//m_materialList->CopyShared(m_mesh->m_materials, true);
 
 
 	owner->GetRootNode()->AddChild(this);
@@ -158,11 +158,18 @@ void StaticMeshComponent::OnRender2(DrawList* renderer)
 {
 	renderer->SetTransform(GetOwnerObject()->transform.GetWorldMatrix());
 
-	MeshResource* m = m_mesh->GetMeshResource();
-	for (int i = 0; i < m->GetSubsetCount(); i++)
+	for (int iMesh = 0; iMesh < m_mesh->GetMeshResourceCount(); iMesh++)
 	{
-		renderer->DrawMesh(m, i, GetMaterials()->GetAt(i));
+		MeshResource* m = m_mesh->GetMeshResource(iMesh);
+		for (int i = 0; i < m->GetSubsetCount(); i++)
+		{
+			MeshAttribute attr;
+			m->GetMeshAttribute(i, &attr);
+			renderer->DrawMesh(m, i, m_mesh->GetMaterial(attr.MaterialIndex));
+			//renderer->DrawMesh(m, i, GetMaterials()->GetAt(i));
+		}
 	}
+
 }
 
 //==============================================================================
@@ -189,7 +196,7 @@ Rectangle::~Rectangle()
 //------------------------------------------------------------------------------
 void Rectangle::Initialize(const Rect& rect)
 {
-	VisualComponent::Initialize(detail::EngineDomain::GetDefaultSceneGraph3D(), 1);
+	VisualComponent::Initialize(detail::EngineDomain::GetDefaultSceneGraph3D()/*, 1*/);
 	detail::EngineDomain::GetDefaultSceneGraph3D()->GetRootNode()->AddChild(this);
 	SetAutoRemove(true);
 

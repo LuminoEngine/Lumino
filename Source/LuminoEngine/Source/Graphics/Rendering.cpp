@@ -1519,10 +1519,10 @@ void DrawList::DrawMesh(MeshResource* mesh, int subsetIndex, Material* material)
 }
 
 //------------------------------------------------------------------------------
-void DrawList::DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material)
-{
-	DrawMeshSubsetInternal(mesh, subsetIndex, material);
-}
+//void DrawList::DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material)
+//{
+//	DrawMeshSubsetInternal(mesh, subsetIndex, material);
+//}
 
 //------------------------------------------------------------------------------
 void DrawList::Blit(Texture* source)
@@ -1839,38 +1839,38 @@ void DrawList::DrawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Mat
 }
 
 //------------------------------------------------------------------------------
-void DrawList::DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material)
-{
-	/* 
-	 * この時点では MeshResource ではなく StaticMeshModel が必要。
-	 * LOD リソースがある場合、実際に書くときの視点情報を元に、描画する LOD リソースを選択する必要がある。
-	 */
-
-	class DrawElement_DrawMeshInternal : public detail::LightingDrawElement
-	{
-	public:
-		RefPtr<StaticMeshModel>	mesh;
-		int startIndex;
-		int primitiveCount;
-		PrimitiveType primitiveType;
-
-		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
-		{
-			context->BeginMeshRenderer()->DrawMesh(mesh->GetMeshResource(), startIndex, primitiveCount, primitiveType);
-		}
-	};
-	MeshAttribute attr;
-	mesh->GetMeshResource()->GetMeshAttribute(subsetIndex, &attr);
-	if (attr.PrimitiveNum == 0) return;		// not need draw
-
-	auto* e = ResolveDrawElement<DrawElement_DrawMeshInternal>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_meshRenderer, material);
-	e->subsetIndex = subsetIndex;
-	e->mesh = mesh;
-	e->startIndex = attr.StartIndex;
-	e->primitiveCount = attr.PrimitiveNum;
-	e->primitiveType = attr.primitiveType;
-	//e->boundingSphere = ;	// TODO
-}
+//void DrawList::DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material)
+//{
+//	/* 
+//	 * この時点では MeshResource ではなく StaticMeshModel が必要。
+//	 * LOD リソースがある場合、実際に書くときの視点情報を元に、描画する LOD リソースを選択する必要がある。
+//	 */
+//
+//	class DrawElement_DrawMeshInternal : public detail::LightingDrawElement
+//	{
+//	public:
+//		RefPtr<StaticMeshModel>	mesh;
+//		int startIndex;
+//		int primitiveCount;
+//		PrimitiveType primitiveType;
+//
+//		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+//		{
+//			context->BeginMeshRenderer()->DrawMesh(mesh->GetMeshResource(), startIndex, primitiveCount, primitiveType);
+//		}
+//	};
+//	MeshAttribute attr;
+//	mesh->GetMeshResource()->GetMeshAttribute(subsetIndex, &attr);
+//	if (attr.PrimitiveNum == 0) return;		// not need draw
+//
+//	auto* e = ResolveDrawElement<DrawElement_DrawMeshInternal>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_meshRenderer, material);
+//	e->subsetIndex = subsetIndex;
+//	e->mesh = mesh;
+//	e->startIndex = attr.StartIndex;
+//	e->primitiveCount = attr.PrimitiveNum;
+//	e->primitiveType = attr.primitiveType;
+//	//e->boundingSphere = ;	// TODO
+//}
 
 //------------------------------------------------------------------------------
 void DrawList::BlitInternal(Texture* source, RenderTargetTexture* dest, const Matrix& transform, Material* material)

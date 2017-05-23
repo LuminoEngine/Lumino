@@ -103,6 +103,7 @@ class MqoObject : public RefObject
 {
 public:
 	MqoImporter*			m_importer;
+	String					m_name;
 	List<MqoVertex>			m_mqoVertexList;
 	List<MqoFace>			m_mqoFaceList;
 
@@ -126,7 +127,7 @@ public:
 private:
 
 	void LoadMaterials(StreamReader* reader);
-	void LoadObject(StreamReader* reader);
+	void LoadObject(StreamReader* reader, const String& name);
 	void ReadVertexChunk(StreamReader* reader, MqoObject* mqoObject);
 	void ReadFaceChunk(StreamReader* reader, MqoObject* mqoObject);
 	static void ReadInts(const StringRef& str, int* values, int valuesCount);

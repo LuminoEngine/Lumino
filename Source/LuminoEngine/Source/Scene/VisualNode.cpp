@@ -77,6 +77,10 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(VisualComponent, SceneNode);
 
 //------------------------------------------------------------------------------
 VisualComponent::VisualComponent()
+	: m_blendMode(BlendMode::Normal)
+	, m_cullingMode(CullingMode::Back)
+	, m_depthTestEnabled(true)
+	, m_depthWriteEnabled(true)
 {
 }
 
@@ -86,24 +90,24 @@ VisualComponent::~VisualComponent()
 }
 
 //------------------------------------------------------------------------------
-void VisualComponent::Initialize(SceneGraph* owner, int subsetCount)
+void VisualComponent::Initialize(SceneGraph* owner/*, int subsetCount*/)
 {
 	SceneNode::Initialize(owner);
-	m_materialList = RefPtr<MaterialList2>::MakeRef();
-	m_materialList->Initialize(subsetCount, true);	// TODO: 今はとりあえず必ず mainMaterial 有り (メモリ効率悪い)
+	//m_materialList = RefPtr<MaterialList2>::MakeRef();
+	//m_materialList->Initialize(subsetCount, true);	// TODO: 今はとりあえず必ず mainMaterial 有り (メモリ効率悪い)
 }
 
-//------------------------------------------------------------------------------
-Material* VisualComponent::GetMainMaterial() const
-{
-	return m_materialList->GetMainMaterial();
-}
-
-//------------------------------------------------------------------------------
-tr::ReflectionObjectList<Material*>* VisualComponent::GetMaterials() const
-{
-	return m_materialList;
-}
+////------------------------------------------------------------------------------
+//Material* VisualComponent::GetMainMaterial() const
+//{
+//	return m_materialList->GetMainMaterial();
+//}
+//
+////------------------------------------------------------------------------------
+//tr::ReflectionObjectList<Material*>* VisualComponent::GetMaterials() const
+//{
+//	return m_materialList;
+//}
 
 //------------------------------------------------------------------------------
 void VisualComponent::SetOpacity(float value)
@@ -224,25 +228,25 @@ Shader* VisualComponent::GetShader() const
 //}
 
 //------------------------------------------------------------------------------
-void VisualComponent::SetBlendMode(BlendMode mode) { GetMainMaterial()->SetBlendMode(mode); }
+void VisualComponent::SetBlendMode(BlendMode mode) { m_blendMode = mode; }
 
 //------------------------------------------------------------------------------
 //BlendMode VisualComponent::GetBlendMode() const { return GetMainMaterial()->GetBlendMode(); }
 
 //------------------------------------------------------------------------------
-void VisualComponent::SetCullingMode(CullingMode mode) { GetMainMaterial()->SetCullingMode(mode); }
+void VisualComponent::SetCullingMode(CullingMode mode) { m_cullingMode = mode; }
 
 //------------------------------------------------------------------------------
 //CullingMode VisualComponent::GetCullingMode() const { return GetMainMaterial()->GetCullingMode(); }
 
 //------------------------------------------------------------------------------
-void VisualComponent::SetDepthTestEnabled(bool enabled) { GetMainMaterial()->SetDepthTestEnabled(enabled); }
+void VisualComponent::SetDepthTestEnabled(bool enabled) { m_depthTestEnabled = enabled; }
 
 //------------------------------------------------------------------------------
 //bool VisualComponent::IsDepthTestEnabled() const { return GetMainMaterial()->IsDepthTestEnabled(); }
 
 //------------------------------------------------------------------------------
-void VisualComponent::SetDepthWriteEnabled(bool enabled) { GetMainMaterial()->SetDepthWriteEnabled(enabled); }
+void VisualComponent::SetDepthWriteEnabled(bool enabled) { m_depthWriteEnabled = enabled; }
 
 //------------------------------------------------------------------------------
 //bool VisualComponent::IsDepthWriteEnabled() const { return GetMainMaterial()->IsDepthWriteEnabled(); }
@@ -263,12 +267,12 @@ detail::Sphere VisualComponent::GetBoundingSphere()
 	return s;
 }
 
-//------------------------------------------------------------------------------
-Shader* VisualComponent::GetPrimaryShader() const
-{
-	// TODO: main が無ければ [0] のをつかう
-	return m_materialList->GetMainMaterial()->GetShader();
-}
+////------------------------------------------------------------------------------
+//Shader* VisualComponent::GetPrimaryShader() const
+//{
+//	// TODO: main が無ければ [0] のをつかう
+//	return m_materialList->GetMainMaterial()->GetShader();
+//}
 
 //------------------------------------------------------------------------------
 void VisualComponent::Render(DrawList* context)
