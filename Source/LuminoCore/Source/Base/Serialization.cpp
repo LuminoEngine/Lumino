@@ -131,6 +131,13 @@ void ScVariantCore::ReleaseValue()
 //==============================================================================
 
 //------------------------------------------------------------------------------
+ScVariantType ScVariant::GetType() const
+{
+	if (m_core == nullptr) return ScVariantType::Unknown;
+	return m_core->m_type;
+}
+
+//------------------------------------------------------------------------------
 void ScVariant::SetInt(int value)
 {
 	if (m_core == nullptr) m_core = NewObject<ScVariantCore>();

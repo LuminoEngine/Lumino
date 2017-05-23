@@ -4,6 +4,227 @@
 #include <Lumino/Reflection/ReflectionObject.h>
 
 
+struct TkMVSoundData
+{
+	ln::String		name;
+	int				volume;
+
+	void Serialize(ln::tr::Archive& ar, int version)
+	{
+		ar & ln::tr::MakeNVP("name", name);
+		ar & ln::tr::MakeNVP("volume", volume);
+	}
+};
+
+struct TkMVMapData1
+{
+	bool			autoplayBgm;
+	TkMVSoundData	bgm;
+	ln::String		displayName;
+
+	void Serialize(ln::tr::Archive& ar, int version)
+	{
+		ar & ln::tr::MakeNVP("autoplayBgm", autoplayBgm);
+		ar & ln::tr::MakeNVP("bgm", bgm);
+		ar & ln::tr::MakeNVP("displayName", displayName);
+	}
+};
+
+class TkMVSoundData3 : public ln::Object
+{
+public:
+	ln::String		name;
+	int				volume;
+
+	virtual void Serialize(ln::tr::Archive& ar, int version)
+	{
+		ar & ln::tr::MakeNVP("name", name);
+		ar & ln::tr::MakeNVP("volume", volume);
+	}
+};
+
+class TkMVEventData3 : public ln::Object
+{
+public:
+	ln::String		id;
+
+	virtual void Serialize(ln::tr::Archive& ar, int version)
+	{
+		ar & ln::tr::MakeNVP("id", id);
+	}
+};
+
+struct TkMVMapData3 : public ln::Object
+{
+	bool							autoplayBgm;
+	RefPtr<TkMVSoundData3>			bgm;
+	ln::String						displayName;
+	List<RefPtr<TkMVEventData3>>	events;
+
+	void Serialize(ln::tr::Archive& ar, int version)
+	{
+		ar & ln::tr::MakeNVP("autoplayBgm", autoplayBgm);
+		ar & ln::tr::MakeNVP("bgm", bgm);
+		ar & ln::tr::MakeNVP("displayName", displayName);
+		ar & ln::tr::MakeNVP("events", events);
+	}
+};
+
+struct TkMVEventCommand3 : public ln::Object
+{
+	int					code;
+	List<tr::ScVariant>	params;
+
+	virtual void Serialize(ln::tr::Archive& ar, int version)
+	{
+		ar & ln::tr::MakeNVP("code", code);
+		ar & ln::tr::MakeNVP("params", params);
+	}
+};
+
+struct TkMVMovementData3 : public ln::Object
+{
+	bool	ignore;
+	List<RefPtr<TkMVEventCommand3>>	commands;
+
+	virtual void Serialize(ln::tr::Archive& ar, int version)
+	{
+		ar & ln::tr::MakeNVP("ignore", ignore);
+		ar & ln::tr::MakeNVP("commands", commands);
+	}
+};
+
+//==============================================================================
+class Test_Serialization : public ::testing::Test
+{
+protected:
+	virtual void SetUp() {}
+	virtual void TearDown() {}
+};
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Serialization, SimpleStruct)
+{
+	ln::String json;
+	// save
+	{
+		TkMVSoundData t1;
+		t1.name = _T("test");
+		t1.volume = 100;
+		json = tr::JsonSerializer::Save(t1);
+	}
+	// load
+	{
+		TkMVSoundData t2 = tr::JsonSerializer::Load<TkMVSoundData>(json);
+		ASSERT_EQ(_T("test"), t2.name);
+		ASSERT_EQ(100, t2.volume);
+	}
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Serialization, StructNested)
+{
+	ln::String json;
+	// save
+	{
+		TkMVMapData1 t1;
+		t1.autoplayBgm = true;
+		t1.bgm.name = _T("test");
+		t1.bgm.volume = 100;
+		t1.displayName = _T("map1");
+		json = tr::JsonSerializer::Save(t1);
+	}
+	// load
+	{
+		TkMVMapData1 t2 = tr::JsonSerializer::Load<TkMVMapData1>(json);
+		ASSERT_EQ(true, t2.autoplayBgm);
+		ASSERT_EQ(_T("test"), t2.bgm.name);
+		ASSERT_EQ(100, t2.bgm.volume);
+		ASSERT_EQ(_T("map1"), t2.displayName);
+	}
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Serialization, SimpleObject)
+{
+	ln::String json;
+	// save
+	{
+		auto t1 = NewObject<TkMVSoundData3>();
+		t1->name = _T("test");
+		t1->volume = 100;
+		json = tr::JsonSerializer::Save(t1);
+	}
+	// load
+	{
+		auto t2 = tr::JsonSerializer::LoadObject<TkMVSoundData3>(json);
+		ASSERT_EQ(_T("test"), t2->name);
+		ASSERT_EQ(100, t2->volume);
+	}
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Serialization, CommonObject)
+{
+	ln::String json;
+	// save
+	{
+		auto t1 = NewObject<TkMVMapData3>();
+		t1->autoplayBgm = true;
+		t1->bgm = NewObject<TkMVSoundData3>();
+		t1->bgm->name = _T("test");
+		t1->bgm->volume = 100;
+		t1->displayName = _T("map1");
+		t1->events.Add(NewObject<TkMVEventData3>());
+		t1->events.Add(nullptr);
+		t1->events.Add(NewObject<TkMVEventData3>());
+		t1->events[0]->id = _T("EV001");
+		t1->events[2]->id = _T("EV003");
+		json = tr::JsonSerializer::Save(t1);
+	}
+	// load
+	{
+		auto t2 = tr::JsonSerializer::LoadObject<TkMVMapData3>(json);
+		ASSERT_EQ(true, t2->autoplayBgm);
+		ASSERT_EQ(_T("test"), t2->bgm->name);
+		ASSERT_EQ(100, t2->bgm->volume);
+		ASSERT_EQ(_T("map1"), t2->displayName);
+		ASSERT_EQ(_T("EV001"), t2->events[0]->id);
+		ASSERT_EQ(nullptr, t2->events[1]);
+		ASSERT_EQ(_T("EV003"), t2->events[2]->id);
+	}
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Serialization, Variant)
+{
+	ln::String json;
+	// save
+	{
+		auto t1 = NewObject<TkMVMovementData3>();
+		t1->ignore = true;
+
+		auto c1 = NewObject<TkMVEventCommand3>();
+		c1->code = 100;
+		tr::ScVariant v1;
+		tr::ScVariant v2;
+		v1.SetInt(20);
+		v2.SetString(_T("test"));
+		c1->params.Add(v1);
+		c1->params.Add(v2);
+
+		t1->commands.Add(c1);
+		json = tr::JsonSerializer::Save(t1);
+	}
+	// load
+	{
+		auto t2 = tr::JsonSerializer::LoadObject<TkMVMovementData3>(json);
+		ASSERT_EQ(true, t2->ignore);
+		//ASSERT_EQ(100, t2->volume);
+	}
+}
+
+#if 0
 class TestObject1
 {
 public:
@@ -330,15 +551,61 @@ TEST_F(Test_Serialization, Reflection)
 TEST_F(Test_Serialization, Variant)
 {
 	String json;
+	//{
+	//	tr::JsonDocument2 doc;
+	//	tr::Archive ar(&doc, tr::ArchiveMode::Save, true);
+
+	//	tr::ScVariant v;
+	//	v.SetInt(10);
+	//	ar.Save(v);
+
+	//	json = doc.ToString();
+	//}
+}
+
+
+//------------------------------------------------------------------------------
+
+struct TkMVSoundData
+{
+	ln::String		name;
+	int				pitch;
+	int				volume;
+
+	void Serialize(ln::tr::Archive& ar, int version)
+	{
+		ar & ln::tr::MakeNVP("name", name);
+		ar & ln::tr::MakeNVP("pitch", pitch);
+		ar & ln::tr::MakeNVP("volume", volume);
+	}
+};
+
+struct TkMVMapData
+{
+	bool			autoplayBgm;
+	TkMVSoundData	bgm;
+	ln::String		displayName;
+
+	void Serialize(ln::tr::Archive& ar, int version)
+	{
+		ar & ln::tr::MakeNVP("autoplayBgm", autoplayBgm);
+		ar & ln::tr::MakeNVP("bgm", bgm);
+		ar & ln::tr::MakeNVP("displayName", displayName);
+	}
+};
+
+TEST_F(Test_Serialization, Raw)
+{
+	ln::String json;
 	{
 		tr::JsonDocument2 doc;
-		tr::Archive ar(&doc, tr::ArchiveMode::Save, true);
+		tr::Archive ar(&doc, tr::ArchiveMode::Load, true);
 
-		tr::ScVariant v;
-		v.SetInt(10);
-		ar & tr::MakeNVP(_T("v"), v);
+		TkMVMapData data;
+		ar.Load(data);
 
-		json = doc.ToString();
+		json = doc.ToString(tr::JsonFormatting::Indented);
 	}
 }
 
+#endif

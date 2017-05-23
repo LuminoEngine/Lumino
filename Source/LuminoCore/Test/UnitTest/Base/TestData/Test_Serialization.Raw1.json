@@ -1,0 +1,12 @@
+{
+    "autoplayBgm":false,
+    "battleback1Name":"",
+    "bgm":{"name":"test1.mp3","pitch":100,"volume":90},
+    "events":[
+        null,
+        {
+            "id": 1,
+            "name": "EV0010"
+        }
+    ]
+}

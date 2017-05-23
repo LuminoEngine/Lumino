@@ -63,6 +63,8 @@ private:
 class ScVariant
 {
 public:
+	ScVariantType GetType() const;
+
 	void SetInt(int value);
 	void SetString(const StringRef& value);
 
@@ -320,11 +322,57 @@ public:
 
 	bool IsLoading() const { return m_mode == ArchiveMode::Load; }
 
+	template<typename T>
+	void Save(T& value)
+	{
+		m_currentObject = SaveHeaderElement(m_currentObject);
+		DoSaveObjectType(value, false);
+	}
+	void Save(ScVariant& value)
+	{
+		if (LN_CHECK_ARG(value.GetType() == ScVariantType::Map)) return;
+		m_currentObject = SaveHeaderElement(m_currentObject);
+		DoSaveObjectType(*value.m_core->m_map, false);
+	}
+
+
+	template<typename T>
+	void Load(T& value)
+	{
+		m_currentObject = LoadHeaderElement(m_currentObject);
+		TryGetValue(m_currentObject, &value, false);
+	}
+	void Load(ScVariant& value)
+	{
+		m_currentObject = LoadHeaderElement(m_currentObject);
+		TryGetValue(m_currentObject, &value, false);
+	}
+
 
 protected:
 	virtual RefPtr<ReflectionObject> CreateObject(const String& className, TypeInfo* requestedType);
 
 private:
+
+	ISerializeElement* SaveHeaderElement(ISerializeElement* element)
+	{
+		int version = 1;
+		element->AddSerializeMemberValue(_T("version"), SerializationValueType::Int32, &version);
+		return element->AddSerializeMemberNewObject(_T("root"));
+	}
+
+	ISerializeElement* LoadHeaderElement(ISerializeElement* element)
+	{
+		ISerializeElement* version = element->FindSerializeElement(_T("version"));
+		ISerializeElement* root = element->FindSerializeElement(_T("root"));
+		if (version != nullptr && root != nullptr)
+		{
+			return root;
+		}
+		return element;
+	}
+
+
 
 	template<typename T> void Process(const KeyInfo& key, T && value)
 	{
@@ -345,7 +393,7 @@ private:
 	template<typename T>
 	void ProcessWrite(const KeyInfo& key, T && value)
 	{
-		WriteValue(key, value);
+		AddMemberValue(key, value);
 	}
 
 	template<typename T>
@@ -355,39 +403,35 @@ private:
 		TryGetValue(element, &value, key.callBase);
 	}
 
-	//void WriteValue(const TCHAR* name, SerializableObject* obj);
-	void WriteValue(const KeyInfo& key, bool value) { m_currentObject->AddSerializeMemberValue(key.name, SerializationValueType::Bool, &value); }
-	void WriteValue(const KeyInfo& key, int8_t value);
-	void WriteValue(const KeyInfo& key, int16_t value);
-	void WriteValue(const KeyInfo& key, int32_t value) { m_currentObject->SetValueInt32(key.name, value); }
-	void WriteValue(const KeyInfo& key, int64_t value);
-	void WriteValue(const KeyInfo& key, uint8_t value);
-	void WriteValue(const KeyInfo& key, uint16_t value);
-	void WriteValue(const KeyInfo& key, uint32_t value);
-	void WriteValue(const KeyInfo& key, uint64_t value);
-	void WriteValue(const KeyInfo& key, float value);
-	void WriteValue(const KeyInfo& key, double value);
-	void WriteValue(const KeyInfo& key, String& value) { m_currentObject->SetValueString(key.name, value); }
-	template<typename T> void WriteValue(const KeyInfo& key, T& obj)	 // non‐intrusive Object
+	// AddMemberValue()
+	//		m_currentObject が示す Object 型へ、指定した名前と値のペアを追加する
+	void AddMemberValue(const KeyInfo& key, bool value) { m_currentObject->AddSerializeMemberValue(key.name, SerializationValueType::Bool, &value); }
+	void AddMemberValue(const KeyInfo& key, int8_t value);
+	void AddMemberValue(const KeyInfo& key, int16_t value);
+	void AddMemberValue(const KeyInfo& key, int32_t value) { m_currentObject->SetValueInt32(key.name, value); }
+	void AddMemberValue(const KeyInfo& key, int64_t value);
+	void AddMemberValue(const KeyInfo& key, uint8_t value);
+	void AddMemberValue(const KeyInfo& key, uint16_t value);
+	void AddMemberValue(const KeyInfo& key, uint32_t value);
+	void AddMemberValue(const KeyInfo& key, uint64_t value);
+	void AddMemberValue(const KeyInfo& key, float value);
+	void AddMemberValue(const KeyInfo& key, double value);
+	void AddMemberValue(const KeyInfo& key, String& value) { m_currentObject->SetValueString(key.name, value); }
+	template<typename T> void AddMemberValue(const KeyInfo& key, T& obj)	 // non‐intrusive Object
 	{
 		auto* old = m_currentObject;
 		m_currentObject = m_currentObject->AddObject(key.name);
-		obj.Serialize(*this, 0);
-		//if (key.callBase)
-		//	obj.T::Serialize(*this, T::lnsl_GetClassVersion());
-		//else
-		//	obj.Serialize(*this, T::lnsl_GetClassVersion());
+		DoSaveObjectType(obj, false);
 		m_currentObject = old;
 	}
-	template<typename T> void WriteValue(const KeyInfo& key, RefPtr<T>& value)	 // non‐intrusive Object
+	template<typename T> void AddMemberValue(const KeyInfo& key, RefPtr<T>& value)	 // non‐intrusive Object
 	{
 		auto* old = m_currentObject;
 		m_currentObject = m_currentObject->AddObject(key.name);
-		//obj.Serialize(*this, T::lnsl_GetClassVersion());
-		CallSave(*value, key.callBase);
+		DoSaveObjectType(value, key.callBase);
 		m_currentObject = old;
 	}
-	template<typename T> void WriteValue(const KeyInfo& key, List<T>& obj)	 // non‐intrusive Object
+	template<typename T> void AddMemberValue(const KeyInfo& key, List<T>& obj)	 // non‐intrusive Object
 	{
 		ISerializeElement* ary = m_currentObject->AddSerializeMemberNewArray(key.name);
 		for (int i = 0; i < obj.GetCount(); i++)
@@ -395,17 +439,15 @@ private:
 			AddItemValue(ary, obj[i]);
 		}
 	}
-	template<typename T> void WriteValue(const KeyInfo& key, std::unordered_map<String, T>& obj)	 // non‐intrusive Object
+	template<typename T> void AddMemberValue(const KeyInfo& key, std::unordered_map<String, T>& obj)	 // non‐intrusive Object
 	{
-		ISerializeElement* ary = m_currentObject->AddSerializeMemberNewObject(key.name);
+		ISerializeElement* e = m_currentObject->AddSerializeMemberNewObject(key.name);
 		auto* old = m_currentObject;
-		for (auto& pair : obj)
-		{
-			WriteValue({ pair.first, key.callBase }, pair.second);
-		}
+		m_currentObject = e;
+		DoSaveObjectType(obj, key.callBase);
 		m_currentObject = old;
 	}
-	void WriteValue(const KeyInfo& key, ScVariant& value)	 // non‐intrusive Object
+	void AddMemberValue(const KeyInfo& key, ScVariant& value)	 // non‐intrusive Object
 	{
 		if (value.m_core == nullptr || value.m_core->m_type == ScVariantType::Unknown)
 		{
@@ -416,22 +458,22 @@ private:
 			switch (value.m_core->m_type)
 			{
 			case ScVariantType::Bool:
-				WriteValue(key, value.m_core->m_bool);
+				AddMemberValue(key, value.m_core->m_bool);
 				break;
 			case ScVariantType::Int:
-				WriteValue(key, value.m_core->m_int);
+				AddMemberValue(key, value.m_core->m_int);
 				break;
 			case ScVariantType::Float:
-				//WriteValue(key, value.m_core->m_float);
+				//AddMemberValue(key, value.m_core->m_float);
 				break;
 			case ScVariantType::String:
-				//WriteValue(key, *value.m_core->m_string);
+				//AddMemberValue(key, *value.m_core->m_string);
 				break;
 			case ScVariantType::List:
-				WriteValue(key, *value.m_core->m_list);
+				AddMemberValue(key, *value.m_core->m_list);
 				break;
 			case ScVariantType::Map:
-				WriteValue(key, *value.m_core->m_map);
+				AddMemberValue(key, *value.m_core->m_map);
 				break;
 			default:
 				LN_UNREACHABLE();
@@ -440,6 +482,36 @@ private:
 		}
 	}
 
+	// DoSaveObjectType()
+	//		m_currentObject が示す Object 型へ、指定した名前と値のペアを追加する
+	template<typename T> void DoSaveObjectType(T& value, bool baseCall)
+	{
+		value.Serialize(*this, 0);
+	}
+	template<typename T> void DoSaveObjectType(RefPtr<T>& value, bool baseCall)
+	{
+		CallSave(*value, baseCall);
+	}
+	template<typename T> void DoSaveObjectType(std::unordered_map<String, T>& value, bool baseCall)
+	{
+		for (auto& pair : value)
+		{
+			AddMemberValue({ pair.first, baseCall }, pair.second);
+		}
+	}
+
+	//template<typename T> void AddMemberValueInternal(T& obj)
+	//{
+	//	obj.Serialize(*this, 0);
+	//}
+	//template<typename T> void AddMemberValueInternal(RefPtr<T>& value)
+	//{
+	//	CallSave(*value, key.callBase);
+	//}
+	//template<typename T> void AddMemberValueInternal(RefPtr<T>& value)
+	//{
+	//	CallSave(*value, key.callBase);
+	//}
 
 
 	//void ReadValue(const StringRef& name, bool& value);
@@ -527,13 +599,19 @@ private:
 	template<typename T>
 	void AddItemValue(ISerializeElement* arrayElement, RefPtr<T>& value)
 	{
-		ISerializeElement* objectElement = arrayElement->AddSerializeItemNewObject();
-
-		auto* old = m_currentObject;
-		m_currentObject = objectElement;
-		//value->Serialize(*this, T::lnsl_GetClassVersion());
-		CallSave(*value, false);
-		m_currentObject = old;
+		if (value == nullptr)
+		{
+			arrayElement->AddSerializeItemValue(SerializationValueType::Null, nullptr);
+		}
+		else
+		{
+			ISerializeElement* objectElement = arrayElement->AddSerializeItemNewObject();
+			auto* old = m_currentObject;
+			m_currentObject = objectElement;
+			//value->Serialize(*this, T::lnsl_GetClassVersion());
+			CallSave(*value, false);
+			m_currentObject = old;
+		}
 	}
 	void AddItemValue(ISerializeElement* arrayElement, ScVariant& value)
 	{
@@ -558,21 +636,29 @@ private:
 		for (int i = 0; i < count; i++)
 		{
 			auto* element = arrayElement->GetSerializeElement(i);
-
-			T raw;
-			if (TryGetValue(element, &raw, false))
+			if (element->GetSerializationElementType() == SerializationElementType::Value &&
+				element->GetSerializationValueType() == SerializationValueType::Null)
 			{
-				value->Add(raw);
+				value->Add(T());	// null
 			}
 			else
 			{
-				LN_NOTIMPLEMENTED();
+				T raw;
+				if (TryGetValue(element, &raw, false))
+				{
+					value->Add(raw);
+				}
+				else
+				{
+					LN_NOTIMPLEMENTED();
+				}
 			}
+
 		}
 		return true;
 	}
 	template<typename T>
-	bool TryGetValue(ISerializeElement* element, T* value, bool)
+	bool TryGetValue(ISerializeElement* element, T* value, bool callBase)
 	{
 		auto* old = m_currentObject;
 		m_currentObject = element;
@@ -580,11 +666,23 @@ private:
 		m_currentObject = old;
 		return true;
 	}
-	bool TryGetValue(ISerializeElement* element, ScVariant* value, bool)
+	bool TryGetValue(ISerializeElement* element, ScVariant* value, bool callBase)
 	{
-		LN_NOTIMPLEMENTED();
+		value->LoadInternal(element);
 		return true;
 	}
+
+
+	//template<typename T>
+	//void DoLoadObjectType(T* value, bool callBase)
+	//{
+	//	value->Serialize(*this, 0);
+	//}
+	//void DoLoadObjectType(ScVariant* value, bool callBase)
+	//{
+	//	
+	//}
+
 
 
 	template<typename T>
@@ -603,10 +701,19 @@ private:
 				typeInfo = TypeInfo::GetTypeInfo(&obj);
 			}
 
-			String typeName = typeInfo->GetName();
-			int version = typeInfo->GetSerializeClassVersion();
-			m_currentObject->AddSerializeMemberValue(ClassNameKey, SerializationValueType::String, &typeName);
-			m_currentObject->AddSerializeMemberValue(ClassVersionKey, SerializationValueType::Int32, &version);
+			int version = 0;
+			if (typeInfo != TypeInfo::GetTypeInfo<Object>())
+			{
+				String typeName = typeInfo->GetName();
+				int version = typeInfo->GetSerializeClassVersion();
+				m_currentObject->AddSerializeMemberValue(ClassNameKey, SerializationValueType::String, &typeName);
+				m_currentObject->AddSerializeMemberValue(ClassVersionKey, SerializationValueType::Int32, &version);
+			}
+			else
+			{
+				// "Object" の型情報しかとれないということは、T の TypeInfo が定義されていない。
+				// 保存しても復元できないので、型情報は保存せずプレーンな情報にする。
+			}
 
 			if (callBase)
 				obj.T::Serialize(*this, version);
@@ -673,7 +780,7 @@ private:
 
 	ArchiveMode					m_mode;
 	ISerializationeStore*		m_stream;
-	ISerializeElement*			m_currentObject;
+	ISerializeElement*			m_currentObject;			//　Serialize() 内で & された値の保存先、または復元元となる親 Object(Map)。Serialize() に入るとき、にセットされる。
 	bool						m_refrectionSupported;
 
 };
