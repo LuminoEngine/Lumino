@@ -1,13 +1,78 @@
 
 #pragma once
+#include <unordered_map>
 #include "String.h"
+#include "../Reflection/ReflectionObject.h"
 
 LN_NAMESPACE_BEGIN
-template <class T> class RefPtr;
+//template <class T> class RefPtr;
 
 namespace tr {
-class ReflectionObject;
-class TypeInfo;
+//class ReflectionObject;
+//class TypeInfo;
+class Archive;
+
+class ScVariant;
+class ISerializeElement;
+
+enum class ScVariantType
+{
+	Unknown,	// TODO: Null
+	Bool,
+	Int,
+	Float,
+	String,
+	List,
+	Map,
+};
+
+class ScVariantCore : public ln::Object
+{
+public:
+	ScVariantCore()
+		: m_type(ScVariantType::Unknown)
+	{}
+
+	virtual ~ScVariantCore();
+
+	void SetInt(int value);
+	void SetString(const StringRef& value);
+	void SetList();
+	void SetMap();
+
+private:
+	void ResetType(ScVariantType type);
+	void ReleaseValue();
+	//void Serialize(Archive& ar, int version);
+
+	ScVariantType	m_type;
+	union
+	{
+		bool										m_bool;
+		int											m_int;
+		float										m_float;
+		ln::String*									m_string;
+		ln::List<ScVariant>*						m_list;
+		std::unordered_map<ln::String, ScVariant>*	m_map;
+	};
+
+	friend class ScVariant;
+	friend class Archive;
+};
+
+class ScVariant
+{
+public:
+	void SetInt(int value);
+	void SetString(const StringRef& value);
+
+	void SaveInternal(ISerializeElement* value);
+	void LoadInternal(ISerializeElement* value);
+
+private:
+	friend class Archive;
+	ln::RefPtr<ScVariantCore>	m_core;
+};
 
 enum class ArchiveMode
 {
@@ -146,10 +211,12 @@ public:
 	//virtual double SetSerializeValueDouble() const = 0;
 	//virtual String SetSerializeValueString() const = 0;
 	
-
-	// Array
+	// Array and Object
 	virtual int GetSerializeElementCount() const = 0;
 	virtual ISerializeElement* GetSerializeElement(int index) const = 0;
+	virtual const String& GetSerializeElementName(int index) const = 0;
+
+	// Array
 	virtual void AddSerializeItemValue(SerializationValueType type, const void* value) = 0;
 	virtual ISerializeElement* AddSerializeItemNewArray() = 0;
 	virtual ISerializeElement* AddSerializeItemNewObject() = 0;
@@ -244,6 +311,16 @@ public:
 
 	//}
 
+	ISerializeElement* GetCurrentSerializeElement() const
+	{
+		return m_currentObject;
+	}
+
+	bool IsSaving() const { return m_mode == ArchiveMode::Save; }
+
+	bool IsLoading() const { return m_mode == ArchiveMode::Load; }
+
+
 protected:
 	virtual RefPtr<ReflectionObject> CreateObject(const String& className, TypeInfo* requestedType);
 
@@ -316,6 +393,50 @@ private:
 		for (int i = 0; i < obj.GetCount(); i++)
 		{
 			AddItemValue(ary, obj[i]);
+		}
+	}
+	template<typename T> void WriteValue(const KeyInfo& key, std::unordered_map<String, T>& obj)	 // non]intrusive Object
+	{
+		ISerializeElement* ary = m_currentObject->AddSerializeMemberNewObject(key.name);
+		auto* old = m_currentObject;
+		for (auto& pair : obj)
+		{
+			WriteValue({ pair.first, key.callBase }, pair.second);
+		}
+		m_currentObject = old;
+	}
+	void WriteValue(const KeyInfo& key, ScVariant& value)	 // non]intrusive Object
+	{
+		if (value.m_core == nullptr || value.m_core->m_type == ScVariantType::Unknown)
+		{
+			LN_NOTIMPLEMENTED();
+		}
+		else
+		{
+			switch (value.m_core->m_type)
+			{
+			case ScVariantType::Bool:
+				WriteValue(key, value.m_core->m_bool);
+				break;
+			case ScVariantType::Int:
+				WriteValue(key, value.m_core->m_int);
+				break;
+			case ScVariantType::Float:
+				//WriteValue(key, value.m_core->m_float);
+				break;
+			case ScVariantType::String:
+				//WriteValue(key, *value.m_core->m_string);
+				break;
+			case ScVariantType::List:
+				WriteValue(key, *value.m_core->m_list);
+				break;
+			case ScVariantType::Map:
+				WriteValue(key, *value.m_core->m_map);
+				break;
+			default:
+				LN_UNREACHABLE();
+				break;
+			}
 		}
 	}
 
@@ -414,7 +535,10 @@ private:
 		CallSave(*value, false);
 		m_currentObject = old;
 	}
-
+	void AddItemValue(ISerializeElement* arrayElement, ScVariant& value)
+	{
+		LN_NOTIMPLEMENTED();
+	}
 
 
 
@@ -454,6 +578,11 @@ private:
 		m_currentObject = element;
 		value->Serialize(*this, 0);
 		m_currentObject = old;
+		return true;
+	}
+	bool TryGetValue(ISerializeElement* element, ScVariant* value, bool)
+	{
+		LN_NOTIMPLEMENTED();
 		return true;
 	}
 

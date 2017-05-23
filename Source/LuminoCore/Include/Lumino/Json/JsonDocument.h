@@ -98,6 +98,7 @@ protected:
 	virtual bool TryGetArray(const StringRef& name, ISerializeElement** outValue) override { return false; }
 	virtual int GetSerializeElementCount() const override { return 0; }
 	virtual ISerializeElement* GetSerializeElement(int index) const override { return nullptr; }
+	virtual const String& GetSerializeElementName(int index) const { return String::GetEmpty(); }
 	virtual SerializationValueType GetSerializationValueType() const override { return SerializationValueType::Null; }
 	virtual bool GetSerializeValueBool() const override { return false; }
 	virtual int8_t GetSerializeValueInt8() const override { return 0; }
@@ -272,6 +273,7 @@ protected:
 	virtual bool TryGetValueString(const StringRef& name, String* outValue) override;
 	virtual bool TryGetObject(const StringRef& name, ISerializeElement** outValue) override;
 	virtual bool TryGetArray(const StringRef& name, ISerializeElement** outValue) override;
+	virtual const String& GetSerializeElementName(int index) const override;
 	virtual ISerializeElement* FindSerializeElement(const StringRef& name) const override;
 	virtual void AddSerializeMemberValue(const StringRef& name, SerializationValueType type, const void* value) override;
 	virtual ISerializeElement* AddSerializeMemberNewArray(const StringRef& name) override;

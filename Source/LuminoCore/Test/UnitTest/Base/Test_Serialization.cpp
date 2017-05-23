@@ -325,3 +325,20 @@ TEST_F(Test_Serialization, Reflection)
 		}
 	}
 }
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Serialization, Variant)
+{
+	String json;
+	{
+		tr::JsonDocument2 doc;
+		tr::Archive ar(&doc, tr::ArchiveMode::Save, true);
+
+		tr::ScVariant v;
+		v.SetInt(10);
+		ar & tr::MakeNVP(_T("v"), v);
+
+		json = doc.ToString();
+	}
+}
+
