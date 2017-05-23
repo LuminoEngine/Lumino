@@ -98,8 +98,8 @@ protected:
 	virtual bool TryGetArray(const StringRef& name, ISerializeElement** outValue) override { return false; }
 	virtual int GetSerializeElementCount() const override { return 0; }
 	virtual ISerializeElement* GetSerializeElement(int index) const override { return nullptr; }
-	virtual const String& GetSerializeElementName(int index) const { return String::GetEmpty(); }
-	virtual SerializationValueType GetSerializationValueType() const override { return SerializationValueType::Null; }
+	virtual const String& GetSerializeElementName(int index) const override { return String::GetEmpty(); }
+	virtual SerializationValueType GetSerializationValueType() const override;
 	virtual bool GetSerializeValueBool() const override { return false; }
 	virtual int8_t GetSerializeValueInt8() const override { return 0; }
 	virtual int16_t GetSerializeValueInt16() const override { return 0; }
@@ -160,7 +160,6 @@ public:
 protected:
 	// ISerializeElement interface
 	virtual SerializationElementType GetSerializationElementType() const { return SerializationElementType::Value; }
-	virtual SerializationValueType GetSerializationValueType() const override;
 	virtual bool GetSerializeValueBool() const override { return GetBool(); }
 	virtual int8_t GetSerializeValueInt8() const override { return GetInt32(); }
 	virtual int16_t GetSerializeValueInt16() const override { return GetInt32(); }
@@ -376,6 +375,42 @@ private:
 
 
 
+class JsonSerializer
+{
+public:
+	template<typename T>
+	static String Save(T& value)
+	{
+		tr::JsonDocument2 doc;
+		tr::Archive ar(&doc, tr::ArchiveMode::Save, true);
+		ar.Save(value);
+		return doc.ToString();
+	}
+
+	template<typename T>
+	static T Load(const StringRef& json)
+	{
+		tr::JsonDocument2 doc;
+		doc.Parse(json);
+		tr::Archive ar(&doc, tr::ArchiveMode::Load, true);
+		T t;
+		ar.Load(t);
+		return t;
+	}
+
+	template<typename T>
+	static RefPtr<T> LoadObject(const StringRef& json)
+	{
+		tr::JsonDocument2 doc;
+		doc.Parse(json);
+		tr::Archive ar(&doc, tr::ArchiveMode::Load, true);
+		auto t = NewObject<T>();
+		ar.Load(t);
+		return t;
+	}
+
+	
+};
 
 } // namespace tr
 LN_NAMESPACE_END
