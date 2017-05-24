@@ -40,6 +40,8 @@ void AssetsManager::Initialize(EngineManager* manager)
 {
 	m_engineManager = manager;
 
+	AddAssetsDirectory(PathName::GetCurrentDirectory());
+
 	m_textureCache = RefPtr<CacheManager>::MakeRef(32, 0);	// TODO
 	m_fontCache = RefPtr<CacheManager>::MakeRef(32, 0);	// TODO
 
@@ -57,6 +59,14 @@ void AssetsManager::Finalize()
 }
 
 //------------------------------------------------------------------------------
+void AssetsManager::AddAssetsDirectory(const StringRef& directoryPath)
+{
+	AssetsDirectory dir;
+	dir.path = PathName(directoryPath);
+	m_assetsDirectories.Add(dir);
+}
+
+//------------------------------------------------------------------------------
 Texture2DPtr AssetsManager::LoadTexture(const StringRef& filePath)
 {
 	CacheKey key(filePath);
@@ -68,6 +78,60 @@ Texture2DPtr AssetsManager::LoadTexture(const StringRef& filePath)
 
 	m_textureCache->RegisterCacheObject(key, ref);
 	return ref;
+}
+
+//------------------------------------------------------------------------------
+String AssetsManager::LoadText(const StringRef& filePath)
+{
+	MakeSearchPath(filePath);
+	auto* path = FindLocalFilePath();
+	return FileSystem::ReadAllText(*path);
+}
+
+//------------------------------------------------------------------------------
+RefPtr<Stream> AssetsManager::OpenFile(const StringRef& filePath)
+{
+	MakeSearchPath(filePath);
+	auto* path = FindLocalFilePath();
+	//if (path == nullptr)
+	//{
+	//	LN_LOG_ERROR << _T("file not found: ") << filePath;
+	//	return nullptr;
+	//}
+
+	return FileStream::Create(*path, FileOpenMode::Read);
+}
+
+//------------------------------------------------------------------------------
+void AssetsManager::MakeSearchPath(const StringRef& path)
+{
+	if (PathTraits::IsAbsolutePath(path.GetBegin(), path.GetLength()))
+	{
+		for (AssetsDirectory& dir : m_assetsDirectories)
+		{
+			dir.searchPath = PathName(path);
+		}
+	}
+	else
+	{
+		for (AssetsDirectory& dir : m_assetsDirectories)
+		{
+			dir.searchPath = PathName(dir.path, path);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+const PathName* AssetsManager::FindLocalFilePath()
+{
+	for (AssetsDirectory& dir : m_assetsDirectories)
+	{
+		if (dir.searchPath.ExistsFile())
+		{
+			return &dir.searchPath;
+		}
+	}
+	return nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -104,9 +168,21 @@ Texture2DPtr AssetsManager::LoadTexture(const StringRef& filePath)
 //==============================================================================
 
 //------------------------------------------------------------------------------
+void Assets::AddAssetsDirectory(const StringRef& directoryPath)
+{
+	AssetsManager::GetInstance()->AddAssetsDirectory(directoryPath);
+}
+
+//------------------------------------------------------------------------------
 Texture2DPtr Assets::LoadTexture(const StringRef& filePath)
 {
 	return AssetsManager::GetInstance()->LoadTexture(filePath);
+}
+
+//------------------------------------------------------------------------------
+String Assets::LoadText(const StringRef& filePath)
+{
+	return AssetsManager::GetInstance()->LoadText(filePath);
 }
 
 LN_NAMESPACE_END

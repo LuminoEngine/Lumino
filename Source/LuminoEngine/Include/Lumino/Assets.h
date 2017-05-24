@@ -11,8 +11,11 @@ class Assets
 {
 public:
 
+	static void AddAssetsDirectory(const StringRef& directoryPath);
 
 	static Texture2DPtr LoadTexture(const StringRef& filePath);
+
+	static String LoadText(const StringRef& filePath);
 
 };
 
