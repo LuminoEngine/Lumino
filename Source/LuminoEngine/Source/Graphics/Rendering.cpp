@@ -572,6 +572,7 @@ DrawElement::DrawElement()
 	, subsetIndex(0)
 	//, zSortDistanceBase(ZSortDistanceBase::CameraDistance)
 	, zDistance(0.0f)
+	, m_stateFence(0)
 {
 	boundingSphere.center = Vector3::Zero;
 	boundingSphere.radius = -1.0f;
@@ -800,13 +801,21 @@ void InternalRenderer::Render(
 	*/
 	// 距離は降順。遠いほうを先に描画する
 	// 優先度は昇順。高いほうを手前に描画する (UE4 ESceneDepthPriorityGroup)
+	// フェンスID は昇順。高いほうを後に描画する
 	std::stable_sort(
 		m_renderingElementList.begin(), m_renderingElementList.end(),
 		[](const DrawElement* lhs, const DrawElement* rhs)
 		{
-			if (lhs->metadata.priority == rhs->metadata.priority)
-				return lhs->zDistance > rhs->zDistance;
-			return lhs->metadata.priority < rhs->metadata.priority;
+			if (lhs->m_stateFence == rhs->m_stateFence)
+			{
+				if (lhs->metadata.priority == rhs->metadata.priority)
+					return lhs->zDistance > rhs->zDistance;
+				return lhs->metadata.priority < rhs->metadata.priority;
+			}
+			else
+			{
+				return lhs->m_stateFence < rhs->m_stateFence;
+			}
 		}
 	);
 
@@ -1175,6 +1184,7 @@ public:
 DrawList::DrawList()
 	: m_currentSectionTopElement(nullptr)
 	, m_metadata(nullptr)
+	, m_currentStateFence(0)
 {
 }
 
@@ -1199,6 +1209,7 @@ void DrawList::Initialize(detail::GraphicsManager* manager)
 void DrawList::SetRenderTarget(int index, RenderTargetTexture* renderTarget)
 {
 	m_state.state.state.SetRenderTarget(index, renderTarget);
+	m_currentStateFence++;
 }
 
 //------------------------------------------------------------------------------
@@ -1211,6 +1222,7 @@ RenderTargetTexture* DrawList::GetRenderTarget(int index) const
 void DrawList::SetDepthBuffer(DepthBuffer* depthBuffer)
 {
 	m_state.state.state.SetDepthBuffer(depthBuffer);
+	m_currentStateFence++;
 }
 
 //------------------------------------------------------------------------------
@@ -1301,6 +1313,7 @@ void DrawList::BeginMakeElements()
 	m_builtinEffectData.Reset();
 	//m_defaultMaterial->cullingMode = CullingMode::None;
 	m_currentSectionTopElement = nullptr;
+	m_currentStateFence = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1330,6 +1343,7 @@ void DrawList::Clear(ClearFlags flags, const Color& color, float z, uint8_t sten
 	ptr->color = color;
 	ptr->z = z;
 	ptr->stencil = stencil;
+	m_currentStateFence++;
 }
 
 //------------------------------------------------------------------------------
