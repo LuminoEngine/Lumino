@@ -143,6 +143,7 @@ public:
 	int					subsetIndex;
 	float				zDistance;
 	DrawElementMetadata	metadata;
+	int					m_stateFence;
 
 	DrawElement();
 	virtual ~DrawElement();
@@ -649,6 +650,7 @@ private:
 	detail::DrawElement*			m_currentSectionTopElement;
 	//detail::DrawElementBatch		m_stateInSection;
 	const DrawElementMetadata*		m_metadata;
+	int								m_currentStateFence;
 
 	CameraComponent*							m_camera;
 
@@ -702,6 +704,7 @@ inline TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId
 		m_currentSectionTopElement != nullptr &&
 		m_currentSectionTopElement->drawingSectionId == sectionId &&
 		m_currentSectionTopElement->metadata.Equals(*metadata) &&
+		m_currentSectionTopElement->m_stateFence == m_currentStateFence &&
 		m_drawElementList.GetBatch(m_currentSectionTopElement->batchIndex)->Equal(m_state.state.state, availableMaterial, m_state.state.GetTransfrom(), m_builtinEffectData))
 	{
 		return static_cast<TElement*>(m_currentSectionTopElement);
@@ -712,6 +715,7 @@ inline TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId
 	//element->OnJoindDrawList(m_state.transfrom);
 	element->drawingSectionId = sectionId;
 	element->metadata = *metadata;
+	element->m_stateFence = m_currentStateFence;
 	m_currentSectionTopElement = element;
 	return element;
 }
