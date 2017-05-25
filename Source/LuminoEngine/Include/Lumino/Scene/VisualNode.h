@@ -102,29 +102,29 @@ public:
 	/** @name RenderState */
 	/** @{ */
 
-	/** このノードを描画する際の合成方法を設定します。デフォルトは BlendMode::Alpha です。*/
+	/** このノードを描画する際の合成方法を設定します。デフォルトは BlendMode::Normal です。*/
 	void SetBlendMode(BlendMode mode);
 
 	/** このノードを描画する際の合成方法を取得します。*/
-	//BlendMode GetBlendMode() const;
+	BlendMode GetBlendMode() const { return m_blendMode; }
 
 	/** このノードを描画する際のカリング方法を設定します。デフォルトは CullingMode::Back です。*/
 	void SetCullingMode(CullingMode mode);
 
 	/** このノードを描画する際のカリング方法を取得します。*/
-	//CullingMode GetCullingMode() const;
+	CullingMode GetCullingMode() const { return m_cullingMode; }
 
 	/** このノードを描画する際の深度テストの有無を設定します。デフォルトは true です。*/
 	void SetDepthTestEnabled(bool enabled);
 
 	/** このノードを描画する際の深度テストの有無を取得します。*/
-	//bool IsDepthTestEnabled() const;
+	bool IsDepthTestEnabled() const { return m_depthTestEnabled; }
 
 	/** このノードを描画する際の深度書き込みの有無を設定します。デフォルトは true です。*/
 	void SetDepthWriteEnabled(bool enabled);
 
 	/** このノードを描画する際の深度書き込みの有無を取得します。*/
-	//bool IsDepthWriteEnabled() const;
+	bool IsDepthWriteEnabled() const { return m_depthWriteEnabled; }
 
 	/** @} */
 
@@ -235,6 +235,31 @@ public:
 
 	/** シェーダを取得します。 */
 	Shader* GetShader() const;
+
+	/** このノードを描画する際の合成方法を設定します。デフォルトは BlendMode::Normal です。*/
+	void SetBlendMode(BlendMode mode);
+
+	/** このノードを描画する際の合成方法を取得します。*/
+	BlendMode GetBlendMode() const;
+
+	/** このノードを描画する際のカリング方法を設定します。デフォルトは CullingMode::Back です。*/
+	void SetCullingMode(CullingMode mode);
+
+	/** このノードを描画する際のカリング方法を取得します。*/
+	CullingMode GetCullingMode() const;
+
+	/** このノードを描画する際の深度テストの有無を設定します。デフォルトは true です。*/
+	void SetDepthTestEnabled(bool enabled);
+
+	/** このノードを描画する際の深度テストの有無を取得します。*/
+	bool IsDepthTestEnabled() const;
+
+	/** このノードを描画する際の深度書き込みの有無を設定します。デフォルトは true です。*/
+	void SetDepthWriteEnabled(bool enabled);
+
+	/** このノードを描画する際の深度書き込みの有無を取得します。*/
+	bool IsDepthWriteEnabled() const;
+
 
 protected:
 	virtual VisualComponent* GetMainVisualComponent() const = 0;

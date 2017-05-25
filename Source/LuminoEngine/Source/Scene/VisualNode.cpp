@@ -279,7 +279,12 @@ void VisualComponent::Render(DrawList* context)
 {
 	if (m_isVisible)
 	{
+		context->SetBlendMode(m_blendMode);
+		context->SetCullingMode(m_cullingMode);
+		context->SetDepthTestEnabled(m_depthTestEnabled);
+		context->SetDepthWriteEnabled(m_depthWriteEnabled);
 		context->SetBuiltinEffectData(m_builtinEffectData);
+		printf("%d\n", m_blendMode);
 		OnRender(context);
 		OnRender2(context);
 	}
@@ -372,6 +377,54 @@ void VisualObject::SetShader(Shader* value)
 Shader* VisualObject::GetShader() const
 {
 	return GetMainVisualComponent()->GetShader();
+}
+
+//------------------------------------------------------------------------------
+void VisualObject::SetBlendMode(BlendMode mode)
+{
+	GetMainVisualComponent()->SetBlendMode(mode);
+}
+
+//------------------------------------------------------------------------------
+BlendMode VisualObject::GetBlendMode() const
+{
+	return GetMainVisualComponent()->GetBlendMode();
+}
+
+//------------------------------------------------------------------------------
+void VisualObject::SetCullingMode(CullingMode mode)
+{
+	GetMainVisualComponent()->SetCullingMode(mode);
+}
+
+//------------------------------------------------------------------------------
+CullingMode VisualObject::GetCullingMode() const
+{
+	return GetMainVisualComponent()->GetCullingMode();
+}
+
+//------------------------------------------------------------------------------
+void VisualObject::SetDepthTestEnabled(bool enabled)
+{
+	GetMainVisualComponent()->SetDepthTestEnabled(enabled);
+}
+
+//------------------------------------------------------------------------------
+bool VisualObject::IsDepthTestEnabled() const
+{
+	return GetMainVisualComponent()->IsDepthTestEnabled();
+}
+
+//------------------------------------------------------------------------------
+void VisualObject::SetDepthWriteEnabled(bool enabled)
+{
+	GetMainVisualComponent()->SetDepthWriteEnabled(enabled);
+}
+
+//------------------------------------------------------------------------------
+bool VisualObject::IsDepthWriteEnabled() const
+{
+	return GetMainVisualComponent()->IsDepthWriteEnabled();
 }
 
 LN_NAMESPACE_SCENE_END

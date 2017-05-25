@@ -290,11 +290,28 @@ void SpriteBase::SetSourceRect(const Rect& rect)
 }
 
 //------------------------------------------------------------------------------
+void SpriteBase::SetSourceRect(float x, float y, float width, float height)
+{
+	GetSpriteComponent()->SetSourceRect(x, y, width, height);
+}
+
+//------------------------------------------------------------------------------
 const Rect& SpriteBase::GetSourceRect() const
 {
 	return GetSpriteComponent()->GetSourceRect();
 }
 
+//------------------------------------------------------------------------------
+void SpriteBase::SetAnchorPoint(const Vector2& ratio)
+{
+	GetSpriteComponent()->SetAnchorPoint(ratio);
+}
+
+//------------------------------------------------------------------------------
+void SpriteBase::SetAnchorPoint(float ratioX, float ratioY)
+{
+	GetSpriteComponent()->SetAnchorPoint(ratioX, ratioY);
+}
 
 //==============================================================================
 // Sprite2D

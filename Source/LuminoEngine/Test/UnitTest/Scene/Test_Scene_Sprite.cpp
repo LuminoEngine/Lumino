@@ -17,12 +17,13 @@ TEST_F(Test_Scene_Sprite, Basic)
 	{
 		auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
 
-		auto sprite1 = Sprite2DComponent::Create(tex);
+		auto sprite1 = Sprite2D::Create(tex);
 		sprite1->SetPosition(0, 0);
 
-		auto sprite2 = Sprite2DComponent::Create(tex);
+		auto sprite2 = Sprite2D::Create(tex);
 		sprite2->SetPosition(32, 0);
 		sprite2->SetOpacity(0.5);
+		sprite2->SetBlendMode(BlendMode::Alpha);
 
 		Engine::Update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite.Basic1.png")));
@@ -33,11 +34,11 @@ TEST_F(Test_Scene_Sprite, Basic)
 TEST_F(Test_Scene_Sprite, BlendMode)
 {
 	auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
-	auto sprite1 = Sprite2DComponent::Create(tex);
-	auto sprite2 = Sprite2DComponent::Create(tex);
-	auto sprite3 = Sprite2DComponent::Create(tex);
-	auto sprite4 = Sprite2DComponent::Create(tex);
-	auto sprite5 = Sprite2DComponent::Create(tex);
+	auto sprite1 = Sprite2D::Create(tex);
+	auto sprite2 = Sprite2D::Create(tex);
+	auto sprite3 = Sprite2D::Create(tex);
+	auto sprite4 = Sprite2D::Create(tex);
+	auto sprite5 = Sprite2D::Create(tex);
 
 	sprite1->SetPosition(0, 0);
 	sprite1->SetBlendMode(BlendMode::Normal);
@@ -66,22 +67,22 @@ TEST_F(Test_Scene_Sprite, Anchor)
 		auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
 
 		// 左上原点
-		auto sprite1 = Sprite2DComponent::Create(tex);
+		auto sprite1 = Sprite2D::Create(tex);
 		sprite1->SetPosition(0, 0);
 		sprite1->SetAnchorPoint(0, 0);
 
 		// 中央原点
-		auto sprite2 = Sprite2DComponent::Create(tex);
+		auto sprite2 = Sprite2D::Create(tex);
 		sprite2->SetPosition(32, 32);
 		sprite2->SetAnchorPoint(Vector2(0.5, 0.5));
 
 		// 右下原点
-		auto sprite3 = Sprite2DComponent::Create(tex);
+		auto sprite3 = Sprite2D::Create(tex);
 		sprite3->SetPosition(64, 64);
 		sprite3->SetAnchorPoint(1, 1);
 
 		// 中央下原点
-		auto sprite4 = Sprite2DComponent::Create(tex);
+		auto sprite4 = Sprite2D::Create(tex);
 		sprite4->SetPosition(32, 120);
 		sprite4->SetAnchorPoint(0.5, 1);
 
@@ -101,9 +102,9 @@ TEST_F(Test_Scene_Sprite, DrawCallCount)
 		int defaultCount = EngineDiag::GetGraphicsDeviceDrawCount();
 
 		auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
-		auto sprite1 = Sprite2DComponent::Create(tex);
-		auto sprite2 = Sprite2DComponent::Create(tex);
-		auto sprite3 = Sprite2DComponent::Create(tex);
+		auto sprite1 = Sprite2D::Create(tex);
+		auto sprite2 = Sprite2D::Create(tex);
+		auto sprite3 = Sprite2D::Create(tex);
 
 		Engine::Update();
 		TestEnv::WaitRendering();
@@ -116,7 +117,7 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 {
 	// <Issues> デフォルトのサンプラステートの繰り返しモードは Repert になる。
 	{
-		auto sprite1 = Sprite2DComponent::Create(LN_LOCALFILE("TestData/Sprite1.png"));
+		auto sprite1 = Sprite2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
 		sprite1->SetSourceRect(32, 0, 32, 32);
 		Engine::Update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Scene_Sprite.Issues_Volkoff_1.png")));
@@ -127,8 +128,8 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 		auto tex2 = Texture2D::Create(32, 32);
 		tex1->Clear(Color32::Red);
 		tex2->Clear(Color32::Blue);
-		auto s1 = Sprite2DComponent::Create(tex1);
-		auto s2 = Sprite2DComponent::Create(tex2);
+		auto s1 = Sprite2D::Create(tex1);
+		auto s2 = Sprite2D::Create(tex2);
 		s1->SetPosition(10, 20, 100);
 		s2->SetPosition(15, 25, 100);	// スクリーンが Z 平面に平行なら、Z が同じときはあとから作ったものが常に手前になる。
 		Engine::Update();
@@ -142,7 +143,7 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 		auto tex2 = Texture2D::Create(32, 32);
 		tex1->Clear(Color32::Green);
 		tex2->Clear(Color32::Blue);
-		auto s1 = Sprite2DComponent::Create(tex1);
+		auto s1 = Sprite2D::Create(tex1);
 		Engine::Update();			// 1度描く
 		s1->SetTexture(tex2);			// 次にテクスチャを変更する
 		Engine::Update();

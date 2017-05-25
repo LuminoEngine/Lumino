@@ -55,6 +55,16 @@ class RenderingPass2;
 class CombinedMaterial;
 class DrawElementList;
 
+struct DefaultStatus
+{
+	RenderTargetTexture*	defaultRenderTarget;
+	DepthBuffer*			defaultDepthBuffer;
+	//BlendMode				blendMode;
+	//CullingMode				cullingMode;
+	//bool					depthTestEnabled;
+	//bool					depthWriteEnabled;
+};
+
 class DynamicLightInfo
 	: public RefObject
 {
@@ -94,6 +104,7 @@ class InternalContext
 	: public RefObject
 {
 public:
+
 	InternalContext();
 	void Initialize(detail::GraphicsManager* manager);
 	Details::Renderer* GetRenderStateManager();
@@ -109,7 +120,7 @@ public:
 	FrameRectRenderer* BeginFrameRectRenderer();
 
 	void SetViewInfo(const Size& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix);
-	void ApplyStatus(DrawElementBatch* state, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
+	void ApplyStatus(DrawElementBatch* state, const DefaultStatus& defaultStatus);
 	DrawElementBatch* GetCurrentStatus() const { return m_currentStatePtr; }
 	detail::SpriteRenderer* GetSpriteRenderer();
 
@@ -199,6 +210,19 @@ public:
 	void SetScissorRect(const RectI& scissorRect);
 	const RectI& GetScissorRect() const { return m_scissorRect; }
 
+	void SetBlendMode(BlendMode mode);
+	BlendMode GetBlendMode() const { return m_blendMode; }
+
+	void SetCullingMode(CullingMode mode);
+	CullingMode GetCullingMode() const { return m_cullingMode; }
+
+	void SetDepthTestEnabled(bool enabled);
+	bool IsDepthTestEnabled() const { return m_depthTestEnabled; }
+
+	void SetDepthWriteEnabled(bool enabled);
+	bool IsDepthWriteEnabled() const { return m_depthWriteEnabled; }
+
+
 	void SetBrush(Brush* brush);
 	Brush* GetBrush() const;
 
@@ -206,10 +230,10 @@ public:
 
 	void SetFont(Font* font);
 	Font* GetFont() const;		// not null (default font)
-
+								
 
 LN_INTERNAL_ACCESS:
-	void ApplyStatus(InternalContext* context, CombinedMaterial* combinedMaterial, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
+	void ApplyStatus(InternalContext* context, CombinedMaterial* combinedMaterial, const DefaultStatus& defaultStatus);
 	uint32_t GetHashCode() const;
 	void Reset();
 	bool IsHashDirty() const { return m_hashDirty; }
@@ -219,6 +243,10 @@ private:
 	RefPtr<RenderTargetTexture>	m_renderTargets[Graphics::MaxMultiRenderTargets];
 	RefPtr<DepthBuffer>			m_depthBuffer;
 	RectI						m_scissorRect;
+	BlendMode					m_blendMode;
+	CullingMode					m_cullingMode;
+	bool						m_depthTestEnabled;
+	bool						m_depthWriteEnabled;
 
 	RefPtr<Brush>				m_brush;
 	RefPtr<Font>				m_font;
@@ -246,7 +274,7 @@ public:
 
 	bool Equal(const BatchState& state, Material* material, const Matrix& transfrom, const BuiltinEffectData& effectData) const;
 	void Reset();
-	void ApplyStatus(InternalContext* context, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
+	void ApplyStatus(InternalContext* context, const DefaultStatus& defaultStatus);
 	size_t GetHashCode() const;
 	size_t GetBuiltinEffectDataHashCode() const;
 
@@ -517,10 +545,11 @@ public:
 	//--------------------------------------------------------------------------
 	/** @name Render status */
 	/** @{ */
+	void SetOpacity(float opacity);
 
 	void SetBlendMode(BlendMode mode);
 
-	void SetOpacity(float opacity);
+	void SetCullingMode(CullingMode mode);
 
 	void SetDepthTestEnabled(bool enabled);
 
