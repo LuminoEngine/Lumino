@@ -22,10 +22,12 @@ WorldObjectPtr WorldObject::Create()
 
 //------------------------------------------------------------------------------
 WorldObject::WorldObject()
-	: m_children()
+	: m_world(nullptr)
+	, m_children()
 	, m_parent(nullptr)
 	//, m_combinedGlobalMatrix()
 	, m_isAutoRelease(false)
+	, m_isSpecialObject(false)
 {
 }
 
@@ -46,6 +48,15 @@ void WorldObject::AddComponent(Component* component)
 	if (LN_CHECK_ARG(component->m_owner == nullptr)) return;
 	component->Attach(this);
 	m_components.Add(component);
+}
+
+//------------------------------------------------------------------------------
+void WorldObject::RemoveFromWorld()
+{
+	if (m_world != nullptr)
+	{
+		m_world->RemoveWorldObject(this);
+	}
 }
 
 //------------------------------------------------------------------------------

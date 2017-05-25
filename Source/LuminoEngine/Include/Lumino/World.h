@@ -36,6 +36,8 @@ public:
 	DrawList* GetRenderer() const;
 	DrawList* GetDebugRenderer() const;
 
+	void RemoveAllObjects();
+
 protected:
 	//virtual SceneGraph* GetSceneGraph() = 0;
 
@@ -46,6 +48,7 @@ LN_CONSTRUCT_ACCESS:
 
 LN_INTERNAL_ACCESS:
 	void AddWorldObject(WorldObject* obj, bool autoRelease /*= false*/);
+	void RemoveWorldObject(WorldObject* obj);
 	virtual void BeginUpdateFrame();
 	virtual void UpdateFrame(float elapsedTime);
 	virtual void Render(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags);

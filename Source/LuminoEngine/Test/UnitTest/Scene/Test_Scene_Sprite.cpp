@@ -27,6 +27,9 @@ TEST_F(Test_Scene_Sprite, Basic)
 
 		Engine::Update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite.Basic1.png")));
+
+		sprite1->RemoveFromWorld();
+		sprite2->RemoveFromWorld();
 	}
 }
 
@@ -57,6 +60,7 @@ TEST_F(Test_Scene_Sprite, BlendMode)
 
 	Engine::Update();
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite.BlendMode1.png")));
+	Engine::GetWorld2D()->RemoveAllObjects();
 }
 
 //------------------------------------------------------------------------------
@@ -88,6 +92,7 @@ TEST_F(Test_Scene_Sprite, Anchor)
 
 		Engine::Update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite.Anchor.png")));
+		Engine::GetWorld2D()->RemoveAllObjects();
 	}
 }
 
@@ -109,6 +114,7 @@ TEST_F(Test_Scene_Sprite, DrawCallCount)
 		Engine::Update();
 		TestEnv::WaitRendering();
 		ASSERT_EQ(defaultCount + 1, EngineDiag::GetGraphicsDeviceDrawCount());
+		Engine::GetWorld2D()->RemoveAllObjects();
 	}
 }
 
@@ -121,6 +127,7 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 		sprite1->SetSourceRect(32, 0, 32, 32);
 		Engine::Update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Scene_Sprite.Issues_Volkoff_1.png")));
+		Engine::GetWorld2D()->RemoveAllObjects();
 	}
 	// <Issues> 2D では Z ソートの基準がカメラ位置からの直線距離ではなく、スクリーンからの距離でなければならない。
 	{
@@ -134,6 +141,7 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 		s2->SetPosition(15, 25, 100);	// スクリーンが Z 平面に平行なら、Z が同じときはあとから作ったものが常に手前になる。
 		Engine::Update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Scene_Sprite.Issues_Volkoff_2.png")));
+		Engine::GetWorld2D()->RemoveAllObjects();
 	}
 	// <Issues> 2D では Z ソートの基準がカメラ位置からの直線距離ではなく、スクリーンからの距離でなければならない。
 
@@ -148,6 +156,7 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 		s1->SetTexture(tex2);			// 次にテクスチャを変更する
 		Engine::Update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Scene_Sprite.Issues_Volkoff_3.png")));
+		Engine::GetWorld2D()->RemoveAllObjects();
 	}
 }
 

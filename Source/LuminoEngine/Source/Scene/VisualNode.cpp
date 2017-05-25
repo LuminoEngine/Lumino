@@ -284,7 +284,6 @@ void VisualComponent::Render(DrawList* context)
 		context->SetDepthTestEnabled(m_depthTestEnabled);
 		context->SetDepthWriteEnabled(m_depthWriteEnabled);
 		context->SetBuiltinEffectData(m_builtinEffectData);
-		printf("%d\n", m_blendMode);
 		OnRender(context);
 		OnRender2(context);
 	}

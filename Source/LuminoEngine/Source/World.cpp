@@ -50,10 +50,33 @@ DrawList* World::GetDebugRenderer() const
 }
 
 //------------------------------------------------------------------------------
+void World::RemoveAllObjects()
+{
+	for (int i = m_rootWorldObjectList.GetCount() - 1; i >= 0; i--)
+	{
+		if (!m_rootWorldObjectList[i]->IsSpecialObject())
+		{
+			m_rootWorldObjectList[i]->m_parent = nullptr;
+			m_rootWorldObjectList.RemoveAt(i);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
 void World::AddWorldObject(WorldObject* obj, bool autoRelease)
 {
 	m_rootWorldObjectList.Add(obj);
+	obj->m_world = this;
 	obj->m_isAutoRelease = autoRelease;
+}
+
+//------------------------------------------------------------------------------
+void World::RemoveWorldObject(WorldObject* obj)
+{
+	if (LN_CHECK_ARG(obj != nullptr)) return;
+	if (LN_CHECK_STATE(obj->m_world == this)) return;
+	m_rootWorldObjectList.Remove(obj);
+	obj->m_parent = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -133,6 +156,7 @@ void World2D::Initialize()
 	m_sceneGraph->CreateCore(EngineManager::GetInstance()->GetSceneGraphManager());
 
 	m_mainCamera = NewObject<Camera>(m_sceneGraph, CameraProjection_2D);
+	m_mainCamera->SetSpecialObject(true);
 	AddWorldObject(m_mainCamera, true);
 }
 
@@ -219,9 +243,11 @@ void World3D::Initialize()
 	m_sceneGraph->CreateCore(EngineManager::GetInstance()->GetSceneGraphManager());
 
 	m_mainCamera = NewObject<Camera>(m_sceneGraph, CameraProjection_3D);
+	m_mainCamera->SetSpecialObject(true);
 	AddWorldObject(m_mainCamera, true);
 
 	m_mainLight = NewObject<Light>(m_sceneGraph);
+	m_mainLight->SetSpecialObject(true);
 	AddWorldObject(m_mainLight, true);
 
 	CreateGridPlane();
