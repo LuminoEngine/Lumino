@@ -71,6 +71,7 @@ public:
 
 	void AddComponent(Component* component);
 
+	void RemoveFromWorld();
 
 
 	/// 開始処理
@@ -90,6 +91,8 @@ protected:
 
 LN_INTERNAL_ACCESS:
 	//const Matrix& GetCombinedGlobalMatrix() const { return m_combinedGlobalMatrix; }
+	void SetSpecialObject(bool enalbed) { m_isSpecialObject = true; }
+	bool IsSpecialObject() const { return m_isSpecialObject; }
 
 private:
 	void UpdateFrame();
@@ -98,10 +101,12 @@ private:
 
 	List<RefPtr<Component>>		m_components;
 
+	World*						m_world;
 	List<RefPtr<WorldObject>>	m_children;
 	WorldObject*				m_parent;
 	//Matrix						m_combinedGlobalMatrix;
 	bool						m_isAutoRelease;
+	bool						m_isSpecialObject;	// World 内で特殊な扱いをされるオブジェクト。今はデフォルトのカメラとライトで、RemoveObjects で除外されない。
 
 	friend class World;
 };

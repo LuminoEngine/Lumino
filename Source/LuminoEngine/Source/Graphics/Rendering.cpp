@@ -234,10 +234,10 @@ SpriteRenderer* InternalContext::GetSpriteRenderer()
 }
 
 //------------------------------------------------------------------------------
-void InternalContext::ApplyStatus(DrawElementBatch* state, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
+void InternalContext::ApplyStatus(DrawElementBatch* state, const DefaultStatus& defaultStatus)
 {
 	m_currentStatePtr = state;
-	m_currentStatePtr->ApplyStatus(this, defaultRenderTarget, defaultDepthBuffer);
+	m_currentStatePtr->ApplyStatus(this, defaultStatus);
 
 	if (m_current != nullptr)
 	{
@@ -323,6 +323,46 @@ void BatchState::SetScissorRect(const RectI& scissorRect)
 }
 
 //------------------------------------------------------------------------------
+void BatchState::SetBlendMode(BlendMode mode)
+{
+	if (m_blendMode != mode)
+	{
+		m_blendMode = mode;
+		m_hashDirty = true;
+	}
+}
+
+//------------------------------------------------------------------------------
+void BatchState::SetCullingMode(CullingMode mode)
+{
+	if (m_cullingMode != mode)
+	{
+		m_cullingMode = mode;
+		m_hashDirty = true;
+	}
+}
+
+//------------------------------------------------------------------------------
+void BatchState::SetDepthTestEnabled(bool enabled)
+{
+	if (m_depthTestEnabled != enabled)
+	{
+		m_depthTestEnabled = enabled;
+		m_hashDirty = true;
+	}
+}
+
+//------------------------------------------------------------------------------
+void BatchState::SetDepthWriteEnabled(bool enabled)
+{
+	if (m_depthWriteEnabled != enabled)
+	{
+		m_depthWriteEnabled = enabled;
+		m_hashDirty = true;
+	}
+}
+
+//------------------------------------------------------------------------------
 void BatchState::SetBrush(Brush* brush)
 {
 	if (m_brush != brush)
@@ -361,6 +401,11 @@ void BatchState::Reset()
 		m_renderTargets[i] = nullptr;
 	m_depthBuffer = nullptr;
 
+	m_blendMode = BlendMode::Normal;
+	m_cullingMode = CullingMode::Back;
+	m_depthTestEnabled = true;
+	m_depthWriteEnabled = true;
+
 	m_brush = nullptr;
 	m_font = nullptr;
 
@@ -369,16 +414,21 @@ void BatchState::Reset()
 }
 
 //------------------------------------------------------------------------------
-void BatchState::ApplyStatus(InternalContext* context, CombinedMaterial* combinedMaterial, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
+void BatchState::ApplyStatus(InternalContext* context, CombinedMaterial* combinedMaterial, const DefaultStatus& defaultStatus)
 {
 	auto* stateManager = context->GetRenderStateManager();
 
 	// RenderState
 	{
+		BlendMode blendMode = (combinedMaterial->m_blendMode.IsSet()) ? combinedMaterial->m_blendMode.Get() : m_blendMode;
+		CullingMode cullingMode = (combinedMaterial->m_cullingMode.IsSet()) ? combinedMaterial->m_cullingMode.Get() : m_cullingMode;
+
+
+
 		// TODO: Base
 		RenderState state;
-		ContextInterface::MakeBlendMode(combinedMaterial->m_blendMode, &state);
-		state.Culling = combinedMaterial->m_cullingMode;
+		ContextInterface::MakeBlendMode(blendMode, &state);
+		state.Culling = cullingMode;
 		//state.AlphaTest = combinedMaterial->m_alphaTest;
 		stateManager->SetRenderState(state);
 
@@ -388,8 +438,8 @@ void BatchState::ApplyStatus(InternalContext* context, CombinedMaterial* combine
 	// DepthStencilState
 	{
 		DepthStencilState state;
-		state.DepthTestEnabled = combinedMaterial->m_depthTestEnabled;
-		state.DepthWriteEnabled = combinedMaterial->m_depthWriteEnabled;
+		state.DepthTestEnabled = (combinedMaterial->m_depthTestEnabled.IsSet()) ? combinedMaterial->m_depthTestEnabled.Get() : m_depthTestEnabled;
+		state.DepthWriteEnabled = (combinedMaterial->m_depthWriteEnabled.IsSet()) ? combinedMaterial->m_depthWriteEnabled.Get() : m_depthWriteEnabled;
 		stateManager->SetDepthStencilState(state);
 	}
 	// FrameBuffer
@@ -404,12 +454,12 @@ void BatchState::ApplyStatus(InternalContext* context, CombinedMaterial* combine
 		for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
 		{
 			if (i == 0 && m_renderTargets[i] == nullptr)
-				stateManager->SetRenderTarget(i, defaultRenderTarget);
+				stateManager->SetRenderTarget(i, defaultStatus.defaultRenderTarget);
 			else
 				stateManager->SetRenderTarget(i, m_renderTargets[i]);
 		}
 		if (m_depthBuffer == nullptr)
-			stateManager->SetDepthBuffer(defaultDepthBuffer);
+			stateManager->SetDepthBuffer(defaultStatus.defaultDepthBuffer);
 		else
 			stateManager->SetDepthBuffer(m_depthBuffer);
 		// TODO: m_scissorRect
@@ -540,9 +590,9 @@ void DrawElementBatch::Reset()
 }
 
 //------------------------------------------------------------------------------
-void DrawElementBatch::ApplyStatus(InternalContext* context, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
+void DrawElementBatch::ApplyStatus(InternalContext* context, const DefaultStatus& defaultStatus)
 {
-	state.ApplyStatus(context, m_combinedMaterial, defaultRenderTarget, defaultDepthBuffer);
+	state.ApplyStatus(context, m_combinedMaterial, defaultStatus);
 }
 
 //------------------------------------------------------------------------------
@@ -835,7 +885,7 @@ void InternalRenderer::Render(
 				context->Flush();
 				currentBatchIndex = element->batchIndex;
 				currentState = elementList->GetBatch(currentBatchIndex);
-				context->ApplyStatus(currentState, defaultRenderTarget, defaultDepthBuffer);
+				context->ApplyStatus(currentState, { defaultRenderTarget, defaultDepthBuffer });
 			}
 
 			// 固定の内部シェーダを使わない場合はいろいろ設定する
@@ -1267,7 +1317,13 @@ Shader* DrawList::GetShader() const
 //------------------------------------------------------------------------------
 void DrawList::SetBlendMode(BlendMode mode)
 {
-	m_defaultMaterial->SetBlendMode(mode);
+	m_state.state.state.SetBlendMode(mode);
+}
+
+//------------------------------------------------------------------------------
+void DrawList::SetCullingMode(CullingMode mode)
+{
+	m_state.state.state.SetCullingMode(mode);
 }
 
 //------------------------------------------------------------------------------
@@ -1279,13 +1335,13 @@ void DrawList::SetBlendMode(BlendMode mode)
 //------------------------------------------------------------------------------
 void DrawList::SetDepthTestEnabled(bool enabled)
 {
-	m_defaultMaterial->SetDepthTestEnabled(enabled);
+	m_state.state.state.SetDepthTestEnabled(enabled);
 }
 
 //------------------------------------------------------------------------------
 void DrawList::SetDepthWriteEnabled(bool enabled)
 {
-	m_defaultMaterial->SetDepthWriteEnabled(enabled);
+	m_state.state.state.SetDepthWriteEnabled(enabled);
 }
 
 //------------------------------------------------------------------------------
@@ -1962,7 +2018,8 @@ void DrawList::RenderSubDrawList(detail::DrawElementList* elementList, const det
 
 			renderer->Render(elementList, cameraInfo, defaultRenderTarget, defaultDepthBuffer);
 
-			context->ApplyStatus(status, oenerList->GetDefaultRenderTarget(), oenerList->GetDefaultDepthBuffer());
+			// ステート復帰
+			context->ApplyStatus(status, { oenerList->GetDefaultRenderTarget(), oenerList->GetDefaultDepthBuffer() });
 		}
 	};
 	auto* e = ResolveDrawElement<DrawElement_RenderSubDrawList>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_frameRectRenderer, nullptr);

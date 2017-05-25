@@ -187,9 +187,26 @@ public:
 	LN_METHOD(Property)
 	void SetSourceRect(const Rect& rect);
 
+	/** @overload SetSourceRect */
+	LN_METHOD()
+	void SetSourceRect(float x, float y, float width, float height);
+
 	/** テクスチャのどの部分を表示するかを示す転送矩形を取得します。(ピクセル単位) */
 	LN_METHOD(Property)
 	const Rect& GetSourceRect() const;
+	
+	/** 
+		@brief		スプライトの原点を設定します。
+		@details	値は (0,0) から (1,1) の間で指定します。
+					デフォルトは (0,0) で、これはスプライトの左上が原点であることを意味します。
+					(0.5,0.5) はスプライトの中央、(1,1) は右下が原点となります。
+	*/
+	LN_METHOD(Property)
+	void SetAnchorPoint(const Vector2& ratio);
+
+	/** @overload SetSourceRect */
+	LN_METHOD()
+	void SetAnchorPoint(float ratioX, float ratioY);
 
 protected:
 	virtual SpriteComponent* GetSpriteComponent() const = 0;

@@ -47,6 +47,12 @@ public:
 
     void reset() { m_isSet = false; m_value = T(); }
 
+
+	uint32_t GetHashCode() const
+	{
+		return (m_isSet) ? Hash::CalcHash(reinterpret_cast<const char*>(&m_value), sizeof(m_value)) : 0;
+	}
+
 private:
     void set(T value) { m_value = value; m_isSet = true; }
 

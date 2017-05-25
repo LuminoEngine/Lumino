@@ -60,10 +60,10 @@ MaterialPtr Material::Create()
 
 //------------------------------------------------------------------------------
 Material::Material()
-	: blendMode(BlendMode::Normal)
-	, cullingMode(CullingMode::Back)
-	, depthTestEnabled(true)
-	, depthWriteEnabled(true)
+	: blendMode(nullptr)
+	, cullingMode(nullptr)
+	, depthTestEnabled(nullptr)
+	, depthWriteEnabled(nullptr)
 	, m_revisionCount(0)
 {
 	InitializeProperties();
@@ -86,12 +86,12 @@ void Material::Reset()
 {
 	m_shader = nullptr;
 	// TODO: とりあえず
-	blendMode = BlendMode::Normal;
-	cullingMode = CullingMode::Back;
+	blendMode = nullptr;
+	cullingMode = nullptr;
 	////m_builtin.fill = FillMode_Solid;
 	//m_builtin.alphaTest = true;
-	depthTestEnabled = true;
-	depthWriteEnabled = true;
+	depthTestEnabled = nullptr;
+	depthWriteEnabled = nullptr;
 	m_revisionCount++;
 }
 
@@ -212,28 +212,28 @@ void Material::SetColorParameter(const StringRef& name, float r, float g, float 
 }
 
 //------------------------------------------------------------------------------
-void Material::SetBlendMode(BlendMode mode)
+void Material::SetBlendMode(Nullable<BlendMode> mode)
 {
 	blendMode = mode;
 	m_revisionCount++;
 }
 
 //------------------------------------------------------------------------------
-void Material::SetCullingMode(CullingMode mode)
+void Material::SetCullingMode(Nullable<CullingMode> mode)
 {
 	cullingMode = mode;
 	m_revisionCount++;
 }
 
 //------------------------------------------------------------------------------
-void Material::SetDepthTestEnabled(bool enabled)
+void Material::SetDepthTestEnabled(Nullable<bool> enabled)
 {
 	depthTestEnabled = enabled;
 	m_revisionCount++;
 }
 
 //------------------------------------------------------------------------------
-void Material::SetDepthWriteEnabled(bool enabled)
+void Material::SetDepthWriteEnabled(Nullable<bool> enabled)
 {
 	depthWriteEnabled = enabled;
 	m_revisionCount++;
@@ -316,6 +316,7 @@ uint32_t Material::GetHashCode()
 
 		//m_hashCode += Hash::CalcHash(reinterpret_cast<const char*>(&m_builtin), sizeof(m_builtin));
 
+		
 		m_hashCode += reinterpret_cast<intptr_t>(m_shader.Get());
 		m_hashCode += blendMode.GetHashCode();
 		m_hashCode += cullingMode.GetHashCode();

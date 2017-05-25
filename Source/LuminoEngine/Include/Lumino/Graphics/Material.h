@@ -178,32 +178,25 @@ public:
 	/** @{ */
 
 private:
-	tr::Property<BlendMode>		blendMode;
-	tr::Property<CullingMode>	cullingMode;
-	tr::Property<bool>			depthTestEnabled;
-	tr::Property<bool>			depthWriteEnabled;
+	Nullable<BlendMode>		blendMode;
+	Nullable<CullingMode>	cullingMode;
+	Nullable<bool>			depthTestEnabled;
+	Nullable<bool>			depthWriteEnabled;
 
 public:
 
-	void SetBlendMode(BlendMode mode);
-	BlendMode GetBlendMode() const { return blendMode; }
+	void SetBlendMode(Nullable<BlendMode> mode);
+	Nullable<BlendMode> GetBlendMode() const { return blendMode; }
 
-	void SetCullingMode(CullingMode mode);
-	CullingMode GetCullingMode() const { return cullingMode; }
+	void SetCullingMode(Nullable<CullingMode> mode);
+	Nullable<CullingMode> GetCullingMode() const { return cullingMode; }
 
-	/** @} */
+	void SetDepthTestEnabled(Nullable<bool> enabled);
+	Nullable<bool> IsDepthTestEnabled() const { return depthTestEnabled; }
 
-	//--------------------------------------------------------------------------
-	/** @name DepthStencilState */
-	/** @{ */
+	void SetDepthWriteEnabled(Nullable<bool> enabled);
+	Nullable<bool> IsDepthWriteEnabled() const { return depthWriteEnabled; }
 
-	void SetDepthTestEnabled(bool enabled);
-	bool IsDepthTestEnabled() const { return depthTestEnabled; }
-
-	void SetDepthWriteEnabled(bool enabled);
-	bool IsDepthWriteEnabled() const { return depthWriteEnabled; }
-
-	/** @} */
 
 LN_INTERNAL_ACCESS:
 	Material();
@@ -358,10 +351,10 @@ public:
 	float			m_power;
 	Texture*		m_mainTexture;
 
-	BlendMode		m_blendMode;
-	CullingMode		m_cullingMode;
-	bool			m_depthTestEnabled;
-	bool			m_depthWriteEnabled;
+	Nullable<BlendMode>		m_blendMode;
+	Nullable<CullingMode>	m_cullingMode;
+	Nullable<bool>			m_depthTestEnabled;
+	Nullable<bool>			m_depthWriteEnabled;
 
 	void Combine(Material* owner, Material* ownerBase, const BuiltinEffectData& builtinEffectData);
 	void ApplyUserShaderValeues(Shader* targetShader);

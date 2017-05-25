@@ -244,7 +244,7 @@ TEST_F(Test_Graphics_Rendering, DrawMesh)
 
 		LN_TEST_BEGIN_FRAME;
 		Engine::RenderFrame();
-		Engine::GetWorld3D()->GetRenderer()->DrawMesh(mesh, 0, mesh->GetMaterial(0));
+		Engine::GetWorld3D()->GetRenderer()->DrawMesh(mesh->GetMeshResource(0), 0, mesh->GetMaterial(0));
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1_1.png"), 95, true));	// 一致率 95%。もし真っ黒になったりしたらわかる
 	}
@@ -333,27 +333,27 @@ TEST_F(Test_Graphics_Rendering, DrawSprite)
 		auto* r = Engine::GetWorld2D()->GetRenderer();
 		r->SetBlendMode(BlendMode::Alpha);
 
-		r->DrawSprite(Vector3(48, 0, 10), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);	// 手前
-		r->DrawSprite(Vector3(0, 0, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(32, 0, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(48, 0, 10), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D, ln::BillboardType::None);	// 手前
+		r->DrawSprite(Vector3(0, 0, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D, ln::BillboardType::None);
+		r->DrawSprite(Vector3(32, 0, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D, ln::BillboardType::None);
 
-		r->DrawSprite(Vector3(0, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color(1, 0, 0, 1), SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(32, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color(0, 1, 0, 1), SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(64, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color(0, 0, 1, 1), SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(96, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color(1, 0, 0, 0.5), SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(128, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color(1, 0, 0, 0), SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(0, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color(1, 0, 0, 1), SpriteBaseDirection::Basic2D, ln::BillboardType::None);
+		r->DrawSprite(Vector3(32, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color(0, 1, 0, 1), SpriteBaseDirection::Basic2D, ln::BillboardType::None);
+		r->DrawSprite(Vector3(64, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color(0, 0, 1, 1), SpriteBaseDirection::Basic2D, ln::BillboardType::None);
+		r->DrawSprite(Vector3(96, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color(1, 0, 0, 0.5), SpriteBaseDirection::Basic2D, ln::BillboardType::None);
+		r->DrawSprite(Vector3(128, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color(1, 0, 0, 0), SpriteBaseDirection::Basic2D, ln::BillboardType::None);
 
-		r->DrawSprite(Vector3(0, 64, 0), Size(16, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(16, 64, 0), Size(32, 16), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(16, 80, 0), Size(16, 16), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(0, 64, 0), Size(16, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D, ln::BillboardType::None);
+		r->DrawSprite(Vector3(16, 64, 0), Size(32, 16), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D, ln::BillboardType::None);
+		r->DrawSprite(Vector3(16, 80, 0), Size(16, 16), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D, ln::BillboardType::None);
 
-		r->DrawSprite(Vector3(64, 64, 0), Size(16, 16), Vector2::Zero, tex, Rect(16, 0, 16, 32), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(80, 64, 0), Size(16, 16), Vector2::Zero, tex, Rect(0, 16, 32, 16), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(64, 80, 0), Size(16, 16), Vector2::Zero, tex, Rect(16, 16, 16, 16), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(80, 80, 0), Size(16, 16), Vector2::Zero, tex, Rect(0, 0, 16, 16), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(64, 64, 0), Size(16, 16), Vector2::Zero, tex, Rect(16, 0, 16, 32), Color::White, SpriteBaseDirection::Basic2D, ln::BillboardType::None);
+		r->DrawSprite(Vector3(80, 64, 0), Size(16, 16), Vector2::Zero, tex, Rect(0, 16, 32, 16), Color::White, SpriteBaseDirection::Basic2D, ln::BillboardType::None);
+		r->DrawSprite(Vector3(64, 80, 0), Size(16, 16), Vector2::Zero, tex, Rect(16, 16, 16, 16), Color::White, SpriteBaseDirection::Basic2D, ln::BillboardType::None);
+		r->DrawSprite(Vector3(80, 80, 0), Size(16, 16), Vector2::Zero, tex, Rect(0, 0, 16, 16), Color::White, SpriteBaseDirection::Basic2D, ln::BillboardType::None);
 
-		r->DrawSprite(Vector3(96, 64, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 16, 32), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(128, 64, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 16), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(96, 64, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 16, 32), Color::White, SpriteBaseDirection::Basic2D, ln::BillboardType::None);
+		r->DrawSprite(Vector3(128, 64, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 16), Color::White, SpriteBaseDirection::Basic2D, ln::BillboardType::None);
 
 		LN_TEST_END_FRAME;
 
@@ -368,26 +368,26 @@ TEST_F(Test_Graphics_Rendering, DrawSprite)
 		auto* r = Engine::GetWorld2D()->GetRenderer();
 
 		r->SetBlendMode(BlendMode::Normal); 
-		r->DrawSprite(Vector3(0, 0, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(64, 0, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(0, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(64, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
-		r->DrawSprite(Vector3(0, 64, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(0, 0, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D, ln::BillboardType::None);
+		r->DrawSprite(Vector3(64, 0, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D, ln::BillboardType::None);
+		r->DrawSprite(Vector3(0, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D, ln::BillboardType::None);
+		r->DrawSprite(Vector3(64, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D, ln::BillboardType::None);
+		r->DrawSprite(Vector3(0, 64, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D, ln::BillboardType::None);
 			
 		r->SetBlendMode(BlendMode::Normal);
-		r->DrawSprite(Vector3(16, 0, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(16, 0, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D, ln::BillboardType::None);
 
 		r->SetBlendMode(BlendMode::Alpha);
-		r->DrawSprite(Vector3(80, 0, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(80, 0, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D, ln::BillboardType::None);
 
 		r->SetBlendMode(BlendMode::Add);
-		r->DrawSprite(Vector3(16, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(16, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D, ln::BillboardType::None);
 			
 		r->SetBlendMode(BlendMode::Subtract);
-		r->DrawSprite(Vector3(80, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(80, 32, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D, ln::BillboardType::None);
 
 		r->SetBlendMode(BlendMode::Multiply);
-		r->DrawSprite(Vector3(16, 64, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D);
+		r->DrawSprite(Vector3(16, 64, 0), Size(32, 32), Vector2::Zero, tex, Rect(0, 0, 32, 32), Color::White, SpriteBaseDirection::Basic2D, ln::BillboardType::None);
 
 		LN_TEST_END_FRAME;
 
