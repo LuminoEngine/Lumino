@@ -315,12 +315,12 @@ UILayoutLayer::~UILayoutLayer()
 }
 
 //------------------------------------------------------------------------------
-void UILayoutLayer::Initialize()
+void UILayoutLayer::Initialize(DrawingContext* cc)
 {
 	UIViewportLayer::Initialize();
 	m_root = NewObject<UILayoutView>(UIContext::GetMainContext(), nullptr);	// TODO: コンテキスト変更とか
 
-	m_drawingContext = NewObject<DrawingContext>();
+	m_drawingContext = cc;;// NewObject<DrawingContext>();
 
 	// lighting disabled.
 	// TODO: NewObject
@@ -344,33 +344,33 @@ void UILayoutLayer::UpdateLayout(const Size& viewSize)
 //------------------------------------------------------------------------------
 void UILayoutLayer::Render()
 {
-	m_drawingContext->BeginMakeElements();
-	m_drawingContext->SetBlendMode(BlendMode::Alpha);
+	//m_drawingContext->BeginMakeElements();
+	//m_drawingContext->SetBlendMode(BlendMode::Alpha);
 	m_root->Render(m_drawingContext);
 }
 
 //------------------------------------------------------------------------------
 void UILayoutLayer::ExecuteDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
-	// TODO: float
-	Size viewPixelSize((float)renderTarget->GetWidth(), (float)renderTarget->GetHeight());
+	//// TODO: float
+	//Size viewPixelSize((float)renderTarget->GetWidth(), (float)renderTarget->GetHeight());
 
-	detail::CameraInfo cameraInfo;
-	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
-	cameraInfo.viewPixelSize = viewPixelSize;
-	cameraInfo.viewPosition = Vector3::Zero;
-	cameraInfo.viewMatrix = Matrix::Identity;
-	cameraInfo.projMatrix = Matrix::MakePerspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1);
-	cameraInfo.viewProjMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;
-	cameraInfo.viewFrustum = ViewFrustum(cameraInfo.projMatrix);
-	cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
-	parentDrawList->RenderSubDrawList(
-		m_drawingContext->GetDrawElementList(),
-		cameraInfo,
-		m_internalRenderer,
-		renderTarget,
-		depthBuffer);
-	m_drawingContext->EndFrame();
+	//detail::CameraInfo cameraInfo;
+	//cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
+	//cameraInfo.viewPixelSize = viewPixelSize;
+	//cameraInfo.viewPosition = Vector3::Zero;
+	//cameraInfo.viewMatrix = Matrix::Identity;
+	//cameraInfo.projMatrix = Matrix::MakePerspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1);
+	//cameraInfo.viewProjMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;
+	//cameraInfo.viewFrustum = ViewFrustum(cameraInfo.projMatrix);
+	//cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
+	//parentDrawList->RenderSubDrawList(
+	//	m_drawingContext->GetDrawElementList(),
+	//	cameraInfo,
+	//	m_internalRenderer,
+	//	renderTarget,
+	//	depthBuffer);
+	//m_drawingContext->EndFrame();
 }
 
 //------------------------------------------------------------------------------

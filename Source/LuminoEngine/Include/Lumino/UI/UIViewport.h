@@ -101,7 +101,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UILayoutLayer();
 	virtual ~UILayoutLayer();
-	void Initialize();
+	void Initialize(DrawingContext* cc);
 
 protected:
 	virtual void UpdateLayout(const Size& viewSize);

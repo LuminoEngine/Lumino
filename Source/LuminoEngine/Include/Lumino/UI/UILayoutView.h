@@ -6,7 +6,7 @@
 LN_NAMESPACE_BEGIN
 class DrawingContext;
 class PlatformWindow;
-namespace tr { class UIPopup; }
+class UIPopup;
 
 namespace detail {
 
@@ -15,8 +15,8 @@ class UIPopuoContainer
 	: public Object
 {
 public:
-	void SetPopup(ln::tr::UIPopup* popup);
-	ln::tr::UIPopup* GetPopup() const;
+	void SetPopup(UIPopup* popup);
+	UIPopup* GetPopup() const;
 
 LN_CONSTRUCT_ACCESS:
 	UIPopuoContainer();
@@ -24,7 +24,7 @@ LN_CONSTRUCT_ACCESS:
 	void Initialize();
 
 private:
-	RefPtr<ln::tr::UIPopup>	m_popup;
+	RefPtr<UIPopup>	m_popup;
 };
 
 } // namespace detail
@@ -56,8 +56,8 @@ LN_INTERNAL_ACCESS:
 
 
 	// Popup
-	void OpenPopup(tr::UIPopup* popup);
-	void ClosePopup(tr::UIPopup* popup);
+	void OpenPopup(UIPopup* popup);
+	void ClosePopup(UIPopup* popup);
 
 
 	// Implements IUIInjectedInputReceiver

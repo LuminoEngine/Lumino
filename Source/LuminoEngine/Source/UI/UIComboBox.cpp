@@ -9,8 +9,6 @@
 #include "UIHelper.h"
 
 LN_NAMESPACE_BEGIN
-namespace tr
-{
 
 //==============================================================================
 // UIPopup
@@ -195,5 +193,4 @@ void UIComboBox::OnMouseDown(UIMouseEventArgs* e)
 	UIControl::OnMouseDown(e);
 }
 
-} // namespace tr
 LN_NAMESPACE_END

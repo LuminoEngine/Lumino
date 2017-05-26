@@ -5,14 +5,10 @@
 
 LN_NAMESPACE_BEGIN
 class UIScrollViewer;
-
-namespace tr
-{
 class UIComboBoxItem;
 class UIComboBox;
 using UIComboBoxItemPtr = RefPtr<UIComboBoxItem>;
 using UIComboBoxPtr = RefPtr<UIComboBox>;
-
 
 /**
 	@brief
@@ -85,5 +81,4 @@ private:
 	RefPtr<UIPopup>			m_popup;
 };
 
-} // namespace tr
 LN_NAMESPACE_END

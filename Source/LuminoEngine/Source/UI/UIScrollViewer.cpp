@@ -300,12 +300,12 @@ void UITrack::CalcSliderComponentsSize(
 	if (isVertical)
 	{
 		trackLength = arrangeSize.height;
-		thumbLength = (m_thumb == nullptr) ? 0 : m_thumb->GetLayoutDesiredSize().height;
+		thumbLength = (m_thumb == nullptr) ? 0 : m_thumb->GetDesiredSize().height;
 	}
 	else
 	{
 		trackLength = arrangeSize.width;
-		thumbLength = (m_thumb == nullptr) ? 0 : m_thumb->GetLayoutDesiredSize().width;
+		thumbLength = (m_thumb == nullptr) ? 0 : m_thumb->GetDesiredSize().width;
 	}
 
 	CoerceLength(thumbLength, trackLength);

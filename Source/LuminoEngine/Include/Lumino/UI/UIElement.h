@@ -359,6 +359,11 @@ protected:
 
 	UIStylePropertyTable* GetLocalStyle() const { return m_localStyle; }
 
+	virtual bool OnEvent(detail::UIInternalEventType type, UIEventArgs* args);
+	virtual void OnRoutedEvent(UIEventArgs* e);
+	virtual void UpdateLayout(const Size& viewSize) override;
+	virtual detail::SpcialUIElementType GetSpcialUIElementType() const;
+
 LN_INTERNAL_ACCESS:
 	detail::UIManager* GetManager() const { return m_manager; }
 	UIContext* GetContext() const;
@@ -376,15 +381,11 @@ LN_INTERNAL_ACCESS:
 	//AnchorInfo* GetAnchorInfo() {return &m_anchorInfo; }
 	detail::InvalidateFlags GetInvalidateFlags() const { return m_invalidateFlags; }
 	UIElement* CheckMouseHoverElement(const PointF& globalPt);
-	virtual bool OnEvent(detail::UIInternalEventType type, UIEventArgs* args);
-	virtual void OnRoutedEvent(UIEventArgs* e);
 	void CallOnGotFocus();
 	void CallOnLostFocus();
 	const Rect& GetFinalGlobalRect() const { return m_finalGlobalRect; }
-	virtual detail::SpcialUIElementType GetSpcialUIElementType() const;
 	UIElement* GetVisualParent() const { return m_visualParent; }
 
-	void UpdateLayout(const Size& viewSize) override;
 	void Render(DrawingContext* g);
 
 protected:
@@ -401,7 +402,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	/** 指定した要素をこの要素のビジュアルツリーから削除します。*/
 	void RemoveVisualChild(UIElement* element);
 
-LN_PROTECTED_INTERNAL_ACCESS:
+private:
 	// ILayoutElement interface
 	virtual const PointF& GetLayoutPosition() const override;
 	virtual Size GetLayoutSize() const override;
@@ -482,6 +483,11 @@ private:
 
 	UIEventHandler::EventType	m_onGotFocus;
 	UIEventHandler::EventType	m_onLostFocus;
+
+	friend class UILayoutView;
+	friend class UIPopup;
+	friend class UIContext;
+	friend class UIHelper;
 };
 
 LN_NAMESPACE_END
