@@ -147,6 +147,7 @@ void UIFrameWindow::Initialize_UIRenderer()
 	m_drawingContext = NewObject<DrawingContext>();
 
 	// lighting disabled.
+	// TODO: NewObject
 	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
 	internalRenderer->Initialize(manager->GetGraphicsManager());
 	m_internalRenderer = internalRenderer;
@@ -242,6 +243,8 @@ void UIMainWindow::Initialize(detail::UIManager* manager, PlatformWindow* platfo
 	m_mainUIViewport->AddViewportLayer(m_cameraViewportLayer3D);
 	m_cameraViewportLayer2D = NewObject<CameraViewportLayer2>(defaultWorld2D, defaultWorld2D->GetMainCamera()->GetCameraComponent());
 	m_mainUIViewport->AddViewportLayer(m_cameraViewportLayer2D);
+	m_uiLayer = NewObject<UILayoutLayer>();
+	m_mainUIViewport->AddViewportLayer(m_uiLayer);
 
 	SetLayoutPanel(panel);
 
@@ -330,6 +333,12 @@ CameraViewportLayer2* UIMainWindow::GetDefaultCameraViewportLayer2D() const
 CameraViewportLayer2* UIMainWindow::GetDefaultCameraViewportLayer3D() const
 {
 	return m_cameraViewportLayer3D;
+}
+
+//------------------------------------------------------------------------------
+UILayoutLayer* UIMainWindow::GetDefaultUILayer() const
+{
+	return m_uiLayer;
 }
 
 //==============================================================================

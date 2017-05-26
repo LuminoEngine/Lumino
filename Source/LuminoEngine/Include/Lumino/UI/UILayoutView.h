@@ -32,7 +32,7 @@ private:
 /**
 	@brief		
 	@details	UILayoutView はネイティブウィンドウと UI システムの接合点となり、
-				UI レイアウトのルート要素を保持します。
+				UI レイアウトのルート要素となります。
 */
 class UILayoutView
 	: public UIControl
@@ -70,7 +70,7 @@ LN_INTERNAL_ACCESS:
 	virtual bool InjectKeyUp(Keys keyCode, ModifierKeys modifierKeys) override;
 	virtual bool InjectTextInput(TCHAR ch) override;
 
-protected:
+LN_CONSTRUCT_ACCESS:
 	UILayoutView();
 	virtual ~UILayoutView();
 	void Initialize(UIContext* ownerContext, PlatformWindow* ownerNativeWindow);

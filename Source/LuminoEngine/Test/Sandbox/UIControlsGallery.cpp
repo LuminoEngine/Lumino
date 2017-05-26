@@ -19,12 +19,13 @@ void UIControlsGallery()
 	CameraComponent::GetMain3DCamera()->SetCameraBehavior(cb);
 
 
-	auto* mainWindow = Engine::GetMainWindow();
+	//auto* uiRoot = Engine::GetMainWindow();
+	auto* uiRoot = Engine::GetDefaultUILayer()->GetLayoutView();
 
 
 	auto listBox1 = UIListBox::Create();
 	listBox1->SetWidth(200);
-	mainWindow->AddChild(listBox1);
+	uiRoot->AddChild(listBox1);
 
 	auto item = listBox1->AddTextItem(_T("スプライト"));
 	auto button1 = UIButton::Create(_T(">"), 20, 20);
@@ -67,9 +68,9 @@ void UIControlsGallery()
 	//auto box1 = StaticMeshComponent::Create(LN_LOCALFILE("Assets/cube.mqo"));
 	//auto box1 = StaticMeshComponent::Create(LN_LOCALFILE("Assets/cylinder2.mqo"));
 	//auto box1 = StaticMeshComponent::Create(LN_LOCALFILE("Assets/Plant1.mqo"));
-	auto box1 = StaticMeshComponent::Create(_T("D:/Documents/Modeling/test4.mqo"));
-	auto mesh1 = NewObject<WorldObject3D>();
-	mesh1->AddComponent(box1);
+	//auto box1 = StaticMeshComponent::Create(_T("D:/Documents/Modeling/test4.mqo"));
+	//auto mesh1 = NewObject<WorldObject3D>();
+	//mesh1->AddComponent(box1);
 	
 #if 0
 	auto font = Font::GetDefault();
