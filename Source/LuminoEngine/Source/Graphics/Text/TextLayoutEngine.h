@@ -89,7 +89,7 @@ private:
 
 
 
-class TextLayoutEngine2
+class AbstractTextLayoutEngine
 {
 public:
 	struct ResultItem
@@ -105,7 +105,9 @@ public:
 		List<ResultItem>	items;
 	};
 
-	void Layout(RawFont* font, const UTF32* text, int length, const Rect& layoutArea, TextLayoutOptions options, ResultData* outResult);
+protected:
+	void Layout(RawFont* font, const UTF32* text, int length, const Rect& layoutArea, TextLayoutOptions options);
+	virtual void OnPlacementChar(const ResultItem& item) = 0;
 
 private:
 	void LayoutTextHorizontal(const UTF32* text, int length);
@@ -114,11 +116,21 @@ private:
 	RawFont*			m_font;
 	FontGlobalMertics	m_globalMetrics;
 	TextLayoutOptions	m_options;
-	ResultData*			m_result;
 	float				m_currentLineBaseline;
 };
 
 
+class TextLayoutEngine2 : public AbstractTextLayoutEngine
+{
+public:
+	void Layout(RawFont* font, const UTF32* text, int length, const Rect& layoutArea, TextLayoutOptions options, ResultData* outResult);
+
+protected:
+	virtual void OnPlacementChar(const ResultItem& item);
+
+private:
+	ResultData*			m_result;
+};
 
 
 } // namespace detail

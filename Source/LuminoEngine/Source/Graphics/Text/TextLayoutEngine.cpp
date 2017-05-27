@@ -209,24 +209,23 @@ void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const
 
 
 
+//==============================================================================
+// AbstractTextLayoutEngine
+//==============================================================================
 //------------------------------------------------------------------------------
-void TextLayoutEngine2::Layout(RawFont* font, const UTF32* text, int length, const Rect& layoutArea, TextLayoutOptions options, ResultData* outResult)
+void AbstractTextLayoutEngine::Layout(RawFont* font, const UTF32* text, int length, const Rect& layoutArea, TextLayoutOptions options)
 {
 	m_font = font;
 	m_options = options;
-	m_result = outResult;
 
 	m_font->GetGlobalMetrics(&m_globalMetrics);
 	m_currentLineBaseline = m_globalMetrics.ascender;
-
-	m_result->areaSize = Size::Zero;
-	m_result->items.Clear();
 
 	LayoutTextHorizontal(text, length);
 }
 
 //------------------------------------------------------------------------------
-void TextLayoutEngine2::LayoutTextHorizontal(const UTF32* text, int length)
+void AbstractTextLayoutEngine::LayoutTextHorizontal(const UTF32* text, int length)
 {
 	const UTF32* lineBegin = text;
 	const UTF32* end = text + length;
@@ -251,7 +250,7 @@ void TextLayoutEngine2::LayoutTextHorizontal(const UTF32* text, int length)
 }
 
 //------------------------------------------------------------------------------
-void TextLayoutEngine2::LayoutLineHorizontal(const UTF32* text, int length)
+void AbstractTextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length)
 {
 	ResultItem item;
 	const UTF32* prev = nullptr;
@@ -267,7 +266,7 @@ void TextLayoutEngine2::LayoutLineHorizontal(const UTF32* text, int length)
 		item.ch = text[i];
 		item.columnBaseline = x;
 		item.lineBaseline = m_currentLineBaseline;
-		m_result->items.Add(item);
+		OnPlacementChar(item);
 
 		FontGlyphMertics metrics;
 		m_font->GetGlyphMetrics(text[i], &metrics);
@@ -277,6 +276,23 @@ void TextLayoutEngine2::LayoutLineHorizontal(const UTF32* text, int length)
 	}
 }
 
+//==============================================================================
+// TextLayoutEngine2
+//==============================================================================
+//------------------------------------------------------------------------------
+void TextLayoutEngine2::Layout(RawFont* font, const UTF32* text, int length, const Rect& layoutArea, TextLayoutOptions options, ResultData* outResult)
+{
+	m_result = outResult;
+	m_result->areaSize = Size::Zero;
+	m_result->items.Clear();
+	AbstractTextLayoutEngine::Layout(font, text, length, layoutArea, options);
+}
+
+//------------------------------------------------------------------------------
+void TextLayoutEngine2::OnPlacementChar(const ResultItem& item)
+{
+	m_result->items.Add(item);
+}
 
 } // namespace detail
 LN_NAMESPACE_END

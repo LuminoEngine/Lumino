@@ -161,6 +161,8 @@ struct FontGlobalMertics
 
 struct FontGlyphMertics
 {
+	float	bearingX;
+	float	bearingY;
 	Vector2	advance;		// 次の文字までのベースライン間隔
 };
 
