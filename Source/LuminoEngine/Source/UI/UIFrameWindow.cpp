@@ -243,8 +243,8 @@ void UIMainWindow::Initialize(detail::UIManager* manager, PlatformWindow* platfo
 	m_mainUIViewport->AddViewportLayer(m_cameraViewportLayer3D);
 	m_cameraViewportLayer2D = NewObject<CameraViewportLayer2>(defaultWorld2D, defaultWorld2D->GetMainCamera()->GetCameraComponent());
 	m_mainUIViewport->AddViewportLayer(m_cameraViewportLayer2D);
-	//m_uiLayer = NewObject<UILayoutLayer>(GetDrawingContext());
-	//m_mainUIViewport->AddViewportLayer(m_uiLayer);
+	m_uiLayer = NewObject<UILayoutLayer>();
+	m_mainUIViewport->AddViewportLayer(m_uiLayer);
 
 	SetLayoutPanel(panel);
 
