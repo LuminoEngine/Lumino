@@ -33,7 +33,7 @@ public:
 
 
 	/** 現在の姿勢を取得します。*/
-	const Matrix& GetTransform() const;
+	//const Matrix& GetTransform() const;
 
 	/** 衝突判定形状を追加します。*/
 	LN_METHOD()
@@ -88,7 +88,7 @@ private:
 	class LocalGhostObject;
 
 	LocalGhostObject*		m_btGhostObject;
-	RefPtr<CollisionShape>	m_shape;
+	detail::BtShapeManager	m_btShapeManager;
 	Matrix					m_transform;
 	bool					m_isTrigger;
 	bool					m_initialUpdate;

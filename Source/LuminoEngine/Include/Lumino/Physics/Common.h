@@ -24,3 +24,31 @@ class btCollisionObject;
 class btManifoldPoint;
 struct btCollisionObjectWrapper;
 class btGeneric6DofSpringConstraint;
+
+
+LN_NAMESPACE_BEGIN
+class CollisionShape;
+
+namespace detail {
+
+class BtShapeManager
+{
+public:
+	BtShapeManager();
+	~BtShapeManager();
+	void AddShape(CollisionShape* shape);
+	bool IsEmpty() const;
+	btCollisionShape* GetBtCollisionShape();
+
+private:
+	void Refresh();
+
+	RefPtr<CollisionShape>		m_collisionShape;
+	btCompoundShape*			m_btCompoundShape;
+	btCollisionShape*			m_activeShape;
+	bool						m_dirty;
+};
+
+} // namespace detail
+LN_NAMESPACE_END
+

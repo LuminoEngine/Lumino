@@ -54,8 +54,6 @@ RefPtr<RigidBody> RigidBody::Create(CollisionShape* collider)
 RigidBody::RigidBody()
 	: PhysicsObject()
 	, m_btRigidBody(nullptr)
-	, m_collisionShape(nullptr)
-	, m_btCompoundShape(nullptr)
 	, m_constraintFlags(RigidbodyConstraintFlags::None)
 	, m_modifiedFlags(Modified_None)
 {
@@ -70,7 +68,6 @@ RigidBody::~RigidBody()
 		LN_SAFE_DELETE(state);
 		LN_SAFE_DELETE(m_btRigidBody);
 	}
-	LN_SAFE_DELETE(m_btCompoundShape);
 }
 
 //------------------------------------------------------------------------------
@@ -78,7 +75,7 @@ void RigidBody::Initialize(CollisionShape* collider, const ConfigData& configDat
 {
 	if (LN_CHECK_ARG(collider != nullptr)) return;
 	PhysicsObject::Initialize();
-	m_collisionShape = collider;
+	m_btShapeManager.AddShape(collider);
 	m_data = configData;
 	m_modifiedFlags |= Modified_InitialUpdate;
 	detail::EngineDomain::GetPhysicsWorld3D()->AddPhysicsObject(this);
@@ -89,7 +86,7 @@ void RigidBody::InitializeCore(CollisionShape* collider, const ConfigData& confi
 {
 	if (LN_CHECK_ARG(collider != nullptr)) return;
 	PhysicsObject::Initialize();
-	m_collisionShape = collider;
+	m_btShapeManager.AddShape(collider);
 	m_data = configData;
 	m_data.Scale = scale;
 	SetCollisionFilterGroup(configData.Group);
@@ -495,34 +492,7 @@ void RigidBody::OnUpdate()
 //------------------------------------------------------------------------------
 void RigidBody::CreateBtRigidBody()
 {
-	btCollisionShape* shape;
-	if (m_collisionShape->GetCenter() != Vector3::Zero)
-	{
-		if (m_btCompoundShape == nullptr)
-		{
-			m_btCompoundShape = new btCompoundShape();
-		}
-		else
-		{
-			for (int i = m_btCompoundShape->getNumChildShapes() - 1; i >= 0; i--)
-			{
-				m_btCompoundShape->removeChildShapeByIndex(i);
-			}
-		}
-
-		btTransform t;
-		t.setBasis(btMatrix3x3::getIdentity());
-		t.setOrigin(detail::BulletUtil::LNVector3ToBtVector3(m_collisionShape->GetCenter()));
-		m_btCompoundShape->addChildShape(t, m_collisionShape->GetBtCollisionShape());
-
-		shape = m_btCompoundShape;
-	}
-	else
-	{
-		shape = m_collisionShape->GetBtCollisionShape();
-	}
-
-
+	btCollisionShape* shape = m_btShapeManager.GetBtCollisionShape();
 
 
 	// 各初期プロパティ
