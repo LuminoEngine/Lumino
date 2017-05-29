@@ -47,6 +47,8 @@ public:
 	LN_METHOD(Property)
 	bool IsTrigger() const;
 
+	// TODO: ContactBodies();
+	const List<PhysicsObject*>& GetContactPhysicsObjects() const { return m_contactObjects; }
 
 	/** OnTriggerEnter イベントの通知を受け取るコールバックを登録します。*/
 	LN_METHOD(Event)
@@ -90,6 +92,7 @@ private:
 	LocalGhostObject*		m_btGhostObject;
 	detail::BtShapeManager	m_btShapeManager;
 	Matrix					m_transform;
+	List<PhysicsObject*>		m_contactObjects;
 	bool					m_isTrigger;
 	bool					m_initialUpdate;
 
