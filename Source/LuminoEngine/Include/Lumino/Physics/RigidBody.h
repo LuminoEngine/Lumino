@@ -190,8 +190,8 @@ LN_INTERNAL_ACCESS:
 	void MarkMMDDynamic();
 
 
-	virtual void OnBeforeStepSimulation();
-	virtual void OnAfterStepSimulation();
+	virtual void OnBeforeStepSimulation() override;
+	virtual void OnAfterStepSimulation() override;
 	virtual void OnRemovedFromWorld() override;
 
 
@@ -217,8 +217,7 @@ private:
 
 	//PhysicsWorld*				m_ownerWorld;
 	btRigidBody*				m_btRigidBody;
-	RefPtr<CollisionShape>		m_collisionShape;
-	btCompoundShape*			m_btCompoundShape;
+	detail::BtShapeManager		m_btShapeManager;
 	
 	//List<RefPtr<CollisionShape>>		m_colliders;
 	//btCollisionShape*			m_rootBtCollisionShape;

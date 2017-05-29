@@ -198,6 +198,7 @@ public:
 	detail::AudioManager* GetAudioManager() const { return m_audioManager; }
 	detail::PhysicsManager* GetPhysicsManager() const;
 	detail::GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
+	detail::ModelManager* GetModelManager() const { return m_modelManager; }
 	detail::DocumentsManager* GetDocumentsManager() const { return m_documentsManager; }
 	detail::UIManager* GetUIManager() const { return m_uiManager; }
 	SceneGraphManager* GetSceneGraphManager() const { return m_sceneGraphManager; }

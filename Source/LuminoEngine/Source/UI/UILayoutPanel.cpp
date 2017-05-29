@@ -109,8 +109,8 @@ detail::GridDefinitionData* UILayoutPanel::GetLayoutGridRowDefinition(int index)
 //------------------------------------------------------------------------------
 float UILayoutPanel::GetExtentWidth() const { return GetDesiredSize().width; }
 float UILayoutPanel::GetExtentHeight() const { return GetDesiredSize().height; }
-float UILayoutPanel::GetViewportWidth() const { return GetLayoutFinalLocalRect().width; }
-float UILayoutPanel::GetViewportHeight() const { return GetLayoutFinalLocalRect().height; }
+float UILayoutPanel::GetViewportWidth() const { return GetRenderSize().width; }
+float UILayoutPanel::GetViewportHeight() const { return GetRenderSize().height; }
 void UILayoutPanel::SetHorizontalOffset(float offset) { m_scrollOffset.x = offset; }
 float UILayoutPanel::GetHorizontalOffset() const { return m_scrollOffset.x; }
 void UILayoutPanel::SetVerticalOffset(float offset) { m_scrollOffset.y = offset; }

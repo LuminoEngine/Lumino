@@ -14,6 +14,7 @@ class CameraViewportLayer2;
 class World2D;
 class World3D;
 class UIViewport;
+class UILayoutLayer;
 
 /**
 	@brief		
@@ -93,14 +94,16 @@ LN_INTERNAL_ACCESS:
 
 	CameraViewportLayer2* GetDefaultCameraViewportLayer2D() const;
 	CameraViewportLayer2* GetDefaultCameraViewportLayer3D() const;
+	UILayoutLayer* GetDefaultUILayer() const;
 
 private:
 	void UpdateViewportTransform();
 
 	UIContext*						m_mainUIContext;
 	RefPtr<UIViewport>				m_mainUIViewport;
-	RefPtr<CameraViewportLayer2>	m_cameraViewportLayer2D;
 	RefPtr<CameraViewportLayer2>	m_cameraViewportLayer3D;
+	RefPtr<CameraViewportLayer2>	m_cameraViewportLayer2D;
+	RefPtr<UILayoutLayer>			m_uiLayer;
 };
 
 

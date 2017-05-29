@@ -1,6 +1,8 @@
 ﻿
 #include "Internal.h"
-#include <Lumino/UI/UIViewport.h>"
+#include <Lumino/UI/UIViewport.h>
+#include <Lumino/UI/UILayoutView.h>
+#include <Lumino/UI/UIContext.h>
 #include <Lumino/Graphics/DrawingContext.h>
 #include "UIManager.h"
 
@@ -85,6 +87,12 @@ void UIViewport::OnRoutedEvent(UIEventArgs* e)
 Size UIViewport::ArrangeOverride(const Size& finalSize)
 {
 	Size renderSize = UIElement::ArrangeOverride(finalSize);
+
+
+	for (auto& layer : m_viewportLayerList)
+	{
+		layer->UpdateLayout(finalSize);
+	}
 
 
 	return renderSize;
@@ -278,6 +286,11 @@ void UIViewportLayer::OnRoutedEvent(UIEventArgs* e)
 }
 
 //------------------------------------------------------------------------------
+void UIViewportLayer::UpdateLayout(const Size& viewSize)
+{
+}
+
+//------------------------------------------------------------------------------
 void UIViewportLayer::PostRender(DrawList* context, RefPtr<RenderTargetTexture>* primaryLayerTarget, RefPtr<RenderTargetTexture>* secondaryLayerTarget)
 {
 	for (auto& e : m_postEffects)
@@ -285,6 +298,84 @@ void UIViewportLayer::PostRender(DrawList* context, RefPtr<RenderTargetTexture>*
 		e->OnRender(context, *primaryLayerTarget, *secondaryLayerTarget);
 		std::swap(*primaryLayerTarget, *secondaryLayerTarget);
 	}
+}
+
+
+//==============================================================================
+// PostEffect
+//==============================================================================
+//------------------------------------------------------------------------------
+UILayoutLayer::UILayoutLayer()
+{
+}
+
+//------------------------------------------------------------------------------
+UILayoutLayer::~UILayoutLayer()
+{
+}
+
+//------------------------------------------------------------------------------
+void UILayoutLayer::Initialize()
+{
+	UIViewportLayer::Initialize();
+	m_root = NewObject<UILayoutView>(UIContext::GetMainContext(), nullptr);	// TODO: コンテキスト変更とか
+
+	m_drawingContext = NewObject<DrawingContext>();
+
+	// lighting disabled.
+	// TODO: NewObject
+	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
+	internalRenderer->Initialize(detail::EngineDomain::GetGraphicsManager());
+	m_internalRenderer = internalRenderer;
+}
+
+//------------------------------------------------------------------------------
+UILayoutView* UILayoutLayer::GetLayoutView() const
+{
+	return m_root;
+}
+
+//------------------------------------------------------------------------------
+void UILayoutLayer::UpdateLayout(const Size& viewSize)
+{
+	m_root->UpdateLayout(viewSize);
+}
+
+//------------------------------------------------------------------------------
+void UILayoutLayer::Render()
+{
+	m_drawingContext->BeginMakeElements();
+	m_drawingContext->SetBlendMode(BlendMode::Alpha);
+	m_root->Render(m_drawingContext);
+}
+
+//------------------------------------------------------------------------------
+void UILayoutLayer::ExecuteDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+{
+	// TODO: float
+	Size viewPixelSize((float)renderTarget->GetWidth(), (float)renderTarget->GetHeight());
+
+	detail::CameraInfo cameraInfo;
+	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
+	cameraInfo.viewPixelSize = viewPixelSize;
+	cameraInfo.viewPosition = Vector3::Zero;
+	cameraInfo.viewMatrix = Matrix::Identity;
+	cameraInfo.projMatrix = Matrix::MakePerspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1);
+	cameraInfo.viewProjMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;
+	cameraInfo.viewFrustum = ViewFrustum(cameraInfo.projMatrix);
+	cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
+	parentDrawList->RenderSubDrawList(
+		m_drawingContext->GetDrawElementList(),
+		cameraInfo,
+		m_internalRenderer,
+		renderTarget,
+		depthBuffer);
+	m_drawingContext->EndFrame();
+}
+
+//------------------------------------------------------------------------------
+void UILayoutLayer::OnRoutedEvent(UIEventArgs* e)
+{
 }
 
 //==============================================================================

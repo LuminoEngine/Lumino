@@ -57,6 +57,7 @@ void TransitionPostEffect::Transition(float duration, Texture* mask, int vague)
 //------------------------------------------------------------------------------
 void TransitionPostEffect::OnRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
+	// TODO: time
 	m_factor += 0.016;
 	if (m_factor > 1.0f) m_factor = 1.0f;
 

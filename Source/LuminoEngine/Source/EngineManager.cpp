@@ -888,6 +888,12 @@ GraphicsManager* EngineDomain::GetGraphicsManager()
 }
 
 //------------------------------------------------------------------------------
+ModelManager* EngineDomain::GetModelManager()
+{
+	return EngineManager::GetInstance()->GetModelManager();
+}
+
+//------------------------------------------------------------------------------
 UIManager* EngineDomain::GetUIManager()
 {
 	return EngineManager::GetInstance()->GetUIManager();

@@ -149,7 +149,7 @@ Size UIControl::MeasureOverride(const Size& constraint)
 	Size desiredSize = UIElement::MeasureOverride(constraint);
 
 	m_itemsHostPanel->MeasureLayout(constraint);
-	const Size& childDesiredSize = m_itemsHostPanel->GetLayoutDesiredSize();
+	const Size& childDesiredSize = m_itemsHostPanel->GetDesiredSize();
 
 	desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
 	desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
@@ -177,7 +177,7 @@ Size UIControl::MeasureOverride(const Size& constraint)
 Size UIControl::ArrangeOverride(const Size& finalSize)
 {
 #if 1
-	Size childDesiredSize = m_itemsHostPanel->GetLayoutDesiredSize();
+	Size childDesiredSize = m_itemsHostPanel->GetDesiredSize();
 	childDesiredSize.width = std::max(finalSize.width, childDesiredSize.width);
 	childDesiredSize.height = std::max(finalSize.height, childDesiredSize.height);
 	m_itemsHostPanel->ArrangeLayout(Rect(0.0f, 0.0f, childDesiredSize));

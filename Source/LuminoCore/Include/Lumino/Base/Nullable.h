@@ -24,6 +24,11 @@ public:
         swap(*this, other);
         return *this;
     }
+	Nullable& operator=(std::nullptr_t)
+	{
+		reset();
+		return *this;
+	}
 
 	T& operator=(const T& value) { set(value); return m_value; }
 	bool operator==(const T& value) const { return m_isSet && value == m_value; }

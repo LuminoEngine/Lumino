@@ -5,6 +5,7 @@
 
 LN_NAMESPACE_BEGIN
 class EngineManager;
+class StaticMeshModel;
 
 /**
 	@brief
@@ -25,6 +26,8 @@ public:
 
 	Texture2DPtr LoadTexture(const StringRef& filePath);
 
+	RefPtr<StaticMeshModel> LoadMeshModel(const StringRef& filePath);
+
 	String LoadText(const StringRef& filePath);
 
 	RefPtr<Stream> OpenFile(const StringRef& filePath);
@@ -40,6 +43,7 @@ private:
 
 	void MakeSearchPath(const StringRef& path);
 	const PathName* FindLocalFilePath();
+	//Stream* CreateFileStream(const StringRef& filePath, bool isDeferring = false);
 
 	EngineManager*			m_engineManager;
 	List<AssetsDirectory>	m_assetsDirectories;

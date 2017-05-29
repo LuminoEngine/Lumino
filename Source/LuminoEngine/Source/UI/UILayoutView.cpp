@@ -32,13 +32,13 @@ void UIPopuoContainer::Initialize()
 }
 
 //------------------------------------------------------------------------------
-void UIPopuoContainer::SetPopup(ln::tr::UIPopup* popup)
+void UIPopuoContainer::SetPopup(UIPopup* popup)
 {
 	m_popup = popup;
 }
 
 //------------------------------------------------------------------------------
-ln::tr::UIPopup* UIPopuoContainer::GetPopup() const
+UIPopup* UIPopuoContainer::GetPopup() const
 {
 	return m_popup;
 }
@@ -155,7 +155,7 @@ EXIT:
 }
 
 //------------------------------------------------------------------------------
-void UILayoutView::OpenPopup(tr::UIPopup* popup)
+void UILayoutView::OpenPopup(UIPopup* popup)
 {
 	auto container = NewObject<detail::UIPopuoContainer>();
 	container->SetPopup(popup);
@@ -163,7 +163,7 @@ void UILayoutView::OpenPopup(tr::UIPopup* popup)
 }
 
 //------------------------------------------------------------------------------
-void UILayoutView::ClosePopup(tr::UIPopup* popup)
+void UILayoutView::ClosePopup(UIPopup* popup)
 {
 	m_popupContainers.RemoveIf([popup](const RefPtr<detail::UIPopuoContainer>& ptr) { return ptr->GetPopup() == popup; });
 }

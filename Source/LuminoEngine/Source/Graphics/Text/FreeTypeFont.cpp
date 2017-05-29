@@ -571,6 +571,9 @@ void FreeTypeFont::GetGlyphMetrics(UTF32 utf32Code, FontGlyphMertics* outMetrics
 	FT_Error err = FT_Load_Glyph(m_ftFace, glyphIndex, FT_LOAD_DEFAULT);
 	if (LN_CHECK_STATE(err == 0)) return;
 
+	outMetrics->bearingX = m_ftFace->glyph->metrics.horiBearingX >> 6;
+	outMetrics->bearingY = m_ftFace->glyph->metrics.horiBearingY >> 6;
+
 	outMetrics->advance.x = m_ftFace->glyph->advance.x >> 6;
 	outMetrics->advance.y = m_ftFace->glyph->advance.y >> 6;
 }

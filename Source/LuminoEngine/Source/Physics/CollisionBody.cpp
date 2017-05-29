@@ -5,11 +5,112 @@
 #include <Lumino/Physics/CollisionShape.h>
 #include <Lumino/Physics/PhysicsWorld.h>
 #include <Lumino/Physics/CollisionBody.h>
+#include "BulletUtils.h"
 
 LN_NAMESPACE_BEGIN
+namespace detail {
+
+//==============================================================================
+// BtShapeManager
+//		各種 Body にアタッチする btCollisionShape を効率よく管理するためのクラス。
+//		Bullet は、Shape が姿勢のオフセットを持つことはできない。
+//		持たせたければ btCompoundShape を経なければならない。
+//		常に btCompoundShape を作ってしまえばいいのだがそれだとメモリや演算の効率が悪い。
+//		そこで、姿勢のオフセットを持たない単一の Shape しか使わなければそれを、
+//		そうでなければ　btCompoundShape を作る。
+//==============================================================================
+
+//------------------------------------------------------------------------------
+BtShapeManager::BtShapeManager()
+	: m_collisionShape()
+	, m_btCompoundShape(nullptr)
+	, m_activeShape(nullptr)
+	, m_dirty(false)
+{
+
+}
+
+//------------------------------------------------------------------------------
+BtShapeManager::~BtShapeManager()
+{
+	LN_SAFE_DELETE(m_btCompoundShape);
+}
+
+//------------------------------------------------------------------------------
+void BtShapeManager::AddShape(CollisionShape* shape)
+{
+	if (LN_CHECK_ARG(shape != nullptr)) return;
+
+	if (m_collisionShape != nullptr)
+	{
+		// TODO: 今は1つのみ許可
+		LN_NOTIMPLEMENTED();
+	}
+	else
+	{
+		m_collisionShape = shape;
+	}
+
+	m_dirty = true;
+}
+
+//------------------------------------------------------------------------------
+bool BtShapeManager::IsEmpty() const
+{
+	return m_collisionShape == nullptr;
+}
+
+//------------------------------------------------------------------------------
+btCollisionShape* BtShapeManager::GetBtCollisionShape()
+{
+	if (m_dirty)
+	{
+		Refresh();
+		m_dirty = false;
+	}
+	return m_activeShape;
+}
+
+//------------------------------------------------------------------------------
+void BtShapeManager::Refresh()
+{
+	btCollisionShape* shape;
+	if (m_collisionShape->GetCenter() != Vector3::Zero)
+	{
+		if (m_btCompoundShape == nullptr)
+		{
+			m_btCompoundShape = new btCompoundShape();
+		}
+		else
+		{
+			for (int i = m_btCompoundShape->getNumChildShapes() - 1; i >= 0; i--)
+			{
+				m_btCompoundShape->removeChildShapeByIndex(i);
+			}
+		}
+
+		btTransform t;
+		t.setBasis(btMatrix3x3::getIdentity());
+		t.setOrigin(BulletUtil::LNVector3ToBtVector3(m_collisionShape->GetCenter()));
+		m_btCompoundShape->addChildShape(t, m_collisionShape->GetBtCollisionShape());
+
+		shape = m_btCompoundShape;
+	}
+	else
+	{
+		shape = m_collisionShape->GetBtCollisionShape();
+	}
+
+	m_activeShape = shape;
+}
+
+} // namespace detail
+
+
 
 //==============================================================================
 // LocalGhostObject
+//	btGhostObject の 衝突開始/終了 をフックして CollisionBody へ通知する
 //==============================================================================
 class CollisionBody::LocalGhostObject : public btGhostObject
 {
@@ -78,7 +179,6 @@ RefPtr<CollisionBody> CollisionBody::Create(CollisionShape* shape)
 CollisionBody::CollisionBody()
 	: PhysicsObject()
 	, m_btGhostObject(nullptr)
-	, m_shape(nullptr)
 	, m_isTrigger(false)
 	, m_initialUpdate(false)
 {
@@ -99,25 +199,15 @@ void CollisionBody::Initialize()
 }
 
 //------------------------------------------------------------------------------
-const Matrix& CollisionBody::GetTransform() const
-{
-	return m_transform;
-}
+//const Matrix& CollisionBody::GetTransform() const
+//{
+//	return m_transform;
+//}
 
 //------------------------------------------------------------------------------
 void CollisionBody::AddShape(CollisionShape* shape)
 {
-	if (LN_CHECK_ARG(shape != nullptr)) return;
-
-	if (m_shape != nullptr)
-	{
-		// TODO: 今は1つのみ許可
-		LN_NOTIMPLEMENTED();
-	}
-	else
-	{
-		m_shape = shape;
-	}
+	m_btShapeManager.AddShape(shape);
 }
 
 //------------------------------------------------------------------------------
@@ -169,12 +259,19 @@ void CollisionBody::OnBeforeStepSimulation()
 		flags & ~btCollisionObject::CF_NO_CONTACT_RESPONSE);
 
 	// set shape
-	if (m_shape != nullptr)
+	btCollisionShape* shape = m_btShapeManager.GetBtCollisionShape();
+	if (m_btGhostObject->getCollisionShape() != shape)
 	{
-		if (m_btGhostObject->getCollisionShape() != m_shape->GetBtCollisionShape())
-		{
-			m_btGhostObject->setCollisionShape(m_shape->GetBtCollisionShape());
-		}
+		m_btGhostObject->setCollisionShape(shape);
+	}
+	
+
+	auto* transform = GetTransform();
+	if (transform != nullptr)
+	{
+		btTransform t;
+		t.setFromOpenGLMatrix((btScalar*)&transform->GetWorldMatrix());
+		m_btGhostObject->setWorldTransform(t);
 	}
 }
 
@@ -230,12 +327,11 @@ void CollisionBody::CreateInternalObject()
 	DeleteInternalObject();
 
 	// 現状、この時点で必ず m_shape が無ければならない。
-	LN_ASSERT(m_shape != nullptr);
+	LN_ASSERT(!m_btShapeManager.IsEmpty());
 
 	m_btGhostObject = new LocalGhostObject(this);
-	m_btGhostObject->setCollisionShape(m_shape->GetBtCollisionShape());
+	m_btGhostObject->setCollisionShape(m_btShapeManager.GetBtCollisionShape());
 	m_btGhostObject->setUserPointer(this);
-
 
 	GetOwnerWorld()->GetBtWorld()->addCollisionObject(m_btGhostObject, GetCollisionFilterGroup(), GetCollisionFilterMask());
 }

@@ -6,6 +6,7 @@
 LN_NAMESPACE_BEGIN
 class UIViewportLayer;
 class PostEffect;
+namespace detail { class InternalRenderer; }
 
 /**
 	@brief		
@@ -74,6 +75,7 @@ protected:
 	virtual ~UIViewportLayer();
 
 	virtual void OnRoutedEvent(UIEventArgs* e);
+	virtual void UpdateLayout(const Size& viewSize);
 	virtual void Render() = 0;
 	virtual void ExecuteDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) = 0;
 
@@ -83,6 +85,34 @@ private:
 	UIViewport*					m_owner;
 	List<RefPtr<PostEffect>>	m_postEffects;
 	friend class UIViewport;
+};
+
+
+/**
+	@brief		
+*/
+class UILayoutLayer
+	: public UIViewportLayer
+{
+	//LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+	UILayoutView* GetLayoutView() const;
+
+LN_CONSTRUCT_ACCESS:
+	UILayoutLayer();
+	virtual ~UILayoutLayer();
+	void Initialize();
+
+protected:
+	virtual void UpdateLayout(const Size& viewSize);
+	virtual void Render() override;
+	virtual void ExecuteDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	virtual void OnRoutedEvent(UIEventArgs* e) override;
+
+private:
+	RefPtr<UILayoutView>				m_root;
+	RefPtr<DrawingContext>				m_drawingContext;
+	RefPtr<detail::InternalRenderer>	m_internalRenderer;
 };
 
 /**
