@@ -66,6 +66,13 @@ public:
 	LN_METHOD(Property)
 	const Vector3& GetScale() const { return transform.scale; }
 
+	/** このオブジェクトにタグ文字列を設定します。 */
+	LN_METHOD()
+	void SetTag(const StringRef& tag) { m_tag = tag; }
+
+	/** このオブジェクトのタグ文字列を取得します。 */
+	LN_METHOD(Property)
+	const String& GetTag() const { return m_tag; }
 
 
 
@@ -104,6 +111,7 @@ private:
 	World*						m_world;
 	List<RefPtr<WorldObject>>	m_children;
 	WorldObject*				m_parent;
+	String						m_tag;
 	//Matrix						m_combinedGlobalMatrix;
 	bool						m_isAutoRelease;
 	bool						m_isSpecialObject;	// World 内で特殊な扱いをされるオブジェクト。今はデフォルトのカメラとライトで、RemoveObjects で除外されない。

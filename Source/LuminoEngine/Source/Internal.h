@@ -19,6 +19,7 @@ class World3D;
 
 namespace detail {
 class GraphicsManager;
+class ModelManager;
 class UIManager;
 
 class EngineDomain
@@ -27,7 +28,7 @@ public:
 	static PhysicsWorld* GetPhysicsWorld3D();
 
 	static GraphicsManager* GetGraphicsManager();
-
+	static ModelManager* GetModelManager();
 	static UIManager* GetUIManager();
 
 	static SceneGraphManager* GetSceneGraphManager();

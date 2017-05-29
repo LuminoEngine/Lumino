@@ -3,6 +3,7 @@
 #include <Lumino/Assets.h>
 #include "Graphics/GraphicsManager.h"
 #include "Graphics/Text/FreeTypeFont.h"
+#include "Mesh/ModelManager.h"
 #include "EngineManager.h"
 #include "AssetsManager.h"
 
@@ -69,15 +70,30 @@ void AssetsManager::AddAssetsDirectory(const StringRef& directoryPath)
 //------------------------------------------------------------------------------
 Texture2DPtr AssetsManager::LoadTexture(const StringRef& filePath)
 {
-	CacheKey key(filePath);
+	// TODO: 暫定処置
+	MakeSearchPath(filePath);
+	auto* path = FindLocalFilePath();
+
+	CacheKey key(*path);
 	Texture2D* ptr = static_cast<Texture2D*>(m_textureCache->FindObjectAddRef(key));
 	if (ptr != nullptr) { return Texture2DPtr(ptr, false); }
 
 	// TODO: mipmap ON にしたい。ただ、サンプラステートを変更しないとならないようなので動作確認してから。
-	auto ref = NewObject<Texture2D>(filePath, TextureFormat::R8G8B8A8, false);
+	auto ref = NewObject<Texture2D>(*path, TextureFormat::R8G8B8A8, false);
 
 	m_textureCache->RegisterCacheObject(key, ref);
 	return ref;
+}
+
+//------------------------------------------------------------------------------
+RefPtr<StaticMeshModel> AssetsManager::LoadMeshModel(const StringRef& filePath)
+{
+	// TODO: 暫定処置
+	MakeSearchPath(filePath);
+	auto* path = FindLocalFilePath();
+
+	// TODO: キャッシュ
+	return detail::EngineDomain::GetModelManager()->CreateStaticMeshModel(*path);
 }
 
 //------------------------------------------------------------------------------
@@ -135,6 +151,27 @@ const PathName* AssetsManager::FindLocalFilePath()
 }
 
 //------------------------------------------------------------------------------
+// Note: isDeferring は今のところ Sound の遅延読み込み用のもの。
+// ディクス上のファイルから FileStream を作るときに使用する。
+//Stream* AssetsManager::CreateFileStream(const StringRef& filePath, bool isDeferring)
+//{
+//	// TODO: this は const にしたい。String::Replace とかと同じ。
+//	PathName absPath = filePath;
+//	absPath.CanonicalizePath();
+//
+//	RefPtr<Stream> stream;
+//	for (IArchive* archive : m_archiveList)
+//	{
+//		if (archive->TryCreateStream(absPath, &stream, isDeferring)) {
+//			break;
+//		}
+//	}
+//
+//	LN_THROW(stream != NULL, FileNotFoundException, absPath);	// ファイルが見つからなかった
+//	return stream.DetachMove();
+//}
+
+//------------------------------------------------------------------------------
 //RawFontPtr AssetsManager::LoadFont(const StringRef& name, int size, bool isBold, bool isItalic, bool isAntiAlias)
 //{
 //	CacheKey key(String::Format(_T("{0}-{1}{2}{3}{4}"), name, size, isBold, isItalic, isAntiAlias));
@@ -177,6 +214,12 @@ void Assets::AddAssetsDirectory(const StringRef& directoryPath)
 Texture2DPtr Assets::LoadTexture(const StringRef& filePath)
 {
 	return AssetsManager::GetInstance()->LoadTexture(filePath);
+}
+
+//------------------------------------------------------------------------------
+RefPtr<StaticMeshModel> Assets::LoadMeshModel(const StringRef& filePath)
+{
+	return AssetsManager::GetInstance()->LoadMeshModel(filePath);
 }
 
 //------------------------------------------------------------------------------
