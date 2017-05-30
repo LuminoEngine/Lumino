@@ -83,6 +83,9 @@ LN_CONSTRUCT_ACCESS:
 	LN_METHOD()
 	void Initialize();
 
+LN_INTERNAL_ACCESS:
+	const Matrix& GetPhysicsObjectTransform() const { return m_transform; }
+
 private:
 	void CreateInternalObject();
 	void DeleteInternalObject();

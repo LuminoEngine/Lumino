@@ -46,8 +46,8 @@ TEST_F(Test_Physics_3D, TriggerCollider)
 		body1->GetOwnerWorld()->RemovePhysicsObject(body1);
 		body2->GetOwnerWorld()->RemovePhysicsObject(body2);
 
-		ASSERT_EQ(true, body1->GetTransform().IsIdentity());
-		ASSERT_EQ(true, body2->GetTransform().IsIdentity());
+		ASSERT_EQ(true, body1->GetPhysicsObjectTransform().IsIdentity());
+		ASSERT_EQ(true, body2->GetPhysicsObjectTransform().IsIdentity());
 
 		ASSERT_EQ(2, count1);	// 2回の接触開始
 		ASSERT_EQ(20, count2);	// 相互に10フレーム接触し続ける
