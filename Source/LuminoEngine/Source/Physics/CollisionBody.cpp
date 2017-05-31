@@ -135,8 +135,9 @@ public:
 			m_overlappingObjects.push_back(otherObject);
 
 			// 通知
-			if (m_owner->IsTrigger())
+			if (m_owner->IsTrigger() && otherObject->getUserPointer() != nullptr)
 			{
+				m_owner->m_contactObjects.Add(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
 				m_owner->OnTriggerEnter(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
 			}
 		}
@@ -153,8 +154,9 @@ public:
 			m_overlappingObjects.pop_back();
 
 			// 通知
-			if (m_owner->IsTrigger())
+			if (m_owner->IsTrigger() && otherObject->getUserPointer() != nullptr)
 			{
+				m_owner->m_contactObjects.Remove(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
 				m_owner->OnTriggerLeave(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
 			}
 		}
