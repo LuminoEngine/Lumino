@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include "../Base/GeometryStructs.h"
+#include "../Graphics/Material.h"
 #include "Common.h"
 #include "Detail.h"
 #include "UITypeInfo.h"
@@ -216,8 +217,8 @@ public:
 	Brush* GetBackground() const;
 
 
-	void SetOpacity(float value) { m_opacity = value; }
-	float GetOpacity() const { return m_opacity; }
+	void SetOpacity(float value) { m_builtinEffectData.SetOpacity(value); }
+	float GetOpacity() const { return m_builtinEffectData.GetOpacity(); }
 
 	/** @} */
 
@@ -469,8 +470,10 @@ private:
 
 
 
-	float							m_opacity;
+	//float							m_opacity;
 	//ToneF							m_tone;
+	detail::BuiltinEffectData			m_builtinEffectData;
+	detail::BuiltinEffectData			m_combinedBuiltinEffectData;
 
 	//tr::Property<BrushPtr>				m_decoratorBackground;
 	//tr::Property<float>					m_decoratorOpacity;

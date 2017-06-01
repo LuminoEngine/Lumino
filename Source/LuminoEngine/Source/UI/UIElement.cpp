@@ -80,7 +80,6 @@ UIElement::UIElement()
 	, anchor(AlignmentAnchor::None)
 	, hAlignment(HAlignment::Stretch)
 	, vAlignment(VAlignment::Stretch)
-	, m_opacity(1.0f)
 	, decoratorBackground(nullptr)
 	, decoratorOpacity(1.0f)
 	, m_combinedOpacity(0.0f)
@@ -651,20 +650,6 @@ detail::SpcialUIElementType UIElement::GetSpcialUIElementType() const
 //------------------------------------------------------------------------------
 void UIElement::UpdateTransformHierarchy(const Rect& parentGlobalRect)
 {
-	if (m_visualParent != nullptr)
-	{
-		//m_finalGlobalRect.x = m_parent->m_finalGlobalRect.x + m_finalLocalRect.x;
-		//m_finalGlobalRect.y = m_parent->m_finalGlobalRect.y + m_finalLocalRect.y;
-		m_combinedOpacity = m_visualParent->m_combinedOpacity * m_opacity;	// 不透明度もココで混ぜてしまう
-	}
-	else
-	{
-		//m_finalGlobalRect.x = m_finalLocalRect.x;
-		//m_finalGlobalRect.y = m_finalLocalRect.y;
-		m_combinedOpacity = m_opacity;
-	}
-	//m_finalGlobalRect.width = m_finalLocalRect.width;
-	//m_finalGlobalRect.height = m_finalLocalRect.height;
 
 	//// 子要素
 	//UIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->UpdateTransformHierarchy(); });
@@ -688,12 +673,19 @@ void UIElement::UpdateFrame()
 //------------------------------------------------------------------------------
 void UIElement::Render(DrawingContext* g)
 {
-	//g->Clear(ClearFlags::Color, Color::White);
+	if (m_visualParent != nullptr)
+	{
+		detail::BuiltinEffectData::Combine(m_visualParent->m_combinedBuiltinEffectData, m_builtinEffectData, &m_combinedBuiltinEffectData);
+	}
+	else
+	{
+		m_combinedBuiltinEffectData = m_builtinEffectData;
+	}
 
 	Matrix mat;
 	mat.Translate(m_finalGlobalRect.x, m_finalGlobalRect.y, 0);
 	g->SetTransform(mat);
-	g->SetOpacity(m_combinedOpacity);
+	g->SetBuiltinEffectData(m_combinedBuiltinEffectData);
 
 
 	//g->DrawBoxBorder(Rect(50, 50, 300, 200), ThicknessF(10, 10, 10, 10), Color::Red, Color::Green, Color::Blue, Color::Cyan, 10, 10, 10, 10);	// TODO:

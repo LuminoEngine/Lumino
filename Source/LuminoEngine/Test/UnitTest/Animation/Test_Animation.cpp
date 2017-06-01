@@ -12,8 +12,11 @@ TEST_F(Test_Animation, Basic)
 {
 	int count = 0;
 	float value = 0;
-	auto curve = ln::FloatEasingAnimationTimeline::Create(5.0f, 1.0f, EasingMode::Linear);	// リソース。スタイルとかの。
-	auto clock = curve->Start(nullptr, &value, 0.0f, [&count]() { count++; });
+	//auto curve = ln::FloatEasingAnimationTimeline::Create(5.0f, 1.0f, EasingMode::Linear);	// リソース。スタイルとかの。
+	//auto clock = curve->Start(nullptr, &value, 0.0f, [&count]() { count++; });
+
+	auto clock = AnimationClock::Create();
+	clock->Start(0.0f, 5.0f, 1.0f, EasingMode::Linear,[&value](float v) { value = v; }, [&count]() {count++; });
 
 	for (int i = 0; i < 90; i++) Engine::Update(); // advance 1.5s
 

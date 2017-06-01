@@ -131,6 +131,16 @@ public:
 		return hash;
 	}
 
+	static void Combine(const BuiltinEffectData& parent, const BuiltinEffectData& local, BuiltinEffectData* outData)
+	{
+		*outData = local;
+		outData->m_opacity *= parent.m_opacity;
+		outData->m_colorScale.MultiplyClamp(parent.m_colorScale);
+		outData->m_blendColor.AddClamp(parent.m_blendColor);
+		outData->m_tone.AddClamp(parent.m_tone);
+		outData->m_hashDirty = true;
+	}
+
 private:
 	RefPtr<Shader>	m_shader;		// default shader (on VisualComponent, マテリアルの shader が null のときに使われる)
 	float			m_opacity;
