@@ -1,6 +1,5 @@
 ﻿
 #pragma once
-#include "../../Animation/AnimatableObject.h"
 #include "../Common.h"
 
 LN_NAMESPACE_BEGIN
@@ -11,7 +10,7 @@ class DrawList;
 	@brief
 */
 class ImageEffect
-	: public AnimatableObject
+	: public Object
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:

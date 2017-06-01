@@ -195,6 +195,7 @@ public:
 
 
 	PlatformManager* GetPlatformManager() const { return m_platformManager; }
+	detail::AnimationManager* GetAnimationManager() const { return m_animationManager; }
 	detail::AudioManager* GetAudioManager() const { return m_audioManager; }
 	detail::PhysicsManager* GetPhysicsManager() const;
 	detail::GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }

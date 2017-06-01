@@ -19,7 +19,7 @@ public:
 
 public:
 	virtual bool ApplyPropertyAnimation(double time) = 0;
-	virtual AnimatableObject* GetTargetObject() = 0;
+	//virtual AnimatableObject* GetTargetObject() = 0;
 	virtual const tr::PropertyInfo* GetTargetPropertyInfo() = 0;
 };
 
@@ -83,10 +83,10 @@ public:
 		return ApplyPropertyAnimationInternal(time);
 	}
 
-	virtual AnimatableObject* GetTargetObject() override
-	{
-		return static_cast<AnimatableObject*>(m_targetProperty.GetOwenr().Get());
-	}
+	//virtual AnimatableObject* GetTargetObject() override
+	//{
+	//	return static_cast<AnimatableObject*>(m_targetProperty.GetOwenr().Get());
+	//}
 
 	virtual const tr::PropertyInfo* GetTargetPropertyInfo() override
 	{

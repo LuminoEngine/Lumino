@@ -34,7 +34,7 @@ const String UIVisualStates::VerticalState = _T("Vertical");
 //==============================================================================
 // UIElement
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIElement, tr::ReflectionObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIElement, Object);
 
 // Property definition
 LN_TR_PROPERTY_IMPLEMENT(UIElement, PointF, position, tr::PropertyMetadata());
@@ -267,6 +267,11 @@ Size UIElement::MeasureOverride(const Size& constraint)
 Size UIElement::ArrangeOverride(const Size& finalSize)
 {
 	return ILayoutElement::ArrangeOverride(finalSize);
+}
+
+//------------------------------------------------------------------------------
+void UIElement::OnUpdateFrame()
+{
 }
 
 //------------------------------------------------------------------------------
@@ -672,6 +677,15 @@ void UIElement::UpdateTransformHierarchy(const Rect& parentGlobalRect)
 }
 
 //------------------------------------------------------------------------------
+void UIElement::UpdateFrame()
+{
+	OnUpdateFrame();
+
+	// call children
+	UIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->UpdateFrame(); });
+}
+
+//------------------------------------------------------------------------------
 void UIElement::Render(DrawingContext* g)
 {
 	//g->Clear(ClearFlags::Color, Color::White);
@@ -679,7 +693,7 @@ void UIElement::Render(DrawingContext* g)
 	Matrix mat;
 	mat.Translate(m_finalGlobalRect.x, m_finalGlobalRect.y, 0);
 	g->SetTransform(mat);
-
+	g->SetOpacity(m_combinedOpacity);
 
 
 	//g->DrawBoxBorder(Rect(50, 50, 300, 200), ThicknessF(10, 10, 10, 10), Color::Red, Color::Green, Color::Blue, Color::Cyan, 10, 10, 10, 10);	// TODO:

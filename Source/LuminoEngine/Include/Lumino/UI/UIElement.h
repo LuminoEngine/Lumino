@@ -1,7 +1,6 @@
 ﻿
 #pragma once
 #include "../Base/GeometryStructs.h"
-#include "../Animation/AnimatableObject.h"
 #include "Common.h"
 #include "Detail.h"
 #include "UITypeInfo.h"
@@ -110,7 +109,7 @@ public:
 	@details	
 */
 class UIElement
-	: public AnimatableObject
+	: public Object
 	, public ILayoutElement
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
@@ -216,6 +215,9 @@ public:
 	void SetBackground(Brush* value);
 	Brush* GetBackground() const;
 
+
+	void SetOpacity(float value) { m_opacity = value; }
+	float GetOpacity() const { return m_opacity; }
 
 	/** @} */
 
@@ -335,6 +337,8 @@ protected:
 	*/
 	virtual Size ArrangeOverride(const Size& finalSize) override;
 
+	virtual void OnUpdateFrame();
+
 	/** この要素のレイアウトの更新が完了した時に呼び出されます。*/
 	virtual void OnLayoutUpdated();
 
@@ -386,6 +390,7 @@ LN_INTERNAL_ACCESS:
 	const Rect& GetFinalGlobalRect() const { return m_finalGlobalRect; }
 	UIElement* GetVisualParent() const { return m_visualParent; }
 
+	void UpdateFrame();
 	void Render(DrawingContext* g);
 
 protected:

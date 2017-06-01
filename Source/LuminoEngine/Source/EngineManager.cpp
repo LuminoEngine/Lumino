@@ -632,6 +632,7 @@ void EngineManager::UpdateFrame()
 	if (m_uiManager != nullptr)
 	{
 		m_uiManager->GetMainWindow()->InjectElapsedTime(deltaTime);
+		m_uiManager->GetMainWindow()->UpdateFrame();
 
 		{	// プロファイリング範囲
 			ScopedProfilerSection prof(Profiler::Group_MainThread, Profiler::Section_MainThread_GUILayput);
@@ -879,6 +880,12 @@ namespace detail {
 PhysicsWorld* EngineDomain::GetPhysicsWorld3D()
 {
 	return EngineManager::GetInstance()->GetDefaultWorld3D()->GetPhysicsWorld3D();
+}
+
+//------------------------------------------------------------------------------
+AnimationManager* EngineDomain::GetAnimationManager()
+{
+	return EngineManager::GetInstance()->GetAnimationManager();
 }
 
 //------------------------------------------------------------------------------
