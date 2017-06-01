@@ -2,103 +2,92 @@
 #include "Internal.h"
 #include <Lumino/Animation/AnimationClock.h>
 #include <Lumino/Animation/AnimationCurve.h>
+#include "AnimationManager.h"
 
 LN_NAMESPACE_BEGIN
 
+//==============================================================================
+// AnimationClock
+//==============================================================================
+
+//------------------------------------------------------------------------------
+RefPtr<AnimationClock> AnimationClock::Create()
+{
+	return ln::NewObject<AnimationClock>();
+}
+
 //------------------------------------------------------------------------------
 AnimationClock::AnimationClock()
-	: m_currentTime(0)
-	, m_isFinished(false)
+	: m_timelineInstance(nullptr)
+	//, m_targetObject()
+	//, m_currentTime(0)
 {
-
 }
 
 //------------------------------------------------------------------------------
-AnimationClock::~AnimationClock()
-{
-
-}
-
-//------------------------------------------------------------------------------
-void AnimationClock::Initialize(AnimatableObject* targetObject)
-{
-	m_targetObject = targetObject;
-}
-
-//------------------------------------------------------------------------------
-//void AnimationClock::Initialize(AnimationClockArgs* list, int listCount)
+//AnimationClock::AnimationClock(AnimationTimeline* timeline, const Delegate<void(void)>& endCallback)
+//	: m_timelineInstance(timeline)
+//	, m_targetObject()
+//	, m_currentTime(0)
+//	, m_endCallback(endCallback)
 //{
-//	for (int iArgs = 0; iArgs < listCount; ++iArgs)
-//	{
-//		const AnimationClockArgs& timeline = list[iArgs];
-//
-//		// タイムラインの適用先を選択する
-//		Object* target = timeline.targetObject;
-//		//if (timeline->GetTargetName().IsEmpty()) {
-//		//	target = owner;
-//		//}
-//		//else {
-//		//	target = VisualTreeHelper::FindChildByName(owner, timeline->GetTargetName());
-//		//}
-//
-//		tr::Property* prop = timeline.targetProperty;
-//
-//		// タイムラインの適用先プロパティを検索する
-//		if (target != nullptr && prop != nullptr)
-//		{
-//			TimeLineInstance tli;
-//			tli.OwnerTimeLine = timeline;
-//			tli.TargetElement = target;
-//			tli.TargetProperty = prop;
-//			tli.StartValue = target->GetPropertyValue(prop);	// 現在のプロパティ値を開始値とする
-//			tli.Active = true;
-//			m_timeLineInstanceList.Add(tli);
-//
-//			// 再生中のアニメの中に同じターゲットの同じプロパティをアニメーションしているものがあれば停止する
-//			auto& playingList = owner->GetAnimationClockList();
-//			for (auto& clock : playingList)
-//			{
-//				for (auto& playingTimeLineInst : clock->m_timeLineInstanceList)
-//				{
-//					if (playingTimeLineInst.OwnerTimeLine->GetTargetName() == timeline->GetTargetName() &&
-//						playingTimeLineInst.OwnerTimeLine->GetTargetProperty() == timeline->GetTargetProperty())
-//					{
-//						playingTimeLineInst.Active = false;
-//					}
-//				}
-//			}
-//		}
-//	}
 //}
 
 //------------------------------------------------------------------------------
-void AnimationClock::SetTime(double time)
+void AnimationClock::Start(float startValue, float targetValue, float duration, EasingMode easingMode, const Delegate<void(float)>& setCallback, const Delegate<void(void)>& endCallback)
 {
-	// とりあえず true にしておいて、タイムラインが1つでも実行中だったら false にする
-	m_isFinished = true;
-
-
-	for (RefPtr<AnimationCurveInstanceBase>& tli : m_instanceList)
-	{
-		if (tli->isActive)
-		{
-			bool r = tli->ApplyPropertyAnimation(time);
-			if (r) {
-				m_isFinished = false;
-			}
-		}
-	}
-
-	// 終了したら Manager の時間管理から外す…のだが、
-	// この関数の中ではまだイテレート中である。m_isFinished フラグを Manager で見て、そちらで外してもらう。
+	auto timeline = FloatEasingAnimationTimeline::Create(targetValue, duration, easingMode);
+	m_timelineInstance = detail::CreateTimelineInstance<float>(timeline, startValue, setCallback, endCallback);
+	AddManager();
 }
 
 //------------------------------------------------------------------------------
 void AnimationClock::AdvanceTime(float deltaTime)
 {
-	m_currentTime += deltaTime;
-	SetTime(m_currentTime);
+	if (m_timelineInstance != nullptr)
+	{
+		m_timelineInstance->AdvanceTime(deltaTime);
+	}
+}
+
+//------------------------------------------------------------------------------
+bool AnimationClock::IsFinished() const
+{
+	return m_timelineInstance == nullptr || m_timelineInstance->IsFinished();
+}
+
+//------------------------------------------------------------------------------
+void AnimationClock::AddManager()
+{
+	detail::EngineDomain::GetAnimationManager()->AddAnimationClock(this);
 }
 
 
+//==============================================================================
+// AnimationTimelineInstance
+//==============================================================================
+namespace detail {
+
+//------------------------------------------------------------------------------
+bool AnimationTimelineInstance::IsFinished() const
+{
+	return m_currentTime >= m_timeline->GetLastTime();
+}
+
+//------------------------------------------------------------------------------
+void AnimationTimelineInstance::AdvanceTime(float deltaTime)
+{
+	float lastTime = m_timeline->GetLastTime();
+	bool endFrame = (m_currentTime < lastTime && m_currentTime + deltaTime >= lastTime);
+
+	m_currentTime += deltaTime;
+	UpdateTime(0, m_currentTime);
+
+	if (endFrame && m_endCallback != nullptr)
+	{
+		m_endCallback();
+	}
+}
+
+} // namespace detail
 LN_NAMESPACE_END

@@ -37,25 +37,27 @@ void AnimationManager::Initialize()
 //------------------------------------------------------------------------------
 void AnimationManager::AdvanceTime(float deltaTime)
 {
-	// アクティブな AnimationClock の時間を進める。
-	// もし適用対象のオブジェクトが存在しなければ AnimationClock は削除する。
 	auto itr = m_clockList.begin();
 	auto end = m_clockList.end();
 	while (itr != end)
 	{
-		if (!(*itr)->IsFinished() && (*itr)->GetTargetObject().IsAlive())
+		if (!(*itr)->IsFinished())
 		{
 			(*itr)->AdvanceTime(deltaTime);
 			++itr;
 		}
 		else
 		{
-			auto obj = (*itr)->GetTargetObject().Resolve();
-			obj->m_playingAnimationClockList.Remove((*itr));
 			itr = m_clockList.erase(itr);
 			end = m_clockList.end();
 		}
 	}
+}
+
+//------------------------------------------------------------------------------
+void AnimationManager::AddAnimationClock(AnimationClock* clock)
+{
+	m_clockList.Add(clock);
 }
 
 //------------------------------------------------------------------------------

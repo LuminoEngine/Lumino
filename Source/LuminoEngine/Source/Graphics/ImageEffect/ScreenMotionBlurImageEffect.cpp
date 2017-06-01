@@ -71,9 +71,10 @@ void ScreenMotionBlurImageEffect::SetBlurStatus(float amount, const Vector2& cen
 	}
 	else
 	{
-		auto anim = ValueEasingCurve<float>::Create(0, duration, EasingMode::Linear);
-		AnimationClock* ac = m_manager->GetAnimationManager()->StartPropertyAnimation(this);
-		ac->AddAnimationCurve(anim.Get(), this, AmountId, amount);
+		LN_NOTIMPLEMENTED();
+		//auto anim = ValueEasingCurve<float>::Create(0, duration, EasingMode::Linear);
+		//AnimationClock* ac = m_manager->GetAnimationManager()->StartPropertyAnimation(this);
+		//ac->AddAnimationCurve(anim.Get(), this, AmountId, amount);
 	}
 }
 

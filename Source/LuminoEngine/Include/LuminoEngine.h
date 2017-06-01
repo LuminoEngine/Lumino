@@ -7,6 +7,7 @@
 #include "Lumino/Version.h"
 
 #include "Lumino/Animation/AnimationCurve.h"
+#include "Lumino/Animation/AnimationClock.h"
 
 #include "Lumino/IO/ASyncIOObject.h"
 #include "Lumino/IO/FileManager.h"

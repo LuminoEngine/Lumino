@@ -125,10 +125,21 @@ public:
 	{
 		uint32_t hash = 0;
 		hash += reinterpret_cast<intptr_t>(m_shader.Get());
+		hash += *reinterpret_cast<const uint32_t*>(&m_opacity);
 		hash += Hash::CalcHash(reinterpret_cast<const char*>(&m_colorScale), sizeof(m_colorScale));	// TODO: template
 		hash += Hash::CalcHash(reinterpret_cast<const char*>(&m_blendColor), sizeof(m_blendColor));
 		hash += Hash::CalcHash(reinterpret_cast<const char*>(&m_tone), sizeof(m_tone));
 		return hash;
+	}
+
+	static void Combine(const BuiltinEffectData& parent, const BuiltinEffectData& local, BuiltinEffectData* outData)
+	{
+		*outData = local;
+		outData->m_opacity *= parent.m_opacity;
+		outData->m_colorScale.MultiplyClamp(parent.m_colorScale);
+		outData->m_blendColor.AddClamp(parent.m_blendColor);
+		outData->m_tone.AddClamp(parent.m_tone);
+		outData->m_hashDirty = true;
 	}
 
 private:
@@ -376,6 +387,7 @@ private:
 	// change monitoring
 	//Material*	m_lastSourceMaterial;
 	uint32_t	m_lastSourceHashCode;
+	uint32_t	m_lastBuiltinEffectHashCode;
 };
 
 } // namespace detail

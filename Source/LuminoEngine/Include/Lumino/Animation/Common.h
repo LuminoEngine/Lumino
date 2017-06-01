@@ -4,8 +4,6 @@
 #include <Lumino/Reflection/ReflectionObject.h>
 
 LN_NAMESPACE_BEGIN
-class AnimatableObject;
-class AnimationClock;
 
 namespace detail
 {

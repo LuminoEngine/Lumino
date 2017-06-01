@@ -649,7 +649,7 @@ void DrawElement::MakeElementInfo(DrawElementList* oenerList, const CameraInfo& 
 }
 
 //------------------------------------------------------------------------------
-void DrawElement::MakeSubsetInfo(CombinedMaterial* material, SubsetInfo* outInfo)
+void DrawElement::MakeSubsetInfo(DrawElementList* oenerList, CombinedMaterial* material, SubsetInfo* outInfo)
 {
 	outInfo->combinedMaterial = material;
 	outInfo->materialTexture = (material != nullptr) ? material->m_mainTexture : nullptr;
@@ -904,7 +904,7 @@ void InternalRenderer::Render(
 					element->MakeElementInfo(elementList, cameraInfo, &elementInfo);
 
 					SubsetInfo subsetInfo;
-					element->MakeSubsetInfo(material, &subsetInfo);
+					element->MakeSubsetInfo(elementList, material, &subsetInfo);
 
 					shader->GetSemanticsManager()->UpdateCameraVariables(cameraInfo);
 					shader->GetSemanticsManager()->UpdateElementVariables(elementInfo);
@@ -1957,9 +1957,9 @@ void DrawList::BlitInternal(Texture* source, RenderTargetTexture* dest, const Ma
 			DrawElement::MakeElementInfo(oenerList, cameraInfo, outInfo);
 			outInfo->WorldViewProjectionMatrix = overrideTransform;
 		}
-		virtual void MakeSubsetInfo(detail::CombinedMaterial* material, detail::SubsetInfo* outInfo) override
+		virtual void MakeSubsetInfo(detail::DrawElementList* oenerList, detail::CombinedMaterial* material, detail::SubsetInfo* outInfo) override
 		{
-			DrawElement::MakeSubsetInfo(material, outInfo);
+			DrawElement::MakeSubsetInfo(oenerList, material, outInfo);
 
 			// MaterialTexture を上書きする
 			outInfo->materialTexture = source;
@@ -1988,6 +1988,14 @@ void DrawList::DrawFrameRectangle(const Rect& rect)
 	{
 	public:
 		Rect rect;
+
+		virtual void MakeSubsetInfo(detail::DrawElementList* oenerList, detail::CombinedMaterial* material, detail::SubsetInfo* outInfo) override
+		{
+			DrawElement::MakeSubsetInfo(oenerList, material, outInfo);
+
+			// MaterialTexture を上書きする
+			outInfo->materialTexture = oenerList->GetBatch(batchIndex)->state.GetBrush()->GetTexture();
+		}
 		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
 		{
 			auto* r = context->BeginFrameRectRenderer();
