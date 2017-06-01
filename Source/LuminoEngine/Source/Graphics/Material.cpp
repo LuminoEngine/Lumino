@@ -496,7 +496,8 @@ void CombinedMaterial::Combine(Material* owner, Material* ownerBase, const Built
 	if (owner != nullptr)		hashCode |= owner->GetHashCode();
 	if (ownerBase != nullptr)	hashCode |= ownerBase->GetHashCode();
 
-	if (m_lastSourceHashCode != hashCode)
+	if (m_lastSourceHashCode != hashCode ||
+		m_lastBuiltinEffectHashCode != builtinEffectData.GetHashCode())
 	{
 		Material* source1 = (ownerBase != nullptr) ? ownerBase : owner;
 		Material* source2 = (ownerBase != nullptr) ? owner : nullptr;
@@ -562,6 +563,7 @@ void CombinedMaterial::Combine(Material* owner, Material* ownerBase, const Built
 		}
 
 		m_lastSourceHashCode = hashCode;
+		m_lastBuiltinEffectHashCode = builtinEffectData.GetHashCode();
 	}
 }
 

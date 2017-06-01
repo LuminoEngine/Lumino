@@ -131,6 +131,7 @@ void UIViewport::OnRender(DrawingContext* g)
 		layer->Render();
 	}
 
+	g->SetBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
 
 	// 全てのレイヤーの描画リストを実行し m_primaryLayerTarget へ書き込む
 	for (auto& layer : m_viewportLayerList)

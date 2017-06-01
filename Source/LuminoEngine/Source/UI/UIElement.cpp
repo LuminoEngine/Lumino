@@ -687,6 +687,7 @@ void UIElement::Render(DrawingContext* g)
 	g->SetTransform(mat);
 	g->SetBuiltinEffectData(m_combinedBuiltinEffectData);
 
+	
 
 	//g->DrawBoxBorder(Rect(50, 50, 300, 200), ThicknessF(10, 10, 10, 10), Color::Red, Color::Green, Color::Blue, Color::Cyan, 10, 10, 10, 10);	// TODO:
 	//g->DrawBoxShadow(Rect(10, 20, 300, 400), Color::Black, 5, 5, false);
