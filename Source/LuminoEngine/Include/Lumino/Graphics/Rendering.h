@@ -162,7 +162,7 @@ public:
 	const Matrix& GetTransform(DrawElementList* oenerList) const;
 
 	virtual void MakeElementInfo(DrawElementList* oenerList, const CameraInfo& cameraInfo, ElementInfo* outInfo);
-	virtual void MakeSubsetInfo(CombinedMaterial* material, SubsetInfo* outInfo);
+	virtual void MakeSubsetInfo(DrawElementList* oenerList, CombinedMaterial* material, SubsetInfo* outInfo);
 
 	virtual void DrawSubset(DrawElementList* oenerList, InternalContext* context/*, int subsetIndex*/) = 0;
 	const detail::Sphere& GetBoundingSphere() const { return boundingSphere; }

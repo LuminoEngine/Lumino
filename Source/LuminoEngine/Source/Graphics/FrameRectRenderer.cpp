@@ -4,7 +4,9 @@
 */
 #include "Internal.h"
 #include <Lumino/Graphics/GraphicsException.h>
+#include <Lumino/Graphics/Vertex.h>
 #include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Graphics/VertexDeclaration.h>
 #include "Device/GraphicsDriverInterface.h"
 #include "GraphicsManager.h"
 #include "RenderingCommand.h"
@@ -130,19 +132,21 @@ void FrameRectRendererCore::Draw(const Matrix& transform, const Rect& rect)
 
 		if (m_indexCache.GetCount() == 0) { return; }
 
-		const SizeI& viewPixelSize = m_renderer->GetRenderTarget(0)->GetSize();
-		if (m_shader.varViewportSize != nullptr)
-			m_shader.varViewportSize->SetVector(Vector4((float)viewPixelSize.width, (float)viewPixelSize.height, 0, 0));
+		//const SizeI& viewPixelSize = m_renderer->GetRenderTarget(0)->GetSize();
+		//if (m_shader.varViewportSize != nullptr)
+		//	m_shader.varViewportSize->SetVector(Vector4((float)viewPixelSize.width, (float)viewPixelSize.height, 0, 0));
 
 		// 描画する
 		m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
 		m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
-		m_shader.varWorldMatrix->SetMatrix(transform);
-		m_shader.varTone->SetVector(ToneF());
-		m_shader.varTexture->SetTexture(srcTexture);
-		m_shader.varGlyphMaskSampler->SetTexture(m_manager->GetDummyDeviceTexture());
-		m_renderer->SetShaderPass(m_shader.pass);
-		m_renderer->SetVertexDeclaration(m_vertexDeclaration);
+		//m_shader.varWorldMatrix->SetMatrix(transform);
+		//m_shader.varTone->SetVector(ToneF());
+		//m_shader.varTexture->SetTexture(srcTexture);
+		//m_shader.varGlyphMaskSampler->SetTexture(m_manager->GetDummyDeviceTexture());
+		//m_renderer->SetShaderPass(m_shader.pass);
+		//m_renderer->SetVertexDeclaration(m_vertexDeclaration);
+
+		m_renderer->SetVertexDeclaration(m_manager->GetDefaultVertexDeclaration()->GetDeviceObject());
 		m_renderer->SetVertexBuffer(0, m_vertexBuffer);
 		m_renderer->SetIndexBuffer(m_indexBuffer);
 		m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
@@ -160,11 +164,12 @@ void FrameRectRendererCore::RequestBuffers(int faceCount)
 	LN_SAFE_RELEASE(m_indexBuffer);
 
 	auto* device = m_manager->GetGraphicsDevice();
-	m_vertexDeclaration.Attach(device->CreateVertexDeclaration(Vertex::Elements(), Vertex::ElementCount), false);
+	//m_vertexDeclaration.Attach(device->CreateVertexDeclaration(Vertex::Elements(), Vertex::ElementCount), false);
 	m_vertexBuffer = device->CreateVertexBuffer(sizeof(Vertex) * faceCount * 4, nullptr, ResourceUsage::Dynamic);
 	m_indexBuffer = device->CreateIndexBuffer(faceCount * 6, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 }
 
+#if 0
 //------------------------------------------------------------------------------
 void FrameRectRendererCore::PutRectangleStretch(const Rect& rect, const Rect& srcUVRect)
 {
@@ -228,6 +233,97 @@ void FrameRectRendererCore::PutRectangleTiling(const Rect& rect, const RectI& sr
 	m_vertexCache.Add(v);
 	v.Position.Set(rect.GetRight(), rect.GetBottom(), 0);	v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1.0f + blockCountW, 1.0f + blockCountH);	// 右下
 	m_vertexCache.Add(v);
+}
+#endif
+
+//------------------------------------------------------------------------------
+void FrameRectRendererCore::PutRectangleStretch(const Rect& rect, const Rect& srcUVRect)
+{
+	if (rect.IsEmpty()) { return; }		// 矩形がつぶれているので書く必要はない
+
+	uint16_t i = m_vertexCache.GetCount();
+	m_indexCache.Add(i + 0);
+	m_indexCache.Add(i + 1);
+	m_indexCache.Add(i + 2);
+	m_indexCache.Add(i + 2);
+	m_indexCache.Add(i + 1);
+	m_indexCache.Add(i + 3);
+
+	float pos_l = rect.GetLeft();
+	float pos_r = rect.GetRight();
+	float pos_t = rect.GetTop();
+	float pos_b = rect.GetBottom();
+	float uv_l = srcUVRect.GetLeft();
+	float uv_r = srcUVRect.GetRight();
+	float uv_t = srcUVRect.GetTop();
+	float uv_b = srcUVRect.GetBottom();
+
+	ln::Vertex v;
+	v.color.Set(1, 1, 1, 1);
+	v.normal.Set(0, 0, 1);
+	v.position.Set(pos_l, pos_t, 0); v.uv.Set(uv_l, uv_t); m_vertexCache.Add(v);	// top-left
+	v.position.Set(pos_l, pos_b, 0); v.uv.Set(uv_l, uv_b); m_vertexCache.Add(v);	// bottom-left
+	v.position.Set(pos_r, pos_t, 0); v.uv.Set(uv_r, uv_t); m_vertexCache.Add(v);	// top-right
+	v.position.Set(pos_r, pos_b, 0); v.uv.Set(uv_r, uv_b); m_vertexCache.Add(v);	// bottom-right
+}
+
+//------------------------------------------------------------------------------
+void FrameRectRendererCore::PutRectangleTiling(const Rect& rect, const RectI& srcPixelRect, const Rect& srcUVRect, Driver::ITexture* srcTexture)
+{
+	if (rect.IsEmpty()) return;		// 矩形がつぶれているので書く必要はない
+
+	int blockCountW = std::ceil(rect.width / srcPixelRect.width);		// 横方向にいくつのタイルを並べられるか (0.5 など、端数も含む)
+	int blockCountH = std::ceil(rect.height / srcPixelRect.height);	// 縦方向にいくつのタイルを並べられるか (0.5 など、端数も含む)
+
+	float bw = (float)srcPixelRect.width;
+	float bh = (float)srcPixelRect.height;
+
+	ln::Vertex v;
+	v.color.Set(1, 1, 1, 1);
+	v.normal.Set(0, 0, 1);
+
+	float uv_l = srcUVRect.x;
+	float uv_t = srcUVRect.y;
+
+	for (int y = 0; y < blockCountH; y++)
+	{
+		float pos_t = bh * y;
+		float pos_b = pos_t + bh;
+		float uv_b = srcUVRect.GetBottom();
+		if (pos_b > rect.height)
+		{
+			float ratio = (1.0f - (pos_b - rect.height) / bh);
+			pos_b = rect.height;
+			uv_b = srcUVRect.y + srcUVRect.height * ratio;
+		}
+
+		for (int x = 0; x < blockCountW; x++)
+		{
+			float pos_l = bw * x;
+			float pos_r = pos_l + bw;
+			float uv_r = srcUVRect.GetRight();
+			if (pos_r > rect.width)
+			{
+				float ratio = (1.0f - (pos_r - rect.width) / bw);
+				pos_r = rect.width;
+				uv_r = srcUVRect.x + srcUVRect.width * ratio;
+			}
+
+			uint16_t i = m_vertexCache.GetCount();
+			m_indexCache.Add(i + 0);
+			m_indexCache.Add(i + 1);
+			m_indexCache.Add(i + 2);
+			m_indexCache.Add(i + 2);
+			m_indexCache.Add(i + 1);
+			m_indexCache.Add(i + 3);
+
+			v.position.Set(rect.x + pos_l, rect.y + pos_t, 0); v.uv.Set(uv_l, uv_t); m_vertexCache.Add(v);	// top-left
+			v.position.Set(rect.x + pos_l, rect.y + pos_b, 0); v.uv.Set(uv_l, uv_b); m_vertexCache.Add(v);	// bottom-left
+			v.position.Set(rect.x + pos_r, rect.y + pos_t, 0); v.uv.Set(uv_r, uv_t); m_vertexCache.Add(v);	// top-right
+			v.position.Set(rect.x + pos_r, rect.y + pos_b, 0); v.uv.Set(uv_r, uv_b); m_vertexCache.Add(v);	// bottom-right
+		}
+	}
+
 }
 
 //------------------------------------------------------------------------------

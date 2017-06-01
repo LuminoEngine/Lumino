@@ -39,32 +39,32 @@ private:
 	void PutRectangle(const Rect& rect, const RectI& srcPixelRect, const Rect& srcUVRect, Driver::ITexture* srcTexture, BrushWrapMode wrapMode);
 	void PutFrameRectangle(const Rect& rect, const ThicknessF& borderThickness, Driver::ITexture* srcTexture, RectI srcRect, BrushWrapMode wrapMode);
 
-	// TODO 頂点宣言とかは外部からもらうようにしたい
-	struct Vertex
-	{
-		Vector3	Position;			///< 位置
-		Vector4	Color;				///< 頂点カラー
-		Vector4	UVOffset;		///< テクスチャUV (転送元のUV情報)
-		Vector2	UVTileUnit;		///< テクスチャUV (タイリング空間のどこにいるか)
+	//// TODO 頂点宣言とかは外部からもらうようにしたい
+	//struct Vertex
+	//{
+	//	Vector3	Position;			///< 位置
+	//	Vector4	Color;				///< 頂点カラー
+	//	Vector4	UVOffset;		///< テクスチャUV (転送元のUV情報)
+	//	Vector2	UVTileUnit;		///< テクスチャUV (タイリング空間のどこにいるか)
 
-								/// 頂点レイアウト
-		static VertexElement* Elements()
-		{
-			static VertexElement elements[] =
-			{
-				{ 0, VertexElementType_Float3, VertexElementUsage_Position, 0 },
-				{ 0, VertexElementType_Float4, VertexElementUsage_Color, 0 },
-				{ 0, VertexElementType_Float4, VertexElementUsage_TexCoord, 0 },
-				{ 0, VertexElementType_Float2, VertexElementUsage_TexCoord, 1 },
-			};
-			return elements;
-		}
-		static const int ElementCount = 4;
-	};
+	//							/// 頂点レイアウト
+	//	static VertexElement* Elements()
+	//	{
+	//		static VertexElement elements[] =
+	//		{
+	//			{ 0, VertexElementType_Float3, VertexElementUsage_Position, 0 },
+	//			{ 0, VertexElementType_Float4, VertexElementUsage_Color, 0 },
+	//			{ 0, VertexElementType_Float4, VertexElementUsage_TexCoord, 0 },
+	//			{ 0, VertexElementType_Float2, VertexElementUsage_TexCoord, 1 },
+	//		};
+	//		return elements;
+	//	}
+	//	static const int ElementCount = 4;
+	//};
 
 	GraphicsManager*			m_manager;
 	Driver::IRenderer*			m_renderer;
-	RefPtr<Driver::IVertexDeclaration>	m_vertexDeclaration;
+	//RefPtr<Driver::IVertexDeclaration>	m_vertexDeclaration;
 	Driver::IVertexBuffer*		m_vertexBuffer;
 	Driver::IIndexBuffer*		m_indexBuffer;
 	CacheBuffer<Vertex>			m_vertexCache;
@@ -100,7 +100,7 @@ public:
 
 	void Draw(const Matrix& transform, const Rect& rect);
 
-	virtual bool IsStandaloneShader() const { return true; }
+	virtual bool IsStandaloneShader() const { return false; }
 	virtual void Flush() override;
 	virtual void OnActivated() { }
 	virtual void OnDeactivated() { Flush(); }

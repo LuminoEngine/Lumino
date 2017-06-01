@@ -11,6 +11,7 @@ struct LN_VSInput
 
 
 static float2	ViewportOffset = (float2(0.5, 0.5) / ln_ViewportPixelSize);
+static float2	ViewportOffset2 = (float2(1.0, 1.0) / ln_ViewportPixelSize);
 
 sampler		MaterialTextureSampler = sampler_state
 {
@@ -37,7 +38,9 @@ VSOutput VSBasic(LN_VSInput v)
 {
 	VSOutput o;
 	o.Pos	= mul(float4(v.Pos, 1.0f), ln_WorldViewProjection);
-	o.UV	= v.UV + ViewportOffset;
+	o.Pos.x -= ViewportOffset2.x;
+	o.Pos.y += ViewportOffset2.y;
+	o.UV	= v.UV;// + ViewportOffset;
 	o.Color	= v.Color;
 	return o;
 }
