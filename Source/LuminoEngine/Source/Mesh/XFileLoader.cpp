@@ -625,7 +625,7 @@ RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream,
 				manager->GetGraphicsManager(),
 				sizeof(Vertex) * all_vertex_num,
 				nullptr,
-				(isDynamic) ? ResourceUsage::Dynamic : ResourceUsage::Static);
+				(isDynamic) ? ResourceUsage::Dynamic : ResourceUsage::Static, true);
 
 			LN_NOTIMPLEMENTED();
 #if 0

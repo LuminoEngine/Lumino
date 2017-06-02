@@ -474,7 +474,7 @@ void* MeshResource::TryLockVertexBuffer(VertexBufferType type)
 	//if (m_usage == ResourceUsage::Dynamic)
 	{
 		if (m_vertexBufferInfos[type].buffer != nullptr &&
-			m_vertexBufferInfos[type].buffer->GetBufferSize() != requestedSize)
+			m_vertexBufferInfos[type].buffer->GetSize() != requestedSize)
 		{
 			//// Unlock
 			//if (m_vertexBufferInfos[type].lockedBuffer != nullptr)
@@ -491,14 +491,15 @@ void* MeshResource::TryLockVertexBuffer(VertexBufferType type)
 	if (m_vertexBufferInfos[type].buffer == nullptr)
 	{
 		m_vertexBufferInfos[type].buffer = RefPtr<VertexBuffer>::MakeRef();
-		m_vertexBufferInfos[type].buffer->Initialize(m_manager, requestedSize, nullptr, m_usage);
+		m_vertexBufferInfos[type].buffer->Initialize(m_manager, requestedSize, nullptr, m_usage, false);
 		m_vertexDeclarationModified = true;
 	}
 
 	//if (m_vertexBufferInfos[type].lockedBuffer == nullptr)
 	{
-		ByteBuffer* buf = m_vertexBufferInfos[type].buffer->GetMappedData();
-		m_vertexBufferInfos[type].lockedBuffer = buf->GetData();
+		//ByteBuffer* buf = m_vertexBufferInfos[type].buffer->GetMappedData();
+		//m_vertexBufferInfos[type].lockedBuffer = buf->GetData();
+		m_vertexBufferInfos[type].lockedBuffer = m_vertexBufferInfos[type].buffer->GetMappedData();
 	}
 	return m_vertexBufferInfos[type].lockedBuffer;
 }

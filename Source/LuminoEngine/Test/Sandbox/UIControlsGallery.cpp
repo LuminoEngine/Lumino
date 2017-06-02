@@ -38,12 +38,13 @@ void UIControlsGallery()
 
 
 	//auto meshModel = ln::StaticMeshModel::
-	auto mesh = ln::StaticMeshComponent::CreateSphere(100);
+	auto mesh = ln::StaticMeshComponent::CreateSphere(1);
 	//mesh->GetStaticMeshModel()->
 	auto material = mesh->GetStaticMeshModel()->GetMaterial(0);
 	material->SetMaterialTexture(ln::Assets::LoadTexture(_T("D:/GameProjects/Chronicles/sky/incskies_024_png8/incskies_024_8k_.png")));
 	auto m_map = ln::NewObject<ln::WorldObject3D>();
 	m_map->AddComponent(mesh);
+	mesh->SetBlendMode(BlendMode::Normal);
 
 	//auto shader = Shader::Create(StringRef(_T("C:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/Sandbox/SSBasic2D.fx")), true);
 	//auto rect = Rectangle::Create(RectF(0, 0, 3, 1));

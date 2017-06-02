@@ -38,12 +38,21 @@ public:
 	
 public:
 
-	size_t GetBufferSize() const { return m_bufferSize; }
+	/** バッファのバイトサイズを取得します。 */
+	int GetSize() const;
+
+	/** バッファの容量を確保します。 */
+	void Reserve(int size);
+
+	/** バッファのサイズを変更します。 */
+	void Resize(int size);
+
+	void* GetMappedData();
 
 	/**
 		@brief		リソースをロックします。
 	*/
-	ByteBuffer* GetMappedData();
+	//ByteBuffer* GetMappedData();
 	//ByteBuffer* Lock(int offset, int byteCount);	// テスト用
 
 	/**
@@ -54,23 +63,26 @@ public:
 LN_INTERNAL_ACCESS:
 	VertexBuffer();
 	virtual ~VertexBuffer();
-	void Initialize(detail::GraphicsManager* manager, size_t bufferSize, const void* data, ResourceUsage usage);
+	void Initialize(detail::GraphicsManager* manager, size_t bufferSize, const void* data, ResourceUsage usage, bool sizeConst);
 	//Driver::IVertexBuffer* GetDeviceObject() const { return m_deviceObj; }
 	Driver::IVertexBuffer* ResolveDeviceObject();
-	void Resize(size_t bufferSize);
 
 	// GraphicsResourceObject interface
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 private:	// TODO
+	bool IsRHIDirect() const { return m_initialUpdate && m_deviceObj != nullptr; }
+	 
 	friend struct SetVertexBufferCommand;
 	Driver::IVertexBuffer*	m_deviceObj;
-	size_t					m_bufferSize;
+	//size_t					m_bufferSize;
 	ResourceUsage			m_usage;
 	GraphicsResourcePool	m_pool;
-	ByteBuffer				m_lockedBuffer;
+	std::vector<byte_t>		m_buffer;
+	//ByteBuffer				m_lockedBuffer;
 	bool					m_initialUpdate;
 	bool					m_locked;
+	void*					m_rhiLockedBuffer;
 };
 
 ///**
