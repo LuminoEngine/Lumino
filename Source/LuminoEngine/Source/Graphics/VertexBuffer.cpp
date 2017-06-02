@@ -1,18 +1,39 @@
 ﻿
-#pragma once
 #include "../Internal.h"
-#include <Lumino/Graphics/VertexBuffer.h>
 #include "GraphicsManager.h"
-#include "Device/GraphicsDriverInterface.h"
 #include "RenderingCommand.h"
+#include "Device/GraphicsDriverInterface.h"
+#include <Lumino/Graphics/VertexBuffer.h>
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 //==============================================================================
 // VertexBuffer
 //==============================================================================
 
+
+	/**
+		@brief		頂点バッファを作成します。
+		@param[in]	vertexElements	: 頂点データレイアウトを表す VertexElement の配列
+		@param[in]	elementsCount	: vertexElements の要素数
+		@param[in]	vertexCount		: 頂点の数
+		@param[in]	data			: 作成と同時に書き込む初期データ (必要なければ NULL)
+		@param[in]	usage			: 頂点バッファリソースの使用方法
+	*/
+	//static VertexBuffer* Create(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data = NULL, DeviceResourceUsage usage = DeviceResourceUsage_Static);
+
+	/**
+		@brief		頂点バッファを作成します。
+		@param[in]	manager			: 作成に使用する GraphicsManager
+		@param[in]	vertexElements	: 頂点データレイアウトを表す VertexElement の配列
+		@param[in]	elementsCount	: vertexElements の要素数
+		@param[in]	vertexCount		: 頂点の数
+		@param[in]	data			: 作成と同時に書き込む初期データ (必要なければ NULL)
+		@param[in]	usage			: 頂点バッファリソースの使用方法
+		@details	この関数はデフォルト以外の GraphicsManager を指定して作成する場合に使用します。
+	*/
+	//static VertexBuffer* Create(GraphicsManager* manager, const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data = NULL, DeviceResourceUsage usage = DeviceResourceUsage_Static);
+	
 ////------------------------------------------------------------------------------
 //VertexBuffer* VertexBuffer::Create(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
 //{
@@ -28,19 +49,20 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 
 //------------------------------------------------------------------------------
 VertexBuffer::VertexBuffer()
-	: m_deviceObj(nullptr)
+	: m_rhiObject(nullptr)
 	, m_usage(ResourceUsage::Static)
-	, m_pool(GraphicsResourcePool::Managed)	// TODO
+	, m_pool(GraphicsResourcePool::Managed)
+	, m_buffer()
+	, m_rhiLockedBuffer(nullptr)
 	, m_initialUpdate(true)
 	, m_locked(false)
-	, m_rhiLockedBuffer(nullptr)
 {
 }
 
 //------------------------------------------------------------------------------
 VertexBuffer::~VertexBuffer()
 {
-	LN_SAFE_RELEASE(m_deviceObj);
+	LN_SAFE_RELEASE(m_rhiObject);
 }
 
 //------------------------------------------------------------------------------
@@ -51,7 +73,7 @@ void VertexBuffer::Initialize(detail::GraphicsManager* manager, size_t bufferSiz
 
 	if (sizeConst)
 	{
-		m_deviceObj = m_manager->GetGraphicsDevice()->CreateVertexBuffer(bufferSize, data, usage);
+		m_rhiObject = m_manager->GetGraphicsDevice()->CreateVertexBuffer(bufferSize, data, usage);
 	}
 	else
 	{
@@ -95,11 +117,11 @@ void* VertexBuffer::GetMappedData()
 	if (m_usage == ResourceUsage::Static)
 	{
 		// sizeConst で、まだ1度も SetVertexBufferCommand に入っていない場合は直接 Lock で書き換えできる
-		if (m_initialUpdate && m_deviceObj != nullptr)
+		if (m_initialUpdate && m_rhiObject != nullptr)
 		{
 			if (m_rhiLockedBuffer == nullptr)
 			{
-				m_rhiLockedBuffer = m_deviceObj->Lock();
+				m_rhiLockedBuffer = m_rhiObject->Lock();
 			}
 			m_locked = true;
 			return m_rhiLockedBuffer;
@@ -110,84 +132,26 @@ void* VertexBuffer::GetMappedData()
 	return m_buffer.data();
 }
 
-
-////------------------------------------------------------------------------------
-//ByteBuffer* VertexBuffer::GetMappedData()
-//{
-//	if (m_usage == ResourceUsage::Static)
-//	{
-//		// まだ1度も SetVertexBufferCommand に入っていない場合は直接 Lock で書き換えできる
-//		if (m_initialUpdate) {
-//			m_lockedBuffer.Attach(m_deviceObj->Lock(), m_deviceObj->GetByteCount());
-//		}
-//		else {
-//			LN_THROW(0, NotImplementedException);
-//		}
-//	}
-//
-//	m_locked = true;
-//	return &m_lockedBuffer;
-//}
-
 //------------------------------------------------------------------------------
-//void VertexBuffer::Unlock()
-//{
-//}
-
-////------------------------------------------------------------------------------
-//void VertexBuffer::Resize(size_t bufferSize)
-//{
-//	if (!m_initialUpdate)
-//	{
-//		if (LN_CHECK_STATE(m_usage == ResourceUsage::Dynamic)) return;
-//	}
-//	m_bufferSize = bufferSize;
-//	m_lockedBuffer.Resize(m_bufferSize);
-//}
-
-//------------------------------------------------------------------------------
-void VertexBuffer::OnChangeDevice(Driver::IGraphicsDevice* device)
-{
-	if (device == nullptr)
-	{
-		// 必要があればデータを保存する
-		if (m_pool == GraphicsResourcePool::Managed)
-		{
-			m_buffer.resize(m_deviceObj->GetByteCount());
-			memcpy(m_buffer.data(), m_deviceObj->Lock(), m_buffer.size());
-			m_deviceObj->Unlock();
-		}
-
-		// オブジェクト破棄
-		LN_SAFE_RELEASE(m_deviceObj);
-	}
-	else
-	{
-		// 復帰後は次の ResolveDeviceObject() で新しい RHI オブジェクトにセットされる
-		m_locked = true;
-	}
-}
-
-//------------------------------------------------------------------------------
-Driver::IVertexBuffer* VertexBuffer::ResolveDeviceObject()
+Driver::IVertexBuffer* VertexBuffer::ResolveRHIObject()
 {
 	if (m_locked)
 	{
 		if (IsRHIDirect())
 		{
-			m_deviceObj->Unlock();
+			m_rhiObject->Unlock();
 		}
 		else
 		{
-			if (m_deviceObj == nullptr || m_deviceObj->GetByteCount() < m_buffer.size())
+			if (m_rhiObject == nullptr || m_rhiObject->GetByteCount() < m_buffer.size())
 			{
-				LN_SAFE_RELEASE(m_deviceObj);
-				m_deviceObj = m_manager->GetGraphicsDevice()->CreateVertexBuffer(m_buffer.size(), m_buffer.data(), m_usage);
+				LN_SAFE_RELEASE(m_rhiObject);
+				m_rhiObject = m_manager->GetGraphicsDevice()->CreateVertexBuffer(m_buffer.size(), m_buffer.data(), m_usage);
 			}
 			else
 			{
 				RenderBulkData data(m_buffer.data(), m_buffer.size());
-				Driver::IVertexBuffer* deviceObj = m_deviceObj;
+				Driver::IVertexBuffer* deviceObj = m_rhiObject;
 				LN_ENQUEUE_RENDER_COMMAND_2(
 					VertexBuffer_SetSubData, m_manager,
 					RenderBulkData, data,
@@ -201,22 +165,30 @@ Driver::IVertexBuffer* VertexBuffer::ResolveDeviceObject()
 
 	m_initialUpdate = false;
 	m_locked = false;
-	return m_deviceObj;
+	return m_rhiObject;
 }
 
 //------------------------------------------------------------------------------
-//bool VertexBuffer::VerifyInitialUpdate()
-//{
-//	if (!m_initialUpdate)
-//	{
-//		if (LN_CHECK_STATE(m_usage == ResourceUsage::Dynamic)) return false;
-//	}
-//	else
-//	{
-//		if (LN_CHECK_STATE(m_deviceObj == nullptr)) return false;
-//	}
-//	return true;
-//}
+void VertexBuffer::OnChangeDevice(Driver::IGraphicsDevice* device)
+{
+	if (device == nullptr)
+	{
+		// 必要があればデータを保存する
+		if (m_pool == GraphicsResourcePool::Managed)
+		{
+			m_buffer.resize(m_rhiObject->GetByteCount());
+			memcpy(m_buffer.data(), m_rhiObject->Lock(), m_buffer.size());
+			m_rhiObject->Unlock();
+		}
 
-LN_NAMESPACE_GRAPHICS_END
+		// オブジェクト破棄
+		LN_SAFE_RELEASE(m_rhiObject);
+	}
+	else
+	{
+		// 復帰後は次の ResolveDeviceObject() で新しい RHI オブジェクトにセットされる
+		m_locked = true;
+	}
+}
+
 LN_NAMESPACE_END

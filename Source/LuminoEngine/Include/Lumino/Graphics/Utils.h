@@ -15,6 +15,8 @@ class Utils
 {
 public:
 	static IndexBufferFormat GetIndexBufferFormat(int indexCount);
+	static int GetIndexStride(IndexBufferFormat format) { return (format == IndexBufferFormat_UInt16) ? 2 : 4; }
+	static int GetIndexBufferSize(IndexBufferFormat format, int indexCount) { return GetIndexStride(format) * indexCount; }
 
 	static int GetTextureFormatByteCount(TextureFormat format);
 	static PixelFormat TranslatePixelFormat(TextureFormat format);

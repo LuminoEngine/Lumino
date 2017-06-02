@@ -51,10 +51,10 @@ void MeshRendererProxy::DrawMesh(MeshResource* mesh, int startIndex, int primiti
 	data.vertexDeclaration = decls->GetDeviceObject();
 	for (int i = 0; i < vbCount; ++i)
 	{
-		data.vertexBuffers[i] = vb[i]->ResolveDeviceObject();
+		data.vertexBuffers[i] = vb[i]->ResolveRHIObject();
 	}
 	data.vertexBuffersCount = vbCount;
-	data.indexBuffer = ib->ResolveDeviceObject();
+	data.indexBuffer = ib->ResolveRHIObject();
 	data.startIndex = startIndex;
 	data.primitiveCount = primitiveCount;
 	data.primitiveType = primitiveType;

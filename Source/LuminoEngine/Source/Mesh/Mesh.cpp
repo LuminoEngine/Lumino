@@ -522,14 +522,14 @@ void* MeshResource::TryLockIndexBuffer()
 			//}
 
 			// Resize
-			m_indexBufferInfo.buffer->Resize(m_indexCapacity, m_indexBufferInfo.format);
+			m_indexBufferInfo.buffer->Resize(m_indexCapacity/*, m_indexBufferInfo.format*/);
 		}
 	}
 
 	if (m_indexBufferInfo.buffer == nullptr)
 	{
 		m_indexBufferInfo.buffer = RefPtr<IndexBuffer>::MakeRef();
-		m_indexBufferInfo.buffer->Initialize(m_manager, m_indexCapacity, nullptr, m_indexBufferInfo.format, m_usage);
+		m_indexBufferInfo.buffer->Initialize(m_manager, m_indexCapacity, nullptr, m_indexBufferInfo.format, m_usage, false);
 		m_indexBufferInfo.refresh = false;
 	}
 	//else if (m_indexBufferInfo.refresh)
@@ -540,8 +540,7 @@ void* MeshResource::TryLockIndexBuffer()
 
 	//if (m_indexBufferInfo.lockedBuffer == nullptr)
 	{
-		ByteBuffer* buf = m_indexBufferInfo.buffer->GetMappedData();
-		m_indexBufferInfo.lockedBuffer = buf->GetData();
+		m_indexBufferInfo.lockedBuffer = m_indexBufferInfo.buffer->GetMappedData();
 	}
 	return m_indexBufferInfo.lockedBuffer;
 }

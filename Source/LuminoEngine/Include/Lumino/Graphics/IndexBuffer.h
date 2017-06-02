@@ -14,6 +14,45 @@ class IndexBuffer
 {
 public:
 
+	/** インデックスの数を取得します。 */
+	int GetIndexCount() const;
+
+	/** インデックスバッファの容量を確保します。 */
+	void Reserve(int indexCount);
+
+	/** インデックスバッファのサイズを変更します。 */
+	void Resize(int indexCount);
+
+	/** インデックスバッファが保持するデータにアクセスします。 */
+	void* GetMappedData();
+
+	/** インデックスバッファのフォーマットを取得します。 */
+	IndexBufferFormat GetIndexFormat() const { return m_format; }
+
+LN_INTERNAL_ACCESS:
+	IndexBuffer();
+	virtual ~IndexBuffer();
+	void Initialize(detail::GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage, bool sizeConst);
+	int GetIndexStride() const;
+	Driver::IIndexBuffer* ResolveRHIObject();
+	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
+
+private:
+	bool IsRHIDirect() const { return m_initialUpdate && !m_rhiObject.IsNull(); }
+
+	RefPtr<Driver::IIndexBuffer>	m_rhiObject;
+	IndexBufferFormat				m_format;
+	ResourceUsage					m_usage;
+	GraphicsResourcePool			m_pool;
+	std::vector<byte_t>				m_buffer;
+	void*							m_rhiLockedBuffer;
+	bool							m_initialUpdate;
+	bool							m_locked;
+};
+
+#if 0
+public:
+
 	/**
 		@brief		インデックスバッファを作成します。
 		@param[in]	indexCount		: インデックスの要素数
@@ -60,10 +99,6 @@ public:
 	//void SetSubData(uint32_t offsetBytes, void* data, uint32_t dataBytes);
 
 LN_INTERNAL_ACCESS:
-	IndexBuffer();
-	virtual ~IndexBuffer();
-	void Initialize(detail::GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage);
-
 	//Driver::IIndexBuffer* GetDeviceObject() const;// { return m_deviceObj; }
 
 	Driver::IIndexBuffer* ResolveDeviceObject();
@@ -76,9 +111,8 @@ LN_INTERNAL_ACCESS:
 
 private:
 	//Driver::IIndexBuffer*	m_deviceObj;
-	RefPtr<Driver::IIndexBuffer>	m_deviceObj;
+	RefPtr<Driver::>	m_deviceObj;
 	int						m_indexCount;
-	IndexBufferFormat		m_format;
 	ResourceUsage			m_usage;
 	GraphicsResourcePool	m_pool;
 	//ByteBuffer				m_data;
@@ -118,6 +152,6 @@ private:
 //	IndexBuffer*	m_indexBuffer;
 //	ByteBuffer*		m_lockedBuffer;
 //};
-
+#endif
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END
