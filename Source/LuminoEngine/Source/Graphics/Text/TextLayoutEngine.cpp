@@ -268,7 +268,7 @@ void AbstractTextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int lengt
 		item.lineBaseline = m_currentLineBaseline;
 		OnPlacementChar(item);
 
-		FontGlyphMertics metrics;
+		FontGlyphMetrics metrics;
 		m_font->GetGlyphMetrics(text[i], &metrics);
 		x += metrics.advance.x;
 

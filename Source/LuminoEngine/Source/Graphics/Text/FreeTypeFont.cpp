@@ -475,7 +475,7 @@ FontGlyphBitmap* FreeTypeFont::LookupGlyphBitmap(UTF32 utf32code, int strokeSize
 }
 
 //------------------------------------------------------------------------------
-void FreeTypeFont::GetGlobalMetrics(FontGlobalMertics* outMetrics)
+void FreeTypeFont::GetGlobalMetrics(FontGlobalMetrics* outMetrics)
 {
 	if (LN_CHECK_ARG(outMetrics != nullptr)) return;
 	UpdateFont();
@@ -559,7 +559,7 @@ Vector2 FreeTypeFont::GetKerning(UTF32 prev, UTF32 next)
 }
 
 //------------------------------------------------------------------------------
-void FreeTypeFont::GetGlyphMetrics(UTF32 utf32Code, FontGlyphMertics* outMetrics)
+void FreeTypeFont::GetGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics)
 {
 	if (LN_CHECK_ARG(outMetrics != nullptr)) return;
 

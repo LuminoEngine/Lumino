@@ -179,7 +179,7 @@ FontGlyphBitmap* BitmapFont::LookupGlyphBitmap(UTF32 utf32code, int strokeSize)
 }
 
 //------------------------------------------------------------------------------
-void BitmapFont::GetGlobalMetrics(FontGlobalMertics* outMetrics)
+void BitmapFont::GetGlobalMetrics(FontGlobalMetrics* outMetrics)
 {
 	if (LN_CHECK_ARG(outMetrics != nullptr)) return;
 	outMetrics->ascender = m_charHeight;
@@ -188,7 +188,7 @@ void BitmapFont::GetGlobalMetrics(FontGlobalMertics* outMetrics)
 }
 
 //------------------------------------------------------------------------------
-void BitmapFont::GetGlyphMetrics(UTF32 utf32Code, FontGlyphMertics* outMetrics)
+void BitmapFont::GetGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics)
 {
 	if (LN_CHECK_ARG(outMetrics != nullptr)) return;
 	outMetrics->advance.x = m_charWidth;

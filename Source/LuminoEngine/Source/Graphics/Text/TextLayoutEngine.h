@@ -114,7 +114,7 @@ private:
 	void LayoutLineHorizontal(const UTF32* text, int length);
 
 	RawFont*			m_font;
-	FontGlobalMertics	m_globalMetrics;
+	FontGlobalMetrics	m_globalMetrics;
 	TextLayoutOptions	m_options;
 	float				m_currentLineBaseline;
 };
