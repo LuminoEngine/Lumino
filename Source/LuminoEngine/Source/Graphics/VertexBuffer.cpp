@@ -143,7 +143,7 @@ Driver::IVertexBuffer* VertexBuffer::ResolveRHIObject()
 		}
 		else
 		{
-			if (m_rhiObject == nullptr || m_rhiObject->GetByteCount() < m_buffer.size())
+			if (m_rhiObject == nullptr || m_rhiObject->GetByteCount() != m_buffer.size())
 			{
 				LN_SAFE_RELEASE(m_rhiObject);
 				m_rhiObject = m_manager->GetGraphicsDevice()->CreateVertexBuffer(m_buffer.size(), m_buffer.data(), m_usage);

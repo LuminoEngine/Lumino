@@ -7,6 +7,7 @@
 */
 #include "Internal.h"
 #include <math.h>
+#include <Lumino/Graphics/IndexBuffer.h>
 #include <Lumino/Mesh/Mesh.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Camera.h>
@@ -588,7 +589,7 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 
 			// 頂点バッファ・インデックスバッファに反映して描画する
 			Vertex* vb = reinterpret_cast<Vertex*>(m_mesh->TryLockVertexBuffer(MeshResource::VB_BasicVertices));
-			uint16_t* ib = reinterpret_cast<uint16_t*>(m_mesh->TryLockIndexBuffer());
+			uint16_t* ib = reinterpret_cast<uint16_t*>(m_mesh->GetIndexBuffer()->GetMappedData());
 
 			//SpriteParticleVertex* vb = (SpriteParticleVertex*)m_vertexBuffer->Lock()->GetData();	
 			//uint16_t* ib = (uint16_t*)m_indexBuffer->Lock()->GetData();

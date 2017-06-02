@@ -7,6 +7,7 @@
 #include <BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
 #include <BulletCollision/CollisionShapes/btTriangleIndexVertexArray.h>
 #include <Lumino/Physics/CollisionShape.h>
+#include <Lumino/Graphics/IndexBuffer.h>
 #include <Lumino/Mesh/Mesh.h>
 #include "BulletUtils.h"
 
@@ -203,19 +204,21 @@ void MeshCollisionShape::Initialize(MeshResource* mesh)
 	if (LN_CHECK_ARG(mesh != nullptr)) return;
 	if (LN_CHECK_STATE(m_btMeshData == nullptr)) return;
 
+	IndexBuffer* indexBuffer = mesh->GetIndexBuffer();
+
 	void* vb = mesh->TryLockVertexBuffer(MeshResource::VB_BasicVertices);
-	void* ib = mesh->TryLockIndexBuffer();
+	void* ib = indexBuffer->GetMappedData();
 
 	btIndexedMesh btMesh;
 	btMesh.m_numTriangles = mesh->GetTriangleCount();
 	btMesh.m_triangleIndexBase = (const unsigned char *)ib;
-	btMesh.m_triangleIndexStride = mesh->GetIndexStride() * 3;
+	btMesh.m_triangleIndexStride = indexBuffer->GetIndexStride() * 3;
 	btMesh.m_numVertices = mesh->GetVertexCount();
 	btMesh.m_vertexBase = (const unsigned char *)vb;
 	btMesh.m_vertexStride = sizeof(Vertex);
 
 	m_btMeshData = new btTriangleIndexVertexArray();
-	m_btMeshData->addIndexedMesh(btMesh, (mesh->GetIndexStride() == 2) ? PHY_SHORT : PHY_INTEGER);
+	m_btMeshData->addIndexedMesh(btMesh, (indexBuffer->GetIndexStride() == 2) ? PHY_SHORT : PHY_INTEGER);
 
 	//m_btMeshData = new btTriangleIndexVertexArray(
 	//	mesh->GetTriangleCount(), (int*)ib, mesh->GetIndexStride(),

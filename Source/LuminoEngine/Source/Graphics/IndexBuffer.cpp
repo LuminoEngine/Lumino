@@ -1,12 +1,34 @@
 ﻿
 #include "../Internal.h"
-#include <Lumino/Graphics/IndexBuffer.h>
 #include "GraphicsManager.h"
-#include "Device/GraphicsDriverInterface.h"
 #include "RenderingCommand.h"
+#include "Device/GraphicsDriverInterface.h"
+#include <Lumino/Graphics/IndexBuffer.h>
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
+
+//==============================================================================
+// IndexBuffer
+//==============================================================================
+/**
+@brief		インデックスバッファを作成します。
+@param[in]	indexCount		: インデックスの要素数
+@param[in]	initialData		: 初期値として設定するインデックスデータ
+@param[in]	format			: インデックスバッファのフォーマット
+@param[in]	usage			: インデックスバッファリソースの使用方法
+*/
+//static IndexBuffer* Create(int indexCount, const void* initialData = NULL, IndexBufferFormat format = IndexBufferFormat_UInt16, DeviceResourceUsage usage = DeviceResourceUsage_Static);
+
+/**
+@brief		インデックスバッファを作成します。
+@param[in]	manager			: 作成に使用する GraphicsManager
+@param[in]	indexCount		: インデックスの要素数
+@param[in]	initialData		: 初期値として設定するインデックスデータ
+@param[in]	format			: インデックスバッファのフォーマット
+@param[in]	usage			: インデックスバッファリソースの使用方法
+@details	この関数はデフォルト以外の GraphicsManager を指定して作成する場合に使用します。
+*/
+//static IndexBuffer* Create(GraphicsManager* manager, int indexCount, const void* initialData = NULL, IndexBufferFormat format = IndexBufferFormat_UInt16, DeviceResourceUsage usage = DeviceResourceUsage_Static);
 
 ////------------------------------------------------------------------------------
 //IndexBuffer* IndexBuffer::Create(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
@@ -24,14 +46,14 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //------------------------------------------------------------------------------
 IndexBuffer::IndexBuffer()
 	: m_rhiObject(nullptr)
-	//, m_indexCount(0)
 	, m_format(IndexBufferFormat_UInt16)
 	, m_usage(ResourceUsage::Static)
-	, m_pool(GraphicsResourcePool::Managed)	// TODO
+	, m_pool(GraphicsResourcePool::Managed)
+	, m_buffer()
+	, m_rhiLockedBuffer(nullptr)
 	, m_initialUpdate(true)
 	, m_locked(false)
 {
-
 }
 
 //------------------------------------------------------------------------------
@@ -44,7 +66,6 @@ IndexBuffer::~IndexBuffer()
 void IndexBuffer::Initialize(detail::GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage, bool sizeConst)
 {
 	GraphicsResourceObject::Initialize(manager);
-	//m_indexCount = indexCount;
 	m_format = format;
 	m_usage = usage;
 
@@ -65,11 +86,11 @@ int IndexBuffer::GetIndexCount() const
 }
 
 //------------------------------------------------------------------------------
-void IndexBuffer::Reserve(int size)
+void IndexBuffer::Reserve(int indexCount)
 {
 	if (LN_CHECK_STATE(!IsRHIDirect())) return;		// サイズ変更禁止
 
-	size_t newSize = static_cast<size_t>(size);
+	size_t newSize = static_cast<size_t>(indexCount * GetIndexStride());
 	if (newSize != m_buffer.capacity())
 	{
 		m_buffer.reserve(newSize);
@@ -77,11 +98,12 @@ void IndexBuffer::Reserve(int size)
 }
 
 //------------------------------------------------------------------------------
-void IndexBuffer::Resize(int size)
+void IndexBuffer::Resize(int indexCount)
 {
 	if (LN_CHECK_STATE(!IsRHIDirect())) return;		// サイズ変更禁止
 
-	size_t newSize = static_cast<size_t>(size);
+	UpdateFormat(indexCount);
+	size_t newSize = static_cast<size_t>(indexCount* GetIndexStride());
 	if (newSize != m_buffer.size())
 	{
 		m_buffer.resize(newSize);
@@ -111,37 +133,55 @@ void* IndexBuffer::GetMappedData()
 }
 
 //------------------------------------------------------------------------------
+void* IndexBuffer::RequestMappedData(int indexCount)
+{
+	if (GetIndexCount() < indexCount)
+	{
+		Resize(indexCount);
+	}
+	return GetMappedData();
+}
+
+//------------------------------------------------------------------------------
+void IndexBuffer::Clear()
+{
+	m_buffer.clear();
+	m_locked = true;
+}
+
+//------------------------------------------------------------------------------
+void IndexBuffer::SetIndex(int index, int vertexIndex)
+{
+	void* indexBuffer = GetMappedData();
+
+	if (m_format == IndexBufferFormat_UInt16)
+	{
+		uint16_t* i = (uint16_t*)indexBuffer;
+		i[index] = vertexIndex;
+	}
+	else if (m_format == IndexBufferFormat_UInt32)
+	{
+		uint32_t* i = (uint32_t*)indexBuffer;
+		i[index] = vertexIndex;
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+	}
+}
+
+//------------------------------------------------------------------------------
 Driver::IIndexBuffer* IndexBuffer::ResolveRHIObject()
 {
 	if (m_locked)
 	{
-		//if (m_usage == ResourceUsage::Static)
-		//{
-		//	// まだ1度も SetVertexBufferCommand に入っていない場合は直接書き換えできる
-		//	if (m_initialUpdate)
-		//	{
-		//		m_rhiObject->SetSubData(0, m_lockedBuffer.GetConstData(), m_lockedBuffer.GetSize());
-		//	}
-		//	else
-		//	{
-		//		LN_THROW(0, NotImplementedException);
-		//	}
-
-		//	//if (m_initialUpdate) {
-		//	//	m_rhiObject->Unlock();
-		//	//}
-		//	//else {
-		//	//	LN_THROW(0, NotImplementedException);
-		//	//}
-		//}
-		//else
 		if (IsRHIDirect())
 		{
 			m_rhiObject->Unlock();
 		}
 		else
 		{
-			if (m_rhiObject == nullptr || m_rhiObject->GetByteCount() < m_buffer.size())
+			if (m_rhiObject == nullptr || m_rhiObject->GetByteCount() != m_buffer.size())
 			{
 				m_rhiObject.Attach(m_manager->GetGraphicsDevice()->CreateIndexBuffer(GetIndexCount(), m_buffer.data(), m_format, m_usage), false);
 			}
@@ -172,7 +212,7 @@ int IndexBuffer::GetIndexStride() const
 //------------------------------------------------------------------------------
 void IndexBuffer::OnChangeDevice(Driver::IGraphicsDevice* device)
 {
-	if (device == NULL)
+	if (device == nullptr)
 	{
 		// 必要があればデータを保存する
 		if (m_pool == GraphicsResourcePool::Managed)
@@ -196,6 +236,13 @@ void IndexBuffer::OnChangeDevice(Driver::IGraphicsDevice* device)
 	}
 }
 
+//------------------------------------------------------------------------------
+void IndexBuffer::UpdateFormat(int indexCount)
+{
+	if (m_format == IndexBufferFormat_UInt16 && indexCount > 0xFFFF)
+	{
+		m_format = IndexBufferFormat_UInt32;
+	}
+}
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

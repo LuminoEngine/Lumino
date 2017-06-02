@@ -2,6 +2,7 @@
 
 #include "../Internal.h"
 #include <Lumino/IO/BinaryReader.h>
+#include <Lumino/Graphics/IndexBuffer.h>
 #include "ModelManager.h"
 #include "PmxSkinnedMesh.h"
 #include "PmxLoader.h"
@@ -244,7 +245,8 @@ void PmxLoader::LoadIndices(BinaryReader* reader)
 	if (getVertexIndexSize() > 2) {
 		format = IndexBufferFormat_UInt16;
 	}
-	m_modelCore->ResizeIndexBuffer(indexCount, format);
+	m_modelCore->ResizeIndexBuffer(indexCount);
+	m_modelCore->RequestIndexBuffer()->SetFormat(format);
 
 	// とりあえずまずは全部読み込む
 	ByteBuffer indicesBuffer(getVertexIndexSize() * indexCount);

@@ -48,8 +48,8 @@ public:
 	const String& GetName() const { return m_name; }
 
 	int GetVertexCount() const { return m_vertexUsedCount; }
-	int GetIndexCount() const { return m_indexUsedCount; }
-	int GetTriangleCount() const { return m_indexUsedCount / 3; }
+	int GetIndexCount() const;
+	int GetTriangleCount() const;
 
 	void SetPosition(int index, const Vector3& position);
 	void SetNormal(int index, const Vector3& normal);
@@ -99,7 +99,7 @@ public:
 	void AddSquare(const Vertex& v1, const Vertex& v2, const Vertex& v3, const Vertex& v4);
 	void AddSquare(const Vertex* virtices);
 
-
+	// TODO: obsolete, triangle only
 	void AddLine(const Vertex& v1, const Vertex& v2);
 
 	void AddPlane(const Vector2& size, int sliceH = 1, int sliceV = 1);	// TODO: name SquarePlane
@@ -109,6 +109,8 @@ public:
 	void AddScreenPlane();
 
 	void ReverseFaces();
+
+	IndexBuffer* GetIndexBuffer() const;
 
 LN_INTERNAL_ACCESS:
 	enum VertexBufferType
@@ -130,7 +132,7 @@ LN_INTERNAL_ACCESS:
 	
 	struct IndexBufferInfo
 	{
-		IndexBufferFormat		format = IndexBufferFormat_UInt16;
+		//IndexBufferFormat		format = IndexBufferFormat_UInt16;
 		RefPtr<IndexBuffer>		buffer = nullptr;
 		void*					lockedBuffer = nullptr;
 		bool					refresh = true;
@@ -166,24 +168,28 @@ LN_INTERNAL_ACCESS:
 	void Reserve(int vertexCount, int indexCount);
 	//void Resize(int vertexCount);
 
+
+
 	// for PMX
 	void ResizeVertexBuffer(int vertexCount);
 	void ResizeIndexBuffer(int indexCount);
-	void ResizeIndexBuffer(int indexCount, IndexBufferFormat format);
+	//void ResizeIndexBuffer(int indexCount, IndexBufferFormat format);
 
-	void SetIndexInternal(void* indexBuffer, int vertexIndex, int value);
+	//void SetIndexInternal(void* indexBuffer, int vertexIndex, int value);
 
 	int GetSubsetCount() const { return (m_attributes.IsEmpty()) ? 1 : m_attributes.GetCount(); }
-	int GetIndexStride() const { return (m_indexBufferInfo.format == IndexBufferFormat_UInt16) ? 2 : 4; }
+	//int GetIndexStride() const { return (m_indexBufferInfo.format == IndexBufferFormat_UInt16) ? 2 : 4; }
 
 	void* TryLockVertexBuffer(VertexBufferType type);
-	void* TryLockIndexBuffer();
+	//void* TryLockIndexBuffer();
 	void TryGlowVertexBuffers(int requestVertexCount);
-	void TryGlowIndexBuffer(int requestIndexCount);
+	//void TryGlowIndexBuffer(int requestIndexCount);
 	//void* RequestVertexBuffer(int vertexCount, VertexBufferType type);
 	//void* RequestIndexBuffer(int indexCount);
 	void* RequestVertexBufferForAdditional(int additionalVertexCount, VertexBufferType type);
 	uint16_t* RequestIndexBufferForAdditional(int additionalIndexCount);
+
+	IndexBuffer* RequestIndexBuffer();
 
 	void GetMeshAttribute(int subsetIndex, MeshAttribute* outAttr);
 	void CommitRenderData(VertexDeclaration** outDecl, VertexBuffer** outVBs, int* outVBCount, IndexBuffer** outIB);
@@ -199,8 +205,8 @@ LN_INTERNAL_ACCESS:	// TODO:
 
 	int							m_vertexCapacity;
 	int							m_vertexUsedCount;
-	int							m_indexCapacity;
-	int							m_indexUsedCount;
+	//int							m_indexCapacity;
+	//int							m_indexUsedCount;
 	RefPtr<VertexDeclaration>	m_vertexDeclaration;
 	VertexBufferInfo			m_vertexBufferInfos[VB_Count];
 	IndexBufferInfo				m_indexBufferInfo;

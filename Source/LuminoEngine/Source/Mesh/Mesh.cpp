@@ -39,8 +39,8 @@ MeshResource::MeshResource()
 	, m_usage(ResourceUsage::Static)
 	, m_vertexCapacity(0)
 	, m_vertexUsedCount(0)
-	, m_indexCapacity(0)
-	, m_indexUsedCount(0)
+	//, m_indexCapacity(0)
+	//, m_indexUsedCount(0)
 	, m_vertexDeclaration()
 	, m_attributes()
 	, m_vertexDeclarationModified(false)
@@ -65,7 +65,8 @@ void MeshResource::Initialize(detail::GraphicsManager* manager, MeshCreationFlag
 void MeshResource::Reserve(int vertexCount, int indexCount)
 {
 	TryGlowVertexBuffers(vertexCount);
-	TryGlowIndexBuffer(indexCount);
+	//TryGlowIndexBuffer(indexCount);
+	RequestIndexBuffer()->Reserve(indexCount);
 }
 
 ////------------------------------------------------------------------------------
@@ -84,34 +85,27 @@ void MeshResource::ResizeVertexBuffer(int vertexCount)
 //------------------------------------------------------------------------------
 void MeshResource::ResizeIndexBuffer(int indexCount)
 {
-	ResizeIndexBuffer(indexCount, Utils::GetIndexBufferFormat(indexCount));
+	RequestIndexBuffer()->Resize(indexCount);
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::ResizeIndexBuffer(int indexCount, IndexBufferFormat format)
+//void MeshResource::ResizeIndexBuffer(int indexCount, IndexBufferFormat format)
+//{
+//	TryGlowIndexBuffer(indexCount);
+//	m_indexUsedCount = indexCount;
+//}
+
+//------------------------------------------------------------------------------
+int MeshResource::GetIndexCount() const
 {
-	TryGlowIndexBuffer(indexCount);
-	m_indexUsedCount = indexCount;
-	m_indexBufferInfo.format = format;
+	// TODO: has check
+	return GetIndexBuffer()->GetIndexCount();
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::SetIndexInternal(void* indexBuffer, int index, int vertexIndex)
+int MeshResource::GetTriangleCount() const	// TODO: face count
 {
-	if (m_indexBufferInfo.format == IndexBufferFormat_UInt16)
-	{
-		uint16_t* i = (uint16_t*)indexBuffer;
-		i[index] = vertexIndex;
-	}
-	else if (m_indexBufferInfo.format == IndexBufferFormat_UInt32)
-	{
-		uint32_t* i = (uint32_t*)indexBuffer;
-		i[index] = vertexIndex;
-	}
-	else
-	{
-		LN_NOTIMPLEMENTED();
-	}
+	return GetIndexCount() / 3;
 }
 
 //------------------------------------------------------------------------------
@@ -217,7 +211,7 @@ void MeshResource::GetBlendIndices(int index, int* out0, int* out1, int* out2, i
 //------------------------------------------------------------------------------
 void MeshResource::SetIndex(int index, int vertexIndex)
 {
-	SetIndexInternal(TryLockIndexBuffer(), index, vertexIndex);
+	m_indexBufferInfo.buffer->SetIndex(index, vertexIndex);
 }
 
 //------------------------------------------------------------------------------
@@ -306,7 +300,7 @@ MeshAttribute* MeshResource::GetSection(int index)
 void MeshResource::Clear()
 {
 	m_vertexUsedCount = 0;
-	m_indexUsedCount = 0;
+	if (GetIndexBuffer() != nullptr) GetIndexBuffer()->Clear();
 }
 
 //------------------------------------------------------------------------------
@@ -421,7 +415,7 @@ void MeshResource::ReverseFaces()
 	if (m_indexBufferInfo.buffer->GetIndexStride() == 2)
 	{
 		Vertex* vb = (Vertex*)TryLockVertexBuffer(VB_BasicVertices);
-		uint16_t* ib = (uint16_t*)TryLockIndexBuffer();
+		uint16_t* ib = (uint16_t*)m_indexBufferInfo.buffer->GetMappedData();
 
 		for (int i = 0; i < m_vertexUsedCount; ++i)
 		{
@@ -429,7 +423,8 @@ void MeshResource::ReverseFaces()
 		}
 		
 		uint16_t* indices = (uint16_t*)ib;
-		for (int i = 0; i < m_indexUsedCount; i += 3)
+		int indexCount = GetIndexBuffer()->GetIndexCount();
+		for (int i = 0; i < indexCount; i += 3)
 		{
 			std::swap(indices[i + 1], indices[i + 2]);
 		}
@@ -438,6 +433,12 @@ void MeshResource::ReverseFaces()
 	{
 		LN_NOTIMPLEMENTED();
 	}
+}
+
+//------------------------------------------------------------------------------
+IndexBuffer* MeshResource::GetIndexBuffer() const
+{
+	return m_indexBufferInfo.buffer;
 }
 
 //------------------------------------------------------------------------------
@@ -504,46 +505,46 @@ void* MeshResource::TryLockVertexBuffer(VertexBufferType type)
 	return m_vertexBufferInfos[type].lockedBuffer;
 }
 
-//------------------------------------------------------------------------------
-void* MeshResource::TryLockIndexBuffer()
-{
-	if (LN_CHECK_STATE(m_indexUsedCount > 0)) return nullptr;
-
-	//if (m_usage == ResourceUsage::Dynamic)
-	{
-		if (m_indexBufferInfo.buffer != nullptr &&
-			(m_indexBufferInfo.buffer->GetIndexCount() != m_indexCapacity || m_indexBufferInfo.buffer->GetIndexFormat() != m_indexBufferInfo.format))
-		{
-			// Unlock
-			//if (m_indexBufferInfo.lockedBuffer != nullptr)
-			//{
-			//	m_indexBufferInfo.lockedBuffer = nullptr;
-			//	m_indexBufferInfo.buffer->Unlock();
-			//}
-
-			// Resize
-			m_indexBufferInfo.buffer->Resize(m_indexCapacity/*, m_indexBufferInfo.format*/);
-		}
-	}
-
-	if (m_indexBufferInfo.buffer == nullptr)
-	{
-		m_indexBufferInfo.buffer = RefPtr<IndexBuffer>::MakeRef();
-		m_indexBufferInfo.buffer->Initialize(m_manager, m_indexCapacity, nullptr, m_indexBufferInfo.format, m_usage, false);
-		m_indexBufferInfo.refresh = false;
-	}
-	//else if (m_indexBufferInfo.refresh)
-	//{
-	//	m_indexBufferInfo.buffer->Resize();
-	//	m_indexBufferInfo.refresh = false;
-	//}
-
-	//if (m_indexBufferInfo.lockedBuffer == nullptr)
-	{
-		m_indexBufferInfo.lockedBuffer = m_indexBufferInfo.buffer->GetMappedData();
-	}
-	return m_indexBufferInfo.lockedBuffer;
-}
+////------------------------------------------------------------------------------
+//void* MeshResource::TryLockIndexBuffer()
+//{
+//	if (LN_CHECK_STATE(m_indexUsedCount > 0)) return nullptr;
+//
+//	//if (m_usage == ResourceUsage::Dynamic)
+//	{
+//		if (m_indexBufferInfo.buffer != nullptr &&
+//			(m_indexBufferInfo.buffer->GetIndexCount() != m_indexCapacity/* || m_indexBufferInfo.buffer->GetIndexFormat() != m_indexBufferInfo.format*/))
+//		{
+//			// Unlock
+//			//if (m_indexBufferInfo.lockedBuffer != nullptr)
+//			//{
+//			//	m_indexBufferInfo.lockedBuffer = nullptr;
+//			//	m_indexBufferInfo.buffer->Unlock();
+//			//}
+//
+//			// Resize
+//			m_indexBufferInfo.buffer->Resize(m_indexCapacity/*, m_indexBufferInfo.format*/);
+//		}
+//	}
+//
+//	if (m_indexBufferInfo.buffer == nullptr)
+//	{
+//		m_indexBufferInfo.buffer = RefPtr<IndexBuffer>::MakeRef();
+//		m_indexBufferInfo.buffer->Initialize(m_manager, m_indexCapacity, nullptr, m_indexBufferInfo.format, m_usage, false);
+//		m_indexBufferInfo.refresh = false;
+//	}
+//	//else if (m_indexBufferInfo.refresh)
+//	//{
+//	//	m_indexBufferInfo.buffer->Resize();
+//	//	m_indexBufferInfo.refresh = false;
+//	//}
+//
+//	//if (m_indexBufferInfo.lockedBuffer == nullptr)
+//	{
+//		m_indexBufferInfo.lockedBuffer = m_indexBufferInfo.buffer->GetMappedData();
+//	}
+//	return m_indexBufferInfo.lockedBuffer;
+//}
 
 //------------------------------------------------------------------------------
 void MeshResource::TryGlowVertexBuffers(int requestVertexCount)
@@ -559,15 +560,15 @@ void MeshResource::TryGlowVertexBuffers(int requestVertexCount)
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::TryGlowIndexBuffer(int requestIndexCount)
-{
-	if (m_indexUsedCount + requestIndexCount > m_indexCapacity)
-	{
-		m_indexCapacity += std::max(m_indexCapacity, requestIndexCount);
-		m_indexBufferInfo.refresh = true;	// 次の TryLock で Resize してほしい
-	}
-}
-
+//void MeshResource::TryGlowIndexBuffer(int requestIndexCount)
+//{
+//	if (m_indexUsedCount + requestIndexCount > m_indexCapacity)
+//	{
+//		m_indexCapacity += std::max(m_indexCapacity, requestIndexCount);
+//		m_indexBufferInfo.refresh = true;	// 次の TryLock で Resize してほしい
+//	}
+//}
+//
 //------------------------------------------------------------------------------
 void* MeshResource::RequestVertexBufferForAdditional(int additionalVertexCount, VertexBufferType type)
 {
@@ -583,17 +584,28 @@ void* MeshResource::RequestVertexBufferForAdditional(int additionalVertexCount, 
 //------------------------------------------------------------------------------
 uint16_t* MeshResource::RequestIndexBufferForAdditional(int additionalIndexCount)
 {
-	int begin = GetIndexCount();
+	int begin = (GetIndexBuffer() != nullptr) ? GetIndexBuffer()->GetIndexCount() : 0;
 	int newCount = begin + additionalIndexCount;
 
 	if (LN_CHECK_STATE(m_indexBufferInfo.buffer == nullptr || m_indexBufferInfo.buffer->GetIndexStride() == 2)) return nullptr;
 	if (LN_CHECK_STATE(newCount <= UINT16_MAX)) return nullptr;
 
-	TryGlowIndexBuffer(newCount);
-	m_indexUsedCount = newCount;
-
-	uint16_t* ib = (uint16_t*)TryLockIndexBuffer();
+	//TryGlowIndexBuffer(newCount);
+	//m_indexUsedCount = newCount;
+	
+	IndexBuffer* indexBuffer = RequestIndexBuffer();
+	uint16_t* ib = (uint16_t*)indexBuffer->RequestMappedData(newCount);
 	return ib + begin;
+}
+
+//------------------------------------------------------------------------------
+IndexBuffer* MeshResource::RequestIndexBuffer()
+{
+	if (m_indexBufferInfo.buffer == nullptr)
+	{
+		m_indexBufferInfo.buffer = ln::NewObject<IndexBuffer>(m_manager, 0, nullptr, IndexBufferFormat_UInt16, m_usage, false);
+	}
+	return m_indexBufferInfo.buffer;
 }
 
 //------------------------------------------------------------------------------
@@ -603,7 +615,7 @@ void MeshResource::GetMeshAttribute(int subsetIndex, MeshAttribute* outAttr)
 	{
 		outAttr->MaterialIndex = 0;
 		outAttr->StartIndex = 0;
-		outAttr->PrimitiveNum = m_indexUsedCount / 3;	// triangle only
+		outAttr->PrimitiveNum = GetIndexBuffer()->GetIndexCount() / 3;	// triangle only
 		outAttr->primitiveType = PrimitiveType_TriangleList;
 	}
 	else
