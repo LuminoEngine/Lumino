@@ -25,6 +25,12 @@ public:
 	/** 頂点バッファが保持するデータにアクセスします。 */
 	void* GetMappedData();
 
+	/** 頂点が保持するデータにアクセスします。サイズが size より小さい場合はバッファを拡張します。 */
+	void* RequestMappedData(int size);
+
+	/** 頂点バッファをクリアします。 */
+	void Clear();
+
 LN_INTERNAL_ACCESS:
 	VertexBuffer();
 	virtual ~VertexBuffer();

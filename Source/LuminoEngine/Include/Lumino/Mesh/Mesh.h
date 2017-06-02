@@ -47,7 +47,7 @@ public:
 	/** 名前を取得します。*/
 	const String& GetName() const { return m_name; }
 
-	int GetVertexCount() const { return m_vertexUsedCount; }
+	int GetVertexCount() const;
 	int GetIndexCount() const;
 	int GetTriangleCount() const;
 
@@ -162,6 +162,8 @@ LN_INTERNAL_ACCESS:
 		float		index;
 	};
 
+	static const size_t vertexStrideTable[VB_Count];
+
 	MeshResource();
 	virtual ~MeshResource();
 	void Initialize(detail::GraphicsManager* manager, MeshCreationFlags flags);
@@ -180,15 +182,17 @@ LN_INTERNAL_ACCESS:
 	int GetSubsetCount() const { return (m_attributes.IsEmpty()) ? 1 : m_attributes.GetCount(); }
 	//int GetIndexStride() const { return (m_indexBufferInfo.format == IndexBufferFormat_UInt16) ? 2 : 4; }
 
-	void* TryLockVertexBuffer(VertexBufferType type);
+	//void* TryLockVertexBuffer(VertexBufferType type);
 	//void* TryLockIndexBuffer();
-	void TryGlowVertexBuffers(int requestVertexCount);
+	//void TryGlowVertexBuffers(int requestVertexCount);
 	//void TryGlowIndexBuffer(int requestIndexCount);
 	//void* RequestVertexBuffer(int vertexCount, VertexBufferType type);
 	//void* RequestIndexBuffer(int indexCount);
 	void* RequestVertexBufferForAdditional(int additionalVertexCount, VertexBufferType type);
 	uint16_t* RequestIndexBufferForAdditional(int additionalIndexCount);
 
+	VertexBuffer* GetVertexBuffer(VertexBufferType type) const;
+	VertexBuffer* RequestVertexBuffer(VertexBufferType type);
 	IndexBuffer* RequestIndexBuffer();
 
 	void GetMeshAttribute(int subsetIndex, MeshAttribute* outAttr);
@@ -203,8 +207,8 @@ LN_INTERNAL_ACCESS:	// TODO:
 	String						m_name;
 	ResourceUsage				m_usage;
 
-	int							m_vertexCapacity;
-	int							m_vertexUsedCount;
+	//int							m_vertexCapacity;
+	//int							m_vertexUsedCount;
 	//int							m_indexCapacity;
 	//int							m_indexUsedCount;
 	RefPtr<VertexDeclaration>	m_vertexDeclaration;

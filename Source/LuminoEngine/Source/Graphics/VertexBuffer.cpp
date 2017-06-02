@@ -133,6 +133,23 @@ void* VertexBuffer::GetMappedData()
 }
 
 //------------------------------------------------------------------------------
+void* VertexBuffer::RequestMappedData(int size)
+{
+	if (GetSize() < size)
+	{
+		Resize(size);
+	}
+	return GetMappedData();
+}
+
+//------------------------------------------------------------------------------
+void VertexBuffer::Clear()
+{
+	m_buffer.clear();
+	m_locked = true;
+}
+
+//------------------------------------------------------------------------------
 Driver::IVertexBuffer* VertexBuffer::ResolveRHIObject()
 {
 	if (m_locked)

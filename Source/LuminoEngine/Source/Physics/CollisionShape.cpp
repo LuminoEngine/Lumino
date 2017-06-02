@@ -7,6 +7,7 @@
 #include <BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
 #include <BulletCollision/CollisionShapes/btTriangleIndexVertexArray.h>
 #include <Lumino/Physics/CollisionShape.h>
+#include <Lumino/Graphics/VertexBuffer.h>
 #include <Lumino/Graphics/IndexBuffer.h>
 #include <Lumino/Mesh/Mesh.h>
 #include "BulletUtils.h"
@@ -206,7 +207,7 @@ void MeshCollisionShape::Initialize(MeshResource* mesh)
 
 	IndexBuffer* indexBuffer = mesh->GetIndexBuffer();
 
-	void* vb = mesh->TryLockVertexBuffer(MeshResource::VB_BasicVertices);
+	void* vb = mesh->GetVertexBuffer(MeshResource::VB_BasicVertices)->GetMappedData();
 	void* ib = indexBuffer->GetMappedData();
 
 	btIndexedMesh btMesh;
