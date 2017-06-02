@@ -173,7 +173,7 @@ LN_INTERNAL_ACCESS:
 
 	void SetIndexInternal(void* indexBuffer, int vertexIndex, int value);
 
-	int GetSubsetCount() const { return m_attributes.GetCount(); }
+	int GetSubsetCount() const { return (m_attributes.IsEmpty()) ? 1 : m_attributes.GetCount(); }
 	int GetIndexStride() const { return (m_indexBufferInfo.format == IndexBufferFormat_UInt16) ? 2 : 4; }
 
 	void* TryLockVertexBuffer(VertexBufferType type);
