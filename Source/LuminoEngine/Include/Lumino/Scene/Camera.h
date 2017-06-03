@@ -94,7 +94,6 @@ public:	// internal
 	//void DoMouseWheel(int pos);
 
 protected:
-	virtual void OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph* oldOwner) override;
 
 	// Component interface
 	virtual void OnUpdate() override;
@@ -103,7 +102,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	CameraComponent();
 	virtual ~CameraComponent();
-	void Initialize(SceneGraph* owner, CameraProjection proj);
+	void Initialize(CameraProjection proj);
 	CameraProjection GetProjectionMode() const { return m_projectionMode; }
 
 	CameraViewportLayer2*	m_ownerLayer;
@@ -266,7 +265,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	Camera();
 	virtual ~Camera();
-	void Initialize(SceneGraph* owner, CameraProjection proj);
+	void Initialize(CameraProjection proj);
 
 LN_INTERNAL_ACCESS:
 

@@ -8,6 +8,7 @@
 #include <Lumino/Scene/Light.h>
 #include <Lumino/World.h>
 #include <Lumino/Scene/WorldObject.h>
+#include <Lumino/Scene/OffscreenWorldView.h>
 #include "Graphics/GraphicsManager.h"
 #include "EngineManager.h"
 
@@ -80,6 +81,18 @@ void World::RemoveWorldObject(WorldObject* obj)
 }
 
 //------------------------------------------------------------------------------
+void World::AddOffscreenWorldView(OffscreenWorldView* view)
+{
+	m_offscreenWorldViewList.Add(view);
+}
+
+//------------------------------------------------------------------------------
+void World::RemoveOffscreenWorldView(OffscreenWorldView* view)
+{
+	m_offscreenWorldViewList.Remove(view);
+}
+
+//------------------------------------------------------------------------------
 void World::BeginUpdateFrame()
 {
 	// OnRender の外のデバッグ描画などでも使用するため、描画リストのクリアは SceneGraph の更新前でなければならない。
@@ -106,8 +119,19 @@ void World::UpdateFrame(float elapsedTime)
 }
 
 //------------------------------------------------------------------------------
+void World::RenderRoot(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags)
+{
+	Render(camera, debugDrawFlags);
+}
+
+//------------------------------------------------------------------------------
 void World::Render(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags)
 {
+	//for (auto& view : m_offscreenWorldViewList)
+	//{
+
+	//}
+
 	for (auto& obj : m_rootWorldObjectList)
 	{
 		obj->Render(m_renderer);
@@ -155,7 +179,7 @@ void World2D::Initialize()
 	m_sceneGraph = RefPtr<SceneGraph2D>::MakeRef();
 	m_sceneGraph->CreateCore(EngineManager::GetInstance()->GetSceneGraphManager());
 
-	m_mainCamera = NewObject<Camera>(m_sceneGraph, CameraProjection_2D);
+	m_mainCamera = NewObject<Camera>(CameraProjection_2D);
 	m_mainCamera->SetSpecialObject(true);
 	AddWorldObject(m_mainCamera, true);
 }
@@ -242,11 +266,11 @@ void World3D::Initialize()
 	m_sceneGraph = RefPtr<SceneGraph3D>::MakeRef();
 	m_sceneGraph->CreateCore(EngineManager::GetInstance()->GetSceneGraphManager());
 
-	m_mainCamera = NewObject<Camera>(m_sceneGraph, CameraProjection_3D);
+	m_mainCamera = NewObject<Camera>(CameraProjection_3D);
 	m_mainCamera->SetSpecialObject(true);
 	AddWorldObject(m_mainCamera, true);
 
-	m_mainLight = NewObject<Light>(m_sceneGraph);
+	m_mainLight = NewObject<Light>();
 	m_mainLight->SetSpecialObject(true);
 	AddWorldObject(m_mainLight, true);
 

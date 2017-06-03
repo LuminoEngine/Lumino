@@ -4,7 +4,6 @@
 #include "GraphicsResourceObject.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 /**
 	@brief		インデックスバッファのクラスです。

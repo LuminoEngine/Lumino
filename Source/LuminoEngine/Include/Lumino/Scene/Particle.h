@@ -338,7 +338,7 @@ class ParticleEmitterComponent
 protected:
 	ParticleEmitterComponent();
 	virtual ~ParticleEmitterComponent();
-	void Initialize(SceneGraph* owner, SpriteParticleModel* model);
+	void Initialize(SpriteParticleModel* model);
 
 	virtual void OnUpdateFrame(float deltaTime) override;
 	virtual void OnRender2(DrawList* renderer) override;

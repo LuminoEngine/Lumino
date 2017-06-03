@@ -65,7 +65,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	SpriteComponent();
 	virtual ~SpriteComponent();
-	void Initialize(SceneGraph* owner);
+	void Initialize();
 	void RenderSprite(DrawList* renderer, SpriteBaseDirection dir);
 
 private:
@@ -160,7 +160,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	Sprite3DComponent();
 	virtual ~Sprite3DComponent();
-	void Initialize(SceneGraph* owner);
+	void Initialize();
 	virtual void OnRender2(DrawList* renderer) override;
 };
 

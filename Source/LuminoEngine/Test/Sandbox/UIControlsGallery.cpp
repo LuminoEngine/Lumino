@@ -45,6 +45,8 @@ void UIControlsGallery()
 	auto m_map = ln::NewObject<ln::WorldObject3D>();
 	m_map->AddComponent(mesh);
 	mesh->SetBlendMode(BlendMode::Normal);
+	mesh->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
+	m_map->SetScale(-100, 100, 100);
 
 	//auto shader = Shader::Create(StringRef(_T("C:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/Sandbox/SSBasic2D.fx")), true);
 	//auto rect = Rectangle::Create(RectF(0, 0, 3, 1));

@@ -35,17 +35,6 @@ public:
 	/// 前回フレームからの経過時間を取得する (秒)
 	float GetElapsedTime() const { return m_elapsedTime; }
 
-	/// マウス移動イベントを通知する (ViewPane の左上を 0,0 とした座標を指定する)
-	bool InjectMouseMove(int x, int y);
-
-	/// マウスボタンイベントを通知する
-	bool InjectMouseButtonDown(MouseButtons button, int x, int y);
-
-	/// マウスボタンイベントを通知する
-	bool InjectMouseButtonUp(MouseButtons button, int x, int y);
-
-	bool InjectMouseWheel(int delta);
-
 	SceneGraphManager* GetManager() const { return m_manager; }
 	virtual void UpdateFrame(float deltaTime);
 	virtual SceneNode* GetRootNode() = 0;
@@ -61,8 +50,6 @@ protected:
 	void CreateCore(SceneGraphManager* manager);
 
 LN_INTERNAL_ACCESS:
-	List<CameraComponent*>* GetAllCameraList() { return &m_allCameraList; }
-	//detail::SceneGraphRenderingProfilerInterface& GetRenderingProfiler() { return m_renderingProfiler; }
 
 	void BeginUpdateFrame();
 
@@ -89,7 +76,6 @@ private:
 
 	double				m_time;					///< 時間処理の開始通知からの経過時間 (秒)
 	float				m_elapsedTime;			///< 前回フレームからの経過時間 (秒)
-	List<CameraComponent*>		m_allCameraList;
 	//LightNodeList		m_renderingLightList;	// 描画ルート以下のライト (他の描画空間にライティングの影響を与えないようにするため)
 
 	MouseState			m_leftMouseState;		///< マウスの左ボタンの状態

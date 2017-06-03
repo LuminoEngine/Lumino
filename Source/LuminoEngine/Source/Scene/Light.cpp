@@ -28,9 +28,9 @@ LightComponent::~LightComponent()
 }
 
 //------------------------------------------------------------------------------
-void LightComponent::Initialize(SceneGraph* owner, LightType type)
+void LightComponent::Initialize(LightType type)
 {
-	SceneNode::Initialize(owner);
+	SceneNode::Initialize();
 	m_lightInfo = RefPtr<detail::DynamicLightInfo>::MakeRef();
 	m_lightInfo->m_type = type;
 	m_lightInfo->m_diffuse.Set(1.0f, 1.0f, 1.0f, 1.0f);
@@ -110,10 +110,10 @@ Light::~Light()
 }
 
 //------------------------------------------------------------------------------
-void Light::Initialize(SceneGraph* owner)
+void Light::Initialize()
 {
 	WorldObject::Initialize();
-	m_component = NewObject<LightComponent>(owner, LightType_Directional);
+	m_component = NewObject<LightComponent>(LightType_Directional);
 	AddComponent(m_component);
 }
 

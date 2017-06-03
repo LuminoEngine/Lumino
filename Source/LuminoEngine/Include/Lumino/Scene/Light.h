@@ -15,7 +15,7 @@ class LightComponent
 public:
 	LightComponent();
 	virtual ~LightComponent();
-	void Initialize(SceneGraph* owner, LightType type);
+	void Initialize(LightType type);
 
 public:
 
@@ -130,7 +130,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	Light();
 	virtual ~Light();
-	void Initialize(SceneGraph* owner);
+	void Initialize();
 
 LN_INTERNAL_ACCESS:
 

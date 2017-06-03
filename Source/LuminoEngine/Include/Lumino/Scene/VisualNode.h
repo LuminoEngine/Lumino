@@ -149,7 +149,7 @@ public:
 protected:
 	VisualComponent();
 	virtual ~VisualComponent();
-	void Initialize(SceneGraph* owner/*, int subsetCount*/);	// TODO: ここでサブセット数渡す必要はないかな
+	void Initialize();
 
 LN_INTERNAL_ACCESS:
 	//MaterialList2* GetMaterialList() { return m_materialList; }

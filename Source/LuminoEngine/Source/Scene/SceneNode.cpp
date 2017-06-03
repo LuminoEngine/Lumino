@@ -34,7 +34,6 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SceneNode, Component);
 //------------------------------------------------------------------------------
 SceneNode::SceneNode()
 	: m_manager(nullptr)
-	, m_ownerSceneGraph(nullptr)
 	, m_name()
 	//, m_localMatrix()
 	, m_transform()
@@ -63,21 +62,9 @@ SceneNode::~SceneNode()
 }
 
 //------------------------------------------------------------------------------
-void SceneNode::Initialize(SceneGraph* owner)
+void SceneNode::Initialize()
 {
-	m_manager = owner->GetManager();
-	SetOwnerSceneGraph(owner);
-}
-
-//------------------------------------------------------------------------------
-void SceneNode::SetOwnerSceneGraph(SceneGraph* owner)
-{
-	SceneGraph* old = m_ownerSceneGraph;
-	m_ownerSceneGraph = owner;
-	if (m_ownerSceneGraph != old)
-	{
-		OnOwnerSceneGraphChanged(m_ownerSceneGraph, old);
-	}
+	m_manager = detail::EngineDomain::GetSceneGraphManager();
 }
 
 //------------------------------------------------------------------------------
@@ -105,9 +92,6 @@ void SceneNode::AddChild(SceneNode* child)
 	// 子として追加
 	m_children->Add(child);
 	child->m_parentNode = this;
-
-	// 子要素は this と同じ SceneGraph に属するようになる
-	child->SetOwnerSceneGraph(m_ownerSceneGraph);
 }
 
 //------------------------------------------------------------------------------
@@ -177,17 +161,6 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 //------------------------------------------------------------------------------
 void SceneNode::OnRender2(DrawList* renderer)
 {
-}
-
-//------------------------------------------------------------------------------
-void SceneNode::OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph* oldOwner)
-{
-	//if (oldOwner != nullptr) {
-	//	oldOwner->RemoveNode(this);
-	//}
-	//if (newOwner != nullptr) {
-	//	newOwner->AddNode(this);
-	//}
 }
 
 //------------------------------------------------------------------------------

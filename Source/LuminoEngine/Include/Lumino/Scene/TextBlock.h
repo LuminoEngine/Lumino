@@ -45,7 +45,7 @@ public:
 protected:
 	TextBlock2DComponent();
 	virtual ~TextBlock2DComponent();
-	void Initialize(SceneGraph* owner);
+	void Initialize();
 
 	virtual void UpdateFrameHierarchy(SceneNode* parent, float deltaTime) override;
 	virtual detail::Sphere GetBoundingSphere() override;

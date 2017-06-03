@@ -110,8 +110,6 @@ public:
 	void AddChild(SceneNode* child);
 	void RemoveChild(SceneNode* child);
 
-	SceneGraph* GetOwnerSceneGraph() { return m_ownerSceneGraph; }
-
 	SceneNodeRenderingMode GetRenderingMode() const { return m_renderingMode; }
 	void SetRenderingMode(SceneNodeRenderingMode mode) { m_renderingMode = mode; }
 
@@ -142,7 +140,6 @@ public:
 	//virtual LightNodeList* GetAffectLightList() { return NULL; }
 
 protected:
-	virtual void OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph* oldOwner);
 
 	// Component interface
 	virtual void OnUpdate() override;
@@ -150,17 +147,16 @@ protected:
 LN_INTERNAL_ACCESS:
 	SceneNode();
 	virtual ~SceneNode();
-	void Initialize(SceneGraph* owner);
+	void Initialize();
+
+	// TODO: これらもいらない
 	void SetAutoRemove(bool enabled) { m_isAutoRemove = enabled; }
 	bool IsAutoRemove() const { return m_isAutoRemove; }
 	//const Matrix& GetCombinedGlobalMatrix() const { return m_combinedGlobalMatrix; }
 
-private:
-	void SetOwnerSceneGraph(SceneGraph* owner);
 
 protected:
 	SceneGraphManager*	m_manager;	// TODO: いらない
-	SceneGraph*			m_ownerSceneGraph;
 	String				m_name;
 	//Matrix				m_localMatrix;
 	AttitudeTransform		m_transform;

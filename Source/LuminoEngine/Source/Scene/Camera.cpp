@@ -53,9 +53,9 @@ CameraComponent::~CameraComponent()
 }
 
 //------------------------------------------------------------------------------
-void CameraComponent::Initialize(SceneGraph* owner, CameraProjection proj)
+void CameraComponent::Initialize(CameraProjection proj)
 {
-	SceneNode::Initialize(owner);
+	SceneNode::Initialize();
 	m_projectionMode = proj;
 	m_manager->GetAllCameraList()->Add(this);
 
@@ -173,20 +173,6 @@ void CameraComponent::UpdateMatrices(const Size& viewSize)
 	m_viewMatrixIT = Matrix::MakeTranspose(m_viewMatrixI);
 	m_projMatrixIT = Matrix::MakeTranspose(m_projMatrixI);
 	m_viewProjMatrixIT = Matrix::MakeTranspose(m_viewProjMatrixI);
-}
-
-//------------------------------------------------------------------------------
-void CameraComponent::OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph* oldOwner)
-{
-	SceneNode::OnOwnerSceneGraphChanged(newOwner, oldOwner);
-
-	// this が属する SceneGraph を付け替える
-	if (oldOwner != nullptr) {
-		oldOwner->GetAllCameraList()->Remove(this);
-	}
-	if (newOwner != nullptr) {
-		newOwner->GetAllCameraList()->Add(this);
-	}
 }
 
 //------------------------------------------------------------------------------
@@ -486,7 +472,7 @@ void CameraViewportLayer2::Render()
 	// カメラ行列の更新
 	m_hostingCamera->UpdateMatrices(GetOwnerViewport()->GetViewSize());
 
-	m_targetWorld->Render(m_hostingCamera, m_debugDrawFlags);
+	m_targetWorld->RenderRoot(m_hostingCamera, m_debugDrawFlags);
 }
 
 //------------------------------------------------------------------------------
@@ -840,10 +826,10 @@ Camera::~Camera()
 }
 
 //------------------------------------------------------------------------------
-void Camera::Initialize(SceneGraph* owner, CameraProjection proj)
+void Camera::Initialize(CameraProjection proj)
 {
 	WorldObject::Initialize();
-	m_component = NewObject<CameraComponent>(owner, proj);
+	m_component = NewObject<CameraComponent>(proj);
 	AddComponent(m_component);
 
 	if (proj == CameraProjection_2D)

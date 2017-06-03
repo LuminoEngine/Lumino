@@ -361,6 +361,7 @@ set(LN_SOURCES_Scene
 	Include/Lumino/Scene/Grid.h
 	Include/Lumino/Scene/Light.h
 	Include/Lumino/Scene/MeshModelObject.h
+	Include/Lumino/Scene/OffscreenWorldView.h
 #	Include/Lumino/Scene/MMDSceneGraph.h
 	Include/Lumino/Scene/SceneGraph.h
 	Include/Lumino/Scene/SceneNode.h
@@ -385,6 +386,7 @@ set(LN_SOURCES_Scene
 	Source/Scene/Grid.cpp
 	Source/Scene/Light.cpp
 	Source/Scene/MeshModelObject.cpp
+	Source/Scene/OffscreenWorldView.cpp
 #	Source/Scene/MMDSceneGraph.cpp
 	Source/Scene/SceneGraph.cpp
 	Source/Scene/SceneGraphManager.cpp

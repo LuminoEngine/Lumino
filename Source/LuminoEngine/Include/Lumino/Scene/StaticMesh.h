@@ -66,7 +66,7 @@ public:
 LN_INTERNAL_ACCESS:
 	StaticMeshComponent();
 	virtual ~StaticMeshComponent();
-	void Initialize(SceneGraph* ownerSceneGraph, StaticMeshModel* meshModel);
+	void Initialize(StaticMeshModel* meshModel);
 	virtual void OnRender2(DrawList* renderer) override;
 
 private:

@@ -15,6 +15,7 @@ class SceneGraph3D;
 class PhysicsWorld;
 class WorldObject;
 class UIEventArgs;
+class OffscreenWorldView;
 
 /** */
 LN_ENUM_FLAGS(WorldDebugDrawFlags)
@@ -49,16 +50,20 @@ LN_CONSTRUCT_ACCESS:
 LN_INTERNAL_ACCESS:
 	void AddWorldObject(WorldObject* obj, bool autoRelease /*= false*/);
 	void RemoveWorldObject(WorldObject* obj);
+	void AddOffscreenWorldView(OffscreenWorldView* view);
+	void RemoveOffscreenWorldView(OffscreenWorldView* view);
 	virtual void BeginUpdateFrame();
 	virtual void UpdateFrame(float elapsedTime);
+	void RenderRoot(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags);
 	virtual void Render(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags);
 	void ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
 	virtual void OnUIEvent(UIEventArgs* e);
 
-	List<RefPtr<WorldObject>>	m_rootWorldObjectList;
-	RefPtr<DrawList>			m_renderer;
-	RefPtr<DrawList>			m_debugRenderer;
-	RefPtr<Material>			m_debugRendererDefaultMaterial;	// TODO: DebugDrawList みたいに派生させてまとめたほうがいいかな・・・
+	List<RefPtr<WorldObject>>			m_rootWorldObjectList;
+	RefPtr<DrawList>					m_renderer;
+	RefPtr<DrawList>					m_debugRenderer;
+	RefPtr<Material>					m_debugRendererDefaultMaterial;	// TODO: DebugDrawList みたいに派生させてまとめたほうがいいかな・・・
+	List<RefPtr<OffscreenWorldView>>	m_offscreenWorldViewList;
 };
 
 /**

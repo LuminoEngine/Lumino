@@ -721,11 +721,11 @@ ParticleEmitterComponent::~ParticleEmitterComponent()
 }
 
 //------------------------------------------------------------------------------
-void ParticleEmitterComponent::Initialize(SceneGraph* owner, SpriteParticleModel* model)
+void ParticleEmitterComponent::Initialize(SpriteParticleModel* model)
 {
 	if (LN_CHECK_ARG(model != nullptr)) return;
 
-	VisualComponent::Initialize(owner/*, 1*/);
+	VisualComponent::Initialize();
 	m_model = model;
 	m_model->Commit();
 	m_instance = m_model->CreateInstane();
@@ -769,8 +769,8 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ParticleEmitter3DComponent, ParticleEmitterC
 RefPtr<ParticleEmitter3DComponent> ParticleEmitter3DComponent::Create(SpriteParticleModel* model)
 {
 	auto ptr = RefPtr<ParticleEmitter3DComponent>::MakeRef();
-	ptr->Initialize(detail::EngineDomain::GetDefaultSceneGraph3D(), model);
-	detail::EngineDomain::GetDefaultSceneGraph3D()->GetRootNode()->AddChild(ptr);
+	ptr->Initialize(model);
+	//detail::EngineDomain::GetDefaultSceneGraph3D()->GetRootNode()->AddChild(ptr);
 	return ptr;
 
 }

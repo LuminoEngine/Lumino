@@ -32,11 +32,9 @@ SpriteComponent::~SpriteComponent()
 }
 
 //------------------------------------------------------------------------------
-void SpriteComponent::Initialize(SceneGraph* owner)
+void SpriteComponent::Initialize()
 {
-	if (LN_CHECK_ARG(owner != nullptr)) return;
-
-	VisualComponent::Initialize(owner/*, 1*/);
+	VisualComponent::Initialize();
 	m_srcRect.Set(0, 0, -1, -1);
 	SetSize(Size(-1, -1));
 
@@ -44,7 +42,7 @@ void SpriteComponent::Initialize(SceneGraph* owner)
 
 	m_material = NewObject<Material>();
 
-	owner->GetRootNode()->AddChild(this);
+	//owner->GetRootNode()->AddChild(this);
 	SetAutoRemove(true);
 }
 
@@ -177,7 +175,7 @@ Sprite2DComponent::~Sprite2DComponent()
 //------------------------------------------------------------------------------
 void Sprite2DComponent::Initialize()
 {
-	SpriteComponent::Initialize(detail::EngineDomain::GetDefaultSceneGraph2D());
+	SpriteComponent::Initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -203,7 +201,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite3DComponent, SpriteComponent);
 Sprite3DComponentPtr Sprite3DComponent::Create()
 {
 	auto obj = Sprite3DComponentPtr::MakeRef();
-	obj->Initialize(detail::EngineDomain::GetDefaultSceneGraph3D());
+	obj->Initialize();
 	return obj;
 }
 
@@ -211,7 +209,7 @@ Sprite3DComponentPtr Sprite3DComponent::Create()
 Sprite3DComponentPtr Sprite3DComponent::Create(float width, float height)
 {
 	auto obj = Sprite3DComponentPtr::MakeRef();
-	obj->Initialize(detail::EngineDomain::GetDefaultSceneGraph3D());
+	obj->Initialize();
 	obj->SetSize(Size(width, height));
 	return obj;
 }
@@ -220,7 +218,7 @@ Sprite3DComponentPtr Sprite3DComponent::Create(float width, float height)
 Sprite3DComponentPtr Sprite3DComponent::Create(float width, float height, Texture* texture)
 {
 	auto obj = Sprite3DComponentPtr::MakeRef();
-	obj->Initialize(detail::EngineDomain::GetDefaultSceneGraph3D());
+	obj->Initialize();
 	obj->SetSize(Size(width, height));
 	obj->SetTexture(texture);
 	return obj;
@@ -237,9 +235,9 @@ Sprite3DComponent::~Sprite3DComponent()
 }
 
 //------------------------------------------------------------------------------
-void Sprite3DComponent::Initialize(SceneGraph* owner)
+void Sprite3DComponent::Initialize()
 {
-	SpriteComponent::Initialize(owner);
+	SpriteComponent::Initialize();
 }
 
 //------------------------------------------------------------------------------

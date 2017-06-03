@@ -20,7 +20,7 @@ RefPtr<SkinnedMeshComponent> SkinnedMeshComponent::Create(const StringRef& fileP
 {
 	auto ptr = RefPtr<SkinnedMeshComponent>::MakeRef();
 	auto mesh = SceneGraphManager::Instance->GetModelManager()->CreateSkinnedMeshModel(filePath);
-	ptr->Initialize(detail::EngineDomain::GetDefaultSceneGraph3D(), mesh);
+	ptr->Initialize(mesh);
 	return ptr;
 }
 
@@ -38,17 +38,17 @@ SkinnedMeshComponent::~SkinnedMeshComponent()
 }
 
 //------------------------------------------------------------------------------
-void SkinnedMeshComponent::Initialize(SceneGraph* ownerSceneGraph, SkinnedMeshModel* meshModel)
+void SkinnedMeshComponent::Initialize(SkinnedMeshModel* meshModel)
 {
 	if (LN_CHECK_ARG(meshModel != nullptr)) return;
 	m_meshModel = meshModel;
 
-	VisualComponent::Initialize(ownerSceneGraph/*, meshModel->m_mesh->m_materials->GetCount()*/);
+	VisualComponent::Initialize();
 
 	//m_materialList->CopyShared(meshModel->m_mesh->m_materials, true);
 
 
-	ownerSceneGraph->GetRootNode()->AddChild(this);
+	//ownerSceneGraph->GetRootNode()->AddChild(this);
 	SetAutoRemove(true);
 
 

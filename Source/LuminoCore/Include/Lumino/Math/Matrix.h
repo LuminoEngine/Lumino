@@ -399,7 +399,7 @@ public:
 	static Matrix MakeTranspose(const Matrix& mat);
 
 	/**
-		@brief		平面に対して座標系を反転した行列を作成します。
+		@brief		平面に対して座標系を反転するための行列を作成します。
 		@param[in]  mat			: 処理の基になる行列
 		@param[in]  plane		: 処理の基になる平面
 		@return		演算結果の行列

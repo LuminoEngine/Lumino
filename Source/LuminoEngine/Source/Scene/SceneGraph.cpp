@@ -65,97 +65,6 @@ void SceneGraph::UpdateFrame(float deltaTime)
 	m_time += deltaTime;
 }
 
-//------------------------------------------------------------------------------
-bool SceneGraph::InjectMouseMove(int x, int y)
-{
-	// シェーダ系
-	m_mousePosition.Set(x, y);
-
-	// カメラ
-	for (CameraComponent* camera : m_allCameraList) {
-		if (camera->GetCameraBehavior() != nullptr) {
-			camera->GetCameraBehavior()->InjectMouseMove(x, y);
-		}
-	}
-	return false;
-}
-
-//------------------------------------------------------------------------------
-bool SceneGraph::InjectMouseButtonDown(MouseButtons button, int x, int y)
-{
-	// TODO: マウス位置はSceneGraphよりも Viewport(CameraLayer)に付くようにしたい。
-	// プレビュー用のUIElementに描きたいときどうするの？という話。
-	// なお、offscreenrendertarget については特にサポートしない。というか無理。
-	
-	// シェーダ系
-	switch (button)
-	{
-	case MouseButtons::Left:
-		m_leftMouseState.position = m_mousePosition;
-		m_leftMouseState.time = static_cast<float>(m_time);
-		m_leftMouseState.isDown = true;
-		break;
-	case MouseButtons::Right:
-		m_rightMouseState.position = m_mousePosition;
-		m_rightMouseState.time = static_cast<float>(m_time);
-		m_rightMouseState.isDown = true;
-		break;
-	case MouseButtons::Middle:
-		m_middleMouseState.position = m_mousePosition;
-		m_middleMouseState.time = static_cast<float>(m_time);
-		m_middleMouseState.isDown = true;
-		break;
-	default:
-		break;
-	}
-
-	// カメラ
-	for (CameraComponent* camera : m_allCameraList) {
-		if (camera->GetCameraBehavior() != nullptr) {
-			camera->GetCameraBehavior()->InjectMouseButtonDown(button, x, y);
-		}
-	}
-	return false;
-}
-
-//------------------------------------------------------------------------------
-bool SceneGraph::InjectMouseButtonUp(MouseButtons button, int x, int y)
-{
-	// シェーダ系
-	switch (button)
-	{
-	case MouseButtons::Left:
-		m_leftMouseState.isDown = false;
-		break;
-	case MouseButtons::Right:
-		m_leftMouseState.isDown = false;
-		break;
-	case MouseButtons::Middle:
-		m_leftMouseState.isDown = false;
-		break;
-	default:
-		break;
-	}
-	
-	// カメラ
-	for (CameraComponent* camera : m_allCameraList) {
-		if (camera->GetCameraBehavior() != nullptr) {
-			camera->GetCameraBehavior()->InjectMouseButtonUp(button, x, y);
-		}
-	}
-	return false;
-}
-
-//------------------------------------------------------------------------------
-bool SceneGraph::InjectMouseWheel(int delta)
-{
-	for (CameraComponent* camera : m_allCameraList) {
-		if (camera->GetCameraBehavior() != nullptr) {
-			camera->GetCameraBehavior()->InjectMouseWheel(delta);
-		}
-	}
-	return false;
-}
 
 ////------------------------------------------------------------------------------
 //DrawList* SceneGraph::GetRenderer() const
@@ -207,10 +116,10 @@ void SceneGraph2D::CreateCore(SceneGraphManager* manager)
 	SceneGraph::CreateCore(manager);
 
 	m_defaultRoot = LN_NEW SceneNode();
-	m_defaultRoot->Initialize(this);
+	m_defaultRoot->Initialize();
 
 	m_defaultCamera = LN_NEW CameraComponent();
-	m_defaultCamera->Initialize(this, CameraProjection_2D);
+	m_defaultCamera->Initialize(CameraProjection_2D);
 	m_defaultRoot->AddChild(m_defaultCamera);
 
 	//auto pass = RefPtr<MMERenderingPass>::MakeRef(manager, MMD_PASS_object);
@@ -253,14 +162,14 @@ void SceneGraph3D::CreateCore(SceneGraphManager* manager)
 	SceneGraph::CreateCore(manager);
 
 	m_defaultRoot = LN_NEW SceneNode();
-	m_defaultRoot->Initialize(this);
+	m_defaultRoot->Initialize();
 
 	m_defaultCamera = LN_NEW CameraComponent();
-	m_defaultCamera->Initialize(this, CameraProjection_3D);
+	m_defaultCamera->Initialize(CameraProjection_3D);
 	m_defaultRoot->AddChild(m_defaultCamera);
 
 	m_defaultLight = RefPtr<LightComponent>::MakeRef();
-	m_defaultLight->Initialize(this, LightType_Directional);
+	m_defaultLight->Initialize(LightType_Directional);
 	m_defaultRoot->AddChild(m_defaultLight);
 }
 
