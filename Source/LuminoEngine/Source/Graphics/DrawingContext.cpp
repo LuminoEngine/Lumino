@@ -22,9 +22,9 @@ public:
 		return m_commandList;
 	}
 
-	virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+	virtual void DrawSubset(const DrawArgs& e) override
 	{
-		auto* r = context->BeginShapesRenderer();
+		auto* r = e.context->BeginShapesRenderer();
 		r->ExecuteCommand(m_commandList);
 		m_commandList = nullptr;
 	}

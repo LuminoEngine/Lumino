@@ -54,6 +54,7 @@ class DrawElementBatch;
 class RenderingPass2;
 class CombinedMaterial;
 class DrawElementList;
+class InternalRenderer;
 
 struct DefaultStatus
 {
@@ -148,6 +149,15 @@ LN_INTERNAL_ACCESS:
 class DrawElement
 {
 public:
+	struct DrawArgs
+	{
+		DrawElementList* oenerList;
+		InternalContext* context;
+		detail::InternalRenderer* renderer;
+		RenderTargetTexture* defaultRenderTarget;
+		DepthBuffer* defaultDepthBuffer;
+	};
+
 	int					batchIndex;
 	DrawingSectionId	drawingSectionId;
 	detail::Sphere		boundingSphere;		// 位置はワールド座標
@@ -164,7 +174,7 @@ public:
 	virtual void MakeElementInfo(DrawElementList* oenerList, const CameraInfo& cameraInfo, ElementInfo* outInfo);
 	virtual void MakeSubsetInfo(DrawElementList* oenerList, CombinedMaterial* material, SubsetInfo* outInfo);
 
-	virtual void DrawSubset(DrawElementList* oenerList, InternalContext* context/*, int subsetIndex*/) = 0;
+	virtual void DrawSubset(const DrawArgs& e) = 0;
 	const detail::Sphere& GetBoundingSphere() const { return boundingSphere; }
 
 	// (ローカル座標系)

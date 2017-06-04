@@ -869,6 +869,13 @@ void InternalRenderer::Render(
 		}
 	);
 
+	DrawElement::DrawArgs drawArgs;
+	drawArgs.oenerList = elementList;
+	drawArgs.context = context;
+	drawArgs.renderer = this;
+	drawArgs.defaultRenderTarget = defaultRenderTarget;
+	drawArgs.defaultDepthBuffer = defaultDepthBuffer;
+
 	for (RenderingPass2* pass : m_renderingPassList)
 	{
 		// DrawElement 描画
@@ -921,7 +928,7 @@ void InternalRenderer::Render(
 			// 描画実行
 			if (visible)
 			{
-				element->DrawSubset(elementList, context);
+				element->DrawSubset(drawArgs);
 			}
 		}
 
@@ -1216,9 +1223,9 @@ public:
 	float z;
 	uint8_t stencil;
 
-	virtual void DrawSubset(detail::DrawElementList* oenerList, InternalContext* context/*, int subsetIndex*/) override
+	virtual void DrawSubset(const DrawArgs& e) override
 	{
-		context->BeginBaseRenderer()->Clear(flags, color, z, stencil);
+		e.context->BeginBaseRenderer()->Clear(flags, color, z, stencil);
 	}
 };
 
@@ -1414,9 +1421,9 @@ void DrawList::DrawLinePrimitive(
 		Vector3 position1; Color color1;
 		Vector3 position2; Color color2;
 
-		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context/*, int subsetIndex*/) override
+		virtual void DrawSubset(const DrawArgs& e) override
 		{
-			context->BeginPrimitiveRenderer()->DrawLine(
+			e.context->BeginPrimitiveRenderer()->DrawLine(
 				position1, color1, position2, color2);
 		}
 	};
@@ -1441,9 +1448,9 @@ void DrawList::DrawSquarePrimitive(
 		Vector2 uv[4];
 		Color color[4];
 
-		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context/*, int subsetIndex*/) override
+		virtual void DrawSubset(const DrawArgs& e) override
 		{
-			context->BeginPrimitiveRenderer()->DrawSquare(
+			e.context->BeginPrimitiveRenderer()->DrawSquare(
 				position[0], uv[0], color[0],
 				position[1], uv[1], color[1],
 				position[2], uv[2], color[2],
@@ -1466,9 +1473,9 @@ void DrawList::DrawSquare(float sizeX, float sizeZ, int slicesX, int slicesZ, co
 	public:
 		detail::PlaneMeshFactory3 factory;
 
-		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		virtual void DrawSubset(const DrawArgs& e) override
 		{
-			auto* r = context->BeginPrimitiveRenderer();
+			auto* r = e.context->BeginPrimitiveRenderer();
 			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
 		}
 	};
@@ -1486,9 +1493,9 @@ void DrawList::DrawArc(float startAngle, float endAngle, float innerRadius, floa
 	public:
 		detail::ArcMeshFactory factory;
 
-		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		virtual void DrawSubset(const DrawArgs& e) override
 		{
-			auto* r = context->BeginPrimitiveRenderer();
+			auto* r = e.context->BeginPrimitiveRenderer();
 			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
 		}
 	};
@@ -1508,9 +1515,9 @@ void DrawList::DrawBox(const Box& box, const Color& color, const Matrix& localTr
 	public:
 		detail::RegularBoxMeshFactory factory;
 
-		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		virtual void DrawSubset(const DrawArgs& e) override
 		{
-			auto* r = context->BeginPrimitiveRenderer();
+			auto* r = e.context->BeginPrimitiveRenderer();
 			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
 		}
 	};
@@ -1530,9 +1537,9 @@ void DrawList::DrawSphere(float radius, int slices, int stacks, const Color& col
 	public:
 		detail::RegularSphereMeshFactory factory;
 
-		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		virtual void DrawSubset(const DrawArgs& e) override
 		{
-			auto* r = context->BeginPrimitiveRenderer();
+			auto* r = e.context->BeginPrimitiveRenderer();
 			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
 		}
 	};
@@ -1550,9 +1557,9 @@ void DrawList::DrawCylinder(float radius, float	height, int slices, int stacks, 
 	public:
 		detail::RegularCylinderMeshFactory factory;
 
-		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		virtual void DrawSubset(const DrawArgs& e) override
 		{
-			auto* r = context->BeginPrimitiveRenderer();
+			auto* r = e.context->BeginPrimitiveRenderer();
 			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
 		}
 	};
@@ -1570,9 +1577,9 @@ void DrawList::DrawCone(float radius, float height, int slices, const Color& col
 	public:
 		detail::RegularConeMeshFactory factory;
 
-		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		virtual void DrawSubset(const DrawArgs& e) override
 		{
-			auto* r = context->BeginPrimitiveRenderer();
+			auto* r = e.context->BeginPrimitiveRenderer();
 			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
 		}
 	};
@@ -1627,9 +1634,9 @@ void DrawList::DrawGlyphRun(const PointF& position, GlyphRun* glyphRun)
 		RefPtr<GlyphRun>	glyphRun;
 		PointF position;
 
-		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		virtual void DrawSubset(const DrawArgs& e) override
 		{
-			context->BeginTextRenderer()->DrawGlyphRun(GetTransform(oenerList), position, glyphRun);
+			e.context->BeginTextRenderer()->DrawGlyphRun(GetTransform(e.oenerList), position, glyphRun);
 		}
 	};
 
@@ -1655,9 +1662,9 @@ void DrawList::DrawText_(const StringRef& text, const Rect& rect, StringFormatFl
 		Rect rect;
 		StringFormatFlags flags;
 
-		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		virtual void DrawSubset(const DrawArgs& e) override
 		{
-			context->BeginTextRenderer()->DrawString(GetTransform(oenerList), text.c_str(), text.GetLength(), rect, flags);
+			e.context->BeginTextRenderer()->DrawString(GetTransform(e.oenerList), text.c_str(), text.GetLength(), rect, flags);
 		}
 	};
 
@@ -1677,9 +1684,9 @@ void DrawList::DrawChar(TCHAR ch, const PointF& position)
 		TCHAR ch;
 		PointF position;
 
-		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		virtual void DrawSubset(const DrawArgs& e) override
 		{
-			context->BeginVectorTextRenderer()->DrawChar(GetTransform(oenerList), ch, Rect(position, 0, 0), TextLayoutOptions::None);
+			e.context->BeginVectorTextRenderer()->DrawChar(GetTransform(e.oenerList), ch, Rect(position, 0, 0), TextLayoutOptions::None);
 		}
 	};
 
@@ -1701,11 +1708,11 @@ void DrawList::DrawText2(const StringRef& text, const Rect& rect)
 		int length;
 		Rect rect;
 
-		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		virtual void DrawSubset(const DrawArgs& e) override
 		{
-			context->BeginVectorTextRenderer()->DrawString(
-				GetTransform(oenerList), 
-				(const UTF32*)oenerList->GetExtData(utf32DataHandle),
+			e.context->BeginVectorTextRenderer()->DrawString(
+				GetTransform(e.oenerList), 
+				(const UTF32*)e.oenerList->GetExtData(utf32DataHandle),
 				length,
 				rect,
 				TextLayoutOptions::None);
@@ -1747,10 +1754,10 @@ void DrawList::DrawSprite(
 		SpriteBaseDirection baseDirection;
 		BillboardType billboardType;
 
-		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		virtual void DrawSubset(const DrawArgs& e) override
 		{
-			auto* r = context->BeginSpriteRenderer();
-			r->SetTransform(GetTransform(oenerList));
+			auto* r = e.context->BeginSpriteRenderer();
+			r->SetTransform(GetTransform(e.oenerList));
 			r->DrawRequest(position, size, anchorRatio, texture, srcRect, color, baseDirection, billboardType);
 		}
 	};
@@ -1784,9 +1791,9 @@ public:
 		return m_commandList;
 	}
 
-	virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+	virtual void DrawSubset(const DrawArgs& e) override
 	{
-		auto* r = context->BeginNanoVGRenderer();
+		auto* r = e.context->BeginNanoVGRenderer();
 		//auto cl = r->TakeCommandList();
 		//detail::NanoVGCommandHelper::nvgRect(cl, rect.x, rect.y, rect.width, rect.height);
 		//detail::NanoVGCommandHelper::nvgFill(cl);
@@ -1889,9 +1896,9 @@ void DrawList::DrawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Mat
 		int primitiveCount;
 		PrimitiveType primitiveType;
 
-		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		virtual void DrawSubset(const DrawArgs& e) override
 		{
-			context->BeginMeshRenderer()->DrawMesh(mesh, startIndex, primitiveCount, primitiveType);
+			e.context->BeginMeshRenderer()->DrawMesh(mesh, startIndex, primitiveCount, primitiveType);
 		}
 	};
 
@@ -1965,9 +1972,9 @@ void DrawList::BlitInternal(Texture* source, RenderTargetTexture* dest, const Ma
 			outInfo->materialTexture = source;
 		}
 
-		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		virtual void DrawSubset(const DrawArgs& e) override
 		{
-			context->BeginBlitRenderer()->Blit();
+			e.context->BeginBlitRenderer()->Blit();
 		}
 	};
 
@@ -1996,10 +2003,10 @@ void DrawList::DrawFrameRectangle(const Rect& rect)
 			// MaterialTexture を上書きする
 			outInfo->materialTexture = oenerList->GetBatch(batchIndex)->state.GetBrush()->GetTexture();
 		}
-		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		virtual void DrawSubset(const DrawArgs& e) override
 		{
-			auto* r = context->BeginFrameRectRenderer();
-			r->Draw(GetTransform(oenerList), rect);
+			auto* r = e.context->BeginFrameRectRenderer();
+			r->Draw(GetTransform(e.oenerList), rect);
 		}
 	};
 	auto* ptr = ResolveDrawElement<DrawElement_DrawFrameRectangle>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_frameRectRenderer, nullptr);
@@ -2019,15 +2026,20 @@ void DrawList::RenderSubDrawList(detail::DrawElementList* elementList, const det
 		RefPtr<RenderTargetTexture>	defaultRenderTarget;
 		RefPtr<DepthBuffer> defaultDepthBuffer;
 
-		virtual void DrawSubset(detail::DrawElementList* oenerList, detail::InternalContext* context) override
+		virtual void DrawSubset(const DrawArgs& e) override
 		{
-			// TODO: scoped change block
-			auto* status = context->GetCurrentStatus();
+			// それぞれ、省略されていれば親のを使う
+			detail::InternalRenderer* primRenderer = (renderer != nullptr) ? renderer : e.renderer;
+			RenderTargetTexture* primRenderTarget = (defaultRenderTarget != nullptr) ? defaultRenderTarget : e.defaultRenderTarget;
+			DepthBuffer* primDepthBuffer = (defaultDepthBuffer != nullptr) ? defaultDepthBuffer : e.defaultDepthBuffer;
 
-			renderer->Render(elementList, cameraInfo, defaultRenderTarget, defaultDepthBuffer);
+			// TODO: scoped change block
+			auto* status = e.context->GetCurrentStatus();
+
+			primRenderer->Render(elementList, cameraInfo, primRenderTarget, primDepthBuffer);
 
 			// ステート復帰
-			context->ApplyStatus(status, { oenerList->GetDefaultRenderTarget(), oenerList->GetDefaultDepthBuffer() });
+			e.context->ApplyStatus(status, { e.oenerList->GetDefaultRenderTarget(), e.oenerList->GetDefaultDepthBuffer() });
 		}
 	};
 

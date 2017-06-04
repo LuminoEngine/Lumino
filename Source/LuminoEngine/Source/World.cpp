@@ -128,7 +128,7 @@ void World::RenderRoot(CameraComponent* camera, WorldDebugDrawFlags debugDrawFla
 	}
 
 	// main render
-	//Render(camera, debugDrawFlags);
+	Render(camera, debugDrawFlags);
 }
 
 //------------------------------------------------------------------------------
