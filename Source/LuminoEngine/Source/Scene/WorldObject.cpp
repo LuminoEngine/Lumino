@@ -42,6 +42,13 @@ void WorldObject::Initialize()
 }
 
 //------------------------------------------------------------------------------
+World* WorldObject::GetWorld() const
+{
+	// TODO: m_world は持たないようにする。上へさかのぼって検索する。
+	return m_world;
+}
+
+//------------------------------------------------------------------------------
 void WorldObject::AddComponent(Component* component)
 {
 	if (LN_CHECK_ARG(component != nullptr)) return;

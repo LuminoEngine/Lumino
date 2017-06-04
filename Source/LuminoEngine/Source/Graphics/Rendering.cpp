@@ -2030,6 +2030,8 @@ void DrawList::RenderSubDrawList(detail::DrawElementList* elementList, const det
 			context->ApplyStatus(status, { oenerList->GetDefaultRenderTarget(), oenerList->GetDefaultDepthBuffer() });
 		}
 	};
+
+	// TODO: m_frameRectRenderer は違う気がする・・・
 	auto* e = ResolveDrawElement<DrawElement_RenderSubDrawList>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_frameRectRenderer, nullptr);
 	e->elementList = elementList;
 	e->cameraInfo = cameraInfo;

@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 LN_NAMESPACE_BEGIN
@@ -11,15 +11,33 @@ class OffscreenWorldView
 	: public Object
 {
 public:
+	CameraComponent* GetCamera() const;
+	RenderTargetTexture* GetRenderTarget() const;
 
 LN_INTERNAL_ACCESS:
 	OffscreenWorldView();
 	virtual ~OffscreenWorldView();
 	void Initialize();
+	void RenderWorld(World* world);
 
 private:
-	// TODO: ‹“_‚ğŒˆ‚ß‚é‚½‚ß‚Ì“Áê‚È CameraComponentBWorld ‚Ö‚Ì’Ç‰Á‚Í‚Å‚«‚È‚¢‚È‚Ç‚Ì§ŒÀ‚ğ‚µ‚Ä‚¨‚«‚½‚¢B
-	RefPtr<CameraComponent>	m_cameraInfo;
+	// TODO: è¦–ç‚¹ã‚’æ±ºã‚ã‚‹ãŸã‚ã®ç‰¹æ®Šãª CameraComponentã€‚World ã¸ã®è¿½åŠ ã¯ã§ããªã„ãªã©ã®åˆ¶é™ã‚’ã—ã¦ãŠããŸã„ã€‚
+	RefPtr<CameraComponent>		m_cameraInfo;
+	RefPtr<RenderTargetTexture>	m_renderTarget;
+};
+
+class MirrorComponent
+	: public Component
+{
+public:
+
+LN_INTERNAL_ACCESS:
+	MirrorComponent();
+	virtual ~MirrorComponent();
+	void Initialize();
+
+private:
+	RefPtr<OffscreenWorldView>	m_offscreen;
 };
 
 LN_NAMESPACE_END

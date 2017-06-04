@@ -3,6 +3,7 @@
 #define LN_PROTECTED_INTERNAL_ACCESS	public
 #include <LuminoEngine.h>
 #include <Lumino/Testing/TestHelper.h>
+#include <Lumino/Scene/OffscreenWorldView.h>
 
 using namespace ln;
 
@@ -46,7 +47,13 @@ void UIControlsGallery()
 	m_map->AddComponent(mesh);
 	mesh->SetBlendMode(BlendMode::Normal);
 	mesh->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
-	m_map->SetScale(-100, 100, 100);
+	m_map->SetScale(-1, 1, 1);
+
+
+	auto mirror = NewObject<MirrorComponent>();
+	auto mirrorObj = ln::NewObject<ln::WorldObject3D>();
+	mirrorObj->AddComponent(mirror);
+
 
 	//auto shader = Shader::Create(StringRef(_T("C:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/Sandbox/SSBasic2D.fx")), true);
 	//auto rect = Rectangle::Create(RectF(0, 0, 3, 1));

@@ -121,17 +121,19 @@ void World::UpdateFrame(float elapsedTime)
 //------------------------------------------------------------------------------
 void World::RenderRoot(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags)
 {
-	Render(camera, debugDrawFlags);
+	// pre render
+	for (auto& view : m_offscreenWorldViewList)
+	{
+		view->RenderWorld(this);
+	}
+
+	// main render
+	//Render(camera, debugDrawFlags);
 }
 
 //------------------------------------------------------------------------------
 void World::Render(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags)
 {
-	//for (auto& view : m_offscreenWorldViewList)
-	//{
-
-	//}
-
 	for (auto& obj : m_rootWorldObjectList)
 	{
 		obj->Render(m_renderer);

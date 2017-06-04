@@ -75,6 +75,8 @@ public:
 	const String& GetTag() const { return m_tag; }
 
 
+	World* GetWorld() const;
+
 
 	void AddComponent(Component* component);
 
