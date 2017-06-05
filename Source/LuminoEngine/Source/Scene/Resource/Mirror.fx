@@ -13,21 +13,23 @@ static float2	ViewportOffset2 = (float2(1.0, 1.0) / ln_ViewportPixelSize);
 sampler		MaterialTextureSampler = sampler_state
 {
 	texture = <ln_MaterialTexture>;
-	MINFILTER = LINEAR;
-	MAGFILTER = LINEAR;
+	//MINFILTER = ANISOTROPIC;	// NONE,POINT だと、MipMap の境界にシャギのようなものが見える。LINEAR だと近景でもボケすぎる。
+	MAGFILTER = LINEAR;			// ANISOTROPIC でも変わらない。LINEAR で良いのでは。
+	MIPFILTER = LINEAR;			// ANISOTROPIC でも変わらない。LINEAR で良いのでは。
+	//MAXANISOTROPY = 16;
 };
 
 struct VSOutput
 {
 	float4	Pos		: POSITION;
 	float4	Color	: COLOR0;
-	float2	UV		: TEXCOORD0;
+	float4	UV		: TEXCOORD1;
 };
 
 struct PSInput
 {
 	float4	Color	: COLOR0;
-	float2	UV		: TEXCOORD0;
+	float4	UV		: TEXCOORD1;
 };
 
 //------------------------------------------------------------------------------
@@ -40,12 +42,12 @@ VSOutput VSBasic(LN_VSInput v)
 	
 	
 	
-	float x = ((o.Pos.x / o.Pos.w) / 2) + 0.5;
-	float y = ((o.Pos.y / o.Pos.w) / 2) + 0.5;
+	//float x = ((o.Pos.x / o.Pos.w) / 2) + 0.5;
+	//float y = ((o.Pos.y / o.Pos.w) / 2) + 0.5;
 	
-	o.UV.x = -x;//((o.Pos.x / o.Pos.w) + 1.0) / 2;
-	o.UV.y = 1.0 - y;//1.0 - (((o.Pos.y / o.Pos.w) + 1.0) / 2);
-	
+	//o.UV.x = -x;//((o.Pos.x / o.Pos.w) + 1.0) / 2;
+	//o.UV.y = 1.0 - y;//1.0 - (((o.Pos.y / o.Pos.w) + 1.0) / 2);
+	o.UV = o.Pos;//o.Pos.xy / o.Pos.w;
 	
 	o.Color	= v.Color;
 	return o;
@@ -54,7 +56,15 @@ VSOutput VSBasic(LN_VSInput v)
 //------------------------------------------------------------------------------
 float4 PSBasic(PSInput p) : COLOR0
 {
-	return (tex2D(MaterialTextureSampler, p.UV) * p.Color) * ln_ColorScale;//float4(p.UV, 0, 1);//
+    float2 ProjectedTexCoords;
+    ProjectedTexCoords.x = p.UV.x/p.UV.w/2.0f + 0.5f;
+    ProjectedTexCoords.y = -p.UV.y/p.UV.w/2.0f + 0.5f;
+	
+	//float x = ((p.UV.x) / 2) + 0.5;
+	//float y = ((p.UV.y) / 2) + 0.5;
+	//return float4(ProjectedTexCoords.x, ProjectedTexCoords.y, 0, 1);
+	//y = 1.0 - y;
+	return (tex2D(MaterialTextureSampler, ProjectedTexCoords) * p.Color) * ln_ColorScale + float4(-0.1,-0.1, -0.0,-0.2);//float4(p.UV, 0, 1);//
 }
 
 //------------------------------------------------------------------------------

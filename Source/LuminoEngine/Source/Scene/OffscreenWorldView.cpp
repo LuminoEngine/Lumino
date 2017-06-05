@@ -45,7 +45,7 @@ RenderTargetTexture* OffscreenWorldView::GetRenderTarget() const
 {
 	return m_renderTarget;
 }
-
+static int g_flag = 0;
 //------------------------------------------------------------------------------
 void OffscreenWorldView::RenderWorld(World* world, CameraComponent* camera)
 {
@@ -71,9 +71,9 @@ void OffscreenWorldView::RenderWorld(World* world, CameraComponent* camera)
 	m_renderer->Clear(ClearFlags::All, Color::White, 1.0f, 0);
 	
 
-
+	g_flag = 1;
 	world->Render(m_renderer, camera, WorldDebugDrawFlags::None);	// TODO: debugdraw の指定
-
+	g_flag = 0;
 
 
 	// 戻す
@@ -84,7 +84,7 @@ void OffscreenWorldView::RenderWorld(World* world, CameraComponent* camera)
 	//m_cameraInfo->SetPosition(camera->GetPosition());
 	//m_cameraInfo->SetRotation(camera->GetRotation());
 
-	
+
 
 
 
@@ -96,7 +96,7 @@ void OffscreenWorldView::RenderWorld(World* world, CameraComponent* camera)
 	m_drawElementListSet->m_cameraInfo.viewPosition = m_hostingCamera->GetTransform()->GetWorldMatrix().GetPosition();
 	//m_drawElementListSet->m_cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
 
-	m_drawElementListSet->m_cameraInfo.viewMatrix = /*Matrix::MakeReflection(Plane(Vector3::UnitY)) *  */m_hostingCamera->GetViewMatrix();
+	m_drawElementListSet->m_cameraInfo.viewMatrix = Matrix::MakeReflection(Plane(Vector3::UnitY)) *  m_hostingCamera->GetViewMatrix();
 
 	m_drawElementListSet->m_cameraInfo.projMatrix = m_hostingCamera->GetProjectionMatrix();
 	m_drawElementListSet->m_cameraInfo.viewProjMatrix = m_hostingCamera->GetViewProjectionMatrix();
@@ -108,6 +108,8 @@ void OffscreenWorldView::RenderWorld(World* world, CameraComponent* camera)
 
 	DrawList* r = world->GetRenderer();
 	r->RenderSubDrawList(m_drawElementListSet);
+
+
 }
 
 //==============================================================================
@@ -139,16 +141,19 @@ void MirrorComponent::Initialize()
 	//m_material->SetMaterialTexture(Texture2D::GetBlackTexture());
 	//m_material->SetMaterialTexture(Texture2D::GetWhiteTexture());
 	//m_material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
-	auto shader = ln::Shader::Create("C:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Mirror.fx");
+	auto shader = ln::Shader::Create("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Mirror.fx");
 	m_material->SetShader(shader);
 }
 
 //------------------------------------------------------------------------------
 void MirrorComponent::OnRender2(DrawList* renderer)
 {
-	m_material->SetMaterialTexture(m_offscreen->GetRenderTarget());
-	// TODO: 法泉が入っていない？
-	renderer->DrawSquare(10, 10, 1, 1, Color::White, Matrix::Identity, m_material);
+	if (g_flag == 0)
+	{
+		m_material->SetMaterialTexture(m_offscreen->GetRenderTarget());
+		// TODO: 法泉が入っていない？
+		renderer->DrawSquare(10, 10, 1, 1, Color::White, Matrix::Identity, m_material);
+	}
 }
 
 

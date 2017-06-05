@@ -38,6 +38,8 @@ void UIControlsGallery()
 	listBox1->AddTextItem(_T("UI"));
 
 	auto mirror = NewObject<MirrorComponent>();
+	mirror->SetDepthTestEnabled(false);
+	mirror->SetDepthWriteEnabled(false);
 	auto mirrorObj = ln::NewObject<ln::WorldObject3D>();
 	mirrorObj->AddComponent(mirror);
 	mirrorObj->SetPosition(10, 0, 0);
@@ -47,13 +49,13 @@ void UIControlsGallery()
 	auto mesh = ln::StaticMeshComponent::CreateSphere(1);
 	//mesh->GetStaticMeshModel()->
 	auto material = mesh->GetStaticMeshModel()->GetMaterial(0);
-	//material->SetMaterialTexture(ln::Assets::LoadTexture(_T("D:/GameProjects/Chronicles/sky/incskies_024_png8/incskies_024_8k_.png")));
-	material->SetMaterialTexture(Texture2D::GetBlackTexture());
+	material->SetMaterialTexture(ln::Assets::LoadTexture(_T("D:/GameProjects/Chronicles/sky/incskies_024_png8/incskies_024_8k_.png")));
+	//material->SetMaterialTexture(Texture2D::GetBlackTexture());
 	auto m_map = ln::NewObject<ln::WorldObject3D>();
 	m_map->AddComponent(mesh);
 	mesh->SetBlendMode(BlendMode::Normal);
 	mesh->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
-	m_map->SetScale(-1, 1, 1);
+	m_map->SetScale(-1.5, 1.5, 1.5);
 	m_map->SetPosition(0, 2, 0);
 	//mesh->SetVisible(false);
 
