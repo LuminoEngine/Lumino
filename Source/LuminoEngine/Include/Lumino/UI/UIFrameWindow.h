@@ -7,6 +7,7 @@
 
 LN_NAMESPACE_BEGIN
 namespace detail { class InternalRenderer; }
+namespace detail { class DrawElementListSet; }
 class PlatformWindow;
 class SwapChain;
 class DrawingContext;
@@ -60,6 +61,7 @@ private:
 
 	RefPtr<DrawingContext>				m_drawingContext;
 	RefPtr<detail::InternalRenderer>	m_internalRenderer;
+	RefPtr<detail::DrawElementListSet>	m_drawElementListSet;		// いまは作業用変数を使うためのダミー
 	bool								m_delayedRenderingSkip;
 };
 

@@ -19,12 +19,14 @@ LN_INTERNAL_ACCESS:
 	OffscreenWorldView();
 	virtual ~OffscreenWorldView();
 	void Initialize();
-	void RenderWorld(World* world);
+	void RenderWorld(World* world, CameraComponent* camera);
 
 private:
 	// TODO: 視点を決めるための特殊な CameraComponent。World への追加はできないなどの制限をしておきたい。
-	RefPtr<CameraComponent>		m_cameraInfo;
-	RefPtr<RenderTargetTexture>	m_renderTarget;
+	RefPtr<CameraComponent>				m_cameraInfo;
+	RefPtr<RenderTargetTexture>			m_renderTarget;
+	RefPtr<DrawList>					m_renderer;
+	RefPtr<detail::DrawElementListSet>	m_drawElementListSet;
 };
 
 class MirrorComponent

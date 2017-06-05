@@ -150,6 +150,11 @@ void CameraComponent::UpdateMatrices(const Size& viewSize)
 		// ビュー行列
 		m_viewMatrix = Matrix::MakeLookAtLH(worldMatrix.GetPosition(), lookAt, m_upDirection);
 
+		if (m_reflectionPlane.Normal != Vector3::Zero)
+		{
+			m_viewMatrix = Matrix::MakeReflection(m_reflectionPlane) * m_viewMatrix;
+		}
+
 		// プロジェクション行列の更新
 		// https://sites.google.com/site/mmereference/home/Annotations-and-Semantics-of-the-parameter/2-1-geometry-translation
 		m_projMatrix = Matrix::MakePerspectiveFovLH(m_fovY, viewSize.width / viewSize.height, m_nearClip, m_farClip);
@@ -441,6 +446,10 @@ void CameraViewportLayer2::Initialize(World* targetWorld, CameraComponent* hosti
 		internalRenderer->Initialize(detail::EngineDomain::GetGraphicsManager());
 		m_internalRenderer = internalRenderer;
 	}
+
+	m_drawElementListSet = RefPtr<detail::DrawElementListSet>::MakeRef();
+	m_drawElementListSet->m_lists.Add(m_targetWorld->GetRenderer()->GetDrawElementList());
+	m_drawElementListSet->m_lists.Add(m_targetWorld->GetDebugRenderer()->GetDrawElementList());
 }
 
 //------------------------------------------------------------------------------
@@ -482,27 +491,28 @@ void CameraViewportLayer2::ExecuteDrawListRendering(DrawList* parentDrawList, Re
 	Size targetSize((float)renderTarget->GetWidth(), (float)renderTarget->GetHeight());
 	m_hostingCamera->UpdateMatrices(targetSize);
 
-	detail::CameraInfo cameraInfo;
-	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.Get());
-	cameraInfo.viewPixelSize = targetSize;
-	cameraInfo.viewPosition = m_hostingCamera->GetTransform()->GetWorldMatrix().GetPosition();
-	cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
-	cameraInfo.projMatrix = m_hostingCamera->GetProjectionMatrix();
-	cameraInfo.viewProjMatrix = m_hostingCamera->GetViewProjectionMatrix();
-	cameraInfo.viewFrustum = m_hostingCamera->GetViewFrustum();
-	cameraInfo.zSortDistanceBase = m_hostingCamera->GetZSortDistanceBase();
+	//detail::CameraInfo cameraInfo;
+	m_drawElementListSet->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.Get());
+	m_drawElementListSet->m_cameraInfo.viewPixelSize = targetSize;
+	m_drawElementListSet->m_cameraInfo.viewPosition = m_hostingCamera->GetTransform()->GetWorldMatrix().GetPosition();
+	m_drawElementListSet->m_cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
+	m_drawElementListSet->m_cameraInfo.projMatrix = m_hostingCamera->GetProjectionMatrix();
+	m_drawElementListSet->m_cameraInfo.viewProjMatrix = m_hostingCamera->GetViewProjectionMatrix();
+	m_drawElementListSet->m_cameraInfo.viewFrustum = m_hostingCamera->GetViewFrustum();
+	m_drawElementListSet->m_cameraInfo.zSortDistanceBase = m_hostingCamera->GetZSortDistanceBase();
 	parentDrawList->RenderSubDrawList(
-		m_targetWorld->GetRenderer()->GetDrawElementList(),
-		cameraInfo,
+		//m_targetWorld->GetRenderer()->GetDrawElementList(),
+		//cameraInfo,
+		m_drawElementListSet,
 		m_internalRenderer,
 		renderTarget,
 		depthBuffer);
-	parentDrawList->RenderSubDrawList(
-		m_targetWorld->GetDebugRenderer()->GetDrawElementList(),
-		cameraInfo,
-		m_internalRenderer,
-		renderTarget,
-		depthBuffer);
+	//parentDrawList->RenderSubDrawList(
+	//	m_targetWorld->GetDebugRenderer()->GetDrawElementList(),
+	//	cameraInfo,
+	//	m_internalRenderer,
+	//	renderTarget,
+	//	depthBuffer);
 	m_targetWorld->GetRenderer()->EndFrame();
 }
 

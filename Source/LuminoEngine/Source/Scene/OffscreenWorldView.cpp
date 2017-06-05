@@ -23,7 +23,15 @@ OffscreenWorldView::~OffscreenWorldView()
 void OffscreenWorldView::Initialize()
 {
 	Object::Initialize();
+	m_renderer = NewObject<DrawList>(detail::EngineDomain::GetGraphicsManager());
+
 	m_cameraInfo = NewObject<CameraComponent>(CameraProjection_3D);	// TODO: proj 指定方法
+	// TODO: CameraComponent を使うべきではない。ミラー描画用の特殊な視点。コンポーネントではない。
+	// CameraInterface のように抽象化するべきだろう。
+	m_cameraInfo->SetReflectionPlane(Plane(Vector3::UnitY));
+
+	m_drawElementListSet = RefPtr<detail::DrawElementListSet>::MakeRef();
+	m_drawElementListSet->m_lists.Add(m_renderer->GetDrawElementList());
 }
 
 //------------------------------------------------------------------------------
@@ -39,10 +47,12 @@ RenderTargetTexture* OffscreenWorldView::GetRenderTarget() const
 }
 
 //------------------------------------------------------------------------------
-void OffscreenWorldView::RenderWorld(World* world)
+void OffscreenWorldView::RenderWorld(World* world, CameraComponent* camera)
 {
-	DrawList* r = world->GetRenderer();
-	RenderTargetTexture* backbuffer = r->GetRenderTarget(0);
+
+
+
+	RenderTargetTexture* backbuffer = m_renderer->GetRenderTarget(0);
 
 	if (m_renderTarget == nullptr)
 	{
@@ -55,9 +65,9 @@ void OffscreenWorldView::RenderWorld(World* world)
 	//}
 
 	// TODO: 深度バッファやクリア方法の指定
-	r->SetRenderTarget(0, m_renderTarget);
+	m_renderer->SetRenderTarget(0, m_renderTarget);
 	//g->SetDepthBuffer(m_depthBuffer);
-	r->Clear(ClearFlags::All, Color::White, 1.0f, 0);
+	m_renderer->Clear(ClearFlags::All, Color::White, 1.0f, 0);
 	
 
 
@@ -66,7 +76,32 @@ void OffscreenWorldView::RenderWorld(World* world)
 
 
 	// 戻す
-	r->SetRenderTarget(0, backbuffer);
+	m_renderer->SetRenderTarget(0, backbuffer);
+
+
+	//// 姿勢コピー
+	//m_cameraInfo->SetPosition(camera->GetPosition());
+	//m_cameraInfo->SetRotation(camera->GetRotation());
+
+	
+
+
+
+
+	// TODO: Camera.cpp あたりと全く同じ処理
+	auto& m_hostingCamera = m_cameraInfo;
+	m_drawElementListSet->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.Get());
+	m_drawElementListSet->m_cameraInfo.viewPixelSize = Size(640, 480);
+	m_drawElementListSet->m_cameraInfo.viewPosition = m_hostingCamera->GetTransform()->GetWorldMatrix().GetPosition();
+	m_drawElementListSet->m_cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
+	m_drawElementListSet->m_cameraInfo.projMatrix = m_hostingCamera->GetProjectionMatrix();
+	m_drawElementListSet->m_cameraInfo.viewProjMatrix = m_hostingCamera->GetViewProjectionMatrix();
+	m_drawElementListSet->m_cameraInfo.viewFrustum = m_hostingCamera->GetViewFrustum();
+	m_drawElementListSet->m_cameraInfo.zSortDistanceBase = m_hostingCamera->GetZSortDistanceBase();
+
+
+	DrawList* r = world->GetRenderer();
+	r->RenderSubDrawList(m_drawElementListSet);
 }
 
 //==============================================================================

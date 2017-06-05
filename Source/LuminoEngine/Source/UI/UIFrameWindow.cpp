@@ -151,6 +151,8 @@ void UIFrameWindow::Initialize_UIRenderer()
 	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
 	internalRenderer->Initialize(manager->GetGraphicsManager());
 	m_internalRenderer = internalRenderer;
+
+	m_drawElementListSet = RefPtr<detail::DrawElementListSet>::MakeRef();
 }
 
 //------------------------------------------------------------------------------
@@ -183,18 +185,19 @@ void UIFrameWindow::ExecuteDrawList_UIRenderer()
 		viewPixelSize = GetPlatformWindow()->GetSize().ToFloatSize();
 	}
 	
-	detail::CameraInfo cameraInfo;
-	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
-	cameraInfo.viewPixelSize = viewPixelSize;
-	cameraInfo.viewPosition = Vector3::Zero;
-	cameraInfo.viewMatrix = Matrix::Identity;
-	cameraInfo.projMatrix = Matrix::MakePerspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1);
-	cameraInfo.viewProjMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;
-	cameraInfo.viewFrustum = ViewFrustum(cameraInfo.projMatrix);
-	cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
+	//detail::CameraInfo cameraInfo;
+	m_drawElementListSet->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
+	m_drawElementListSet->m_cameraInfo.viewPixelSize = viewPixelSize;
+	m_drawElementListSet->m_cameraInfo.viewPosition = Vector3::Zero;
+	m_drawElementListSet->m_cameraInfo.viewMatrix = Matrix::Identity;
+	m_drawElementListSet->m_cameraInfo.projMatrix = Matrix::MakePerspective2DLH(m_drawElementListSet->m_cameraInfo.viewPixelSize.width, m_drawElementListSet->m_cameraInfo.viewPixelSize.height, 0, 1);
+	m_drawElementListSet->m_cameraInfo.viewProjMatrix = m_drawElementListSet->m_cameraInfo.viewMatrix * m_drawElementListSet->m_cameraInfo.projMatrix;
+	m_drawElementListSet->m_cameraInfo.viewFrustum = ViewFrustum(m_drawElementListSet->m_cameraInfo.projMatrix);
+	m_drawElementListSet->m_cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
 	m_internalRenderer->Render(
+		m_drawElementListSet,
 		m_drawingContext->GetDrawElementList(),
-		cameraInfo,
+		m_drawElementListSet->m_cameraInfo,
 		renderTarget,
 		depthBuffer);
 	m_drawingContext->EndFrame();

@@ -7,6 +7,7 @@ LN_NAMESPACE_BEGIN
 class UIViewportLayer;
 class PostEffect;
 namespace detail { class InternalRenderer; }
+namespace detail { class DrawElementListSet; }
 
 /**
 	@brief		
@@ -113,6 +114,7 @@ private:
 	RefPtr<UILayoutView>				m_root;
 	RefPtr<DrawingContext>				m_drawingContext;
 	RefPtr<detail::InternalRenderer>	m_internalRenderer;
+	RefPtr<detail::DrawElementListSet>	m_drawElementListSet;
 };
 
 /**

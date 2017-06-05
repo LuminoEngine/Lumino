@@ -328,6 +328,9 @@ void UILayoutLayer::Initialize()
 	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
 	internalRenderer->Initialize(detail::EngineDomain::GetGraphicsManager());
 	m_internalRenderer = internalRenderer;
+
+	m_drawElementListSet = RefPtr<detail::DrawElementListSet>::MakeRef();
+	m_drawElementListSet->m_lists.Add(m_drawingContext->GetDrawElementList());
 }
 
 //------------------------------------------------------------------------------
@@ -357,17 +360,18 @@ void UILayoutLayer::ExecuteDrawListRendering(DrawList* parentDrawList, RenderTar
 	Size viewPixelSize((float)renderTarget->GetWidth(), (float)renderTarget->GetHeight());
 
 	detail::CameraInfo cameraInfo;
-	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
-	cameraInfo.viewPixelSize = viewPixelSize;
-	cameraInfo.viewPosition = Vector3::Zero;
-	cameraInfo.viewMatrix = Matrix::Identity;
-	cameraInfo.projMatrix = Matrix::MakePerspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1);
-	cameraInfo.viewProjMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;
-	cameraInfo.viewFrustum = ViewFrustum(cameraInfo.projMatrix);
-	cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
+	m_drawElementListSet->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
+	m_drawElementListSet->m_cameraInfo.viewPixelSize = viewPixelSize;
+	m_drawElementListSet->m_cameraInfo.viewPosition = Vector3::Zero;
+	m_drawElementListSet->m_cameraInfo.viewMatrix = Matrix::Identity;
+	m_drawElementListSet->m_cameraInfo.projMatrix = Matrix::MakePerspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1);
+	m_drawElementListSet->m_cameraInfo.viewProjMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;
+	m_drawElementListSet->m_cameraInfo.viewFrustum = ViewFrustum(cameraInfo.projMatrix);
+	m_drawElementListSet->m_cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
 	parentDrawList->RenderSubDrawList(
-		m_drawingContext->GetDrawElementList(),
-		cameraInfo,
+		//m_drawingContext->GetDrawElementList(),
+		//cameraInfo,
+		m_drawElementListSet,
 		m_internalRenderer,
 		renderTarget,
 		depthBuffer);

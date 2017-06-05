@@ -786,6 +786,7 @@ void InternalRenderer::AddPass(RenderingPass2* pass)
 
 //------------------------------------------------------------------------------
 void InternalRenderer::Render(
+	DrawElementListSet* drawElementListSet,
 	DrawElementList* elementList,
 	const detail::CameraInfo& cameraInfo,
 	RenderTargetTexture* defaultRenderTarget,
@@ -797,7 +798,7 @@ void InternalRenderer::Render(
 	OnPreRender(elementList);
 
 	InternalContext* context = m_manager->GetInternalContext();
-	m_renderingElementList.Clear();
+	drawElementListSet->m_renderingElementList.Clear();
 
 	// 視点に関する情報の設定
 	context->SetViewInfo(cameraInfo.viewPixelSize, cameraInfo.viewMatrix, cameraInfo.projMatrix);
@@ -815,7 +816,7 @@ void InternalRenderer::Render(
 			cameraInfo.viewFrustum.Intersects(boundingSphere.center, boundingSphere.radius))
 		{
 			// このノードは描画できる
-			m_renderingElementList.Add(element);
+			drawElementListSet->m_renderingElementList.Add(element);
 
 			// calculate distance for ZSort
 			const Matrix& transform = element->GetTransform(elementList);
@@ -853,7 +854,7 @@ void InternalRenderer::Render(
 	// 優先度は昇順。高いほうを手前に描画する (UE4 ESceneDepthPriorityGroup)
 	// フェンスID は昇順。高いほうを後に描画する
 	std::stable_sort(
-		m_renderingElementList.begin(), m_renderingElementList.end(),
+		drawElementListSet->m_renderingElementList.begin(), drawElementListSet->m_renderingElementList.end(),
 		[](const DrawElement* lhs, const DrawElement* rhs)
 		{
 			if (lhs->m_stateFence == rhs->m_stateFence)
@@ -882,7 +883,7 @@ void InternalRenderer::Render(
 		int currentBatchIndex = -1;
 		DrawElementBatch* currentState = nullptr;
 		//Shader* currentShader = nullptr;
-		for (DrawElement* element : m_renderingElementList)
+		for (DrawElement* element : drawElementListSet->m_renderingElementList)
 		{
 			bool visible = true;
 
@@ -2015,13 +2016,14 @@ void DrawList::DrawFrameRectangle(const Rect& rect)
 }
 
 //------------------------------------------------------------------------------
-void DrawList::RenderSubDrawList(detail::DrawElementList* elementList, const detail::CameraInfo& cameraInfo, detail::InternalRenderer* renderer, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
+void DrawList::RenderSubDrawList(detail::DrawElementListSet* listSet,/*detail::DrawElementList* elementList, const detail::CameraInfo& cameraInfo, */detail::InternalRenderer* renderer, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
 {
 	class DrawElement_RenderSubDrawList : public detail::DrawElement
 	{
 	public:
-		detail::DrawElementList* elementList;
-		detail::CameraInfo cameraInfo;
+		//detail::DrawElementList* elementList;
+		//detail::CameraInfo cameraInfo;
+		detail::DrawElementListSet* listSet;
 		detail::InternalRenderer* renderer;
 		RefPtr<RenderTargetTexture>	defaultRenderTarget;
 		RefPtr<DepthBuffer> defaultDepthBuffer;
@@ -2036,17 +2038,23 @@ void DrawList::RenderSubDrawList(detail::DrawElementList* elementList, const det
 			// TODO: scoped change block
 			auto* status = e.context->GetCurrentStatus();
 
-			primRenderer->Render(elementList, cameraInfo, primRenderTarget, primDepthBuffer);
+			// TODO: Zソートは結合してやりたいので、外側で for するのはだめ。
+			// また、バッチはindexで管理しているので、Element は親 list を参照する必要がある。
+			for (auto& list : listSet->m_lists)
+			{
+				primRenderer->Render(listSet, list, listSet->m_cameraInfo, primRenderTarget, primDepthBuffer);
+			}
 
 			// ステート復帰
-			e.context->ApplyStatus(status, { e.oenerList->GetDefaultRenderTarget(), e.oenerList->GetDefaultDepthBuffer() });
+			e.context->ApplyStatus(status, { e.defaultRenderTarget, e.defaultDepthBuffer });
 		}
 	};
 
 	// TODO: m_frameRectRenderer は違う気がする・・・
 	auto* e = ResolveDrawElement<DrawElement_RenderSubDrawList>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_frameRectRenderer, nullptr);
-	e->elementList = elementList;
-	e->cameraInfo = cameraInfo;
+	//e->elementList = listSet->m_lists[0];
+	//e->cameraInfo = listSet->m_cameraInfo;
+	e->listSet = listSet;
 	e->renderer = renderer;
 	e->defaultRenderTarget = defaultRenderTarget;
 	e->defaultDepthBuffer = defaultDepthBuffer;

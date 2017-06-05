@@ -55,6 +55,7 @@ class RenderingPass2;
 class CombinedMaterial;
 class DrawElementList;
 class InternalRenderer;
+class DrawElementListSet;
 
 struct DefaultStatus
 {
@@ -379,6 +380,7 @@ public:
 	void Initialize(GraphicsManager* manager);
 
 	void Render(
+		DrawElementListSet* drawElementListSet,
 		DrawElementList* elementList,
 		const detail::CameraInfo& cameraInfo,
 		RenderTargetTexture* defaultRenderTarget,
@@ -391,7 +393,6 @@ protected:
 private:
 	GraphicsManager*				m_manager;
 	List<RefPtr<RenderingPass2>>	m_renderingPassList;
-	List<DrawElement*>				m_renderingElementList;
 };
 
 
@@ -514,12 +515,17 @@ public:
 	void Initialize(GraphicsManager* manager);
 };
 
-
+// 描画リストと視点情報のまとまり。
+// ある1つの視点から、複数の描画リストを結合して描画するために使用する。
 class DrawElementListSet
 	: public RefObject
 {
 public:
 	List<DrawElementList*>	m_lists;
+	CameraInfo				m_cameraInfo;
+
+	// 作業用
+	List<DrawElement*>				m_renderingElementList;
 };
 
 
@@ -678,7 +684,7 @@ LN_INTERNAL_ACCESS:
 	//void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material);
 	void BlitInternal(Texture* source, RenderTargetTexture* dest, const Matrix& transform, Material* material);
 	void DrawFrameRectangle(const Rect& rect);
-	void RenderSubDrawList(detail::DrawElementList* elementList, const detail::CameraInfo& cameraInfo, detail::InternalRenderer* renderer, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
+	void RenderSubDrawList(detail::DrawElementListSet* listSet,/*detail::DrawElementList* elementList, const detail::CameraInfo& cameraInfo, */detail::InternalRenderer* renderer = nullptr, RenderTargetTexture* defaultRenderTarget = nullptr, DepthBuffer* defaultDepthBuffer = nullptr);
 
 	// TODO: 本質的に DrawList に持たせるべきではない。一応今は一時変数的な扱いでしかないので被害は少ないが・・・
 	void SetCurrentCamera(CameraComponent* camera) { m_camera = camera; }

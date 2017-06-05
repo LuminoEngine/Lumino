@@ -105,6 +105,8 @@ LN_INTERNAL_ACCESS:
 	void Initialize(CameraProjection proj);
 	CameraProjection GetProjectionMode() const { return m_projectionMode; }
 
+	void SetReflectionPlane(const Plane& plane) { m_reflectionPlane = plane; }
+
 	CameraViewportLayer2*	m_ownerLayer;
 
 	CameraProjection	m_projectionMode;
@@ -136,6 +138,8 @@ private:
 	Matrix				m_viewMatrixIT;		///< ビュー行列 (Inverse * Transpose)
 	Matrix				m_projMatrixIT;		///< プロジェクション行列 (Inverse * Transpose)
 	Matrix				m_viewProjMatrixIT;	///< ビュー行列とプロジェクション行列の積 (Inverse * Transpose)
+
+	Plane				m_reflectionPlane;
 };
 
 #if 0
@@ -204,6 +208,7 @@ private:
 	World*								m_targetWorld;
 	RefPtr<CameraComponent>				m_hostingCamera;
 	RefPtr<detail::InternalRenderer>	m_internalRenderer;
+	RefPtr<detail::DrawElementListSet>	m_drawElementListSet;
 	WorldDebugDrawFlags					m_debugDrawFlags;
 };
 
