@@ -55,7 +55,7 @@ LN_INTERNAL_ACCESS:
 	virtual void BeginUpdateFrame();
 	virtual void UpdateFrame(float elapsedTime);
 	void RenderRoot(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags);
-	virtual void Render(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags);
+	virtual void Render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags);
 	void ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
 	virtual void OnUIEvent(UIEventArgs* e);
 
@@ -89,7 +89,7 @@ LN_INTERNAL_ACCESS:
 	Camera* GetMainCamera() const;
 	virtual void BeginUpdateFrame() override;
 	virtual void UpdateFrame(float elapsedTime) override;
-	virtual void Render(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags) override;
+	virtual void Render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags) override;
 
 private:
 	RefPtr<SceneGraph2D>		m_sceneGraph;
@@ -121,7 +121,7 @@ LN_INTERNAL_ACCESS:
 	Camera* GetMainCamera() const;
 	virtual void BeginUpdateFrame() override;
 	virtual void UpdateFrame(float elapsedTime) override;
-	virtual void Render(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags) override;
+	virtual void Render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags) override;
 
 private:
 	void CreateGridPlane();

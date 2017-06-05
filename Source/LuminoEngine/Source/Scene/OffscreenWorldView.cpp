@@ -25,20 +25,20 @@ void OffscreenWorldView::Initialize()
 	Object::Initialize();
 	m_renderer = NewObject<DrawList>(detail::EngineDomain::GetGraphicsManager());
 
-	m_cameraInfo = NewObject<CameraComponent>(CameraProjection_3D);	// TODO: proj 指定方法
-	// TODO: CameraComponent を使うべきではない。ミラー描画用の特殊な視点。コンポーネントではない。
-	// CameraInterface のように抽象化するべきだろう。
-	m_cameraInfo->SetReflectionPlane(Plane(Vector3::UnitY));
+	//m_cameraInfo = NewObject<CameraComponent>(CameraProjection_3D);	// TODO: proj 指定方法
+	//// TODO: CameraComponent を使うべきではない。ミラー描画用の特殊な視点。コンポーネントではない。
+	//// CameraInterface のように抽象化するべきだろう。
+	//m_cameraInfo->SetReflectionPlane(Plane(Vector3::UnitY));
 
 	m_drawElementListSet = RefPtr<detail::DrawElementListSet>::MakeRef();
 	m_drawElementListSet->m_lists.Add(m_renderer->GetDrawElementList());
 }
 
-//------------------------------------------------------------------------------
-CameraComponent* OffscreenWorldView::GetCamera() const
-{
-	return m_cameraInfo;
-}
+////------------------------------------------------------------------------------
+//CameraComponent* OffscreenWorldView::GetCamera() const
+//{
+//	return m_cameraInfo;
+//}
 
 //------------------------------------------------------------------------------
 RenderTargetTexture* OffscreenWorldView::GetRenderTarget() const
@@ -49,6 +49,7 @@ RenderTargetTexture* OffscreenWorldView::GetRenderTarget() const
 //------------------------------------------------------------------------------
 void OffscreenWorldView::RenderWorld(World* world, CameraComponent* camera)
 {
+	m_renderer->BeginMakeElements();
 
 
 
@@ -71,7 +72,7 @@ void OffscreenWorldView::RenderWorld(World* world, CameraComponent* camera)
 	
 
 
-	world->Render(m_cameraInfo, WorldDebugDrawFlags::None);	// TODO: debugdraw の指定
+	world->Render(m_renderer, camera, WorldDebugDrawFlags::None);	// TODO: debugdraw の指定
 
 
 
@@ -89,15 +90,20 @@ void OffscreenWorldView::RenderWorld(World* world, CameraComponent* camera)
 
 
 	// TODO: Camera.cpp あたりと全く同じ処理
-	auto& m_hostingCamera = m_cameraInfo;
-	m_drawElementListSet->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.Get());
+	auto* m_hostingCamera = camera;
+	m_drawElementListSet->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera) + 1;
 	m_drawElementListSet->m_cameraInfo.viewPixelSize = Size(640, 480);
 	m_drawElementListSet->m_cameraInfo.viewPosition = m_hostingCamera->GetTransform()->GetWorldMatrix().GetPosition();
-	m_drawElementListSet->m_cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
+	//m_drawElementListSet->m_cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
+
+	m_drawElementListSet->m_cameraInfo.viewMatrix = /*Matrix::MakeReflection(Plane(Vector3::UnitY)) *  */m_hostingCamera->GetViewMatrix();
+
 	m_drawElementListSet->m_cameraInfo.projMatrix = m_hostingCamera->GetProjectionMatrix();
 	m_drawElementListSet->m_cameraInfo.viewProjMatrix = m_hostingCamera->GetViewProjectionMatrix();
 	m_drawElementListSet->m_cameraInfo.viewFrustum = m_hostingCamera->GetViewFrustum();
 	m_drawElementListSet->m_cameraInfo.zSortDistanceBase = m_hostingCamera->GetZSortDistanceBase();
+
+	
 
 
 	DrawList* r = world->GetRenderer();
@@ -132,7 +138,9 @@ void MirrorComponent::Initialize()
 	m_material = NewObject<Material>();
 	//m_material->SetMaterialTexture(Texture2D::GetBlackTexture());
 	//m_material->SetMaterialTexture(Texture2D::GetWhiteTexture());
-	m_material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
+	//m_material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
+	auto shader = ln::Shader::Create("C:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Mirror.fx");
+	m_material->SetShader(shader);
 }
 
 //------------------------------------------------------------------------------

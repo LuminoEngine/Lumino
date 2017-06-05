@@ -124,23 +124,23 @@ void World::RenderRoot(CameraComponent* camera, WorldDebugDrawFlags debugDrawFla
 	// pre render
 	for (auto& view : m_offscreenWorldViewList)
 	{
-		view->RenderWorld(this);
+		view->RenderWorld(this, camera);
 	}
 
 	// main render
-	Render(camera, debugDrawFlags);
+	Render(GetRenderer(), camera, debugDrawFlags);
 }
 
 //------------------------------------------------------------------------------
-void World::Render(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags)
+void World::Render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags)
 {
 	for (auto& obj : m_rootWorldObjectList)
 	{
-		obj->Render(m_renderer);
+		obj->Render(g);
 	}
 
 	// reset status
-	m_renderer->SetBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
+	g->SetBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
 }
 
 //------------------------------------------------------------------------------
@@ -237,9 +237,9 @@ void World2D::UpdateFrame(float elapsedTime)
 }
 
 //------------------------------------------------------------------------------
-void World2D::Render(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags)
+void World2D::Render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags)
 {
-	World::Render(camera, debugDrawFlags);
+	World::Render(g, camera, debugDrawFlags);
 }
 
 //==============================================================================
@@ -344,11 +344,11 @@ void World3D::UpdateFrame(float elapsedTime)
 }
 
 //------------------------------------------------------------------------------
-void World3D::Render(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags)
+void World3D::Render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags)
 {
-	World::Render(camera, debugDrawFlags);
+	World::Render(g, camera, debugDrawFlags);
 
-	RenderGridPlane(GetRenderer(), camera);
+	RenderGridPlane(g, camera);
 
 	if (debugDrawFlags.TestFlag(WorldDebugDrawFlags::PhysicsInfo))
 	{

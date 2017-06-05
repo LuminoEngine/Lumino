@@ -35,12 +35,18 @@ VSOutput VSBasic(LN_VSInput v)
 {
 	VSOutput o;
 	o.Pos	= mul(float4(v.Pos, 1.0f), ln_WorldViewProjection);
-	o.Pos.x -= ViewportOffset2.x;
-	o.Pos.y += ViewportOffset2.y;
+	//o.Pos.x -= ViewportOffset2.x;
+	//o.Pos.y += ViewportOffset2.y;
 	
 	
 	
-	o.UV	= v.UV;
+	float x = ((o.Pos.x / o.Pos.w) / 2) + 0.5;
+	float y = ((o.Pos.y / o.Pos.w) / 2) + 0.5;
+	
+	o.UV.x = -x;//((o.Pos.x / o.Pos.w) + 1.0) / 2;
+	o.UV.y = 1.0 - y;//1.0 - (((o.Pos.y / o.Pos.w) + 1.0) / 2);
+	
+	
 	o.Color	= v.Color;
 	return o;
 }
@@ -48,7 +54,7 @@ VSOutput VSBasic(LN_VSInput v)
 //------------------------------------------------------------------------------
 float4 PSBasic(PSInput p) : COLOR0
 {
-	return (tex2D(MaterialTextureSampler, p.UV) * p.Color) * ln_ColorScale;
+	return (tex2D(MaterialTextureSampler, p.UV) * p.Color) * ln_ColorScale;//float4(p.UV, 0, 1);//
 }
 
 //------------------------------------------------------------------------------

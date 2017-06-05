@@ -12,7 +12,7 @@ class OffscreenWorldView
 	: public Object
 {
 public:
-	CameraComponent* GetCamera() const;
+	//CameraComponent* GetCamera() const;
 	RenderTargetTexture* GetRenderTarget() const;
 
 LN_INTERNAL_ACCESS:
@@ -23,7 +23,7 @@ LN_INTERNAL_ACCESS:
 
 private:
 	// TODO: 視点を決めるための特殊な CameraComponent。World への追加はできないなどの制限をしておきたい。
-	RefPtr<CameraComponent>				m_cameraInfo;
+	//RefPtr<CameraComponent>				m_cameraInfo;
 	RefPtr<RenderTargetTexture>			m_renderTarget;
 	RefPtr<DrawList>					m_renderer;
 	RefPtr<detail::DrawElementListSet>	m_drawElementListSet;

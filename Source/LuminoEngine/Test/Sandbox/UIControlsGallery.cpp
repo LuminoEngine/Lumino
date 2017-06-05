@@ -57,6 +57,8 @@ void UIControlsGallery()
 	m_map->SetPosition(0, 2, 0);
 	//mesh->SetVisible(false);
 
+	//CameraComponent::GetMain3DCamera()->SetReflectionPlane(Plane(Vector3::UnitY));
+
 
 
 
