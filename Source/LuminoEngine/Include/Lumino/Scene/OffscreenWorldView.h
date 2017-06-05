@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "VisualNode.h"
 
 LN_NAMESPACE_BEGIN
 class CameraComponent;
@@ -27,9 +28,12 @@ private:
 };
 
 class MirrorComponent
-	: public Component
+	: public VisualComponent
 {
 public:
+
+protected:
+	virtual void OnRender2(DrawList* renderer) override;
 
 LN_INTERNAL_ACCESS:
 	MirrorComponent();
@@ -38,6 +42,7 @@ LN_INTERNAL_ACCESS:
 
 private:
 	RefPtr<OffscreenWorldView>	m_offscreen;
+	RefPtr<Material>			m_material;
 };
 
 LN_NAMESPACE_END

@@ -54,10 +54,10 @@ void OffscreenWorldView::RenderWorld(World* world)
 	//	LN_NOTIMPLEMENTED();
 	//}
 
-	//// TODO: 深度バッファやクリア方法の指定
-	//r->SetRenderTarget(0, m_renderTarget);
-	////g->SetDepthBuffer(m_depthBuffer);
-	//r->Clear(ClearFlags::All, Color::Black, 1.0f, 0);
+	// TODO: 深度バッファやクリア方法の指定
+	r->SetRenderTarget(0, m_renderTarget);
+	//g->SetDepthBuffer(m_depthBuffer);
+	r->Clear(ClearFlags::All, Color::White, 1.0f, 0);
 	
 
 
@@ -65,8 +65,8 @@ void OffscreenWorldView::RenderWorld(World* world)
 
 
 
-	//// 戻す
-	//r->SetRenderTarget(0, backbuffer);
+	// 戻す
+	r->SetRenderTarget(0, backbuffer);
 }
 
 //==============================================================================
@@ -85,7 +85,7 @@ MirrorComponent::~MirrorComponent()
 //------------------------------------------------------------------------------
 void MirrorComponent::Initialize()
 {
-	Component::Initialize();
+	VisualComponent::Initialize();
 
 	// TODO: この辺の初期化は OnParentChanged() のようなコールバックで行う。
 	// そうすれば、アタッチされた任意のワールドへ追加できる。
@@ -93,6 +93,19 @@ void MirrorComponent::Initialize()
 
 	// TODO: Remove
 	detail::EngineDomain::GetDefaultWorld3D()->AddOffscreenWorldView(m_offscreen);
+
+	m_material = NewObject<Material>();
+	//m_material->SetMaterialTexture(Texture2D::GetBlackTexture());
+	//m_material->SetMaterialTexture(Texture2D::GetWhiteTexture());
+	m_material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
+}
+
+//------------------------------------------------------------------------------
+void MirrorComponent::OnRender2(DrawList* renderer)
+{
+	m_material->SetMaterialTexture(m_offscreen->GetRenderTarget());
+	// TODO: 法泉が入っていない？
+	renderer->DrawSquare(10, 10, 1, 1, Color::White, Matrix::Identity, m_material);
 }
 
 

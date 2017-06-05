@@ -37,22 +37,26 @@ void UIControlsGallery()
 
 	listBox1->AddTextItem(_T("UI"));
 
-
-	//auto meshModel = ln::StaticMeshModel::
-	auto mesh = ln::StaticMeshComponent::CreateSphere(1);
-	//mesh->GetStaticMeshModel()->
-	auto material = mesh->GetStaticMeshModel()->GetMaterial(0);
-	material->SetMaterialTexture(ln::Assets::LoadTexture(_T("D:/GameProjects/Chronicles/sky/incskies_024_png8/incskies_024_8k_.png")));
-	auto m_map = ln::NewObject<ln::WorldObject3D>();
-	m_map->AddComponent(mesh);
-	mesh->SetBlendMode(BlendMode::Normal);
-	mesh->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
-	m_map->SetScale(-1, 1, 1);
-
-
 	auto mirror = NewObject<MirrorComponent>();
 	auto mirrorObj = ln::NewObject<ln::WorldObject3D>();
 	mirrorObj->AddComponent(mirror);
+	mirrorObj->SetPosition(10, 0, 0);
+
+
+	////auto meshModel = ln::StaticMeshModel::
+	//auto mesh = ln::StaticMeshComponent::CreateSphere(1);
+	////mesh->GetStaticMeshModel()->
+	//auto material = mesh->GetStaticMeshModel()->GetMaterial(0);
+	////material->SetMaterialTexture(ln::Assets::LoadTexture(_T("D:/GameProjects/Chronicles/sky/incskies_024_png8/incskies_024_8k_.png")));
+	//material->SetMaterialTexture(Texture2D::GetBlackTexture());
+	//auto m_map = ln::NewObject<ln::WorldObject3D>();
+	//m_map->AddComponent(mesh);
+	//mesh->SetBlendMode(BlendMode::Normal);
+	//mesh->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
+	//m_map->SetScale(-1, 1, 1);
+	//mesh->SetVisible(false);
+
+
 
 
 	//auto shader = Shader::Create(StringRef(_T("C:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/Sandbox/SSBasic2D.fx")), true);

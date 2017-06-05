@@ -515,6 +515,14 @@ public:
 };
 
 
+class DrawElementListSet
+	: public RefObject
+{
+public:
+	List<DrawElementList*>	m_lists;
+};
+
+
 } // namespace detail
 
 /**
