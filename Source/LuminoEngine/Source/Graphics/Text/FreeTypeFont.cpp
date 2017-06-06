@@ -27,8 +27,8 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 RawFontPtr RawFont::Create()
 {
-	RawFontPtr obj(LN_NEW detail::FreeTypeFont(detail::GraphicsManager::GetInstance()->GetFontManager()), false);
-	return obj;
+	auto ptr = NewObject<detail::FreeTypeFont>();
+	return RawFontPtr::StaticCast(ptr);
 }
 
 namespace detail {
@@ -50,8 +50,6 @@ void FreeTypeGlyphBitmap::ReleaseGlyph()
 	}
 }
 
-//------------------------------------------------------------------------------
-// 
 //------------------------------------------------------------------------------
 void FreeTypeGlyphData::ReleaseGlyph()
 {
@@ -118,10 +116,8 @@ void FreeTypeGlyphData::ReleaseGlyph()
 */
 
 //------------------------------------------------------------------------------
-// 
-//------------------------------------------------------------------------------
-FreeTypeFont::FreeTypeFont(FontManager* manager)
-	: m_manager(manager)
+FreeTypeFont::FreeTypeFont()
+	: m_manager()
 	, m_edgeSize(0)
 	, m_modified(false)
 	, m_ftFaceID(0)
@@ -134,7 +130,26 @@ FreeTypeFont::FreeTypeFont(FontManager* manager)
 	, m_glyphBitmap()
 	, m_outlineBitmap()
 {
-	LN_SAFE_ADDREF(m_manager);
+}
+
+//------------------------------------------------------------------------------
+FreeTypeFont::~FreeTypeFont()
+{
+	Dispose();
+
+	if (m_ftStroker)
+	{
+		FT_Stroker_Done(m_ftStroker);
+		m_ftStroker = NULL;
+	}
+}
+
+//------------------------------------------------------------------------------
+void FreeTypeFont::Initialize()
+{
+	RawFont::Initialize();
+
+	m_manager = detail::EngineDomain::GetGraphicsManager()->GetFontManager();
 	m_glyphData.CopyGlyph = NULL;
 	m_glyphData.CopyOutlineGlyph = NULL;
 
@@ -149,23 +164,9 @@ FreeTypeFont::FreeTypeFont(FontManager* manager)
 }
 
 //------------------------------------------------------------------------------
-FreeTypeFont::~FreeTypeFont()
-{
-	Dispose();
-
-	if (m_ftStroker)
-	{
-		FT_Stroker_Done(m_ftStroker);
-		m_ftStroker = NULL;
-	}
-
-	LN_SAFE_RELEASE(m_manager);
-}
-
-//------------------------------------------------------------------------------
 RawFontPtr FreeTypeFont::Copy() const
 {
-	RefPtr<FreeTypeFont> font(LN_NEW FreeTypeFont(m_manager), false);
+	auto font = NewObject<FreeTypeFont>();
 	font->m_fontData = m_fontData;
 	font->m_modified = true;
 	return RawFontPtr::StaticCast(font);
@@ -900,7 +901,8 @@ void FreeTypeFont::UpdateFont()
 		//int hh = m_ftFace->height;
 
 
-		Dispose();
+		m_glyphData.ReleaseGlyph();
+
 		//if (m_edgeSize > 0)
 		//{
 		//	// エッジの描画情報
@@ -979,7 +981,7 @@ void FreeTypeFont::TryUpdateStroke(int newEdgeSize)
 //------------------------------------------------------------------------------
 void FreeTypeFont::Dispose()
 {
-	m_glyphData.ReleaseGlyph();
+	
 
 	//SAFE_DELETE_ARRAY(mPixelList);
 

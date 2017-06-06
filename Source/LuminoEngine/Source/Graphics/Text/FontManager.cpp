@@ -133,7 +133,7 @@ void FontManager::Initialize(FileManager* fileManager, GraphicsManager* graphics
 	m_defaultFont->SetAntiAlias(true);
 
 
-	m_defaultRawFont = LN_NEW FreeTypeFont(this);
+	m_defaultRawFont = NewObject<FreeTypeFont>();
 	m_defaultRawFont->SetName(m_defaultFontName);
 	m_defaultRawFont->SetSize(12);
 	m_defaultRawFont->SetAntiAlias(true);
@@ -145,7 +145,7 @@ void FontManager::Initialize(FileManager* fileManager, GraphicsManager* graphics
 	// 組み込みフォント
 	m_builtinFontList.Resize(1);
 	{
-		RefPtr<RawFont> raw(RawFont::CreateBuiltInBitmapFontInternal(this, 7), false);
+		RefPtr<RawFont> raw = RawFont::CreateBuiltInBitmapFontInternal2(7);
 		RefPtr<Font> font = RefPtr<Font>::MakeRef();
 		font->Initialize(m_graphicsManager, raw);
 		m_builtinFontList[(int)BuiltinFontSize::XXSmall] = font;
@@ -166,7 +166,7 @@ void FontManager::Finalize()
 	m_defaultFont = nullptr;
 
 	m_rawFontCache->FinalizeCache();
-	LN_SAFE_RELEASE(m_defaultRawFont);
+	m_defaultRawFont.SafeRelease();
 
 	// 登録したTTFファイルのメモリバッファをすべて解放
 	//TTFDataEntryMap::iterator itr = m_ttfDataEntryMap.begin();
@@ -301,7 +301,7 @@ RawFontPtr FontManager::LookupRawFont(const detail::FontData& keyData)
 	}
 	else
 	{
-		auto ftFont = RefPtr<FreeTypeFont>::MakeRef(this);
+		auto ftFont = NewObject<FreeTypeFont>();
 		ref = ftFont;
 	}
 

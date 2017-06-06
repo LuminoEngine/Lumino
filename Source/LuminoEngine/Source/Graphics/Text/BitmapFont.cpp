@@ -19,11 +19,12 @@ static const byte_t g_BuiltInBitmapFont_size7_Data[] =
 static const size_t g_BuiltInBitmapFont_size7_Len = LN_ARRAY_SIZE_OF(g_BuiltInBitmapFont_size7_Data);
 
 //------------------------------------------------------------------------------
-RawFont* RawFont::CreateBuiltInBitmapFontInternal(detail::FontManager* manager, int size)
+RefPtr<RawFont> RawFont::CreateBuiltInBitmapFontInternal2(int size)
 {
 	MemoryStream stream(g_BuiltInBitmapFont_size7_Data, g_BuiltInBitmapFont_size7_Len);
 	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(&stream), false);
-	return LN_NEW detail::BitmapFont(manager, bitmap);
+	auto font = NewObject<detail::BitmapFont>(bitmap);
+	return RefPtr<RawFont>::StaticCast(font);
 }
 
 //------------------------------------------------------------------------------
@@ -39,15 +40,20 @@ namespace detail {
 //==============================================================================
 
 //------------------------------------------------------------------------------
-// 
-//------------------------------------------------------------------------------
-BitmapFont::BitmapFont(FontManager* manager, Bitmap* bitmap)
+BitmapFont::BitmapFont()
 	: m_manager(NULL)
 	, m_fontBitmap()
 	, m_charWidth(0)
 	, m_charHeight(0)
 {
-	LN_REFOBJ_SET(m_manager, manager);
+}
+
+//------------------------------------------------------------------------------
+void BitmapFont::Initialize(Bitmap* bitmap)
+{
+	RawFont::Initialize();
+	m_manager = detail::EngineDomain::GetGraphicsManager()->GetFontManager();
+
 	m_name = String::SPrintf(_T("%d"), rand());	// TODO: 名前がユーザー指定されていなければランダムに作る
 	m_fontBitmap = bitmap;
 
@@ -65,7 +71,6 @@ BitmapFont::BitmapFont(FontManager* manager, Bitmap* bitmap)
 //------------------------------------------------------------------------------
 BitmapFont::~BitmapFont()
 {
-	LN_SAFE_RELEASE(m_manager);
 }
 
 #if 0
@@ -131,8 +136,8 @@ void BitmapFont::getTextSize(const wchar_t* text, int len, Geometry::RectI* rect
 //------------------------------------------------------------------------------
 RawFontPtr BitmapFont::Copy() const
 {
-	RefPtr<BitmapFont> font(LN_NEW BitmapFont(m_manager, m_fontBitmap), false);
-	return RawFontPtr::StaticCast(font);
+	auto ptr = NewObject<BitmapFont>(m_fontBitmap);
+	return RawFontPtr::StaticCast(ptr);
 }
 
 //------------------------------------------------------------------------------

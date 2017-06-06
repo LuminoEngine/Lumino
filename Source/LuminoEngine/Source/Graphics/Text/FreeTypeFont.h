@@ -52,17 +52,13 @@ struct FreeTypeGlyphData
 	void ReleaseGlyph();
 };
 
-
-/**
-	@brief		フォントのクラスです。
-*/
 class FreeTypeFont
 	: public RawFont
 {
 public:
-	FreeTypeFont(FontManager* manager);
+	FreeTypeFont();
 	virtual ~FreeTypeFont();
-	void Finalize();
+	void Initialize();
 
 public:
 	virtual void SetName(const String& fontName) { m_fontData.Family = fontName; m_modified = true; }

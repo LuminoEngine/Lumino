@@ -23,7 +23,6 @@ typedef struct FT_GlyphRec_*  FT_Glyph;
 
 LN_NAMESPACE_BEGIN
 class RawFont;
-class FreeTypeFont;
 
 namespace detail {
 class GraphicsManager;
@@ -62,6 +61,8 @@ public:
 	RawFontPtr LookupRawFont(const detail::FontData& keyData);
 
 LN_INTERNAL_ACCESS:
+	void AddFontResource_(RawFont* font) { m_fontResourceList.Add(font); }
+	void RemoveFontResource_(RawFont* font) { m_fontResourceList.Remove(font); }
 	FT_Library GetFTLibrary() const { return m_ftLibrary; }
 	FTC_Manager GetFTCacheManager() const { return m_ftCacheManager; }
 	FTC_CMapCache GetFTCacheMapCache() const { return m_ftCMapCache; }
@@ -116,9 +117,10 @@ LN_INTERNAL_ACCESS:
 	GraphicsManager*		m_graphicsManager;
 	RefPtr<CacheManager>	m_rawFontCache;
 	RefPtr<Font>			m_defaultFont;
-	RawFont*				m_defaultRawFont;
+	RefPtr<RawFont>			m_defaultRawFont;
 	String					m_defaultFontName;
 	List<RefPtr<Font>>		m_builtinFontList;
+	List<RawFont*>			m_fontResourceList;
 
 	EncodingConverter		m_charToUTF32Converter;
 	EncodingConverter		m_wcharToUTF32Converter;
@@ -129,8 +131,6 @@ LN_INTERNAL_ACCESS:
 	FTC_Manager				m_ftCacheManager;
 	FTC_CMapCache			m_ftCMapCache;
 	FTC_ImageCache			m_ftImageCache;
-	//List<FreeTypeFont*>		m_freeTypeFontList;
-
 
 	// FaceRequester() で Windows のシステムフォントを拾うための細工。
 	// FreeType は FTC_Manager_LookupFace() に渡されたアドレスを直接辞書のキーとする。

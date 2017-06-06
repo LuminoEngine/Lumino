@@ -206,6 +206,29 @@ RawFont::~RawFont()
 }
 
 //------------------------------------------------------------------------------
+void RawFont::Initialize()
+{
+	m_manager = detail::EngineDomain::GetGraphicsManager()->GetFontManager();
+	m_manager->AddFontResource_(this);
+}
+
+//------------------------------------------------------------------------------
+void RawFont::Finalize_()
+{
+	Dispose_();
+}
+
+//------------------------------------------------------------------------------
+void RawFont::Dispose_()
+{
+	if (m_manager != nullptr)
+	{
+		m_manager->RemoveFontResource_(this);
+		m_manager = nullptr;
+	}
+}
+
+//------------------------------------------------------------------------------
 SizeI RawFont::GetTextSize(const StringRef& text)
 {
 	auto* r = GetManager()->GetGraphicsManager()->GetBitmapTextRenderer();

@@ -211,7 +211,7 @@ public:
 	static RawFontPtr Create();
 
 
-	static RawFont* CreateBuiltInBitmapFontInternal(detail::FontManager* manager, int size);			// TODO: manager を何とかしたい
+	static RefPtr<RawFont> CreateBuiltInBitmapFontInternal2(int size);
 
 
 	static void RegisterFontFile(const StringRef& filePath);
@@ -302,15 +302,19 @@ public:
 	virtual detail::FontManager* GetManager() const = 0;
 
 
-protected:
+LN_CONSTRUCT_ACCESS:
 	RawFont();
 	virtual ~RawFont();
+	void Initialize();
+	virtual void Finalize_();
+	virtual void Dispose_();
 
 LN_INTERNAL_ACCESS:
 	detail::FontGlyphTextureCache* GetGlyphTextureCache();
 	detail::VectorFontGlyphCache* GetVectorGlyphCache();
 
 private:
+	detail::FontManager*			m_manager;
 	detail::FontGlyphTextureCache*	m_glyphTextureCache;
 	detail::VectorFontGlyphCache*	m_vectorGlyphCache;
 

@@ -10,8 +10,9 @@ class BitmapFont
     : public RawFont
 {
 public:
-	BitmapFont(FontManager* manager, Bitmap* bitmap);
+	BitmapFont();
 	virtual ~BitmapFont();
+	void Initialize(Bitmap* bitmap);
 
 	virtual void SetName(const String& fontName) { LN_THROW(0, InvalidOperationException); }
 	virtual const String& GetName() const { return m_name; }
@@ -37,8 +38,6 @@ public:
 	virtual FontManager* GetManager() const { return m_manager; }
 
 private:
-    void Dispose();
-
 	FontManager*			m_manager;
 	String					m_name;					// 名前。グリフテクスチャのキャッシュで使用する
 	RefPtr<Bitmap>			m_fontBitmap;
