@@ -393,11 +393,11 @@ CacheManager::CacheManager(int capacityCount, size_t maxMemorySize)
 //------------------------------------------------------------------------------
 CacheManager::~CacheManager()
 {
-	Finalize();
+	FinalizeCache();
 }
 
 //------------------------------------------------------------------------------
-void CacheManager::Finalize()
+void CacheManager::FinalizeCache()
 {
 	ClearCache();
 	LN_SAFE_DELETE(m_cacheUnusedList);

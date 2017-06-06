@@ -55,8 +55,8 @@ void AssetsManager::Initialize(EngineManager* manager)
 //------------------------------------------------------------------------------
 void AssetsManager::Finalize()
 {
-	m_textureCache->Finalize();
-	m_fontCache->Finalize();
+	m_textureCache->FinalizeCache();
+	m_fontCache->FinalizeCache();
 }
 
 //------------------------------------------------------------------------------

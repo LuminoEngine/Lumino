@@ -49,7 +49,7 @@ TextRendererCore::~TextRendererCore()
 //------------------------------------------------------------------------------
 void TextRendererCore::Initialize(GraphicsManager* manager)
 {
-	GraphicsResourceObject::Initialize(manager);
+	GraphicsResourceObject::Initialize();
 	CreateDeviceResources();
 }
 

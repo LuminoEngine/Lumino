@@ -37,6 +37,9 @@ public:
 	/** インデックスの値を設定します。 */
 	void SetIndex(int index, int vertexIndex);
 
+protected:
+	virtual void Dispose() override;
+
 LN_INTERNAL_ACCESS:
 	IndexBuffer();
 	virtual ~IndexBuffer();

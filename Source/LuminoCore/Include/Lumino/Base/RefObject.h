@@ -37,6 +37,7 @@ class RefObject
 protected:
 	RefObject();
 	virtual ~RefObject();
+	virtual void Finalize_();
 
 public:
 

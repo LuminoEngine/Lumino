@@ -407,14 +407,6 @@ Shader::Shader()
 //------------------------------------------------------------------------------
 Shader::~Shader()
 {
-	for (ShaderVariable* var : m_variables) {
-		LN_SAFE_RELEASE(var);
-	}
-	for (ShaderTechnique* tech : m_techniques) {
-		LN_SAFE_RELEASE(tech);
-	}
-
-	LN_SAFE_RELEASE(m_deviceObj);
 }
 
 //------------------------------------------------------------------------------
@@ -442,7 +434,7 @@ void Shader::Initialize(detail::GraphicsManager* manager, const StringRef& fileP
 //------------------------------------------------------------------------------
 void Shader::Initialize(detail::GraphicsManager* manager, const void* code, int length, bool useTRSS)
 {
-	GraphicsResourceObject::Initialize(manager);
+	GraphicsResourceObject::Initialize();
 
 	StringBuilderA newCode;
 	if (useTRSS)
@@ -473,6 +465,26 @@ void Shader::Initialize(detail::GraphicsManager* manager, const void* code, int 
 	m_sourceCode.Alloc(newCode.c_str(), newCode.GetLength());
 
 	PostInitialize();
+}
+
+//------------------------------------------------------------------------------
+void Shader::Dispose()
+{
+	for (ShaderVariable* var : m_variables)
+	{
+		LN_SAFE_RELEASE(var);
+	}
+	m_variables.Clear();
+
+	for (ShaderTechnique* tech : m_techniques) 
+	{
+		LN_SAFE_RELEASE(tech);
+	}
+	m_techniques.Clear();
+
+	LN_SAFE_RELEASE(m_deviceObj);
+
+	GraphicsResourceObject::Dispose();
 }
 
 //------------------------------------------------------------------------------

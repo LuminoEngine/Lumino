@@ -40,7 +40,7 @@ Renderer::Renderer(detail::GraphicsManager* manager)
 	, m_currentDepthBuffer(NULL)
 {
 	memset(m_currentRenderTargets, 0, sizeof(m_currentRenderTargets));
-	GraphicsResourceObject::Initialize(manager);
+	GraphicsResourceObject::Initialize();
 
 	//if (m_manager->GetRenderingType() == GraphicsRenderingType::Deferred) {
 	m_primaryCommandList = LN_NEW RenderingCommandList(manager);

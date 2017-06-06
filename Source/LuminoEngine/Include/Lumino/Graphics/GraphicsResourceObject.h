@@ -17,8 +17,10 @@ protected:
 	friend class detail::GraphicsManager;
 	friend class ShaderVariable;
 
-	void Initialize(detail::GraphicsManager* manager);
-	void Finalize();
+	void Initialize();
+	virtual void Finalize_() override;
+
+	virtual void Dispose();
 
 
 	// デバイスが変更される場合、まずは NULL が渡されて呼ばれる。このとき、必要なリソースを保存する。

@@ -141,7 +141,7 @@ void MirrorComponent::Initialize()
 	//m_material->SetMaterialTexture(Texture2D::GetBlackTexture());
 	//m_material->SetMaterialTexture(Texture2D::GetWhiteTexture());
 	//m_material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
-	auto shader = ln::Shader::Create("C:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Mirror.fx");
+	auto shader = ln::Shader::Create("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Mirror.fx");
 	m_material->SetShader(shader);
 }
 

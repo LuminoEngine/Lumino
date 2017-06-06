@@ -32,7 +32,13 @@ Texture::Texture()
 //------------------------------------------------------------------------------
 Texture::~Texture()
 {
+}
+
+//------------------------------------------------------------------------------
+void Texture::Dispose()
+{
 	LN_SAFE_RELEASE(m_deviceObj);
+	GraphicsResourceObject::Dispose();
 }
 
 //------------------------------------------------------------------------------
@@ -167,7 +173,7 @@ Texture2D::Texture2D()
 //------------------------------------------------------------------------------
 void Texture2D::Initialize(const SizeI& size, TextureFormat format, bool mipmap, ResourceUsage usage)
 {
-	GraphicsResourceObject::Initialize(detail::GraphicsManager::GetInstance());
+	GraphicsResourceObject::Initialize();
 
 	m_size = size;
 	m_mipmap = mipmap;
@@ -201,7 +207,7 @@ void Texture2D::Initialize(const StringRef& filePath, TextureFormat format, bool
 //------------------------------------------------------------------------------
 void Texture2D::Initialize(Stream* stream, TextureFormat format, bool mipmap)
 {
-	GraphicsResourceObject::Initialize(detail::GraphicsManager::GetInstance());
+	GraphicsResourceObject::Initialize();
 	m_mipmap = mipmap;
 	m_format = format;
 
@@ -482,14 +488,14 @@ Texture3D::~Texture3D()
 //------------------------------------------------------------------------------
 void Texture3D::Initialize(ln::detail::GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage)
 {
-	GraphicsResourceObject::Initialize(manager);
+	GraphicsResourceObject::Initialize();
 	m_size.width = width;
 	m_size.height = height;
 	m_depth = depth;
 	m_format = format;
 	m_mipLevels = mipLevels;
 	m_usage = usage;
-	m_deviceObj = manager->GetGraphicsDevice()->CreateTexture3D(m_size.width, m_size.height, m_depth, m_mipLevels, m_format, m_usage, nullptr);
+	m_deviceObj = m_manager->GetGraphicsDevice()->CreateTexture3D(m_size.width, m_size.height, m_depth, m_mipLevels, m_format, m_usage, nullptr);
 	m_initializing = true;
 
 	if (m_usage == ResourceUsage::Dynamic)
@@ -603,8 +609,7 @@ void RenderTargetTexture::Initialize(const SizeI& size, int mipLevels, TextureFo
 //------------------------------------------------------------------------------
 void RenderTargetTexture::CreateImpl(detail::GraphicsManager* manager, const SizeI& size, int mipLevels, TextureFormat format)
 {
-	GraphicsResourceObject::Initialize(manager);
-
+	GraphicsResourceObject::Initialize();
 	m_size = size;
 	m_mipLevels = mipLevels;
 	m_format = format;
@@ -614,7 +619,7 @@ void RenderTargetTexture::CreateImpl(detail::GraphicsManager* manager, const Siz
 //------------------------------------------------------------------------------
 void RenderTargetTexture::CreateCore(detail::GraphicsManager* manager, bool isDefaultBackBuffer)
 {
-	GraphicsResourceObject::Initialize(manager);
+	GraphicsResourceObject::Initialize();
 	m_deviceObj = NULL;
 	m_isDefaultBackBuffer = isDefaultBackBuffer;
 }
@@ -715,16 +720,22 @@ DepthBuffer::DepthBuffer()
 //------------------------------------------------------------------------------
 DepthBuffer::~DepthBuffer()
 {
-	LN_SAFE_RELEASE(m_deviceObj);
 }
 
 //------------------------------------------------------------------------------
 void DepthBuffer::CreateImpl(detail::GraphicsManager* manager, const SizeI& size, TextureFormat format)
 {
-	GraphicsResourceObject::Initialize(manager);
+	GraphicsResourceObject::Initialize();
 	m_size = size;
 	m_format = format;
 	RefreshDeviceResource();
+}
+
+//------------------------------------------------------------------------------
+void DepthBuffer::Dispose()
+{
+	LN_SAFE_RELEASE(m_deviceObj);
+	GraphicsResourceObject::Dispose();
 }
 
 //------------------------------------------------------------------------------

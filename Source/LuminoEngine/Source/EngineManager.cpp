@@ -198,7 +198,7 @@ EngineManager::~EngineManager()
 	{
 		// 先に描画スレッドを終了しておく。
 		// 他モジュールで発行されたコマンドがまだ実行待機中にそのモジュールが解放されるとマズイ。
-		m_graphicsManager->Finalize();
+		m_graphicsManager->Dispose();
 	}
 
 	if (m_platformManager != nullptr)

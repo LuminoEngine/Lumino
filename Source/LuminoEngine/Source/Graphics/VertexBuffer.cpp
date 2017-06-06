@@ -62,13 +62,12 @@ VertexBuffer::VertexBuffer()
 //------------------------------------------------------------------------------
 VertexBuffer::~VertexBuffer()
 {
-	LN_SAFE_RELEASE(m_rhiObject);
 }
 
 //------------------------------------------------------------------------------
 void VertexBuffer::Initialize(detail::GraphicsManager* manager, size_t bufferSize, const void* data, ResourceUsage usage, bool sizeConst)
 {
-	GraphicsResourceObject::Initialize(manager);
+	GraphicsResourceObject::Initialize();
 	m_usage = usage;
 
 	if (sizeConst)
@@ -79,6 +78,13 @@ void VertexBuffer::Initialize(detail::GraphicsManager* manager, size_t bufferSiz
 	{
 		m_buffer.resize(bufferSize);
 	}
+}
+
+//------------------------------------------------------------------------------
+void VertexBuffer::Dispose()
+{
+	LN_SAFE_RELEASE(m_rhiObject);
+	GraphicsResourceObject::Dispose();
 }
 
 //------------------------------------------------------------------------------

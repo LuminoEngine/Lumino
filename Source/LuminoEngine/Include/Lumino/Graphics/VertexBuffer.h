@@ -31,6 +31,9 @@ public:
 	/** 頂点バッファをクリアします。 */
 	void Clear();
 
+protected:
+	virtual void Dispose() override;
+
 LN_INTERNAL_ACCESS:
 	VertexBuffer();
 	virtual ~VertexBuffer();

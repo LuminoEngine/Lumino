@@ -133,7 +133,7 @@ void AudioManager::Finalize()
 
 
 	if (m_audioStreamCache != NULL) {
-		m_audioStreamCache->Finalize();
+		m_audioStreamCache->FinalizeCache();
 		LN_SAFE_RELEASE(m_audioStreamCache);
 	}
 	LN_SAFE_RELEASE(m_midiAudioDevice);

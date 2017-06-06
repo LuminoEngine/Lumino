@@ -23,6 +23,12 @@ RefObject::~RefObject()
 }
 
 //------------------------------------------------------------------------------
+void RefObject::Finalize_()
+{
+	LN_FATAL(m_referenceCount.Get() <= 1, "Object is still referenced.");
+}
+
+//------------------------------------------------------------------------------
 int32_t RefObject::GetReferenceCount() const
 { 
 	return m_referenceCount.Get();
@@ -41,6 +47,7 @@ int32_t RefObject::Release()
 	int32_t count2 = m_internalReferenceCount;
 	if (count <= 0 && count2 <= 0)
 	{
+		Finalize_();
 		delete this;
 	}
     return count;

@@ -88,10 +88,10 @@ public:
 
 public:
 	GraphicsManager();
-	~GraphicsManager();
+	virtual ~GraphicsManager();
 
 	void Initialize(const ConfigData& configData);
-	void Finalize();
+	void Dispose();
 
 	/** 現在のグラフィックスシステムが使用している API の種類を確認します。*/
 	GraphicsAPI GetGraphicsAPI() const;
@@ -132,8 +132,8 @@ public:
 	ContextInterface* GetActiveContext() const { return m_activeContext; }
 
 public:
-	void AddResourceObject(GraphicsResourceObject* obj) { m_resourceObjectList.Add(obj); }
-	void RemoveResourceObject(GraphicsResourceObject* obj) { m_resourceObjectList.Remove(obj); }
+	void AddResourceObject(GraphicsResourceObject* obj);
+	void RemoveResourceObject(GraphicsResourceObject* obj);
 	PhysicsManager* GetPhysicsManager() const { return m_physicsManager; }
 	Driver::IGraphicsDevice* GetGraphicsDevice() { return m_graphicsDevice; }
 	RenderingThread* GetRenderingThread() { return m_renderingThread; }
@@ -163,7 +163,7 @@ private:
 	PlatformWindow*					m_mainWindow;
 	FontManager*					m_fontManager;
 	GraphicsRenderingType			m_renderingType;
-	List<GraphicsResourceObject*>	m_resourceObjectList;
+	List<RefPtr<GraphicsResourceObject>>	m_resourceObjectList;
 	List<IDeviceResetListener*>		m_deviceResetListenerList;
 	
 	Driver::IGraphicsDevice*		m_graphicsDevice;

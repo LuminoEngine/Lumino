@@ -44,21 +44,28 @@ GraphicsResourceObject::GraphicsResourceObject()
 {
 }
 
+static int _pp = 0;
+
 //------------------------------------------------------------------------------
 GraphicsResourceObject::~GraphicsResourceObject()
 {
-	Finalize();
 }
 
 //------------------------------------------------------------------------------
-void GraphicsResourceObject::Initialize(detail::GraphicsManager* manager)
+void GraphicsResourceObject::Finalize_()
 {
-	m_manager = manager;
+	Dispose();
+}
+
+//------------------------------------------------------------------------------
+void GraphicsResourceObject::Initialize()
+{
+	m_manager = detail::EngineDomain::GetGraphicsManager();
 	m_manager->AddResourceObject(this);
 }
 
 //------------------------------------------------------------------------------
-void GraphicsResourceObject::Finalize()
+void GraphicsResourceObject::Dispose()
 {
 	if (m_manager != nullptr)
 	{
@@ -115,7 +122,7 @@ GraphicsManager::~GraphicsManager()
 
 	if (m_textRendererCore != nullptr)
 	{
-		m_textRendererCore->Finalize();
+		m_textRendererCore->Dispose();
 		LN_SAFE_RELEASE(m_textRendererCore);
 	}
 	m_dymmyBlackTexture.SafeRelease();
@@ -307,7 +314,7 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 
 
 //------------------------------------------------------------------------------
-void GraphicsManager::Finalize()
+void GraphicsManager::Dispose()
 {
 	if (m_renderingThread != nullptr)
 	{
@@ -315,13 +322,15 @@ void GraphicsManager::Finalize()
 		LN_SAFE_DELETE(m_renderingThread);
 	}
 
+	// TODO: なんか量がすごいことになっている。多分 VertexDecl。Diag で監視する。
 	auto deleteList = m_resourceObjectList;
-	for (auto* obj : deleteList)
+	for (auto& obj : deleteList)
 	{
-		obj->Finalize();
+		obj->Dispose();
 	}
+	deleteList.Clear();
+	m_resourceObjectList.Clear();
 
-	//LN_SAFE_RELEASE(m_renderingContext);
 	m_internalContext.SafeRelease();
 }
 
@@ -330,12 +339,6 @@ GraphicsAPI GraphicsManager::GetGraphicsAPI() const
 {
 	return m_graphicsDevice->GetGraphicsAPI();
 }
-
-//------------------------------------------------------------------------------
-//RenderingCommandList* GraphicsManager::GetPrimaryRenderingCommandList()
-//{
-//	return m_renderer->m_primaryCommandList;
-//}
 
 //------------------------------------------------------------------------------
 void GraphicsManager::PauseDevice()
@@ -369,7 +372,7 @@ void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
 	if (device == NULL)
 	{
 		// 全オブジェクトに通知
-		for (auto* obj : m_resourceObjectList) {
+		for (auto& obj : m_resourceObjectList) {
 			obj->OnChangeDevice(NULL);
 		}
 
@@ -404,7 +407,7 @@ void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
 		}
 
 		// 全オブジェクトに通知
-		for (auto* obj : m_resourceObjectList) {
+		for (auto& obj : m_resourceObjectList) {
 			obj->OnChangeDevice(device);
 		}
 	}
@@ -427,6 +430,18 @@ void GraphicsManager::SwitchActiveContext(detail::ContextInterface* context)
 			m_activeContext->OnActivated();
 		}
 	}
+}
+
+//------------------------------------------------------------------------------
+void GraphicsManager::AddResourceObject(GraphicsResourceObject* obj)
+{
+	m_resourceObjectList.Add(obj);
+}
+
+//------------------------------------------------------------------------------
+void GraphicsManager::RemoveResourceObject(GraphicsResourceObject* obj)
+{
+	m_resourceObjectList.Remove(obj);
 }
 
 //------------------------------------------------------------------------------

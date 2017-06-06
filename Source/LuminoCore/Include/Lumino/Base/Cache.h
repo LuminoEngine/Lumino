@@ -123,7 +123,7 @@ public:
 	/**
 		@brief	終了処理 (これ以降キャッシュにオブジェクトを追加しないようにする)
 	*/
-	void Finalize();
+	void FinalizeCache();
 
 	/**
 		@brief	オブジェクトをキャッシュ管理に追加します。

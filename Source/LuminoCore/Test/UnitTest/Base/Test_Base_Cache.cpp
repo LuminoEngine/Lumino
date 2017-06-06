@@ -96,7 +96,7 @@ TEST_F(Test_Base_Cache, ObjectCount)
 	obj3->Release();
 
 	// 後処理。キャッシュに残っているオブジェクトを全解放する
-	manager->Finalize();
+	manager->FinalizeCache();
 
 	// Release。もう Finalize() 済みなのでそのまま解放される。
 	obj4->Release();

@@ -23,20 +23,12 @@ SwapChain::SwapChain()
 //------------------------------------------------------------------------------
 SwapChain::~SwapChain()
 {
-	// 前回発行したコマンドリストがまだ処理中である。待ち状態になるまで待機する。
-	m_waiting.Wait();
-
-	m_backColorBuffer->DetachDefaultBackBuffer();
-
-	LN_SAFE_RELEASE(m_commandList);
-	LN_SAFE_RELEASE(m_backColorBuffer);
-	LN_SAFE_RELEASE(m_deviceObj);;
 }
 
 //------------------------------------------------------------------------------
 void SwapChain::InitializeDefault(detail::GraphicsManager* manager)
 {
-	GraphicsResourceObject::Initialize(manager);
+	GraphicsResourceObject::Initialize();
 
 	m_deviceObj = m_manager->GetGraphicsDevice()->GetDefaultSwapChain();
 	m_deviceObj->AddRef();
@@ -46,10 +38,28 @@ void SwapChain::InitializeDefault(detail::GraphicsManager* manager)
 //------------------------------------------------------------------------------
 void SwapChain::InitializeSub(detail::GraphicsManager* manager, PlatformWindow* window)
 {
-	GraphicsResourceObject::Initialize(manager);
+	GraphicsResourceObject::Initialize();
 
 	m_deviceObj = m_manager->GetGraphicsDevice()->CreateSwapChain(window);
 	PostInitialize();
+}
+
+//------------------------------------------------------------------------------
+void SwapChain::Dispose()
+{
+	if (m_deviceObj != nullptr)
+	{
+		// 前回発行したコマンドリストがまだ処理中である。待ち状態になるまで待機する。
+		m_waiting.Wait();
+
+		m_backColorBuffer->DetachDefaultBackBuffer();
+
+		LN_SAFE_RELEASE(m_commandList);
+		LN_SAFE_RELEASE(m_backColorBuffer);
+		LN_SAFE_RELEASE(m_deviceObj);
+	}
+
+	GraphicsResourceObject::Dispose();
 }
 
 //------------------------------------------------------------------------------

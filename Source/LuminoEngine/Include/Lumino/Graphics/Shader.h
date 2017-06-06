@@ -237,6 +237,7 @@ public:
 
 protected:
 	virtual ~Shader();
+	virtual void Dispose() override;
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 LN_INTERNAL_ACCESS:

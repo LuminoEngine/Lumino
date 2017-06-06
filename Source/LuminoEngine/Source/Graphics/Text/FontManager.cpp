@@ -165,7 +165,7 @@ void FontManager::Finalize()
 	//m_defaultRawFont = nullptr;
 	m_defaultFont = nullptr;
 
-	m_rawFontCache->Finalize();
+	m_rawFontCache->FinalizeCache();
 	LN_SAFE_RELEASE(m_defaultRawFont);
 
 	// 登録したTTFファイルのメモリバッファをすべて解放

@@ -59,13 +59,12 @@ IndexBuffer::IndexBuffer()
 //------------------------------------------------------------------------------
 IndexBuffer::~IndexBuffer()
 {
-	m_rhiObject.SafeRelease();
 }
 
 //------------------------------------------------------------------------------
 void IndexBuffer::Initialize(detail::GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage, bool sizeConst)
 {
-	GraphicsResourceObject::Initialize(manager);
+	GraphicsResourceObject::Initialize();
 	m_format = format;
 	m_usage = usage;
 
@@ -77,6 +76,13 @@ void IndexBuffer::Initialize(detail::GraphicsManager* manager, int indexCount, c
 	{
 		m_buffer.resize(Utils::GetIndexBufferSize(m_format, indexCount));
 	}
+}
+
+//------------------------------------------------------------------------------
+void IndexBuffer::Dispose()
+{
+	m_rhiObject.SafeRelease();
+	GraphicsResourceObject::Dispose();
 }
 
 //------------------------------------------------------------------------------

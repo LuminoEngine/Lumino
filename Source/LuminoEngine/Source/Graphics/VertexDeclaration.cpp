@@ -36,18 +36,24 @@ VertexDeclaration::~VertexDeclaration()
 //------------------------------------------------------------------------------
 void VertexDeclaration::Initialize(detail::GraphicsManager* manager)
 {
-	GraphicsResourceObject::Initialize(manager);
+	GraphicsResourceObject::Initialize();
 }
 
 //------------------------------------------------------------------------------
 void VertexDeclaration::Initialize(detail::GraphicsManager* manager, const VertexElement* elements, int count)
 {
-	GraphicsResourceObject::Initialize(manager);
+	GraphicsResourceObject::Initialize();
 
 	for (int i = 0; i < count; ++i)
 	{
 		m_vertexElements.Add(elements[i]);
 	}
+}
+
+//------------------------------------------------------------------------------
+void VertexDeclaration::Dispose()
+{
+	m_deviceObj.SafeRelease();
 }
 
 //------------------------------------------------------------------------------

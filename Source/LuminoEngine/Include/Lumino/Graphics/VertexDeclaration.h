@@ -25,6 +25,8 @@ public:
 
 	void AddVertexElement(int streamIndex, VertexElementType type, VertexElementUsage usage, int usageIndex);
 
+protected:
+	virtual void Dispose() override;
 
 LN_INTERNAL_ACCESS:
 	VertexDeclaration();

@@ -16,6 +16,7 @@ class SwapChain
 {
 public:
 	virtual ~SwapChain();
+	virtual void Dispose() override;
 
 public:
 

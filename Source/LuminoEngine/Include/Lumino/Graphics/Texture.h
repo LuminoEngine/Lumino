@@ -44,6 +44,9 @@ public:
 	*/
 	TextureFormat GetFormat() const;
 
+protected:
+	virtual void Dispose() override;
+
 LN_INTERNAL_ACCESS:
 	Driver::ITexture* GetDeviceObjectConst() const { return m_deviceObj; }
 	Driver::ITexture* ResolveDeviceObject() { ApplyModifies(); return m_deviceObj; }
@@ -229,6 +232,9 @@ public:
 	static DepthBufferPtr Create(const SizeI& size, TextureFormat format = TextureFormat::D24S8);
 
 	const SizeI& GetSize() const { return m_size; }
+
+protected:
+	virtual void Dispose() override;
 
 LN_INTERNAL_ACCESS :
 	DepthBuffer();
