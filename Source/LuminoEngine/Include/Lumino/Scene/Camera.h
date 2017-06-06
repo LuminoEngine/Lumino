@@ -142,47 +142,6 @@ private:
 	Plane				m_reflectionPlane;
 };
 
-#if 0
-/**
-	@brief
-*/
-class CameraViewportLayer
-	: public ViewportLayer
-{
-public:
-	static CameraViewportLayer* GetDefault2D();
-	static CameraViewportLayer* GetDefault3D();
-
-	//static CameraViewportLayerPtr Create(Camera* camera);
-
-	void SetDebugDrawFlags(WorldDebugDrawFlags flags);
-
-	tr::GizmoModel* CreateGizmo();
-
-	// ViewportLayer interface
-	//virtual DrawList* GetRenderer() override;
-	virtual void Render() override;
-	virtual void ExecuteDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
-
-protected:
-	// ViewportLayer interface
-	virtual void UpdateTransform(const Size& viewSize) override;
-	virtual bool OnPlatformEvent(const PlatformEventArgs& e) override;
-
-LN_INTERNAL_ACCESS:
-	CameraViewportLayer();
-	virtual ~CameraViewportLayer();
-	void Initialize(SceneGraphManager* manager, World* targetWorld, Camera* hostingCamera);
-
-private:
-	World*				m_targetWorld;
-	RefPtr<Camera>		m_hostingCamera;
-	RefPtr<detail::InternalRenderer>	m_internalRenderer;
-	RefPtr<tr::GizmoModel>	m_gizmo;
-	WorldDebugDrawFlags		m_debugDrawFlags;
-};
-#endif
-
 /**
 	@brief
 */
@@ -207,8 +166,8 @@ LN_INTERNAL_ACCESS:
 private:
 	World*								m_targetWorld;
 	RefPtr<CameraComponent>				m_hostingCamera;
-	RefPtr<detail::InternalRenderer>	m_internalRenderer;
-	RefPtr<detail::DrawElementListSet>	m_drawElementListSet;
+	RefPtr<detail::SceneRenderer>	m_internalRenderer;
+	RefPtr<RenderView>	m_drawElementListSet;
 	WorldDebugDrawFlags					m_debugDrawFlags;
 };
 

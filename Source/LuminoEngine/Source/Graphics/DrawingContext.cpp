@@ -28,6 +28,7 @@ public:
 		r->ExecuteCommand(m_commandList);
 		m_commandList = nullptr;
 	}
+	virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawShapesRendererCommandList"); }
 };
 
 //==============================================================================

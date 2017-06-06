@@ -30,7 +30,7 @@ void OffscreenWorldView::Initialize()
 	//// CameraInterface のように抽象化するべきだろう。
 	//m_cameraInfo->SetReflectionPlane(Plane(Vector3::UnitY));
 
-	m_drawElementListSet = RefPtr<detail::DrawElementListSet>::MakeRef();
+	m_drawElementListSet = RefPtr<RenderView>::MakeRef();
 	m_drawElementListSet->m_lists.Add(m_renderer->GetDrawElementList());
 }
 
@@ -107,7 +107,7 @@ void OffscreenWorldView::RenderWorld(World* world, CameraComponent* camera)
 
 
 	DrawList* r = world->GetRenderer();
-	r->RenderSubDrawList(m_drawElementListSet);
+	r->RenderSubView(m_drawElementListSet);
 
 
 }
@@ -141,7 +141,7 @@ void MirrorComponent::Initialize()
 	//m_material->SetMaterialTexture(Texture2D::GetBlackTexture());
 	//m_material->SetMaterialTexture(Texture2D::GetWhiteTexture());
 	//m_material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
-	auto shader = ln::Shader::Create("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Mirror.fx");
+	auto shader = ln::Shader::Create("C:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Mirror.fx");
 	m_material->SetShader(shader);
 }
 

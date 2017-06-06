@@ -6,8 +6,7 @@
 #include "UILayoutView.h"
 
 LN_NAMESPACE_BEGIN
-namespace detail { class InternalRenderer; }
-namespace detail { class DrawElementListSet; }
+namespace detail { class SceneRenderer; }
 class PlatformWindow;
 class SwapChain;
 class DrawingContext;
@@ -16,6 +15,8 @@ class World2D;
 class World3D;
 class UIViewport;
 class UILayoutLayer;
+class RenderView;
+class RenderDiag;
 
 /**
 	@brief		
@@ -32,6 +33,8 @@ public:
 	DrawingContext* GetDrawingContext() const;
 
 	//void SetSize(const SizeI& size);
+
+	RenderDiag* GetRenderDiagnostic() const;
 
 protected:
 	UIFrameWindow();
@@ -60,8 +63,9 @@ private:
 	SwapChain*				m_swapChain;
 
 	RefPtr<DrawingContext>				m_drawingContext;
-	RefPtr<detail::InternalRenderer>	m_internalRenderer;
-	RefPtr<detail::DrawElementListSet>	m_drawElementListSet;		// いまは作業用変数を使うためのダミー
+	RefPtr<detail::SceneRenderer>	m_internalRenderer;
+	RefPtr<RenderView>	m_drawElementListSet;		// いまは作業用変数を使うためのダミー
+	RefPtr<RenderDiag>	m_renderDiag;
 	bool								m_delayedRenderingSkip;
 };
 

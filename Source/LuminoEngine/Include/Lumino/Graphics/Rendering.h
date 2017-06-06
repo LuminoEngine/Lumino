@@ -15,6 +15,8 @@ class Material;
 class MeshResource;
 class StaticMeshModel;
 class DrawList;
+class RenderView;
+class RenderDiag;
 
 class CameraComponent;
 
@@ -54,8 +56,7 @@ class DrawElementBatch;
 class RenderingPass2;
 class CombinedMaterial;
 class DrawElementList;
-class InternalRenderer;
-class DrawElementListSet;
+class SceneRenderer;
 
 struct DefaultStatus
 {
@@ -154,9 +155,10 @@ public:
 	{
 		DrawElementList* oenerList;
 		InternalContext* context;
-		detail::InternalRenderer* renderer;
+		detail::SceneRenderer* renderer;
 		RenderTargetTexture* defaultRenderTarget;
 		DepthBuffer* defaultDepthBuffer;
+		RenderDiag* diag;
 	};
 
 	int					batchIndex;
@@ -182,6 +184,8 @@ public:
 	void MakeBoundingSphere(const Vector3& minPos, const Vector3& maxPos);
 
 	virtual DynamicLightInfo** GetAffectedDynamicLightInfos();
+
+	virtual void ReportDiag(RenderDiag* diag) = 0;
 
 protected:
 	//void OnJoindDrawList(const Matrix& transform);
@@ -371,20 +375,21 @@ private:
 };
 
 
-class InternalRenderer
+class SceneRenderer
 	: public RefObject
 {
 public:
-	InternalRenderer();
-	virtual ~InternalRenderer();
+	SceneRenderer();
+	virtual ~SceneRenderer();
 	void Initialize(GraphicsManager* manager);
 
 	void Render(
-		DrawElementListSet* drawElementListSet,
+		RenderView* drawElementListSet,
 		DrawElementList* elementList,
 		const detail::CameraInfo& cameraInfo,
 		RenderTargetTexture* defaultRenderTarget,
-		DepthBuffer* defaultDepthBuffer);
+		DepthBuffer* defaultDepthBuffer,
+		RenderDiag* diag);
 
 protected:
 	virtual void OnPreRender(DrawElementList* elementList);
@@ -449,7 +454,7 @@ private:
 };
 
 class NonShadingRenderer
-	: public InternalRenderer
+	: public SceneRenderer
 {
 public:
 	NonShadingRenderer();
@@ -475,7 +480,7 @@ private:
 
 
 class ForwardShadingRenderer
-	: public InternalRenderer
+	: public SceneRenderer
 {
 public:
 	ForwardShadingRenderer();
@@ -515,21 +520,163 @@ public:
 	void Initialize(GraphicsManager* manager);
 };
 
-// 描画リストと視点情報のまとまり。
-// ある1つの視点から、複数の描画リストを結合して描画するために使用する。
-class DrawElementListSet
-	: public RefObject
-{
-public:
-	List<DrawElementList*>	m_lists;
-	CameraInfo				m_cameraInfo;
-
-	// 作業用
-	List<DrawElement*>				m_renderingElementList;
-};
 
 
 } // namespace detail
+
+
+class RenderDiagItem
+{
+public:
+	RenderDiagItem();
+	virtual ~RenderDiagItem() = default;
+	virtual String ToString() const;
+
+private:
+	enum class SubType
+	{
+		ScopeBegin,
+		ScopeEnd,
+		Command,
+	};
+
+	const TCHAR* m_name;
+	SubType	m_subType;
+	friend class RenderDiag;
+};
+
+class RenderDiag
+	: public Object
+{
+public:
+	void Clear();
+
+	void BeginRenderView();
+	void EndRenderView();
+	void BeginDrawList();
+	void EndDrawList();
+	void ChangeRenderStage();
+	void CallCommonElement(const TCHAR* typeName);
+
+	template<typename TDiagItem>
+	TDiagItem* CallElement(const TCHAR* typeName)
+	{
+		return Instantiate<TDiagItem>(typeName);
+	}
+
+	void Print();
+
+private:
+
+	class IDataCatch
+	{
+	public:
+		virtual ~IDataCatch() = default;
+		virtual void Clear() = 0;
+	};
+
+	template<typename T>
+	class DataCatch : public IDataCatch
+	{
+	public:
+		virtual void Clear() override
+		{
+			for (auto& p : m_using)
+				m_storage.push_back(p);
+			m_using.clear();
+		}
+		T* Instantiate()
+		{
+			if (!m_storage.empty())
+			{
+				auto p = m_storage.back();
+				m_storage.pop_back();
+				m_using.push_back(p);
+				return p.get();
+			}
+			else
+			{
+				auto p = std::make_shared<T>();
+				m_using.push_back(p);
+				return p.get();
+			}
+		}
+
+	private:
+		std::vector<std::shared_ptr<T>>	m_storage;
+		std::vector<std::shared_ptr<T>>	m_using;
+	};
+
+	template<typename T>
+	T* Instantiate(const char* typeName)
+	{
+		assert(typeName != nullptr);
+
+		DataCatch<T>* cache = nullptr;
+		auto itr = m_cacheMap.find(typeName);
+		if (itr != m_cacheMap.end())
+		{
+			cache = static_cast<DataCatch<T>*>(itr->second.get());
+		}
+		else
+		{
+			auto cachePtr = std::make_shared<DataCatch<T>>();
+			m_cacheMap[typeName] = cachePtr;
+			cache = cachePtr.get();
+		}
+
+		T* obj = cache->Instantiate();
+		obj->m_name = typeName;
+		m_items.push_back(obj);
+		return obj;
+	}
+
+	std::unordered_map<std::string, std::shared_ptr<IDataCatch>>	m_cacheMap;
+	std::vector<RenderDiagItem*>									m_items;
+};
+
+namespace detail {
+
+class RenderDiagItem_BeginRenderView : public RenderDiagItem
+{
+public:
+};
+class RenderDiagItem_EndRenderView : public RenderDiagItem
+{
+public:
+};
+class RenderDiagItem_BeginDrawList : public RenderDiagItem
+{
+public:
+};
+class RenderDiagItem_EndDrawList : public RenderDiagItem
+{
+public:
+};
+class RenderDiagItem_Common : public RenderDiagItem
+{
+public:
+};
+
+} // namespace detail
+
+
+/**
+	@brief	ある視点を起点としたレンダリングのエントリーポイントとなるビューを表します。
+*/
+class RenderView
+	: public RefObject
+{
+public:
+	// 描画リストと視点情報のまとまり。
+	// ある1つの視点から、複数の描画リストを結合して描画するために使用する。
+	List<detail::DrawElementList*>	m_lists;
+	detail::CameraInfo				m_cameraInfo;
+
+	// 作業用
+	List<detail::DrawElement*>				m_renderingElementList;
+};
+
 
 /**
 	@brief	
@@ -684,7 +831,7 @@ LN_INTERNAL_ACCESS:
 	//void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material);
 	void BlitInternal(Texture* source, RenderTargetTexture* dest, const Matrix& transform, Material* material);
 	void DrawFrameRectangle(const Rect& rect);
-	void RenderSubDrawList(detail::DrawElementListSet* listSet,/*detail::DrawElementList* elementList, const detail::CameraInfo& cameraInfo, */detail::InternalRenderer* renderer = nullptr, RenderTargetTexture* defaultRenderTarget = nullptr, DepthBuffer* defaultDepthBuffer = nullptr);
+	void RenderSubView(RenderView* listSet, detail::SceneRenderer* renderer = nullptr, RenderTargetTexture* defaultRenderTarget = nullptr, DepthBuffer* defaultDepthBuffer = nullptr);
 
 	// TODO: 本質的に DrawList に持たせるべきではない。一応今は一時変数的な扱いでしかないので被害は少ないが・・・
 	void SetCurrentCamera(CameraComponent* camera) { m_camera = camera; }

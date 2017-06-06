@@ -49,8 +49,8 @@ void UIControlsGallery()
 	auto mesh = ln::StaticMeshComponent::CreateSphere(1);
 	//mesh->GetStaticMeshModel()->
 	auto material = mesh->GetStaticMeshModel()->GetMaterial(0);
-	material->SetMaterialTexture(ln::Assets::LoadTexture(_T("D:/GameProjects/Chronicles/sky/incskies_024_png8/incskies_024_8k_.png")));
-	//material->SetMaterialTexture(Texture2D::GetBlackTexture());
+	//material->SetMaterialTexture(ln::Assets::LoadTexture(_T("D:/GameProjects/Chronicles/sky/incskies_024_png8/incskies_024_8k_.png")));
+	material->SetMaterialTexture(Texture2D::GetBlackTexture());
 	auto m_map = ln::NewObject<ln::WorldObject3D>();
 	m_map->AddComponent(mesh);
 	mesh->SetBlendMode(BlendMode::Normal);
@@ -274,6 +274,10 @@ void UIControlsGallery()
 			//shader->FindVariable(_T("time"))->SetFloat(t);
 
 		Engine::PresentFrame();
+
+
+		//printf("----------\n");
+		//Engine::GetMainWindow()->GetRenderDiagnostic()->Print();
 	}
 
 	//while (Engine::Update())

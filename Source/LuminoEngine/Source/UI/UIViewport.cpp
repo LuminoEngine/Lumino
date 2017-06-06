@@ -329,8 +329,9 @@ void UILayoutLayer::Initialize()
 	internalRenderer->Initialize(detail::EngineDomain::GetGraphicsManager());
 	m_internalRenderer = internalRenderer;
 
-	m_drawElementListSet = RefPtr<detail::DrawElementListSet>::MakeRef();
+	m_drawElementListSet = RefPtr<RenderView>::MakeRef();
 	m_drawElementListSet->m_lists.Add(m_drawingContext->GetDrawElementList());
+
 }
 
 //------------------------------------------------------------------------------
@@ -368,9 +369,7 @@ void UILayoutLayer::ExecuteDrawListRendering(DrawList* parentDrawList, RenderTar
 	m_drawElementListSet->m_cameraInfo.viewProjMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;
 	m_drawElementListSet->m_cameraInfo.viewFrustum = ViewFrustum(cameraInfo.projMatrix);
 	m_drawElementListSet->m_cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
-	parentDrawList->RenderSubDrawList(
-		//m_drawingContext->GetDrawElementList(),
-		//cameraInfo,
+	parentDrawList->RenderSubView(
 		m_drawElementListSet,
 		m_internalRenderer,
 		renderTarget,

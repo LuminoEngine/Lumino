@@ -447,7 +447,7 @@ void CameraViewportLayer2::Initialize(World* targetWorld, CameraComponent* hosti
 		m_internalRenderer = internalRenderer;
 	}
 
-	m_drawElementListSet = RefPtr<detail::DrawElementListSet>::MakeRef();
+	m_drawElementListSet = RefPtr<RenderView>::MakeRef();
 	m_drawElementListSet->m_lists.Add(m_targetWorld->GetRenderer()->GetDrawElementList());
 	m_drawElementListSet->m_lists.Add(m_targetWorld->GetDebugRenderer()->GetDrawElementList());
 }
@@ -500,19 +500,11 @@ void CameraViewportLayer2::ExecuteDrawListRendering(DrawList* parentDrawList, Re
 	m_drawElementListSet->m_cameraInfo.viewProjMatrix = m_hostingCamera->GetViewProjectionMatrix();
 	m_drawElementListSet->m_cameraInfo.viewFrustum = m_hostingCamera->GetViewFrustum();
 	m_drawElementListSet->m_cameraInfo.zSortDistanceBase = m_hostingCamera->GetZSortDistanceBase();
-	parentDrawList->RenderSubDrawList(
-		//m_targetWorld->GetRenderer()->GetDrawElementList(),
-		//cameraInfo,
+	parentDrawList->RenderSubView(
 		m_drawElementListSet,
 		m_internalRenderer,
 		renderTarget,
 		depthBuffer);
-	//parentDrawList->RenderSubDrawList(
-	//	m_targetWorld->GetDebugRenderer()->GetDrawElementList(),
-	//	cameraInfo,
-	//	m_internalRenderer,
-	//	renderTarget,
-	//	depthBuffer);
 	m_targetWorld->GetRenderer()->EndFrame();
 }
 

@@ -56,6 +56,7 @@ void UIFrameWindow::Initialize(detail::UIManager* manager, PlatformWindow* platf
 
 	m_platformWindow->AttachEventListener(this, 0);
 
+
 	Initialize_UIRenderer();
 }
 
@@ -63,6 +64,12 @@ void UIFrameWindow::Initialize(detail::UIManager* manager, PlatformWindow* platf
 DrawingContext* UIFrameWindow::GetDrawingContext() const
 {
 	return m_drawingContext;
+}
+
+//------------------------------------------------------------------------------
+RenderDiag* UIFrameWindow::GetRenderDiagnostic() const
+{
+	return m_renderDiag;
 }
 
 //------------------------------------------------------------------------------
@@ -152,7 +159,9 @@ void UIFrameWindow::Initialize_UIRenderer()
 	internalRenderer->Initialize(manager->GetGraphicsManager());
 	m_internalRenderer = internalRenderer;
 
-	m_drawElementListSet = RefPtr<detail::DrawElementListSet>::MakeRef();
+	m_drawElementListSet = RefPtr<RenderView>::MakeRef();
+
+	m_renderDiag = NewObject<RenderDiag>();
 }
 
 //------------------------------------------------------------------------------
@@ -184,6 +193,8 @@ void UIFrameWindow::ExecuteDrawList_UIRenderer()
 		//		この時もらうサイズは、次の描画スレッドの描画で使用されるバックバッファのサイズである。
 		viewPixelSize = GetPlatformWindow()->GetSize().ToFloatSize();
 	}
+
+	m_renderDiag->Clear();
 	
 	//detail::CameraInfo cameraInfo;
 	m_drawElementListSet->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
@@ -199,7 +210,8 @@ void UIFrameWindow::ExecuteDrawList_UIRenderer()
 		m_drawingContext->GetDrawElementList(),
 		m_drawElementListSet->m_cameraInfo,
 		renderTarget,
-		depthBuffer);
+		depthBuffer,
+		m_renderDiag);
 	m_drawingContext->EndFrame();
 }
 

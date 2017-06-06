@@ -754,44 +754,48 @@ void DrawElementList::AddDynamicLightInfo(DynamicLightInfo* lightInfo)
 }
 
 //==============================================================================
-// InternalRenderer
+// SceneRenderer
 //==============================================================================
 
 //------------------------------------------------------------------------------
-InternalRenderer::InternalRenderer()
+SceneRenderer::SceneRenderer()
 {
 }
 
 //------------------------------------------------------------------------------
-InternalRenderer::~InternalRenderer()
+SceneRenderer::~SceneRenderer()
 {
 }
 
 //------------------------------------------------------------------------------
-void InternalRenderer::Initialize(GraphicsManager* manager)
+void SceneRenderer::Initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 }
 
 //------------------------------------------------------------------------------
-void InternalRenderer::OnPreRender(DrawElementList* elementList)
+void SceneRenderer::OnPreRender(DrawElementList* elementList)
 {
 }
 
 //------------------------------------------------------------------------------
-void InternalRenderer::AddPass(RenderingPass2* pass)
+void SceneRenderer::AddPass(RenderingPass2* pass)
 {
 	m_renderingPassList.Add(pass);
 }
 
 //------------------------------------------------------------------------------
-void InternalRenderer::Render(
-	DrawElementListSet* drawElementListSet,
+void SceneRenderer::Render(
+	RenderView* drawElementListSet,
 	DrawElementList* elementList,
 	const detail::CameraInfo& cameraInfo,
 	RenderTargetTexture* defaultRenderTarget,
-	DepthBuffer* defaultDepthBuffer)
+	DepthBuffer* defaultDepthBuffer,
+	RenderDiag* diag)
 {
+	if (diag != nullptr) diag->BeginRenderView();
+	if (diag != nullptr) diag->BeginDrawList();
+
 	elementList->SetDefaultRenderTarget(defaultRenderTarget);
 	elementList->SetDefaultDepthBuffer(defaultDepthBuffer);
 
@@ -876,6 +880,7 @@ void InternalRenderer::Render(
 	drawArgs.renderer = this;
 	drawArgs.defaultRenderTarget = defaultRenderTarget;
 	drawArgs.defaultDepthBuffer = defaultDepthBuffer;
+	drawArgs.diag = diag;
 
 	for (RenderingPass2* pass : m_renderingPassList)
 	{
@@ -894,6 +899,7 @@ void InternalRenderer::Render(
 				currentBatchIndex = element->batchIndex;
 				currentState = elementList->GetBatch(currentBatchIndex);
 				context->ApplyStatus(currentState, { defaultRenderTarget, defaultDepthBuffer });
+				if (diag != nullptr) diag->ChangeRenderStage();
 			}
 
 			// 固定の内部シェーダを使わない場合はいろいろ設定する
@@ -929,12 +935,16 @@ void InternalRenderer::Render(
 			// 描画実行
 			if (visible)
 			{
+				if (diag != nullptr) element->ReportDiag(diag);
 				element->DrawSubset(drawArgs);
 			}
 		}
 
 		context->Flush();
 	}
+
+	if (diag != nullptr) diag->EndDrawList();
+	if (diag != nullptr) diag->EndRenderView();
 }
 
 
@@ -957,7 +967,7 @@ NonShadingRenderer::~NonShadingRenderer()
 //------------------------------------------------------------------------------
 void NonShadingRenderer::Initialize(GraphicsManager* manager)
 {
-	InternalRenderer::Initialize(manager);
+	SceneRenderer::Initialize(manager);
 
 	auto pass = RefPtr<detail::NonShadingRenderingPass>::MakeRef();
 	pass->Initialize(manager);
@@ -1009,7 +1019,7 @@ ForwardShadingRenderer::~ForwardShadingRenderer()
 //------------------------------------------------------------------------------
 void ForwardShadingRenderer::Initialize(GraphicsManager* manager)
 {
-	InternalRenderer::Initialize(manager);
+	SceneRenderer::Initialize(manager);
 
 	auto pass = RefPtr<detail::ForwardShadingRenderingPass>::MakeRef();
 	pass->Initialize(manager);
@@ -1215,6 +1225,8 @@ void RenderingPass2::SelectElementRenderingPolicy(DrawElement* element, Combined
 
 
 
+
+
 //==============================================================================
 class ClearElement : public DrawElement
 {
@@ -1228,9 +1240,94 @@ public:
 	{
 		e.context->BeginBaseRenderer()->Clear(flags, color, z, stencil);
 	}
+
+	virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("Clear"); }
 };
 
 } // namespace detail 
+
+
+
+//==============================================================================
+// RenderDiag
+//==============================================================================
+
+//------------------------------------------------------------------------------
+RenderDiagItem::RenderDiagItem()
+	: m_name(nullptr)
+	, m_subType(SubType::Command)
+{
+}
+
+//------------------------------------------------------------------------------
+String RenderDiagItem::ToString() const
+{
+	return String(m_name);
+}
+
+//==============================================================================
+// RenderDiag
+//==============================================================================
+
+//------------------------------------------------------------------------------
+void RenderDiag::Clear()
+{
+	for (auto& pair : m_cacheMap)
+	{
+		pair.second->Clear();
+	}
+	m_items.clear();
+}
+
+//------------------------------------------------------------------------------
+void RenderDiag::BeginRenderView()
+{
+	Instantiate<detail::RenderDiagItem_BeginRenderView>("BeginRenderView")->m_subType = RenderDiagItem::SubType::ScopeBegin;
+}
+
+//------------------------------------------------------------------------------
+void RenderDiag::EndRenderView()
+{
+	Instantiate<detail::RenderDiagItem_EndRenderView>("EndRenderView")->m_subType = RenderDiagItem::SubType::ScopeEnd;
+}
+
+//------------------------------------------------------------------------------
+void RenderDiag::BeginDrawList()
+{
+	Instantiate<detail::RenderDiagItem_BeginDrawList>("BeginDrawList")->m_subType = RenderDiagItem::SubType::ScopeBegin;
+}
+
+//------------------------------------------------------------------------------
+void RenderDiag::EndDrawList()
+{
+	Instantiate<detail::RenderDiagItem_EndDrawList>("EndDrawList")->m_subType = RenderDiagItem::SubType::ScopeEnd;
+}
+
+//------------------------------------------------------------------------------
+void RenderDiag::ChangeRenderStage()
+{
+	Instantiate<detail::RenderDiagItem_EndDrawList>("ChangeRenderStage");
+}
+
+//------------------------------------------------------------------------------
+void RenderDiag::CallCommonElement(const TCHAR* typeName)
+{
+	Instantiate<detail::RenderDiagItem_Common>(typeName);
+}
+
+//------------------------------------------------------------------------------
+void RenderDiag::Print()
+{
+	int level = 0;
+	for (RenderDiagItem* item : m_items)
+	{
+		if (item->m_subType == RenderDiagItem::SubType::ScopeEnd) level--;
+		for (int i = 0; i < level; i++) printf("  ");
+		if (item->m_subType == RenderDiagItem::SubType::ScopeBegin) level++;
+
+		Console::WriteLine(item->ToString());
+	}
+}
 
 //==============================================================================
 // DrawList
@@ -1427,6 +1524,7 @@ void DrawList::DrawLinePrimitive(
 			e.context->BeginPrimitiveRenderer()->DrawLine(
 				position1, color1, position2, color2);
 		}
+		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawLine"); }
 	};
 	auto* ptr = ResolveDrawElement<DrawElement_DrawLine>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, nullptr);
 	ptr->position1 = position1; ptr->color1 = color1;
@@ -1457,6 +1555,7 @@ void DrawList::DrawSquarePrimitive(
 				position[2], uv[2], color[2],
 				position[3], uv[3], color[3]);
 		}
+		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawSquarePrimitive"); }
 	};
 	auto* e = ResolveDrawElement<DrawSquarePrimitiveElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, nullptr);
 	e->position[0] = position1; e->uv[0] = uv1; e->color[0] = color1;
@@ -1479,6 +1578,7 @@ void DrawList::DrawSquare(float sizeX, float sizeZ, int slicesX, int slicesZ, co
 			auto* r = e.context->BeginPrimitiveRenderer();
 			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
 		}
+		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawCylinderElement"); }
 	};
 	auto* e = ResolveDrawElement<DrawCylinderElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, material);
 	e->factory.Initialize(Vector2(sizeX, sizeZ), slicesX, slicesZ, color, localTransform);
@@ -1499,6 +1599,7 @@ void DrawList::DrawArc(float startAngle, float endAngle, float innerRadius, floa
 			auto* r = e.context->BeginPrimitiveRenderer();
 			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
 		}
+		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawArcElement"); }
 	};
 	auto* e = ResolveDrawElement<DrawArcElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, material);
 	e->factory.Initialize(startAngle, endAngle, innerRadius, outerRadius, slices, color, localTransform);
@@ -1521,6 +1622,7 @@ void DrawList::DrawBox(const Box& box, const Color& color, const Matrix& localTr
 			auto* r = e.context->BeginPrimitiveRenderer();
 			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
 		}
+		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawBoxElement"); }
 	};
 	auto* e = ResolveDrawElement<DrawBoxElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, material);
 	e->factory.Initialize(Vector3(box.width, box.height, box.depth), color, localTransform);
@@ -1543,6 +1645,7 @@ void DrawList::DrawSphere(float radius, int slices, int stacks, const Color& col
 			auto* r = e.context->BeginPrimitiveRenderer();
 			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
 		}
+		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawSphereElement"); }
 	};
 	auto* e = ResolveDrawElement<DrawSphereElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, nullptr);
 	e->factory.Initialize(radius, slices, stacks, color, localTransform);
@@ -1563,6 +1666,7 @@ void DrawList::DrawCylinder(float radius, float	height, int slices, int stacks, 
 			auto* r = e.context->BeginPrimitiveRenderer();
 			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
 		}
+		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawCylinder"); }
 	};
 	auto* e = ResolveDrawElement<DrawCylinderElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, nullptr);
 	e->factory.Initialize(radius, height, slices, stacks, color, localTransform);
@@ -1573,7 +1677,7 @@ void DrawList::DrawCylinder(float radius, float	height, int slices, int stacks, 
 //------------------------------------------------------------------------------
 void DrawList::DrawCone(float radius, float height, int slices, const Color& color, const Matrix& localTransform)
 {
-	class DrawCylinderElement : public detail::LightingDrawElement	// TODO: LightingDrawElement は忘れやすい。デフォルトありでいいと思う
+	class DrawConeElement : public detail::LightingDrawElement	// TODO: LightingDrawElement は忘れやすい。デフォルトありでいいと思う
 	{
 	public:
 		detail::RegularConeMeshFactory factory;
@@ -1583,8 +1687,9 @@ void DrawList::DrawCone(float radius, float height, int slices, const Color& col
 			auto* r = e.context->BeginPrimitiveRenderer();
 			r->DrawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
 		}
+		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawCone"); }
 	};
-	auto* e = ResolveDrawElement<DrawCylinderElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, nullptr);
+	auto* e = ResolveDrawElement<DrawConeElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, nullptr);
 	e->factory.Initialize(radius, height, slices, color, localTransform);
 	e->boundingSphere.center = Vector3::Zero;
 	e->boundingSphere.radius = Vector3(radius, height, 0).GetLength();
@@ -1639,6 +1744,7 @@ void DrawList::DrawGlyphRun(const PointF& position, GlyphRun* glyphRun)
 		{
 			e.context->BeginTextRenderer()->DrawGlyphRun(GetTransform(e.oenerList), position, glyphRun);
 		}
+		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawGlyphRun"); }
 	};
 
 	auto* e = ResolveDrawElement<DrawElement_DrawGlyphRun>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_textRenderer, nullptr);
@@ -1667,6 +1773,7 @@ void DrawList::DrawText_(const StringRef& text, const Rect& rect, StringFormatFl
 		{
 			e.context->BeginTextRenderer()->DrawString(GetTransform(e.oenerList), text.c_str(), text.GetLength(), rect, flags);
 		}
+		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawText"); }
 	};
 
 	auto* e = ResolveDrawElement<DrawElement_DrawText>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_textRenderer, nullptr);
@@ -1689,6 +1796,7 @@ void DrawList::DrawChar(TCHAR ch, const PointF& position)
 		{
 			e.context->BeginVectorTextRenderer()->DrawChar(GetTransform(e.oenerList), ch, Rect(position, 0, 0), TextLayoutOptions::None);
 		}
+		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawChar"); }
 	};
 
 	// TODO: UTF32 変換
@@ -1718,6 +1826,7 @@ void DrawList::DrawText2(const StringRef& text, const Rect& rect)
 				rect,
 				TextLayoutOptions::None);
 		}
+		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawString"); }
 	};
 
 	const ByteBuffer& utf32Data = m_manager->GetFontManager()->GetTCharToUTF32Converter()->Convert(text.GetBegin(), text.GetLength() * sizeof(TCHAR));
@@ -1761,6 +1870,7 @@ void DrawList::DrawSprite(
 			r->SetTransform(GetTransform(e.oenerList));
 			r->DrawRequest(position, size, anchorRatio, texture, srcRect, color, baseDirection, billboardType);
 		}
+		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawSprite"); }
 	};
 
 	auto* ptr = ResolveDrawElement<DrawElement_DrawSprite>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_spriteRenderer, material);
@@ -1801,6 +1911,7 @@ public:
 		r->ExecuteCommand(m_commandList);
 		m_commandList = nullptr;
 	}
+	virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawNanoVGCommands"); }
 };
 
 void DrawList::DrawRectangle(const Rect& rect)
@@ -1901,6 +2012,7 @@ void DrawList::DrawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Mat
 		{
 			e.context->BeginMeshRenderer()->DrawMesh(mesh, startIndex, primitiveCount, primitiveType);
 		}
+		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawMeshResourceInternal"); }
 	};
 
 	MeshAttribute attr;
@@ -1977,6 +2089,7 @@ void DrawList::BlitInternal(Texture* source, RenderTargetTexture* dest, const Ma
 		{
 			e.context->BeginBlitRenderer()->Blit();
 		}
+		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("BlitInternal"); }
 	};
 
 	if (dest != nullptr)
@@ -2009,6 +2122,7 @@ void DrawList::DrawFrameRectangle(const Rect& rect)
 			auto* r = e.context->BeginFrameRectRenderer();
 			r->Draw(GetTransform(e.oenerList), rect);
 		}
+		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawFrameRectangle"); }
 	};
 	auto* ptr = ResolveDrawElement<DrawElement_DrawFrameRectangle>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_frameRectRenderer, nullptr);
 	ptr->rect = rect;
@@ -2016,22 +2130,20 @@ void DrawList::DrawFrameRectangle(const Rect& rect)
 }
 
 //------------------------------------------------------------------------------
-void DrawList::RenderSubDrawList(detail::DrawElementListSet* listSet,/*detail::DrawElementList* elementList, const detail::CameraInfo& cameraInfo, */detail::InternalRenderer* renderer, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
+void DrawList::RenderSubView(RenderView* listSet, detail::SceneRenderer* renderer, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
 {
-	class DrawElement_RenderSubDrawList : public detail::DrawElement
+	class DrawElement_RenderSubView : public detail::DrawElement
 	{
 	public:
-		//detail::DrawElementList* elementList;
-		//detail::CameraInfo cameraInfo;
-		detail::DrawElementListSet* listSet;
-		detail::InternalRenderer* renderer;
+		RenderView* listSet;
+		detail::SceneRenderer* renderer;
 		RefPtr<RenderTargetTexture>	defaultRenderTarget;
 		RefPtr<DepthBuffer> defaultDepthBuffer;
 
 		virtual void DrawSubset(const DrawArgs& e) override
 		{
 			// それぞれ、省略されていれば親のを使う
-			detail::InternalRenderer* primRenderer = (renderer != nullptr) ? renderer : e.renderer;
+			detail::SceneRenderer* primRenderer = (renderer != nullptr) ? renderer : e.renderer;
 			RenderTargetTexture* primRenderTarget = (defaultRenderTarget != nullptr) ? defaultRenderTarget : e.defaultRenderTarget;
 			DepthBuffer* primDepthBuffer = (defaultDepthBuffer != nullptr) ? defaultDepthBuffer : e.defaultDepthBuffer;
 
@@ -2042,16 +2154,17 @@ void DrawList::RenderSubDrawList(detail::DrawElementListSet* listSet,/*detail::D
 			// また、バッチはindexで管理しているので、Element は親 list を参照する必要がある。
 			for (auto& list : listSet->m_lists)
 			{
-				primRenderer->Render(listSet, list, listSet->m_cameraInfo, primRenderTarget, primDepthBuffer);
+				primRenderer->Render(listSet, list, listSet->m_cameraInfo, primRenderTarget, primDepthBuffer, e.diag);
 			}
 
 			// ステート復帰
 			e.context->ApplyStatus(status, { e.defaultRenderTarget, e.defaultDepthBuffer });
 		}
+		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("RenderSubView"); }
 	};
 
 	// TODO: m_frameRectRenderer は違う気がする・・・
-	auto* e = ResolveDrawElement<DrawElement_RenderSubDrawList>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_frameRectRenderer, nullptr);
+	auto* e = ResolveDrawElement<DrawElement_RenderSubView>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_frameRectRenderer, nullptr);
 	//e->elementList = listSet->m_lists[0];
 	//e->cameraInfo = listSet->m_cameraInfo;
 	e->listSet = listSet;

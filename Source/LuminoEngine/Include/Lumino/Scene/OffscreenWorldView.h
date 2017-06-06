@@ -26,7 +26,7 @@ private:
 	//RefPtr<CameraComponent>				m_cameraInfo;
 	RefPtr<RenderTargetTexture>			m_renderTarget;
 	RefPtr<DrawList>					m_renderer;
-	RefPtr<detail::DrawElementListSet>	m_drawElementListSet;
+	RefPtr<RenderView>	m_drawElementListSet;
 };
 
 class MirrorComponent
