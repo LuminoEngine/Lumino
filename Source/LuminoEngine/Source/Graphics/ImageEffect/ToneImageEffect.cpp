@@ -3,7 +3,7 @@
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Shader.h>
 #include <Lumino/Graphics/Material.h>
-#include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Rendering/Rendering.h>
 #include <Lumino/Graphics/ImageEffect/ToneImageEffect.h>
 #include "../../Animation/AnimationManager.h"
 #include "../GraphicsManager.h"

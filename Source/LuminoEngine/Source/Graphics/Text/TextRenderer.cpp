@@ -8,8 +8,8 @@
 #include <algorithm>
 #include <Lumino/Graphics/GraphicsException.h>
 #include <Lumino/Graphics/Brush.h>
-#include <Lumino/Graphics/Rendering.h>
 #include <Lumino/Graphics/VertexDeclaration.h>
+#include <Lumino/Rendering/Rendering.h>
 #include "../Device/GraphicsDriverInterface.h"
 #include "../RendererImpl.h"
 #include "../RenderingCommand.h"

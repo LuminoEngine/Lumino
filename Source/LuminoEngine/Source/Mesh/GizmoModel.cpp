@@ -1,7 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include <Lumino/Graphics/Material.h>
-#include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Rendering/Rendering.h>
 #include <Lumino/Mesh/GizmoModel.h>
 #include "../Graphics/GraphicsManager.h"
 

@@ -19,8 +19,8 @@
 #include "RendererImpl.h"
 #include "Text/FontGlyphTextureCache.h"
 #include "RenderingThread.h"
-#include "Rendering/ShapesRenderer.h"
-#include "NanoVGRenderer.h"
+#include "../Rendering/ShapesRenderer.h"
+#include "../Rendering/NanoVGRenderer.h"
 #include "Text/FontManager.h"
 #include "Text/TextRenderer.h"
 #include "Text/BitmapTextRenderer.h"
@@ -29,7 +29,7 @@
 #include <Lumino/Graphics/Shader.h>
 #include <Lumino/Graphics/VertexDeclaration.h>
 #include <Lumino/Graphics/Shader.h>
-#include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Rendering/Rendering.h>
 
 LN_NAMESPACE_BEGIN
 

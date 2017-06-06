@@ -8,7 +8,7 @@
 #include "GraphicsManager.h"
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Material.h>
-#include <Lumino/Graphics/Rendering.h>	// TODO: for LightInfo
+#include <Lumino/Rendering/Rendering.h>	// TODO: for LightInfo
 #include "RendererImpl.h"
 #include "RenderingCommand.h"
 #include "ShaderAnalyzer.h"

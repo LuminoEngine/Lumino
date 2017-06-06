@@ -4,7 +4,7 @@
 #include "RendererImpl.h"
 #include "../UI/UIManager.h"
 #include <Lumino/Graphics/Viewport.h>
-#include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Rendering/Rendering.h>
 #include <Lumino/Scene/Camera.h>			// for make proj matrix
 #include <Lumino/UI/UIFrameWindow.h>
 

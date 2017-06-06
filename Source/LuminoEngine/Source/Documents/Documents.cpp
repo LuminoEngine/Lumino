@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.h"
 #include <Lumino/Graphics/Brush.h>
-#include <Lumino/Graphics/Rendering.h>
 #include <Lumino/Graphics/Text/GlyphRun.h>
+#include <Lumino/Rendering/Rendering.h>
 #include "DocumentsManager.h"
 #include <Lumino/Documents/Documents.h>
 

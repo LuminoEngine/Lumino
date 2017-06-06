@@ -2,7 +2,7 @@
 #pragma once
 #include "../Internal.h"
 #include <Lumino/Mesh/SkinnedMeshModel.h>
-#include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Rendering/Rendering.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/MeshModelObject.h>
 #include "../Mesh/PmxSkinnedMesh.h"
