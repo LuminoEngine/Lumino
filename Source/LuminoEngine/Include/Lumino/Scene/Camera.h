@@ -2,7 +2,7 @@
 #pragma once
 #include "../World.h"
 #include "../Graphics/Viewport.h"
-#include "../Graphics/Rendering.h"
+#include "../Rendering/Rendering.h"
 #include "../UI/UIViewport.h"
 #include "SceneNode.h"
 #include "WorldObject.h"

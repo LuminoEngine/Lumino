@@ -3,8 +3,8 @@
 #include <math.h>
 #include <Lumino/Graphics/GraphicsException.h>
 #include "SpriteRenderer.h"
-#include "RenderingCommand.h"
-#include "GraphicsManager.h"
+#include "../Graphics/RenderingCommand.h"
+#include "../Graphics/GraphicsManager.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN

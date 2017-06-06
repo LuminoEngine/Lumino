@@ -1,12 +1,12 @@
 ﻿
 #include "../Internal.h"
 #include <Lumino/Graphics/GraphicsContext.h>	// TODO: いらない
-#include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Rendering/Rendering.h>
 #include "SceneGraphManager.h"
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Sprite.h>
 #include <Lumino/World.h>
-#include "../Graphics/PrimitiveRenderer.h"	// todo
+#include "../Rendering/PrimitiveRenderer.h"	// todo
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN

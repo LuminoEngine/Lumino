@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include <Lumino/Math/Random.h>
-#include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Rendering/Rendering.h>
 #include "VisualNode.h"
 
 LN_NAMESPACE_BEGIN

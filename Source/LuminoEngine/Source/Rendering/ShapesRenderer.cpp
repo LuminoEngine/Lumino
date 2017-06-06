@@ -1,14 +1,11 @@
 ﻿
-/*
-	- [ ] inset border
-*/
 #include "../Internal.h"
 #include <Lumino/Graphics/Brush.h>
-#include <Lumino/Graphics/Rendering.h>
 #include <Lumino/Graphics/VertexDeclaration.h>
-#include "../Device/GraphicsDriverInterface.h"
-#include "../GraphicsManager.h"
-#include "../RenderingCommand.h"
+#include <Lumino/Rendering/Rendering.h>
+#include "../Graphics/Device/GraphicsDriverInterface.h"
+#include "../Graphics/GraphicsManager.h"
+#include "../Graphics/RenderingCommand.h"
 #include "ShapesRenderer.h"
 
 LN_NAMESPACE_BEGIN

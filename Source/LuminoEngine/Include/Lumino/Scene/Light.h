@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include "../Graphics/Color.h"
-#include "../Graphics/Rendering.h"	// for DynamicLightInfo
+#include "../Rendering/Rendering.h"	// for DynamicLightInfo
 #include "SceneNode.h"
 #include "WorldObject.h"
 

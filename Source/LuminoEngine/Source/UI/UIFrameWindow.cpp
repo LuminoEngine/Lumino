@@ -3,7 +3,7 @@
 #include <Lumino/Platform/PlatformWindow.h>
 #include <Lumino/Graphics/SwapChain.h>
 #include <Lumino/Graphics/Viewport.h>
-#include <Lumino/Graphics/DrawingContext.h>
+#include <Lumino/Rendering/DrawingContext.h>
 #include <Lumino/UI/UIContext.h>
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIFrameWindow.h>

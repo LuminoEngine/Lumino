@@ -9,11 +9,11 @@
 #include <Lumino/Graphics/VertexBuffer.h>
 #include <Lumino/Graphics/IndexBuffer.h>
 #include <Lumino/Graphics/Shader.h>
-#include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Rendering/Rendering.h>
 #include <Lumino/TileMap/TileMapRenderer.h>
 #include <Lumino/TileMap/TileMapModel.h>
 #include "../Graphics/Device/GraphicsDriverInterface.h"
-#include "../Graphics/SpriteRenderer.h"
+#include "../Rendering/SpriteRenderer.h"
 
 LN_NAMESPACE_BEGIN
 

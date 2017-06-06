@@ -1,12 +1,12 @@
 ﻿
 #pragma once
 #include "Common.h"
-#include "Color.h"
-#include "RenderState.h"
-#include "Shader.h"
-#include "Texture.h"
-#include "ContextInterface.h"
-#include "Material.h"
+#include "../Graphics/Color.h"
+#include "../Graphics/RenderState.h"
+#include "../Graphics/Shader.h"
+#include "../Graphics/Texture.h"
+#include "../Graphics/ContextInterface.h"
+#include "../Graphics/Material.h"
 
 LN_NAMESPACE_BEGIN
 class Pen;
@@ -51,7 +51,7 @@ class TextRenderer;
 class VectorTextRenderer;
 class ShapesRenderer;
 class NanoVGRenderer;
-class FrameRectRenderer;
+class FrameRectRenderFeature;
 class DrawElementBatch;
 class RenderingPass2;
 class CombinedMaterial;
@@ -120,7 +120,7 @@ public:
 	VectorTextRenderer* BeginVectorTextRenderer();
 	ShapesRenderer* BeginShapesRenderer();
 	NanoVGRenderer* BeginNanoVGRenderer();
-	FrameRectRenderer* BeginFrameRectRenderer();
+	FrameRectRenderFeature* BeginFrameRectRenderer();
 
 	void SetViewInfo(const Size& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix);
 	void ApplyStatus(DrawElementBatch* state, const DefaultStatus& defaultStatus);
@@ -132,18 +132,18 @@ public:
 LN_INTERNAL_ACCESS:
 	void SwitchActiveRenderer(detail::IRendererPloxy* renderer);
 
-	IRendererPloxy*				m_current;
-	Details::Renderer*			m_baseRenderer;
-	RefPtr<PrimitiveRenderer>	m_primitiveRenderer;
-	RefPtr<BlitRenderer>		m_blitRenderer;
-	RefPtr<MeshRendererProxy>	m_meshRenderer;
-	RefPtr<SpriteRenderer>		m_spriteRenderer;
-	RefPtr<TextRenderer>		m_textRenderer;
-	RefPtr<VectorTextRenderer>	m_vectorTextRenderer;
-	RefPtr<ShapesRenderer>		m_shapesRenderer;
-	RefPtr<NanoVGRenderer>		m_nanoVGRenderer;
-	RefPtr<FrameRectRenderer>	m_frameRectRenderer;
-	DrawElementBatch*			m_currentStatePtr;
+	IRendererPloxy*					m_current;
+	Details::Renderer*				m_baseRenderer;
+	RefPtr<PrimitiveRenderer>		m_primitiveRenderer;
+	RefPtr<BlitRenderer>			m_blitRenderer;
+	RefPtr<MeshRendererProxy>		m_meshRenderer;
+	RefPtr<SpriteRenderer>			m_spriteRenderer;
+	RefPtr<TextRenderer>			m_textRenderer;
+	RefPtr<VectorTextRenderer>		m_vectorTextRenderer;
+	RefPtr<ShapesRenderer>			m_shapesRenderer;
+	RefPtr<NanoVGRenderer>			m_nanoVGRenderer;
+	RefPtr<FrameRectRenderFeature>	m_frameRectRenderer;
+	DrawElementBatch*				m_currentStatePtr;
 
 	friend class ::ln::DrawList;
 };

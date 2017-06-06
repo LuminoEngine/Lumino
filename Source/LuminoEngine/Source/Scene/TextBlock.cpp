@@ -1,7 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include <Lumino/Graphics/GraphicsContext.h>
-#include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Rendering/Rendering.h>
 #include "SceneGraphManager.h"
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/TextBlock.h>

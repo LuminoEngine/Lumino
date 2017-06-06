@@ -2,7 +2,7 @@
 #pragma once
 #include <Lumino/Graphics/Common.h>
 #include <Lumino/Graphics/ContextInterface.h>
-#include "Device/GraphicsDriverInterface.h"
+#include "../Graphics/Device/GraphicsDriverInterface.h"
 
 LN_NAMESPACE_BEGIN
 class MeshResource;

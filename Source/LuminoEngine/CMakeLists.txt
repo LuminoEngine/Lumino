@@ -166,7 +166,6 @@ set(LN_SOURCES_Graphics
 	Include/Lumino/Graphics/Color.h
 	Include/Lumino/Graphics/Common.h
 	Include/Lumino/Graphics/ContextInterface.h
-	Include/Lumino/Graphics/DrawingContext.h
 	Include/Lumino/Graphics/FrameCapturer.h
 	Include/Lumino/Graphics/Graphics.h
 	Include/Lumino/Graphics/GraphicsException.h
@@ -175,7 +174,6 @@ set(LN_SOURCES_Graphics
 	Include/Lumino/Graphics/Material.h
 	Include/Lumino/Graphics/PerlinNoise.h
 	Include/Lumino/Graphics/Renderer.h
-	Include/Lumino/Graphics/Rendering.h
 	Include/Lumino/Graphics/RenderingContext.h
 	Include/Lumino/Graphics/RenderState.h
 	Include/Lumino/Graphics/SamplerState.h
@@ -211,10 +209,7 @@ set(LN_SOURCES_Graphics
 	Source/Graphics/Brush.cpp
 	Source/Graphics/Color.cpp
 	Source/Graphics/ContextInterface.cpp
-	Source/Graphics/DrawingContext.cpp
 	Source/Graphics/FrameCapturer.cpp
-	Source/Graphics/FrameRectRenderer.cpp
-	Source/Graphics/FrameRectRenderer.h
 	Source/Graphics/Graphics.cpp
 	Source/Graphics/GraphicsException.cpp
 	Source/Graphics/GraphicsManager.cpp
@@ -222,19 +217,12 @@ set(LN_SOURCES_Graphics
 	Source/Graphics/IndexBuffer.cpp
 	Source/Graphics/Internal.h
 	Source/Graphics/Material.cpp
-	Source/Graphics/MeshRendererProxy.cpp
-	Source/Graphics/MeshRendererProxy.h
-	Source/Graphics/NanoVGRenderer.cpp
-	Source/Graphics/NanoVGRenderer.h
 	Source/Graphics/PerlinNoise.cpp
 	Source/Graphics/PngFile.h
-	Source/Graphics/PrimitiveRenderer.cpp
-	Source/Graphics/PrimitiveRenderer.h
 	Source/Graphics/ProfilerRenderer.cpp
 	Source/Graphics/ProfilerRenderer.h
 	Source/Graphics/Renderer.cpp
 	Source/Graphics/RendererImpl.h
-	Source/Graphics/Rendering.cpp
 	Source/Graphics/RenderingCommand.cpp
 	Source/Graphics/RenderingCommand.h
 	Source/Graphics/RenderingContext.cpp
@@ -247,8 +235,6 @@ set(LN_SOURCES_Graphics
 	Source/Graphics/Shader.cpp
 	Source/Graphics/ShaderAnalyzer.cpp
 	Source/Graphics/ShaderAnalyzer.h
-	Source/Graphics/SpriteRenderer.cpp
-	Source/Graphics/SpriteRenderer.h
 	Source/Graphics/SwapChain.cpp
 	Source/Graphics/Texture.cpp
 	Source/Graphics/Utils.cpp
@@ -259,8 +245,6 @@ set(LN_SOURCES_Graphics
 	Source/Graphics/ImageEffect/BlurImageEffect.cpp
 	Source/Graphics/ImageEffect/ScreenMotionBlurImageEffect.cpp
 	Source/Graphics/ImageEffect/ToneImageEffect.cpp
-	Source/Graphics/Rendering/ShapesRenderer.cpp
-	Source/Graphics/Rendering/ShapesRenderer.h
 )
 set(LN_SOURCES_Graphics_Device
 	Source/Graphics/Device/GraphicsDriverInterface.cpp
@@ -306,6 +290,27 @@ set(LN_SOURCES_Graphics_Text
 	Source/Graphics/Text/TextLayoutEngine.h
 	Source/Graphics/Text/TextRenderer.cpp
 	Source/Graphics/Text/TextRenderer.h
+)
+
+set(LN_SOURCES_Rendering
+	Include/Lumino/Rendering/Common.h
+	Include/Lumino/Rendering/DrawingContext.h
+	Include/Lumino/Rendering/Rendering.h
+	Source/Rendering/DrawingContext.cpp
+	Source/Rendering/FrameRectRenderFeature.cpp
+	Source/Rendering/FrameRectRenderFeature.h
+	Source/Rendering/Internal.h
+	Source/Rendering/MeshRendererProxy.cpp
+	Source/Rendering/MeshRendererProxy.h
+	Source/Rendering/NanoVGRenderer.cpp
+	Source/Rendering/NanoVGRenderer.h
+	Source/Rendering/PrimitiveRenderer.cpp
+	Source/Rendering/PrimitiveRenderer.h
+	Source/Rendering/Rendering.cpp
+	Source/Rendering/ShapesRenderer.cpp
+	Source/Rendering/ShapesRenderer.h
+	Source/Rendering/SpriteRenderer.cpp
+	Source/Rendering/SpriteRenderer.h
 )
 
 set(LN_SOURCES_Effect
@@ -719,6 +724,7 @@ source_group("Physics"			FILES ${LN_SOURCES_Physics})
 source_group("Graphics"			FILES ${LN_SOURCES_Graphics})
 source_group("Graphics_Device"	FILES ${LN_SOURCES_Graphics_Device})
 source_group("Graphics_Text"	FILES ${LN_SOURCES_Graphics_Text})
+source_group("Rendering"		FILES ${LN_SOURCES_Rendering})
 source_group("Effect"			FILES ${LN_SOURCES_Effect})
 source_group("Tilemap"			FILES ${LN_SOURCES_TileMap})
 source_group("Mesh"				FILES ${LN_SOURCES_Mesh})
@@ -743,6 +749,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Graphics}
 	${LN_SOURCES_Graphics_Device}
 	${LN_SOURCES_Graphics_Text}
+	${LN_SOURCES_Rendering}
 	${LN_SOURCES_Effect}
 	${LN_SOURCES_TileMap}
 	${LN_SOURCES_Mesh}

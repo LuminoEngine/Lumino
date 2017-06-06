@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.h"
 #include <Lumino/Physics/PhysicsWorld.h>
-#include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Rendering/Rendering.h>
 #include <Lumino/Mesh/Mesh.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Camera.h>

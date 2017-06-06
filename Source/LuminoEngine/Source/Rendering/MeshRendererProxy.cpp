@@ -5,9 +5,9 @@
 #include <Lumino/Graphics/VertexBuffer.h>
 #include <Lumino/Graphics/IndexBuffer.h>
 #include <Lumino/Mesh/Mesh.h>
-#include "Device/GraphicsDriverInterface.h"
-#include "RenderingCommand.h"
-#include "GraphicsManager.h"
+#include "../Graphics/Device/GraphicsDriverInterface.h"
+#include "../Graphics/RenderingCommand.h"
+#include "../Graphics/GraphicsManager.h"
 #include "MeshRendererProxy.h"
 
 LN_NAMESPACE_BEGIN

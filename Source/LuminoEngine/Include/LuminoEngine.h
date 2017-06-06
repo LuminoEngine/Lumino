@@ -33,12 +33,13 @@
 #include "Lumino/Graphics/Shader.h"
 #include "Lumino/Graphics/Bitmap.h"
 #include "Lumino/Graphics/GraphicsContext.h"
-#include "Lumino/Graphics/DrawingContext.h"
 #include "Lumino/Graphics/FrameCapturer.h"
 #include "Lumino/Graphics/Text/Font.h"
 #include "Lumino/Graphics/ImageEffect/ImageEffect.h"
 #include "Lumino/Graphics/ImageEffect/ToneImageEffect.h"
 #include "Lumino/Graphics/ImageEffect/ScreenMotionBlurImageEffect.h"
+
+#include "Lumino/Rendering/DrawingContext.h"
 
 #include "Lumino/Effect/VisualEffect.h"
 #include "Lumino/Effect/VisualEffectInstance.h"

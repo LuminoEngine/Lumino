@@ -2,21 +2,21 @@
 #include "../Internal.h"
 #include <float.h>
 #include <Lumino/Graphics/Color.h>
-#include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Rendering/Rendering.h>
 #include <Lumino/Graphics/ContextInterface.h>
 #include <Lumino/Mesh/Mesh.h>
-#include "Device/GraphicsDriverInterface.h"
-#include "GraphicsManager.h"
-#include "RendererImpl.h"
+#include "../Graphics/Device/GraphicsDriverInterface.h"
+#include "../Graphics/GraphicsManager.h"
+#include "../Graphics/RendererImpl.h"
 #include "PrimitiveRenderer.h"
 #include "MeshRendererProxy.h"
 #include "SpriteRenderer.h"
-#include "Text/TextRenderer.h"
-#include "Text/FontManager.h"
-#include "Rendering/ShapesRenderer.h"
-#include "NanoVGRenderer.h"
-#include "FrameRectRenderer.h"
+#include "../Graphics/Text/TextRenderer.h"
+#include "../Graphics/Text/FontManager.h"
 #include "../Mesh/MeshFactory.h"
+#include "ShapesRenderer.h"
+#include "NanoVGRenderer.h"
+#include "FrameRectRenderFeature.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -139,7 +139,7 @@ void InternalContext::Initialize(detail::GraphicsManager* manager)
 	m_nanoVGRenderer = RefPtr<NanoVGRenderer>::MakeRef();
 	m_nanoVGRenderer->Initialize(manager);
 
-	m_frameRectRenderer = RefPtr<FrameRectRenderer>::MakeRef();
+	m_frameRectRenderer = RefPtr<FrameRectRenderFeature>::MakeRef();
 	m_frameRectRenderer->Initialize(manager);
 }
 
@@ -213,7 +213,7 @@ NanoVGRenderer* InternalContext::BeginNanoVGRenderer()
 }
 
 //------------------------------------------------------------------------------
-FrameRectRenderer* InternalContext::BeginFrameRectRenderer()
+FrameRectRenderFeature* InternalContext::BeginFrameRectRenderer()
 {
 	SwitchActiveRenderer(m_frameRectRenderer);
 	return m_frameRectRenderer;

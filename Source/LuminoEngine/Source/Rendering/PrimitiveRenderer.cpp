@@ -5,11 +5,11 @@
 #include <Lumino/Graphics/Vertex.h>
 #include <Lumino/Graphics/VertexDeclaration.h>
 #include <Lumino/Graphics/Material.h>
-#include "Device/GraphicsDriverInterface.h"
-#include "RendererImpl.h"
-#include "RenderingCommand.h"
+#include "../Graphics/Device/GraphicsDriverInterface.h"
+#include "../Graphics/RendererImpl.h"
+#include "../Graphics/RenderingCommand.h"
+#include "../Graphics/GraphicsManager.h"
 #include "PrimitiveRenderer.h"
-#include "GraphicsManager.h"
 
 #define LN_CALL_CORE_COMMAND(func, command, ...) \
 	if (m_manager->GetRenderingType() == GraphicsRenderingType::Threaded) { \

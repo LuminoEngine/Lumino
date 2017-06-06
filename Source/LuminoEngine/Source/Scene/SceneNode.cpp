@@ -2,7 +2,7 @@
 #include "../Internal.h"
 #include <float.h>
 #include "SceneGraphManager.h"
-#include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Rendering/Rendering.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/SceneNode.h>
 #include <Lumino/Scene/WorldObject.h>

@@ -1,6 +1,6 @@
 
 #include "Internal.h"
-#include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Rendering/Rendering.h>
 #include <Lumino/Scene/TransitionPostEffect.h>
 
 LN_NAMESPACE_BEGIN

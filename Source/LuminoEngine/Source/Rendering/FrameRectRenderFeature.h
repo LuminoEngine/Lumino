@@ -86,13 +86,13 @@ private:
 	} m_shader;
 };
 
-class FrameRectRenderer
+class FrameRectRenderFeature
 	: public RefObject
 	, public detail::IRendererPloxy
 {
 public:
-	FrameRectRenderer();
-	~FrameRectRenderer();
+	FrameRectRenderFeature();
+	~FrameRectRenderFeature();
 	void Initialize(GraphicsManager* manager);
 
 	void SetViewInfo(const Matrix& viewProj);

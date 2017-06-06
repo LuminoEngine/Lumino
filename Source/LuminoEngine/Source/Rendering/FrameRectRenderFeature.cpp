@@ -5,12 +5,12 @@
 #include "Internal.h"
 #include <Lumino/Graphics/GraphicsException.h>
 #include <Lumino/Graphics/Vertex.h>
-#include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Rendering/Rendering.h>
 #include <Lumino/Graphics/VertexDeclaration.h>
-#include "Device/GraphicsDriverInterface.h"
-#include "GraphicsManager.h"
-#include "RenderingCommand.h"
-#include "FrameRectRenderer.h"
+#include "../Graphics/Device/GraphicsDriverInterface.h"
+#include "../Graphics/GraphicsManager.h"
+#include "../Graphics/RenderingCommand.h"
+#include "FrameRectRenderFeature.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -57,7 +57,7 @@ void FrameRectRendererCore::Initialize(GraphicsManager* manager)
 	// Shader
 	static const byte_t g_Painter_fx_Data[] =
 	{
-#include "Resource/Painter.fx.h"
+#include "../Graphics/Resource/Painter.fx.h"	// TODO: もういらない
 	};
 	static const size_t g_Painter_fx_Len = LN_ARRAY_SIZE_OF(g_Painter_fx_Data);
 
@@ -474,24 +474,24 @@ void FrameRectRendererCore::PutFrameRectangle(const Rect& rect, const ThicknessF
 }
 
 //==============================================================================
-// FrameRectRenderer
+// FrameRectRenderFeature
 //==============================================================================
 
 //------------------------------------------------------------------------------
-FrameRectRenderer::FrameRectRenderer()
+FrameRectRenderFeature::FrameRectRenderFeature()
 	: m_manager(nullptr)
 	, m_core(nullptr)
 {
 }
 
 //------------------------------------------------------------------------------
-FrameRectRenderer::~FrameRectRenderer()
+FrameRectRenderFeature::~FrameRectRenderFeature()
 {
 	LN_SAFE_RELEASE(m_core);
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRenderer::Initialize(GraphicsManager* manager)
+void FrameRectRenderFeature::Initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 
@@ -500,19 +500,19 @@ void FrameRectRenderer::Initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRenderer::SetViewInfo(const Matrix& viewProj)
+void FrameRectRenderFeature::SetViewInfo(const Matrix& viewProj)
 {
 	m_viewProj = viewProj;
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRenderer::SetState(Brush* brush)
+void FrameRectRenderFeature::SetState(Brush* brush)
 {
 	m_brush = brush;
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRenderer::SetState(Brush* brush, const Matrix& world, const Matrix& viewProj)	// TODO: world いらない
+void FrameRectRenderFeature::SetState(Brush* brush, const Matrix& world, const Matrix& viewProj)	// TODO: world いらない
 {
 	if (LN_CHECK_ARG(brush != nullptr)) return;
 
@@ -536,7 +536,7 @@ void FrameRectRenderer::SetState(Brush* brush, const Matrix& world, const Matrix
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRenderer::Draw(const Matrix& transform, const Rect& rect)
+void FrameRectRenderFeature::Draw(const Matrix& transform, const Rect& rect)
 {
 	SetState(m_brush, Matrix::Identity, m_viewProj);
 
@@ -551,12 +551,12 @@ void FrameRectRenderer::Draw(const Matrix& transform, const Rect& rect)
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRenderer::Flush()
+void FrameRectRenderFeature::Flush()
 {
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRenderer::OnSetState(const DrawElementBatch* state)
+void FrameRectRenderFeature::OnSetState(const DrawElementBatch* state)
 {
 	SetState(state->state.GetBrush());
 }

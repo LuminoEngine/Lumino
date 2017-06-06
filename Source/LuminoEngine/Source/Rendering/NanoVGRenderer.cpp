@@ -24,11 +24,11 @@ lnnvg__renderFlush
 #include "Internal.h"
 #include <math.h>
 #include <Lumino/Graphics/Texture.h>
-#include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Rendering/Rendering.h>
 #include <Lumino/Graphics/GraphicsException.h>
-#include "Device/GraphicsDriverInterface.h"
-#include "GraphicsManager.h"
-#include "RenderingCommand.h"
+#include "../Graphics/Device/GraphicsDriverInterface.h"
+#include "../Graphics/GraphicsManager.h"
+#include "../Graphics/RenderingCommand.h"
 #include "NanoVGRenderer.h"
 
 LN_NAMESPACE_BEGIN
@@ -593,7 +593,7 @@ static int lnnvg__renderCreate(void* uptr)
 	// シェーダ
 	static const byte_t codeData[] =
 	{
-#include "Resource/NanoVGShader.fx.h"
+#include "../Graphics/Resource/NanoVGShader.fx.h"
 	};
 	static const size_t codeLen = LN_ARRAY_SIZE_OF(codeData);
 	StringA code = lnc->manager->GetCommonShaderHeader();

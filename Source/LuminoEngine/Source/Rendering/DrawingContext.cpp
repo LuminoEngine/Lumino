@@ -1,8 +1,8 @@
 
 #include "../Internal.h"
-#include "Rendering/ShapesRenderer.h"
-#include "GraphicsManager.h"
-#include <Lumino/Graphics/DrawingContext.h>
+#include "ShapesRenderer.h"
+#include "../Graphics/GraphicsManager.h"
+#include <Lumino/Rendering/DrawingContext.h>
 
 LN_NAMESPACE_BEGIN
 

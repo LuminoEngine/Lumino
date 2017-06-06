@@ -3,7 +3,7 @@
 #include <Lumino/UI/UIViewport.h>
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIContext.h>
-#include <Lumino/Graphics/DrawingContext.h>
+#include <Lumino/Rendering/DrawingContext.h>
 #include "UIManager.h"
 
 LN_NAMESPACE_BEGIN

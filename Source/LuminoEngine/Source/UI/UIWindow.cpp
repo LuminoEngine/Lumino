@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.h"
-#include <Lumino/Graphics/DrawingContext.h>
+#include <Lumino/Rendering/DrawingContext.h>
 #include <Lumino/UI/UILayoutPanel.h>
 #include <Lumino/UI/UIWindow.h>
 

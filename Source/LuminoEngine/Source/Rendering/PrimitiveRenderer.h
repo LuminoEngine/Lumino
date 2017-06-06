@@ -3,7 +3,7 @@
 #include <Lumino/Graphics/Common.h>
 #include <Lumino/Graphics/ContextInterface.h>
 #include <Lumino/Graphics/Text/Font.h>
-#include "RenderingCommand.h"
+#include "../Graphics/RenderingCommand.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
