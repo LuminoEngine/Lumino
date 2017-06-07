@@ -1,6 +1,6 @@
 
 #include "../Internal.h"
-#include "ShapesRenderer.h"
+#include "ShapesRenderFeature.h"
 #include "../Graphics/GraphicsManager.h"
 #include <Lumino/Rendering/DrawingContext.h>
 
@@ -15,7 +15,7 @@ public:
 	{
 		if (m_commandList == nullptr)
 		{
-			// このコマンドリストは ShapesRenderer 側で解放される
+			// このコマンドリストは ShapesRenderFeature 側で解放される
 			// TODO: それだと描画フレームスキップ時に対応できない
 			m_commandList = owner->GetManager()->GetShapesRendererCommandListCache()->QueryCommandList();
 		}

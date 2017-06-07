@@ -6,7 +6,7 @@
 #include "../Graphics/Device/GraphicsDriverInterface.h"
 #include "../Graphics/GraphicsManager.h"
 #include "../Graphics/RenderingCommand.h"
-#include "ShapesRenderer.h"
+#include "ShapesRenderFeature.h"
 
 LN_NAMESPACE_BEGIN
 namespace detail {
@@ -191,7 +191,7 @@ void ShapesRendererCore::RenderCommandList(ShapesRendererCommandList* commandLis
 	//		vb, ib, beginVertexIndex);
 	//}
 
-	// TODO: このへん PrimitiveRenderer と同じ。共通にできないか？
+	// TODO: このへん PrimitiveRenderFeature と同じ。共通にできないか？
 	{
 		Driver::IRenderer* renderer = m_manager->GetGraphicsDevice()->GetRenderer();
 
@@ -1109,10 +1109,10 @@ void ShapesRendererCore::PlotCornerBasePointsBezier(const Vector2& first, const 
 }
 
 //==============================================================================
-// ShapesRenderer
+// ShapesRenderFeature
 //==============================================================================
 //------------------------------------------------------------------------------
-ShapesRenderer::ShapesRenderer()
+ShapesRenderFeature::ShapesRenderFeature()
 	: m_manager(nullptr)
 	, m_core(nullptr)
 	, m_fillBrush()
@@ -1120,12 +1120,12 @@ ShapesRenderer::ShapesRenderer()
 }
 
 //------------------------------------------------------------------------------
-ShapesRenderer::~ShapesRenderer()
+ShapesRenderFeature::~ShapesRenderFeature()
 {
 }
 
 //------------------------------------------------------------------------------
-void ShapesRenderer::Initialize(GraphicsManager* manager)
+void ShapesRenderFeature::Initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 	m_core = RefPtr<ShapesRendererCore>::MakeRef();
@@ -1133,7 +1133,7 @@ void ShapesRenderer::Initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void ShapesRenderer::ExecuteCommand(ShapesRendererCommandList* commandList)
+void ShapesRenderFeature::ExecuteCommand(ShapesRendererCommandList* commandList)
 {
 	if (LN_CHECK_ARG(commandList != nullptr)) return;
 
@@ -1147,7 +1147,7 @@ void ShapesRenderer::ExecuteCommand(ShapesRendererCommandList* commandList)
 		});
 }
 //------------------------------------------------------------------------------
-void ShapesRenderer::OnSetState(const DrawElementBatch* state)
+void ShapesRenderFeature::OnSetState(const DrawElementBatch* state)
 {
 	if (state->state.GetBrush() != nullptr)
 	{

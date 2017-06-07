@@ -88,7 +88,7 @@ private:
 
 class FrameRectRenderFeature
 	: public RefObject
-	, public detail::IRendererPloxy
+	, public detail::IRenderFeature
 {
 public:
 	FrameRectRenderFeature();

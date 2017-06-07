@@ -10,7 +10,7 @@ namespace detail {
 // なぜコマンドが必要なのか？DrawList や RenderingCommand ではだめなのか？
 //		LineTo を考えてみればわかりやすい。
 //		点を1つ打つのに、DrawElement を１つ作りたいか？No.
-//		このコマンドは、ShapesRenderer 内でプリミティブをキャッシュするためのものである。
+//		このコマンドは、ShapesRenderFeature 内でプリミティブをキャッシュするためのものである。
 //		ちなみに、RenderingCommand は描画スレッド有効でしか働かないので論外。
 class ShapesRendererCommandList
 	: public CommandDataCache
@@ -124,13 +124,13 @@ private:
 	CacheBuffer<uint16_t>		m_indexCache;
 };
 
-class ShapesRenderer
+class ShapesRenderFeature
 	: public RefObject
-	, public detail::IRendererPloxy
+	, public detail::IRenderFeature
 {
 public:
-	ShapesRenderer();
-	virtual ~ShapesRenderer();
+	ShapesRenderFeature();
+	virtual ~ShapesRenderFeature();
 	void Initialize(GraphicsManager* manager);
 
 	void ExecuteCommand(ShapesRendererCommandList* commandList);

@@ -42,15 +42,15 @@ struct DrawElementMetadata
 
 namespace detail {
 class GraphicsManager;
-class IRendererPloxy;
-class PrimitiveRenderer;
+class IRenderFeature;
+class PrimitiveRenderFeature;
 class BlitRenderer;
-class MeshRendererProxy;
-class SpriteRenderer;
+class MeshRenderFeature;
+class SpriteRenderFeature;
 class TextRenderer;
 class VectorTextRenderer;
-class ShapesRenderer;
-class NanoVGRenderer;
+class ShapesRenderFeature;
+class NanoVGRenderFeature;
 class FrameRectRenderFeature;
 class DrawElementBatch;
 class RenderingPass2;
@@ -112,36 +112,36 @@ public:
 	void Initialize(detail::GraphicsManager* manager);
 	Details::Renderer* GetRenderStateManager();
 	Details::Renderer* BeginBaseRenderer();
-	PrimitiveRenderer* BeginPrimitiveRenderer();
+	PrimitiveRenderFeature* BeginPrimitiveRenderer();
 	BlitRenderer* BeginBlitRenderer();
-	MeshRendererProxy* BeginMeshRenderer();
-	SpriteRenderer* BeginSpriteRenderer();
+	MeshRenderFeature* BeginMeshRenderer();
+	SpriteRenderFeature* BeginSpriteRenderer();
 	TextRenderer* BeginTextRenderer();
 	VectorTextRenderer* BeginVectorTextRenderer();
-	ShapesRenderer* BeginShapesRenderer();
-	NanoVGRenderer* BeginNanoVGRenderer();
+	ShapesRenderFeature* BeginShapesRenderer();
+	NanoVGRenderFeature* BeginNanoVGRenderer();
 	FrameRectRenderFeature* BeginFrameRectRenderer();
 
 	void SetViewInfo(const Size& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix);
 	void ApplyStatus(DrawElementBatch* state, const DefaultStatus& defaultStatus);
 	DrawElementBatch* GetCurrentStatus() const { return m_currentStatePtr; }
-	detail::SpriteRenderer* GetSpriteRenderer();
+	detail::SpriteRenderFeature* GetSpriteRenderer();
 
 	void Flush();
 
 LN_INTERNAL_ACCESS:
-	void SwitchActiveRenderer(detail::IRendererPloxy* renderer);
+	void SwitchActiveRenderer(detail::IRenderFeature* renderer);
 
-	IRendererPloxy*					m_current;
+	IRenderFeature*					m_current;
 	Details::Renderer*				m_baseRenderer;
-	RefPtr<PrimitiveRenderer>		m_primitiveRenderer;
+	RefPtr<PrimitiveRenderFeature>	m_primitiveRenderer;
 	RefPtr<BlitRenderer>			m_blitRenderer;
-	RefPtr<MeshRendererProxy>		m_meshRenderer;
-	RefPtr<SpriteRenderer>			m_spriteRenderer;
+	RefPtr<MeshRenderFeature>		m_meshRenderer;
+	RefPtr<SpriteRenderFeature>		m_spriteRenderer;
 	RefPtr<TextRenderer>			m_textRenderer;
 	RefPtr<VectorTextRenderer>		m_vectorTextRenderer;
-	RefPtr<ShapesRenderer>			m_shapesRenderer;
-	RefPtr<NanoVGRenderer>			m_nanoVGRenderer;
+	RefPtr<ShapesRenderFeature>		m_shapesRenderer;
+	RefPtr<NanoVGRenderFeature>		m_nanoVGRenderer;
 	RefPtr<FrameRectRenderFeature>	m_frameRectRenderer;
 	DrawElementBatch*				m_currentStatePtr;
 
@@ -833,7 +833,7 @@ LN_INTERNAL_ACCESS:
 	const DrawElementMetadata* GetMetadata();
 	void PopMetadata();
 
-	template<typename TElement> TElement* ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer, Material* userMaterial);
+	template<typename TElement> TElement* ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRenderFeature* renderer, Material* userMaterial);
 	void DrawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Material* material);
 	//void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material);
 	void BlitInternal(Texture* source, RenderTargetTexture* dest, const Matrix& transform, Material* material);
@@ -894,7 +894,7 @@ private:
 
 //------------------------------------------------------------------------------
 template<typename TElement>
-inline TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer, Material* userMaterial)
+inline TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRenderFeature* renderer, Material* userMaterial)
 {
 	Material* availableMaterial = (userMaterial != nullptr) ? userMaterial : m_defaultMaterial.Get();
 

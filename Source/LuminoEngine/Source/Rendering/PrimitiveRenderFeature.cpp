@@ -9,7 +9,7 @@
 #include "../Graphics/RendererImpl.h"
 #include "../Graphics/RenderingCommand.h"
 #include "../Graphics/GraphicsManager.h"
-#include "PrimitiveRenderer.h"
+#include "PrimitiveRenderFeature.h"
 
 #define LN_CALL_CORE_COMMAND(func, command, ...) \
 	if (m_manager->GetRenderingType() == GraphicsRenderingType::Threaded) { \
@@ -207,11 +207,11 @@ void PrimitiveRendererCore::AddVertex(const Vector3& pos, const Vector2& uv, con
 }
 
 //==============================================================================
-// PrimitiveRenderer
+// PrimitiveRenderFeature
 //==============================================================================
 
 //------------------------------------------------------------------------------
-PrimitiveRenderer::PrimitiveRenderer()
+PrimitiveRenderFeature::PrimitiveRenderFeature()
 	: m_manager(nullptr)
 	, m_core(nullptr)
 	, m_stateModified(false)
@@ -220,13 +220,13 @@ PrimitiveRenderer::PrimitiveRenderer()
 }
 
 //------------------------------------------------------------------------------
-PrimitiveRenderer::~PrimitiveRenderer()
+PrimitiveRenderFeature::~PrimitiveRenderFeature()
 {
 	LN_SAFE_RELEASE(m_core);
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRenderer::Initialize(GraphicsManager* manager)
+void PrimitiveRenderFeature::Initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 
@@ -235,7 +235,7 @@ void PrimitiveRenderer::Initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRenderer::DrawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor)
+void PrimitiveRenderFeature::DrawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor)
 {
 	SetPrimitiveRendererMode(PrimitiveRendererMode::LineList);
 	CheckUpdateState();
@@ -244,7 +244,7 @@ void PrimitiveRenderer::DrawLine(const Vector3& from, const Color& fromColor, co
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRenderer::DrawSquare(
+void PrimitiveRenderFeature::DrawSquare(
 	const Vector3& position1, const Vector2& uv1, const Color& color1,
 	const Vector3& position2, const Vector2& uv2, const Color& color2,
 	const Vector3& position3, const Vector2& uv3, const Color& color3,
@@ -262,7 +262,7 @@ void PrimitiveRenderer::DrawSquare(
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRenderer::DrawRectangle(const Rect& rect)
+void PrimitiveRenderFeature::DrawRectangle(const Rect& rect)
 {
 	float l = rect.GetLeft();
 	float t = rect.GetTop();
@@ -276,7 +276,7 @@ void PrimitiveRenderer::DrawRectangle(const Rect& rect)
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRenderer::Flush()
+void PrimitiveRenderFeature::Flush()
 {
 	if (m_flushRequested)
 	{
@@ -291,12 +291,12 @@ void PrimitiveRenderer::Flush()
 }
 
 //------------------------------------------------------------------------------
-bool PrimitiveRenderer::IsStandaloneShader() const { return false; }
-void PrimitiveRenderer::OnActivated() { m_stateModified = true; }
-void PrimitiveRenderer::OnDeactivated() { Flush(); }
+bool PrimitiveRenderFeature::IsStandaloneShader() const { return false; }
+void PrimitiveRenderFeature::OnActivated() { m_stateModified = true; }
+void PrimitiveRenderFeature::OnDeactivated() { Flush(); }
 
 //------------------------------------------------------------------------------
-void PrimitiveRenderer::SetPrimitiveRendererMode(PrimitiveRendererMode mode)
+void PrimitiveRenderFeature::SetPrimitiveRendererMode(PrimitiveRendererMode mode)
 {
 	if (mode != m_mode)
 	{
@@ -306,7 +306,7 @@ void PrimitiveRenderer::SetPrimitiveRendererMode(PrimitiveRendererMode mode)
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRenderer::CheckUpdateState()
+void PrimitiveRenderFeature::CheckUpdateState()
 {
 	if (m_stateModified)
 	{
@@ -319,7 +319,7 @@ void PrimitiveRenderer::CheckUpdateState()
 
 
 //==============================================================================
-// PrimitiveRenderer
+// BlitRenderer
 //==============================================================================
 
 //------------------------------------------------------------------------------

@@ -67,7 +67,7 @@ private:
 	Brush*		m_fillBrush;
 };
 
-class IRendererPloxy// : public RefObject
+class IRenderFeature
 {
 public:
 	virtual bool IsStandaloneShader() const = 0;
@@ -112,7 +112,7 @@ protected:
 	GraphicsManager* GetManager() const { return m_manager; }
 
 	void NorityStateChanging();
-	void NorityStartDrawing(detail::IRendererPloxy* rendererPloxy);
+	void NorityStartDrawing(detail::IRenderFeature* rendererPloxy);
 	void FlushImplemented();
 
 	// call by GraphicsManager
@@ -120,7 +120,7 @@ protected:
 	void OnDeactivated();
 
 	virtual bool OnCheckStateChanged() = 0;
-	virtual void OnStateFlush(detail::IRendererPloxy* activeRenderer);
+	virtual void OnStateFlush(detail::IRenderFeature* activeRenderer);
 	virtual void OnPrimitiveFlush();
 
 	// call by ShaderVariable::SetModified()
@@ -135,11 +135,11 @@ public:
 	static void MakeBlendMode(BlendMode mode, RenderState* state);
 
 private:
-	void SwitchActiveRendererPloxy(detail::IRendererPloxy* rendererPloxy);
+	void SwitchActiveRendererPloxy(detail::IRenderFeature* rendererPloxy);
 
 	GraphicsManager*		m_manager;
 	Details::Renderer*		m_baseRenderer;
-	detail::IRendererPloxy*	m_activeRendererPloxy;
+	detail::IRenderFeature*	m_activeRendererPloxy;
 	bool					m_stateChanged;
 
 	friend class GraphicsManager;

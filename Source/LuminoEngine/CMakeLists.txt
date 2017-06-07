@@ -300,17 +300,17 @@ set(LN_SOURCES_Rendering
 	Source/Rendering/FrameRectRenderFeature.cpp
 	Source/Rendering/FrameRectRenderFeature.h
 	Source/Rendering/Internal.h
-	Source/Rendering/MeshRendererProxy.cpp
-	Source/Rendering/MeshRendererProxy.h
-	Source/Rendering/NanoVGRenderer.cpp
-	Source/Rendering/NanoVGRenderer.h
-	Source/Rendering/PrimitiveRenderer.cpp
-	Source/Rendering/PrimitiveRenderer.h
+	Source/Rendering/MeshRenderFeature.cpp
+	Source/Rendering/MeshRenderFeature.h
+	Source/Rendering/NanoVGRenderFeature.cpp
+	Source/Rendering/NanoVGRenderFeature.h
+	Source/Rendering/PrimitiveRenderFeature.cpp
+	Source/Rendering/PrimitiveRenderFeature.h
 	Source/Rendering/Rendering.cpp
-	Source/Rendering/ShapesRenderer.cpp
-	Source/Rendering/ShapesRenderer.h
-	Source/Rendering/SpriteRenderer.cpp
-	Source/Rendering/SpriteRenderer.h
+	Source/Rendering/ShapesRenderFeature.cpp
+	Source/Rendering/ShapesRenderFeature.h
+	Source/Rendering/SpriteRenderFeature.cpp
+	Source/Rendering/SpriteRenderFeature.h
 )
 
 set(LN_SOURCES_Effect

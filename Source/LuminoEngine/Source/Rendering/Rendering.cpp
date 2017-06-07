@@ -8,14 +8,14 @@
 #include "../Graphics/Device/GraphicsDriverInterface.h"
 #include "../Graphics/GraphicsManager.h"
 #include "../Graphics/RendererImpl.h"
-#include "PrimitiveRenderer.h"
-#include "MeshRendererProxy.h"
-#include "SpriteRenderer.h"
 #include "../Graphics/Text/TextRenderer.h"
 #include "../Graphics/Text/FontManager.h"
 #include "../Mesh/MeshFactory.h"
-#include "ShapesRenderer.h"
-#include "NanoVGRenderer.h"
+#include "PrimitiveRenderFeature.h"
+#include "MeshRenderFeature.h"
+#include "SpriteRenderFeature.h"
+#include "ShapesRenderFeature.h"
+#include "NanoVGRenderFeature.h"
 #include "FrameRectRenderFeature.h"
 
 LN_NAMESPACE_BEGIN
@@ -116,16 +116,16 @@ void InternalContext::Initialize(detail::GraphicsManager* manager)
 {
 	m_baseRenderer = manager->GetRenderer();
 
-	m_primitiveRenderer = RefPtr<PrimitiveRenderer>::MakeRef();
+	m_primitiveRenderer = RefPtr<PrimitiveRenderFeature>::MakeRef();
 	m_primitiveRenderer->Initialize(manager);
 
 	m_blitRenderer = RefPtr<BlitRenderer>::MakeRef();
 	m_blitRenderer->Initialize(manager);
 
-	m_meshRenderer = RefPtr<MeshRendererProxy>::MakeRef();
+	m_meshRenderer = RefPtr<MeshRenderFeature>::MakeRef();
 	m_meshRenderer->Initialize(manager);
 
-	m_spriteRenderer = RefPtr<SpriteRenderer>::MakeRef(manager, 2048);	// TODO
+	m_spriteRenderer = RefPtr<SpriteRenderFeature>::MakeRef(manager, 2048);	// TODO
 
 	m_textRenderer = RefPtr<TextRenderer>::MakeRef();
 	m_textRenderer->Initialize(manager);
@@ -133,10 +133,10 @@ void InternalContext::Initialize(detail::GraphicsManager* manager)
 	m_vectorTextRenderer = RefPtr<VectorTextRenderer>::MakeRef();
 	m_vectorTextRenderer->Initialize(manager);
 
-	m_shapesRenderer = RefPtr<ShapesRenderer>::MakeRef();
+	m_shapesRenderer = RefPtr<ShapesRenderFeature>::MakeRef();
 	m_shapesRenderer->Initialize(manager);
 
-	m_nanoVGRenderer = RefPtr<NanoVGRenderer>::MakeRef();
+	m_nanoVGRenderer = RefPtr<NanoVGRenderFeature>::MakeRef();
 	m_nanoVGRenderer->Initialize(manager);
 
 	m_frameRectRenderer = RefPtr<FrameRectRenderFeature>::MakeRef();
@@ -157,7 +157,7 @@ Details::Renderer* InternalContext::BeginBaseRenderer()
 }
 
 //------------------------------------------------------------------------------
-PrimitiveRenderer* InternalContext::BeginPrimitiveRenderer()
+PrimitiveRenderFeature* InternalContext::BeginPrimitiveRenderer()
 {
 	SwitchActiveRenderer(m_primitiveRenderer);
 	return m_primitiveRenderer;
@@ -171,14 +171,14 @@ BlitRenderer* InternalContext::BeginBlitRenderer()
 }
 
 //------------------------------------------------------------------------------
-MeshRendererProxy* InternalContext::BeginMeshRenderer()
+MeshRenderFeature* InternalContext::BeginMeshRenderer()
 {
 	SwitchActiveRenderer(m_meshRenderer);
 	return m_meshRenderer;
 }
 
 //------------------------------------------------------------------------------
-SpriteRenderer* InternalContext::BeginSpriteRenderer()
+SpriteRenderFeature* InternalContext::BeginSpriteRenderer()
 {
 	SwitchActiveRenderer(m_spriteRenderer);
 	return m_spriteRenderer;
@@ -199,14 +199,14 @@ VectorTextRenderer* InternalContext::BeginVectorTextRenderer()
 }
 
 //------------------------------------------------------------------------------
-ShapesRenderer* InternalContext::BeginShapesRenderer()
+ShapesRenderFeature* InternalContext::BeginShapesRenderer()
 {
 	SwitchActiveRenderer(m_shapesRenderer);
 	return m_shapesRenderer;
 }
 
 //------------------------------------------------------------------------------
-NanoVGRenderer* InternalContext::BeginNanoVGRenderer()
+NanoVGRenderFeature* InternalContext::BeginNanoVGRenderer()
 {
 	SwitchActiveRenderer(m_nanoVGRenderer);
 	return m_nanoVGRenderer;
@@ -228,7 +228,7 @@ void InternalContext::SetViewInfo(const Size& viewPixelSize, const Matrix& viewM
 }
 
 //------------------------------------------------------------------------------
-SpriteRenderer* InternalContext::GetSpriteRenderer()
+SpriteRenderFeature* InternalContext::GetSpriteRenderer()
 {
 	return m_spriteRenderer;
 }
@@ -252,7 +252,7 @@ void InternalContext::Flush()
 }
 
 //------------------------------------------------------------------------------
-void InternalContext::SwitchActiveRenderer(detail::IRendererPloxy* renderer)
+void InternalContext::SwitchActiveRenderer(detail::IRenderFeature* renderer)
 {
 	if (m_current != renderer)
 	{
@@ -1886,7 +1886,7 @@ void DrawList::DrawSprite(
 	ptr->color = color;
 	ptr->baseDirection = baseDirection;
 	ptr->billboardType = billboardType;
-	detail::SpriteRenderer::MakeBoundingSphere(ptr->size, baseDirection, &ptr->boundingSphere);
+	detail::SpriteRenderFeature::MakeBoundingSphere(ptr->size, baseDirection, &ptr->boundingSphere);
 	ptr->boundingSphere.center += m_state.state.GetTransfrom().GetPosition();	// TODO: 他と共通化
 }
 

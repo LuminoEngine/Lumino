@@ -97,7 +97,7 @@ private:
 
 class TextRenderer
 	: public RefObject
-	, public IRendererPloxy
+	, public IRenderFeature
 {
 public:
 	TextRenderer();
@@ -174,7 +174,7 @@ private:
 
 class VectorTextRenderer
 	: public RefObject
-	, public detail::IRendererPloxy
+	, public detail::IRenderFeature
 {
 public:
 	VectorTextRenderer();

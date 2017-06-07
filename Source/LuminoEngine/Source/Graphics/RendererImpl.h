@@ -19,7 +19,7 @@ namespace Details
 */
 class Renderer
 	: public GraphicsResourceObject
-	, public detail::IRendererPloxy
+	, public detail::IRenderFeature
 {
 public:
 	Renderer(detail::GraphicsManager* manager);

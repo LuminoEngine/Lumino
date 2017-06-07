@@ -6,7 +6,6 @@
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Sprite.h>
 #include <Lumino/World.h>
-#include "../Rendering/PrimitiveRenderer.h"	// todo
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN

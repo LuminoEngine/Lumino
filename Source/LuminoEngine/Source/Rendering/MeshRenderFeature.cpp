@@ -8,25 +8,25 @@
 #include "../Graphics/Device/GraphicsDriverInterface.h"
 #include "../Graphics/RenderingCommand.h"
 #include "../Graphics/GraphicsManager.h"
-#include "MeshRendererProxy.h"
+#include "MeshRenderFeature.h"
 
 LN_NAMESPACE_BEGIN
 namespace detail {
 
 //------------------------------------------------------------------------------
-MeshRendererProxy::MeshRendererProxy()
+MeshRenderFeature::MeshRenderFeature()
 	: m_manager(nullptr)
 	, m_renderer(nullptr)
 {
 }
 
 //------------------------------------------------------------------------------
-MeshRendererProxy::~MeshRendererProxy()
+MeshRenderFeature::~MeshRenderFeature()
 {
 }
 
 //------------------------------------------------------------------------------
-void MeshRendererProxy::Initialize(GraphicsManager* manager)
+void MeshRenderFeature::Initialize(GraphicsManager* manager)
 {
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
@@ -36,7 +36,7 @@ void MeshRendererProxy::Initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void MeshRendererProxy::DrawMesh(MeshResource* mesh, int startIndex, int primitiveCount, PrimitiveType primitiveType)
+void MeshRenderFeature::DrawMesh(MeshResource* mesh, int startIndex, int primitiveCount, PrimitiveType primitiveType)
 {
 	if (LN_CHECK_ARG(mesh != nullptr)) return;
 	auto* _this = this;
@@ -60,7 +60,7 @@ void MeshRendererProxy::DrawMesh(MeshResource* mesh, int startIndex, int primiti
 	data.primitiveType = primitiveType;
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		FlushState, m_manager,
-		MeshRendererProxy*, _this,
+		MeshRenderFeature*, _this,
 		DrawMeshCommandData, data,
 		{
 			_this->DrawMeshImpl(data);
@@ -68,7 +68,7 @@ void MeshRendererProxy::DrawMesh(MeshResource* mesh, int startIndex, int primiti
 }
 
 //------------------------------------------------------------------------------
-void MeshRendererProxy::DrawMeshImpl(const DrawMeshCommandData& data)
+void MeshRenderFeature::DrawMeshImpl(const DrawMeshCommandData& data)
 {
 	m_renderer->SetVertexDeclaration(data.vertexDeclaration);
 	for (int i = 0; i < data.vertexBuffersCount; ++i)

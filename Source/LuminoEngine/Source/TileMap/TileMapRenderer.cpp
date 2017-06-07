@@ -13,7 +13,7 @@
 #include <Lumino/TileMap/TileMapRenderer.h>
 #include <Lumino/TileMap/TileMapModel.h>
 #include "../Graphics/Device/GraphicsDriverInterface.h"
-#include "../Rendering/SpriteRenderer.h"
+#include "../Rendering/SpriteRenderFeature.h"
 
 LN_NAMESPACE_BEGIN
 

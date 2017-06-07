@@ -503,7 +503,7 @@ void VectorTextRendererCore::Render(const VectorGlyphData* dataList, int dataCou
 			vb, ib, beginVertexIndex);
 	}
 
-	// TODO: このへん PrimitiveRenderer と同じ。共通にできないか？
+	// TODO: このへん PrimitiveRenderFeature と同じ。共通にできないか？
 	{
 		// サイズが足りなければ再作成
 		auto* device = m_manager->GetGraphicsDevice();

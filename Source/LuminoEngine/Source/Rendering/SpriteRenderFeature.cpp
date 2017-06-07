@@ -2,7 +2,7 @@
 #include "Internal.h"
 #include <math.h>
 #include <Lumino/Graphics/GraphicsException.h>
-#include "SpriteRenderer.h"
+#include "SpriteRenderFeature.h"
 #include "../Graphics/RenderingCommand.h"
 #include "../Graphics/GraphicsManager.h"
 
@@ -12,17 +12,17 @@ namespace detail
 {
 
 //==============================================================================
-// SpriteRenderer
+// SpriteRenderFeature
 //==============================================================================
 
 //------------------------------------------------------------------------------
-SpriteRenderer* SpriteRenderer::Create(int maxSpriteCount, GraphicsManager* manager)
+SpriteRenderFeature* SpriteRenderFeature::Create(int maxSpriteCount, GraphicsManager* manager)
 {
-	return LN_NEW SpriteRenderer(manager, maxSpriteCount);
+	return LN_NEW SpriteRenderFeature(manager, maxSpriteCount);
 }
 
 //------------------------------------------------------------------------------
-SpriteRenderer::SpriteRenderer(GraphicsManager* manager, int maxSpriteCount)
+SpriteRenderFeature::SpriteRenderFeature(GraphicsManager* manager, int maxSpriteCount)
 	: m_manager(manager)
 	, m_internal(nullptr)
 	, m_spriteSortMode(/*SpriteSortMode::Texture | */SpriteSortMode::DepthBackToFront)
@@ -32,13 +32,13 @@ SpriteRenderer::SpriteRenderer(GraphicsManager* manager, int maxSpriteCount)
 }
 
 //------------------------------------------------------------------------------
-SpriteRenderer::~SpriteRenderer()
+SpriteRenderFeature::~SpriteRenderFeature()
 {
 	LN_SAFE_RELEASE(m_internal);
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderer::SetTransform(const Matrix& matrix)
+void SpriteRenderFeature::SetTransform(const Matrix& matrix)
 {
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		SpriteRenderer_SetTransform, m_manager,
@@ -50,7 +50,7 @@ void SpriteRenderer::SetTransform(const Matrix& matrix)
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderer::SetState(const RenderState& renderState)
+void SpriteRenderFeature::SetState(const RenderState& renderState)
 {
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		SpriteRenderer_SetTransform, m_manager,
@@ -62,7 +62,7 @@ void SpriteRenderer::SetState(const RenderState& renderState)
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderer::SetViewInfo(const Size& size, const Matrix& view, const Matrix& proj)
+void SpriteRenderFeature::SetViewInfo(const Size& size, const Matrix& view, const Matrix& proj)
 {
 	LN_ENQUEUE_RENDER_COMMAND_4(
 		SpriteRenderer_SetTransform, m_manager,
@@ -77,13 +77,13 @@ void SpriteRenderer::SetViewInfo(const Size& size, const Matrix& view, const Mat
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderer::SetSortMode(SpriteSortMode flags, SortingDistanceBasis basis)
+void SpriteRenderFeature::SetSortMode(SpriteSortMode flags, SortingDistanceBasis basis)
 {
 	m_spriteSortMode = flags;
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderer::DrawRequest2D(
+void SpriteRenderFeature::DrawRequest2D(
 	const Vector3& position,
 	const Vector2& size,
 	const Vector2& anchorRatio,
@@ -110,7 +110,7 @@ void SpriteRenderer::DrawRequest2D(
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderer::DrawRequest(
+void SpriteRenderFeature::DrawRequest(
 	const Vector3& position,
 	const Vector2& size,
 	const Vector2& anchorRatio,
@@ -147,7 +147,7 @@ void SpriteRenderer::DrawRequest(
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderer::Flush()
+void SpriteRenderFeature::Flush()
 {
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		SpriteRenderer_Flush, m_manager,
@@ -159,7 +159,7 @@ void SpriteRenderer::Flush()
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderer::MakeBoundingSphere(const Vector2& size, SpriteBaseDirection baseDir, detail::Sphere* sphere)
+void SpriteRenderFeature::MakeBoundingSphere(const Vector2& size, SpriteBaseDirection baseDir, detail::Sphere* sphere)
 {
 	Vector2 half = 0.5f * size;
 	sphere->radius = half.GetLength();

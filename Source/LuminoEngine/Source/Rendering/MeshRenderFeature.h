@@ -11,13 +11,13 @@ namespace detail {
 
 // いまのところ、streamIndex の仕組みをユーザーに公開しないために用意している。
 // メッシュが使う streamIndex 関係の処理は全部この中。
-class MeshRendererProxy
+class MeshRenderFeature
 	: public RefObject
-	, public detail::IRendererPloxy
+	, public detail::IRenderFeature
 {
 public:
-	MeshRendererProxy();
-	~MeshRendererProxy();
+	MeshRenderFeature();
+	~MeshRenderFeature();
 	void Initialize(GraphicsManager* manager);
 
 	void DrawMesh(MeshResource* mesh, int startIndex, int primitiveCount, PrimitiveType primitiveType);

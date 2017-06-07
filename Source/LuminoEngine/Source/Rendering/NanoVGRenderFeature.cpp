@@ -29,7 +29,7 @@ lnnvg__renderFlush
 #include "../Graphics/Device/GraphicsDriverInterface.h"
 #include "../Graphics/GraphicsManager.h"
 #include "../Graphics/RenderingCommand.h"
-#include "NanoVGRenderer.h"
+#include "NanoVGRenderFeature.h"
 
 LN_NAMESPACE_BEGIN
 namespace detail
@@ -936,37 +936,37 @@ RefPtr<NanoVGCommandList> NanoVGCommandListCache::CreateObject()
 
 
 //==============================================================================
-// NanoVGRenderer
+// NanoVGRenderFeature
 //==============================================================================
 //------------------------------------------------------------------------------
-NanoVGRenderer::NanoVGRenderer()
+NanoVGRenderFeature::NanoVGRenderFeature()
 	: m_manager(nullptr)
 	, m_nvgContext(nullptr)
 {
 }
 
 //------------------------------------------------------------------------------
-NanoVGRenderer::~NanoVGRenderer()
+NanoVGRenderFeature::~NanoVGRenderFeature()
 {
 	nvgDeleteLNContext(m_nvgContext);
 }
 
 //------------------------------------------------------------------------------
-void NanoVGRenderer::Initialize(GraphicsManager* manager)
+void NanoVGRenderFeature::Initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 	m_nvgContext = nvgCreateLNContext(m_manager, NVG_ANTIALIAS/* | NVG_STENCIL_STROKES*/);
 }
 
 //------------------------------------------------------------------------------
-void NanoVGRenderer::ExecuteCommand(NanoVGCommandList* commandList)
+void NanoVGRenderFeature::ExecuteCommand(NanoVGCommandList* commandList)
 {
 	if (LN_CHECK_ARG(commandList != nullptr)) return;
 
-	NanoVGRenderer* _this = this;
+	NanoVGRenderFeature* _this = this;
 	LN_ENQUEUE_RENDER_COMMAND_3(
 		ExecuteCommand, m_manager,
-		NanoVGRenderer*, _this,
+		NanoVGRenderFeature*, _this,
 		NanoVGState, m_state,
 		RefPtr<NanoVGCommandList>, commandList,
 		{
@@ -974,13 +974,13 @@ void NanoVGRenderer::ExecuteCommand(NanoVGCommandList* commandList)
 		});
 }
 //------------------------------------------------------------------------------
-void NanoVGRenderer::OnSetState(const DrawElementBatch* state)
+void NanoVGRenderFeature::OnSetState(const DrawElementBatch* state)
 {
 	NanoVGCommandHelper::ExpandState(state->GetTransfrom(), state->state.GetBrush(), state->state.GetPen(), &m_state);
 }
 
 //------------------------------------------------------------------------------
-void NanoVGRenderer::ExecuteCommandInternal(const NanoVGState& state, NanoVGCommandList* commandList)
+void NanoVGRenderFeature::ExecuteCommandInternal(const NanoVGState& state, NanoVGCommandList* commandList)
 {
 	Driver::IRenderer* renderer = m_manager->GetGraphicsDevice()->GetRenderer();
 	const SizeI& size = renderer->GetRenderTarget(0)->GetSize();
@@ -1001,7 +1001,7 @@ void NanoVGRenderer::ExecuteCommandInternal(const NanoVGState& state, NanoVGComm
 }
 
 //------------------------------------------------------------------------------
-void NanoVGRenderer::PushCommandList(NanoVGCommandList* commandList)
+void NanoVGRenderFeature::PushCommandList(NanoVGCommandList* commandList)
 {
 	commandList->Clear();
 

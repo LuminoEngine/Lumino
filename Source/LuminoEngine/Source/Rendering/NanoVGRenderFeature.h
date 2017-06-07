@@ -149,13 +149,13 @@ protected:
 	virtual RefPtr<NanoVGCommandList> CreateObject() override;
 };
 
-class NanoVGRenderer
+class NanoVGRenderFeature
 	: public RefObject
-	, public detail::IRendererPloxy
+	, public detail::IRenderFeature
 {
 public:
-	NanoVGRenderer();
-	virtual ~NanoVGRenderer();
+	NanoVGRenderFeature();
+	virtual ~NanoVGRenderFeature();
 	void Initialize(GraphicsManager* manager);
 
 	void ExecuteCommand(NanoVGCommandList* commandList);

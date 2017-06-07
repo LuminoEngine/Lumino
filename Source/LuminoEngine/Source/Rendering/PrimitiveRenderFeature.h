@@ -52,13 +52,13 @@ private:
 	PrimitiveRendererMode	m_mode;
 };
 
-class PrimitiveRenderer
+class PrimitiveRenderFeature
 	: public RefObject
-	, public detail::IRendererPloxy
+	, public detail::IRenderFeature
 {
 public:
-	PrimitiveRenderer();
-	~PrimitiveRenderer();
+	PrimitiveRenderFeature();
+	~PrimitiveRenderFeature();
 	void Initialize(GraphicsManager* manager);
 
 	void DrawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor);
@@ -114,7 +114,7 @@ private:
 
 class BlitRenderer
 	: public RefObject
-	, public detail::IRendererPloxy
+	, public detail::IRenderFeature
 {
 public:
 	BlitRenderer();

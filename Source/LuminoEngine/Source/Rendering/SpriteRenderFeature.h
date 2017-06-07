@@ -77,7 +77,7 @@ private:
 		int					Priority;       ///< 優先度 (大きい方が後から描画される =手前)
 		float				Depth;          ///< ソートに使われる Z 値 (大きいほど遠い)
 		bool				Visible;
-		bool				Assigned;       ///< SpriteRenderer::getBatchSpriteData() で取得された場合に true になる
+		bool				Assigned;       ///< SpriteRenderFeature::getBatchSpriteData() で取得された場合に true になる
 
 	};
 
@@ -135,18 +135,13 @@ private:
 /**
 	@brief		スプライトの描画を行うクラスです。
 */
-class SpriteRenderer
+class SpriteRenderFeature
 	: public RefObject
-	, public detail::IRendererPloxy
+	, public detail::IRenderFeature
 {
 public:
 
-	/**
-		@brief		SpriteRenderer のインスタンスを作成します。
-		@param[in]	maxSpriteCount	: 一度のバッチ描画で描画できる最大スプライト数
-		@param[in]	manager			: 作成に使用する GraphicsManager
-	*/
-	static SpriteRenderer* Create(int maxSpriteCount, GraphicsManager* manager);
+	static SpriteRenderFeature* Create(int maxSpriteCount, GraphicsManager* manager);
 
 public:
 
@@ -213,8 +208,8 @@ public:
 	static void MakeBoundingSphere(const Vector2& size, SpriteBaseDirection baseDir, detail::Sphere* sphere);
 
 LN_INTERNAL_ACCESS:
-	SpriteRenderer(GraphicsManager* manager, int maxSpriteCount);
-	virtual ~SpriteRenderer();
+	SpriteRenderFeature(GraphicsManager* manager, int maxSpriteCount);
+	virtual ~SpriteRenderFeature();
 	GraphicsManager*	m_manager;
 	SpriteRendererImpl*	m_internal;
 	SpriteSortMode		m_spriteSortMode;

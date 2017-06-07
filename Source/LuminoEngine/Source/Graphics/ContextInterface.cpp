@@ -237,7 +237,7 @@ void ContextInterface::NorityStateChanging()
 }
 
 //------------------------------------------------------------------------------
-void ContextInterface::NorityStartDrawing(detail::IRendererPloxy* rendererPloxy)
+void ContextInterface::NorityStartDrawing(detail::IRenderFeature* rendererPloxy)
 {
 	m_manager->SwitchActiveContext(this);
 
@@ -290,7 +290,7 @@ void ContextInterface::OnDeactivated()
 }
 
 //------------------------------------------------------------------------------
-void ContextInterface::OnStateFlush(detail::IRendererPloxy* activeRenderer)
+void ContextInterface::OnStateFlush(detail::IRenderFeature* activeRenderer)
 {
 }
 
@@ -309,7 +309,7 @@ void ContextInterface::OnShaderVariableModified(ShaderVariable* var)
 }
 
 //------------------------------------------------------------------------------
-void ContextInterface::SwitchActiveRendererPloxy(detail::IRendererPloxy* rendererPloxy)
+void ContextInterface::SwitchActiveRendererPloxy(detail::IRenderFeature* rendererPloxy)
 {
 	if (rendererPloxy != m_activeRendererPloxy)
 	{
