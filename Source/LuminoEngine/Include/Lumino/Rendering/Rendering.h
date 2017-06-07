@@ -169,6 +169,8 @@ public:
 	DrawElementMetadata	metadata;
 	int					m_stateFence;
 
+	DrawElementList*	m_ownerDrawElementList;
+
 	DrawElement();
 	virtual ~DrawElement();
 
@@ -341,6 +343,7 @@ public:
 		auto handle = m_commandDataCache.AllocData(sizeof(T));
 		T* t = new (m_commandDataCache.GetData(handle))T(args...);
 		PostAddCommandInternal(state, availableMaterial, transform, effectData, t);
+		t->m_ownerDrawElementList = this;
 		return t;
 	}
 
@@ -375,6 +378,10 @@ private:
 };
 
 
+
+/**
+	@brief	シーンの描画方法を定義し、描画コマンドを実行します。
+*/
 class SceneRenderer
 	: public RefObject
 {
@@ -385,8 +392,8 @@ public:
 
 	void Render(
 		RenderView* drawElementListSet,
-		DrawElementList* elementList,
-		const detail::CameraInfo& cameraInfo,
+		//DrawElementList* elementList,
+		//const detail::CameraInfo& cameraInfo,
 		RenderTargetTexture* defaultRenderTarget,
 		DepthBuffer* defaultDepthBuffer,
 		RenderDiag* diag);

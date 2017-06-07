@@ -160,6 +160,7 @@ void UIFrameWindow::Initialize_UIRenderer()
 	m_internalRenderer = internalRenderer;
 
 	m_drawElementListSet = RefPtr<RenderView>::MakeRef();
+	m_drawElementListSet->m_lists.Add(m_drawingContext->GetDrawElementList());
 
 	m_renderDiag = NewObject<RenderDiag>();
 }
@@ -207,8 +208,8 @@ void UIFrameWindow::ExecuteDrawList_UIRenderer()
 	m_drawElementListSet->m_cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
 	m_internalRenderer->Render(
 		m_drawElementListSet,
-		m_drawingContext->GetDrawElementList(),
-		m_drawElementListSet->m_cameraInfo,
+		//m_drawingContext->GetDrawElementList(),
+		//m_drawElementListSet->m_cameraInfo,
 		renderTarget,
 		depthBuffer,
 		m_renderDiag);

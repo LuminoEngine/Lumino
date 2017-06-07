@@ -33,6 +33,7 @@ World::~World()
 void World::Initialize()
 {
 	m_renderer = NewObject<DrawList>(detail::EngineDomain::GetGraphicsManager());
+	m_insideWorldRenderer = NewObject<DrawList>(detail::EngineDomain::GetGraphicsManager());
 	m_debugRenderer = NewObject<DrawList>(detail::EngineDomain::GetGraphicsManager());
 
 	m_debugRendererDefaultMaterial = NewObject<Material>();

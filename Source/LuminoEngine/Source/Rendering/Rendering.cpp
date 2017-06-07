@@ -787,8 +787,8 @@ void SceneRenderer::AddPass(RenderingPass2* pass)
 //------------------------------------------------------------------------------
 void SceneRenderer::Render(
 	RenderView* drawElementListSet,
-	DrawElementList* elementList,
-	const detail::CameraInfo& cameraInfo,
+	//DrawElementList* elementList,
+	//const detail::CameraInfo& cameraInfo,
 	RenderTargetTexture* defaultRenderTarget,
 	DepthBuffer* defaultDepthBuffer,
 	RenderDiag* diag)
@@ -796,36 +796,41 @@ void SceneRenderer::Render(
 	if (diag != nullptr) diag->BeginRenderView();
 	if (diag != nullptr) diag->BeginDrawList();
 
-	elementList->SetDefaultRenderTarget(defaultRenderTarget);
-	elementList->SetDefaultDepthBuffer(defaultDepthBuffer);
-
-	OnPreRender(elementList);
-
 	InternalContext* context = m_manager->GetInternalContext();
+	const detail::CameraInfo& cameraInfo = drawElementListSet->m_cameraInfo;
+
 	drawElementListSet->m_renderingElementList.Clear();
 
-	// 視点に関する情報の設定
-	context->SetViewInfo(cameraInfo.viewPixelSize, cameraInfo.viewMatrix, cameraInfo.projMatrix);
-
-	// ライブラリ外部への書き込み対応
-	//context->BeginBaseRenderer()->Clear(ClearFlags::Depth/* | ClearFlags::Stencil*/, Color());
-
-	// 視錘台カリング
-	for (int i = 0; i < elementList->GetElementCount(); ++i)
+	// Collect
+	for (auto& elementList : drawElementListSet->m_lists)
 	{
-		DrawElement* element = elementList->GetElement(i);
-		Sphere boundingSphere = element->GetBoundingSphere();
+		elementList->SetDefaultRenderTarget(defaultRenderTarget);
+		elementList->SetDefaultDepthBuffer(defaultDepthBuffer);
 
-		if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
-			cameraInfo.viewFrustum.Intersects(boundingSphere.center, boundingSphere.radius))
+		OnPreRender(elementList);
+
+		// 視点に関する情報の設定
+		context->SetViewInfo(cameraInfo.viewPixelSize, cameraInfo.viewMatrix, cameraInfo.projMatrix);
+
+		// ライブラリ外部への書き込み対応
+		//context->BeginBaseRenderer()->Clear(ClearFlags::Depth/* | ClearFlags::Stencil*/, Color());
+
+		// 視錘台カリング
+		for (int i = 0; i < elementList->GetElementCount(); ++i)
 		{
-			// このノードは描画できる
-			drawElementListSet->m_renderingElementList.Add(element);
+			DrawElement* element = elementList->GetElement(i);
+			Sphere boundingSphere = element->GetBoundingSphere();
 
-			// calculate distance for ZSort
-			const Matrix& transform = element->GetTransform(elementList);
-			switch (cameraInfo.zSortDistanceBase)
+			if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
+				cameraInfo.viewFrustum.Intersects(boundingSphere.center, boundingSphere.radius))
 			{
+				// このノードは描画できる
+				drawElementListSet->m_renderingElementList.Add(element);
+
+				// calculate distance for ZSort
+				const Matrix& transform = element->GetTransform(elementList);
+				switch (cameraInfo.zSortDistanceBase)
+				{
 				case ZSortDistanceBase::NodeZ:
 					element->zDistance = transform.GetPosition().z;
 					break;
@@ -836,30 +841,24 @@ void SceneRenderer::Render(
 					element->zDistance = Vector3::Dot(
 						transform.GetPosition() - cameraInfo.viewPosition,
 						transform.GetFront());		// 平面と点の距離
-						// TODO: ↑第2引数違くない？要確認
+													// TODO: ↑第2引数違くない？要確認
 					break;
 				default:
 					element->zDistance = 0.0f;
 					break;
+				}
 			}
 		}
 	}
 
-	/*
-	if (left->m_priority == right->m_priority)
+	// Prepare
 	{
-		// 距離は降順。遠いほうを先に描画する。
-		return left->m_zDistance > right->m_zDistance;
-	}
-	// 優先度は降順。高いほうを先に描画する。
-	return left->m_priority > right->m_priority;
-	*/
-	// 距離は降順。遠いほうを先に描画する
-	// 優先度は昇順。高いほうを手前に描画する (UE4 ESceneDepthPriorityGroup)
-	// フェンスID は昇順。高いほうを後に描画する
-	std::stable_sort(
-		drawElementListSet->m_renderingElementList.begin(), drawElementListSet->m_renderingElementList.end(),
-		[](const DrawElement* lhs, const DrawElement* rhs)
+		// 距離は降順。遠いほうを先に描画する
+		// 優先度は昇順。高いほうを手前に描画する (UE4 ESceneDepthPriorityGroup)
+		// フェンスID は昇順。高いほうを後に描画する
+		std::stable_sort(
+			drawElementListSet->m_renderingElementList.begin(), drawElementListSet->m_renderingElementList.end(),
+			[](const DrawElement* lhs, const DrawElement* rhs)
 		{
 			if (lhs->m_stateFence == rhs->m_stateFence)
 			{
@@ -872,10 +871,11 @@ void SceneRenderer::Render(
 				return lhs->m_stateFence < rhs->m_stateFence;
 			}
 		}
-	);
+		);
+	}
 
 	DrawElement::DrawArgs drawArgs;
-	drawArgs.oenerList = elementList;
+	//drawArgs.oenerList = elementList;
 	drawArgs.context = context;
 	drawArgs.renderer = this;
 	drawArgs.defaultRenderTarget = defaultRenderTarget;
@@ -885,19 +885,23 @@ void SceneRenderer::Render(
 	for (RenderingPass2* pass : m_renderingPassList)
 	{
 		// DrawElement 描画
-		int currentBatchIndex = -1;
+		//int currentBatchIndex = -1;
 		DrawElementBatch* currentState = nullptr;
 		//Shader* currentShader = nullptr;
 		for (DrawElement* element : drawElementListSet->m_renderingElementList)
 		{
 			bool visible = true;
+			drawArgs.oenerList = element->m_ownerDrawElementList;
+
+			DrawElementBatch* batch = element->m_ownerDrawElementList->GetBatch(element->batchIndex);
 
 			// ステートの変わり目チェック
-			if (element->batchIndex != currentBatchIndex)
+			//if (element->batchIndex != currentBatchIndex)
+			if (currentState == nullptr || currentState->GetHashCode() != batch->GetHashCode())
 			{
 				context->Flush();
-				currentBatchIndex = element->batchIndex;
-				currentState = elementList->GetBatch(currentBatchIndex);
+				//currentBatchIndex = element->batchIndex;
+				currentState = batch;
 				context->ApplyStatus(currentState, { defaultRenderTarget, defaultDepthBuffer });
 				if (diag != nullptr) diag->ChangeRenderStage();
 			}
@@ -915,10 +919,10 @@ void SceneRenderer::Render(
 					Shader* shader = policy.shader;
 
 					ElementInfo elementInfo;
-					element->MakeElementInfo(elementList, cameraInfo, &elementInfo);
+					element->MakeElementInfo(element->m_ownerDrawElementList, cameraInfo, &elementInfo);
 
 					SubsetInfo subsetInfo;
-					element->MakeSubsetInfo(elementList, material, &subsetInfo);
+					element->MakeSubsetInfo(element->m_ownerDrawElementList, material, &subsetInfo);
 
 					shader->GetSemanticsManager()->UpdateCameraVariables(cameraInfo);
 					shader->GetSemanticsManager()->UpdateElementVariables(elementInfo);
@@ -2150,12 +2154,7 @@ void DrawList::RenderSubView(RenderView* listSet, detail::SceneRenderer* rendere
 			// TODO: scoped change block
 			auto* status = e.context->GetCurrentStatus();
 
-			// TODO: Zソートは結合してやりたいので、外側で for するのはだめ。
-			// また、バッチはindexで管理しているので、Element は親 list を参照する必要がある。
-			for (auto& list : listSet->m_lists)
-			{
-				primRenderer->Render(listSet, list, listSet->m_cameraInfo, primRenderTarget, primDepthBuffer, e.diag);
-			}
+			primRenderer->Render(listSet, primRenderTarget, primDepthBuffer, e.diag);
 
 			// ステート復帰
 			e.context->ApplyStatus(status, { e.defaultRenderTarget, e.defaultDepthBuffer });

@@ -105,7 +105,7 @@ void OffscreenWorldView::RenderWorld(World* world, CameraComponent* camera)
 
 	
 
-
+	// TODO: World が持つ DrawList を使いまわす場合、というか、ここで DrawList を実行する場合、親から diag とか継承する必要がある。
 	DrawList* r = world->GetRenderer();
 	r->RenderSubView(m_drawElementListSet);
 

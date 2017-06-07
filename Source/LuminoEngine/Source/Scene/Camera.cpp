@@ -448,6 +448,7 @@ void CameraViewportLayer2::Initialize(World* targetWorld, CameraComponent* hosti
 	}
 
 	m_mainRenderView = RefPtr<RenderView>::MakeRef();
+	m_mainRenderView->m_lists.Add(m_targetWorld->GetInsideWorldRenderer()->GetDrawElementList());
 	m_mainRenderView->m_lists.Add(m_targetWorld->GetRenderer()->GetDrawElementList());
 	m_mainRenderView->m_lists.Add(m_targetWorld->GetDebugRenderer()->GetDrawElementList());
 }
