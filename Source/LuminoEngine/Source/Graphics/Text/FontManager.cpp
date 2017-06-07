@@ -153,12 +153,13 @@ void FontManager::Initialize(FileManager* fileManager, GraphicsManager* graphics
 }
 
 //------------------------------------------------------------------------------
-void FontManager::Finalize()
+void FontManager::Dispose()
 {
-	//for (FreeTypeFont* font : m_freeTypeFontList)
-	//{
-	//	font->
-	//}
+	auto disposeList = m_fontResourceList;
+	for (RawFont* font : disposeList)
+	{
+		font->Dispose_();
+	}
 
 	m_builtinFontList.Clear();
 	//LN_SAFE_RELEASE();

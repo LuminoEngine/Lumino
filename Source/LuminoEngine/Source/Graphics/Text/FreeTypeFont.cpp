@@ -135,13 +135,6 @@ FreeTypeFont::FreeTypeFont()
 //------------------------------------------------------------------------------
 FreeTypeFont::~FreeTypeFont()
 {
-	Dispose();
-
-	if (m_ftStroker)
-	{
-		FT_Stroker_Done(m_ftStroker);
-		m_ftStroker = NULL;
-	}
 }
 
 //------------------------------------------------------------------------------
@@ -161,6 +154,16 @@ void FreeTypeFont::Initialize()
 	m_ftOutlineFuncs.cubic_to = (FT_Outline_CubicTo_Func)ftCubicToCallback;
 	m_ftOutlineFuncs.shift = 0;
 	m_ftOutlineFuncs.delta = 0;
+}
+
+//------------------------------------------------------------------------------
+void FreeTypeFont::Dispose_()
+{
+	if (m_ftStroker)
+	{
+		FT_Stroker_Done(m_ftStroker);
+		m_ftStroker = NULL;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -976,17 +979,6 @@ void FreeTypeFont::TryUpdateStroke(int newEdgeSize)
 		// ImageFlags 再設定
 		UpdateImageFlags();
 	}
-}
-
-//------------------------------------------------------------------------------
-void FreeTypeFont::Dispose()
-{
-	
-
-	//SAFE_DELETE_ARRAY(mPixelList);
-
-	// キャッシュを使用している場合、FT_Done_Face( m_ftFace ); などで解放の必要はない。
-	// 解放してしまうと、CacheManager の解放時に NULL アクセスが起こる。
 }
 
 //------------------------------------------------------------------------------

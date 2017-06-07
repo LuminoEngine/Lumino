@@ -54,6 +54,7 @@ void VertexDeclaration::Initialize(detail::GraphicsManager* manager, const Verte
 void VertexDeclaration::Dispose()
 {
 	m_deviceObj.SafeRelease();
+	GraphicsResourceObject::Dispose();
 }
 
 //------------------------------------------------------------------------------

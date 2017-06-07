@@ -59,6 +59,7 @@ public:
 	FreeTypeFont();
 	virtual ~FreeTypeFont();
 	void Initialize();
+	virtual void Dispose_() override;
 
 public:
 	virtual void SetName(const String& fontName) { m_fontData.Family = fontName; m_modified = true; }
@@ -96,7 +97,6 @@ public:
 	FT_Int GetFTCacheMapIndex() const { return m_ftCacheMapIndex; }
 
 LN_INTERNAL_ACCESS:	// TODO
-	void Dispose();
 	void UpdateFont();
 	void RefreshBitmap(Bitmap* bitmap, FT_Bitmap* ftBitmap);
 	void UpdateImageFlags();

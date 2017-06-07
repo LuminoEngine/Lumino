@@ -307,6 +307,8 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~RawFont();
 	void Initialize();
 	virtual void Finalize_();
+
+LN_PROTECTED_INTERNAL_ACCESS:
 	virtual void Dispose_();
 
 LN_INTERNAL_ACCESS:

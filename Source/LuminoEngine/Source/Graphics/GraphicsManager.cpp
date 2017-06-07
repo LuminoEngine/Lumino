@@ -134,7 +134,6 @@ GraphicsManager::~GraphicsManager()
 
 	if (m_fontManager != nullptr)
 	{
-		m_fontManager->Finalize();
 		LN_SAFE_RELEASE(m_fontManager);
 	}
 
@@ -320,6 +319,11 @@ void GraphicsManager::Dispose()
 	{
 		m_renderingThread->Dispose();
 		LN_SAFE_DELETE(m_renderingThread);
+	}
+
+	if (m_fontManager != nullptr)
+	{
+		m_fontManager->Dispose();
 	}
 
 	// TODO: なんか量がすごいことになっている。多分 VertexDecl。Diag で監視する。

@@ -447,9 +447,9 @@ void CameraViewportLayer2::Initialize(World* targetWorld, CameraComponent* hosti
 		m_internalRenderer = internalRenderer;
 	}
 
-	m_drawElementListSet = RefPtr<RenderView>::MakeRef();
-	m_drawElementListSet->m_lists.Add(m_targetWorld->GetRenderer()->GetDrawElementList());
-	m_drawElementListSet->m_lists.Add(m_targetWorld->GetDebugRenderer()->GetDrawElementList());
+	m_mainRenderView = RefPtr<RenderView>::MakeRef();
+	m_mainRenderView->m_lists.Add(m_targetWorld->GetRenderer()->GetDrawElementList());
+	m_mainRenderView->m_lists.Add(m_targetWorld->GetDebugRenderer()->GetDrawElementList());
 }
 
 //------------------------------------------------------------------------------
@@ -492,16 +492,16 @@ void CameraViewportLayer2::ExecuteDrawListRendering(DrawList* parentDrawList, Re
 	m_hostingCamera->UpdateMatrices(targetSize);
 
 	//detail::CameraInfo cameraInfo;
-	m_drawElementListSet->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.Get());
-	m_drawElementListSet->m_cameraInfo.viewPixelSize = targetSize;
-	m_drawElementListSet->m_cameraInfo.viewPosition = m_hostingCamera->GetTransform()->GetWorldMatrix().GetPosition();
-	m_drawElementListSet->m_cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
-	m_drawElementListSet->m_cameraInfo.projMatrix = m_hostingCamera->GetProjectionMatrix();
-	m_drawElementListSet->m_cameraInfo.viewProjMatrix = m_hostingCamera->GetViewProjectionMatrix();
-	m_drawElementListSet->m_cameraInfo.viewFrustum = m_hostingCamera->GetViewFrustum();
-	m_drawElementListSet->m_cameraInfo.zSortDistanceBase = m_hostingCamera->GetZSortDistanceBase();
+	m_mainRenderView->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.Get());
+	m_mainRenderView->m_cameraInfo.viewPixelSize = targetSize;
+	m_mainRenderView->m_cameraInfo.viewPosition = m_hostingCamera->GetTransform()->GetWorldMatrix().GetPosition();
+	m_mainRenderView->m_cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
+	m_mainRenderView->m_cameraInfo.projMatrix = m_hostingCamera->GetProjectionMatrix();
+	m_mainRenderView->m_cameraInfo.viewProjMatrix = m_hostingCamera->GetViewProjectionMatrix();
+	m_mainRenderView->m_cameraInfo.viewFrustum = m_hostingCamera->GetViewFrustum();
+	m_mainRenderView->m_cameraInfo.zSortDistanceBase = m_hostingCamera->GetZSortDistanceBase();
 	parentDrawList->RenderSubView(
-		m_drawElementListSet,
+		m_mainRenderView,
 		m_internalRenderer,
 		renderTarget,
 		depthBuffer);
