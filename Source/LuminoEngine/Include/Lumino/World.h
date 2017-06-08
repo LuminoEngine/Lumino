@@ -16,6 +16,7 @@ class PhysicsWorld;
 class WorldObject;
 class UIEventArgs;
 class OffscreenWorldView;
+class RenderView;
 
 /** */
 LN_ENUM_FLAGS(WorldDebugDrawFlags)
@@ -55,7 +56,7 @@ LN_INTERNAL_ACCESS:
 	void RemoveOffscreenWorldView(OffscreenWorldView* view);
 	virtual void BeginUpdateFrame();
 	virtual void UpdateFrame(float elapsedTime);
-	void RenderRoot(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags);
+	void RenderRoot(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, RenderView* mainRenderView);
 	virtual void Render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen = nullptr);
 	void ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
 	virtual void OnUIEvent(UIEventArgs* e);

@@ -481,8 +481,9 @@ void CameraViewportLayer2::Render()
 
 	// カメラ行列の更新
 	m_hostingCamera->UpdateMatrices(GetOwnerViewport()->GetViewSize());
+	m_mainRenderView->SetViewSize(GetOwnerViewport()->GetViewSize());
 
-	m_targetWorld->RenderRoot(m_hostingCamera, m_debugDrawFlags);
+	m_targetWorld->RenderRoot(m_hostingCamera, m_debugDrawFlags, m_mainRenderView);
 }
 
 //------------------------------------------------------------------------------
@@ -506,7 +507,6 @@ void CameraViewportLayer2::ExecuteDrawListRendering(DrawList* parentDrawList, Re
 		m_internalRenderer,
 		renderTarget,
 		depthBuffer);
-	m_targetWorld->GetRenderer()->EndFrame();
 }
 
 //------------------------------------------------------------------------------

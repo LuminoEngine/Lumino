@@ -947,6 +947,11 @@ void SceneRenderer::Render(
 		context->Flush();
 	}
 
+	// Flush
+	{
+		m_manager->GetInternalContext()->Flush();
+	}
+
 	if (diag != nullptr) diag->EndDrawList();
 	if (diag != nullptr) diag->EndRenderView();
 }
@@ -1479,12 +1484,6 @@ void DrawList::BeginMakeElements()
 	//m_defaultMaterial->cullingMode = CullingMode::None;
 	m_currentSectionTopElement = nullptr;
 	m_currentStateFence = 0;
-}
-
-//------------------------------------------------------------------------------
-void DrawList::EndFrame()
-{
-	m_manager->GetInternalContext()->Flush();
 }
 
 ////------------------------------------------------------------------------------

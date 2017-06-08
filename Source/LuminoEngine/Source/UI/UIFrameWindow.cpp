@@ -213,7 +213,6 @@ void UIFrameWindow::ExecuteDrawList_UIRenderer()
 		renderTarget,
 		depthBuffer,
 		m_renderDiag);
-	m_drawingContext->EndFrame();
 }
 
 

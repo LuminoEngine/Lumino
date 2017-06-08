@@ -374,7 +374,6 @@ void UILayoutLayer::ExecuteDrawListRendering(DrawList* parentDrawList, RenderTar
 		m_internalRenderer,
 		renderTarget,
 		depthBuffer);
-	m_drawingContext->EndFrame();
 }
 
 //------------------------------------------------------------------------------

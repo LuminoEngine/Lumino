@@ -65,7 +65,7 @@ void OffscreenWorldView::HideVisual(VisualComponent* renderObject)
 }
 
 //------------------------------------------------------------------------------
-void OffscreenWorldView::RenderWorld(World* world, CameraComponent* mainViewCamera)
+void OffscreenWorldView::RenderWorld(World* world, CameraComponent* mainViewCamera, RenderView* mainRenderView)
 {
 	m_renderer->BeginMakeElements();
 
@@ -75,8 +75,7 @@ void OffscreenWorldView::RenderWorld(World* world, CameraComponent* mainViewCame
 
 	if (m_renderTarget == nullptr)
 	{
-		// TODO: size 指定
-		m_renderTarget = NewObject<RenderTargetTexture>(SizeI(640, 480)/*backbuffer->GetSize()*/, 1, TextureFormat::R8G8B8X8);
+		m_renderTarget = NewObject<RenderTargetTexture>(SizeI::FromFloatSize(mainRenderView->GetViewSize()), 1, TextureFormat::R8G8B8X8);
 	}
 	//else if (m_renderTarget->GetSize() != backbuffer->GetSize())
 	//{
@@ -122,11 +121,8 @@ void OffscreenWorldView::RenderWorld(World* world, CameraComponent* mainViewCame
 	// user override
 	OnUpdateRenderViewPoint(m_renderView);
 
-	// TODO: World が持つ DrawList を使いまわす場合、というか、ここで DrawList を実行する場合、親から diag とか継承する必要がある。
 	DrawList* r = world->GetRenderer();
 	r->RenderSubView(m_renderView);
-
-
 }
 
 //------------------------------------------------------------------------------

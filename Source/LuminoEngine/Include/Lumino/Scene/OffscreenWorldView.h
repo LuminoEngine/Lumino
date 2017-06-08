@@ -27,7 +27,7 @@ LN_INTERNAL_ACCESS:
 	void Initialize();
 	void SetId(int id) { m_id = id; }
 	int GetId() const { return m_id; }
-	void RenderWorld(World* world, CameraComponent* mainViewCamera);
+	void RenderWorld(World* world, CameraComponent* mainViewCamera, RenderView* mainRenderView);
 	bool FilterRenderObject(VisualComponent* renderObject);
 	detail::OffscreenFilterInfo* UpdateRenderObjectFilterInfo(VisualComponent* renderObject);
 

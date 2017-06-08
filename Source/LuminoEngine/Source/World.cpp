@@ -134,12 +134,12 @@ void World::UpdateFrame(float elapsedTime)
 }
 
 //------------------------------------------------------------------------------
-void World::RenderRoot(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags)
+void World::RenderRoot(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, RenderView* mainRenderView)
 {
 	// pre render
 	for (auto& view : m_offscreenWorldViewList)
 	{
-		view->RenderWorld(this, camera);
+		view->RenderWorld(this, camera, mainRenderView);
 	}
 
 	// main render

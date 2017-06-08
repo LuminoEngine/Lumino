@@ -682,6 +682,16 @@ public:
 
 	// 作業用
 	List<detail::DrawElement*>				m_renderingElementList;
+
+
+	const ln::Size& GetViewSize() const { return m_viewSize; }
+
+LN_INTERNAL_ACCESS:
+	void SetViewSize(const ln::Size& size) { m_viewSize = size; }
+
+private:
+	ln::Size    m_viewSize;
+
 };
 
 
@@ -824,7 +834,6 @@ LN_INTERNAL_ACCESS:
 	void SetDefaultMaterial(Material* material);
 	void SetBuiltinEffectData(const detail::BuiltinEffectData& data);
 	void BeginMakeElements();
-	void EndFrame();
 
 	const detail::BatchStateBlock& GetState() const { return m_state; }
 	void SetState(const detail::BatchStateBlock& state) { m_state = state; }
