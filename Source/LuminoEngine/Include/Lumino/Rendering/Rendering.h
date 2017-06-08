@@ -672,7 +672,7 @@ public:
 	@brief	ある視点を起点としたレンダリングのエントリーポイントとなるビューを表します。
 */
 class RenderView
-	: public RefObject
+	: public Object
 {
 public:
 	// 描画リストと視点情報のまとまり。

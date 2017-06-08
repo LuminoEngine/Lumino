@@ -10,7 +10,7 @@ class VisualComponent;
 	@brief		
 */
 class OffscreenWorldView
-	: public Object
+	: public RenderView
 {
 public:
 	//CameraComponent* GetCamera() const;
@@ -19,7 +19,7 @@ public:
 	void HideVisual(VisualComponent* renderObject);
 
 protected:
-	virtual void OnUpdateRenderViewPoint(RenderView* renderView);
+	virtual void OnPrepareRender(CameraComponent* mainViewCamera);
 
 LN_INTERNAL_ACCESS:
 	OffscreenWorldView();
@@ -34,7 +34,7 @@ LN_INTERNAL_ACCESS:
 private:
 	RefPtr<RenderTargetTexture>	m_renderTarget;
 	RefPtr<DrawList>			m_renderer;
-	RefPtr<RenderView>			m_renderView;
+	//RefPtr<RenderView>			m_renderView;
 	int							m_id;
 };
 

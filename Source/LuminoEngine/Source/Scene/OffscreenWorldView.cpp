@@ -44,11 +44,12 @@ OffscreenWorldView::~OffscreenWorldView()
 //------------------------------------------------------------------------------
 void OffscreenWorldView::Initialize()
 {
-	Object::Initialize();
+	RenderView::Initialize();
 	m_renderer = NewObject<DrawList>(detail::EngineDomain::GetGraphicsManager());
 
-	m_renderView = RefPtr<RenderView>::MakeRef();
-	m_renderView->m_lists.Add(m_renderer->GetDrawElementList());
+	//m_renderView = RefPtr<RenderView>::MakeRef();
+	//m_renderView->
+	m_lists.Add(m_renderer->GetDrawElementList());
 }
 
 //------------------------------------------------------------------------------
@@ -65,8 +66,36 @@ void OffscreenWorldView::HideVisual(VisualComponent* renderObject)
 }
 
 //------------------------------------------------------------------------------
+void OffscreenWorldView::OnPrepareRender(CameraComponent* mainViewCamera)
+{
+}
+
+//------------------------------------------------------------------------------
 void OffscreenWorldView::RenderWorld(World* world, CameraComponent* mainViewCamera, RenderView* mainRenderView)
 {
+
+	// TODO: Camera.cpp あたりと全く同じ処理
+	auto* m_hostingCamera = mainViewCamera;
+	auto*m_renderView = this;
+	m_renderView->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera) + 1;
+	m_renderView->m_cameraInfo.viewPixelSize = Size(640, 480);
+	m_renderView->m_cameraInfo.viewPosition = m_hostingCamera->GetTransform()->GetWorldMatrix().GetPosition();
+	//m_renderView->m_cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
+
+	m_renderView->m_cameraInfo.viewMatrix = Matrix::MakeReflection(Plane(Vector3::UnitY)) *  m_hostingCamera->GetViewMatrix();
+
+	m_renderView->m_cameraInfo.projMatrix = m_hostingCamera->GetProjectionMatrix();
+	m_renderView->m_cameraInfo.viewProjMatrix = m_hostingCamera->GetViewProjectionMatrix();
+	m_renderView->m_cameraInfo.viewFrustum = m_hostingCamera->GetViewFrustum();
+	m_renderView->m_cameraInfo.zSortDistanceBase = m_hostingCamera->GetZSortDistanceBase();
+
+
+
+
+
+
+
+
 	m_renderer->BeginMakeElements();
 
 
@@ -104,22 +133,9 @@ void OffscreenWorldView::RenderWorld(World* world, CameraComponent* mainViewCame
 
 
 
-	// TODO: Camera.cpp あたりと全く同じ処理
-	auto* m_hostingCamera = mainViewCamera;
-	m_renderView->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera) + 1;
-	m_renderView->m_cameraInfo.viewPixelSize = Size(640, 480);
-	m_renderView->m_cameraInfo.viewPosition = m_hostingCamera->GetTransform()->GetWorldMatrix().GetPosition();
-	//m_renderView->m_cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
-
-	m_renderView->m_cameraInfo.viewMatrix = Matrix::MakeReflection(Plane(Vector3::UnitY)) *  m_hostingCamera->GetViewMatrix();
-
-	m_renderView->m_cameraInfo.projMatrix = m_hostingCamera->GetProjectionMatrix();
-	m_renderView->m_cameraInfo.viewProjMatrix = m_hostingCamera->GetViewProjectionMatrix();
-	m_renderView->m_cameraInfo.viewFrustum = m_hostingCamera->GetViewFrustum();
-	m_renderView->m_cameraInfo.zSortDistanceBase = m_hostingCamera->GetZSortDistanceBase();
 
 	// user override
-	OnUpdateRenderViewPoint(m_renderView);
+	//OnUpdateRenderViewPoint(m_renderView);
 
 	DrawList* r = world->GetRenderer();
 	r->RenderSubView(m_renderView);
@@ -147,10 +163,6 @@ detail::OffscreenFilterInfo* OffscreenWorldView::UpdateRenderObjectFilterInfo(Vi
 	return filterInfo;
 }
 
-//------------------------------------------------------------------------------
-void OffscreenWorldView::OnUpdateRenderViewPoint(RenderView* renderView)
-{
-}
 
 //==============================================================================
 // MirrorComponent
