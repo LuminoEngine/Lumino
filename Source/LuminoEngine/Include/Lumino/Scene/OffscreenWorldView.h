@@ -13,13 +13,13 @@ class OffscreenWorldView
 	: public RenderView
 {
 public:
-	//CameraComponent* GetCamera() const;
 	RenderTargetTexture* GetRenderTarget() const;
 
 	void HideVisual(VisualComponent* renderObject);
 
 protected:
-	virtual void OnPrepareRender(CameraComponent* mainViewCamera);
+	virtual Matrix CalculateViewMatrix(CameraComponent* mainViewCamera);
+	virtual Matrix CalculateProjectionMatrix(CameraComponent* mainViewCamera);
 
 LN_INTERNAL_ACCESS:
 	OffscreenWorldView();
@@ -34,7 +34,6 @@ LN_INTERNAL_ACCESS:
 private:
 	RefPtr<RenderTargetTexture>	m_renderTarget;
 	RefPtr<DrawList>			m_renderer;
-	//RefPtr<RenderView>			m_renderView;
 	int							m_id;
 };
 

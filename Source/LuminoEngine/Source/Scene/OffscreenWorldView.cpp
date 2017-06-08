@@ -66,28 +66,28 @@ void OffscreenWorldView::HideVisual(VisualComponent* renderObject)
 }
 
 //------------------------------------------------------------------------------
-void OffscreenWorldView::OnPrepareRender(CameraComponent* mainViewCamera)
+Matrix OffscreenWorldView::CalculateViewMatrix(CameraComponent* mainViewCamera)
 {
+	return Matrix::MakeReflection(Plane(Vector3::UnitY)) * mainViewCamera->GetViewMatrix();
+}
+
+//------------------------------------------------------------------------------
+Matrix OffscreenWorldView::CalculateProjectionMatrix(CameraComponent* mainViewCamera)
+{
+	return mainViewCamera->GetProjectionMatrix();;
 }
 
 //------------------------------------------------------------------------------
 void OffscreenWorldView::RenderWorld(World* world, CameraComponent* mainViewCamera, RenderView* mainRenderView)
 {
-
-	// TODO: Camera.cpp あたりと全く同じ処理
-	auto* m_hostingCamera = mainViewCamera;
-	auto*m_renderView = this;
-	m_renderView->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera) + 1;
-	m_renderView->m_cameraInfo.viewPixelSize = Size(640, 480);
-	m_renderView->m_cameraInfo.viewPosition = m_hostingCamera->GetTransform()->GetWorldMatrix().GetPosition();
-	//m_renderView->m_cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
-
-	m_renderView->m_cameraInfo.viewMatrix = Matrix::MakeReflection(Plane(Vector3::UnitY)) *  m_hostingCamera->GetViewMatrix();
-
-	m_renderView->m_cameraInfo.projMatrix = m_hostingCamera->GetProjectionMatrix();
-	m_renderView->m_cameraInfo.viewProjMatrix = m_hostingCamera->GetViewProjectionMatrix();
-	m_renderView->m_cameraInfo.viewFrustum = m_hostingCamera->GetViewFrustum();
-	m_renderView->m_cameraInfo.zSortDistanceBase = m_hostingCamera->GetZSortDistanceBase();
+	m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(mainViewCamera) + 1;
+	m_cameraInfo.viewPixelSize = mainRenderView->GetViewSize();
+	m_cameraInfo.viewPosition = mainViewCamera->GetTransform()->GetWorldMatrix().GetPosition();
+	m_cameraInfo.viewMatrix = CalculateViewMatrix(mainViewCamera);
+	m_cameraInfo.projMatrix = CalculateProjectionMatrix(mainViewCamera);
+	m_cameraInfo.viewProjMatrix = m_cameraInfo.viewMatrix * m_cameraInfo.projMatrix;
+	m_cameraInfo.viewFrustum = mainViewCamera->GetViewFrustum();	// TODO: この View 独自処理にしたい
+	m_cameraInfo.zSortDistanceBase = mainViewCamera->GetZSortDistanceBase();
 
 
 
@@ -124,21 +124,13 @@ void OffscreenWorldView::RenderWorld(World* world, CameraComponent* mainViewCame
 	m_renderer->SetRenderTarget(0, backbuffer);
 
 
-	//// 姿勢コピー
-	//m_cameraInfo->SetPosition(camera->GetPosition());
-	//m_cameraInfo->SetRotation(camera->GetRotation());
-
-
-
-
-
 
 
 	// user override
 	//OnUpdateRenderViewPoint(m_renderView);
 
 	DrawList* r = world->GetRenderer();
-	r->RenderSubView(m_renderView);
+	r->RenderSubView(this);
 }
 
 //------------------------------------------------------------------------------
@@ -194,14 +186,21 @@ void MirrorComponent::Initialize()
 	//m_material->SetMaterialTexture(Texture2D::GetBlackTexture());
 	//m_material->SetMaterialTexture(Texture2D::GetWhiteTexture());
 	//m_material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
-	auto shader = ln::Shader::Create("C:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Mirror.fx");
+	auto shader = ln::Shader::Create("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Mirror.fx");
 	m_material->SetShader(shader);
-}
 
+	auto tex = ln::Texture2D::Create("D:/Proj/LN/HC1/Assets/Data/waterbump.png");
+	m_material->SetTextureParameter(_T("xWaterBumpMap"), tex);
+}
+float g_time = 0;
 //------------------------------------------------------------------------------
 void MirrorComponent::OnRender2(DrawList* renderer)
 {
+	g_time += 0.001;
 	m_material->SetMaterialTexture(m_offscreen->GetRenderTarget());
+	m_material->SetVectorParameter("xCamPos", Vector4(renderer->GetCurrentCamera()->GetTransform()->position.Get(), 1.0));
+	m_material->SetFloatParameter("time", g_time);
+
 	// TODO: 法泉が入っていない？
 	renderer->DrawSquare(10, 10, 1, 1, Color::White, Matrix::Identity, m_material);
 }
