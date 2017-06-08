@@ -4,6 +4,7 @@
 
 LN_NAMESPACE_BEGIN
 class CameraComponent;
+class VisualComponent;
 
 /**
 	@brief		
@@ -15,19 +16,28 @@ public:
 	//CameraComponent* GetCamera() const;
 	RenderTargetTexture* GetRenderTarget() const;
 
+	void HideVisual(VisualComponent* renderObject);
+
+protected:
+	virtual void OnUpdateRenderViewPoint(RenderView* renderView);
+
 LN_INTERNAL_ACCESS:
 	OffscreenWorldView();
 	virtual ~OffscreenWorldView();
 	void Initialize();
-	void RenderWorld(World* world, CameraComponent* camera);
+	void SetId(int id) { m_id = id; }
+	int GetId() const { return m_id; }
+	void RenderWorld(World* world, CameraComponent* mainViewCamera);
+	bool FilterRenderObject(VisualComponent* renderObject);
+	detail::OffscreenFilterInfo* UpdateRenderObjectFilterInfo(VisualComponent* renderObject);
 
 private:
-	// TODO: 視点を決めるための特殊な CameraComponent。World への追加はできないなどの制限をしておきたい。
-	//RefPtr<CameraComponent>				m_cameraInfo;
-	RefPtr<RenderTargetTexture>			m_renderTarget;
-	RefPtr<DrawList>					m_renderer;
-	RefPtr<RenderView>	m_drawElementListSet;
+	RefPtr<RenderTargetTexture>	m_renderTarget;
+	RefPtr<DrawList>			m_renderer;
+	RefPtr<RenderView>			m_renderView;
+	int							m_id;
 };
+
 
 class MirrorComponent
 	: public VisualComponent

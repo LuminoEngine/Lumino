@@ -82,6 +82,7 @@ VisualComponent::VisualComponent()
 	, m_depthTestEnabled(true)
 	, m_depthWriteEnabled(true)
 {
+	SetSpecialComponentType(SpecialComponentType::Visual);
 }
 
 //------------------------------------------------------------------------------

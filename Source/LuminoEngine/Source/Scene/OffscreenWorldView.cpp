@@ -8,9 +8,31 @@ LN_NAMESPACE_BEGIN
 
 //==============================================================================
 // OffscreenWorldView
+/*
+■[MME メモ] DefaultEffect アノテーションのためのグループ分け
+	ひとつの OffscreenScene 内でのエフェクトファイルの割り当て方法や
+	描画そのものの有無を決めるため、ワイルドカード指定可能なオブジェクト名の
+	マッチング判定が行われる。
+	ただ、この処理を毎フレーム行うのはかなり処理時間的にキツイ。
+
+	そこで、一度マッチングを行った後はどのエフェクトを割り当てるかを示す
+	整数値を持たせて、以降これを使って割り当てを決める。
+	例えば以下のようになる。
+
+	string DefaultEffect =
+	"self = hide;"				… グループ 0
+	"Mirror*.x = hide;"			… グループ 0
+	"Player1=MirrorMain.fx;";	… グループ 1
+	"Player2=MirrorMain.fx;";	… グループ 1
+	"*=MirrorObject.fx;";		… グループ 2
+
+	もしいずれにもマッチしなければグループ -1。
+	グループ -1 は非表示を表す。
+*/
 //==============================================================================
 //------------------------------------------------------------------------------
 OffscreenWorldView::OffscreenWorldView()
+	: m_id(0)
 {
 }
 
@@ -25,29 +47,25 @@ void OffscreenWorldView::Initialize()
 	Object::Initialize();
 	m_renderer = NewObject<DrawList>(detail::EngineDomain::GetGraphicsManager());
 
-	//m_cameraInfo = NewObject<CameraComponent>(CameraProjection_3D);	// TODO: proj 指定方法
-	//// TODO: CameraComponent を使うべきではない。ミラー描画用の特殊な視点。コンポーネントではない。
-	//// CameraInterface のように抽象化するべきだろう。
-	//m_cameraInfo->SetReflectionPlane(Plane(Vector3::UnitY));
-
-	m_drawElementListSet = RefPtr<RenderView>::MakeRef();
-	m_drawElementListSet->m_lists.Add(m_renderer->GetDrawElementList());
+	m_renderView = RefPtr<RenderView>::MakeRef();
+	m_renderView->m_lists.Add(m_renderer->GetDrawElementList());
 }
-
-////------------------------------------------------------------------------------
-//CameraComponent* OffscreenWorldView::GetCamera() const
-//{
-//	return m_cameraInfo;
-//}
 
 //------------------------------------------------------------------------------
 RenderTargetTexture* OffscreenWorldView::GetRenderTarget() const
 {
 	return m_renderTarget;
 }
-static int g_flag = 0;
+
 //------------------------------------------------------------------------------
-void OffscreenWorldView::RenderWorld(World* world, CameraComponent* camera)
+void OffscreenWorldView::HideVisual(VisualComponent* renderObject)
+{
+	auto* filterInfo = UpdateRenderObjectFilterInfo(renderObject);
+	filterInfo->effectGroup = -1;
+}
+
+//------------------------------------------------------------------------------
+void OffscreenWorldView::RenderWorld(World* world, CameraComponent* mainViewCamera)
 {
 	m_renderer->BeginMakeElements();
 
@@ -71,9 +89,7 @@ void OffscreenWorldView::RenderWorld(World* world, CameraComponent* camera)
 	m_renderer->Clear(ClearFlags::All, Color::White, 1.0f, 0);
 	
 
-	g_flag = 1;
-	world->Render(m_renderer, camera, WorldDebugDrawFlags::None);	// TODO: debugdraw の指定
-	g_flag = 0;
+	world->Render(m_renderer, mainViewCamera, WorldDebugDrawFlags::None, this);	// TODO: debugdraw の指定
 
 
 	// 戻す
@@ -90,26 +106,54 @@ void OffscreenWorldView::RenderWorld(World* world, CameraComponent* camera)
 
 
 	// TODO: Camera.cpp あたりと全く同じ処理
-	auto* m_hostingCamera = camera;
-	m_drawElementListSet->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera) + 1;
-	m_drawElementListSet->m_cameraInfo.viewPixelSize = Size(640, 480);
-	m_drawElementListSet->m_cameraInfo.viewPosition = m_hostingCamera->GetTransform()->GetWorldMatrix().GetPosition();
-	//m_drawElementListSet->m_cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
+	auto* m_hostingCamera = mainViewCamera;
+	m_renderView->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera) + 1;
+	m_renderView->m_cameraInfo.viewPixelSize = Size(640, 480);
+	m_renderView->m_cameraInfo.viewPosition = m_hostingCamera->GetTransform()->GetWorldMatrix().GetPosition();
+	//m_renderView->m_cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
 
-	m_drawElementListSet->m_cameraInfo.viewMatrix = Matrix::MakeReflection(Plane(Vector3::UnitY)) *  m_hostingCamera->GetViewMatrix();
+	m_renderView->m_cameraInfo.viewMatrix = Matrix::MakeReflection(Plane(Vector3::UnitY)) *  m_hostingCamera->GetViewMatrix();
 
-	m_drawElementListSet->m_cameraInfo.projMatrix = m_hostingCamera->GetProjectionMatrix();
-	m_drawElementListSet->m_cameraInfo.viewProjMatrix = m_hostingCamera->GetViewProjectionMatrix();
-	m_drawElementListSet->m_cameraInfo.viewFrustum = m_hostingCamera->GetViewFrustum();
-	m_drawElementListSet->m_cameraInfo.zSortDistanceBase = m_hostingCamera->GetZSortDistanceBase();
+	m_renderView->m_cameraInfo.projMatrix = m_hostingCamera->GetProjectionMatrix();
+	m_renderView->m_cameraInfo.viewProjMatrix = m_hostingCamera->GetViewProjectionMatrix();
+	m_renderView->m_cameraInfo.viewFrustum = m_hostingCamera->GetViewFrustum();
+	m_renderView->m_cameraInfo.zSortDistanceBase = m_hostingCamera->GetZSortDistanceBase();
 
-	
+	// user override
+	OnUpdateRenderViewPoint(m_renderView);
 
 	// TODO: World が持つ DrawList を使いまわす場合、というか、ここで DrawList を実行する場合、親から diag とか継承する必要がある。
 	DrawList* r = world->GetRenderer();
-	r->RenderSubView(m_drawElementListSet);
+	r->RenderSubView(m_renderView);
 
 
+}
+
+//------------------------------------------------------------------------------
+bool OffscreenWorldView::FilterRenderObject(VisualComponent* renderObject)
+{
+	auto* filterInfo = UpdateRenderObjectFilterInfo(renderObject);
+	return filterInfo->effectGroup >= 0;
+}
+
+//------------------------------------------------------------------------------
+detail::OffscreenFilterInfo* OffscreenWorldView::UpdateRenderObjectFilterInfo(VisualComponent* renderObject)
+{
+	auto* filterInfo = renderObject->GetOffscreenFilterInfo(m_id);
+
+	// オーナーが this ではない。再割り当てする。
+	// (renderObject が新しく作成されたオブジェクトであるか、前の Offscreen が解放され ID が返却された後、新たに作成された Offscreen が同じ ID を取得した場合)
+	if (filterInfo->ownerOffscreenView != this)
+	{
+		filterInfo->ownerOffscreenView = this;
+		filterInfo->effectGroup = 0;
+	}
+	return filterInfo;
+}
+
+//------------------------------------------------------------------------------
+void OffscreenWorldView::OnUpdateRenderViewPoint(RenderView* renderView)
+{
 }
 
 //==============================================================================
@@ -136,6 +180,7 @@ void MirrorComponent::Initialize()
 
 	// TODO: Remove
 	detail::EngineDomain::GetDefaultWorld3D()->AddOffscreenWorldView(m_offscreen);
+	m_offscreen->HideVisual(this);
 
 	m_material = NewObject<Material>();
 	//m_material->SetMaterialTexture(Texture2D::GetBlackTexture());
@@ -148,12 +193,9 @@ void MirrorComponent::Initialize()
 //------------------------------------------------------------------------------
 void MirrorComponent::OnRender2(DrawList* renderer)
 {
-	if (g_flag == 0)
-	{
-		m_material->SetMaterialTexture(m_offscreen->GetRenderTarget());
-		// TODO: 法泉が入っていない？
-		renderer->DrawSquare(10, 10, 1, 1, Color::White, Matrix::Identity, m_material);
-	}
+	m_material->SetMaterialTexture(m_offscreen->GetRenderTarget());
+	// TODO: 法泉が入っていない？
+	renderer->DrawSquare(10, 10, 1, 1, Color::White, Matrix::Identity, m_material);
 }
 
 

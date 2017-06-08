@@ -9,6 +9,12 @@ class Transform;
 class VisualComponent;
 class UIEventArgs;
 
+enum class SpecialComponentType
+{
+	None,
+	Visual,
+};
+
 /**
 	@brief		
 */
@@ -38,9 +44,15 @@ private:
 	void Attach(WorldObject* owner);
 	void Detach();
 	void UpdateFrame();
-	virtual void Render(DrawList* context);
 
+LN_INTERNAL_ACCESS:
+	virtual void Render(DrawList* context);
+	void SetSpecialComponentType(SpecialComponentType type) { m_specialComponentType = type; }
+	SpecialComponentType GetSpecialComponentType() const { return m_specialComponentType; }
+
+private:
 	WorldObject*	m_owner;
+	SpecialComponentType	m_specialComponentType;
 
 	friend class WorldObject;
 	friend class VisualComponent;

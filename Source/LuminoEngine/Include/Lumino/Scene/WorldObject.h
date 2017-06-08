@@ -100,6 +100,7 @@ protected:
 
 LN_INTERNAL_ACCESS:
 	//const Matrix& GetCombinedGlobalMatrix() const { return m_combinedGlobalMatrix; }
+	const List<RefPtr<Component>>& GetComponents() const { return m_components; }
 	void SetSpecialObject(bool enalbed) { m_isSpecialObject = true; }
 	bool IsSpecialObject() const { return m_isSpecialObject; }
 

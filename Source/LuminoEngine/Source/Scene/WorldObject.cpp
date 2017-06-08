@@ -150,10 +150,10 @@ void WorldObject::Render(DrawList* context)
 {
 	OnRender(context);
 
-	for (auto& c : m_components)
-	{
-		c->Render(context);
-	}
+	//for (auto& c : m_components)
+	//{
+	//	c->Render(context);
+	//}
 }
 
 //------------------------------------------------------------------------------

@@ -10,6 +10,19 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 class MaterialList2;
+class OffscreenWorldView;
+
+namespace detail {
+
+struct OffscreenFilterInfo
+{
+	OffscreenWorldView* ownerOffscreenView = nullptr;
+	int					effectGroup = 0;
+};
+
+static const int MaxOffscreenId = 16;
+
+} // namespace detail
 
 /// VisualComponent
 LN_CLASS()
@@ -154,6 +167,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	//MaterialList2* GetMaterialList() { return m_materialList; }
 	//Shader* GetPrimaryShader() const;
+	detail::OffscreenFilterInfo* GetOffscreenFilterInfo(int index) { return &m_offscreenFilterInfoList[index]; }
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	virtual detail::SceneNodeDefaultShaderClass GetShaderClass() { return detail::SceneNodeDefaultShaderClass_StaticMesh; }
@@ -169,6 +183,8 @@ private:
 	CullingMode	m_cullingMode;
 	bool		m_depthTestEnabled;
 	bool		m_depthWriteEnabled;
+
+	detail::OffscreenFilterInfo	m_offscreenFilterInfoList[detail::MaxOffscreenId];
 };
 
 

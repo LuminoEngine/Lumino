@@ -37,6 +37,11 @@ void World::Initialize()
 	m_debugRenderer = NewObject<DrawList>(detail::EngineDomain::GetGraphicsManager());
 
 	m_debugRendererDefaultMaterial = NewObject<Material>();
+
+	for (int i = 0; i < detail::MaxOffscreenId; i++)
+	{
+		m_offscreenIdStorage.Add(i);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -84,13 +89,22 @@ void World::RemoveWorldObject(WorldObject* obj)
 //------------------------------------------------------------------------------
 void World::AddOffscreenWorldView(OffscreenWorldView* view)
 {
+	if (LN_CHECK_ARG(!m_offscreenIdStorage.IsEmpty())) return;
 	m_offscreenWorldViewList.Add(view);
+
+	// assign Id
+	view->SetId(m_offscreenIdStorage.GetLast());
+	m_offscreenIdStorage.RemoveLast();
 }
 
 //------------------------------------------------------------------------------
 void World::RemoveOffscreenWorldView(OffscreenWorldView* view)
 {
 	m_offscreenWorldViewList.Remove(view);
+
+	// repay Id.
+	m_offscreenIdStorage.Add(view->GetId());
+	view->SetId(0);
 }
 
 //------------------------------------------------------------------------------
@@ -133,10 +147,27 @@ void World::RenderRoot(CameraComponent* camera, WorldDebugDrawFlags debugDrawFla
 }
 
 //------------------------------------------------------------------------------
-void World::Render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags)
+void World::Render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen)
 {
 	for (auto& obj : m_rootWorldObjectList)
 	{
+		for (auto& c : obj->m_components)
+		{
+			VisualComponent* visual = nullptr;
+			if (c->GetSpecialComponentType() == SpecialComponentType::Visual)
+			{
+				visual = static_cast<VisualComponent*>(c.Get());
+
+				bool visible = true;
+				if (offscreen != nullptr) visible = offscreen->FilterRenderObject(visual);
+
+				if (visible)
+				{
+					c->Render(g);
+				}
+			}
+		}
+
 		obj->Render(g);
 	}
 
@@ -238,9 +269,9 @@ void World2D::UpdateFrame(float elapsedTime)
 }
 
 //------------------------------------------------------------------------------
-void World2D::Render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags)
+void World2D::Render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen)
 {
-	World::Render(g, camera, debugDrawFlags);
+	World::Render(g, camera, debugDrawFlags, offscreen);
 }
 
 //==============================================================================
@@ -345,9 +376,9 @@ void World3D::UpdateFrame(float elapsedTime)
 }
 
 //------------------------------------------------------------------------------
-void World3D::Render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags)
+void World3D::Render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen)
 {
-	World::Render(g, camera, debugDrawFlags);
+	World::Render(g, camera, debugDrawFlags, offscreen);
 
 	RenderGridPlane(g, camera);
 

@@ -15,6 +15,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Component, Object);
 Component::Component()
 	: transfotm(nullptr)
 	, m_owner(nullptr)
+	, m_specialComponentType(SpecialComponentType::None)
 {
 }
 
