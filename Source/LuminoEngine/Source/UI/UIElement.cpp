@@ -34,7 +34,7 @@ const String UIVisualStates::VerticalState = _T("Vertical");
 //==============================================================================
 // UIElement
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIElement, Object);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIElement, RuntimeResource);
 
 // Property definition
 LN_TR_PROPERTY_IMPLEMENT(UIElement, PointF, position, tr::PropertyMetadata());
@@ -100,6 +100,7 @@ UIElement::~UIElement()
 //------------------------------------------------------------------------------
 void UIElement::Initialize()
 {
+	RuntimeResource::Initialize();
 	m_manager = detail::EngineDomain::GetUIManager();
 	m_invalidateFlags |= detail::InvalidateFlags::Initializing;
 

@@ -89,7 +89,7 @@ void Main()
 
 	Engine::Initialize();
 
-	//auto window = NewObject<UIFrameWindow>();
+	auto window = NewObject<UIFrameWindow>();
 
 
 	while (Engine::Update())

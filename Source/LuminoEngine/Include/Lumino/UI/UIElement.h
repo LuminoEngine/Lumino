@@ -110,7 +110,7 @@ public:
 	@details	
 */
 class UIElement
-	: public Object
+	: public RuntimeResource
 	, public ILayoutElement
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();

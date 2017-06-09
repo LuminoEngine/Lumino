@@ -38,9 +38,6 @@ UIFrameWindow::UIFrameWindow()
 //------------------------------------------------------------------------------
 UIFrameWindow::~UIFrameWindow()
 {
-	m_platformWindow->DetachEventListener(this);
-	LN_SAFE_RELEASE(m_swapChain);
-	LN_SAFE_RELEASE(m_platformWindow);
 }
 
 //------------------------------------------------------------------------------
@@ -48,30 +45,52 @@ void UIFrameWindow::Initialize(PlatformWindow* platformWindow, SwapChain* swapCh
 {
 	if (LN_CHECK_ARG(platformWindow != nullptr)) return;
 	m_manager = detail::EngineDomain::GetUIManager();
-	LN_REFOBJ_SET(m_platformWindow, platformWindow);
-	LN_REFOBJ_SET(m_swapChain, swapChain);
+	m_platformWindow = platformWindow;
+	m_swapChain = swapChain;
 
 	UILayoutView::Initialize(context, platformWindow);
 	m_platformWindow->AttachEventListener(this, 0);
 	Initialize_UIRenderer();
+	m_manager->AddFrameWindow(this);
 }
 
 //------------------------------------------------------------------------------
-//void UIFrameWindow::Initialize()
-//{
-//	m_manager = detail::EngineDomain::GetUIManager();
-//
-//
-//
-//	WindowCreationSettings ws;
-//	RefPtr<PlatformWindow> window(m_manager->GetPlatformManager()->GetWindowManager()->CreateSubWindow(ws), false);
-//	auto swap = RefPtr<SwapChain>::MakeRef();
-//	swap->InitializeSub(m_manager->GetGraphicsManager(), window);
-//
-//	UILayoutView::Initialize(UIContext::GetMainContext(), window);
-//	m_platformWindow->AttachEventListener(this, 0);
-//	Initialize_UIRenderer();
-//}
+void UIFrameWindow::Initialize()
+{
+	m_manager = detail::EngineDomain::GetUIManager();
+
+	WindowCreationSettings ws;
+	RefPtr<PlatformWindow> window(m_manager->GetPlatformManager()->GetWindowManager()->CreateSubWindow(ws), false);
+	auto swapChain = RefPtr<SwapChain>::MakeRef();
+	swapChain->InitializeSub(m_manager->GetGraphicsManager(), window);
+
+	Initialize(window, swapChain, UIContext::GetMainContext());
+}
+
+//------------------------------------------------------------------------------
+void UIFrameWindow::Dispose()
+{
+	if (m_manager != nullptr)
+	{
+		m_platformWindow->DetachEventListener(this);
+		m_swapChain.SafeRelease();
+		m_platformWindow.SafeRelease();
+		m_manager->RemoveFrameWindow(this);
+		m_manager = nullptr;
+	}
+}
+
+//------------------------------------------------------------------------------
+PlatformWindow* UIFrameWindow::GetPlatformWindow() const
+{
+	return m_platformWindow;
+}
+
+//------------------------------------------------------------------------------
+SwapChain* UIFrameWindow::GetSwapChain() const
+{
+	return m_swapChain;
+}
 
 //------------------------------------------------------------------------------
 DrawingContext* UIFrameWindow::GetDrawingContext() const
@@ -290,10 +309,10 @@ UIViewport* UIMainWindow::GetViewport() const
 }
 
 //------------------------------------------------------------------------------
-void UIMainWindow::InjectElapsedTime(float elapsedTime)
-{
-	m_mainUIContext->InjectElapsedTime(elapsedTime);
-}
+//void UIMainWindow::InjectElapsedTime(float elapsedTime)
+//{
+//	m_mainUIContext->InjectElapsedTime(elapsedTime);
+//}
 
 //------------------------------------------------------------------------------
 void UIMainWindow::UpdateLayout(const Size& viewSize)

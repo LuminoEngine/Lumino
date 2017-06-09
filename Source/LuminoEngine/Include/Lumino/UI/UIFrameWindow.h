@@ -28,7 +28,7 @@ class UIFrameWindow
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
-	PlatformWindow* GetPlatformWindow() const { return m_platformWindow; }
+	PlatformWindow* GetPlatformWindow() const;
 
 	DrawingContext* GetDrawingContext() const;
 
@@ -41,13 +41,14 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~UIFrameWindow();
 	void Initialize(PlatformWindow* platformWindow, SwapChain* swapChain, UIContext* context);
 	void Initialize();
+	virtual void Dispose();
 	virtual bool OnEvent(const PlatformEventArgs& e) override;
 	virtual void OnRenderContents();
 	virtual void OnPresentRenderingContexts();
 
 LN_INTERNAL_ACCESS:
 	detail::UIManager* GetManager() const { return m_manager; }
-	SwapChain* GetSwapChain() const { return m_swapChain; }
+	SwapChain* GetSwapChain() const;
 	void SetDelayedRenderingSkip(bool enabled) { m_delayedRenderingSkip = enabled; }
 
 	void RenderContents();
@@ -57,17 +58,19 @@ private:
 	void Initialize_UIRenderer();
 	void Render_UIRenderer();
 	void ExecuteDrawList_UIRenderer();
-	bool IsStandaloneSwapChain() const { return m_swapChain != nullptr; }
+	bool IsStandaloneSwapChain() const { return !m_swapChain.IsNull(); }
 
 	detail::UIManager*		m_manager;
-	PlatformWindow*			m_platformWindow;
-	SwapChain*				m_swapChain;
+	RefPtr<PlatformWindow>	m_platformWindow;
+	RefPtr<SwapChain>		m_swapChain;
 
 	RefPtr<DrawingContext>				m_drawingContext;
 	RefPtr<detail::SceneRenderer>	m_internalRenderer;
 	RefPtr<RenderView>	m_drawElementListSet;		// いまは作業用変数を使うためのダミー
 	RefPtr<RenderDiag>	m_renderDiag;
 	bool								m_delayedRenderingSkip;
+
+	friend class detail::UIManager;
 };
 
 
@@ -91,7 +94,7 @@ LN_INTERNAL_ACCESS:
 	virtual ~UIMainWindow();
 	void Initialize(PlatformWindow* platformWindow, World2D* defaultWorld2D, World3D* defaultWorld3D);
 
-	void InjectElapsedTime(float elapsedTime);
+	//void InjectElapsedTime(float elapsedTime);
 	void UpdateLayout(const Size& viewSize);	// TODO: ゆくゆくは SwapChain や Viewport も UIFrameWindow にもってくる。そのとき、この viewSize はいらなくなる
 	void RenderUI();
 

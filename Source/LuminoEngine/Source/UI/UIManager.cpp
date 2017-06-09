@@ -100,6 +100,12 @@ void UIManager::Initialize(const Settings& settings)
 //------------------------------------------------------------------------------
 void UIManager::Finalize()
 {
+	auto deleteList = m_windows;
+	for (auto& p : deleteList)
+	{
+		p->Dispose();
+	}
+
 	LN_SAFE_RELEASE(m_mainWindow);
 	LN_SAFE_RELEASE(m_defaultStyleTable);
 	LN_SAFE_DELETE(m_eventArgsPool);

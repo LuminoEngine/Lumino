@@ -54,6 +54,10 @@ public:
 	AssetsManager* GetAssetsManager() const { return m_assetsManager; }
 	UIMainWindow* GetMainWindow() const { return m_mainWindow; }
 
+	const List<UIFrameWindow*>& GetWindows() const { return m_windows; }
+	void AddFrameWindow(UIFrameWindow* window) { m_windows.Add(window); }
+	void RemoveFrameWindow(UIFrameWindow* window) { m_windows.Remove(window); }
+
 private:
 	void CreateGlobalObjects();
 	void MakeDefaultStyle(UIStyleTable* table);
@@ -68,6 +72,7 @@ private:
 	UIStyleTable*		m_defaultStyleTable;
 	UIMainWindow*		m_mainWindow;
 	List<RefPtr<UIRoutedCommand>>		m_allGlobalCommands;
+	List<UIFrameWindow*>	m_windows;
 };
 
 } // namespace detail

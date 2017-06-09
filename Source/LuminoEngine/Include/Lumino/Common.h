@@ -152,4 +152,20 @@ enum class FrameUpdateMode
 	VariableOnRealTime,
 };
 
+/**
+	@brief	
+*/
+LN_CLASS()
+class RuntimeResource
+	: public Object
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+protected:
+	RuntimeResource();
+	virtual ~RuntimeResource();
+
+	virtual void Finalize_() override;
+	virtual void Dispose();
+};
+
 LN_NAMESPACE_END
