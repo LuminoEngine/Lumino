@@ -791,82 +791,82 @@ detail::PhysicsManager* EngineManager::GetPhysicsManager() const
 //------------------------------------------------------------------------------
 bool EngineManager::OnEvent(const PlatformEventArgs& e)
 {
-	//UILayoutView* uiView = nullptr;
-	//if (m_uiManager != nullptr)
-	//{
-	//	uiView = m_uiManager->GetMainWindow();
-	//}
+	UILayoutView* uiView = nullptr;
+	if (m_uiManager != nullptr)
+	{
+		uiView = m_uiManager->GetMainWindow();
+	}
 
 
-	//switch (e.type)
-	//{
-	//case PlatformEventType::Quit:	// アプリ終了要求
-	//case PlatformEventType::Close:	// ウィンドウが閉じられようとしている
-	//	break;
+	switch (e.type)
+	{
+	case PlatformEventType::Quit:	// アプリ終了要求
+	case PlatformEventType::Close:	// ウィンドウが閉じられようとしている
+		break;
 
-	//case PlatformEventType::MouseDown:		// マウスボタンが押された
-	//	if (uiView != nullptr)
-	//	{
-	//		if (uiView->InjectMouseButtonDown(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
-	//	}
-	//	break;
-	//case PlatformEventType::MouseUp:			// マウスボタンが離された
-	//	if (uiView != nullptr)
-	//	{
-	//		if (uiView->InjectMouseButtonUp(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
-	//	}
-	//	break;
-	//case PlatformEventType::MouseMove:		// マウスが移動した
-	//	if (uiView != nullptr)
-	//	{
-	//		if (uiView->InjectMouseMove(e.mouse.x, e.mouse.y)) { return true; }
-	//	}
-	//	break;
-	//case PlatformEventType::MouseWheel:		// マウスホイールが操作された
-	//	if (uiView != nullptr)
-	//	{
-	//		if (uiView->InjectMouseWheel(e.wheel.delta)) { return true; }
-	//	}
-	//	break;
-	//case PlatformEventType::KeyDown:
-	//	if (uiView != nullptr)
-	//	{
-	//		if (uiView->InjectKeyDown(e.key.keyCode, e.key.modifierKeys)) { return true; }
-	//	}
+	case PlatformEventType::MouseDown:		// マウスボタンが押された
+		if (uiView != nullptr)
+		{
+			if (uiView->InjectMouseButtonDown(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
+		}
+		break;
+	case PlatformEventType::MouseUp:			// マウスボタンが離された
+		if (uiView != nullptr)
+		{
+			if (uiView->InjectMouseButtonUp(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
+		}
+		break;
+	case PlatformEventType::MouseMove:		// マウスが移動した
+		if (uiView != nullptr)
+		{
+			if (uiView->InjectMouseMove(e.mouse.x, e.mouse.y)) { return true; }
+		}
+		break;
+	case PlatformEventType::MouseWheel:		// マウスホイールが操作された
+		if (uiView != nullptr)
+		{
+			if (uiView->InjectMouseWheel(e.wheel.delta)) { return true; }
+		}
+		break;
+	case PlatformEventType::KeyDown:
+		if (uiView != nullptr)
+		{
+			if (uiView->InjectKeyDown(e.key.keyCode, e.key.modifierKeys)) { return true; }
+		}
 
-	//	//// デバッグ表示切替
-	//	//if (m_configData.acceleratorKeys.toggleShowDiag != nullptr &&
-	//	//	m_configData.acceleratorKeys.toggleShowDiag->EqualKeyInput(e.key.keyCode, e.key.modifierKeys) &&
-	//	//	m_diagViewer != nullptr)
-	//	//{
-	//	//	m_diagViewer->ToggleDisplayMode();
-	//	//}
-	//	break;
-	//case PlatformEventType::KeyUp:
-	//	if (uiView != nullptr)
-	//	{
-	//		if (uiView->InjectKeyUp(e.key.keyCode, e.key.modifierKeys/*, e.Key.keyChar*/)) { return true; }
-	//	}
-	//	break;
-	//case PlatformEventType::KeyChar:
-	//	if (uiView != nullptr)
-	//	{
-	//		if (uiView->InjectTextInput(e.key.keyChar)) { return true; }
-	//	}
-	//	break;
-	//case PlatformEventType::WindowSizeChanged:
-	//	//if (m_graphicsManager != nullptr)
-	//	//{
-	//	//	m_graphicsManager->GetMainSwapChain()->Resize(SizeI(e.size.width, e.size.height));
-	//	//}
-	//	//if (uiView != nullptr)
-	//	//{
-	//	//	if (uiView->InjectViewportSizeChanged(e.size.width, e.size.height)) { return true; }
-	//	//}
-	//	break;
-	//default:
-	//	break;
-	//}
+		//// デバッグ表示切替
+		//if (m_configData.acceleratorKeys.toggleShowDiag != nullptr &&
+		//	m_configData.acceleratorKeys.toggleShowDiag->EqualKeyInput(e.key.keyCode, e.key.modifierKeys) &&
+		//	m_diagViewer != nullptr)
+		//{
+		//	m_diagViewer->ToggleDisplayMode();
+		//}
+		break;
+	case PlatformEventType::KeyUp:
+		if (uiView != nullptr)
+		{
+			if (uiView->InjectKeyUp(e.key.keyCode, e.key.modifierKeys/*, e.Key.keyChar*/)) { return true; }
+		}
+		break;
+	case PlatformEventType::KeyChar:
+		if (uiView != nullptr)
+		{
+			if (uiView->InjectTextInput(e.key.keyChar)) { return true; }
+		}
+		break;
+	case PlatformEventType::WindowSizeChanged:
+		//if (m_graphicsManager != nullptr)
+		//{
+		//	m_graphicsManager->GetMainSwapChain()->Resize(SizeI(e.size.width, e.size.height));
+		//}
+		//if (uiView != nullptr)
+		//{
+		//	if (uiView->InjectViewportSizeChanged(e.size.width, e.size.height)) { return true; }
+		//}
+		break;
+	default:
+		break;
+	}
 
 	if (m_inputManager != nullptr) {
 		m_inputManager->OnEvent(e);

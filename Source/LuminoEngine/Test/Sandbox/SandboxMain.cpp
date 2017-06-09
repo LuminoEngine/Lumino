@@ -87,20 +87,20 @@ void Main()
 #endif
 
 
-	Engine::Initialize();
+	//Engine::Initialize();
 
-	auto window = NewObject<UIFrameWindow>();
+	//auto window = NewObject<UIFrameWindow>();
 
 
-	while (Engine::Update())
-	{
-	}
+	//while (Engine::Update())
+	//{
+	//}
 
-	Engine::Terminate();
+	//Engine::Terminate();
 
-	return;
+	//return;
 
-	//UIControlsGallery();
+	UIControlsGallery();
 	//DxLibMain();
 	return;
 

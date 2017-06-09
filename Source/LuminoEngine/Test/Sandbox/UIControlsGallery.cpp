@@ -37,12 +37,22 @@ void UIControlsGallery()
 
 	listBox1->AddTextItem(_T("UI"));
 
-	auto mirror = NewObject<MirrorComponent>();
-	mirror->SetDepthTestEnabled(false);
-	mirror->SetDepthWriteEnabled(false);
-	auto mirrorObj = ln::NewObject<ln::WorldObject3D>();
-	mirrorObj->AddComponent(mirror);
-	mirrorObj->SetPosition(10, 0, 0);
+
+
+	auto sky = NewObject<SkyComponent>();
+	sky->SetDepthTestEnabled(false);
+	sky->SetDepthWriteEnabled(false);
+	auto skyObj = ln::NewObject<ln::WorldObject3D>();
+	skyObj->AddComponent(sky);
+	skyObj->SetPosition(10, 0, 0);
+
+	//auto mirror = NewObject<MirrorComponent>();
+	//mirror->SetDepthTestEnabled(false);
+	//mirror->SetDepthWriteEnabled(false);
+	//auto mirrorObj = ln::NewObject<ln::WorldObject3D>();
+	//mirrorObj->AddComponent(mirror);
+	//mirrorObj->SetPosition(10, 0, 0);
+
 
 
 	//auto meshModel = ln::StaticMeshModel::
@@ -55,10 +65,11 @@ void UIControlsGallery()
 	m_map->AddComponent(mesh);
 	mesh->SetBlendMode(BlendMode::Normal);
 	mesh->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
-	//m_map->SetScale(-1.5, 1.5, 1.5);
-	m_map->SetScale(-10, 10, 10);
+	m_map->SetScale(-1.5, 1.5, 1.5);
+	//m_map->SetScale(-10, 10, 10);
 	m_map->SetPosition(0, 2, 0);
 	//mesh->SetVisible(false);
+
 
 	//CameraComponent::GetMain3DCamera()->SetReflectionPlane(Plane(Vector3::UnitY));
 

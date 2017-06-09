@@ -38,6 +38,25 @@ private:
 };
 
 
+
+class SkyComponent
+	: public VisualComponent
+{
+public:
+
+protected:
+	virtual void OnRender2(DrawList* renderer) override;
+
+LN_INTERNAL_ACCESS:
+	SkyComponent();
+	virtual ~SkyComponent();
+	void Initialize();
+
+private:
+
+	RefPtr<Material>			m_skyMaterial;
+};
+
 class MirrorComponent
 	: public VisualComponent
 {
@@ -54,6 +73,7 @@ LN_INTERNAL_ACCESS:
 private:
 	RefPtr<OffscreenWorldView>	m_offscreen;
 	RefPtr<Material>			m_material;
+
 };
 
 LN_NAMESPACE_END
