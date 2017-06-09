@@ -12,8 +12,6 @@ void UIControlsGallery()
 	Engine::Initialize();
 
 
-	//Engine::GetDefaultSceneGraph3D()->visibleGridPlane = true;
-
 	Engine::GetWorld3D()->SetVisibleGridPlane(true);
 
 	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
@@ -24,51 +22,54 @@ void UIControlsGallery()
 	auto* uiRoot = Engine::GetDefaultUILayer()->GetLayoutView();
 
 
-	auto listBox1 = UIListBox::Create();
-	listBox1->SetWidth(200);
-	uiRoot->AddChild(listBox1);
+	//auto listBox1 = UIListBox::Create();
+	//listBox1->SetWidth(200);
+	//uiRoot->AddChild(listBox1);
 
-	auto item = listBox1->AddTextItem(_T("スプライト"));
-	auto button1 = UIButton::Create(_T(">"), 20, 20);
-	//button1->SetPosition(PointF(2, 0));
-	button1->margin = ThicknessF(2);
-	button1->SetAnchor(AlignmentAnchor::RightOffsets | AlignmentAnchor::VCenter);
-	item->AddChild(button1);
+	//auto item = listBox1->AddTextItem(_T("スプライト"));
+	//auto button1 = UIButton::Create(_T(">"), 20, 20);
+	////button1->SetPosition(PointF(2, 0));
+	//button1->margin = ThicknessF(2);
+	//button1->SetAnchor(AlignmentAnchor::RightOffsets | AlignmentAnchor::VCenter);
+	//item->AddChild(button1);
 
-	listBox1->AddTextItem(_T("UI"));
-
-
-
-	auto sky = NewObject<SkyComponent>();
-	sky->SetDepthTestEnabled(false);
-	sky->SetDepthWriteEnabled(false);
-	auto skyObj = ln::NewObject<ln::WorldObject3D>();
-	skyObj->AddComponent(sky);
-	skyObj->SetPosition(10, 0, 0);
-
-	//auto mirror = NewObject<MirrorComponent>();
-	//mirror->SetDepthTestEnabled(false);
-	//mirror->SetDepthWriteEnabled(false);
-	//auto mirrorObj = ln::NewObject<ln::WorldObject3D>();
-	//mirrorObj->AddComponent(mirror);
-	//mirrorObj->SetPosition(10, 0, 0);
+	//listBox1->AddTextItem(_T("UI"));
 
 
+	auto slider = UISlider::Create();
+	slider->SetWidth(300);
+	uiRoot->AddChild(slider);
 
-	//auto meshModel = ln::StaticMeshModel::
-	auto mesh = ln::StaticMeshComponent::CreateSphere(1);
-	//mesh->GetStaticMeshModel()->
-	auto material = mesh->GetStaticMeshModel()->GetMaterial(0);
-	material->SetMaterialTexture(ln::Assets::LoadTexture(_T("D:/GameProjects/Chronicles/sky/incskies_024_png8/incskies_024_8k_.png")));
-	//material->SetMaterialTexture(Texture2D::GetBlackTexture());
-	auto m_map = ln::NewObject<ln::WorldObject3D>();
-	m_map->AddComponent(mesh);
-	mesh->SetBlendMode(BlendMode::Normal);
-	mesh->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
-	m_map->SetScale(-1.5, 1.5, 1.5);
-	//m_map->SetScale(-10, 10, 10);
-	m_map->SetPosition(0, 2, 0);
-	//mesh->SetVisible(false);
+	//auto sky = NewObject<SkyComponent>();
+	//sky->SetDepthTestEnabled(false);
+	//sky->SetDepthWriteEnabled(false);
+	//auto skyObj = ln::NewObject<ln::WorldObject3D>();
+	//skyObj->AddComponent(sky);
+	//skyObj->SetPosition(10, 0, 0);
+
+	////auto mirror = NewObject<MirrorComponent>();
+	////mirror->SetDepthTestEnabled(false);
+	////mirror->SetDepthWriteEnabled(false);
+	////auto mirrorObj = ln::NewObject<ln::WorldObject3D>();
+	////mirrorObj->AddComponent(mirror);
+	////mirrorObj->SetPosition(10, 0, 0);
+
+
+
+	////auto meshModel = ln::StaticMeshModel::
+	//auto mesh = ln::StaticMeshComponent::CreateSphere(1);
+	////mesh->GetStaticMeshModel()->
+	//auto material = mesh->GetStaticMeshModel()->GetMaterial(0);
+	//material->SetMaterialTexture(ln::Assets::LoadTexture(_T("D:/GameProjects/Chronicles/sky/incskies_024_png8/incskies_024_8k_.png")));
+	////material->SetMaterialTexture(Texture2D::GetBlackTexture());
+	//auto m_map = ln::NewObject<ln::WorldObject3D>();
+	//m_map->AddComponent(mesh);
+	//mesh->SetBlendMode(BlendMode::Normal);
+	//mesh->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
+	//m_map->SetScale(-1.5, 1.5, 1.5);
+	////m_map->SetScale(-10, 10, 10);
+	//m_map->SetPosition(0, 2, 0);
+	////mesh->SetVisible(false);
 
 
 	//CameraComponent::GetMain3DCamera()->SetReflectionPlane(Plane(Vector3::UnitY));

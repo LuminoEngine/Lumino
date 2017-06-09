@@ -351,6 +351,7 @@ void UILayoutLayer::Render()
 {
 	m_drawingContext->BeginMakeElements();
 	m_drawingContext->SetBlendMode(BlendMode::Alpha);
+	//m_drawingContext->Clear(ClearFlags::All, Color::Black);;	// TODO
 	m_root->Render(m_drawingContext);
 }
 
@@ -360,14 +361,13 @@ void UILayoutLayer::ExecuteDrawListRendering(DrawList* parentDrawList, RenderTar
 	// TODO: float
 	Size viewPixelSize((float)renderTarget->GetWidth(), (float)renderTarget->GetHeight());
 
-	detail::CameraInfo cameraInfo;
 	m_drawElementListSet->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
 	m_drawElementListSet->m_cameraInfo.viewPixelSize = viewPixelSize;
 	m_drawElementListSet->m_cameraInfo.viewPosition = Vector3::Zero;
 	m_drawElementListSet->m_cameraInfo.viewMatrix = Matrix::Identity;
-	m_drawElementListSet->m_cameraInfo.projMatrix = Matrix::MakePerspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1);
-	m_drawElementListSet->m_cameraInfo.viewProjMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;
-	m_drawElementListSet->m_cameraInfo.viewFrustum = ViewFrustum(cameraInfo.projMatrix);
+	m_drawElementListSet->m_cameraInfo.projMatrix = Matrix::MakePerspective2DLH(m_drawElementListSet->m_cameraInfo.viewPixelSize.width, m_drawElementListSet->m_cameraInfo.viewPixelSize.height, 0, 1);
+	m_drawElementListSet->m_cameraInfo.viewProjMatrix = m_drawElementListSet->m_cameraInfo.viewMatrix * m_drawElementListSet->m_cameraInfo.projMatrix;
+	m_drawElementListSet->m_cameraInfo.viewFrustum = ViewFrustum(m_drawElementListSet->m_cameraInfo.projMatrix);
 	m_drawElementListSet->m_cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
 	parentDrawList->RenderSubView(
 		m_drawElementListSet,
