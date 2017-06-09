@@ -116,7 +116,7 @@ void UIManager::CreateGameModeMainFrame(World2D* defaultWorld2D, World3D* defaul
 	if (LN_CHECK_STATE(m_mainWindow == nullptr)) return;
 
 	m_mainWindow = LN_NEW UIMainWindow();
-	m_mainWindow->Initialize(this, m_platformManager->GetMainWindow(), defaultWorld2D, defaultWorld3D);
+	m_mainWindow->Initialize(m_platformManager->GetMainWindow(), defaultWorld2D, defaultWorld3D);
 }
 
 //------------------------------------------------------------------------------

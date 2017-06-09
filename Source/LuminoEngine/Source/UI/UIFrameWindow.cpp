@@ -44,21 +44,34 @@ UIFrameWindow::~UIFrameWindow()
 }
 
 //------------------------------------------------------------------------------
-void UIFrameWindow::Initialize(detail::UIManager* manager, PlatformWindow* platformWindow, SwapChain* swapChain, UIContext* context)
+void UIFrameWindow::Initialize(PlatformWindow* platformWindow, SwapChain* swapChain, UIContext* context)
 {
-	if (LN_CHECK_ARG(manager != nullptr)) return;
 	if (LN_CHECK_ARG(platformWindow != nullptr)) return;
-	m_manager = manager;
+	m_manager = detail::EngineDomain::GetUIManager();
 	LN_REFOBJ_SET(m_platformWindow, platformWindow);
 	LN_REFOBJ_SET(m_swapChain, swapChain);
 
 	UILayoutView::Initialize(context, platformWindow);
-
 	m_platformWindow->AttachEventListener(this, 0);
-
-
 	Initialize_UIRenderer();
 }
+
+//------------------------------------------------------------------------------
+//void UIFrameWindow::Initialize()
+//{
+//	m_manager = detail::EngineDomain::GetUIManager();
+//
+//
+//
+//	WindowCreationSettings ws;
+//	RefPtr<PlatformWindow> window(m_manager->GetPlatformManager()->GetWindowManager()->CreateSubWindow(ws), false);
+//	auto swap = RefPtr<SwapChain>::MakeRef();
+//	swap->InitializeSub(m_manager->GetGraphicsManager(), window);
+//
+//	UILayoutView::Initialize(UIContext::GetMainContext(), window);
+//	m_platformWindow->AttachEventListener(this, 0);
+//	Initialize_UIRenderer();
+//}
 
 //------------------------------------------------------------------------------
 DrawingContext* UIFrameWindow::GetDrawingContext() const
@@ -235,14 +248,14 @@ UIMainWindow::~UIMainWindow()
 }
 
 //------------------------------------------------------------------------------
-void UIMainWindow::Initialize(detail::UIManager* manager, PlatformWindow* platformWindow, World2D* defaultWorld2D, World3D* defaultWorld3D)
+void UIMainWindow::Initialize(PlatformWindow* platformWindow, World2D* defaultWorld2D, World3D* defaultWorld3D)
 {
-	if (LN_CHECK_ARG(manager != nullptr)) return;
+	auto* manager = detail::EngineDomain::GetUIManager();
 
 	m_mainUIContext = LN_NEW UIContext();
 	m_mainUIContext->Initialize(manager);
 
-	UIFrameWindow::Initialize(manager, platformWindow, manager->GetGraphicsManager()->GetMainSwapChain(), m_mainUIContext);
+	UIFrameWindow::Initialize(platformWindow, manager->GetGraphicsManager()->GetMainSwapChain(), m_mainUIContext);
 
 
 
@@ -365,7 +378,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UINativeHostWindow, UIFrameWindow)
 UINativeHostWindowPtr UINativeHostWindow::Create(intptr_t windowHandle)
 {
 	auto ptr = UINativeHostWindowPtr::MakeRef();
-	ptr->Initialize(detail::UIManager::GetInstance(), windowHandle);
+	ptr->Initialize(windowHandle);
 	return ptr;
 }
 
@@ -381,10 +394,11 @@ UINativeHostWindow::~UINativeHostWindow()
 }
 
 //------------------------------------------------------------------------------
-void UINativeHostWindow::Initialize(detail::UIManager* manager, intptr_t windowHandle)
+void UINativeHostWindow::Initialize(intptr_t windowHandle)
 {
-	if (LN_CHECK_ARG(manager != nullptr)) return;
 	if (LN_CHECK_ARG(windowHandle != 0)) return;
+
+	auto* manager = detail::EngineDomain::GetUIManager();
 
 	WindowCreationSettings ws;
 	//ws.title;		// TODO
@@ -401,7 +415,7 @@ void UINativeHostWindow::Initialize(detail::UIManager* manager, intptr_t windowH
 	m_mainUIContext = LN_NEW UIContext();
 	m_mainUIContext->Initialize(manager);
 
-	UIFrameWindow::Initialize(manager, window, swap, m_mainUIContext);
+	UIFrameWindow::Initialize(window, swap, m_mainUIContext);
 }
 
 LN_NAMESPACE_END
