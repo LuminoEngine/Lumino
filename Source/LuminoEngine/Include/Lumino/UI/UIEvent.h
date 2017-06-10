@@ -48,7 +48,7 @@ public:
 //public:
 //
 //	/**
-//		@brief	ルーティングイベントのハンドラを追加します。
+//		@brief	イベントのハンドラを追加します。
 //	*/
 //	void AddHandler(const Delegate<void(TArgs*)>& handler)
 //	{
@@ -64,7 +64,7 @@ public:
 //	}
 //	
 //	/**
-//		@brief	ルーティングイベントのハンドラを追加します。
+//		@brief	イベントのハンドラを追加します。
 //	*/
 //	void operator += (const std::function<void(TArgs*)>& handler)
 //	{
@@ -170,17 +170,32 @@ public:
 class UIEvents
 {
 public:
-	/** MouseMove ルーティングイベントの識別子 (UIMouseEventArgs) */
+	/** MouseMove イベントの識別子 (UIMouseEventArgs) */
 	static UIEventType	MouseMoveEvent;
 
-	/** MouseDown ルーティングイベントの識別子 (UIMouseEventArgs) */
+	/** MouseDown イベントの識別子 (UIMouseEventArgs) */
 	static UIEventType	MouseDownEvent;
 
-	/** MouseUp ルーティングイベントの識別子 (UIMouseEventArgs) */
+	/** MouseUp イベントの識別子 (UIMouseEventArgs) */
 	static UIEventType	MouseUpEvent;
 
-	/** MouseWheel ルーティングイベントの識別子 (UIMouseWheelEventArgs) */
+	/** MouseWheel イベントの識別子 (UIMouseWheelEventArgs) */
 	static UIEventType	MouseWheelEvent;
+
+	/** MouseEnterEvent イベントの識別子 (UIMouseEventArgs) */
+	static UIEventType	MouseEnterEvent;
+
+	/** MouseLeaveEvent イベントの識別子 (UIMouseEventArgs) */
+	static UIEventType	MouseLeaveEvent;
+
+	/** KeyDownEvent イベントの識別子 (UIKeyEventArgs) */
+	static UIEventType	KeyDownEvent;
+
+	/** KeyUpEvent イベントの識別子 (UIKeyEventArgs) */
+	static UIEventType	KeyUpEvent;
+
+	/** TextInputEvent イベントの識別子 (UIKeyEventArgs) */
+	static UIEventType	TextInputEvent;
 };
 
 LN_NAMESPACE_END

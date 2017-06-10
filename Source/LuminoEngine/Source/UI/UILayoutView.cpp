@@ -136,7 +136,7 @@ EXIT:
 	// 新旧それぞれの Element に MouseLeave、MouseEnter イベントを送る
 	if (m_mouseHoverElement != old)
 	{
-		auto args = UIMouseEventArgs::Create(UIElement::MouseEnterEvent, MouseButtons::None, mousePos.x, mousePos.y, 0, true);
+		auto args = UIMouseEventArgs::Create(UIEvents::MouseEnterEvent, MouseButtons::None, mousePos.x, mousePos.y, 0, true);
 		if (old != nullptr)
 		{
 			old->OnEvent(detail::UIInternalEventType::MouseLeave, args);
@@ -290,7 +290,7 @@ bool UILayoutView::InjectKeyDown(Keys keyCode, ModifierKeys modifierKeys)
 	// フォーカスを持っているUI要素に送る
 	if (m_ownerContext->SetFocusElement() != nullptr)
 	{
-		auto args = UIKeyEventArgs::Create(UIElement::KeyDownEvent, keyCode, modifierKeys, 0, true);
+		auto args = UIKeyEventArgs::Create(UIEvents::KeyDownEvent, keyCode, modifierKeys, 0, true);
 		return m_ownerContext->SetFocusElement()->OnEvent(detail::UIInternalEventType::KeyDown, args);
 	}
 	return false;
@@ -302,7 +302,7 @@ bool UILayoutView::InjectKeyUp(Keys keyCode, ModifierKeys modifierKeys)
 	// フォーカスを持っているUI要素に送る
 	if (m_ownerContext->SetFocusElement() != nullptr)
 	{
-		auto args = UIKeyEventArgs::Create(UIElement::KeyUpEvent, keyCode, modifierKeys, 0, true);
+		auto args = UIKeyEventArgs::Create(UIEvents::KeyUpEvent, keyCode, modifierKeys, 0, true);
 		return m_ownerContext->SetFocusElement()->OnEvent(detail::UIInternalEventType::KeyUp, args);
 	}
 	return false;
@@ -314,7 +314,7 @@ bool UILayoutView::InjectTextInput(TCHAR ch)
 	// フォーカスを持っているUI要素に送る
 	if (m_ownerContext->SetFocusElement() != nullptr)
 	{
-		auto args = UIKeyEventArgs::Create(UIElement::TextInputEvent, Keys::Unknown, ModifierKeys::None, ch, true);
+		auto args = UIKeyEventArgs::Create(UIEvents::TextInputEvent, Keys::Unknown, ModifierKeys::None, ch, true);
 		return m_ownerContext->SetFocusElement()->OnEvent(detail::UIInternalEventType::TextInput, args);
 	}
 	return false;

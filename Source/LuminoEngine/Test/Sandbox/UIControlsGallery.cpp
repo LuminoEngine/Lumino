@@ -38,6 +38,7 @@ void UIControlsGallery()
 
 	auto slider = UISlider::Create();
 	slider->SetWidth(300);
+	slider->SetHeight(16);
 	uiRoot->AddChild(slider);
 
 	//auto sky = NewObject<SkyComponent>();

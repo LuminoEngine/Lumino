@@ -40,6 +40,7 @@ protected:
 	virtual Size ArrangeOverride(const Size& finalSize) override;
 	virtual void OnRender(DrawingContext* g) override;
 
+	virtual UIElement* CheckMouseHoverElement(const PointF& globalPt) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIViewport();
@@ -75,6 +76,7 @@ protected:
 	UIViewportLayer();
 	virtual ~UIViewportLayer();
 
+	virtual UIElement* HitTestUIElement(const PointF& globalPt);	// TODO: globalPt じゃなくて local のほうがやりやすい
 	virtual void OnRoutedEvent(UIEventArgs* e);
 	virtual void UpdateLayout(const Size& viewSize);
 	virtual void Render() = 0;
@@ -105,10 +107,11 @@ LN_CONSTRUCT_ACCESS:
 	void Initialize();
 
 protected:
-	virtual void UpdateLayout(const Size& viewSize);
+	virtual UIElement* HitTestUIElement(const PointF& globalPt) override;
+	virtual void OnRoutedEvent(UIEventArgs* e) override;
+	virtual void UpdateLayout(const Size& viewSize) override;
 	virtual void Render() override;
 	virtual void ExecuteDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
-	virtual void OnRoutedEvent(UIEventArgs* e) override;
 
 private:
 	RefPtr<UILayoutView>				m_root;

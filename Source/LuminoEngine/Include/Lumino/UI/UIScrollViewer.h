@@ -71,11 +71,18 @@ class UITrack
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
+
+	// TODO: 別途、UIScrollBarStyle 見たいなクラスに分けたほうがいいかも
+	static const String OrientationStates;
+	static const String HorizontalState;
+	static const String VerticalState;
+
+
 	static RefPtr<UITrack> Create();
 public:
 
 	/** Track の方向を指定します。*/
-	void SetOrientation(Orientation orientation) { m_orientation = orientation; }
+	void SetOrientation(Orientation orientation);
 
 	/** Track の方向を取得します。規定値は Orientation::Horizontal です。*/
 	Orientation GetOrientation() const { return m_orientation; }

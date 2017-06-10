@@ -51,14 +51,6 @@ LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, decoratorBackground, tr::PropertyM
 LN_TR_PROPERTY_IMPLEMENT(UIElement, float, decoratorOpacity, tr::PropertyMetadata());
 
 // Event definition
-LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIMouseEventArgs, MouseEnterEvent, "MouseEnter", MouseEnter);
-LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIMouseEventArgs, MouseLeaveEvent, "MouseLeave", MouseLeave);
-//LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIMouseEventArgs, MouseMoveEvent, "MouseMove", MouseMove);
-//LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIMouseEventArgs, MouseDownEvent, "MouseDown", MouseDown);
-//LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIMouseEventArgs, MouseUpEvent, "MouseUp", MouseUp);
-LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIKeyEventArgs, KeyDownEvent, "KeyDown", KeyDown);
-LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIKeyEventArgs, KeyUpEvent, "KeyUp", KeyUp);
-LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIKeyEventArgs, TextInputEvent, "TextInput", TextInput);
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIEventArgs, GotFocusEvent, "GotFocus", GotFocus);
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIEventArgs, LostFocusEvent, "LostFocus", LostFocus);
 
@@ -436,21 +428,21 @@ bool UIElement::OnEvent(detail::UIInternalEventType type, UIEventArgs* args)
 		if (m_isEnabled) RaiseEvent(UIEvents::MouseWheelEvent, this, args);
 		break;
 	case detail::UIInternalEventType::KeyDown:
-		if (m_isEnabled) RaiseEvent(KeyDownEvent, this, args);
+		if (m_isEnabled) RaiseEvent(UIEvents::KeyDownEvent, this, args);
 		break;
 	case detail::UIInternalEventType::KeyUp:
-		if (m_isEnabled) RaiseEvent(KeyUpEvent, this, args);
+		if (m_isEnabled) RaiseEvent(UIEvents::KeyUpEvent, this, args);
 		break;
 	case detail::UIInternalEventType::TextInput:
-		if (m_isEnabled) RaiseEvent(TextInputEvent, this, args);
+		if (m_isEnabled) RaiseEvent(UIEvents::TextInputEvent, this, args);
 		break;
 	case detail::UIInternalEventType::ElapsedTime:
 		break;
 	case detail::UIInternalEventType::MouseEnter:	// TODO: 親領域
-		if (m_isEnabled) RaiseEvent(MouseEnterEvent, this, args);
+		if (m_isEnabled) RaiseEvent(UIEvents::MouseEnterEvent, this, args);
 		break;
 	case detail::UIInternalEventType::MouseLeave:	// TODO: 親領域
-		if (m_isEnabled) RaiseEvent(MouseLeaveEvent, this, args);
+		if (m_isEnabled) RaiseEvent(UIEvents::MouseLeaveEvent, this, args);
 		break;
 	default:
 		break; 
@@ -478,23 +470,23 @@ void UIElement::OnRoutedEvent(UIEventArgs* e)
 	{
 		OnMouseUp(static_cast<UIMouseEventArgs*>(e));
 	}
-	else if (ev == KeyDownEvent)
+	else if (ev == UIEvents::KeyDownEvent)
 	{
 		OnKeyDown(static_cast<UIKeyEventArgs*>(e));
 	}
-	else if (ev == KeyUpEvent)
+	else if (ev == UIEvents::KeyUpEvent)
 	{
 		OnKeyUp(static_cast<UIKeyEventArgs*>(e));
 	}
-	else if (ev == TextInputEvent)
+	else if (ev == UIEvents::TextInputEvent)
 	{
 		OnTextInput(static_cast<UIKeyEventArgs*>(e));
 	}
-	else if (ev == MouseEnterEvent)
+	else if (ev == UIEvents::MouseEnterEvent)
 	{
 		OnMouseEnter(static_cast<UIMouseEventArgs*>(e));
 	}
-	else if (ev == MouseLeaveEvent)
+	else if (ev == UIEvents::MouseLeaveEvent)
 	{
 		OnMouseLeave(static_cast<UIMouseEventArgs*>(e));
 	}

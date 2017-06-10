@@ -119,10 +119,13 @@ void UISlider::Initialize()
 	vsm->RegisterVisualState(UIVisualStates::OrientationGroup, UIVisualStates::VerticalState);
 
 	m_track = NewObject<UITrack>();
-	m_track->SetBackground(Brush::Red);		// TODO:
+	//m_track->SetBackground(Brush::Red);		// TODO:
 	m_track->GetThumb()->SetSize(Size(16, 20));
 	m_track->GetThumb()->SetBackground(Brush::Green);
 	//m_track->SetViewportSize(Math::NaN);
+
+	m_track->SetStyleSubControlName(_T("UISlider"), _T("Track"));
+
 	AddVisualChild(m_track);
 }
 

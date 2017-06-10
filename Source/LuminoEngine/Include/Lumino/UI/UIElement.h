@@ -151,14 +151,6 @@ public:
 	//tr::Property<Color>					bottomBorderColor;
 	//tr::Property<BorderDirection>		borderDirection;
 
-	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseEnterEvent);				/**< MouseEnter ルーティングイベントの識別子 */
-	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseLeaveEvent);				/**< MouseLeave ルーティングイベントの識別子 */
-	//LN_ROUTED_EVENT(UIMouseEventArgs,	MouseMoveEvent);				/**< MouseMove ルーティングイベントの識別子 */
-	//LN_ROUTED_EVENT(UIMouseEventArgs,	MouseDownEvent);				/**< MouseDown ルーティングイベントの識別子 */
-	//LN_ROUTED_EVENT(UIMouseEventArgs,	MouseUpEvent);					/**< MouseUp ルーティングイベントの識別子 */
-	LN_ROUTED_EVENT(UIMouseEventArgs,	KeyDownEvent);					/**< KeyDown ルーティングイベントの識別子 */
-	LN_ROUTED_EVENT(UIMouseEventArgs,	KeyUpEvent);					/**< KeyUp ルーティングイベントの識別子 */
-	LN_ROUTED_EVENT(UIKeyEventArgs,		TextInputEvent);				/**< TextInput ルーティングイベントの識別子 */
 	LN_ROUTED_EVENT(UIEventArgs, GotFocusEvent);
 	LN_ROUTED_EVENT(UIEventArgs, LostFocusEvent);
 
@@ -385,7 +377,7 @@ LN_INTERNAL_ACCESS:
 	//const String& GetCurrentVisualStateName() const { return m_currentVisualStateName; }
 	//AnchorInfo* GetAnchorInfo() {return &m_anchorInfo; }
 	detail::InvalidateFlags GetInvalidateFlags() const { return m_invalidateFlags; }
-	UIElement* CheckMouseHoverElement(const PointF& globalPt);
+	virtual UIElement* CheckMouseHoverElement(const PointF& globalPt);
 	void CallOnGotFocus();
 	void CallOnLostFocus();
 	const Rect& GetFinalGlobalRect() const { return m_finalGlobalRect; }

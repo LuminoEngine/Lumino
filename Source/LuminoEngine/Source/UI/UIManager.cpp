@@ -148,6 +148,11 @@ void UIManager::CreateGlobalObjects()
 	UIEvents::MouseDownEvent = UIEventManager::RegisterEvent();
 	UIEvents::MouseUpEvent = UIEventManager::RegisterEvent();
 	UIEvents::MouseWheelEvent = UIEventManager::RegisterEvent();
+	UIEvents::MouseEnterEvent = UIEventManager::RegisterEvent();
+	UIEvents::MouseLeaveEvent = UIEventManager::RegisterEvent();
+	UIEvents::KeyDownEvent = UIEventManager::RegisterEvent();
+	UIEvents::KeyUpEvent = UIEventManager::RegisterEvent();
+	UIEvents::TextInputEvent = UIEventManager::RegisterEvent();
 
 	auto cmd = NewObject<UIRoutedCommand>();
 	m_allGlobalCommands.Add(cmd);
@@ -396,6 +401,32 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 			//props->background = nullptr;
 		}
 	}
+
+	// UISlider
+	{
+		auto* style = table->GetStyle(_T("UISlider"));
+		// base
+		{
+			auto* props = style->GetPropertyTable();
+			props->background = SolidColorBrush::Blue;
+		}
+	}
+	// UISlider::Track
+	{
+		auto* style = table->GetSubControlStyle(_T("UISlider"), _T("Track"));
+		// base
+		{
+			auto* props = style->GetPropertyTable();
+			props->background = SolidColorBrush::Gray;
+		}
+		// UISlider::Track.Horizontal
+		{
+			auto* props = style->GetPropertyTable("Horizontal");
+			props->height = 4.0f;
+		}
+	}
+
+	
 
 	//{
 	//	auto brush = TextureBrush::Create(m_defaultSkinTexture);

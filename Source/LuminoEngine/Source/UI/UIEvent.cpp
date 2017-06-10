@@ -49,5 +49,11 @@ UIEventType	UIEvents::MouseMoveEvent = 0;
 UIEventType	UIEvents::MouseDownEvent = 0;
 UIEventType	UIEvents::MouseUpEvent = 0;
 UIEventType	UIEvents::MouseWheelEvent = 0;
+UIEventType	UIEvents::MouseEnterEvent = 0;
+UIEventType	UIEvents::MouseLeaveEvent = 0;
+UIEventType	UIEvents::KeyDownEvent = 0;
+UIEventType	UIEvents::KeyUpEvent = 0;
+UIEventType	UIEvents::TextInputEvent = 0;
+
 
 LN_NAMESPACE_END

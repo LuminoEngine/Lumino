@@ -121,6 +121,10 @@ void UIThumb::OnRoutedEvent(UIEventArgs* e)
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UITrack, UIElement)
 
+const String UITrack::OrientationStates = _T("OrientationStates");
+const String UITrack::HorizontalState = _T("Horizontal");
+const String UITrack::VerticalState = _T("Vertical");
+
 //------------------------------------------------------------------------------
 RefPtr<UITrack> UITrack::Create()
 {
@@ -153,6 +157,11 @@ void UITrack::Initialize()
 {
 	UIElement::Initialize();
 
+	// register VisualState
+	auto* vsm = GetVisualStateManager();
+	vsm->RegisterVisualState(OrientationStates, HorizontalState);
+	vsm->RegisterVisualState(OrientationStates, VerticalState);
+
 	m_decreaseButton = NewObject<UIButton>();
 	m_thumb = NewObject<UIThumb>();
 	m_increaseButton = NewObject<UIButton>();
@@ -163,6 +172,27 @@ void UITrack::Initialize()
 	AddVisualChild(m_decreaseButton);
 	AddVisualChild(m_thumb);
 	AddVisualChild(m_increaseButton);
+
+	SetOrientation(Orientation::Horizontal);
+}
+
+//------------------------------------------------------------------------------
+void UITrack::SetOrientation(Orientation orientation)
+{
+	m_orientation = orientation;
+
+	switch (orientation)
+	{
+	case Orientation::Horizontal:
+		GoToVisualState(HorizontalState);
+		break;
+	case Orientation::Vertical:
+		GoToVisualState(VerticalState);
+		break;
+	default:
+		LN_NOTIMPLEMENTED();
+		break;
+	}
 }
 
 //------------------------------------------------------------------------------

@@ -99,6 +99,18 @@ Size UIViewport::ArrangeOverride(const Size& finalSize)
 }
 
 //------------------------------------------------------------------------------
+UIElement* UIViewport::CheckMouseHoverElement(const PointF& globalPt)
+{
+	for (auto& layer : m_viewportLayerList)
+	{
+		auto* element = layer->HitTestUIElement(globalPt);
+		if (element != nullptr) return element;
+	}
+
+	return UIElement::CheckMouseHoverElement(globalPt);
+}
+
+//------------------------------------------------------------------------------
 void UIViewport::OnRender(DrawingContext* g)
 {
 	// バックバッファサイズの調整
@@ -282,6 +294,12 @@ void UIViewportLayer::AddPostEffect(PostEffect* postEffect)
 }
 
 //------------------------------------------------------------------------------
+UIElement* UIViewportLayer::HitTestUIElement(const PointF& globalPt)
+{
+	return nullptr;
+}
+
+//------------------------------------------------------------------------------
 void UIViewportLayer::OnRoutedEvent(UIEventArgs* e)
 {
 }
@@ -303,7 +321,7 @@ void UIViewportLayer::PostRender(DrawList* context, RefPtr<RenderTargetTexture>*
 
 
 //==============================================================================
-// PostEffect
+// UILayoutLayer
 //==============================================================================
 //------------------------------------------------------------------------------
 UILayoutLayer::UILayoutLayer()
@@ -341,6 +359,20 @@ UILayoutView* UILayoutLayer::GetLayoutView() const
 }
 
 //------------------------------------------------------------------------------
+UIElement* UILayoutLayer::HitTestUIElement(const PointF& globalPt)
+{
+	auto* element = m_root->CheckMouseHoverElement(globalPt);
+	if (element != nullptr) return element;
+	return UIViewportLayer::HitTestUIElement(globalPt);
+}
+
+//------------------------------------------------------------------------------
+void UILayoutLayer::OnRoutedEvent(UIEventArgs* e)
+{
+	//m_root->RaiseEvent(e->GetType(), e->sender, e);
+}
+
+//------------------------------------------------------------------------------
 void UILayoutLayer::UpdateLayout(const Size& viewSize)
 {
 	m_root->UpdateLayout(viewSize);
@@ -374,11 +406,6 @@ void UILayoutLayer::ExecuteDrawListRendering(DrawList* parentDrawList, RenderTar
 		m_internalRenderer,
 		renderTarget,
 		depthBuffer);
-}
-
-//------------------------------------------------------------------------------
-void UILayoutLayer::OnRoutedEvent(UIEventArgs* e)
-{
 }
 
 //==============================================================================
