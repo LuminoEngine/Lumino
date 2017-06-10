@@ -9,12 +9,57 @@
 		http://doc.qt.io/qt-4.8/stylesheet-examples.html
 */
 #include "Internal.h"
+#include <Lumino/Rendering/DrawingContext.h>
 #include <Lumino/UI/UIElement.h>
 #include <Lumino/UI/UIStyle.h>
 #include "../Animation/AnimationManager.h"
 #include "UIManager.h"
 
 LN_NAMESPACE_BEGIN
+
+//==============================================================================
+// UIStylePropertyTable
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIRenderElement, Object);
+
+//------------------------------------------------------------------------------
+UIRenderElement::UIRenderElement()
+	: m_width(Math::NaN)
+	, m_height(Math::NaN)
+	, m_margin(ThicknessF::Zero)
+	, m_hAlignment(HAlignment::Stretch)
+	, m_vAlignment(VAlignment::Stretch)
+{
+}
+
+//------------------------------------------------------------------------------
+UIRenderElement::~UIRenderElement()
+{
+}
+
+//------------------------------------------------------------------------------
+void UIRenderElement::Initialize()
+{
+}
+
+//------------------------------------------------------------------------------
+void UIRenderElement::LayoutAndRender(DrawingContext* context, const Size& parentRenderSize)
+{
+	Size areaSize;
+	areaSize.width = parentRenderSize.width - (m_margin.Left + m_margin.Right);
+	areaSize.height = parentRenderSize.height - (m_margin.Top + m_margin.Bottom);
+
+	Size desiredSize;
+	desiredSize.width = Math::IsNaN(m_width) ? 0.0f : m_width;
+	desiredSize.height = Math::IsNaN(m_height) ? 0.0f : m_height;
+
+	Rect localRect;
+	detail::LayoutHelper::AdjustHorizontalAlignment(areaSize, desiredSize, Math::IsNaN(m_width), m_hAlignment, &localRect);
+	detail::LayoutHelper::AdjustVerticalAlignment(areaSize, desiredSize, Math::IsNaN(m_height), m_vAlignment, &localRect);
+
+	context->SetBrush(SolidColorBrush::Red);
+	context->DrawBoxBackground(localRect, CornerRadius());
+}
 
 //==============================================================================
 // UIStylePropertyTable
@@ -27,7 +72,7 @@ UIStylePropertyTable::UIStylePropertyTable()
 {
 	// 初期状態を ByInherit にしておく。
 	// こうすることで、MergeActiveStylePropertyTables() で 有効な VisualStyle が1つも無いときに各プロパティがデフォルト値に戻るようにする。
-	background.SetValueSource(tr::PropertySetSource::ByInherit);
+	//background.SetValueSource(tr::PropertySetSource::ByInherit);
 }
 
 //------------------------------------------------------------------------------
@@ -48,53 +93,60 @@ void UIStylePropertyTable::Initialize(const StringRef& visualStateName)
 //}
 
 //------------------------------------------------------------------------------
-detail::InvalidateFlags UIStylePropertyTable::UpdateInherit(UIStylePropertyTable* parent)
+//detail::InvalidateFlags UIStylePropertyTable::UpdateInherit(UIStylePropertyTable* parent)
+//{
+//	bool changed = false;
+//
+//	//// parent が持っている値のうち、同じ targetProperty のものを探す。そんなに数は多くないはずなので線形探索。
+//	//for (UIStyleAttribute& parentAttr : parent->m_attributes)
+//	//{
+//	//	parentAttr.m_mergedMark = false;
+//
+//	//	for (UIStyleAttribute& attr : m_attributes)
+//	//	{
+//	//		if (attr.m_targetProperty == parentAttr.m_targetProperty)
+//	//		{
+//	//			changed |= attr.UpdateInherit(parentAttr);
+//	//			parentAttr.m_mergedMark = true;
+//	//			break;
+//	//		}
+//	//	}
+//	//}
+//
+//	//// parent が持っている値のうち、同じ targetProperty ではなかったものを単なる参照として継承する。
+//	//m_parentRefAttributes.Clear();
+//	//for (UIStyleAttribute& parentAttr : parent->m_attributes)
+//	//{
+//	//	if (!parentAttr.m_mergedMark)
+//	//	{
+//	//		m_parentRefAttributes.Add(&parentAttr);
+//	//		changed = true;	// TODO: ほとんど毎回更新されたことになってしまう。リビジョンカウント必須かな・・
+//	//	}
+//	//}
+//
+//	return (changed) ? detail::InvalidateFlags::All : detail::InvalidateFlags::None;
+//}
+
+//------------------------------------------------------------------------------
+detail::InvalidateFlags UIStylePropertyTable::InheritParentElementStyle(UIStylePropertyTable* parent)
 {
-	bool changed = false;
-
-	//// parent が持っている値のうち、同じ targetProperty のものを探す。そんなに数は多くないはずなので線形探索。
-	//for (UIStyleAttribute& parentAttr : parent->m_attributes)
-	//{
-	//	parentAttr.m_mergedMark = false;
-
-	//	for (UIStyleAttribute& attr : m_attributes)
-	//	{
-	//		if (attr.m_targetProperty == parentAttr.m_targetProperty)
-	//		{
-	//			changed |= attr.UpdateInherit(parentAttr);
-	//			parentAttr.m_mergedMark = true;
-	//			break;
-	//		}
-	//	}
-	//}
-
-	//// parent が持っている値のうち、同じ targetProperty ではなかったものを単なる参照として継承する。
-	//m_parentRefAttributes.Clear();
-	//for (UIStyleAttribute& parentAttr : parent->m_attributes)
-	//{
-	//	if (!parentAttr.m_mergedMark)
-	//	{
-	//		m_parentRefAttributes.Add(&parentAttr);
-	//		changed = true;	// TODO: ほとんど毎回更新されたことになってしまう。リビジョンカウント必須かな・・
-	//	}
-	//}
-
-	return (changed) ? detail::InvalidateFlags::All : detail::InvalidateFlags::None;
+	// TODO: 親要素から継承するのはフォント情報だけ。
+	return detail::InvalidateFlags::None;
 }
 
 //------------------------------------------------------------------------------
-detail::InvalidateFlags UIStylePropertyTable::Merge(UIStylePropertyTable* source)
+detail::InvalidateFlags UIStylePropertyTable::Merge(const UIStylePropertyTable* source, UIStyleAttributeInheritSourceType sourceType)
 {
 	detail::InvalidateFlags flags = detail::InvalidateFlags::None;
 	{
 		bool changed = false;
-		changed |= width.UpdateInherit(source->width);
-		changed |= height.UpdateInherit(source->height);
+		changed |= width.inherit(source->width, sourceType);
+		changed |= height.inherit(source->height, sourceType);
 		if (changed) flags |= detail::InvalidateFlags::Layout;
 	}
 	{
 		bool changed = false;
-		changed |= background.Inherit(source->background);
+		changed |= background.inherit(source->background, sourceType);
 		changed |= borderThickness.Inherit(source->borderThickness);
 		changed |= cornerRadius.Inherit(source->cornerRadius);
 		changed |= leftBorderColor.Inherit(source->leftBorderColor);
@@ -104,15 +156,30 @@ detail::InvalidateFlags UIStylePropertyTable::Merge(UIStylePropertyTable* source
 		changed |= borderDirection.Inherit(source->borderDirection);
 		if (changed) flags |= detail::InvalidateFlags::Rendering;
 	}
+
+	{
+		bool changed = false;
+		changed |= testDeco.inherit(source->testDeco, sourceType);
+		//for (auto& pair : m_renderElementMap)
+		//{
+		//	auto itr = source->m_renderElementMap.find(pair.first);
+		//	if (itr != source->m_renderElementMap.end())
+		//	{
+		//		changed |= pair.second.inherit(itr->second, sourceType);
+		//	}
+		//}
+		if (changed) flags |= detail::InvalidateFlags::Rendering;
+	}
+
 	return flags;
 }
 
 //------------------------------------------------------------------------------
 void UIStylePropertyTable::Apply(UIElement* targetElement, bool useTransitionAnimation)
 {
-	if (width.HasValue())
+	if (width.hasValue())
 		targetElement->SetWidth(width);
-	if (height.HasValue())
+	if (height.hasValue())
 		targetElement->SetHeight(height);
 	//if (background.HasValue())
 	//	targetElement->SetBackground(background.value);
@@ -281,7 +348,7 @@ detail::InvalidateFlags UIStyle::MergeActiveStylePropertyTables(UIStylePropertyT
 		invalidateFlags |= m_baseOn->MergeActiveStylePropertyTables(store, visualStateNames);
 	}
 
-	invalidateFlags |= store->Merge(m_basePropertyTable);
+	invalidateFlags |= store->Merge(m_basePropertyTable, UIStyleAttributeInheritSourceType::BaseStyle);
 
 	// このあたりの処理で、あとから追加されたスタイルが優先されることになる
 	UIStylePropertyTable* lastActiveStyle = nullptr;
@@ -290,7 +357,7 @@ detail::InvalidateFlags UIStyle::MergeActiveStylePropertyTables(UIStylePropertyT
 		const String& name = pair.first;
 		if (visualStateNames.Contains(name))
 		{
-			invalidateFlags |= store->Merge(pair.second);
+			invalidateFlags |= store->Merge(pair.second, UIStyleAttributeInheritSourceType::StyleLocal);
 		}
 	}
 	return invalidateFlags;

@@ -409,6 +409,8 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 		{
 			auto* props = style->GetPropertyTable();
 			props->background = SolidColorBrush::Blue;
+
+			props->testDeco = NewObject<UIRenderElement>();
 		}
 	}
 	// UISlider::Track

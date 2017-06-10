@@ -125,7 +125,7 @@ void UIElement::SetBackground(Brush* value)
 //------------------------------------------------------------------------------
 Brush* UIElement::GetBackground() const
 {
-	return m_localStyle->background.Get();
+	return m_localStyle->background.get();
 	//return tr::PropertyInfo::GetPropertyValueDirect<BrushPtr>(this, backgroundId);
 }
 
@@ -277,9 +277,9 @@ void UIElement::OnRender(DrawingContext* g)
 	//g->SetBlendMode(BlendMode::Alpha);
 
 	//if (background.Get() != nullptr)
-	if (m_localStyle->background.Get() != nullptr)
+	if (m_localStyle->background.get() != nullptr)
 	{
-		g->SetBrush(m_localStyle->background.Get());
+		g->SetBrush(m_localStyle->background.get());
 		//g->SetOpacity(m_combinedOpacity);
 		//g->DrawRectangle(Rect(0, 0, m_finalLocalRect.GetSize()));
 		g->DrawBoxBackground(Rect(0, 0, m_finalLocalRect.GetSize()), CornerRadius());
@@ -291,6 +291,11 @@ void UIElement::OnRender(DrawingContext* g)
 		//g->SetBrush(decoratorBackground.Get());
 		////g->SetOpacity(m_combinedOpacity * m_decoratorOpacity);
 		//g->DrawRectangle(Rect(0, 0, m_finalLocalRect.GetSize()));
+	}
+
+	if (m_localStyle->testDeco.get() != nullptr)
+	{
+		m_localStyle->testDeco.get()->LayoutAndRender(g, m_finalGlobalRect.GetSize());
 	}
 
 	if (!m_localStyle->borderThickness.Get().IsZero())
@@ -553,8 +558,7 @@ void UIElement::UpdateLocalStyleAndApplyProperties(UIStyleTable* styleTable, UIS
 	// parent → state の順で local へマージする
 	// TODO: このへんのコピーが時間かかりそうならリビジョンカウント使うとか対策する。毎フレームやってるから多分重い。
 	detail::InvalidateFlags invalidate = detail::InvalidateFlags::None;
-	if (parentStyle != nullptr)       invalidate |= m_localStyle->UpdateInherit(parentStyle);
-	//if (currentStateStyle != nullptr) invalidate |= m_localStyle->UpdateInherit(currentStateStyle);
+	if (parentStyle != nullptr)       invalidate |= m_localStyle->InheritParentElementStyle(parentStyle);
 
 
 
