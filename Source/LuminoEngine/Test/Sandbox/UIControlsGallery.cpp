@@ -36,10 +36,11 @@ void UIControlsGallery()
 	//listBox1->AddTextItem(_T("UI"));
 
 
-	auto slider = UISlider::Create();
+	auto slider = UISlider::Create(0.75, 0.5, 2.0);
 	slider->SetPosition(PointF(10, 10));
 	slider->SetWidth(300);
 	slider->SetHeight(16);
+	//slider->SetOrientation(Orientation::Vertical);
 	uiRoot->AddChild(slider);
 
 	//auto sky = NewObject<SkyComponent>();
@@ -289,6 +290,8 @@ void UIControlsGallery()
 			//shader->FindVariable(_T("time"))->SetFloat(t);
 
 		Engine::PresentFrame();
+
+		printf("%f\n", slider->GetValue());
 
 
 		//printf("----------\n");
