@@ -12,6 +12,7 @@ LN_NAMESPACE_BEGIN
 class DrawingContext;
 class UIStylePropertyTable;
 class UIVisualStateManager;
+namespace detail { class UIStylePropertyTableInstance; }
 
 /**
 	@brief		特定のイベントデータを持たない、UIイベントを処理するハンドラです。
@@ -266,7 +267,7 @@ public:
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
 	void RaiseEvent(const UIEventInfo* ev, UIElement* sender, UIEventArgs* e);
 
-	void ApplyTemplateHierarchy(UIStyleTable* styleTable, UIStylePropertyTable* parentStyle);
+	void ApplyTemplateHierarchy(UIStyleTable* styleTable, detail::UIStylePropertyTableInstance* parentStyle);
 
 	float GetActualWidth() const { return m_finalLocalRect.width; }
 	float GetActualHeight() const { return m_finalLocalRect.height; }
@@ -351,10 +352,10 @@ protected:
 	virtual void OnGotFocus(UIEventArgs* e);
 	virtual void OnLostFocus(UIEventArgs* e);
 
-	virtual void OnUpdateStyle(UIStylePropertyTable* localStyle, detail::InvalidateFlags invalidateFlags);
+	virtual void OnUpdateStyle(detail::UIStylePropertyTableInstance* localStyle, detail::InvalidateFlags invalidateFlags);
 	virtual void OnUpdatingLayout();
 
-	UIStylePropertyTable* GetLocalStyle() const { return m_localStyle; }
+	//UIStylePropertyTable* GetLocalStyle() const { return m_localStyle; }
 
 	virtual bool OnEvent(detail::UIInternalEventType type, UIEventArgs* args);
 	virtual void OnRoutedEvent(UIEventArgs* e);
@@ -421,7 +422,7 @@ private:
 
 
 private:
-	void UpdateLocalStyleAndApplyProperties(UIStyleTable* styleTable, UIStylePropertyTable* parentStyle);
+	void UpdateLocalStyleAndApplyProperties(UIStyleTable* styleTable, detail::UIStylePropertyTableInstance* parentStyleInstance);
 
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
 	void RaiseEventInternal(UIEventArgs* e);
@@ -432,7 +433,9 @@ private:
 	Size					m_minSize;
 	Size					m_maxSize;
 	UIElement*				m_logicalParent;
-	UIStylePropertyTable*	m_localStyle;			// 内部的に使用されるスタイル。親や VisualState から取得したスタイルをマージしたもの。
+	//UIStylePropertyTable*	m_localStyle;			// 内部的に使用されるスタイル。親や VisualState から取得したスタイルをマージしたもの。
+	//	m_localStyle;
+	RefPtr<detail::UIStylePropertyTableInstance>	m_localStyle;
 	Size					m_desiredSize;			// MeasureLayout() で決定されるこのコントロールの要求サイズ
 	Rect					m_finalLocalRect;		// 描画に使用する最終境界矩形 (グローバル座標系=RootFrame のローカル座標系)
 	Rect					m_finalGlobalRect;
@@ -440,8 +443,6 @@ private:
 	RefPtr<UIVisualStateManager>	m_visualStateManager;
 	String							m_styleSubControlOwnerName;
 	String							m_styleSubControlName;
-	//String					m_currentVisualStateName;
-	UIStylePropertyTable*	m_currentVisualStateStyle;
 
 	UIElement*                m_visualParent;
 	std::shared_ptr<List<RefPtr<UIElement>>>    m_visualChildren;

@@ -61,7 +61,7 @@ Size UITextElement::MeasureOverride(const Size& constraint)
 }
 
 //------------------------------------------------------------------------------
-void UITextElement::OnUpdateStyle(UIStylePropertyTable* localStyle, detail::InvalidateFlags invalidateFlags)
+void UITextElement::OnUpdateStyle(detail::UIStylePropertyTableInstance* localStyle, detail::InvalidateFlags invalidateFlags)
 {
 	UIElement::OnUpdateStyle(localStyle, invalidateFlags);
 

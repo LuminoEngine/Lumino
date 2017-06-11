@@ -127,15 +127,22 @@ void UIStylePropertyTable::Initialize(const StringRef& visualStateName)
 //	return (changed) ? detail::InvalidateFlags::All : detail::InvalidateFlags::None;
 //}
 
+
+
+//==============================================================================
+// UIStylePropertyTableInstance
+//==============================================================================
+namespace detail {
+
 //------------------------------------------------------------------------------
-detail::InvalidateFlags UIStylePropertyTable::InheritParentElementStyle(UIStylePropertyTable* parent)
+detail::InvalidateFlags UIStylePropertyTableInstance::InheritParentElementStyle(UIStylePropertyTableInstance* parent)
 {
 	// TODO: 親要素から継承するのはフォント情報だけ。
 	return detail::InvalidateFlags::None;
 }
 
 //------------------------------------------------------------------------------
-detail::InvalidateFlags UIStylePropertyTable::Merge(const UIStylePropertyTable* source, UIStyleAttributeInheritSourceType sourceType)
+detail::InvalidateFlags UIStylePropertyTableInstance::Merge(const UIStylePropertyTable* source, UIStyleAttributeInheritSourceType sourceType)
 {
 	detail::InvalidateFlags flags = detail::InvalidateFlags::None;
 	{
@@ -175,7 +182,7 @@ detail::InvalidateFlags UIStylePropertyTable::Merge(const UIStylePropertyTable* 
 }
 
 //------------------------------------------------------------------------------
-void UIStylePropertyTable::Apply(UIElement* targetElement, bool useTransitionAnimation)
+void UIStylePropertyTableInstance::Apply(UIElement* targetElement, bool useTransitionAnimation)
 {
 	if (width.hasValue())
 		targetElement->SetWidth(width);
@@ -219,6 +226,7 @@ void UIStylePropertyTable::Apply(UIElement* targetElement, bool useTransitionAni
 //	}
 //}
 
+} // namespace detail
 
 //==============================================================================
 // UIStyle
@@ -338,7 +346,7 @@ UIStylePropertyTable* UIStyle::FindStylePropertyTable(const String& visualStateN
 }
 
 //------------------------------------------------------------------------------
-detail::InvalidateFlags UIStyle::MergeActiveStylePropertyTables(UIStylePropertyTable* store, const List<String>& visualStateNames)
+detail::InvalidateFlags UIStyle::MergeActiveStylePropertyTables(detail::UIStylePropertyTableInstance* store, const List<String>& visualStateNames)
 {
 	detail::InvalidateFlags invalidateFlags = detail::InvalidateFlags::None;
 

@@ -61,7 +61,7 @@ UIElement::UIElement()
 	, m_maxSize(Math::Inf, Math::Inf)
 	, m_logicalParent(nullptr)
 	, m_localStyle(nullptr)
-	, m_currentVisualStateStyle(nullptr)
+	//, m_currentVisualStateStyle(nullptr)
 	, m_visualParent(nullptr)
 	, m_visualChildren(nullptr)
 	, position(PointF(0, 0))
@@ -86,7 +86,6 @@ UIElement::UIElement()
 //------------------------------------------------------------------------------
 UIElement::~UIElement()
 {
-	LN_SAFE_RELEASE(m_localStyle);
 }
 
 //------------------------------------------------------------------------------
@@ -99,7 +98,7 @@ void UIElement::Initialize()
 	// 要素名を覚えておく。末端のサブクラスの名前となる。
 	m_elementName = tr::TypeInfo::GetTypeInfo(this)->GetName();
 
-	m_localStyle = LN_NEW UIStylePropertyTable();
+	m_localStyle = RefPtr<detail::UIStylePropertyTableInstance>::MakeRef();
 
 	//GoToVisualState(String::GetEmpty());
 	m_invalidateFlags |= detail::InvalidateFlags::VisualState;
@@ -536,19 +535,19 @@ void UIElement::CallOnLostFocus()
 //}
 
 //------------------------------------------------------------------------------
-void UIElement::ApplyTemplateHierarchy(UIStyleTable* styleTable, UIStylePropertyTable* parentStyle)
+void UIElement::ApplyTemplateHierarchy(UIStyleTable* styleTable, detail::UIStylePropertyTableInstance* parentStyle)
 {
 
 	// Style 更新
 	UpdateLocalStyleAndApplyProperties(styleTable, parentStyle);
 
 	// 子要素
-	UIStylePropertyTable* localStyle = m_localStyle;
+	detail::UIStylePropertyTableInstance* localStyle = m_localStyle;
 	UIHelper::ForEachVisualChildren(this, [styleTable, localStyle](UIElement* child) { child->ApplyTemplateHierarchy(styleTable, localStyle); });
 }
 
 //------------------------------------------------------------------------------
-void UIElement::UpdateLocalStyleAndApplyProperties(UIStyleTable* styleTable, UIStylePropertyTable* parentStyle)
+void UIElement::UpdateLocalStyleAndApplyProperties(UIStyleTable* styleTable, detail::UIStylePropertyTableInstance* parentStyleInstance)
 {
 	if (LN_CHECK_STATE(m_localStyle != nullptr)) return;
 
@@ -558,7 +557,7 @@ void UIElement::UpdateLocalStyleAndApplyProperties(UIStyleTable* styleTable, UIS
 	// parent → state の順で local へマージする
 	// TODO: このへんのコピーが時間かかりそうならリビジョンカウント使うとか対策する。毎フレームやってるから多分重い。
 	detail::InvalidateFlags invalidate = detail::InvalidateFlags::None;
-	if (parentStyle != nullptr)       invalidate |= m_localStyle->InheritParentElementStyle(parentStyle);
+	if (parentStyleInstance != nullptr)       invalidate |= m_localStyle->InheritParentElementStyle(parentStyleInstance);
 
 
 
@@ -568,26 +567,13 @@ void UIElement::UpdateLocalStyleAndApplyProperties(UIStyleTable* styleTable, UIS
 
 		auto* vm = GetVisualStateManager();
 
-		//String subStateName;
-		//GetStyleClassName(&subStateName);
-
 
 		UIStyle* style = styleTable->FindStyle(tr::TypeInfo::GetTypeInfo(this)/*, GetStyleSubControlName()*/);
 		if (style != nullptr)
 		{
 			invalidate |= style->MergeActiveStylePropertyTables(m_localStyle, vm->GetActiveStateNames());
 
-			//for (auto& stateName : vm->GetActiveStateNames())
-			//{
-			//	auto* st = style->FindStylePropertyTable(stateName);
-			//	if (st != nullptr) invalidate |= m_localStyle->UpdateInherit(st);
-			//}
-			//m_currentVisualStateStyle = style->FindStylePropertyTable(m_currentVisualStateName);
 		}
-		//else
-		//{
-		//	m_currentVisualStateStyle = nullptr;
-		//}
 
 		style = styleTable->FindSubControlStyle(m_styleSubControlOwnerName, m_styleSubControlName);
 		if (style != nullptr)
@@ -607,7 +593,7 @@ void UIElement::UpdateLocalStyleAndApplyProperties(UIStyleTable* styleTable, UIS
 }
 
 //------------------------------------------------------------------------------
-void UIElement::OnUpdateStyle(UIStylePropertyTable* localStyle, detail::InvalidateFlags invalidateFlags)
+void UIElement::OnUpdateStyle(detail::UIStylePropertyTableInstance* localStyle, detail::InvalidateFlags invalidateFlags)
 {
 	localStyle->Apply(this, !m_invalidateFlags.TestFlag(detail::InvalidateFlags::Initializing));
 	// TODO: UITextElement::OnUpdateStyle 参照

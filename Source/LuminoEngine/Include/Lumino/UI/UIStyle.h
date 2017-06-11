@@ -171,9 +171,6 @@ LN_INTERNAL_ACCESS:
 	UIStylePropertyTable();
 	virtual ~UIStylePropertyTable();
 	void Initialize(const StringRef& visualStateName);
-	detail::InvalidateFlags InheritParentElementStyle(UIStylePropertyTable* parent);
-	detail::InvalidateFlags Merge(const UIStylePropertyTable* source, UIStyleAttributeInheritSourceType sourceType);
-	void Apply(UIElement* targetElement, bool useTransitionAnimation);
 
 private:
 	//void ApplyInternal(UIElement* targetElement, bool useTransitionAnimation);
@@ -224,6 +221,55 @@ public:
 	//std::unordered_map<String, UIStyleAttribute<RefPtr<UIRenderElement>>>	m_renderElementMap;
 };
 
+namespace detail {
+
+class UIStylePropertyTableInstance
+	: public RefObject
+{
+public:
+	detail::InvalidateFlags InheritParentElementStyle(UIStylePropertyTableInstance* parent);
+	detail::InvalidateFlags Merge(const UIStylePropertyTable* source, UIStyleAttributeInheritSourceType sourceType);
+	void Apply(UIElement* targetElement, bool useTransitionAnimation);
+
+public:
+	UIStyleAttribute<float>				width;
+	UIStyleAttribute<float>				height;
+
+	//UIStyleAttribute<ThicknessF>			m_margin;
+	//UIStyleAttribute<ThicknessF>			m_padding;
+	//UIStyleAttribute<VAlignment>		m_verticalAlignment;
+	//UIStyleAttribute<HAlignment>	m_horizontalAlignment;
+	UIStyleAttribute<BrushPtr>				background;
+
+	UIStyleAttribute < RefPtr<UIRenderElement>>	testDeco;
+
+	//UIStyleAttribute<BrushPtr>				backgroundMargin;
+	//UIStyleAttribute<BrushPtr>				foreground;
+	//UIStyleAttribute<TexturePtr>			m_image;
+
+	//UIStyleAttribute<RefPtr<Pen>>			m_borderLeft;
+	//UIStyleAttribute<RefPtr<Pen>>			m_borderRight;
+	//UIStyleAttribute<RefPtr<Pen>>			m_borderTop;
+	//UIStyleAttribute<RefPtr<Pen>>			m_borderBottom;
+	//UIStyleAttribute<FontPtr>				m_font;
+
+	//UIStyleAttribute<String>				m_fontFamily;
+	//UIStyleAttribute<int>					m_fontSize;
+	//UIStyleAttribute<bool>					m_fontBold;
+	//UIStyleAttribute<bool>					m_fontItalic;
+
+	// TODO: Property はちょっとサイズ大きいので、SimpleProperty とか変更通知持たないのを作りたい
+	tr::Property<ThicknessF>		borderThickness;
+	tr::Property<CornerRadius>		cornerRadius;
+	tr::Property<Color>				leftBorderColor;
+	tr::Property<Color>				topBorderColor;
+	tr::Property<Color>				rightBorderColor;
+	tr::Property<Color>				bottomBorderColor;
+	tr::Property<BorderDirection>	borderDirection;
+};
+
+} // namespace detail
+
 /**
 	@brief		
 */
@@ -258,7 +304,7 @@ LN_INTERNAL_ACCESS:
 	//detail::InvalidateFlags UpdateInherit(UIStyle* parent);
 	//void Apply(UIElement* targetElement);
 
-	detail::InvalidateFlags MergeActiveStylePropertyTables(UIStylePropertyTable* store, const List<String>& visualStateNames);
+	detail::InvalidateFlags MergeActiveStylePropertyTables(detail::UIStylePropertyTableInstance* store, const List<String>& visualStateNames);
 
 public:	// TODO:
 	using VisualStateStylePair = std::pair<String, RefPtr<UIStylePropertyTable>>;
