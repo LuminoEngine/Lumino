@@ -292,9 +292,13 @@ void UIElement::OnRender(DrawingContext* g)
 		//g->DrawRectangle(Rect(0, 0, m_finalLocalRect.GetSize()));
 	}
 
-	if (m_localStyle->testDeco.get() != nullptr)
+	//if (m_localStyle->testDeco.get() != nullptr)
+	//{
+	//	m_localStyle->testDeco.get()->LayoutAndRender(g, m_finalGlobalRect.GetSize());
+	//}
+	for (auto& re : m_localStyle->m_availableRenderElements)
 	{
-		m_localStyle->testDeco.get()->LayoutAndRender(g, m_finalGlobalRect.GetSize());
+		re->LayoutAndRender(g, m_finalGlobalRect.GetSize());
 	}
 
 	if (!m_localStyle->borderThickness.Get().IsZero())
@@ -551,6 +555,7 @@ void UIElement::UpdateLocalStyleAndApplyProperties(UIStyleTable* styleTable, det
 {
 	if (LN_CHECK_STATE(m_localStyle != nullptr)) return;
 
+	m_localStyle->ClearAvailableRenderElements();
 
 	// TODO: styleTable は多分 Context のルート固定でよい。
 

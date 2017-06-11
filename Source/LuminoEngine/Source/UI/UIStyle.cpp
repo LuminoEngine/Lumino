@@ -135,6 +135,12 @@ void UIStylePropertyTable::Initialize(const StringRef& visualStateName)
 namespace detail {
 
 //------------------------------------------------------------------------------
+void UIStylePropertyTableInstance::ClearAvailableRenderElements()
+{
+	m_availableRenderElements.Clear();
+}
+
+//------------------------------------------------------------------------------
 detail::InvalidateFlags UIStylePropertyTableInstance::InheritParentElementStyle(UIStylePropertyTableInstance* parent)
 {
 	// TODO: 親要素から継承するのはフォント情報だけ。
@@ -166,7 +172,7 @@ detail::InvalidateFlags UIStylePropertyTableInstance::Merge(const UIStylePropert
 
 	{
 		bool changed = false;
-		changed |= testDeco.inherit(source->testDeco, sourceType);
+		//changed |= testDeco.inherit(source->testDeco, sourceType);
 		//for (auto& pair : m_renderElementMap)
 		//{
 		//	auto itr = source->m_renderElementMap.find(pair.first);
@@ -175,6 +181,12 @@ detail::InvalidateFlags UIStylePropertyTableInstance::Merge(const UIStylePropert
 		//		changed |= pair.second.inherit(itr->second, sourceType);
 		//	}
 		//}
+
+		for (auto& e : source->m_renderElements)
+		{
+			m_availableRenderElements.Add(e);
+		}
+
 		if (changed) flags |= detail::InvalidateFlags::Rendering;
 	}
 

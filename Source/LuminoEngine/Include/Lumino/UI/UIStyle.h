@@ -192,7 +192,7 @@ public:
 	//UIStyleAttribute<HAlignment>	m_horizontalAlignment;
 	UIStyleAttribute<BrushPtr>				background;
 
-	UIStyleAttribute < RefPtr<UIRenderElement>>	testDeco;
+	//UIStyleAttribute < RefPtr<UIRenderElement>>	testDeco;
 	
 	//UIStyleAttribute<BrushPtr>				backgroundMargin;
 	//UIStyleAttribute<BrushPtr>				foreground;
@@ -219,6 +219,7 @@ public:
 	tr::Property<BorderDirection>	borderDirection;
 
 	//std::unordered_map<String, UIStyleAttribute<RefPtr<UIRenderElement>>>	m_renderElementMap;
+	List<RefPtr<UIRenderElement>>	m_renderElements;
 };
 
 namespace detail {
@@ -227,6 +228,7 @@ class UIStylePropertyTableInstance
 	: public RefObject
 {
 public:
+	void ClearAvailableRenderElements();
 	detail::InvalidateFlags InheritParentElementStyle(UIStylePropertyTableInstance* parent);
 	detail::InvalidateFlags Merge(const UIStylePropertyTable* source, UIStyleAttributeInheritSourceType sourceType);
 	void Apply(UIElement* targetElement, bool useTransitionAnimation);
@@ -241,7 +243,7 @@ public:
 	//UIStyleAttribute<HAlignment>	m_horizontalAlignment;
 	UIStyleAttribute<BrushPtr>				background;
 
-	UIStyleAttribute < RefPtr<UIRenderElement>>	testDeco;
+	//UIStyleAttribute < RefPtr<UIRenderElement>>	testDeco;
 
 	//UIStyleAttribute<BrushPtr>				backgroundMargin;
 	//UIStyleAttribute<BrushPtr>				foreground;
@@ -266,6 +268,8 @@ public:
 	tr::Property<Color>				rightBorderColor;
 	tr::Property<Color>				bottomBorderColor;
 	tr::Property<BorderDirection>	borderDirection;
+
+	List<RefPtr<UIRenderElement>>	m_availableRenderElements;
 };
 
 } // namespace detail
