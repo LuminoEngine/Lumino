@@ -33,6 +33,7 @@ UIFrameWindow::UIFrameWindow()
 	, m_swapChain(nullptr)
 	, m_delayedRenderingSkip(false)
 {
+	SetSpecialElementType(UISpecialElementType::FrameWindow);
 }
 
 //------------------------------------------------------------------------------

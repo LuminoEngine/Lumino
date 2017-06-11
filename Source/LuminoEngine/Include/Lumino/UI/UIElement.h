@@ -14,6 +14,12 @@ class UIStylePropertyTable;
 class UIVisualStateManager;
 namespace detail { class UIStylePropertyTableInstance; }
 
+enum class UISpecialElementType
+{
+	None,
+	FrameWindow,
+};
+
 /**
 	@brief		特定のイベントデータを持たない、UIイベントを処理するハンドラです。
 	@param[in]	e		: イベントのデータ
@@ -384,6 +390,9 @@ LN_INTERNAL_ACCESS:
 	const Rect& GetFinalGlobalRect() const { return m_finalGlobalRect; }
 	UIElement* GetVisualParent() const { return m_visualParent; }
 
+	void SetSpecialElementType(UISpecialElementType type) { m_specialElementType = type; }
+	UISpecialElementType GetSpecialElementType2() const { return m_specialElementType; }
+
 	void UpdateFrame();
 	void Render(DrawingContext* g);
 
@@ -471,6 +480,7 @@ private:
 	//tr::Property<BrushPtr>				m_decoratorBackground;
 	//tr::Property<float>					m_decoratorOpacity;
 
+	UISpecialElementType			m_specialElementType;
 
 	//RefPtr<Style>					m_style;
 	float					m_combinedOpacity;

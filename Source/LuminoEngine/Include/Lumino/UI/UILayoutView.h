@@ -93,7 +93,6 @@ private:
 
 	UIContext*			m_ownerContext;
 	UIElement*			m_mouseHoverElement;
-	UIElement*			m_capturedElement;
 
 	PointF				m_mousePosition;
 	MouseClickTracker	m_mouseClickTrackers[8];

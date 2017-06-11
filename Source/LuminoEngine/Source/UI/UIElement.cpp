@@ -8,6 +8,7 @@
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIStyle.h>
 #include "UIHelper.h"
+#include "UIManager.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -74,6 +75,7 @@ UIElement::UIElement()
 	, vAlignment(VAlignment::Stretch)
 	, decoratorBackground(nullptr)
 	, decoratorOpacity(1.0f)
+	, m_specialElementType(UISpecialElementType::None)
 	, m_combinedOpacity(0.0f)
 	, m_isEnabled(true)
 	, m_isMouseOver(nullptr)
@@ -170,13 +172,13 @@ void UIElement::Focus()
 //------------------------------------------------------------------------------
 void UIElement::CaptureMouse()
 {
-	GetContext()->CaptureMouse(this);
+	GetManager()->CaptureMouse(this);
 }
 
 //------------------------------------------------------------------------------
 void UIElement::ReleaseMouseCapture()
 {
-	GetContext()->ReleaseMouseCapture(this);
+	GetManager()->ReleaseMouseCapture(this);
 }
 
 //------------------------------------------------------------------------------

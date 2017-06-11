@@ -61,51 +61,18 @@ public:
 		return nullptr;
 	}
 
-	//static void AdjustHorizontalAlignment(const Size& arrangeSize, const SizeF& desiredSize, HorizontalAlignment align, RectF* outRect)
-	//{
-	//	switch (align)
-	//	{
-	//	case HorizontalAlignment::Left:
-	//		outRect->x = 0;
-	//		outRect->width = desiredSize.width;
-	//		break;
-	//	case HorizontalAlignment::Center:
-	//		outRect->x = (arrangeSize.width - desiredSize.width) / 2;
-	//		outRect->width = desiredSize.width;
-	//		break;
-	//	case HorizontalAlignment::Right:
-	//		outRect->x = arrangeSize.width - desiredSize.width;
-	//		outRect->width = desiredSize.width;
-	//		break;
-	//	case HorizontalAlignment::Stretch:
-	//		outRect->x = 0;
-	//		outRect->width = arrangeSize.width;
-	//		break;
-	//	}
-	//}
-
-	//static void AdjustVerticalAlignment(const Size& arrangeSize, const SizeF& desiredSize, VerticalAlignment align, RectF* outRect)
-	//{
-	//	switch (align)
-	//	{
-	//	case VerticalAlignment::Top:
-	//		outRect->y = 0;
-	//		outRect->height = desiredSize.height;
-	//		break;
-	//	case VerticalAlignment::Center:
-	//		outRect->y = (arrangeSize.height - desiredSize.height) / 2;
-	//		outRect->height = desiredSize.height;
-	//		break;
-	//	case VerticalAlignment::Bottom:
-	//		outRect->y = arrangeSize.height - desiredSize.height;
-	//		outRect->height = desiredSize.height;
-	//		break;
-	//	case VerticalAlignment::Stretch:
-	//		outRect->y = 0;
-	//		outRect->height = arrangeSize.height;
-	//		break;
-	//	}
-	//}
+	static UIElement* FindSpcialElementAncestor(UIElement* element, UISpecialElementType type)
+	{
+		while (element != nullptr)
+		{
+			if (element->GetSpecialElementType2() == type)
+			{
+				return element;
+			}
+			element = element->GetVisualParent();
+		}
+		return nullptr;
+	}
 };
 
 LN_NAMESPACE_END

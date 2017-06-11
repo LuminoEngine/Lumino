@@ -54,7 +54,6 @@ UILayoutView::UILayoutView()
 	: m_ownerNativeWindow(nullptr)
 	, m_ownerContext(nullptr)
 	, m_mouseHoverElement(nullptr)
-	, m_capturedElement(nullptr)
 	, m_mouseClickTrackers{}
 {
 }
@@ -202,10 +201,10 @@ bool UILayoutView::InjectMouseMove(float clientX, float clientY)
 	m_mousePosition.Set(clientX, clientY);
 
 	// キャプチャ中のコントロールがあればそちらに送る
-	if (m_capturedElement != nullptr)
+	if (m_manager->GetMouseCapturedElement() != nullptr)
 	{
 		auto args = UIMouseEventArgs::Create(UIEvents::MouseMoveEvent, MouseButtons::None, clientX, clientY, 0, true);
-		return m_capturedElement->OnEvent(detail::UIInternalEventType::MouseMove, args);
+		return m_manager->GetMouseCapturedElement()->OnEvent(detail::UIInternalEventType::MouseMove, args);
 	}
 	UpdateMouseHover(PointF(clientX, clientY));
 	if (m_mouseHoverElement == nullptr) return false;
@@ -235,10 +234,10 @@ bool UILayoutView::InjectMouseButtonDown(MouseButtons button, float clientX, flo
 	tracker.LastTime = curTime;
 
 	// キャプチャ中のコントロールがあればそちらに送る
-	if (m_capturedElement != nullptr)
+	if (m_manager->GetMouseCapturedElement() != nullptr)
 	{
 		auto args = UIMouseEventArgs::Create(UIEvents::MouseDownEvent, button, clientX, clientY, tracker.ClickCount, true);
-		return m_capturedElement->OnEvent(detail::UIInternalEventType::MouseButtonDown, args);
+		return m_manager->GetMouseCapturedElement()->OnEvent(detail::UIInternalEventType::MouseButtonDown, args);
 	}
 	if (m_mouseHoverElement == nullptr) return false;
 
@@ -252,10 +251,10 @@ bool UILayoutView::InjectMouseButtonUp(MouseButtons button, float clientX, float
 	m_mousePosition.Set(clientX, clientY);
 
 	// キャプチャ中のUI要素があればそちらに送る
-	if (m_capturedElement != nullptr)
+	if (m_manager->GetMouseCapturedElement() != nullptr)
 	{
 		auto args = UIMouseEventArgs::Create(UIEvents::MouseUpEvent, button, clientX, clientY, 0, true);
-		return m_capturedElement->OnEvent(detail::UIInternalEventType::MouseButtonUp, args);
+		return m_manager->GetMouseCapturedElement()->OnEvent(detail::UIInternalEventType::MouseButtonUp, args);
 	}
 	// マウス位置にUI要素があればそちらに送る
 	if (m_mouseHoverElement != nullptr)
@@ -270,10 +269,10 @@ bool UILayoutView::InjectMouseButtonUp(MouseButtons button, float clientX, float
 bool UILayoutView::InjectMouseWheel(int delta)
 {
 	// キャプチャ中のUI要素があればそちらに送る
-	if (m_capturedElement != nullptr)
+	if (m_manager->GetMouseCapturedElement() != nullptr)
 	{
 		auto args = UIMouseWheelEventArgs::Create(UIEvents::MouseWheelEvent, delta, true);
-		return m_capturedElement->OnEvent(detail::UIInternalEventType::MouseWheel, args);
+		return m_manager->GetMouseCapturedElement()->OnEvent(detail::UIInternalEventType::MouseWheel, args);
 	}
 	// マウス位置にUI要素があればそちらに送る
 	if (m_mouseHoverElement != nullptr)

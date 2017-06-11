@@ -54,6 +54,10 @@ public:
 	AssetsManager* GetAssetsManager() const { return m_assetsManager; }
 	UIMainWindow* GetMainWindow() const { return m_mainWindow; }
 
+	void CaptureMouse(UIElement* element);
+	void ReleaseMouseCapture(UIElement* element);
+	UIElement* GetMouseCapturedElement() const { return m_mouseCapturedElement; }
+
 	const List<UIFrameWindow*>& GetWindows() const { return m_windows; }
 	void AddFrameWindow(UIFrameWindow* window) { m_windows.Add(window); }
 	void RemoveFrameWindow(UIFrameWindow* window) { m_windows.Remove(window); }
@@ -73,6 +77,8 @@ private:
 	UIMainWindow*		m_mainWindow;
 	List<RefPtr<UIRoutedCommand>>		m_allGlobalCommands;
 	List<UIFrameWindow*>	m_windows;
+
+	UIElement*				m_mouseCapturedElement;
 };
 
 } // namespace detail

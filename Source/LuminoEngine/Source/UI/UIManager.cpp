@@ -6,12 +6,14 @@
 		- Button Decorator (Focused)
 */
 #include "Internal.h"
+#include <Lumino/Platform/PlatformWindow.h>
 #include <Lumino/UI/UIStyle.h>
 #include <Lumino/UI/UIFrameWindow.h>
 #include <Lumino/UI/UICommands.h>
 #include "EventArgsPool.h"
 #include "UIManager.h"
 #include "../Platform/PlatformManager.h"
+#include "UIHelper.h"
 
 // for style definition
 #include <Lumino/Graphics/Brush.h>
@@ -46,6 +48,7 @@ UIManager::UIManager()
 	, m_assetsManager(nullptr)
 	, m_defaultStyleTable(nullptr)
 	, m_mainWindow(nullptr)
+	, m_mouseCapturedElement(nullptr)
 {
 }
 
@@ -139,6 +142,18 @@ void UIManager::ReleaseGameModeMainFrame()
 {
 	// TODO: MainWindow は UIManager の中で作るのではなく Engine のほうがいい気がしてきた。
 	LN_SAFE_RELEASE(m_mainWindow);
+}
+
+//------------------------------------------------------------------------------
+void UIManager::CaptureMouse(UIElement* element)
+{
+	m_mouseCapturedElement = element;
+}
+
+//------------------------------------------------------------------------------
+void UIManager::ReleaseMouseCapture(UIElement* element)
+{
+	m_mouseCapturedElement = nullptr;
 }
 
 //------------------------------------------------------------------------------

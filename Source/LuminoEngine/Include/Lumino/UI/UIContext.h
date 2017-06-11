@@ -26,8 +26,6 @@ LN_INTERNAL_ACCESS:
 	void SetFocusElement(UIElement* element);
 	UIElement* SetFocusElement() { return m_focusElement; }	// キーボードフォーカス
 
-	void CaptureMouse(UIElement* element);
-	void ReleaseMouseCapture(UIElement* element);
 
 	void InjectElapsedTime(float elapsedTime);
 	//void AddElement(UIElement* element) { m_allElementList.Add(element); }
