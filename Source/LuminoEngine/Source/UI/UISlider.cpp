@@ -125,6 +125,8 @@ void UISlider::Initialize()
 	//m_track->SetViewportSize(Math::NaN);
 
 	m_track->SetStyleSubControlName(_T("UISlider"), _T("Track"));
+	m_track->GetDecreaseButton()->SetStyleSubControlName(_T("UISlider"), _T("DecreaseButton"));
+	m_track->GetIncreaseButton()->SetStyleSubControlName(_T("UISlider"), _T("IncreaseButton"));
 
 	AddVisualChild(m_track);
 }

@@ -115,6 +115,8 @@ public:
 	float ValueFromDistance(float horizontal, float vertical);
 
 	UIThumb* GetThumb() const;
+	UIButton* GetDecreaseButton() const;
+	UIButton* GetIncreaseButton() const;
 
 LN_CONSTRUCT_ACCESS:
 

@@ -555,7 +555,6 @@ void UIElement::UpdateLocalStyleAndApplyProperties(UIStyleTable* styleTable, det
 {
 	if (LN_CHECK_STATE(m_localStyle != nullptr)) return;
 
-	m_localStyle->ClearAvailableRenderElements();
 
 	// TODO: styleTable は多分 Context のルート固定でよい。
 
@@ -569,22 +568,26 @@ void UIElement::UpdateLocalStyleAndApplyProperties(UIStyleTable* styleTable, det
 	// VisualState の変更がある場合
 	if (m_invalidateFlags.TestFlag(detail::InvalidateFlags::VisualState))
 	{
+		m_localStyle->ClearAvailableRenderElements();
 
 		auto* vm = GetVisualStateManager();
 
-
-		UIStyle* style = styleTable->FindStyle(tr::TypeInfo::GetTypeInfo(this)/*, GetStyleSubControlName()*/);
-		if (style != nullptr)
-		{
-			invalidate |= style->MergeActiveStylePropertyTables(m_localStyle, vm->GetActiveStateNames());
-
-		}
-
-		style = styleTable->FindSubControlStyle(m_styleSubControlOwnerName, m_styleSubControlName);
+		UIStyle* style = styleTable->FindSubControlStyle(m_styleSubControlOwnerName, m_styleSubControlName);
 		if (style != nullptr)
 		{
 			invalidate |= style->MergeActiveStylePropertyTables(m_localStyle, vm->GetActiveStateNames());
 		}
+		else
+		{
+			style = styleTable->FindStyle(tr::TypeInfo::GetTypeInfo(this)/*, GetStyleSubControlName()*/);
+			if (style != nullptr)
+			{
+				invalidate |= style->MergeActiveStylePropertyTables(m_localStyle, vm->GetActiveStateNames());
+
+			}
+		}
+
+
 
 		m_invalidateFlags &= ~detail::InvalidateFlags::VisualState;
 	}

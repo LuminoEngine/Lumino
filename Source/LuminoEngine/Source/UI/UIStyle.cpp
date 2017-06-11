@@ -57,7 +57,7 @@ void UIRenderElement::LayoutAndRender(DrawingContext* context, const Size& paren
 	detail::LayoutHelper::AdjustHorizontalAlignment(areaSize, desiredSize, Math::IsNaN(m_width), m_hAlignment, &localRect);
 	detail::LayoutHelper::AdjustVerticalAlignment(areaSize, desiredSize, Math::IsNaN(m_height), m_vAlignment, &localRect);
 
-	context->SetBrush(SolidColorBrush::Red);
+	context->SetBrush(m_brush);
 	context->DrawBoxBackground(localRect, CornerRadius());
 }
 

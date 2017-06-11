@@ -211,6 +211,18 @@ float UITrack::ValueFromDistance(float horizontal, float vertical)
 }
 
 //------------------------------------------------------------------------------
+UIButton* UITrack::GetDecreaseButton() const
+{
+	return m_decreaseButton;
+}
+
+//------------------------------------------------------------------------------
+UIButton* UITrack::GetIncreaseButton() const
+{
+	return m_increaseButton;
+}
+
+//------------------------------------------------------------------------------
 UIThumb* UITrack::GetThumb() const
 {
 	return m_thumb;

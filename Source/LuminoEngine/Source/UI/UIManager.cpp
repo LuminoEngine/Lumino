@@ -408,9 +408,12 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 		// base
 		{
 			auto* props = style->GetPropertyTable();
-			props->background = SolidColorBrush::Blue;
+			//props->background = SolidColorBrush::Blue;
 
-			props->m_renderElements.Add(NewObject<UIRenderElement>());
+			auto r1 = NewObject<UIRenderElement>();
+			r1->m_height = 2.0f;
+			r1->m_brush = UIColors::GetBrush(UIColorIndex::Grey);
+			props->m_renderElements.Add(r1);
 		}
 	}
 	// UISlider::Track
@@ -419,13 +422,21 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 		// base
 		{
 			auto* props = style->GetPropertyTable();
-			props->background = SolidColorBrush::Gray;
+			//props->background = SolidColorBrush::Gray;
 		}
 		// UISlider::Track.Horizontal
 		{
 			auto* props = style->GetPropertyTable("Horizontal");
-			props->height = 4.0f;
+			//props->height = 4.0f;
 		}
+	}
+	// UISlider::DecreaseButton
+	{
+		auto* style = table->GetSubControlStyle(_T("UISlider"), _T("DecreaseButton"));
+	}
+	// UISlider::IncreaseButton
+	{
+		auto* style = table->GetSubControlStyle(_T("UISlider"), _T("IncreaseButton"));
 	}
 
 	

@@ -138,11 +138,12 @@ class UIRenderElement
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	float		m_width;
-	float		m_height;
-	ThicknessF	m_margin;
-	HAlignment	m_hAlignment;
-	VAlignment	m_vAlignment;
+	float			m_width;
+	float			m_height;
+	ThicknessF		m_margin;
+	HAlignment		m_hAlignment;
+	VAlignment		m_vAlignment;
+	RefPtr<Brush>	m_brush;
 
 LN_CONSTRUCT_ACCESS:
 	UIRenderElement();
