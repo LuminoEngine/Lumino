@@ -37,6 +37,7 @@ void UIControlsGallery()
 
 
 	auto slider = UISlider::Create();
+	slider->SetPosition(PointF(10, 10));
 	slider->SetWidth(300);
 	slider->SetHeight(16);
 	uiRoot->AddChild(slider);

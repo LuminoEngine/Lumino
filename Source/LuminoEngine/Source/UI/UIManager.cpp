@@ -424,11 +424,6 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 		{
 			auto* props = style->GetPropertyTable();
 			//props->background = SolidColorBrush::Blue;
-
-			auto r1 = NewObject<UIRenderElement>();
-			r1->m_height = 2.0f;
-			r1->m_brush = UIColors::GetBrush(UIColorIndex::Grey);
-			props->m_renderElements.Add(r1);
 		}
 	}
 	// UISlider::Track
@@ -447,11 +442,41 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 	}
 	// UISlider::DecreaseButton
 	{
+		auto* style = table->GetSubControlStyle(_T("UISlider"), _T("Thumb"));
+		// base
+		{
+			auto* props = style->GetPropertyTable();
+			props->width = 16;
+			props->height = 16;
+			props->cornerRadius = 8;
+			props->background = UIColors::GetBrush(UIColorIndex::LightGreen);
+		}
+	}
+	// UISlider::DecreaseButton
+	{
 		auto* style = table->GetSubControlStyle(_T("UISlider"), _T("DecreaseButton"));
+		// base
+		{
+			auto* props = style->GetPropertyTable();
+
+			auto r1 = NewObject<UIRenderElement>();
+			r1->m_height = 2.0f;
+			r1->m_brush = UIColors::GetBrush(UIColorIndex::LightGreen);
+			props->m_renderElements.Add(r1);
+		}
 	}
 	// UISlider::IncreaseButton
 	{
 		auto* style = table->GetSubControlStyle(_T("UISlider"), _T("IncreaseButton"));
+		// base
+		{
+			auto* props = style->GetPropertyTable();
+
+			auto r1 = NewObject<UIRenderElement>();
+			r1->m_height = 2.0f;
+			r1->m_brush = UIColors::GetBrush(UIColorIndex::Grey);
+			props->m_renderElements.Add(r1);
+		}
 	}
 
 	

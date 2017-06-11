@@ -283,7 +283,7 @@ void UIElement::OnRender(DrawingContext* g)
 		g->SetBrush(m_localStyle->background.get());
 		//g->SetOpacity(m_combinedOpacity);
 		//g->DrawRectangle(Rect(0, 0, m_finalLocalRect.GetSize()));
-		g->DrawBoxBackground(Rect(0, 0, m_finalLocalRect.GetSize()), CornerRadius());
+		g->DrawBoxBackground(Rect(0, 0, m_finalLocalRect.GetSize()), m_localStyle->cornerRadius.Get());
 
 		
 	}

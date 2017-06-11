@@ -120,11 +120,12 @@ void UISlider::Initialize()
 
 	m_track = NewObject<UITrack>();
 	//m_track->SetBackground(Brush::Red);		// TODO:
-	m_track->GetThumb()->SetSize(Size(16, 20));
-	m_track->GetThumb()->SetBackground(Brush::Green);
+	//m_track->GetThumb()->SetSize(Size(16, 20));
+	//m_track->GetThumb()->SetBackground(Brush::Green);
 	//m_track->SetViewportSize(Math::NaN);
 
 	m_track->SetStyleSubControlName(_T("UISlider"), _T("Track"));
+	m_track->GetThumb()->SetStyleSubControlName(_T("UISlider"), _T("Thumb"));
 	m_track->GetDecreaseButton()->SetStyleSubControlName(_T("UISlider"), _T("DecreaseButton"));
 	m_track->GetIncreaseButton()->SetStyleSubControlName(_T("UISlider"), _T("IncreaseButton"));
 
