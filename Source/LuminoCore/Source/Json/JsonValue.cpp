@@ -33,13 +33,13 @@ JsonValue::JsonValue(const TCHAR* value)
 	: m_type(JsonType::Null)
 	, m_uint(0)
 {
-	SetString(String(value));
+	setString(String(value));
 }
 JsonValue::JsonValue(const String& value)
 	: m_type(JsonType::Null)
 	, m_uint(0)
 {
-	SetString(value);
+	setString(value);
 }
 JsonValue::JsonValue(const JsonValue& value)
 	: m_type(JsonType::Null)
@@ -56,7 +56,7 @@ JsonValue::JsonValue(JsonType::enum_type type)
 	case JsonType::Null:	SetNull(); break;
 	case JsonType::Bool:	SetBool(false); break;
 	case JsonType::Double:	SetDouble(0.0); break;
-	case JsonType::String:	SetString(String::GetEmpty()); break;
+	case JsonType::String:	setString(String::getEmpty()); break;
 	case JsonType::Array:	SetArray(); break;
 	case JsonType::Object:	SetObject(); break;
 	}
@@ -65,7 +65,7 @@ JsonValue::JsonValue(JsonType::enum_type type)
 //------------------------------------------------------------------------------
 JsonValue::~JsonValue()
 {
-	Detach();
+	detach();
 }
 
 //------------------------------------------------------------------------------
@@ -78,14 +78,14 @@ JsonValue& JsonValue::operator=(const JsonValue& obj)
 //------------------------------------------------------------------------------
 void JsonValue::SetNull()
 {
-	Detach();
+	detach();
 	m_type = JsonType::Null;
 }
 
 //------------------------------------------------------------------------------
 void JsonValue::SetBool(bool value)
 {
-	Detach();
+	detach();
 	m_type = JsonType::Bool;
 	m_bool = value;
 }
@@ -100,7 +100,7 @@ bool JsonValue::GetBool() const
 //------------------------------------------------------------------------------
 void JsonValue::SetDouble(double value)
 {
-	Detach();
+	detach();
 	m_type = JsonType::Double;
 	m_double = value;
 }
@@ -113,24 +113,24 @@ double JsonValue::GetDouble() const
 }
 
 //------------------------------------------------------------------------------
-void JsonValue::SetString(const String& str)
+void JsonValue::setString(const String& str)
 {
-	Detach();
+	detach();
 	m_type = JsonType::String;
 	m_string = LN_NEW String(str);
 }
 
 //------------------------------------------------------------------------------
-const String& JsonValue::GetString() const
+const String& JsonValue::getString() const
 {
-	if (LN_CHECK_STATE(m_type == JsonType::String && m_string != NULL)) return String::GetEmpty();
+	if (LN_CHECK_STATE(m_type == JsonType::String && m_string != NULL)) return String::getEmpty();
 	return *m_string;
 }
 
 //------------------------------------------------------------------------------
 void JsonValue::SetArray()
 {
-	Detach();
+	detach();
 	m_type = JsonType::Array;
 	m_valueList = LN_NEW ValueList();
 }
@@ -139,32 +139,32 @@ void JsonValue::SetArray()
 int JsonValue::GetItemCount() const
 {
 	if (LN_CHECK_STATE(m_type == JsonType::Array && m_valueList != NULL)) return 0;
-	return m_valueList->GetCount();
+	return m_valueList->getCount();
 }
 
 //------------------------------------------------------------------------------
 void JsonValue::AddItem(const JsonValue& value)
 {
 	if (LN_CHECK_STATE(m_type == JsonType::Array && m_valueList != NULL)) return;
-	m_valueList->Add(value);
+	m_valueList->add(value);
 }
 
 //------------------------------------------------------------------------------
 JsonValue& JsonValue::operator[](int index)
 {
 	LN_VERIFY_STATE(m_type == JsonType::Array && m_valueList != NULL);
-	return m_valueList->GetAt(index);
+	return m_valueList->getAt(index);
 }
 const JsonValue& JsonValue::operator[](int index) const
 {
 	LN_VERIFY_STATE(m_type == JsonType::Array && m_valueList != NULL);
-	return m_valueList->GetAt(index);
+	return m_valueList->getAt(index);
 }
 
 //------------------------------------------------------------------------------
 void JsonValue::SetObject()
 {
-	Detach();
+	detach();
 	m_type = JsonType::Object;
 	m_memberList = LN_NEW MemberList();
 }
@@ -173,7 +173,7 @@ void JsonValue::SetObject()
 int JsonValue::GetMemberCount() const
 {
 	if (LN_CHECK_STATE(m_type == JsonType::Object && m_memberList != NULL)) return 0;
-	return m_memberList->GetCount();
+	return m_memberList->getCount();
 }
 
 //------------------------------------------------------------------------------
@@ -183,7 +183,7 @@ void JsonValue::AddMember(const String& name, const JsonValue& value)
 	JsonMember m;
 	m.Name = name;
 	m.Value = value;
-	m_memberList->Add(m);
+	m_memberList->add(m);
 }
 
 //------------------------------------------------------------------------------
@@ -199,17 +199,17 @@ void JsonValue::copy(const JsonValue& obj)
 		SetDouble(obj.GetDouble());
 	}
 	else if (obj.m_type == JsonType::String) {
-		SetString(obj.GetString());
+		setString(obj.getString());
 	}
 	else if (obj.m_type == JsonType::Array)
 	{
-		Detach();
+		detach();
 		m_type = JsonType::Array;
 		m_valueList = LN_NEW ValueList(*obj.m_valueList);
 	}
 	else if (obj.m_type == JsonType::Object)
 	{
-		Detach();
+		detach();
 		m_type = JsonType::Object;
 		m_memberList = LN_NEW MemberList(*obj.m_memberList);
 	}
@@ -217,7 +217,7 @@ void JsonValue::copy(const JsonValue& obj)
 }
 
 //------------------------------------------------------------------------------
-void JsonValue::Detach()
+void JsonValue::detach()
 {
 	if (m_type == JsonType::String) {
 		LN_SAFE_DELETE(m_string);

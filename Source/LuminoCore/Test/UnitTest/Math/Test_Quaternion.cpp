@@ -33,11 +33,11 @@ TEST_F(Test_Quaternion, Basic)
 	}
 	// this->GetLength / GetLengthSquared
 	{
-		ASSERT_FLOAT_EQ(1.0f, sample1.GetLength());
+		ASSERT_FLOAT_EQ(1.0f, sample1.getLength());
 		ASSERT_FLOAT_EQ(1.0f, sample1.GetLengthSquared());
 
 		Quaternion q1(1, 2, 3, 4);
-		ASSERT_FLOAT_EQ(5.477226f, q1.GetLength());
+		ASSERT_FLOAT_EQ(5.477226f, q1.getLength());
 		ASSERT_FLOAT_EQ(30.000000, q1.GetLengthSquared());
 	}
 	// this->Normalize

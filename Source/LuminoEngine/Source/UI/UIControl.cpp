@@ -44,7 +44,7 @@ void UIControl::initialize()
 	VContentAlignment = VAlignment::Stretch;
 
 
-	m_items = RefPtr<UIElementCollection>::MakeRef(this);
+	m_items = RefPtr<UIElementCollection>::makeRef(this);
 	auto panel = NewObject<UIAbsoluteLayout>();
 	SetLayoutPanel(panel);
 }
@@ -58,7 +58,7 @@ UIElementCollection* UIControl::GetItems() const
 //------------------------------------------------------------------------------
 void UIControl::AddChild(UIElement* element)
 {
-	m_items->Add(element);
+	m_items->add(element);
 	element->SetLogicalParent(this);
 }
 
@@ -66,7 +66,7 @@ void UIControl::AddChild(UIElement* element)
 void UIControl::RemoveChild(UIElement* element)
 {
 	element->SetLogicalParent(nullptr);
-	m_items->Remove(element);
+	m_items->remove(element);
 }
 
 //------------------------------------------------------------------------------
@@ -89,7 +89,7 @@ void UIControl::SetLayoutPanel(UILayoutPanel* newPanel)
 		{
 			for (auto* c : *m_items)
 			{
-				m_itemsHostPanel->GetChildren()->Remove(c);
+				m_itemsHostPanel->GetChildren()->remove(c);
 			}
 
 			RemoveVisualChild(m_itemsHostPanel);
@@ -104,7 +104,7 @@ void UIControl::SetLayoutPanel(UILayoutPanel* newPanel)
 
 			for (auto* c : *m_items)
 			{
-				m_itemsHostPanel->GetChildren()->Add(c);
+				m_itemsHostPanel->GetChildren()->add(c);
 			}
 		}
 
@@ -200,25 +200,25 @@ Size UIControl::ArrangeOverride(const Size& finalSize)
 //------------------------------------------------------------------------------
 const HAlignment* UIControl::GetPriorityContentHAlignment()
 {
-	if (HContentAlignment.Get() == VAlignment::Stretch) return nullptr;
-	return &HContentAlignment.Get();
+	if (HContentAlignment.get() == VAlignment::Stretch) return nullptr;
+	return &HContentAlignment.get();
 }
 //------------------------------------------------------------------------------
 const VAlignment* UIControl::GetPriorityContentVAlignment()
 {
-	if (VContentAlignment.Get() == VAlignment::Stretch) return nullptr;
-	return &VContentAlignment.Get();
+	if (VContentAlignment.get() == VAlignment::Stretch) return nullptr;
+	return &VContentAlignment.get();
 }
 
 //------------------------------------------------------------------------------
 void UIControl::OnRoutedEvent(UIEventArgs* e)
 {
 	// TODO: ここでやるべきではない。MFC なら PreTranslate 相当なので。On～で行う。
-	if (e->GetType() == UIEvents::MouseEnterEvent)
+	if (e->getType() == UIEvents::MouseEnterEvent)
 	{
 		GoToVisualState(UIVisualStates::MouseOverState);
 	}
-	else if (e->GetType() == UIEvents::MouseLeaveEvent)
+	else if (e->getType() == UIEvents::MouseLeaveEvent)
 	{
 		GoToVisualState(UIVisualStates::NormalState);
 	}
@@ -268,16 +268,16 @@ void UIControl::OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e
 	switch (e.action)
 	{
 	case tr::NotifyCollectionChangedAction::Add:
-		if (LN_CHECK_STATE(e.newItems.GetCount() == 1)) return;	// TODO
-		m_itemsHostPanel->GetChildren()->Insert(e.newStartingIndex, e.newItems.GetAt(0));
+		if (LN_CHECK_STATE(e.newItems.getCount() == 1)) return;	// TODO
+		m_itemsHostPanel->GetChildren()->insert(e.newStartingIndex, e.newItems.getAt(0));
 		break;
 	case tr::NotifyCollectionChangedAction::Move:
 		LN_NOTIMPLEMENTED();
 		break;
 	case tr::NotifyCollectionChangedAction::Remove:
-		m_itemsHostPanel->GetChildren()->RemoveAt(e.oldStartingIndex);
+		m_itemsHostPanel->GetChildren()->removeAt(e.oldStartingIndex);
 		break;
-	case tr::NotifyCollectionChangedAction::Replace:
+	case tr::NotifyCollectionChangedAction::replace:
 		LN_NOTIMPLEMENTED();
 		break;
 	case tr::NotifyCollectionChangedAction::Reset:

@@ -15,9 +15,9 @@ class StaticMeshComponent
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
-	static RefPtr<StaticMeshComponent> Create(StaticMeshModel* staticMeshModel);
+	static RefPtr<StaticMeshComponent> create(StaticMeshModel* staticMeshModel);
 
-	static RefPtr<StaticMeshComponent> Create(const StringRef& filePath);
+	static RefPtr<StaticMeshComponent> create(const StringRef& filePath);
 
 	static RefPtr<StaticMeshComponent> CreatePlane(const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags = MeshCreationFlags::None);
 
@@ -85,7 +85,7 @@ class Rectangle
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
-	static RefPtr<Rectangle> Create(const Rect& rect);
+	static RefPtr<Rectangle> create(const Rect& rect);
 
 
 LN_CONSTRUCT_ACCESS:

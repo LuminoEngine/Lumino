@@ -12,7 +12,7 @@ class TransitionPostEffect
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static RefPtr<TransitionPostEffect> Create();
+	static RefPtr<TransitionPostEffect> create();
 	void Transition(float duration, Texture* mask, int vague);
 
 private:

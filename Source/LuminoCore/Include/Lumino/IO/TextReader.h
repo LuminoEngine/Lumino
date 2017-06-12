@@ -29,7 +29,7 @@ public:
 		@return		EOF に到達しているかエラーが発生した場合は -1 を返します。
 					戻り値が -1 かをチェックした後、TCHAR にキャストすることで文字として使用できます。
 	*/
-	virtual int Read() = 0;
+	virtual int read() = 0;
 
 	/**
 		@brief		現在位置から 1 行分の文字列を読み取り、現在位置を移動します。
@@ -49,7 +49,7 @@ public:
 	/**
 		@brief		現在位置が EOF に到達しているかを確認します。
 	*/
-	virtual bool IsEOF() = 0;
+	virtual bool isEOF() = 0;
 
 };
 

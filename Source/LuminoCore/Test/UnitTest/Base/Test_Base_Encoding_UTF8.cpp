@@ -88,7 +88,7 @@ TEST_F(Test_Base_Encoding_UTF8, Basic)
 
 		// 例外とか発生しないこと
 		StringA str;
-		str.AssignCStr((const char*)utf8str, 15);
+		str.assignCStr((const char*)utf8str, 15);
 
 		// 元もまま変換されていないこと
 		for (int i = 0; i < 15; i++) {

@@ -49,57 +49,57 @@ public:
 public:
 
 	/** 配列が空であるかを確認します。*/
-	bool IsEmpty() const
+	bool isEmpty() const
 	{
 		return m_data->m_vector.empty();
 	}
 
 	/** 格納されている要素の数を取得します。*/
-	int GetCount() const
+	int getCount() const
 	{
 		return (int)m_data->m_vector.size();
 	}
 
 	/** 追加のメモリ割り当てを行わずに追加できる要素の最大数を取得します。*/
-	int GetCapacity() const
+	int getCapacity() const
 	{ 
 		return m_data->m_vector.capacity();
 	}
 
 	/** 配列を初期化し、指定した範囲の要素をコピーします。*/
 	template<typename TItr>
-	void Assign(TItr first, TItr last)
+	void assign(TItr first, TItr last)
 	{
 		checkDetachShared();
 		m_data->m_vector.assign(first, last);
 	}
 
 	/** 末尾に要素を追加します。*/
-	void Add(const value_type& item)
+	void add(const value_type& item)
 	{
 		checkDetachShared();
 		m_data->m_vector.push_back(item);
 	}
 
 	/** 末尾に別の配列を連結します。*/
-	void AddRange(const List<T>& items)
+	void addRange(const List<T>& items)
 	{
 		checkDetachShared();
 		m_data->m_vector.insert(m_data->m_vector.end(), items.m_data->m_vector.begin(), items.m_data->m_vector.end());
 	}
 
 	/** 指定したインデックスの位置に要素を挿入します。*/
-	void Insert(int index, const value_type& item)
+	void insert(int index, const value_type& item)
 	{
-		LN_THROW(0 <= index && index <= GetCount(), OutOfRangeException);	// Count と同じインデックスを指定できる
+		LN_THROW(0 <= index && index <= getCount(), OutOfRangeException);	// Count と同じインデックスを指定できる
 		checkDetachShared();
 		m_data->m_vector.insert(m_data->m_vector.begin() + index, item);
 	}
 
 	/** 指定したインデックスの位置に要素を挿入します。*/
-	void InsertRange(int index, const List<T>& items)
+	void insertRange(int index, const List<T>& items)
 	{
-		LN_THROW(0 <= index && index <= GetCount(), OutOfRangeException);	// Count と同じインデックスを指定できる
+		LN_THROW(0 <= index && index <= getCount(), OutOfRangeException);	// Count と同じインデックスを指定できる
 		checkDetachShared();
 		m_data->m_vector.insert(m_data->m_vector.begin() + index, items.m_data->m_vector.begin(), items.m_data->m_vector.end());
 	}
@@ -112,15 +112,15 @@ public:
 	}
 
 	/** item に一致する最初の要素を削除します。(正常に削除された場合は true を返す。要素が見つからなければ false を返す)*/
-	bool Remove(const value_type& item)
+	bool remove(const value_type& item)
 	{
 		checkDetachShared();
-		return detail::StlHelper::Remove(m_data->m_vector, item);
+		return detail::StlHelper::remove(m_data->m_vector, item);
 	}
 
 	/** 指定した条件に一致する最初の要素を削除します。(正常に削除された場合は true を返す。要素が見つからなければ false を返す)*/
 	template<typename TPred>
-	bool RemoveIf(TPred pred)
+	bool removeIf(TPred pred)
 	{
 		checkDetachShared();
 		auto itr = m_data->m_vector.begin();
@@ -136,38 +136,38 @@ public:
 	}
 
 	/** 指定したインデックスにある要素を削除します。*/
-	void RemoveAt(int index)
+	void removeAt(int index)
 	{
-		CheckOutOfRange(index);
+		checkOutOfRange(index);
 		checkDetachShared();
 		m_data->m_vector.erase(m_data->m_vector.begin() + index);
 	}
 
 	/** item に一致する全ての要素を削除します。*/
-	void RemoveAll(const value_type& item)
+	void removeAll(const value_type& item)
 	{
 		checkDetachShared();
-		detail::StlHelper::RemoveAll(m_data->m_vector, item);
+		detail::StlHelper::removeAll(m_data->m_vector, item);
 	}
 
 	/** 指定した条件に一致する全ての要素を削除します。*/
 	template<typename TPred>
-	void RemoveAll(TPred pred)
+	void removeAll(TPred pred)
 	{
 		checkDetachShared();
-		detail::StlHelper::RemoveAll(m_data->m_vector, pred);
+		detail::StlHelper::removeAll(m_data->m_vector, pred);
 	}
 
 	/** 終端要素を削除します。*/
-	void RemoveLast()
+	void removeLast()
 	{
-		CheckOutOfRange(GetCount() - 1);
+		checkOutOfRange(getCount() - 1);
 		checkDetachShared();
-		RemoveAt(GetCount() - 1);
+		removeAt(getCount() - 1);
 	}
 
 	/** 配列用のメモリを指定したサイズで確保します。*/
-	void Reserve(int count)
+	void reserve(int count)
 	{
 		checkDetachShared();
 		m_data->m_vector.reserve(count);
@@ -181,14 +181,14 @@ public:
 	}
 
 	/** 指定した要素がこの配列内に存在するかどうかを判断します。*/
-	bool Contains(const value_type& item) const
+	bool contains(const value_type& item) const
 	{
 		return std::find(m_data->m_vector.begin(), m_data->m_vector.end(), item) != m_data->m_vector.end();
 	}
 
 	/** 指定した条件と一致する要素がこの配列内に存在するかどうかを判断します。*/
 	template<typename TPred>
-	bool Contains(TPred pred) const
+	bool contains(TPred pred) const
 	{
 		return std::find_if(m_data->m_vector.begin(), m_data->m_vector.end(), pred) != m_data->m_vector.end();
 	}
@@ -199,10 +199,10 @@ public:
 		@param[in]	startIndex	: 検索を開始するインデックス (省略した場合は先頭から)
 		@return		検索した要素が最初に現れた位置。見つからなかった場合は -1。
 	*/
-	int IndexOf(const value_type& item, int startIndex = 0) const
+	int indexOf(const value_type& item, int startIndex = 0) const
 	{
-		if (IsEmpty()) { return -1; }
-		CheckOutOfRange(startIndex);
+		if (isEmpty()) { return -1; }
+		checkOutOfRange(startIndex);
 		const_iterator itr = std::find(m_data->m_vector.begin() + startIndex, m_data->m_vector.end(), item);
 		if (itr != m_data->m_vector.end()) { return itr - m_data->m_vector.begin(); }
 		return -1;
@@ -215,17 +215,17 @@ public:
 		@return		検索した要素が最初に現れた位置。見つからなかった場合は -1。
 	*/
 	template<typename TPred>
-	int IndexOf(TPred pred, int startIndex = 0) const
+	int indexOf(TPred pred, int startIndex = 0) const
 	{
-		if (IsEmpty()) { return -1; }
-		CheckOutOfRange(startIndex);
+		if (isEmpty()) { return -1; }
+		checkOutOfRange(startIndex);
 		const_iterator itr = std::find_if(m_data->m_vector.begin() + startIndex, m_data->m_vector.end(), pred);
 		if (itr != m_data->m_vector.end()) { return itr - m_data->m_vector.begin(); }
 		return -1;
 	}
 
 	/** 指定した要素と一致する最初の要素を検索し、その要素を指すポインタを返します。見つからなければ NULL を返します。*/
-	value_type* Find(const value_type& item) const
+	value_type* find(const value_type& item) const
 	{
 		auto itr = std::find(m_data->m_vector.begin(), m_data->m_vector.end(), item);
 		if (itr != end()) {
@@ -236,7 +236,7 @@ public:
 
 	/** 指定した条件と一致する最初の要素を検索し、その要素を指すポインタを返します。見つからなければ NULL を返します。*/
 	template<typename TPred>
-	value_type* Find(TPred pred) const
+	value_type* find(TPred pred) const
 	{
 		auto itr = std::find_if(m_data->m_vector.begin(), m_data->m_vector.end(), pred);
 		if (itr != end()) {
@@ -246,69 +246,69 @@ public:
 	}
 
 	/** 指定したインデックスに要素を設定します。*/
-	void SetAt(int index, const T& item)
+	void getAt(int index, const T& item)
 	{
-		CheckOutOfRange(index);
+		checkOutOfRange(index);
 		checkDetachShared();
 		m_data->m_vector.at(index) = item;
 	}
 
 	/** 指定したインデックスにある要素への参照を取得します。*/
-	reference GetAt(int index)
+	reference getAt(int index)
 	{
-		CheckOutOfRange(index);
+		checkOutOfRange(index);
 		checkDetachShared();
 		return m_data->m_vector.at(index);
 	}
 
 	/** 指定したインデックスにある要素への参照を取得します。*/
-	const_reference GetAt(int index) const
+	const_reference getAt(int index) const
 	{
-		CheckOutOfRange(index);
+		checkOutOfRange(index);
 		return m_data->m_vector.at(index);
 	}
 
 	/** 先頭要素の参照を返します。*/
-	reference GetFront()
+	reference getFront()
 	{
-		LN_VERIFY_STATE(!IsEmpty());
+		LN_VERIFY_STATE(!isEmpty());
 		checkDetachShared();
 		return m_data->m_vector.front();
 	}
 
 	/** 先頭要素の参照を返します。*/
-	const_reference GetFront() const
+	const_reference getFront() const
 	{
-		LN_VERIFY_STATE(!IsEmpty());
+		LN_VERIFY_STATE(!isEmpty());
 		return m_data->m_vector.front();
 	}
 
 	/** 終端要素の参照を返します。*/
-	reference GetLast()
+	reference getLast()
 	{
-		LN_VERIFY_STATE(!IsEmpty());
+		LN_VERIFY_STATE(!isEmpty());
 		checkDetachShared();
 		return m_data->m_vector.back();
 	}
 
 	/** 終端要素の参照を返します。*/
-	const_reference GetLast() const
+	const_reference getLast() const
 	{
-		LN_VERIFY_STATE(!IsEmpty());
+		LN_VERIFY_STATE(!isEmpty());
 		return m_data->m_vector.back();
 	}
 
 	/** 別の配列をこの配列に上書きコピーします。*/
-	void CopyFrom(const List<T>& ary)
+	void copyFrom(const List<T>& ary)
 	{
 		checkDetachShared();
 		m_data->m_vector = ary.m_data->m_vector;
 	}
 
 	/** 指定したインデックスがこの配列の境界の範囲外かを確認します。*/
-	bool IsOutOfRange(int index) const
+	bool isOutOfRange(int index) const
 	{
-		return (index < 0 || GetCount() <= index);
+		return (index < 0 || getCount() <= index);
 	}
 
 	/** 別の配列をこの配列に割り当てます。*/
@@ -337,7 +337,7 @@ public:
 
 private:
 	void checkDetachShared();
-	void CheckOutOfRange(int index) const;
+	void checkOutOfRange(int index) const;
 
 private:
 	struct ArrayData
@@ -346,10 +346,10 @@ private:
 		std_vector	m_vector;
 		ArrayData(int refCount) : m_refCount(refCount) {}
 		ArrayData(const std_vector& vec) : m_refCount(1), m_vector(vec) {}
-		inline bool IsShared() const { return (m_refCount > 1); }
+		inline bool isShared() const { return (m_refCount > 1); }
 		inline void addRef() { ++m_refCount; }
 		inline void release();
-		static ArrayData* GetSharedEmpty();
+		static ArrayData* getSharedEmpty();
 	};
 
 	ArrayData*	m_data;

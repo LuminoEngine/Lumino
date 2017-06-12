@@ -15,10 +15,10 @@ class UITextBlock
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
-	static UITextBlockPtr Create();
+	static UITextBlockPtr create();
 
 public:
-	void SetText(const StringRef& text);
+	void setText(const StringRef& text);
 
 
 LN_PROTECTED_INTERNAL_ACCESS:

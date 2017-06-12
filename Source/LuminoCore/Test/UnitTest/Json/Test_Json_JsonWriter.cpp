@@ -39,7 +39,7 @@ TEST_F(Test_Json_JsonWriter, Example)
 
 	ASSERT_EQ(
 		_T("{\"hello\":\"world\",\"t\":true,\"f\":false,\"n\":null,\"i\":123.000000,\"pi\":3.141600,\"a\":[0.000000,1.000000,2.000000,3.000000]}"),
-		s.ToString());
+		s.toString());
 }
 
 //------------------------------------------------------------------------------
@@ -57,7 +57,7 @@ TEST_F(Test_Json_JsonWriter, Formatting)
 
 		ASSERT_EQ(
 			_T("{\"hello\":\"world\"}"),
-			s.ToString());
+			s.toString());
 	}
 	// <Test> フォーマット有効
 	{
@@ -73,7 +73,7 @@ TEST_F(Test_Json_JsonWriter, Formatting)
 
 		ASSERT_EQ(
 			_T("{\n  \"hello\": \"world\"\n}"),
-			s.ToString());
+			s.toString());
 	}
 }
 

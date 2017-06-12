@@ -18,7 +18,7 @@ public:
 	{
 	}
 
-	void Start()
+	void start()
 	{
 		pthread_create(&mThread, NULL, ThreadEntry, this);
 	}

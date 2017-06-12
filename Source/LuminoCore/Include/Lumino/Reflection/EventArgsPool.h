@@ -41,9 +41,9 @@ public:
 	}
 
 	template<class TEventArgs, typename ...TArgs>
-	TEventArgs* Create(TArgs... args)
+	TEventArgs* create(TArgs... args)
 	{
-		TEventArgs* e = static_cast<TEventArgs* >(Find(tr::TypeInfo::GetTypeInfo<TEventArgs>()));
+		TEventArgs* e = static_cast<TEventArgs* >(find(tr::TypeInfo::GetTypeInfo<TEventArgs>()));
 		if (e == nullptr)
 		{
 			e = LN_NEW TEventArgs(args...);
@@ -64,10 +64,10 @@ private:
 	typedef SortedArray<tr::TypeInfo*, EventArgsList*>	EventArgsMap;
 	EventArgsMap	m_pool;
 
-	ReflectionEventArgs* Find(tr::TypeInfo* typeId)
+	ReflectionEventArgs* find(tr::TypeInfo* typeId)
 	{
 		EventArgsList* list;
-		if (m_pool.TryGetValue(typeId, &list))
+		if (m_pool.tryGetValue(typeId, &list))
 		{
 			for (auto e : (*list))
 			{
@@ -82,12 +82,12 @@ private:
 	void Register(ReflectionEventArgs* e)
 	{
 		EventArgsList* list;
-		if (!m_pool.TryGetValue(tr::TypeInfo::GetTypeInfo(e), &list))
+		if (!m_pool.tryGetValue(tr::TypeInfo::GetTypeInfo(e), &list))
 		{
 			list = LN_NEW EventArgsList();
-			m_pool.Add(tr::TypeInfo::GetTypeInfo(e), list);
+			m_pool.add(tr::TypeInfo::GetTypeInfo(e), list);
 		}
-		list->Add(e);
+		list->add(e);
 	}
 
 

@@ -62,7 +62,7 @@ TEST_F(Test_Thread, Basic)
 
 	volatile int gTest;
 	TestThread testThread(&gTest);
-	testThread.Start();
+	testThread.start();
 
 	
 

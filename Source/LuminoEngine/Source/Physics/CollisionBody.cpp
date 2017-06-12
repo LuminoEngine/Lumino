@@ -55,7 +55,7 @@ void BtShapeManager::AddShape(CollisionShape* shape)
 }
 
 //------------------------------------------------------------------------------
-bool BtShapeManager::IsEmpty() const
+bool BtShapeManager::isEmpty() const
 {
 	return m_collisionShape == nullptr;
 }
@@ -137,7 +137,7 @@ public:
 			// 通知
 			if (m_owner->IsTrigger() && otherObject->getUserPointer() != nullptr)
 			{
-				m_owner->m_contactObjects.Add(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
+				m_owner->m_contactObjects.add(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
 				m_owner->OnTriggerEnter(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
 			}
 		}
@@ -156,7 +156,7 @@ public:
 			// 通知
 			if (m_owner->IsTrigger() && otherObject->getUserPointer() != nullptr)
 			{
-				m_owner->m_contactObjects.Remove(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
+				m_owner->m_contactObjects.remove(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
 				m_owner->OnTriggerLeave(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
 			}
 		}
@@ -169,9 +169,9 @@ public:
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(CollisionBody, PhysicsObject);
 
 //------------------------------------------------------------------------------
-RefPtr<CollisionBody> CollisionBody::Create(CollisionShape* shape)
+RefPtr<CollisionBody> CollisionBody::create(CollisionShape* shape)
 {
-	auto ptr = RefPtr<CollisionBody>::MakeRef();
+	auto ptr = RefPtr<CollisionBody>::makeRef();
 	ptr->initialize();
 	ptr->AddShape(shape);
 	return ptr;
@@ -228,19 +228,19 @@ bool CollisionBody::IsTrigger() const
 //------------------------------------------------------------------------------
 EventConnection CollisionBody::ConnectOnTriggerEnter(CollisionEventHandler handler)
 {
-	return onTriggerEnter.Connect(handler);
+	return onTriggerEnter.connect(handler);
 }
 
 //------------------------------------------------------------------------------
 EventConnection CollisionBody::ConnectOnTriggerLeave(CollisionEventHandler handler)
 {
-	return onTriggerLeave.Connect(handler);
+	return onTriggerLeave.connect(handler);
 }
 
 //------------------------------------------------------------------------------
 EventConnection CollisionBody::ConnectOnTriggerStay(CollisionEventHandler handler)
 {
-	return onTriggerStay.Connect(handler);
+	return onTriggerStay.connect(handler);
 }
 
 //------------------------------------------------------------------------------
@@ -308,19 +308,19 @@ void CollisionBody::OnRemovedFromWorld()
 //------------------------------------------------------------------------------
 void CollisionBody::OnTriggerEnter(PhysicsObject* otherObject)
 {
-	onTriggerEnter.Raise(otherObject);
+	onTriggerEnter.raise(otherObject);
 }
 
 //------------------------------------------------------------------------------
 void CollisionBody::OnTriggerLeave(PhysicsObject* otherObject)
 {
-	onTriggerLeave.Raise(otherObject);
+	onTriggerLeave.raise(otherObject);
 }
 
 //------------------------------------------------------------------------------
 void CollisionBody::OnTriggerStay(PhysicsObject* otherObject)
 {
-	onTriggerStay.Raise(otherObject);
+	onTriggerStay.raise(otherObject);
 }
 
 //------------------------------------------------------------------------------
@@ -329,7 +329,7 @@ void CollisionBody::CreateInternalObject()
 	DeleteInternalObject();
 
 	// 現状、この時点で必ず m_shape が無ければならない。
-	LN_ASSERT(!m_btShapeManager.IsEmpty());
+	LN_ASSERT(!m_btShapeManager.isEmpty());
 
 	m_btGhostObject = new LocalGhostObject(this);
 	m_btGhostObject->setCollisionShape(m_btShapeManager.GetBtCollisionShape());

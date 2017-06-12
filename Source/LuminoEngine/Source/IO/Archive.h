@@ -24,7 +24,7 @@ public:
 	/**
 		@brief	アーカイブ内に指定したパスのファイルが存在するか確認します。
 	*/
-	virtual bool ExistsFile(const PathName& fileFullPath) = 0;
+	virtual bool existsFile(const PathName& fileFullPath) = 0;
 
 	/**
 		@brief	アーカイブ内のファイルを読み取るためのストリームを作成します。
@@ -73,12 +73,12 @@ public:
 		@param[in]	filePath	: アーカイブファイルのパス
 		@param[in]	key			: パスワード文字列
 	*/
-	void Open(const PathName& filePath, const String& key);
+	void open(const PathName& filePath, const String& key);
 
 	/**
 		@brief	アーカイブ内に指定したパスのファイルが存在するか確認します。
 	*/
-	virtual bool ExistsFile(const PathName& fileFullPath) override;
+	virtual bool existsFile(const PathName& fileFullPath) override;
 
 	/**
 		@brief	アーカイブ内のファイルを読み取るためのストリームを作成します。
@@ -145,14 +145,14 @@ private:
 	virtual ~ArchiveStream();
 
 public:
-	virtual bool CanRead() const { return true; }
-	virtual bool CanWrite() const { return false; }
-	virtual int64_t GetLength() const { return m_dataSize; }
-	virtual int64_t GetPosition() const { return m_seekPoint; }
-	virtual size_t Read(void* buffer, size_t byteCount);
-	virtual void Write(const void* data, size_t byteCount) {}
-	virtual void Seek(int64_t offset, SeekOrigin origin);
-	virtual void Flush() {}
+	virtual bool canRead() const { return true; }
+	virtual bool canWrite() const { return false; }
+	virtual int64_t getLength() const { return m_dataSize; }
+	virtual int64_t getPosition() const { return m_seekPoint; }
+	virtual size_t read(void* buffer, size_t byteCount);
+	virtual void write(const void* data, size_t byteCount) {}
+	virtual void seek(int64_t offset, SeekOrigin origin);
+	virtual void flush() {}
 
 private:
 	friend class Archive;
@@ -169,7 +169,7 @@ class DummyArchive
 	: public IArchive
 {
 public:
-	virtual bool ExistsFile(const PathName& fileFullPath) override;
+	virtual bool existsFile(const PathName& fileFullPath) override;
 	virtual bool TryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outStream, bool isDeferring) override;
 };
 

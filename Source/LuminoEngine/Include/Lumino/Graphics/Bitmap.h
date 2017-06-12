@@ -93,7 +93,7 @@ public:
 		@brief		指定したファイルにビットマップを保存します。
 		@param[in]	filePath	: ファイルパス
 	*/
-	void Save(const TCHAR* filePath);
+	void save(const TCHAR* filePath);
 
 	/**
 		@brief		このビットマップと、指定したビットマップを比較します。
@@ -112,7 +112,7 @@ public:
 	void SetSize(const SizeI& size) { m_size = size; }
 
 	void CopyRawData(const void* data, size_t byteCount);
-	size_t GetByteCount() const;
+	size_t getByteCount() const;
 
 
 
@@ -198,7 +198,7 @@ private:
 	{
 	public:
 		// 中間フォーマット (RGBA) に変換
-		static inline ClColor Get(const byte_t* line, int x)
+		static inline ClColor get(const byte_t* line, int x)
 		{
 			U32* c = &((U32*)line)[x];
 			return RGBA(c->D[0], c->D[1], c->D[2], c->D[3]);
@@ -214,7 +214,7 @@ private:
 	class ConverterR8G8B8X8
 	{
 	public:
-		static inline ClColor Get(const byte_t* line, int x)
+		static inline ClColor get(const byte_t* line, int x)
 		{
 			U32* c = &((U32*)line)[x];
 			return RGBA(c->D[0], c->D[1], c->D[2], 0xFF);
@@ -229,7 +229,7 @@ private:
 	class ConverterB8G8R8A8
 	{
 	public:
-		static inline ClColor Get(const byte_t* line, int x)
+		static inline ClColor get(const byte_t* line, int x)
 		{
 			U32* c = &((U32*)line)[x];
 			return RGBA(c->D[2], c->D[1], c->D[0], c->D[3]);
@@ -244,7 +244,7 @@ private:
 	class ConverterB8G8R8X8
 	{
 	public:
-		static inline ClColor Get(const byte_t* line, int x)
+		static inline ClColor get(const byte_t* line, int x)
 		{
 			U32* c = &((U32*)line)[x];
 			return RGBA(c->D[2], c->D[1], c->D[0], 0xFF);
@@ -259,7 +259,7 @@ private:
 	class ConverterA1
 	{
 	public:
-		static inline ClColor Get(const byte_t* line, int x)
+		static inline ClColor get(const byte_t* line, int x)
 		{
 			int byte = (x) >> 3;// / 8;
 			int bit = (x) & 7;//  % 8;
@@ -279,7 +279,7 @@ private:
 	class ConverterA8
 	{
 	public:
-		static inline ClColor Get(const byte_t* line, int x)
+		static inline ClColor get(const byte_t* line, int x)
 		{
 			byte_t c = line[x];
 			return RGBA(0xFF, 0xFF, 0xFF, c);
@@ -316,7 +316,7 @@ private:
 
 		inline ClColor GetPixel(int x)
 		{
-			return TConverter::Get(m_curLine, m_rc.x + x);
+			return TConverter::get(m_curLine, m_rc.x + x);
 		}
 
 		inline void SetPixel(int x, ClColor color)
@@ -359,7 +359,7 @@ private:
 
 		inline ClColor GetPixel(int x) const
 		{
-			return TConverter::Get(m_curLine, m_rc.x + x);
+			return TConverter::get(m_curLine, m_rc.x + x);
 		}
 
 	private:

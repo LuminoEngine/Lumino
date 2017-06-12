@@ -31,7 +31,7 @@ public:
 
 	void SetSortMode(uint32_t flags, SortingDistanceBasis basis);
 
-	void Flush(SpriteSortMode sortFlags);
+	void flush(SpriteSortMode sortFlags);
 
 	void clear();
 
@@ -141,7 +141,7 @@ class SpriteRenderFeature
 {
 public:
 
-	static SpriteRenderFeature* Create(int maxSpriteCount, GraphicsManager* manager);
+	static SpriteRenderFeature* create(int maxSpriteCount, GraphicsManager* manager);
 
 public:
 
@@ -199,9 +199,9 @@ public:
 		BillboardType billboardType);
 
 	virtual bool IsStandaloneShader() const { return true; }
-	virtual void Flush() override;
+	virtual void flush() override;
 	virtual void OnActivated() override {}
-	virtual void OnDeactivated() override { Flush(); }
+	virtual void OnDeactivated() override { flush(); }
 
 	GraphicsManager* GetManager() const { return m_manager; }
 

@@ -38,7 +38,7 @@ public:
 	static const String NormalState;
 
 public:
-	static UIListBoxPtr Create();
+	static UIListBoxPtr create();
 
 public:
 	UIListBoxItemPtr AddTextItem(const String& text);

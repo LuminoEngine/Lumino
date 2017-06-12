@@ -51,9 +51,9 @@ const Color Material::DefaultEmissive(0.0f, 0.0f, 0.0f, 0.0f);
 const float Material::DefaultPower = 50.0f;
 
 //------------------------------------------------------------------------------
-MaterialPtr Material::Create()
+MaterialPtr Material::create()
 {
-	auto ptr = MaterialPtr::MakeRef();
+	auto ptr = MaterialPtr::makeRef();
 	ptr->initialize();
 	return ptr;
 }
@@ -96,18 +96,18 @@ void Material::Reset()
 }
 
 //------------------------------------------------------------------------------
-void Material::SetBuiltinIntParameter(const StringRef& name, int value) { m_builtinValueMap[Hash::CalcHash(name.GetBegin(), name.GetLength())].SetInt(value); }
-void Material::SetBuiltinFloatParameter(const StringRef& name, float value) { m_builtinValueMap[Hash::CalcHash(name.GetBegin(), name.GetLength())].SetFloat(value); }
-void Material::SetBuiltinVectorParameter(const StringRef& name, const Vector4& value) { m_builtinValueMap[Hash::CalcHash(name.GetBegin(), name.GetLength())].SetVector(value); }
-void Material::SetBuiltinMatrixParameter(const StringRef& name, const Matrix& value) { m_builtinValueMap[Hash::CalcHash(name.GetBegin(), name.GetLength())].SetMatrix(value); }
-void Material::SetBuiltinTextureParameter(const StringRef& name, Texture* value) { m_builtinValueMap[Hash::CalcHash(name.GetBegin(), name.GetLength())].SetManagedTexture(value); }
+void Material::SetBuiltinIntParameter(const StringRef& name, int value) { m_builtinValueMap[Hash::calcHash(name.getBegin(), name.getLength())].setInt(value); }
+void Material::SetBuiltinFloatParameter(const StringRef& name, float value) { m_builtinValueMap[Hash::calcHash(name.getBegin(), name.getLength())].SetFloat(value); }
+void Material::SetBuiltinVectorParameter(const StringRef& name, const Vector4& value) { m_builtinValueMap[Hash::calcHash(name.getBegin(), name.getLength())].SetVector(value); }
+void Material::SetBuiltinMatrixParameter(const StringRef& name, const Matrix& value) { m_builtinValueMap[Hash::calcHash(name.getBegin(), name.getLength())].SetMatrix(value); }
+void Material::SetBuiltinTextureParameter(const StringRef& name, Texture* value) { m_builtinValueMap[Hash::calcHash(name.getBegin(), name.getLength())].SetManagedTexture(value); }
 void Material::SetBuiltinColorParameter(const StringRef& name, const Color& value) { SetBuiltinVectorParameter(name, value); }
 void Material::SetBuiltinColorParameter(const StringRef& name, float r, float g, float b, float a) { SetBuiltinVectorParameter(name, Color(r, g, b, a)); }
 
 //------------------------------------------------------------------------------
 RefPtr<Material> Material::CopyShared() const
 {
-	auto m = RefPtr<Material>::MakeRef();
+	auto m = RefPtr<Material>::makeRef();
 	m->initialize();	// TODO: base
 	m->m_shader = m_shader;
 	//m->m_shader = m_shader;
@@ -162,15 +162,15 @@ Shader* Material::GetShader() const
 //------------------------------------------------------------------------------
 void Material::SetIntParameter(const StringRef& name, int value)
 {
-	uint32_t hashKey = Hash::CalcHash(name.GetBegin(), name.GetLength());
-	FindAndCreateUserShaderValue(hashKey)->SetInt(value);
+	uint32_t hashKey = Hash::calcHash(name.getBegin(), name.getLength());
+	FindAndCreateUserShaderValue(hashKey)->setInt(value);
 	m_revisionCount++;
 }
 
 //------------------------------------------------------------------------------
 void Material::SetFloatParameter(const StringRef& name, float value)
 {
-	uint32_t hashKey = Hash::CalcHash(name.GetBegin(), name.GetLength());
+	uint32_t hashKey = Hash::calcHash(name.getBegin(), name.getLength());
 	FindAndCreateUserShaderValue(hashKey)->SetFloat(value);
 	m_revisionCount++;
 }
@@ -178,7 +178,7 @@ void Material::SetFloatParameter(const StringRef& name, float value)
 //------------------------------------------------------------------------------
 void Material::SetVectorParameter(const StringRef& name, const Vector4& value)
 {
-	uint32_t hashKey = Hash::CalcHash(name.GetBegin(), name.GetLength());
+	uint32_t hashKey = Hash::calcHash(name.getBegin(), name.getLength());
 	FindAndCreateUserShaderValue(hashKey)->SetVector(value);
 	m_revisionCount++;
 }
@@ -186,7 +186,7 @@ void Material::SetVectorParameter(const StringRef& name, const Vector4& value)
 //------------------------------------------------------------------------------
 void Material::SetMatrixParameter(const StringRef& name, const Matrix& value)
 {
-	uint32_t hashKey = Hash::CalcHash(name.GetBegin(), name.GetLength());
+	uint32_t hashKey = Hash::calcHash(name.getBegin(), name.getLength());
 	FindAndCreateUserShaderValue(hashKey)->SetMatrix(value);
 	m_revisionCount++;
 }
@@ -194,7 +194,7 @@ void Material::SetMatrixParameter(const StringRef& name, const Matrix& value)
 //------------------------------------------------------------------------------
 void Material::SetTextureParameter(const StringRef& name, Texture* value)
 {
-	uint32_t hashKey = Hash::CalcHash(name.GetBegin(), name.GetLength());
+	uint32_t hashKey = Hash::calcHash(name.getBegin(), name.getLength());
 	FindAndCreateUserShaderValue(hashKey)->SetManagedTexture(value);
 	m_revisionCount++;
 }
@@ -300,7 +300,7 @@ const ShaderValue* Material::FindUserShaderValueConst(uint32_t hashKey) const
 }
 
 //------------------------------------------------------------------------------
-uint32_t Material::GetHashCode()
+uint32_t Material::getHashCode()
 {
 	if (m_revisionCount != 0)
 	{
@@ -309,19 +309,19 @@ uint32_t Material::GetHashCode()
 
 		// TODO: map じゃなくて List で思う。20個も普通値いれないだろうし
 		for (auto& pair : m_userValueMap)
-			m_hashCode += pair.second.GetHashCode();
+			m_hashCode += pair.second.getHashCode();
 
 		for (auto& pair : m_builtinValueMap)
-			m_hashCode += pair.second.GetHashCode();
+			m_hashCode += pair.second.getHashCode();
 
 		//m_hashCode += Hash::CalcHash(reinterpret_cast<const char*>(&m_builtin), sizeof(m_builtin));
 
 		
-		m_hashCode += reinterpret_cast<intptr_t>(m_shader.Get());
-		m_hashCode += blendMode.GetHashCode();
-		m_hashCode += cullingMode.GetHashCode();
-		m_hashCode += depthTestEnabled.GetHashCode();
-		m_hashCode += depthWriteEnabled.GetHashCode();
+		m_hashCode += reinterpret_cast<intptr_t>(m_shader.get());
+		m_hashCode += blendMode.getHashCode();
+		m_hashCode += cullingMode.getHashCode();
+		m_hashCode += depthTestEnabled.getHashCode();
+		m_hashCode += depthWriteEnabled.getHashCode();
 	}
 
 	return m_hashCode;
@@ -337,16 +337,16 @@ void Material::OnRenderStateChanged(Object* obj)
 static const Color DefaultColorScale(1, 1, 1, 1);
 static const Color DefaultBlendColor(0, 0, 0, 0);
 static const ToneF DefaultTone(0, 0, 0, 0);
-static const uint32_t MaterialTextureHash = Hash::CalcHash(_T("MaterialTexture"));
-static const uint32_t OpacityHash = Hash::CalcHash(_T("Opacity"));
-static const uint32_t ColorScaleHash = Hash::CalcHash(_T("ColorScale"));
-static const uint32_t BlendColorHash = Hash::CalcHash(_T("BlendColor"));
-static const uint32_t ToneHash = Hash::CalcHash(_T("Tone"));
-static const uint32_t DiffuseHash = Hash::CalcHash(_T("Diffuse"));
-static const uint32_t AmbientHash = Hash::CalcHash(_T("Ambient"));
-static const uint32_t SpecularHash = Hash::CalcHash(_T("Specular"));
-static const uint32_t EmissiveHash = Hash::CalcHash(_T("Emissive"));
-static const uint32_t PowerHash = Hash::CalcHash(_T("Power"));
+static const uint32_t MaterialTextureHash = Hash::calcHash(_T("MaterialTexture"));
+static const uint32_t OpacityHash = Hash::calcHash(_T("Opacity"));
+static const uint32_t ColorScaleHash = Hash::calcHash(_T("ColorScale"));
+static const uint32_t BlendColorHash = Hash::calcHash(_T("BlendColor"));
+static const uint32_t ToneHash = Hash::calcHash(_T("Tone"));
+static const uint32_t DiffuseHash = Hash::calcHash(_T("Diffuse"));
+static const uint32_t AmbientHash = Hash::calcHash(_T("Ambient"));
+static const uint32_t SpecularHash = Hash::calcHash(_T("Specular"));
+static const uint32_t EmissiveHash = Hash::calcHash(_T("Emissive"));
+static const uint32_t PowerHash = Hash::calcHash(_T("Power"));
 
 void Material::SetMaterialTexture(Texture* v)
 {
@@ -390,9 +390,9 @@ Texture* Material::GetMaterialTexture(Texture* defaultValue) const { auto itr = 
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(DiffuseMaterial, Material);
 
 //------------------------------------------------------------------------------
-DiffuseMaterialPtr DiffuseMaterial::Create()
+DiffuseMaterialPtr DiffuseMaterial::create()
 {
-	auto ptr = DiffuseMaterialPtr::MakeRef();
+	auto ptr = DiffuseMaterialPtr::makeRef();
 	ptr->initialize();
 	return ptr;
 }
@@ -493,11 +493,11 @@ void CombinedMaterial::Combine(Material* owner, Material* ownerBase, const Built
 	//}
 
 	uint32_t hashCode = 0;
-	if (owner != nullptr)		hashCode |= owner->GetHashCode();
-	if (ownerBase != nullptr)	hashCode |= ownerBase->GetHashCode();
+	if (owner != nullptr)		hashCode |= owner->getHashCode();
+	if (ownerBase != nullptr)	hashCode |= ownerBase->getHashCode();
 
 	if (m_lastSourceHashCode != hashCode ||
-		m_lastBuiltinEffectHashCode != builtinEffectData.GetHashCode())
+		m_lastBuiltinEffectHashCode != builtinEffectData.getHashCode())
 	{
 		Material* source1 = (ownerBase != nullptr) ? ownerBase : owner;
 		Material* source2 = (ownerBase != nullptr) ? owner : nullptr;
@@ -563,7 +563,7 @@ void CombinedMaterial::Combine(Material* owner, Material* ownerBase, const Built
 		}
 
 		m_lastSourceHashCode = hashCode;
-		m_lastBuiltinEffectHashCode = builtinEffectData.GetHashCode();
+		m_lastBuiltinEffectHashCode = builtinEffectData.getHashCode();
 	}
 }
 
@@ -583,7 +583,7 @@ void CombinedMaterial::CopyUserValueTable(Material* source)
 	m_userValueTable.clear();
 	for (auto& pair : source->GetUserValueMap())
 	{
-		m_userValueTable.Add(ValuePair{ pair.first, pair.second });
+		m_userValueTable.add(ValuePair{ pair.first, pair.second });
 	}
 }
 
@@ -594,14 +594,14 @@ void CombinedMaterial::MergeUserValueTable(Material* source)
 	for (auto& pair : source->GetUserValueMap())
 	{
 		uint32_t key = pair.first;
-		ValuePair* p = m_userValueTable.Find([key](const ValuePair& p) { return p.nameHash == key; });
+		ValuePair* p = m_userValueTable.find([key](const ValuePair& p) { return p.nameHash == key; });
 		if (p != nullptr)
 		{
 			p->value = pair.second;
 		}
 		else
 		{
-			m_userValueTable.Add(ValuePair{ pair.first, pair.second });
+			m_userValueTable.add(ValuePair{ pair.first, pair.second });
 		}
 	}
 }

@@ -116,31 +116,31 @@ protected:
 //}
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_Rect, Contains)
+TEST_F(Test_Base_Rect, contains)
 {
 	Rect rc1(10, 20, 30, 40);
-	ASSERT_TRUE(rc1.Contains(10, 20));
-	ASSERT_TRUE(rc1.Contains(PointF(30, 40)));
+	ASSERT_TRUE(rc1.contains(10, 20));
+	ASSERT_TRUE(rc1.contains(PointF(30, 40)));
 
 	// 同じサイズ → true
 	Rect rc2(10, 20, 30, 40);
-	ASSERT_TRUE(rc1.Contains(rc2));
+	ASSERT_TRUE(rc1.contains(rc2));
 
 	// 内部 → true
 	Rect rc3(15, 25, 5, 6);
-	ASSERT_TRUE(rc1.Contains(rc3));
+	ASSERT_TRUE(rc1.contains(rc3));
 
 	// 1px 大きい → false
 	Rect rc4(10, 20, 30, 40 + 1);
-	ASSERT_FALSE(rc1.Contains(rc4));
+	ASSERT_FALSE(rc1.contains(rc4));
 
 	// 1px ずれ → false
 	Rect rc5(10, 20 - 1, 30, 40);
-	ASSERT_FALSE(rc1.Contains(rc5));
+	ASSERT_FALSE(rc1.contains(rc5));
 
 	// rc1 全体を囲む → false
 	Rect rc6(0, 1, 100, 200);
-	ASSERT_FALSE(rc1.Contains(rc6));
+	ASSERT_FALSE(rc1.contains(rc6));
 
 }
 

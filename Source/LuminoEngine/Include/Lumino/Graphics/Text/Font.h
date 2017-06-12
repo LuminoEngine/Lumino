@@ -50,22 +50,22 @@ public:
 	/**
 		@brief	デフォルトのスタイルに基づいてフォントを作成します。
 	*/
-	static FontPtr Create();
+	static FontPtr create();
 	
 	/**
 		@brief	指定したフォントファミリとデフォルトのサイズに基づいてフォントを作成します。
 	*/
-	static FontPtr Create(const String& family);
+	static FontPtr create(const String& family);
 	
 	/**
 		@brief	指定したフォントファミリとサイズに基づいてフォントを作成します。
 	*/
-	static FontPtr Create(const String& family, float size);
+	static FontPtr create(const String& family, float size);
 
 	/**
 		@brief	デフォルトのフォントを取得します。
 	*/
-	static FontPtr GetDefault();
+	static FontPtr getDefault();
 	
 	/**
 		@brief	Lumino に内蔵されているビットマップフォントを取得します。
@@ -208,7 +208,7 @@ public:
 
 	static RawFontPtr GetDefaultFont();
 
-	static RawFontPtr Create();
+	static RawFontPtr create();
 
 
 	static RefPtr<RawFont> CreateBuiltInBitmapFontInternal2(int size);
@@ -306,7 +306,7 @@ LN_CONSTRUCT_ACCESS:
 	RawFont();
 	virtual ~RawFont();
 	void initialize();
-	virtual void Finalize_();
+	virtual void finalize_();
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	virtual void Dispose_();

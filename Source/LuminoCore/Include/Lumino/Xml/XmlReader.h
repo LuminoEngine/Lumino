@@ -78,7 +78,7 @@ public:
 		@brief		次のノード読み取ります。
 		@return		正常に読み取られた場合は true。それ以上読み取るノードが存在しない場合は false。
 	*/
-	bool Read();
+	bool read();
 
 	/**
 		@brief		現在のノードの種類を取得します。
@@ -94,7 +94,7 @@ public:
 		@brief		現在のノードの値 (文字列形式) を取得します。
 		@details	値が無い場合は空文字列を返します。
 	*/
-	const String& GetValue();
+	const String& getValue();
 
 	/**
 		@brief		現在のノードが空要素(<book/> 等) かどうかを確認します。
@@ -277,7 +277,7 @@ public:
 
 
 	/** ファイルの絶対パスを取得します。*/
-	const PathName& GetFilePath() const { return m_filePath; }
+	const PathName& getFilePath() const { return m_filePath; }
 
 private:
 	PathName	m_filePath;

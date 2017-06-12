@@ -70,9 +70,9 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 {
 	*handled = false;
 
-	if (!UserWndProc.IsEmpty())
+	if (!UserWndProc.isEmpty())
 	{
-		LRESULT dr = UserWndProc.Call(hwnd, msg, wparam, lparam, handled);//RaiseDelegateEvent(PreWndProc, hwnd, msg, wparam, lparam, handled);
+		LRESULT dr = UserWndProc.call(hwnd, msg, wparam, lparam, handled);//RaiseDelegateEvent(PreWndProc, hwnd, msg, wparam, lparam, handled);
 		if (*handled) {
 			return dr;
 		}
@@ -425,7 +425,7 @@ Keys Win32PlatformWindow::ConvertVirtualKeyCode(DWORD winVK)
 	case VK_BACK:
 		return Keys::BackSpace;
 	case VK_INSERT:
-		return Keys::Insert;
+		return Keys::insert;
 	case VK_DELETE:
 		return Keys::Delete;
 	case VK_PRIOR:

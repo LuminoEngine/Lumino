@@ -56,7 +56,7 @@ public:
 		m_size = 0;
 	}
 
-	void Add(TNode* node)
+	void add(TNode* node)
 	{
 		if (node == nullptr) return;
 		if (LN_CHECK_ARG(node->m_prev == nullptr && node->m_next == nullptr)) return;	// already added
@@ -70,7 +70,7 @@ public:
 		m_size++;
 	}
 
-	void Remove(TNode* node)
+	void remove(TNode* node)
 	{
 		if (node == nullptr) return;
 		if (node->m_prev == nullptr || node->m_next == nullptr) return;	// already removed
@@ -82,7 +82,7 @@ public:
 		m_size--;
 	}
 
-	TNode* PopFront()
+	TNode* popFront()
 	{
 		LinkedNode* node = m_dummy->m_next;
 		if (node == m_dummy) return nullptr;	// empty

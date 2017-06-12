@@ -115,7 +115,7 @@ public:
 
 	void FlushState(const detail::ContextState& state);
 	virtual bool IsStandaloneShader() const { return false; }
-	virtual void Flush() override;
+	virtual void flush() override;
 	virtual void OnActivated() {}
 	virtual void OnDeactivated() { }
 

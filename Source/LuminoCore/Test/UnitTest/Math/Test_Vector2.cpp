@@ -27,7 +27,7 @@ TEST_F(Test_Vector2, Basic)
 	// this->GetLength()
 	{
 		Vector2 v1(1, 2);
-		ASSERT_FLOAT_EQ(2.236068f, v1.GetLength());
+		ASSERT_FLOAT_EQ(2.236068f, v1.getLength());
 	}
 	// this->GetLengthSquared()
 	{

@@ -28,7 +28,7 @@ Vector3::Vector3(const Vector2& vec, float z_)
 }
 
 //------------------------------------------------------------------------------
-float Vector3::GetLength() const
+float Vector3::getLength() const
 {
 	return Asm::sqrt(x * x + y * y + z * z);
 }

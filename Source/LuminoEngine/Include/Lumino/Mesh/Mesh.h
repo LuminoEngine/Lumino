@@ -38,7 +38,7 @@ class MeshResource
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static MeshResourcePtr Create();
+	static MeshResourcePtr create();
 
 public:
 	/** 名前を設定します。*/
@@ -55,7 +55,7 @@ public:
 	void SetNormal(int index, const Vector3& normal);
 	void SetUV(int index, const Vector2& uv);
 	void SetColor(int index, const Color& color);
-	const Vector3& GetPosition(int index);
+	const Vector3& getPosition(int index);
 
 
 	void SetBlendWeight(int index, int blendIndex, float value);
@@ -167,7 +167,7 @@ LN_INTERNAL_ACCESS:
 	MeshResource();
 	virtual ~MeshResource();
 	void initialize(detail::GraphicsManager* manager, MeshCreationFlags flags);
-	void Reserve(int vertexCount, int indexCount);
+	void reserve(int vertexCount, int indexCount);
 	//void Resize(int vertexCount);
 
 
@@ -179,7 +179,7 @@ LN_INTERNAL_ACCESS:
 
 	//void SetIndexInternal(void* indexBuffer, int vertexIndex, int value);
 
-	int GetSubsetCount() const { return (m_attributes.IsEmpty()) ? 1 : m_attributes.GetCount(); }
+	int GetSubsetCount() const { return (m_attributes.isEmpty()) ? 1 : m_attributes.getCount(); }
 	//int GetIndexStride() const { return (m_indexBufferInfo.format == IndexBufferFormat_UInt16) ? 2 : 4; }
 
 	//void* TryLockVertexBuffer(VertexBufferType type);
@@ -231,9 +231,9 @@ class StaticMeshModel
 public:
 
 	//void SetMeshResource(MeshResource* meshResource) { m_meshResource = meshResource; }
-	void AddMeshResource(MeshResource* meshResource) { m_meshResources.Add(meshResource); }
+	void AddMeshResource(MeshResource* meshResource) { m_meshResources.add(meshResource); }
 	MeshResource* GetMeshResource(int index) const { return m_meshResources[index]; }
-	int GetMeshResourceCount() const { return m_meshResources.GetCount(); }
+	int GetMeshResourceCount() const { return m_meshResources.getCount(); }
 
 	MeshResource* FindMesh(const StringRef& name);
 

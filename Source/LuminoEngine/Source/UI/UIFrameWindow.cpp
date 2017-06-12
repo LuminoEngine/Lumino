@@ -62,7 +62,7 @@ void UIFrameWindow::initialize()
 
 	WindowCreationSettings ws;
 	RefPtr<PlatformWindow> window(m_manager->GetPlatformManager()->GetWindowManager()->CreateSubWindow(ws), false);
-	auto swapChain = RefPtr<SwapChain>::MakeRef();
+	auto swapChain = RefPtr<SwapChain>::makeRef();
 	swapChain->InitializeSub(m_manager->GetGraphicsManager(), window);
 
 	initialize(window, swapChain, UIContext::GetMainContext());
@@ -74,8 +74,8 @@ void UIFrameWindow::Dispose()
 	if (m_manager != nullptr)
 	{
 		m_platformWindow->DetachEventListener(this);
-		m_swapChain.SafeRelease();
-		m_platformWindow.SafeRelease();
+		m_swapChain.safeRelease();
+		m_platformWindow.safeRelease();
 		m_manager->RemoveFrameWindow(this);
 		m_manager = nullptr;
 	}
@@ -188,12 +188,12 @@ void UIFrameWindow::Initialize_UIRenderer()
 
 	// lighting disabled.
 	// TODO: NewObject
-	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
+	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::makeRef();
 	internalRenderer->initialize(manager->GetGraphicsManager());
 	m_internalRenderer = internalRenderer;
 
-	m_drawElementListSet = RefPtr<RenderView>::MakeRef();
-	m_drawElementListSet->m_lists.Add(m_drawingContext->GetDrawElementList());
+	m_drawElementListSet = RefPtr<RenderView>::makeRef();
+	m_drawElementListSet->m_lists.add(m_drawingContext->GetDrawElementList());
 
 	m_renderDiag = NewObject<RenderDiag>();
 }
@@ -395,9 +395,9 @@ UILayoutLayer* UIMainWindow::GetDefaultUILayer() const
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UINativeHostWindow, UIFrameWindow)
 
 //------------------------------------------------------------------------------
-UINativeHostWindowPtr UINativeHostWindow::Create(intptr_t windowHandle)
+UINativeHostWindowPtr UINativeHostWindow::create(intptr_t windowHandle)
 {
-	auto ptr = UINativeHostWindowPtr::MakeRef();
+	auto ptr = UINativeHostWindowPtr::makeRef();
 	ptr->initialize(windowHandle);
 	return ptr;
 }
@@ -428,7 +428,7 @@ void UINativeHostWindow::initialize(intptr_t windowHandle)
 	ws.userWindow = windowHandle;
 	RefPtr<PlatformWindow> window(manager->GetPlatformManager()->GetWindowManager()->CreateSubWindow(ws), false);
 
-	auto swap = RefPtr<SwapChain>::MakeRef();
+	auto swap = RefPtr<SwapChain>::makeRef();
 	swap->InitializeSub(manager->GetGraphicsManager(), window);
 
 

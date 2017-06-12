@@ -25,12 +25,12 @@ public:
 	/**
 		@brief	Sound クラスのインスタンスを作成します。
 	*/
-	static SoundPtr Create(const TCHAR* filePath);
+	static SoundPtr create(const TCHAR* filePath);
 
 	/**
 		@brief	Sound クラスのインスタンスを作成します。
 	*/
-	static SoundPtr Create(Stream* stream, SoundLoadingMode loadingMode);
+	static SoundPtr create(Stream* stream, SoundLoadingMode loadingMode);
 
 public:
 	

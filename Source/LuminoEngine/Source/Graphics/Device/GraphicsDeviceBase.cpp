@@ -36,7 +36,7 @@ void GraphicsDeviceBase::Finalize()
 void GraphicsDeviceBase::AddDeviceResource(IDeviceObject* obj)
 {
 	MutexScopedLock lock(m_deviceObjectListMutex);
-	m_deviceObjectList.Add(obj);
+	m_deviceObjectList.add(obj);
 	obj->addRef();
 }
 
@@ -111,7 +111,7 @@ IVertexDeclaration* GraphicsDeviceBase::CreateVertexDeclaration(const VertexElem
 	ScopedAccessContext lock(this);
 	auto obj = CreateVertexDeclarationImplement(elements, elementsCount);
 	AddDeviceResource(obj);
-	return obj.DetachMove();
+	return obj.detachMove();
 }
 
 //------------------------------------------------------------------------------
@@ -120,7 +120,7 @@ IVertexBuffer* GraphicsDeviceBase::CreateVertexBuffer(size_t bufferSize, const v
 	ScopedAccessContext lock(this);
 	auto obj = CreateVertexBufferImplement(bufferSize, data, usage);
 	AddDeviceResource(obj);
-	return obj.DetachMove();
+	return obj.detachMove();
 }
 
 //------------------------------------------------------------------------------
@@ -129,7 +129,7 @@ IIndexBuffer* GraphicsDeviceBase::CreateIndexBuffer(int indexCount, const void* 
 	ScopedAccessContext lock(this);
 	auto obj = CreateIndexBufferImplement(indexCount, initialData, format, usage);
 	AddDeviceResource(obj);
-	return obj.DetachMove();
+	return obj.detachMove();
 }
 
 //------------------------------------------------------------------------------
@@ -138,7 +138,7 @@ ITexture* GraphicsDeviceBase::CreateTexture(const SizeI& size, bool mipmap, Text
 	ScopedAccessContext lock(this);
 	auto obj = CreateTextureImplement(size, mipmap, format, initialData);
 	AddDeviceResource(obj);
-	return obj.DetachMove();
+	return obj.detachMove();
 }
 
 //------------------------------------------------------------------------------
@@ -147,7 +147,7 @@ ITexture* GraphicsDeviceBase::CreateTexturePlatformLoading(Stream* stream, bool 
 	ScopedAccessContext lock(this);
 	auto obj = CreateTexturePlatformLoadingImplement(stream, mipmap, format);
 	AddDeviceResource(obj);
-	return obj.DetachMove();
+	return obj.detachMove();
 }
 
 //------------------------------------------------------------------------------
@@ -156,7 +156,7 @@ ITexture* GraphicsDeviceBase::CreateTexture3D(int width, int height, int depth, 
 	ScopedAccessContext lock(this);
 	auto obj = CreateTexture3DImplement(width, height, depth, mipLevels, format, usage, initialData);
 	AddDeviceResource(obj);
-	return obj.DetachMove();
+	return obj.detachMove();
 }
 
 //------------------------------------------------------------------------------
@@ -165,7 +165,7 @@ ITexture* GraphicsDeviceBase::CreateRenderTarget(uint32_t width, uint32_t height
 	ScopedAccessContext lock(this);
 	auto obj = CreateRenderTargetImplement(width, height, mipLevels, format);
 	AddDeviceResource(obj);
-	return obj.DetachMove();
+	return obj.detachMove();
 }
 
 //------------------------------------------------------------------------------
@@ -174,7 +174,7 @@ ITexture* GraphicsDeviceBase::CreateDepthBuffer(uint32_t width, uint32_t height,
 	ScopedAccessContext lock(this);
 	auto obj = CreateDepthBufferImplement(width, height, format);
 	AddDeviceResource(obj);
-	return obj.DetachMove();
+	return obj.detachMove();
 }
 
 //------------------------------------------------------------------------------
@@ -182,10 +182,10 @@ IShader* GraphicsDeviceBase::CreateShader(const void* textData, size_t size, Sha
 {
 	ScopedAccessContext lock(this);
 	auto obj = CreateShaderImplement(textData, size, result);
-	if (!obj.IsNull()) { 
+	if (!obj.isNull()) { 
 		AddDeviceResource(obj);
 	}
-	return obj.DetachMove();
+	return obj.detachMove();
 }
 
 //------------------------------------------------------------------------------
@@ -194,7 +194,7 @@ ISwapChain* GraphicsDeviceBase::CreateSwapChain(PlatformWindow* window)
 	ScopedAccessContext lock(this);
 	auto obj = CreateSwapChainImplement(window);
 	AddDeviceResource(obj);
-	return obj.DetachMove();
+	return obj.detachMove();
 }
 
 } // namespace Driver

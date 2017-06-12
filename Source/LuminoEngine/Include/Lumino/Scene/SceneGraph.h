@@ -96,7 +96,7 @@ class SceneGraph2D
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static SceneGraph2DPtr Create();
+	static SceneGraph2DPtr create();
 
 public:
 

@@ -10,7 +10,7 @@ LN_NAMESPACE_BEGIN
 
 static void NlVariant_AddInt32(NlVariant* lhs, NlVariant* rhs, NlVariant* outResult)
 {
-	outResult->SetValue(lhs->GetValue<int32_t>() + rhs->GetValue<int32_t>());
+	outResult->SetValue(lhs->getValue<int32_t>() + rhs->getValue<int32_t>());
 }
 
 using OpFunc = void(NlVariant* lhs, NlVariant* rhs, NlVariant* outResult);

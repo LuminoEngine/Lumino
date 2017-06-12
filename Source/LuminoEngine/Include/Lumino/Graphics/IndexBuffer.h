@@ -17,7 +17,7 @@ public:
 	int GetIndexCount() const;
 
 	/** インデックスバッファの容量を確保します。 */
-	void Reserve(int indexCount);
+	void reserve(int indexCount);
 
 	/** インデックスバッファのサイズを変更します。 */
 	void resize(int indexCount);
@@ -51,7 +51,7 @@ LN_INTERNAL_ACCESS:
 
 private:
 	void UpdateFormat(int indexCount);
-	bool IsRHIDirect() const { return m_initialUpdate && !m_rhiObject.IsNull(); }
+	bool IsRHIDirect() const { return m_initialUpdate && !m_rhiObject.isNull(); }
 
 	RefPtr<Driver::IIndexBuffer>	m_rhiObject;
 	IndexBufferFormat				m_format;

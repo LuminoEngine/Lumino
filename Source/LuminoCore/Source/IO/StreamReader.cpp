@@ -19,7 +19,7 @@ GenericStreamReader<TChar>::GenericStreamReader(Stream* stream, Encoding* encodi
 template<typename TChar>
 GenericStreamReader<TChar>::GenericStreamReader(const TChar* filePath, Encoding* encoding)
 {
-	auto stream = GenericFileStream<TChar>::Create(filePath, FileOpenMode::Read);
+	auto stream = GenericFileStream<TChar>::create(filePath, FileOpenMode::read);
 	InitReader(stream, encoding);
 }
 
@@ -47,7 +47,7 @@ int GenericStreamReader<TChar>::Peek()
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-int GenericStreamReader<TChar>::Read()
+int GenericStreamReader<TChar>::read()
 {
 	// バッファリングデータを最後まで読んでいた場合は追加読み込み。
 	// それでも1つも読み込めなかったら EOF。
@@ -83,7 +83,7 @@ bool GenericStreamReader<TChar>::ReadLine(GenericString<TChar>* line)
 			TChar ch = buf[i];
 			if (ch == '\r' || ch == '\n')
 			{
-				builder.Append(buf + m_charPos, i - m_charPos);
+				builder.append(buf + m_charPos, i - m_charPos);
 				m_charPos = i + 1;
 
 				// CR+LF 対応。条件式の中に ReadBuffer() があるが、これは現在のバッファ境界で \r と \n が切れている時の対策。
@@ -92,7 +92,7 @@ bool GenericStreamReader<TChar>::ReadLine(GenericString<TChar>* line)
 						m_charPos++;
 					}
 				}
-				*line = builder.ToString();
+				*line = builder.toString();
 				return true;
 			}
 			i++;
@@ -101,11 +101,11 @@ bool GenericStreamReader<TChar>::ReadLine(GenericString<TChar>* line)
 		// ここに来るのは、charBuffer の現在位置 ～ 終端までに改行が無かったとき。
 		// 現在の残りバッファを str に結合して、次のバッファを ReadBuffer() で読み出す。
 		const TChar* buf = (const TChar*)m_converter.GetLastBuffer().getConstData();
-		builder.Append(buf + m_charPos, m_charElementLen - m_charPos);
+		builder.append(buf + m_charPos, m_charElementLen - m_charPos);
 
 	} while (ReadBuffer() > 0);
 
-	*line = builder.ToString();
+	*line = builder.toString();
 	return true;
 }
 
@@ -119,18 +119,18 @@ GenericString<TChar> GenericStreamReader<TChar>::ReadToEnd()
 		if (m_charElementLen - m_charPos > 0)
 		{
 			const TChar* buf = (const TChar*)m_converter.GetLastBuffer().getConstData();
-			builder.Append(buf + m_charPos, m_charElementLen - m_charPos);
+			builder.append(buf + m_charPos, m_charElementLen - m_charPos);
 			m_charPos = m_charElementLen;
 		}
 
 	} while (ReadBuffer() > 0);
 
-	return builder.ToString();
+	return builder.toString();
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-bool GenericStreamReader<TChar>::IsEOF()
+bool GenericStreamReader<TChar>::isEOF()
 {
 	if (m_charPos < m_charElementLen) {
 		return false;	// まだバッファリングされていて読まれていない文字がある
@@ -166,7 +166,7 @@ int GenericStreamReader<TChar>::ReadBuffer()
 	m_charPos = 0;
 	m_charElementLen = 0;
 
-	m_byteLen = m_stream->Read(m_byteBuffer.getData(), m_byteBuffer.getSize());
+	m_byteLen = m_stream->read(m_byteBuffer.getData(), m_byteBuffer.getSize());
 	if (m_byteLen == 0) { return m_charElementLen; }
 
 	// 文字コード変換 (ユーザー指定 → TChar)

@@ -832,7 +832,7 @@ void Matrix::DecomposeMatrices(Matrix* scale, Matrix* rot, Matrix* trans) const
 {
 	if (trans)
 	{
-		*trans = Matrix::MakeTranslation(GetPosition());
+		*trans = Matrix::MakeTranslation(getPosition());
 	}
 
 	Vector3 sc(

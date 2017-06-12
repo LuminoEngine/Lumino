@@ -55,17 +55,17 @@ DllLoader::DllLoader()
 DllLoader::DllLoader(const TCHAR* filePath)
 	: m_module(NULL)
 {
-	Load(filePath);
+	load(filePath);
 }
 
 //------------------------------------------------------------------------------
 DllLoader::~DllLoader()
 {
-	Unload();
+	unload();
 }
 
 //------------------------------------------------------------------------------
-bool DllLoader::Exists(const TCHAR* filePath)
+bool DllLoader::exists(const TCHAR* filePath)
 {
 	// ロードできるかでチェック
 	void* module = LoadDLL(filePath);
@@ -78,23 +78,23 @@ bool DllLoader::Exists(const TCHAR* filePath)
 }
 
 //------------------------------------------------------------------------------
-void DllLoader::Load(const TCHAR* filePath)
+void DllLoader::load(const TCHAR* filePath)
 {
-	Unload();
+	unload();
 	m_module = LoadDLL(filePath);
 	LN_THROW(m_module != NULL, FileNotFoundException);
 }
 
 //------------------------------------------------------------------------------
-bool DllLoader::TryLoad(const TCHAR* filePath)
+bool DllLoader::tryLoad(const TCHAR* filePath)
 {
-	Unload();
+	unload();
 	m_module = LoadDLL(filePath);
 	return m_module != NULL;
 }
 
 //------------------------------------------------------------------------------
-void DllLoader::Unload()
+void DllLoader::unload()
 {
 	if (m_module != NULL)
 	{
@@ -104,7 +104,7 @@ void DllLoader::Unload()
 }
 
 //------------------------------------------------------------------------------
-void* DllLoader::GetProcAddress(const char* procName)
+void* DllLoader::getProcAddress(const char* procName)
 {
 	LN_THROW(m_module != NULL, InvalidOperationException);
 	void* proc = GetProcAddr(m_module, procName);

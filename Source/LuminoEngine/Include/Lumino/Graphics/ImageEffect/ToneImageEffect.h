@@ -19,7 +19,7 @@ public:
 	tr::Property<Vector4>	Tone;
 
 public:
-	static ToneImageEffectPtr Create();
+	static ToneImageEffectPtr create();
 
 	void SetTone(const ToneF& tone);
 

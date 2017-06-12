@@ -144,7 +144,7 @@ void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const
 
 		if (m_layoutTextOptions == LayoutTextOptions::All)
 		{
-			m_result->Items.Add(item);
+			m_result->Items.add(item);
 		}
 	}
 
@@ -232,7 +232,7 @@ void AbstractTextLayoutEngine::LayoutTextHorizontal(const UTF32* text, int lengt
 	while (lineBegin < end)
 	{
 		int nlPos, nlLen;
-		if (StringTraits::IndexOfNewLineSequence(lineBegin, end, &nlPos, &nlLen))
+		if (StringTraits::indexOfNewLineSequence(lineBegin, end, &nlPos, &nlLen))
 		{
 			LayoutLineHorizontal(lineBegin, nlPos);
 			lineBegin += nlPos + nlLen;
@@ -291,7 +291,7 @@ void TextLayoutEngine2::Layout(RawFont* font, const UTF32* text, int length, con
 //------------------------------------------------------------------------------
 void TextLayoutEngine2::OnPlacementChar(const ResultItem& item)
 {
-	m_result->items.Add(item);
+	m_result->items.add(item);
 }
 
 } // namespace detail

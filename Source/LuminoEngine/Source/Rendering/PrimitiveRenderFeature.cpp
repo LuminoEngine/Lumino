@@ -29,7 +29,7 @@ struct PrimitiveRendererCore_SetStateCommand : public RenderingCommand
 {
 	PrimitiveRendererCore* m_core;
 	PrimitiveRendererMode	m_mode;
-	void Create(PrimitiveRendererCore* core, PrimitiveRendererMode mode)
+	void create(PrimitiveRendererCore* core, PrimitiveRendererMode mode)
 	{
 		m_core = core;
 		m_mode = mode;
@@ -49,7 +49,7 @@ struct PrimitiveRendererCore_DrawLine : public RenderingCommand
 	Vector3 m_to;
 	Color m_toColor;
 
-	void Create(PrimitiveRendererCore* core, const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor)
+	void create(PrimitiveRendererCore* core, const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor)
 	{
 		m_core = core;
 		m_from = from;
@@ -66,7 +66,7 @@ struct PrimitiveRendererCore_DrawSquare : public RenderingCommand
 	PrimitiveRendererCore* m_core;
 	PrimitiveRendererCore::DrawSquareData	m_data;
 
-	void Create(PrimitiveRendererCore* core, const PrimitiveRendererCore::DrawSquareData& data) { m_core = core; m_data = data; }
+	void create(PrimitiveRendererCore* core, const PrimitiveRendererCore::DrawSquareData& data) { m_core = core; m_data = data; }
 	void Execute() { m_core->DrawSquare(m_data); }
 };
 
@@ -74,8 +74,8 @@ struct PrimitiveRendererCore_DrawSquare : public RenderingCommand
 struct PrimitiveRendererCore_FlushCommand : public RenderingCommand
 {
 	PrimitiveRendererCore* m_core;
-	void Create(PrimitiveRendererCore* core) { m_core = core; }
-	void Execute() { m_core->Flush(); }
+	void create(PrimitiveRendererCore* core) { m_core = core; }
+	void Execute() { m_core->flush(); }
 };
 
 //==============================================================================
@@ -110,8 +110,8 @@ void PrimitiveRendererCore::initialize(GraphicsManager* manager)
 	m_vertexBuffer = device->CreateVertexBuffer(sizeof(Vertex) * DefaultFaceCount * 4, nullptr, ResourceUsage::Dynamic);
 	m_indexBuffer = device->CreateIndexBuffer(DefaultFaceCount * 6, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 
-	m_vertexCache.Reserve(DefaultFaceCount * 4);
-	m_indexCache.Reserve(DefaultFaceCount * 6);
+	m_vertexCache.reserve(DefaultFaceCount * 4);
+	m_indexCache.reserve(DefaultFaceCount * 6);
 }
 
 //------------------------------------------------------------------------------
@@ -130,13 +130,13 @@ void PrimitiveRendererCore::DrawLine(const Vector3& from, const Color& fromColor
 //------------------------------------------------------------------------------
 void PrimitiveRendererCore::DrawSquare(const DrawSquareData& data)
 {
-	uint16_t i = m_vertexCache.GetCount();
-	m_indexCache.Add(i + 0);
-	m_indexCache.Add(i + 1);
-	m_indexCache.Add(i + 2);
-	m_indexCache.Add(i + 2);
-	m_indexCache.Add(i + 1);
-	m_indexCache.Add(i + 3);
+	uint16_t i = m_vertexCache.getCount();
+	m_indexCache.add(i + 0);
+	m_indexCache.add(i + 1);
+	m_indexCache.add(i + 2);
+	m_indexCache.add(i + 2);
+	m_indexCache.add(i + 1);
+	m_indexCache.add(i + 3);
 
 	AddVertex(data.pos[0], data.uv[0], data.color[0]);
 	AddVertex(data.pos[1], data.uv[1], data.color[1]);
@@ -145,16 +145,16 @@ void PrimitiveRendererCore::DrawSquare(const DrawSquareData& data)
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRendererCore::Flush()
+void PrimitiveRendererCore::flush()
 {
 	// サイズが足りなければ再作成
 	auto* device = m_manager->GetGraphicsDevice();
-	if (m_vertexBuffer->GetByteCount() < m_vertexCache.GetBufferUsedByteCount())
+	if (m_vertexBuffer->getByteCount() < m_vertexCache.GetBufferUsedByteCount())
 	{
 		LN_SAFE_RELEASE(m_vertexBuffer);
 		m_vertexBuffer = device->CreateVertexBuffer(m_vertexCache.GetBufferUsedByteCount(), nullptr, ResourceUsage::Dynamic);
 	}
-	if (m_indexBuffer->GetByteCount() < m_indexCache.GetBufferUsedByteCount())
+	if (m_indexBuffer->getByteCount() < m_indexCache.GetBufferUsedByteCount())
 	{
 		LN_SAFE_RELEASE(m_indexBuffer);
 		m_indexBuffer = device->CreateIndexBuffer(m_indexCache.GetBufferUsedByteCount(), nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
@@ -170,13 +170,13 @@ void PrimitiveRendererCore::Flush()
 			m_renderer->SetVertexDeclaration(m_manager->GetDefaultVertexDeclaration()->GetDeviceObject());
 			m_renderer->SetVertexBuffer(0, m_vertexBuffer);
 			m_renderer->SetIndexBuffer(m_indexBuffer);
-			m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
+			m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.getCount() / 3);
 		}
 		else if (m_mode == PrimitiveRendererMode::LineList)
 		{
 			m_renderer->SetVertexDeclaration(m_manager->GetDefaultVertexDeclaration()->GetDeviceObject());
 			m_renderer->SetVertexBuffer(0, m_vertexBuffer);
-			m_renderer->DrawPrimitive(PrimitiveType_LineList, 0, m_vertexCache.GetCount() / 2);
+			m_renderer->DrawPrimitive(PrimitiveType_LineList, 0, m_vertexCache.getCount() / 2);
 		}
 	}
 
@@ -190,7 +190,7 @@ void PrimitiveRendererCore::RequestBuffers(int vertexCount, int indexCount, Vert
 {
 	assert(vb != nullptr);
 	assert(ib != nullptr);
-	*outBeginVertexIndex = m_vertexCache.GetCount();
+	*outBeginVertexIndex = m_vertexCache.getCount();
 	*vb = m_vertexCache.Request(vertexCount);
 	*ib = m_indexCache.Request(indexCount);
 }
@@ -203,7 +203,7 @@ void PrimitiveRendererCore::AddVertex(const Vector3& pos, const Vector2& uv, con
 	v.uv = uv;
 	v.color = color;
 	v.normal = -Vector3::UnitZ;
-	m_vertexCache.Add(v);
+	m_vertexCache.add(v);
 }
 
 //==============================================================================
@@ -265,7 +265,7 @@ void PrimitiveRenderFeature::DrawSquare(
 void PrimitiveRenderFeature::DrawRectangle(const Rect& rect)
 {
 	float l = rect.GetLeft();
-	float t = rect.GetTop();
+	float t = rect.getTop();
 	float r = rect.GetRight();
 	float b = rect.GetBottom();
 	DrawSquare(
@@ -276,7 +276,7 @@ void PrimitiveRenderFeature::DrawRectangle(const Rect& rect)
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRenderFeature::Flush()
+void PrimitiveRenderFeature::flush()
 {
 	if (m_flushRequested)
 	{
@@ -284,7 +284,7 @@ void PrimitiveRenderFeature::Flush()
             m_manager->GetPrimaryRenderingCommandList()->AddCommand<PrimitiveRendererCore_FlushCommand>(m_core);
         }
         else {
-            m_core->Flush();
+            m_core->flush();
         }
         m_flushRequested = false;
 	}
@@ -293,7 +293,7 @@ void PrimitiveRenderFeature::Flush()
 //------------------------------------------------------------------------------
 bool PrimitiveRenderFeature::IsStandaloneShader() const { return false; }
 void PrimitiveRenderFeature::OnActivated() { m_stateModified = true; }
-void PrimitiveRenderFeature::OnDeactivated() { Flush(); }
+void PrimitiveRenderFeature::OnDeactivated() { flush(); }
 
 //------------------------------------------------------------------------------
 void PrimitiveRenderFeature::SetPrimitiveRendererMode(PrimitiveRendererMode mode)
@@ -310,7 +310,7 @@ void PrimitiveRenderFeature::CheckUpdateState()
 {
 	if (m_stateModified)
 	{
-		Flush();
+		flush();
 
 		LN_CALL_CORE_COMMAND(SetState, PrimitiveRendererCore_SetStateCommand, m_mode);
 		m_stateModified = false;
@@ -349,7 +349,7 @@ void BlitRenderer::initialize(GraphicsManager* manager)
 	};
 	m_vertexBuffer.attach(device->CreateVertexBuffer(sizeof(vertices), vertices, ResourceUsage::Static), false);
 
-	m_commonMaterial = RefPtr<Material>::MakeRef();
+	m_commonMaterial = RefPtr<Material>::makeRef();
 	m_commonMaterial->initialize();
 }
 
@@ -383,7 +383,7 @@ void BlitRenderer::BlitImpl()
 
 //------------------------------------------------------------------------------
 bool BlitRenderer::IsStandaloneShader() const { return false; }
-void BlitRenderer::Flush() {}
+void BlitRenderer::flush() {}
 void BlitRenderer::OnActivated() {}
 void BlitRenderer::OnDeactivated() {}
 

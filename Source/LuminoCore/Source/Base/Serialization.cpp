@@ -39,22 +39,22 @@ namespace tr {
 //------------------------------------------------------------------------------
 ScVariantCore::~ScVariantCore()
 {
-	ReleaseValue();
+	releaseValue();
 }
 
 //------------------------------------------------------------------------------
-void ScVariantCore::SetInt(int value)
+void ScVariantCore::setInt(int value)
 {
-	ResetType(ScVariantType::Int);
+	resetType(ScVariantType::Int);
 	m_int = value;
 }
 
 //------------------------------------------------------------------------------
-void ScVariantCore::SetString(const StringRef& value)
+void ScVariantCore::setString(const StringRef& value)
 {
 	if (m_type != ScVariantType::String)
 	{
-		ResetType(ScVariantType::String);
+		resetType(ScVariantType::String);
 		m_string = LN_NEW String(value);
 	}
 	else
@@ -64,16 +64,16 @@ void ScVariantCore::SetString(const StringRef& value)
 }
 
 //------------------------------------------------------------------------------
-void ScVariantCore::SetList()
+void ScVariantCore::setList()
 {
-	ResetType(ScVariantType::List);
+	resetType(ScVariantType::List);
 	m_list = LN_NEW ln::List<ScVariant>();
 }
 
 //------------------------------------------------------------------------------
-void ScVariantCore::SetMap()
+void ScVariantCore::setMap()
 {
-	ResetType(ScVariantType::Map);
+	resetType(ScVariantType::Map);
 	m_map = LN_NEW std::unordered_map<ln::String, ScVariant>();
 }
 
@@ -91,14 +91,14 @@ void ScVariantCore::SetMap()
 //}
 
 //------------------------------------------------------------------------------
-void ScVariantCore::ResetType(ScVariantType type)
+void ScVariantCore::resetType(ScVariantType type)
 {
-	ReleaseValue();
+	releaseValue();
 	m_type = type;
 }
 
 //------------------------------------------------------------------------------
-void ScVariantCore::ReleaseValue()
+void ScVariantCore::releaseValue()
 {
 	switch (m_type)
 	{
@@ -131,54 +131,54 @@ void ScVariantCore::ReleaseValue()
 //==============================================================================
 
 //------------------------------------------------------------------------------
-ScVariantType ScVariant::GetType() const
+ScVariantType ScVariant::getType() const
 {
 	if (m_core == nullptr) return ScVariantType::Unknown;
 	return m_core->m_type;
 }
 
 //------------------------------------------------------------------------------
-void ScVariant::SetInt(int value)
+void ScVariant::setInt(int value)
 {
 	if (m_core == nullptr) m_core = NewObject<ScVariantCore>();
-	m_core->SetInt(value);
+	m_core->setInt(value);
 }
 
 //------------------------------------------------------------------------------
-int ScVariant::GetInt() const
+int ScVariant::getInt() const
 {
 	if (LN_CHECK_STATE(m_core->m_type == ScVariantType::Int)) return 0;
 	return m_core->m_int;
 }
 
 //------------------------------------------------------------------------------
-void ScVariant::SetString(const StringRef& value)
+void ScVariant::setString(const StringRef& value)
 {
 	if (m_core == nullptr) m_core = NewObject<ScVariantCore>();
-	m_core->SetString(value);
+	m_core->setString(value);
 }
 
 //------------------------------------------------------------------------------
-const String& ScVariant::GetString() const
+const String& ScVariant::getString() const
 {
-	if (LN_CHECK_STATE(m_core->m_type == ScVariantType::String)) return String::GetEmpty();
+	if (LN_CHECK_STATE(m_core->m_type == ScVariantType::String)) return String::getEmpty();
 	return *m_core->m_string;
 }
 
 //------------------------------------------------------------------------------
-void ScVariant::SaveInternal(ISerializeElement* value)
+void ScVariant::saveInternal(ISerializeElement* value)
 {
 
 }
 
 //------------------------------------------------------------------------------
-void ScVariant::LoadInternal(ISerializeElement* value)
+void ScVariant::loadInternal(ISerializeElement* value)
 {
-	switch (value->GetSerializationElementType())
+	switch (value->getSerializationElementType())
 	{
 	case SerializationElementType::Value:
 	{
-		SerializationValueType type = value->GetSerializationValueType();
+		SerializationValueType type = value->getSerializationValueType();
 		if (type == SerializationValueType::Null)
 		{
 			m_core = nullptr;
@@ -192,51 +192,51 @@ void ScVariant::LoadInternal(ISerializeElement* value)
 			switch (type)
 			{
 			case SerializationValueType::Bool:
-				m_core->ResetType(ScVariantType::Bool);
-				m_core->m_bool = value->GetSerializeValueBool();
+				m_core->resetType(ScVariantType::Bool);
+				m_core->m_bool = value->getSerializeValueBool();
 				break;
 			case SerializationValueType::Int8:
-				m_core->ResetType(ScVariantType::Int);
-				m_core->m_int = value->GetSerializeValueInt8();
+				m_core->resetType(ScVariantType::Int);
+				m_core->m_int = value->getSerializeValueInt8();
 				break;
 			case SerializationValueType::Int16:
-				m_core->ResetType(ScVariantType::Int);
-				m_core->m_int = value->GetSerializeValueInt16();
+				m_core->resetType(ScVariantType::Int);
+				m_core->m_int = value->getSerializeValueInt16();
 				break;
 			case SerializationValueType::Int32:
-				m_core->ResetType(ScVariantType::Int);
-				m_core->m_int = value->GetSerializeValueInt32();
+				m_core->resetType(ScVariantType::Int);
+				m_core->m_int = value->getSerializeValueInt32();
 				break;
 			case SerializationValueType::Int64:
-				m_core->ResetType(ScVariantType::Int);
-				m_core->m_int = value->GetSerializeValueInt64();
+				m_core->resetType(ScVariantType::Int);
+				m_core->m_int = value->getSerializeValueInt64();
 				break;
 			case SerializationValueType::UInt8:
-				m_core->ResetType(ScVariantType::Int);
-				m_core->m_int = value->GetSerializeValueUInt8();
+				m_core->resetType(ScVariantType::Int);
+				m_core->m_int = value->getSerializeValueUInt8();
 				break;
 			case SerializationValueType::UInt16:
-				m_core->ResetType(ScVariantType::Int);
-				m_core->m_int = value->GetSerializeValueUInt16();
+				m_core->resetType(ScVariantType::Int);
+				m_core->m_int = value->getSerializeValueUInt16();
 				break;
 			case SerializationValueType::UInt32:
-				m_core->ResetType(ScVariantType::Int);
-				m_core->m_int = value->GetSerializeValueUInt32();
+				m_core->resetType(ScVariantType::Int);
+				m_core->m_int = value->getSerializeValueUInt32();
 				break;
 			case SerializationValueType::UInt64:
-				m_core->ResetType(ScVariantType::Int);
-				m_core->m_int = value->GetSerializeValueUInt64();
+				m_core->resetType(ScVariantType::Int);
+				m_core->m_int = value->getSerializeValueUInt64();
 				break;
 			case SerializationValueType::Float:
-				m_core->ResetType(ScVariantType::Float);
-				m_core->m_float = value->GetSerializeValueFloat();
+				m_core->resetType(ScVariantType::Float);
+				m_core->m_float = value->getSerializeValueFloat();
 				break;
 			case SerializationValueType::Double:
-				m_core->ResetType(ScVariantType::Float);
-				m_core->m_float = value->GetSerializeValueDouble();
+				m_core->resetType(ScVariantType::Float);
+				m_core->m_float = value->getSerializeValueDouble();
 				break;
 			case SerializationValueType::String:
-				m_core->SetString(value->GetSerializeValueString());
+				m_core->setString(value->getSerializeValueString());
 				break;
 			default:
 				LN_UNREACHABLE();
@@ -251,13 +251,13 @@ void ScVariant::LoadInternal(ISerializeElement* value)
 		{
 			m_core = NewObject<ScVariantCore>();
 		}
-		m_core->SetList();
-		int count = value->GetSerializeElementCount();
+		m_core->setList();
+		int count = value->getSerializeElementCount();
 		for (int i = 0; i < count; i++)
 		{
 			ScVariant v;
-			v.LoadInternal(value->GetSerializeElement(i));
-			m_core->m_list->Add(v);
+			v.loadInternal(value->getSerializeElement(i));
+			m_core->m_list->add(v);
 		}
 		break;
 	}
@@ -267,13 +267,13 @@ void ScVariant::LoadInternal(ISerializeElement* value)
 		{
 			m_core = NewObject<ScVariantCore>();
 		}
-		m_core->SetMap();
-		int count = value->GetSerializeElementCount();
+		m_core->setMap();
+		int count = value->getSerializeElementCount();
 		for (int i = 0; i < count; i++)
 		{
 			ScVariant v;
-			v.LoadInternal(value->GetSerializeElement(i));
-			(*m_core->m_map)[value->GetSerializeElementName(i)] = v;
+			v.loadInternal(value->getSerializeElement(i));
+			(*m_core->m_map)[value->getSerializeElementName(i)] = v;
 		}
 		break;
 	}
@@ -293,7 +293,7 @@ const TCHAR* Archive::ClassVersionKey = _T("_ln_class_version");
 const TCHAR* Archive::ClassBaseDefaultNameKey = _T("_ln_class_base");
 
 //------------------------------------------------------------------------------
-RefPtr<ReflectionObject> Archive::CreateObject(const String& className, TypeInfo* requestedType)
+RefPtr<ReflectionObject> Archive::createObject(const String& className, TypeInfo* requestedType)
 {
 	if (className == requestedType->GetName())
 	{
@@ -315,10 +315,10 @@ RefPtr<ReflectionObject> Archive::CreateObject(const String& className, TypeInfo
 //	switch (mode)
 //	{
 //	case ArchiveMode::Save:
-//		file = FileStream::Create(filePath, FileOpenMode::Write | FileOpenMode::Truncate);
+//		file = FileStream::create(filePath, FileOpenMode::Write | FileOpenMode::Truncate);
 //		break;
 //	case ArchiveMode::Load:
-//		file = FileStream::Create(filePath, FileOpenMode::Read);
+//		file = FileStream::create(filePath, FileOpenMode::Read);
 //		break;
 //	default:
 //		assert(0);

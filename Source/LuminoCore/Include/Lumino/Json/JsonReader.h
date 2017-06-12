@@ -76,9 +76,9 @@ public:
 		return m_innter->Peek();
 	}
 
-	virtual int Read() override
+	virtual int read() override
 	{
-		int c = m_innter->Read();
+		int c = m_innter->read();
 		if (c >= 0) {
 			AdvancePosition((TCHAR)c);
 		}
@@ -100,12 +100,12 @@ public:
 		LN_THROW(0, NotImplementedException);
 	}
 
-	virtual bool IsEOF() override
+	virtual bool isEOF() override
 	{
-		return m_innter->IsEOF();
+		return m_innter->isEOF();
 	}
 
-	int GetPosition() const
+	int getPosition() const
 	{
 		return m_pos;
 	}
@@ -198,7 +198,7 @@ public:
 		@brief		次のノード読み取ります。
 		@return		正常に読み取られた場合は true。それ以上読み取るノードが存在しない場合は false。
 	*/
-	bool Read();
+	bool read();
 
 	bool TryRead();
 
@@ -211,7 +211,7 @@ public:
 		@brief		現在のノードの値 (文字列形式) を取得します。
 		@details	値が無い場合は空文字列を返します。
 	*/
-	const String& GetValue() const;
+	const String& getValue() const;
 
 	const String& GetPropertyName() const;
 
@@ -312,7 +312,7 @@ private:
 	bool SetToken(JsonToken newToken, const TCHAR* value = nullptr, int valueLen = 0);
 	void PushState(/*ContainerType containerType*/);
 	void PopState();
-	void SetError(JsonParseError2 code, const String& message = String::GetEmpty());
+	void SetError(JsonParseError2 code, const String& message = String::getEmpty());
 };
 
 } // namespace tr

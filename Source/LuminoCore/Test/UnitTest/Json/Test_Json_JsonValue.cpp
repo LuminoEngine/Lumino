@@ -17,15 +17,15 @@ TEST_F(Test_Json_JsonValue, Null)
 	// <Test> GetType() で Null を確認する。
 	{
 		JsonValue v;
-		ASSERT_TRUE(v.IsNull());
-		ASSERT_EQ(JsonType::Null, v.GetType());
+		ASSERT_TRUE(v.isNull());
+		ASSERT_EQ(JsonType::Null, v.getType());
 	}
 	// <Test> SetNull() で Null を設定。
 	{
 		JsonValue v;
 		v.SetNull();
-		ASSERT_TRUE(v.IsNull());
-		ASSERT_EQ(JsonType::Null, v.GetType());
+		ASSERT_TRUE(v.isNull());
+		ASSERT_EQ(JsonType::Null, v.getType());
 	}
 }
 
@@ -39,7 +39,7 @@ TEST_F(Test_Json_JsonValue, Bool)
 		JsonValue v;
 		v.SetBool(true);
 		ASSERT_TRUE(v.IsBool());
-		ASSERT_EQ(JsonType::Bool, v.GetType());
+		ASSERT_EQ(JsonType::Bool, v.getType());
 	}
 
 	// <Test> SetBool() で true を設定する。
@@ -75,10 +75,10 @@ TEST_F(Test_Json_JsonValue, Double)
 		JsonValue v2;
 		v2.SetDouble(2.0);
 		ASSERT_TRUE(v1.IsDouble());
-		ASSERT_EQ(JsonType::Double, v1.GetType());
+		ASSERT_EQ(JsonType::Double, v1.getType());
 		ASSERT_EQ(1.0, v1.GetDouble());
 		ASSERT_TRUE(v2.IsDouble());
-		ASSERT_EQ(JsonType::Double, v2.GetType());
+		ASSERT_EQ(JsonType::Double, v2.getType());
 		ASSERT_EQ(2.0, v2.GetDouble());
 	}
 }
@@ -94,13 +94,13 @@ TEST_F(Test_Json_JsonValue, String)
 	{
 		JsonValue v1(_T("abc"));
 		JsonValue v2;
-		v2.SetString(String(_T("def")));
+		v2.setString(String(_T("def")));
 		ASSERT_TRUE(v1.IsString());
-		ASSERT_EQ(JsonType::String, v1.GetType());
-		ASSERT_EQ(_T("abc"), v1.GetString());
+		ASSERT_EQ(JsonType::String, v1.getType());
+		ASSERT_EQ(_T("abc"), v1.getString());
 		ASSERT_TRUE(v2.IsString());
-		ASSERT_EQ(JsonType::String, v2.GetType());
-		ASSERT_EQ(_T("def"), v2.GetString());
+		ASSERT_EQ(JsonType::String, v2.getType());
+		ASSERT_EQ(_T("def"), v2.getString());
 	}
 }
 
@@ -112,7 +112,7 @@ TEST_F(Test_Json_JsonValue, Array)
 		JsonValue v1;
 		v1.SetArray();
 		ASSERT_TRUE(v1.IsArray());
-		ASSERT_EQ(JsonType::Array, v1.GetType());
+		ASSERT_EQ(JsonType::Array, v1.getType());
 		ASSERT_EQ(0, v1.GetItemCount());
 	}
 
@@ -142,7 +142,7 @@ TEST_F(Test_Json_JsonValue, Object)
 		JsonValue v1;
 		v1.SetObject();
 		ASSERT_TRUE(v1.IsObject());
-		ASSERT_EQ(JsonType::Object, v1.GetType());
+		ASSERT_EQ(JsonType::Object, v1.getType());
 		ASSERT_EQ(0, v1.GetMemberCount());
 	}
 
@@ -176,7 +176,7 @@ TEST_F(Test_Json_JsonValue, Object)
 	for (int j = 0; j < 10; j++)
 	{
 		ElapsedTimer timer;
-		timer.Start();
+		timer.start();
 
 		for (int i = 0; i < 100000; ++i)
 		{
@@ -188,7 +188,7 @@ TEST_F(Test_Json_JsonValue, Object)
 	for (int j = 0; j < 10; j++)
 	{
 		ElapsedTimer timer;
-		timer.Start();
+		timer.start();
 
 		for (int i = 0; i < 100000; ++i)
 		{

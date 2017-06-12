@@ -29,7 +29,7 @@ public:
 	/**
 		@brief		3D音声のリスナーの位置を取得します。
 	*/
-	static const Vector3& GetPosition();
+	static const Vector3& getPosition();
 
 	/**
 		@brief		3D音声のリスナーの正面方向を設定します。

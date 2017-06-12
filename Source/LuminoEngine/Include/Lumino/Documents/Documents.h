@@ -72,10 +72,10 @@ public:
 	void initialize();
 
 	// 現在の内容をすべて破棄して、新しい1つの Paragraph を作る
-	void SetText(const StringRef& text);
+	void setText(const StringRef& text);
 
 LN_INTERNAL_ACCESS:
-	void Replace(int offset, int length, const StringRef& text);
+	void replace(int offset, int length, const StringRef& text);
 	const List<RefPtr<Block>>& GetBlocks() const { return m_blockList; }
 
 private:
@@ -222,7 +222,7 @@ public:
 	void initialize();
 	void initialize(const UTF32* str, int len);
 
-	void SetText(const StringRef& text);
+	void setText(const StringRef& text);
 
 protected:
 	// TextElement interface
@@ -230,8 +230,8 @@ protected:
 	virtual InternalTextElementType GetInternalTextElementType() const;
 
 LN_INTERNAL_ACCESS:
-	const UTF32* GetText() const { return m_text.c_str(); }
-	int GetLength() const { return m_text.GetLength(); }
+	const UTF32* getText() const { return m_text.c_str(); }
+	int getLength() const { return m_text.getLength(); }
 
 private:
 	GenericStringBuilderCore<UTF32>	m_text;
@@ -391,7 +391,7 @@ LN_INTERNAL_ACCESS:
 	void MeasureLayout(const Size& availableSize);
 	void ArrangeLayout(const Rect& finalLocalRect);
 	void Render(DrawList* renderer);
-	void AddVisualFragment(VisualTextFragment* glyph) { m_visualFragments.Add(glyph); }
+	void AddVisualFragment(VisualTextFragment* glyph) { m_visualFragments.add(glyph); }
 
 private:
 	void RebuildVisualLineList();

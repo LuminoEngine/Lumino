@@ -24,7 +24,7 @@ void EffectEngine::initialize(EffectManager* manager, int cacheObjectCount, size
 void EffectEngine::Finalize()
 {
 	if (m_effectCoreCache != NULL) {
-		m_effectCoreCache->FinalizeCache();
+		m_effectCoreCache->finalizeCache();
 		LN_SAFE_RELEASE(m_effectCoreCache);
 	}
 }

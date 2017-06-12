@@ -32,7 +32,7 @@ private:
 	{
 	public:
 		virtual ~HolderBase() = default;
-		virtual TRet Call(TArgs... args) const = 0;
+		virtual TRet call(TArgs... args) const = 0;
 		virtual bool equals(const HolderBase* p) const = 0;
 		virtual HolderBase* copy() const = 0;
 	};
@@ -48,7 +48,7 @@ private:
 		StaticHolder(StaticFunction func)
 			: m_func(func)
 		{}
-		virtual TRet Call(TArgs... args) const
+		virtual TRet call(TArgs... args) const
 		{
 			return m_func(args...);
 		}
@@ -76,7 +76,7 @@ private:
 			: m_obj(obj)
 			, m_func(func)
 		{}
-		virtual TRet Call(TArgs... args) const
+		virtual TRet call(TArgs... args) const
 		{
 			return (m_obj->*m_func)(args...);
 		}
@@ -102,7 +102,7 @@ private:
 		FuncObjHolder(const FuncObj& func)
 			: m_func(func)
 		{}
-		virtual TRet Call(TArgs... args) const
+		virtual TRet call(TArgs... args) const
 		{
 			return m_func(args...);
 		}
@@ -183,27 +183,27 @@ public:
 public:
 
 	/** 空の Delegate であるかを確認します。*/
-	bool IsEmpty() const
+	bool isEmpty() const
 	{
 		return m_holder == nullptr;
 	}
 
 	/** 関数を呼び出します。operator() と同じ動作です。*/
-	TRet Call(TArgs... args) const
+	TRet call(TArgs... args) const
 	{
-		return m_holder->Call(args...);
+		return m_holder->call(args...);
 	}
 
 	/** 関数を呼び出します。*/
 	void operator ()(TArgs... args) const
 	{
-		m_holder->Call(args...);
+		m_holder->call(args...);
 	}
 
 	/** コピー */
 	Delegate& operator = (const Delegate& d)
 	{
-		Detach();
+		detach();
 		if (d.m_holder != nullptr) {
 			m_holder = d.m_holder->copy();
 			m_type = d.m_type;
@@ -254,7 +254,7 @@ public:
 	}
 
 private:
-	void Detach()
+	void detach()
 	{
 		delete m_holder;
 		m_holder = nullptr;
@@ -280,7 +280,7 @@ private:
 	@details	Delegate のコンストラクタと同じですが、冗長な記述を避けるために使用します。
 */
 template<class TRet, class... TArgs>
-Delegate<TRet(TArgs...)> CreateDelegate(TRet(*func)(TArgs...))
+Delegate<TRet(TArgs...)> createDelegate(TRet(*func)(TArgs...))
 {
 	return Delegate<TRet(TArgs...)>(func);
 }
@@ -290,7 +290,7 @@ Delegate<TRet(TArgs...)> CreateDelegate(TRet(*func)(TArgs...))
 	@details	Delegate のコンストラクタと同じですが、冗長な記述を避けるために使用します。
 */
 template<class T, class TRet, class... TArgs>
-Delegate<TRet(TArgs...)> CreateDelegate(T* objPtr, TRet(T::*func)(TArgs...))
+Delegate<TRet(TArgs...)> createDelegate(T* objPtr, TRet(T::*func)(TArgs...))
 {
 	return Delegate<TRet(TArgs...)>(objPtr, func);
 }

@@ -34,7 +34,7 @@ public:
 		@param[in]	targetValue	: 終了値
 		@param[in]	time		: 変更にかける時間
 	*/
-	void Start(const TValue& startValue, const TValue& targetValue, const TTime& time)
+	void start(const TValue& startValue, const TValue& targetValue, const TTime& time)
 	{
 		m_startValue = startValue;
 		m_targetValue = targetValue;
@@ -48,7 +48,7 @@ public:
 		@param[in]	targetValue	: 終了値
 		@param[in]	time		: 変更にかける時間
 	*/
-	void Start(const TValue& targetValue, const TTime& time)
+	void start(const TValue& targetValue, const TTime& time)
 	{
 		m_startValue = m_value;
 		m_targetValue = targetValue;
@@ -95,7 +95,7 @@ public:
 		@brief      現在の値を取得します。
 		@details	経過時間が 0 以前の場合は 開始時の値を、経過時間が 変更にかける時間以上 の場合は 終了時の値 を返します。
 	*/
-	const TValue& GetValue() const { return m_value; }
+	const TValue& getValue() const { return m_value; }
 
 	/**
 		@brief      開始値を取得します。

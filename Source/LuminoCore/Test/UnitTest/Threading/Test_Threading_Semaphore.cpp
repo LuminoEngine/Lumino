@@ -22,10 +22,10 @@ TEST_F(IntegrateTest_Threading_Semaphore, Basic)
 	g_value = 0;
 	auto func = [&sem, &flag](){ sem.Lock(); g_value++; flag.Wait(); sem.Unlock(); };
 
-	thr1.Start(Delegate<void()>(func));
-	thr2.Start(Delegate<void()>(func));
-	thr3.Start(Delegate<void()>(func));
-	thr4.Start(Delegate<void()>(func));
+	thr1.start(Delegate<void()>(func));
+	thr2.start(Delegate<void()>(func));
+	thr3.start(Delegate<void()>(func));
+	thr4.start(Delegate<void()>(func));
 
 	Thread::Sleep(100);
 

@@ -24,7 +24,7 @@ public:
 
 protected:
 	virtual bool IsStandaloneShader() const { return false; }
-	virtual void Flush() override {}
+	virtual void flush() override {}
 	virtual void OnActivated() override {}
 	virtual void OnDeactivated() override {}
 

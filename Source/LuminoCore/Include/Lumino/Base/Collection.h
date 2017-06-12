@@ -53,15 +53,15 @@ public:
 public:
 
 	/** コレクションが空であるかを確認します。*/
-	bool IsEmpty() const
+	bool isEmpty() const
 	{
-		return m_array.IsEmpty();
+		return m_array.isEmpty();
 	}
 
 	/** 格納されている要素の数を取得します。*/
-	int GetCount() const
+	int getCount() const
 	{
-		return m_array.GetCount();
+		return m_array.getCount();
 	}
 
 	/** 末尾に要素を追加します。*/
@@ -71,15 +71,15 @@ public:
 	//}
 
 	/** 末尾に要素を追加します。*/
-	void Add(const value_type& item)
+	void add(const value_type& item)
 	{
-		InsertItem(GetCount(), item);
+		insertItem(getCount(), item);
 	}
 
 	/** 指定したインデックスの位置に要素を挿入します。*/
-	void Insert(int index, const value_type& item)
+	void insert(int index, const value_type& item)
 	{
-		InsertItem(index, item);
+		insertItem(index, item);
 	}
 
 	/** 指定したインデックスの位置に要素を挿入します。*/
@@ -89,28 +89,28 @@ public:
 	//}
 
 	/** item に一致する最初の要素を削除します。(正常に削除された場合は true を返す。要素が見つからなければ false を返す)*/
-	bool Remove(const T& item)
+	bool remove(const T& item)
 	{
-		int index = m_array.IndexOf(item);
+		int index = m_array.indexOf(item);
 		if (index < 0) { return false; }
-		RemoveItem(index);
+		removeItem(index);
 		return true;
 	}
 
 	/** 指定したインデックスにある要素を削除します。*/
-	void RemoveAt(int index)
+	void removeAt(int index)
 	{
-		RemoveItem(index);
+		removeItem(index);
 	}
 
 	/** 全ての要素を削除します。*/
 	void clear()
 	{
-		ClearItems();
+		clearItems();
 	}
 
 	/** 配列用のメモリを指定したサイズで確保します。*/
-	void Reserve(int size) { m_array.Reserve(size); }
+	void reserve(int size) { m_array.reserve(size); }
 
 
 	/** 配列の要素数を変更します。*/
@@ -118,27 +118,27 @@ public:
 	{
 		if (LN_CHECK_ARG(count >= 0)) return;
 
-		int d = GetCount() - count;
+		int d = getCount() - count;
 		if (d > 0)
 		{
-			for (int i = GetCount() - 1; i >= count; --i)
+			for (int i = getCount() - 1; i >= count; --i)
 			{
-				RemoveItem(i);
+				removeItem(i);
 			}
 		}
 		m_array.resize(count);
 	}
 
 	/** 指定した要素がこの配列内に存在するかどうかを判断します。*/
-	bool Contains(const T& item) const
+	bool contains(const T& item) const
 	{
-		return m_array.Contains(item);
+		return m_array.contains(item);
 	}
 
 	/** 指定したインデックスがこの配列の境界の範囲外かを確認します。*/
-	bool IsOutOfRange(int index) const
+	bool isOutOfRange(int index) const
 	{
-		return m_array.IsOutOfRange(index);
+		return m_array.isOutOfRange(index);
 	}
 
 	/**
@@ -147,31 +147,31 @@ public:
 		@param[in]	startIndex	: 検索を開始するインデックス (省略した場合は先頭から)
 		@return		検索した要素が最初に現れた位置。見つからなかった場合は -1。
 	*/
-	int IndexOf(const T& item, int startIndex = 0) const
+	int indexOf(const T& item, int startIndex = 0) const
 	{
-		return m_array.IndexOf(item, startIndex);
+		return m_array.indexOf(item, startIndex);
 	}
 
 	/** 指定したインデックスに要素を設定します。*/
-	void SetAt(int index, const T& item) { SetItem(index, item); }
+	void getAt(int index, const T& item) { setItem(index, item); }
 
 	/** 指定したインデックスにある要素への参照を取得します。*/
-	reference GetAt(int index) { return m_array.GetAt(index); }
+	reference getAt(int index) { return m_array.getAt(index); }
 
 	/** 指定したインデックスにある要素への参照を取得します。*/
-	const_reference GetAt(int index) const { return m_array.GetAt(index); }
+	const_reference getAt(int index) const { return m_array.getAt(index); }
 
 	/** 先頭要素の参照を返します。*/
-	reference GetFront() { return m_array.GetFront(); }
+	reference getFront() { return m_array.getFront(); }
 
 	/** 先頭要素の参照を返します。*/
-	const_reference GetFront() const { return m_array.GetFront(); }
+	const_reference getFront() const { return m_array.getFront(); }
 
 	/** 終端要素の参照を返します。*/
-	reference GetLast() { return m_array.GetLast(); }
+	reference getLast() { return m_array.getLast(); }
 
 	/** 終端要素の参照を返します。*/
-	const_reference GetLast() const { return m_array.GetLast(); }
+	const_reference getLast() const { return m_array.getLast(); }
 
 	/** 指定したインデックスにある要素への参照を取得します。*/
 	//reference operator[] (int index)
@@ -265,9 +265,9 @@ public:
 protected:
 
 	/** 指定したインデックスの位置に要素を挿入します。*/
-	virtual void InsertItem(int index, const value_type& item)
+	virtual void insertItem(int index, const value_type& item)
 	{
-		m_array.Insert(index, item);
+		m_array.insert(index, item);
 	}
 
 	/** 指定したインデックスの位置に要素を挿入します。*/
@@ -277,21 +277,21 @@ protected:
 	//}
 
 	/** 全ての要素を削除します。*/
-	virtual void ClearItems()
+	virtual void clearItems()
 	{
 		m_array.clear();
 	}
 
 	/** 指定したインデックスにある要素を削除します。*/
-	virtual void RemoveItem(int index)
+	virtual void removeItem(int index)
 	{
-		m_array.RemoveAt(index);
+		m_array.removeAt(index);
 	}
 
 	/** 指定したインデックス位置にある要素を置き換えます。*/
-	virtual void SetItem(int index, const value_type& item)
+	virtual void setItem(int index, const value_type& item)
 	{
-		m_array.SetAt(index, item);
+		m_array.getAt(index, item);
 	}
 
 	/** 指定したインデックス位置にある要素を置き換えます。*/

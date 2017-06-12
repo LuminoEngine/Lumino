@@ -94,13 +94,13 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Texture2D, Texture);
 //}
 
 //------------------------------------------------------------------------------
-Texture2DPtr Texture2D::Create(int width, int height, TextureFormat format, bool mipmap)
+Texture2DPtr Texture2D::create(int width, int height, TextureFormat format, bool mipmap)
 {
-	return Create(SizeI(width, height), format, mipmap);
+	return create(SizeI(width, height), format, mipmap);
 }
 
 //------------------------------------------------------------------------------
-Texture2DPtr Texture2D::Create(const SizeI& size, TextureFormat format, bool mipmap)
+Texture2DPtr Texture2D::create(const SizeI& size, TextureFormat format, bool mipmap)
 {
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
 	tex->initialize(size, format, mipmap, ResourceUsage::Dynamic);
@@ -108,7 +108,7 @@ Texture2DPtr Texture2D::Create(const SizeI& size, TextureFormat format, bool mip
 }
 
 //------------------------------------------------------------------------------
-Texture2DPtr Texture2D::Create(const StringRef& filePath, TextureFormat format, bool mipmap)
+Texture2DPtr Texture2D::create(const StringRef& filePath, TextureFormat format, bool mipmap)
 {
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
 	tex->initialize(filePath, format, mipmap);
@@ -116,7 +116,7 @@ Texture2DPtr Texture2D::Create(const StringRef& filePath, TextureFormat format, 
 }
 
 //------------------------------------------------------------------------------
-Texture2DPtr Texture2D::Create(Stream* stream, TextureFormat format, bool mipmap)
+Texture2DPtr Texture2D::create(Stream* stream, TextureFormat format, bool mipmap)
 {
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
 	tex->initialize(stream, format, mipmap);
@@ -140,10 +140,10 @@ Texture2DPtr Texture2D::Create(Stream* stream, TextureFormat format, bool mipmap
 }
 
 //------------------------------------------------------------------------------
-Texture2DPtr Texture2D::Create(const void* data, size_t size, TextureFormat format, bool mipmap)
+Texture2DPtr Texture2D::create(const void* data, size_t size, TextureFormat format, bool mipmap)
 {
 	MemoryStream stream(data, size);
-	return Create(&stream, format, mipmap);
+	return create(&stream, format, mipmap);
 }
 
 //------------------------------------------------------------------------------
@@ -220,7 +220,7 @@ void Texture2D::initialize(Stream* stream, TextureFormat format, bool mipmap)
 			Bitmap deviceSurface(size, Utils::TranslatePixelFormat(m_deviceObj->GetTextureFormat()), true);
 			m_deviceObj->getData(RectI(0, 0, size), deviceSurface.GetBitmapBuffer()->getData());
 
-			m_primarySurface2 = RefPtr<Bitmap>::MakeRef(m_deviceObj->getSize(), Utils::TranslatePixelFormat(format));
+			m_primarySurface2 = RefPtr<Bitmap>::makeRef(m_deviceObj->getSize(), Utils::TranslatePixelFormat(format));
 			m_primarySurface2->BitBlt(RectI(0, 0, size), &deviceSurface, RectI(0, 0, size), Color32::White, false);
 
 			m_size = size;
@@ -231,7 +231,7 @@ void Texture2D::initialize(Stream* stream, TextureFormat format, bool mipmap)
 	if (m_deviceObj == NULL)
 	{
 		m_locked = true;
-		m_primarySurface2 = RefPtr<Bitmap>::MakeRef(stream);
+		m_primarySurface2 = RefPtr<Bitmap>::makeRef(stream);
 		m_size = m_primarySurface2->getSize();
 	}
 
@@ -281,7 +281,7 @@ void Texture2D::TryLock()
 			// もし合わせていないと、転送時に同じサイズで DeviceObject 側のフォーマットと同じ Bitmap を
 			// いちいち作らなければならなくなる。
 			// 基本的に Texture への直接転送は重い体でいるので、ユーザーがあまり Clear や Blit を多用しないような想定でいる。
-			m_primarySurface2 = RefPtr<Bitmap>::MakeRef(m_size, Utils::TranslatePixelFormat(m_deviceObj->GetTextureFormat()));
+			m_primarySurface2 = RefPtr<Bitmap>::makeRef(m_size, Utils::TranslatePixelFormat(m_deviceObj->GetTextureFormat()));
 		}
 		m_locked = true;
 	}
@@ -336,7 +336,7 @@ void Texture2D::ApplyModifies()
 		// static ならメモリを無駄に使わないように解放する
 		if (m_usage == ResourceUsage::Static && m_usageReadFast == false)
 		{
-			m_primarySurface2.SafeRelease();
+			m_primarySurface2.safeRelease();
 		}
 	}
 }
@@ -391,7 +391,7 @@ void Texture2D::LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const RectI& re
 	auto* r = m_manager->GetBitmapTextRenderer();
 	auto* gr = r->GetTempGlyphRun();
 	gr->SetFont(font->ResolveRawFont());
-	gr->SetText(text);
+	gr->setText(text);
 	r->SetRenderArea(rect);
 	r->SetTextAlignment(alignment);
 	r->DrawGlyphRun(m_primarySurface2, gr, fillColor, strokeColor, strokeThickness);
@@ -464,9 +464,9 @@ namespace tr {
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Texture3D, Texture);
 
 //------------------------------------------------------------------------------
-Texture3DPtr Texture3D::Create(int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage)
+Texture3DPtr Texture3D::create(int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage)
 {
-	auto ptr = Texture3DPtr::MakeRef();
+	auto ptr = Texture3DPtr::makeRef();
 	ptr->initialize(ln::detail::GraphicsManager::GetInstance(), width, height, depth, format, mipLevels, usage);
 	return ptr;
 }
@@ -500,7 +500,7 @@ void Texture3D::initialize(ln::detail::GraphicsManager* manager, int width, int 
 
 	if (m_usage == ResourceUsage::Dynamic)
 	{
-		m_primarySurface = RefPtr<Bitmap>::MakeRef(m_size.width, m_size.height, m_depth, Utils::TranslatePixelFormat(m_format));
+		m_primarySurface = RefPtr<Bitmap>::makeRef(m_size.width, m_size.height, m_depth, Utils::TranslatePixelFormat(m_format));
 	}
 }
 
@@ -524,7 +524,7 @@ void Texture3D::TryLock()
 	{
 		if (m_usage == ResourceUsage::Static)
 		{
-			m_primarySurface = RefPtr<Bitmap>::MakeRef(m_size.width, m_size.height, m_depth, Utils::TranslatePixelFormat(m_format));
+			m_primarySurface = RefPtr<Bitmap>::makeRef(m_size.width, m_size.height, m_depth, Utils::TranslatePixelFormat(m_format));
 		}
 		m_locked = true;
 	}
@@ -558,7 +558,7 @@ void Texture3D::ApplyModifies()
 
 		if (m_usage == ResourceUsage::Static)
 		{
-			m_primarySurface.SafeRelease();
+			m_primarySurface.safeRelease();
 		}
 	}
 }
@@ -584,7 +584,7 @@ void Texture3D::OnChangeDevice(Driver::IGraphicsDevice* device)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RenderTargetTexturePtr RenderTargetTexture::Create(const SizeI& size, TextureFormat format, int mipLevels)
+RenderTargetTexturePtr RenderTargetTexture::create(const SizeI& size, TextureFormat format, int mipLevels)
 {
 	RefPtr<RenderTargetTexture> tex(LN_NEW RenderTargetTexture(), false);
 	tex->CreateImpl(detail::GraphicsManager::GetInstance(), size, mipLevels, format);
@@ -702,9 +702,9 @@ void RenderTargetTexture::Unlock()
 //==============================================================================
 
 //------------------------------------------------------------------------------
-DepthBufferPtr DepthBuffer::Create(const SizeI& size, TextureFormat format)
+DepthBufferPtr DepthBuffer::create(const SizeI& size, TextureFormat format)
 {
-	auto ptr = DepthBufferPtr::MakeRef();
+	auto ptr = DepthBufferPtr::makeRef();
 	ptr->CreateImpl(detail::GraphicsManager::GetInstance(), size, format);
 	return ptr;
 }

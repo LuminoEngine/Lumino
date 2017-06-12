@@ -121,14 +121,14 @@ public:
 			m_tone == rhs.m_tone;
 	}
 
-	uint32_t GetHashCode() const
+	uint32_t getHashCode() const
 	{
 		uint32_t hash = 0;
-		hash += reinterpret_cast<intptr_t>(m_shader.Get());
+		hash += reinterpret_cast<intptr_t>(m_shader.get());
 		hash += *reinterpret_cast<const uint32_t*>(&m_opacity);
-		hash += Hash::CalcHash(reinterpret_cast<const char*>(&m_colorScale), sizeof(m_colorScale));	// TODO: template
-		hash += Hash::CalcHash(reinterpret_cast<const char*>(&m_blendColor), sizeof(m_blendColor));
-		hash += Hash::CalcHash(reinterpret_cast<const char*>(&m_tone), sizeof(m_tone));
+		hash += Hash::calcHash(reinterpret_cast<const char*>(&m_colorScale), sizeof(m_colorScale));	// TODO: template
+		hash += Hash::calcHash(reinterpret_cast<const char*>(&m_blendColor), sizeof(m_blendColor));
+		hash += Hash::calcHash(reinterpret_cast<const char*>(&m_tone), sizeof(m_tone));
 		return hash;
 	}
 
@@ -170,7 +170,7 @@ public:
 	static const String MaterialTextureParameter;
 
 public:
-	static MaterialPtr Create();
+	static MaterialPtr create();
 
 public:
 	void SetShader(Shader* shader);
@@ -301,7 +301,7 @@ LN_INTERNAL_ACCESS:
 	Texture* GetBuiltinTexture(uint32_t hashKey, Texture* defaultValue) const { auto itr = m_builtinValueMap.find(hashKey); return (itr != m_builtinValueMap.end()) ? itr->second.GetManagedTexture() : defaultValue; }
 
 	
-	uint32_t GetHashCode();
+	uint32_t getHashCode();
 };
 
 /**
@@ -325,7 +325,7 @@ class DiffuseMaterial
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static DiffuseMaterialPtr Create();
+	static DiffuseMaterialPtr create();
 
 public:
 	void SetDiffuse(const Color& value);

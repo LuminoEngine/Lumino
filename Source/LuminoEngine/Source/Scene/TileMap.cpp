@@ -20,7 +20,7 @@ LN_NAMESPACE_SCENE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TileMap, VisualComponent);
 
 //------------------------------------------------------------------------------
-//TileMap* TileMap::Create()
+//TileMap* TileMap::create()
 //{
 //	RefPtr<TileMap> obj(LN_NEW TileMap(), false);
 //	obj->CreateCore(SceneGraphManager::Instance);

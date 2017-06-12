@@ -23,7 +23,7 @@ RenderState::RenderState()
 {}
 
 //------------------------------------------------------------------------------
-uint32_t RenderState::GetHashCode() const
+uint32_t RenderState::getHashCode() const
 {
 	return
 		((uint32_t)Blend) * 1000000 +

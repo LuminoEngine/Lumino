@@ -15,7 +15,7 @@ class TileLayer
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static TileLayerPtr Create();
+	static TileLayerPtr create();
 
 	TileLayer();
 	virtual ~TileLayer();

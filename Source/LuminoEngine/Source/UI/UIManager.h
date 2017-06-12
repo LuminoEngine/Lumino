@@ -59,8 +59,8 @@ public:
 	UIElement* GetMouseCapturedElement() const { return m_mouseCapturedElement; }
 
 	const List<UIFrameWindow*>& GetWindows() const { return m_windows; }
-	void AddFrameWindow(UIFrameWindow* window) { m_windows.Add(window); }
-	void RemoveFrameWindow(UIFrameWindow* window) { m_windows.Remove(window); }
+	void AddFrameWindow(UIFrameWindow* window) { m_windows.add(window); }
+	void RemoveFrameWindow(UIFrameWindow* window) { m_windows.remove(window); }
 
 private:
 	void CreateGlobalObjects();

@@ -39,8 +39,8 @@ public:
 	virtual void Finalize() = 0;
 
 public:
-	void AddWindow(PlatformWindow* window) { m_windowArray.Add(window); }
-	void RemoveWindow(PlatformWindow* window) { m_windowArray.Remove(window); }
+	void AddWindow(PlatformWindow* window) { m_windowArray.add(window); }
+	void RemoveWindow(PlatformWindow* window) { m_windowArray.remove(window); }
 	bool IsEndRequested() const { return m_endRequested; }
 	void Exit() { m_endRequested = true; }
 

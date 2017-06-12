@@ -13,9 +13,9 @@ LN_NAMESPACE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TileSet, tr::ReflectionObject);
 
 //------------------------------------------------------------------------------
-TileSetPtr TileSet::Create()
+TileSetPtr TileSet::create()
 {
-	TileSetPtr ptr = TileSetPtr::MakeRef();
+	TileSetPtr ptr = TileSetPtr::makeRef();
 	ptr->initialize(detail::GraphicsManager::GetInstance());
 	return ptr;
 }
@@ -36,7 +36,7 @@ TileSet::~TileSet()
 //------------------------------------------------------------------------------
 void TileSet::initialize(detail::GraphicsManager* manager)
 {
-	m_material = Object::MakeRef<Material>();
+	m_material = Object::makeRef<Material>();
 	// TODO:自己照明
 	m_material->SetBuiltinColorParameter(Material::AmbientParameter, Color::White);
 }

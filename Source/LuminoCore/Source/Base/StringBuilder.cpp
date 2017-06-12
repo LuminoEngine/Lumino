@@ -35,33 +35,33 @@ void GenericStringBuilderCore<TChar>::clear()
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-void GenericStringBuilderCore<TChar>::Append(const TChar ch)
+void GenericStringBuilderCore<TChar>::append(const TChar ch)
 {
-	Append(&ch, 1);
+	append(&ch, 1);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-void GenericStringBuilderCore<TChar>::Append(const TChar ch, int count)
+void GenericStringBuilderCore<TChar>::append(const TChar ch, int count)
 {
 	for (int i = 0; i < count; ++i) {
-		Append(ch);
+		append(ch);
 	}
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-void GenericStringBuilderCore<TChar>::Append(const TChar* str, int length)
+void GenericStringBuilderCore<TChar>::append(const TChar* str, int length)
 {
 	//if (str == NULL || length <= 0) { return; }	// コピーの必要無し
-	WriteInternal(str, (length < 0) ? StringTraits::tcslen(str) : length);
+	writeInternal(str, (length < 0) ? StringTraits::tcslen(str) : length);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-void GenericStringBuilderCore<TChar>::Append(const TChar* str)
+void GenericStringBuilderCore<TChar>::append(const TChar* str)
 {
-	WriteInternal(str, StringTraits::tcslen(str));
+	writeInternal(str, StringTraits::tcslen(str));
 }
 
 //------------------------------------------------------------------------------
@@ -73,21 +73,21 @@ void GenericStringBuilderCore<TChar>::Append(const TChar* str)
 //
 //------------------------------------------------------------------------------
 template<typename TChar>
-void GenericStringBuilderCore<TChar>::Append(const byte_t* buffer, int byteCount)
+void GenericStringBuilderCore<TChar>::append(const byte_t* buffer, int byteCount)
 {
-	Append((const TChar*)buffer, byteCount / sizeof(TChar));
+	append((const TChar*)buffer, byteCount / sizeof(TChar));
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-void GenericStringBuilderCore<TChar>::Append(const ByteBuffer& buffer)
+void GenericStringBuilderCore<TChar>::append(const ByteBuffer& buffer)
 {
-	Append(buffer.getData(), buffer.getSize());
+	append(buffer.getData(), buffer.getSize());
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-void GenericStringBuilderCore<TChar>::Replace(int start, int length, const TChar* str, int strLength)
+void GenericStringBuilderCore<TChar>::replace(int start, int length, const TChar* str, int strLength)
 {
 	// 置換したら何 byte 増える？減る？
 	int diff = sizeof(TChar) * (strLength - length);
@@ -106,7 +106,7 @@ void GenericStringBuilderCore<TChar>::Replace(int start, int length, const TChar
 	
 	// oldAfter は残す部分
 	TChar* oldAfterBegin = beforeEnd + length;
-	TChar* oldAfterEnd = beforeBegin + GetLength();		// この1つ前までが after の文字
+	TChar* oldAfterEnd = beforeBegin + getLength();		// この1つ前までが after の文字
 	int afterCount = oldAfterEnd - oldAfterBegin;
 
 	// newAfter は oldAfter の移動先 (文字数は oldAfter と同じ)
@@ -132,7 +132,7 @@ void GenericStringBuilderCore<TChar>::Replace(int start, int length, const TChar
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-void GenericStringBuilderCore<TChar>::WriteInternal(const TChar* str, int length)
+void GenericStringBuilderCore<TChar>::writeInternal(const TChar* str, int length)
 {
 	LN_ASSERT(str != NULL);
 

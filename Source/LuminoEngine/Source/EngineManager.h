@@ -153,7 +153,7 @@ public:
 	{
 #ifdef LN_DEBUG
 		engineLogEnabled = true;
-		acceleratorKeys.toggleShowDiag = KeyboardBinding::Create(Keys::F3);
+		acceleratorKeys.toggleShowDiag = KeyboardBinding::create(Keys::F3);
 #endif
 		//engineAcceleratorKeys[(int)EngineAcceleratorKey::ToggleShowDiag] = Key::F3;
 	}
@@ -177,7 +177,7 @@ public:
 	/**
 		@brief		
 	*/
-	static EngineManager* Create(const detail::EngineSettings& configData);
+	static EngineManager* create(const detail::EngineSettings& configData);
 
 public:
 	void SetFrameUpdateMode(FrameUpdateMode mode) { m_frameUpdateMode = mode; }

@@ -19,7 +19,7 @@ public:
 	/**
 		@brief		
 	*/
-	static VertexDeclarationPtr Create();
+	static VertexDeclarationPtr create();
 	
 public:
 

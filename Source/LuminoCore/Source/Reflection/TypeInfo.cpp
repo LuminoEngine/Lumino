@@ -129,7 +129,7 @@ const String& TypeInfo::GetName() const
 void TypeInfo::RegisterProperty(PropertyInfo* prop)
 {
 	if (LN_CHECK_ARG(!prop->m_registerd)) return;
-	m_propertyList.Add(prop);
+	m_propertyList.add(prop);
 	prop->m_registerd = true;
 }
 
@@ -150,7 +150,7 @@ PropertyInfo* TypeInfo::FindProperty(size_t memberOffset) const
 void TypeInfo::RegisterReflectionEvent(ReflectionEventInfo* ev)
 {
 	if (LN_CHECK_ARG(!ev->m_registerd)) return;
-	m_routedEventList.Add(ev);
+	m_routedEventList.add(ev);
 	ev->m_registerd = true;
 }
 

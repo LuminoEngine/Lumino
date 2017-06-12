@@ -99,10 +99,10 @@ public:
 		{
 			AccessorSelector<T, typeKind>::SetValue(variant, value);
 		}
-		static T GetValue(const Variant& value)
+		static T getValue(const Variant& value)
 		{
 			static_assert(std::is_same<T, const String&>::value == false, "Reference string type is not supported.");
-			return AccessorSelector<T, typeKind>::GetValue(&value);
+			return AccessorSelector<T, typeKind>::getValue(&value);
 		}
 	};
 	// ポインタ型用の AccessorSelectorHelper
@@ -117,9 +117,9 @@ public:
 		{
 			AccessorSelector<T*, typeKind>::SetValue(variant, value);
 		}
-		static T* GetValue(const Variant& value)
+		static T* getValue(const Variant& value)
 		{
-			return AccessorSelector<T*, typeKind>::GetValue(&value);
+			return AccessorSelector<T*, typeKind>::getValue(&value);
 		}
 	};
 	/* ↑struct 型の判別に is_pod を使用しているが、is_pod はポインタ型も true とみなしてしまうため、前段で分ける必要がある。
@@ -146,7 +146,7 @@ public:
 	//Variant(bool value) : Variant() { SetBool(value); }
 	//Variant(int32_t value) : Variant() {}
 	//Variant(float value);
-	Variant(const TCHAR* value) : Variant() { SetString(value); }
+	Variant(const TCHAR* value) : Variant() { setString(value); }
 	//Variant(const String& value);
 	//Variant(const Enum& value) : Variant() { SetEnumValue(value.GetValue()); }
 	////Variant(const ReflectionStruct& value) : Variant() { }
@@ -185,7 +185,7 @@ public:
 	Variant(const RefPtr<T>& value)
 		: Variant()
 	{
-		AccessorSelectorHelper<T*>::SetValue(this, value.Get());
+		AccessorSelectorHelper<T*>::SetValue(this, value.get());
 	}
 
 	template<typename T>
@@ -216,7 +216,7 @@ public:
 	//Variant(RefPtr<T>& obj);
 
 public:
-	VariantType GetType() const { return m_type; }
+	VariantType getType() const { return m_type; }
 
 
 
@@ -229,7 +229,7 @@ public:
 	template<typename T>
 	static T Cast(const Variant& value)
 	{
-		return AccessorSelectorHelper<T>::GetValue(value);
+		return AccessorSelectorHelper<T>::getValue(value);
 	}
 
 private:
@@ -241,9 +241,9 @@ private:
 	void SetArithmetic(uint32_t value);
 	void SetArithmetic(float value);
 	void SetArithmetic(double value);
-	void SetString(const TCHAR* value);
-	void SetString(const String& value);
-	String GetString() const;
+	void setString(const TCHAR* value);
+	void setString(const String& value);
+	String getString() const;
 	void SetEnumValue(EnumValueType value);
 	EnumValueType GetEnumValue() const;
 	void SetStruct(const void* value, size_t size, const std::type_info& typeInfo);
@@ -301,17 +301,17 @@ private:
 
 
 #if 0
-	template<typename T, typename TIsEnum> struct CastSelector { static T GetValue(const Variant& v) { return static_cast<T>(v.GetObject()); } };
+	template<typename T, typename TIsEnum> struct CastSelector { static T getValue(const Variant& v) { return static_cast<T>(v.GetObject()); } };
 	//template<typename TRefPtr, typename TIsEnum> struct CastSelector { static TRefPtr GetValue(const Variant& v) { return TRefPtr(static_cast<TRefPtr::PtrType>(v.GetObject())); } };
 
-	template<> struct CastSelector < bool, std::false_type >		{ static bool GetValue(const Variant& v) { return v.GetBool(); } };
-	template<> struct CastSelector < int, std::false_type >		{ static int GetValue(const Variant& v) { return v.GetInt(); } };
-	template<> struct CastSelector < float, std::false_type >		{ static float GetValue(const Variant& v) { return v.GetFloat(); } };
-	template<> struct CastSelector < String, std::false_type >		{ static String GetValue(const Variant& v) { return v.GetString(); } };
-	template<> struct CastSelector < Rect, std::false_type >		{ static Rect GetValue(const Variant& v) { return v.GetRect(); } };
-	template<> struct CastSelector < SizeF, std::false_type >		{ static SizeF GetValue(const Variant& v) { return v.GetSizeF(); } };
-	template<> struct CastSelector < ThicknessF, std::false_type > { static const ThicknessF& GetValue(const Variant& v) { return v.GetThicknessF(); } };
-	template<typename T> struct CastSelector < T, std::true_type > { static T GetValue(const Variant& v) { return *((T*)(&v.m_enum)); } };	// TODO: 型チェック
+	template<> struct CastSelector < bool, std::false_type >		{ static bool getValue(const Variant& v) { return v.GetBool(); } };
+	template<> struct CastSelector < int, std::false_type >		{ static int getValue(const Variant& v) { return v.getInt(); } };
+	template<> struct CastSelector < float, std::false_type >		{ static float getValue(const Variant& v) { return v.GetFloat(); } };
+	template<> struct CastSelector < String, std::false_type >		{ static String getValue(const Variant& v) { return v.getString(); } };
+	template<> struct CastSelector < Rect, std::false_type >		{ static Rect getValue(const Variant& v) { return v.GetRect(); } };
+	template<> struct CastSelector < SizeF, std::false_type >		{ static SizeF getValue(const Variant& v) { return v.GetSizeF(); } };
+	template<> struct CastSelector < ThicknessF, std::false_type > { static const ThicknessF& getValue(const Variant& v) { return v.GetThicknessF(); } };
+	template<typename T> struct CastSelector < T, std::true_type > { static T getValue(const Variant& v) { return *((T*)(&v.m_enum)); } };	// TODO: 型チェック
 //	template<typename TRefPtr, typename U> struct CastSelector < TRefPtr<U>, std::true_type > { static TRefPtr<U> GetValue(const Variant& v) { return TRefPtr<U>(static_cast<U>(v.GetObject())); } };	// TODO: 型チェック
 #endif
 
@@ -348,51 +348,51 @@ private:
 template<> struct Variant::AccessorSelector<std::nullptr_t, detail::KindPrimitive>
 {
 	static void SetValue(Variant* v, std::nullptr_t value) { v->SetNullPtr(value); }
-	static std::nullptr_t GetValue(const Variant* v) { return v->GetNullPtr(); }
+	static std::nullptr_t getValue(const Variant* v) { return v->GetNullPtr(); }
 };
 template<> struct Variant::AccessorSelector<bool, detail::KindPrimitive>
 {
 	static void SetValue(Variant* v, bool value) { v->SetBool(value); }
-	static bool GetValue(const Variant* v) { return v->GetBool(); }
+	static bool getValue(const Variant* v) { return v->GetBool(); }
 };
 template<typename T> struct Variant::AccessorSelector<T, detail::KindArithmetic>
 {
 	static void SetValue(Variant* v, T value) { v->SetArithmetic(value); }
-	static T GetValue(const Variant* v) { return v->GetArithmetic<T>(); }
+	static T getValue(const Variant* v) { return v->GetArithmetic<T>(); }
 };
 template<> struct Variant::AccessorSelector<String, detail::KindPrimitive>
 {
-	static void SetValue(Variant* v, const String& value) { v->SetString(value); }
-	static String GetValue(const Variant* v) { return v->GetString(); }		// 戻り値は参照ではダメ
+	static void SetValue(Variant* v, const String& value) { v->setString(value); }
+	static String getValue(const Variant* v) { return v->getString(); }		// 戻り値は参照ではダメ
 };
 template<typename T> struct Variant::AccessorSelector<T, detail::KindEnum>
 {
 	static void SetValue(Variant* v, T value) { v->SetEnumValue((int)value); }
-	static T GetValue(const Variant* v) { return static_cast<typename T::enum_type>(v->GetEnumValue()); }
+	static T getValue(const Variant* v) { return static_cast<typename T::enum_type>(v->GetEnumValue()); }
 };
 template<typename T> struct Variant::AccessorSelector<T, detail::KindReflectionObject>
 {
 	static void SetValue(Variant* v, T value) { v->SetReflectionObject(value); }
-	static T GetValue(const Variant* v) { return static_cast<T>(v->GetReflectionObject()); }
+	static T getValue(const Variant* v) { return static_cast<T>(v->GetReflectionObject()); }
 };
 template<typename T> struct Variant::AccessorSelector<T, detail::KindReflectionArrayObject>
 {
 	static void SetValue(Variant* v, T value) { v->SetReflectionArrayObject(value); }
-	static T GetValue(const Variant* v) { return static_cast<T>(v->GetReflectionArrayObject()); }
+	static T getValue(const Variant* v) { return static_cast<T>(v->GetReflectionArrayObject()); }
 };
 template<typename T> struct Variant::AccessorSelector<T, detail::KindStruct>
 {
 	static void SetValue(Variant* v, T value) { v->SetStruct(&value, sizeof(T), typeid(T)); }
-	static T GetValue(const Variant* v) { return *((T*)v->GetStruct()); }
+	static T getValue(const Variant* v) { return *((T*)v->GetStruct()); }
 };
 template<typename T> struct Variant::AccessorSelector<const T&, detail::KindStruct>	// const Struct& のような参照での get をサポートする
 {
-	static const T& GetValue(const Variant* v) { return *((T*)v->GetStruct()); }
+	static const T& getValue(const Variant* v) { return *((T*)v->GetStruct()); }
 };
 template<typename T> struct Variant::AccessorSelector<T, detail::KindRefPtr>
 {
 	static void SetValue(Variant* v, T value) { v->SetReflectionObject(value); }
-	static T GetValue(const Variant* v) { return T(static_cast<typename T::PtrType>(v->GetReflectionObject())); }
+	static T getValue(const Variant* v) { return T(static_cast<typename T::PtrType>(v->GetReflectionObject())); }
 };
 
 } // namespace tr

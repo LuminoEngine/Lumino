@@ -57,7 +57,7 @@ void AnimationManager::AdvanceTime(float deltaTime)
 //------------------------------------------------------------------------------
 void AnimationManager::AddAnimationClock(AnimationClock* clock)
 {
-	m_clockList.Add(clock);
+	m_clockList.add(clock);
 }
 
 //------------------------------------------------------------------------------

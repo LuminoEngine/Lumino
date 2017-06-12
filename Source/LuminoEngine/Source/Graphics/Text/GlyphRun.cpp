@@ -70,20 +70,20 @@ RawFont* GlyphRun::GetFont() const
 }
 
 //------------------------------------------------------------------------------
-void GlyphRun::SetText(const UTF32* str, int len)
+void GlyphRun::setText(const UTF32* str, int len)
 {
 	m_utf32Text.clear();
-	m_utf32Text.Append(str, len);
+	m_utf32Text.append(str, len);
 	m_modifiedRenderSize = true;
 	m_modifiedItems = true;
 }
 
 //------------------------------------------------------------------------------
-void GlyphRun::SetText(const StringRef& text)
+void GlyphRun::setText(const StringRef& text)
 {
 	EncodingConverter* conv = m_manager->GetFontManager()->GetTCharToUTF32Converter();
 	m_utf32Text.clear();
-	m_utf32Text.Append(conv->Convert(text.GetBegin(), text.GetLength() * sizeof(TCHAR)));
+	m_utf32Text.append(conv->Convert(text.getBegin(), text.getLength() * sizeof(TCHAR)));
 	m_modifiedRenderSize = true;
 	m_modifiedItems = true;
 }
@@ -106,9 +106,9 @@ const SizeI& GlyphRun::GetRenderSize()
 	// RenderSize だけ更新する
 	if (m_modifiedRenderSize)
 	{
-		if (m_layoutEngine->GetFont() != nullptr && m_utf32Text.GetLength() > 0)
+		if (m_layoutEngine->GetFont() != nullptr && m_utf32Text.getLength() > 0)
 		{
-			m_layoutEngine->LayoutText(m_utf32Text.c_str(), m_utf32Text.GetLength(), detail::LayoutTextOptions::RenderSizeOnly, &m_glyphData);
+			m_layoutEngine->LayoutText(m_utf32Text.c_str(), m_utf32Text.getLength(), detail::LayoutTextOptions::RenderSizeOnly, &m_glyphData);
 		}
 		m_modifiedRenderSize = false;
 	}
@@ -141,13 +141,13 @@ bool GlyphRun::GetDistanceFromCharacterHit(int index, PointF* outPos)
 {
 	UpdateTextLayoutItem();
 
-	if (index < 0 || m_glyphData.Items.IsEmpty())
+	if (index < 0 || m_glyphData.Items.isEmpty())
 	{
 		outPos->Set(0, 0);
 	}
-	else if (index >= m_glyphData.Items.GetCount())
+	else if (index >= m_glyphData.Items.getCount())
 	{
-		outPos->x = m_glyphData.Items.GetLast().Location.BitmapTopLeftPosition.x + m_glyphData.Items.GetLast().Location.BitmapSize.width;
+		outPos->x = m_glyphData.Items.getLast().Location.BitmapTopLeftPosition.x + m_glyphData.Items.getLast().Location.BitmapSize.width;
 		outPos->y = 0;
 	}
 	else
@@ -165,9 +165,9 @@ void GlyphRun::UpdateTextLayoutItem()
 	{
 		m_glyphData.AreaSize = SizeI::Zero;
 		m_glyphData.Items.clear();
-		if (m_layoutEngine->GetFont() != nullptr && m_utf32Text.GetLength() > 0)
+		if (m_layoutEngine->GetFont() != nullptr && m_utf32Text.getLength() > 0)
 		{
-			m_layoutEngine->LayoutText(m_utf32Text.c_str(), m_utf32Text.GetLength(), detail::LayoutTextOptions::All, &m_glyphData);
+			m_layoutEngine->LayoutText(m_utf32Text.c_str(), m_utf32Text.getLength(), detail::LayoutTextOptions::All, &m_glyphData);
 		}
 		m_modifiedRenderSize = false;
 		m_modifiedItems = false;

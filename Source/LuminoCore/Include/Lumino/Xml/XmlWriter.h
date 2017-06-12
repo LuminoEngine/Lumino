@@ -143,7 +143,7 @@ public:
 	void SetNewLine(const String& newLine);
 
 	/** XML 文字列を取得します。*/
-	String ToString();
+	String toString();
 
 private:
 	StringWriter* m_stringWriter;

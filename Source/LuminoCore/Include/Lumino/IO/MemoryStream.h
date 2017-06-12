@@ -17,7 +17,7 @@ class MemoryStream
 {
 public:
 
-	static MemoryStreamPtr Create();
+	static MemoryStreamPtr create();
 
 	/**
 		@brief		既存のバッファを指定して、サイズ変更できないメモリストリームを作成します。
@@ -25,7 +25,7 @@ public:
 		@param		size	: サイズ(バイト数)
 		@details	buffer に指定したバッファは、このクラスのインスタンスが存在する間は開放しないでください。
 	*/
-	static MemoryStreamPtr Create(void* buffer, size_t size);
+	static MemoryStreamPtr create(void* buffer, size_t size);
 	
 	/**
 		@brief		既存のバッファを指定して、サイズ変更できない読み取り専用のメモリストリームを作成します。
@@ -33,7 +33,7 @@ public:
 		@param		size	: サイズ(バイト数)
 		@details	buffer に指定したバッファは、このクラスのインスタンスが存在する間は開放しないでください。
 	*/
-	static MemoryStreamPtr Create(const void* buffer, size_t size, bool copy = false);
+	static MemoryStreamPtr create(const void* buffer, size_t size, bool copy = false);
 
 public:
 
@@ -44,14 +44,14 @@ public:
 
 public:
 	// override Stream
-	virtual bool CanRead() const;
-	virtual bool CanWrite() const;
-	virtual int64_t GetLength() const;
-	virtual int64_t GetPosition() const;
-	virtual size_t Read(void* buffer, size_t byteCount);
-	virtual void Write(const void* data, size_t byteCount);
-	virtual void Seek(int64_t offset, SeekOrigin origin);
-	virtual void Flush() {}		// Write が直接メモリに書きこむので不要
+	virtual bool canRead() const;
+	virtual bool canWrite() const;
+	virtual int64_t getLength() const;
+	virtual int64_t getPosition() const;
+	virtual size_t read(void* buffer, size_t byteCount);
+	virtual void write(const void* data, size_t byteCount);
+	virtual void seek(int64_t offset, SeekOrigin origin);
+	virtual void flush() {}		// Write が直接メモリに書きこむので不要
 
 public:	// TODO: スタックでも使いたい
 	MemoryStream();

@@ -12,7 +12,7 @@ struct LNVector3
 LN_API LNResultCode LNVector3_GetLength(const LNVector3* vector3, float* outReturn)
 {
     LWIG_FUNC_TRY_BEGIN;
-    *outReturn = (reinterpret_cast<const Vector3*>(vector3)->GetLength());
+    *outReturn = (reinterpret_cast<const Vector3*>(vector3)->getLength());
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNVector3_GetLengthSquared(const LNVector3* vector3, float* outReturn)
@@ -214,7 +214,7 @@ LN_API LNResultCode LNSceneNode_SetPosition(LNHandle scenenode, const LNVector3*
 LN_API LNResultCode LNSceneNode_GetPosition(LNHandle scenenode, LNVector3* outReturn)
 {
     LWIG_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LNVector3&>(LWIG_TO_OBJECT(LNSceneNode, scenenode)->GetPosition());
+    *outReturn = reinterpret_cast<const LNVector3&>(LWIG_TO_OBJECT(LNSceneNode, scenenode)->getPosition());
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSceneNode_SetVisible(LNHandle scenenode, bool visible)
@@ -364,19 +364,19 @@ LN_API LNResultCode LNCollider_IsTrigger(LNHandle collider, bool* outReturn)
 LN_API LNResultCode LNCollider_ConnectOnTriggerEnter(LNHandle self, LNCollisionEventHandler callback)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(LNCollider, self)->m_ConnectOnTriggerEnter_EventWrapper.Connect(callback);
+    LWIG_TO_OBJECT(LNCollider, self)->m_ConnectOnTriggerEnter_EventWrapper.connect(callback);
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNCollider_ConnectOnTriggerLeave(LNHandle self, LNCollisionEventHandler callback)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(LNCollider, self)->m_ConnectOnTriggerLeave_EventWrapper.Connect(callback);
+    LWIG_TO_OBJECT(LNCollider, self)->m_ConnectOnTriggerLeave_EventWrapper.connect(callback);
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNCollider_ConnectOnTriggerStay(LNHandle self, LNCollisionEventHandler callback)
 {
     LWIG_FUNC_TRY_BEGIN;
-    LWIG_TO_OBJECT(LNCollider, self)->m_ConnectOnTriggerStay_EventWrapper.Connect(callback);
+    LWIG_TO_OBJECT(LNCollider, self)->m_ConnectOnTriggerStay_EventWrapper.connect(callback);
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNCollider_Initialize(LNHandle* outCollider)

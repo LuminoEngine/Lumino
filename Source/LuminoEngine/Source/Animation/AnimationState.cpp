@@ -53,7 +53,7 @@ void AnimationState::Refresh(Animator* animator)
 			t.Curve = e.Curve;
 			t.Target = target;
 			LN_SAFE_ADDREF(t.Curve);
-			m_animationTargetList.Add(t);
+			m_animationTargetList.add(t);
 		}
 	}
 }
@@ -85,7 +85,7 @@ void AnimationState::FadeInLinerInternal(float duration)
 {
 	SetPlayState(PlayState_Playing);
 	m_internalFade = InternalFade::FadeIn;
-	m_internalFadeWeight.Start(1.0f, duration);
+	m_internalFadeWeight.start(1.0f, duration);
 }
 
 //------------------------------------------------------------------------------
@@ -94,7 +94,7 @@ void AnimationState::FadeOutLinerInternal(float duration)
 	if (m_state == PlayState_Playing)
 	{
 		m_internalFade = InternalFade::FadeOut;
-		m_internalFadeWeight.Start(0.0f, duration);
+		m_internalFadeWeight.start(0.0f, duration);
 	}
 }
 
@@ -122,7 +122,7 @@ void AnimationState::SetLocalTime(double time)
 	else
 	{
 		m_internalFadeWeight.AdvanceTime(elapsed);
-		m_addingBlendWeight = m_internalFadeWeight.GetValue();
+		m_addingBlendWeight = m_internalFadeWeight.getValue();
 		if (m_internalFade == InternalFade::FadeOut && m_internalFadeWeight.IsFinished())
 		{
 			// フェードアウト中で最後までたどり着いたら停止状態にする
@@ -145,7 +145,7 @@ void AnimationState::SetLocalTime(double time)
 		{
 		case ValueType_Float:
 		{
-			*((float*)target.Target->Buffer) = static_cast<FloatAnimationCurve*>(target.Curve)->GetValue();
+			*((float*)target.Target->Buffer) = static_cast<FloatAnimationCurve*>(target.Curve)->getValue();
 			break;
 		}
 		case ValueType_Vector3:
@@ -162,7 +162,7 @@ void AnimationState::SetLocalTime(double time)
 		{
 			if (m_addingBlendWeight != 1.0f)
 			{
-				AttitudeTransform v = static_cast<VMDBezierAttitudeTransformAnimation*>(target.Curve)->GetValue();
+				AttitudeTransform v = static_cast<VMDBezierAttitudeTransformAnimation*>(target.Curve)->getValue();
 				AttitudeTransform* t = (AttitudeTransform*)target.Target->Buffer;
 				t->scale += v.scale * m_addingBlendWeight;
 				t->rotation *= Quaternion::Slerp(Quaternion::Identity, v.rotation, m_addingBlendWeight);
@@ -170,7 +170,7 @@ void AnimationState::SetLocalTime(double time)
 			}
 			else
 			{
-				*((AttitudeTransform*)target.Target->Buffer) = static_cast<VMDBezierAttitudeTransformAnimation*>(target.Curve)->GetValue();
+				*((AttitudeTransform*)target.Target->Buffer) = static_cast<VMDBezierAttitudeTransformAnimation*>(target.Curve)->getValue();
 			}
 			target.Target->Modified = true;	// 値をセットした
 			break;

@@ -22,7 +22,7 @@ public:
 	}
 
 	template<class TObject, typename ...TArgs>
-	TObject* Create(TArgs... args)
+	TObject* create(TArgs... args)
 	{
 		TObject* obj = static_cast<TObject* >(FindFreeObject(tr::TypeInfo::GetTypeInfo<TObject>()));
 		if (obj == nullptr) {
@@ -55,7 +55,7 @@ private:
 
 	void Register(tr::ReflectionObject* obj)
 	{
-		m_poolList.Add(obj);
+		m_poolList.add(obj);
 	}
 };
 
@@ -93,9 +93,9 @@ public:
 	}
 
 	template<class TEventArgs, typename ...TArgs>
-	TEventArgs* Create(TArgs... args)
+	TEventArgs* create(TArgs... args)
 	{
-		TEventArgs* e = static_cast<TEventArgs* >(Find(tr::TypeInfo::GetTypeInfo<TEventArgs>()));
+		TEventArgs* e = static_cast<TEventArgs* >(find(tr::TypeInfo::GetTypeInfo<TEventArgs>()));
 		if (e == nullptr) {
 			auto eRef = NewObject<TEventArgs>(args...);
 			Register(eRef);
@@ -115,10 +115,10 @@ private:
 	typedef SortedArray<tr::TypeInfo*, EventArgsList*>	EventArgsMap;
 	EventArgsMap	m_pool;
 
-	UIEventArgs* Find(tr::TypeInfo* typeId)
+	UIEventArgs* find(tr::TypeInfo* typeId)
 	{
 		EventArgsList* list;
-		if (m_pool.TryGetValue(typeId, &list))
+		if (m_pool.tryGetValue(typeId, &list))
 		{
 			for (auto e : (*list))
 			{
@@ -133,13 +133,13 @@ private:
 	void Register(UIEventArgs* e)
 	{
 		EventArgsList* list;
-		if (!m_pool.TryGetValue(tr::TypeInfo::GetTypeInfo(e), &list))
+		if (!m_pool.tryGetValue(tr::TypeInfo::GetTypeInfo(e), &list))
 		{
 			list = LN_NEW EventArgsList();
-			m_pool.Add(tr::TypeInfo::GetTypeInfo(e), list);
+			m_pool.add(tr::TypeInfo::GetTypeInfo(e), list);
 			e->addRef();
 		}
-		list->Add(e);
+		list->add(e);
 	}
 
 

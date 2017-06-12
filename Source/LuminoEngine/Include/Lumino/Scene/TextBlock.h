@@ -21,17 +21,17 @@ public:
 	/**
 		@brief		
 	*/
-	static TextBlock2DComponentPtr Create();
+	static TextBlock2DComponentPtr create();
 
 	/**
 		@brief		
 	*/
-	static TextBlock2DComponentPtr Create(const StringRef& text);
+	static TextBlock2DComponentPtr create(const StringRef& text);
 
 public:
 
 	/** 表示する文字列を設定します。*/
-	void SetText(const StringRef& text);
+	void setText(const StringRef& text);
 
 	/** 
 		@brief		テキストの表示の原点を設定します。

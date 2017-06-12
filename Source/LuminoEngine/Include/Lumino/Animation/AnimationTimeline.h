@@ -67,15 +67,15 @@ class EasingAnimationTimeline
 	: public ValueAnimationTimeline<TValue>
 {
 public:
-	static RefPtr<EasingAnimationTimeline<TValue>> Create(const TValue& targetValue, double duration, EasingMode easingMode)
+	static RefPtr<EasingAnimationTimeline<TValue>> create(const TValue& targetValue, double duration, EasingMode easingMode)
 	{
-		return RefPtr<EasingAnimationTimeline<TValue>>::MakeRef(targetValue, duration, easingMode);
+		return RefPtr<EasingAnimationTimeline<TValue>>::makeRef(targetValue, duration, easingMode);
 	}
 
 
 	virtual float GetLastTime() const override { return m_duration; }
 
-	RefPtr<AnimationClock> Start(Object* targetObject, TValue* targetVariablePtr, const TValue& startValue, const Delegate<void(void)>& endCallback);
+	RefPtr<AnimationClock> start(Object* targetObject, TValue* targetVariablePtr, const TValue& startValue, const Delegate<void(void)>& endCallback);
 
 public:
 	EasingAnimationTimeline(const TValue& targetValue, double duration, EasingMode easingMode)

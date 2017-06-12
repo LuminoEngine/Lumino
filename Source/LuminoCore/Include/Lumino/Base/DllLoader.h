@@ -34,31 +34,31 @@ public:
 		@brief		指定したライブラリが存在するかを確認します。
 		@return		アクセスできれば true、そうでなければ false
 	*/
-	static bool Exists(const TCHAR* filePath);
+	static bool exists(const TCHAR* filePath);
 
 	/**
 		@brief		指定したライブラリをロードします。
 		@param[in]	filePath	: ライブラリの名前またはパス
 		@exception	FileNotFoundException
 	*/
-	void Load(const TCHAR* filePath);
+	void load(const TCHAR* filePath);
 
 	/**
 		@brief		指定したライブラリをロードします。
 		@param[in]	filePath	: ライブラリの名前またはパス
 	*/
-	bool TryLoad(const TCHAR* filePath);
+	bool tryLoad(const TCHAR* filePath);
 
 	/**
 		@brief		ロード済みのライブラリを解放します。
 		@details	ロードされていなければ何もしません。デストラクタでも実行されます。
 	*/
-	void Unload();
+	void unload();
 
 	/**
 		@brief		ライブラリに含まれる関数のポインタを取得します。
 	*/
-	void* GetProcAddress(const char* procName);
+	void* getProcAddress(const char* procName);
 
 private:
 	LN_DISALLOW_COPY_AND_ASSIGN(DllLoader);

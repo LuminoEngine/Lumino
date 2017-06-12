@@ -77,22 +77,22 @@ void Variant::SetArithmetic(double value)
 	m_type = VariantType::Double;
 	m_double = value;
 }
-void Variant::SetString(const TCHAR* value)
+void Variant::setString(const TCHAR* value)
 {
 	release();
 	m_type = VariantType::String;
 	m_string = LN_NEW ln::detail::GenericStringCore<TCHAR>();
 	m_string->assign(value);
 }
-void Variant::SetString(const String& value)
+void Variant::setString(const String& value)
 {
 	release();
 	m_type = VariantType::String;
 	LN_REFOBJ_SET(m_string, value.m_string);
 }
-String Variant::GetString() const
+String Variant::getString() const
 {
-	if (LN_CHECK_STATE(m_type == VariantType::String)) return String::GetEmpty();
+	if (LN_CHECK_STATE(m_type == VariantType::String)) return String::getEmpty();
 	String str;
 	str.attach(m_string);
 	return str;

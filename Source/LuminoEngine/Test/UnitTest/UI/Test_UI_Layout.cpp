@@ -13,7 +13,7 @@ protected:
 TEST_F(Test_UI_Button, Basic)
 {
 	auto uiRoot = Engine::GetMainWindow();
-	auto button1 = UIButton::Create();
+	auto button1 = UIButton::create();
 	button1->SetText(_T("Button"));
 	uiRoot->AddChild(button1);
 
@@ -37,17 +37,17 @@ protected:
 TEST_F(Test_UI_StackPanel, HorizontalAlignment)
 {
 	auto uiRoot = Engine::GetMainWindow();
-	auto panel = UIStackPanel::Create();
+	auto panel = UIStackPanel::create();
 	panel->SetOrientation(Orientation::Vertical);
 	panel->SetSize(uiRoot->getSize());
 	panel->SetBackground(Brush::Blue);
 	uiRoot->AddChild(panel);
 
-	auto button1 = UIButton::Create();
-	auto button2 = UIButton::Create();
-	auto button3 = UIButton::Create();
-	auto button4 = UIButton::Create();
-	auto button5 = UIButton::Create();
+	auto button1 = UIButton::create();
+	auto button2 = UIButton::create();
+	auto button3 = UIButton::create();
+	auto button4 = UIButton::create();
+	auto button5 = UIButton::create();
 	button1->SetHAlignment(HAlignment::Stretch);
 	button2->SetHAlignment(HAlignment::Left);
 	button3->SetHAlignment(HAlignment::Right);
@@ -74,17 +74,17 @@ TEST_F(Test_UI_StackPanel, HorizontalAlignment)
 TEST_F(Test_UI_StackPanel, VerticalAlignment)
 {
 	auto uiRoot = Engine::GetMainWindow();
-	auto panel = UIStackPanel::Create();
+	auto panel = UIStackPanel::create();
 	panel->SetOrientation(Orientation::Horizontal);
 	panel->SetSize(uiRoot->getSize());
 	panel->SetBackground(Brush::Blue);
 	uiRoot->AddChild(panel);
 
-	auto button1 = UIButton::Create();
-	auto button2 = UIButton::Create();
-	auto button3 = UIButton::Create();
-	auto button4 = UIButton::Create();
-	auto button5 = UIButton::Create();
+	auto button1 = UIButton::create();
+	auto button2 = UIButton::create();
+	auto button3 = UIButton::create();
+	auto button4 = UIButton::create();
+	auto button5 = UIButton::create();
 	button1->SetVAlignment(VAlignment::Stretch);
 	button2->SetVAlignment(VAlignment::Top);
 	button3->SetVAlignment(VAlignment::Bottom);
@@ -111,14 +111,14 @@ TEST_F(Test_UI_StackPanel, VerticalAlignment)
 TEST_F(Test_UI_StackPanel, ReverseHorizontal)
 {
 	auto uiRoot = Engine::GetMainWindow();
-	auto panel = UIStackPanel::Create();
+	auto panel = UIStackPanel::create();
 	panel->SetSize(uiRoot->getSize());
 	panel->SetBackground(Brush::Blue);
 	panel->SetOrientation(Orientation::ReverseHorizontal);
 	uiRoot->AddChild(panel);
 
-	auto button1 = UIButton::Create();
-	auto button2 = UIButton::Create();
+	auto button1 = UIButton::create();
+	auto button2 = UIButton::create();
 	button1->SetSize(Size(20, 20));
 	button2->SetSize(Size(30, 30));
 	panel->AddChild(button1);
@@ -135,13 +135,13 @@ TEST_F(Test_UI_StackPanel, ReverseHorizontal)
 TEST_F(Test_UI_StackPanel, Margin_Padding)
 {
 	auto uiRoot = Engine::GetMainWindow();
-	auto panel = UIStackPanel::Create();
+	auto panel = UIStackPanel::create();
 	panel->SetSize(uiRoot->getSize());
 	panel->SetBackground(Brush::Blue);
 	uiRoot->AddChild(panel);
 
-	auto button1 = UIButton::Create();
-	auto button2 = UIButton::Create();
+	auto button1 = UIButton::create();
+	auto button2 = UIButton::create();
 	button1->SetHeight(16);
 	button2->SetHeight(16);
 	panel->AddChild(button1);
@@ -174,11 +174,11 @@ TEST_F(Test_UI_GridLayout, Basic)
 	{
 		auto uiRoot = Engine::GetMainWindow();
 
-		auto grid = UIGridLayout::Create();
+		auto grid = UIGridLayout::create();
 		grid->SetBackground(Brush::Blue);
 		uiRoot->AddChild(grid);
 
-		auto button = UIButton::Create();
+		auto button = UIButton::create();
 		button->SetSize(Size(32, 32));
 		grid->AddChild(button);
 
@@ -189,10 +189,10 @@ TEST_F(Test_UI_GridLayout, Basic)
 		TestEnv::WaitRendering();
 
 		// button の参照を切ってもまだ生きている
-		button.SafeRelease();
+		button.safeRelease();
 		ASSERT_EQ(true, ref.IsAlive());
 		// grid の参照を切ってもまだ生きている
-		grid.SafeRelease();
+		grid.safeRelease();
 		ASSERT_EQ(true, ref.IsAlive());
 		// root からの参照を切るとようやく削除される
 		uiRoot->RemoveChild(gridPtr);
@@ -206,11 +206,11 @@ TEST_F(Test_UI_GridLayout, Basic)
 		auto uiRoot = Engine::GetMainWindow();
 		RefPtr<UILayoutPanel> oldLayot = uiRoot->GetLayoutPanel();
 
-		auto grid = UIGridLayout::Create();
+		auto grid = UIGridLayout::create();
 		grid->SetBackground(Brush::Blue);
 		uiRoot->SetLayoutPanel(grid);
 
-		auto button = UIButton::Create();
+		auto button = UIButton::create();
 		button->SetSize(Size(32, 32));
 		uiRoot->AddChild(button);
 
@@ -226,11 +226,11 @@ TEST_F(Test_UI_GridLayout, Basic)
 	{
 		auto uiRoot = Engine::GetMainWindow();
 
-		auto grid = UIGridLayout::Create();
+		auto grid = UIGridLayout::create();
 		grid->SetBackground(Brush::Blue);
 		uiRoot->AddChild(grid);
 
-		auto button = UIButton::Create();
+		auto button = UIButton::create();
 		button->SetSize(Size(32, 32));
 		grid->AddChild(button);
 
@@ -249,10 +249,10 @@ TEST_F(Test_UI_GridLayout, DefaultLayout)
 		auto uiRoot = Engine::GetMainWindow();
 		RefPtr<UILayoutPanel> oldLayot = uiRoot->GetLayoutPanel();
 
-		auto grid1 = UIGridLayout::Create();
+		auto grid1 = UIGridLayout::create();
 		uiRoot->SetLayoutPanel(grid1);
 
-		auto button1 = UIButton::Create();
+		auto button1 = UIButton::create();
 		uiRoot->AddChild(button1);
 
 		Engine::Update();
@@ -269,51 +269,51 @@ TEST_F(Test_UI_GridLayout, Layout)
 	auto uiRoot = Engine::GetMainWindow();
 	RefPtr<UILayoutPanel> oldLayot = uiRoot->GetLayoutPanel();
 
-	auto grid1 = UIGridLayout::Create(4, 4);
+	auto grid1 = UIGridLayout::create(4, 4);
 	uiRoot->SetLayoutPanel(grid1);
 
-	auto button1 = UIButton::Create();
+	auto button1 = UIButton::create();
 	uiRoot->AddChild(button1);
 
-	auto button2 = UIButton::Create();
+	auto button2 = UIButton::create();
 	button2->SetLayoutColumn(1);
 	uiRoot->AddChild(button2);
 
-	auto button3 = UIButton::Create();
+	auto button3 = UIButton::create();
 	button3->SetLayoutRow(1);
 	uiRoot->AddChild(button3);
 
-	auto button4 = UIButton::Create();
+	auto button4 = UIButton::create();
 	button4->SetLayoutColumn(1);
 	button4->SetLayoutRow(1);
 	uiRoot->AddChild(button4);
 
 	// column span
-	auto button5 = UIButton::Create();
+	auto button5 = UIButton::create();
 	button5->SetLayoutColumn(2);
 	button5->SetLayoutColumnSpan(2);
 	uiRoot->AddChild(button5);
 
-	auto button6 = UIButton::Create();
+	auto button6 = UIButton::create();
 	button6->SetLayoutColumn(2);
 	button6->SetLayoutRow(1);
 	button6->SetLayoutColumnSpan(2);
 	uiRoot->AddChild(button6);
 
 	// row span
-	auto button7 = UIButton::Create();
+	auto button7 = UIButton::create();
 	button7->SetLayoutRow(2);
 	button7->SetLayoutRowSpan(2);
 	uiRoot->AddChild(button7);
 
-	auto button8 = UIButton::Create();
+	auto button8 = UIButton::create();
 	button8->SetLayoutColumn(1);
 	button8->SetLayoutRow(2);
 	button8->SetLayoutRowSpan(2);
 	uiRoot->AddChild(button8);
 
 	// column and row span
-	auto button9 = UIButton::Create();
+	auto button9 = UIButton::create();
 	button9->SetLayoutColumn(2);
 	button9->SetLayoutColumnSpan(2);
 	button9->SetLayoutRow(2);
@@ -333,26 +333,26 @@ TEST_F(Test_UI_GridLayout, TreeLayout)
 	auto uiRoot = Engine::GetMainWindow();
 	RefPtr<UILayoutPanel> oldLayot = uiRoot->GetLayoutPanel();
 
-	auto grid1 = UIGridLayout::Create(2, 2);
+	auto grid1 = UIGridLayout::create(2, 2);
 	uiRoot->SetLayoutPanel(grid1);
 
 	UIGridLayoutPtr grids[3];
 	for (int i = 0; i < 3; ++i)
 	{
-		grids[i] = UIGridLayout::Create(2, 2);
+		grids[i] = UIGridLayout::create(2, 2);
 
-		auto button1 = UIButton::Create();
+		auto button1 = UIButton::create();
 		grids[i]->AddChild(button1);
 
-		auto button2 = UIButton::Create();
+		auto button2 = UIButton::create();
 		button2->SetLayoutColumn(1);
 		grids[i]->AddChild(button2);
 
-		auto button3 = UIButton::Create();
+		auto button3 = UIButton::create();
 		button3->SetLayoutRow(1);
 		grids[i]->AddChild(button3);
 
-		auto button4 = UIButton::Create();
+		auto button4 = UIButton::create();
 		button4->SetLayoutColumn(1);
 		button4->SetLayoutRow(1);
 		grids[i]->AddChild(button4);
@@ -376,7 +376,7 @@ TEST_F(Test_UI_GridLayout, GridLength)
 	auto uiRoot = Engine::GetMainWindow();
 	RefPtr<UILayoutPanel> oldLayot = uiRoot->GetLayoutPanel();
 
-	auto grid1 = UIGridLayout::Create();
+	auto grid1 = UIGridLayout::create();
 	uiRoot->SetLayoutPanel(grid1);
 	grid1->AddColumnDefinition();	// default
 	grid1->AddColumnDefinition(GridLengthType::Pixel, 50);
@@ -387,23 +387,23 @@ TEST_F(Test_UI_GridLayout, GridLength)
 	grid1->AddRowDefinition(GridLengthType::Auto);
 	grid1->AddRowDefinition(GridLengthType::Ratio, 2.0f);
 
-	auto button1 = UIButton::Create();
+	auto button1 = UIButton::create();
 	button1->SetLayoutColumn(0);
 	button1->SetLayoutRow(0);
 	uiRoot->AddChild(button1);
 
-	auto button2 = UIButton::Create();
+	auto button2 = UIButton::create();
 	button2->SetLayoutColumn(1);
 	button2->SetLayoutRow(1);
 	uiRoot->AddChild(button2);
 
-	auto button3 = UIButton::Create();
+	auto button3 = UIButton::create();
 	button3->SetSize(Size(20, 20));
 	button3->SetLayoutColumn(2);
 	button3->SetLayoutRow(2);
 	uiRoot->AddChild(button3);
 
-	auto button4 = UIButton::Create();
+	auto button4 = UIButton::create();
 	button4->SetLayoutColumn(3);
 	button4->SetLayoutRow(3);
 	uiRoot->AddChild(button4);
@@ -421,7 +421,7 @@ TEST_F(Test_UI_GridLayout, MinMax)
 	auto uiRoot = Engine::GetMainWindow();
 	RefPtr<UILayoutPanel> oldLayot = uiRoot->GetLayoutPanel();
 
-	auto grid1 = UIGridLayout::Create();
+	auto grid1 = UIGridLayout::create();
 	uiRoot->SetLayoutPanel(grid1);
 	grid1->AddColumnDefinition(GridLengthType::Auto, 1.0f, 20.0f, 30.0f);
 	grid1->AddColumnDefinition(GridLengthType::Auto, 1.0f, 20.0f, 30.0f);
@@ -430,7 +430,7 @@ TEST_F(Test_UI_GridLayout, MinMax)
 	grid1->AddRowDefinition(GridLengthType::Auto, 1.0f, 20.0f, 30.0f);
 	grid1->AddRowDefinition(GridLengthType::Auto, 1.0f, 20.0f, 30.0f);
 
-	auto button1 = UIButton::Create();
+	auto button1 = UIButton::create();
 	button1->SetLayoutColumn(0);
 	button1->SetLayoutRow(0);
 	button1->SetSize(Size(10, 10));
@@ -438,7 +438,7 @@ TEST_F(Test_UI_GridLayout, MinMax)
 	button1->SetVAlignment(VAlignment::Top);
 	uiRoot->AddChild(button1);
 
-	auto button2 = UIButton::Create();
+	auto button2 = UIButton::create();
 	button2->SetLayoutColumn(1);
 	button2->SetLayoutRow(1);
 	button2->SetSize(Size(40, 40));
@@ -446,7 +446,7 @@ TEST_F(Test_UI_GridLayout, MinMax)
 	button2->SetVAlignment(VAlignment::Top);
 	uiRoot->AddChild(button2);
 
-	auto button3 = UIButton::Create();
+	auto button3 = UIButton::create();
 	button3->SetLayoutColumn(2);
 	button3->SetLayoutRow(2);
 	button3->SetSize(Size(10, 10));

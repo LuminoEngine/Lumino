@@ -30,12 +30,12 @@ public:
 public:
 
 	/// 追加
-	void AddObject(TRefObj obj)
+	void addObject(TRefObj obj)
 	{
 		assert(obj);
 		assert(std::find(m_registerList.begin(), m_registerList.end(), obj) == m_registerList.end());	// 既に追加要求されている
 		assert(std::find(m_objectArray.begin(), m_objectArray.end(), obj) == m_objectArray.end());		// 現在削除待ちである
-		m_registerList.Add(obj);
+		m_registerList.add(obj);
 		obj->addRef();
 	}
 
@@ -54,7 +54,7 @@ public:
 
 		assert(std::find(m_unregisterList.begin(), m_unregisterList.end(), obj) == m_unregisterList.end());
 		assert(std::find(m_objectArray.begin(), m_objectArray.end(), obj) != m_objectArray.end());
-		m_unregisterList.Add(obj);
+		m_unregisterList.add(obj);
 		obj->addRef();
 	}
 
@@ -64,13 +64,13 @@ public:
 		typename ObjectArray::iterator itr, end;
 
 		// 追加
-		if (!m_registerList.IsEmpty())
+		if (!m_registerList.isEmpty())
 		{
 			itr = m_registerList.begin();
 			end = m_registerList.end();
 			for (; itr != end; ++itr)
 			{
-				m_objectArray.Add(*itr);
+				m_objectArray.add(*itr);
 				// 参照カウントは m_registerList から外す分と m_objectArray に
 				// 追加する分で ±0 なので操作はしない
 			}
@@ -78,7 +78,7 @@ public:
 		}
 
 		// 削除
-		if (!m_unregisterList.IsEmpty())
+		if (!m_unregisterList.isEmpty())
 		{
 			itr = m_unregisterList.begin();
 			end = m_unregisterList.end();
@@ -173,7 +173,7 @@ public:
 public:
 
 	/// 追加
-	void AddObject(TRefObj* obj)
+	void addObject(TRefObj* obj)
 	{
 		assert(obj);
 		assert(std::find(m_registerList.begin(), m_registerList.end(), obj) == m_registerList.end());	// 既に追加要求されている
@@ -181,7 +181,7 @@ public:
 
 		MutexScopedLock lock(m_mutex);
 		// 追加リストに入れる
-		m_registerList.Add(obj);
+		m_registerList.add(obj);
 		tr::ReflectionHelper::AddRefInternal(obj);
 	}
 
@@ -204,7 +204,7 @@ public:
 		assert(std::find(m_objectArray.begin(), m_objectArray.end(), obj) != m_objectArray.end());
 
 		// 削除してほしいリストに入れる
-		m_unregisterList.Add(obj);
+		m_unregisterList.add(obj);
 		//tr::ReflectionHelper::AddRefInternal(obj);
 	}
 
@@ -217,13 +217,13 @@ public:
 		MutexScopedLock lock(m_mutex);
 
 		// 追加
-		if (!m_registerList.IsEmpty())
+		if (!m_registerList.isEmpty())
 		{
 			itr = m_registerList.begin();
 			end = m_registerList.end();
 			for (; itr != end; ++itr)
 			{
-				m_objectArray.Add(*itr);
+				m_objectArray.add(*itr);
 				// 参照カウントは m_registerList から外す分と m_objectArray に
 				// 追加する分で ±0 なので操作はしない
 			}
@@ -231,7 +231,7 @@ public:
 		}
 
 		// 削除
-		if (!m_unregisterList.IsEmpty())
+		if (!m_unregisterList.isEmpty())
 		{
 			itr = m_unregisterList.begin();
 			end = m_unregisterList.end();
@@ -243,7 +243,7 @@ public:
 					//tr::ReflectionHelper::ReleaseInternal(*pos);	// m_unregisterList から外す分
 					// 参照カウントはもうひとつ m_objectArray の分があるが、これはすぐ m_removingList に移すのでデクリメントしない
 					m_objectArray.erase(pos);
-					m_removingList.Add(*pos);
+					m_removingList.add(*pos);
 				}
 			}
 			m_unregisterList.clear();
@@ -258,7 +258,7 @@ public:
 				// このリストからしか削除されていないものを削除して欲しいオブジェクトリストへ移す
 				if ((*itr)->getReferenceCount() == 0 && tr::ReflectionHelper::GetInternalReferenceCount(*itr) == 1)
 				{
-					m_removingList.Add(*itr);
+					m_removingList.add(*itr);
 					itr = m_objectArray.erase(itr);
 					end = m_objectArray.end();
 				}
@@ -358,43 +358,43 @@ public:
 
 	void CollectGC()
 	{
-		for (int i = GetCount() - 1; i >= 0; i--)
+		for (int i = getCount() - 1; i >= 0; i--)
 		{
-			TObject* ptr = GetAt(i);
+			TObject* ptr = getAt(i);
 			if (ptr->getReferenceCount() == 0 && tr::ReflectionHelper::GetInternalReferenceCount(ptr) == 1)
 			{
-				RemoveAt(i);
+				removeAt(i);
 			}
 		}
 	}
 
 private:
 
-	virtual void InsertItem(int index, const value_type& item) override
+	virtual void insertItem(int index, const value_type& item) override
 	{
-		Collection<TObject>::InsertItem(index, item);
+		Collection<TObject>::insertItem(index, item);
 		tr::ReflectionHelper::AddRefInternal(item);
 	}
 
-	virtual void ClearItems() override
+	virtual void clearItems() override
 	{
 		for (TObject* ptr : *this)
 		{
 			tr::ReflectionHelper::ReleaseInternal(ptr);
 		}
 
-		Collection<TObject>::ClearItems();
+		Collection<TObject>::clearItems();
 	}
 
-	virtual void RemoveItem(int index) override
+	virtual void removeItem(int index) override
 	{
-		tr::ReflectionHelper::ReleaseInternal(GetAt(index));
-		Collection<TObject>::RemoveItem(index);
+		tr::ReflectionHelper::ReleaseInternal(getAt(index));
+		Collection<TObject>::removeItem(index);
 	}
 
-	virtual void SetItem(int index, const value_type& item) override
+	virtual void setItem(int index, const value_type& item) override
 	{
-		Collection<TObject>::SetItem(index, item);
+		Collection<TObject>::setItem(index, item);
 		tr::ReflectionHelper::AddRefInternal(item);
 	}
 };

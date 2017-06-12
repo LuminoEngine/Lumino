@@ -63,19 +63,19 @@ void AudioUtils::PrintWAVEFORMATEX(const WAVEFORMATEX& wavFmt, const char* str)
 //------------------------------------------------------------------------------
 StreamFormat AudioUtils::CheckFormat(Stream* stream)
 {
-	if (!stream || stream->GetLength() < 4) {
+	if (!stream || stream->getLength() < 4) {
 		return StreamFormat_Unknown;
 	}
 
 	StreamFormat format = StreamFormat_Unknown;
 
 	byte_t head[4];
-	stream->Read(head, 4);
+	stream->read(head, 4);
 	if (memcmp(head, "RIFF", 4) == 0)
 	{
-		stream->Seek(4, SeekOrigin_Current);
+		stream->seek(4, SeekOrigin_Current);
 		byte_t wave[4];
-		stream->Read(wave, 4);
+		stream->read(wave, 4);
 		if (memcmp(wave, "WAVE", 4) == 0)
 		{
 			format = StreamFormat_Wave;
@@ -104,9 +104,9 @@ StreamFormat AudioUtils::CheckFormat(Stream* stream)
 		}
 		else
 		{
-			stream->Seek(-128, SeekOrigin_End);
+			stream->seek(-128, SeekOrigin_End);
 			char data[3];
-			stream->Read(data, 3);
+			stream->read(data, 3);
 			if (data[0] == 'T' && data[1] == 'A' && data[2] == 'G')
 			{
 				format = StreamFormat_Mp3;
@@ -114,7 +114,7 @@ StreamFormat AudioUtils::CheckFormat(Stream* stream)
 		}
 	}
 
-	stream->Seek(0, SeekOrigin_Begin);
+	stream->seek(0, SeekOrigin_Begin);
 	return format;
 }
 

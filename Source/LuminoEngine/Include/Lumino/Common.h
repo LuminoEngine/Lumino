@@ -93,7 +93,7 @@ enum class Keys
 	Tab,
 	Enter,
 	BackSpace,
-	Insert,
+	insert,
 	Delete,
 	PageUp,
 	PageDown,
@@ -164,7 +164,7 @@ protected:
 	RuntimeResource();
 	virtual ~RuntimeResource();
 
-	virtual void Finalize_() override;
+	virtual void finalize_() override;
 	virtual void Dispose();
 };
 

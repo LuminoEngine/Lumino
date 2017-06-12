@@ -30,7 +30,7 @@ GLVertexBuffer::~GLVertexBuffer()
 }
 
 //------------------------------------------------------------------------------
-void GLVertexBuffer::Create(size_t bufferSize, const void* initialData, ResourceUsage usage)
+void GLVertexBuffer::create(size_t bufferSize, const void* initialData, ResourceUsage usage)
 {
 	m_format = usage;
 	m_byteCount = bufferSize;
@@ -124,7 +124,7 @@ void GLVertexDeclaration::initialize(const VertexElement* elements, int elements
 //------------------------------------------------------------------------------
 void GLVertexDeclaration::CreateGLVertexElements(const VertexElement* vertexElements, int elementsCount, List<LNGLVertexElement>* outList)
 {
-	outList->Reserve(elementsCount);
+	outList->reserve(elementsCount);
 
 	int vertexSize = GetVertexSize(vertexElements, elementsCount, 0);
 	int totalSize = 0;
@@ -142,7 +142,7 @@ void GLVertexDeclaration::CreateGLVertexElements(const VertexElement* vertexElem
 
 		elm.Stride = vertexSize;
 		elm.ByteOffset = totalSize;
-		outList->Add(elm);
+		outList->add(elm);
 
 		totalSize += GetVertexElementTypeSize(vertexElements[i].Type);
 	}

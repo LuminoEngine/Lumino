@@ -100,7 +100,7 @@ void UIElement::initialize()
 	// 要素名を覚えておく。末端のサブクラスの名前となる。
 	m_elementName = tr::TypeInfo::GetTypeInfo(this)->GetName();
 
-	m_localStyle = RefPtr<detail::UIStylePropertyTableInstance>::MakeRef();
+	m_localStyle = RefPtr<detail::UIStylePropertyTableInstance>::makeRef();
 
 	//GoToVisualState(String::GetEmpty());
 	m_invalidateFlags |= detail::InvalidateFlags::VisualState;
@@ -133,13 +133,13 @@ Brush* UIElement::GetBackground() const
 //------------------------------------------------------------------------------
 EventConnection UIElement::ConnectOnGotFocus(UIEventHandler handler)
 {
-	return m_onGotFocus.Connect(handler);
+	return m_onGotFocus.connect(handler);
 }
 
 //------------------------------------------------------------------------------
 EventConnection UIElement::ConnectOnLostFocus(UIEventHandler handler)
 {
-	return m_onLostFocus.Connect(handler);
+	return m_onLostFocus.connect(handler);
 }
 
 //------------------------------------------------------------------------------
@@ -186,7 +186,7 @@ int UIElement::GetVisualChildrenCount() const
 {
 	if (m_visualChildren != nullptr)
 	{
-		return m_visualChildren->GetCount();
+		return m_visualChildren->getCount();
 	}
 
 	return 0;
@@ -197,7 +197,7 @@ ILayoutElement* UIElement::GetVisualChild(int index) const
 {
 	if (m_visualChildren != nullptr)
 	{
-		return m_visualChildren->GetAt(index);
+		return m_visualChildren->getAt(index);
 	}
 
 	LN_THROW(0, InvalidOperationException);
@@ -283,11 +283,11 @@ void UIElement::OnRender(DrawingContext* g)
 		g->SetBrush(m_localStyle->background.get());
 		//g->SetOpacity(m_combinedOpacity);
 		//g->DrawRectangle(Rect(0, 0, m_finalLocalRect.GetSize()));
-		g->DrawBoxBackground(Rect(0, 0, m_finalLocalRect.getSize()), m_localStyle->cornerRadius.Get());
+		g->DrawBoxBackground(Rect(0, 0, m_finalLocalRect.getSize()), m_localStyle->cornerRadius.get());
 
 		
 	}
-	if (decoratorBackground.Get() != nullptr)
+	if (decoratorBackground.get() != nullptr)
 	{
 		//g->SetBrush(decoratorBackground.Get());
 		////g->SetOpacity(m_combinedOpacity * m_decoratorOpacity);
@@ -303,10 +303,10 @@ void UIElement::OnRender(DrawingContext* g)
 		re->LayoutAndRender(g, m_finalGlobalRect.getSize());
 	}
 
-	if (!m_localStyle->borderThickness.Get().IsZero())
+	if (!m_localStyle->borderThickness.get().IsZero())
 	{
 		g->DrawBoxBorder(
-			Rect(0, 0, m_finalGlobalRect.getSize()), m_localStyle->borderThickness.Get(), CornerRadius(),
+			Rect(0, 0, m_finalGlobalRect.getSize()), m_localStyle->borderThickness.get(), CornerRadius(),
 			Color::Gray, Color::Gray, Color::Gray, Color::Gray,
 			BorderDirection::Outside);
 	}
@@ -330,11 +330,11 @@ void UIElement::OnKeyUp(UIKeyEventArgs* e) { }
 void UIElement::OnTextInput(UIKeyEventArgs* e) { }
 void UIElement::OnGotFocus(UIEventArgs* e)
 {
-	m_onGotFocus.Raise(e);
+	m_onGotFocus.raise(e);
 }
 void UIElement::OnLostFocus(UIEventArgs* e)
 {
-	m_onLostFocus.Raise(e);
+	m_onLostFocus.raise(e);
 }
 
 //------------------------------------------------------------------------------
@@ -357,7 +357,7 @@ void UIElement::OnMouseLeave(UIMouseEventArgs* e)
 	// 親にもマウスが乗ったことになっていれば、ヒットテストをした上で通知する
 	if (m_visualParent != nullptr && m_visualParent->m_isMouseOver)
 	{
-		if (!m_visualParent->m_finalGlobalRect.Contains(e->GetPosition()))
+		if (!m_visualParent->m_finalGlobalRect.contains(e->getPosition()))
 		{
 			m_visualParent->OnMouseLeave(e);
 		}
@@ -394,7 +394,7 @@ UIElement* UIElement::CheckMouseHoverElement(const PointF& globalPt)
 
 	if (m_isHitTestVisible)
 	{
-		if (m_finalGlobalRect.Contains(globalPt)) {
+		if (m_finalGlobalRect.contains(globalPt)) {
 			return this;
 		}
 	}
@@ -467,7 +467,7 @@ bool UIElement::OnEvent(detail::UIInternalEventType type, UIEventArgs* args)
 // (UI要素作成時のイベントハンドラの new や AddHandler をする必要がなくなる)
 void UIElement::OnRoutedEvent(UIEventArgs* e)
 {
-	auto ev = e->GetType();
+	auto ev = e->getType();
 	if (ev == UIEvents::MouseMoveEvent)
 	{
 		OnMouseMove(static_cast<UIMouseEventArgs*>(e));
@@ -507,7 +507,7 @@ void UIElement::CallOnGotFocus()
 {
 	LN_ASSERT(!m_hasFocus);
 	m_hasFocus = true;
-	OnGotFocus(UIEventArgs::Create(GotFocusEvent, this));
+	OnGotFocus(UIEventArgs::create(GotFocusEvent, this));
 }
 
 //------------------------------------------------------------------------------
@@ -515,7 +515,7 @@ void UIElement::CallOnLostFocus()
 {
 	LN_ASSERT(m_hasFocus);
 	m_hasFocus = false;
-	OnLostFocus(UIEventArgs::Create(LostFocusEvent, this));
+	OnLostFocus(UIEventArgs::create(LostFocusEvent, this));
 }
 
 //------------------------------------------------------------------------------
@@ -719,7 +719,7 @@ void UIElement::RaiseEventInternal(UIEventArgs* e)
 
 	// this に AddHandler されているイベントハンドラを呼び出す
 	tr::TypeInfo* thisType = tr::TypeInfo::GetTypeInfo(this);
-	thisType->InvokeReflectionEvent(this, e->GetType(), e);
+	thisType->InvokeReflectionEvent(this, e->getType(), e);
 	if (e->handled) return;
 
 	// bubble
@@ -741,7 +741,7 @@ void UIElement::AddVisualChild(UIElement* element)
 		m_visualChildren = std::make_shared<List<RefPtr<UIElement>>>();
 	}
 
-	m_visualChildren->Add(element);
+	m_visualChildren->add(element);
 	element->m_visualParent = this;
 }
 
@@ -752,7 +752,7 @@ void UIElement::RemoveVisualChild(UIElement* element)
 	if (element == nullptr) return;
 	if (m_visualChildren == nullptr) return;
 
-	m_visualChildren->Remove(element);
+	m_visualChildren->remove(element);
 	element->m_visualParent = nullptr;
 }
 

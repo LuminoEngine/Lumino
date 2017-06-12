@@ -43,14 +43,14 @@ int StringTraits::tcsicmp(const char* s1, const char* s2)
 	int len1 = strlen(s1);
 	int len2 = strlen(s2);
 	if (len1 != len2) return len2 - len1;
-	return StrNICmp(s1, s2, len1);
+	return strnicmp(s1, s2, len1);
 }
 int StringTraits::tcsicmp(const wchar_t* s1, const wchar_t* s2)
 {
 	int len1 = wcslen(s1);
 	int len2 = wcslen(s2);
 	if (len1 != len2) return len2 - len1;
-	return StrNICmp(s1, s2, len1);
+	return strnicmp(s1, s2, len1);
 }
 #ifdef LN_OS_WIN32
 int StringTraits::tvscprintf_l(const char* format, NativeLocale_t locale, va_list args)
@@ -127,39 +127,39 @@ int StringTraits::tsnprintf_l(wchar_t* out, int charCount, const wchar_t* format
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-TChar StringTraits::ToUpper(TChar ch)
+TChar StringTraits::toUpper(TChar ch)
 {
 	if ('a' <= ch && ch <= 'z')
 		return 'A' + (ch - 'a');
 	return ch;
 }
-template char StringTraits::ToUpper<char>(char ch);
-template UTF8 StringTraits::ToUpper<UTF8>(UTF8 ch);
-template UTF16 StringTraits::ToUpper<UTF16>(UTF16 ch);
-template UTF32 StringTraits::ToUpper<UTF32>(UTF32 ch);
+template char StringTraits::toUpper<char>(char ch);
+template UTF8 StringTraits::toUpper<UTF8>(UTF8 ch);
+template UTF16 StringTraits::toUpper<UTF16>(UTF16 ch);
+template UTF32 StringTraits::toUpper<UTF32>(UTF32 ch);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-TChar StringTraits::ToLower(TChar ch)
+TChar StringTraits::toLower(TChar ch)
 {
 	if ('A' <= ch && ch <= 'Z')
 		return 'a' + (ch - 'A');
 	return ch;
 }
-template char StringTraits::ToLower<char>(char ch);
-template UTF8 StringTraits::ToLower<UTF8>(UTF8 ch);
-template UTF16 StringTraits::ToLower<UTF16>(UTF16 ch);
-template UTF32 StringTraits::ToLower<UTF32>(UTF32 ch);
+template char StringTraits::toLower<char>(char ch);
+template UTF8 StringTraits::toLower<UTF8>(UTF8 ch);
+template UTF16 StringTraits::toLower<UTF16>(UTF16 ch);
+template UTF32 StringTraits::toLower<UTF32>(UTF32 ch);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-bool StringTraits::IsSpace(TChar ch)
+bool StringTraits::isSpace(TChar ch)
 {
 	return isspace((uint8_t)ch) != 0;
 }
-template bool StringTraits::IsSpace(UTF8 ch);
-template bool StringTraits::IsSpace(UTF16 ch);
-template bool StringTraits::IsSpace(UTF32 ch);
+template bool StringTraits::isSpace(UTF8 ch);
+template bool StringTraits::isSpace(UTF16 ch);
+template bool StringTraits::isSpace(UTF32 ch);
 
 
 
@@ -172,11 +172,11 @@ static const char*		StrStr(const char* s1, const char* s2) { return ::strstr(s1,
 static const wchar_t*	StrStr(const wchar_t* s1, const wchar_t* s2) { return ::wcsstr(s1, s2); }
 
 #ifdef _WIN32
-int				StringTraits::VSPrintf(char* out, int charCount, const char* format, va_list args) { return _vsnprintf_s(out, charCount, _TRUNCATE, format, args); }
-int				StringTraits::VSPrintf(wchar_t* out, int charCount, const wchar_t* format, va_list args) { return vswprintf(out, charCount, format, args); }
+int				StringTraits::vsprintf(char* out, int charCount, const char* format, va_list args) { return _vsnprintf_s(out, charCount, _TRUNCATE, format, args); }
+int				StringTraits::vsprintf(wchar_t* out, int charCount, const wchar_t* format, va_list args) { return vswprintf(out, charCount, format, args); }
 #else
-int				StringTraits::VSPrintf(char* out, int charCount, const char* format, va_list args) { return vsnprintf(out, charCount, format, args); }
-int				StringTraits::VSPrintf(wchar_t* out, int charCount, const wchar_t* format, va_list args)
+int				StringTraits::vsprintf(char* out, int charCount, const char* format, va_list args) { return vsnprintf(out, charCount, format, args); }
+int				StringTraits::vsprintf(wchar_t* out, int charCount, const wchar_t* format, va_list args)
 {
 	LN_THROW(0, NotImplementedException);	// vswprintf は動作保障無し
 	return vswprintf(out, charCount, format, args);
@@ -184,19 +184,19 @@ int				StringTraits::VSPrintf(wchar_t* out, int charCount, const wchar_t* format
 #endif
 
 
-int StringTraits::SPrintf(char* out, int charCount, const char* format, ...)
+int StringTraits::sprintf(char* out, int charCount, const char* format, ...)
 {
 	va_list args;
 	va_start(args, format);
-	int r = VSPrintf(out, charCount, format, args);
+	int r = vsprintf(out, charCount, format, args);
 	va_end(args);
 	return r;
 }
-int StringTraits::SPrintf(wchar_t* out, int charCount, const wchar_t* format, ...)
+int StringTraits::sprintf(wchar_t* out, int charCount, const wchar_t* format, ...)
 {
 	va_list args;
 	va_start(args, format);
-	int r = VSPrintf(out, charCount, format, args);
+	int r = vsprintf(out, charCount, format, args);
 	va_end(args);
 	return r;
 }
@@ -218,7 +218,7 @@ int StringTraits::StrNICmp(const char* str1, const char* str2, size_t count) { r
 int StringTraits::StrNICmp(const wchar_t* str1, const wchar_t* str2, size_t count) { return wcsnicmp(str1, str2, count); }
 #endif
 */
-int StringTraits::StrNICmp(const char* s1, const char* s2, size_t count)
+int StringTraits::strnicmp(const char* s1, const char* s2, size_t count)
 {
 	if (count == 0) {
 		return 0;
@@ -227,9 +227,9 @@ int StringTraits::StrNICmp(const char* s1, const char* s2, size_t count)
 	//while (*s1 && *s2)
 	do
 	{
-		if (StringTraits::ToUpper(*s1) != StringTraits::ToUpper(*s2))
+		if (StringTraits::toUpper(*s1) != StringTraits::toUpper(*s2))
 		{
-			return ((StringTraits::ToUpper(*s1) - StringTraits::ToUpper(*s2)));
+			return ((StringTraits::toUpper(*s1) - StringTraits::toUpper(*s2)));
 		}
 		if (*s1 == 0) {
 			break;
@@ -240,7 +240,7 @@ int StringTraits::StrNICmp(const char* s1, const char* s2, size_t count)
 	} while (count != 0);
 	return 0;//((StringTraits::ToUpper(*s1) - StringTraits::ToUpper(*s2)));
 }
-int StringTraits::StrNICmp(const wchar_t* s1, const wchar_t* s2, size_t count)
+int StringTraits::strnicmp(const wchar_t* s1, const wchar_t* s2, size_t count)
 {
 	if (count == 0) {
 		return 0;
@@ -249,9 +249,9 @@ int StringTraits::StrNICmp(const wchar_t* s1, const wchar_t* s2, size_t count)
 	//while (*s1 && *s2)
 	do
 	{
-		if (StringTraits::ToUpper(*s1) != StringTraits::ToUpper(*s2))
+		if (StringTraits::toUpper(*s1) != StringTraits::toUpper(*s2))
 		{
-			return ((StringTraits::ToUpper(*s1) - StringTraits::ToUpper(*s2)));
+			return ((StringTraits::toUpper(*s1) - StringTraits::toUpper(*s2)));
 		}
 		if (*s1 == 0) {
 			break;
@@ -265,16 +265,16 @@ int StringTraits::StrNICmp(const wchar_t* s1, const wchar_t* s2, size_t count)
 
 
 //------------------------------------------------------------------------------
-void StringTraits::ConvertMultiToWide(std::wstring* out, const char* input, int inputLength)
+void StringTraits::convertMultiToWide(std::wstring* out, const char* input, int inputLength)
 {
 	StringW strWide;
-	strWide.AssignCStr(input, inputLength);
+	strWide.assignCStr(input, inputLength);
 	(*out) = strWide.c_str();
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-int StringTraits::IndexOf(const TChar* str1, int str1Len, const TChar* str2, int str2Len, int startIndex, CaseSensitivity cs)
+int StringTraits::indexOf(const TChar* str1, int str1Len, const TChar* str2, int str2Len, int startIndex, CaseSensitivity cs)
 {
 	LN_THROW(str1 && str2, ArgumentException);
 
@@ -296,7 +296,7 @@ int StringTraits::IndexOf(const TChar* str1, int str1Len, const TChar* str2, int
 		for (; *pos; ++pos)
 		{
 			if (*pos == *str2) {
-				if (StrNCmp(pos, str2, str2Len) == 0) {
+				if (strncmp(pos, str2, str2Len) == 0) {
 					return (int)(pos - str1);
 				}
 			}
@@ -308,7 +308,7 @@ int StringTraits::IndexOf(const TChar* str1, int str1Len, const TChar* str2, int
 		for (; *pos; ++pos)
 		{
 			if (*pos == *str2) {
-				if (StrNICmp(pos, str2, str2Len) == 0) {
+				if (strnicmp(pos, str2, str2Len) == 0) {
 					return (int)(pos - str1);
 				}
 			}
@@ -317,13 +317,13 @@ int StringTraits::IndexOf(const TChar* str1, int str1Len, const TChar* str2, int
 
 	return -1;
 }
-template int StringTraits::IndexOf<char>(const char* str1, int str1Len, const char* str2, int str2Len, int startIndex, CaseSensitivity cs);
-template int StringTraits::IndexOf<wchar_t>(const wchar_t* str1, int str1Len, const wchar_t* str2, int str2Len, int startIndex, CaseSensitivity cs);
+template int StringTraits::indexOf<char>(const char* str1, int str1Len, const char* str2, int str2Len, int startIndex, CaseSensitivity cs);
+template int StringTraits::indexOf<wchar_t>(const wchar_t* str1, int str1Len, const wchar_t* str2, int str2Len, int startIndex, CaseSensitivity cs);
 
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-int StringTraits::LastIndexOf(const TChar* str1, int str1Len, const TChar* str2, int str2Len, int startIndex, int count, CaseSensitivity cs)
+int StringTraits::lastIndexOf(const TChar* str1, int str1Len, const TChar* str2, int str2Len, int startIndex, int count, CaseSensitivity cs)
 {
 	str1 = (str1 == NULL) ? LN_T(TChar, "") : str1;
 	str2 = (str2 == NULL) ? LN_T(TChar, "") : str2;
@@ -360,7 +360,7 @@ int StringTraits::LastIndexOf(const TChar* str1, int str1Len, const TChar* str2,
 		// 後ろから前へ見ていく
 		while (pos >= end)
 		{
-			if (StrNCmp(pos, str2, str2Len) == 0) {
+			if (strncmp(pos, str2, str2Len) == 0) {
 				return (int)(pos - str1);
 			}
 			--pos;
@@ -372,7 +372,7 @@ int StringTraits::LastIndexOf(const TChar* str1, int str1Len, const TChar* str2,
 		// 後ろから前へ見ていく
 		while (pos >= end)
 		{
-			if (StrNICmp(pos, str2, str2Len) == 0) {
+			if (strnicmp(pos, str2, str2Len) == 0) {
 				return (int)(pos - str1);
 			}
 			--pos;
@@ -380,8 +380,8 @@ int StringTraits::LastIndexOf(const TChar* str1, int str1Len, const TChar* str2,
 	}
 	return -1;
 }
-template int StringTraits::LastIndexOf<char>(const char* str1, int str1Len, const char* str2, int str2Len, int startIndex, int count, CaseSensitivity cs);
-template int StringTraits::LastIndexOf<wchar_t>(const wchar_t* str1, int str1Len, const wchar_t* str2, int str2Len, int startIndex, int count, CaseSensitivity cs);
+template int StringTraits::lastIndexOf<char>(const char* str1, int str1Len, const char* str2, int str2Len, int startIndex, int count, CaseSensitivity cs);
+template int StringTraits::lastIndexOf<wchar_t>(const wchar_t* str1, int str1Len, const wchar_t* str2, int str2Len, int startIndex, int count, CaseSensitivity cs);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
@@ -436,8 +436,8 @@ int StringTraits::compare(const TChar* str1, int str1Len, const TChar* str2, int
 	{
 		while (count > 0)
 		{
-			if (ToUpper(*str1) != ToUpper(*str2)) {
-				return ((unsigned int)(ToUpper(*str1))) - ((unsigned int)(ToUpper(*str2)));
+			if (toUpper(*str1) != toUpper(*str2)) {
+				return ((unsigned int)(toUpper(*str1))) - ((unsigned int)(toUpper(*str2)));
 			}
 			//if (*str1 == 0) {
 			//	break;
@@ -474,7 +474,7 @@ int StringTraits::compare(TChar ch1, TChar ch2, CaseSensitivity cs)
 		return ((unsigned int)(ch1)) - ((unsigned int)(ch2));
 	}
 	else {
-		return ((unsigned int)(ToUpper(ch1))) - ((unsigned int)(ToUpper(ch2)));
+		return ((unsigned int)(toUpper(ch1))) - ((unsigned int)(toUpper(ch2)));
 	}
 }
 template int StringTraits::compare<char>(char ch1, char ch2, CaseSensitivity cs);
@@ -482,7 +482,7 @@ template int StringTraits::compare<wchar_t>(wchar_t ch1, wchar_t ch2, CaseSensit
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-void StringTraits::Trim(const TChar* begin, int length, const TChar** outBegin, int* outLength)
+void StringTraits::trim(const TChar* begin, int length, const TChar** outBegin, int* outLength)
 {
 	if (LN_CHECK_ARG(begin != nullptr)) return;
 	if (LN_CHECK_ARG(length >= 0)) return;
@@ -500,7 +500,7 @@ void StringTraits::Trim(const TChar* begin, int length, const TChar** outBegin, 
 	// Left 部分
 	while (*begin)
 	{
-		if (!IsSpace(*begin)) {
+		if (!isSpace(*begin)) {
 			break;
 		}
 		++begin;
@@ -509,7 +509,7 @@ void StringTraits::Trim(const TChar* begin, int length, const TChar** outBegin, 
 	// Right 部分
 	while (begin < end)
 	{
-		if (!IsSpace(*(end - 1))) {
+		if (!isSpace(*(end - 1))) {
 			break;
 		}
 		--end;
@@ -518,8 +518,8 @@ void StringTraits::Trim(const TChar* begin, int length, const TChar** outBegin, 
 	*outBegin = begin;
 	*outLength = (int)(end - begin);
 }
-template void StringTraits::Trim<char>(const char* begin, int length, const char** outBegin, int* outLength);
-template void StringTraits::Trim<wchar_t>(const wchar_t* begin, int length, const wchar_t** outBegin, int* outLength);
+template void StringTraits::trim<char>(const char* begin, int length, const char** outBegin, int* outLength);
+template void StringTraits::trim<wchar_t>(const wchar_t* begin, int length, const wchar_t** outBegin, int* outLength);
 
 //------------------------------------------------------------------------------
 //template<typename TChar>
@@ -559,16 +559,16 @@ template void StringTraits::Trim<wchar_t>(const wchar_t* begin, int length, cons
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-bool StringTraits::StartsWith(const TChar* str1, int len1, const TChar* str2, int len2, CaseSensitivity cs)
+bool StringTraits::startsWith(const TChar* str1, int len1, const TChar* str2, int len2, CaseSensitivity cs)
 {
 	return compare(str1, str2, len2, cs) == 0;
 }
-template bool StringTraits::StartsWith<char>(const char* str1, int len1, const char* str2, int len2, CaseSensitivity cs);
-template bool StringTraits::StartsWith<wchar_t>(const wchar_t* str1, int len1, const wchar_t* str2, int len2, CaseSensitivity cs);
+template bool StringTraits::startsWith<char>(const char* str1, int len1, const char* str2, int len2, CaseSensitivity cs);
+template bool StringTraits::startsWith<wchar_t>(const wchar_t* str1, int len1, const wchar_t* str2, int len2, CaseSensitivity cs);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-bool StringTraits::EndsWith(const TChar* str1, int len1, const TChar* str2, int len2, CaseSensitivity cs)
+bool StringTraits::endsWith(const TChar* str1, int len1, const TChar* str2, int len2, CaseSensitivity cs)
 {
 	// 長さが -1 の場合は \0 までカウント
 	len1 = static_cast<int>((len1 < 0) ? tcslen(str1) : len1);
@@ -606,31 +606,31 @@ bool StringTraits::EndsWith(const TChar* str1, int len1, const TChar* str2, int 
 		return true;
 	}
 }
-template bool StringTraits::EndsWith<char>(const char* str1, int len1, const char* str2, int len2, CaseSensitivity cs);
-template bool StringTraits::EndsWith<wchar_t>(const wchar_t* str1, int len1, const wchar_t* str2, int len2, CaseSensitivity cs);
+template bool StringTraits::endsWith<char>(const char* str1, int len1, const char* str2, int len2, CaseSensitivity cs);
+template bool StringTraits::endsWith<wchar_t>(const wchar_t* str1, int len1, const wchar_t* str2, int len2, CaseSensitivity cs);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-int StringTraits::CountString(const TChar* str1, int str1Len, const TChar* str2, int str2Len, CaseSensitivity cs)
+int StringTraits::countString(const TChar* str1, int str1Len, const TChar* str2, int str2Len, CaseSensitivity cs)
 {
 	str1Len = (str1Len < 0) ? ((int)tcslen(str1)) : str1Len;
 	str2Len = (str2Len < 0) ? ((int)tcslen(str2)) : str2Len;
 
 	int count = 0;
 	int i = 0;
-	while ((i = IndexOf(str1, str1Len, str2, str2Len, i, cs)) != -1)
+	while ((i = indexOf(str1, str1Len, str2, str2Len, i, cs)) != -1)
 	{
 		i += str2Len;
 		count++;
 	}
 	return count;
 }
-template int StringTraits::CountString<char>(const char* str1, int str1Len, const char* str2, int str2Len, CaseSensitivity cs);
-template int StringTraits::CountString<wchar_t>(const wchar_t* str1, int str1Len, const wchar_t* str2, int str2Len, CaseSensitivity cs);
+template int StringTraits::countString<char>(const char* str1, int str1Len, const char* str2, int str2Len, CaseSensitivity cs);
+template int StringTraits::countString<wchar_t>(const wchar_t* str1, int str1Len, const wchar_t* str2, int str2Len, CaseSensitivity cs);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericString<TChar> StringTraits::Left(const TChar* str, int count)
+GenericString<TChar> StringTraits::left(const TChar* str, int count)
 {
 	if (count < 0) {
 		count = 0;
@@ -642,12 +642,12 @@ GenericString<TChar> StringTraits::Left(const TChar* str, int count)
 	}
 	return GenericString<TChar>(str, count);
 }
-template GenericString<char> StringTraits::Left<char>(const char* str, int count);
-template GenericString<wchar_t> StringTraits::Left<wchar_t>(const wchar_t* str, int count);
+template GenericString<char> StringTraits::left<char>(const char* str, int count);
+template GenericString<wchar_t> StringTraits::left<wchar_t>(const wchar_t* str, int count);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericString<TChar> StringTraits::Right(const TChar* str, int count)
+GenericString<TChar> StringTraits::right(const TChar* str, int count)
 {
 	if (count < 0) {
 		count = 0;
@@ -659,12 +659,12 @@ GenericString<TChar> StringTraits::Right(const TChar* str, int count)
 	}
 	return GenericString<TChar>(str + len - count, count);
 }
-template GenericString<char> StringTraits::Right<char>(const char* str, int count);
-template GenericString<wchar_t> StringTraits::Right<wchar_t>(const wchar_t* str, int count);
+template GenericString<char> StringTraits::right<char>(const char* str, int count);
+template GenericString<wchar_t> StringTraits::right<wchar_t>(const wchar_t* str, int count);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericString<TChar> StringTraits::Mid(const TChar* str, int start, int count)
+GenericString<TChar> StringTraits::mid(const TChar* str, int start, int count)
 {
 	int len = (int)tcslen(str);
 
@@ -688,18 +688,18 @@ GenericString<TChar> StringTraits::Mid(const TChar* str, int start, int count)
 
 	return GenericString<TChar>(str + start, count);
 }
-template GenericString<char> StringTraits::Mid<char>(const char* str, int start, int count);
-template GenericString<wchar_t> StringTraits::Mid<wchar_t>(const wchar_t* str, int start, int count);
+template GenericString<char> StringTraits::mid<char>(const char* str, int start, int count);
+template GenericString<wchar_t> StringTraits::mid<wchar_t>(const wchar_t* str, int start, int count);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericStringArray<TChar> StringTraits::Split(const GenericString<TChar>& str, const TChar* delim, StringSplitOptions option)
+GenericStringArray<TChar> StringTraits::split(const GenericString<TChar>& str, const TChar* delim, StringSplitOptions option)
 {
 	GenericStringArray<TChar> result;
 
 	SplitHelper(
-		str.c_str(), str.c_str() + str.GetLength(), delim, -1, option, CaseSensitivity::CaseSensitive,
-		[&result](const TChar* begin, const TChar* end){ result.Add(GenericString<TChar>(begin, end - begin)); });
+		str.c_str(), str.c_str() + str.getLength(), delim, -1, option, CaseSensitivity::CaseSensitive,
+		[&result](const TChar* begin, const TChar* end){ result.add(GenericString<TChar>(begin, end - begin)); });
 
 	//// 最初の区切り文字を探す
 	//int tokenStart = 0;
@@ -739,12 +739,12 @@ GenericStringArray<TChar> StringTraits::Split(const GenericString<TChar>& str, c
 
 	return result;
 }
-template GenericStringArray<char> StringTraits::Split(const GenericString<char>& str, const char* delim, StringSplitOptions option);
-template GenericStringArray<wchar_t> StringTraits::Split(const GenericString<wchar_t>& str, const wchar_t* delim, StringSplitOptions option);
+template GenericStringArray<char> StringTraits::split(const GenericString<char>& str, const char* delim, StringSplitOptions option);
+template GenericStringArray<wchar_t> StringTraits::split(const GenericString<wchar_t>& str, const wchar_t* delim, StringSplitOptions option);
 
 //------------------------------------------------------------------------------
 template<typename T>
-int StringTraits::CheckNewLineSequence(const T* start, const T* end)
+int StringTraits::checkNewLineSequence(const T* start, const T* end)
 {
 	if (start < end)
 	{
@@ -762,19 +762,19 @@ int StringTraits::CheckNewLineSequence(const T* start, const T* end)
 	}
 	return 0;
 }
-template int StringTraits::CheckNewLineSequence<byte_t>(const byte_t* start, const byte_t* end);
-template int StringTraits::CheckNewLineSequence<char>(const char* start, const char* end);
-template int StringTraits::CheckNewLineSequence<wchar_t>(const wchar_t* start, const wchar_t* end);
-template int StringTraits::CheckNewLineSequence<UTF32>(const UTF32* start, const UTF32* end);
+template int StringTraits::checkNewLineSequence<byte_t>(const byte_t* start, const byte_t* end);
+template int StringTraits::checkNewLineSequence<char>(const char* start, const char* end);
+template int StringTraits::checkNewLineSequence<wchar_t>(const wchar_t* start, const wchar_t* end);
+template int StringTraits::checkNewLineSequence<UTF32>(const UTF32* start, const UTF32* end);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-bool StringTraits::IndexOfNewLineSequence(const TChar* start, const TChar* end, int* outIndex, int* outNewLineCodeCount)
+bool StringTraits::indexOfNewLineSequence(const TChar* start, const TChar* end, int* outIndex, int* outNewLineCodeCount)
 {
 	const TChar* pos = start;
 	while (pos < end)
 	{
-		int count = CheckNewLineSequence(pos, end);
+		int count = checkNewLineSequence(pos, end);
 		if (count != 0)
 		{
 			if (outIndex != nullptr) { *outIndex = (pos - start); }
@@ -786,28 +786,28 @@ bool StringTraits::IndexOfNewLineSequence(const TChar* start, const TChar* end, 
 	}
 	return false;
 }
-template bool StringTraits::IndexOfNewLineSequence<char>(const char* start, const char* end, int* outIndex, int* outNewLineCodeCount);
-template bool StringTraits::IndexOfNewLineSequence<wchar_t>(const wchar_t* start, const wchar_t* end, int* outIndex, int* outNewLineCodeCount);
-template bool StringTraits::IndexOfNewLineSequence<UTF32>(const UTF32* start, const UTF32* end, int* outIndex, int* outNewLineCodeCount);
+template bool StringTraits::indexOfNewLineSequence<char>(const char* start, const char* end, int* outIndex, int* outNewLineCodeCount);
+template bool StringTraits::indexOfNewLineSequence<wchar_t>(const wchar_t* start, const wchar_t* end, int* outIndex, int* outNewLineCodeCount);
+template bool StringTraits::indexOfNewLineSequence<UTF32>(const UTF32* start, const UTF32* end, int* outIndex, int* outNewLineCodeCount);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-bool StringTraits::Match(const TChar* pattern, const TChar* str)
+bool StringTraits::match(const TChar* pattern, const TChar* str)
 {
 	switch (*pattern)
 	{
 	case _T('\0'):
 		return _T('\0') == *str;
 	case _T('*'):
-		return Match(pattern + 1, str) || ((_T('\0') != *str) && Match(pattern, str + 1));
+		return match(pattern + 1, str) || ((_T('\0') != *str) && match(pattern, str + 1));
 	case _T('?'):
-		return (_T('\0') != *str) && Match(pattern + 1, str + 1);
+		return (_T('\0') != *str) && match(pattern + 1, str + 1);
 	default:
-		return (*pattern == *str) && Match(pattern + 1, str + 1);
+		return (*pattern == *str) && match(pattern + 1, str + 1);
 	}
 }
-template bool StringTraits::Match<char>(const char* pattern, const char* str);
-template bool StringTraits::Match<wchar_t>(const wchar_t* pattern, const wchar_t* str);
+template bool StringTraits::match<char>(const char* pattern, const char* str);
+template bool StringTraits::match<wchar_t>(const wchar_t* pattern, const wchar_t* str);
 
 //------------------------------------------------------------------------------
 // Note:C言語標準では uint64_t 用の 変換関数が無いため自作した。
@@ -834,7 +834,7 @@ static NumberConversionResult StrToNumInternal(
 	const TChar* end = str + (len < 0 ? StringTraits::tcslen(str) : len);
 
 	// 空白をスキップ
-	while (StringTraits::IsSpace(*p)) { ++p; }
+	while (StringTraits::isSpace(*p)) { ++p; }
 
 	// 符号チェック
 	bool isNeg = false;
@@ -963,99 +963,99 @@ static NumberConversionResult StrToNumInternal(
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-int8_t StringTraits::ToInt8(const TChar* str, int len, int base, const TChar** outEndPtr, NumberConversionResult* outResult)
+int8_t StringTraits::toInt8(const TChar* str, int len, int base, const TChar** outEndPtr, NumberConversionResult* outResult)
 {
 	uint8_t n;
 	NumberConversionResult r = StrToNumInternal<TChar, int8_t, uint8_t>(str, len, base, false, INT8_MIN, INT8_MAX, UINT8_MAX, outEndPtr, &n);
 	if (outResult != NULL) { *outResult = r; }
 	return (int8_t)n;
 }
-template int8_t StringTraits::ToInt8<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
-template int8_t StringTraits::ToInt8<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
+template int8_t StringTraits::toInt8<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
+template int8_t StringTraits::toInt8<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-uint8_t StringTraits::ToUInt8(const TChar* str, int len, int base, const TChar** outEndPtr, NumberConversionResult* outResult)
+uint8_t StringTraits::toUInt8(const TChar* str, int len, int base, const TChar** outEndPtr, NumberConversionResult* outResult)
 {
 	uint8_t n;
 	NumberConversionResult r = StrToNumInternal<TChar, int8_t, uint8_t>(str, len, base, true, INT8_MIN, INT8_MAX, UINT8_MAX, outEndPtr, &n);
 	if (outResult != NULL) { *outResult = r; }
 	return n;
 }
-template uint8_t StringTraits::ToUInt8<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
-template uint8_t StringTraits::ToUInt8<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
+template uint8_t StringTraits::toUInt8<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
+template uint8_t StringTraits::toUInt8<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-int16_t StringTraits::ToInt16(const TChar* str, int len, int base, const TChar** outEndPtr, NumberConversionResult* outResult)
+int16_t StringTraits::toInt16(const TChar* str, int len, int base, const TChar** outEndPtr, NumberConversionResult* outResult)
 {
 	uint16_t n;
 	NumberConversionResult r = StrToNumInternal<TChar, int16_t, uint16_t>(str, len, base, false, INT16_MIN, INT16_MAX, UINT16_MAX, outEndPtr, &n);
 	if (outResult != NULL) { *outResult = r; }
 	return (int16_t)n;
 }
-template int16_t StringTraits::ToInt16<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
-template int16_t StringTraits::ToInt16<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
+template int16_t StringTraits::toInt16<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
+template int16_t StringTraits::toInt16<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-uint16_t StringTraits::ToUInt16(const TChar* str, int len, int base, const TChar** outEndPtr, NumberConversionResult* outResult)
+uint16_t StringTraits::toUInt16(const TChar* str, int len, int base, const TChar** outEndPtr, NumberConversionResult* outResult)
 {
 	uint16_t n;
 	NumberConversionResult r = StrToNumInternal<TChar, int16_t, uint16_t>(str, len, base, true, INT16_MIN, INT16_MAX, UINT16_MAX, outEndPtr, &n);
 	if (outResult != NULL) { *outResult = r; }
 	return n;
 }
-template uint16_t StringTraits::ToUInt16<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
-template uint16_t StringTraits::ToUInt16<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
+template uint16_t StringTraits::toUInt16<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
+template uint16_t StringTraits::toUInt16<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-int32_t StringTraits::ToInt32(const TChar* str, int len, int base, const TChar** outEndPtr, NumberConversionResult* outResult)
+int32_t StringTraits::toInt32(const TChar* str, int len, int base, const TChar** outEndPtr, NumberConversionResult* outResult)
 {
 	uint32_t n;
 	NumberConversionResult r = StrToNumInternal<TChar, int32_t, uint32_t>(str, len, base, false, INT32_MIN, INT32_MAX, UINT32_MAX, outEndPtr, &n);
 	if (outResult != NULL) { *outResult = r; }
 	return (int32_t)n;
 }
-template int32_t StringTraits::ToInt32<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
-template int32_t StringTraits::ToInt32<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
+template int32_t StringTraits::toInt32<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
+template int32_t StringTraits::toInt32<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-uint32_t StringTraits::ToUInt32(const TChar* str, int len, int base, const TChar** outEndPtr, NumberConversionResult* outResult)
+uint32_t StringTraits::toUInt32(const TChar* str, int len, int base, const TChar** outEndPtr, NumberConversionResult* outResult)
 {
 	uint32_t n;
 	NumberConversionResult r = StrToNumInternal<TChar, int32_t, uint32_t>(str, len, base, true, INT32_MIN, INT32_MAX, UINT32_MAX, outEndPtr, &n);
 	if (outResult != NULL) { *outResult = r; }
 	return n;
 }
-template uint32_t StringTraits::ToUInt32<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
-template uint32_t StringTraits::ToUInt32<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
+template uint32_t StringTraits::toUInt32<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
+template uint32_t StringTraits::toUInt32<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-int64_t StringTraits::ToInt64(const TChar* str, int len, int base, const TChar** outEndPtr, NumberConversionResult* outResult)
+int64_t StringTraits::toInt64(const TChar* str, int len, int base, const TChar** outEndPtr, NumberConversionResult* outResult)
 {
 	uint64_t n;
 	NumberConversionResult r = StrToNumInternal<TChar, int64_t, uint64_t>(str, len, base, false, INT64_MIN, INT64_MAX, UINT64_MAX, outEndPtr, &n);
 	if (outResult != NULL) { *outResult = r; }
 	return (int64_t)n;
 }
-template int64_t StringTraits::ToInt64<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
-template int64_t StringTraits::ToInt64<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
+template int64_t StringTraits::toInt64<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
+template int64_t StringTraits::toInt64<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-uint64_t StringTraits::ToUInt64(const TChar* str, int len, int base, const TChar** outEndPtr, NumberConversionResult* outResult)
+uint64_t StringTraits::toUInt64(const TChar* str, int len, int base, const TChar** outEndPtr, NumberConversionResult* outResult)
 {
 	uint64_t n;
 	NumberConversionResult r = StrToNumInternal<TChar, int64_t, uint64_t>(str, len, base, true, INT64_MIN, INT64_MAX, UINT64_MAX, outEndPtr, &n);
 	if (outResult != NULL) { *outResult = r; }
 	return n;
 }
-template uint64_t StringTraits::ToUInt64<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
-template uint64_t StringTraits::ToUInt64<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
+template uint64_t StringTraits::toUInt64<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
+template uint64_t StringTraits::toUInt64<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
 
 //------------------------------------------------------------------------------
 #ifdef _WIN32
@@ -1107,7 +1107,7 @@ static double StrToD_L(const wchar_t* str, wchar_t** endptr, locale_t locale) { 
 #endif
 
 template<typename TChar>
-double StringTraits::ToDouble(const TChar* str, int len, const TChar** outEndPtr, NumberConversionResult* outResult)
+double StringTraits::toDouble(const TChar* str, int len, const TChar** outEndPtr, NumberConversionResult* outResult)
 {
 	if (outResult != NULL) { *outResult = NumberConversionResult::Success; }
 
@@ -1128,7 +1128,7 @@ double StringTraits::ToDouble(const TChar* str, int len, const TChar** outEndPtr
 	// IBM 形式では仮数部の桁数は 2^24=16777216 で8桁で、指数部は 16^63で、7.237005577332262213973186563043e+75。
 	// 0 は 308 個並べられることになるが、512 文字分のサイズがあれば十分。
 	TChar tmp[512] = { 0 };
-	StrNCpy(tmp, 512, str, len);
+	strncpy(tmp, 512, str, len);
 	tmp[len] = '\0';
 
 	TChar* end;
@@ -1143,13 +1143,13 @@ double StringTraits::ToDouble(const TChar* str, int len, const TChar** outEndPtr
 	}
 	return v;
 }
-template double StringTraits::ToDouble<char>(const char* str, int len, const char** outEndPtr, NumberConversionResult* outResult);
-template double StringTraits::ToDouble<wchar_t>(const wchar_t* str, int len, const wchar_t** outEndPtr, NumberConversionResult* outResult);
+template double StringTraits::toDouble<char>(const char* str, int len, const char** outEndPtr, NumberConversionResult* outResult);
+template double StringTraits::toDouble<wchar_t>(const wchar_t* str, int len, const wchar_t** outEndPtr, NumberConversionResult* outResult);
 
 template<typename TChar>
-float StringTraits::ToFloat(const TChar* str, int len, const TChar** outEndPtr, NumberConversionResult* outResult)
+float StringTraits::toFloat(const TChar* str, int len, const TChar** outEndPtr, NumberConversionResult* outResult)
 {
-	double value = ToDouble(str, len, outEndPtr, outResult);
+	double value = toDouble(str, len, outEndPtr, outResult);
 
 	// double に変換するとオーバーフローする場合はエラーを出力する
 	if (outResult != nullptr &&
@@ -1161,8 +1161,8 @@ float StringTraits::ToFloat(const TChar* str, int len, const TChar** outEndPtr, 
 
 	return (float)value;
 }
-template float StringTraits::ToFloat<char>(const char* str, int len, const char** outEndPtr, NumberConversionResult* outResult);
-template float StringTraits::ToFloat<wchar_t>(const wchar_t* str, int len, const wchar_t** outEndPtr, NumberConversionResult* outResult);
+template float StringTraits::toFloat<char>(const char* str, int len, const char** outEndPtr, NumberConversionResult* outResult);
+template float StringTraits::toFloat<wchar_t>(const wchar_t* str, int len, const wchar_t** outEndPtr, NumberConversionResult* outResult);
 
 
 LN_NAMESPACE_END

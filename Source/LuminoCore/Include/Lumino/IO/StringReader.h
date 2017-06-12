@@ -38,11 +38,11 @@ public:
 
 public:
 	virtual int Peek();
-	virtual int Read();
+	virtual int read();
 	virtual bool ReadLine(String* line);
 	virtual String ReadToEnd();
 	//virtual int GetPosition() const;
-	virtual bool IsEOF();
+	virtual bool isEOF();
 
 private:
 	String		m_src;

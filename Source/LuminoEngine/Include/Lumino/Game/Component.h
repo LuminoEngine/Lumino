@@ -42,7 +42,7 @@ protected:
 
 private:
 	void attach(WorldObject* owner);
-	void Detach();
+	void detach();
 	void UpdateFrame();
 
 LN_INTERNAL_ACCESS:
@@ -79,7 +79,7 @@ public:
 	Transform();
 	virtual ~Transform();
 
-	Vector3 GetFront() const;
+	Vector3 getFront() const;
 
 	/** 指定した方向と距離に移動します。*/
 	void Translate(const Vector3& translation);

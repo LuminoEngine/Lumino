@@ -16,7 +16,7 @@ public:
 	// override Exception
 	virtual Exception* copy() const;
 	virtual const char* what() const throw();
-	virtual const TCHAR* GetMessageOverride() const override;
+	virtual const TCHAR* getMessageOverride() const override;
 
 private:
 	String	m_message;		///< コンパイルエラーのメッセージはベースで確保しているメッセージのバッファを余裕で超えることがあるので独自確保

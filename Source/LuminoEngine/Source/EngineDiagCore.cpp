@@ -61,8 +61,8 @@ void EngineDiagCore::initialize(EngineManager* manager)
 void EngineDiagCore::ReportCapability(int indent, const char* name, const char* value)
 {
 	StringA str(indent, '\t');
-	str = StringA::Format("{0}{1} : {2}", str, name, value);
-	Logger::WriteLine(str.c_str());
+	str = StringA::format("{0}{1} : {2}", str, name, value);
+	Logger::writeLine(str.c_str());
 }
 
 //------------------------------------------------------------------------------
@@ -124,7 +124,7 @@ void EngineDiagViewer::UpdateFrame()
 {
 	if (m_displayMode == EngineDiagDisplayMode::FpsSummary)
 	{
-		String str = String::Format(_T("{0} - MainFPS:{1}/{2}"), m_originalMainWindowTitle, m_diagCore->GetMainFPS(), m_diagCore->GetMainFPSCapacity());
+		String str = String::format(_T("{0} - MainFPS:{1}/{2}"), m_originalMainWindowTitle, m_diagCore->GetMainFPS(), m_diagCore->GetMainFPSCapacity());
 		m_mainWindow->SetTitleText(str);
 	}
 }

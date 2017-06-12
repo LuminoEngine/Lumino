@@ -13,7 +13,7 @@ namespace tr
 //==============================================================================
 
 //------------------------------------------------------------------------------
-TaskScheduler* TaskScheduler::GetDefault()
+TaskScheduler* TaskScheduler::getDefault()
 {
 	static TaskScheduler instance(4);
 	return &instance;
@@ -24,12 +24,12 @@ TaskScheduler::TaskScheduler(int threadCount)
 	: m_semaphore(0, INT_MAX)
 	, m_endRequested(false)
 {
-	m_threadList.Reserve(threadCount);
+	m_threadList.reserve(threadCount);
 	for (int i = 0; i < threadCount; ++i)
 	{
 		auto thr = LN_NEW DelegateThread();
-		thr->Start(CreateDelegate(this, &TaskScheduler::ExecuteThread));
-		m_threadList.Add(thr);
+		thr->start(createDelegate(this, &TaskScheduler::ExecuteThread));
+		m_threadList.add(thr);
 	}
 }
 
@@ -52,7 +52,7 @@ TaskScheduler::~TaskScheduler()
 //------------------------------------------------------------------------------
 int TaskScheduler::GetMaxConcurrencyLevel() const
 {
-	return m_threadList.GetCount();
+	return m_threadList.getCount();
 }
 
 //------------------------------------------------------------------------------

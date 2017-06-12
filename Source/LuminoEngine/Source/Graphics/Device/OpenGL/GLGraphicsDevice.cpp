@@ -46,8 +46,8 @@ void GLGraphicsDevice::initialize(const ConfigData& configData)
 	m_mainWindow = configData.mainWindow;
 	m_deviceState = DeviceState_Enabled;
 
-	Logger::WriteLine("GLGraphicsDevice::Initialize");
-	Logger::WriteLine("    Requested OpenGL version : %d.%d", configData.openGLMajorVersion, configData.openGLMinorVersion);
+	Logger::writeLine("GLGraphicsDevice::Initialize");
+	Logger::writeLine("    Requested OpenGL version : %d.%d", configData.openGLMajorVersion, configData.openGLMinorVersion);
 
 	// create main context
 	m_mainContext = InitializeMainContext(configData);
@@ -59,18 +59,18 @@ void GLGraphicsDevice::initialize(const ConfigData& configData)
 	else
 		m_mainRenderingContext = m_mainContext;
 
-	// m_defaultSwapChain->Create() でシェーダとか作るので先にアクティブにしておく
+	// m_defaultSwapChain->create() でシェーダとか作るので先にアクティブにしておく
 	MakeCurrentContext(m_mainContext);
 
 	// create MainWindow SwapChain
 	RefPtr<GLContext> swapChainContext = m_mainContext;
 	if (configData.createSharedRenderingContext)
 		swapChainContext = CreateContext(m_mainWindow);
-	m_defaultSwapChain = RefPtr<GLSwapChain>::MakeRef();
+	m_defaultSwapChain = RefPtr<GLSwapChain>::makeRef();
 	m_defaultSwapChain->initialize(this, swapChainContext, m_mainWindow);
 
 	// create Renderer
-	m_renderer = RefPtr<GLRenderer>::MakeRef();
+	m_renderer = RefPtr<GLRenderer>::makeRef();
 }
 
 //------------------------------------------------------------------------------
@@ -79,10 +79,10 @@ void GLGraphicsDevice::Finalize()	// 仮想関数呼び出しが必要なので�
 	ScopedAccessContext lock(this);
 	GraphicsDeviceBase::Finalize();
 
-	m_renderer.SafeRelease();
-	m_defaultSwapChain.SafeRelease();
-	m_mainRenderingContext.SafeRelease();
-	m_mainContext.SafeRelease();
+	m_renderer.safeRelease();
+	m_defaultSwapChain.safeRelease();
+	m_mainRenderingContext.safeRelease();
+	m_mainContext.safeRelease();
 }
 
 //------------------------------------------------------------------------------
@@ -107,9 +107,9 @@ ISwapChain* GLGraphicsDevice::GetDefaultSwapChain()
 ISwapChain* GLGraphicsDevice::CreateSwapChain(PlatformWindow* window)
 {
 	RefPtr<GLContext> context = CreateContext(window);
-	auto ptr = RefPtr<GLSwapChain>::MakeRef();
+	auto ptr = RefPtr<GLSwapChain>::makeRef();
 	ptr->initialize(this, context, window);
-	return ptr.DetachMove();
+	return ptr.detachMove();
 }
 
 //------------------------------------------------------------------------------
@@ -117,23 +117,23 @@ RefPtr<IVertexDeclaration> GLGraphicsDevice::CreateVertexDeclarationImplement(co
 {
 	RefPtr<GLVertexDeclaration> obj(LN_NEW GLVertexDeclaration(), false);
 	obj->initialize(elements, elementsCount);
-	return RefPtr<IVertexDeclaration>::StaticCast(obj);
+	return RefPtr<IVertexDeclaration>::staticCast(obj);
 }
 
 //------------------------------------------------------------------------------
 RefPtr<IVertexBuffer> GLGraphicsDevice::CreateVertexBufferImplement(size_t bufferSize, const void* data, ResourceUsage usage)
 {
 	RefPtr<GLVertexBuffer> obj(LN_NEW GLVertexBuffer(), false);
-	obj->Create(bufferSize, data, usage);
-    return RefPtr<IVertexBuffer>::StaticCast(obj);
+	obj->create(bufferSize, data, usage);
+    return RefPtr<IVertexBuffer>::staticCast(obj);
 }
 
 //------------------------------------------------------------------------------
 RefPtr<IIndexBuffer> GLGraphicsDevice::CreateIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
 {
 	RefPtr<GLIndexBuffer> obj(LN_NEW GLIndexBuffer(), false);
-    obj->Create(indexCount, initialData, format, usage);
-    return RefPtr<IIndexBuffer>::StaticCast(obj);
+    obj->create(indexCount, initialData, format, usage);
+    return RefPtr<IIndexBuffer>::staticCast(obj);
 }
 
 //------------------------------------------------------------------------------
@@ -143,7 +143,7 @@ RefPtr<ITexture> GLGraphicsDevice::CreateTextureImplement(const SizeI& size, boo
 	if (initialData != nullptr) {
 		obj->SetSubData(PointI(0, 0), initialData, Utils::GetTextureFormatByteCount(format) * size.width * size.height, size);
     }
-    return RefPtr<ITexture>::StaticCast(obj);
+    return RefPtr<ITexture>::staticCast(obj);
 }
 
 //------------------------------------------------------------------------------
@@ -157,14 +157,14 @@ RefPtr<ITexture> GLGraphicsDevice::CreateTexture3DImplement(int width, int heigh
 RefPtr<ITexture> GLGraphicsDevice::CreateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format)
 {
 	RefPtr<GLRenderTargetTexture> obj(LN_NEW GLRenderTargetTexture(SizeI(width, height), format, mipLevels), false);
-    return RefPtr<ITexture>::StaticCast(obj);
+    return RefPtr<ITexture>::staticCast(obj);
 }
 
 //------------------------------------------------------------------------------
 RefPtr<ITexture> GLGraphicsDevice::CreateDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format)
 {
 	RefPtr<GLDepthBuffer> obj(LN_NEW GLDepthBuffer(SizeI(width, height), format), false);
-    return RefPtr<ITexture>::StaticCast(obj);
+    return RefPtr<ITexture>::staticCast(obj);
 }
 
 //------------------------------------------------------------------------------
@@ -327,7 +327,7 @@ void GLGraphicsDevice::SelectGLVersion(int requestMajor, int requestMinor)
 		}
 	}
 
-	Logger::WriteLine("Active OpenGL version : %d.%d", m_openGLMajorVersion, m_openGLMinorVersion);
+	Logger::writeLine("Active OpenGL version : %d.%d", m_openGLMajorVersion, m_openGLMinorVersion);
 }
 
 //------------------------------------------------------------------------------

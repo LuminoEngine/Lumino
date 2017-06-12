@@ -55,7 +55,7 @@ public:
 		errorCode = errorCode_;
 		line = line_;
 		col = col_;
-		message = String::Format(_T("{3}({0}, {1}): {2}"), line, col, message_, filePath);
+		message = String::format(_T("{3}({0}, {1}): {2}"), line, col, message_, filePath);
 	}
 	void AddError(XmlErrorCode errorCode_, int line_, int col_)	// TODO: 削除予定。エラーメッセージはちゃんとつけてあげよう。
 	{

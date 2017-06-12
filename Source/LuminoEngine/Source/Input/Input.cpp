@@ -62,7 +62,7 @@ void Input::ClearBindings()
 //==============================================================================
 // InputButton
 //==============================================================================
-const String InputButtons::Any = String::GetEmpty();
+const String InputButtons::Any = String::getEmpty();
 const String InputButtons::Left = _T("left");
 const String InputButtons::Right = _T("right");
 const String InputButtons::Up = _T("up");

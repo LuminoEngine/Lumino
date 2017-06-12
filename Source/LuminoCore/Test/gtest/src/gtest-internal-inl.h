@@ -1136,10 +1136,10 @@ class StreamingListener : public EmptyTestEventListener {
   static string UrlEncode(const char* str);
 
   StreamingListener(const string& host, const string& port)
-      : socket_writer_(new SocketWriter(host, port)) { Start(); }
+      : socket_writer_(new SocketWriter(host, port)) { start(); }
 
   explicit StreamingListener(AbstractSocketWriter* socket_writer)
-      : socket_writer_(socket_writer) { Start(); }
+      : socket_writer_(socket_writer) { start(); }
 
   void OnTestProgramStart(const UnitTest& /* unit_test */) {
     SendLn("event=TestProgramStart");
@@ -1201,7 +1201,7 @@ class StreamingListener : public EmptyTestEventListener {
 
   // Called at the start of streaming to notify the receiver what
   // protocol we are using.
-  void Start() { SendLn("gtest_streaming_protocol_version=1.0"); }
+  void start() { SendLn("gtest_streaming_protocol_version=1.0"); }
 
   string FormatBool(bool value) { return value ? "1" : "0"; }
 

@@ -39,32 +39,32 @@ static size_t GetCurrentDirectoryInternal(wchar_t* outPath)
 }
 
 #pragma push_macro("GetCurrentDirectory")
-#undef GetCurrentDirectory
+#undef getCurrentDirectory
 template<typename TChar>
-size_t DirectoryUtils::GetCurrentDirectory(TChar* outPath) { return LN_AFX_FUNCNAME(GetCurrentDirectory)(outPath); }
+size_t DirectoryUtils::getCurrentDirectory(TChar* outPath) { return LN_AFX_FUNCNAME(getCurrentDirectory)(outPath); }
 template<typename TChar>
-size_t DirectoryUtils::LN_AFX_FUNCNAME(GetCurrentDirectory)(TChar* outPath)
+size_t DirectoryUtils::LN_AFX_FUNCNAME(getCurrentDirectory)(TChar* outPath)
 {
 	return GetCurrentDirectoryInternal(outPath);
 }
-template size_t DirectoryUtils::GetCurrentDirectory<char>(char* outPath);
-template size_t DirectoryUtils::LN_AFX_FUNCNAME(GetCurrentDirectory)<char>(char* outPath);
-template size_t DirectoryUtils::GetCurrentDirectory<wchar_t>(wchar_t* outPath);
-template size_t DirectoryUtils::LN_AFX_FUNCNAME(GetCurrentDirectory)<wchar_t>(wchar_t* outPath);
+template size_t DirectoryUtils::getCurrentDirectory<char>(char* outPath);
+template size_t DirectoryUtils::LN_AFX_FUNCNAME(getCurrentDirectory)<char>(char* outPath);
+template size_t DirectoryUtils::getCurrentDirectory<wchar_t>(wchar_t* outPath);
+template size_t DirectoryUtils::LN_AFX_FUNCNAME(getCurrentDirectory)<wchar_t>(wchar_t* outPath);
 #pragma pop_macro("GetCurrentDirectory")
 
 //------------------------------------------------------------------------------
 #ifdef _WIN32
-List<String> DirectoryUtils::GetFiles(const TCHAR* drPath, const TCHAR* pattern)
+List<String> DirectoryUtils::getFiles(const TCHAR* drPath, const TCHAR* pattern)
 {
 	List<String> fileList;
 	PathName dirPathKey(drPath);
 	String dirPatternPath(dirPathKey.GetStrEndSeparator());
 	if (pattern) {
-		dirPathKey.Append(pattern);
+		dirPathKey.append(pattern);
 	}
 	else {
-		dirPathKey.Append(_T("*"));
+		dirPathKey.append(_T("*"));
 	}
 
     // 検索開始
@@ -90,7 +90,7 @@ List<String> DirectoryUtils::GetFiles(const TCHAR* drPath, const TCHAR* pattern)
         }
         else {
             // ファイルの場合
-			fileList.Add(dirPatternPath + fd.cFileName);
+			fileList.add(dirPatternPath + fd.cFileName);
         }
 
 		// 次のファイルを検索する
@@ -102,7 +102,7 @@ List<String> DirectoryUtils::GetFiles(const TCHAR* drPath, const TCHAR* pattern)
 }
 
 #else
-List<String> DirectoryUtils::GetFiles(const TCHAR* drPath, const TCHAR* pattern)
+List<String> DirectoryUtils::getFiles(const TCHAR* drPath, const TCHAR* pattern)
 {
 	LN_THROW(0, NotImplementedException);
 	// http://www.syuhitu.org/other/dir.html
@@ -134,23 +134,23 @@ GenericFileFinder<TChar>::~GenericFileFinder()
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-bool GenericFileFinder<TChar>::IsWorking() const
+bool GenericFileFinder<TChar>::isWorking() const
 {
-	return m_impl->IsWorking();
+	return m_impl->isWorking();
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-const GenericPathName<TChar>& GenericFileFinder<TChar>::GetCurrent() const
+const GenericPathName<TChar>& GenericFileFinder<TChar>::getCurrent() const
 {
-	return m_impl->GetCurrent();
+	return m_impl->getCurrent();
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-bool GenericFileFinder<TChar>::Next()
+bool GenericFileFinder<TChar>::next()
 {
-	return m_impl->Next();
+	return m_impl->next();
 }
 
 // テンプレートのインスタンス化

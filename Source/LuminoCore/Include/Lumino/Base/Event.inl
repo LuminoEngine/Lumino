@@ -8,12 +8,12 @@ public:
 public:
 	void AddHandler(const DelegateType& handler)
 	{
-		m_handlerList.Add(handler);
+		m_handlerList.add(handler);
 	}
 
 	void RemoveHandler(const DelegateType& handler)
 	{
-		m_handlerList.Remove(handler);
+		m_handlerList.remove(handler);
 	}
 
 	void clear()
@@ -21,17 +21,17 @@ public:
 		m_handlerList.clear();
 	}
 
-	void Raise(LN_EVENT_ARGS_DECL)
+	void raise(LN_EVENT_ARGS_DECL)
 	{
 		LN_FOREACH(DelegateType& d, m_handlerList)
 		{
-			d.Call(LN_EVENT_CALL_ARGS);
+			d.call(LN_EVENT_CALL_ARGS);
 		}
 	}
 
-	bool IsEmpty() const
+	bool isEmpty() const
 	{
-		return m_handlerList.IsEmpty();
+		return m_handlerList.isEmpty();
 	}
 
 	void operator += (const DelegateType& handler)
@@ -46,7 +46,7 @@ public:
 
 	void operator () (LN_EVENT_ARGS_DECL)
 	{
-		Raise(LN_EVENT_CALL_ARGS);
+		raise(LN_EVENT_CALL_ARGS);
 	}
 
 private:

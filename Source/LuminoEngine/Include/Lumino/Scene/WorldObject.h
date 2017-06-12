@@ -20,7 +20,7 @@ public:
 	Transform	transform;
 
 public:
-	static WorldObjectPtr Create();
+	static WorldObjectPtr create();
 
 	WorldObject();
 	virtual ~WorldObject();
@@ -36,7 +36,7 @@ public:
 
 	/** このオブジェクトの位置を位置を取得します。 */
 	LN_METHOD(Property)
-	const Vector3& GetPosition() const { return transform.position; }
+	const Vector3& getPosition() const { return transform.position; }
 
 	/** このオブジェクトの回転を設定します。 */
 	LN_METHOD(Property)

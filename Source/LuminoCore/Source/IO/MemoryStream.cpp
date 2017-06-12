@@ -10,21 +10,21 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-MemoryStreamPtr MemoryStream::Create()
+MemoryStreamPtr MemoryStream::create()
 {
 	MemoryStreamPtr ptr(LN_NEW MemoryStream(), false);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-MemoryStreamPtr MemoryStream::Create(void* buffer, size_t size)
+MemoryStreamPtr MemoryStream::create(void* buffer, size_t size)
 {
 	MemoryStreamPtr ptr(LN_NEW MemoryStream(buffer, size), false);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-MemoryStreamPtr MemoryStream::Create(const void* buffer, size_t size, bool copy)
+MemoryStreamPtr MemoryStream::create(const void* buffer, size_t size, bool copy)
 {
 	MemoryStreamPtr ptr(LN_NEW MemoryStream(buffer, size, copy), false);
 	return ptr;
@@ -124,19 +124,19 @@ void* MemoryStream::GetBuffer(size_t index)
 
 
 //------------------------------------------------------------------------------
-bool MemoryStream::CanRead() const
+bool MemoryStream::canRead() const
 {
 	return true;
 }
 
 //------------------------------------------------------------------------------
-bool MemoryStream::CanWrite() const
+bool MemoryStream::canWrite() const
 {
 	return (m_constfixedBuffer == NULL);
 }
 
 //------------------------------------------------------------------------------
-int64_t MemoryStream::GetLength() const
+int64_t MemoryStream::getLength() const
 {
 	if (m_fixedBuffer != NULL || m_constfixedBuffer != NULL) {
 		return m_fixedBufferSize;
@@ -147,13 +147,13 @@ int64_t MemoryStream::GetLength() const
 }
 
 //------------------------------------------------------------------------------
-int64_t MemoryStream::GetPosition() const
+int64_t MemoryStream::getPosition() const
 {
 	return m_seekPos;
 }
 
 //------------------------------------------------------------------------------
-size_t MemoryStream::Read(void* buffer, size_t byteCount)
+size_t MemoryStream::read(void* buffer, size_t byteCount)
 {
 	// const 固定長のバッファを使用している場合
 	if (m_constfixedBuffer != NULL)
@@ -183,7 +183,7 @@ size_t MemoryStream::Read(void* buffer, size_t byteCount)
 }
 
 //------------------------------------------------------------------------------
-void MemoryStream::Write(const void* data, size_t byteCount)
+void MemoryStream::write(const void* data, size_t byteCount)
 {
 	size_t newPos = m_seekPos + byteCount;
 
@@ -214,10 +214,10 @@ void MemoryStream::Write(const void* data, size_t byteCount)
 }
 
 //------------------------------------------------------------------------------
-void MemoryStream::Seek(int64_t offset, SeekOrigin origin)
+void MemoryStream::seek(int64_t offset, SeekOrigin origin)
 {
 	size_t s = (m_fixedBufferSize != 0) ? m_fixedBufferSize : m_buffer.size();
-	m_seekPos = (size_t)FileSystem::CalcSeekPoint(m_seekPos, s, offset, origin);
+	m_seekPos = (size_t)FileSystem::calcSeekPoint(m_seekPos, s, offset, origin);
 }
 
 LN_NAMESPACE_END

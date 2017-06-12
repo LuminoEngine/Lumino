@@ -70,7 +70,7 @@ void Component::attach(WorldObject* owner)
 }
 
 //------------------------------------------------------------------------------
-void Component::Detach()
+void Component::detach()
 {
 	OnDetaching();
 	m_owner = nullptr;
@@ -113,15 +113,15 @@ Transform::~Transform()
 }
 
 //------------------------------------------------------------------------------
-Vector3 Transform::GetFront() const
+Vector3 Transform::getFront() const
 {
-	return Vector3::Transform(Vector3::UnitZ, rotation.Get());
+	return Vector3::Transform(Vector3::UnitZ, rotation.get());
 }
 
 //------------------------------------------------------------------------------
 void Transform::Translate(const Vector3& translation)
 {
-	position = position.Get() + translation;
+	position = position.get() + translation;
 }
 
 //------------------------------------------------------------------------------
@@ -133,10 +133,10 @@ void Transform::Translate(float x, float y, float z)
 //------------------------------------------------------------------------------
 void Transform::LookAt(const Vector3& target, const Vector3& up)
 {
-	if (target == position.Get()) return;
+	if (target == position.get()) return;
 
 	// left-hand coord
-	Vector3 f = Vector3::Normalize(target - position.Get());
+	Vector3 f = Vector3::Normalize(target - position.get());
 	Vector3 s = Vector3::Normalize(Vector3::Cross(up, f));
 	Vector3 u = Vector3::Cross(f, s);
 	Matrix mat(

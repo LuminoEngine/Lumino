@@ -38,7 +38,7 @@ class RenderBulkData;
 	しかし、コマンドは RenderingCommandList::Alloc() が呼ばれると再配置される可能性がある。
 	そのため、コンストラクタ内で Alloc() すると this が不正なポインタになることがある。
 
-	対策として、初期化は static 関数である Create() で行うようにした。
+	対策として、初期化は static 関数である create() で行うようにした。
 	ユーティリティ関数を用意したものの、キャストなどで冗長になってしまうのはやむなし。
 	(急いで作ったから、もう少し改善の余地はあるかも)
 
@@ -189,9 +189,9 @@ public:
 		//RenderingCommand::CmdInfo cmd;
 		//cmd->m_commandList = this;
 		//cmd.m_dataHandle = t->m_dataHandle;
-		cmd->Create(args...);
+		cmd->create(args...);
 		LN_RC_TRACE("RenderingCommandList::AddCommand 0() s %p\n", this);
-		m_commandList.Add(h);
+		m_commandList.add(h);
 	}
 
 	template<typename T, typename... TArgs>
@@ -204,7 +204,7 @@ public:
 		t->m_commandList = this;
 		t->OnEnqueued(this);
 		LN_RC_TRACE("RenderingCommandList::EnqueueCommand 0() s %p\n", this);
-		m_commandList.Add(dataHandle);
+		m_commandList.add(dataHandle);
 	}
 	
 
@@ -216,7 +216,7 @@ public:
 		RenderingCommand::CmdInfo cmd;
 		cmd.m_commandList = this;
 		cmd.m_dataHandle = t->m_dataHandle;
-		T::Create(cmd, a1);
+		T::create(cmd, a1);
 		LN_RC_TRACE("RenderingCommandList::AddCommand 0() s %p\n", this);
 		m_commandList.Add(cmd.m_dataHandle);
 	}
@@ -227,7 +227,7 @@ public:
 		RenderingCommand::CmdInfo cmd;
 		cmd.m_commandList = this;
 		cmd.m_dataHandle = t->m_dataHandle;
-		T::Create(cmd, a1, a2);
+		T::create(cmd, a1, a2);
 		LN_RC_TRACE("RenderingCommandList::AddCommand 1() s %p\n", this);
 		m_commandList.Add(cmd.m_dataHandle);
 	}
@@ -238,7 +238,7 @@ public:
 		RenderingCommand::CmdInfo cmd;
 		cmd.m_commandList = this;
 		cmd.m_dataHandle = t->m_dataHandle;
-		T::Create(cmd, a1, a2, a3);
+		T::create(cmd, a1, a2, a3);
 		LN_RC_TRACE("RenderingCommandList::AddCommand 2() s %p\n", this);
 		m_commandList.Add(cmd.m_dataHandle);
 	}
@@ -249,7 +249,7 @@ public:
 		RenderingCommand::CmdInfo cmd;
 		cmd.m_commandList = this;
 		cmd.m_dataHandle = t->m_dataHandle;
-		T::Create(cmd, a1, a2, a3, a4);
+		T::create(cmd, a1, a2, a3, a4);
 		LN_RC_TRACE("RenderingCommandList::AddCommand 3() s %p\n", this);
 		m_commandList.Add(cmd.m_dataHandle);
 	}
@@ -260,7 +260,7 @@ public:
 		RenderingCommand::CmdInfo cmd;
 		cmd.m_commandList = this;
 		cmd.m_dataHandle = t->m_dataHandle;
-		T::Create(cmd, a1, a2, a3, a4, a5);
+		T::create(cmd, a1, a2, a3, a4, a5);
 		LN_RC_TRACE("RenderingCommandList::AddCommand 4() s %p\n", this);
 		m_commandList.Add(cmd.m_dataHandle);
 	}
@@ -271,7 +271,7 @@ public:
 		RenderingCommand::CmdInfo cmd;
 		cmd.m_commandList = this;
 		cmd.m_dataHandle = t->m_dataHandle;
-		T::Create(cmd, a1, a2, a3, a4, a5, a6);
+		T::create(cmd, a1, a2, a3, a4, a5, a6);
 		LN_RC_TRACE("RenderingCommandList::AddCommand 5() s %p\n", this);
 		m_commandList.Add(cmd.m_dataHandle);
 	}
@@ -282,7 +282,7 @@ public:
 		RenderingCommand::CmdInfo cmd;
 		cmd.m_commandList = this;
 		cmd.m_dataHandle = t->m_dataHandle;
-		T::Create(cmd, a1, a2, a3, a4, a5, a6, a7);
+		T::create(cmd, a1, a2, a3, a4, a5, a6, a7);
 		LN_RC_TRACE("RenderingCommandList::AddCommand 6() s %p\n", this);
 		m_commandList.Add(cmd.m_dataHandle);
 	}
@@ -293,7 +293,7 @@ public:
 		RenderingCommand::CmdInfo cmd;
 		cmd.m_commandList = this;
 		cmd.m_dataHandle = t->m_dataHandle;
-		T::Create(cmd, a1, a2, a3, a4, a5, a6, a7, a8);
+		T::create(cmd, a1, a2, a3, a4, a5, a6, a7, a8);
 		LN_RC_TRACE("RenderingCommandList::AddCommand 8() s %p\n", this);
 		m_commandList.Add(cmd.m_dataHandle);
 	}
@@ -307,7 +307,7 @@ public:
 		if (obj != NULL)	// テクスチャを解除したりするときは NULL が渡されてくる
 		{
 			obj->addRef();
-			m_markGCList.Add(obj);
+			m_markGCList.add(obj);
 		}
 	}
 
@@ -649,7 +649,7 @@ struct SetSamplerStateCommand : public RenderingCommand
 {
 	Driver::ITexture* m_targetTexture;
 	SamplerState m_state;
-	void Create(Driver::ITexture* texture, const SamplerState& state)
+	void create(Driver::ITexture* texture, const SamplerState& state)
 	{
 		m_targetTexture = texture;
 		m_state = state;
@@ -678,28 +678,28 @@ struct SetShaderVariableCommand : public RenderingCommand
 	ShaderVariableType			m_variableType;
 	Driver::IShaderVariable*	m_target;
 
-	void Create(Driver::IShaderVariable* target, bool value)
+	void create(Driver::IShaderVariable* target, bool value)
 	{
 		m_target = target;
 		m_variableType = ShaderVariableType_Bool;
 		BoolVal = value;
 		MarkGC(target);
 	}
-	void Create(Driver::IShaderVariable* target, int value)
+	void create(Driver::IShaderVariable* target, int value)
 	{
 		m_target = target;
 		m_variableType = ShaderVariableType_Int;
 		Int = value;
 		MarkGC(target);
 	}
-	void Create(Driver::IShaderVariable* target, float value)
+	void create(Driver::IShaderVariable* target, float value)
 	{
 		m_target = target;
 		m_variableType = ShaderVariableType_Float;
 		Float = value;
 		MarkGC(target);
 	}
-	void Create(Driver::IShaderVariable* target, const Vector4& value)
+	void create(Driver::IShaderVariable* target, const Vector4& value)
 	{
 		size_t tmpData = AllocExtData(sizeof(Vector4), &value);
 		m_target = target;
@@ -707,7 +707,7 @@ struct SetShaderVariableCommand : public RenderingCommand
 		VectorsBufferIndex = tmpData;
 		MarkGC(target);
 	}
-	void Create(Driver::IShaderVariable* target, const Vector4* vectors, size_t count)
+	void create(Driver::IShaderVariable* target, const Vector4* vectors, size_t count)
 	{
 		size_t tmpData = AllocExtData(sizeof(Vector4) * count, vectors);
 		m_target = target;
@@ -716,7 +716,7 @@ struct SetShaderVariableCommand : public RenderingCommand
 		VectorsBufferIndex = tmpData;
 		MarkGC(target);
 	}
-	void Create(Driver::IShaderVariable* target, const Matrix* matrices, size_t count)
+	void create(Driver::IShaderVariable* target, const Matrix* matrices, size_t count)
 	{
 		size_t tmpData = AllocExtData(sizeof(Matrix) * count, matrices);
 		m_target = target;
@@ -725,7 +725,7 @@ struct SetShaderVariableCommand : public RenderingCommand
 		VectorsBufferIndex = tmpData;
 		MarkGC(target);
 	}
-	void Create(Driver::IShaderVariable* target, const Matrix& value)
+	void create(Driver::IShaderVariable* target, const Matrix& value)
 	{
 		size_t tmpData = AllocExtData(sizeof(Matrix), &value);
 		m_target = target;
@@ -733,7 +733,7 @@ struct SetShaderVariableCommand : public RenderingCommand
 		VectorsBufferIndex = tmpData;
 		MarkGC(target);
 	}
-	void Create(Driver::IShaderVariable* target, Driver::ITexture* value)
+	void create(Driver::IShaderVariable* target, Driver::ITexture* value)
 	{
 		m_target = target;
 		m_variableType = ShaderVariableType_DeviceTexture;
@@ -750,7 +750,7 @@ struct SetShaderVariableCommand : public RenderingCommand
 			m_target->SetBool(BoolVal);
 			break;
 		case ShaderVariableType_Int:
-			m_target->SetInt(Int);
+			m_target->setInt(Int);
 			break;
 		case ShaderVariableType_Float:
 			m_target->SetFloat(Float);
@@ -781,7 +781,7 @@ struct SetShaderVariableCommand : public RenderingCommand
 struct ApplyShaderPassCommand : public RenderingCommand
 {
 	Driver::IShaderPass* m_pass;
-	void Create(Driver::IShaderPass* pass)
+	void create(Driver::IShaderPass* pass)
 	{
 		m_pass = pass;
 		MarkGC(pass);
@@ -794,7 +794,7 @@ struct PresentCommand : public RenderingCommand
 {
 	SwapChain* m_targetSwapChain;
 
-	void Create(SwapChain* swapChain)
+	void create(SwapChain* swapChain)
 	{
 		m_targetSwapChain = swapChain;
 		MarkGC(swapChain);
@@ -816,7 +816,7 @@ struct SetSubDataTextureCommand : public RenderingCommand
 	SizeI					m_bmpSize;
 	// ↑エラーチェックは Texture で行い、フォーマットは既に決まっていることを前提とするため、コマンドに乗せるデータはこれだけでOK。
 
-	void Create(Driver::ITexture* texture, const PointI& offset, const void* data, size_t dataSize, const SizeI& bmpSize)
+	void create(Driver::ITexture* texture, const PointI& offset, const void* data, size_t dataSize, const SizeI& bmpSize)
 	{
 		m_targetTexture = texture;
 		m_offset = offset;
@@ -836,7 +836,7 @@ struct SetSubDataTextureCommand : public RenderingCommand
 struct ReadLockTextureCommand : public RenderingCommand
 {
 	Texture*	m_targetTexture;
-	void Create(Texture* texture)
+	void create(Texture* texture)
 	{
 		m_targetTexture = texture;
 		MarkGC(texture);
@@ -853,7 +853,7 @@ struct ReadLockTextureCommand : public RenderingCommand
 struct ReadUnlockTextureCommand : public RenderingCommand
 {
 	Texture*	m_targetTexture;
-	void Create(Texture* texture)
+	void create(Texture* texture)
 	{
 		m_targetTexture = texture;
 		MarkGC(texture);

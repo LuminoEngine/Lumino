@@ -41,7 +41,7 @@ public:
 	{
 		EffectEngine*	m_engine;
 		tr::Task* m_updateTask;
-		void Create(EffectEngine* engine, tr::Task* updateTask)
+		void create(EffectEngine* engine, tr::Task* updateTask)
 		{
 			m_engine = engine;
 			m_updateTask = updateTask;

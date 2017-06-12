@@ -69,7 +69,7 @@ protected:
 	virtual void OnPropertyChanged(PropertyChangedEventArgs* e);
 
 	template<typename... TArgs>
-	void RaiseDelegateEvent(DelegateEvent<TArgs...>& ev, TArgs... args) { ev.Raise(args...); }
+	void RaiseDelegateEvent(DelegateEvent<TArgs...>& ev, TArgs... args) { ev.raise(args...); }
 
 private:
 	void SetPropertyValueInternal(const PropertyInfo* prop, const Variant& value, bool reset, PropertySetSource source);
@@ -88,7 +88,7 @@ private:
 LN_INTERNAL_ACCESS:
 
 	template<class T, typename... TArgs>
-	static RefPtr<T> MakeRef(TArgs... args)
+	static RefPtr<T> makeRef(TArgs... args)
 	{
 		auto ptr = RefPtr<T>(LN_NEW T(), false);
 		ptr->initialize(args...);
@@ -220,32 +220,32 @@ public:
 	}
 
 protected:
-	virtual void InsertItem(int index, const value_type& item) override
+	virtual void insertItem(int index, const value_type& item) override
 	{
-		Collection<T>::InsertItem(index, item);
+		Collection<T>::insertItem(index, item);
 		LN_SAFE_ADDREF(item);
 	}
-	virtual void ClearItems() override
+	virtual void clearItems() override
 	{
 		for (auto* item : *this) {
 			LN_SAFE_RELEASE(item);
 		}
-		Collection<T>::ClearItems();
+		Collection<T>::clearItems();
 	}
-	virtual void RemoveItem(int index) override
+	virtual void removeItem(int index) override
 	{
-		if (Collection<T>::GetAt(index) != nullptr) {
-			Collection<T>::GetAt(index)->release();
+		if (Collection<T>::getAt(index) != nullptr) {
+			Collection<T>::getAt(index)->release();
 		}
-		Collection<T>::RemoveItem(index);
+		Collection<T>::removeItem(index);
 	}
-	virtual void SetItem(int index, const value_type& item) override
+	virtual void setItem(int index, const value_type& item) override
 	{
 		LN_SAFE_ADDREF(item);
-		if (Collection<T>::GetAt(index) != nullptr) {
-			Collection<T>::GetAt(index)->release();
+		if (Collection<T>::getAt(index) != nullptr) {
+			Collection<T>::getAt(index)->release();
 		}
-		Collection<T>::SetItem(index, item);
+		Collection<T>::setItem(index, item);
 	}
 
 private:

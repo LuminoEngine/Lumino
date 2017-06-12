@@ -19,7 +19,7 @@ public:
 		@param[in]	filePath	: エフェクトファイル
 		@details	対応しているエフェクトファイルは Effekseer のファイル (.efk) です。
 	*/
-	static VisualEffectPtr Create(const StringRef& filePath);
+	static VisualEffectPtr create(const StringRef& filePath);
 
 public:
 

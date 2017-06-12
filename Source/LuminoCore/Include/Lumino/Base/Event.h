@@ -16,7 +16,7 @@ struct EventConnectionDataBase
 
 struct EventInternalDataBase
 {
-	virtual void OnDisconnect(EventConnectionDataBase* conn) = 0;
+	virtual void onDisconnect(EventConnectionDataBase* conn) = 0;
 };
 
 } // namespace detail
@@ -40,7 +40,7 @@ public:
 	{
 		if (m_internalData != nullptr)
 		{
-			m_internalData->OnDisconnect(m_connectionData);
+			m_internalData->onDisconnect(m_connectionData);
 		}
 	}
 
@@ -81,9 +81,9 @@ public:
 		clear();
 	}
 
-	EventConnection Connect(const DelegateType& handler)
+	EventConnection connect(const DelegateType& handler)
 	{
-		return ConnectInternal(handler);
+		return connectInternal(handler);
 	}
 
 	//EventConnection Connect(const std::function<TRet(TArgs...)>& handler)
@@ -96,18 +96,18 @@ public:
 		m_internalData->connectionDataList.clear();
 	}
 
-	bool IsEmpty() const
+	bool isEmpty() const
 	{
-		return m_internalData->connectionDataList.IsEmpty();
+		return m_internalData->connectionDataList.isEmpty();
 	}
 
-	void Raise(TArgs... args)
+	void raise(TArgs... args)
 	{
-		if (!IsEmpty())
+		if (!isEmpty())
 		{
 			for (auto& data : m_internalData->connectionDataList)
 			{
-				if (data->m_active) data->handler.Call(args...);
+				if (data->m_active) data->handler.call(args...);
 			}
 		}
 	}
@@ -115,17 +115,17 @@ public:
 
 	EventConnection operator += (const DelegateType& handler)
 	{
-		return ConnectInternal(handler);
+		return connectInternal(handler);
 	}
 
 	EventConnection operator += (const std::function<TRet(TArgs...)>& handler)
 	{
-		return ConnectInternal(handler);
+		return connectInternal(handler);
 	}
 
 	void operator () (TArgs... args)
 	{
-		Raise(args...);
+		raise(args...);
 	}
 
 private:
@@ -138,7 +138,7 @@ private:
 	{
 		List<std::shared_ptr<EventConnectionData>>	connectionDataList;
 
-		virtual void OnDisconnect(detail::EventConnectionDataBase* conn)
+		virtual void onDisconnect(detail::EventConnectionDataBase* conn)
 		{
 			// check memory not released
 			bool released = true;
@@ -153,14 +153,14 @@ private:
 		}
 	};
 
-	EventConnection ConnectInternal(const DelegateType& handler)
+	EventConnection connectInternal(const DelegateType& handler)
 	{
-		auto connectionData = RequestFreeConnectionData();
+		auto connectionData = requestFreeConnectionData();
 		connectionData->handler = handler;
 		return EventConnection(m_internalData, connectionData.get());
 	}
 
-	std::shared_ptr<EventConnectionData> RequestFreeConnectionData()
+	std::shared_ptr<EventConnectionData> requestFreeConnectionData()
 	{
 		for (auto& data : m_internalData->connectionDataList)
 		{
@@ -168,7 +168,7 @@ private:
 		}
 
 		auto newData = std::make_shared<EventConnectionData>();
-		m_internalData->connectionDataList.Add(newData);
+		m_internalData->connectionDataList.add(newData);
 		return newData;
 	}
 

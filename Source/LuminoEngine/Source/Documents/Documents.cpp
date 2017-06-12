@@ -31,18 +31,18 @@ void Document::initialize()
 }
 
 //------------------------------------------------------------------------------
-void Document::SetText(const StringRef& text)
+void Document::setText(const StringRef& text)
 {
 	m_blockList.clear();
 
-	Replace(0, 0, text);
+	replace(0, 0, text);
 }
 
 //------------------------------------------------------------------------------
-void Document::Replace(int offset, int length, const StringRef& text)
+void Document::replace(int offset, int length, const StringRef& text)
 {
 	// UTF32 へ変換
-	const ByteBuffer& utf32Buf = m_manager->GetTCharToUTF32Converter()->Convert(text.GetBegin(), sizeof(TCHAR) * text.GetLength());
+	const ByteBuffer& utf32Buf = m_manager->GetTCharToUTF32Converter()->Convert(text.getBegin(), sizeof(TCHAR) * text.getLength());
 	int len = utf32Buf.getSize() / sizeof(UTF32);
 	ReplaceInternal(offset, length, (const UTF32*)utf32Buf.getConstData(), len);
 }
@@ -59,23 +59,23 @@ void Document::ReplaceInternal(int offset, int length, const UTF32* text, int le
 		const UTF32* end = pos + len;
 		int nlIndex = 0;
 		int nlCount = 0;
-		while (StringTraits::IndexOfNewLineSequence(pos, end, &nlIndex, &nlCount))
+		while (StringTraits::indexOfNewLineSequence(pos, end, &nlIndex, &nlCount))
 		{
-			inlines.Add(NewObject<Run>(pos, nlIndex).Get());
-			inlines.Add(NewObject<LineBreak>().Get());
+			inlines.add(NewObject<Run>(pos, nlIndex).get());
+			inlines.add(NewObject<LineBreak>().get());
 			pos += (nlIndex + nlCount);	// 改行文字の次の文字を指す
 		}
 		if (pos != end)
 		{
-			inlines.Add(NewObject<Run>(pos, end - pos).Get());
+			inlines.add(NewObject<Run>(pos, end - pos).get());
 		}
 	}
 
 	// TODO: Insert 先を割る
 	int localInsertPoint = 0;
-	LN_ASSERT(m_blockList.IsEmpty());	// TODO
+	LN_ASSERT(m_blockList.isEmpty());	// TODO
 	RefPtr<Block> parentBlock = NewObject<Paragraph>();
-	m_blockList.Add(parentBlock);
+	m_blockList.add(parentBlock);
 	parentBlock->SetParentContent(this);
 	IncreaseRevision();
 
@@ -139,7 +139,7 @@ TextElement::~TextElement()
 void TextElement::initialize()
 {
 	m_manager = ln::detail::DocumentsManager::GetInstance();
-	m_fontData.Family = String::GetEmpty();
+	m_fontData.Family = String::getEmpty();
 	m_fontData.Size = 20;
 	m_fontData.IsBold = false;
 	m_fontData.IsItalic = false;
@@ -193,7 +193,7 @@ void Block::initialize()
 void Block::AddInline(Inline* inl)
 {
 	if (LN_CHECK_ARG(inl != nullptr)) return;
-	m_inlines.Add(inl);
+	m_inlines.add(inl);
 	inl->SetParentContent(this);
 	IncreaseRevision();
 }
@@ -201,7 +201,7 @@ void Block::AddInline(Inline* inl)
 //------------------------------------------------------------------------------
 void Block::InsertInlines(int index, const List<RefPtr<Inline>>& inlines)
 {
-	m_inlines.InsertRange(index, inlines);
+	m_inlines.insertRange(index, inlines);
 	for (Inline* inl : inlines)
 	{
 		inl->SetParentContent(this);
@@ -291,7 +291,7 @@ void Run::initialize(const UTF32* str, int len)
 	initialize();
 
 	m_text.clear();
-	m_text.Append(str, len/*GetManager()->GetTCharToUTF32Converter()->Convert(str, len)*/);
+	m_text.append(str, len/*GetManager()->GetTCharToUTF32Converter()->Convert(str, len)*/);
 	IncreaseRevision();
 }
 
@@ -479,11 +479,11 @@ void VisualInline::MeasureLayout(const Size& availableSize, VisualBlock* rootBlo
 			//if (m_glyphRun == nullptr)
 			{
 				auto frag = NewObject<VisualTextFragment>();	// TODO: キャッシュしたい
-				frag->m_glyphRun = RefPtr<GlyphRun>::MakeRef();
+				frag->m_glyphRun = RefPtr<GlyphRun>::makeRef();
 				frag->m_glyphRun->initialize(ln::detail::EngineDomain::GetGraphicsManager());
 
-				auto* run = static_cast<Run*>(m_inline.Get());
-				frag->m_glyphRun->SetText(run->GetText(), run->GetLength());
+				auto* run = static_cast<Run*>(m_inline.get());
+				frag->m_glyphRun->setText(run->getText(), run->getLength());
 
 				rootBlock->AddVisualFragment(frag);
 			}
@@ -591,7 +591,7 @@ void VisualBlock::MeasureLayout(const Size& availableSize)
 
 		for (auto& inl : m_block->GetInlines())
 		{
-			m_visualInlines.Add(NewObject<VisualInline>(inl));
+			m_visualInlines.add(NewObject<VisualInline>(inl));
 		}
 
 		SetThisRevision(m_block->GetThisRevision());
@@ -665,7 +665,7 @@ void DocumentView::MeasureLayout(const Size& availableSize)
 
 		for (auto& block : m_document->GetBlocks())
 		{
-			m_visualBlocks.Add(NewObject<VisualBlock>(block));
+			m_visualBlocks.add(NewObject<VisualBlock>(block));
 		}
 
 		SetThisRevision(m_document->GetThisRevision());

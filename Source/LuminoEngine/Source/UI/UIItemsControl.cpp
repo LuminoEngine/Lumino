@@ -27,7 +27,7 @@ UIItemsControl::~UIItemsControl()
 void UIItemsControl::initialize(detail::UIManager* manager)
 {
 	UIControl::initialize(manager);
-	m_items = RefPtr<UIElementCollection>::MakeRef(this);
+	m_items = RefPtr<UIElementCollection>::makeRef(this);
 
 	auto panel = NewObject<UILayoutPanel>(manager);
 	SetLayoutPanel(panel);

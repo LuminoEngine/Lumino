@@ -6,8 +6,8 @@ class Test_Scene_SpriteParticle : public ::testing::Test
 protected:
 	virtual void SetUp()
 	{
-		material = Material::Create();
-		material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("TestData/Particle1.png")));
+		material = Material::create();
+		material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("TestData/Particle1.png")));
 		material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 
 		oldCamPos = Camera::GetMain3DCamera()->GetPosition();
@@ -26,10 +26,10 @@ protected:
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_SpriteParticle, Default)
 {
-	auto particleModel1 = SpriteParticleModel::Create();
+	auto particleModel1 = SpriteParticleModel::create();
 	particleModel1->SetMaterial(material);
 
-	auto particle1 = ParticleEmitter3D::Create(particleModel1);
+	auto particle1 = ParticleEmitter3D::create(particleModel1);
 	particle1->SetBlendMode(BlendMode::Add);
 
 	// Create 直後、フェードイン中
@@ -57,13 +57,13 @@ TEST_F(Test_Scene_SpriteParticle, Default)
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_SpriteParticle, PositionVelocityAccel)
 {
-	auto m = SpriteParticleModel::Create();
+	auto m = SpriteParticleModel::create();
 	m->SetSpawnRate(10);
 	m->SetLifeTime(10.0f);
 	m->SetPositionRange(Vector3(-10, 0, 0), Vector3(10, 0, 0));
 	m->SetVelocity(Vector3(0, 5, 0));
 	m->SetAccel(Vector3(0, -8, 0));
-	m->SetTexture(Texture2D::Create(LN_LOCALFILE("TestData/Particle1.png")));
+	m->SetTexture(Texture2D::create(LN_LOCALFILE("TestData/Particle1.png")));
 	m->SetRandomSeed(12345);
 	auto particle1 = SpriteParticle::Create3D(m);
 
@@ -77,13 +77,13 @@ TEST_F(Test_Scene_SpriteParticle, PositionVelocityAccel)
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_SpriteParticle, RandomBaseValue)
 {
-	auto m = SpriteParticleModel::Create();
+	auto m = SpriteParticleModel::create();
 	m->SetSpawnRate(10);
 	m->SetLifeTime(10.0f);
 	m->SetRandomBaseValueRange(0.0f, 1.0f);
 	m->SetPositionRange(Vector3(-10, 0, 0), Vector3(10, 0, 0), ParticleRandomSource::ByBaseValue);
 	m->SetSizeRange(0.5f, 3.0f, ParticleRandomSource::ByBaseValue);
-	m->SetTexture(Texture2D::Create(LN_LOCALFILE("TestData/Particle1.png")));
+	m->SetTexture(Texture2D::create(LN_LOCALFILE("TestData/Particle1.png")));
 	m->SetRandomSeed(12345);
 	auto particle1 = SpriteParticle::Create3D(m);
 
@@ -95,10 +95,10 @@ TEST_F(Test_Scene_SpriteParticle, RandomBaseValue)
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_SpriteParticle, Billboard)
 {
-	auto m = SpriteParticleModel::Create();
+	auto m = SpriteParticleModel::create();
 	m->SetLifeTime(10.0f);
 	m->SetSize(10.0f);
-	m->SetTexture(Texture2D::Create(LN_LOCALFILE("TestData/Particle1.png")));
+	m->SetTexture(Texture2D::create(LN_LOCALFILE("TestData/Particle1.png")));
 	auto particle1 = SpriteParticle::Create3D(m);
 
 	// 斜め上から見下ろす
@@ -112,12 +112,12 @@ TEST_F(Test_Scene_SpriteParticle, Billboard)
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_SpriteParticle, MovementDirection)
 {
-	auto m = SpriteParticleModel::Create();
+	auto m = SpriteParticleModel::create();
 	m->SetLifeTime(10.0f);
 	m->SetSize(10.0f);
 	m->SetVelocity(Vector3(0.0, 0, 2.0));
 	m->m_particleDirection = ParticleDirection::MovementDirection;
-	m->SetTexture(Texture2D::Create(LN_LOCALFILE("TestData/Particle2.png")));
+	m->SetTexture(Texture2D::create(LN_LOCALFILE("TestData/Particle2.png")));
 	auto particle1 = SpriteParticle::Create3D(m);
 
 	// 斜め上から見下ろす
@@ -132,11 +132,11 @@ TEST_F(Test_Scene_SpriteParticle, MovementDirection)
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_SpriteParticle, MaxParticles)
 {
-	auto m = SpriteParticleModel::Create();
+	auto m = SpriteParticleModel::create();
 	m->SetSpawnRate(10);
 	m->SetLifeTime(10.0f);
 	m->SetPositionRange(Vector3(-10, 0, 0), Vector3(10, 0, 0));
-	m->SetTexture(Texture2D::Create(LN_LOCALFILE("TestData/Particle1.png")));
+	m->SetTexture(Texture2D::create(LN_LOCALFILE("TestData/Particle1.png")));
 	m->SetRandomSeed(12345);
 	m->SetMaxParticles(1);
 	auto particle1 = SpriteParticle::Create3D(m);

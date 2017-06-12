@@ -47,10 +47,10 @@ bool FontData::operator < (const FontData& right)
 }
 
 //------------------------------------------------------------------------------
-uint64_t FontData::CalcHash() const
+uint64_t FontData::calcHash() const
 {
 	uint32_t v[2];
-	v[0] = Hash::CalcHash(Family.c_str());
+	v[0] = Hash::calcHash(Family.c_str());
 
 	uint8_t* v2 = (uint8_t*)&v[1];
 	v2[0] = Size;
@@ -127,7 +127,7 @@ void FontManager::initialize(FileManager* fileManager, GraphicsManager* graphics
 	LN_THROW(err == 0, InvalidOperationException, "failed initialize font image cache : %d\n", err);
 
 	// デフォルトフォント
-	m_defaultFont = RefPtr<Font>::MakeRef();
+	m_defaultFont = RefPtr<Font>::makeRef();
 	m_defaultFont->initialize(m_graphicsManager, nullptr);
 	m_defaultFont->SetFamily(m_defaultFontName);
 	m_defaultFont->SetAntiAlias(true);
@@ -140,13 +140,13 @@ void FontManager::initialize(FileManager* fileManager, GraphicsManager* graphics
 	//m_defaultFont = RawFont::CreateBuiltInBitmapFontInternal(this, 7);
 
 	// キャッシュ
-	m_rawFontCache = RefPtr<CacheManager>::MakeRef(32, 0);
+	m_rawFontCache = RefPtr<CacheManager>::makeRef(32, 0);
 
 	// 組み込みフォント
 	m_builtinFontList.resize(1);
 	{
 		RefPtr<RawFont> raw = RawFont::CreateBuiltInBitmapFontInternal2(7);
-		RefPtr<Font> font = RefPtr<Font>::MakeRef();
+		RefPtr<Font> font = RefPtr<Font>::makeRef();
 		font->initialize(m_graphicsManager, raw);
 		m_builtinFontList[(int)BuiltinFontSize::XXSmall] = font;
 	}
@@ -166,8 +166,8 @@ void FontManager::Dispose()
 	//m_defaultRawFont = nullptr;
 	m_defaultFont = nullptr;
 
-	m_rawFontCache->FinalizeCache();
-	m_defaultRawFont.SafeRelease();
+	m_rawFontCache->finalizeCache();
+	m_defaultRawFont.safeRelease();
 
 	// 登録したTTFファイルのメモリバッファをすべて解放
 	//TTFDataEntryMap::iterator itr = m_ttfDataEntryMap.begin();
@@ -197,8 +197,8 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 {
 	// ファイルから全てのデータを読み込む
 	RefPtr<Stream> file(m_fileManager->CreateFileStream(fontFilePath), false);
-	ByteBuffer buffer((size_t)file->GetLength(), false);
-	file->Read(buffer.getData(), buffer.getSize());
+	ByteBuffer buffer((size_t)file->getLength(), false);
+	file->read(buffer.getData(), buffer.getSize());
 
 	// Face 作成 (ファミリ名・Face 数を調べるため。すぐ削除する)
 	FT_Face face;
@@ -214,7 +214,7 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 	if (face->num_faces == 1)
 	{
 		String familyName(face->family_name);
-		uint32_t key = Hash::CalcHash(familyName.c_str());
+		uint32_t key = Hash::calcHash(familyName.c_str());
 		if (m_ttfDataEntryMap.find(key) == m_ttfDataEntryMap.end())
 		{
 			TTFDataEntry e;
@@ -223,7 +223,7 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 			e.CollectionIndex = 0;
 			m_ttfDataEntryMap.insert(TTFDataEntryPair(key, e));
 
-			ln::Logger::WriteLine("Registered font file. [%s]", face->family_name);
+			ln::Logger::writeLine("Registered font file. [%s]", face->family_name);
 
 			//// 初回登録の場合はデフォルトフォント名として登録する
 			//if (m_ttfDataEntryMap.size() == 1) {
@@ -251,7 +251,7 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 			LN_THROW(err == FT_Err_Ok, InvalidOperationException, "failed FT_New_Memory_Face : %d\n", err);
 
 			String familyName(face->family_name);
-			uint32_t key = Hash::CalcHash(familyName.c_str());
+			uint32_t key = Hash::calcHash(familyName.c_str());
 			if (m_ttfDataEntryMap.find(key) == m_ttfDataEntryMap.end())
 			{
 				TTFDataEntry e;
@@ -260,7 +260,7 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 				e.CollectionIndex = i;
 				m_ttfDataEntryMap.insert(TTFDataEntryPair(key, e));
 
-				ln::Logger::WriteLine("Registered font file. [%s]", face->family_name);
+				ln::Logger::writeLine("Registered font file. [%s]", face->family_name);
 
 				//// 初回登録の場合はデフォルトフォント名として登録する
 				//if (m_ttfDataEntryMap.size() == 1) {
@@ -291,12 +291,12 @@ FontPtr FontManager::GetBuiltinFont(BuiltinFontSize size) const
 //------------------------------------------------------------------------------
 RawFontPtr FontManager::LookupRawFont(const detail::FontData& keyData)
 {
-	CacheKey key(keyData.CalcHash());
-	RawFont* ptr = static_cast<RawFont*>(m_rawFontCache->FindObjectAddRef(key));
+	CacheKey key(keyData.calcHash());
+	RawFont* ptr = static_cast<RawFont*>(m_rawFontCache->findObjectAddRef(key));
 	if (ptr != nullptr) return RawFontPtr(ptr, false);	// found
 
 	RawFontPtr ref;
-	if (keyData.Family.IsEmpty())
+	if (keyData.Family.isEmpty())
 	{
 		ref = GetDefaultRawFont()->copy();
 	}
@@ -312,8 +312,8 @@ RawFontPtr FontManager::LookupRawFont(const detail::FontData& keyData)
 	ref->SetItalic(keyData.IsItalic);
 	ref->SetAntiAlias(keyData.IsAntiAlias);
 
-	m_rawFontCache->RegisterCacheObject(key, ref);
-	return RawFontPtr::StaticCast(ref);
+	m_rawFontCache->registerCacheObject(key, ref);
+	return RawFontPtr::staticCast(ref);
 }
 
 //------------------------------------------------------------------------------

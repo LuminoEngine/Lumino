@@ -11,9 +11,9 @@ LN_NAMESPACE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TileMapModel, tr::ReflectionObject);
 
 //------------------------------------------------------------------------------
-TileMapModelPtr TileMapModel::Create()
+TileMapModelPtr TileMapModel::create()
 {
-	auto ptr = TileMapModelPtr::MakeRef();
+	auto ptr = TileMapModelPtr::makeRef();
 	return ptr;
 }
 

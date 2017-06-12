@@ -20,10 +20,10 @@ class UITextBox
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
-	static UITextBoxPtr Create();
+	static UITextBoxPtr create();
 
 public:
-	void SetText(const StringRef& text);
+	void setText(const StringRef& text);
 
 protected:
 	virtual void OnMouseDown(UIMouseEventArgs* e) override;
@@ -56,10 +56,10 @@ class UITextField
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static RefPtr<UITextField> Create();
+	static RefPtr<UITextField> create();
 
 public:
-	void SetText(const StringRef& text);
+	void setText(const StringRef& text);
 
 
 protected:

@@ -48,7 +48,7 @@ RuntimeResource::~RuntimeResource()
 }
 
 //------------------------------------------------------------------------------
-void RuntimeResource::Finalize_()
+void RuntimeResource::finalize_()
 {
 	Dispose();
 }
@@ -154,10 +154,10 @@ EngineManager* EngineManager::GetInstance(EngineManager* priority)
 }
 
 //------------------------------------------------------------------------------
-EngineManager* EngineManager::Create(const detail::EngineSettings& configData)
+EngineManager* EngineManager::create(const detail::EngineSettings& configData)
 {
 	RefPtr<EngineManager> app(LN_NEW EngineManager(configData), false);
-	app.SafeAddRef();
+	app.safeAddRef();
 	return app;
 }
 
@@ -210,8 +210,8 @@ EngineManager::~EngineManager()
 		m_uiManager->ReleaseGameModeMainFrame();
 	}
 
-	m_defaultWorld2D.SafeRelease();
-	m_defaultWorld3D.SafeRelease();
+	m_defaultWorld2D.safeRelease();
+	m_defaultWorld3D.safeRelease();
 
 	LN_SAFE_RELEASE(m_diagViewer);
 
@@ -258,7 +258,7 @@ EngineManager::~EngineManager()
 
 	if (m_physicsManager != nullptr) {
 		m_physicsManager->Finalize();
-		m_physicsManager.SafeRelease();
+		m_physicsManager.safeRelease();
 		//LN_SAFE_RELEASE(m_physicsManager);
 	}
 	if (m_audioManager != nullptr) {
@@ -353,7 +353,7 @@ void EngineManager::InitializeFileManager()
 //------------------------------------------------------------------------------
 void EngineManager::InitializePlatformManager()
 {
-	if (m_platformManager.IsNull())
+	if (m_platformManager.isNull())
 	{
 		InitializeCommon();
 
@@ -421,10 +421,10 @@ void EngineManager::InitializeAudioManager()
 //------------------------------------------------------------------------------
 void EngineManager::InitializePhysicsManager()
 {
-	if (m_physicsManager.IsNull())
+	if (m_physicsManager.isNull())
 	{
 		InitializeCommon();
-		m_physicsManager = RefPtr<detail::PhysicsManager>::MakeRef();
+		m_physicsManager = RefPtr<detail::PhysicsManager>::makeRef();
 		m_physicsManager->initialize();
 	}
 }
@@ -595,7 +595,7 @@ bool EngineManager::UpdateUnitily()
 //------------------------------------------------------------------------------
 void EngineManager::UpdateFrame()
 {
-	m_fpsController.Process();
+	m_fpsController.process();
 
 	Profiler::Instance.SetMainFPS(m_fpsController.GetFps());
 	Profiler::Instance.SetMainFPSCapacity(m_fpsController.GetCapacityFps());
@@ -801,7 +801,7 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 	switch (e.type)
 	{
 	case PlatformEventType::Quit:	// アプリ終了要求
-	case PlatformEventType::Close:	// ウィンドウが閉じられようとしている
+	case PlatformEventType::close:	// ウィンドウが閉じられようとしている
 		break;
 
 	case PlatformEventType::MouseDown:		// マウスボタンが押された

@@ -44,7 +44,7 @@ TEST_F(Test_Vector3, Basic)
 	}
 	// this->GetLength / GetLengthSquared
 	{
-		ASSERT_NEAR(3.741657, sample1.GetLength(), LN_FLOAT_THRESHOLD);
+		ASSERT_NEAR(3.741657, sample1.getLength(), LN_FLOAT_THRESHOLD);
 		ASSERT_NEAR(14.000000, sample1.GetLengthSquared(), LN_FLOAT_THRESHOLD);
 	}
 	// this->Normalize
@@ -89,8 +89,8 @@ TEST_F(Test_Vector3, Basic)
 	{
 		Vector3 v1(1, 2, 3);
 		Vector3 v2(4, 5, 6);
-		ASSERT_NEAR((v2 - v1).GetLength(), Vector3::Distance(v1, v2), LN_FLOAT_THRESHOLD);
-		ASSERT_NEAR((v2 - v1).GetLength(), Vector3::Distance(v2, v1), LN_FLOAT_THRESHOLD);
+		ASSERT_NEAR((v2 - v1).getLength(), Vector3::Distance(v1, v2), LN_FLOAT_THRESHOLD);
+		ASSERT_NEAR((v2 - v1).getLength(), Vector3::Distance(v2, v1), LN_FLOAT_THRESHOLD);
 	}
 	// Vector3::DistanceSquared
 	{

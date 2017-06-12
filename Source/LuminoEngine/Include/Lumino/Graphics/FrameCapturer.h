@@ -13,7 +13,7 @@ class FrameCapturer
 	: public Object
 {
 public:
-	static FrameCapturerPtr Create();
+	static FrameCapturerPtr create();
 
 public:
 	void SetCapturerTarget(RenderTargetTexture* renderTarget);

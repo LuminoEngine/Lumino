@@ -43,13 +43,13 @@ int Profiler::RegisterGroup(const TCHAR* name)
 {
 	std::shared_ptr<Group> group(LN_NEW Group());
 	group->Name = name;
-	m_groups.Add(group);
+	m_groups.add(group);
 
 	CommitedGroup cg;
 	cg.Name = name;
-	m_commitedGroups.Add(cg);
+	m_commitedGroups.add(cg);
 
-	return m_groups.GetCount() - 1;
+	return m_groups.getCount() - 1;
 }
 
 //------------------------------------------------------------------------------
@@ -57,13 +57,13 @@ int Profiler::RegisterSection(int parentGroupIndex, const TCHAR* name)
 {
 	std::shared_ptr<Section> section(LN_NEW Section());
 	section->Name;
-	m_groups[parentGroupIndex]->Sections.Add(section);
+	m_groups[parentGroupIndex]->Sections.add(section);
 
 	CommitedSection cs;
 	cs.Name = name;
-	m_commitedGroups[parentGroupIndex].Sections.Add(cs);
+	m_commitedGroups[parentGroupIndex].Sections.add(cs);
 
-	return m_groups[parentGroupIndex]->Sections.GetCount() - 1;
+	return m_groups[parentGroupIndex]->Sections.getCount() - 1;
 }
 
 //------------------------------------------------------------------------------
@@ -76,7 +76,7 @@ void Profiler::SetBaseFrameRate(int group, float baseFrameRate)
 void Profiler::StartSection(int groupIndex, int sectionIndex)
 {
 	if (!m_enabled) { return; }
-	m_groups[groupIndex]->Timer.Start();
+	m_groups[groupIndex]->Timer.start();
 	//Section* s = m_groups[groupIndex]->Sections[sectionIndex];
 
 }
@@ -99,10 +99,10 @@ void Profiler::Commit()
 	m_commitedMainWindowSize = m_mainWindowSize;
 	m_commitedMainBackbufferSize = m_mainBackbufferSize;
 
-	for (int iGroup = 0; iGroup < m_groups.GetCount(); ++iGroup)
+	for (int iGroup = 0; iGroup < m_groups.getCount(); ++iGroup)
 	{
 		uint64_t totalTime = 0;
-		for (int iSection = 0; iSection < m_groups[iGroup]->Sections.GetCount(); ++iSection)
+		for (int iSection = 0; iSection < m_groups[iGroup]->Sections.getCount(); ++iSection)
 		{
 			Section*			s1 = m_groups[iGroup]->Sections[iSection].get();
 			CommitedSection*	s2 = &m_commitedGroups[iGroup].Sections[iSection];

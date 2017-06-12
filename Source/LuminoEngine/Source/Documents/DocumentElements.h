@@ -41,13 +41,13 @@ public:
 	void initialize();
 
 	// Œ»İ‚Ì“à—e‚ğ‚·‚×‚Ä”jŠü‚µ‚ÄAV‚µ‚¢1‚Â‚Ì Paragraph ‚ğì‚é
-	void SetText(const StringRef& text);
+	void setText(const StringRef& text);
 
 LN_INTERNAL_ACCESS:
-	void Replace(int offset, int length, const StringRef& text);
+	void replace(int offset, int length, const StringRef& text);
 
 private:
-	void Replace(int offset, int length, const UTF32* text, int len);
+	void replace(int offset, int length, const UTF32* text, int len);
 
 	DocumentsManager*		m_manager;
 	List<RefPtr<Block>>		m_blockList;
@@ -230,7 +230,7 @@ public:
 	void initialize();
 	void initialize(const UTF32* str, int len);
 
-	void SetText(const StringRef& text);
+	void setText(const StringRef& text);
 
 protected:
 	// TextElement interface

@@ -49,7 +49,7 @@ public:
 
 	/** 位置を取得します。*/
 	LN_METHOD(Property)
-	const Vector3& GetPosition() const { return m_transform.translation; }
+	const Vector3& getPosition() const { return m_transform.translation; }
 
 	/// 回転の設定
 	void SetRotation(const Quaternion& rot) { m_transform.rotation = rot; }
@@ -150,8 +150,8 @@ LN_INTERNAL_ACCESS:
 	void initialize();
 
 	// TODO: これらもいらない
-	void SetAutoRemove(bool enabled) { m_isAutoRemove = enabled; }
-	bool IsAutoRemove() const { return m_isAutoRemove; }
+	void setAutoRemove(bool enabled) { m_isAutoRemove = enabled; }
+	bool isAutoRemove() const { return m_isAutoRemove; }
 	//const Matrix& GetCombinedGlobalMatrix() const { return m_combinedGlobalMatrix; }
 
 

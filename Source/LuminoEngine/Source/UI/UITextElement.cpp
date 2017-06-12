@@ -20,7 +20,7 @@ LN_TR_PROPERTY_IMPLEMENT(UITextElement, bool, IsFontItalic, tr::PropertyMetadata
 
 //------------------------------------------------------------------------------
 UITextElement::UITextElement()
-	: FontFamily(String::GetEmpty())
+	: FontFamily(String::getEmpty())
 	, FontSize(RawFont::DefaultSize)
 	, IsFontBold(false)
 	, IsFontItalic(false)
@@ -46,7 +46,7 @@ Size UITextElement::MeasureOverride(const Size& constraint)
 		if (m_font == nullptr)
 		{
 			// TODO: GetActiveFont() でやったほうがいいかな
-			m_font = RefPtr<Font>::MakeRef();
+			m_font = RefPtr<Font>::makeRef();
 			m_font->initialize(GetManager()->GetGraphicsManager(), nullptr);
 		}
 		m_font->SetFamily(FontFamily);

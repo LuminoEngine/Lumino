@@ -34,10 +34,10 @@ public:
 	EffekseerFileReader(Stream* stream) : m_stream(stream, false) {}
 	virtual ~EffekseerFileReader() = default;
 
-	virtual size_t Read(void* buffer, size_t size) override { return m_stream->Read(buffer, size); }
-	virtual void Seek(int position) override { m_stream->Seek(position, SeekOrigin_Begin); }
-	virtual int GetPosition() override { return (int)m_stream->GetPosition(); }
-	virtual size_t GetLength() override { return (size_t)m_stream->GetLength(); }
+	virtual size_t Read(void* buffer, size_t size) override { return m_stream->read(buffer, size); }
+	virtual void Seek(int position) override { m_stream->seek(position, SeekOrigin_Begin); }
+	virtual int GetPosition() override { return (int)m_stream->getPosition(); }
+	virtual size_t GetLength() override { return (size_t)m_stream->getLength(); }
 
 private:
 	RefPtr<Stream>	m_stream;

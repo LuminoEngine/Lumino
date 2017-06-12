@@ -12,7 +12,7 @@ class UIWindow
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static RefPtr<UIWindow> Create();
+	static RefPtr<UIWindow> create();
 
 protected:
 	virtual void OnRoutedEvent(UIEventArgs* e) override;

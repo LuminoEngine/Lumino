@@ -19,9 +19,9 @@ const float GizmoModel::RotationViewZRingOuter = 1.1f;
 const float GizmoModel::BaseOpacity = 0.5f;
 
 //------------------------------------------------------------------------------
-GizmoModelPtr GizmoModel::Create()
+GizmoModelPtr GizmoModel::create()
 {
-	auto ptr = GizmoModelPtr::MakeRef();
+	auto ptr = GizmoModelPtr::makeRef();
 	ptr->initialize(ln::detail::GraphicsManager::GetInstance());
 	return ptr;
 }
@@ -43,7 +43,7 @@ GizmoModel::~GizmoModel()
 //------------------------------------------------------------------------------
 void GizmoModel::initialize(ln::detail::GraphicsManager* manager)
 {
-	m_tmat = RefPtr<Material>::MakeRef();
+	m_tmat = RefPtr<Material>::makeRef();
 	m_tmat->initialize();
 	m_tmat->SetBlendMode(BlendMode::Alpha);
 	m_tmat->SetCullingMode(CullingMode::None);
@@ -227,7 +227,7 @@ bool GizmoModel::InjectMouseMove(int x, int y)
 			}
 		}
 
-		m_onTargetTransformChanged.Raise(this);
+		m_onTargetTransformChanged.raise(this);
 		return true;
 	}
 	else
@@ -388,19 +388,19 @@ void GizmoModel::SubmitEditing()
 	m_targetInitialTransform = m_targetTransform;
 	
 	// 拡大・回転をリセット
-	m_gizmoTransform = Matrix::MakeTranslation(m_gizmoTransform.GetPosition());
+	m_gizmoTransform = Matrix::MakeTranslation(m_gizmoTransform.getPosition());
 	m_gizmoInitialTransform = m_gizmoTransform;
 
 	m_dragging = false;
 
-	m_onSubmitEditing.Raise(this);
+	m_onSubmitEditing.raise(this);
 }
 
 //------------------------------------------------------------------------------
 void GizmoModel::MakeScreenFactor()
 {
 	Matrix viewproj = m_view * m_proj;
-	Vector4 trf = Vector4(m_gizmoTransform.GetPosition(), 1.0f);
+	Vector4 trf = Vector4(m_gizmoTransform.getPosition(), 1.0f);
 	trf = Vector4::Transform(trf, viewproj);
 	m_screenFactor = m_displayScale * 0.15f * trf.w;
 }
@@ -455,19 +455,19 @@ GizmoModel::OperationType GizmoModel::GetDirectionOperationType(int x, int y, Pl
 			if (xz)
 			{
 				if (outLocalPlane) *outLocalPlane = Plane(Vector3::UnitY);
-				float d = ptXZ.GetLength();
+				float d = ptXZ.getLength();
 				if (RotationRingInner <= d && d <= RotationRingOuter) return OperationType::Y;
 			}
 			if (xy)
 			{
 				if (outLocalPlane) *outLocalPlane = Plane(Vector3::UnitZ);
-				float d = ptXY.GetLength();
+				float d = ptXY.getLength();
 				if (RotationRingInner <= d && d <= RotationRingOuter) return OperationType::Z;
 			}
 			if (yz)
 			{
 				if (outLocalPlane) *outLocalPlane = Plane(Vector3::UnitX);
-				float d = ptYZ.GetLength();
+				float d = ptYZ.getLength();
 				if (RotationRingInner <= d && d <= RotationRingOuter) return OperationType::X;
 			}
 
@@ -478,7 +478,7 @@ GizmoModel::OperationType GizmoModel::GetDirectionOperationType(int x, int y, Pl
 
 				Vector3 pt;
 				localPlane.Intersects(localViewRay, &pt);
-				float d = pt.GetLength();
+				float d = pt.getLength();
 				if (RotationViewZRingInner <= d && d <= RotationViewZRingOuter) return OperationType::ViewZ;
 			}
 			break;

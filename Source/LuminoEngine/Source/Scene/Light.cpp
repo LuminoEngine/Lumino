@@ -31,7 +31,7 @@ LightComponent::~LightComponent()
 void LightComponent::initialize(LightType type)
 {
 	SceneNode::initialize();
-	m_lightInfo = RefPtr<detail::DynamicLightInfo>::MakeRef();
+	m_lightInfo = RefPtr<detail::DynamicLightInfo>::makeRef();
 	m_lightInfo->m_type = type;
 	m_lightInfo->m_diffuse.Set(1.0f, 1.0f, 1.0f, 1.0f);
 	m_lightInfo->m_ambient.Set(1.0f, 1.0f, 1.0f, 1.0f);
@@ -54,11 +54,11 @@ void LightComponent::UpdateMatrices(/*const Size& viewSize*/)
 	Vector3 direction = Vector3::TransformCoord(Vector3(0, 0, 1), worldMatrix);
 
 	// 注視点
-	Vector3 lookAt = worldMatrix.GetPosition() + direction;
+	Vector3 lookAt = worldMatrix.getPosition() + direction;
 
 	// ビュー行列
 	Vector3 up = Vector3(0, 1, 0);
-	m_viewMatrix = Matrix::MakeLookAtLH(worldMatrix.GetPosition(), lookAt, up);
+	m_viewMatrix = Matrix::MakeLookAtLH(worldMatrix.getPosition(), lookAt, up);
 
 	// プロジェクション行列の更新
 	// TODO: 視野角とnear,far

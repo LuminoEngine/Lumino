@@ -106,15 +106,15 @@ class ValueEasingCurve
 {
 public:
 
-	//static FloatEasing* Create(const String& targetName, const String& targetProperty, float targetValue, float duration, Animation::EasingMode easingMode);
+	//static FloatEasing* create(const String& targetName, const String& targetProperty, float targetValue, float duration, Animation::EasingMode easingMode);
 	virtual ValueType GetValueType() const { return ValueType_Float; }
 	virtual void UpdateValue(double time) {}
 	virtual double GetLastFrameTime() const { return 0; }
 
 public:
-	static RefPtr<ValueEasingCurve<TValue>> Create(TValue targetValue, double duration, EasingMode easingMode)
+	static RefPtr<ValueEasingCurve<TValue>> create(TValue targetValue, double duration, EasingMode easingMode)
 	{
-		return RefPtr<ValueEasingCurve<TValue>>::MakeRef(targetValue, duration, easingMode);
+		return RefPtr<ValueEasingCurve<TValue>>::makeRef(targetValue, duration, easingMode);
 	}
 
 	ValueEasingCurve(TValue targetValue, double duration, EasingMode easingMode)
@@ -235,7 +235,7 @@ public:
 	void AddKeyFrame(double frame_pos, float value, InterpolationMode mode = InterpolationMode_Linear);
 
 	/// 補間結果の取得 (SetTime() で更新される)
-	float GetValue() const { return m_value; }
+	float getValue() const { return m_value; }
 
 public:
 	// override AnimationCurve
@@ -305,7 +305,7 @@ public:
 	void SortKeyFrame();
 
 	/// 補間結果の取得 (SetTime() で更新される)
-	const AttitudeTransform& GetValue() const { return m_transform; }
+	const AttitudeTransform& getValue() const { return m_transform; }
 
 public:
 	virtual ValueType GetValueType() const { return ValueType_SQTTransform; }
@@ -387,7 +387,7 @@ public:
 	virtual ~VMDBezierSQTTransformAnimation2();
 
 public:
-	void AddFrame(const BoneFrameData& frame) { m_keyFrameList.Add(frame); }
+	void AddFrame(const BoneFrameData& frame) { m_keyFrameList.add(frame); }
 	void SortKeyFrame();
 
 public:

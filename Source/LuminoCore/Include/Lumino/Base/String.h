@@ -153,19 +153,19 @@ public:
 	
 
 	/// 終端 \0 までの文字数を返す (マルチバイト文字は考慮しない。CString::GetLength と同様の関数です)
-	int GetLength() const;
+	int getLength() const;
 
 	/// 文字列が空の時にtrueを返す
-	bool IsEmpty() const;
+	bool isEmpty() const;
 
 	/**
 		@brief		この文字列の末尾に指定された文字列を追加します。
 		@param[in]	str		: 追加する文字列
 		@param[in]	len		: 追加する文字数 (-1 を指定すると \0 まで)
 	*/
-	void Append(const GenericString& str, int len = -1);
-	void Append(const TChar* str, int len = -1);			///< @overload Append
-	void Append(TChar ch);									///< @overload Append
+	void append(const GenericString& str, int len = -1);
+	void append(const TChar* str, int len = -1);			///< @overload Append
+	void append(TChar ch);									///< @overload Append
 
 	/**
 		@brief		指定したエンコーディングを使用し、文字列を変換して設定する
@@ -174,7 +174,7 @@ public:
 		@param[in]	encoding			: 変換元文字エンコーディング
 		@param[out]	usedDefaultChar		: 変換不可文字をデフォルト文字 ('?') に変換したかどうか
 	*/
-	void ConvertFrom(const void* buffer, int byteCount, const Encoding* encoding, bool* usedDefaultChar = NULL);
+	void convertFrom(const void* buffer, int byteCount, const Encoding* encoding, bool* usedDefaultChar = NULL);
 
 	/**
 		@brief		指定したエンコーディングを使用し、変換した文字列バッファを取得する
@@ -182,7 +182,7 @@ public:
 		@param[out]	usedDefaultChar		: 変換不可文字をデフォルト文字 ('?') に変換したかどうか
 		@return		バッファ終端には encoding に合わせた \0 終端文字が付加されます。
 	*/
-	ByteBuffer ConvertTo(const Encoding* encoding, bool* usedDefaultChar = NULL) const;
+	ByteBuffer convertTo(const Encoding* encoding, bool* usedDefaultChar = NULL) const;
 
 	/**
 		@brief		空文字列を設定する
@@ -194,20 +194,20 @@ public:
 		@param[in]	startIndex	: 文字列の 0 から始まる開始文字位置
 		@param[in]	length		: 部分文字列の文字数 (省略した場合は末尾まで)
 	*/
-	StringT SubString(int startIndex = 0, int length = -1) const;
+	StringT subString(int startIndex = 0, int length = -1) const;
 
 	/**
 		@brief		文字列の先頭と末尾の空白を全て削除する
 		@details	空白文字はロケールに依存します。日本語環境であれば全角スペースも空白扱いです。
 	*/
-	StringT Trim() const;
+	StringT trim() const;
 
 	/**
 		@brief		この文字列から指定した文字をすべて取り除いた新しい文字列を返します。
 		@param[in]	ch		: 削除する文字
 		@param[in]	cs		: 大文字と小文字の区別設定
 	*/
-	StringT Remove(TChar ch, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	StringT remove(TChar ch, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 
 	/**
 		@brief		文字列の置換を行う
@@ -220,7 +220,7 @@ public:
 					str = str.Replace("bc", "d");	// => "ad"
 					~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	*/
-	StringT Replace(const StringRefT& from, const StringRefT& to) const;
+	StringT replace(const StringRefT& from, const StringRefT& to) const;
 
 	/**
 		@brief		指定した文字列がこの文字列内に存在するかを判断します。
@@ -228,8 +228,8 @@ public:
 		@param[in]	cs		: 大文字と小文字の区別設定
 		@return		文字列が存在すれば true。str が空文字列である場合は必ず true となります。
 	*/
-	bool Contains(const TChar* str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
-	bool Contains(TChar ch,         CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;			/**< @overload Contains */
+	bool contains(const TChar* str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	bool contains(TChar ch,         CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;			/**< @overload Contains */
 
 	/**
 		@brief		文字列を検索し、見つかった最初の文字のインデックスを返す
@@ -238,8 +238,8 @@ public:
 		@param[in]	cs		: 大文字と小文字の区別設定
 		@return		見つからなかった場合は -1。str が空文字列である場合は 0。
 	*/
-	int IndexOf(const StringRefT& str, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
-	int IndexOf(TChar ch,              int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;	/**< @overload IndexOf */
+	int indexOf(const StringRefT& str, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	int indexOf(TChar ch,              int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;	/**< @overload IndexOf */
 
 	/**
 		@brief		文字列を検索し、最後に見つかったインデックスを返します。
@@ -258,16 +258,16 @@ public:
 					str.LastIndexOf("bc", 4, 3);	// => -1	(検索範囲 "cde" の中に "bc" は存在しない)
 		@endcode
 	*/
-	int LastIndexOf(const TChar* str, int startIndex = -1, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
-	int LastIndexOf(TChar ch,         int startIndex = -1, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;	/**< @overload LastIndexOf */
+	int lastIndexOf(const TChar* str, int startIndex = -1, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	int lastIndexOf(TChar ch,         int startIndex = -1, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;	/**< @overload LastIndexOf */
 	
 	/**
 		@brief		この文字列の先頭が、指定した文字列と一致するかを判断します。
 		@param[in]	str			: 検索文字列
 		@details	str が空文字の場合は必ず true が返ります。
 	*/
-	bool StartsWith(const TChar* str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
-	bool StartsWith(TChar ch,         CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;	/**< @overload StartsWith */
+	bool startsWith(const TChar* str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	bool startsWith(TChar ch,         CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;	/**< @overload StartsWith */
 
 	/**
 		@brief		この文字列の末尾が、指定した文字列と一致するかを判断します。
@@ -280,8 +280,8 @@ public:
 					}
 		@endcode
 	*/
-	bool EndsWith(const TChar* str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
-	bool EndsWith(TChar ch,         CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;	/**< @overload EndsWith */
+	bool endsWith(const TChar* str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	bool endsWith(TChar ch,         CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;	/**< @overload EndsWith */
 	
 	/**
 		@brief		文字列が同一かを判断します。
@@ -314,7 +314,7 @@ public:
 					s.Left(2)		=> _T("ab");
 		@endcode
 	*/
-	GenericString<TChar> Left(int count) const;
+	GenericString<TChar> left(int count) const;
 
 	/**
 		@brief		文字列の右側(末尾)から指定した文字数を抽出します。
@@ -326,7 +326,7 @@ public:
 					s.Right(2)		=> _T("ef");
 		@endcode
 	*/
-	GenericString<TChar> Right(int count) const;
+	GenericString<TChar> right(int count) const;
 
 	/**
 		@brief		文字列の部分文字列を抽出します。
@@ -339,7 +339,7 @@ public:
 					s.Mid(2, 3)		=> _T("cde");
 		@endcode
 	*/
-	GenericString<TChar> Mid(int start, int count = -1) const;
+	GenericString<TChar> mid(int start, int count = -1) const;
 
 	/**
 		@brief		文字列をデリミタで分割する
@@ -355,21 +355,21 @@ public:
 					auto tokens = String("a::b").Split("::");		// => ["a", "b"]
 					~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	*/
-	GenericStringArray<TChar> Split(const TChar* delim, StringSplitOptions option = StringSplitOptions::None) const;
+	GenericStringArray<TChar> split(const TChar* delim, StringSplitOptions option = StringSplitOptions::None) const;
 
 	/**
 		@brief		文字列を構成するバイト数を取得する (終端 '\0' は含まない)
 	*/
-	int GetByteCount() const { return GetLength() * sizeof(TChar); }
+	int getByteCount() const { return getLength() * sizeof(TChar); }
 
 	/** 小文字を大文字に変換します。(ロケールの影響を受けません) */
-	GenericString<TChar> ToUpper() const;
+	GenericString<TChar> toUpper() const;
 
 	/** 大文字を小文字に変換します。(ロケールの影響を受けません) */
-	GenericString<TChar> ToLower() const;
+	GenericString<TChar> toLower() const;
 
 	/** 先頭の文字を大文字、以降を小文字に変換します。(ロケールの影響を受けません) */
-	GenericString<TChar> ToTitleCase() const;
+	GenericString<TChar> toTitleCase() const;
 
 	/**
 		@brief		この文字列を整数値に変換します。
@@ -386,14 +386,14 @@ public:
 		@exception	InvalidFormatException	指定された基数に対して有効な桁を示す数字以外の文字が含まれていました。または、書式の前後に空白以外の文字が存在しました。
 		@exception	OverflowException		数値に変換する際にオーバーフローが発生しました。
 	*/
-	int8_t		ToInt8(int base = 0) const;
-	int16_t		ToInt16(int base = 0) const;	///< @copydoc ToInt8
-	int32_t		ToInt32(int base = 0) const;	///< @copydoc ToInt8
-	int64_t		ToInt64(int base = 0) const;	///< @copydoc ToInt8
-	uint8_t		ToUInt8(int base = 0) const;	///< @copydoc ToInt8
-	uint16_t	ToUInt16(int base = 0) const;	///< @copydoc ToInt8
-	uint32_t	ToUInt32(int base = 0) const;	///< @copydoc ToInt8
-	uint64_t	ToUInt64(int base = 0) const;	///< @copydoc ToInt8
+	int8_t		toInt8(int base = 0) const;
+	int16_t		toInt16(int base = 0) const;	///< @copydoc toInt8
+	int32_t		toInt32(int base = 0) const;	///< @copydoc toInt8
+	int64_t		toInt64(int base = 0) const;	///< @copydoc toInt8
+	uint8_t		toUInt8(int base = 0) const;	///< @copydoc toInt8
+	uint16_t	toUInt16(int base = 0) const;	///< @copydoc toInt8
+	uint32_t	toUInt32(int base = 0) const;	///< @copydoc toInt8
+	uint64_t	toUInt64(int base = 0) const;	///< @copydoc toInt8
 
 	/**
 		@brief		この文字列を整数値に変換し、成否を返します。
@@ -404,17 +404,17 @@ public:
 					大量のループの内部等、例外によるパフォーマンスへの影響が懸念される場合に使用してください。
 		@see		ToInt8
 	*/
-	bool		TryToInt8(int8_t* outValue, int base = 0) const;
-	bool		TryToInt16(int16_t* outValue, int base = 0) const;		///< @copydoc TryToInt8
-	bool		TryToInt32(int32_t* outValue, int base = 0) const;		///< @copydoc TryToInt8
-	bool		TryToInt64(int64_t* outValue, int base = 0) const;		///< @copydoc TryToInt8
-	bool		TryToUInt8(uint8_t* outValue, int base = 0) const;		///< @copydoc TryToInt8
-	bool		TryToUInt16(uint16_t* outValue, int base = 0) const;	///< @copydoc TryToInt8
-	bool		TryToUInt32(uint32_t* outValue, int base = 0) const;	///< @copydoc TryToInt8
-	bool		TryToUInt64(uint64_t* outValue, int base = 0) const;	///< @copydoc TryToInt8
+	bool		tryToInt8(int8_t* outValue, int base = 0) const;
+	bool		tryToInt16(int16_t* outValue, int base = 0) const;		///< @copydoc tryToInt8
+	bool		tryToInt32(int32_t* outValue, int base = 0) const;		///< @copydoc tryToInt8
+	bool		tryToInt64(int64_t* outValue, int base = 0) const;		///< @copydoc tryToInt8
+	bool		tryToUInt8(uint8_t* outValue, int base = 0) const;		///< @copydoc tryToInt8
+	bool		tryToUInt16(uint16_t* outValue, int base = 0) const;	///< @copydoc tryToInt8
+	bool		tryToUInt32(uint32_t* outValue, int base = 0) const;	///< @copydoc tryToInt8
+	bool		tryToUInt64(uint64_t* outValue, int base = 0) const;	///< @copydoc tryToInt8
 
-	GenericString<char>	ToStringA() const;
-	GenericString<wchar_t> ToStringW() const;
+	GenericString<char>	toStringA() const;
+	GenericString<wchar_t> toStringW() const;
 
 	/**
 		@brief		指定した char 配列から文字列を作成します。
@@ -422,7 +422,7 @@ public:
 		@param[in]	length	: コピーする文字数 (省略した場合は終端 \0 まで)
 		@return		作成された文字列
 	*/
-	static GenericString FromNativeCharString(const char* str, int length = -1);
+	static GenericString fromNativeCharString(const char* str, int length = -1);
 	
 	/**
 		@brief		指定した wchar_t 配列から文字列を作成します。
@@ -430,7 +430,7 @@ public:
 		@param[in]	length	: コピーする文字数 (省略した場合は終端 \0 まで)
 		@return		作成された文字列
 	*/
-	static GenericString FromNativeCharString(const wchar_t* str, int length = -1);
+	static GenericString fromNativeCharString(const wchar_t* str, int length = -1);
 
 
 	/**
@@ -445,19 +445,19 @@ public:
 					文字コードをの変換を行います。
 					TChar と str の型が同じ場合は文字コードの変換を行いません。
 	*/
-	void AssignCStr(const char* str, int begin, int length, bool* usedDefaultChar = NULL);
-	void AssignCStr(const char* str, int length, bool* usedDefaultChar = NULL);					/**< @overload AssignCStr */
-	void AssignCStr(const char* str, bool* usedDefaultChar = NULL);								/**< @overload AssignCStr */
-	void AssignCStr(const wchar_t* str, int begin, int length, bool* usedDefaultChar = NULL);	/**< @overload AssignCStr */
-	void AssignCStr(const wchar_t* str, int length, bool* usedDefaultChar = NULL);				/**< @overload AssignCStr */
-	void AssignCStr(const wchar_t* str, bool* usedDefaultChar = NULL);							/**< @overload AssignCStr */
+	void assignCStr(const char* str, int begin, int length, bool* usedDefaultChar = NULL);
+	void assignCStr(const char* str, int length, bool* usedDefaultChar = NULL);					/**< @overload assignCStr */
+	void assignCStr(const char* str, bool* usedDefaultChar = NULL);								/**< @overload assignCStr */
+	void assignCStr(const wchar_t* str, int begin, int length, bool* usedDefaultChar = NULL);	/**< @overload assignCStr */
+	void assignCStr(const wchar_t* str, int length, bool* usedDefaultChar = NULL);				/**< @overload assignCStr */
+	void assignCStr(const wchar_t* str, bool* usedDefaultChar = NULL);							/**< @overload assignCStr */
 
 public:
 	/// 現在の環境で定義されている改行文字列を取得する
-	static const StringT& GetNewLine();
+	static const StringT& getNewLine();
 
 	/// 空文字列を取得する
-	static const StringT& GetEmpty();
+	static const StringT& getEmpty();
 
 	/**
 		@brief		書式文字列と可変長引数リストから文字列を生成します。
@@ -484,8 +484,8 @@ public:
 					String str2 = String::SPrintf(_T("%ss"), str1.c_str());	// => "100s"
 					~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	*/
-	static GenericString SPrintf(const GenericString& format, ...);
-	static GenericString SPrintf(const TChar* format, ...);				/**< @overload SPrintf */
+	static GenericString sprintf(const GenericString& format, ...);
+	static GenericString sprintf(const TChar* format, ...);				/**< @overload SPrintf */
 	
 	/**
 		@brief		複合書式文字列と可変長引数リストから文字列を生成します。
@@ -585,12 +585,12 @@ public:
 					- String クラス (GenericString<T>)
 	*/
 	template<typename... TArgs>
-	static GenericString Format(const GenericStringRef<TChar>& format, const TArgs&... args);
+	static GenericString format(const GenericStringRef<TChar>& format, const TArgs&... args);
 	template<typename... TArgs>
-	static GenericString Format(const Locale& locale, const GenericStringRef<TChar>& format, const TArgs&... args);	/**< @overload Format */
+	static GenericString format(const Locale& locale, const GenericStringRef<TChar>& format, const TArgs&... args);	/**< @overload Format */
 
 
-	size_t GetHashCode() const;
+	size_t getHashCode() const;
 
 	/**
 		@brief		String に格納されているデータへのポインタを返します。
@@ -605,16 +605,16 @@ private:
 	template<typename T> friend class GenericCharRef;
 	template<typename T> friend class GenericStringRef;
 	
-	void Detach() LN_NOEXCEPT;
+	void detach() LN_NOEXCEPT;
 	void attach(detail::GenericStringCore<TChar>* core);
-	void AssignTString(const TChar* str, int len);
-	void AssignTString(int count, TChar ch);
-	void Realloc();
-	TChar& InternalGetAt(int index);
-	const TChar& InternalGetAt(int index) const;
+	void assignTString(const TChar* str, int len);
+	void assignTString(int count, TChar ch);
+	void realloc();
+	TChar& internalGetAt(int index);
+	const TChar& internalGetAt(int index) const;
 
-	Encoding* GetThisTypeEncoding() const;
-	detail::GenericStringCore<TChar>* GetCore() const { return m_string; }
+	Encoding* getThisTypeEncoding() const;
+	detail::GenericStringCore<TChar>* getCore() const { return m_string; }
 
 	detail::GenericStringCore<TChar>*	m_string;
 
@@ -648,7 +648,7 @@ public:
 
 	inline GenericCharRef& operator=(TChar ch)
 	{
-		m_str.Realloc();
+		m_str.realloc();
 		m_str.m_string->at(m_idx) = ch;
 		return *this;
 	}
@@ -747,12 +747,12 @@ public:
 	}
 	~GenericStringCore() {}
 
-	static GenericStringCore* GetSharedEmpty() { return &m_sharedEmpty; }
+	static GenericStringCore* getSharedEmpty() { return &m_sharedEmpty; }
 
 #ifdef LN_INTERNAL_COW_THREAD_SAFE
 	// ※ m_sharedEmpty の参照カウントは操作しない。String を初期化しただけでオーバーヘッドが出るのを避けるため。
-	inline bool IsShared() const { return IsSharedEmpty() || (m_refCount.load() > 1); }
-	inline bool IsSharedEmpty() const { return this == GetSharedEmpty(); }
+	inline bool isShared() const { return IsSharedEmpty() || (m_refCount.load() > 1); }
+	inline bool IsSharedEmpty() const { return this == getSharedEmpty(); }
 	inline void addRef()
 	{
 		if (IsSharedEmpty()) {
@@ -802,10 +802,10 @@ class StringHelper
 {
 public:
 	template<typename TChar>
-	static GenericStringCore<TChar>* GetStringCore(const GenericString<TChar>& str) { return str.m_string; }
+	static GenericStringCore<TChar>* getStringCore(const GenericString<TChar>& str) { return str.m_string; }
 
 	template<typename TChar>
-	static void AttachStringCore(String* str, GenericStringCore<TChar>* core) { str->attach(core); }
+	static void attachStringCore(String* str, GenericStringCore<TChar>* core) { str->attach(core); }
 };
 
 } // namespace detail

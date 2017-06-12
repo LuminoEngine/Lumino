@@ -43,7 +43,7 @@ PmxLoader::~PmxLoader()
 }
 
 //------------------------------------------------------------------------------
-RefPtr<PmxSkinnedMeshResource> PmxLoader::Load(detail::ModelManager* manager, Stream* stream, const PathName& baseDir, bool isDynamic, ModelCreationFlag flags)
+RefPtr<PmxSkinnedMeshResource> PmxLoader::load(detail::ModelManager* manager, Stream* stream, const PathName& baseDir, bool isDynamic, ModelCreationFlag flags)
 {
 	m_manager = manager;
 	m_isDynamic = isDynamic;
@@ -51,13 +51,13 @@ RefPtr<PmxSkinnedMeshResource> PmxLoader::Load(detail::ModelManager* manager, St
 	m_hasSDEF = false;
 
 	BinaryReader reader(stream);
-	m_modelCore = RefPtr<PmxSkinnedMeshResource>::MakeRef();
+	m_modelCore = RefPtr<PmxSkinnedMeshResource>::makeRef();
 	m_modelCore->initialize(manager->GetGraphicsManager(), MeshCreationFlags::None);
 	m_modelCore->Format = ModelFormat_PMX;
 	
 	//-----------------------------------------------------
 	// ヘッダ
-	reader.Read( &m_pmxHeader, sizeof(PMX_Header) );
+	reader.read( &m_pmxHeader, sizeof(PMX_Header) );
 	if (m_pmxHeader.Magic[0] != 'P' ||
 		m_pmxHeader.Magic[1] != 'M' ||
 		m_pmxHeader.Magic[2] != 'X' ||
@@ -137,7 +137,7 @@ void PmxLoader::LoadModelInfo(BinaryReader* reader)
 void PmxLoader::LoadVertices(BinaryReader* reader)
 {
 	// 頂点数
-	int vertexCount = reader->ReadInt32();
+	int vertexCount = reader->readInt32();
 
 	// 頂点バッファ作成
 	m_modelCore->ResizeVertexBuffer(vertexCount);
@@ -153,7 +153,7 @@ void PmxLoader::LoadVertices(BinaryReader* reader)
 	for (int i = 0; i < vertexCount; ++i)
 	{
 		// 頂点、法線、テクスチャUV
-		reader->Read(&baseVertex, sizeof(BaseVertex));
+		reader->read(&baseVertex, sizeof(BaseVertex));
 		m_modelCore->SetPosition(i, baseVertex.Position);
 		m_modelCore->SetNormal(i, baseVertex.Normal);
 		m_modelCore->SetUV(i, baseVertex.TexUV);
@@ -163,17 +163,17 @@ void PmxLoader::LoadVertices(BinaryReader* reader)
 		for (int iAddUV = 0; iAddUV < getAdditionalUVCount(); iAddUV++)
 		{
 			Vector4 uv;
-			reader->Read(&uv, sizeof(Vector4));
+			reader->read(&uv, sizeof(Vector4));
 			m_modelCore->SetAdditionalUV(i, iAddUV, uv);
 		}
 
 		// ブレンドウェイト
-		int defType = reader->ReadInt8();
+		int defType = reader->readInt8();
 		switch (defType)
 		{
 			case 0:	// BDEF1
 			{
-				int i0 = reader->ReadInt(getBoneIndexSize());
+				int i0 = reader->readInt(getBoneIndexSize());
 				m_modelCore->SetBlendIndices(i, i0, 0.0f, 0.0f, 0.0f);
 				m_modelCore->SetBlendWeights(i, 1.0f, 0.0f, 0.0f, 0.0f);
 				m_modelCore->SetSdefC(i, Vector4(0, 0, 0, -1));
@@ -183,9 +183,9 @@ void PmxLoader::LoadVertices(BinaryReader* reader)
 			}
 			case 1:	// BDEF2
 			{
-				int i0 = reader->ReadInt(getBoneIndexSize());
-				int i1 = reader->ReadInt(getBoneIndexSize());
-				float w0 = reader->ReadFloat();
+				int i0 = reader->readInt(getBoneIndexSize());
+				int i1 = reader->readInt(getBoneIndexSize());
+				float w0 = reader->readFloat();
 				m_modelCore->SetBlendIndices(i, i0, i1, 0.0f, 0.0f);
 				m_modelCore->SetBlendWeights(i, w0, 1.0f - w0, 0.0f, 0.0f);
 				m_modelCore->SetSdefC(i, Vector4(0, 0, 0, -1));
@@ -195,14 +195,14 @@ void PmxLoader::LoadVertices(BinaryReader* reader)
 			}
 			case 2:	// BDEF4
 			{
-				int i0 = reader->ReadInt(getBoneIndexSize());
-				int i1 = reader->ReadInt(getBoneIndexSize());
-				int i2 = reader->ReadInt(getBoneIndexSize());
-				int i3 = reader->ReadInt(getBoneIndexSize());
-				float w0 = reader->ReadFloat();
-				float w1 = reader->ReadFloat();
-				float w2 = reader->ReadFloat();
-				float w3 = reader->ReadFloat();
+				int i0 = reader->readInt(getBoneIndexSize());
+				int i1 = reader->readInt(getBoneIndexSize());
+				int i2 = reader->readInt(getBoneIndexSize());
+				int i3 = reader->readInt(getBoneIndexSize());
+				float w0 = reader->readFloat();
+				float w1 = reader->readFloat();
+				float w2 = reader->readFloat();
+				float w3 = reader->readFloat();
 				m_modelCore->SetBlendIndices(i, i0, i1, i2, i3);
 				m_modelCore->SetBlendWeights(i, w0, w1, w2, w3);
 				m_modelCore->SetSdefC(i, Vector4(0, 0, 0, -1));
@@ -212,15 +212,15 @@ void PmxLoader::LoadVertices(BinaryReader* reader)
 			}
 			case 3:	// SDEF
 			{
-				int i0 = reader->ReadInt(getBoneIndexSize());
-				int i1 = reader->ReadInt(getBoneIndexSize());
-				float w0 = reader->ReadFloat();
+				int i0 = reader->readInt(getBoneIndexSize());
+				int i1 = reader->readInt(getBoneIndexSize());
+				float w0 = reader->readFloat();
 				m_modelCore->SetBlendIndices(i, i0, i1, 0.0f, 0.0f);
 				m_modelCore->SetBlendWeights(i, w0, 1.0f - w0, 0.0f, 0.0f);
 				Vector3 sdefC, sdefR0, sdefR1;
-				reader->Read(&sdefC, sizeof(float) * 3);
-				reader->Read(&sdefR0, sizeof(float) * 3);
-				reader->Read(&sdefR1, sizeof(float) * 3);	// TODO:※修正値を要計算
+				reader->read(&sdefC, sizeof(float) * 3);
+				reader->read(&sdefR0, sizeof(float) * 3);
+				reader->read(&sdefR1, sizeof(float) * 3);	// TODO:※修正値を要計算
 				m_modelCore->SetSdefC(i, Vector4(sdefC, -1/*1.0f*/));	// TODO: 調査中なので BDEF2 扱いする
 				m_modelCore->SetSdefR0(i, sdefR0);
 				m_modelCore->SetSdefR1(i, sdefR1);
@@ -230,7 +230,7 @@ void PmxLoader::LoadVertices(BinaryReader* reader)
 		}
 
 		// エッジ倍率
-		m_modelCore->SetEdgeWeight(i, reader->ReadFloat());
+		m_modelCore->SetEdgeWeight(i, reader->readFloat());
 	}
 }
 
@@ -238,7 +238,7 @@ void PmxLoader::LoadVertices(BinaryReader* reader)
 void PmxLoader::LoadIndices(BinaryReader* reader)
 {
 	// インデックス数
-	int indexCount = reader->ReadInt32();
+	int indexCount = reader->readInt32();
 
 	// インデックスバッファ作成
 	IndexBufferFormat format = IndexBufferFormat_UInt16;
@@ -250,7 +250,7 @@ void PmxLoader::LoadIndices(BinaryReader* reader)
 
 	// とりあえずまずは全部読み込む
 	ByteBuffer indicesBuffer(getVertexIndexSize() * indexCount);
-	reader->Read(indicesBuffer.getData(), indicesBuffer.getSize());
+	reader->read(indicesBuffer.getData(), indicesBuffer.getSize());
 
 	// 1 バイトインデックス
 	if (getVertexIndexSize() == 1)
@@ -287,10 +287,10 @@ void PmxLoader::LoadIndices(BinaryReader* reader)
 void PmxLoader::LoadTextureTable(BinaryReader* reader, const PathName& baseDir)
 {
 	// テクスチャ数
-	int textureCount = reader->ReadInt32();
+	int textureCount = reader->readInt32();
 
 	// テクスチャテーブル
-	m_textureTable.Reserve(textureCount);
+	m_textureTable.reserve(textureCount);
 
 	for (int i = 0; i < textureCount; ++i)
 	{
@@ -299,7 +299,7 @@ void PmxLoader::LoadTextureTable(BinaryReader* reader, const PathName& baseDir)
 
 		// 作成
 		PathName filePath(baseDir, name);
-		m_textureTable.Add(m_manager->CreateTexture(baseDir, filePath, m_flags));
+		m_textureTable.add(m_manager->CreateTexture(baseDir, filePath, m_flags));
 	}
 }
 
@@ -307,7 +307,7 @@ void PmxLoader::LoadTextureTable(BinaryReader* reader, const PathName& baseDir)
 void PmxLoader::LoadMaterials(BinaryReader* reader)
 {
 	// マテリアル数
-	int materialCount = reader->ReadInt32();
+	int materialCount = reader->readInt32();
 
 	// メモリ確保
 	m_modelCore->materials.resize(materialCount);
@@ -316,7 +316,7 @@ void PmxLoader::LoadMaterials(BinaryReader* reader)
 	int indexAttrOffset = 0;
 	for (int i = 0; i < materialCount; ++i)
 	{
-		auto m = RefPtr<PmxMaterialResource>::MakeRef();
+		auto m = RefPtr<PmxMaterialResource>::makeRef();
 		m_modelCore->materials[i] = m;;
 
 		// 材質名
@@ -326,47 +326,47 @@ void PmxLoader::LoadMaterials(BinaryReader* reader)
 		/*m_modelCore->Material.EnglishName = */ReadString(reader);
 
 		// Diffuse
-		reader->Read(&m->Diffuse, sizeof(float) * 4);
+		reader->read(&m->Diffuse, sizeof(float) * 4);
 
 		// Specular
-		reader->Read(&m->Specular, sizeof(float) * 3);
+		reader->read(&m->Specular, sizeof(float) * 3);
 		m->Specular.a = 1.0f;
 
 		// Specular係数
-		m->Power = reader->ReadFloat();
+		m->Power = reader->readFloat();
 
 		// Ambient
-		reader->Read(&m->Ambient, sizeof(float) * 3);
+		reader->read(&m->Ambient, sizeof(float) * 3);
 		m->Ambient.a = 1.0f;
 
 		// 描画フラグ (MMDDrawingFlags)
-		uint8_t bitFlag = reader->ReadInt8();
+		uint8_t bitFlag = reader->readInt8();
 		m->DrawingFlags = bitFlag;
 
 		// エッジ色
-		reader->Read(&m->EdgeColor, sizeof(float) * 4);
+		reader->read(&m->EdgeColor, sizeof(float) * 4);
 
 		// エッジサイズ
-		m->EdgeSize = reader->ReadFloat();
+		m->EdgeSize = reader->readFloat();
 
 		// テクスチャ
-		int normalTexture = (int)reader->ReadInt(getTextureIndexSize());
+		int normalTexture = (int)reader->readInt(getTextureIndexSize());
 		if (normalTexture >= 0) {
 			m->Texture = m_textureTable[normalTexture];
 		}
 
 		// スフィアテクスチャ
-		int sphereTexture = (int)reader->ReadInt(getTextureIndexSize());
+		int sphereTexture = (int)reader->readInt(getTextureIndexSize());
 		if (sphereTexture >= 0) {
 			m->SphereTexture = m_textureTable[sphereTexture];
 		}
-		m->SphereMode = (enum PmxMaterialResource::SphereMode)reader->ReadInt8();
+		m->SphereMode = (enum PmxMaterialResource::SphereMode)reader->readInt8();
 
 		// トゥーンテクスチャ
-		int shareToon = reader->ReadInt8();
+		int shareToon = reader->readInt8();
 		if (shareToon == 0)
 		{
-			int index = (int)reader->ReadInt(getTextureIndexSize());
+			int index = (int)reader->readInt(getTextureIndexSize());
 			if (index >= 0) {
 				m->ToonTexture = m_textureTable[index];
 			}
@@ -374,16 +374,16 @@ void PmxLoader::LoadMaterials(BinaryReader* reader)
 		// 共有Toonテクスチャ (toon01.bmp～toon10.bmp)
 		else
 		{
-			int index = reader->ReadInt8();
+			int index = reader->readInt8();
 			m->ToonTexture = m_manager->GetMMDDefaultToonTexture(index);
 		}
 
 		// 自由欄
-		uint32_t byteSize = reader->ReadInt32();
-		reader->Seek(byteSize);
+		uint32_t byteSize = reader->readInt32();
+		reader->seek(byteSize);
 
 		// マテリアルに対応する頂点数
-		int vc = reader->ReadInt32();
+		int vc = reader->readInt32();
 
 		// 属性テーブルを埋める
 		MeshAttribute* attr = m_modelCore->GetSection(i);
@@ -398,13 +398,13 @@ void PmxLoader::LoadMaterials(BinaryReader* reader)
 void PmxLoader::LoadBones(BinaryReader* reader)
 {
 	// ボーン数
-	int boneCount = reader->ReadInt32();
+	int boneCount = reader->readInt32();
 
 	// 親ボーンをインデックスから拾うため、まずはすべてインスタンス化
 	m_modelCore->bones.resize(boneCount);
 	for (int i = 0; i < boneCount; ++i)
 	{
-		m_modelCore->bones[i] = RefPtr<PmxBoneResource>::MakeRef(m_modelCore, i);
+		m_modelCore->bones[i] = RefPtr<PmxBoneResource>::makeRef(m_modelCore, i);
 	}
 
 	// データ読み込み
@@ -419,16 +419,16 @@ void PmxLoader::LoadBones(BinaryReader* reader)
 		/*bone->EnglishName = */ ReadString(reader);
 
 		// 初期位置
-		reader->Read(&bone->OrgPosition, sizeof(float) * 3);
+		reader->read(&bone->OrgPosition, sizeof(float) * 3);
 
 		// 親ボーンのボーンIndex
-		bone->ParentBoneIndex = (int)reader->ReadInt(getBoneIndexSize());
+		bone->ParentBoneIndex = (int)reader->readInt(getBoneIndexSize());
 
 		// 変形階層
-		bone->TransformLevel = reader->ReadInt32();
+		bone->TransformLevel = reader->readInt32();
 
 		// ボーンフラグ
-		uint32_t flag = reader->ReadUInt16();
+		uint32_t flag = reader->readUInt16();
 		bone->BoneConnect = (flag & 0x0001) != 0 ? BoneConnectType_Bone : BoneConnectType_PositionOffset;
 		bone->CanRotate = (flag & 0x0002) != 0;
 		bone->CanMove = (flag & 0x0004) != 0;
@@ -450,60 +450,60 @@ void PmxLoader::LoadBones(BinaryReader* reader)
 		if (bone->BoneConnect == BoneConnectType_PositionOffset)
 		{
 			// 座標オフセット, ボーン位置からの相対分
-			reader->Read(&bone->PositionOffset, sizeof(float) * 3);
+			reader->read(&bone->PositionOffset, sizeof(float) * 3);
 		}
 		else
 		{
 			// 接続先ボーンのボーンIndex
-			bone->ConnectedBoneIndex = (int)reader->ReadInt(getBoneIndexSize());
+			bone->ConnectedBoneIndex = (int)reader->readInt(getBoneIndexSize());
 		}
 
 		// 回転付与:1 または 移動付与:1 の場合
 		if (bone->IsRotateProvided || bone->IsMoveProvided)
 		{
 			// 付与親ボーンのボーンIndex
-			bone->ProvidedParentBoneIndex = (int)reader->ReadInt(getBoneIndexSize());
-			bone->ProvidedRatio = reader->ReadFloat();
+			bone->ProvidedParentBoneIndex = (int)reader->readInt(getBoneIndexSize());
+			bone->ProvidedRatio = reader->readFloat();
 		}
 
 		// 軸固定:1 の場合
 		if (bone->IsFixAxis) {
-			reader->Read(&bone->AxisDirectionVector, sizeof(float) * 3);
+			reader->read(&bone->AxisDirectionVector, sizeof(float) * 3);
 		}
 
 		//  ローカル軸:1 の場合
 		if (bone->IsLocalAxis)
 		{
-			reader->Read(&bone->DimentionXDirectionVector, sizeof(float) * 3);
-			reader->Read(&bone->DimentionZDirectionVector, sizeof(float) * 3);
+			reader->read(&bone->DimentionXDirectionVector, sizeof(float) * 3);
+			reader->read(&bone->DimentionZDirectionVector, sizeof(float) * 3);
 		}
 
 		// 外部親変形:1 の場合
 		if (bone->ParentTransform) {
-			bone->KeyValue = reader->ReadInt32();
+			bone->KeyValue = reader->readInt32();
 		}
 
 		// IK:1 の場合
 		if (bone->IsIK)
 		{
-			auto ik = RefPtr<PmxIKResource>::MakeRef();
-			m_modelCore->iks.Add(ik);
+			auto ik = RefPtr<PmxIKResource>::makeRef();
+			m_modelCore->iks.add(ik);
 			ik->IKBoneIndex = i;							// 現在処理中のボーン番号
-			ik->IKTargetBoneIndex = (int)reader->ReadInt(getBoneIndexSize());
-			ik->LoopCount = reader->ReadInt32();
-			ik->IKRotateLimit = reader->ReadFloat()/* * 4*/;
+			ik->IKTargetBoneIndex = (int)reader->readInt(getBoneIndexSize());
+			ik->LoopCount = reader->readInt32();
+			ik->IKRotateLimit = reader->readFloat()/* * 4*/;
 
-			int ikLinkCount = reader->ReadInt32();
+			int ikLinkCount = reader->readInt32();
 			for (int i = 0; i < ikLinkCount; i++)
 			{
 				PmxIKResource::IKLink ikLink;
-				ikLink.LinkBoneIndex = (int)reader->ReadInt(getBoneIndexSize());
-				ikLink.IsRotateLimit = (reader->ReadInt8() != 0);
+				ikLink.LinkBoneIndex = (int)reader->readInt(getBoneIndexSize());
+				ikLink.IsRotateLimit = (reader->readInt8() != 0);
 				if (ikLink.IsRotateLimit)
 				{
 					Vector3 minLimit, maxLimit;
-					reader->Read(&minLimit, sizeof(float) * 3);
-					reader->Read(&maxLimit, sizeof(float) * 3);
+					reader->read(&minLimit, sizeof(float) * 3);
+					reader->read(&maxLimit, sizeof(float) * 3);
 					ikLink.MinLimit = Vector3::Min(minLimit, maxLimit);
 					ikLink.MaxLimit = Vector3::Max(minLimit, maxLimit);
 
@@ -513,7 +513,7 @@ void PmxLoader::LoadBones(BinaryReader* reader)
 					ikLink.MaxLimit.Clamp(EularMinimum, EularMaximum);
 				}
 
-				ik->IKLinks.Add(ikLink);
+				ik->IKLinks.add(ikLink);
 			}
 		}
 	}
@@ -523,13 +523,13 @@ void PmxLoader::LoadBones(BinaryReader* reader)
 void PmxLoader::LoadMorphs(BinaryReader* reader)
 {
 	// モーフ数
-	int boneCount = reader->ReadInt32();
+	int boneCount = reader->readInt32();
 	m_modelCore->morphs.resize(boneCount);
 
 	// データ読み込み
 	for (int i = 0; i < boneCount; ++i)
 	{
-		auto morph = RefPtr<PmxMorphResource>::MakeRef();
+		auto morph = RefPtr<PmxMorphResource>::makeRef();
 		m_modelCore->morphs[i] = morph;
 
 		// モーフ名
@@ -539,13 +539,13 @@ void PmxLoader::LoadMorphs(BinaryReader* reader)
 		/*morph->EnglishName = */ ReadString(reader);
 
 		// 操作パネル
-		morph->OperationPanel = reader->ReadInt8();
+		morph->OperationPanel = reader->readInt8();
 
 		// モーフ種類
-		int morphType = reader->ReadInt8();
+		int morphType = reader->readInt8();
 
 		// モーフオフセット
-		int32_t offsetCount = reader->ReadInt32();
+		int32_t offsetCount = reader->readInt32();
 		morph->MorphOffsets.resize(offsetCount);
 		for (int i = 0; i < offsetCount; i++)
 		{
@@ -554,72 +554,72 @@ void PmxLoader::LoadMorphs(BinaryReader* reader)
 			{
 			case 0:		// グループモーフ
 				morph->MorphType = ModelMorphType_Group;
-				mo->GroupMorphOffset.MorphIndex = (int)reader->ReadInt(getMorphIndexSize());
-				mo->GroupMorphOffset.MorphRatio = reader->ReadFloat();
+				mo->GroupMorphOffset.MorphIndex = (int)reader->readInt(getMorphIndexSize());
+				mo->GroupMorphOffset.MorphRatio = reader->readFloat();
 				break;
 			case 1:		// 頂点モーフ
 				// VertexIndex はモデル本体の頂点インデックス
 				// PositionOffset は元の位置からの相対位置
 				morph->MorphType = ModelMorphType_Vertex;
-				mo->VertexMorphOffset.VertexIndex = (int)reader->ReadInt(getVertexIndexSize());
-				reader->Read(&mo->VertexMorphOffset.PositionOffset, sizeof(float) * 3);
+				mo->VertexMorphOffset.VertexIndex = (int)reader->readInt(getVertexIndexSize());
+				reader->read(&mo->VertexMorphOffset.PositionOffset, sizeof(float) * 3);
 				break;
 			case 2:		// ボーンモーフ
 				morph->MorphType = ModelMorphType_Bone;
-				mo->BoneMorphOffset.BoneIndex = (int)reader->ReadInt(getVertexIndexSize());
-				reader->Read(&mo->BoneMorphOffset.Moving, sizeof(float) * 3);
-				reader->Read(&mo->BoneMorphOffset.Rotating, sizeof(float) * 4);
+				mo->BoneMorphOffset.BoneIndex = (int)reader->readInt(getVertexIndexSize());
+				reader->read(&mo->BoneMorphOffset.Moving, sizeof(float) * 3);
+				reader->read(&mo->BoneMorphOffset.Rotating, sizeof(float) * 4);
 				break;
 			case 3:		// UVモーフ
 				morph->MorphType = ModelMorphType_UV;
-				mo->UVMorphOffset.VertexIndex = (int)reader->ReadInt(getVertexIndexSize());
-				reader->Read(&mo->UVMorphOffset.UVOffset, sizeof(float) * 4);
+				mo->UVMorphOffset.VertexIndex = (int)reader->readInt(getVertexIndexSize());
+				reader->read(&mo->UVMorphOffset.UVOffset, sizeof(float) * 4);
 				break;
 			case 4:		// 追加UVモーフ1
 				morph->MorphType = ModelMorphType_AdditionalUV1;
-				mo->UVMorphOffset.VertexIndex = (int)reader->ReadInt(getVertexIndexSize());
-				reader->Read(&mo->UVMorphOffset.UVOffset, sizeof(float) * 4);
+				mo->UVMorphOffset.VertexIndex = (int)reader->readInt(getVertexIndexSize());
+				reader->read(&mo->UVMorphOffset.UVOffset, sizeof(float) * 4);
 				break;
 			case 5:		// 追加UVモーフ2
 				morph->MorphType = ModelMorphType_AdditionalUV2;
-				mo->UVMorphOffset.VertexIndex = (int)reader->ReadInt(getVertexIndexSize());
-				reader->Read(&mo->UVMorphOffset.UVOffset, sizeof(float) * 4);
+				mo->UVMorphOffset.VertexIndex = (int)reader->readInt(getVertexIndexSize());
+				reader->read(&mo->UVMorphOffset.UVOffset, sizeof(float) * 4);
 				break;
 			case 6:		// 追加UVモーフ3
 				morph->MorphType = ModelMorphType_AdditionalUV3;
-				mo->UVMorphOffset.VertexIndex = (int)reader->ReadInt(getVertexIndexSize());
-				reader->Read(&mo->UVMorphOffset.UVOffset, sizeof(float) * 4);
+				mo->UVMorphOffset.VertexIndex = (int)reader->readInt(getVertexIndexSize());
+				reader->read(&mo->UVMorphOffset.UVOffset, sizeof(float) * 4);
 				break;
 			case 7:		// 追加UVモーフ4
 				morph->MorphType = ModelMorphType_AdditionalUV4;
-				mo->UVMorphOffset.VertexIndex = (int)reader->ReadInt(getVertexIndexSize());
-				reader->Read(&mo->UVMorphOffset.UVOffset, sizeof(float) * 4);
+				mo->UVMorphOffset.VertexIndex = (int)reader->readInt(getVertexIndexSize());
+				reader->read(&mo->UVMorphOffset.UVOffset, sizeof(float) * 4);
 				break;
 			case 8:		// 材質モーフ
 				morph->MorphType = ModelMorphType_Matrial;
-				mo->MaterialMorphOffset.MaterialIndex = (int)reader->ReadInt(getMaterialIndexSize());
-				mo->MaterialMorphOffset.OffsetCalcType = reader->ReadUInt8();
-				reader->Read(&mo->MaterialMorphOffset.Diffuse, sizeof(float) * 4);
-				reader->Read(&mo->MaterialMorphOffset.Specular, sizeof(float) * 3);
-				reader->Read(&mo->MaterialMorphOffset.SpecularCoe, sizeof(float) * 1);
-				reader->Read(&mo->MaterialMorphOffset.Ambient, sizeof(float) * 3);
-				reader->Read(&mo->MaterialMorphOffset.EdgeColor, sizeof(float) * 4);
-				reader->Read(&mo->MaterialMorphOffset.EdgeSize, sizeof(float) * 1);
-				reader->Read(&mo->MaterialMorphOffset.TextureCoe, sizeof(float) * 4);
-				reader->Read(&mo->MaterialMorphOffset.SphereTextureCoe, sizeof(float) * 4);
-				reader->Read(&mo->MaterialMorphOffset.ToonTextureCoe, sizeof(float) * 4);
+				mo->MaterialMorphOffset.MaterialIndex = (int)reader->readInt(getMaterialIndexSize());
+				mo->MaterialMorphOffset.OffsetCalcType = reader->readUInt8();
+				reader->read(&mo->MaterialMorphOffset.Diffuse, sizeof(float) * 4);
+				reader->read(&mo->MaterialMorphOffset.Specular, sizeof(float) * 3);
+				reader->read(&mo->MaterialMorphOffset.SpecularCoe, sizeof(float) * 1);
+				reader->read(&mo->MaterialMorphOffset.Ambient, sizeof(float) * 3);
+				reader->read(&mo->MaterialMorphOffset.EdgeColor, sizeof(float) * 4);
+				reader->read(&mo->MaterialMorphOffset.EdgeSize, sizeof(float) * 1);
+				reader->read(&mo->MaterialMorphOffset.TextureCoe, sizeof(float) * 4);
+				reader->read(&mo->MaterialMorphOffset.SphereTextureCoe, sizeof(float) * 4);
+				reader->read(&mo->MaterialMorphOffset.ToonTextureCoe, sizeof(float) * 4);
 				break;
 			case 9:		// Flipモーフ
 				morph->MorphType = ModelMorphType_Flip;
-				mo->FlipMorphOffset.MorphIndex = (int)reader->ReadInt(getMorphIndexSize());
-				mo->FlipMorphOffset.MorphValue = reader->ReadFloat();
+				mo->FlipMorphOffset.MorphIndex = (int)reader->readInt(getMorphIndexSize());
+				mo->FlipMorphOffset.MorphValue = reader->readFloat();
 				break;
 			case 10:	// Impulseモーフ
 				morph->MorphType = ModelMorphType_Impulse;
-				mo->ImpulseMorphOffset.RigidIndex = (int)reader->ReadInt(getMorphIndexSize());
-				mo->ImpulseMorphOffset.LocalFlag = reader->ReadUInt8();
-				reader->Read(&mo->ImpulseMorphOffset.Moving, sizeof(float) * 3);
-				reader->Read(&mo->ImpulseMorphOffset.Rotating, sizeof(float) * 3);
+				mo->ImpulseMorphOffset.RigidIndex = (int)reader->readInt(getMorphIndexSize());
+				mo->ImpulseMorphOffset.LocalFlag = reader->readUInt8();
+				reader->read(&mo->ImpulseMorphOffset.Moving, sizeof(float) * 3);
+				reader->read(&mo->ImpulseMorphOffset.Rotating, sizeof(float) * 3);
 				break;
 			}
 		}
@@ -630,33 +630,33 @@ void PmxLoader::LoadMorphs(BinaryReader* reader)
 void PmxLoader::LoadDisplayFrame(BinaryReader* reader)
 {
 	// 表示枠はすべて読み飛ばす
-	int displayFrameCount = reader->ReadInt32();
+	int displayFrameCount = reader->readInt32();
 	for (int i = 0; i < displayFrameCount; i++)
 	{
 		// 枠名
-		uint32_t byteSize = reader->ReadInt32();
-		reader->Seek(byteSize);
+		uint32_t byteSize = reader->readInt32();
+		reader->seek(byteSize);
 
 		// 枠名英
-		byteSize = reader->ReadInt32();
-		reader->Seek(byteSize);
+		byteSize = reader->readInt32();
+		reader->seek(byteSize);
 
 		// 特殊枠フラグ
-		reader->Seek(sizeof(uint8_t));
+		reader->seek(sizeof(uint8_t));
 
 		// 枠内要素数
-		int frameElementCount = reader->ReadInt32();
+		int frameElementCount = reader->readInt32();
 		for (int j = 0; j < frameElementCount; j++)
 		{
 			// 要素対象
-			uint8_t type = reader->ReadUInt8();
+			uint8_t type = reader->readUInt8();
 			switch (type)
 			{
 			case 0:	// ボーンがターゲットの場合
-				reader->ReadInt(getBoneIndexSize());
+				reader->readInt(getBoneIndexSize());
 				break;
 			case 1:	// モーフがターゲットの場合
-				reader->ReadInt(getMorphIndexSize());
+				reader->readInt(getMorphIndexSize());
 				break;
 			}
 		}
@@ -667,13 +667,13 @@ void PmxLoader::LoadDisplayFrame(BinaryReader* reader)
 void PmxLoader::LoadRigidBodys(BinaryReader* reader)
 {
 	// 剛体数
-	int bodyCount = reader->ReadInt32();
+	int bodyCount = reader->readInt32();
 	m_modelCore->rigidBodys.resize(bodyCount);
 
 	// データ読み込み
 	for (int i = 0; i < bodyCount; ++i)
 	{
-		auto body = RefPtr<PmxRigidBodyResource>::MakeRef();
+		auto body = RefPtr<PmxRigidBodyResource>::makeRef();
 		m_modelCore->rigidBodys[i] = body;
 
 		// 剛体名
@@ -683,20 +683,20 @@ void PmxLoader::LoadRigidBodys(BinaryReader* reader)
 		/*body->EnglishName =*/ ReadString(reader);
 
 		// 関連ボーンIndex - 関連なしの場合は-1
-		body->RelatedBoneIndex = (int)reader->ReadInt(getBoneIndexSize());
+		body->RelatedBoneIndex = (int)reader->readInt(getBoneIndexSize());
 
 		// グループ
-		body->Group = (1 << reader->ReadUInt8());
+		body->Group = (1 << reader->readUInt8());
 
 		// 非衝突グループフラグ
-		body->GroupMask = reader->ReadUInt16();
+		body->GroupMask = reader->readUInt16();
 
 		// 形状 - 0:球 1:箱 2:カプセル
-		uint8_t type = reader->ReadUInt8();
+		uint8_t type = reader->readUInt8();
 
 		// サイズ(x,y,z)
 		Vector3 size;
-		reader->Read(&size, sizeof(float) * 3);
+		reader->read(&size, sizeof(float) * 3);
 
 		switch (type)
 		{
@@ -719,11 +719,11 @@ void PmxLoader::LoadRigidBodys(BinaryReader* reader)
 
 		// 位置(x,y,z) (グローバル座標空間)
 		Vector3 Position;
-		reader->Read(&Position, sizeof(float) * 3);
+		reader->read(&Position, sizeof(float) * 3);
 
 		// 回転(x,y,z) (グローバル座標空間) -> ラジアン角
 		Vector3 Rotation;
-		reader->Read(&Rotation, sizeof(float) * 3);
+		reader->read(&Rotation, sizeof(float) * 3);
 		if (Math::IsNaN(Rotation.x)) Rotation.x = 0;	// モデルによっては壊れていることがあったのでリセットしておく
 		if (Math::IsNaN(Rotation.y)) Rotation.y = 0;
 		if (Math::IsNaN(Rotation.z)) Rotation.z = 0;
@@ -732,14 +732,14 @@ void PmxLoader::LoadRigidBodys(BinaryReader* reader)
 		body->InitialTransform = Matrix::MakeRotationYawPitchRoll(Rotation.y, Rotation.x, Rotation.z) * Matrix::MakeTranslation(Position);
 
 		// 剛体基本情報
-		body->Mass = reader->ReadFloat();
-		body->LinearDamping = reader->ReadFloat();
-		body->AngularDamping = reader->ReadFloat();
-		body->Restitution = reader->ReadFloat();
-		body->Friction = reader->ReadFloat();
+		body->Mass = reader->readFloat();
+		body->LinearDamping = reader->readFloat();
+		body->AngularDamping = reader->readFloat();
+		body->Restitution = reader->readFloat();
+		body->Friction = reader->readFloat();
 
 		// 剛体の物理演算 - 0:ボーン追従(static) 1:物理演算(dynamic) 2:物理演算 + Bone位置合わせ
-		uint8_t physicsType = reader->ReadUInt8();
+		uint8_t physicsType = reader->readUInt8();
 		switch (physicsType)
 		{
 		case 0:	// Static
@@ -759,13 +759,13 @@ void PmxLoader::LoadRigidBodys(BinaryReader* reader)
 void PmxLoader::LoadJoints(BinaryReader* reader)
 {
 	// ジョイント数
-	int jointCount = reader->ReadInt32();
+	int jointCount = reader->readInt32();
 	m_modelCore->joints.resize(jointCount);
 
 	// データ読み込み
 	for (int i = 0; i < jointCount; ++i)
 	{
-		auto joint = RefPtr<PmxJointResource>::MakeRef();
+		auto joint = RefPtr<PmxJointResource>::makeRef();
 		m_modelCore->joints[i] = joint;
 
 		// Joint名
@@ -775,20 +775,20 @@ void PmxLoader::LoadJoints(BinaryReader* reader)
 		/*joint->EnglishName =*/ ReadString(reader);
 
 		// Joint種類 - 0:スプリング6DOF   | PMX2.0では 0 のみ(拡張用)
-		int type = reader->ReadUInt8();
+		int type = reader->readUInt8();
 		LN_THROW(type == 0, InvalidFormatException);
 
 		// 後は PMD と同じ
-		joint->RigidBodyAIndex = (int)reader->ReadInt(getRigidBodyIndexSize());
-		joint->RigidBodyBIndex = (int)reader->ReadInt(getRigidBodyIndexSize());
-		reader->Read(&joint->Position, sizeof(Vector3));
-		reader->Read(&joint->Rotation, sizeof(Vector3));
-		reader->Read(&joint->PositionLimitLower, sizeof(Vector3));
-		reader->Read(&joint->PositionLimitUpper, sizeof(Vector3));
-		reader->Read(&joint->RotationLimitLower, sizeof(Vector3));
-		reader->Read(&joint->RotationLimitUpper, sizeof(Vector3));
-		reader->Read(&joint->SpringPositionStiffness, sizeof(Vector3));
-		reader->Read(&joint->SpringRotationStiffness, sizeof(Vector3));
+		joint->RigidBodyAIndex = (int)reader->readInt(getRigidBodyIndexSize());
+		joint->RigidBodyBIndex = (int)reader->readInt(getRigidBodyIndexSize());
+		reader->read(&joint->Position, sizeof(Vector3));
+		reader->read(&joint->Rotation, sizeof(Vector3));
+		reader->read(&joint->PositionLimitLower, sizeof(Vector3));
+		reader->read(&joint->PositionLimitUpper, sizeof(Vector3));
+		reader->read(&joint->RotationLimitLower, sizeof(Vector3));
+		reader->read(&joint->RotationLimitUpper, sizeof(Vector3));
+		reader->read(&joint->SpringPositionStiffness, sizeof(Vector3));
+		reader->read(&joint->SpringRotationStiffness, sizeof(Vector3));
 
 		joint->SpringRotationStiffness.x = Math::DegreesToRadians(joint->SpringRotationStiffness.x);
 		joint->SpringRotationStiffness.y = Math::DegreesToRadians(joint->SpringRotationStiffness.y);
@@ -799,16 +799,16 @@ void PmxLoader::LoadJoints(BinaryReader* reader)
 //------------------------------------------------------------------------------
 String PmxLoader::ReadString(BinaryReader* reader)
 {
-	uint32_t byteSize = reader->ReadInt32();
+	uint32_t byteSize = reader->readInt32();
 	m_tmpBuffer.resize(byteSize);
-	reader->Read(m_tmpBuffer.getData(), byteSize);
+	reader->read(m_tmpBuffer.getData(), byteSize);
 
 	String str;
 	if (getEncode() == PMX_Encode_UTF16) {
-		str.ConvertFrom(m_tmpBuffer.getData(), byteSize, Encoding::GetUTF16Encoding());
+		str.convertFrom(m_tmpBuffer.getData(), byteSize, Encoding::GetUTF16Encoding());
 	}
 	else {
-		str.ConvertFrom(m_tmpBuffer.getData(), byteSize, Encoding::GetUTF8Encoding());
+		str.convertFrom(m_tmpBuffer.getData(), byteSize, Encoding::GetUTF8Encoding());
 	}
 
 	return str;

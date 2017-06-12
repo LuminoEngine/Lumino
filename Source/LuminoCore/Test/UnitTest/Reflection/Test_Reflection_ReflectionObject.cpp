@@ -69,11 +69,11 @@ TEST_F(IntegrationTest_Reflection_ReflectionObject, Basic)
 
 	auto type1 = tr::TypeInfo::GetTypeInfo(&t1);
 	name = type1->GetName();
-	ASSERT_TRUE(name.IndexOf(_T("RefTest1")) >= 0);
+	ASSERT_TRUE(name.indexOf(_T("RefTest1")) >= 0);
 
 	auto type2 = tr::TypeInfo::GetTypeInfo(&t2);
 	name = type2->GetName();
-	ASSERT_TRUE(name.IndexOf(_T("RefTest2")) >= 0);
+	ASSERT_TRUE(name.indexOf(_T("RefTest2")) >= 0);
 
 	tr::TypeInfo::GetTypeInfo(&t1)->SetBindingTypeInfo((void*)1);
 	tr::TypeInfo::GetTypeInfo(&t2)->SetBindingTypeInfo((void*)2);
@@ -114,13 +114,13 @@ TEST_F(IntegrationTest_Reflection_ReflectionObject, StackDestruct)
 	{
 	};
 	g_StackDestructCount = 0;
-	Assertion::SetNotifyFataiErrorHandler([](const char* file, int line, const char* message) { g_StackDestructCount++; return true; });
+	Assertion::setNotifyFataiErrorHandler([](const char* file, int line, const char* message) { g_StackDestructCount++; return true; });
 	{
 		MyObj o1;
 		MyObj o2;
 		o2.addRef();
 	}
-	Assertion::SetNotifyFataiErrorHandler(nullptr);
+	Assertion::setNotifyFataiErrorHandler(nullptr);
 
 	ASSERT_EQ(1, g_StackDestructCount);
 }
@@ -174,7 +174,7 @@ public:
 
 	void SetV4(RefTest2* v) { V4.Set(v); }
 	//RefTest2* GetV4() const { return V4; }	// TODO: できればコレがやりたいのだが・・・
-	RefTest2* GetV4() const { return V4.Get(); }
+	RefTest2* GetV4() const { return V4.get(); }
 	RefPtr<RefTest2> GetV4_2() const { return V4; }
 
 	virtual void OnPropertyChanged(tr::PropertyChangedEventArgs* e) override
@@ -204,7 +204,7 @@ TEST_F(Test_Reflection_Property, GetSet)
 {
 	PropertyTest1 obj;
 	RefTest1 t2;
-	auto t3 = RefPtr<RefTest2>::MakeRef();
+	auto t3 = RefPtr<RefTest2>::makeRef();
 
 	// int type
 	ASSERT_EQ(1, obj.V1);
@@ -219,11 +219,11 @@ TEST_F(Test_Reflection_Property, GetSet)
 	// struct type
 	Point pt1(1, 2);
 	obj.V3 = pt1;
-	ASSERT_EQ(1, obj.V3.Get().x);
-	ASSERT_EQ(2, obj.V3.Get().y);
+	ASSERT_EQ(1, obj.V3.get().x);
+	ASSERT_EQ(2, obj.V3.get().y);
 
 	// RefPtr<> type
-	ASSERT_EQ(nullptr, obj.V4.Get());
+	ASSERT_EQ(nullptr, obj.V4.get());
 	obj.V4 = t3;
 	ASSERT_EQ(t3, obj.V4);
 }
@@ -339,8 +339,8 @@ TEST_F(IntegrationTest_Reflection_ReflectionObject, GetSetHelper)
 		// set
 		Point pt1(1, 2);
 		tr::PropertyInfo::SetPropertyValue(&t1, PropertyTest1::V3Id, pt1);
-		ASSERT_EQ(1, t1.V3.Get().x);
-		ASSERT_EQ(2, t1.V3.Get().y);
+		ASSERT_EQ(1, t1.V3.get().x);
+		ASSERT_EQ(2, t1.V3.get().y);
 
 		// get
 		tr::Variant v = tr::PropertyInfo::GetPropertyValue(&t1, PropertyTest1::V3Id);
@@ -350,8 +350,8 @@ TEST_F(IntegrationTest_Reflection_ReflectionObject, GetSetHelper)
 		// set (Direct)
 		Point pt2(10, 20);
 		tr::PropertyInfo::SetPropertyValueDirect<Point>(&t1, PropertyTest1::V3Id, pt2);
-		ASSERT_EQ(10, t1.V3.Get().x);
-		ASSERT_EQ(20, t1.V3.Get().y);
+		ASSERT_EQ(10, t1.V3.get().x);
+		ASSERT_EQ(20, t1.V3.get().y);
 
 		// get (Direct)
 		tr::Variant v2 = tr::PropertyInfo::GetPropertyValueDirect<Point>(&t1, PropertyTest1::V3Id);
@@ -373,7 +373,7 @@ TEST_F(IntegrationTest_Reflection_ReflectionObject, GetSetHelper)
 
 		// get
 		tr::Variant v = tr::PropertyInfo::GetPropertyValue(&t1, PropertyTest1::V4Id);
-		ASSERT_EQ(p1.Get(), tr::Variant::Cast<RefPtr<RefTest2>>(v));
+		ASSERT_EQ(p1.get(), tr::Variant::Cast<RefPtr<RefTest2>>(v));
 
 		// set (Direct)
 		RefPtr<RefTest2> p12(LN_NEW RefTest2(), false);
@@ -387,7 +387,7 @@ TEST_F(IntegrationTest_Reflection_ReflectionObject, GetSetHelper)
 		// setter/getter
 		RefPtr<RefTest2> p2(LN_NEW RefTest2(), false);
 		t1.SetV4(p2);
-		ASSERT_EQ(p2.Get(), t1.GetV4());
+		ASSERT_EQ(p2.get(), t1.GetV4());
 
 		// setter/getter (nullptr)
 		t1.SetV4(nullptr);

@@ -16,26 +16,26 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Font, Object);
 
 //------------------------------------------------------------------------------
-FontPtr Font::Create()
+FontPtr Font::create()
 {
-	auto ptr = FontPtr::MakeRef();
+	auto ptr = FontPtr::makeRef();
 	ptr->initialize(detail::GraphicsManager::GetInstance(), nullptr);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-FontPtr Font::Create(const String& family)
+FontPtr Font::create(const String& family)
 {
-	auto ptr = FontPtr::MakeRef();
+	auto ptr = FontPtr::makeRef();
 	ptr->initialize(detail::GraphicsManager::GetInstance(), nullptr);
 	ptr->SetFamily(family);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-FontPtr Font::Create(const String& family, float size)
+FontPtr Font::create(const String& family, float size)
 {
-	auto ptr = FontPtr::MakeRef();
+	auto ptr = FontPtr::makeRef();
 	ptr->initialize(detail::GraphicsManager::GetInstance(), nullptr);
 	ptr->SetFamily(family);
 	ptr->SetSize(size);
@@ -43,7 +43,7 @@ FontPtr Font::Create(const String& family, float size)
 }
 
 //------------------------------------------------------------------------------
-FontPtr Font::GetDefault()
+FontPtr Font::getDefault()
 {
 	return detail::GraphicsManager::GetInstance()->GetFontManager()->GetDefaultFont();
 }
@@ -162,7 +162,7 @@ Size Font::MeasureRenderSize(const StringRef& text)
 //------------------------------------------------------------------------------
 FontPtr Font::Clone() const
 {
-	auto ptr = FontPtr::MakeRef();
+	auto ptr = FontPtr::makeRef();
 	ptr->m_manager = m_manager;
 	ptr->m_fontInfo = m_fontInfo;
 	ptr->m_rawFont = m_rawFont;
@@ -213,7 +213,7 @@ void RawFont::initialize()
 }
 
 //------------------------------------------------------------------------------
-void RawFont::Finalize_()
+void RawFont::finalize_()
 {
 	Dispose_();
 }
@@ -234,7 +234,7 @@ SizeI RawFont::GetTextSize(const StringRef& text)
 	auto* r = GetManager()->GetGraphicsManager()->GetBitmapTextRenderer();
 	auto* gr = r->GetTempGlyphRun();
 	gr->SetFont(this);
-	gr->SetText(text);
+	gr->setText(text);
 	return gr->GetRenderSize();
 }
 

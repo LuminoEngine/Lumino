@@ -12,7 +12,7 @@ LN_NAMESPACE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIWindow, UIControl)
 
 //------------------------------------------------------------------------------
-RefPtr<UIWindow> UIWindow::Create()
+RefPtr<UIWindow> UIWindow::create()
 {
 	return NewObject<UIWindow>();
 }
@@ -39,14 +39,14 @@ void UIWindow::initialize()
 //------------------------------------------------------------------------------
 void UIWindow::OnRoutedEvent(UIEventArgs* e)
 {
-	if (e->GetType() == UIEvents::MouseDownEvent)
+	if (e->getType() == UIEvents::MouseDownEvent)
 	{
 		if (!m_isDragging)
 		{
 			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);
-			PointF pos = mouseEvent->GetPosition(GetVisualParent());
+			PointF pos = mouseEvent->getPosition(GetVisualParent());
 
-			m_dragStartWindowPosition = GetPosition();
+			m_dragStartWindowPosition = getPosition();
 			m_dragStartLocalPosition = pos;
 			m_isDragging = true;
 			CaptureMouse();
@@ -55,12 +55,12 @@ void UIWindow::OnRoutedEvent(UIEventArgs* e)
 			return;
 		}
 	}
-	else if (e->GetType() == UIEvents::MouseUpEvent)
+	else if (e->getType() == UIEvents::MouseUpEvent)
 	{
 		if (m_isDragging)
 		{
 			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);
-			PointF pos = mouseEvent->GetPosition(GetVisualParent());
+			PointF pos = mouseEvent->getPosition(GetVisualParent());
 
 			m_isDragging = false;
 			ReleaseMouseCapture();
@@ -69,12 +69,12 @@ void UIWindow::OnRoutedEvent(UIEventArgs* e)
 			return;
 		}
 	}
-	else if (e->GetType() == UIEvents::MouseMoveEvent)
+	else if (e->getType() == UIEvents::MouseMoveEvent)
 	{
 		if (m_isDragging)
 		{
 			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);
-			Vector2 diff = mouseEvent->GetPosition(GetVisualParent()) - m_dragStartLocalPosition;
+			Vector2 diff = mouseEvent->getPosition(GetVisualParent()) - m_dragStartLocalPosition;
 
 			SetPosition(m_dragStartWindowPosition + diff);
 			

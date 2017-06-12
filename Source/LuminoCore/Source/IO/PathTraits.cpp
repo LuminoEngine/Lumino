@@ -152,7 +152,7 @@ GenericString<TChar> PathTraits::GetDirectoryPath(const TChar* path)
 			//if ((*str.rbegin() != DirectorySeparatorChar) && (*str.rbegin() != AltDirectorySeparatorChar)) {
 			//if (str.LastIndexOf(DirectorySeparatorChar) != str.GetLength() &&
 			//	str.LastIndexOf(AltDirectorySeparatorChar) != str.GetLength()){
-			if (!str.EndsWith((TChar)DirectorySeparatorChar) && !str.EndsWith((TChar)AltDirectorySeparatorChar))
+			if (!str.endsWith((TChar)DirectorySeparatorChar) && !str.endsWith((TChar)AltDirectorySeparatorChar))
 			{
 				if (lastSep != 0) {
 					str += (const char)lastSep;
@@ -179,12 +179,12 @@ template GenericString<wchar_t> PathTraits::GetDirectoryPath<wchar_t>(const wcha
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericString<TChar> PathTraits::GetFileName(const TChar* path)
+GenericString<TChar> PathTraits::getFileName(const TChar* path)
 {
 	return GenericString<TChar>(GetFileNameSub(path));
 }
-template GenericString<char> PathTraits::GetFileName(const char* path);
-template GenericString<wchar_t> PathTraits::GetFileName(const wchar_t* path);
+template GenericString<char> PathTraits::getFileName(const char* path);
+template GenericString<wchar_t> PathTraits::getFileName(const wchar_t* path);
 
 
 //------------------------------------------------------------------------------
@@ -221,13 +221,13 @@ void PathTraits::GetFileNameWithoutExtension(const TChar* path, TChar* outExt)
 
 	const TChar* fileName = GetFileNameSub(path);
 	int len = StringTraits::tcslen(fileName);
-	int i = StringTraits::LastIndexOf(fileName, len, LN_T(TChar, "."), 1, (len-1), len, CaseSensitivity::CaseSensitive);
+	int i = StringTraits::lastIndexOf(fileName, len, LN_T(TChar, "."), 1, (len-1), len, CaseSensitivity::CaseSensitive);
 	if (i >= 0) {
-		StringTraits::StrNCpy(outExt, LN_MAX_PATH, fileName, i);
+		StringTraits::strncpy(outExt, LN_MAX_PATH, fileName, i);
 		outExt[i] = '\0';
 	}
 	else {
-		StringTraits::StrNCpy(outExt, LN_MAX_PATH, fileName, len);
+		StringTraits::strncpy(outExt, LN_MAX_PATH, fileName, len);
 		outExt[len] = '\0';
 	}
 }
@@ -248,7 +248,7 @@ void PathTraits::GetExtension(const TChar* path, TChar* outExt)
 		if (ch == '.')
 		{
 			if (i != len - 1) {
-				StringTraits::StrNCpy(outExt, LN_MAX_PATH, &path[i], len - i);
+				StringTraits::strncpy(outExt, LN_MAX_PATH, &path[i], len - i);
 			}
 			else {
 				break;	// "file." のようなパターン
@@ -602,10 +602,10 @@ void PathTraits::CanonicalizePath(const TChar* srcPath, TChar* outPath)
 	{
 		// 相対パスであれば、カレントディレクトリと結合してから変換する
 		TChar src[LN_MAX_PATH];
-		size_t len2 = DirectoryUtils::GetCurrentDirectory(src);
+		size_t len2 = DirectoryUtils::getCurrentDirectory(src);
 		src[len2] = DirectorySeparatorChar;
 		++len2;
-		StringTraits::StrNCpy(src + len2, LN_MAX_PATH - len2, srcPath, srcLen);
+		StringTraits::strncpy(src + len2, LN_MAX_PATH - len2, srcPath, srcLen);
 		srcLen += len2;
 		CanonicalizePath(src, srcLen, outPath);
 	}
@@ -728,7 +728,7 @@ int PathTraits::compare(const TChar* path1, const TChar* path2)
 	// 大文字小文字区別せず、文字が等しい間繰り返す
 	while (*s1 && *s2)
 	{
-		if (StringTraits::ToUpper(*s1) != StringTraits::ToUpper(*s2))
+		if (StringTraits::toUpper(*s1) != StringTraits::toUpper(*s2))
 		{
 			// セパレータの差は区別しない
 			if ((*s1 == DirectorySeparatorChar || *s1 == AltDirectorySeparatorChar) &&
@@ -737,14 +737,14 @@ int PathTraits::compare(const TChar* path1, const TChar* path2)
 				// 継続
 			}
 			else {
-				return ((StringTraits::ToUpper(*s1) - StringTraits::ToUpper(*s2)));
+				return ((StringTraits::toUpper(*s1) - StringTraits::toUpper(*s2)));
 			}
 		}
 		s1++;
 		s2++;
 	}
 
-	return ((StringTraits::ToUpper(*s1) - StringTraits::ToUpper(*s2)));
+	return ((StringTraits::toUpper(*s1) - StringTraits::toUpper(*s2)));
 #else
 	while (*s1 && *s2)
 	{
@@ -851,7 +851,7 @@ GenericString<TChar> PathTraits::DiffPath(const TChar* path1, int len1, const TC
 	}
 	// 完全一致
 	if (i == slen1 && i == slen2) {
-		return GenericString<TChar>::FromNativeCharString(_T("."));	// TODO: 共通文字列にしたい。メモリ確保したくない//::GetEmpty();
+		return GenericString<TChar>::fromNativeCharString(_T("."));	// TODO: 共通文字列にしたい。メモリ確保したくない//::GetEmpty();
 	}
 
 	// path1 の残りの部分からセパレータを探す。このセパレータの数が、戻る深さ(..) の数になる。
@@ -860,7 +860,7 @@ GenericString<TChar> PathTraits::DiffPath(const TChar* path1, int len1, const TC
 	{
 		if (IsInternalSeparator(path1, i, len1))
 		{
-			if (!relLead.IsEmpty()) {
+			if (!relLead.isEmpty()) {
 				relLead += LN_T(TChar, "/");
 			}
 			relLead += LN_T(TChar, "..");

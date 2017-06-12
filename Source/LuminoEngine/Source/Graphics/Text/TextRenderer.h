@@ -57,7 +57,7 @@ private:
 	};
 
 	void InternalDrawRectangle(const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color);
-	void Flush(FontGlyphTextureCache* cache);
+	void flush(FontGlyphTextureCache* cache);
 
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device) override;
 	void CreateDeviceResources();
@@ -114,9 +114,9 @@ public:
 	void DrawString(const Matrix& transform, const TCHAR* str, int length, const Rect& rect, StringFormatFlags flags);
 
 	virtual bool IsStandaloneShader() const { return true; }
-	virtual void Flush() override;
+	virtual void flush() override;
 	virtual void OnActivated() { m_stateModified = true; }
-	virtual void OnDeactivated() { Flush(); }
+	virtual void OnDeactivated() { flush(); }
 	virtual void OnSetState(const DrawElementBatch* state);
 
 public:
@@ -185,9 +185,9 @@ public:
 	void DrawChar(const Matrix& transform, UTF32 ch, const Rect& rect, TextLayoutOptions options);
 
 	virtual bool IsStandaloneShader() const { return false; }
-	virtual void Flush() override;
+	virtual void flush() override;
 	virtual void OnActivated() override {}
-	virtual void OnDeactivated() override { Flush(); }
+	virtual void OnDeactivated() override { flush(); }
 	virtual void OnSetState(const DrawElementBatch* state);
 
 	GraphicsManager* GetManager() const { return m_manager; }

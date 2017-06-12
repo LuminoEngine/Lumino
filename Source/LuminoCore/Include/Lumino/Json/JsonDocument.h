@@ -80,7 +80,7 @@ class JsonElement2
 	, public ISerializeElement
 {
 public:
-	JsonValueType GetType() const { return m_type; }
+	JsonValueType getType() const { return m_type; }
 
 protected:
 	JsonElement2(JsonDocument2* owner);
@@ -89,42 +89,42 @@ protected:
 	virtual JsonParseResult OnLoad(JsonReader2* reader) = 0;
 
 	// ISerializeElement interface
-	virtual void SetValueInt32(const StringRef& name, int32_t value) override {}
-	virtual void SetValueString(const StringRef& name, const String& value) override {}
-	virtual ISerializeElement* AddObject(const StringRef& name) override { return nullptr; }
-	virtual bool TryGetValueInt32(const StringRef& name, int32_t* outValue) override { return false; }
-	virtual bool TryGetValueString(const StringRef& name, String* outValue) override { return false; }
-	virtual bool TryGetObject(const StringRef& name, ISerializeElement** outValue) override { return false; }
-	virtual bool TryGetArray(const StringRef& name, ISerializeElement** outValue) override { return false; }
-	virtual int GetSerializeElementCount() const override { return 0; }
-	virtual ISerializeElement* GetSerializeElement(int index) const override { return nullptr; }
-	virtual const String& GetSerializeElementName(int index) const override { return String::GetEmpty(); }
-	virtual SerializationValueType GetSerializationValueType() const override;
-	virtual bool GetSerializeValueBool() const override { return false; }
-	virtual int8_t GetSerializeValueInt8() const override { return 0; }
-	virtual int16_t GetSerializeValueInt16() const override { return 0; }
-	virtual int32_t GetSerializeValueInt32() const override { return 0; }
-	virtual int64_t GetSerializeValueInt64() const override { return 0; }
-	virtual uint8_t GetSerializeValueUInt8() const override { return 0; }
-	virtual uint16_t GetSerializeValueUInt16() const override { return 0; }
-	virtual uint32_t GetSerializeValueUInt32() const override { return 0; }
-	virtual uint64_t GetSerializeValueUInt64() const override { return 0; }
-	virtual float GetSerializeValueFloat() const override { return 0; }
-	virtual double GetSerializeValueDouble() const override { return 0; }
-	virtual String GetSerializeValueString() const override { return String::GetEmpty(); }
-	virtual void AddSerializeItemValue(SerializationValueType type, const void* value) override {}
-	virtual ISerializeElement* AddSerializeItemNewArray() override { return nullptr; }
-	virtual ISerializeElement* AddSerializeItemNewObject() override { return nullptr; }
-	virtual ISerializeElement* FindSerializeElement(const StringRef& name) const override { return nullptr; }
-	virtual void AddSerializeMemberValue(const StringRef& name, SerializationValueType type, const void* value) override {}
-	virtual ISerializeElement* AddSerializeMemberNewArray(const StringRef& name) override { return nullptr; }
-	virtual ISerializeElement* AddSerializeMemberNewObject(const StringRef& name) override { return nullptr; }
+	virtual void setValueInt32(const StringRef& name, int32_t value) override {}
+	virtual void setValueString(const StringRef& name, const String& value) override {}
+	virtual ISerializeElement* addObject(const StringRef& name) override { return nullptr; }
+	virtual bool tryGetValueInt32(const StringRef& name, int32_t* outValue) override { return false; }
+	virtual bool tryGetValueString(const StringRef& name, String* outValue) override { return false; }
+	virtual bool tryGetObject(const StringRef& name, ISerializeElement** outValue) override { return false; }
+	virtual bool tryGetArray(const StringRef& name, ISerializeElement** outValue) override { return false; }
+	virtual int getSerializeElementCount() const override { return 0; }
+	virtual ISerializeElement* getSerializeElement(int index) const override { return nullptr; }
+	virtual const String& getSerializeElementName(int index) const override { return String::getEmpty(); }
+	virtual SerializationValueType getSerializationValueType() const override;
+	virtual bool getSerializeValueBool() const override { return false; }
+	virtual int8_t getSerializeValueInt8() const override { return 0; }
+	virtual int16_t getSerializeValueInt16() const override { return 0; }
+	virtual int32_t getSerializeValueInt32() const override { return 0; }
+	virtual int64_t getSerializeValueInt64() const override { return 0; }
+	virtual uint8_t getSerializeValueUInt8() const override { return 0; }
+	virtual uint16_t getSerializeValueUInt16() const override { return 0; }
+	virtual uint32_t getSerializeValueUInt32() const override { return 0; }
+	virtual uint64_t getSerializeValueUInt64() const override { return 0; }
+	virtual float getSerializeValueFloat() const override { return 0; }
+	virtual double getSerializeValueDouble() const override { return 0; }
+	virtual String getSerializeValueString() const override { return String::getEmpty(); }
+	virtual void addSerializeItemValue(SerializationValueType type, const void* value) override {}
+	virtual ISerializeElement* addSerializeItemNewArray() override { return nullptr; }
+	virtual ISerializeElement* addSerializeItemNewObject() override { return nullptr; }
+	virtual ISerializeElement* findSerializeElement(const StringRef& name) const override { return nullptr; }
+	virtual void addSerializeMemberValue(const StringRef& name, SerializationValueType type, const void* value) override {}
+	virtual ISerializeElement* addSerializeMemberNewArray(const StringRef& name) override { return nullptr; }
+	virtual ISerializeElement* addSerializeMemberNewObject(const StringRef& name) override { return nullptr; }
 
 LN_INTERNAL_ACCESS:
 	JsonDocument2* GetOwnerDocument() const { return m_ownerDoc; }
 	void SetType(JsonValueType type) { m_type = type; }
-	void Save(JsonWriter* writer) { OnSave(writer); }
-	JsonParseResult Load(JsonReader2* reader) { return OnLoad(reader); }
+	void save(JsonWriter* writer) { OnSave(writer); }
+	JsonParseResult load(JsonReader2* reader) { return OnLoad(reader); }
 
 private:
 	JsonDocument2*	m_ownerDoc;
@@ -147,31 +147,31 @@ public:
 	void SetInt64(int64_t value);
 	void SetFloat(float value);
 	void SetDouble(double value);
-	void SetString(const StringRef& value);
+	void setString(const StringRef& value);
 
-	bool IsNull() const;
+	bool isNull() const;
 	bool GetBool() const;
 	int32_t GetInt32() const;
 	int64_t GetInt64() const;
 	float GetFloat() const;
 	double GetDouble() const;
-	String GetString() const;
+	String getString() const;
 
 protected:
 	// ISerializeElement interface
-	virtual SerializationElementType GetSerializationElementType() const { return SerializationElementType::Value; }
-	virtual bool GetSerializeValueBool() const override { return GetBool(); }
-	virtual int8_t GetSerializeValueInt8() const override { return GetInt32(); }
-	virtual int16_t GetSerializeValueInt16() const override { return GetInt32(); }
-	virtual int32_t GetSerializeValueInt32() const override { return GetInt32(); }
-	virtual int64_t GetSerializeValueInt64() const override { return GetInt64(); }
-	virtual uint8_t GetSerializeValueUInt8() const override { return GetInt32(); }
-	virtual uint16_t GetSerializeValueUInt16() const override { return GetInt32(); }
-	virtual uint32_t GetSerializeValueUInt32() const override { return GetInt32(); }
-	virtual uint64_t GetSerializeValueUInt64() const override { return GetInt64();; }
-	virtual float GetSerializeValueFloat() const override { return GetFloat(); }
-	virtual double GetSerializeValueDouble() const override { return GetDouble(); }
-	virtual String GetSerializeValueString() const override { return GetString(); }
+	virtual SerializationElementType getSerializationElementType() const { return SerializationElementType::Value; }
+	virtual bool getSerializeValueBool() const override { return GetBool(); }
+	virtual int8_t getSerializeValueInt8() const override { return GetInt32(); }
+	virtual int16_t getSerializeValueInt16() const override { return GetInt32(); }
+	virtual int32_t getSerializeValueInt32() const override { return GetInt32(); }
+	virtual int64_t getSerializeValueInt64() const override { return GetInt64(); }
+	virtual uint8_t getSerializeValueUInt8() const override { return GetInt32(); }
+	virtual uint16_t getSerializeValueUInt16() const override { return GetInt32(); }
+	virtual uint32_t getSerializeValueUInt32() const override { return GetInt32(); }
+	virtual uint64_t getSerializeValueUInt64() const override { return GetInt64();; }
+	virtual float getSerializeValueFloat() const override { return GetFloat(); }
+	virtual double getSerializeValueDouble() const override { return GetDouble(); }
+	virtual String getSerializeValueString() const override { return getString(); }
 
 private:
 	JsonValue2(JsonDocument2* ownerDoc);
@@ -211,19 +211,19 @@ public:
 	void AddString(const StringRef& value);
 
 	JsonArray2* AddArray();
-	JsonObject2* AddObject();
+	JsonObject2* addObject();
 
-	int GetElementCount() const { return m_itemList.GetCount(); }
-	JsonElement2* GetElement(int index) const { return m_itemList.GetAt(index); }
+	int GetElementCount() const { return m_itemList.getCount(); }
+	JsonElement2* GetElement(int index) const { return m_itemList.getAt(index); }
 
 protected:
 	// ISerializeElement interface
-	virtual SerializationElementType GetSerializationElementType() const override { return SerializationElementType::Array; }
-	virtual int GetSerializeElementCount() const override { return GetElementCount(); }
-	virtual ISerializeElement* GetSerializeElement(int index) const override { return GetElement(index); }
-	virtual void AddSerializeItemValue(SerializationValueType type, const void* value) override;
-	virtual ISerializeElement* AddSerializeItemNewArray() override;
-	virtual ISerializeElement* AddSerializeItemNewObject() override;
+	virtual SerializationElementType getSerializationElementType() const override { return SerializationElementType::Array; }
+	virtual int getSerializeElementCount() const override { return GetElementCount(); }
+	virtual ISerializeElement* getSerializeElement(int index) const override { return GetElement(index); }
+	virtual void addSerializeItemValue(SerializationValueType type, const void* value) override;
+	virtual ISerializeElement* addSerializeItemNewArray() override;
+	virtual ISerializeElement* addSerializeItemNewObject() override;
 
 private:
 	JsonArray2(JsonDocument2* ownerDoc);
@@ -255,7 +255,7 @@ public:
 	JsonArray2* AddMemberArray(const StringRef& name);
 	JsonObject2* AddMemberObject(const StringRef& name);
 
-	JsonElement2* Find(const StringRef& name) const;
+	JsonElement2* find(const StringRef& name) const;
 
 protected:
 	JsonObject2(JsonDocument2* ownerDoc);
@@ -264,25 +264,25 @@ protected:
 	virtual JsonParseResult OnLoad(JsonReader2* reader) override;
 
 	// ISerializElement interface
-	virtual SerializationElementType GetSerializationElementType() const { return SerializationElementType::Object; }
-	virtual void SetValueInt32(const StringRef& name, int32_t value) override;
-	virtual void SetValueString(const StringRef& name, const String& value) override;
-	virtual ISerializeElement* AddObject(const StringRef& name) override;
-	virtual bool TryGetValueInt32(const StringRef& name, int32_t* outValue) override;
-	virtual bool TryGetValueString(const StringRef& name, String* outValue) override;
-	virtual bool TryGetObject(const StringRef& name, ISerializeElement** outValue) override;
-	virtual bool TryGetArray(const StringRef& name, ISerializeElement** outValue) override;
-	virtual const String& GetSerializeElementName(int index) const override;
-	virtual ISerializeElement* FindSerializeElement(const StringRef& name) const override;
-	virtual void AddSerializeMemberValue(const StringRef& name, SerializationValueType type, const void* value) override;
-	virtual ISerializeElement* AddSerializeMemberNewArray(const StringRef& name) override;
-	virtual ISerializeElement* AddSerializeMemberNewObject(const StringRef& name) override;
+	virtual SerializationElementType getSerializationElementType() const { return SerializationElementType::Object; }
+	virtual void setValueInt32(const StringRef& name, int32_t value) override;
+	virtual void setValueString(const StringRef& name, const String& value) override;
+	virtual ISerializeElement* addObject(const StringRef& name) override;
+	virtual bool tryGetValueInt32(const StringRef& name, int32_t* outValue) override;
+	virtual bool tryGetValueString(const StringRef& name, String* outValue) override;
+	virtual bool tryGetObject(const StringRef& name, ISerializeElement** outValue) override;
+	virtual bool tryGetArray(const StringRef& name, ISerializeElement** outValue) override;
+	virtual const String& getSerializeElementName(int index) const override;
+	virtual ISerializeElement* findSerializeElement(const StringRef& name) const override;
+	virtual void addSerializeMemberValue(const StringRef& name, SerializationValueType type, const void* value) override;
+	virtual ISerializeElement* addSerializeMemberNewArray(const StringRef& name) override;
+	virtual ISerializeElement* addSerializeMemberNewObject(const StringRef& name) override;
 
 LN_INTERNAL_ACCESS:
 	void Finalize() { m_memberList.clear(); }
 
 private:
-	JsonValue2* GetValue(const StringRef& name);
+	JsonValue2* getValue(const StringRef& name);
 
 	struct Member
 	{
@@ -348,15 +348,15 @@ public:
 
 	//void Load();
 
-	void Save(const StringRef& filePath, JsonFormatting formatting = JsonFormatting::None);
+	void save(const StringRef& filePath, JsonFormatting formatting = JsonFormatting::None);
 
-	void Load(const StringRef& filePath);
+	void load(const StringRef& filePath);
 
 
-	String ToString(JsonFormatting formatting = JsonFormatting::None);
+	String toString(JsonFormatting formatting = JsonFormatting::None);
 
 protected:
-	virtual ISerializeElement* GetRootObject() override;
+	virtual ISerializeElement* getRootObject() override;
 
 LN_INTERNAL_ACCESS:
 	template<class T>
@@ -379,22 +379,22 @@ class JsonSerializer
 {
 public:
 	template<typename T>
-	static String Save(T& value)
+	static String save(T& value)
 	{
 		tr::JsonDocument2 doc;
-		tr::Archive ar(&doc, tr::ArchiveMode::Save, true);
-		ar.Save(value);
-		return doc.ToString();
+		tr::Archive ar(&doc, tr::ArchiveMode::save, true);
+		ar.save(value);
+		return doc.toString();
 	}
 
 	template<typename T>
-	static T Load(const StringRef& json)
+	static T load(const StringRef& json)
 	{
 		tr::JsonDocument2 doc;
 		doc.Parse(json);
-		tr::Archive ar(&doc, tr::ArchiveMode::Load, true);
+		tr::Archive ar(&doc, tr::ArchiveMode::load, true);
 		T t;
-		ar.Load(t);
+		ar.load(t);
 		return t;
 	}
 
@@ -403,9 +403,9 @@ public:
 	{
 		tr::JsonDocument2 doc;
 		doc.Parse(json);
-		tr::Archive ar(&doc, tr::ArchiveMode::Load, true);
+		tr::Archive ar(&doc, tr::ArchiveMode::load, true);
 		auto t = NewObject<T>();
-		ar.Load(t);
+		ar.load(t);
 		return t;
 	}
 

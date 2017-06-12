@@ -41,11 +41,11 @@ struct SynchronizeMotionState
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(RigidBody, PhysicsObject);
 
 //------------------------------------------------------------------------------
-RefPtr<RigidBody> RigidBody::Create(CollisionShape* collider)
+RefPtr<RigidBody> RigidBody::create(CollisionShape* collider)
 {
 	ConfigData data;
 	data.Mass = 1.0f;
-	auto ptr = RefPtr<RigidBody>::MakeRef();
+	auto ptr = RefPtr<RigidBody>::makeRef();
 	ptr->initialize(collider, data);
 	return ptr;
 }

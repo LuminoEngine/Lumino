@@ -209,7 +209,7 @@ public:
 	float GetLeft() const { return x; }
 
 	/** 上辺の y 軸の位置を取得します。*/
-	float GetTop() const { return y; }
+	float getTop() const { return y; }
 
 	/** 右辺の x 軸の値を取得します。*/
 	float GetRight() const { return x + width; }
@@ -218,10 +218,10 @@ public:
 	float GetBottom() const { return y + height; }
 
 	/** 左上隅の位置を取得します。*/
-	PointF GetTopLeft() const { return PointF(GetLeft(), GetTop()); }
+	PointF GetTopLeft() const { return PointF(GetLeft(), getTop()); }
 	
 	/** 右上隅の位置を取得します。*/
-	PointF GetTopRight() const { return PointF(GetRight(), GetTop()); }
+	PointF GetTopRight() const { return PointF(GetRight(), getTop()); }
 	
 	/** 左下隅の位置を取得します。*/
 	PointF GetBottomLeft() const { return PointF(GetLeft(), GetBottom()); }
@@ -244,18 +244,18 @@ public:
 	Size getSize() const { return Size(width, height); }
 
 	/** 幅または高さを持たないかを判定します。*/
-	bool IsEmpty() const { return (width < 0 || height < 0); }
+	bool isEmpty() const { return (width < 0 || height < 0); }
 
 	/** 要素がすべて 0 かを判定します。*/
 	bool IsZero() const { return (x == 0 && y == 0 && width == 0 && height == 0); }
 
 	/** 矩形内に指定した点が含まれているかどうかを判定します。*/
-	bool Contains(const PointF point) const { return Contains(point.x, point.y); }
+	bool contains(const PointF point) const { return contains(point.x, point.y); }
 	
 	/** 矩形内に指定した点が含まれているかどうかを判定します。*/
-	bool Contains(float x_, float y_) const
+	bool contains(float x_, float y_) const
 	{
-		if (IsEmpty()) {
+		if (isEmpty()) {
 			return false;
 		}
 		return ((x_ >= x) && (x_ - width <= x) && (y_ >= y) && (y_ - height <= y));
@@ -264,9 +264,9 @@ public:
 	/**
 		@brief	指定した矩形全体が、この矩形内部に含まれているかを判定します。
 	*/
-	bool Contains(const Rect& rect) const
+	bool contains(const Rect& rect) const
 	{
-		if (IsEmpty() || rect.IsEmpty()) {
+		if (isEmpty() || rect.isEmpty()) {
 			return false;
 		}
 		return (
@@ -321,9 +321,9 @@ public:
 	void Set(int x_, int y_, int width_, int height_) { x = x_; y = y_; width = width_; height = height_; }
 	void Set(int x_, int y_, const SizeI& size) { x = x_; y = y_; width = size.width; height = size.height; }
 
-	bool IsEmpty() const { return (width < 0 || height < 0); }
+	bool isEmpty() const { return (width < 0 || height < 0); }
 	int GetLeft() const { return x; }
-	int GetTop() const { return y; }
+	int getTop() const { return y; }
 	int GetRight() const { return x + width; }
 	int GetBottom() const { return y + height; }
 	SizeI getSize() const { return SizeI(width, height); }

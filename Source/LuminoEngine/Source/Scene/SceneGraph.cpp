@@ -85,9 +85,9 @@ void SceneGraph::UpdateFrame(float deltaTime)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SceneGraph2D, SceneGraph);
 
 //------------------------------------------------------------------------------
-SceneGraph2DPtr SceneGraph2D::Create()
+SceneGraph2DPtr SceneGraph2D::create()
 {
-	auto ptr = SceneGraph2DPtr::MakeRef();
+	auto ptr = SceneGraph2DPtr::makeRef();
 	ptr->CreateCore(SceneGraphManager::Instance);
 	return ptr;
 }
@@ -168,7 +168,7 @@ void SceneGraph3D::CreateCore(SceneGraphManager* manager)
 	m_defaultCamera->initialize(CameraProjection_3D);
 	m_defaultRoot->AddChild(m_defaultCamera);
 
-	m_defaultLight = RefPtr<LightComponent>::MakeRef();
+	m_defaultLight = RefPtr<LightComponent>::makeRef();
 	m_defaultLight->initialize(LightType_Directional);
 	m_defaultRoot->AddChild(m_defaultLight);
 }

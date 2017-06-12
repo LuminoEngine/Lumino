@@ -43,18 +43,18 @@ public:
 		@param[in]	mode		: ファイルを開く方法
 		@param		openMode	: ファイルを開く方法 (FileOpenMode のフラグの組み合わせ)
 	*/
-	void Open(FileOpenMode openMode);
+	void open(FileOpenMode openMode);
 
 	/**
 		@brief		開いているファイルストリームを閉じます。
 		@details	デストラクタからも呼び出されます。
 	*/
-	void Close();
+	void close();
 
 	/**
 		@brief		ファイルの絶対パスを取得します。
 	*/
-	PathName GetFilePath() const;
+	PathName getFilePath() const;
 
 	/**
 		@brief		拡張子を含むファイルの名前を取得します。
@@ -63,7 +63,7 @@ public:
 					f.GetFileName();	// => "Program.cs"
 		@endcode
 	*/
-	String GetFileName() const;
+	String getFileName() const;
 
 	/**
 		@brief		現在のファイルサイズをバイト単位で取得します。
@@ -72,14 +72,14 @@ public:
 
 public:
 	// override Stream
-	virtual bool CanRead() const;
-	virtual bool CanWrite() const;
-	virtual int64_t GetLength() const;
-	virtual int64_t GetPosition() const;
-	virtual size_t Read(void* buffer, size_t byteCount);
-	virtual void Write(const void* data, size_t byteCount);
-	virtual void Seek(int64_t offset, SeekOrigin origin);
-	virtual void Flush();
+	virtual bool canRead() const;
+	virtual bool canWrite() const;
+	virtual int64_t getLength() const;
+	virtual int64_t getPosition() const;
+	virtual size_t read(void* buffer, size_t byteCount);
+	virtual void write(const void* data, size_t byteCount);
+	virtual void seek(int64_t offset, SeekOrigin origin);
+	virtual void flush();
 
 private:
 	PathName			m_filePath;
@@ -93,13 +93,13 @@ public:
 	TemporaryFile();
 	~TemporaryFile();
 
-	void Open();
+	void open();
 
 	/** デストラクタで一時ファイルを自動削除するかを指定します。*/
-	void SetAutoRemove(bool enabled) { m_autoRemove = enabled; }
+	void setAutoRemove(bool enabled) { m_autoRemove = enabled; }
 
 	/** デストラクタで一時ファイルを自動削除するかを確認します。*/
-	bool IsAutoRemove() const { return m_autoRemove; }
+	bool isAutoRemove() const { return m_autoRemove; }
 
 private:
 	bool	m_autoRemove;

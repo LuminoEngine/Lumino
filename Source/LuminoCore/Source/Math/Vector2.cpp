@@ -17,7 +17,7 @@ const Vector2   Vector2::UnitY	= Vector2(0, 1);
 const Vector2   Vector2::Ones	= Vector2(1, 1);
 
 //------------------------------------------------------------------------------
-float Vector2::GetLength() const
+float Vector2::getLength() const
 {
     return Asm::sqrt( x * x + y * y );
 }
@@ -31,7 +31,7 @@ float Vector2::GetLengthSquared() const
 //------------------------------------------------------------------------------
 void Vector2::Normalize()
 {
-	float t = GetLength();
+	float t = getLength();
 	if (t == 0.0f)
 		return;
 	t = 1.0f / t;

@@ -17,7 +17,7 @@ public:
 	void SetValue(float value);
 
 	/** スクロール位置に対する値を取得します。規定値は 0 です。*/
-	float GetValue() const;
+	float getValue() const;
 
 	/** 指定可能な最小値を設定します。*/
 	void SetMinimum(float value);

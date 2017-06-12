@@ -133,7 +133,7 @@ Locale::Locale()
 	, m_nativeName()
 {
 	GetNativeDefaultLocale(&m_nativeLocale, &m_nativeName);
-	StringA name = m_nativeName.ToStringA();
+	StringA name = m_nativeName.toStringA();
 	m_stdLocale = std::locale(name.c_str());
 }
 
@@ -141,13 +141,13 @@ Locale::Locale()
 Locale::Locale(const TCHAR* name)
 : m_nativeLocale(0)
 #if defined(LN_OS_WIN32)
-	, m_nativeName(StringW::FromNativeCharString(name))
+	, m_nativeName(StringW::fromNativeCharString(name))
 #else
     , m_nativeName(StringA::FromNativeCharString(name))
 #endif
 {
 	m_nativeLocale = CreateNativeLocale(m_nativeName.c_str());
-	StringA t = m_nativeName.ToStringA();
+	StringA t = m_nativeName.toStringA();
 	m_stdLocale = std::locale(t.c_str());
 }
 
@@ -182,26 +182,26 @@ void Locale::release()
 }
 
 //------------------------------------------------------------------------------
-const std::locale& Locale::GetStdLocale() const
+const std::locale& Locale::getStdLocale() const
 {
 	return m_stdLocale;
 }
 
 //------------------------------------------------------------------------------
-NativeLocale_t Locale::GetNativeLocale() const
+NativeLocale_t Locale::getNativeLocale() const
 {
 	return m_nativeLocale;
 }
 
 //------------------------------------------------------------------------------
-const Locale& Locale::GetDefault()
+const Locale& Locale::getDefault()
 {
 	static Locale locale;
 	return locale;
 }
 
 //------------------------------------------------------------------------------
-const Locale& Locale::GetC()
+const Locale& Locale::getC()
 {
 	static Locale locale;
 	static bool init = false;
@@ -232,7 +232,7 @@ GenericLocalizer<TChar>::GenericLocalizer(const Locale& locale)
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-int GenericLocalizer<TChar>::Format(TChar* outBuf, int outBufLength, const TChar* format, ...)
+int GenericLocalizer<TChar>::format(TChar* outBuf, int outBufLength, const TChar* format, ...)
 {
 
 }

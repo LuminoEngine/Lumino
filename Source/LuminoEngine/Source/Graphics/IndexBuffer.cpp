@@ -17,7 +17,7 @@ LN_NAMESPACE_BEGIN
 @param[in]	format			: インデックスバッファのフォーマット
 @param[in]	usage			: インデックスバッファリソースの使用方法
 */
-//static IndexBuffer* Create(int indexCount, const void* initialData = NULL, IndexBufferFormat format = IndexBufferFormat_UInt16, DeviceResourceUsage usage = DeviceResourceUsage_Static);
+//static IndexBuffer* create(int indexCount, const void* initialData = NULL, IndexBufferFormat format = IndexBufferFormat_UInt16, DeviceResourceUsage usage = DeviceResourceUsage_Static);
 
 /**
 @brief		インデックスバッファを作成します。
@@ -28,16 +28,16 @@ LN_NAMESPACE_BEGIN
 @param[in]	usage			: インデックスバッファリソースの使用方法
 @details	この関数はデフォルト以外の GraphicsManager を指定して作成する場合に使用します。
 */
-//static IndexBuffer* Create(GraphicsManager* manager, int indexCount, const void* initialData = NULL, IndexBufferFormat format = IndexBufferFormat_UInt16, DeviceResourceUsage usage = DeviceResourceUsage_Static);
+//static IndexBuffer* create(GraphicsManager* manager, int indexCount, const void* initialData = NULL, IndexBufferFormat format = IndexBufferFormat_UInt16, DeviceResourceUsage usage = DeviceResourceUsage_Static);
 
 ////------------------------------------------------------------------------------
-//IndexBuffer* IndexBuffer::Create(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
+//IndexBuffer* IndexBuffer::create(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
 //{
-//	return Create(GraphicsManager::GetInstance(), indexCount, initialData, format, usage);
+//	return create(GraphicsManager::GetInstance(), indexCount, initialData, format, usage);
 //}
 //
 ////------------------------------------------------------------------------------
-//IndexBuffer* IndexBuffer::Create(GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
+//IndexBuffer* IndexBuffer::create(GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
 //{
 //	LN_THROW(manager != NULL, ArgumentException);
 //	return LN_NEW IndexBuffer(manager, indexCount, initialData, format, usage);
@@ -81,7 +81,7 @@ void IndexBuffer::initialize(detail::GraphicsManager* manager, int indexCount, c
 //------------------------------------------------------------------------------
 void IndexBuffer::Dispose()
 {
-	m_rhiObject.SafeRelease();
+	m_rhiObject.safeRelease();
 	GraphicsResourceObject::Dispose();
 }
 
@@ -92,7 +92,7 @@ int IndexBuffer::GetIndexCount() const
 }
 
 //------------------------------------------------------------------------------
-void IndexBuffer::Reserve(int indexCount)
+void IndexBuffer::reserve(int indexCount)
 {
 	if (LN_CHECK_STATE(!IsRHIDirect())) return;		// サイズ変更禁止
 
@@ -187,7 +187,7 @@ Driver::IIndexBuffer* IndexBuffer::ResolveRHIObject()
 		}
 		else
 		{
-			if (m_rhiObject == nullptr || m_rhiObject->GetByteCount() != m_buffer.size())
+			if (m_rhiObject == nullptr || m_rhiObject->getByteCount() != m_buffer.size())
 			{
 				m_rhiObject.attach(m_manager->GetGraphicsDevice()->CreateIndexBuffer(GetIndexCount(), m_buffer.data(), m_format, m_usage), false);
 			}
@@ -223,7 +223,7 @@ void IndexBuffer::OnChangeDevice(Driver::IGraphicsDevice* device)
 		// 必要があればデータを保存する
 		if (m_pool == GraphicsResourcePool::Managed)
 		{
-			m_buffer.resize(m_rhiObject->GetByteCount());
+			m_buffer.resize(m_rhiObject->getByteCount());
 
 			void* buffer;
 			size_t size;
@@ -233,7 +233,7 @@ void IndexBuffer::OnChangeDevice(Driver::IGraphicsDevice* device)
 		}
 
 		// オブジェクト破棄
-		m_rhiObject.SafeRelease();
+		m_rhiObject.safeRelease();
 	}
 	else
 	{

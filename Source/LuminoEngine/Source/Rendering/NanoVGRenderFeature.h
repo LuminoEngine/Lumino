@@ -146,7 +146,7 @@ class NanoVGCommandListCache
 	: public SimpleOneTimeObjectCache<NanoVGCommandList>
 {
 protected:
-	virtual RefPtr<NanoVGCommandList> CreateObject() override;
+	virtual RefPtr<NanoVGCommandList> createObject() override;
 };
 
 class NanoVGRenderFeature
@@ -162,9 +162,9 @@ public:
 
 protected:
 	virtual bool IsStandaloneShader() const { return true; }
-	virtual void Flush() override {}
+	virtual void flush() override {}
 	virtual void OnActivated() override {}
-	virtual void OnDeactivated() override { Flush(); }
+	virtual void OnDeactivated() override { flush(); }
 	virtual void OnSetState(const DrawElementBatch* state);
 
 private:

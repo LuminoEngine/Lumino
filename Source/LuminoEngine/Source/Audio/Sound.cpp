@@ -24,18 +24,18 @@ LN_NAMESPACE_AUDIO_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sound, Object);
 
 //------------------------------------------------------------------------------
-SoundPtr Sound::Create(const TCHAR* filePath)
+SoundPtr Sound::create(const TCHAR* filePath)
 {
-	auto ptr = SoundPtr::MakeRef();
+	auto ptr = SoundPtr::makeRef();
 	ptr->initialize(filePath);
 	return ptr;
 	//return CreateInternal(detail::AudioManager::GetInstance(), filePath);
 }
 
 //------------------------------------------------------------------------------
-SoundPtr Sound::Create(Stream* stream, SoundLoadingMode loadingMode)
+SoundPtr Sound::create(Stream* stream, SoundLoadingMode loadingMode)
 {
-	auto ptr = SoundPtr::MakeRef();
+	auto ptr = SoundPtr::makeRef();
 	ptr->initialize(stream, loadingMode);
 	return ptr;
 	//return CreateInternal(detail::AudioManager::GetInstance(), stream, loadingMode);
@@ -324,7 +324,7 @@ void Sound::FadeVolume(float targetVolume, double time, SoundFadeBehavior behavi
 
 	// 現在の音量から targetVolume への遷移
 	targetVolume = Math::Clamp(targetVolume, 0.0f, 1.0f);
-	m_fadeValue.Start(GetVolume(), targetVolume, time);
+	m_fadeValue.start(GetVolume(), targetVolume, time);
 	m_fadeBehavior = behavior;
 	m_fading = true;
 }
@@ -369,7 +369,7 @@ void Sound::Polling(float elapsedTime)
 		if (m_fading)
 		{
 			m_fadeValue.AdvanceTime(elapsedTime);
-			m_playerState.SetVolume(m_fadeValue.GetValue());
+			m_playerState.SetVolume(m_fadeValue.getValue());
 
 			// フェード完了
 			if (m_fadeValue.IsFinished())

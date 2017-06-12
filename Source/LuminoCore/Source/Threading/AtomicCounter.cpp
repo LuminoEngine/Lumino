@@ -25,7 +25,7 @@ Atomic::~Atomic()
 }
 
 //------------------------------------------------------------------------------
-int32_t Atomic::Get() const
+int32_t Atomic::get() const
 {
 	return ::InterlockedExchangeAdd( const_cast< volatile LONG* >( &m_value ), 0 );
 }
@@ -69,7 +69,7 @@ Atomic::~Atomic()
 }
 
 //------------------------------------------------------------------------------
-int32_t Atomic::Get() const
+int32_t Atomic::get() const
 {
 	pthread_mutex_lock( &m_mutex );
     int32_t v = m_value;

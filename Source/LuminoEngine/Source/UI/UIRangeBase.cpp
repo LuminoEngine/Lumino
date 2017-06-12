@@ -46,7 +46,7 @@ void UIRangeBase::SetValue(float value)
 }
 
 //------------------------------------------------------------------------------
-float UIRangeBase::GetValue() const
+float UIRangeBase::getValue() const
 {
 	return m_value;
 }

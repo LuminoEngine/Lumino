@@ -41,10 +41,10 @@ void AssetsManager::initialize(EngineManager* manager)
 {
 	m_engineManager = manager;
 
-	AddAssetsDirectory(PathName::GetCurrentDirectory());
+	AddAssetsDirectory(PathName::getCurrentDirectory());
 
-	m_textureCache = RefPtr<CacheManager>::MakeRef(32, 0);	// TODO
-	m_fontCache = RefPtr<CacheManager>::MakeRef(32, 0);	// TODO
+	m_textureCache = RefPtr<CacheManager>::makeRef(32, 0);	// TODO
+	m_fontCache = RefPtr<CacheManager>::makeRef(32, 0);	// TODO
 
 	if (g_managerInstance == nullptr)
 	{
@@ -55,8 +55,8 @@ void AssetsManager::initialize(EngineManager* manager)
 //------------------------------------------------------------------------------
 void AssetsManager::Finalize()
 {
-	m_textureCache->FinalizeCache();
-	m_fontCache->FinalizeCache();
+	m_textureCache->finalizeCache();
+	m_fontCache->finalizeCache();
 }
 
 //------------------------------------------------------------------------------
@@ -64,7 +64,7 @@ void AssetsManager::AddAssetsDirectory(const StringRef& directoryPath)
 {
 	AssetsDirectory dir;
 	dir.path = PathName(directoryPath);
-	m_assetsDirectories.Add(dir);
+	m_assetsDirectories.add(dir);
 }
 
 //------------------------------------------------------------------------------
@@ -75,13 +75,13 @@ Texture2DPtr AssetsManager::LoadTexture(const StringRef& filePath)
 	auto* path = FindLocalFilePath();
 
 	CacheKey key(*path);
-	Texture2D* ptr = static_cast<Texture2D*>(m_textureCache->FindObjectAddRef(key));
+	Texture2D* ptr = static_cast<Texture2D*>(m_textureCache->findObjectAddRef(key));
 	if (ptr != nullptr) { return Texture2DPtr(ptr, false); }
 
 	// TODO: mipmap ON にしたい。ただ、サンプラステートを変更しないとならないようなので動作確認してから。
 	auto ref = NewObject<Texture2D>(*path, TextureFormat::R8G8B8A8, false);
 
-	m_textureCache->RegisterCacheObject(key, ref);
+	m_textureCache->registerCacheObject(key, ref);
 	return ref;
 }
 
@@ -101,7 +101,7 @@ String AssetsManager::LoadText(const StringRef& filePath)
 {
 	MakeSearchPath(filePath);
 	auto* path = FindLocalFilePath();
-	return FileSystem::ReadAllText(*path);
+	return FileSystem::readAllText(*path);
 }
 
 //------------------------------------------------------------------------------
@@ -115,13 +115,13 @@ RefPtr<Stream> AssetsManager::OpenFile(const StringRef& filePath)
 	//	return nullptr;
 	//}
 
-	return FileStream::Create(*path, FileOpenMode::Read);
+	return FileStream::create(*path, FileOpenMode::read);
 }
 
 //------------------------------------------------------------------------------
 void AssetsManager::MakeSearchPath(const StringRef& path)
 {
-	if (PathTraits::IsAbsolutePath(path.GetBegin(), path.GetLength()))
+	if (PathTraits::IsAbsolutePath(path.getBegin(), path.getLength()))
 	{
 		for (AssetsDirectory& dir : m_assetsDirectories)
 		{
@@ -142,7 +142,7 @@ const PathName* AssetsManager::FindLocalFilePath()
 {
 	for (AssetsDirectory& dir : m_assetsDirectories)
 	{
-		if (dir.searchPath.ExistsFile())
+		if (dir.searchPath.existsFile())
 		{
 			return &dir.searchPath;
 		}

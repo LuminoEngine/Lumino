@@ -26,9 +26,9 @@ InputBinding::~InputBinding()
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(KeyboardBinding, InputBinding);
 
 //------------------------------------------------------------------------------
-KeyboardBindingPtr KeyboardBinding::Create(Keys key, ModifierKeys modifierKeys)
+KeyboardBindingPtr KeyboardBinding::create(Keys key, ModifierKeys modifierKeys)
 {
-	auto ptr = KeyboardBindingPtr::MakeRef(key, modifierKeys);
+	auto ptr = KeyboardBindingPtr::makeRef(key, modifierKeys);
 	return ptr;
 }
 
@@ -45,7 +45,7 @@ KeyboardBinding::~KeyboardBinding()
 }
 
 //------------------------------------------------------------------------------
-detail::InputBindingType KeyboardBinding::GetType() const
+detail::InputBindingType KeyboardBinding::getType() const
 {
 	return detail::InputBindingType::Keyboard;
 }
@@ -57,9 +57,9 @@ detail::InputBindingType KeyboardBinding::GetType() const
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(MouseBinding, InputBinding);
 
 //------------------------------------------------------------------------------
-MouseBindingPtr MouseBinding::Create(MouseAction mouseAction, ModifierKeys modifierKeys)
+MouseBindingPtr MouseBinding::create(MouseAction mouseAction, ModifierKeys modifierKeys)
 {
-	auto ptr = MouseBindingPtr::MakeRef(mouseAction, modifierKeys);
+	auto ptr = MouseBindingPtr::makeRef(mouseAction, modifierKeys);
 	return ptr;
 }
 
@@ -76,7 +76,7 @@ MouseBinding::~MouseBinding()
 }
 
 //------------------------------------------------------------------------------
-detail::InputBindingType MouseBinding::GetType() const
+detail::InputBindingType MouseBinding::getType() const
 {
 	return detail::InputBindingType::Mouse;
 }
@@ -88,9 +88,9 @@ detail::InputBindingType MouseBinding::GetType() const
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(GamepadBinding, InputBinding);
 
 //------------------------------------------------------------------------------
-GamepadBindingPtr GamepadBinding::Create(GamepadElement element)
+GamepadBindingPtr GamepadBinding::create(GamepadElement element)
 {
-	auto ptr = GamepadBindingPtr::MakeRef(element);
+	auto ptr = GamepadBindingPtr::makeRef(element);
 	return ptr;
 }
 
@@ -106,7 +106,7 @@ GamepadBinding::~GamepadBinding()
 }
 
 //------------------------------------------------------------------------------
-detail::InputBindingType GamepadBinding::GetType() const
+detail::InputBindingType GamepadBinding::getType() const
 {
 	return detail::InputBindingType::Gamepad;
 }

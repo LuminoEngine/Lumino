@@ -28,7 +28,7 @@ public:
 	/**
 		@brief	格納されているキー/値ペアの数を取得します。
 	*/
-	int GetCount() const
+	int getCount() const
 	{
 		return (int)m_vector.size();
 	}
@@ -44,7 +44,7 @@ public:
 		@param[in]	value	: 要素の値
 		@exception	ArgumentException	キーが既に追加されています。
 	*/
-	void Add(const TKey& key, const TValue& value)
+	void add(const TKey& key, const TValue& value)
 	{
 		LN_THROW(!ContainsKey(key), ArgumentException);
 		struct Cmp
@@ -58,7 +58,7 @@ public:
 		std::sort(m_vector.begin(), m_vector.end(), Cmp::CmpEventListener);
 	}
 
-	bool Remove(const TKey& key)
+	bool remove(const TKey& key)
 	{
 		typename InternalArray::iterator itr = m_vector.begin();
 		for (; itr != m_vector.end();)
@@ -95,7 +95,7 @@ public:
 	bool ContainsKey(const TKey& key) const
 	{
 		int index = LowerBound(key);
-		if (index < GetCount() && equals(m_vector[index].first, key)/*m_vector[index].first == key*/)
+		if (index < getCount() && equals(m_vector[index].first, key)/*m_vector[index].first == key*/)
 		{
 			return true;
 		}
@@ -109,12 +109,12 @@ public:
 	void SetValue(const TKey& key, const TValue& value)
 	{
 		int index = LowerBound(key);
-		if (index < GetCount() && equals(m_vector[index].first, key)/*m_vector[index].first == key*/)
+		if (index < getCount() && equals(m_vector[index].first, key)/*m_vector[index].first == key*/)
 		{
 			m_vector[index].second = value;
 		}
 		else {
-			Add(key, value);
+			add(key, value);
 		}
 	}
 
@@ -122,10 +122,10 @@ public:
 		@brief		指定したキーに関連付けられている値を取得します。
 		@exception	KeyNotFoundException
 	*/
-	const TValue& GetValue(const TKey& key) const
+	const TValue& getValue(const TKey& key) const
 	{
 		int index = LowerBound(key);
-		if (index < GetCount() && equals(m_vector[index].first, key)/*m_vector[index].first == key*/)
+		if (index < getCount() && equals(m_vector[index].first, key)/*m_vector[index].first == key*/)
 		{
 			return m_vector[index].second;
 		}
@@ -138,10 +138,10 @@ public:
 		@return		キーが格納されている場合は true。それ以外の場合は false。
 		@details	GetValue() と似た動作をしますが、検索の成否を例外ではなく戻り値で返します。
 	*/
-	bool TryGetValue(const TKey& key, TValue* value) const
+	bool tryGetValue(const TKey& key, TValue* value) const
 	{
 		int index = LowerBound(key);
-		if (index < GetCount() && equals(m_vector[index].first, key)/*m_vector[index].first == key*/)
+		if (index < getCount() && equals(m_vector[index].first, key)/*m_vector[index].first == key*/)
 		{
 			if (value != NULL) { *value = m_vector[index].second; }
 			return true;
@@ -156,11 +156,11 @@ public:
 	TValue& operator[](const TKey& key)
 	{
 		int index = LowerBound(key);
-		if (index < GetCount() && equals(m_vector[index].first, key)/*m_vector[index].first == key*/) {
+		if (index < getCount() && equals(m_vector[index].first, key)/*m_vector[index].first == key*/) {
 			
 		}
 		else {
-			Add(key, TValue());
+			add(key, TValue());
 			index = LowerBound(key);
 		}
 		return m_vector[index].second;
@@ -172,14 +172,14 @@ public:
 	*/
 	const TValue& operator[](const TKey& key) const
 	{
-		return GetValue(key);
+		return getValue(key);
 	}
 
 	template<typename TOtherKey>
-	const TValue* Find(const TOtherKey& key) const
+	const TValue* find(const TOtherKey& key) const
 	{
 		int index = LowerBound(key);
-		if (index < GetCount() && equals(m_vector[index].first, key)/*m_vector[index].first == key*/)
+		if (index < getCount() && equals(m_vector[index].first, key)/*m_vector[index].first == key*/)
 		{
 			return &m_vector[index].second;
 		}
@@ -187,10 +187,10 @@ public:
 	}
 
 	template<typename TOtherKey>
-	TValue* Find(const TOtherKey& key)
+	TValue* find(const TOtherKey& key)
 	{
 		int index = LowerBound(key);
-		if (index < GetCount() && equals(m_vector[index].first, key)/*m_vector[index].first == key*/)
+		if (index < getCount() && equals(m_vector[index].first, key)/*m_vector[index].first == key*/)
 		{
 			return &m_vector[index].second;
 		}
@@ -222,7 +222,7 @@ private:
 	template<typename TOtherKey>
 	int LowerBound(const TOtherKey/*TKey*/& key) const
 	{
-		if (m_vector.empty()) { return GetCount(); }
+		if (m_vector.empty()) { return getCount(); }
 
 		int count = (int)m_vector.size();
 		int first = 0;

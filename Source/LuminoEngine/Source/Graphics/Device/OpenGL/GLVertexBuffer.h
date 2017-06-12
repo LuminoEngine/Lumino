@@ -32,13 +32,13 @@ public:
 
 public:
 	/// オブジェクト作成
-	void Create(size_t bufferSize, const void* initialData, ResourceUsage usage);
+	void create(size_t bufferSize, const void* initialData, ResourceUsage usage);
 
 	/// 頂点バッファオブジェクトの取得
 	GLuint GetGLVertexBuffer() const { return m_glVertexBuffer; }
 
 public:
-	virtual size_t GetByteCount() const { return m_byteCount; }
+	virtual size_t getByteCount() const { return m_byteCount; }
 	//virtual DeviceResourceUsage GetUsage() const { return m_format; }
 	virtual void SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes);
 	virtual void* Lock();

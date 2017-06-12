@@ -75,7 +75,7 @@ bool InputController::IsRepeated(const StringRef& bindingName) const
 //------------------------------------------------------------------------------
 float InputController::GetAxisValue(const StringRef& bindingName) const
 {
-	auto* state = m_inputStatus.Find(bindingName);
+	auto* state = m_inputStatus.find(bindingName);
 	LN_THROW(state != nullptr, KeyNotFoundException);
 	return state->current;
 }
@@ -84,17 +84,17 @@ float InputController::GetAxisValue(const StringRef& bindingName) const
 void InputController::AddBinding(const StringRef& buttonName, InputBinding* binding)
 {
 	BindingSlot slot = { buttonName, binding };
-	m_bindingSlots.Add(slot);
+	m_bindingSlots.add(slot);
 
 	// まだ登録したことがない名前であれば InputState を作る。そうでなければ参照カウントを増やす。
-	auto* state = m_inputStatus.Find(buttonName);
+	auto* state = m_inputStatus.find(buttonName);
 	if (state == nullptr)
 	{
 		InputState newState;
 		newState.current = 0;
 		newState.state = 0;
 		newState.ref = 1;
-		m_inputStatus.Add(buttonName, newState);
+		m_inputStatus.add(buttonName, newState);
 	}
 	else
 	{
@@ -105,25 +105,25 @@ void InputController::AddBinding(const StringRef& buttonName, InputBinding* bind
 //------------------------------------------------------------------------------
 void InputController::RemoveBinding(InputBinding* binding)
 {
-	int index = m_bindingSlots.IndexOf([binding](const BindingSlot& slot) { return slot.binding == binding; });
+	int index = m_bindingSlots.indexOf([binding](const BindingSlot& slot) { return slot.binding == binding; });
 	if (index < 0) return;
 
 	const String& name = m_bindingSlots[index].name;
 
-	auto* state = m_inputStatus.Find(name);
+	auto* state = m_inputStatus.find(name);
 	state->ref--;
 	if (state->ref <= 0) {
-		m_inputStatus.Remove(name);
+		m_inputStatus.remove(name);
 	}
 
-	m_bindingSlots.RemoveAt(index);
+	m_bindingSlots.removeAt(index);
 }
 
 //------------------------------------------------------------------------------
 void InputController::ClearBindings()
 {
 	List<BindingSlot> list = m_bindingSlots;
-	for (int i = list.GetCount() - 1; i >= 0; ++i)	// 後ろから回した方がちょっと削除の効率がいい
+	for (int i = list.getCount() - 1; i >= 0; ++i)	// 後ろから回した方がちょっと削除の効率がいい
 	{
 		RemoveBinding(list[i].binding);
 	}
@@ -159,7 +159,7 @@ void InputController::UpdateFrame()
 			(m_attachedDevices & detail::InputDeviceID_Keyboard) != 0,
 			(m_attachedDevices & detail::InputDeviceID_Mouse) != 0,
 			GetJoyNumber());
-		InputState* state = m_inputStatus.Find(slot.name);
+		InputState* state = m_inputStatus.find(slot.name);
 		if (state != nullptr)
 		{
 			v *= binding->GetScale();
@@ -212,11 +212,11 @@ void InputController::UpdateOneInputState(InputState* state)
 //------------------------------------------------------------------------------
 const InputController::InputState* InputController::LockupState(const StringRef& bindingName) const
 {
-	if (bindingName.IsEmpty())
+	if (bindingName.isEmpty())
 	{
 		return &m_inputStateForAny;
 	}
-	return m_inputStatus.Find(bindingName);
+	return m_inputStatus.find(bindingName);
 }
 
 LN_NAMESPACE_END

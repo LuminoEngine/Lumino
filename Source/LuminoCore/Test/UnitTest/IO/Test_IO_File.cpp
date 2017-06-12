@@ -8,8 +8,8 @@ protected:
 	virtual void TearDown() {}
 };
 //------------------------------------------------------------------------------
-TEST_F(Test_IO_File, Open)
+TEST_F(Test_IO_File, open)
 {
 	File file1(LN_LOCALFILE("TestData/test1.txt"));
-	file1.Open(FileOpenMode::Read);
+	file1.open(FileOpenMode::read);
 }

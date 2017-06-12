@@ -68,7 +68,7 @@ Bitmap::Bitmap(const TCHAR* filePath)
 	Init();
 	LN_THROW(filePath != NULL, ArgumentException);
 
-	RefPtr<FileStream> file = FileStream::Create(filePath, FileOpenMode::Read);
+	RefPtr<FileStream> file = FileStream::create(filePath, FileOpenMode::read);
 	PngFile pngFile;
 	if (!pngFile.load(file, false)) {
 		LN_THROW(0, InvalidFormatException);
@@ -191,7 +191,7 @@ void Bitmap::BitBlt(int x, int y, const Bitmap* srcBitmap, const RectI& srcRect,
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::Save(const TCHAR* filePath)
+void Bitmap::save(const TCHAR* filePath)
 {
 	// png に保存するときは RGBA
 	Bitmap bitmap(m_size, PixelFormat::R8G8B8A8);
@@ -206,7 +206,7 @@ void Bitmap::Save(const TCHAR* filePath)
 	}
 
 	PngFile pngFile;
-	pngFile.Save(filePath, bitmap.m_bitmapData, bitmap.m_size, bitmap.m_upFlow);
+	pngFile.save(filePath, bitmap.m_bitmapData, bitmap.m_size, bitmap.m_upFlow);
 }
 
 //------------------------------------------------------------------------------
@@ -258,7 +258,7 @@ void Bitmap::CopyRawData(const void* data, size_t byteCount)
 }
 
 //------------------------------------------------------------------------------
-size_t Bitmap::GetByteCount() const
+size_t Bitmap::getByteCount() const
 {
 	return m_bitmapData.getSize();
 }
@@ -415,7 +415,7 @@ void Bitmap::Serialize(void* buffer, const RectI& rect)
 	size_t pixelSize = GetPixelFormatByteCount(m_format);
 	size_t srcLineSize = pixelSize * m_size.width;
 	size_t dstLineSize = pixelSize * clipRect.width;
-	for (int y = clipRect.GetTop(); y < clipRect.GetBottom(); ++y)
+	for (int y = clipRect.getTop(); y < clipRect.GetBottom(); ++y)
 	{
 		const byte_t* srcLine = &(m_bitmapData.getConstData()[srcLineSize * y]);
 		byte_t* dstLine = &(b[dstLineSize * y]);

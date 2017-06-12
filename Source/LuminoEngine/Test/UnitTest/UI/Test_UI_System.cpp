@@ -26,7 +26,7 @@ static std::string g_eventLog;
 TEST_F(Test_UI_System, Focus)
 {
 	auto uiRoot = Engine::GetMainWindow();
-	uiRoot->SetLayoutPanel(UIStackPanel::Create());
+	uiRoot->SetLayoutPanel(UIStackPanel::create());
 
 	auto c1 = NewObject<UIControl>();
 	c1->SetSize(Size(64, 32));

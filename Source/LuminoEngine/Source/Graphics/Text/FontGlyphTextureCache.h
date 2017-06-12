@@ -102,7 +102,7 @@ public:
 	VectorFontGlyphCache();
 	virtual ~VectorFontGlyphCache();
 	void initialize(GraphicsManager* manager, RawFont* font, int maxSize);
-	int GetMaxCount() const { return m_glyphInfoList.GetCount(); }
+	int GetMaxCount() const { return m_glyphInfoList.getCount(); }
 
 	// callby main thread
 	Handle GetGlyphInfo(char32_t utf32Code, bool* outFlushRequested);

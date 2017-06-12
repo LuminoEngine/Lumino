@@ -11,9 +11,9 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-void Clipboard::SetText(PlatformWindow* window, const String& text)
+void Clipboard::setText(PlatformWindow* window, const String& text)
 {
-	ByteBuffer wideStr = text.ConvertTo(Encoding::GetWideCharEncoding());
+	ByteBuffer wideStr = text.convertTo(Encoding::GetWideCharEncoding());
 	int wideCount = (wideStr.getSize() + 1) * sizeof(WCHAR);
 
 	HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE, wideCount);
@@ -39,11 +39,11 @@ void Clipboard::SetText(PlatformWindow* window, const String& text)
 }
 
 //------------------------------------------------------------------------------
-String Clipboard::GetText(PlatformWindow* window)
+String Clipboard::getText(PlatformWindow* window)
 {
 	// クリップボードのデータ形式チェック
 	if (!IsClipboardFormatAvailable(CF_UNICODETEXT)) {
-		return String::GetEmpty();
+		return String::getEmpty();
 	}
 
 	HWND hWnd = PlatformSupport::GetWindowHandle(window);
@@ -64,7 +64,7 @@ String Clipboard::GetText(PlatformWindow* window)
 	String str;
 	try
 	{
-		str.ConvertFrom(buf, len * sizeof(WCHAR), Encoding::GetWideCharEncoding());
+		str.convertFrom(buf, len * sizeof(WCHAR), Encoding::GetWideCharEncoding());
 	}
 	catch (...)
 	{

@@ -11,8 +11,8 @@ struct TkMVSoundData
 
 	void Serialize(ln::tr::Archive& ar, int version)
 	{
-		ar & ln::tr::MakeNVP("name", name);
-		ar & ln::tr::MakeNVP("volume", volume);
+		ar & ln::tr::makeNVP("name", name);
+		ar & ln::tr::makeNVP("volume", volume);
 	}
 };
 
@@ -24,9 +24,9 @@ struct TkMVMapData1
 
 	void Serialize(ln::tr::Archive& ar, int version)
 	{
-		ar & ln::tr::MakeNVP("autoplayBgm", autoplayBgm);
-		ar & ln::tr::MakeNVP("bgm", bgm);
-		ar & ln::tr::MakeNVP("displayName", displayName);
+		ar & ln::tr::makeNVP("autoplayBgm", autoplayBgm);
+		ar & ln::tr::makeNVP("bgm", bgm);
+		ar & ln::tr::makeNVP("displayName", displayName);
 	}
 };
 
@@ -38,8 +38,8 @@ public:
 
 	virtual void Serialize(ln::tr::Archive& ar, int version)
 	{
-		ar & ln::tr::MakeNVP("name", name);
-		ar & ln::tr::MakeNVP("volume", volume);
+		ar & ln::tr::makeNVP("name", name);
+		ar & ln::tr::makeNVP("volume", volume);
 	}
 };
 
@@ -50,7 +50,7 @@ public:
 
 	virtual void Serialize(ln::tr::Archive& ar, int version)
 	{
-		ar & ln::tr::MakeNVP("id", id);
+		ar & ln::tr::makeNVP("id", id);
 	}
 };
 
@@ -63,10 +63,10 @@ struct TkMVMapData3 : public ln::Object
 
 	void Serialize(ln::tr::Archive& ar, int version)
 	{
-		ar & ln::tr::MakeNVP("autoplayBgm", autoplayBgm);
-		ar & ln::tr::MakeNVP("bgm", bgm);
-		ar & ln::tr::MakeNVP("displayName", displayName);
-		ar & ln::tr::MakeNVP("events", events);
+		ar & ln::tr::makeNVP("autoplayBgm", autoplayBgm);
+		ar & ln::tr::makeNVP("bgm", bgm);
+		ar & ln::tr::makeNVP("displayName", displayName);
+		ar & ln::tr::makeNVP("events", events);
 	}
 };
 
@@ -77,8 +77,8 @@ struct TkMVEventCommand3 : public ln::Object
 
 	virtual void Serialize(ln::tr::Archive& ar, int version)
 	{
-		ar & ln::tr::MakeNVP("code", code);
-		ar & ln::tr::MakeNVP("params", params);
+		ar & ln::tr::makeNVP("code", code);
+		ar & ln::tr::makeNVP("params", params);
 	}
 };
 
@@ -89,8 +89,8 @@ struct TkMVMovementData3 : public ln::Object
 
 	virtual void Serialize(ln::tr::Archive& ar, int version)
 	{
-		ar & ln::tr::MakeNVP("ignore", ignore);
-		ar & ln::tr::MakeNVP("commands", commands);
+		ar & ln::tr::makeNVP("ignore", ignore);
+		ar & ln::tr::makeNVP("commands", commands);
 	}
 };
 
@@ -111,11 +111,11 @@ TEST_F(Test_Serialization, SimpleStruct)
 		TkMVSoundData t1;
 		t1.name = _T("test");
 		t1.volume = 100;
-		json = tr::JsonSerializer::Save(t1);
+		json = tr::JsonSerializer::save(t1);
 	}
 	// load
 	{
-		TkMVSoundData t2 = tr::JsonSerializer::Load<TkMVSoundData>(json);
+		TkMVSoundData t2 = tr::JsonSerializer::load<TkMVSoundData>(json);
 		ASSERT_EQ(_T("test"), t2.name);
 		ASSERT_EQ(100, t2.volume);
 	}
@@ -132,11 +132,11 @@ TEST_F(Test_Serialization, StructNested)
 		t1.bgm.name = _T("test");
 		t1.bgm.volume = 100;
 		t1.displayName = _T("map1");
-		json = tr::JsonSerializer::Save(t1);
+		json = tr::JsonSerializer::save(t1);
 	}
 	// load
 	{
-		TkMVMapData1 t2 = tr::JsonSerializer::Load<TkMVMapData1>(json);
+		TkMVMapData1 t2 = tr::JsonSerializer::load<TkMVMapData1>(json);
 		ASSERT_EQ(true, t2.autoplayBgm);
 		ASSERT_EQ(_T("test"), t2.bgm.name);
 		ASSERT_EQ(100, t2.bgm.volume);
@@ -153,7 +153,7 @@ TEST_F(Test_Serialization, SimpleObject)
 		auto t1 = NewObject<TkMVSoundData3>();
 		t1->name = _T("test");
 		t1->volume = 100;
-		json = tr::JsonSerializer::Save(t1);
+		json = tr::JsonSerializer::save(t1);
 	}
 	// load
 	{
@@ -175,12 +175,12 @@ TEST_F(Test_Serialization, CommonObject)
 		t1->bgm->name = _T("test");
 		t1->bgm->volume = 100;
 		t1->displayName = _T("map1");
-		t1->events.Add(NewObject<TkMVEventData3>());
-		t1->events.Add(nullptr);
-		t1->events.Add(NewObject<TkMVEventData3>());
+		t1->events.add(NewObject<TkMVEventData3>());
+		t1->events.add(nullptr);
+		t1->events.add(NewObject<TkMVEventData3>());
 		t1->events[0]->id = _T("EV001");
 		t1->events[2]->id = _T("EV003");
-		json = tr::JsonSerializer::Save(t1);
+		json = tr::JsonSerializer::save(t1);
 	}
 	// load
 	{
@@ -208,35 +208,35 @@ TEST_F(Test_Serialization, Variant)
 			c1->code = 100;
 			tr::ScVariant v1;
 			tr::ScVariant v2;
-			v1.SetInt(20);
-			v2.SetString(_T("test"));
-			c1->params.Add(v1);
-			c1->params.Add(v2);
-			t1->commands.Add(c1);
+			v1.setInt(20);
+			v2.setString(_T("test"));
+			c1->params.add(v1);
+			c1->params.add(v2);
+			t1->commands.add(c1);
 		}
 		{
 			auto c1 = NewObject<TkMVEventCommand3>();
 			c1->code = 200;
 			tr::ScVariant v1;
 			tr::ScVariant v2;
-			v1.SetInt(120);
-			v2.SetString(_T("test2"));
-			c1->params.Add(v1);
-			c1->params.Add(v2);
-			t1->commands.Add(c1);
+			v1.setInt(120);
+			v2.setString(_T("test2"));
+			c1->params.add(v1);
+			c1->params.add(v2);
+			t1->commands.add(c1);
 		}
-		json = tr::JsonSerializer::Save(t1);
+		json = tr::JsonSerializer::save(t1);
 	}
 	// load
 	{
 		auto t2 = tr::JsonSerializer::LoadObject<TkMVMovementData3>(json);
 		ASSERT_EQ(true, t2->ignore);
 		ASSERT_EQ(100, t2->commands[0]->code);
-		ASSERT_EQ(20, t2->commands[0]->params[0].GetInt());
-		ASSERT_EQ(_T("test"), t2->commands[0]->params[1].GetString());
+		ASSERT_EQ(20, t2->commands[0]->params[0].getInt());
+		ASSERT_EQ(_T("test"), t2->commands[0]->params[1].getString());
 		ASSERT_EQ(200, t2->commands[1]->code);
-		ASSERT_EQ(120, t2->commands[1]->params[0].GetInt());
-		ASSERT_EQ(_T("test2"), t2->commands[1]->params[1].GetString());
+		ASSERT_EQ(120, t2->commands[1]->params[0].getInt());
+		ASSERT_EQ(_T("test2"), t2->commands[1]->params[1].getString());
 	}
 }
 
@@ -249,7 +249,7 @@ public:
 	//LN_SERIALIZE(ar, version, 1)
 	virtual void Serialize(tr::Archive& ar, int version)
 	{
-		ar & tr::MakeNVP(_T("value1"), m_value1);
+		ar & tr::makeNVP(_T("value1"), m_value1);
 	}
 
 public:
@@ -265,14 +265,14 @@ protected:
 };
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Serialization, Save)
+TEST_F(Test_Serialization, save)
 {
 	TestObject1 t1;
 	tr::JsonDocument2 doc;
-	tr::Archive ar(&doc, tr::ArchiveMode::Save, false);
+	tr::Archive ar(&doc, tr::ArchiveMode::save, false);
 
-	ar & tr::MakeNVP(_T("obj1"), t1);
-	doc.Save(TEMPFILE("json3.txt"));
+	ar & tr::makeNVP(_T("obj1"), t1);
+	doc.save(TEMPFILE("json3.txt"));
 }
 
 //------------------------------------------------------------------------------
@@ -284,7 +284,7 @@ TEST_F(Test_Serialization, Load)
 	tr::Archive ar(&doc, tr::ArchiveMode::Load, false);
 
 	t1.m_value1 = 1;
-	ar & tr::MakeNVP(_T("obj1"), t1);
+	ar & tr::makeNVP(_T("obj1"), t1);
 }
 
 //------------------------------------------------------------------------------
@@ -295,7 +295,7 @@ public:
 	//LN_SERIALIZE(ar, version, 1)
 	virtual void Serialize(tr::Archive& ar, int version)
 	{
-		ar & tr::MakeNVP(_T("value"), m_value);
+		ar & tr::makeNVP(_T("value"), m_value);
 	}
 
 public:
@@ -312,7 +312,7 @@ public:
 	virtual void Serialize(tr::Archive& ar, int version)
 	{
 		ver1 = version;
-		ar & tr::MakeNVP(_T("value"), m_value);
+		ar & tr::makeNVP(_T("value"), m_value);
 	}
 
 public:
@@ -326,36 +326,36 @@ TEST_F(Test_Serialization, List)
 	// <Test> write primitive type values.
 	{
 		tr::JsonDocument2 doc;
-		tr::Archive ar(&doc, tr::ArchiveMode::Save, false);
+		tr::Archive ar(&doc, tr::ArchiveMode::save, false);
 
 		List<int>	m_list1 = { 1, 2, 3 };
-		ar & tr::MakeNVP(_T("list1"), m_list1);
+		ar & tr::makeNVP(_T("list1"), m_list1);
 
 		ASSERT_EQ(_T("{\"list1\":[1,2,3]}"), doc.ToString());
 	}
 	// <Test> write struct type values.
 	{
 		tr::JsonDocument2 doc;
-		tr::Archive ar(&doc, tr::ArchiveMode::Save, false);
+		tr::Archive ar(&doc, tr::ArchiveMode::save, false);
 
 		List<TestObject2>	m_list1 = { TestObject2(), TestObject2(), TestObject2() };
 		m_list1[0].m_value = 1;
 		m_list1[1].m_value = 2;
 		m_list1[2].m_value = 3;
-		ar & tr::MakeNVP(_T("list1"), m_list1);
+		ar & tr::makeNVP(_T("list1"), m_list1);
 
 		ASSERT_EQ(_T("{\"list1\":[{\"value\":1},{\"value\":2},{\"value\":3}]}"), doc.ToString());
 	}
 	// <Test> write ln::Object type values.
 	{
 		tr::JsonDocument2 doc;
-		tr::Archive ar(&doc, tr::ArchiveMode::Save, false);
+		tr::Archive ar(&doc, tr::ArchiveMode::save, false);
 
 		List <RefPtr<TestObject3>> m_list1 = { NewObject<TestObject3>(), NewObject<TestObject3>(), NewObject<TestObject3>() };
 		m_list1[0]->m_value = 1;
 		m_list1[1]->m_value = 2;
 		m_list1[2]->m_value = 3;
-		ar & tr::MakeNVP(_T("list1"), m_list1);
+		ar & tr::makeNVP(_T("list1"), m_list1);
 
 		auto ss = doc.ToString();
 		ASSERT_EQ(_T("{\"list1\":[{\"value\":1},{\"value\":2},{\"value\":3}]}"), doc.ToString());
@@ -368,7 +368,7 @@ TEST_F(Test_Serialization, List)
 		tr::Archive ar(&doc, tr::ArchiveMode::Load, false);
 
 		List<int>	m_list1;
-		ar & tr::MakeNVP(_T("list1"), m_list1);
+		ar & tr::makeNVP(_T("list1"), m_list1);
 
 		ASSERT_EQ(3, m_list1.GetCount());
 		ASSERT_EQ(1, m_list1[0]);
@@ -382,7 +382,7 @@ TEST_F(Test_Serialization, List)
 		tr::Archive ar(&doc, tr::ArchiveMode::Load, false);
 
 		List<TestObject2>	m_list1;
-		ar & tr::MakeNVP(_T("list1"), m_list1);
+		ar & tr::makeNVP(_T("list1"), m_list1);
 
 		ASSERT_EQ(3, m_list1.GetCount());
 		ASSERT_EQ(5, m_list1[0].m_value);
@@ -396,7 +396,7 @@ TEST_F(Test_Serialization, List)
 		tr::Archive ar(&doc, tr::ArchiveMode::Load, false);
 
 		List <RefPtr<TestObject3>> m_list1;
-		ar & tr::MakeNVP(_T("list1"), m_list1);
+		ar & tr::makeNVP(_T("list1"), m_list1);
 
 		ASSERT_EQ(3, m_list1.GetCount());
 		ASSERT_EQ(5, m_list1[0]->m_value);
@@ -481,8 +481,8 @@ public:
 	virtual void Serialize(tr::Archive& ar, int version)
 	{
 		ver2 = version;
-		ar & tr::MakeNVPBaseObject<TestObject3>(this);
-		ar & tr::MakeNVP(_T("value2"), m_value2);
+		ar & tr::makeNVPBaseObject<TestObject3>(this);
+		ar & tr::makeNVP(_T("value2"), m_value2);
 	}
 
 public:
@@ -498,13 +498,13 @@ TEST_F(Test_Serialization, Reflection)
 		String json;
 		{
 			tr::JsonDocument2 doc;
-			tr::Archive ar(&doc, tr::ArchiveMode::Save, true);
+			tr::Archive ar(&doc, tr::ArchiveMode::save, true);
 
 			List <RefPtr<TestObject3>> m_list1 = { NewObject<TestObject3>(), NewObject<TestObject3>(), NewObject<TestObject3>() };
 			m_list1[0]->m_value = 1;
 			m_list1[1]->m_value = 2;
 			m_list1[2]->m_value = 3;
-			ar & tr::MakeNVP(_T("list1"), m_list1);
+			ar & tr::makeNVP(_T("list1"), m_list1);
 
 			json = doc.ToString();
 		}
@@ -514,7 +514,7 @@ TEST_F(Test_Serialization, Reflection)
 			tr::Archive ar(&doc, tr::ArchiveMode::Load, true);
 
 			List <RefPtr<TestObject3>> m_list1;
-			ar & tr::MakeNVP(_T("list1"), m_list1);
+			ar & tr::makeNVP(_T("list1"), m_list1);
 
 			ASSERT_EQ(3, m_list1.GetCount());
 			ASSERT_EQ(1, m_list1[0]->m_value);
@@ -528,7 +528,7 @@ TEST_F(Test_Serialization, Reflection)
 		String json;
 		{
 			tr::JsonDocument2 doc;
-			tr::Archive ar(&doc, tr::ArchiveMode::Save, true);
+			tr::Archive ar(&doc, tr::ArchiveMode::save, true);
 
 			auto obj1 = NewObject<TestObject4>();
 			auto obj2 = NewObject<TestObject4>();
@@ -536,8 +536,8 @@ TEST_F(Test_Serialization, Reflection)
 			obj1->m_value = 1; obj1->m_value2 = 4;
 			obj2->m_value = 2; obj2->m_value2 = 5;
 			obj3->m_value = 3; obj3->m_value2 = 6;
-			List <RefPtr<TestObject3>> m_list1 = { obj1.Get(), obj2.Get(), obj3.Get() };
-			ar & tr::MakeNVP(_T("list1"), m_list1);
+			List <RefPtr<TestObject3>> m_list1 = { obj1.get(), obj2.get(), obj3.get() };
+			ar & tr::makeNVP(_T("list1"), m_list1);
 
 			json = doc.ToString(tr::JsonFormatting::Indented);
 		}
@@ -547,11 +547,11 @@ TEST_F(Test_Serialization, Reflection)
 			tr::Archive ar(&doc, tr::ArchiveMode::Load, true);
 
 			List <RefPtr<TestObject3>> m_list1;
-			ar & tr::MakeNVP(_T("list1"), m_list1);
+			ar & tr::makeNVP(_T("list1"), m_list1);
 
-			auto* obj1 = dynamic_cast<TestObject4*>(m_list1[0].Get());
-			auto* obj2 = dynamic_cast<TestObject4*>(m_list1[1].Get());
-			auto* obj3 = dynamic_cast<TestObject4*>(m_list1[2].Get());
+			auto* obj1 = dynamic_cast<TestObject4*>(m_list1[0].get());
+			auto* obj2 = dynamic_cast<TestObject4*>(m_list1[1].get());
+			auto* obj3 = dynamic_cast<TestObject4*>(m_list1[2].get());
 			ASSERT_EQ(3, m_list1.GetCount());
 			ASSERT_EQ(1, obj1->m_value); ASSERT_EQ(1, obj1->ver1);
 			ASSERT_EQ(4, obj1->m_value2); ASSERT_EQ(2, obj1->ver2);
@@ -590,9 +590,9 @@ struct TkMVSoundData
 
 	void Serialize(ln::tr::Archive& ar, int version)
 	{
-		ar & ln::tr::MakeNVP("name", name);
-		ar & ln::tr::MakeNVP("pitch", pitch);
-		ar & ln::tr::MakeNVP("volume", volume);
+		ar & ln::tr::makeNVP("name", name);
+		ar & ln::tr::makeNVP("pitch", pitch);
+		ar & ln::tr::makeNVP("volume", volume);
 	}
 };
 
@@ -604,9 +604,9 @@ struct TkMVMapData
 
 	void Serialize(ln::tr::Archive& ar, int version)
 	{
-		ar & ln::tr::MakeNVP("autoplayBgm", autoplayBgm);
-		ar & ln::tr::MakeNVP("bgm", bgm);
-		ar & ln::tr::MakeNVP("displayName", displayName);
+		ar & ln::tr::makeNVP("autoplayBgm", autoplayBgm);
+		ar & ln::tr::makeNVP("bgm", bgm);
+		ar & ln::tr::makeNVP("displayName", displayName);
 	}
 };
 

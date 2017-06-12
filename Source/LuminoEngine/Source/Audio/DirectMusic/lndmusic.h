@@ -268,8 +268,8 @@ DECLARE_INTERFACE_(IDirectMusic, IUnknown)
 {
     /*  IUnknown */
     STDMETHOD(QueryInterface)       (THIS_ REFIID, LPVOID FAR *) PURE;
-    STDMETHOD_(ULONG,addRef)        (THIS) PURE;
-    STDMETHOD_(ULONG,release)       (THIS) PURE;
+    STDMETHOD_(ULONG,AddRef)        (THIS) PURE;
+    STDMETHOD_(ULONG,Release)       (THIS) PURE;
 
     /*  IDirectMusic */
     STDMETHOD(EnumPort)             (THIS_ DWORD dwIndex,
@@ -298,8 +298,8 @@ DECLARE_INTERFACE_(IDirectMusic8, IDirectMusic)
 {
     /*  IUnknown */
     STDMETHOD(QueryInterface)       (THIS_ REFIID, LPVOID FAR *) PURE;
-    STDMETHOD_(ULONG,addRef)        (THIS) PURE;
-    STDMETHOD_(ULONG,release)       (THIS) PURE;
+    STDMETHOD_(ULONG,AddRef)        (THIS) PURE;
+    STDMETHOD_(ULONG,Release)       (THIS) PURE;
 
     /*  IDirectMusic */
     STDMETHOD(EnumPort)             (THIS_ DWORD dwIndex,
@@ -331,11 +331,11 @@ DECLARE_INTERFACE_(IDirectMusicSegment, IUnknown)
 {
     /*  IUnknown */
     STDMETHOD(QueryInterface)       (THIS_ REFIID, LPVOID FAR *) PURE;
-    STDMETHOD_(ULONG,addRef)        (THIS) PURE;
-    STDMETHOD_(ULONG,release)       (THIS) PURE;
+    STDMETHOD_(ULONG,AddRef)        (THIS) PURE;
+    STDMETHOD_(ULONG,Release)       (THIS) PURE;
 
     /*  IDirectMusicSegment */
-    STDMETHOD(GetLength)                (THIS_ MUSIC_TIME* pmtLength) PURE;
+    STDMETHOD(getLength)                (THIS_ MUSIC_TIME* pmtLength) PURE;
     STDMETHOD(SetLength)                (THIS_ MUSIC_TIME mtLength) PURE;
     STDMETHOD(GetRepeats)               (THIS_ DWORD* pdwRepeats) PURE;
     STDMETHOD(SetRepeats)               (THIS_ DWORD  dwRepeats) PURE;
@@ -387,11 +387,11 @@ DECLARE_INTERFACE_(IDirectMusicSegment8, IDirectMusicSegment)
 {
     /*  IUnknown */
     STDMETHOD(QueryInterface)       (THIS_ REFIID, LPVOID FAR *) PURE;
-    STDMETHOD_(ULONG,addRef)        (THIS) PURE;
-    STDMETHOD_(ULONG,release)       (THIS) PURE;
+    STDMETHOD_(ULONG,AddRef)        (THIS) PURE;
+    STDMETHOD_(ULONG,Release)       (THIS) PURE;
 
     /*  IDirectMusicSegment */
-    STDMETHOD(GetLength)                (THIS_ MUSIC_TIME* pmtLength) PURE;
+    STDMETHOD(getLength)                (THIS_ MUSIC_TIME* pmtLength) PURE;
     STDMETHOD(SetLength)                (THIS_ MUSIC_TIME mtLength) PURE;
     STDMETHOD(GetRepeats)               (THIS_ DWORD* pdwRepeats) PURE;
     STDMETHOD(SetRepeats)               (THIS_ DWORD  dwRepeats) PURE;
@@ -456,8 +456,8 @@ DECLARE_INTERFACE_(IDirectMusicSegmentState, IUnknown)
 {
     /*  IUnknown */
     STDMETHOD(QueryInterface)       (THIS_ REFIID, LPVOID FAR *) PURE;
-    STDMETHOD_(ULONG,addRef)        (THIS) PURE;
-    STDMETHOD_(ULONG,release)       (THIS) PURE;
+    STDMETHOD_(ULONG,AddRef)        (THIS) PURE;
+    STDMETHOD_(ULONG,Release)       (THIS) PURE;
 
     /*  IDirectMusicSegmentState */
     STDMETHOD(GetRepeats)           (THIS_ DWORD* pdwRepeats) PURE;
@@ -473,8 +473,8 @@ DECLARE_INTERFACE_(IDirectMusicSegmentState8, IDirectMusicSegmentState)
 {
     /*  IUnknown */
     STDMETHOD(QueryInterface)       (THIS_ REFIID, LPVOID FAR *) PURE;
-    STDMETHOD_(ULONG,addRef)        (THIS) PURE;
-    STDMETHOD_(ULONG,release)       (THIS) PURE;
+    STDMETHOD_(ULONG,AddRef)        (THIS) PURE;
+    STDMETHOD_(ULONG,Release)       (THIS) PURE;
 
     /*  IDirectMusicSegmentState */
     STDMETHOD(GetRepeats)           (THIS_ DWORD* pdwRepeats) PURE;
@@ -505,8 +505,8 @@ DECLARE_INTERFACE_(IDirectMusicPerformance, IUnknown)
 {
     /*  IUnknown */
     STDMETHOD(QueryInterface)       (THIS_ REFIID, LPVOID FAR *) PURE;
-    STDMETHOD_(ULONG,addRef)        (THIS) PURE;
-    STDMETHOD_(ULONG,release)       (THIS) PURE;
+    STDMETHOD_(ULONG,AddRef)        (THIS) PURE;
+    STDMETHOD_(ULONG,Release)       (THIS) PURE;
 
     /*  IDirectMusicPerformance */
     STDMETHOD(Init)                 (THIS_ IDirectMusic** ppDirectMusic,
@@ -623,8 +623,8 @@ DECLARE_INTERFACE_(IDirectMusicPerformance8, IDirectMusicPerformance)
 {
     /*  IUnknown */
     STDMETHOD(QueryInterface)       (THIS_ REFIID, LPVOID FAR *) PURE;
-    STDMETHOD_(ULONG,addRef)        (THIS) PURE;
-    STDMETHOD_(ULONG,release)       (THIS) PURE;
+    STDMETHOD_(ULONG,AddRef)        (THIS) PURE;
+    STDMETHOD_(ULONG,Release)       (THIS) PURE;
 
     /*  IDirectMusicPerformance */
     STDMETHOD(Init)                 (THIS_ IDirectMusic** ppDirectMusic,
@@ -777,8 +777,8 @@ DECLARE_INTERFACE_(IDirectMusicAudioPath, IUnknown)
 {
     /*  IUnknown */
     STDMETHOD(QueryInterface)       (THIS_ REFIID, LPVOID FAR *) PURE;
-    STDMETHOD_(ULONG,addRef)        (THIS) PURE;
-    STDMETHOD_(ULONG,release)       (THIS) PURE;
+    STDMETHOD_(ULONG,AddRef)        (THIS) PURE;
+    STDMETHOD_(ULONG,Release)       (THIS) PURE;
 
     /*  IDirectMusicAudioPath */
     STDMETHOD(GetObjectInPath)      (THIS_ DWORD dwPChannel,    /* PChannel to search. */
@@ -803,8 +803,8 @@ DECLARE_INTERFACE_(IDirectMusicLoader, IUnknown)
 {
     /* IUnknown */
     STDMETHOD(QueryInterface)       (THIS_ REFIID, LPVOID FAR *) PURE;
-    STDMETHOD_(ULONG,addRef)        (THIS) PURE;
-    STDMETHOD_(ULONG,release)       (THIS) PURE;
+    STDMETHOD_(ULONG,AddRef)        (THIS) PURE;
+    STDMETHOD_(ULONG,Release)       (THIS) PURE;
 
     /* IDirectMusicLoader */
     STDMETHOD(GetObject)            (THIS_ LPDMUS_OBJECTDESC pDesc,
@@ -833,8 +833,8 @@ DECLARE_INTERFACE_(IDirectMusicLoader8, IDirectMusicLoader)
 {
     /* IUnknown */
     STDMETHOD(QueryInterface)       (THIS_ REFIID, LPVOID FAR *) PURE;
-    STDMETHOD_(ULONG,addRef)        (THIS) PURE;
-    STDMETHOD_(ULONG,release)       (THIS) PURE;
+    STDMETHOD_(ULONG,AddRef)        (THIS) PURE;
+    STDMETHOD_(ULONG,Release)       (THIS) PURE;
 
     /* IDirectMusicLoader */
     STDMETHOD(GetObject)            (THIS_ LPDMUS_OBJECTDESC pDesc,

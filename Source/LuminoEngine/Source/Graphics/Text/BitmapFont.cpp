@@ -24,7 +24,7 @@ RefPtr<RawFont> RawFont::CreateBuiltInBitmapFontInternal2(int size)
 	MemoryStream stream(g_BuiltInBitmapFont_size7_Data, g_BuiltInBitmapFont_size7_Len);
 	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(&stream), false);
 	auto font = NewObject<detail::BitmapFont>(bitmap);
-	return RefPtr<RawFont>::StaticCast(font);
+	return RefPtr<RawFont>::staticCast(font);
 }
 
 //------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ void BitmapFont::initialize(Bitmap* bitmap)
 	RawFont::initialize();
 	m_manager = detail::EngineDomain::GetGraphicsManager()->GetFontManager();
 
-	m_name = String::SPrintf(_T("%d"), rand());	// TODO: 名前がユーザー指定されていなければランダムに作る
+	m_name = String::sprintf(_T("%d"), rand());	// TODO: 名前がユーザー指定されていなければランダムに作る
 	m_fontBitmap = bitmap;
 
 	m_charWidth = m_fontBitmap->getSize().width / 16;
@@ -137,7 +137,7 @@ void BitmapFont::getTextSize(const wchar_t* text, int len, Geometry::RectI* rect
 RawFontPtr BitmapFont::copy() const
 {
 	auto ptr = NewObject<BitmapFont>(m_fontBitmap);
-	return RawFontPtr::StaticCast(ptr);
+	return RawFontPtr::staticCast(ptr);
 }
 
 //------------------------------------------------------------------------------

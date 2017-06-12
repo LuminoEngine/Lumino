@@ -84,7 +84,7 @@ public:
 		@brief		RigidBody オブジェクトを作成します。
 		@param[in]	collider	: 衝突判定形状
 	*/
-	static RefPtr<RigidBody> Create(CollisionShape* collider);
+	static RefPtr<RigidBody> create(CollisionShape* collider);
 
 
 public:

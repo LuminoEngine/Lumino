@@ -37,7 +37,7 @@ public:
 	virtual ~PropertyInfo();
 
 	virtual void SetValue(ReflectionObject* target, Variant value, PropertySetSource source) const { LN_THROW(0, InvalidOperationException); }
-	virtual Variant GetValue(const ReflectionObject* target) const { LN_THROW(0, InvalidOperationException); }
+	virtual Variant getValue(const ReflectionObject* target) const { LN_THROW(0, InvalidOperationException); }
 	virtual void AddItem(ReflectionObject* target, const Variant& value) const { LN_THROW(0, InvalidOperationException); }
 
 	virtual bool IsReadable() const { return false; }
@@ -130,7 +130,7 @@ public:
 	{
 		SetValueDirect(target, Variant::Cast<TValue>(value), source);
 	}
-	virtual Variant GetValue(const ReflectionObject* target) const
+	virtual Variant getValue(const ReflectionObject* target) const
 	{
 		LN_THROW(m_getter != NULL, InvalidOperationException);
 		TValue* v;
@@ -271,7 +271,7 @@ public:
 		field.Set(value);
 	}
 	template<typename TValue, typename TProperty>
-	static void GetValue(TProperty& field, TValue** outValuePtr)
+	static void getValue(TProperty& field, TValue** outValuePtr)
 	{
 		*outValuePtr = &field.m_value;
 	}
@@ -300,7 +300,7 @@ public:
 	const ln::tr::TypedPropertyInfo<valueType>*		ownerClass::propVar##Id = &_##propVar##Id; \
 	::ln::tr::Property<valueType>*					ownerClass::get_Ptr##propVar(ln::tr::ReflectionObject* obj) { return &static_cast<ownerClass*>(obj)->propVar; } \
 	void											ownerClass::set_##propVar(ln::tr::ReflectionObject* obj, valueType& value) { tr::PropertyHelper::SetValue(static_cast<ownerClass*>(obj)->propVar, value); } \
-	void											ownerClass::get_##propVar(ln::tr::ReflectionObject* obj, valueType** outValuePtr) { tr::PropertyHelper::GetValue<valueType>(static_cast<ownerClass*>(obj)->propVar, outValuePtr); } \
+	void											ownerClass::get_##propVar(ln::tr::ReflectionObject* obj, valueType** outValuePtr) { tr::PropertyHelper::getValue<valueType>(static_cast<ownerClass*>(obj)->propVar, outValuePtr); } \
 	ln::tr::TypedPropertyInitializer<valueType>		ownerClass::init_##propVar(&_##propVar##Id, LN_MEMBER_OFFSETOF(ownerClass, propVar), &ownerClass::get_Ptr##propVar, &ownerClass::set_##propVar, &ownerClass::get_##propVar, metadata); \
 
 
@@ -386,7 +386,7 @@ public:
 		SetInternal(value, PropertySetSource::ByLocal);
 	}
 
-	const TValue& Get() const { return m_value; }
+	const TValue& get() const { return m_value; }
 
 
 
@@ -407,11 +407,11 @@ public:
 	const PropertyInfo* GetPropertyInfo() const { return m_propId; }
 
 LN_INTERNAL_ACCESS:
-	uint32_t GetHashCode() const
+	uint32_t getHashCode() const
 	{
 		return
-			Hash::CalcHash(reinterpret_cast<const char*>(&m_value), sizeof(m_value)) +
-			Hash::CalcHash(reinterpret_cast<const char*>(&m_valueSource), sizeof(m_valueSource));
+			Hash::calcHash(reinterpret_cast<const char*>(&m_value), sizeof(m_value)) +
+			Hash::calcHash(reinterpret_cast<const char*>(&m_valueSource), sizeof(m_valueSource));
 	}
 
 	bool Inherit(const Property& parent)
@@ -461,22 +461,22 @@ private:
 template<typename TValue>
 inline bool operator == (const Property<TValue>& lhs, const TValue& rhs)
 {
-	return lhs.Get() == rhs;
+	return lhs.get() == rhs;
 }
 template<typename TValue>
 inline bool operator == (const TValue& lhs, const Property<TValue>& rhs)
 {
-	return lhs == rhs.Get();
+	return lhs == rhs.get();
 }
 template<typename TValue>
 inline bool operator != (const Property<TValue>& lhs, const TValue& rhs)
 {
-	return lhs.Get() != rhs;
+	return lhs.get() != rhs;
 }
 template<typename TValue>
 inline bool operator != (const TValue& lhs, const Property<TValue>& rhs)
 {
-	return lhs != rhs.Get();
+	return lhs != rhs.get();
 }
 
 
@@ -506,10 +506,10 @@ public:
 		if (ptr != nullptr) m_prop.Set(value);
 	}
 
-	const TValue& GetValue(const TValue& defaultValue) const
+	const TValue& getValue(const TValue& defaultValue) const
 	{
 		auto ptr = m_propOwner.Resolve();
-		if (ptr != nullptr) return m_prop.Get();
+		if (ptr != nullptr) return m_prop.get();
 		return defaultValue;
 	}
 

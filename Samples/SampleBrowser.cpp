@@ -26,7 +26,7 @@ void Main()
 	auto* mainWindow = Engine::GetMainWindow();
 
 
-	auto listBox1 = UIListBox::Create();
+	auto listBox1 = UIListBox::create();
 	listBox1->SetWidth(200);
 	mainWindow->AddChild(listBox1);
 

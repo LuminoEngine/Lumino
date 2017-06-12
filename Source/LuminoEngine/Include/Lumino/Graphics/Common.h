@@ -413,7 +413,7 @@ public:
 
 	FontData();
 	bool operator < (const FontData& right);
-	uint64_t CalcHash() const;
+	uint64_t calcHash() const;
 };
 
 
@@ -428,13 +428,13 @@ public:
 	{
 	}
 
-	void Reserve(int count)
+	void reserve(int count)
 	{
 		m_buffer.resize(sizeof(T) * count, false);
 		m_capacity = count;
 	}
 
-	void Add(const T& value)
+	void add(const T& value)
 	{
 		TryGlow(m_count + 1);
 		memcpy(&m_buffer[sizeof(T) * m_count], &value, sizeof(T));
@@ -454,10 +454,10 @@ public:
 		m_count = 0;
 	}
 
-	T& GetAt(int index) { return ((T*)(m_buffer.getData()))[index]; }
-	T& GetLast() { return GetAt(m_count - 1); }
+	T& getAt(int index) { return ((T*)(m_buffer.getData()))[index]; }
+	T& getLast() { return getAt(m_count - 1); }
 
-	int GetCount() const { return m_count; }
+	int getCount() const { return m_count; }
 	byte_t* GetBuffer() { return m_buffer.getData(); }
 	size_t GetBufferUsedByteCount() { return m_count * sizeof(T); }
 
@@ -466,7 +466,7 @@ private:
 	{
 		if (/*m_count + */requestCount > m_capacity)
 		{
-			Reserve(m_capacity * 2);
+			reserve(m_capacity * 2);
 		}
 	}
 
@@ -484,12 +484,12 @@ public:
 	CommandDataCache();
 	virtual ~CommandDataCache();
 
-	void Reserve(size_t dataCount, size_t byteCount);
+	void reserve(size_t dataCount, size_t byteCount);
 	void clear();
 	DataHandle AllocData(size_t byteCount, const void* data = nullptr);
 	byte_t* getData(DataHandle handle);
 
-	int GetDataCount() const { return m_dataList.GetCount(); }
+	int GetDataCount() const { return m_dataList.getCount(); }
 	byte_t* GetDataByIndex(int index) { return getData(m_dataList[index]); }
 
 private:

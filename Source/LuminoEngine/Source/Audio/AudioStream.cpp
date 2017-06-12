@@ -37,7 +37,7 @@ AudioStream::~AudioStream()
 }
 
 //------------------------------------------------------------------------------
-void AudioStream::Create(bool async)
+void AudioStream::create(bool async)
 {
 	InvokeIOProc(async, m_manager->GetFileManager());
 }
@@ -85,7 +85,7 @@ void AudioStream::OnASyncIOProc()
 	}
 
 	// 初期化
-	m_decoder->Create(m_stream);
+	m_decoder->create(m_stream);
 }
 
 //==============================================================================

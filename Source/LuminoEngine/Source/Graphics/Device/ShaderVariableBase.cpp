@@ -48,7 +48,7 @@ void ShaderVariableBase::MakeInitialValue()
 		}
 		case ShaderVariableType_Int:
 		{
-			SetInt(0);
+			setInt(0);
 			break;
 		}
 		case ShaderVariableType_Float:
@@ -88,7 +88,7 @@ void ShaderVariableBase::MakeInitialValue()
 		}
 		case ShaderVariableType_String:
 		{
-			SetString(String::GetEmpty());
+			setString(String::getEmpty());
 			break;
 		}
 		default:
@@ -112,9 +112,9 @@ void ShaderVariableBase::SetBoolArray(const bool* values, int count)
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableBase::SetInt(int value)
+void ShaderVariableBase::setInt(int value)
 {
-	m_value.SetInt(value);
+	m_value.setInt(value);
 	m_modifid = true;
 }
 
@@ -168,16 +168,16 @@ void ShaderVariableBase::SetTexture(ITexture* texture)
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableBase::SetString(const char* str)
+void ShaderVariableBase::setString(const char* str)
 {
-	m_value.SetString(str);
+	m_value.setString(str);
 	m_modifid = true;
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableBase::SetString(const String& str)
+void ShaderVariableBase::setString(const String& str)
 {
-	m_value.SetString(str);
+	m_value.setString(str);
 	m_modifid = true;
 }
 

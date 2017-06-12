@@ -27,7 +27,7 @@ namespace detail {
 			assert(0);
 		}
 		
-		virtual bool Next() override
+		virtual bool next() override
 		{
 			assert(0);
 			return false;
@@ -46,7 +46,7 @@ public:
 		, m_dir(NULL)
 	{
 		StringA t;
-		t.AssignCStr(GenericFileFinderImplBase<char>::m_dirPath.c_str());
+		t.assignCStr(GenericFileFinderImplBase<char>::m_dirPath.c_str());
 		initialize(t.c_str());
 	}
 
@@ -63,10 +63,10 @@ public:
 		m_dir = opendir(dirPath);
 		LN_THROW(m_dir != NULL, IOException, dirPath);
 
-		Next();
+		next();
 	}
 
-	virtual bool Next() override
+	virtual bool next() override
 	{
 		struct dirent* entry;
 		do
@@ -74,16 +74,16 @@ public:
 			entry = readdir(m_dir);
 			if (entry)
 			{
-				GenericFileFinderImplBase<char>::SetCurrentFileName(entry->d_name);
+				GenericFileFinderImplBase<char>::setCurrentFileName(entry->d_name);
 			}
 			else
 			{
-				GenericFileFinderImplBase<char>::SetCurrentFileName((char*)NULL);
+				GenericFileFinderImplBase<char>::setCurrentFileName((char*)NULL);
 				break;
 			}
 		} while (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0);
 
-		return !GenericFileFinderImplBase<char>::GetCurrent().IsEmpty();
+		return !GenericFileFinderImplBase<char>::getCurrent().isEmpty();
 	}
 
 private:

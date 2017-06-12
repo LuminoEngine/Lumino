@@ -49,7 +49,7 @@ CameraComponent::CameraComponent()
 CameraComponent::~CameraComponent()
 {
 	LN_SAFE_RELEASE(m_cameraBehavior);
-	m_manager->GetAllCameraList()->Remove(this);
+	m_manager->GetAllCameraList()->remove(this);
 }
 
 //------------------------------------------------------------------------------
@@ -57,7 +57,7 @@ void CameraComponent::initialize(CameraProjection proj)
 {
 	SceneNode::initialize();
 	m_projectionMode = proj;
-	m_manager->GetAllCameraList()->Add(this);
+	m_manager->GetAllCameraList()->add(this);
 
 	if (m_projectionMode == CameraProjection_2D)
 	{
@@ -138,7 +138,7 @@ void CameraComponent::UpdateMatrices(const Size& viewSize)
 		// 注視点
 		Vector3 lookAt;
 		if (m_directionMode == CameraDirection::LookAt &&
-			worldMatrix.GetPosition() != m_lookAt)	// 位置と注視点が同じだと、Matrix::MakeLookAt で NAN になる
+			worldMatrix.getPosition() != m_lookAt)	// 位置と注視点が同じだと、Matrix::MakeLookAt で NAN になる
 		{
 			lookAt = m_lookAt;
 		}
@@ -148,7 +148,7 @@ void CameraComponent::UpdateMatrices(const Size& viewSize)
 		}
 
 		// ビュー行列
-		m_viewMatrix = Matrix::MakeLookAtLH(worldMatrix.GetPosition(), lookAt, m_upDirection);
+		m_viewMatrix = Matrix::MakeLookAtLH(worldMatrix.getPosition(), lookAt, m_upDirection);
 
 		if (m_reflectionPlane.Normal != Vector3::Zero)
 		{
@@ -162,7 +162,7 @@ void CameraComponent::UpdateMatrices(const Size& viewSize)
 		m_viewProjMatrix = m_viewMatrix * m_projMatrix;
 
 		// 正面方向
-		Vector3 d = lookAt - worldMatrix.GetPosition();
+		Vector3 d = lookAt - worldMatrix.getPosition();
 		d.Normalize();
 		m_direction = Vector4(d, 0.0f);
 	}
@@ -189,34 +189,34 @@ void CameraComponent::OnUpdate()
 //------------------------------------------------------------------------------
 void CameraComponent::OnUIEvent(UIEventArgs* e)
 {
-	if (e->GetType() == UIEvents::MouseDownEvent)
+	if (e->getType() == UIEvents::MouseDownEvent)
 	{
 		if (GetCameraBehavior() != nullptr)
 		{
 			auto* me = static_cast<UIMouseEventArgs*>(e);
-			auto pos = me->GetPosition(me->sender);
+			auto pos = me->getPosition(me->sender);
 			GetCameraBehavior()->InjectMouseButtonDown(me->GetMouseButtons(), pos.x, pos.y);
 		}
 	}
-	else if (e->GetType() == UIEvents::MouseUpEvent)
+	else if (e->getType() == UIEvents::MouseUpEvent)
 	{
 		if (GetCameraBehavior() != nullptr)
 		{
 			auto* me = static_cast<UIMouseEventArgs*>(e);
-			auto pos = me->GetPosition(me->sender);
+			auto pos = me->getPosition(me->sender);
 			GetCameraBehavior()->InjectMouseButtonUp(me->GetMouseButtons(), pos.x, pos.y);
 		}
 	}
-	else if (e->GetType() == UIEvents::MouseMoveEvent)
+	else if (e->getType() == UIEvents::MouseMoveEvent)
 	{
 		if (GetCameraBehavior() != nullptr)
 		{
 			auto* me = static_cast<UIMouseEventArgs*>(e);
-			auto pos = me->GetPosition(me->sender);
+			auto pos = me->getPosition(me->sender);
 			GetCameraBehavior()->InjectMouseMove(pos.x, pos.y);
 		}
 	}
-	else if (e->GetType() == UIEvents::MouseMoveEvent)
+	else if (e->getType() == UIEvents::MouseMoveEvent)
 	{
 		if (GetCameraBehavior() != nullptr)
 		{
@@ -250,7 +250,7 @@ CameraViewportLayer* CameraViewportLayer::GetDefault3D()
 }
 
 ////------------------------------------------------------------------------------
-//CameraViewportLayerPtr CameraViewportLayer::Create(Camera* camera)
+//CameraViewportLayerPtr CameraViewportLayer::create(Camera* camera)
 //{
 //	auto ptr = CameraViewportLayerPtr::MakeRef();
 //	ptr->initialize(SceneGraphManager::Instance, camera);
@@ -274,13 +274,13 @@ void CameraViewportLayer::initialize(SceneGraphManager* manager, World* targetWo
 
 	if (m_hostingCamera->GetProjectionMode() == CameraProjection_3D)
 	{
-		auto internalRenderer = RefPtr<detail::ForwardShadingRenderer>::MakeRef();
+		auto internalRenderer = RefPtr<detail::ForwardShadingRenderer>::makeRef();
 		internalRenderer->initialize(manager->GetGraphicsManager());
 		m_internalRenderer = internalRenderer;
 	}
 	else
 	{
-		auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
+		auto internalRenderer = RefPtr<detail::NonShadingRenderer>::makeRef();
 		internalRenderer->initialize(manager->GetGraphicsManager());
 		m_internalRenderer = internalRenderer;
 	}
@@ -305,7 +305,7 @@ void CameraViewportLayer::SetDebugDrawFlags(WorldDebugDrawFlags flags)
 //------------------------------------------------------------------------------
 tr::GizmoModel* CameraViewportLayer::CreateGizmo()
 {
-	m_gizmo = RefPtr<tr::GizmoModel>::MakeRef();
+	m_gizmo = RefPtr<tr::GizmoModel>::makeRef();
 	m_gizmo->initialize(detail::EngineDomain::GetGraphicsManager());
 	return m_gizmo;
 }
@@ -337,7 +337,7 @@ void CameraViewportLayer::ExecuteDrawListRendering(DrawList* parentDrawList, Ren
 	m_hostingCamera->UpdateMatrices(targetSize);
 
 	detail::CameraInfo cameraInfo;
-	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.Get());
+	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.get());
 	cameraInfo.viewPixelSize = targetSize;
 	cameraInfo.viewPosition = m_hostingCamera->GetCombinedGlobalMatrix().GetPosition();
 	cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
@@ -436,21 +436,21 @@ void CameraViewportLayer2::initialize(World* targetWorld, CameraComponent* hosti
 
 	if (m_hostingCamera->GetProjectionMode() == CameraProjection_3D)
 	{
-		auto internalRenderer = RefPtr<detail::ForwardShadingRenderer>::MakeRef();
+		auto internalRenderer = RefPtr<detail::ForwardShadingRenderer>::makeRef();
 		internalRenderer->initialize(detail::EngineDomain::GetGraphicsManager());
 		m_internalRenderer = internalRenderer;
 	}
 	else
 	{
-		auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
+		auto internalRenderer = RefPtr<detail::NonShadingRenderer>::makeRef();
 		internalRenderer->initialize(detail::EngineDomain::GetGraphicsManager());
 		m_internalRenderer = internalRenderer;
 	}
 
-	m_mainRenderView = RefPtr<RenderView>::MakeRef();
-	m_mainRenderView->m_lists.Add(m_targetWorld->GetInsideWorldRenderer()->GetDrawElementList());
-	m_mainRenderView->m_lists.Add(m_targetWorld->GetRenderer()->GetDrawElementList());
-	m_mainRenderView->m_lists.Add(m_targetWorld->GetDebugRenderer()->GetDrawElementList());
+	m_mainRenderView = RefPtr<RenderView>::makeRef();
+	m_mainRenderView->m_lists.add(m_targetWorld->GetInsideWorldRenderer()->GetDrawElementList());
+	m_mainRenderView->m_lists.add(m_targetWorld->GetRenderer()->GetDrawElementList());
+	m_mainRenderView->m_lists.add(m_targetWorld->GetDebugRenderer()->GetDrawElementList());
 }
 
 //------------------------------------------------------------------------------
@@ -494,9 +494,9 @@ void CameraViewportLayer2::ExecuteDrawListRendering(DrawList* parentDrawList, Re
 	m_hostingCamera->UpdateMatrices(targetSize);
 
 	//detail::CameraInfo cameraInfo;
-	m_mainRenderView->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.Get());
+	m_mainRenderView->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.get());
 	m_mainRenderView->m_cameraInfo.viewPixelSize = targetSize;
-	m_mainRenderView->m_cameraInfo.viewPosition = m_hostingCamera->GetTransform()->GetWorldMatrix().GetPosition();
+	m_mainRenderView->m_cameraInfo.viewPosition = m_hostingCamera->GetTransform()->GetWorldMatrix().getPosition();
 	m_mainRenderView->m_cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
 	m_mainRenderView->m_cameraInfo.projMatrix = m_hostingCamera->GetProjectionMatrix();
 	m_mainRenderView->m_cameraInfo.viewProjMatrix = m_hostingCamera->GetViewProjectionMatrix();
@@ -704,11 +704,11 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseMove(int x, int y)
 	if (m_MDrag)
 	{
 		CameraComponent* camera = GetTargetCamera();
-		Vector3 pos = camera->GetPosition();
+		Vector3 pos = camera->getPosition();
 		Vector3 lookAt = camera->GetLookAt();
 
 		// 1px に付きどの程度移動するか
-		float s = 0.00175f * (pos - lookAt).GetLength();
+		float s = 0.00175f * (pos - lookAt).getLength();
 		float dx = s * (x - m_prevPos.x);
 		float dy = s * (y - m_prevPos.y);
 
@@ -799,7 +799,7 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseButtonUp(MouseButtons button, i
 bool CylinderMouseMoveCameraBehavior::InjectMouseWheel(int delta)
 {
 	CameraComponent* camera = GetTargetCamera();
-	Vector3 view = camera->GetTransform()->position.Get() - camera->GetLookAt();
+	Vector3 view = camera->GetTransform()->position.get() - camera->GetLookAt();
 	if (delta >= 0) {
 		view *= 0.9f;
 	}

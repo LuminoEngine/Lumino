@@ -32,7 +32,7 @@ PropertyInfo::~PropertyInfo()
 //------------------------------------------------------------------------------
 void PropertyInfo::NotifyPropertyChanged(ReflectionObject* ownerObject, PropertyBase* target, const PropertyInfo* prop, PropertySetSource source)
 {
-	RefPtr<PropertyChangedEventArgs> e(g_eventArgsPool.Create<PropertyChangedEventArgs>(prop, source), false);
+	RefPtr<PropertyChangedEventArgs> e(g_eventArgsPool.create<PropertyChangedEventArgs>(prop, source), false);
 	//target->OnPropertyChanged(e);
 	//target->CallListener(e);
 	//prop->m_metadata->CallPropertyChangedCallback(target, e);
@@ -72,7 +72,7 @@ Variant PropertyInfo::GetPropertyValue(ReflectionObject* obj, const PropertyInfo
 	//{
 	//	// この const_cast は、外に公開する Getter はとにかく const 関数にしたかったためのもの。
 	//	UpdateInheritanceProperty(const_cast<CoreObject*>(this), prop);
-		return prop->GetValue(obj);
+		return prop->getValue(obj);
 	//}
 }
 

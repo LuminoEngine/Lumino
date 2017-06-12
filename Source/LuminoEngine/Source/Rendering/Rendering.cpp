@@ -51,10 +51,10 @@ CommandDataCache::~CommandDataCache()
 }
 
 //------------------------------------------------------------------------------
-void CommandDataCache::Reserve(size_t dataCount, size_t byteCount)
+void CommandDataCache::reserve(size_t dataCount, size_t byteCount)
 {
 	clear();
-	m_dataList.Reserve(dataCount);
+	m_dataList.reserve(dataCount);
 	m_dataBuffer.resize(byteCount, false);
 }
 
@@ -83,7 +83,7 @@ CommandDataCache::DataHandle CommandDataCache::AllocData(size_t byteCount, const
 	}
 
 	size_t dataIdx = m_dataBufferUsed;
-	m_dataList.Add(dataIdx);
+	m_dataList.add(dataIdx);
 	m_dataBufferUsed += byteCount;
 	return dataIdx;
 }
@@ -116,30 +116,30 @@ void InternalContext::initialize(detail::GraphicsManager* manager)
 {
 	m_baseRenderer = manager->GetRenderer();
 
-	m_primitiveRenderer = RefPtr<PrimitiveRenderFeature>::MakeRef();
+	m_primitiveRenderer = RefPtr<PrimitiveRenderFeature>::makeRef();
 	m_primitiveRenderer->initialize(manager);
 
-	m_blitRenderer = RefPtr<BlitRenderer>::MakeRef();
+	m_blitRenderer = RefPtr<BlitRenderer>::makeRef();
 	m_blitRenderer->initialize(manager);
 
-	m_meshRenderer = RefPtr<MeshRenderFeature>::MakeRef();
+	m_meshRenderer = RefPtr<MeshRenderFeature>::makeRef();
 	m_meshRenderer->initialize(manager);
 
-	m_spriteRenderer = RefPtr<SpriteRenderFeature>::MakeRef(manager, 2048);	// TODO
+	m_spriteRenderer = RefPtr<SpriteRenderFeature>::makeRef(manager, 2048);	// TODO
 
-	m_textRenderer = RefPtr<TextRenderer>::MakeRef();
+	m_textRenderer = RefPtr<TextRenderer>::makeRef();
 	m_textRenderer->initialize(manager);
 
-	m_vectorTextRenderer = RefPtr<VectorTextRenderer>::MakeRef();
+	m_vectorTextRenderer = RefPtr<VectorTextRenderer>::makeRef();
 	m_vectorTextRenderer->initialize(manager);
 
-	m_shapesRenderer = RefPtr<ShapesRenderFeature>::MakeRef();
+	m_shapesRenderer = RefPtr<ShapesRenderFeature>::makeRef();
 	m_shapesRenderer->initialize(manager);
 
-	m_nanoVGRenderer = RefPtr<NanoVGRenderFeature>::MakeRef();
+	m_nanoVGRenderer = RefPtr<NanoVGRenderFeature>::makeRef();
 	m_nanoVGRenderer->initialize(manager);
 
-	m_frameRectRenderer = RefPtr<FrameRectRenderFeature>::MakeRef();
+	m_frameRectRenderer = RefPtr<FrameRectRenderFeature>::makeRef();
 	m_frameRectRenderer->initialize(manager);
 }
 
@@ -246,9 +246,9 @@ void InternalContext::ApplyStatus(DrawElementBatch* state, const DefaultStatus& 
 }
 
 //------------------------------------------------------------------------------
-void InternalContext::Flush()
+void InternalContext::flush()
 {
-	if (m_current != nullptr) m_current->Flush();
+	if (m_current != nullptr) m_current->flush();
 }
 
 //------------------------------------------------------------------------------
@@ -420,8 +420,8 @@ void BatchState::ApplyStatus(InternalContext* context, CombinedMaterial* combine
 
 	// RenderState
 	{
-		BlendMode blendMode = (combinedMaterial->m_blendMode.IsSet()) ? combinedMaterial->m_blendMode.Get() : m_blendMode;
-		CullingMode cullingMode = (combinedMaterial->m_cullingMode.IsSet()) ? combinedMaterial->m_cullingMode.Get() : m_cullingMode;
+		BlendMode blendMode = (combinedMaterial->m_blendMode.isSet()) ? combinedMaterial->m_blendMode.get() : m_blendMode;
+		CullingMode cullingMode = (combinedMaterial->m_cullingMode.isSet()) ? combinedMaterial->m_cullingMode.get() : m_cullingMode;
 
 
 
@@ -438,8 +438,8 @@ void BatchState::ApplyStatus(InternalContext* context, CombinedMaterial* combine
 	// DepthStencilState
 	{
 		DepthStencilState state;
-		state.DepthTestEnabled = (combinedMaterial->m_depthTestEnabled.IsSet()) ? combinedMaterial->m_depthTestEnabled.Get() : m_depthTestEnabled;
-		state.DepthWriteEnabled = (combinedMaterial->m_depthWriteEnabled.IsSet()) ? combinedMaterial->m_depthWriteEnabled.Get() : m_depthWriteEnabled;
+		state.DepthTestEnabled = (combinedMaterial->m_depthTestEnabled.isSet()) ? combinedMaterial->m_depthTestEnabled.get() : m_depthTestEnabled;
+		state.DepthWriteEnabled = (combinedMaterial->m_depthWriteEnabled.isSet()) ? combinedMaterial->m_depthWriteEnabled.get() : m_depthWriteEnabled;
 		stateManager->SetDepthStencilState(state);
 	}
 	// FrameBuffer
@@ -467,13 +467,13 @@ void BatchState::ApplyStatus(InternalContext* context, CombinedMaterial* combine
 }
 
 //------------------------------------------------------------------------------
-uint32_t BatchState::GetHashCode() const
+uint32_t BatchState::getHashCode() const
 {
 	if (m_hashDirty)
 	{
 		m_hashCode = 0;
 		m_hashDirty = false;
-		m_hashCode = Hash::CalcHash(reinterpret_cast<const char*>(this), sizeof(BatchState));
+		m_hashCode = Hash::calcHash(reinterpret_cast<const char*>(this), sizeof(BatchState));
 	}
 	return m_hashCode;
 }
@@ -540,10 +540,10 @@ bool DrawElementBatch::Equal(const BatchState& state_, Material* material, const
 {
 	assert(m_combinedMaterial != nullptr);
 	return
-		state.GetHashCode() == state_.GetHashCode() &&
-		m_combinedMaterial->GetSourceHashCode() == material->GetHashCode() &&
+		state.getHashCode() == state_.getHashCode() &&
+		m_combinedMaterial->GetSourceHashCode() == material->getHashCode() &&
 		m_transfrom == transfrom &&
-		m_builtinEffectData.GetHashCode() == effectData.GetHashCode();
+		m_builtinEffectData.getHashCode() == effectData.getHashCode();
 //#if 1
 //	return GetHashCode() == obj.GetHashCode();
 //#else
@@ -596,14 +596,14 @@ void DrawElementBatch::ApplyStatus(InternalContext* context, const DefaultStatus
 }
 
 //------------------------------------------------------------------------------
-size_t DrawElementBatch::GetHashCode() const
+size_t DrawElementBatch::getHashCode() const
 {
 	if (m_hashDirty || state.IsHashDirty())
 	{
-		size_t hs = state.GetHashCode();
+		size_t hs = state.getHashCode();
 		m_hashCode = 0;
 		m_hashDirty = false;
-		m_hashCode = Hash::CalcHash(reinterpret_cast<const char*>(this), sizeof(DrawElementBatch));
+		m_hashCode = Hash::calcHash(reinterpret_cast<const char*>(this), sizeof(DrawElementBatch));
 		m_hashCode += hs;
 	}
 	return m_hashCode;
@@ -694,8 +694,8 @@ LightingDrawElement::LightingDrawElement()
 //------------------------------------------------------------------------------
 DrawElementList::DrawElementList()
 {
-	m_commandDataCache.Reserve(512, 4096);	// 適当に
-	m_extDataCache.Reserve(512, 4096);
+	m_commandDataCache.reserve(512, 4096);	// 適当に
+	m_extDataCache.reserve(512, 4096);
 }
 
 //------------------------------------------------------------------------------
@@ -718,20 +718,20 @@ void DrawElementList::ClearCommands()
 //------------------------------------------------------------------------------
 void DrawElementList::PostAddCommandInternal(const BatchState& state, Material* availableMaterial, const Matrix& transform, const BuiltinEffectData& effectData, DrawElement* element)
 {
-	if (m_batchList.IsEmpty() || !m_batchList.GetLast().Equal(state, availableMaterial, transform, effectData))
+	if (m_batchList.isEmpty() || !m_batchList.getLast().Equal(state, availableMaterial, transform, effectData))
 	{
 		// CombinedMaterial を作る
 		CombinedMaterial* cm = m_combinedMaterialCache.QueryCommandList();
 		cm->Combine(nullptr, availableMaterial, effectData);	// TODO
 
 		// 新しく DrawElementBatch を作る
-		m_batchList.Add(DrawElementBatch());
-		m_batchList.GetLast().state = state;
-		m_batchList.GetLast().SetCombinedMaterial(cm);
-		m_batchList.GetLast().SetTransfrom(transform);
-		m_batchList.GetLast().SetBuiltinEffect(effectData);
+		m_batchList.add(DrawElementBatch());
+		m_batchList.getLast().state = state;
+		m_batchList.getLast().SetCombinedMaterial(cm);
+		m_batchList.getLast().SetTransfrom(transform);
+		m_batchList.getLast().SetBuiltinEffect(effectData);
 	}
-	element->batchIndex = m_batchList.GetCount() - 1;
+	element->batchIndex = m_batchList.getCount() - 1;
 }
 
 //------------------------------------------------------------------------------
@@ -750,7 +750,7 @@ void DrawElementList::PostAddCommandInternal(const BatchState& state, Material* 
 void DrawElementList::AddDynamicLightInfo(DynamicLightInfo* lightInfo)
 {
 	assert(lightInfo != nullptr);
-	m_dynamicLightList.Add(lightInfo);
+	m_dynamicLightList.add(lightInfo);
 }
 
 //==============================================================================
@@ -781,7 +781,7 @@ void SceneRenderer::OnPreRender(DrawElementList* elementList)
 //------------------------------------------------------------------------------
 void SceneRenderer::AddPass(RenderingPass2* pass)
 {
-	m_renderingPassList.Add(pass);
+	m_renderingPassList.add(pass);
 }
 
 //------------------------------------------------------------------------------
@@ -825,22 +825,22 @@ void SceneRenderer::Render(
 				cameraInfo.viewFrustum.Intersects(boundingSphere.center, boundingSphere.radius))
 			{
 				// このノードは描画できる
-				drawElementListSet->m_renderingElementList.Add(element);
+				drawElementListSet->m_renderingElementList.add(element);
 
 				// calculate distance for ZSort
 				const Matrix& transform = element->GetTransform(elementList);
 				switch (cameraInfo.zSortDistanceBase)
 				{
 				case ZSortDistanceBase::NodeZ:
-					element->zDistance = transform.GetPosition().z;
+					element->zDistance = transform.getPosition().z;
 					break;
 				case ZSortDistanceBase::CameraDistance:
-					element->zDistance = (transform.GetPosition() - cameraInfo.viewPosition).GetLengthSquared();
+					element->zDistance = (transform.getPosition() - cameraInfo.viewPosition).GetLengthSquared();
 					break;
 				case ZSortDistanceBase::CameraScreenDistance:
 					element->zDistance = Vector3::Dot(
-						transform.GetPosition() - cameraInfo.viewPosition,
-						transform.GetFront());		// 平面と点の距離
+						transform.getPosition() - cameraInfo.viewPosition,
+						transform.getFront());		// 平面と点の距離
 													// TODO: ↑第2引数違くない？要確認
 					break;
 				default:
@@ -897,9 +897,9 @@ void SceneRenderer::Render(
 
 			// ステートの変わり目チェック
 			//if (element->batchIndex != currentBatchIndex)
-			if (currentState == nullptr || currentState->GetHashCode() != batch->GetHashCode())
+			if (currentState == nullptr || currentState->getHashCode() != batch->getHashCode())
 			{
-				context->Flush();
+				context->flush();
 				//currentBatchIndex = element->batchIndex;
 				currentState = batch;
 				context->ApplyStatus(currentState, { defaultRenderTarget, defaultDepthBuffer });
@@ -931,7 +931,7 @@ void SceneRenderer::Render(
 					material->ApplyUserShaderValeues(shader);
 
 					auto* stateManager = context->GetRenderStateManager();
-					ShaderPass* pass = shader->GetTechniques().GetAt(0)->GetPasses().GetAt(0);	// TODO: DrawList の実行者によって決定する
+					ShaderPass* pass = shader->GetTechniques().getAt(0)->GetPasses().getAt(0);	// TODO: DrawList の実行者によって決定する
 					stateManager->SetShaderPass(pass);
 				}
 			}
@@ -944,12 +944,12 @@ void SceneRenderer::Render(
 			}
 		}
 
-		context->Flush();
+		context->flush();
 	}
 
 	// Flush
 	{
-		m_manager->GetInternalContext()->Flush();
+		m_manager->GetInternalContext()->flush();
 	}
 
 	if (diag != nullptr) diag->EndDrawList();
@@ -978,7 +978,7 @@ void NonShadingRenderer::initialize(GraphicsManager* manager)
 {
 	SceneRenderer::initialize(manager);
 
-	auto pass = RefPtr<detail::NonShadingRenderingPass>::MakeRef();
+	auto pass = RefPtr<detail::NonShadingRenderingPass>::makeRef();
 	pass->initialize(manager);
 	AddPass(pass);
 }
@@ -1030,7 +1030,7 @@ void ForwardShadingRenderer::initialize(GraphicsManager* manager)
 {
 	SceneRenderer::initialize(manager);
 
-	auto pass = RefPtr<detail::ForwardShadingRenderingPass>::MakeRef();
+	auto pass = RefPtr<detail::ForwardShadingRenderingPass>::makeRef();
 	pass->initialize(manager);
 	AddPass(pass);
 }
@@ -1042,7 +1042,7 @@ void ForwardShadingRenderer::OnPreRender(DrawElementList* elementList)
 	m_selectingLights.clear();
 	for (DynamicLightInfo* light : lights)
 	{
-		m_selectingLights.Add(light);
+		m_selectingLights.add(light);
 	}
 
 	for (int i = 0; i < elementList->GetElementCount(); i++)
@@ -1067,12 +1067,12 @@ void ForwardShadingRenderer::UpdateAffectLights(DrawElement* element, DrawElemen
 		先頭数個が確定したときにソートを終了する等、最適化の余地はあるが…。
 	*/
 
-	if (m_selectingLights.GetCount() > DynamicLightInfo::MaxLights)
+	if (m_selectingLights.getCount() > DynamicLightInfo::MaxLights)
 	{
 		// ソート基準値の計算
 		for (DynamicLightInfo* light : m_selectingLights)
 		{
-			light->tempDistance = Vector3::DistanceSquared(element->GetTransform(elementList).GetPosition(), light->transform.GetPosition());
+			light->tempDistance = Vector3::DistanceSquared(element->GetTransform(elementList).getPosition(), light->transform.getPosition());
 		}
 
 		// ソート (昇順)
@@ -1081,7 +1081,7 @@ void ForwardShadingRenderer::UpdateAffectLights(DrawElement* element, DrawElemen
 
 	// 出力 (足りない分は nullptr で埋める)
 	DynamicLightInfo** affectLightList = element->GetAffectedDynamicLightInfos();
-	int count = std::min(m_selectingLights.GetCount(), DynamicLightInfo::MaxLights);
+	int count = std::min(m_selectingLights.getCount(), DynamicLightInfo::MaxLights);
 	int i = 0;
 	for (; i < count; ++i)
 	{
@@ -1145,9 +1145,9 @@ void InfomationRenderingPass::initialize(GraphicsManager* manager)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RefPtr<CombinedMaterial> CombinedMaterialCache::CreateObject()
+RefPtr<CombinedMaterial> CombinedMaterialCache::createObject()
 {
-	auto m = RefPtr<CombinedMaterial>::MakeRef();
+	auto m = RefPtr<CombinedMaterial>::makeRef();
 	return m;
 }
 
@@ -1269,7 +1269,7 @@ RenderDiagItem::RenderDiagItem()
 }
 
 //------------------------------------------------------------------------------
-String RenderDiagItem::ToString() const
+String RenderDiagItem::toString() const
 {
 	return String(m_name);
 }
@@ -1334,7 +1334,7 @@ void RenderDiag::Print()
 		for (int i = 0; i < level; i++) printf("  ");
 		if (item->m_subType == RenderDiagItem::SubType::ScopeBegin) level++;
 
-		Console::WriteLine(item->ToString());
+		Console::writeLine(item->toString());
 	}
 }
 
@@ -1365,7 +1365,7 @@ void DrawList::initialize(detail::GraphicsManager* manager)
 	m_manager = manager;
 	m_state.Reset();
 
-	m_defaultMaterial = RefPtr<Material>::MakeRef();
+	m_defaultMaterial = RefPtr<Material>::makeRef();
 	m_defaultMaterial->initialize();
 }
 
@@ -1586,7 +1586,7 @@ void DrawList::DrawSquare(float sizeX, float sizeZ, int slicesX, int slicesZ, co
 	auto* e = ResolveDrawElement<DrawCylinderElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, material);
 	e->factory.initialize(Vector2(sizeX, sizeZ), slicesX, slicesZ, color, localTransform);
 	e->boundingSphere.center = Vector3::Zero;
-	e->boundingSphere.radius = Vector3(sizeX, sizeZ, 0).GetLength();
+	e->boundingSphere.radius = Vector3(sizeX, sizeZ, 0).getLength();
 }
 
 //------------------------------------------------------------------------------
@@ -1674,7 +1674,7 @@ void DrawList::DrawCylinder(float radius, float	height, int slices, int stacks, 
 	auto* e = ResolveDrawElement<DrawCylinderElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, nullptr);
 	e->factory.initialize(radius, height, slices, stacks, color, localTransform);
 	e->boundingSphere.center = Vector3::Zero;
-	e->boundingSphere.radius = Vector3(radius, height, 0).GetLength();
+	e->boundingSphere.radius = Vector3(radius, height, 0).getLength();
 }
 
 //------------------------------------------------------------------------------
@@ -1695,7 +1695,7 @@ void DrawList::DrawCone(float radius, float height, int slices, const Color& col
 	auto* e = ResolveDrawElement<DrawConeElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, nullptr);
 	e->factory.initialize(radius, height, slices, color, localTransform);
 	e->boundingSphere.center = Vector3::Zero;
-	e->boundingSphere.radius = Vector3(radius, height, 0).GetLength();
+	e->boundingSphere.radius = Vector3(radius, height, 0).getLength();
 }
 
 //------------------------------------------------------------------------------
@@ -1774,7 +1774,7 @@ void DrawList::DrawText_(const StringRef& text, const Rect& rect, StringFormatFl
 
 		virtual void DrawSubset(const DrawArgs& e) override
 		{
-			e.context->BeginTextRenderer()->DrawString(GetTransform(e.oenerList), text.c_str(), text.GetLength(), rect, flags);
+			e.context->BeginTextRenderer()->DrawString(GetTransform(e.oenerList), text.c_str(), text.getLength(), rect, flags);
 		}
 		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawText"); }
 	};
@@ -1832,7 +1832,7 @@ void DrawList::DrawText2(const StringRef& text, const Rect& rect)
 		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawString"); }
 	};
 
-	const ByteBuffer& utf32Data = m_manager->GetFontManager()->GetTCharToUTF32Converter()->Convert(text.GetBegin(), text.GetLength() * sizeof(TCHAR));
+	const ByteBuffer& utf32Data = m_manager->GetFontManager()->GetTCharToUTF32Converter()->Convert(text.getBegin(), text.getLength() * sizeof(TCHAR));
 
 	auto* e = ResolveDrawElement<DrawElement_DrawString>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_vectorTextRenderer, nullptr);
 	e->utf32DataHandle = m_drawElementList.AllocExtData(utf32Data.getSize());
@@ -1886,7 +1886,7 @@ void DrawList::DrawSprite(
 	ptr->baseDirection = baseDirection;
 	ptr->billboardType = billboardType;
 	detail::SpriteRenderFeature::MakeBoundingSphere(ptr->size, baseDirection, &ptr->boundingSphere);
-	ptr->boundingSphere.center += m_state.state.GetTransfrom().GetPosition();	// TODO: 他と共通化
+	ptr->boundingSphere.center += m_state.state.GetTransfrom().getPosition();	// TODO: 他と共通化
 }
 
 

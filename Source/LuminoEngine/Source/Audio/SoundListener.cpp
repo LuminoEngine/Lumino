@@ -20,7 +20,7 @@ void SoundListener::SetPosition(float x, float y, float z)
 }
 
 //------------------------------------------------------------------------------
-const Vector3& SoundListener::GetPosition()
+const Vector3& SoundListener::getPosition()
 {
 	return detail::AudioManager::GetInstance()->GetAudioDevice()->GetSoundListenerData()->position;
 }

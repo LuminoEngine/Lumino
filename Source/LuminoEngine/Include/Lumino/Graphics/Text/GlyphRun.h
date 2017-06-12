@@ -35,8 +35,8 @@ class GlyphRun
 public:
 	void SetFont(RawFont* font);
 	RawFont* GetFont() const;
-	void SetText(const UTF32* str, int len);	// TODO: internal
-	void SetText(const StringRef& text);
+	void setText(const UTF32* str, int len);	// TODO: internal
+	void setText(const StringRef& text);
 	void SetTextAlignment(TextAlignment align);	// TODO: Run に持たせるべき？
 	const SizeI& GetRenderSize();
 
@@ -53,8 +53,8 @@ LN_INTERNAL_ACCESS:
 	void initialize(detail::GraphicsManager* manager);
 	const List<TextLayoutResultItem>& RequestLayoutItems();
 	detail::FontGlyphTextureCache* LookupFontGlyphTextureCache();
-	const UTF32* GetText() const { return m_utf32Text.c_str(); }
-	int GetTextLength() const { return m_utf32Text.GetLength(); }
+	const UTF32* getText() const { return m_utf32Text.c_str(); }
+	int GetTextLength() const { return m_utf32Text.getLength(); }
 
 private:
 	void UpdateTextLayoutItem();

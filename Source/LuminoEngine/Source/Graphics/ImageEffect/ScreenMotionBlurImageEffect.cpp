@@ -24,7 +24,7 @@ static const byte_t g_ScreenMotionBlurImageEffect_fx_Data[] =
 static const size_t g_ScreenMotionBlurImageEffect_fx_Len = LN_ARRAY_SIZE_OF(g_ScreenMotionBlurImageEffect_fx_Data);
 
 //------------------------------------------------------------------------------
-ScreenMotionBlurImageEffectPtr ScreenMotionBlurImageEffect::Create()
+ScreenMotionBlurImageEffectPtr ScreenMotionBlurImageEffect::create()
 {
 	ScreenMotionBlurImageEffectPtr obj(LN_NEW ScreenMotionBlurImageEffect(), false);
 	obj->initialize(detail::GraphicsManager::GetInstance());
@@ -52,9 +52,9 @@ void ScreenMotionBlurImageEffect::initialize(detail::GraphicsManager* manager)
 {
 	ImageEffect::initialize(manager);
 
-	auto shader = Object::MakeRef<Shader>(m_manager, g_ScreenMotionBlurImageEffect_fx_Data, g_ScreenMotionBlurImageEffect_fx_Len);
+	auto shader = Object::makeRef<Shader>(m_manager, g_ScreenMotionBlurImageEffect_fx_Data, g_ScreenMotionBlurImageEffect_fx_Len);
 
-	m_material = Object::MakeRef<Material>();
+	m_material = Object::makeRef<Material>();
 	m_material->SetShader(shader);
 	m_material->SetBlendMode(BlendMode::Alpha);
 }
@@ -72,7 +72,7 @@ void ScreenMotionBlurImageEffect::SetBlurStatus(float amount, const Vector2& cen
 	else
 	{
 		LN_NOTIMPLEMENTED();
-		//auto anim = ValueEasingCurve<float>::Create(0, duration, EasingMode::Linear);
+		//auto anim = ValueEasingCurve<float>::create(0, duration, EasingMode::Linear);
 		//AnimationClock* ac = m_manager->GetAnimationManager()->StartPropertyAnimation(this);
 		//ac->AddAnimationCurve(anim.Get(), this, AmountId, amount);
 	}
@@ -102,7 +102,7 @@ void ScreenMotionBlurImageEffect::OnRender(DrawList* context, RenderTargetTextur
 	blurMatrix.Scale(m_scale);
 	blurMatrix.Translate(m_center.x, m_center.y, 0);
 
-	m_material->SetVectorParameter(_T("_BlurColor"), Vector4(1, 1, 1, Amount.Get()));
+	m_material->SetVectorParameter(_T("_BlurColor"), Vector4(1, 1, 1, Amount.get()));
 	m_material->SetMatrixParameter(_T("_BlurMatrix"), blurMatrix);
 
 	//// m_accumTexture > source

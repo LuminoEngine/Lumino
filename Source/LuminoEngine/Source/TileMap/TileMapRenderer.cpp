@@ -51,7 +51,7 @@ TileMapRenderer::TileMapRenderer(detail::GraphicsManager* manager)
 	//, m_indexBuffer(nullptr)
 {
 	int tileCount = 20 * 20;
-	m_mesh = Object::MakeRef<MeshResource>(manager, MeshCreationFlags::DynamicBuffers);
+	m_mesh = Object::makeRef<MeshResource>(manager, MeshCreationFlags::DynamicBuffers);
 	m_mesh->ResizeVertexBuffer(tileCount * 4);
 	m_mesh->ResizeIndexBuffer(tileCount * 6);
 	m_maxTileCount = 100 * 100;
@@ -273,7 +273,7 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const Rect& boundingRect, Tile
 				//float pr = (float)x + tileSize.Width;
 				//float pb = (float)y + tileSize.Height;
 				float tl = ((float)srcRect.GetLeft()) * invSize.width + delta;
-				float tt = ((float)srcRect.GetTop()) * invSize.height + delta;
+				float tt = ((float)srcRect.getTop()) * invSize.height + delta;
 				float tr = ((float)srcRect.GetRight()) * invSize.width + delta;
 				float tb = ((float)srcRect.GetBottom()) * invSize.height + delta;
 				//pos.Set(x * tileSize.Width, y * tileSize.Height, 0);
@@ -360,7 +360,7 @@ LOOP_EXIT:
 //SpriteTileMapRenderer::SpriteTileMapRenderer(GraphicsManager* manager)
 //	: m_spriteRenderer(nullptr)
 //{
-//	m_spriteRenderer = SpriteRenderer::Create(MaxSpriteCount, manager);
+//	m_spriteRenderer = SpriteRenderer::create(MaxSpriteCount, manager);
 //	m_spriteRenderer->SetViewPixelSize(SizeI(640, 480));	// TODO
 //}
 //

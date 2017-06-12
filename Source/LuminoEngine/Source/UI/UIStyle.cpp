@@ -184,7 +184,7 @@ detail::InvalidateFlags UIStylePropertyTableInstance::Merge(const UIStylePropert
 
 		for (auto& e : source->m_renderElements)
 		{
-			m_availableRenderElements.Add(e);
+			m_availableRenderElements.add(e);
 		}
 
 		if (changed) flags |= detail::InvalidateFlags::Rendering;
@@ -227,7 +227,7 @@ void UIStylePropertyTableInstance::Apply(UIElement* targetElement, bool useTrans
 //			float now = tr::PropertyInfo::GetPropertyValueDirect<float>(targetElement, setter.m_targetProperty);
 //			float target = tr::Variant::Cast<float>(setter.value);
 //
-//			auto anim = ValueEasingCurve<float>::Create(target, setter.time, setter.easingMode);
+//			auto anim = ValueEasingCurve<float>::create(target, setter.time, setter.easingMode);
 //			AnimationClock* ac = targetElement->GetManager()->GetAnimationManager()->StartPropertyAnimation(targetElement);
 //			ac->AddAnimationCurve(anim.Get(), targetElement, static_cast<const tr::TypedPropertyInfo<float>*>(setter.m_targetProperty), now);
 //		}
@@ -246,7 +246,7 @@ void UIStylePropertyTableInstance::Apply(UIElement* targetElement, bool useTrans
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIStyle, Object);
 
 //------------------------------------------------------------------------------
-UIStylePtr UIStyle::Create()
+UIStylePtr UIStyle::create()
 {
 	return NewObject<UIStyle>();//UIStylePtr::MakeRef();
 }
@@ -273,7 +273,7 @@ UIStyle::UIStyle()
 //------------------------------------------------------------------------------
 void UIStyle::initialize()
 {
-	m_basePropertyTable = RefPtr<UIStylePropertyTable>::MakeRef();
+	m_basePropertyTable = RefPtr<UIStylePropertyTable>::makeRef();
 	m_basePropertyTable->initialize(_T(""));
 }
 
@@ -323,16 +323,16 @@ UIStylePropertyTable* UIStyle::GetPropertyTable()
 //------------------------------------------------------------------------------
 UIStylePropertyTable* UIStyle::GetPropertyTable(const StringRef& visualStateName)
 {
-	auto* ptr = m_visualStatePropertyTableList.Find([visualStateName](const VisualStateStylePair& pair) { return pair.first == visualStateName; });
+	auto* ptr = m_visualStatePropertyTableList.find([visualStateName](const VisualStateStylePair& pair) { return pair.first == visualStateName; });
 	if (ptr != nullptr)
 	{
 		return ptr->second;
 	}
 	else
 	{
-		auto table = RefPtr<UIStylePropertyTable>::MakeRef();
+		auto table = RefPtr<UIStylePropertyTable>::makeRef();
 		table->initialize(visualStateName);
-		m_visualStatePropertyTableList.Add(VisualStateStylePair{ visualStateName, table });
+		m_visualStatePropertyTableList.add(VisualStateStylePair{ visualStateName, table });
 		return table;
 	}
 }
@@ -346,7 +346,7 @@ void UIStyle::SetBaseOnStyle(UIStyle* style)
 //------------------------------------------------------------------------------
 UIStylePropertyTable* UIStyle::FindStylePropertyTable(const String& visualStateName)
 {
-	auto* ptr = m_visualStatePropertyTableList.Find([visualStateName](const VisualStateStylePair& pair) { return pair.first == visualStateName; });
+	auto* ptr = m_visualStatePropertyTableList.find([visualStateName](const VisualStateStylePair& pair) { return pair.first == visualStateName; });
 	if (ptr != nullptr)
 	{
 		return ptr->second;
@@ -375,7 +375,7 @@ detail::InvalidateFlags UIStyle::MergeActiveStylePropertyTables(detail::UIStyleP
 	for (auto& pair : m_visualStatePropertyTableList)
 	{
 		const String& name = pair.first;
-		if (visualStateNames.Contains(name))
+		if (visualStateNames.contains(name))
 		{
 			invalidateFlags |= store->Merge(pair.second, UIStyleAttributeInheritSourceType::StyleLocal);
 		}
@@ -461,38 +461,38 @@ UIStyleTable::~UIStyleTable()
 //------------------------------------------------------------------------------
 UIStyle* UIStyleTable::GetStyle(const StringRef& typeName)
 {
-	StyleKey key = typeName.GetHashCode()/* + subControlName.GetHashCode()*/;
+	StyleKey key = typeName.getHashCode()/* + subControlName.GetHashCode()*/;
 	if (key == 0) return nullptr;
 
-	RefPtr<UIStyle>* s = m_table.Find(key);
+	RefPtr<UIStyle>* s = m_table.find(key);
 	if (s == nullptr)
 	{
 		auto s2 = NewObject<UIStyle>();
-		m_table.Add(key, s2);
+		m_table.add(key, s2);
 		return s2;
 	}
 	else
 	{
-		return s->Get();
+		return s->get();
 	}
 }
 
 //------------------------------------------------------------------------------
 UIStyle* UIStyleTable::GetSubControlStyle(const StringRef& subControlOwnerName, const StringRef& subControlName)
 {
-	StyleKey key = subControlOwnerName.GetHashCode() + subControlName.GetHashCode();
+	StyleKey key = subControlOwnerName.getHashCode() + subControlName.getHashCode();
 	if (key == 0) return nullptr;
 
-	RefPtr<UIStyle>* s = m_subControlStyleTable.Find(key);
+	RefPtr<UIStyle>* s = m_subControlStyleTable.find(key);
 	if (s == nullptr)
 	{
 		auto s2 = NewObject<UIStyle>();
-		m_subControlStyleTable.Add(key, s2);
+		m_subControlStyleTable.add(key, s2);
 		return s2;
 	}
 	else
 	{
-		return s->Get();
+		return s->get();
 	}
 }
 
@@ -507,11 +507,11 @@ UIStyle* UIStyleTable::FindStyle(const tr::TypeInfo* targetType/*, const StringR
 {
 	if (LN_CHECK_ARG(targetType != nullptr)) return nullptr;
 
-	StyleKey key = targetType->GetName().GetHashCode();// +subControlName.GetHashCode();
-	RefPtr<UIStyle>* s = m_table.Find(key);
+	StyleKey key = targetType->GetName().getHashCode();// +subControlName.GetHashCode();
+	RefPtr<UIStyle>* s = m_table.find(key);
 	if (s != nullptr)
 	{
-		return s->Get();
+		return s->get();
 	}
 	else if (targetType->GetBaseClass() != nullptr)
 	{
@@ -524,11 +524,11 @@ UIStyle* UIStyleTable::FindStyle(const tr::TypeInfo* targetType/*, const StringR
 //------------------------------------------------------------------------------
 UIStyle* UIStyleTable::FindSubControlStyle(const StringRef& subControlOwnerName, const StringRef& subControlName)
 {
-	StyleKey key = subControlOwnerName.GetHashCode() + subControlName.GetHashCode();
+	StyleKey key = subControlOwnerName.getHashCode() + subControlName.getHashCode();
 
-	RefPtr<UIStyle>* s = m_subControlStyleTable.Find(key);
+	RefPtr<UIStyle>* s = m_subControlStyleTable.find(key);
 	if (s != nullptr)
-		return s->Get();
+		return s->get();
 	else
 		return nullptr;
 }

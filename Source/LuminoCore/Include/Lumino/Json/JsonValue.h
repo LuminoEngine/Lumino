@@ -37,8 +37,8 @@ public:
 	JsonValue& operator=(const JsonValue& obj);
 
 public:
-	JsonType GetType()  const { return m_type; }
-	bool IsNull()   const { return m_type == JsonType::Null; }
+	JsonType getType()  const { return m_type; }
+	bool isNull()   const { return m_type == JsonType::Null; }
 	bool IsBool()   const { return m_type == JsonType::Bool; }
 	bool IsDouble() const { return m_type == JsonType::Double; }
 	bool IsString() const { return m_type == JsonType::String; }
@@ -80,10 +80,10 @@ public:
 	/** @{ */
 
 	/** この値に文字列を設定します。*/
-	void SetString(const String& str);
+	void setString(const String& str);
 
 	/** この値の文字列を取得します。*/
-	const String& GetString() const;
+	const String& getString() const;
 
 	/** @} */
 	/*-----------------------------------------------------------------------*/
@@ -121,13 +121,13 @@ public:
 
 private:
 	void copy(const JsonValue& obj);
-	void Detach();
+	void detach();
 
 	friend class JsonDOMHandler;
 	void ResizeValueList(int count) { m_valueList->resize(count); }
-	JsonValue& GetAtValue(int index) { return m_valueList->GetAt(index); }
+	JsonValue& GetAtValue(int index) { return m_valueList->getAt(index); }
 	void ResizeMemberList(int count) { m_memberList->resize(count); }
-	JsonMember& GetAtMember(int index) { return m_memberList->GetAt(index); }
+	JsonMember& GetAtMember(int index) { return m_memberList->getAt(index); }
 
 private:
 	typedef List<JsonValue>	ValueList;

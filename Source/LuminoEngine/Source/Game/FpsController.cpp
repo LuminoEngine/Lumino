@@ -40,7 +40,7 @@ FpsController::FpsController()
 	, m_elapsedGameTime(0.0)
 	, m_lastRealTime(0.0)
 	, m_elapsedRealTime(0.0)
-	, m_startTime(Environment::GetTickCount())
+	, m_startTime(Environment::getTickCount())
 	, m_totalGameTime(0)
 	, m_totalRealTime(0)
 	, m_capacityFps(0.0)
@@ -80,7 +80,7 @@ void FpsController::SetFrameRate(int frameRate)
 //------------------------------------------------------------------------------
 void FpsController::RefreshSystemDelay()
 {
-	uint64_t currentTime = Environment::GetTickCount();
+	uint64_t currentTime = Environment::getTickCount();
 	m_lastTime = m_baseTime = m_capaFpsLastTime = (0.001f * (currentTime - m_startTime));// + m_frameRateRec;
 	m_baseTime -= 1.0f - m_frameRateRec;
 
@@ -97,13 +97,13 @@ void FpsController::RefreshSystemDelay()
 }
 
 //------------------------------------------------------------------------------
-void FpsController::Process()
+void FpsController::process()
 {
 	//if (!mEnableFrameWait) {
 	//	processForMeasure();
 	//	return;
 	//}
-	m_currentTime = 0.001f * (Environment::GetTickCount() - m_startTime);
+	m_currentTime = 0.001f * (Environment::getTickCount() - m_startTime);
 
 	m_elapsedGameTime = m_currentTime - m_lastTime;
 	m_elapsedRealTime = m_currentTime - m_lastRealTime;
@@ -218,7 +218,7 @@ void FpsController::Process()
 			}
 		}
 
-		m_capaFpsLastTime = 0.001f * (Environment::GetTickCount() - m_startTime);
+		m_capaFpsLastTime = 0.001f * (Environment::getTickCount() - m_startTime);
 	}
 
 	// m_frameCount を frame で一周するようにする
@@ -230,7 +230,7 @@ void FpsController::Process()
 //------------------------------------------------------------------------------
 void FpsController::ProcessForMeasure()
 {
-	m_currentTime = 0.001f * (Environment::GetTickCount() - m_startTime);
+	m_currentTime = 0.001f * (Environment::getTickCount() - m_startTime);
 
 	m_elapsedGameTime = m_currentTime - m_lastTime;
 	m_elapsedRealTime = m_currentTime - m_lastRealTime;

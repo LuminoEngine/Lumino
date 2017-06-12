@@ -34,7 +34,7 @@ class ShapesRendererCommandListCache
 	: public SimpleOneTimeObjectCache<ShapesRendererCommandList>
 {
 protected:
-	virtual RefPtr<ShapesRendererCommandList> CreateObject() override;
+	virtual RefPtr<ShapesRendererCommandList> createObject() override;
 };
 
 class ShapesRendererCore
@@ -137,9 +137,9 @@ public:
 
 protected:
 	virtual bool IsStandaloneShader() const { return false; }
-	virtual void Flush() override {}
+	virtual void flush() override {}
 	virtual void OnActivated() override {}
-	virtual void OnDeactivated() override { Flush(); }
+	virtual void OnDeactivated() override { flush(); }
 	virtual void OnSetState(const DrawElementBatch* state);
 
 private:

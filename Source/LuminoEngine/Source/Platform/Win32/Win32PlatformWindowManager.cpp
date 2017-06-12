@@ -133,7 +133,7 @@ Win32PlatformWindow* Win32WindowManager::CreateNativeWindow(const NativeWindowCr
 		RefPtr<Win32NativeWindow> window(LN_NEW Win32NativeWindow(this), false);
 		window->Initilaize(this, data.TitleText, data.Width, data.Height, data.Fullscreen, data.Resizable);
 		window->SetVisible(true);
-		window.SafeAddRef();
+		window.safeAddRef();
 		return window;
 	}
 	else
@@ -256,7 +256,7 @@ void Win32WindowManager::DoEvents()
 //------------------------------------------------------------------------------
 void Win32WindowManager::Finalize()
 {
-	m_mainWindow.SafeRelease();
+	m_mainWindow.safeRelease();
 }
 
 LN_NAMESPACE_END

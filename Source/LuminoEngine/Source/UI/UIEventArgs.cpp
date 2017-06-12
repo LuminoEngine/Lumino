@@ -13,12 +13,12 @@ LN_NAMESPACE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIEventArgs, tr::ReflectionEventArgs)
 
 //------------------------------------------------------------------------------
-UIEventArgsPtr UIEventArgs::Create(UIEventType type, Object* sender, bool caching)
+UIEventArgsPtr UIEventArgs::create(UIEventType type, Object* sender, bool caching)
 {
 	if (caching)
 	{
 		detail::EventArgsPool* pool = detail::UIManager::GetInstance()->GetEventArgsPool();
-		return UIEventArgsPtr(pool->Create<UIEventArgs>(type), false);
+		return UIEventArgsPtr(pool->create<UIEventArgs>(type), false);
 	}
 	else
 	{
@@ -52,12 +52,12 @@ void UIEventArgs::initialize(UIEventType type)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIMouseEventArgs, UIEventArgs)
 
 //------------------------------------------------------------------------------
-RefPtr<UIMouseEventArgs> UIMouseEventArgs::Create(UIEventType type, MouseButtons button, float x, float y, int clickCount, bool caching)
+RefPtr<UIMouseEventArgs> UIMouseEventArgs::create(UIEventType type, MouseButtons button, float x, float y, int clickCount, bool caching)
 {
 	if (caching)
 	{
 		detail::EventArgsPool* pool = detail::UIManager::GetInstance()->GetEventArgsPool();
-		RefPtr<UIMouseEventArgs> ptr(pool->Create<UIMouseEventArgs>(type, button, x, y, clickCount), false);
+		RefPtr<UIMouseEventArgs> ptr(pool->create<UIMouseEventArgs>(type, button, x, y, clickCount), false);
 		return ptr;
 	}
 	else
@@ -91,7 +91,7 @@ void UIMouseEventArgs::initialize(UIEventType type, MouseButtons button, float x
 }
 
 //------------------------------------------------------------------------------
-PointF UIMouseEventArgs::GetPosition(UIElement* relativeTo) const
+PointF UIMouseEventArgs::getPosition(UIElement* relativeTo) const
 {
 	const Rect& rc = relativeTo->GetFinalGlobalRect();
 	return PointF(m_position.x - rc.x, m_position.y - rc.y);
@@ -103,12 +103,12 @@ PointF UIMouseEventArgs::GetPosition(UIElement* relativeTo) const
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIKeyEventArgs, UIEventArgs)
 
 //------------------------------------------------------------------------------
-RefPtr<UIKeyEventArgs> UIKeyEventArgs::Create(UIEventType type, Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode, bool caching)
+RefPtr<UIKeyEventArgs> UIKeyEventArgs::create(UIEventType type, Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode, bool caching)
 {
 	if (caching)
 	{
 		detail::EventArgsPool* pool = detail::UIManager::GetInstance()->GetEventArgsPool();
-		RefPtr<UIKeyEventArgs> ptr(pool->Create<UIKeyEventArgs>(type, keyCode, modifierKeys, charCode), false);
+		RefPtr<UIKeyEventArgs> ptr(pool->create<UIKeyEventArgs>(type, keyCode, modifierKeys, charCode), false);
 		return ptr;
 	}
 	else
@@ -146,12 +146,12 @@ void UIKeyEventArgs::initialize(UIEventType type, Keys keyCode, ModifierKeys mod
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIMouseWheelEventArgs, UIEventArgs)
 
 //------------------------------------------------------------------------------
-RefPtr<UIMouseWheelEventArgs> UIMouseWheelEventArgs::Create(UIEventType type, int delta, bool caching)
+RefPtr<UIMouseWheelEventArgs> UIMouseWheelEventArgs::create(UIEventType type, int delta, bool caching)
 {
 	if (caching)
 	{
 		detail::EventArgsPool* pool = detail::UIManager::GetInstance()->GetEventArgsPool();
-		RefPtr<UIMouseWheelEventArgs> ptr(pool->Create<UIMouseWheelEventArgs>(type, delta), false);
+		RefPtr<UIMouseWheelEventArgs> ptr(pool->create<UIMouseWheelEventArgs>(type, delta), false);
 		return ptr;
 	}
 	else

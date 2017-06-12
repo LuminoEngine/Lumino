@@ -37,7 +37,7 @@ namespace detail
 	{
 		static ObjectFactory GetFactory()
 		{
-			return []() { return RefPtr<ReflectionObject>::StaticCast(NewObject<TObject>()); };
+			return []() { return RefPtr<ReflectionObject>::staticCast(NewObject<TObject>()); };
 		}
 	};
 	template<class TObject> struct ObjectFactorySelector<TObject, std::true_type>
@@ -106,7 +106,7 @@ public:
 	template<class TList>
 	inline static void GCObjectList(TList* list)
 	{
-		list->RemoveAll([](typename TList::value_type& obj) { return IsGCReady(obj); });
+		list->removeAll([](typename TList::value_type& obj) { return IsGCReady(obj); });
 	}
 
 

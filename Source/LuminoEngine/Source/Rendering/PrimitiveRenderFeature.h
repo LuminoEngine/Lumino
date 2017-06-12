@@ -36,7 +36,7 @@ public:
 	void SetState(PrimitiveRendererMode mode);
 	void DrawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor);
 	void DrawSquare(const DrawSquareData& data);
-	void Flush();
+	void flush();
 
 	void RequestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex);
 
@@ -96,7 +96,7 @@ public:
 
 
 	virtual bool IsStandaloneShader() const;
-	virtual void Flush() override;
+	virtual void flush() override;
 	virtual void OnActivated();
 	virtual void OnDeactivated();
 
@@ -126,7 +126,7 @@ public:
 
 protected:
 	virtual bool IsStandaloneShader() const;
-	virtual void Flush();
+	virtual void flush();
 	virtual void OnActivated();
 	virtual void OnDeactivated();
 

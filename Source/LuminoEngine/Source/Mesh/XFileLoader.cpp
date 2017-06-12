@@ -55,7 +55,7 @@ HRESULT AllocateHierarchy::CreateFrame( const char* name_, D3DXFRAME** out_new_f
 	dx_frame->Index = mFrameNum;
 	++mFrameNum;
 
-    mDerivedD3DXFrameArray.Add( dx_frame );
+    mDerivedD3DXFrameArray.add( dx_frame );
 	return S_OK;
 
 ERR_EXIT:
@@ -134,7 +134,7 @@ HRESULT AllocateHierarchy::CreateMeshContainer(
 	}
 
     // 作成したメッシュコンテナのポインタを渡す
-    mDerivedD3DXMeshContainerArray.Add( mesh_container );
+    mDerivedD3DXMeshContainerArray.add( mesh_container );
 	*new_mesh_container_ = mesh_container;
 	mesh_container = NULL;
 
@@ -245,14 +245,14 @@ HRESULT AllocateHierarchy::_registMaterialData(
 
             if ( out_->pMaterials[ i ].pTextureFilename != NULL )
             {
-                out_->TextureNames.Add(String::FromNativeCharString( out_->pMaterials[ i ].pTextureFilename ) );
+                out_->TextureNames.add(String::fromNativeCharString( out_->pMaterials[ i ].pTextureFilename ) );
                 out_->pMaterials[ i ].pTextureFilename = NULL;
             }
             else
             {
                 // テクスチャ名がない場合でも、空の文字列を入れておく
                 // そうしないと、マテリアル数とテクスチャ名数が合わなくなる
-                out_->TextureNames.Add(String::GetEmpty());
+                out_->TextureNames.add(String::getEmpty());
             }
         }
 	}
@@ -549,7 +549,7 @@ static void FlipTriangleFronts(TIndex* indices, int count)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream, const PathName& parentDir, bool isDynamic, ModelCreationFlag flags)
+RefPtr<StaticMeshModel> XFileLoader::load(ModelManager* manager, Stream* stream, const PathName& parentDir, bool isDynamic, ModelCreationFlag flags)
 {
 	Driver::DX9GraphicsDevice* device = dynamic_cast<Driver::DX9GraphicsDevice*>(manager->GetGraphicsManager()->GetGraphicsDevice());
 	LN_THROW(device != nullptr, ArgumentException);
@@ -558,8 +558,8 @@ RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream,
 	D3DXFRAME* root_frame = NULL;
 	ID3DXAnimationController* dx_anim_controller = NULL;
 
-	ByteBuffer data((size_t)stream->GetLength());
-	stream->Read(data.getData(), data.getSize());
+	ByteBuffer data((size_t)stream->getLength());
+	stream->read(data.getData(), data.getSize());
 	LN_COMCALL(DX9Module::D3DXLoadMeshHierarchyFromXInMemory(
 		data.getConstData(),
 		data.getSize(),
@@ -589,7 +589,7 @@ RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream,
 
 	try
 	{
-		auto meshRes = RefPtr<MeshResource>::MakeRef();
+		auto meshRes = RefPtr<MeshResource>::makeRef();
 		meshRes->initialize(manager->GetGraphicsManager(), MeshCreationFlags::None);
 		auto mesh1 = NewObject<StaticMeshModel>(manager->GetGraphicsManager(), meshRes);
 
@@ -603,7 +603,7 @@ RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream,
 			uint32_t all_index_num = 0;
 
 			DerivedD3DXMeshContainerArray& dx_mesh_containers = allocate_hierarchy.getDerivedD3DXMeshContainerArray();
-			LN_THROW(dx_mesh_containers.GetCount() == 1, InvalidFormatException, "XFile error: Mesh container is 2 or more.");
+			LN_THROW(dx_mesh_containers.getCount() == 1, InvalidFormatException, "XFile error: Mesh container is 2 or more.");
 			
 			for (DerivedD3DXMeshContainer* c : dx_mesh_containers)
 			{
@@ -720,12 +720,12 @@ RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream,
 
 					for (uint32_t i = 0; i < c->NumMaterials; ++i, ++mi)
 					{
-						DxMaterialToLnMaterial(c->pMaterials[i].MatD3D, materials->GetAt(mi));
+						DxMaterialToLnMaterial(c->pMaterials[i].MatD3D, materials->getAt(mi));
 
 						// テクスチャ名がある場合はテクスチャ作成
-						if (!c->TextureNames.IsEmpty() && !c->TextureNames[i].IsEmpty())
+						if (!c->TextureNames.isEmpty() && !c->TextureNames[i].isEmpty())
 						{
-							materials->GetAt(mi)->SetTextureParameter(
+							materials->getAt(mi)->SetTextureParameter(
 								Material::MaterialTextureParameter,
 								manager->CreateTexture(parentDir, c->TextureNames[i], flags));
 						}

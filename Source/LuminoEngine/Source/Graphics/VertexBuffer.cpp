@@ -20,7 +20,7 @@ LN_NAMESPACE_BEGIN
 		@param[in]	data			: 作成と同時に書き込む初期データ (必要なければ NULL)
 		@param[in]	usage			: 頂点バッファリソースの使用方法
 	*/
-	//static VertexBuffer* Create(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data = NULL, DeviceResourceUsage usage = DeviceResourceUsage_Static);
+	//static VertexBuffer* create(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data = NULL, DeviceResourceUsage usage = DeviceResourceUsage_Static);
 
 	/**
 		@brief		頂点バッファを作成します。
@@ -32,16 +32,16 @@ LN_NAMESPACE_BEGIN
 		@param[in]	usage			: 頂点バッファリソースの使用方法
 		@details	この関数はデフォルト以外の GraphicsManager を指定して作成する場合に使用します。
 	*/
-	//static VertexBuffer* Create(GraphicsManager* manager, const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data = NULL, DeviceResourceUsage usage = DeviceResourceUsage_Static);
+	//static VertexBuffer* create(GraphicsManager* manager, const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data = NULL, DeviceResourceUsage usage = DeviceResourceUsage_Static);
 	
 ////------------------------------------------------------------------------------
-//VertexBuffer* VertexBuffer::Create(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
+//VertexBuffer* VertexBuffer::create(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
 //{
-//	return Create(GraphicsManager::GetInstance(), vertexElements, elementsCount, vertexCount, data, usage);
+//	return create(GraphicsManager::GetInstance(), vertexElements, elementsCount, vertexCount, data, usage);
 //}
 //
 ////------------------------------------------------------------------------------
-//VertexBuffer* VertexBuffer::Create(GraphicsManager* manager, const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
+//VertexBuffer* VertexBuffer::create(GraphicsManager* manager, const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
 //{
 //	LN_THROW(manager != NULL, ArgumentException);
 //	return LN_NEW VertexBuffer(manager, vertexElements, elementsCount, vertexCount, data, usage);
@@ -94,7 +94,7 @@ int VertexBuffer::getSize() const
 }
 
 //------------------------------------------------------------------------------
-void VertexBuffer::Reserve(int size)
+void VertexBuffer::reserve(int size)
 {
 	if (LN_CHECK_STATE(!IsRHIDirect())) return;		// サイズ変更禁止
 
@@ -166,7 +166,7 @@ Driver::IVertexBuffer* VertexBuffer::ResolveRHIObject()
 		}
 		else
 		{
-			if (m_rhiObject == nullptr || m_rhiObject->GetByteCount() != m_buffer.size())
+			if (m_rhiObject == nullptr || m_rhiObject->getByteCount() != m_buffer.size())
 			{
 				LN_SAFE_RELEASE(m_rhiObject);
 				m_rhiObject = m_manager->GetGraphicsDevice()->CreateVertexBuffer(m_buffer.size(), m_buffer.data(), m_usage);
@@ -199,7 +199,7 @@ void VertexBuffer::OnChangeDevice(Driver::IGraphicsDevice* device)
 		// 必要があればデータを保存する
 		if (m_pool == GraphicsResourcePool::Managed)
 		{
-			m_buffer.resize(m_rhiObject->GetByteCount());
+			m_buffer.resize(m_rhiObject->getByteCount());
 			memcpy(m_buffer.data(), m_rhiObject->Lock(), m_buffer.size());
 			m_rhiObject->Unlock();
 		}

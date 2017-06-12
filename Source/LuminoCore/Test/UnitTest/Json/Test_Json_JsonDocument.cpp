@@ -25,7 +25,7 @@ TEST_F(Test_Json_JsonDocument, Basic)
 }
 
 //---------------------------------------------------------------------
-TEST_F(Test_Json_JsonDocument, Save)
+TEST_F(Test_Json_JsonDocument, save)
 {
 	tr::JsonDocument2 doc;
 	doc.AddMemberBool(_T("b1"), true);
@@ -48,20 +48,20 @@ TEST_F(Test_Json_JsonDocument, Save)
 	aryary->AddArray()->AddInt32(222);
 
 	auto* objary = doc.AddMemberArray(_T("objary"));
-	objary->AddObject()->AddMemberInt32(_T("int32"), 300);
-	objary->AddObject()->AddMemberString(_T("str1"), _T("test2"));
+	objary->addObject()->AddMemberInt32(_T("int32"), 300);
+	objary->addObject()->AddMemberString(_T("str1"), _T("test2"));
 
-	doc.Save(TEMPFILE("json.txt"), tr::JsonFormatting::Indented);
+	doc.save(TEMPFILE("json.txt"), tr::JsonFormatting::Indented);
 
 	ASSERT_TRUE(TestHelper::EqualFiles(TEMPFILE("json.txt"), LN_LOCALFILE("TestData/Test_Json_JsonDocument_Save1.json")));
 
 }
 
 //---------------------------------------------------------------------
-TEST_F(Test_Json_JsonDocument, Load)
+TEST_F(Test_Json_JsonDocument, load)
 {
 	tr::JsonDocument2 doc;
-	doc.Load(LN_LOCALFILE("TestData/Test_Json_JsonDocument_Save1.json"));
-	doc.Save(TEMPFILE("json2.txt"), tr::JsonFormatting::Indented);
+	doc.load(LN_LOCALFILE("TestData/Test_Json_JsonDocument_Save1.json"));
+	doc.save(TEMPFILE("json2.txt"), tr::JsonFormatting::Indented);
 }
 

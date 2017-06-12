@@ -11,7 +11,7 @@ LN_NAMESPACE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TransitionPostEffect, PostEffect);
 
 //------------------------------------------------------------------------------
-RefPtr<TransitionPostEffect> TransitionPostEffect::Create()
+RefPtr<TransitionPostEffect> TransitionPostEffect::create()
 {
 	return NewObject<TransitionPostEffect>();
 }

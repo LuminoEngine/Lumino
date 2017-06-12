@@ -69,7 +69,7 @@ void EffectManager::initialize(const Settings& settings)
 
 
 	//m_threadUpdateFrame.Start(CreateDelegate(this, &EffectManager::Thread_UpdateFrame));
-	//m_taskUpdateFrame = tr::Task::Create(CreateDelegate(this, &EffectManager::Thread_UpdateFrame));
+	//m_taskUpdateFrame = tr::Task::create(CreateDelegate(this, &EffectManager::Thread_UpdateFrame));
 
 	if (g_managerInstance == nullptr) {
 		g_managerInstance = this;
@@ -88,11 +88,11 @@ void EffectManager::Finalize()
 EffectEngine* EffectManager::CreateEffectWorld()
 {
 #ifdef LN_USE_EXTERNAL_Effekseer
-	auto engine = RefPtr<EffekseerEffectEngine>::MakeRef();
+	auto engine = RefPtr<EffekseerEffectEngine>::makeRef();
 	engine->initialize(this, 32, 0, 2000);	// TODO
 
-	auto basePtr = RefPtr<EffectEngine>::StaticCast(engine);
-	m_effectWorldList.Add(basePtr);
+	auto basePtr = RefPtr<EffectEngine>::staticCast(engine);
+	m_effectWorldList.add(basePtr);
 	return basePtr;
 #else
 	LN_NOTIMPLEMENTED();
@@ -105,7 +105,7 @@ void EffectManager::ReleaseEffectWorld(EffectEngine* world)
 {
 	assert(world != nullptr);
 	world->Finalize();
-	m_effectWorldList.Remove(RefPtr<EffectEngine>(world));
+	m_effectWorldList.remove(RefPtr<EffectEngine>(world));
 }
 
 ////------------------------------------------------------------------------------

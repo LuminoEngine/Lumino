@@ -25,10 +25,10 @@ FileManager::FileManager(const Settings& settings)
 	, m_endRequested(false)
 	, m_isASyncTaskListEmpty(true)
 {
-	m_archiveList.Add(m_dummyArchive);
+	m_archiveList.add(m_dummyArchive);
 	m_dummyArchive->addRef();	// m_archiveList からの参照を示す
 
-	m_asyncProcThread.Start(CreateDelegate(this, &FileManager::Thread_ASyncProc));
+	m_asyncProcThread.start(createDelegate(this, &FileManager::Thread_ASyncProc));
 }
 
 //------------------------------------------------------------------------------
@@ -52,30 +52,30 @@ void FileManager::RegisterArchive(const PathName& filePath, const String& passwo
 	MutexScopedLock lock(m_mutex);
 
 	Archive* archive = LN_NEW Archive();
-	archive->Open(filePath, password);
-	m_archiveList.Add(archive);
+	archive->open(filePath, password);
+	m_archiveList.add(archive);
 
 	RefreshArchiveList();
 }
 
 //------------------------------------------------------------------------------
-bool FileManager::ExistsFile(const char* filePath)
+bool FileManager::existsFile(const char* filePath)
 {
-	return ExistsFile(PathName(filePath));
+	return existsFile(PathName(filePath));
 }
 
 //------------------------------------------------------------------------------
-bool FileManager::ExistsFile(const wchar_t* filePath)
+bool FileManager::existsFile(const wchar_t* filePath)
 {
-	return ExistsFile(PathName(filePath));
+	return existsFile(PathName(filePath));
 }
 
 //------------------------------------------------------------------------------
-bool FileManager::ExistsFile(const PathName& filePath)
+bool FileManager::existsFile(const PathName& filePath)
 {
 	for (IArchive* archive : m_archiveList)
 	{
-		if (archive->ExistsFile(filePath)) {
+		if (archive->existsFile(filePath)) {
 			return true;
 		}
 	}
@@ -111,11 +111,11 @@ Stream* FileManager::CreateFileStream(const PathName& filePath, bool isDeferring
 	}
 
 	LN_THROW(stream != NULL, FileNotFoundException, absPath);	// ファイルが見つからなかった
-	return stream.DetachMove();
+	return stream.detachMove();
 }
 
 //------------------------------------------------------------------------------
-CaseSensitivity FileManager::GetFileSystemCaseSensitivity() const
+CaseSensitivity FileManager::getFileSystemCaseSensitivity() const
 {
 #ifdef LN_OS_WIN32
 	return CaseSensitivity::CaseInsensitive;
@@ -138,7 +138,7 @@ void FileManager::RequestASyncTask(ASyncIOObject* task)
 
 	task->m_ayncIOState = ASyncIOState_Ready;
 	task->addRef();
-	m_asyncTaskList.Add(task);
+	m_asyncTaskList.add(task);
 	m_isASyncTaskListEmpty.SetFalse();
 }
 
@@ -152,20 +152,20 @@ void FileManager::WaitForAllASyncTask()
 void FileManager::RefreshArchiveList()
 {
 	// 一度ダミーをリストから外す
-	if (m_archiveList.Contains(m_dummyArchive))
+	if (m_archiveList.contains(m_dummyArchive))
 	{
-		m_archiveList.Remove(m_dummyArchive);
+		m_archiveList.remove(m_dummyArchive);
 		m_dummyArchive->release();
 	}
 
 	// ディレクトリ優先ならダミーを先頭に追加し直す
 	if (m_fileAccessPriority == FileAccessPriority_DirectoryFirst) {
-		m_archiveList.Insert(0, m_dummyArchive);
+		m_archiveList.insert(0, m_dummyArchive);
 		m_dummyArchive->addRef();
 	}
 	// アーカイブ優先ならダミーを末尾に追加し直す
 	else if (m_fileAccessPriority == FileAccessPriority_ArchiveFirst) {
-		m_archiveList.Add(m_dummyArchive);
+		m_archiveList.add(m_dummyArchive);
 		m_dummyArchive->addRef();
 	}
 	// アーカイブのみであればダミーを追加する必要は無い
@@ -183,11 +183,11 @@ void FileManager::Thread_ASyncProc()
 		ASyncIOObject* task = NULL;
 		{
 			MutexScopedLock lock(m_asyncTaskListMutex);
-			if (!m_asyncTaskList.IsEmpty())
+			if (!m_asyncTaskList.isEmpty())
 			{
-				task = m_asyncTaskList.GetFront();
+				task = m_asyncTaskList.getFront();
 				task->m_ayncIOState = ASyncIOState_Processing;	// 処理中状態にする
-				m_asyncTaskList.RemoveAt(0);				// 先頭要素を削除する (Queue の方がよかったかも…？)
+				m_asyncTaskList.removeAt(0);				// 先頭要素を削除する (Queue の方がよかったかも…？)
 			}
 		}
 
@@ -219,7 +219,7 @@ void FileManager::Thread_ASyncProc()
 		// この時点でリストが空ならすべて処理が終わったことにする
 		{
 			MutexScopedLock lock(m_asyncTaskListMutex);
-			if (m_asyncTaskList.IsEmpty())
+			if (m_asyncTaskList.isEmpty())
 			{
 				m_isASyncTaskListEmpty.SetTrue();
 			}

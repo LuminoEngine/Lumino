@@ -124,7 +124,7 @@ void InputDriver::OnMouseButtonDown(MouseButtons button)
 	MouseClickTracker& tracker = m_mouseClickTrackers[(int)button];
 	tracker.clickCount++;
 
-	double curTime = 0.001 * Environment::GetTickCount();
+	double curTime = 0.001 * Environment::getTickCount();
 	float elapsed = (float)(curTime - tracker.lastTime);
 	if (elapsed > m_mouseButtonClickTimeout ||
 		tracker.clickCount > 3)

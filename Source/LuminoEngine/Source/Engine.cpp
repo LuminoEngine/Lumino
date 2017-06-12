@@ -27,7 +27,7 @@ LN_NAMESPACE_BEGIN
 void Engine::initialize()
 {
 	if (LN_CHECK_STATE(EngineManager::Instance == nullptr)) return;
-	EngineManager::Instance = EngineManager::Create(detail::EngineSettings::instance);
+	EngineManager::Instance = EngineManager::create(detail::EngineSettings::instance);
 	EngineManager::Instance->initialize();
 }
 

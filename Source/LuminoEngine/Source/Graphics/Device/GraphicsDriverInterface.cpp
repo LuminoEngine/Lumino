@@ -104,7 +104,7 @@ IVertexDeclaration* IRenderer::GetVertexDeclaration() const
 //------------------------------------------------------------------------------
 void IRenderer::SetVertexBuffer(int streamIndex, IVertexBuffer* vertexBuffer)
 {
-	if (m_currentVertexBuffers.GetCount() <= streamIndex)
+	if (m_currentVertexBuffers.getCount() <= streamIndex)
 		m_currentVertexBuffers.resize(streamIndex + 1);		// 配列が小さいので増やす
 
 	if (m_currentVertexBuffers[streamIndex] != vertexBuffer)

@@ -189,7 +189,7 @@ Bitmap* GLTexture::Lock()
 void GLTexture::Unlock()
 {
 	SetSubData(PointI(0, 0), m_lockedTexture->GetBitmapBuffer()->getConstData(), m_lockedTexture->GetBitmapBuffer()->getSize(), m_size);
-	m_lockedTexture.SafeRelease();
+	m_lockedTexture.safeRelease();
 }
 
 

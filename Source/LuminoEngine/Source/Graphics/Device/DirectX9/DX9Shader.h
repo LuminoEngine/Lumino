@@ -31,7 +31,7 @@ public:
 
 public:
 	/// 作成
-	static ShaderCompileResultLevel Create(DX9GraphicsDevice* device, const char* code, size_t codeByteCount, DX9Shader** outShader, StringA* outMessage);
+	static ShaderCompileResultLevel create(DX9GraphicsDevice* device, const char* code, size_t codeByteCount, DX9Shader** outShader, StringA* outMessage);
 
 	DX9GraphicsDevice* GetGraphicsDevice() { return m_device; }
 	ID3DXEffect* GetID3DXEffect() { return m_dxEffect; }
@@ -40,9 +40,9 @@ public:
 	List<TextureVarInfo>* GetTextureVarInfoList() { return &m_textureVariables; }
 
 	// override IShader
-	virtual int GetVariableCount() const { return m_variables.GetCount(); }
+	virtual int GetVariableCount() const { return m_variables.getCount(); }
 	virtual IShaderVariable* GetVariable(int index) const;
-	virtual int GetTechniqueCount() const { return m_techniques.GetCount(); }
+	virtual int GetTechniqueCount() const { return m_techniques.getCount(); }
 	virtual IShaderTechnique* GetTechnique(int index) const;
 	virtual void OnLostDevice();
 	virtual void OnResetDevice();
@@ -68,12 +68,12 @@ public:
 	DX9TextureBase* GetDX9TextureBase() const { return m_texture; }
 
 	/// 初期値の読み取り用
-	static void GetValue(ID3DXEffect* dxEffect, D3DXHANDLE handle, ShaderVariableTypeDesc desc, ShaderValue* outValue);
+	static void getValue(ID3DXEffect* dxEffect, D3DXHANDLE handle, ShaderVariableTypeDesc desc, ShaderValue* outValue);
 
 public:
 	virtual void SetBool(bool value);
 	virtual void SetBoolArray(const bool* values, int count);
-	virtual void SetInt(int value);
+	virtual void setInt(int value);
 	virtual void SetFloat(float value);
 	virtual void SetFloatArray(const float* values, int count);
 	virtual void SetVector(const Vector4& vec);
@@ -81,7 +81,7 @@ public:
 	virtual void SetMatrix(const Matrix& matrix);
 	virtual void SetMatrixArray(const Matrix* matrices, int count);
 	virtual void SetTexture(ITexture* texture);
-	virtual int GetAnnotationCount() { return m_annotations.GetCount(); }
+	virtual int GetAnnotationCount() { return m_annotations.getCount(); }
 	virtual IShaderVariable* GetAnnotation(int index);
 
 private:
@@ -102,7 +102,7 @@ public:
 
 public:
 	virtual void SetBool(bool value) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetInt(int value) { LN_THROW(0, InvalidOperationException); }
+	virtual void setInt(int value) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetFloat(float value) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetVector(const Vector4& vec) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetVectorArray(const Vector4* vectors, int count) { LN_THROW(0, InvalidOperationException); }
@@ -124,9 +124,9 @@ public:
 public:
 	// override IShaderTechnique
 	virtual const TCHAR* GetName() const { return m_name.c_str(); }
-	virtual int GetPassCount() const { return m_passes.GetCount(); }
+	virtual int GetPassCount() const { return m_passes.getCount(); }
 	virtual IShaderPass* GetPass(int index);
-	virtual int GetAnnotationCount() { return m_annotations.GetCount(); }
+	virtual int GetAnnotationCount() { return m_annotations.getCount(); }
 	virtual IShaderVariable* GetAnnotation(int index) { return m_annotations[index]; }
 
 private:
@@ -148,7 +148,7 @@ public:
 public:
 	// override IShaderPass
 	virtual const TCHAR* GetName() const { return m_name.c_str(); }
-	virtual int GetAnnotationCount() { return m_annotations.GetCount(); }
+	virtual int GetAnnotationCount() { return m_annotations.getCount(); }
 	virtual IShaderVariable* GetAnnotation(int index) { return m_annotations[index]; }
 	virtual void Apply();
 

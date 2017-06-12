@@ -9,7 +9,7 @@ template<typename T, typename TAllocator>
 List<T, TAllocator>::List()
 	: m_data(NULL)
 {
-	m_data = ArrayData::GetSharedEmpty();
+	m_data = ArrayData::getSharedEmpty();
 	m_data->addRef();
 }
 template<typename T, typename TAllocator>
@@ -61,7 +61,7 @@ List<T, TAllocator>& List<T, TAllocator>::operator=(const List& ary)
 template<typename T, typename TAllocator>
 T& List<T, TAllocator>::operator[] (int index)
 {
-	CheckOutOfRange(index);
+	checkOutOfRange(index);
 	checkDetachShared();
 	return m_data->m_vector[index];
 }
@@ -70,7 +70,7 @@ T& List<T, TAllocator>::operator[] (int index)
 template<typename T, typename TAllocator>
 const T& List<T, TAllocator>::operator[] (int index) const
 {
-	CheckOutOfRange(index);
+	checkOutOfRange(index);
 	return m_data->m_vector[index];
 }
 
@@ -78,7 +78,7 @@ const T& List<T, TAllocator>::operator[] (int index) const
 template<typename T, typename TAllocator>
 void List<T, TAllocator>::checkDetachShared()
 {
-	if (m_data->IsShared())
+	if (m_data->isShared())
 	{
 		auto* newData = LN_NEW ArrayData(m_data->m_vector);	// copy
 		m_data->release();
@@ -88,9 +88,9 @@ void List<T, TAllocator>::checkDetachShared()
 
 //------------------------------------------------------------------------------
 template<typename T, typename TAllocator>
-void List<T, TAllocator>::CheckOutOfRange(int index) const
+void List<T, TAllocator>::checkOutOfRange(int index) const
 {
-	LN_THROW(!IsOutOfRange(index), OutOfRangeException);
+	LN_THROW(!isOutOfRange(index), OutOfRangeException);
 }
 
 //==============================================================================
@@ -103,7 +103,7 @@ void List<T, TAllocator>::ArrayData::release()
 	--m_refCount;
 	if (m_refCount <= 0)
 	{
-		if (this != GetSharedEmpty()) {
+		if (this != getSharedEmpty()) {
 			delete this;
 		}
 	}
@@ -111,7 +111,7 @@ void List<T, TAllocator>::ArrayData::release()
 
 //------------------------------------------------------------------------------
 template<typename T, typename TAllocator>
-typename List<T, TAllocator>::ArrayData* List<T, TAllocator>::ArrayData::GetSharedEmpty()
+typename List<T, TAllocator>::ArrayData* List<T, TAllocator>::ArrayData::getSharedEmpty()
 {
 	static ArrayData sharedEmpty(100);	// 共有オブジェクトは delete しないように、適当に参照カウントを増やしておく
 	return &sharedEmpty;

@@ -198,7 +198,7 @@ MacroDefine* MacroMap::Insert(const Token& name, const SourceRange& replacementR
 {
 	////LN_THROW(!IsFreeze(), InvalidOperationException);
 
-	auto macro = RefPtr<MacroDefine>::MakeRef();
+	auto macro = RefPtr<MacroDefine>::makeRef();
 	macro->name = name.ToString();
 	macro->replacementRange = replacementRange;
 	//macro.replacementContentString = TokenString(replacementBegin->GetBegin(), replacementEnd->GetEnd() - replacementBegin->GetBegin());
@@ -264,12 +264,12 @@ bool MacroMap::IsDefined(const TokenChar* name, MacroDefine** outDefinedMacro) c
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-uint64_t MacroMap::GetHashCode() const
+uint64_t MacroMap::getHashCode() const
 {
 	uint64_t value = 0;
 	for (auto& macro : m_allMacroList)
 	{
-		value += Hash::CalcHash(macro->name.c_str(), macro->name.GetLength());
+		value += Hash::calcHash(macro->name.c_str(), macro->name.getLength());
 	}
 	return value + m_allMacroList.GetCount();	// ついでに個数でもいれておこうか
 }
@@ -536,7 +536,7 @@ ResultState Preprocessor::PollingDirectiveLine(Token* keyword, Token* lineEnd)
 		// マクロ登録
 		// TODO: マクロの上書き確認
 		//m_unitFile->m_macroMap->Insert(*macroName, range);
-		m_macroMap.Get()->Insert(*macroName, range);
+		m_macroMap.get()->Insert(*macroName, range);
 
 		// Reference 作成 (Macro Define)
 		m_referenceTracker->InjectReference(nullptr, macroName->GetStringRef(), EntityKind::Macro, ReferenceKindFlags::Define);
@@ -565,7 +565,7 @@ ResultState Preprocessor::PollingDirectiveLine(Token* keyword, Token* lineEnd)
 		keyword->EqualString("ifndef", 6))
 	{
 		// 新しいセクションを開始する
-		m_conditionalSectionStack.Push(ConditionalSection());
+		m_conditionalSectionStack.push(ConditionalSection());
 
 		// 次の識別子まで進める
 		Token* pos = ParserUtils::SkipNextSpaceOrComment(keyword, lineEnd);
@@ -579,17 +579,17 @@ ResultState Preprocessor::PollingDirectiveLine(Token* keyword, Token* lineEnd)
 		bool isDefined = m_macroMap.GetConst()->IsDefined(*pos);
 
 		// "ifndef" なら条件を反転
-		if (keyword->GetLength() == 6) {
+		if (keyword->getLength() == 6) {
 			isDefined = !isDefined;
 		}
 
 		if (isDefined)
 		{
-			m_conditionalSectionStack.GetTop().state = ConditionalSectionState::Valid;
+			m_conditionalSectionStack.getTop().state = ConditionalSectionState::Valid;
 		}
 		else
 		{
-			m_conditionalSectionStack.GetTop().state = ConditionalSectionState::Invalid;
+			m_conditionalSectionStack.getTop().state = ConditionalSectionState::Invalid;
 		}
 	}
 	//---------------------------------------------------------
@@ -598,31 +598,31 @@ ResultState Preprocessor::PollingDirectiveLine(Token* keyword, Token* lineEnd)
 	else if (keyword->EqualString("else", 4))
 	{
 		if (m_conditionalSectionStack.IsEmpty() ||				// #if がない
-			m_conditionalSectionStack.GetTop().elseProcessed)	// 既に #else 受領済み
+			m_conditionalSectionStack.getTop().elseProcessed)	// 既に #else 受領済み
 		{
 			// Error: 予期しない #else
 			m_diag->Report(DiagnosticsCode::Preprocessor_UnexpectedElse);
 			return ResultState::Error;
 		}
 
-		if (m_conditionalSectionStack.GetTop().state == ConditionalSectionState::Valid)
+		if (m_conditionalSectionStack.getTop().state == ConditionalSectionState::Valid)
 		{
 			// 有効領域のあとの #else なので、後は何があろうと全て無効領域となる
-			m_conditionalSectionStack.GetTop().state = ConditionalSectionState::Skip;
+			m_conditionalSectionStack.getTop().state = ConditionalSectionState::Skip;
 		}
-		else if (m_conditionalSectionStack.GetTop().state == ConditionalSectionState::Invalid)
+		else if (m_conditionalSectionStack.getTop().state == ConditionalSectionState::Invalid)
 		{
 			// いままで無効だったのでここから有効になる
-			m_conditionalSectionStack.GetTop().state = ConditionalSectionState::Valid;
+			m_conditionalSectionStack.getTop().state = ConditionalSectionState::Valid;
 		}
 		else
 		{
 			// Skip のまま維持する
-			m_conditionalSectionStack.GetTop().state = ConditionalSectionState::Skip;
+			m_conditionalSectionStack.getTop().state = ConditionalSectionState::Skip;
 		}
 
 		// else を処理した
-		m_conditionalSectionStack.GetTop().elseProcessed = true;
+		m_conditionalSectionStack.getTop().elseProcessed = true;
 	}
 	//---------------------------------------------------------
 	// #endif
@@ -635,7 +635,7 @@ ResultState Preprocessor::PollingDirectiveLine(Token* keyword, Token* lineEnd)
 			m_diag->Report(DiagnosticsCode::Preprocessor_UnexpectedEndif);
 			return ResultState::Error;
 		}
-		m_conditionalSectionStack.Pop();
+		m_conditionalSectionStack.pop();
 	}
 	//---------------------------------------------------------
 	// #line
@@ -683,24 +683,24 @@ ResultState Preprocessor::AnalyzeIfElifDirective(Token* keyword, Token* lineEnd,
 	if (!isElse)
 	{
 		// 新しいセクションを開始する
-		m_conditionalSectionStack.Push(ConditionalSection());
+		m_conditionalSectionStack.push(ConditionalSection());
 	}
 	// #elif の場合
 	else
 	{
 		if (m_conditionalSectionStack.IsEmpty() ||				// #if がない
-			m_conditionalSectionStack.GetTop().elseProcessed)	// 既に #else 受領済み
+			m_conditionalSectionStack.getTop().elseProcessed)	// 既に #else 受領済み
 		{
 			LN_DIAG_REPORT_ERROR(0, DiagnosticsCode::Preprocessor_UnexpectedElif);
 		}
 
-		if (m_conditionalSectionStack.GetTop().state == ConditionalSectionState::Valid)
+		if (m_conditionalSectionStack.getTop().state == ConditionalSectionState::Valid)
 		{
 			// 有効領域のあとの #else なので、後は何があろうと全て無効領域となる
-			m_conditionalSectionStack.GetTop().state = ConditionalSectionState::Skip;
+			m_conditionalSectionStack.getTop().state = ConditionalSectionState::Skip;
 			return ResultState::Success;
 		}
-		else if (m_conditionalSectionStack.GetTop().state == ConditionalSectionState::Skip)
+		else if (m_conditionalSectionStack.getTop().state == ConditionalSectionState::Skip)
 		{
 			// 既に Skip 状態
 			return ResultState::Success;
@@ -800,10 +800,10 @@ ResultState Preprocessor::AnalyzeIfElifDirective(Token* keyword, Token* lineEnd,
 	if (result.IsIntager() || result.type == RpnOperandType::Boolean)
 	{
 		if (result.IsFuzzyTrue()) {	// 0 以外または true
-			m_conditionalSectionStack.GetTop().state = ConditionalSectionState::Valid;
+			m_conditionalSectionStack.getTop().state = ConditionalSectionState::Valid;
 		}
 		else {
-			m_conditionalSectionStack.GetTop().state = ConditionalSectionState::Invalid;
+			m_conditionalSectionStack.getTop().state = ConditionalSectionState::Invalid;
 		}
 	}
 	else
@@ -877,8 +877,8 @@ bool Preprocessor::IsValidSection() const
 		return true;
 	}
 	else if (
-		m_conditionalSectionStack.GetTop().state == ConditionalSectionState::None ||
-		m_conditionalSectionStack.GetTop().state == ConditionalSectionState::Valid)
+		m_conditionalSectionStack.getTop().state == ConditionalSectionState::None ||
+		m_conditionalSectionStack.getTop().state == ConditionalSectionState::Valid)
 	{
 		return true;
 	}

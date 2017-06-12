@@ -61,7 +61,7 @@ TEST_F(Test_Graphics_Rendering, Basic)
 
 	//	auto* r = Engine::GetWorld2D()->GetRenderer();
 	//	r->Clear(ClearFlags::Color, Color::Red);
-	//	auto tex = Texture2D::Create(LN_LOCALFILE("../Scene/TestData/Sprite1.png"));
+	//	auto tex = Texture2D::create(LN_LOCALFILE("../Scene/TestData/Sprite1.png"));
 	//	r->DrawSprite2D(Size(32, 32), tex, Rect(0, 0, 32, 32), Color::White);
 
 	//	Engine::EndRendering();
@@ -239,7 +239,7 @@ TEST_F(Test_Graphics_Rendering, DrawMesh)
 	//	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png")));
 	//}
 	{
-		auto mesh = RefPtr<StaticMeshModel>::MakeRef();
+		auto mesh = RefPtr<StaticMeshModel>::makeRef();
 		mesh->InitializeSphere(detail::GraphicsManager::GetInstance(), 2, 8, 4, MeshCreationFlags::None);
 
 		LN_TEST_BEGIN_FRAME;
@@ -255,7 +255,7 @@ TEST_F(Test_Graphics_Rendering, Blit)
 {
 	// <Test> デフォルトのレンダーターターゲットへの転送
 	{
-		auto tex = Texture2D::Create(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png"));
+		auto tex = Texture2D::create(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png"));
 		LN_TEST_BEGIN_FRAME;
 		Engine::RenderFrame();
 		Engine::GetWorld2D()->GetRenderer()->Blit(tex);
@@ -264,8 +264,8 @@ TEST_F(Test_Graphics_Rendering, Blit)
 	}
 	// <Test> 別のレンダーターゲットへの転送
 	{
-		auto tex = Texture2D::Create(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png"));
-		auto rt1 = RenderTargetTexture::Create(tex->getSize());
+		auto tex = Texture2D::create(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png"));
+		auto rt1 = RenderTargetTexture::create(tex->getSize());
 		LN_TEST_BEGIN_FRAME;
 		Engine::RenderFrame();
 		Engine::GetWorld2D()->GetRenderer()->Blit(tex, rt1, nullptr);
@@ -283,7 +283,7 @@ TEST_F(Test_Graphics_Rendering, Blit)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Rendering, DrawText_)
 {
-	auto font = Font::GetDefault();
+	auto font = Font::getDefault();
 	float w = 160;
 
 	// <Issue> フレームをまたいだ連続描画で、後のテキストが表示されない問題
@@ -323,7 +323,7 @@ TEST_F(Test_Graphics_Rendering, DrawText_)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Rendering, DrawSprite)
 {
-	auto tex = Texture2D::Create(LN_LOCALFILE("../Scene/TestData/Sprite1.png"));
+	auto tex = Texture2D::create(LN_LOCALFILE("../Scene/TestData/Sprite1.png"));
 
 	// <Test>
 	{
@@ -429,19 +429,19 @@ TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
 {
 	// <Test> BorderFrame + Tile
 	{
-		auto brush1 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
+		auto brush1 = TextureBrush::create(LN_LOCALFILE("TestData/Window.png"));
 		brush1->SetSourceRect(0, 192, 32, 32);
 		brush1->SetWrapMode(BrushWrapMode::Tile);
 		brush1->SetImageDrawMode(BrushImageDrawMode::BorderFrame);
 		brush1->SetBorderThickness(ThicknessF(8, 8, 8, 8));
 
-		auto brush2 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
+		auto brush2 = TextureBrush::create(LN_LOCALFILE("TestData/Window.png"));
 		brush2->SetSourceRect(0, 160, 32, 32);
 		brush2->SetWrapMode(BrushWrapMode::Tile);
 		brush2->SetImageDrawMode(BrushImageDrawMode::BorderFrame);
 		brush2->SetBorderThickness(ThicknessF(0, 2, 4, 8));
 
-		auto brush3 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
+		auto brush3 = TextureBrush::create(LN_LOCALFILE("TestData/Window.png"));
 		brush3->SetSourceRect(0, 160, 32, 32);
 		brush3->SetWrapMode(BrushWrapMode::Tile);
 		brush3->SetImageDrawMode(BrushImageDrawMode::BorderFrame);
@@ -477,19 +477,19 @@ TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
 	// <Test> BoxFrame + Stretch
 	// <Test> BoxFrame + Tile
 	{
-		auto brush1 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
+		auto brush1 = TextureBrush::create(LN_LOCALFILE("TestData/Window.png"));
 		brush1->SetSourceRect(0, 192, 32, 32);
 		brush1->SetWrapMode(BrushWrapMode::Stretch);
 		brush1->SetImageDrawMode(BrushImageDrawMode::BorderFrame);
 		brush1->SetBorderThickness(ThicknessF(8, 8, 8, 8));
 
-		auto brush2 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
+		auto brush2 = TextureBrush::create(LN_LOCALFILE("TestData/Window.png"));
 		brush2->SetSourceRect(0, 192, 32, 32);
 		brush2->SetWrapMode(BrushWrapMode::Stretch);
 		brush2->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
 		brush2->SetBorderThickness(ThicknessF(8, 8, 8, 8));
 
-		auto brush3 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
+		auto brush3 = TextureBrush::create(LN_LOCALFILE("TestData/Window.png"));
 		brush3->SetSourceRect(0, 192, 32, 32);
 		brush3->SetWrapMode(BrushWrapMode::Tile);
 		brush3->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
@@ -516,9 +516,9 @@ TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Rendering, ZSort)
 {
-	auto t1 = Texture2D::Create(LN_LOCALFILE("TestData/Sprite2.png"));
-	auto s1 = Sprite3DComponent::Create(5, 5, t1);
-	auto s2 = Sprite3DComponent::Create(8, 2, t1);
+	auto t1 = Texture2D::create(LN_LOCALFILE("TestData/Sprite2.png"));
+	auto s1 = Sprite3DComponent::create(5, 5, t1);
+	auto s2 = Sprite3DComponent::create(8, 2, t1);
 	s1->SetPosition(0, 0, 0);	// 手前
 	s2->SetPosition(0, 0, 1);	// 奥
 	Engine::Update();
@@ -553,7 +553,7 @@ TEST_F(Test_Graphics_DrawingContext, DrawChar)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_DrawingContext, DrawText_)
 {
-	//auto f = Font::Create(_T("Meiryo UI"), 30);
+	//auto f = Font::create(_T("Meiryo UI"), 30);
 	{
 		LN_TEST_BEGIN_FRAME;
 		Engine::RenderFrame();
@@ -579,14 +579,14 @@ protected:
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Texture, Blit)
 {
-	auto tex1 = Texture2D::Create(LN_LOCALFILE("TestData/Numbers1.png"));
-	auto tex2 = Texture2D::Create(100, 100);
+	auto tex1 = Texture2D::create(LN_LOCALFILE("TestData/Numbers1.png"));
+	auto tex2 = Texture2D::create(100, 100);
 	tex2->Blit(20 * 0, 20 * 0, tex1, RectI(8 * 0, 14 * 0, 8, 14));
 	tex2->Blit(20 * 1, 20 * 1, tex1, RectI(8 * 1, 14 * 1, 8, 14));
 	tex2->Blit(20 * 2, 20 * 2, tex1, RectI(8 * 2, 14 * 2, 8, 14));
 	tex2->Blit(20 * 3, 20 * 3, tex1, RectI(8 * 3, 14 * 3, 8, 14));
 
-	auto sprite = Sprite2DComponent::Create(tex2);
+	auto sprite = Sprite2DComponent::create(tex2);
 	sprite->SetBlendMode(BlendMode::Alpha);
 	Engine::Update();
 
@@ -596,13 +596,13 @@ TEST_F(Test_Graphics_Texture, Blit)
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Texture, DrawText)
 {
-	auto font = Font::Create();
-	auto texture = Texture2D::Create(160, 120);
+	auto font = Font::create();
+	auto texture = Texture2D::create(160, 120);
 	texture->DrawText(_T("Left"), RectI(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
 	texture->DrawText(_T("Center"), RectI(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Center);
 	texture->DrawText(_T("Rigth"), RectI(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Right);
 	//texture->DrawText("Justify", Rect(0, 32, 120, 160), font, Color32::White, Color32::White, 0, TextAlignment::Justify);
-	auto sprite = Sprite2DComponent::Create(texture);
+	auto sprite = Sprite2DComponent::create(texture);
 	sprite->SetBlendMode(BlendMode::Alpha);
 	Engine::Update();
 
@@ -615,10 +615,10 @@ TEST_F(Test_Graphics_Texture, Issues)
 	// <Issue> Clear の後に Drawtext すると、Clear されていない問題の修正。
 	// <Issue> Drawtext 連続で描画すると、1フレーム前の内容がクリアされる問題の修正。
 	{
-		auto font = Font::Create();
-		auto texture = Texture2D::Create(160, 120);
+		auto font = Font::create();
+		auto texture = Texture2D::create(160, 120);
 		texture->DrawText(_T("__________"), RectI(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
-		auto sprite = Sprite2DComponent::Create(texture);
+		auto sprite = Sprite2DComponent::create(texture);
 		Engine::Update();
 
 		texture->clear(Color32(0, 0, 0, 0));

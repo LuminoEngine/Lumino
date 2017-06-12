@@ -39,7 +39,7 @@ public:
     LN_ROUTED_EVENT2(UIDragDeltaEventArgs, DragCanceledEvent);		/**< マウスドラッグを中断したときに発生するイベントを表します。*/
 
 public:
-	static RefPtr<UIThumb> Create();
+	static RefPtr<UIThumb> create();
 
 LN_CONSTRUCT_ACCESS:
 	UIThumb();
@@ -78,7 +78,7 @@ public:
 	static const String VerticalState;
 
 
-	static RefPtr<UITrack> Create();
+	static RefPtr<UITrack> create();
 public:
 
 	/** Track の方向を指定します。*/
@@ -91,7 +91,7 @@ public:
 	void SetValue(float value) { m_value = value; }
 
 	/** スクロール位置に対する値を取得します。規定値は 0 です。*/
-	float GetValue() const { return m_value; }
+	float getValue() const { return m_value; }
 
 	/** 指定可能な最小値を設定します。*/
 	void SetMinimum(float value) { m_minimum = value; }
@@ -175,7 +175,7 @@ class UIScrollEventArgs
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static UIScrollEventArgsPtr Create(Object* sender, float newValue, ScrollEventType type, bool caching = true);
+	static UIScrollEventArgsPtr create(Object* sender, float newValue, ScrollEventType type, bool caching = true);
 
 	UIScrollEventArgs();
 	virtual ~UIScrollEventArgs();
@@ -204,7 +204,7 @@ public:
 
 
 
-	static RefPtr<UIScrollBar> Create();
+	static RefPtr<UIScrollBar> create();
 	// TODO:↓後で RangeBase に移すかも
 
 
@@ -218,7 +218,7 @@ public:
 	void SetValue(float value);
 
 	/** スクロール位置に対する値を取得します。規定値は 0 です。*/
-	float GetValue() const;
+	float getValue() const;
 
 	/** 指定可能な最小値を設定します。*/
 	void SetMinimum(float value);
@@ -268,7 +268,7 @@ class UIScrollViewer
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
-	static RefPtr<UIScrollViewer> Create();
+	static RefPtr<UIScrollViewer> create();
 
 LN_CONSTRUCT_ACCESS:
 	UIScrollViewer();

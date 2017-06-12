@@ -64,9 +64,9 @@ RefPtr<RenderTargetTexture> RenderTargetTextureCache::RequestRenderTarget(const 
 	// 見つからなかったら新しく作って map に追加する
 	if (renderTarget == nullptr)
 	{
-		auto rt = RefPtr<RenderTargetTexture>::MakeRef();
+		auto rt = RefPtr<RenderTargetTexture>::makeRef();
 		rt->CreateImpl(m_manager, size, mipLevel, format);
-		renderTarget = rt.DetachMove();
+		renderTarget = rt.detachMove();
 
 		m_renderTargetMap[key].push_back(renderTarget);
 	}

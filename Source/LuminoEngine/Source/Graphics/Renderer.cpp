@@ -347,7 +347,7 @@ void Renderer::FlushState(const detail::ContextState& state)
 }
 
 //------------------------------------------------------------------------------
-void Renderer::Flush()
+void Renderer::flush()
 {
 
 }

@@ -299,7 +299,7 @@ void ContextInterface::OnPrimitiveFlush()
 {
 	if (m_activeRendererPloxy != nullptr)
 	{
-		m_activeRendererPloxy->Flush();
+		m_activeRendererPloxy->flush();
 	}
 }
 

@@ -128,7 +128,7 @@ LN_INTERNAL_ACCESS:
 	void PostInitialize(SkinnedMeshModel* owner, int depth);
 
 	// PmxBoneResource の取得
-	PmxBoneResource* GetCore() const;
+	PmxBoneResource* getCore() const;
 
 	// 子ボーンの追加
 	void AddChildBone(SkinnedMeshBone* bone);

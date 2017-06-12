@@ -21,13 +21,13 @@ StreamWriter::StreamWriter(const PathName& filePath, Encoding* encoding, FileWri
 	// ÉÇÅ[ÉhëIë
 	FileOpenMode openMode;
 	if (mode == FileWriteMode_Truncate) {
-		openMode = FileOpenMode::Write | FileOpenMode::Truncate;
+		openMode = FileOpenMode::write | FileOpenMode::Truncate;
 	}
 	else {
-		openMode = FileOpenMode::Write | FileOpenMode::Append;
+		openMode = FileOpenMode::write | FileOpenMode::append;
 	}
 
-	RefPtr<FileStream> stream = FileStream::Create(filePath, openMode);
+	RefPtr<FileStream> stream = FileStream::create(filePath, openMode);
 	Init(stream, encoding);
 }
 
@@ -51,13 +51,13 @@ void StreamWriter::Init(Stream* stream, Encoding* encoding)
 //------------------------------------------------------------------------------
 void StreamWriter::Flash()
 {
-	m_stream->Flush();
+	m_stream->flush();
 }
 
 //------------------------------------------------------------------------------
 void StreamWriter::WriteOverride(const void* data, size_t byteCount)
 {
-	m_stream->Write(data, byteCount);
+	m_stream->write(data, byteCount);
 }
 
 LN_NAMESPACE_END

@@ -62,10 +62,10 @@ public:
 		@param[in]	level	: 通知レベル (指定しない場合は Level_Info)
 		@details	ログ機能が初期化されていない場合は何もしません。
 	*/
-	static void WriteLine(Level severity, const char* format, ...) throw();
-	static void WriteLine(Level severity, const wchar_t* format, ...) throw();	/**< @overload WriteLine */
-	static void WriteLine(const char* format, ...) throw();								/**< @overload WriteLine */
-	static void WriteLine(const wchar_t* format, ...) throw();							/**< @overload WriteLine */
+	static void writeLine(Level severity, const char* format, ...) throw();
+	static void writeLine(Level severity, const wchar_t* format, ...) throw();	/**< @overload WriteLine */
+	static void writeLine(const char* format, ...) throw();								/**< @overload WriteLine */
+	static void writeLine(const wchar_t* format, ...) throw();							/**< @overload WriteLine */
 };
 
 
@@ -88,7 +88,7 @@ public:
 	LogRecord(LogLevel level, const char* file, const char* func, int line);
 	const LogTime& GetTime() const { return m_time; }
 	LogLevel GetLevel() const { return m_level; }
-	const char* GetMessage() const;
+	const char* getMessage() const;
 	const char* GetFile() const { return m_file; }
 	const char* GetFunc() const { return m_func; }
 	int GetLine() const { return m_line; }

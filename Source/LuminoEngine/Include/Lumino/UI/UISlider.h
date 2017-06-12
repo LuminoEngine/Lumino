@@ -31,7 +31,7 @@ public:
 	/**
 		@brief		UISlider を作成します。
 	*/
-	static RefPtr<UISlider> Create();
+	static RefPtr<UISlider> create();
 
 	/**
 		@brief		UISlider を作成します。
@@ -39,7 +39,7 @@ public:
 		@param[in]	minimum	: 最小値
 		@param[in]	maximum	: 最大値
 	*/
-	static RefPtr<UISlider> Create(float value, float minimum = 0.0f, float maximum = 1.0f);
+	static RefPtr<UISlider> create(float value, float minimum = 0.0f, float maximum = 1.0f);
 
 public:
 

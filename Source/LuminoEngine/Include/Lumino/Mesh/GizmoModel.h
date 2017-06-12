@@ -19,7 +19,7 @@ class GizmoModel
 	: public RefObject
 {
 public:
-	static GizmoModelPtr Create();
+	static GizmoModelPtr create();
 
 public:
 	void SetGizmoType(GizmoType type);
@@ -41,11 +41,11 @@ public:
 
 	void AddOnTargetTransformChanged(const std::function<void(GizmoModel*)>& handler)
 	{
-		m_onTargetTransformChanged.Connect(handler);
+		m_onTargetTransformChanged.connect(handler);
 	}
 	void AddOnSubmitEditing(const std::function<void(GizmoModel*)>& handler)
 	{
-		m_onSubmitEditing.Connect(handler);
+		m_onSubmitEditing.connect(handler);
 	}
 	
 LN_INTERNAL_ACCESS:

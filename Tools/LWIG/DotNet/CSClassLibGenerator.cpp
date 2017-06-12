@@ -29,9 +29,9 @@ void CSClassLibGenerator::Generate()
 
 		// class header
 		String modifier = (classInfo->IsStatic()) ? "static" : "";
-		classesText.Append("public {0} class {1}", modifier, classInfo->name).NewLine();
-		if (classInfo->baseClass != nullptr) classesText.Append("    : " + classInfo->baseClass->name).NewLine();
-		classesText.Append("{").NewLine();
+		classesText.append("public {0} class {1}", modifier, classInfo->name).NewLine();
+		if (classInfo->baseClass != nullptr) classesText.append("    : " + classInfo->baseClass->name).NewLine();
+		classesText.append("{").NewLine();
 		classesText.IncreaseIndent();
 
 		// property
@@ -43,23 +43,23 @@ void CSClassLibGenerator::Generate()
 			classesText.AppendLines(DotNetCommon::MakeXmlDocument(propInfo->document));
 
 			// property header
-			classesText.Append("public {0} {1}", DotNetCommon::MakeTypeName(propInfo->type), propInfo->namePrefix + propInfo->name).NewLine();
-			classesText.Append("{").NewLine();
+			classesText.append("public {0} {1}", DotNetCommon::MakeTypeName(propInfo->type), propInfo->namePrefix + propInfo->name).NewLine();
+			classesText.append("{").NewLine();
 			classesText.IncreaseIndent();
 
 			if (propInfo->getter != nullptr)
 			{
-				classesText.Append("get").NewLine();
+				classesText.append("get").NewLine();
 				classesText.AppendLines(MakeMethodBody(propInfo->getter, true));
 			}
 			if (propInfo->setter != nullptr)
 			{
-				classesText.Append("set").NewLine();
+				classesText.append("set").NewLine();
 				classesText.AppendLines(MakeMethodBody(propInfo->setter, true));
 			}
 
 			classesText.DecreaseIndent();
-			classesText.Append("}").NewLine(2);
+			classesText.append("}").NewLine(2);
 		}
 
 		// methods
@@ -77,11 +77,11 @@ void CSClassLibGenerator::Generate()
 			if (methodInfo->isVirtual) modifier += " virtual";
 			if (methodInfo->isConstructor)
 			{
-				classesText.Append("{0} {1}({2}) : base(_LNInternal.InternalBlock)", modifier, classInfo->name, MakeMethodHeaderParamList(methodInfo)).NewLine();
+				classesText.append("{0} {1}({2}) : base(_LNInternal.InternalBlock)", modifier, classInfo->name, MakeMethodHeaderParamList(methodInfo)).NewLine();
 			}
 			else
 			{
-				classesText.Append("{0} {1} {2}({3})", modifier, DotNetCommon::MakeTypeName(methodInfo->returnType), methodInfo->name, MakeMethodHeaderParamList(methodInfo)).NewLine();
+				classesText.append("{0} {1} {2}({3})", modifier, DotNetCommon::MakeTypeName(methodInfo->returnType), methodInfo->name, MakeMethodHeaderParamList(methodInfo)).NewLine();
 			}
 
 			// method body
@@ -91,7 +91,7 @@ void CSClassLibGenerator::Generate()
 			if (methodInfo->isVirtual)
 			{
 				classesText.AppendLines(MakeOverrideCallbackMethodBody(methodInfo)).NewLine();
-				typeInfoRegistersText.Append("API.LN{0}_{1}_SetOverrideCaller({0}.{1}_OverrideCallback);", classInfo->name, methodInfo->name);
+				typeInfoRegistersText.append("API.LN{0}_{1}_SetOverrideCaller({0}.{1}_OverrideCallback);", classInfo->name, methodInfo->name);
 			}
 		}
 
@@ -116,7 +116,7 @@ void CSClassLibGenerator::Generate()
 			m_eventsText.AppendLine("internal static void {0}({1})", MakeEventCallbackMethodName(methodInfo), DotNetPInvokeLibGenerator::MakePInvokeMethodDeclParamList(invokeMethod));
 			m_eventsText.AppendLine("{");
 			m_eventsText.AppendLine("    var this_ = InternalManager.GetWrapperObject<{0}>(sender);", classInfo->name);
-			m_eventsText.AppendLine("    this_.{0}({1});", MakeEventName(methodInfo), args.ToString());
+			m_eventsText.AppendLine("    this_.{0}({1});", MakeEventName(methodInfo), args.toString());
 			m_eventsText.AppendLine("}");
 
 			// PostInitialize
@@ -126,27 +126,27 @@ void CSClassLibGenerator::Generate()
 		// internal constructor
 		if (!classInfo->IsStatic())
 		{
-			classesText.Append("internal {0}(_LNInternal i) : base(i) {{}}", classInfo->name).NewLine(2);
+			classesText.append("internal {0}(_LNInternal i) : base(i) {{}}", classInfo->name).NewLine(2);
 
 			classesText.AppendLine("private void PostInitialize()");
 			classesText.AppendLine("{");
-			classesText.AppendLines(m_posiInitializeText.ToString());
+			classesText.AppendLines(m_posiInitializeText.toString());
 			classesText.AppendLine("}");
 		}
 
-		classesText.Append(m_fieldsText.ToString()).NewLine();
-		classesText.Append(m_eventsText.ToString()).NewLine();
+		classesText.append(m_fieldsText.toString()).NewLine();
+		classesText.append(m_eventsText.toString()).NewLine();
 		m_fieldsText.clear();
 		m_eventsText.clear();
 
 		classesText.DecreaseIndent();
-		classesText.Append("}").NewLine();
+		classesText.append("}").NewLine();
 	}
 
 	// delegates
 	for (auto& delegateInfo : g_database.delegates)
 	{
-		m_delegatesText.Append(
+		m_delegatesText.append(
 			"public delegate void {0}({1});",
 			delegateInfo->name,
 			MakeMethodHeaderParamList(delegateInfo->declaredMethods[0])).NewLine();
@@ -154,12 +154,12 @@ void CSClassLibGenerator::Generate()
 
 	// output
 	{
-		String src = FileSystem::ReadAllText(PathName(g_templateDir, "DotNet/CSClasses.template.cs"));
-		src = src.Replace("%Delegates%", m_delegatesText.ToString());
-		src = src.Replace("%Classes%", classesText.ToString());
-		src = src.Replace("%TypeInfoRegisters%", typeInfoRegistersText.ToString());
-		src = src.Replace("%TypeInfoPInvoke%", typeInfoPInvolesText.ToString());
-		FileSystem::WriteAllText(PathName(g_csOutputDir, "CSClasses.generated.cs"), src);
+		String src = FileSystem::readAllText(PathName(g_templateDir, "DotNet/CSClasses.template.cs"));
+		src = src.replace("%Delegates%", m_delegatesText.toString());
+		src = src.replace("%Classes%", classesText.toString());
+		src = src.replace("%TypeInfoRegisters%", typeInfoRegistersText.toString());
+		src = src.replace("%TypeInfoPInvoke%", typeInfoPInvolesText.toString());
+		FileSystem::writeAllText(PathName(g_csOutputDir, "CSClasses.generated.cs"), src);
 	}
 }
 
@@ -177,9 +177,9 @@ String CSClassLibGenerator::MakeMethodBody(MethodInfoPtr methodInfo, bool isProp
 		if (paramInfo->isOut || paramInfo->isReturn)
 		{
 			if (paramInfo->type->isStruct)
-				initStmt.Append("{0} {1} = new {0}();", DotNetCommon::MakePInvokeTypeName(paramInfo->type), paramInfo->name);
+				initStmt.append("{0} {1} = new {0}();", DotNetCommon::MakePInvokeTypeName(paramInfo->type), paramInfo->name);
 			else
-				initStmt.Append("{0} {1};", DotNetCommon::MakePInvokeTypeName(paramInfo->type), paramInfo->name);
+				initStmt.append("{0} {1};", DotNetCommon::MakePInvokeTypeName(paramInfo->type), paramInfo->name);
 		}
 
 		// call args
@@ -197,7 +197,7 @@ String CSClassLibGenerator::MakeMethodBody(MethodInfoPtr methodInfo, bool isProp
 			argName = ((isProperty) ? "value" : paramInfo->name);
 
 			if (paramInfo->type->IsClass())
-				argName = String::Format("({0} != null) ? {0}.Handle : IntPtr.Zero", argName);
+				argName = String::format("({0} != null) ? {0}.Handle : IntPtr.Zero", argName);
 			if (paramInfo->type->isStruct)
 				argName = "ref " + argName;
 		}
@@ -207,32 +207,32 @@ String CSClassLibGenerator::MakeMethodBody(MethodInfoPtr methodInfo, bool isProp
 		if (paramInfo->isReturn)
 		{
 			if (methodInfo->isConstructor)	// クラスコンストラクタの場合は Manager 登録を行う
-				returnStmt = String::Format("InternalManager.RegisterWrapperObject(this, {0}); API.LNObject_Release({0});", paramInfo->name);
+				returnStmt = String::format("InternalManager.RegisterWrapperObject(this, {0}); API.LNObject_Release({0});", paramInfo->name);
 			else if (methodInfo->returnType->IsClass())
 			{
-				returnStmt = String::Format("return InternalManager.ReturnObjectHelper<{0}>({1}, ref _{2});", methodInfo->returnType->name, paramInfo->name, methodInfo->name);
+				returnStmt = String::format("return InternalManager.ReturnObjectHelper<{0}>({1}, ref _{2});", methodInfo->returnType->name, paramInfo->name, methodInfo->name);
 
 				// cache field
 				String modifier = (methodInfo->isStatic) ? "static" : "";
-				m_fieldsText.Append("private {0} {1} _{2};", modifier, methodInfo->returnType->name, methodInfo->name).NewLine();
+				m_fieldsText.append("private {0} {1} _{2};", modifier, methodInfo->returnType->name, methodInfo->name).NewLine();
 			}
 			else
-				returnStmt = String::Format("return {0};", paramInfo->name);
+				returnStmt = String::format("return {0};", paramInfo->name);
 		}
 
 		if (methodInfo->isConstructor)
-			returnStmt += String::Format("PostInitialize();", paramInfo->name);
+			returnStmt += String::format("PostInitialize();", paramInfo->name);
 	}
 
 	// method body
 	String suffix = (methodInfo->isVirtual) ? "_CallVirtualBase" : "";
 	methodBody.AppendLines(MethodBodyTemplate
-		.Replace("%InitStmt%", initStmt.ToString())
-		.Replace("%APIFuncName%", methodInfo->GetCAPIFuncName() + suffix)
-		.Replace("%CallArgList%", callArgs.ToString())
-		.Replace("%ReturnStmt%", returnStmt));
+		.replace("%InitStmt%", initStmt.toString())
+		.replace("%APIFuncName%", methodInfo->GetCAPIFuncName() + suffix)
+		.replace("%CallArgList%", callArgs.toString())
+		.replace("%ReturnStmt%", returnStmt));
 
-	return methodBody.ToString();
+	return methodBody.toString();
 }
 
 String CSClassLibGenerator::MakeOverrideCallbackMethodBody(MethodInfoPtr methodInfo)
@@ -253,10 +253,10 @@ String CSClassLibGenerator::MakeOverrideCallbackMethodBody(MethodInfoPtr methodI
 		"}\n";
 
 	return MethodTemplate
-		.Replace("%Method%", methodInfo->name)
-		.Replace("%CApiParams%", DotNetPInvokeLibGenerator::MakePInvokeMethodDeclParamList(methodInfo))
-		.Replace("%Class%", methodInfo->owner->name)
-		.Replace("%Args%", "");
+		.replace("%Method%", methodInfo->name)
+		.replace("%CApiParams%", DotNetPInvokeLibGenerator::MakePInvokeMethodDeclParamList(methodInfo))
+		.replace("%Class%", methodInfo->owner->name)
+		.replace("%Args%", "");
 
 	//OutputBuffer method;
 	//method.Append("private static ResultCode {0}_OverrideCallback({1})", methodInfo->name, DotNetPInvokeLibGenerator::MakePInvokeMethodDeclParamList(methodInfo)).NewLine();
@@ -277,7 +277,7 @@ void CSClassLibGenerator::MakeTypeInfoRegisters(TypeInfoPtr classInfo, OutputBuf
 		"}};\n"
 		"_typeInfos.Add(_%Class%);\n"
 		"LN%Class%_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));\n";
-	typeInfoRegistersText->AppendLines(template1.Replace("%Class%", classInfo->name)).NewLine();
+	typeInfoRegistersText->AppendLines(template1.replace("%Class%", classInfo->name)).NewLine();
 
 	// P/Invoke
 	typeInfoPInvolesText->AppendLine("[DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]");
@@ -294,15 +294,15 @@ String CSClassLibGenerator::MakeMethodHeaderParamList(MethodInfoPtr methodInfo)
 		// default value
 		if (paramInfo->defaultValue != nullptr)
 		{
-			params.Append(" = {0}", DotNetCommon::MakeLiteral(paramInfo->defaultValue));
+			params.append(" = {0}", DotNetCommon::MakeLiteral(paramInfo->defaultValue));
 		}
 	}
-	return params.ToString();
+	return params.toString();
 }
 
 String CSClassLibGenerator::MakeEventName(MethodInfoPtr eventConnectMethod)
 {
-	return eventConnectMethod->name.Replace("Connect", "").Replace("On", "");
+	return eventConnectMethod->name.replace("Connect", "").replace("On", "");
 }
 
 String CSClassLibGenerator::MakeEventCallbackMethodName(MethodInfoPtr method)

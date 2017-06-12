@@ -110,12 +110,12 @@ public:
 		LN_SAFE_RELEASE( mDelegate );
 	}
 
-	bool IsEmpty() const
+	bool isEmpty() const
 	{
 		return mDelegate == NULL;
 	}
 
-	void Call( LN_DELEGATE_ARGS_DECL ) const
+	void call( LN_DELEGATE_ARGS_DECL ) const
 	{
 		if ( mDelegate != NULL )
 		{
@@ -148,7 +148,7 @@ public:
 
 	void operator ()( LN_DELEGATE_ARGS_DECL ) const
 	{
-		Call( LN_DELEGATE_CALL_ARGS );
+		call( LN_DELEGATE_CALL_ARGS );
 	}
 
 	LN_DELEGATE_CLASS_NAME& operator = (const LN_DELEGATE_CLASS_NAME& obj)

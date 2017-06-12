@@ -68,7 +68,7 @@ public:
 	/**
 		@brief		ベクトルの長さを返します。
 	*/
-	float GetLength() const;
+	float getLength() const;
 
 	/**
 		@brief		ベクトルの長さの 2 乗を返します。

@@ -23,7 +23,7 @@ TEST_F(Test_Base_WeakRefPtr, Basic)
 {
 	tr::WeakRefPtr<WeakRefTest1> weak;
 	{
-		auto ptr = RefPtr<WeakRefTest1>::MakeRef();
+		auto ptr = RefPtr<WeakRefTest1>::makeRef();
 		weak = tr::WeakRefPtr<WeakRefTest1>(ptr);
 		ASSERT_EQ(true, weak.IsAlive());
 		ASSERT_EQ(100, weak.Resolve()->m);
@@ -31,7 +31,7 @@ TEST_F(Test_Base_WeakRefPtr, Basic)
 	}
 	ASSERT_EQ(0, WeakRefTest1::count);	// デストラクタが動いた
 	ASSERT_EQ(false, weak.IsAlive());
-	ASSERT_EQ(true, weak.Resolve().IsNull());
+	ASSERT_EQ(true, weak.Resolve().isNull());
 }
 
 //------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ TEST_F(Test_Base_WeakRefPtr, Basic2)
 	}
 	ASSERT_EQ(0, WeakRefTest1::count);	// デストラクタが動いた
 	ASSERT_EQ(false, weak.IsAlive());
-	ASSERT_EQ(true, weak.Resolve().IsNull());
+	ASSERT_EQ(true, weak.Resolve().isNull());
 }
 
 //------------------------------------------------------------------------------

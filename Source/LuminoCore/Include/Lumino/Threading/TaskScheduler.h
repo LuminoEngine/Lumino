@@ -17,7 +17,7 @@ class Task;
 class TaskScheduler
 {
 public:
-	static TaskScheduler* GetDefault();
+	static TaskScheduler* getDefault();
 
 	/** この TaskScheduler が同時に並列実行できる Task の数を取得します。*/
 	int GetMaxConcurrencyLevel() const;

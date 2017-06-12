@@ -58,7 +58,7 @@ private:
 	void Initialize_UIRenderer();
 	void Render_UIRenderer();
 	void ExecuteDrawList_UIRenderer();
-	bool IsStandaloneSwapChain() const { return !m_swapChain.IsNull(); }
+	bool IsStandaloneSwapChain() const { return !m_swapChain.isNull(); }
 
 	detail::UIManager*		m_manager;
 	RefPtr<PlatformWindow>	m_platformWindow;
@@ -134,7 +134,7 @@ public:
 	/**
 		@brief		UIFrameWindow を作成します。
 	*/
-	static UINativeHostWindowPtr Create(intptr_t windowHandle);
+	static UINativeHostWindowPtr create(intptr_t windowHandle);
 
 
 public:

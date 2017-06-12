@@ -18,7 +18,7 @@ LN_NAMESPACE_BEGIN
 
 //------------------------------------------------------------------------------
 TextWriter::TextWriter()
-	: m_newLine(String::GetNewLine())
+	: m_newLine(String::getNewLine())
 	, m_locale()
 	//, m_utf16Buffer(BufferSize, false)
 	, m_writtenPreamble(true)
@@ -110,27 +110,27 @@ void TextWriter::SetFormatLocale(const Locale& locale)
 ////}
 
 //------------------------------------------------------------------------------
-void TextWriter::Write(TCHAR ch)
+void TextWriter::write(TCHAR ch)
 {
-	WriteInternal(&ch, 1);
+	writeInternal(&ch, 1);
 }
-void TextWriter::Write(int16_t value)
+void TextWriter::write(int16_t value)
 {
 	TCHAR buf[64];
-	int len = StringTraits::SPrintf(buf, 64, _T("%d"), value);
-	WriteInternal(buf, len);
+	int len = StringTraits::sprintf(buf, 64, _T("%d"), value);
+	writeInternal(buf, len);
 }
-void TextWriter::Write(int32_t value)
+void TextWriter::write(int32_t value)
 {
 	TCHAR buf[64];
-	int len = StringTraits::SPrintf(buf, 64, _T("%d"), value);
-	WriteInternal(buf, len);
+	int len = StringTraits::sprintf(buf, 64, _T("%d"), value);
+	writeInternal(buf, len);
 }
-void TextWriter::Write(int64_t value)
+void TextWriter::write(int64_t value)
 {
 	TCHAR buf[64];
-	int len = StringTraits::SPrintf(buf, 64, _T("%lld"), value);
-	WriteInternal(buf, len);
+	int len = StringTraits::sprintf(buf, 64, _T("%lld"), value);
+	writeInternal(buf, len);
 }
 //void Write(byte_t value);
 //void TextWriter::WriteByte(byte_t value)
@@ -139,55 +139,55 @@ void TextWriter::Write(int64_t value)
 //	int len = StringTraits::SPrintf(buf, 64, _T("%u"), value);
 //	WriteInternal(buf, len);
 //}
-void TextWriter::Write(uint16_t value)
+void TextWriter::write(uint16_t value)
 {
 	TCHAR buf[64];
-	int len = StringTraits::SPrintf(buf, 64, _T("%u"), value);
-	WriteInternal(buf, len);
+	int len = StringTraits::sprintf(buf, 64, _T("%u"), value);
+	writeInternal(buf, len);
 }
-void TextWriter::Write(uint32_t value)
+void TextWriter::write(uint32_t value)
 {
 	TCHAR buf[64];
-	int len = StringTraits::SPrintf(buf, 64, _T("%u"), value);
-	WriteInternal(buf, len);
+	int len = StringTraits::sprintf(buf, 64, _T("%u"), value);
+	writeInternal(buf, len);
 }
-void TextWriter::Write(uint64_t value)
+void TextWriter::write(uint64_t value)
 {
 	TCHAR buf[64];
-	int len = StringTraits::SPrintf(buf, 64, _T("%llu"), value);
-	WriteInternal(buf, len);
+	int len = StringTraits::sprintf(buf, 64, _T("%llu"), value);
+	writeInternal(buf, len);
 }
-void TextWriter::Write(float value)
+void TextWriter::write(float value)
 {
 	TCHAR buf[64];
-	int len = StringTraits::tsnprintf_l(buf, 64, _T("%f"), m_locale.GetNativeLocale(), value);
-	WriteInternal(buf, len);
+	int len = StringTraits::tsnprintf_l(buf, 64, _T("%f"), m_locale.getNativeLocale(), value);
+	writeInternal(buf, len);
 }
-void TextWriter::Write(double value)
+void TextWriter::write(double value)
 {
 	// TODO: 64桁以上だと失敗する
 	TCHAR buf[64];
-	int len = StringTraits::tsnprintf_l(buf, 64, _T("%lf"), m_locale.GetNativeLocale(), value);
+	int len = StringTraits::tsnprintf_l(buf, 64, _T("%lf"), m_locale.getNativeLocale(), value);
 	if (LN_CHECK_STATE(len > 0)) return;
-	WriteInternal(buf, len);
+	writeInternal(buf, len);
 }
 
 //------------------------------------------------------------------------------
-void TextWriter::Write(const StringRef& str)
+void TextWriter::write(const StringRef& str)
 {
-	WriteInternal(str.GetBegin(), str.GetLength());
+	writeInternal(str.getBegin(), str.getLength());
 }
 
 //------------------------------------------------------------------------------
-void TextWriter::Write(const TCHAR* str, int length)
+void TextWriter::write(const TCHAR* str, int length)
 {
-	WriteInternal(str, length);
+	writeInternal(str, length);
 }
 
 //------------------------------------------------------------------------------
-void TextWriter::WriteLine()
+void TextWriter::writeLine()
 {
-	WriteInternal(m_newLine.c_str(), m_newLine.GetLength());
+	writeInternal(m_newLine.c_str(), m_newLine.getLength());
 }
 //void TextWriter::WriteLine(const StringRef& str)
 //{
@@ -215,25 +215,25 @@ void TextWriter::WriteLine()
 //}
 
 //------------------------------------------------------------------------------
-void TextWriter::WriteLine(TCHAR value)
+void TextWriter::writeLine(TCHAR value)
 {
-	Write(value);
-	WriteLine();
+	write(value);
+	writeLine();
 }
-void TextWriter::WriteLine(int16_t value)
+void TextWriter::writeLine(int16_t value)
 {
-	Write(value);
-	WriteLine();
+	write(value);
+	writeLine();
 }
-void TextWriter::WriteLine(int32_t value)
+void TextWriter::writeLine(int32_t value)
 {
-	Write(value);
-	WriteLine();
+	write(value);
+	writeLine();
 }
-void TextWriter::WriteLine(int64_t value)
+void TextWriter::writeLine(int64_t value)
 {
-	Write(value);
-	WriteLine();
+	write(value);
+	writeLine();
 }
 //void WriteLine(byte_t value);
 //void TextWriter::WriteLine(uint8_t value)
@@ -241,34 +241,34 @@ void TextWriter::WriteLine(int64_t value)
 //	Write(value);
 //	WriteLine();
 //}
-void TextWriter::WriteLine(uint16_t value)
+void TextWriter::writeLine(uint16_t value)
 {
-	Write(value);
-	WriteLine();
+	write(value);
+	writeLine();
 }
-void TextWriter::WriteLine(uint32_t value)
+void TextWriter::writeLine(uint32_t value)
 {
-	Write(value);
-	WriteLine();
+	write(value);
+	writeLine();
 }
-void TextWriter::WriteLine(uint64_t value)
+void TextWriter::writeLine(uint64_t value)
 {
-	Write(value);
-	WriteLine();
+	write(value);
+	writeLine();
 }
-void TextWriter::WriteLine(float value)
+void TextWriter::writeLine(float value)
 {
-	Write(value);
-	WriteLine();
+	write(value);
+	writeLine();
 }
-void TextWriter::WriteLine(double value)
+void TextWriter::writeLine(double value)
 {
-	Write(value);
-	WriteLine();
+	write(value);
+	writeLine();
 }
 
 //------------------------------------------------------------------------------
-void TextWriter::WriteInternal(const TCHAR* str, int len)
+void TextWriter::writeInternal(const TCHAR* str, int len)
 {
 	// BOM の書き込みが必要であればここで書き込む
 	if (!m_writtenPreamble)

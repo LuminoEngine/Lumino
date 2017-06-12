@@ -72,8 +72,8 @@ void TextRendererCore::CreateDeviceResources()
 	m_vertexBuffer = device->CreateVertexBuffer(sizeof(Vertex) * DefaultFaceCount * 4, nullptr, ResourceUsage::Dynamic);
 	m_indexBuffer = device->CreateIndexBuffer(DefaultFaceCount * 6, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 
-	m_vertexCache.Reserve(DefaultFaceCount * 4);
-	m_indexCache.Reserve(DefaultFaceCount * 6);
+	m_vertexCache.reserve(DefaultFaceCount * 4);
+	m_indexCache.reserve(DefaultFaceCount * 6);
 
 	ShaderCompileResult r;
 	m_shader.shader = device->CreateShader(g_TextRenderer_fx_Data, g_TextRenderer_fx_Len, &r);
@@ -130,47 +130,47 @@ void TextRendererCore::Render(const GlyphRunData* dataList, int dataCount, FontG
 		InternalDrawRectangle(data.transform, dstRect, uvSrcRect, color);
 	}
 
-	Flush(cache);
+	flush(cache);
 }
 
 //------------------------------------------------------------------------------
 void TextRendererCore::InternalDrawRectangle(const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color)
 {
-	if (rect.IsEmpty()) { return; }		// 矩形がつぶれているので書く必要はない
+	if (rect.isEmpty()) { return; }		// 矩形がつぶれているので書く必要はない
 
 	float lu = srcUVRect.GetLeft();
-	float tv = srcUVRect.GetTop();
+	float tv = srcUVRect.getTop();
 	float ru = srcUVRect.GetRight();
 	float bv = srcUVRect.GetBottom();
 
-	uint16_t i = m_vertexCache.GetCount();
-	m_indexCache.Add(i + 0);
-	m_indexCache.Add(i + 1);
-	m_indexCache.Add(i + 2);
-	m_indexCache.Add(i + 2);
-	m_indexCache.Add(i + 1);
-	m_indexCache.Add(i + 3);
+	uint16_t i = m_vertexCache.getCount();
+	m_indexCache.add(i + 0);
+	m_indexCache.add(i + 1);
+	m_indexCache.add(i + 2);
+	m_indexCache.add(i + 2);
+	m_indexCache.add(i + 1);
+	m_indexCache.add(i + 3);
 
 	Vertex v;
 	v.color = color;
-	v.position.Set(rect.GetLeft(), rect.GetTop(), 0);	v.uv.Set(lu, tv);	// 左上
+	v.position.Set(rect.GetLeft(), rect.getTop(), 0);	v.uv.Set(lu, tv);	// 左上
 	v.position.TransformCoord(transform);
-	m_vertexCache.Add(v);
+	m_vertexCache.add(v);
 	v.position.Set(rect.GetLeft(), rect.GetBottom(), 0); v.uv.Set(lu, bv);	// 左下
 	v.position.TransformCoord(transform);
-	m_vertexCache.Add(v);
-	v.position.Set(rect.GetRight(), rect.GetTop(), 0);	v.uv.Set(ru, tv);	// 右上
+	m_vertexCache.add(v);
+	v.position.Set(rect.GetRight(), rect.getTop(), 0);	v.uv.Set(ru, tv);	// 右上
 	v.position.TransformCoord(transform);
-	m_vertexCache.Add(v);
+	m_vertexCache.add(v);
 	v.position.Set(rect.GetRight(), rect.GetBottom(), 0); v.uv.Set(ru, bv);	// 右下
 	v.position.TransformCoord(transform);
-	m_vertexCache.Add(v);
+	m_vertexCache.add(v);
 }
 
 //------------------------------------------------------------------------------
-void TextRendererCore::Flush(FontGlyphTextureCache* cache)
+void TextRendererCore::flush(FontGlyphTextureCache* cache)
 {
-	if (m_indexCache.GetCount() == 0) { return; }
+	if (m_indexCache.getCount() == 0) { return; }
 
 	auto* renderer = m_manager->GetGraphicsDevice()->GetRenderer();
 
@@ -195,7 +195,7 @@ void TextRendererCore::Flush(FontGlyphTextureCache* cache)
 	renderer->SetVertexDeclaration(m_vertexDeclaration);
 	renderer->SetVertexBuffer(0, m_vertexBuffer);
 	renderer->SetIndexBuffer(m_indexBuffer);
-	renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
+	renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.getCount() / 3);
 
 	// キャッシュクリア
 	m_vertexCache.clear();
@@ -331,7 +331,7 @@ void TextRenderer::DrawGlyphsInternal(const Matrix& transform, const PointF& pos
 {
 	CheckUpdateState();
 
-	int dataCount = layoutItems.GetCount();
+	int dataCount = layoutItems.getCount();
 	for (int i = 0; i < dataCount; ++i)
 	{
 		const TextLayoutResultItem& item = layoutItems[i];
@@ -353,14 +353,14 @@ void TextRenderer::DrawGlyphsInternal(const Matrix& transform, const PointF& pos
 		layoutData.Position.y = position.y + (float)item.Location.OuterTopLeftPosition.y;
 		layoutData.srcRect = info.srcRect;
 		layoutData.outlineOffset = info.outlineOffset;
-		m_glyphLayoutDataList.Add(layoutData);
+		m_glyphLayoutDataList.add(layoutData);
 	}
 	
 	m_flushRequested = true;
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::Flush()
+void TextRenderer::flush()
 {
 	if (m_flushRequested)
 	{
@@ -400,7 +400,7 @@ void TextRenderer::OnSetState(const DrawElementBatch* state)
 //------------------------------------------------------------------------------
 void TextRenderer::FlushInternal(FontGlyphTextureCache* cache)
 {
-	int dataCount = m_glyphLayoutDataList.GetCount();
+	int dataCount = m_glyphLayoutDataList.getCount();
 	RenderBulkData dataListData(&m_glyphLayoutDataList[0], sizeof(TextRendererCore::GlyphRunData) * dataCount);
 
 	// Texture::Blit で転送されるものを Flush する
@@ -472,8 +472,8 @@ void VectorTextRendererCore::initialize(GraphicsManager* manager)
 	auto* device = m_manager->GetGraphicsDevice();
 	m_renderer = device->GetRenderer();
 
-	m_vertexCache.Reserve(4096);
-	m_indexCache.Reserve(4096);
+	m_vertexCache.reserve(4096);
+	m_indexCache.reserve(4096);
 }
 
 //------------------------------------------------------------------------------
@@ -481,7 +481,7 @@ void VectorTextRendererCore::RequestBuffers(int vertexCount, int indexCount, Ver
 {
 	assert(vb != nullptr);
 	assert(ib != nullptr);
-	*outBeginVertexIndex = m_vertexCache.GetCount();
+	*outBeginVertexIndex = m_vertexCache.getCount();
 	*vb = m_vertexCache.Request(vertexCount);
 	*ib = m_indexCache.Request(indexCount);
 }
@@ -507,12 +507,12 @@ void VectorTextRendererCore::Render(const VectorGlyphData* dataList, int dataCou
 	{
 		// サイズが足りなければ再作成
 		auto* device = m_manager->GetGraphicsDevice();
-		if (m_vertexBuffer == nullptr || m_vertexBuffer->GetByteCount() < m_vertexCache.GetBufferUsedByteCount())
+		if (m_vertexBuffer == nullptr || m_vertexBuffer->getByteCount() < m_vertexCache.GetBufferUsedByteCount())
 		{
 			LN_SAFE_RELEASE(m_vertexBuffer);
 			m_vertexBuffer = device->CreateVertexBuffer(m_vertexCache.GetBufferUsedByteCount(), nullptr, ResourceUsage::Dynamic);
 		}
-		if (m_indexBuffer == nullptr || m_indexBuffer->GetByteCount() < m_indexCache.GetBufferUsedByteCount())
+		if (m_indexBuffer == nullptr || m_indexBuffer->getByteCount() < m_indexCache.GetBufferUsedByteCount())
 		{
 			LN_SAFE_RELEASE(m_indexBuffer);
 			m_indexBuffer = device->CreateIndexBuffer(m_indexCache.GetBufferUsedByteCount(), nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
@@ -526,7 +526,7 @@ void VectorTextRendererCore::Render(const VectorGlyphData* dataList, int dataCou
 			m_renderer->SetVertexDeclaration(m_manager->GetDefaultVertexDeclaration()->GetDeviceObject());
 			m_renderer->SetVertexBuffer(0, m_vertexBuffer);
 			m_renderer->SetIndexBuffer(m_indexBuffer);
-			m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
+			m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.getCount() / 3);
 		}
 
 		// キャッシュクリア
@@ -559,7 +559,7 @@ VectorTextRenderer::~VectorTextRenderer()
 void VectorTextRenderer::initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
-	m_core = RefPtr<VectorTextRendererCore>::MakeRef();
+	m_core = RefPtr<VectorTextRendererCore>::makeRef();
 	m_core->initialize(m_manager);
 }
 
@@ -584,28 +584,28 @@ void VectorTextRenderer::DrawInternal(const Matrix& transform)
 {
 	VectorFontGlyphCache* glyphCache = m_currentFont->GetVectorGlyphCache();
 
-	bool flush = false;
+	bool needFlush = false;
 	for (auto& item : m_layoutResult.items)
 	{
 		VectorGlyphData data;
-		data.cacheGlyphInfoHandle = glyphCache->GetGlyphInfo(item.ch, &flush);
+		data.cacheGlyphInfoHandle = glyphCache->GetGlyphInfo(item.ch, &needFlush);
 		data.transform = transform;
 		data.origin = PointF(item.columnBaseline, item.lineBaseline);
-		m_bufferingCache.Add(data);
+		m_bufferingCache.add(data);
 	}
 
-	if (flush)
+	if (needFlush)
 	{
-		Flush();
+		flush();
 	}
 }
 
 //------------------------------------------------------------------------------
-void VectorTextRenderer::Flush()
+void VectorTextRenderer::flush()
 {
-	if (!m_bufferingCache.IsEmpty())
+	if (!m_bufferingCache.isEmpty())
 	{
-		int dataCount = m_bufferingCache.GetCount();
+		int dataCount = m_bufferingCache.getCount();
 		RenderBulkData dataListData(&m_bufferingCache[0], sizeof(VectorGlyphData) * dataCount);
 		VectorFontGlyphCache* glyphCache = m_currentFont->GetVectorGlyphCache();
 

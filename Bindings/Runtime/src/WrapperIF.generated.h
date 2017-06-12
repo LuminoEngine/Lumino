@@ -280,26 +280,26 @@ public:
 
     void PostInitialize()
     {
-        ConnectOnTriggerEnter(CreateDelegate(this, &LNCollider::ConnectOnTriggerEnter_EventCallback));
-        ConnectOnTriggerLeave(CreateDelegate(this, &LNCollider::ConnectOnTriggerLeave_EventCallback));
-        ConnectOnTriggerStay(CreateDelegate(this, &LNCollider::ConnectOnTriggerStay_EventCallback));
+        ConnectOnTriggerEnter(createDelegate(this, &LNCollider::ConnectOnTriggerEnter_EventCallback));
+        ConnectOnTriggerLeave(createDelegate(this, &LNCollider::ConnectOnTriggerLeave_EventCallback));
+        ConnectOnTriggerStay(createDelegate(this, &LNCollider::ConnectOnTriggerStay_EventCallback));
 
     }
 
     Event<void(LNHandle self, LNHandle obj)> m_ConnectOnTriggerEnter_EventWrapper;
     void ConnectOnTriggerEnter_EventCallback(PhysicsObject* obj)
     {
-        m_ConnectOnTriggerEnter_EventWrapper.Raise(LWIG_TO_HANDLE(this), LWIG_TO_HANDLE(obj));
+        m_ConnectOnTriggerEnter_EventWrapper.raise(LWIG_TO_HANDLE(this), LWIG_TO_HANDLE(obj));
     }
     Event<void(LNHandle self, LNHandle obj)> m_ConnectOnTriggerLeave_EventWrapper;
     void ConnectOnTriggerLeave_EventCallback(PhysicsObject* obj)
     {
-        m_ConnectOnTriggerLeave_EventWrapper.Raise(LWIG_TO_HANDLE(this), LWIG_TO_HANDLE(obj));
+        m_ConnectOnTriggerLeave_EventWrapper.raise(LWIG_TO_HANDLE(this), LWIG_TO_HANDLE(obj));
     }
     Event<void(LNHandle self, LNHandle obj)> m_ConnectOnTriggerStay_EventWrapper;
     void ConnectOnTriggerStay_EventCallback(PhysicsObject* obj)
     {
-        m_ConnectOnTriggerStay_EventWrapper.Raise(LWIG_TO_HANDLE(this), LWIG_TO_HANDLE(obj));
+        m_ConnectOnTriggerStay_EventWrapper.raise(LWIG_TO_HANDLE(this), LWIG_TO_HANDLE(obj));
     }
 
 

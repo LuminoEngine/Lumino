@@ -55,7 +55,7 @@ TEST_F(Test_Base_Exception, Assertion)
 		LN_VERIFY(0, ArgumentException),
 		ArgumentException);
 
-	Assertion::SetNotifyVerificationHandler(Test_NotifyVerificationHandler);
+	Assertion::setNotifyVerificationHandler(Test_NotifyVerificationHandler);
 
 	// ユーザーハンドラ・handled
 	LN_VERIFY(0, ArgumentException);
@@ -67,7 +67,7 @@ TEST_F(Test_Base_Exception, Assertion)
 		ArgumentException);
 	ASSERT_EQ(2, g_value);
 
-	Assertion::SetNotifyVerificationHandler(nullptr);
+	Assertion::setNotifyVerificationHandler(nullptr);
 
 	ASSERT_THROW(
 		LN_VERIFY(0, ArgumentException),
@@ -86,7 +86,7 @@ TEST_F(Test_Base_Exception, Basic)
 		}
 		catch (ArgumentException& e)
 		{
-			ASSERT_TRUE(_tcslen(e.GetMessage()) > 0);	// 何かメッセージが入っているはず
+			ASSERT_TRUE(_tcslen(e.getMessage()) > 0);	// 何かメッセージが入っているはず
 		}
 
 		try
@@ -95,7 +95,7 @@ TEST_F(Test_Base_Exception, Basic)
 		}
 		catch (ArgumentException& e)
 		{
-			ASSERT_TRUE(_tcsstr(e.GetMessage(), _T("test")) != NULL);
+			ASSERT_TRUE(_tcsstr(e.getMessage(), _T("test")) != NULL);
 		}
 
 		try
@@ -104,7 +104,7 @@ TEST_F(Test_Base_Exception, Basic)
 		}
 		catch (ArgumentException& e)
 		{
-			ASSERT_TRUE(_tcsstr(e.GetMessage(), _T("param:p1")) != NULL);
+			ASSERT_TRUE(_tcsstr(e.getMessage(), _T("param:p1")) != NULL);
 		}
 	}
 
@@ -116,7 +116,7 @@ TEST_F(Test_Base_Exception, Basic)
 	}
 	catch (IOException& e)
 	{
-		ASSERT_TRUE(_tcsstr(e.GetMessage(), _T("test1")) != NULL);
+		ASSERT_TRUE(_tcsstr(e.getMessage(), _T("test1")) != NULL);
 	}
 	// wchar_t 可変長 message
 	try
@@ -133,7 +133,7 @@ TEST_F(Test_Base_Exception, Basic)
 	}
 	catch (IOException& e)
 	{
-		ASSERT_TRUE(_tcsstr(e.GetMessage(), _T("testtest")) != NULL);
+		ASSERT_TRUE(_tcsstr(e.getMessage(), _T("testtest")) != NULL);
 	}
 }
 

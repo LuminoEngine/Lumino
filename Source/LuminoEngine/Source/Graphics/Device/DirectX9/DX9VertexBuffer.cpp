@@ -30,7 +30,7 @@ DX9VertexBuffer::~DX9VertexBuffer()
 }
 
 //------------------------------------------------------------------------------
-void DX9VertexBuffer::Create(DX9GraphicsDevice* device, size_t bufferSize, const void* initialData, ResourceUsage usage)
+void DX9VertexBuffer::create(DX9GraphicsDevice* device, size_t bufferSize, const void* initialData, ResourceUsage usage)
 {
 	LN_REFOBJ_SET(m_graphicsDevice, device);
 	m_bufferSize = bufferSize;

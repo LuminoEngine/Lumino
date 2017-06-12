@@ -22,7 +22,7 @@ public:
 	Uuid(const uint8_t* bytes);
 
 	/** •¶š—ñ‚É•ÏŠ·‚µ‚Ü‚·B*/
-	String ToString() const;
+	String toString() const;
 
 	// copy
 	Uuid(const Uuid &other);

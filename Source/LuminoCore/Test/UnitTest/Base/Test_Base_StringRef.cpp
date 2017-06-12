@@ -9,7 +9,7 @@ protected:
 	virtual void TearDown() {}
 };
 
-static int Func1(const StringRef& str) { return str.GetLength(); }
+static int Func1(const StringRef& str) { return str.getLength(); }
 
 //------------------------------------------------------------------------------
 TEST_F(Test_Base_StringRef, Constructor)
@@ -25,9 +25,9 @@ TEST_F(Test_Base_StringRef, Constructor)
 	// <Test> メモリ確保を伴わずに配列の検索キーにできること。
 	{
 		SortedArray<String, int> d;
-		d.Add(_T("a"), 1);
-		d.Add(_T("b"), 2);
-		auto* v = d.Find(StringRef(_T("b")));
+		d.add(_T("a"), 1);
+		d.add(_T("b"), 2);
+		auto* v = d.find(StringRef(_T("b")));
 		ASSERT_EQ(2, *v);
 	}
 }
@@ -38,6 +38,6 @@ TEST_F(Test_Base_StringRef, StringAssign)
 	String str1(_T("asd"));
 	StringRef ref(str1);
 	String str2(ref);
-	ASSERT_EQ(detail::StringHelper::GetStringCore(str1), detail::StringHelper::GetStringCore(str2));
+	ASSERT_EQ(detail::StringHelper::getStringCore(str1), detail::StringHelper::getStringCore(str2));
 }
 

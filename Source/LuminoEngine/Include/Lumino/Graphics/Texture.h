@@ -84,7 +84,7 @@ public:
 		@param[in]	format		: テクスチャのピクセルフォーマット
 		@param[in]	mipmap		: ミップマップの有無
 	*/
-	static Texture2DPtr Create(int width, int height, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
+	static Texture2DPtr create(int width, int height, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
 	
 	/**
 		@brief		指定したサイズのテクスチャを作成します。
@@ -92,7 +92,7 @@ public:
 		@param[in]	format		: テクスチャのピクセルフォーマット
 		@param[in]	mipmap		: ミップマップの有無
 	*/
-	static Texture2DPtr Create(const SizeI& size, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
+	static Texture2DPtr create(const SizeI& size, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
 
 	/**
 		@brief		ファイルからテクスチャを作成します。
@@ -100,7 +100,7 @@ public:
 		@param[in]	format		: テクスチャのピクセルフォーマット
 		@param[in]	mipmap		: ミップマップの有無
 	*/
-	static Texture2DPtr Create(const StringRef& filePath, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
+	static Texture2DPtr create(const StringRef& filePath, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
 
 	/**
 		@brief		画像ファイルデータのストリームを指定してテクスチャを作成します。
@@ -108,7 +108,7 @@ public:
 		@param[in]	format		: テクスチャのピクセルフォーマット
 		@param[in]	mipmap		: ミップマップの有無
 	*/
-	static Texture2DPtr Create(Stream* stream, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
+	static Texture2DPtr create(Stream* stream, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
 
 	/**
 		@brief		メモリ上に展開された画像ファイルデータからテクスチャを作成します。
@@ -117,7 +117,7 @@ public:
 		@param[in]	format		: テクスチャのピクセルフォーマット
 		@param[in]	mipmap		: ミップマップの有無
 	*/
-	static Texture2DPtr Create(const void* data, size_t size, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
+	static Texture2DPtr create(const void* data, size_t size, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
 	
 	/**
 		@brief		黒い小さなテクスチャを取得します。
@@ -194,7 +194,7 @@ public:
 		@param[in]	format		: テクスチャのピクセルフォーマット
 		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
 	*/
-	static RenderTargetTexturePtr Create(const SizeI& size, TextureFormat format = TextureFormat::R8G8B8A8, int mipLevels = 1);
+	static RenderTargetTexturePtr create(const SizeI& size, TextureFormat format = TextureFormat::R8G8B8A8, int mipLevels = 1);
 
 LN_INTERNAL_ACCESS:
 	RenderTargetTexture();
@@ -229,7 +229,7 @@ public:
 		@param[in]	size		: テクスチャのサイズ (ピクセル単位)
 		@param[in]	format		: ピクセルフォーマット
 	*/
-	static DepthBufferPtr Create(const SizeI& size, TextureFormat format = TextureFormat::D24S8);
+	static DepthBufferPtr create(const SizeI& size, TextureFormat format = TextureFormat::D24S8);
 
 	const SizeI& getSize() const { return m_size; }
 
@@ -275,7 +275,7 @@ public:
 		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
 		@param[in]	format		: テクスチャのピクセルフォーマット
 	*/
-	static Texture3DPtr Create(int width, int height, int depth, TextureFormat format = TextureFormat::R8G8B8A8, int mipLevels = 1, ResourceUsage usage = ResourceUsage::Static);
+	static Texture3DPtr create(int width, int height, int depth, TextureFormat format = TextureFormat::R8G8B8A8, int mipLevels = 1, ResourceUsage usage = ResourceUsage::Static);
 
 public:
 	

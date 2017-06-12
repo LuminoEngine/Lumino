@@ -101,9 +101,9 @@ public:
 	void Draw(const Matrix& transform, const Rect& rect);
 
 	virtual bool IsStandaloneShader() const { return false; }
-	virtual void Flush() override;
+	virtual void flush() override;
 	virtual void OnActivated() { }
-	virtual void OnDeactivated() { Flush(); }
+	virtual void OnDeactivated() { flush(); }
 	virtual void OnSetState(const DrawElementBatch* state);
 
 private:

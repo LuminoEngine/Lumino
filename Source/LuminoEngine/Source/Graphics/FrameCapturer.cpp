@@ -20,8 +20,8 @@ class CapturerContext
 {
 public:
 	virtual ~CapturerContext() = default;
-	virtual void Open(const PathName& filePath, const SizeI& size) = 0;
-	virtual void Close() = 0;
+	virtual void open(const PathName& filePath, const SizeI& size) = 0;
+	virtual void close() = 0;
 	virtual void AddFrame(Bitmap* bitmap, int delayMS) = 0;
 };
 
@@ -46,16 +46,16 @@ public:
 
 	virtual ~DynamicPaletteGifContext()
 	{
-		Close();
+		close();
 	}
 
-	virtual void Open(const PathName& filePath, const SizeI& size) override
+	virtual void open(const PathName& filePath, const SizeI& size) override
 	{
 		m_imageSize = size;
 		m_framePixels.resize(size.width * size.height * 4);	// 4 component. RGBX format, where X is unused
 		m_frameCount = 0;
 
-		StringA fn = StringA::FromNativeCharString(filePath);
+		StringA fn = StringA::fromNativeCharString(filePath);
 		int error;
 		m_gif = EGifOpenFileName(fn.c_str(), false, &error);
 
@@ -63,12 +63,12 @@ public:
 
 	}
 
-	virtual void Close() override
+	virtual void close() override
 	{
 		if (m_task != nullptr)
 		{
 			m_task->Wait();
-			m_task.SafeRelease();
+			m_task.safeRelease();
 		}
 		jo_gif_end(&m_joGif);
 
@@ -203,15 +203,15 @@ public:
 
 	virtual ~GifContext()
 	{
-		Close();
+		close();
 	}
 
-	virtual void Open(const PathName& filePath, const SizeI& size) override
+	virtual void open(const PathName& filePath, const SizeI& size) override
 	{
 		m_imageSize = size;
 		m_line.alloc(sizeof(GifPixelType) * m_imageSize.width);
 
-		StringA f = StringA::FromNativeCharString(filePath);
+		StringA f = StringA::fromNativeCharString(filePath);
 		int error;
 		m_gif = EGifOpenFileName(f.c_str(), false, &error);
 
@@ -233,7 +233,7 @@ public:
 		EGifPutExtensionTrailer(m_gif);
 	}
 
-	virtual void Close() override
+	virtual void close() override
 	{
 		int error;
 		EGifCloseFile(m_gif, &error);
@@ -335,9 +335,9 @@ const GifColorType GifContext::PaletteGPriority[256] =
 //==============================================================================
 
 //------------------------------------------------------------------------------
-FrameCapturerPtr FrameCapturer::Create()
+FrameCapturerPtr FrameCapturer::create()
 {
-	auto ptr = FrameCapturerPtr::MakeRef();
+	auto ptr = FrameCapturerPtr::makeRef();
 	ptr->initialize(detail::GraphicsManager::GetInstance());
 	return ptr;
 }
@@ -413,12 +413,12 @@ void FrameCapturer::RecordCommand(Driver::ITexture* target, State newState)
 	{
 		if (newState == State::Stoped)
 		{
-			m_gifContext->Close();
+			m_gifContext->close();
 		}
 		else if (newState == State::Recording)
 		{
 			PathName filePath(_T("FrameCapturer.gif"));
-			m_gifContext->Open(filePath, target->getSize());
+			m_gifContext->open(filePath, target->getSize());
 			m_lastTick = 0;
 		}
 		m_currentState = newState;
@@ -429,7 +429,7 @@ void FrameCapturer::RecordCommand(Driver::ITexture* target, State newState)
 	{
 		// 差分時間計算
 		uint64_t deltaTick = 0;
-		uint64_t curTick = Environment::GetTickCount();
+		uint64_t curTick = Environment::getTickCount();
 		if (m_lastTick != 0) deltaTick = curTick - m_lastTick;
 
 		if (m_lastTick == 0 || deltaTick > 64)	// FPS15 くらいでプロットする場合はコレ (TODO: fps指定)

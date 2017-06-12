@@ -35,7 +35,7 @@ public:
 	/**
 		@brief	実行開始
 	*/
-	void Start();
+	void start();
 
 	/**
 		@brief		スレッドの終了を待つ
@@ -105,7 +105,7 @@ class LUMINO_EXPORT DelegateThread
 {
 #ifdef LN_CPP11
 public:
-	void Start(Delegate<void()> func);
+	void start(Delegate<void()> func);
 
 protected:
 	virtual void Execute();
@@ -114,7 +114,7 @@ private:
 	Delegate<void()>	m_ThreadFunc;
 #else
 public:
-	void Start(Delegate00 func);
+	void start(Delegate00 func);
 
 protected:
 	virtual void Execute();

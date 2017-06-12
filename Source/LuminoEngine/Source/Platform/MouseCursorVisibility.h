@@ -27,7 +27,7 @@ public:
 		if (m_requestForced) return true;
 		if (m_visibleMouseCursor) return true;
 		if (m_mouseVisibleTime == 0) return false;
-		return ((Environment::GetTickCount() - m_startTime) < m_mouseVisibleTime);
+		return ((Environment::getTickCount() - m_startTime) < m_mouseVisibleTime);
 	}
 
 	/// マウスカーソルの表示設定 (count は マウスカーソル放置時、消すまでの時間(ms)。0 で常に消す)
@@ -35,7 +35,7 @@ public:
 	{
 		m_visibleMouseCursor = visible;
 		m_mouseVisibleTime = std::max(0, time);
-		m_startTime = Environment::GetTickCount();
+		m_startTime = Environment::getTickCount();
 		m_requestForced = false;
 	}
 
@@ -51,7 +51,7 @@ public:
 		{
 			if (on_client_area)
 			{
-				m_startTime = Environment::GetTickCount();
+				m_startTime = Environment::getTickCount();
 				m_requestForced = false;
 			}
 			else

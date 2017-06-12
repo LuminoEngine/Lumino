@@ -84,7 +84,7 @@ int main()
 	}
 	catch (Exception& e)
 	{
-		Console::WriteLine(e.GetMessage());
+		Console::writeLine(e.getMessage());
 	}
 	
 	return 0;

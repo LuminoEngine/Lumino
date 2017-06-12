@@ -254,9 +254,9 @@ VisualEffect* EffekseerEffectEngine::CreateEffectCore(const PathName& filePath)
 	CacheKey key(filePath);
 
 	// キャッシュ検索
-	RefPtr<EffekseerEffectCore> core(static_cast<EffekseerEffectCore*>(m_effectCoreCache->FindObjectAddRef(key)), false);
+	RefPtr<EffekseerEffectCore> core(static_cast<EffekseerEffectCore*>(m_effectCoreCache->findObjectAddRef(key)), false);
 	if (core != nullptr) {
-		core.SafeAddRef();
+		core.safeAddRef();
 		return core;
 	}
 
@@ -275,11 +275,11 @@ VisualEffect* EffekseerEffectEngine::CreateEffectCore(const PathName& filePath)
 	core.attach(LN_NEW EffekseerEffectCore(this, efkEffect), false);
 
 	// キャッシュに登録
-	if (!key.IsNull()) {
-		m_effectCoreCache->RegisterCacheObject(key, core);
+	if (!key.isNull()) {
+		m_effectCoreCache->registerCacheObject(key, core);
 	}
 
-	core.SafeAddRef();
+	core.safeAddRef();
 	return core;
 }
 

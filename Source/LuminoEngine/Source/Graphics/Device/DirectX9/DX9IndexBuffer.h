@@ -18,13 +18,13 @@ public:
 public:
 
 	/// 作成
-	void Create(DX9GraphicsDevice* device, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage);
+	void create(DX9GraphicsDevice* device, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage);
 
 	/// IDirect3DIndexBuffer9 へのポインタ取得
 	IDirect3DIndexBuffer9* GetDxIndexBuffer() const { return m_indexBuffer; }
 
 public:
-	virtual size_t GetByteCount() const { return m_indexCount * m_indexStride; }
+	virtual size_t getByteCount() const { return m_indexCount * m_indexStride; }
 	virtual IndexBufferFormat GetFormat() const { return m_format; }
 	virtual ResourceUsage GetUsage() const { return m_usage; }
 	virtual void SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes);

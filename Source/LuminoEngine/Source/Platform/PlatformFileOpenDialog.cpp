@@ -14,10 +14,10 @@ namespace tr
 //==============================================================================
 
 //------------------------------------------------------------------------------
-PlatformFileOpenDialogPtr PlatformFileOpenDialog::Create()
+PlatformFileOpenDialogPtr PlatformFileOpenDialog::create()
 {
 #ifdef LN_OS_WIN32
-	auto ptr = RefPtr<Win32PlatformFileOpenDialog>::MakeRef();
+	auto ptr = RefPtr<Win32PlatformFileOpenDialog>::makeRef();
 	return ptr;
 #endif
 }

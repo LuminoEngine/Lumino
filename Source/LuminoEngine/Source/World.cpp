@@ -40,7 +40,7 @@ void World::initialize()
 
 	for (int i = 0; i < detail::MaxOffscreenId; i++)
 	{
-		m_offscreenIdStorage.Add(i);
+		m_offscreenIdStorage.add(i);
 	}
 }
 
@@ -59,12 +59,12 @@ DrawList* World::GetDebugRenderer() const
 //------------------------------------------------------------------------------
 void World::RemoveAllObjects()
 {
-	for (int i = m_rootWorldObjectList.GetCount() - 1; i >= 0; i--)
+	for (int i = m_rootWorldObjectList.getCount() - 1; i >= 0; i--)
 	{
 		if (!m_rootWorldObjectList[i]->IsSpecialObject())
 		{
 			m_rootWorldObjectList[i]->m_parent = nullptr;
-			m_rootWorldObjectList.RemoveAt(i);
+			m_rootWorldObjectList.removeAt(i);
 		}
 	}
 }
@@ -72,7 +72,7 @@ void World::RemoveAllObjects()
 //------------------------------------------------------------------------------
 void World::AddWorldObject(WorldObject* obj, bool autoRelease)
 {
-	m_rootWorldObjectList.Add(obj);
+	m_rootWorldObjectList.add(obj);
 	obj->m_world = this;
 	obj->m_isAutoRelease = autoRelease;
 }
@@ -82,28 +82,28 @@ void World::RemoveWorldObject(WorldObject* obj)
 {
 	if (LN_CHECK_ARG(obj != nullptr)) return;
 	if (LN_CHECK_STATE(obj->m_world == this)) return;
-	m_rootWorldObjectList.Remove(obj);
+	m_rootWorldObjectList.remove(obj);
 	obj->m_parent = nullptr;
 }
 
 //------------------------------------------------------------------------------
 void World::AddOffscreenWorldView(OffscreenWorldView* view)
 {
-	if (LN_CHECK_ARG(!m_offscreenIdStorage.IsEmpty())) return;
-	m_offscreenWorldViewList.Add(view);
+	if (LN_CHECK_ARG(!m_offscreenIdStorage.isEmpty())) return;
+	m_offscreenWorldViewList.add(view);
 
 	// assign Id
-	view->SetId(m_offscreenIdStorage.GetLast());
-	m_offscreenIdStorage.RemoveLast();
+	view->SetId(m_offscreenIdStorage.getLast());
+	m_offscreenIdStorage.removeLast();
 }
 
 //------------------------------------------------------------------------------
 void World::RemoveOffscreenWorldView(OffscreenWorldView* view)
 {
-	m_offscreenWorldViewList.Remove(view);
+	m_offscreenWorldViewList.remove(view);
 
 	// repay Id.
-	m_offscreenIdStorage.Add(view->GetId());
+	m_offscreenIdStorage.add(view->GetId());
 	view->SetId(0);
 }
 
@@ -156,7 +156,7 @@ void World::Render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags deb
 			VisualComponent* visual = nullptr;
 			if (c->GetSpecialComponentType() == SpecialComponentType::Visual)
 			{
-				visual = static_cast<VisualComponent*>(c.Get());
+				visual = static_cast<VisualComponent*>(c.get());
 
 				bool visible = true;
 				if (offscreen != nullptr) visible = offscreen->FilterRenderObject(visual);
@@ -210,7 +210,7 @@ void World2D::initialize()
 {
 	World::initialize();
 
-	m_sceneGraph = RefPtr<SceneGraph2D>::MakeRef();
+	m_sceneGraph = RefPtr<SceneGraph2D>::makeRef();
 	m_sceneGraph->CreateCore(EngineManager::GetInstance()->GetSceneGraphManager());
 
 	m_mainCamera = NewObject<Camera>(CameraProjection_2D);
@@ -297,7 +297,7 @@ void World3D::initialize()
 
 	m_physicsWorld = NewObject<PhysicsWorld>();
 
-	m_sceneGraph = RefPtr<SceneGraph3D>::MakeRef();
+	m_sceneGraph = RefPtr<SceneGraph3D>::makeRef();
 	m_sceneGraph->CreateCore(EngineManager::GetInstance()->GetSceneGraphManager());
 
 	m_mainCamera = NewObject<Camera>(CameraProjection_3D);
@@ -410,7 +410,7 @@ void World3D::CreateGridPlane()
 	detail::GraphicsManager* gm = detail::EngineDomain::GetGraphicsManager();
 
 	// 適当な四角形メッシュ
-	m_gridPlane = RefPtr<StaticMeshModel>::MakeRef();
+	m_gridPlane = RefPtr<StaticMeshModel>::makeRef();
 	m_gridPlane->InitializeScreenPlane(gm, MeshCreationFlags::DynamicBuffers);
 	MeshResource* mesh = m_gridPlane->GetMeshResource(0);
 	mesh->AddSections(1);
@@ -424,7 +424,7 @@ void World3D::CreateGridPlane()
 #include "Scene/Resource/InfinitePlaneGrid.lfx.h"
 	};
 	static const size_t shaderCodeLen = LN_ARRAY_SIZE_OF(shaderCode);
-	auto shader = RefPtr<Shader>::MakeRef();
+	auto shader = RefPtr<Shader>::makeRef();
 	shader->initialize(gm, shaderCode, shaderCodeLen);
 	m_gridPlane->GetMaterial(0)->SetShader(shader);
 
@@ -508,7 +508,7 @@ void World3D::AdjustGridPlane(CameraComponent* camera)
 		Vector3 pt;
 		if (plane.Intersects(li.from, li.to, &pt))
 		{
-			hits.Add(pt);
+			hits.add(pt);
 		}
 	}
 

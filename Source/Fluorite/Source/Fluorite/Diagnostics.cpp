@@ -21,7 +21,7 @@ void DiagnosticsItemSet::Report(DiagnosticsCode code)
 	item.m_code = code;
 	item.m_lineNumber = m_currentLineNumber;
 	item.m_columnNumber = m_currentColumnNumber;
-	m_items.Add(item);
+	m_items.add(item);
 }
 
 //------------------------------------------------------------------------------
@@ -31,8 +31,8 @@ void DiagnosticsItemSet::Report(DiagnosticsCode code, flString option1)
 	item.m_code = code;
 	item.m_lineNumber = m_currentLineNumber;
 	item.m_columnNumber = m_currentColumnNumber;
-	item.m_options.Add(option1);
-	m_items.Add(item);
+	item.m_options.add(option1);
+	m_items.add(item);
 }
 
 //==============================================================================
@@ -47,8 +47,8 @@ void DiagnosticsManager::clear()
 //------------------------------------------------------------------------------
 DiagnosticsItemSet* DiagnosticsManager::CreateItemSet(const PathNameA& absFilePath)
 {
-	auto ptr = RefPtr<DiagnosticsItemSet>::MakeRef(absFilePath);
-	m_itemSetList.Add(ptr);
+	auto ptr = RefPtr<DiagnosticsItemSet>::makeRef(absFilePath);
+	m_itemSetList.add(ptr);
 	return ptr;
 }
 

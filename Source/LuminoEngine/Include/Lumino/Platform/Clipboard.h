@@ -17,13 +17,13 @@ public:
 	/**
 		@brief	クリップボードに文字列データを格納します。
 	*/
-	static void SetText(PlatformWindow* window, const String& text);
+	static void setText(PlatformWindow* window, const String& text);
 
 	/**
 		@brief	クリップボードに格納されている文字列データを取得します。
 		@return	格納されているデータが文字列ではない場合、空の文字列を返します。
 	*/
-	static String GetText(PlatformWindow* window);
+	static String getText(PlatformWindow* window);
 };
 
 LN_NAMESPACE_END

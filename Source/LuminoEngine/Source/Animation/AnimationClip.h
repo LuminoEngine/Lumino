@@ -11,7 +11,7 @@ class AnimationClip
 	: public RefObject
 {
 public:
-	static AnimationClipPtr Create(const StringRef& filePath);
+	static AnimationClipPtr create(const StringRef& filePath);
 
 public:
 	struct AnimationCurveEntry

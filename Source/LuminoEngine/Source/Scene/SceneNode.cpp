@@ -45,7 +45,7 @@ SceneNode::SceneNode()
 	//, m_transformModified(true)
 	, m_isAutoUpdate(false)
 	, m_isAutoRemove(false)
-	, m_children(RefPtr<SceneNodeList>::MakeRef())
+	, m_children(RefPtr<SceneNodeList>::makeRef())
 	, m_parentNode(NULL)
 	, m_isVisible(true)
 {
@@ -90,7 +90,7 @@ void SceneNode::AddChild(SceneNode* child)
 	}
 
 	// 子として追加
-	m_children->Add(child);
+	m_children->add(child);
 	child->m_parentNode = this;
 }
 
@@ -100,7 +100,7 @@ void SceneNode::RemoveChild(SceneNode* child)
 	if (LN_CHECK_ARG(child != nullptr)) return;
 	if (child->m_parentNode == this)
 	{
-		m_children->Remove(child);
+		m_children->remove(child);
 		child->m_parentNode = nullptr;
 	}
 }
@@ -140,16 +140,16 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 	OnUpdateFrame(deltaTime);
 
 	// 子ノード更新
-	int count = m_children->GetCount();
+	int count = m_children->getCount();
 	for (int i = 0; i < count; )
 	{
-		SceneNode* node = m_children->GetAt(i);
+		SceneNode* node = m_children->getAt(i);
 		node->UpdateFrameHierarchy(this, deltaTime);
 
-		if (node->IsAutoRemove() && node->getReferenceCount() == 1)
+		if (node->isAutoRemove() && node->getReferenceCount() == 1)
 		{
-			m_children->RemoveAt(i);
-			count = m_children->GetCount();
+			m_children->removeAt(i);
+			count = m_children->getCount();
 		}
 		else
 		{

@@ -20,7 +20,7 @@ public:
 public:
 
 	/// ライトの種類の取得
-	LightType GetType() const { return m_lightInfo->m_type; }
+	LightType getType() const { return m_lightInfo->m_type; }
 
 	/// ライトの有効、無効を設定する
 	void SetEnabled(bool enabled) { m_enabled = enabled; }

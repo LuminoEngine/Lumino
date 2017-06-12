@@ -54,7 +54,7 @@ AudioPlayer* DirectMusicAudioDevice::CreateAudioPlayer(AudioStream* source, bool
 		audioPlayer->initialize(source, enable3d);
     }
 
-	audioPlayer.SafeAddRef();
+	audioPlayer.safeAddRef();
 	return audioPlayer;
 }
 

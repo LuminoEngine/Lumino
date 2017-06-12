@@ -132,7 +132,7 @@ public:
 	void initialize(const String& type, const String& name, const String& value);
 
 	virtual void SetBool(bool value) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetInt(int value) { LN_THROW(0, InvalidOperationException); }
+	virtual void setInt(int value) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetFloat(float value) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetVector(const Vector4& vec) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetVectorArray(const Vector4* vectors, int count) { LN_THROW(0, InvalidOperationException); }
@@ -153,13 +153,13 @@ public:
 	GLShaderTechnique();
 	virtual ~GLShaderTechnique();
 	void initialize(GLShader* ownerShader, const String& name);
-	void AddPass(GLShaderPass* pass) { m_passes.Add(pass); }
+	void AddPass(GLShaderPass* pass) { m_passes.add(pass); }
 
 public:
 	virtual const TCHAR* GetName() const { return m_name.c_str(); }
-	virtual int GetPassCount() const { return m_passes.GetCount(); }
+	virtual int GetPassCount() const { return m_passes.getCount(); }
 	virtual IShaderPass* GetPass(int index);
-	virtual int GetAnnotationCount() { return m_annotations.GetCount(); }
+	virtual int GetAnnotationCount() { return m_annotations.getCount(); }
 	virtual IShaderVariable* GetAnnotation(int index) { return m_annotations[index]; }
 
 private:
@@ -190,7 +190,7 @@ public:
 
 public:
 	virtual const TCHAR* GetName() const { return m_name.c_str(); }
-	virtual int GetAnnotationCount() { return m_annotations.GetCount(); }
+	virtual int GetAnnotationCount() { return m_annotations.getCount(); }
 	virtual IShaderVariable* GetAnnotation(int index) { return m_annotations[index]; }
 	virtual void Apply();
 	//virtual void End();

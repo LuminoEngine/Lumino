@@ -14,7 +14,7 @@ TEST_F(Test_IO_Process, Example)
 	// <Example> リダイレクト無しで起動。
 	{
 		Process proc;
-		proc.Start(_T("LuminoCore_Test"), _T("--proctest1"));
+		proc.start(_T("LuminoCore_Test"), _T("--proctest1"));
 		proc.WaitForExit();
 		ASSERT_EQ(5, proc.GetExitCode());
 	}
@@ -23,7 +23,7 @@ TEST_F(Test_IO_Process, Example)
 	{
 		Process proc;
 		proc.SetRedirectStandardOutput(true);
-		proc.Start(_T("LuminoCore_Test"), _T("--proctest1"));
+		proc.start(_T("LuminoCore_Test"), _T("--proctest1"));
 		ASSERT_EQ(_T("stdout"), proc.GetStandardOutput()->ReadToEnd());
 	}
 
@@ -31,8 +31,8 @@ TEST_F(Test_IO_Process, Example)
 	{
 		Process proc;
 		proc.SetRedirectStandardInput(true);
-		proc.Start(_T("LuminoCore_Test"), _T("--proctest2"));
-		proc.GetStandardInput()->Write(_T("test\n"));	// 改行が必要
+		proc.start(_T("LuminoCore_Test"), _T("--proctest2"));
+		proc.GetStandardInput()->write(_T("test\n"));	// 改行が必要
 		proc.WaitForExit();
 		ASSERT_EQ(4, proc.GetExitCode());				// 文字数が返ってくる
 	}
@@ -42,8 +42,8 @@ TEST_F(Test_IO_Process, Example)
 		Process proc;
 		proc.SetRedirectStandardInput(true);
 		proc.SetRedirectStandardOutput(true);
-		proc.Start(_T("LuminoCore_Test"), _T("--proctest3"));
-		proc.GetStandardInput()->Write(_T("test\n"));	// 改行が必要
+		proc.start(_T("LuminoCore_Test"), _T("--proctest3"));
+		proc.GetStandardInput()->write(_T("test\n"));	// 改行が必要
 		ASSERT_EQ(_T("[test]"), proc.GetStandardOutput()->ReadToEnd());
 	}
 
@@ -80,7 +80,7 @@ TEST_F(Test_IO_Process, Example)
 		Process proc;
 		proc.SetRedirectStandardOutput(true);
 		proc.SetOutputDataReceivedCallback(Delegate<void(String)>(&t, &Test::Callback));
-		proc.Start(_T("LuminoCore_Test"), _T("--proctest1"));
+		proc.start(_T("LuminoCore_Test"), _T("--proctest1"));
 		proc.BeginOutputReadLine();
 		proc.WaitForExit();
 		ASSERT_EQ(_T("stdout"), output);
@@ -88,13 +88,13 @@ TEST_F(Test_IO_Process, Example)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_IO_Process, Start)
+TEST_F(Test_IO_Process, start)
 {
 	// <Illegal> プログラム名が見つからなかった。
 	{
 		Process proc;
 		ASSERT_THROW(
-			proc.Start(_T("XXXX")),
+			proc.start(_T("XXXX")),
 			FileNotFoundException);
 	}
 }
@@ -107,7 +107,7 @@ TEST_F(Test_IO_Process, Issue)
 		Process proc;
 		proc.SetRedirectStandardOutput(true);
 		proc.SetStandardOutputEncoding(Encoding::GetUTF8Encoding());	// エンコーディングを明示することで回避する
-		proc.Start(_T("LuminoCore_Test"), _T("--proctest4_utf8"));
+		proc.start(_T("LuminoCore_Test"), _T("--proctest4_utf8"));
 		String str = proc.GetStandardOutput()->ReadToEnd();
 		ASSERT_EQ(_T("あ"), str);
 	}

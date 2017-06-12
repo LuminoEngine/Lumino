@@ -44,10 +44,10 @@ public:
 public:
 	// GenericTextReader interface
 	virtual int Peek();
-	virtual int Read();
+	virtual int read();
 	virtual bool ReadLine(GenericString<TChar>* line);
 	virtual GenericString<TChar> ReadToEnd();
-	virtual bool IsEOF();
+	virtual bool isEOF();
 
 private:
 	void InitReader(Stream* stream, Encoding* encoding);

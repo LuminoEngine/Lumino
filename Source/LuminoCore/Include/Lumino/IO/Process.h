@@ -115,7 +115,7 @@ public:
 		@param[in]	args	: コマンドライン引数
 		@exception	FileNotFoundException	program が見つからなかった。
 	*/
-	void Start(const PathName& program, const String& args = String());
+	void start(const PathName& program, const String& args = String());
 
 	/**
 		@brief		プログラムのファイルパスとコマンドライン引数を指定してプロセスを起動します。
@@ -124,7 +124,7 @@ public:
 		@exception	FileNotFoundException	program が見つからなかった。
 		@details	指定されたコマンドライン引数の各要素は、要素に空白が含まれる場合その前後に " を付加した状態でプロセスの起動に使用します。
 	*/
-	void Start(const PathName& program, const StringArray& args);
+	void start(const PathName& program, const StringArray& args);
 
 	/**
 		@brief		プロセスの終了を待機します。

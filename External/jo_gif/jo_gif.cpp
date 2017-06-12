@@ -248,8 +248,8 @@ static void jo_gif_lzw_write(jo_gif_lzw_t *s, int code)
         s->curBits -= 8;
         if (s->idx >= 255) {
             //(*s->os) << s->idx;
-			s->os->WriteUInt8(s->idx);
-            s->os->Write((char*)s->buf, s->idx);
+			s->os->writeUInt8(s->idx);
+            s->os->write((char*)s->buf, s->idx);
             s->idx = 0;
         }
     }
@@ -315,8 +315,8 @@ CONTINUE:
     jo_gif_lzw_write(&state, 0x101);
     jo_gif_lzw_write(&state, 0);
     if(state.idx) {
-		os->WriteUInt8(state.idx);
-        os->Write((char*)state.buf, state.idx);
+		os->writeUInt8(state.idx);
+        os->write((char*)state.buf, state.idx);
     }
 }
 
@@ -434,12 +434,12 @@ void jo_gif_end(jo_gif_t *)
 
 void jo_gif_write_header(ln::BinaryWriter* os, jo_gif_t *gif)
 {
-    os->Write("GIF89a", 6);
+    os->write("GIF89a", 6);
     // Logical Screen Descriptor
-    os->Write((char*)&gif->width, 2);
-    os->Write((char*)&gif->height, 2);
-	os->WriteUInt8(uint8_t(0xF0 | gif->palSize));
-    os->Write("\x00\x00", 2); // bg color index (unused), aspect ratio
+    os->write((char*)&gif->width, 2);
+    os->write((char*)&gif->height, 2);
+	os->writeUInt8(uint8_t(0xF0 | gif->palSize));
+    os->write("\x00\x00", 2); // bg color index (unused), aspect ratio
 }
 
 
@@ -461,36 +461,36 @@ void jo_gif_write_frame(ln::BinaryWriter* os, jo_gif_t *gif, jo_gif_frame_t *fda
 
     if (frame == 0) {
         // Global Color Table
-        os->Write((char*)palette, palette_size);
+        os->write((char*)palette, palette_size);
         if (gif->repeat >= 0) {
             // Netscape Extension
-            os->Write("\x21\xff\x0bNETSCAPE2.0\x03\x01", 16);
-            os->Write((char*)&gif->repeat, 2); // loop count (extra iterations, 0=repeat forever)
-			os->WriteUInt8(0); // block terminator
+            os->write("\x21\xff\x0bNETSCAPE2.0\x03\x01", 16);
+            os->write((char*)&gif->repeat, 2); // loop count (extra iterations, 0=repeat forever)
+			os->writeUInt8(0); // block terminator
         }
     }
     // Graphic Control Extension
-    os->Write("\x21\xf9\x04\x00", 4);
-    os->Write((char*)&delayCsec, 2); // delayCsec x 1/100 sec
-    os->Write("\x00\x00", 2); // transparent color index (first byte), currently unused
+    os->write("\x21\xf9\x04\x00", 4);
+    os->write((char*)&delayCsec, 2); // delayCsec x 1/100 sec
+    os->write("\x00\x00", 2); // transparent color index (first byte), currently unused
     // Image Descriptor
-    os->Write("\x2c\x00\x00\x00\x00", 5); // header, x,y
-    os->Write((char*)&width, 2);
-    os->Write((char*)&height, 2);
+    os->write("\x2c\x00\x00\x00\x00", 5); // header, x,y
+    os->write((char*)&width, 2);
+    os->write((char*)&height, 2);
     if (frame == 0 || !palette) {
-		os->WriteUInt8(0);
+		os->writeUInt8(0);
     }
     else {
-		os->WriteUInt8(0x80 | gif->palSize);		// 0x80 で <Packed Fields> の Local Color Table Flag を 1 にする。1のときは直後にパレットが続く (Local Color Table)
-        os->Write((char*)palette, palette_size);
+		os->writeUInt8(0x80 | gif->palSize);		// 0x80 で <Packed Fields> の Local Color Table Flag を 1 にする。1のときは直後にパレットが続く (Local Color Table)
+        os->write((char*)palette, palette_size);
     }
-	os->WriteUInt8(uint8_t(8)); // block terminator
-    os->Write(fdata->encoded_pixels.GetBuffer(), fdata->encoded_pixels.GetLength());
-	os->WriteUInt8(uint8_t(0)); // block terminator
+	os->writeUInt8(uint8_t(8)); // block terminator
+    os->write(fdata->encoded_pixels.GetBuffer(), fdata->encoded_pixels.getLength());
+	os->writeUInt8(uint8_t(0)); // block terminator
 }
 
 void jo_gif_write_footer(ln::BinaryWriter* os, jo_gif_t *)
 {
-	os->WriteUInt8(uint8_t(0x3b));	// gif trailer
+	os->writeUInt8(uint8_t(0x3b));	// gif trailer
 }
 #endif

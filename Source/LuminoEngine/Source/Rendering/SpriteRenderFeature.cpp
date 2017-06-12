@@ -16,7 +16,7 @@ namespace detail
 //==============================================================================
 
 //------------------------------------------------------------------------------
-SpriteRenderFeature* SpriteRenderFeature::Create(int maxSpriteCount, GraphicsManager* manager)
+SpriteRenderFeature* SpriteRenderFeature::create(int maxSpriteCount, GraphicsManager* manager)
 {
 	return LN_NEW SpriteRenderFeature(manager, maxSpriteCount);
 }
@@ -147,14 +147,14 @@ void SpriteRenderFeature::DrawRequest(
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderFeature::Flush()
+void SpriteRenderFeature::flush()
 {
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		SpriteRenderer_Flush, m_manager,
 		SpriteRendererImpl*, m_internal,
 		SpriteSortMode, m_spriteSortMode,
 		{
-			m_internal->Flush(m_spriteSortMode);
+			m_internal->flush(m_spriteSortMode);
 		});
 }
 
@@ -162,7 +162,7 @@ void SpriteRenderFeature::Flush()
 void SpriteRenderFeature::MakeBoundingSphere(const Vector2& size, SpriteBaseDirection baseDir, detail::Sphere* sphere)
 {
 	Vector2 half = 0.5f * size;
-	sphere->radius = half.GetLength();
+	sphere->radius = half.getLength();
 
 	if (baseDir == SpriteBaseDirection::Basic2D)
 	{
@@ -301,7 +301,7 @@ void SpriteRendererImpl::initialize(GraphicsManager* manager, int maxSpriteCount
 	m_spriteIndexList.resize(m_maxSprites);
 
 	// ステートにはデフォルトをひとつ詰めておく
-	m_renderStateList.Add(RenderState());
+	m_renderStateList.add(RenderState());
 
 	//if (m_3DSystem) {
 	//	// 視点からの距離が大きいものを先に描画する
@@ -327,7 +327,7 @@ void SpriteRendererImpl::SetViewProjMatrix(const Matrix& view, const Matrix& pro
 {
 	m_viewDirection.Set(view.m[0][2], view.m[1][2], view.m[2][2]);
 	m_viewInverseMatrix = Matrix::MakeInverse(view);
-	m_viewPosition = m_viewInverseMatrix.GetPosition();
+	m_viewPosition = m_viewInverseMatrix.getPosition();
 	m_viewProjMatrix = (view * proj);
 }
 
@@ -341,7 +341,7 @@ void SpriteRendererImpl::SetViewPixelSize(const Size& size)
 void SpriteRendererImpl::SetRenderState(const RenderState& state)
 {
 	// 同じものがあればカレントに
-	size_t count = m_renderStateList.GetCount();
+	size_t count = m_renderStateList.getCount();
 	for (size_t i = 0; i < count; ++i)
 	{
 		if (state == m_renderStateList[i]) {
@@ -351,7 +351,7 @@ void SpriteRendererImpl::SetRenderState(const RenderState& state)
 	}
 
 	// 見つからなかったら登録
-	m_renderStateList.Add(state);
+	m_renderStateList.add(state);
 	m_currentRenderStateIndex = count;
 }
 
@@ -502,7 +502,7 @@ void SpriteRendererImpl::DrawRequestInternal(
 	}
 
 	mat.Translate(position);
-	mat.Translate(m_transformMatrix.GetPosition());
+	mat.Translate(m_transformMatrix.getPosition());
 
 	// 座標変換
 	sprite.Vertices[0].Position.TransformCoord(mat);
@@ -578,8 +578,8 @@ public:
 
 	bool operator()(int l_, int r_)
 	{
-		const BatchSpriteData& lsp = spriteList->GetAt(l_);
-		const BatchSpriteData& rsp = spriteList->GetAt(r_);
+		const BatchSpriteData& lsp = spriteList->getAt(l_);
+		const BatchSpriteData& rsp = spriteList->getAt(r_);
 
 		if (lsp.Priority == rsp.Priority)
 		{
@@ -610,8 +610,8 @@ public:
 
 	bool operator()(int l_, int r_)
 	{
-		const BatchSpriteData& lsp = spriteList->GetAt(l_);
-		const BatchSpriteData& rsp = spriteList->GetAt(r_);
+		const BatchSpriteData& lsp = spriteList->getAt(l_);
+		const BatchSpriteData& rsp = spriteList->getAt(r_);
 
 		if (lsp.Priority == rsp.Priority)
 		{
@@ -642,8 +642,8 @@ public:
 
 	bool operator()(int l_, int r_)
 	{
-		const BatchSpriteData& lsp = spriteList->GetAt(l_);
-		const BatchSpriteData& rsp = spriteList->GetAt(r_);
+		const BatchSpriteData& lsp = spriteList->getAt(l_);
+		const BatchSpriteData& rsp = spriteList->getAt(r_);
 
 		if (lsp.Priority == rsp.Priority)
 		{
@@ -674,8 +674,8 @@ public:
 
 	bool operator()(int l_, int r_)
 	{
-		const BatchSpriteData& lsp = spriteList->GetAt(l_);
-		const BatchSpriteData& rsp = spriteList->GetAt(r_);
+		const BatchSpriteData& lsp = spriteList->getAt(l_);
+		const BatchSpriteData& rsp = spriteList->getAt(r_);
 
 		if (lsp.Priority == rsp.Priority)
 		{
@@ -699,7 +699,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-void SpriteRendererImpl::Flush(SpriteSortMode sortFlags)
+void SpriteRendererImpl::flush(SpriteSortMode sortFlags)
 {
 	int spriteCount = m_spriteRequestListUsedCount;	// 描画するスプライトの数
 	if (spriteCount == 0) { return; }				// 0 個ならなにもしない
@@ -782,7 +782,7 @@ void SpriteRendererImpl::Flush(SpriteSortMode sortFlags)
 		attr.PrimitiveNum = prim_num * 2;
 		attr.Texture = current_tex;
 		attr.RenderStateIndex = currnetRenderStateIndex;
-		m_attributeList.Add(attr);
+		m_attributeList.add(attr);
 
 		if (si >= spriteCount)
 		{
@@ -842,7 +842,7 @@ void SpriteRendererImpl::Flush(SpriteSortMode sortFlags)
 void SpriteRendererImpl::clear()
 {
 	m_renderStateList.clear();
-	m_renderStateList.Add(RenderState());
+	m_renderStateList.add(RenderState());
 	m_currentRenderStateIndex = 0;
 	m_spriteRequestListUsedCount = 0;
 }

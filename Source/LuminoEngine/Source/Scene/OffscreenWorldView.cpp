@@ -49,7 +49,7 @@ void OffscreenWorldView::initialize()
 
 	//m_renderView = RefPtr<RenderView>::MakeRef();
 	//m_renderView->
-	m_lists.Add(m_renderer->GetDrawElementList());
+	m_lists.add(m_renderer->GetDrawElementList());
 }
 
 //------------------------------------------------------------------------------
@@ -82,7 +82,7 @@ void OffscreenWorldView::RenderWorld(World* world, CameraComponent* mainViewCame
 {
 	m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(mainViewCamera) + 1;
 	m_cameraInfo.viewPixelSize = mainRenderView->GetViewSize();
-	m_cameraInfo.viewPosition = mainViewCamera->GetTransform()->GetWorldMatrix().GetPosition();
+	m_cameraInfo.viewPosition = mainViewCamera->GetTransform()->GetWorldMatrix().getPosition();
 	m_cameraInfo.viewMatrix = CalculateViewMatrix(mainViewCamera);
 	m_cameraInfo.projMatrix = CalculateProjectionMatrix(mainViewCamera);
 	m_cameraInfo.viewProjMatrix = m_cameraInfo.viewMatrix * m_cameraInfo.projMatrix;
@@ -186,7 +186,7 @@ void SkyComponent::initialize()
 
 	{
 
-		auto shader = ln::Shader::Create("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Sky.fx");
+		auto shader = ln::Shader::create("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Sky.fx");
 		m_skyMaterial = NewObject<Material>();
 		m_skyMaterial->SetShader(shader);
 	}
@@ -210,7 +210,7 @@ void SkyComponent::OnRender2(DrawList* renderer)
 											   //cameraPos.Normalize();
 		Vector3 lightPos = 1.0f * Vector3::Normalize(1, -0, -1);//sunDirection.normalized();
 
-		float fCameraHeight = cameraPos.GetLength();
+		float fCameraHeight = cameraPos.getLength();
 		float fCameraHeight2 = fCameraHeight * fCameraHeight;
 
 		const float red = 0.680f;
@@ -328,10 +328,10 @@ void MirrorComponent::initialize()
 	//m_material->SetMaterialTexture(Texture2D::GetBlackTexture());
 	//m_material->SetMaterialTexture(Texture2D::GetWhiteTexture());
 	//m_material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
-	auto shader = ln::Shader::Create("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Mirror.fx");
+	auto shader = ln::Shader::create("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Mirror.fx");
 	m_material->SetShader(shader);
 
-	auto tex = ln::Texture2D::Create("D:/Proj/LN/HC1/Assets/Data/waterbump.png");
+	auto tex = ln::Texture2D::create("D:/Proj/LN/HC1/Assets/Data/waterbump.png");
 	m_material->SetTextureParameter(_T("xWaterBumpMap"), tex);
 
 }
@@ -345,7 +345,7 @@ void MirrorComponent::OnRender2(DrawList* renderer)
 
 	g_time += 0.001;
 	m_material->SetMaterialTexture(m_offscreen->GetRenderTarget());
-	m_material->SetVectorParameter("xCamPos", Vector4(renderer->GetCurrentCamera()->GetTransform()->position.Get(), 1.0));
+	m_material->SetVectorParameter("xCamPos", Vector4(renderer->GetCurrentCamera()->GetTransform()->position.get(), 1.0));
 	m_material->SetFloatParameter("time", g_time);
 
 	// TODO: 法泉が入っていない？

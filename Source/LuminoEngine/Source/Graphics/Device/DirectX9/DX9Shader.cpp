@@ -74,9 +74,9 @@ public:
 	{
 		RefPtr<Stream> file(m_fileManager->CreateFileStream(pFileName), false);
 
-		size_t size = (size_t)file->GetLength();
+		size_t size = (size_t)file->getLength();
 		byte_t* data = LN_NEW byte_t[size];
-		file->Read(data, size);
+		file->read(data, size);
 
 		*ppData = data;
 		*pBytes = size;
@@ -102,7 +102,7 @@ private:
 const char* DX9Shader::Macro_LN_HLSL_DX9 = "LN_HLSL_DX9";
 
 //------------------------------------------------------------------------------
-ShaderCompileResultLevel DX9Shader::Create(DX9GraphicsDevice* device, const char* code, size_t codeByteCount, DX9Shader** outShader, StringA* outMessage)
+ShaderCompileResultLevel DX9Shader::create(DX9GraphicsDevice* device, const char* code, size_t codeByteCount, DX9Shader** outShader, StringA* outMessage)
 {
 	// UTF-8のBOM対策
 	if (code[0] == 0xEF && code[1] == 0xBB && code[2] == 0xBF) {
@@ -170,17 +170,17 @@ DX9Shader::DX9Shader(DX9GraphicsDevice* device, ID3DXEffect* dxEffect)
 		if (!handle) break;
 
 		auto* v = LN_NEW DX9ShaderVariable(this, handle);
-		if (v->GetType() == ShaderVariableType_Unknown)
+		if (v->getType() == ShaderVariableType_Unknown)
 		{
 			LN_SAFE_RELEASE(v);
 		}
 		else
 		{
-			m_variables.Add(v);
-			if (v->GetType() == ShaderVariableType_DeviceTexture)
+			m_variables.add(v);
+			if (v->getType() == ShaderVariableType_DeviceTexture)
 			{
-				TextureVarInfo info = { v, device->GetDummyTextures()[m_textureVariables.GetCount()], nullptr };
-				m_textureVariables.Add(info);
+				TextureVarInfo info = { v, device->GetDummyTextures()[m_textureVariables.getCount()], nullptr };
+				m_textureVariables.add(info);
 			}
 		}
 
@@ -194,7 +194,7 @@ DX9Shader::DX9Shader(DX9GraphicsDevice* device, ID3DXEffect* dxEffect)
 	{
 		m_dxEffect->FindNextValidTechnique(tech, &next);
 		if (next) {
-			m_techniques.Add(LN_NEW DX9ShaderTechnique(this, next));
+			m_techniques.add(LN_NEW DX9ShaderTechnique(this, next));
 		}
 		tech = next;
 	} while (tech);
@@ -304,7 +304,7 @@ void D3DXParamDescToLNParamDesc(
 }
 
 //------------------------------------------------------------------------------
-void DX9ShaderVariable::GetValue(ID3DXEffect* dxEffect, D3DXHANDLE handle, ShaderVariableTypeDesc desc, ShaderValue* outValue)
+void DX9ShaderVariable::getValue(ID3DXEffect* dxEffect, D3DXHANDLE handle, ShaderVariableTypeDesc desc, ShaderValue* outValue)
 {
 	switch (desc.Type)
 	{
@@ -330,7 +330,7 @@ void DX9ShaderVariable::GetValue(ID3DXEffect* dxEffect, D3DXHANDLE handle, Shade
 	{
 		INT v;
 		LN_COMCALL(dxEffect->GetInt(handle, &v));
-		outValue->SetInt(v);
+		outValue->setInt(v);
 		break;
 	}
 	case ShaderVariableType_Float:
@@ -382,7 +382,7 @@ void DX9ShaderVariable::GetValue(ID3DXEffect* dxEffect, D3DXHANDLE handle, Shade
 	{
 		LPCSTR str;
 		LN_COMCALL(dxEffect->GetString(handle, &str));
-		outValue->SetString(str);
+		outValue->setString(str);
 		break;
 	}
 	}
@@ -428,14 +428,14 @@ DX9ShaderVariable::DX9ShaderVariable(DX9Shader* owner, D3DXHANDLE handle)
 	ShaderVariableBase::initialize(desc, String(dxDesc.Name), String(dxDesc.Semantic));
 
 	// 初期値を読み取る
-	GetValue(m_dxEffect, m_handle, desc, &m_value);
+	getValue(m_dxEffect, m_handle, desc, &m_value);
 
 	// すべてのアノテーションを配列と map に格納
 	D3DXHANDLE anno;
 	for (UINT i = 0; i < dxDesc.Annotations; ++i)
 	{
 		anno = m_dxEffect->GetAnnotation(m_handle, i);
-		m_annotations.Add(LN_NEW DX9ShaderAnnotation(owner, anno));
+		m_annotations.add(LN_NEW DX9ShaderAnnotation(owner, anno));
 	}
 
 	// テクスチャ型の場合はテクスチャとサンプラステートを記憶する構造体を作る
@@ -478,10 +478,10 @@ void DX9ShaderVariable::SetBoolArray(const bool* values, int count)
 }
 
 //------------------------------------------------------------------------------
-void DX9ShaderVariable::SetInt(int value)
+void DX9ShaderVariable::setInt(int value)
 {
 	LN_COMCALL(m_dxEffect->SetInt(m_handle, value));
-	ShaderVariableBase::SetInt(value);
+	ShaderVariableBase::setInt(value);
 }
 
 //------------------------------------------------------------------------------
@@ -581,7 +581,7 @@ DX9ShaderTechnique::DX9ShaderTechnique(DX9Shader* owner, D3DXHANDLE handle)
 	for (UINT i = 0; i < desc.Annotations; ++i)
 	{
 		anno = m_dxEffect->GetAnnotation(m_handle, i);
-		m_annotations.Add(LN_NEW DX9ShaderAnnotation(owner, anno));
+		m_annotations.add(LN_NEW DX9ShaderAnnotation(owner, anno));
 	}
 
 	// パス
@@ -589,7 +589,7 @@ DX9ShaderTechnique::DX9ShaderTechnique(DX9Shader* owner, D3DXHANDLE handle)
 	for (UINT i = 0; i < desc.Passes; ++i)
 	{
 		pass = m_dxEffect->GetPass(m_handle, i);
-		m_passes.Add(LN_NEW DX9ShaderPass(owner, pass, i, m_handle));
+		m_passes.add(LN_NEW DX9ShaderPass(owner, pass, i, m_handle));
 	}
 }
 
@@ -636,7 +636,7 @@ DX9ShaderPass::DX9ShaderPass(DX9Shader* owner, D3DXHANDLE handle, int passIndex,
 	for (UINT i = 0; i < desc.Annotations; ++i)
 	{
 		anno = m_dxEffect->GetAnnotation(m_handle, i);
-		m_annotations.Add(LN_NEW DX9ShaderAnnotation(owner, anno));
+		m_annotations.add(LN_NEW DX9ShaderAnnotation(owner, anno));
 	}
 
 	// サンプラ変数が指しているサンプラインデックスを取得しておく (もしかしたら連番でもいいのかもしれないが、そんなこと明記されていないので一応)
@@ -652,7 +652,7 @@ DX9ShaderPass::DX9ShaderPass(DX9Shader* owner, D3DXHANDLE handle, int passIndex,
 		if (cd.RegisterSet == D3DXRS_SAMPLER)
 		{
 			SamplerLink link = { (int)constantTablePS->GetSamplerIndex(handle), nullptr };
-			m_samplerLinkList.Add(link);
+			m_samplerLinkList.add(link);
 		}
 		//printf("%s\n", cd.Name);	// これでサンプラ変数が取れる
 	}
@@ -721,16 +721,16 @@ void DX9ShaderPass::CommitSamplerStatus()
 		LN_COMCALL(m_dxEffect->Begin(&dummy, D3DXFX_DONOTSAVESTATE | D3DXFX_DONOTSAVESHADERSTATE));
 		LN_COMCALL(m_dxEffect->BeginPass(m_passIndex));
 
-		for (int i = 0; i < m_samplerLinkList.GetCount(); ++i)
+		for (int i = 0; i < m_samplerLinkList.getCount(); ++i)
 		{
 			SamplerLink* info = &m_samplerLinkList[i];
 			IDirect3DBaseTexture9* key;
 			dxDevice->GetTexture(info->samplerIndex, &key);
-			for (int iVarInfo = 0; iVarInfo < infoList->GetCount(); ++iVarInfo)
+			for (int iVarInfo = 0; iVarInfo < infoList->getCount(); ++iVarInfo)
 			{
-				if (infoList->GetAt(iVarInfo).key == key)
+				if (infoList->getAt(iVarInfo).key == key)
 				{
-					info->variable = infoList->GetAt(iVarInfo).variable;
+					info->variable = infoList->getAt(iVarInfo).variable;
 					break;
 				}
 			}

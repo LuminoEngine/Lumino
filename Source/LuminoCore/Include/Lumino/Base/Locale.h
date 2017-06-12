@@ -35,17 +35,17 @@ public:
 		@brief		現在のデフォルトのロケールを取得します。
 		@details	Windows の場合、ユーザーロケールを使用します。
 	*/
-	static const Locale& GetDefault();
+	static const Locale& getDefault();
 
 	/**
 		@brief		"C" ロケールを取得します。
 		@details	"C" ロケールは ANSI に準拠した最小環境を表します。
 	*/
-	static const Locale& GetC();
+	static const Locale& getC();
 
 public:
-	const std::locale& GetStdLocale() const;
-	NativeLocale_t GetNativeLocale() const;
+	const std::locale& getStdLocale() const;
+	NativeLocale_t getNativeLocale() const;
 
 private:
 	void release();
@@ -70,7 +70,7 @@ public:
 	GenericLocalizer(const Locale& locale);
 
 public:
-	int Format(TChar* outBuf, int outBufLength, const TChar* format, ...);
+	int format(TChar* outBuf, int outBufLength, const TChar* format, ...);
 
 private:
 	Locale	m_locale;

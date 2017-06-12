@@ -41,7 +41,7 @@ public:
 	PmxLoader();
 	~PmxLoader();
 
-	RefPtr<PmxSkinnedMeshResource> Load(detail::ModelManager* manager, Stream* stream, const PathName& baseDir, bool isDynamic, ModelCreationFlag flags);
+	RefPtr<PmxSkinnedMeshResource> load(detail::ModelManager* manager, Stream* stream, const PathName& baseDir, bool isDynamic, ModelCreationFlag flags);
 
 private:
 	PMX_Encode getEncode() { return (PMX_Encode)m_pmxHeader.Data[0]; }

@@ -95,7 +95,7 @@ public:
 		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
 		@detail		作成されたスプライトは、デフォルトの 2D シーングラフ に追加されます。
 	*/
-	static Sprite2DComponentPtr Create();
+	static Sprite2DComponentPtr create();
 	
 	/**
 		@brief		指定したファイルパスのテクスチャを読み込み、スプライトを作成します。
@@ -103,7 +103,7 @@ public:
 		@detail		作成されたスプライトは、デフォルトの 2D シーングラフ に追加されます。
 					スプライトのサイズは、読み込んだテクスチャのサイズとなります。
 	*/
-	static Sprite2DComponentPtr Create(const StringRef& filePath);
+	static Sprite2DComponentPtr create(const StringRef& filePath);
 	
 	/**
 		@brief		テクスチャを指定してスプライトを作成します。
@@ -111,7 +111,7 @@ public:
 		@detail		作成されたスプライトは、デフォルトの 2D シーングラフ に追加されます。
 					スプライトのサイズは、指定したテクスチャのサイズとなります。
 	*/
-	static Sprite2DComponentPtr Create(Texture* texture);
+	static Sprite2DComponentPtr create(Texture* texture);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	Sprite2DComponent();
@@ -137,7 +137,7 @@ public:
 		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
 		@detail		作成されたスプライトは、デフォルトの 3D シーングラフ に追加されます。
 	*/
-	static Sprite3DComponentPtr Create();
+	static Sprite3DComponentPtr create();
 	
 	
 	/**
@@ -146,7 +146,7 @@ public:
 		@param[in]	height		: スプライトの高さ
 		@detail		作成されたスプライトは、デフォルトの 3D シーングラフ に追加されます。
 	*/
-	static Sprite3DComponentPtr Create(float width, float height);
+	static Sprite3DComponentPtr create(float width, float height);
 	
 	/**
 		@brief		サイズとテクスチャを指定してスプライトを作成します。
@@ -155,7 +155,7 @@ public:
 		@param[in]	texture		: スプライトが表示するテクスチャ
 		@detail		作成されたスプライトは、デフォルトの 3D シーングラフ に追加されます。
 	*/
-	static Sprite3DComponentPtr Create(float width, float height, Texture* texture);
+	static Sprite3DComponentPtr create(float width, float height, Texture* texture);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	Sprite3DComponent();
@@ -233,7 +233,7 @@ public:
 		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
 		@detail		作成されたスプライトは、デフォルトの 2D シーングラフ に追加されます。
 	*/
-	static RefPtr<Sprite2D> Create();
+	static RefPtr<Sprite2D> create();
 	
 	/**
 		@brief		指定したファイルパスのテクスチャを読み込み、スプライトを作成します。
@@ -241,7 +241,7 @@ public:
 		@detail		作成されたスプライトは、デフォルトの 2D シーングラフ に追加されます。
 					スプライトのサイズは、読み込んだテクスチャのサイズとなります。
 	*/
-	static RefPtr<Sprite2D> Create(const StringRef& filePath);
+	static RefPtr<Sprite2D> create(const StringRef& filePath);
 	
 	/**
 		@brief		テクスチャを指定してスプライトを作成します。
@@ -249,7 +249,7 @@ public:
 		@detail		作成されたスプライトは、デフォルトの 2D シーングラフ に追加されます。
 					スプライトのサイズは、指定したテクスチャのサイズとなります。
 	*/
-	static RefPtr<Sprite2D> Create(Texture* texture);
+	static RefPtr<Sprite2D> create(Texture* texture);
 
 protected:
 	virtual VisualComponent* GetMainVisualComponent() const override;
@@ -286,7 +286,7 @@ public:
 		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
 		@detail		作成されたスプライトは、デフォルトの 3D シーングラフ に追加されます。
 	*/
-	static RefPtr<Sprite3D> Create();
+	static RefPtr<Sprite3D> create();
 	
 	
 	/**
@@ -295,7 +295,7 @@ public:
 		@param[in]	height		: スプライトの高さ
 		@detail		作成されたスプライトは、デフォルトの 3D シーングラフ に追加されます。
 	*/
-	//static RefPtr<Sprite3D> Create(float width, float height);
+	//static RefPtr<Sprite3D> create(float width, float height);
 	
 	/**
 		@brief		サイズとテクスチャを指定してスプライトを作成します。
@@ -304,7 +304,7 @@ public:
 		@param[in]	texture		: スプライトが表示するテクスチャ
 		@detail		作成されたスプライトは、デフォルトの 3D シーングラフ に追加されます。
 	*/
-	static RefPtr<Sprite3D> Create(float width, float height, Texture* texture);
+	static RefPtr<Sprite3D> create(float width, float height, Texture* texture);
 
 
 protected:

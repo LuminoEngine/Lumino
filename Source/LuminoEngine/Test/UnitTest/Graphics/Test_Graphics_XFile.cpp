@@ -13,12 +13,12 @@ protected:
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_XFile, Basic)
 {
-	//auto shader = MMEShader::Create(LN_LOCALFILE("../../../src/Scene/Resource/BasicForwardRendering.fx"));
-	auto shader = MMEShader::Create(LN_LOCALFILE("TestData/Grid.fx"));
-	auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Grid1.png"), TextureFormat::R8G8B8A8/*, 4*/);
+	//auto shader = MMEShader::create(LN_LOCALFILE("../../../src/Scene/Resource/BasicForwardRendering.fx"));
+	auto shader = MMEShader::create(LN_LOCALFILE("TestData/Grid.fx"));
+	auto tex = Texture2D::create(LN_LOCALFILE("TestData/Grid1.png"), TextureFormat::R8G8B8A8/*, 4*/);
 
-	//auto mesh = StaticMeshComponent::Create(LN_LOCALFILE("TestData/Box_1.x"));
-	//auto mesh = StaticMeshComponent::Create(_T("D:/tmp/box1.x"));
+	//auto mesh = StaticMeshComponent::create(LN_LOCALFILE("TestData/Box_1.x"));
+	//auto mesh = StaticMeshComponent::create(_T("D:/tmp/box1.x"));
 	//auto mesh = StaticMeshComponent::CreateSphere(2, 32, 16);
 	//auto mesh = StaticMeshComponent::CreateScreenPlane();
 	auto mesh = StaticMeshComponent::CreateSquarePlane(Vector2(1, 2), Vector3::UnitY, MeshCreationFlags::DynamicBuffers);
@@ -26,11 +26,11 @@ TEST_F(Test_Graphics_XFile, Basic)
 	mesh->GetMaterials()->GetAt(0)->SetTextureParameter(Material::MaterialTextureParameter, tex);
 
 
-	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
+	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::makeRef();
 	Camera::GetMain3DCamera()->SetCameraBehavior(cb);
 
 
-	//auto sprite = Sprite3DComponent::Create(1, 1);
+	//auto sprite = Sprite3DComponent::create(1, 1);
 	//sprite->SetTexture(tex);
 
 	//while (Engine::UpdateFrame());

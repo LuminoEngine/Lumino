@@ -34,28 +34,28 @@ public:
 	bool operator==(const T& value) const { return m_isSet && value == m_value; }
 	bool operator==(const Nullable& right) const { return equals(right); }
 	bool operator!=(const Nullable& right) const { return !equals(right); }
-    operator T() const { return Get(); }
+    operator T() const { return get(); }
 
-    T& Get() 
+    T& get() 
 	{
 		if (LN_CHECK_STATE(m_isSet)) return m_value;
         return m_value;
 	}
-	const T& Get() const
+	const T& get() const
 	{
 		if (LN_CHECK_STATE(m_isSet)) return m_value;
 		return m_value;
 	}
 
-	bool IsSet() const { return m_isSet; }
-	bool IsNull() const { return !m_isSet; }
+	bool isSet() const { return m_isSet; }	// TODO: hasValue
+	bool isNull() const { return !m_isSet; }
 
     void reset() { m_isSet = false; m_value = T(); }
 
 
-	uint32_t GetHashCode() const
+	uint32_t getHashCode() const
 	{
-		return (m_isSet) ? Hash::CalcHash(reinterpret_cast<const char*>(&m_value), sizeof(m_value)) : 0;
+		return (m_isSet) ? Hash::calcHash(reinterpret_cast<const char*>(&m_value), sizeof(m_value)) : 0;
 	}
 
 private:

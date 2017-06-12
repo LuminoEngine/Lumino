@@ -62,7 +62,7 @@ public:
 	String							copydocMethodName;
 	String							copydocSignature;
 
-	bool IsCopyDoc() const { return !copydocMethodName.IsEmpty(); }
+	bool IsCopyDoc() const { return !copydocMethodName.isEmpty(); }
 };
 
 class MetadataInfo

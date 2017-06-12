@@ -22,7 +22,7 @@ public:
 	AudioStream(AudioManager* manager, Stream* stream);
 	virtual ~AudioStream();
 
-	void Create(bool async);
+	void create(bool async);
 
 	StreamFormat GetFormat() const { return m_format; }
 
@@ -62,7 +62,7 @@ protected:
 
 public:
 	/// 作成
-	virtual void Create(Stream* stream) = 0;
+	virtual void create(Stream* stream) = 0;
 
 	/// ファイルフォーマットの取得
 	virtual StreamFormat GetSourceFormat() const = 0;
@@ -128,7 +128,7 @@ public:
 					現在のファイルポインタに outReadSize の値を足した値が、次回の読み込み位置となります。
 					この関数はスレッドセーフです。
 	*/
-	virtual void Read(uint32_t seekPos, void* buffer, uint32_t bufferSize, uint32_t* outReadSize, uint32_t* outWriteSize) = 0;
+	virtual void read(uint32_t seekPos, void* buffer, uint32_t bufferSize, uint32_t* outReadSize, uint32_t* outWriteSize) = 0;
 
 
 	/// デコード状態のリセット(再生開始直前に呼ばれる。MP3 用)

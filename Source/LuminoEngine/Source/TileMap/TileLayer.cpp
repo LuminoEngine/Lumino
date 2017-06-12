@@ -12,9 +12,9 @@ LN_NAMESPACE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TileLayer, tr::ReflectionObject);
 
 //------------------------------------------------------------------------------
-TileLayerPtr TileLayer::Create()
+TileLayerPtr TileLayer::create()
 {
-	TileLayerPtr ptr = TileLayerPtr::MakeRef();
+	TileLayerPtr ptr = TileLayerPtr::makeRef();
 	return ptr;
 }
 

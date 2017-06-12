@@ -49,7 +49,7 @@ void Win32InputDriver::Finalize()
 //------------------------------------------------------------------------------
 int Win32InputDriver::GetJoystickCount()
 {
-	return m_joystickList.GetCount();
+	return m_joystickList.getCount();
 }
 
 //------------------------------------------------------------------------------
@@ -122,7 +122,7 @@ void Win32InputDriver::CreateJoysticksDevice(const DIDEVICEINSTANCE* instance)
 
 		Win32JoystickDriver* joystick = LN_NEW Win32JoystickDriver();
 		joystick->initialize(NULL, m_hWnd, m_XInputDeviceCount, true);
-		m_joystickList.Add(joystick);
+		m_joystickList.add(joystick);
 		++m_XInputDeviceCount;
 	}
 	else
@@ -141,7 +141,7 @@ void Win32InputDriver::CreateJoysticksDevice(const DIDEVICEINSTANCE* instance)
 				//DXST_ERRORLOGFMT_ADDA(( "デバイスの製品登録名:%s" , State.tszProductName )) ;
 				Win32JoystickDriver* joystick = LN_NEW Win32JoystickDriver();
 				joystick->initialize(device, m_hWnd, -1, (caps.dwFlags & DIDC_FORCEFEEDBACK) != 0);
-				m_joystickList.Add(joystick);
+				m_joystickList.add(joystick);
 			}
 		}
 	}

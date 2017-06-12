@@ -54,7 +54,7 @@ void UIPopup::SetContent(UIElement* element)
 }
 
 //------------------------------------------------------------------------------
-void UIPopup::Open()
+void UIPopup::open()
 {
 	UIElement* root = UIHelper::GetLayoutRoot(this);
 	if (root != nullptr)
@@ -123,9 +123,9 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIComboBox, UIControl)
 
 
 //------------------------------------------------------------------------------
-UIComboBoxPtr UIComboBox::Create()
+UIComboBoxPtr UIComboBox::create()
 {
-	auto ptr = UIComboBoxPtr::MakeRef();
+	auto ptr = UIComboBoxPtr::makeRef();
 	ptr->initialize();
 	return ptr;
 }
@@ -156,7 +156,7 @@ void UIComboBox::initialize()
 
 	SetHContentAlignment(HAlignment::Stretch);
 
-	auto panel = RefPtr<UIStackPanel>::MakeRef();
+	auto panel = RefPtr<UIStackPanel>::makeRef();
 	panel->initialize();
 	panel->SetHAlignment(HAlignment::Stretch);
 	panel->SetVAlignment(VAlignment::Stretch);
@@ -189,7 +189,7 @@ void UIComboBox::initialize()
 //------------------------------------------------------------------------------
 void UIComboBox::OnMouseDown(UIMouseEventArgs* e)
 {
-	m_popup->Open();
+	m_popup->open();
 	UIControl::OnMouseDown(e);
 }
 

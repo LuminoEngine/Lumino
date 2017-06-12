@@ -84,21 +84,21 @@ JsonParseResult JsonHelper::LoadElement(JsonDocument2* doc, JsonReader2* reader,
 	if (type == JsonToken::StartObject)
 	{
 		auto* value = doc->NewElement<JsonObject2>();
-		JsonParseResult result = value->Load(reader);
+		JsonParseResult result = value->load(reader);
 		if (result != JsonParseResult::Success) return result;
 		*outElement = value;
 	}
 	else if (type == JsonToken::StartArray)
 	{
 		auto* value = doc->NewElement<JsonArray2>();
-		JsonParseResult result = value->Load(reader);
+		JsonParseResult result = value->load(reader);
 		if (result != JsonParseResult::Success) return result;
 		*outElement = value;
 	}
 	else if (detail::JsonHelper::IsValueType(type))
 	{
 		auto* value = doc->NewElement<JsonValue2>();
-		JsonParseResult result = value->Load(reader);
+		JsonParseResult result = value->load(reader);
 		if (result != JsonParseResult::Success) return result;
 		*outElement = value;
 	}
@@ -127,9 +127,9 @@ JsonElement2::~JsonElement2()
 }
 
 //------------------------------------------------------------------------------
-SerializationValueType JsonElement2::GetSerializationValueType() const
+SerializationValueType JsonElement2::getSerializationValueType() const
 {
-	switch (GetType())
+	switch (getType())
 	{
 	case JsonValueType::Null: return SerializationValueType::Null;
 	case JsonValueType::Bool: return SerializationValueType::Bool;
@@ -207,67 +207,67 @@ void JsonValue2::SetDouble(double value)
 }
 
 //------------------------------------------------------------------------------
-void JsonValue2::SetString(const StringRef& value)
+void JsonValue2::setString(const StringRef& value)
 {
 	CheckRelease();
 	SetType(JsonValueType::String);
 	m_stringCore = LN_NEW ln::detail::GenericStringCore<TCHAR>();
-	m_stringCore->assign(value.GetBegin(), value.GetLength());
+	m_stringCore->assign(value.getBegin(), value.getLength());
 }
 
 //------------------------------------------------------------------------------
-bool JsonValue2::IsNull() const
+bool JsonValue2::isNull() const
 {
-	return GetType() == JsonValueType::Null;
+	return getType() == JsonValueType::Null;
 }
 
 //------------------------------------------------------------------------------
 bool JsonValue2::GetBool() const
 {
-	if (LN_CHECK_STATE(GetType() == JsonValueType::Bool)) return false;
+	if (LN_CHECK_STATE(getType() == JsonValueType::Bool)) return false;
 	return m_bool;
 }
 
 //------------------------------------------------------------------------------
 int32_t JsonValue2::GetInt32() const
 {
-	if (LN_CHECK_STATE(GetType() == JsonValueType::Int32)) return 0;
+	if (LN_CHECK_STATE(getType() == JsonValueType::Int32)) return 0;
 	return m_int32;
 }
 
 //------------------------------------------------------------------------------
 int64_t JsonValue2::GetInt64() const
 {
-	if (LN_CHECK_STATE(GetType() == JsonValueType::Int64)) return 0;
+	if (LN_CHECK_STATE(getType() == JsonValueType::Int64)) return 0;
 	return m_int64;
 }
 
 //------------------------------------------------------------------------------
 float JsonValue2::GetFloat() const
 {
-	if (LN_CHECK_STATE(GetType() == JsonValueType::Float)) return 0;
+	if (LN_CHECK_STATE(getType() == JsonValueType::Float)) return 0;
 	return m_float;
 }
 
 //------------------------------------------------------------------------------
 double JsonValue2::GetDouble() const
 {
-	if (LN_CHECK_STATE(GetType() == JsonValueType::Double)) return 0;
+	if (LN_CHECK_STATE(getType() == JsonValueType::Double)) return 0;
 	return m_double;
 }
 
 //------------------------------------------------------------------------------
-String JsonValue2::GetString() const
+String JsonValue2::getString() const
 {
 	String str;
-	ln::detail::StringHelper::AttachStringCore(&str, m_stringCore);
+	ln::detail::StringHelper::attachStringCore(&str, m_stringCore);
 	return str;
 }
 
 //------------------------------------------------------------------------------
 void JsonValue2::CheckRelease()
 {
-	if (GetType() == JsonValueType::String)
+	if (getType() == JsonValueType::String)
 	{
 		m_stringCore->release();
 	}
@@ -278,7 +278,7 @@ void JsonValue2::CheckRelease()
 void JsonValue2::OnSave(JsonWriter* writer)
 {
 	if (LN_CHECK_ARG(writer != nullptr)) return;
-	switch (GetType())
+	switch (getType())
 	{
 		case JsonValueType::Null:
 			writer->WriteNull();
@@ -333,7 +333,7 @@ JsonParseResult JsonValue2::OnLoad(JsonReader2* reader)
 			SetBool(reader->GetBoolValue());
 			break;
 		case JsonToken::String:
-			SetString(reader->GetValue());
+			setString(reader->getValue());
 			break;
 		default:
 			LN_UNREACHABLE();
@@ -363,7 +363,7 @@ void JsonArray2::AddNull()
 {
 	auto ptr = GetOwnerDocument()->NewElement<JsonValue2>();
 	ptr->SetNull();
-	m_itemList.Add(ptr);
+	m_itemList.add(ptr);
 }
 
 //------------------------------------------------------------------------------
@@ -371,7 +371,7 @@ void JsonArray2::AddBool(bool value)
 {
 	auto ptr = GetOwnerDocument()->NewElement<JsonValue2>();
 	ptr->SetBool(value);
-	m_itemList.Add(ptr);
+	m_itemList.add(ptr);
 }
 
 //------------------------------------------------------------------------------
@@ -379,7 +379,7 @@ void JsonArray2::AddInt32(int32_t value)
 {
 	auto ptr = GetOwnerDocument()->NewElement<JsonValue2>();
 	ptr->SetInt64(value);
-	m_itemList.Add(ptr);
+	m_itemList.add(ptr);
 }
 
 //------------------------------------------------------------------------------
@@ -387,7 +387,7 @@ void JsonArray2::AddInt64(int64_t value)
 {
 	auto ptr = GetOwnerDocument()->NewElement<JsonValue2>();
 	ptr->SetInt64(value);
-	m_itemList.Add(ptr);
+	m_itemList.add(ptr);
 }
 
 //------------------------------------------------------------------------------
@@ -395,7 +395,7 @@ void JsonArray2::AddFloat(float value)
 {
 	auto ptr = GetOwnerDocument()->NewElement<JsonValue2>();
 	ptr->SetFloat(value);
-	m_itemList.Add(ptr);
+	m_itemList.add(ptr);
 }
 
 //------------------------------------------------------------------------------
@@ -403,30 +403,30 @@ void JsonArray2::AddDouble(double value)
 {
 	auto ptr = GetOwnerDocument()->NewElement<JsonValue2>();
 	ptr->SetDouble(value);
-	m_itemList.Add(ptr);
+	m_itemList.add(ptr);
 }
 
 //------------------------------------------------------------------------------
 void JsonArray2::AddString(const StringRef& value)
 {
 	auto ptr = GetOwnerDocument()->NewElement<JsonValue2>();
-	ptr->SetString(value);
-	m_itemList.Add(ptr);
+	ptr->setString(value);
+	m_itemList.add(ptr);
 }
 
 //------------------------------------------------------------------------------
 JsonArray2* JsonArray2::AddArray()
 {
 	auto ptr = GetOwnerDocument()->NewElement<JsonArray2>();
-	m_itemList.Add(ptr);
+	m_itemList.add(ptr);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-JsonObject2* JsonArray2::AddObject()
+JsonObject2* JsonArray2::addObject()
 {
 	auto ptr = GetOwnerDocument()->NewElement<JsonObject2>();
-	m_itemList.Add(ptr);
+	m_itemList.add(ptr);
 	return ptr;
 }
 
@@ -437,7 +437,7 @@ void JsonArray2::OnSave(JsonWriter* writer)
 	writer->WriteStartArray();
 	for (JsonElement2* item : m_itemList)
 	{
-		item->Save(writer);
+		item->save(writer);
 	}
 	writer->WriteEndArray();
 }
@@ -449,7 +449,7 @@ JsonParseResult JsonArray2::OnLoad(JsonReader2* reader)
 
 	// この時点で reader は StartArray('[') を指している
 
-	while (reader->Read())
+	while (reader->read())
 	{
 		if (reader->GetTokenType() == JsonToken::EndArray) return JsonParseResult::Success;	// end scope
 
@@ -457,14 +457,14 @@ JsonParseResult JsonArray2::OnLoad(JsonReader2* reader)
 		JsonElement2* element;
 		JsonParseResult result = detail::JsonHelper::LoadElement(GetOwnerDocument(), reader, &element);
 		if (result != JsonParseResult::Success) return result;
-		m_itemList.Add(element);
+		m_itemList.add(element);
 	}
 
 	return JsonParseResult::Success;
 }
 
 //------------------------------------------------------------------------------
-void JsonArray2::AddSerializeItemValue(SerializationValueType type, const void* value)
+void JsonArray2::addSerializeItemValue(SerializationValueType type, const void* value)
 {
 	switch (type)
 	{
@@ -488,15 +488,15 @@ void JsonArray2::AddSerializeItemValue(SerializationValueType type, const void* 
 }
 
 //------------------------------------------------------------------------------
-ISerializeElement* JsonArray2::AddSerializeItemNewArray()
+ISerializeElement* JsonArray2::addSerializeItemNewArray()
 {
 	return AddArray();
 }
 
 //------------------------------------------------------------------------------
-ISerializeElement* JsonArray2::AddSerializeItemNewObject()
+ISerializeElement* JsonArray2::addSerializeItemNewObject()
 {
-	return AddObject();
+	return addObject();
 }
 
 //==============================================================================
@@ -518,53 +518,53 @@ JsonObject2::~JsonObject2()
 //------------------------------------------------------------------------------
 void JsonObject2::AddMemberNull(const StringRef& name)
 {
-	GetValue(name)->SetNull();
+	getValue(name)->SetNull();
 }
 
 //------------------------------------------------------------------------------
 void JsonObject2::AddMemberBool(const StringRef& name, bool value)
 {
-	GetValue(name)->SetBool(value);
+	getValue(name)->SetBool(value);
 }
 
 //------------------------------------------------------------------------------
 void JsonObject2::AddMemberInt32(const StringRef& name, int32_t value)
 {
-	GetValue(name)->SetInt32(value);
+	getValue(name)->SetInt32(value);
 }
 
 //------------------------------------------------------------------------------
 void JsonObject2::AddMemberInt64(const StringRef& name, int64_t value)
 {
-	GetValue(name)->SetInt64(value);
+	getValue(name)->SetInt64(value);
 }
 
 //------------------------------------------------------------------------------
 void JsonObject2::AddMemberFloat(const StringRef& name, float value)
 {
-	GetValue(name)->SetFloat(value);
+	getValue(name)->SetFloat(value);
 }
 
 //------------------------------------------------------------------------------
 void JsonObject2::AddMemberDouble(const StringRef& name, double value)
 {
-	GetValue(name)->SetDouble(value);
+	getValue(name)->SetDouble(value);
 }
 
 //------------------------------------------------------------------------------
 void JsonObject2::AddMemberString(const StringRef& name, const StringRef& value)
 {
-	GetValue(name)->SetString(value);
+	getValue(name)->setString(value);
 }
 
 //------------------------------------------------------------------------------
 JsonArray2* JsonObject2::AddMemberArray(const StringRef& name)
 {
-	Member* m = m_memberList.Find([name](const Member& m) { return m.name == name; });
-	if (m == nullptr || m->value->GetType() != JsonValueType::Array)
+	Member* m = m_memberList.find([name](const Member& m) { return m.name == name; });
+	if (m == nullptr || m->value->getType() != JsonValueType::Array)
 	{
 		auto* ptr = GetOwnerDocument()->NewElement<JsonArray2>();
-		m_memberList.Add({ name, ptr });
+		m_memberList.add({ name, ptr });
 		return ptr;
 	}
 	return static_cast<JsonArray2*>(m->value);
@@ -573,20 +573,20 @@ JsonArray2* JsonObject2::AddMemberArray(const StringRef& name)
 //------------------------------------------------------------------------------
 JsonObject2* JsonObject2::AddMemberObject(const StringRef& name)
 {
-	Member* m = m_memberList.Find([name](const Member& m) { return m.name == name; });
-	if (m == nullptr || m->value->GetType() != JsonValueType::Object)
+	Member* m = m_memberList.find([name](const Member& m) { return m.name == name; });
+	if (m == nullptr || m->value->getType() != JsonValueType::Object)
 	{
 		auto* ptr = GetOwnerDocument()->NewElement<JsonObject2>();
-		m_memberList.Add({ name, ptr });
+		m_memberList.add({ name, ptr });
 		return ptr;
 	}
 	return static_cast<JsonObject2*>(m->value);
 }
 
 //------------------------------------------------------------------------------
-JsonElement2* JsonObject2::Find(const StringRef& name) const
+JsonElement2* JsonObject2::find(const StringRef& name) const
 {
-	Member* m = m_memberList.Find([name](const Member& m) { return m.name == name; });
+	Member* m = m_memberList.find([name](const Member& m) { return m.name == name; });
 	if (m == nullptr) return nullptr;
 	return m->value;
 }
@@ -600,8 +600,8 @@ void JsonObject2::OnSave(JsonWriter* writer)
 
 	for (auto& m : m_memberList)
 	{
-		writer->WritePropertyName(m.name.c_str(), m.name.GetLength());
-		m.value->Save(writer);
+		writer->WritePropertyName(m.name.c_str(), m.name.getLength());
+		m.value->save(writer);
 	}
 
 	writer->WriteEndObject();
@@ -614,83 +614,83 @@ JsonParseResult JsonObject2::OnLoad(JsonReader2* reader)
 
 	// この時点で reader は StartObject('{') を指している
 
-	while (reader->Read())
+	while (reader->read())
 	{
 		if (reader->GetTokenType() == JsonToken::EndObject) return JsonParseResult::Success;	// end scope
 
 		// member name
 		if (reader->GetTokenType() != JsonToken::PropertyName) return JsonParseResult::Error;
-		String name = reader->GetValue();
+		String name = reader->getValue();
 
 		// member value
-		if (!reader->Read()) return JsonParseResult::Error;
+		if (!reader->read()) return JsonParseResult::Error;
 		JsonElement2* element;
 		JsonParseResult result = detail::JsonHelper::LoadElement(GetOwnerDocument(), reader, &element);
 		if (result != JsonParseResult::Success) return result;
-		m_memberList.Add({ name, element });
+		m_memberList.add({ name, element });
 	}
 
 	return JsonParseResult::Success;
 }
 
 //------------------------------------------------------------------------------
-JsonValue2* JsonObject2::GetValue(const StringRef& name)
+JsonValue2* JsonObject2::getValue(const StringRef& name)
 {
-	Member* m = m_memberList.Find([name](const Member& m) { return m.name == name; });
-	if (m == nullptr || !detail::JsonHelper::IsValueType(m->value->GetType()))
+	Member* m = m_memberList.find([name](const Member& m) { return m.name == name; });
+	if (m == nullptr || !detail::JsonHelper::IsValueType(m->value->getType()))
 	{
 		auto* ptr = GetOwnerDocument()->NewElement<JsonValue2>();
-		m_memberList.Add({ name, ptr });
+		m_memberList.add({ name, ptr });
 		return ptr;
 	}
 	return static_cast<JsonValue2*>(m->value);
 }
 
 //------------------------------------------------------------------------------
-void JsonObject2::SetValueInt32(const StringRef& name, int32_t value) { AddMemberInt32(name, value); }
-void JsonObject2::SetValueString(const StringRef& name, const String& value) { AddMemberString(name, value); }
-ISerializeElement* JsonObject2::AddObject(const StringRef& name)  { return AddMemberObject(name); }
-bool JsonObject2::TryGetValueInt32(const StringRef& name, int32_t* outValue)
+void JsonObject2::setValueInt32(const StringRef& name, int32_t value) { AddMemberInt32(name, value); }
+void JsonObject2::setValueString(const StringRef& name, const String& value) { AddMemberString(name, value); }
+ISerializeElement* JsonObject2::addObject(const StringRef& name)  { return AddMemberObject(name); }
+bool JsonObject2::tryGetValueInt32(const StringRef& name, int32_t* outValue)
 {
-	auto* v = Find(name);
+	auto* v = find(name);
 	if (v == nullptr) return false;
-	if (v->GetType() != JsonValueType::Int32) return false;
+	if (v->getType() != JsonValueType::Int32) return false;
 	*outValue = static_cast<JsonValue2*>(v)->GetInt32();
 	return true;
 }
-bool JsonObject2::TryGetValueString(const StringRef& name, String* outValue)
+bool JsonObject2::tryGetValueString(const StringRef& name, String* outValue)
 {
-	auto* v = Find(name);
+	auto* v = find(name);
 	if (v == nullptr) return false;
-	if (v->GetType() != JsonValueType::String) return false;
-	*outValue = static_cast<JsonValue2*>(v)->GetString();
+	if (v->getType() != JsonValueType::String) return false;
+	*outValue = static_cast<JsonValue2*>(v)->getString();
 	return true;
 }
-bool JsonObject2::TryGetObject(const StringRef& name, ISerializeElement** outValue)
+bool JsonObject2::tryGetObject(const StringRef& name, ISerializeElement** outValue)
 {
-	auto* v = Find(name);
+	auto* v = find(name);
 	if (v == nullptr) return false;
-	if (v->GetType() != JsonValueType::Object) return false;
+	if (v->getType() != JsonValueType::Object) return false;
 	*outValue = static_cast<JsonObject2*>(v);
 	return true;
 }
-bool JsonObject2::TryGetArray(const StringRef& name, ISerializeElement** outValue)
+bool JsonObject2::tryGetArray(const StringRef& name, ISerializeElement** outValue)
 {
-	auto* v = Find(name);
+	auto* v = find(name);
 	if (v == nullptr) return false;
-	if (v->GetType() != JsonValueType::Array) return false;
+	if (v->getType() != JsonValueType::Array) return false;
 	*outValue = static_cast<JsonArray2*>(v);
 	return true;
 }
-const String& JsonObject2::GetSerializeElementName(int index) const
+const String& JsonObject2::getSerializeElementName(int index) const
 {
 	return m_memberList[index].name;
 }
-ISerializeElement* JsonObject2::FindSerializeElement(const StringRef& name) const
+ISerializeElement* JsonObject2::findSerializeElement(const StringRef& name) const
 {
-	return Find(name);
+	return find(name);
 }
-void JsonObject2::AddSerializeMemberValue(const StringRef& name, SerializationValueType type, const void* value)
+void JsonObject2::addSerializeMemberValue(const StringRef& name, SerializationValueType type, const void* value)
 {
 	switch (type)
 	{
@@ -711,11 +711,11 @@ void JsonObject2::AddSerializeMemberValue(const StringRef& name, SerializationVa
 		break;
 	}
 }
-ISerializeElement* JsonObject2::AddSerializeMemberNewArray(const StringRef& name)
+ISerializeElement* JsonObject2::addSerializeMemberNewArray(const StringRef& name)
 {
 	return AddMemberArray(name);
 }
-ISerializeElement* JsonObject2::AddSerializeMemberNewObject(const StringRef& name)
+ISerializeElement* JsonObject2::addSerializeMemberNewObject(const StringRef& name)
 {
 	return AddMemberObject(name);
 }
@@ -731,9 +731,9 @@ void JsonElementCache::initialize()
 	BufferInfo info;
 	info.buffer.resize(2048);
 	info.used = 0;
-	m_buffers.Add(info);
+	m_buffers.add(info);
 
-	m_elements.Reserve(256);
+	m_elements.reserve(256);
 }
 
 //------------------------------------------------------------------------------
@@ -750,19 +750,19 @@ JsonElement2* JsonElementCache::alloc(size_t size)
 {
 	if (LN_CHECK_ARG(size <= BufferSize)) return nullptr;
 
-	BufferInfo* cur = &m_buffers.GetLast();
+	BufferInfo* cur = &m_buffers.getLast();
 	if (cur->buffer.getSize() - cur->used < size)
 	{
 		BufferInfo info;
 		info.buffer.resize(2048);
 		info.used = 0;
-		m_buffers.Add(info);
-		cur = &m_buffers.GetLast();
+		m_buffers.add(info);
+		cur = &m_buffers.getLast();
 	}
 
 	JsonElement2* buf = reinterpret_cast<JsonElement2*>(cur->buffer.getData() + cur->used);
 	cur->used += size;
-	m_elements.Add(buf);
+	m_elements.add(buf);
 	return buf;
 }
 
@@ -816,45 +816,45 @@ void JsonDocument2::Parse(const String& text)
 
 
 //------------------------------------------------------------------------------
-void JsonDocument2::Save(const StringRef& filePath, JsonFormatting formatting)
+void JsonDocument2::save(const StringRef& filePath, JsonFormatting formatting)
 {
 	StreamWriter w(filePath);
 	JsonWriter jw(&w);
 	jw.SetFormatting(formatting);
-	JsonElement2::Save(&jw);
+	JsonElement2::save(&jw);
 }
 
 //------------------------------------------------------------------------------
-void JsonDocument2::Load(const StringRef& filePath)
+void JsonDocument2::load(const StringRef& filePath)
 {
-	StreamReader r(filePath.GetBegin());	// TODO: end
+	StreamReader r(filePath.getBegin());	// TODO: end
 	JsonReader2 jr(&r);
 	ParseInternal(&jr);
 }
 
 //------------------------------------------------------------------------------
-String JsonDocument2::ToString(JsonFormatting formatting)
+String JsonDocument2::toString(JsonFormatting formatting)
 {
 	StringWriter w;
 	JsonWriter jw(&w);
 	jw.SetFormatting(formatting);
-	JsonElement2::Save(&jw);
-	return w.ToString();
+	JsonElement2::save(&jw);
+	return w.toString();
 }
 
 //------------------------------------------------------------------------------
-ISerializeElement* JsonDocument2::GetRootObject() { return this; }
+ISerializeElement* JsonDocument2::getRootObject() { return this; }
 
 //------------------------------------------------------------------------------
 void JsonDocument2::ParseInternal(JsonReader2* reader)
 {
-	bool result = reader->Read();
+	bool result = reader->read();
 	if (LN_CHECK(result, InvalidFormatException)) return;
 
 	JsonToken type = reader->GetTokenType();
 	if (LN_CHECK(type == JsonToken::StartObject, InvalidFormatException)) return;
 
-	JsonElement2::Load(reader);
+	JsonElement2::load(reader);
 }
 
 

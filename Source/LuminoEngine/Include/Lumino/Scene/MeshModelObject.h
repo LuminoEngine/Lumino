@@ -13,7 +13,7 @@ class SkinnedMeshComponent
 	: public VisualComponent
 {
 public:
-	static RefPtr<SkinnedMeshComponent> Create(const StringRef& filePath);
+	static RefPtr<SkinnedMeshComponent> create(const StringRef& filePath);
 
 public:
 	SkinnedMeshModel* GetSkinnedMeshModel() const;
@@ -46,7 +46,7 @@ LN_NAMESPACE_END
 //	: public VisualComponent
 //{
 //public:
-//	static RefPtr<MeshModelObject> Create(const StringRef& filePath);
+//	static RefPtr<MeshModelObject> create(const StringRef& filePath);
 //
 //public:
 //

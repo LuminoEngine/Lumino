@@ -41,7 +41,7 @@ TEST_F(Test_Vector4, Basic)
 	}
 	// this->GetLength / GetLengthSquared
 	{
-		ASSERT_NEAR(5.477226, sample1.GetLength(), LN_FLOAT_THRESHOLD);
+		ASSERT_NEAR(5.477226, sample1.getLength(), LN_FLOAT_THRESHOLD);
 		ASSERT_NEAR(30.000000, sample1.GetLengthSquared(), LN_FLOAT_THRESHOLD);
 	}
 	// this->Clamp

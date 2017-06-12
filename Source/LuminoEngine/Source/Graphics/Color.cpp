@@ -209,10 +209,10 @@ static int ParseHexChar(int c)
 static bool ParseHexColor(const StringRef& str, Color32* outColor)
 {
 	uint8_t r, g, b, a;
-	if (str.GetLength() >= 3 && str[0] == _T('#'))
+	if (str.getLength() >= 3 && str[0] == _T('#'))
 	{
 		// #FFFFFFFF
-		if (str.GetLength() >= 9)
+		if (str.getLength() >= 9)
 		{
 			a = ParseHexChar(str[1]) * 16 + ParseHexChar(str[2]);
 			r = ParseHexChar(str[3]) * 16 + ParseHexChar(str[4]);
@@ -220,7 +220,7 @@ static bool ParseHexColor(const StringRef& str, Color32* outColor)
 			b = ParseHexChar(str[7]) * 16 + ParseHexChar(str[8]);
 		}
 		// #FFFFFF
-		else if (str.GetLength() >= 7)
+		else if (str.getLength() >= 7)
 		{
 			a = 255;
 			r = ParseHexChar(str[1]) * 16 + ParseHexChar(str[2]);
@@ -228,7 +228,7 @@ static bool ParseHexColor(const StringRef& str, Color32* outColor)
 			b = ParseHexChar(str[5]) * 16 + ParseHexChar(str[6]);
 		}
 		// #FFFF
-		else if (str.GetLength() >= 5)
+		else if (str.getLength() >= 5)
 		{
 			a = ParseHexChar(str[1]);
 			a = a + a * 16;
@@ -240,7 +240,7 @@ static bool ParseHexColor(const StringRef& str, Color32* outColor)
 			b = b + b * 16;
 		}
         // #FFF
-		else if (str.GetLength() >= 4)
+		else if (str.getLength() >= 4)
 		{
 			r = ParseHexChar(str[1]);
 			r = r + r * 16;

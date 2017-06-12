@@ -277,7 +277,7 @@ class IVertexBuffer
 public:
 
 	/// 頂点データのバイト数の取得
-	virtual size_t GetByteCount() const = 0;
+	virtual size_t getByteCount() const = 0;
 
 	///// 頂点バッファリソースの使用方法の取得
 	//virtual DeviceResourceUsage GetUsage() const = 0;
@@ -300,7 +300,7 @@ class IIndexBuffer
 	: public IDeviceObject
 {
 public:
-	virtual size_t GetByteCount() const = 0;
+	virtual size_t getByteCount() const = 0;
 
 	/// インデックスバッファのフォーマットの取得　
 	virtual IndexBufferFormat GetFormat() const = 0;
@@ -443,7 +443,7 @@ class IShaderVariable
 public:
 
 	/// 変数の型の取得
-	virtual ShaderVariableType GetType() const = 0;
+	virtual ShaderVariableType getType() const = 0;
 
 	/// 変数名の取得
 	virtual const String& GetName() const = 0;
@@ -469,7 +469,7 @@ public:
 	virtual void SetBoolArray(const bool* values, int count) = 0;
 
 	/// 整数値の設定
-	virtual void SetInt(int value) = 0;
+	virtual void setInt(int value) = 0;
 
 	/// 整数値の取得
 	//virtual int GetInt() = 0;
@@ -515,7 +515,7 @@ public:
 	/// 文字列の取得
 	//virtual const TCHAR* GetString() = 0;
 
-	virtual const ShaderValue& GetValue() const = 0;
+	virtual const ShaderValue& getValue() const = 0;
 
 	/// アノテーションの数を取得する
 	virtual int GetAnnotationCount() = 0;

@@ -14,7 +14,7 @@ VmdLoader::~VmdLoader()
 }
 
 //------------------------------------------------------------------------------
-bool VmdLoader::Load(Stream* stream)
+bool VmdLoader::load(Stream* stream)
 {
 	m_lastFramePosition = 0.0;
 	BinaryReader reader(stream);
@@ -23,7 +23,7 @@ bool VmdLoader::Load(Stream* stream)
 	// ヘッダのチェック
 
 	VMD_Header vmdHeader;
-	reader.Read(&vmdHeader, sizeof(VMD_Header));
+	reader.read(&vmdHeader, sizeof(VMD_Header));
 	if (strncmp(vmdHeader.szHeader, "Vocaloid Motion Data 0002", 30) != 0) {
 		return false;
 	}
@@ -31,11 +31,11 @@ bool VmdLoader::Load(Stream* stream)
 	//-----------------------------------------------------
 	// ボーンアニメーション
 
-	uint32_t allBoneKeyCount = reader.ReadUInt32();
+	uint32_t allBoneKeyCount = reader.readUInt32();
 	for (uint32_t i = 0; i < allBoneKeyCount; ++i)
 	{
 		VMD_Motion vmdMotion;
-		reader.Read(&vmdMotion, sizeof(VMD_Motion));
+		reader.read(&vmdMotion, sizeof(VMD_Motion));
 
 		// 最大フレーム更新
 		if (m_lastFramePosition < (float)vmdMotion.ulFrameNo) {
@@ -66,15 +66,15 @@ bool VmdLoader::Load(Stream* stream)
 		if (itr == m_boneAnimationIndexMap.end())
 		{
 			BoneAnimation anim;
-			anim.TargetBoneName.ConvertFrom(vmdMotion.szBoneName, 15, Encoding::GetEncoding(EncodingType::SJIS));
+			anim.TargetBoneName.convertFrom(vmdMotion.szBoneName, 15, Encoding::GetEncoding(EncodingType::SJIS));
 
 			// 名前・インデックスの対応
-			m_boneAnimationIndexMap.insert(BoneAnimationIndexPair(vmdMotion.szBoneName, m_boneAnimationList.GetCount()));
+			m_boneAnimationIndexMap.insert(BoneAnimationIndexPair(vmdMotion.szBoneName, m_boneAnimationList.getCount()));
 
 			// アニメーション作成、キー追加
-			anim.AnimationCurve = RefPtr<VMDBezierSQTTransformAnimation2>::MakeRef();
+			anim.AnimationCurve = RefPtr<VMDBezierSQTTransformAnimation2>::makeRef();
 			anim.AnimationCurve->AddFrame(frame);
-			m_boneAnimationList.Add(anim);
+			m_boneAnimationList.add(anim);
 		}
 		// すでにあるボーン
 		else
@@ -92,11 +92,11 @@ bool VmdLoader::Load(Stream* stream)
 	//-----------------------------------------------------
 	// 表情アニメーション
 
-	uint32_t allFaceKeyCount = reader.ReadUInt32();
+	uint32_t allFaceKeyCount = reader.readUInt32();
 	for (uint32_t i = 0; i < allFaceKeyCount; ++i)
 	{
 		VMD_Face vmdFace;
-		reader.Read(&vmdFace, sizeof(VMD_Face));
+		reader.read(&vmdFace, sizeof(VMD_Face));
 
 		// 最大フレーム更新
 		if (m_lastFramePosition < (float)vmdFace.ulFrameNo)
@@ -110,16 +110,16 @@ bool VmdLoader::Load(Stream* stream)
 		if (itr == m_faceAnimationIndexMap.end())
 		{
 			FaceAnimation anim;
-			anim.TargetFaceName.ConvertFrom(vmdFace.szFaceName, 15, Encoding::GetEncoding(EncodingType::SJIS));
+			anim.TargetFaceName.convertFrom(vmdFace.szFaceName, 15, Encoding::GetEncoding(EncodingType::SJIS));
 			//anim.TargetFaceName = String(vmdFace.szFaceName);
 
 			// 名前・インデックスの対応
-			m_faceAnimationIndexMap.insert(FaceAnimationIndexPair(vmdFace.szFaceName, m_faceAnimationList.GetCount()));
+			m_faceAnimationIndexMap.insert(FaceAnimationIndexPair(vmdFace.szFaceName, m_faceAnimationList.getCount()));
 
 			// アニメーション作成、キー追加
-			anim.AnimationCurve = RefPtr<FloatAnimationCurve>::MakeRef();
+			anim.AnimationCurve = RefPtr<FloatAnimationCurve>::makeRef();
 			anim.AnimationCurve->AddKeyFrame(vmdFace.ulFrameNo, vmdFace.fFactor);
-			m_faceAnimationList.Add(anim);
+			m_faceAnimationList.add(anim);
 		}
 		// すでにある表情
 		else

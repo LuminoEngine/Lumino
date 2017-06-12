@@ -12,8 +12,8 @@ class UIImage
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static RefPtr<UIImage> Create();
-	static RefPtr<UIImage> Create(const StringRef& filePath);
+	static RefPtr<UIImage> create();
+	static RefPtr<UIImage> create(const StringRef& filePath);
 
 
 	void SetStretchType(StretchMode mode);

@@ -24,21 +24,21 @@ namespace tr
 void ReflectionHelper::AddGCObject(ReflectionObject* obj, ReflectionObject* child)
 {
 	if (obj == nullptr || child == nullptr) return;
-	obj->m_gcList.Add(child);
+	obj->m_gcList.add(child);
 }
 
 //------------------------------------------------------------------------------
 void ReflectionHelper::RemoveGCObject(ReflectionObject* obj, ReflectionObject* child)
 {
 	if (obj == nullptr || child == nullptr) return;
-	obj->m_gcList.Remove(child);
+	obj->m_gcList.remove(child);
 }
 
 //------------------------------------------------------------------------------
 void ReflectionHelper::GCObjects(ReflectionObject* obj)
 {
 	if (obj == nullptr) return;
-	obj->m_gcList.RemoveAll([](RefPtr<ReflectionObject>& obj) { return IsGCReady(obj); });
+	obj->m_gcList.removeAll([](RefPtr<ReflectionObject>& obj) { return IsGCReady(obj); });
 }
 
 //------------------------------------------------------------------------------
@@ -77,7 +77,7 @@ ReflectionObject::~ReflectionObject()
 //------------------------------------------------------------------------------
 void ReflectionObject::RaiseReflectionEvent(const ReflectionEventBase& ev, ReflectionEventArgs* args)
 {
-	ev.Raise(args);
+	ev.raise(args);
 }
 
 //------------------------------------------------------------------------------

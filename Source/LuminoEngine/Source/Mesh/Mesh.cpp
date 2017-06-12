@@ -35,9 +35,9 @@ const size_t MeshResource::vertexStrideTable[VB_Count] =
 };
 
 //------------------------------------------------------------------------------
-MeshResourcePtr MeshResource::Create()
+MeshResourcePtr MeshResource::create()
 {
-	auto ptr = MeshResourcePtr::MakeRef();
+	auto ptr = MeshResourcePtr::makeRef();
 	ptr->initialize(detail::GraphicsManager::GetInstance(), MeshCreationFlags::DynamicBuffers);
 	return ptr;
 }
@@ -71,10 +71,10 @@ void MeshResource::initialize(detail::GraphicsManager* manager, MeshCreationFlag
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::Reserve(int vertexCount, int indexCount)
+void MeshResource::reserve(int vertexCount, int indexCount)
 {
-	RequestVertexBuffer(VB_BasicVertices)->Reserve(vertexCount);	// まずは VB_BasicVertices だけ。他は必要になったとき、これのサイズに合わせて確保される。
-	RequestIndexBuffer()->Reserve(indexCount);
+	RequestVertexBuffer(VB_BasicVertices)->reserve(vertexCount);	// まずは VB_BasicVertices だけ。他は必要になったとき、これのサイズに合わせて確保される。
+	RequestIndexBuffer()->reserve(indexCount);
 }
 
 ////------------------------------------------------------------------------------
@@ -166,7 +166,7 @@ void MeshResource::SetColor(int index, const Color& color)
 }
 
 //------------------------------------------------------------------------------
-const Vector3& MeshResource::GetPosition(int index)
+const Vector3& MeshResource::getPosition(int index)
 {
 	if (LN_CHECK_RANGE(index, 0, GetVertexCount())) return Vector3::Zero;
 	Vertex* v = (Vertex*)RequestVertexBuffer(VB_BasicVertices)->GetMappedData();
@@ -306,13 +306,13 @@ void MeshResource::SetEdgeWeight(int index, float weight)
 //------------------------------------------------------------------------------
 void MeshResource::AddMeshSection(const MeshAttribute& section)
 {
-	m_attributes.Add(section);
+	m_attributes.add(section);
 }
 
 //------------------------------------------------------------------------------
 void MeshResource::AddSections(int count)
 {
-	m_attributes.resize(m_attributes.GetCount() + count);
+	m_attributes.resize(m_attributes.getCount() + count);
 }
 
 //------------------------------------------------------------------------------
@@ -362,8 +362,8 @@ void MeshResource::AddSquare(const Vertex* virtices)
 //------------------------------------------------------------------------------
 void MeshResource::AddLine(const Vertex& v1, const Vertex& v2)
 {
-	if (LN_CHECK_STATE(!m_attributes.IsEmpty())) return;
-	if (LN_CHECK_STATE(m_attributes.GetLast().primitiveType == PrimitiveType_LineList)) return;
+	if (LN_CHECK_STATE(!m_attributes.isEmpty())) return;
+	if (LN_CHECK_STATE(m_attributes.getLast().primitiveType == PrimitiveType_LineList)) return;
 
 	int beginIndex = GetVertexCount();
 	Vertex* v = (Vertex*)RequestVertexBufferForAdditional(2, VB_BasicVertices);
@@ -374,7 +374,7 @@ void MeshResource::AddLine(const Vertex& v1, const Vertex& v2)
 	i[0] = beginIndex + 0;
 	i[1] = beginIndex + 1;
 
-	m_attributes.GetLast().PrimitiveNum += 1;
+	m_attributes.getLast().PrimitiveNum += 1;
 }
 
 //------------------------------------------------------------------------------
@@ -662,7 +662,7 @@ IndexBuffer* MeshResource::RequestIndexBuffer()
 //------------------------------------------------------------------------------
 void MeshResource::GetMeshAttribute(int subsetIndex, MeshAttribute* outAttr)
 {
-	if (m_attributes.IsEmpty())
+	if (m_attributes.isEmpty())
 	{
 		outAttr->MaterialIndex = 0;
 		outAttr->StartIndex = 0;
@@ -686,7 +686,7 @@ void MeshResource::CommitRenderData(VertexDeclaration** outDecl, VertexBuffer** 
 	// VertexDeclaration
 	if (m_vertexDeclaration == nullptr || m_vertexDeclarationModified)
 	{
-		m_vertexDeclaration = RefPtr<VertexDeclaration>::MakeRef();
+		m_vertexDeclaration = RefPtr<VertexDeclaration>::makeRef();
 		m_vertexDeclaration->initialize(m_manager);
 		int stream = 0;
 
@@ -814,7 +814,7 @@ StaticMeshModel::~StaticMeshModel()
 void StaticMeshModel::initialize(detail::GraphicsManager* manager)
 {
 	LN_VERIFY_ARG(manager != nullptr);
-	m_materials = RefPtr<MaterialList>::MakeRef();
+	m_materials = RefPtr<MaterialList>::makeRef();
 }
 
 //------------------------------------------------------------------------------
@@ -824,9 +824,9 @@ void StaticMeshModel::initialize(detail::GraphicsManager* manager, MeshResource*
 	if (LN_CHECK_ARG(sharingMesh != nullptr)) return;
 
 	// メッシュ(バッファ類)は共有する
-	m_meshResources.Add(sharingMesh);
+	m_meshResources.add(sharingMesh);
 
-	m_materials = RefPtr<MaterialList>::MakeRef();
+	m_materials = RefPtr<MaterialList>::makeRef();
 
 	// マテリアルはコピーする
 	// TODO: コピー有無のフラグがあったほうがいいかも？
@@ -842,7 +842,7 @@ void StaticMeshModel::initialize(detail::GraphicsManager* manager, MeshResource*
 //------------------------------------------------------------------------------
 void StaticMeshModel::InitializeBox(detail::GraphicsManager* manager, const Vector3& size, MeshCreationFlags flags)
 {
-	auto res = RefPtr<MeshResource>::MakeRef();
+	auto res = RefPtr<MeshResource>::makeRef();
 	res->initialize(manager, flags);
 	res->AddBox(size);
 	if (flags.TestFlag(MeshCreationFlags::ReverseFaces)) res->ReverseFaces();
@@ -853,7 +853,7 @@ void StaticMeshModel::InitializeBox(detail::GraphicsManager* manager, const Vect
 //------------------------------------------------------------------------------
 void StaticMeshModel::InitializeSphere(detail::GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags)
 {
-	auto res = RefPtr<MeshResource>::MakeRef();
+	auto res = RefPtr<MeshResource>::makeRef();
 	res->initialize(manager, flags);
 	res->AddSphere(radius, slices, stacks);
 	if (flags.TestFlag(MeshCreationFlags::ReverseFaces)) res->ReverseFaces();
@@ -864,7 +864,7 @@ void StaticMeshModel::InitializeSphere(detail::GraphicsManager* manager, float r
 //------------------------------------------------------------------------------
 void StaticMeshModel::InitializePlane(detail::GraphicsManager* manager, const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags)
 {
-	auto res = RefPtr<MeshResource>::MakeRef();
+	auto res = RefPtr<MeshResource>::makeRef();
 	res->initialize(manager, flags);
 	res->AddPlane(size, sliceH, sliceV);
 	if (flags.TestFlag(MeshCreationFlags::ReverseFaces)) res->ReverseFaces();
@@ -875,7 +875,7 @@ void StaticMeshModel::InitializePlane(detail::GraphicsManager* manager, const Ve
 //------------------------------------------------------------------------------
 void StaticMeshModel::InitializeScreenPlane(detail::GraphicsManager* manager, MeshCreationFlags flags)
 {
-	auto res = RefPtr<MeshResource>::MakeRef();
+	auto res = RefPtr<MeshResource>::makeRef();
 	res->initialize(manager, flags);
 	res->AddScreenPlane();
 	if (flags.TestFlag(MeshCreationFlags::ReverseFaces)) res->ReverseFaces();
@@ -886,7 +886,7 @@ void StaticMeshModel::InitializeScreenPlane(detail::GraphicsManager* manager, Me
 //------------------------------------------------------------------------------
 void StaticMeshModel::InitializeTeapot(detail::GraphicsManager* manager, float size, int tessellation, MeshCreationFlags flags)
 {
-	auto res = RefPtr<MeshResource>::MakeRef();
+	auto res = RefPtr<MeshResource>::makeRef();
 	res->initialize(manager, flags);
 	res->AddTeapot(size, tessellation);
 	if (flags.TestFlag(MeshCreationFlags::ReverseFaces)) res->ReverseFaces();
@@ -903,23 +903,23 @@ void StaticMeshModel::InitializeTeapot(detail::GraphicsManager* manager, float s
 //------------------------------------------------------------------------------
 MeshResource* StaticMeshModel::FindMesh(const StringRef& name)
 {
-	auto mesh = m_meshResources.Find([name](MeshResource* mesh) { return mesh->GetName() == name; });
+	auto mesh = m_meshResources.find([name](MeshResource* mesh) { return mesh->GetName() == name; });
 	return (mesh != nullptr) ? *mesh : nullptr;
 }
 
 //------------------------------------------------------------------------------
 void StaticMeshModel::AddMaterials(int count)
 {
-	int oldCount = m_materials->GetCount();
+	int oldCount = m_materials->getCount();
 	int newCount = oldCount + count;
 	m_materials->resize(newCount);
 	if (oldCount < newCount)
 	{
 		for (int i = oldCount; i < newCount; ++i)
 		{
-			auto m = RefPtr<Material>::MakeRef();
+			auto m = RefPtr<Material>::makeRef();
 			m->initialize();
-			m_materials->SetAt(i, m);
+			m_materials->getAt(i, m);
 		}
 	}
 }
@@ -928,13 +928,13 @@ void StaticMeshModel::AddMaterials(int count)
 void StaticMeshModel::AddMaterial(Material* material)
 {
 	LN_VERIFY_STATE(m_materials != nullptr);
-	m_materials->Add(material);
+	m_materials->add(material);
 }
 
 //------------------------------------------------------------------------------
 Material* StaticMeshModel::GetMaterial(int index) const
 {
-	return m_materials->GetAt(index);
+	return m_materials->getAt(index);
 }
 
 LN_NAMESPACE_END

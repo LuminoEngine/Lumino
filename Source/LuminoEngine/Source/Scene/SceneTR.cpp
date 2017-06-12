@@ -15,9 +15,9 @@ namespace tr
 //==============================================================================
 
 //------------------------------------------------------------------------------
-HugePlanePtr HugePlane::Create(const Vector3& direction)
+HugePlanePtr HugePlane::create(const Vector3& direction)
 {
-	auto ptr = HugePlanePtr::MakeRef();
+	auto ptr = HugePlanePtr::makeRef();
 	ptr->initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), direction);
 	return ptr;
 }
@@ -40,7 +40,7 @@ void HugePlane::initialize(SceneGraph* sceneGraph, const Vector3& direction)
 	sceneGraph->GetRootNode()->AddChild(this);
 	SetAutoRemove(true);
 
-	m_mesh = RefPtr<MeshResource>::MakeRef();
+	m_mesh = RefPtr<MeshResource>::makeRef();
 	m_mesh->initialize(sceneGraph->GetManager()->GetGraphicsManager());
 	m_mesh->CreateSquarePlane(Vector2(1, 1), direction, MeshCreationFlags::DynamicBuffers);
 

@@ -451,17 +451,17 @@ void XInputModule::initialize()
 	{
 #if(_WIN32_WINNT >= _WIN32_WINNT_WIN8)	// XINPUT_DLL が "xinput1_4.dll" なのに、見つからないことがあった。 
 		// がんばって探す
-		if (DllLoader::Exists(XINPUT_DLL)) {
-			m_XInputModule.Load(XINPUT_DLL);
+		if (DllLoader::exists(XINPUT_DLL)) {
+			m_XInputModule.load(XINPUT_DLL);
 		}
-		else if (DllLoader::Exists(_T("xinput1_3.dll"))) {
-			m_XInputModule.Load(_T("xinput1_3.dll"));
+		else if (DllLoader::exists(_T("xinput1_3.dll"))) {
+			m_XInputModule.load(_T("xinput1_3.dll"));
 		}
-		else if (DllLoader::Exists(_T("xinput1_2.dll"))) {
-			m_XInputModule.Load(_T("xinput1_2.dll"));
+		else if (DllLoader::exists(_T("xinput1_2.dll"))) {
+			m_XInputModule.load(_T("xinput1_2.dll"));
 		}
-		else if (DllLoader::Exists(_T("xinput1_1.dll"))) {
-			m_XInputModule.Load(_T("xinput1_1.dll"));
+		else if (DllLoader::exists(_T("xinput1_1.dll"))) {
+			m_XInputModule.load(_T("xinput1_1.dll"));
 		}
 		else {
 			LN_THROW(0, FileNotFoundException);
@@ -469,8 +469,8 @@ void XInputModule::initialize()
 #else
 		m_XInputModule.Load(XINPUT_DLL);
 #endif
-		XInputGetState = reinterpret_cast<MD_XInputGetState>(m_XInputModule.GetProcAddress("XInputGetState"));
-		XInputSetState = reinterpret_cast<MD_XInputSetState>(m_XInputModule.GetProcAddress("XInputSetState"));
+		XInputGetState = reinterpret_cast<MD_XInputGetState>(m_XInputModule.getProcAddress("XInputGetState"));
+		XInputSetState = reinterpret_cast<MD_XInputSetState>(m_XInputModule.getProcAddress("XInputSetState"));
 	}
 }
 

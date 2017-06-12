@@ -51,23 +51,23 @@ public:
 		Grow(size);
 	}
 
-	int Pop()
+	int pop()
 	{
 		int top;
-		m_indexStack.Pop(&top);
+		m_indexStack.pop(&top);
 		return top;
 	}
 
-	bool IsEmpty() const
+	bool isEmpty() const
 	{
-		return m_indexStack.IsEmpty();
+		return m_indexStack.isEmpty();
 	}
 
 	void Grow(int size)
 	{
 		for (int i = 0; i < size; i++)
 		{
-			m_indexStack.Push(m_capacity + i);
+			m_indexStack.push(m_capacity + i);
 		}
 		m_capacity += size;
 	}
@@ -415,7 +415,7 @@ struct LNNVGcontext
 	{
 		Driver::IGraphicsDevice* device = manager->GetGraphicsDevice();
 		size_t bufferSize = nverts * sizeof(NVGvertex);
-		if (m_vertexBuffer == nullptr || bufferSize > m_vertexBuffer->GetByteCount())
+		if (m_vertexBuffer == nullptr || bufferSize > m_vertexBuffer->getByteCount())
 		{
 			m_vertexBuffer.attach(device->CreateVertexBuffer(bufferSize, verts, ResourceUsage::Dynamic), false);
 		}
@@ -597,10 +597,10 @@ static int lnnvg__renderCreate(void* uptr)
 	};
 	static const size_t codeLen = LN_ARRAY_SIZE_OF(codeData);
 	StringA code = lnc->manager->GetCommonShaderHeader();
-	code.Append((const char*)codeData, codeLen);
+	code.append((const char*)codeData, codeLen);
 
 	ShaderCompileResult result;
-	lnc->shader.attach(device->CreateShader(code.c_str(), code.GetLength(), &result), false);
+	lnc->shader.attach(device->CreateShader(code.c_str(), code.getLength(), &result), false);
 	LN_THROW(result.Level != ShaderCompileResultLevel_Error, CompilationException, result);
 	lnc->shaderPass = lnc->shader->GetTechnique(0)->GetPass(0);
 	lnc->varViewSize = lnc->shader->GetVariableByName(_T("viewSize"));
@@ -878,8 +878,8 @@ static void lnnvg__renderDelete(void* uptr)
 static int lnnvg__AddImageTexture(NVGcontext* ctx, Driver::ITexture* texture)
 {
 	LNNVGcontext* lnc = (LNNVGcontext*)nvgInternalParams(ctx)->userPtr;
-	lnc->textureList.Add(texture);
-	return lnc->textureList.GetCount();
+	lnc->textureList.add(texture);
+	return lnc->textureList.getCount();
 }
 
 //------------------------------------------------------------------------------
@@ -929,9 +929,9 @@ void nvgDeleteLNContext(NVGcontext* ctx)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RefPtr<NanoVGCommandList> NanoVGCommandListCache::CreateObject()
+RefPtr<NanoVGCommandList> NanoVGCommandListCache::createObject()
 {
-	return RefPtr<NanoVGCommandList>::MakeRef();
+	return RefPtr<NanoVGCommandList>::makeRef();
 }
 
 

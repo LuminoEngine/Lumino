@@ -24,7 +24,7 @@ static const byte_t g_ToneImageEffect_fx_Data[] =
 static const size_t g_ToneImageEffect_fx_Len = LN_ARRAY_SIZE_OF(g_ToneImageEffect_fx_Data);
 
 //------------------------------------------------------------------------------
-ToneImageEffectPtr ToneImageEffect::Create()
+ToneImageEffectPtr ToneImageEffect::create()
 {
 	ToneImageEffectPtr obj(LN_NEW ToneImageEffect(), false);
 	obj->initialize(detail::GraphicsManager::GetInstance());
@@ -47,8 +47,8 @@ void ToneImageEffect::initialize(detail::GraphicsManager* manager)
 {
 	ImageEffect::initialize(manager);
 
-	m_material = Object::MakeRef<Material>();
-	m_material->SetShader(Object::MakeRef<Shader>(m_manager, g_ToneImageEffect_fx_Data, g_ToneImageEffect_fx_Len));
+	m_material = Object::makeRef<Material>();
+	m_material->SetShader(Object::makeRef<Shader>(m_manager, g_ToneImageEffect_fx_Data, g_ToneImageEffect_fx_Len));
 
 	//m_shader.shader = LN_NEW Shader();
 	//m_shader.shader->initialize(m_manager, g_ToneImageEffect_fx_Data, g_ToneImageEffect_fx_Len);
@@ -69,7 +69,7 @@ void ToneImageEffect::SetTone(const ToneF& tone)
 void ToneImageEffect::ChangeTone(const ToneF& tone, double time)
 {
 	LN_NOTIMPLEMENTED();
-	//auto anim = ValueEasingCurve<Vector4>::Create(tone, time, EasingMode::Linear);
+	//auto anim = ValueEasingCurve<Vector4>::create(tone, time, EasingMode::Linear);
 	//AnimationClock* ac = m_manager->GetAnimationManager()->StartPropertyAnimation(this);
 	//ac->AddAnimationCurve(anim.Get(), this, ToneImageEffect::ToneId, Tone.Get());
 }
@@ -80,7 +80,7 @@ void ToneImageEffect::OnRender(DrawList* context, RenderTargetTexture* source, R
 	//if (Tone != Vector4::Zero)
 	{
 		//printf("ToneImageEffect::OnRender %p > %p\n", source, destination);
-		m_material->SetVectorParameter(_T("_Tone"), Tone.Get());
+		m_material->SetVectorParameter(_T("_Tone"), Tone.get());
 		context->Blit(source, destination, m_material);
 
 		//m_shader.varTone->SetVector(Tone.Get());

@@ -122,7 +122,7 @@ DirectMusicSegment::DirectMusicSegment(DirectMusicManager* manager, IDirectMusic
 		LN_COMCALL(m_dmSegment->SetParam(GUID_StandardMIDIFile, 0xFFFFFFFF, 0, 0, NULL));
     	
         // ローダーはもう使わないので解放
-		LN_SAFE_RELEASE( loader );
+		LN_COM_SAFE_RELEASE( loader );
     }
 }
 
@@ -171,7 +171,7 @@ void DirectMusicSegment::SetPitch(float pitch)
 uint32_t DirectMusicSegment::GetTotalTime() const
 {
 	MUSIC_TIME segment_length = 0;
-	m_dmSegment->GetLength(&segment_length);
+	m_dmSegment->getLength(&segment_length);
     return segment_length;
 }
 
@@ -214,7 +214,7 @@ void DirectMusicSegment::SetLoopState(bool isLoop, uint32_t begin, uint32_t leng
 		{
 			// セグメント全体の長さ取得
 			MUSIC_TIME time_length;
-			LN_COMCALL(m_dmSegment->GetLength(&time_length));
+			LN_COMCALL(m_dmSegment->getLength(&time_length));
 			length = time_length;
 
 			LN_COMCALL(m_dmSegment->SetLoopPoints(begin, length));
@@ -240,7 +240,7 @@ void DirectMusicSegment::Play()
 {
 	Stop();
 
-	LN_SAFE_RELEASE(m_dmSegmentState);
+	LN_COM_SAFE_RELEASE(m_dmSegmentState);
 
 	LN_COMCALL(m_dmAudioPath->Activate(TRUE));
 
@@ -248,7 +248,7 @@ void DirectMusicSegment::Play()
 	LN_COMCALL(m_dmPerformance->PlaySegmentEx(m_dmSegment, NULL, NULL, 0, 0, &state, NULL, m_dmAudioPath));
 
 	state->QueryInterface(IID_IDirectMusicSegmentState8, (LPVOID*)&m_dmSegmentState);
-	state->release();
+	state->Release();
 
 	// 非同期で初期化してた場合、ボリュームなどは、再生開始直前に設定する必要がある
 }
@@ -337,7 +337,7 @@ void DirectMusicManager::AddPlayRequest(PlayerObject* obj)
 	pos = std::find(m_playRequestList.begin(), m_playRequestList.end(), obj);
 	if (pos == m_playRequestList.end())
 	{
-		m_playRequestList.Add(obj);
+		m_playRequestList.add(obj);
 	}
 }
 
@@ -345,7 +345,7 @@ void DirectMusicManager::AddPlayRequest(PlayerObject* obj)
 void DirectMusicManager::RemovePlayRequest( PlayerObject* obj )
 {
 	MutexScopedLock lock(m_mutex);
-	m_playRequestList.Remove(obj);
+	m_playRequestList.remove(obj);
 }
 
 //------------------------------------------------------------------------------
@@ -391,7 +391,7 @@ void DirectMusicManager::Polling()
 	{
 		MutexScopedLock lock(m_mutex);
 
-		if (m_playRequestList.GetCount() > 0)
+		if (m_playRequestList.getCount() > 0)
 		{
 			PlayRequestList::iterator it = m_playRequestList.begin();
 			PlayRequestList::iterator end = m_playRequestList.end();
@@ -435,7 +435,7 @@ void DirectMusicManager::InternalInitialize(const ConfigData& configData)
 
 	if (m_initMode == DirectMusicMode::ThreadWait || m_initMode == DirectMusicMode::ThreadRequest)
 	{
-		m_initThread.Start(CreateDelegate(this, &DirectMusicManager::Thread_InitPerformance));
+		m_initThread.start(createDelegate(this, &DirectMusicManager::Thread_InitPerformance));
 	}
 	else
 	{
@@ -447,7 +447,7 @@ void DirectMusicManager::InternalInitialize(const ConfigData& configData)
 void DirectMusicManager::InitPerformance()
 {
 #ifdef LN_OUT_LOG
-	ln::Logger::WriteLine("initialize IDirectMusicPerformance8 ...");
+	ln::Logger::writeLine("initialize IDirectMusicPerformance8 ...");
 #endif
 
     IDirectMusicPerformance8* performance = NULL;
@@ -473,7 +473,7 @@ void DirectMusicManager::InitPerformance()
     }
 
 #ifdef LN_OUT_LOG
-	ln::Logger::WriteLine("lock IDirectMusicPerformance8");
+	ln::Logger::writeLine("lock IDirectMusicPerformance8");
 #endif
 
     m_mutex.Lock();
@@ -485,7 +485,7 @@ void DirectMusicManager::InitPerformance()
     m_performanceInited.SetTrue();
 
 #ifdef LN_OUT_LOG
-	ln::Logger::WriteLine("success initialize IDirectMusicPerformance8");
+	ln::Logger::writeLine("success initialize IDirectMusicPerformance8");
 #endif
 }
 

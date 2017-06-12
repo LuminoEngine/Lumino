@@ -97,9 +97,9 @@ Size UITreeViewItem::ArrangeOverride(const Size& finalSize)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UITreeView, UIControl)
 
 //------------------------------------------------------------------------------
-UITreeViewPtr UITreeView::Create()
+UITreeViewPtr UITreeView::create()
 {
-	auto ptr = UITreeViewPtr::MakeRef();
+	auto ptr = UITreeViewPtr::makeRef();
 	ptr->initialize();
 	return ptr;
 }
@@ -120,7 +120,7 @@ void UITreeView::initialize()
 	UIControl::initialize();
 	SetHContentAlignment(HAlignment::Stretch);
 
-	auto panel = RefPtr<UIStackPanel>::MakeRef();
+	auto panel = RefPtr<UIStackPanel>::makeRef();
 	panel->initialize();
 	panel->SetHAlignment(HAlignment::Stretch);
 	panel->SetVAlignment(VAlignment::Stretch);

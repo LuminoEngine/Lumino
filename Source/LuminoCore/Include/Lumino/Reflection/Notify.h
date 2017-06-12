@@ -46,7 +46,7 @@ protected:
 
 private:
 	friend class ReflectionObject;
-	virtual void Raise(ReflectionEventArgs* e) const = 0;
+	virtual void raise(ReflectionEventArgs* e) const = 0;
 };
 
 /**
@@ -68,7 +68,7 @@ public:
 	*/
 	void AddHandler(const Delegate<void(TArgs*)>& handler)
 	{
-		m_handlerList.Add(handler);
+		m_handlerList.add(handler);
 	}
 	
 	/**
@@ -76,7 +76,7 @@ public:
 	*/
 	void RemoveHandler(const Delegate<void(TArgs*)>& handler)
 	{
-		m_handlerList.Remove(handler);
+		m_handlerList.remove(handler);
 	}
 	
 	/**
@@ -89,7 +89,7 @@ public:
 
 	void operator += (const Delegate<void(TArgs*)>& handler)
 	{
-		m_handlerList.Add(handler);
+		m_handlerList.add(handler);
 	}
 	
 	/**
@@ -97,17 +97,17 @@ public:
 	*/
 	void operator -= (const Delegate<void(TArgs*)>& handler)
 	{
-		m_handlerList.Remove(handler);
+		m_handlerList.remove(handler);
 	}
 
 private:
 	List< Delegate<void(TArgs*)> > m_handlerList;
 
-	virtual void Raise(ReflectionEventArgs* e) const override
+	virtual void raise(ReflectionEventArgs* e) const override
 	{
 		for (const Delegate<void(TArgs*)>& d : m_handlerList)
 		{
-			d.Call(static_cast<TArgs*>(e));
+			d.call(static_cast<TArgs*>(e));
 		}
 	}
 };
@@ -147,7 +147,7 @@ public:
 
 	void AddHandler(const DelegateType& handler)
 	{
-		m_handlerList.Add(handler);
+		m_handlerList.add(handler);
 	}
 
 	void AddHandler(const std::function<void(TArgs...)>& handler)	// void operator += (const DelegateType& handler) だけだと暗黙変換が効かずコンパイルエラーとなっていたため用意
@@ -157,7 +157,7 @@ public:
 
 	void RemoveHandler(const DelegateType& handler)
 	{
-		m_handlerList.Remove(handler);
+		m_handlerList.remove(handler);
 	}
 
 	void operator += (const DelegateType& handler)
@@ -185,21 +185,21 @@ private:
 		m_handlerList.clear();
 	}
 
-	bool IsEmpty() const
+	bool isEmpty() const
 	{
-		return m_handlerList.IsEmpty();
+		return m_handlerList.isEmpty();
 	}
 
-	void Raise(TArgs... args)
+	void raise(TArgs... args)
 	{
-		int count = m_handlerList.GetCount();
+		int count = m_handlerList.getCount();
 		if (count > 0)
 		{
 			for (int i = 0; i < count - 1; ++i)
 			{
-				m_handlerList[i].Call(args...);
+				m_handlerList[i].call(args...);
 			}
-			m_handlerList[count - 1].Call(args...);	// 戻り値を戻すのは最後の1つ。(.NET の動作)
+			m_handlerList[count - 1].call(args...);	// 戻り値を戻すのは最後の1つ。(.NET の動作)
 		}
 	}
 };

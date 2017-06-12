@@ -58,10 +58,10 @@ TEST_F(Test_Threading_Atomic, Basic)
 	{
 		incrThreads[i].value = &value;
 		incrThreads[i].valueIncr = &valueIncr;
-		incrThreads[i].Start();
+		incrThreads[i].start();
 		decrThreads[i].value = &value;
 		decrThreads[i].valueDecr = &valueDecr;
-		decrThreads[i].Start();
+		decrThreads[i].start();
 	}
 	// 終了待機
 	for (int i = 0; i < ThreadCount; i++)
@@ -70,8 +70,8 @@ TEST_F(Test_Threading_Atomic, Basic)
 		decrThreads[i].Wait();
 	}
 
-	ASSERT_EQ(10, value.Get());
-	ASSERT_EQ(ThreadCount * 1000, valueIncr.Get());
-	ASSERT_EQ(-ThreadCount * 1000, valueDecr.Get());
+	ASSERT_EQ(10, value.get());
+	ASSERT_EQ(ThreadCount * 1000, valueIncr.get());
+	ASSERT_EQ(-ThreadCount * 1000, valueDecr.get());
 }
 

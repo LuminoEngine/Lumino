@@ -34,10 +34,10 @@ Thread::~Thread()
 }
 
 //------------------------------------------------------------------------------
-void Thread::Start()
+void Thread::start()
 {
 	Reset();
-	m_impl->Start();
+	m_impl->start();
 }
 
 //------------------------------------------------------------------------------
@@ -111,24 +111,24 @@ void Thread::ExecuteInternal()
 
 //------------------------------------------------------------------------------
 #ifdef LN_CPP11
-void DelegateThread::Start(Delegate<void()> func)
+void DelegateThread::start(Delegate<void()> func)
 {
 	m_ThreadFunc = func;
-	Thread::Start();
+	Thread::start();
 }
 #else
-void DelegateThread::Start(Delegate00 func)
+void DelegateThread::start(Delegate00 func)
 {
 	m_ThreadFunc = func;
-	Thread::Start();
+	Thread::start();
 }
 #endif
 
 //------------------------------------------------------------------------------
 void DelegateThread::Execute()
 {
-	if (!m_ThreadFunc.IsEmpty()) {
-		m_ThreadFunc.Call();
+	if (!m_ThreadFunc.isEmpty()) {
+		m_ThreadFunc.call();
 	}
 }
 

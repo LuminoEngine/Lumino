@@ -11,7 +11,7 @@ enum class PlatformEventType
 	Unknown,				/** 不明なイベント */
 
 	Quit,					/** アプリ終了要求 */
-	Close,					/** ウィンドウが閉じられようとしている */
+	close,					/** ウィンドウが閉じられようとしている */
 	WindowActivate,			/** ウィンドウがアクティブになった */
 	WindowDeactivate,		/** ウィンドウが非アクティブになった */
 

@@ -568,7 +568,7 @@ void GameAudioImpl::PushReleaseAtPlayEndList(Sound* sound)
 //------------------------------------------------------------------------------
 SoundPtr GameAudioImpl::CreateSound(const StringRef& filePath)
 {
-	auto ptr = SoundPtr::MakeRef();
+	auto ptr = SoundPtr::makeRef();
 	ptr->initialize(filePath);
 	return ptr;
 }
@@ -576,7 +576,7 @@ SoundPtr GameAudioImpl::CreateSound(const StringRef& filePath)
 //------------------------------------------------------------------------------
 SoundPtr GameAudioImpl::CreateSound(detail::AudioStream* audioStream)
 {
-	auto ptr = SoundPtr::MakeRef();
+	auto ptr = SoundPtr::makeRef();
 	ptr->initialize(audioStream);
 	return ptr;
 }

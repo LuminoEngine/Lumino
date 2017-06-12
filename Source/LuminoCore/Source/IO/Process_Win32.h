@@ -21,11 +21,11 @@ public:
 	{}
 
 public:
-	virtual bool CanRead() const { return (m_side == ReadSide); }
-	virtual bool CanWrite() const { return (m_side == WriteSide); }
-	virtual int64_t GetLength() const { LN_THROW(0, InvalidOperationException); return 0; }
-	virtual int64_t GetPosition() const { LN_THROW(0, InvalidOperationException); return 0; }
-	virtual size_t Read(void* buffer, size_t byteCount)
+	virtual bool canRead() const { return (m_side == ReadSide); }
+	virtual bool canWrite() const { return (m_side == WriteSide); }
+	virtual int64_t getLength() const { LN_THROW(0, InvalidOperationException); return 0; }
+	virtual int64_t getPosition() const { LN_THROW(0, InvalidOperationException); return 0; }
+	virtual size_t read(void* buffer, size_t byteCount)
 	{
 		if (LN_CHECK_STATE(m_side == ReadSide)) return 0;
 
@@ -41,7 +41,7 @@ public:
 		}
 		return bytesRead;
 	}
-	virtual void Write(const void* data, size_t byteCount)
+	virtual void write(const void* data, size_t byteCount)
 	{
 		if (LN_CHECK_STATE(m_side == WriteSide)) return;
 
@@ -49,8 +49,8 @@ public:
 		BOOL bRes = ::WriteFile(m_hPipe, data, (DWORD)byteCount, &bytesWrite, NULL);
 		LN_THROW(bRes != FALSE, Win32Exception, ::GetLastError());
 	}
-	virtual void Seek(int64_t offset, SeekOrigin origin) { LN_THROW(0, InvalidOperationException); }
-	virtual void Flush() {}
+	virtual void seek(int64_t offset, SeekOrigin origin) { LN_THROW(0, InvalidOperationException); }
+	virtual void flush() {}
 
 private:
 	Side	m_side;
@@ -67,7 +67,7 @@ public:
 	ProcessImpl();
 	~ProcessImpl();
 
-	void Start(const ProcessStartInfo& startInfo, ProcessStartResult* outResult);
+	void start(const ProcessStartInfo& startInfo, ProcessStartResult* outResult);
 	bool WaitForExit(int timeoutMSec);
 	ProcessStatus GetState();
 	int GetExitCode();
@@ -115,7 +115,7 @@ ProcessImpl::~ProcessImpl()
 }
 
 //------------------------------------------------------------------------------
-void ProcessImpl::Start(const ProcessStartInfo& startInfo, ProcessStartResult* outResult)
+void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* outResult)
 {
 	enum { R = 0, W = 1 };
 	BOOL bResult;
@@ -211,15 +211,15 @@ void ProcessImpl::Start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 	si.wShowWindow = SW_HIDE;
 
 	// exe 名と引数を連結してコマンドライン文字列を作る
-	String cmdArgs = startInfo.program.GetString();
-	if (!startInfo.args.IsEmpty()) {
+	String cmdArgs = startInfo.program.getString();
+	if (!startInfo.args.isEmpty()) {
 		cmdArgs += _T(" ");
 		cmdArgs += startInfo.args;
 	}
 
 	// カレントディレクトリ
 	LPCTSTR pCurrentDirectory = NULL;
-	if (!startInfo.workingDirectory.IsEmpty()) {
+	if (!startInfo.workingDirectory.isEmpty()) {
 		pCurrentDirectory = startInfo.workingDirectory.c_str();
 	}
 

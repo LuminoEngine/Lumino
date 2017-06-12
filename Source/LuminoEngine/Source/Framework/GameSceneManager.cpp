@@ -50,7 +50,7 @@ void GameScene::OnTerminate()
 void GameScene::AddGameObject(WorldObject* obj)
 {
 	if (LN_CHECK_ARG(obj != nullptr)) return;
-	m_gameObjectList.Add(obj);
+	m_gameObjectList.add(obj);
 }
 
 //------------------------------------------------------------------------------

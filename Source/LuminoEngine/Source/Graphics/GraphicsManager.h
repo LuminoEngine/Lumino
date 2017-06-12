@@ -102,7 +102,7 @@ public:
 	/** グラフィックスシステムのメイン Renderer を取得します。*/
 	Details::Renderer* GetRenderer() const { return m_renderer; }
 
-	/** メインの SwapChain を取得します。これは Create() で指定されたメインウィンドウへのスワップチェインです。*/
+	/** メインの SwapChain を取得します。これは create() で指定されたメインウィンドウへのスワップチェインです。*/
 	SwapChain* GetMainSwapChain() { return m_mainSwapChain; }
 
 
@@ -118,8 +118,8 @@ public:
 	
 	BitmapTextRenderer* GetBitmapTextRenderer() const { return m_bitmapTextRenderer; }
 
-	void AddDeviceResetListener(IDeviceResetListener* listener) { m_deviceResetListenerList.Add(listener); }
-	void RemoveDeviceResetListener(IDeviceResetListener* listener) { m_deviceResetListenerList.Remove(listener); }
+	void AddDeviceResetListener(IDeviceResetListener* listener) { m_deviceResetListenerList.add(listener); }
+	void RemoveDeviceResetListener(IDeviceResetListener* listener) { m_deviceResetListenerList.remove(listener); }
 
 	/// TODO: (GraphicsDevice を作成したスレッドと同じスレッドで呼び出す)
 	void PauseDevice();

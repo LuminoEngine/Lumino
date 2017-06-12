@@ -100,7 +100,7 @@ class CombinedMaterialCache
 	: public SimpleOneTimeObjectCache<CombinedMaterial>
 {
 protected:
-	virtual RefPtr<CombinedMaterial> CreateObject() override;
+	virtual RefPtr<CombinedMaterial> createObject() override;
 };
 
 class InternalContext
@@ -127,7 +127,7 @@ public:
 	DrawElementBatch* GetCurrentStatus() const { return m_currentStatePtr; }
 	detail::SpriteRenderFeature* GetSpriteRenderer();
 
-	void Flush();
+	void flush();
 
 LN_INTERNAL_ACCESS:
 	void SwitchActiveRenderer(detail::IRenderFeature* renderer);
@@ -251,7 +251,7 @@ public:
 
 LN_INTERNAL_ACCESS:
 	void ApplyStatus(InternalContext* context, CombinedMaterial* combinedMaterial, const DefaultStatus& defaultStatus);
-	uint32_t GetHashCode() const;
+	uint32_t getHashCode() const;
 	void Reset();
 	bool IsHashDirty() const { return m_hashDirty; }
 
@@ -292,7 +292,7 @@ public:
 	bool Equal(const BatchState& state, Material* material, const Matrix& transfrom, const BuiltinEffectData& effectData) const;
 	void Reset();
 	void ApplyStatus(InternalContext* context, const DefaultStatus& defaultStatus);
-	size_t GetHashCode() const;
+	size_t getHashCode() const;
 	size_t GetBuiltinEffectDataHashCode() const;
 
 	intptr_t				m_rendererId;
@@ -537,7 +537,7 @@ class RenderDiagItem
 public:
 	RenderDiagItem();
 	virtual ~RenderDiagItem() = default;
-	virtual String ToString() const;
+	virtual String toString() const;
 
 private:
 	enum class SubType
@@ -905,7 +905,7 @@ private:
 template<typename TElement>
 inline TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRenderFeature* renderer, Material* userMaterial)
 {
-	Material* availableMaterial = (userMaterial != nullptr) ? userMaterial : m_defaultMaterial.Get();
+	Material* availableMaterial = (userMaterial != nullptr) ? userMaterial : m_defaultMaterial.get();
 
 	// これを決定してから比較を行う
 	m_state.state.SetStandaloneShaderRenderer(renderer->IsStandaloneShader());

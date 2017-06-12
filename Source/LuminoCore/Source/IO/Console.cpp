@@ -83,56 +83,56 @@ void Console::Free()
 #endif
 
 //------------------------------------------------------------------------------
-void Console::WriteLine()
+void Console::writeLine()
 {
-	WriteInternal(Environment::GetNewLine<char>());
+	writeInternal(Environment::getNewLine<char>());
 }
 
 //------------------------------------------------------------------------------
-void Console::WriteLine(const StringRefA& str)
+void Console::writeLine(const StringRefA& str)
 {
 	StringA s(str);
-	WriteInternal(s.c_str());
-	WriteLine();
+	writeInternal(s.c_str());
+	writeLine();
 }
 
 //------------------------------------------------------------------------------
-void Console::WriteLine(const StringRefW& str)
+void Console::writeLine(const StringRefW& str)
 {
 	StringW s(str);
-	WriteInternal(s.c_str());
-	WriteLine();
+	writeInternal(s.c_str());
+	writeLine();
 }
 
 //------------------------------------------------------------------------------
-void Console::WriteLineError()
+void Console::writeLineError()
 {
-	WriteInternalError(Environment::GetNewLine<char>());
+	writeInternalError(Environment::getNewLine<char>());
 }
 
 //------------------------------------------------------------------------------
-void Console::WriteInternal(const char* str)
+void Console::writeInternal(const char* str)
 {
 	if (LN_CHECK_ARG(str != nullptr)) return;
 	fprintf(stdout, "%s", str);
 }
 
 //------------------------------------------------------------------------------
-void Console::WriteInternal(const wchar_t* str)
+void Console::writeInternal(const wchar_t* str)
 {
 	if (LN_CHECK_ARG(str != nullptr)) return;
 	fwprintf(stdout, L"%s", str);
 }
 
 //------------------------------------------------------------------------------
-void Console::WriteInternalError(const char* str)
+void Console::writeInternalError(const char* str)
 {
 	if (LN_CHECK_ARG(str != nullptr)) return;
 	fprintf(stderr, "%s", str);
 }
 
 //------------------------------------------------------------------------------
-void Console::WriteInternalError(const wchar_t* str)
+void Console::writeInternalError(const wchar_t* str)
 {
 	if (LN_CHECK_ARG(str != nullptr)) return;
 	fwprintf(stderr, L"%s", str);

@@ -16,7 +16,7 @@ class TileSet
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static TileSetPtr Create();
+	static TileSetPtr create();
 
 public:
 	TileSet();

@@ -33,15 +33,15 @@ public:
 
 	bool IsEof() const
 	{
-		return m_pos == m_tokenList->GetCount();
+		return m_pos == m_tokenList->getCount();
 	}
 
 	const fl::Token* GetToken() const
 	{
-		return m_tokenList->GetAt(m_pos);
+		return m_tokenList->getAt(m_pos);
 	}
 
-	TokenPosition Next(bool eatSpace = true) const
+	TokenPosition next(bool eatSpace = true) const
 	{
 		TokenPosition next(m_tokenList, m_pos + 1);
 		return next.EatSpace();
@@ -50,9 +50,9 @@ public:
 	TokenPosition EatSpace() const
 	{
 		int i = m_pos;
-		for (; i < m_tokenList->GetCount(); i++)
+		for (; i < m_tokenList->getCount(); i++)
 		{
-			const fl::Token* t = m_tokenList->GetAt(i);
+			const fl::Token* t = m_tokenList->getAt(i);
 			if (t->GetTokenGroup() == fl::TokenGroup::SpaceSequence ||
 				t->GetTokenGroup() == fl::TokenGroup::NewLine ||
 				t->GetTokenGroup() == fl::TokenGroup::Comment)
@@ -78,9 +78,9 @@ public:
 	TokenPosition FindNext(TPred pred) const
 	{
 		int i = m_pos;
-		for (; i < m_tokenList->GetCount(); i++)
+		for (; i < m_tokenList->getCount(); i++)
 		{
-			if (pred(m_tokenList->GetAt(i)))
+			if (pred(m_tokenList->getAt(i)))
 			{
 				break;
 			}
@@ -127,8 +127,8 @@ void ShaderAnalyzer::ParseSimpleShaderMacros(const fl::TokenList* tokenList)
 			return;
 		}
 
-		pos = keyword.Next();	// to '('
-		pos = pos.Next();	// to FuncName
+		pos = keyword.next();	// to '('
+		pos = pos.next();	// to FuncName
 
 		if (keyword.GetToken()->EqualString("technique", 9))
 		{
@@ -136,14 +136,14 @@ void ShaderAnalyzer::ParseSimpleShaderMacros(const fl::TokenList* tokenList)
 		}
 		else if (keyword.GetToken()->EqualString("LN_SURFACE_VS", 13))
 		{
-			m_wrapedShaderFuncList.Add({ lastTechniqueKWLoc, "", ShaderCodeType::SurfaceVertexShader });
+			m_wrapedShaderFuncList.add({ lastTechniqueKWLoc, "", ShaderCodeType::SurfaceVertexShader });
 		}
 		else if (keyword.GetToken()->EqualString("LN_SURFACE_PS", 13))
 		{
-			m_wrapedShaderFuncList.Add({ lastTechniqueKWLoc, pos.GetToken()->GetString(), ShaderCodeType::SurfacePixelShader });
+			m_wrapedShaderFuncList.add({ lastTechniqueKWLoc, pos.GetToken()->getString(), ShaderCodeType::SurfacePixelShader });
 		}
 
-		pos = keyword.Next();
+		pos = keyword.next();
 	}
 }
 
@@ -158,42 +158,42 @@ std::vector<char> ShaderAnalyzer::MakeHLSLCode() const
 #include "Resource/EffectHeaderDX9HLSL.fxh.h"
 		};
 		static const size_t EffectHeader_Data_Len = LN_ARRAY_SIZE_OF(EffectHeader_Data);
-		newCode.Append(EffectHeader_Data, EffectHeader_Data_Len);
+		newCode.append(EffectHeader_Data, EffectHeader_Data_Len);
 	}
-	newCode.Append("#line 5");
-	newCode.Append(StringA::GetNewLine().c_str());
+	newCode.append("#line 5");
+	newCode.append(StringA::getNewLine().c_str());
 	//newCode.Append(m_code, m_codeLength);
 	//newCode.Append("\n");	// 最後には改行を入れておく。環境によっては改行がないとエラーになる。しかもエラーなのにエラー文字列が出ないこともある。
 
 
 
-	std::vector<char> code(newCode.c_str(), newCode.c_str() + newCode.GetLength());
+	std::vector<char> code(newCode.c_str(), newCode.c_str() + newCode.getLength());
 	code.insert(code.end(), m_code, m_code + m_codeLength);
 
 	// TODO: StringBuilderA Insert, AppendFormat, AppendLine
 
-	int insetedLength = newCode.GetLength();
+	int insetedLength = newCode.getLength();
 
 	for (auto& info : m_wrapedShaderFuncList)
 	{
 		if (info.type == ShaderCodeType::SurfacePixelShader)
 		{
 			StringBuilderA sb;
-			sb.Append(StringA::Format("LN_PS_OUTPUT_SURFACE LN_SurfacePS_{0}(LN_PS_INPUT_SURFACE i){{", info.funcName));
-			sb.Append("LN_SURFACE_INPUT ui;");
-			sb.Append("ui.TexCoord  = i.TexCoord;");
-			sb.Append("ui.TexCoord1 = i.TexCoord1;");
-			sb.Append("ui.TexCoord2 = i.TexCoord2;");
-			sb.Append("ui.TexCoord3 = i.TexCoord;");
-			sb.Append("ui.Color     = i.Color;");
-			sb.Append(StringA::Format("LN_SURFACE_OUTPUT uo = {0}(ui);", info.funcName));
-			sb.Append("LN_PS_OUTPUT_SURFACE o;");
-			sb.Append("o.Color = uo.Albedo;");
-			sb.Append("return o;");
-			sb.Append("}");
+			sb.append(StringA::format("LN_PS_OUTPUT_SURFACE LN_SurfacePS_{0}(LN_PS_INPUT_SURFACE i){{", info.funcName));
+			sb.append("LN_SURFACE_INPUT ui;");
+			sb.append("ui.TexCoord  = i.TexCoord;");
+			sb.append("ui.TexCoord1 = i.TexCoord1;");
+			sb.append("ui.TexCoord2 = i.TexCoord2;");
+			sb.append("ui.TexCoord3 = i.TexCoord;");
+			sb.append("ui.Color     = i.Color;");
+			sb.append(StringA::format("LN_SURFACE_OUTPUT uo = {0}(ui);", info.funcName));
+			sb.append("LN_PS_OUTPUT_SURFACE o;");
+			sb.append("o.Color = uo.Albedo;");
+			sb.append("return o;");
+			sb.append("}");
 
-			code.insert(code.begin() + insetedLength + info.lastTechniqueKWLoc, sb.c_str(), sb.c_str() + sb.GetLength());
-			insetedLength += sb.GetLength();
+			code.insert(code.begin() + insetedLength + info.lastTechniqueKWLoc, sb.c_str(), sb.c_str() + sb.getLength());
+			insetedLength += sb.getLength();
 		}
 	}
 

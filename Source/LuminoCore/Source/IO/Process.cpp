@@ -79,20 +79,20 @@ void Process::SetErrorDataReceivedCallback(const Delegate<void(String)>& callbac
 }
 #else
 //------------------------------------------------------------------------------
-void Process::SetOutputDataReceivedCallback(const Delegate01<String>& callback)
+void process::SetOutputDataReceivedCallback(const Delegate01<String>& callback)
 {
 	m_outputDataReceivedCallback = callback;
 }
 
 //------------------------------------------------------------------------------
-void Process::SetErrorDataReceivedCallback(const Delegate01<String>& callback)
+void process::SetErrorDataReceivedCallback(const Delegate01<String>& callback)
 {
 	m_errorDataReceivedCallback = callback;
 }
 #endif
 
 //------------------------------------------------------------------------------
-void Process::Start(const PathName& program, const String& args)
+void Process::start(const PathName& program, const String& args)
 {
 	detail::ProcessStartInfo si;
 	detail::ProcessStartResult result;
@@ -105,28 +105,28 @@ void Process::Start(const PathName& program, const String& args)
 	si.standardInputEncoding = m_standardInputEncoding;
 	si.standardOutputEncoding = m_standardOutputEncoding;
 	si.standardErrorEncoding = m_standardErrorEncoding;
-	m_impl->Start(si, &result);
+	m_impl->start(si, &result);
 	m_standardInputWriter = result.standardInputWriter;
 	m_standardOutputReader = result.standardOutputReader;
 	m_standardErrorReader = result.standardErrorReader;
 }
 
 //------------------------------------------------------------------------------
-void Process::Start(const PathName& program, const StringArray& argsList)
+void Process::start(const PathName& program, const StringArray& argsList)
 {
 	// コマンドライン引数を作る
 	String args;
-	for (int i = 0; i < argsList.GetCount(); ++i)
+	for (int i = 0; i < argsList.getCount(); ++i)
 	{
-		if (!args.IsEmpty()) {
+		if (!args.isEmpty()) {
 			args += _T(' ');
 		}
 
 		// スペースが含まれていれば引数を " で囲む
 		String tmp = argsList[i];
-		if (tmp.Contains(_T(' ')) || tmp.Contains(_T('\t')))
+		if (tmp.contains(_T(' ')) || tmp.contains(_T('\t')))
 		{
-			if (!tmp.StartsWith(_T('\"')) && !tmp.EndsWith(_T('\"')))
+			if (!tmp.startsWith(_T('\"')) && !tmp.endsWith(_T('\"')))
 			{
 				tmp = _T('\"') + tmp + _T('\"');
 			}
@@ -135,7 +135,7 @@ void Process::Start(const PathName& program, const StringArray& argsList)
 		args += tmp;
 	}
 
-	Start(program, args);
+	start(program, args);
 }
 
 //------------------------------------------------------------------------------
@@ -171,7 +171,7 @@ int Process::Execute(const PathName& program, const String& args, String* outStd
 	Process proc;
 	proc.SetRedirectStandardOutput(outStdOutput != nullptr);
 	proc.SetRedirectStandardError(outStdError != nullptr);
-	proc.Start(program, args);
+	proc.start(program, args);
 	if (outStdOutput != nullptr) {
 		*outStdOutput = proc.GetStandardOutput()->ReadToEnd();
 	}
@@ -195,9 +195,9 @@ void Process::BeginOutputReadLine()
 
 	// 読み取りスレッドを立てる
 #ifdef LN_CPP11
-	m_readStdOutputThread.Start(Delegate<void()>(this, &Process::Thread_ReadStdOutput));
+	m_readStdOutputThread.start(Delegate<void()>(this, &Process::Thread_ReadStdOutput));
 #else
-	m_readStdOutputThread.Start(LN_CreateDelegate(this, &Process::Thread_ReadStdOutput));
+	m_readStdOutputThread.start(LN_CreateDelegate(this, &process::Thread_ReadStdOutput));
 #endif
 	m_runningReadThread = true;
 }
@@ -209,9 +209,9 @@ void Process::BeginErrorReadLine()
 
 	// 読み取りスレッドを立てる
 #ifdef LN_CPP11
-	m_readStdErrorThread.Start(Delegate<void()>(this, &Process::Thread_ReadStdError));
+	m_readStdErrorThread.start(Delegate<void()>(this, &Process::Thread_ReadStdError));
 #else
-	m_readStdErrorThread.Start(LN_CreateDelegate(this, &Process::Thread_ReadStdError));
+	m_readStdErrorThread.start(LN_CreateDelegate(this, &process::Thread_ReadStdError));
 #endif
 	m_runningErrorReadThread = true;
 }
@@ -240,8 +240,8 @@ void Process::Thread_ReadStdOutput()
 	String strLine;
 	while (m_standardOutputReader->ReadLine(&strLine))
 	{
-		if (!m_outputDataReceivedCallback.IsEmpty()) {
-			m_outputDataReceivedCallback.Call(strLine);
+		if (!m_outputDataReceivedCallback.isEmpty()) {
+			m_outputDataReceivedCallback.call(strLine);
 		}
 	}
 }
@@ -252,8 +252,8 @@ void Process::Thread_ReadStdError()
 	String strLine;
 	while (m_standardErrorReader->ReadLine(&strLine))
 	{
-		if (!m_errorDataReceivedCallback.IsEmpty()) {
-			m_errorDataReceivedCallback.Call(strLine);
+		if (!m_errorDataReceivedCallback.isEmpty()) {
+			m_errorDataReceivedCallback.call(strLine);
 		}
 	}
 }

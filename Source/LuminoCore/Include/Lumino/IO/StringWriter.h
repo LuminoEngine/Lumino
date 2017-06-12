@@ -16,7 +16,7 @@ public:
 	virtual ~StringWriter();
 
 public:
-	String ToString() const;
+	String toString() const;
 	
 private:
 	virtual void Flash();

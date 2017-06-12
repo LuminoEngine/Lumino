@@ -76,13 +76,13 @@ void Brush::GetRawData(detail::BrushRawData* outData) const
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RefPtr<SolidColorBrush> SolidColorBrush::Create(const Color& color)
+RefPtr<SolidColorBrush> SolidColorBrush::create(const Color& color)
 {
 	return NewObject<SolidColorBrush>(color);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<SolidColorBrush> SolidColorBrush::Create(const Color& rgb, float a)
+RefPtr<SolidColorBrush> SolidColorBrush::create(const Color& rgb, float a)
 {
 	return NewObject<SolidColorBrush>(rgb, a);
 }
@@ -116,19 +116,19 @@ void SolidColorBrush::initialize(const Color& rgb, float a)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RefPtr<TextureBrush> TextureBrush::Create(const StringRef& filePath)
+RefPtr<TextureBrush> TextureBrush::create(const StringRef& filePath)
 {
 	return NewObject<TextureBrush>(filePath);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<TextureBrush> TextureBrush::Create(Texture* texture)
+RefPtr<TextureBrush> TextureBrush::create(Texture* texture)
 {
 	return NewObject<TextureBrush>(texture);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<TextureBrush> TextureBrush::Create(Texture* texture, BrushImageDrawMode drawMode, const Rect& sourceRect, const ThicknessF& borderThickness, BrushWrapMode wrapMode)
+RefPtr<TextureBrush> TextureBrush::create(Texture* texture, BrushImageDrawMode drawMode, const Rect& sourceRect, const ThicknessF& borderThickness, BrushWrapMode wrapMode)
 {
 	auto ptr = NewObject<TextureBrush>(texture);
 	ptr->SetImageDrawMode(drawMode);
@@ -159,7 +159,7 @@ void TextureBrush::initialize()
 void TextureBrush::initialize(const StringRef& filePath)
 {
 	Brush::initialize();
-	auto texture = Texture2D::Create(filePath, TextureFormat::R8G8B8A8, false);		//TODO: GraphicsManager?
+	auto texture = Texture2D::create(filePath, TextureFormat::R8G8B8A8, false);		//TODO: GraphicsManager?
 	SetTexture(texture);
 }
 
@@ -225,10 +225,10 @@ ColorBrush::~ColorBrush()
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RefPtr<TextureBrush> TextureBrush::Create(const StringRef& filePath)
+RefPtr<TextureBrush> TextureBrush::create(const StringRef& filePath)
 {
 	RefPtr<TextureBrush> obj(LN_NEW TextureBrush(), false);
-	obj->Create(filePath.GetBegin(), nullptr);	// TODO: getBegin
+	obj->create(filePath.GetBegin(), nullptr);	// TODO: getBegin
 	return obj;
 }
 
@@ -246,13 +246,13 @@ TextureBrush::~TextureBrush()
 }
 
 //------------------------------------------------------------------------------
-void TextureBrush::Create(const TCHAR* filePath, detail::GraphicsManager* manager)
+void TextureBrush::create(const TCHAR* filePath, detail::GraphicsManager* manager)
 {
-	m_texture = Texture2D::Create(filePath, TextureFormat::R8G8B8A8, false);		//TODO: GraphicsManager?
+	m_texture = Texture2D::create(filePath, TextureFormat::R8G8B8A8, false);		//TODO: GraphicsManager?
 }
 
 //------------------------------------------------------------------------------
-void TextureBrush::Create(Texture* texture)
+void TextureBrush::create(Texture* texture)
 {
 	m_texture = texture;
 }

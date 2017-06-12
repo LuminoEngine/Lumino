@@ -75,9 +75,9 @@ void JsonReader::Parse(TextReader* textReader)
 bool JsonReader::SkipWhitespace()
 {
 	while (m_reader->Peek() == ' ' || m_reader->Peek() == '\n' || m_reader->Peek() == '\r' || m_reader->Peek() == '\t') {
-		m_reader->Read();
+		m_reader->read();
 	}
-	return !m_reader->IsEOF();
+	return !m_reader->isEOF();
 }
 
 //------------------------------------------------------------------------------
@@ -98,10 +98,10 @@ bool JsonReader::ParseValue()
 //------------------------------------------------------------------------------
 bool JsonReader::ParseNull()
 {
-	m_reader->Read();	// skip 'n'
-	if (m_reader->Read() == 'u' &&
-		m_reader->Read() == 'l' &&
-		m_reader->Read() == 'l')
+	m_reader->read();	// skip 'n'
+	if (m_reader->read() == 'u' &&
+		m_reader->read() == 'l' &&
+		m_reader->read() == 'l')
 	{
 		if (!m_handler->OnNull())
 		{
@@ -122,10 +122,10 @@ bool JsonReader::ParseNull()
 //------------------------------------------------------------------------------
 bool JsonReader::ParseTrue()
 {
-	m_reader->Read();	// skip 't'
-	if (m_reader->Read() == 'r' &&
-		m_reader->Read() == 'u' &&
-		m_reader->Read() == 'e')
+	m_reader->read();	// skip 't'
+	if (m_reader->read() == 'r' &&
+		m_reader->read() == 'u' &&
+		m_reader->read() == 'e')
 	{
 		if (!m_handler->OnBool(true))
 		{
@@ -146,11 +146,11 @@ bool JsonReader::ParseTrue()
 //------------------------------------------------------------------------------
 bool JsonReader::ParseFalse()
 {
-	m_reader->Read();	// skip 'f'
-	if (m_reader->Read() == 'a' &&
-		m_reader->Read() == 'l' &&
-		m_reader->Read() == 's' &&
-		m_reader->Read() == 'e')
+	m_reader->read();	// skip 'f'
+	if (m_reader->read() == 'a' &&
+		m_reader->read() == 'l' &&
+		m_reader->read() == 's' &&
+		m_reader->read() == 'e')
 	{
 		if (!m_handler->OnBool(false))
 		{
@@ -172,7 +172,7 @@ bool JsonReader::ParseFalse()
 bool JsonReader::ParseNumber()
 {
 	// 数値への変換には strtod を使用する。そのため、まずは数値扱いできる文字を全て読み取る
-	m_tmpStream.Seek(0, SeekOrigin_Begin);
+	m_tmpStream.seek(0, SeekOrigin_Begin);
 	int len = 0;
 	TCHAR ch;
 	while (true)
@@ -183,9 +183,9 @@ bool JsonReader::ParseNumber()
 			(ch == 'e' || ch == 'E') ||
 			(ch == '+' || ch == '-'))
 		{
-			m_tmpStream.Write(&ch, sizeof(TCHAR));
+			m_tmpStream.write(&ch, sizeof(TCHAR));
 			++len;
-			m_reader->Read();	// ここで1つ進める
+			m_reader->read();	// ここで1つ進める
 		}
 		else {
 			break;				// 一致しなければポインタは進めない
@@ -198,13 +198,13 @@ bool JsonReader::ParseNumber()
 		return false;
 	}
 	ch = '\0';
-	m_tmpStream.Write(&ch, sizeof(TCHAR));	// 終端 \0
+	m_tmpStream.write(&ch, sizeof(TCHAR));	// 終端 \0
 
 	// double へ変換する
 	TCHAR* str = (TCHAR*)m_tmpStream.GetBuffer();
 	const TCHAR* endptr = NULL;
 	NumberConversionResult result;
-	double value = StringTraits::ToDouble(str, len, &endptr, &result);
+	double value = StringTraits::toDouble(str, len, &endptr, &result);
 	if ((endptr - str) != len)	// 正常に変換できていれば、読み取った文字数が全て消費されるはず
 	{
 		// Error: 構文が正しくない
@@ -253,9 +253,9 @@ bool JsonReader::ParseString(bool isKey)
 	};
 
 	// 1つずつ読んだ文字を格納していく一時バッファ。シーク位置を先頭に戻しておく
-	m_tmpStream.Seek(0, SeekOrigin_Begin);
+	m_tmpStream.seek(0, SeekOrigin_Begin);
 
-	m_reader->Read();	// skip '"'
+	m_reader->read();	// skip '"'
 	while (true)
 	{
 		TCHAR c = m_reader->Peek();
@@ -263,12 +263,12 @@ bool JsonReader::ParseString(bool isKey)
 		// エスケープシーケンス
 		if (c == '\\')
 		{
-			m_reader->Read();	// skip '\'
-			TCHAR esc = m_reader->Read();
+			m_reader->read();	// skip '\'
+			TCHAR esc = m_reader->read();
 			// 基本的なエスケープ
 			if (unsigned(esc) < 256 && escapeTable[(unsigned char)esc])
 			{
-				m_tmpStream.Write(&escapeTable[(unsigned char)esc], sizeof(TCHAR));
+				m_tmpStream.write(&escapeTable[(unsigned char)esc], sizeof(TCHAR));
 			}
 			// Unicode エスケープ
 			else if (esc == 'u')
@@ -287,11 +287,11 @@ bool JsonReader::ParseString(bool isKey)
 		// 文字列終端
 		else if (c == '"')
 		{
-			m_reader->Read();	// skip '"'
+			m_reader->read();	// skip '"'
 			break;
 		}
 		// 文字列の途中でバッファが切れた
-		else if (m_reader->IsEOF() || c == '\0')
+		else if (m_reader->isEOF() || c == '\0')
 		{
 			// Error: " が一致しなかった
 			m_error.SetError(JsonParseError::StringMissQuotationMark, m_currentCharCount);
@@ -306,18 +306,18 @@ bool JsonReader::ParseString(bool isKey)
 		// 普通の文字
 		else
 		{
-			m_tmpStream.Write(&c, sizeof(TCHAR));
-			m_reader->Read();
+			m_tmpStream.write(&c, sizeof(TCHAR));
+			m_reader->read();
 		}
 	}
 
 	// Handler に通知
 	bool cont = false;
 	if (isKey) {
-		cont = m_handler->OnKey((TCHAR*)m_tmpStream.GetBuffer(), ((int)m_tmpStream.GetPosition()) / sizeof(TCHAR));
+		cont = m_handler->OnKey((TCHAR*)m_tmpStream.GetBuffer(), ((int)m_tmpStream.getPosition()) / sizeof(TCHAR));
 	}
 	else {
-		cont = m_handler->OnString((TCHAR*)m_tmpStream.GetBuffer(), ((int)m_tmpStream.GetPosition()) / sizeof(TCHAR));
+		cont = m_handler->OnString((TCHAR*)m_tmpStream.GetBuffer(), ((int)m_tmpStream.getPosition()) / sizeof(TCHAR));
 	}
 	if (!cont)
 	{
@@ -331,7 +331,7 @@ bool JsonReader::ParseString(bool isKey)
 //------------------------------------------------------------------------------
 bool JsonReader::ParseArray()
 {
-	m_reader->Read();  // skip '['
+	m_reader->read();  // skip '['
 
 	// Handler に Array の開始を通知
 	if (!m_handler->OnStartArray())
@@ -345,7 +345,7 @@ bool JsonReader::ParseArray()
 	if (m_reader->Peek() == ']')
 	{
 		// 空配列だった。Array の終了を通知する
-		m_reader->Read(); 	// ']' の次を指しておく
+		m_reader->read(); 	// ']' の次を指しておく
 		if (!m_handler->OnEndArray(0))
 		{
 			// 中断
@@ -366,7 +366,7 @@ bool JsonReader::ParseArray()
 		++elementCount;
 		SkipWhitespace();
 
-		switch (m_reader->Read())
+		switch (m_reader->read())
 		{
 		case ',':
 			SkipWhitespace();
@@ -393,7 +393,7 @@ bool JsonReader::ParseArray()
 //------------------------------------------------------------------------------
 bool JsonReader::ParseObject()
 {
-	m_reader->Read();  // Skip '{'
+	m_reader->read();  // Skip '{'
 
 	// オブジェクト定義の開始
 	if (!m_handler->OnStartObject())
@@ -407,7 +407,7 @@ bool JsonReader::ParseObject()
 	if (m_reader->Peek() == '}')
 	{
 		// メンバが1つも無かった
-		m_reader->Read();	// '}' の次を指しておく
+		m_reader->read();	// '}' の次を指しておく
 		if (!m_handler->OnEndObject(0))
 		{
 			// 中断
@@ -431,7 +431,7 @@ bool JsonReader::ParseObject()
 		SkipWhitespace();
 
 		// 続いて ':'
-		if (m_reader->Read() != ':')
+		if (m_reader->read() != ':')
 		{
 			// Error: ':' が見つからなかった
 			m_error.SetError(JsonParseError::ObjectMissColon, m_currentCharCount);
@@ -445,7 +445,7 @@ bool JsonReader::ParseObject()
 
 		++memberCount;
 
-		switch (m_reader->Read())
+		switch (m_reader->read())
 		{
 		case ',':
 			SkipWhitespace();
@@ -501,7 +501,7 @@ JsonReader2::~JsonReader2()
 }
 
 //------------------------------------------------------------------------------
-bool JsonReader2::Read()
+bool JsonReader2::read()
 {
 	return TryRead();
 	// TODO: 例外
@@ -545,7 +545,7 @@ JsonToken JsonReader2::GetTokenType() const
 }
 
 //------------------------------------------------------------------------------
-const String& JsonReader2::GetValue() const
+const String& JsonReader2::getValue() const
 {
 	return m_value;
 }
@@ -599,7 +599,7 @@ const JsonError2& JsonReader2::GetError() const
 
 void JsonReader2::ReadAsStartObject()
 {
-	if (!Read() || GetTokenType() != JsonToken::StartObject)
+	if (!read() || GetTokenType() != JsonToken::StartObject)
 	{
 		LN_THROW(0, InvalidFormatException);
 	}
@@ -607,7 +607,7 @@ void JsonReader2::ReadAsStartObject()
 
 void JsonReader2::ReadAsEndObject()
 {
-	if (!Read() || GetTokenType() != JsonToken::EndObject)
+	if (!read() || GetTokenType() != JsonToken::EndObject)
 	{
 		LN_THROW(0, InvalidFormatException);
 	}
@@ -615,7 +615,7 @@ void JsonReader2::ReadAsEndObject()
 
 void JsonReader2::ReadAsStartArray()
 {
-	if (!Read() || GetTokenType() != JsonToken::StartArray)
+	if (!read() || GetTokenType() != JsonToken::StartArray)
 	{
 		LN_THROW(0, InvalidFormatException);
 	}
@@ -623,7 +623,7 @@ void JsonReader2::ReadAsStartArray()
 
 void JsonReader2::ReadAsEndArray()
 {
-	if (!Read() || GetTokenType() != JsonToken::EndArray)
+	if (!read() || GetTokenType() != JsonToken::EndArray)
 	{
 		LN_THROW(0, InvalidFormatException);
 	}
@@ -631,38 +631,38 @@ void JsonReader2::ReadAsEndArray()
 
 bool JsonReader2::ReadAsBool()
 {
-	if (!Read() || GetTokenType() != JsonToken::Boolean)
+	if (!read() || GetTokenType() != JsonToken::Boolean)
 	{
 		LN_THROW(0, InvalidFormatException);
 	}
-	return GetValue()[0] == 't';
+	return getValue()[0] == 't';
 }
 
 const String& JsonReader2::ReadAsPropertyName()
 {
-	if (!Read() || GetTokenType() != JsonToken::PropertyName)
+	if (!read() || GetTokenType() != JsonToken::PropertyName)
 	{
 		LN_THROW(0, InvalidFormatException);
 	}
-	return GetValue();
+	return getValue();
 }
 
 const String& JsonReader2::ReadAsString()
 {
-	if (!Read() || GetTokenType() != JsonToken::String)
+	if (!read() || GetTokenType() != JsonToken::String)
 	{
 		LN_THROW(0, InvalidFormatException);
 	}
-	return GetValue();
+	return getValue();
 }
 
 //------------------------------------------------------------------------------
 bool JsonReader2::SkipWhitespace()
 {
 	while (m_reader->Peek() == ' ' || m_reader->Peek() == '\n' || m_reader->Peek() == '\r' || m_reader->Peek() == '\t') {
-		m_reader->Read();
+		m_reader->read();
 	}
-	return !m_reader->IsEOF();	// スキップした後に EOF にたどり着いたら false
+	return !m_reader->isEOF();	// スキップした後に EOF にたどり着いたら false
 }
 
 //------------------------------------------------------------------------------
@@ -686,15 +686,15 @@ bool JsonReader2::ParseValue()
 			//	break;
 			case '{':
 				SetToken(JsonToken::StartObject);
-				m_reader->Read();
+				m_reader->read();
 				return true;
 			case '[':
 				SetToken(JsonToken::StartArray);
-				m_reader->Read();
+				m_reader->read();
 				return true;
 			case ']':	// 空配列
 				SetToken(JsonToken::EndArray);
-				m_reader->Read();
+				m_reader->read();
 				return true;
 			case '"':
 				return ParseString(false);
@@ -727,10 +727,10 @@ bool JsonReader2::ParseValue()
 //------------------------------------------------------------------------------
 bool JsonReader2::ParseNull()
 {
-	m_reader->Read();	// skip 'n'
-	if (m_reader->Read() == 'u' &&
-		m_reader->Read() == 'l' &&
-		m_reader->Read() == 'l')
+	m_reader->read();	// skip 'n'
+	if (m_reader->read() == 'u' &&
+		m_reader->read() == 'l' &&
+		m_reader->read() == 'l')
 	{
 		return SetToken(JsonToken::Null);
 	}
@@ -745,10 +745,10 @@ bool JsonReader2::ParseNull()
 //------------------------------------------------------------------------------
 bool JsonReader2::ParseTrue()
 {
-	m_reader->Read();	// skip 't'
-	if (m_reader->Read() == 'r' &&
-		m_reader->Read() == 'u' &&
-		m_reader->Read() == 'e')
+	m_reader->read();	// skip 't'
+	if (m_reader->read() == 'r' &&
+		m_reader->read() == 'u' &&
+		m_reader->read() == 'e')
 	{
 		m_valueData.m_bool = true;
 		return SetToken(JsonToken::Boolean, _T("true"), 4);
@@ -764,11 +764,11 @@ bool JsonReader2::ParseTrue()
 //------------------------------------------------------------------------------
 bool JsonReader2::ParseFalse()
 {
-	m_reader->Read();	// skip 'f'
-	if (m_reader->Read() == 'a' &&
-		m_reader->Read() == 'l' &&
-		m_reader->Read() == 's' &&
-		m_reader->Read() == 'e')
+	m_reader->read();	// skip 'f'
+	if (m_reader->read() == 'a' &&
+		m_reader->read() == 'l' &&
+		m_reader->read() == 's' &&
+		m_reader->read() == 'e')
 	{
 		m_valueData.m_bool = false;
 		return SetToken(JsonToken::Boolean, _T("false"), 5);
@@ -796,9 +796,9 @@ bool JsonReader2::ParseNumber()
 			(ch == 'e' || ch == 'E') ||
 			(ch == '+' || ch == '-'))
 		{
-			m_textCache.Add(ch);
+			m_textCache.add(ch);
 			++len;
-			m_reader->Read();	// ここで1つ進める
+			m_reader->read();	// ここで1つ進める
 
 			// 小数か？
 			if (!isDecimal) isDecimal = (ch == '.');
@@ -819,7 +819,7 @@ bool JsonReader2::ParseNumber()
 		const TCHAR* str = &m_textCache[0];
 		const TCHAR* endptr = nullptr;
 		NumberConversionResult result;
-		double value = StringTraits::ToDouble(str, len, &endptr, &result);
+		double value = StringTraits::toDouble(str, len, &endptr, &result);
 
 		if ((endptr - str) != len)	// 正常に変換できていれば、読み取った文字数が全て消費されるはず
 		{
@@ -850,7 +850,7 @@ bool JsonReader2::ParseNumber()
 		const TCHAR* str = &m_textCache[0];
 		const TCHAR* endptr = nullptr;
 		NumberConversionResult result;
-		int64_t value = StringTraits::ToInt64(str, len, 0, &endptr, &result);
+		int64_t value = StringTraits::toInt64(str, len, 0, &endptr, &result);
 
 		if ((endptr - str) != len)	// 正常に変換できていれば、読み取った文字数が全て消費されるはず
 		{
@@ -945,7 +945,7 @@ bool JsonReader2::ParseObject()
 	{
 	case '}':
 		SetToken(JsonToken::EndObject);
-		m_reader->Read();
+		m_reader->read();
 		return true;
 	default:
 		return TryParsePropertyName();
@@ -976,10 +976,10 @@ bool JsonReader2::TryParsePropertyName()
 		if (m_reader->Peek() == ':') {
 			// Invalid character after parsing property name. Expected ':'
 		}
-		m_reader->Read();
+		m_reader->read();
 
-		if (!m_textCache.IsEmpty()) {
-			SetToken(JsonToken::PropertyName, &m_textCache[0], m_textCache.GetCount());
+		if (!m_textCache.isEmpty()) {
+			SetToken(JsonToken::PropertyName, &m_textCache[0], m_textCache.getCount());
 		}
 		else {
 			SetToken(JsonToken::PropertyName);
@@ -1039,7 +1039,7 @@ bool JsonReader2::ParseString(bool isKey)
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	};
 
-	m_reader->Read();	// skip '"'
+	m_reader->read();	// skip '"'
 	while (true)
 	{
 		TCHAR c = m_reader->Peek();
@@ -1047,12 +1047,12 @@ bool JsonReader2::ParseString(bool isKey)
 		// エスケープシーケンス
 		if (c == '\\')
 		{
-			m_reader->Read();	// skip '\'
-			TCHAR esc = m_reader->Read();
+			m_reader->read();	// skip '\'
+			TCHAR esc = m_reader->read();
 			// 基本的なエスケープ
 			if (unsigned(esc) < 256 && escapeTable[(unsigned char)esc])
 			{
-				m_textCache.Add(escapeTable[(unsigned char)esc]);
+				m_textCache.add(escapeTable[(unsigned char)esc]);
 			}
 			// Unicode エスケープ
 			else if (esc == 'u')
@@ -1071,11 +1071,11 @@ bool JsonReader2::ParseString(bool isKey)
 		// 文字列終端
 		else if (c == '"')
 		{
-			m_reader->Read();	// skip '"'
+			m_reader->read();	// skip '"'
 			break;
 		}
 		// 文字列の途中でバッファが切れた
-		else if (m_reader->IsEOF() || c == '\0')
+		else if (m_reader->isEOF() || c == '\0')
 		{
 			// " が一致しなかった
 			SetError(JsonParseError2::UnterminatedString);
@@ -1090,8 +1090,8 @@ bool JsonReader2::ParseString(bool isKey)
 		// 普通の文字
 		else
 		{
-			m_textCache.Add(c);
-			m_reader->Read();
+			m_textCache.add(c);
+			m_reader->read();
 		}
 	}
 
@@ -1100,8 +1100,8 @@ bool JsonReader2::ParseString(bool isKey)
 	}
 	else
 	{
-		if (!m_textCache.IsEmpty()) {
-			SetToken(JsonToken::String, &m_textCache[0], m_textCache.GetCount());
+		if (!m_textCache.isEmpty()) {
+			SetToken(JsonToken::String, &m_textCache[0], m_textCache.getCount());
 		}
 		else {
 			SetToken(JsonToken::String);
@@ -1135,11 +1135,11 @@ bool JsonReader2::ParsePostValue(bool* outSkip)
 	{
 	case '}':
 		SetToken(JsonToken::EndObject);
-		m_reader->Read();
+		m_reader->read();
 		return true;
 	case ']':
 		SetToken(JsonToken::EndArray);
-		m_reader->Read();
+		m_reader->read();
 		return true;
 	case ',':
 		*outSkip = true;	// 今回の , は Read() で返さず、次のトークンを読みに行く
@@ -1149,7 +1149,7 @@ bool JsonReader2::ParsePostValue(bool* outSkip)
 		else if (m_currentState.containerType == ContainerType::Array) {
 			m_currentState.state = State::Array;
 		}
-		m_reader->Read();
+		m_reader->read();
 		return true;
 	default:
 		return false;	// Error
@@ -1170,7 +1170,7 @@ bool JsonReader2::SetToken(JsonToken newToken, const TCHAR* value, int valueLen)
 	}
 	else
 	{
-		m_value = String::GetEmpty();
+		m_value = String::getEmpty();
 	}
 
 	switch (m_currentToken.type)
@@ -1237,13 +1237,13 @@ bool JsonReader2::SetToken(JsonToken newToken, const TCHAR* value, int valueLen)
 //------------------------------------------------------------------------------
 void JsonReader2::PushState(/*ContainerType containerType*/)
 {
-	m_stateStack.Push(m_currentState);
+	m_stateStack.push(m_currentState);
 }
 
 //------------------------------------------------------------------------------
 void JsonReader2::PopState()
 {
-	m_stateStack.Pop(&m_currentState);
+	m_stateStack.pop(&m_currentState);
 }
 
 //------------------------------------------------------------------------------

@@ -47,18 +47,18 @@ public:
 		@brief		文字を書き込みます。
 		@param[in]	ch		: 書き込む文字
 	*/
-	void Write(TCHAR ch);
+	void write(TCHAR ch);
 
 	/**
 		@brief		整数値を文字列に変換して書き込みます。
 		@param[in]	value	: 書き込む値
 	*/
-	void Write(int16_t value);
-	void Write(int32_t value);			/**< @copydoc Write(int16_t) */
-	void Write(int64_t value);			/**< @copydoc Write(int16_t) */
-	void Write(uint16_t value);			/**< @copydoc Write(int16_t) */
-	void Write(uint32_t value);			/**< @copydoc Write(int16_t) */
-	void Write(uint64_t value);			/**< @copydoc Write(int16_t) */
+	void write(int16_t value);
+	void write(int32_t value);			/**< @copydoc Write(int16_t) */
+	void write(int64_t value);			/**< @copydoc Write(int16_t) */
+	void write(uint16_t value);			/**< @copydoc Write(int16_t) */
+	void write(uint32_t value);			/**< @copydoc Write(int16_t) */
+	void write(uint64_t value);			/**< @copydoc Write(int16_t) */
 
 	/**
 		@brief		実数値を文字列に変換して書き込みます。
@@ -66,20 +66,20 @@ public:
 		@attention	小数点文字はロケールに依存します。(例えばフランス語では ',' になります)
 					必ず '.' で書き込まれるようにするには、SetFormatLocale() で ANSI ロケールを指定してください。
 	*/
-	void Write(float value);
-	void Write(double value);			/**< @copydoc Write(float) */
+	void write(float value);
+	void write(double value);			/**< @copydoc Write(float) */
 
 
-	void Write(const StringRef& str);
-	void Write(const TCHAR* str, int length);
+	void write(const StringRef& str);
+	void write(const TCHAR* str, int length);
 
 	template<typename... TArgs>
-	void WriteFormat(const StringRef& str, const TArgs&... args) { String s = String::Format(str, args...); WriteInternal(s.c_str(), s.GetLength()); }
+	void WriteFormat(const StringRef& str, const TArgs&... args) { String s = String::Format(str, args...); writeInternal(s.c_str(), s.getLength()); }
 
 	/**
 		@brief		改行を書き込みます。
 	*/
-	void WriteLine();
+	void writeLine();
 
 	/**
 		@brief		文字列を書き込み、続けて改行を書き込みます。
@@ -93,18 +93,18 @@ public:
 		@brief		文字を書き込みます。
 		@param[in]	ch		: 書き込む文字
 	*/
-	void WriteLine(TCHAR ch);
+	void writeLine(TCHAR ch);
 
 	/**
 		@brief		整数値を文字列に変換して書き込み、続けて改行を書き込みます。
 		@param[in]	value	: 書き込む値
 	*/
-	void WriteLine(int16_t value);
-	void WriteLine(int32_t value);		/**< @overload WriteLine(int16_t) */
-	void WriteLine(int64_t value);		/**< @overload WriteLine(int16_t) */
-	void WriteLine(uint16_t value);		/**< @overload WriteLine(int16_t) */
-	void WriteLine(uint32_t value);		/**< @overload WriteLine(int16_t) */
-	void WriteLine(uint64_t value);		/**< @overload WriteLine(int16_t) */
+	void writeLine(int16_t value);
+	void writeLine(int32_t value);		/**< @overload WriteLine(int16_t) */
+	void writeLine(int64_t value);		/**< @overload WriteLine(int16_t) */
+	void writeLine(uint16_t value);		/**< @overload WriteLine(int16_t) */
+	void writeLine(uint32_t value);		/**< @overload WriteLine(int16_t) */
+	void writeLine(uint64_t value);		/**< @overload WriteLine(int16_t) */
 
 	/**
 		@brief		実数値を文字列に変換して書き込み、続けて改行を書き込みます。
@@ -112,13 +112,13 @@ public:
 		@attention	小数点文字はロケールに依存します。(例えばフランス語では ',' になります)
 					必ず '.' で書き込まれるようにするには、SetFormatLocale() で ANSI ロケールを指定してください。
 	*/
-	void WriteLine(float value);
-	void WriteLine(double value);		/**< @copydoc WriteLine(float) */
+	void writeLine(float value);
+	void writeLine(double value);		/**< @copydoc WriteLine(float) */
 
-	void WriteLine(const StringRef& str) { WriteInternal(str.GetBegin(), str.GetLength()); WriteLine(); }
+	void writeLine(const StringRef& str) { writeInternal(str.getBegin(), str.getLength()); writeLine(); }
 
 	template<typename... TArgs>
-	void WriteLine(const StringRef& str, const TArgs&... args) { String s = String::Format(str, args...); WriteInternal(s.c_str(), s.GetLength()); WriteLine(); }
+	void writeLine(const StringRef& str, const TArgs&... args) { String s = String::Format(str, args...); writeInternal(s.c_str(), s.getLength()); writeLine(); }
 
 	/**
 		@brief		バッファリングデータを全てストリームに書き出します。
@@ -133,7 +133,7 @@ protected:
 	virtual void WriteOverride(const void* data, size_t byteCount) = 0;
 
 private:
-	void WriteInternal(const TCHAR* str, int len);
+	void writeInternal(const TCHAR* str, int len);
 
 private:
 	static const int	BufferSize = 2048;

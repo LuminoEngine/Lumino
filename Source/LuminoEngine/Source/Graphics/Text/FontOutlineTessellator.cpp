@@ -70,7 +70,7 @@ void FontOutlineTessellator::BeginCallback(GLenum primitiveType, TessellatingSta
 	c.intermediateVertexIndex1 = -1;
 	c.intermediateVertexIndex2 = -1;
 	c.faceCount = 0;
-	state->contourList.Add(c);
+	state->contourList.add(c);
 }
 
 //------------------------------------------------------------------------------
@@ -84,7 +84,7 @@ void FontOutlineTessellator::EndCallback(TessellatingState* state)
 // 点は時計回りで送られてくるようだ。
 void FontOutlineTessellator::VertexDataCallback(void* vertexData, TessellatingState* state)
 {
-	Contour* contour = &state->contourList.GetLast();
+	Contour* contour = &state->contourList.getLast();
 	int vertexIndex = reinterpret_cast<int>(vertexData);
 
 	switch (contour->primitiveType)
@@ -106,9 +106,9 @@ void FontOutlineTessellator::VertexDataCallback(void* vertexData, TessellatingSt
 			else
 			{
 				// 3つの点ができあがった
-				state->glyphInfo->triangleIndices.Add(contour->intermediateVertexIndex1);
-				state->glyphInfo->triangleIndices.Add(vertexIndex);
-				state->glyphInfo->triangleIndices.Add(contour->intermediateVertexIndex2);
+				state->glyphInfo->triangleIndices.add(contour->intermediateVertexIndex1);
+				state->glyphInfo->triangleIndices.add(vertexIndex);
+				state->glyphInfo->triangleIndices.add(contour->intermediateVertexIndex2);
 				contour->intermediateVertexIndex1 = -1;
 			}
 			break;
@@ -128,15 +128,15 @@ void FontOutlineTessellator::VertexDataCallback(void* vertexData, TessellatingSt
 			{
 				if (contour->faceCount & 1)	// 奇数回
 				{
-					state->glyphInfo->triangleIndices.Add(contour->intermediateVertexIndex1);
-					state->glyphInfo->triangleIndices.Add(contour->intermediateVertexIndex2);
-					state->glyphInfo->triangleIndices.Add(vertexIndex);
+					state->glyphInfo->triangleIndices.add(contour->intermediateVertexIndex1);
+					state->glyphInfo->triangleIndices.add(contour->intermediateVertexIndex2);
+					state->glyphInfo->triangleIndices.add(vertexIndex);
 				}
 				else	// 偶数回 (初回含む)
 				{
-					state->glyphInfo->triangleIndices.Add(contour->intermediateVertexIndex1);
-					state->glyphInfo->triangleIndices.Add(vertexIndex);
-					state->glyphInfo->triangleIndices.Add(contour->intermediateVertexIndex2);
+					state->glyphInfo->triangleIndices.add(contour->intermediateVertexIndex1);
+					state->glyphInfo->triangleIndices.add(vertexIndex);
+					state->glyphInfo->triangleIndices.add(contour->intermediateVertexIndex2);
 				}
 
 				contour->intermediateVertexIndex1 = contour->intermediateVertexIndex2;
@@ -158,9 +158,9 @@ void FontOutlineTessellator::VertexDataCallback(void* vertexData, TessellatingSt
 			}
 			else
 			{
-				state->glyphInfo->triangleIndices.Add(contour->intermediateVertexIndex1);
-				state->glyphInfo->triangleIndices.Add(vertexIndex);
-				state->glyphInfo->triangleIndices.Add(contour->intermediateVertexIndex2);
+				state->glyphInfo->triangleIndices.add(contour->intermediateVertexIndex1);
+				state->glyphInfo->triangleIndices.add(vertexIndex);
+				state->glyphInfo->triangleIndices.add(contour->intermediateVertexIndex2);
 				contour->intermediateVertexIndex2 = vertexIndex;
 			}
 			break;
@@ -172,8 +172,8 @@ void FontOutlineTessellator::VertexDataCallback(void* vertexData, TessellatingSt
 void FontOutlineTessellator::CombineCallback(GLfloat coords[3], void* vertex_data[4], GLfloat weight[4], void** out_data, TessellatingState* state)
 {
 	RawFont::FontOutlineVertex v(Vector2(coords[0], coords[1]));
-	state->glyphInfo->vertices.Add(v);
-	*out_data = reinterpret_cast<void*>(state->glyphInfo->vertices.GetCount() - 1);
+	state->glyphInfo->vertices.add(v);
+	*out_data = reinterpret_cast<void*>(state->glyphInfo->vertices.getCount() - 1);
 }
 
 //------------------------------------------------------------------------------
@@ -255,8 +255,8 @@ void FontOutlineStroker::MakeAntiAliasStroke()
 		auto& cur = m_info->vertices[i];
 
 		int iNextExt = 0;
-		int iStartExt = m_info->vertices.GetCount();
-		int iCurExt = m_info->vertices.GetCount();
+		int iStartExt = m_info->vertices.getCount();
+		int iCurExt = m_info->vertices.getCount();
 
 
 
@@ -268,8 +268,8 @@ void FontOutlineStroker::MakeAntiAliasStroke()
 		//}
 		//else
 		{
-			m_info->vertices.Add(cur.pos + cur.extrusion2 * extRate);
-			m_info->vertices.GetLast().alpha = 0.0f;
+			m_info->vertices.add(cur.pos + cur.extrusion2 * extRate);
+			m_info->vertices.getLast().alpha = 0.0f;
 		}
 
 
@@ -297,7 +297,7 @@ void FontOutlineStroker::MakeAntiAliasStroke()
 			if (iNext != outline.startIndex)	// start は押し出し済み
 			{
 				// next のを押し出す
-				iNextExt = m_info->vertices.GetCount();
+				iNextExt = m_info->vertices.getCount();
 
 				//if (Math::NearEqual(next.pos.x - cur.pos.x, 0.0f) || Math::NearEqual(next.pos.y - cur.pos.y, 0.0f))
 				//{
@@ -306,8 +306,8 @@ void FontOutlineStroker::MakeAntiAliasStroke()
 				//}
 				//else
 				{
-					m_info->vertices.Add(next.pos + next.extrusion2 * extRate);
-					m_info->vertices.GetLast().alpha = 0.0f;
+					m_info->vertices.add(next.pos + next.extrusion2 * extRate);
+					m_info->vertices.getLast().alpha = 0.0f;
 				}
 
 				//m_info->vertices.Add(next.pos + next.extrusion * extRate);
@@ -329,13 +329,13 @@ void FontOutlineStroker::MakeAntiAliasStroke()
 			int i2 = iCurExt;
 			int i3 = iNextExt;
 
-			m_info->triangleIndices.Add(i0);
-			m_info->triangleIndices.Add(i1);
-			m_info->triangleIndices.Add(i2);
+			m_info->triangleIndices.add(i0);
+			m_info->triangleIndices.add(i1);
+			m_info->triangleIndices.add(i2);
 
-			m_info->triangleIndices.Add(i2);
-			m_info->triangleIndices.Add(i1);
-			m_info->triangleIndices.Add(i3);
+			m_info->triangleIndices.add(i2);
+			m_info->triangleIndices.add(i1);
+			m_info->triangleIndices.add(i3);
 			//Vector2 p0 = cur.pos;
 			//Vector2 p1 = next.pos;
 			//Vector2 p2 = m_vertexList[iCurExt].pos;

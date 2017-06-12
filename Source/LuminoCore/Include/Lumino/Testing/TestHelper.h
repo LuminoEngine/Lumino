@@ -8,8 +8,8 @@ class TestHelper
 {
 public:
 	/// baseFilePath のファイルと同じディレクトリの fileName を指すパスを得る
-	static String GetFilePath(const char* baseFilePath, const char* fileName);
-	static String GetFilePath(const char* baseFilePath, const wchar_t* fileName) { return String::FromNativeCharString(GetFilePathW(baseFilePath, fileName).c_str()); }
+	static String getFilePath(const char* baseFilePath, const char* fileName);
+	static String getFilePath(const char* baseFilePath, const wchar_t* fileName) { return String::fromNativeCharString(GetFilePathW(baseFilePath, fileName).c_str()); }
 
 	/// baseFilePath のファイルと同じディレクトリの fileName を指すパスを得る
 	static PathName GetDirPath(const char* baseFilePath);
@@ -29,7 +29,7 @@ public:
 #define LN_TEST_GET_DIR_PATH() TestHelper::GetDirPath(__FILE__)
 
 // __FILE__ と同じフォルダのファイルパス (TCHAR) を取得する
-#define LN_LOCALFILE(fileName) TestHelper::GetFilePath(__FILE__, fileName).c_str()
+#define LN_LOCALFILE(fileName) TestHelper::getFilePath(__FILE__, fileName).c_str()
 
 // __FILE__ と同じフォルダのファイルパス (char) を取得する
 #define LN_LOCALFILEA(fileName) TestHelper::GetFilePathA(__FILE__, fileName).c_str()

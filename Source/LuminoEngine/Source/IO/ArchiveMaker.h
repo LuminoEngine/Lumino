@@ -39,15 +39,15 @@ public:
 		@param[in]  key			: 暗号化に使う文字列 (最大128文字)
 		@return		true=成功 / false=失敗
 	*/
-	bool Open(const char* filePath, const char* key);
-	bool Open(const wchar_t* filePath, const char* key);
-	bool Open(const PathName& filePath, const char* key);
+	bool open(const char* filePath, const char* key);
+	bool open(const wchar_t* filePath, const char* key);
+	bool open(const PathName& filePath, const char* key);
 
 	/**
 		@brief		暗号化アーカイブファイルのストリームを閉じます。
 		@details	デストラクタでも呼び出されます。
 	*/
-    void Close();
+    void close();
 	
 	/**
 		@brief		ファイルを追加します。

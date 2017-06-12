@@ -42,7 +42,7 @@ TEST_F(Test_IO_StreamReader, ReadLine)
 		tcharBuf[StreamReader::DefaultBufferSize + 0] = _T('\n');
 		tcharBuf[StreamReader::DefaultBufferSize + 1] = _T('a');
 
-		MemoryStreamPtr mem = MemoryStream::Create(asciiBuf, LN_ARRAY_SIZE_OF(asciiBuf));
+		MemoryStreamPtr mem = MemoryStream::create(asciiBuf, LN_ARRAY_SIZE_OF(asciiBuf));
 		StreamReader reader(mem, Encoding::GetEncoding(EncodingType::SJIS));
 
 		String line1, line2, line3;
@@ -50,7 +50,7 @@ TEST_F(Test_IO_StreamReader, ReadLine)
 		ASSERT_TRUE(reader.ReadLine(&line2));
 		ASSERT_FALSE(reader.ReadLine(&line3));
 
-		ASSERT_EQ(StreamReader::DefaultBufferSize - 1, line1.GetLength());
+		ASSERT_EQ(StreamReader::DefaultBufferSize - 1, line1.getLength());
 		ASSERT_EQ(0, line1.compare(tcharBuf, StreamReader::DefaultBufferSize - 1));
 		ASSERT_EQ(0, line2.compare(_T("a")));
 	}

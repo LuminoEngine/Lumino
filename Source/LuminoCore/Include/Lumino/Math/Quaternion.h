@@ -63,7 +63,7 @@ public:
 	/**
 		@brief		このクォータニオンの長さを返します。
 	*/
-	float GetLength() const;
+	float getLength() const;
 
 	/**
 		@brief		このクォータニオンの長さの 2 乗を返します。

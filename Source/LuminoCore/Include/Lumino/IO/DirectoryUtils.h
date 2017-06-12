@@ -18,17 +18,17 @@ class DirectoryUtils
 public:
 
 	#pragma push_macro("GetCurrentDirectory")
-	#undef GetCurrentDirectory
+	#undef getCurrentDirectory
 	/**
 		@brief		カレントディレクトリのパスを取得します。
 		@param[in]	outPath	: パス文字列を格納するバッファ (LN_MAX_PATH 文字数分のサイズが必要) 
 		@return		パスの文字数 (\0 は除く)
 	*/
 	template<typename TChar>
-	static size_t GetCurrentDirectory(TChar* outPath);
+	static size_t getCurrentDirectory(TChar* outPath);
 
 	template<typename TChar>
-	static size_t LN_AFX_FUNCNAME(GetCurrentDirectory)(TChar* outPath);
+	static size_t LN_AFX_FUNCNAME(getCurrentDirectory)(TChar* outPath);
 	#pragma pop_macro("GetCurrentDirectory")
 
 	/**
@@ -36,7 +36,7 @@ public:
 		@param[in]	dirPath	: 検索するディレクトリ
 		@param[in]	pattern	: 検索文字列 (ワイルドカード指定可能)
 	*/
-	static List<String> GetFiles(const TCHAR* dirPath, const TCHAR* pattern);
+	static List<String> getFiles(const TCHAR* dirPath, const TCHAR* pattern);
 
 
 };
@@ -51,9 +51,9 @@ class GenericFileFinder
 public:
 	GenericFileFinder(const GenericStringRef<TChar>& dirPath);
 	~GenericFileFinder();
-	bool IsWorking() const;
-	const GenericPathName<TChar>& GetCurrent() const;
-	bool Next();
+	bool isWorking() const;
+	const GenericPathName<TChar>& getCurrent() const;
+	bool next();
 
 private:
 	detail::GenericFileFinderImplBase<TChar>*	m_impl;
@@ -71,31 +71,31 @@ public:
 	virtual ~GenericFileFinderImplBase()
 	{}
 
-	bool IsWorking() const
+	bool isWorking() const
 	{
-		return !m_combinedPath.IsEmpty();
+		return !m_combinedPath.isEmpty();
 	}
 
-	const GenericPathName<TChar>& GetCurrent() const
+	const GenericPathName<TChar>& getCurrent() const
 	{
 		return m_combinedPath;
 	}
 
-	virtual bool Next() = 0;
+	virtual bool next() = 0;
 
 protected:
 	GenericFileFinderImplBase(const GenericStringRef<TChar>& dirPath)
 		: m_dirPath(dirPath)
 	{}
 
-	void SetCurrentFileName(const char* fileName)
+	void setCurrentFileName(const char* fileName)
 	{
 		if (fileName != nullptr)
 			m_combinedPath.AssignUnderBasePath(m_dirPath, fileName);
 		else
 			m_combinedPath.clear();
 	}
-	void SetCurrentFileName(const wchar_t* fileName)
+	void setCurrentFileName(const wchar_t* fileName)
 	{
 		if (fileName != nullptr)
 			m_combinedPath.AssignUnderBasePath(m_dirPath, fileName);

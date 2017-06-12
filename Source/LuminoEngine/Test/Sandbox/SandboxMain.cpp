@@ -26,7 +26,7 @@ int DxLibMain();
 template<class T, typename... TArgs>
 RefPtr<T> NewObject(TArgs... args)
 {
-	auto ptr = RefPtr<T>::MakeRef();
+	auto ptr = RefPtr<T>::makeRef();
 	//ptr->initialize(args);
 	return ptr;
 }
@@ -54,8 +54,8 @@ public:
 
 	virtual void OnStart() override
 	{
-		auto player = WorldObject::Create();
-		player->AddComponent(Sprite2DComponent::Create(_T("C:/LocalProj/設計ツール/dll_48x48.png")));
+		auto player = WorldObject::create();
+		player->AddComponent(Sprite2DComponent::create(_T("C:/LocalProj/設計ツール/dll_48x48.png")));
 		player->AddComponent(NewObject<Simple2DCharacterController>());
 	}
 
@@ -140,36 +140,36 @@ void Main()
 
 	//Engine::GetDefaultSceneGraph3D()->visibleGridPlane = true;
 
-	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
+	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::makeRef();
 	CameraComponent::GetMain3DCamera()->SetCameraBehavior(cb);
 
-	//auto mesh = SkinnedMeshComponent::Create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
+	//auto mesh = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
 
-	//auto tex = Texture2D::Create("D:/Proj/Volkoff/External/Lumino/test/UnitTest/Scene/TestData/Dice1.png");
-	//auto sprite1 = Sprite3DComponent::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
-	//auto sprite2 = Sprite3DComponent::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
-	//auto sprite3 = Sprite3DComponent::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
-	//auto sprite4 = Sprite3DComponent::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
-	//auto sprite5 = Sprite3DComponent::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
-	//auto sprite6 = Sprite3DComponent::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
+	//auto tex = Texture2D::create("D:/Proj/Volkoff/External/Lumino/test/UnitTest/Scene/TestData/Dice1.png");
+	//auto sprite1 = Sprite3DComponent::create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
+	//auto sprite2 = Sprite3DComponent::create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
+	//auto sprite3 = Sprite3DComponent::create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
+	//auto sprite4 = Sprite3DComponent::create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
+	//auto sprite5 = Sprite3DComponent::create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
+	//auto sprite6 = Sprite3DComponent::create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
 
 	//auto mesh = StaticMeshComponent::CreateSphere(2, 4, 4);
 
 #if 0
-	auto blur = ScreenMotionBlurImageEffect::Create();
+	auto blur = ScreenMotionBlurImageEffect::create();
 	//blur->SetAmount(0.5f);
 	//blur->SetRadialScale(1.05f);
 	CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(blur);
 
-	//auto tonePE23 = ToneImageEffect::Create();
+	//auto tonePE23 = ToneImageEffect::create();
 	//tonePE23->SetTone(ToneF(1, 0,0, 1.0));
 	//CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(tonePE23);
 
-	//auto tonePE2 = ToneImageEffect::Create();
+	//auto tonePE2 = ToneImageEffect::create();
 	//tonePE2->SetTone(ToneF(0,0,1, 1.0));
 	//CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(tonePE2);
 
-	auto tonePE = ToneImageEffect::Create();
+	auto tonePE = ToneImageEffect::create();
 	//tonePE->SetTone(ToneF(0,0,1, 1.0));
 	tonePE->ChangeTone(ToneF(1, 0, 1, 0), 5);
 	CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(tonePE);
@@ -177,7 +177,7 @@ void Main()
 
 #if 0
 	//Engine::GetMainLight3D()->SetPosition();
-	auto mLogoSprite = Sprite2DComponent::Create(_T("D:/Proj/Volkoff/Volkoff/Data/Graphics/Frontend/Logo_1.png"));
+	auto mLogoSprite = Sprite2DComponent::create(_T("D:/Proj/Volkoff/Volkoff/Data/Graphics/Frontend/Logo_1.png"));
 
 	int map[5*5] =
 	{
@@ -190,15 +190,15 @@ void Main()
 
 	auto t = Assets::LoadTexture(_T("D:/Proj/Volkoff/Volkoff/Data/Graphics/MapChip_1.png"));
 
-	auto m_tileset = TileSet::Create();
+	auto m_tileset = TileSet::create();
 	m_tileset->SetImageSource(t);
 	m_tileset->SetTileSize(SizeI(20, 20));
 
 
-	auto tilemapModel = TileMapModel::Create();
+	auto tilemapModel = TileMapModel::create();
 	tilemapModel->SetTileSet(m_tileset);
 
-	auto m_tileLayer = TileLayer::Create();
+	auto m_tileLayer = TileLayer::create();
 	m_tileLayer->Resize(5, 5);
 	tilemapModel->GetLayers()->Add(m_tileLayer);
 
@@ -215,16 +215,16 @@ void Main()
 
 	EngineDiag::SetDisplayMode(EngineDiagDisplayMode::FpsSummary);
 
-	Input::AddButtonBinding(_T("AA"), KeyboardBinding::Create(Keys::C));
-	Input::AddButtonBinding(_T("GG"), KeyboardBinding::Create(Keys::A));
+	Input::AddButtonBinding(_T("AA"), KeyboardBinding::create(Keys::C));
+	Input::AddButtonBinding(_T("GG"), KeyboardBinding::create(Keys::A));
 
-	//auto spr1 = Sprite2DComponent::Create(_T("D:/Proj/LuminoStudio/Engine/External/Lumino/test/UnitTest/Graphics/TestData/Sprite2.png"));
+	//auto spr1 = Sprite2DComponent::create(_T("D:/Proj/LuminoStudio/Engine/External/Lumino/test/UnitTest/Graphics/TestData/Sprite2.png"));
 
-	//auto text = TextBlock2DComponent::Create(_T("Hello, world!"));
+	//auto text = TextBlock2DComponent::create(_T("Hello, world!"));
 
 #if 0
 
-	auto m = SpriteParticleModel::Create();
+	auto m = SpriteParticleModel::create();
 	m->SetSpawnRate(100);
 	m->SetLifeTime(3.0f);
 	m->m_maxParticles = 300;
@@ -241,11 +241,11 @@ void Main()
 	m->SetVelocity(Vector3(0, -3, 0));
 	//m->SetAccel(Vector3(0, -8, 0));
 
-	auto material = DiffuseMaterial::Create();
-	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	auto material = DiffuseMaterial::create();
+	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetEmissive(Color::White);
 	m->SetMaterial(material);
-	//m->SetTexture(Texture2D::Create(LN_LOCALFILE("../Media/Spark1.png"), TextureFormat::R8G8B8A8, false));
+	//m->SetTexture(Texture2D::create(LN_LOCALFILE("../Media/Spark1.png"), TextureFormat::R8G8B8A8, false));
 
 	auto particle1 = SpriteParticle::Create3D(m);
 	particle1->SetBlendMode(BlendMode::Add);
@@ -259,7 +259,7 @@ void Main()
 #endif
 
 #if 0
-	auto m1 = SpriteParticleModel::Create();
+	auto m1 = SpriteParticleModel::create();
 	m1->SetSpawnRate(2);
 	m1->SetLifeTime(2.0f);
 	m1->m_maxParticles = 10;
@@ -267,7 +267,7 @@ void Main()
 	m1->m_shapeParam.x = Math::PI * 0.1;
 	m1->m_shapeParam.y = 2;
 
-	auto m2 = SpriteParticleModel::Create();
+	auto m2 = SpriteParticleModel::create();
 	m2->SetSpawnRate(2);
 	m2->SetLifeTime(2.0f);
 	m2->m_maxParticles = 10;
@@ -276,8 +276,8 @@ void Main()
 	m2->m_shapeParam.y = 2;
 	m1->SetSubParticle(m2);
 
-	auto material = DiffuseMaterial::Create();
-	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	auto material = DiffuseMaterial::create();
+	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
 	m2->SetMaterial(material);
@@ -289,7 +289,7 @@ void Main()
 
 #endif
 #if 0
-	auto m1 = SpriteParticleModel::Create();
+	auto m1 = SpriteParticleModel::create();
 	m1->SetSpawnRate(40);
 	m1->SetLifeTime(5.0f);
 	m1->m_maxParticles = 100;
@@ -300,8 +300,8 @@ void Main()
 	m1->SetSize(0.5);
 	//m1->m_loop = false;
 
-	auto material = DiffuseMaterial::Create();
-	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	auto material = DiffuseMaterial::create();
+	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
 
@@ -311,7 +311,7 @@ void Main()
 
 #endif
 #if 0	// 半円ほわほわ
-	auto m1 = SpriteParticleModel::Create();
+	auto m1 = SpriteParticleModel::create();
 	m1->SetSpawnRate(40);
 	m1->SetLifeTime(5.0f);
 	m1->m_maxParticles = 100;
@@ -325,8 +325,8 @@ void Main()
 	m1->m_forwardPosition.maxValue = 2;
 	m1->SetSize(0.5);
 
-	auto material = DiffuseMaterial::Create();
-	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	auto material = DiffuseMaterial::create();
+	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
 
@@ -336,7 +336,7 @@ void Main()
 
 #endif
 #if 0	// くるくる
-	auto m1 = SpriteParticleModel::Create();
+	auto m1 = SpriteParticleModel::create();
 	m1->SetSpawnRate(40);
 	m1->SetLifeTime(5.0f);
 	m1->m_maxParticles = 100;
@@ -352,8 +352,8 @@ void Main()
 	m1->m_forwardPosition.maxValue = 10;
 	m1->SetSize(0.5);
 
-	auto material = DiffuseMaterial::Create();
-	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	auto material = DiffuseMaterial::create();
+	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
 
@@ -363,7 +363,7 @@ void Main()
 
 #endif
 #if 0	// 引力斥力
-	auto m1 = SpriteParticleModel::Create();
+	auto m1 = SpriteParticleModel::create();
 	m1->SetSpawnRate(100);
 	m1->SetLifeTime(5.0f);
 	m1->m_maxParticles = 1000;
@@ -381,8 +381,8 @@ void Main()
 	m1->m_forwardVelocity.maxValue = 0;
 	m1->SetSize(0.5);
 
-	auto material = DiffuseMaterial::Create();
-	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	auto material = DiffuseMaterial::create();
+	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
 
@@ -392,7 +392,7 @@ void Main()
 
 #endif
 #if 0	// point trail
-	auto m1 = SpriteParticleModel::Create();
+	auto m1 = SpriteParticleModel::create();
 	m1->SetSpawnRate(4);
 	m1->SetLifeTime(5.0f);
 	m1->m_maxParticles = 1000;
@@ -411,8 +411,8 @@ void Main()
 	m1->m_trailTime = 0.5f;
 	m1->m_loop = false;
 
-	auto material = DiffuseMaterial::Create();
-	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	auto material = DiffuseMaterial::create();
+	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
 
@@ -423,7 +423,7 @@ void Main()
 #endif
 #if 0	// 放射
 	Camera::GetMain3DCamera()->SetFarClip(10000);
-	auto m1 = SpriteParticleModel::Create();
+	auto m1 = SpriteParticleModel::create();
 	m1->m_maxParticles = 128;
 	m1->SetSpawnRate(12);
 	m1->SetLifeTime(3.0);
@@ -449,19 +449,19 @@ void Main()
 	m1->m_forwardVelocity.randomSource = ParticleRandomSource::ByBaseValueInverse;	// 速度が大きい
 
 
-	auto material = DiffuseMaterial::Create();
-	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	auto material = DiffuseMaterial::create();
+	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
 
-	auto particle1 = ParticleEmitter3D::Create(m1);
+	auto particle1 = ParticleEmitter3D::create(m1);
 	particle1->SetBlendMode(BlendMode::Subtract);
 	particle1->SetPosition(2, 0, 200);
 
 #endif
 #if 0	// 雨
 	Camera::GetMain3DCamera()->SetFarClip(10000);
-	auto m1 = SpriteParticleModel::Create();
+	auto m1 = SpriteParticleModel::create();
 	m1->m_maxParticles = 10000;
 	m1->SetSpawnRate(1000);
 	m1->SetLifeTime(1.0);
@@ -477,19 +477,19 @@ void Main()
 	m1->m_forwardVelocity.maxValue = -12;
 	m1->m_lengthScale = 10;
 
-	auto material = DiffuseMaterial::Create();
-	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	auto material = DiffuseMaterial::create();
+	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
 
-	auto particle1 = ParticleEmitter3D::Create(m1);
+	auto particle1 = ParticleEmitter3D::create(m1);
 	particle1->SetBlendMode(BlendMode::Add);
 	particle1->SetPosition(0, 12, 0);
 	//particle1->SetAngles(Math::PI, 0, 0);
 
 
 
-	auto m2 = SpriteParticleModel::Create();
+	auto m2 = SpriteParticleModel::create();
 	m2->m_maxParticles = 1000;
 	m2->SetSpawnRate(200);
 	m2->SetLifeTime(0.2);
@@ -502,12 +502,12 @@ void Main()
 	m2->m_particleDirection = ParticleDirectionType::Horizontal;
 	m2->SetMaterial(material);
 
-	auto particle2 = ParticleEmitter3D::Create(m2);
+	auto particle2 = ParticleEmitter3D::create(m2);
 	particle2->SetBlendMode(BlendMode::Add);
 #endif
 
 	//auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
-	//auto listBox = tr::UIListBox::Create();
+	//auto listBox = tr::UIListBox::create();
 	//listBox->AddTextItem(_T("test"));
 	//listBox->AddTextItem(_T("fff"));
 	//uiRoot->SetContent(listBox);
@@ -518,7 +518,7 @@ void Main()
 
 	//auto gizmo = static_cast<CameraViewportLayer*>(Engine::GetDefault3DLayer())->CreateGizmo();
 
-	//auto sp = Sprite3DComponent::Create(2, 2, Texture2D::Create(_T("D:/GameProjects/Chronicles/110220c_as019.jpg")));
+	//auto sp = Sprite3DComponent::create(2, 2, Texture2D::create(_T("D:/GameProjects/Chronicles/110220c_as019.jpg")));
 	//sp->SetTone(ToneF(0, 0, 1, 1.0));
 	//gizmo->Setup(Matrix::Identity, sp->GetTransform());//Matrix::MakeTranslation(1, 0, 0));
 	//
@@ -533,12 +533,12 @@ void Main()
 	//});
 
 
-	//auto tex1 = Texture2D::Create(32, 32);
+	//auto tex1 = Texture2D::create(32, 32);
 	//tex1->Clear(Color32::Red);
 	//auto box1 = StaticMeshComponent::CreateBox(Vector3(5, 5, 5));
 	//auto box1 = StaticMeshComponent::CreateTeapot();
-	//auto box1 = StaticMeshComponent::Create(_T("D:/Proj/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/MqoTest1.mqo"));
-	//auto box1 = StaticMeshComponent::Create(_T("C:/Proj/FluoriteSolution/External/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/Plant1.mqo"));
+	//auto box1 = StaticMeshComponent::create(_T("D:/Proj/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/MqoTest1.mqo"));
+	//auto box1 = StaticMeshComponent::create(_T("C:/Proj/FluoriteSolution/External/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/Plant1.mqo"));
 
 	//box1->GetMaterials()->GetAt(0)->SetMaterialTexture(tex1);
 	////box1->SetTone(ToneF(0, 0, 1, 1.0));
@@ -564,20 +564,20 @@ void Main()
 #endif
 
 #if 0
-	auto col1 = BoxCollisionShape::Create(1, 2, 3);
-	auto body1 = RigidBody::Create(col1);
+	auto col1 = BoxCollisionShape::create(1, 2, 3);
+	auto body1 = RigidBody::create(col1);
 	body1->SetPosition(10, 0, 0);
 #endif
 	//static_cast<CameraViewportLayer*>(Engine::GetDefault3DLayer())->SetDebugDrawFlags(WorldDebugDrawFlags::PhysicsInfo);
 
 	auto uiRoot = Engine::GetMainWindow();
-	//auto thumb = UIThumb::Create();
+	//auto thumb = UIThumb::create();
 	////thumb->SetPosition(PointF(100, 200));
 	//thumb->SetSize(Size(30,60));
 	////thumb->SetBackground(ColorBrush::Red);
 	////textBlock1->SetText(_T("TextBlock"));
 	//uiRoot->SetContent(thumb);
-	auto track = UIScrollBar::Create();
+	auto track = UIScrollBar::create();
 	//track->SetSize(Size(200, NAN));
 	track->SetMaximum(10);
 	track->SetValue(3);

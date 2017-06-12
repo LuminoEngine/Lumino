@@ -16,7 +16,7 @@ public:
 public:
 
     /// 値を取得する
-	int32_t Get() const;
+	int32_t get() const;
 
     /// 値を設定する
     void Set( int32_t value );

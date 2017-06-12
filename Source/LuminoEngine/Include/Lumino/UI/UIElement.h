@@ -51,14 +51,14 @@ private:
 public:
 	void RegisterVisualState(const StringRef& groupName, const StringRef& stateName)
 	{
-		Group* group = groups.Find([groupName](const Group& g) { return g.name == groupName; });
+		Group* group = groups.find([groupName](const Group& g) { return g.name == groupName; });
 		if (group == nullptr)
 		{
-			groups.Add(Group{ groups.GetCount(), groupName });
-			activeStateNames.Add(stateName);
-			group = &groups.GetLast();
+			groups.add(Group{ groups.getCount(), groupName });
+			activeStateNames.add(stateName);
+			group = &groups.getLast();
 		}
-		group->stateNames.Add(stateName);
+		group->stateNames.add(stateName);
 	}
 
 	void GoToVisualState(const StringRef& stateName)
@@ -184,7 +184,7 @@ public:
 	/** @{ */
 
 	void SetPosition(const PointF& value) { tr::PropertyInfo::SetPropertyValueDirect<PointF>(this, positionId, value); }
-	const PointF& GetPosition() const { return tr::PropertyInfo::GetPropertyValueDirect<PointF>(this, positionId); }
+	const PointF& getPosition() const { return tr::PropertyInfo::GetPropertyValueDirect<PointF>(this, positionId); }
 
 	void SetWidth(float value) { tr::PropertyInfo::SetPropertyValueDirect<float>(this, widthId, value); }
 	float GetWidth() const { return tr::PropertyInfo::GetPropertyValueDirect<float>(this, widthId); }

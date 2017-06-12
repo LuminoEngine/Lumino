@@ -108,12 +108,12 @@ public:
 	/**
 		@brief		この行列の正面方向を示すベクトルを取得します。
 	*/
-	const Vector3& GetFront() const;
+	const Vector3& getFront() const;
 	
 	/**
 		@brief		この行列の平行移動量を示すベクトルを取得します。
 	*/
-	const Vector3& GetPosition() const;
+	const Vector3& getPosition() const;
 	
 	/**
 		@brief		この行列の行要素を設定します。

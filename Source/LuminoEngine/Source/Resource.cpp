@@ -11,7 +11,7 @@ const String InternalResource::DirectXNotInstalledError(_T("DirectXNotInstalledE
 
 void InternalResource::InitializeEngineResource()
 {
-	SetString(DirectXNotInstalledError, _T("%s が見つかりませんでした。\nDirectX エンドユーザーランタイム をインストールしてください。\nhttps://www.microsoft.com/ja-jp/download/details.aspx?id=35&"));
+	setString(DirectXNotInstalledError, _T("%s が見つかりませんでした。\nDirectX エンドユーザーランタイム をインストールしてください。\nhttps://www.microsoft.com/ja-jp/download/details.aspx?id=35&"));
 }
 
 LN_NAMESPACE_END

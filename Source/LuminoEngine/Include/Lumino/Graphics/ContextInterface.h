@@ -71,7 +71,7 @@ class IRenderFeature
 {
 public:
 	virtual bool IsStandaloneShader() const = 0;
-	virtual void Flush() = 0;
+	virtual void flush() = 0;
 	virtual void OnActivated() = 0;
 	virtual void OnDeactivated() = 0;
 
@@ -156,16 +156,16 @@ public:
 	{
 		MutexScopedLock lock(m_mutex);
 
-		if (m_freeObjects.IsEmpty())
+		if (m_freeObjects.isEmpty())
 		{
-			auto ptr = CreateObject();
-			m_objects.Add(ptr);
+			auto ptr = createObject();
+			m_objects.add(ptr);
 			return ptr;
 		}
 		else
 		{
 			T* ptr;
-			m_freeObjects.Pop(&ptr);
+			m_freeObjects.pop(&ptr);
 			return ptr;
 		}
 	}
@@ -173,7 +173,7 @@ public:
 	void ReleaseCommandList(T* commandList)
 	{
 		MutexScopedLock lock(m_mutex);
-		m_freeObjects.Push(commandList);
+		m_freeObjects.push(commandList);
 	}
 
 	void ReleaseAll()
@@ -182,12 +182,12 @@ public:
 		m_freeObjects.clear();
 		for (RefPtr<T>& ptr : m_objects)
 		{
-			m_freeObjects.Push(ptr);
+			m_freeObjects.push(ptr);
 		}
 	}
 
 protected:
-	virtual RefPtr<T> CreateObject() = 0;
+	virtual RefPtr<T> createObject() = 0;
 
 private:
 	Mutex			m_mutex;

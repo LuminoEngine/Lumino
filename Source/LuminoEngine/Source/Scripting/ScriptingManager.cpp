@@ -29,15 +29,15 @@ NlGraphPin* NlGraphNode::CreatePin(NlGraphPinCategory category, NlGraphPinDirect
 		if (direction == NlGraphPinDirection::Input)
 		{
 			if (LN_CHECK_STATE(m_inputCommandFlowPin == nullptr)) return nullptr;
-			m_inputCommandFlowPin = NlGraphPinPtr::MakeRef();
+			m_inputCommandFlowPin = NlGraphPinPtr::makeRef();
 			m_inputCommandFlowPin->initialize(this, category, direction);
 			return m_inputCommandFlowPin;
 		}
 		else if (direction == NlGraphPinDirection::Output)
 		{
-			auto ptr = NlGraphPinPtr::MakeRef();
+			auto ptr = NlGraphPinPtr::makeRef();
 			ptr->initialize(this, category, direction);
-			m_outputCommandFlowPinList.Add(ptr);
+			m_outputCommandFlowPinList.add(ptr);
 			return ptr;
 		}
 	}
@@ -45,16 +45,16 @@ NlGraphPin* NlGraphNode::CreatePin(NlGraphPinCategory category, NlGraphPinDirect
 	{
 		if (direction == NlGraphPinDirection::Input)
 		{
-			auto ptr = NlGraphPinPtr::MakeRef();
+			auto ptr = NlGraphPinPtr::makeRef();
 			ptr->initialize(this, category, direction);
-			m_inputDataFlowPinList.Add(ptr);
+			m_inputDataFlowPinList.add(ptr);
 			return ptr;
 		}
 		else if (direction == NlGraphPinDirection::Output)
 		{
-			auto ptr = NlGraphPinPtr::MakeRef();
+			auto ptr = NlGraphPinPtr::makeRef();
 			ptr->initialize(this, category, direction);
-			m_outputCDataFlowPinList.Add(ptr);
+			m_outputCDataFlowPinList.add(ptr);
 			return ptr;
 		}
 	}
@@ -102,14 +102,14 @@ void NlGraphPin::initialize(NlGraphNode* ownerNode, NlGraphPinCategory category,
 	m_ownerNode = ownerNode;
 	m_category = category;
 	m_direction = direction;
-	m_valueCache = RefPtr<NlVariant>::MakeRef();
+	m_valueCache = RefPtr<NlVariant>::makeRef();
 }
 
 //------------------------------------------------------------------------------
 NlGraphNode* NlGraphPin::GetLinkedToNode()
 {
-	if (LN_CHECK_STATE(m_linkedTo.GetCount() <= 1)) return nullptr;
-	if (m_linkedTo.IsEmpty()) return nullptr;
+	if (LN_CHECK_STATE(m_linkedTo.getCount() <= 1)) return nullptr;
+	if (m_linkedTo.isEmpty()) return nullptr;
 	return m_linkedTo[0]->GetOwnerNode();
 }
 
@@ -117,12 +117,12 @@ NlGraphNode* NlGraphPin::GetLinkedToNode()
 void NlGraphPin::MakeLinkTo(NlGraphPin* toPin)
 {
 	if (LN_CHECK_ARG(toPin != nullptr)) return;
-	if (LN_CHECK_STATE(!m_linkedTo.Contains(toPin))) return;
-	if (LN_CHECK_STATE(!toPin->m_linkedTo.Contains(this))) return;
+	if (LN_CHECK_STATE(!m_linkedTo.contains(toPin))) return;
+	if (LN_CHECK_STATE(!toPin->m_linkedTo.contains(this))) return;
 
 	// 双方向接続
-	m_linkedTo.Add(toPin);
-	toPin->m_linkedTo.Add(this);
+	m_linkedTo.add(toPin);
+	toPin->m_linkedTo.add(this);
 }
 
 //------------------------------------------------------------------------------
@@ -130,8 +130,8 @@ void NlGraphPin::BreakLinkTo(NlGraphPin* toPin)
 {
 	if (LN_CHECK_ARG(toPin != nullptr)) return;
 
-	m_linkedTo.Remove(toPin);
-	toPin->m_linkedTo.Remove(this);
+	m_linkedTo.remove(toPin);
+	toPin->m_linkedTo.remove(this);
 }
 //------------------------------------------------------------------------------
 NlVariant* NlGraphPin::GetValueCache() const
@@ -153,7 +153,7 @@ NlVariant* NlGraphPin::GetInputValue() const
 {
 	if (LN_CHECK_STATE(m_category == NlGraphPinCategory::DataFlow)) return nullptr;
 	if (LN_CHECK_STATE(m_direction == NlGraphPinDirection::Input)) return nullptr;
-	if (m_linkedTo.IsEmpty())
+	if (m_linkedTo.isEmpty())
 	{
 		return GetValueCache();
 	}
@@ -248,7 +248,7 @@ void NlContext::Step()
 void NlGraph::AddGraphNode(NlGraphNode* node)
 {
 	if (LN_CHECK_ARG(node != nullptr)) return;
-	m_nodeList.Add(node);
+	m_nodeList.add(node);
 }
 
 //==============================================================================
@@ -264,10 +264,10 @@ NlGraphInterface::NlGraphInterface()
 //------------------------------------------------------------------------------
 void NlGraphInterface::initialize()
 {
-	m_graph = NlGraphPtr::MakeRef();
+	m_graph = NlGraphPtr::makeRef();
 
 	// 1つのエントリーポイントは必ず存在している
-	auto ep = RefPtr<EntryPointNode>::MakeRef();
+	auto ep = RefPtr<EntryPointNode>::makeRef();
 	ep->initialize(_T(""));
 	m_graph->AddGraphNode(ep);
 	m_entryPoint = ep;
@@ -292,7 +292,7 @@ void NlNode_Print::Execute(NlContext* sc)
 	printf("test\n");
 
 	NlVariant* v = sc->Evaluate(m_inputValuePin);
-	printf("test %d\n", v->GetValue<int32_t>());
+	printf("test %d\n", v->getValue<int32_t>());
 
 	sc->Goto(GetFlowOutputPin());
 }

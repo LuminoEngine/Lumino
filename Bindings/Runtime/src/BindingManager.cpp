@@ -21,7 +21,7 @@ void LFManager::PreInitialize()
 {
 	if (Engine == nullptr)
 	{
-		Engine = EngineManager::Create(ConfigData);
+		Engine = EngineManager::create(ConfigData);
 		IsSystemInitialized = true;
 	}
 }
@@ -40,10 +40,10 @@ void LFManager::PostInitialize()
 		ObjectEntry e;
 		e.Object = NULL;
 		e.Index = i;
-		m_objectEntryList.Add(e);
+		m_objectEntryList.add(e);
 
 		if (i > 0) {  // 0 は NULL 扱い。欠番にする。
-			m_objectIndexStack.Push(i);
+			m_objectIndexStack.push(i);
 		}
 	}
 }
@@ -82,16 +82,16 @@ LNHandle LFManager::CheckRegisterObject(tr::ReflectionObject* obj)
 	}
 
 	// 管理配列がすべて埋まっている場合
-	if (m_objectIndexStack.IsEmpty())
+	if (m_objectIndexStack.isEmpty())
 	{
 		// 末尾に追加する
 		ObjectEntry e;
 		e.Object = obj;
 		obj->addRef();
 		//e.Interface = obj;
-		e.Index = m_objectEntryList.GetCount();
+		e.Index = m_objectEntryList.getCount();
 		e.RefCount = 1;
-		m_objectEntryList.Add(e);
+		m_objectEntryList.add(e);
 
 		// ユーザーデータ登録
 		ObjectRegisterData* data = LN_NEW ObjectRegisterData();
@@ -104,8 +104,8 @@ LNHandle LFManager::CheckRegisterObject(tr::ReflectionObject* obj)
 	else
 	{
 		// 空き場所を取得
-		int newPos = m_objectIndexStack.GetTop();
-		m_objectIndexStack.Pop();
+		int newPos = m_objectIndexStack.getTop();
+		m_objectIndexStack.pop();
 
 		// 格納
 		ObjectEntry& e = m_objectEntryList[newPos];
@@ -182,7 +182,7 @@ void LFManager::ReleaseObject(LNHandle handle)
 			LN_SAFE_RELEASE(e.Object);
 
 			// Index 返却
-			m_objectIndexStack.Push(index);
+			m_objectIndexStack.push(index);
 		}
 	}
 }
@@ -206,5 +206,5 @@ ObjectEntry* LFManager::GetObjectEntry(LNHandle handle)
 //------------------------------------------------------------------------------
 int LFManager::GetHandleCount()
 {
-	return m_objectEntryList.GetCount() - m_objectIndexStack.GetCount();
+	return m_objectEntryList.getCount() - m_objectIndexStack.getCount();
 }

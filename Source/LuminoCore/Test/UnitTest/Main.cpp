@@ -8,9 +8,9 @@ PathName Test_GetTempFilePath(const TCHAR* fileName)
 {
 	PathName base(__FILE__);
 	PathName tempDir(base.GetParent(), _T("../../"));
-	tempDir.Append(_T("tmp"));
+	tempDir.append(_T("tmp"));
 	PathName path(tempDir, fileName);
-	FileSystem::CreateDirectory(path.GetParent());
+	FileSystem::createDirectory(path.GetParent());
 	return PathName(path.c_str());
 }
 

@@ -43,13 +43,13 @@ WaveDecoder::~WaveDecoder()
 }
 
 //------------------------------------------------------------------------------
-void WaveDecoder::Create(Stream* stream)
+void WaveDecoder::create(Stream* stream)
 {
 	if (LN_CHECK_ARG(stream != nullptr)) return;
 	LN_REFOBJ_SET(m_stream, stream);
 
 	// 念のためファイルポインタを先頭に戻す
-	m_stream->Seek(0, SeekOrigin_Begin);
+	m_stream->seek(0, SeekOrigin_Begin);
 
 	BinaryReader reader(m_stream);
 
@@ -57,7 +57,7 @@ void WaveDecoder::Create(Stream* stream)
 	// ヘッダ読み込んで念のためフォーマットチェック
 
 	WaveFileHeader rh;
-	reader.Read(&rh, sizeof(WaveFileHeader));
+	reader.read(&rh, sizeof(WaveFileHeader));
 	if (memcmp(&rh.riff, "RIFF", 4) != 0 ||
 		memcmp(&rh.waveHeader, "WAVE", 4) != 0)
 	{
@@ -68,22 +68,22 @@ void WaveDecoder::Create(Stream* stream)
 	// 各チャンクチェック
 
 	char chunk[4];
-	while (reader.Read(chunk, 4) == 4)
+	while (reader.read(chunk, 4) == 4)
 	{
 		if (strncmp(chunk, "fmt ", 4) == 0)
 		{
-			uint32_t chunkSize = reader.ReadUInt32();	// チャンクサイズ
+			uint32_t chunkSize = reader.readUInt32();	// チャンクサイズ
 
-			m_waveFormat.formatTag = reader.ReadUInt16();
-			m_waveFormat.channels = reader.ReadUInt16();
-			m_waveFormat.samplesPerSec = reader.ReadUInt32();
-			m_waveFormat.avgBytesPerSec = reader.ReadUInt32();
-			m_waveFormat.blockAlign = reader.ReadUInt16();
-			m_waveFormat.bitsPerSample = reader.ReadUInt16();
+			m_waveFormat.formatTag = reader.readUInt16();
+			m_waveFormat.channels = reader.readUInt16();
+			m_waveFormat.samplesPerSec = reader.readUInt32();
+			m_waveFormat.avgBytesPerSec = reader.readUInt32();
+			m_waveFormat.blockAlign = reader.readUInt16();
+			m_waveFormat.bitsPerSample = reader.readUInt16();
 
 			// 拡張部分のあるファイルの場合は読みとばす
 			if (chunkSize > 16) {
-				reader.Seek(chunkSize - 16);
+				reader.seek(chunkSize - 16);
 				//mWaveFormat.EXSize = FileIO::readU16( mInFile );
 				//mInFile->seek( mWaveFormat.EXSize, SEEK_CUR );
 			}
@@ -93,10 +93,10 @@ void WaveDecoder::Create(Stream* stream)
 		}
 		else if (strncmp(chunk, "data", 4) == 0)
 		{
-			uint32_t chunkSize = reader.ReadUInt32();
+			uint32_t chunkSize = reader.readUInt32();
 
 			// ファイルポインタの現在位置 (data チャンク内のデータ位置) を記憶
-			m_dataOffset = reader.GetPosition();
+			m_dataOffset = reader.getPosition();
 
 			// 元データのサイズは data チャンク内のデータのサイズ
 			m_onmemoryPCMBufferSize = m_pcmDataSize = chunkSize;
@@ -115,8 +115,8 @@ void WaveDecoder::Create(Stream* stream)
 		// "fmt " と "data" 以外はすべて読み飛ばす
 		else
 		{
-			uint32_t chunkSize = reader.ReadUInt32();
-			reader.Seek(chunkSize);
+			uint32_t chunkSize = reader.readUInt32();
+			reader.seek(chunkSize);
 		}
 	}
 
@@ -138,19 +138,19 @@ void WaveDecoder::FillOnmemoryBuffer()
 		m_onmemoryPCMBuffer = LN_NEW byte_t[m_onmemoryPCMBufferSize];
 
 		// 現在のシーク位置を覚えておく
-		int64_t old_seek = m_stream->GetPosition();
+		int64_t old_seek = m_stream->getPosition();
 
 		// ファイルポインタをデータがある場所の先頭にセット
-		m_stream->Seek(m_dataOffset, SeekOrigin_Begin);
+		m_stream->seek(m_dataOffset, SeekOrigin_Begin);
 
 		// 全部読み込み
-		int size = m_stream->Read(m_onmemoryPCMBuffer, m_onmemoryPCMBufferSize);
+		int size = m_stream->read(m_onmemoryPCMBuffer, m_onmemoryPCMBufferSize);
 
 		// 読み込んだサイズが変な場合はエラー
 		LN_THROW(size == m_onmemoryPCMBufferSize, InvalidOperationException, "read file size is incorrect.\nThere is a possibility that the file is corrupted.");
 
 		// シーク位置を元に戻す
-		m_stream->Seek(old_seek, SeekOrigin_Begin);
+		m_stream->seek(old_seek, SeekOrigin_Begin);
 
 		// もういらない
 		LN_SAFE_RELEASE(m_stream);
@@ -158,12 +158,12 @@ void WaveDecoder::FillOnmemoryBuffer()
 }
 
 //------------------------------------------------------------------------------
-void WaveDecoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint32_t* out_read_size, uint32_t* out_write_size)
+void WaveDecoder::read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint32_t* out_read_size, uint32_t* out_write_size)
 {
 	LN_THROW(m_stream != NULL, InvalidOperationException);	// オンメモリ再生とストリーミング再生で同じ AudioStream を共有したときにぶつかる
 	MutexScopedLock lock(m_mutex);
 
-	m_stream->Seek(m_dataOffset + seekPos, SeekOrigin_Begin);
+	m_stream->seek(m_dataOffset + seekPos, SeekOrigin_Begin);
 
 	if (!buffer || !(buffer_size > 0) || !(out_read_size) || !(out_write_size)) {
 		return;
@@ -172,12 +172,12 @@ void WaveDecoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uin
 	// 読み込むサイズ
 	uint32_t read_size = buffer_size;
 	// ソースのサイズを超えている場合はソースサイズ分読む
-	if (((uint64_t)m_stream->GetPosition()) + buffer_size > m_dataOffset + m_pcmDataSize)
+	if (((uint64_t)m_stream->getPosition()) + buffer_size > m_dataOffset + m_pcmDataSize)
 	{
-		read_size = (m_dataOffset + m_pcmDataSize) - m_stream->GetPosition();
+		read_size = (m_dataOffset + m_pcmDataSize) - m_stream->getPosition();
 	}
 
-	size_t size = m_stream->Read(buffer, read_size);
+	size_t size = m_stream->read(buffer, read_size);
 
 	// 元データから読み込んだサイズと、buffer_ へ書き込んだサイズは同じ
 	*out_read_size = static_cast<uint32_t>(size);

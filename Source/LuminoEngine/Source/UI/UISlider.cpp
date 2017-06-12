@@ -12,13 +12,13 @@ LN_NAMESPACE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UISlider, UIRangeBase);
 
 //------------------------------------------------------------------------------
-RefPtr<UISlider> UISlider::Create()
+RefPtr<UISlider> UISlider::create()
 {
 	return NewObject<UISlider>();
 }
 
 //------------------------------------------------------------------------------
-RefPtr<UISlider> UISlider::Create(float value, float minimum, float maximum)
+RefPtr<UISlider> UISlider::create(float value, float minimum, float maximum)
 {
 	return NewObject<UISlider>(value, minimum, maximum);
 }
@@ -90,17 +90,17 @@ Orientation UISlider::GetOrientation() const
 //------------------------------------------------------------------------------
 void UISlider::OnRoutedEvent(UIEventArgs* e)
 {
-	if (e->GetType() == UIThumb::DragStartedEventId)
+	if (e->getType() == UIThumb::DragStartedEventId)
 	{
-		m_dragStartValue = m_track->GetValue();
+		m_dragStartValue = m_track->getValue();
 	}
-	else if (e->GetType() == UIThumb::DragDeltaEventId)
+	else if (e->getType() == UIThumb::DragDeltaEventId)
 	{
 		auto* e2 = static_cast<UIDragDeltaEventArgs*>(e);
 		float newValue = m_dragStartValue + m_track->ValueFromDistance(e2->horizontalChange, e2->verticalChange);
 		UpdateValue(Math::Clamp(newValue, GetMinimum(), GetMaximum()));
 	}
-	else if (e->GetType() == UIThumb::DragCompletedEventId)
+	else if (e->getType() == UIThumb::DragCompletedEventId)
 	{
 	}
 	UIControl::OnRoutedEvent(e);

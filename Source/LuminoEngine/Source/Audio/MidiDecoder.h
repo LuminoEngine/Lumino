@@ -25,7 +25,7 @@ public:
 
 public:
 	// AudioDecoder interface
-	virtual void				Create(Stream* stream) override;
+	virtual void				create(Stream* stream) override;
 	virtual StreamFormat		GetSourceFormat() const override { return StreamFormat_Midi; }
 	virtual const WaveFormat*	GetWaveFormat() const override { return NULL; }
 	virtual uint32_t			GetSourceDataSize() const override { return m_midiFileData.getSize(); }
@@ -35,7 +35,7 @@ public:
 	virtual uint32_t			GetBytesPerSec() const override { return 0; }
 	virtual void				GetLoopState(uint32_t* begin, uint32_t* length) const override;
 	virtual void				FillOnmemoryBuffer() override;
-	virtual void				Read(uint32_t seekPos, void* buffer, uint32_t bufferSize, uint32_t* outReadSize, uint32_t* outWriteSize) override;
+	virtual void				read(uint32_t seekPos, void* buffer, uint32_t bufferSize, uint32_t* outReadSize, uint32_t* outWriteSize) override;
 	virtual void				Reset() override;
 
 private:

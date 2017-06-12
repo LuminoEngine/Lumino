@@ -19,7 +19,7 @@ public:
 	TokenStore();
 	~TokenStore();	
 
-	void Reserve(int count);
+	void reserve(int count);
 	Token* CreateToken();
 
 private:

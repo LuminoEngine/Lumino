@@ -101,9 +101,9 @@ FloatAnimationCurve::~FloatAnimationCurve()
 void FloatAnimationCurve::AddKeyFrame(const FloatKeyFrame& keyFrame)
 {
 	// そのまま追加できる
-	if (m_keyFrameList.IsEmpty() || m_keyFrameList.GetLast().FrameTime <= keyFrame.FrameTime)
+	if (m_keyFrameList.isEmpty() || m_keyFrameList.getLast().FrameTime <= keyFrame.FrameTime)
 	{
-		m_keyFrameList.Add(keyFrame);
+		m_keyFrameList.add(keyFrame);
 	}
 	// 追加後のソートが必要
 	else
@@ -117,7 +117,7 @@ void FloatAnimationCurve::AddKeyFrame(const FloatKeyFrame& keyFrame)
 			}
 		};
 
-		m_keyFrameList.Add(keyFrame);
+		m_keyFrameList.add(keyFrame);
 		std::stable_sort(m_keyFrameList.begin(), m_keyFrameList.end(), compare());
 	}
 }
@@ -148,27 +148,27 @@ static int _cmpKey(const void* a_, const void* b_)
 //------------------------------------------------------------------------------
 void FloatAnimationCurve::UpdateValue(double time)
 {
-	if (!m_keyFrameList.IsEmpty())
+	if (!m_keyFrameList.isEmpty())
 	{
 		// time_ が最初のフレーム位置より前の場合はデフォルト値
-		if (time < m_keyFrameList.GetFront().FrameTime)
+		if (time < m_keyFrameList.getFront().FrameTime)
 		{
 			m_value = m_defaultValue;
 		}
 		// キーがひとつだけの場合はそのキーの値
-		else if (m_keyFrameList.GetCount() == 1)
+		else if (m_keyFrameList.getCount() == 1)
 		{
-			m_value = m_keyFrameList.GetFront().Value;
+			m_value = m_keyFrameList.getFront().Value;
 		}
 		// time_ が終端以降の場合は終端の値
-		else if (time >= m_keyFrameList.GetLast().FrameTime)
+		else if (time >= m_keyFrameList.getLast().FrameTime)
 		{
-			m_value = m_keyFrameList.GetLast().Value;
+			m_value = m_keyFrameList.getLast().Value;
 		}
 		// 以上以外の場合は補間する
 		else
 		{
-			const FloatKeyFrame* key0 = (FloatKeyFrame*)bsearch(&time, &(m_keyFrameList[0]), m_keyFrameList.GetCount(), sizeof(FloatKeyFrame), _cmpKey);
+			const FloatKeyFrame* key0 = (FloatKeyFrame*)bsearch(&time, &(m_keyFrameList[0]), m_keyFrameList.getCount(), sizeof(FloatKeyFrame), _cmpKey);
 			const FloatKeyFrame* key1 = key0 + 1;
 
 			float p0 = key0->Value;
@@ -213,8 +213,8 @@ void FloatAnimationCurve::UpdateValue(double time)
 				// ループ再生で time が終端を超えている場合、
 				// この時点でkey の値は ループ開始位置のひとつ前のキーを指している
 
-				const FloatKeyFrame& begin = m_keyFrameList.GetFront();
-				const FloatKeyFrame& end = m_keyFrameList.GetLast();
+				const FloatKeyFrame& begin = m_keyFrameList.getFront();
+				const FloatKeyFrame& end = m_keyFrameList.getLast();
 
 				// この補間には、begin のひとつ前と end のひとつ後の値が必要。
 				// それぞれが始点、終点の場合はループするように補間する
@@ -238,8 +238,8 @@ void FloatAnimationCurve::UpdateValue(double time)
 //------------------------------------------------------------------------------
 double FloatAnimationCurve::GetLastFrameTime() const
 {
-	if (m_keyFrameList.IsEmpty()) return 0;
-	return m_keyFrameList.GetLast().FrameTime;
+	if (m_keyFrameList.isEmpty()) return 0;
+	return m_keyFrameList.getLast().FrameTime;
 }
 
 
@@ -339,8 +339,8 @@ void VMDBezierAttitudeTransformAnimation::AddKeyFrame(
 	char* interpolation_z,
 	char* interpolation_rot)
 {
-	m_keyFrameList.Add(KeyFrame());
-	KeyFrame& key = m_keyFrameList.GetLast();
+	m_keyFrameList.add(KeyFrame());
+	KeyFrame& key = m_keyFrameList.getLast();
 
 	key.Time = framePos;
 	key.Position = pos;
@@ -372,26 +372,26 @@ void VMDBezierAttitudeTransformAnimation::SortKeyFrame()
 void VMDBezierAttitudeTransformAnimation::UpdateValue(double time)
 {
 	// フレーム数 1 個
-	if (m_keyFrameList.GetCount() == 1)
+	if (m_keyFrameList.getCount() == 1)
 	{
-		m_transform.rotation = m_keyFrameList.GetFront().Rotation;
-		m_transform.translation = m_keyFrameList.GetFront().Position;
+		m_transform.rotation = m_keyFrameList.getFront().Rotation;
+		m_transform.translation = m_keyFrameList.getFront().Position;
 		return;
 	}
 
 	// 最初のフレーム以前であれば最初のフレームの値を返す
-	if (time <= m_keyFrameList.GetFront().Time)
+	if (time <= m_keyFrameList.getFront().Time)
 	{
-		m_transform.rotation = m_keyFrameList.GetFront().Rotation;
-		m_transform.translation = m_keyFrameList.GetFront().Position;
+		m_transform.rotation = m_keyFrameList.getFront().Rotation;
+		m_transform.translation = m_keyFrameList.getFront().Position;
 		return;
 	}
 
 	// 最後のフレーム以降であれば最後のフレームの値を返す
-	if (time >= m_keyFrameList.GetLast().Time)
+	if (time >= m_keyFrameList.getLast().Time)
 	{
-		m_transform.rotation = m_keyFrameList.GetLast().Rotation;
-		m_transform.translation = m_keyFrameList.GetLast().Position;
+		m_transform.rotation = m_keyFrameList.getLast().Rotation;
+		m_transform.translation = m_keyFrameList.getLast().Position;
 		return;
 	}
 
@@ -439,8 +439,8 @@ void VMDBezierAttitudeTransformAnimation::UpdateValue(double time)
 //------------------------------------------------------------------------------
 double VMDBezierAttitudeTransformAnimation::GetLastFrameTime() const
 {
-	if (m_keyFrameList.IsEmpty()) return 0;
-	return m_keyFrameList.GetLast().Time;
+	if (m_keyFrameList.isEmpty()) return 0;
+	return m_keyFrameList.getLast().Time;
 }
 
 
@@ -472,26 +472,26 @@ void VMDBezierSQTTransformAnimation2::SortKeyFrame()
 void VMDBezierSQTTransformAnimation2::UpdateValue(double time)
 {
 	// フレーム数 1 個
-	if (m_keyFrameList.GetCount() == 1)
+	if (m_keyFrameList.getCount() == 1)
 	{
-		m_transform.rotation = m_keyFrameList.GetFront().Rotation;
-		m_transform.translation = m_keyFrameList.GetFront().Position;
+		m_transform.rotation = m_keyFrameList.getFront().Rotation;
+		m_transform.translation = m_keyFrameList.getFront().Position;
 		return;
 	}
 
 	// 最初のフレーム以前であれば最初のフレームの値を返す
-	if (time <= m_keyFrameList.GetFront().Time)
+	if (time <= m_keyFrameList.getFront().Time)
 	{
-		m_transform.rotation = m_keyFrameList.GetFront().Rotation;
-		m_transform.translation = m_keyFrameList.GetFront().Position;
+		m_transform.rotation = m_keyFrameList.getFront().Rotation;
+		m_transform.translation = m_keyFrameList.getFront().Position;
 		return;
 	}
 
 	// 最後のフレーム以降であれば最後のフレームの値を返す
-	if (time >= m_keyFrameList.GetLast().Time)
+	if (time >= m_keyFrameList.getLast().Time)
 	{
-		m_transform.rotation = m_keyFrameList.GetLast().Rotation;
-		m_transform.translation = m_keyFrameList.GetLast().Position;
+		m_transform.rotation = m_keyFrameList.getLast().Rotation;
+		m_transform.translation = m_keyFrameList.getLast().Position;
 		return;
 	}
 
@@ -537,8 +537,8 @@ void VMDBezierSQTTransformAnimation2::UpdateValue(double time)
 //------------------------------------------------------------------------------
 double VMDBezierSQTTransformAnimation2::GetLastFrameTime() const
 {
-	if (m_keyFrameList.IsEmpty()) return 0;
-	return m_keyFrameList.GetLast().Time;
+	if (m_keyFrameList.isEmpty()) return 0;
+	return m_keyFrameList.getLast().Time;
 }
 
 

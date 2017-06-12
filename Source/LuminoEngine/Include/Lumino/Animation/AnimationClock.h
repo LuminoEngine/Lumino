@@ -17,9 +17,9 @@ class AnimationClock
 {
 public:
 	//template<typename TValue>
-	//static RefPtr<AnimationClock> Create(const TValue& startValue, const Delegate<void(void)>& setCallback, const Delegate<void(void)>& endCallback);
+	//static RefPtr<AnimationClock> create(const TValue& startValue, const Delegate<void(void)>& setCallback, const Delegate<void(void)>& endCallback);
 
-	static RefPtr<AnimationClock> Create();
+	static RefPtr<AnimationClock> create();
 
 	AnimationClock();
 	AnimationClock(AnimationTimeline* timeline, const Delegate<void(void)>& endCallback);
@@ -36,7 +36,7 @@ public:
 	//	AddManager();
 	//}
 
-	void Start(float startValue, float targetValue, float duration, EasingMode easingMode, const Delegate<void(float)>& setCallback, const Delegate<void(void)>& endCallback);
+	void start(float startValue, float targetValue, float duration, EasingMode easingMode, const Delegate<void(float)>& setCallback, const Delegate<void(void)>& endCallback);
 
 	// TODO: private
 	void AddManager();
@@ -153,8 +153,8 @@ private:
 template<typename TValue>
 RefPtr<ValueAnimationTimelineInstance<TValue>> CreateTimelineInstance(ValueAnimationTimeline<TValue>* timeline, const TValue& startValue, const Delegate<void(TValue)>& setCallback, const Delegate<void(void)>& endCallback)
 {
-	auto setter = RefPtr<AnimationDelegateValueSetter<TValue, Delegate<void(TValue)>>>::MakeRef(setCallback);
-	auto instance = RefPtr<ValueAnimationTimelineInstance<TValue>>::MakeRef(nullptr, setter, timeline, startValue, endCallback);
+	auto setter = RefPtr<AnimationDelegateValueSetter<TValue, Delegate<void(TValue)>>>::makeRef(setCallback);
+	auto instance = RefPtr<ValueAnimationTimelineInstance<TValue>>::makeRef(nullptr, setter, timeline, startValue, endCallback);
 	return instance;
 }
 
@@ -172,7 +172,7 @@ RefPtr<ValueAnimationTimelineInstance<TValue>> CreateTimelineInstance(ValueAnima
 //}
 
 //template<typename TValue>
-//static RefPtr<AnimationClock> AnimationClock::Create(const TValue& startValue, const Delegate<void(TValue)>& setCallback, const Delegate<void(void)>& endCallback)
+//static RefPtr<AnimationClock> AnimationClock::create(const TValue& startValue, const Delegate<void(TValue)>& setCallback, const Delegate<void(void)>& endCallback)
 //{
 //	auto setter = RefPtr<detail::AnimationDelegateValueSetter<TValue>>::MakeRef(setCallback);
 //	auto clock = RefPtr<detail::ValueAnimationClock<TValue>>::MakeRef(nullptr, setter, this, startValue, endCallback);

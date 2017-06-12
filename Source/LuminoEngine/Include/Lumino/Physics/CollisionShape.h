@@ -65,7 +65,7 @@ public:
 		@brief		PlaneCollisionShape オブジェクトを作成します。
 		@param[in]	direction	: 面の正面方向 (省略した場合は Y+ 方向)
 	*/
-	static PlaneCollisionShapePtr Create(const Vector3& direction = Vector3::UnitY);
+	static PlaneCollisionShapePtr create(const Vector3& direction = Vector3::UnitY);
 	
 LN_INTERNAL_ACCESS:
 	PlaneCollisionShape();
@@ -87,13 +87,13 @@ public:
 		@brief		BoxCollisionShape オブジェクトを作成します。
 		@param[in]	size	: 各辺の幅
 	*/
-	static BoxCollisionShapePtr Create(const Vector3& size);
+	static BoxCollisionShapePtr create(const Vector3& size);
 	
 	/**
 		@brief		BoxCollisionShape オブジェクトを作成します。
 		@param[in]	x, y, z	: 各辺の幅
 	*/
-	static BoxCollisionShapePtr Create(float x, float y, float z);
+	static BoxCollisionShapePtr create(float x, float y, float z);
 
 LN_CONSTRUCT_ACCESS:
 	BoxCollisionShape();
@@ -116,7 +116,7 @@ public:
 		@brief		CapsuleCollisionShape オブジェクトを作成します。
 		@param[in]	radius	: 半径
 	*/
-	static SphereCollisionShapePtr Create(float radius);
+	static SphereCollisionShapePtr create(float radius);
 
 LN_CONSTRUCT_ACCESS:
 	SphereCollisionShape();
@@ -138,7 +138,7 @@ public:
 		@param[in]	radius	: 半径
 		@param[in]	height	: 高さ
 	*/
-	static CapsuleCollisionShapePtr Create(float radius, float height);
+	static CapsuleCollisionShapePtr create(float radius, float height);
 
 LN_CONSTRUCT_ACCESS:
 	CapsuleCollisionShape();
@@ -159,7 +159,7 @@ public:
 	/**
 		@brief		MeshCollisionShape オブジェクトを作成します。
 	*/
-	static MeshCollisionShapePtr Create(MeshResource* mesh);
+	static MeshCollisionShapePtr create(MeshResource* mesh);
 
 LN_CONSTRUCT_ACCESS:
 	MeshCollisionShape();

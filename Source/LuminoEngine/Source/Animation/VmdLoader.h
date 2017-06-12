@@ -64,7 +64,7 @@ public:
 	~VmdLoader();
 
 	// 読み込み
-	bool Load(Stream* stream);
+	bool load(Stream* stream);
 
 	double GetLastFramePosition() const { return m_lastFramePosition; }
 	BoneAnimationList& GetBoneAnimationList() { return m_boneAnimationList; }

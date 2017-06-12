@@ -363,9 +363,9 @@ void DX9Renderer::OnUpdatePrimitiveData(IVertexDeclaration* decls, const List<Re
 		LN_COMCALL(m_dxDevice->SetVertexDeclaration(NULL));
 
 	// VertexBuffer
-	for (int i = 0; i < vertexBuufers.GetCount(); ++i)
+	for (int i = 0; i < vertexBuufers.getCount(); ++i)
 	{
-		DX9VertexBuffer* vb = static_cast<DX9VertexBuffer*>(vertexBuufers[i].Get());
+		DX9VertexBuffer* vb = static_cast<DX9VertexBuffer*>(vertexBuufers[i].get());
 		if (vb != nullptr)
 		{
 			LN_COMCALL(m_dxDevice->SetStreamSource(i, vb->GetDxVertexBuffer(), 0, dx9Decls->GetVertexStride(i)));
@@ -452,7 +452,7 @@ void DX9Renderer::OnDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex
 	DX9VertexDeclaration* decl = static_cast<DX9VertexDeclaration*>(GetVertexDeclaration());
 
 	// 0 番ストリームで頂点数を計る
-	size_t vertexCount = GetVertexBuffer(0)->GetByteCount() / decl->GetVertexStride(0);
+	size_t vertexCount = GetVertexBuffer(0)->getByteCount() / decl->GetVertexStride(0);
 
 	D3DPRIMITIVETYPE dx_prim = D3DPT_TRIANGLELIST;
 	switch (primitive)

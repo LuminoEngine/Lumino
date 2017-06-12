@@ -37,16 +37,16 @@ LN_ENUM_DECLARE(SpecialFolder);
 class Environment
 {
 public:
-#pragma push_macro("GetEnvironmentVariable")
-#undef GetEnvironmentVariable
+#pragma push_macro("getEnvironmentVariable")
+#undef getEnvironmentVariable
 	/**
 		@brief		環境変数の値を取得します。
 		@param[in]	variableName	: 環境変数の名前
 		@exception	KeyNotFoundException
 	*/
-	static String GetEnvironmentVariable(const String& variableName);
-	static String LN_AFX_FUNCNAME(GetEnvironmentVariable)(const String& variableName);
-#pragma pop_macro("GetEnvironmentVariable")
+	static String getEnvironmentVariable(const String& variableName);
+	static String LN_AFX_FUNCNAME(getEnvironmentVariable)(const String& variableName);
+#pragma pop_macro("getEnvironmentVariable")
 
 	/**
 		@brief		環境変数の値を取得します。
@@ -54,40 +54,40 @@ public:
 		@param[out]	outValue		: 環境変数の値を格納する変数のポインタ
 		@return		環境変数が存在し、値が取得できた場合は true。
 	*/
-	static bool TryGetEnvironmentVariable(const String& variableName, String* outValue);
+	static bool tryGetEnvironmentVariable(const String& variableName, String* outValue);
 
 	/**
 		@brief		現在の環境のエンディアンを確認します。
 	*/
-	static ByteOrder GetByteOrder();
+	static ByteOrder getByteOrder();
 
 	/**
 		@brief		リトルエンディアン環境であるかを確認します。
 	*/
-	static bool IsLittleEndian();
+	static bool isLittleEndian();
 
 	/**
 		@brief		システム起動からの時間を ms 単位で取得します。
 	*/
-	static uint64_t GetTickCount();
+	static uint64_t getTickCount();
 
 	/**
 		@brief		システム起動からの時間を ns 単位で取得します。
 	*/
-	static uint64_t GetTickCountNS();
+	static uint64_t getTickCountNS();
 
 	/**
 		@brief		現在の環境で定義されている改行文字列を取得します。
 	*/
 	template<typename TChar>
-	static const TChar* GetNewLine();
+	static const TChar* getNewLine();
 
 	/**
 		@brief		システムの特別なフォルダのパスを取得します。
 		@see	PathName.GetSpecialFolderPath
 	*/
 	template<typename TChar>
-	static void GetSpecialFolderPath(SpecialFolder specialFolder, TChar* outPath);
+	static void getSpecialFolderPath(SpecialFolder specialFolder, TChar* outPath);
 };
 
 LN_NAMESPACE_END

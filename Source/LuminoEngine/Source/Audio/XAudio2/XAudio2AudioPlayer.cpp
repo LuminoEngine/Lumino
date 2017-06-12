@@ -499,7 +499,7 @@ void XAudio2StreamingAudioPlayer::_addNextBuffer()
 	// データ読み込み
 	uint32_t read_size;		// 呼んだサイズ
 	uint32_t write_size;		// デコードして書き込んだサイズ
-	m_decoder->Read(mReadCursor, mSecondaryAudioData, mAudioDataBufferSize, &read_size, &write_size);
+	m_decoder->read(mReadCursor, mSecondaryAudioData, mAudioDataBufferSize, &read_size, &write_size);
 
 	// 実際に元データから読んだデータ分、カーソルを進める
 	mReadCursor += read_size;

@@ -43,7 +43,7 @@ class UITreeView
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static UITreeViewPtr Create();
+	static UITreeViewPtr create();
 
 //public:
 //	UITreeViewItemPtr AddTextItem(const String& text);

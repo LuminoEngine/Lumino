@@ -150,7 +150,7 @@ class SpriteParticleModel
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static SpriteParticleModelPtr Create();
+	static SpriteParticleModelPtr create();
 
 	void SetMaterial(Material* material);
 	Material* GetMaterial() const;
@@ -355,7 +355,7 @@ class ParticleEmitter3DComponent
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static RefPtr<ParticleEmitter3DComponent> Create(SpriteParticleModel* model);
+	static RefPtr<ParticleEmitter3DComponent> create(SpriteParticleModel* model);
 
 protected:
 	ParticleEmitter3DComponent();

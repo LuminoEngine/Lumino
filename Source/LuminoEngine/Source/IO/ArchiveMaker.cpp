@@ -19,25 +19,25 @@ ArchiveMaker::ArchiveMaker()
 //------------------------------------------------------------------------------
 ArchiveMaker::~ArchiveMaker()
 {
-	Close();
+	close();
 }
 
 //------------------------------------------------------------------------------
-bool ArchiveMaker::Open(const char* filePath, const char* key)
+bool ArchiveMaker::open(const char* filePath, const char* key)
 {
 	PathName path(filePath);
-	return Open(path, key);
+	return open(path, key);
 }
 
 //------------------------------------------------------------------------------
-bool ArchiveMaker::Open(const wchar_t* filePath, const char* key)
+bool ArchiveMaker::open(const wchar_t* filePath, const char* key)
 {
 	PathName path(filePath);
-	return Open(path, key);
+	return open(path, key);
 }
 
 //------------------------------------------------------------------------------
-bool ArchiveMaker::Open(const PathName& filePath, const char* key)
+bool ArchiveMaker::open(const PathName& filePath, const char* key)
 {
 	m_encryptionKey = (key) ? key : "";
 	m_fileCount = 0;
@@ -78,7 +78,7 @@ bool ArchiveMaker::Open(const PathName& filePath, const char* key)
 }
 
 //------------------------------------------------------------------------------
-void ArchiveMaker::Close()
+void ArchiveMaker::close()
 {
 	if (m_stream)
 	{
@@ -99,19 +99,19 @@ bool ArchiveMaker::AddFile(const PathName& filePath, String aliasPath)
 	if (err == 0)
 	{
         // アクセス用の名前がなければ、ファイル名を代わりに使う
-		if (aliasPath.IsEmpty())
+		if (aliasPath.isEmpty())
         {
 			aliasPath = filePath.c_str();
         }
 
         // アクセス用ファイル名のスラッシュをバックスラッシュ化
-		StringW filename = StringW::FromNativeCharString(aliasPath.c_str());
+		StringW filename = StringW::fromNativeCharString(aliasPath.c_str());
 		NormalizePath(&filename);
 
         //-------------------------------------------------
         // ファイル名の長さとファイルのサイズを書き込む
-		uint32_t nameSize = filename.GetLength();
-		uint32_t fileSize = (uint32_t)FileSystem::GetFileSize(stream);
+		uint32_t nameSize = filename.getLength();
+		uint32_t fileSize = (uint32_t)FileSystem::getFileSize(stream);
 
 		WriteU32Padding16(nameSize, fileSize);
 
@@ -144,8 +144,8 @@ bool ArchiveMaker::AddFile(const PathName& filePath, String aliasPath)
 //------------------------------------------------------------------------------
 void ArchiveMaker::NormalizePath(StringW* path)
 {
-	if (path->GetLength() > 0) {
-		for (int i = 0; i < path->GetLength(); ++i) {
+	if (path->getLength() > 0) {
+		for (int i = 0; i < path->getLength(); ++i) {
 			if ((*path)[i] == L'\\') (*path)[i] = L'/';
 		}
 	}

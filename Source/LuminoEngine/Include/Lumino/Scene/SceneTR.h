@@ -13,7 +13,7 @@ class HugePlane
 	: public VisualComponent
 {
 public:
-	static HugePlanePtr Create(const Vector3& direction);
+	static HugePlanePtr create(const Vector3& direction);
 
 public:
 

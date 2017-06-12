@@ -115,7 +115,7 @@ void DX9GraphicsDevice::initialize(const ConfigData& configData)
 	{
 		IDirect3DTexture9* tex = NULL;
 		LN_COMCALL(m_dxDevice->CreateTexture(2, 2, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &tex, NULL));
-		m_dummyTextures.Add(tex);
+		m_dummyTextures.add(tex);
 	}
 
 	
@@ -146,14 +146,14 @@ RefPtr<IVertexDeclaration> DX9GraphicsDevice::CreateVertexDeclarationImplement(c
 {
 	RefPtr<DX9VertexDeclaration> obj(LN_NEW DX9VertexDeclaration(), false);
 	obj->initialize(this, elements, elementsCount);
-	return RefPtr<IVertexDeclaration>::StaticCast(obj);
+	return RefPtr<IVertexDeclaration>::staticCast(obj);
 }
 
 //------------------------------------------------------------------------------
 RefPtr<IVertexBuffer> DX9GraphicsDevice::CreateVertexBufferImplement(size_t bufferSize, const void* data, ResourceUsage usage)
 {
 	RefPtr<DX9VertexBuffer> obj(LN_NEW DX9VertexBuffer(), false);
-	obj->Create(this, bufferSize, data, usage);
+	obj->create(this, bufferSize, data, usage);
 	return obj;
 }
 
@@ -161,7 +161,7 @@ RefPtr<IVertexBuffer> DX9GraphicsDevice::CreateVertexBufferImplement(size_t buff
 RefPtr<IIndexBuffer> DX9GraphicsDevice::CreateIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
 {
 	RefPtr<DX9IndexBuffer> obj(LN_NEW DX9IndexBuffer(), false);
-	obj->Create(this, indexCount, initialData, format, usage);
+	obj->create(this, indexCount, initialData, format, usage);
 	return obj;
 }
 
@@ -179,8 +179,8 @@ RefPtr<ITexture> DX9GraphicsDevice::CreateTextureImplement(const SizeI& size, bo
 RefPtr<ITexture> DX9GraphicsDevice::CreateTexturePlatformLoadingImplement(Stream* stream, bool mipmap, TextureFormat format)
 {
 	ByteBuffer buffer;
-	buffer.resize((size_t)stream->GetLength(), false);
-	stream->Read(buffer.getData(), buffer.getSize());
+	buffer.resize((size_t)stream->getLength(), false);
+	stream->read(buffer.getData(), buffer.getSize());
 
 	RefPtr<DX9Texture> obj(LN_NEW DX9Texture(this, buffer.getData(), buffer.getSize(), Color32::Transparency, mipmap, format), false);
 	return obj;
@@ -215,7 +215,7 @@ RefPtr<ITexture> DX9GraphicsDevice::CreateDepthBufferImplement(uint32_t width, u
 RefPtr<IShader> DX9GraphicsDevice::CreateShaderImplement(const void* textData, size_t size, ShaderCompileResult* result)
 {
 	DX9Shader* shader = NULL;
-	result->Level = DX9Shader::Create(this, (const char*)textData, size, &shader, &result->Message);
+	result->Level = DX9Shader::create(this, (const char*)textData, size, &shader, &result->Message);
 	if (shader != NULL) {
 		AddDeviceResource(shader);
 	}
@@ -247,7 +247,7 @@ void DX9GraphicsDevice::OnLostDevice()
 
 	m_renderer->OnLostDevice();
 	m_defaultSwapChain->OnLostDevice();
-	for (int i = 0; i < m_deviceObjectList.GetCount(); i++) {
+	for (int i = 0; i < m_deviceObjectList.getCount(); i++) {
 		m_deviceObjectList[i]->OnLostDevice();
 	}
 
@@ -257,7 +257,7 @@ void DX9GraphicsDevice::OnLostDevice()
 //------------------------------------------------------------------------------
 void DX9GraphicsDevice::OnResetDevice()
 {
-	for (int i = m_deviceObjectList.GetCount() - 1; i >= 0; i--) {
+	for (int i = m_deviceObjectList.getCount() - 1; i >= 0; i--) {
 		m_deviceObjectList[i]->OnResetDevice();
 	}
 	m_defaultSwapChain->OnResetDevice();
@@ -346,33 +346,33 @@ void DX9GraphicsDevice::CheckDeviceInformation()
 	}
 
 	// TODO:
-	Logger::WriteLine("グラフィックデバイスの情報を取得します...");
-	Logger::WriteLine("    スクリーンの幅             : %u", m_dxDisplayMode.Width);
-	Logger::WriteLine("    スクリーンの高さ           : %u", m_dxDisplayMode.Height);
-	Logger::WriteLine("    リフレッシュレート         : %u", m_dxDisplayMode.RefreshRate);
-	Logger::WriteLine("    ディスプレイフォーマット   : %s", DX9Module::GetDxFormatString(m_dxDisplayMode.Format));
-	Logger::WriteLine("    テクスチャ");
-	Logger::WriteLine("        最大横幅               : %u", m_dxCaps.MaxTextureWidth);
-	Logger::WriteLine("        最大縦幅               : %u", m_dxCaps.MaxTextureHeight);
-	Logger::WriteLine("        2 の累乗制限           : %s", m_dxCaps.TextureCaps & D3DPTEXTURECAPS_POW2 ? "あり" : "なし");
-	Logger::WriteLine("        2 の累乗制限の限定解除 : %s", m_dxCaps.TextureCaps & D3DPTEXTURECAPS_NONPOW2CONDITIONAL ? "あり" : "なし");
-	Logger::WriteLine("        正方形制限             : %s", m_dxCaps.TextureCaps & D3DPTEXTURECAPS_SQUAREONLY ? "あり" : "なし");
-	Logger::WriteLine("        動的テクスチャ         : %s", m_dxCaps.Caps2 & D3DCAPS2_DYNAMICTEXTURES ? "○" : "×");
-	Logger::WriteLine("    キューブテクスチャ         : %s", m_dxCaps.TextureCaps & D3DPTEXTURECAPS_CUBEMAP ? "○" : "×");
-	Logger::WriteLine("        2 の累乗制限           : %s", m_dxCaps.TextureCaps & D3DPTEXTURECAPS_CUBEMAP_POW2 ? "あり" : "なし");
-	Logger::WriteLine("    ボリュームテクスチャ       : %s", m_dxCaps.TextureCaps & D3DPTEXTURECAPS_VOLUMEMAP ? "○" : "×");
-	Logger::WriteLine("        2 の累乗制限           : %s", m_dxCaps.TextureCaps & D3DPTEXTURECAPS_VOLUMEMAP_POW2 ? "あり" : "なし");
-	Logger::WriteLine("        ﾃﾞｨﾒﾝｼﾞｮﾝ最大値        : %u", m_dxCaps.MaxVolumeExtent);
-	Logger::WriteLine("    異方性の次数               : %u", m_dxCaps.MaxAnisotropy);
-	Logger::WriteLine("    異方性フィルタ拡大         : %s", m_dxCaps.TextureFilterCaps & D3DPTFILTERCAPS_MAGFANISOTROPIC ? "○" : "×");
-	Logger::WriteLine("    異方性フィルタ縮小         : %s", m_dxCaps.TextureFilterCaps & D3DPTFILTERCAPS_MINFANISOTROPIC ? "○" : "×");
-	Logger::WriteLine("    最大プリミティブ数         : %u", m_dxCaps.MaxPrimitiveCount);
-	Logger::WriteLine("    最大インデックス数         : %u", m_dxCaps.MaxVertexIndex);
-	Logger::WriteLine("    頂点シェーダバージョン     : %u.%u", D3DSHADER_VERSION_MAJOR(m_dxCaps.VertexShaderVersion), D3DSHADER_VERSION_MINOR(m_dxCaps.VertexShaderVersion));
-	Logger::WriteLine("    ピクセルシェーダバージョン : %u.%u", D3DSHADER_VERSION_MAJOR(m_dxCaps.PixelShaderVersion), D3DSHADER_VERSION_MINOR(m_dxCaps.PixelShaderVersion));
-	Logger::WriteLine("    マルチレンダーターゲット数 : %u", m_dxCaps.NumSimultaneousRTs);
-	Logger::WriteLine("    MSAA レベル(Window)        : %u", m_MSAAQualityWindowed);
-	Logger::WriteLine("    MSAA レベル(FullScreen)    : %u", m_MSAAQualityFullScreen);
+	Logger::writeLine("グラフィックデバイスの情報を取得します...");
+	Logger::writeLine("    スクリーンの幅             : %u", m_dxDisplayMode.Width);
+	Logger::writeLine("    スクリーンの高さ           : %u", m_dxDisplayMode.Height);
+	Logger::writeLine("    リフレッシュレート         : %u", m_dxDisplayMode.RefreshRate);
+	Logger::writeLine("    ディスプレイフォーマット   : %s", DX9Module::GetDxFormatString(m_dxDisplayMode.Format));
+	Logger::writeLine("    テクスチャ");
+	Logger::writeLine("        最大横幅               : %u", m_dxCaps.MaxTextureWidth);
+	Logger::writeLine("        最大縦幅               : %u", m_dxCaps.MaxTextureHeight);
+	Logger::writeLine("        2 の累乗制限           : %s", m_dxCaps.TextureCaps & D3DPTEXTURECAPS_POW2 ? "あり" : "なし");
+	Logger::writeLine("        2 の累乗制限の限定解除 : %s", m_dxCaps.TextureCaps & D3DPTEXTURECAPS_NONPOW2CONDITIONAL ? "あり" : "なし");
+	Logger::writeLine("        正方形制限             : %s", m_dxCaps.TextureCaps & D3DPTEXTURECAPS_SQUAREONLY ? "あり" : "なし");
+	Logger::writeLine("        動的テクスチャ         : %s", m_dxCaps.Caps2 & D3DCAPS2_DYNAMICTEXTURES ? "○" : "×");
+	Logger::writeLine("    キューブテクスチャ         : %s", m_dxCaps.TextureCaps & D3DPTEXTURECAPS_CUBEMAP ? "○" : "×");
+	Logger::writeLine("        2 の累乗制限           : %s", m_dxCaps.TextureCaps & D3DPTEXTURECAPS_CUBEMAP_POW2 ? "あり" : "なし");
+	Logger::writeLine("    ボリュームテクスチャ       : %s", m_dxCaps.TextureCaps & D3DPTEXTURECAPS_VOLUMEMAP ? "○" : "×");
+	Logger::writeLine("        2 の累乗制限           : %s", m_dxCaps.TextureCaps & D3DPTEXTURECAPS_VOLUMEMAP_POW2 ? "あり" : "なし");
+	Logger::writeLine("        ﾃﾞｨﾒﾝｼﾞｮﾝ最大値        : %u", m_dxCaps.MaxVolumeExtent);
+	Logger::writeLine("    異方性の次数               : %u", m_dxCaps.MaxAnisotropy);
+	Logger::writeLine("    異方性フィルタ拡大         : %s", m_dxCaps.TextureFilterCaps & D3DPTFILTERCAPS_MAGFANISOTROPIC ? "○" : "×");
+	Logger::writeLine("    異方性フィルタ縮小         : %s", m_dxCaps.TextureFilterCaps & D3DPTFILTERCAPS_MINFANISOTROPIC ? "○" : "×");
+	Logger::writeLine("    最大プリミティブ数         : %u", m_dxCaps.MaxPrimitiveCount);
+	Logger::writeLine("    最大インデックス数         : %u", m_dxCaps.MaxVertexIndex);
+	Logger::writeLine("    頂点シェーダバージョン     : %u.%u", D3DSHADER_VERSION_MAJOR(m_dxCaps.VertexShaderVersion), D3DSHADER_VERSION_MINOR(m_dxCaps.VertexShaderVersion));
+	Logger::writeLine("    ピクセルシェーダバージョン : %u.%u", D3DSHADER_VERSION_MAJOR(m_dxCaps.PixelShaderVersion), D3DSHADER_VERSION_MINOR(m_dxCaps.PixelShaderVersion));
+	Logger::writeLine("    マルチレンダーターゲット数 : %u", m_dxCaps.NumSimultaneousRTs);
+	Logger::writeLine("    MSAA レベル(Window)        : %u", m_MSAAQualityWindowed);
+	Logger::writeLine("    MSAA レベル(FullScreen)    : %u", m_MSAAQualityFullScreen);
 
 	// シェーダのバージョンチェック
 	LN_THROW((m_dxCaps.VertexShaderVersion >= D3DVS_VERSION(2, 0)), InvalidOperationException, "Invalid vertex shader version.");

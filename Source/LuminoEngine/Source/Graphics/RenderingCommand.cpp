@@ -98,7 +98,7 @@ RenderingCommandList::RenderingCommandList(detail::GraphicsManager* manager)
 	, m_running(false)
 	, m_idling(true)
 {
-	m_commandList.Reserve(DataBufferReserve);	// 適当に
+	m_commandList.reserve(DataBufferReserve);	// 適当に
 	m_commandDataBuffer.resize(DataBufferReserve, false);
 	m_commandDataBufferUsed = 0;
 	m_extDataBuffer.resize(DataBufferReserve, false);
@@ -128,7 +128,7 @@ void RenderingCommandList::ClearCommands()
 //------------------------------------------------------------------------------
 void RenderingCommandList::Execute(Driver::IGraphicsDevice* device/*Driver::IRenderer* renderer*/)
 {
-	LN_RC_TRACE("RenderingCommandList::Execute() s %p %d\n", this, m_commandList.GetCount());
+	LN_RC_TRACE("RenderingCommandList::Execute() s %p %d\n", this, m_commandList.getCount());
 	// この関数は描画スレッドから呼ばれる
 
 	m_currentDevice = device;

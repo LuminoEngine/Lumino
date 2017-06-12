@@ -26,7 +26,7 @@ void UILayoutPanel::initialize()
 {
 	UIElement::initialize();
 	SetHitTestVisible(false);
-	m_children = RefPtr<UIElementCollection>::MakeRef(this);
+	m_children = RefPtr<UIElementCollection>::makeRef(this);
 
 	// Panel 系のデフォルトは Stretch
 	//SetHAlignment(HAlignment::Stretch);
@@ -36,27 +36,27 @@ void UILayoutPanel::initialize()
 //------------------------------------------------------------------------------
 void UILayoutPanel::AddChild(UIElement* element)
 {
-	m_children->Add(element);
+	m_children->add(element);
 	element->SetLogicalParent(this);
 }
 
 //------------------------------------------------------------------------------
 void UILayoutPanel::RemoveChild(UIElement* element)
 {
-	m_children->Remove(element);
+	m_children->remove(element);
 	element->SetLogicalParent(nullptr);
 }
 
 //------------------------------------------------------------------------------
 int UILayoutPanel::GetVisualChildrenCount() const
 {
-	return m_children->GetCount();
+	return m_children->getCount();
 }
 
 //------------------------------------------------------------------------------
 UIElement* UILayoutPanel::GetVisualChild(int index) const
 {
-	return m_children->GetAt(index);
+	return m_children->getAt(index);
 }
 
 //------------------------------------------------------------------------------
@@ -99,8 +99,8 @@ void UILayoutPanel::OnChildCollectionChanged(const tr::ChildCollectionChangedArg
 }
 
 //------------------------------------------------------------------------------
-int UILayoutPanel::GetLayoutChildrenCount() { return m_children->GetCount(); }
-ILayoutElement* UILayoutPanel::GetLayoutChild(int index) { return m_children->GetAt(index); }
+int UILayoutPanel::GetLayoutChildrenCount() { return m_children->getCount(); }
+ILayoutElement* UILayoutPanel::GetLayoutChild(int index) { return m_children->getAt(index); }
 int UILayoutPanel::GetLayoutGridColumnDefinitionCount() { return 0; }
 detail::GridDefinitionData* UILayoutPanel::GetLayoutGridColumnDefinition(int index) { return nullptr; }
 int UILayoutPanel::GetLayoutGridRowDefinitionCount() { return 0; }
@@ -122,9 +122,9 @@ float UILayoutPanel::GetVerticalOffset() const { return m_scrollOffset.y; }
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIStackPanel, UILayoutPanel)
 
 //------------------------------------------------------------------------------
-UIStackPanelPtr UIStackPanel::Create()
+UIStackPanelPtr UIStackPanel::create()
 {
-	auto ptr = RefPtr<UIStackPanel>::MakeRef();
+	auto ptr = RefPtr<UIStackPanel>::makeRef();
 	ptr->initialize();
 	return ptr;
 }
@@ -167,9 +167,9 @@ Size UIStackPanel::ArrangeOverride(const Size& finalSize)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIAbsoluteLayout, UILayoutPanel)
 
 //------------------------------------------------------------------------------
-UIAbsoluteLayoutPtr UIAbsoluteLayout::Create()
+UIAbsoluteLayoutPtr UIAbsoluteLayout::create()
 {
-	auto ptr = UIAbsoluteLayoutPtr::MakeRef();
+	auto ptr = UIAbsoluteLayoutPtr::makeRef();
 	ptr->initialize();
 	return ptr;
 }
@@ -388,7 +388,7 @@ public:
 	{
 	}
 
-	GridLengthType GetType() const { return m_data.type; }
+	GridLengthType getType() const { return m_data.type; }
 
 	//float GetAvailableDesiredSize() const
 	//{
@@ -484,17 +484,17 @@ public:
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIGridLayout, UILayoutPanel)
 
 //------------------------------------------------------------------------------
-UIGridLayoutPtr UIGridLayout::Create()
+UIGridLayoutPtr UIGridLayout::create()
 {
-	auto ptr = UIGridLayoutPtr::MakeRef();
+	auto ptr = UIGridLayoutPtr::makeRef();
 	ptr->initialize();
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-UIGridLayoutPtr UIGridLayout::Create(int columnCount, int rowCount)
+UIGridLayoutPtr UIGridLayout::create(int columnCount, int rowCount)
 {
-	auto ptr = UIGridLayoutPtr::MakeRef();
+	auto ptr = UIGridLayoutPtr::makeRef();
 	ptr->initialize();
 	ptr->SetGridSize(columnCount, rowCount);
 	return ptr;
@@ -525,29 +525,29 @@ void UIGridLayout::SetGridSize(int columnCount, int rowCount)
 	m_rowDefinitions.clear();
 
 	for (int i = 0; i < columnCount; ++i)
-		m_columnDefinitions.Add(RefPtr<ColumnDefinition>::MakeRef());
+		m_columnDefinitions.add(RefPtr<ColumnDefinition>::makeRef());
 	for (int i = 0; i < rowCount; ++i)
-		m_rowDefinitions.Add(RefPtr<RowDefinition>::MakeRef());
+		m_rowDefinitions.add(RefPtr<RowDefinition>::makeRef());
 }
 
 //------------------------------------------------------------------------------
 void UIGridLayout::AddColumnDefinition(GridLengthType type, float width, float minWidth, float maxWidth)
 {
-	auto ptr = RefPtr<ColumnDefinition>::MakeRef();
+	auto ptr = RefPtr<ColumnDefinition>::makeRef();
 	ptr->SetWidth(width, type);
 	ptr->SetMinWidth(minWidth);
 	ptr->SetMaxWidth(maxWidth);
-	m_columnDefinitions.Add(ptr);
+	m_columnDefinitions.add(ptr);
 }
 
 //------------------------------------------------------------------------------
 void UIGridLayout::AddRowDefinition(GridLengthType type, float height, float minHeight, float maxHeight)
 {
-	auto ptr = RefPtr<RowDefinition>::MakeRef();
+	auto ptr = RefPtr<RowDefinition>::makeRef();
 	ptr->SetHeight(height, type);
 	ptr->SetMinHeight(minHeight);
 	ptr->SetMaxHeight(maxHeight);
-	m_rowDefinitions.Add(ptr);
+	m_rowDefinitions.add(ptr);
 }
 
 //------------------------------------------------------------------------------
@@ -565,9 +565,9 @@ Size UIGridLayout::ArrangeOverride(const Size& finalSize)
 }
 
 //------------------------------------------------------------------------------
-int UIGridLayout::GetLayoutGridColumnDefinitionCount() { return m_columnDefinitions.GetCount(); }
+int UIGridLayout::GetLayoutGridColumnDefinitionCount() { return m_columnDefinitions.getCount(); }
 detail::GridDefinitionData* UIGridLayout::GetLayoutGridColumnDefinition(int index) { return &m_columnDefinitions[index]->m_data; }
-int UIGridLayout::GetLayoutGridRowDefinitionCount() { return m_rowDefinitions.GetCount(); }
+int UIGridLayout::GetLayoutGridRowDefinitionCount() { return m_rowDefinitions.getCount(); }
 detail::GridDefinitionData* UIGridLayout::GetLayoutGridRowDefinition(int index) { return &m_rowDefinitions[index]->m_data; }
 
 LN_NAMESPACE_END

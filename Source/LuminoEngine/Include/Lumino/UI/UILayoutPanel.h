@@ -163,7 +163,7 @@ class UIStackPanel
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static UIStackPanelPtr Create();
+	static UIStackPanelPtr create();
 
 public:
 	void SetOrientation(Orientation orientation) { m_orientation = orientation; }
@@ -190,7 +190,7 @@ class UIAbsoluteLayout
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static UIAbsoluteLayoutPtr Create();
+	static UIAbsoluteLayoutPtr create();
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	UIAbsoluteLayout();
@@ -217,13 +217,13 @@ public:
 	/**
 		@brief		UIGridLayout オブジェクトを作成します。
 	*/
-	static UIGridLayoutPtr Create();
+	static UIGridLayoutPtr create();
 
 	/**
 		@brief		指定した数の行列をもつ UIGridLayout オブジェクトを作成します。
 		@details	各セルの幅と高さは GridLengthType::Ratio となります。
 	*/
-	static UIGridLayoutPtr Create(int columnCount, int rowCount);
+	static UIGridLayoutPtr create(int columnCount, int rowCount);
 
 public:
 

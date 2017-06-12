@@ -163,14 +163,14 @@ public:
 		@brief		シェーダコードが記述されたテキストファイルをコンパイルし、Shader を作成します。
 		@param[in]	filePath		: ファイルパス
 	*/
-	static RefPtr<Shader> Create(const StringRef& filePath, bool useTRSS = false);
+	static RefPtr<Shader> create(const StringRef& filePath, bool useTRSS = false);
 
 	/**
 		@brief		メモリ上に展開されたテキストデータをコンパイルし、Shader を作成します。
 		@param[in]	code			: シェーダコード文字列
 		@param[in]	length			: 文字列の長さ (-1 で 終端 \0 まで)
 	*/
-	static RefPtr<Shader> Create(const char* code, int length);
+	static RefPtr<Shader> create(const char* code, int length);
 	
 	///**
 	//	@brief		文字列をコンパイルし、シェーダを作成します。
@@ -181,7 +181,7 @@ public:
 	//				(成功または警告のみの場合は throw されません)
 	//				例外を throw せず、コンパイル結果の詳細を取得したいときは TryCreate() を使用してください。
 	//*/
-	//static Shader* Create(const char* code, int length = -1);
+	//static Shader* create(const char* code, int length = -1);
 
 	///**
 	//	@brief		メモリ上に展開されたテキストデータをコンパイルし、シェーダを作成します。
@@ -193,7 +193,7 @@ public:
 	//				(成功または警告のみの場合は throw されません)
 	//				例外を throw せず、コンパイル結果の詳細を取得したいときは TryCreate() を使用してください。
 	//*/
-	//static Shader* Create(GraphicsManager* manager, const void* textData, size_t byteCount);
+	//static Shader* create(GraphicsManager* manager, const void* textData, size_t byteCount);
 	//
 	///**
 	//	@brief		メモリ上に展開されたテキストデータをコンパイルし、シェーダを作成します。
@@ -273,12 +273,12 @@ public:
 
 public:
 	bool IsValid() const { return m_type != ShaderVariableType_Unknown; }
-	ShaderVariableType GetType() const { return m_type; }
+	ShaderVariableType getType() const { return m_type; }
 
 	void SetBool(bool value);
 	bool GetBool() const { return m_value.BoolVal; }
-	void SetInt(int value);
-	int GetInt() const { return m_value.Int; }
+	void setInt(int value);
+	int getInt() const { return m_value.Int; }
 	void SetBoolArray(const bool* values, int count);
 	const bool* GetBoolArray() const { return m_value.BoolArray; }
 	void SetFloat(float value);
@@ -297,15 +297,15 @@ public:
 	Driver::ITexture* GetDeviceTexture() const { return m_value.DeviceTexture; }
 	void SetManagedTexture(Texture* texture);
 	Texture* GetManagedTexture() const { return m_value.ManagedTexture; }
-	void SetString(const char* str);
-	void SetString(const String& str);
-	const TCHAR* GetString() const { return m_value.String; }
+	void setString(const char* str);
+	void setString(const String& str);
+	const TCHAR* getString() const { return m_value.String; }
 
 	int GetArrayLength() const;
 	byte_t* GetDataBuffer() { return m_value.Buffer; }	// 初期値格納用
 
 	bool equals(const ShaderValue& value) const;
-	uint32_t GetHashCode();
+	uint32_t getHashCode();
 
 private:
 
@@ -363,7 +363,7 @@ class ShaderVariable
 {
 public:
 	/// 変数の型の取得
-	ShaderVariableType GetType() const;
+	ShaderVariableType getType() const;
 
 	/// 変数名の取得
 	const String& GetName() const;
@@ -383,8 +383,8 @@ public:
 	void SetBool(bool value);
 	bool GetBool() const;
 	void SetBoolArray(const bool* values, int count);
-	void SetInt(int value);
-	int GetInt() const;
+	void setInt(int value);
+	int getInt() const;
 	void SetFloat(float value);
 	float GetFloat() const;
 	void SetFloatArray(const float* values, int count);
@@ -398,8 +398,8 @@ public:
 	const Matrix* GetMatrixArray() const;
 	void SetTexture(Texture* texture);
 	Texture* GetTexture() const;
-	void SetString(const char* str);
-	const TCHAR* GetString() const;
+	void setString(const char* str);
+	const TCHAR* getString() const;
 
 	/**
 		@brief		このシェーダ変数で定義されている全てのアノテーションを取得します。

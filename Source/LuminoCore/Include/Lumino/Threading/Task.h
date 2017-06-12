@@ -32,11 +32,11 @@ class Task
 {
 public:
 
-	static TaskPtr Create(const Delegate<void()>& action);
+	static TaskPtr create(const Delegate<void()>& action);
 
 	static TaskPtr Run(const Delegate<void()>& action);
 
-	void Start();
+	void start();
 
 	void Wait();
 

@@ -17,7 +17,7 @@ void TestEnv::TearDown()
 //------------------------------------------------------------------------------
 void TestEnv::SaveScreenShot(const TCHAR* filePath)
 {
-	EngineManager::Instance->GetGraphicsManager()->GetMainSwapChain()->GetBackBuffer()->Lock()->Save(filePath);
+	EngineManager::Instance->GetGraphicsManager()->GetMainSwapChain()->GetBackBuffer()->Lock()->save(filePath);
 	EngineManager::Instance->GetGraphicsManager()->GetMainSwapChain()->GetBackBuffer()->Unlock();
 }
 
@@ -164,7 +164,7 @@ void EngineInitalize()
 
 
 	{
-		auto buttonNormalBrush = TextureBrush::Create(detail::UIManager::GetInstance()->GetDefaultSkinTexture());
+		auto buttonNormalBrush = TextureBrush::create(detail::UIManager::GetInstance()->GetDefaultSkinTexture());
 		buttonNormalBrush->SetSourceRect(0, 0, 32, 32);
 		buttonNormalBrush->SetBorderThickness(8, 8, 8, 8);
 		buttonNormalBrush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
@@ -175,7 +175,7 @@ void EngineInitalize()
 		// base
 		{
 			auto* props = style->GetPropertyTable();
-			props->background = RefPtr<Brush>::StaticCast(buttonNormalBrush);
+			props->background = RefPtr<Brush>::staticCast(buttonNormalBrush);
 			props->borderThickness = ThicknessF(0);
 		}
 	}

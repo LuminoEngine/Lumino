@@ -75,28 +75,28 @@ bool XAudio2AudioDevice::initialize(/* const ConfigData& configData */)
 		return false;
 	}
 
-	ln::Logger::WriteLine("get XAudio2AudioDevice information...");
+	ln::Logger::writeLine("get XAudio2AudioDevice information...");
 
 	// デバイス詳細情報の確認
 	XAUDIO2_DEVICE_DETAILS details;
 	hr = m_XAudio->GetDeviceDetails(0, &details);
 	if (SUCCEEDED(hr))
 	{
-		ln::Logger::WriteLine(L"    DeviceID    : %s", details.DeviceID);
-		ln::Logger::WriteLine(L"    DisplayName : %s", details.DisplayName);
-		ln::Logger::WriteLine(L"    Role        : %d", details.Role);
-		ln::Logger::WriteLine(L"    OutputFormat ( WAVEFORMATEX )");
-		ln::Logger::WriteLine("        Format ID       : %hu", details.OutputFormat.Format.wFormatTag);
-		ln::Logger::WriteLine("        Channels        : %hu", details.OutputFormat.Format.nChannels);
-		ln::Logger::WriteLine("        SamplesPerSec   : %lu", details.OutputFormat.Format.nSamplesPerSec);
-		ln::Logger::WriteLine("        AvgBytesPerSec  : %lu", details.OutputFormat.Format.nAvgBytesPerSec);
-		ln::Logger::WriteLine("        BlockAlign      : %hu", details.OutputFormat.Format.nBlockAlign);
-		ln::Logger::WriteLine("        BitsPerSample   : %hu", details.OutputFormat.Format.wBitsPerSample);
-		ln::Logger::WriteLine("        ExtraSize       : %hu", details.OutputFormat.Format.cbSize);
+		ln::Logger::writeLine(L"    DeviceID    : %s", details.DeviceID);
+		ln::Logger::writeLine(L"    DisplayName : %s", details.DisplayName);
+		ln::Logger::writeLine(L"    Role        : %d", details.Role);
+		ln::Logger::writeLine(L"    OutputFormat ( WAVEFORMATEX )");
+		ln::Logger::writeLine("        Format ID       : %hu", details.OutputFormat.Format.wFormatTag);
+		ln::Logger::writeLine("        Channels        : %hu", details.OutputFormat.Format.nChannels);
+		ln::Logger::writeLine("        SamplesPerSec   : %lu", details.OutputFormat.Format.nSamplesPerSec);
+		ln::Logger::writeLine("        AvgBytesPerSec  : %lu", details.OutputFormat.Format.nAvgBytesPerSec);
+		ln::Logger::writeLine("        BlockAlign      : %hu", details.OutputFormat.Format.nBlockAlign);
+		ln::Logger::writeLine("        BitsPerSample   : %hu", details.OutputFormat.Format.wBitsPerSample);
+		ln::Logger::writeLine("        ExtraSize       : %hu", details.OutputFormat.Format.cbSize);
     }
     else
     {
-		ln::Logger::WriteLine("failed to get information.");
+		ln::Logger::writeLine("failed to get information.");
     }
 
     // チャンネル数記憶
@@ -171,7 +171,7 @@ AudioPlayer* XAudio2AudioDevice::CreateAudioPlayer(AudioStream* audioStream, boo
 			break;
 	}
 
-	audioPlayer.SafeAddRef();
+	audioPlayer.safeAddRef();
 	return audioPlayer;
 }
 

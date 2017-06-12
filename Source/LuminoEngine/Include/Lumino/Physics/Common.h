@@ -37,7 +37,7 @@ public:
 	BtShapeManager();
 	~BtShapeManager();
 	void AddShape(CollisionShape* shape);
-	bool IsEmpty() const;
+	bool isEmpty() const;
 	btCollisionShape* GetBtCollisionShape();
 
 private:

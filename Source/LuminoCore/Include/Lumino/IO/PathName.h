@@ -6,7 +6,7 @@
 #include "PathTraits.h"
 
 #pragma push_macro("CreateDirectory")
-#undef CreateDirectory
+#undef createDirectory
 
 LN_NAMESPACE_BEGIN
 
@@ -52,12 +52,12 @@ public:
 	GenericPathName(const GenericPathName& obj);
 
 	/// @overload Assign
-	GenericPathName(const char* path) { Assign(path); }
+	GenericPathName(const char* path) { assign(path); }
 	/// @overload Assign
-	GenericPathName(const wchar_t* path) { Assign(path); }
+	GenericPathName(const wchar_t* path) { assign(path); }
 	/// @overload Assign
-	GenericPathName(const GenericStringT& path) { Assign(path); }
-	GenericPathName(const GenericStringRef<TChar>& path) { Assign(path); }
+	GenericPathName(const GenericStringT& path) { assign(path); }
+	GenericPathName(const GenericStringRef<TChar>& path) { assign(path); }
 
 	/// @overload AssignUnderBasePath
 	GenericPathName(const PathNameT& basePath, const char* relativePath) { AssignUnderBasePath(basePath, relativePath); }
@@ -71,9 +71,9 @@ public:
 	GenericPathName(const PathNameT& basePath, const PathNameT& relativePath) { AssignUnderBasePath(basePath, relativePath); }
 
 	// operators
-	GenericPathName& operator = (const GenericStringT& str)	{ Assign(str.c_str()); return (*this); }
-	GenericPathName& operator = (const char* str) { Assign(str); return (*this); }
-	GenericPathName& operator = (const wchar_t* str) { Assign(str); return (*this); }
+	GenericPathName& operator = (const GenericStringT& str)	{ assign(str.c_str()); return (*this); }
+	GenericPathName& operator = (const char* str) { assign(str); return (*this); }
+	GenericPathName& operator = (const wchar_t* str) { assign(str); return (*this); }
 	bool operator < (const GenericPathName& right) const { return PathTraits::compare(m_path.c_str(), right.m_path.c_str()) < 0; }
 	bool operator < (const TChar* right) const { return PathTraits::compare(m_path.c_str(), right) < 0; }
 	operator const TChar*() const { return m_path.c_str(); }
@@ -85,12 +85,12 @@ public:
 		@brief		パス文字列を割り当てる
 		@param[in]	path		: パス文字列
 	*/
-	void Assign(const char* path, int length = -1);
+	void assign(const char* path, int length = -1);
 	/// @overload Assign
-	void Assign(const wchar_t* path, int length = -1);
+	void assign(const wchar_t* path, int length = -1);
 	/// @overload Assign
-	void Assign(const GenericStringT& path) { Assign(path.c_str()); }
-	void Assign(const GenericStringRef<TChar>& path) { Assign(path.GetBegin(), path.GetLength()); }
+	void assign(const GenericStringT& path) { assign(path.c_str()); }
+	void assign(const GenericStringRef<TChar>& path) { assign(path.getBegin(), path.getLength()); }
 
 	/**
 		@brief		ベースパスと相対パスを連結して、パスを作成する
@@ -103,11 +103,11 @@ public:
 	/// @overload AssignUnderBasePath
 	void AssignUnderBasePath(const PathNameT& basePath, const wchar_t* relativePath, int len = -1);
 	/// @overload AssignUnderBasePath
-	void AssignUnderBasePath(const PathNameT& basePath, const GenericStringT& relativePath) { AssignUnderBasePath(basePath, relativePath.c_str(), relativePath.GetLength()); }
+	void AssignUnderBasePath(const PathNameT& basePath, const GenericStringT& relativePath) { AssignUnderBasePath(basePath, relativePath.c_str(), relativePath.getLength()); }
 	/// @overload AssignUnderBasePath
-	void AssignUnderBasePath(const PathNameT& basePath, const GenericStringRef<TChar>& relativePath) { AssignUnderBasePath(basePath, relativePath.GetBegin(), relativePath.GetLength()); }
+	void AssignUnderBasePath(const PathNameT& basePath, const GenericStringRef<TChar>& relativePath) { AssignUnderBasePath(basePath, relativePath.getBegin(), relativePath.getLength()); }
 	/// @overload AssignUnderBasePath
-	void AssignUnderBasePath(const PathNameT& basePath, const PathNameT& relativePath) { AssignUnderBasePath(basePath, relativePath.c_str(), relativePath.GetLength()); }
+	void AssignUnderBasePath(const PathNameT& basePath, const PathNameT& relativePath) { AssignUnderBasePath(basePath, relativePath.c_str(), relativePath.getLength()); }
 
 	/**
 		@brief		現在のパスに別のパス文字列を連結します。
@@ -115,15 +115,15 @@ public:
 		@details	現在のパスの末尾にセパレータが無い場合は付加し、文字列を連結します。
 					path が絶対パスであれば、現在のパスを置き換えます。
 	*/
-	void Append(const TChar* path);
+	void append(const TChar* path);
 	/// @overload Append
-	void Append(const PathNameT& path) { Append(path.m_path.c_str()); }
+	void append(const PathNameT& path) { append(path.m_path.c_str()); }
 
 	/// 空文字列を設定する
 	void clear() { m_path.clear(); }
 
 	/// パス文字列の中から拡張子を含むファイル名の部分を返す (空パスの場合は空文字列を返す)
-	GenericStringT GetFileName() const { return PathTraits::GetFileName(m_path.c_str()); }
+	GenericStringT getFileName() const { return PathTraits::getFileName(m_path.c_str()); }
 
 	GenericPathName<TChar> GetFileNameWithoutExtension() const;
 
@@ -143,15 +143,15 @@ public:
 	StringRefT GetExtension(bool withDot = true) const LN_NOEXCEPT;
 
 	/** パス文字列の長さを返します。*/
-	int GetLength() const { return m_path.GetLength(); }
+	int getLength() const { return m_path.getLength(); }
 
 	/** C言語形式の文字列ポインタを返します。*/
 	const TChar* c_str() const { return m_path.c_str(); }
 	
 	/// パス文字列を返す
-	const GenericStringT& GetString() const { return m_path; }	// TODO: ToString()
+	const GenericStringT& getString() const { return m_path; }	// TODO: ToString()
 
-	GenericString<TCHAR> ToString() const;
+	GenericString<TCHAR> toString() const;
 
 	/// パス文字列を返す (末尾に必ずセパレータをひとつ付加する)
 	const GenericString<TChar> GetStrEndSeparator() const;
@@ -186,7 +186,7 @@ public:
 	GenericPathName<TChar> ChangeExtension(const TChar* newExt) const;
 
 	/// パスが空であるかを確認する
-	bool IsEmpty() const { return m_path.IsEmpty(); }
+	bool isEmpty() const { return m_path.isEmpty(); }
 
 	/// 絶対パスであるかを確認する
 	bool IsAbsolute() const;
@@ -235,13 +235,13 @@ public:
 	/** 
 		@brief		このパスの指す先がファイルとして存在しているかを確認します。
 	*/
-	bool ExistsFile() const;
+	bool existsFile() const;
 
 	/** 
 		@brief		このパスの指す先がディレクトリとして存在しているかを確認します。
 	*/
 	// TODO :↑に同じようなのがある…
-	bool ExistsDirectory() const;
+	bool existsDirectory() const;
 
 	/**
 		@brief		このパスの指す先がディレクトリ内に、指定した名前のファイルが存在するかを確認します。
@@ -283,18 +283,18 @@ public:
 		このパスが示すディレクトリを作成します。
 		@details	このパスへの全てのディレクトリを作成します。既に存在する場合は作成しません。
 	*/
-	void CreateDirectory() const;
-	void LN_AFX_FUNCNAME(CreateDirectory)() const;
+	void createDirectory() const;
+	void LN_AFX_FUNCNAME(createDirectory)() const;
 
 public:
 
 	#pragma push_macro("GetCurrentDirectory")
-	#undef GetCurrentDirectory
+	#undef getCurrentDirectory
 	/**
 		@brief		カレントディレクトリのパスを取得します。
 	*/
-	static PathNameT GetCurrentDirectory();
-	static PathNameT LN_AFX_FUNCNAME(GetCurrentDirectory)();
+	static PathNameT getCurrentDirectory();
+	static PathNameT LN_AFX_FUNCNAME(getCurrentDirectory)();
 	#pragma pop_macro("GetCurrentDirectory")
 
 	/** アプリケーションを開始した実行ファイルのパスを取得します。*/
@@ -307,7 +307,7 @@ public:
 		@param[in]	option			: 取得オプション
 		@exception	ArgumentException	childDir が絶対パスです。
 	*/
-	static PathNameT GetSpecialFolderPath(SpecialFolder specialFolder, const TChar* childDir = NULL, SpecialFolderOption option = SpecialFolderOption::Create);
+	static PathNameT getSpecialFolderPath(SpecialFolder specialFolder, const TChar* childDir = NULL, SpecialFolderOption option = SpecialFolderOption::Create);
 
 	/**	
 		@brief		あるフォルダ内でユニークなファイルパス(絶対パス)を生成して返す
@@ -347,10 +347,10 @@ public:
 	GenericStaticallyLocalPath(const GenericStringRef<char>& path);
 	GenericStaticallyLocalPath(const GenericStringRef<wchar_t>& path);
 	
-	const TChar* c_str() const { return m_path.IsEmpty() ? m_static : m_path.c_str(); }
+	const TChar* c_str() const { return m_path.isEmpty() ? m_static : m_path.c_str(); }
 	const GenericString<TChar>& GetPath() const { return m_path; }
 
-	bool IsStatic() const { return m_path.IsEmpty(); }
+	bool IsStatic() const { return m_path.isEmpty(); }
 
 private:
 	TChar					m_static[LocalPathBaseLength];
@@ -375,7 +375,7 @@ struct Formatter<TChar, detail::FormatArgType::KindString, GenericPathName<TChar
 {
 	static GenericString<TChar> Format(const std::locale& locale, const GenericStringRef<TChar>& format, const GenericStringRef<TChar>& formatParam, const GenericPathName<TChar>& value)
 	{
-		return value.GetString();
+		return value.getString();
 	}
 };
 

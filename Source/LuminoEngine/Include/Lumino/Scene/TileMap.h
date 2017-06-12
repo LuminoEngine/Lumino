@@ -21,7 +21,7 @@ public:
 	/**
 		@brief		
 	*/
-	static TileMapPtr Create();
+	static TileMapPtr create();
 
 	/**
 		@brief

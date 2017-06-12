@@ -35,7 +35,7 @@ protected:
 
 public:
 	// IShaderVariable
-	virtual ShaderVariableType GetType() const override { return m_desc.Type; }
+	virtual ShaderVariableType getType() const override { return m_desc.Type; }
 	virtual const String& GetName() const override { return m_name; }
 	virtual const String& GetSemanticName() const override { return m_semanticName; }
 	virtual int GetMatrixRows() const override { return m_desc.Rows; }
@@ -43,7 +43,7 @@ public:
 	virtual int GetArrayElements() const override { return m_desc.Elements; }
 	virtual void SetBool(bool value) override;
 	virtual void SetBoolArray(const bool* values, int count) override;
-	virtual void SetInt(int value) override;
+	virtual void setInt(int value) override;
 	virtual void SetFloat(float value) override;
 	virtual void SetFloatArray(const float* values, int count) override;
 	virtual void SetVector(const Vector4& vec) override;
@@ -51,10 +51,10 @@ public:
 	virtual void SetMatrix(const Matrix& matrix) override;
 	virtual void SetMatrixArray(const Matrix* matrices, int count) override;
 	virtual void SetTexture(ITexture* texture) override;
-	virtual const ShaderValue& GetValue() const override { return m_value; }
+	virtual const ShaderValue& getValue() const override { return m_value; }
 
-	void SetString(const char* str);
-	void SetString(const String& str);
+	void setString(const char* str);
+	void setString(const String& str);
   
 protected:
 	ShaderVariableTypeDesc	m_desc;

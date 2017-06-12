@@ -37,14 +37,14 @@ public:
 		@brief		整数ランダム値を返します。
 		@return		0 以上の整数値
 	*/
-	int GetInt();
+	int getInt();
 
 	/**
 		@brief		指定した最大値より小さい整数ランダム値を返します。(0 <= 値 < maxValue)
 		@param[in]	maxValue	: 上限値
 		@return		0 以上で maxValue より小さい整数値
 	*/
-	int GetInt(int maxValue);
+	int getInt(int maxValue);
 
 	/**
 		@brief		指定した範囲内の整数ランダム値を返します。(minValue <= 値 < maxValue)

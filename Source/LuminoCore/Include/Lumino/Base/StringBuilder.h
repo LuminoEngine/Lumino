@@ -18,28 +18,28 @@ public:
 	~GenericStringBuilderCore();
 
 public:
-	bool IsEmpty() const { return m_bufferUsed == 0; }
+	bool isEmpty() const { return m_bufferUsed == 0; }
 	void clear();
-	void Append(const TChar ch);
-	void Append(const TChar ch, int count);
-	void Append(const TChar* str, int length);
-	void Append(const TChar* str);
+	void append(const TChar ch);
+	void append(const TChar ch, int count);
+	void append(const TChar* str, int length);
+	void append(const TChar* str);
 	//void Append(const GenericString<TChar>& str);		// TODO: GenericString 側が UTF16/32 対応できるまで
-	void Append(const byte_t* buffer, int byteCount);
-	void Append(const ByteBuffer& buffer);
-	void Append(const GenericStringRef<TChar>& str)
+	void append(const byte_t* buffer, int byteCount);
+	void append(const ByteBuffer& buffer);
+	void append(const GenericStringRef<TChar>& str)
 	{
-		Append(str.GetBegin(), str.GetLength());
+		append(str.getBegin(), str.getLength());
 	}
 
-	void Replace(int start, int length, const TChar* str, int strLength);
+	void replace(int start, int length, const TChar* str, int strLength);
 
 	const TChar* c_str() const { return (const TChar*)m_buffer.getConstData(); }
-	int GetLength() const { return m_bufferUsed / sizeof(TChar); }
+	int getLength() const { return m_bufferUsed / sizeof(TChar); }
 
 
 private:
-	void WriteInternal(const TChar* str, int length);
+	void writeInternal(const TChar* str, int length);
 
 protected:
 	ByteBuffer	m_buffer;
@@ -53,9 +53,9 @@ class GenericStringBuilder
 {
 public:
 
-	GenericString<TChar> ToString() const
+	GenericString<TChar> toString() const
 	{
-		m_cache.AssignCStr(
+		m_cache.assignCStr(
 			(const TChar*)GenericStringBuilderCore<TChar>::m_buffer.getConstData(),
 			GenericStringBuilderCore<TChar>::m_bufferUsed / sizeof(TChar));
 		return m_cache;
@@ -68,9 +68,9 @@ public:
 
 
 	template<typename... TArgs>
-	void AppendFormat(const Locale& locale, const GenericStringRef<TChar>& format, const TArgs&... args);
+	void appendFormat(const Locale& locale, const GenericStringRef<TChar>& format, const TArgs&... args);
 
-	void AppendFormatInternal(const Locale& locale, const GenericStringRef<TChar>& format, typename detail::FormatList<TChar>* args);
+	void appendFormatInternal(const Locale& locale, const GenericStringRef<TChar>& format, typename detail::FormatList<TChar>* args);
 
 private:
 	mutable GenericString<TChar>	m_cache;
@@ -83,17 +83,17 @@ private:
 
 template<typename TChar>
 template<typename... TArgs>
-void GenericStringBuilder<TChar>::AppendFormat(const Locale& locale, const GenericStringRef<TChar>& format, const TArgs&... args)
+void GenericStringBuilder<TChar>::appendFormat(const Locale& locale, const GenericStringRef<TChar>& format, const TArgs&... args)
 {
 	auto list = detail::MakeArgList<TChar>(args...);
-	AppendFormatInternal(locale, format, &list);
+	appendFormatInternal(locale, format, &list);
 }
 
 template<typename TChar>
-void GenericStringBuilder<TChar>::AppendFormatInternal(const Locale& locale, const GenericStringRef<TChar>& format, typename detail::FormatList<TChar>* args)
+void GenericStringBuilder<TChar>::appendFormatInternal(const Locale& locale, const GenericStringRef<TChar>& format, typename detail::FormatList<TChar>* args)
 {
-	const TChar* pos = format.GetBegin();
-	const TChar* end = format.GetEnd();
+	const TChar* pos = format.getBegin();
+	const TChar* end = format.getEnd();
 	TChar ch;
 	while (pos < end)
 	{
@@ -125,7 +125,7 @@ void GenericStringBuilder<TChar>::AppendFormatInternal(const Locale& locale, con
 				}
 			}
 
-			GenericStringBuilderCore<TChar>::Append(ch);
+			GenericStringBuilderCore<TChar>::append(ch);
 		}
 		// この時点で pos は { の次を指している
 
@@ -148,7 +148,7 @@ void GenericStringBuilder<TChar>::AppendFormatInternal(const Locale& locale, con
 			LN_THROW(pos < end, InvalidFormatException);	// インデックス解析中に \0 になった
 
 		} while ((*pos) >= '0' && (*pos) <= '9');
-		LN_THROW(index < args->GetCount(), InvalidFormatException);
+		LN_THROW(index < args->getCount(), InvalidFormatException);
 
 		//-----------------------------------------------------------
 		// Alignment コンポーネント
@@ -216,12 +216,12 @@ void GenericStringBuilder<TChar>::AppendFormatInternal(const Locale& locale, con
 		// 最後は } でなければならない
 		LN_THROW(*pos == '}', InvalidFormatException);
 
-		GenericString<TChar> str = args->GetArg(index).DoFormat(locale.GetStdLocale(), GenericStringRef<TChar>(fmtBegin, fmtEnd), GenericStringRef<TChar>(fmtEnd, fmtParamEnd));
+		GenericString<TChar> str = args->GetArg(index).DoFormat(locale.getStdLocale(), GenericStringRef<TChar>(fmtBegin, fmtEnd), GenericStringRef<TChar>(fmtEnd, fmtParamEnd));
 
-		int pad = width - str.GetLength();
-		if (!leftJustify && pad > 0) GenericStringBuilderCore<TChar>::Append(' ', pad);
-		GenericStringBuilderCore<TChar>::Append(str.c_str(), str.GetLength());
-		if (leftJustify && pad > 0) GenericStringBuilderCore<TChar>::Append(' ', pad);
+		int pad = width - str.getLength();
+		if (!leftJustify && pad > 0) GenericStringBuilderCore<TChar>::append(' ', pad);
+		GenericStringBuilderCore<TChar>::append(str.c_str(), str.getLength());
+		if (leftJustify && pad > 0) GenericStringBuilderCore<TChar>::append(' ', pad);
 
 		++pos;
 	}
@@ -236,21 +236,21 @@ typedef GenericStringBuilder<wchar_t>	StringBuilderW;
 //------------------------------------------------------------------------------
 template<typename TChar>
 template<typename... TArgs>
-GenericString<TChar> GenericString<TChar>::Format(const GenericStringRef<TChar>& format, const TArgs&... args)
+GenericString<TChar> GenericString<TChar>::format(const GenericStringRef<TChar>& format, const TArgs&... args)
 {
 	GenericStringBuilder<TChar> sb;
-	sb.AppendFormat(Locale::GetC(), format, args...);
-	return sb.ToString();
+	sb.appendFormat(Locale::getC(), format, args...);
+	return sb.toString();
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
 template<typename... TArgs>
-GenericString<TChar> GenericString<TChar>::Format(const Locale& locale, const GenericStringRef<TChar>& format, const TArgs&... args)
+GenericString<TChar> GenericString<TChar>::format(const Locale& locale, const GenericStringRef<TChar>& format, const TArgs&... args)
 {
 	GenericStringBuilder<TChar> sb;
-	sb.AppendFormat(locale, format, args...);
-	return sb.ToString();
+	sb.appendFormat(locale, format, args...);
+	return sb.toString();
 }
 
 LN_NAMESPACE_END

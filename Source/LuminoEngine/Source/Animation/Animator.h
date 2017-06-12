@@ -23,7 +23,7 @@ public:
 public:
 
 	/// 作成
-	void Create(detail::IAnimationTargetElement* element);
+	void create(detail::IAnimationTargetElement* element);
 
 	/// 再生中であるかを確認する
 	bool IsPlaying() const;

@@ -15,12 +15,12 @@ TEST_F(Test_Scene_Sprite, Basic)
 	// <Test> 普通の描画
 	// <Test> 不透明度の設定
 	{
-		auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
+		auto tex = Texture2D::create(LN_LOCALFILE("TestData/Sprite1.png"));
 
-		auto sprite1 = Sprite2D::Create(tex);
+		auto sprite1 = Sprite2D::create(tex);
 		sprite1->SetPosition(0, 0);
 
-		auto sprite2 = Sprite2D::Create(tex);
+		auto sprite2 = Sprite2D::create(tex);
 		sprite2->SetPosition(32, 0);
 		sprite2->SetOpacity(0.5);
 		sprite2->SetBlendMode(BlendMode::Alpha);
@@ -36,12 +36,12 @@ TEST_F(Test_Scene_Sprite, Basic)
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_Sprite, BlendMode)
 {
-	auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
-	auto sprite1 = Sprite2D::Create(tex);
-	auto sprite2 = Sprite2D::Create(tex);
-	auto sprite3 = Sprite2D::Create(tex);
-	auto sprite4 = Sprite2D::Create(tex);
-	auto sprite5 = Sprite2D::Create(tex);
+	auto tex = Texture2D::create(LN_LOCALFILE("TestData/Sprite1.png"));
+	auto sprite1 = Sprite2D::create(tex);
+	auto sprite2 = Sprite2D::create(tex);
+	auto sprite3 = Sprite2D::create(tex);
+	auto sprite4 = Sprite2D::create(tex);
+	auto sprite5 = Sprite2D::create(tex);
 
 	sprite1->SetPosition(0, 0);
 	sprite1->SetBlendMode(BlendMode::Normal);
@@ -68,25 +68,25 @@ TEST_F(Test_Scene_Sprite, Anchor)
 {
 	// <Test> 原点の指定
 	{
-		auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
+		auto tex = Texture2D::create(LN_LOCALFILE("TestData/Sprite1.png"));
 
 		// 左上原点
-		auto sprite1 = Sprite2D::Create(tex);
+		auto sprite1 = Sprite2D::create(tex);
 		sprite1->SetPosition(0, 0);
 		sprite1->SetAnchorPoint(0, 0);
 
 		// 中央原点
-		auto sprite2 = Sprite2D::Create(tex);
+		auto sprite2 = Sprite2D::create(tex);
 		sprite2->SetPosition(32, 32);
 		sprite2->SetAnchorPoint(Vector2(0.5, 0.5));
 
 		// 右下原点
-		auto sprite3 = Sprite2D::Create(tex);
+		auto sprite3 = Sprite2D::create(tex);
 		sprite3->SetPosition(64, 64);
 		sprite3->SetAnchorPoint(1, 1);
 
 		// 中央下原点
-		auto sprite4 = Sprite2D::Create(tex);
+		auto sprite4 = Sprite2D::create(tex);
 		sprite4->SetPosition(32, 120);
 		sprite4->SetAnchorPoint(0.5, 1);
 
@@ -106,10 +106,10 @@ TEST_F(Test_Scene_Sprite, DrawCallCount)
 		TestEnv::WaitRendering();
 		int defaultCount = EngineDiag::GetGraphicsDeviceDrawCount();
 
-		auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
-		auto sprite1 = Sprite2D::Create(tex);
-		auto sprite2 = Sprite2D::Create(tex);
-		auto sprite3 = Sprite2D::Create(tex);
+		auto tex = Texture2D::create(LN_LOCALFILE("TestData/Sprite1.png"));
+		auto sprite1 = Sprite2D::create(tex);
+		auto sprite2 = Sprite2D::create(tex);
+		auto sprite3 = Sprite2D::create(tex);
 
 		Engine::Update();
 		TestEnv::WaitRendering();
@@ -123,7 +123,7 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 {
 	// <Issues> デフォルトのサンプラステートの繰り返しモードは Repert になる。
 	{
-		auto sprite1 = Sprite2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
+		auto sprite1 = Sprite2D::create(LN_LOCALFILE("TestData/Sprite1.png"));
 		sprite1->SetSourceRect(32, 0, 32, 32);
 		Engine::Update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Scene_Sprite.Issues_Volkoff_1.png")));
@@ -131,12 +131,12 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 	}
 	// <Issues> 2D では Z ソートの基準がカメラ位置からの直線距離ではなく、スクリーンからの距離でなければならない。
 	{
-		auto tex1 = Texture2D::Create(32, 32);
-		auto tex2 = Texture2D::Create(32, 32);
+		auto tex1 = Texture2D::create(32, 32);
+		auto tex2 = Texture2D::create(32, 32);
 		tex1->clear(Color32::Red);
 		tex2->clear(Color32::Blue);
-		auto s1 = Sprite2D::Create(tex1);
-		auto s2 = Sprite2D::Create(tex2);
+		auto s1 = Sprite2D::create(tex1);
+		auto s2 = Sprite2D::create(tex2);
 		s1->SetPosition(10, 20, 100);
 		s2->SetPosition(15, 25, 100);	// スクリーンが Z 平面に平行なら、Z が同じときはあとから作ったものが常に手前になる。
 		Engine::Update();
@@ -147,11 +147,11 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 
 	// <Issues> テクスチャを変更できること。
 	{
-		auto tex1 = Texture2D::Create(32, 32);
-		auto tex2 = Texture2D::Create(32, 32);
+		auto tex1 = Texture2D::create(32, 32);
+		auto tex2 = Texture2D::create(32, 32);
 		tex1->clear(Color32::Green);
 		tex2->clear(Color32::Blue);
-		auto s1 = Sprite2D::Create(tex1);
+		auto s1 = Sprite2D::create(tex1);
 		Engine::Update();			// 1度描く
 		s1->SetTexture(tex2);			// 次にテクスチャを変更する
 		Engine::Update();
@@ -177,21 +177,21 @@ TEST_F(Test_Scene_Sprite3D, Basic)
 {
 	// <Test> 普通の描画
 	{
-		auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
-		auto sprite1 = Sprite3DComponent::Create(1, 1, tex);
+		auto tex = Texture2D::create(LN_LOCALFILE("TestData/Sprite1.png"));
+		auto sprite1 = Sprite3DComponent::create(1, 1, tex);
 		Engine::Update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite3D.Basic1.png")));
 	}
 	// <Test> 不透明度の設定
 	{
-		auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
-		auto sprite1 = Sprite3DComponent::Create(1, 1, tex);
+		auto tex = Texture2D::create(LN_LOCALFILE("TestData/Sprite1.png"));
+		auto sprite1 = Sprite3DComponent::create(1, 1, tex);
 		sprite1->SetPosition(-1, 0, 0);
 		sprite1->SetOpacity(0.25f);
-		auto sprite2 = Sprite3DComponent::Create(1, 1, tex);
+		auto sprite2 = Sprite3DComponent::create(1, 1, tex);
 		sprite2->SetPosition(0, 0, 0);
 		sprite2->SetOpacity(0.5f);
-		auto sprite3 = Sprite3DComponent::Create(1, 1, tex);
+		auto sprite3 = Sprite3DComponent::create(1, 1, tex);
 		sprite3->SetPosition(1, 0, 0);
 		sprite3->SetOpacity(0.75f);
 		Engine::Update();
@@ -203,11 +203,11 @@ TEST_F(Test_Scene_Sprite3D, Basic)
 	//	Engine::Update();
 	//	int defaultCount = EngineDiag::GetGraphicsDeviceDrawCount();
 
-	//	auto tex1 = Texture2D::Create(32, 32);
-	//	auto tex2 = Texture2D::Create(32, 32);
-	//	auto sprite1 = Sprite3DComponent::Create(1, 1, tex1);
-	//	auto sprite2 = Sprite3DComponent::Create(1, 1, tex2);
-	//	auto sprite3 = Sprite3DComponent::Create(1, 1, tex1);
+	//	auto tex1 = Texture2D::create(32, 32);
+	//	auto tex2 = Texture2D::create(32, 32);
+	//	auto sprite1 = Sprite3DComponent::create(1, 1, tex1);
+	//	auto sprite2 = Sprite3DComponent::create(1, 1, tex2);
+	//	auto sprite3 = Sprite3DComponent::create(1, 1, tex1);
 	//	sprite1->SetPosition(0, 0);
 	//	sprite2->SetPosition(10, 10);
 	//	sprite3->SetPosition(20, 20);
@@ -227,8 +227,8 @@ TEST_F(Test_Scene_Sprite3D, ViewFrustumCulling)
 		TestEnv::WaitRendering();
 		int count1 = EngineDiag::GetGraphicsDeviceDrawCount();
 
-		auto tex1 = Texture2D::Create(32, 32);
-		auto sprite1 = Sprite3DComponent::Create(1, 1, tex1);
+		auto tex1 = Texture2D::create(32, 32);
+		auto sprite1 = Sprite3DComponent::create(1, 1, tex1);
 		Engine::Update();
 		TestEnv::WaitRendering();
 		int count2= EngineDiag::GetGraphicsDeviceDrawCount();
@@ -256,33 +256,33 @@ protected:
 TEST_F(Test_Scene_TextBlock2D, Basic)
 {
 	{
-		auto text = TextBlock2DComponent::Create(_T("Lumino"));
+		auto text = TextBlock2DComponent::create(_T("Lumino"));
 		Engine::Update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_TextBlock2D.Basic1.png")));
 	}
 	{
-		auto text1 = TextBlock2DComponent::Create();
-		text1->SetText(_T("upper left"));
+		auto text1 = TextBlock2DComponent::create();
+		text1->setText(_T("upper left"));
 		text1->SetPosition(0, 0, 0);
 		text1->SetAnchorPoint(0, 0);
 
-		auto text2 = TextBlock2DComponent::Create();
-		text2->SetText(_T("upper right"));
+		auto text2 = TextBlock2DComponent::create();
+		text2->setText(_T("upper right"));
 		text2->SetPosition(160, 0, 0);
 		text2->SetAnchorPoint(1, 0);
 
-		auto text3 = TextBlock2DComponent::Create();
-		text3->SetText(_T("lower left"));
+		auto text3 = TextBlock2DComponent::create();
+		text3->setText(_T("lower left"));
 		text3->SetPosition(0, 120, 0);
 		text3->SetAnchorPoint(0, 1);
 
-		auto text4 = TextBlock2DComponent::Create();
-		text4->SetText(_T("lower right"));
+		auto text4 = TextBlock2DComponent::create();
+		text4->setText(_T("lower right"));
 		text4->SetPosition(160, 120, 0);
 		text4->SetAnchorPoint(1, 1);
 
-		auto text5 = TextBlock2DComponent::Create();
-		text5->SetText(_T("center"));
+		auto text5 = TextBlock2DComponent::create();
+		text5->setText(_T("center"));
 		text5->SetPosition(80, 60, 0);
 		text5->SetAnchorPoint(0.5, 0.5);
 

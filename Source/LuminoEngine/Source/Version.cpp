@@ -31,7 +31,7 @@ int Engine::GetBuild()
 }
 
 //------------------------------------------------------------------------------
-const TCHAR* Engine::GetString()
+const TCHAR* Engine::getString()
 {
 	return LUMINO_ENGINE_VERSION_STRING;
 }

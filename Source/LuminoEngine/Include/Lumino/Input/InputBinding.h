@@ -95,7 +95,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	InputBinding();
 	virtual ~InputBinding();
-	virtual detail::InputBindingType GetType() const = 0;
+	virtual detail::InputBindingType getType() const = 0;
 
 private:
 	float						m_minValidMThreshold;
@@ -115,7 +115,7 @@ public:
 		@param[in]	key				: 関連付けられるキー
 		@param[in]	modifierKeys	: 関連付けられる修飾キー
 	*/
-	static KeyboardBindingPtr Create(Keys key, ModifierKeys modifierKeys = ModifierKeys::None);
+	static KeyboardBindingPtr create(Keys key, ModifierKeys modifierKeys = ModifierKeys::None);
 
 public:
 
@@ -128,7 +128,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	KeyboardBinding(Keys key, ModifierKeys modifierKeys);
 	virtual ~KeyboardBinding();
-	virtual detail::InputBindingType GetType() const override;
+	virtual detail::InputBindingType getType() const override;
 
 private:
 	Keys			m_key;
@@ -149,7 +149,7 @@ public:
 		@param[in]	mouseAction		: 関連付けられるマウス操作
 		@param[in]	modifierKeys	: 関連付けられる修飾キー
 	*/
-	static MouseBindingPtr Create(MouseAction mouseAction, ModifierKeys modifierKeys = ModifierKeys::None);
+	static MouseBindingPtr create(MouseAction mouseAction, ModifierKeys modifierKeys = ModifierKeys::None);
 
 public:
 
@@ -162,7 +162,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	MouseBinding(MouseAction mouseAction, ModifierKeys modifierKeys);
 	virtual ~MouseBinding();
-	virtual detail::InputBindingType GetType() const override;
+	virtual detail::InputBindingType getType() const override;
 
 private:
 	MouseAction		m_mouseAction;
@@ -182,7 +182,7 @@ public:
 		@brief		GamepadBinding オブジェクトを作成します。
 		@param[in]	element		: 関連付けられるゲームパッド操作
 	*/
-	static GamepadBindingPtr Create(GamepadElement element);
+	static GamepadBindingPtr create(GamepadElement element);
 
 public:
 
@@ -192,7 +192,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	GamepadBinding(GamepadElement element);
 	virtual ~GamepadBinding();
-	virtual detail::InputBindingType GetType() const override;
+	virtual detail::InputBindingType getType() const override;
 
 private:
 	GamepadElement		m_element;

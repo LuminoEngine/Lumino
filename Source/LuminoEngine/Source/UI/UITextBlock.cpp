@@ -12,9 +12,9 @@ LN_NAMESPACE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UITextBlock, UITextElement)
 
 //------------------------------------------------------------------------------
-UITextBlockPtr UITextBlock::Create()
+UITextBlockPtr UITextBlock::create()
 {
-	auto ptr = UITextBlockPtr::MakeRef();
+	auto ptr = UITextBlockPtr::makeRef();
 	ptr->initialize();
 	return ptr;
 }
@@ -38,7 +38,7 @@ void UITextBlock::initialize()
 }
 
 //------------------------------------------------------------------------------
-void UITextBlock::SetText(const StringRef& text)
+void UITextBlock::setText(const StringRef& text)
 {
 	m_text = text;
 }

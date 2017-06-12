@@ -24,7 +24,7 @@ class UIButtonBase
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	void SetText(const StringRef& text);
+	void setText(const StringRef& text);
 
 	/** OnClick イベントの通知を受け取るコールバックを登録します。*/
 	LN_METHOD(Event)
@@ -59,8 +59,8 @@ class UIButton
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static RefPtr<UIButton> Create();
-	static RefPtr<UIButton> Create(const StringRef& text, float width, float height);
+	static RefPtr<UIButton> create();
+	static RefPtr<UIButton> create(const StringRef& text, float width, float height);
 
 LN_CONSTRUCT_ACCESS:
 	UIButton();
@@ -81,7 +81,7 @@ public:
 	static const String CheckedState;
 	static const String UncheckedState;
 
-	static RefPtr<UIToggleButton> Create();
+	static RefPtr<UIToggleButton> create();
 
 protected:
 	virtual void OnClick(UIEventArgs* e);

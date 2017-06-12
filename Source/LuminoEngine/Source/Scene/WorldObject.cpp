@@ -13,9 +13,9 @@ LN_NAMESPACE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(WorldObject, Object);
 
 //------------------------------------------------------------------------------
-WorldObjectPtr WorldObject::Create()
+WorldObjectPtr WorldObject::create()
 {
-	auto ptr = WorldObjectPtr::MakeRef();
+	auto ptr = WorldObjectPtr::makeRef();
 	//detail::GameSceneManager::GetInstance()->GetActiveScene()->AddGameObject(ptr);
 	return ptr;
 }
@@ -54,7 +54,7 @@ void WorldObject::AddComponent(Component* component)
 	if (LN_CHECK_ARG(component != nullptr)) return;
 	if (LN_CHECK_ARG(component->m_owner == nullptr)) return;
 	component->attach(this);
-	m_components.Add(component);
+	m_components.add(component);
 }
 
 //------------------------------------------------------------------------------
@@ -127,16 +127,16 @@ void WorldObject::UpdateFrame()
 	}
 
 	// 子ノード更新
-	int count = m_children.GetCount();
+	int count = m_children.getCount();
 	for (int i = 0; i < count; )
 	{
-		WorldObject* obj = m_children.GetAt(i);
+		WorldObject* obj = m_children.getAt(i);
 		obj->UpdateFrame();
 
 		if (obj->m_isAutoRelease && obj->getReferenceCount() == 1)
 		{
-			m_children.RemoveAt(i);
-			count = m_children.GetCount();
+			m_children.removeAt(i);
+			count = m_children.getCount();
 		}
 		else
 		{
@@ -160,7 +160,7 @@ void WorldObject::Render(DrawList* context)
 void WorldObject::ReleaseComponents()
 {
 	for (auto& c : m_components)
-		c->Detach();
+		c->detach();
 	m_components.clear();
 }
 

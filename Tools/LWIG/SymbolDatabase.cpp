@@ -40,7 +40,7 @@ void MethodInfo::LinkParameters()
 {
 	if (metadata->HasKey("Event"))
 	{
-		Console::WriteLine("is event");
+		Console::writeLine("is event");
 	}
 
 	for (auto& paramInfo : parameters)
@@ -56,10 +56,10 @@ void MethodInfo::LinkParameters()
 
 		if (paramInfo->rawDefaultValue != nullptr)
 		{
-			String text = paramInfo->rawDefaultValue.Get();
-			if (text.Contains("::"))
+			String text = paramInfo->rawDefaultValue.get();
+			if (text.contains("::"))
 			{
-				auto tokens = text.Split("::");
+				auto tokens = text.split("::");
 				TypeInfoPtr dummy;
 				g_database.FindEnumTypeAndValue(tokens[0], tokens[1], &dummy, &paramInfo->defaultValue);
 			}
@@ -80,10 +80,10 @@ void MethodInfo::ExpandCAPIParameters()
 			if (owner->isStruct)
 			{
 				auto info = std::make_shared<ParameterInfo>();
-				info->name = owner->name.ToLower();
+				info->name = owner->name.toLower();
 				info->type = g_database.FindTypeInfo(owner->name);
 				info->isThis = true;
-				capiParameters.Add(info);
+				capiParameters.add(info);
 			}
 			else if (isConstructor)
 			{
@@ -94,15 +94,15 @@ void MethodInfo::ExpandCAPIParameters()
 				info->name = _T("sender");
 				info->type = PredefinedTypes::objectType;
 				info->isThis = true;
-				capiParameters.Add(info);
+				capiParameters.add(info);
 			}
 			else
 			{
 				auto info = std::make_shared<ParameterInfo>();
-				info->name = owner->name.ToLower();
+				info->name = owner->name.toLower();
 				info->type = g_database.FindTypeInfo(owner->name);
 				info->isThis = true;
-				capiParameters.Add(info);
+				capiParameters.add(info);
 			}
 		}
 	}
@@ -110,8 +110,8 @@ void MethodInfo::ExpandCAPIParameters()
 	// params
 	for (auto& paramInfo : parameters)
 	{
-		capiParameters.Add(paramInfo);
-		overloadSuffix += StringTraits::ToUpper((TCHAR)paramInfo->name[0]);
+		capiParameters.add(paramInfo);
+		overloadSuffix += StringTraits::toUpper((TCHAR)paramInfo->name[0]);
 	}
 
 	// return value
@@ -127,7 +127,7 @@ void MethodInfo::ExpandCAPIParameters()
 		info->isIn = false;
 		info->isOut = true;
 		info->isReturn = true;
-		capiParameters.Add(info);
+		capiParameters.add(info);
 	}
 
 	// constructor
@@ -139,17 +139,17 @@ void MethodInfo::ExpandCAPIParameters()
 		else
 		{
 			auto info = std::make_shared<ParameterInfo>();
-			info->name = String::Format(_T("out{0}"), owner->name);
+			info->name = String::format(_T("out{0}"), owner->name);
 			info->type = g_database.FindTypeInfo(owner->name);
 			info->isReturn = true;
-			capiParameters.Add(info);
+			capiParameters.add(info);
 		}
 	}
 }
 
 String MethodInfo::GetCAPIFuncName()
 {
-	String n = String::Format(_T("LN{0}_{1}"), owner->name, name);
+	String n = String::format(_T("LN{0}_{1}"), owner->name, name);
 	if (IsOverloadChild())
 		n += overloadSuffix;
 	return n;
@@ -162,7 +162,7 @@ String MethodInfo::GetCApiSetOverrideCallbackFuncName()
 
 String MethodInfo::GetCApiSetOverrideCallbackTypeName()
 {
-	return String::Format("LN{0}_{1}_OverrideCaller", owner->name, name);
+	return String::format("LN{0}_{1}_OverrideCaller", owner->name, name);
 }
 
 String MethodInfo::GetAccessLevelName(AccessLevel accessLevel)
@@ -191,7 +191,7 @@ void TypeInfo::Link()
 	ResolveCopyDoc();
 
 	// find base class
-	if (!baseClassRawName.IsEmpty())
+	if (!baseClassRawName.isEmpty())
 	{
 		baseClass = g_database.FindTypeInfo(baseClassRawName);
 	}
@@ -206,31 +206,31 @@ void TypeInfo::MakeProperties()
 			String name;
 			String namePrefix;
 			bool isGetter = false;
-			if (methodInfo->name.IndexOf(_T("Get")) == 0)
+			if (methodInfo->name.indexOf(_T("Get")) == 0)
 			{
-				name = methodInfo->name.Mid(3);
+				name = methodInfo->name.mid(3);
 				isGetter = true;
 			}
-			if (methodInfo->name.IndexOf(_T("Is")) == 0)
+			if (methodInfo->name.indexOf(_T("Is")) == 0)
 			{
-				name = methodInfo->name.Mid(2);
+				name = methodInfo->name.mid(2);
 				namePrefix = _T("Is");
 				isGetter = true;
 			}
-			if (methodInfo->name.IndexOf(_T("Set")) == 0)
+			if (methodInfo->name.indexOf(_T("Set")) == 0)
 			{
-				name = methodInfo->name.Mid(3);
+				name = methodInfo->name.mid(3);
 				isGetter = false;
 			}
 
 			PropertyInfoPtr propInfo;
 			{
-				auto* ptr = declaredProperties.Find([name](PropertyInfoPtr info) {return info->name == name; });
+				auto* ptr = declaredProperties.find([name](PropertyInfoPtr info) {return info->name == name; });
 				if (ptr == nullptr)
 				{
 					propInfo = std::make_shared<PropertyInfo>();
 					propInfo->name = name;
-					declaredProperties.Add(propInfo);
+					declaredProperties.add(propInfo);
 				}
 				else
 				{
@@ -276,7 +276,7 @@ void TypeInfo::LinkOverload()
 
 			if (methodInfo1->name == methodInfo2->name)
 			{
-				methodInfo1->overloadChildren.Add(methodInfo2);
+				methodInfo1->overloadChildren.add(methodInfo2);
 				methodInfo2->overloadParent = methodInfo1;
 			}
 		}
@@ -318,8 +318,8 @@ void PropertyInfo::MakeDocument()
 	}
 	if (setter != nullptr)
 	{
-		if (!document->summary.IsEmpty()) document->summary += _T("\n");
-		if (!document->details.IsEmpty()) document->details += _T("\n\n");
+		if (!document->summary.isEmpty()) document->summary += _T("\n");
+		if (!document->details.isEmpty()) document->details += _T("\n\n");
 
 		document->summary += setter->document->summary;
 		document->details += setter->document->details;
@@ -445,15 +445,15 @@ ConstantInfoPtr SymbolDatabase::CreateConstantFromLiteralString(const String& va
 		info->type = PredefinedTypes::nullptrType;
 		info->value = nullptr;
 	}
-	else if (valueStr.Contains('.'))
+	else if (valueStr.contains('.'))
 	{
 		info->type = PredefinedTypes::floatType;
-		info->value = StringTraits::ToFloat(valueStr.c_str());
+		info->value = StringTraits::toFloat(valueStr.c_str());
 	}
 	else
 	{
 		info->type = PredefinedTypes::intType;
-		info->value = StringTraits::ToInt32(valueStr.c_str());
+		info->value = StringTraits::toInt32(valueStr.c_str());
 	}
 
 	return info;
@@ -461,64 +461,64 @@ ConstantInfoPtr SymbolDatabase::CreateConstantFromLiteralString(const String& va
 
 void SymbolDatabase::InitializePredefineds()
 {
-	predefineds.Add(std::make_shared<TypeInfo>(_T("void")));
-	predefineds.GetLast()->isVoid = true;
-	PredefinedTypes::voidType = predefineds.GetLast();
+	predefineds.add(std::make_shared<TypeInfo>(_T("void")));
+	predefineds.getLast()->isVoid = true;
+	PredefinedTypes::voidType = predefineds.getLast();
 
-	predefineds.Add(std::make_shared<TypeInfo>(_T("nullptr")));
-	predefineds.GetLast()->isVoid = true;
-	PredefinedTypes::nullptrType = predefineds.GetLast();
+	predefineds.add(std::make_shared<TypeInfo>(_T("nullptr")));
+	predefineds.getLast()->isVoid = true;
+	PredefinedTypes::nullptrType = predefineds.getLast();
 
-	predefineds.Add(std::make_shared<TypeInfo>(_T("bool")));
-	predefineds.GetLast()->isPrimitive = true;
-	PredefinedTypes::boolType = predefineds.GetLast();
+	predefineds.add(std::make_shared<TypeInfo>(_T("bool")));
+	predefineds.getLast()->isPrimitive = true;
+	PredefinedTypes::boolType = predefineds.getLast();
 
-	predefineds.Add(std::make_shared<TypeInfo>(_T("int")));
-	predefineds.GetLast()->isPrimitive = true;
-	PredefinedTypes::intType = predefineds.GetLast();
+	predefineds.add(std::make_shared<TypeInfo>(_T("int")));
+	predefineds.getLast()->isPrimitive = true;
+	PredefinedTypes::intType = predefineds.getLast();
 
-	predefineds.Add(std::make_shared<TypeInfo>(_T("uint32_t")));
-	predefineds.GetLast()->isPrimitive = true;
-	PredefinedTypes::uint32Type = predefineds.GetLast();
+	predefineds.add(std::make_shared<TypeInfo>(_T("uint32_t")));
+	predefineds.getLast()->isPrimitive = true;
+	PredefinedTypes::uint32Type = predefineds.getLast();
 
-	predefineds.Add(std::make_shared<TypeInfo>(_T("float")));
-	predefineds.GetLast()->isPrimitive = true;
-	PredefinedTypes::floatType = predefineds.GetLast();
+	predefineds.add(std::make_shared<TypeInfo>(_T("float")));
+	predefineds.getLast()->isPrimitive = true;
+	PredefinedTypes::floatType = predefineds.getLast();
 
-	predefineds.Add(std::make_shared<TypeInfo>(_T("String")));
-	predefineds.GetLast()->isPrimitive = true;
-	PredefinedTypes::stringType = predefineds.GetLast();
+	predefineds.add(std::make_shared<TypeInfo>(_T("String")));
+	predefineds.getLast()->isPrimitive = true;
+	PredefinedTypes::stringType = predefineds.getLast();
 
-	predefineds.Add(std::make_shared<TypeInfo>(_T("Object")));
-	PredefinedTypes::objectType = predefineds.GetLast();
+	predefineds.add(std::make_shared<TypeInfo>(_T("Object")));
+	PredefinedTypes::objectType = predefineds.getLast();
 
-	predefineds.Add(std::make_shared<TypeInfo>(_T("EventConnection")));
-	PredefinedTypes::EventConnectionType = predefineds.GetLast();
+	predefineds.add(std::make_shared<TypeInfo>(_T("EventConnection")));
+	PredefinedTypes::EventConnectionType = predefineds.getLast();
 }
 
 TypeInfoPtr SymbolDatabase::FindTypeInfo(StringRef typeName)
 {
 	TypeInfoPtr* type;
 	
-	type = predefineds.Find([typeName](TypeInfoPtr type) { return type->name == typeName; });
+	type = predefineds.find([typeName](TypeInfoPtr type) { return type->name == typeName; });
 	if (type != nullptr) return *type;
 
-	type = structs.Find([typeName](TypeInfoPtr type) { return type->name == typeName; });
+	type = structs.find([typeName](TypeInfoPtr type) { return type->name == typeName; });
 	if (type != nullptr) return *type;
 
-	type = classes.Find([typeName](TypeInfoPtr type) { return type->name == typeName; });
+	type = classes.find([typeName](TypeInfoPtr type) { return type->name == typeName; });
 	if (type != nullptr) return *type;
 
-	type = enums.Find([typeName](TypeInfoPtr type) { return type->name == typeName; });
+	type = enums.find([typeName](TypeInfoPtr type) { return type->name == typeName; });
 	if (type != nullptr) return *type;
 
-	type = delegates.Find([typeName](TypeInfoPtr type) { return type->name == typeName; });
+	type = delegates.find([typeName](TypeInfoPtr type) { return type->name == typeName; });
 	if (type != nullptr)
 		return *type;
 
 	if (typeName == _T("StringRef")) return PredefinedTypes::stringType;
 	if (typeName == _T("EventConnection")) return PredefinedTypes::EventConnectionType;
 
-	LN_THROW(0, InvalidOperationException, "Undefined type: %s", typeName.ToString().c_str());
+	LN_THROW(0, InvalidOperationException, "Undefined type: %s", typeName.toString().c_str());
 	return nullptr;
 }

@@ -293,7 +293,7 @@ Bitmap* DX9Texture::Lock()
 //------------------------------------------------------------------------------
 void DX9Texture::Unlock()
 {
-	m_lockedBitmap.SafeRelease();
+	m_lockedBitmap.safeRelease();
 	//m_lockedBuffer.Release();
 	m_dxTexture->UnlockRect(0);
 }

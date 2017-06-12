@@ -12,12 +12,12 @@ protected:
 TEST_F(Test_Graphics_MeshResource, AddSquare)
 {
 	// 自己照明
-	auto material = Material::Create();
+	auto material = Material::create();
 	material->SetBuiltinColorParameter(Material::EmissiveParameter, Color::White);
 
 	// <Test> 四角形1つ
 	{
-		auto mesh = MeshResource::Create();
+		auto mesh = MeshResource::create();
 		mesh->AddSquare(
 			Vertex{ Vector3(-2, 2, 0), Vector2(0, 0), Vector3(0, 0, 1), Color::Red },
 			Vertex{ Vector3(-2, 0, 0), Vector2(0, 0), Vector3(0, 0, 1), Color::Green },
@@ -33,7 +33,7 @@ TEST_F(Test_Graphics_MeshResource, AddSquare)
 
 	// <Test> 描画しつつ追加
 	{
-		auto mesh = MeshResource::Create();
+		auto mesh = MeshResource::create();
 
 		// 1回目
 		mesh->AddSquare(
@@ -65,12 +65,12 @@ TEST_F(Test_Graphics_MeshResource, AddSquare)
 TEST_F(Test_Graphics_MeshResource, clear)
 {
 	// 自己照明
-	auto material = Material::Create();
+	auto material = Material::create();
 	material->SetBuiltinColorParameter(Material::AmbientParameter, Color::White);
 
 	// <Test> 描画しつつ追加
 	{
-		auto mesh = MeshResource::Create();
+		auto mesh = MeshResource::create();
 
 		// 1回目
 		mesh->AddSquare(
@@ -103,12 +103,12 @@ TEST_F(Test_Graphics_MeshResource, clear)
 TEST_F(Test_Graphics_MeshResource, AddLine)
 {
 	// 自己照明
-	auto material = Material::Create();
+	auto material = Material::create();
 	material->SetBuiltinColorParameter(Material::EmissiveParameter, Color::White);
 
 	// <Test> AddLine
 	{
-		auto mesh = MeshResource::Create();
+		auto mesh = MeshResource::create();
 		mesh->AddSections(1);
 		mesh->GetSection(0)->primitiveType = PrimitiveType_LineList;
 		mesh->AddLine(
@@ -129,7 +129,7 @@ TEST_F(Test_Graphics_MeshResource, AddLine)
 //
 //	ScopedCameraPosition cp(5, 5, -5);
 //	{
-//		auto mesh = TeapotMesh::Create();
+//		auto mesh = TeapotMesh::create();
 //
 //		Engine::Update();
 //

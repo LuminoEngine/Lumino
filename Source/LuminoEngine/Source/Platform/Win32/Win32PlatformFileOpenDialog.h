@@ -13,8 +13,8 @@ class Win32PlatformFileOpenDialog
 public:
 	enum class Type
 	{
-		Open,
-		Save,
+		open,
+		save,
 	};
 
 	Win32PlatformFileOpenDialog()
@@ -32,7 +32,7 @@ public:
 		if (SUCCEEDED(CoInitializeEx(NULL, COINIT_APARTMENTTHREADED)))	// multi-threaded is not supported
 		{
 			HRESULT hr;
-			if (type == Type::Open)
+			if (type == Type::open)
 			{
 				hr = CoCreateInstance(
 					CLSID_FileOpenDialog,
@@ -72,7 +72,7 @@ public:
 		return false;
 	}
 
-	virtual PathName GetFilePath() override
+	virtual PathName getFilePath() override
 	{
 		LPWSTR wcFileName;
 		HRESULT hr = m_fileDialog->GetFileName(&wcFileName);

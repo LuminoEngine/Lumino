@@ -30,7 +30,7 @@ void Document::initialize()
 }
 
 //------------------------------------------------------------------------------
-void Document::SetText(const StringRef& text)
+void Document::setText(const StringRef& text)
 {
 	m_blockList.clear();
 
@@ -38,16 +38,16 @@ void Document::SetText(const StringRef& text)
 }
 
 //------------------------------------------------------------------------------
-void Document::Replace(int offset, int length, const StringRef& text)
+void Document::replace(int offset, int length, const StringRef& text)
 {
 	// UTF32 へ変換
-	const ByteBuffer& utf32Buf = m_manager->GetTCharToUTF32Converter()->Convert(text.GetBegin(), sizeof(TCHAR) * text.GetLength());
+	const ByteBuffer& utf32Buf = m_manager->GetTCharToUTF32Converter()->Convert(text.getBegin(), sizeof(TCHAR) * text.getLength());
 	int len = utf32Buf.getSize() / sizeof(UTF32);
-	Replace(offset, length, (const UTF32*)utf32Buf.getConstData(), len);
+	replace(offset, length, (const UTF32*)utf32Buf.getConstData(), len);
 }
 
 //------------------------------------------------------------------------------
-void Document::Replace(int offset, int length, const UTF32* text, int len)
+void Document::replace(int offset, int length, const UTF32* text, int len)
 {
 	LN_ASSERT(offset == 0 && length == 0);	// TODO: まだ
 
@@ -58,23 +58,23 @@ void Document::Replace(int offset, int length, const UTF32* text, int len)
 		const UTF32* end = pos + len;
 		int nlIndex = 0;
 		int nlCount = 0;
-		while (StringTraits::IndexOfNewLineSequence(pos, end, &nlIndex, &nlCount))
+		while (StringTraits::indexOfNewLineSequence(pos, end, &nlIndex, &nlCount))
 		{
-			inlines.Add(NewObject<Run>(pos, nlIndex).Get());
-			inlines.Add(NewObject<LineBreak>().Get());
+			inlines.add(NewObject<Run>(pos, nlIndex).get());
+			inlines.add(NewObject<LineBreak>().get());
 			pos += (nlIndex + nlCount);	// 改行文字の次の文字を指す
 		}
 		if (pos != end)
 		{
-			inlines.Add(NewObject<Run>(pos, nlIndex).Get());
+			inlines.add(NewObject<Run>(pos, nlIndex).get());
 		}
 	}
 
 	// TODO: Insert 先を割る
 	int localInsertPoint = 0;
-	LN_ASSERT(m_blockList.IsEmpty());	// TODO
+	LN_ASSERT(m_blockList.isEmpty());	// TODO
 	RefPtr<Block> parentBlock = NewObject<Paragraph>();
-	m_blockList.Add(parentBlock);
+	m_blockList.add(parentBlock);
 
 	parentBlock->InsertInlines(localInsertPoint, inlines);
 
@@ -143,7 +143,7 @@ TextElement::~TextElement()
 void TextElement::initialize()
 {
 	m_manager = detail::DocumentsManager::GetInstance();
-	m_fontData.Family = String::GetEmpty();
+	m_fontData.Family = String::getEmpty();
 	m_fontData.Size = 20;
 	m_fontData.IsBold = false;
 	m_fontData.IsItalic = false;
@@ -237,14 +237,14 @@ void Block::AddInline(Inline* inl)
 {
 	if (LN_CHECK_ARG(inl != nullptr)) return;
 	if (LN_CHECK_ARG(inl->GetParent() == nullptr)) return;
-	m_inlines.Add(inl);
+	m_inlines.add(inl);
 	inl->SetParent(this);
 }
 
 //------------------------------------------------------------------------------
 void Block::InsertInlines(int index, const List<RefPtr<Inline>>& inlines)
 {
-	m_inlines.InsertRange(index, inlines);
+	m_inlines.insertRange(index, inlines);
 	for (Inline* inl : inlines)
 	{
 		inl->SetParent(this);
@@ -365,7 +365,7 @@ void Run::initialize()
 	Inline::initialize();
 
 	// TODO: 本当に画面に表示されている分だけ作ればいろいろ節約できそう
-	m_glyphRun = RefPtr<GlyphRun>::MakeRef();
+	m_glyphRun = RefPtr<GlyphRun>::makeRef();
 	m_glyphRun->initialize(GetManager()->GetGraphicsManager());
 }
 
@@ -374,15 +374,15 @@ void Run::initialize(const UTF32* str, int len)
 {
 	initialize();
 
-	m_glyphRun->SetText(str, len);
+	m_glyphRun->setText(str, len);
 }
 
 //------------------------------------------------------------------------------
-void Run::SetText(const StringRef& text)
+void Run::setText(const StringRef& text)
 {
 	//m_text.Clear();
 	//m_text.Append(GetManager()->GetTCharToUTF32Converter()->Convert(text.GetBegin(), text.GetLength()));
-	m_glyphRun->SetText(text);
+	m_glyphRun->setText(text);
 }
 
 //------------------------------------------------------------------------------

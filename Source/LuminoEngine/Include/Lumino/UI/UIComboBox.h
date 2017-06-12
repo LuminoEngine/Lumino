@@ -20,7 +20,7 @@ class UIPopup
 public:
 	void SetContent(UIElement* element);
 
-	void Open();
+	void open();
 
 protected:
 	virtual Size MeasureOverride(const Size& constraint) override;
@@ -62,7 +62,7 @@ class UIComboBox
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static UIComboBoxPtr Create();
+	static UIComboBoxPtr create();
 
 public:
 	UIComboBoxItemPtr AddTextItem(const String& text);

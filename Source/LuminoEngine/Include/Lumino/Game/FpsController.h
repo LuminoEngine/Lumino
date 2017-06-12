@@ -89,7 +89,7 @@ private:	// internal
 	LN_DISALLOW_COPY_AND_ASSIGN(FpsController);
 
 	friend class EngineManager;
-	void Process();
+	void process();
     void ProcessForMeasure();	// ウェイトは取らず、測定のみ行う (ツール用)
 	void AddingToTotalTime();
 

@@ -10,14 +10,14 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-AnimationClipPtr AnimationClip::Create(const StringRef& filePath)
+AnimationClipPtr AnimationClip::create(const StringRef& filePath)
 {
-	auto stream = FileStream::Create(filePath.GetBegin(), FileOpenMode::Read);
+	auto stream = FileStream::create(filePath.getBegin(), FileOpenMode::read);
 
 	VmdLoader loader;
-	loader.Load(stream);
+	loader.load(stream);
 
-	auto ptr = AnimationClipPtr::MakeRef();
+	auto ptr = AnimationClipPtr::makeRef();
 	for (VmdLoader::BoneAnimation& anim : loader.GetBoneAnimationList())
 	{
 		ptr->AddAnimationCurve(anim.TargetBoneName, anim.AnimationCurve);
@@ -54,7 +54,7 @@ void AnimationClip::AddAnimationCurve(const String& relativePath, AnimationCurve
 	e.RelativePath = relativePath;
 	e.Curve = curve;
 	LN_SAFE_ADDREF(e.Curve);
-	m_animationCurveEntryList.Add(e);
+	m_animationCurveEntryList.add(e);
 }
 
 //------------------------------------------------------------------------------

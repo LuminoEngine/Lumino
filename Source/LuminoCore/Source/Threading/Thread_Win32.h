@@ -22,7 +22,7 @@ public:
 	{
 	}
 
-	void Start()
+	void start()
 	{
 #if defined(_DLL)
 		//if (mUseCreateThreadAPI)

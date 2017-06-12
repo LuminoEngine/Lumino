@@ -18,7 +18,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ViewportLayer, Object);
 //------------------------------------------------------------------------------
 ViewportLayer::ViewportLayer()
 	: m_owner(nullptr)
-	, m_imageEffects(RefPtr<ImageEffectList>::MakeRef())
+	, m_imageEffects(RefPtr<ImageEffectList>::makeRef())
 	, m_zIndex(0)
 {
 }
@@ -103,7 +103,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Viewport, Object);
 Viewport::Viewport()
 	: m_manager(nullptr)
 	, m_placement(ViewportPlacement::Stretch)
-	, m_viewportLayerList(RefPtr<ViewportLayerList>::MakeRef())
+	, m_viewportLayerList(RefPtr<ViewportLayerList>::makeRef())
 	, m_backgroundColor(Color::White)
 	, m_primaryLayerTarget(nullptr)
 	, m_secondaryLayerTarget(nullptr)
@@ -123,10 +123,10 @@ void Viewport::initialize(detail::GraphicsManager* manager, const SizeI& viewSiz
 	//m_renderTarget = renderTarget;
 	//m_size.Set((float)m_renderTarget->GetWidth(), (float)m_renderTarget->GetHeight());
 
-	m_renderer = RefPtr<DrawList>::MakeRef();
+	m_renderer = RefPtr<DrawList>::makeRef();
 	m_renderer->initialize(manager);
 
-	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
+	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::makeRef();
 	internalRenderer->initialize(manager);
 	m_internalRenderer = internalRenderer;
 
@@ -279,13 +279,13 @@ void Viewport::TryRemakeLayerTargets(const SizeI& ownerViewPixelSize)
 		// RenderTargetTexture
 		// TODO: できればこういうのは Resize 関数を作りたい。作り直したくない
 		// TODO: というか UE4 みたいにキャッシュしたい
-		m_primaryLayerTarget = RefPtr<RenderTargetTexture>::MakeRef();
+		m_primaryLayerTarget = RefPtr<RenderTargetTexture>::makeRef();
 		m_primaryLayerTarget->CreateImpl(GetManager(), newSize, 1, TextureFormat::R8G8B8X8);
-		m_secondaryLayerTarget = RefPtr<RenderTargetTexture>::MakeRef();
+		m_secondaryLayerTarget = RefPtr<RenderTargetTexture>::makeRef();
 		m_secondaryLayerTarget->CreateImpl(GetManager(), newSize, 1, TextureFormat::R8G8B8X8);
 
 		// DepthBuffer
-		m_depthBuffer = RefPtr<DepthBuffer>::MakeRef();
+		m_depthBuffer = RefPtr<DepthBuffer>::makeRef();
 		m_depthBuffer->CreateImpl(GetManager(), newSize, TextureFormat::D24S8);
 	}
 }

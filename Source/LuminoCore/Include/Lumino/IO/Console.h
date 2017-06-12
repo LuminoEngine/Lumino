@@ -21,67 +21,67 @@ public:
 	*/
 	static void Free();
 
-	static void WriteLine();
+	static void writeLine();
 
 
-	static void WriteLine(const StringRefA& str);
-	static void WriteLine(const StringRefW& str);
-
-	template<typename... TArgs>
-	static void WriteLine(const StringRefA& str, const TArgs&... args);
-	template<typename... TArgs>
-	static void WriteLine(const StringRefW& str, const TArgs&... args);
-
-
-
-	static void WriteLineError();
+	static void writeLine(const StringRefA& str);
+	static void writeLine(const StringRefW& str);
 
 	template<typename... TArgs>
-	static void WriteLineError(const StringRefA& str, const TArgs&... args);
+	static void writeLine(const StringRefA& str, const TArgs&... args);
 	template<typename... TArgs>
-	static void WriteLineError(const StringRefW& str, const TArgs&... args);
+	static void writeLine(const StringRefW& str, const TArgs&... args);
+
+
+
+	static void writeLineError();
+
+	template<typename... TArgs>
+	static void writeLineError(const StringRefA& str, const TArgs&... args);
+	template<typename... TArgs>
+	static void writeLineError(const StringRefW& str, const TArgs&... args);
 
 private:
-	static void WriteInternal(const char* str);
-	static void WriteInternal(const wchar_t* str);
-	static void WriteInternalError(const char* str);
-	static void WriteInternalError(const wchar_t* str);
+	static void writeInternal(const char* str);
+	static void writeInternal(const wchar_t* str);
+	static void writeInternalError(const char* str);
+	static void writeInternalError(const wchar_t* str);
 };
 
 //------------------------------------------------------------------------------
 template<typename... TArgs>
-void Console::WriteLine(const StringRefA& str, const TArgs&... args)
+void Console::writeLine(const StringRefA& str, const TArgs&... args)
 {
 	StringA s = StringA::Format(str, args...);
-	WriteInternal(s.c_str());
-	WriteLine();
+	writeInternal(s.c_str());
+	writeLine();
 }
 
 //------------------------------------------------------------------------------
 template<typename... TArgs>
-void Console::WriteLine(const StringRefW& str, const TArgs&... args)
+void Console::writeLine(const StringRefW& str, const TArgs&... args)
 {
 	StringW s = StringW::Format(str, args...);
-	WriteInternal(s.c_str());
-	WriteLine();
+	writeInternal(s.c_str());
+	writeLine();
 }
 
 //------------------------------------------------------------------------------
 template<typename... TArgs>
-void Console::WriteLineError(const StringRefA& str, const TArgs&... args)
+void Console::writeLineError(const StringRefA& str, const TArgs&... args)
 {
 	StringA s = StringA::Format(str, args...);
-	WriteInternalError(s.c_str());
-	WriteLineError();
+	writeInternalError(s.c_str());
+	writeLineError();
 }
 
 //------------------------------------------------------------------------------
 template<typename... TArgs>
-void Console::WriteLineError(const StringRefW& str, const TArgs&... args)
+void Console::writeLineError(const StringRefW& str, const TArgs&... args)
 {
 	StringW s = StringW::Format(str, args...);
-	WriteInternalError(s.c_str());
-	WriteLineError();
+	writeInternalError(s.c_str());
+	writeLineError();
 }
 
 LN_NAMESPACE_END

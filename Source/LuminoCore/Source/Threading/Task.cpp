@@ -14,7 +14,7 @@ namespace tr
 //==============================================================================
 
 //------------------------------------------------------------------------------
-TaskPtr Task::Create(const Delegate<void()>& action)
+TaskPtr Task::create(const Delegate<void()>& action)
 {
 	TaskPtr task(LN_NEW Task(action), false);
 	return task;
@@ -24,7 +24,7 @@ TaskPtr Task::Create(const Delegate<void()>& action)
 TaskPtr Task::Run(const Delegate<void()>& action)
 {
 	TaskPtr task(LN_NEW Task(action), false);
-	task->Start();
+	task->start();
 	return task;
 }
 
@@ -44,11 +44,11 @@ Task::~Task()
 }
 
 //------------------------------------------------------------------------------
-void Task::Start()
+void Task::start()
 {
 	LN_SAFE_DELETE(m_exception);
 	m_waiting.SetFalse();
-	TaskScheduler::GetDefault()->QueueTask(this);
+	TaskScheduler::getDefault()->QueueTask(this);
 }
 
 //------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ void Task::Execute()
 	m_status = TaskStatus::Running;
 	try
 	{
-		m_action.Call();
+		m_action.call();
 		m_status = TaskStatus::Completed;
 	}
 	catch (Exception& e)

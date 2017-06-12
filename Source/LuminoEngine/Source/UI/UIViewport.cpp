@@ -54,7 +54,7 @@ void UIViewport::SetBackbufferSize(int width, int height)
 //------------------------------------------------------------------------------
 void UIViewport::AddViewportLayer(UIViewportLayer* layer)
 {
-	m_viewportLayerList.Add(layer);
+	m_viewportLayerList.add(layer);
 	layer->m_owner = this;
 }
 
@@ -196,13 +196,13 @@ void UIViewport::UpdateFramebufferSizeIfNeeded(const SizeI& viewSize)
 		// RenderTargetTexture
 		// TODO: できればこういうのは Resize 関数を作りたい。作り直したくない
 		// TODO: というか UE4 みたいにキャッシュしたい
-		m_primaryLayerTarget = RefPtr<RenderTargetTexture>::MakeRef();
+		m_primaryLayerTarget = RefPtr<RenderTargetTexture>::makeRef();
 		m_primaryLayerTarget->CreateImpl(GetManager()->GetGraphicsManager(), newSize, 1, TextureFormat::R8G8B8X8);
-		m_secondaryLayerTarget = RefPtr<RenderTargetTexture>::MakeRef();
+		m_secondaryLayerTarget = RefPtr<RenderTargetTexture>::makeRef();
 		m_secondaryLayerTarget->CreateImpl(GetManager()->GetGraphicsManager(), newSize, 1, TextureFormat::R8G8B8X8);
 
 		// DepthBuffer
-		m_depthBuffer = RefPtr<DepthBuffer>::MakeRef();
+		m_depthBuffer = RefPtr<DepthBuffer>::makeRef();
 		m_depthBuffer->CreateImpl(GetManager()->GetGraphicsManager(), newSize, TextureFormat::D24S8);
 
 		m_viewSize = newSize.ToFloatSize();
@@ -289,7 +289,7 @@ UIViewportLayer::~UIViewportLayer()
 //------------------------------------------------------------------------------
 void UIViewportLayer::AddPostEffect(PostEffect* postEffect)
 {
-	m_postEffects.Add(postEffect);
+	m_postEffects.add(postEffect);
 	postEffect->m_ownerLayer = this;
 }
 
@@ -343,12 +343,12 @@ void UILayoutLayer::initialize()
 
 	// lighting disabled.
 	// TODO: NewObject
-	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
+	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::makeRef();
 	internalRenderer->initialize(detail::EngineDomain::GetGraphicsManager());
 	m_internalRenderer = internalRenderer;
 
-	m_drawElementListSet = RefPtr<RenderView>::MakeRef();
-	m_drawElementListSet->m_lists.Add(m_drawingContext->GetDrawElementList());
+	m_drawElementListSet = RefPtr<RenderView>::makeRef();
+	m_drawElementListSet->m_lists.add(m_drawingContext->GetDrawElementList());
 
 }
 

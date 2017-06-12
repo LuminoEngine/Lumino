@@ -14,10 +14,10 @@ public:
 	~ElapsedTimer();
 
 	/** 計測開始 */
-	void Start();
+	void start();
 
 	/** 経過時間の取得 (ns) */
-	uint64_t GetElapsed() const LN_NOEXCEPT;
+	uint64_t getElapsed() const LN_NOEXCEPT;
 
 private:
 	LN_DISALLOW_COPY_AND_ASSIGN(ElapsedTimer);

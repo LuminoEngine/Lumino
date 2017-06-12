@@ -266,7 +266,7 @@ void PhysicsWorld::AddPhysicsObject(PhysicsObject* physicsObject)
 	if (physicsObject->GetOwnerWorld() != nullptr)
 		physicsObject->GetOwnerWorld()->RemovePhysicsObject(physicsObject);
 
-	m_physicsObjectList.Add(physicsObject);
+	m_physicsObjectList.add(physicsObject);
 	physicsObject->SetOwnerWorld(this);
 }
 
@@ -274,7 +274,7 @@ void PhysicsWorld::AddPhysicsObject(PhysicsObject* physicsObject)
 void PhysicsWorld::AddJoint(Joint* joint)
 {
 	LN_ASSERT(joint != nullptr);
-	m_jointList.Add(joint);
+	m_jointList.add(joint);
 	m_btWorld->addConstraint(joint->GetBtConstraint());
 }
 
@@ -284,7 +284,7 @@ void PhysicsWorld::RemovePhysicsObject(PhysicsObject* physicsObject)
 	if (LN_CHECK_ARG(physicsObject != nullptr)) return;
 	if (physicsObject->GetOwnerWorld() != this) return;
 
-	m_physicsObjectList.Remove(physicsObject);
+	m_physicsObjectList.remove(physicsObject);
 	physicsObject->OnRemovedFromWorld();
 	physicsObject->SetOwnerWorld(nullptr);
 }

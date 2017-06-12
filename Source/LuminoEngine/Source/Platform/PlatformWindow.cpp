@@ -8,7 +8,7 @@
 LN_NAMESPACE_BEGIN
 
 //------------------------------------------------------------------------------
-//PlatformWindow* PlatformWindow::Create(const String& title, const Size& clientSize, bool resizable, PlatformManager* manager)
+//PlatformWindow* PlatformWindow::create(const String& title, const Size& clientSize, bool resizable, PlatformManager* manager)
 //{
 //	WindowCreationSettings data;
 //	data.title = title;
@@ -55,7 +55,7 @@ void PlatformWindow::SetCursorVisible(bool visible)
 //------------------------------------------------------------------------------
 void PlatformWindow::AttachEventListener(IEventListener* listener, int priority)
 {
-	m_listenerEntryArray.Add({ priority, listener });
+	m_listenerEntryArray.add({ priority, listener });
 	std::stable_sort(
 		m_listenerEntryArray.begin(), m_listenerEntryArray.end(),
 		[](const std::pair<int, IEventListener*>& lhs, const std::pair<int, IEventListener*>& rhs) { return lhs.first < rhs.first; });
@@ -64,7 +64,7 @@ void PlatformWindow::AttachEventListener(IEventListener* listener, int priority)
 //------------------------------------------------------------------------------
 void PlatformWindow::DetachEventListener(IEventListener* listener)
 {
-	m_listenerEntryArray.RemoveIf(
+	m_listenerEntryArray.removeIf(
 		[listener](const std::pair<int, IEventListener*>& i) { return i.second == listener; });
 }
 
@@ -79,7 +79,7 @@ bool PlatformWindow::SendPlatformEvent(const PlatformEventArgs& e)
 
 		switch (e.type)
 		{
-			case PlatformEventType::Close:
+			case PlatformEventType::close:
 			{
 				// TODO
 				if (this == m_windowManager->GetMainWindow())

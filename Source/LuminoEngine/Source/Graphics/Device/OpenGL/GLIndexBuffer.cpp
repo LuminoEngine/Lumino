@@ -29,7 +29,7 @@ GLIndexBuffer::~GLIndexBuffer()
 }
 
 //------------------------------------------------------------------------------
-void GLIndexBuffer::Create(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
+void GLIndexBuffer::create(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
 {
 	m_format = format;
 	int stride = (format == IndexBufferFormat_UInt16) ? 2 : 4;

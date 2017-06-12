@@ -61,8 +61,8 @@ public:
 	RawFontPtr LookupRawFont(const detail::FontData& keyData);
 
 LN_INTERNAL_ACCESS:
-	void AddFontResource_(RawFont* font) { m_fontResourceList.Add(font); }
-	void RemoveFontResource_(RawFont* font) { m_fontResourceList.Remove(font); }
+	void AddFontResource_(RawFont* font) { m_fontResourceList.add(font); }
+	void RemoveFontResource_(RawFont* font) { m_fontResourceList.remove(font); }
 	FT_Library GetFTLibrary() const { return m_ftLibrary; }
 	FTC_Manager GetFTCacheManager() const { return m_ftCacheManager; }
 	FTC_CMapCache GetFTCacheMapCache() const { return m_ftCMapCache; }

@@ -31,7 +31,7 @@ DX9IndexBuffer::~DX9IndexBuffer()
 }
 
 //------------------------------------------------------------------------------
-void DX9IndexBuffer::Create(DX9GraphicsDevice* device, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
+void DX9IndexBuffer::create(DX9GraphicsDevice* device, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
 {
 	LN_REFOBJ_SET(m_graphicsDevice, device);
 	m_format = format;

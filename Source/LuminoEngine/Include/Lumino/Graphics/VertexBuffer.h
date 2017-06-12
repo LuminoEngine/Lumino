@@ -17,7 +17,7 @@ public:
 	int getSize() const;
 
 	/** 頂点バッファの容量を確保します。 */
-	void Reserve(int size);
+	void reserve(int size);
 
 	/** 頂点バッファのサイズを変更します。 */
 	void resize(int size);

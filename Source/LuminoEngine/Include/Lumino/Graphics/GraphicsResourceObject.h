@@ -18,7 +18,7 @@ protected:
 	friend class ShaderVariable;
 
 	void initialize();
-	virtual void Finalize_() override;
+	virtual void finalize_() override;
 
 	virtual void Dispose();
 

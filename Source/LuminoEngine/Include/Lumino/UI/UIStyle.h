@@ -283,7 +283,7 @@ class UIStyle
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static UIStylePtr Create();
+	static UIStylePtr create();
 
 public:
 	UIStyle();

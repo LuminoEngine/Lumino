@@ -42,7 +42,7 @@ void SpriteComponent::initialize()
 	m_material = NewObject<Material>();
 
 	//owner->GetRootNode()->AddChild(this);
-	SetAutoRemove(true);
+	setAutoRemove(true);
 }
 
 //------------------------------------------------------------------------------
@@ -139,24 +139,24 @@ void SpriteComponent::UpdateVertexData()
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite2DComponent, SpriteComponent);
 
 //------------------------------------------------------------------------------
-Sprite2DComponentPtr Sprite2DComponent::Create()
+Sprite2DComponentPtr Sprite2DComponent::create()
 {
-	auto obj = Sprite2DComponentPtr::MakeRef();
+	auto obj = Sprite2DComponentPtr::makeRef();
 	obj->initialize();
 	return obj;
 }
 
 //------------------------------------------------------------------------------
-Sprite2DComponentPtr Sprite2DComponent::Create(const StringRef& filePath)
+Sprite2DComponentPtr Sprite2DComponent::create(const StringRef& filePath)
 {
-	auto tex = Texture2D::Create(filePath);	// TODO: from asset
-	return Create(tex);
+	auto tex = Texture2D::create(filePath);	// TODO: from asset
+	return create(tex);
 }
 
 //------------------------------------------------------------------------------
-Sprite2DComponentPtr Sprite2DComponent::Create(Texture* texture)
+Sprite2DComponentPtr Sprite2DComponent::create(Texture* texture)
 {
-	auto obj = Create();
+	auto obj = create();
 	obj->SetTexture(texture);
 	return obj;
 }
@@ -197,26 +197,26 @@ void Sprite2DComponent::OnRender2(DrawList* renderer)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite3DComponent, SpriteComponent);
 
 //------------------------------------------------------------------------------
-Sprite3DComponentPtr Sprite3DComponent::Create()
+Sprite3DComponentPtr Sprite3DComponent::create()
 {
-	auto obj = Sprite3DComponentPtr::MakeRef();
+	auto obj = Sprite3DComponentPtr::makeRef();
 	obj->initialize();
 	return obj;
 }
 
 //------------------------------------------------------------------------------
-Sprite3DComponentPtr Sprite3DComponent::Create(float width, float height)
+Sprite3DComponentPtr Sprite3DComponent::create(float width, float height)
 {
-	auto obj = Sprite3DComponentPtr::MakeRef();
+	auto obj = Sprite3DComponentPtr::makeRef();
 	obj->initialize();
 	obj->SetSize(Size(width, height));
 	return obj;
 }
 
 //------------------------------------------------------------------------------
-Sprite3DComponentPtr Sprite3DComponent::Create(float width, float height, Texture* texture)
+Sprite3DComponentPtr Sprite3DComponent::create(float width, float height, Texture* texture)
 {
-	auto obj = Sprite3DComponentPtr::MakeRef();
+	auto obj = Sprite3DComponentPtr::makeRef();
 	obj->initialize();
 	obj->SetSize(Size(width, height));
 	obj->SetTexture(texture);
@@ -316,19 +316,19 @@ void SpriteBase::SetAnchorPoint(float ratioX, float ratioY)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite2D, SpriteBase);
 
 //------------------------------------------------------------------------------
-RefPtr<Sprite2D> Sprite2D::Create()
+RefPtr<Sprite2D> Sprite2D::create()
 {
 	return NewObject<Sprite2D>();
 }
 
 //------------------------------------------------------------------------------
-RefPtr<Sprite2D> Sprite2D::Create(const StringRef& filePath)
+RefPtr<Sprite2D> Sprite2D::create(const StringRef& filePath)
 {
 	return NewObject<Sprite2D>(filePath);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<Sprite2D> Sprite2D::Create(Texture* texture)
+RefPtr<Sprite2D> Sprite2D::create(Texture* texture)
 {
 	return NewObject<Sprite2D>(texture);
 }
@@ -349,7 +349,7 @@ Sprite2D::~Sprite2D()
 void Sprite2D::initialize()
 {
 	SpriteBase::initialize();
-	m_component = Sprite2DComponent::Create();
+	m_component = Sprite2DComponent::create();
 	AddComponent(m_component);
 	detail::EngineDomain::GetDefaultWorld2D()->AddWorldObject(this, true);
 }
@@ -358,7 +358,7 @@ void Sprite2D::initialize()
 void Sprite2D::initialize(const StringRef& filePath)
 {
 	SpriteBase::initialize();
-	m_component = Sprite2DComponent::Create(filePath);
+	m_component = Sprite2DComponent::create(filePath);
 	AddComponent(m_component);
 	detail::EngineDomain::GetDefaultWorld2D()->AddWorldObject(this, true);
 }
@@ -367,7 +367,7 @@ void Sprite2D::initialize(const StringRef& filePath)
 void Sprite2D::initialize(Texture* texture)
 {
 	SpriteBase::initialize();
-	m_component = Sprite2DComponent::Create(texture);
+	m_component = Sprite2DComponent::create(texture);
 	AddComponent(m_component);
 	detail::EngineDomain::GetDefaultWorld2D()->AddWorldObject(this, true);
 }
@@ -391,13 +391,13 @@ SpriteComponent* Sprite2D::GetSpriteComponent() const
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite3D, SpriteBase);
 
 //------------------------------------------------------------------------------
-RefPtr<Sprite3D> Sprite3D::Create()
+RefPtr<Sprite3D> Sprite3D::create()
 {
 	return NewObject<Sprite3D>();
 }
 
 //------------------------------------------------------------------------------
-RefPtr<Sprite3D> Sprite3D::Create(float width, float height, Texture* texture)
+RefPtr<Sprite3D> Sprite3D::create(float width, float height, Texture* texture)
 {
 	return NewObject<Sprite3D>(width, height, texture);
 }
@@ -418,7 +418,7 @@ Sprite3D::~Sprite3D()
 void Sprite3D::initialize()
 {
 	SpriteBase::initialize();
-	m_component = Sprite3DComponent::Create();
+	m_component = Sprite3DComponent::create();
 	AddComponent(m_component);
 	detail::EngineDomain::GetDefaultWorld3D()->AddWorldObject(this, true);
 }
@@ -427,7 +427,7 @@ void Sprite3D::initialize()
 void Sprite3D::initialize(float width, float height, Texture* texture)
 {
 	SpriteBase::initialize();
-	m_component = Sprite3DComponent::Create(width, height, texture);
+	m_component = Sprite3DComponent::create(width, height, texture);
 	AddComponent(m_component);
 	detail::EngineDomain::GetDefaultWorld3D()->AddWorldObject(this, true);
 }

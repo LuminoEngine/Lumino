@@ -65,14 +65,14 @@ public:
 		//size_t		size;
 		int			res;
 
-		size_t dataSize = (size_t)stream->GetLength();
+		size_t dataSize = (size_t)stream->getLength();
 
 		// サイズチェック
 		if (dataSize < PNG_BYTES_TO_CHECK) return false;
 
 		// データが png かどうか調べる
-		stream->Read(sig, 4);
-		stream->Seek(0, SeekOrigin_Begin);
+		stream->read(sig, 4);
+		stream->seek(0, SeekOrigin_Begin);
 		res = png_check_sig(sig, PNG_BYTES_TO_CHECK);
 		if (!res) return false;
 
@@ -216,7 +216,7 @@ public:
 	}
 
 	/// 保存 (bitmapData のフォーマットは PixelFormat_BYTE_R8G8B8A8 であること)
-	void Save(const TCHAR* filePath, const ByteBuffer& bitmapData, const SizeI& size, bool upFlow)
+	void save(const TCHAR* filePath, const ByteBuffer& bitmapData, const SizeI& size, bool upFlow)
 	{
 		FILE *fp;
 		_tfopen_s(&fp, filePath, _T("wb"));
@@ -265,7 +265,7 @@ private:
 	{
 #if 1
 		PngData* png_data = (PngData*)png_get_io_ptr(png_ptr);
-		int validSize = png_data->SourceStream->Read(data, length);
+		int validSize = png_data->SourceStream->read(data, length);
 		if (validSize != length) {
 			png_error(png_ptr, "_readPngData failed");
 		}

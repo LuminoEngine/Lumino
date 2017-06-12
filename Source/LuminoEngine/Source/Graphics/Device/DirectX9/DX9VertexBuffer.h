@@ -16,11 +16,11 @@ public:
 	DX9VertexBuffer();
 	virtual ~DX9VertexBuffer();
 
-	void Create(DX9GraphicsDevice* device, size_t bufferSize, const void* initialData, ResourceUsage usage);
+	void create(DX9GraphicsDevice* device, size_t bufferSize, const void* initialData, ResourceUsage usage);
 	IDirect3DVertexBuffer9* GetDxVertexBuffer() { return m_vertexBuffer; }
 
 	// IVertexBuffer interface
-	virtual size_t GetByteCount() const { return m_bufferSize; }
+	virtual size_t getByteCount() const { return m_bufferSize; }
 	virtual void SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes);
 	virtual void* Lock();
 	virtual void Unlock();

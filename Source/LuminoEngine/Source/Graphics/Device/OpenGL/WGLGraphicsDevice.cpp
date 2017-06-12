@@ -190,10 +190,10 @@ RefPtr<GLContext> WGLGraphicsDevice::InitializeMainContext(const ConfigData& con
 	GetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
 	CreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
 
-	Logger::WriteLine("Default OpenGL info:");
-	Logger::WriteLine("    GL_VERSION                  : %s", glGetString(GL_VERSION));
-	Logger::WriteLine("    GL_SHADING_LANGUAGE_VERSION : %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
-	Logger::WriteLine("    Extensions strings          : %s", GetExtensionsStringEXT());
+	Logger::writeLine("Default OpenGL info:");
+	Logger::writeLine("    GL_VERSION                  : %s", glGetString(GL_VERSION));
+	Logger::writeLine("    GL_SHADING_LANGUAGE_VERSION : %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
+	Logger::writeLine("    Extensions strings          : %s", GetExtensionsStringEXT());
 
 	SelectGLVersion(configData.openGLMajorVersion, configData.openGLMinorVersion);
 
@@ -201,20 +201,20 @@ RefPtr<GLContext> WGLGraphicsDevice::InitializeMainContext(const ConfigData& con
 	GLenum result = glewInit();
 	if (LN_CHECK_STATE(result == GLEW_OK)) return nullptr;	// コンテキスト作成後、wglMakeCurrent() しないとエラーが返る
 
-	auto mainContext = RefPtr<WGLContext>::MakeRef(this, configData.mainWindow, nullptr);
+	auto mainContext = RefPtr<WGLContext>::makeRef(this, configData.mainWindow, nullptr);
 
 	wglDeleteContext(hGLRC);
 	::ReleaseDC(hWnd, hDC);
 
 
-	return RefPtr<GLContext>::StaticCast(mainContext);
+	return RefPtr<GLContext>::staticCast(mainContext);
 }
 
 //------------------------------------------------------------------------------
 RefPtr<GLContext> WGLGraphicsDevice::CreateContext(PlatformWindow* window)
 {
-	auto ptr = RefPtr<WGLContext>::MakeRef(this, window, static_cast<WGLContext*>(GetMainContext()));
-	return RefPtr<GLContext>::StaticCast(ptr);
+	auto ptr = RefPtr<WGLContext>::makeRef(this, window, static_cast<WGLContext*>(GetMainContext()));
+	return RefPtr<GLContext>::staticCast(ptr);
 }
 
 //------------------------------------------------------------------------------

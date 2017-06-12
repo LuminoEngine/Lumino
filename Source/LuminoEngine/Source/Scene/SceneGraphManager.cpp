@@ -68,7 +68,7 @@ SceneNode* SceneGraphManager::FindNodeFirst(const String& name)
 void SceneGraphManager::OnNodeRename(SceneNode* node, const String& oldName, const String& newName)
 {
 	// もし古い名前があればリネームされたということ。一度 map から取り除く
-	if (!oldName.IsEmpty())
+	if (!oldName.isEmpty())
 	{
 		std::pair<NodeNameMap::iterator, NodeNameMap::iterator> range = m_nodeNameMap.equal_range(oldName);
 		for (NodeNameMap::iterator itr = range.first; itr != range.second; ++itr)
@@ -82,7 +82,7 @@ void SceneGraphManager::OnNodeRename(SceneNode* node, const String& oldName, con
 	}
 
 	// 新しい名前で map に追加
-	if (!newName.IsEmpty()) {
+	if (!newName.isEmpty()) {
 		m_nodeNameMap.insert(NodeNamePair(newName, node));
 	}
 }

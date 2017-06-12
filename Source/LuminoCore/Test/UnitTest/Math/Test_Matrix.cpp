@@ -53,8 +53,8 @@ TEST_F(Test_Matrix, Basic)
 		m.m[3][0] = 5;
 		ASSERT_VEC3_NEAR(1, 0, 0, m.GetRight());
 		ASSERT_VEC3_NEAR(0, 1, 0, m.GetUp());
-		ASSERT_VEC3_NEAR(0, 0, 1, m.GetFront());
-		ASSERT_VEC3_NEAR(5, 0, 0, m.GetPosition());
+		ASSERT_VEC3_NEAR(0, 0, 1, m.getFront());
+		ASSERT_VEC3_NEAR(5, 0, 0, m.getPosition());
 	}
 	// this->SetRow/GetRow
 	{

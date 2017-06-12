@@ -32,35 +32,35 @@ void DX9Module::initialize()
 	if (!Direct3DCreate9)
     {
         // モジュール読み込み
-		if (!m_D3D9Module.TryLoad(_T("d3d9.dll")))
+		if (!m_D3D9Module.tryLoad(_T("d3d9.dll")))
 		{
-			LN_THROW(0, RuntimeException, InternalResource::GetString(InternalResource::DirectXNotInstalledError).c_str(), _T("d3d9.dll"));
+			LN_THROW(0, RuntimeException, InternalResource::getString(InternalResource::DirectXNotInstalledError).c_str(), _T("d3d9.dll"));
 		}
-		Direct3DCreate9 = reinterpret_cast<MD_Direct3DCreate9>(m_D3D9Module.GetProcAddress("Direct3DCreate9"));
+		Direct3DCreate9 = reinterpret_cast<MD_Direct3DCreate9>(m_D3D9Module.getProcAddress("Direct3DCreate9"));
 
         // モジュール読み込み
 		TCHAR name[64] = { 0 };
 		_stprintf_s(name, 64, _T("d3dx9_%d.dll"), D3DX_SDK_VERSION);
-		if (!m_D3Dx9Module.TryLoad(name))
+		if (!m_D3Dx9Module.tryLoad(name))
 		{
-			LN_THROW(0, RuntimeException, InternalResource::GetString(InternalResource::DirectXNotInstalledError).c_str(), name);
+			LN_THROW(0, RuntimeException, InternalResource::getString(InternalResource::DirectXNotInstalledError).c_str(), name);
 		}
 
 		// TODO: d3dx9 が無ければ、"エンドユーザーランタイムをインストールしてください"
 
-		D3DXCreateTextureFromFileInMemoryEx = reinterpret_cast< MD_D3DXCreateTextureFromFileInMemoryEx >(m_D3Dx9Module.GetProcAddress("D3DXCreateTextureFromFileInMemoryEx"));
-		D3DXGetImageInfoFromFileInMemory = reinterpret_cast< MD_D3DXGetImageInfoFromFileInMemory >(m_D3Dx9Module.GetProcAddress("D3DXGetImageInfoFromFileInMemory"));
-		D3DXCheckTextureRequirements = reinterpret_cast< MD_D3DXCheckTextureRequirements >(m_D3Dx9Module.GetProcAddress("D3DXCheckTextureRequirements"));
-		D3DXCheckVolumeTextureRequirements = reinterpret_cast< MD_D3DXCheckVolumeTextureRequirements >(m_D3Dx9Module.GetProcAddress("D3DXCheckVolumeTextureRequirements"));
-		D3DXCreateEffect = reinterpret_cast< MD_D3DXCreateEffect >(m_D3Dx9Module.GetProcAddress("D3DXCreateEffect"));
-		D3DXLoadMeshFromXInMemory = reinterpret_cast< MD_D3DXLoadMeshFromXInMemory >(m_D3Dx9Module.GetProcAddress("D3DXLoadMeshFromXInMemory"));
+		D3DXCreateTextureFromFileInMemoryEx = reinterpret_cast< MD_D3DXCreateTextureFromFileInMemoryEx >(m_D3Dx9Module.getProcAddress("D3DXCreateTextureFromFileInMemoryEx"));
+		D3DXGetImageInfoFromFileInMemory = reinterpret_cast< MD_D3DXGetImageInfoFromFileInMemory >(m_D3Dx9Module.getProcAddress("D3DXGetImageInfoFromFileInMemory"));
+		D3DXCheckTextureRequirements = reinterpret_cast< MD_D3DXCheckTextureRequirements >(m_D3Dx9Module.getProcAddress("D3DXCheckTextureRequirements"));
+		D3DXCheckVolumeTextureRequirements = reinterpret_cast< MD_D3DXCheckVolumeTextureRequirements >(m_D3Dx9Module.getProcAddress("D3DXCheckVolumeTextureRequirements"));
+		D3DXCreateEffect = reinterpret_cast< MD_D3DXCreateEffect >(m_D3Dx9Module.getProcAddress("D3DXCreateEffect"));
+		D3DXLoadMeshFromXInMemory = reinterpret_cast< MD_D3DXLoadMeshFromXInMemory >(m_D3Dx9Module.getProcAddress("D3DXLoadMeshFromXInMemory"));
 		//D3DXCreateFontIndirectW = reinterpret_cast< MD_D3DXCreateFontIndirect >(m_D3Dx9Module.GetProcAddress("D3DXCreateFontIndirectW"));
-		D3DXDeclaratorFromFVF = reinterpret_cast< MD_D3DXDeclaratorFromFVF >(m_D3Dx9Module.GetProcAddress("D3DXDeclaratorFromFVF"));
-		D3DXLoadMeshHierarchyFromXInMemory = reinterpret_cast< MD_D3DXLoadMeshHierarchyFromXInMemory >(m_D3Dx9Module.GetProcAddress("D3DXLoadMeshHierarchyFromXInMemory"));
-		D3DXFrameDestroy = reinterpret_cast< MD_D3DXFrameDestroy >(m_D3Dx9Module.GetProcAddress("D3DXFrameDestroy"));
-		D3DXComputeNormals = reinterpret_cast< MD_D3DXComputeNormals >(m_D3Dx9Module.GetProcAddress("D3DXComputeNormals"));
-		D3DXCreateEffectPool = reinterpret_cast< MD_D3DXCreateEffectPool >(m_D3Dx9Module.GetProcAddress("D3DXCreateEffectPool"));
-		D3DXGetShaderConstantTable = reinterpret_cast< MD_D3DXGetShaderConstantTable >(m_D3Dx9Module.GetProcAddress("D3DXGetShaderConstantTable"));
+		D3DXDeclaratorFromFVF = reinterpret_cast< MD_D3DXDeclaratorFromFVF >(m_D3Dx9Module.getProcAddress("D3DXDeclaratorFromFVF"));
+		D3DXLoadMeshHierarchyFromXInMemory = reinterpret_cast< MD_D3DXLoadMeshHierarchyFromXInMemory >(m_D3Dx9Module.getProcAddress("D3DXLoadMeshHierarchyFromXInMemory"));
+		D3DXFrameDestroy = reinterpret_cast< MD_D3DXFrameDestroy >(m_D3Dx9Module.getProcAddress("D3DXFrameDestroy"));
+		D3DXComputeNormals = reinterpret_cast< MD_D3DXComputeNormals >(m_D3Dx9Module.getProcAddress("D3DXComputeNormals"));
+		D3DXCreateEffectPool = reinterpret_cast< MD_D3DXCreateEffectPool >(m_D3Dx9Module.getProcAddress("D3DXCreateEffectPool"));
+		D3DXGetShaderConstantTable = reinterpret_cast< MD_D3DXGetShaderConstantTable >(m_D3Dx9Module.getProcAddress("D3DXGetShaderConstantTable"));
 	}
 }
 

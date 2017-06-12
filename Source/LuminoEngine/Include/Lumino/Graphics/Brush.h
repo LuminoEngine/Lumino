@@ -50,7 +50,7 @@ public:
 	static Brush*	DimGray;
 
 public:
-	//static RefPtr<Brush> Create(const StringRef& filePath);
+	//static RefPtr<Brush> create(const StringRef& filePath);
 
 
 
@@ -88,8 +88,8 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 LN_INTERNAL_ACCESS:
-	bool IsSolidColor() const { return m_texture.IsNull(); }
-	bool IsTextureBrush() const { return !m_texture.IsNull(); }
+	bool IsSolidColor() const { return m_texture.isNull(); }
+	bool IsTextureBrush() const { return !m_texture.isNull(); }
 	void GetRawData(detail::BrushRawData* outData) const;
 
 private:
@@ -108,8 +108,8 @@ class SolidColorBrush
 	: public Brush
 {
 public:
-	static RefPtr<SolidColorBrush> Create(const Color& color);
-	static RefPtr<SolidColorBrush> Create(const Color& rgb, float a);
+	static RefPtr<SolidColorBrush> create(const Color& color);
+	static RefPtr<SolidColorBrush> create(const Color& rgb, float a);
 
 LN_CONSTRUCT_ACCESS:
 	SolidColorBrush();
@@ -125,9 +125,9 @@ class TextureBrush
 	: public Brush
 {
 public:
-	static RefPtr<TextureBrush> Create(const StringRef& filePath);
-	static RefPtr<TextureBrush> Create(Texture* texture);
-	static RefPtr<TextureBrush> Create(Texture* texture, BrushImageDrawMode drawMode, const Rect& sourceRect, const ThicknessF& borderThickness, BrushWrapMode wrapMode);
+	static RefPtr<TextureBrush> create(const StringRef& filePath);
+	static RefPtr<TextureBrush> create(Texture* texture);
+	static RefPtr<TextureBrush> create(Texture* texture, BrushImageDrawMode drawMode, const Rect& sourceRect, const ThicknessF& borderThickness, BrushWrapMode wrapMode);
 
 LN_CONSTRUCT_ACCESS:
 	TextureBrush();
@@ -159,7 +159,7 @@ public:
 
 public:
 
-	virtual BrushType GetType() const { return BrushType_SolidColor; }
+	virtual BrushType getType() const { return BrushType_SolidColor; }
 
 private:
 };
@@ -170,18 +170,18 @@ class TextureBrush
 {
 public:
 
-	static RefPtr<TextureBrush> Create(const StringRef& filePath);
+	static RefPtr<TextureBrush> create(const StringRef& filePath);
 
 public:
 	TextureBrush();
 	virtual ~TextureBrush();
 
 public:
-	void Create(const TCHAR* filePath, detail::GraphicsManager* manager);
-	void Create(Texture* texture);
+	void create(const TCHAR* filePath, detail::GraphicsManager* manager);
+	void create(Texture* texture);
 	
 
-	virtual BrushType GetType() const { return BrushType_Texture; }
+	virtual BrushType getType() const { return BrushType_Texture; }
 
 private:
 };

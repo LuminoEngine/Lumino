@@ -19,7 +19,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 PlatformEventArgs PlatformEventArgs::MakeClosingEvent(PlatformWindow* sender)
 {
-	return PlatformEventArgs(PlatformEventType::Close, sender);
+	return PlatformEventArgs(PlatformEventType::close, sender);
 }
 
 PlatformEventArgs PlatformEventArgs::MakeWindowSizeChangedEvent(PlatformWindow* sender, int width, int height)
@@ -44,7 +44,7 @@ PlatformEventArgs PlatformEventArgs::MakeKeyEvent(PlatformWindow* sender, Platfo
 	e.type = type;
 	e.sender = sender;
 	e.key.keyCode = keyCode;
-	e.key.modifierKeys = (ModifierKeys::value_type)modifierKeys.GetValue();
+	e.key.modifierKeys = (ModifierKeys::value_type)modifierKeys.getValue();
 	e.key.keyChar = keyChar;
 	return e;
 }
@@ -108,8 +108,8 @@ void PlatformManager::initialize(const Settings& settings)
 	// create window manager
 	if (api == WindowSystemAPI::Win32API)
 	{
-		auto m = RefPtr<Win32WindowManager>::MakeRef(0);
-		m_windowManager = m.DetachMove();
+		auto m = RefPtr<Win32WindowManager>::makeRef(0);
+		m_windowManager = m.detachMove();
     }
 #elif defined(LN_OS_MAC)
     // select default
@@ -120,9 +120,9 @@ void PlatformManager::initialize(const Settings& settings)
     // create window manager
     if (api == WindowSystemAPI::Cocoa)
     {
-        auto m = RefPtr<CocoaPlatformWindowManager>::MakeRef();
+        auto m = RefPtr<CocoaPlatformWindowManager>::makeRef();
         m->initialize();
-        m_windowManager = m.DetachMove();
+        m_windowManager = m.detachMove();
     }
 
 #elif defined(LN_X11)
@@ -134,8 +134,8 @@ void PlatformManager::initialize(const Settings& settings)
 	// create window manager
 	if (api == WindowSystemAPI::X11)
 	{
-		auto m = RefPtr<X11WindowManager>::MakeRef();
-		m_windowManager = m.DetachMove();
+		auto m = RefPtr<X11WindowManager>::makeRef();
+		m_windowManager = m.detachMove();
 	}
 #endif
 	LN_THROW(m_windowManager != nullptr, ArgumentException);
@@ -143,7 +143,7 @@ void PlatformManager::initialize(const Settings& settings)
 	if (m_useThread) {
 		m_mainWindowThreadInitFinished.SetFalse();
 		m_mainWindowThreadEndRequested.SetFalse();
-		m_mainWindowThread.Start(CreateDelegate(this, &PlatformManager::Thread_MainWindow));
+		m_mainWindowThread.start(createDelegate(this, &PlatformManager::Thread_MainWindow));
 		m_mainWindowThreadInitFinished.Wait();	// 初期化終了まで待機する
 	}
 	else {

@@ -66,7 +66,7 @@ LN_ENUM_DECLARE(CompareFunc);
 LN_ENUM(StencilOp)
 {
 	Keep = 0,					///< 既存のステンシル データを保持します。(何もしません)
-	Replace,					///< ステンシルデータをステンシル参照値に設定します。
+	replace,					///< ステンシルデータをステンシル参照値に設定します。
 };
 LN_ENUM_DECLARE(StencilOp);
 
@@ -109,7 +109,7 @@ public:
 	/**
 		@brief	現在の設定のハッシュ値を計算します。
 	*/
-	uint32_t GetHashCode() const;
+	uint32_t getHashCode() const;
 
 	bool equals(const RenderState& state) const;
 

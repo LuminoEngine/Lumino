@@ -25,10 +25,10 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RawFontPtr RawFont::Create()
+RawFontPtr RawFont::create()
 {
 	auto ptr = NewObject<detail::FreeTypeFont>();
-	return RawFontPtr::StaticCast(ptr);
+	return RawFontPtr::staticCast(ptr);
 }
 
 namespace detail {
@@ -172,7 +172,7 @@ RawFontPtr FreeTypeFont::copy() const
 	auto font = NewObject<FreeTypeFont>();
 	font->m_fontData = m_fontData;
 	font->m_modified = true;
-	return RawFontPtr::StaticCast(font);
+	return RawFontPtr::staticCast(font);
 }
 
 #if 0
@@ -524,10 +524,10 @@ void FreeTypeFont::DecomposeOutline(UTF32 utf32code, RawFont::VectorGlyphInfo* o
 
 
 	// 1つ前の Outline があれば、頂点数を確定させる
-	if (!state.outlines->IsEmpty())
+	if (!state.outlines->isEmpty())
 	{
-		auto& outline = state.outlines->GetLast();
-		outline.vertexCount = state.vertices->GetCount() - outline.startIndex;
+		auto& outline = state.outlines->getLast();
+		outline.vertexCount = state.vertices->getCount() - outline.startIndex;
 	}
 
 	// FT_Done_Glyph
@@ -586,16 +586,16 @@ void FreeTypeFont::GetGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics
 int FreeTypeFont::ftMoveToCallback(FT_Vector* to, DecomposingState* state)
 {
 	// 1つ前の Outline があれば、頂点数を確定させる
-	if (!state->outlines->IsEmpty())
+	if (!state->outlines->isEmpty())
 	{
-		auto& outline = state->outlines->GetLast();
-		outline.vertexCount = state->vertices->GetCount() - outline.startIndex;
+		auto& outline = state->outlines->getLast();
+		outline.vertexCount = state->vertices->getCount() - outline.startIndex;
 	}
 
 	// 新しい Outline を開始する
 	OutlineInfo outline;
-	outline.startIndex = state->vertices->GetCount();
-	state->outlines->Add(outline);
+	outline.startIndex = state->vertices->getCount();
+	state->outlines->add(outline);
 
 	state->lastVertex = FTVectorToLNVector(to);
 	return 0;
@@ -605,7 +605,7 @@ int FreeTypeFont::ftMoveToCallback(FT_Vector* to, DecomposingState* state)
 int FreeTypeFont::ftLineToCallback(FT_Vector* to, DecomposingState* state)
 {
 	Vector2 v = FTVectorToLNVector(to);
-	state->vertices->Add(v * state->vectorScale);
+	state->vertices->add(v * state->vectorScale);
 	state->lastVertex = v;
 	return 0;
 }
@@ -628,13 +628,13 @@ int FreeTypeFont::ftConicToCallback(FT_Vector* control, FT_Vector* to, Decomposi
 		f += df;
 
 		Vector2 v = f * state->vectorScale;
-		state->vertices->Add(v);
+		state->vertices->add(v);
 
 		df += d2f;
 	}
 
 	Vector2 v = FTVectorToLNVector(to) * state->vectorScale;
-	state->vertices->Add(v);
+	state->vertices->add(v);
 
 	state->lastVertex = toVertex;
 
@@ -662,14 +662,14 @@ int FreeTypeFont::ftCubicToCallback(FT_Vector* control1, FT_Vector* control2, FT
 		f += df;
 
 		Vector2 v = f * state->vectorScale;
-		state->vertices->Add(v);
+		state->vertices->add(v);
 
 		df += d2f;
 		d2f += d3f;
 	}
 
 	Vector2 v = FTVectorToLNVector(to) * state->vectorScale;
-	state->vertices->Add(v);
+	state->vertices->add(v);
 
 	state->lastVertex = toVertex;
 
@@ -845,9 +845,9 @@ void FreeTypeFont::UpdateFont()
 	if (m_modified)
 	{
 		const String* name = &m_fontData.Family;
-		if (name->IsEmpty()) name = &m_manager->GetDefaultFontName();
+		if (name->isEmpty()) name = &m_manager->GetDefaultFontName();
 
-		m_ftFaceID = (FTC_FaceID)Hash::CalcHash(name->c_str());
+		m_ftFaceID = (FTC_FaceID)Hash::calcHash(name->c_str());
 		FTC_Manager ftc_manager = m_manager->GetFTCacheManager();
 		m_manager->m_requesterFaceName = name->c_str();
 

@@ -52,7 +52,7 @@ GraphicsResourceObject::~GraphicsResourceObject()
 }
 
 //------------------------------------------------------------------------------
-void GraphicsResourceObject::Finalize_()
+void GraphicsResourceObject::finalize_()
 {
 	Dispose();
 }
@@ -125,8 +125,8 @@ GraphicsManager::~GraphicsManager()
 		m_textRendererCore->Dispose();
 		LN_SAFE_RELEASE(m_textRendererCore);
 	}
-	m_dymmyBlackTexture.SafeRelease();
-	m_dymmyWhiteTexture.SafeRelease();
+	m_dymmyBlackTexture.safeRelease();
+	m_dymmyWhiteTexture.safeRelease();
 	LN_SAFE_RELEASE(m_dummyDeviceTexture);
 	LN_SAFE_RELEASE(m_mainSwapChain);
 	LN_SAFE_RELEASE(m_renderer);
@@ -236,7 +236,7 @@ void GraphicsManager::initialize(const ConfigData& configData)
 
 	// PainterEngine
 	//m_painterEngine = LN_NEW PainterEngine();
-	//m_painterEngine->Create(this);
+	//m_painterEngine->create(this);
 
 	m_textRendererCore = LN_NEW detail::TextRendererCore();
 	m_textRendererCore->initialize(this);
@@ -247,11 +247,11 @@ void GraphicsManager::initialize(const ConfigData& configData)
 	m_bitmapTextRenderer = LN_NEW BitmapTextRenderer();
 	m_bitmapTextRenderer->initialize(this);
 
-	m_internalContext = RefPtr<InternalContext>::MakeRef();
+	m_internalContext = RefPtr<InternalContext>::makeRef();
 	m_internalContext->initialize(this);
 
-	m_shapesRendererCommandListCache = RefPtr<ShapesRendererCommandListCache>::MakeRef();
-	m_nanoVGCommandListCache = RefPtr<NanoVGCommandListCache>::MakeRef();
+	m_shapesRendererCommandListCache = RefPtr<ShapesRendererCommandListCache>::makeRef();
+	m_nanoVGCommandListCache = RefPtr<NanoVGCommandListCache>::makeRef();
 
 	m_defaultVertexDeclaration = LN_NEW VertexDeclaration();
 	m_defaultVertexDeclaration->initialize(this);
@@ -268,7 +268,7 @@ void GraphicsManager::initialize(const ConfigData& configData)
 #include "Resource/EffectHeader.fxh.h"
 		};
 		static const size_t EffectHeader_Data_Len = LN_ARRAY_SIZE_OF(EffectHeader_Data);
-		m_commonShaderHeader.AssignCStr((const char*)EffectHeader_Data, EffectHeader_Data_Len);
+		m_commonShaderHeader.assignCStr((const char*)EffectHeader_Data, EffectHeader_Data_Len);
 	}
 	
 	// デフォルトシェーダ
@@ -278,7 +278,7 @@ void GraphicsManager::initialize(const ConfigData& configData)
 #include "Resource/NoLightingRendering.fx.h"
 		};
 		static const size_t shaderDataLen = LN_ARRAY_SIZE_OF(shaderData);
-		auto shader = RefPtr<Shader>::MakeRef();
+		auto shader = RefPtr<Shader>::makeRef();
 		shader->initialize(this, (const char*)shaderData, shaderDataLen);
 		m_builtinShaders[(int)BuiltinShader::Sprite] = shader;
 	}
@@ -288,7 +288,7 @@ void GraphicsManager::initialize(const ConfigData& configData)
 #include "Resource/ForwardRendering.fx.h"
 		};
 		static const size_t shaderDataLen = LN_ARRAY_SIZE_OF(shaderData);
-		auto shader = RefPtr<Shader>::MakeRef();
+		auto shader = RefPtr<Shader>::makeRef();
 		shader->initialize(this, (const char*)shaderData, shaderDataLen);
 		m_builtinShaders[(int)BuiltinShader::LegacyDiffuse] = shader;
 	}
@@ -300,7 +300,7 @@ void GraphicsManager::initialize(const ConfigData& configData)
 		// 描画スレッドを立ち上げる
 		m_renderingThread = LN_NEW RenderingThread();
 		m_renderingThread->Reset(m_graphicsDevice);
-		m_renderingThread->Start();
+		m_renderingThread->start();
 	}
 
 	if (g_GraphicsManagerInstance == nullptr)
@@ -335,7 +335,7 @@ void GraphicsManager::Dispose()
 	deleteList.clear();
 	m_resourceObjectList.clear();
 
-	m_internalContext.SafeRelease();
+	m_internalContext.safeRelease();
 }
 
 //------------------------------------------------------------------------------
@@ -439,13 +439,13 @@ void GraphicsManager::SwitchActiveContext(detail::ContextInterface* context)
 //------------------------------------------------------------------------------
 void GraphicsManager::AddResourceObject(GraphicsResourceObject* obj)
 {
-	m_resourceObjectList.Add(obj);
+	m_resourceObjectList.add(obj);
 }
 
 //------------------------------------------------------------------------------
 void GraphicsManager::RemoveResourceObject(GraphicsResourceObject* obj)
 {
-	m_resourceObjectList.Remove(obj);
+	m_resourceObjectList.remove(obj);
 }
 
 //------------------------------------------------------------------------------
@@ -508,7 +508,7 @@ void GraphicsManager::CreateGlobalObjects()
 	auto colorBrush = [this](const Color& c)
 	{
 		auto brush = NewObject<SolidColorBrush>(c);
-		this->m_globalBrushes.Add(brush);
+		this->m_globalBrushes.add(brush);
 		return brush;
 	};
 
@@ -536,60 +536,60 @@ void GraphicsManager::CreateGlobalObjects()
 //------------------------------------------------------------------------------
 ShaderVariableCommitSerializeHelper::ShaderVariableCommitSerializeHelper()
 {
-	m_writerBuffer = MemoryStream::Create();
-	m_writer = RefPtr<BinaryWriter>::MakeRef(m_writerBuffer);
+	m_writerBuffer = MemoryStream::create();
+	m_writer = RefPtr<BinaryWriter>::makeRef(m_writerBuffer);
 }
 
 //------------------------------------------------------------------------------
 void ShaderVariableCommitSerializeHelper::BeginSerialize()
 {
-	m_writer->Seek(0, SeekOrigin_Begin);
+	m_writer->seek(0, SeekOrigin_Begin);
 }
 
 //------------------------------------------------------------------------------
 void ShaderVariableCommitSerializeHelper::WriteValue(Driver::IShaderVariable* targetVariable, const ShaderValue& value)
 {
-	m_writer->WriteInt8(value.GetType());
-	m_writer->WriteUInt64((intptr_t)targetVariable);
+	m_writer->writeInt8(value.getType());
+	m_writer->writeUInt64((intptr_t)targetVariable);
 
-	switch (value.GetType())
+	switch (value.getType())
 	{
 	case ShaderVariableType_Bool:
-		m_writer->WriteUInt8(value.GetBool() ? 1 : 0);
+		m_writer->writeUInt8(value.GetBool() ? 1 : 0);
 		break;
 	case ShaderVariableType_BoolArray:
-		m_writer->WriteUInt8(value.GetArrayLength());
-		m_writer->Write(value.GetBoolArray(), sizeof(bool) * value.GetArrayLength());
+		m_writer->writeUInt8(value.GetArrayLength());
+		m_writer->write(value.GetBoolArray(), sizeof(bool) * value.GetArrayLength());
 		break;
 	case ShaderVariableType_Int:
-		m_writer->WriteInt32(value.GetInt());
+		m_writer->writeInt32(value.getInt());
 		break;
 	case ShaderVariableType_Float:
-		m_writer->WriteFloat(value.GetFloat());
+		m_writer->writeFloat(value.GetFloat());
 		break;
 	case ShaderVariableType_FloatArray:
-		m_writer->WriteUInt8(value.GetArrayLength());
-		m_writer->Write(value.GetFloatArray(), sizeof(float) * value.GetArrayLength());
+		m_writer->writeUInt8(value.GetArrayLength());
+		m_writer->write(value.GetFloatArray(), sizeof(float) * value.GetArrayLength());
 		break;
 	case ShaderVariableType_Vector:
-		m_writer->Write(&value.GetVector(), sizeof(Vector4));
+		m_writer->write(&value.GetVector(), sizeof(Vector4));
 		break;
 	case ShaderVariableType_VectorArray:
-		m_writer->WriteUInt8(value.GetArrayLength());
-		m_writer->Write(value.GetVectorArray(), sizeof(Vector4) * value.GetArrayLength());
+		m_writer->writeUInt8(value.GetArrayLength());
+		m_writer->write(value.GetVectorArray(), sizeof(Vector4) * value.GetArrayLength());
 		break;
 	case ShaderVariableType_Matrix:
-		m_writer->Write(&value.GetMatrix(), sizeof(Matrix));
+		m_writer->write(&value.GetMatrix(), sizeof(Matrix));
 		break;
 	case ShaderVariableType_MatrixArray:
-		m_writer->WriteUInt8(value.GetArrayLength());
-		m_writer->Write(value.GetMatrixArray(), sizeof(Matrix) * value.GetArrayLength());
+		m_writer->writeUInt8(value.GetArrayLength());
+		m_writer->write(value.GetMatrixArray(), sizeof(Matrix) * value.GetArrayLength());
 		break;
 	case ShaderVariableType_DeviceTexture:
-		m_writer->WriteUInt64((intptr_t)value.GetDeviceTexture());
+		m_writer->writeUInt64((intptr_t)value.GetDeviceTexture());
 		break;
 	case ShaderVariableType_ManagedTexture:
-		m_writer->WriteUInt64((intptr_t)((value.GetManagedTexture()) ? value.GetManagedTexture()->ResolveDeviceObject() : nullptr));
+		m_writer->writeUInt64((intptr_t)((value.GetManagedTexture()) ? value.GetManagedTexture()->ResolveDeviceObject() : nullptr));
 		break;
 	default:
 		// TODO: シェーダ変数に値が1度もセットされなかった場合ここに来る。デフォルト値を使うべき？
@@ -607,7 +607,7 @@ void* ShaderVariableCommitSerializeHelper::GetSerializeData()
 //------------------------------------------------------------------------------
 size_t ShaderVariableCommitSerializeHelper::GetSerializeDataLength()
 {
-	return (size_t)m_writerBuffer->GetPosition();
+	return (size_t)m_writerBuffer->getPosition();
 }
 
 //------------------------------------------------------------------------------
@@ -617,73 +617,73 @@ void ShaderVariableCommitSerializeHelper::Deserialize(const void* data, size_t l
 	MemoryStream buffer(data, length);
 	BinaryReader reader(&buffer);
 
-	while (!reader.IsEOF())
+	while (!reader.isEOF())
 	{
-		uint8_t type = reader.ReadInt8();
-		Driver::IShaderVariable* variable = (Driver::IShaderVariable*)reader.ReadUInt64();
+		uint8_t type = reader.readInt8();
+		Driver::IShaderVariable* variable = (Driver::IShaderVariable*)reader.readUInt64();
 
 		switch (type)
 		{
 			case ShaderVariableType_Bool:
 			{
-				variable->SetBool(reader.ReadUInt8() != 0);
+				variable->SetBool(reader.readUInt8() != 0);
 				break;
 			}
 			case ShaderVariableType_BoolArray:
 			{
-				size_t size = reader.ReadUInt8();
-				variable->SetBoolArray((const bool*)&raw[buffer.GetPosition()], size);
-				reader.Seek(sizeof(bool) * size);
+				size_t size = reader.readUInt8();
+				variable->SetBoolArray((const bool*)&raw[buffer.getPosition()], size);
+				reader.seek(sizeof(bool) * size);
 				break;
 			}
 			case ShaderVariableType_Int:
 			{
-				variable->SetInt(reader.ReadInt32());
+				variable->setInt(reader.readInt32());
 				break;
 			}
 			case ShaderVariableType_Float:
 			{
-				variable->SetFloat(reader.ReadFloat());
+				variable->SetFloat(reader.readFloat());
 				break;
 			}
 			case ShaderVariableType_FloatArray:
 			{
-				size_t size = reader.ReadUInt8();
-				variable->SetFloatArray((const float*)&raw[buffer.GetPosition()], size);
-				reader.Seek(sizeof(float) * size);
+				size_t size = reader.readUInt8();
+				variable->SetFloatArray((const float*)&raw[buffer.getPosition()], size);
+				reader.seek(sizeof(float) * size);
 				break;
 			}
 			case ShaderVariableType_Vector:
 			{
 				Vector4 v;
-				reader.Read(&v, sizeof(Vector4));
+				reader.read(&v, sizeof(Vector4));
 				variable->SetVector(v);
 				break;
 			}
 			case ShaderVariableType_VectorArray:
 			{
-				size_t size = reader.ReadUInt8();
-				variable->SetVectorArray((const Vector4*)&raw[buffer.GetPosition()], size);
-				reader.Seek(sizeof(Vector4) * size);
+				size_t size = reader.readUInt8();
+				variable->SetVectorArray((const Vector4*)&raw[buffer.getPosition()], size);
+				reader.seek(sizeof(Vector4) * size);
 				break;
 			}
 			case ShaderVariableType_Matrix:
 			{
 				Matrix v;
-				reader.Read(&v, sizeof(Matrix));
+				reader.read(&v, sizeof(Matrix));
 				variable->SetMatrix(v);
 				break;
 			}
 			case ShaderVariableType_MatrixArray:
 			{
-				size_t size = reader.ReadUInt8();
-				variable->SetMatrixArray((const Matrix*)&raw[buffer.GetPosition()], size);
-				reader.Seek(sizeof(Matrix) * size);
+				size_t size = reader.readUInt8();
+				variable->SetMatrixArray((const Matrix*)&raw[buffer.getPosition()], size);
+				reader.seek(sizeof(Matrix) * size);
 				break;
 			}
 			case ShaderVariableType_DeviceTexture:
 			case ShaderVariableType_ManagedTexture:
-				variable->SetTexture((Driver::ITexture*)reader.ReadUInt64());
+				variable->SetTexture((Driver::ITexture*)reader.readUInt64());
 				break;
 			default:
 				LN_THROW(0, InvalidOperationException);

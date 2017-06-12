@@ -38,25 +38,25 @@ void UIButtonBase::initialize()
 }
 
 //------------------------------------------------------------------------------
-void UIButtonBase::SetText(const StringRef& text)
+void UIButtonBase::setText(const StringRef& text)
 {
-	auto textBlock = UITextBlockPtr::MakeRef();
+	auto textBlock = UITextBlockPtr::makeRef();
 	textBlock->initialize();
-	textBlock->SetText(text);
+	textBlock->setText(text);
 	AddChild(textBlock);
 }
 
 //------------------------------------------------------------------------------
 EventConnection UIButtonBase::ConnectOnGotFocus(UIEventHandler handler)
 {
-	return m_onClick.Connect(handler);
+	return m_onClick.connect(handler);
 }
 
 //------------------------------------------------------------------------------
 void UIButtonBase::OnClick(UIEventArgs* e)
 {
-	m_onClick.Raise(e);
-	//RaiseEvent(ClickEvent, this, UIEventArgs::Create(this));
+	m_onClick.raise(e);
+	//RaiseEvent(ClickEvent, this, UIEventArgs::create(this));
 }
 
 //------------------------------------------------------------------------------
@@ -103,13 +103,13 @@ void UIButtonBase::OnMouseUp(UIMouseEventArgs* e)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIButton, UIButtonBase);
 
 //------------------------------------------------------------------------------
-RefPtr<UIButton> UIButton::Create()
+RefPtr<UIButton> UIButton::create()
 {
 	return NewObject<UIButton>();
 }
 
 //------------------------------------------------------------------------------
-RefPtr<UIButton> UIButton::Create(const StringRef& text, float width, float height)
+RefPtr<UIButton> UIButton::create(const StringRef& text, float width, float height)
 {
 	return NewObject<UIButton>(text, width, height);
 }
@@ -134,7 +134,7 @@ void UIButton::initialize()
 void UIButton::initialize(const StringRef& text, float width, float height)
 {
 	UIButtonBase::initialize();
-	SetText(text);
+	setText(text);
 	SetWidth(width);
 	SetHeight(height);
 }
@@ -148,7 +148,7 @@ const String UIToggleButton::CheckedState = _T("Checked");
 const String UIToggleButton::UncheckedState = _T("Unchecked");
 
 //------------------------------------------------------------------------------
-RefPtr<UIToggleButton> UIToggleButton::Create()
+RefPtr<UIToggleButton> UIToggleButton::create()
 {
 	return NewObject<UIToggleButton>();
 }

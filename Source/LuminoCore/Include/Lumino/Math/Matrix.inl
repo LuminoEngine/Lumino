@@ -28,7 +28,7 @@ inline const Vector3& Matrix::GetUp() const
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-inline const Vector3& Matrix::GetFront() const
+inline const Vector3& Matrix::getFront() const
 {
 	return (Vector3&)m[2][0];
 }
@@ -36,7 +36,7 @@ inline const Vector3& Matrix::GetFront() const
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-inline const Vector3& Matrix::GetPosition() const
+inline const Vector3& Matrix::getPosition() const
 {
 	return (Vector3&)m[3][0];
 }

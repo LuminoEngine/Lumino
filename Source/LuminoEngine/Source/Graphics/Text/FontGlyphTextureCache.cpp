@@ -60,7 +60,7 @@ void FontGlyphTextureCache::initialize(GraphicsManager* manager, RawFont* font)
 	m_curPrimUsedFlags.resize(m_maxCacheGlyphs);
 	for (int i = 0; i < m_maxCacheGlyphs; i++)
 	{
-		m_indexStack.Push(i);
+		m_indexStack.push(i);
 	}
 	ResetUsedFlags();
 }
@@ -83,7 +83,7 @@ void FontGlyphTextureCache::LookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, b
 	}
 	else
 	{
-		if (m_indexStack.GetCount() == 0) {
+		if (m_indexStack.getCount() == 0) {
 			// TODO: 古いキャッシュ破棄
 			LN_THROW(0, NotImplementedException);
 		}
@@ -92,8 +92,8 @@ void FontGlyphTextureCache::LookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, b
 		FontGlyphBitmap* glyphBitmap = m_font->LookupGlyphBitmap(ch, 0);
 
 		// 空いてるインデックスを取りだす
-		cacheIndex = m_indexStack.GetTop();
-		m_indexStack.Pop();
+		cacheIndex = m_indexStack.getTop();
+		m_indexStack.pop();
 
 		// キャッシュマップに登録
 		CachedGlyphInfo info;
@@ -208,7 +208,7 @@ FontGlyphTextureCache::FontGlyphTextureCache(GraphicsManager* manager, RawFont* 
 	int w = m_glyphWidthCount * m_font->GetLineSpacing();	//TODO ビットマップが収まるサイズは要チェック
 
 	// キャッシュ用テクスチャ作成
-	m_glyphCacheTexture = Texture2D::Create(SizeI(w, w), TextureFormat_R8G8B8A8, 1);	// TODO: GraphicsManager?
+	m_glyphCacheTexture = Texture2D::create(SizeI(w, w), TextureFormat_R8G8B8A8, 1);	// TODO: GraphicsManager?
 	//Driver::IGraphicsDevice* device = m_spriteRenderer->GetManager()->GetGraphicsDevice()->GetDeviceObject();
 	//m_glyphCacheTexture.Attach(device->CreateTexture(SizeI(w, w), 1, TextureFormat_R8G8B8A8));
 
@@ -220,7 +220,7 @@ FontGlyphTextureCache::FontGlyphTextureCache(GraphicsManager* manager, RawFont* 
 
 	// 空きキャッシュインデックス作成
 	for (int i = 0; i < maxCharacters; i++) {
-		m_indexStack.Push(i);
+		m_indexStack.push(i);
 	}
 
 	m_glyphMaxBitmapSize = m_font->GetGlyphMaxSize();
@@ -252,8 +252,8 @@ void FontGlyphTextureCache::LookupGlyph(UTF32 ch, int strokeThickness, Texture**
 		// 新しく作ってキャッシュに登録
 		FontGlyphBitmap* glyphBitmap = m_font->LookupGlyphBitmap(ch, strokeThickness);
 
-		int cacheIndex = m_indexStack.GetTop();
-		m_indexStack.Pop();
+		int cacheIndex = m_indexStack.getTop();
+		m_indexStack.pop();
 
 
 		// m_tmpBitmap へ BitBlt することで、アウトラインのビットマップと結合し、フォーマットをそろえる
@@ -304,7 +304,7 @@ void FontGlyphTextureCache::LookupGlyph(UTF32 ch, int strokeThickness, Texture**
 uint64_t FontGlyphTextureCache::CalcFontSettingHash() const
 {
 	uint32_t v[2];
-	v[0] = Hash::CalcHash(m_font->GetName().c_str());
+	v[0] = Hash::calcHash(m_font->GetName().c_str());
 
 	uint8_t* v2 = (uint8_t*)&v[1];
 	v2[0] = m_font->GetSize();
@@ -379,7 +379,7 @@ VectorFontGlyphCache::Handle VectorFontGlyphCache::GetGlyphInfo(char32_t utf32Co
 		else
 		{
 			// 最も古いものを選択
-			GryphInfo* info = m_olderInfoList.PopFront();
+			GryphInfo* info = m_olderInfoList.popFront();
 			infoIndex = info->idIndex;
 			m_glyphInfoIndexMap.erase(info->utf32Code);
 		}
@@ -392,8 +392,8 @@ VectorFontGlyphCache::Handle VectorFontGlyphCache::GetGlyphInfo(char32_t utf32Co
 		
 		// レンダリングスレッドへデータを送る
 		{
-			RenderBulkData vertexList(&info.vertices[0], sizeof(RawFont::FontOutlineVertex) * info.vertices.GetCount());
-			RenderBulkData outlineList(&info.outlines[0], sizeof(RawFont::OutlineInfo) * info.outlines.GetCount());
+			RenderBulkData vertexList(&info.vertices[0], sizeof(RawFont::FontOutlineVertex) * info.vertices.getCount());
+			RenderBulkData outlineList(&info.outlines[0], sizeof(RawFont::OutlineInfo) * info.outlines.getCount());
 			VectorFontGlyphCache* this_ = this;
 			LN_ENQUEUE_RENDER_COMMAND_4(
 				RegisterPolygons, m_manager,
@@ -416,8 +416,8 @@ VectorFontGlyphCache::Handle VectorFontGlyphCache::GetGlyphInfo(char32_t utf32Co
 	info->utf32Code = utf32Code;
 
 	// 最新とする
-	m_olderInfoList.Remove(info);
-	m_olderInfoList.Add(info);
+	m_olderInfoList.remove(info);
+	m_olderInfoList.add(info);
 
 	// 今回、cacheIndex を使うことをマーク
 	if (!m_inFlushUsedFlags[infoIndex])
@@ -451,13 +451,13 @@ void VectorFontGlyphCache::OnFlush()
 //------------------------------------------------------------------------------
 int VectorFontGlyphCache::GetVertexCount(Handle info)
 {
-	return m_gryphBufferDataList[info].vertices.GetCount();
+	return m_gryphBufferDataList[info].vertices.getCount();
 }
 
 //------------------------------------------------------------------------------
 int VectorFontGlyphCache::GetIndexCount(Handle info)
 {
-	return m_gryphBufferDataList[info].triangleIndices.GetCount();
+	return m_gryphBufferDataList[info].triangleIndices.getCount();
 }
 
 //------------------------------------------------------------------------------
@@ -465,7 +465,7 @@ void VectorFontGlyphCache::GenerateMesh(Handle infoIndex, const Vector3& baselin
 {
 	auto* info = &m_gryphBufferDataList[infoIndex];
 	bool isIdent = transform.IsIdentity();
-	for (int i = 0; i < info->vertices.GetCount(); i++)
+	for (int i = 0; i < info->vertices.getCount(); i++)
 	{
 		outVertices[i].position = Vector3(info->vertices[i].pos, 0.0f);
 		outVertices[i].position.y *= -1;
@@ -474,7 +474,7 @@ void VectorFontGlyphCache::GenerateMesh(Handle infoIndex, const Vector3& baselin
 		if (!isIdent) outVertices[i].position.TransformCoord(transform);
 		outVertices[i].position += baselineOrigin;
 	}
-	for (int i = 0; i < info->triangleIndices.GetCount(); i++)
+	for (int i = 0; i < info->triangleIndices.getCount(); i++)
 	{
 		outIndices[i] = beginIndex + info->triangleIndices[i];
 	}
@@ -498,16 +498,16 @@ void VectorFontGlyphCache::RegisterPolygons(Handle infoIndex, const RawFont::Fon
 
 	// TODO: AddRange
 	info->vertices.clear();
-	info->vertices.Reserve(vertexSize);
+	info->vertices.reserve(vertexSize);
 	for (int i = 0; i < vertexSize; i++)
 	{
-		info->vertices.Add(vertices[i]);
+		info->vertices.add(vertices[i]);
 	}
 	info->outlines.clear();
-	info->outlines.Reserve(outlineSize);
+	info->outlines.reserve(outlineSize);
 	for (int i = 0; i < outlineSize; i++)
 	{
-		info->outlines.Add(outlines[i]);
+		info->outlines.add(outlines[i]);
 	}
 
 	FontOutlineTessellator tess;	// TODO: インスタンスはメンバに持っておいたほうが malloc 少なくなっていいかな？
@@ -608,8 +608,8 @@ void TextRendererImplemented::DrawChar(UTF32 ch, const Rect& area)
 		// 新しく作ってキャッシュに登録
 		FontGlyphData* glyhp = m_font->LookupGlyphData(ch, NULL);
 
-		int cacheIndex = m_indexStack.GetTop();
-		m_indexStack.Pop();
+		int cacheIndex = m_indexStack.getTop();
+		m_indexStack.pop();
 
 		{
 			Driver::ITexture::ScopedLock lock(m_glyphCacheTexture);
@@ -676,7 +676,7 @@ void TextRendererImplemented::Reset()
 
 	// 空きキャッシュインデックス作成
 	for (int i = 0; i < maxCharacters; i++) {
-		m_indexStack.Push(i);
+		m_indexStack.push(i);
 	}
 
 	m_glyphMaxBitmapSize = m_font->GetGlyphMaxSize();
@@ -692,7 +692,7 @@ void TextRendererImplemented::Reset()
 //==============================================================================
 
 //------------------------------------------------------------------------------
-TextRenderer* TextRenderer::Create(GraphicsManager* manager)
+TextRenderer* TextRenderer::create(GraphicsManager* manager)
 {
 	return LN_NEW TextRenderer(manager);
 }
@@ -712,7 +712,7 @@ TextRenderer::TextRenderer(GraphicsManager* manager)
 {
 	//m_manager = manager;
 	//m_impl = LN_NEW TextRendererImplemented(manager);
-	m_spriteRenderer.Attach(SpriteRenderer::Create(2048, manager));	// TODO 定数
+	m_spriteRenderer.Attach(SpriteRenderer::create(2048, manager));	// TODO 定数
 }
 
 //------------------------------------------------------------------------------
@@ -795,8 +795,8 @@ void TextRenderer::DrawChar(UTF32 ch)
 		//FontGlyphData* glyhp = m_font->LookupGlyphData(ch, NULL);
 		FontGlyphBitmap* glyphBitmap = m_font->LookupGlyphBitmap(ch);
 
-		int cacheIndex = m_indexStack.GetTop();
-		m_indexStack.Pop();
+		int cacheIndex = m_indexStack.getTop();
+		m_indexStack.pop();
 
 		//m_tmpBitmap
 
@@ -881,7 +881,7 @@ void TextRenderer::CheckResetCache()
 		int w = m_glyphWidthCount * m_font->GetLineHeight();	//TODO ビットマップが収まるサイズは要チェック
 
 		// キャッシュ用テクスチャ作成
-		m_glyphCacheTexture.Attach(Texture::Create(SizeI(w, w), TextureFormat_R8G8B8A8, 1, m_spriteRenderer->GetManager()));
+		m_glyphCacheTexture.Attach(Texture::create(SizeI(w, w), TextureFormat_R8G8B8A8, 1, m_spriteRenderer->GetManager()));
 		//Device::IGraphicsDevice* device = m_spriteRenderer->GetManager()->GetGraphicsDevice()->GetDeviceObject();
 		//m_glyphCacheTexture.Attach(device->CreateTexture(SizeI(w, w), 1, TextureFormat_R8G8B8A8));
 
@@ -893,7 +893,7 @@ void TextRenderer::CheckResetCache()
 
 		// 空きキャッシュインデックス作成
 		for (int i = 0; i < maxCharacters; i++) {
-			m_indexStack.Push(i);
+			m_indexStack.push(i);
 		}
 
 		m_glyphMaxBitmapSize = m_font->GetGlyphMaxSize();

@@ -12,7 +12,7 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 RefPtr<Material> PmxMaterialResource::MakeCommonMaterial() const
 {
-	auto m = RefPtr<Material>::MakeRef();
+	auto m = RefPtr<Material>::makeRef();
 	m->SetBuiltinColorParameter(
 		Material::DiffuseParameter,
 		Diffuse.r,

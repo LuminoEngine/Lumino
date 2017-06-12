@@ -156,7 +156,7 @@ using UIEventId = UIEventInfo*;
     static const UIEventId eventVar##Id;
 
 #define LN_ROUTED_EVENT_IMPLEMENT2(ownerClass, eventArgs, eventVar) \
-    const UIEventId ownerClass::eventVar##Id = reinterpret_cast<UIEventId>(ln::Hash::CalcHash(#eventVar));
+    const UIEventId ownerClass::eventVar##Id = reinterpret_cast<UIEventId>(ln::Hash::calcHash(#eventVar));
 
 
 /** */

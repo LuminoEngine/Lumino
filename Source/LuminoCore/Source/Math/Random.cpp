@@ -37,7 +37,7 @@ void Randomizer::SetSeed(int seed)
 }
 
 //------------------------------------------------------------------------------
-int Randomizer::GetInt()
+int Randomizer::getInt()
 {
 	unsigned t = x ^ (x << 11);
 	x = y;
@@ -48,10 +48,10 @@ int Randomizer::GetInt()
 }
 
 //------------------------------------------------------------------------------
-int Randomizer::GetInt(int maxValue)
+int Randomizer::getInt(int maxValue)
 {
 	if (maxValue == 0) { return 0; }
-	int r = GetInt();
+	int r = getInt();
 	r %= maxValue;
 	return r;
 }
@@ -60,7 +60,7 @@ int Randomizer::GetInt(int maxValue)
 int Randomizer::GetIntRange(int minValue, int maxValue)
 {
 	if (maxValue - minValue == 0) { return 0; }
-	int r = GetInt();
+	int r = getInt();
 	r %= maxValue - minValue;
 	r += minValue;
 	return r;
@@ -75,7 +75,7 @@ int Randomizer::GetIntWidth(int median, int width)
 //------------------------------------------------------------------------------
 float Randomizer::GetFloat()
 {
-	int r = GetInt();
+	int r = getInt();
 	r = (r & 0x007fffff) | 0x3f800000;			// 0x3f800000 は指数部が 1111111で、これは指数1を示す。r & 0x007fffff で仮数部を適当に決めている。
 	float f = *reinterpret_cast<float*>(&r);
 	return f - 1.f;

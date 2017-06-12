@@ -94,7 +94,7 @@ detail::ParticleData* SpriteParticleModelInstance::GetNextFreeParticleData()
 		}
 	}
 
-	if (!spawned && m_inactiveFindIndex < m_particleIndices.GetCount())
+	if (!spawned && m_inactiveFindIndex < m_particleIndices.getCount())
 	{
 		int idx = m_particleIndices[m_inactiveFindIndex];
 		detail::ParticleData& data = m_particles[idx];
@@ -130,9 +130,9 @@ void SpriteParticleModelInstance::SpawnTrailPoint(detail::ParticleData* sourceDa
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SpriteParticleModel, Object);
 
 //------------------------------------------------------------------------------
-SpriteParticleModelPtr SpriteParticleModel::Create()
+SpriteParticleModelPtr SpriteParticleModel::create()
 {
-	auto ptr = SpriteParticleModelPtr::MakeRef();
+	auto ptr = SpriteParticleModelPtr::makeRef();
 	ptr->initialize(detail::GraphicsManager::GetInstance());
 	return ptr;
 }
@@ -226,7 +226,7 @@ void SpriteParticleModel::Commit()
 	// 瞬間最大パーティクル数
 	//m_maxParticleCount = (int)ceil(m_maxLifeTime * (float)m_spawnRate);
 
-	m_mesh = RefPtr<MeshResource>::MakeRef();
+	m_mesh = RefPtr<MeshResource>::makeRef();
 	m_mesh->initialize(m_manager, MeshCreationFlags::DynamicBuffers);
 	m_mesh->ResizeVertexBuffer(m_maxParticles * 4);
 	m_mesh->ResizeIndexBuffer(m_maxParticles * 6);
@@ -235,7 +235,7 @@ void SpriteParticleModel::Commit()
 //------------------------------------------------------------------------------
 RefPtr<detail::SpriteParticleModelInstance> SpriteParticleModel::CreateInstane()
 {
-	auto ptr = RefPtr<detail::SpriteParticleModelInstance>::MakeRef();
+	auto ptr = RefPtr<detail::SpriteParticleModelInstance>::makeRef();
 	ptr->m_owner = this;
 	ptr->m_particles.resize(m_maxParticles);
 	ptr->m_particleIndices.resize(m_maxParticles);
@@ -556,8 +556,8 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 
 		bool operator()(int left, int right)
 		{
-			const detail::ParticleData& lsp = spriteList->GetAt(left);
-			const detail::ParticleData& rsp = spriteList->GetAt(right);
+			const detail::ParticleData& lsp = spriteList->getAt(left);
+			const detail::ParticleData& rsp = spriteList->getAt(right);
 
 			// どちらか一方でも非アクティブなら spawnTime の降順にする。そうすると、負値が後ろに集まる。
 			if (!lsp.IsActive() || !rsp.IsActive())
@@ -595,7 +595,7 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 			//SpriteParticleVertex* vb = (SpriteParticleVertex*)m_vertexBuffer->Lock()->GetData();	
 			//uint16_t* ib = (uint16_t*)m_indexBuffer->Lock()->GetData();
 			int iData = 0;
-			int count = instance->m_particleIndices.GetCount();
+			int count = instance->m_particleIndices.getCount();
 			for (; iData < count; ++iData)
 			{
 				int idx = instance->m_particleIndices[iData];
@@ -684,7 +684,7 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 		else if (m_sourceDataType == ParticleSourceDataType::Particle)
 		{
 			int iData = 0;
-			int count = instance->m_particleIndices.GetCount();
+			int count = instance->m_particleIndices.getCount();
 			for (; iData < count; ++iData)
 			{
 				int idx = instance->m_particleIndices[iData];
@@ -754,7 +754,7 @@ void ParticleEmitterComponent::OnRender2(DrawList* renderer)
 		renderer,
 		m_instance,
 		GetOwnerObject()->transform.GetWorldMatrix(),
-		renderer->GetCurrentCamera()->GetPosition(),
+		renderer->GetCurrentCamera()->getPosition(),
 		dir.GetXYZ(),
 		renderer->GetCurrentCamera()->GetViewMatrixI(),
 		m_material);
@@ -766,9 +766,9 @@ void ParticleEmitterComponent::OnRender2(DrawList* renderer)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ParticleEmitter3DComponent, ParticleEmitterComponent);
 
 //------------------------------------------------------------------------------
-RefPtr<ParticleEmitter3DComponent> ParticleEmitter3DComponent::Create(SpriteParticleModel* model)
+RefPtr<ParticleEmitter3DComponent> ParticleEmitter3DComponent::create(SpriteParticleModel* model)
 {
-	auto ptr = RefPtr<ParticleEmitter3DComponent>::MakeRef();
+	auto ptr = RefPtr<ParticleEmitter3DComponent>::makeRef();
 	ptr->initialize(model);
 	//detail::EngineDomain::GetDefaultSceneGraph3D()->GetRootNode()->AddChild(ptr);
 	return ptr;

@@ -71,7 +71,7 @@ Archive::~Archive()
 }
 
 //------------------------------------------------------------------------------
-void Archive::Open(const PathName& filePath, const String& key)
+void Archive::open(const PathName& filePath, const String& key)
 {
 	m_key = key;
 	m_fileCount = 0;
@@ -83,11 +83,11 @@ void Archive::Open(const PathName& filePath, const String& key)
 
     // 拡張キーの初期化
 	memset(m_keyTable, 0, sizeof(m_keyTable));
-	if (!m_key.IsEmpty())
+	if (!m_key.isEmpty())
 	{
-		StringA k = m_key.ToStringA();
+		StringA k = m_key.toStringA();
 		byte_t key_buf[KEY_SIZE] = { 0 };
-		memcpy(key_buf, k.c_str(), k.GetLength());
+		memcpy(key_buf, k.c_str(), k.getLength());
 		memset(m_keyTable, 0, sizeof(m_keyTable));
 		Camellia_Ekeygen(KEY_SIZE, key_buf, m_keyTable);
     }
@@ -132,7 +132,7 @@ void Archive::Open(const PathName& filePath, const String& key)
 		ByteBuffer nameBuf(name_len * sizeof(UTF16));
 		ReadPadding16(nameBuf.getData(), name_len * sizeof(UTF16));
 		String tmpName;
-		tmpName.ConvertFrom(nameBuf.getData(), nameBuf.getSize(), Encoding::GetUTF16Encoding());
+		tmpName.convertFrom(nameBuf.getData(), nameBuf.getSize(), Encoding::GetUTF16Encoding());
 		PathName name(m_virtualDirectoryPath, tmpName);	// 絶対パスにする
 		name = name.CanonicalizePath();
 			
@@ -149,7 +149,7 @@ void Archive::Open(const PathName& filePath, const String& key)
 }
 
 //------------------------------------------------------------------------------
-bool Archive::ExistsFile(const PathName& fileFullPath)
+bool Archive::existsFile(const PathName& fileFullPath)
 {
 #if 1 // map のキーを絶対パスにしてみた。メモリ効率は悪いが、検索キー用に PathName を再度作らなくて良くなる。まぁ、携帯機に乗せるときに問題になるようなら改めて見直す…。
 	EntriesMap::iterator itr = m_entriesMap.find(fileFullPath);
@@ -160,10 +160,10 @@ bool Archive::ExistsFile(const PathName& fileFullPath)
 #else
 	// まず、パスの先頭が m_virtualDirectoryPath と一致するかを確認する
 	CaseSensitivity cs = FileManager::GetInstance().GetFileSystemCaseSensitivity();
-	if (StringUtils::Compare(fileFullPath.c_str(), m_virtualDirectoryPath.GetCStr(), m_virtualDirectoryPath.GetString().GetLength(), cs) == 0)
+	if (StringUtils::Compare(fileFullPath.c_str(), m_virtualDirectoryPath.GetCStr(), m_virtualDirectoryPath.getString().getLength(), cs) == 0)
 	{
 		// internalPath は m_virtualDirectoryPath の後ろの部分の開始位置
-		const TCHAR* internalPath = fileFullPath.c_str() + m_virtualDirectoryPath.GetString().GetLength();
+		const TCHAR* internalPath = fileFullPath.c_str() + m_virtualDirectoryPath.getString().getLength();
 		if (*internalPath != _T('\0'))
 		{
 			// 検索
@@ -191,13 +191,13 @@ bool Archive::TryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outS
 #else
 	// まず、パスの先頭が m_virtualDirectoryPath と一致するかを確認する
 	CaseSensitivity cs = FileManager::GetInstance().GetFileSystemCaseSensitivity();
-	if (StringUtils::Compare(fileFullPath.c_str(), m_virtualDirectoryPath.GetCStr(), m_virtualDirectoryPath.GetString().GetLength(), cs) != 0)
+	if (StringUtils::Compare(fileFullPath.c_str(), m_virtualDirectoryPath.GetCStr(), m_virtualDirectoryPath.getString().getLength(), cs) != 0)
 	{
 		LN_THROW(0, FileNotFoundException, fileFullPath);
 	}
 
 	// internalPath は m_virtualDirectoryPath の後ろの部分の開始位置
-	const TCHAR* internalPath = fileFullPath.c_str() + m_virtualDirectoryPath.GetString().GetLength();
+	const TCHAR* internalPath = fileFullPath.c_str() + m_virtualDirectoryPath.getString().getLength();
 	LN_THROW((*internalPath != _T('\0')), FileNotFoundException, fileFullPath);	// ファイル名が空だった
 
 	EntriesMap::iterator itr = m_entriesMap.find(internalPath);
@@ -278,7 +278,7 @@ void Archive::ReadU32Padding16( uint32_t* v0, uint32_t* v1 )
 	byte_t b[16] = { 0 };
 
 	// 復号する場合
-	if (!m_key.IsEmpty())
+	if (!m_key.isEmpty())
 	{
 		byte_t buf[16];
 		fread(buf, 1, 16, m_stream);
@@ -290,7 +290,7 @@ void Archive::ReadU32Padding16( uint32_t* v0, uint32_t* v1 )
 		fread(b, 1, 16, m_stream);
 	}
 
-	if (Environment::IsLittleEndian())
+	if (Environment::isLittleEndian())
 	{
 		*v0 = *((uint32_t*)(b + 0));
 		*v1 = *((uint32_t*)(b + 4));
@@ -315,7 +315,7 @@ void Archive::ReadU32Padding16( uint32_t* v0, uint32_t* v1 )
 void Archive::ReadPadding16(byte_t* buffer, int count)
 {
 	// 復号する場合
-	if (!m_key.IsEmpty())
+	if (!m_key.isEmpty())
 	{
 		while (count > 0)
 		{
@@ -363,7 +363,7 @@ ArchiveStream::~ArchiveStream()
 }
 
 //------------------------------------------------------------------------------
-size_t ArchiveStream::Read(void* buffer, size_t byteCount)
+size_t ArchiveStream::read(void* buffer, size_t byteCount)
 {
     // 復号しながら読み込む
 	size_t validSize = m_archive->ReadArchiveStream((byte_t*)buffer, byteCount, m_stream, m_dataOffset, m_seekPoint);
@@ -385,9 +385,9 @@ size_t ArchiveStream::Read(void* buffer, size_t byteCount)
 }
 
 //------------------------------------------------------------------------------
-void ArchiveStream::Seek(int64_t offset, SeekOrigin origin)
+void ArchiveStream::seek(int64_t offset, SeekOrigin origin)
 {
-	m_seekPoint = FileSystem::CalcSeekPoint(m_seekPoint, m_dataSize, offset, origin);
+	m_seekPoint = FileSystem::calcSeekPoint(m_seekPoint, m_dataSize, offset, origin);
 }
 
 //==============================================================================
@@ -395,21 +395,21 @@ void ArchiveStream::Seek(int64_t offset, SeekOrigin origin)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-bool DummyArchive::ExistsFile(const PathName& fileFullPath)
+bool DummyArchive::existsFile(const PathName& fileFullPath)
 {
-	return FileSystem::ExistsFile(fileFullPath);
+	return FileSystem::existsFile(fileFullPath);
 }
 
 //------------------------------------------------------------------------------
 bool DummyArchive::TryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outStream, bool isDeferring)
 {
-	if (!FileSystem::ExistsFile(fileFullPath)) {
+	if (!FileSystem::existsFile(fileFullPath)) {
 		return false;
 	}
 
-	FileOpenMode mode = FileOpenMode::Read;
+	FileOpenMode mode = FileOpenMode::read;
 	if (isDeferring) { mode |= FileOpenMode::Deferring; }
-	RefPtr<FileStream> file = FileStream::Create(fileFullPath, mode);
+	RefPtr<FileStream> file = FileStream::create(fileFullPath, mode);
 	*outStream = file;
 	return true;
 }

@@ -82,9 +82,9 @@ public:
 		//Vector3 TargetGlobalPos = Vector3::TransformCoord(ikBone->GetCore()->OrgPosition, ikBone->GetCombinedMatrix());
 
 		// IKボーンのグローバル位置
-		const Vector3& targetPos = ikBone->GetCombinedMatrix().GetPosition();
+		const Vector3& targetPos = ikBone->GetCombinedMatrix().getPosition();
 
-		for (int iLink = 0; iLink < ik->IKLinks.GetCount(); ++iLink)
+		for (int iLink = 0; iLink < ik->IKLinks.getCount(); ++iLink)
 		{
 			PmxIKResource::IKLink& ikLink = ik->IKLinks[iLink];
 			SkinnedMeshBone* ikLinkBone = owner->m_allBoneList[ikLink.LinkBoneIndex];
@@ -100,7 +100,7 @@ public:
 			//Vector3 link2Target = Vector3::SafeNormalize(targetPos - ikLinkBone->GetCore()->OrgPosition);
 
 			// エフェクタのグローバル位置
-			const Vector3& effPos = effector->GetCombinedMatrix().GetPosition();
+			const Vector3& effPos = effector->GetCombinedMatrix().getPosition();
 
 			// 各ベクトルの座標変換を行い、検索中のボーンi基準の座標系にする
 			// (1) 注目ノード→エフェクタ位置へのベクトル(a)(注目ノード)
@@ -207,7 +207,7 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	if (LN_CHECK_ARG(sharingMesh != nullptr)) return;
 
-	m_mesh = Object::MakeRef<StaticMeshModel>(manager, sharingMesh);
+	m_mesh = Object::makeRef<StaticMeshModel>(manager, sharingMesh);
 
 	// メッシュ(バッファ類)は共有する
 	m_meshResource = sharingMesh;
@@ -215,31 +215,31 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 	//---------------------------------------------------------
 	// マテリアルのインスタンス化
 	{
-		int count = sharingMesh->materials.GetCount();
-		m_mesh->m_materials = RefPtr<MaterialList>::MakeRef();
+		int count = sharingMesh->materials.getCount();
+		m_mesh->m_materials = RefPtr<MaterialList>::makeRef();
 		m_mesh->m_materials->resize(count);
 		for (int i = 0; i < count; ++i)
 		{
-			m_mesh->m_materials->SetAt(i, sharingMesh->materials.GetAt(i)->MakeCommonMaterial());
+			m_mesh->m_materials->getAt(i, sharingMesh->materials.getAt(i)->MakeCommonMaterial());
 		}
 	}
 
 	//---------------------------------------------------------
 	// Bone のインスタンス化
-	int boneCount = m_meshResource->bones.GetCount();
+	int boneCount = m_meshResource->bones.getCount();
 	if (boneCount > 0)
 	{
 		m_allBoneList.resize(boneCount);
 		// まずは Bone を作る
 		for (int i = 0; i < boneCount; i++)
 		{
-			m_allBoneList[i] = SkinnedMeshBonePtr::MakeRef();
+			m_allBoneList[i] = SkinnedMeshBonePtr::makeRef();
 			m_allBoneList[i]->initialize(m_meshResource->bones[i]);
 			
 			// IK ボーンを集める
 			if (m_meshResource->bones[i]->IsIK)
 			{
-				m_ikBoneList.Add(m_allBoneList[i]);
+				m_ikBoneList.add(m_allBoneList[i]);
 			}
 		}
 		// 次に子と親を繋げる
@@ -252,7 +252,7 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 			}
 			else
 			{
-				m_rootBoneList.Add(m_allBoneList[i]);	// 親がいない。ルートボーンとして覚えておく
+				m_rootBoneList.add(m_allBoneList[i]);	// 親がいない。ルートボーンとして覚えておく
 			}
 		}
 		for (SkinnedMeshBone* rootBone : m_rootBoneList)
@@ -272,8 +272,8 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 		m_skinningLocalQuaternionsTexture = NewObject<Texture2D>(SizeI(1, boneCount), TextureFormat::R32G32B32A32_Float, false, ResourceUsage::Static);	// TODO: Dynamic、NoManaged
 
 		// アニメーション管理
-		m_animator = RefPtr<Animator>::MakeRef();
-		m_animator->Create(this);
+		m_animator = RefPtr<Animator>::makeRef();
+		m_animator->create(this);
 	}
 
 
@@ -286,23 +286,23 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 			//後であればあるほどスコアが大きくなるように計算する
 			int xScore = 0;
 			int yScore = 0;
-			if (x->GetCore()->TransformAfterPhysics)
+			if (x->getCore()->TransformAfterPhysics)
 			{
 				xScore += boneCount * boneCount;
 			}
-			if (y->GetCore()->TransformAfterPhysics)
+			if (y->getCore()->TransformAfterPhysics)
 			{
 				yScore += boneCount * boneCount;
 			}
 			xScore += boneCount * x->m_depth;
 			yScore += boneCount * y->m_depth;
-			xScore += x->GetCore()->GetBoneIndex();
-			yScore += y->GetCore()->GetBoneIndex();
+			xScore += x->getCore()->GetBoneIndex();
+			yScore += y->getCore()->GetBoneIndex();
 			return xScore < yScore;
 		}
 
 	} cmp;
-	cmp.boneCount = m_allBoneList.GetCount();
+	cmp.boneCount = m_allBoneList.getCount();
 
 	std::sort(m_ikBoneList.begin(), m_ikBoneList.end(), cmp);
 
@@ -311,17 +311,17 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 	m_physicsWorld = NewObject<PhysicsWorld>();
 	m_physicsWorld->SetGravity(Vector3(0, -9.80f * 10.0f, 0));
 
-	m_rigidBodyList.resize(m_meshResource->rigidBodys.GetCount());
-	for (int i = 0; i < m_meshResource->rigidBodys.GetCount(); ++i)
+	m_rigidBodyList.resize(m_meshResource->rigidBodys.getCount());
+	for (int i = 0; i < m_meshResource->rigidBodys.getCount(); ++i)
 	{
-		m_rigidBodyList[i] = RefPtr<detail::MmdSkinnedMeshRigidBody>::MakeRef();
+		m_rigidBodyList[i] = RefPtr<detail::MmdSkinnedMeshRigidBody>::makeRef();
 		m_rigidBodyList[i]->initialize(this, m_meshResource->rigidBodys[i], 1.0f);
 	}
 
-	m_jointList.resize(m_meshResource->joints.GetCount());
-	for (int i = 0; i < m_meshResource->joints.GetCount(); ++i)
+	m_jointList.resize(m_meshResource->joints.getCount());
+	for (int i = 0; i < m_meshResource->joints.getCount(); ++i)
 	{
-		m_jointList[i] = RefPtr<detail::MmdSkinnedMeshJoint>::MakeRef();
+		m_jointList[i] = RefPtr<detail::MmdSkinnedMeshJoint>::makeRef();
 		m_jointList[i]->initialize(this, m_meshResource->joints[i]);
 	}
 }
@@ -383,7 +383,7 @@ void SkinnedMeshModel::UpdateBoneTransformHierarchy()
 void SkinnedMeshModel::UpdateSkinningMatrices()
 {
 	// スキニング行列の作成
-	for (int i = 0; i < m_allBoneList.GetCount(); i++)
+	for (int i = 0; i < m_allBoneList.getCount(); i++)
 	{
 		/*
 			初期姿勢は、スキニングしなくても同じ姿勢。
@@ -397,7 +397,7 @@ void SkinnedMeshModel::UpdateSkinningMatrices()
 			取得できる行列 (SkinnedMeshサンプルの D3DXMESHCONTAINER_DERIVED::pBoneOffsetMatrices) がこれにあたるものっぽい。
 			サンプルでも描画の直前に対象ボーン行列にこの行列を乗算している。
 		*/
-		m_skinningMatrices[i] = m_allBoneList[i]->GetCore()->GetInitialTranstormInv() * m_allBoneList[i]->GetCombinedMatrix();
+		m_skinningMatrices[i] = m_allBoneList[i]->getCore()->GetInitialTranstormInv() * m_allBoneList[i]->GetCombinedMatrix();
 		//m_skinningMatrices[i] = m_allBoneList[i]->GetCombinedMatrix();
 	
 		m_skinningLocalQuaternions[i] = Quaternion::MakeFromRotationMatrix(m_skinningMatrices[i]);//m_allBoneList[i]->m_localTransform.rotation;//
@@ -405,7 +405,7 @@ void SkinnedMeshModel::UpdateSkinningMatrices()
 	}
 
 	// スキニングテクスチャ更新
-	if (!m_skinningMatricesTexture.IsNull())
+	if (!m_skinningMatricesTexture.isNull())
 	{
 		m_skinningMatricesTexture->SetData(&m_skinningMatrices[0]);
 		m_skinningLocalQuaternionsTexture->SetData(&m_skinningLocalQuaternions[0]);
@@ -436,15 +436,15 @@ void SkinnedMeshModel::UpdateBestow()
 {
 	for (SkinnedMeshBone* bone : m_allBoneList)
 	{
-		if (bone->GetCore()->IsMoveProvided)
+		if (bone->getCore()->IsMoveProvided)
 		{
-			SkinnedMeshBone* parent = m_allBoneList[bone->GetCore()->ProvidedParentBoneIndex];
-			bone->m_localTransform.translation += Vector3::Lerp(Vector3::Zero, parent->m_localTransform.translation, bone->GetCore()->ProvidedRatio);
+			SkinnedMeshBone* parent = m_allBoneList[bone->getCore()->ProvidedParentBoneIndex];
+			bone->m_localTransform.translation += Vector3::Lerp(Vector3::Zero, parent->m_localTransform.translation, bone->getCore()->ProvidedRatio);
 		}
-		if (bone->GetCore()->IsRotateProvided)
+		if (bone->getCore()->IsRotateProvided)
 		{
-			SkinnedMeshBone* parent = m_allBoneList[bone->GetCore()->ProvidedParentBoneIndex];
-			bone->m_localTransform.rotation *= Quaternion::Slerp(Quaternion::Identity, parent->m_localTransform.rotation, bone->GetCore()->ProvidedRatio);
+			SkinnedMeshBone* parent = m_allBoneList[bone->getCore()->ProvidedParentBoneIndex];
+			bone->m_localTransform.rotation *= Quaternion::Slerp(Quaternion::Identity, parent->m_localTransform.rotation, bone->getCore()->ProvidedRatio);
 		}
 	}
 }
@@ -452,13 +452,13 @@ void SkinnedMeshModel::UpdateBestow()
 //------------------------------------------------------------------------------
 int SkinnedMeshModel::GetAnimationTargetAttributeCount() const
 {
-	return m_allBoneList.GetCount();
+	return m_allBoneList.getCount();
 }
 
 //------------------------------------------------------------------------------
 detail::IAnimationTargetAttribute* SkinnedMeshModel::GetAnimationTargetAttribute(int index)
 {
-	return m_allBoneList[index].Get();
+	return m_allBoneList[index].get();
 }
 
 //==============================================================================
@@ -501,7 +501,7 @@ void SkinnedMeshBone::PostInitialize(SkinnedMeshModel* owner, int depth)
 }
 
 //------------------------------------------------------------------------------
-PmxBoneResource* SkinnedMeshBone::GetCore() const
+PmxBoneResource* SkinnedMeshBone::getCore() const
 {
 	return m_core;
 }
@@ -511,7 +511,7 @@ void SkinnedMeshBone::AddChildBone(SkinnedMeshBone* bone)
 {
 	if (LN_CHECK_ARG(bone != nullptr)) return;
 	if (LN_CHECK_ARG(bone->m_parent == nullptr)) return;
-	m_children.Add(bone);
+	m_children.add(bone);
 	bone->m_parent = this;
 }
 
@@ -647,11 +647,11 @@ void MmdSkinnedMeshRigidBody::initialize(SkinnedMeshModel* ownerModel, PmxRigidB
 	m_boneLocalPosition = Matrix::MakeInverse(initialTransform);
 
 	m_boneOffset = initialTransform;
-	m_boneOffset.m41 -= m_bone->GetCore()->OrgPosition.x;
-	m_boneOffset.m42 -= m_bone->GetCore()->OrgPosition.y;
-	m_boneOffset.m43 -= m_bone->GetCore()->OrgPosition.z;
+	m_boneOffset.m41 -= m_bone->getCore()->OrgPosition.x;
+	m_boneOffset.m42 -= m_bone->getCore()->OrgPosition.y;
+	m_boneOffset.m43 -= m_bone->getCore()->OrgPosition.z;
 
-	m_offsetBodyToBone = Matrix::MakeTranslation(m_bone->GetCore()->OrgPosition) * m_boneLocalPosition;
+	m_offsetBodyToBone = Matrix::MakeTranslation(m_bone->getCore()->OrgPosition) * m_boneLocalPosition;
 
 	RigidBody::ConfigData data;
 	data.InitialTransform = initialTransform;
@@ -673,7 +673,7 @@ void MmdSkinnedMeshRigidBody::initialize(SkinnedMeshModel* ownerModel, PmxRigidB
 		data.KinematicObject = true;
 	}
 
-	m_rigidBody = RefPtr<RigidBody>::MakeRef();
+	m_rigidBody = RefPtr<RigidBody>::makeRef();
 	m_rigidBody->InitializeCore(collider, data, scale);
 	ownerModel->m_physicsWorld->AddPhysicsObject(m_rigidBody);
 }
@@ -779,7 +779,7 @@ void MmdSkinnedMeshRigidBody::UpdateAfterPhysics()
 				(m_offsetBodyToBone * matrix);
 
 #else
-			Matrix mat = Matrix::MakeTranslation(-m_bone->GetCore()->OrgPosition) * m_boneLocalPosition * matrix;
+			Matrix mat = Matrix::MakeTranslation(-m_bone->getCore()->OrgPosition) * m_boneLocalPosition * matrix;
 
 			m_bone->m_combinedMatrix = mat;
 #endif
@@ -819,7 +819,7 @@ void MmdSkinnedMeshRigidBody::UpdateAfterPhysics()
 			m_boneOffset *
 			m_bone->GetCombinedMatrix() *
 			m_ownerModel->GetWorldTransform();
-		Vector3 offset = t.GetPosition();
+		Vector3 offset = t.getPosition();
 
 		Matrix bodyMat = m_rigidBody->GetWorldTransform();
 		bodyMat.m41 = offset.x;
@@ -887,7 +887,7 @@ void MmdSkinnedMeshJoint::initialize(SkinnedMeshModel* ownerModel, PmxJointResou
 	Matrix frameInA = jointOffset * transInvA;
 	Matrix frameInB = jointOffset * transInvB;
 
-	m_joint = RefPtr<DofSpringJoint>::MakeRef();
+	m_joint = RefPtr<DofSpringJoint>::makeRef();
 	m_joint->initialize(bodyA->GetRigidBody(), bodyB->GetRigidBody(), frameInA, frameInB);
 
 	// SpringPositionStiffness.x

@@ -33,7 +33,7 @@ Vector4::Vector4(const Vector3& vec, float w_)
 }
 
 //------------------------------------------------------------------------------
-float Vector4::GetLength() const
+float Vector4::getLength() const
 {
 	return Asm::sqrt(x * x + y * y + z * z + w * w);
 }

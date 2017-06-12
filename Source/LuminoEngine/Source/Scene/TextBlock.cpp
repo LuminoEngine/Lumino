@@ -16,19 +16,19 @@ LN_NAMESPACE_SCENE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TextBlock2DComponent, VisualComponent);
 
 //------------------------------------------------------------------------------
-TextBlock2DComponentPtr TextBlock2DComponent::Create()
+TextBlock2DComponentPtr TextBlock2DComponent::create()
 {
-	auto ptr = TextBlock2DComponentPtr::MakeRef();
+	auto ptr = TextBlock2DComponentPtr::makeRef();
 	ptr->initialize();
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-TextBlock2DComponentPtr TextBlock2DComponent::Create(const StringRef& text)
+TextBlock2DComponentPtr TextBlock2DComponent::create(const StringRef& text)
 {
-	auto ptr = TextBlock2DComponentPtr::MakeRef();
+	auto ptr = TextBlock2DComponentPtr::makeRef();
 	ptr->initialize();
-	ptr->SetText(text);
+	ptr->setText(text);
 	return ptr;
 }
 
@@ -50,19 +50,19 @@ void TextBlock2DComponent::initialize()
 	VisualComponent::initialize();
 
 	//owner->GetRootNode()->AddChild(this);
-	SetAutoRemove(true);
+	setAutoRemove(true);
 
-	m_paragraph = RefPtr<detail::Paragraph>::MakeRef();
+	m_paragraph = RefPtr<detail::Paragraph>::makeRef();
 	m_paragraph->initialize();
 }
 
 //------------------------------------------------------------------------------
-void TextBlock2DComponent::SetText(const StringRef& text)
+void TextBlock2DComponent::setText(const StringRef& text)
 {
 	m_paragraph->ClearInlines();
-	auto run = RefPtr<detail::Run>::MakeRef();
+	auto run = RefPtr<detail::Run>::makeRef();
 	run->initialize();
-	run->SetText(text);
+	run->setText(text);
 	m_paragraph->AddInline(run);
 }
 

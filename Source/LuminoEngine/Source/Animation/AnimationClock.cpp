@@ -11,7 +11,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RefPtr<AnimationClock> AnimationClock::Create()
+RefPtr<AnimationClock> AnimationClock::create()
 {
 	return ln::NewObject<AnimationClock>();
 }
@@ -34,9 +34,9 @@ AnimationClock::AnimationClock()
 //}
 
 //------------------------------------------------------------------------------
-void AnimationClock::Start(float startValue, float targetValue, float duration, EasingMode easingMode, const Delegate<void(float)>& setCallback, const Delegate<void(void)>& endCallback)
+void AnimationClock::start(float startValue, float targetValue, float duration, EasingMode easingMode, const Delegate<void(float)>& setCallback, const Delegate<void(void)>& endCallback)
 {
-	auto timeline = FloatEasingAnimationTimeline::Create(targetValue, duration, easingMode);
+	auto timeline = FloatEasingAnimationTimeline::create(targetValue, duration, easingMode);
 	m_timelineInstance = detail::CreateTimelineInstance<float>(timeline, startValue, setCallback, endCallback);
 	AddManager();
 }

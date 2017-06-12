@@ -19,9 +19,9 @@ TEST_F(Test_Scene_SceneNode, Visible)
 		//int defaultCount = EngineDiag::GetVisualNodeDrawCount();
 		int defaultCount = Engine::GetWorld2D()->GetRenderingProfiler().GetLastFrameData()->nodeDrawCount;
 
-		auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
-		auto sprite1 = Sprite2DComponent::Create(tex);
-		auto sprite2 = Sprite2DComponent::Create(tex);
+		auto tex = Texture2D::create(LN_LOCALFILE("TestData/Sprite1.png"));
+		auto sprite1 = Sprite2DComponent::create(tex);
+		auto sprite2 = Sprite2DComponent::create(tex);
 
 		sprite1->SetVisible(false);
 
@@ -33,8 +33,8 @@ TEST_F(Test_Scene_SceneNode, Visible)
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_SceneNode, DepthTest)
 {
-	auto tex1 = Texture2D::Create(32, 32);
-	auto tex2 = Texture2D::Create(32, 32);
+	auto tex1 = Texture2D::create(32, 32);
+	auto tex2 = Texture2D::create(32, 32);
 	tex1->Clear(Color32::Red);
 	tex2->Clear(Color32::Blue);
 
@@ -49,8 +49,8 @@ TEST_F(Test_Scene_SceneNode, DepthTest)
 	}
 	// <Test> 深度テスト無効
 	{
-		auto s1 = Sprite3DComponent::Create(5, 5, tex1);
-		auto s2 = Sprite3DComponent::Create(5, 5, tex2);
+		auto s1 = Sprite3DComponent::create(5, 5, tex1);
+		auto s2 = Sprite3DComponent::create(5, 5, tex2);
 		s1->SetAngles(0, Math::PI / 4, 0);
 		s2->SetAngles(0, -Math::PI / 4, 0);
 		s2->SetDepthTestEnabled(false);
@@ -59,8 +59,8 @@ TEST_F(Test_Scene_SceneNode, DepthTest)
 	}
 	// <Test> 深度書き込み無効
 	{
-		auto s1 = Sprite3DComponent::Create(5, 5, tex1);
-		auto s2 = Sprite3DComponent::Create(5, 5, tex2);
+		auto s1 = Sprite3DComponent::create(5, 5, tex1);
+		auto s2 = Sprite3DComponent::create(5, 5, tex2);
 		s1->SetAngles(0, Math::PI / 4, 0);
 		s1->SetDepthWriteEnabled(false);
 		s2->SetAngles(0, -Math::PI / 4, 0);
@@ -74,9 +74,9 @@ TEST_F(Test_Scene_SceneNode, DepthTest)
 //TEST_F(Test_Scene_SceneNode, MaterialUtilities)
 //{
 //
-//	auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
-//	auto sprite1 = Sprite2DComponent::Create(tex);
-//	//auto sprite2 = Sprite2DComponent::Create(tex);
+//	auto tex = Texture2D::create(LN_LOCALFILE("TestData/Sprite1.png"));
+//	auto sprite1 = Sprite2DComponent::create(tex);
+//	//auto sprite2 = Sprite2DComponent::create(tex);
 //
 //	sprite1->SetOpacity(0.25f);
 //

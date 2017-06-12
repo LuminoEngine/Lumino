@@ -57,9 +57,9 @@ bool CollisionShape::IsTrigger() const
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PlaneCollisionShape, CollisionShape);
 	
 //------------------------------------------------------------------------------
-PlaneCollisionShapePtr PlaneCollisionShape::Create(const Vector3& direction)
+PlaneCollisionShapePtr PlaneCollisionShape::create(const Vector3& direction)
 {
-	auto ptr = RefPtr<PlaneCollisionShape>::MakeRef();
+	auto ptr = RefPtr<PlaneCollisionShape>::makeRef();
 	ptr->initialize(direction);
 	return ptr;
 }
@@ -86,17 +86,17 @@ void PlaneCollisionShape::initialize(const Vector3& direction)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(BoxCollisionShape, CollisionShape);
 	
 //------------------------------------------------------------------------------
-BoxCollisionShapePtr BoxCollisionShape::Create(const Vector3& size)
+BoxCollisionShapePtr BoxCollisionShape::create(const Vector3& size)
 {
-	auto ptr = RefPtr<BoxCollisionShape>::MakeRef();
+	auto ptr = RefPtr<BoxCollisionShape>::makeRef();
 	ptr->initialize(size);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-BoxCollisionShapePtr BoxCollisionShape::Create(float x, float y, float z)
+BoxCollisionShapePtr BoxCollisionShape::create(float x, float y, float z)
 {
-	return Create(Vector3(x, y, z));
+	return create(Vector3(x, y, z));
 }
 	
 //------------------------------------------------------------------------------
@@ -122,9 +122,9 @@ void BoxCollisionShape::initialize(const Vector3& size)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SphereCollisionShape, CollisionShape);
 	
 //------------------------------------------------------------------------------
-SphereCollisionShapePtr SphereCollisionShape::Create(float radius)
+SphereCollisionShapePtr SphereCollisionShape::create(float radius)
 {
-	auto ptr = RefPtr<SphereCollisionShape>::MakeRef();
+	auto ptr = RefPtr<SphereCollisionShape>::makeRef();
 	ptr->initialize(radius);
 	return ptr;
 }
@@ -151,9 +151,9 @@ void SphereCollisionShape::initialize(float radius)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(CapsuleCollisionShape, CollisionShape);
 
 //------------------------------------------------------------------------------
-CapsuleCollisionShapePtr CapsuleCollisionShape::Create(float radius, float height)
+CapsuleCollisionShapePtr CapsuleCollisionShape::create(float radius, float height)
 {
-	auto ptr = RefPtr<CapsuleCollisionShape>::MakeRef();
+	auto ptr = RefPtr<CapsuleCollisionShape>::makeRef();
 	ptr->initialize(radius, height);
 	return ptr;
 }
@@ -180,9 +180,9 @@ void CapsuleCollisionShape::initialize(float radius, float height)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(MeshCollisionShape, CollisionShape);
 
 //------------------------------------------------------------------------------
-MeshCollisionShapePtr MeshCollisionShape::Create(MeshResource* mesh)
+MeshCollisionShapePtr MeshCollisionShape::create(MeshResource* mesh)
 {
-	auto ptr = RefPtr<MeshCollisionShape>::MakeRef();
+	auto ptr = RefPtr<MeshCollisionShape>::makeRef();
 	ptr->initialize(mesh);
 	return ptr;
 }

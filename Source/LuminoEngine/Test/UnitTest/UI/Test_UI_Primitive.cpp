@@ -20,8 +20,8 @@ TEST_F(Test_UI_TextBlock, DefaultLayout)
 	*/
 
 	auto uiRoot = Engine::GetMainWindow();
-	auto textBlock1 = UITextBlock::Create();
-	textBlock1->SetText(_T("TextBlock"));
+	auto textBlock1 = UITextBlock::create();
+	textBlock1->setText(_T("TextBlock"));
 	uiRoot->AddChild(textBlock1);
 
 	Engine::Update();
@@ -50,7 +50,7 @@ TEST_F(Test_UI_Image, Basic)
 	// <Test> アルファブレンドは最初から有効
 	{
 		auto uiRoot = Engine::GetMainWindow();
-		auto image1 = UIImage::Create(LN_LOCALFILE("../Graphics/TestData/Sprite2.png"));
+		auto image1 = UIImage::create(LN_LOCALFILE("../Graphics/TestData/Sprite2.png"));
 		uiRoot->AddChild(image1);
 
 		Engine::Update();
