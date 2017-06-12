@@ -1091,8 +1091,8 @@ void ShapesRendererCore::PlotCornerBasePointsBezier(const Vector2& first, const 
 		float t = firstT + (step * i);
 		BasePoint pt;
 		pt.pos = Vector2(
-			Math::CubicBezier(first.x, cp2.x, cp3.x, last.x, t),
-			Math::CubicBezier(first.y, cp2.y, cp3.y, last.y, t));
+			Math::cubicBezier(first.x, cp2.x, cp3.x, last.x, t),
+			Math::cubicBezier(first.y, cp2.y, cp3.y, last.y, t));
 		pt.exDir = Vector2::Normalize(pt.pos - center);
 		pt.enabledAA = (0.0f < t && t < 1.0f);//true;
 		pt.exDirect = false;
@@ -1100,8 +1100,8 @@ void ShapesRendererCore::PlotCornerBasePointsBezier(const Vector2& first, const 
 	}
 	BasePoint pt;
 	pt.pos = Vector2(
-		Math::CubicBezier(first.x, cp2.x, cp3.x, last.x, lastT),
-		Math::CubicBezier(first.y, cp2.y, cp3.y, last.y, lastT));
+		Math::cubicBezier(first.x, cp2.x, cp3.x, last.x, lastT),
+		Math::cubicBezier(first.y, cp2.y, cp3.y, last.y, lastT));
 	pt.exDir = Vector2::Normalize(pt.pos - center);
 	pt.enabledAA = (0.0f < lastT && lastT < 1.0f);
 	pt.exDirect = false;

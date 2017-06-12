@@ -105,7 +105,7 @@ void MemoryStream::initialize(const void* buffer, size_t size, bool copy)
 }
 
 //------------------------------------------------------------------------------
-void* MemoryStream::GetBuffer(size_t index)
+void* MemoryStream::getBuffer(size_t index)
 {
 	byte_t* buf = NULL;
 	size_t size = 0;

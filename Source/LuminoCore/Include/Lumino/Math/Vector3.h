@@ -62,7 +62,7 @@ public:
 	/**
 		@brief		各要素に値を設定します。
 	*/
-	void Set(float x, float y, float z);
+	void set(float x, float y, float z);
 	
 	/**
 		@brief		このベクトルの X Y 要素を Vector2 として返します。
@@ -94,7 +94,7 @@ public:
 		@param[in]	maxVec	: 最大値
 	*/
 	LN_METHOD()
-	void Clamp(const Vector3& minVec, const Vector3& maxVec);
+	void clamp(const Vector3& minVec, const Vector3& maxVec);
 
 	/**
 		@brief		指定された行列を使用してこのベクトルを座標変換します。
@@ -106,7 +106,7 @@ public:
 	/**
 		@brief		要素のいずれかが NaN または Inf かを判別します。
 	*/
-	bool IsNaNOrInf() const;
+	bool isNaNOrInf() const;
 
 	/**
 		@brief		デバッグ用に文字列を標準出力します。
@@ -114,7 +114,7 @@ public:
 		@param[in]	stream	: 出力先ストリーム
 		@details	format が NULL の場合、書式は "%f, %f, %f\n" を使用します。
 	*/
-	void Print(const char* format = NULL, FILE* stream = NULL) const;
+	void print(const char* format = NULL, FILE* stream = NULL) const;
 	
 public:
 
@@ -255,7 +255,7 @@ public:
 		@return		補間結果のベクトル
 		@details	t は通常、0.0～1.0 を指定します。
 	*/
-	static Vector3 Lerp(const Vector3& start, const Vector3& end, float t);
+	static Vector3 lerp(const Vector3& start, const Vector3& end, float t);
 
 	/**
 		@brief		指定されたベクトルを使用して エルミートスプライン補間を実行します。
@@ -267,7 +267,7 @@ public:
 		@return		補間結果の値
 		@details	t は通常、0.0～1.0 を指定します。
 	*/
-	static Vector3 Hermite(const Vector3& v1, const Vector3& a1, const Vector3& v2, const Vector3& a2, float t);
+	static Vector3 hermite(const Vector3& v1, const Vector3& a1, const Vector3& v2, const Vector3& a2, float t);
 
 	/**
 		@brief		指定されたベクトルを使用して Catmull-Rom 補間を行います。
@@ -279,7 +279,7 @@ public:
 		@return		補間結果のベクトル
 		@details	t は通常、0.0～1.0 を指定します。
 	*/
-	static Vector3 CatmullRom(const Vector3& vec1, const Vector3& vec2, const Vector3& vec3, const Vector3& vec4, float t);
+	static Vector3 catmullRom(const Vector3& vec1, const Vector3& vec2, const Vector3& vec3, const Vector3& vec4, float t);
 	
 	/**
 		@brief		オブジェクト空間(3D空間)のベクトルをスクリーン空間(2D空間)のベクトルに変換する。
@@ -307,7 +307,7 @@ public:
 	*/
 	static Vector3 Unproject(const Vector3& point, const Matrix& worldViewProj, float x, float y, float width, float height, float minZ = 0.0f, float maxZ = 1.0f);
 
-	static bool NearEqual(const Vector3& value1, const Vector3& value2);
+	static bool nearEqual(const Vector3& value1, const Vector3& value2);
 
 public:
 

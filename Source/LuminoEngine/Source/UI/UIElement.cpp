@@ -668,7 +668,7 @@ void UIElement::Render(DrawingContext* g)
 {
 	if (m_visualParent != nullptr)
 	{
-		detail::BuiltinEffectData::Combine(m_visualParent->m_combinedBuiltinEffectData, m_builtinEffectData, &m_combinedBuiltinEffectData);
+		detail::BuiltinEffectData::combine(m_visualParent->m_combinedBuiltinEffectData, m_builtinEffectData, &m_combinedBuiltinEffectData);
 	}
 	else
 	{
@@ -676,7 +676,7 @@ void UIElement::Render(DrawingContext* g)
 	}
 
 	Matrix mat;
-	mat.Translate(m_finalGlobalRect.x, m_finalGlobalRect.y, 0);
+	mat.translate(m_finalGlobalRect.x, m_finalGlobalRect.y, 0);
 	g->SetTransform(mat);
 	g->SetBuiltinEffectData(m_combinedBuiltinEffectData);
 

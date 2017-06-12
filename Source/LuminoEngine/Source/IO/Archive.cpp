@@ -78,8 +78,8 @@ void Archive::open(const PathName& filePath, const String& key)
 
 	// このアーカイブファイルをディレクトリに見立てたときのパスを作る
 	// (絶対パスにして、拡張子を取り除く)
-	PathName fullPath = filePath.CanonicalizePath();
-	m_virtualDirectoryPath = fullPath.GetWithoutExtension();
+	PathName fullPath = filePath.canonicalizePath();
+	m_virtualDirectoryPath = fullPath.getWithoutExtension();
 
     // 拡張キーの初期化
 	memset(m_keyTable, 0, sizeof(m_keyTable));
@@ -134,7 +134,7 @@ void Archive::open(const PathName& filePath, const String& key)
 		String tmpName;
 		tmpName.convertFrom(nameBuf.getData(), nameBuf.getSize(), Encoding::GetUTF16Encoding());
 		PathName name(m_virtualDirectoryPath, tmpName);	// 絶対パスにする
-		name = name.CanonicalizePath();
+		name = name.canonicalizePath();
 			
 		// ここでのファイルポインタがデータ本体の位置
 		entry.Offset = ftell( m_stream );

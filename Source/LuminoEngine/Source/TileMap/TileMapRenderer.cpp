@@ -166,7 +166,7 @@ void TileMapRenderer::Draw(DrawList* context, TileMapModel* tileMap, const Rect&
 		}
 
 
-		//printf("%d %d %d %d \n", renderRange.GetLeft(), renderRange.GetTop(), renderRange.GetRight(), renderRange.GetBottom());
+		//printf("%d %d %d %d \n", renderRange.GetLeft(), renderRange.GetTop(), renderRange.getRight(), renderRange.GetBottom());
 		//printf("%d %d %d %d \n", clipd.left, clipd.top, clipd.right, clipd.bottom);
 
 		DrawLayer(layer, boundingRect, tileMap->GetTileSet(), clipd, priority);
@@ -274,19 +274,19 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const Rect& boundingRect, Tile
 				//float pb = (float)y + tileSize.Height;
 				float tl = ((float)srcRect.GetLeft()) * invSize.width + delta;
 				float tt = ((float)srcRect.getTop()) * invSize.height + delta;
-				float tr = ((float)srcRect.GetRight()) * invSize.width + delta;
+				float tr = ((float)srcRect.getRight()) * invSize.width + delta;
 				float tb = ((float)srcRect.GetBottom()) * invSize.height + delta;
 				//pos.Set(x * tileSize.Width, y * tileSize.Height, 0);
 				//size.Set(srcRect.Width, srcRect.Height);
 				//DrawTile(pos, size, texture, srcRect);
 				virtices[0].position = pos;
-				virtices[0].uv.Set(tl, tt);
+				virtices[0].uv.set(tl, tt);
 				virtices[1].position = pos + stepY;
-				virtices[1].uv.Set(tl, tb);
+				virtices[1].uv.set(tl, tb);
 				virtices[2].position = pos + stepX + stepY;
-				virtices[2].uv.Set(tr, tb);
+				virtices[2].uv.set(tr, tb);
 				virtices[3].position = pos + stepX;
-				virtices[3].uv.Set(tr, tt);
+				virtices[3].uv.set(tr, tt);
 				//plotCount += 4;
 
 				m_mesh->AddSquare(virtices);
@@ -310,10 +310,10 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const Rect& boundingRect, Tile
 LOOP_EXIT:
 
 	//printf("---\n");
-	//Vector3::Transform(vb[0].Position, m_viewProj).Print();
-	//Vector3::Transform(vb[1].Position, m_viewProj).Print();
-	//Vector3::Transform(vb[2].Position, m_viewProj).Print();
-	//Vector3::Transform(vb[3].Position, m_viewProj).Print();
+	//Vector3::Transform(vb[0].Position, m_viewProj).print();
+	//Vector3::Transform(vb[1].Position, m_viewProj).print();
+	//Vector3::Transform(vb[2].Position, m_viewProj).print();
+	//Vector3::Transform(vb[3].Position, m_viewProj).print();
 
 	//m_vertexBuffer->Unlock();
 

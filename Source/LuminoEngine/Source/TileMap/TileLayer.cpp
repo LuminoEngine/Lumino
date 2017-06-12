@@ -31,7 +31,7 @@ TileLayer::~TileLayer()
 //------------------------------------------------------------------------------
 void TileLayer::resize(int width, int height)
 {
-	m_size.Set(width, height);
+	m_size.set(width, height);
 	m_data.resize(width * height);
 }
 

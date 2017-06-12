@@ -88,7 +88,7 @@ void TaskScheduler::ExecuteThread()
 		}
 
 		// 実行。状態変化は内部で行う
-		task->Execute();
+		task->execute();
 		task->release();
 	}
 }

@@ -23,7 +23,7 @@ TEST_F(Test_Xml_XmlWriter, User)
 	writer.WriteStartElement(_T("ToolSettings"));
 	{
 		writer.WriteStartElement(_T("WorkingDirectory"));
-		writer.WriteString(_T("C:\\workspace"));
+		writer.writeString(_T("C:\\workspace"));
 		writer.WriteEndElement();
 
 		writer.WriteStartElement(_T("ProjectList"));
@@ -132,7 +132,7 @@ TEST_F(Test_Xml_XmlWriter, UnitTest)
 	// <Unit> WriteComment
 	{
 		StringWriter strWriter;
-		strWriter.SetNewLine(_T("\n"));
+		strWriter.setNewLine(_T("\n"));
 		XmlWriter xmlWriter(&strWriter);
 		xmlWriter.WriteStartElement(_T("test"));
 		xmlWriter.WriteComment(_T("comment1"));
@@ -161,7 +161,7 @@ TEST_F(Test_Xml_XmlWriter, SystemTest)
 	// <Test> XML 宣言と要素
 	{
 		XmlStringWriter writer;
-		writer.SetNewLine(_T("\n"));
+		writer.setNewLine(_T("\n"));
 		writer.WriteStartDocument();
 		writer.WriteStartElement(_T("EnvData"));
 		writer.WriteElementString(_T("ToolPath"), _T("path"));

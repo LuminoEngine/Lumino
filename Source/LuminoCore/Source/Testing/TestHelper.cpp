@@ -8,7 +8,7 @@ LN_NAMESPACE_BEGIN
 String TestHelper::getFilePath(const char* baseSourceFilePath, const char* fileName)
 {
 	PathName base(baseSourceFilePath);
-	PathName path(base.GetParent(), fileName);
+	PathName path(base.getParent(), fileName);
 	return String(path.c_str());
 }
 
@@ -16,14 +16,14 @@ String TestHelper::getFilePath(const char* baseSourceFilePath, const char* fileN
 PathName TestHelper::GetDirPath(const char* baseFilePath)
 {
 	PathName base(baseFilePath);
-	return base.GetParent();
+	return base.getParent();
 }
 
 //------------------------------------------------------------------------------
 PathNameA TestHelper::GetFilePathA(const char* baseFilePath, const char* fileName)
 {
 	PathNameA base(baseFilePath);
-	PathNameA path(base.GetParent(), fileName);
+	PathNameA path(base.getParent(), fileName);
 	return path;
 }
 
@@ -31,7 +31,7 @@ PathNameA TestHelper::GetFilePathA(const char* baseFilePath, const char* fileNam
 PathNameW TestHelper::GetFilePathW(const char* baseFilePath, const wchar_t* fileName)
 {
 	PathNameW base(baseFilePath);
-	PathNameW path(base.GetParent(), fileName);
+	PathNameW path(base.getParent(), fileName);
 	return path;
 }
 

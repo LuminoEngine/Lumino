@@ -119,15 +119,15 @@ Vector3 Transform::getFront() const
 }
 
 //------------------------------------------------------------------------------
-void Transform::Translate(const Vector3& translation)
+void Transform::translate(const Vector3& translation)
 {
 	position = position.get() + translation;
 }
 
 //------------------------------------------------------------------------------
-void Transform::Translate(float x, float y, float z)
+void Transform::translate(float x, float y, float z)
 {
-	Translate(Vector3(x, y, z));
+	translate(Vector3(x, y, z));
 }
 
 //------------------------------------------------------------------------------

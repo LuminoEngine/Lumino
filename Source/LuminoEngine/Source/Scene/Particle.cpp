@@ -46,7 +46,7 @@ void ParticleData::MakeTrailPointData(const ParticleData& src, float currentTime
 
 	rotation = src.rotation;
 	color = src.color;
-	colorVelocity.Set(0, 0, 0, -(color.a / trailTime));	// 現在の a 値から、trailTime かけて 0 にしたい
+	colorVelocity.set(0, 0, 0, -(color.a / trailTime));	// 現在の a 値から、trailTime かけて 0 にしたい
 
 	spawnTime = currentTime;
 	endTime = currentTime + trailTime;
@@ -412,7 +412,7 @@ void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double
 			{
 				float pre = data->color.a;
 
-				data->color.a = Math::Clamp01(data->color.a + (data->colorVelocity.a * deltaTime));
+				data->color.a = Math::clamp01(data->color.a + (data->colorVelocity.a * deltaTime));
 			}
 			//data->color.a = 0.1;
 		}
@@ -464,7 +464,7 @@ void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double
 			data->size += data->sizeVelocity * deltaTime;
 
 			data->currentDirection = Vector3::Normalize(data->position - prevPos);
-			if (data->currentDirection.IsNaNOrInf()) data->currentDirection = Vector3::SafeNormalize(data->positionVelocity, Vector3::UnitY);
+			if (data->currentDirection.isNaNOrInf()) data->currentDirection = Vector3::SafeNormalize(data->positionVelocity, Vector3::UnitY);
 			
 
 			if (time >= data->endTime)
@@ -491,8 +491,8 @@ void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double
 			float a = 1.0f;
 
 			float lifeSpan = data->endTime - data->spawnTime;
-			a *= Math::Clamp01(localTime / (lifeSpan * m_fadeInRatio));
-			a *= Math::Clamp01((data->endTime - time) / (lifeSpan * m_fadeOutRatio));
+			a *= Math::clamp01(localTime / (lifeSpan * m_fadeInRatio));
+			a *= Math::clamp01((data->endTime - time) / (lifeSpan * m_fadeOutRatio));
 			data->color.a = a;
 		}
 
@@ -524,11 +524,11 @@ float SpriteParticleModel::MakeRandom(detail::ParticleData* data, float minValue
 {
 	if (source == ParticleRandomSource::ByBaseValue)
 	{
-		return Math::Lerp(minValue, maxValue, data->ramdomBaseValue);
+		return Math::lerp(minValue, maxValue, data->ramdomBaseValue);
 	}
 	else if (source == ParticleRandomSource::ByBaseValueInverse)
 	{
-		return Math::Lerp(minValue, maxValue, data->ramdomBaseValue);
+		return Math::lerp(minValue, maxValue, data->ramdomBaseValue);
 	}
 	else
 	{
@@ -606,7 +606,7 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 				float hs = data.size / 2;
 
 				if (m_particleDirection == ParticleDirectionType::MovementDirection &&
-					!data.currentDirection.IsNaNOrInf() &&
+					!data.currentDirection.isNaNOrInf() &&
 					data.currentDirection != Vector3::Zero)
 				{
 					// 進行方向に対する右方向
@@ -636,10 +636,10 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 				else
 				{
 					// Z- 正面
-					vb[(iData * 4) + 0].position.Set(-hs, hs, 0.0f);	// 左上
-					vb[(iData * 4) + 1].position.Set(-hs, -hs, 0.0f);	// 左下
-					vb[(iData * 4) + 2].position.Set(hs, hs, 0.0f);		// 右上
-					vb[(iData * 4) + 3].position.Set(hs, -hs, 0.0f);	// 右下
+					vb[(iData * 4) + 0].position.set(-hs, hs, 0.0f);	// 左上
+					vb[(iData * 4) + 1].position.set(-hs, -hs, 0.0f);	// 左下
+					vb[(iData * 4) + 2].position.set(hs, hs, 0.0f);		// 右上
+					vb[(iData * 4) + 3].position.set(hs, -hs, 0.0f);	// 右下
 					// 視点へ向ける
 					vb[(iData * 4) + 0].position.TransformCoord(transform);
 					vb[(iData * 4) + 1].position.TransformCoord(transform);
@@ -652,10 +652,10 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 					vb[(iData * 4) + 3].position += pos;
 				}
 
-				vb[(iData * 4) + 0].uv.Set(0, 0);
-				vb[(iData * 4) + 1].uv.Set(0, 1);
-				vb[(iData * 4) + 2].uv.Set(1, 0);
-				vb[(iData * 4) + 3].uv.Set(1, 1);
+				vb[(iData * 4) + 0].uv.set(0, 0);
+				vb[(iData * 4) + 1].uv.set(0, 1);
+				vb[(iData * 4) + 2].uv.set(1, 0);
+				vb[(iData * 4) + 3].uv.set(1, 1);
 
 				vb[(iData * 4) + 0].color = data.color;
 				vb[(iData * 4) + 1].color = data.color;

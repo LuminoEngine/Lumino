@@ -110,7 +110,7 @@ void CppLexer::PollingToken(Token* token)
 	else if (m_seqPPDirective == PPDirectiveSeq::LineHead)
 	{
 		if (token->GetTokenGroup() == TokenGroup::Operator &&
-			token->GetTokenType() == TT_CppOP_Sharp)
+			token->getTokenType() == TT_CppOP_Sharp)
 		{
 			m_seqPPDirective = PPDirectiveSeq::FoundSharp;	// "#" を見つけた
 		}

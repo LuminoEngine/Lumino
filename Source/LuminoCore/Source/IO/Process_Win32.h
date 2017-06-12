@@ -68,9 +68,9 @@ public:
 	~ProcessImpl();
 
 	void start(const ProcessStartInfo& startInfo, ProcessStartResult* outResult);
-	bool WaitForExit(int timeoutMSec);
-	ProcessStatus GetState();
-	int GetExitCode();
+	bool waitForExit(int timeoutMSec);
+	ProcessStatus getState();
+	int getExitCode();
 	void TryGetExitCode();
 	void Dispose();
 
@@ -260,7 +260,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 }
 
 //------------------------------------------------------------------------------
-bool ProcessImpl::WaitForExit(int timeoutMSec)
+bool ProcessImpl::waitForExit(int timeoutMSec)
 {
 	if (m_processInfo.hProcess != NULL)
 	{
@@ -290,7 +290,7 @@ bool ProcessImpl::WaitForExit(int timeoutMSec)
 }
 
 //------------------------------------------------------------------------------
-ProcessStatus ProcessImpl::GetState()
+ProcessStatus ProcessImpl::getState()
 {
 	if (::WaitForSingleObject(m_processInfo.hProcess, 0) == WAIT_OBJECT_0) {
 		return ProcessStatus::Running;
@@ -300,7 +300,7 @@ ProcessStatus ProcessImpl::GetState()
 }
 
 //------------------------------------------------------------------------------
-int ProcessImpl::GetExitCode()
+int ProcessImpl::getExitCode()
 {
 	TryGetExitCode();
 	return m_exitCode;

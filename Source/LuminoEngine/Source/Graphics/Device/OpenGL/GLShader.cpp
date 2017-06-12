@@ -589,42 +589,42 @@ void GLShader::initialize(GLGraphicsDevice* device, const void* code_, size_t co
 		LN_THROW(index >= 0, InvalidFormatException);
 		StringReader reader(String::fromNativeCharString(code + 22, index - 22));
 		tr::JsonReader2 json(&reader);
-		json.ReadAsStartObject();
+		json.readAsStartObject();
 
 		// vertexShaders
-		if (json.ReadAsPropertyName() == _T("vertexShaders"))
+		if (json.readAsPropertyName() == _T("vertexShaders"))
 		{
-			json.ReadAsStartArray();
-			while (json.read() && json.GetTokenType() != tr::JsonToken::EndArray)
+			json.readAsStartArray();
+			while (json.read() && json.getTokenType() != tr::JsonToken::EndArray)
 			{
 				String entry = json.getValue();
 				m_glVertexShaderEntryMap[entry] = CompileShader(code, codeByteCount, entry.toStringA().c_str(), GL_VERTEX_SHADER);
 			}
 		}
 		// pixelShaders
-		if (json.ReadAsPropertyName() == _T("pixelShaders"))
+		if (json.readAsPropertyName() == _T("pixelShaders"))
 		{
-			json.ReadAsStartArray();
-			while (json.read() && json.GetTokenType() != tr::JsonToken::EndArray)
+			json.readAsStartArray();
+			while (json.read() && json.getTokenType() != tr::JsonToken::EndArray)
 			{
 				String entry = json.getValue();
 				m_glPixelShaderEntryMap[entry] = CompileShader(code, codeByteCount, entry.toStringA().c_str(), GL_FRAGMENT_SHADER);
 			}
 		}
 		// techniques
-		if (json.ReadAsPropertyName() == _T("techniques"))
+		if (json.readAsPropertyName() == _T("techniques"))
 		{
-			json.ReadAsStartArray();
-			while (json.read() && json.GetTokenType() != tr::JsonToken::EndArray)
+			json.readAsStartArray();
+			while (json.read() && json.getTokenType() != tr::JsonToken::EndArray)
 			{
 				m_techniques.add(GLShaderTechnique::Deserialize(this, &json));
 			}
 		}
 		// parameters
-		if (json.ReadAsPropertyName() == _T("parameters"))
+		if (json.readAsPropertyName() == _T("parameters"))
 		{
-			json.ReadAsStartArray();
-			while (json.read() && json.GetTokenType() != tr::JsonToken::EndArray)
+			json.readAsStartArray();
+			while (json.read() && json.getTokenType() != tr::JsonToken::EndArray)
 			{
 				bool overwrited = false;	//TODO: いらないかも
 				GLShaderVariable* v = GLShaderVariable::Deserialize(this, &json, &overwrited);
@@ -635,7 +635,7 @@ void GLShader::initialize(GLGraphicsDevice* device, const void* code_, size_t co
 			}
 		}
 
-		json.ReadAsEndObject();
+		json.readAsEndObject();
 	}
 	else
 	{
@@ -784,7 +784,7 @@ GLShaderVariable* GLShaderVariable::Deserialize(GLShader* ownerShader, tr::JsonR
 {
 	String name, semantic/*, samplerName*/;
 	bool shared;
-	if (json->ReadAsPropertyName() == _T("name")) name = json->ReadAsString();
+	if (json->readAsPropertyName() == _T("name")) name = json->readAsString();
 
 	GLShaderVariable* var = ownerShader->FindShaderVariable(name);
 	if (var == nullptr)
@@ -802,20 +802,20 @@ GLShaderVariable* GLShaderVariable::Deserialize(GLShader* ownerShader, tr::JsonR
 
 	while (json->read())
 	{
-		if (json->GetTokenType() == tr::JsonToken::EndObject) break;
-		if (json->GetTokenType() == tr::JsonToken::PropertyName)
+		if (json->getTokenType() == tr::JsonToken::EndObject) break;
+		if (json->getTokenType() == tr::JsonToken::PropertyName)
 		{
 			const String& prop = json->getValue();
-			if (prop == _T("semantic")) var->SetSemanticName(json->ReadAsString());
+			if (prop == _T("semantic")) var->SetSemanticName(json->readAsString());
 			//else if (prop == _T("samplerName")) samplerName = json->ReadAsString();
-			else if (prop == _T("shared")) shared = json->ReadAsBool();
+			else if (prop == _T("shared")) shared = json->readAsBool();
 			else if (prop == _T("samplerStatus"))
 			{
-				json->ReadAsStartObject();
-				while (json->read() && json->GetTokenType() != tr::JsonToken::EndObject)
+				json->readAsStartObject();
+				while (json->read() && json->getTokenType() != tr::JsonToken::EndObject)
 				{
 					String stateName = json->getValue();
-					String stateValue = json->ReadAsString();
+					String stateValue = json->readAsString();
 					//if (json->ReadAsPropertyName() == _T("stateName")) stateName = json->ReadAsString();
 					//if (json->ReadAsPropertyName() == _T("value")) stateValue = json->ReadAsString();
 
@@ -829,8 +829,8 @@ GLShaderVariable* GLShaderVariable::Deserialize(GLShader* ownerShader, tr::JsonR
 			}
 			else if (prop == _T("annotations"))
 			{
-				json->ReadAsStartArray();
-				while (json->read() && json->GetTokenType() != tr::JsonToken::EndArray)
+				json->readAsStartArray();
+				while (json->read() && json->getTokenType() != tr::JsonToken::EndArray)
 				{
 					var->m_annotations.add(GLShaderAnnotation::Deserialize(json));
 				}
@@ -884,7 +884,7 @@ void GLShaderVariable::Apply(int location, int textureStageIndex)
 	switch (m_desc.Type)
 	{
 	case ShaderVariableType_Bool:
-		glUniform1i(location, m_value.GetBool());
+		glUniform1i(location, m_value.getBool());
 		LN_FAIL_CHECK_GLERROR() return;
 		break;
 	case ShaderVariableType_BoolArray:
@@ -893,7 +893,7 @@ void GLShaderVariable::Apply(int location, int textureStageIndex)
 		const bool* end = begin + m_desc.Elements;
 
 		std::for_each(begin, end, [&tempWriter](bool v) { GLint i = (v) ? 1 : 0; tempWriter->write(&i, sizeof(GLint)); });
-		glUniform1iv(location, m_desc.Elements, (const GLint*)tempBuffer->GetBuffer());
+		glUniform1iv(location, m_desc.Elements, (const GLint*)tempBuffer->getBuffer());
 		LN_FAIL_CHECK_GLERROR() return;
 		break;
 	}
@@ -902,7 +902,7 @@ void GLShaderVariable::Apply(int location, int textureStageIndex)
 		LN_FAIL_CHECK_GLERROR() return;
 		break;
 	case ShaderVariableType_Float:
-		glUniform1f(location, m_value.GetFloat());
+		glUniform1f(location, m_value.getFloat());
 		LN_FAIL_CHECK_GLERROR() return;
 		break;
 	case ShaderVariableType_Vector:
@@ -926,13 +926,13 @@ void GLShaderVariable::Apply(int location, int textureStageIndex)
 		if (m_desc.Columns == 2)
 		{
 			std::for_each(begin, end, [&tempWriter](const Vector4& v) { tempWriter->write(&v, sizeof(float) * 2); });
-			glUniform2fv(location, m_desc.Elements, (const GLfloat*)tempBuffer->GetBuffer());
+			glUniform2fv(location, m_desc.Elements, (const GLfloat*)tempBuffer->getBuffer());
 			LN_FAIL_CHECK_GLERROR() return;
 		}
 		else if (m_desc.Columns == 3)
 		{
 			std::for_each(begin, end, [&tempWriter](const Vector4& v) { tempWriter->write(&v, sizeof(float) * 3); });
-			glUniform3fv(location, m_desc.Elements, (const GLfloat*)tempBuffer->GetBuffer());
+			glUniform3fv(location, m_desc.Elements, (const GLfloat*)tempBuffer->getBuffer());
 			LN_FAIL_CHECK_GLERROR() return;
 		}
 		else if (m_desc.Columns == 4)
@@ -1086,10 +1086,10 @@ GLShaderAnnotation* GLShaderAnnotation::Deserialize(tr::JsonReader2* json)
 {
 	auto anno = RefPtr<GLShaderAnnotation>::makeRef();
 	String type, name, value;
-	if (json->ReadAsPropertyName() == _T("type")) type = json->ReadAsString();
-	if (json->ReadAsPropertyName() == _T("name")) name = json->ReadAsString();
-	if (json->ReadAsPropertyName() == _T("value")) value = json->ReadAsString();
-	json->ReadAsEndObject();
+	if (json->readAsPropertyName() == _T("type")) type = json->readAsString();
+	if (json->readAsPropertyName() == _T("name")) name = json->readAsString();
+	if (json->readAsPropertyName() == _T("value")) value = json->readAsString();
+	json->readAsEndObject();
 	anno->initialize(type, name, value);
 	return anno.detachMove();
 }
@@ -1118,7 +1118,7 @@ void GLShaderAnnotation::initialize(const String& type, const String& name, cons
 	{
 		desc.Type = ShaderVariableType_Bool;
 		ShaderVariableBase::initialize(desc, name, String::getEmpty());
-		ShaderVariableBase::SetBool(value[0] == 't');	// "true"?
+		ShaderVariableBase::setBool(value[0] == 't');	// "true"?
 	}
 	else if (type.indexOf(_T("int")) == 0)
 	{
@@ -1138,7 +1138,7 @@ void GLShaderAnnotation::initialize(const String& type, const String& name, cons
 		{
 			desc.Type = ShaderVariableType_Float;
 			ShaderVariableBase::initialize(desc, name, String::getEmpty());
-			ShaderVariableBase::SetFloat((float)StringTraits::toDouble(value.c_str(), value.getLength()));
+			ShaderVariableBase::setFloat((float)StringTraits::toDouble(value.c_str(), value.getLength()));
 		}
 		else if (type.getLength() == 6)
 		{
@@ -1172,14 +1172,14 @@ void GLShaderAnnotation::initialize(const String& type, const String& name, cons
 GLShaderTechnique* GLShaderTechnique::Deserialize(GLShader* ownerShader, tr::JsonReader2* json)
 {
 	String name;
-	if (json->ReadAsPropertyName() == _T("name")) name = json->ReadAsString();
+	if (json->readAsPropertyName() == _T("name")) name = json->readAsString();
 	auto tech = RefPtr<GLShaderTechnique>::makeRef();
 	tech->initialize(ownerShader, name);
 
-	if (json->ReadAsPropertyName() == _T("passes"))
+	if (json->readAsPropertyName() == _T("passes"))
 	{
-		json->ReadAsStartArray();
-		while (json->read() && json->GetTokenType() != tr::JsonToken::EndArray)
+		json->readAsStartArray();
+		while (json->read() && json->getTokenType() != tr::JsonToken::EndArray)
 		{
 			tech->m_passes.add(GLShaderPass::Deserialize(ownerShader, json));
 		}
@@ -1187,13 +1187,13 @@ GLShaderTechnique* GLShaderTechnique::Deserialize(GLShader* ownerShader, tr::Jso
 
 	while (json->read())
 	{
-		if (json->GetTokenType() == tr::JsonToken::EndObject) break;
-		if (json->GetTokenType() == tr::JsonToken::PropertyName)
+		if (json->getTokenType() == tr::JsonToken::EndObject) break;
+		if (json->getTokenType() == tr::JsonToken::PropertyName)
 		{
-			if (json->ReadAsPropertyName() == _T("annotations"))
+			if (json->readAsPropertyName() == _T("annotations"))
 			{
-				json->ReadAsStartArray();
-				while (json->read() && json->GetTokenType() != tr::JsonToken::EndArray)
+				json->readAsStartArray();
+				while (json->read() && json->getTokenType() != tr::JsonToken::EndArray)
 				{
 					tech->m_annotations.add(GLShaderAnnotation::Deserialize(json));
 				}
@@ -1245,29 +1245,29 @@ GLShaderPass* GLShaderPass::Deserialize(GLShader* ownerShader, tr::JsonReader2* 
 	auto pass = RefPtr<GLShaderPass>::makeRef();
 	String name, vsName, psName;
 
-	if (json->ReadAsPropertyName() == _T("name")) name = json->ReadAsString();
-	if (json->ReadAsPropertyName() == _T("vertexShader")) vsName = json->ReadAsString();
-	if (json->ReadAsPropertyName() == _T("pixelShader")) psName = json->ReadAsString();
+	if (json->readAsPropertyName() == _T("name")) name = json->readAsString();
+	if (json->readAsPropertyName() == _T("vertexShader")) vsName = json->readAsString();
+	if (json->readAsPropertyName() == _T("pixelShader")) psName = json->readAsString();
 
 	pass->initialize(ownerShader, name, vsName, psName);
 
 	while (json->read())
 	{
-		if (json->GetTokenType() == tr::JsonToken::EndObject) break;
-		if (json->GetTokenType() == tr::JsonToken::PropertyName)
+		if (json->getTokenType() == tr::JsonToken::EndObject) break;
+		if (json->getTokenType() == tr::JsonToken::PropertyName)
 		{
 			if (json->getValue() == _T("status"))
 			{
-				json->ReadAsStartArray();
-				while (json->read() && json->GetTokenType() != tr::JsonToken::EndArray)
+				json->readAsStartArray();
+				while (json->read() && json->getTokenType() != tr::JsonToken::EndArray)
 				{
 					// TODO:
 				}
 			}
-			else if (json->ReadAsPropertyName() == _T("annotations"))
+			else if (json->readAsPropertyName() == _T("annotations"))
 			{
-				json->ReadAsStartArray();
-				while (json->read() && json->GetTokenType() != tr::JsonToken::EndArray)
+				json->readAsStartArray();
+				while (json->read() && json->getTokenType() != tr::JsonToken::EndArray)
 				{
 					pass->m_annotations.add(GLShaderAnnotation::Deserialize(json));
 				}
@@ -1305,7 +1305,7 @@ void GLShaderPass::initialize(GLShader* ownerShader, const String& name, GLuint 
 	m_name = name;
 	if (LinkShader(vertShader, fragShader, m_ownerShader->GetDiag()))
 	{
-		Build();
+		build();
 	}
 }
 
@@ -1399,7 +1399,7 @@ bool GLShaderPass::LinkShader(GLuint vertShader, GLuint fragShader, ShaderDiag* 
 }
 
 //------------------------------------------------------------------------------
-void GLShaderPass::Build()
+void GLShaderPass::build()
 {
 	int textureVarCount = 0;
 

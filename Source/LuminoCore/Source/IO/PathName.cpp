@@ -40,10 +40,10 @@ void GenericPathName<TChar>::assign(const wchar_t* path, int length)
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-void GenericPathName<TChar>::AssignUnderBasePath(const PathNameT& basePath, const char* relativePath, int len)
+void GenericPathName<TChar>::assignUnderBasePath(const PathNameT& basePath, const char* relativePath, int len)
 {
 	// フルパスの場合はそのまま割り当てる
-	if (PathTraits::IsAbsolutePath(relativePath, len))
+	if (PathTraits::isAbsolutePath(relativePath, len))
 	{
 		m_path.assignCStr(relativePath, len);
 	}
@@ -52,7 +52,7 @@ void GenericPathName<TChar>::AssignUnderBasePath(const PathNameT& basePath, cons
 	{
 		m_path = basePath.m_path;
 		// 末尾にセパレータがなければ付加する
-		if (!PathTraits::EndWithSeparator(m_path.c_str(), m_path.getLength())) {
+		if (!PathTraits::endWithSeparator(m_path.c_str(), m_path.getLength())) {
 			m_path += Separator;
 		}
 
@@ -69,10 +69,10 @@ void GenericPathName<TChar>::AssignUnderBasePath(const PathNameT& basePath, cons
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-void GenericPathName<TChar>::AssignUnderBasePath(const PathNameT& basePath, const wchar_t* relativePath, int len)
+void GenericPathName<TChar>::assignUnderBasePath(const PathNameT& basePath, const wchar_t* relativePath, int len)
 {
 	// フルパスの場合はそのまま割り当てる
-	if (PathTraits::IsAbsolutePath(relativePath, len))
+	if (PathTraits::isAbsolutePath(relativePath, len))
 	{
 		m_path.assignCStr(relativePath, len);
 	}
@@ -82,7 +82,7 @@ void GenericPathName<TChar>::AssignUnderBasePath(const PathNameT& basePath, cons
 		m_path = basePath.m_path;
 		//if ((*m_path.rbegin()) != Separator) {	// 末尾セパレータ
 		// 末尾がセパレータでなければ付加する
-		if (!PathTraits::EndWithSeparator(m_path.c_str(), m_path.getLength())) {
+		if (!PathTraits::endWithSeparator(m_path.c_str(), m_path.getLength())) {
 			m_path += Separator;
 		}
 
@@ -101,11 +101,11 @@ void GenericPathName<TChar>::AssignUnderBasePath(const PathNameT& basePath, cons
 template<typename TChar>
 void GenericPathName<TChar>::append(const TChar* path)
 {
-	if (PathTraits::IsAbsolutePath(path)) {
+	if (PathTraits::isAbsolutePath(path)) {
 		m_path = path;
 	}
 	else {
-		if (m_path.getLength() > 0 && !PathTraits::EndWithSeparator(m_path.c_str(), m_path.getLength()))/*(*m_path.rbegin()) != Separator)*/ {	// 末尾セパレータ
+		if (m_path.getLength() > 0 && !PathTraits::endWithSeparator(m_path.c_str(), m_path.getLength()))/*(*m_path.rbegin()) != Separator)*/ {	// 末尾セパレータ
 			m_path += Separator;
 		}
 		m_path += path;
@@ -114,19 +114,19 @@ void GenericPathName<TChar>::append(const TChar* path)
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericPathName<TChar> GenericPathName<TChar>::GetFileNameWithoutExtension() const
+GenericPathName<TChar> GenericPathName<TChar>::getFileNameWithoutExtension() const
 {
 	TChar path[LN_MAX_PATH];
-	PathTraits::GetFileNameWithoutExtension(m_path.c_str(), path);
+	PathTraits::getFileNameWithoutExtension(m_path.c_str(), path);
 	return GenericPathName<TChar>(path);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericStringRef<TChar> GenericPathName<TChar>::GetExtension(bool withDot) const LN_NOEXCEPT
+GenericStringRef<TChar> GenericPathName<TChar>::getExtension(bool withDot) const LN_NOEXCEPT
 {
 	StringRefT ref;
-	PathTraits::GetExtension(m_path.c_str(), withDot, &ref);
+	PathTraits::getExtension(m_path.c_str(), withDot, &ref);
 	return ref;
 }
 
@@ -157,10 +157,10 @@ GenericString<TCHAR> GenericPathName<wchar_t>::toString() const
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-const GenericString<TChar> GenericPathName<TChar>::GetStrEndSeparator() const
+const GenericString<TChar> GenericPathName<TChar>::getStrEndSeparator() const
 {
 	GenericStringT newStr = m_path;
-	if (!newStr.isEmpty() && !PathTraits::EndWithSeparator(newStr.c_str(), newStr.getLength())/*(*newStr.rbegin()) != Separator*/) {	// 末尾セパレータ
+	if (!newStr.isEmpty() && !PathTraits::endWithSeparator(newStr.c_str(), newStr.getLength())/*(*newStr.rbegin()) != Separator*/) {	// 末尾セパレータ
 		newStr += Separator;
 	}
 	return newStr;
@@ -168,7 +168,7 @@ const GenericString<TChar> GenericPathName<TChar>::GetStrEndSeparator() const
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericPathName<TChar> GenericPathName<TChar>::GetWithoutExtension() const
+GenericPathName<TChar> GenericPathName<TChar>::getWithoutExtension() const
 {
 	CaseSensitivity cs = FileSystem::getFileSystemCaseSensitivity();
 
@@ -194,7 +194,7 @@ GenericPathName<TChar> GenericPathName<TChar>::GetWithoutExtension() const
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericPathName<TChar> GenericPathName<TChar>::ChangeExtension(const TChar* newExt) const
+GenericPathName<TChar> GenericPathName<TChar>::changeExtension(const TChar* newExt) const
 {
 	GenericString<TChar> newPath;
 	for (int i = m_path.getLength() - 1; i >= 0; --i)
@@ -204,7 +204,7 @@ GenericPathName<TChar> GenericPathName<TChar>::ChangeExtension(const TChar* newE
 			newPath = m_path.mid(0, i);
 			break;
 		}
-		if (PathTraits::IsSeparatorChar(ch) || PathTraits::IsVolumeSeparatorChar(ch)) { break; }
+		if (PathTraits::isSeparatorChar(ch) || PathTraits::isVolumeSeparatorChar(ch)) { break; }
 	}
 
 	// . が無かった場合
@@ -223,28 +223,28 @@ GenericPathName<TChar> GenericPathName<TChar>::ChangeExtension(const TChar* newE
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-bool GenericPathName<TChar>::IsAbsolute() const
+bool GenericPathName<TChar>::isAbsolute() const
 {
-	return PathTraits::IsAbsolutePath(m_path.c_str());
+	return PathTraits::isAbsolutePath(m_path.c_str());
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-bool GenericPathName<TChar>::IsRoot() const
+bool GenericPathName<TChar>::isRoot() const
 {
-	return PathTraits::IsRootPath(m_path.c_str());
+	return PathTraits::isRootPath(m_path.c_str());
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-bool GenericPathName<TChar>::IsDirectory() const
+bool GenericPathName<TChar>::isDirectory() const
 {
 	return FileSystem::existsDirectory(m_path.c_str());
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-bool GenericPathName<TChar>::CheckExt(const TChar* ext) const
+bool GenericPathName<TChar>::checkExt(const TChar* ext) const
 {
 	// TODO: 大文字小文字の区別をする
 	return StringTraits::endsWith(m_path.c_str(), m_path.getLength(), ext, -1, CaseSensitivity::CaseInsensitive);
@@ -252,7 +252,7 @@ bool GenericPathName<TChar>::CheckExt(const TChar* ext) const
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericPathName<TChar> GenericPathName<TChar>::GetParent() const
+GenericPathName<TChar> GenericPathName<TChar>::getParent() const
 {
 	/* 参考：他のライブラリの、空文字やセパレータが無いなどで親ディレクトリが取れない時の動作
 		- Qt (QFileInfo::dir())		… "." を返す
@@ -262,22 +262,22 @@ GenericPathName<TChar> GenericPathName<TChar>::GetParent() const
 		- Java (os.nio.Paths)		… null を返す
 		- C# (Path, Uri)			… "" を返す (入力が "" だった場合は例外)
 	*/
-	return GenericPathName(PathTraits::GetDirectoryPath(m_path.c_str()).c_str());
+	return GenericPathName(PathTraits::getDirectoryPath(m_path.c_str()).c_str());
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericPathName<TChar> GenericPathName<TChar>::CanonicalizePath() const
+GenericPathName<TChar> GenericPathName<TChar>::canonicalizePath() const
 {
 	TChar tmpPath[LN_MAX_PATH + 1];
 	memset(tmpPath, 0, sizeof(tmpPath));
-	PathTraits::CanonicalizePath(m_path.c_str(), tmpPath);
+	PathTraits::canonicalizePath(m_path.c_str(), tmpPath);
 	return GenericPathName<TChar>(tmpPath);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-std::string GenericPathName<TChar>::ToLocalChar() const
+std::string GenericPathName<TChar>::toLocalChar() const
 {
 	GenericString<char> tmp;
 	tmp.assignCStr(m_path.c_str());
@@ -300,20 +300,20 @@ bool GenericPathName<TChar>::existsDirectory() const
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-bool GenericPathName<TChar>::ExistsFileInDirectory(const StringRefT& relPath) const LN_NOEXCEPT
+bool GenericPathName<TChar>::existsFileInDirectory(const StringRefT& relPath) const LN_NOEXCEPT
 {
 	TChar path[LN_MAX_PATH];
-	PathTraits::Combine(m_path.c_str(), m_path.getLength(), relPath.getBegin(), relPath.getLength(), path, LN_MAX_PATH);
+	PathTraits::combine(m_path.c_str(), m_path.getLength(), relPath.getBegin(), relPath.getLength(), path, LN_MAX_PATH);
 	return FileSystem::existsFile(path);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericPathName<TChar> GenericPathName<TChar>::MakeRelative(const GenericPathName<TChar>& target) const
+GenericPathName<TChar> GenericPathName<TChar>::makeRelative(const GenericPathName<TChar>& target) const
 {
-	if (LN_CHECK_ARG(IsAbsolute())) return GenericPathName<TChar>();
-	if (LN_CHECK_ARG(target.IsAbsolute())) return GenericPathName<TChar>();
-	GenericString<TChar> rel = PathTraits::DiffPath<TChar>(m_path.c_str(), m_path.getLength(), target.m_path.c_str(), target.m_path.getLength(), FileSystem::getFileSystemCaseSensitivity());
+	if (LN_CHECK_ARG(isAbsolute())) return GenericPathName<TChar>();
+	if (LN_CHECK_ARG(target.isAbsolute())) return GenericPathName<TChar>();
+	GenericString<TChar> rel = PathTraits::diffPath<TChar>(m_path.c_str(), m_path.getLength(), target.m_path.c_str(), target.m_path.getLength(), FileSystem::getFileSystemCaseSensitivity());
 	return GenericPathName<TChar>(rel);
 }
 
@@ -352,7 +352,7 @@ GenericPathName<TChar> GenericPathName<TChar>::LN_AFX_FUNCNAME(getCurrentDirecto
 
 //------------------------------------------------------------------------------
 template<>
-GenericPathName<char> GenericPathName<char>::GetExecutablePath()
+GenericPathName<char> GenericPathName<char>::getExecutablePath()
 {
 #if defined(LN_OS_WIN32)
 	char path[LN_MAX_PATH];
@@ -364,7 +364,7 @@ GenericPathName<char> GenericPathName<char>::GetExecutablePath()
 }
 //------------------------------------------------------------------------------
 template<>
-GenericPathName<wchar_t> GenericPathName<wchar_t>::GetExecutablePath()
+GenericPathName<wchar_t> GenericPathName<wchar_t>::getExecutablePath()
 {
 #if defined(LN_OS_WIN32)
 	wchar_t path[LN_MAX_PATH];
@@ -380,7 +380,7 @@ template<typename TChar>
 GenericPathName<TChar> GenericPathName<TChar>::getSpecialFolderPath(SpecialFolder specialFolder, const TChar* childDir, SpecialFolderOption option)
 {
 	if (childDir != NULL) {
-		if (LN_CHECK_ARG(!PathTraits::IsAbsolutePath(childDir))) return GenericPathName<TChar>();
+		if (LN_CHECK_ARG(!PathTraits::isAbsolutePath(childDir))) return GenericPathName<TChar>();
 	}
 
 	TChar path[LN_MAX_PATH];
@@ -410,9 +410,9 @@ GenericPathName<TChar> GenericPathName<TChar>::getSpecialFolderPath(SpecialFolde
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericPathName<TChar> GenericPathName<TChar>::GetUniqueFilePathInDirectory(const PathNameT& directory, const TChar* filePrefix, const TChar* extName)
+GenericPathName<TChar> GenericPathName<TChar>::getUniqueFilePathInDirectory(const PathNameT& directory, const TChar* filePrefix, const TChar* extName)
 {
-	GenericStringT dirPath = directory.GetStrEndSeparator();
+	GenericStringT dirPath = directory.getStrEndSeparator();
 	uint64_t key = static_cast<uint64_t>(::time(NULL));
 
 	// 同番号のファイルがあればインクリメントしつつ空き番号を調べる
@@ -443,9 +443,9 @@ GenericPathName<TChar> GenericPathName<TChar>::GetUniqueFilePathInDirectory(cons
 
 /// (こちらはファイル名だけを返す)
 template<typename TChar>
-GenericString<TChar> GenericPathName<TChar>::GetUniqueFileNameInDirectory(const PathNameT& directory, const TChar* filePrefix, const TChar* extName)
+GenericString<TChar> GenericPathName<TChar>::getUniqueFileNameInDirectory(const PathNameT& directory, const TChar* filePrefix, const TChar* extName)
 {
-	return GetUniqueFilePathInDirectory(directory,filePrefix, extName).getFileName();
+	return getUniqueFilePathInDirectory(directory,filePrefix, extName).getFileName();
 }
 
 // テンプレートのインスタンス化

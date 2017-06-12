@@ -137,7 +137,7 @@ void UIControlsGallery()
 	{
 		meshRes->SetPosition(i, Vector3(filled.m_vertexList[i].pos, 0.0f));
 		meshRes->SetColor(i, Color(0, 0, 0, filled.m_vertexList[i].alpha));
-		//filled.m_vertexList[i].Print();
+		//filled.m_vertexList[i].print();
 	}
 	meshRes->ResizeIndexBuffer(filled.m_triangleIndexList.GetCount(), IndexBufferFormat_UInt16);
 	for (int i = 0; i < filled.m_triangleIndexList.GetCount(); i++)
@@ -295,7 +295,7 @@ void UIControlsGallery()
 
 
 		//printf("----------\n");
-		//Engine::GetMainWindow()->GetRenderDiagnostic()->Print();
+		//Engine::GetMainWindow()->GetRenderDiagnostic()->print();
 	}
 
 	//while (Engine::Update())

@@ -179,10 +179,10 @@ Rect TextureBrush::GetActualSourceRect() const
 
 	const Rect& rc = GetSourceRect();
 	return Rect(
-		(Math::IsNaNOrInf(rc.x)) ? 0.0f : rc.x,
-		(Math::IsNaNOrInf(rc.y)) ? 0.0f : rc.y,
-		(Math::IsNaNOrInf(rc.width)) ? textureSize.width : rc.width,
-		(Math::IsNaNOrInf(rc.height)) ? textureSize.height : rc.height);
+		(Math::isNaNOrInf(rc.x)) ? 0.0f : rc.x,
+		(Math::isNaNOrInf(rc.y)) ? 0.0f : rc.y,
+		(Math::isNaNOrInf(rc.width)) ? textureSize.width : rc.width,
+		(Math::isNaNOrInf(rc.height)) ? textureSize.height : rc.height);
 }
 
 //------------------------------------------------------------------------------

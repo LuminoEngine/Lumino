@@ -41,9 +41,9 @@ public:
 	virtual ~StreamWriter();
 	
 private:
-	void Init(Stream* stream, Encoding* encoding);
-	virtual void Flash();
-	virtual void WriteOverride(const void* data, size_t byteCount);
+	void init(Stream* stream, Encoding* encoding);
+	virtual void flash();
+	virtual void writeOverride(const void* data, size_t byteCount);
 
 private:
 	RefPtr<Stream>	m_stream;

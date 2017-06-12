@@ -44,7 +44,7 @@ public:
 	/**
 		@brief		各要素に値を設定します。
 	*/
-	void Set(float x, float y);
+	void set(float x, float y);
 
 	/**
 		@brief		このベクトルの長さを返します。
@@ -72,7 +72,7 @@ public:
 	/**
 		@brief		要素のいずれかが NaN または Inf かを判別します。
 	*/
-	bool IsNaNOrInf() const;
+	bool isNaNOrInf() const;
 
 	/**
 		@brief		デバッグ用に文字列を標準出力します。
@@ -80,7 +80,7 @@ public:
 		@param[in]	stream	: 出力先ストリーム
 		@details	format が NULL の場合、書式は "%f, %f\n" を使用します。
 	*/
-	void Print(const char* format = NULL, FILE* stream = NULL) const;
+	void print(const char* format = NULL, FILE* stream = NULL) const;
 
 public:
 
@@ -140,7 +140,7 @@ public:
 		@return		補間結果のベクトル
 		@details	t は通常、0.0～1.0 を指定します。
 	*/
-	static Vector2 Lerp(const Vector2& start, const Vector2& end, float t);
+	static Vector2 lerp(const Vector2& start, const Vector2& end, float t);
 
 	/**
 		@brief		指定されたベクトルを使用して エルミートスプライン補間を実行します。
@@ -152,7 +152,7 @@ public:
 		@return		補間結果の値
 		@details	t は通常、0.0～1.0 を指定します。
 	*/
-	static Vector2 Hermite(const Vector2& v1, const Vector2& a1, const Vector2& v2, const Vector2& a2, float t);
+	static Vector2 hermite(const Vector2& v1, const Vector2& a1, const Vector2& v2, const Vector2& a2, float t);
 
 	/**
 		@brief		指定されたベクトルを使用して Catmull-Rom 補間を行います。
@@ -164,7 +164,7 @@ public:
 		@return		補間結果のベクトル
 		@details	t は通常、0.0～1.0 を指定します。
 	*/
-	static Vector2 CatmullRom(const Vector2& vec1, const Vector2& vec2, const Vector2& vec3, const Vector2& vec4, float t);
+	static Vector2 catmullRom(const Vector2& vec1, const Vector2& vec2, const Vector2& vec3, const Vector2& vec4, float t);
 
 public:
 

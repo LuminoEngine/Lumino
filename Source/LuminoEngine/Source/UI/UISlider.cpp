@@ -98,7 +98,7 @@ void UISlider::OnRoutedEvent(UIEventArgs* e)
 	{
 		auto* e2 = static_cast<UIDragDeltaEventArgs*>(e);
 		float newValue = m_dragStartValue + m_track->ValueFromDistance(e2->horizontalChange, e2->verticalChange);
-		UpdateValue(Math::Clamp(newValue, GetMinimum(), GetMaximum()));
+		UpdateValue(Math::clamp(newValue, GetMinimum(), GetMaximum()));
 	}
 	else if (e->getType() == UIThumb::DragCompletedEventId)
 	{

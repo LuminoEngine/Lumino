@@ -48,7 +48,7 @@ void GenericFileStream<TChar>::open(const TChar* filePath, FileOpenMode openMode
 	LN_ASSERT( filePath );
 	close();
 
-	m_filePath = PathName(filePath).CanonicalizePath();
+	m_filePath = PathName(filePath).canonicalizePath();
 	m_openModeFlags = openMode;
 
 	if (m_openModeFlags.TestFlag(FileOpenMode::Deferring))

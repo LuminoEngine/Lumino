@@ -115,7 +115,7 @@ public:
 		@param[in]	stream	: 出力先ストリーム
 		@details	format が NULL の場合、書式は "%f, %f, %f, %f\n" を使用します。
 	*/
-	void Print(const char* format = NULL, FILE* stream = NULL) const;
+	void print(const char* format = NULL, FILE* stream = NULL) const;
 
 public:
 

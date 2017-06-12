@@ -112,17 +112,17 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 	//if (m_transformModified)
 	//{
 	//	m_localMatrix = Matrix::Identity;
-	//	m_localMatrix.Translate(-m_transformCenter.x, -m_transformCenter.y, -m_transformCenter.z);
-	//	m_localMatrix.Scale(m_transform.scale);
-	//	m_localMatrix.RotateQuaternion(m_transform.rotation);
-	//	m_localMatrix.Translate(m_transform.translation);
+	//	m_localMatrix.translate(-m_transformCenter.x, -m_transformCenter.y, -m_transformCenter.z);
+	//	m_localMatrix.scale(m_transform.scale);
+	//	m_localMatrix.rotateQuaternion(m_transform.rotation);
+	//	m_localMatrix.translate(m_transform.translation);
 	//	m_transformModified = false;
 	//}
 	Matrix localMatrix;
-	localMatrix.Translate(-m_transformCenter.x, -m_transformCenter.y, -m_transformCenter.z);
-	localMatrix.Scale(m_transform.scale);
-	localMatrix.RotateQuaternion(m_transform.rotation);
-	localMatrix.Translate(m_transform.translation);
+	localMatrix.translate(-m_transformCenter.x, -m_transformCenter.y, -m_transformCenter.z);
+	localMatrix.scale(m_transform.scale);
+	localMatrix.rotateQuaternion(m_transform.rotation);
+	localMatrix.translate(m_transform.translation);
 
 	// グローバル行列結合
 	//if (parent != nullptr)

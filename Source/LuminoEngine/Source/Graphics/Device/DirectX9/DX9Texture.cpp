@@ -74,7 +74,7 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const SizeI& size, TextureForm
 		&dx_fmt,
 		D3DPOOL_MANAGED));
 
-	m_realSize.Set(w, h);
+	m_realSize.set(w, h);
 
 	// テクスチャ作成
 	// 3つめの引数 ( ミップマップ ) は、使わない場合は 1 にしておく( 0 にすると可能な限り全部作られる )
@@ -135,14 +135,14 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const void* data, uint32_t siz
 	// ここの時点で mDxTexture の参照カウントは「 1 」
 
 	// ファイルのイメージの幅と高さを記憶
-	m_size.Set(imageInfo.Width, imageInfo.Height);
+	m_size.set(imageInfo.Width, imageInfo.Height);
 
 	// 実際のテクスチャの大きさを取得
 	LN_COMCALL(DX9Module::D3DXCheckTextureRequirements(
 		m_graphicsDevice->GetIDirect3DDevice9(),
 		&imageInfo.Width, &imageInfo.Height,
 		&miplevels, dxUsage, NULL, D3DPOOL_MANAGED));
-	m_realSize.Set(imageInfo.Width, imageInfo.Height);
+	m_realSize.set(imageInfo.Width, imageInfo.Height);
 
 	// テクスチャのサーフェイスを取得する
 	// ( ここでテクスチャのインターフェイスの参照カウントもひとつ増えてるみたい )
@@ -324,7 +324,7 @@ void DX9Texture3D::initialize(int width, int height, int depth, TextureFormat fo
 {
 	IDirect3DDevice9* d3d9Device = m_graphicsDevice->GetIDirect3DDevice9();
 
-	m_size.Set(width, height);
+	m_size.set(width, height);
 	m_format = format;
 
 	// 実際に作成されるべきテクスチャの情報を取得する
@@ -340,7 +340,7 @@ void DX9Texture3D::initialize(int width, int height, int depth, TextureFormat fo
 		0,
 		&dxFormat,
 		D3DPOOL_MANAGED));
-	m_realSize.Set(w, h);
+	m_realSize.set(w, h);
 	m_depth = d;
 
 	// テクスチャ作成
@@ -499,7 +499,7 @@ void DX9RenderTargetTexture::OnResetDevice()
 	m_dxTexture->GetLevelDesc(0, &desc);
 	//_p( desc.Width );
 	//_p( desc.Height );
-	m_realSize.Set(desc.Width, desc.Height);
+	m_realSize.set(desc.Width, desc.Height);
 
 	// レンダリングターゲットのサーフェイスを取得する
 	LN_COMCALL(m_dxTexture->GetSurfaceLevel(0, &m_dxSurface));
@@ -655,7 +655,7 @@ void DX9BackBufferTexture::Reset(IDirect3DSurface9* backBufferSurface)
 		// サイズとフォーマットを覚えておく
 		D3DSURFACE_DESC desc;
 		m_dxSurface->GetDesc(&desc);
-		m_realSize.Set(desc.Width, desc.Height);
+		m_realSize.set(desc.Width, desc.Height);
 		m_format = DX9Module::TranslateFormatDxToLN(desc.Format);
 	}
 }

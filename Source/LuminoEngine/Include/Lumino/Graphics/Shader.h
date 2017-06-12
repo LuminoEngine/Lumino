@@ -275,14 +275,14 @@ public:
 	bool IsValid() const { return m_type != ShaderVariableType_Unknown; }
 	ShaderVariableType getType() const { return m_type; }
 
-	void SetBool(bool value);
-	bool GetBool() const { return m_value.BoolVal; }
+	void setBool(bool value);
+	bool getBool() const { return m_value.BoolVal; }
 	void setInt(int value);
 	int getInt() const { return m_value.Int; }
 	void SetBoolArray(const bool* values, int count);
 	const bool* GetBoolArray() const { return m_value.BoolArray; }
-	void SetFloat(float value);
-	float GetFloat() const { return m_value.Float; }
+	void setFloat(float value);
+	float getFloat() const { return m_value.Float; }
 	void SetFloatArray(const float* values, int count);
 	const float* GetFloatArray() const { return m_value.FloatArray; }
 	void SetVector(const Vector4& vec);
@@ -380,13 +380,13 @@ public:
 	/// 配列型の場合の要素数を取得する (0 の場合は配列ではない)
 	int GetArrayElements() const;
 
-	void SetBool(bool value);
-	bool GetBool() const;
+	void setBool(bool value);
+	bool getBool() const;
 	void SetBoolArray(const bool* values, int count);
 	void setInt(int value);
 	int getInt() const;
-	void SetFloat(float value);
-	float GetFloat() const;
+	void setFloat(float value);
+	float getFloat() const;
 	void SetFloatArray(const float* values, int count);
 	void SetVector(const Vector4& value);
 	const Vector4& GetVector() const;

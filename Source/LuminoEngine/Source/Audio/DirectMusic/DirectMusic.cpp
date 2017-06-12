@@ -88,7 +88,7 @@ DirectMusicSegment::DirectMusicSegment(DirectMusicManager* manager, IDirectMusic
 		DSFXWavesReverb rv;
 		rv.fInGain			= 0.f;//DSFX_WAVESREVERB_INGAIN_MIN ;//DSFX_WAVESREVERB_INGAIN_DEFAULT;
 		rv.fReverbMix		= 0.f;//DSFX_WAVESREVERB_REVERBMIX_MIN  DSFX_WAVESREVERB_REVERBMIX_DEFAULT;
-		rv.fReverbTime = Math::Lerp(DSFX_WAVESREVERB_REVERBTIME_MIN, 800.f, std::max(manager->GetReverbLevel(), 1.0f));	// 上限 800 くらいが現実的。また、万一大きな値になるとものすごく壊れた音が鳴るので max で制限。
+		rv.fReverbTime = Math::lerp(DSFX_WAVESREVERB_REVERBTIME_MIN, 800.f, std::max(manager->GetReverbLevel(), 1.0f));	// 上限 800 くらいが現実的。また、万一大きな値になるとものすごく壊れた音が鳴るので max で制限。
 		rv.fHighFreqRTRatio = DSFX_WAVESREVERB_HIGHFREQRTRATIO_DEFAULT;//DSFX_WAVESREVERB_HIGHFREQRTRATIO_MIN; //DSFX_WAVESREVERB_HIGHFREQRTRATIO_DEFAULT;DSFX_WAVESREVERB_HIGHFREQRTRATIO_MAX
 		LN_COMCALL(waves_reverb->SetAllParameters(&rv));
 

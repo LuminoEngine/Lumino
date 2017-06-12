@@ -18,7 +18,7 @@ public:
 	{
 		float angle = i * Math::PI2 / slices;
 		float dx, dz;
-		Math::SinCos(angle, &dx, &dz);
+		Math::sinCos(angle, &dx, &dz);
 		return Vector3(dx, 0, dz);
 	}
 
@@ -27,7 +27,7 @@ public:
 		float da = endAngle - startAngle;
 		float angle = (i * da / slices) + startAngle;
 		float dx, dz;
-		Math::SinCos(angle, &dx, &dz);
+		Math::sinCos(angle, &dx, &dz);
 		return Vector3(dx, 0, dz);
 	}
 
@@ -80,18 +80,18 @@ public:
 	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
 	{
 		Vector2 half = m_size / 2;
-		outVertices[0].position.Set(-half.x, half.y, 0);
-		outVertices[0].normal.Set(0.0f, 0.0f, -1.0f);
-		outVertices[0].uv.Set(0.0f, 0.0f);
-		outVertices[1].position.Set(-half.x, -half.y, 0);
-		outVertices[1].normal.Set(0.0f, 0.0f, -1.0f);
-		outVertices[1].uv.Set(0.0f, 1.0f);
-		outVertices[2].position.Set(half.x, half.y, 0);
-		outVertices[2].normal.Set(0.0f, 0.0f, -1.0f);
-		outVertices[2].uv.Set(1.0f, 0.0f);
-		outVertices[3].position.Set(half.x, -half.y, 0);
-		outVertices[3].normal.Set(0.0f, 0.0f, -1.0f);
-		outVertices[3].uv.Set(1.0f, 1.0f);
+		outVertices[0].position.set(-half.x, half.y, 0);
+		outVertices[0].normal.set(0.0f, 0.0f, -1.0f);
+		outVertices[0].uv.set(0.0f, 0.0f);
+		outVertices[1].position.set(-half.x, -half.y, 0);
+		outVertices[1].normal.set(0.0f, 0.0f, -1.0f);
+		outVertices[1].uv.set(0.0f, 1.0f);
+		outVertices[2].position.set(half.x, half.y, 0);
+		outVertices[2].normal.set(0.0f, 0.0f, -1.0f);
+		outVertices[2].uv.set(1.0f, 0.0f);
+		outVertices[3].position.set(half.x, -half.y, 0);
+		outVertices[3].normal.set(0.0f, 0.0f, -1.0f);
+		outVertices[3].uv.set(1.0f, 1.0f);
 
 		outIndices[0] = beginIndex + 0;
 		outIndices[1] = beginIndex + 1;
@@ -121,17 +121,17 @@ public:
 		Vector2 half = m_size / 2;
 		if (m_front == Vector3::UnitY)
 		{
-			outVertices[0].position.Set(-half.x, 0, half.y);
-			outVertices[1].position.Set(-half.x, 0, -half.y);
-			outVertices[2].position.Set(half.x, 0, half.y);
-			outVertices[3].position.Set(half.x, 0, -half.y);
+			outVertices[0].position.set(-half.x, 0, half.y);
+			outVertices[1].position.set(-half.x, 0, -half.y);
+			outVertices[2].position.set(half.x, 0, half.y);
+			outVertices[3].position.set(half.x, 0, -half.y);
 		}
 		else if(m_front == -Vector3::UnitY)
 		{
-			outVertices[0].position.Set(half.x, 0, half.y);
-			outVertices[1].position.Set(half.x, 0, -half.y);
-			outVertices[2].position.Set(-half.x, 0, half.y);
-			outVertices[3].position.Set(-half.x, 0, -half.y);
+			outVertices[0].position.set(half.x, 0, half.y);
+			outVertices[1].position.set(half.x, 0, -half.y);
+			outVertices[2].position.set(-half.x, 0, half.y);
+			outVertices[3].position.set(-half.x, 0, -half.y);
 		}
 		else
 		{
@@ -139,13 +139,13 @@ public:
 		}
 
 		outVertices[0].normal = m_front;
-		outVertices[0].uv.Set(0.0f, 0.0f);
+		outVertices[0].uv.set(0.0f, 0.0f);
 		outVertices[1].normal = m_front;
-		outVertices[1].uv.Set(0.0f, 1.0f);
+		outVertices[1].uv.set(0.0f, 1.0f);
 		outVertices[2].normal = m_front;
-		outVertices[2].uv.Set(1.0f, 0.0f);
+		outVertices[2].uv.set(1.0f, 0.0f);
 		outVertices[3].normal = m_front;
-		outVertices[3].uv.Set(1.0f, 1.0f);
+		outVertices[3].uv.set(1.0f, 1.0f);
 
 		outIndices[0] = 0;
 		outIndices[1] = 1;
@@ -224,8 +224,8 @@ public:
 					v->position.z = maxZ - stepZ * iZ;
 
 				v->position.y = 0.0f;
-				v->normal.Set(0.0f, 1.0f, 0.0f);
-				v->uv.Set(StepU * iX, 1.0f - StepV * iZ);
+				v->normal.set(0.0f, 1.0f, 0.0f);
+				v->uv.set(StepU * iX, 1.0f - StepV * iZ);
 				v->color = m_color;
 				++v;
 			}
@@ -250,7 +250,7 @@ public:
 			}
 		}
 
-		if (!m_transform.IsIdentity())
+		if (!m_transform.isIdentity())
 			MeshHelper::Transform(outVertices, v, m_transform);
 	}
 
@@ -284,23 +284,23 @@ public:
 		Vector3 maxPos = (m_size / 2);
 
 		// 手前 (Z-)
-		outVertices[0].position.Set(minPos.x, maxPos.y, minPos.z);	// 左上
-		outVertices[0].uv.Set(0.0f, 0.0f);
-		outVertices[1].position.Set(minPos.x, minPos.y, minPos.z);	// 左下
-		outVertices[1].uv.Set(0.0f, 1.0f);
-		outVertices[2].position.Set(maxPos.x, maxPos.y, minPos.z);	// 右上
-		outVertices[2].uv.Set(1.0f, 0.0f);
-		outVertices[3].position.Set(maxPos.x, minPos.y, minPos.z);	// 右下
-		outVertices[3].uv.Set(1.0f, 1.0f);
+		outVertices[0].position.set(minPos.x, maxPos.y, minPos.z);	// 左上
+		outVertices[0].uv.set(0.0f, 0.0f);
+		outVertices[1].position.set(minPos.x, minPos.y, minPos.z);	// 左下
+		outVertices[1].uv.set(0.0f, 1.0f);
+		outVertices[2].position.set(maxPos.x, maxPos.y, minPos.z);	// 右上
+		outVertices[2].uv.set(1.0f, 0.0f);
+		outVertices[3].position.set(maxPos.x, minPos.y, minPos.z);	// 右下
+		outVertices[3].uv.set(1.0f, 1.0f);
 		// 奥 (Z+)
-		outVertices[4].position.Set(minPos.x, maxPos.y, maxPos.z);	// 左上
-		outVertices[4].uv.Set(1.0f, 0.0f);
-		outVertices[5].position.Set(minPos.x, minPos.y, maxPos.z);	// 左下
-		outVertices[5].uv.Set(1.0f, 1.0f);
-		outVertices[6].position.Set(maxPos.x, maxPos.y, maxPos.z);	// 右上
-		outVertices[6].uv.Set(0.0f, 0.0f);
-		outVertices[7].position.Set(maxPos.x, minPos.y, maxPos.z);	// 右下
-		outVertices[7].uv.Set(0.0f, 1.0f);
+		outVertices[4].position.set(minPos.x, maxPos.y, maxPos.z);	// 左上
+		outVertices[4].uv.set(1.0f, 0.0f);
+		outVertices[5].position.set(minPos.x, minPos.y, maxPos.z);	// 左下
+		outVertices[5].uv.set(1.0f, 1.0f);
+		outVertices[6].position.set(maxPos.x, maxPos.y, maxPos.z);	// 右上
+		outVertices[6].uv.set(0.0f, 0.0f);
+		outVertices[7].position.set(maxPos.x, minPos.y, maxPos.z);	// 右下
+		outVertices[7].uv.set(0.0f, 1.0f);
 
 		for (int i = 0; i < 8; ++i) outVertices[i].color = Color::White;
 
@@ -358,8 +358,8 @@ public:
 
 	void SetV(Vertex* vertex, float x, float y, float z, float u, float v, const Vector3& normal)
 	{
-		vertex->position.Set(x, y, z);
-		vertex->uv.Set(u, v);
+		vertex->position.set(x, y, z);
+		vertex->uv.set(u, v);
 		vertex->color = m_color;
 		vertex->normal = normal;
 	}
@@ -422,7 +422,7 @@ public:
 		SetV(v, maxPos.x, maxPos.y, minPos.z, 1.0f, 1.0f, Vector3::UnitY); ++v;	// ┛
 		SetI(i, beginVertexIndex + 20);
 
-		if (!m_transform.IsIdentity())
+		if (!m_transform.isIdentity())
 			MeshHelper::Transform(outVertices, v, m_transform);
 	}
 
@@ -471,7 +471,7 @@ public:
 	//typedef uint16_t Face[3];
 	//typedef uint16_t QuadFace[6];
 
-	struct SinCos
+	struct sinCos
 	{
 		float	sin;
 		float	cos;
@@ -555,7 +555,7 @@ public:
 			}
 		}
 
-		if (!m_transform.IsIdentity())
+		if (!m_transform.isIdentity())
 			MeshHelper::Transform(outVertices, v, m_transform);
 	}
 
@@ -586,7 +586,7 @@ private:
 	int		m_slices;
 	int		m_stacks;
 
-	List<SinCos>	m_sincosTable;
+	List<sinCos>	m_sincosTable;
 };
 
 // Sphere 同様、uv 展開の都合上 ring の始点と終点、底の位置は同一。
@@ -642,7 +642,7 @@ public:
 			// upper base
 			{
 				Vertex v;
-				v.position.Set(0, yu, 0);
+				v.position.set(0, yu, 0);
 				v.normal = Vector3::UnitY;
 				v.color = m_color;
 				AddVertex(&vb, v);
@@ -663,7 +663,7 @@ public:
 			// lower base
 			{
 				Vertex v;
-				v.position.Set(0, yd, 0);
+				v.position.set(0, yd, 0);
 				v.normal = -Vector3::UnitY;
 				v.color = m_color;
 				AddVertex(&vb, v);
@@ -690,7 +690,7 @@ public:
 			}
 		}
 
-		if (!m_transform.IsIdentity())
+		if (!m_transform.isIdentity())
 			MeshHelper::Transform(outVertices, vb, m_transform);
 	}
 
@@ -751,7 +751,7 @@ public:
 			// top
 			{
 				Vertex v;
-				v.position.Set(0, m_height / 2, 0);
+				v.position.set(0, m_height / 2, 0);
 				v.normal = Vector3::UnitY;
 				v.color = m_color;
 				AddVertex(&vb, v);
@@ -760,7 +760,7 @@ public:
 			float y = -m_height / 2;
 			{
 				Vertex v;
-				v.position.Set(xz.x, y, xz.z);
+				v.position.set(xz.x, y, xz.z);
 				v.normal = n;
 				v.color = m_color;
 				AddVertex(&vb, v);
@@ -768,7 +768,7 @@ public:
 			// lower base
 			{
 				Vertex v;
-				v.position.Set(0, y, 0);
+				v.position.set(0, y, 0);
 				v.normal = -Vector3::UnitY;
 				v.color = m_color;
 				AddVertex(&vb, v);
@@ -795,7 +795,7 @@ public:
 			}
 		}
 
-		if (!m_transform.IsIdentity())
+		if (!m_transform.isIdentity())
 			MeshHelper::Transform(outVertices, vb, m_transform);
 	}
 
@@ -889,7 +889,7 @@ public:
 			ib += 6;
 		}
 
-		if (!m_transform.IsIdentity())
+		if (!m_transform.isIdentity())
 			MeshHelper::Transform(outVertices, vb, m_transform);
 	}
 

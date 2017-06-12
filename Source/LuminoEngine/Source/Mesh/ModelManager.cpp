@@ -316,7 +316,7 @@ RefPtr<PmxSkinnedMeshResource> ModelManager::CreateSkinnedMeshResource(const Pat
 {
 	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath), false);
 	PmxLoader loader;
-	RefPtr<PmxSkinnedMeshResource> mesh = loader.load(this, stream, filePath.GetParent(), true, ModelCreationFlag::None);
+	RefPtr<PmxSkinnedMeshResource> mesh = loader.load(this, stream, filePath.getParent(), true, ModelCreationFlag::None);
 	mesh->RefreshInitialValues();
 	return mesh;
 }
@@ -329,7 +329,7 @@ RefPtr<StaticMeshModel> ModelManager::CreateStaticMeshModel(const PathName& file
 	RefPtr<StaticMeshModel> mesh;
 	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath), false);
 
-	PathName parentDir = filePath.GetParent();
+	PathName parentDir = filePath.getParent();
 	{
 		MqoImporter importer;
 		mesh = importer.Import(this, parentDir, stream);

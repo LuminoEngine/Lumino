@@ -82,8 +82,8 @@ public:
 	Vector3 getFront() const;
 
 	/** 指定した方向と距離に移動します。*/
-	void Translate(const Vector3& translation);
-	void Translate(float x, float y, float z = 0.0f);
+	void translate(const Vector3& translation);
+	void translate(float x, float y, float z = 0.0f);
 
 	void LookAt(const Vector3& target, const Vector3& up = Vector3::UnitY);
 

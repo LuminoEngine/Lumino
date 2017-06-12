@@ -140,7 +140,7 @@ public:
 protected:
 	virtual void UpdateTime(float previousTime, float currentTime) override
 	{
-		m_valueSetter->SetValue(m_valueTimeline->Interpolate(m_startValue, Math::Clamp(currentTime, 0, m_valueTimeline->GetLastTime())));
+		m_valueSetter->SetValue(m_valueTimeline->Interpolate(m_startValue, Math::clamp(currentTime, 0, m_valueTimeline->GetLastTime())));
 	}
 
 private:

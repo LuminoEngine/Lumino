@@ -554,7 +554,7 @@ void Win32NativeWindow::Initilaize(
 
 	mTitleText = windowTitle;
 	// 初期化時のサイズ記憶
-	m_originalClientSize.Set(width, height);
+	m_originalClientSize.set(width, height);
 
 	/* もともとは Win32Window クラスで生成していたが、
 	* RegisterClassEx() を Manager に移動したことで、ウィンドウスタイルなどの情報も Manager に移った。
@@ -663,7 +663,7 @@ Win32UserHostWindow::Win32UserHostWindow(Win32WindowManager* windowManager, HWND
 {
 	RECT rc = { 0, 0, 0, 0 };
 	::GetClientRect(m_hWnd, &rc);
-	m_clientSize.Set(rc.right, rc.bottom);
+	m_clientSize.set(rc.right, rc.bottom);
 	SendPlatformEvent(PlatformEventArgs::MakeWindowSizeChangedEvent(this, rc.right, rc.bottom));
 
 	TCHAR text[256];

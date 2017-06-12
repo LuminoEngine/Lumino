@@ -41,7 +41,7 @@ public:
 	{}
 
 public:
-	void SetError(JsonParseError errorCode, int offset) { ErrorCode = errorCode; Offset = offset; }
+	void setError(JsonParseError errorCode, int offset) { ErrorCode = errorCode; Offset = offset; }
 
 public:
 	JsonParseError	ErrorCode;

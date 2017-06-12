@@ -29,7 +29,7 @@ NlNode_Add::NlNode_Add()
 }
 
 //------------------------------------------------------------------------------
-void NlNode_Add::Execute(NlContext* sc)
+void NlNode_Add::execute(NlContext* sc)
 {
 	NlVariant* lhs = sc->Evaluate(m_inputLhsPin);
 	NlVariant* rhs = sc->Evaluate(m_inputRhsPin);

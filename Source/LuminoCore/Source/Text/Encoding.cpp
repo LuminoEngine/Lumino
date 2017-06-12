@@ -82,7 +82,7 @@ Encoding* Encoding::GetUTF32Encoding()
 }
 
 //------------------------------------------------------------------------------
-Encoding* Encoding::GetEncoding(EncodingType type)
+Encoding* Encoding::getEncoding(EncodingType type)
 {
 	switch (type)
 	{

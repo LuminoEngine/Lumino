@@ -25,23 +25,23 @@ public:
 		@brief		この TextWriter が出力する文字列のエンコーディングを指定します。
 		@details	設定する場合、初回の書き込みの前に設定する必要があります。途中から変更はできません。
 	*/
-	void SetEncoding(Encoding* encoding);
+	void setEncoding(Encoding* encoding);
 
 	/**
 		@brief		この TextWriter が出力する文字列のエンコーディングを取得します。
 	*/
-	Encoding* GetEncoding() const;
+	Encoding* getEncoding() const;
 
 	/**
 		@brief		この TextWriter で使用する改行文字列を設定します。
 		@details	規定値は String::GetNewLine() で取得できる値です。
 	*/
-	void SetNewLine(const String& newLine);
+	void setNewLine(const String& newLine);
 
 	/**
 		@brief		文字列の書き込み時に使用する書式を表すロケールを指定します。
 	*/
-	void SetFormatLocale(const Locale& locale);
+	void setFormatLocale(const Locale& locale);
 
 	/**
 		@brief		文字を書き込みます。
@@ -74,7 +74,7 @@ public:
 	void write(const TCHAR* str, int length);
 
 	template<typename... TArgs>
-	void WriteFormat(const StringRef& str, const TArgs&... args) { String s = String::Format(str, args...); writeInternal(s.c_str(), s.getLength()); }
+	void writeFormat(const StringRef& str, const TArgs&... args) { String s = String::Format(str, args...); writeInternal(s.c_str(), s.getLength()); }
 
 	/**
 		@brief		改行を書き込みます。
@@ -123,14 +123,14 @@ public:
 	/**
 		@brief		バッファリングデータを全てストリームに書き出します。
 	*/
-	virtual void Flash() = 0;
+	virtual void flash() = 0;
 
 protected:
 
 	/**
 		@brief		データの書き込み先を実装します。
 	*/
-	virtual void WriteOverride(const void* data, size_t byteCount) = 0;
+	virtual void writeOverride(const void* data, size_t byteCount) = 0;
 
 private:
 	void writeInternal(const TCHAR* str, int len);

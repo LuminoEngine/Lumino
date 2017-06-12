@@ -555,7 +555,7 @@ void ShaderVariableCommitSerializeHelper::WriteValue(Driver::IShaderVariable* ta
 	switch (value.getType())
 	{
 	case ShaderVariableType_Bool:
-		m_writer->writeUInt8(value.GetBool() ? 1 : 0);
+		m_writer->writeUInt8(value.getBool() ? 1 : 0);
 		break;
 	case ShaderVariableType_BoolArray:
 		m_writer->writeUInt8(value.GetArrayLength());
@@ -565,7 +565,7 @@ void ShaderVariableCommitSerializeHelper::WriteValue(Driver::IShaderVariable* ta
 		m_writer->writeInt32(value.getInt());
 		break;
 	case ShaderVariableType_Float:
-		m_writer->writeFloat(value.GetFloat());
+		m_writer->writeFloat(value.getFloat());
 		break;
 	case ShaderVariableType_FloatArray:
 		m_writer->writeUInt8(value.GetArrayLength());
@@ -601,7 +601,7 @@ void ShaderVariableCommitSerializeHelper::WriteValue(Driver::IShaderVariable* ta
 //------------------------------------------------------------------------------
 void* ShaderVariableCommitSerializeHelper::GetSerializeData()
 {
-	return m_writerBuffer->GetBuffer();
+	return m_writerBuffer->getBuffer();
 }
 
 //------------------------------------------------------------------------------
@@ -626,7 +626,7 @@ void ShaderVariableCommitSerializeHelper::Deserialize(const void* data, size_t l
 		{
 			case ShaderVariableType_Bool:
 			{
-				variable->SetBool(reader.readUInt8() != 0);
+				variable->setBool(reader.readUInt8() != 0);
 				break;
 			}
 			case ShaderVariableType_BoolArray:
@@ -643,7 +643,7 @@ void ShaderVariableCommitSerializeHelper::Deserialize(const void* data, size_t l
 			}
 			case ShaderVariableType_Float:
 			{
-				variable->SetFloat(reader.readFloat());
+				variable->setFloat(reader.readFloat());
 				break;
 			}
 			case ShaderVariableType_FloatArray:

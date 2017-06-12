@@ -4,7 +4,7 @@ LN_NAMESPACE_BEGIN
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-inline bool Matrix::IsIdentity() const
+inline bool Matrix::isIdentity() const
 {
 	return (memcmp(this, &Matrix::Identity, sizeof(Matrix)) == 0);
 }
@@ -12,7 +12,7 @@ inline bool Matrix::IsIdentity() const
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-inline const Vector3& Matrix::GetRight() const
+inline const Vector3& Matrix::getRight() const
 { 
 	return (Vector3&)m[0][0];
 }
@@ -20,7 +20,7 @@ inline const Vector3& Matrix::GetRight() const
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-inline const Vector3& Matrix::GetUp() const
+inline const Vector3& Matrix::getUp() const
 {
 	return (Vector3&)m[1][0];
 }
@@ -44,7 +44,7 @@ inline const Vector3& Matrix::getPosition() const
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-inline void Matrix::SetRow(int index, const Vector4& row)
+inline void Matrix::setRow(int index, const Vector4& row)
 {
 	((Vector4&)m[index][0]) = row;
 }
@@ -52,7 +52,7 @@ inline void Matrix::SetRow(int index, const Vector4& row)
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-inline const Vector4& Matrix::GetRow(int index) const
+inline const Vector4& Matrix::getRow(int index) const
 {
 	return (Vector4&)m[index][0];
 }

@@ -93,7 +93,7 @@ public:
 	/**
 		@brief		種類を指定してエンコーディングを取得します。
 	*/
-	static Encoding* GetEncoding(EncodingType type);
+	static Encoding* getEncoding(EncodingType type);
 
 	/**
 		@brief		テンプレート引数によってエンコーディングを取得します。

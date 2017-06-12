@@ -119,7 +119,7 @@ class SkinnedMeshBone
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	SkinnedMeshBone* GetParent() const { return m_parent; }
+	SkinnedMeshBone* getParent() const { return m_parent; }
 
 LN_INTERNAL_ACCESS:
 	SkinnedMeshBone();

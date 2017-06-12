@@ -70,7 +70,7 @@ private:
 	float NoiseNormal(float x, float y, float z) const;
 	float OctaveNoiseNormal(float x, float y, float z, int octaves) const;
 	float Fade(float t) const;
-	float Lerp(float a, float b, float t) const;
+	float lerp(float a, float b, float t) const;
 	float Grad(int hash, float x, float y, float z) const;
 	int Increment(int num) const;
 

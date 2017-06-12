@@ -58,7 +58,7 @@ public:
 	/**
 		@brief		各要素に値を設定します。
 	*/
-	void Set(float x, float y, float z, float w);
+	void set(float x, float y, float z, float w);
 
 	/**
 		@brief		このクォータニオンの長さを返します。
@@ -79,7 +79,7 @@ public:
 		@brief		このクォータニオンが単位クォータニオンであるかを判定します。
 		@return		true の場合、単位クォータニオンである
 	*/
-	bool IsIdentity() const;
+	bool isIdentity() const;
 
 	/**
 		@brief		このクォータニオンに指定されたクォータニオンを乗算します。
@@ -91,19 +91,19 @@ public:
 		@brief		このクォータニオンを X 軸で回転します。
 		@param[in]	angle	: 回転角度 (ラジアン単位)
 	*/
-	void RotateX(float angle);
+	void rotateX(float angle);
 
 	/**
 		@brief		このクォータニオンを Y 軸で回転します。
 		@param[in]	angle	: 回転角度 (ラジアン単位)
 	*/
-	void RotateY(float angle);
+	void rotateY(float angle);
 
 	/**
 		@brief		このクォータニオンを Z 軸で回転します。
 		@param[in]	angle	: 回転角度 (ラジアン単位)
 	*/
-	void RotateZ(float angle);
+	void rotateZ(float angle);
 	
 	/**
 		@brief		このクォータニオンを回転軸と角度を指定して回転します。
@@ -111,7 +111,7 @@ public:
 		@param[in]  r		: 回転角度 (ラジアン単位)
 		@details	axis が単位ベクトルでなければ正規化してから計算を行います。
 	*/
-	void RotateAxis(const Vector3& axis, float r);
+	void rotateAxis(const Vector3& axis, float r);
 
 	/**
 		@brief		このクォータニオンを XYZ 各軸のオイラー角度に変換します。
@@ -122,7 +122,7 @@ public:
 					例えば RotationYawPitchRoll() は、回転軸 Z → Y → X の順に回転を行いますが、
 					これから元の角度を取り出すには RotationOrder_ZXY を指定します。
 	*/
-	Vector3 ToEulerAngles(RotationOrder order = RotationOrder::ZXY, bool* locked = nullptr) const;
+	Vector3 toEulerAngles(RotationOrder order = RotationOrder::ZXY, bool* locked = nullptr) const;
 
 	/**
 		@brief		このクォータニオンの回転軸と回転角度を取得します。
@@ -135,7 +135,7 @@ public:
 	/**
 		@brief		要素のいずれかが NaN または Inf かを判別します。
 	*/
-	bool IsNaNOrInf() const;
+	bool isNaNOrInf() const;
 
 	/**
 		@brief		デバッグ用に文字列を標準出力します。
@@ -143,7 +143,7 @@ public:
 		@param[in]	stream	: 出力先ストリーム
 		@details	format が NULL の場合、書式は "(%f, %f, %f, %f)\n" を使用します。
 	*/
-	void Print(const char* format = nullptr, FILE* stream = nullptr) const;
+	void print(const char* format = nullptr, FILE* stream = nullptr) const;
 
 public:
 

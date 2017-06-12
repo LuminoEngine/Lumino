@@ -129,14 +129,14 @@ public:
 	WeakRefPtr(T* obj)
 		: m_weakRefInfo(nullptr)
 	{
-		Set(ReflectionHelper::RequestWeakRefInfo(obj));
+		set(ReflectionHelper::RequestWeakRefInfo(obj));
 	}
 
 	/** コピーコンストラクタ */
 	WeakRefPtr(const WeakRefPtr<T>& obj)
 		: m_weakRefInfo(nullptr)
 	{
-		Set(obj.m_weakRefInfo);
+		set(obj.m_weakRefInfo);
 	}
 
 	/** デストラクタ */
@@ -164,20 +164,20 @@ public:
 	/** */
 	WeakRefPtr<T>& operator =(const WeakRefPtr<T>& obj)
 	{
-		Set(obj.m_weakRefInfo);
+		set(obj.m_weakRefInfo);
 		return *this;
 	}
 
 	/** */
 	WeakRefPtr<T>& operator =(T* obj)
 	{
-		Set(ReflectionHelper::RequestWeakRefInfo(obj));
+		set(ReflectionHelper::RequestWeakRefInfo(obj));
 		return *this;
 	}
 
 private:
 	
-	void Set(detail::WeakRefInfo* info)
+	void set(detail::WeakRefInfo* info)
 	{
 		release();
 		m_weakRefInfo = info;

@@ -162,7 +162,7 @@ FontGlyphLocation* BitmapFont::AdvanceKerning(UTF32 utf32code, int strokeSize, F
 		m_fontGlyphLocation.OuterTopLeftPosition = PointI::Zero;
 		locData = &m_fontGlyphLocation;
 	}
-	locData->BitmapSize.Set(m_charWidth, m_charHeight);
+	locData->BitmapSize.set(m_charWidth, m_charHeight);
 
 	return locData;
 }

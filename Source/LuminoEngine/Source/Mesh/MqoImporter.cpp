@@ -624,10 +624,10 @@ RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathNam
 	m_model->initialize(manager->GetGraphicsManager());
 
 	// Metasequoia4 で出力される .mqo ファイルの文字コードは Shift_JIS だった
-	StreamReader reader(stream, Encoding::GetEncoding(EncodingType::SJIS));
+	StreamReader reader(stream, Encoding::getEncoding(EncodingType::SJIS));
 
 	String line;
-	while (reader.ReadLine(&line))
+	while (reader.readLine(&line))
 	{
 		// Material
 		int index = line.indexOf(_T("Material"));
@@ -647,7 +647,7 @@ RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathNam
 			int nameEnd = line.indexOf(_T('"'), nameBegin);
 
 
-			LoadObject(&reader, line.mid(nameBegin, nameEnd - nameBegin));
+			loadObject(&reader, line.mid(nameBegin, nameEnd - nameBegin));
 		}
 	}
 
@@ -666,7 +666,7 @@ RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathNam
 void MqoImporter::LoadMaterials(StreamReader* reader)
 {
 	String line;
-	while (reader->ReadLine(&line))
+	while (reader->readLine(&line))
 	{
 		if (line.indexOf(_T("}")) > -1) break;
 
@@ -773,7 +773,7 @@ void MqoImporter::LoadMaterials(StreamReader* reader)
 }
 
 //------------------------------------------------------------------------------
-void MqoImporter::LoadObject(StreamReader* reader, const String& name)
+void MqoImporter::loadObject(StreamReader* reader, const String& name)
 {
 	auto mqoObject = RefPtr<MqoObject>::makeRef();
 	mqoObject->m_importer = this;
@@ -782,7 +782,7 @@ void MqoImporter::LoadObject(StreamReader* reader, const String& name)
 	//int vertexIndexOffset = m_mqoVertexList.GetCount();	// この Object チャンクに含まれる Vertex は、全体の何番目から始まるか？
 	int index;
 	String line;
-	while (reader->ReadLine(&line))
+	while (reader->readLine(&line))
 	{
 		if (line.indexOf(_T("}")) > -1) break;
 
@@ -811,7 +811,7 @@ void MqoImporter::LoadObject(StreamReader* reader, const String& name)
 void MqoImporter::ReadVertexChunk(StreamReader* reader, MqoObject* mqoObject)
 {
 	String line;
-	while (reader->ReadLine(&line))
+	while (reader->readLine(&line))
 	{
 		if (line.indexOf(_T("}")) > -1) break;
 
@@ -825,7 +825,7 @@ void MqoImporter::ReadVertexChunk(StreamReader* reader, MqoObject* mqoObject)
 void MqoImporter::ReadFaceChunk(StreamReader* reader, MqoObject* mqoObject)
 {
 	String line;
-	while (reader->ReadLine(&line))
+	while (reader->readLine(&line))
 	{
 		if (line.indexOf(_T("}")) > -1) break;
 

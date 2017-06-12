@@ -22,7 +22,7 @@ TEST_F(Test_Threading_EventFlag, Basic)
 		{
 		}
 
-		virtual void Execute()
+		virtual void execute()
 		{
 			gValue++;
 			mInited.SetTrue();
@@ -41,7 +41,7 @@ TEST_F(Test_Threading_EventFlag, Basic)
 	gValue = 0;
 
 	TestThread t;
-	t.Execute();
+	t.execute();
 
 	t.mInited.Wait();	// 初期化完了待ち
 	ASSERT_TRUE(gValue >= 2);

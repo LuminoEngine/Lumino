@@ -131,9 +131,9 @@ public:
 	virtual ~GLShaderAnnotation();
 	void initialize(const String& type, const String& name, const String& value);
 
-	virtual void SetBool(bool value) { LN_THROW(0, InvalidOperationException); }
+	virtual void setBool(bool value) { LN_THROW(0, InvalidOperationException); }
 	virtual void setInt(int value) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetFloat(float value) { LN_THROW(0, InvalidOperationException); }
+	virtual void setFloat(float value) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetVector(const Vector4& vec) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetVectorArray(const Vector4* vectors, int count) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetMatrix(const Matrix& matrix) { LN_THROW(0, InvalidOperationException); }
@@ -197,7 +197,7 @@ public:
 
 private:
 	bool LinkShader(GLuint vertShader, GLuint fragShader, ShaderDiag* diag);
-	void Build();
+	void build();
 	
 	GLShader*						m_ownerShader;
 	GLuint							m_program;

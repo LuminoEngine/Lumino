@@ -143,7 +143,7 @@ bool GlyphRun::GetDistanceFromCharacterHit(int index, PointF* outPos)
 
 	if (index < 0 || m_glyphData.Items.isEmpty())
 	{
-		outPos->Set(0, 0);
+		outPos->set(0, 0);
 	}
 	else if (index >= m_glyphData.Items.getCount())
 	{

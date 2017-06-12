@@ -34,7 +34,7 @@ SpriteComponent::~SpriteComponent()
 void SpriteComponent::initialize()
 {
 	VisualComponent::initialize();
-	m_srcRect.Set(0, 0, -1, -1);
+	m_srcRect.set(0, 0, -1, -1);
 	SetSize(Size(-1, -1));
 
 	SetBlendMode(BlendMode::Alpha);
@@ -90,7 +90,7 @@ void SpriteComponent::SetAnchorPoint(const Vector2& ratio)
 //------------------------------------------------------------------------------
 void SpriteComponent::SetAnchorPoint(float ratioX, float ratioY)
 {
-	m_anchor.Set(ratioX, ratioY);
+	m_anchor.set(ratioX, ratioY);
 }
 
 //------------------------------------------------------------------------------

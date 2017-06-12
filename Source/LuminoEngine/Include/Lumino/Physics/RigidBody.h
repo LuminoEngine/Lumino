@@ -62,7 +62,7 @@ public:
 		bool			AdditionalDamping;	///< 減衰の有効
 		bool			KinematicObject;	///< Kinematicオブジェクトとする (質量が 0.0 として扱われ、MotionState の getWorldTransform() が呼ばれるようになる)
 
-		float			Scale;				///< (*Mass に乗算するスケール値)
+		float			scale;				///< (*Mass に乗算するスケール値)
 
 		ConfigData()
 		{
@@ -76,7 +76,7 @@ public:
 			//InitialTransform = NULL;
 			AdditionalDamping = false;
 			KinematicObject = false;
-			Scale = 1.0f;
+			scale = 1.0f;
 		}
 	};
 

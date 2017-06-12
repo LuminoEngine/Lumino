@@ -37,10 +37,10 @@ public:
 	virtual ~StringReader();
 
 public:
-	virtual int Peek();
+	virtual int peek();
 	virtual int read();
-	virtual bool ReadLine(String* line);
-	virtual String ReadToEnd();
+	virtual bool readLine(String* line);
+	virtual String readToEnd();
 	//virtual int GetPosition() const;
 	virtual bool isEOF();
 

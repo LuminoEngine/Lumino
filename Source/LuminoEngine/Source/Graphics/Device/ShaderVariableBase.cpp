@@ -38,7 +38,7 @@ void ShaderVariableBase::MakeInitialValue()
 	{
 		case ShaderVariableType_Bool:
 		{
-			SetBool(false);
+			setBool(false);
 			break;
 		}
 		case ShaderVariableType_BoolArray:
@@ -53,7 +53,7 @@ void ShaderVariableBase::MakeInitialValue()
 		}
 		case ShaderVariableType_Float:
 		{
-			SetFloat(0.0f);
+			setFloat(0.0f);
 			break;
 		}
 		case ShaderVariableType_FloatArray:
@@ -98,9 +98,9 @@ void ShaderVariableBase::MakeInitialValue()
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableBase::SetBool(bool value)
+void ShaderVariableBase::setBool(bool value)
 {
-	m_value.SetBool(value);
+	m_value.setBool(value);
 	m_modifid = true;
 }
 
@@ -119,9 +119,9 @@ void ShaderVariableBase::setInt(int value)
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableBase::SetFloat(float value)
+void ShaderVariableBase::setFloat(float value)
 {
-	m_value.SetFloat(value);
+	m_value.setFloat(value);
 	m_modifid = true;
 }
 

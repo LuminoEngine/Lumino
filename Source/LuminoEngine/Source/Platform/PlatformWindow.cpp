@@ -92,7 +92,7 @@ bool PlatformWindow::SendPlatformEvent(const PlatformEventArgs& e)
 			case PlatformEventType::WindowSizeChanged:
 			{
 				// ウィンドウサイズを拾っておく
-				m_clientSize.Set(e.size.width, e.size.height);
+				m_clientSize.set(e.size.width, e.size.height);
 				break;
 			}
 			case PlatformEventType::WindowActivate:

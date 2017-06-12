@@ -33,15 +33,15 @@ void LightComponent::initialize(LightType type)
 	SceneNode::initialize();
 	m_lightInfo = RefPtr<detail::DynamicLightInfo>::makeRef();
 	m_lightInfo->m_type = type;
-	m_lightInfo->m_diffuse.Set(1.0f, 1.0f, 1.0f, 1.0f);
-	m_lightInfo->m_ambient.Set(1.0f, 1.0f, 1.0f, 1.0f);
-	m_lightInfo->m_specular.Set(1.0f, 1.0f, 1.0f, 1.0f);
+	m_lightInfo->m_diffuse.set(1.0f, 1.0f, 1.0f, 1.0f);
+	m_lightInfo->m_ambient.set(1.0f, 1.0f, 1.0f, 1.0f);
+	m_lightInfo->m_specular.set(1.0f, 1.0f, 1.0f, 1.0f);
 	m_lightInfo->m_shadowZFar = 1000.0f;
 
 	// Unity Default
 	Quaternion rot;
-	rot.RotateX(Math::DegreesToRadians(50));
-	rot.RotateY(Math::DegreesToRadians(-30));
+	rot.rotateX(Math::degreesToRadians(50));
+	rot.rotateY(Math::degreesToRadians(-30));
 	SetRotation(rot);
 }
 

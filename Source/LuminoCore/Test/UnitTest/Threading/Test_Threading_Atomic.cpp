@@ -20,7 +20,7 @@ TEST_F(Test_Threading_Atomic, Basic)
 	public:
 		Atomic* value;
 		Atomic* valueIncr;
-		virtual void Execute()
+		virtual void execute()
 		{
 			for (int i = 0; i < 1000; i++)
 			{
@@ -35,7 +35,7 @@ TEST_F(Test_Threading_Atomic, Basic)
 	public:
 		Atomic* value;
 		Atomic* valueDecr;
-		virtual void Execute()
+		virtual void execute()
 		{
 			for (int i = 0; i < 1000; i++)
 			{
@@ -48,7 +48,7 @@ TEST_F(Test_Threading_Atomic, Basic)
 	Atomic value;		// ++ と -- を繰り返す
 	Atomic valueIncr;	// ++ だけ
 	Atomic valueDecr;	// -- だけ
-	value.Set(10);			// 初期値
+	value.set(10);			// 初期値
 
 	// ++ と -- スレッドを 10 個ずつ走らせる
 	const int ThreadCount = 10;

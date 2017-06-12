@@ -180,7 +180,7 @@ void ShaderSemanticsManager::UpdateElementVariables(const ElementInfo& info)
 					// TODO: WriteBool() がほしい
 					m_tempBufferWriter.writeUInt8((lights == nullptr) ? false : lights[i] != nullptr);
 				}
-				varInfo.variable->SetBoolArray((const bool*)m_tempBuffer.GetBuffer(), DynamicLightInfo::MaxLights);
+				varInfo.variable->SetBoolArray((const bool*)m_tempBuffer.getBuffer(), DynamicLightInfo::MaxLights);
 				break;
 			case BuiltinSemantics::LightWVPMatrices:
 				LN_NOTIMPLEMENTED();
@@ -205,7 +205,7 @@ void ShaderSemanticsManager::UpdateElementVariables(const ElementInfo& info)
 						Vector4 v = (lights[i] != nullptr) ? Vector4(lights[i]->m_direction, 0) : Vector4(0, 0, 0, 0);
 						m_tempBufferWriter.write(&v, sizeof(Vector4));
 					}
-					varInfo.variable->SetVectorArray((const Vector4*)m_tempBuffer.GetBuffer(), DynamicLightInfo::MaxLights);
+					varInfo.variable->SetVectorArray((const Vector4*)m_tempBuffer.getBuffer(), DynamicLightInfo::MaxLights);
 				}
 				break;
 			case BuiltinSemantics::LightPositions:
@@ -217,7 +217,7 @@ void ShaderSemanticsManager::UpdateElementVariables(const ElementInfo& info)
 						Vector4 v = (lights[i] != nullptr) ? Vector4(lights[i]->transform.getPosition(), 0) : Vector4(0, 0, 0, 0);
 						m_tempBufferWriter.write(&v, sizeof(Vector4));
 					}
-					varInfo.variable->SetVectorArray((const Vector4*)m_tempBuffer.GetBuffer(), DynamicLightInfo::MaxLights);
+					varInfo.variable->SetVectorArray((const Vector4*)m_tempBuffer.getBuffer(), DynamicLightInfo::MaxLights);
 				}
 				break;
 			case BuiltinSemantics::LightZFars:
@@ -228,7 +228,7 @@ void ShaderSemanticsManager::UpdateElementVariables(const ElementInfo& info)
 					{
 						m_tempBufferWriter.writeFloat((lights[i] != nullptr) ? lights[i]->m_shadowZFar : 0.0f);
 					}
-					varInfo.variable->SetFloatArray((const float*)m_tempBuffer.GetBuffer(), DynamicLightInfo::MaxLights);
+					varInfo.variable->SetFloatArray((const float*)m_tempBuffer.getBuffer(), DynamicLightInfo::MaxLights);
 				}
 				break;
 			case BuiltinSemantics::LightDiffuses:
@@ -240,7 +240,7 @@ void ShaderSemanticsManager::UpdateElementVariables(const ElementInfo& info)
 						auto& v = (lights[i] != nullptr) ? lights[i]->m_diffuse : Color::Black;
 						m_tempBufferWriter.write(&v, sizeof(Color));
 					}
-					varInfo.variable->SetVectorArray((const Vector4*)m_tempBuffer.GetBuffer(), DynamicLightInfo::MaxLights);
+					varInfo.variable->SetVectorArray((const Vector4*)m_tempBuffer.getBuffer(), DynamicLightInfo::MaxLights);
 				}
 				break;
 			case BuiltinSemantics::LightAmbients:
@@ -252,7 +252,7 @@ void ShaderSemanticsManager::UpdateElementVariables(const ElementInfo& info)
 						auto& v = (lights[i] != nullptr) ? lights[i]->m_ambient : Color::Transparency;		// TODO: デフォルト値は？
 						m_tempBufferWriter.write(&v, sizeof(Color));
 					}
-					varInfo.variable->SetVectorArray((const Vector4*)m_tempBuffer.GetBuffer(), DynamicLightInfo::MaxLights);
+					varInfo.variable->SetVectorArray((const Vector4*)m_tempBuffer.getBuffer(), DynamicLightInfo::MaxLights);
 				}
 				break;
 			case BuiltinSemantics::LightSpeculars:
@@ -264,7 +264,7 @@ void ShaderSemanticsManager::UpdateElementVariables(const ElementInfo& info)
 						auto& v = (lights[i] != nullptr) ? lights[i]->m_specular : Color::Black;		// TODO: デフォルト値は？
 						m_tempBufferWriter.write(&v, sizeof(Color));
 					}
-					varInfo.variable->SetVectorArray((const Vector4*)m_tempBuffer.GetBuffer(), DynamicLightInfo::MaxLights);
+					varInfo.variable->SetVectorArray((const Vector4*)m_tempBuffer.getBuffer(), DynamicLightInfo::MaxLights);
 				}
 				break;
 
@@ -306,7 +306,7 @@ void ShaderSemanticsManager::UpdateSubsetVariables(const SubsetInfo& info)
 				break;
 			case BuiltinSemantics::MaterialSpecularPower:
 				if (cm != nullptr)
-					varInfo.variable->SetFloat(cm->m_power);
+					varInfo.variable->setFloat(cm->m_power);
 				break;
 			case BuiltinSemantics::ColorScale:
 				if (cm != nullptr)
@@ -644,7 +644,7 @@ ShaderValue& ShaderValue::operator = (const ShaderValue& obj)
 }
 
 //------------------------------------------------------------------------------
-void ShaderValue::SetBool(bool value)
+void ShaderValue::setBool(bool value)
 {
 	m_type = ShaderVariableType_Bool;
 	m_value.BoolVal = value;
@@ -671,7 +671,7 @@ void ShaderValue::SetBoolArray(const bool* values, int count)
 }
 
 //------------------------------------------------------------------------------
-void ShaderValue::SetFloat(float value)
+void ShaderValue::setFloat(float value)
 {
 	m_type = ShaderVariableType_Float;
 	m_value.Float = value;
@@ -977,19 +977,19 @@ int ShaderVariable::GetArrayElements() const
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariable::SetBool(bool value)
+void ShaderVariable::setBool(bool value)
 {
-	if (m_value.getType() != ShaderVariableType_Bool || value != m_value.GetBool())
+	if (m_value.getType() != ShaderVariableType_Bool || value != m_value.getBool())
 	{
 		SetModified();
-		m_value.SetBool(value);
+		m_value.setBool(value);
 	}
 }
 
 //------------------------------------------------------------------------------
-bool ShaderVariable::GetBool() const
+bool ShaderVariable::getBool() const
 {
-	return m_value.GetBool();
+	return m_value.getBool();
 }
 
 //------------------------------------------------------------------------------
@@ -1017,19 +1017,19 @@ int ShaderVariable::getInt() const
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariable::SetFloat(float value)
+void ShaderVariable::setFloat(float value)
 {
-	if (m_value.getType() != ShaderVariableType_Float || value != m_value.GetFloat())
+	if (m_value.getType() != ShaderVariableType_Float || value != m_value.getFloat())
 	{
 		SetModified();
-		m_value.SetFloat(value);
+		m_value.setFloat(value);
 	}
 }
 
 //------------------------------------------------------------------------------
-float ShaderVariable::GetFloat() const
+float ShaderVariable::getFloat() const
 {
-	return m_value.GetFloat();
+	return m_value.getFloat();
 }
 
 //------------------------------------------------------------------------------

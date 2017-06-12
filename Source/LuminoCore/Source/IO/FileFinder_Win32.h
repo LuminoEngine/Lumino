@@ -15,7 +15,7 @@ template<typename TChar>
 static inline void makePattern(const GenericStringRef<TChar>& path, TChar* pattern)
 {
 	int len = path.copyTo(pattern, LN_MAX_PATH);
-	if (!PathTraits::IsSeparatorChar(pattern[len]))
+	if (!PathTraits::isSeparatorChar(pattern[len]))
 	{
 		LN_THROW(len < LN_MAX_PATH - 1, ArgumentException);
 		pattern[len] = '/';

@@ -12,7 +12,7 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 StreamWriter::StreamWriter(Stream* stream, Encoding* encoding)
 {
-	Init(stream, encoding);
+	init(stream, encoding);
 }
 
 //------------------------------------------------------------------------------
@@ -28,7 +28,7 @@ StreamWriter::StreamWriter(const PathName& filePath, Encoding* encoding, FileWri
 	}
 
 	RefPtr<FileStream> stream = FileStream::create(filePath, openMode);
-	Init(stream, encoding);
+	init(stream, encoding);
 }
 
 //------------------------------------------------------------------------------
@@ -37,7 +37,7 @@ StreamWriter::~StreamWriter()
 }
 
 //------------------------------------------------------------------------------
-void StreamWriter::Init(Stream* stream, Encoding* encoding)
+void StreamWriter::init(Stream* stream, Encoding* encoding)
 {
 	// encoding –¢Žw’è‚Å‚ ‚ê‚Î UTF8 ‚Æ‚·‚é
 	if (encoding == NULL) {
@@ -45,17 +45,17 @@ void StreamWriter::Init(Stream* stream, Encoding* encoding)
 	}
 
 	m_stream = stream;
-	SetEncoding(encoding);
+	setEncoding(encoding);
 }
 
 //------------------------------------------------------------------------------
-void StreamWriter::Flash()
+void StreamWriter::flash()
 {
 	m_stream->flush();
 }
 
 //------------------------------------------------------------------------------
-void StreamWriter::WriteOverride(const void* data, size_t byteCount)
+void StreamWriter::writeOverride(const void* data, size_t byteCount)
 {
 	m_stream->write(data, byteCount);
 }

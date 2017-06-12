@@ -26,7 +26,7 @@ Bitmap::Bitmap()
 //------------------------------------------------------------------------------
 Bitmap::Bitmap(const SizeI& size, PixelFormat format, bool upFlow)
 {
-	Init();
+	init();
 	m_size = size;
 	m_depth = 1;
 	m_format = format;
@@ -37,8 +37,8 @@ Bitmap::Bitmap(const SizeI& size, PixelFormat format, bool upFlow)
 //------------------------------------------------------------------------------
 Bitmap::Bitmap(int width, int height, int depth, PixelFormat format, bool upFlow)
 {
-	Init();
-	m_size.Set(width, height);
+	init();
+	m_size.set(width, height);
 	m_depth = depth;
 	m_format = format;
 	m_bitmapData = ByteBuffer(GetPixelFormatByteCount(m_format, m_size, m_depth));
@@ -48,7 +48,7 @@ Bitmap::Bitmap(int width, int height, int depth, PixelFormat format, bool upFlow
 //------------------------------------------------------------------------------
 Bitmap::Bitmap(Stream* stream, bool flipV)
 {
-	Init();
+	init();
 	LN_THROW(stream != NULL, ArgumentException);
 
 	PngFile pngFile;
@@ -65,7 +65,7 @@ Bitmap::Bitmap(Stream* stream, bool flipV)
 //------------------------------------------------------------------------------
 Bitmap::Bitmap(const TCHAR* filePath)
 {
-	Init();
+	init();
 	LN_THROW(filePath != NULL, ArgumentException);
 
 	RefPtr<FileStream> file = FileStream::create(filePath, FileOpenMode::read);
@@ -82,7 +82,7 @@ Bitmap::Bitmap(const TCHAR* filePath)
 //------------------------------------------------------------------------------
 Bitmap::Bitmap(ByteBuffer buffer, const SizeI& size, PixelFormat format)
 {
-	Init();
+	init();
 	m_size = size;
 	m_depth = 1;
 	m_format = format;
@@ -90,7 +90,7 @@ Bitmap::Bitmap(ByteBuffer buffer, const SizeI& size, PixelFormat format)
 }
 Bitmap::Bitmap(const ByteBuffer& buffer, const SizeI& size, PixelFormat format, bool upFlow)
 {
-	Init();
+	init();
 	m_size = size;
 	m_depth = 1;
 	m_format = format;
@@ -101,7 +101,7 @@ Bitmap::Bitmap(const ByteBuffer& buffer, const SizeI& size, PixelFormat format, 
 //------------------------------------------------------------------------------
 Bitmap::Bitmap(void* buffer, const SizeI& size, PixelFormat format, bool upFlow)
 {
-	Init();
+	init();
 	m_size = size;
 	m_depth = 1;
 	m_format = format;
@@ -112,8 +112,8 @@ Bitmap::Bitmap(void* buffer, const SizeI& size, PixelFormat format, bool upFlow)
 //------------------------------------------------------------------------------
 Bitmap::Bitmap(void* buffer, int width, int height, int depth, PixelFormat format)
 {
-	Init();
-	m_size.Set(width, height);
+	init();
+	m_size.set(width, height);
 	m_depth = depth;
 	m_format = format;
 	m_bitmapData.attach(buffer, GetPixelFormatByteCount(m_format, m_size, m_depth));
@@ -125,10 +125,10 @@ Bitmap::~Bitmap()
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::Init()
+void Bitmap::init()
 {
 	//m_bitmapData;
-	m_size.Set(0, 0);
+	m_size.set(0, 0);
 	m_pitch = 0;
 	m_format = PixelFormat::Unknown;
 	m_upFlow = false;

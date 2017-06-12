@@ -194,7 +194,7 @@ const ThicknessF& TextElement::GetLayoutPadding() const { return m_padding; }
 AlignmentAnchor TextElement::GetLayoutAnchor() const { return m_anchor; }
 HAlignment TextElement::GetLayoutHAlignment() const { return m_horizontalAlignment; }
 VAlignment TextElement::GetLayoutVAlignment() const { return m_verticalAlignment; }
-void TextElement::GetLayoutMinMaxInfo(Size* outMin, Size* outMax) const { *outMin = Size::Zero, outMax->Set(INFINITY, INFINITY); }	// TODO:
+void TextElement::GetLayoutMinMaxInfo(Size* outMin, Size* outMax) const { *outMin = Size::Zero, outMax->set(INFINITY, INFINITY); }	// TODO:
 ILayoutElement* TextElement::GetLayoutParent() const { return m_parent; }
 const HAlignment* TextElement::GetLayoutContentHAlignment() { return nullptr; }
 const VAlignment* TextElement::GetLayoutContentVAlignment() { return nullptr; }
@@ -236,7 +236,7 @@ void Block::initialize()
 void Block::AddInline(Inline* inl)
 {
 	if (LN_CHECK_ARG(inl != nullptr)) return;
-	if (LN_CHECK_ARG(inl->GetParent() == nullptr)) return;
+	if (LN_CHECK_ARG(inl->getParent() == nullptr)) return;
 	m_inlines.add(inl);
 	inl->SetParent(this);
 }

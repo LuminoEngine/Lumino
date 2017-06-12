@@ -210,7 +210,7 @@ bool FileSystem::getAttributeInternal(const char* path, FileAttribute* outAttr)
 		return false;
 	}
 
-	const char* fileName = PathTraits::GetFileNameSub(path);
+	const char* fileName = PathTraits::getFileNameSub(path);
 	FileAttribute attrs;
 	if (S_ISDIR(st.st_mode))
 	{

@@ -59,7 +59,7 @@ List<String> DirectoryUtils::getFiles(const TCHAR* drPath, const TCHAR* pattern)
 {
 	List<String> fileList;
 	PathName dirPathKey(drPath);
-	String dirPatternPath(dirPathKey.GetStrEndSeparator());
+	String dirPatternPath(dirPathKey.getStrEndSeparator());
 	if (pattern) {
 		dirPathKey.append(pattern);
 	}

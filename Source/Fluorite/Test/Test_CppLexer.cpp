@@ -44,63 +44,63 @@ TEST_F(Test_CppLexer, Basic)
 	{
 		DO_LEX("5 0x5 5.0 5.");
 		ASSERT_EQ(8, tokens->getCount());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(0)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Int32, tokens->getAt(0)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(2)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Int32, tokens->getAt(2)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(4)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->getAt(4)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(6)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->getAt(6)->GetTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(0)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Int32, tokens->getAt(0)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(2)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Int32, tokens->getAt(2)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(4)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->getAt(4)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(6)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->getAt(6)->getTokenType());
 	}
 	// <Test> 整数サフィックスの確認
 	{
 		DO_LEX("5u 5U    5l 5L    5ul 5Ul 5uL 5UL    5ll 5LL    5ull 5Ull 5uLL 5uLL");
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(0)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt32, tokens->getAt(0)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(2)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt32, tokens->getAt(2)->GetTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(0)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt32, tokens->getAt(0)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(2)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt32, tokens->getAt(2)->getTokenType());
 
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(4)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Int32, tokens->getAt(4)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(6)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Int32, tokens->getAt(6)->GetTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(4)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Int32, tokens->getAt(4)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(6)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Int32, tokens->getAt(6)->getTokenType());
 
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(8)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt32, tokens->getAt(8)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(10)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt32, tokens->getAt(10)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(12)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt32, tokens->getAt(12)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(14)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt32, tokens->getAt(14)->GetTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(8)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt32, tokens->getAt(8)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(10)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt32, tokens->getAt(10)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(12)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt32, tokens->getAt(12)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(14)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt32, tokens->getAt(14)->getTokenType());
 
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(16)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Int64, tokens->getAt(16)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(18)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Int64, tokens->getAt(18)->GetTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(16)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Int64, tokens->getAt(16)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(18)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Int64, tokens->getAt(18)->getTokenType());
 
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(20)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt64, tokens->getAt(20)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(22)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt64, tokens->getAt(22)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(24)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt64, tokens->getAt(24)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(26)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt64, tokens->getAt(26)->GetTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(20)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt64, tokens->getAt(20)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(22)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt64, tokens->getAt(22)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(24)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt64, tokens->getAt(24)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(26)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt64, tokens->getAt(26)->getTokenType());
 	}
 	// <Test> 実数サフィックスの確認
 	{
 		DO_LEX("5f 5.F 5d 5.D");
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(0)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Float, tokens->getAt(0)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(2)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Float, tokens->getAt(2)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(4)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->getAt(4)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(6)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->getAt(6)->GetTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(0)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Float, tokens->getAt(0)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(2)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Float, tokens->getAt(2)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(4)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->getAt(4)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(6)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->getAt(6)->getTokenType());
 	}
 	// <Test> 指数表記
 	{
 		DO_LEX("5e+03 5e+03F 5.e+03 5.0e+03");
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(0)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->getAt(0)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(2)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Float, tokens->getAt(2)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(4)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->getAt(4)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(6)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->getAt(6)->GetTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(0)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->getAt(0)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(2)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Float, tokens->getAt(2)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(4)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->getAt(4)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(6)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->getAt(6)->getTokenType());
 	}
 	// <Test> 文字リテラル
 	{
 		DO_LEX("'a' '\\'' L'\\n'");
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(0)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Char, tokens->getAt(0)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(2)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Char, tokens->getAt(2)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(4)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_WideChar, tokens->getAt(4)->GetTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(0)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Char, tokens->getAt(0)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(2)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Char, tokens->getAt(2)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(4)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_WideChar, tokens->getAt(4)->getTokenType());
 	}
 
 	// <Test> 文字列リテラル
 	{
 		DO_LEX("\"a\" \"\\\"\" L\"\"");
-		ASSERT_EQ(TokenGroup::StringLiteral, tokens->getAt(0)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_AsciiString, tokens->getAt(0)->GetTokenType());
-		ASSERT_EQ(TokenGroup::StringLiteral, tokens->getAt(2)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_AsciiString, tokens->getAt(2)->GetTokenType());
-		ASSERT_EQ(TokenGroup::StringLiteral, tokens->getAt(4)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_WideString, tokens->getAt(4)->GetTokenType());
+		ASSERT_EQ(TokenGroup::StringLiteral, tokens->getAt(0)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_AsciiString, tokens->getAt(0)->getTokenType());
+		ASSERT_EQ(TokenGroup::StringLiteral, tokens->getAt(2)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_AsciiString, tokens->getAt(2)->getTokenType());
+		ASSERT_EQ(TokenGroup::StringLiteral, tokens->getAt(4)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_WideString, tokens->getAt(4)->getTokenType());
 	}
 	// <Test> ブロックコメント
 	{
@@ -131,7 +131,7 @@ TEST_F(Test_CppLexer, Basic)
 	// <Test> 行末エスケープ
 	{
 		DO_LEX("\\\n");
-		ASSERT_EQ(TokenGroup::SpaceSequence, tokens->getAt(0)->GetTokenGroup()); ASSERT_EQ(TT_EscapeNewLine, tokens->getAt(0)->GetTokenType());
+		ASSERT_EQ(TokenGroup::SpaceSequence, tokens->getAt(0)->GetTokenGroup()); ASSERT_EQ(TT_EscapeNewLine, tokens->getAt(0)->getTokenType());
 		ASSERT_EQ(TokenGroup::Eof, tokens->getAt(1)->GetTokenGroup());
 	
 		// コメント、文字列内のものはコメント、文字列として扱う。その外側のものは空白として合扱う。
@@ -161,7 +161,7 @@ TEST_F(Test_CppLexer, Basic)
 		ASSERT_EQ(TokenGroup::Operator, tokens->getAt(0)->GetTokenGroup());
 		ASSERT_EQ(TokenGroup::Identifier, tokens->getAt(1)->GetTokenGroup());
 		ASSERT_EQ(TokenGroup::SpaceSequence, tokens->getAt(2)->GetTokenGroup());
-		ASSERT_EQ(TokenGroup::TextTokens, tokens->getAt(3)->GetTokenGroup()); ASSERT_EQ(TT_PPTokens, tokens->getAt(3)->GetTokenType());
+		ASSERT_EQ(TokenGroup::TextTokens, tokens->getAt(3)->GetTokenGroup()); ASSERT_EQ(TT_PPTokens, tokens->getAt(3)->getTokenType());
 		ASSERT_EQ(TokenGroup::NewLine, tokens->getAt(4)->GetTokenGroup());
 		ASSERT_EQ(TokenGroup::Eof, tokens->getAt(5)->GetTokenGroup());
 	}
@@ -249,7 +249,7 @@ TEST_F(Test_CppLexer, Example)
 		{
 			xml.WriteStartElement(_T("b"));
 			StringA str = t->getString(file);
-			xml.WriteString(String::fromNativeCharString(str.c_str(), str.getLength()));
+			xml.writeString(String::fromNativeCharString(str.c_str(), str.getLength()));
 			xml.WriteEndElement();
 		}
 		else if(t->GetTokenGroup() == TokenGroup::NewLine)
@@ -260,7 +260,7 @@ TEST_F(Test_CppLexer, Example)
 		else
 		{
 			StringA str = t->getString(file);
-			xml.WriteString(String::fromNativeCharString(str.c_str(), str.getLength()));
+			xml.writeString(String::fromNativeCharString(str.c_str(), str.getLength()));
 		}
 	}
 	xml.WriteEndElement();

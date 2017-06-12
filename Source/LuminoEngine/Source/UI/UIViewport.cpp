@@ -48,7 +48,7 @@ void UIViewport::SetPlacement(ViewportPlacement placement)
 //------------------------------------------------------------------------------
 void UIViewport::SetBackbufferSize(int width, int height)
 {
-	m_backbufferSize.Set(width, height);
+	m_backbufferSize.set(width, height);
 }
 
 //------------------------------------------------------------------------------
@@ -260,8 +260,8 @@ void UIViewport::MakeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize
 
 #if 1	// pxel based
 	* mat = Matrix::Identity;
-	mat->Scale(new_w / sw, new_h / sh, 1.0f);
-	mat->Translate(new_x, new_y, 0.0f);
+	mat->scale(new_w / sw, new_h / sh, 1.0f);
+	mat->translate(new_x, new_y, 0.0f);
 #else	// screen coord based
 	*mat = Matrix::Identity;
 	mat->Scale(new_w / dw, new_h / dh, 1.0f);

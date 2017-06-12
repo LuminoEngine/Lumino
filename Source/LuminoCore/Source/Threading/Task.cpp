@@ -83,7 +83,7 @@ Exception* Task::GetException() const
 }
 
 //------------------------------------------------------------------------------
-void Task::Execute()
+void Task::execute()
 {
 	m_status = TaskStatus::Running;
 	try

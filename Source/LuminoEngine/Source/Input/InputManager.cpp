@@ -163,7 +163,7 @@ float InputManager::GetVirtualButtonState(InputBinding* binding, bool keyboard, 
 		if (joyNumber >= m_inputDriver->GetJoystickCount()) return 0.0f;
 
 		auto b = static_cast<GamepadBinding*>(binding);
-		int e = (int)b->GetElement();
+		int e = (int)b->getElement();
 		// ボタン
 		if ((int)GamepadElement::Button1 <= e && e <= (int)GamepadElement::Button16)
 		{
@@ -178,10 +178,10 @@ float InputManager::GetVirtualButtonState(InputBinding* binding, bool keyboard, 
 		{
 			JoystickDeviceState state;
 			m_inputDriver->GetJoystickState(joyNumber, &state);
-			if (b->GetElement() == GamepadElement::PovLeft && (state.POV & PovDirFlags::Left)) return 1.0;
-			if (b->GetElement() == GamepadElement::PovRight && (state.POV & PovDirFlags::Right)) return 1.0;
-			if (b->GetElement() == GamepadElement::PovUp && (state.POV & PovDirFlags::Up)) return 1.0;
-			if (b->GetElement() == GamepadElement::PovDown && (state.POV & PovDirFlags::Down)) return 1.0;
+			if (b->getElement() == GamepadElement::PovLeft && (state.POV & PovDirFlags::Left)) return 1.0;
+			if (b->getElement() == GamepadElement::PovRight && (state.POV & PovDirFlags::Right)) return 1.0;
+			if (b->getElement() == GamepadElement::PovUp && (state.POV & PovDirFlags::Up)) return 1.0;
+			if (b->getElement() == GamepadElement::PovDown && (state.POV & PovDirFlags::Down)) return 1.0;
 			return 0.0f;
 		}
 		// Axis -1.0 .. 1.0

@@ -38,7 +38,7 @@ StringReader::~StringReader()
 }
 
 //------------------------------------------------------------------------------
-int StringReader::Peek()
+int StringReader::peek()
 {
 	if (m_pos >= m_range.getLength()) {
 		return -1;
@@ -56,7 +56,7 @@ int StringReader::read()
 }
 
 //------------------------------------------------------------------------------
-bool StringReader::ReadLine(String* line)
+bool StringReader::readLine(String* line)
 {
 	int i = m_pos;
 	while (i < m_range.getLength())
@@ -89,7 +89,7 @@ bool StringReader::ReadLine(String* line)
 }
 
 //------------------------------------------------------------------------------
-String StringReader::ReadToEnd()
+String StringReader::readToEnd()
 {
 	String s;
 	if (m_pos == 0) {

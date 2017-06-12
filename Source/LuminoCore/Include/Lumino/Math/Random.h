@@ -66,14 +66,14 @@ public:
 		@brief		実数ランダム値を返します。
 		@return		0.0 以上 1.0 未満の実数値
 	*/
-	float GetFloat();
+	float getFloat();
 
 	/**
 		@brief		指定した最大値より小さい実数ランダム値を返します。(0 <= 値 < maxValue)
 		@param[in]	maxValue	: 上限値
 		@return		0 以上で maxValue より小さい実数値
 	*/
-	float GetFloat(float maxValue);
+	float getFloat(float maxValue);
 
 	/**
 		@brief		指定した範囲内の実数ランダム値を返します。(minValue <= 値 < maxValue)

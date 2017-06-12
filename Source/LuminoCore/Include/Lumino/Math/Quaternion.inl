@@ -24,7 +24,7 @@ inline Quaternion::Quaternion(float x_, float y_, float z_, float w_)
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-inline void Quaternion::Set(float x_, float y_, float z_, float w_)
+inline void Quaternion::set(float x_, float y_, float z_, float w_)
 {
 	x = x_;
 	y = y_;
@@ -35,7 +35,7 @@ inline void Quaternion::Set(float x_, float y_, float z_, float w_)
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-inline bool Quaternion::IsIdentity() const
+inline bool Quaternion::isIdentity() const
 {
 	return (x == 0.0f && y == 0.0f && z == 0.0f && w == 1.0f);
 }

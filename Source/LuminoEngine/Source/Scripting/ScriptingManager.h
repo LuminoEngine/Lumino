@@ -40,7 +40,7 @@ public:
 	NlGraphNodeCategory GetCategory() const { return m_category; }
 
 protected:
-	virtual void Execute(NlContext* sc) = 0;
+	virtual void execute(NlContext* sc) = 0;
 
 	NlGraphPin* CreatePin(NlGraphPinCategory category, NlGraphPinDirection direction, const StringRef& name);
 
@@ -100,7 +100,7 @@ LN_INTERNAL_ACCESS:
 	void initialize(const StringRef& name);
 
 protected:
-	virtual void Execute(NlContext* sc);
+	virtual void execute(NlContext* sc);
 
 private:
 	String				m_entryPointName;
@@ -270,7 +270,7 @@ public:
 	NlGraphPin* GetInputValuePin() const { return m_inputValuePin; }
 
 protected:
-	virtual void Execute(NlContext* sc) override;
+	virtual void execute(NlContext* sc) override;
 
 	NlGraphPin*			m_inputValuePin;
 };

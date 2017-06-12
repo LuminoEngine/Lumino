@@ -26,7 +26,7 @@ TEST_F(Test_Vector4, Basic)
 	// this->Set
 	{
 		Vector4 v1;
-		v1.Set(1, 2, 3, 4);
+		v1.set(1, 2, 3, 4);
 		ASSERT_VEC4_NEAR(1, 2, 3, 4, v1);
 	}
 	// this->GetXY
@@ -47,20 +47,20 @@ TEST_F(Test_Vector4, Basic)
 	// this->Clamp
 	{
 		Vector4 v1(1, 2, 3, 4);
-		v1.Clamp(Vector4(0, 4, 2, 3), Vector4(0.5, 5, 3, 8));
+		v1.clamp(Vector4(0, 4, 2, 3), Vector4(0.5, 5, 3, 8));
 		ASSERT_VEC4_NEAR(0.5, 4, 3, 4, v1);
 
 		Vector4 v2(1, 2, 3, 4);
-		v2.Clamp(2, 3);
+		v2.clamp(2, 3);
 		ASSERT_VEC4_NEAR(2, 2, 3, 3, v2);
 	}
 	// this->IsNaNOrInf
 	{
 		Vector4 v(1, 2, 3, 4);
-		ASSERT_FALSE(v.IsNaNOrInf());
+		ASSERT_FALSE(v.isNaNOrInf());
 		volatile  float d = 0.0f;
 		v.x /= d;
-		ASSERT_TRUE(v.IsNaNOrInf());
+		ASSERT_TRUE(v.isNaNOrInf());
 	}
 
 	// Vector4::Normalize
@@ -90,7 +90,7 @@ TEST_F(Test_Vector4, Basic)
 	}
 	// Vector4::Lerp()
 	{
-		Vector4 v1 = Vector4::Lerp(
+		Vector4 v1 = Vector4::lerp(
 			Vector4(1, 2, 3, 4),
 			Vector4(3, 4, 7, 8),
 			0.75);
@@ -98,7 +98,7 @@ TEST_F(Test_Vector4, Basic)
 	}
 	// Vector4::Hermite()
 	{
-		Vector4 v1 = Vector4::Hermite(
+		Vector4 v1 = Vector4::hermite(
 			Vector4(1, 2, 3, 4),
 			Vector4(3, 4, 7, 8),
 			Vector4(0.3f, 0.4f, -0.5f, -0.7f),
@@ -108,7 +108,7 @@ TEST_F(Test_Vector4, Basic)
 	}
 	// Vector4::CatmullRom()
 	{
-		Vector4 v1 = Vector4::CatmullRom(
+		Vector4 v1 = Vector4::catmullRom(
 			Vector4(1, 2, 3, 4),
 			Vector4(3, 4, 7, 8),
 			Vector4(0.3f, 0.4f, -0.5f, -0.7f),
@@ -121,31 +121,31 @@ TEST_F(Test_Vector4, Basic)
 	{
 		Vector4 v1;
 
-		v1.Set(1, 2, 3, 4);
+		v1.set(1, 2, 3, 4);
 		v1 += Vector4(1, 2, 3, 4);
 		ASSERT_VEC4_NEAR(2, 4, 6, 8, v1);
-		v1.Set(1, 2, 3, 4);
+		v1.set(1, 2, 3, 4);
 		v1 += 5;
 		ASSERT_VEC4_NEAR(6, 7, 8, 9, v1);
 
-		v1.Set(1, 2, 3, 4);
+		v1.set(1, 2, 3, 4);
 		v1 -= Vector4(1, 2, 3, 4);
 		ASSERT_VEC4_NEAR(0, 0, 0, 0, v1);
-		v1.Set(1, 2, 3, 4);
+		v1.set(1, 2, 3, 4);
 		v1 -= 5;
 		ASSERT_VEC4_NEAR(-4, -3, -2, -1, v1);
 
-		v1.Set(1, 2, 3, 4);
+		v1.set(1, 2, 3, 4);
 		v1 *= Vector4(5, 6, 7, 8);
 		ASSERT_VEC4_NEAR(5, 12, 21, 32, v1);
-		v1.Set(1, 2, 3, 4);
+		v1.set(1, 2, 3, 4);
 		v1 *= 5;
 		ASSERT_VEC4_NEAR(5, 10, 15, 20, v1);
 
-		v1.Set(1, 2, 3, 4);
+		v1.set(1, 2, 3, 4);
 		v1 /= Vector4(1, 2, 3, 4);
 		ASSERT_VEC4_NEAR(1, 1, 1, 1, v1);
-		v1.Set(10, 20, 30, 40);
+		v1.set(10, 20, 30, 40);
 		v1 /= 5;
 		ASSERT_VEC4_NEAR(2, 4, 6, 8, v1);
 	}
@@ -181,7 +181,7 @@ TEST_F(Test_Vector4, Basic)
 		v1 = 20 / Vector4(1, 2, 4, 5);
 		ASSERT_VEC4_NEAR(20, 10, 5, 4, v1);
 
-		v1.Set(2, 4, 6, 8);
+		v1.set(2, 4, 6, 8);
 		ASSERT_TRUE(v1 == Vector4(2, 4, 6, 8));
 		ASSERT_FALSE(v1 != Vector4(2, 4, 6, 8));
 	}

@@ -79,11 +79,11 @@ UIListBoxItemPtr UIListBox::AddTextItem(const String& text)
 	auto textBlock = RefPtr<UITextBlock>::makeRef();
 	textBlock->initialize();
 	textBlock->setText(text);
-	return AddItem(textBlock);
+	return addItem(textBlock);
 }
 
 //------------------------------------------------------------------------------
-UIListBoxItemPtr UIListBox::AddItem(UIElement* item)
+UIListBoxItemPtr UIListBox::addItem(UIElement* item)
 {
 	if (LN_CHECK_ARG(item != nullptr)) return nullptr;
 

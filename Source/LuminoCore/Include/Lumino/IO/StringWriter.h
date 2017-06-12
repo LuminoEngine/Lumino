@@ -19,8 +19,8 @@ public:
 	String toString() const;
 	
 private:
-	virtual void Flash();
-	virtual void WriteOverride(const void* data, size_t byteCount);
+	virtual void flash();
+	virtual void writeOverride(const void* data, size_t byteCount);
 
 private:
 	StringBuilder	m_builder;

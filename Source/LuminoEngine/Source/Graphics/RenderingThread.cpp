@@ -80,7 +80,7 @@ void RenderingThread::RequestResume()
 }
 
 //------------------------------------------------------------------------------
-void RenderingThread::Execute()
+void RenderingThread::execute()
 {
 	// 描画スレッド初期化
 	m_device->AttachRenderingThread();
@@ -120,7 +120,7 @@ void RenderingThread::Execute()
 					ScopedProfilerSection sec(Profiler::Group_RenderThread, Profiler::Section_RenderThread_CommandExecute);
 
 					// コマンドリスト実行
-					commandList->Execute(m_device);
+					commandList->execute(m_device);
 				}
 				catch (Exception& e)
 				{

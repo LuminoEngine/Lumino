@@ -71,7 +71,7 @@ void EngineSettings::SetMainWindowSize(const SizeI& size)
 }
 void EngineSettings::SetMainWindowSize(int width, int height)
 {
-	detail::EngineSettings::instance.mainWindowSize.Set(width, height);
+	detail::EngineSettings::instance.mainWindowSize.set(width, height);
 }
 
 //------------------------------------------------------------------------------
@@ -81,7 +81,7 @@ void EngineSettings::SetMainBackBufferSize(const SizeI& size)
 }
 void EngineSettings::SetMainBackBufferSize(int width, int height)
 {
-	detail::EngineSettings::instance.mainBackBufferSize.Set(width, height);
+	detail::EngineSettings::instance.mainBackBufferSize.set(width, height);
 }
 
 //------------------------------------------------------------------------------

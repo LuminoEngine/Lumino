@@ -255,7 +255,7 @@ static bool ParseHexColor(const StringRef& str, Color32* outColor)
 			return false;
 		}
 
-		outColor->Set(r, g, b, a);
+		outColor->set(r, g, b, a);
 		return true;
 	}
 	return false;
@@ -465,19 +465,19 @@ Color::Color(const Vector4& vec)
 //------------------------------------------------------------------------------
 void Color::AddClamp(const Color& color)
 {
-	r = Math::Clamp(r + color.r, 0.0f, 1.0f);
-	g = Math::Clamp(g + color.g, 0.0f, 1.0f);
-	b = Math::Clamp(b + color.b, 0.0f, 1.0f);
-	a = Math::Clamp(a + color.a, 0.0f, 1.0f);
+	r = Math::clamp(r + color.r, 0.0f, 1.0f);
+	g = Math::clamp(g + color.g, 0.0f, 1.0f);
+	b = Math::clamp(b + color.b, 0.0f, 1.0f);
+	a = Math::clamp(a + color.a, 0.0f, 1.0f);
 }
 
 //------------------------------------------------------------------------------
 void Color::MultiplyClamp(const Color& color)
 {
-	r = Math::Clamp(r * color.r, 0.0f, 1.0f);
-	g = Math::Clamp(g * color.g, 0.0f, 1.0f);
-	b = Math::Clamp(b * color.b, 0.0f, 1.0f);
-	a = Math::Clamp(a * color.a, 0.0f, 1.0f);
+	r = Math::clamp(r * color.r, 0.0f, 1.0f);
+	g = Math::clamp(g * color.g, 0.0f, 1.0f);
+	b = Math::clamp(b * color.b, 0.0f, 1.0f);
+	a = Math::clamp(a * color.a, 0.0f, 1.0f);
 }
 
 //------------------------------------------------------------------------------
@@ -500,13 +500,13 @@ Color Color::FromString(const StringRef& str)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Color Color::Lerp(const Color& color1, const Color& color2, float t)
+Color Color::lerp(const Color& color1, const Color& color2, float t)
 {
 	return Color(
-		Math::Lerp(color1.r, color2.r, t),
-		Math::Lerp(color1.g, color2.g, t),
-		Math::Lerp(color1.b, color2.b, t),
-		Math::Lerp(color1.a, color2.a, t));
+		Math::lerp(color1.r, color2.r, t),
+		Math::lerp(color1.g, color2.g, t),
+		Math::lerp(color1.b, color2.b, t),
+		Math::lerp(color1.a, color2.a, t));
 }
 
 //==============================================================================
@@ -518,10 +518,10 @@ const ToneF ToneF::Zero(0, 0, 0, 0);
 //------------------------------------------------------------------------------
 void ToneF::AddClamp(const ToneF& tone)
 {
-	r = Math::Clamp(r + tone.r, 0.0f, 1.0f);
-	g = Math::Clamp(g + tone.g, 0.0f, 1.0f);
-	b = Math::Clamp(b + tone.b, 0.0f, 1.0f);
-	gray = Math::Clamp(gray + tone.gray, 0.0f, 1.0f);
+	r = Math::clamp(r + tone.r, 0.0f, 1.0f);
+	g = Math::clamp(g + tone.g, 0.0f, 1.0f);
+	b = Math::clamp(b + tone.b, 0.0f, 1.0f);
+	gray = Math::clamp(gray + tone.gray, 0.0f, 1.0f);
 }
 
 

@@ -88,7 +88,7 @@ public:
 
 	const List<DiagnosticsItem>* GetItems() { return &m_items; }
 
-	bool HasError() const { return !m_items.isEmpty(); }
+	bool hasError() const { return !m_items.isEmpty(); }
 
 LN_INTERNAL_ACCESS:
 

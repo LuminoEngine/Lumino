@@ -46,7 +46,7 @@ public:
 			m_engine = engine;
 			m_updateTask = updateTask;
 		}
-		void Execute()
+		void execute()
 		{
 			m_updateTask->Wait();
 			m_engine->Render();

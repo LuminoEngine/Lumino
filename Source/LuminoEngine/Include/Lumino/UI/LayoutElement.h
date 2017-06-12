@@ -88,7 +88,7 @@ struct GridDefinitionData
 			return desiredSize;
 		}
 		else if (type == GridLengthType::Pixel) {
-			return Math::Clamp(size, minSize, maxSize);
+			return Math::clamp(size, minSize, maxSize);
 		}
 		else {
 			return 0;
@@ -102,7 +102,7 @@ struct GridDefinitionData
 
 	void AdjustActualSize()
 	{
-		actualSize = Math::Clamp(actualSize, minSize, maxSize);
+		actualSize = Math::clamp(actualSize, minSize, maxSize);
 	}
 };
 

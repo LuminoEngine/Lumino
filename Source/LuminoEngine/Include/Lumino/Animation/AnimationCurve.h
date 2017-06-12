@@ -332,16 +332,16 @@ public:
 		float Evaluate(float Progress)
 		{
 			//ニュートン法による近似
-			float t = Math::Clamp(Progress, 0, 1);
+			float t = Math::clamp(Progress, 0, 1);
 			float dt;
 			do
 			{
 				dt = -(fx(t) - Progress) / dfx(t);
-				if (Math::IsNaN(dt))
+				if (Math::isNaN(dt))
 					break;
-				t += Math::Clamp(dt, -1.0f, 1.0f);//大幅に移動して別の解に到達するのを防止する用
+				t += Math::clamp(dt, -1.0f, 1.0f);//大幅に移動して別の解に到達するのを防止する用
 			} while (abs(dt) > Epsilon);
-			return Math::Clamp(fy(t), 0.0f, 1.0f);//念のため、0-1の間に収まるようにした
+			return Math::clamp(fy(t), 0.0f, 1.0f);//念のため、0-1の間に収まるようにした
 		}
 	private:
 		//fy(t)を計算する関数

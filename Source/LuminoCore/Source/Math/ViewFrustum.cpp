@@ -67,16 +67,16 @@ void ViewFrustum::GetCornerPoints(Vector3* points) const
 	if (points == nullptr) return;
 
 	// Near
-	points[0].Set(-1, 1, 0);
-	points[1].Set(-1, -1, 0);
-	points[2].Set(1, -1, 0);
-	points[3].Set(1, 1, 0);
+	points[0].set(-1, 1, 0);
+	points[1].set(-1, -1, 0);
+	points[2].set(1, -1, 0);
+	points[3].set(1, 1, 0);
 
 	// Far
-	points[4].Set(-1, 1, 1);
-	points[5].Set(-1, -1, 1);
-	points[6].Set(1, -1, 1);
-	points[7].Set(1, 1, 1);
+	points[4].set(-1, 1, 1);
+	points[5].set(-1, -1, 1);
+	points[6].set(1, -1, 1);
+	points[7].set(1, 1, 1);
 
 	// Transfrom
 	Matrix inv = Matrix::MakeInverse(m_viewProjMatrix);

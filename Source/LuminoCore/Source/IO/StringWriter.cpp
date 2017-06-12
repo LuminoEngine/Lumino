@@ -26,12 +26,12 @@ String StringWriter::toString() const
 }
 
 //------------------------------------------------------------------------------
-void StringWriter::Flash()
+void StringWriter::flash()
 {
 }
 
 //------------------------------------------------------------------------------
-void StringWriter::WriteOverride(const void* data, size_t byteCount)
+void StringWriter::writeOverride(const void* data, size_t byteCount)
 {
 	m_builder.append((const TCHAR*)data, byteCount / sizeof(TCHAR));
 }

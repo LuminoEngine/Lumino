@@ -158,13 +158,13 @@ TEST_F(Test_IO_FileSystem, forEachFilesInDirectory)
 	FileSystem::forEachFilesInDirectory<TCHAR>(TEMPFILE("Test_IO_FileSystem/ForEachFilesInDirectory"), [&list](const PathName& path) { list.add(path); });
 
 	ASSERT_EQ(4, list.getCount());
-	ASSERT_EQ(true, list[0].IsAbsolute());
+	ASSERT_EQ(true, list[0].isAbsolute());
 	ASSERT_EQ(_T("dir1"), list[0].getFileName());
-	ASSERT_EQ(true, list[1].IsAbsolute());
+	ASSERT_EQ(true, list[1].isAbsolute());
 	ASSERT_EQ(_T("dir2"), list[1].getFileName());
-	ASSERT_EQ(true, list[2].IsAbsolute());
+	ASSERT_EQ(true, list[2].isAbsolute());
 	ASSERT_EQ(_T("file1"), list[2].getFileName());
-	ASSERT_EQ(true, list[3].IsAbsolute());
+	ASSERT_EQ(true, list[3].isAbsolute());
 	ASSERT_EQ(_T("file2"), list[3].getFileName());
 }
 

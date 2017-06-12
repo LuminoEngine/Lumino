@@ -331,8 +331,8 @@ public:
 
 	DrawElementList();
 
-	int GetElementCount() { return m_commandDataCache.GetDataCount(); }
-	DrawElement* GetElement(int index) { return reinterpret_cast<DrawElement*>(m_commandDataCache.GetDataByIndex(index)); }
+	int getElementCount() { return m_commandDataCache.GetDataCount(); }
+	DrawElement* getElement(int index) { return reinterpret_cast<DrawElement*>(m_commandDataCache.GetDataByIndex(index)); }
 	DrawElementBatch* GetBatch(int index) { return &m_batchList[index]; }
 
 	void ClearCommands();
@@ -571,7 +571,7 @@ public:
 		return Instantiate<TDiagItem>(typeName);
 	}
 
-	void Print();
+	void print();
 
 private:
 
@@ -835,7 +835,7 @@ LN_INTERNAL_ACCESS:
 	void SetBuiltinEffectData(const detail::BuiltinEffectData& data);
 	void BeginMakeElements();
 
-	const detail::BatchStateBlock& GetState() const { return m_state; }
+	const detail::BatchStateBlock& getState() const { return m_state; }
 	void SetState(const detail::BatchStateBlock& state) { m_state = state; }
 	void AddDynamicLightInfo(detail::DynamicLightInfo* lightInfo);
 	void PushMetadata(const DrawElementMetadata* metadata);

@@ -31,7 +31,7 @@ int32_t Atomic::get() const
 }
 
 //------------------------------------------------------------------------------
-void Atomic::Set( int32_t nValue )
+void Atomic::set( int32_t nValue )
 {
     ::InterlockedExchange( &m_value, nValue );
 }

@@ -108,7 +108,7 @@ void EngineDiagViewer::initialize(EngineManager* manager, EngineDiagCore* diagCo
 
 	m_font = manager->GetGraphicsManager()->GetFontManager()->GetBuiltinFont(BuiltinFontSize::XXSmall);
 	//m_windowRect.Set(640 - 8 - 300, 8, 300, 256);	// TODO
-	m_windowRect.Set(8, 8, 300, 300);
+	m_windowRect.set(8, 8, 300, 300);
 }
 
 //------------------------------------------------------------------------------

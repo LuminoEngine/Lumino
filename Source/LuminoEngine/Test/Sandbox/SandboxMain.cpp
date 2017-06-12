@@ -121,7 +121,7 @@ void Main()
 
 	Ray ray(Vector3(1, 0, 0), Vector3(0, 0, 1));
 	Matrix mat = Matrix::MakeScaling(2) * Matrix::MakeRotationY(Math::PI / 4)/* * Matrix::MakeTranslation(2, 0, 0)*/;
-	mat.Inverse();
+	mat.inverse();
 
 	Ray ray2 = ray;
 	ray2.direction += ray2.origin;
@@ -603,7 +603,7 @@ void Main()
 			Engine::PresentFrame();
 		}
 
-		//body1->GetWorldTransform().GetPosition().Print();
+		//body1->GetWorldTransform().GetPosition().print();
 
 
 		//if (Input::IsTriggered(InputButtons::Ok))

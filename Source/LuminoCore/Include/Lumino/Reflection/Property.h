@@ -38,7 +38,7 @@ public:
 
 	virtual void SetValue(ReflectionObject* target, Variant value, PropertySetSource source) const { LN_THROW(0, InvalidOperationException); }
 	virtual Variant getValue(const ReflectionObject* target) const { LN_THROW(0, InvalidOperationException); }
-	virtual void AddItem(ReflectionObject* target, const Variant& value) const { LN_THROW(0, InvalidOperationException); }
+	virtual void addItem(ReflectionObject* target, const Variant& value) const { LN_THROW(0, InvalidOperationException); }
 
 	virtual bool IsReadable() const { return false; }
 	virtual bool IsWritable() const { return false; }
@@ -168,12 +168,12 @@ public:
 	template<typename T, typename TIsList> struct ListOperationSelector
 	{
 		static bool IsList() { return false; }
-		static void AddItem(T& list, const Variant& item) { LN_THROW(0, InvalidOperationException); }
+		static void addItem(T& list, const Variant& item) { LN_THROW(0, InvalidOperationException); }
 	};
 	template<typename T> struct ListOperationSelector<T, std::true_type>
 	{
 		static bool IsList() { return true; }
-		static void AddItem(T& list, const Variant& item) { list.AddVariant(item); }
+		static void addItem(T& list, const Variant& item) { list.AddVariant(item); }
 	};
 
 
@@ -268,7 +268,7 @@ public:
 	template<typename TValue, typename TProperty>
 	static void SetValue(TProperty& field, TValue& value)
 	{
-		field.Set(value);
+		field.set(value);
 	}
 	template<typename TValue, typename TProperty>
 	static void getValue(TProperty& field, TValue** outValuePtr)
@@ -381,7 +381,7 @@ public:
 	~Property()
 	{}
 
-	void Set(const TValue& value)
+	void set(const TValue& value)
 	{
 		SetInternal(value, PropertySetSource::ByLocal);
 	}
@@ -401,7 +401,7 @@ public:
 		}
 	}
 
-	Property& operator = (const TValue& value) { Set(value); return *this; }
+	Property& operator = (const TValue& value) { set(value); return *this; }
 	operator const TValue&() const { return m_value; }
 
 	const PropertyInfo* GetPropertyInfo() const { return m_propId; }
@@ -503,7 +503,7 @@ public:
 	void SetValue(const TValue& value)
 	{
 		auto ptr = m_propOwner.Resolve();
-		if (ptr != nullptr) m_prop.Set(value);
+		if (ptr != nullptr) m_prop.set(value);
 	}
 
 	const TValue& getValue(const TValue& defaultValue) const

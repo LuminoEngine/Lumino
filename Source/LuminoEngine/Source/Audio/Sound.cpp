@@ -129,7 +129,7 @@ void Sound::initialize(detail::AudioStream* audioStream)
 void Sound::SetVolume(float volume)
 {
 	MutexScopedLock lock(m_playerStateLock);
-	m_playerState.SetVolume(Math::Clamp(volume, 0.0f, 1.0f));
+	m_playerState.SetVolume(Math::clamp(volume, 0.0f, 1.0f));
 }
 
 //------------------------------------------------------------------------------
@@ -142,7 +142,7 @@ float Sound::GetVolume() const
 void Sound::SetPitch(float pitch)
 {
 	MutexScopedLock lock(m_playerStateLock);
-	m_playerState.SetPitch(Math::Clamp(pitch, 0.5f, 2.0f));
+	m_playerState.SetPitch(Math::clamp(pitch, 0.5f, 2.0f));
 }
 
 //------------------------------------------------------------------------------
@@ -323,7 +323,7 @@ void Sound::FadeVolume(float targetVolume, double time, SoundFadeBehavior behavi
 	MutexScopedLock lock(m_playerStateLock);
 
 	// 現在の音量から targetVolume への遷移
-	targetVolume = Math::Clamp(targetVolume, 0.0f, 1.0f);
+	targetVolume = Math::clamp(targetVolume, 0.0f, 1.0f);
 	m_fadeValue.start(GetVolume(), targetVolume, time);
 	m_fadeBehavior = behavior;
 	m_fading = true;

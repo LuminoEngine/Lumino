@@ -75,7 +75,7 @@ void TextBlock2DComponent::SetAnchorPoint(const Vector2& ratio)
 //------------------------------------------------------------------------------
 void TextBlock2DComponent::SetAnchorPoint(float ratioX, float ratioY)
 {
-	m_anchor.Set(ratioX, ratioY);
+	m_anchor.set(ratioX, ratioY);
 }
 
 //------------------------------------------------------------------------------

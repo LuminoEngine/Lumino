@@ -70,38 +70,38 @@ namespace fl {
 // http://en.cppreference.com/w/cpp/language/operator_logical
 struct RpnOperator
 {
-	template<typename T> static void UnaryPlus(T /*lhs*/, T rhs, RpnOperand* out) { out->Set(rhs); }
-	template<typename T> static void UnaryMinus(T /*lhs*/, T rhs, RpnOperand* out) { out->Set(-rhs); }
-	template<> static void UnaryMinus<uint32_t>(uint32_t /*lhs*/, uint32_t rhs, RpnOperand* out) { out->Set((uint32_t)-((int32_t)rhs)); }	// 警告回避
-	template<> static void UnaryMinus<uint64_t>(uint64_t /*lhs*/, uint64_t rhs, RpnOperand* out) { out->Set((uint64_t)-((int64_t)rhs)); }	// 警告回避
+	template<typename T> static void UnaryPlus(T /*lhs*/, T rhs, RpnOperand* out) { out->set(rhs); }
+	template<typename T> static void UnaryMinus(T /*lhs*/, T rhs, RpnOperand* out) { out->set(-rhs); }
+	template<> static void UnaryMinus<uint32_t>(uint32_t /*lhs*/, uint32_t rhs, RpnOperand* out) { out->set((uint32_t)-((int32_t)rhs)); }	// 警告回避
+	template<> static void UnaryMinus<uint64_t>(uint64_t /*lhs*/, uint64_t rhs, RpnOperand* out) { out->set((uint64_t)-((int64_t)rhs)); }	// 警告回避
 
-	template<typename T> static void Multiply(T lhs, T rhs, RpnOperand* out)	{ out->Set(lhs * rhs); }
-	template<typename T> static void Divide(T lhs, T rhs, RpnOperand* out)		{ out->Set(lhs / rhs); }
-	template<typename T> static void Modulus(T lhs, T rhs, RpnOperand* out)		{ out->Set(lhs % rhs); }
-	template<typename T> static void BinaryPlus(T lhs, T rhs, RpnOperand* out)	{ out->Set(lhs + rhs); }
-	template<typename T> static void BinaryMinus(T lhs, T rhs, RpnOperand* out) { out->Set(lhs - rhs); }
+	template<typename T> static void Multiply(T lhs, T rhs, RpnOperand* out)	{ out->set(lhs * rhs); }
+	template<typename T> static void Divide(T lhs, T rhs, RpnOperand* out)		{ out->set(lhs / rhs); }
+	template<typename T> static void Modulus(T lhs, T rhs, RpnOperand* out)		{ out->set(lhs % rhs); }
+	template<typename T> static void BinaryPlus(T lhs, T rhs, RpnOperand* out)	{ out->set(lhs + rhs); }
+	template<typename T> static void BinaryMinus(T lhs, T rhs, RpnOperand* out) { out->set(lhs - rhs); }
 
-	template<typename T> static void LeftShift(T lhs, T rhs, RpnOperand* out)	{ out->Set(lhs << rhs); }
-	template<typename T> static void RightShift(T lhs, T rhs, RpnOperand* out)	{ out->Set(lhs >> rhs); }
+	template<typename T> static void LeftShift(T lhs, T rhs, RpnOperand* out)	{ out->set(lhs << rhs); }
+	template<typename T> static void RightShift(T lhs, T rhs, RpnOperand* out)	{ out->set(lhs >> rhs); }
 
-	template<typename T> static void CompLessThan(T lhs, T rhs, RpnOperand* out)			{ out->Set(lhs < rhs); }
-	template<typename T> static void CompLessThanEqual(T lhs, T rhs, RpnOperand* out)		{ out->Set(lhs <= rhs); }
-	template<typename T> static void CompGreaterThen(T lhs, T rhs, RpnOperand* out)			{ out->Set(lhs > rhs); }
-	template<typename T> static void CompGreaterThenEqual(T lhs, T rhs, RpnOperand* out)	{ out->Set(lhs >= rhs); }
-	template<typename T> static void CompEqual(T lhs, T rhs, RpnOperand* out)				{ out->Set(lhs == rhs); }
-	template<typename T> static void CompNotEqual(T lhs, T rhs, RpnOperand* out)			{ out->Set(lhs != rhs); }
+	template<typename T> static void CompLessThan(T lhs, T rhs, RpnOperand* out)			{ out->set(lhs < rhs); }
+	template<typename T> static void CompLessThanEqual(T lhs, T rhs, RpnOperand* out)		{ out->set(lhs <= rhs); }
+	template<typename T> static void CompGreaterThen(T lhs, T rhs, RpnOperand* out)			{ out->set(lhs > rhs); }
+	template<typename T> static void CompGreaterThenEqual(T lhs, T rhs, RpnOperand* out)	{ out->set(lhs >= rhs); }
+	template<typename T> static void CompEqual(T lhs, T rhs, RpnOperand* out)				{ out->set(lhs == rhs); }
+	template<typename T> static void CompNotEqual(T lhs, T rhs, RpnOperand* out)			{ out->set(lhs != rhs); }
 
-	template<typename T> static void BitwiseNot(T /*lhs*/, T rhs, RpnOperand* out)	{ out->Set(~rhs); }
-	template<typename T> static void BitwiseAnd(T lhs, T rhs, RpnOperand* out)		{ out->Set(lhs & rhs); }
-	template<typename T> static void BitwiseXor(T lhs, T rhs, RpnOperand* out)		{ out->Set(lhs ^ rhs); }
-	template<typename T> static void BitwiseOr(T lhs, T rhs, RpnOperand* out)		{ out->Set(lhs | rhs); }
+	template<typename T> static void BitwiseNot(T /*lhs*/, T rhs, RpnOperand* out)	{ out->set(~rhs); }
+	template<typename T> static void BitwiseAnd(T lhs, T rhs, RpnOperand* out)		{ out->set(lhs & rhs); }
+	template<typename T> static void BitwiseXor(T lhs, T rhs, RpnOperand* out)		{ out->set(lhs ^ rhs); }
+	template<typename T> static void BitwiseOr(T lhs, T rhs, RpnOperand* out)		{ out->set(lhs | rhs); }
 
-	template<typename T> static void LogicalNot(T /*lhs*/, T rhs, RpnOperand* out)		{ out->Set(!(rhs != 0)); }
-	template<typename T> static void LogicalAnd(T lhs, T rhs, RpnOperand* out)			{ out->Set((lhs != 0) && (rhs != 0)); }
-	template<typename T> static void LogicalOr(T lhs, T rhs, RpnOperand* out)			{ out->Set((lhs != 0) || (rhs != 0)); }
-	template<> static void LogicalNot<bool>(bool /*lhs*/, bool rhs, RpnOperand* out)	{ out->Set(!rhs); }
-	template<> static void LogicalAnd<bool>(bool lhs, bool rhs, RpnOperand* out)		{ out->Set(lhs && rhs); }
-	template<> static void LogicalOr<bool>(bool lhs, bool rhs, RpnOperand* out)			{ out->Set(lhs || rhs); }
+	template<typename T> static void LogicalNot(T /*lhs*/, T rhs, RpnOperand* out)		{ out->set(!(rhs != 0)); }
+	template<typename T> static void LogicalAnd(T lhs, T rhs, RpnOperand* out)			{ out->set((lhs != 0) && (rhs != 0)); }
+	template<typename T> static void LogicalOr(T lhs, T rhs, RpnOperand* out)			{ out->set((lhs != 0) || (rhs != 0)); }
+	template<> static void LogicalNot<bool>(bool /*lhs*/, bool rhs, RpnOperand* out)	{ out->set(!rhs); }
+	template<> static void LogicalAnd<bool>(bool lhs, bool rhs, RpnOperand* out)		{ out->set(lhs && rhs); }
+	template<> static void LogicalOr<bool>(bool lhs, bool rhs, RpnOperand* out)			{ out->set(lhs || rhs); }
 };
 
 typedef void(*NullOperator)(nullptr_t lhs, nullptr_t rhs, RpnOperand* out);
@@ -220,7 +220,7 @@ ResultState RpnParser::ParseCppConstExpression2(Position exprBegin, Position exp
 {
 	initialize(diag);
 	TokenizeCppConst(exprBegin, exprEnd);
-	Parse();
+	parse();
 	return ResultState::Success;
 }
 
@@ -280,7 +280,7 @@ void RpnParser::TokenizeCppConst(Position exprBegin, Position exprEnd)
 		case TokenGroup::ArithmeticLiteral:
 		{
 			RpnToken token;
-			switch ((*pos)->GetTokenType())
+			switch ((*pos)->getTokenType())
 			{
 			case TT_NumericLitaralType_Char:		token.Type = RPN_TT_NumericLitaral_Int32; break;
 			case TT_NumericLitaralType_WideChar:	token.Type = RPN_TT_NumericLitaral_Int32; break;
@@ -408,7 +408,7 @@ void RpnParser::TokenizeCppConst(Position exprBegin, Position exprEnd)
 			assert(LN_ARRAY_SIZE_OF(TokenInfoTable) == RPN_TT_Max);
 
 			RpnToken token;
-			token.Type = CppTypeToRPNType[(*pos)->GetTokenType() - TT_CppOP_SeparatorBegin];
+			token.Type = CppTypeToRPNType[(*pos)->getTokenType() - TT_CppOP_SeparatorBegin];
 
 			// ( かつひとつ前が識別子の場合は関数呼び出しとする
 			if (token.Type == RPN_TT_OP_GroupStart &&
@@ -445,13 +445,13 @@ void RpnParser::TokenizeCppConst(Position exprBegin, Position exprEnd)
 		case TokenGroup::Keyword:
 		{
 			RpnToken token;
-			if ((*pos)->GetTokenType() == TT_CppKW_true)
+			if ((*pos)->getTokenType() == TT_CppKW_true)
 			{
 				token.Type = RPN_TT_NumericLitaral_True;
 				token.SourceToken = (*pos);
 				m_tokenList->add(token);
 			}
-			else if ((*pos)->GetTokenType() == TT_CppKW_false)
+			else if ((*pos)->getTokenType() == TT_CppKW_false)
 			{
 				token.Type = RPN_TT_NumericLitaral_False;
 				token.SourceToken = (*pos);
@@ -472,7 +472,7 @@ void RpnParser::TokenizeCppConst(Position exprBegin, Position exprEnd)
 }
 
 //------------------------------------------------------------------------------
-void RpnParser::Parse()
+void RpnParser::parse()
 {
 	m_tmpRPNTokenList.reserve(m_tokenList->getCount());
 	m_lastToken = nullptr;

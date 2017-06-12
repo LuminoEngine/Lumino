@@ -121,7 +121,7 @@ RefPtr<Stream> AssetsManager::OpenFile(const StringRef& filePath)
 //------------------------------------------------------------------------------
 void AssetsManager::MakeSearchPath(const StringRef& path)
 {
-	if (PathTraits::IsAbsolutePath(path.getBegin(), path.getLength()))
+	if (PathTraits::isAbsolutePath(path.getBegin(), path.getLength()))
 	{
 		for (AssetsDirectory& dir : m_assetsDirectories)
 		{

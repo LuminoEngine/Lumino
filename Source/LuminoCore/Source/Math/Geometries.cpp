@@ -57,7 +57,7 @@ Box::Box(const Vector3& min, const Vector3& max)
 }
 
 //------------------------------------------------------------------------------
-void Box::GetMinMax(Vector3* outMin, Vector3* outMax) const
+void Box::getMinMax(Vector3* outMin, Vector3* outMax) const
 {
 	float hw = width / 2;
 	float hh = height / 2;

@@ -24,7 +24,7 @@ TEST_F(Test_Base_Point, Basic)
 	PointI pt2(1, 2);
 	ASSERT_EQ_POINT(1, 2, pt2);
 
-	pt2.Set(3, 4);
+	pt2.set(3, 4);
 	ASSERT_EQ_POINT(3, 4, pt2);
 
 	ASSERT_TRUE(pt1.IsZero());
@@ -45,7 +45,7 @@ TEST_F(Test_Base_Point, Float)
 	PointF pt2(0.5f, 0.75f);
 	ASSERT_EQ_POINT_FLOAT(0.5f, 0.75f, pt2);
 
-	pt2.Set(3.5f, 4.25f);
+	pt2.set(3.5f, 4.25f);
 	ASSERT_EQ_POINT_FLOAT(3.5f, 4.25f, pt2);
 
 	ASSERT_TRUE(pt1.IsZero());
@@ -86,7 +86,7 @@ protected:
 //
 //	ASSERT_EQ(5, rc4.GetLeft());
 //	ASSERT_EQ(6, rc4.GetTop());
-//	ASSERT_EQ(12, rc4.GetRight());
+//	ASSERT_EQ(12, rc4.getRight());
 //	ASSERT_EQ(14, rc4.GetBottom());
 //
 //	ASSERT_EQ(PointI(5, 6), rc4.GetTopLeft());
@@ -176,7 +176,7 @@ TEST_F(Test_Base_Size, Basic)
 	SizeI s2(1, 2);
 	ASSERT_EQ_SIZE(1, 2, s2);
 
-	s2.Set(3, 4);
+	s2.set(3, 4);
 	ASSERT_EQ_SIZE(3, 4, s2);
 
 	ASSERT_TRUE(s1.IsZero());
@@ -202,7 +202,7 @@ TEST_F(Test_Base_Size, Float)
 	Size s2(0.5f, 0.75f);
 	ASSERT_EQ_SIZE_FLOAT(0.5f, 0.75f, s2);
 
-	s2.Set(3.5f, 4.25f);
+	s2.set(3.5f, 4.25f);
 	ASSERT_EQ_SIZE_FLOAT(3.5f, 4.25f, s2);
 
 	ASSERT_TRUE(s1.IsZero());

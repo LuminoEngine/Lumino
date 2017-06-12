@@ -21,14 +21,14 @@ void CSClassLibGenerator::Generate()
 	for (auto& classInfo : g_database.classes)
 	{
 		// ランタイムへの TypeInfo 登録コード
-		if (!classInfo->IsStatic())
+		if (!classInfo->isStatic())
 			MakeTypeInfoRegisters(classInfo, &typeInfoRegistersText, &typeInfoPInvolesText);
 
 		// XmlDocument
 		classesText.AppendLines(DotNetCommon::MakeXmlDocument(classInfo->document));
 
 		// class header
-		String modifier = (classInfo->IsStatic()) ? "static" : "";
+		String modifier = (classInfo->isStatic()) ? "static" : "";
 		classesText.append("public {0} class {1}", modifier, classInfo->name).NewLine();
 		if (classInfo->baseClass != nullptr) classesText.append("    : " + classInfo->baseClass->name).NewLine();
 		classesText.append("{").NewLine();
@@ -124,7 +124,7 @@ void CSClassLibGenerator::Generate()
 		}
 
 		// internal constructor
-		if (!classInfo->IsStatic())
+		if (!classInfo->isStatic())
 		{
 			classesText.append("internal {0}(_LNInternal i) : base(i) {{}}", classInfo->name).NewLine(2);
 

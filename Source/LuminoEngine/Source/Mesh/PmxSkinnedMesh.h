@@ -135,13 +135,13 @@ public:
 
 	PmxMaterialResource()
 	{
-		Diffuse.Set(1.0f, 1.0f, 1.0f, 1.0f);
-		Ambient.Set(0.0f, 0.0f, 0.0f, 0.0f);
-		Specular.Set(0.5f, 0.5f, 0.5f, 0.5f);
-		Emissive.Set(0.0f, 0.0f, 0.0f, 0.0f);
+		Diffuse.set(1.0f, 1.0f, 1.0f, 1.0f);
+		Ambient.set(0.0f, 0.0f, 0.0f, 0.0f);
+		Specular.set(0.5f, 0.5f, 0.5f, 0.5f);
+		Emissive.set(0.0f, 0.0f, 0.0f, 0.0f);
 		Power = 50.0f;
-		ToonColor.Set(1.0f, 1.0f, 1.0f, 1.0f);
-		EdgeColor.Set(0.0f, 0.0f, 0.0f, 1.0f);
+		ToonColor.set(1.0f, 1.0f, 1.0f, 1.0f);
+		EdgeColor.set(0.0f, 0.0f, 0.0f, 1.0f);
 		EdgeSize = 0.0f;
 		SphereMode = SphereMode_Disable;
 		DrawingFlags = 0;

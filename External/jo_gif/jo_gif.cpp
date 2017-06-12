@@ -485,7 +485,7 @@ void jo_gif_write_frame(ln::BinaryWriter* os, jo_gif_t *gif, jo_gif_frame_t *fda
         os->write((char*)palette, palette_size);
     }
 	os->writeUInt8(uint8_t(8)); // block terminator
-    os->write(fdata->encoded_pixels.GetBuffer(), fdata->encoded_pixels.getLength());
+    os->write(fdata->encoded_pixels.getBuffer(), fdata->encoded_pixels.getLength());
 	os->writeUInt8(uint8_t(0)); // block terminator
 }
 

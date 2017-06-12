@@ -57,7 +57,7 @@ void ContextState::SetRenderTarget(int index, Texture* texture)
 		if (index == 0)
 		{
 			auto& size = texture->getSize();
-			viewport.Set(0, 0, size.width, size.height);
+			viewport.set(0, 0, size.width, size.height);
 		}
 
 		modifiedFlags |= ContextStateFlags::CommonState;

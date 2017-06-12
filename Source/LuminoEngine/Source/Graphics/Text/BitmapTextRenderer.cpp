@@ -61,7 +61,7 @@ void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const 
 		}
 		case TextAlignment::Right:
 		{
-			offset.x = m_renderArea.GetRight() - renderSize.width;
+			offset.x = m_renderArea.getRight() - renderSize.width;
 			break;
 		}
 		case TextAlignment::Justify:
@@ -80,24 +80,24 @@ void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const 
 		// 枠線用ビットマップがある場合は先に描画する
 		if (gb->OutlineBitmap != nullptr)
 		{
-			dstRect.Set(
+			dstRect.set(
 				pos.x + item.Location.OutlineBitmapTopLeftPosition.x,
 				pos.y + item.Location.OutlineBitmapTopLeftPosition.y,
 				item.Location.BitmapSize.width,
 				item.Location.BitmapSize.height);
-			srcRect.Set(0, 0, gb->OutlineBitmap->getSize());
+			srcRect.set(0, 0, gb->OutlineBitmap->getSize());
 			target->BitBlt(dstRect, gb->OutlineBitmap, srcRect, strokeColor, true);
 		}
 
 		// 内側 (or 通常) 部分の描画
 		if (gb->GlyphBitmap != nullptr)
 		{
-			dstRect.Set(
+			dstRect.set(
 				pos.x + item.Location.BitmapTopLeftPosition.x,
 				pos.y + item.Location.BitmapTopLeftPosition.y,
 				item.Location.BitmapSize.width,
 				item.Location.BitmapSize.height);
-			srcRect.Set(0, 0, gb->GlyphBitmap->getSize());
+			srcRect.set(0, 0, gb->GlyphBitmap->getSize());
 			target->BitBlt(dstRect, gb->GlyphBitmap, srcRect, fillColor, true);
 		}
 	}

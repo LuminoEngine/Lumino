@@ -66,7 +66,7 @@ public:
 
 public:
 	UIComboBoxItemPtr AddTextItem(const String& text);
-	UIComboBoxItemPtr AddItem(UIElement* item);
+	UIComboBoxItemPtr addItem(UIElement* item);
 
 protected:
 	virtual void OnMouseDown(UIMouseEventArgs* e) override;

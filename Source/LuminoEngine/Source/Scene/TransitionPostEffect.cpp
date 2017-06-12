@@ -107,7 +107,7 @@ void TransitionPostEffect::OnRender(DrawList* context, RenderTargetTexture* sour
 	else
 	{
 		// マスクテクスチャ不使用
-		m_withoutMaskShader.varFactor->SetFloat(m_factor);
+		m_withoutMaskShader.varFactor->setFloat(m_factor);
 		m_withoutMaskShader.varFreezedTexture->SetTexture(m_savedTarget);
 		shader = m_withoutMaskShader.shader;
 	}

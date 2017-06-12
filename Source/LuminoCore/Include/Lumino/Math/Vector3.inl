@@ -22,7 +22,7 @@ inline Vector3::Vector3(float x_, float y_, float z_)
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-inline void Vector3::Set(float x_, float y_, float z_)
+inline void Vector3::set(float x_, float y_, float z_)
 {
 	x = x_;
 	y = y_;

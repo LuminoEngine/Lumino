@@ -166,7 +166,7 @@ void SpriteRenderFeature::MakeBoundingSphere(const Vector2& size, SpriteBaseDire
 
 	if (baseDir == SpriteBaseDirection::Basic2D)
 	{
-		sphere->center.Set(half.x, half.y, 0);
+		sphere->center.set(half.x, half.y, 0);
 	}
 	else
 	{
@@ -325,7 +325,7 @@ void SpriteRendererImpl::SetTransform(const Matrix& matrix)
 //------------------------------------------------------------------------------
 void SpriteRendererImpl::SetViewProjMatrix(const Matrix& view, const Matrix& proj)
 {
-	m_viewDirection.Set(view.m[0][2], view.m[1][2], view.m[2][2]);
+	m_viewDirection.set(view.m[0][2], view.m[1][2], view.m[2][2]);
 	m_viewInverseMatrix = Matrix::MakeInverse(view);
 	m_viewPosition = m_viewInverseMatrix.getPosition();
 	m_viewProjMatrix = (view * proj);
@@ -334,7 +334,7 @@ void SpriteRendererImpl::SetViewProjMatrix(const Matrix& view, const Matrix& pro
 //------------------------------------------------------------------------------
 void SpriteRendererImpl::SetViewPixelSize(const Size& size)
 {
-	m_viewPixelSize.Set(size.width, size.height);
+	m_viewPixelSize.set(size.width, size.height);
 }
 
 //------------------------------------------------------------------------------
@@ -399,40 +399,40 @@ void SpriteRendererImpl::DrawRequestInternal(
 		switch (baseDir)
 		{
 			case SpriteBaseDirection::XPlus:
-				sprite.Vertices[0].Position.Set(LN_WRITE_V3(0, t, l));     // 左上
-				sprite.Vertices[1].Position.Set(LN_WRITE_V3(0, b, l));     // 左下
-				sprite.Vertices[2].Position.Set(LN_WRITE_V3(0, t, r));     // 右上
-				sprite.Vertices[3].Position.Set(LN_WRITE_V3(0, b, r));     // 右下
+				sprite.Vertices[0].Position.set(LN_WRITE_V3(0, t, l));     // 左上
+				sprite.Vertices[1].Position.set(LN_WRITE_V3(0, b, l));     // 左下
+				sprite.Vertices[2].Position.set(LN_WRITE_V3(0, t, r));     // 右上
+				sprite.Vertices[3].Position.set(LN_WRITE_V3(0, b, r));     // 右下
 				break;
 			case SpriteBaseDirection::YPlus:
-				sprite.Vertices[0].Position.Set(LN_WRITE_V3(l, 0, t));
-				sprite.Vertices[1].Position.Set(LN_WRITE_V3(l, 0, b));
-				sprite.Vertices[2].Position.Set(LN_WRITE_V3(r, 0, t));
-				sprite.Vertices[3].Position.Set(LN_WRITE_V3(r, 0, b));
+				sprite.Vertices[0].Position.set(LN_WRITE_V3(l, 0, t));
+				sprite.Vertices[1].Position.set(LN_WRITE_V3(l, 0, b));
+				sprite.Vertices[2].Position.set(LN_WRITE_V3(r, 0, t));
+				sprite.Vertices[3].Position.set(LN_WRITE_V3(r, 0, b));
 				break;
 			case SpriteBaseDirection::ZPlus:
-				sprite.Vertices[0].Position.Set(LN_WRITE_V3(r, t, 0));
-				sprite.Vertices[1].Position.Set(LN_WRITE_V3(r, b, 0));
-				sprite.Vertices[2].Position.Set(LN_WRITE_V3(l, t, 0));
-				sprite.Vertices[3].Position.Set(LN_WRITE_V3(l, b, 0));
+				sprite.Vertices[0].Position.set(LN_WRITE_V3(r, t, 0));
+				sprite.Vertices[1].Position.set(LN_WRITE_V3(r, b, 0));
+				sprite.Vertices[2].Position.set(LN_WRITE_V3(l, t, 0));
+				sprite.Vertices[3].Position.set(LN_WRITE_V3(l, b, 0));
 				break;
 			case SpriteBaseDirection::XMinus:
-				sprite.Vertices[0].Position.Set(LN_WRITE_V3(0, t, r));
-				sprite.Vertices[1].Position.Set(LN_WRITE_V3(0, b, r));
-				sprite.Vertices[2].Position.Set(LN_WRITE_V3(0, t, l));
-				sprite.Vertices[3].Position.Set(LN_WRITE_V3(0, b, l));
+				sprite.Vertices[0].Position.set(LN_WRITE_V3(0, t, r));
+				sprite.Vertices[1].Position.set(LN_WRITE_V3(0, b, r));
+				sprite.Vertices[2].Position.set(LN_WRITE_V3(0, t, l));
+				sprite.Vertices[3].Position.set(LN_WRITE_V3(0, b, l));
 				break;
 			case SpriteBaseDirection::YMinus:
-				sprite.Vertices[0].Position.Set(LN_WRITE_V3(r, 0, t));
-				sprite.Vertices[1].Position.Set(LN_WRITE_V3(r, 0, b));
-				sprite.Vertices[2].Position.Set(LN_WRITE_V3(l, 0, t));
-				sprite.Vertices[3].Position.Set(LN_WRITE_V3(l, 0, b));
+				sprite.Vertices[0].Position.set(LN_WRITE_V3(r, 0, t));
+				sprite.Vertices[1].Position.set(LN_WRITE_V3(r, 0, b));
+				sprite.Vertices[2].Position.set(LN_WRITE_V3(l, 0, t));
+				sprite.Vertices[3].Position.set(LN_WRITE_V3(l, 0, b));
 				break;
 			case SpriteBaseDirection::ZMinus:
-				sprite.Vertices[0].Position.Set(LN_WRITE_V3(l, t, 0));
-				sprite.Vertices[1].Position.Set(LN_WRITE_V3(l, b, 0));
-				sprite.Vertices[2].Position.Set(LN_WRITE_V3(r, t, 0));
-				sprite.Vertices[3].Position.Set(LN_WRITE_V3(r, b, 0));
+				sprite.Vertices[0].Position.set(LN_WRITE_V3(l, t, 0));
+				sprite.Vertices[1].Position.set(LN_WRITE_V3(l, b, 0));
+				sprite.Vertices[2].Position.set(LN_WRITE_V3(r, t, 0));
+				sprite.Vertices[3].Position.set(LN_WRITE_V3(r, b, 0));
 				break;
 		}
 #undef LN_WRITE_V3
@@ -441,13 +441,13 @@ void SpriteRendererImpl::DrawRequestInternal(
 	else
 	{
 		Vector2 origin(-center);
-		sprite.Vertices[0].Position.Set(origin.x, origin.y, 0);
-		sprite.Vertices[1].Position.Set(origin.x, origin.y + size.y, 0);
-		sprite.Vertices[2].Position.Set(origin.x + size.x, origin.y, 0);
-		sprite.Vertices[3].Position.Set(origin.x + size.x, origin.y + size.y, 0);
+		sprite.Vertices[0].Position.set(origin.x, origin.y, 0);
+		sprite.Vertices[1].Position.set(origin.x, origin.y + size.y, 0);
+		sprite.Vertices[2].Position.set(origin.x + size.x, origin.y, 0);
+		sprite.Vertices[3].Position.set(origin.x + size.x, origin.y + size.y, 0);
 	}
 
-	Matrix mat = m_transformMatrix.GetRotationMatrix();
+	Matrix mat = m_transformMatrix.getRotationMatrix();
 
 
 	// ビルボード
@@ -484,7 +484,7 @@ void SpriteRendererImpl::DrawRequestInternal(
 	{
 		if (m_viewDirection.x > 0.0f)
 		{
-			mat.RotateY(-atanf(m_viewDirection.z / m_viewDirection.x) + Math::PI / 2);
+			mat.rotateY(-atanf(m_viewDirection.z / m_viewDirection.x) + Math::PI / 2);
 		}
 		else if (m_viewDirection.x == 0.0f)
 		{
@@ -492,7 +492,7 @@ void SpriteRendererImpl::DrawRequestInternal(
 		}
 		else
 		{
-			mat.RotateY(-atanf(m_viewDirection.z / m_viewDirection.x) - Math::PI / 2);
+			mat.rotateY(-atanf(m_viewDirection.z / m_viewDirection.x) - Math::PI / 2);
 		}
 
 	}
@@ -501,8 +501,8 @@ void SpriteRendererImpl::DrawRequestInternal(
 	{
 	}
 
-	mat.Translate(position);
-	mat.Translate(m_transformMatrix.getPosition());
+	mat.translate(position);
+	mat.translate(m_transformMatrix.getPosition());
 
 	// 座標変換
 	sprite.Vertices[0].Position.TransformCoord(mat);

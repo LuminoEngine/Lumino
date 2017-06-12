@@ -127,7 +127,7 @@ public:
 private:
 
 	void LoadMaterials(StreamReader* reader);
-	void LoadObject(StreamReader* reader, const String& name);
+	void loadObject(StreamReader* reader, const String& name);
 	void ReadVertexChunk(StreamReader* reader, MqoObject* mqoObject);
 	void ReadFaceChunk(StreamReader* reader, MqoObject* mqoObject);
 	static void ReadInts(const StringRef& str, int* values, int valuesCount);

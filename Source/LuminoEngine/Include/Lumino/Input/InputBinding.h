@@ -187,7 +187,7 @@ public:
 public:
 
 	/** 関連付けられるゲームパッド操作 */
-	GamepadElement GetElement() const { return m_element; }
+	GamepadElement getElement() const { return m_element; }
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	GamepadBinding(GamepadElement element);

@@ -98,9 +98,9 @@ void ScreenMotionBlurImageEffect::OnRender(DrawList* context, RenderTargetTextur
 	}
 
 	Matrix blurMatrix;
-	blurMatrix.Translate(-m_center.x, -m_center.y, 0);
-	blurMatrix.Scale(m_scale);
-	blurMatrix.Translate(m_center.x, m_center.y, 0);
+	blurMatrix.translate(-m_center.x, -m_center.y, 0);
+	blurMatrix.scale(m_scale);
+	blurMatrix.translate(m_center.x, m_center.y, 0);
 
 	m_material->SetVectorParameter(_T("_BlurColor"), Vector4(1, 1, 1, Amount.get()));
 	m_material->SetMatrixParameter(_T("_BlurMatrix"), blurMatrix);

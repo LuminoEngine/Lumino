@@ -34,7 +34,7 @@ struct PrimitiveRendererCore_SetStateCommand : public RenderingCommand
 		m_core = core;
 		m_mode = mode;
 	}
-	void Execute()
+	void execute()
 	{
 		m_core->SetState(m_mode);
 	}
@@ -57,7 +57,7 @@ struct PrimitiveRendererCore_DrawLine : public RenderingCommand
 		m_to = to;
 		m_toColor = toColor;
 	}
-	void Execute() { m_core->DrawLine(m_from, m_fromColor, m_to, m_toColor); }
+	void execute() { m_core->DrawLine(m_from, m_fromColor, m_to, m_toColor); }
 };
 
 //==============================================================================
@@ -67,7 +67,7 @@ struct PrimitiveRendererCore_DrawSquare : public RenderingCommand
 	PrimitiveRendererCore::DrawSquareData	m_data;
 
 	void create(PrimitiveRendererCore* core, const PrimitiveRendererCore::DrawSquareData& data) { m_core = core; m_data = data; }
-	void Execute() { m_core->DrawSquare(m_data); }
+	void execute() { m_core->DrawSquare(m_data); }
 };
 
 //==============================================================================
@@ -75,7 +75,7 @@ struct PrimitiveRendererCore_FlushCommand : public RenderingCommand
 {
 	PrimitiveRendererCore* m_core;
 	void create(PrimitiveRendererCore* core) { m_core = core; }
-	void Execute() { m_core->flush(); }
+	void execute() { m_core->flush(); }
 };
 
 //==============================================================================
@@ -266,7 +266,7 @@ void PrimitiveRenderFeature::DrawRectangle(const Rect& rect)
 {
 	float l = rect.GetLeft();
 	float t = rect.getTop();
-	float r = rect.GetRight();
+	float r = rect.getRight();
 	float b = rect.GetBottom();
 	DrawSquare(
 		Vector3(l, t, 0), Vector2(0, 0), Color::White,

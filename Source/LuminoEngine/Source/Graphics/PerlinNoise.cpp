@@ -47,21 +47,21 @@ void PerlinNoise::SetTiledRepeatFrequency(float repeat)
 float PerlinNoise::Noise1D(float x, int octaves, float minValue, float maxValue) const
 {
 	float v = OctaveNoiseNormal(x, 0, 0, octaves);
-	return Math::Clamp(((v + 1.0f) / 2.0f) * (maxValue - minValue) + minValue, minValue, maxValue);
+	return Math::clamp(((v + 1.0f) / 2.0f) * (maxValue - minValue) + minValue, minValue, maxValue);
 }
 
 //------------------------------------------------------------------------------
 float PerlinNoise::Noise2D(float x, float y, int octaves, float minValue, float maxValue) const
 {
 	float v = OctaveNoiseNormal(x, y, 0, octaves);
-	return Math::Clamp(((v + 1.0f) / 2.0f)  * (maxValue - minValue) + minValue, minValue, maxValue);
+	return Math::clamp(((v + 1.0f) / 2.0f)  * (maxValue - minValue) + minValue, minValue, maxValue);
 }
 
 //------------------------------------------------------------------------------
 float PerlinNoise::Noise3D(float x, float y, float z, int octaves, float minValue, float maxValue) const
 {
 	float v = OctaveNoiseNormal(x, y, z, octaves);
-	return Math::Clamp(((v + 1.0f) / 2.0f)  * (maxValue - minValue) + minValue, minValue, maxValue);
+	return Math::clamp(((v + 1.0f) / 2.0f)  * (maxValue - minValue) + minValue, minValue, maxValue);
 }
 
 //------------------------------------------------------------------------------
@@ -95,23 +95,23 @@ float PerlinNoise::NoiseNormal(float x, float y, float z) const
 	bbb = p[p[p[Increment(xi)] + Increment(yi)] + Increment(zi)];
 
 	float x1, x2, y1, y2;
-	x1 = Lerp(Grad(aaa, xf, yf, zf),
+	x1 = lerp(Grad(aaa, xf, yf, zf),
 		Grad(baa, xf - 1, yf, zf),
 		u);
-	x2 = Lerp(Grad(aba, xf, yf - 1, zf),
+	x2 = lerp(Grad(aba, xf, yf - 1, zf),
 		Grad(bba, xf - 1, yf - 1, zf),
 		u);
-	y1 = Lerp(x1, x2, v);
+	y1 = lerp(x1, x2, v);
 
-	x1 = Lerp(Grad(aab, xf, yf, zf - 1),
+	x1 = lerp(Grad(aab, xf, yf, zf - 1),
 		Grad(bab, xf - 1, yf, zf - 1),
 		u);
-	x2 = Lerp(Grad(abb, xf, yf - 1, zf - 1),
+	x2 = lerp(Grad(abb, xf, yf - 1, zf - 1),
 		Grad(bbb, xf - 1, yf - 1, zf - 1),
 		u);
-	y2 = Lerp(x1, x2, v);
+	y2 = lerp(x1, x2, v);
 
-	return Lerp(y1, y2, w);	// -1.0 .. 1.0
+	return lerp(y1, y2, w);	// -1.0 .. 1.0
 }
 
 //------------------------------------------------------------------------------
@@ -136,7 +136,7 @@ float PerlinNoise::Fade(float t) const
 }
 
 //------------------------------------------------------------------------------
-float PerlinNoise::Lerp(float a, float b, float t) const
+float PerlinNoise::lerp(float a, float b, float t) const
 {
 	return a + t * (b - a);
 }

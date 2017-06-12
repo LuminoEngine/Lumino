@@ -53,8 +53,8 @@ bool VmdLoader::load(Stream* stream)
 		frame.Rotation = vmdMotion.vec4Rotation;
 		for (int iC = 0; iC < 4; ++iC)
 		{
-			frame.Curves[iC].v1.Set(vmdMotion.Interpolation[0][0][iC] / 128.0f, vmdMotion.Interpolation[0][1][iC] / 128.0f);
-			frame.Curves[iC].v2.Set(vmdMotion.Interpolation[0][2][iC] / 128.0f, vmdMotion.Interpolation[0][3][iC] / 128.0f);
+			frame.Curves[iC].v1.set(vmdMotion.Interpolation[0][0][iC] / 128.0f, vmdMotion.Interpolation[0][1][iC] / 128.0f);
+			frame.Curves[iC].v2.set(vmdMotion.Interpolation[0][2][iC] / 128.0f, vmdMotion.Interpolation[0][3][iC] / 128.0f);
 		}
 
 		// 既存アニメーション検索
@@ -66,7 +66,7 @@ bool VmdLoader::load(Stream* stream)
 		if (itr == m_boneAnimationIndexMap.end())
 		{
 			BoneAnimation anim;
-			anim.TargetBoneName.convertFrom(vmdMotion.szBoneName, 15, Encoding::GetEncoding(EncodingType::SJIS));
+			anim.TargetBoneName.convertFrom(vmdMotion.szBoneName, 15, Encoding::getEncoding(EncodingType::SJIS));
 
 			// 名前・インデックスの対応
 			m_boneAnimationIndexMap.insert(BoneAnimationIndexPair(vmdMotion.szBoneName, m_boneAnimationList.getCount()));
@@ -110,7 +110,7 @@ bool VmdLoader::load(Stream* stream)
 		if (itr == m_faceAnimationIndexMap.end())
 		{
 			FaceAnimation anim;
-			anim.TargetFaceName.convertFrom(vmdFace.szFaceName, 15, Encoding::GetEncoding(EncodingType::SJIS));
+			anim.TargetFaceName.convertFrom(vmdFace.szFaceName, 15, Encoding::getEncoding(EncodingType::SJIS));
 			//anim.TargetFaceName = String(vmdFace.szFaceName);
 
 			// 名前・インデックスの対応

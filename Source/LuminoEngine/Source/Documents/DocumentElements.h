@@ -136,7 +136,7 @@ LN_INTERNAL_ACCESS:
 	DocumentsManager* GetManager() const { return m_manager; }
 	virtual InternalTextElementType GetInternalTextElementType() const;
 	void SetParent(TextElement* parent) { m_parent = parent; }
-	TextElement* GetParent() const { return m_parent; }
+	TextElement* getParent() const { return m_parent; }
 	const Size& GetDesiredSize() const { return m_desiredSize; }
 	const Size& GetRenderSize() const { return m_finalLocalRect.getSize(); }
 

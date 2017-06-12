@@ -262,7 +262,7 @@ Size UIAbsoluteLayout::ArrangeOverride(const Size& finalSize)
 		if (anchor != AlignmentAnchor::None)
 		{
 			const ThicknessF& margin = GetMargineInternal();
-			//float l = childRect.GetLeft(), t = childRect.GetTop(), r = childRect.GetRight(), b = childRect.GetBottom();
+			//float l = childRect.GetLeft(), t = childRect.GetTop(), r = childRect.getRight(), b = childRect.GetBottom();
 
 			//if (anchor.TestFlag(AlignmentAnchor::LeftOffsets))
 			//	l = margin.Left;
@@ -321,13 +321,13 @@ Size UIAbsoluteLayout::ArrangeOverride(const Size& finalSize)
 			if (anchor.TestFlag(AlignmentAnchor::VCenter))
 				childRect.y = (finalSize.height - childRect.height) / 2;
 
-			if (!Math::IsNaN(l) || !Math::IsNaN(r))
+			if (!Math::isNaN(l) || !Math::isNaN(r))
 			{
-				if (!Math::IsNaN(l) && Math::IsNaN(r))
+				if (!Math::isNaN(l) && Math::isNaN(r))
 				{
 					childRect.x = l;
 				}
-				else if (Math::IsNaN(l) && !Math::IsNaN(r))
+				else if (Math::isNaN(l) && !Math::isNaN(r))
 				{
 					childRect.x = r - childRect.width;
 				}
@@ -338,13 +338,13 @@ Size UIAbsoluteLayout::ArrangeOverride(const Size& finalSize)
 				}
 			}
 
-			if (!Math::IsNaN(t) || !Math::IsNaN(b))
+			if (!Math::isNaN(t) || !Math::isNaN(b))
 			{
-				if (!Math::IsNaN(t) && Math::IsNaN(b))
+				if (!Math::isNaN(t) && Math::isNaN(b))
 				{
 					childRect.y = t;
 				}
-				else if (Math::IsNaN(t) && !Math::IsNaN(b))
+				else if (Math::isNaN(t) && !Math::isNaN(b))
 				{
 					childRect.y = b - childRect.height;
 				}

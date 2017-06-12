@@ -245,7 +245,7 @@ Size UITrack::ArrangeOverride(const Size& finalSize)
 	float increaseButtonLength;
 	float trackLength = (m_orientation == Orientation::Vertical) ? finalSize.height : finalSize.width;
 
-	if (Math::IsNaN(m_viewportSize))
+	if (Math::isNaN(m_viewportSize))
 	{
 		// ビューサイズが関係ない場合の計算。つまり、Slider コントロール用
 		CalcSliderComponentsSize(finalSize, (m_orientation == Orientation::Vertical), &decreaseButtonLength, &thumbLength, &increaseButtonLength);
@@ -318,7 +318,7 @@ void UITrack::CoerceLength(float& componentLength, float trackLength)
 	{
 		componentLength = 0.0f;
 	}
-	else if (componentLength > trackLength || Math::IsNaN(componentLength))
+	else if (componentLength > trackLength || Math::isNaN(componentLength))
 	{
 		componentLength = trackLength;
 	}

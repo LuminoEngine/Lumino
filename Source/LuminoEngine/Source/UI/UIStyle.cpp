@@ -50,12 +50,12 @@ void UIRenderElement::LayoutAndRender(DrawingContext* context, const Size& paren
 	areaSize.height = parentRenderSize.height - (m_margin.Top + m_margin.Bottom);
 
 	Size desiredSize;
-	desiredSize.width = Math::IsNaN(m_width) ? 0.0f : m_width;
-	desiredSize.height = Math::IsNaN(m_height) ? 0.0f : m_height;
+	desiredSize.width = Math::isNaN(m_width) ? 0.0f : m_width;
+	desiredSize.height = Math::isNaN(m_height) ? 0.0f : m_height;
 
 	Rect localRect;
-	detail::LayoutHelper::AdjustHorizontalAlignment(areaSize, desiredSize, Math::IsNaN(m_width), m_hAlignment, &localRect);
-	detail::LayoutHelper::AdjustVerticalAlignment(areaSize, desiredSize, Math::IsNaN(m_height), m_vAlignment, &localRect);
+	detail::LayoutHelper::AdjustHorizontalAlignment(areaSize, desiredSize, Math::isNaN(m_width), m_hAlignment, &localRect);
+	detail::LayoutHelper::AdjustVerticalAlignment(areaSize, desiredSize, Math::isNaN(m_height), m_vAlignment, &localRect);
 
 	context->SetBrush(m_brush);
 	context->DrawBoxBackground(localRect, CornerRadius());

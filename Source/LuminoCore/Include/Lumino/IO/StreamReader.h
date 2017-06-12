@@ -39,19 +39,19 @@ public:
 	~GenericStreamReader();
 
 public:
-	Stream* GetStream() const { return m_stream; }
+	Stream* getStream() const { return m_stream; }
 	
 public:
 	// GenericTextReader interface
-	virtual int Peek();
+	virtual int peek();
 	virtual int read();
-	virtual bool ReadLine(GenericString<TChar>* line);
-	virtual GenericString<TChar> ReadToEnd();
+	virtual bool readLine(GenericString<TChar>* line);
+	virtual GenericString<TChar> readToEnd();
 	virtual bool isEOF();
 
 private:
-	void InitReader(Stream* stream, Encoding* encoding);
-	int ReadBuffer();
+	void initReader(Stream* stream, Encoding* encoding);
+	int readBuffer();
 
 	RefPtr<Stream>			m_stream;
 	EncodingConverter		m_converter;

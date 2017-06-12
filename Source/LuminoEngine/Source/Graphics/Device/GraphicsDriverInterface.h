@@ -461,7 +461,7 @@ public:
 	virtual int GetArrayElements() const = 0;
 
 	/// ブール値の設定
-	virtual void SetBool(bool value) = 0;
+	virtual void setBool(bool value) = 0;
 
 	/// ブール値の取得
 	//virtual bool GetBool() = 0;
@@ -475,7 +475,7 @@ public:
 	//virtual int GetInt() = 0;
 
 	/// 実数値の設定
-	virtual void SetFloat(float value) = 0;
+	virtual void setFloat(float value) = 0;
 
 	/// 実数値の取得
 	//virtual float GetFloat() = 0;

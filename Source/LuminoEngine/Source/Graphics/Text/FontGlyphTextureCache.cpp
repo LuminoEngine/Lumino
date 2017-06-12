@@ -76,7 +76,7 @@ void FontGlyphTextureCache::LookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, b
 		cacheIndex = info.index;
 		//outInfo->fillGlyphBitmap = nullptr;
 		outInfo->outlineOffset = 0;
-		outInfo->srcRect.Set(	// 描画スレッド側で作るといろいろな情報にアクセスしなければならないのでここで作ってしまう
+		outInfo->srcRect.set(	// 描画スレッド側で作るといろいろな情報にアクセスしなければならないのでここで作ってしまう
 			((info.index % m_glyphWidthCount) * m_glyphMaxBitmapSize.width),
 			((info.index / m_glyphWidthCount) * m_glyphMaxBitmapSize.height),
 			info.size.width, info.size.height);
@@ -103,7 +103,7 @@ void FontGlyphTextureCache::LookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, b
 
 		//outInfo->fillGlyphBitmap = glyphBitmap->GlyphBitmap;
 		outInfo->outlineOffset = glyphBitmap->OutlineOffset;
-		outInfo->srcRect.Set(	// 描画スレッド側で作るといろいろな情報にアクセスしなければならないのでここで作ってしまう
+		outInfo->srcRect.set(	// 描画スレッド側で作るといろいろな情報にアクセスしなければならないのでここで作ってしまう
 			((info.index % m_glyphWidthCount) * m_glyphMaxBitmapSize.width),
 			((info.index / m_glyphWidthCount) * m_glyphMaxBitmapSize.height),
 			info.size.width, info.size.height);
@@ -464,7 +464,7 @@ int VectorFontGlyphCache::GetIndexCount(Handle info)
 void VectorFontGlyphCache::GenerateMesh(Handle infoIndex, const Vector3& baselineOrigin, const Matrix& transform, Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
 {
 	auto* info = &m_gryphBufferDataList[infoIndex];
-	bool isIdent = transform.IsIdentity();
+	bool isIdent = transform.isIdentity();
 	for (int i = 0; i < info->vertices.getCount(); i++)
 	{
 		outVertices[i].position = Vector3(info->vertices[i].pos, 0.0f);

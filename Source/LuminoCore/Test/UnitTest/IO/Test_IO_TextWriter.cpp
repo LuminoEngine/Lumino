@@ -69,7 +69,7 @@ TEST_F(Test_IO_TextWriter, writeLine)
 		double v_double = 100;
 
 		StringWriter writer;
-		writer.SetNewLine(_T("\n"));
+		writer.setNewLine(_T("\n"));
 		writer.writeLine(StringRef(_T("abc"), 2));
 		writer.writeLine(String("def"));
 		writer.writeLine(_T('g'));

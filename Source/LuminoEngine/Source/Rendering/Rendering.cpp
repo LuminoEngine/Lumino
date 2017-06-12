@@ -701,9 +701,9 @@ DrawElementList::DrawElementList()
 //------------------------------------------------------------------------------
 void DrawElementList::ClearCommands()
 {
-	for (int i = 0; i < GetElementCount(); ++i)
+	for (int i = 0; i < getElementCount(); ++i)
 	{
-		DrawElement* cmd = GetElement(i);
+		DrawElement* cmd = getElement(i);
 		cmd->~DrawElement();
 	}
 
@@ -722,7 +722,7 @@ void DrawElementList::PostAddCommandInternal(const BatchState& state, Material* 
 	{
 		// CombinedMaterial を作る
 		CombinedMaterial* cm = m_combinedMaterialCache.QueryCommandList();
-		cm->Combine(nullptr, availableMaterial, effectData);	// TODO
+		cm->combine(nullptr, availableMaterial, effectData);	// TODO
 
 		// 新しく DrawElementBatch を作る
 		m_batchList.add(DrawElementBatch());
@@ -816,9 +816,9 @@ void SceneRenderer::Render(
 		//context->BeginBaseRenderer()->Clear(ClearFlags::Depth/* | ClearFlags::Stencil*/, Color());
 
 		// 視錘台カリング
-		for (int i = 0; i < elementList->GetElementCount(); ++i)
+		for (int i = 0; i < elementList->getElementCount(); ++i)
 		{
-			DrawElement* element = elementList->GetElement(i);
+			DrawElement* element = elementList->getElement(i);
 			Sphere boundingSphere = element->GetBoundingSphere();
 
 			if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
@@ -1045,9 +1045,9 @@ void ForwardShadingRenderer::OnPreRender(DrawElementList* elementList)
 		m_selectingLights.add(light);
 	}
 
-	for (int i = 0; i < elementList->GetElementCount(); i++)
+	for (int i = 0; i < elementList->getElementCount(); i++)
 	{
-		DrawElement* element = elementList->GetElement(i);
+		DrawElement* element = elementList->getElement(i);
 		DynamicLightInfo** lightInfos = element->GetAffectedDynamicLightInfos();
 		if (lightInfos != nullptr)
 		{
@@ -1159,7 +1159,7 @@ RefPtr<CombinedMaterial> CombinedMaterialCache::createObject()
 //------------------------------------------------------------------------------
 ScopedStateBlock2::ScopedStateBlock2(DrawList* renderer)
 	: m_renderer(renderer)
-	, m_state(renderer->GetState())
+	, m_state(renderer->getState())
 {}
 
 //------------------------------------------------------------------------------
@@ -1325,7 +1325,7 @@ void RenderDiag::CallCommonElement(const TCHAR* typeName)
 }
 
 //------------------------------------------------------------------------------
-void RenderDiag::Print()
+void RenderDiag::print()
 {
 	int level = 0;
 	for (RenderDiagItem* item : m_items)
@@ -1631,7 +1631,7 @@ void DrawList::DrawBox(const Box& box, const Color& color, const Matrix& localTr
 	e->factory.initialize(Vector3(box.width, box.height, box.depth), color, localTransform);
 
 	Vector3 min, max;
-	box.GetMinMax(&min, &max);
+	box.getMinMax(&min, &max);
 	e->MakeBoundingSphere(min, max);
 }
 
@@ -1878,7 +1878,7 @@ void DrawList::DrawSprite(
 
 	auto* ptr = ResolveDrawElement<DrawElement_DrawSprite>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_spriteRenderer, material);
 	ptr->position = position;
-	ptr->size.Set(size.width, size.height);
+	ptr->size.set(size.width, size.height);
 	ptr->anchorRatio = anchor;
 	ptr->texture = texture;
 	ptr->srcRect = srcRect;

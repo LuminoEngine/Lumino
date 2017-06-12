@@ -97,7 +97,7 @@ void Material::Reset()
 
 //------------------------------------------------------------------------------
 void Material::SetBuiltinIntParameter(const StringRef& name, int value) { m_builtinValueMap[Hash::calcHash(name.getBegin(), name.getLength())].setInt(value); }
-void Material::SetBuiltinFloatParameter(const StringRef& name, float value) { m_builtinValueMap[Hash::calcHash(name.getBegin(), name.getLength())].SetFloat(value); }
+void Material::SetBuiltinFloatParameter(const StringRef& name, float value) { m_builtinValueMap[Hash::calcHash(name.getBegin(), name.getLength())].setFloat(value); }
 void Material::SetBuiltinVectorParameter(const StringRef& name, const Vector4& value) { m_builtinValueMap[Hash::calcHash(name.getBegin(), name.getLength())].SetVector(value); }
 void Material::SetBuiltinMatrixParameter(const StringRef& name, const Matrix& value) { m_builtinValueMap[Hash::calcHash(name.getBegin(), name.getLength())].SetMatrix(value); }
 void Material::SetBuiltinTextureParameter(const StringRef& name, Texture* value) { m_builtinValueMap[Hash::calcHash(name.getBegin(), name.getLength())].SetManagedTexture(value); }
@@ -171,7 +171,7 @@ void Material::SetIntParameter(const StringRef& name, int value)
 void Material::SetFloatParameter(const StringRef& name, float value)
 {
 	uint32_t hashKey = Hash::calcHash(name.getBegin(), name.getLength());
-	FindAndCreateUserShaderValue(hashKey)->SetFloat(value);
+	FindAndCreateUserShaderValue(hashKey)->setFloat(value);
 	m_revisionCount++;
 }
 
@@ -480,7 +480,7 @@ CombinedMaterial::~CombinedMaterial()
 }
 
 //------------------------------------------------------------------------------
-void CombinedMaterial::Combine(Material* owner, Material* ownerBase, const BuiltinEffectData& builtinEffectData)
+void CombinedMaterial::combine(Material* owner, Material* ownerBase, const BuiltinEffectData& builtinEffectData)
 {
 	//bool modified = false;
 	//if (owner == nullptr || owner != owner || owner->m_modifiedForMaterialInstance)

@@ -56,7 +56,7 @@ public:
 
 	typedef size_t	DataHandle;
 
-	virtual void Execute() = 0;
+	virtual void execute() = 0;
 
 
 protected:
@@ -145,7 +145,7 @@ public:
 	void ClearCommands();
 
 	/// すべてのコマンドを実行する (描画スレッドから呼ばれる)
-	void Execute(Driver::IGraphicsDevice* device/*, Device::IRenderer* renderer*/);
+	void execute(Driver::IGraphicsDevice* device/*, Device::IRenderer* renderer*/);
 
 	/// 後処理 (描画スレッドから呼ばれる)
 	void PostExecute();
@@ -368,7 +368,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 	} \
 	else { \
 		commandName cmd(__VA_ARGS__); \
-		cmd.Execute(); \
+		cmd.execute(); \
 	}
 
 #define LN_ENQUEUE_RENDER_COMMAND_1(name, manager, type1, param1, code) \
@@ -384,7 +384,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 		{ \
 			RenderingCommand::MarkBulkData(commandList, param1); \
 		} \
-		virtual void Execute() override \
+		virtual void execute() override \
 		{ \
 			code; \
 		} \
@@ -408,7 +408,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 			RenderingCommand::MarkBulkData(commandList, param1); \
 			RenderingCommand::MarkBulkData(commandList, param2); \
 		} \
-		virtual void Execute() override \
+		virtual void execute() override \
 		{ \
 			code; \
 		} \
@@ -436,7 +436,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 			RenderingCommand::MarkBulkData(commandList, param2); \
 			RenderingCommand::MarkBulkData(commandList, param3); \
 		} \
-		virtual void Execute() override \
+		virtual void execute() override \
 		{ \
 			code; \
 		} \
@@ -468,7 +468,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 			RenderingCommand::MarkBulkData(commandList, param3); \
 			RenderingCommand::MarkBulkData(commandList, param4); \
 		} \
-		virtual void Execute() override \
+		virtual void execute() override \
 		{ \
 			code; \
 		} \
@@ -504,7 +504,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 			RenderingCommand::MarkBulkData(commandList, param4); \
 			RenderingCommand::MarkBulkData(commandList, param5); \
 		} \
-		virtual void Execute() override \
+		virtual void execute() override \
 		{ \
 			code; \
 		} \
@@ -544,7 +544,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 			RenderingCommand::MarkBulkData(commandList, param5); \
 			RenderingCommand::MarkBulkData(commandList, param6); \
 		} \
-		virtual void Execute() override \
+		virtual void execute() override \
 		{ \
 			code; \
 		} \
@@ -588,7 +588,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 			RenderingCommand::MarkBulkData(commandList, param6); \
 			RenderingCommand::MarkBulkData(commandList, param7); \
 		} \
-		virtual void Execute() override \
+		virtual void execute() override \
 		{ \
 			code; \
 		} \
@@ -636,7 +636,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 			RenderingCommand::MarkBulkData(commandList, param7); \
 			RenderingCommand::MarkBulkData(commandList, param8); \
 		} \
-		virtual void Execute() override \
+		virtual void execute() override \
 		{ \
 			code; \
 		} \
@@ -655,7 +655,7 @@ struct SetSamplerStateCommand : public RenderingCommand
 		m_state = state;
 		MarkGC(m_targetTexture);
 	}
-	void Execute()
+	void execute()
 	{
 		m_targetTexture->SetSamplerState(m_state);
 	}
@@ -742,18 +742,18 @@ struct SetShaderVariableCommand : public RenderingCommand
 		MarkGC(value);
 	}
 
-	void Execute()
+	void execute()
 	{
 		switch (m_variableType)
 		{
 		case ShaderVariableType_Bool:
-			m_target->SetBool(BoolVal);
+			m_target->setBool(BoolVal);
 			break;
 		case ShaderVariableType_Int:
 			m_target->setInt(Int);
 			break;
 		case ShaderVariableType_Float:
-			m_target->SetFloat(Float);
+			m_target->setFloat(Float);
 			break;
 		case ShaderVariableType_Vector:
 			m_target->SetVector(*((Vector4*)GetExtData(VectorsBufferIndex)));
@@ -786,7 +786,7 @@ struct ApplyShaderPassCommand : public RenderingCommand
 		m_pass = pass;
 		MarkGC(pass);
 	}
-	void Execute() { GetRenderer()->SetShaderPass(m_pass); /*m_pass->Apply();*/ }
+	void execute() { GetRenderer()->SetShaderPass(m_pass); /*m_pass->Apply();*/ }
 };
 
 //==============================================================================
@@ -800,7 +800,7 @@ struct PresentCommand : public RenderingCommand
 		MarkGC(swapChain);
 	}
 
-	void Execute()
+	void execute()
 	{
 		m_targetSwapChain->PresentInternal();
 	}
@@ -826,7 +826,7 @@ struct SetSubDataTextureCommand : public RenderingCommand
 		MarkGC(texture);
 	}
 
-	void Execute()
+	void execute()
 	{
 		m_targetTexture->SetSubData(m_offset, GetExtData(m_bmpDataIndex), m_dataSize, m_bmpSize);
 	}
@@ -841,7 +841,7 @@ struct ReadLockTextureCommand : public RenderingCommand
 		m_targetTexture = texture;
 		MarkGC(texture);
 	}
-	void Execute()
+	void execute()
 	{
 		m_targetTexture->m_primarySurface = m_targetTexture->m_deviceObj->Lock();
 		// Texture::Lock() はこの後コマンドリストが空になるまで待機する
@@ -858,7 +858,7 @@ struct ReadUnlockTextureCommand : public RenderingCommand
 		m_targetTexture = texture;
 		MarkGC(texture);
 	}
-	void Execute()
+	void execute()
 	{
 		m_targetTexture->m_deviceObj->Unlock();
 		m_targetTexture->m_primarySurface = NULL;

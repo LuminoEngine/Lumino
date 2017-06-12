@@ -194,13 +194,13 @@ void FloatAnimationCurve::UpdateValue(double time)
 				// 等加速度
 			case InterpolationMode_QuadAccel:
 			{
-				m_value = Math::QuadAccel(p0, key0->Velocity, key0->Accel, static_cast< float >(time - key0->FrameTime));
+				m_value = Math::quadAccel(p0, key0->Velocity, key0->Accel, static_cast< float >(time - key0->FrameTime));
 				break;
 			}
 				// 三次補間
 			case InterpolationMode_Hermite:
 			{
-				m_value = Math::Hermite(
+				m_value = Math::hermite(
 					p0, p1,
 					key0->RightSlope,
 					key1->LeftSlope,
@@ -218,7 +218,7 @@ void FloatAnimationCurve::UpdateValue(double time)
 
 				// この補間には、begin のひとつ前と end のひとつ後の値が必要。
 				// それぞれが始点、終点の場合はループするように補間する
-				m_value = Math::CatmullRom(
+				m_value = Math::catmullRom(
 					((key0->FrameTime == begin.FrameTime) ? end.Value : (key0 - 1)->Value),
 					p0,
 					p1,
@@ -525,9 +525,9 @@ void VMDBezierSQTTransformAnimation2::UpdateValue(double time)
 	// ボーンを更新する
 	Vector3 progress(ss[0], ss[1], ss[2]);
 	m_transform.translation =
-		Vector3(Math::Lerp(k0.Position.x, k1.Position.x, progress.x),
-			Math::Lerp(k0.Position.y, k1.Position.y, progress.y),
-			Math::Lerp(k0.Position.z, k1.Position.z, progress.z));
+		Vector3(Math::lerp(k0.Position.x, k1.Position.x, progress.x),
+			Math::lerp(k0.Position.y, k1.Position.y, progress.y),
+			Math::lerp(k0.Position.z, k1.Position.z, progress.z));
 	
 	m_transform.rotation =
 		Quaternion::Slerp(k0.Rotation, k1.Rotation, ss[3]);

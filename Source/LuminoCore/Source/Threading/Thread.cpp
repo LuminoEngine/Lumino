@@ -90,7 +90,7 @@ void Thread::ExecuteInternal()
 {
 	try
 	{
-		Execute();
+		execute();
 	}
 	catch (Exception& e)
 	{
@@ -125,7 +125,7 @@ void DelegateThread::start(Delegate00 func)
 #endif
 
 //------------------------------------------------------------------------------
-void DelegateThread::Execute()
+void DelegateThread::execute()
 {
 	if (!m_ThreadFunc.isEmpty()) {
 		m_ThreadFunc.call();

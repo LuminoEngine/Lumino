@@ -111,7 +111,7 @@ namespace Bezier
 				// Cross the two tangent vectors to compute the normal.
 				Vector3 normal = Vector3::Cross(tangent1, tangent2);
 
-				if (!Vector3::NearEqual(normal, Vector3::Zero/*, g_XMEpsilon*/))
+				if (!Vector3::nearEqual(normal, Vector3::Zero/*, g_XMEpsilon*/))
 				{
 					normal = Vector3::Normalize(normal);
 

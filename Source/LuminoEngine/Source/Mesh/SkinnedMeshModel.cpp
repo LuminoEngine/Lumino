@@ -123,8 +123,8 @@ public:
 		// 回転角度を求める
 		float dot = Vector3::Dot(link2Effector, link2Target);
 		if (dot > 1.0f) dot = 1.0f;
-		float rotationAngle = Math::Clamp(acosf(dot), -RotationLimited, RotationLimited);
-		if (Math::IsNaN(rotationAngle)) return;
+		float rotationAngle = Math::clamp(acosf(dot), -RotationLimited, RotationLimited);
+		if (Math::isNaN(rotationAngle)) return;
 		if (rotationAngle <= 1.0e-3f) return;
 
 		// 回転軸を求める
@@ -152,15 +152,15 @@ public:
 		// まずオイラー角に分解する。
 		// 分解の試行順序は XYZ が一番最初でなければならない (Love&Joy モーションで破綻する)
 		type = RotationOrder::XYZ;
-		euler = localRot.ToEulerAngles(type, &locked);
+		euler = localRot.toEulerAngles(type, &locked);
 		if (locked)
 		{
 			type = RotationOrder::YZX;
-			euler = localRot.ToEulerAngles(type, &locked);
+			euler = localRot.toEulerAngles(type, &locked);
 			if (locked)
 			{
 				type = RotationOrder::ZXY;
-				euler = localRot.ToEulerAngles(type, &locked);
+				euler = localRot.toEulerAngles(type, &locked);
 				if (locked)
 				{
 					LN_UNREACHABLE();	// あり得ないはずだが…。localRotの要素がすべて0とか。
@@ -170,7 +170,7 @@ public:
 
 		// 角度修正
 		NormalizeEular(&euler);
-		euler.Clamp(ikLink.MinLimit, ikLink.MaxLimit);
+		euler.clamp(ikLink.MinLimit, ikLink.MaxLimit);
 
 		// 戻す
 		return Quaternion::MakeFromRotationMatrix(Matrix::MakeRotationEulerAngles(euler, type));
@@ -439,7 +439,7 @@ void SkinnedMeshModel::UpdateBestow()
 		if (bone->getCore()->IsMoveProvided)
 		{
 			SkinnedMeshBone* parent = m_allBoneList[bone->getCore()->ProvidedParentBoneIndex];
-			bone->m_localTransform.translation += Vector3::Lerp(Vector3::Zero, parent->m_localTransform.translation, bone->getCore()->ProvidedRatio);
+			bone->m_localTransform.translation += Vector3::lerp(Vector3::Zero, parent->m_localTransform.translation, bone->getCore()->ProvidedRatio);
 		}
 		if (bone->getCore()->IsRotateProvided)
 		{
@@ -529,7 +529,7 @@ void SkinnedMeshBone::UpdateGlobalTransform(bool hierarchical)
 
 
 	// 親からの平行移動量
-	m_combinedMatrix.Translate(m_core->GetOffsetFromParent());
+	m_combinedMatrix.translate(m_core->GetOffsetFromParent());
 
 	//m_combinedMatrix =
 	//	Matrix::MakeTranslation(-m_core->OrgPosition) *
@@ -635,9 +635,9 @@ void MmdSkinnedMeshRigidBody::initialize(SkinnedMeshModel* ownerModel, PmxRigidB
 	}
 
 	//Matrix bias;
-	//bias.RotateZ(m_resource->.z);
-	//bias.RotateX(pmd_rigidbody_->vec3Rotation.x);
-	//bias.RotateY(pmd_rigidbody_->vec3Rotation.y);
+	//bias.rotateZ(m_resource->.z);
+	//bias.rotateX(pmd_rigidbody_->vec3Rotation.x);
+	//bias.rotateY(pmd_rigidbody_->vec3Rotation.y);
 
 
 	Matrix initialTransform = m_resource->InitialTransform;
@@ -725,7 +725,7 @@ void MmdSkinnedMeshRigidBody::UpdateAfterPhysics()
 			matrix = /*Matrix::MakeScalingScaling(scale, scale, scale) * */m_rigidBody->GetWorldTransform();
 		}
 
-		if (matrix.IsNaNOrInf())
+		if (matrix.isNaNOrInf())
 		{
 			matrix = Matrix::Identity;
 		}
@@ -748,7 +748,7 @@ void MmdSkinnedMeshRigidBody::UpdateAfterPhysics()
 			//Matrix mat = Matrix::MakeTranslation(m_bone->GetCore()->OrgPosition) * localPose * Matrix::MakeTranslation(-m_bone->GetCore()->OrgPosition);
 			//m_bone->m_combinedMatrix = globalPose;
 
-			//localPose.Translate(-m_bone->GetCore()->GetOffsetFromParent());
+			//localPose.translate(-m_bone->GetCore()->GetOffsetFromParent());
 			
 			//m_bone->m_localTransform.translation = localPose.GetPosition();
 			//m_bone->m_localTransform.rotation = Quaternion::MakeFromRotationMatrix(localPose);

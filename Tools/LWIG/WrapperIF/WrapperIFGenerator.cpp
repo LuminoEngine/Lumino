@@ -55,7 +55,7 @@ void WrapperIFGenerator::Generate(SymbolDatabase* database)
 	{
 		buffer.AppendLines(MakeMethods(classInfo));
 
-		if (!classInfo->IsStatic())
+		if (!classInfo->isStatic())
 		{
 			static const String SetBindingTypeInfo =
 				"LN_API void LN%ClassName%_SetBindingTypeInfo(void* data)\n"
@@ -129,7 +129,7 @@ String WrapperIFGenerator::GenerateOverrideCallerFuncPtrs()
 	OutputBuffer funcPtrDefs;
 	for (auto& classInfo : m_database->classes)
 	{
-		if (!classInfo->IsStatic())
+		if (!classInfo->isStatic())
 		{
 			for (auto& methodInfo : classInfo->declaredMethods)
 			{
@@ -161,7 +161,7 @@ String WrapperIFGenerator::GenerateWrapperIFClasses()
 		m_eventWrapperConnectExps.clear();
 		m_eventWrapperConnectExps.IncreaseIndent(2);
 
-		if (!classInfo->IsStatic())
+		if (!classInfo->isStatic())
 		{
 			// ‰¼‘zŠÖ”‚Ì override
 			OutputBuffer overrideCallersDecl(1);

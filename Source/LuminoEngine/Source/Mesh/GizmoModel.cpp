@@ -103,7 +103,7 @@ bool GizmoModel::InjectMouseDown(int x, int y)
 		{
 			m_draggingLocalPlane.Intersects(MakeLocalRay(x, y), &m_draggingStartLocalPosition);
 			m_draggingStartGizmoTransform = m_gizmoTransform;
-			m_draggingStartViewPixelPoint.Set(x, y);
+			m_draggingStartViewPixelPoint.set(x, y);
 			m_dragging = true;
 			return true;
 		}
@@ -160,13 +160,13 @@ bool GizmoModel::InjectMouseMove(int x, int y)
 				switch (m_operationType)
 				{
 				case ln::tr::GizmoModel::OperationType::X:
-					rot.RotateAxis(m_draggingLocalPlane.Normal, -atan2(localOffaet.y, localOffaet.z));
+					rot.rotateAxis(m_draggingLocalPlane.Normal, -atan2(localOffaet.y, localOffaet.z));
 					break;
 				case ln::tr::GizmoModel::OperationType::Y:
-					rot.RotateAxis(m_draggingLocalPlane.Normal, -atan2(localOffaet.z, localOffaet.x));
+					rot.rotateAxis(m_draggingLocalPlane.Normal, -atan2(localOffaet.z, localOffaet.x));
 					break;
 				case ln::tr::GizmoModel::OperationType::Z:
-					rot.RotateAxis(m_draggingLocalPlane.Normal, atan2(localOffaet.y, localOffaet.x));
+					rot.rotateAxis(m_draggingLocalPlane.Normal, atan2(localOffaet.y, localOffaet.x));
 					break;
 				case ln::tr::GizmoModel::OperationType::XYZ:
 				{
@@ -179,12 +179,12 @@ bool GizmoModel::InjectMouseMove(int x, int y)
 					lp2 -= m_draggingStartLocalPosition;
 					Vector3 raxis = Vector3::Normalize(lp1 - localOffaet);
 					Vector3 taxis = Vector3::Normalize(lp2 - localOffaet);
-					rot.RotateAxis(raxis, (y - m_draggingStartViewPixelPoint.y) * -0.05);
-					rot.RotateAxis(taxis, (x - m_draggingStartViewPixelPoint.x) * 0.05);
+					rot.rotateAxis(raxis, (y - m_draggingStartViewPixelPoint.y) * -0.05);
+					rot.rotateAxis(taxis, (x - m_draggingStartViewPixelPoint.x) * 0.05);
 					break;
 				}
 				case ln::tr::GizmoModel::OperationType::ViewZ:
-					rot.RotateAxis(m_draggingLocalPlane.Normal, atan2(localOffaet.y, localOffaet.x));
+					rot.rotateAxis(m_draggingLocalPlane.Normal, atan2(localOffaet.y, localOffaet.x));
 					break;
 				}
 
@@ -255,7 +255,7 @@ bool GizmoModel::InjectMouseUp(int x, int y)
 void GizmoModel::Render(DrawList* context)
 {
 	Matrix gizmoMat;
-	gizmoMat.Scale(m_screenFactor);
+	gizmoMat.scale(m_screenFactor);
 	gizmoMat *= m_gizmoTransform;
 	context->SetTransform(gizmoMat);	// TODO: old
 
@@ -505,7 +505,7 @@ GizmoModel::OperationType GizmoModel::GetRotationOperationType(int x, int y)
 Ray GizmoModel::MakeLocalRay(int x, int y)
 {
 	Matrix gizmoMat;
-	gizmoMat.Scale(m_screenFactor);
+	gizmoMat.scale(m_screenFactor);
 	gizmoMat *= m_gizmoInitialTransform;
 
 	Matrix viewproj = m_view * m_proj;

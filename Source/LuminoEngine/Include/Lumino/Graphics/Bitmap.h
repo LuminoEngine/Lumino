@@ -146,7 +146,7 @@ public:
 private:
 	typedef uint32_t ClColor;	// ビット演算で表現する
 
-	void Init();
+	void init();
 	static void ConvertPixelFormat(
 		const byte_t* input, size_t inputSize, PixelFormat inputFormat,
 		byte_t* output, size_t outputSize, PixelFormat outputFormat);
@@ -204,7 +204,7 @@ private:
 			return RGBA(c->D[0], c->D[1], c->D[2], c->D[3]);
 		}
 		// 中間フォーマット (RGBA) からセット
-		static inline void Set(byte_t* line, int x, ClColor color)
+		static inline void set(byte_t* line, int x, ClColor color)
 		{
 			U32* w = &((U32*)line)[x];
 			w->D[0] = GetR(color); w->D[1] = GetG(color); w->D[2] = GetB(color); w->D[3] = GetA(color);
@@ -219,7 +219,7 @@ private:
 			U32* c = &((U32*)line)[x];
 			return RGBA(c->D[0], c->D[1], c->D[2], 0xFF);
 		}
-		static inline void Set(byte_t* line, int x, ClColor color)
+		static inline void set(byte_t* line, int x, ClColor color)
 		{
 			U32* w = &((U32*)line)[x];
 			w->D[0] = GetR(color); w->D[1] = GetG(color); w->D[2] = GetB(color); w->D[3] = 0xFF;
@@ -234,7 +234,7 @@ private:
 			U32* c = &((U32*)line)[x];
 			return RGBA(c->D[2], c->D[1], c->D[0], c->D[3]);
 		}
-		static inline void Set(byte_t* line, int x, ClColor color)
+		static inline void set(byte_t* line, int x, ClColor color)
 		{
 			U32* w = &((U32*)line)[x];
 			w->D[0] = GetB(color); w->D[1] = GetG(color); w->D[2] = GetR(color); w->D[3] = GetA(color);
@@ -249,7 +249,7 @@ private:
 			U32* c = &((U32*)line)[x];
 			return RGBA(c->D[2], c->D[1], c->D[0], 0xFF);
 		}
-		static inline void Set(byte_t* line, int x, ClColor color)
+		static inline void set(byte_t* line, int x, ClColor color)
 		{
 			U32* w = &((U32*)line)[x];
 			w->D[0] = GetB(color); w->D[1] = GetG(color); w->D[2] = GetR(color); w->D[3] = 0xFF;
@@ -270,7 +270,7 @@ private:
 				return RGBA(0xFF, 0xFF, 0xFF, 0x00);
 			}
 		}
-		static inline void Set(byte_t* line, int x, ClColor color)
+		static inline void set(byte_t* line, int x, ClColor color)
 		{
 			assert(0);
 		}
@@ -284,7 +284,7 @@ private:
 			byte_t c = line[x];
 			return RGBA(0xFF, 0xFF, 0xFF, c);
 		}
-		static inline void Set(byte_t* line, int x, ClColor color)
+		static inline void set(byte_t* line, int x, ClColor color)
 		{
 			line[x] = GetA(color);
 		}
@@ -321,7 +321,7 @@ private:
 
 		inline void SetPixel(int x, ClColor color)
 		{
-			TConverter::Set(m_curLine, m_rc.x + x, color);
+			TConverter::set(m_curLine, m_rc.x + x, color);
 		}
 
 	private:

@@ -79,7 +79,7 @@ void EntryPointNode::initialize(const StringRef& name)
 }
 
 //------------------------------------------------------------------------------
-void EntryPointNode::Execute(NlContext* sc)
+void EntryPointNode::execute(NlContext* sc)
 {
 	sc->Goto(m_flowOutput);
 }
@@ -180,7 +180,7 @@ NlVariant* NlContext::Evaluate(NlGraphPin* dataInputPin)
 	NlGraphNode* node = dataInputPin->GetLinkedToNode();
 	if (node != nullptr)
 	{
-		node->Execute(this);
+		node->execute(this);
 	}
 	else
 	{
@@ -237,7 +237,7 @@ void NlContext::GotoNode(NlGraphNode* next)
 void NlContext::Step()
 {
 	if (LN_CHECK_STATE(m_pc != nullptr)) return;
-	m_pc->Execute(this);
+	m_pc->execute(this);
 }
 
 //==============================================================================
@@ -287,7 +287,7 @@ NlNode_Print::NlNode_Print()
 }
 
 //------------------------------------------------------------------------------
-void NlNode_Print::Execute(NlContext* sc)
+void NlNode_Print::execute(NlContext* sc)
 {
 	printf("test\n");
 

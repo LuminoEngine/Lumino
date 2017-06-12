@@ -23,7 +23,7 @@ inline Vector4::Vector4(float x_, float y_, float z_, float w_)
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-inline void Vector4::Set(float x_, float y_, float z_, float w_)
+inline void Vector4::set(float x_, float y_, float z_, float w_)
 {
 	x = x_;
 	y = y_;

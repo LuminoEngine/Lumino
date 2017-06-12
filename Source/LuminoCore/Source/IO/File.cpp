@@ -46,7 +46,7 @@ void File::close()
 //------------------------------------------------------------------------------
 PathName File::getFilePath() const
 {
-	return m_filePath.CanonicalizePath();
+	return m_filePath.canonicalizePath();
 }
 
 //------------------------------------------------------------------------------
@@ -118,7 +118,7 @@ void File::flush()
 
 //------------------------------------------------------------------------------
 TemporaryFile::TemporaryFile()
-	: File(PathName::GetUniqueFilePathInDirectory(PathName::getSpecialFolderPath(SpecialFolder::Temporary), nullptr, nullptr))
+	: File(PathName::getUniqueFilePathInDirectory(PathName::getSpecialFolderPath(SpecialFolder::Temporary), nullptr, nullptr))
 	, m_autoRemove(true)
 {
 }

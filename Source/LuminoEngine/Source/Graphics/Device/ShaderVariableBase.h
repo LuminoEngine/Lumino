@@ -41,10 +41,10 @@ public:
 	virtual int GetMatrixRows() const override { return m_desc.Rows; }
 	virtual int GetMatrixColumns() const override { return m_desc.Columns; }
 	virtual int GetArrayElements() const override { return m_desc.Elements; }
-	virtual void SetBool(bool value) override;
+	virtual void setBool(bool value) override;
 	virtual void SetBoolArray(const bool* values, int count) override;
 	virtual void setInt(int value) override;
-	virtual void SetFloat(float value) override;
+	virtual void setFloat(float value) override;
 	virtual void SetFloatArray(const float* values, int count) override;
 	virtual void SetVector(const Vector4& vec) override;
 	virtual void SetVectorArray(const Vector4* vectors, int count) override;

@@ -62,7 +62,7 @@ public:
 		AddError(errorCode_, line_, col_, String());
 	}
 
-	bool HasError() const { return errorCode != ParseError_NoError; }
+	bool hasError() const { return errorCode != ParseError_NoError; }
 };
 
 } // namespace detail

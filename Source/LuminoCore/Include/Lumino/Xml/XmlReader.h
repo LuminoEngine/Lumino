@@ -183,10 +183,10 @@ LN_INTERNAL_ACCESS:
 
 		NodeData()
 		{
-			Init();
+			init();
 		}
 
-		void Init()
+		void init()
 		{
 			Type = XmlNodeType::None;
 			NameStartPos = -1;
@@ -224,7 +224,7 @@ LN_INTERNAL_ACCESS:
 
 
 	bool IsWhiteSpace(int ch);
-	bool SkipWhitespace();
+	bool skipWhitespace();
 
 	bool IsReservedEntity(const TCHAR* text, int len);	// & と ; は含まないこと
 

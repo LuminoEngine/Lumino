@@ -123,7 +123,7 @@ void TextLayoutEngine::LayoutTextHorizontal(const UTF32* text, int length)
 //------------------------------------------------------------------------------
 void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const RectI& lineArea, SizeI* outLineSize)
 {
-	outLineSize->Set(0, 0);
+	outLineSize->set(0, 0);
 
 	// 描く必要がない
 	if (length == 0) { return; }
@@ -177,7 +177,7 @@ void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const
 		}
 		case TextAlignment::Right:
 		{
-			int offset = lineArea.GetRight() - planeWidth;
+			int offset = lineArea.getRight() - planeWidth;
 			for (TextLayoutResultItem & item : m_result->Items) {
 				item.Location.BitmapTopLeftPosition.x += offset;
 				item.Location.OutlineBitmapTopLeftPosition.x += offset;

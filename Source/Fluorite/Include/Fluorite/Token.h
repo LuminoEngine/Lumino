@@ -24,7 +24,7 @@ public:
 	TokenGroup GetTokenGroup() const { return m_group; }
 
 	/** トークンの種別。値の意味はプログラム言語ごとに異なる */
-	int GetTokenType() const { return m_tokenType; }
+	int getTokenType() const { return m_tokenType; }
 
 	int getLength() const { return m_locEnd - m_locBegin; }
 	SourceLocation GetBeginLoc() const { return m_locBegin; }

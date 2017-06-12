@@ -28,7 +28,7 @@ public:
 	/**
 		@brief	スレッド関数 (これを自身で実装する)
 	*/
-	virtual void Execute() = 0;
+	virtual void execute() = 0;
 
 public:
 
@@ -108,7 +108,7 @@ public:
 	void start(Delegate<void()> func);
 
 protected:
-	virtual void Execute();
+	virtual void execute();
 
 private:
 	Delegate<void()>	m_ThreadFunc;

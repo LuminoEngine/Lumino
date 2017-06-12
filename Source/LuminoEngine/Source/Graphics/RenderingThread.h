@@ -34,7 +34,7 @@ public:
 
 protected:
 	/// スレッド関数
-	virtual void Execute();
+	virtual void execute();
 
 private:
 	Driver::IGraphicsDevice*			m_device;

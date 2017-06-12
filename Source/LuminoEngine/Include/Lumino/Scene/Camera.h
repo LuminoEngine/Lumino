@@ -129,15 +129,15 @@ private:
 
 	// 以下はシェーダ変数への設定用。ライトは個々のノードに比べて参照される回数が多いので
 	// 必要になるたびに計算するのではなく、あらかじめ計算しておく。
-	Matrix				m_viewMatrixI;		///< ビュー行列 (Inverse)
-	Matrix				m_projMatrixI;		///< プロジェクション行列 (Inverse)
-	Matrix				m_viewProjMatrixI;	///< ビュー行列とプロジェクション行列の積 (Inverse)
-	Matrix				m_viewMatrixT;		///< ビュー行列 (Transpose)
-	Matrix				m_projMatrixT;		///< プロジェクション行列 (Transpose)
-	Matrix				m_viewProjMatrixT;	///< ビュー行列とプロジェクション行列の積 (Transpose)
-	Matrix				m_viewMatrixIT;		///< ビュー行列 (Inverse * Transpose)
-	Matrix				m_projMatrixIT;		///< プロジェクション行列 (Inverse * Transpose)
-	Matrix				m_viewProjMatrixIT;	///< ビュー行列とプロジェクション行列の積 (Inverse * Transpose)
+	Matrix				m_viewMatrixI;		///< ビュー行列 (inverse)
+	Matrix				m_projMatrixI;		///< プロジェクション行列 (inverse)
+	Matrix				m_viewProjMatrixI;	///< ビュー行列とプロジェクション行列の積 (inverse)
+	Matrix				m_viewMatrixT;		///< ビュー行列 (transpose)
+	Matrix				m_projMatrixT;		///< プロジェクション行列 (transpose)
+	Matrix				m_viewProjMatrixT;	///< ビュー行列とプロジェクション行列の積 (transpose)
+	Matrix				m_viewMatrixIT;		///< ビュー行列 (inverse * transpose)
+	Matrix				m_projMatrixIT;		///< プロジェクション行列 (inverse * transpose)
+	Matrix				m_viewProjMatrixIT;	///< ビュー行列とプロジェクション行列の積 (inverse * transpose)
 
 	Plane				m_reflectionPlane;
 };

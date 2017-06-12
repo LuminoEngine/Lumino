@@ -20,7 +20,7 @@ public:
 	NlGraphPin* GetDataOutputPin() const { return m_outputPin; }
 
 protected:
-	virtual void Execute(NlContext* sc) override;
+	virtual void execute(NlContext* sc) override;
 
 private:
 	NlGraphPin*			m_inputLhsPin;

@@ -34,7 +34,7 @@ TEST_F(Test_Vector3, Basic)
 	// this->Set
 	{
 		Vector3 v1;
-		v1.Set(1, 2 ,3);
+		v1.set(1, 2 ,3);
 		ASSERT_VEC3_NEAR(1, 2, 3, v1);
 	}
 	// this->GetXY
@@ -56,7 +56,7 @@ TEST_F(Test_Vector3, Basic)
 	// this->Clamp
 	{
 		Vector3 v1(1, 2, 3);
-		v1.Clamp(Vector3(0, 4, 2), Vector3(0.5, 5, 3));
+		v1.clamp(Vector3(0, 4, 2), Vector3(0.5, 5, 3));
 		ASSERT_VEC3_NEAR(0.5, 4, 3, v1);
 	}
 	// this->TransformCoord
@@ -72,10 +72,10 @@ TEST_F(Test_Vector3, Basic)
 	// this->IsNaNOrInf
 	{
 		Vector3 v(1, 2, 3);
-		ASSERT_FALSE(v.IsNaNOrInf());
+		ASSERT_FALSE(v.isNaNOrInf());
 		volatile  float d = 0.0f;
 		v.x /= d;
-		ASSERT_TRUE(v.IsNaNOrInf());
+		ASSERT_TRUE(v.isNaNOrInf());
 	}
 
 	// Vector3::Normalize
@@ -148,7 +148,7 @@ TEST_F(Test_Vector3, Basic)
 	}
 	// Vector3::Lerp()
 	{
-		Vector3 v1 = Vector3::Lerp(
+		Vector3 v1 = Vector3::lerp(
 			Vector3(1, 2, 3),
 			Vector3(3, 4, 7),
 			0.75);
@@ -156,7 +156,7 @@ TEST_F(Test_Vector3, Basic)
 	}
 	// Vector3::Hermite()
 	{
-		Vector3 v1 = Vector3::Hermite(
+		Vector3 v1 = Vector3::hermite(
 			Vector3(1, 2, 3),
 			Vector3(3, 4, 7),
 			Vector3(0.3f, 0.4f, -0.5f),
@@ -166,7 +166,7 @@ TEST_F(Test_Vector3, Basic)
 	}
 	// Vector3::CatmullRom()
 	{
-		Vector3 v1 = Vector3::CatmullRom(
+		Vector3 v1 = Vector3::catmullRom(
 			Vector3(1, 2, 3),
 			Vector3(3, 4, 7),
 			Vector3(0.3f, 0.4f, -0.5f),
@@ -204,31 +204,31 @@ TEST_F(Test_Vector3, Basic)
 	{
 		Vector3 v1;
 
-		v1.Set(1, 2, 3);
+		v1.set(1, 2, 3);
 		v1 += Vector3(1, 2, 3);
 		ASSERT_VEC3_NEAR(2, 4, 6, v1);
-		v1.Set(1, 2, 3);
+		v1.set(1, 2, 3);
 		v1 += 5;
 		ASSERT_VEC3_NEAR(6, 7, 8, v1);
 
-		v1.Set(1, 2, 3);
+		v1.set(1, 2, 3);
 		v1 -= Vector3(1, 2, 3);
 		ASSERT_VEC3_NEAR(0, 0, 0, v1);
-		v1.Set(1, 2, 3);
+		v1.set(1, 2, 3);
 		v1 -= 5;
 		ASSERT_VEC3_NEAR(-4, -3, -2, v1);
 
-		v1.Set(1, 2, 3);
+		v1.set(1, 2, 3);
 		v1 *= Vector3(5, 6, 7);
 		ASSERT_VEC3_NEAR(5, 12, 21, v1);
-		v1.Set(1, 2, 3);
+		v1.set(1, 2, 3);
 		v1 *= 5;
 		ASSERT_VEC3_NEAR(5, 10, 15, v1);
 
-		v1.Set(1, 2, 3);
+		v1.set(1, 2, 3);
 		v1 /= Vector3(1, 2, 3);
 		ASSERT_VEC3_NEAR(1, 1, 1, v1);
-		v1.Set(10, 20, 30);
+		v1.set(10, 20, 30);
 		v1 /= 5;
 		ASSERT_VEC3_NEAR(2, 4, 6, v1);
 	}
@@ -264,7 +264,7 @@ TEST_F(Test_Vector3, Basic)
 		v1 = 20 / Vector3(1, 2, 4);
 		ASSERT_VEC3_NEAR(20, 10, 5, v1);
 
-		v1.Set(2, 4, 6);
+		v1.set(2, 4, 6);
 		ASSERT_TRUE(v1 == Vector3(2, 4, 6));
 		ASSERT_FALSE(v1 != Vector3(2, 4, 6));
 	}

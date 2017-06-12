@@ -75,7 +75,7 @@ void Quaternion::Multiply(const Quaternion& qua)
 }
 
 //------------------------------------------------------------------------------
-void Quaternion::RotateX(float angle)
+void Quaternion::rotateX(float angle)
 {
 	float s, c;
 	Asm::sincos(angle * 0.5f, &s, &c);
@@ -91,7 +91,7 @@ void Quaternion::RotateX(float angle)
 }
 
 //------------------------------------------------------------------------------
-void Quaternion::RotateY(float angle)
+void Quaternion::rotateY(float angle)
 {
 	float s, c;
 	Asm::sincos(angle * 0.5f, &s, &c);
@@ -107,7 +107,7 @@ void Quaternion::RotateY(float angle)
 }
 
 //------------------------------------------------------------------------------
-void Quaternion::RotateZ(float angle)
+void Quaternion::rotateZ(float angle)
 {
 	float s, c;
 	Asm::sincos(angle * 0.5f, &s, &c);
@@ -123,18 +123,18 @@ void Quaternion::RotateZ(float angle)
 }
 
 //------------------------------------------------------------------------------
-void Quaternion::RotateAxis(const Vector3& axis, float r)
+void Quaternion::rotateAxis(const Vector3& axis, float r)
 {
 	// TODO: もうちょい最適化
 	Multiply(MakeFromRotationAxis(axis, r));
 }
 
 //------------------------------------------------------------------------------
-Vector3 Quaternion::ToEulerAngles(RotationOrder order, bool* locked) const
+Vector3 Quaternion::toEulerAngles(RotationOrder order, bool* locked) const
 {
 	// クォータニオン→行列
 	Matrix rot = Matrix::MakeRotationQuaternion(Quaternion::Normalize(*this));
-	return rot.ToEulerAngles(order, locked);
+	return rot.toEulerAngles(order, locked);
 }
 
 //------------------------------------------------------------------------------
@@ -155,13 +155,13 @@ void Quaternion::ToAxisAngle(Vector3* axis, float* angle) const
 }
 
 //------------------------------------------------------------------------------
-bool Quaternion::IsNaNOrInf() const
+bool Quaternion::isNaNOrInf() const
 {
-	return Math::IsNaNOrInf(x) || Math::IsNaNOrInf(y) || Math::IsNaNOrInf(z) || Math::IsNaNOrInf(w);
+	return Math::isNaNOrInf(x) || Math::isNaNOrInf(y) || Math::isNaNOrInf(z) || Math::isNaNOrInf(w);
 }
 
 //------------------------------------------------------------------------------
-void Quaternion::Print(const char* format, FILE* stream) const
+void Quaternion::print(const char* format, FILE* stream) const
 {
 	if (!format) {
 		format = "%f, %f, %f, %f\n";
@@ -346,13 +346,13 @@ Quaternion Quaternion::MakeFromEulerAngles(const Vector3& angles, RotationOrder 
 	switch (order)
 	{
 		case RotationOrder::XYZ:
-			q.RotateX(angles.x); q.RotateY(angles.y); q.RotateZ(angles.z);
+			q.rotateX(angles.x); q.rotateY(angles.y); q.rotateZ(angles.z);
 			break;
 		case RotationOrder::YZX:
-			q.RotateY(angles.y); q.RotateZ(angles.z); q.RotateX(angles.x);
+			q.rotateY(angles.y); q.rotateZ(angles.z); q.rotateX(angles.x);
 			break;
 		case RotationOrder::ZXY:
-			q.RotateZ(angles.z); q.RotateX(angles.x); q.RotateY(angles.y);
+			q.rotateZ(angles.z); q.rotateX(angles.x); q.rotateY(angles.y);
 			break;
 		default:
 			assert(0);

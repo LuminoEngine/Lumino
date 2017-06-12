@@ -172,7 +172,7 @@ public:
 	void SetV3(const Point& v) { V3 = v; }
 	const Point& GetV3() const { return V3; }
 
-	void SetV4(RefTest2* v) { V4.Set(v); }
+	void SetV4(RefTest2* v) { V4.set(v); }
 	//RefTest2* GetV4() const { return V4; }	// TODO: できればコレがやりたいのだが・・・
 	RefTest2* GetV4() const { return V4.get(); }
 	RefPtr<RefTest2> GetV4_2() const { return V4; }

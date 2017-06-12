@@ -12,7 +12,7 @@ LN_NAMESPACE_BEGIN
 template<typename TChar>
 GenericStreamReader<TChar>::GenericStreamReader(Stream* stream, Encoding* encoding)
 {
-	InitReader(stream, encoding);
+	initReader(stream, encoding);
 }
 
 //------------------------------------------------------------------------------
@@ -20,7 +20,7 @@ template<typename TChar>
 GenericStreamReader<TChar>::GenericStreamReader(const TChar* filePath, Encoding* encoding)
 {
 	auto stream = GenericFileStream<TChar>::create(filePath, FileOpenMode::read);
-	InitReader(stream, encoding);
+	initReader(stream, encoding);
 }
 
 //------------------------------------------------------------------------------
@@ -31,13 +31,13 @@ GenericStreamReader<TChar>::~GenericStreamReader()
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-int GenericStreamReader<TChar>::Peek()
+int GenericStreamReader<TChar>::peek()
 {
 	// バッファリングデータを最後まで読んでいた場合は追加読み込み。
 	// それでも1つも読み込めなかったら EOF。
 	if (m_charPos >= m_charElementLen)
 	{
-		if (ReadBuffer() == 0) {
+		if (readBuffer() == 0) {
 			return -1;
 		}
 	}
@@ -53,7 +53,7 @@ int GenericStreamReader<TChar>::read()
 	// それでも1つも読み込めなかったら EOF。
 	if (m_charPos >= m_charElementLen)
 	{
-		if (ReadBuffer() == 0) {
+		if (readBuffer() == 0) {
 			return -1;
 		}
 	}
@@ -63,12 +63,12 @@ int GenericStreamReader<TChar>::read()
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-bool GenericStreamReader<TChar>::ReadLine(GenericString<TChar>* line)
+bool GenericStreamReader<TChar>::readLine(GenericString<TChar>* line)
 {
 	// 変換済みの文字列を全て返していれば (または初回)、次のバッファを読みに行く
 	if (m_charPos == m_charElementLen)
 	{
-		if (ReadBuffer() == 0) {
+		if (readBuffer() == 0) {
 			return false;	// EOF
 		}
 	}
@@ -87,7 +87,7 @@ bool GenericStreamReader<TChar>::ReadLine(GenericString<TChar>* line)
 				m_charPos = i + 1;
 
 				// CR+LF 対応。条件式の中に ReadBuffer() があるが、これは現在のバッファ境界で \r と \n が切れている時の対策。
-				if (ch == '\r' && (m_charPos < m_charElementLen || ReadBuffer() > 0)) {
+				if (ch == '\r' && (m_charPos < m_charElementLen || readBuffer() > 0)) {
 					if (buf[m_charPos] == '\n') {
 						m_charPos++;
 					}
@@ -103,7 +103,7 @@ bool GenericStreamReader<TChar>::ReadLine(GenericString<TChar>* line)
 		const TChar* buf = (const TChar*)m_converter.GetLastBuffer().getConstData();
 		builder.append(buf + m_charPos, m_charElementLen - m_charPos);
 
-	} while (ReadBuffer() > 0);
+	} while (readBuffer() > 0);
 
 	*line = builder.toString();
 	return true;
@@ -111,7 +111,7 @@ bool GenericStreamReader<TChar>::ReadLine(GenericString<TChar>* line)
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericString<TChar> GenericStreamReader<TChar>::ReadToEnd()
+GenericString<TChar> GenericStreamReader<TChar>::readToEnd()
 {
 	GenericStringBuilder<TChar> builder;
 	do
@@ -123,7 +123,7 @@ GenericString<TChar> GenericStreamReader<TChar>::ReadToEnd()
 			m_charPos = m_charElementLen;
 		}
 
-	} while (ReadBuffer() > 0);
+	} while (readBuffer() > 0);
 
 	return builder.toString();
 }
@@ -135,12 +135,12 @@ bool GenericStreamReader<TChar>::isEOF()
 	if (m_charPos < m_charElementLen) {
 		return false;	// まだバッファリングされていて読まれていない文字がある
 	}
-	return (ReadBuffer() == 0);
+	return (readBuffer() == 0);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-void GenericStreamReader<TChar>::InitReader(Stream* stream, Encoding* encoding)
+void GenericStreamReader<TChar>::initReader(Stream* stream, Encoding* encoding)
 {
 	// encoding 未指定であれば UTF8 とする
 	if (encoding == nullptr) {
@@ -159,7 +159,7 @@ void GenericStreamReader<TChar>::InitReader(Stream* stream, Encoding* encoding)
 //------------------------------------------------------------------------------
 // ストリームからバイト列を読み取って変換し、現在バッファリングされている文字要素数(THCAR)を返す。
 template<typename TChar>
-int GenericStreamReader<TChar>::ReadBuffer()
+int GenericStreamReader<TChar>::readBuffer()
 {
 	// TODO: BOM チェックするならここで。
 

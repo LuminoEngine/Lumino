@@ -88,7 +88,7 @@ void RigidBody::InitializeCore(CollisionShape* collider, const ConfigData& confi
 	PhysicsObject::initialize();
 	m_btShapeManager.AddShape(collider);
 	m_data = configData;
-	m_data.Scale = scale;
+	m_data.scale = scale;
 	SetCollisionFilterGroup(configData.Group);
 	SetCollisionFilterMask(configData.GroupMask);
 	m_modifiedFlags |= Modified_InitialUpdate;
@@ -496,7 +496,7 @@ void RigidBody::CreateBtRigidBody()
 
 
 	// 各初期プロパティ
-	float num = m_data.Mass * m_data.Scale;
+	float num = m_data.Mass * m_data.scale;
 	float friction;
 	float hitFraction;
 	float linearDamping;
@@ -527,9 +527,9 @@ void RigidBody::CreateBtRigidBody()
 	//if (configData.InitialTransform != nullptr)
 	{
 		initialTransform.setFromOpenGLMatrix((const btScalar*)&m_data.InitialTransform);
-		initialTransform.getOrigin().setX(initialTransform.getOrigin().x() * m_data.Scale);
-		initialTransform.getOrigin().setY(initialTransform.getOrigin().y() * m_data.Scale);
-		initialTransform.getOrigin().setZ(initialTransform.getOrigin().z() * m_data.Scale);
+		initialTransform.getOrigin().setX(initialTransform.getOrigin().x() * m_data.scale);
+		initialTransform.getOrigin().setY(initialTransform.getOrigin().y() * m_data.scale);
+		initialTransform.getOrigin().setZ(initialTransform.getOrigin().z() * m_data.scale);
 	}
 	//else {
 	//	initialTransform.setIdentity();

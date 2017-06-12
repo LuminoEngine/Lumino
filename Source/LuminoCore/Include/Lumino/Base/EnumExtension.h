@@ -53,12 +53,12 @@ enum _##enumName
 */
 #define LN_ENUM_REFLECTION(enumName, ...) \
 private: \
-	struct LocalEnumParser : public EnumParser <_##enumName> { LocalEnumParser() { _##enumName values[] = { __VA_ARGS__ };  Init(values, LN_ARRAY_SIZE_OF(values), #__VA_ARGS__); } }; \
+	struct LocalEnumParser : public EnumParser <_##enumName> { LocalEnumParser() { _##enumName values[] = { __VA_ARGS__ };  init(values, LN_ARRAY_SIZE_OF(values), #__VA_ARGS__); } }; \
 	static LocalEnumParser& GetEnumParser() { static LocalEnumParser parser; return parser; } \
 public: \
-	static int GetMemberCount() { return GetEnumParser().GetMemberList().getCount(); } \
+	static int getMemberCount() { return GetEnumParser().GetMemberList().getCount(); } \
 	String toString() const { return GetEnumParser().toString(m_value); } \
-	static enumName Parse(const TCHAR* str) { return GetEnumParser().Parse(str); }; \
+	static enumName parse(const TCHAR* str) { return GetEnumParser().parse(str); }; \
 	static bool TryParse(const TCHAR* str, enumName* outValue) { return GetEnumParser().TryParse(str, (outValue) ? (int*)&outValue->m_value : NULL); }
 
 /**
@@ -126,11 +126,11 @@ enum _##enumName
 */
 #define LN_ENUM_FLAGS_REFLECTION(enumName, ...) \
 private: \
-	struct LocalEnumParser : public EnumFlagsParser <_##enumName> { LocalEnumParser() { _##enumName values[] = { __VA_ARGS__ };  Init(values, LN_ARRAY_SIZE_OF(values), #__VA_ARGS__); } }; \
+	struct LocalEnumParser : public EnumFlagsParser <_##enumName> { LocalEnumParser() { _##enumName values[] = { __VA_ARGS__ };  init(values, LN_ARRAY_SIZE_OF(values), #__VA_ARGS__); } }; \
 	static LocalEnumParser& GetEnumParser() { static LocalEnumParser parser; return parser; } \
 public: \
 	String toString(const TCHAR* separator = _T("|")) const { return GetEnumParser().toString(m_value, separator); } \
-	static enumName Parse(const TCHAR* str, TCHAR separator = '|') { return GetEnumParser().Parse(str, separator); }; \
+	static enumName parse(const TCHAR* str, TCHAR separator = '|') { return GetEnumParser().parse(str, separator); }; \
 	static bool TryParse(const TCHAR* str, enumName* outValue, TCHAR separator = '|') { return GetEnumParser().TryParse(str, (outValue) ? &outValue->m_value : NULL, separator); }
 
 
@@ -168,7 +168,7 @@ public:
 		{
 			static PairList members; return members;	// ヘッダ include だけで済ますため、static 変数は関数内に閉じ込めておく
 		}
-		void Init(const TEnum* values, int valuesCount, const char* argNames)
+		void init(const TEnum* values, int valuesCount, const char* argNames)
 		{
 			PairList& members = GetMemberList();
 			String names = String::fromNativeCharString(argNames);
@@ -193,7 +193,7 @@ public:
 			LN_ASSERT(0);
 			return String();
 		}
-		static TEnum Parse(const TCHAR* str)
+		static TEnum parse(const TCHAR* str)
 		{
 			int value;
 			if (TryParse(str, &value)) {
@@ -248,7 +248,7 @@ public:
 			LN_THROW(!out.isEmpty(), ArgumentException);
 			return out;
 		}
-		static TEnum Parse(const TCHAR* str, TCHAR separator)
+		static TEnum parse(const TCHAR* str, TCHAR separator)
 		{
 			int value;
 			if (TryParse(str, &value, separator)) {

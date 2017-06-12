@@ -100,7 +100,7 @@ Stream* FileManager::CreateFileStream(const wchar_t* filePath, bool isDeferring)
 //------------------------------------------------------------------------------
 Stream* FileManager::CreateFileStream(const PathName& filePath, bool isDeferring)
 {
-	PathName absPath = filePath.CanonicalizePath();
+	PathName absPath = filePath.canonicalizePath();
 
 	RefPtr<Stream> stream;
 	for (IArchive* archive : m_archiveList)

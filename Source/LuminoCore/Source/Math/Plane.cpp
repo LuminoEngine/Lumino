@@ -137,7 +137,7 @@ void Plane::Transform(const Matrix& mat)
 }
 
 //------------------------------------------------------------------------------
-void Plane::Print(const char* format, FILE* stream) const
+void Plane::print(const char* format, FILE* stream) const
 {
 	if (!format) {
 		format = "%f, %f, %f, %f\n";

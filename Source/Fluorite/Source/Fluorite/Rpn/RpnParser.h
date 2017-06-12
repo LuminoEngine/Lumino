@@ -153,7 +153,7 @@ public:
 private:
 	void initialize(DiagnosticsItemSet* diag);
 	void TokenizeCppConst(Position exprBegin, Position exprEnd);
-	void Parse();
+	void parse();
 	void PushOpStack(RpnToken* token);
 	RpnToken* PopOpStackGroupEnd(bool fromArgsSeparator);
 	RpnToken* PopOpStackCondFalse();
@@ -208,13 +208,13 @@ public:
 		double		valueDouble;
 	};
 
-	void Set(bool value) { valueBoolean = value; type = RpnOperandType::Boolean; }
-	void Set(int32_t value) { valueInt32 = value; type = RpnOperandType::Int32; }
-	void Set(uint32_t value) { valueUInt32 = value; type = RpnOperandType::UInt32; }
-	void Set(int64_t value) { valueInt64 = value; type = RpnOperandType::Int64; }
-	void Set(uint64_t value) { valueUInt64 = value; type = RpnOperandType::UInt64; }
-	void Set(float value) { valueFloat = value; type = RpnOperandType::Float; }
-	void Set(double value) { valueDouble = value; type = RpnOperandType::Double; }
+	void set(bool value) { valueBoolean = value; type = RpnOperandType::Boolean; }
+	void set(int32_t value) { valueInt32 = value; type = RpnOperandType::Int32; }
+	void set(uint32_t value) { valueUInt32 = value; type = RpnOperandType::UInt32; }
+	void set(int64_t value) { valueInt64 = value; type = RpnOperandType::Int64; }
+	void set(uint64_t value) { valueUInt64 = value; type = RpnOperandType::UInt64; }
+	void set(float value) { valueFloat = value; type = RpnOperandType::Float; }
+	void set(double value) { valueDouble = value; type = RpnOperandType::Double; }
 
 	/** 整数型であるか (Boolean は含まない) */
 	bool IsIntager() const;

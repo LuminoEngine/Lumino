@@ -73,7 +73,7 @@ int Randomizer::GetIntWidth(int median, int width)
 }
 
 //------------------------------------------------------------------------------
-float Randomizer::GetFloat()
+float Randomizer::getFloat()
 {
 	int r = getInt();
 	r = (r & 0x007fffff) | 0x3f800000;			// 0x3f800000 は指数部が 1111111で、これは指数1を示す。r & 0x007fffff で仮数部を適当に決めている。
@@ -82,9 +82,9 @@ float Randomizer::GetFloat()
 }
 
 //------------------------------------------------------------------------------
-float Randomizer::GetFloat(float maxValue)
+float Randomizer::getFloat(float maxValue)
 {
-	float r = GetFloat();
+	float r = getFloat();
 	r *= maxValue;
 	return r;
 }
@@ -92,7 +92,7 @@ float Randomizer::GetFloat(float maxValue)
 //------------------------------------------------------------------------------
 float Randomizer::GetFloatRange(float minValue, float maxValue)
 {
-	float r = GetFloat();
+	float r = getFloat();
 	r *= (maxValue - minValue);
 	r += minValue;
 	return r;

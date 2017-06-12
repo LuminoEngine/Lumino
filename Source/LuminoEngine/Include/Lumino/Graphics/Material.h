@@ -132,7 +132,7 @@ public:
 		return hash;
 	}
 
-	static void Combine(const BuiltinEffectData& parent, const BuiltinEffectData& local, BuiltinEffectData* outData)
+	static void combine(const BuiltinEffectData& parent, const BuiltinEffectData& local, BuiltinEffectData* outData)
 	{
 		*outData = local;
 		outData->m_opacity *= parent.m_opacity;
@@ -297,7 +297,7 @@ LN_INTERNAL_ACCESS:
 	//Texture* GetTexture(uint32_t hashKey, Texture* defaultValue) const { auto* v = FindUserShaderValueConst(hashKey); return (v) ? v->GetManagedTexture() : defaultValue; }
 	
 	const Color& GetBuiltinColor(uint32_t hashKey, const Color& defaultValue) const { auto itr = m_builtinValueMap.find(hashKey); return (itr != m_builtinValueMap.end()) ? static_cast<const Color&>(itr->second.GetVector()) : defaultValue; }
-	float GetBuiltinFloat(uint32_t hashKey, float defaultValue) const { auto itr = m_builtinValueMap.find(hashKey); return (itr != m_builtinValueMap.end()) ? itr->second.GetFloat() : defaultValue; }
+	float GetBuiltinFloat(uint32_t hashKey, float defaultValue) const { auto itr = m_builtinValueMap.find(hashKey); return (itr != m_builtinValueMap.end()) ? itr->second.getFloat() : defaultValue; }
 	Texture* GetBuiltinTexture(uint32_t hashKey, Texture* defaultValue) const { auto itr = m_builtinValueMap.find(hashKey); return (itr != m_builtinValueMap.end()) ? itr->second.GetManagedTexture() : defaultValue; }
 
 	
@@ -367,7 +367,7 @@ public:
 	Nullable<bool>			m_depthTestEnabled;
 	Nullable<bool>			m_depthWriteEnabled;
 
-	void Combine(Material* owner, Material* ownerBase, const BuiltinEffectData& builtinEffectData);
+	void combine(Material* owner, Material* ownerBase, const BuiltinEffectData& builtinEffectData);
 	void ApplyUserShaderValeues(Shader* targetShader);
 
 	uint32_t GetSourceHashCode() const { return m_lastSourceHashCode; }

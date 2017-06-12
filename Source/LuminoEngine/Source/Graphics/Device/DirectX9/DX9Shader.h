@@ -71,10 +71,10 @@ public:
 	static void getValue(ID3DXEffect* dxEffect, D3DXHANDLE handle, ShaderVariableTypeDesc desc, ShaderValue* outValue);
 
 public:
-	virtual void SetBool(bool value);
+	virtual void setBool(bool value);
 	virtual void SetBoolArray(const bool* values, int count);
 	virtual void setInt(int value);
-	virtual void SetFloat(float value);
+	virtual void setFloat(float value);
 	virtual void SetFloatArray(const float* values, int count);
 	virtual void SetVector(const Vector4& vec);
 	virtual void SetVectorArray(const Vector4* vectors, int count);
@@ -101,9 +101,9 @@ public:
 	virtual ~DX9ShaderAnnotation();
 
 public:
-	virtual void SetBool(bool value) { LN_THROW(0, InvalidOperationException); }
+	virtual void setBool(bool value) { LN_THROW(0, InvalidOperationException); }
 	virtual void setInt(int value) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetFloat(float value) { LN_THROW(0, InvalidOperationException); }
+	virtual void setFloat(float value) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetVector(const Vector4& vec) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetVectorArray(const Vector4* vectors, int count) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetMatrix(const Matrix& matrix) { LN_THROW(0, InvalidOperationException); }

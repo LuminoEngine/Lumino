@@ -43,7 +43,7 @@ void XmlWriter::WriteStartDocument()
 	m_textWriter->write(_T("<?xml "));
 	m_textWriter->write(_T("version=\"1.0\""));
 	m_textWriter->write(_T(" encoding=\""));
-	m_textWriter->write(m_textWriter->GetEncoding()->GetName());
+	m_textWriter->write(m_textWriter->getEncoding()->GetName());
 	m_textWriter->write(_T("\""));
 	m_textWriter->write(_T("?>"));
 	m_state = State_Prolog;
@@ -99,7 +99,7 @@ void XmlWriter::WriteAttribute(const String& name, const String& value)
 }
 
 //------------------------------------------------------------------------------
-void XmlWriter::WriteString(const String& text)
+void XmlWriter::writeString(const String& text)
 {
 	PreWrite(XmlNodeType::Text);
 	WriteStringInternal(text.c_str(), text.getLength(), false);
@@ -137,7 +137,7 @@ void XmlWriter::WriteCData(const String& text)
 void XmlWriter::WriteElementString(const String& elementName, const String& text)
 {
 	WriteStartElement(elementName);
-	WriteString(text);
+	writeString(text);
 	WriteEndElement();
 }
 
@@ -368,9 +368,9 @@ XmlStringWriter::~XmlStringWriter()
 }
 
 //------------------------------------------------------------------------------
-void XmlStringWriter::SetNewLine(const String& newLine)
+void XmlStringWriter::setNewLine(const String& newLine)
 {
-	m_stringWriter->SetNewLine(newLine);
+	m_stringWriter->setNewLine(newLine);
 }
 
 //------------------------------------------------------------------------------

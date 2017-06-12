@@ -9,7 +9,7 @@ protected:
 };
 
 //-----------------------------------------------------------------------------
-TEST_F(Test_ParserCombinators, Parse)
+TEST_F(Test_ParserCombinators, parse)
 {
 	struct TokenParser : public combinators::ParseLib<TokenParser>
 	{

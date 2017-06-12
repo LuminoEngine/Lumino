@@ -21,13 +21,13 @@ JsonValue::JsonValue(bool value)
 	: m_type(JsonType::Null)
 	, m_uint(0)
 {
-	SetBool(value);
+	setBool(value);
 }
 JsonValue::JsonValue(double value)
 	: m_type(JsonType::Null)
 	, m_uint(0)
 {
-	SetDouble(value);
+	setDouble(value);
 }
 JsonValue::JsonValue(const TCHAR* value)
 	: m_type(JsonType::Null)
@@ -53,12 +53,12 @@ JsonValue::JsonValue(JsonType::enum_type type)
 {
 	switch (type)
 	{
-	case JsonType::Null:	SetNull(); break;
-	case JsonType::Bool:	SetBool(false); break;
-	case JsonType::Double:	SetDouble(0.0); break;
+	case JsonType::Null:	setNull(); break;
+	case JsonType::Bool:	setBool(false); break;
+	case JsonType::Double:	setDouble(0.0); break;
 	case JsonType::String:	setString(String::getEmpty()); break;
-	case JsonType::Array:	SetArray(); break;
-	case JsonType::Object:	SetObject(); break;
+	case JsonType::Array:	setArray(); break;
+	case JsonType::Object:	setObject(); break;
 	}
 }
 
@@ -76,14 +76,14 @@ JsonValue& JsonValue::operator=(const JsonValue& obj)
 }
 
 //------------------------------------------------------------------------------
-void JsonValue::SetNull()
+void JsonValue::setNull()
 {
 	detach();
 	m_type = JsonType::Null;
 }
 
 //------------------------------------------------------------------------------
-void JsonValue::SetBool(bool value)
+void JsonValue::setBool(bool value)
 {
 	detach();
 	m_type = JsonType::Bool;
@@ -91,14 +91,14 @@ void JsonValue::SetBool(bool value)
 }
 
 //------------------------------------------------------------------------------
-bool JsonValue::GetBool() const
+bool JsonValue::getBool() const
 {
 	if (LN_CHECK_STATE(m_type == JsonType::Bool)) return false;
 	return m_bool;
 }
 
 //------------------------------------------------------------------------------
-void JsonValue::SetDouble(double value)
+void JsonValue::setDouble(double value)
 {
 	detach();
 	m_type = JsonType::Double;
@@ -106,7 +106,7 @@ void JsonValue::SetDouble(double value)
 }
 
 //------------------------------------------------------------------------------
-double JsonValue::GetDouble() const
+double JsonValue::getDouble() const
 {
 	if (LN_CHECK_STATE(m_type == JsonType::Double)) return 0.0;
 	return m_double;
@@ -128,7 +128,7 @@ const String& JsonValue::getString() const
 }
 
 //------------------------------------------------------------------------------
-void JsonValue::SetArray()
+void JsonValue::setArray()
 {
 	detach();
 	m_type = JsonType::Array;
@@ -136,14 +136,14 @@ void JsonValue::SetArray()
 }
 
 //------------------------------------------------------------------------------
-int JsonValue::GetItemCount() const
+int JsonValue::getItemCount() const
 {
 	if (LN_CHECK_STATE(m_type == JsonType::Array && m_valueList != NULL)) return 0;
 	return m_valueList->getCount();
 }
 
 //------------------------------------------------------------------------------
-void JsonValue::AddItem(const JsonValue& value)
+void JsonValue::addItem(const JsonValue& value)
 {
 	if (LN_CHECK_STATE(m_type == JsonType::Array && m_valueList != NULL)) return;
 	m_valueList->add(value);
@@ -162,7 +162,7 @@ const JsonValue& JsonValue::operator[](int index) const
 }
 
 //------------------------------------------------------------------------------
-void JsonValue::SetObject()
+void JsonValue::setObject()
 {
 	detach();
 	m_type = JsonType::Object;
@@ -170,14 +170,14 @@ void JsonValue::SetObject()
 }
 
 //------------------------------------------------------------------------------
-int JsonValue::GetMemberCount() const
+int JsonValue::getMemberCount() const
 {
 	if (LN_CHECK_STATE(m_type == JsonType::Object && m_memberList != NULL)) return 0;
 	return m_memberList->getCount();
 }
 
 //------------------------------------------------------------------------------
-void JsonValue::AddMember(const String& name, const JsonValue& value)
+void JsonValue::addMember(const String& name, const JsonValue& value)
 {
 	if (LN_CHECK_STATE(m_type == JsonType::Object && m_memberList != NULL)) return;
 	JsonMember m;
@@ -190,13 +190,13 @@ void JsonValue::AddMember(const String& name, const JsonValue& value)
 void JsonValue::copy(const JsonValue& obj)
 {
 	if (obj.m_type == JsonType::Null) {
-		SetNull();
+		setNull();
 	}
 	else if (obj.m_type == JsonType::Bool) {
-		SetBool(obj.GetBool());
+		setBool(obj.getBool());
 	}
 	else if (obj.m_type == JsonType::Double) {
-		SetDouble(obj.GetDouble());
+		setDouble(obj.getDouble());
 	}
 	else if (obj.m_type == JsonType::String) {
 		setString(obj.getString());

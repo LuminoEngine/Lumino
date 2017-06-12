@@ -40,7 +40,7 @@ public:
 	/**
 		@brief		データの読み書き先バイト配列の先頭アドレスを取得します。
 	*/
-	void* GetBuffer(size_t index = 0);
+	void* getBuffer(size_t index = 0);
 
 public:
 	// override Stream

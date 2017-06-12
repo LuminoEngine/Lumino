@@ -40,7 +40,7 @@ public:
 	void WriteAttribute(const String& name, const String& value);
 
 	/** 指定したテキストを書き込みます。*/
-	void WriteString(const String& text);
+	void writeString(const String& text);
 
 	/** コメントブロックを書き込みます。*/
 	void WriteComment(const String& text);
@@ -140,7 +140,7 @@ public:
 		@brief		この TextWriter で使用する改行文字列を設定します。
 		@details	規定値は String::GetNewLine() で取得できる値です。
 	*/
-	void SetNewLine(const String& newLine);
+	void setNewLine(const String& newLine);
 
 	/** XML 文字列を取得します。*/
 	String toString();

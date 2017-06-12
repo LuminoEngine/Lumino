@@ -360,7 +360,7 @@ FontGlyphLocation* FreeTypeFont::AdvanceKerning(UTF32 utf32code, int strokeSize,
 	locData->BitmapTopLeftPosition.x = locData->NextBaseX + slot->bitmap_left;
 	locData->BitmapTopLeftPosition.y = locData->NextBaseY - (slot->metrics.horiBearingY >> 6);//slot->bitmap_top;// (slot->metrics.horiBearingY * m_ftFace->size->metrics.y_ppem / m_ftFace->units_per_EM)/*- slot->bitmap_top*/;
 
-	locData->BitmapSize.Set(slot->bitmap.width, slot->bitmap.rows);
+	locData->BitmapSize.set(slot->bitmap.width, slot->bitmap.rows);
 
 	// 直前の glyph_index として記憶
 	locData->PreviousGlyphIndex = glyphIndex;

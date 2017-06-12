@@ -412,7 +412,7 @@ String FileSystem::readAllText(const StringRef& filePath, const Encoding* encodi
 	ByteBuffer buffer(FileSystem::readAllBytes(filePath));
 	if (encoding == nullptr)
 	{
-		Encoding* e = Encoding::GetEncoding(EncodingType::UTF8);
+		Encoding* e = Encoding::getEncoding(EncodingType::UTF8);
 		if (ByteBuffer::compare(buffer, e->GetPreamble(), 3, 3) == 0)
 			encoding = e;
 		else

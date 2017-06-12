@@ -559,7 +559,7 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseMove(int x, int y)
 		//Vector3 localPos = pos - lookAt;
 
 		//Matrix m = Matrix::LookAtLH(pos, lookAt, Vector3::UnitY);
-		//Vector3 r = m.ToEulerAngles(RotationOrder_XYZ);
+		//Vector3 r = m.toEulerAngles(RotationOrder_XYZ);
 
 		//float lenXZ = Vector2(localPos.X, localPos.Z).GetLength();
 		//float rotX = atan2f(localPos.Z, localPos.X);
@@ -584,8 +584,8 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseMove(int x, int y)
 		//}
 
 		//Matrix mat;// = Matrix::RotationYawPitchRoll(rotX, rotY, 0);
-		//mat.RotateX(rotY);
-		//mat.RotateY(rotX);
+		//mat.rotateX(rotY);
+		//mat.rotateY(rotX);
 		//Vector3 newPos(0, 0, localPos.GetLength());
 		//newPos.TransformCoord(mat);
 		//camera->SetPosition(newPos);
@@ -630,7 +630,7 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseMove(int x, int y)
 			//else
 			//	D3DXMatrixRotationY( &m, D3DXToRadian(d) );
 
-			m.RotateY(d);
+			m.rotateY(d);
 			view.TransformCoord(m);
 		}
 		if (dy != 0)
@@ -738,7 +738,7 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseMove(int x, int y)
 		m_prevPos.y = y;
 
 		//Vector3 view;
-		//Matrix mat = Matrix::Inverse(GetTargetCamera()->GetViewMatrix());
+		//Matrix mat = Matrix::inverse(GetTargetCamera()->GetViewMatrix());
 		//mat.M41 = mat.M42 = mat.M43 = 0.0f;
 		//view.X = -dx * s;
 		//view.Y = dy * s;

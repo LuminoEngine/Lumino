@@ -11,7 +11,7 @@ protected:
 	AnalyzerContext	m_context;
 	RpnParser m_parser;
 
-	const RpnTokenList* Parse(const char* code)
+	const RpnTokenList* parse(const char* code)
 	{
 		auto file = m_context.RegisterInputMemoryCode("test", code);
 		m_context.LexFile(file);
@@ -23,14 +23,14 @@ protected:
 };
 
 //-----------------------------------------------------------------------------
-TEST_F(Test_Rpn, Parse)
+TEST_F(Test_Rpn, parse)
 {
 	//int a = (1 == 2 ? 3 + 4 : 5 + 6);					// 11
 	//int b = (0 ?     1 ? 1 : 2     :     1 ? 3 : 4);	// 3
 
 	// <Test> 普通に
 	{
-		auto rpnTokens = Parse("1 + 2");
+		auto rpnTokens = parse("1 + 2");
 		ASSERT_EQ(4, rpnTokens->getCount());
 		ASSERT_EQ(RPN_TT_NumericLitaral_Int32, rpnTokens->getAt(0).Type);
 		ASSERT_EQ(RPN_TT_NumericLitaral_Int32, rpnTokens->getAt(1).Type);
@@ -39,7 +39,7 @@ TEST_F(Test_Rpn, Parse)
 	}
 	// <Test> 優先順序
 	{
-		auto rpnTokens = Parse("1 + 2 * 3");
+		auto rpnTokens = parse("1 + 2 * 3");
 		ASSERT_EQ(6, rpnTokens->getCount());
 		ASSERT_EQ(RPN_TT_NumericLitaral_Int32, rpnTokens->getAt(0).Type);
 		ASSERT_EQ(RPN_TT_NumericLitaral_Int32, rpnTokens->getAt(1).Type);
@@ -50,7 +50,7 @@ TEST_F(Test_Rpn, Parse)
 	}
 	// <Test> 優先順序
 	{
-		auto rpnTokens = Parse("1 * 2 + 3");
+		auto rpnTokens = parse("1 * 2 + 3");
 		ASSERT_EQ(6, rpnTokens->getCount());
 		ASSERT_EQ(RPN_TT_NumericLitaral_Int32, rpnTokens->getAt(0).Type);
 		ASSERT_EQ(RPN_TT_NumericLitaral_Int32, rpnTokens->getAt(1).Type);
@@ -61,7 +61,7 @@ TEST_F(Test_Rpn, Parse)
 	}
 	// <Test> 括弧
 	{
-		auto rpnTokens = Parse("1 * (2 + 3)");
+		auto rpnTokens = parse("1 * (2 + 3)");
 		ASSERT_EQ(6, rpnTokens->getCount());
 		ASSERT_EQ(RPN_TT_NumericLitaral_Int32, rpnTokens->getAt(0).Type);
 		ASSERT_EQ(RPN_TT_NumericLitaral_Int32, rpnTokens->getAt(1).Type);
@@ -72,7 +72,7 @@ TEST_F(Test_Rpn, Parse)
 	}
 	// <Test> 単項演算子
 	{
-		auto rpnTokens = Parse("1 + -2");
+		auto rpnTokens = parse("1 + -2");
 		ASSERT_EQ(5, rpnTokens->getCount());
 		ASSERT_EQ(RPN_TT_NumericLitaral_Int32, rpnTokens->getAt(0).Type);
 		ASSERT_EQ(RPN_TT_NumericLitaral_Int32, rpnTokens->getAt(1).Type);
@@ -82,7 +82,7 @@ TEST_F(Test_Rpn, Parse)
 	}
 	// <Test> 条件演算子
 	{
-		auto rpnTokens = Parse("1 != 2 ? 3 + 4 : 5 + 6");
+		auto rpnTokens = parse("1 != 2 ? 3 + 4 : 5 + 6");
 		ASSERT_EQ(12, rpnTokens->getCount());
 		ASSERT_EQ(RPN_TT_NumericLitaral_Int32, rpnTokens->getAt(0).Type);
 		ASSERT_EQ(RPN_TT_NumericLitaral_Int32, rpnTokens->getAt(1).Type);
@@ -99,7 +99,7 @@ TEST_F(Test_Rpn, Parse)
 	}
 	// <Test> 条件演算子
 	{
-		auto rpnTokens = Parse("1 ? (5 ? 6 : 7) : (3 ? 4 : (5 ? 6 : 7))");
+		auto rpnTokens = parse("1 ? (5 ? 6 : 7) : (3 ? 4 : (5 ? 6 : 7))");
 		ASSERT_EQ(18, rpnTokens->getCount());
 		ASSERT_EQ(RPN_TT_NumericLitaral_Int32, rpnTokens->getAt(0).Type); 
 		ASSERT_EQ(RPN_TT_OP_CondTrue, rpnTokens->getAt(1).Type);	ASSERT_EQ(8, rpnTokens->getAt(1).CondGoto);
@@ -135,7 +135,7 @@ TEST_F(Test_Rpn, Parse)
 
 	// <Test> 関数呼び出し
 	{
-		auto rpnTokens = Parse("Func(1)");
+		auto rpnTokens = parse("Func(1)");
 		ASSERT_EQ(3, rpnTokens->getCount());
 		ASSERT_EQ(RPN_TT_NumericLitaral_Int32, rpnTokens->getAt(0).Type);
 		ASSERT_EQ(RPN_TT_OP_FuncCall, rpnTokens->getAt(1).Type);
@@ -143,7 +143,7 @@ TEST_F(Test_Rpn, Parse)
 	}
 	// <Test> 関数呼び出し (複数の引数)
 	{
-		auto rpnTokens = Parse("F1(1+1, F2(2*2) + 2)");
+		auto rpnTokens = parse("F1(1+1, F2(2*2) + 2)");
 		ASSERT_EQ(11, rpnTokens->getCount());
 		ASSERT_EQ(RPN_TT_NumericLitaral_Int32, rpnTokens->getAt(0).Type);
 		ASSERT_EQ(RPN_TT_NumericLitaral_Int32, rpnTokens->getAt(1).Type);

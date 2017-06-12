@@ -312,7 +312,7 @@ void DX9ShaderVariable::getValue(ID3DXEffect* dxEffect, D3DXHANDLE handle, Shade
 	{
 		BOOL b;
 		LN_COMCALL(dxEffect->GetBool(handle, &b));
-		outValue->SetBool(b != FALSE);
+		outValue->setBool(b != FALSE);
 		break;
 	}
 	case ShaderVariableType_BoolArray:
@@ -337,7 +337,7 @@ void DX9ShaderVariable::getValue(ID3DXEffect* dxEffect, D3DXHANDLE handle, Shade
 	{
 		FLOAT v;
 		LN_COMCALL(dxEffect->GetFloat(handle, &v));
-		outValue->SetFloat(v);
+		outValue->setFloat(v);
 		break;
 	}
 	case ShaderVariableType_FloatArray:
@@ -456,10 +456,10 @@ DX9ShaderVariable::~DX9ShaderVariable()
 }
 
 //------------------------------------------------------------------------------
-void DX9ShaderVariable::SetBool(bool value)
+void DX9ShaderVariable::setBool(bool value)
 {
 	LN_COMCALL(m_dxEffect->SetBool(m_handle, value));
-	ShaderVariableBase::SetBool(value);
+	ShaderVariableBase::setBool(value);
 }
 
 //------------------------------------------------------------------------------
@@ -485,10 +485,10 @@ void DX9ShaderVariable::setInt(int value)
 }
 
 //------------------------------------------------------------------------------
-void DX9ShaderVariable::SetFloat(float value)
+void DX9ShaderVariable::setFloat(float value)
 {
 	LN_COMCALL(m_dxEffect->SetFloat(m_handle, value));
-	ShaderVariableBase::SetFloat(value);
+	ShaderVariableBase::setFloat(value);
 }
 
 //------------------------------------------------------------------------------

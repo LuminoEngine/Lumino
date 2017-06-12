@@ -53,7 +53,7 @@ public:
 	Exception* GetException() const;
 
 LN_INTERNAL_ACCESS:
-	void Execute();
+	void execute();
 
 private:
 	Task(const Delegate<void()>& action);	// 今は Run からだけ考える

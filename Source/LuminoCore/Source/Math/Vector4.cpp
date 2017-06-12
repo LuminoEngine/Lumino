@@ -45,31 +45,31 @@ float Vector4::GetLengthSquared() const
 }
 
 //------------------------------------------------------------------------------
-void Vector4::Clamp(float min_xyzw, float max_xyzw)
+void Vector4::clamp(float min_xyzw, float max_xyzw)
 {
-	x = Math::Clamp(x, min_xyzw, max_xyzw);
-	y = Math::Clamp(y, min_xyzw, max_xyzw);
-	z = Math::Clamp(z, min_xyzw, max_xyzw);
-	w = Math::Clamp(w, min_xyzw, max_xyzw);
+	x = Math::clamp(x, min_xyzw, max_xyzw);
+	y = Math::clamp(y, min_xyzw, max_xyzw);
+	z = Math::clamp(z, min_xyzw, max_xyzw);
+	w = Math::clamp(w, min_xyzw, max_xyzw);
 }
 
 //------------------------------------------------------------------------------
-void Vector4::Clamp(const Vector4& minVec, const Vector4& maxVec)
+void Vector4::clamp(const Vector4& minVec, const Vector4& maxVec)
 {
-	x = Math::Clamp(x, minVec.x, maxVec.x);
-	y = Math::Clamp(y, minVec.y, maxVec.y);
-	z = Math::Clamp(z, minVec.z, maxVec.z);
-	w = Math::Clamp(w, minVec.w, maxVec.w);
+	x = Math::clamp(x, minVec.x, maxVec.x);
+	y = Math::clamp(y, minVec.y, maxVec.y);
+	z = Math::clamp(z, minVec.z, maxVec.z);
+	w = Math::clamp(w, minVec.w, maxVec.w);
 }
 
 //------------------------------------------------------------------------------
-bool Vector4::IsNaNOrInf() const
+bool Vector4::isNaNOrInf() const
 {
-	return Math::IsNaNOrInf(x) || Math::IsNaNOrInf(y) || Math::IsNaNOrInf(z) || Math::IsNaNOrInf(w);
+	return Math::isNaNOrInf(x) || Math::isNaNOrInf(y) || Math::isNaNOrInf(z) || Math::isNaNOrInf(w);
 }
 
 //------------------------------------------------------------------------------
-void Vector4::Print(const char* format, FILE* stream) const
+void Vector4::print(const char* format, FILE* stream) const
 {
 	if (!format) {
 		format = "%f, %f, %f, %f\n";
@@ -140,37 +140,37 @@ Vector4 Vector4::Transform(const Vector4& vec, const Matrix& mat)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector4 Vector4::Lerp(const Vector4& start, const Vector4& end, float t)
+Vector4 Vector4::lerp(const Vector4& start, const Vector4& end, float t)
 {
 	return Vector4(
-		Math::Lerp(start.x, end.x, t),
-		Math::Lerp(start.y, end.y, t),
-		Math::Lerp(start.z, end.z, t),
-		Math::Lerp(start.w, end.w, t));
+		Math::lerp(start.x, end.x, t),
+		Math::lerp(start.y, end.y, t),
+		Math::lerp(start.z, end.z, t),
+		Math::lerp(start.w, end.w, t));
 }
 
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector4 Vector4::Hermite(const Vector4& v1, const Vector4& a1, const Vector4& v2, const Vector4& a2, float t)
+Vector4 Vector4::hermite(const Vector4& v1, const Vector4& a1, const Vector4& v2, const Vector4& a2, float t)
 {
 	return Vector4(
-		Math::Hermite(v1.x, a1.x, v2.x, a2.x, t),
-		Math::Hermite(v1.y, a1.y, v2.y, a2.y, t),
-		Math::Hermite(v1.z, a1.z, v2.z, a2.z, t),
-		Math::Hermite(v1.w, a1.w, v2.w, a2.w, t));
+		Math::hermite(v1.x, a1.x, v2.x, a2.x, t),
+		Math::hermite(v1.y, a1.y, v2.y, a2.y, t),
+		Math::hermite(v1.z, a1.z, v2.z, a2.z, t),
+		Math::hermite(v1.w, a1.w, v2.w, a2.w, t));
 }
 
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector4 Vector4::CatmullRom(const Vector4& vec1, const Vector4& vec2, const Vector4& vec3, const Vector4& vec4, float t)
+Vector4 Vector4::catmullRom(const Vector4& vec1, const Vector4& vec2, const Vector4& vec3, const Vector4& vec4, float t)
 {
 	return Vector4(
-		Math::CatmullRom(vec1.x, vec2.x, vec3.x, vec4.x, t),
-		Math::CatmullRom(vec1.y, vec2.y, vec3.y, vec4.y, t),
-		Math::CatmullRom(vec1.z, vec2.z, vec3.z, vec4.z, t),
-		Math::CatmullRom(vec1.w, vec2.w, vec3.w, vec4.w, t));
+		Math::catmullRom(vec1.x, vec2.x, vec3.x, vec4.x, t),
+		Math::catmullRom(vec1.y, vec2.y, vec3.y, vec4.y, t),
+		Math::catmullRom(vec1.z, vec2.z, vec3.z, vec4.z, t),
+		Math::catmullRom(vec1.w, vec2.w, vec3.w, vec4.w, t));
 }
 
 LN_NAMESPACE_END

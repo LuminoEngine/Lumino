@@ -37,43 +37,43 @@ Process::Process()
 //------------------------------------------------------------------------------
 Process::~Process()
 {
-	Dispose();
+	disposeProcess();
 	LN_SAFE_DELETE(m_impl);
 }
 
 //------------------------------------------------------------------------------
-void Process::SetWorkingDirectory(const PathName& directoryPath)
+void Process::setWorkingDirectory(const PathName& directoryPath)
 {
 	m_workingDirectory = directoryPath;
 }
 
 //------------------------------------------------------------------------------
-void Process::SetRedirectStandardInput(bool enabled)
+void Process::setRedirectStandardInput(bool enabled)
 {
 	m_redirectStandardInput = enabled;
 }
 
 //------------------------------------------------------------------------------
-void Process::SetRedirectStandardOutput(bool enabled)
+void Process::setRedirectStandardOutput(bool enabled)
 {
 	m_redirectStandardOutput = enabled;
 }
 
 //------------------------------------------------------------------------------
-void Process::SetRedirectStandardError(bool enabled)
+void Process::setRedirectStandardError(bool enabled)
 {
 	m_redirectStandardError = enabled;
 }
 
 #ifdef LN_CPP11
 //------------------------------------------------------------------------------
-void Process::SetOutputDataReceivedCallback(const Delegate<void(String)>& callback)
+void Process::setOutputDataReceivedCallback(const Delegate<void(String)>& callback)
 {
 	m_outputDataReceivedCallback = callback;
 }
 
 //------------------------------------------------------------------------------
-void Process::SetErrorDataReceivedCallback(const Delegate<void(String)>& callback)
+void Process::setErrorDataReceivedCallback(const Delegate<void(String)>& callback)
 {
 	m_errorDataReceivedCallback = callback;
 }
@@ -139,63 +139,63 @@ void Process::start(const PathName& program, const StringArray& argsList)
 }
 
 //------------------------------------------------------------------------------
-bool Process::WaitForExit(int timeoutMSec)
+bool Process::waitForExit(int timeoutMSec)
 {
-	return m_impl->WaitForExit(timeoutMSec);
+	return m_impl->waitForExit(timeoutMSec);
 }
 
 //------------------------------------------------------------------------------
-StreamWriter* Process::GetStandardInput() const
+StreamWriter* Process::getStandardInput() const
 {
 	if (LN_CHECK_STATE(m_standardInputWriter != nullptr)) return nullptr;
 	return m_standardInputWriter;
 }
 
 //------------------------------------------------------------------------------
-StreamReader* Process::GetStandardOutput() const
+StreamReader* Process::getStandardOutput() const
 {
 	if (LN_CHECK_STATE(m_standardOutputReader != nullptr)) return nullptr;
 	return m_standardOutputReader;
 }
 
 //------------------------------------------------------------------------------
-StreamReader* Process::GetStandardError() const
+StreamReader* Process::getStandardError() const
 {
 	if (LN_CHECK_STATE(m_standardErrorReader != nullptr)) return nullptr;
 	return m_standardErrorReader;
 }
 
 //------------------------------------------------------------------------------
-int Process::Execute(const PathName& program, const String& args, String* outStdOutput, String* outStdError)
+int Process::execute(const PathName& program, const String& args, String* outStdOutput, String* outStdError)
 {
 	Process proc;
-	proc.SetRedirectStandardOutput(outStdOutput != nullptr);
-	proc.SetRedirectStandardError(outStdError != nullptr);
+	proc.setRedirectStandardOutput(outStdOutput != nullptr);
+	proc.setRedirectStandardError(outStdError != nullptr);
 	proc.start(program, args);
 	if (outStdOutput != nullptr) {
-		*outStdOutput = proc.GetStandardOutput()->ReadToEnd();
+		*outStdOutput = proc.getStandardOutput()->readToEnd();
 	}
 	if (outStdError != nullptr) {
-		*outStdError = proc.GetStandardError()->ReadToEnd();
+		*outStdError = proc.getStandardError()->readToEnd();
 	}
-	proc.WaitForExit();
-	return proc.GetExitCode();
+	proc.waitForExit();
+	return proc.getExitCode();
 }
 
 //------------------------------------------------------------------------------
-int Process::GetExitCode()
+int Process::getExitCode()
 {
-	return m_impl->GetExitCode();
+	return m_impl->getExitCode();
 }
 
 //------------------------------------------------------------------------------
-void Process::BeginOutputReadLine()
+void Process::beginOutputReadLine()
 {
 	if (LN_CHECK_STATE(m_standardOutputReader != nullptr)) return;
 
 	// 読み取りスレッドを立てる
 #ifdef LN_CPP11
-	m_readStdOutputThread.start(Delegate<void()>(this, &Process::Thread_ReadStdOutput));
+	m_readStdOutputThread.start(Delegate<void()>(this, &Process::thread_ReadStdOutput));
 #else
 	m_readStdOutputThread.start(LN_CreateDelegate(this, &process::Thread_ReadStdOutput));
 #endif
@@ -203,13 +203,13 @@ void Process::BeginOutputReadLine()
 }
 
 //------------------------------------------------------------------------------
-void Process::BeginErrorReadLine()
+void Process::beginErrorReadLine()
 {
 	if (LN_CHECK_STATE(m_standardErrorReader != nullptr)) return;
 
 	// 読み取りスレッドを立てる
 #ifdef LN_CPP11
-	m_readStdErrorThread.start(Delegate<void()>(this, &Process::Thread_ReadStdError));
+	m_readStdErrorThread.start(Delegate<void()>(this, &Process::thread_ReadStdError));
 #else
 	m_readStdErrorThread.start(LN_CreateDelegate(this, &process::Thread_ReadStdError));
 #endif
@@ -217,7 +217,7 @@ void Process::BeginErrorReadLine()
 }
 
 //------------------------------------------------------------------------------
-void Process::Dispose()
+void Process::disposeProcess()
 {
 	m_impl->Dispose();
 
@@ -235,10 +235,10 @@ void Process::Dispose()
 }
 
 //------------------------------------------------------------------------------
-void Process::Thread_ReadStdOutput()
+void Process::thread_ReadStdOutput()
 {
 	String strLine;
-	while (m_standardOutputReader->ReadLine(&strLine))
+	while (m_standardOutputReader->readLine(&strLine))
 	{
 		if (!m_outputDataReceivedCallback.isEmpty()) {
 			m_outputDataReceivedCallback.call(strLine);
@@ -247,10 +247,10 @@ void Process::Thread_ReadStdOutput()
 }
 
 //------------------------------------------------------------------------------
-void Process::Thread_ReadStdError()
+void Process::thread_ReadStdError()
 {
 	String strLine;
-	while (m_standardErrorReader->ReadLine(&strLine))
+	while (m_standardErrorReader->readLine(&strLine))
 	{
 		if (!m_errorDataReceivedCallback.isEmpty()) {
 			m_errorDataReceivedCallback.call(strLine);

@@ -126,7 +126,7 @@ void RenderingCommandList::ClearCommands()
 }
 
 //------------------------------------------------------------------------------
-void RenderingCommandList::Execute(Driver::IGraphicsDevice* device/*Driver::IRenderer* renderer*/)
+void RenderingCommandList::execute(Driver::IGraphicsDevice* device/*Driver::IRenderer* renderer*/)
 {
 	LN_RC_TRACE("RenderingCommandList::Execute() s %p %d\n", this, m_commandList.getCount());
 	// この関数は描画スレッドから呼ばれる
@@ -145,7 +145,7 @@ void RenderingCommandList::Execute(Driver::IGraphicsDevice* device/*Driver::IRen
 		※ウィンドウがアクティブになったときに起こりやすい？
 		*/
 		RenderingCommand* cmd = ((RenderingCommand*)GetCommand(dataIdx));
-		cmd->Execute();
+		cmd->execute();
 		cmd->~RenderingCommand();
 	}
 	LN_RC_TRACE("RenderingCommandList::Execute() e %p\n", this);

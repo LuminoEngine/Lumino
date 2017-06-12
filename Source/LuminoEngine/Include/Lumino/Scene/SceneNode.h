@@ -45,7 +45,7 @@ public:
 	/** 位置を設定します。*/
 	LN_METHOD(Property)
 	void SetPosition(const Vector3& pos) { m_transform.translation = pos; }
-	void SetPosition(float x, float y, float z = 0.0f) { m_transform.translation.Set(x, y, z); }
+	void SetPosition(float x, float y, float z = 0.0f) { m_transform.translation.set(x, y, z); }
 
 	/** 位置を取得します。*/
 	LN_METHOD(Property)
@@ -60,8 +60,8 @@ public:
 
 	/// 拡大率の設定
 	void SetScale(const Vector3& scale) { m_transform.scale = scale; }
-	void SetScale(float xyz) { m_transform.scale.Set(xyz, xyz, xyz); }
-	void SetScale(float x, float y, float z = 0.0f) { m_transform.scale.Set(x, y, z); }
+	void SetScale(float xyz) { m_transform.scale.set(xyz, xyz, xyz); }
+	void SetScale(float x, float y, float z = 0.0f) { m_transform.scale.set(x, y, z); }
 
 	/// 拡大率の取得
 	const Vector3& GetScale() const { return m_transform.scale; }
@@ -69,7 +69,7 @@ public:
 	/// 原点の設定
 	void SetCenter(const Vector3& center) { m_transformCenter = center; }
 
-	void SetCenter(float x, float y, float z = 0.0f) { m_transformCenter.Set(x, y, z); }
+	void SetCenter(float x, float y, float z = 0.0f) { m_transformCenter.set(x, y, z); }
 
 	/// 原点の取得
 	const Vector3& GetCenter() const { return m_transformCenter; }

@@ -124,13 +124,13 @@ void AudioPlayer::DoPolling()
 //------------------------------------------------------------------------------
 void AudioPlayer::SetVolume(float volume)
 {
-	mVolume = Math::Clamp(volume, 0.0f, 1.0f);
+	mVolume = Math::clamp(volume, 0.0f, 1.0f);
 }
 
 //------------------------------------------------------------------------------
 void AudioPlayer::SetPitch(float pitch)
 {
-	mPitch = Math::Clamp(pitch, 0.5f, 2.0f);
+	mPitch = Math::clamp(pitch, 0.5f, 2.0f);
 }
 
 //------------------------------------------------------------------------------

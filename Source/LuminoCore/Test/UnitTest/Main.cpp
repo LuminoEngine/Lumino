@@ -7,10 +7,10 @@
 PathName Test_GetTempFilePath(const TCHAR* fileName)
 {
 	PathName base(__FILE__);
-	PathName tempDir(base.GetParent(), _T("../../"));
+	PathName tempDir(base.getParent(), _T("../../"));
 	tempDir.append(_T("tmp"));
 	PathName path(tempDir, fileName);
-	FileSystem::createDirectory(path.GetParent());
+	FileSystem::createDirectory(path.getParent());
 	return PathName(path.c_str());
 }
 

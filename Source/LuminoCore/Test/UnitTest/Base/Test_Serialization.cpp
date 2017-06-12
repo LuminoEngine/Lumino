@@ -157,7 +157,7 @@ TEST_F(Test_Serialization, SimpleObject)
 	}
 	// load
 	{
-		auto t2 = tr::JsonSerializer::LoadObject<TkMVSoundData3>(json);
+		auto t2 = tr::JsonSerializer::loadObject<TkMVSoundData3>(json);
 		ASSERT_EQ(_T("test"), t2->name);
 		ASSERT_EQ(100, t2->volume);
 	}
@@ -184,7 +184,7 @@ TEST_F(Test_Serialization, CommonObject)
 	}
 	// load
 	{
-		auto t2 = tr::JsonSerializer::LoadObject<TkMVMapData3>(json);
+		auto t2 = tr::JsonSerializer::loadObject<TkMVMapData3>(json);
 		ASSERT_EQ(true, t2->autoplayBgm);
 		ASSERT_EQ(_T("test"), t2->bgm->name);
 		ASSERT_EQ(100, t2->bgm->volume);
@@ -229,7 +229,7 @@ TEST_F(Test_Serialization, Variant)
 	}
 	// load
 	{
-		auto t2 = tr::JsonSerializer::LoadObject<TkMVMovementData3>(json);
+		auto t2 = tr::JsonSerializer::loadObject<TkMVMovementData3>(json);
 		ASSERT_EQ(true, t2->ignore);
 		ASSERT_EQ(100, t2->commands[0]->code);
 		ASSERT_EQ(20, t2->commands[0]->params[0].getInt());

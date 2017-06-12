@@ -21,7 +21,7 @@ TEST_F(Test_Vector2, Basic)
 	// this->Set()
 	{
 		Vector2 v1;
-		v1.Set(1, 2);
+		v1.set(1, 2);
 		ASSERT_VEC2_NEAR(1, 2, v1);
 	}
 	// this->GetLength()
@@ -50,10 +50,10 @@ TEST_F(Test_Vector2, Basic)
 	// this->IsNaNOrInf
 	{
 		Vector2 v(1, 2);
-		ASSERT_FALSE(v.IsNaNOrInf());
+		ASSERT_FALSE(v.isNaNOrInf());
 		volatile  float d = 0.0f;
 		v.x /= d;
-		ASSERT_TRUE(v.IsNaNOrInf());
+		ASSERT_TRUE(v.isNaNOrInf());
 	}
 
 	// Vector2::Normaize()
@@ -88,17 +88,17 @@ TEST_F(Test_Vector2, Basic)
 	}
 	// Vector2::Lerp()
 	{
-		Vector2 v1 = Vector2::Lerp(Vector2(1, 2), Vector2(3, 4), 0.75);
+		Vector2 v1 = Vector2::lerp(Vector2(1, 2), Vector2(3, 4), 0.75);
 		ASSERT_VEC2_NEAR(2.500000, 3.500000, v1);
 	}
 	// Vector2::Hermite()
 	{
-		Vector2 v1 = Vector2::Hermite(Vector2(1, 2), Vector2(3, 4), Vector2(0.3f, 0.4f), Vector2(0.03f, 0.04f), 0.75);
+		Vector2 v1 = Vector2::hermite(Vector2(1, 2), Vector2(3, 4), Vector2(0.3f, 0.4f), Vector2(0.03f, 0.04f), 0.75);
 		ASSERT_VEC2_NEAR(0.545781, 0.831875, v1);
 	}
 	// Vector2::CatmullRom()
 	{
-		Vector2 v1 = Vector2::CatmullRom(Vector2(1, 2), Vector2(3, 4), Vector2(0.3f, 0.4f), Vector2(0.03f, 0.04f), 0.75);
+		Vector2 v1 = Vector2::catmullRom(Vector2(1, 2), Vector2(3, 4), Vector2(0.3f, 0.4f), Vector2(0.03f, 0.04f), 0.75);
 		ASSERT_VEC2_NEAR(0.914297, 1.203438, v1);
 	}
 

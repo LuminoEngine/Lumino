@@ -198,7 +198,7 @@ void UILayoutView::ClosePopup(UIPopup* popup)
 //------------------------------------------------------------------------------
 bool UILayoutView::InjectMouseMove(float clientX, float clientY)
 {
-	m_mousePosition.Set(clientX, clientY);
+	m_mousePosition.set(clientX, clientY);
 
 	// キャプチャ中のコントロールがあればそちらに送る
 	if (m_manager->GetMouseCapturedElement() != nullptr)
@@ -216,7 +216,7 @@ bool UILayoutView::InjectMouseMove(float clientX, float clientY)
 //------------------------------------------------------------------------------
 bool UILayoutView::InjectMouseButtonDown(MouseButtons button, float clientX, float clientY)
 {
-	m_mousePosition.Set(clientX, clientY);
+	m_mousePosition.set(clientX, clientY);
 
 	// マウスクリック回数の処理
 	MouseClickTracker& tracker = m_mouseClickTrackers[(int)button];
@@ -248,7 +248,7 @@ bool UILayoutView::InjectMouseButtonDown(MouseButtons button, float clientX, flo
 //------------------------------------------------------------------------------
 bool UILayoutView::InjectMouseButtonUp(MouseButtons button, float clientX, float clientY)
 {
-	m_mousePosition.Set(clientX, clientY);
+	m_mousePosition.set(clientX, clientY);
 
 	// キャプチャ中のUI要素があればそちらに送る
 	if (m_manager->GetMouseCapturedElement() != nullptr)

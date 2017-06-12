@@ -140,7 +140,7 @@ void TextRendererCore::InternalDrawRectangle(const Matrix& transform, const Rect
 
 	float lu = srcUVRect.GetLeft();
 	float tv = srcUVRect.getTop();
-	float ru = srcUVRect.GetRight();
+	float ru = srcUVRect.getRight();
 	float bv = srcUVRect.GetBottom();
 
 	uint16_t i = m_vertexCache.getCount();
@@ -153,16 +153,16 @@ void TextRendererCore::InternalDrawRectangle(const Matrix& transform, const Rect
 
 	Vertex v;
 	v.color = color;
-	v.position.Set(rect.GetLeft(), rect.getTop(), 0);	v.uv.Set(lu, tv);	// 左上
+	v.position.set(rect.GetLeft(), rect.getTop(), 0);	v.uv.set(lu, tv);	// 左上
 	v.position.TransformCoord(transform);
 	m_vertexCache.add(v);
-	v.position.Set(rect.GetLeft(), rect.GetBottom(), 0); v.uv.Set(lu, bv);	// 左下
+	v.position.set(rect.GetLeft(), rect.GetBottom(), 0); v.uv.set(lu, bv);	// 左下
 	v.position.TransformCoord(transform);
 	m_vertexCache.add(v);
-	v.position.Set(rect.GetRight(), rect.getTop(), 0);	v.uv.Set(ru, tv);	// 右上
+	v.position.set(rect.getRight(), rect.getTop(), 0);	v.uv.set(ru, tv);	// 右上
 	v.position.TransformCoord(transform);
 	m_vertexCache.add(v);
-	v.position.Set(rect.GetRight(), rect.GetBottom(), 0); v.uv.Set(ru, bv);	// 右下
+	v.position.set(rect.getRight(), rect.GetBottom(), 0); v.uv.set(ru, bv);	// 右下
 	v.position.TransformCoord(transform);
 	m_vertexCache.add(v);
 }

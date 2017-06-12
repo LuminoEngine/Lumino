@@ -30,7 +30,7 @@ LN_API LNResultCode LNVector3_Normalize(LNVector3* vector3)
 LN_API LNResultCode LNVector3_Clamp(LNVector3* vector3, const LNVector3* minVec, const LNVector3* maxVec)
 {
     LWIG_FUNC_TRY_BEGIN;
-    (reinterpret_cast<Vector3*>(vector3)->Clamp(*reinterpret_cast<const Vector3*>(minVec), *reinterpret_cast<const Vector3*>(maxVec)));
+    (reinterpret_cast<Vector3*>(vector3)->clamp(*reinterpret_cast<const Vector3*>(minVec), *reinterpret_cast<const Vector3*>(maxVec)));
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNVector3_NormalizeXYZ(float x, float y, float z, LNVector3* outReturn)

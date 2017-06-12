@@ -509,8 +509,8 @@ void PmxLoader::LoadBones(BinaryReader* reader)
 
 					const Vector3 EularMaximum(Math::PI - FLT_EPSILON, 0.5f * Math::PI - FLT_EPSILON, Math::PI - FLT_EPSILON);
 					const Vector3 EularMinimum = -EularMaximum;
-					ikLink.MinLimit.Clamp(EularMinimum, EularMaximum);
-					ikLink.MaxLimit.Clamp(EularMinimum, EularMaximum);
+					ikLink.MinLimit.clamp(EularMinimum, EularMaximum);
+					ikLink.MaxLimit.clamp(EularMinimum, EularMaximum);
 				}
 
 				ik->IKLinks.add(ikLink);
@@ -724,9 +724,9 @@ void PmxLoader::LoadRigidBodys(BinaryReader* reader)
 		// 回転(x,y,z) (グローバル座標空間) -> ラジアン角
 		Vector3 Rotation;
 		reader->read(&Rotation, sizeof(float) * 3);
-		if (Math::IsNaN(Rotation.x)) Rotation.x = 0;	// モデルによっては壊れていることがあったのでリセットしておく
-		if (Math::IsNaN(Rotation.y)) Rotation.y = 0;
-		if (Math::IsNaN(Rotation.z)) Rotation.z = 0;
+		if (Math::isNaN(Rotation.x)) Rotation.x = 0;	// モデルによっては壊れていることがあったのでリセットしておく
+		if (Math::isNaN(Rotation.y)) Rotation.y = 0;
+		if (Math::isNaN(Rotation.z)) Rotation.z = 0;
 
 		// オフセット行列化
 		body->InitialTransform = Matrix::MakeRotationYawPitchRoll(Rotation.y, Rotation.x, Rotation.z) * Matrix::MakeTranslation(Position);
@@ -790,9 +790,9 @@ void PmxLoader::LoadJoints(BinaryReader* reader)
 		reader->read(&joint->SpringPositionStiffness, sizeof(Vector3));
 		reader->read(&joint->SpringRotationStiffness, sizeof(Vector3));
 
-		joint->SpringRotationStiffness.x = Math::DegreesToRadians(joint->SpringRotationStiffness.x);
-		joint->SpringRotationStiffness.y = Math::DegreesToRadians(joint->SpringRotationStiffness.y);
-		joint->SpringRotationStiffness.z = Math::DegreesToRadians(joint->SpringRotationStiffness.z);
+		joint->SpringRotationStiffness.x = Math::degreesToRadians(joint->SpringRotationStiffness.x);
+		joint->SpringRotationStiffness.y = Math::degreesToRadians(joint->SpringRotationStiffness.y);
+		joint->SpringRotationStiffness.z = Math::degreesToRadians(joint->SpringRotationStiffness.z);
 	}
 }
 

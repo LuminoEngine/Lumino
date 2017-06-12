@@ -37,7 +37,7 @@ TextWriter::~TextWriter()
 }
 
 //------------------------------------------------------------------------------
-void TextWriter::SetEncoding(Encoding* encoding)
+void TextWriter::setEncoding(Encoding* encoding)
 {
 	m_converter.SetDestinationEncoding(encoding);
 #if 0
@@ -67,19 +67,19 @@ void TextWriter::SetEncoding(Encoding* encoding)
 }
 
 //------------------------------------------------------------------------------
-Encoding* TextWriter::GetEncoding() const
+Encoding* TextWriter::getEncoding() const
 {
 	return m_converter.GetDestinationEncoding();
 }
 
 //------------------------------------------------------------------------------
-void TextWriter::SetNewLine(const String& newLine)
+void TextWriter::setNewLine(const String& newLine)
 {
 	m_newLine = newLine;
 }
 
 //------------------------------------------------------------------------------
-void TextWriter::SetFormatLocale(const Locale& locale)
+void TextWriter::setFormatLocale(const Locale& locale)
 {
 	m_locale = locale;
 }
@@ -275,7 +275,7 @@ void TextWriter::writeInternal(const TCHAR* str, int len)
 	{
 		const byte_t* bom = m_converter.GetDestinationEncoding()->GetPreamble();
 		size_t len = strlen((char*)bom);
-		WriteOverride(bom, len);
+		writeOverride(bom, len);
 		m_writtenPreamble = true;
 	}
 
@@ -286,7 +286,7 @@ void TextWriter::writeInternal(const TCHAR* str, int len)
 
 	const ByteBuffer buf = m_converter.Convert(str, len * sizeof(TCHAR));
 
-	WriteOverride(buf.getConstData(), buf.getSize());
+	writeOverride(buf.getConstData(), buf.getSize());
 
 #if 0
 

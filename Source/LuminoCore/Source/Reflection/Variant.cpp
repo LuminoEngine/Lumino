@@ -32,13 +32,13 @@ std::nullptr_t Variant::GetNullPtr() const
 	if (LN_CHECK_STATE(m_type == VariantType::Null)) return nullptr;
 	return nullptr;
 }
-void Variant::SetBool(bool value)
+void Variant::setBool(bool value)
 {
 	release();
 	m_type = VariantType::Bool;
 	m_bool = value;
 }
-bool Variant::GetBool() const
+bool Variant::getBool() const
 {
 	if (LN_CHECK_STATE(m_type == VariantType::Bool)) return false;
 	return m_bool;

@@ -43,11 +43,11 @@ void Vector3::Normalize()
 }
 
 //------------------------------------------------------------------------------
-void Vector3::Clamp(const Vector3& minVec, const Vector3& maxVec)
+void Vector3::clamp(const Vector3& minVec, const Vector3& maxVec)
 {
-	x = Math::Clamp(x, minVec.x, maxVec.x);
-	y = Math::Clamp(y, minVec.y, maxVec.y);
-	z = Math::Clamp(z, minVec.z, maxVec.z);
+	x = Math::clamp(x, minVec.x, maxVec.x);
+	y = Math::clamp(y, minVec.y, maxVec.y);
+	z = Math::clamp(z, minVec.z, maxVec.z);
 }
 
 //------------------------------------------------------------------------------
@@ -63,13 +63,13 @@ void Vector3::TransformCoord(const Matrix& mat)
 }
 
 //------------------------------------------------------------------------------
-bool Vector3::IsNaNOrInf() const
+bool Vector3::isNaNOrInf() const
 {
-	return Math::IsNaNOrInf(x) || Math::IsNaNOrInf(y) || Math::IsNaNOrInf(z);
+	return Math::isNaNOrInf(x) || Math::isNaNOrInf(y) || Math::isNaNOrInf(z);
 }
 
 //------------------------------------------------------------------------------
-void Vector3::Print(const char* format, FILE* stream) const
+void Vector3::print(const char* format, FILE* stream) const
 {
 	if (!format) {
 		format = "%f, %f, %f\n";
@@ -294,34 +294,34 @@ Vector3 Vector3::TransformCoord(const Vector3& vec, const Matrix& mat)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector3 Vector3::Lerp(const Vector3& start, const Vector3& end, float t)
+Vector3 Vector3::lerp(const Vector3& start, const Vector3& end, float t)
 {
 	return Vector3(
-		Math::Lerp(start.x, end.x, t),
-		Math::Lerp(start.y, end.y, t),
-		Math::Lerp(start.z, end.z, t));
+		Math::lerp(start.x, end.x, t),
+		Math::lerp(start.y, end.y, t),
+		Math::lerp(start.z, end.z, t));
 }
 
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector3 Vector3::Hermite(const Vector3& v1, const Vector3& a1, const Vector3& v2, const Vector3& a2, float t)
+Vector3 Vector3::hermite(const Vector3& v1, const Vector3& a1, const Vector3& v2, const Vector3& a2, float t)
 {
 	return Vector3(
-		Math::Hermite(v1.x, a1.x, v2.x, a2.x, t),
-		Math::Hermite(v1.y, a1.y, v2.y, a2.y, t),
-		Math::Hermite(v1.z, a1.z, v2.z, a2.z, t));
+		Math::hermite(v1.x, a1.x, v2.x, a2.x, t),
+		Math::hermite(v1.y, a1.y, v2.y, a2.y, t),
+		Math::hermite(v1.z, a1.z, v2.z, a2.z, t));
 }
 
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector3 Vector3::CatmullRom(const Vector3& vec1, const Vector3& vec2, const Vector3& vec3, const Vector3& vec4, float t)
+Vector3 Vector3::catmullRom(const Vector3& vec1, const Vector3& vec2, const Vector3& vec3, const Vector3& vec4, float t)
 {
 	return Vector3(
-		Math::CatmullRom(vec1.x, vec2.x, vec3.x, vec4.x, t),
-		Math::CatmullRom(vec1.y, vec2.y, vec3.y, vec4.y, t),
-		Math::CatmullRom(vec1.z, vec2.z, vec3.z, vec4.z, t));
+		Math::catmullRom(vec1.x, vec2.x, vec3.x, vec4.x, t),
+		Math::catmullRom(vec1.y, vec2.y, vec3.y, vec4.y, t),
+		Math::catmullRom(vec1.z, vec2.z, vec3.z, vec4.z, t));
 }
 
 //------------------------------------------------------------------------------
@@ -352,12 +352,12 @@ Vector3 Vector3::Unproject(const Vector3& point, const Matrix& worldViewProj, fl
 }
 
 //------------------------------------------------------------------------------
-bool Vector3::NearEqual(const Vector3& value1, const Vector3& value2)
+bool Vector3::nearEqual(const Vector3& value1, const Vector3& value2)
 {
 	return
-		Math::NearEqual(value1.x, value2.x) &&
-		Math::NearEqual(value1.y, value2.y) &&
-		Math::NearEqual(value1.z, value2.z);
+		Math::nearEqual(value1.x, value2.x) &&
+		Math::nearEqual(value1.y, value2.y) &&
+		Math::nearEqual(value1.z, value2.z);
 }
 
 LN_NAMESPACE_END

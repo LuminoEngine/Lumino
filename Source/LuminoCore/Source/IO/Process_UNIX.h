@@ -24,9 +24,9 @@ public:
 	~ProcessImpl();
 	
 	void start(const ProcessStartInfo& startInfo, ProcessStartResult* outResult);
-	bool WaitForExit(int timeoutMSec);
-	ProcessStatus GetState();
-	int GetExitCode();
+	bool waitForExit(int timeoutMSec);
+	ProcessStatus getState();
+	int getExitCode();
 	void TryGetExitCode();
 	void Dispose();
 	
@@ -84,7 +84,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 }
 
 //------------------------------------------------------------------------------
-bool ProcessImpl::WaitForExit(int timeoutMSec)
+bool ProcessImpl::waitForExit(int timeoutMSec)
 {
 	ElapsedTimer timer;
 	bool exit = false;
@@ -126,14 +126,14 @@ bool ProcessImpl::WaitForExit(int timeoutMSec)
 }
 
 //------------------------------------------------------------------------------
-ProcessStatus ProcessImpl::GetState()
+ProcessStatus ProcessImpl::getState()
 {
 	LN_NOTIMPLEMENTED();
 	return ProcessStatus::Finished;
 }
 
 //------------------------------------------------------------------------------
-int ProcessImpl::GetExitCode()
+int ProcessImpl::getExitCode()
 {
 	return m_exitCode;
 }

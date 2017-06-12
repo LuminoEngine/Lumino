@@ -235,8 +235,8 @@ public:
 private:
 	void SetNullPtr(std::nullptr_t value);
 	std::nullptr_t GetNullPtr() const;
-	void SetBool(bool value);
-	bool GetBool() const;
+	void setBool(bool value);
+	bool getBool() const;
 	void SetArithmetic(int32_t value);
 	void SetArithmetic(uint32_t value);
 	void SetArithmetic(float value);
@@ -352,8 +352,8 @@ template<> struct Variant::AccessorSelector<std::nullptr_t, detail::KindPrimitiv
 };
 template<> struct Variant::AccessorSelector<bool, detail::KindPrimitive>
 {
-	static void SetValue(Variant* v, bool value) { v->SetBool(value); }
-	static bool getValue(const Variant* v) { return v->GetBool(); }
+	static void SetValue(Variant* v, bool value) { v->setBool(value); }
+	static bool getValue(const Variant* v) { return v->getBool(); }
 };
 template<typename T> struct Variant::AccessorSelector<T, detail::KindArithmetic>
 {

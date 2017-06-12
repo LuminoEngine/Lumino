@@ -189,7 +189,7 @@ public:
 	/**
 		@brief	各要素を設定します。
 	*/
-	void Set(uint8_t r_, uint8_t g_, uint8_t b_, uint8_t a_ = 255) { r = r_; g = g_; b = b_; a = a_; }
+	void set(uint8_t r_, uint8_t g_, uint8_t b_, uint8_t a_ = 255) { r = r_; g = g_; b = b_; a = a_; }
 
 	static Color32 FromString(const StringRef& str);
 
@@ -396,7 +396,7 @@ public:
 	/**
 		@brief	各要素を設定します。
 	*/
-	void Set(float r_, float g_, float b_, float a_ = 1.0f) { r = r_; g = g_; b = b_; a = a_; }
+	void set(float r_, float g_, float b_, float a_ = 1.0f) { r = r_; g = g_; b = b_; a = a_; }
 
 	/**
 		@brief	この色に指定した色を加算します。0.0～1.0 を超える場合はクランプします。
@@ -408,7 +408,7 @@ public:
 	*/
 	void MultiplyClamp(const Color& color);
 
-	static Color Lerp(const Color& color1, const Color& color2, float t);
+	static Color lerp(const Color& color1, const Color& color2, float t);
 
 	//----------------------------------------------------------------------
 	///**
@@ -489,7 +489,7 @@ public:
 	/**
 		@brief	各要素を設定します。
 	*/
-	void Set(float r_, float g_, float b_, float gs_) { r = r_; g = g_; b = b_; gray = gs_; }
+	void set(float r_, float g_, float b_, float gs_) { r = r_; g = g_; b = b_; gray = gs_; }
 
 	/**
 		@brief	この色調に指定した色調を加算します。0.0～1.0 を超える場合はクランプします。
@@ -568,7 +568,7 @@ public:
 	/**
 		@brief	各要素を設定します。
 	*/
-	void Set(uint32_t h, uint32_t s, uint32_t v, uint32_t a_) { H = h; S = s; V = v; a = a_; }
+	void set(uint32_t h, uint32_t s, uint32_t v, uint32_t a_) { H = h; S = s; V = v; a = a_; }
 
 	/**
 		@brief	Color32 型に変換します。
