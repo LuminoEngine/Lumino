@@ -87,12 +87,12 @@ TEST_F(Test_IO_PathName, GetExtension)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_IO_PathName, Compare)
+TEST_F(Test_IO_PathName, compare)
 {
 #ifdef LN_OS_WIN32
 	PathName path1(_T("C:/dir/file.txt"));
 	PathName path2(_T("C:\\dir\\file.txt"));
-	ASSERT_TRUE(path1.Equals(path2));
+	ASSERT_TRUE(path1.equals(path2));
 	ASSERT_TRUE(path1 == path2);
 #endif
 }

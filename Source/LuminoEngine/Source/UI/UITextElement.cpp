@@ -47,7 +47,7 @@ Size UITextElement::MeasureOverride(const Size& constraint)
 		{
 			// TODO: GetActiveFont() でやったほうがいいかな
 			m_font = RefPtr<Font>::MakeRef();
-			m_font->Initialize(GetManager()->GetGraphicsManager(), nullptr);
+			m_font->initialize(GetManager()->GetGraphicsManager(), nullptr);
 		}
 		m_font->SetFamily(FontFamily);
 		m_font->SetSize(FontSize);

@@ -9,7 +9,7 @@ using namespace ln;
 
 void UIControlsGallery()
 {
-	Engine::Initialize();
+	Engine::initialize();
 
 
 	Engine::GetWorld3D()->SetVisibleGridPlane(true);
@@ -120,7 +120,7 @@ void UIControlsGallery()
 	font->SetSize(50);
 
 	detail::Filled filled;
-	filled.Initialize();
+	filled.initialize();
 	filled.setTessellationSteps(3);
 	filled.DecomposeOutlineVertices(static_cast<detail::FreeTypeFont*>(font->ResolveRawFont()), 'A');
 	filled.Tessellate();

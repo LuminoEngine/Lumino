@@ -29,7 +29,7 @@ Joint::~Joint()
 }
 
 //------------------------------------------------------------------------------
-void Joint::Initialize(btTypedConstraint* constraint)
+void Joint::initialize(btTypedConstraint* constraint)
 {
 	m_btConstraint = constraint;
 }
@@ -63,7 +63,7 @@ DofSpringJoint::~DofSpringJoint()
 }
 
 //------------------------------------------------------------------------------
-void DofSpringJoint::Initialize(RigidBody* bodyA, RigidBody* bodyB, const Matrix& localOffsetA, const Matrix& localOffsetB)
+void DofSpringJoint::initialize(RigidBody* bodyA, RigidBody* bodyB, const Matrix& localOffsetA, const Matrix& localOffsetB)
 {
 	if (LN_CHECK_ARG(bodyA != nullptr)) return;
 	if (LN_CHECK_ARG(bodyB != nullptr)) return;
@@ -81,7 +81,7 @@ void DofSpringJoint::Initialize(RigidBody* bodyA, RigidBody* bodyB, const Matrix
         localB,
         true);
 
-	Joint::Initialize(m_btDofSpringConstraint);
+	Joint::initialize(m_btDofSpringConstraint);
 	m_initialUpdate = true;
 }
 

@@ -44,7 +44,7 @@ JsonDOMHandler::JsonDOMHandler(JsonDocument* document)
 	, m_writer(&m_valueRawData)
 {
 	if (LN_CHECK_ARG(document != nullptr)) return;
-	m_valueRawData.Initialize(2048);
+	m_valueRawData.initialize(2048);
 }
 
 //------------------------------------------------------------------------------

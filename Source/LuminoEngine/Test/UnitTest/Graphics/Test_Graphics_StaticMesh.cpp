@@ -62,7 +62,7 @@ TEST_F(Test_Graphics_MeshResource, AddSquare)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Graphics_MeshResource, Clear)
+TEST_F(Test_Graphics_MeshResource, clear)
 {
 	// 自己照明
 	auto material = Material::Create();
@@ -85,7 +85,7 @@ TEST_F(Test_Graphics_MeshResource, Clear)
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_MeshResource.Clear1.png"), 95));
 
 		// 2回目
-		mesh->Clear();		// clear
+		mesh->clear();		// clear
 		mesh->AddSquare(
 			Vertex{ Vector3(0, 2, 0), Vector2(0, 0), Vector3(0, 0, 1), Color::Red },
 			Vertex{ Vector3(0, 0, 0), Vector2(0, 0), Vector3(0, 0, 1), Color::Green },

@@ -41,7 +41,7 @@ class DX9VertexDeclaration
 public:
 	DX9VertexDeclaration();
 	virtual ~DX9VertexDeclaration();
-	void Initialize(DX9GraphicsDevice* device, const VertexElement* elements, int elementsCount);
+	void initialize(DX9GraphicsDevice* device, const VertexElement* elements, int elementsCount);
 
 	IDirect3DVertexDeclaration9* GetDxVertexDeclaration() const { return m_vertexDecl; }
 	int GetVertexStride(int streamIndex) const { return m_vertexStrides[streamIndex]; }

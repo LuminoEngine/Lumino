@@ -32,8 +32,8 @@ public:
 
 	T& operator=(const T& value) { set(value); return m_value; }
 	bool operator==(const T& value) const { return m_isSet && value == m_value; }
-	bool operator==(const Nullable& right) const { return Equals(right); }
-	bool operator!=(const Nullable& right) const { return !Equals(right); }
+	bool operator==(const Nullable& right) const { return equals(right); }
+	bool operator!=(const Nullable& right) const { return !equals(right); }
     operator T() const { return Get(); }
 
     T& Get() 
@@ -61,7 +61,7 @@ public:
 private:
     void set(T value) { m_value = value; m_isSet = true; }
 
-	bool Equals(const Nullable& right) const
+	bool equals(const Nullable& right) const
 	{
 		if (m_isSet != right.m_isSet) return false;
 		if (!m_isSet && !right.m_isSet) return true;

@@ -43,7 +43,7 @@ public:
 
 public:
 
-	void Initialize(const Settings& settings);
+	void initialize(const Settings& settings);
 	PlatformWindow* GetMainWindow();
 	bool DoEvents();
 

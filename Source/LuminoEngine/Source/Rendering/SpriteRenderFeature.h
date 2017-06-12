@@ -20,7 +20,7 @@ class SpriteRendererImpl
 public:
 	SpriteRendererImpl();
 	virtual ~SpriteRendererImpl();
-	void Initialize(GraphicsManager* manager, int maxSpriteCount);
+	void initialize(GraphicsManager* manager, int maxSpriteCount);
 
 public:
 	void SetTransform(const Matrix& matrix);
@@ -33,7 +33,7 @@ public:
 
 	void Flush(SpriteSortMode sortFlags);
 
-	void Clear();
+	void clear();
 
 	void DrawRequestInternal(
 		const Vector3& position,

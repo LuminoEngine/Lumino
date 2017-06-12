@@ -151,7 +151,7 @@ void ProcessImpl::Start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 
 		// 標準出力の Writer を作る
 		m_stdinPipeStream = LN_NEW InternalPipeStream(InternalPipeStream::WriteSide, m_hInputWrite);
-		outResult->standardInputWriter.Attach(LN_NEW StreamWriter(m_stdinPipeStream, startInfo.standardInputEncoding));
+		outResult->standardInputWriter.attach(LN_NEW StreamWriter(m_stdinPipeStream, startInfo.standardInputEncoding));
 	}
 
 	// 標準出力のパイプを作る
@@ -174,7 +174,7 @@ void ProcessImpl::Start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 
 		// 標準出力の Reader を作る
 		m_stdoutPipeStream = LN_NEW InternalPipeStream(InternalPipeStream::ReadSide, m_hOutputRead);
-		outResult->standardOutputReader.Attach(LN_NEW StreamReader(m_stdoutPipeStream, startInfo.standardOutputEncoding));
+		outResult->standardOutputReader.attach(LN_NEW StreamReader(m_stdoutPipeStream, startInfo.standardOutputEncoding));
 	}
 
 	// 標準エラー出力のパイプを作る
@@ -197,7 +197,7 @@ void ProcessImpl::Start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 
 		// 標準出力の Reader を作る
 		m_stderrPipeStream = LN_NEW InternalPipeStream(InternalPipeStream::ReadSide, m_hErrorRead);
-		outResult->standardErrorReader.Attach(LN_NEW StreamReader(m_stderrPipeStream, startInfo.standardErrorEncoding));
+		outResult->standardErrorReader.attach(LN_NEW StreamReader(m_stderrPipeStream, startInfo.standardErrorEncoding));
 	}
 
 	// 子プロセスの標準出力の出力先を↑で作ったパイプにする

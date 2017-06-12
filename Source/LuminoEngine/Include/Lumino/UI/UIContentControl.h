@@ -19,7 +19,7 @@ public:
 protected:
 	UIContentControl();
 	virtual ~UIContentControl();
-	void Initialize();
+	void initialize();
 	//virtual void OnUpdatingLayout() override;
 
 

@@ -39,7 +39,7 @@ public:
 
 public:
 	/// 描画を行うスレッドで初期化する必要がある
-	void Initialize(const ConfigData& configData);
+	void initialize(const ConfigData& configData);
 
 	/// FileManager
 	FileManager* GetFileManager() { return m_fileManager; }

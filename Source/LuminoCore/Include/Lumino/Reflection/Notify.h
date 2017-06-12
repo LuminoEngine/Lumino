@@ -180,9 +180,9 @@ private:
 
 	List<DelegateType> m_handlerList;
 
-	void Clear()
+	void clear()
 	{
-		m_handlerList.Clear();
+		m_handlerList.clear();
 	}
 
 	bool IsEmpty() const

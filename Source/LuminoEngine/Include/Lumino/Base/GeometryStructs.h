@@ -241,7 +241,7 @@ public:
 	
 	/** 幅と高さを取得します。*/
 	LN_METHOD(Property)
-	Size GetSize() const { return Size(width, height); }
+	Size getSize() const { return Size(width, height); }
 
 	/** 幅または高さを持たないかを判定します。*/
 	bool IsEmpty() const { return (width < 0 || height < 0); }
@@ -326,7 +326,7 @@ public:
 	int GetTop() const { return y; }
 	int GetRight() const { return x + width; }
 	int GetBottom() const { return y + height; }
-	SizeI GetSize() const { return SizeI(width, height); }
+	SizeI getSize() const { return SizeI(width, height); }
 
 	void Clip(const RectI& rect) { GeometryStructsHelper::Clip(this, rect); }
 

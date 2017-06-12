@@ -91,7 +91,7 @@ FontManager::~FontManager()
 }
 
 //------------------------------------------------------------------------------
-void FontManager::Initialize(FileManager* fileManager, GraphicsManager* graphicsManager)
+void FontManager::initialize(FileManager* fileManager, GraphicsManager* graphicsManager)
 {
 	m_fileManager = fileManager;
 	m_graphicsManager = graphicsManager;
@@ -128,7 +128,7 @@ void FontManager::Initialize(FileManager* fileManager, GraphicsManager* graphics
 
 	// デフォルトフォント
 	m_defaultFont = RefPtr<Font>::MakeRef();
-	m_defaultFont->Initialize(m_graphicsManager, nullptr);
+	m_defaultFont->initialize(m_graphicsManager, nullptr);
 	m_defaultFont->SetFamily(m_defaultFontName);
 	m_defaultFont->SetAntiAlias(true);
 
@@ -143,11 +143,11 @@ void FontManager::Initialize(FileManager* fileManager, GraphicsManager* graphics
 	m_rawFontCache = RefPtr<CacheManager>::MakeRef(32, 0);
 
 	// 組み込みフォント
-	m_builtinFontList.Resize(1);
+	m_builtinFontList.resize(1);
 	{
 		RefPtr<RawFont> raw = RawFont::CreateBuiltInBitmapFontInternal2(7);
 		RefPtr<Font> font = RefPtr<Font>::MakeRef();
-		font->Initialize(m_graphicsManager, raw);
+		font->initialize(m_graphicsManager, raw);
 		m_builtinFontList[(int)BuiltinFontSize::XXSmall] = font;
 	}
 }
@@ -161,7 +161,7 @@ void FontManager::Dispose()
 		font->Dispose_();
 	}
 
-	m_builtinFontList.Clear();
+	m_builtinFontList.clear();
 	//LN_SAFE_RELEASE();
 	//m_defaultRawFont = nullptr;
 	m_defaultFont = nullptr;
@@ -198,14 +198,14 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 	// ファイルから全てのデータを読み込む
 	RefPtr<Stream> file(m_fileManager->CreateFileStream(fontFilePath), false);
 	ByteBuffer buffer((size_t)file->GetLength(), false);
-	file->Read(buffer.GetData(), buffer.GetSize());
+	file->Read(buffer.getData(), buffer.getSize());
 
 	// Face 作成 (ファミリ名・Face 数を調べるため。すぐ削除する)
 	FT_Face face;
 	FT_Error err = FT_New_Memory_Face(
 		m_ftLibrary,
-		(const FT_Byte*)buffer.GetData(),
-		buffer.GetSize(),
+		(const FT_Byte*)buffer.getData(),
+		buffer.getSize(),
 		0,
 		&face);
 	LN_THROW(err == FT_Err_Ok, InvalidOperationException, "failed FT_New_Memory_Face : %d\n", err);
@@ -244,8 +244,8 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 		{
 			err = FT_New_Memory_Face(
 				m_ftLibrary,
-				(const FT_Byte*)buffer.GetData(),
-				buffer.GetSize(),
+				(const FT_Byte*)buffer.getData(),
+				buffer.getSize(),
 				i,
 				&face);
 			LN_THROW(err == FT_Err_Ok, InvalidOperationException, "failed FT_New_Memory_Face : %d\n", err);
@@ -298,7 +298,7 @@ RawFontPtr FontManager::LookupRawFont(const detail::FontData& keyData)
 	RawFontPtr ref;
 	if (keyData.Family.IsEmpty())
 	{
-		ref = GetDefaultRawFont()->Copy();
+		ref = GetDefaultRawFont()->copy();
 	}
 	else
 	{
@@ -336,8 +336,8 @@ FT_Error FontManager::FaceRequester(
 		FT_Face face;
 		FT_Error err = FT_New_Memory_Face(
 			m_ftLibrary,
-			(const FT_Byte*)itr->second.DataBuffer.GetConstData(),
-			itr->second.DataBuffer.GetSize(),
+			(const FT_Byte*)itr->second.DataBuffer.getConstData(),
+			itr->second.DataBuffer.getSize(),
 			itr->second.CollectionIndex,
 			&face);
 		LN_THROW(err == FT_Err_Ok, InvalidOperationException, "failed FT_New_Memory_Face : %d\n", err);

@@ -35,12 +35,12 @@ DirectMusicAudioPlayer::~DirectMusicAudioPlayer()
 }
 
 //------------------------------------------------------------------------------
-void DirectMusicAudioPlayer::Initialize(AudioStream* audioStream, bool enable3d)
+void DirectMusicAudioPlayer::initialize(AudioStream* audioStream, bool enable3d)
 {
 	m_midiDecoder = dynamic_cast<MidiDecoder*>(audioStream->GetDecoder());
 	LN_THROW(m_midiDecoder != NULL, ArgumentException);
 
-	AudioPlayer::Initialize(audioStream, enable3d);
+	AudioPlayer::initialize(audioStream, enable3d);
 
 	// オンメモリ再生用に内部に持ってるバッファを埋める
 	m_midiDecoder->FillOnmemoryBuffer();

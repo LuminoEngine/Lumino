@@ -17,7 +17,7 @@ protected:
 	friend class detail::GraphicsManager;
 	friend class ShaderVariable;
 
-	void Initialize();
+	void initialize();
 	virtual void Finalize_() override;
 
 	virtual void Dispose();

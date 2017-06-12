@@ -117,21 +117,21 @@ Viewport::~Viewport()
 }
 
 //------------------------------------------------------------------------------
-void Viewport::Initialize(detail::GraphicsManager* manager, const SizeI& viewSize)
+void Viewport::initialize(detail::GraphicsManager* manager, const SizeI& viewSize)
 {
 	m_manager = manager;
 	//m_renderTarget = renderTarget;
 	//m_size.Set((float)m_renderTarget->GetWidth(), (float)m_renderTarget->GetHeight());
 
 	m_renderer = RefPtr<DrawList>::MakeRef();
-	m_renderer->Initialize(manager);
+	m_renderer->initialize(manager);
 
 	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
-	internalRenderer->Initialize(manager);
+	internalRenderer->initialize(manager);
 	m_internalRenderer = internalRenderer;
 
 	//m_pass = RefPtr<detail::RenderingPass2>::MakeRef();
-	//m_pass->Initialize(manager);
+	//m_pass->initialize(manager);
 
 	TryRemakeLayerTargets(viewSize);
 }

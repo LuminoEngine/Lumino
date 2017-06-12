@@ -208,7 +208,7 @@ ModelManager::~ModelManager()
 }
 
 //------------------------------------------------------------------------------
-void ModelManager::Initialize(const ConfigData& configData)
+void ModelManager::initialize(const ConfigData& configData)
 {
 	m_fileManager = configData.fileManager;
 	m_physicsManager = configData.physicsManager;
@@ -236,28 +236,28 @@ void ModelManager::Initialize(const ConfigData& configData)
 	m_mmdDefaultToonTexture[9] = NewObject<Texture2D>(&data10, TextureFormat::R8G8B8A8, false);
 
 	m_defaultMaterial = RefPtr<Material>::MakeRef();
-	m_defaultMaterial->Initialize();
+	m_defaultMaterial->initialize();
 
 	m_unitBoxMeshResource = RefPtr<MeshResource>::MakeRef();
-	m_unitBoxMeshResource->Initialize(m_graphicsManager, MeshCreationFlags::None);
+	m_unitBoxMeshResource->initialize(m_graphicsManager, MeshCreationFlags::None);
 	m_unitBoxMeshResource->AddBox(Vector3(1, 1, 1));
 
 	m_unitBoxMeshResourceReverseFaces = RefPtr<MeshResource>::MakeRef();
-	m_unitBoxMeshResourceReverseFaces->Initialize(m_graphicsManager, MeshCreationFlags::None);
+	m_unitBoxMeshResourceReverseFaces->initialize(m_graphicsManager, MeshCreationFlags::None);
 	m_unitBoxMeshResourceReverseFaces->AddBox(Vector3(1, 1, 1));
 	m_unitBoxMeshResourceReverseFaces->ReverseFaces();
 
 	m_unitSphereMeshResource = RefPtr<MeshResource>::MakeRef();
-	m_unitSphereMeshResource->Initialize(m_graphicsManager, MeshCreationFlags::None);
+	m_unitSphereMeshResource->initialize(m_graphicsManager, MeshCreationFlags::None);
 	m_unitSphereMeshResource->AddSphere(0.5, 16, 16);
 
 	m_unitSphereMeshResourceReverseFaces = RefPtr<MeshResource>::MakeRef();
-	m_unitSphereMeshResourceReverseFaces->Initialize(m_graphicsManager, MeshCreationFlags::None);
+	m_unitSphereMeshResourceReverseFaces->initialize(m_graphicsManager, MeshCreationFlags::None);
 	m_unitSphereMeshResourceReverseFaces->AddSphere(0.5, 16, 16);
 	m_unitSphereMeshResourceReverseFaces->ReverseFaces();
 
 	m_unitTeapotMeshResource = RefPtr<MeshResource>::MakeRef();
-	m_unitTeapotMeshResource->Initialize(m_graphicsManager, MeshCreationFlags::None);
+	m_unitTeapotMeshResource->initialize(m_graphicsManager, MeshCreationFlags::None);
 	m_unitTeapotMeshResource->AddTeapot(1.0f, 8);
 
 
@@ -353,7 +353,7 @@ RefPtr<StaticMeshModel> ModelManager::CreateStaticMeshModel(const PathName& file
 
 	//auto meshResource = CreateModelCore(filePath);
 	//auto mesh = RefPtr<StaticMeshModel>::MakeRef();
-	//mesh->Initialize(m_graphicsManager, meshResource);
+	//mesh->initialize(m_graphicsManager, meshResource);
 	//return mesh;
 }
 
@@ -362,7 +362,7 @@ RefPtr<SkinnedMeshModel> ModelManager::CreateSkinnedMeshModel(const PathName& fi
 {
 	auto meshResource = CreateSkinnedMeshResource(filePath);
 	auto mesh = RefPtr<SkinnedMeshModel>::MakeRef();
-	mesh->Initialize(m_graphicsManager, meshResource);
+	mesh->initialize(m_graphicsManager, meshResource);
 	return mesh;
 }
 

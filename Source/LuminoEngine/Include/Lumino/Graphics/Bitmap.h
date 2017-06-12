@@ -75,12 +75,12 @@ public:
 	ByteBuffer* GetBitmapBuffer() { return &m_bitmapData; }
 	
 	/// ビットマップサイズの取得 (ピクセル数単位)
-	const SizeI& GetSize() const { return m_size; }
+	const SizeI& getSize() const { return m_size; }
 
 	/// ピクセルフォーマットの取得
 	PixelFormat GetPixelFormat() const { return m_format; }
 
-	void Clear(const Color32& color);
+	void clear(const Color32& color);
 
 	/**
 		@brief		指定したビットマップからこのビットマップへブロック転送を行います。
@@ -99,7 +99,7 @@ public:
 		@brief		このビットマップと、指定したビットマップを比較します。
 		@param[in]	bitmap		: 比較対象
 	*/
-	bool Equals(const Bitmap* bitmap) const;
+	bool equals(const Bitmap* bitmap) const;
 
 	/**
 		@brief		上下逆のイメージを反転します。上下逆でなければ何もしません。
@@ -297,7 +297,7 @@ private:
 		/// bitmap	: 転送先 Bitmap
 		/// rect	: 転送先領域 (Bitmap のサイズに収まるようにクリッピングされていること)
 		DestBuffer(Bitmap* bitmap, const RectI& rect)
-			: m_data(bitmap->m_bitmapData.GetData())
+			: m_data(bitmap->m_bitmapData.getData())
 			, m_widthByteCount((bitmap->m_format == PixelFormat::A1) ? bitmap->m_pitch : (bitmap->m_size.width * Bitmap::GetPixelFormatByteCount(bitmap->GetPixelFormat())))
 			, m_rc(rect)
 			, m_bottomLine(rect.GetBottom() - 1)	// 転送範囲の最後の行 (0スタート)
@@ -340,7 +340,7 @@ private:
 		/// bitmap	: 転送元 Bitmap
 		/// rect	: 転送元領域 (Bitmap のサイズに収まるようにクリッピングされていること)
 		SrcBuffer(const Bitmap* bitmap, const RectI& rect)
-			: m_data(bitmap->m_bitmapData.GetConstData())
+			: m_data(bitmap->m_bitmapData.getConstData())
 			, m_widthByteCount((bitmap->m_format == PixelFormat::A1) ? bitmap->m_pitch : bitmap->m_size.width * Bitmap::GetPixelFormatByteCount(bitmap->GetPixelFormat()))
 			, m_rc(rect)
 			, m_bottomLine(rect.GetBottom() - 1)	// 転送範囲の最後の行 (0スタート)

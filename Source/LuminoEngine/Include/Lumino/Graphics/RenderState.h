@@ -111,7 +111,7 @@ public:
 	*/
 	uint32_t GetHashCode() const;
 
-	bool Equals(const RenderState& state) const;
+	bool equals(const RenderState& state) const;
 
 public:
 	bool operator == (const RenderState& obj) const;
@@ -148,11 +148,11 @@ public:
 	// DirectX : 「ステンシルテスト」→「深度テスト」
 	// ・・・らしい。要確認。
 
-	bool Equals(const DepthStencilState& state) const;
+	bool equals(const DepthStencilState& state) const;
 
 
-	bool operator == (const DepthStencilState& state) const { return Equals(state); }
-	bool operator != (const DepthStencilState& state) const { return !Equals(state); }
+	bool operator == (const DepthStencilState& state) const { return equals(state); }
+	bool operator != (const DepthStencilState& state) const { return !equals(state); }
 };
 
 LN_NAMESPACE_GRAPHICS_END

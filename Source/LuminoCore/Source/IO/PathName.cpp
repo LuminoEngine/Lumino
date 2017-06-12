@@ -395,7 +395,7 @@ GenericPathName<TChar> GenericPathName<TChar>::GetSpecialFolderPath(SpecialFolde
 	{
 		// フォルダが無かったら空文字列にして返す
 		if (!FileSystem::ExistsDirectory(path2)) {
-			path2.Clear();
+			path2.clear();
 		}
 		return path2;
 	}

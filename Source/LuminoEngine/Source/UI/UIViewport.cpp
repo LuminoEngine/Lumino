@@ -28,9 +28,9 @@ UIViewport::~UIViewport()
 }
 
 //------------------------------------------------------------------------------
-void UIViewport::Initialize()
+void UIViewport::initialize()
 {
-	UIElement::Initialize();
+	UIElement::initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -132,7 +132,7 @@ void UIViewport::OnRender(DrawingContext* g)
 
 	g->SetRenderTarget(0, m_primaryLayerTarget);
 	g->SetDepthBuffer(m_depthBuffer);
-	g->Clear(ClearFlags::All, m_backgroundColor, 1.0f, 0);
+	g->clear(ClearFlags::All, m_backgroundColor, 1.0f, 0);
 
 
 
@@ -163,7 +163,7 @@ void UIViewport::OnRender(DrawingContext* g)
 	g->Blit(m_primaryLayerTarget);	// TODO: 転送先指定
 
 	// TODO: 暫定。Blit の中で深度書き込みしないようにしてほしいかも。
-	g->Clear(ClearFlags::Depth, Color());
+	g->clear(ClearFlags::Depth, Color());
 
 	UIElement::OnRender(g);
 }
@@ -184,7 +184,7 @@ void UIViewport::UpdateFramebufferSizeIfNeeded(const SizeI& viewSize)
 	// 自動リサイズONで、描画先とサイズが異なるなら再作成
 	if (m_placement == ViewportPlacement::AutoResize)
 	{
-		if (m_primaryLayerTarget != nullptr && viewSize != m_primaryLayerTarget->GetSize())
+		if (m_primaryLayerTarget != nullptr && viewSize != m_primaryLayerTarget->getSize())
 		{
 			create = true;
 		}
@@ -334,9 +334,9 @@ UILayoutLayer::~UILayoutLayer()
 }
 
 //------------------------------------------------------------------------------
-void UILayoutLayer::Initialize()
+void UILayoutLayer::initialize()
 {
-	UIViewportLayer::Initialize();
+	UIViewportLayer::initialize();
 	m_root = NewObject<UILayoutView>(UIContext::GetMainContext(), nullptr);	// TODO: コンテキスト変更とか
 
 	m_drawingContext = NewObject<DrawingContext>();
@@ -344,7 +344,7 @@ void UILayoutLayer::Initialize()
 	// lighting disabled.
 	// TODO: NewObject
 	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
-	internalRenderer->Initialize(detail::EngineDomain::GetGraphicsManager());
+	internalRenderer->initialize(detail::EngineDomain::GetGraphicsManager());
 	m_internalRenderer = internalRenderer;
 
 	m_drawElementListSet = RefPtr<RenderView>::MakeRef();
@@ -425,7 +425,7 @@ PostEffect::~PostEffect()
 }
 
 //------------------------------------------------------------------------------
-void PostEffect::Initialize()
+void PostEffect::initialize()
 {
 }
 

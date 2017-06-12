@@ -50,7 +50,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	Driver::ITexture* GetDeviceObjectConst() const { return m_deviceObj; }
 	Driver::ITexture* ResolveDeviceObject() { ApplyModifies(); return m_deviceObj; }
-	const SizeI& GetSize() const;
+	const SizeI& getSize() const;
 
 protected:
 	Texture();
@@ -134,7 +134,7 @@ public:
 public:
 
 	/** 指定した色でテクスチャ全体を塗りつぶします。*/
-	void Clear(const Color32& color);
+	void clear(const Color32& color);
 
 	void SetPixel(int x, int y, const Color& color);
 
@@ -155,12 +155,12 @@ LN_CONSTRUCT_ACCESS:
 	Texture2D();
 	virtual ~Texture2D();
 	//LN_METHOD()
-	void Initialize(const SizeI& size, TextureFormat format, bool mipmap, ResourceUsage usage);
+	void initialize(const SizeI& size, TextureFormat format, bool mipmap, ResourceUsage usage);
 	LN_METHOD()
-	void Initialize(int width, int height, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
+	void initialize(int width, int height, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
 	LN_METHOD()
-	void Initialize(const StringRef& filePath, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
-	void Initialize(Stream* stream, TextureFormat format, bool mipmap);
+	void initialize(const StringRef& filePath, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
+	void initialize(Stream* stream, TextureFormat format, bool mipmap);
 
 LN_INTERNAL_ACCESS:
 	void TryLock();
@@ -199,7 +199,7 @@ public:
 LN_INTERNAL_ACCESS:
 	RenderTargetTexture();
 	virtual ~RenderTargetTexture();
-	void Initialize(const SizeI& size, int mipLevels, TextureFormat format);
+	void initialize(const SizeI& size, int mipLevels, TextureFormat format);
 	void CreateImpl(detail::GraphicsManager* manager, const SizeI& size, int mipLevels, TextureFormat format);
 	void CreateCore(detail::GraphicsManager* manager, bool isDefaultBackBuffer);
 	void AttachDefaultBackBuffer(Driver::ITexture* deviceObj);
@@ -231,7 +231,7 @@ public:
 	*/
 	static DepthBufferPtr Create(const SizeI& size, TextureFormat format = TextureFormat::D24S8);
 
-	const SizeI& GetSize() const { return m_size; }
+	const SizeI& getSize() const { return m_size; }
 
 protected:
 	virtual void Dispose() override;
@@ -241,7 +241,7 @@ LN_INTERNAL_ACCESS :
 	virtual ~DepthBuffer();
 	void CreateImpl(detail::GraphicsManager* manager, const SizeI& size, TextureFormat format);
 	Driver::ITexture* ResolveDeviceObject() const { return m_deviceObj; }
-	void Resize(const SizeI& newSize);
+	void resize(const SizeI& newSize);
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 private:
@@ -289,7 +289,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	Texture3D();
 	virtual ~Texture3D();
-	void Initialize(ln::detail::GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage);
+	void initialize(ln::detail::GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage);
 
 protected:
 	virtual void ApplyModifies() override;

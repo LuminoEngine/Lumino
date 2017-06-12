@@ -25,7 +25,7 @@ public:
 	virtual ~DirectMusicAudioDevice();
 
 public:
-    void Initialize( const ConfigData& configData );
+    void initialize( const ConfigData& configData );
 	virtual AudioPlayer* CreateAudioPlayer(AudioStream* source, bool enable3d, SoundPlayingMode mode);
 	virtual void Update();
 	virtual void SetMetreUnitDistance(float d);

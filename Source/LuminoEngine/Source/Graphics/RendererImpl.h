@@ -103,7 +103,7 @@ public:
 	/**
 		@brief	現在設定されているレンダリングターゲット、深度バッファをクリアします。
 	*/
-	void Clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
+	void clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
 
 	/**
 	*/

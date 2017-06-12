@@ -41,7 +41,7 @@ int GenericStreamReader<TChar>::Peek()
 			return -1;
 		}
 	}
-	const TChar* buf = (const TChar*)m_converter.GetLastBuffer().GetConstData();
+	const TChar* buf = (const TChar*)m_converter.GetLastBuffer().getConstData();
 	return buf[m_charPos];
 }
 
@@ -57,7 +57,7 @@ int GenericStreamReader<TChar>::Read()
 			return -1;
 		}
 	}
-	const TChar* buf = (const TChar*)m_converter.GetLastBuffer().GetConstData();
+	const TChar* buf = (const TChar*)m_converter.GetLastBuffer().getConstData();
 	return buf[m_charPos++];
 }
 
@@ -79,7 +79,7 @@ bool GenericStreamReader<TChar>::ReadLine(GenericString<TChar>* line)
 		int i = m_charPos;
 		do
 		{
-			const TChar* buf = (const TChar*)m_converter.GetLastBuffer().GetConstData();
+			const TChar* buf = (const TChar*)m_converter.GetLastBuffer().getConstData();
 			TChar ch = buf[i];
 			if (ch == '\r' || ch == '\n')
 			{
@@ -100,7 +100,7 @@ bool GenericStreamReader<TChar>::ReadLine(GenericString<TChar>* line)
 
 		// ここに来るのは、charBuffer の現在位置 ～ 終端までに改行が無かったとき。
 		// 現在の残りバッファを str に結合して、次のバッファを ReadBuffer() で読み出す。
-		const TChar* buf = (const TChar*)m_converter.GetLastBuffer().GetConstData();
+		const TChar* buf = (const TChar*)m_converter.GetLastBuffer().getConstData();
 		builder.Append(buf + m_charPos, m_charElementLen - m_charPos);
 
 	} while (ReadBuffer() > 0);
@@ -118,7 +118,7 @@ GenericString<TChar> GenericStreamReader<TChar>::ReadToEnd()
 	{
 		if (m_charElementLen - m_charPos > 0)
 		{
-			const TChar* buf = (const TChar*)m_converter.GetLastBuffer().GetConstData();
+			const TChar* buf = (const TChar*)m_converter.GetLastBuffer().getConstData();
 			builder.Append(buf + m_charPos, m_charElementLen - m_charPos);
 			m_charPos = m_charElementLen;
 		}
@@ -150,7 +150,7 @@ void GenericStreamReader<TChar>::InitReader(Stream* stream, Encoding* encoding)
 	m_stream = stream;
 	m_converter.SetSourceEncoding(encoding);
 	m_converter.SetDestinationEncoding(Encoding::GetEncodingTemplate<TChar>());
-	m_byteBuffer.Resize(DefaultBufferSize, false);
+	m_byteBuffer.resize(DefaultBufferSize, false);
 	m_byteLen = 0;
 	m_charElementLen = 0;
 	m_charPos = 0;
@@ -166,11 +166,11 @@ int GenericStreamReader<TChar>::ReadBuffer()
 	m_charPos = 0;
 	m_charElementLen = 0;
 
-	m_byteLen = m_stream->Read(m_byteBuffer.GetData(), m_byteBuffer.GetSize());
+	m_byteLen = m_stream->Read(m_byteBuffer.getData(), m_byteBuffer.getSize());
 	if (m_byteLen == 0) { return m_charElementLen; }
 
 	// 文字コード変換 (ユーザー指定 → TChar)
-	m_converter.Convert(m_byteBuffer.GetData(), m_byteLen);
+	m_converter.Convert(m_byteBuffer.getData(), m_byteLen);
 	m_charElementLen = m_converter.GetLastResult().BytesUsed / sizeof(TChar);
 	return m_charElementLen;
 }

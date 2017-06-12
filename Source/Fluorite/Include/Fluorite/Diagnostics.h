@@ -96,7 +96,7 @@ LN_INTERNAL_ACCESS:
 	int SetCurrentLineNumber(int line) { m_currentLineNumber = line; }
 	int SetCurrentColumnNumber(int column) { m_currentColumnNumber = column; }
 
-	void ClearItems() { m_items.Clear(); }
+	void ClearItems() { m_items.clear(); }
 	void Report(DiagnosticsCode code);
 	void Report(DiagnosticsCode code, flString option1);
 
@@ -124,7 +124,7 @@ public:
 	DiagnosticsManager() = default;
 	~DiagnosticsManager() = default;
 
-	void Clear();
+	void clear();
 	DiagnosticsItemSet* CreateItemSet(const PathNameA& absFilePath);
 
 private:

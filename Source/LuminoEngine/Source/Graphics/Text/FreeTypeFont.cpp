@@ -138,9 +138,9 @@ FreeTypeFont::~FreeTypeFont()
 }
 
 //------------------------------------------------------------------------------
-void FreeTypeFont::Initialize()
+void FreeTypeFont::initialize()
 {
-	RawFont::Initialize();
+	RawFont::initialize();
 
 	m_manager = detail::EngineDomain::GetGraphicsManager()->GetFontManager();
 	m_glyphData.CopyGlyph = NULL;
@@ -167,7 +167,7 @@ void FreeTypeFont::Dispose_()
 }
 
 //------------------------------------------------------------------------------
-RawFontPtr FreeTypeFont::Copy() const
+RawFontPtr FreeTypeFont::copy() const
 {
 	auto font = NewObject<FreeTypeFont>();
 	font->m_fontData = m_fontData;
@@ -925,8 +925,8 @@ void FreeTypeFont::UpdateFont()
 		UpdateImageFlags();
 
 		// グリフ格納用ビットマップ (仮確保)
-		m_glyphBitmap.Attach(LN_NEW Bitmap(SizeI(m_fontData.Size, m_fontData.Size), PixelFormat::A8));
-		m_outlineBitmap.Attach(LN_NEW Bitmap(SizeI(m_fontData.Size, m_fontData.Size), PixelFormat::A8));
+		m_glyphBitmap.attach(LN_NEW Bitmap(SizeI(m_fontData.Size, m_fontData.Size), PixelFormat::A8));
+		m_outlineBitmap.attach(LN_NEW Bitmap(SizeI(m_fontData.Size, m_fontData.Size), PixelFormat::A8));
 
 		// ラスタライズで使用する
 		//mPixelList = LN_NEW PixelData[m_fontSize * m_fontSize * 4];
@@ -1007,7 +1007,7 @@ void FreeTypeFont::RefreshBitmap(Bitmap* bitmap, FT_Bitmap* ftBitmap)
 	}
 
 	// ビットマップデータを参照モードでセットする
-	bitmap->m_bitmapData.Attach(
+	bitmap->m_bitmapData.attach(
 		ftBitmap->buffer,
 		Bitmap::GetPixelFormatByteCount(bitmap->m_format, bitmap->m_size, 1));
 }

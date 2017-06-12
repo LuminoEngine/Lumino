@@ -148,7 +148,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIRenderElement();
 	virtual ~UIRenderElement();
-	void Initialize();
+	void initialize();
 
 private:
 	void LayoutAndRender(DrawingContext* context, const Size& parentRenderSize);
@@ -171,7 +171,7 @@ public:
 LN_INTERNAL_ACCESS:
 	UIStylePropertyTable();
 	virtual ~UIStylePropertyTable();
-	void Initialize(const StringRef& visualStateName);
+	void initialize(const StringRef& visualStateName);
 
 private:
 	//void ApplyInternal(UIElement* targetElement, bool useTransitionAnimation);
@@ -288,7 +288,7 @@ public:
 public:
 	UIStyle();
 	virtual ~UIStyle();
-	void Initialize();
+	void initialize();
 
 	//void AddValue(const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time = 0.0, EasingMode easingMode = EasingMode::Linear);
 

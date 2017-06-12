@@ -50,8 +50,8 @@ ResultState AbstractLexer::Tokenize(InputFile* file)
 {
 	assert(file != nullptr);
 	m_inputFile = file;
-	const char* code = (const char*)file->GetCodeBuffer()->GetConstData();
-	int length = (file->GetCodeBuffer()->GetSize() / sizeof(char));
+	const char* code = (const char*)file->GetCodeBuffer()->getConstData();
+	int length = (file->GetCodeBuffer()->getSize() / sizeof(char));
 	return Tokenize(code, length, file->GetTokenListInternal(), file->GetDiag());
 }
 

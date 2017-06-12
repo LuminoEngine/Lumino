@@ -42,9 +42,9 @@ OffscreenWorldView::~OffscreenWorldView()
 }
 
 //------------------------------------------------------------------------------
-void OffscreenWorldView::Initialize()
+void OffscreenWorldView::initialize()
 {
-	RenderView::Initialize();
+	RenderView::initialize();
 	m_renderer = NewObject<DrawList>(detail::EngineDomain::GetGraphicsManager());
 
 	//m_renderView = RefPtr<RenderView>::MakeRef();
@@ -114,7 +114,7 @@ void OffscreenWorldView::RenderWorld(World* world, CameraComponent* mainViewCame
 	// TODO: 深度バッファやクリア方法の指定
 	m_renderer->SetRenderTarget(0, m_renderTarget);
 	//g->SetDepthBuffer(m_depthBuffer);
-	m_renderer->Clear(ClearFlags::All, Color::White, 1.0f, 0);
+	m_renderer->clear(ClearFlags::All, Color::White, 1.0f, 0);
 	
 
 	world->Render(m_renderer, mainViewCamera, WorldDebugDrawFlags::None, this);	// TODO: debugdraw の指定
@@ -179,9 +179,9 @@ SkyComponent::~SkyComponent()
 }
 
 //------------------------------------------------------------------------------
-void SkyComponent::Initialize()
+void SkyComponent::initialize()
 {
-	VisualComponent::Initialize();
+	VisualComponent::initialize();
 
 
 	{
@@ -312,9 +312,9 @@ MirrorComponent::~MirrorComponent()
 }
 
 //------------------------------------------------------------------------------
-void MirrorComponent::Initialize()
+void MirrorComponent::initialize()
 {
-	VisualComponent::Initialize();
+	VisualComponent::initialize();
 
 	// TODO: この辺の初期化は OnParentChanged() のようなコールバックで行う。
 	// そうすれば、アタッチされた任意のワールドへ追加できる。

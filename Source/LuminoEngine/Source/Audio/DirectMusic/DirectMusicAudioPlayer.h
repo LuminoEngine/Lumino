@@ -30,7 +30,7 @@ public:
 	virtual ~DirectMusicAudioPlayer();
 
 	// AudioPlayer interface
-	virtual void			Initialize(AudioStream* audioStream, bool enable3d) override;
+	virtual void			initialize(AudioStream* audioStream, bool enable3d) override;
 	virtual void			SetVolume(float volume) override;
 	virtual void			SetPitch(float pitch) override;
 	virtual void			SetLoopState(uint32_t loop_begin, uint32_t loop_length) override;

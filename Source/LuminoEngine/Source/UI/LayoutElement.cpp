@@ -74,7 +74,7 @@ void ILayoutElement::ArrangeLayout(const Rect& finalLocalRect)
 	// TODO: HorizontalAlignment 等を考慮して、最終的な座標とサイズを決定する。
 	//		 この要素のサイズが省略されていれば、Stretch ならサイズは最大に、それ以外なら最小になる。
 
-	const Size& areaSize = finalLocalRect.GetSize();
+	const Size& areaSize = finalLocalRect.getSize();
 
 #if 1
 	HAlignment		hAlign = GetLayoutHAlignment();
@@ -115,7 +115,7 @@ void ILayoutElement::ArrangeLayout(const Rect& finalLocalRect)
 	arrangeRect.height = std::max(arrangeRect.height - marginHeight, 0.0f);
 
 
-	Size renderSize = ArrangeOverride(arrangeRect.GetSize());
+	Size renderSize = ArrangeOverride(arrangeRect.getSize());
 	Rect thisFinalLocalRect;
 	thisFinalLocalRect.x = finalLocalRect.x + margin.Left + arrangeRect.x;
 	thisFinalLocalRect.y = finalLocalRect.y + margin.Top + arrangeRect.y;

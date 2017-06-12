@@ -102,7 +102,7 @@ class ShaderSemanticsManager
 {
 public:
 	ShaderSemanticsManager();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
 	void TryPushVariable(ShaderVariable* var);
 	void UpdateSceneVariables(const SceneInfo& info);
@@ -243,8 +243,8 @@ protected:
 LN_INTERNAL_ACCESS:
 	friend class RenderingCommandList;
 	Shader();
-	void Initialize(detail::GraphicsManager* manager, const StringRef& filePath, bool useTRSS = false);
-	void Initialize(detail::GraphicsManager* manager, const void* code, int length, bool useTRSS = false);
+	void initialize(detail::GraphicsManager* manager, const StringRef& filePath, bool useTRSS = false);
+	void initialize(detail::GraphicsManager* manager, const void* code, int length, bool useTRSS = false);
 	void PostInitialize();
 	void SetModifiedVariables(bool modified) { m_modifiedVariables = modified; }
 	bool IsModifiedVariables() const { return m_modifiedVariables; }
@@ -304,7 +304,7 @@ public:
 	int GetArrayLength() const;
 	byte_t* GetDataBuffer() { return m_value.Buffer; }	// 初期値格納用
 
-	bool Equals(const ShaderValue& value) const;
+	bool equals(const ShaderValue& value) const;
 	uint32_t GetHashCode();
 
 private:
@@ -351,7 +351,7 @@ private:
 
 	void ReleaseValueBuffer();
 	void AllocValueBuffer(size_t byteCount);
-	void Copy(const ShaderValue& value);
+	void copy(const ShaderValue& value);
 
 };
 

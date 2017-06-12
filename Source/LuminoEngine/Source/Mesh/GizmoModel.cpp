@@ -22,7 +22,7 @@ const float GizmoModel::BaseOpacity = 0.5f;
 GizmoModelPtr GizmoModel::Create()
 {
 	auto ptr = GizmoModelPtr::MakeRef();
-	ptr->Initialize(ln::detail::GraphicsManager::GetInstance());
+	ptr->initialize(ln::detail::GraphicsManager::GetInstance());
 	return ptr;
 }
 
@@ -41,10 +41,10 @@ GizmoModel::~GizmoModel()
 }
 
 //------------------------------------------------------------------------------
-void GizmoModel::Initialize(ln::detail::GraphicsManager* manager)
+void GizmoModel::initialize(ln::detail::GraphicsManager* manager)
 {
 	m_tmat = RefPtr<Material>::MakeRef();
-	m_tmat->Initialize();
+	m_tmat->initialize();
 	m_tmat->SetBlendMode(BlendMode::Alpha);
 	m_tmat->SetCullingMode(CullingMode::None);
 }

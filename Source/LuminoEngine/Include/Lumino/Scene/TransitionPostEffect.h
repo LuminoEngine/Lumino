@@ -21,7 +21,7 @@ private:
 LN_CONSTRUCT_ACCESS:
 	TransitionPostEffect();
 	virtual ~TransitionPostEffect();
-	void Initialize();
+	void initialize();
 
 private:
 	RefPtr<RenderTargetTexture>	m_primaryTarget;

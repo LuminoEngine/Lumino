@@ -355,7 +355,7 @@ void jo_gif_frame(jo_gif_t *gif, jo_gif_frame_t *fdata, unsigned char * rgba, in
     unsigned char *palette = frame == 0 || !localPalette ? gif->palette : localPalTbl;
     if (frame == 0 || localPalette) {
         jo_gif_quantize(rgba, size*4, 1, palette, gif->numColors);
-        fdata->palette.Alloc((char*)palette, 3 * (1 << (gif->palSize + 1)) );
+        fdata->palette.alloc((char*)palette, 3 * (1 << (gif->palSize + 1)) );
     }
 
     unsigned char *indexedPixels = (unsigned char *)malloc(size);
@@ -396,7 +396,7 @@ void jo_gif_frame(jo_gif_t *gif, jo_gif_frame_t *fdata, unsigned char * rgba, in
         free(ditheredPixels);
     }
 
-    fdata->indexed_pixels.Alloc((char*)indexedPixels, size);
+    fdata->indexed_pixels.alloc((char*)indexedPixels, size);
 
   //  {
 		//fdata->encoded_pixels.Initialize(10);
@@ -452,11 +452,11 @@ void jo_gif_write_frame(ln::BinaryWriter* os, jo_gif_t *gif, jo_gif_frame_t *fda
     int palette_size = 0;
     if (palette_optional != nullptr) {
         palette = (unsigned char*)&palette_optional->palette[0];
-        palette_size = (int)palette_optional->palette.GetSize();
+        palette_size = (int)palette_optional->palette.getSize();
     }
     else {
-        palette = (fdata->palette.GetSize() == 0) ? nullptr : (unsigned char*)&fdata->palette[0];
-        palette_size = (int)fdata->palette.GetSize();
+        palette = (fdata->palette.getSize() == 0) ? nullptr : (unsigned char*)&fdata->palette[0];
+        palette_size = (int)fdata->palette.getSize();
     }
 
     if (frame == 0) {

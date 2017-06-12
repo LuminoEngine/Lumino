@@ -58,7 +58,7 @@ class GLShader
 public:
 	GLShader();
 	virtual ~GLShader();
-	void Initialize(GLGraphicsDevice* device, const void* code, size_t codeByteCount);
+	void initialize(GLGraphicsDevice* device, const void* code, size_t codeByteCount);
 
 	GLGraphicsDevice* GetGraphicsDevice() { return m_device; }
 	GLShaderVariable* FindShaderVariable(const String& name);
@@ -100,7 +100,7 @@ public:
 
 	GLShaderVariable();
 	virtual ~GLShaderVariable();
-	void Initialize(GLShader* owner, ShaderVariableTypeDesc desc, const String& name, const String& semanticName, GLint location);
+	void initialize(GLShader* owner, ShaderVariableTypeDesc desc, const String& name, const String& semanticName, GLint location);
 
 public:
 	/// 指定された GLSL Location に値を設定する
@@ -129,7 +129,7 @@ public:
 
 	GLShaderAnnotation();
 	virtual ~GLShaderAnnotation();
-	void Initialize(const String& type, const String& name, const String& value);
+	void initialize(const String& type, const String& name, const String& value);
 
 	virtual void SetBool(bool value) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetInt(int value) { LN_THROW(0, InvalidOperationException); }
@@ -152,7 +152,7 @@ public:
 
 	GLShaderTechnique();
 	virtual ~GLShaderTechnique();
-	void Initialize(GLShader* ownerShader, const String& name);
+	void initialize(GLShader* ownerShader, const String& name);
 	void AddPass(GLShaderPass* pass) { m_passes.Add(pass); }
 
 public:
@@ -181,8 +181,8 @@ public:
 
 	GLShaderPass();
 	virtual ~GLShaderPass();
-	void Initialize(GLShader* ownerShader, const String& name, GLuint vertShader, GLuint fragShader);
-	void Initialize(GLShader* ownerShader, const String& name, const String& vertShaderName, const String& fragShaderName);
+	void initialize(GLShader* ownerShader, const String& name, GLuint vertShader, GLuint fragShader);
+	void initialize(GLShader* ownerShader, const String& name, const String& vertShaderName, const String& fragShaderName);
 
 public:
 	/// glVertexAttribPointer() に指定する attribute インデックスを取得する (-1 の場合は存在しないことを示す)

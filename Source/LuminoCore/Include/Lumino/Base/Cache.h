@@ -78,8 +78,8 @@ protected:
 	virtual CacheObjectInfo&	GetCacheObjectInfo() = 0;
 
 public:
-	virtual int32_t	AddRef() = 0;
-	virtual int32_t	Release() = 0;
+	virtual int32_t	addRef() = 0;
+	virtual int32_t	release() = 0;
 };
 
 /// ICacheObject の実装ユーティリティ
@@ -88,12 +88,12 @@ protected: \
 	CacheObjectInfo m_cacheObjectInfo; \
 public: \
 	virtual CacheObjectInfo& GetCacheObjectInfo() { return m_cacheObjectInfo; } \
-	virtual int32_t AddRef() { return RefObject::AddRef(); } \
-	virtual int32_t Release() \
+	virtual int32_t addRef() { return RefObject::addRef(); } \
+	virtual int32_t release() \
 	{ \
 		if (m_cacheObjectInfo.manager == NULL/* || m_cacheObjectInfo.mIsStockObject*/) \
 		{ \
-			return RefObject::Release(); \
+			return RefObject::release(); \
 		} \
 		int32_t count = m_referenceCount.Decrement(); \
 		LN_ASSERT(count >= 0); \

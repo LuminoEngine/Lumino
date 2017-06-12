@@ -47,7 +47,7 @@ int main()
 
 		g_database.Link();
 
-		DotNetCommon::Initialize();
+		DotNetCommon::initialize();
 
 		{
 			WrapperIFGenerator gen;

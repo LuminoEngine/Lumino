@@ -41,7 +41,7 @@ NullAudioDevice::~NullAudioDevice()
 AudioPlayer* NullAudioDevice::CreateAudioPlayer(AudioStream* source, bool enable3d, SoundPlayingMode mode)
 {
 	RefPtr<NullAudioPlayer> player(LN_NEW NullAudioPlayer(this), false);
-	player->Initialize(source, enable3d);
+	player->initialize(source, enable3d);
 	return player.DetachMove();
 }
 

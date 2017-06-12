@@ -18,7 +18,7 @@ class MeshRenderFeature
 public:
 	MeshRenderFeature();
 	~MeshRenderFeature();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
 	void DrawMesh(MeshResource* mesh, int startIndex, int primitiveCount, PrimitiveType primitiveType);
 

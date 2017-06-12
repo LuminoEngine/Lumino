@@ -35,9 +35,9 @@ UISlider::~UISlider()
 }
 
 //------------------------------------------------------------------------------
-void UISlider::Initialize()
+void UISlider::initialize()
 {
-	UIRangeBase::Initialize();
+	UIRangeBase::initialize();
 
 	// register VisualState
 	auto* vsm = GetVisualStateManager();
@@ -54,9 +54,9 @@ void UISlider::Initialize()
 }
 
 //------------------------------------------------------------------------------
-void UISlider::Initialize(float value, float minimum, float maximum)
+void UISlider::initialize(float value, float minimum, float maximum)
 {
-	Initialize();
+	initialize();
 	SetValue(value);
 	SetMinimum(minimum);
 	SetMaximum(maximum);

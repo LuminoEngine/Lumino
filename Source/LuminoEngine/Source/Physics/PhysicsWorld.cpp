@@ -109,7 +109,7 @@ PhysicsWorld::~PhysicsWorld()
 }
 
 //------------------------------------------------------------------------------
-void PhysicsWorld::Initialize()
+void PhysicsWorld::initialize()
 {
 	// ↓以下で出てくる単語とか
 	//		http://nullorempry.jimdo.com/2012/03/10/bullet-physics%E3%81%AE%E3%81%8A%E5%8B%89%E5%BC%B7/
@@ -295,7 +295,7 @@ void PhysicsWorld::GCPhysicsObjects()
 	// rigidBody
 	for (auto itr = m_physicsObjectList.begin(); itr != m_physicsObjectList.end();)
 	{
-		if ((*itr)->GetReferenceCount() == 1)
+		if ((*itr)->getReferenceCount() == 1)
 		{
 			(*itr)->OnRemovedFromWorld();
 			itr = m_physicsObjectList.erase(itr);
@@ -309,7 +309,7 @@ void PhysicsWorld::GCPhysicsObjects()
 	// constraint
 	for (auto itr = m_jointList.begin(); itr != m_jointList.end();)
 	{
-		if ((*itr)->GetReferenceCount() == 1)
+		if ((*itr)->getReferenceCount() == 1)
 		{
 			m_btWorld->removeConstraint((*itr)->GetBtConstraint());
 			itr = m_jointList.erase(itr);

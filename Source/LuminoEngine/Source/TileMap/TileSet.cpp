@@ -16,7 +16,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TileSet, tr::ReflectionObject);
 TileSetPtr TileSet::Create()
 {
 	TileSetPtr ptr = TileSetPtr::MakeRef();
-	ptr->Initialize(detail::GraphicsManager::GetInstance());
+	ptr->initialize(detail::GraphicsManager::GetInstance());
 	return ptr;
 }
 
@@ -34,7 +34,7 @@ TileSet::~TileSet()
 }
 
 //------------------------------------------------------------------------------
-void TileSet::Initialize(detail::GraphicsManager* manager)
+void TileSet::initialize(detail::GraphicsManager* manager)
 {
 	m_material = Object::MakeRef<Material>();
 	// TODO:自己照明

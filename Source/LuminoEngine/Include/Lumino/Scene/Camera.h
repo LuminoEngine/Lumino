@@ -102,7 +102,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	CameraComponent();
 	virtual ~CameraComponent();
-	void Initialize(CameraProjection proj);
+	void initialize(CameraProjection proj);
 	CameraProjection GetProjectionMode() const { return m_projectionMode; }
 
 	void SetReflectionPlane(const Plane& plane) { m_reflectionPlane = plane; }
@@ -160,7 +160,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	CameraViewportLayer2();
 	virtual ~CameraViewportLayer2();
-	void Initialize(World* targetWorld, CameraComponent* hostingCamera);
+	void initialize(World* targetWorld, CameraComponent* hostingCamera);
 	const Size& GetViewSize() const;
 
 private:
@@ -229,7 +229,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	Camera();
 	virtual ~Camera();
-	void Initialize(CameraProjection proj);
+	void initialize(CameraProjection proj);
 
 LN_INTERNAL_ACCESS:
 

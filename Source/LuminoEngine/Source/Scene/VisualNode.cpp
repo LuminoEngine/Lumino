@@ -26,9 +26,9 @@ MaterialList2::~MaterialList2()
 }
 
 //------------------------------------------------------------------------------
-void MaterialList2::Initialize(int subMaterialCount, bool createMainMaterial)
+void MaterialList2::initialize(int subMaterialCount, bool createMainMaterial)
 {
-	Resize(subMaterialCount);
+	resize(subMaterialCount);
 	for (int i = 0; i < subMaterialCount; ++i)
 	{
 		auto m = RefPtr<Material>::MakeRef();	// TODO
@@ -46,7 +46,7 @@ void MaterialList2::CopyShared(MaterialList* srcList, bool createMainMaterial)
 {
 	if (LN_CHECK_ARG(srcList != nullptr)) return;
 
-	Resize(srcList->GetCount());
+	resize(srcList->GetCount());
 	for (int i = 0; i < srcList->GetCount(); ++i)
 	{
 		SetAt(i, srcList->GetAt(i));
@@ -91,9 +91,9 @@ VisualComponent::~VisualComponent()
 }
 
 //------------------------------------------------------------------------------
-void VisualComponent::Initialize()
+void VisualComponent::initialize()
 {
-	SceneNode::Initialize();
+	SceneNode::initialize();
 }
 
 ////------------------------------------------------------------------------------
@@ -306,9 +306,9 @@ VisualObject::~VisualObject()
 }
 
 //------------------------------------------------------------------------------
-void VisualObject::Initialize()
+void VisualObject::initialize()
 {
-	WorldObject::Initialize();
+	WorldObject::initialize();
 }
 
 //------------------------------------------------------------------------------

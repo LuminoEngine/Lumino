@@ -46,15 +46,15 @@ DrawingContext::~DrawingContext()
 }
 
 //------------------------------------------------------------------------------
-void DrawingContext::Initialize()
+void DrawingContext::initialize()
 {
-	DrawList::Initialize(detail::EngineDomain::GetGraphicsManager());
+	DrawList::initialize(detail::EngineDomain::GetGraphicsManager());
 }
 
 //------------------------------------------------------------------------------
 void DrawingContext::DrawTexture(const Rect& destRect, Texture* texture, const Rect& sourceRect)
 {
-	DrawSprite(Vector3(destRect.x, destRect.y, 0), destRect.GetSize(), Vector2(0, 0), texture, sourceRect, Color::White, SpriteBaseDirection::Basic2D, BillboardType::None, nullptr);
+	DrawSprite(Vector3(destRect.x, destRect.y, 0), destRect.getSize(), Vector2(0, 0), texture, sourceRect, Color::White, SpriteBaseDirection::Basic2D, BillboardType::None, nullptr);
 }
 
 //------------------------------------------------------------------------------

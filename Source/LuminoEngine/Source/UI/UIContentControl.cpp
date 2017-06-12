@@ -26,9 +26,9 @@ UIContentControl::~UIContentControl()
 }
 
 //------------------------------------------------------------------------------
-void UIContentControl::Initialize()
+void UIContentControl::initialize()
 {
-	UIControl::Initialize();
+	UIControl::initialize();
 
 	SetVContentAlignment(VAlignment::Stretch);
 	SetHContentAlignment(HAlignment::Stretch);
@@ -69,7 +69,7 @@ void UIContentControl::SetContent(UIElement* element)
 //	if (GetVisualTreeRoot() == nullptr)
 //	{
 //		auto panel = RefPtr<UIPanel>::MakeRef();
-//		panel->Initialize(GetManager());
+//		panel->initialize(GetManager());
 //
 //		// ContentAlignment 設定
 //		panel->SetVerticalAlignment(GetVerticalContentAlignment());

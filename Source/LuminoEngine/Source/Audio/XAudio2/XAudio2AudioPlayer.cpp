@@ -30,9 +30,9 @@ XAudio2AudioPlayerBase::~XAudio2AudioPlayerBase()
 }
 
 //------------------------------------------------------------------------------
-void XAudio2AudioPlayerBase::Initialize(AudioStream* audioStream, bool enable3d)
+void XAudio2AudioPlayerBase::initialize(AudioStream* audioStream, bool enable3d)
 {
-	AudioPlayer::Initialize(audioStream, enable3d);
+	AudioPlayer::initialize(audioStream, enable3d);
 
 	if (enable3d)
 	{
@@ -83,9 +83,9 @@ XAudio2OnMemoryAudioPlayer::~XAudio2OnMemoryAudioPlayer()
 }
 
 //------------------------------------------------------------------------------
-void XAudio2OnMemoryAudioPlayer::Initialize(AudioStream* audioStream, bool enable3d)
+void XAudio2OnMemoryAudioPlayer::initialize(AudioStream* audioStream, bool enable3d)
 {
-	XAudio2AudioPlayerBase::Initialize(audioStream, enable3d);
+	XAudio2AudioPlayerBase::initialize(audioStream, enable3d);
 
 	// オンメモリ再生用に内部に持ってるバッファを埋める
 	m_decoder->FillOnmemoryBuffer();
@@ -288,9 +288,9 @@ XAudio2StreamingAudioPlayer::~XAudio2StreamingAudioPlayer()
 }
 
 //------------------------------------------------------------------------------
-void XAudio2StreamingAudioPlayer::Initialize(AudioStream* audioStream, bool enable3d)
+void XAudio2StreamingAudioPlayer::initialize(AudioStream* audioStream, bool enable3d)
 {
-	XAudio2AudioPlayerBase::Initialize(audioStream, enable3d);
+	XAudio2AudioPlayerBase::initialize(audioStream, enable3d);
 
 	// 1 秒分のバッファサイズ取得
 	mAudioDataBufferSize = m_decoder->GetBytesPerSec();

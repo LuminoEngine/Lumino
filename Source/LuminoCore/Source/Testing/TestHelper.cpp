@@ -54,7 +54,7 @@ bool TestHelper::CheckArrays(const void* ary1, const void* ary2, size_t count)
 bool TestHelper::EqualFiles(const PathName& filePath1, const PathName& filePath2)
 {
 	if (FileSystem::GetFileSize(filePath1) != FileSystem::GetFileSize(filePath2)) return false;
-	return FileSystem::ReadAllBytes(filePath1).Equals(FileSystem::ReadAllBytes(filePath2));
+	return FileSystem::ReadAllBytes(filePath1).equals(FileSystem::ReadAllBytes(filePath2));
 }
 
 LN_NAMESPACE_END

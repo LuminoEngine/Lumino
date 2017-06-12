@@ -93,9 +93,9 @@ void Graphics::ChangeDirectX9Device(void* id3d9device)
 		//data.EnableVSyncWait = false;			// TODO
 		//data.EnableFPUPreserve = false;			// TODO
 		auto* device = LN_NEW Driver::DX9GraphicsDevice();
-		device->Initialize(data);
+		device->initialize(data);
 		detail::GraphicsManager::GetInstance()->ChangeDevice(device);
-		device->Release();
+		device->release();
 	}
     
 #endif

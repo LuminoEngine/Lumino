@@ -54,7 +54,7 @@ TileMap::~TileMap()
 //------------------------------------------------------------------------------
 void TileMap::Create3DCore(SceneGraph* owner)
 {
-	VisualComponent::Initialize(owner, 1);
+	VisualComponent::initialize(owner, 1);
 	owner->GetRootNode()->AddChild(this);
 	SetAutoRemove(true);
 	m_renderer = LN_NEW TileMapRenderer(owner->GetManager()->GetGraphicsManager());

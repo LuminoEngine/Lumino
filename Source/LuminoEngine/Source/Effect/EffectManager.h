@@ -29,7 +29,7 @@ public:
 	EffectManager();
 	virtual ~EffectManager();
 
-	void Initialize(const Settings& settings);
+	void initialize(const Settings& settings);
 	void Finalize();
 
 	EffectEngine* CreateEffectWorld();

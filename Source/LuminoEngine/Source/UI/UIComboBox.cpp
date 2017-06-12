@@ -26,9 +26,9 @@ UIPopup::~UIPopup()
 }
 
 //------------------------------------------------------------------------------
-void UIPopup::Initialize()
+void UIPopup::initialize()
 {
-	UIElement::Initialize();
+	UIElement::initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -108,9 +108,9 @@ UIComboBoxItem::~UIComboBoxItem()
 }
 
 //------------------------------------------------------------------------------
-void UIComboBoxItem::Initialize()
+void UIComboBoxItem::initialize()
 {
-	UIContentControl::Initialize();
+	UIContentControl::initialize();
 	SetHContentAlignment(HAlignment::Left);
 	SetHAlignment(HAlignment::Stretch);
 	GoToVisualState(UIVisualStates::NormalState);
@@ -126,7 +126,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIComboBox, UIControl)
 UIComboBoxPtr UIComboBox::Create()
 {
 	auto ptr = UIComboBoxPtr::MakeRef();
-	ptr->Initialize();
+	ptr->initialize();
 	return ptr;
 }
 
@@ -141,9 +141,9 @@ UIComboBox::~UIComboBox()
 }
 
 //------------------------------------------------------------------------------
-void UIComboBox::Initialize()
+void UIComboBox::initialize()
 {
-	UIControl::Initialize();
+	UIControl::initialize();
 
 	m_popup = NewObject<UIPopup>();
 	AddVisualChild(m_popup);
@@ -157,7 +157,7 @@ void UIComboBox::Initialize()
 	SetHContentAlignment(HAlignment::Stretch);
 
 	auto panel = RefPtr<UIStackPanel>::MakeRef();
-	panel->Initialize();
+	panel->initialize();
 	panel->SetHAlignment(HAlignment::Stretch);
 	panel->SetVAlignment(VAlignment::Stretch);
 	SetLayoutPanel(panel);
@@ -168,7 +168,7 @@ void UIComboBox::Initialize()
 //UIComboBoxItemPtr UIComboBox::AddTextItem(const String& text)
 //{
 //	auto textBlock = RefPtr<UITextBlock>::MakeRef();
-//	textBlock->Initialize(GetManager());
+//	textBlock->initialize(GetManager());
 //	textBlock->SetText(text);
 //	return AddItem(textBlock);
 //}
@@ -180,7 +180,7 @@ void UIComboBox::Initialize()
 //
 //	// 受け取った item を UIComboBoxItem でラップして、UIComboBoxItem をリストに入れる
 //	auto listItem = RefPtr<UIComboBoxItem>::MakeRef();
-//	listItem->Initialize(GetManager());
+//	listItem->initialize(GetManager());
 //	listItem->SetContent(item);
 //	GetItems()->Add(listItem);
 //	return listItem;

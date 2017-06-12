@@ -9,12 +9,12 @@ namespace tr { class ReflectionHelper; }
 
 /// 参照カウントのインクリメント
 #ifndef LN_SAFE_ADDREF
-	#define LN_SAFE_ADDREF( p ) { if ( p ) { (p)->AddRef(); } }
+	#define LN_SAFE_ADDREF( p ) { if ( p ) { (p)->addRef(); } }
 #endif
 
 /// 参照カウントのデクリメント
 #ifndef LN_SAFE_RELEASE
-	#define LN_SAFE_RELEASE( p ) { if ( p ) { (p)->Release(); (p)= nullptr; } }
+	#define LN_SAFE_RELEASE( p ) { if ( p ) { (p)->release(); (p)= nullptr; } }
 #endif
 
 /// a に b を格納するユーティリティ
@@ -23,7 +23,7 @@ namespace tr { class ReflectionHelper; }
 	if (a != b) \
 	{ \
 		LN_SAFE_ADDREF(b); \
-		if (a) (a)->Release(); \
+		if (a) (a)->release(); \
 		(a) = (b); \
 	} \
 }
@@ -42,13 +42,13 @@ protected:
 public:
 
 	/** 参照カウントを取得します。*/
-	virtual int32_t GetReferenceCount() const;
+	virtual int32_t getReferenceCount() const;
 
 	/** 参照カウントをインクリメントします。*/
-	virtual int32_t AddRef();
+	virtual int32_t addRef();
 
 	/** 参照カウントをデクリメントします。*/
-	virtual int32_t Release();
+	virtual int32_t release();
 
 protected:
     Atomic					m_referenceCount;	///< 参照カウント	TODO: atomic<> の方が高速
@@ -56,7 +56,7 @@ protected:
 private:
 	LN_DISALLOW_COPY_AND_ASSIGN(RefObject);
 
-	void ReleaseInternal();
+	void releaseInternal();
 
 	std::atomic<int32_t>	m_internalReferenceCount;
 
@@ -116,7 +116,7 @@ public:
 		@param[in]	ptr		: 管理対象としてセットする ReferenceObject インスタンスのポインタ
 		@param[in]	addRef	: true の場合、セットされた ReferenceObject の参照カウントをインクリメントする
 	*/
-	void Attach(T* ptr, bool addRef = false)
+	void attach(T* ptr, bool addRef = false)
     {
 		if (ptr == m_ptr) return;
         SafeRelease();

@@ -58,7 +58,7 @@ void GraphicsResourceObject::Finalize_()
 }
 
 //------------------------------------------------------------------------------
-void GraphicsResourceObject::Initialize()
+void GraphicsResourceObject::initialize()
 {
 	m_manager = detail::EngineDomain::GetGraphicsManager();
 	m_manager->AddResourceObject(this);
@@ -151,7 +151,7 @@ GraphicsManager::~GraphicsManager()
 
 
 //------------------------------------------------------------------------------
-void GraphicsManager::Initialize(const ConfigData& configData)
+void GraphicsManager::initialize(const ConfigData& configData)
 {
 	m_renderingType = configData.renderingType;
 	m_animationManager = configData.animationManager;
@@ -162,7 +162,7 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 
 	// フォント管理
 	m_fontManager = LN_NEW FontManager();
-	m_fontManager->Initialize(m_fileManager, this);
+	m_fontManager->initialize(m_fileManager, this);
 
 #if defined(LN_OS_WIN32)
 	if (configData.graphicsAPI == GraphicsAPI::DirectX9)
@@ -175,9 +175,9 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 		data.EnableVSyncWait = false;			// TODO
 		data.EnableFPUPreserve = configData.fpuPreserveEnabled;
 		auto* device = LN_NEW Driver::DX9GraphicsDevice();
-		device->Initialize(data);
+		device->initialize(data);
 		ChangeDevice(device);
-		device->Release();
+		device->release();
 	}
 	else if (configData.graphicsAPI == GraphicsAPI::OpenGL)
 	{
@@ -189,9 +189,9 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 		data.openGLMinorVersion = 1;
 		data.createSharedRenderingContext = (m_renderingType == GraphicsRenderingType::Threaded);
 		auto* device = LN_NEW Driver::WGLGraphicsDevice();
-		device->Initialize(data);
+		device->initialize(data);
 		ChangeDevice(device);
-		device->Release();
+		device->release();
 	}
 	else {
 		LN_THROW(0, ArgumentException);
@@ -206,7 +206,7 @@ void GraphicsManager::Initialize(const ConfigData& configData)
     data.OpenGLMinorVersion = 1;
 
     auto* device = LN_NEW Driver::NSGLGraphicsDevice();
-    device->Initialize(data);
+    device->initialize(data);
     ChangeDevice(device);
     device->Release();
     
@@ -214,7 +214,7 @@ void GraphicsManager::Initialize(const ConfigData& configData)
     m_platformTextureLoading = false;
     
 	auto* device = LN_NEW Driver::GLXGraphicsDevice();
-	device->Initialize(data);
+	device->initialize(data);
 	ChangeDevice(device);
 	device->Release();
 #else
@@ -239,22 +239,22 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 	//m_painterEngine->Create(this);
 
 	m_textRendererCore = LN_NEW detail::TextRendererCore();
-	m_textRendererCore->Initialize(this);
+	m_textRendererCore->initialize(this);
 
 	//m_graphicsContext = LN_NEW GraphicsContext();
-	//m_graphicsContext->Initialize(this);
+	//m_graphicsContext->initialize(this);
 
 	m_bitmapTextRenderer = LN_NEW BitmapTextRenderer();
-	m_bitmapTextRenderer->Initialize(this);
+	m_bitmapTextRenderer->initialize(this);
 
 	m_internalContext = RefPtr<InternalContext>::MakeRef();
-	m_internalContext->Initialize(this);
+	m_internalContext->initialize(this);
 
 	m_shapesRendererCommandListCache = RefPtr<ShapesRendererCommandListCache>::MakeRef();
 	m_nanoVGCommandListCache = RefPtr<NanoVGCommandListCache>::MakeRef();
 
 	m_defaultVertexDeclaration = LN_NEW VertexDeclaration();
-	m_defaultVertexDeclaration->Initialize(this);
+	m_defaultVertexDeclaration->initialize(this);
 	m_defaultVertexDeclaration->AddVertexElement(0, VertexElementType_Float3, VertexElementUsage_Position, 0);
 	m_defaultVertexDeclaration->AddVertexElement(0, VertexElementType_Float2, VertexElementUsage_TexCoord, 0);
 	m_defaultVertexDeclaration->AddVertexElement(0, VertexElementType_Float3, VertexElementUsage_Normal, 0);
@@ -279,7 +279,7 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 		};
 		static const size_t shaderDataLen = LN_ARRAY_SIZE_OF(shaderData);
 		auto shader = RefPtr<Shader>::MakeRef();
-		shader->Initialize(this, (const char*)shaderData, shaderDataLen);
+		shader->initialize(this, (const char*)shaderData, shaderDataLen);
 		m_builtinShaders[(int)BuiltinShader::Sprite] = shader;
 	}
 	{
@@ -289,7 +289,7 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 		};
 		static const size_t shaderDataLen = LN_ARRAY_SIZE_OF(shaderData);
 		auto shader = RefPtr<Shader>::MakeRef();
-		shader->Initialize(this, (const char*)shaderData, shaderDataLen);
+		shader->initialize(this, (const char*)shaderData, shaderDataLen);
 		m_builtinShaders[(int)BuiltinShader::LegacyDiffuse] = shader;
 	}
 	
@@ -332,8 +332,8 @@ void GraphicsManager::Dispose()
 	{
 		obj->Dispose();
 	}
-	deleteList.Clear();
-	m_resourceObjectList.Clear();
+	deleteList.clear();
+	m_resourceObjectList.clear();
 
 	m_internalContext.SafeRelease();
 }
@@ -406,7 +406,7 @@ void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
 		m_dummyDeviceTexture = m_graphicsDevice->CreateTexture(SizeI(32, 32), false, TextureFormat::R8G8B8A8, NULL);
 		{
 			BitmapPainter painter(m_dummyDeviceTexture->Lock());
-			painter.Clear(Color32::White);
+			painter.clear(Color32::White);
 			m_dummyDeviceTexture->Unlock();
 		}
 
@@ -523,11 +523,11 @@ void GraphicsManager::CreateGlobalObjects()
 
 	// black texture
 	m_dymmyBlackTexture = NewObject<Texture2D>(SizeI(32, 32), TextureFormat::R8G8B8A8, false, ResourceUsage::Static);
-	m_dymmyBlackTexture->Clear(Color32::Black);
+	m_dymmyBlackTexture->clear(Color32::Black);
 
 	// white texture
 	m_dymmyWhiteTexture = NewObject<Texture2D>(SizeI(32, 32), TextureFormat::R8G8B8A8, false, ResourceUsage::Static);
-	m_dymmyWhiteTexture->Clear(Color32::White);
+	m_dymmyWhiteTexture->clear(Color32::White);
 }
 
 //==============================================================================

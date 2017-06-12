@@ -172,11 +172,11 @@ Locale& Locale::operator=(const Locale& locale)
 //------------------------------------------------------------------------------
 Locale::~Locale()
 {
-	Release();
+	release();
 }
 
 //------------------------------------------------------------------------------
-void Locale::Release()
+void Locale::release()
 {
 	FreeNativeLocale(m_nativeLocale);
 }

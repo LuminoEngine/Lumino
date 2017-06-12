@@ -14,7 +14,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIButtonBase, UIControl);
 
 //------------------------------------------------------------------------------
 UIButtonBase::UIButtonBase()
-	: m_clickMode(ClickMode::Release)
+	: m_clickMode(ClickMode::release)
 	, m_isPressed(false)
 {
 }
@@ -25,14 +25,14 @@ UIButtonBase::~UIButtonBase()
 }
 
 //------------------------------------------------------------------------------
-void UIButtonBase::Initialize()
+void UIButtonBase::initialize()
 {
-	UIControl::Initialize();
+	UIControl::initialize();
 
 	HContentAlignment = HAlignment::Center;
 	VContentAlignment = VAlignment::Center;
 
-	// TODO: UIControl::Initialize() の中でも作ってるから、そっちが無駄になる。
+	// TODO: UIControl::initialize() の中でも作ってるから、そっちが無駄になる。
 	// UIControl では何も作らなくてもいいかも。null の場合、UILayoutPanel と同じレイアウトにするとか。
 	SetLayoutPanel(NewObject<UIStackPanel>());
 }
@@ -41,7 +41,7 @@ void UIButtonBase::Initialize()
 void UIButtonBase::SetText(const StringRef& text)
 {
 	auto textBlock = UITextBlockPtr::MakeRef();
-	textBlock->Initialize();
+	textBlock->initialize();
 	textBlock->SetText(text);
 	AddChild(textBlock);
 }
@@ -62,7 +62,7 @@ void UIButtonBase::OnClick(UIEventArgs* e)
 //------------------------------------------------------------------------------
 void UIButtonBase::OnMouseDown(UIMouseEventArgs* e)
 {
-	if (m_clickMode == ClickMode::Release)
+	if (m_clickMode == ClickMode::release)
 	{
 		m_isPressed = true;
 		Focus();
@@ -82,7 +82,7 @@ void UIButtonBase::OnMouseDown(UIMouseEventArgs* e)
 //------------------------------------------------------------------------------
 void UIButtonBase::OnMouseUp(UIMouseEventArgs* e)
 {
-	if (m_clickMode == ClickMode::Release)
+	if (m_clickMode == ClickMode::release)
 	{
 		if (m_isPressed)
 		{
@@ -125,15 +125,15 @@ UIButton::~UIButton()
 }
 
 //------------------------------------------------------------------------------
-void UIButton::Initialize()
+void UIButton::initialize()
 {
-	UIButtonBase::Initialize();
+	UIButtonBase::initialize();
 }
 
 //------------------------------------------------------------------------------
-void UIButton::Initialize(const StringRef& text, float width, float height)
+void UIButton::initialize(const StringRef& text, float width, float height)
 {
-	UIButtonBase::Initialize();
+	UIButtonBase::initialize();
 	SetText(text);
 	SetWidth(width);
 	SetHeight(height);
@@ -165,9 +165,9 @@ UIToggleButton::~UIToggleButton()
 }
 
 //------------------------------------------------------------------------------
-void UIToggleButton::Initialize()
+void UIToggleButton::initialize()
 {
-	UIButtonBase::Initialize();
+	UIButtonBase::initialize();
 
 	auto* vsm = GetVisualStateManager();
 	vsm->RegisterVisualState(UIVisualStates::CommonGroup, CheckedState);

@@ -15,7 +15,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UITextBlock, UITextElement)
 UITextBlockPtr UITextBlock::Create()
 {
 	auto ptr = UITextBlockPtr::MakeRef();
-	ptr->Initialize();
+	ptr->initialize();
 	return ptr;
 }
 
@@ -30,9 +30,9 @@ UITextBlock::~UITextBlock()
 }
 
 //------------------------------------------------------------------------------
-void UITextBlock::Initialize()
+void UITextBlock::initialize()
 {
-	UITextElement::Initialize();
+	UITextElement::initialize();
 	//SetHAlignment(HAlignment::Center);
 	//SetVAlignment(VAlignment::Center);
 }

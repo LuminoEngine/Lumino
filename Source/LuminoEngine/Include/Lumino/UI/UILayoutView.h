@@ -21,7 +21,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIPopuoContainer();
 	virtual ~UIPopuoContainer();
-	void Initialize();
+	void initialize();
 
 private:
 	RefPtr<UIPopup>	m_popup;
@@ -73,7 +73,7 @@ LN_INTERNAL_ACCESS:
 LN_CONSTRUCT_ACCESS:
 	UILayoutView();
 	virtual ~UILayoutView();
-	void Initialize(UIContext* ownerContext, PlatformWindow* ownerNativeWindow);
+	void initialize(UIContext* ownerContext, PlatformWindow* ownerNativeWindow);
 
 LN_INTERNAL_ACCESS:
 	virtual detail::SpcialUIElementType GetSpcialUIElementType() const;

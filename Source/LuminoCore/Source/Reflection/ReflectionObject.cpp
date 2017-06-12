@@ -45,7 +45,7 @@ void ReflectionHelper::GCObjects(ReflectionObject* obj)
 bool ReflectionHelper::IsGCReady(ReflectionObject* obj)
 {
 	if (obj == nullptr) return false;
-	return obj->m_autoGC && obj->GetReferenceCount() == 1;
+	return obj->m_autoGC && obj->getReferenceCount() == 1;
 }
 
 //==============================================================================
@@ -69,7 +69,7 @@ ReflectionObject::~ReflectionObject()
 	if (m_weakRefInfo != nullptr)
 	{
 		m_weakRefInfo->owner = nullptr;
-		m_weakRefInfo->Release();
+		m_weakRefInfo->release();
 		m_weakRefInfo = nullptr;
 	}
 }

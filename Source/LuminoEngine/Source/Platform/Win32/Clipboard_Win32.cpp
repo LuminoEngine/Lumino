@@ -14,13 +14,13 @@ LN_NAMESPACE_BEGIN
 void Clipboard::SetText(PlatformWindow* window, const String& text)
 {
 	ByteBuffer wideStr = text.ConvertTo(Encoding::GetWideCharEncoding());
-	int wideCount = (wideStr.GetSize() + 1) * sizeof(WCHAR);
+	int wideCount = (wideStr.getSize() + 1) * sizeof(WCHAR);
 
 	HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE, wideCount);
 	LN_THROW(hGlobal != NULL, Win32Exception, ::GetLastError());
 
 	WCHAR* buf = (WCHAR*)::GlobalLock(hGlobal);
-	memcpy(buf, wideStr.GetConstData(), wideCount);
+	memcpy(buf, wideStr.getConstData(), wideCount);
 	buf[wideCount - 1] = L'\0';
 	::GlobalUnlock(hGlobal);
 

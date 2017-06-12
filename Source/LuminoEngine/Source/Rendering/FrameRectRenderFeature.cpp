@@ -39,7 +39,7 @@ FrameRectRendererCore::~FrameRectRendererCore()
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRendererCore::Initialize(GraphicsManager* manager)
+void FrameRectRendererCore::initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 
@@ -152,8 +152,8 @@ void FrameRectRendererCore::Draw(const Matrix& transform, const Rect& rect)
 		m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
 
 		// キャッシュクリア
-		m_vertexCache.Clear();
-		m_indexCache.Clear();
+		m_vertexCache.clear();
+		m_indexCache.clear();
 	}
 }
 
@@ -346,14 +346,14 @@ void FrameRectRendererCore::PutFrameRectangle(const Rect& rect, const ThicknessF
 	assert(srcTexture != nullptr);
 
 	if (srcRect.width == INT_MAX) {
-		srcRect.width = srcTexture->GetSize().width;
+		srcRect.width = srcTexture->getSize().width;
 	}
 	if (srcRect.height == INT_MAX) {
-		srcRect.height = srcTexture->GetSize().height;
+		srcRect.height = srcTexture->getSize().height;
 	}
 
-	m_vertexCache.Clear();
-	m_indexCache.Clear();
+	m_vertexCache.clear();
+	m_indexCache.clear();
 
 	Size texSize((float)srcTexture->GetRealSize().width, (float)srcTexture->GetRealSize().height);
 	texSize.width = 1.0f / texSize.width;
@@ -491,12 +491,12 @@ FrameRectRenderFeature::~FrameRectRenderFeature()
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRenderFeature::Initialize(GraphicsManager* manager)
+void FrameRectRenderFeature::initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 
 	m_core = LN_NEW FrameRectRendererCore();
-	m_core->Initialize(manager);
+	m_core->initialize(manager);
 }
 
 //------------------------------------------------------------------------------

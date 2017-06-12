@@ -103,7 +103,7 @@ GpuParticle::~GpuParticle()
 }
 
 //------------------------------------------------------------------------------
-void GpuParticle::Initialize(SceneGraphManager* manager)
+void GpuParticle::initialize(SceneGraphManager* manager)
 {
 }
 

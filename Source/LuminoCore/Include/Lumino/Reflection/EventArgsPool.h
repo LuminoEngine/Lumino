@@ -34,7 +34,7 @@ public:
 		{
 			for (auto e : (*list.second))
 			{
-				e->Release();
+				e->release();
 			}
 			delete list.second;
 		}
@@ -55,7 +55,7 @@ public:
 			new (e)TEventArgs(args...);
 		}
 		e->handled = false;
-		e->AddRef();
+		e->addRef();
 		return e;
 	}
 
@@ -71,7 +71,7 @@ private:
 		{
 			for (auto e : (*list))
 			{
-				if (e->GetReferenceCount() == 1) {	// このリストからしか参照されていなければ返す
+				if (e->getReferenceCount() == 1) {	// このリストからしか参照されていなければ返す
 					return e;
 				}
 			}
@@ -97,7 +97,7 @@ private:
 	{
 		LN_FOREACH(T a, pool)
 		{
-			if (a->GetReferenceCount() == 1) {
+			if (a->getReferenceCount() == 1) {
 				return a;
 			}
 		}

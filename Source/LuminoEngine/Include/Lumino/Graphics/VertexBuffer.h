@@ -14,13 +14,13 @@ class VertexBuffer
 public:
 
 	/** 頂点バッファのバイトサイズを取得します。 */
-	int GetSize() const;
+	int getSize() const;
 
 	/** 頂点バッファの容量を確保します。 */
 	void Reserve(int size);
 
 	/** 頂点バッファのサイズを変更します。 */
-	void Resize(int size);
+	void resize(int size);
 
 	/** 頂点バッファが保持するデータにアクセスします。 */
 	void* GetMappedData();
@@ -29,7 +29,7 @@ public:
 	void* RequestMappedData(int size);
 
 	/** 頂点バッファをクリアします。 */
-	void Clear();
+	void clear();
 
 protected:
 	virtual void Dispose() override;
@@ -37,7 +37,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	VertexBuffer();
 	virtual ~VertexBuffer();
-	void Initialize(detail::GraphicsManager* manager, size_t bufferSize, const void* data, ResourceUsage usage, bool sizeConst);
+	void initialize(detail::GraphicsManager* manager, size_t bufferSize, const void* data, ResourceUsage usage, bool sizeConst);
 	Driver::IVertexBuffer* ResolveRHIObject();
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 

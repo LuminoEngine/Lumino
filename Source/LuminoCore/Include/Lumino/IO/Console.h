@@ -14,7 +14,7 @@ public:
 	/**
 		@brief		コンソールウィンドウを割り当てます。
 	*/
-	static void Alloc();
+	static void alloc();
 	
 	/**
 		@brief		コンソールウィンドウを解放します。

@@ -24,7 +24,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	UITextBlock();
 	virtual ~UITextBlock();
-	void Initialize();
+	void initialize();
 
 	virtual Size MeasureOverride(const Size& availableSize) override;
 	virtual Size ArrangeOverride(const Size& finalSize) override;

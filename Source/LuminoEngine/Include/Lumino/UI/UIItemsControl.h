@@ -27,7 +27,7 @@ public:
 protected:
 	UIItemsControl();
 	virtual ~UIItemsControl();
-	void Initialize(detail::UIManager* manager);
+	void initialize(detail::UIManager* manager);
 
 	virtual void OnLayoutPanelChanged(UILayoutPanel* newPanel);
 

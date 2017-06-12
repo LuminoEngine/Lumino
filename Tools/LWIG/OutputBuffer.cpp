@@ -16,18 +16,18 @@ OutputBuffer::OutputBuffer(int indent)
 	for (int i = 0 ; i < indent; i++) IncreaseIndent();
 }
 
-void OutputBuffer::Clear()
+void OutputBuffer::clear()
 {
-	m_buffer.Clear();
+	m_buffer.clear();
 	m_indentLevel = 0;
-	m_indent.Clear();
+	m_indent.clear();
 	m_state = State::LineHead;
 }
 
 void OutputBuffer::IncreaseIndent(int count)
 {
 	m_indentLevel += count;
-	m_indent.Clear();
+	m_indent.clear();
 	for (int i = 0; i < m_indentLevel; i++)
 		m_indent += _T("    ");
 }
@@ -35,7 +35,7 @@ void OutputBuffer::IncreaseIndent(int count)
 void OutputBuffer::DecreaseIndent()
 {
 	m_indentLevel--;
-	m_indent.Clear();
+	m_indent.clear();
 	for (int i = 0; i < m_indentLevel; i++)
 		m_indent += _T("    ");
 }

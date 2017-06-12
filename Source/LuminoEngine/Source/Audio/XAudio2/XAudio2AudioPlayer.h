@@ -18,7 +18,7 @@ public:
     virtual ~XAudio2AudioPlayerBase();
 
 public:
-	virtual void			Initialize(AudioStream* audioStream, bool enable3d) override;
+	virtual void			initialize(AudioStream* audioStream, bool enable3d) override;
     virtual bool			Is3DSound() override { return ( mEmitterState != NULL ); }
     virtual void			setPosition( const Vector3& pos ) override;
     virtual const Vector3&	getPosition() override { return mEmitterState->Position; }
@@ -48,7 +48,7 @@ public:
 	virtual ~XAudio2OnMemoryAudioPlayer();
 
 public:
-	virtual void		Initialize(AudioStream* audioStream, bool enable3d) override;
+	virtual void		initialize(AudioStream* audioStream, bool enable3d) override;
 	virtual void		SetVolume(float volume) override;
 	virtual void		SetPitch(float pitch) override;
     virtual uint64_t	GetPlayedSamples() const override;
@@ -79,7 +79,7 @@ public:
 	virtual ~XAudio2StreamingAudioPlayer();
 
 public:
-	virtual void		Initialize(AudioStream* audioStream, bool enable3d) override;
+	virtual void		initialize(AudioStream* audioStream, bool enable3d) override;
 	virtual void		SetVolume(float volume) override;
 	virtual void		SetPitch(float pitch) override;
 	virtual uint64_t	GetPlayedSamples() const override;

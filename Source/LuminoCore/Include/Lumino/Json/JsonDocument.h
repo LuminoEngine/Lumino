@@ -279,7 +279,7 @@ protected:
 	virtual ISerializeElement* AddSerializeMemberNewObject(const StringRef& name) override;
 
 LN_INTERNAL_ACCESS:
-	void Finalize() { m_memberList.Clear(); }
+	void Finalize() { m_memberList.clear(); }
 
 private:
 	JsonValue2* GetValue(const StringRef& name);
@@ -301,9 +301,9 @@ namespace detail
 class JsonElementCache
 {
 public:
-	void Initialize();
+	void initialize();
 	void Finalize();
-	JsonElement2* Alloc(size_t size);
+	JsonElement2* alloc(size_t size);
 
 private:
 	static const size_t BufferSize = 2048;
@@ -362,7 +362,7 @@ LN_INTERNAL_ACCESS:
 	template<class T>
 	T* NewElement()
 	{
-		T* buf = static_cast<T*>(m_cache.Alloc(sizeof(T)));
+		T* buf = static_cast<T*>(m_cache.alloc(sizeof(T)));
 		new (buf)T(this);
 		return buf;
 	}

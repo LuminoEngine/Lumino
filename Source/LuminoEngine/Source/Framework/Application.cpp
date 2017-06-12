@@ -24,7 +24,7 @@ Application::~Application()
 }
 
 //------------------------------------------------------------------------------
-void Application::Initialize(EngineManager* engineManager)
+void Application::initialize(EngineManager* engineManager)
 {
 	if (LN_CHECK_ARG(engineManager != nullptr)) return;
 	m_engineManager = engineManager;
@@ -54,7 +54,7 @@ GameApplication::~GameApplication()
 }
 
 //------------------------------------------------------------------------------
-void GameApplication::Initialize()
+void GameApplication::initialize()
 {
 
 }
@@ -69,7 +69,7 @@ void GameApplication::Run(GameScene* initialScene)
 {
 	//OnConfigure();
 
-	//Engine::Initialize();
+	//Engine::initialize();
 
 	if (initialScene == nullptr)
 		m_gameSceneManager->GotoScene(RefPtr<GameScene>::MakeRef());

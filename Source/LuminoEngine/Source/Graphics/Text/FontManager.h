@@ -34,7 +34,7 @@ class FontManager
 public:
 	FontManager();
 	virtual ~FontManager();
-	void Initialize(FileManager* fileManager, GraphicsManager* graphicsManager);
+	void initialize(FileManager* fileManager, GraphicsManager* graphicsManager);
 	void Dispose();
 
 	GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }

@@ -28,17 +28,17 @@ SwapChain::~SwapChain()
 //------------------------------------------------------------------------------
 void SwapChain::InitializeDefault(detail::GraphicsManager* manager)
 {
-	GraphicsResourceObject::Initialize();
+	GraphicsResourceObject::initialize();
 
 	m_deviceObj = m_manager->GetGraphicsDevice()->GetDefaultSwapChain();
-	m_deviceObj->AddRef();
+	m_deviceObj->addRef();
 	PostInitialize();
 }
 
 //------------------------------------------------------------------------------
 void SwapChain::InitializeSub(detail::GraphicsManager* manager, PlatformWindow* window)
 {
-	GraphicsResourceObject::Initialize();
+	GraphicsResourceObject::initialize();
 
 	m_deviceObj = m_manager->GetGraphicsDevice()->CreateSwapChain(window);
 	PostInitialize();
@@ -105,9 +105,9 @@ void SwapChain::Present()
 void SwapChain::MightResizeAndDeviceReset(const SizeI& newSize)
 {
 	// Resize
-	if (GetBackBuffer()->GetSize() != newSize)
+	if (GetBackBuffer()->getSize() != newSize)
 	{
-		m_deviceObj->Resize(newSize);
+		m_deviceObj->resize(newSize);
 		m_backColorBuffer->AttachDefaultBackBuffer(m_deviceObj->GetBackBuffer());
 		// ※ここではまだ深度バッファはリサイズしない。Present を終えた後に行う。
 	}
@@ -177,7 +177,7 @@ void SwapChain::OnChangeDevice(Driver::IGraphicsDevice* device)
 	else
 	{
 		m_deviceObj = m_manager->GetGraphicsDevice()->GetDefaultSwapChain();
-		m_deviceObj->AddRef();
+		m_deviceObj->addRef();
 	}
 }
 

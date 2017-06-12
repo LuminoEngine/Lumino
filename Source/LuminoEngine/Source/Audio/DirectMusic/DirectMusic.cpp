@@ -138,11 +138,11 @@ DirectMusicSegment::~DirectMusicSegment()
 		m_dmPerformance->CloseDown();
 	}
 
-	LN_SAFE_RELEASE(m_dmSegmentState);
-	LN_SAFE_RELEASE(m_dmSegment);
-	LN_SAFE_RELEASE(m_dsSoundBuffer);
-	LN_SAFE_RELEASE(m_dmAudioPath);
-	LN_SAFE_RELEASE(m_dmPerformance);
+	LN_COM_SAFE_RELEASE(m_dmSegmentState);
+	LN_COM_SAFE_RELEASE(m_dmSegment);
+	LN_COM_SAFE_RELEASE(m_dsSoundBuffer);
+	LN_COM_SAFE_RELEASE(m_dmAudioPath);
+	LN_COM_SAFE_RELEASE(m_dmPerformance);
 }
 
 //------------------------------------------------------------------------------
@@ -248,7 +248,7 @@ void DirectMusicSegment::Play()
 	LN_COMCALL(m_dmPerformance->PlaySegmentEx(m_dmSegment, NULL, NULL, 0, 0, &state, NULL, m_dmAudioPath));
 
 	state->QueryInterface(IID_IDirectMusicSegmentState8, (LPVOID*)&m_dmSegmentState);
-	state->Release();
+	state->release();
 
 	// 非同期で初期化してた場合、ボリュームなどは、再生開始直前に設定する必要がある
 }
@@ -280,7 +280,7 @@ DirectMusicManager::PlayerObject::~PlayerObject()
 DirectMusicManager* DirectMusicManager::m_instance = NULL;
 
 //------------------------------------------------------------------------------
-void DirectMusicManager::Initialize(const ConfigData& configData)
+void DirectMusicManager::initialize(const ConfigData& configData)
 {
 	if (!m_instance && configData.DMInitMode != DirectMusicMode::NotUse)
 	{
@@ -313,9 +313,9 @@ DirectMusicManager::~DirectMusicManager()
 	// スレッドの終了を待って解放
 	m_initThread.Wait();
 
-	LN_SAFE_RELEASE(m_firstPerformance);
-	LN_SAFE_RELEASE(m_directSound);
-	LN_SAFE_RELEASE(m_directMusic);
+	LN_COM_SAFE_RELEASE(m_firstPerformance);
+	LN_COM_SAFE_RELEASE(m_directSound);
+	LN_COM_SAFE_RELEASE(m_directMusic);
 
 	//::CoUninitialize();
 }
@@ -399,7 +399,7 @@ void DirectMusicManager::Polling()
 			{
 				(*it)->onFinishDMInit(CreateDMPerformance());
 			}
-			m_playRequestList.Clear();
+			m_playRequestList.clear();
 		}
 	}
 }

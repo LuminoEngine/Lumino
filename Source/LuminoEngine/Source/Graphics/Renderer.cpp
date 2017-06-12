@@ -40,7 +40,7 @@ Renderer::Renderer(detail::GraphicsManager* manager)
 	, m_currentDepthBuffer(NULL)
 {
 	memset(m_currentRenderTargets, 0, sizeof(m_currentRenderTargets));
-	GraphicsResourceObject::Initialize();
+	GraphicsResourceObject::initialize();
 
 	//if (m_manager->GetRenderingType() == GraphicsRenderingType::Deferred) {
 	m_primaryCommandList = LN_NEW RenderingCommandList(manager);
@@ -253,19 +253,19 @@ void Renderer::SetShaderPass(ShaderPass* pass)
 }
 
 //------------------------------------------------------------------------------
-void Renderer::Clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
+void Renderer::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	VerifyFrameBuffers();
 
 	LN_ENQUEUE_RENDER_COMMAND_5(
-		Clear, m_manager,
+		clear, m_manager,
 		Driver::IRenderer*, m_internal,
 		ClearFlags, flags,
 		Color, color, 
 		float, z, 
 		uint8_t, stencil,
 		{
-			m_internal->Clear(flags, color, z, stencil);
+			m_internal->clear(flags, color, z, stencil);
 		});
 
 	//LN_CALL_RENDERER_COMMAND(Clear, ClearCommand, flags, color, z, stencil);
@@ -383,7 +383,7 @@ void Renderer::VerifyFrameBuffers()
 	// レンダリングターゲットと深度バッファのサイズが一致している必要がある。
 	if (m_currentDepthBuffer != nullptr)
 	{
-		if (LN_CHECK_STATE(m_currentRenderTargets[0]->GetSize() == m_currentDepthBuffer->GetSize())) return;
+		if (LN_CHECK_STATE(m_currentRenderTargets[0]->getSize() == m_currentDepthBuffer->getSize())) return;
 	}
 }
 

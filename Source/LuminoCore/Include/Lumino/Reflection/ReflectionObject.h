@@ -57,7 +57,7 @@ private:
 public:
 	ReflectionObject();
 	virtual ~ReflectionObject();
-	void Initialize() {}
+	void initialize() {}
 
 	void SetUserData(void* data) { m_userData = data; }
 	void* GetUserData() const { return m_userData; }
@@ -91,7 +91,7 @@ LN_INTERNAL_ACCESS:
 	static RefPtr<T> MakeRef(TArgs... args)
 	{
 		auto ptr = RefPtr<T>(LN_NEW T(), false);
-		ptr->Initialize(args...);
+		ptr->initialize(args...);
 		return ptr;
 	}
 };
@@ -142,7 +142,7 @@ public:
 	/** デストラクタ */
 	virtual ~WeakRefPtr()
 	{
-		Release();
+		release();
 	}
 
 	/** 監視しているオブジェクトが削除されておらず、使用できるかを確認します。*/
@@ -179,19 +179,19 @@ private:
 	
 	void Set(detail::WeakRefInfo* info)
 	{
-		Release();
+		release();
 		m_weakRefInfo = info;
 		if (m_weakRefInfo != nullptr)
 		{
-			m_weakRefInfo->AddRef();
+			m_weakRefInfo->addRef();
 		}
 	}
 	
-	void Release()
+	void release()
 	{
 		if (m_weakRefInfo != nullptr)
 		{
-			m_weakRefInfo->Release();
+			m_weakRefInfo->release();
 			m_weakRefInfo = nullptr;
 		}
 	}
@@ -216,7 +216,7 @@ public:
 
 	virtual ~ReflectionObjectList()
 	{
-		Collection<T>::Clear();
+		Collection<T>::clear();
 	}
 
 protected:
@@ -235,7 +235,7 @@ protected:
 	virtual void RemoveItem(int index) override
 	{
 		if (Collection<T>::GetAt(index) != nullptr) {
-			Collection<T>::GetAt(index)->Release();
+			Collection<T>::GetAt(index)->release();
 		}
 		Collection<T>::RemoveItem(index);
 	}
@@ -243,7 +243,7 @@ protected:
 	{
 		LN_SAFE_ADDREF(item);
 		if (Collection<T>::GetAt(index) != nullptr) {
-			Collection<T>::GetAt(index)->Release();
+			Collection<T>::GetAt(index)->release();
 		}
 		Collection<T>::SetItem(index, item);
 	}
@@ -260,7 +260,7 @@ template<class T, typename... TArgs>
 RefPtr<T> NewObject(TArgs&&... args)
 {
 	auto ptr = RefPtr<T>(new T(), false);
-	ptr->Initialize(std::forward<TArgs>(args)...);
+	ptr->initialize(std::forward<TArgs>(args)...);
 	return ptr;
 }
 
@@ -268,7 +268,7 @@ template<class T, typename... TArgs>
 void PlacementNewObject(void* ptr, TArgs&&... args)
 {
 	new (ptr)T();
-	static_cast<T*>(ptr)->Initialize(std::forward<TArgs>(args)...);
+	static_cast<T*>(ptr)->initialize(std::forward<TArgs>(args)...);
 }
 
 LN_NAMESPACE_END

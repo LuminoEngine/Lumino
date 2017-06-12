@@ -70,8 +70,8 @@ public:
 		@param[in]	overwrite		: コピー先を上書きする場合は true
 		@details	読み取り専用ファイルに上書きすることはできません。
 	*/
-	static void Copy(const char* sourceFileName, const char* destFileName, bool overwrite);
-	static void Copy(const wchar_t* sourceFileName, const wchar_t* destFileName, bool overwrite);
+	static void copy(const char* sourceFileName, const char* destFileName, bool overwrite);
+	static void copy(const wchar_t* sourceFileName, const wchar_t* destFileName, bool overwrite);
 
 	/**
 		@brief		ファイルを削除する

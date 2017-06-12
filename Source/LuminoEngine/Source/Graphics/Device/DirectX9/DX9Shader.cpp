@@ -138,7 +138,7 @@ ShaderCompileResultLevel DX9Shader::Create(DX9GraphicsDevice* device, const char
 		if (buffer != NULL)
 		{
 			*outMessage = static_cast<const char*>(buffer->GetBufferPointer());
-			LN_SAFE_RELEASE(buffer);
+			LN_COM_SAFE_RELEASE(buffer);
 		}
 		return ShaderCompileResultLevel_Error;
 	}
@@ -146,7 +146,7 @@ ShaderCompileResultLevel DX9Shader::Create(DX9GraphicsDevice* device, const char
 	else if (buffer != NULL)
 	{
 		*outMessage = static_cast<const char*>(buffer->GetBufferPointer());
-		LN_SAFE_RELEASE(buffer);
+		LN_COM_SAFE_RELEASE(buffer);
 		*outShader = LN_NEW DX9Shader(device, dxEffect);
 		return ShaderCompileResultLevel_Warning;
 	}
@@ -204,13 +204,13 @@ DX9Shader::DX9Shader(DX9GraphicsDevice* device, ID3DXEffect* dxEffect)
 DX9Shader::~DX9Shader()
 {
 	for (DX9ShaderVariable* v : m_variables) {
-		v->Release();
+		v->release();
 	}
 
 	for (DX9ShaderTechnique* t : m_techniques) {
-		t->Release();
+		t->release();
 	}
-	LN_SAFE_RELEASE(m_dxEffect);
+	LN_COM_SAFE_RELEASE(m_dxEffect);
 }
 
 //------------------------------------------------------------------------------
@@ -319,7 +319,7 @@ void DX9ShaderVariable::GetValue(ID3DXEffect* dxEffect, D3DXHANDLE handle, Shade
 	{
 		List<BOOL> tmp1;
 		std::vector<bool> tmp2;	// TODO: List<bool> がつかえないので
-		tmp1.Resize(desc.Elements);
+		tmp1.resize(desc.Elements);
 		tmp2.resize(desc.Elements);
 		LN_COMCALL(dxEffect->GetBoolArray(handle, (BOOL*)&tmp1[0], desc.Elements));
 		for (int i = 0; i < desc.Elements; ++i) tmp2[i] = (tmp1[i] != FALSE);
@@ -425,7 +425,7 @@ DX9ShaderVariable::DX9ShaderVariable(DX9Shader* owner, D3DXHANDLE handle)
 	}
 
 	// 初期化
-	ShaderVariableBase::Initialize(desc, String(dxDesc.Name), String(dxDesc.Semantic));
+	ShaderVariableBase::initialize(desc, String(dxDesc.Name), String(dxDesc.Semantic));
 
 	// 初期値を読み取る
 	GetValue(m_dxEffect, m_handle, desc, &m_value);
@@ -451,7 +451,7 @@ DX9ShaderVariable::DX9ShaderVariable(DX9Shader* owner, D3DXHANDLE handle)
 DX9ShaderVariable::~DX9ShaderVariable()
 {
 	for (DX9ShaderAnnotation* anno : m_annotations) {
-		anno->Release();
+		anno->release();
 	}
 }
 
@@ -467,7 +467,7 @@ void DX9ShaderVariable::SetBoolArray(const bool* values, int count)
 {
 	if (count > 0)
 	{
-		m_temp.Resize(count);
+		m_temp.resize(count);
 		for (int i = 0; i < count; ++i)
 		{
 			m_temp[i] = values[i];
@@ -597,10 +597,10 @@ DX9ShaderTechnique::DX9ShaderTechnique(DX9Shader* owner, D3DXHANDLE handle)
 DX9ShaderTechnique::~DX9ShaderTechnique()
 {
 	for (DX9ShaderAnnotation* anno : m_annotations) {
-		anno->Release();
+		anno->release();
 	}
 	for (DX9ShaderPass* pass : m_passes) {
-		pass->Release();
+		pass->release();
 	}
 }
 
@@ -663,7 +663,7 @@ DX9ShaderPass::DX9ShaderPass(DX9Shader* owner, D3DXHANDLE handle, int passIndex,
 DX9ShaderPass::~DX9ShaderPass()
 {
 	for (DX9ShaderAnnotation* anno : m_annotations) {
-		anno->Release();
+		anno->release();
 	}
 }
 
@@ -743,7 +743,7 @@ void DX9ShaderPass::CommitSamplerStatus()
 		for (auto& info : *infoList)
 		{
 			m_dxEffect->SetTexture(info.variable->GetHandle(), info.originalTexture);
-			LN_SAFE_RELEASE(info.originalTexture);
+			LN_COM_SAFE_RELEASE(info.originalTexture);
 		}
 
 		m_resolvedSamplerLink = true;

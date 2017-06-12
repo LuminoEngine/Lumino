@@ -87,7 +87,7 @@ LNHandle LFManager::CheckRegisterObject(tr::ReflectionObject* obj)
 		// 末尾に追加する
 		ObjectEntry e;
 		e.Object = obj;
-		obj->AddRef();
+		obj->addRef();
 		//e.Interface = obj;
 		e.Index = m_objectEntryList.GetCount();
 		e.RefCount = 1;
@@ -111,7 +111,7 @@ LNHandle LFManager::CheckRegisterObject(tr::ReflectionObject* obj)
 		ObjectEntry& e = m_objectEntryList[newPos];
 
 		e.Object = obj;
-		obj->AddRef();
+		obj->addRef();
 		e.Index = newPos;
 		e.RefCount = 1;
 
@@ -134,7 +134,7 @@ ResultCode LFManager::ProcException(Exception* e)
 
 	// 最後に発生した例外として覚えておく
 	LN_SAFE_DELETE(LastException);
-	LastException = e->Copy();
+	LastException = e->copy();
 
 #define ERROR_DEF(exceptionType, code) \
 	{ \

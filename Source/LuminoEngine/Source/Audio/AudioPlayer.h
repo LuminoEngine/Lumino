@@ -23,7 +23,7 @@ public:
 	virtual ~AudioPlayer();
 
 public:
-	virtual void Initialize(AudioStream* audioStream, bool enable3d);
+	virtual void initialize(AudioStream* audioStream, bool enable3d);
 
 public:
 	void CommitPlayerState(const detail::AudioPlayerState& newState);

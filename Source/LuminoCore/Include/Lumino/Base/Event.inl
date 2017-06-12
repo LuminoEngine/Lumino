@@ -16,9 +16,9 @@ public:
 		m_handlerList.Remove(handler);
 	}
 
-	void Clear()
+	void clear()
 	{
-		m_handlerList.Clear();
+		m_handlerList.clear();
 	}
 
 	void Raise(LN_EVENT_ARGS_DECL)

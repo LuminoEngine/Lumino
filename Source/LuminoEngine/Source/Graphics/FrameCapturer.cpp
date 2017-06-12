@@ -52,7 +52,7 @@ public:
 	virtual void Open(const PathName& filePath, const SizeI& size) override
 	{
 		m_imageSize = size;
-		m_framePixels.Resize(size.width * size.height * 4);	// 4 component. RGBX format, where X is unused
+		m_framePixels.resize(size.width * size.height * 4);	// 4 component. RGBX format, where X is unused
 		m_frameCount = 0;
 
 		StringA fn = StringA::FromNativeCharString(filePath);
@@ -88,8 +88,8 @@ public:
 		if (m_task == nullptr || m_task->IsCompleted())
 		{
 			// Task の中で jo_gif で減色を行うため、ピクセルフォーマットを変換しつつ作業領域にビットマップデータを取り出す
-			const SizeI& bmpSize = bitmap->GetSize();
-			RGBX* framePixels = (RGBX*)m_framePixels.GetData();
+			const SizeI& bmpSize = bitmap->getSize();
+			RGBX* framePixels = (RGBX*)m_framePixels.getData();
 			for (int y = 0; y < m_imageSize.height; ++y)
 			{
 				for (int x = 0; x < m_imageSize.width; ++x)
@@ -119,14 +119,14 @@ public:
 				bool updatePalette = (m_frameCount % m_keyFrameSpan == 0);
 
 				// ビットマップデータからインデックスデータと、必要に応じてパレットを作る
-				jo_gif_frame(&m_joGif, &m_gifFrame, (unsigned char*)m_framePixels.GetConstData(), m_frameCount, updatePalette);
+				jo_gif_frame(&m_joGif, &m_gifFrame, (unsigned char*)m_framePixels.getConstData(), m_frameCount, updatePalette);
 
 				// 使うパレットを選択する
 				ColorMapObject* palette = nullptr;
 				if (updatePalette)
 				{
 					// jo_gif のパレットを giflib のパレットに変換
-					m_lastPalette.reset(GifMakeMapObject(m_colorCount, (GifColorType*)m_gifFrame.palette.GetConstData()));
+					m_lastPalette.reset(GifMakeMapObject(m_colorCount, (GifColorType*)m_gifFrame.palette.getConstData()));
 					palette = m_lastPalette.get();
 				}
 
@@ -157,7 +157,7 @@ public:
 				EGifPutImageDesc(m_gif, 0, 0, m_imageSize.width, m_imageSize.height, false, palette);
 				
 				// ピクセルインデックス出力
-				const byte_t* indices = m_gifFrame.indexed_pixels.GetConstData();
+				const byte_t* indices = m_gifFrame.indexed_pixels.getConstData();
 				for (int y = 0; y < m_imageSize.height; ++y)
 				{
 					EGifPutLine(m_gif, (GifPixelType*)&indices[m_imageSize.width * y], m_imageSize.width);
@@ -209,7 +209,7 @@ public:
 	virtual void Open(const PathName& filePath, const SizeI& size) override
 	{
 		m_imageSize = size;
-		m_line.Alloc(sizeof(GifPixelType) * m_imageSize.width);
+		m_line.alloc(sizeof(GifPixelType) * m_imageSize.width);
 
 		StringA f = StringA::FromNativeCharString(filePath);
 		int error;
@@ -254,8 +254,8 @@ public:
 		// Image Descriptor
 		EGifPutImageDesc(m_gif, 0, 0, m_imageSize.width, m_imageSize.height, false, nullptr);
 
-		const SizeI& bmpSize = bitmap->GetSize();
-		GifPixelType* line = (GifPixelType*)m_line.GetData();
+		const SizeI& bmpSize = bitmap->getSize();
+		GifPixelType* line = (GifPixelType*)m_line.getData();
 		for (int y = 0; y < m_imageSize.height; ++y)
 		{
 			for (int x = 0; x < m_imageSize.width; ++x)
@@ -338,7 +338,7 @@ const GifColorType GifContext::PaletteGPriority[256] =
 FrameCapturerPtr FrameCapturer::Create()
 {
 	auto ptr = FrameCapturerPtr::MakeRef();
-	ptr->Initialize(detail::GraphicsManager::GetInstance());
+	ptr->initialize(detail::GraphicsManager::GetInstance());
 	return ptr;
 }
 
@@ -361,7 +361,7 @@ FrameCapturer::~FrameCapturer()
 }
 
 //------------------------------------------------------------------------------
-void FrameCapturer::Initialize(detail::GraphicsManager* manager)
+void FrameCapturer::initialize(detail::GraphicsManager* manager)
 {
 	m_manager = manager;
 	m_gifContext = LN_NEW detail::DynamicPaletteGifContext();//;GifContext
@@ -418,7 +418,7 @@ void FrameCapturer::RecordCommand(Driver::ITexture* target, State newState)
 		else if (newState == State::Recording)
 		{
 			PathName filePath(_T("FrameCapturer.gif"));
-			m_gifContext->Open(filePath, target->GetSize());
+			m_gifContext->Open(filePath, target->getSize());
 			m_lastTick = 0;
 		}
 		m_currentState = newState;

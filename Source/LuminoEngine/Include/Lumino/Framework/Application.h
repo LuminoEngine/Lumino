@@ -21,7 +21,7 @@ protected:
 	virtual ~Application();
 
 LN_INTERNAL_ACCESS:
-	void Initialize(EngineManager* engineManager);
+	void initialize(EngineManager* engineManager);
 
 private:
 	EngineManager*	m_engineManager;
@@ -64,7 +64,7 @@ public:
 
 LN_INTERNAL_ACCESS:
 	LN_METHOD()
-	void Initialize();
+	void initialize();
 
 private:
 	RefPtr<detail::GameSceneManager>	m_gameSceneManager;

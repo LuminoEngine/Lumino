@@ -14,7 +14,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const;
+	virtual Exception* copy() const;
 	virtual const char* what() const throw();
 	virtual const TCHAR* GetMessageOverride() const override;
 

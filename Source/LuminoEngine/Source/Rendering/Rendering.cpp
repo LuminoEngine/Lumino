@@ -53,15 +53,15 @@ CommandDataCache::~CommandDataCache()
 //------------------------------------------------------------------------------
 void CommandDataCache::Reserve(size_t dataCount, size_t byteCount)
 {
-	Clear();
+	clear();
 	m_dataList.Reserve(dataCount);
-	m_dataBuffer.Resize(byteCount, false);
+	m_dataBuffer.resize(byteCount, false);
 }
 
 //------------------------------------------------------------------------------
-void CommandDataCache::Clear()
+void CommandDataCache::clear()
 {
-	m_dataList.Clear();
+	m_dataList.clear();
 	m_dataBufferUsed = 0;
 }
 
@@ -69,16 +69,16 @@ void CommandDataCache::Clear()
 CommandDataCache::DataHandle CommandDataCache::AllocData(size_t byteCount, const void* data)
 {
 	// バッファが足りなければ拡張する
-	if (m_dataBufferUsed + byteCount > m_dataBuffer.GetSize())
+	if (m_dataBufferUsed + byteCount > m_dataBuffer.getSize())
 	{
-		size_t newSize = m_dataBuffer.GetSize() + std::max(m_dataBuffer.GetSize(), byteCount);	// 最低でも byteCount 分を拡張する
-		m_dataBuffer.Resize(newSize, false);
+		size_t newSize = m_dataBuffer.getSize() + std::max(m_dataBuffer.getSize(), byteCount);	// 最低でも byteCount 分を拡張する
+		m_dataBuffer.resize(newSize, false);
 	}
 
 	if (data != nullptr)
 	{
-		byte_t* ptr = &(m_dataBuffer.GetData()[m_dataBufferUsed]);
-		size_t size = m_dataBuffer.GetSize() - m_dataBufferUsed;
+		byte_t* ptr = &(m_dataBuffer.getData()[m_dataBufferUsed]);
+		size_t size = m_dataBuffer.getSize() - m_dataBufferUsed;
 		memcpy_s(ptr, size, data, byteCount);
 	}
 
@@ -89,9 +89,9 @@ CommandDataCache::DataHandle CommandDataCache::AllocData(size_t byteCount, const
 }
 
 //------------------------------------------------------------------------------
-byte_t* CommandDataCache::GetData(DataHandle handle)
+byte_t* CommandDataCache::getData(DataHandle handle)
 {
-	return &(m_dataBuffer.GetData()[handle]);
+	return &(m_dataBuffer.getData()[handle]);
 }
 
 
@@ -112,35 +112,35 @@ InternalContext::InternalContext()
 }
 
 //------------------------------------------------------------------------------
-void InternalContext::Initialize(detail::GraphicsManager* manager)
+void InternalContext::initialize(detail::GraphicsManager* manager)
 {
 	m_baseRenderer = manager->GetRenderer();
 
 	m_primitiveRenderer = RefPtr<PrimitiveRenderFeature>::MakeRef();
-	m_primitiveRenderer->Initialize(manager);
+	m_primitiveRenderer->initialize(manager);
 
 	m_blitRenderer = RefPtr<BlitRenderer>::MakeRef();
-	m_blitRenderer->Initialize(manager);
+	m_blitRenderer->initialize(manager);
 
 	m_meshRenderer = RefPtr<MeshRenderFeature>::MakeRef();
-	m_meshRenderer->Initialize(manager);
+	m_meshRenderer->initialize(manager);
 
 	m_spriteRenderer = RefPtr<SpriteRenderFeature>::MakeRef(manager, 2048);	// TODO
 
 	m_textRenderer = RefPtr<TextRenderer>::MakeRef();
-	m_textRenderer->Initialize(manager);
+	m_textRenderer->initialize(manager);
 
 	m_vectorTextRenderer = RefPtr<VectorTextRenderer>::MakeRef();
-	m_vectorTextRenderer->Initialize(manager);
+	m_vectorTextRenderer->initialize(manager);
 
 	m_shapesRenderer = RefPtr<ShapesRenderFeature>::MakeRef();
-	m_shapesRenderer->Initialize(manager);
+	m_shapesRenderer->initialize(manager);
 
 	m_nanoVGRenderer = RefPtr<NanoVGRenderFeature>::MakeRef();
-	m_nanoVGRenderer->Initialize(manager);
+	m_nanoVGRenderer->initialize(manager);
 
 	m_frameRectRenderer = RefPtr<FrameRectRenderFeature>::MakeRef();
-	m_frameRectRenderer->Initialize(manager);
+	m_frameRectRenderer->initialize(manager);
 }
 
 //------------------------------------------------------------------------------
@@ -512,7 +512,7 @@ void DrawElementBatch::SetCombinedMaterial(CombinedMaterial* value)
 //------------------------------------------------------------------------------
 void DrawElementBatch::SetBuiltinEffect(const BuiltinEffectData& data)
 {
-	if (!m_builtinEffectData.Equals(data))
+	if (!m_builtinEffectData.equals(data))
 	{
 		m_builtinEffectData = data;
 		m_hashDirty = true;
@@ -707,12 +707,12 @@ void DrawElementList::ClearCommands()
 		cmd->~DrawElement();
 	}
 
-	m_commandDataCache.Clear();
-	m_extDataCache.Clear();
-	m_batchList.Clear();
+	m_commandDataCache.clear();
+	m_extDataCache.clear();
+	m_batchList.clear();
 
 	m_combinedMaterialCache.ReleaseAll();
-	m_dynamicLightList.Clear();
+	m_dynamicLightList.clear();
 }
 
 //------------------------------------------------------------------------------
@@ -768,7 +768,7 @@ SceneRenderer::~SceneRenderer()
 }
 
 //------------------------------------------------------------------------------
-void SceneRenderer::Initialize(GraphicsManager* manager)
+void SceneRenderer::initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 }
@@ -799,7 +799,7 @@ void SceneRenderer::Render(
 	InternalContext* context = m_manager->GetInternalContext();
 	const detail::CameraInfo& cameraInfo = drawElementListSet->m_cameraInfo;
 
-	drawElementListSet->m_renderingElementList.Clear();
+	drawElementListSet->m_renderingElementList.clear();
 
 	// Collect
 	for (auto& elementList : drawElementListSet->m_lists)
@@ -974,12 +974,12 @@ NonShadingRenderer::~NonShadingRenderer()
 }
 
 //------------------------------------------------------------------------------
-void NonShadingRenderer::Initialize(GraphicsManager* manager)
+void NonShadingRenderer::initialize(GraphicsManager* manager)
 {
-	SceneRenderer::Initialize(manager);
+	SceneRenderer::initialize(manager);
 
 	auto pass = RefPtr<detail::NonShadingRenderingPass>::MakeRef();
-	pass->Initialize(manager);
+	pass->initialize(manager);
 	AddPass(pass);
 }
 
@@ -998,7 +998,7 @@ NonShadingRenderingPass::~NonShadingRenderingPass()
 }
 
 //------------------------------------------------------------------------------
-void NonShadingRenderingPass::Initialize(GraphicsManager* manager)
+void NonShadingRenderingPass::initialize(GraphicsManager* manager)
 {
 	m_defaultShader = manager->GetBuiltinShader(BuiltinShader::Sprite);
 }
@@ -1026,12 +1026,12 @@ ForwardShadingRenderer::~ForwardShadingRenderer()
 }
 
 //------------------------------------------------------------------------------
-void ForwardShadingRenderer::Initialize(GraphicsManager* manager)
+void ForwardShadingRenderer::initialize(GraphicsManager* manager)
 {
-	SceneRenderer::Initialize(manager);
+	SceneRenderer::initialize(manager);
 
 	auto pass = RefPtr<detail::ForwardShadingRenderingPass>::MakeRef();
-	pass->Initialize(manager);
+	pass->initialize(manager);
 	AddPass(pass);
 }
 
@@ -1039,7 +1039,7 @@ void ForwardShadingRenderer::Initialize(GraphicsManager* manager)
 void ForwardShadingRenderer::OnPreRender(DrawElementList* elementList)
 {
 	auto& lights = elementList->GetDynamicLightList();
-	m_selectingLights.Clear();
+	m_selectingLights.clear();
 	for (DynamicLightInfo* light : lights)
 	{
 		m_selectingLights.Add(light);
@@ -1107,7 +1107,7 @@ ForwardShadingRenderingPass::~ForwardShadingRenderingPass()
 }
 
 //------------------------------------------------------------------------------
-void ForwardShadingRenderingPass::Initialize(GraphicsManager* manager)
+void ForwardShadingRenderingPass::initialize(GraphicsManager* manager)
 {
 	m_defaultShader = manager->GetBuiltinShader(BuiltinShader::LegacyDiffuse);
 }
@@ -1134,9 +1134,9 @@ InfomationRenderingPass::~InfomationRenderingPass()
 }
 
 //------------------------------------------------------------------------------
-void InfomationRenderingPass::Initialize(GraphicsManager* manager)
+void InfomationRenderingPass::initialize(GraphicsManager* manager)
 {
-	NonShadingRenderingPass::Initialize(manager);
+	NonShadingRenderingPass::initialize(manager);
 }
 
 
@@ -1211,7 +1211,7 @@ void RenderingPass2::SelectElementRenderingPolicy(DrawElement* element, Combined
 }
 
 ////------------------------------------------------------------------------------
-//void RenderingPass2::Initialize(GraphicsManager* manager)
+//void RenderingPass2::initialize(GraphicsManager* manager)
 //{
 //	m_defaultShader = manager->GetDefaultShader(DefaultShader::NoLightingRendering);
 //}
@@ -1247,7 +1247,7 @@ public:
 
 	virtual void DrawSubset(const DrawArgs& e) override
 	{
-		e.context->BeginBaseRenderer()->Clear(flags, color, z, stencil);
+		e.context->BeginBaseRenderer()->clear(flags, color, z, stencil);
 	}
 
 	virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("Clear"); }
@@ -1279,11 +1279,11 @@ String RenderDiagItem::ToString() const
 //==============================================================================
 
 //------------------------------------------------------------------------------
-void RenderDiag::Clear()
+void RenderDiag::clear()
 {
 	for (auto& pair : m_cacheMap)
 	{
-		pair.second->Clear();
+		pair.second->clear();
 	}
 	m_items.clear();
 }
@@ -1359,14 +1359,14 @@ DrawList::~DrawList()
 }
 
 //------------------------------------------------------------------------------
-void DrawList::Initialize(detail::GraphicsManager* manager)
+void DrawList::initialize(detail::GraphicsManager* manager)
 {
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
 	m_state.Reset();
 
 	m_defaultMaterial = RefPtr<Material>::MakeRef();
-	m_defaultMaterial->Initialize();
+	m_defaultMaterial->initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -1500,7 +1500,7 @@ void DrawList::SetTransform(const Matrix& transform)
 }
 
 //------------------------------------------------------------------------------
-void DrawList::Clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
+void DrawList::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	auto* ptr = m_drawElementList.AddCommand<detail::ClearElement>(m_state.state.state, m_defaultMaterial, Matrix::Identity, m_builtinEffectData);
 	ptr->flags = flags;
@@ -1584,7 +1584,7 @@ void DrawList::DrawSquare(float sizeX, float sizeZ, int slicesX, int slicesZ, co
 		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawCylinderElement"); }
 	};
 	auto* e = ResolveDrawElement<DrawCylinderElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, material);
-	e->factory.Initialize(Vector2(sizeX, sizeZ), slicesX, slicesZ, color, localTransform);
+	e->factory.initialize(Vector2(sizeX, sizeZ), slicesX, slicesZ, color, localTransform);
 	e->boundingSphere.center = Vector3::Zero;
 	e->boundingSphere.radius = Vector3(sizeX, sizeZ, 0).GetLength();
 }
@@ -1605,7 +1605,7 @@ void DrawList::DrawArc(float startAngle, float endAngle, float innerRadius, floa
 		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawArcElement"); }
 	};
 	auto* e = ResolveDrawElement<DrawArcElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, material);
-	e->factory.Initialize(startAngle, endAngle, innerRadius, outerRadius, slices, color, localTransform);
+	e->factory.initialize(startAngle, endAngle, innerRadius, outerRadius, slices, color, localTransform);
 	e->boundingSphere.center = Vector3::Zero;
 	e->boundingSphere.radius = outerRadius;
 }
@@ -1628,7 +1628,7 @@ void DrawList::DrawBox(const Box& box, const Color& color, const Matrix& localTr
 		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawBoxElement"); }
 	};
 	auto* e = ResolveDrawElement<DrawBoxElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, material);
-	e->factory.Initialize(Vector3(box.width, box.height, box.depth), color, localTransform);
+	e->factory.initialize(Vector3(box.width, box.height, box.depth), color, localTransform);
 
 	Vector3 min, max;
 	box.GetMinMax(&min, &max);
@@ -1651,7 +1651,7 @@ void DrawList::DrawSphere(float radius, int slices, int stacks, const Color& col
 		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawSphereElement"); }
 	};
 	auto* e = ResolveDrawElement<DrawSphereElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, nullptr);
-	e->factory.Initialize(radius, slices, stacks, color, localTransform);
+	e->factory.initialize(radius, slices, stacks, color, localTransform);
 	e->boundingSphere.center = Vector3::Zero;
 	e->boundingSphere.radius = radius;
 }
@@ -1672,7 +1672,7 @@ void DrawList::DrawCylinder(float radius, float	height, int slices, int stacks, 
 		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawCylinder"); }
 	};
 	auto* e = ResolveDrawElement<DrawCylinderElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, nullptr);
-	e->factory.Initialize(radius, height, slices, stacks, color, localTransform);
+	e->factory.initialize(radius, height, slices, stacks, color, localTransform);
 	e->boundingSphere.center = Vector3::Zero;
 	e->boundingSphere.radius = Vector3(radius, height, 0).GetLength();
 }
@@ -1693,7 +1693,7 @@ void DrawList::DrawCone(float radius, float height, int slices, const Color& col
 		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawCone"); }
 	};
 	auto* e = ResolveDrawElement<DrawConeElement>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_primitiveRenderer, nullptr);
-	e->factory.Initialize(radius, height, slices, color, localTransform);
+	e->factory.initialize(radius, height, slices, color, localTransform);
 	e->boundingSphere.center = Vector3::Zero;
 	e->boundingSphere.radius = Vector3(radius, height, 0).GetLength();
 }
@@ -1835,12 +1835,12 @@ void DrawList::DrawText2(const StringRef& text, const Rect& rect)
 	const ByteBuffer& utf32Data = m_manager->GetFontManager()->GetTCharToUTF32Converter()->Convert(text.GetBegin(), text.GetLength() * sizeof(TCHAR));
 
 	auto* e = ResolveDrawElement<DrawElement_DrawString>(detail::DrawingSectionId::None, m_manager->GetInternalContext()->m_vectorTextRenderer, nullptr);
-	e->utf32DataHandle = m_drawElementList.AllocExtData(utf32Data.GetSize());
-	e->length = utf32Data.GetSize() / sizeof(UTF32);
+	e->utf32DataHandle = m_drawElementList.AllocExtData(utf32Data.getSize());
+	e->length = utf32Data.getSize() / sizeof(UTF32);
 	e->rect = rect;
 	//e->boundingSphere = ;	// TODO
 
-	memcpy(m_drawElementList.GetExtData(e->utf32DataHandle), utf32Data.GetConstData(), utf32Data.GetSize());
+	memcpy(m_drawElementList.GetExtData(e->utf32DataHandle), utf32Data.getConstData(), utf32Data.getSize());
 }
 
 //------------------------------------------------------------------------------

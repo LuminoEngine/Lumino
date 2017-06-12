@@ -39,7 +39,7 @@ GLGraphicsDevice::~GLGraphicsDevice()
 }
 
 //------------------------------------------------------------------------------
-void GLGraphicsDevice::Initialize(const ConfigData& configData)
+void GLGraphicsDevice::initialize(const ConfigData& configData)
 {
 	if (LN_CHECK_ARG(configData.mainWindow != nullptr)) return;
 
@@ -67,7 +67,7 @@ void GLGraphicsDevice::Initialize(const ConfigData& configData)
 	if (configData.createSharedRenderingContext)
 		swapChainContext = CreateContext(m_mainWindow);
 	m_defaultSwapChain = RefPtr<GLSwapChain>::MakeRef();
-	m_defaultSwapChain->Initialize(this, swapChainContext, m_mainWindow);
+	m_defaultSwapChain->initialize(this, swapChainContext, m_mainWindow);
 
 	// create Renderer
 	m_renderer = RefPtr<GLRenderer>::MakeRef();
@@ -108,7 +108,7 @@ ISwapChain* GLGraphicsDevice::CreateSwapChain(PlatformWindow* window)
 {
 	RefPtr<GLContext> context = CreateContext(window);
 	auto ptr = RefPtr<GLSwapChain>::MakeRef();
-	ptr->Initialize(this, context, window);
+	ptr->initialize(this, context, window);
 	return ptr.DetachMove();
 }
 
@@ -116,7 +116,7 @@ ISwapChain* GLGraphicsDevice::CreateSwapChain(PlatformWindow* window)
 RefPtr<IVertexDeclaration> GLGraphicsDevice::CreateVertexDeclarationImplement(const VertexElement* elements, int elementsCount)
 {
 	RefPtr<GLVertexDeclaration> obj(LN_NEW GLVertexDeclaration(), false);
-	obj->Initialize(elements, elementsCount);
+	obj->initialize(elements, elementsCount);
 	return RefPtr<IVertexDeclaration>::StaticCast(obj);
 }
 
@@ -171,7 +171,7 @@ RefPtr<ITexture> GLGraphicsDevice::CreateDepthBufferImplement(uint32_t width, ui
 RefPtr<IShader> GLGraphicsDevice::CreateShaderImplement(const void* textData, size_t size, ShaderCompileResult* result)
 {
 	GLShader* shader = LN_NEW GLShader();
-	shader->Initialize(this, textData, size);
+	shader->initialize(this, textData, size);
 	result->Level = shader->GetDiag()->level;
 	result->Message = shader->GetDiag()->message;
 

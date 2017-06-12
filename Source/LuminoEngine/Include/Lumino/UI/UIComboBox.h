@@ -29,7 +29,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	UIPopup();
 	virtual ~UIPopup();
-	void Initialize();
+	void initialize();
 
 LN_INTERNAL_ACCESS:
 	void UpdateLayoutForInPlacePopup(const Size& viewSize);
@@ -51,7 +51,7 @@ public:
 LN_CONSTRUCT_ACCESS :
 	UIComboBoxItem();
 	virtual ~UIComboBoxItem();
-	void Initialize();
+	void initialize();
 };
 
 /**
@@ -74,7 +74,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	UIComboBox();
 	virtual ~UIComboBox();
-	void Initialize();
+	void initialize();
 
 private:
 	RefPtr<UIScrollViewer>	m_scrollViewer;

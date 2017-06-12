@@ -58,7 +58,7 @@ public:
 public:
 	GLGraphicsDevice();
 	virtual ~GLGraphicsDevice();
-	void Initialize(const ConfigData& configData);
+	void initialize(const ConfigData& configData);
 
 	int GetOpenGLMajorVersio() const { return m_openGLMajorVersion; }
 	int GetOpenGLMinorVersio() const { return m_openGLMinorVersion; }

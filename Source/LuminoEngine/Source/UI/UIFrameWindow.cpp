@@ -42,21 +42,21 @@ UIFrameWindow::~UIFrameWindow()
 }
 
 //------------------------------------------------------------------------------
-void UIFrameWindow::Initialize(PlatformWindow* platformWindow, SwapChain* swapChain, UIContext* context)
+void UIFrameWindow::initialize(PlatformWindow* platformWindow, SwapChain* swapChain, UIContext* context)
 {
 	if (LN_CHECK_ARG(platformWindow != nullptr)) return;
 	m_manager = detail::EngineDomain::GetUIManager();
 	m_platformWindow = platformWindow;
 	m_swapChain = swapChain;
 
-	UILayoutView::Initialize(context, platformWindow);
+	UILayoutView::initialize(context, platformWindow);
 	m_platformWindow->AttachEventListener(this, 0);
 	Initialize_UIRenderer();
 	m_manager->AddFrameWindow(this);
 }
 
 //------------------------------------------------------------------------------
-void UIFrameWindow::Initialize()
+void UIFrameWindow::initialize()
 {
 	m_manager = detail::EngineDomain::GetUIManager();
 
@@ -65,7 +65,7 @@ void UIFrameWindow::Initialize()
 	auto swapChain = RefPtr<SwapChain>::MakeRef();
 	swapChain->InitializeSub(m_manager->GetGraphicsManager(), window);
 
-	Initialize(window, swapChain, UIContext::GetMainContext());
+	initialize(window, swapChain, UIContext::GetMainContext());
 }
 
 //------------------------------------------------------------------------------
@@ -175,7 +175,7 @@ void UIFrameWindow::PresentRenderingContexts()
 		}
 
 		// ウィンドウサイズとバックバッファサイズを合わせる
-		m_swapChain->MightResizeAndDeviceReset(m_platformWindow->GetSize());
+		m_swapChain->MightResizeAndDeviceReset(m_platformWindow->getSize());
 	}
 }
 
@@ -189,7 +189,7 @@ void UIFrameWindow::Initialize_UIRenderer()
 	// lighting disabled.
 	// TODO: NewObject
 	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
-	internalRenderer->Initialize(manager->GetGraphicsManager());
+	internalRenderer->initialize(manager->GetGraphicsManager());
 	m_internalRenderer = internalRenderer;
 
 	m_drawElementListSet = RefPtr<RenderView>::MakeRef();
@@ -217,7 +217,7 @@ void UIFrameWindow::ExecuteDrawList_UIRenderer()
 	if (m_swapChain != nullptr)
 	{
 		renderTarget = m_swapChain->GetBackBuffer();
-		viewPixelSize = renderTarget->GetSize().ToFloatSize();
+		viewPixelSize = renderTarget->getSize().ToFloatSize();
 	}
 	else
 	{
@@ -225,10 +225,10 @@ void UIFrameWindow::ExecuteDrawList_UIRenderer()
 		// 描画スレッドを使わないなら、Device から直接とっても良い。
 		// 描画スレッドを使うなら、Lumino を使用するフレームワークからサイズをもらわなければならない。
 		//		この時もらうサイズは、次の描画スレッドの描画で使用されるバックバッファのサイズである。
-		viewPixelSize = GetPlatformWindow()->GetSize().ToFloatSize();
+		viewPixelSize = GetPlatformWindow()->getSize().ToFloatSize();
 	}
 
-	m_renderDiag->Clear();
+	m_renderDiag->clear();
 	
 	//detail::CameraInfo cameraInfo;
 	m_drawElementListSet->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
@@ -268,14 +268,14 @@ UIMainWindow::~UIMainWindow()
 }
 
 //------------------------------------------------------------------------------
-void UIMainWindow::Initialize(PlatformWindow* platformWindow, World2D* defaultWorld2D, World3D* defaultWorld3D)
+void UIMainWindow::initialize(PlatformWindow* platformWindow, World2D* defaultWorld2D, World3D* defaultWorld3D)
 {
 	auto* manager = detail::EngineDomain::GetUIManager();
 
 	m_mainUIContext = LN_NEW UIContext();
-	m_mainUIContext->Initialize(manager);
+	m_mainUIContext->initialize(manager);
 
-	UIFrameWindow::Initialize(platformWindow, manager->GetGraphicsManager()->GetMainSwapChain(), m_mainUIContext);
+	UIFrameWindow::initialize(platformWindow, manager->GetGraphicsManager()->GetMainSwapChain(), m_mainUIContext);
 
 
 
@@ -284,7 +284,7 @@ void UIMainWindow::Initialize(PlatformWindow* platformWindow, World2D* defaultWo
 	SetLayoutPanel(nullptr);
 
 	m_mainUIViewport = NewObject<UIViewport>();
-	m_mainUIViewport->SetBackbufferSize(platformWindow->GetSize().width, platformWindow->GetSize().height);	// TODO: EngineSettings からもらう
+	m_mainUIViewport->SetBackbufferSize(platformWindow->getSize().width, platformWindow->getSize().height);	// TODO: EngineSettings からもらう
 	AddVisualChild(m_mainUIViewport);
 
 	m_cameraViewportLayer3D = NewObject<CameraViewportLayer2>(defaultWorld3D, defaultWorld3D->GetMainCamera()->GetCameraComponent());
@@ -297,7 +297,7 @@ void UIMainWindow::Initialize(PlatformWindow* platformWindow, World2D* defaultWo
 	SetLayoutPanel(panel);
 
 
-	SetSizeInternal(platformWindow->GetSize().ToFloatSize());
+	SetSizeInternal(platformWindow->getSize().ToFloatSize());
 
 	// SwapChain のサイズを Viewport へ通知
 	UpdateViewportTransform();
@@ -398,7 +398,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UINativeHostWindow, UIFrameWindow)
 UINativeHostWindowPtr UINativeHostWindow::Create(intptr_t windowHandle)
 {
 	auto ptr = UINativeHostWindowPtr::MakeRef();
-	ptr->Initialize(windowHandle);
+	ptr->initialize(windowHandle);
 	return ptr;
 }
 
@@ -414,7 +414,7 @@ UINativeHostWindow::~UINativeHostWindow()
 }
 
 //------------------------------------------------------------------------------
-void UINativeHostWindow::Initialize(intptr_t windowHandle)
+void UINativeHostWindow::initialize(intptr_t windowHandle)
 {
 	if (LN_CHECK_ARG(windowHandle != 0)) return;
 
@@ -433,9 +433,9 @@ void UINativeHostWindow::Initialize(intptr_t windowHandle)
 
 
 	m_mainUIContext = LN_NEW UIContext();
-	m_mainUIContext->Initialize(manager);
+	m_mainUIContext->initialize(manager);
 
-	UIFrameWindow::Initialize(window, swap, m_mainUIContext);
+	UIFrameWindow::initialize(window, swap, m_mainUIContext);
 }
 
 LN_NAMESPACE_END

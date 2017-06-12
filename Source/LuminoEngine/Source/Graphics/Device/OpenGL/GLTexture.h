@@ -44,12 +44,12 @@ public:
 	// override ITexture
 	virtual TextureType GetTextureType() const { return TextureType_Normal; }
 	virtual TextureFormat GetTextureFormat() const { return m_format; }
-	virtual const SizeI& GetSize() const { return m_size; }
+	virtual const SizeI& getSize() const { return m_size; }
 	virtual const SizeI& GetRealSize() const { return m_realSize; }
 	virtual void SetSamplerState(const SamplerState& state);
 	virtual void SetSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize);
 	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes);
-	virtual void GetData(const RectI& rect, void* outData) override;
+	virtual void getData(const RectI& rect, void* outData) override;
 	virtual Bitmap* Lock();
 	virtual void Unlock();
 
@@ -84,12 +84,12 @@ public:
 	// override ITexture
 	virtual TextureType GetTextureType() const { return TextureType_RenderTarget; }
 	virtual TextureFormat GetTextureFormat() const { return m_format; }
-	virtual const SizeI& GetSize() const { return m_size; }
+	virtual const SizeI& getSize() const { return m_size; }
 	virtual const SizeI& GetRealSize() const { return m_realSize; }
 	virtual void SetSamplerState(const SamplerState& state) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes);
-	virtual void GetData(const RectI& rect, void* outData) override;
+	virtual void getData(const RectI& rect, void* outData) override;
 	virtual Bitmap* Lock();
 	virtual void Unlock();
 
@@ -123,12 +123,12 @@ public:
 	// override ITexture
 	virtual TextureType GetTextureType() const { return TextureType_DepthBuffer; }
 	virtual TextureFormat GetTextureFormat() const { return m_format; }
-	virtual const SizeI& GetSize() const { return m_size; }
+	virtual const SizeI& getSize() const { return m_size; }
 	virtual const SizeI& GetRealSize() const { return m_realSize; }
 	virtual void SetSamplerState(const SamplerState& state) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes);
-	virtual void GetData(const RectI& rect, void* outData) override;
+	virtual void getData(const RectI& rect, void* outData) override;
 	virtual Bitmap* Lock() { LN_THROW(0, InvalidOperationException); return NULL; }
 	virtual void Unlock() { LN_THROW(0, InvalidOperationException); }
 

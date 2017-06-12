@@ -26,9 +26,9 @@ UITreeViewItem::~UITreeViewItem()
 }
 
 //------------------------------------------------------------------------------
-void UITreeViewItem::Initialize()
+void UITreeViewItem::initialize()
 {
-	UIControl::Initialize();
+	UIControl::initialize();
 	SetHContentAlignment(HAlignment::Left);
 	SetHAlignment(HAlignment::Stretch);
 	GoToVisualState(UIVisualStates::NormalState);
@@ -100,7 +100,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UITreeView, UIControl)
 UITreeViewPtr UITreeView::Create()
 {
 	auto ptr = UITreeViewPtr::MakeRef();
-	ptr->Initialize();
+	ptr->initialize();
 	return ptr;
 }
 
@@ -115,13 +115,13 @@ UITreeView::~UITreeView()
 }
 
 //------------------------------------------------------------------------------
-void UITreeView::Initialize()
+void UITreeView::initialize()
 {
-	UIControl::Initialize();
+	UIControl::initialize();
 	SetHContentAlignment(HAlignment::Stretch);
 
 	auto panel = RefPtr<UIStackPanel>::MakeRef();
-	panel->Initialize();
+	panel->initialize();
 	panel->SetHAlignment(HAlignment::Stretch);
 	panel->SetVAlignment(VAlignment::Stretch);
 	SetLayoutPanel(panel);
@@ -132,7 +132,7 @@ void UITreeView::Initialize()
 //UITreeViewItemPtr UITreeView::AddTextItem(const String& text)
 //{
 //	auto textBlock = RefPtr<UITextBlock>::MakeRef();
-//	textBlock->Initialize(GetManager());
+//	textBlock->initialize(GetManager());
 //	textBlock->SetText(text);
 //	return AddItem(textBlock);
 //}
@@ -143,7 +143,7 @@ void UITreeView::Initialize()
 //
 //	// 受け取った item を UITreeViewItem でラップして、UITreeViewItem をリストに入れる
 //	auto listItem = RefPtr<UITreeViewItem>::MakeRef();
-//	listItem->Initialize(GetManager());
+//	listItem->initialize(GetManager());
 //	listItem->SetContent(item);
 //	GetItems()->Add(listItem);
 //	return listItem;

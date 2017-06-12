@@ -10,7 +10,7 @@ using UIButtonPtr = RefPtr<UIButton>;
 enum class ClickMode
 {
 	/** ボタンを離したときにイベントを発生させます。*/
-	Release,
+	release,
 
 	/** ボタンを押したときにイベントを発生させます。*/
 	Press,
@@ -42,7 +42,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	UIButtonBase();
 	virtual ~UIButtonBase();
-	void Initialize();
+	void initialize();
 
 private:
 	ClickMode	m_clickMode;
@@ -65,8 +65,8 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIButton();
 	virtual ~UIButton();
-	void Initialize();
-	void Initialize(const StringRef& text, float width, float height);
+	void initialize();
+	void initialize(const StringRef& text, float width, float height);
 };
 
 
@@ -89,7 +89,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	UIToggleButton();
 	virtual ~UIToggleButton();
-	void Initialize();
+	void initialize();
 
 private:
 	bool	m_isChecked;

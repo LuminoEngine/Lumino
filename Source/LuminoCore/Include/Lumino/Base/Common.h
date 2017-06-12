@@ -140,6 +140,12 @@
 	typeName(const typeName&); \
 	void operator=(const typeName&)
 
+// increment COM reference count
+#define LN_COM_SAFE_ADDREF(p)	{ if (p) { (p)->AddRef(); } }
+
+// decrement COM reference count
+#define LN_COM_SAFE_RELEASE(p)	{ if (p) { (p)->Release(); (p)= nullptr; } }
+
 //----------------------------------------------------------------------
 // include
 #include <stdio.h>

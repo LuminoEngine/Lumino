@@ -93,14 +93,14 @@ protected:
 		if (fileName != nullptr)
 			m_combinedPath.AssignUnderBasePath(m_dirPath, fileName);
 		else
-			m_combinedPath.Clear();
+			m_combinedPath.clear();
 	}
 	void SetCurrentFileName(const wchar_t* fileName)
 	{
 		if (fileName != nullptr)
 			m_combinedPath.AssignUnderBasePath(m_dirPath, fileName);
 		else
-			m_combinedPath.Clear();
+			m_combinedPath.clear();
 	}
 
 protected:

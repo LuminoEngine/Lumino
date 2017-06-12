@@ -42,7 +42,7 @@ void Texture::Dispose()
 }
 
 //------------------------------------------------------------------------------
-const SizeI& Texture::GetSize() const
+const SizeI& Texture::getSize() const
 {
 	return m_size;
 }
@@ -103,7 +103,7 @@ Texture2DPtr Texture2D::Create(int width, int height, TextureFormat format, bool
 Texture2DPtr Texture2D::Create(const SizeI& size, TextureFormat format, bool mipmap)
 {
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
-	tex->Initialize(size, format, mipmap, ResourceUsage::Dynamic);
+	tex->initialize(size, format, mipmap, ResourceUsage::Dynamic);
 	return tex;
 }
 
@@ -111,7 +111,7 @@ Texture2DPtr Texture2D::Create(const SizeI& size, TextureFormat format, bool mip
 Texture2DPtr Texture2D::Create(const StringRef& filePath, TextureFormat format, bool mipmap)
 {
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
-	tex->Initialize(filePath, format, mipmap);
+	tex->initialize(filePath, format, mipmap);
 	return tex;
 }
 
@@ -119,7 +119,7 @@ Texture2DPtr Texture2D::Create(const StringRef& filePath, TextureFormat format, 
 Texture2DPtr Texture2D::Create(Stream* stream, TextureFormat format, bool mipmap)
 {
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
-	tex->Initialize(stream, format, mipmap);
+	tex->initialize(stream, format, mipmap);
 	return tex;
 	/*
 	if (GetManager()->IsPlatformTextureLoading())
@@ -171,9 +171,9 @@ Texture2D::Texture2D()
 }
 
 //------------------------------------------------------------------------------
-void Texture2D::Initialize(const SizeI& size, TextureFormat format, bool mipmap, ResourceUsage usage)
+void Texture2D::initialize(const SizeI& size, TextureFormat format, bool mipmap, ResourceUsage usage)
 {
-	GraphicsResourceObject::Initialize();
+	GraphicsResourceObject::initialize();
 
 	m_size = size;
 	m_mipmap = mipmap;
@@ -190,24 +190,24 @@ void Texture2D::Initialize(const SizeI& size, TextureFormat format, bool mipmap,
 }
 
 //------------------------------------------------------------------------------
-void Texture2D::Initialize(int width, int height, TextureFormat format, bool mipmap)
+void Texture2D::initialize(int width, int height, TextureFormat format, bool mipmap)
 {
-	Initialize(SizeI(width, height), format, mipmap, ResourceUsage::Dynamic);
+	initialize(SizeI(width, height), format, mipmap, ResourceUsage::Dynamic);
 }
 
 //------------------------------------------------------------------------------
-void Texture2D::Initialize(const StringRef& filePath, TextureFormat format, bool mipmap)
+void Texture2D::initialize(const StringRef& filePath, TextureFormat format, bool mipmap)
 {
 	RefPtr<Stream> stream(detail::GraphicsManager::GetInstance()->GetFileManager()->CreateFileStream(filePath), false);
-	Initialize(stream, format, mipmap);
+	initialize(stream, format, mipmap);
 }
 
 //------------------------------------------------------------------------------
 // プラットフォーム依存用
 //------------------------------------------------------------------------------
-void Texture2D::Initialize(Stream* stream, TextureFormat format, bool mipmap)
+void Texture2D::initialize(Stream* stream, TextureFormat format, bool mipmap)
 {
-	GraphicsResourceObject::Initialize();
+	GraphicsResourceObject::initialize();
 	m_mipmap = mipmap;
 	m_format = format;
 
@@ -216,11 +216,11 @@ void Texture2D::Initialize(Stream* stream, TextureFormat format, bool mipmap)
 		m_deviceObj = m_manager->GetGraphicsDevice()->CreateTexturePlatformLoading(stream, m_mipmap, format);
 		if (m_deviceObj != NULL)
 		{
-			SizeI size = m_deviceObj->GetSize();
+			SizeI size = m_deviceObj->getSize();
 			Bitmap deviceSurface(size, Utils::TranslatePixelFormat(m_deviceObj->GetTextureFormat()), true);
-			m_deviceObj->GetData(RectI(0, 0, size), deviceSurface.GetBitmapBuffer()->GetData());
+			m_deviceObj->getData(RectI(0, 0, size), deviceSurface.GetBitmapBuffer()->getData());
 
-			m_primarySurface2 = RefPtr<Bitmap>::MakeRef(m_deviceObj->GetSize(), Utils::TranslatePixelFormat(format));
+			m_primarySurface2 = RefPtr<Bitmap>::MakeRef(m_deviceObj->getSize(), Utils::TranslatePixelFormat(format));
 			m_primarySurface2->BitBlt(RectI(0, 0, size), &deviceSurface, RectI(0, 0, size), Color32::White, false);
 
 			m_size = size;
@@ -232,7 +232,7 @@ void Texture2D::Initialize(Stream* stream, TextureFormat format, bool mipmap)
 	{
 		m_locked = true;
 		m_primarySurface2 = RefPtr<Bitmap>::MakeRef(stream);
-		m_size = m_primarySurface2->GetSize();
+		m_size = m_primarySurface2->getSize();
 	}
 
 #if 0
@@ -292,18 +292,18 @@ void Texture2D::ApplyModifies()
 {
 	if (m_deviceObj == nullptr)
 	{
-		m_deviceObj = m_manager->GetGraphicsDevice()->CreateTexture(m_primarySurface2->GetSize(), m_mipmap, m_format, nullptr);
+		m_deviceObj = m_manager->GetGraphicsDevice()->CreateTexture(m_primarySurface2->getSize(), m_mipmap, m_format, nullptr);
 	}
 
 	if (m_locked)
 	{
 		ByteBuffer* bmpData = m_primarySurface2->GetBitmapBuffer();
-		SizeI bmpSize = m_primarySurface2->GetSize();
+		SizeI bmpSize = m_primarySurface2->getSize();
 
 		// 上下反転した一時ビットマップを作ってそれを転送する
 		RenderingCommandList* cmdList = m_manager->GetPrimaryRenderingCommandList();
 		RenderBulkData bmpRawData;
-		void* bmpRawDataBuf = bmpRawData.Alloc(cmdList, bmpData->GetSize());
+		void* bmpRawDataBuf = bmpRawData.alloc(cmdList, bmpData->getSize());
 		Bitmap bmpTmp(bmpRawDataBuf, bmpSize, m_primarySurface2->GetPixelFormat(), true);
 		bmpTmp.BitBlt(0, 0, m_primarySurface2, RectI(0, 0, bmpSize), Color32::White, false);
 
@@ -312,7 +312,7 @@ void Texture2D::ApplyModifies()
 		{
 			// まだ1度もコマンドリストに入れられていなければ直接転送できる
 			//m_deviceObj->SetSubData(PointI::Zero, bmpData->GetConstData(), bmpData->GetSize(), bmpSize);
-			m_deviceObj->SetSubData(PointI::Zero, bmpRawData.GetData(), bmpRawData.GetSize(), bmpSize);
+			m_deviceObj->SetSubData(PointI::Zero, bmpRawData.getData(), bmpRawData.getSize(), bmpSize);
 		}
 		else
 		{
@@ -327,7 +327,7 @@ void Texture2D::ApplyModifies()
 				SizeI, bmpSize,
 				RefPtr<Driver::ITexture>, deviceTexture,
 				{
-					deviceTexture->SetSubData(PointI::Zero, bmpRawData.GetData(), bmpRawData.GetSize(), bmpSize);
+					deviceTexture->SetSubData(PointI::Zero, bmpRawData.getData(), bmpRawData.getSize(), bmpSize);
 				});
 		}
 		m_initializing = false;
@@ -342,10 +342,10 @@ void Texture2D::ApplyModifies()
 }
 
 //------------------------------------------------------------------------------
-void Texture2D::Clear(const Color32& color)
+void Texture2D::clear(const Color32& color)
 {
 	TryLock();
-	m_primarySurface2->Clear(color);
+	m_primarySurface2->clear(color);
 }
 
 //------------------------------------------------------------------------------
@@ -370,14 +370,14 @@ void Texture2D::Blit(int x, int y, Texture2D* srcTexture, const RectI& srcRect)
 	srcTexture->m_usageReadFast = true;
 
 	TryLock();
-	m_primarySurface2->BitBlt(RectI(x, y, srcRect.GetSize()), srcTexture->m_primarySurface2, srcRect, Color32::White, false);
+	m_primarySurface2->BitBlt(RectI(x, y, srcRect.getSize()), srcTexture->m_primarySurface2, srcRect, Color32::White, false);
 }
 
 //------------------------------------------------------------------------------
 void Texture2D::Blt(int x, int y, Bitmap* srcBitmap/*, const RectI& srcRect*/)
 {
 	TryLock();
-	SizeI srcSize = srcBitmap->GetSize();
+	SizeI srcSize = srcBitmap->getSize();
 	m_primarySurface2->BitBlt(RectI(x, y, srcSize), srcBitmap, RectI(0, 0, srcSize), Color32::White, false);
 }
 
@@ -409,7 +409,7 @@ void Texture2D::SetSubData(const PointI& offset, Bitmap* bitmap)
 	}
 
 	LN_CALL_TEXTURE_COMMAND(SetSubData, SetSubDataTextureCommand,
-		offset, bitmap->GetBitmapBuffer()->GetConstData(), bitmap->GetBitmapBuffer()->GetSize(), bitmap->GetSize());
+		offset, bitmap->GetBitmapBuffer()->getConstData(), bitmap->GetBitmapBuffer()->getSize(), bitmap->getSize());
 }
 
 //------------------------------------------------------------------------------
@@ -427,12 +427,12 @@ void Texture2D::OnChangeDevice(Driver::IGraphicsDevice* device)
 	if (device == nullptr)
 	{
 		TryLock();
-		m_deviceObj->GetData(RectI(0, 0, m_size), m_primarySurface2->GetBitmapBuffer()->GetData());
+		m_deviceObj->getData(RectI(0, 0, m_size), m_primarySurface2->GetBitmapBuffer()->getData());
 		LN_SAFE_RELEASE(m_deviceObj);
 	}
 	else
 	{
-		m_deviceObj = device->CreateTexture(m_primarySurface2->GetSize(), m_mipmap, m_format, m_primarySurface2->GetBitmapBuffer()->GetConstData());
+		m_deviceObj = device->CreateTexture(m_primarySurface2->getSize(), m_mipmap, m_format, m_primarySurface2->GetBitmapBuffer()->getConstData());
 	}
 
 
@@ -467,7 +467,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Texture3D, Texture);
 Texture3DPtr Texture3D::Create(int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage)
 {
 	auto ptr = Texture3DPtr::MakeRef();
-	ptr->Initialize(ln::detail::GraphicsManager::GetInstance(), width, height, depth, format, mipLevels, usage);
+	ptr->initialize(ln::detail::GraphicsManager::GetInstance(), width, height, depth, format, mipLevels, usage);
 	return ptr;
 }
 
@@ -486,9 +486,9 @@ Texture3D::~Texture3D()
 }
 
 //------------------------------------------------------------------------------
-void Texture3D::Initialize(ln::detail::GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage)
+void Texture3D::initialize(ln::detail::GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage)
 {
-	GraphicsResourceObject::Initialize();
+	GraphicsResourceObject::initialize();
 	m_size.width = width;
 	m_size.height = height;
 	m_depth = depth;
@@ -539,18 +539,18 @@ void Texture3D::ApplyModifies()
 		if (m_initializing)
 		{
 			// まだ1度もコマンドリストに入れられていなければ直接転送できる
-			m_deviceObj->SetSubData3D(Box32::Zero, bmpData->GetConstData(), bmpData->GetSize());
+			m_deviceObj->SetSubData3D(Box32::Zero, bmpData->getConstData(), bmpData->getSize());
 		}
 		else
 		{
-			RenderBulkData bmpRawData(bmpData->GetConstData(), bmpData->GetSize());
+			RenderBulkData bmpRawData(bmpData->getConstData(), bmpData->getSize());
 			Driver::ITexture* deviceTexture = m_deviceObj;
 			LN_ENQUEUE_RENDER_COMMAND_2(
 				Texture3D_ApplyModifies, m_manager,
 				RenderBulkData, bmpRawData,
 				RefPtr<Driver::ITexture>, deviceTexture,
 				{
-					deviceTexture->SetSubData3D(Box32::Zero, bmpRawData.GetData(), bmpRawData.GetSize());
+					deviceTexture->SetSubData3D(Box32::Zero, bmpRawData.getData(), bmpRawData.getSize());
 				});
 		}
 		m_initializing = false;
@@ -601,7 +601,7 @@ RenderTargetTexture::RenderTargetTexture()
 }
 
 //------------------------------------------------------------------------------
-void RenderTargetTexture::Initialize(const SizeI& size, int mipLevels, TextureFormat format)
+void RenderTargetTexture::initialize(const SizeI& size, int mipLevels, TextureFormat format)
 {
 	CreateImpl(detail::EngineDomain::GetGraphicsManager(), size, mipLevels, format);
 }
@@ -609,7 +609,7 @@ void RenderTargetTexture::Initialize(const SizeI& size, int mipLevels, TextureFo
 //------------------------------------------------------------------------------
 void RenderTargetTexture::CreateImpl(detail::GraphicsManager* manager, const SizeI& size, int mipLevels, TextureFormat format)
 {
-	GraphicsResourceObject::Initialize();
+	GraphicsResourceObject::initialize();
 	m_size = size;
 	m_mipLevels = mipLevels;
 	m_format = format;
@@ -619,7 +619,7 @@ void RenderTargetTexture::CreateImpl(detail::GraphicsManager* manager, const Siz
 //------------------------------------------------------------------------------
 void RenderTargetTexture::CreateCore(detail::GraphicsManager* manager, bool isDefaultBackBuffer)
 {
-	GraphicsResourceObject::Initialize();
+	GraphicsResourceObject::initialize();
 	m_deviceObj = NULL;
 	m_isDefaultBackBuffer = isDefaultBackBuffer;
 }
@@ -634,7 +634,7 @@ void RenderTargetTexture::AttachDefaultBackBuffer(Driver::ITexture* deviceObj)
 {
 	assert(m_isDefaultBackBuffer);
 	LN_REFOBJ_SET(m_deviceObj, deviceObj);
-	m_size = m_deviceObj->GetSize();
+	m_size = m_deviceObj->getSize();
 }
 
 //------------------------------------------------------------------------------
@@ -725,7 +725,7 @@ DepthBuffer::~DepthBuffer()
 //------------------------------------------------------------------------------
 void DepthBuffer::CreateImpl(detail::GraphicsManager* manager, const SizeI& size, TextureFormat format)
 {
-	GraphicsResourceObject::Initialize();
+	GraphicsResourceObject::initialize();
 	m_size = size;
 	m_format = format;
 	RefreshDeviceResource();
@@ -739,7 +739,7 @@ void DepthBuffer::Dispose()
 }
 
 //------------------------------------------------------------------------------
-void DepthBuffer::Resize(const SizeI& newSize)
+void DepthBuffer::resize(const SizeI& newSize)
 {
 	RefreshDeviceResource();
 }

@@ -31,7 +31,7 @@ public:
 	FontGlyphTextureCache();
 	virtual ~FontGlyphTextureCache();
 
-	void Initialize(GraphicsManager* manager, RawFont* font);	// TODO: ストローク幅をpenで表すなら太さ分の引数が増えることになる。
+	void initialize(GraphicsManager* manager, RawFont* font);	// TODO: ストローク幅をpenで表すなら太さ分の引数が増えることになる。
 
 
 	// まずメインスレッドでこの関数でキャッシュを検索する。
@@ -101,7 +101,7 @@ public:
 
 	VectorFontGlyphCache();
 	virtual ~VectorFontGlyphCache();
-	void Initialize(GraphicsManager* manager, RawFont* font, int maxSize);
+	void initialize(GraphicsManager* manager, RawFont* font, int maxSize);
 	int GetMaxCount() const { return m_glyphInfoList.GetCount(); }
 
 	// callby main thread

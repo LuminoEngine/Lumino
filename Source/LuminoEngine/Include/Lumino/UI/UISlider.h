@@ -63,8 +63,8 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	UISlider();
 	virtual ~UISlider();
-	void Initialize();
-	void Initialize(float value, float minimum, float maximum);
+	void initialize();
+	void initialize(float value, float minimum, float maximum);
 
 private:
 	void UpdateValue(float value);

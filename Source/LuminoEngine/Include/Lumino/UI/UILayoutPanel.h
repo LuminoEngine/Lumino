@@ -120,7 +120,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	UILayoutPanel();
 	virtual ~UILayoutPanel();
-	void Initialize();
+	void initialize();
 	UIElementCollection* GetChildren() const { return m_children; }
 
 	// UIElement interface
@@ -172,7 +172,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	UIStackPanel();
 	virtual ~UIStackPanel();
-	void Initialize();
+	void initialize();
 
 	// UIElement interface
 	virtual Size MeasureOverride(const Size& constraint) override;
@@ -195,7 +195,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	UIAbsoluteLayout();
 	virtual ~UIAbsoluteLayout();
-	void Initialize();
+	void initialize();
 
 	// UIElement interface
 	virtual Size MeasureOverride(const Size& constraint) override;
@@ -234,7 +234,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	UIGridLayout();
 	virtual ~UIGridLayout();
-	void Initialize();
+	void initialize();
 
 	// UIElement interface
 	virtual Size MeasureOverride(const Size& constraint) override;

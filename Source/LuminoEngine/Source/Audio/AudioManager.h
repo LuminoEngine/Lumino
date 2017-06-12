@@ -38,7 +38,7 @@ public:
 
 	AudioManager();
 	virtual ~AudioManager();
-	void Initialize(const Settings& settings);
+	void initialize(const Settings& settings);
 	void Finalize();
 
 	/// オンメモリorストリーミング自動選択の音声データバイト数閾値

@@ -550,7 +550,7 @@ void Win32NativeWindow::Initilaize(
 	bool resizable)
 {
 	if (LN_CHECK_ARG(windowManager != nullptr)) return;
-	PlatformWindow::Initialize(SizeI(width, height));
+	PlatformWindow::initialize(SizeI(width, height));
 
 	mTitleText = windowTitle;
 	// 初期化時のサイズ記憶

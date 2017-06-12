@@ -16,7 +16,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW XmlException(*this); }
+	virtual Exception* copy() const { return LN_NEW XmlException(*this); }
 };
 
 namespace detail

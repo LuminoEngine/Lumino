@@ -74,8 +74,8 @@ public:
 	GenericPathName& operator = (const GenericStringT& str)	{ Assign(str.c_str()); return (*this); }
 	GenericPathName& operator = (const char* str) { Assign(str); return (*this); }
 	GenericPathName& operator = (const wchar_t* str) { Assign(str); return (*this); }
-	bool operator < (const GenericPathName& right) const { return PathTraits::Compare(m_path.c_str(), right.m_path.c_str()) < 0; }
-	bool operator < (const TChar* right) const { return PathTraits::Compare(m_path.c_str(), right) < 0; }
+	bool operator < (const GenericPathName& right) const { return PathTraits::compare(m_path.c_str(), right.m_path.c_str()) < 0; }
+	bool operator < (const TChar* right) const { return PathTraits::compare(m_path.c_str(), right) < 0; }
 	operator const TChar*() const { return m_path.c_str(); }
 
 
@@ -120,7 +120,7 @@ public:
 	void Append(const PathNameT& path) { Append(path.m_path.c_str()); }
 
 	/// 空文字列を設定する
-	void Clear() { m_path.Clear(); }
+	void clear() { m_path.clear(); }
 
 	/// パス文字列の中から拡張子を含むファイル名の部分を返す (空パスの場合は空文字列を返す)
 	GenericStringT GetFileName() const { return PathTraits::GetFileName(m_path.c_str()); }
@@ -271,13 +271,13 @@ public:
 					http://helpx.adobe.com/jp/x-productkb/global/cpsid_83180.html
 					http://www.clip-studio.com/clip_site/support/faq/detail/svc/52/tid/37429
 	*/
-	bool Equals(const TChar* path) const { return PathTraits::Equals(m_path.c_str(), path); }
+	bool equals(const TChar* path) const { return PathTraits::equals(m_path.c_str(), path); }
 	/// @overload Equals
-	bool Equals(const PathNameT& path) const { return PathTraits::Equals(m_path.c_str(), path.c_str()); }
+	bool equals(const PathNameT& path) const { return PathTraits::equals(m_path.c_str(), path.c_str()); }
 	/// @overload Equals
-	bool Equals(const GenericStringT& path) const { return PathTraits::Equals(m_path.c_str(), path.c_str()); }
+	bool equals(const GenericStringT& path) const { return PathTraits::equals(m_path.c_str(), path.c_str()); }
 	/// @overload Equals
-	bool operator == (const PathNameT& path) const { return Equals(path); }
+	bool operator == (const PathNameT& path) const { return equals(path); }
 
 	/**
 		このパスが示すディレクトリを作成します。

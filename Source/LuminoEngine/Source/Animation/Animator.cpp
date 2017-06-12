@@ -129,7 +129,7 @@ void Animator::Create(detail::IAnimationTargetElement* element)
 	}
 
 	int count = m_element->GetAnimationTargetAttributeCount();
-	m_animationTargetAttributeEntityList.Resize(count);
+	m_animationTargetAttributeEntityList.resize(count);
 	for (int i = 0; i < count; i++)
 	{
 		m_animationTargetAttributeEntityList[i].Target = m_element->GetAnimationTargetAttribute(i);

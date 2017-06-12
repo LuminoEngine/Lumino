@@ -34,7 +34,7 @@ MidiDecoder::~MidiDecoder()
 void MidiDecoder::Create(Stream* stream)
 {
 	LN_REFOBJ_SET(m_stream, stream);
-	m_volumeEntryList.Clear();
+	m_volumeEntryList.clear();
 
 	SearchData();
 }
@@ -53,9 +53,9 @@ void MidiDecoder::FillOnmemoryBuffer()
 
 	if (m_stream != NULL)
 	{
-		m_midiFileData.Resize((size_t)m_stream->GetLength(), false);
+		m_midiFileData.resize((size_t)m_stream->GetLength(), false);
 		m_stream->Seek(0, SeekOrigin_Begin);
-		m_stream->Read(m_midiFileData.GetData(), m_midiFileData.GetSize());
+		m_stream->Read(m_midiFileData.getData(), m_midiFileData.getSize());
 
 		if (m_volumeNormalize)
 		{

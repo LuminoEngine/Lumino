@@ -48,7 +48,7 @@ public:
 	NativeLocale_t GetNativeLocale() const;
 
 private:
-	void Release();
+	void release();
 
 private:
 	std::locale		m_stdLocale;

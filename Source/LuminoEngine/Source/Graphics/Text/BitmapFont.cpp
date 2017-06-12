@@ -49,19 +49,19 @@ BitmapFont::BitmapFont()
 }
 
 //------------------------------------------------------------------------------
-void BitmapFont::Initialize(Bitmap* bitmap)
+void BitmapFont::initialize(Bitmap* bitmap)
 {
-	RawFont::Initialize();
+	RawFont::initialize();
 	m_manager = detail::EngineDomain::GetGraphicsManager()->GetFontManager();
 
 	m_name = String::SPrintf(_T("%d"), rand());	// TODO: 名前がユーザー指定されていなければランダムに作る
 	m_fontBitmap = bitmap;
 
-	m_charWidth = m_fontBitmap->GetSize().width / 16;
-	m_charHeight = m_fontBitmap->GetSize().height / 16;
+	m_charWidth = m_fontBitmap->getSize().width / 16;
+	m_charHeight = m_fontBitmap->getSize().height / 16;
 
 	// グリフ用の一時ビットマップ
-	m_glyphBitmap.Attach(LN_NEW Bitmap(SizeI(m_charWidth, m_charHeight), PixelFormat::R8G8B8A8));
+	m_glyphBitmap.attach(LN_NEW Bitmap(SizeI(m_charWidth, m_charHeight), PixelFormat::R8G8B8A8));
 
 	m_fontGlyphBitmap.GlyphBitmap = m_glyphBitmap;
 	m_fontGlyphBitmap.OutlineBitmap = NULL;
@@ -134,7 +134,7 @@ void BitmapFont::getTextSize(const wchar_t* text, int len, Geometry::RectI* rect
 #endif
 
 //------------------------------------------------------------------------------
-RawFontPtr BitmapFont::Copy() const
+RawFontPtr BitmapFont::copy() const
 {
 	auto ptr = NewObject<BitmapFont>(m_fontBitmap);
 	return RawFontPtr::StaticCast(ptr);

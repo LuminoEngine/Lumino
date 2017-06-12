@@ -136,7 +136,7 @@ public:
 
 	~CacheUnusedList()
 	{
-		Clear();
+		clear();
 		LN_SAFE_DELETE_ARRAY(mNodes);
 	}
 
@@ -148,7 +148,7 @@ public:
 	/// 領域の確保
 	void SetCapacity(int capacityCount, size_t maxMemorySize)
 	{
-		Clear();
+		clear();
 		LN_SAFE_DELETE_ARRAY(mNodes);
 
 		if (capacityCount == 0)
@@ -178,7 +178,7 @@ public:
 	}
 
 	/// クリア (全 delete 呼び出し)
-	void Clear()
+	void clear()
 	{
 		if (mNodes && m_internalCapacity > 0)
 		{
@@ -204,7 +204,7 @@ public:
 			mNodeMap.clear();
 
 			// 空き番号スタック
-			mIndexStack.Clear();
+			mIndexStack.clear();
 			for (int i = 0; i < m_internalCapacity; ++i)
 			{
 				mIndexStack.Push(i);
@@ -416,7 +416,7 @@ void CacheManager::RegisterCacheObject(const CacheKey& key, ICacheObject* obj)
 
 	m_cacheUsingMap.insert(CacheUsingPair(key, obj));
 	info.manager = this;
-	info.manager->AddRef();
+	info.manager->addRef();
 	info.key = key;
 }
 
@@ -433,7 +433,7 @@ ICacheObject* CacheManager::FindObjectAddRef(const CacheKey& key)
 		if (itr != m_cacheUsingMap.end())
 		{
 			obj = itr->second;
-			obj->AddRef();
+			obj->addRef();
 		}
 		// キャッシュリストを検索
 		else
@@ -443,7 +443,7 @@ ICacheObject* CacheManager::FindObjectAddRef(const CacheKey& key)
 			{
 				// 使用中オブジェクトマップに入れておく
 				m_cacheUsingMap.insert(CacheUsingPair(obj->GetCacheObjectInfo().key, obj));
-				obj->AddRef();
+				obj->addRef();
 			}
 		}
 	}
@@ -455,7 +455,7 @@ void CacheManager::ClearCache()
 {
 	MutexScopedLock lock(m_mutex);
 	if (m_cacheUnusedList != NULL) {	// Finalize() 済みチェック
-		m_cacheUnusedList->Clear();
+		m_cacheUnusedList->clear();
 	}
 }
 

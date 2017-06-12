@@ -26,7 +26,7 @@ FileManager::FileManager(const Settings& settings)
 	, m_isASyncTaskListEmpty(true)
 {
 	m_archiveList.Add(m_dummyArchive);
-	m_dummyArchive->AddRef();	// m_archiveList からの参照を示す
+	m_dummyArchive->addRef();	// m_archiveList からの参照を示す
 
 	m_asyncProcThread.Start(CreateDelegate(this, &FileManager::Thread_ASyncProc));
 }
@@ -39,9 +39,9 @@ FileManager::~FileManager()
 	m_asyncProcThread.Wait();
 
 	for (IArchive* a : m_archiveList) {
-		a->Release();
+		a->release();
 	}
-	m_archiveList.Clear();
+	m_archiveList.clear();
 
 	LN_SAFE_RELEASE(m_dummyArchive);
 }
@@ -137,7 +137,7 @@ void FileManager::RequestASyncTask(ASyncIOObject* task)
 	LN_THROW(task->m_ayncIOState == ASyncIOState_Idle, InvalidOperationException);
 
 	task->m_ayncIOState = ASyncIOState_Ready;
-	task->AddRef();
+	task->addRef();
 	m_asyncTaskList.Add(task);
 	m_isASyncTaskListEmpty.SetFalse();
 }
@@ -155,18 +155,18 @@ void FileManager::RefreshArchiveList()
 	if (m_archiveList.Contains(m_dummyArchive))
 	{
 		m_archiveList.Remove(m_dummyArchive);
-		m_dummyArchive->Release();
+		m_dummyArchive->release();
 	}
 
 	// ディレクトリ優先ならダミーを先頭に追加し直す
 	if (m_fileAccessPriority == FileAccessPriority_DirectoryFirst) {
 		m_archiveList.Insert(0, m_dummyArchive);
-		m_dummyArchive->AddRef();
+		m_dummyArchive->addRef();
 	}
 	// アーカイブ優先ならダミーを末尾に追加し直す
 	else if (m_fileAccessPriority == FileAccessPriority_ArchiveFirst) {
 		m_archiveList.Add(m_dummyArchive);
-		m_dummyArchive->AddRef();
+		m_dummyArchive->addRef();
 	}
 	// アーカイブのみであればダミーを追加する必要は無い
 	else {
@@ -202,7 +202,7 @@ void FileManager::Thread_ASyncProc()
 			catch (Exception& e)
 			{
 				task->m_ayncIOState = ASyncIOState_Failed;		// 処理失敗状態にする
-				task->m_ayncIOException = e.Copy();				// メインスレッドがエラー内容を確認できるように例外を保持しておく
+				task->m_ayncIOException = e.copy();				// メインスレッドがエラー内容を確認できるように例外を保持しておく
 			}
 			catch (...)
 			{
@@ -213,7 +213,7 @@ void FileManager::Thread_ASyncProc()
 			//if (task->m_autoDelete) {
 			//	delete task;
 			//}
-			task->Release();
+			task->release();
 		}
 
 		// この時点でリストが空ならすべて処理が終わったことにする

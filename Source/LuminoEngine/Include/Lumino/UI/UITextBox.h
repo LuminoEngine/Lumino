@@ -33,7 +33,7 @@ protected:
 LN_PROTECTED_INTERNAL_ACCESS:
 	UITextBox();
 	virtual ~UITextBox();
-	void Initialize();
+	void initialize();
 
 	virtual Size MeasureOverride(const Size& availableSize) override;
 	virtual Size ArrangeOverride(const Size& finalSize) override;
@@ -67,7 +67,7 @@ protected:
 LN_PROTECTED_INTERNAL_ACCESS:
 	UITextField();
 	virtual ~UITextField();
-	void Initialize();
+	void initialize();
 
 	virtual Size MeasureOverride(const Size& availableSize) override;
 	virtual Size ArrangeOverride(const Size& finalSize) override;

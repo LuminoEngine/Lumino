@@ -44,7 +44,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIThumb();
 	virtual ~UIThumb();
-	void Initialize();
+	void initialize();
 
 protected:
 	virtual void OnRoutedEvent(UIEventArgs* e) override;
@@ -122,7 +122,7 @@ LN_CONSTRUCT_ACCESS:
 
 	UITrack();
 	virtual ~UITrack();
-	void Initialize();
+	void initialize();
 
 protected:
 	// UIElement interface
@@ -179,7 +179,7 @@ public:
 
 	UIScrollEventArgs();
 	virtual ~UIScrollEventArgs();
-	void Initialize(Object* sender, float newValue_, ScrollEventType type_);
+	void initialize(Object* sender, float newValue_, ScrollEventType type_);
 
 public:
 	float			newValue;	/** 新しい値 */
@@ -241,7 +241,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIScrollBar();
 	virtual ~UIScrollBar();
-	void Initialize();
+	void initialize();
 
 protected:
 	// UIElement interface
@@ -273,7 +273,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIScrollViewer();
 	virtual ~UIScrollViewer();
-	void Initialize();
+	void initialize();
 
 protected:
 	// UIElement interface

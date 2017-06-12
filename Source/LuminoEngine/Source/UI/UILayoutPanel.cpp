@@ -22,9 +22,9 @@ UILayoutPanel::~UILayoutPanel()
 }
 
 //------------------------------------------------------------------------------
-void UILayoutPanel::Initialize()
+void UILayoutPanel::initialize()
 {
-	UIElement::Initialize();
+	UIElement::initialize();
 	SetHitTestVisible(false);
 	m_children = RefPtr<UIElementCollection>::MakeRef(this);
 
@@ -125,7 +125,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIStackPanel, UILayoutPanel)
 UIStackPanelPtr UIStackPanel::Create()
 {
 	auto ptr = RefPtr<UIStackPanel>::MakeRef();
-	ptr->Initialize();
+	ptr->initialize();
 	return ptr;
 }
 
@@ -141,9 +141,9 @@ UIStackPanel::~UIStackPanel()
 }
 
 //------------------------------------------------------------------------------
-void UIStackPanel::Initialize()
+void UIStackPanel::initialize()
 {
-	UILayoutPanel::Initialize();
+	UILayoutPanel::initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -170,7 +170,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIAbsoluteLayout, UILayoutPanel)
 UIAbsoluteLayoutPtr UIAbsoluteLayout::Create()
 {
 	auto ptr = UIAbsoluteLayoutPtr::MakeRef();
-	ptr->Initialize();
+	ptr->initialize();
 	return ptr;
 }
 
@@ -185,9 +185,9 @@ UIAbsoluteLayout::~UIAbsoluteLayout()
 }
 
 //------------------------------------------------------------------------------
-void UIAbsoluteLayout::Initialize()
+void UIAbsoluteLayout::initialize()
 {
-	UILayoutPanel::Initialize();
+	UILayoutPanel::initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -487,7 +487,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIGridLayout, UILayoutPanel)
 UIGridLayoutPtr UIGridLayout::Create()
 {
 	auto ptr = UIGridLayoutPtr::MakeRef();
-	ptr->Initialize();
+	ptr->initialize();
 	return ptr;
 }
 
@@ -495,7 +495,7 @@ UIGridLayoutPtr UIGridLayout::Create()
 UIGridLayoutPtr UIGridLayout::Create(int columnCount, int rowCount)
 {
 	auto ptr = UIGridLayoutPtr::MakeRef();
-	ptr->Initialize();
+	ptr->initialize();
 	ptr->SetGridSize(columnCount, rowCount);
 	return ptr;
 }
@@ -513,16 +513,16 @@ UIGridLayout::~UIGridLayout()
 }
 
 //------------------------------------------------------------------------------
-void UIGridLayout::Initialize()
+void UIGridLayout::initialize()
 {
-	UILayoutPanel::Initialize();
+	UILayoutPanel::initialize();
 }
 
 //------------------------------------------------------------------------------
 void UIGridLayout::SetGridSize(int columnCount, int rowCount)
 {
-	m_columnDefinitions.Clear();
-	m_rowDefinitions.Clear();
+	m_columnDefinitions.clear();
+	m_rowDefinitions.clear();
 
 	for (int i = 0; i < columnCount; ++i)
 		m_columnDefinitions.Add(RefPtr<ColumnDefinition>::MakeRef());

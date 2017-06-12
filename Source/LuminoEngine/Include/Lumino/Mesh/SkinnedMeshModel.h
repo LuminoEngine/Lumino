@@ -44,7 +44,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	SkinnedMeshModel();
 	virtual ~SkinnedMeshModel();
-	void Initialize(detail::GraphicsManager* manager, PmxSkinnedMeshResource* sharingMesh);
+	void initialize(detail::GraphicsManager* manager, PmxSkinnedMeshResource* sharingMesh);
 
 	void SetWorldTransform(const Matrix& matrix) { m_worldTransform = matrix; m_worldTransformInverse = Matrix::MakeInverse(m_worldTransform); }
 	const Matrix& GetWorldTransform() const { return m_worldTransform; }
@@ -124,7 +124,7 @@ public:
 LN_INTERNAL_ACCESS:
 	SkinnedMeshBone();
 	virtual ~SkinnedMeshBone();
-	void Initialize(PmxBoneResource* boneResource);
+	void initialize(PmxBoneResource* boneResource);
 	void PostInitialize(SkinnedMeshModel* owner, int depth);
 
 	// PmxBoneResource の取得
@@ -170,7 +170,7 @@ class MmdSkinnedMeshRigidBody
 LN_INTERNAL_ACCESS:
 	MmdSkinnedMeshRigidBody();
 	virtual ~MmdSkinnedMeshRigidBody();
-	void Initialize(SkinnedMeshModel* ownerModel, PmxRigidBodyResource* rigidBodyResource, float scale);
+	void initialize(SkinnedMeshModel* ownerModel, PmxRigidBodyResource* rigidBodyResource, float scale);
 
 	RigidBody* GetRigidBody() const;
 	void UpdateBeforePhysics();
@@ -192,7 +192,7 @@ class MmdSkinnedMeshJoint
 LN_INTERNAL_ACCESS:
 	MmdSkinnedMeshJoint();
 	virtual ~MmdSkinnedMeshJoint();
-	void Initialize(SkinnedMeshModel* ownerModel, PmxJointResource* jointResource);
+	void initialize(SkinnedMeshModel* ownerModel, PmxJointResource* jointResource);
 
 private:
 	RefPtr<DofSpringJoint>	m_joint;

@@ -28,7 +28,7 @@ public:
 
 	TextRendererCore();
 	~TextRendererCore();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
 	void SetState(const Matrix& world, const Matrix& viewProj, const SizeI& viewPixelSize);
 	void Render(const GlyphRunData* dataList, int dataCount, FontGlyphTextureCache* cache, Brush* fillBrush);
@@ -102,7 +102,7 @@ class TextRenderer
 public:
 	TextRenderer();
 	~TextRenderer();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
 	void SetTransform(const Matrix& matrix);
 	void SetViewInfo(const Matrix& viewProj, const SizeI& viewPixelSize);
@@ -157,7 +157,7 @@ class VectorTextRendererCore
 public:
 	VectorTextRendererCore();
 	virtual ~VectorTextRendererCore();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
 	void RequestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex);
 	void Render(const VectorGlyphData* dataList, int dataCount, VectorFontGlyphCache* cache, Brush* fillBrush);
@@ -179,7 +179,7 @@ class VectorTextRenderer
 public:
 	VectorTextRenderer();
 	virtual ~VectorTextRenderer();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
 	void DrawString(const Matrix& transform, const UTF32* str, int length, const Rect& rect, TextLayoutOptions options);
 	void DrawChar(const Matrix& transform, UTF32 ch, const Rect& rect, TextLayoutOptions options);

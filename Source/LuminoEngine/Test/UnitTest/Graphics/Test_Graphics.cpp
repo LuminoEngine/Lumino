@@ -71,14 +71,14 @@ TEST_F(Test_Graphics_Rendering, Basic)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Graphics_Rendering, Clear)
+TEST_F(Test_Graphics_Rendering, clear)
 {
 	// <Test> 2D ビューのクリア
 	{
 		LN_TEST_BEGIN_FRAME;
 		Engine::RenderFrame();
 		auto* r1 = Engine::GetWorld2D()->GetRenderer();
-		r1->Clear(ClearFlags::Color, Color::Blue);
+		r1->clear(ClearFlags::Color, Color::Blue);
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.Clear1.png")));
 	}
@@ -87,7 +87,7 @@ TEST_F(Test_Graphics_Rendering, Clear)
 		LN_TEST_BEGIN_FRAME;
 		Engine::RenderFrame();
 		auto* r1 = Engine::GetWorld3D()->GetRenderer();
-		r1->Clear(ClearFlags::Color, Color::Red);
+		r1->clear(ClearFlags::Color, Color::Red);
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.Clear2.png")));
 	}
@@ -95,8 +95,8 @@ TEST_F(Test_Graphics_Rendering, Clear)
 	{
 		LN_TEST_BEGIN_FRAME;
 		Engine::RenderFrame();
-		Engine::GetWorld2D()->GetRenderer()->Clear(ClearFlags::Color, Color::Blue);
-		Engine::GetWorld3D()->GetRenderer()->Clear(ClearFlags::Color, Color::Red);
+		Engine::GetWorld2D()->GetRenderer()->clear(ClearFlags::Color, Color::Blue);
+		Engine::GetWorld3D()->GetRenderer()->clear(ClearFlags::Color, Color::Red);
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.Clear3.png")));
 	}
@@ -265,7 +265,7 @@ TEST_F(Test_Graphics_Rendering, Blit)
 	// <Test> 別のレンダーターゲットへの転送
 	{
 		auto tex = Texture2D::Create(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png"));
-		auto rt1 = RenderTargetTexture::Create(tex->GetSize());
+		auto rt1 = RenderTargetTexture::Create(tex->getSize());
 		LN_TEST_BEGIN_FRAME;
 		Engine::RenderFrame();
 		Engine::GetWorld2D()->GetRenderer()->Blit(tex, rt1, nullptr);
@@ -451,7 +451,7 @@ TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
 		Engine::RenderFrame();
 
 		auto* g = Engine::GetWorld2D()->GetRenderer();
-		g->Clear(ClearFlags::All, Color::Gray);
+		g->clear(ClearFlags::All, Color::Gray);
 
 		// 厚さ均一
 		g->SetBrush(brush1);
@@ -499,7 +499,7 @@ TEST_F(Test_Graphics_Rendering, DrawFrameRectangle)
 		Engine::RenderFrame();
 
 		auto* g = Engine::GetWorld2D()->GetRenderer();
-		g->Clear(ClearFlags::All, Color::Gray);
+		g->clear(ClearFlags::All, Color::Gray);
 		g->SetBrush(brush1);
 		g->DrawRectangle(Rect(0, 0, 43, 63));
 		g->SetBrush(brush2);
@@ -542,7 +542,7 @@ TEST_F(Test_Graphics_DrawingContext, DrawChar)
 		Engine::RenderFrame();
 		auto* dc = Engine::GetWorld2D()->GetRenderer();
 		//auto* dc = Engine::GetMainWindow()->GetDrawingContext();
-		dc->Clear(ClearFlags::Color, Color::Blue);
+		dc->clear(ClearFlags::Color, Color::Blue);
 		dc->SetBrush(Brush::Black);
 		dc->DrawChar('g', PointF(100, 100));
 		LN_TEST_END_FRAME;
@@ -558,7 +558,7 @@ TEST_F(Test_Graphics_DrawingContext, DrawText_)
 		LN_TEST_BEGIN_FRAME;
 		Engine::RenderFrame();
 		auto* dc = Engine::GetMainWindow()->GetDrawingContext();
-		dc->Clear(ClearFlags::Color, Color::White);
+		dc->clear(ClearFlags::Color, Color::White);
 		dc->SetBrush(Brush::Gray);
 		//dc->SetFont(f);
 		dc->SetBlendMode(BlendMode::Alpha);
@@ -621,7 +621,7 @@ TEST_F(Test_Graphics_Texture, Issues)
 		auto sprite = Sprite2DComponent::Create(texture);
 		Engine::Update();
 
-		texture->Clear(Color32(0, 0, 0, 0));
+		texture->clear(Color32(0, 0, 0, 0));
 		texture->DrawText(_T("Clear1"), RectI(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
 		Engine::Update();
 

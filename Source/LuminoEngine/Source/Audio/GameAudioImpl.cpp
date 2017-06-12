@@ -49,7 +49,7 @@ GameAudioImpl::~GameAudioImpl()
 	ReleaseAtPlayEndList::iterator end = mReleaseAtPlayEndList.end();
 	for (; itr != end; ++itr)
 	{
-		(*itr)->Release();
+		(*itr)->release();
 	}
 	mReleaseAtPlayEndList.clear();
 
@@ -543,7 +543,7 @@ void GameAudioImpl::Polling()
 		SoundPlayingState state = (*itr)->GetPlayingState();
 		if (state != SoundPlayingState::Playing)
 		{
-			(*itr)->Release();
+			(*itr)->release();
 			itr = mReleaseAtPlayEndList.erase(itr);
 			end = mReleaseAtPlayEndList.end();
 		}
@@ -569,7 +569,7 @@ void GameAudioImpl::PushReleaseAtPlayEndList(Sound* sound)
 SoundPtr GameAudioImpl::CreateSound(const StringRef& filePath)
 {
 	auto ptr = SoundPtr::MakeRef();
-	ptr->Initialize(filePath);
+	ptr->initialize(filePath);
 	return ptr;
 }
 
@@ -577,7 +577,7 @@ SoundPtr GameAudioImpl::CreateSound(const StringRef& filePath)
 SoundPtr GameAudioImpl::CreateSound(detail::AudioStream* audioStream)
 {
 	auto ptr = SoundPtr::MakeRef();
-	ptr->Initialize(audioStream);
+	ptr->initialize(audioStream);
 	return ptr;
 }
 

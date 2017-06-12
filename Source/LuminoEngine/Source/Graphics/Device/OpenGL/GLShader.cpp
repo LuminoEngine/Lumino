@@ -329,7 +329,7 @@ enum class RenderStateId
 ShaderCompileResultLevel GLSLUtils::MakeShaderProgram(const char* vsCode, size_t vsCodeLen, const char* fsCode, size_t fsCodeLen, GLuint* outProgram, StringA* outMessage)
 {
 	*outProgram = NULL;
-	outMessage->Clear();
+	outMessage->clear();
 
 	// 頂点シェーダコード
 	const char* vs_codes[] =
@@ -501,9 +501,9 @@ GLuint GLSLUtils::CompileShader2(GLuint type, int codeCount, const char** codes,
 	{
 		ByteBuffer buf(logSize);
 		int length;
-		glGetShaderInfoLog(shader, logSize, &length, (GLchar*)buf.GetData());
+		glGetShaderInfoLog(shader, logSize, &length, (GLchar*)buf.getData());
 		diag->message += "Compile info:\n";
-		diag->message += (const char*)buf.GetConstData();
+		diag->message += (const char*)buf.getConstData();
 		diag->level = ShaderCompileResultLevel_Warning;
 	}
 
@@ -578,7 +578,7 @@ GLShader::~GLShader()
 }
 
 //------------------------------------------------------------------------------
-void GLShader::Initialize(GLGraphicsDevice* device, const void* code_, size_t codeByteCount)
+void GLShader::initialize(GLGraphicsDevice* device, const void* code_, size_t codeByteCount)
 {
 	m_device = device;
 
@@ -644,10 +644,10 @@ void GLShader::Initialize(GLGraphicsDevice* device, const void* code_, size_t co
 		m_glVertexShaderEntryMap[_T("Main")] = vertShader;	// delete のため
 		m_glPixelShaderEntryMap[_T("Main")] = fragShader;	// delete のため
 		auto* tech = LN_NEW GLShaderTechnique();
-		tech->Initialize(this, _T("Main"));
+		tech->initialize(this, _T("Main"));
 		m_techniques.Add(tech);
 		auto* pass = LN_NEW GLShaderPass();
-		pass->Initialize(this, _T("Main"), vertShader, fragShader);
+		pass->initialize(this, _T("Main"), vertShader, fragShader);
 		tech->AddPass(pass);
 	}
 }
@@ -681,7 +681,7 @@ GLShaderVariable* GLShader::FindShaderVariable(const String& name)
 GLShaderVariable* GLShader::CreateShaderVariable(ShaderVariableBase::ShaderVariableTypeDesc desc, const String& name, const String& semanticName)
 {
 	GLShaderVariable* v = LN_NEW GLShaderVariable();
-	v->Initialize(this, desc, name, semanticName, 0);
+	v->initialize(this, desc, name, semanticName, 0);
 	m_variables.Add(v);
 	return v;
 }
@@ -838,7 +838,7 @@ GLShaderVariable* GLShaderVariable::Deserialize(GLShader* ownerShader, tr::JsonR
 		}
 	}
 
-	//var->Initialize(ownerShader, , name, semantic, 0);
+	//var->initialize(ownerShader, , name, semantic, 0);
 	//json->ReadAsEndObject();
 	return var;
 }
@@ -855,16 +855,16 @@ GLShaderVariable::~GLShaderVariable()
 {
 	for (GLShaderAnnotation* anno : m_annotations)
 	{
-		anno->Release();
+		anno->release();
 	}
 }
 
 //------------------------------------------------------------------------------
-void GLShaderVariable::Initialize(GLShader* owner, ShaderVariableTypeDesc desc, const String& name, const String& semanticName, GLint location)
+void GLShaderVariable::initialize(GLShader* owner, ShaderVariableTypeDesc desc, const String& name, const String& semanticName, GLint location)
 {
 	m_ownerShader = owner;
 	m_glUniformLocation = location;
-	ShaderVariableBase::Initialize(desc, name, semanticName);
+	ShaderVariableBase::initialize(desc, name, semanticName);
 	MakeInitialValue();
 }
 
@@ -1090,7 +1090,7 @@ GLShaderAnnotation* GLShaderAnnotation::Deserialize(tr::JsonReader2* json)
 	if (json->ReadAsPropertyName() == _T("name")) name = json->ReadAsString();
 	if (json->ReadAsPropertyName() == _T("value")) value = json->ReadAsString();
 	json->ReadAsEndObject();
-	anno->Initialize(type, name, value);
+	anno->initialize(type, name, value);
 	return anno.DetachMove();
 }
 
@@ -1105,7 +1105,7 @@ GLShaderAnnotation::~GLShaderAnnotation()
 }
 
 //------------------------------------------------------------------------------
-void GLShaderAnnotation::Initialize(const String& type, const String& name, const String& value)
+void GLShaderAnnotation::initialize(const String& type, const String& name, const String& value)
 {
 	ShaderVariableTypeDesc desc;
 	desc.Type = ShaderVariableType_Unknown;
@@ -1117,19 +1117,19 @@ void GLShaderAnnotation::Initialize(const String& type, const String& name, cons
 	if (type.IndexOf(_T("bool")) == 0)
 	{
 		desc.Type = ShaderVariableType_Bool;
-		ShaderVariableBase::Initialize(desc, name, String::GetEmpty());
+		ShaderVariableBase::initialize(desc, name, String::GetEmpty());
 		ShaderVariableBase::SetBool(value[0] == 't');	// "true"?
 	}
 	else if (type.IndexOf(_T("int")) == 0)
 	{
 		desc.Type = ShaderVariableType_Int;
-		ShaderVariableBase::Initialize(desc, name, String::GetEmpty());
+		ShaderVariableBase::initialize(desc, name, String::GetEmpty());
 		ShaderVariableBase::SetInt(value.ToInt32());
 	}
 	else if (type.IndexOf(_T("string")) == 0)
 	{
 		desc.Type = ShaderVariableType_Int;
-		ShaderVariableBase::Initialize(desc, name, String::GetEmpty());
+		ShaderVariableBase::initialize(desc, name, String::GetEmpty());
 		ShaderVariableBase::SetString(value.c_str());
 	}
 	else if (type.IndexOf(_T("float")) == 0)
@@ -1137,7 +1137,7 @@ void GLShaderAnnotation::Initialize(const String& type, const String& name, cons
 		if (type.GetLength() == 5)
 		{
 			desc.Type = ShaderVariableType_Float;
-			ShaderVariableBase::Initialize(desc, name, String::GetEmpty());
+			ShaderVariableBase::initialize(desc, name, String::GetEmpty());
 			ShaderVariableBase::SetFloat((float)StringTraits::ToDouble(value.c_str(), value.GetLength()));
 		}
 		else if (type.GetLength() == 6)
@@ -1153,7 +1153,7 @@ void GLShaderAnnotation::Initialize(const String& type, const String& name, cons
 			v.w = (float)((tokens.GetCount() >= 4) ? StringTraits::ToDouble(tokens[3].c_str(), tokens[3].GetLength()) : 0);
 
 			desc.Type = ShaderVariableType_Vector;
-			ShaderVariableBase::Initialize(desc, name, String::GetEmpty());
+			ShaderVariableBase::initialize(desc, name, String::GetEmpty());
 			ShaderVariableBase::SetVector(v);
 		}
 		else
@@ -1174,7 +1174,7 @@ GLShaderTechnique* GLShaderTechnique::Deserialize(GLShader* ownerShader, tr::Jso
 	String name;
 	if (json->ReadAsPropertyName() == _T("name")) name = json->ReadAsString();
 	auto tech = RefPtr<GLShaderTechnique>::MakeRef();
-	tech->Initialize(ownerShader, name);
+	tech->initialize(ownerShader, name);
 
 	if (json->ReadAsPropertyName() == _T("passes"))
 	{
@@ -1218,12 +1218,12 @@ GLShaderTechnique::~GLShaderTechnique()
 	}
 	for (GLShaderAnnotation* anno : m_annotations)
 	{
-		anno->Release();
+		anno->release();
 	}
 }
 
 //------------------------------------------------------------------------------
-void GLShaderTechnique::Initialize(GLShader* ownerShader, const String& name)
+void GLShaderTechnique::initialize(GLShader* ownerShader, const String& name)
 {
 	m_ownerShader = ownerShader;
 	m_name = name;
@@ -1249,7 +1249,7 @@ GLShaderPass* GLShaderPass::Deserialize(GLShader* ownerShader, tr::JsonReader2* 
 	if (json->ReadAsPropertyName() == _T("vertexShader")) vsName = json->ReadAsString();
 	if (json->ReadAsPropertyName() == _T("pixelShader")) psName = json->ReadAsString();
 
-	pass->Initialize(ownerShader, name, vsName, psName);
+	pass->initialize(ownerShader, name, vsName, psName);
 
 	while (json->Read())
 	{
@@ -1289,7 +1289,7 @@ GLShaderPass::~GLShaderPass()
 {
 	for (GLShaderAnnotation* anno : m_annotations)
 	{
-		anno->Release();
+		anno->release();
 	}
 	if (m_program != 0)
 	{
@@ -1299,7 +1299,7 @@ GLShaderPass::~GLShaderPass()
 }
 
 //------------------------------------------------------------------------------
-void GLShaderPass::Initialize(GLShader* ownerShader, const String& name, GLuint vertShader, GLuint fragShader)
+void GLShaderPass::initialize(GLShader* ownerShader, const String& name, GLuint vertShader, GLuint fragShader)
 {
 	m_ownerShader = ownerShader;
 	m_name = name;
@@ -1310,11 +1310,11 @@ void GLShaderPass::Initialize(GLShader* ownerShader, const String& name, GLuint 
 }
 
 //------------------------------------------------------------------------------
-void GLShaderPass::Initialize(GLShader* ownerShader, const String& name, const String& vertShaderName, const String& fragShaderName)
+void GLShaderPass::initialize(GLShader* ownerShader, const String& name, const String& vertShaderName, const String& fragShaderName)
 {
 	GLuint vertShader = ownerShader->GetVertexShader(vertShaderName);
 	GLuint fragShader = ownerShader->GetFlagmentShader(fragShaderName);
-	Initialize(ownerShader, name, vertShader, fragShader);
+	initialize(ownerShader, name, vertShader, fragShader);
 }
 
 //------------------------------------------------------------------------------

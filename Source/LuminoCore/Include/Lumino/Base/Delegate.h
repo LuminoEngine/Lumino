@@ -33,8 +33,8 @@ private:
 	public:
 		virtual ~HolderBase() = default;
 		virtual TRet Call(TArgs... args) const = 0;
-		virtual bool Equals(const HolderBase* p) const = 0;
-		virtual HolderBase* Copy() const = 0;
+		virtual bool equals(const HolderBase* p) const = 0;
+		virtual HolderBase* copy() const = 0;
 	};
 
 	class StaticHolder
@@ -52,11 +52,11 @@ private:
 		{
 			return m_func(args...);
 		}
-		virtual bool Equals(const HolderBase* p) const
+		virtual bool equals(const HolderBase* p) const
 		{
 			return (m_func == static_cast<const StaticHolder*>(p)->m_func);
 		}
-		virtual HolderBase* Copy() const
+		virtual HolderBase* copy() const
 		{
 			return LN_NEW StaticHolder(m_func);
 		}
@@ -80,12 +80,12 @@ private:
 		{
 			return (m_obj->*m_func)(args...);
 		}
-		virtual bool Equals(const HolderBase* p) const
+		virtual bool equals(const HolderBase* p) const
 		{
 			return	m_obj == static_cast<const MemberHolder*>(p)->m_obj &&
 				m_func == static_cast<const MemberHolder*>(p)->m_func;
 		}
-		virtual HolderBase* Copy() const
+		virtual HolderBase* copy() const
 		{
 			return LN_NEW MemberHolder(m_obj, m_func);
 		}
@@ -106,11 +106,11 @@ private:
 		{
 			return m_func(args...);
 		}
-		virtual bool Equals(const HolderBase* p) const
+		virtual bool equals(const HolderBase* p) const
 		{
 			return false;	// std::function を比較することは出来ない
 		}
-		virtual HolderBase* Copy() const
+		virtual HolderBase* copy() const
 		{
 			return LN_NEW FuncObjHolder(m_func);
 		}
@@ -158,7 +158,7 @@ public:
 		: Delegate()
 	{
 		if (d.m_holder != nullptr) {
-			m_holder = d.m_holder->Copy();
+			m_holder = d.m_holder->copy();
 			m_type = d.m_type;
 		}
 	}
@@ -205,7 +205,7 @@ public:
 	{
 		Detach();
 		if (d.m_holder != nullptr) {
-			m_holder = d.m_holder->Copy();
+			m_holder = d.m_holder->copy();
 			m_type = d.m_type;
 		}
 		return *this;
@@ -238,7 +238,7 @@ public:
 	/** 比較 */
 	bool operator==(const Delegate& left) const
 	{
-		return Equals(left);
+		return equals(left);
 	}
 
 	/** 比較 */
@@ -250,7 +250,7 @@ public:
 	/** 比較 */
 	bool operator!=(const Delegate& left) const
 	{
-		return !Equals(left);
+		return !equals(left);
 	}
 
 private:
@@ -259,12 +259,12 @@ private:
 		delete m_holder;
 		m_holder = nullptr;
 	}
-	bool Equals(const Delegate& left) const
+	bool equals(const Delegate& left) const
 	{
 		if (m_type != left.m_type) { return false; }
 		if (m_holder == NULL &&  left.m_holder == NULL) { return true; }
 		if (m_holder != NULL && left.m_holder != NULL) {
-			return m_holder->Equals(left.m_holder);
+			return m_holder->equals(left.m_holder);
 		}
 		else {
 			return false;	// this か obj 一方が NULL で、もう一方が 非NULL であればここに来る。

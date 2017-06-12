@@ -113,7 +113,7 @@ public:
 		return m_tone;
 	}
 
-	bool Equals(const BuiltinEffectData& rhs) const
+	bool equals(const BuiltinEffectData& rhs) const
 	{
 		return	m_shader == rhs.m_shader &&
 			m_colorScale == rhs.m_colorScale &&
@@ -212,7 +212,7 @@ public:
 LN_INTERNAL_ACCESS:
 	Material();
 	virtual ~Material();
-	void Initialize();
+	void initialize();
 	void Reset();
 
 	void SetBuiltinIntParameter(const StringRef& name, int value);
@@ -337,7 +337,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	DiffuseMaterial();
 	virtual ~DiffuseMaterial();
-	void Initialize();
+	void initialize();
 };
 
 

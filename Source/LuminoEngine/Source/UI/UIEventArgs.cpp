@@ -41,7 +41,7 @@ UIEventArgs::~UIEventArgs()
 }
 
 //------------------------------------------------------------------------------
-void UIEventArgs::Initialize(UIEventType type)
+void UIEventArgs::initialize(UIEventType type)
 {
 	m_type = type;
 }
@@ -81,9 +81,9 @@ UIMouseEventArgs::~UIMouseEventArgs()
 }
 
 //------------------------------------------------------------------------------
-void UIMouseEventArgs::Initialize(UIEventType type, MouseButtons button, float x, float y, int clickCount)
+void UIMouseEventArgs::initialize(UIEventType type, MouseButtons button, float x, float y, int clickCount)
 {
-	UIEventArgs::Initialize(type);
+	UIEventArgs::initialize(type);
 	m_button = button;
 	m_position.x = x;
 	m_position.y = y;
@@ -132,9 +132,9 @@ UIKeyEventArgs::~UIKeyEventArgs()
 }
 
 //------------------------------------------------------------------------------
-void UIKeyEventArgs::Initialize(UIEventType type, Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode)
+void UIKeyEventArgs::initialize(UIEventType type, Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode)
 {
-	UIEventArgs::Initialize(type);
+	UIEventArgs::initialize(type);
 	m_keyCode = keyCode;
 	m_modifierKeys = modifierKeys;
 	m_charCode = charCode;
@@ -173,9 +173,9 @@ UIMouseWheelEventArgs::~UIMouseWheelEventArgs()
 }
 
 //------------------------------------------------------------------------------
-void UIMouseWheelEventArgs::Initialize(UIEventType type, int delta)
+void UIMouseWheelEventArgs::initialize(UIEventType type, int delta)
 {
-	UIEventArgs::Initialize(type);
+	UIEventArgs::initialize(type);
 	m_delta = delta;
 }
 

@@ -25,7 +25,7 @@ public:
 	/**
 		@brief		指定した色でビットマップ全体を塗りつぶします。
 	*/
-	void Clear(const Color32& color);
+	void clear(const Color32& color);
 
 	/**
 		@brief		矩形を塗りつぶします。

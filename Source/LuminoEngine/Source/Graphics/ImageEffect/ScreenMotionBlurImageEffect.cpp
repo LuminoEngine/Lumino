@@ -27,7 +27,7 @@ static const size_t g_ScreenMotionBlurImageEffect_fx_Len = LN_ARRAY_SIZE_OF(g_Sc
 ScreenMotionBlurImageEffectPtr ScreenMotionBlurImageEffect::Create()
 {
 	ScreenMotionBlurImageEffectPtr obj(LN_NEW ScreenMotionBlurImageEffect(), false);
-	obj->Initialize(detail::GraphicsManager::GetInstance());
+	obj->initialize(detail::GraphicsManager::GetInstance());
 	return obj;
 }
 
@@ -48,9 +48,9 @@ ScreenMotionBlurImageEffect::~ScreenMotionBlurImageEffect()
 }
 
 //------------------------------------------------------------------------------
-void ScreenMotionBlurImageEffect::Initialize(detail::GraphicsManager* manager)
+void ScreenMotionBlurImageEffect::initialize(detail::GraphicsManager* manager)
 {
-	ImageEffect::Initialize(manager);
+	ImageEffect::initialize(manager);
 
 	auto shader = Object::MakeRef<Shader>(m_manager, g_ScreenMotionBlurImageEffect_fx_Data, g_ScreenMotionBlurImageEffect_fx_Len);
 
@@ -87,10 +87,10 @@ void ScreenMotionBlurImageEffect::OnRender(DrawList* context, RenderTargetTextur
 		return;
 	}
 
-	const SizeI& sourceSize = source->GetSize();
+	const SizeI& sourceSize = source->getSize();
 
 	// m_accumTexture と source のサイズが異なる場合は作り直す
-	if (m_accumTexture == nullptr || m_accumTexture->GetSize() != sourceSize)
+	if (m_accumTexture == nullptr || m_accumTexture->getSize() != sourceSize)
 	{
 		m_accumTexture = LN_NEW RenderTargetTexture();
 		m_accumTexture->CreateImpl(m_manager, sourceSize, 1, TextureFormat::R8G8B8X8);

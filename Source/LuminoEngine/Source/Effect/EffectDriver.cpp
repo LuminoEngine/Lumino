@@ -14,7 +14,7 @@ namespace detail
 //==============================================================================
 
 //------------------------------------------------------------------------------
-void EffectEngine::Initialize(EffectManager* manager, int cacheObjectCount, size_t cacheMemorySize)
+void EffectEngine::initialize(EffectManager* manager, int cacheObjectCount, size_t cacheMemorySize)
 {
 	m_manager = manager;
 	m_effectCoreCache = LN_NEW CacheManager(cacheObjectCount, cacheMemorySize);
@@ -35,7 +35,7 @@ void EffectEngine::Finalize()
 //==============================================================================
 
 //------------------------------------------------------------------------------
-//void EffectInstance::Initialize(EffectManager* manager)
+//void EffectInstance::initialize(EffectManager* manager)
 //{
 //	m_manager = manager;
 //}

@@ -12,12 +12,12 @@ class BitmapFont
 public:
 	BitmapFont();
 	virtual ~BitmapFont();
-	void Initialize(Bitmap* bitmap);
+	void initialize(Bitmap* bitmap);
 
 	virtual void SetName(const String& fontName) { LN_THROW(0, InvalidOperationException); }
 	virtual const String& GetName() const { return m_name; }
 	virtual void SetSize(int size) { LN_THROW(0, InvalidOperationException); }
-	virtual int GetSize() const { return 0; }
+	virtual int getSize() const { return 0; }
 	virtual void SetEdgeSize(int size) { LN_THROW(0, InvalidOperationException); }
 	virtual int GetEdgeSize() const { return 0; }
 	virtual void SetBold(bool enabled) { LN_THROW(0, InvalidOperationException); }
@@ -26,7 +26,7 @@ public:
 	virtual bool IsItalic() const { return false; }
 	virtual void SetAntiAlias(bool enabled) { LN_THROW(0, InvalidOperationException); }
 	virtual bool IsAntiAlias() const { return false; }
-	virtual RawFontPtr Copy() const;
+	virtual RawFontPtr copy() const;
 	virtual int GetLineSpacing() { return m_charHeight; }
 	virtual FontGlyphLocation* AdvanceKerning(UTF32 utf32code, int strokeSize, FontGlyphLocation* prevData);
 	virtual FontGlyphBitmap* LookupGlyphBitmap(UTF32 utf32code, int strokeSize);

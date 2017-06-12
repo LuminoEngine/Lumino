@@ -20,8 +20,8 @@ public:
 	TileLayer();
 	virtual ~TileLayer();
 	
-	void Resize(int width, int height);
-	const SizeI& GetSize() const { return m_size; }
+	void resize(int width, int height);
+	const SizeI& getSize() const { return m_size; }
 
 	void SetTileId(int x, int y, int id);
 	int GetTileId(int x, int y);

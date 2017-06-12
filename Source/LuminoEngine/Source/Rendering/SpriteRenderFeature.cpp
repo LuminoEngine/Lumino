@@ -28,7 +28,7 @@ SpriteRenderFeature::SpriteRenderFeature(GraphicsManager* manager, int maxSprite
 	, m_spriteSortMode(/*SpriteSortMode::Texture | */SpriteSortMode::DepthBackToFront)
 {
 	m_internal = LN_NEW SpriteRendererImpl();
-	m_internal->Initialize(manager, maxSpriteCount);
+	m_internal->initialize(manager, maxSpriteCount);
 }
 
 //------------------------------------------------------------------------------
@@ -227,7 +227,7 @@ SpriteRendererImpl::~SpriteRendererImpl()
 //}
 
 //------------------------------------------------------------------------------
-void SpriteRendererImpl::Initialize(GraphicsManager* manager, int maxSpriteCount)
+void SpriteRendererImpl::initialize(GraphicsManager* manager, int maxSpriteCount)
 {
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
@@ -236,12 +236,12 @@ void SpriteRendererImpl::Initialize(GraphicsManager* manager, int maxSpriteCount
 
 	//-----------------------------------------------------
 	// 頂点バッファとインデックスバッファ
-	m_vertexDeclaration.Attach(device->CreateVertexDeclaration(BatchSpriteVertex::Elements(), BatchSpriteVertex::ElementCount));
-	m_vertexBuffer.Attach(device->CreateVertexBuffer(sizeof(BatchSpriteVertex) * m_maxSprites * 4, NULL, ResourceUsage::Dynamic));
+	m_vertexDeclaration.attach(device->CreateVertexDeclaration(BatchSpriteVertex::Elements(), BatchSpriteVertex::ElementCount));
+	m_vertexBuffer.attach(device->CreateVertexBuffer(sizeof(BatchSpriteVertex) * m_maxSprites * 4, NULL, ResourceUsage::Dynamic));
 
 #if 1
 	ByteBuffer indexBuf(sizeof(uint16_t) * m_maxSprites * 6, false);
-	uint16_t* ib = (uint16_t*)indexBuf.GetData();
+	uint16_t* ib = (uint16_t*)indexBuf.getData();
 	int idx = 0;
 	int i2 = 0;
 	for (int i = 0; i < m_maxSprites; ++i)
@@ -255,7 +255,7 @@ void SpriteRendererImpl::Initialize(GraphicsManager* manager, int maxSpriteCount
 		ib[i2 + 4] = idx + 1;
 		ib[i2 + 5] = idx + 3;
 	}
-	m_indexBuffer.Attach(device->CreateIndexBuffer(
+	m_indexBuffer.attach(device->CreateIndexBuffer(
 		m_maxSprites * 6, ib, IndexBufferFormat_UInt16, ResourceUsage::Dynamic));
 #else
 	m_indexBuffer.Attach(device->CreateIndexBuffer(
@@ -285,7 +285,7 @@ void SpriteRendererImpl::Initialize(GraphicsManager* manager, int maxSpriteCount
 	// シェーダ
 
 	ShaderCompileResult r;
-	m_shader.Shader.Attach(device->CreateShader(g_SpriteRenderer_fx_Data, g_SpriteRenderer_fx_Len, &r));
+	m_shader.Shader.attach(device->CreateShader(g_SpriteRenderer_fx_Data, g_SpriteRenderer_fx_Len, &r));
 	LN_THROW(r.Level != ShaderCompileResultLevel_Error, CompilationException, r);
 
 	m_shader.varTexture = m_shader.Shader->GetVariableByName(_T("gMaterialTexture"));
@@ -297,8 +297,8 @@ void SpriteRendererImpl::Initialize(GraphicsManager* manager, int maxSpriteCount
 	//-----------------------------------------------------
 	// メモリ確保と各種初期値
 
-	m_spriteRequestList.Resize(m_maxSprites);
-	m_spriteIndexList.Resize(m_maxSprites);
+	m_spriteRequestList.resize(m_maxSprites);
+	m_spriteIndexList.resize(m_maxSprites);
 
 	// ステートにはデフォルトをひとつ詰めておく
 	m_renderStateList.Add(RenderState());
@@ -753,7 +753,7 @@ void SpriteRendererImpl::Flush(SpriteSortMode sortFlags)
 	//-----------------------------------------------------
 	// 属性リストを作る
 
-	m_attributeList.Clear();
+	m_attributeList.clear();
 	while (true)
 	{
 		while (true)
@@ -835,13 +835,13 @@ void SpriteRendererImpl::Flush(SpriteSortMode sortFlags)
 	//-----------------------------------------------------
 	// クリーンアップ
 
-	Clear();
+	clear();
 }
 
 //------------------------------------------------------------------------------
-void SpriteRendererImpl::Clear()
+void SpriteRendererImpl::clear()
 {
-	m_renderStateList.Clear();
+	m_renderStateList.clear();
 	m_renderStateList.Add(RenderState());
 	m_currentRenderStateIndex = 0;
 	m_spriteRequestListUsedCount = 0;

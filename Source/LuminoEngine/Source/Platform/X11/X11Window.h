@@ -40,7 +40,7 @@ public:
 public:
 	// override Window
 	virtual bool IsActive() const { return true; }
-	virtual const Size& GetSize() const { return m_clientSize; }
+	virtual const Size& getSize() const { return m_clientSize; }
 	virtual void SetFullScreenEnabled(bool enabled);
 	virtual bool IsFullScreenEnabled() const { return false; }
 	virtual void CaptureMouse();

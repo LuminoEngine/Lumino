@@ -136,8 +136,8 @@ void CSClassLibGenerator::Generate()
 
 		classesText.Append(m_fieldsText.ToString()).NewLine();
 		classesText.Append(m_eventsText.ToString()).NewLine();
-		m_fieldsText.Clear();
-		m_eventsText.Clear();
+		m_fieldsText.clear();
+		m_eventsText.clear();
 
 		classesText.DecreaseIndent();
 		classesText.Append("}").NewLine();

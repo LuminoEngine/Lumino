@@ -306,7 +306,7 @@ class TestObject3 : public Object
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	void Initialize() {}
+	void initialize() {}
 	//void lnsl_SerializeImpl(tr::Archive& ar)
 	//LN_SERIALIZE(ar, version, 1)
 	virtual void Serialize(tr::Archive& ar, int version)
@@ -423,7 +423,7 @@ TEST_F(Test_Serialization, List)
 //public:
 //	static Test_TypeInfo<TestObject4> info;
 //
-//	void Initialize() {}
+//	void initialize() {}
 //};
 //
 //template<class TObject> struct Test_GetFactory<TObject, std::false_type>
@@ -476,7 +476,7 @@ class TestObject4 : public TestObject3
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	void Initialize() {}
+	void initialize() {}
 	//LN_SERIALIZE(ar, version, 2)
 	virtual void Serialize(tr::Archive& ar, int version)
 	{

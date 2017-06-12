@@ -23,7 +23,7 @@ public:
 	PhysicsManager();
 	virtual ~PhysicsManager();
 
-	void Initialize();
+	void initialize();
 	void Finalize();
 
 	//void AddPhysicsWorld(PhysicsWorldCore* world) { m_worldList.Add(world); }

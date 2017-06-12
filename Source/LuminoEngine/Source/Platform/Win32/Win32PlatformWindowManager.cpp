@@ -214,7 +214,7 @@ void Win32WindowManager::CreateMainWindow(const WindowCreationSettings& settings
 	data.Fullscreen = settings.fullscreen;
 	data.Resizable = settings.resizable;
 	data.UserWindow = (HWND)settings.userWindow;
-	m_mainWindow.Attach(CreateNativeWindow(data));
+	m_mainWindow.attach(CreateNativeWindow(data));
 }
 
 //------------------------------------------------------------------------------

@@ -67,7 +67,7 @@ LN_INTERNAL_ACCESS:
 	
 	GizmoModel();
 	virtual ~GizmoModel();
-	void Initialize(ln::detail::GraphicsManager* manager);
+	void initialize(ln::detail::GraphicsManager* manager);
 
 	void SubmitEditing();
 

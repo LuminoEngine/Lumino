@@ -24,7 +24,7 @@ public:
 	AnimationClock();
 	AnimationClock(AnimationTimeline* timeline, const Delegate<void(void)>& endCallback);
 	virtual ~AnimationClock() = default;
-	void Initialize() {}
+	void initialize() {}
 	void AdvanceTime(float deltaTime);
 	bool IsFinished() const;
 

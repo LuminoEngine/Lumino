@@ -27,7 +27,7 @@ public:
 		Finalize();
 	}
 
-	void Initialize(Type type)
+	void initialize(Type type)
 	{
 		if (SUCCEEDED(CoInitializeEx(NULL, COINIT_APARTMENTTHREADED)))	// multi-threaded is not supported
 		{

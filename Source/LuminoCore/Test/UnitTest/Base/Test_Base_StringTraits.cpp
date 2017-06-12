@@ -72,68 +72,68 @@ TEST_F(Test_Base_StringUtils, IsSpace)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_StringUtils, Compare)
+TEST_F(Test_Base_StringUtils, compare)
 {
 	// <Test> 文字数指定無しの全体比較
 	{
-		ASSERT_EQ(true, StringTraits::Compare("aa", -1, "aaa", -1, 2) == 0);
-		ASSERT_EQ(true, StringTraits::Compare("aaa", -1, "aa", -1, 2) == 0);
-		ASSERT_EQ(true, StringTraits::Compare("aa", -1, "aaa", -1, 3) < 0);
-		ASSERT_EQ(true, StringTraits::Compare("aaa", -1, "aa", -1, 3) > 0);
+		ASSERT_EQ(true, StringTraits::compare("aa", -1, "aaa", -1, 2) == 0);
+		ASSERT_EQ(true, StringTraits::compare("aaa", -1, "aa", -1, 2) == 0);
+		ASSERT_EQ(true, StringTraits::compare("aa", -1, "aaa", -1, 3) < 0);
+		ASSERT_EQ(true, StringTraits::compare("aaa", -1, "aa", -1, 3) > 0);
 	}
 	// <Test> 文字数指定有りの全体比較
 	{
-		ASSERT_EQ(true, StringTraits::Compare("aa", 2, "aaa", 3, 2) == 0);
-		ASSERT_EQ(true, StringTraits::Compare("aaa", 3, "aa", 2, 2) == 0);
-		ASSERT_EQ(true, StringTraits::Compare("aa", 2, "aaa", 3, 3) < 0);
-		ASSERT_EQ(true, StringTraits::Compare("aaa", 3, "aa", 2, 3) > 0);
+		ASSERT_EQ(true, StringTraits::compare("aa", 2, "aaa", 3, 2) == 0);
+		ASSERT_EQ(true, StringTraits::compare("aaa", 3, "aa", 2, 2) == 0);
+		ASSERT_EQ(true, StringTraits::compare("aa", 2, "aaa", 3, 3) < 0);
+		ASSERT_EQ(true, StringTraits::compare("aaa", 3, "aa", 2, 3) > 0);
 	}
 	// <Test> 文字数指定無し・比較数指定無し
 	{
-		ASSERT_EQ(true, StringTraits::Compare("aaa", -1, "aaa", -1, -1) == 0);
-		ASSERT_EQ(true, StringTraits::Compare("aa", -1, "aaa", -1, -1) < 0);
-		ASSERT_EQ(true, StringTraits::Compare("aaa", -1, "aa", -1, -1) > 0);
+		ASSERT_EQ(true, StringTraits::compare("aaa", -1, "aaa", -1, -1) == 0);
+		ASSERT_EQ(true, StringTraits::compare("aa", -1, "aaa", -1, -1) < 0);
+		ASSERT_EQ(true, StringTraits::compare("aaa", -1, "aa", -1, -1) > 0);
 	}
 	// <Test> 文字数指定有りの比較数指定
 	{
-		ASSERT_EQ(true, StringTraits::Compare("aa", 2, "aaa", 3, -1) < 0);
-		ASSERT_EQ(true, StringTraits::Compare("aaa", 3, "aa", 2, -1) > 0);
+		ASSERT_EQ(true, StringTraits::compare("aa", 2, "aaa", 3, -1) < 0);
+		ASSERT_EQ(true, StringTraits::compare("aaa", 3, "aa", 2, -1) > 0);
 	}
 	// <Test> 部分比較
 	{
-		ASSERT_EQ(true, StringTraits::Compare("aaa", 3, "aaa", 3, 4) == 0);
-		ASSERT_EQ(true, StringTraits::Compare("aaa", 2, "aaa", 3, 4) < 0);
-		ASSERT_EQ(true, StringTraits::Compare("aaa", 3, "aaa", 2, 4) > 0);
+		ASSERT_EQ(true, StringTraits::compare("aaa", 3, "aaa", 3, 4) == 0);
+		ASSERT_EQ(true, StringTraits::compare("aaa", 2, "aaa", 3, 4) < 0);
+		ASSERT_EQ(true, StringTraits::compare("aaa", 3, "aaa", 2, 4) > 0);
 	}
 	// <Test> デフォルト引数では大文字小文字を区別する
 	{
-		ASSERT_EQ(true, StringTraits::Compare("aaa", -1, "aaa", -1, -1) == 0);
-		ASSERT_EQ(true, StringTraits::Compare("aaa", -1, "AAA", -1, -1) != 0);
+		ASSERT_EQ(true, StringTraits::compare("aaa", -1, "aaa", -1, -1) == 0);
+		ASSERT_EQ(true, StringTraits::compare("aaa", -1, "AAA", -1, -1) != 0);
 	}
 	// <Test> 大文字小文字を区別する
 	{
-		ASSERT_EQ(true, StringTraits::Compare("aaa", -1, "aaa", -1, -1, CaseSensitivity::CaseSensitive) == 0);
-		ASSERT_EQ(true, StringTraits::Compare("aaa", -1, "AAA", -1, -1, CaseSensitivity::CaseSensitive) != 0);
+		ASSERT_EQ(true, StringTraits::compare("aaa", -1, "aaa", -1, -1, CaseSensitivity::CaseSensitive) == 0);
+		ASSERT_EQ(true, StringTraits::compare("aaa", -1, "AAA", -1, -1, CaseSensitivity::CaseSensitive) != 0);
 	}
 	// <Test> 大文字小文字を区別しない
 	{
-		ASSERT_EQ(true, StringTraits::Compare("aaa", -1, "aaa", -1, -1, CaseSensitivity::CaseInsensitive) == 0);
-		ASSERT_EQ(true, StringTraits::Compare("aaa", -1, "AAA", -1, -1, CaseSensitivity::CaseInsensitive) == 0);
+		ASSERT_EQ(true, StringTraits::compare("aaa", -1, "aaa", -1, -1, CaseSensitivity::CaseInsensitive) == 0);
+		ASSERT_EQ(true, StringTraits::compare("aaa", -1, "AAA", -1, -1, CaseSensitivity::CaseInsensitive) == 0);
 	}
 
 	// <Test> 空文字列の比較
 	{
-		ASSERT_EQ(true, StringTraits::Compare("", -1, "", -1, 0) == 0);
-		ASSERT_EQ(true, StringTraits::Compare("", 0, "", 0, 0) == 0);
-		ASSERT_EQ(true, StringTraits::Compare("", -1, "a", -1, 0) == 0);
-		ASSERT_EQ(true, StringTraits::Compare("a", -1, "", -1, 0) == 0);
-		ASSERT_EQ(true, StringTraits::Compare("", 0, "a", 1, 0) == 0);
-		ASSERT_EQ(true, StringTraits::Compare("a", 1, "", 0, 0) == 0);
+		ASSERT_EQ(true, StringTraits::compare("", -1, "", -1, 0) == 0);
+		ASSERT_EQ(true, StringTraits::compare("", 0, "", 0, 0) == 0);
+		ASSERT_EQ(true, StringTraits::compare("", -1, "a", -1, 0) == 0);
+		ASSERT_EQ(true, StringTraits::compare("a", -1, "", -1, 0) == 0);
+		ASSERT_EQ(true, StringTraits::compare("", 0, "a", 1, 0) == 0);
+		ASSERT_EQ(true, StringTraits::compare("a", 1, "", 0, 0) == 0);
 
-		ASSERT_EQ(true, StringTraits::Compare("", -1, "a", -1, 1) < 0);
-		ASSERT_EQ(true, StringTraits::Compare("a", -1, "", -1, 1) > 0);
-		ASSERT_EQ(true, StringTraits::Compare("", 0, "a", 1, 1) < 0);
-		ASSERT_EQ(true, StringTraits::Compare("a", 1, "", 0, 1) > 0);
+		ASSERT_EQ(true, StringTraits::compare("", -1, "a", -1, 1) < 0);
+		ASSERT_EQ(true, StringTraits::compare("a", -1, "", -1, 1) > 0);
+		ASSERT_EQ(true, StringTraits::compare("", 0, "a", 1, 1) < 0);
+		ASSERT_EQ(true, StringTraits::compare("a", 1, "", 0, 1) > 0);
 	}
 }
 

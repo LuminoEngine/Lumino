@@ -32,7 +32,7 @@ DocumentsManager::~DocumentsManager()
 }
 
 //------------------------------------------------------------------------------
-void DocumentsManager::Initialize(const ConfigData& configData)
+void DocumentsManager::initialize(const ConfigData& configData)
 {
 	m_graphicsManager = configData.graphicsManager;
 	m_TCharToUTF32Converter.SetDestinationEncoding(Encoding::GetUTF32Encoding());

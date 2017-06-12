@@ -18,7 +18,7 @@ public:
 	EffectEngine() = default;
 	virtual ~EffectEngine() = default;
 
-	void Initialize(EffectManager* manager, int cacheObjectCount, size_t cacheMemorySize);
+	void initialize(EffectManager* manager, int cacheObjectCount, size_t cacheMemorySize);
 	virtual void Finalize();
 	virtual VisualEffect* CreateEffectCore(const PathName& filePath) = 0;
 	virtual void SetViewProjectin(const Matrix& view, const Matrix& proj) = 0;
@@ -73,7 +73,7 @@ public:
 //	EffectInstance() = default;
 //	virtual ~EffectInstance() = default;
 //
-//	void Initialize(EffectManager* manager);
+//	void initialize(EffectManager* manager);
 //	void SetWorldMatrix(const Matrix& matrix) { m_worldMatrix = matrix; }
 //	//void AdvanceTime(float deltaTime);
 //

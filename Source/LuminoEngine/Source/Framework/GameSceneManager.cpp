@@ -22,7 +22,7 @@ GameScene::~GameScene()
 }
 
 //------------------------------------------------------------------------------
-void GameScene::Initialize()
+void GameScene::initialize()
 {
 
 }

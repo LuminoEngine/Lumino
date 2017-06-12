@@ -17,7 +17,7 @@ public:
 	{
 		for (auto* obj : m_poolList)
 		{
-			obj->Release();
+			obj->release();
 		}
 	}
 
@@ -34,7 +34,7 @@ public:
 			new (obj)TObject(args...);
 		}
 		obj->handled = false;
-		obj->AddRef();
+		obj->addRef();
 		return obj;
 	}
 
@@ -46,7 +46,7 @@ private:
 	{
 		for (auto* e : m_poolList)
 		{
-			if (e->GetReferenceCount() == 1) {	// このリストからしか参照されていなければ返す
+			if (e->getReferenceCount() == 1) {	// このリストからしか参照されていなければ返す
 				return e;
 			}
 		}
@@ -86,7 +86,7 @@ public:
 		{
 			for (auto e : (*list.second))
 			{
-				e->Release();
+				e->release();
 			}
 			delete list.second;
 		}
@@ -106,7 +106,7 @@ public:
 			PlacementNewObject<TEventArgs>(e, args...);
 		}
 		e->handled = false;
-		e->AddRef();
+		e->addRef();
 		return e;
 	}
 
@@ -122,7 +122,7 @@ private:
 		{
 			for (auto e : (*list))
 			{
-				if (e->GetReferenceCount() == 1) {	// このリストからしか参照されていなければ返す
+				if (e->getReferenceCount() == 1) {	// このリストからしか参照されていなければ返す
 					return e;
 				}
 			}
@@ -137,7 +137,7 @@ private:
 		{
 			list = LN_NEW EventArgsList();
 			m_pool.Add(tr::TypeInfo::GetTypeInfo(e), list);
-			e->AddRef();
+			e->addRef();
 		}
 		list->Add(e);
 	}
@@ -154,7 +154,7 @@ private:
 	{
 		LN_FOREACH(T a, pool)
 		{
-			if (a->GetReferenceCount() == 1) {
+			if (a->getReferenceCount() == 1) {
 				return a;
 			}
 		}

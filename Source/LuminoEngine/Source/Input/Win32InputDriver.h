@@ -12,7 +12,7 @@ public:
 	Win32InputDriver();
 	virtual ~Win32InputDriver();
 
-	void Initialize(HWND hWnd);
+	void initialize(HWND hWnd);
 
 	virtual int GetJoystickCount() override;
 	virtual void GetJoystickState(int joysticNumber, JoystickDeviceState* state) override;

@@ -83,11 +83,11 @@ public:
 	bool IsEmpty() const { return m_len <= 0; }
 	int GetLength() const { return m_len; }
 
-	int Compare(const TChar* str, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const { return StringTraits::Compare(GetBegin(), m_len, str, -1, count, cs); }
+	int compare(const TChar* str, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const { return StringTraits::compare(GetBegin(), m_len, str, -1, count, cs); }
 
 	const TChar& operator[](int index) const  { return *(m_str + m_pos + index); }
 	
-	bool Equals(const GenericStringRef<TChar>& str) const { return Compare(str.GetBegin(), str.GetLength()) == 0; }
+	bool equals(const GenericStringRef<TChar>& str) const { return compare(str.GetBegin(), str.GetLength()) == 0; }
 	
 	void Detach() LN_NOEXCEPT
 	{
@@ -95,7 +95,7 @@ public:
 		m_pos = 0;
 		m_len = 0;
 	}
-	void Attach(const TChar* str, int pos, int len) LN_NOEXCEPT
+	void attach(const TChar* str, int pos, int len) LN_NOEXCEPT
 	{
 		m_str = str;
 		m_pos = pos;
@@ -142,21 +142,21 @@ GenericString<TChar> GenericStringRef<TChar>::ToString() const
 template<typename TChar>
 inline bool operator==(const TChar* left, const GenericStringRef<TChar>& right)
 {
-	return right.Equals(left);
+	return right.equals(left);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
 inline bool operator==(const GenericStringRef<TChar>& left, const TChar* right)
 {
-	return left.Equals(right);
+	return left.equals(right);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
 inline bool operator!=(const GenericStringRef<TChar>& left, const GenericStringRef<TChar>& right)
 {
-	return !right.Equals(left);
+	return !right.equals(left);
 }
 
 

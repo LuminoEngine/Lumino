@@ -36,7 +36,7 @@ uint32_t RenderState::GetHashCode() const
 }
 
 //------------------------------------------------------------------------------
-bool RenderState::Equals(const RenderState& state) const
+bool RenderState::equals(const RenderState& state) const
 {
 	return
 		Blend == state.Blend &&
@@ -82,7 +82,7 @@ DepthStencilState::DepthStencilState()
 }
 
 //------------------------------------------------------------------------------
-bool DepthStencilState::Equals(const DepthStencilState& state) const
+bool DepthStencilState::equals(const DepthStencilState& state) const
 {
 	return
 		DepthTestEnabled == state.DepthTestEnabled &&

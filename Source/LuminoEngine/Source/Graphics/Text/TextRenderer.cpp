@@ -47,9 +47,9 @@ TextRendererCore::~TextRendererCore()
 }
 
 //------------------------------------------------------------------------------
-void TextRendererCore::Initialize(GraphicsManager* manager)
+void TextRendererCore::initialize(GraphicsManager* manager)
 {
-	GraphicsResourceObject::Initialize();
+	GraphicsResourceObject::initialize();
 	CreateDeviceResources();
 }
 
@@ -68,7 +68,7 @@ void TextRendererCore::CreateDeviceResources()
 	const int DefaultFaceCount = 512;
 
 	auto* device = m_manager->GetGraphicsDevice();
-	m_vertexDeclaration.Attach(device->CreateVertexDeclaration(Vertex::Elements(), Vertex::ElementCount));
+	m_vertexDeclaration.attach(device->CreateVertexDeclaration(Vertex::Elements(), Vertex::ElementCount));
 	m_vertexBuffer = device->CreateVertexBuffer(sizeof(Vertex) * DefaultFaceCount * 4, nullptr, ResourceUsage::Dynamic);
 	m_indexBuffer = device->CreateIndexBuffer(DefaultFaceCount * 6, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 
@@ -198,8 +198,8 @@ void TextRendererCore::Flush(FontGlyphTextureCache* cache)
 	renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
 
 	// キャッシュクリア
-	m_vertexCache.Clear();
-	m_indexCache.Clear();
+	m_vertexCache.clear();
+	m_indexCache.clear();
 
 	// 変更したステートを元に戻す
 	renderer->SetRenderState(oldState);
@@ -231,7 +231,7 @@ TextRenderer::~TextRenderer()
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::Initialize(GraphicsManager* manager)
+void TextRenderer::initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 	m_core = m_manager->GetTextRendererCore();
@@ -286,7 +286,7 @@ void TextRenderer::DrawString(const Matrix& transform, const TCHAR* str, int len
 	// 
 	TextLayoutResult result;
 	cache->GetTextLayoutEngine()->ResetSettings();
-	cache->GetTextLayoutEngine()->LayoutText((UTF32*)utf32Buf.GetConstData(), utf32Buf.GetSize() / sizeof(UTF32), LayoutTextOptions::All, &result);
+	cache->GetTextLayoutEngine()->LayoutText((UTF32*)utf32Buf.getConstData(), utf32Buf.getSize() / sizeof(UTF32), LayoutTextOptions::All, &result);
 
 	DrawGlyphsInternal(transform, position, result.Items, cache);
 }
@@ -321,7 +321,7 @@ void TextRenderer::DrawString(const Matrix& transform, const TCHAR* str, int len
 
 
 	TextLayoutResult result;
-	cache->GetTextLayoutEngine()->LayoutText((UTF32*)utf32Buf.GetConstData(), utf32Buf.GetSize() / sizeof(UTF32), LayoutTextOptions::All, &result);
+	cache->GetTextLayoutEngine()->LayoutText((UTF32*)utf32Buf.getConstData(), utf32Buf.getSize() / sizeof(UTF32), LayoutTextOptions::All, &result);
 
 	DrawGlyphsInternal(transform, rect.GetTopLeft(), result.Items, cache);
 }
@@ -415,13 +415,13 @@ void TextRenderer::FlushInternal(FontGlyphTextureCache* cache)
 		RefPtr<Brush>, m_fillBrush,	// TODO: Brush をそのまま描画スレッドに持ち込むのは危険。変更される。
 		{
 			m_core->Render(
-				(TextRendererCore::GlyphRunData*)dataListData.GetData(),
+				(TextRendererCore::GlyphRunData*)dataListData.getData(),
 				dataCount,
 				cache,
 				m_fillBrush);
 		});
 
-	m_glyphLayoutDataList.Clear();
+	m_glyphLayoutDataList.clear();
 	m_flushRequested = false;
 }
 
@@ -465,7 +465,7 @@ VectorTextRendererCore::~VectorTextRendererCore()
 }
 
 //------------------------------------------------------------------------------
-void VectorTextRendererCore::Initialize(GraphicsManager* manager)
+void VectorTextRendererCore::initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 
@@ -530,8 +530,8 @@ void VectorTextRendererCore::Render(const VectorGlyphData* dataList, int dataCou
 		}
 
 		// キャッシュクリア
-		m_vertexCache.Clear();
-		m_indexCache.Clear();
+		m_vertexCache.clear();
+		m_indexCache.clear();
 	}
 }
 
@@ -556,11 +556,11 @@ VectorTextRenderer::~VectorTextRenderer()
 }
 
 //------------------------------------------------------------------------------
-void VectorTextRenderer::Initialize(GraphicsManager* manager)
+void VectorTextRenderer::initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 	m_core = RefPtr<VectorTextRendererCore>::MakeRef();
-	m_core->Initialize(m_manager);
+	m_core->initialize(m_manager);
 }
 
 //------------------------------------------------------------------------------
@@ -618,13 +618,13 @@ void VectorTextRenderer::Flush()
 			RefPtr<Brush>, m_fillBrush,
 			{
 				m_core->Render(
-					(VectorGlyphData*)dataListData.GetData(),
+					(VectorGlyphData*)dataListData.getData(),
 					dataCount,
 					glyphCache,
 					m_fillBrush);
 			});
 
-		m_bufferingCache.Clear();
+		m_bufferingCache.clear();
 	}
 }
 

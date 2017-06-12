@@ -25,7 +25,7 @@ DX9VertexBuffer::DX9VertexBuffer()
 //------------------------------------------------------------------------------
 DX9VertexBuffer::~DX9VertexBuffer()
 {
-	LN_SAFE_RELEASE(m_vertexBuffer);
+	LN_COM_SAFE_RELEASE(m_vertexBuffer);
 	LN_SAFE_RELEASE(m_graphicsDevice);
 }
 
@@ -80,7 +80,7 @@ void DX9VertexBuffer::OnLostDevice()
 {
 	if (m_usage == ResourceUsage::Dynamic)
 	{
-		LN_SAFE_RELEASE(m_vertexBuffer);
+		LN_COM_SAFE_RELEASE(m_vertexBuffer);
 	}
 }
 
@@ -122,11 +122,11 @@ DX9VertexDeclaration::DX9VertexDeclaration()
 //------------------------------------------------------------------------------
 DX9VertexDeclaration::~DX9VertexDeclaration()
 {
-	LN_SAFE_RELEASE(m_vertexDecl);
+	LN_COM_SAFE_RELEASE(m_vertexDecl);
 }
 
 //------------------------------------------------------------------------------
-void DX9VertexDeclaration::Initialize(DX9GraphicsDevice* device, const VertexElement* elements, int elementsCount)
+void DX9VertexDeclaration::initialize(DX9GraphicsDevice* device, const VertexElement* elements, int elementsCount)
 {
 	if (LN_CHECK_ARG(device != nullptr)) return;
 	if (LN_CHECK_ARG(elements != nullptr)) return;

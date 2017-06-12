@@ -85,7 +85,7 @@ LN_CONSTRUCT_ACCESS:
 	Brush();
 	Brush(const Color& color);
 	virtual ~Brush();
-	void Initialize();
+	void initialize();
 
 LN_INTERNAL_ACCESS:
 	bool IsSolidColor() const { return m_texture.IsNull(); }
@@ -114,8 +114,8 @@ public:
 LN_CONSTRUCT_ACCESS:
 	SolidColorBrush();
 	virtual ~SolidColorBrush();
-	void Initialize(const Color& color);
-	void Initialize(const Color& rgb, float a);
+	void initialize(const Color& color);
+	void initialize(const Color& rgb, float a);
 };
 
 /**
@@ -132,13 +132,13 @@ public:
 LN_CONSTRUCT_ACCESS:
 	TextureBrush();
 	virtual ~TextureBrush();
-	void Initialize();
-	void Initialize(const StringRef& filePath);
-	void Initialize(Texture* texture);
+	void initialize();
+	void initialize(const StringRef& filePath);
+	void initialize(Texture* texture);
 
 LN_INTERNAL_ACCESS:
 	Rect GetActualSourceRect() const;
-	Size GetSize() const;
+	Size getSize() const;
 };
 
 

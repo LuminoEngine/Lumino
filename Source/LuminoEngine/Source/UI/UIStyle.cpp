@@ -38,7 +38,7 @@ UIRenderElement::~UIRenderElement()
 }
 
 //------------------------------------------------------------------------------
-void UIRenderElement::Initialize()
+void UIRenderElement::initialize()
 {
 }
 
@@ -81,7 +81,7 @@ UIStylePropertyTable::~UIStylePropertyTable()
 }
 
 //------------------------------------------------------------------------------
-void UIStylePropertyTable::Initialize(const StringRef& visualStateName)
+void UIStylePropertyTable::initialize(const StringRef& visualStateName)
 {
 	m_visualStateName = visualStateName;
 }
@@ -137,7 +137,7 @@ namespace detail {
 //------------------------------------------------------------------------------
 void UIStylePropertyTableInstance::ClearAvailableRenderElements()
 {
-	m_availableRenderElements.Clear();
+	m_availableRenderElements.clear();
 }
 
 //------------------------------------------------------------------------------
@@ -271,10 +271,10 @@ UIStyle::UIStyle()
 }
 
 //------------------------------------------------------------------------------
-void UIStyle::Initialize()
+void UIStyle::initialize()
 {
 	m_basePropertyTable = RefPtr<UIStylePropertyTable>::MakeRef();
-	m_basePropertyTable->Initialize(_T(""));
+	m_basePropertyTable->initialize(_T(""));
 }
 
 //------------------------------------------------------------------------------
@@ -331,7 +331,7 @@ UIStylePropertyTable* UIStyle::GetPropertyTable(const StringRef& visualStateName
 	else
 	{
 		auto table = RefPtr<UIStylePropertyTable>::MakeRef();
-		table->Initialize(visualStateName);
+		table->initialize(visualStateName);
 		m_visualStatePropertyTableList.Add(VisualStateStylePair{ visualStateName, table });
 		return table;
 	}
@@ -554,7 +554,7 @@ class GlobalSolidColorBrush
 public:
 	GlobalSolidColorBrush() = default;
 	virtual ~GlobalSolidColorBrush() = default;
-	void Initialize(const Color& color) { SolidColorBrush::Initialize(color); }
+	void initialize(const Color& color) { SolidColorBrush::initialize(color); }
 };
 
 static bool						g_colorsInit = false;
@@ -577,7 +577,7 @@ static const void InitColors()
 		{
 			for (int j = 0; j < UIColors::MaxDepth; j++)
 			{
-				g_brushes[i][j].Initialize(g_colors[i][j]);
+				g_brushes[i][j].initialize(g_colors[i][j]);
 			}
 		}
 

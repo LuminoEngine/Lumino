@@ -29,7 +29,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	UITreeViewItem();
 	virtual ~UITreeViewItem();
-	void Initialize();
+	void initialize();
 
 private:
 	RefPtr<UIElement>	m_header;
@@ -52,7 +52,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	UITreeView();
 	virtual ~UITreeView();
-	void Initialize();
+	void initialize();
 
 private:
 };

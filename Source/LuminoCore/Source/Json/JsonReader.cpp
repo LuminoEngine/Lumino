@@ -47,7 +47,7 @@ void JsonReader::Parse(TextReader* textReader)
 	m_reader = textReader;
 
 	// 一時バッファ。もし足りなければ拡張される
-	m_tmpStream.Initialize(512);
+	m_tmpStream.initialize(512);
 
 	// バッファ先頭の空白を読み飛ばす
 	if (!SkipWhitespace())
@@ -485,14 +485,14 @@ JsonReader2::JsonReader2(const String& text)
 	: JsonReader2()
 {
 	RefPtr<StringReader> r(LN_NEW StringReader(text), false);
-	m_reader.Attach(LN_NEW detail::PositioningTextReader(r));
+	m_reader.attach(LN_NEW detail::PositioningTextReader(r));
 }
 
 //------------------------------------------------------------------------------
 JsonReader2::JsonReader2(TextReader* textReader)
 	: JsonReader2()
 {
-	m_reader.Attach(LN_NEW detail::PositioningTextReader(textReader));
+	m_reader.attach(LN_NEW detail::PositioningTextReader(textReader));
 }
 
 //------------------------------------------------------------------------------
@@ -510,7 +510,7 @@ bool JsonReader2::Read()
 //------------------------------------------------------------------------------
 bool JsonReader2::TryRead()
 {
-	m_textCache.Clear();
+	m_textCache.clear();
 
 	bool skip;
 	do

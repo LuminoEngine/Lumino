@@ -26,9 +26,9 @@ UIControl::~UIControl()
 }
 
 //------------------------------------------------------------------------------
-void UIControl::Initialize()
+void UIControl::initialize()
 {
-	UIElement::Initialize();
+	UIElement::initialize();
 	SetFocusable(true);
 
 	auto* vsm = GetVisualStateManager();
@@ -76,7 +76,7 @@ void UIControl::ClearChildren()
 	{
 		c->SetLogicalParent(nullptr);
 	}
-	m_items->Clear();
+	m_items->clear();
 }
 
 //------------------------------------------------------------------------------
@@ -281,7 +281,7 @@ void UIControl::OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e
 		LN_NOTIMPLEMENTED();
 		break;
 	case tr::NotifyCollectionChangedAction::Reset:
-		m_itemsHostPanel->GetChildren()->Clear();
+		m_itemsHostPanel->GetChildren()->clear();
 		break;
 	default:
 		break;

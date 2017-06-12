@@ -20,7 +20,7 @@ int g_samplesIndex = 0;
 
 void Main()
 {
-	Engine::Initialize();
+	Engine::initialize();
 
 
 	auto* mainWindow = Engine::GetMainWindow();

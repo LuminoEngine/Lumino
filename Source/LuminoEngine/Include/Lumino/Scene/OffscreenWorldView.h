@@ -24,7 +24,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	OffscreenWorldView();
 	virtual ~OffscreenWorldView();
-	void Initialize();
+	void initialize();
 	void SetId(int id) { m_id = id; }
 	int GetId() const { return m_id; }
 	void RenderWorld(World* world, CameraComponent* mainViewCamera, RenderView* mainRenderView);
@@ -50,7 +50,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	SkyComponent();
 	virtual ~SkyComponent();
-	void Initialize();
+	void initialize();
 
 private:
 
@@ -68,7 +68,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	MirrorComponent();
 	virtual ~MirrorComponent();
-	void Initialize();
+	void initialize();
 
 private:
 	RefPtr<OffscreenWorldView>	m_offscreen;

@@ -21,7 +21,7 @@ public:
 LN_INTERNAL_ACCESS:
 	UIContext();
 	virtual ~UIContext();
-	void Initialize(detail::UIManager* manager);
+	void initialize(detail::UIManager* manager);
 
 	void SetFocusElement(UIElement* element);
 	UIElement* SetFocusElement() { return m_focusElement; }	// キーボードフォーカス

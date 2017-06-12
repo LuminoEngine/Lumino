@@ -38,7 +38,7 @@ class Document
 public:
 	Document();
 	virtual ~Document();
-	void Initialize();
+	void initialize();
 
 	// åªç›ÇÃì‡óeÇÇ∑Ç◊Çƒîjä¸ÇµÇƒÅAêVÇµÇ¢1Ç¬ÇÃ Paragraph ÇçÏÇÈ
 	void SetText(const StringRef& text);
@@ -130,7 +130,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 LN_CONSTRUCT_ACCESS:
 	TextElement();
 	virtual ~TextElement();
-	void Initialize();
+	void initialize();
 
 LN_INTERNAL_ACCESS:
 	DocumentsManager* GetManager() const { return m_manager; }
@@ -138,7 +138,7 @@ LN_INTERNAL_ACCESS:
 	void SetParent(TextElement* parent) { m_parent = parent; }
 	TextElement* GetParent() const { return m_parent; }
 	const Size& GetDesiredSize() const { return m_desiredSize; }
-	const Size& GetRenderSize() const { return m_finalLocalRect.GetSize(); }
+	const Size& GetRenderSize() const { return m_finalLocalRect.getSize(); }
 
 private:
 	DocumentsManager*		m_manager;
@@ -170,7 +170,7 @@ class Block
 public:
 	Block();
 	virtual ~Block();
-	void Initialize();
+	void initialize();
 
 	void AddInline(Inline* inl);
 	void ClearInlines();
@@ -198,7 +198,7 @@ class Paragraph
 public:
 	Paragraph();
 	virtual ~Paragraph();
-	void Initialize();
+	void initialize();
 
 
 private:
@@ -213,7 +213,7 @@ class Inline
 public:
 	Inline();
 	virtual ~Inline();
-	void Initialize();
+	void initialize();
 
 private:
 };
@@ -227,8 +227,8 @@ class Run
 public:
 	Run();
 	virtual ~Run();
-	void Initialize();
-	void Initialize(const UTF32* str, int len);
+	void initialize();
+	void initialize(const UTF32* str, int len);
 
 	void SetText(const StringRef& text);
 
@@ -254,7 +254,7 @@ class Span
 public:
 	Span();
 	virtual ~Span();
-	void Initialize();
+	void initialize();
 
 private:
 	// Inline List
@@ -270,7 +270,7 @@ class LineBreak
 public:
 	LineBreak();
 	virtual ~LineBreak();
-	void Initialize();
+	void initialize();
 
 private:
 	virtual InternalTextElementType GetInternalTextElementType() const;
@@ -326,7 +326,7 @@ class DocumentView
 public:
 
 private:
-	void Initialize(Document* document);
+	void initialize(Document* document);
 
 	Document*	m_document;
 };

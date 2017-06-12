@@ -118,7 +118,7 @@ TEST_F(IntegrationTest_Reflection_ReflectionObject, StackDestruct)
 	{
 		MyObj o1;
 		MyObj o2;
-		o2.AddRef();
+		o2.addRef();
 	}
 	Assertion::SetNotifyFataiErrorHandler(nullptr);
 

@@ -267,7 +267,7 @@ template<typename TChar>
 Result PathTraits::GetExtension(const TChar* path, bool withDot, GenericStringRef<TChar>* outRef) LN_NOEXCEPT
 {
 	if (path == nullptr || outRef == nullptr) { return Result::ArgumentError; }
-	outRef->Attach(path, 0, 0);
+	outRef->attach(path, 0, 0);
 
 	int len = StringTraits::tcslen(path);
 	for (int i = len; i >= 0; --i)
@@ -710,7 +710,7 @@ void PathTraits::NormalizeSeparator(TChar* srcPath)
 */
 //------------------------------------------------------------------------------
 template<typename TChar>
-int PathTraits::Compare(const TChar* path1, const TChar* path2)
+int PathTraits::compare(const TChar* path1, const TChar* path2)
 {
 	// まずは正規化。セキュリティ的推奨事項
 	// https://www.jpcert.or.jp/java-rules/ids02-j.html
@@ -770,22 +770,22 @@ int PathTraits::Compare(const TChar* path1, const TChar* path2)
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-bool PathTraits::Equals(const TChar* path1, const TChar* path2)
+bool PathTraits::equals(const TChar* path1, const TChar* path2)
 {
-	return Compare(path1, path2) == 0;
+	return compare(path1, path2) == 0;
 }
-template bool PathTraits::Equals<char>(const char* path1, const char* path2);
-template bool PathTraits::Equals<wchar_t>(const wchar_t* path1, const wchar_t* path2);
+template bool PathTraits::equals<char>(const char* path1, const char* path2);
+template bool PathTraits::equals<wchar_t>(const wchar_t* path1, const wchar_t* path2);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-int PathTraits::Compare(TChar ch1, TChar ch2, CaseSensitivity cs)
+int PathTraits::compare(TChar ch1, TChar ch2, CaseSensitivity cs)
 {
 	if (IsSeparatorChar(ch1) && IsSeparatorChar(ch2)) { return 0; }
-	return StringTraits::Compare(ch1, ch2, cs);
+	return StringTraits::compare(ch1, ch2, cs);
 }
-template int PathTraits::Compare<char>(char ch1, char ch2, CaseSensitivity cs);
-template int PathTraits::Compare<wchar_t>(wchar_t ch1, wchar_t ch2, CaseSensitivity cs);
+template int PathTraits::compare<char>(char ch1, char ch2, CaseSensitivity cs);
+template int PathTraits::compare<wchar_t>(wchar_t ch1, wchar_t ch2, CaseSensitivity cs);
 
 //------------------------------------------------------------------------------
 // path1 から見たときの path2 の相対パス
@@ -827,7 +827,7 @@ GenericString<TChar> PathTraits::DiffPath(const TChar* path1, int len1, const TC
 		//	// ↑の if の後、1ループしてここで終了する
 		//	break;
 		//}
-		else if (Compare(path1[i], path2[i], cs) != 0) {
+		else if (compare(path1[i], path2[i], cs) != 0) {
 			break;
 		}
 		else if (IsSeparatorChar(path1[i])) {

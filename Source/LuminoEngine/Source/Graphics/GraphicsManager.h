@@ -90,7 +90,7 @@ public:
 	GraphicsManager();
 	virtual ~GraphicsManager();
 
-	void Initialize(const ConfigData& configData);
+	void initialize(const ConfigData& configData);
 	void Dispose();
 
 	/** 現在のグラフィックスシステムが使用している API の種類を確認します。*/

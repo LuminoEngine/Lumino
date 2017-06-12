@@ -39,7 +39,7 @@ PhysicsManager::~PhysicsManager()
 }
 
 //------------------------------------------------------------------------------
-void PhysicsManager::Initialize()
+void PhysicsManager::initialize()
 {
 	if (Instance == nullptr) {
 		Instance = this;

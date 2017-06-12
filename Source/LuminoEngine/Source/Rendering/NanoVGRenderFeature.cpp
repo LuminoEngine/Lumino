@@ -46,7 +46,7 @@ public:
 
 	void Reserved(int size)
 	{
-		m_indexStack.Clear();
+		m_indexStack.clear();
 		m_capacity = 0;
 		Grow(size);
 	}
@@ -390,7 +390,7 @@ struct LNNVGcontext
 	//List<TexturePtr>	textureList;
 	List<Driver::ITexture*>	textureList;
 
-	void Initialize()
+	void initialize()
 	{
 		GLNVGcontext* base = this;
 		memset(base, 0, sizeof(GLNVGcontext));
@@ -403,7 +403,7 @@ struct LNNVGcontext
 			{ 0, VertexElementType_Float2, VertexElementUsage_Position, 0 },
 			{ 0, VertexElementType_Float2, VertexElementUsage_TexCoord, 0 },
 		};
-		m_vertexDeclaration.Attach(device->CreateVertexDeclaration(elements, 2), false);
+		m_vertexDeclaration.attach(device->CreateVertexDeclaration(elements, 2), false);
 	}
 
 	Driver::IRenderer* GetRenderer()
@@ -417,7 +417,7 @@ struct LNNVGcontext
 		size_t bufferSize = nverts * sizeof(NVGvertex);
 		if (m_vertexBuffer == nullptr || bufferSize > m_vertexBuffer->GetByteCount())
 		{
-			m_vertexBuffer.Attach(device->CreateVertexBuffer(bufferSize, verts, ResourceUsage::Dynamic), false);
+			m_vertexBuffer.attach(device->CreateVertexBuffer(bufferSize, verts, ResourceUsage::Dynamic), false);
 		}
 		else
 		{
@@ -600,7 +600,7 @@ static int lnnvg__renderCreate(void* uptr)
 	code.Append((const char*)codeData, codeLen);
 
 	ShaderCompileResult result;
-	lnc->shader.Attach(device->CreateShader(code.c_str(), code.GetLength(), &result), false);
+	lnc->shader.attach(device->CreateShader(code.c_str(), code.GetLength(), &result), false);
 	LN_THROW(result.Level != ShaderCompileResultLevel_Error, CompilationException, result);
 	lnc->shaderPass = lnc->shader->GetTechnique(0)->GetPass(0);
 	lnc->varViewSize = lnc->shader->GetVariableByName(_T("viewSize"));
@@ -887,7 +887,7 @@ NVGcontext* nvgCreateLNContext(GraphicsManager* manager, int flags)
 {
 	LNNVGcontext* lnc = LN_NEW LNNVGcontext();
 	lnc->manager = manager;
-	lnc->Initialize();
+	lnc->initialize();
 
 	NVGparams params;
 	memset(&params, 0, sizeof(params));
@@ -952,7 +952,7 @@ NanoVGRenderFeature::~NanoVGRenderFeature()
 }
 
 //------------------------------------------------------------------------------
-void NanoVGRenderFeature::Initialize(GraphicsManager* manager)
+void NanoVGRenderFeature::initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 	m_nvgContext = nvgCreateLNContext(m_manager, NVG_ANTIALIAS/* | NVG_STENCIL_STROKES*/);
@@ -983,11 +983,11 @@ void NanoVGRenderFeature::OnSetState(const DrawElementBatch* state)
 void NanoVGRenderFeature::ExecuteCommandInternal(const NanoVGState& state, NanoVGCommandList* commandList)
 {
 	Driver::IRenderer* renderer = m_manager->GetGraphicsDevice()->GetRenderer();
-	const SizeI& size = renderer->GetRenderTarget(0)->GetSize();
+	const SizeI& size = renderer->GetRenderTarget(0)->getSize();
 
 	// 描画開始前にテクスチャテーブルをクリア
 	LNNVGcontext* lnc = (LNNVGcontext*)nvgInternalParams(m_nvgContext)->userPtr;
-	lnc->textureList.Clear();
+	lnc->textureList.clear();
 
 	// 描画実行
 	float pxRatio = 1.0f;
@@ -1003,7 +1003,7 @@ void NanoVGRenderFeature::ExecuteCommandInternal(const NanoVGState& state, NanoV
 //------------------------------------------------------------------------------
 void NanoVGRenderFeature::PushCommandList(NanoVGCommandList* commandList)
 {
-	commandList->Clear();
+	commandList->clear();
 
 	m_manager->GetNanoVGCommandListCache()->ReleaseCommandList(commandList);
 }

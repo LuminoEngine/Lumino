@@ -419,7 +419,7 @@ COMException::~COMException() throw()
 }
 
 //------------------------------------------------------------------------------
-Exception* COMException::Copy() const
+Exception* COMException::copy() const
 {
 	return LN_NEW COMException(*this);
 }

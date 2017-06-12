@@ -27,8 +27,8 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	UIImage();
 	virtual ~UIImage();
-	void Initialize();
-	void Initialize(const StringRef& filePath);
+	void initialize();
+	void initialize(const StringRef& filePath);
 
 private:
 	Size MeasureInternal(Size contentSize);

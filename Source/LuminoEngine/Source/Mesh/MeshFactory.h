@@ -49,7 +49,7 @@ public:
 	{
 	}
 
-	void Initialize(const Color& color, const Matrix& transform)
+	void initialize(const Color& color, const Matrix& transform)
 	{
 		m_color = color;
 		m_transform = transform;
@@ -179,14 +179,14 @@ public:
 	{
 	}
 
-	void Initialize(const Vector2& size, int sliceX, int sliceZ, const Color& color, const Matrix& transform)
+	void initialize(const Vector2& size, int sliceX, int sliceZ, const Color& color, const Matrix& transform)
 	{
 		if (LN_CHECK_ARG(sliceX >= 1)) return;
 		if (LN_CHECK_ARG(sliceZ >= 1)) return;
 		m_size = size;
 		m_sliceX = sliceX;
 		m_sliceZ = sliceZ;
-		MeshFactoryBase::Initialize(color, transform);
+		MeshFactoryBase::initialize(color, transform);
 	}
 
 	int GetVertexCount() const { return (m_sliceX + 1) * (m_sliceZ + 1); }
@@ -340,10 +340,10 @@ class RegularBoxMeshFactory
 public:
 	RegularBoxMeshFactory() {}
 
-	void Initialize(const Vector3& size, const Color& color, const Matrix& transform)
+	void initialize(const Vector3& size, const Color& color, const Matrix& transform)
 	{
 		m_size = size;
-		MeshFactoryBase::Initialize(color, transform);
+		MeshFactoryBase::initialize(color, transform);
 	}
 
 	int GetVertexCount() const
@@ -443,7 +443,7 @@ public:
 	{
 	}
 
-	void Initialize(float radius, int slices, int stacks, const Color& color, const Matrix& transform)
+	void initialize(float radius, int slices, int stacks, const Color& color, const Matrix& transform)
 	{
 		if (LN_CHECK_ARG(slices >= 3)) return;
 		if (LN_CHECK_ARG(stacks >= 2)) return;
@@ -451,7 +451,7 @@ public:
 		m_slices = slices;
 		m_stacks = stacks;
 		MakeSinCosTable();
-		MeshFactoryBase::Initialize(color, transform);
+		MeshFactoryBase::initialize(color, transform);
 	}
 
 	// Squashed
@@ -568,7 +568,7 @@ public:
 	{
 		float phi_start = Math::PI / 2.0f;
 		float phi_step = -2.0f * Math::PI / m_slices;
-		m_sincosTable.Resize(m_slices + 1);
+		m_sincosTable.resize(m_slices + 1);
 
 		float angle = phi_start;
 		for (int i = 0; i < m_slices; ++i)
@@ -602,7 +602,7 @@ public:
 	{
 	}
 
-	void Initialize(float radius, float height, int slices, int stacks, const Color& color, const Matrix& transform)
+	void initialize(float radius, float height, int slices, int stacks, const Color& color, const Matrix& transform)
 	{
 		if (LN_CHECK_ARG(slices >= 3)) return;
 		if (LN_CHECK_ARG(stacks >= 1)) return;
@@ -610,7 +610,7 @@ public:
 		m_height = height;
 		m_slices = slices;
 		m_stacks = stacks;
-		MeshFactoryBase::Initialize(color, transform);
+		MeshFactoryBase::initialize(color, transform);
 	}
 
 	int GetVertexCount() const
@@ -719,13 +719,13 @@ public:
 	{
 	}
 
-	void Initialize(float radius, float height, int slices, const Color& color, const Matrix& transform)
+	void initialize(float radius, float height, int slices, const Color& color, const Matrix& transform)
 	{
 		if (LN_CHECK_ARG(slices >= 3)) return;
 		m_radius = radius;
 		m_height = height;
 		m_slices = slices;
-		MeshFactoryBase::Initialize(color, transform);
+		MeshFactoryBase::initialize(color, transform);
 	}
 
 	int GetVertexCount() const
@@ -825,7 +825,7 @@ public:
 	{
 	}
 
-	void Initialize(float startAngle, float endAngle, float innerRadius, float outerRadius, int slices, const Color& color, const Matrix& transform)
+	void initialize(float startAngle, float endAngle, float innerRadius, float outerRadius, int slices, const Color& color, const Matrix& transform)
 	{
 		if (LN_CHECK_ARG(slices >= 1)) return;
 		m_startAngle = startAngle;
@@ -833,7 +833,7 @@ public:
 		m_innerRadius = innerRadius;
 		m_outerRadius = outerRadius;
 		m_slices = slices;
-		MeshFactoryBase::Initialize(color, transform);
+		MeshFactoryBase::initialize(color, transform);
 	}
 
 	int GetVertexCount() const
@@ -916,7 +916,7 @@ class TeapotMeshFactory
 public:
 	TeapotMeshFactory();
 
-	void Initialize(float size, int tessellation, const Color& color, const Matrix& transform);
+	void initialize(float size, int tessellation, const Color& color, const Matrix& transform);
 
 	int GetVertexCount() const;
 

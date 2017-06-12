@@ -84,13 +84,13 @@ LN_API LNResultCode LNRectF_SetSize(LNRectF* rectf, const LNSize* size)
 LN_API LNResultCode LNRectF_GetSize(const LNRectF* rectf, LNSize* outReturn)
 {
     LWIG_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LNSize&>(reinterpret_cast<const Rect*>(rectf)->GetSize());
+    *outReturn = reinterpret_cast<const LNSize&>(reinterpret_cast<const Rect*>(rectf)->getSize());
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNEngine_Initialize()
 {
     LWIG_FUNC_TRY_BEGIN;
-    LFManager::PreInitialize();(Engine::Initialize());LFManager::PostInitialize();
+    LFManager::PreInitialize();(Engine::initialize());LFManager::PostInitialize();
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNEngine_Terminate()

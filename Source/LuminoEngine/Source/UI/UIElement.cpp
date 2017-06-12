@@ -91,9 +91,9 @@ UIElement::~UIElement()
 }
 
 //------------------------------------------------------------------------------
-void UIElement::Initialize()
+void UIElement::initialize()
 {
-	RuntimeResource::Initialize();
+	RuntimeResource::initialize();
 	m_manager = detail::EngineDomain::GetUIManager();
 	m_invalidateFlags |= detail::InvalidateFlags::Initializing;
 
@@ -235,12 +235,12 @@ void UIElement::ArrangeLayout(const Rect& finalLocalRect)
 	Size ds = GetLayoutDesiredSize();
 	if (parentHAlign != nullptr)
 	{
-		detail::LayoutHelper::AdjustHorizontalAlignment(finalLocalRect.GetSize(), ds, true, *parentHAlign, &alignd);
+		detail::LayoutHelper::AdjustHorizontalAlignment(finalLocalRect.getSize(), ds, true, *parentHAlign, &alignd);
 		alignd.x += finalLocalRect.x;
 	}
 	if (parentVAlign != nullptr)
 	{
-		detail::LayoutHelper::AdjustVerticalAlignment(finalLocalRect.GetSize(), ds, true, *parentVAlign, &alignd);
+		detail::LayoutHelper::AdjustVerticalAlignment(finalLocalRect.getSize(), ds, true, *parentVAlign, &alignd);
 		alignd.y += finalLocalRect.y;
 	}
 
@@ -283,7 +283,7 @@ void UIElement::OnRender(DrawingContext* g)
 		g->SetBrush(m_localStyle->background.get());
 		//g->SetOpacity(m_combinedOpacity);
 		//g->DrawRectangle(Rect(0, 0, m_finalLocalRect.GetSize()));
-		g->DrawBoxBackground(Rect(0, 0, m_finalLocalRect.GetSize()), m_localStyle->cornerRadius.Get());
+		g->DrawBoxBackground(Rect(0, 0, m_finalLocalRect.getSize()), m_localStyle->cornerRadius.Get());
 
 		
 	}
@@ -300,13 +300,13 @@ void UIElement::OnRender(DrawingContext* g)
 	//}
 	for (auto& re : m_localStyle->m_availableRenderElements)
 	{
-		re->LayoutAndRender(g, m_finalGlobalRect.GetSize());
+		re->LayoutAndRender(g, m_finalGlobalRect.getSize());
 	}
 
 	if (!m_localStyle->borderThickness.Get().IsZero())
 	{
 		g->DrawBoxBorder(
-			Rect(0, 0, m_finalGlobalRect.GetSize()), m_localStyle->borderThickness.Get(), CornerRadius(),
+			Rect(0, 0, m_finalGlobalRect.getSize()), m_localStyle->borderThickness.Get(), CornerRadius(),
 			Color::Gray, Color::Gray, Color::Gray, Color::Gray,
 			BorderDirection::Outside);
 	}

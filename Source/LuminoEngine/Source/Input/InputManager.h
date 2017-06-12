@@ -27,7 +27,7 @@ public:
 	InputManager();
 	virtual ~InputManager();
 
-	void Initialize(const Settings& settings);
+	void initialize(const Settings& settings);
 	void Finalize();
 
 	InputController* GetVirtualPad(int index) { return m_defaultVirtualPads[index]; }

@@ -70,21 +70,21 @@ public:
 	template<typename TItr>
 	void Assign(TItr first, TItr last)
 	{
-		CheckDetachShared();
+		checkDetachShared();
 		m_data->m_vector.assign(first, last);
 	}
 
 	/** 末尾に要素を追加します。*/
 	void Add(const value_type& item)
 	{
-		CheckDetachShared();
+		checkDetachShared();
 		m_data->m_vector.push_back(item);
 	}
 
 	/** 末尾に別の配列を連結します。*/
 	void AddRange(const List<T>& items)
 	{
-		CheckDetachShared();
+		checkDetachShared();
 		m_data->m_vector.insert(m_data->m_vector.end(), items.m_data->m_vector.begin(), items.m_data->m_vector.end());
 	}
 
@@ -92,7 +92,7 @@ public:
 	void Insert(int index, const value_type& item)
 	{
 		LN_THROW(0 <= index && index <= GetCount(), OutOfRangeException);	// Count と同じインデックスを指定できる
-		CheckDetachShared();
+		checkDetachShared();
 		m_data->m_vector.insert(m_data->m_vector.begin() + index, item);
 	}
 
@@ -100,21 +100,21 @@ public:
 	void InsertRange(int index, const List<T>& items)
 	{
 		LN_THROW(0 <= index && index <= GetCount(), OutOfRangeException);	// Count と同じインデックスを指定できる
-		CheckDetachShared();
+		checkDetachShared();
 		m_data->m_vector.insert(m_data->m_vector.begin() + index, items.m_data->m_vector.begin(), items.m_data->m_vector.end());
 	}
 
 	/** 全ての要素を削除します。*/
-	void Clear()
+	void clear()
 	{
-		CheckDetachShared();
+		checkDetachShared();
 		m_data->m_vector.clear();
 	}
 
 	/** item に一致する最初の要素を削除します。(正常に削除された場合は true を返す。要素が見つからなければ false を返す)*/
 	bool Remove(const value_type& item)
 	{
-		CheckDetachShared();
+		checkDetachShared();
 		return detail::StlHelper::Remove(m_data->m_vector, item);
 	}
 
@@ -122,7 +122,7 @@ public:
 	template<typename TPred>
 	bool RemoveIf(TPred pred)
 	{
-		CheckDetachShared();
+		checkDetachShared();
 		auto itr = m_data->m_vector.begin();
 		auto end = m_data->m_vector.end();
 		for (; itr != end; ++itr)
@@ -139,14 +139,14 @@ public:
 	void RemoveAt(int index)
 	{
 		CheckOutOfRange(index);
-		CheckDetachShared();
+		checkDetachShared();
 		m_data->m_vector.erase(m_data->m_vector.begin() + index);
 	}
 
 	/** item に一致する全ての要素を削除します。*/
 	void RemoveAll(const value_type& item)
 	{
-		CheckDetachShared();
+		checkDetachShared();
 		detail::StlHelper::RemoveAll(m_data->m_vector, item);
 	}
 
@@ -154,7 +154,7 @@ public:
 	template<typename TPred>
 	void RemoveAll(TPred pred)
 	{
-		CheckDetachShared();
+		checkDetachShared();
 		detail::StlHelper::RemoveAll(m_data->m_vector, pred);
 	}
 
@@ -162,21 +162,21 @@ public:
 	void RemoveLast()
 	{
 		CheckOutOfRange(GetCount() - 1);
-		CheckDetachShared();
+		checkDetachShared();
 		RemoveAt(GetCount() - 1);
 	}
 
 	/** 配列用のメモリを指定したサイズで確保します。*/
 	void Reserve(int count)
 	{
-		CheckDetachShared();
+		checkDetachShared();
 		m_data->m_vector.reserve(count);
 	}
 
 	/** 配列の要素数を変更します。*/
-	void Resize(int count)
+	void resize(int count)
 	{
-		CheckDetachShared();
+		checkDetachShared();
 		m_data->m_vector.resize(count);
 	}
 
@@ -249,7 +249,7 @@ public:
 	void SetAt(int index, const T& item)
 	{
 		CheckOutOfRange(index);
-		CheckDetachShared();
+		checkDetachShared();
 		m_data->m_vector.at(index) = item;
 	}
 
@@ -257,7 +257,7 @@ public:
 	reference GetAt(int index)
 	{
 		CheckOutOfRange(index);
-		CheckDetachShared();
+		checkDetachShared();
 		return m_data->m_vector.at(index);
 	}
 
@@ -272,7 +272,7 @@ public:
 	reference GetFront()
 	{
 		LN_VERIFY_STATE(!IsEmpty());
-		CheckDetachShared();
+		checkDetachShared();
 		return m_data->m_vector.front();
 	}
 
@@ -287,7 +287,7 @@ public:
 	reference GetLast()
 	{
 		LN_VERIFY_STATE(!IsEmpty());
-		CheckDetachShared();
+		checkDetachShared();
 		return m_data->m_vector.back();
 	}
 
@@ -301,7 +301,7 @@ public:
 	/** 別の配列をこの配列に上書きコピーします。*/
 	void CopyFrom(const List<T>& ary)
 	{
-		CheckDetachShared();
+		checkDetachShared();
 		m_data->m_vector = ary.m_data->m_vector;
 	}
 
@@ -324,19 +324,19 @@ public:
 	/** @name STL interface */
 	/** @{ */
 
-	iterator		begin()			{ CheckDetachShared(); return m_data->m_vector.begin(); }
+	iterator		begin()			{ checkDetachShared(); return m_data->m_vector.begin(); }
 	const_iterator	begin() const	{ return m_data->m_vector.begin(); }
-	iterator		end()			{ CheckDetachShared(); return m_data->m_vector.end(); }
+	iterator		end()			{ checkDetachShared(); return m_data->m_vector.end(); }
 	const_iterator	end() const		{ return m_data->m_vector.end(); }
 	const_iterator	cbegin() const	{ return m_data->m_vector.cbegin(); }
 	const_iterator	cend() const	{ return m_data->m_vector.cend(); }
-	iterator		erase(iterator pos) { CheckDetachShared(); return m_data->m_vector.erase(pos); }
-	iterator		erase(iterator begin, iterator end) { CheckDetachShared(); return m_data->m_vector.erase(begin, end); }
+	iterator		erase(iterator pos) { checkDetachShared(); return m_data->m_vector.erase(pos); }
+	iterator		erase(iterator begin, iterator end) { checkDetachShared(); return m_data->m_vector.erase(begin, end); }
 
 	/** @} */
 
 private:
-	void CheckDetachShared();
+	void checkDetachShared();
 	void CheckOutOfRange(int index) const;
 
 private:
@@ -347,8 +347,8 @@ private:
 		ArrayData(int refCount) : m_refCount(refCount) {}
 		ArrayData(const std_vector& vec) : m_refCount(1), m_vector(vec) {}
 		inline bool IsShared() const { return (m_refCount > 1); }
-		inline void AddRef() { ++m_refCount; }
-		inline void Release();
+		inline void addRef() { ++m_refCount; }
+		inline void release();
 		static ArrayData* GetSharedEmpty();
 	};
 

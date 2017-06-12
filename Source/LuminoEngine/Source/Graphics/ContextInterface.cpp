@@ -56,7 +56,7 @@ void ContextState::SetRenderTarget(int index, Texture* texture)
 
 		if (index == 0)
 		{
-			auto& size = texture->GetSize();
+			auto& size = texture->getSize();
 			viewport.Set(0, 0, size.width, size.height);
 		}
 
@@ -97,7 +97,7 @@ void ContextState::SetFillBrush(Brush* brush)
 }
 
 //------------------------------------------------------------------------------
-void ContextState::Copy(const ContextState& obj)
+void ContextState::copy(const ContextState& obj)
 {
 
 	renderState = obj.renderState;
@@ -176,7 +176,7 @@ void BasicContextState::SetShaderPass(ShaderPass* pass)
 }
 
 //------------------------------------------------------------------------------
-bool BasicContextState::Equals(const BasicContextState& s) const
+bool BasicContextState::equals(const BasicContextState& s) const
 {
 	if (renderState != s.renderState) return false;
 	if (depthStencilState != s.depthStencilState) return false;
@@ -191,7 +191,7 @@ bool BasicContextState::Equals(const BasicContextState& s) const
 }
 
 //------------------------------------------------------------------------------
-void BasicContextState::Copy(const BasicContextState& s)
+void BasicContextState::copy(const BasicContextState& s)
 {
 	renderState = s.renderState;
 	depthStencilState = s.depthStencilState;
@@ -221,7 +221,7 @@ ContextInterface::~ContextInterface()
 }
 
 //------------------------------------------------------------------------------
-void ContextInterface::Initialize(GraphicsManager* manager)
+void ContextInterface::initialize(GraphicsManager* manager)
 {
 	assert(manager != nullptr);
 	m_manager = manager;

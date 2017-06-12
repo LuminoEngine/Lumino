@@ -218,7 +218,7 @@ public:
 static FileClose g_fileClose;
 
 //------------------------------------------------------------------------------
-bool Logger::Initialize(const TCHAR* filePath) throw()
+bool Logger::initialize(const TCHAR* filePath) throw()
 {
 	//if (log_dir)
 	//{

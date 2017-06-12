@@ -47,7 +47,7 @@ public:
 	/** デストラクタ */
 	virtual ~Collection()
 	{
-		Clear();
+		clear();
 	}
 
 public:
@@ -104,7 +104,7 @@ public:
 	}
 
 	/** 全ての要素を削除します。*/
-	void Clear()
+	void clear()
 	{
 		ClearItems();
 	}
@@ -114,7 +114,7 @@ public:
 
 
 	/** 配列の要素数を変更します。*/
-	void Resize(int count)
+	void resize(int count)
 	{
 		if (LN_CHECK_ARG(count >= 0)) return;
 
@@ -126,7 +126,7 @@ public:
 				RemoveItem(i);
 			}
 		}
-		m_array.Resize(count);
+		m_array.resize(count);
 	}
 
 	/** 指定した要素がこの配列内に存在するかどうかを判断します。*/
@@ -279,7 +279,7 @@ protected:
 	/** 全ての要素を削除します。*/
 	virtual void ClearItems()
 	{
-		m_array.Clear();
+		m_array.clear();
 	}
 
 	/** 指定したインデックスにある要素を削除します。*/

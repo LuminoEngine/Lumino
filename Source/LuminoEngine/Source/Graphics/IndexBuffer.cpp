@@ -62,15 +62,15 @@ IndexBuffer::~IndexBuffer()
 }
 
 //------------------------------------------------------------------------------
-void IndexBuffer::Initialize(detail::GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage, bool sizeConst)
+void IndexBuffer::initialize(detail::GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage, bool sizeConst)
 {
-	GraphicsResourceObject::Initialize();
+	GraphicsResourceObject::initialize();
 	m_format = format;
 	m_usage = usage;
 
 	if (sizeConst)
 	{
-		m_rhiObject.Attach(m_manager->GetGraphicsDevice()->CreateIndexBuffer(indexCount, initialData, m_format, m_usage), false);
+		m_rhiObject.attach(m_manager->GetGraphicsDevice()->CreateIndexBuffer(indexCount, initialData, m_format, m_usage), false);
 	}
 	else
 	{
@@ -104,7 +104,7 @@ void IndexBuffer::Reserve(int indexCount)
 }
 
 //------------------------------------------------------------------------------
-void IndexBuffer::Resize(int indexCount)
+void IndexBuffer::resize(int indexCount)
 {
 	if (LN_CHECK_STATE(!IsRHIDirect())) return;		// サイズ変更禁止
 
@@ -143,13 +143,13 @@ void* IndexBuffer::RequestMappedData(int indexCount)
 {
 	if (GetIndexCount() < indexCount)
 	{
-		Resize(indexCount);
+		resize(indexCount);
 	}
 	return GetMappedData();
 }
 
 //------------------------------------------------------------------------------
-void IndexBuffer::Clear()
+void IndexBuffer::clear()
 {
 	m_buffer.clear();
 	m_locked = true;
@@ -189,7 +189,7 @@ Driver::IIndexBuffer* IndexBuffer::ResolveRHIObject()
 		{
 			if (m_rhiObject == nullptr || m_rhiObject->GetByteCount() != m_buffer.size())
 			{
-				m_rhiObject.Attach(m_manager->GetGraphicsDevice()->CreateIndexBuffer(GetIndexCount(), m_buffer.data(), m_format, m_usage), false);
+				m_rhiObject.attach(m_manager->GetGraphicsDevice()->CreateIndexBuffer(GetIndexCount(), m_buffer.data(), m_format, m_usage), false);
 			}
 			else
 			{
@@ -200,7 +200,7 @@ Driver::IIndexBuffer* IndexBuffer::ResolveRHIObject()
 					RenderBulkData, data,
 					RefPtr<Driver::IIndexBuffer>, deviceObj,
 					{
-						deviceObj->SetSubData(0, data.GetData(), data.GetSize());
+						deviceObj->SetSubData(0, data.getData(), data.getSize());
 					});
 			}
 		}

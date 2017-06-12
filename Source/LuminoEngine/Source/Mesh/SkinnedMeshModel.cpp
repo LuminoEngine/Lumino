@@ -202,7 +202,7 @@ SkinnedMeshModel::~SkinnedMeshModel()
 }
 
 //------------------------------------------------------------------------------
-void SkinnedMeshModel::Initialize(detail::GraphicsManager* manager, PmxSkinnedMeshResource* sharingMesh)
+void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMeshResource* sharingMesh)
 {
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	if (LN_CHECK_ARG(sharingMesh != nullptr)) return;
@@ -217,7 +217,7 @@ void SkinnedMeshModel::Initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 	{
 		int count = sharingMesh->materials.GetCount();
 		m_mesh->m_materials = RefPtr<MaterialList>::MakeRef();
-		m_mesh->m_materials->Resize(count);
+		m_mesh->m_materials->resize(count);
 		for (int i = 0; i < count; ++i)
 		{
 			m_mesh->m_materials->SetAt(i, sharingMesh->materials.GetAt(i)->MakeCommonMaterial());
@@ -229,12 +229,12 @@ void SkinnedMeshModel::Initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 	int boneCount = m_meshResource->bones.GetCount();
 	if (boneCount > 0)
 	{
-		m_allBoneList.Resize(boneCount);
+		m_allBoneList.resize(boneCount);
 		// まずは Bone を作る
 		for (int i = 0; i < boneCount; i++)
 		{
 			m_allBoneList[i] = SkinnedMeshBonePtr::MakeRef();
-			m_allBoneList[i]->Initialize(m_meshResource->bones[i]);
+			m_allBoneList[i]->initialize(m_meshResource->bones[i]);
 			
 			// IK ボーンを集める
 			if (m_meshResource->bones[i]->IsIK)
@@ -265,10 +265,10 @@ void SkinnedMeshModel::Initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 		}
 
 		// ボーン行列を書き込むところを作る
-		m_skinningMatrices.Resize(boneCount);
+		m_skinningMatrices.resize(boneCount);
 		m_skinningMatricesTexture = NewObject<Texture2D>(SizeI(4, boneCount), TextureFormat::R32G32B32A32_Float, false, ResourceUsage::Static);	// TODO: Dynamic、NoManaged
 
-		m_skinningLocalQuaternions.Resize(boneCount);
+		m_skinningLocalQuaternions.resize(boneCount);
 		m_skinningLocalQuaternionsTexture = NewObject<Texture2D>(SizeI(1, boneCount), TextureFormat::R32G32B32A32_Float, false, ResourceUsage::Static);	// TODO: Dynamic、NoManaged
 
 		// アニメーション管理
@@ -311,18 +311,18 @@ void SkinnedMeshModel::Initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 	m_physicsWorld = NewObject<PhysicsWorld>();
 	m_physicsWorld->SetGravity(Vector3(0, -9.80f * 10.0f, 0));
 
-	m_rigidBodyList.Resize(m_meshResource->rigidBodys.GetCount());
+	m_rigidBodyList.resize(m_meshResource->rigidBodys.GetCount());
 	for (int i = 0; i < m_meshResource->rigidBodys.GetCount(); ++i)
 	{
 		m_rigidBodyList[i] = RefPtr<detail::MmdSkinnedMeshRigidBody>::MakeRef();
-		m_rigidBodyList[i]->Initialize(this, m_meshResource->rigidBodys[i], 1.0f);
+		m_rigidBodyList[i]->initialize(this, m_meshResource->rigidBodys[i], 1.0f);
 	}
 
-	m_jointList.Resize(m_meshResource->joints.GetCount());
+	m_jointList.resize(m_meshResource->joints.GetCount());
 	for (int i = 0; i < m_meshResource->joints.GetCount(); ++i)
 	{
 		m_jointList[i] = RefPtr<detail::MmdSkinnedMeshJoint>::MakeRef();
-		m_jointList[i]->Initialize(this, m_meshResource->joints[i]);
+		m_jointList[i]->initialize(this, m_meshResource->joints[i]);
 	}
 }
 
@@ -484,7 +484,7 @@ SkinnedMeshBone::~SkinnedMeshBone()
 }
 
 //------------------------------------------------------------------------------
-void SkinnedMeshBone::Initialize(PmxBoneResource* boneResource)
+void SkinnedMeshBone::initialize(PmxBoneResource* boneResource)
 {
 	m_core = boneResource;
 }
@@ -598,7 +598,7 @@ MmdSkinnedMeshRigidBody::~MmdSkinnedMeshRigidBody()
 }
 
 //------------------------------------------------------------------------------
-void MmdSkinnedMeshRigidBody::Initialize(SkinnedMeshModel* ownerModel, PmxRigidBodyResource* rigidBodyResource, float scale)
+void MmdSkinnedMeshRigidBody::initialize(SkinnedMeshModel* ownerModel, PmxRigidBodyResource* rigidBodyResource, float scale)
 {
 	m_ownerModel = ownerModel;
 	m_resource = rigidBodyResource;
@@ -867,7 +867,7 @@ MmdSkinnedMeshJoint::~MmdSkinnedMeshJoint()
 }
 
 //------------------------------------------------------------------------------
-void MmdSkinnedMeshJoint::Initialize(SkinnedMeshModel* ownerModel, PmxJointResource* jointResource)
+void MmdSkinnedMeshJoint::initialize(SkinnedMeshModel* ownerModel, PmxJointResource* jointResource)
 {
 	if (LN_CHECK_ARG(ownerModel != nullptr)) return;
 	if (LN_CHECK_ARG(jointResource != nullptr)) return;
@@ -888,7 +888,7 @@ void MmdSkinnedMeshJoint::Initialize(SkinnedMeshModel* ownerModel, PmxJointResou
 	Matrix frameInB = jointOffset * transInvB;
 
 	m_joint = RefPtr<DofSpringJoint>::MakeRef();
-	m_joint->Initialize(bodyA->GetRigidBody(), bodyB->GetRigidBody(), frameInA, frameInB);
+	m_joint->initialize(bodyA->GetRigidBody(), bodyB->GetRigidBody(), frameInA, frameInB);
 
 	// SpringPositionStiffness.x
 	if (jointResource->SpringPositionStiffness.x != 0.0f)

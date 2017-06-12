@@ -34,7 +34,7 @@ CollisionShape::~CollisionShape()
 }
 
 //------------------------------------------------------------------------------
-void CollisionShape::Initialize(btCollisionShape* shape)
+void CollisionShape::initialize(btCollisionShape* shape)
 {
 	m_shape = shape;
 }
@@ -60,7 +60,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PlaneCollisionShape, CollisionShape);
 PlaneCollisionShapePtr PlaneCollisionShape::Create(const Vector3& direction)
 {
 	auto ptr = RefPtr<PlaneCollisionShape>::MakeRef();
-	ptr->Initialize(direction);
+	ptr->initialize(direction);
 	return ptr;
 }
 
@@ -75,9 +75,9 @@ PlaneCollisionShape::~PlaneCollisionShape()
 }
 
 //------------------------------------------------------------------------------
-void PlaneCollisionShape::Initialize(const Vector3& direction)
+void PlaneCollisionShape::initialize(const Vector3& direction)
 {
-	CollisionShape::Initialize(new btStaticPlaneShape(detail::BulletUtil::LNVector3ToBtVector3(Vector3::Normalize(direction)), 0.0f));
+	CollisionShape::initialize(new btStaticPlaneShape(detail::BulletUtil::LNVector3ToBtVector3(Vector3::Normalize(direction)), 0.0f));
 }
 
 //==============================================================================
@@ -89,7 +89,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(BoxCollisionShape, CollisionShape);
 BoxCollisionShapePtr BoxCollisionShape::Create(const Vector3& size)
 {
 	auto ptr = RefPtr<BoxCollisionShape>::MakeRef();
-	ptr->Initialize(size);
+	ptr->initialize(size);
 	return ptr;
 }
 
@@ -110,9 +110,9 @@ BoxCollisionShape::~BoxCollisionShape()
 }
 
 //------------------------------------------------------------------------------
-void BoxCollisionShape::Initialize(const Vector3& size)
+void BoxCollisionShape::initialize(const Vector3& size)
 {
-	CollisionShape::Initialize(new btBoxShape(detail::BulletUtil::LNVector3ToBtVector3(size * 0.5f)));
+	CollisionShape::initialize(new btBoxShape(detail::BulletUtil::LNVector3ToBtVector3(size * 0.5f)));
 	// Å¶PMD ÇÃçÑëÃÉTÉCÉYÇÕ bullet ÇÃÇ∆ìØÇ∂Ç»ÇÃÇ≈íçà”
 }
 
@@ -125,7 +125,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SphereCollisionShape, CollisionShape);
 SphereCollisionShapePtr SphereCollisionShape::Create(float radius)
 {
 	auto ptr = RefPtr<SphereCollisionShape>::MakeRef();
-	ptr->Initialize(radius);
+	ptr->initialize(radius);
 	return ptr;
 }
 	
@@ -140,9 +140,9 @@ SphereCollisionShape::~SphereCollisionShape()
 }
 
 //------------------------------------------------------------------------------
-void SphereCollisionShape::Initialize(float radius)
+void SphereCollisionShape::initialize(float radius)
 {
-	CollisionShape::Initialize(new btSphereShape(radius));
+	CollisionShape::initialize(new btSphereShape(radius));
 }
 
 //==============================================================================
@@ -154,7 +154,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(CapsuleCollisionShape, CollisionShape);
 CapsuleCollisionShapePtr CapsuleCollisionShape::Create(float radius, float height)
 {
 	auto ptr = RefPtr<CapsuleCollisionShape>::MakeRef();
-	ptr->Initialize(radius, height);
+	ptr->initialize(radius, height);
 	return ptr;
 }
 
@@ -169,9 +169,9 @@ CapsuleCollisionShape::~CapsuleCollisionShape()
 }
 
 //------------------------------------------------------------------------------
-void CapsuleCollisionShape::Initialize(float radius, float height)
+void CapsuleCollisionShape::initialize(float radius, float height)
 {
-	CollisionShape::Initialize(new btCapsuleShape(radius, height));
+	CollisionShape::initialize(new btCapsuleShape(radius, height));
 }
 
 //==============================================================================
@@ -183,7 +183,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(MeshCollisionShape, CollisionShape);
 MeshCollisionShapePtr MeshCollisionShape::Create(MeshResource* mesh)
 {
 	auto ptr = RefPtr<MeshCollisionShape>::MakeRef();
-	ptr->Initialize(mesh);
+	ptr->initialize(mesh);
 	return ptr;
 }
 
@@ -200,7 +200,7 @@ MeshCollisionShape::~MeshCollisionShape()
 }
 
 //------------------------------------------------------------------------------
-void MeshCollisionShape::Initialize(MeshResource* mesh)
+void MeshCollisionShape::initialize(MeshResource* mesh)
 {
 	if (LN_CHECK_ARG(mesh != nullptr)) return;
 	if (LN_CHECK_STATE(m_btMeshData == nullptr)) return;
@@ -225,7 +225,7 @@ void MeshCollisionShape::Initialize(MeshResource* mesh)
 	//	mesh->GetTriangleCount(), (int*)ib, mesh->GetIndexStride(),
 	//	mesh->GetVertexCount(), (btScalar*)vb, sizeof(Vertex));
 	
-	CollisionShape::Initialize(new btBvhTriangleMeshShape(m_btMeshData, true));
+	CollisionShape::initialize(new btBvhTriangleMeshShape(m_btMeshData, true));
 }
 
 LN_NAMESPACE_END

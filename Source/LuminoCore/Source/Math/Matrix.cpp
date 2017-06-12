@@ -1693,7 +1693,7 @@ Matrix operator * (const Matrix& mat1, float v)
 }
 
 //------------------------------------------------------------------------------
-static bool Equals(const Matrix& value1, const Matrix& value2)
+static bool equals(const Matrix& value1, const Matrix& value2)
 {
 	return (
 		value1.m11 == value2.m11 && value1.m12 == value2.m12 && value1.m13 == value2.m13 && value1.m14 == value2.m14 &&
@@ -1705,13 +1705,13 @@ static bool Equals(const Matrix& value1, const Matrix& value2)
 //------------------------------------------------------------------------------
 bool Matrix::operator == (const Matrix& mat) const
 {
-	return Equals(*this, mat);
+	return equals(*this, mat);
 }
 
 //------------------------------------------------------------------------------
 bool Matrix::operator != (const Matrix& mat) const
 {
-	return !Equals(*this, mat);
+	return !equals(*this, mat);
 }
 
 LN_NAMESPACE_END

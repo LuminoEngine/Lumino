@@ -141,9 +141,9 @@ EffekseerEffectEngine::~EffekseerEffectEngine()
 }
 
 //------------------------------------------------------------------------------
-void EffekseerEffectEngine::Initialize(EffectManager* manager, int cacheObjectCount, size_t cacheMemorySize, int maxSpriteCount)
+void EffekseerEffectEngine::initialize(EffectManager* manager, int cacheObjectCount, size_t cacheMemorySize, int maxSpriteCount)
 {
-	EffectEngine::Initialize(manager, cacheObjectCount, cacheMemorySize);
+	EffectEngine::initialize(manager, cacheObjectCount, cacheMemorySize);
 
 	// ファイルIOインターフェイス
 	m_fileInterface = LN_NEW EffekseerFileInterface(m_manager->GetFileManager());
@@ -266,13 +266,13 @@ VisualEffect* EffekseerEffectEngine::CreateEffectCore(const PathName& filePath)
 	// エフェクトの読込
 	Effekseer::Effect* efkEffect = Effekseer::Effect::Create(
 		m_efkManager,
-		(const EFK_CHAR*)utf16.GetConstData());
+		(const EFK_CHAR*)utf16.getConstData());
 	if (efkEffect == NULL) {
 		return NULL;
 	}
 
 	// EffectCore 作成
-	core.Attach(LN_NEW EffekseerEffectCore(this, efkEffect), false);
+	core.attach(LN_NEW EffekseerEffectCore(this, efkEffect), false);
 
 	// キャッシュに登録
 	if (!key.IsNull()) {

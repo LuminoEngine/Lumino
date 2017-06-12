@@ -45,7 +45,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	UIViewport();
 	virtual ~UIViewport();
-	void Initialize();
+	void initialize();
 
 private:
 	void UpdateFramebufferSizeIfNeeded(const SizeI& viewSize);
@@ -104,7 +104,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UILayoutLayer();
 	virtual ~UILayoutLayer();
-	void Initialize();
+	void initialize();
 
 protected:
 	virtual UIElement* HitTestUIElement(const PointF& globalPt) override;
@@ -133,7 +133,7 @@ public:
 protected:
 	PostEffect();
 	virtual ~PostEffect();
-	void Initialize();
+	void initialize();
 
 	virtual void OnRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) = 0;
 

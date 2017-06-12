@@ -167,7 +167,7 @@ TEST_F(Test_Base_EventConnection, Basic)
 	ASSERT_EQ(65, g_Value);
 
 	// <Test> Clear 後に Dissconnetct してみる → 特に何も起こらない
-	ev01.Clear();
+	ev01.clear();
 	ev01.Raise(5);
 	ASSERT_EQ(65, g_Value);
 	conn.Disconnect();

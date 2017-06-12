@@ -215,7 +215,7 @@ protected:
 	virtual ~EngineManager();
 
 public:
-	void Initialize();
+	void initialize();
 	void InitializeCommon();
 	void InitializeAnimationManager();
 	void InitializeFileManager();

@@ -32,7 +32,7 @@ public:
 
 	// override ISwapChain
 	virtual ITexture* GetBackBuffer() { return m_backBuffer; }
-	virtual void Resize(const SizeI& size);
+	virtual void resize(const SizeI& size);
 	virtual void Present(ITexture* colorBuffer);
 
 private:

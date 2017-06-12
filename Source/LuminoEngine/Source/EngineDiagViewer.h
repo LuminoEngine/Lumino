@@ -11,7 +11,7 @@ class EngineDiagViewer
 public:
 	EngineDiagViewer();
 	~EngineDiagViewer();
-	void Initialize(EngineManager* manager, EngineDiagCore* diagCore);
+	void initialize(EngineManager* manager, EngineDiagCore* diagCore);
 
 	//void SetVisible(bool visible) { m_isVisible = visible; }
 	//bool IsVisible() const { return m_isVisible; }

@@ -49,7 +49,7 @@ RenderBulkData::RenderBulkData(const void* srcData, size_t size)
 }
 
 //------------------------------------------------------------------------------
-const void* RenderBulkData::GetData() const
+const void* RenderBulkData::getData() const
 {
 	if (m_dataHandle)
 	{
@@ -62,14 +62,14 @@ const void* RenderBulkData::GetData() const
 }
 
 //------------------------------------------------------------------------------
-void* RenderBulkData::Alloc(RenderingCommandList* commandList, size_t size)
+void* RenderBulkData::alloc(RenderingCommandList* commandList, size_t size)
 {
 	m_size = size;
-	return Alloc(commandList);
+	return alloc(commandList);
 }
 
 //------------------------------------------------------------------------------
-void* RenderBulkData::Alloc(RenderingCommandList* commandList)
+void* RenderBulkData::alloc(RenderingCommandList* commandList)
 {
 	if (m_dataHandle == 0)
 	{
@@ -99,9 +99,9 @@ RenderingCommandList::RenderingCommandList(detail::GraphicsManager* manager)
 	, m_idling(true)
 {
 	m_commandList.Reserve(DataBufferReserve);	// 適当に
-	m_commandDataBuffer.Resize(DataBufferReserve, false);
+	m_commandDataBuffer.resize(DataBufferReserve, false);
 	m_commandDataBufferUsed = 0;
-	m_extDataBuffer.Resize(DataBufferReserve, false);
+	m_extDataBuffer.resize(DataBufferReserve, false);
 	m_extDataBufferUsed = sizeof(intptr_t);	// ポインタサイズ分予約済みにしておく (null チェックで 0 を使いたい)
 }
 
@@ -113,16 +113,16 @@ RenderingCommandList::~RenderingCommandList()
 //------------------------------------------------------------------------------
 void RenderingCommandList::ClearCommands()
 {
-	m_commandList.Clear();
+	m_commandList.clear();
 	m_commandDataBufferUsed = 0;
 	m_extDataBufferUsed = sizeof(intptr_t);	// ポインタサイズ分予約済みにしておく (null チェックで 0 を使いたい)
 
 	// コマンド内のリソースの参照をクリア
 	for (RefObject* obj : m_markGCList)
 	{
-		obj->Release();
+		obj->release();
 	}
-	m_markGCList.Clear();
+	m_markGCList.clear();
 }
 
 //------------------------------------------------------------------------------
@@ -161,16 +161,16 @@ void RenderingCommandList::PostExecute()
 RenderingCommandList::DataHandle RenderingCommandList::AllocCommand(size_t byteCount, const void* copyData)
 {
 	// バッファが足りなければ拡張する
-	if (m_commandDataBufferUsed + byteCount > m_commandDataBuffer.GetSize())
+	if (m_commandDataBufferUsed + byteCount > m_commandDataBuffer.getSize())
 	{
-		size_t newSize = m_commandDataBuffer.GetSize() + std::max(m_commandDataBuffer.GetSize(), byteCount);	// 最低でも byteCount 分を拡張する
-		m_commandDataBuffer.Resize(newSize, false);
+		size_t newSize = m_commandDataBuffer.getSize() + std::max(m_commandDataBuffer.getSize(), byteCount);	// 最低でも byteCount 分を拡張する
+		m_commandDataBuffer.resize(newSize, false);
 	}
 
 	if (copyData != nullptr)
 	{
-		byte_t* ptr = &(m_commandDataBuffer.GetData()[m_commandDataBufferUsed]);
-		size_t size = m_commandDataBuffer.GetSize() - m_commandDataBufferUsed;
+		byte_t* ptr = &(m_commandDataBuffer.getData()[m_commandDataBufferUsed]);
+		size_t size = m_commandDataBuffer.getSize() - m_commandDataBufferUsed;
 		memcpy_s(ptr, size, copyData, byteCount);
 	}
 
@@ -184,16 +184,16 @@ RenderingCommandList::DataHandle RenderingCommandList::AllocCommand(size_t byteC
 RenderingCommandList::DataHandle RenderingCommandList::AllocExtData(size_t byteCount, const void* copyData)
 {
 	// バッファが足りなければ拡張する
-	if (m_extDataBufferUsed + byteCount > m_extDataBuffer.GetSize())
+	if (m_extDataBufferUsed + byteCount > m_extDataBuffer.getSize())
 	{
-		size_t newSize = m_extDataBuffer.GetSize() + std::max(m_extDataBuffer.GetSize(), byteCount);	// 最低でも byteCount 分を拡張する
-		m_extDataBuffer.Resize(newSize, false);
+		size_t newSize = m_extDataBuffer.getSize() + std::max(m_extDataBuffer.getSize(), byteCount);	// 最低でも byteCount 分を拡張する
+		m_extDataBuffer.resize(newSize, false);
 	}
 
 	if (copyData != nullptr)
 	{
-		byte_t* ptr = &(m_extDataBuffer.GetData()[m_extDataBufferUsed]);
-		size_t size = m_extDataBuffer.GetSize() - m_extDataBufferUsed;
+		byte_t* ptr = &(m_extDataBuffer.getData()[m_extDataBufferUsed]);
+		size_t size = m_extDataBuffer.getSize() - m_extDataBufferUsed;
 		memcpy_s(ptr, size, copyData, byteCount);
 	}
 
@@ -206,7 +206,7 @@ RenderingCommandList::DataHandle RenderingCommandList::AllocExtData(size_t byteC
 //------------------------------------------------------------------------------
 void* RenderingCommandList::GetExtData(DataHandle bufferIndex)
 {
-	return &(m_extDataBuffer.GetData()[bufferIndex]);
+	return &(m_extDataBuffer.getData()[bufferIndex]);
 }
 
 //------------------------------------------------------------------------------

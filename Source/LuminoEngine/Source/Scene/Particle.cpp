@@ -133,7 +133,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SpriteParticleModel, Object);
 SpriteParticleModelPtr SpriteParticleModel::Create()
 {
 	auto ptr = SpriteParticleModelPtr::MakeRef();
-	ptr->Initialize(detail::GraphicsManager::GetInstance());
+	ptr->initialize(detail::GraphicsManager::GetInstance());
 	return ptr;
 }
 
@@ -184,7 +184,7 @@ SpriteParticleModel::~SpriteParticleModel()
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticleModel::Initialize(detail::GraphicsManager* manager)
+void SpriteParticleModel::initialize(detail::GraphicsManager* manager)
 {
 	m_manager = manager;
 }
@@ -227,7 +227,7 @@ void SpriteParticleModel::Commit()
 	//m_maxParticleCount = (int)ceil(m_maxLifeTime * (float)m_spawnRate);
 
 	m_mesh = RefPtr<MeshResource>::MakeRef();
-	m_mesh->Initialize(m_manager, MeshCreationFlags::DynamicBuffers);
+	m_mesh->initialize(m_manager, MeshCreationFlags::DynamicBuffers);
 	m_mesh->ResizeVertexBuffer(m_maxParticles * 4);
 	m_mesh->ResizeIndexBuffer(m_maxParticles * 6);
 }
@@ -237,8 +237,8 @@ RefPtr<detail::SpriteParticleModelInstance> SpriteParticleModel::CreateInstane()
 {
 	auto ptr = RefPtr<detail::SpriteParticleModelInstance>::MakeRef();
 	ptr->m_owner = this;
-	ptr->m_particles.Resize(m_maxParticles);
-	ptr->m_particleIndices.Resize(m_maxParticles);
+	ptr->m_particles.resize(m_maxParticles);
+	ptr->m_particleIndices.resize(m_maxParticles);
 	for (int i = 0; i < m_maxParticles; ++i)
 	{
 		ptr->m_particleIndices[i] = i;
@@ -676,7 +676,7 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 			//LN_NOTIMPLEMENTED();
 			//context->DrawPrimitiveIndexed(m_vertexDeclaration, m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, iData * 2);
 			instance->m_activeCount = iData;
-			m_mesh->m_attributes.Resize(1);
+			m_mesh->m_attributes.resize(1);
 			m_mesh->m_attributes[0].PrimitiveNum = instance->m_activeCount * 2;
 			context->DrawMesh(m_mesh, 0, material);
 
@@ -721,11 +721,11 @@ ParticleEmitterComponent::~ParticleEmitterComponent()
 }
 
 //------------------------------------------------------------------------------
-void ParticleEmitterComponent::Initialize(SpriteParticleModel* model)
+void ParticleEmitterComponent::initialize(SpriteParticleModel* model)
 {
 	if (LN_CHECK_ARG(model != nullptr)) return;
 
-	VisualComponent::Initialize();
+	VisualComponent::initialize();
 	m_model = model;
 	m_model->Commit();
 	m_instance = m_model->CreateInstane();
@@ -769,7 +769,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ParticleEmitter3DComponent, ParticleEmitterC
 RefPtr<ParticleEmitter3DComponent> ParticleEmitter3DComponent::Create(SpriteParticleModel* model)
 {
 	auto ptr = RefPtr<ParticleEmitter3DComponent>::MakeRef();
-	ptr->Initialize(model);
+	ptr->initialize(model);
 	//detail::EngineDomain::GetDefaultSceneGraph3D()->GetRootNode()->AddChild(ptr);
 	return ptr;
 

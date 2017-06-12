@@ -11,7 +11,7 @@ public:
 	BitmapTextRenderer();
 	virtual ~BitmapTextRenderer();
 
-	void Initialize(detail::GraphicsManager* manager);
+	void initialize(detail::GraphicsManager* manager);
 
 	GlyphRun* GetTempGlyphRun() { return m_tmpGlyphRun; }	// テクスチャの DrawText 等、ユーティリティ的に使いたいときに new を減らす
 

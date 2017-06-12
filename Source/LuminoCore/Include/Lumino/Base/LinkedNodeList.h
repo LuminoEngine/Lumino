@@ -35,12 +35,12 @@ public:
 
 	~LinkedNodeList()
 	{
-		Clear();
+		clear();
 	}
 
-	int GetSize() const { return m_size; }
+	int getSize() const { return m_size; }
 
-	void Clear()
+	void clear()
 	{
 		LinkedNode* n = m_dummy->m_next;
 		LinkedNode* t;

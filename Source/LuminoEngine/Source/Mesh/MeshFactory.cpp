@@ -286,12 +286,12 @@ TeapotMeshFactory::TeapotMeshFactory()
 }
 
 //------------------------------------------------------------------------------
-void TeapotMeshFactory::Initialize(float size, int tessellation, const Color& color, const Matrix& transform)
+void TeapotMeshFactory::initialize(float size, int tessellation, const Color& color, const Matrix& transform)
 {
 	if (LN_CHECK_ARG(tessellation >= 1)) return;
 	m_size = size;
 	m_tessellation = tessellation;
-	MeshFactoryBase::Initialize(color, transform);
+	MeshFactoryBase::initialize(color, transform);
 }
 
 //------------------------------------------------------------------------------

@@ -24,7 +24,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	UIListBoxItem();
 	virtual ~UIListBoxItem();
-	void Initialize();
+	void initialize();
 };
 
 /**
@@ -47,7 +47,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	UIListBox();
 	virtual ~UIListBox();
-	void Initialize();
+	void initialize();
 
 private:
 };

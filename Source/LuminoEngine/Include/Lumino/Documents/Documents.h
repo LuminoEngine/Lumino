@@ -69,7 +69,7 @@ class Document
 public:
 	Document();
 	virtual ~Document();
-	void Initialize();
+	void initialize();
 
 	// 現在の内容をすべて破棄して、新しい1つの Paragraph を作る
 	void SetText(const StringRef& text);
@@ -132,7 +132,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 LN_CONSTRUCT_ACCESS:
 	TextElement();
 	virtual ~TextElement();
-	void Initialize();
+	void initialize();
 
 LN_INTERNAL_ACCESS:
 	ln::detail::DocumentsManager* GetManager() const { return m_manager; }
@@ -166,7 +166,7 @@ class Block
 public:
 	Block();
 	virtual ~Block();
-	void Initialize();
+	void initialize();
 
 	void AddInline(Inline* inl);
 	void ClearInlines();
@@ -190,7 +190,7 @@ class Paragraph
 public:
 	Paragraph();
 	virtual ~Paragraph();
-	void Initialize();
+	void initialize();
 
 
 private:
@@ -205,7 +205,7 @@ class Inline
 public:
 	Inline();
 	virtual ~Inline();
-	void Initialize();
+	void initialize();
 
 private:
 };
@@ -219,8 +219,8 @@ class Run
 public:
 	Run();
 	virtual ~Run();
-	void Initialize();
-	void Initialize(const UTF32* str, int len);
+	void initialize();
+	void initialize(const UTF32* str, int len);
 
 	void SetText(const StringRef& text);
 
@@ -247,7 +247,7 @@ class Span
 public:
 	Span();
 	virtual ~Span();
-	void Initialize();
+	void initialize();
 
 private:
 	// Inline List
@@ -263,7 +263,7 @@ class LineBreak
 public:
 	LineBreak();
 	virtual ~LineBreak();
-	void Initialize();
+	void initialize();
 
 private:
 	virtual InternalTextElementType GetInternalTextElementType() const;
@@ -291,7 +291,7 @@ class VisualBlock;
 //LN_CONSTRUCT_ACCESS:
 //	VisualGlyph();
 //	virtual ~VisualGlyph();
-//	void Initialize();
+//	void initialize();
 //
 //LN_INTERNAL_ACCESS:
 //	//void MeasureLayout(const Size& availableSize);
@@ -318,7 +318,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	VisualTextFragment();
 	virtual ~VisualTextFragment();
-	void Initialize();
+	void initialize();
 
 LN_INTERNAL_ACCESS:
 	//void MeasureLayout(const Size& availableSize);
@@ -356,7 +356,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	VisualInline();
 	virtual ~VisualInline();
-	void Initialize(Inline* inl);
+	void initialize(Inline* inl);
 
 LN_INTERNAL_ACCESS:
 	void MeasureLayout(const Size& availableSize, VisualBlock* rootBlock);
@@ -385,7 +385,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	VisualBlock();
 	virtual ~VisualBlock();
-	void Initialize(Block* block);
+	void initialize(Block* block);
 
 LN_INTERNAL_ACCESS:
 	void MeasureLayout(const Size& availableSize);
@@ -410,7 +410,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	DocumentView();
 	virtual ~DocumentView();
-	void Initialize(Document* document);
+	void initialize(Document* document);
 
 LN_INTERNAL_ACCESS:
 	void MeasureLayout(const Size& availableSize);

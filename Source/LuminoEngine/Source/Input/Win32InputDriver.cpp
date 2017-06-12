@@ -28,7 +28,7 @@ Win32InputDriver::~Win32InputDriver()
 }
 
 //------------------------------------------------------------------------------
-void Win32InputDriver::Initialize(HWND hWnd)
+void Win32InputDriver::initialize(HWND hWnd)
 {
 	m_hWnd = hWnd;
 
@@ -43,7 +43,7 @@ void Win32InputDriver::Initialize(HWND hWnd)
 void Win32InputDriver::Finalize()
 {
 	ReleaseDevice();
-	LN_SAFE_RELEASE(m_directInput);
+	LN_COM_SAFE_RELEASE(m_directInput);
 }
 
 //------------------------------------------------------------------------------
@@ -90,9 +90,9 @@ void Win32InputDriver::RefreshDevice()
 void Win32InputDriver::ReleaseDevice()
 {
 	for (Win32JoystickDriver* joy : m_joystickList) {
-		joy->Release();
+		joy->release();
 	}
-	m_joystickList.Clear();
+	m_joystickList.clear();
 	m_XInputDeviceCount = 0;
 }
 
@@ -118,10 +118,10 @@ void Win32InputDriver::CreateJoysticksDevice(const DIDEVICEINSTANCE* instance)
 			device->GetDeviceInfo(&di);
 			//printf( "XInput Device  No:%d Name:%s\n", mXInputNo, di.tszInstanceName );
 		}
-		LN_SAFE_RELEASE(device);
+		LN_COM_SAFE_RELEASE(device);
 
 		Win32JoystickDriver* joystick = LN_NEW Win32JoystickDriver();
-		joystick->Initialize(NULL, m_hWnd, m_XInputDeviceCount, true);
+		joystick->initialize(NULL, m_hWnd, m_XInputDeviceCount, true);
 		m_joystickList.Add(joystick);
 		++m_XInputDeviceCount;
 	}
@@ -140,7 +140,7 @@ void Win32InputDriver::CreateJoysticksDevice(const DIDEVICEINSTANCE* instance)
 				//DXST_ERRORLOGFMT_ADDA(( "デバイスの登録名:%s" , State.tszInstanceName )) ;
 				//DXST_ERRORLOGFMT_ADDA(( "デバイスの製品登録名:%s" , State.tszProductName )) ;
 				Win32JoystickDriver* joystick = LN_NEW Win32JoystickDriver();
-				joystick->Initialize(device, m_hWnd, -1, (caps.dwFlags & DIDC_FORCEFEEDBACK) != 0);
+				joystick->initialize(device, m_hWnd, -1, (caps.dwFlags & DIDC_FORCEFEEDBACK) != 0);
 				m_joystickList.Add(joystick);
 			}
 		}
@@ -259,7 +259,7 @@ BOOL Win32InputDriver::IsXInputDevice(const GUID* pGuidProductFromDirectInput)
 					}
 				}
 			}
-			LN_SAFE_RELEASE(pDevices[iDevice]);
+			LN_COM_SAFE_RELEASE(pDevices[iDevice]);
 		}
 	}
 
@@ -271,10 +271,10 @@ LCleanup:
 	if (bstrClassName)
 		SysFreeString(bstrClassName);
 	for (iDevice = 0; iDevice<20; iDevice++)
-		LN_SAFE_RELEASE(pDevices[iDevice]);
-	LN_SAFE_RELEASE(pEnumDevices);
-	LN_SAFE_RELEASE(pIWbemLocator);
-	LN_SAFE_RELEASE(pIWbemServices);
+		LN_COM_SAFE_RELEASE(pDevices[iDevice]);
+	LN_COM_SAFE_RELEASE(pEnumDevices);
+	LN_COM_SAFE_RELEASE(pIWbemLocator);
+	LN_COM_SAFE_RELEASE(pIWbemServices);
 
 	if (bCleanupCOM)
 		CoUninitialize();

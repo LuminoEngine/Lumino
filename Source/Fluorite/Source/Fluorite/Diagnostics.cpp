@@ -39,9 +39,9 @@ void DiagnosticsItemSet::Report(DiagnosticsCode code, flString option1)
 // DiagnosticsManager
 //==============================================================================
 //------------------------------------------------------------------------------
-void DiagnosticsManager::Clear()
+void DiagnosticsManager::clear()
 {
-	m_itemSetList.Clear();
+	m_itemSetList.clear();
 }
 
 //------------------------------------------------------------------------------

@@ -23,7 +23,7 @@ public:
 public:
 	// ITexture interface
 	virtual void SetSamplerState(const SamplerState& state) { m_samplerState = state; }
-	virtual void GetData(const RectI& rect, void* outData) override;
+	virtual void getData(const RectI& rect, void* outData) override;
 
 	virtual IDirect3DBaseTexture9* GetIDirect3DBaseTexture9() = 0;
 	virtual IDirect3DSurface9* GetIDirect3DSurface9() = 0;
@@ -54,11 +54,11 @@ public:
 	// ITexture interface
 	virtual TextureType GetTextureType() const { return TextureType_Normal; }
 	virtual TextureFormat GetTextureFormat() const { return m_format; }
-	virtual const SizeI& GetSize() const { return m_size; }
+	virtual const SizeI& getSize() const { return m_size; }
 	virtual const SizeI& GetRealSize() const { return m_realSize; }
 	virtual void SetSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize);
 	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes);
-	virtual void GetData(const RectI& rect, void* outData) override;
+	virtual void getData(const RectI& rect, void* outData) override;
 	virtual Bitmap* Lock();
 	virtual void Unlock();
 
@@ -81,7 +81,7 @@ class DX9Texture3D
 public:
 	DX9Texture3D(DX9GraphicsDevice* device);
 	virtual ~DX9Texture3D();
-	void Initialize(int width, int height, int depth, TextureFormat format, uint32_t levels);
+	void initialize(int width, int height, int depth, TextureFormat format, uint32_t levels);
 
 	// IDeviceObject interface
 	virtual void OnLostDevice() {}
@@ -90,7 +90,7 @@ public:
 	// ITexture interface
 	virtual TextureType GetTextureType() const { return TextureType_Normal; }
 	virtual TextureFormat GetTextureFormat() const { return m_format; }
-	virtual const SizeI& GetSize() const { return m_size; }
+	virtual const SizeI& getSize() const { return m_size; }
 	virtual const SizeI& GetRealSize() const { return m_realSize; }
 	virtual void SetSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize);
 	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes);
@@ -126,7 +126,7 @@ public:
 	// ITexture interface
 	virtual TextureType GetTextureType() const { return TextureType_RenderTarget; }
 	virtual TextureFormat GetTextureFormat() const { return m_format; }
-	virtual const SizeI& GetSize() const { return m_size; }
+	virtual const SizeI& getSize() const { return m_size; }
 	virtual const SizeI& GetRealSize() const { return m_realSize; }
 	virtual void SetSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes);
@@ -169,7 +169,7 @@ public:
 	// ITexture interface
 	virtual TextureType GetTextureType() const { return TextureType_DepthBuffer; }
 	virtual TextureFormat GetTextureFormat() const { return m_format; }
-	virtual const SizeI& GetSize() const { return m_size; }
+	virtual const SizeI& getSize() const { return m_size; }
 	virtual const SizeI& GetRealSize() const { return m_realSize; }
 	virtual void SetSamplerState(const SamplerState& state) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
@@ -210,7 +210,7 @@ public:
 	// ITexture interface
 	virtual TextureType GetTextureType() const { return TextureType_RenderTarget; }
 	virtual TextureFormat GetTextureFormat() const { return m_format; }
-	virtual const SizeI& GetSize() const { return m_realSize; }
+	virtual const SizeI& getSize() const { return m_realSize; }
 	virtual const SizeI& GetRealSize() const { return m_realSize; }
 	virtual void SetSamplerState(const SamplerState& state) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }

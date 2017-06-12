@@ -16,7 +16,7 @@ NlGraphNode::NlGraphNode()
 }
 
 //------------------------------------------------------------------------------
-void NlGraphNode::Initialize(NlGraphNodeCategory category)
+void NlGraphNode::initialize(NlGraphNodeCategory category)
 {
 	m_category = category;
 }
@@ -30,13 +30,13 @@ NlGraphPin* NlGraphNode::CreatePin(NlGraphPinCategory category, NlGraphPinDirect
 		{
 			if (LN_CHECK_STATE(m_inputCommandFlowPin == nullptr)) return nullptr;
 			m_inputCommandFlowPin = NlGraphPinPtr::MakeRef();
-			m_inputCommandFlowPin->Initialize(this, category, direction);
+			m_inputCommandFlowPin->initialize(this, category, direction);
 			return m_inputCommandFlowPin;
 		}
 		else if (direction == NlGraphPinDirection::Output)
 		{
 			auto ptr = NlGraphPinPtr::MakeRef();
-			ptr->Initialize(this, category, direction);
+			ptr->initialize(this, category, direction);
 			m_outputCommandFlowPinList.Add(ptr);
 			return ptr;
 		}
@@ -46,14 +46,14 @@ NlGraphPin* NlGraphNode::CreatePin(NlGraphPinCategory category, NlGraphPinDirect
 		if (direction == NlGraphPinDirection::Input)
 		{
 			auto ptr = NlGraphPinPtr::MakeRef();
-			ptr->Initialize(this, category, direction);
+			ptr->initialize(this, category, direction);
 			m_inputDataFlowPinList.Add(ptr);
 			return ptr;
 		}
 		else if (direction == NlGraphPinDirection::Output)
 		{
 			auto ptr = NlGraphPinPtr::MakeRef();
-			ptr->Initialize(this, category, direction);
+			ptr->initialize(this, category, direction);
 			m_outputCDataFlowPinList.Add(ptr);
 			return ptr;
 		}
@@ -73,7 +73,7 @@ EntryPointNode::EntryPointNode()
 }
 
 //------------------------------------------------------------------------------
-void EntryPointNode::Initialize(const StringRef& name)
+void EntryPointNode::initialize(const StringRef& name)
 {
 	m_flowOutput = CreatePin(NlGraphPinCategory::CommandFlow, NlGraphPinDirection::Output, _T("name"));
 }
@@ -97,7 +97,7 @@ NlGraphPin::NlGraphPin()
 }
 
 //------------------------------------------------------------------------------
-void NlGraphPin::Initialize(NlGraphNode* ownerNode, NlGraphPinCategory category, NlGraphPinDirection direction)
+void NlGraphPin::initialize(NlGraphNode* ownerNode, NlGraphPinCategory category, NlGraphPinDirection direction)
 {
 	m_ownerNode = ownerNode;
 	m_category = category;
@@ -262,13 +262,13 @@ NlGraphInterface::NlGraphInterface()
 }
 
 //------------------------------------------------------------------------------
-void NlGraphInterface::Initialize()
+void NlGraphInterface::initialize()
 {
 	m_graph = NlGraphPtr::MakeRef();
 
 	// 1つのエントリーポイントは必ず存在している
 	auto ep = RefPtr<EntryPointNode>::MakeRef();
-	ep->Initialize(_T(""));
+	ep->initialize(_T(""));
 	m_graph->AddGraphNode(ep);
 	m_entryPoint = ep;
 }
@@ -315,7 +315,7 @@ ScriptingManager::~ScriptingManager()
 }
 
 //------------------------------------------------------------------------------
-void ScriptingManager::Initialize(const ConfigData& configData)
+void ScriptingManager::initialize(const ConfigData& configData)
 {
 }
 

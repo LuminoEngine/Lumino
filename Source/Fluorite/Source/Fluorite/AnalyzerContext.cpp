@@ -90,7 +90,7 @@ Token* InputFile::CreateToken()
 	// 初回、最大のパターンで容量確保
 	if (m_tokenList.IsEmpty())
 	{
-		m_tokenStore.Reserve(m_code.GetSize());
+		m_tokenStore.Reserve(m_code.getSize());
 	}
 
 	Token* t = m_tokenStore.CreateToken();
@@ -133,7 +133,7 @@ InputFile* AnalyzerContext::RegisterInputMemoryCode(const PathNameA& filePath, c
 //------------------------------------------------------------------------------
 void AnalyzerContext::RemoveAllInputFile()
 {
-	m_inputFileList.Clear();
+	m_inputFileList.clear();
 }
 
 //------------------------------------------------------------------------------

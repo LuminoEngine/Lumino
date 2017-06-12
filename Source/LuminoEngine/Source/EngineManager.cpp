@@ -285,7 +285,7 @@ EngineManager::~EngineManager()
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::Initialize()
+void EngineManager::initialize()
 {
 	InitializePlatformManager();
 	InitializeInputManager();
@@ -298,7 +298,7 @@ void EngineManager::Initialize()
 	InitializeSceneGraphManager();
 	InitializeAssetsManager();
 
-	EngineDiagCore::Instance.Initialize(this);
+	EngineDiagCore::Instance.initialize(this);
 
 	m_defaultWorld2D = NewObject<World2D>();
 	m_defaultWorld3D = NewObject<World3D>();
@@ -316,8 +316,8 @@ void EngineManager::InitializeCommon()
 		// ログファイル出力
 		if (m_configData.engineLogEnabled)
 		{
-			Logger::Initialize(LogFileName);
-			//Logger2::Initialize("log.txt");
+			Logger::initialize(LogFileName);
+			//Logger2::initialize("log.txt");
 			//LN_LOG_INFO("Lumino 1.0.0");
 			//LN_LOG_INFO << "Lumino 1.0.0";
 			//LN_LOG_INFO << L"Lumino 1.0.0";
@@ -332,7 +332,7 @@ void EngineManager::InitializeAnimationManager()
 	if (m_animationManager == nullptr)
 	{
 		m_animationManager = LN_NEW detail::AnimationManager();
-		m_animationManager->Initialize();
+		m_animationManager->initialize();
 	}
 }
 
@@ -366,8 +366,8 @@ void EngineManager::InitializePlatformManager()
 		data.mainWindowSettings.userWindow = m_configData.userMainWindow;
 		data.useInternalUIThread = false;
 
-		m_platformManager.Attach(LN_NEW PlatformManager());
-		m_platformManager->Initialize(data);
+		m_platformManager.attach(LN_NEW PlatformManager());
+		m_platformManager->initialize(data);
 
 		// イベントリスナー登録
 		m_platformManager->GetMainWindow()->AttachEventListener(this, 0);
@@ -385,7 +385,7 @@ void EngineManager::InitializeInputManager()
 		data.mainWindow = m_platformManager->GetMainWindow();
 
 		m_inputManager = LN_NEW detail::InputManager();
-		m_inputManager->Initialize(data);
+		m_inputManager->initialize(data);
 	}
 }
 
@@ -414,7 +414,7 @@ void EngineManager::InitializeAudioManager()
 #endif
 		settings.directMusicReverbLevel = m_configData.DirectMusicReverbLevel;
 		m_audioManager = LN_NEW detail::AudioManager();
-		m_audioManager->Initialize(settings);
+		m_audioManager->initialize(settings);
 	}
 }
 
@@ -425,7 +425,7 @@ void EngineManager::InitializePhysicsManager()
 	{
 		InitializeCommon();
 		m_physicsManager = RefPtr<detail::PhysicsManager>::MakeRef();
-		m_physicsManager->Initialize();
+		m_physicsManager->initialize();
 	}
 }
 
@@ -454,10 +454,10 @@ void EngineManager::InitializeGraphicsManager()
 		data.D3D9Device = m_configData.D3D9Device;
 #endif
 		m_graphicsManager = LN_NEW detail::GraphicsManager();
-		m_graphicsManager->Initialize(data);
+		m_graphicsManager->initialize(data);
 
 		m_diagViewer = LN_NEW EngineDiagViewer();
-		m_diagViewer->Initialize(this, &EngineDiagCore::Instance);
+		m_diagViewer->initialize(this, &EngineDiagCore::Instance);
 	}
 }
 
@@ -474,7 +474,7 @@ void EngineManager::InitializeEffectManager()
 		data.audioManager = m_audioManager;
 		data.graphicsManager = m_graphicsManager;
 		m_effectManager = LN_NEW detail::EffectManager();
-		m_effectManager->Initialize(data);
+		m_effectManager->initialize(data);
 
 		m_graphicsManager->AddDeviceResetListener(m_effectManager);
 	}
@@ -496,7 +496,7 @@ void EngineManager::InitializeModelManager()
 		data.modelCoreCacheSize = 32;
 		data.modelCoreCacheMemorySize = 0;
 		m_modelManager = LN_NEW detail::ModelManager();
-		m_modelManager->Initialize(data);
+		m_modelManager->initialize(data);
 	}
 }
 
@@ -511,7 +511,7 @@ void EngineManager::InitializeDocumentsManager()
 		detail::DocumentsManager::ConfigData data;
 		data.graphicsManager = m_graphicsManager;
 		m_documentsManager = LN_NEW detail::DocumentsManager();
-		m_documentsManager->Initialize(data);
+		m_documentsManager->initialize(data);
 	}
 }
 
@@ -537,7 +537,7 @@ void EngineManager::InitializeUIManager()
 		data.documentsManager = m_documentsManager;
 		data.defaultSkinFilePath = m_configData.defaultSkinFilePath;
 		m_uiManager = LN_NEW detail::UIManager();
-		m_uiManager->Initialize(data);
+		m_uiManager->initialize(data);
 
 	}
 }
@@ -576,7 +576,7 @@ void EngineManager::InitializeAssetsManager()
 	if (m_assetsManager == nullptr)
 	{
 		m_assetsManager = LN_NEW AssetsManager();
-		m_assetsManager->Initialize(this);
+		m_assetsManager->initialize(this);
 	}
 }
 
@@ -669,7 +669,7 @@ void EngineManager::UpdateFrame()
 				//m_uiManager->GetMainWindow()->UpdateLayout(Size(static_cast<float>(size.width), static_cast<float>(size.height)));
 
 				// TODO: 内部に閉じ込める
-				window->UpdateLayout(m_uiManager->GetMainWindow()->GetPlatformWindow()->GetSize().ToFloatSize());
+				window->UpdateLayout(m_uiManager->GetMainWindow()->GetPlatformWindow()->getSize().ToFloatSize());
 			}
 		}
 

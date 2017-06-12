@@ -3,7 +3,7 @@
 
 std::unordered_map<TypeInfoPtr, String>	DotNetCommon::primitiveTypesMap;
 
-void DotNetCommon::Initialize()
+void DotNetCommon::initialize()
 {
 	primitiveTypesMap[PredefinedTypes::voidType] = "void";
 	primitiveTypesMap[PredefinedTypes::boolType] = "bool";

@@ -24,7 +24,7 @@ PhysicsObject::~PhysicsObject()
 }
 
 //------------------------------------------------------------------------------
-void PhysicsObject::Initialize()
+void PhysicsObject::initialize()
 {
 }
 
@@ -109,7 +109,7 @@ BodyBase::~BodyBase()
 }
 
 //------------------------------------------------------------------------------
-void BodyBase::Initialize(btCollisionObject* obj)
+void BodyBase::initialize(btCollisionObject* obj)
 {
 	obj->setUserPointer(this);
 }

@@ -53,7 +53,7 @@ RefPtr<RenderTargetTexture> RenderTargetTextureCache::RequestRenderTarget(const 
 	{
 		for (RenderTargetTexture* rt : itr->second)
 		{
-			if (rt->GetReferenceCount() == 1)	// Cache からしか参照されていない？
+			if (rt->getReferenceCount() == 1)	// Cache からしか参照されていない？
 			{
 				renderTarget = rt;
 				break;

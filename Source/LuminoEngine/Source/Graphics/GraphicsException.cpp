@@ -29,7 +29,7 @@ const char* CompilationException::what() const throw()
 }
 
 //------------------------------------------------------------------------------
-Exception* CompilationException::Copy() const
+Exception* CompilationException::copy() const
 {
 	return LN_NEW CompilationException(*this);
 }

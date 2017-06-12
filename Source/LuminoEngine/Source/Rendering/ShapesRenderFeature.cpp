@@ -128,7 +128,7 @@ ShapesRendererCore::~ShapesRendererCore()
 }
 
 //------------------------------------------------------------------------------
-void ShapesRendererCore::Initialize(GraphicsManager* manager)
+void ShapesRendererCore::initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 	m_basePoints.Reserve(4096);
@@ -221,17 +221,17 @@ void ShapesRendererCore::RenderCommandList(ShapesRendererCommandList* commandLis
 	}
 
 	// キャッシュクリア
-	m_vertexCache.Clear();
-	m_indexCache.Clear();
-	m_basePoints.Clear();
-	m_outlinePoints.Clear();
-	m_pathes.Clear();
+	m_vertexCache.clear();
+	m_indexCache.clear();
+	m_basePoints.clear();
+	m_outlinePoints.clear();
+	m_pathes.clear();
 }
 
 //------------------------------------------------------------------------------
 void ShapesRendererCore::ReleaseCommandList(ShapesRendererCommandList* commandList)
 {
-	commandList->Clear();
+	commandList->clear();
 	m_manager->GetShapesRendererCommandListCache()->ReleaseCommandList(commandList);
 }
 
@@ -1125,11 +1125,11 @@ ShapesRenderFeature::~ShapesRenderFeature()
 }
 
 //------------------------------------------------------------------------------
-void ShapesRenderFeature::Initialize(GraphicsManager* manager)
+void ShapesRenderFeature::initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 	m_core = RefPtr<ShapesRendererCore>::MakeRef();
-	m_core->Initialize(m_manager);
+	m_core->initialize(m_manager);
 }
 
 //------------------------------------------------------------------------------

@@ -43,14 +43,14 @@ UIContext::~UIContext()
 }
 
 //------------------------------------------------------------------------------
-void UIContext::Initialize(detail::UIManager* manager)
+void UIContext::initialize(detail::UIManager* manager)
 {
 	m_manager = manager;
 
 	LN_REFOBJ_SET(m_rootStyleTable, m_manager->GetDefaultStyleTable());
 
 	//m_mainWindowView = LN_NEW UILayoutView();
-	//m_mainWindowView->Initialize(this, m_manager->GetMainWindow()->GetPlatformWindow());
+	//m_mainWindowView->initialize(this, m_manager->GetMainWindow()->GetPlatformWindow());
 }
 
 //------------------------------------------------------------------------------

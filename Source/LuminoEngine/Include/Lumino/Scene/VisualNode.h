@@ -162,7 +162,7 @@ public:
 protected:
 	VisualComponent();
 	virtual ~VisualComponent();
-	void Initialize();
+	void initialize();
 
 LN_INTERNAL_ACCESS:
 	//MaterialList2* GetMaterialList() { return m_materialList; }
@@ -200,7 +200,7 @@ public:
 LN_INTERNAL_ACCESS:
 	MaterialList2();
 	virtual ~MaterialList2();
-	void Initialize(int subMaterialCount, bool createMainMaterial);
+	void initialize(int subMaterialCount, bool createMainMaterial);
 	void CopyShared(MaterialList* srcList, bool createMainMaterial);
 	
 LN_INTERNAL_ACCESS:
@@ -283,7 +283,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	VisualObject();
 	virtual ~VisualObject();
-	void Initialize();
+	void initialize();
 };
 
 LN_NAMESPACE_SCENE_END

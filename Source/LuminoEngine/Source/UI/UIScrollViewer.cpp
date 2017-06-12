@@ -25,7 +25,7 @@ LN_ROUTED_EVENT_IMPLEMENT2(UIThumb, UIDragDeltaEventArgs, DragCanceledEvent);
 RefPtr<UIThumb> UIThumb::Create()
 {
 	auto ptr = RefPtr<UIThumb>::MakeRef();
-	ptr->Initialize();
+	ptr->initialize();
 	return ptr;
 }
 
@@ -42,9 +42,9 @@ UIThumb::~UIThumb()
 }
 
 //------------------------------------------------------------------------------
-void UIThumb::Initialize()
+void UIThumb::initialize()
 {
-	UIElement::Initialize();
+	UIElement::initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -129,7 +129,7 @@ const String UITrack::VerticalState = _T("Vertical");
 RefPtr<UITrack> UITrack::Create()
 {
 	auto ptr = RefPtr<UITrack>::MakeRef();
-	ptr->Initialize();
+	ptr->initialize();
 	return ptr;
 }
 
@@ -153,9 +153,9 @@ UITrack::~UITrack()
 }
 
 //------------------------------------------------------------------------------
-void UITrack::Initialize()
+void UITrack::initialize()
 {
-	UIElement::Initialize();
+	UIElement::initialize();
 
 	// register VisualState
 	auto* vsm = GetVisualStateManager();
@@ -448,7 +448,7 @@ UIScrollEventArgs::~UIScrollEventArgs()
 }
 
 //------------------------------------------------------------------------------
-void UIScrollEventArgs::Initialize(Object* sender, float newValue_, ScrollEventType type_)
+void UIScrollEventArgs::initialize(Object* sender, float newValue_, ScrollEventType type_)
 {
 	sender = sender;
 	newValue = newValue_;
@@ -469,7 +469,7 @@ const String UIScrollBar::VerticalState = _T("Vertical");
 RefPtr<UIScrollBar> UIScrollBar::Create()
 {
 	auto ptr = RefPtr<UIScrollBar>::MakeRef();
-	ptr->Initialize();
+	ptr->initialize();
 	return ptr;
 }
 
@@ -488,9 +488,9 @@ UIScrollBar::~UIScrollBar()
 }
 
 //------------------------------------------------------------------------------
-void UIScrollBar::Initialize()
+void UIScrollBar::initialize()
 {
-	UIControl::Initialize();
+	UIControl::initialize();
 
 	// register VisualState
 	auto* vsm = GetVisualStateManager();
@@ -693,7 +693,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIScrollViewer, UIControl)
 RefPtr<UIScrollViewer> UIScrollViewer::Create()
 {
 	auto ptr = RefPtr<UIScrollViewer>::MakeRef();
-	ptr->Initialize();
+	ptr->initialize();
 	return ptr;
 }
 
@@ -711,9 +711,9 @@ UIScrollViewer::~UIScrollViewer()
 }
 
 //------------------------------------------------------------------------------
-void UIScrollViewer::Initialize()
+void UIScrollViewer::initialize()
 {
-	UIControl::Initialize();
+	UIControl::initialize();
 
 	m_horizontalScrollBar = NewObject<UIScrollBar>();
 	m_horizontalScrollBar->SetOrientation(Orientation::Horizontal);

@@ -24,7 +24,7 @@ public:
 LN_INTERNAL_ACCESS:
 	FrameCapturer();
 	virtual ~FrameCapturer();
-	void Initialize(detail::GraphicsManager* manager);
+	void initialize(detail::GraphicsManager* manager);
 
 private:
 	enum class State

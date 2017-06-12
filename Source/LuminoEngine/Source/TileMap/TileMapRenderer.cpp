@@ -57,7 +57,7 @@ TileMapRenderer::TileMapRenderer(detail::GraphicsManager* manager)
 	m_maxTileCount = 100 * 100;
 
 	m_shader.shader = LN_NEW Shader();
-	m_shader.shader->Initialize(m_graphicsManager, g_TileMapRenderer_fx_Data, g_TileMapRenderer_fx_Len);
+	m_shader.shader->initialize(m_graphicsManager, g_TileMapRenderer_fx_Data, g_TileMapRenderer_fx_Len);
 	m_shader.pass = m_shader.shader->GetTechniques()[0]->GetPasses()[0];
 	m_shader.varWorldMatrix = m_shader.shader->FindVariable(_T("g_worldMatrix"));
 	m_shader.varViewProjMatrix = m_shader.shader->FindVariable(_T("g_viewProjMatrix"));
@@ -150,15 +150,15 @@ void TileMapRenderer::Draw(DrawList* context, TileMapModel* tileMap, const Rect&
 	{
 		BoundingRect clipd = renderRange;
 		// TODO: 3D で Y0 を下端とする
-		clipd.top = layer->GetSize().height - clipd.top;
-		clipd.bottom = layer->GetSize().height - clipd.bottom;
+		clipd.top = layer->getSize().height - clipd.top;
+		clipd.bottom = layer->getSize().height - clipd.bottom;
 		//clipd.Y = layer->GetSize().Height + clipd.Y;
 
 		// ループしない
 		// TODO:
 		if (1)
 		{
-			const SizeI& size = layer->GetSize();
+			const SizeI& size = layer->getSize();
 			if (clipd.left < 0) clipd.left = 0;
 			if (clipd.top < 0) clipd.top = 0;
 			if (clipd.right > size.width) clipd.right = size.width;		// 描画したいところ +1
@@ -238,19 +238,19 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const Rect& boundingRect, Tile
 
 	Texture* tileSetTexture = tileSet->GetImageSource();
 	Size invSize(
-		1.0f / tileSetTexture->GetSize().width,
-		1.0f / tileSetTexture->GetSize().height);
+		1.0f / tileSetTexture->getSize().width,
+		1.0f / tileSetTexture->getSize().height);
 
 	Vector3 pos;
 	Vector2 size;
 	Texture* texture;
 	RectI srcRect;
-	const SizeI& layerSize = layer->GetSize();
+	const SizeI& layerSize = layer->getSize();
 
 	//ByteBuffer* buf = m_vertexBuffer->Lock();
 	//TileMapVertex* vb = (TileMapVertex*)buf->GetData();
 
-	m_mesh->Clear();
+	m_mesh->clear();
 
 	Vertex virtices[4];
 	for (Vertex& v : virtices) { v.normal = Vector3::UnitZ, v.color = Color::White; }

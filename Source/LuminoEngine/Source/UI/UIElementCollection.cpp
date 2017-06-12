@@ -24,9 +24,9 @@ UIElementCollection::~UIElementCollection()
 //------------------------------------------------------------------------------
 void UIElementCollection::InsertItem(int index, const value_type& item)
 {
-	m_newItemsCache.Resize(1);
+	m_newItemsCache.resize(1);
 	m_newItemsCache[0] = item;
-	m_oldItemsCache.Clear();
+	m_oldItemsCache.clear();
 
 	tr::ReflectionObjectList<UIElement*>::InsertItem(index, item);
 
@@ -37,14 +37,14 @@ void UIElementCollection::InsertItem(int index, const value_type& item)
 		m_oldItemsCache, 0,
 	};
 	m_owner->OnChildCollectionChanged(e);
-	m_newItemsCache.Clear();
+	m_newItemsCache.clear();
 }
 
 //------------------------------------------------------------------------------
 void UIElementCollection::ClearItems()
 {
-	m_newItemsCache.Clear();
-	m_oldItemsCache.Clear();
+	m_newItemsCache.clear();
+	m_oldItemsCache.clear();
 
 	tr::ReflectionObjectList<UIElement*>::ClearItems();
 
@@ -60,8 +60,8 @@ void UIElementCollection::ClearItems()
 //------------------------------------------------------------------------------
 void UIElementCollection::RemoveItem(int index)
 {
-	m_newItemsCache.Clear();
-	m_oldItemsCache.Resize(1);
+	m_newItemsCache.clear();
+	m_oldItemsCache.resize(1);
 	m_oldItemsCache[0] = GetAt(index);
 
 	tr::ReflectionObjectList<UIElement*>::RemoveItem(index);
@@ -73,15 +73,15 @@ void UIElementCollection::RemoveItem(int index)
 		m_oldItemsCache, index,
 	};
 	m_owner->OnChildCollectionChanged(e);
-	m_oldItemsCache.Clear();
+	m_oldItemsCache.clear();
 }
 
 //------------------------------------------------------------------------------
 void UIElementCollection::SetItem(int index, const value_type& item)
 {
-	m_newItemsCache.Resize(1);
+	m_newItemsCache.resize(1);
 	m_newItemsCache[0] = item;
-	m_oldItemsCache.Resize(1);
+	m_oldItemsCache.resize(1);
 	m_oldItemsCache[0] = GetAt(index);
 
 	tr::ReflectionObjectList<UIElement*>::SetItem(index, item);
@@ -93,8 +93,8 @@ void UIElementCollection::SetItem(int index, const value_type& item)
 		m_oldItemsCache, index,
 	};
 	m_owner->OnChildCollectionChanged(e);
-	m_newItemsCache.Clear();
-	m_oldItemsCache.Clear();
+	m_newItemsCache.clear();
+	m_oldItemsCache.clear();
 }
 
 LN_NAMESPACE_END

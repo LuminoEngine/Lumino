@@ -32,7 +32,7 @@ struct DrawElementMetadata
 	DrawElementCategory	category = DrawElementCategory::SceneObject;
 	int	priority = 0;
 
-	bool Equals(const DrawElementMetadata& rhs) const
+	bool equals(const DrawElementMetadata& rhs) const
 	{
 		return category == rhs.category && priority == rhs.priority;
 	}
@@ -109,7 +109,7 @@ class InternalContext
 public:
 
 	InternalContext();
-	void Initialize(detail::GraphicsManager* manager);
+	void initialize(detail::GraphicsManager* manager);
 	Details::Renderer* GetRenderStateManager();
 	Details::Renderer* BeginBaseRenderer();
 	PrimitiveRenderFeature* BeginPrimitiveRenderer();
@@ -341,7 +341,7 @@ public:
 	T* AddCommand(const BatchState& state, Material* availableMaterial, const Matrix& transform, const BuiltinEffectData& effectData, TArgs... args)
 	{
 		auto handle = m_commandDataCache.AllocData(sizeof(T));
-		T* t = new (m_commandDataCache.GetData(handle))T(args...);
+		T* t = new (m_commandDataCache.getData(handle))T(args...);
 		PostAddCommandInternal(state, availableMaterial, transform, effectData, t);
 		t->m_ownerDrawElementList = this;
 		return t;
@@ -349,7 +349,7 @@ public:
 
 	//byte_t* AllocExtData(size_t size) { return m_extDataCache.GetData(m_extDataCache.AllocData(size)); }
 	CommandDataCache::DataHandle AllocExtData(size_t size) { return m_extDataCache.AllocData(size); }
-	void* GetExtData(CommandDataCache::DataHandle handle) { return m_extDataCache.GetData(handle); }
+	void* GetExtData(CommandDataCache::DataHandle handle) { return m_extDataCache.getData(handle); }
 
 	//void ResolveCombinedMaterials();
 
@@ -388,7 +388,7 @@ class SceneRenderer
 public:
 	SceneRenderer();
 	virtual ~SceneRenderer();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
 	void Render(
 		RenderView* drawElementListSet,
@@ -448,7 +448,7 @@ class RenderingPass2
 public:
 	RenderingPass2();
 	virtual ~RenderingPass2();
-	//void Initialize(GraphicsManager* manager);
+	//void initialize(GraphicsManager* manager);
 
 	virtual Shader* GetDefaultShader() const = 0;
 
@@ -466,7 +466,7 @@ class NonShadingRenderer
 public:
 	NonShadingRenderer();
 	virtual ~NonShadingRenderer();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
 private:
 };
@@ -477,7 +477,7 @@ class NonShadingRenderingPass
 public:
 	NonShadingRenderingPass();
 	virtual ~NonShadingRenderingPass();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 	virtual Shader* GetDefaultShader() const override;
 
 private:
@@ -492,7 +492,7 @@ class ForwardShadingRenderer
 public:
 	ForwardShadingRenderer();
 	virtual ~ForwardShadingRenderer();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
 protected:
 	virtual void OnPreRender(DrawElementList* elementList);
@@ -510,7 +510,7 @@ class ForwardShadingRenderingPass
 public:
 	ForwardShadingRenderingPass();
 	virtual ~ForwardShadingRenderingPass();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 	virtual Shader* GetDefaultShader() const override;
 
 private:
@@ -524,7 +524,7 @@ class InfomationRenderingPass
 public:
 	InfomationRenderingPass();
 	virtual ~InfomationRenderingPass();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 };
 
 
@@ -556,7 +556,7 @@ class RenderDiag
 	: public Object
 {
 public:
-	void Clear();
+	void clear();
 
 	void BeginRenderView();
 	void EndRenderView();
@@ -579,14 +579,14 @@ private:
 	{
 	public:
 		virtual ~IDataCatch() = default;
-		virtual void Clear() = 0;
+		virtual void clear() = 0;
 	};
 
 	template<typename T>
 	class DataCatch : public IDataCatch
 	{
 	public:
-		virtual void Clear() override
+		virtual void clear() override
 		{
 			for (auto& p : m_using)
 				m_storage.push_back(p);
@@ -756,7 +756,7 @@ public:
 	void SetShader(Shader* shader);
 	Shader* GetShader() const;
 
-	void Clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
+	void clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
 	
 
 	/**
@@ -828,7 +828,7 @@ public:
 LN_INTERNAL_ACCESS:
 	DrawList();
 	virtual ~DrawList();
-	void Initialize(detail::GraphicsManager* manager);
+	void initialize(detail::GraphicsManager* manager);
 	detail::GraphicsManager* GetManager() const { return m_manager; }
 	detail::DrawElementList* GetDrawElementList() { return &m_drawElementList; }
 	void SetDefaultMaterial(Material* material);
@@ -919,7 +919,7 @@ inline TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId
 	if (sectionId != detail::DrawingSectionId::None &&
 		m_currentSectionTopElement != nullptr &&
 		m_currentSectionTopElement->drawingSectionId == sectionId &&
-		m_currentSectionTopElement->metadata.Equals(*metadata) &&
+		m_currentSectionTopElement->metadata.equals(*metadata) &&
 		m_currentSectionTopElement->m_stateFence == m_currentStateFence &&
 		m_drawElementList.GetBatch(m_currentSectionTopElement->batchIndex)->Equal(m_state.state.state, availableMaterial, m_state.state.GetTransfrom(), m_builtinEffectData))
 	{

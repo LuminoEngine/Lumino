@@ -88,15 +88,15 @@ UIImage::~UIImage()
 }
 
 //------------------------------------------------------------------------------
-void UIImage::Initialize()
+void UIImage::initialize()
 {
-	UIElement::Initialize();
+	UIElement::initialize();
 }
 
 //------------------------------------------------------------------------------
-void UIImage::Initialize(const StringRef& filePath)
+void UIImage::initialize(const StringRef& filePath)
 {
-	Initialize();
+	initialize();
 	//m_brush->SetTexture(NewObject<Texture2D>(filePath));
 
 	m_texture = NewObject<Texture2D>(filePath);
@@ -130,7 +130,7 @@ Size UIImage::MeasureInternal(Size contentSize)
 		return Size::Zero;
 	}
 
-	Size size = m_texture->GetSize().ToFloatSize();
+	Size size = m_texture->getSize().ToFloatSize();
 
 	Vector2 scale = CalcViewBoxScale(
 		contentSize,

@@ -58,14 +58,14 @@ class FreeTypeFont
 public:
 	FreeTypeFont();
 	virtual ~FreeTypeFont();
-	void Initialize();
+	void initialize();
 	virtual void Dispose_() override;
 
 public:
 	virtual void SetName(const String& fontName) { m_fontData.Family = fontName; m_modified = true; }
 	virtual const String& GetName() const { return m_fontData.Family; }
 	virtual void SetSize(int size) { m_fontData.Size = size; m_modified = true; }
-	virtual int GetSize() const  { return m_fontData.Size; }
+	virtual int getSize() const  { return m_fontData.Size; }
 	//virtual void SetEdgeSize(int size) { m_fontData.EdgeSize = size; m_modified = true; }
 	//virtual int GetEdgeSize() const  { return m_fontData.EdgeSize; }
 	virtual void SetBold(bool enabled) { m_fontData.IsBold = enabled; m_modified = true; }
@@ -75,7 +75,7 @@ public:
 	virtual void SetAntiAlias(bool enabled) { m_fontData.IsAntiAlias = enabled; m_modified = true; }
 	virtual bool IsAntiAlias() const { return m_fontData.IsAntiAlias; }
 
-	virtual RawFontPtr Copy() const;
+	virtual RawFontPtr copy() const;
 	virtual int GetLineSpacing() { UpdateFont(); return m_lineHeight; }	// TODO: [Obsolete]
 	//virtual Size GetTextSize(const char* text, int length);	// TODO: GetTextSize もいらなそう。UTF32 のだけあればいいかも？
 	//virtual Size GetTextSize(const wchar_t* text, int length);

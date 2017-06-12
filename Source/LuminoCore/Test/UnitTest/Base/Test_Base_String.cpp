@@ -449,8 +449,8 @@ TEST_F(Test_Base_String, ConvertTo)
 	{
 		StringA str1("test");
 		ByteBuffer buf = str1.ConvertTo(Encoding::GetWideCharEncoding());
-		wchar_t* wstr = (wchar_t*)buf.GetData();
-		ASSERT_EQ(sizeof(wchar_t) * 5, buf.GetSize());
+		wchar_t* wstr = (wchar_t*)buf.getData();
+		ASSERT_EQ(sizeof(wchar_t) * 5, buf.getSize());
 		ASSERT_EQ(L't', wstr[0]);
 		ASSERT_EQ(L'e', wstr[1]);
 		ASSERT_EQ(L's', wstr[2]);
@@ -461,8 +461,8 @@ TEST_F(Test_Base_String, ConvertTo)
 	{
 		StringW str1(L"test");
 		ByteBuffer buf = str1.ConvertTo(Encoding::GetSystemMultiByteEncoding());
-		char* astr = (char*)buf.GetData();
-		ASSERT_EQ(5, buf.GetSize());
+		char* astr = (char*)buf.getData();
+		ASSERT_EQ(5, buf.getSize());
 		ASSERT_EQ('t', astr[0]);
 		ASSERT_EQ('e', astr[1]);
 		ASSERT_EQ('s', astr[2]);
@@ -620,19 +620,19 @@ TEST_F(Test_Base_String, Replace)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_String, Equals)
+TEST_F(Test_Base_String, equals)
 {
 	// <Issue> 文字列の先頭が同じだけで一致判定にならないこと。
 	{
 		String str1("abc");
 		String str2("abcd");
-		ASSERT_FALSE(str1.Equals(str2));
-		ASSERT_FALSE(str2.Equals(str1));
+		ASSERT_FALSE(str1.equals(str2));
+		ASSERT_FALSE(str2.equals(str1));
 	}
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_String, Compare)
+TEST_F(Test_Base_String, compare)
 {
 	int a1 = strcmp("abc", "abcd");
 	int a2 = strcmp("bbb", "aaaa");
@@ -641,9 +641,9 @@ TEST_F(Test_Base_String, Compare)
 
 	{
 		String str1("abc");
-		EXPECT_EQ(0, str1.Compare(_T("abc")));
-		EXPECT_LE(0, str1.Compare(_T("ab")));	// v1 < v2
-		EXPECT_GT(0, str1.Compare(_T("abd")));	// v1 > v2
+		EXPECT_EQ(0, str1.compare(_T("abc")));
+		EXPECT_LE(0, str1.compare(_T("ab")));	// v1 < v2
+		EXPECT_GT(0, str1.compare(_T("abd")));	// v1 > v2
 	}
 
 	{
@@ -677,8 +677,8 @@ TEST_F(Test_Base_String, Compare)
 
 	// <Test> 比較
 	{
-		ASSERT_LE(0, StringTraits::Compare(_T("abcd"), 4, _T("abc"), 3, 4));	// 0 < result (1)
-		ASSERT_GT(0, StringTraits::Compare(_T("abc"), 3, _T("abcd"), 4, 4));	// result < 0 (-1)
+		ASSERT_LE(0, StringTraits::compare(_T("abcd"), 4, _T("abc"), 3, 4));	// 0 < result (1)
+		ASSERT_GT(0, StringTraits::compare(_T("abc"), 3, _T("abcd"), 4, 4));	// result < 0 (-1)
 	}
 }
 

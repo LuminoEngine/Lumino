@@ -22,7 +22,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	UIWindow();
 	virtual ~UIWindow();
-	void Initialize();
+	void initialize();
 
 private:
 	Vector2	m_dragStartWindowPosition;

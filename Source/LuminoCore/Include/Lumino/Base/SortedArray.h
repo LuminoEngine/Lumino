@@ -33,7 +33,7 @@ public:
 		return (int)m_vector.size();
 	}
 
-	void Clear()
+	void clear()
 	{
 		m_vector.clear();
 	}
@@ -95,7 +95,7 @@ public:
 	bool ContainsKey(const TKey& key) const
 	{
 		int index = LowerBound(key);
-		if (index < GetCount() && Equals(m_vector[index].first, key)/*m_vector[index].first == key*/)
+		if (index < GetCount() && equals(m_vector[index].first, key)/*m_vector[index].first == key*/)
 		{
 			return true;
 		}
@@ -109,7 +109,7 @@ public:
 	void SetValue(const TKey& key, const TValue& value)
 	{
 		int index = LowerBound(key);
-		if (index < GetCount() && Equals(m_vector[index].first, key)/*m_vector[index].first == key*/)
+		if (index < GetCount() && equals(m_vector[index].first, key)/*m_vector[index].first == key*/)
 		{
 			m_vector[index].second = value;
 		}
@@ -125,7 +125,7 @@ public:
 	const TValue& GetValue(const TKey& key) const
 	{
 		int index = LowerBound(key);
-		if (index < GetCount() && Equals(m_vector[index].first, key)/*m_vector[index].first == key*/)
+		if (index < GetCount() && equals(m_vector[index].first, key)/*m_vector[index].first == key*/)
 		{
 			return m_vector[index].second;
 		}
@@ -141,7 +141,7 @@ public:
 	bool TryGetValue(const TKey& key, TValue* value) const
 	{
 		int index = LowerBound(key);
-		if (index < GetCount() && Equals(m_vector[index].first, key)/*m_vector[index].first == key*/)
+		if (index < GetCount() && equals(m_vector[index].first, key)/*m_vector[index].first == key*/)
 		{
 			if (value != NULL) { *value = m_vector[index].second; }
 			return true;
@@ -156,7 +156,7 @@ public:
 	TValue& operator[](const TKey& key)
 	{
 		int index = LowerBound(key);
-		if (index < GetCount() && Equals(m_vector[index].first, key)/*m_vector[index].first == key*/) {
+		if (index < GetCount() && equals(m_vector[index].first, key)/*m_vector[index].first == key*/) {
 			
 		}
 		else {
@@ -179,7 +179,7 @@ public:
 	const TValue* Find(const TOtherKey& key) const
 	{
 		int index = LowerBound(key);
-		if (index < GetCount() && Equals(m_vector[index].first, key)/*m_vector[index].first == key*/)
+		if (index < GetCount() && equals(m_vector[index].first, key)/*m_vector[index].first == key*/)
 		{
 			return &m_vector[index].second;
 		}
@@ -190,7 +190,7 @@ public:
 	TValue* Find(const TOtherKey& key)
 	{
 		int index = LowerBound(key);
-		if (index < GetCount() && Equals(m_vector[index].first, key)/*m_vector[index].first == key*/)
+		if (index < GetCount() && equals(m_vector[index].first, key)/*m_vector[index].first == key*/)
 		{
 			return &m_vector[index].second;
 		}
@@ -213,7 +213,7 @@ public:
 private:
 
 	template<typename TOtherKey>
-	bool Equals(const TKey& left, const TOtherKey& right) const
+	bool equals(const TKey& left, const TOtherKey& right) const
 	{
 		return !m_comparer(left, right) && !m_comparer(right, left);
 	}

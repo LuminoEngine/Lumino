@@ -156,9 +156,9 @@ String WrapperIFGenerator::GenerateWrapperIFClasses()
 	OutputBuffer classes;
 	for (auto& classInfo : m_database->classes)
 	{
-		m_eventWrappers.Clear();
+		m_eventWrappers.clear();
 		m_eventWrappers.IncreaseIndent();
-		m_eventWrapperConnectExps.Clear();
+		m_eventWrapperConnectExps.clear();
 		m_eventWrapperConnectExps.IncreaseIndent(2);
 
 		if (!classInfo->IsStatic())

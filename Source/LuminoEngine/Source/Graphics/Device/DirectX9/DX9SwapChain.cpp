@@ -72,7 +72,7 @@ void DX9SwapChain::OnLostDevice()
 		m_backBuffer->Reset(NULL);
 	}
 
-	LN_SAFE_RELEASE(m_dxSwapChain);
+	LN_COM_SAFE_RELEASE(m_dxSwapChain);
 }
 
 //------------------------------------------------------------------------------
@@ -98,11 +98,11 @@ void DX9SwapChain::OnResetDevice()
 	//LN_COMCALL(m_graphicsDevice->GetIDirect3DDevice9()->GetRenderTarget(0, &surface));
 	m_dxSwapChain->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &surface);
 	m_backBuffer->Reset(surface);
-	LN_SAFE_RELEASE(surface);
+	LN_COM_SAFE_RELEASE(surface);
 }
 
 //------------------------------------------------------------------------------
-void DX9SwapChain::Resize(const SizeI& size)
+void DX9SwapChain::resize(const SizeI& size)
 {
 	m_backBufferSize = size;
 

@@ -61,7 +61,7 @@ class GLVertexDeclaration
 public:
 	GLVertexDeclaration();
 	virtual ~GLVertexDeclaration();
-	void Initialize(const VertexElement* elements, int elementsCount);
+	void initialize(const VertexElement* elements, int elementsCount);
 
 	const List<LNGLVertexElement>& GetVertexElements() const { return m_vertexElements; }
 

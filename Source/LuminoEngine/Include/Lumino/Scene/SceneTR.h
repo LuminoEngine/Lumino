@@ -22,7 +22,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	HugePlane();
 	virtual ~HugePlane();
-	void Initialize(SceneGraph* sceneGraph, const Vector3& direction);
+	void initialize(SceneGraph* sceneGraph, const Vector3& direction);
 
 	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
 

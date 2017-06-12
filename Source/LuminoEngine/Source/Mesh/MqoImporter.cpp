@@ -106,7 +106,7 @@ void MqoObject::Smoothing()
 RefPtr<MeshResource> MqoObject::CreateMeshResource()
 {
 	auto mesh = RefPtr<MeshResource>::MakeRef();
-	mesh->Initialize(EngineDomain::GetGraphicsManager(), MeshCreationFlags::None);
+	mesh->initialize(EngineDomain::GetGraphicsManager(), MeshCreationFlags::None);
 	mesh->SetName(m_name);
 
 	// 頂点バッファを作る
@@ -237,8 +237,8 @@ RefPtr<MeshResource> MqoObject::CreateMeshResource()
 void MqoObject::MakeMqoFaceRefsAndEdge()
 {
 	// 各面3頂点として MqoFaceRef,MqoEdge を作っておく
-	m_importer->m_mqoFaceRefBuffer.Resize(m_mqoFaceList.GetCount() * 3);
-	m_importer->m_mqoEdgeBuffer.Resize(m_mqoFaceList.GetCount() * 3);
+	m_importer->m_mqoFaceRefBuffer.resize(m_mqoFaceList.GetCount() * 3);
+	m_importer->m_mqoEdgeBuffer.resize(m_mqoFaceList.GetCount() * 3);
 	m_importer->m_mqoFacePointGroupBuffer.Reserve(m_mqoFaceList.GetCount() * 3);
 	int mqoFaceRefBufferUsed = 0;
 	int mqoEdgeBufferUsed = 0;
@@ -621,7 +621,7 @@ RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathNam
 	//RefPtr<Stream> stream(file, false); //manager->GetFileManager()->CreateFileStream(filePath)
 
 	m_model = RefPtr<StaticMeshModel>::MakeRef();
-	m_model->Initialize(manager->GetGraphicsManager());
+	m_model->initialize(manager->GetGraphicsManager());
 
 	// Metasequoia4 で出力される .mqo ファイルの文字コードは Shift_JIS だった
 	StreamReader reader(stream, Encoding::GetEncoding(EncodingType::SJIS));
@@ -853,23 +853,23 @@ void MqoImporter::ReadFaceChunk(StreamReader* reader, MqoObject* mqoObject)
 			}
 
 			// V(%d ...)	頂点インデックス
-			else if (StringTraits::Compare(line.c_str() + dataHead, _T("V"), 1, CaseSensitivity::CaseInsensitive) == 0)
+			else if (StringTraits::compare(line.c_str() + dataHead, _T("V"), 1, CaseSensitivity::CaseInsensitive) == 0)
 			{
 				ReadInts(StringRef(line, numHead, numEnd - numHead), face.vertexIndices, face.vertexCount);
 				//for (int i = 0; i < face.vertexCount; i++) face.vertexIndices[i] += vertexIndexOffset;
 			}
 			// M(%d)	材質インデックス
-			else if (StringTraits::Compare(line.c_str() + dataHead, _T("M"), 1, CaseSensitivity::CaseInsensitive) == 0)
+			else if (StringTraits::compare(line.c_str() + dataHead, _T("M"), 1, CaseSensitivity::CaseInsensitive) == 0)
 			{
 				face.materialIndex = StringTraits::ToInt32(line.c_str() + numHead, numEnd - numHead);
 			}
 			// UV(%.5f %.5f ...)	ＵＶ値
-			else if (StringTraits::Compare(line.c_str() + dataHead, _T("UV"), 2, CaseSensitivity::CaseInsensitive) == 0)
+			else if (StringTraits::compare(line.c_str() + dataHead, _T("UV"), 2, CaseSensitivity::CaseInsensitive) == 0)
 			{
 				ReadFloats(StringRef(line, numHead, numEnd - numHead), reinterpret_cast<float*>(face.uv), face.vertexCount * 2);
 			}
 			// COL(%u)	頂点カラー
-			else if (StringTraits::Compare(line.c_str() + dataHead, _T("COL"), 3, CaseSensitivity::CaseInsensitive) == 0)
+			else if (StringTraits::compare(line.c_str() + dataHead, _T("COL"), 3, CaseSensitivity::CaseInsensitive) == 0)
 			{
 				ReadUInts(StringRef(line, numHead, numEnd - numHead), face.colors, face.vertexCount);
 			}

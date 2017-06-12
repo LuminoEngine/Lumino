@@ -120,13 +120,13 @@ public:
 	/** @} */
 
 private:
-	void Copy(const JsonValue& obj);
+	void copy(const JsonValue& obj);
 	void Detach();
 
 	friend class JsonDOMHandler;
-	void ResizeValueList(int count) { m_valueList->Resize(count); }
+	void ResizeValueList(int count) { m_valueList->resize(count); }
 	JsonValue& GetAtValue(int index) { return m_valueList->GetAt(index); }
-	void ResizeMemberList(int count) { m_memberList->Resize(count); }
+	void ResizeMemberList(int count) { m_memberList->resize(count); }
 	JsonMember& GetAtMember(int index) { return m_memberList->GetAt(index); }
 
 private:

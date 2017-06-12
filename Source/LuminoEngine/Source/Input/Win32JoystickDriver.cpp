@@ -103,9 +103,9 @@ Win32JoystickDriver::~Win32JoystickDriver()
 }
 
 //------------------------------------------------------------------------------
-void Win32JoystickDriver::Initialize( IDirectInputDevice8* device, HWND hwnd, int xinputNumber, bool forcefeedback )
+void Win32JoystickDriver::initialize( IDirectInputDevice8* device, HWND hwnd, int xinputNumber, bool forcefeedback )
 {
-	XInputModule::Initialize();
+	XInputModule::initialize();
 	Dispose();
 
 	mDevice = device;
@@ -183,14 +183,14 @@ void Win32JoystickDriver::Dispose()
     if ( mDeviceEffect )
     {
         mDeviceEffect->Unload();
-        LN_SAFE_RELEASE( mDeviceEffect );
+		LN_COM_SAFE_RELEASE( mDeviceEffect );
     }
 
     // 入力を停止してジョイスティックデバイスを解放
 	if ( mDevice )
 	{
 		mDevice->Unacquire();
-		LN_SAFE_RELEASE(mDevice);
+		LN_COM_SAFE_RELEASE(mDevice);
 	}
 }
 
@@ -445,7 +445,7 @@ XInputModule::MD_XInputSetState	XInputModule::XInputSetState;
 DllLoader						XInputModule::m_XInputModule;
 
 //------------------------------------------------------------------------------
-void XInputModule::Initialize()
+void XInputModule::initialize()
 {
 	if (!XInputGetState)
 	{

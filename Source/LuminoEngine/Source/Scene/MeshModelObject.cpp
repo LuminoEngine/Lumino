@@ -20,7 +20,7 @@ RefPtr<SkinnedMeshComponent> SkinnedMeshComponent::Create(const StringRef& fileP
 {
 	auto ptr = RefPtr<SkinnedMeshComponent>::MakeRef();
 	auto mesh = SceneGraphManager::Instance->GetModelManager()->CreateSkinnedMeshModel(filePath);
-	ptr->Initialize(mesh);
+	ptr->initialize(mesh);
 	return ptr;
 }
 
@@ -38,12 +38,12 @@ SkinnedMeshComponent::~SkinnedMeshComponent()
 }
 
 //------------------------------------------------------------------------------
-void SkinnedMeshComponent::Initialize(SkinnedMeshModel* meshModel)
+void SkinnedMeshComponent::initialize(SkinnedMeshModel* meshModel)
 {
 	if (LN_CHECK_ARG(meshModel != nullptr)) return;
 	m_meshModel = meshModel;
 
-	VisualComponent::Initialize();
+	VisualComponent::initialize();
 
 	//m_materialList->CopyShared(meshModel->m_mesh->m_materials, true);
 
@@ -150,7 +150,7 @@ LN_NAMESPACE_END
 //RefPtr<MeshModelObject> MeshModelObject::Create(const StringRef& filePath)
 //{
 //	RefPtr<MeshModelObject> obj(LN_NEW MeshModelObject(), false);
-//	obj->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), filePath);	// tODO: 3Dだけ？
+//	obj->initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), filePath);	// tODO: 3Dだけ？
 //	return obj;
 //}
 //
@@ -165,11 +165,11 @@ LN_NAMESPACE_END
 //}
 //
 ////------------------------------------------------------------------------------
-//void MeshModelObject::Initialize(SceneGraph* owner, const StringRef& filePath)
+//void MeshModelObject::initialize(SceneGraph* owner, const StringRef& filePath)
 //{
 //	m_model.Attach(LN_NEW Model(), false);
 //	m_model->Create(owner->GetManager()->GetModelManager(), filePath);
-//	VisualComponent::Initialize(owner, m_model->GetSubsetCount());
+//	VisualComponent::initialize(owner, m_model->GetSubsetCount());
 //
 //	// マテリアルをコピーする (急ぎ足で作ったから、もっとちゃんと考えた方が良いと思う)
 //	//for (int i = 0; i < m_model->GetSubsetCount(); i++)

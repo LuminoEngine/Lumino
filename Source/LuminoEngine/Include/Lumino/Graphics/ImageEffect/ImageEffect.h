@@ -18,7 +18,7 @@ public:
 protected:
 	ImageEffect();
 	virtual ~ImageEffect();
-	void Initialize(detail::GraphicsManager* manager);
+	void initialize(detail::GraphicsManager* manager);
 
 	virtual void OnRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) = 0;
 

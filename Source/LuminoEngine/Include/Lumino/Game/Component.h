@@ -41,7 +41,7 @@ protected:
 	virtual void OnUIEvent(UIEventArgs* e);
 
 private:
-	void Attach(WorldObject* owner);
+	void attach(WorldObject* owner);
 	void Detach();
 	void UpdateFrame();
 

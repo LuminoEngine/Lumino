@@ -22,7 +22,7 @@ public:
 	{
 	}
 
-	void Initialize(int reserved)
+	void initialize(int reserved)
 	{
 		Glow(reserved);
 	}
@@ -59,7 +59,7 @@ private:
 		{
 			m_indexStack.Push(last + i);
 		}
-		m_indexStack.Resize(last + count);
+		m_indexStack.resize(last + count);
 	}
 	
 	Array<T>	m_cache;

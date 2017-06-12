@@ -19,7 +19,7 @@ protected:
 TEST_F(Test_Scripting, Basic)
 {
 	auto nlif = RefPtr<NlGraphInterface>::MakeRef();
-	nlif->Initialize();
+	nlif->initialize();
 
 	auto epNode = nlif->GetEntryPoint();
 
@@ -36,7 +36,7 @@ TEST_F(Test_Scripting, Basic)
 	NlHelper::LinkPins(node1->GetInputValuePin(), node2->GetDataOutputPin());
 
 	auto ctx = RefPtr<NlContext>::MakeRef();
-	//ctx->Initialize();
+	//ctx->initialize();
 	ctx->CallInterface(nlif);
 
 

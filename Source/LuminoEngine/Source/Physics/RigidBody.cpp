@@ -46,7 +46,7 @@ RefPtr<RigidBody> RigidBody::Create(CollisionShape* collider)
 	ConfigData data;
 	data.Mass = 1.0f;
 	auto ptr = RefPtr<RigidBody>::MakeRef();
-	ptr->Initialize(collider, data);
+	ptr->initialize(collider, data);
 	return ptr;
 }
 
@@ -71,10 +71,10 @@ RigidBody::~RigidBody()
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::Initialize(CollisionShape* collider, const ConfigData& configData)
+void RigidBody::initialize(CollisionShape* collider, const ConfigData& configData)
 {
 	if (LN_CHECK_ARG(collider != nullptr)) return;
-	PhysicsObject::Initialize();
+	PhysicsObject::initialize();
 	m_btShapeManager.AddShape(collider);
 	m_data = configData;
 	m_modifiedFlags |= Modified_InitialUpdate;
@@ -85,7 +85,7 @@ void RigidBody::Initialize(CollisionShape* collider, const ConfigData& configDat
 void RigidBody::InitializeCore(CollisionShape* collider, const ConfigData& configData, float scale)
 {
 	if (LN_CHECK_ARG(collider != nullptr)) return;
-	PhysicsObject::Initialize();
+	PhysicsObject::initialize();
 	m_btShapeManager.AddShape(collider);
 	m_data = configData;
 	m_data.Scale = scale;
@@ -569,7 +569,7 @@ void RigidBody::CreateBtRigidBody()
 
 	m_modifiedFlags |= Modified_Activate;
 
-	//BodyBase::Initialize(m_btRigidBody);
+	//BodyBase::initialize(m_btRigidBody);
 
 	GetOwnerWorld()->GetBtWorld()->addRigidBody(GetBtRigidBody(), GetCollisionFilterGroup(), GetCollisionFilterMask());
 

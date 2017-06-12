@@ -53,9 +53,9 @@ CameraComponent::~CameraComponent()
 }
 
 //------------------------------------------------------------------------------
-void CameraComponent::Initialize(CameraProjection proj)
+void CameraComponent::initialize(CameraProjection proj)
 {
-	SceneNode::Initialize();
+	SceneNode::initialize();
 	m_projectionMode = proj;
 	m_manager->GetAllCameraList()->Add(this);
 
@@ -253,7 +253,7 @@ CameraViewportLayer* CameraViewportLayer::GetDefault3D()
 //CameraViewportLayerPtr CameraViewportLayer::Create(Camera* camera)
 //{
 //	auto ptr = CameraViewportLayerPtr::MakeRef();
-//	ptr->Initialize(SceneGraphManager::Instance, camera);
+//	ptr->initialize(SceneGraphManager::Instance, camera);
 //	return ptr;
 //}
 
@@ -266,7 +266,7 @@ CameraViewportLayer::CameraViewportLayer()
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer::Initialize(SceneGraphManager* manager, World* targetWorld, Camera* hostingCamera)
+void CameraViewportLayer::initialize(SceneGraphManager* manager, World* targetWorld, Camera* hostingCamera)
 {
 	m_targetWorld = targetWorld;
 	m_hostingCamera = hostingCamera;
@@ -275,18 +275,18 @@ void CameraViewportLayer::Initialize(SceneGraphManager* manager, World* targetWo
 	if (m_hostingCamera->GetProjectionMode() == CameraProjection_3D)
 	{
 		auto internalRenderer = RefPtr<detail::ForwardShadingRenderer>::MakeRef();
-		internalRenderer->Initialize(manager->GetGraphicsManager());
+		internalRenderer->initialize(manager->GetGraphicsManager());
 		m_internalRenderer = internalRenderer;
 	}
 	else
 	{
 		auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
-		internalRenderer->Initialize(manager->GetGraphicsManager());
+		internalRenderer->initialize(manager->GetGraphicsManager());
 		m_internalRenderer = internalRenderer;
 	}
 
 	//auto pass = RefPtr<detail::RenderingPass2>::MakeRef();
-	//pass->Initialize(manager->GetGraphicsManager());
+	//pass->initialize(manager->GetGraphicsManager());
 	//AddRenderingPass(pass);
 }
 
@@ -306,7 +306,7 @@ void CameraViewportLayer::SetDebugDrawFlags(WorldDebugDrawFlags flags)
 tr::GizmoModel* CameraViewportLayer::CreateGizmo()
 {
 	m_gizmo = RefPtr<tr::GizmoModel>::MakeRef();
-	m_gizmo->Initialize(detail::EngineDomain::GetGraphicsManager());
+	m_gizmo->initialize(detail::EngineDomain::GetGraphicsManager());
 	return m_gizmo;
 }
 
@@ -428,7 +428,7 @@ CameraViewportLayer2::CameraViewportLayer2()
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer2::Initialize(World* targetWorld, CameraComponent* hostingCamera)
+void CameraViewportLayer2::initialize(World* targetWorld, CameraComponent* hostingCamera)
 {
 	m_targetWorld = targetWorld;
 	m_hostingCamera = hostingCamera;
@@ -437,13 +437,13 @@ void CameraViewportLayer2::Initialize(World* targetWorld, CameraComponent* hosti
 	if (m_hostingCamera->GetProjectionMode() == CameraProjection_3D)
 	{
 		auto internalRenderer = RefPtr<detail::ForwardShadingRenderer>::MakeRef();
-		internalRenderer->Initialize(detail::EngineDomain::GetGraphicsManager());
+		internalRenderer->initialize(detail::EngineDomain::GetGraphicsManager());
 		m_internalRenderer = internalRenderer;
 	}
 	else
 	{
 		auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
-		internalRenderer->Initialize(detail::EngineDomain::GetGraphicsManager());
+		internalRenderer->initialize(detail::EngineDomain::GetGraphicsManager());
 		m_internalRenderer = internalRenderer;
 	}
 
@@ -477,7 +477,7 @@ void CameraViewportLayer2::Render()
 	// TODO: やめよう
 	m_targetWorld->GetRenderer()->SetCurrentCamera(m_hostingCamera);
 
-	m_targetWorld->GetRenderer()->Clear(ClearFlags::Depth, Color::White);
+	m_targetWorld->GetRenderer()->clear(ClearFlags::Depth, Color::White);
 
 	// カメラ行列の更新
 	m_hostingCamera->UpdateMatrices(GetOwnerViewport()->GetViewSize());
@@ -829,9 +829,9 @@ Camera::~Camera()
 }
 
 //------------------------------------------------------------------------------
-void Camera::Initialize(CameraProjection proj)
+void Camera::initialize(CameraProjection proj)
 {
-	WorldObject::Initialize();
+	WorldObject::initialize();
 	m_component = NewObject<CameraComponent>(proj);
 	AddComponent(m_component);
 

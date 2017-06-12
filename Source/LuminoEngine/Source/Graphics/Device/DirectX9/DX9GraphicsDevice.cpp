@@ -49,19 +49,19 @@ DX9GraphicsDevice::DX9GraphicsDevice()
 //------------------------------------------------------------------------------
 DX9GraphicsDevice::~DX9GraphicsDevice()
 {
-	LN_SAFE_RELEASE(m_d3dxEffectPool);
-	LN_SAFE_RELEASE(m_dxDevice);
-	LN_SAFE_RELEASE(m_direct3D);
+	LN_COM_SAFE_RELEASE(m_d3dxEffectPool);
+	LN_COM_SAFE_RELEASE(m_dxDevice);
+	LN_COM_SAFE_RELEASE(m_direct3D);
 }
 
 //------------------------------------------------------------------------------
-void DX9GraphicsDevice::Initialize(const ConfigData& configData)
+void DX9GraphicsDevice::initialize(const ConfigData& configData)
 {
-	m_mainWindow.Attach(configData.MainWindow, true);
+	m_mainWindow.attach(configData.MainWindow, true);
 	m_enableFPUPreserve = configData.EnableFPUPreserve;
 
 	// DLL 読み込み
-	DX9Module::Initialize(); 
+	DX9Module::initialize(); 
 
 	// Direct3D 作成
 	m_direct3D = DX9Module::Direct3DCreate9(D3D_SDK_VERSION);
@@ -126,9 +126,9 @@ void DX9GraphicsDevice::Finalize()
 {
 	for (IDirect3DTexture9* tex : m_dummyTextures)
 	{
-		LN_SAFE_RELEASE(tex);
+		LN_COM_SAFE_RELEASE(tex);
 	}
-	m_dummyTextures.Clear();
+	m_dummyTextures.clear();
 
 	GraphicsDeviceBase::Finalize();
 	LN_SAFE_RELEASE(m_renderer);
@@ -145,7 +145,7 @@ ISwapChain* DX9GraphicsDevice::GetDefaultSwapChain()
 RefPtr<IVertexDeclaration> DX9GraphicsDevice::CreateVertexDeclarationImplement(const VertexElement* elements, int elementsCount)
 {
 	RefPtr<DX9VertexDeclaration> obj(LN_NEW DX9VertexDeclaration(), false);
-	obj->Initialize(this, elements, elementsCount);
+	obj->initialize(this, elements, elementsCount);
 	return RefPtr<IVertexDeclaration>::StaticCast(obj);
 }
 
@@ -179,10 +179,10 @@ RefPtr<ITexture> DX9GraphicsDevice::CreateTextureImplement(const SizeI& size, bo
 RefPtr<ITexture> DX9GraphicsDevice::CreateTexturePlatformLoadingImplement(Stream* stream, bool mipmap, TextureFormat format)
 {
 	ByteBuffer buffer;
-	buffer.Resize((size_t)stream->GetLength(), false);
-	stream->Read(buffer.GetData(), buffer.GetSize());
+	buffer.resize((size_t)stream->GetLength(), false);
+	stream->Read(buffer.getData(), buffer.getSize());
 
-	RefPtr<DX9Texture> obj(LN_NEW DX9Texture(this, buffer.GetData(), buffer.GetSize(), Color32::Transparency, mipmap, format), false);
+	RefPtr<DX9Texture> obj(LN_NEW DX9Texture(this, buffer.getData(), buffer.getSize(), Color32::Transparency, mipmap, format), false);
 	return obj;
 }
 
@@ -190,7 +190,7 @@ RefPtr<ITexture> DX9GraphicsDevice::CreateTexturePlatformLoadingImplement(Stream
 RefPtr<ITexture> DX9GraphicsDevice::CreateTexture3DImplement(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, ResourceUsage usage, const void* initialData)
 {
 	RefPtr<DX9Texture3D> obj(LN_NEW DX9Texture3D(this), false);
-	obj->Initialize(width, height, depth, format, mipLevels);
+	obj->initialize(width, height, depth, format, mipLevels);
 	if (initialData != nullptr) {
 		obj->SetSubData3D(Box32::Zero, initialData, Utils::GetTextureFormatByteCount(format) * width * height * depth);
 	}
@@ -227,7 +227,7 @@ RefPtr<IShader> DX9GraphicsDevice::CreateShaderImplement(const void* textData, s
 RefPtr<ISwapChain> DX9GraphicsDevice::CreateSwapChainImplement(PlatformWindow* window)
 {
 	RefPtr<DX9SwapChain> obj(LN_NEW DX9SwapChain(), false);
-	obj->InitializeSub(this, window, window->GetSize());
+	obj->InitializeSub(this, window, window->getSize());
 	return obj;
 }
 

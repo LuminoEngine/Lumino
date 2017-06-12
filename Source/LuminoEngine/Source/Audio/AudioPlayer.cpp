@@ -52,7 +52,7 @@ AudioPlayer::~AudioPlayer()
 }
 
 //------------------------------------------------------------------------------
-void AudioPlayer::Initialize(AudioStream* audioStream, bool enable3d)
+void AudioPlayer::initialize(AudioStream* audioStream, bool enable3d)
 { 
 	LN_THROW(audioStream, ArgumentException);
 	LN_REFOBJ_SET(m_audioStream, audioStream);

@@ -28,7 +28,7 @@ public:
 		Free();
 	}
 
-	void Alloc()
+	void alloc()
 	{
 		// コンソールアプリとして実行している場合はこの if に入ることはない
 		if (!m_consoleAlloced && ::AllocConsole())
@@ -69,9 +69,9 @@ private:
 static ConsoleInternal g_console;
 
 //------------------------------------------------------------------------------
-void Console::Alloc()
+void Console::alloc()
 {
-	g_console.Alloc();
+	g_console.alloc();
 }
 
 //------------------------------------------------------------------------------

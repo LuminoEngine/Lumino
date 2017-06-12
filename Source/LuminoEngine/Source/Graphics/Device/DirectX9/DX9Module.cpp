@@ -27,7 +27,7 @@ DllLoader	DX9Module::m_D3D9Module;
 DllLoader	DX9Module::m_D3Dx9Module;
 
 //------------------------------------------------------------------------------
-void DX9Module::Initialize()
+void DX9Module::initialize()
 {
 	if (!Direct3DCreate9)
     {

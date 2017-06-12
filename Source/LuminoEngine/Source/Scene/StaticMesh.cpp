@@ -16,7 +16,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(StaticMeshComponent, VisualComponent);
 RefPtr<StaticMeshComponent> StaticMeshComponent::Create(StaticMeshModel* staticMeshModel)
 {
 	auto ptr = RefPtr<StaticMeshComponent>::MakeRef();
-	ptr->Initialize(staticMeshModel);
+	ptr->initialize(staticMeshModel);
 	return ptr;
 }
 
@@ -25,7 +25,7 @@ RefPtr<StaticMeshComponent> StaticMeshComponent::Create(const StringRef& filePat
 {
 	auto ptr = RefPtr<StaticMeshComponent>::MakeRef();
 	auto mesh = SceneGraphManager::Instance->GetModelManager()->CreateStaticMeshModel(filePath);
-	ptr->Initialize(mesh);
+	ptr->initialize(mesh);
 	return ptr;
 }
 
@@ -35,7 +35,7 @@ RefPtr<StaticMeshComponent> StaticMeshComponent::CreatePlane(const Vector2& size
 	auto ptr = RefPtr<StaticMeshComponent>::MakeRef();
 	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
 	mesh->InitializePlane(SceneGraphManager::Instance->GetGraphicsManager(), size, sliceH, sliceV, flags);
-	ptr->Initialize(mesh);
+	ptr->initialize(mesh);
 	return ptr;
 }
 
@@ -45,7 +45,7 @@ RefPtr<StaticMeshComponent> StaticMeshComponent::CreateScreenPlane()
 	auto ptr = RefPtr<StaticMeshComponent>::MakeRef();
 	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
 	mesh->InitializeScreenPlane(SceneGraphManager::Instance->GetGraphicsManager(), MeshCreationFlags::None);
-	ptr->Initialize(mesh);
+	ptr->initialize(mesh);
 	return ptr;
 }
 
@@ -53,12 +53,12 @@ RefPtr<StaticMeshComponent> StaticMeshComponent::CreateScreenPlane()
 RefPtr<StaticMeshComponent> StaticMeshComponent::CreateBox()
 {
 	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
-	mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager());
+	mesh->initialize(SceneGraphManager::Instance->GetGraphicsManager());
 	mesh->AddMeshResource(detail::ModelManager::GetInstance()->GetUnitBoxMeshResource(MeshCreationFlags::None));
 	mesh->AddMaterial(detail::ModelManager::GetInstance()->GetDefaultMaterial());
 
 	auto ptr = RefPtr<StaticMeshComponent>::MakeRef();
-	ptr->Initialize(mesh);
+	ptr->initialize(mesh);
 	return ptr;
 }
 
@@ -69,7 +69,7 @@ RefPtr<StaticMeshComponent> StaticMeshComponent::CreateBox(const Vector3& size)
 	mesh->InitializeBox(SceneGraphManager::Instance->GetGraphicsManager(), size, MeshCreationFlags::None);
 
 	auto ptr = RefPtr<StaticMeshComponent>::MakeRef();
-	ptr->Initialize(mesh);
+	ptr->initialize(mesh);
 	return ptr;
 }
 
@@ -83,12 +83,12 @@ RefPtr<StaticMeshComponent> StaticMeshComponent::CreateBox(float width, float he
 RefPtr<StaticMeshComponent> StaticMeshComponent::CreateSphere()
 {
 	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
-	mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager());
+	mesh->initialize(SceneGraphManager::Instance->GetGraphicsManager());
 	mesh->AddMeshResource(detail::ModelManager::GetInstance()->GetUnitSphereMeshResource(MeshCreationFlags::None));
 	mesh->AddMaterial(detail::ModelManager::GetInstance()->GetDefaultMaterial());
 
 	auto ptr = RefPtr<StaticMeshComponent>::MakeRef();
-	ptr->Initialize(mesh);
+	ptr->initialize(mesh);
 	return ptr;
 }
 
@@ -99,7 +99,7 @@ RefPtr<StaticMeshComponent> StaticMeshComponent::CreateSphere(float radius, int 
 	mesh->InitializeSphere(SceneGraphManager::Instance->GetGraphicsManager(), radius, tessellation, tessellation, MeshCreationFlags::None);
 
 	auto ptr = RefPtr<StaticMeshComponent>::MakeRef();
-	ptr->Initialize(mesh);
+	ptr->initialize(mesh);
 	return ptr;
 }
 
@@ -107,12 +107,12 @@ RefPtr<StaticMeshComponent> StaticMeshComponent::CreateSphere(float radius, int 
 RefPtr<StaticMeshComponent> StaticMeshComponent::CreateTeapot()
 {
 	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
-	mesh->Initialize(SceneGraphManager::Instance->GetGraphicsManager());
+	mesh->initialize(SceneGraphManager::Instance->GetGraphicsManager());
 	mesh->AddMeshResource(detail::ModelManager::GetInstance()->GetUnitTeapotMeshResource());
 	mesh->AddMaterial(detail::ModelManager::GetInstance()->GetDefaultMaterial());
 
 	auto ptr = RefPtr<StaticMeshComponent>::MakeRef();
-	ptr->Initialize(mesh);
+	ptr->initialize(mesh);
 	return ptr;
 }
 
@@ -123,7 +123,7 @@ RefPtr<StaticMeshComponent> StaticMeshComponent::CreateTeapot(float size, int te
 	mesh->InitializeTeapot(SceneGraphManager::Instance->GetGraphicsManager(), size, tessellation, MeshCreationFlags::None);
 
 	auto ptr = RefPtr<StaticMeshComponent>::MakeRef();
-	ptr->Initialize(mesh);
+	ptr->initialize(mesh);
 	return ptr;
 }
 
@@ -139,12 +139,12 @@ StaticMeshComponent::~StaticMeshComponent()
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshComponent::Initialize(StaticMeshModel* meshModel)
+void StaticMeshComponent::initialize(StaticMeshModel* meshModel)
 {
 	if (LN_CHECK_ARG(meshModel != nullptr)) return;
 	m_mesh = meshModel;
 
-	VisualComponent::Initialize();
+	VisualComponent::initialize();
 
 	//m_materialList->CopyShared(m_mesh->m_materials, true);
 
@@ -194,9 +194,9 @@ Rectangle::~Rectangle()
 }
 
 //------------------------------------------------------------------------------
-void Rectangle::Initialize(const Rect& rect)
+void Rectangle::initialize(const Rect& rect)
 {
-	VisualComponent::Initialize();
+	VisualComponent::initialize();
 	detail::EngineDomain::GetDefaultSceneGraph3D()->GetRootNode()->AddChild(this);
 	SetAutoRemove(true);
 

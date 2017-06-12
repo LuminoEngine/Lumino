@@ -195,9 +195,9 @@ LN_INTERNAL_ACCESS:
 	Sound();
 	virtual ~Sound();
 	LN_METHOD()
-	void Initialize(const StringRef& filePath);
-	void Initialize(Stream* stream, SoundLoadingMode loadingMode);
-	void Initialize(detail::AudioStream* audioStream);
+	void initialize(const StringRef& filePath);
+	void initialize(Stream* stream, SoundLoadingMode loadingMode);
+	void initialize(detail::AudioStream* audioStream);
 	void CreateAudioPlayerSync();
 	void Polling(float elapsedTime);
 

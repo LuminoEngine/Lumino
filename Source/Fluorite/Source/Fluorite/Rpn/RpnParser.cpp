@@ -218,32 +218,32 @@ bool RpnToken::IsUnary() const
 //------------------------------------------------------------------------------
 ResultState RpnParser::ParseCppConstExpression2(Position exprBegin, Position exprEnd, DiagnosticsItemSet* diag)
 {
-	Initialize(diag);
+	initialize(diag);
 	TokenizeCppConst(exprBegin, exprEnd);
 	Parse();
 	return ResultState::Success;
 }
 
 //------------------------------------------------------------------------------
-void RpnParser::Initialize(DiagnosticsItemSet* diag)
+void RpnParser::initialize(DiagnosticsItemSet* diag)
 {
 	if (m_tokenList != nullptr) {
-		m_tokenList->Clear();
+		m_tokenList->clear();
 	}
 	else {
-		m_tokenList.Attach(LN_NEW RpnTokenList());
+		m_tokenList.attach(LN_NEW RpnTokenList());
 	}
 	if (m_rpnTokenList != nullptr) {
-		m_rpnTokenList->Clear();
+		m_rpnTokenList->clear();
 	}
 	else {
-		m_rpnTokenList.Attach(LN_NEW RpnTokenList());
+		m_rpnTokenList.attach(LN_NEW RpnTokenList());
 	}
 	m_diag = diag;
-	m_tmpRPNTokenList.Clear();
-	m_opStack.Clear();
-	m_condStack.Clear();
-	m_groupStack.Clear();
+	m_tmpRPNTokenList.clear();
+	m_opStack.clear();
+	m_condStack.clear();
+	m_groupStack.clear();
 	m_lastToken = nullptr;
 }
 
@@ -810,7 +810,7 @@ ResultState RpnEvaluator::TryEval(InputFile* inputFile, const RpnTokenList* toke
 			case RpnTokenGroup::FunctionCall:
 				if (operandStack.GetCount() >= token.ElementCount)
 				{
-					funcCallArgs.Resize(token.ElementCount);
+					funcCallArgs.resize(token.ElementCount);
 					for (int i = token.ElementCount - 1; i >= 0; --i)
 					{
 						operandStack.Pop(&funcCallArgs[i]);

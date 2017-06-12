@@ -170,13 +170,13 @@ HRESULT AllocateHierarchy::DestroyMeshContainer( D3DXMESHCONTAINER* mesh_contain
 	LN_SAFE_DELETE_ARRAY( mesh_container->pAdjacency );
 	LN_SAFE_DELETE_ARRAY( mesh_container->pMaterials );
 
-	LN_SAFE_RELEASE( mesh_container->OriginalMesh );
+	LN_COM_SAFE_RELEASE( mesh_container->OriginalMesh );
 	LN_SAFE_DELETE_ARRAY( mesh_container->BoneOffsetMatrices );
 
     //SAFE_DELETE_ARRAY( mesh_container->pAttributeTable );
 
-	LN_SAFE_RELEASE( mesh_container->MeshData.pMesh );
-	LN_SAFE_RELEASE( mesh_container->pSkinInfo );
+	LN_COM_SAFE_RELEASE( mesh_container->MeshData.pMesh );
+	LN_COM_SAFE_RELEASE( mesh_container->pSkinInfo );
 
 	LN_SAFE_DELETE( mesh_container );
 	return S_OK;
@@ -559,10 +559,10 @@ RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream,
 	ID3DXAnimationController* dx_anim_controller = NULL;
 
 	ByteBuffer data((size_t)stream->GetLength());
-	stream->Read(data.GetData(), data.GetSize());
+	stream->Read(data.getData(), data.getSize());
 	LN_COMCALL(DX9Module::D3DXLoadMeshHierarchyFromXInMemory(
-		data.GetConstData(),
-		data.GetSize(),
+		data.getConstData(),
+		data.getSize(),
 		D3DXMESH_MANAGED | D3DXMESH_32BIT,	// まずは 32bit インデックスで作る
 		device->GetIDirect3DDevice9(),
 		&allocate_hierarchy,
@@ -578,7 +578,7 @@ RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream,
 		~finally()
 		{
 			if (mRF) DX9Module::D3DXFrameDestroy(mRF, mAH);
-			LN_SAFE_RELEASE(mAC);
+			LN_COM_SAFE_RELEASE(mAC);
 		}
 		AllocateHierarchy* mAH;
 		D3DXFRAME* mRF;
@@ -590,7 +590,7 @@ RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream,
 	try
 	{
 		auto meshRes = RefPtr<MeshResource>::MakeRef();
-		meshRes->Initialize(manager->GetGraphicsManager(), MeshCreationFlags::None);
+		meshRes->initialize(manager->GetGraphicsManager(), MeshCreationFlags::None);
 		auto mesh1 = NewObject<StaticMeshModel>(manager->GetGraphicsManager(), meshRes);
 
 		// スキンメッシュではない場合
@@ -620,8 +620,8 @@ RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream,
 			meshRes->m_vertexDeclaration = manager->GetGraphicsManager()->GetDefaultVertexDeclaration();
 
 			// VertexBuffer
-			meshRes->m_vertexBufferInfos[0].buffer.Attach(LN_NEW VertexBuffer());
-			meshRes->m_vertexBufferInfos[0].buffer->Initialize(
+			meshRes->m_vertexBufferInfos[0].buffer.attach(LN_NEW VertexBuffer());
+			meshRes->m_vertexBufferInfos[0].buffer->initialize(
 				manager->GetGraphicsManager(),
 				sizeof(Vertex) * all_vertex_num,
 				nullptr,
@@ -636,7 +636,7 @@ RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream,
 			dx_indexbuffer->GetDesc(&dx_indexbuffer_desc);
 			dx_indexbuffer->Release();
 			mesh->m_indexBuffer.Attach(LN_NEW IndexBuffer());
-			mesh->m_indexBuffer->Initialize(
+			mesh->m_indexBuffer->initialize(
 				manager->GetGraphicsManager(),
 				all_index_num,
 				nullptr,
@@ -715,7 +715,7 @@ RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream,
 					DWORD   attr_num = 0;
 					c->MeshData.pMesh->GetAttributeTable(NULL, &attr_num);
 					List<D3DXATTRIBUTERANGE> dx_attrib_table;
-					dx_attrib_table.Resize(attr_num);
+					dx_attrib_table.resize(attr_num);
 					c->MeshData.pMesh->GetAttributeTable(&dx_attrib_table[0], &attr_num);
 
 					for (uint32_t i = 0; i < c->NumMaterials; ++i, ++mi)

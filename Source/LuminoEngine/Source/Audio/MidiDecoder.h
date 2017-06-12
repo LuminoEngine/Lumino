@@ -18,7 +18,7 @@ public:
 	virtual ~MidiDecoder();
 	
 	// メモリ上に展開された MIDI データの取得
-	const byte_t* GetSourceData() const { return m_midiFileData.GetData(); }
+	const byte_t* GetSourceData() const { return m_midiFileData.getData(); }
 
 	// 音量を正規化して読み込むかの設定 ( fillBufferAndReleaseStream() の前に呼ぶこと )
 	void SetEnableVolumeNormalize(bool flag) { m_volumeNormalize = flag; }
@@ -28,7 +28,7 @@ public:
 	virtual void				Create(Stream* stream) override;
 	virtual StreamFormat		GetSourceFormat() const override { return StreamFormat_Midi; }
 	virtual const WaveFormat*	GetWaveFormat() const override { return NULL; }
-	virtual uint32_t			GetSourceDataSize() const override { return m_midiFileData.GetSize(); }
+	virtual uint32_t			GetSourceDataSize() const override { return m_midiFileData.getSize(); }
 	virtual uint32_t			GetTotalUnits() const override { return 0; }
 	virtual byte_t*				GetOnmemoryPCMBuffer() const override { return NULL; }
 	virtual uint32_t			GetOnmemoryPCMBufferSize() const override { return 0; }

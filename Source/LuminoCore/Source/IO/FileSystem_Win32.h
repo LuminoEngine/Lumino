@@ -92,7 +92,7 @@ void FileSystem::SetAttribute(const wchar_t* filePath, FileAttribute attr)
 }
 
 //------------------------------------------------------------------------------
-void FileSystem::Copy(const char* sourceFileName, const char* destFileName, bool overwrite)
+void FileSystem::copy(const char* sourceFileName, const char* destFileName, bool overwrite)
 {
 	BOOL bRes = ::CopyFileA(sourceFileName, destFileName, (overwrite) ? FALSE : TRUE);
 	if (bRes == FALSE) {
@@ -101,7 +101,7 @@ void FileSystem::Copy(const char* sourceFileName, const char* destFileName, bool
 	}
 }
 
-void FileSystem::Copy(const wchar_t* sourceFileName, const wchar_t* destFileName, bool overwrite)
+void FileSystem::copy(const wchar_t* sourceFileName, const wchar_t* destFileName, bool overwrite)
 {
 	BOOL bRes = ::CopyFileW(sourceFileName, destFileName, (overwrite) ? FALSE : TRUE);
 	if (bRes == FALSE) {

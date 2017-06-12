@@ -27,9 +27,9 @@ void GraphicsDeviceBase::Finalize()
 {
 	MutexScopedLock lock(m_deviceObjectListMutex);
 	for (IDeviceObject* obj : m_deviceObjectList) {
-		obj->Release();
+		obj->release();
 	}
-	m_deviceObjectList.Clear();
+	m_deviceObjectList.clear();
 }
 
 //------------------------------------------------------------------------------
@@ -37,7 +37,7 @@ void GraphicsDeviceBase::AddDeviceResource(IDeviceObject* obj)
 {
 	MutexScopedLock lock(m_deviceObjectListMutex);
 	m_deviceObjectList.Add(obj);
-	obj->AddRef();
+	obj->addRef();
 }
 
 //------------------------------------------------------------------------------
@@ -77,8 +77,8 @@ void GraphicsDeviceBase::GCDeviceResource()
 	List<IDeviceObject*>::iterator end = m_deviceObjectList.end();
 	for (; itr != end;)
 	{
-		if ((*itr)->GetReferenceCount() == 1) {
-			(*itr)->Release();
+		if ((*itr)->getReferenceCount() == 1) {
+			(*itr)->release();
 			itr = m_deviceObjectList.erase(itr);
 			end = m_deviceObjectList.end();
 		}

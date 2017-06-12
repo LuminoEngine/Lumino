@@ -106,7 +106,7 @@ public:
 
 	/// 初期化
 	///		DMInitMode が LN_DMINITMODE_NOTUSE の場合はインスタンスを作成しない。GetInstance() は NULL を返す。
-	static void Initialize( const ConfigData& configData );
+	static void initialize( const ConfigData& configData );
 
 	/// 終了処理
 	static void Finalize();

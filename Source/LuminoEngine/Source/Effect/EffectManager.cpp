@@ -61,7 +61,7 @@ EffectManager::~EffectManager()
 }
 
 //------------------------------------------------------------------------------
-void EffectManager::Initialize(const Settings& settings)
+void EffectManager::initialize(const Settings& settings)
 {
 	m_fileManager = settings.fileManager;
 	m_graphicsManager = settings.graphicsManager;
@@ -89,7 +89,7 @@ EffectEngine* EffectManager::CreateEffectWorld()
 {
 #ifdef LN_USE_EXTERNAL_Effekseer
 	auto engine = RefPtr<EffekseerEffectEngine>::MakeRef();
-	engine->Initialize(this, 32, 0, 2000);	// TODO
+	engine->initialize(this, 32, 0, 2000);	// TODO
 
 	auto basePtr = RefPtr<EffectEngine>::StaticCast(engine);
 	m_effectWorldList.Add(basePtr);

@@ -30,7 +30,7 @@ World::~World()
 }
 
 //------------------------------------------------------------------------------
-void World::Initialize()
+void World::initialize()
 {
 	m_renderer = NewObject<DrawList>(detail::EngineDomain::GetGraphicsManager());
 	m_insideWorldRenderer = NewObject<DrawList>(detail::EngineDomain::GetGraphicsManager());
@@ -206,9 +206,9 @@ World2D::~World2D()
 }
 
 //------------------------------------------------------------------------------
-void World2D::Initialize()
+void World2D::initialize()
 {
-	World::Initialize();
+	World::initialize();
 
 	m_sceneGraph = RefPtr<SceneGraph2D>::MakeRef();
 	m_sceneGraph->CreateCore(EngineManager::GetInstance()->GetSceneGraphManager());
@@ -291,9 +291,9 @@ World3D::~World3D()
 }
 
 //------------------------------------------------------------------------------
-void World3D::Initialize()
+void World3D::initialize()
 {
-	World::Initialize();
+	World::initialize();
 
 	m_physicsWorld = NewObject<PhysicsWorld>();
 
@@ -425,7 +425,7 @@ void World3D::CreateGridPlane()
 	};
 	static const size_t shaderCodeLen = LN_ARRAY_SIZE_OF(shaderCode);
 	auto shader = RefPtr<Shader>::MakeRef();
-	shader->Initialize(gm, shaderCode, shaderCodeLen);
+	shader->initialize(gm, shaderCode, shaderCodeLen);
 	m_gridPlane->GetMaterial(0)->SetShader(shader);
 
 	// 四方の辺に黒線を引いたテクスチャを作り、マテリアルにセットしておく

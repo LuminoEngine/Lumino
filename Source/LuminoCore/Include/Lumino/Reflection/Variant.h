@@ -141,7 +141,7 @@ public:
 
 public:
 	Variant();
-	Variant(const Variant& value) : Variant() { Copy(value); }
+	Variant(const Variant& value) : Variant() { copy(value); }
 	//Variant(std::nullptr_t value);
 	//Variant(bool value) : Variant() { SetBool(value); }
 	//Variant(int32_t value) : Variant() {}
@@ -153,8 +153,8 @@ public:
 	//Variant(ReflectionObject* value) : Variant() { SetReflectionObject(value); }
 	//Variant(ReflectionArrayObject* value) : Variant() { SetReflectionArrayObject(value); }
 
-	~Variant() { Release(); }
-	Variant& operator = (const Variant& obj) { Copy(obj); return (*this); }
+	~Variant() { release(); }
+	Variant& operator = (const Variant& obj) { copy(obj); return (*this); }
 
 
 
@@ -318,11 +318,11 @@ private:
 public:
 	//bool operator == (const Variant& right) const;
 
-	bool Equals(const Variant& obj) const;
+	bool equals(const Variant& obj) const;
 
 private:
-	void Copy(const Variant& obj);
-	void Release();
+	void copy(const Variant& obj);
+	void release();
 
 private:
 	VariantType	m_type;

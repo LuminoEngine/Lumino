@@ -147,7 +147,7 @@ public:
 		{
 			m_format = PixelFormat::R8G8B8A8;
 			m_bitmapData = ByteBuffer(m_size.width * m_size.height * 4);
-			byte_t* bitmap = m_bitmapData.GetData();
+			byte_t* bitmap = m_bitmapData.getData();
 
 			// 1行ずつコピー
 			for (int h = 0; h < m_size.height; ++h) {
@@ -160,7 +160,7 @@ public:
 		{
 			m_format = PixelFormat::R8G8B8A8;
 			m_bitmapData = ByteBuffer(m_size.width * m_size.height * 4);
-			byte_t* bitmap = m_bitmapData.GetData();
+			byte_t* bitmap = m_bitmapData.getData();
 
 			byte_t* row;
 			for (int y = 0; y < m_size.height; ++y)
@@ -182,7 +182,7 @@ public:
 		{
 			m_format = PixelFormat::A8;
 			m_bitmapData = ByteBuffer(m_size.width * m_size.height * 1);
-			byte_t* bitmap = m_bitmapData.GetData();
+			byte_t* bitmap = m_bitmapData.getData();
 
 			for (int h = 0; h < m_size.height; ++h) {
 				memcpy(&bitmap[row_bytes * (unit + (sign * h))], row_pointers[h], row_bytes);
@@ -234,9 +234,9 @@ public:
 		//png_bytepp rows = bitmapData->GetData();
 		List<png_bytep> rows;
 		ByteBuffer tmpData = bitmapData;	// 書き込み可能ポインタでないと png の API に渡せないので一時メモリ化する。
-		rows.Resize(size.height);
+		rows.resize(size.height);
 		int rowBytes = png_get_rowbytes(pp, pngInfo);	// PixelFormat_BYTE_R8G8B8A8
-		byte_t* data = tmpData.GetData();//bitmapData.GetData();
+		byte_t* data = tmpData.getData();//bitmapData.GetData();
 		for (int i = 0; i < size.height; i++)
 		{
 			if (upFlow) {

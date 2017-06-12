@@ -38,7 +38,7 @@ FontGlyphTextureCache::~FontGlyphTextureCache()
 }
 
 //------------------------------------------------------------------------------
-void FontGlyphTextureCache::Initialize(GraphicsManager* manager, RawFont* font)
+void FontGlyphTextureCache::initialize(GraphicsManager* manager, RawFont* font)
 {
 	m_manager = manager;
 	m_font = font;
@@ -98,7 +98,7 @@ void FontGlyphTextureCache::LookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, b
 		// キャッシュマップに登録
 		CachedGlyphInfo info;
 		info.index = cacheIndex;
-		info.size = glyphBitmap->GlyphBitmap->GetSize();
+		info.size = glyphBitmap->GlyphBitmap->getSize();
 		m_cachedGlyphInfoMap[ch] = info;
 
 		//outInfo->fillGlyphBitmap = glyphBitmap->GlyphBitmap;
@@ -341,13 +341,13 @@ VectorFontGlyphCache::~VectorFontGlyphCache()
 }
 
 //------------------------------------------------------------------------------
-void VectorFontGlyphCache::Initialize(GraphicsManager* manager, RawFont* font, int maxSize)
+void VectorFontGlyphCache::initialize(GraphicsManager* manager, RawFont* font, int maxSize)
 {
 	m_manager = manager;
 	m_font = font;
-	m_glyphInfoList.Resize(maxSize);
+	m_glyphInfoList.resize(maxSize);
 	m_inFlushUsedFlags.resize(maxSize);
-	m_gryphBufferDataList.Resize(maxSize);
+	m_gryphBufferDataList.resize(maxSize);
 	m_freeIndexCount = maxSize;
 	for (int i = 0; i < maxSize; i++)
 	{
@@ -404,10 +404,10 @@ VectorFontGlyphCache::Handle VectorFontGlyphCache::GetGlyphInfo(char32_t utf32Co
 				{
 					this_->RegisterPolygons(
 						infoIndex,
-						reinterpret_cast<const RawFont::FontOutlineVertex*>(vertexList.GetData()),
-						vertexList.GetSize() / sizeof(RawFont::FontOutlineVertex),
-						reinterpret_cast<const RawFont::OutlineInfo*>(outlineList.GetData()),
-						outlineList.GetSize() / sizeof(RawFont::OutlineInfo));
+						reinterpret_cast<const RawFont::FontOutlineVertex*>(vertexList.getData()),
+						vertexList.getSize() / sizeof(RawFont::FontOutlineVertex),
+						reinterpret_cast<const RawFont::OutlineInfo*>(outlineList.getData()),
+						outlineList.getSize() / sizeof(RawFont::OutlineInfo));
 				});
 		}
 	}
@@ -497,13 +497,13 @@ void VectorFontGlyphCache::RegisterPolygons(Handle infoIndex, const RawFont::Fon
 	auto* info = &m_gryphBufferDataList[infoIndex];
 
 	// TODO: AddRange
-	info->vertices.Clear();
+	info->vertices.clear();
 	info->vertices.Reserve(vertexSize);
 	for (int i = 0; i < vertexSize; i++)
 	{
 		info->vertices.Add(vertices[i]);
 	}
-	info->outlines.Clear();
+	info->outlines.clear();
 	info->outlines.Reserve(outlineSize);
 	for (int i = 0; i < outlineSize; i++)
 	{

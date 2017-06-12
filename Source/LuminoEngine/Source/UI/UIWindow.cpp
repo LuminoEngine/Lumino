@@ -31,9 +31,9 @@ UIWindow::~UIWindow()
 }
 
 //------------------------------------------------------------------------------
-void UIWindow::Initialize()
+void UIWindow::initialize()
 {
-	UIControl::Initialize();
+	UIControl::initialize();
 }
 
 //------------------------------------------------------------------------------

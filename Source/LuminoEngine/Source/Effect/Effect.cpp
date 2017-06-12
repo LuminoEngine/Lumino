@@ -27,7 +27,7 @@ VisualEffect::~VisualEffect()
 }
 
 //------------------------------------------------------------------------------
-void VisualEffect::Initialize(/*detail::EffectCore* core*/)
+void VisualEffect::initialize(/*detail::EffectCore* core*/)
 {
 	//LN_REFOBJ_SET(m_core, core);
 }
@@ -37,7 +37,7 @@ void VisualEffect::ReleaseInstance()
 {
 	for (auto* inst : m_instanceList)
 	{
-		inst->Release();
+		inst->release();
 	}
 	m_instanceList.clear();
 }

@@ -255,7 +255,7 @@ class VMDBezierTable
 {
 public:
 	/// 初期化
-	void Initialize(float pt_x1, float pt_y1, float pt_x2, float pt_y2);
+	void initialize(float pt_x1, float pt_y1, float pt_x2, float pt_y2);
 
 	/// t = 0.0～1.0
 	float GetInterValue(float t);

@@ -100,7 +100,7 @@ PrimitiveRendererCore::~PrimitiveRendererCore()
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRendererCore::Initialize(GraphicsManager* manager)
+void PrimitiveRendererCore::initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 	const int DefaultFaceCount = 2048;
@@ -181,8 +181,8 @@ void PrimitiveRendererCore::Flush()
 	}
 
 	// キャッシュクリア
-	m_vertexCache.Clear();
-	m_indexCache.Clear();
+	m_vertexCache.clear();
+	m_indexCache.clear();
 }
 
 //------------------------------------------------------------------------------
@@ -226,12 +226,12 @@ PrimitiveRenderFeature::~PrimitiveRenderFeature()
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRenderFeature::Initialize(GraphicsManager* manager)
+void PrimitiveRenderFeature::initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 
 	m_core = LN_NEW PrimitiveRendererCore();
-	m_core->Initialize(m_manager);
+	m_core->initialize(m_manager);
 }
 
 //------------------------------------------------------------------------------
@@ -335,7 +335,7 @@ BlitRenderer::~BlitRenderer()
 }
 
 //------------------------------------------------------------------------------
-void BlitRenderer::Initialize(GraphicsManager* manager)
+void BlitRenderer::initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 	auto* device = m_manager->GetGraphicsDevice();
@@ -347,10 +347,10 @@ void BlitRenderer::Initialize(GraphicsManager* manager)
 		{ Vector3( 1,  1, 0), Vector2(1, 0), Vector3::Zero, Color::White },
 		{ Vector3( 1, -1, 0), Vector2(1, 1), Vector3::Zero, Color::White },
 	};
-	m_vertexBuffer.Attach(device->CreateVertexBuffer(sizeof(vertices), vertices, ResourceUsage::Static), false);
+	m_vertexBuffer.attach(device->CreateVertexBuffer(sizeof(vertices), vertices, ResourceUsage::Static), false);
 
 	m_commonMaterial = RefPtr<Material>::MakeRef();
-	m_commonMaterial->Initialize();
+	m_commonMaterial->initialize();
 }
 
 //------------------------------------------------------------------------------

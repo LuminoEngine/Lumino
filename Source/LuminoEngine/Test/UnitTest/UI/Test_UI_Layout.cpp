@@ -39,7 +39,7 @@ TEST_F(Test_UI_StackPanel, HorizontalAlignment)
 	auto uiRoot = Engine::GetMainWindow();
 	auto panel = UIStackPanel::Create();
 	panel->SetOrientation(Orientation::Vertical);
-	panel->SetSize(uiRoot->GetSize());
+	panel->SetSize(uiRoot->getSize());
 	panel->SetBackground(Brush::Blue);
 	uiRoot->AddChild(panel);
 
@@ -76,7 +76,7 @@ TEST_F(Test_UI_StackPanel, VerticalAlignment)
 	auto uiRoot = Engine::GetMainWindow();
 	auto panel = UIStackPanel::Create();
 	panel->SetOrientation(Orientation::Horizontal);
-	panel->SetSize(uiRoot->GetSize());
+	panel->SetSize(uiRoot->getSize());
 	panel->SetBackground(Brush::Blue);
 	uiRoot->AddChild(panel);
 
@@ -112,7 +112,7 @@ TEST_F(Test_UI_StackPanel, ReverseHorizontal)
 {
 	auto uiRoot = Engine::GetMainWindow();
 	auto panel = UIStackPanel::Create();
-	panel->SetSize(uiRoot->GetSize());
+	panel->SetSize(uiRoot->getSize());
 	panel->SetBackground(Brush::Blue);
 	panel->SetOrientation(Orientation::ReverseHorizontal);
 	uiRoot->AddChild(panel);
@@ -136,7 +136,7 @@ TEST_F(Test_UI_StackPanel, Margin_Padding)
 {
 	auto uiRoot = Engine::GetMainWindow();
 	auto panel = UIStackPanel::Create();
-	panel->SetSize(uiRoot->GetSize());
+	panel->SetSize(uiRoot->getSize());
 	panel->SetBackground(Brush::Blue);
 	uiRoot->AddChild(panel);
 

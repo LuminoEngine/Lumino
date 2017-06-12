@@ -28,9 +28,9 @@ LightComponent::~LightComponent()
 }
 
 //------------------------------------------------------------------------------
-void LightComponent::Initialize(LightType type)
+void LightComponent::initialize(LightType type)
 {
-	SceneNode::Initialize();
+	SceneNode::initialize();
 	m_lightInfo = RefPtr<detail::DynamicLightInfo>::MakeRef();
 	m_lightInfo->m_type = type;
 	m_lightInfo->m_diffuse.Set(1.0f, 1.0f, 1.0f, 1.0f);
@@ -110,9 +110,9 @@ Light::~Light()
 }
 
 //------------------------------------------------------------------------------
-void Light::Initialize()
+void Light::initialize()
 {
-	WorldObject::Initialize();
+	WorldObject::initialize();
 	m_component = NewObject<LightComponent>(LightType_Directional);
 	AddComponent(m_component);
 }

@@ -20,7 +20,7 @@ public:
 	void Reserve(int indexCount);
 
 	/** インデックスバッファのサイズを変更します。 */
-	void Resize(int indexCount);
+	void resize(int indexCount);
 
 	/** インデックスバッファが保持するデータにアクセスします。 */
 	void* GetMappedData();
@@ -29,7 +29,7 @@ public:
 	void* RequestMappedData(int indexCount);
 
 	/** インデックスバッファをクリアします。 */
-	void Clear();
+	void clear();
 
 	/** インデックスバッファのフォーマットを取得します。 */
 	IndexBufferFormat GetIndexFormat() const { return m_format; }
@@ -43,7 +43,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	IndexBuffer();
 	virtual ~IndexBuffer();
-	void Initialize(detail::GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage, bool sizeConst);
+	void initialize(detail::GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage, bool sizeConst);
 	int GetIndexStride() const;
 	Driver::IIndexBuffer* ResolveRHIObject();
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);

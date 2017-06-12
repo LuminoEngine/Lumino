@@ -156,7 +156,7 @@ class NanoVGRenderFeature
 public:
 	NanoVGRenderFeature();
 	virtual ~NanoVGRenderFeature();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
 	void ExecuteCommand(NanoVGCommandList* commandList);
 

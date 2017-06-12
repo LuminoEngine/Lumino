@@ -51,7 +51,7 @@ TEST_F(Test_IO_StreamReader, ReadLine)
 		ASSERT_FALSE(reader.ReadLine(&line3));
 
 		ASSERT_EQ(StreamReader::DefaultBufferSize - 1, line1.GetLength());
-		ASSERT_EQ(0, line1.Compare(tcharBuf, StreamReader::DefaultBufferSize - 1));
-		ASSERT_EQ(0, line2.Compare(_T("a")));
+		ASSERT_EQ(0, line1.compare(tcharBuf, StreamReader::DefaultBufferSize - 1));
+		ASSERT_EQ(0, line2.compare(_T("a")));
 	}
 }

@@ -151,7 +151,7 @@ public:
 	const RpnTokenList* GetTokenList() const { return m_rpnTokenList; }
 
 private:
-	void Initialize(DiagnosticsItemSet* diag);
+	void initialize(DiagnosticsItemSet* diag);
 	void TokenizeCppConst(Position exprBegin, Position exprEnd);
 	void Parse();
 	void PushOpStack(RpnToken* token);

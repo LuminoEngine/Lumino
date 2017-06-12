@@ -69,7 +69,7 @@ public:
 	}
 
 LN_CONSTRUCT_ACCESS:
-	void Initialize()
+	void initialize()
 	{
 	}
 
@@ -193,7 +193,7 @@ public:
 	float GetHeight() const { return tr::PropertyInfo::GetPropertyValueDirect<float>(this, heightId); }
 
 	void SetSize(const Size& value) { SetWidth(value.width); SetHeight(value.height); }
-	Size GetSize() const { return Size(width, height); }
+	Size getSize() const { return Size(width, height); }
 
 	void SetMinWidth(float value) { m_minSize.width = value; }
 
@@ -246,7 +246,7 @@ public:
 	const Size& GetDesiredSize() const { return m_desiredSize; }
 
 	/** この要素の最終的な描画サイズを取得します。この値は Arrange() で確定します。*/
-	const Size& GetRenderSize() const { return m_finalLocalRect.GetSize(); }
+	const Size& GetRenderSize() const { return m_finalLocalRect.getSize(); }
 
 	/** この要素へのフォーカスの取得を試みます。*/
 	void Focus();
@@ -307,7 +307,7 @@ public:
 protected:
 	UIElement();
 	virtual ~UIElement();
-	void Initialize();
+	void initialize();
 
 	/** 要素の視覚状態を切り替えます。*/
 	void GoToVisualState(const StringRef& stateName);

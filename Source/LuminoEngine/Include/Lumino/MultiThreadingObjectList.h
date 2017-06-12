@@ -25,7 +25,7 @@ private:
 
 public:
 	MultiThreadingRefObjectList() {}
-	~MultiThreadingRefObjectList() { Clear(); }
+	~MultiThreadingRefObjectList() { clear(); }
 
 public:
 
@@ -36,7 +36,7 @@ public:
 		assert(std::find(m_registerList.begin(), m_registerList.end(), obj) == m_registerList.end());	// 既に追加要求されている
 		assert(std::find(m_objectArray.begin(), m_objectArray.end(), obj) == m_objectArray.end());		// 現在削除待ちである
 		m_registerList.Add(obj);
-		obj->AddRef();
+		obj->addRef();
 	}
 
 	/// 削除
@@ -55,7 +55,7 @@ public:
 		assert(std::find(m_unregisterList.begin(), m_unregisterList.end(), obj) == m_unregisterList.end());
 		assert(std::find(m_objectArray.begin(), m_objectArray.end(), obj) != m_objectArray.end());
 		m_unregisterList.Add(obj);
-		obj->AddRef();
+		obj->addRef();
 	}
 
 	/// 同期
@@ -74,7 +74,7 @@ public:
 				// 参照カウントは m_registerList から外す分と m_objectArray に
 				// 追加する分で ±0 なので操作はしない
 			}
-			m_registerList.Clear();
+			m_registerList.clear();
 		}
 
 		// 削除
@@ -87,12 +87,12 @@ public:
 				typename ObjectArray::iterator pos = std::find(m_objectArray.begin(), m_objectArray.end(), (*itr));
 				if (pos != m_objectArray.end())
 				{
-					(*pos)->Release();	// m_unregisterList から外す分
-					(*pos)->Release();	// m_registerList から外す分
+					(*pos)->release();	// m_unregisterList から外す分
+					(*pos)->release();	// m_registerList から外す分
 					m_objectArray.erase(pos);
 				}
 			}
-			m_unregisterList.Clear();
+			m_unregisterList.clear();
 		}
 	}
 
@@ -103,9 +103,9 @@ public:
 		typename ObjectArray::iterator end = m_objectArray.end();
 		for (; itr != end;)
 		{
-			if ((*itr)->GetReferenceCount() == 1)
+			if ((*itr)->getReferenceCount() == 1)
 			{
-				(*itr)->Release();
+				(*itr)->release();
 				itr = m_objectArray.erase(itr);
 				end = m_objectArray.end();
 			}
@@ -125,24 +125,24 @@ public:
 	ObjectArray& GetObjectArray() { return m_objectArray; }
 
 	/// すべてクリア (終了処理用。Clear() を呼ぶスレッド以外は停止していること)
-	void Clear()
+	void clear()
 	{
 		typename ObjectArray::iterator itr, end;
 
 		itr = m_registerList.begin();
 		end = m_registerList.end();
-		for (; itr != end; ++itr) (*itr)->Release();
-		m_registerList.Clear();
+		for (; itr != end; ++itr) (*itr)->release();
+		m_registerList.clear();
 
 		itr = m_unregisterList.begin();
 		end = m_unregisterList.end();
-		for (; itr != end; ++itr) (*itr)->Release();
-		m_unregisterList.Clear();
+		for (; itr != end; ++itr) (*itr)->release();
+		m_unregisterList.clear();
 
 		itr = m_objectArray.begin();
 		end = m_objectArray.end();
-		for (; itr != end; ++itr) (*itr)->Release();
-		m_objectArray.Clear();
+		for (; itr != end; ++itr) (*itr)->release();
+		m_objectArray.clear();
 	}
 };
 
@@ -168,7 +168,7 @@ private:
 
 public:
 	MultiThreadingInFrameGCList() {}
-	~MultiThreadingInFrameGCList() { Clear(); }
+	~MultiThreadingInFrameGCList() { clear(); }
 
 public:
 
@@ -227,7 +227,7 @@ public:
 				// 参照カウントは m_registerList から外す分と m_objectArray に
 				// 追加する分で ±0 なので操作はしない
 			}
-			m_registerList.Clear();
+			m_registerList.clear();
 		}
 
 		// 削除
@@ -246,7 +246,7 @@ public:
 					m_removingList.Add(*pos);
 				}
 			}
-			m_unregisterList.Clear();
+			m_unregisterList.clear();
 		}
 
 		// Check GC
@@ -256,7 +256,7 @@ public:
 			for (; itr != end;)
 			{
 				// このリストからしか削除されていないものを削除して欲しいオブジェクトリストへ移す
-				if ((*itr)->GetReferenceCount() == 0 && tr::ReflectionHelper::GetInternalReferenceCount(*itr) == 1)
+				if ((*itr)->getReferenceCount() == 0 && tr::ReflectionHelper::GetInternalReferenceCount(*itr) == 1)
 				{
 					m_removingList.Add(*itr);
 					itr = m_objectArray.erase(itr);
@@ -280,7 +280,7 @@ public:
 		{
 			tr::ReflectionHelper::ReleaseInternal(obj);
 		}
-		m_removingList.Clear();
+		m_removingList.clear();
 
 		//typename ObjectArray::iterator itr = m_objectArray.begin();
 		//typename ObjectArray::iterator end = m_objectArray.end();
@@ -309,7 +309,7 @@ public:
 	ObjectArray& GetObjectArray() { return m_objectArray; }
 
 	/// すべてクリア (終了処理用。Clear() を呼ぶスレッド以外は停止していること)
-	void Clear()
+	void clear()
 	{
 		typename ObjectArray::iterator itr, end;
 		MutexScopedLock lock(m_mutex);
@@ -317,18 +317,18 @@ public:
 		itr = m_registerList.begin();
 		end = m_registerList.end();
 		for (; itr != end; ++itr) tr::ReflectionHelper::ReleaseInternal(*itr);
-		m_registerList.Clear();
+		m_registerList.clear();
 		
 
 		itr = m_unregisterList.begin();
 		end = m_unregisterList.end();
 		for (; itr != end; ++itr) tr::ReflectionHelper::ReleaseInternal(*itr);
-		m_unregisterList.Clear();
+		m_unregisterList.clear();
 
 		itr = m_objectArray.begin();
 		end = m_objectArray.end();
 		for (; itr != end; ++itr) tr::ReflectionHelper::ReleaseInternal(*itr);
-		m_objectArray.Clear();
+		m_objectArray.clear();
 	}
 };
 //
@@ -361,7 +361,7 @@ public:
 		for (int i = GetCount() - 1; i >= 0; i--)
 		{
 			TObject* ptr = GetAt(i);
-			if (ptr->GetReferenceCount() == 0 && tr::ReflectionHelper::GetInternalReferenceCount(ptr) == 1)
+			if (ptr->getReferenceCount() == 0 && tr::ReflectionHelper::GetInternalReferenceCount(ptr) == 1)
 			{
 				RemoveAt(i);
 			}

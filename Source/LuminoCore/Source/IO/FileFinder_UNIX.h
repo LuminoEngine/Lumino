@@ -22,7 +22,7 @@ namespace detail {
 			assert(0);
 		}
 		
-		void Initialize(const TChar* dirPath)
+		void initialize(const TChar* dirPath)
 		{
 			assert(0);
 		}
@@ -47,7 +47,7 @@ public:
 	{
 		StringA t;
 		t.AssignCStr(GenericFileFinderImplBase<char>::m_dirPath.c_str());
-		Initialize(t.c_str());
+		initialize(t.c_str());
 	}
 
 	~GenericFileFinderImpl()
@@ -58,7 +58,7 @@ public:
 		}
 	}
 
-	void Initialize(const char* dirPath)
+	void initialize(const char* dirPath)
 	{
 		m_dir = opendir(dirPath);
 		LN_THROW(m_dir != NULL, IOException, dirPath);

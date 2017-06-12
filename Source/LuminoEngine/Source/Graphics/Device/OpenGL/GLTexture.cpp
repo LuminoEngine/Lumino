@@ -173,7 +173,7 @@ void GLTexture::SetSubData3D(const Box32& box, const void* data, size_t dataByte
 }
 
 //------------------------------------------------------------------------------
-void GLTexture::GetData(const RectI& rect, void* outData)
+void GLTexture::getData(const RectI& rect, void* outData)
 {
 	LN_NOTIMPLEMENTED();
 }
@@ -181,14 +181,14 @@ void GLTexture::GetData(const RectI& rect, void* outData)
 //------------------------------------------------------------------------------
 Bitmap* GLTexture::Lock()
 {
-	m_lockedTexture.Attach(LN_NEW Bitmap(m_size, Utils::TranslatePixelFormat(m_format)));
+	m_lockedTexture.attach(LN_NEW Bitmap(m_size, Utils::TranslatePixelFormat(m_format)));
 	return m_lockedTexture;
 }
 
 //------------------------------------------------------------------------------
 void GLTexture::Unlock()
 {
-	SetSubData(PointI(0, 0), m_lockedTexture->GetBitmapBuffer()->GetConstData(), m_lockedTexture->GetBitmapBuffer()->GetSize(), m_size);
+	SetSubData(PointI(0, 0), m_lockedTexture->GetBitmapBuffer()->getConstData(), m_lockedTexture->GetBitmapBuffer()->getSize(), m_size);
 	m_lockedTexture.SafeRelease();
 }
 
@@ -267,7 +267,7 @@ void GLRenderTargetTexture::SetSubData3D(const Box32& box, const void* data, siz
 }
 
 //------------------------------------------------------------------------------
-void GLRenderTargetTexture::GetData(const RectI& rect, void* outData)
+void GLRenderTargetTexture::getData(const RectI& rect, void* outData)
 {
 	LN_NOTIMPLEMENTED();
 }
@@ -279,7 +279,7 @@ Bitmap* GLRenderTargetTexture::Lock()
 	m_lockingBitmap = LN_NEW Bitmap(m_size, Utils::TranslatePixelFormat(m_format), true);
 
 	glBindTexture(GL_TEXTURE_2D, m_glTexture); LN_CHECK_GLERROR();
-	glGetTexImage(GL_TEXTURE_2D, 0, m_pixelFormat, m_elementType, m_lockingBitmap->GetBitmapBuffer()->GetData()); LN_CHECK_GLERROR();
+	glGetTexImage(GL_TEXTURE_2D, 0, m_pixelFormat, m_elementType, m_lockingBitmap->GetBitmapBuffer()->getData()); LN_CHECK_GLERROR();
 	glBindTexture(GL_TEXTURE_2D, 0); LN_CHECK_GLERROR();
 
 	return m_lockingBitmap;
@@ -318,7 +318,7 @@ void GLDepthBuffer::SetSubData3D(const Box32& box, const void* data, size_t data
 }
 
 //------------------------------------------------------------------------------
-void GLDepthBuffer::GetData(const RectI& rect, void* outData)
+void GLDepthBuffer::getData(const RectI& rect, void* outData)
 {
 	LN_THROW(0, InvalidOperationException);
 }

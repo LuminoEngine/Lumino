@@ -23,16 +23,16 @@ BitmapPainter::~BitmapPainter()
 }
 
 //------------------------------------------------------------------------------
-void BitmapPainter::Clear(const Color32& color)
+void BitmapPainter::clear(const Color32& color)
 {
-	FillRectangle(RectI(0, 0, m_bitmap->GetSize()), color);
+	FillRectangle(RectI(0, 0, m_bitmap->getSize()), color);
 }
 
 //------------------------------------------------------------------------------
 void BitmapPainter::FillRectangle(const RectI& rect, const Color32& color)
 {
 	RectI destRect = rect;
-	destRect.Clip(RectI(0, 0, m_bitmap->GetSize()));
+	destRect.Clip(RectI(0, 0, m_bitmap->getSize()));
 
 	PixelFormat format = m_bitmap->GetPixelFormat();
 
@@ -41,14 +41,14 @@ void BitmapPainter::FillRectangle(const RectI& rect, const Color32& color)
 		format == PixelFormat::B8G8R8A8 ||
 		format == PixelFormat::B8G8R8X8)
 	{
-		uint32_t* data = (uint32_t*)m_bitmap->GetBitmapBuffer()->GetData();
+		uint32_t* data = (uint32_t*)m_bitmap->GetBitmapBuffer()->getData();
 
 		uint32_t c = GetColorByteSec(color, format);
 		for (int y = 0; y < destRect.height; y++)
 		{
 			for (int x = 0; x < destRect.width; x++)
 			{
-				data[(destRect.y + y) * m_bitmap->GetSize().width + (destRect.x + x)] = c;
+				data[(destRect.y + y) * m_bitmap->getSize().width + (destRect.x + x)] = c;
 			}
 		}
 		return;
@@ -91,11 +91,11 @@ uint32_t BitmapPainter::GetColorByteSec(const Color32& color, PixelFormat format
 //------------------------------------------------------------------------------
 void BitmapFilter::FlipVertical(Bitmap* dst, const Bitmap* src)
 {
-	for (int y = 0; y < dst->GetSize().height; ++y)
+	for (int y = 0; y < dst->getSize().height; ++y)
 	{
-		for (int x = 0; x < dst->GetSize().width; ++x)
+		for (int x = 0; x < dst->getSize().width; ++x)
 		{
-			dst->SetPixel(x, y, src->GetPixel(x, src->GetSize().height - y - 1));
+			dst->SetPixel(x, y, src->GetPixel(x, src->getSize().height - y - 1));
 		}
 	}
 }

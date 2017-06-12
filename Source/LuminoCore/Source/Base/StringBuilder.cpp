@@ -17,7 +17,7 @@ GenericStringBuilderCore<TChar>::GenericStringBuilderCore()
 	: m_buffer()
 	, m_bufferUsed(0)
 {
-	m_buffer.Resize(DefaultCapacity, false);
+	m_buffer.resize(DefaultCapacity, false);
 }
 
 //------------------------------------------------------------------------------
@@ -28,7 +28,7 @@ GenericStringBuilderCore<TChar>::~GenericStringBuilderCore()
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-void GenericStringBuilderCore<TChar>::Clear()
+void GenericStringBuilderCore<TChar>::clear()
 {
 	m_bufferUsed = 0;
 }
@@ -82,7 +82,7 @@ void GenericStringBuilderCore<TChar>::Append(const byte_t* buffer, int byteCount
 template<typename TChar>
 void GenericStringBuilderCore<TChar>::Append(const ByteBuffer& buffer)
 {
-	Append(buffer.GetData(), buffer.GetSize());
+	Append(buffer.getData(), buffer.getSize());
 }
 
 //------------------------------------------------------------------------------
@@ -93,15 +93,15 @@ void GenericStringBuilderCore<TChar>::Replace(int start, int length, const TChar
 	int diff = sizeof(TChar) * (strLength - length);
 
 	// バッファが足りなければ拡張する
-	if (diff > 0 && m_bufferUsed + diff > m_buffer.GetSize())
+	if (diff > 0 && m_bufferUsed + diff > m_buffer.getSize())
 	{
-		size_t newSize = m_buffer.GetSize() + std::max(m_buffer.GetSize(), (size_t)diff);
-		m_buffer.Resize(newSize, false);
+		size_t newSize = m_buffer.getSize() + std::max(m_buffer.getSize(), (size_t)diff);
+		m_buffer.resize(newSize, false);
 	}
 
 	int diffChars = (strLength - length);
 	// before は置換しない部分
-	TChar* beforeBegin = (TChar*)m_buffer.GetData();
+	TChar* beforeBegin = (TChar*)m_buffer.getData();
 	TChar* beforeEnd = beforeBegin + start;				// この1つ前までが before の文字。全て置換する場合は beforeBegin と同じ。
 	
 	// oldAfter は残す部分
@@ -139,15 +139,15 @@ void GenericStringBuilderCore<TChar>::WriteInternal(const TChar* str, int length
 	size_t byteCount = sizeof(TChar) * length;
 
 	// バッファが足りなければ拡張する
-	if (m_bufferUsed + byteCount > m_buffer.GetSize())
+	if (m_bufferUsed + byteCount > m_buffer.getSize())
 	{
-		size_t newSize = m_buffer.GetSize() + std::max(m_buffer.GetSize(), byteCount);	// 最低でも byteCount 分を拡張する
-		m_buffer.Resize(newSize, false);
+		size_t newSize = m_buffer.getSize() + std::max(m_buffer.getSize(), byteCount);	// 最低でも byteCount 分を拡張する
+		m_buffer.resize(newSize, false);
 	}
 
 	// 末尾にコピー
-	byte_t* ptr = &(m_buffer.GetData()[m_bufferUsed]);
-	size_t size = m_buffer.GetSize() - m_bufferUsed;
+	byte_t* ptr = &(m_buffer.getData()[m_bufferUsed]);
+	size_t size = m_buffer.getSize() - m_bufferUsed;
 	memcpy_s(ptr, size, str, byteCount);
 
 	m_bufferUsed += byteCount;

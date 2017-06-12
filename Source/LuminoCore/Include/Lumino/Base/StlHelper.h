@@ -120,25 +120,25 @@ struct StringCaseInsensitiveLess
 
 	LN_CONSTEXPR bool operator()(const TString& left, const TString& right) const
 	{
-		return left.Compare(right.c_str(), -1, CaseSensitivity::CaseInsensitive) < 0;
+		return left.compare(right.c_str(), -1, CaseSensitivity::CaseInsensitive) < 0;
 	}
 	// String and char*
 	LN_CONSTEXPR bool operator()(const TString& left, const CharType* right) const
 	{
-		return left.Compare(right, -1, CaseSensitivity::CaseInsensitive) < 0;
+		return left.compare(right, -1, CaseSensitivity::CaseInsensitive) < 0;
 	}
 	LN_CONSTEXPR bool operator()(const CharType* left, const TString& right) const
 	{
-		return right.Compare(left, -1, CaseSensitivity::CaseInsensitive) > 0;
+		return right.compare(left, -1, CaseSensitivity::CaseInsensitive) > 0;
 	}
 	// String and StringRef
 	LN_CONSTEXPR bool operator()(const TString& left, const StringRef& right) const
 	{
-		return left.Compare(right.GetBegin(), -1, CaseSensitivity::CaseInsensitive) < 0;
+		return left.compare(right.GetBegin(), -1, CaseSensitivity::CaseInsensitive) < 0;
 	}
 	LN_CONSTEXPR bool operator()(const StringRef& left, const TString& right) const
 	{
-		return right.Compare(left.GetBegin(), -1, CaseSensitivity::CaseInsensitive) > 0;
+		return right.compare(left.GetBegin(), -1, CaseSensitivity::CaseInsensitive) > 0;
 	}
 };
 

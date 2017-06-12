@@ -27,7 +27,7 @@ template<class T, typename... TArgs>
 RefPtr<T> NewObject(TArgs... args)
 {
 	auto ptr = RefPtr<T>::MakeRef();
-	//ptr->Initialize(args);
+	//ptr->initialize(args);
 	return ptr;
 }
 
@@ -87,7 +87,7 @@ void Main()
 #endif
 
 
-	//Engine::Initialize();
+	//Engine::initialize();
 
 	//auto window = NewObject<UIFrameWindow>();
 
@@ -134,7 +134,7 @@ void Main()
 
 	//EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
 	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
-	Engine::Initialize();
+	Engine::initialize();
 	//Engine::GetMainViewport()->SetBackgroundColor(Color32::Gray);
 	Engine::GetMainViewport()->SetPlacement(ViewportPlacement::AutoResize);
 

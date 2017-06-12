@@ -105,7 +105,7 @@ Bitmap::Bitmap(void* buffer, const SizeI& size, PixelFormat format, bool upFlow)
 	m_size = size;
 	m_depth = 1;
 	m_format = format;
-	m_bitmapData.Attach(buffer, GetPixelFormatByteCount(m_format, m_size, m_depth));
+	m_bitmapData.attach(buffer, GetPixelFormatByteCount(m_format, m_size, m_depth));
 	m_upFlow = upFlow;
 }
 
@@ -116,7 +116,7 @@ Bitmap::Bitmap(void* buffer, int width, int height, int depth, PixelFormat forma
 	m_size.Set(width, height);
 	m_depth = depth;
 	m_format = format;
-	m_bitmapData.Attach(buffer, GetPixelFormatByteCount(m_format, m_size, m_depth));
+	m_bitmapData.attach(buffer, GetPixelFormatByteCount(m_format, m_size, m_depth));
 }
 
 //------------------------------------------------------------------------------
@@ -135,12 +135,12 @@ void Bitmap::Init()
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::Clear(const Color32& color)
+void Bitmap::clear(const Color32& color)
 {
 	// 完全に透明にクリアする場合はバッファクリアでよい。
 	if (color.r == 0x00 && color.g == 0x00 && color.b == 0x00 && color.a == 0x00)
 	{
-		m_bitmapData.Clear();
+		m_bitmapData.clear();
 	}
 	else
 	{
@@ -154,8 +154,8 @@ void Bitmap::Clear(const Color32& color)
 			case PixelFormat::R8G8B8X8:
 			{
 				byte_t c[4] = { color.r, color.g, color.b, color.a };
-				uint32_t* dst = (uint32_t*)m_bitmapData.GetData();
-				int count = m_bitmapData.GetSize() / 4;
+				uint32_t* dst = (uint32_t*)m_bitmapData.getData();
+				int count = m_bitmapData.getSize() / 4;
 				for (int i = 0; i < count; ++i)
 				{
 					dst[i] = *((uint32_t*)c);
@@ -165,8 +165,8 @@ void Bitmap::Clear(const Color32& color)
 			case PixelFormat::B8G8R8A8:
 			case PixelFormat::B8G8R8X8:
 				byte_t c[4] = { color.b, color.g, color.r, color.a };
-				uint32_t* dst = (uint32_t*)m_bitmapData.GetData();
-				int count = m_bitmapData.GetSize() / 4;
+				uint32_t* dst = (uint32_t*)m_bitmapData.getData();
+				int count = m_bitmapData.getSize() / 4;
 				for (int i = 0; i < count; ++i)
 				{
 					dst[i] = *((uint32_t*)c);
@@ -197,8 +197,8 @@ void Bitmap::Save(const TCHAR* filePath)
 	Bitmap bitmap(m_size, PixelFormat::R8G8B8A8);
 	bitmap.m_upFlow = m_upFlow;
 	ConvertPixelFormat(
-		m_bitmapData.GetData(), m_bitmapData.GetSize(), m_format,
-		bitmap.m_bitmapData.GetData(), bitmap.m_bitmapData.GetSize(), bitmap.m_format);
+		m_bitmapData.getData(), m_bitmapData.getSize(), m_format,
+		bitmap.m_bitmapData.getData(), bitmap.m_bitmapData.getSize(), bitmap.m_format);
 
 	// アルファ無しフォーマットであれば、アルファを埋めてから出力する
 	if (m_format == PixelFormat::B8G8R8X8) {
@@ -210,15 +210,15 @@ void Bitmap::Save(const TCHAR* filePath)
 }
 
 //------------------------------------------------------------------------------
-bool Bitmap::Equals(const Bitmap* bitmap) const
+bool Bitmap::equals(const Bitmap* bitmap) const
 {
 	if (m_size != bitmap->m_size ||
 		m_format != bitmap->m_format ||
-		m_bitmapData.GetSize() != bitmap->m_bitmapData.GetSize()) {
+		m_bitmapData.getSize() != bitmap->m_bitmapData.getSize()) {
 		return false;
 	}
 
-	return memcmp(m_bitmapData.GetData(), bitmap->m_bitmapData.GetData(), m_bitmapData.GetSize()) == 0;
+	return memcmp(m_bitmapData.getData(), bitmap->m_bitmapData.getData(), m_bitmapData.getSize()) == 0;
 }
 
 //------------------------------------------------------------------------------
@@ -229,7 +229,7 @@ void Bitmap::ConvertToDownFlow()
 	{
 		// XOR で工夫すると演算回数が少なくなるとか最適化の余地はあるけど、
 		// とりあえず今は評価目的でしか使わないので愚直に swap。
-		byte_t* pixels = m_bitmapData.GetData();
+		byte_t* pixels = m_bitmapData.getData();
 		for (int y = 0; y < (m_size.height / 2); ++y) {
 			for (int x = 0; x < m_size.width; ++x) {
 				std::swap(pixels[(y * m_size.width) + x], pixels[((m_size.height - 1 - y) * m_size.width) + x]);
@@ -238,7 +238,7 @@ void Bitmap::ConvertToDownFlow()
 	}
 	else if (pixelSize == 4)
 	{
-		uint32_t* pixels = (uint32_t*)m_bitmapData.GetData();
+		uint32_t* pixels = (uint32_t*)m_bitmapData.getData();
 		for (int y = 0; y < (m_size.height / 2); ++y) {
 			for (int x = 0; x < m_size.width; ++x) {
 				std::swap(pixels[(y * m_size.width) + x], pixels[((m_size.height - 1 - y) * m_size.width) + x]);
@@ -253,14 +253,14 @@ void Bitmap::ConvertToDownFlow()
 //------------------------------------------------------------------------------
 void Bitmap::CopyRawData(const void* data, size_t byteCount)
 {
-	if (LN_CHECK_ARG(m_bitmapData.GetSize() <= byteCount)) return;
-	m_bitmapData.Copy(data, byteCount);
+	if (LN_CHECK_ARG(m_bitmapData.getSize() <= byteCount)) return;
+	m_bitmapData.copy(data, byteCount);
 }
 
 //------------------------------------------------------------------------------
 size_t Bitmap::GetByteCount() const
 {
-	return m_bitmapData.GetSize();
+	return m_bitmapData.getSize();
 }
 
 //------------------------------------------------------------------------------
@@ -285,7 +285,7 @@ void Bitmap::SetPixel(int x, int y, int z, const Color32& color)
 		y = m_size.height - 1 - y;
 	}
 
-	U32* buf = &((U32*)m_bitmapData.GetConstData())[z * (m_size.width * m_size.height) + y * m_size.width + x];
+	U32* buf = &((U32*)m_bitmapData.getConstData())[z * (m_size.width * m_size.height) + y * m_size.width + x];
 	if (m_format == PixelFormat::B8G8R8A8 || m_format == PixelFormat::B8G8R8X8)
 	{
 		buf->D[2] = color.r;
@@ -314,7 +314,7 @@ Color32 Bitmap::GetPixel(int x, int y) const
 		y = m_size.height - 1 - y;
 	}
 
-	const U32* buf = &((const U32*)m_bitmapData.GetConstData())[y * m_size.width + x];
+	const U32* buf = &((const U32*)m_bitmapData.getConstData())[y * m_size.width + x];
 	if (m_format == PixelFormat::B8G8R8A8 || m_format == PixelFormat::B8G8R8X8)
 	{
 		return Color32(buf->D[2], buf->D[1], buf->D[0], buf->D[3]);
@@ -347,7 +347,7 @@ size_t Bitmap::GetSerializeSize(const RectI& rect) const
 	return
 		GetPropertySerializeSize() +
 		sizeof(size_t) +
-		GetPixelFormatByteCount(m_format, clipRect.GetSize(), m_depth);
+		GetPixelFormatByteCount(m_format, clipRect.getSize(), m_depth);
 }
 
 //------------------------------------------------------------------------------
@@ -409,7 +409,7 @@ void Bitmap::Serialize(void* buffer, const RectI& rect)
 	*((bool*)b) = m_upFlow;
 	b += sizeof(m_upFlow);
 	
-	*((size_t*)b) = GetPixelFormatByteCount(m_format, clipRect.GetSize(), m_depth);
+	*((size_t*)b) = GetPixelFormatByteCount(m_format, clipRect.getSize(), m_depth);
 	b += sizeof(size_t);
 	
 	size_t pixelSize = GetPixelFormatByteCount(m_format);
@@ -417,7 +417,7 @@ void Bitmap::Serialize(void* buffer, const RectI& rect)
 	size_t dstLineSize = pixelSize * clipRect.width;
 	for (int y = clipRect.GetTop(); y < clipRect.GetBottom(); ++y)
 	{
-		const byte_t* srcLine = &(m_bitmapData.GetConstData()[srcLineSize * y]);
+		const byte_t* srcLine = &(m_bitmapData.getConstData()[srcLineSize * y]);
 		byte_t* dstLine = &(b[dstLineSize * y]);
 		memcpy(dstLine, &srcLine[pixelSize * clipRect.x], pixelSize * clipRect.width);
 	}
@@ -469,14 +469,14 @@ void Bitmap::Deserialize(void* buffer, bool refMode)
 
 	if (refMode)
 	{
-		m_bitmapData.Attach(b, size);
+		m_bitmapData.attach(b, size);
 	}
 	else
 	{
-		m_bitmapData.Resize(size);
-		memcpy(m_bitmapData.GetData(), b, size);
+		m_bitmapData.resize(size);
+		memcpy(m_bitmapData.getData(), b, size);
 	}
-	b += m_bitmapData.GetSize();
+	b += m_bitmapData.getSize();
 }
 
 //------------------------------------------------------------------------------
@@ -498,7 +498,7 @@ void Bitmap::DeserializePropertyAndRawData(const void* propData, void* rawData, 
 
 	if (refMode)
 	{
-		m_bitmapData.Attach(rawData, rawDataSize);
+		m_bitmapData.attach(rawData, rawDataSize);
 	}
 	else
 	{
@@ -571,8 +571,8 @@ void Bitmap::FillAlpha(byte_t alpha)
 		m_format == PixelFormat::B8G8R8A8 ||
 		m_format == PixelFormat::B8G8R8X8)
 	{
-		byte_t* buf = m_bitmapData.GetData();
-		size_t count = m_bitmapData.GetSize() / sizeof(uint32_t);
+		byte_t* buf = m_bitmapData.getData();
+		size_t count = m_bitmapData.getSize() / sizeof(uint32_t);
 		for (size_t i = 0; i < count; ++i) {
 			buf[i * 4 + 3] = alpha;
 		}

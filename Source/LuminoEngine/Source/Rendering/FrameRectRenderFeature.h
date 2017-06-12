@@ -26,7 +26,7 @@ class FrameRectRendererCore
 public:
 	FrameRectRendererCore();
 	~FrameRectRendererCore();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
 	void SetState(const FrameRectRendererState& state);
 	void Draw(const Matrix& transform, const Rect& rect);
@@ -93,7 +93,7 @@ class FrameRectRenderFeature
 public:
 	FrameRectRenderFeature();
 	~FrameRectRenderFeature();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
 	void SetViewInfo(const Matrix& viewProj);
 	void SetState(Brush* brush);

@@ -385,7 +385,7 @@ template int StringTraits::LastIndexOf<wchar_t>(const wchar_t* str1, int str1Len
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-int StringTraits::Compare(const TChar* str1, int str1Len, const TChar* str2, int str2Len, int count, CaseSensitivity cs)
+int StringTraits::compare(const TChar* str1, int str1Len, const TChar* str2, int str2Len, int count, CaseSensitivity cs)
 {
 	if (str1 == nullptr || str2 == nullptr)
 	{
@@ -454,21 +454,21 @@ int StringTraits::Compare(const TChar* str1, int str1Len, const TChar* str2, int
 	}
 	return 0;
 }
-template int StringTraits::Compare<char>(const char* str1, int str1Len, const char* str2, int str2Len, int count, CaseSensitivity cs);
-template int StringTraits::Compare<wchar_t>(const wchar_t* str1, int str1Len, const wchar_t* str2, int str2Len, int count, CaseSensitivity cs);
+template int StringTraits::compare<char>(const char* str1, int str1Len, const char* str2, int str2Len, int count, CaseSensitivity cs);
+template int StringTraits::compare<wchar_t>(const wchar_t* str1, int str1Len, const wchar_t* str2, int str2Len, int count, CaseSensitivity cs);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-int StringTraits::Compare(const TChar* str1, const TChar* str2, int count, CaseSensitivity cs)
+int StringTraits::compare(const TChar* str1, const TChar* str2, int count, CaseSensitivity cs)
 {
-	return Compare(str1, -1, str2, -1, count, cs);
+	return compare(str1, -1, str2, -1, count, cs);
 }
-template int StringTraits::Compare<char>(const char* str1, const char* str2, int count, CaseSensitivity cs);
-template int StringTraits::Compare<wchar_t>(const wchar_t* str1, const wchar_t* str2, int count, CaseSensitivity cs);
+template int StringTraits::compare<char>(const char* str1, const char* str2, int count, CaseSensitivity cs);
+template int StringTraits::compare<wchar_t>(const wchar_t* str1, const wchar_t* str2, int count, CaseSensitivity cs);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-int StringTraits::Compare(TChar ch1, TChar ch2, CaseSensitivity cs)
+int StringTraits::compare(TChar ch1, TChar ch2, CaseSensitivity cs)
 {
 	if (cs == CaseSensitivity::CaseSensitive) {
 		return ((unsigned int)(ch1)) - ((unsigned int)(ch2));
@@ -477,8 +477,8 @@ int StringTraits::Compare(TChar ch1, TChar ch2, CaseSensitivity cs)
 		return ((unsigned int)(ToUpper(ch1))) - ((unsigned int)(ToUpper(ch2)));
 	}
 }
-template int StringTraits::Compare<char>(char ch1, char ch2, CaseSensitivity cs);
-template int StringTraits::Compare<wchar_t>(wchar_t ch1, wchar_t ch2, CaseSensitivity cs);
+template int StringTraits::compare<char>(char ch1, char ch2, CaseSensitivity cs);
+template int StringTraits::compare<wchar_t>(wchar_t ch1, wchar_t ch2, CaseSensitivity cs);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
@@ -561,7 +561,7 @@ template void StringTraits::Trim<wchar_t>(const wchar_t* begin, int length, cons
 template<typename TChar>
 bool StringTraits::StartsWith(const TChar* str1, int len1, const TChar* str2, int len2, CaseSensitivity cs)
 {
-	return Compare(str1, str2, len2, cs) == 0;
+	return compare(str1, str2, len2, cs) == 0;
 }
 template bool StringTraits::StartsWith<char>(const char* str1, int len1, const char* str2, int len2, CaseSensitivity cs);
 template bool StringTraits::StartsWith<wchar_t>(const wchar_t* str1, int len1, const wchar_t* str2, int len2, CaseSensitivity cs);

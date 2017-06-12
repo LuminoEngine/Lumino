@@ -24,7 +24,7 @@ Document::~Document()
 }
 
 //------------------------------------------------------------------------------
-void Document::Initialize()
+void Document::initialize()
 {
 	m_manager = detail::DocumentsManager::GetInstance();
 }
@@ -32,7 +32,7 @@ void Document::Initialize()
 //------------------------------------------------------------------------------
 void Document::SetText(const StringRef& text)
 {
-	m_blockList.Clear();
+	m_blockList.clear();
 
 
 }
@@ -42,8 +42,8 @@ void Document::Replace(int offset, int length, const StringRef& text)
 {
 	// UTF32 へ変換
 	const ByteBuffer& utf32Buf = m_manager->GetTCharToUTF32Converter()->Convert(text.GetBegin(), sizeof(TCHAR) * text.GetLength());
-	int len = utf32Buf.GetSize() / sizeof(UTF32);
-	Replace(offset, length, (const UTF32*)utf32Buf.GetConstData(), len);
+	int len = utf32Buf.getSize() / sizeof(UTF32);
+	Replace(offset, length, (const UTF32*)utf32Buf.getConstData(), len);
 }
 
 //------------------------------------------------------------------------------
@@ -140,7 +140,7 @@ TextElement::~TextElement()
 }
 
 //------------------------------------------------------------------------------
-void TextElement::Initialize()
+void TextElement::initialize()
 {
 	m_manager = detail::DocumentsManager::GetInstance();
 	m_fontData.Family = String::GetEmpty();
@@ -227,9 +227,9 @@ Block::~Block()
 }
 
 //------------------------------------------------------------------------------
-void Block::Initialize()
+void Block::initialize()
 {
-	TextElement::Initialize();
+	TextElement::initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -255,7 +255,7 @@ void Block::InsertInlines(int index, const List<RefPtr<Inline>>& inlines)
 void Block::ClearInlines()
 {
 	for (TextElement* child : m_inlines) child->SetParent(nullptr);
-	m_inlines.Clear();
+	m_inlines.clear();
 }
 
 //------------------------------------------------------------------------------
@@ -298,7 +298,7 @@ Size Block::ArrangeOverride(const Size& finalSize)
 		child->ArrangeLayout(childRect);
 	}
 
-	return Size::Min(finalSize, childRect.GetSize());
+	return Size::Min(finalSize, childRect.getSize());
 }
 
 //==============================================================================
@@ -316,9 +316,9 @@ Paragraph::~Paragraph()
 }
 
 //------------------------------------------------------------------------------
-void Paragraph::Initialize()
+void Paragraph::initialize()
 {
-	Block::Initialize();
+	Block::initialize();
 }
 
 
@@ -338,9 +338,9 @@ Inline::~Inline()
 }
 
 //------------------------------------------------------------------------------
-void Inline::Initialize()
+void Inline::initialize()
 {
-	TextElement::Initialize();
+	TextElement::initialize();
 }
 
 
@@ -360,19 +360,19 @@ Run::~Run()
 }
 
 //------------------------------------------------------------------------------
-void Run::Initialize()
+void Run::initialize()
 {
-	Inline::Initialize();
+	Inline::initialize();
 
 	// TODO: 本当に画面に表示されている分だけ作ればいろいろ節約できそう
 	m_glyphRun = RefPtr<GlyphRun>::MakeRef();
-	m_glyphRun->Initialize(GetManager()->GetGraphicsManager());
+	m_glyphRun->initialize(GetManager()->GetGraphicsManager());
 }
 
 //------------------------------------------------------------------------------
-void Run::Initialize(const UTF32* str, int len)
+void Run::initialize(const UTF32* str, int len)
 {
-	Initialize();
+	initialize();
 
 	m_glyphRun->SetText(str, len);
 }
@@ -423,9 +423,9 @@ LineBreak::~LineBreak()
 }
 
 //------------------------------------------------------------------------------
-void LineBreak::Initialize()
+void LineBreak::initialize()
 {
-	Inline::Initialize();
+	Inline::initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -467,7 +467,7 @@ void VisualBlock::RebuildVisualLineList()
 //==============================================================================
 
 //------------------------------------------------------------------------------
-void DocumentView::Initialize(Document* document)
+void DocumentView::initialize(Document* document)
 {
 	m_document = document;
 }

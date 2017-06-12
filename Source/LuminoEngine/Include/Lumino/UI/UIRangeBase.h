@@ -45,7 +45,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	UIRangeBase();
 	virtual ~UIRangeBase();
-	void Initialize();
+	void initialize();
 
 private:
 	float	m_value;

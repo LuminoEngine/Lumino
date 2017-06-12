@@ -38,7 +38,7 @@ const size_t MeshResource::vertexStrideTable[VB_Count] =
 MeshResourcePtr MeshResource::Create()
 {
 	auto ptr = MeshResourcePtr::MakeRef();
-	ptr->Initialize(detail::GraphicsManager::GetInstance(), MeshCreationFlags::DynamicBuffers);
+	ptr->initialize(detail::GraphicsManager::GetInstance(), MeshCreationFlags::DynamicBuffers);
 	return ptr;
 }
 
@@ -62,7 +62,7 @@ MeshResource::~MeshResource()
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::Initialize(detail::GraphicsManager* manager, MeshCreationFlags flags)
+void MeshResource::initialize(detail::GraphicsManager* manager, MeshCreationFlags flags)
 {
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
@@ -92,7 +92,7 @@ void MeshResource::ResizeVertexBuffer(int vertexCount)
 	{
 		if (info.buffer != nullptr)
 		{
-			info.buffer->Resize(vertexCount * vertexStrideTable[VB_BasicVertices]);
+			info.buffer->resize(vertexCount * vertexStrideTable[VB_BasicVertices]);
 		}
 	}
 }
@@ -100,7 +100,7 @@ void MeshResource::ResizeVertexBuffer(int vertexCount)
 //------------------------------------------------------------------------------
 void MeshResource::ResizeIndexBuffer(int indexCount)
 {
-	RequestIndexBuffer()->Resize(indexCount);
+	RequestIndexBuffer()->resize(indexCount);
 }
 
 //------------------------------------------------------------------------------
@@ -115,7 +115,7 @@ int MeshResource::GetVertexCount() const
 {
 	if (GetVertexBuffer(VB_BasicVertices) != nullptr)
 	{
-		return GetVertexBuffer(VB_BasicVertices)->GetSize() / vertexStrideTable[VB_BasicVertices];
+		return GetVertexBuffer(VB_BasicVertices)->getSize() / vertexStrideTable[VB_BasicVertices];
 	}
 	return 0;
 }
@@ -312,7 +312,7 @@ void MeshResource::AddMeshSection(const MeshAttribute& section)
 //------------------------------------------------------------------------------
 void MeshResource::AddSections(int count)
 {
-	m_attributes.Resize(m_attributes.GetCount() + count);
+	m_attributes.resize(m_attributes.GetCount() + count);
 }
 
 //------------------------------------------------------------------------------
@@ -322,16 +322,16 @@ MeshAttribute* MeshResource::GetSection(int index)
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::Clear()
+void MeshResource::clear()
 {
 	for (auto& info : m_vertexBufferInfos)
 	{
 		if (info.buffer != nullptr)
 		{
-			info.buffer->Clear();
+			info.buffer->clear();
 		}
 	}
-	if (GetIndexBuffer() != nullptr) GetIndexBuffer()->Clear();
+	if (GetIndexBuffer() != nullptr) GetIndexBuffer()->clear();
 }
 
 //------------------------------------------------------------------------------
@@ -385,7 +385,7 @@ void MeshResource::AddPlane(const Vector2& size, int sliceH, int sliceV)
 
 	// setup factory
 	detail::PlaneMeshFactory3 factory;
-	factory.Initialize(size, sliceH, sliceV, Color::White, Matrix::Identity);
+	factory.initialize(size, sliceH, sliceV, Color::White, Matrix::Identity);
 
 	// alloc buffers, generate mesh
 	Vertex* vb = (Vertex*)RequestVertexBufferForAdditional(factory.GetVertexCount(), VB_BasicVertices);
@@ -401,7 +401,7 @@ void MeshResource::AddBox(const Vector3& size)
 
 	// setup factory
 	detail::RegularBoxMeshFactory factory;
-	factory.Initialize(size, Color::White, Matrix::Identity);
+	factory.initialize(size, Color::White, Matrix::Identity);
 
 	// alloc buffers, generate mesh
 	Vertex* vb = (Vertex*)RequestVertexBufferForAdditional(factory.GetVertexCount(), VB_BasicVertices);
@@ -417,7 +417,7 @@ void MeshResource::AddSphere(float radius, int slices, int stacks)
 
 	// setup factory
 	detail::RegularSphereMeshFactory factory;
-	factory.Initialize(radius, slices, stacks, Color::White, Matrix::Identity);
+	factory.initialize(radius, slices, stacks, Color::White, Matrix::Identity);
 
 	// alloc buffers, generate mesh
 	Vertex* vb = (Vertex*)RequestVertexBufferForAdditional(factory.GetVertexCount(), VB_BasicVertices);
@@ -481,7 +481,7 @@ void MeshResource::AddTeapot(float size, int tessellation)
 
 	// setup factory
 	detail::TeapotMeshFactory factory;
-	factory.Initialize(size, tessellation, Color::White, Matrix::Identity);
+	factory.initialize(size, tessellation, Color::White, Matrix::Identity);
 
 	// alloc buffers, generate mesh
 	Vertex* vb = (Vertex*)RequestVertexBufferForAdditional(factory.GetVertexCount(), VB_BasicVertices);
@@ -524,7 +524,7 @@ void MeshResource::AddTeapot(float size, int tessellation)
 //	if (m_vertexBufferInfos[type].buffer == nullptr)
 //	{
 //		m_vertexBufferInfos[type].buffer = RefPtr<VertexBuffer>::MakeRef();
-//		m_vertexBufferInfos[type].buffer->Initialize(m_manager, requestedSize, nullptr, m_usage, false);
+//		m_vertexBufferInfos[type].buffer->initialize(m_manager, requestedSize, nullptr, m_usage, false);
 //		m_vertexDeclarationModified = true;
 //	}
 //
@@ -562,7 +562,7 @@ void MeshResource::AddTeapot(float size, int tessellation)
 //	if (m_indexBufferInfo.buffer == nullptr)
 //	{
 //		m_indexBufferInfo.buffer = RefPtr<IndexBuffer>::MakeRef();
-//		m_indexBufferInfo.buffer->Initialize(m_manager, m_indexCapacity, nullptr, m_indexBufferInfo.format, m_usage, false);
+//		m_indexBufferInfo.buffer->initialize(m_manager, m_indexCapacity, nullptr, m_indexBufferInfo.format, m_usage, false);
 //		m_indexBufferInfo.refresh = false;
 //	}
 //	//else if (m_indexBufferInfo.refresh)
@@ -687,7 +687,7 @@ void MeshResource::CommitRenderData(VertexDeclaration** outDecl, VertexBuffer** 
 	if (m_vertexDeclaration == nullptr || m_vertexDeclarationModified)
 	{
 		m_vertexDeclaration = RefPtr<VertexDeclaration>::MakeRef();
-		m_vertexDeclaration->Initialize(m_manager);
+		m_vertexDeclaration->initialize(m_manager);
 		int stream = 0;
 
 		// BasicVertices
@@ -811,14 +811,14 @@ StaticMeshModel::~StaticMeshModel()
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::Initialize(detail::GraphicsManager* manager)
+void StaticMeshModel::initialize(detail::GraphicsManager* manager)
 {
 	LN_VERIFY_ARG(manager != nullptr);
 	m_materials = RefPtr<MaterialList>::MakeRef();
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::Initialize(detail::GraphicsManager* manager, MeshResource* sharingMesh)
+void StaticMeshModel::initialize(detail::GraphicsManager* manager, MeshResource* sharingMesh)
 {
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	if (LN_CHECK_ARG(sharingMesh != nullptr)) return;
@@ -843,10 +843,10 @@ void StaticMeshModel::Initialize(detail::GraphicsManager* manager, MeshResource*
 void StaticMeshModel::InitializeBox(detail::GraphicsManager* manager, const Vector3& size, MeshCreationFlags flags)
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
-	res->Initialize(manager, flags);
+	res->initialize(manager, flags);
 	res->AddBox(size);
 	if (flags.TestFlag(MeshCreationFlags::ReverseFaces)) res->ReverseFaces();
-	Initialize(manager, res);
+	initialize(manager, res);
 	AddMaterials(1);
 }
 
@@ -854,10 +854,10 @@ void StaticMeshModel::InitializeBox(detail::GraphicsManager* manager, const Vect
 void StaticMeshModel::InitializeSphere(detail::GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags)
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
-	res->Initialize(manager, flags);
+	res->initialize(manager, flags);
 	res->AddSphere(radius, slices, stacks);
 	if (flags.TestFlag(MeshCreationFlags::ReverseFaces)) res->ReverseFaces();
-	Initialize(manager, res);
+	initialize(manager, res);
 	AddMaterials(1);
 }
 
@@ -865,10 +865,10 @@ void StaticMeshModel::InitializeSphere(detail::GraphicsManager* manager, float r
 void StaticMeshModel::InitializePlane(detail::GraphicsManager* manager, const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags)
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
-	res->Initialize(manager, flags);
+	res->initialize(manager, flags);
 	res->AddPlane(size, sliceH, sliceV);
 	if (flags.TestFlag(MeshCreationFlags::ReverseFaces)) res->ReverseFaces();
-	Initialize(manager, res);
+	initialize(manager, res);
 	AddMaterials(1);
 }
 
@@ -876,10 +876,10 @@ void StaticMeshModel::InitializePlane(detail::GraphicsManager* manager, const Ve
 void StaticMeshModel::InitializeScreenPlane(detail::GraphicsManager* manager, MeshCreationFlags flags)
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
-	res->Initialize(manager, flags);
+	res->initialize(manager, flags);
 	res->AddScreenPlane();
 	if (flags.TestFlag(MeshCreationFlags::ReverseFaces)) res->ReverseFaces();
-	Initialize(manager, res);
+	initialize(manager, res);
 	AddMaterials(1);
 }
 
@@ -887,10 +887,10 @@ void StaticMeshModel::InitializeScreenPlane(detail::GraphicsManager* manager, Me
 void StaticMeshModel::InitializeTeapot(detail::GraphicsManager* manager, float size, int tessellation, MeshCreationFlags flags)
 {
 	auto res = RefPtr<MeshResource>::MakeRef();
-	res->Initialize(manager, flags);
+	res->initialize(manager, flags);
 	res->AddTeapot(size, tessellation);
 	if (flags.TestFlag(MeshCreationFlags::ReverseFaces)) res->ReverseFaces();
-	Initialize(manager, res);
+	initialize(manager, res);
 	AddMaterials(1);
 }
 
@@ -912,13 +912,13 @@ void StaticMeshModel::AddMaterials(int count)
 {
 	int oldCount = m_materials->GetCount();
 	int newCount = oldCount + count;
-	m_materials->Resize(newCount);
+	m_materials->resize(newCount);
 	if (oldCount < newCount)
 	{
 		for (int i = oldCount; i < newCount; ++i)
 		{
 			auto m = RefPtr<Material>::MakeRef();
-			m->Initialize();
+			m->initialize();
 			m_materials->SetAt(i, m);
 		}
 	}

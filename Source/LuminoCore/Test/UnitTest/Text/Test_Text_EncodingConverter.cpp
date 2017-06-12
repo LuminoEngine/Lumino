@@ -18,7 +18,7 @@ TEST_F(Test_Text_EncodingConverter, AsciiCode)
 	convAsciiToUtf16.SetDestinationEncoding(Encoding::GetUTF16Encoding());
 	convAsciiToUtf16.SetConversionOptions(options);
 	ByteBuffer buf = convAsciiToUtf16.Convert("ab", 2);
-	const UTF16* utf16 = (const UTF16*)buf.GetConstData();
+	const UTF16* utf16 = (const UTF16*)buf.getConstData();
 	ASSERT_EQ('a', utf16[0]);
 	ASSERT_EQ('b', utf16[1]);
 	ASSERT_EQ(0x00, utf16[2]);

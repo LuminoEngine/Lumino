@@ -42,7 +42,7 @@ TEST_F(Test_Base_Encoding_UTF8, Basic)
 		EncodingConversionResult info;
 		ByteBuffer buf1 = Encoding::Convert(str1, 9, decoder.get(), encoder.get(), options, &info);
 		
-		uint16_t* utf16str = (uint16_t*)buf1.GetData();
+		uint16_t* utf16str = (uint16_t*)buf1.getData();
 
 		ASSERT_EQ(6, info.BytesUsed);
 		ASSERT_EQ(3, info.CharsUsed);
@@ -65,7 +65,7 @@ TEST_F(Test_Base_Encoding_UTF8, Basic)
 		EncodingConversionResult info;
 		ByteBuffer buf1 = Encoding::Convert(utf16str, 6, decoder.get(), encoder.get(), options, &info);
 
-		uint8_t* utf8str = (uint8_t*)buf1.GetData();
+		uint8_t* utf8str = (uint8_t*)buf1.getData();
 
 		ASSERT_EQ(9, info.BytesUsed);
 		ASSERT_EQ(3, info.CharsUsed);

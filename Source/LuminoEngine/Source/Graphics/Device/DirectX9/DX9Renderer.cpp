@@ -150,13 +150,13 @@ void DX9Renderer::OnLeaveRenderState()
 		device->SetRenderState(D3DRS_SHADEMODE, m_state_D3DRS_SHADEMODE);
 
 		device->SetVertexShader(m_state_vertexShader);
-		LN_SAFE_RELEASE(m_state_vertexShader);
+		LN_COM_SAFE_RELEASE(m_state_vertexShader);
 
 		device->SetPixelShader(m_state_pixelShader);
-		LN_SAFE_RELEASE(m_state_pixelShader);
+		LN_COM_SAFE_RELEASE(m_state_pixelShader);
 
 		device->SetVertexDeclaration(m_state_vertexDeclaration);
-		LN_SAFE_RELEASE(m_state_vertexDeclaration);
+		LN_COM_SAFE_RELEASE(m_state_vertexDeclaration);
 
 		//device->SetStreamSource( 0, m_state_streamData, m_state_OffsetInBytes, m_state_pStride );
 		//LN_SAFE_RELEASE( m_state_streamData );
@@ -165,7 +165,7 @@ void DX9Renderer::OnLeaveRenderState()
 		//LN_SAFE_RELEASE( m_state_IndexData );
 
 		device->SetTexture(0, m_state_pTexture);
-		LN_SAFE_RELEASE(m_state_pTexture);
+		LN_COM_SAFE_RELEASE(m_state_pTexture);
 
 		device->SetFVF(m_state_FVF);
 
@@ -173,10 +173,10 @@ void DX9Renderer::OnLeaveRenderState()
 		for (int i = 0; i < Graphics::MaxMultiRenderTargets; i++)
 		{
 			device->SetRenderTarget(i, m_defaultRenderTargets[i]);
-			LN_SAFE_RELEASE(m_defaultRenderTargets[i]);
+			LN_COM_SAFE_RELEASE(m_defaultRenderTargets[i]);
 		}
 		device->SetDepthStencilSurface(m_defaultDepthBuffer);
-		LN_SAFE_RELEASE(m_defaultDepthBuffer);
+		LN_COM_SAFE_RELEASE(m_defaultDepthBuffer);
 	}
 }
 

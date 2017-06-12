@@ -41,7 +41,7 @@ class XAudio2AudioDevice
 public:
 	XAudio2AudioDevice();
 	virtual ~XAudio2AudioDevice();
-    bool Initialize();
+    bool initialize();
     void Finalize();
 
 	IXAudio2* GetXAudio2() const { return m_XAudio; }

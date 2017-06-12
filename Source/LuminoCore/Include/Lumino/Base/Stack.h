@@ -28,7 +28,7 @@ public:
 	void Reserve(int size) { m_stack.reserve(size); }
 
 	/// 全ての要素を削除します。
-	void Clear() { m_stack.clear(); }
+	void clear() { m_stack.clear(); }
 
 	/// 格納されている要素数を取得します。
 	int GetCount() const { return (int)m_stack.size(); }

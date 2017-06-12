@@ -93,7 +93,7 @@ void Task::Execute()
 	}
 	catch (Exception& e)
 	{
-		m_exception = e.Copy();
+		m_exception = e.copy();
 		m_status = TaskStatus::Faulted;
 	}
 	catch (...)

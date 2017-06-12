@@ -43,7 +43,7 @@ Brush::~Brush()
 }
 
 //------------------------------------------------------------------------------
-void Brush::Initialize()
+void Brush::initialize()
 {
 }
 
@@ -98,16 +98,16 @@ SolidColorBrush::~SolidColorBrush()
 }
 
 //------------------------------------------------------------------------------
-void SolidColorBrush::Initialize(const Color& color)
+void SolidColorBrush::initialize(const Color& color)
 {
-	Brush::Initialize();
+	Brush::initialize();
 	SetColor(color);
 }
 
 //------------------------------------------------------------------------------
-void SolidColorBrush::Initialize(const Color& rgb, float a)
+void SolidColorBrush::initialize(const Color& rgb, float a)
 {
-	Brush::Initialize();
+	Brush::initialize();
 	SetColor(rgb.WithAlpha(a));
 }
 
@@ -150,23 +150,23 @@ TextureBrush::~TextureBrush()
 }
 
 //------------------------------------------------------------------------------
-void TextureBrush::Initialize()
+void TextureBrush::initialize()
 {
-	Brush::Initialize();
+	Brush::initialize();
 }
 
 //------------------------------------------------------------------------------
-void TextureBrush::Initialize(const StringRef& filePath)
+void TextureBrush::initialize(const StringRef& filePath)
 {
-	Brush::Initialize();
+	Brush::initialize();
 	auto texture = Texture2D::Create(filePath, TextureFormat::R8G8B8A8, false);		//TODO: GraphicsManager?
 	SetTexture(texture);
 }
 
 //------------------------------------------------------------------------------
-void TextureBrush::Initialize(Texture* texture)
+void TextureBrush::initialize(Texture* texture)
 {
-	Brush::Initialize();
+	Brush::initialize();
 	SetTexture(texture);
 }
 
@@ -175,7 +175,7 @@ Rect TextureBrush::GetActualSourceRect() const
 {
 	Size textureSize(0, 0);
 	Texture* texture = GetTexture();
-	if (texture != nullptr) textureSize = texture->GetSize().ToFloatSize();
+	if (texture != nullptr) textureSize = texture->getSize().ToFloatSize();
 
 	const Rect& rc = GetSourceRect();
 	return Rect(
@@ -186,9 +186,9 @@ Rect TextureBrush::GetActualSourceRect() const
 }
 
 //------------------------------------------------------------------------------
-Size TextureBrush::GetSize() const
+Size TextureBrush::getSize() const
 {
-	return GetActualSourceRect().GetSize();
+	return GetActualSourceRect().getSize();
 }
 
 #if 0

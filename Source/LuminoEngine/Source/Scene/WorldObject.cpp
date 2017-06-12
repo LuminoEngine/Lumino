@@ -37,7 +37,7 @@ WorldObject::~WorldObject()
 }
 
 //------------------------------------------------------------------------------
-void WorldObject::Initialize()
+void WorldObject::initialize()
 {
 }
 
@@ -53,7 +53,7 @@ void WorldObject::AddComponent(Component* component)
 {
 	if (LN_CHECK_ARG(component != nullptr)) return;
 	if (LN_CHECK_ARG(component->m_owner == nullptr)) return;
-	component->Attach(this);
+	component->attach(this);
 	m_components.Add(component);
 }
 
@@ -133,7 +133,7 @@ void WorldObject::UpdateFrame()
 		WorldObject* obj = m_children.GetAt(i);
 		obj->UpdateFrame();
 
-		if (obj->m_isAutoRelease && obj->GetReferenceCount() == 1)
+		if (obj->m_isAutoRelease && obj->getReferenceCount() == 1)
 		{
 			m_children.RemoveAt(i);
 			count = m_children.GetCount();
@@ -161,7 +161,7 @@ void WorldObject::ReleaseComponents()
 {
 	for (auto& c : m_components)
 		c->Detach();
-	m_components.Clear();
+	m_components.clear();
 }
 
 
@@ -181,9 +181,9 @@ WorldObject2D::~WorldObject2D()
 }
 
 //------------------------------------------------------------------------------
-void WorldObject2D::Initialize()
+void WorldObject2D::initialize()
 {
-	WorldObject::Initialize();
+	WorldObject::initialize();
 	detail::EngineDomain::GetDefaultWorld2D()->AddWorldObject(this, true);
 }
 
@@ -204,9 +204,9 @@ WorldObject3D::~WorldObject3D()
 }
 
 //------------------------------------------------------------------------------
-void WorldObject3D::Initialize()
+void WorldObject3D::initialize()
 {
-	WorldObject::Initialize();
+	WorldObject::initialize();
 	detail::EngineDomain::GetDefaultWorld3D()->AddWorldObject(this, true);
 }
 

@@ -130,9 +130,9 @@ void Archive::Open(const PathName& filePath, const String& key)
 
 		// ファイル名を読み込むバッファを確保して読み込む
 		ByteBuffer nameBuf(name_len * sizeof(UTF16));
-		ReadPadding16(nameBuf.GetData(), name_len * sizeof(UTF16));
+		ReadPadding16(nameBuf.getData(), name_len * sizeof(UTF16));
 		String tmpName;
-		tmpName.ConvertFrom(nameBuf.GetData(), nameBuf.GetSize(), Encoding::GetUTF16Encoding());
+		tmpName.ConvertFrom(nameBuf.getData(), nameBuf.getSize(), Encoding::GetUTF16Encoding());
 		PathName name(m_virtualDirectoryPath, tmpName);	// 絶対パスにする
 		name = name.CanonicalizePath();
 			
@@ -186,7 +186,7 @@ bool Archive::TryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outS
 		return false;
 	}
 
-	outStream->Attach(LN_NEW ArchiveStream(this, m_stream, itr->second.Offset, itr->second.Size), false);
+	outStream->attach(LN_NEW ArchiveStream(this, m_stream, itr->second.Offset, itr->second.Size), false);
 	return true;
 #else
 	// まず、パスの先頭が m_virtualDirectoryPath と一致するかを確認する

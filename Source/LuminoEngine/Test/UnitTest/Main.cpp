@@ -53,7 +53,7 @@ Color32 MixPixels(Bitmap* bmp, int x, int y)
 			const Color32& c = bmp->GetPixel(x, y - 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
-		if (x < bmp->GetSize().width - 1) {
+		if (x < bmp->getSize().width - 1) {
 			const Color32& c = bmp->GetPixel(x + 1, y - 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
@@ -63,12 +63,12 @@ Color32 MixPixels(Bitmap* bmp, int x, int y)
 			const Color32& c = bmp->GetPixel(x - 1, y);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
-		if (x < bmp->GetSize().width - 1) {
+		if (x < bmp->getSize().width - 1) {
 			const Color32& c = bmp->GetPixel(x + 1, y);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 	}
-	if (y < bmp->GetSize().height - 1) {
+	if (y < bmp->getSize().height - 1) {
 		if (x > 0) {
 			const Color32& c = bmp->GetPixel(x - 1, y + 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
@@ -77,7 +77,7 @@ Color32 MixPixels(Bitmap* bmp, int x, int y)
 			const Color32& c = bmp->GetPixel(x, y + 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
-		if (x < bmp->GetSize().width - 1) {
+		if (x < bmp->getSize().width - 1) {
 			const Color32& c = bmp->GetPixel(x + 1, y + 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
@@ -96,9 +96,9 @@ bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath, int passRate
 	int pass = 0;
 	int fail = 0;
 
-	for (int y = 0; y < bmp1->GetSize().height; ++y)
+	for (int y = 0; y < bmp1->getSize().height; ++y)
 	{
-		for (int x = 0; x < bmp1->GetSize().width; ++x)
+		for (int x = 0; x < bmp1->getSize().width; ++x)
 		{
 			Color32 c1 = MixPixels(bmp1, x, y);
 			Color32 c2 = MixPixels(&bmp2, x, y);
@@ -116,7 +116,7 @@ bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath, int passRate
 		}
 	}
 
-	int thr = ((bmp1->GetSize().height * bmp1->GetSize().width) * passRate / 100);
+	int thr = ((bmp1->getSize().height * bmp1->getSize().width) * passRate / 100);
 	return pass >= thr;
 }
 
@@ -150,7 +150,7 @@ void TestEnv::WaitRendering()
 //------------------------------------------------------------------------------
 void EngineInitalize()
 {
-	Engine::Initialize();
+	Engine::initialize();
 
 	// テストしやすいように固定フレームレートにする
 	Engine::SetFrameUpdateMode(FrameUpdateMode::Fixed);
@@ -202,7 +202,7 @@ GTEST_API_ int main(int argc, char **argv)
 	::testing::AddGlobalTestEnvironment(new TestEnv());
 
 	{
-		Logger::Initialize(_T("test_log.txt"));
+		Logger::initialize(_T("test_log.txt"));
 
 		int scale = 1;
 		EngineSettings::SetMainWindowSize(SizeI(160 * scale, 120 * scale));

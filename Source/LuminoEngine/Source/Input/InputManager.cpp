@@ -56,11 +56,11 @@ InputManager::~InputManager()
 }
 
 //------------------------------------------------------------------------------
-void InputManager::Initialize(const Settings& settings)
+void InputManager::initialize(const Settings& settings)
 {
 #if defined(LN_OS_WIN32)
 	RefPtr<Win32InputDriver> driver(LN_NEW Win32InputDriver());
-	driver->Initialize(PlatformSupport::GetWindowHandle(settings.mainWindow));
+	driver->initialize(PlatformSupport::GetWindowHandle(settings.mainWindow));
 	m_inputDriver = driver;
 #elif defined(LN_OS_MAC)
 	RefPtr<CocoaInputDriver> driver(LN_NEW CocoaInputDriver());
@@ -72,7 +72,7 @@ void InputManager::Initialize(const Settings& settings)
 	// TODO: 今は1つだけ
 	auto pad = RefPtr<InputController>::MakeRef(this);
 	m_defaultVirtualPads[0] = pad;
-	m_defaultVirtualPads[0]->AddRef();
+	m_defaultVirtualPads[0]->addRef();
 
 	pad->AddBinding(InputButtons::Left,		KeyboardBinding::Create(Keys::Left));
 	pad->AddBinding(InputButtons::Right,	KeyboardBinding::Create(Keys::Right));

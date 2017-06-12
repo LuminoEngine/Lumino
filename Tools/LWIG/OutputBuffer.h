@@ -12,7 +12,7 @@ public:
 	bool IsEmpty() const { return m_buffer.IsEmpty(); }
 	
 	/** クリアする */
-	void Clear();
+	void clear();
 
 	/** インデントレベルをひとつ増やす */
 	void IncreaseIndent(int count = 1);

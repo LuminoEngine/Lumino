@@ -43,7 +43,7 @@ AnimationClip::AnimationClip()
 AnimationClip::~AnimationClip()
 {
 	for (AnimationCurveEntry& e : m_animationCurveEntryList) {
-		e.Curve->Release();
+		e.Curve->release();
 	}
 }
 

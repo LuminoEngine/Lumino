@@ -87,19 +87,19 @@ void Win32CodePageEncoding::Win32CodePageDecoder::ConvertToUTF16(const byte_t* i
 		ByteBuffer tmpInBuffer;
 		if (m_lastLeadByte != '\0')
 		{
-			tmpInBuffer.Resize(1 + inputByteSize);
-			tmpInBuffer.Copy(0, &m_lastLeadByte, 1);
-			tmpInBuffer.Copy(1, input, inputByteSize);
+			tmpInBuffer.resize(1 + inputByteSize);
+			tmpInBuffer.copy(0, &m_lastLeadByte, 1);
+			tmpInBuffer.copy(1, input, inputByteSize);
 		}
 		else
 		{
-			tmpInBuffer.Resize(inputByteSize);
-			tmpInBuffer.Copy(0, input, inputByteSize);
+			tmpInBuffer.resize(inputByteSize);
+			tmpInBuffer.copy(0, input, inputByteSize);
 		}
 
 		// バッファ全体をチェック。末尾が先行バイトであれば defectCount が 1 でループ終了する。
 		size_t defectCount = 0;
-		for (size_t i = 0; i < tmpInBuffer.GetSize(); i++)
+		for (size_t i = 0; i < tmpInBuffer.getSize(); i++)
 		{
 			if (defectCount > 0) {
 				// ひとつ前の文字が LeadByte だった。2つで1文字。
@@ -116,19 +116,19 @@ void Win32CodePageEncoding::Win32CodePageDecoder::ConvertToUTF16(const byte_t* i
 
 		// バッファ終端が先行バイトだった。先行バイトを保存する
 		if (defectCount > 0) {
-			m_lastLeadByte = tmpInBuffer[tmpInBuffer.GetSize() - 1];
+			m_lastLeadByte = tmpInBuffer[tmpInBuffer.getSize() - 1];
 		}
 		else {
 			m_lastLeadByte = '\0';
 		}
 
 		// バッファ全てが先行バイトだった。何もしない
-		if (defectCount == tmpInBuffer.GetSize()) {
+		if (defectCount == tmpInBuffer.getSize()) {
 			return;
 		}
 
 		// 変換
-		convertedWideCount = ::MultiByteToWideChar(m_codePage, MB_ERR_INVALID_CHARS, (LPCSTR)tmpInBuffer.GetConstData(), tmpInBuffer.GetSize() - defectCount, (LPWSTR)output, outputElementSize);
+		convertedWideCount = ::MultiByteToWideChar(m_codePage, MB_ERR_INVALID_CHARS, (LPCSTR)tmpInBuffer.getConstData(), tmpInBuffer.getSize() - defectCount, (LPWSTR)output, outputElementSize);
 		LN_THROW(convertedWideCount > 0, EncodingException);
 	}
 	else

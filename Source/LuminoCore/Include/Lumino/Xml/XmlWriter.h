@@ -60,7 +60,7 @@ public:
 	void WriteElementString(const String& elementName, const String& text);
 
 protected:
-	void Initialize(TextWriter* textWriter);
+	void initialize(TextWriter* textWriter);
 
 private:
 	void WriteStartAttribute(const String& name);

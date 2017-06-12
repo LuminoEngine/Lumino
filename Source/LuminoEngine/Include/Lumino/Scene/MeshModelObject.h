@@ -21,7 +21,7 @@ public:
 LN_INTERNAL_ACCESS:
 	SkinnedMeshComponent();
 	virtual ~SkinnedMeshComponent();
-	void Initialize(SkinnedMeshModel* meshModel);
+	void initialize(SkinnedMeshModel* meshModel);
 	virtual void OnUpdateFrame(float elapsedTime) override;
 	virtual void OnRender2(DrawList* renderer) override;
 
@@ -59,7 +59,7 @@ LN_NAMESPACE_END
 //protected:
 //	MeshModelObject();
 //	virtual ~MeshModelObject();
-//	void Initialize(SceneGraph* owner, const StringRef& filePath);
+//	void initialize(SceneGraph* owner, const StringRef& filePath);
 //
 //	virtual void OnUpdateFrame(float elapsedTime) override;
 //	virtual void UpdateNodeRenderingParams(MMEShader* priorityShader) override;

@@ -130,7 +130,7 @@ void HeaderParser::ParseFile(const PathName& path)
 		static bool FilterToken(fl::Token* token)
 		{
 			if (token->GetTokenGroup() == TokenGroup::Comment &&
-				StringTraits::Compare(token->GetBegin(), "/**", 3) == 0)
+				StringTraits::compare(token->GetBegin(), "/**", 3) == 0)
 			{
 				return true;
 			}
@@ -835,7 +835,7 @@ void HeaderParser::ParseDocument(const Decl& decl)
 					info->copydocSignature = result[2];
 					info->copydocSignature = info->copydocSignature.Remove('(').Remove(')').Remove(' ').Remove('\t');
 					target = &info->details;
-					line.Clear();
+					line.clear();
 				}
 			}
 		}

@@ -45,7 +45,7 @@ void RenderingThread::Dispose()
 		c->PostExecute();		// TODO: デストラクタでやるべきかも？
 		c->m_running.SetFalse();
 		c->m_idling.SetTrue();
-		c->Release();
+		c->release();
 	}
 	m_commandListQueue.clear();
 }
@@ -57,7 +57,7 @@ void RenderingThread::PushRenderingCommand(RenderingCommandList* commandList)
 	m_commandListQueue.push_back(commandList);
 	commandList->m_running.SetTrue();
 	commandList->m_idling.SetFalse();
-	commandList->AddRef();
+	commandList->addRef();
 	m_running.SetTrue();
 
 	// 既に描画スレッド例外していれば、それを再 throw する。
@@ -124,13 +124,13 @@ void RenderingThread::Execute()
 				}
 				catch (Exception& e)
 				{
-					m_exception = e.Copy();
+					m_exception = e.copy();
 				}
 			}
 			commandList->PostExecute();
 			//commandList->m_running.SetFalse();
 			commandList->m_idling.SetTrue();
-			commandList->Release();
+			commandList->release();
 		}
 		else
 		{

@@ -115,14 +115,14 @@ class RenderBulkData
 public:
 	RenderBulkData();
 	RenderBulkData(const void* srcData, size_t size);
-	const void* GetData() const;
-	size_t GetSize() const { return m_size; }
+	const void* getData() const;
+	size_t getSize() const { return m_size; }
 
 	// 確保したメモリは書き込み可能ポインタとして返される。
-	void* Alloc(RenderingCommandList* commandList, size_t size);
+	void* alloc(RenderingCommandList* commandList, size_t size);
 
 	// TODO: internal
-	void* Alloc(RenderingCommandList* commandList);
+	void* alloc(RenderingCommandList* commandList);
 
 private:
 	const void*				m_srcData;
@@ -165,7 +165,7 @@ private:
 private:
 	DataHandle AllocCommand(size_t byteCount, const void* copyData);
 
-	RenderingCommand* GetCommand(DataHandle bufferIndex) { return (RenderingCommand*)&(m_commandDataBuffer.GetData()[bufferIndex]); }
+	RenderingCommand* GetCommand(DataHandle bufferIndex) { return (RenderingCommand*)&(m_commandDataBuffer.getData()[bufferIndex]); }
 
 	template<typename T>
 	DataHandle CreateCommand()
@@ -306,7 +306,7 @@ public:
 	{ 
 		if (obj != NULL)	// テクスチャを解除したりするときは NULL が渡されてくる
 		{
-			obj->AddRef();
+			obj->addRef();
 			m_markGCList.Add(obj);
 		}
 	}
@@ -357,7 +357,7 @@ inline void RenderingCommand::MarkBulkData(RenderingCommandList* commandList, T&
 template<>
 inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList* commandList, RenderBulkData& value)
 {
-	value.Alloc(commandList);
+	value.alloc(commandList);
 }
 
 #define LN_ENQUEUE_RENDER_COMMAND_PARAM(type, param) type param

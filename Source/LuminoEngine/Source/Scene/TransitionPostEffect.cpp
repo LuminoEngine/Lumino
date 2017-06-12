@@ -30,9 +30,9 @@ TransitionPostEffect::~TransitionPostEffect()
 }
 
 //------------------------------------------------------------------------------
-void TransitionPostEffect::Initialize()
+void TransitionPostEffect::initialize()
 {
-	PostEffect::Initialize();
+	PostEffect::initialize();
 
 	{
 		static const byte_t ShaderData[] =
@@ -65,11 +65,11 @@ void TransitionPostEffect::OnRender(DrawList* context, RenderTargetTexture* sour
 	bool refreshed = false;
 	if (m_primaryTarget == nullptr)
 	{
-		m_primaryTarget = NewObject<RenderTargetTexture>(destination->GetSize(), 1, TextureFormat::R8G8B8X8);
-		m_savedTarget = NewObject<RenderTargetTexture>(destination->GetSize(), 1, TextureFormat::R8G8B8X8);
+		m_primaryTarget = NewObject<RenderTargetTexture>(destination->getSize(), 1, TextureFormat::R8G8B8X8);
+		m_savedTarget = NewObject<RenderTargetTexture>(destination->getSize(), 1, TextureFormat::R8G8B8X8);
 		refreshed = true;
 	}
-	else if (m_primaryTarget->GetSize() != destination->GetSize())
+	else if (m_primaryTarget->getSize() != destination->getSize())
 	{
 		// TODO: Resize
 		LN_NOTIMPLEMENTED();
@@ -87,7 +87,7 @@ void TransitionPostEffect::OnRender(DrawList* context, RenderTargetTexture* sour
 			// TODO: scoped Ç‹ÇΩÇÕ Blit Ç›ÇΩÇ¢Ç… RT íºê⁄éwíËÇÃ Clear
 			RefPtr<RenderTargetTexture> oldTarget = context->GetRenderTarget(0);
 			context->SetRenderTarget(0, m_savedTarget);
-			context->Clear(ClearFlags::Color, GetOwnerLayer()->GetOwnerViewport()->GetViewBackgroundColor());
+			context->clear(ClearFlags::Color, GetOwnerLayer()->GetOwnerViewport()->GetViewBackgroundColor());
 		}
 		else
 		{

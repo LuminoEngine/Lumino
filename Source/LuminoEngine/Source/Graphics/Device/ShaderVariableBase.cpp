@@ -23,7 +23,7 @@ ShaderVariableBase::~ShaderVariableBase()
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableBase::Initialize(ShaderVariableTypeDesc desc, const String& name, const String& semanticName)
+void ShaderVariableBase::initialize(ShaderVariableTypeDesc desc, const String& name, const String& semanticName)
 {
 	m_desc = desc;
 	m_name = name;

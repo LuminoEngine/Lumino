@@ -58,9 +58,9 @@ public:	// TODO: スタックでも使いたい
 	MemoryStream(void* buffer, size_t size);
 	MemoryStream(const void* buffer, size_t size, bool copy = false);
 	~MemoryStream();
-	void Initialize(size_t size);	// TODO: Resize 
-	void Initialize(void* buffer, size_t size);
-	void Initialize(const void* buffer, size_t size, bool copy = false);
+	void initialize(size_t size);	// TODO: Resize 
+	void initialize(void* buffer, size_t size);
+	void initialize(const void* buffer, size_t size, bool copy = false);
 
 private:
 	std::vector<byte_t>	m_buffer;			///< 可変長の場合はこのバッファを使う

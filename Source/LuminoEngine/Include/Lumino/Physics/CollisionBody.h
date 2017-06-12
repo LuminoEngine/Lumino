@@ -81,7 +81,7 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~CollisionBody();
 
 	LN_METHOD()
-	void Initialize();
+	void initialize();
 
 LN_INTERNAL_ACCESS:
 	const Matrix& GetPhysicsObjectTransform() const { return m_transform; }

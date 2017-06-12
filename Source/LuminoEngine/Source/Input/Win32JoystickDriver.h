@@ -32,7 +32,7 @@ public:
 public:
 
 	/// 初期化 (xinputNumber は XInput 用コントローラの割り当て番号。XInput 以外のものは -1 を渡すこと)
-	void Initialize(IDirectInputDevice8* device, HWND hwnd, int xinputNumber, bool forcefeedback);
+	void initialize(IDirectInputDevice8* device, HWND hwnd, int xinputNumber, bool forcefeedback);
 
 	/// 解放
 	void Dispose();
@@ -86,7 +86,7 @@ class XInputModule
 public:
 
 	/// 初期化
-	static void Initialize();
+	static void initialize();
 
 public:
 

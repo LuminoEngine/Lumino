@@ -33,13 +33,13 @@ GlyphRun::~GlyphRun()
 }
 
 //------------------------------------------------------------------------------
-void GlyphRun::Initialize()
+void GlyphRun::initialize()
 {
-	Initialize(detail::EngineDomain::GetGraphicsManager());
+	initialize(detail::EngineDomain::GetGraphicsManager());
 }
 
 //------------------------------------------------------------------------------
-void GlyphRun::Initialize(detail::GraphicsManager* manager)
+void GlyphRun::initialize(detail::GraphicsManager* manager)
 {
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
@@ -72,7 +72,7 @@ RawFont* GlyphRun::GetFont() const
 //------------------------------------------------------------------------------
 void GlyphRun::SetText(const UTF32* str, int len)
 {
-	m_utf32Text.Clear();
+	m_utf32Text.clear();
 	m_utf32Text.Append(str, len);
 	m_modifiedRenderSize = true;
 	m_modifiedItems = true;
@@ -82,7 +82,7 @@ void GlyphRun::SetText(const UTF32* str, int len)
 void GlyphRun::SetText(const StringRef& text)
 {
 	EncodingConverter* conv = m_manager->GetFontManager()->GetTCharToUTF32Converter();
-	m_utf32Text.Clear();
+	m_utf32Text.clear();
 	m_utf32Text.Append(conv->Convert(text.GetBegin(), text.GetLength() * sizeof(TCHAR)));
 	m_modifiedRenderSize = true;
 	m_modifiedItems = true;
@@ -164,7 +164,7 @@ void GlyphRun::UpdateTextLayoutItem()
 	if (m_modifiedItems)
 	{
 		m_glyphData.AreaSize = SizeI::Zero;
-		m_glyphData.Items.Clear();
+		m_glyphData.Items.clear();
 		if (m_layoutEngine->GetFont() != nullptr && m_utf32Text.GetLength() > 0)
 		{
 			m_layoutEngine->LayoutText(m_utf32Text.c_str(), m_utf32Text.GetLength(), detail::LayoutTextOptions::All, &m_glyphData);

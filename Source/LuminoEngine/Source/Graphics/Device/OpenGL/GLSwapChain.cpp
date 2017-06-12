@@ -40,7 +40,7 @@ GLSwapChain::~GLSwapChain()
 }
 
 //------------------------------------------------------------------------------
-void GLSwapChain::Initialize(GLGraphicsDevice* device, GLContext* context, PlatformWindow* window)
+void GLSwapChain::initialize(GLGraphicsDevice* device, GLContext* context, PlatformWindow* window)
 {
 	m_device = device;
 	LN_REFOBJ_SET(m_context, context);
@@ -48,7 +48,7 @@ void GLSwapChain::Initialize(GLGraphicsDevice* device, GLContext* context, Platf
 
 
 	// TODO: バックバッファサイズ
-	m_backBufferSize = m_window->GetSize();
+	m_backBufferSize = m_window->getSize();
 	m_renderTarget = LN_NEW GLRenderTargetTexture(m_backBufferSize, TextureFormat::R8G8B8A8, 1);
 
 	OnResetDevice();
@@ -111,7 +111,7 @@ void GLSwapChain::OnResetDevice()
 }
 
 //------------------------------------------------------------------------------
-void GLSwapChain::Resize(const SizeI& size)
+void GLSwapChain::resize(const SizeI& size)
 {
 	m_backBufferSize = size;
 }
@@ -140,7 +140,7 @@ void GLSwapChain::Present(ITexture* colorBuffer)
 	m_device->GCDeviceResource();
 
 
-	if (m_backBufferSize != m_renderTarget->GetSize())
+	if (m_backBufferSize != m_renderTarget->getSize())
 	{
 		LN_SAFE_RELEASE(m_renderTarget);
 		m_renderTarget = LN_NEW GLRenderTargetTexture(m_backBufferSize, TextureFormat::R8G8B8A8, 1);
@@ -157,7 +157,7 @@ void GLSwapChain::InternalPresent(ITexture* colorBuffer, GLRenderer* renderer)
 	glUseProgram(0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); LN_CHECK_GLERROR();
 
-	const SizeI& size = m_window->GetSize();
+	const SizeI& size = m_window->getSize();
 	glViewport(0, 0, size.width, size.height); LN_CHECK_GLERROR();
     
     /*

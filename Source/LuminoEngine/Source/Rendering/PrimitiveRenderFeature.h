@@ -31,7 +31,7 @@ public:
 
 	PrimitiveRendererCore();
 	~PrimitiveRendererCore();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
 	void SetState(PrimitiveRendererMode mode);
 	void DrawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor);
@@ -59,7 +59,7 @@ class PrimitiveRenderFeature
 public:
 	PrimitiveRenderFeature();
 	~PrimitiveRenderFeature();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
 	void DrawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor);
 
@@ -119,7 +119,7 @@ class BlitRenderer
 public:
 	BlitRenderer();
 	virtual ~BlitRenderer();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 	Material* GetCommonMaterial() const;
 
 	void Blit();

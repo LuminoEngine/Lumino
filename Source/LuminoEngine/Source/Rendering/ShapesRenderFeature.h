@@ -43,7 +43,7 @@ class ShapesRendererCore
 public:
 	ShapesRendererCore();
 	virtual ~ShapesRendererCore();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
 	void RenderCommandList(ShapesRendererCommandList* commandList, detail::BrushRawData* fillBrush);
 
@@ -131,7 +131,7 @@ class ShapesRenderFeature
 public:
 	ShapesRenderFeature();
 	virtual ~ShapesRenderFeature();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
 	void ExecuteCommand(ShapesRendererCommandList* commandList);
 

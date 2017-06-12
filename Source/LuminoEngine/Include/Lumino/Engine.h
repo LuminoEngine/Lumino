@@ -28,7 +28,7 @@ public:
 		@brief		エンジンの初期化処理を行います。
 	*/
 	LN_METHOD(RuntimeInitializer)
-	static void Initialize();
+	static void initialize();
 	
 	/**
 		@brief		エンジンの終了処理を行います。

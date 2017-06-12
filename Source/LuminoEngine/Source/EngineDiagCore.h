@@ -26,7 +26,7 @@ public:
 public:
 	static EngineDiagCore	Instance;		// グローバルインスタンス
 
-	void Initialize(EngineManager* manager);
+	void initialize(EngineManager* manager);
 
 	void ReportCapability(int indent, const char* name, const char* value);
 

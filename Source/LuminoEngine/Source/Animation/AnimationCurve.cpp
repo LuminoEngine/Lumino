@@ -248,7 +248,7 @@ double FloatAnimationCurve::GetLastFrameTime() const
 //==============================================================================
 
 //------------------------------------------------------------------------------
-	void VMDBezierTable::Initialize(float fPointX1, float fPointY1, float fPointX2, float fPointY2)
+	void VMDBezierTable::initialize(float fPointX1, float fPointY1, float fPointX2, float fPointY2)
 {
 	if (fPointX1 == fPointY1 && fPointX2 == fPointY2)
 	{
@@ -347,10 +347,10 @@ void VMDBezierAttitudeTransformAnimation::AddKeyFrame(
 	key.Rotation = rot;
 	key.Rotation.Normalize();
 
-	key.PosXInterBezier.Initialize(interpolation_x[0], interpolation_x[4], interpolation_x[8], interpolation_x[12]);
-	key.PosYInterBezier.Initialize(interpolation_y[0], interpolation_y[4], interpolation_y[8], interpolation_y[12]);
-	key.PosZInterBezier.Initialize(interpolation_z[0], interpolation_z[4], interpolation_z[8], interpolation_z[12]);
-	key.RotInterBezier.Initialize(interpolation_rot[0], interpolation_rot[4], interpolation_rot[8], interpolation_rot[12]);
+	key.PosXInterBezier.initialize(interpolation_x[0], interpolation_x[4], interpolation_x[8], interpolation_x[12]);
+	key.PosYInterBezier.initialize(interpolation_y[0], interpolation_y[4], interpolation_y[8], interpolation_y[12]);
+	key.PosZInterBezier.initialize(interpolation_z[0], interpolation_z[4], interpolation_z[8], interpolation_z[12]);
+	key.RotInterBezier.initialize(interpolation_rot[0], interpolation_rot[4], interpolation_rot[8], interpolation_rot[12]);
 }
 
 //------------------------------------------------------------------------------

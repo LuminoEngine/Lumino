@@ -61,7 +61,7 @@ void TextLayoutEngine::LayoutTextHorizontal(const UTF32* text, int length)
 
 	if (m_layoutTextOptions == LayoutTextOptions::All)
 	{
-		m_result->Items.Clear();
+		m_result->Items.clear();
 	}
 
 	RectI rc = m_drawingArea;
@@ -284,7 +284,7 @@ void TextLayoutEngine2::Layout(RawFont* font, const UTF32* text, int length, con
 {
 	m_result = outResult;
 	m_result->areaSize = Size::Zero;
-	m_result->items.Clear();
+	m_result->items.clear();
 	AbstractTextLayoutEngine::Layout(font, text, length, layoutArea, options);
 }
 

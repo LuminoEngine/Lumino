@@ -286,7 +286,7 @@ void TextWriter::WriteInternal(const TCHAR* str, int len)
 
 	const ByteBuffer buf = m_converter.Convert(str, len * sizeof(TCHAR));
 
-	WriteOverride(buf.GetConstData(), buf.GetSize());
+	WriteOverride(buf.getConstData(), buf.getSize());
 
 #if 0
 

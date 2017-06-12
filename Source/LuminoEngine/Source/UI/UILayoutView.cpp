@@ -27,7 +27,7 @@ UIPopuoContainer::~UIPopuoContainer()
 }
 
 //------------------------------------------------------------------------------
-void UIPopuoContainer::Initialize()
+void UIPopuoContainer::initialize()
 {
 }
 
@@ -64,9 +64,9 @@ UILayoutView::~UILayoutView()
 }
 
 //------------------------------------------------------------------------------
-void UILayoutView::Initialize(UIContext* ownerContext, PlatformWindow* ownerNativeWindow)
+void UILayoutView::initialize(UIContext* ownerContext, PlatformWindow* ownerNativeWindow)
 {
-	UIControl::Initialize();
+	UIControl::initialize();
 
 	m_ownerContext = ownerContext;
 	m_ownerNativeWindow = ownerNativeWindow;

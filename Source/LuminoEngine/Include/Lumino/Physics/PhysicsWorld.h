@@ -26,7 +26,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	PhysicsWorld();
 	virtual ~PhysicsWorld();
-	void Initialize();
+	void initialize();
 
 LN_INTERNAL_ACCESS:
 	class IDebugRenderer

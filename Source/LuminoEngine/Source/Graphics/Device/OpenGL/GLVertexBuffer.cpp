@@ -112,7 +112,7 @@ GLVertexDeclaration::~GLVertexDeclaration()
 }
 
 //------------------------------------------------------------------------------
-void GLVertexDeclaration::Initialize(const VertexElement* elements, int elementsCount)
+void GLVertexDeclaration::initialize(const VertexElement* elements, int elementsCount)
 {
 	if (LN_CHECK_ARG(elements != nullptr)) return;
 	if (LN_CHECK_ARG(elementsCount >= 0)) return;

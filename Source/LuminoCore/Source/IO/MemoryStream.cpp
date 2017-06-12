@@ -50,7 +50,7 @@ MemoryStream::MemoryStream(void* buffer, size_t size)
 	, m_fixedBufferSize(0)
 	, m_autoDelete(false)
 {
-	Initialize(buffer, size);
+	initialize(buffer, size);
 }
 
 //------------------------------------------------------------------------------
@@ -61,7 +61,7 @@ MemoryStream::MemoryStream(const void* buffer, size_t size, bool copy)
 	, m_fixedBufferSize(0)
 	, m_autoDelete(false)
 {
-	Initialize(buffer, size, copy);
+	initialize(buffer, size, copy);
 }
 
 //------------------------------------------------------------------------------
@@ -74,21 +74,21 @@ MemoryStream::~MemoryStream()
 }
 
 //------------------------------------------------------------------------------
-void MemoryStream::Initialize(size_t uSize)
+void MemoryStream::initialize(size_t uSize)
 {
 	m_buffer.resize(uSize);
 	m_seekPos = 0;
 }
 
 //------------------------------------------------------------------------------
-void MemoryStream::Initialize(void* buffer, size_t size)
+void MemoryStream::initialize(void* buffer, size_t size)
 {
 	m_fixedBuffer = buffer;
 	m_fixedBufferSize = size;
 }
 
 //------------------------------------------------------------------------------
-void MemoryStream::Initialize(const void* buffer, size_t size, bool copy)
+void MemoryStream::initialize(const void* buffer, size_t size, bool copy)
 {
 	if (copy)
 	{

@@ -34,7 +34,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	PhysicsObject();
 	virtual ~PhysicsObject();
-	void Initialize();
+	void initialize();
 
 private:
 	PhysicsWorld*	m_ownerWorld;
@@ -87,7 +87,7 @@ LN_INTERNAL_ACCESS:
 protected:
 	BodyBase();
 	virtual ~BodyBase();
-	void Initialize(btCollisionObject* obj);
+	void initialize(btCollisionObject* obj);
 
 private:
 	PhysicsWorld*			m_ownerWorld;

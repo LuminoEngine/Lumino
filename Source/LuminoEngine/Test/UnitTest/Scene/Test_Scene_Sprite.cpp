@@ -133,8 +133,8 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 	{
 		auto tex1 = Texture2D::Create(32, 32);
 		auto tex2 = Texture2D::Create(32, 32);
-		tex1->Clear(Color32::Red);
-		tex2->Clear(Color32::Blue);
+		tex1->clear(Color32::Red);
+		tex2->clear(Color32::Blue);
 		auto s1 = Sprite2D::Create(tex1);
 		auto s2 = Sprite2D::Create(tex2);
 		s1->SetPosition(10, 20, 100);
@@ -149,8 +149,8 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 	{
 		auto tex1 = Texture2D::Create(32, 32);
 		auto tex2 = Texture2D::Create(32, 32);
-		tex1->Clear(Color32::Green);
-		tex2->Clear(Color32::Blue);
+		tex1->clear(Color32::Green);
+		tex2->clear(Color32::Blue);
 		auto s1 = Sprite2D::Create(tex1);
 		Engine::Update();			// 1度描く
 		s1->SetTexture(tex2);			// 次にテクスチャを変更する

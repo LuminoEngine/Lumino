@@ -27,7 +27,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sound, Object);
 SoundPtr Sound::Create(const TCHAR* filePath)
 {
 	auto ptr = SoundPtr::MakeRef();
-	ptr->Initialize(filePath);
+	ptr->initialize(filePath);
 	return ptr;
 	//return CreateInternal(detail::AudioManager::GetInstance(), filePath);
 }
@@ -36,7 +36,7 @@ SoundPtr Sound::Create(const TCHAR* filePath)
 SoundPtr Sound::Create(Stream* stream, SoundLoadingMode loadingMode)
 {
 	auto ptr = SoundPtr::MakeRef();
-	ptr->Initialize(stream, loadingMode);
+	ptr->initialize(stream, loadingMode);
 	return ptr;
 	//return CreateInternal(detail::AudioManager::GetInstance(), stream, loadingMode);
 }
@@ -76,7 +76,7 @@ Sound::~Sound()
 }
 
 //------------------------------------------------------------------------------
-void Sound::Initialize(const StringRef& filePath)
+void Sound::initialize(const StringRef& filePath)
 {
 	detail::AudioManager* manager = detail::AudioManager::GetInstance();
 	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath, true), false);
@@ -95,7 +95,7 @@ void Sound::Initialize(const StringRef& filePath)
 }
 
 //------------------------------------------------------------------------------
-void Sound::Initialize(Stream* stream, SoundLoadingMode loadingMode)
+void Sound::initialize(Stream* stream, SoundLoadingMode loadingMode)
 {
 	detail::AudioManager* manager = detail::AudioManager::GetInstance();
 	//RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath, true), false);
@@ -115,7 +115,7 @@ void Sound::Initialize(Stream* stream, SoundLoadingMode loadingMode)
 }
 
 //------------------------------------------------------------------------------
-void Sound::Initialize(detail::AudioStream* audioStream)
+void Sound::initialize(detail::AudioStream* audioStream)
 {
 	detail::AudioManager* manager = detail::AudioManager::GetInstance();
 	if (LN_CHECK_ARG(manager != nullptr)) return;

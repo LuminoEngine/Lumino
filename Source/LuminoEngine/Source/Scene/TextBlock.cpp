@@ -19,7 +19,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TextBlock2DComponent, VisualComponent);
 TextBlock2DComponentPtr TextBlock2DComponent::Create()
 {
 	auto ptr = TextBlock2DComponentPtr::MakeRef();
-	ptr->Initialize();
+	ptr->initialize();
 	return ptr;
 }
 
@@ -27,7 +27,7 @@ TextBlock2DComponentPtr TextBlock2DComponent::Create()
 TextBlock2DComponentPtr TextBlock2DComponent::Create(const StringRef& text)
 {
 	auto ptr = TextBlock2DComponentPtr::MakeRef();
-	ptr->Initialize();
+	ptr->initialize();
 	ptr->SetText(text);
 	return ptr;
 }
@@ -45,15 +45,15 @@ TextBlock2DComponent::~TextBlock2DComponent()
 }
 
 //------------------------------------------------------------------------------
-void TextBlock2DComponent::Initialize()
+void TextBlock2DComponent::initialize()
 {
-	VisualComponent::Initialize();
+	VisualComponent::initialize();
 
 	//owner->GetRootNode()->AddChild(this);
 	SetAutoRemove(true);
 
 	m_paragraph = RefPtr<detail::Paragraph>::MakeRef();
-	m_paragraph->Initialize();
+	m_paragraph->initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -61,7 +61,7 @@ void TextBlock2DComponent::SetText(const StringRef& text)
 {
 	m_paragraph->ClearInlines();
 	auto run = RefPtr<detail::Run>::MakeRef();
-	run->Initialize();
+	run->initialize();
 	run->SetText(text);
 	m_paragraph->AddInline(run);
 }

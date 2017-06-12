@@ -65,9 +65,9 @@ VertexBuffer::~VertexBuffer()
 }
 
 //------------------------------------------------------------------------------
-void VertexBuffer::Initialize(detail::GraphicsManager* manager, size_t bufferSize, const void* data, ResourceUsage usage, bool sizeConst)
+void VertexBuffer::initialize(detail::GraphicsManager* manager, size_t bufferSize, const void* data, ResourceUsage usage, bool sizeConst)
 {
-	GraphicsResourceObject::Initialize();
+	GraphicsResourceObject::initialize();
 	m_usage = usage;
 
 	if (sizeConst)
@@ -88,7 +88,7 @@ void VertexBuffer::Dispose()
 }
 
 //------------------------------------------------------------------------------
-int VertexBuffer::GetSize() const
+int VertexBuffer::getSize() const
 {
 	return static_cast<int>(m_buffer.size());
 }
@@ -106,7 +106,7 @@ void VertexBuffer::Reserve(int size)
 }
 
 //------------------------------------------------------------------------------
-void VertexBuffer::Resize(int size)
+void VertexBuffer::resize(int size)
 {
 	if (LN_CHECK_STATE(!IsRHIDirect())) return;		// サイズ変更禁止
 
@@ -141,15 +141,15 @@ void* VertexBuffer::GetMappedData()
 //------------------------------------------------------------------------------
 void* VertexBuffer::RequestMappedData(int size)
 {
-	if (GetSize() < size)
+	if (getSize() < size)
 	{
-		Resize(size);
+		resize(size);
 	}
 	return GetMappedData();
 }
 
 //------------------------------------------------------------------------------
-void VertexBuffer::Clear()
+void VertexBuffer::clear()
 {
 	m_buffer.clear();
 	m_locked = true;
@@ -180,7 +180,7 @@ Driver::IVertexBuffer* VertexBuffer::ResolveRHIObject()
 					RenderBulkData, data,
 					RefPtr<Driver::IVertexBuffer>, deviceObj,
 					{
-						deviceObj->SetSubData(0, data.GetData(), data.GetSize());
+						deviceObj->SetSubData(0, data.getData(), data.getSize());
 					});
 			}
 		}

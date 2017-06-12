@@ -62,7 +62,7 @@ SceneNode::~SceneNode()
 }
 
 //------------------------------------------------------------------------------
-void SceneNode::Initialize()
+void SceneNode::initialize()
 {
 	m_manager = detail::EngineDomain::GetSceneGraphManager();
 }
@@ -146,7 +146,7 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 		SceneNode* node = m_children->GetAt(i);
 		node->UpdateFrameHierarchy(this, deltaTime);
 
-		if (node->IsAutoRemove() && node->GetReferenceCount() == 1)
+		if (node->IsAutoRemove() && node->getReferenceCount() == 1)
 		{
 			m_children->RemoveAt(i);
 			count = m_children->GetCount();

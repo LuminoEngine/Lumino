@@ -62,7 +62,7 @@ void TaskScheduler::QueueTask(Task* task)
 
 	MutexScopedLock lock(m_taskQueueLock);
 	m_taskQueue.push_back(task);
-	task->AddRef();
+	task->addRef();
 
 	m_semaphore.Unlock();	// キューに入れたので取り出したい人はどうぞ。
 }
@@ -89,7 +89,7 @@ void TaskScheduler::ExecuteThread()
 
 		// 実行。状態変化は内部で行う
 		task->Execute();
-		task->Release();
+		task->release();
 	}
 }
 

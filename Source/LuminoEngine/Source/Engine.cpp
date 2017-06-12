@@ -24,11 +24,11 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-void Engine::Initialize()
+void Engine::initialize()
 {
 	if (LN_CHECK_STATE(EngineManager::Instance == nullptr)) return;
 	EngineManager::Instance = EngineManager::Create(detail::EngineSettings::instance);
-	EngineManager::Instance->Initialize();
+	EngineManager::Instance->initialize();
 }
 
 //------------------------------------------------------------------------------

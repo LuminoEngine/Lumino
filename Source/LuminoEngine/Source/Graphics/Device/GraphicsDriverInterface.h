@@ -148,7 +148,7 @@ public:
 	virtual ITexture* GetBackBuffer() = 0;
 
 	/// バックバッファサイズを変更する
-	virtual void Resize(const SizeI& size) = 0;
+	virtual void resize(const SizeI& size) = 0;
 
 	/// バックバッファの内容をウィンドウへ転送する
 	///		colorBuffer を本物のバックバッファへ一度コピーしてからウィンドウに Swap する。
@@ -207,7 +207,7 @@ public:
 
 
 	/// 設定されている各種バッファをクリアする
-	void Clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
+	void clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
 
 	/// プリミティブ描画
 	void DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount);
@@ -340,7 +340,7 @@ public:
 	virtual TextureFormat GetTextureFormat() const = 0;
 
 	/// サイズの取得
-    virtual const SizeI& GetSize() const = 0;
+    virtual const SizeI& getSize() const = 0;
 
 	/// 実際のサイズの取得 (デバイス依存により2のべき乗倍に拡張されたサイズ)
 	virtual const SizeI& GetRealSize() const = 0;
@@ -355,7 +355,7 @@ public:
 	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes) = 0;
 
 	// (得られるデータは上下反転)
-	virtual void GetData(const RectI& rect, void* outData) = 0;
+	virtual void getData(const RectI& rect, void* outData) = 0;
 
 	/// ロック
 	virtual Bitmap* Lock() = 0;

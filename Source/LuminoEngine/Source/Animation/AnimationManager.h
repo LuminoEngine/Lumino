@@ -16,7 +16,7 @@ public:
 	AnimationManager();
 	virtual ~AnimationManager();
 
-	void Initialize();
+	void initialize();
 
 	void AdvanceTime(float deltaTime);
 
@@ -25,7 +25,7 @@ public:
 	//AnimationClock* StartPropertyAnimation(AnimatableObject* targetObject/*AnimationClockArgs* list, int listCount*/)
 	//{
 	//	auto ac = RefPtr<AnimationClock>::MakeRef();
-	//	ac->Initialize(targetObject);
+	//	ac->initialize(targetObject);
 	//	m_clockList.Add(ac);
 
 	//	targetObject->m_playingAnimationClockList.Add(ac);

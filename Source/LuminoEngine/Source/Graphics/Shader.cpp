@@ -80,7 +80,7 @@ ShaderSemanticsManager::ShaderSemanticsManager()
 }
 
 //------------------------------------------------------------------------------
-void ShaderSemanticsManager::Initialize(GraphicsManager* manager)
+void ShaderSemanticsManager::initialize(GraphicsManager* manager)
 {
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
@@ -352,7 +352,7 @@ ShaderPtr Shader::GetBuiltinShader(BuiltinShader shader)
 RefPtr<Shader> Shader::Create(const StringRef& filePath, bool useTRSS)
 {
 	RefPtr<Shader> obj(LN_NEW Shader(), false);
-	obj->Initialize(detail::GraphicsManager::GetInstance(), filePath, useTRSS);
+	obj->initialize(detail::GraphicsManager::GetInstance(), filePath, useTRSS);
 	return obj;
 }
 
@@ -360,7 +360,7 @@ RefPtr<Shader> Shader::Create(const StringRef& filePath, bool useTRSS)
 RefPtr<Shader> Shader::Create(const char* code, int length)
 {
 	RefPtr<Shader> obj(LN_NEW Shader(), false);
-	obj->Initialize(detail::GraphicsManager::GetInstance(), code, length);
+	obj->initialize(detail::GraphicsManager::GetInstance(), code, length);
 	return obj;
 }
 //
@@ -410,16 +410,16 @@ Shader::~Shader()
 }
 
 //------------------------------------------------------------------------------
-void Shader::Initialize(detail::GraphicsManager* manager, const StringRef& filePath, bool useTRSS)
+void Shader::initialize(detail::GraphicsManager* manager, const StringRef& filePath, bool useTRSS)
 {
 	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath), false);
 	ByteBuffer buf((size_t)stream->GetLength() + 1, false);
-	stream->Read(buf.GetData(), buf.GetSize());
+	stream->Read(buf.getData(), buf.getSize());
 	buf[(size_t)stream->GetLength()] = 0x00;
 
-	Initialize(manager, buf.GetConstData(), buf.GetSize(), useTRSS);
+	initialize(manager, buf.getConstData(), buf.getSize(), useTRSS);
 
-	//GraphicsResourceObject::Initialize(manager);
+	//GraphicsResourceObject::initialize(manager);
 	//
 
 	//
@@ -432,9 +432,9 @@ void Shader::Initialize(detail::GraphicsManager* manager, const StringRef& fileP
 }
 
 //------------------------------------------------------------------------------
-void Shader::Initialize(detail::GraphicsManager* manager, const void* code, int length, bool useTRSS)
+void Shader::initialize(detail::GraphicsManager* manager, const void* code, int length, bool useTRSS)
 {
-	GraphicsResourceObject::Initialize();
+	GraphicsResourceObject::initialize();
 
 	StringBuilderA newCode;
 	if (useTRSS)
@@ -462,7 +462,7 @@ void Shader::Initialize(detail::GraphicsManager* manager, const void* code, int 
 	LN_THROW(m_deviceObj != nullptr, CompilationException, result);
 
 	// ライブラリ外部からの DeviceContext 再設定に備えてコードを保存する
-	m_sourceCode.Alloc(newCode.c_str(), newCode.GetLength());
+	m_sourceCode.alloc(newCode.c_str(), newCode.GetLength());
 
 	PostInitialize();
 }
@@ -474,13 +474,13 @@ void Shader::Dispose()
 	{
 		LN_SAFE_RELEASE(var);
 	}
-	m_variables.Clear();
+	m_variables.clear();
 
 	for (ShaderTechnique* tech : m_techniques) 
 	{
 		LN_SAFE_RELEASE(tech);
 	}
-	m_techniques.Clear();
+	m_techniques.clear();
 
 	LN_SAFE_RELEASE(m_deviceObj);
 
@@ -490,7 +490,7 @@ void Shader::Dispose()
 //------------------------------------------------------------------------------
 void Shader::PostInitialize()
 {
-	m_semanticsManager.Initialize(m_manager);
+	m_semanticsManager.initialize(m_manager);
 
 	// 変数を展開
 	for (int i = 0; i < m_deviceObj->GetVariableCount(); ++i)
@@ -521,7 +521,7 @@ void Shader::TryCommitChanges()
 	RenderBulkData varsData(serializer->GetSerializeData(), serializer->GetSerializeDataLength());
 
 	auto* cmdList = GetManager()->GetPrimaryRenderingCommandList();
-	byte_t* data = (byte_t*)varsData.Alloc(cmdList);
+	byte_t* data = (byte_t*)varsData.alloc(cmdList);
 
 	detail::GraphicsManager* manager = GetManager();
 	Shader* _this = this;
@@ -532,7 +532,7 @@ void Shader::TryCommitChanges()
 		RefPtr<Shader>, _this,
 		{
 			auto* serializer = manager->GetShaderVariableCommitSerializeHelper();
-			serializer->Deserialize(varsData.GetData(), varsData.GetSize());
+			serializer->Deserialize(varsData.getData(), varsData.getSize());
 		});
 }
 
@@ -540,7 +540,7 @@ void Shader::TryCommitChanges()
 ShaderVariable* Shader::FindVariable(const TCHAR* name, CaseSensitivity cs) const
 {
 	for (ShaderVariable* var : m_variables) {
-		if (var->GetName().Compare(name, -1, cs) == 0) {
+		if (var->GetName().compare(name, -1, cs) == 0) {
 			return var;
 		}
 	}
@@ -557,7 +557,7 @@ const List<ShaderTechnique*>& Shader::GetTechniques() const
 ShaderTechnique* Shader::FindTechnique(const TCHAR* name, CaseSensitivity cs) const
 {
 	for (auto* var : m_techniques) {
-		if (var->GetName().Compare(name, -1, cs) == 0) {
+		if (var->GetName().compare(name, -1, cs) == 0) {
 			return var;
 		}
 	}
@@ -574,7 +574,7 @@ void Shader::OnChangeDevice(Driver::IGraphicsDevice* device)
 	else
 	{
 		ShaderCompileResult result;
-		m_deviceObj = m_manager->GetGraphicsDevice()->CreateShader(m_sourceCode.GetConstData(), m_sourceCode.GetSize(), &result);
+		m_deviceObj = m_manager->GetGraphicsDevice()->CreateShader(m_sourceCode.getConstData(), m_sourceCode.getSize(), &result);
 		LN_THROW(result.Level != ShaderCompileResultLevel_Error, InvalidOperationException);	// 一度生成に成功しているので発生はしないはず
 
 		// 変数再割り当て
@@ -634,12 +634,12 @@ ShaderValue::~ShaderValue()
 ShaderValue::ShaderValue(const ShaderValue& obj)
 {
 	memset(&m_value, 0, sizeof(m_value));
-	Copy(obj);
+	copy(obj);
 }
 ShaderValue& ShaderValue::operator = (const ShaderValue& obj)
 {
 	memset(&m_value, 0, sizeof(m_value));
-	Copy(obj);
+	copy(obj);
 	return (*this);
 }
 
@@ -769,7 +769,7 @@ void ShaderValue::SetString(const String& s)
 }
 
 //------------------------------------------------------------------------------
-bool ShaderValue::Equals(const ShaderValue& value) const
+bool ShaderValue::equals(const ShaderValue& value) const
 {
 	if (m_type != value.m_type) return false;
 
@@ -778,27 +778,27 @@ bool ShaderValue::Equals(const ShaderValue& value) const
 		case ShaderVariableType_Bool:
 			return m_value.BoolVal == value.m_value.BoolVal;
 		case ShaderVariableType_BoolArray:
-			return m_buffer.Equals(value.m_buffer);
+			return m_buffer.equals(value.m_buffer);
 		case ShaderVariableType_Int:
 			return m_value.Int == value.m_value.Int;
 		case ShaderVariableType_Float:
 			return m_value.Float == value.m_value.Float;
 		case ShaderVariableType_FloatArray:
-			return m_buffer.Equals(value.m_buffer);
+			return m_buffer.equals(value.m_buffer);
 		case ShaderVariableType_Vector:
 			return m_value.Vector == value.m_value.Vector;
 		case ShaderVariableType_VectorArray:
-			return m_buffer.Equals(value.m_buffer);
+			return m_buffer.equals(value.m_buffer);
 		case ShaderVariableType_Matrix:
 			return m_value.Matrix == value.m_value.Matrix;
 		case ShaderVariableType_MatrixArray:
-			return m_buffer.Equals(value.m_buffer);
+			return m_buffer.equals(value.m_buffer);
 		case ShaderVariableType_DeviceTexture:
 			return m_value.DeviceTexture == value.m_value.DeviceTexture;
 		case ShaderVariableType_ManagedTexture:
 			return m_value.ManagedTexture == value.m_value.ManagedTexture;
 		case ShaderVariableType_String:
-			return StringTraits::Compare(m_value.String, m_value.String, -1) == 0;
+			return StringTraits::compare(m_value.String, m_value.String, -1) == 0;
 		default:
 			assert(0);
 			break;
@@ -816,7 +816,7 @@ uint32_t ShaderValue::GetHashCode()
 
 		if (IsBufferCopyType(m_type))
 		{
-			m_hashCode += Hash::CalcHash((const char*)m_buffer.GetConstData(), m_buffer.GetSize());
+			m_hashCode += Hash::CalcHash((const char*)m_buffer.getConstData(), m_buffer.getSize());
 		}
 
 		m_hashDirty = false;
@@ -829,16 +829,16 @@ uint32_t ShaderValue::GetHashCode()
 int ShaderValue::GetArrayLength() const
 {
 	if (m_type == ShaderVariableType_BoolArray) {
-		return m_buffer.GetSize() / sizeof(bool);
+		return m_buffer.getSize() / sizeof(bool);
 	}
 	if (m_type == ShaderVariableType_FloatArray) {
-		return m_buffer.GetSize() / sizeof(float);
+		return m_buffer.getSize() / sizeof(float);
 	}
 	if (m_type == ShaderVariableType_VectorArray) {
-		return m_buffer.GetSize() / sizeof(Vector4);
+		return m_buffer.getSize() / sizeof(Vector4);
 	}
 	if (m_type == ShaderVariableType_MatrixArray) {
-		return m_buffer.GetSize() / sizeof(Matrix);
+		return m_buffer.getSize() / sizeof(Matrix);
 	}
 	return 0;
 }
@@ -857,25 +857,25 @@ void ShaderValue::ReleaseValueBuffer()
 		LN_SAFE_RELEASE(m_value.ManagedTexture);
 	}
 	//m_value.ByteCount = 0;
-	m_buffer.Release();
+	m_buffer.free();
 }
 
 //------------------------------------------------------------------------------
 void ShaderValue::AllocValueBuffer(size_t byteCount)
 {
-	if (byteCount > m_buffer.GetSize()/*m_value.ByteCount*//* || m_buffer.GetReferenceCount() != 1*/)
+	if (byteCount > m_buffer.getSize()/*m_value.ByteCount*//* || m_buffer.GetReferenceCount() != 1*/)
 	{
 		//LN_SAFE_DELETE_ARRAY(m_value.Buffer);
 		//m_value.Buffer = LN_NEW byte_t[byteCount];
 		//m_value.ByteCount = byteCount;
 		//m_buffer.Attach(LN_NEW ByteBuffer(byteCount), false);
-		m_buffer.Resize(byteCount);
-		m_value.Buffer = m_buffer.GetData();
+		m_buffer.resize(byteCount);
+		m_value.Buffer = m_buffer.getData();
 	}
 }
 
 //------------------------------------------------------------------------------
-void ShaderValue::Copy(const ShaderValue& value)
+void ShaderValue::copy(const ShaderValue& value)
 {
 	m_type = value.m_type;
 	m_buffer = value.m_buffer;	// 共有参照
@@ -890,7 +890,7 @@ void ShaderValue::Copy(const ShaderValue& value)
 	//}
 	if (IsBufferCopyType(m_type))
 	{
-		m_value.Buffer = m_buffer.GetData();
+		m_value.Buffer = m_buffer.getData();
 	}
 	else
 	{
@@ -935,7 +935,7 @@ ShaderVariable::ShaderVariable(Shader* owner, Driver::IShaderVariable* deviceObj
 ShaderVariable::~ShaderVariable()
 {
 	for (ShaderVariable* anno : m_annotations) {
-		anno->Release();
+		anno->release();
 	}
 	LN_SAFE_RELEASE(m_textureValue);
 }
@@ -1166,7 +1166,7 @@ void ShaderVariable::SetShaderValue(const ShaderValue& value)
 	}
 	else
 	{
-		if (!m_value.Equals(value))
+		if (!m_value.equals(value))
 		{
 			SetModified();
 			m_value = value;
@@ -1184,7 +1184,7 @@ const List<ShaderVariable*>& ShaderVariable::GetAnnotations() const
 ShaderVariable* ShaderVariable::FindAnnotation(const TCHAR* name, CaseSensitivity cs) const
 {
 	for (ShaderVariable* anno : m_annotations) {
-		if (anno->GetName().Compare(name, -1, cs) == 0) {
+		if (anno->GetName().compare(name, -1, cs) == 0) {
 			return anno;
 		}
 	}
@@ -1298,7 +1298,7 @@ const List<ShaderVariable*>& ShaderTechnique::GetAnnotations() const
 ShaderVariable* ShaderTechnique::FindAnnotation(const TCHAR* name, CaseSensitivity cs) const
 {
 	for (ShaderVariable* anno : m_annotations) {
-		if (anno->GetName().Compare(name, -1, cs) == 0) {
+		if (anno->GetName().compare(name, -1, cs) == 0) {
 			return anno;
 		}
 	}
@@ -1388,7 +1388,7 @@ const List<ShaderVariable*>& ShaderPass::GetAnnotations() const
 ShaderVariable* ShaderPass::FindAnnotation(const TCHAR* name, CaseSensitivity cs) const
 {
 	for (ShaderVariable* anno : m_annotations) {
-		if (anno->GetName().Compare(name, -1, cs) == 0) {
+		if (anno->GetName().compare(name, -1, cs) == 0) {
 			return anno;
 		}
 	}

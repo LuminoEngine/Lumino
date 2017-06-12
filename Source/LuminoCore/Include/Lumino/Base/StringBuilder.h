@@ -19,7 +19,7 @@ public:
 
 public:
 	bool IsEmpty() const { return m_bufferUsed == 0; }
-	void Clear();
+	void clear();
 	void Append(const TChar ch);
 	void Append(const TChar ch, int count);
 	void Append(const TChar* str, int length);
@@ -34,7 +34,7 @@ public:
 
 	void Replace(int start, int length, const TChar* str, int strLength);
 
-	const TChar* c_str() const { return (const TChar*)m_buffer.GetConstData(); }
+	const TChar* c_str() const { return (const TChar*)m_buffer.getConstData(); }
 	int GetLength() const { return m_bufferUsed / sizeof(TChar); }
 
 
@@ -56,7 +56,7 @@ public:
 	GenericString<TChar> ToString() const
 	{
 		m_cache.AssignCStr(
-			(const TChar*)GenericStringBuilderCore<TChar>::m_buffer.GetConstData(),
+			(const TChar*)GenericStringBuilderCore<TChar>::m_buffer.getConstData(),
 			GenericStringBuilderCore<TChar>::m_bufferUsed / sizeof(TChar));
 		return m_cache;
 	}

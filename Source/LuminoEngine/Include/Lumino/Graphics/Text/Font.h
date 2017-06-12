@@ -84,7 +84,7 @@ public:
 	void SetSize(int size);
 
 	/** フォントサイズの取得 */
-	int GetSize() const;
+	int getSize() const;
 
 	/** 太文字の有効設定 */
 	void SetBold(bool enabled);
@@ -113,7 +113,7 @@ public:
 LN_INTERNAL_ACCESS:
 	Font();
 	virtual ~Font();
-	void Initialize(detail::GraphicsManager* manager, RawFont* builtinRawFont);
+	void initialize(detail::GraphicsManager* manager, RawFont* builtinRawFont);
 	RawFont* ResolveRawFont();
 
 private:
@@ -230,7 +230,7 @@ public:
 	virtual void SetSize(int size) = 0;
 
 	/// フォントサイズの取得
-	virtual int GetSize() const = 0;
+	virtual int getSize() const = 0;
 
 	///// フォントカラーの設定
 	//virtual void SetColor(const Graphics::Color& color) = 0;
@@ -269,7 +269,7 @@ public:
 	virtual bool IsAntiAlias() const = 0;
 
 	/// このフォントのコピーを作成する
-	virtual RawFontPtr Copy() const = 0;
+	virtual RawFontPtr copy() const = 0;
 
 	/** 次の行のベースラインまでの長さを返します。*/
 	virtual int GetLineSpacing() = 0;
@@ -305,7 +305,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	RawFont();
 	virtual ~RawFont();
-	void Initialize();
+	void initialize();
 	virtual void Finalize_();
 
 LN_PROTECTED_INTERNAL_ACCESS:

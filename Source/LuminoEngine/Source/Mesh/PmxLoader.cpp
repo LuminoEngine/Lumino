@@ -52,7 +52,7 @@ RefPtr<PmxSkinnedMeshResource> PmxLoader::Load(detail::ModelManager* manager, St
 
 	BinaryReader reader(stream);
 	m_modelCore = RefPtr<PmxSkinnedMeshResource>::MakeRef();
-	m_modelCore->Initialize(manager->GetGraphicsManager(), MeshCreationFlags::None);
+	m_modelCore->initialize(manager->GetGraphicsManager(), MeshCreationFlags::None);
 	m_modelCore->Format = ModelFormat_PMX;
 	
 	//-----------------------------------------------------
@@ -250,7 +250,7 @@ void PmxLoader::LoadIndices(BinaryReader* reader)
 
 	// とりあえずまずは全部読み込む
 	ByteBuffer indicesBuffer(getVertexIndexSize() * indexCount);
-	reader->Read(indicesBuffer.GetData(), indicesBuffer.GetSize());
+	reader->Read(indicesBuffer.getData(), indicesBuffer.getSize());
 
 	// 1 バイトインデックス
 	if (getVertexIndexSize() == 1)
@@ -260,7 +260,7 @@ void PmxLoader::LoadIndices(BinaryReader* reader)
 	// 2 バイトインデックス
 	else if (getVertexIndexSize() == 2)
 	{
-		auto indices = (const uint16_t*)indicesBuffer.GetConstData();
+		auto indices = (const uint16_t*)indicesBuffer.getConstData();
 		for (int i = 0; i < indexCount; i += 3)
 		{
 			// PMX と Lumino では面方向が逆なので反転する
@@ -272,7 +272,7 @@ void PmxLoader::LoadIndices(BinaryReader* reader)
 	// 2 or 4 バイトインデックス
 	else
 	{
-		auto indices = (const uint32_t*)indicesBuffer.GetConstData();
+		auto indices = (const uint32_t*)indicesBuffer.getConstData();
 		for (int i = 0; i < indexCount; i += 3)
 		{
 			// PMX と Lumino では面方向が逆なので反転する
@@ -310,7 +310,7 @@ void PmxLoader::LoadMaterials(BinaryReader* reader)
 	int materialCount = reader->ReadInt32();
 
 	// メモリ確保
-	m_modelCore->materials.Resize(materialCount);
+	m_modelCore->materials.resize(materialCount);
 	m_modelCore->AddSections(materialCount);
 
 	int indexAttrOffset = 0;
@@ -401,7 +401,7 @@ void PmxLoader::LoadBones(BinaryReader* reader)
 	int boneCount = reader->ReadInt32();
 
 	// 親ボーンをインデックスから拾うため、まずはすべてインスタンス化
-	m_modelCore->bones.Resize(boneCount);
+	m_modelCore->bones.resize(boneCount);
 	for (int i = 0; i < boneCount; ++i)
 	{
 		m_modelCore->bones[i] = RefPtr<PmxBoneResource>::MakeRef(m_modelCore, i);
@@ -524,7 +524,7 @@ void PmxLoader::LoadMorphs(BinaryReader* reader)
 {
 	// モーフ数
 	int boneCount = reader->ReadInt32();
-	m_modelCore->morphs.Resize(boneCount);
+	m_modelCore->morphs.resize(boneCount);
 
 	// データ読み込み
 	for (int i = 0; i < boneCount; ++i)
@@ -546,7 +546,7 @@ void PmxLoader::LoadMorphs(BinaryReader* reader)
 
 		// モーフオフセット
 		int32_t offsetCount = reader->ReadInt32();
-		morph->MorphOffsets.Resize(offsetCount);
+		morph->MorphOffsets.resize(offsetCount);
 		for (int i = 0; i < offsetCount; i++)
 		{
 			PmxMorphResource::MorphOffset* mo = &morph->MorphOffsets[i];
@@ -668,7 +668,7 @@ void PmxLoader::LoadRigidBodys(BinaryReader* reader)
 {
 	// 剛体数
 	int bodyCount = reader->ReadInt32();
-	m_modelCore->rigidBodys.Resize(bodyCount);
+	m_modelCore->rigidBodys.resize(bodyCount);
 
 	// データ読み込み
 	for (int i = 0; i < bodyCount; ++i)
@@ -760,7 +760,7 @@ void PmxLoader::LoadJoints(BinaryReader* reader)
 {
 	// ジョイント数
 	int jointCount = reader->ReadInt32();
-	m_modelCore->joints.Resize(jointCount);
+	m_modelCore->joints.resize(jointCount);
 
 	// データ読み込み
 	for (int i = 0; i < jointCount; ++i)
@@ -800,15 +800,15 @@ void PmxLoader::LoadJoints(BinaryReader* reader)
 String PmxLoader::ReadString(BinaryReader* reader)
 {
 	uint32_t byteSize = reader->ReadInt32();
-	m_tmpBuffer.Resize(byteSize);
-	reader->Read(m_tmpBuffer.GetData(), byteSize);
+	m_tmpBuffer.resize(byteSize);
+	reader->Read(m_tmpBuffer.getData(), byteSize);
 
 	String str;
 	if (getEncode() == PMX_Encode_UTF16) {
-		str.ConvertFrom(m_tmpBuffer.GetData(), byteSize, Encoding::GetUTF16Encoding());
+		str.ConvertFrom(m_tmpBuffer.getData(), byteSize, Encoding::GetUTF16Encoding());
 	}
 	else {
-		str.ConvertFrom(m_tmpBuffer.GetData(), byteSize, Encoding::GetUTF8Encoding());
+		str.ConvertFrom(m_tmpBuffer.getData(), byteSize, Encoding::GetUTF8Encoding());
 	}
 
 	return str;

@@ -26,7 +26,7 @@ MeshRenderFeature::~MeshRenderFeature()
 }
 
 //------------------------------------------------------------------------------
-void MeshRenderFeature::Initialize(GraphicsManager* manager)
+void MeshRenderFeature::initialize(GraphicsManager* manager)
 {
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;

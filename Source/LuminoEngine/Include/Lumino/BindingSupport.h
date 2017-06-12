@@ -15,7 +15,7 @@ class RefObjectList
 {
 public:
 	RefObjectList() {}
-	virtual ~RefObjectList() { Clear(); }
+	virtual ~RefObjectList() { clear(); }
 
 public:
 
@@ -51,13 +51,13 @@ public:
 	}
 
 	/// 全ての要素を削除する
-	void Clear()
+	void clear()
 	{
 		for (RefObject* item : m_list) {
 			OnItemRemoved(item);	// TODO: erase しながらひとつずつ呼ぶべきかも
 			LN_SAFE_RELEASE(item);
 		}
-		m_list.Clear();
+		m_list.clear();
 	}
 
 	/// 指定したインデックスの位置に要素を挿入する
@@ -252,7 +252,7 @@ public:
 
 	virtual ~ObjectList()
 	{
-		Collection<T>::Clear();
+		Collection<T>::clear();
 	}
 
 protected:
@@ -271,7 +271,7 @@ protected:
 	virtual void RemoveItem(int index) override
 	{
 		if (Collection<T>::GetAt(index) != nullptr) {
-			Collection<T>::GetAt(index)->Release();
+			Collection<T>::GetAt(index)->release();
 		}
 		Collection<T>::RemoveItem(index);
 	}
@@ -279,7 +279,7 @@ protected:
 	{
 		LN_SAFE_ADDREF(item);
 		if (Collection<T>::GetAt(index) != nullptr) {
-			Collection<T>::GetAt(index)->Release();
+			Collection<T>::GetAt(index)->release();
 		}
 		Collection<T>::SetItem(index, item);
 	}
@@ -289,7 +289,7 @@ protected:
 	virtual void SetAt_Object(int index, Object* item) override { Collection<T>::SetAt(index, static_cast<T>(item)); }
 	virtual Object* GetAt_Object(int index) override { return Collection<T>::GetAt(index); }
 	virtual void Add_Object(Object* item) override { Collection<T>::Add(static_cast<T>(item)); }
-	virtual void Clear_Object() override { Collection<T>::Clear(); }
+	virtual void Clear_Object() override { Collection<T>::clear(); }
 	virtual void Insert_Object(int index, Object* item) override { auto t = static_cast<T>(item); Collection<T>::Insert(index, t); }
 	virtual bool Remove_Object(Object* item) override { return Collection<T>::Remove(static_cast<T>(item)); }
 	virtual void RemoveAt_Object(int index) override { Collection<T>::RemoveAt(index); }

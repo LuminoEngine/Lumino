@@ -10,13 +10,13 @@ List<T, TAllocator>::List()
 	: m_data(NULL)
 {
 	m_data = ArrayData::GetSharedEmpty();
-	m_data->AddRef();
+	m_data->addRef();
 }
 template<typename T, typename TAllocator>
 List<T, TAllocator>::List(const List& ary)
 {
 	m_data = ary.m_data;
-	m_data->AddRef();
+	m_data->addRef();
 }
 template<typename T, typename TAllocator>
 List<T, TAllocator>::List(List&& ary)
@@ -43,7 +43,7 @@ template<typename T, typename TAllocator>
 List<T, TAllocator>::~List()
 {
 	if (m_data != NULL) {
-		m_data->Release();
+		m_data->release();
 	}
 }
 
@@ -51,9 +51,9 @@ List<T, TAllocator>::~List()
 template<typename T, typename TAllocator>
 List<T, TAllocator>& List<T, TAllocator>::operator=(const List& ary)
 {
-	m_data->Release();
+	m_data->release();
 	m_data = ary.m_data;
-	m_data->AddRef();
+	m_data->addRef();
 	return *this;
 }
 
@@ -62,7 +62,7 @@ template<typename T, typename TAllocator>
 T& List<T, TAllocator>::operator[] (int index)
 {
 	CheckOutOfRange(index);
-	CheckDetachShared();
+	checkDetachShared();
 	return m_data->m_vector[index];
 }
 
@@ -76,12 +76,12 @@ const T& List<T, TAllocator>::operator[] (int index) const
 
 //------------------------------------------------------------------------------
 template<typename T, typename TAllocator>
-void List<T, TAllocator>::CheckDetachShared()
+void List<T, TAllocator>::checkDetachShared()
 {
 	if (m_data->IsShared())
 	{
 		auto* newData = LN_NEW ArrayData(m_data->m_vector);	// copy
-		m_data->Release();
+		m_data->release();
 		m_data = newData;
 	}
 }
@@ -98,7 +98,7 @@ void List<T, TAllocator>::CheckOutOfRange(int index) const
 //==============================================================================
 //------------------------------------------------------------------------------
 template<typename T, typename TAllocator>
-void List<T, TAllocator>::ArrayData::Release()
+void List<T, TAllocator>::ArrayData::release()
 {
 	--m_refCount;
 	if (m_refCount <= 0)

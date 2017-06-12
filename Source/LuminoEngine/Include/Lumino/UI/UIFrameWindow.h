@@ -39,8 +39,8 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIFrameWindow();
 	virtual ~UIFrameWindow();
-	void Initialize(PlatformWindow* platformWindow, SwapChain* swapChain, UIContext* context);
-	void Initialize();
+	void initialize(PlatformWindow* platformWindow, SwapChain* swapChain, UIContext* context);
+	void initialize();
 	virtual void Dispose();
 	virtual bool OnEvent(const PlatformEventArgs& e) override;
 	virtual void OnRenderContents();
@@ -92,7 +92,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	UIMainWindow();
 	virtual ~UIMainWindow();
-	void Initialize(PlatformWindow* platformWindow, World2D* defaultWorld2D, World3D* defaultWorld3D);
+	void initialize(PlatformWindow* platformWindow, World2D* defaultWorld2D, World3D* defaultWorld3D);
 
 	//void InjectElapsedTime(float elapsedTime);
 	void UpdateLayout(const Size& viewSize);	// TODO: ゆくゆくは SwapChain や Viewport も UIFrameWindow にもってくる。そのとき、この viewSize はいらなくなる
@@ -145,7 +145,7 @@ public:
 LN_INTERNAL_ACCESS:
 	UINativeHostWindow();
 	virtual ~UINativeHostWindow();
-	void Initialize(intptr_t windowHandle);
+	void initialize(intptr_t windowHandle);
 
 private:
 	UIContext*	m_mainUIContext;

@@ -26,7 +26,7 @@ DX9IndexBuffer::DX9IndexBuffer()
 //------------------------------------------------------------------------------
 DX9IndexBuffer::~DX9IndexBuffer()
 {
-	LN_SAFE_RELEASE(m_indexBuffer);
+	LN_COM_SAFE_RELEASE(m_indexBuffer);
 	LN_SAFE_RELEASE(m_graphicsDevice);
 }
 
@@ -85,7 +85,7 @@ void DX9IndexBuffer::OnLostDevice()
 {
 	if (m_usage == ResourceUsage::Dynamic)
 	{
-		LN_SAFE_RELEASE(m_indexBuffer);
+		LN_COM_SAFE_RELEASE(m_indexBuffer);
 	}
 }
 

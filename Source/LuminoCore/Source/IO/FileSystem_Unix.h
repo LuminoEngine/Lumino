@@ -105,7 +105,7 @@ void FileSystem::SetAttribute(const wchar_t* filePath, FileAttribute attrs)
 }
 
 //------------------------------------------------------------------------------
-void FileSystem::Copy(const char* sourceFileName, const char* destFileName, bool overwrite)
+void FileSystem::copy(const char* sourceFileName, const char* destFileName, bool overwrite)
 {
 	// コピー先ファイルの存在確認
 	if (!overwrite && ExistsFile(destFileName)) {
@@ -144,11 +144,11 @@ void FileSystem::Copy(const char* sourceFileName, const char* destFileName, bool
 	fclose(fpSrc);
 }
 
-void FileSystem::Copy(const wchar_t* sourceFileName, const wchar_t* destFileName, bool overwrite)
+void FileSystem::copy(const wchar_t* sourceFileName, const wchar_t* destFileName, bool overwrite)
 {
 	MBCS_FILEPATH(mbcsSrc, sourceFileName);
 	MBCS_FILEPATH(mbcsDest, destFileName);
-	Copy(mbcsSrc, mbcsDest, overwrite);
+	copy(mbcsSrc, mbcsDest, overwrite);
 }
 
 //------------------------------------------------------------------------------

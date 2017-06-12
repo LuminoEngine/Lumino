@@ -26,8 +26,8 @@ namespace detail
 		//int	weakRefCount;
 
 		WeakRefInfo();
-		void AddRef();
-		void Release();
+		void addRef();
+		void release();
 	};
 
 	// get instance factory
@@ -113,7 +113,7 @@ public:
 
 	static int32_t GetInternalReferenceCount(RefObject* obj) { return obj->m_internalReferenceCount; }
 	static void AddRefInternal(RefObject* obj) { obj->m_internalReferenceCount++; }
-	static void ReleaseInternal(RefObject* obj) { obj->ReleaseInternal(); }
+	static void ReleaseInternal(RefObject* obj) { obj->releaseInternal(); }
 };
 
 /**

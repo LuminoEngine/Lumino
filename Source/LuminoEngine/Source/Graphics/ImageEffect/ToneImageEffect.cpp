@@ -27,7 +27,7 @@ static const size_t g_ToneImageEffect_fx_Len = LN_ARRAY_SIZE_OF(g_ToneImageEffec
 ToneImageEffectPtr ToneImageEffect::Create()
 {
 	ToneImageEffectPtr obj(LN_NEW ToneImageEffect(), false);
-	obj->Initialize(detail::GraphicsManager::GetInstance());
+	obj->initialize(detail::GraphicsManager::GetInstance());
 	return obj;
 }
 
@@ -43,15 +43,15 @@ ToneImageEffect::~ToneImageEffect()
 }
 
 //------------------------------------------------------------------------------
-void ToneImageEffect::Initialize(detail::GraphicsManager* manager)
+void ToneImageEffect::initialize(detail::GraphicsManager* manager)
 {
-	ImageEffect::Initialize(manager);
+	ImageEffect::initialize(manager);
 
 	m_material = Object::MakeRef<Material>();
 	m_material->SetShader(Object::MakeRef<Shader>(m_manager, g_ToneImageEffect_fx_Data, g_ToneImageEffect_fx_Len));
 
 	//m_shader.shader = LN_NEW Shader();
-	//m_shader.shader->Initialize(m_manager, g_ToneImageEffect_fx_Data, g_ToneImageEffect_fx_Len);
+	//m_shader.shader->initialize(m_manager, g_ToneImageEffect_fx_Data, g_ToneImageEffect_fx_Len);
 	//m_shader.varTone = m_shader.shader->FindVariable(_T("Tone"));
 	//m_shader.varScreenTexture = m_shader.shader->FindVariable(_T("ScreenTexture"));
 

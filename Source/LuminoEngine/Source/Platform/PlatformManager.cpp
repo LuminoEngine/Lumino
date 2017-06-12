@@ -82,7 +82,7 @@ PlatformManager::PlatformManager(const Settings& settings)
 	: m_useThread(false)
 	, m_windowManager(NULL)
 {
-	Initialize(settings);
+	initialize(settings);
 }
 
 //------------------------------------------------------------------------------
@@ -92,7 +92,7 @@ PlatformManager::~PlatformManager()
 }
 
 //------------------------------------------------------------------------------
-void PlatformManager::Initialize(const Settings& settings)
+void PlatformManager::initialize(const Settings& settings)
 {
 	m_windowCreationSettings = settings.mainWindowSettings;
 	m_useThread = settings.useInternalUIThread;
@@ -121,7 +121,7 @@ void PlatformManager::Initialize(const Settings& settings)
     if (api == WindowSystemAPI::Cocoa)
     {
         auto m = RefPtr<CocoaPlatformWindowManager>::MakeRef();
-        m->Initialize();
+        m->initialize();
         m_windowManager = m.DetachMove();
     }
 

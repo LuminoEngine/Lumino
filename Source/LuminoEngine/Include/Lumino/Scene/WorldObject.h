@@ -24,7 +24,7 @@ public:
 
 	WorldObject();
 	virtual ~WorldObject();
-	void Initialize();
+	void initialize();
 
 	/** このオブジェクトの位置を設定します。 */
 	LN_METHOD(Property)
@@ -135,7 +135,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	WorldObject2D();
 	virtual ~WorldObject2D();
-	void Initialize();
+	void initialize();
 };
 
 /**
@@ -151,7 +151,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	WorldObject3D();
 	virtual ~WorldObject3D();
-	void Initialize();
+	void initialize();
 };
 
 LN_NAMESPACE_END

@@ -29,9 +29,9 @@ UIRangeBase::~UIRangeBase()
 }
 
 //------------------------------------------------------------------------------
-void UIRangeBase::Initialize()
+void UIRangeBase::initialize()
 {
-	UIControl::Initialize();
+	UIControl::initialize();
 }
 
 //------------------------------------------------------------------------------

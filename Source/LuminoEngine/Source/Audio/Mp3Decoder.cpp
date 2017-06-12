@@ -54,7 +54,7 @@ void Mp3Decoder::Create(Stream* stream)
 {
 	LN_THROW(stream != NULL, ArgumentException);
 	m_stream = stream;
-	m_stream->AddRef();
+	m_stream->addRef();
 
 	// ファイルポインタを先頭に戻す
 	m_stream->Seek(0, SeekOrigin_Begin);
@@ -106,7 +106,7 @@ void Mp3Decoder::Create(Stream* stream)
 	//
 	//mMP3SourceBufferParSec = LN_NEW byte_t[ mMP3SourceBufferSizeParSec ];
 	// ストリーミング再生用の 1 秒分の mp3 データのサイズ分、メモリを確保
-	m_mp3SourceBufferParSec.Resize(mp3_format->wfx.nAvgBytesPerSec);
+	m_mp3SourceBufferParSec.resize(mp3_format->wfx.nAvgBytesPerSec);
 
 	// 全体の再生時間を計算する
 	double t = static_cast< double >(m_onmemoryPCMBufferSize) / (static_cast< double >(m_waveFormat.avgBytesPerSec) * 0.001);
@@ -132,7 +132,7 @@ void Mp3Decoder::FillOnmemoryBuffer()
 		ByteBuffer mp3_buffer(m_sourceDataSize);
 
 		m_stream->Seek(m_dataOffset, SeekOrigin_Begin);
-		size_t read_size = m_stream->Read(mp3_buffer.GetData(), m_sourceDataSize);
+		size_t read_size = m_stream->Read(mp3_buffer.getData(), m_sourceDataSize);
 		LN_THROW(read_size == m_sourceDataSize, InvalidFormatException);
 
 		// 全体を変換した時の PCM サイズを mPCMSize に格納
@@ -148,7 +148,7 @@ void Mp3Decoder::FillOnmemoryBuffer()
 		ACMSTREAMHEADER ash;
 		ZeroMemory(&ash, sizeof(ACMSTREAMHEADER));
 		ash.cbStruct = sizeof(ACMSTREAMHEADER);
-		ash.pbSrc = mp3_buffer.GetData();
+		ash.pbSrc = mp3_buffer.getData();
 		ash.cbSrcLength = m_sourceDataSize;
 		ash.pbDst = (LPBYTE)m_onmemoryPCMBuffer;
 		ash.cbDstLength = m_onmemoryPCMBufferSize;
@@ -186,12 +186,12 @@ void Mp3Decoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint
 		ZeroMemory(buffer, buffer_size);
 
 		// ファイルからデータ読み込み
-		size_t read_size = m_stream->Read(m_mp3SourceBufferParSec.GetData(), m_mp3SourceBufferParSec.GetSize());
+		size_t read_size = m_stream->Read(m_mp3SourceBufferParSec.getData(), m_mp3SourceBufferParSec.getSize());
 
-		DWORD src_length = m_mp3SourceBufferParSec.GetSize();
+		DWORD src_length = m_mp3SourceBufferParSec.getSize();
 
 		// 実際に読み込んだサイズが、読むべきサイズよりも小さかった場合
-		if (read_size < m_mp3SourceBufferParSec.GetSize())
+		if (read_size < m_mp3SourceBufferParSec.getSize())
 		{
 			// とりあえず、読み込めたサイズ分コンバートする
 			src_length = read_size;
@@ -201,7 +201,7 @@ void Mp3Decoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint
 		ACMSTREAMHEADER ash;
 		ZeroMemory(&ash, sizeof(ACMSTREAMHEADER));
 		ash.cbStruct = sizeof(ACMSTREAMHEADER);
-		ash.pbSrc = m_mp3SourceBufferParSec.GetData();
+		ash.pbSrc = m_mp3SourceBufferParSec.getData();
 		ash.cbSrcLength = src_length;
 		ash.pbDst = (LPBYTE)buffer;
 		ash.cbDstLength = buffer_size;

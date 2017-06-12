@@ -62,7 +62,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	DrawingContext();
 	virtual ~DrawingContext();
-	void Initialize();
+	void initialize();
 };
 
 LN_NAMESPACE_END

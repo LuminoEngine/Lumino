@@ -20,7 +20,7 @@ XmlWriter::XmlWriter(TextWriter* textWriter)
 	, m_indentString(DefaultIndentString)
 	, m_quoteChar(_T('"'))
 {
-	Initialize(textWriter);
+	initialize(textWriter);
 }
 
 //------------------------------------------------------------------------------
@@ -30,7 +30,7 @@ XmlWriter::~XmlWriter()
 }
 
 //------------------------------------------------------------------------------
-void XmlWriter::Initialize(TextWriter* textWriter)
+void XmlWriter::initialize(TextWriter* textWriter)
 {
 	m_textWriter = textWriter;
 }
@@ -338,7 +338,7 @@ XmlFileWriter::XmlFileWriter(const PathName& filePath, Encoding* encoding)
 	: XmlWriter(NULL)
 {
 	RefPtr<StreamWriter> file(LN_NEW StreamWriter(filePath, encoding, FileWriteMode_Truncate), false);
-	Initialize(file);
+	initialize(file);
 }
 
 //------------------------------------------------------------------------------
@@ -358,7 +358,7 @@ XmlStringWriter::XmlStringWriter()
 	, m_stringWriter(NULL)
 {
 	m_stringWriter = LN_NEW StringWriter();
-	Initialize(m_stringWriter);
+	initialize(m_stringWriter);
 }
 
 //------------------------------------------------------------------------------

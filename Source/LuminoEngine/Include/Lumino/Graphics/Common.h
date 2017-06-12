@@ -430,7 +430,7 @@ public:
 
 	void Reserve(int count)
 	{
-		m_buffer.Resize(sizeof(T) * count, false);
+		m_buffer.resize(sizeof(T) * count, false);
 		m_capacity = count;
 	}
 
@@ -446,19 +446,19 @@ public:
 		TryGlow(m_count + count);
 		size_t begin = GetBufferUsedByteCount();
 		m_count += count;
-		return reinterpret_cast<T*>(m_buffer.GetData() + begin);
+		return reinterpret_cast<T*>(m_buffer.getData() + begin);
 	}
 
-	void Clear()
+	void clear()
 	{
 		m_count = 0;
 	}
 
-	T& GetAt(int index) { return ((T*)(m_buffer.GetData()))[index]; }
+	T& GetAt(int index) { return ((T*)(m_buffer.getData()))[index]; }
 	T& GetLast() { return GetAt(m_count - 1); }
 
 	int GetCount() const { return m_count; }
-	byte_t* GetBuffer() { return m_buffer.GetData(); }
+	byte_t* GetBuffer() { return m_buffer.getData(); }
 	size_t GetBufferUsedByteCount() { return m_count * sizeof(T); }
 
 private:
@@ -485,12 +485,12 @@ public:
 	virtual ~CommandDataCache();
 
 	void Reserve(size_t dataCount, size_t byteCount);
-	void Clear();
+	void clear();
 	DataHandle AllocData(size_t byteCount, const void* data = nullptr);
-	byte_t* GetData(DataHandle handle);
+	byte_t* getData(DataHandle handle);
 
 	int GetDataCount() const { return m_dataList.GetCount(); }
-	byte_t* GetDataByIndex(int index) { return GetData(m_dataList[index]); }
+	byte_t* GetDataByIndex(int index) { return getData(m_dataList[index]); }
 
 private:
 	List<DataHandle>		m_dataList;

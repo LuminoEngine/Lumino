@@ -18,7 +18,7 @@ namespace tr
 HugePlanePtr HugePlane::Create(const Vector3& direction)
 {
 	auto ptr = HugePlanePtr::MakeRef();
-	ptr->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), direction);
+	ptr->initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), direction);
 	return ptr;
 }
 
@@ -34,14 +34,14 @@ HugePlane::~HugePlane()
 }
 
 //------------------------------------------------------------------------------
-void HugePlane::Initialize(SceneGraph* sceneGraph, const Vector3& direction)
+void HugePlane::initialize(SceneGraph* sceneGraph, const Vector3& direction)
 {
-	VisualComponent::Initialize(sceneGraph, 1);
+	VisualComponent::initialize(sceneGraph, 1);
 	sceneGraph->GetRootNode()->AddChild(this);
 	SetAutoRemove(true);
 
 	m_mesh = RefPtr<MeshResource>::MakeRef();
-	m_mesh->Initialize(sceneGraph->GetManager()->GetGraphicsManager());
+	m_mesh->initialize(sceneGraph->GetManager()->GetGraphicsManager());
 	m_mesh->CreateSquarePlane(Vector2(1, 1), direction, MeshCreationFlags::DynamicBuffers);
 
 }

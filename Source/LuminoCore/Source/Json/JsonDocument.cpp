@@ -269,7 +269,7 @@ void JsonValue2::CheckRelease()
 {
 	if (GetType() == JsonValueType::String)
 	{
-		m_stringCore->Release();
+		m_stringCore->release();
 	}
 	SetType(JsonValueType::Null);
 }
@@ -726,10 +726,10 @@ ISerializeElement* JsonObject2::AddSerializeMemberNewObject(const StringRef& nam
 namespace detail {
 
 //------------------------------------------------------------------------------
-void JsonElementCache::Initialize()
+void JsonElementCache::initialize()
 {
 	BufferInfo info;
-	info.buffer.Resize(2048);
+	info.buffer.resize(2048);
 	info.used = 0;
 	m_buffers.Add(info);
 
@@ -746,21 +746,21 @@ void JsonElementCache::Finalize()
 }
 
 //------------------------------------------------------------------------------
-JsonElement2* JsonElementCache::Alloc(size_t size)
+JsonElement2* JsonElementCache::alloc(size_t size)
 {
 	if (LN_CHECK_ARG(size <= BufferSize)) return nullptr;
 
 	BufferInfo* cur = &m_buffers.GetLast();
-	if (cur->buffer.GetSize() - cur->used < size)
+	if (cur->buffer.getSize() - cur->used < size)
 	{
 		BufferInfo info;
-		info.buffer.Resize(2048);
+		info.buffer.resize(2048);
 		info.used = 0;
 		m_buffers.Add(info);
 		cur = &m_buffers.GetLast();
 	}
 
-	JsonElement2* buf = reinterpret_cast<JsonElement2*>(cur->buffer.GetData() + cur->used);
+	JsonElement2* buf = reinterpret_cast<JsonElement2*>(cur->buffer.getData() + cur->used);
 	cur->used += size;
 	m_elements.Add(buf);
 	return buf;
@@ -776,7 +776,7 @@ JsonElement2* JsonElementCache::Alloc(size_t size)
 JsonDocument2::JsonDocument2()
 	: JsonObject2(this)
 {
-	m_cache.Initialize();
+	m_cache.initialize();
 }
 
 //------------------------------------------------------------------------------

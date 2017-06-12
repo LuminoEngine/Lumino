@@ -45,14 +45,14 @@ XAudio2AudioDevice::~XAudio2AudioDevice()
     if ( m_XAudio )
     {
 		m_XAudio->StopEngine();
-		LN_SAFE_RELEASE(m_XAudio);
+		LN_COM_SAFE_RELEASE(m_XAudio);
     }
 }
 
 //------------------------------------------------------------------------------
-bool XAudio2AudioDevice::Initialize(/* const ConfigData& configData */)
+bool XAudio2AudioDevice::initialize(/* const ConfigData& configData */)
 {
-	if (!m_module.Initialize()) {
+	if (!m_module.initialize()) {
 		return false;
 	}
 
@@ -154,16 +154,16 @@ AudioPlayer* XAudio2AudioDevice::CreateAudioPlayer(AudioStream* audioStream, boo
 		case SoundPlayingMode::OnMemory:
         {
 			XAudio2OnMemoryAudioPlayer* player = LN_NEW XAudio2OnMemoryAudioPlayer(this);
-			audioPlayer.Attach(player, false);
-			player->Initialize(audioStream, enable3d);
+			audioPlayer.attach(player, false);
+			player->initialize(audioStream, enable3d);
 			break;
         }
 		// ストリーミング再生
 		case SoundPlayingMode::Streaming:
         {
 			XAudio2StreamingAudioPlayer* player = LN_NEW XAudio2StreamingAudioPlayer(this);
-			audioPlayer.Attach(player, false);
-			player->Initialize(audioStream, enable3d);
+			audioPlayer.attach(player, false);
+			player->initialize(audioStream, enable3d);
 			break;
         }
 		default:

@@ -28,7 +28,7 @@ TEST_F(Test_Base_UTF32Encoding, Basic)
 		EncodingConversionResult info;
 		ByteBuffer result1 = Encoding::Convert(buf1, 4, decoder.get(), encoder.get(), options, &info);
 
-		byte_t* utf16buf = (byte_t*)result1.GetData();
+		byte_t* utf16buf = (byte_t*)result1.getData();
 		ASSERT_EQ(2, info.BytesUsed);
 		ASSERT_EQ(1, info.CharsUsed);
 		ASSERT_EQ(false, info.UsedDefaultChar);
@@ -53,7 +53,7 @@ TEST_F(Test_Base_UTF32Encoding, Basic)
 
 		// 2回目の変換。ここで1文字完成して出てくる。
 		ByteBuffer result2 = Encoding::Convert(&buf1[2], 2, decoder.get(), encoder.get(), options, &info);
-		byte_t* utf16buf = (byte_t*)result2.GetData();
+		byte_t* utf16buf = (byte_t*)result2.getData();
 		ASSERT_EQ(2, info.BytesUsed);
 		ASSERT_EQ(1, info.CharsUsed);
 		ASSERT_EQ(false, info.UsedDefaultChar);
@@ -72,7 +72,7 @@ TEST_F(Test_Base_UTF32Encoding, Basic)
 		EncodingConversionResult info;
 		ByteBuffer result1 = Encoding::Convert(uttf16buf, 2, decoder.get(), encoder.get(), options, &info);
 
-		byte_t* utf32buf = (byte_t*)result1.GetData();
+		byte_t* utf32buf = (byte_t*)result1.getData();
 		ASSERT_EQ(4, info.BytesUsed);
 		ASSERT_EQ(1, info.CharsUsed);
 		ASSERT_EQ(false, info.UsedDefaultChar);
@@ -101,7 +101,7 @@ TEST_F(Test_Base_UTF32Encoding, Basic)
 		// 2回目の変換。ここで1文字完成して出てくる。
 		ByteBuffer result2 = Encoding::Convert(&uttf16buf[2], 2, decoder.get(), encoder.get(), options, &info);
 
-		byte_t* utf32buf = (byte_t*)result2.GetData();
+		byte_t* utf32buf = (byte_t*)result2.getData();
 		ASSERT_EQ(4, info.BytesUsed);
 		ASSERT_EQ(1, info.CharsUsed);
 		ASSERT_EQ(false, info.UsedDefaultChar);
@@ -142,7 +142,7 @@ TEST_F(Test_Base_UTF32Encoding, Basic)
 		// 4回目の変換。ここで1文字完成して出てくる。
 		ByteBuffer result4 = Encoding::Convert(&uttf16buf[3], 1, decoder.get(), encoder.get(), options, &info);
 
-		byte_t* utf32buf = (byte_t*)result4.GetData();
+		byte_t* utf32buf = (byte_t*)result4.getData();
 		ASSERT_EQ(4, info.BytesUsed);
 		ASSERT_EQ(1, info.CharsUsed);
 		ASSERT_EQ(false, info.UsedDefaultChar);

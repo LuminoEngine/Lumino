@@ -172,7 +172,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(CollisionBody, PhysicsObject);
 RefPtr<CollisionBody> CollisionBody::Create(CollisionShape* shape)
 {
 	auto ptr = RefPtr<CollisionBody>::MakeRef();
-	ptr->Initialize();
+	ptr->initialize();
 	ptr->AddShape(shape);
 	return ptr;
 }
@@ -193,9 +193,9 @@ CollisionBody::~CollisionBody()
 }
 
 //------------------------------------------------------------------------------
-void CollisionBody::Initialize()
+void CollisionBody::initialize()
 {
-	PhysicsObject::Initialize();
+	PhysicsObject::initialize();
 	m_initialUpdate = true;
 	detail::EngineDomain::GetPhysicsWorld3D()->AddPhysicsObject(this);
 }

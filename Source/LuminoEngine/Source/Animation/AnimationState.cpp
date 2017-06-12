@@ -103,9 +103,9 @@ void AnimationState::ClearTargetList()
 {
 	for (AnimationTarget& target : m_animationTargetList)
 	{
-		target.Curve->Release();
+		target.Curve->release();
 	}
-	m_animationTargetList.Clear();
+	m_animationTargetList.clear();
 }
 
 //------------------------------------------------------------------------------

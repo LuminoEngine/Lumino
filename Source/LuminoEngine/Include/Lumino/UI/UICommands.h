@@ -17,7 +17,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIRoutedCommand();
 	virtual ~UIRoutedCommand();
-	void Initialize();
+	void initialize();
 
 private:
 };

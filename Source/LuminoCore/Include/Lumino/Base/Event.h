@@ -78,7 +78,7 @@ public:
 
 	~Event()
 	{
-		Clear();
+		clear();
 	}
 
 	EventConnection Connect(const DelegateType& handler)
@@ -91,9 +91,9 @@ public:
 	//	return ConnectInternal(handler);
 	//}
 
-	void Clear() LN_NOEXCEPT
+	void clear() LN_NOEXCEPT
 	{
-		m_internalData->connectionDataList.Clear();
+		m_internalData->connectionDataList.clear();
 	}
 
 	bool IsEmpty() const

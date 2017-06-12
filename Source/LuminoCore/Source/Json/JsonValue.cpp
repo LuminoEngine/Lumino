@@ -45,7 +45,7 @@ JsonValue::JsonValue(const JsonValue& value)
 	: m_type(JsonType::Null)
 	, m_uint(0)
 {
-	Copy(value);
+	copy(value);
 }
 JsonValue::JsonValue(JsonType::enum_type type)
 	: m_type(JsonType::Null)
@@ -71,7 +71,7 @@ JsonValue::~JsonValue()
 //------------------------------------------------------------------------------
 JsonValue& JsonValue::operator=(const JsonValue& obj)
 {
-	Copy(obj);
+	copy(obj);
 	return (*this);
 }
 
@@ -187,7 +187,7 @@ void JsonValue::AddMember(const String& name, const JsonValue& value)
 }
 
 //------------------------------------------------------------------------------
-void JsonValue::Copy(const JsonValue& obj)
+void JsonValue::copy(const JsonValue& obj)
 {
 	if (obj.m_type == JsonType::Null) {
 		SetNull();

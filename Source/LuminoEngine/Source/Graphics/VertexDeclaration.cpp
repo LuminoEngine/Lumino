@@ -16,7 +16,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 VertexDeclarationPtr VertexDeclaration::Create()
 {
 	auto ptr = VertexDeclarationPtr::MakeRef();
-	ptr->Initialize(detail::GraphicsManager::GetInstance());
+	ptr->initialize(detail::GraphicsManager::GetInstance());
 	return ptr;
 }
 
@@ -34,15 +34,15 @@ VertexDeclaration::~VertexDeclaration()
 }
 
 //------------------------------------------------------------------------------
-void VertexDeclaration::Initialize(detail::GraphicsManager* manager)
+void VertexDeclaration::initialize(detail::GraphicsManager* manager)
 {
-	GraphicsResourceObject::Initialize();
+	GraphicsResourceObject::initialize();
 }
 
 //------------------------------------------------------------------------------
-void VertexDeclaration::Initialize(detail::GraphicsManager* manager, const VertexElement* elements, int count)
+void VertexDeclaration::initialize(detail::GraphicsManager* manager, const VertexElement* elements, int count)
 {
-	GraphicsResourceObject::Initialize();
+	GraphicsResourceObject::initialize();
 
 	for (int i = 0; i < count; ++i)
 	{
@@ -76,7 +76,7 @@ void VertexDeclaration::TryUpdateResource()
 {
 	if (m_modified)
 	{
-		m_deviceObj.Attach(m_manager->GetGraphicsDevice()->CreateVertexDeclaration(&m_vertexElements[0], m_vertexElements.GetCount()), false);
+		m_deviceObj.attach(m_manager->GetGraphicsDevice()->CreateVertexDeclaration(&m_vertexElements[0], m_vertexElements.GetCount()), false);
 		m_modified = false;
 	}
 }
@@ -101,7 +101,7 @@ void VertexDeclaration::OnChangeDevice(Driver::IGraphicsDevice* device)
 		assert(m_deviceObj == NULL);
 
 		// 作り直す
-		m_deviceObj.Attach(m_manager->GetGraphicsDevice()->CreateVertexDeclaration(&m_vertexElements[0], m_vertexElements.GetCount()), false);
+		m_deviceObj.attach(m_manager->GetGraphicsDevice()->CreateVertexDeclaration(&m_vertexElements[0], m_vertexElements.GetCount()), false);
 		m_modified = false;
 	}
 }

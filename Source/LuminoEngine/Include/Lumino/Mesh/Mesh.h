@@ -87,7 +87,7 @@ public:
 
 	/*----------*/
 
-	void Clear();
+	void clear();
 	
 	/**
 		@brief
@@ -166,7 +166,7 @@ LN_INTERNAL_ACCESS:
 
 	MeshResource();
 	virtual ~MeshResource();
-	void Initialize(detail::GraphicsManager* manager, MeshCreationFlags flags);
+	void initialize(detail::GraphicsManager* manager, MeshCreationFlags flags);
 	void Reserve(int vertexCount, int indexCount);
 	//void Resize(int vertexCount);
 
@@ -246,8 +246,8 @@ public:
 LN_INTERNAL_ACCESS:
 	StaticMeshModel();
 	virtual ~StaticMeshModel();
-	void Initialize(detail::GraphicsManager* manager);
-	void Initialize(detail::GraphicsManager* manager, MeshResource* sharingMesh);
+	void initialize(detail::GraphicsManager* manager);
+	void initialize(detail::GraphicsManager* manager, MeshResource* sharingMesh);
 	void InitializeBox(detail::GraphicsManager* manager, const Vector3& size, MeshCreationFlags flags);
 	void InitializeSphere(detail::GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags);
 	void InitializePlane(detail::GraphicsManager* manager, const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags);

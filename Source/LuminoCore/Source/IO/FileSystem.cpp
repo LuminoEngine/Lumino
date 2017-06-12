@@ -352,12 +352,12 @@ void FileSystem::CopyDirectoryInternal(const GenericStringRef<TChar>& srcPath, c
 			{
 				if (overwrite)
 				{
-					Copy(src, dest, true);
+					copy(src, dest, true);
 				}
 			}
 			else
 			{
-				Copy(src, dest, false);
+				copy(src, dest, false);
 			}
 		}
 		else if (src.ExistsDirectory())
@@ -390,7 +390,7 @@ ByteBuffer FileSystem::ReadAllBytes(const StringRefA& filePath)
 	size_t size = (size_t)GetFileSize(fp);
 
 	ByteBuffer buffer(size);
-	fread(buffer.GetData(), 1, size, fp);
+	fread(buffer.getData(), 1, size, fp);
 	return buffer;
 }
 ByteBuffer FileSystem::ReadAllBytes(const StringRefW& filePath)
@@ -402,7 +402,7 @@ ByteBuffer FileSystem::ReadAllBytes(const StringRefW& filePath)
 	size_t size = (size_t)GetFileSize(fp);
 
 	ByteBuffer buffer(size);
-	fread(buffer.GetData(), 1, size, fp);
+	fread(buffer.getData(), 1, size, fp);
 	return buffer;
 }
 
@@ -413,14 +413,14 @@ String FileSystem::ReadAllText(const StringRef& filePath, const Encoding* encodi
 	if (encoding == nullptr)
 	{
 		Encoding* e = Encoding::GetEncoding(EncodingType::UTF8);
-		if (ByteBuffer::Compare(buffer, e->GetPreamble(), 3, 3) == 0)
+		if (ByteBuffer::compare(buffer, e->GetPreamble(), 3, 3) == 0)
 			encoding = e;
 		else
 			encoding = Encoding::GetUTF8Encoding();
 	}
 
 	String str;
-	str.ConvertFrom(buffer.GetData(), buffer.GetSize(), encoding);
+	str.ConvertFrom(buffer.getData(), buffer.getSize(), encoding);
 	return str;
 }
 
@@ -441,7 +441,7 @@ void FileSystem::WriteAllText(const TCHAR* filePath, const String& str, const En
 	options.NullTerminated = false;
 	ByteBuffer buffer = Encoding::Convert(str.c_str(), str.GetByteCount(), Encoding::GetTCharEncoding(), encoding, options, &result);
 	
-	WriteAllBytes(filePath, buffer.GetConstData(), buffer.GetSize());
+	WriteAllBytes(filePath, buffer.getConstData(), buffer.getSize());
 }
 
 //------------------------------------------------------------------------------

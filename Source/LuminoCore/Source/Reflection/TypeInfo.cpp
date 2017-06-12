@@ -220,14 +220,14 @@ WeakRefInfo::WeakRefInfo()
 {}
 
 //------------------------------------------------------------------------------
-void WeakRefInfo::AddRef()
+void WeakRefInfo::addRef()
 {
 	weakRefCount.fetch_add(1, std::memory_order_relaxed);
 	//weakRefCount++;
 }
 
 //------------------------------------------------------------------------------
-void WeakRefInfo::Release()
+void WeakRefInfo::release()
 {
 	int before = weakRefCount.fetch_sub(1, std::memory_order_relaxed);
 	//int before = weakRefCount;

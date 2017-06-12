@@ -16,7 +16,7 @@ public:
 protected:
 	Joint();
 	virtual ~Joint();
-	void Initialize(btTypedConstraint* constraint);
+	void initialize(btTypedConstraint* constraint);
 
 LN_INTERNAL_ACCESS:
 	btTypedConstraint* GetBtConstraint() { return m_btConstraint; }
@@ -50,7 +50,7 @@ public:
 LN_INTERNAL_ACCESS:
 	DofSpringJoint();
 	virtual ~DofSpringJoint();
-	void Initialize(RigidBody* bodyA, RigidBody* bodyB, const Matrix& localOffsetA, const Matrix& localOffsetB);
+	void initialize(RigidBody* bodyA, RigidBody* bodyB, const Matrix& localOffsetA, const Matrix& localOffsetB);
 
 private:
 	btGeneric6DofSpringConstraint*	m_btDofSpringConstraint;

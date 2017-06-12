@@ -30,7 +30,7 @@ DX9TextureBase::~DX9TextureBase()
 }
 
 //------------------------------------------------------------------------------
-void DX9TextureBase::GetData(const RectI& rect, void* outData)
+void DX9TextureBase::getData(const RectI& rect, void* outData)
 {
 	LN_UNREACHABLE();
 }
@@ -160,8 +160,8 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const void* data, uint32_t siz
 //------------------------------------------------------------------------------
 DX9Texture::~DX9Texture()
 {
-	LN_SAFE_RELEASE(m_dxSurface);
-	LN_SAFE_RELEASE(m_dxTexture);
+	LN_COM_SAFE_RELEASE(m_dxSurface);
+	LN_COM_SAFE_RELEASE(m_dxTexture);
 }
 
 //------------------------------------------------------------------------------
@@ -240,7 +240,7 @@ void DX9Texture::SetSubData3D(const Box32& box, const void* data, size_t dataByt
 }
 
 //------------------------------------------------------------------------------
-void DX9Texture::GetData(const RectI& rect, void* outData)
+void DX9Texture::getData(const RectI& rect, void* outData)
 {
 	if (LN_CHECK_ARG(outData != nullptr)) return;
 
@@ -283,7 +283,7 @@ Bitmap* DX9Texture::Lock()
 	PixelFormat pixelFormat = Utils::TranslatePixelFormat(m_format);
 	size_t size = Bitmap::GetPixelFormatByteCount(pixelFormat, m_realSize, 1);
 	//m_lockedBuffer =  ByteBuffer(lockedRect.pBits, size, true);
-	m_lockedBitmap.Attach(LN_NEW Bitmap(lockedRect.pBits, m_realSize, pixelFormat));
+	m_lockedBitmap.attach(LN_NEW Bitmap(lockedRect.pBits, m_realSize, pixelFormat));
 
 	// TODO: ↑文字列書き込み等でわりと頻繁にロックされる場合がある。できれば new は 1 度にしたいが…
 
@@ -316,11 +316,11 @@ DX9Texture3D::DX9Texture3D(DX9GraphicsDevice* device)
 //------------------------------------------------------------------------------
 DX9Texture3D::~DX9Texture3D()
 {
-	LN_SAFE_RELEASE(m_dxTexture);
+	LN_COM_SAFE_RELEASE(m_dxTexture);
 }
 
 //------------------------------------------------------------------------------
-void DX9Texture3D::Initialize(int width, int height, int depth, TextureFormat format, uint32_t levels)
+void DX9Texture3D::initialize(int width, int height, int depth, TextureFormat format, uint32_t levels)
 {
 	IDirect3DDevice9* d3d9Device = m_graphicsDevice->GetIDirect3DDevice9();
 
@@ -430,8 +430,8 @@ DX9RenderTargetTexture::~DX9RenderTargetTexture()
 //------------------------------------------------------------------------------
 void DX9RenderTargetTexture::OnLostDevice()
 {
-	LN_SAFE_RELEASE(m_dxSurface);
-	LN_SAFE_RELEASE(m_dxTexture);
+	LN_COM_SAFE_RELEASE(m_dxSurface);
+	LN_COM_SAFE_RELEASE(m_dxTexture);
 }
 
 //------------------------------------------------------------------------------
@@ -562,10 +562,10 @@ void DX9RenderTargetTexture::UnlockRenderTarget(IDirect3DSurface9** lockedSystem
 	if ((*lockedSystemSurface) != NULL)
 	{
 		(*lockedSystemSurface)->UnlockRect();
-		LN_SAFE_RELEASE((*lockedSystemSurface));
+		LN_COM_SAFE_RELEASE((*lockedSystemSurface));
 	}
 	LN_SAFE_RELEASE((*lockedBitmap));
-	lockedBuffer->Release();
+	lockedBuffer->free();
 }
 
 //==============================================================================
@@ -598,7 +598,7 @@ DX9DepthBuffer::~DX9DepthBuffer()
 //------------------------------------------------------------------------------
 void DX9DepthBuffer::OnLostDevice()
 {
-	LN_SAFE_RELEASE(m_dxSurface);
+	LN_COM_SAFE_RELEASE(m_dxSurface);
 }
 
 //------------------------------------------------------------------------------
@@ -640,14 +640,14 @@ DX9BackBufferTexture::DX9BackBufferTexture(DX9GraphicsDevice* device)
 //------------------------------------------------------------------------------
 DX9BackBufferTexture::~DX9BackBufferTexture()
 {
-	LN_SAFE_RELEASE(m_dxSurface);
+	LN_COM_SAFE_RELEASE(m_dxSurface);
 }
 
 //------------------------------------------------------------------------------
 void DX9BackBufferTexture::Reset(IDirect3DSurface9* backBufferSurface)
 {
-	LN_SAFE_ADDREF(backBufferSurface);
-	LN_SAFE_RELEASE(m_dxSurface);
+	LN_COM_SAFE_ADDREF(backBufferSurface);
+	LN_COM_SAFE_RELEASE(m_dxSurface);
 	m_dxSurface = backBufferSurface;
 
 	if (m_dxSurface != NULL)

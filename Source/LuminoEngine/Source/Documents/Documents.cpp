@@ -25,7 +25,7 @@ Document::~Document()
 }
 
 //------------------------------------------------------------------------------
-void Document::Initialize()
+void Document::initialize()
 {
 	m_manager = ln::detail::DocumentsManager::GetInstance();
 }
@@ -33,7 +33,7 @@ void Document::Initialize()
 //------------------------------------------------------------------------------
 void Document::SetText(const StringRef& text)
 {
-	m_blockList.Clear();
+	m_blockList.clear();
 
 	Replace(0, 0, text);
 }
@@ -43,8 +43,8 @@ void Document::Replace(int offset, int length, const StringRef& text)
 {
 	// UTF32 へ変換
 	const ByteBuffer& utf32Buf = m_manager->GetTCharToUTF32Converter()->Convert(text.GetBegin(), sizeof(TCHAR) * text.GetLength());
-	int len = utf32Buf.GetSize() / sizeof(UTF32);
-	ReplaceInternal(offset, length, (const UTF32*)utf32Buf.GetConstData(), len);
+	int len = utf32Buf.getSize() / sizeof(UTF32);
+	ReplaceInternal(offset, length, (const UTF32*)utf32Buf.getConstData(), len);
 }
 
 //------------------------------------------------------------------------------
@@ -136,7 +136,7 @@ TextElement::~TextElement()
 }
 
 //------------------------------------------------------------------------------
-void TextElement::Initialize()
+void TextElement::initialize()
 {
 	m_manager = ln::detail::DocumentsManager::GetInstance();
 	m_fontData.Family = String::GetEmpty();
@@ -184,9 +184,9 @@ Block::~Block()
 }
 
 //------------------------------------------------------------------------------
-void Block::Initialize()
+void Block::initialize()
 {
-	TextElement::Initialize();
+	TextElement::initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -213,7 +213,7 @@ void Block::InsertInlines(int index, const List<RefPtr<Inline>>& inlines)
 void Block::ClearInlines()
 {
 	for (TextElement* child : m_inlines) child->SetParentContent(nullptr);
-	m_inlines.Clear();
+	m_inlines.clear();
 	IncreaseRevision();
 }
 
@@ -232,9 +232,9 @@ Paragraph::~Paragraph()
 }
 
 //------------------------------------------------------------------------------
-void Paragraph::Initialize()
+void Paragraph::initialize()
 {
-	Block::Initialize();
+	Block::initialize();
 }
 
 
@@ -254,9 +254,9 @@ Inline::~Inline()
 }
 
 //------------------------------------------------------------------------------
-void Inline::Initialize()
+void Inline::initialize()
 {
-	TextElement::Initialize();
+	TextElement::initialize();
 }
 
 
@@ -276,21 +276,21 @@ Run::~Run()
 }
 
 //------------------------------------------------------------------------------
-void Run::Initialize()
+void Run::initialize()
 {
-	Inline::Initialize();
+	Inline::initialize();
 
 	// TODO: 本当に画面に表示されている分だけ作ればいろいろ節約できそう
 	//m_glyphRun = RefPtr<GlyphRun>::MakeRef();
-	//m_glyphRun->Initialize(GetManager()->GetGraphicsManager());
+	//m_glyphRun->initialize(GetManager()->GetGraphicsManager());
 }
 
 //------------------------------------------------------------------------------
-void Run::Initialize(const UTF32* str, int len)
+void Run::initialize(const UTF32* str, int len)
 {
-	Initialize();
+	initialize();
 
-	m_text.Clear();
+	m_text.clear();
 	m_text.Append(str, len/*GetManager()->GetTCharToUTF32Converter()->Convert(str, len)*/);
 	IncreaseRevision();
 }
@@ -331,9 +331,9 @@ LineBreak::~LineBreak()
 }
 
 //------------------------------------------------------------------------------
-void LineBreak::Initialize()
+void LineBreak::initialize()
 {
-	Inline::Initialize();
+	Inline::initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -387,7 +387,7 @@ InternalTextElementType LineBreak::GetInternalTextElementType() const
 //}
 //
 ////------------------------------------------------------------------------------
-//void VisualGlyph::Initialize()
+//void VisualGlyph::initialize()
 //{
 //}
 //
@@ -414,7 +414,7 @@ VisualTextFragment::~VisualTextFragment()
 }
 
 //------------------------------------------------------------------------------
-void VisualTextFragment::Initialize()
+void VisualTextFragment::initialize()
 {
 }
 
@@ -461,7 +461,7 @@ VisualInline::~VisualInline()
 }
 
 //------------------------------------------------------------------------------
-void VisualInline::Initialize(Inline* inl)
+void VisualInline::initialize(Inline* inl)
 {
 	m_inline = inl;
 }
@@ -480,7 +480,7 @@ void VisualInline::MeasureLayout(const Size& availableSize, VisualBlock* rootBlo
 			{
 				auto frag = NewObject<VisualTextFragment>();	// TODO: キャッシュしたい
 				frag->m_glyphRun = RefPtr<GlyphRun>::MakeRef();
-				frag->m_glyphRun->Initialize(ln::detail::EngineDomain::GetGraphicsManager());
+				frag->m_glyphRun->initialize(ln::detail::EngineDomain::GetGraphicsManager());
 
 				auto* run = static_cast<Run*>(m_inline.Get());
 				frag->m_glyphRun->SetText(run->GetText(), run->GetLength());
@@ -545,7 +545,7 @@ VisualBlock::~VisualBlock()
 }
 
 //------------------------------------------------------------------------------
-void VisualBlock::Initialize(Block* block)
+void VisualBlock::initialize(Block* block)
 {
 	m_block = block;
 }
@@ -600,7 +600,7 @@ void VisualBlock::MeasureLayout(const Size& availableSize)
 	// update children
 	if (GetChildrenRevision() != m_block->GetChildrenRevision())
 	{
-		m_visualFragments.Clear();
+		m_visualFragments.clear();
 
 		for (auto& inl : m_visualInlines)
 		{
@@ -647,7 +647,7 @@ DocumentView::~DocumentView()
 }
 
 //------------------------------------------------------------------------------
-void DocumentView::Initialize(Document* document)
+void DocumentView::initialize(Document* document)
 {
 	m_document = document;
 }

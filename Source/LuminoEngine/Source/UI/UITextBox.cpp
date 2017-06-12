@@ -33,8 +33,8 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UITextDocumentLine();
 	virtual ~UITextDocumentLine();
-	void Initialize();
-	void Initialize(const UTF32* text, int len, UTF32 lineDelim);
+	void initialize();
+	void initialize(const UTF32* text, int len, UTF32 lineDelim);
 
 LN_INTERNAL_ACCESS:
 	void RemoveInternal(int offset, int length);
@@ -44,7 +44,7 @@ LN_INTERNAL_ACCESS:
 	UTF32 GetLineDelimiterCode() const { return m_text.c_str()[m_text.GetLength() - 1]; }
 	const UTF32* GetText() const { return m_text.c_str(); }
 	int GetTextLength2() const { return m_text.GetLength() - 1; }
-	void Clear();
+	void clear();
 	int GetRevision() const { return m_revision; }
 
 private:
@@ -62,7 +62,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UITextDocument();
 	virtual ~UITextDocument();
-	void Initialize();
+	void initialize();
 
 LN_INTERNAL_ACCESS:
 	int GetRevision() const { return m_revision; }
@@ -96,13 +96,13 @@ class UITextVisualLine
 	: public Object
 {
 public:
-	const Size& GetRenderSize() const { return m_renderRect.GetSize(); }
+	const Size& GetRenderSize() const { return m_renderRect.getSize(); }
 	const Rect& GetRenderRect() const { return m_renderRect; }
 
 LN_CONSTRUCT_ACCESS:
 	UITextVisualLine();
 	virtual ~UITextVisualLine();
-	void Initialize();
+	void initialize();
 
 LN_INTERNAL_ACCESS:
 	void SetStartDocumentTextOffset(int offset) { m_startDocumentTextOffset = offset; }
@@ -145,7 +145,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UITextVisualLineBlock();
 	virtual ~UITextVisualLineBlock();
-	void Initialize(UITextDocumentLine* documentLine);
+	void initialize(UITextDocumentLine* documentLine);
 
 LN_INTERNAL_ACCESS:
 	void Render(DrawingContext* g);
@@ -172,7 +172,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UITextAreaCaret();
 	virtual ~UITextAreaCaret();
-	void Initialize();
+	void initialize();
 
 LN_INTERNAL_ACCESS:
 	const UITextVisualPosition& GetVisualPosition() const { return m_position; }
@@ -200,7 +200,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UITextArea();
 	virtual ~UITextArea();
-	void Initialize();
+	void initialize();
 
 LN_INTERNAL_ACCESS:
 	UITextVisualLine* FindVisualLine(int lineIndex);
@@ -236,13 +236,13 @@ UITextDocumentLine::~UITextDocumentLine()
 }
 
 //------------------------------------------------------------------------------
-void UITextDocumentLine::Initialize()
+void UITextDocumentLine::initialize()
 {
-	Clear();
+	clear();
 }
 
 //------------------------------------------------------------------------------
-void UITextDocumentLine::Initialize(const UTF32* text, int len, UTF32 lineDelim)
+void UITextDocumentLine::initialize(const UTF32* text, int len, UTF32 lineDelim)
 {
 	m_text.Append(text, len);
 	m_text.Append(lineDelim);
@@ -277,9 +277,9 @@ void UITextDocumentLine::InsertText(int offset, const UTF32* text, int len)
 //}
 
 //------------------------------------------------------------------------------
-void UITextDocumentLine::Clear()
+void UITextDocumentLine::clear()
 {
-	m_text.Clear();
+	m_text.clear();
 	m_text.Append(EofCode);
 	m_revision++;
 }
@@ -300,7 +300,7 @@ UITextDocument::~UITextDocument()
 }
 
 //------------------------------------------------------------------------------
-void UITextDocument::Initialize()
+void UITextDocument::initialize()
 {
 	m_manager = detail::EngineDomain::GetUIManager();
 
@@ -313,8 +313,8 @@ void UITextDocument::Replace(int offset, int length, const StringRef& text)
 {
 	// UTF32 へ変換
 	const ByteBuffer& utf32Buf = m_manager->GetGraphicsManager()->GetFontManager()->GetTCharToUTF32Converter()->Convert(text.GetBegin(), sizeof(TCHAR) * text.GetLength());
-	int len = utf32Buf.GetSize() / sizeof(UTF32);
-	ReplaceInternal(offset, length, (const UTF32*)utf32Buf.GetConstData(), len);
+	int len = utf32Buf.getSize() / sizeof(UTF32);
+	ReplaceInternal(offset, length, (const UTF32*)utf32Buf.getConstData(), len);
 }
 
 //------------------------------------------------------------------------------
@@ -351,7 +351,7 @@ void UITextDocument::RemoveInternal(int offset, int length)
 			if (m_lines.GetCount() == 1)
 			{
 				// 最後の1つなら Remove はせず、空行にする
-				m_lines[i]->Clear();
+				m_lines[i]->clear();
 			}
 			else
 			{
@@ -485,7 +485,7 @@ UITextVisualLine::~UITextVisualLine()
 }
 
 //------------------------------------------------------------------------------
-void UITextVisualLine::Initialize()
+void UITextVisualLine::initialize()
 {
 }
 
@@ -576,7 +576,7 @@ UITextVisualLineBlock::~UITextVisualLineBlock()
 }
 
 //------------------------------------------------------------------------------
-void UITextVisualLineBlock::Initialize(UITextDocumentLine* documentLine)
+void UITextVisualLineBlock::initialize(UITextDocumentLine* documentLine)
 {
 	m_documentLine = documentLine;
 }
@@ -590,7 +590,7 @@ bool UITextVisualLineBlock::IsModified() const
 //------------------------------------------------------------------------------
 void UITextVisualLineBlock::BuildVisualLines(Font* font, int startDocumentTextOffset, int visualLineIndex, const PointF& renderPt)
 {
-	m_visualLines.Clear();
+	m_visualLines.clear();
 	m_renderRect = Rect(renderPt, 0, 0);
 	//m_renderTop = renderTop;
 	//m_renderSize = Size::Zero;
@@ -638,7 +638,7 @@ UITextAreaCaret::~UITextAreaCaret()
 }
 
 //------------------------------------------------------------------------------
-void UITextAreaCaret::Initialize()
+void UITextAreaCaret::initialize()
 {
 	m_position.line = 0;
 	m_position.column = 0;
@@ -661,7 +661,7 @@ UITextArea::~UITextArea()
 }
 
 //------------------------------------------------------------------------------
-void UITextArea::Initialize()
+void UITextArea::initialize()
 {
 	m_document = NewObject<UITextDocument>();
 	m_caret = NewObject<UITextAreaCaret>();
@@ -809,7 +809,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UITextBox, UITextElement)
 UITextBoxPtr UITextBox::Create()
 {
 	auto ptr = RefPtr<UITextBox>::MakeRef();
-	ptr->Initialize();
+	ptr->initialize();
 	return ptr;
 }
 
@@ -824,9 +824,9 @@ UITextBox::~UITextBox()
 }
 
 //------------------------------------------------------------------------------
-void UITextBox::Initialize()
+void UITextBox::initialize()
 {
-	UITextElement::Initialize();
+	UITextElement::initialize();
 	SetFocusable(true);
 	//SetHAlignment(HAlignment::Center);
 	//SetVAlignment(VAlignment::Center);
@@ -967,7 +967,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	UISimpleTextArea();
 	virtual ~UISimpleTextArea();
-	void Initialize();
+	void initialize();
 	//UITextVisualLine* FindVisualLine(int lineIndex);
 	//Rect GetGlyphGlobalRectFromVisualPosition(const UITextVisualPosition& pos);
 	//void GetVisualPositionFromRenderPosition(const PointF& pt, UITextVisualPosition* outPos);
@@ -999,9 +999,9 @@ UISimpleTextArea::~UISimpleTextArea()
 }
 
 //------------------------------------------------------------------------------
-void UISimpleTextArea::Initialize()
+void UISimpleTextArea::initialize()
 {
-	UITextElement::Initialize();
+	UITextElement::initialize();
 	SetFocusable(true);
 	m_glyphRun = NewObject<GlyphRun>();
 	m_caret = NewObject<UITextAreaCaret>();
@@ -1013,11 +1013,11 @@ void UISimpleTextArea::Replace(int offset, int length, const StringRef& text)
 {
 	// to UTF32
 	const ByteBuffer& utf32Buf = GetManager()->GetGraphicsManager()->GetFontManager()->GetTCharToUTF32Converter()->Convert(text.GetBegin(), sizeof(TCHAR) * text.GetLength());
-	int len = utf32Buf.GetSize() / sizeof(UTF32);
+	int len = utf32Buf.getSize() / sizeof(UTF32);
 
 
 	//m_rawText.Replace(offset, length, text.GetBegin(), text.GetLength());
-	m_rawText.Replace(offset, length, (const UTF32*)utf32Buf.GetConstData(), len);
+	m_rawText.Replace(offset, length, (const UTF32*)utf32Buf.getConstData(), len);
 	m_invalidateGlyphRun = true;
 
 	UITextVisualPosition pos = { 0, offset + len };
@@ -1131,9 +1131,9 @@ UITextField::~UITextField()
 }
 
 //------------------------------------------------------------------------------
-void UITextField::Initialize()
+void UITextField::initialize()
 {
-	UIControl::Initialize();
+	UIControl::initialize();
 	SetFocusable(true);
 	m_textArea = NewObject<UISimpleTextArea>();
 

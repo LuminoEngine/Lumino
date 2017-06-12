@@ -113,7 +113,7 @@ XmlReader::XmlReader()
 XmlReader::XmlReader(const String& str)
 	: XmlReader()
 {
-	m_reader.Attach(LN_NEW StringReader(str), false);
+	m_reader.attach(LN_NEW StringReader(str), false);
 	m_nodes.Reserve(32);
 	m_textCache.Reserve(1024);
 }
@@ -122,7 +122,7 @@ XmlReader::XmlReader(const String& str)
 XmlReader::XmlReader(TextReader* textReader)
 	: XmlReader()
 {
-	m_reader.Attach(textReader, true);
+	m_reader.attach(textReader, true);
 	m_nodes.Reserve(32);
 	m_textCache.Reserve(1024);
 }
@@ -164,13 +164,13 @@ const String& XmlReader::GetName()
 {
 	if (m_nodes.IsEmpty())
 	{
-		m_tmpName.Clear();
+		m_tmpName.clear();
 	}
 	else
 	{
 		if (m_currentNode->NameStartPos == -1 || m_currentNode->NameLen == 0)
 		{
-			m_tmpName.Clear();	// Node はあるけど名前が無かった
+			m_tmpName.clear();	// Node はあるけど名前が無かった
 		}
 		else
 		{
@@ -186,13 +186,13 @@ const String& XmlReader::GetValue()
 {
 	if (m_nodes.IsEmpty())
 	{
-		m_valueCache.Clear();
+		m_valueCache.clear();
 	}
 	else
 	{
 		if (m_currentNode->ValueStartPos == -1 || m_currentNode->ValueLen == 0)
 		{
-			m_valueCache.Clear();	// Node はあるけど値が無かった
+			m_valueCache.clear();	// Node はあるけど値が無かった
 		}
 		else
 		{
@@ -394,7 +394,7 @@ bool XmlReader::ReadInternal()
 					m_parsingState = ParsingState::ReadElement;
 
 				// Attribute を破棄
-				m_nodes.Resize(m_currentElementNodePos + 1);	// TODO: この辺の減らす処理もインデックス減らすだけにしたいが・・・
+				m_nodes.resize(m_currentElementNodePos + 1);	// TODO: この辺の減らす処理もインデックス減らすだけにしたいが・・・
 
 				continue;
 			}
@@ -404,7 +404,7 @@ bool XmlReader::ReadInternal()
 				if (m_currentElementNodePos >= m_stockElementCount)
 				{
 					m_currentElementNodePos = m_stockElementCount - m_currentPartialCount - 1;	//　一連の Text が始まる前の要素を指す (次は EndElement がくるはず)
-					m_nodes.Resize(m_currentElementNodePos+1);
+					m_nodes.resize(m_currentElementNodePos+1);
 					m_stockElementCount = m_nodes.GetCount();	// TODO: m_stockElementCountは配列サイズで代用できないかな？
 					m_currentPartialCount = 0;
 					m_parsingState = ParsingState::ReadElement;
@@ -449,11 +449,11 @@ int XmlReader::PushNode(const NodeData& node)
 //------------------------------------------------------------------------------
 void XmlReader::PopNode()
 {
-	m_textCache.Resize(m_textCache.GetCount() - m_nodes.GetLast().NameLen);
+	m_textCache.resize(m_textCache.GetCount() - m_nodes.GetLast().NameLen);
 
 
 	//m_nodes.RemoveLast();
-	m_nodes.Resize(m_currentElementNodePos);
+	m_nodes.resize(m_currentElementNodePos);
 	--m_stockElementCount;
 
 
@@ -1109,7 +1109,7 @@ bool XmlReader::IsAlphaNum(int ch)
 //------------------------------------------------------------------------------
 void XmlReader::ExpandReservedEntities(const TCHAR* text, int len, StringBuilder* outBuilder)
 {
-	outBuilder->Clear();
+	outBuilder->clear();
 
 	const TCHAR* rp = text;	// read pointer
 	const TCHAR* end = text + len;

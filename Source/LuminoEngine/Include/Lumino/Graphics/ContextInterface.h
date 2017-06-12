@@ -36,8 +36,8 @@ struct ContextState
 	ContextState();
 	~ContextState();
 
-	ContextState(const ContextState& obj) : ContextState() { Copy(obj); }
-	ContextState& operator=(const ContextState& obj) { Copy(obj); return *this; }
+	ContextState(const ContextState& obj) : ContextState() { copy(obj); }
+	ContextState& operator=(const ContextState& obj) { copy(obj); return *this; }
 
 
 	void SetRenderTarget(int index, Texture* texture);
@@ -58,7 +58,7 @@ struct ContextState
 		//indexBuffer = nullptr;
 	}
 
-	void Copy(const ContextState& obj);
+	void copy(const ContextState& obj);
 
 private:
 	std::array<Texture*, Graphics::MaxMultiRenderTargets>	m_renderTargets = {};
@@ -91,8 +91,8 @@ struct BasicContextState
 	void SetShaderPass(ShaderPass* pass);
 	ShaderPass* GetShaderPass() const { return m_shaderPass; }
 
-	bool Equals(const BasicContextState& s) const;
-	void Copy(const BasicContextState& s);
+	bool equals(const BasicContextState& s) const;
+	void copy(const BasicContextState& s);
 
 private:
 	std::array<RefPtr<Texture>, Graphics::MaxMultiRenderTargets>	m_renderTargets;
@@ -108,7 +108,7 @@ class ContextInterface
 protected:
 	ContextInterface();
 	virtual ~ContextInterface();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 	GraphicsManager* GetManager() const { return m_manager; }
 
 	void NorityStateChanging();
@@ -179,7 +179,7 @@ public:
 	void ReleaseAll()
 	{
 		MutexScopedLock lock(m_mutex);
-		m_freeObjects.Clear();
+		m_freeObjects.clear();
 		for (RefPtr<T>& ptr : m_objects)
 		{
 			m_freeObjects.Push(ptr);

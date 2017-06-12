@@ -207,16 +207,16 @@ ByteBuffer Encoding::Convert(
 	decoder->ConvertToUTF16(
 		(const byte_t*)src,
 		srcByteCount,
-		(UTF16*)tmpBuf.GetData(),
+		(UTF16*)tmpBuf.getData(),
 		utf16MaxByteCount / sizeof(UTF16),			// \0 強制格納に備え、1文字分余裕のあるサイズを指定する
 		&bytesUsed,
 		&charsUsed);
 	// 中間フォーマットからターゲットフォーマットへ
 	encoder->ConvertFromUTF16(
-		(const UTF16*)tmpBuf.GetData(),
+		(const UTF16*)tmpBuf.getData(),
 		bytesUsed / sizeof(UTF16),
-		(byte_t*)targetBuf.GetData(),
-		targetBuf.GetSize(),		// \0 強制格納に備え、1文字分余裕のあるサイズを指定する
+		(byte_t*)targetBuf.getData(),
+		targetBuf.getSize(),		// \0 強制格納に備え、1文字分余裕のあるサイズを指定する
 		&bytesUsed,
 		&charsUsed);
 
@@ -224,7 +224,7 @@ ByteBuffer Encoding::Convert(
 	if (options.NullTerminated)
 	{
 		size_t nullBytes = encoder->GetMinByteCount();
-		byte_t* buf = (byte_t*)targetBuf.GetData();
+		byte_t* buf = (byte_t*)targetBuf.getData();
 		for (size_t i = 0; i < nullBytes; ++i) {
 			buf[bytesUsed + i] = 0x00;
 		}
@@ -237,7 +237,7 @@ ByteBuffer Encoding::Convert(
 		result->CharsUsed = charsUsed;
 		result->UsedDefaultChar = (decoder->UsedDefaultCharCount() > 0 || encoder->UsedDefaultCharCount() > 0);
 	}
-	targetBuf.Resize(bytesUsed);	// 出力バッファの見かけ上のサイズを、実際に使用したバイト数にする
+	targetBuf.resize(bytesUsed);	// 出力バッファの見かけ上のサイズを、実際に使用したバイト数にする
 	return targetBuf;
 }
 

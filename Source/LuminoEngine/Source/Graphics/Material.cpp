@@ -54,7 +54,7 @@ const float Material::DefaultPower = 50.0f;
 MaterialPtr Material::Create()
 {
 	auto ptr = MaterialPtr::MakeRef();
-	ptr->Initialize();
+	ptr->initialize();
 	return ptr;
 }
 
@@ -76,7 +76,7 @@ Material::~Material()
 }
 
 //------------------------------------------------------------------------------
-void Material::Initialize()
+void Material::initialize()
 {
 	//m_combinedMaterial = RefPtr<detail::CombinedMaterial>::MakeRef();
 }
@@ -108,7 +108,7 @@ void Material::SetBuiltinColorParameter(const StringRef& name, float r, float g,
 RefPtr<Material> Material::CopyShared() const
 {
 	auto m = RefPtr<Material>::MakeRef();
-	m->Initialize();	// TODO: base
+	m->initialize();	// TODO: base
 	m->m_shader = m_shader;
 	//m->m_shader = m_shader;
 	////m->m_valueList = m_valueList;
@@ -393,7 +393,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(DiffuseMaterial, Material);
 DiffuseMaterialPtr DiffuseMaterial::Create()
 {
 	auto ptr = DiffuseMaterialPtr::MakeRef();
-	ptr->Initialize();
+	ptr->initialize();
 	return ptr;
 }
 
@@ -408,9 +408,9 @@ DiffuseMaterial::~DiffuseMaterial()
 }
 
 //------------------------------------------------------------------------------
-void DiffuseMaterial::Initialize()
+void DiffuseMaterial::initialize()
 {
-	Material::Initialize();
+	Material::initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -580,7 +580,7 @@ void CombinedMaterial::ApplyUserShaderValeues(Shader* targetShader)
 void CombinedMaterial::CopyUserValueTable(Material* source)
 {
 	assert(source != nullptr);
-	m_userValueTable.Clear();
+	m_userValueTable.clear();
 	for (auto& pair : source->GetUserValueMap())
 	{
 		m_userValueTable.Add(ValuePair{ pair.first, pair.second });

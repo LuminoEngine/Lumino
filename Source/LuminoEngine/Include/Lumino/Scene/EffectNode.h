@@ -22,7 +22,7 @@ public:
 protected:
 	EffectNode();
 	virtual ~EffectNode();
-	void Initialize(SceneGraphManager* manager, detail::EffectManager* effectManager);
+	void initialize(SceneGraphManager* manager, detail::EffectManager* effectManager);
 };
 
 LN_NAMESPACE_SCENE_END

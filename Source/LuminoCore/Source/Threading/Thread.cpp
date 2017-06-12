@@ -94,7 +94,7 @@ void Thread::ExecuteInternal()
 	}
 	catch (Exception& e)
 	{
-		mLastException = e.Copy();
+		mLastException = e.copy();
 	}
 	catch (...)
 	{

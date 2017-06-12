@@ -185,7 +185,7 @@ public:
 		@brief		例外のコピーを作成する
 		@note		別スレッドで発生した例外を保持するために使用する。
 	*/
-	virtual Exception* Copy() const { return LN_NEW Exception( *this ); }
+	virtual Exception* copy() const { return LN_NEW Exception( *this ); }
 
 public:
 	// override std::exception
@@ -225,7 +225,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW VerifyException(*this); }
+	virtual Exception* copy() const { return LN_NEW VerifyException(*this); }
 };
 
 /**
@@ -239,7 +239,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW ArgumentException( *this ); }
+	virtual Exception* copy() const { return LN_NEW ArgumentException( *this ); }
 };
 
 /**
@@ -253,7 +253,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW InvalidOperationException(*this); }
+	virtual Exception* copy() const { return LN_NEW InvalidOperationException(*this); }
 };
 
 /**
@@ -267,7 +267,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW NotImplementedException( *this ); }
+	virtual Exception* copy() const { return LN_NEW NotImplementedException( *this ); }
 };
 
 /**
@@ -281,7 +281,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW OutOfMemoryException( *this ); }
+	virtual Exception* copy() const { return LN_NEW OutOfMemoryException( *this ); }
 };
 
 /**
@@ -295,7 +295,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW OutOfRangeException(*this); }
+	virtual Exception* copy() const { return LN_NEW OutOfRangeException(*this); }
 };
 
 /**
@@ -309,7 +309,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW KeyNotFoundException(*this); }
+	virtual Exception* copy() const { return LN_NEW KeyNotFoundException(*this); }
 };
 
 /**
@@ -323,7 +323,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW OverflowException(*this); }
+	virtual Exception* copy() const { return LN_NEW OverflowException(*this); }
 };
 
 /**
@@ -338,7 +338,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW IOException( *this ); }
+	virtual Exception* copy() const { return LN_NEW IOException( *this ); }
 };
 
 /**
@@ -352,7 +352,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW FileNotFoundException(*this); }
+	virtual Exception* copy() const { return LN_NEW FileNotFoundException(*this); }
 };
 
 /**
@@ -366,7 +366,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW DirectoryNotFoundException(*this); }
+	virtual Exception* copy() const { return LN_NEW DirectoryNotFoundException(*this); }
 };
 
 /**
@@ -380,7 +380,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW InvalidFormatException(*this); }
+	virtual Exception* copy() const { return LN_NEW InvalidFormatException(*this); }
 };
 
 /**
@@ -394,7 +394,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW EndOfStreamException(*this); }
+	virtual Exception* copy() const { return LN_NEW EndOfStreamException(*this); }
 };
 
 /**
@@ -408,7 +408,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW EncodingException(*this); }
+	virtual Exception* copy() const { return LN_NEW EncodingException(*this); }
 };
 
 /**
@@ -422,7 +422,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW RuntimeException(*this); }
+	virtual Exception* copy() const { return LN_NEW RuntimeException(*this); }
 };
 
 /**
@@ -441,7 +441,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW Win32Exception( *this ); }
+	virtual Exception* copy() const { return LN_NEW Win32Exception( *this ); }
 
 private:
 	uint32_t/*DWORD*/	m_dwLastErrorCode;
@@ -462,7 +462,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const;
+	virtual Exception* copy() const;
 
 private:
 	uint32_t	m_HRESULT;

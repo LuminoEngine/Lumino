@@ -51,7 +51,7 @@ EngineDiagCore::~EngineDiagCore()
 }
 
 //------------------------------------------------------------------------------
-void EngineDiagCore::Initialize(EngineManager* manager)
+void EngineDiagCore::initialize(EngineManager* manager)
 {
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
@@ -99,7 +99,7 @@ EngineDiagViewer::~EngineDiagViewer()
 }
 
 //------------------------------------------------------------------------------
-void EngineDiagViewer::Initialize(EngineManager* manager, EngineDiagCore* diagCore)
+void EngineDiagViewer::initialize(EngineManager* manager, EngineDiagCore* diagCore)
 {
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_diagCore = diagCore;

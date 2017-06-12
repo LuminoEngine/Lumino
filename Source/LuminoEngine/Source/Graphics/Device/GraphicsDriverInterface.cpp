@@ -105,7 +105,7 @@ IVertexDeclaration* IRenderer::GetVertexDeclaration() const
 void IRenderer::SetVertexBuffer(int streamIndex, IVertexBuffer* vertexBuffer)
 {
 	if (m_currentVertexBuffers.GetCount() <= streamIndex)
-		m_currentVertexBuffers.Resize(streamIndex + 1);		// 配列が小さいので増やす
+		m_currentVertexBuffers.resize(streamIndex + 1);		// 配列が小さいので増やす
 
 	if (m_currentVertexBuffers[streamIndex] != vertexBuffer)
 	{
@@ -138,13 +138,13 @@ void IRenderer::SetShaderPass(IShaderPass* pass)
 }
 
 //------------------------------------------------------------------------------
-void IRenderer::Clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
+void IRenderer::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	// ※レンダリングターゲットと深度バッファのサイズが一致している必要がある。
 	//   していない場合、エラーとならないがクリアされない。
 	if (m_currentDepthBuffer != nullptr)
 	{
-		if (LN_CHECK_STATE(m_currentRenderTargets[0]->GetSize() == m_currentDepthBuffer->GetSize())) return;
+		if (LN_CHECK_STATE(m_currentRenderTargets[0]->getSize() == m_currentDepthBuffer->getSize())) return;
 	}
 
 	FlushStates();
@@ -177,12 +177,12 @@ void IRenderer::FlushStates()
 		OnUpdateFrameBuffers(renderTargets, Graphics::MaxMultiRenderTargets, m_currentDepthBuffer);
 	}
 
-	if (!m_requestedRenderState.Equals(m_currentRenderState))
+	if (!m_requestedRenderState.equals(m_currentRenderState))
 	{
 		OnUpdateRenderState(m_requestedRenderState, m_currentRenderState, false);
 		m_currentRenderState = m_requestedRenderState;
 	}
-	if (!m_requestedDepthStencilState.Equals(m_currentDepthStencilState))
+	if (!m_requestedDepthStencilState.equals(m_currentDepthStencilState))
 	{
 		OnUpdateDepthStencilState(m_requestedDepthStencilState, m_currentDepthStencilState, false);
 		m_currentDepthStencilState = m_requestedDepthStencilState;

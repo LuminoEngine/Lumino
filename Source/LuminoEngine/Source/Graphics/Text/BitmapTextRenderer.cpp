@@ -27,13 +27,13 @@ BitmapTextRenderer::~BitmapTextRenderer()
 }
 
 //------------------------------------------------------------------------------
-void BitmapTextRenderer::Initialize(detail::GraphicsManager* manager)
+void BitmapTextRenderer::initialize(detail::GraphicsManager* manager)
 {
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
 
 	m_tmpGlyphRun = LN_NEW GlyphRun();
-	m_tmpGlyphRun->Initialize(m_manager);
+	m_tmpGlyphRun->initialize(m_manager);
 }
 
 //------------------------------------------------------------------------------
@@ -85,7 +85,7 @@ void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const 
 				pos.y + item.Location.OutlineBitmapTopLeftPosition.y,
 				item.Location.BitmapSize.width,
 				item.Location.BitmapSize.height);
-			srcRect.Set(0, 0, gb->OutlineBitmap->GetSize());
+			srcRect.Set(0, 0, gb->OutlineBitmap->getSize());
 			target->BitBlt(dstRect, gb->OutlineBitmap, srcRect, strokeColor, true);
 		}
 
@@ -97,7 +97,7 @@ void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const 
 				pos.y + item.Location.BitmapTopLeftPosition.y,
 				item.Location.BitmapSize.width,
 				item.Location.BitmapSize.height);
-			srcRect.Set(0, 0, gb->GlyphBitmap->GetSize());
+			srcRect.Set(0, 0, gb->GlyphBitmap->getSize());
 			target->BitBlt(dstRect, gb->GlyphBitmap, srcRect, fillColor, true);
 		}
 	}

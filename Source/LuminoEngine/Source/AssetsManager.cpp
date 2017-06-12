@@ -37,7 +37,7 @@ AssetsManager::~AssetsManager()
 }
 
 //------------------------------------------------------------------------------
-void AssetsManager::Initialize(EngineManager* manager)
+void AssetsManager::initialize(EngineManager* manager)
 {
 	m_engineManager = manager;
 

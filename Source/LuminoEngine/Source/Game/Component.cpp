@@ -62,7 +62,7 @@ void Component::OnUIEvent(UIEventArgs* e)
 }
 
 //------------------------------------------------------------------------------
-void Component::Attach(WorldObject* owner)
+void Component::attach(WorldObject* owner)
 {
 	m_owner = owner;
 	transfotm = &m_owner->transform;

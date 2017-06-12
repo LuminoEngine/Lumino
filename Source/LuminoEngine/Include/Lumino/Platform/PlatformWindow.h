@@ -30,7 +30,7 @@ public:
 	/**
 		@brief		クライアント領域のサイズを取得します。
 	*/
-	SizeI GetSize() const { return m_clientSize; }
+	SizeI getSize() const { return m_clientSize; }
 
 	virtual void SetSize(const SizeI& size) = 0;
 
@@ -77,7 +77,7 @@ public:
 protected:
 	PlatformWindow(WindowManagerBase* windowManager);
 	virtual ~PlatformWindow();
-	void Initialize(const SizeI& clientSize);
+	void initialize(const SizeI& clientSize);
     
 LN_INTERNAL_ACCESS:
 	virtual void OnPlatformEvent(const PlatformEventArgs& e);

@@ -120,9 +120,9 @@ public:
 	GenericString& operator+=(const TChar* ptr);
 	GenericString& operator+=(TChar ch);
 
-	bool operator==(const GenericString& right) const			{ return Equals(right); }		///< @see Equals
-	bool operator==(const GenericStringRef<TChar>& right) const	{ return Equals(right); }		///< @see Equals
-	bool operator==(const TChar* right) const					{ return Equals(right); }		///< @see Equals
+	bool operator==(const GenericString& right) const			{ return equals(right); }		///< @see Equals
+	bool operator==(const GenericStringRef<TChar>& right) const	{ return equals(right); }		///< @see Equals
+	bool operator==(const TChar* right) const					{ return equals(right); }		///< @see Equals
 	bool operator!=(const GenericString& right) const			{ return !operator==(right); }	///< @see Equals
 	bool operator!=(const GenericStringRef<TChar>& right) const	{ return !operator==(right); }	///< @see Equals
 	bool operator!=(const TChar* right) const					{ return !operator==(right); }	///< @see Equals
@@ -187,7 +187,7 @@ public:
 	/**
 		@brief		空文字列を設定する
 	*/
-	void Clear();
+	void clear();
 
 	/**
 		@brief		部分文字列を取得する
@@ -289,9 +289,9 @@ public:
 		@details	大文字/小文字を区別し、ロケールに依存しない比較を行います。
 					また、str が NULL の場合は空文字とみなして比較を行います。
 	*/
-	bool Equals(const GenericString& str) const;
-	bool Equals(const GenericStringRef<TChar>& str) const;	/**< @overload Equals */
-	bool Equals(const TChar* str) const;					/**< @overload Equals */
+	bool equals(const GenericString& str) const;
+	bool equals(const GenericStringRef<TChar>& str) const;	/**< @overload Equals */
+	bool equals(const TChar* str) const;					/**< @overload Equals */
 
 	/**
 		@brief		この文字列と、指定した文字列を比較します。
@@ -302,7 +302,7 @@ public:
 					str1 と str2 が等しい   → 0
 					str1 が str2 より大きい → 0 より大きい値
 	*/
-	int Compare(const TChar* str, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	int compare(const TChar* str, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 
 	/**
 		@brief		文字列の左側(先頭)から指定した文字数を抽出します。
@@ -597,7 +597,7 @@ public:
 		@details	返されたポインタは、文字列を構成する文字にアクセスして変更するために使用することができます。
 					格納されているデータが複数の String から参照されている場合はデータをコピーし、新しいデータのポインタを返します。
 	*/
-	TChar* GetData();
+	TChar* getData();
 
 private:
 	friend class detail::StringHelper;
@@ -606,7 +606,7 @@ private:
 	template<typename T> friend class GenericStringRef;
 	
 	void Detach() LN_NOEXCEPT;
-	void Attach(detail::GenericStringCore<TChar>* core);
+	void attach(detail::GenericStringCore<TChar>* core);
 	void AssignTString(const TChar* str, int len);
 	void AssignTString(int count, TChar ch);
 	void Realloc();
@@ -704,7 +704,7 @@ inline GenericString<TChar> operator+(TChar left, const GenericString<TChar>& ri
 template<typename TChar>
 inline bool operator==(const TChar* left, const GenericString<TChar>& right)
 {
-	return right.Equals(left);
+	return right.equals(left);
 }
 
 template<typename TChar>
@@ -753,14 +753,14 @@ public:
 	// ※ m_sharedEmpty の参照カウントは操作しない。String を初期化しただけでオーバーヘッドが出るのを避けるため。
 	inline bool IsShared() const { return IsSharedEmpty() || (m_refCount.load() > 1); }
 	inline bool IsSharedEmpty() const { return this == GetSharedEmpty(); }
-	inline void AddRef()
+	inline void addRef()
 	{
 		if (IsSharedEmpty()) {
 			return;
 		}
 		m_refCount.fetch_add(1, std::memory_order_relaxed);/*m_refCount.Increment();*/
 	}
-	inline void Release()
+	inline void release()
 	{
 		if (IsSharedEmpty()) {
 			return;
@@ -805,7 +805,7 @@ public:
 	static GenericStringCore<TChar>* GetStringCore(const GenericString<TChar>& str) { return str.m_string; }
 
 	template<typename TChar>
-	static void AttachStringCore(String* str, GenericStringCore<TChar>* core) { str->Attach(core); }
+	static void AttachStringCore(String* str, GenericStringCore<TChar>* core) { str->attach(core); }
 };
 
 } // namespace detail

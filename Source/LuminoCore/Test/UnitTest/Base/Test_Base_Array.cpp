@@ -67,9 +67,9 @@ public:
 		return m_array.at(index);//[index];
 	}
 
-	void Clear()
+	void clear()
 	{
-		m_indexStack.Clear();
+		m_indexStack.clear();
 		int size = (int)m_array.size();
 		for (int i = 0; i < size; ++i) {
 			m_indexStack.Push(i);
@@ -251,7 +251,7 @@ TEST_F(Test_Base_Array, IsEmpty)
 		ASSERT_TRUE(a1.IsEmpty());
 		a1.Add(1);
 		ASSERT_FALSE(a1.IsEmpty());
-		a1.Clear();
+		a1.clear();
 		ASSERT_TRUE(a1.IsEmpty());
 	}
 	
@@ -437,18 +437,18 @@ TEST_F(Test_Base_Array, Reserve)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_Array, Resize)
+TEST_F(Test_Base_Array, resize)
 {
 	// <Test> Resize
 	{
 		List<int> a1;
 		a1.Add(1);
-		a1.Resize(2);
+		a1.resize(2);
 		ASSERT_EQ(2, a1.GetCount());
 		ASSERT_EQ(0, a1[1]);
 		a1[1] = 10;
 		ASSERT_EQ(10, a1[1]);
-		a1.Resize(1);
+		a1.resize(1);
 		ASSERT_EQ(1, a1.GetCount());
 		ASSERT_EQ(1, a1[0]);
 	}
