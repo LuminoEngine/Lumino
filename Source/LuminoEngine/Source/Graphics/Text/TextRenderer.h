@@ -30,7 +30,7 @@ public:
 	~TextRendererCore();
 	void initialize(GraphicsManager* manager);
 
-	void SetState(const Matrix& world, const Matrix& viewProj, const SizeI& viewPixelSize);
+	void setState(const Matrix& world, const Matrix& viewProj, const SizeI& viewPixelSize);
 	void render(const GlyphRunData* dataList, int dataCount, FontGlyphTextureCache* cache, Brush* fillBrush);
 
 private:
@@ -56,12 +56,12 @@ private:
 		static const int ElementCount = 3;
 	};
 
-	void InternalDrawRectangle(const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color);
+	void internalDrawRectangle(const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color);
 	void flush(FontGlyphTextureCache* cache);
 
 	virtual void onChangeDevice(Driver::IGraphicsDevice* device) override;
-	void CreateDeviceResources();
-	void ReleaseDeviceResources();
+	void createDeviceResources();
+	void releaseDeviceResources();
 
 	//GraphicsManager*		m_manager;
 	//Driver::IRenderer*		m_renderer;
@@ -104,14 +104,14 @@ public:
 	~TextRenderer();
 	void initialize(GraphicsManager* manager);
 
-	void SetTransform(const Matrix& matrix);
-	void SetViewInfo(const Matrix& viewProj, const SizeI& viewPixelSize);
+	void setTransform(const Matrix& matrix);
+	void setViewInfo(const Matrix& viewProj, const SizeI& viewPixelSize);
 
-	void DrawGlyphRun(const Matrix& transform, const PointI& position, GlyphRun* glyphRun);
-	void DrawGlyphRun(const Matrix& transform, const PointF& position, GlyphRun* glyphRun);	// SetFont 無視
+	void drawGlyphRun(const Matrix& transform, const PointI& position, GlyphRun* glyphRun);
+	void drawGlyphRun(const Matrix& transform, const PointF& position, GlyphRun* glyphRun);	// setFont 無視
 
-	void DrawString(const Matrix& transform, const TCHAR* str, int length, const PointF& position);
-	void DrawString(const Matrix& transform, const TCHAR* str, int length, const Rect& rect, StringFormatFlags flags);
+	void drawString(const Matrix& transform, const TCHAR* str, int length, const PointF& position);
+	void drawString(const Matrix& transform, const TCHAR* str, int length, const Rect& rect, StringFormatFlags flags);
 
 	virtual bool isStandaloneShader() const { return true; }
 	virtual void flush() override;
@@ -159,7 +159,7 @@ public:
 	virtual ~VectorTextRendererCore();
 	void initialize(GraphicsManager* manager);
 
-	void RequestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex);
+	void requestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex);
 	void render(const VectorGlyphData* dataList, int dataCount, VectorFontGlyphCache* cache, Brush* fillBrush);
 
 private:
@@ -181,8 +181,8 @@ public:
 	virtual ~VectorTextRenderer();
 	void initialize(GraphicsManager* manager);
 
-	void DrawString(const Matrix& transform, const UTF32* str, int length, const Rect& rect, TextLayoutOptions options);
-	void DrawChar(const Matrix& transform, UTF32 ch, const Rect& rect, TextLayoutOptions options);
+	void drawString(const Matrix& transform, const UTF32* str, int length, const Rect& rect, TextLayoutOptions options);
+	void drawChar(const Matrix& transform, UTF32 ch, const Rect& rect, TextLayoutOptions options);
 
 	virtual bool isStandaloneShader() const { return false; }
 	virtual void flush() override;
@@ -193,7 +193,7 @@ public:
 	GraphicsManager* getManager() const { return m_manager; }
 
 private:
-	void DrawInternal(const Matrix& transform);
+	void drawInternal(const Matrix& transform);
 
 LN_INTERNAL_ACCESS:
 	GraphicsManager*				m_manager;

@@ -564,7 +564,7 @@ RefPtr<StaticMeshModel> XFileLoader::load(ModelManager* manager, Stream* stream,
 		data.getConstData(),
 		data.getSize(),
 		D3DXMESH_MANAGED | D3DXMESH_32BIT,	// まずは 32bit インデックスで作る
-		device->GetIDirect3DDevice9(),
+		device->getIDirect3DDevice9(),
 		&allocate_hierarchy,
 		NULL,
 		&root_frame,
@@ -727,7 +727,7 @@ RefPtr<StaticMeshModel> XFileLoader::load(ModelManager* manager, Stream* stream,
 						{
 							materials->getAt(mi)->setTextureParameter(
 								Material::MaterialTextureParameter,
-								manager->CreateTexture(parentDir, c->TextureNames[i], flags));
+								manager->createTexture(parentDir, c->TextureNames[i], flags));
 						}
 
 						// 属性

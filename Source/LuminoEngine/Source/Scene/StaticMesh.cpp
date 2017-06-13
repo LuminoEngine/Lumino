@@ -156,7 +156,7 @@ void StaticMeshComponent::initialize(StaticMeshModel* meshModel)
 //------------------------------------------------------------------------------
 void StaticMeshComponent::OnRender2(DrawList* renderer)
 {
-	renderer->SetTransform(getOwnerObject()->transform.getWorldMatrix());
+	renderer->setTransform(getOwnerObject()->transform.getWorldMatrix());
 
 	for (int iMesh = 0; iMesh < m_mesh->GetMeshResourceCount(); iMesh++)
 	{

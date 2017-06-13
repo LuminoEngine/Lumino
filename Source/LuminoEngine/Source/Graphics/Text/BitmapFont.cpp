@@ -19,7 +19,7 @@ static const byte_t g_BuiltInBitmapFont_size7_Data[] =
 static const size_t g_BuiltInBitmapFont_size7_Len = LN_ARRAY_SIZE_OF(g_BuiltInBitmapFont_size7_Data);
 
 //------------------------------------------------------------------------------
-RefPtr<RawFont> RawFont::CreateBuiltInBitmapFontInternal2(int size)
+RefPtr<RawFont> RawFont::createBuiltInBitmapFontInternal2(int size)
 {
 	MemoryStream stream(g_BuiltInBitmapFont_size7_Data, g_BuiltInBitmapFont_size7_Len);
 	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(&stream), false);
@@ -28,9 +28,9 @@ RefPtr<RawFont> RawFont::CreateBuiltInBitmapFontInternal2(int size)
 }
 
 //------------------------------------------------------------------------------
-void RawFont::RegisterFontFile(const StringRef& filePath)
+void RawFont::registerFontFile(const StringRef& filePath)
 {
-	detail::GraphicsManager::getInstance()->getFontManager()->RegisterFontFile(filePath);
+	detail::GraphicsManager::getInstance()->getFontManager()->registerFontFile(filePath);
 }
 
 namespace detail {
@@ -141,7 +141,7 @@ RawFontPtr BitmapFont::copy() const
 }
 
 //------------------------------------------------------------------------------
-FontGlyphLocation* BitmapFont::AdvanceKerning(UTF32 utf32code, int strokeSize, FontGlyphLocation* prevData)
+FontGlyphLocation* BitmapFont::advanceKerning(UTF32 utf32code, int strokeSize, FontGlyphLocation* prevData)
 {
 	FontGlyphLocation* locData;
 
@@ -168,7 +168,7 @@ FontGlyphLocation* BitmapFont::AdvanceKerning(UTF32 utf32code, int strokeSize, F
 }
 
 //------------------------------------------------------------------------------
-FontGlyphBitmap* BitmapFont::LookupGlyphBitmap(UTF32 utf32code, int strokeSize)
+FontGlyphBitmap* BitmapFont::lookupGlyphBitmap(UTF32 utf32code, int strokeSize)
 {
 	// ASCII 部分だけグリフに出来る。それ以外は '?'
 	if (utf32code > 0xFF) {
@@ -184,7 +184,7 @@ FontGlyphBitmap* BitmapFont::LookupGlyphBitmap(UTF32 utf32code, int strokeSize)
 }
 
 //------------------------------------------------------------------------------
-void BitmapFont::GetGlobalMetrics(FontGlobalMetrics* outMetrics)
+void BitmapFont::getGlobalMetrics(FontGlobalMetrics* outMetrics)
 {
 	if (LN_CHECK_ARG(outMetrics != nullptr)) return;
 	outMetrics->ascender = m_charHeight;
@@ -193,7 +193,7 @@ void BitmapFont::GetGlobalMetrics(FontGlobalMetrics* outMetrics)
 }
 
 //------------------------------------------------------------------------------
-void BitmapFont::GetGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics)
+void BitmapFont::getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics)
 {
 	if (LN_CHECK_ARG(outMetrics != nullptr)) return;
 	outMetrics->advance.x = m_charWidth;

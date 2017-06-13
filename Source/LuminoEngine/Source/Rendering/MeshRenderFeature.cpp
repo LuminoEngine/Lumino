@@ -70,12 +70,12 @@ void MeshRenderFeature::DrawMesh(MeshResource* mesh, int startIndex, int primiti
 //------------------------------------------------------------------------------
 void MeshRenderFeature::DrawMeshImpl(const DrawMeshCommandData& data)
 {
-	m_renderer->SetVertexDeclaration(data.vertexDeclaration);
+	m_renderer->setVertexDeclaration(data.vertexDeclaration);
 	for (int i = 0; i < data.vertexBuffersCount; ++i)
 	{
-		m_renderer->SetVertexBuffer(i, data.vertexBuffers[i]);
+		m_renderer->setVertexBuffer(i, data.vertexBuffers[i]);
 	}
-	m_renderer->SetIndexBuffer(data.indexBuffer);
+	m_renderer->setIndexBuffer(data.indexBuffer);
 	m_renderer->drawPrimitiveIndexed(data.primitiveType, data.startIndex, data.primitiveCount);
 }
 

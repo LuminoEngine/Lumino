@@ -68,13 +68,13 @@ void DX9GraphicsDevice::initialize(const ConfigData& configData)
 	LN_THROW(m_direct3D != NULL, InvalidOperationException);
 
 	// デバイスの性能チェック
-	CheckDeviceInformation();
+	checkDeviceInformation();
 
 	if (configData.D3D9Device == NULL)
 	{
 		// デフォルトの SwapChain
 		m_defaultSwapChain = LN_NEW DX9SwapChain();
-		m_defaultSwapChain->InitializeDefault(this, m_mainWindow, configData.BackbufferSize);
+		m_defaultSwapChain->initializeDefault(this, m_mainWindow, configData.BackbufferSize);
 
 		// 基本的に変化のないプレゼンテーションパラメータの設定
 		// ( PresentationInterval は D3DPRESENT_INTERVAL_IMMEDIATE 以外の場合、
@@ -90,7 +90,7 @@ void DX9GraphicsDevice::initialize(const ConfigData& configData)
 		//m_presentParameters.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
 
 		// デバイス作成
-		ResetDevice(false/*configData.FullScreen*//*, mSystemManager->getMainWindow()->getSize()*/);
+		resetDevice(false/*configData.FullScreen*//*, mSystemManager->getMainWindow()->getSize()*/);
 	}
 	else
 	{
@@ -136,13 +136,13 @@ void DX9GraphicsDevice::Finalize()
 }
 
 //------------------------------------------------------------------------------
-ISwapChain* DX9GraphicsDevice::GetDefaultSwapChain()
+ISwapChain* DX9GraphicsDevice::getDefaultSwapChain()
 {
 	return m_defaultSwapChain;
 }
 
 //------------------------------------------------------------------------------
-RefPtr<IVertexDeclaration> DX9GraphicsDevice::CreateVertexDeclarationImplement(const VertexElement* elements, int elementsCount)
+RefPtr<IVertexDeclaration> DX9GraphicsDevice::createVertexDeclarationImplement(const VertexElement* elements, int elementsCount)
 {
 	RefPtr<DX9VertexDeclaration> obj(LN_NEW DX9VertexDeclaration(), false);
 	obj->initialize(this, elements, elementsCount);
@@ -150,7 +150,7 @@ RefPtr<IVertexDeclaration> DX9GraphicsDevice::CreateVertexDeclarationImplement(c
 }
 
 //------------------------------------------------------------------------------
-RefPtr<IVertexBuffer> DX9GraphicsDevice::CreateVertexBufferImplement(size_t bufferSize, const void* data, ResourceUsage usage)
+RefPtr<IVertexBuffer> DX9GraphicsDevice::createVertexBufferImplement(size_t bufferSize, const void* data, ResourceUsage usage)
 {
 	RefPtr<DX9VertexBuffer> obj(LN_NEW DX9VertexBuffer(), false);
 	obj->create(this, bufferSize, data, usage);
@@ -158,7 +158,7 @@ RefPtr<IVertexBuffer> DX9GraphicsDevice::CreateVertexBufferImplement(size_t buff
 }
 
 //------------------------------------------------------------------------------
-RefPtr<IIndexBuffer> DX9GraphicsDevice::CreateIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
+RefPtr<IIndexBuffer> DX9GraphicsDevice::createIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
 {
 	RefPtr<DX9IndexBuffer> obj(LN_NEW DX9IndexBuffer(), false);
 	obj->create(this, indexCount, initialData, format, usage);
@@ -166,7 +166,7 @@ RefPtr<IIndexBuffer> DX9GraphicsDevice::CreateIndexBufferImplement(int indexCoun
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ITexture> DX9GraphicsDevice::CreateTextureImplement(const SizeI& size, bool mipmap, TextureFormat format, const void* initialData)
+RefPtr<ITexture> DX9GraphicsDevice::createTextureImplement(const SizeI& size, bool mipmap, TextureFormat format, const void* initialData)
 {
 	RefPtr<DX9Texture> obj(LN_NEW DX9Texture(this, size, format, mipmap), false);
 	if (initialData != nullptr) {
@@ -176,7 +176,7 @@ RefPtr<ITexture> DX9GraphicsDevice::CreateTextureImplement(const SizeI& size, bo
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ITexture> DX9GraphicsDevice::CreateTexturePlatformLoadingImplement(Stream* stream, bool mipmap, TextureFormat format)
+RefPtr<ITexture> DX9GraphicsDevice::createTexturePlatformLoadingImplement(Stream* stream, bool mipmap, TextureFormat format)
 {
 	ByteBuffer buffer;
 	buffer.resize((size_t)stream->getLength(), false);
@@ -187,57 +187,57 @@ RefPtr<ITexture> DX9GraphicsDevice::CreateTexturePlatformLoadingImplement(Stream
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ITexture> DX9GraphicsDevice::CreateTexture3DImplement(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, ResourceUsage usage, const void* initialData)
+RefPtr<ITexture> DX9GraphicsDevice::createTexture3DImplement(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, ResourceUsage usage, const void* initialData)
 {
 	RefPtr<DX9Texture3D> obj(LN_NEW DX9Texture3D(this), false);
 	obj->initialize(width, height, depth, format, mipLevels);
 	if (initialData != nullptr) {
-		obj->SetSubData3D(Box32::Zero, initialData, Utils::getTextureFormatByteCount(format) * width * height * depth);
+		obj->setSubData3D(Box32::Zero, initialData, Utils::getTextureFormatByteCount(format) * width * height * depth);
 	}
 	return obj;
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ITexture> DX9GraphicsDevice::CreateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format)
+RefPtr<ITexture> DX9GraphicsDevice::ceateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format)
 {
 	RefPtr<DX9RenderTargetTexture> obj(LN_NEW DX9RenderTargetTexture(this, SizeI(width, height), format, mipLevels), false);
 	return obj;
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ITexture> DX9GraphicsDevice::CreateDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format)
+RefPtr<ITexture> DX9GraphicsDevice::createDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format)
 {
 	RefPtr<DX9DepthBuffer> obj(LN_NEW DX9DepthBuffer(this, SizeI(width, height), format), false);
 	return obj;
 }
 
 //------------------------------------------------------------------------------
-RefPtr<IShader> DX9GraphicsDevice::CreateShaderImplement(const void* textData, size_t size, ShaderCompileResult* result)
+RefPtr<IShader> DX9GraphicsDevice::createShaderImplement(const void* textData, size_t size, ShaderCompileResult* result)
 {
 	DX9Shader* shader = NULL;
 	result->Level = DX9Shader::create(this, (const char*)textData, size, &shader, &result->Message);
 	if (shader != NULL) {
-		AddDeviceResource(shader);
+		addDeviceResource(shader);
 	}
 	RefPtr<IShader> obj(shader, false);
 	return obj;
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ISwapChain> DX9GraphicsDevice::CreateSwapChainImplement(PlatformWindow* window)
+RefPtr<ISwapChain> DX9GraphicsDevice::createSwapChainImplement(PlatformWindow* window)
 {
 	RefPtr<DX9SwapChain> obj(LN_NEW DX9SwapChain(), false);
-	obj->InitializeSub(this, window, window->getSize());
+	obj->initializeSub(this, window, window->getSize());
 	return obj;
 }
 
 //------------------------------------------------------------------------------
-void DX9GraphicsDevice::ResetDevice()
+void DX9GraphicsDevice::resetDevice()
 {
 	// 先に onLostDevice() を呼ぶこと
 	LN_THROW(m_deviceState == DeviceState_Pausing, InvalidOperationException);
 
-	ResetDevice(false);
+	resetDevice(false);
 }
 
 //------------------------------------------------------------------------------
@@ -267,7 +267,7 @@ void DX9GraphicsDevice::onResetDevice()
 }
 
 //------------------------------------------------------------------------------
-void DX9GraphicsDevice::CheckDeviceInformation()
+void DX9GraphicsDevice::checkDeviceInformation()
 {
 	// 使えるデバイスの種類を調べる
 	HRESULT hr = m_direct3D->GetDeviceCaps(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, &m_dxCaps);
@@ -380,7 +380,7 @@ void DX9GraphicsDevice::CheckDeviceInformation()
 }
 
 //------------------------------------------------------------------------------
-void DX9GraphicsDevice::ResetDevice(bool fullscreen)
+void DX9GraphicsDevice::resetDevice(bool fullscreen)
 {
 	// プレゼンテーションパラメータ設定
 	//mIsFullScreen = (canFullScreen()) ? fullscreen : false;
@@ -388,7 +388,7 @@ void DX9GraphicsDevice::ResetDevice(bool fullscreen)
 	//	_setPresentParameters(mDefaultCanvas->getRequestedBackbufferSize());
 	//else
 	//	_setPresentParameters(mSystemManager->getMainWindow()->getSize());
-	SetPresentParameters(m_defaultSwapChain->GetBackBufferSize(), fullscreen);
+	setPresentParameters(m_defaultSwapChain->getBackBufferSize(), fullscreen);
 
 	// まだデバイスが作成されていなければ新規作成
 	if (!m_dxDevice)
@@ -415,7 +415,7 @@ void DX9GraphicsDevice::ResetDevice(bool fullscreen)
 }
 
 //------------------------------------------------------------------------------
-void DX9GraphicsDevice::SetPresentParameters(const SizeI& backbufferSize, bool fullscreen)
+void DX9GraphicsDevice::setPresentParameters(const SizeI& backbufferSize, bool fullscreen)
 {
 	// フルスクリーンモードの場合
 	if (fullscreen == true)

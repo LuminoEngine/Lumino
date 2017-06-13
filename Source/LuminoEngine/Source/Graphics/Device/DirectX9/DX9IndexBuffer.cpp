@@ -103,7 +103,7 @@ void DX9IndexBuffer::onResetDevice()
 		}
 
 		LN_COMCALL(
-			m_graphicsDevice->GetIDirect3DDevice9()->CreateIndexBuffer(
+			m_graphicsDevice->getIDirect3DDevice9()->CreateIndexBuffer(
 				m_indexStride * m_indexCount,
 				dxUsage,
 				(m_format == IndexBufferFormat_UInt16) ? D3DFMT_INDEX16 : D3DFMT_INDEX32,

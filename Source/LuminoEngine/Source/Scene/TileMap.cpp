@@ -85,7 +85,7 @@ void TileMap::OnRender2(DrawList* renderer)
 //		//m_renderer->setViewProjMatrix(dc->CurrentCamera->GetViewMatrix(), dc->CurrentCamera->GetProjectionMatrix());
 //		
 //		// TODO: WorldMatrix
-//		m_renderer->SetTransform(Matrix::Identity, dc->GetCurrentCamera()->GetViewProjectionMatrix());
+//		m_renderer->setTransform(Matrix::Identity, dc->GetCurrentCamera()->GetViewProjectionMatrix());
 //		m_renderer->Draw(dc, m_tileMap, RectF(0,0,3200,2400), dc->GetCurrentCamera()->GetViewFrustum());
 //	}
 //

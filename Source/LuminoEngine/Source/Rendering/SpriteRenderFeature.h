@@ -23,7 +23,7 @@ public:
 	void initialize(GraphicsManager* manager, int maxSpriteCount);
 
 public:
-	void SetTransform(const Matrix& matrix);
+	void setTransform(const Matrix& matrix);
 	void setViewProjMatrix(const Matrix& view, const Matrix& proj);
 	void SetViewPixelSize(const Size& size);
 
@@ -150,11 +150,11 @@ public:
 		@param[in]	matrix		: 座標変換行列
 		@details	次の DrawRequest2D または DrawRequest3D で描画要求されるスプライトに対して適用する座標変換行列です。
 	*/
-	void SetTransform(const Matrix& matrix);
+	void setTransform(const Matrix& matrix);
 
-	void SetState(const RenderState& renderState);
+	void setState(const RenderState& renderState);
 
-	void SetViewInfo(const Size& size, const Matrix& view, const Matrix& proj);
+	void setViewInfo(const Size& size, const Matrix& view, const Matrix& proj);
 
 	/**
 		@brief		レンダリングステートを設定します。

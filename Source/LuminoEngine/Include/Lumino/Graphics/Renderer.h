@@ -80,12 +80,12 @@ public:
 	///**
 	//	@brief	頂点バッファを設定します。
 	//*/
-	//static void SetVertexBuffer(VertexBuffer* vertexBuffer);
+	//static void setVertexBuffer(VertexBuffer* vertexBuffer);
 
 	///**
 	//	@brief	インデックスバッファを設定します。
 	//*/
-	//static void SetIndexBuffer(IndexBuffer* indexBuffer);
+	//static void setIndexBuffer(IndexBuffer* indexBuffer);
 
 	/**
 		@brief	現在設定されているレンダリングターゲット、深度バッファをクリアします。

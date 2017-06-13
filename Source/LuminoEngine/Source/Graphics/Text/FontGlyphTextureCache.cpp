@@ -42,8 +42,8 @@ void FontGlyphTextureCache::initialize(GraphicsManager* manager, RawFont* font)
 {
 	m_manager = manager;
 	m_font = font;
-	m_glyphMaxBitmapSize = m_font->GetGlyphMaxSize();
-	m_layoutEngine.SetFont(m_font);
+	m_glyphMaxBitmapSize = m_font->getGlyphMaxSize();
+	m_layoutEngine.setFont(m_font);
 
 	m_maxCacheGlyphs = 2048;// TODO 定数なのはなんとかしたい
 
@@ -51,7 +51,7 @@ void FontGlyphTextureCache::initialize(GraphicsManager* manager, RawFont* font)
 	// +1.0 は切り捨て対策。テクスチャサイズはmaxCharactersが収まる大きさであれば良い。
 	// (小さくなければOK)
 	m_glyphWidthCount = (int)(sqrt((double)m_maxCacheGlyphs) + 1.0);
-	int w = m_glyphWidthCount * m_font->GetLineSpacing();	//TODO ビットマップが収まるサイズは要チェック
+	int w = m_glyphWidthCount * m_font->getLineSpacing();	//TODO ビットマップが収まるサイズは要チェック
 
 	// キャッシュ用テクスチャ作成
 	m_fillGlyphsTexture = newObject<Texture2D>(SizeI(w, w), TextureFormat::R8G8B8A8, false, ResourceUsage::Dynamic);
@@ -62,11 +62,11 @@ void FontGlyphTextureCache::initialize(GraphicsManager* manager, RawFont* font)
 	{
 		m_indexStack.push(i);
 	}
-	ResetUsedFlags();
+	resetUsedFlags();
 }
 
 //------------------------------------------------------------------------------
-void FontGlyphTextureCache::LookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, bool* outFlush)
+void FontGlyphTextureCache::lookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, bool* outFlush)
 {
 	int cacheIndex = -1;
 	CachedGlyphInfoMap::const_iterator itr = m_cachedGlyphInfoMap.find(ch);
@@ -89,7 +89,7 @@ void FontGlyphTextureCache::LookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, b
 		}
 
 		// ビットマップを新しく作ってキャッシュに登録したい
-		FontGlyphBitmap* glyphBitmap = m_font->LookupGlyphBitmap(ch, 0);
+		FontGlyphBitmap* glyphBitmap = m_font->lookupGlyphBitmap(ch, 0);
 
 		// 空いてるインデックスを取りだす
 		cacheIndex = m_indexStack.getTop();
@@ -126,7 +126,7 @@ void FontGlyphTextureCache::LookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, b
 	// 一杯になってたら呼び出し元に Flush してもらわないと、一部の文字が描画できないことになる。
 	if (m_curPrimUsedCount == m_maxCacheGlyphs)
 	{
-		ResetUsedFlags();
+		resetUsedFlags();
 		(*outFlush) = true;
 	}
 	else
@@ -164,25 +164,25 @@ void FontGlyphTextureCache::CommitCacheGlyphInfo(CacheGlyphInfo* info, Rect* src
 #endif
 
 //------------------------------------------------------------------------------
-Driver::ITexture* FontGlyphTextureCache::GetGlyphsFillTexture()
+Driver::ITexture* FontGlyphTextureCache::getGlyphsFillTexture()
 {
 	return m_fillGlyphsTexture->resolveDeviceObject();
 }
 
 //------------------------------------------------------------------------------
-void FontGlyphTextureCache::OnFlush()
+void FontGlyphTextureCache::onFlush()
 {
-	ResetUsedFlags();
+	resetUsedFlags();
 }
 
 //------------------------------------------------------------------------------
 //const SizeI& FontGlyphTextureCache::GetGlyphsTextureSize() const
 //{
-//	return m_fillGlyphsTexture->GetRealSize();
+//	return m_fillGlyphsTexture->getRealSize();
 //}
 
 //------------------------------------------------------------------------------
-void FontGlyphTextureCache::ResetUsedFlags()
+void FontGlyphTextureCache::resetUsedFlags()
 {
 	for (int i = 0; i < m_maxCacheGlyphs; ++i)
 	{
@@ -210,7 +210,7 @@ FontGlyphTextureCache::FontGlyphTextureCache(GraphicsManager* manager, RawFont* 
 	// キャッシュ用テクスチャ作成
 	m_glyphCacheTexture = Texture2D::create(SizeI(w, w), TextureFormat_R8G8B8A8, 1);	// TODO: GraphicsManager?
 	//Driver::IGraphicsDevice* device = m_spriteRenderer->getManager()->getGraphicsDevice()->getDeviceObject();
-	//m_glyphCacheTexture.Attach(device->CreateTexture(SizeI(w, w), 1, TextureFormat_R8G8B8A8));
+	//m_glyphCacheTexture.Attach(device->createTexture(SizeI(w, w), 1, TextureFormat_R8G8B8A8));
 
 
 	//Device::IGraphicsDevice::ScopedLockContext lock(m_spriteRenderer->getManager()->getGraphicsDevice()->getDeviceObject());
@@ -319,9 +319,9 @@ uint64_t FontGlyphTextureCache::CalcFontSettingHash() const
 #endif
 
 //------------------------------------------------------------------------------
-void FontGlyphTextureCache::Measure(const UTF32* text, int length, TextLayoutResult* outResult)
+void FontGlyphTextureCache::measure(const UTF32* text, int length, TextLayoutResult* outResult)
 {
-	m_layoutEngine.LayoutText(text, length, LayoutTextOptions::All, outResult);	// TODO: RenderSize だけでもいいかも？
+	m_layoutEngine.layoutText(text, length, LayoutTextOptions::All, outResult);	// TODO: RenderSize だけでもいいかも？
 }
 
 
@@ -354,11 +354,11 @@ void VectorFontGlyphCache::initialize(GraphicsManager* manager, RawFont* font, i
 		m_glyphInfoList[i].idIndex = i;
 	}
 
-	ResetUsedFlags();
+	resetUsedFlags();
 }
 
 //------------------------------------------------------------------------------
-VectorFontGlyphCache::Handle VectorFontGlyphCache::GetGlyphInfo(char32_t utf32Code, bool* outFlushRequested)
+VectorFontGlyphCache::Handle VectorFontGlyphCache::getGlyphInfo(char32_t utf32Code, bool* outFlushRequested)
 {
 	int infoIndex = -1;
 	auto itr = m_glyphInfoIndexMap.find(utf32Code);
@@ -388,7 +388,7 @@ VectorFontGlyphCache::Handle VectorFontGlyphCache::GetGlyphInfo(char32_t utf32Co
 		m_glyphInfoIndexMap[utf32Code] = infoIndex;
 
 		RawFont::VectorGlyphInfo info;
-		m_font->DecomposeOutline(utf32Code, &info);
+		m_font->decomposeOutline(utf32Code, &info);
 		
 		// レンダリングスレッドへデータを送る
 		{
@@ -396,13 +396,13 @@ VectorFontGlyphCache::Handle VectorFontGlyphCache::GetGlyphInfo(char32_t utf32Co
 			RenderBulkData outlineList(&info.outlines[0], sizeof(RawFont::OutlineInfo) * info.outlines.getCount());
 			VectorFontGlyphCache* this_ = this;
 			LN_ENQUEUE_RENDER_COMMAND_4(
-				RegisterPolygons, m_manager,
+				registerPolygons, m_manager,
 				VectorFontGlyphCache*, this_,
 				Handle, infoIndex,
 				RenderBulkData, vertexList,
 				RenderBulkData, outlineList,
 				{
-					this_->RegisterPolygons(
+					this_->registerPolygons(
 						infoIndex,
 						reinterpret_cast<const RawFont::FontOutlineVertex*>(vertexList.getData()),
 						vertexList.getSize() / sizeof(RawFont::FontOutlineVertex),
@@ -429,9 +429,9 @@ VectorFontGlyphCache::Handle VectorFontGlyphCache::GetGlyphInfo(char32_t utf32Co
 	// キャッシュが一杯になっていないかチェック。
 	// 一杯になってたら、異なる文字が max 個書かれようとしているということ。
 	// 呼び出し元に Flush してもらわないと、一部の文字が描画できないことになる。
-	if (m_inFlushUsedCount == GetMaxCount())
+	if (m_inFlushUsedCount == getMaxCount())
 	{
-		ResetUsedFlags();
+		resetUsedFlags();
 		*outFlushRequested = true;
 	}
 	else
@@ -443,13 +443,13 @@ VectorFontGlyphCache::Handle VectorFontGlyphCache::GetGlyphInfo(char32_t utf32Co
 }
 
 //------------------------------------------------------------------------------
-void VectorFontGlyphCache::OnFlush()
+void VectorFontGlyphCache::onFlush()
 {
-	ResetUsedFlags();
+	resetUsedFlags();
 }
 
 //------------------------------------------------------------------------------
-int VectorFontGlyphCache::GetVertexCount(Handle info)
+int VectorFontGlyphCache::getVertexCount(Handle info)
 {
 	return m_gryphBufferDataList[info].vertices.getCount();
 }
@@ -461,7 +461,7 @@ int VectorFontGlyphCache::getIndexCount(Handle info)
 }
 
 //------------------------------------------------------------------------------
-void VectorFontGlyphCache::GenerateMesh(Handle infoIndex, const Vector3& baselineOrigin, const Matrix& transform, Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+void VectorFontGlyphCache::generateMesh(Handle infoIndex, const Vector3& baselineOrigin, const Matrix& transform, Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
 {
 	auto* info = &m_gryphBufferDataList[infoIndex];
 	bool isIdent = transform.isIdentity();
@@ -481,9 +481,9 @@ void VectorFontGlyphCache::GenerateMesh(Handle infoIndex, const Vector3& baselin
 }
 
 //------------------------------------------------------------------------------
-void VectorFontGlyphCache::ResetUsedFlags()
+void VectorFontGlyphCache::resetUsedFlags()
 {
-	for (int i = 0; i < GetMaxCount(); i++)
+	for (int i = 0; i < getMaxCount(); i++)
 	{
 		m_inFlushUsedFlags[i] = false;
 	}
@@ -491,7 +491,7 @@ void VectorFontGlyphCache::ResetUsedFlags()
 }
 
 //------------------------------------------------------------------------------
-void VectorFontGlyphCache::RegisterPolygons(Handle infoIndex, const RawFont::FontOutlineVertex* vertices, int vertexSize, const RawFont::OutlineInfo* outlines, int outlineSize)
+void VectorFontGlyphCache::registerPolygons(Handle infoIndex, const RawFont::FontOutlineVertex* vertices, int vertexSize, const RawFont::OutlineInfo* outlines, int outlineSize)
 {
 
 	auto* info = &m_gryphBufferDataList[infoIndex];
@@ -511,10 +511,10 @@ void VectorFontGlyphCache::RegisterPolygons(Handle infoIndex, const RawFont::Fon
 	}
 
 	FontOutlineTessellator tess;	// TODO: インスタンスはメンバに持っておいたほうが malloc 少なくなっていいかな？
-	tess.Tessellate(info);
+	tess.tessellate(info);
 
 	FontOutlineStroker stroker;
-	stroker.MakeStroke(info);
+	stroker.makeStroke(info);
 }
 
 } // namespace detail
@@ -551,7 +551,7 @@ namespace detail
 	//	{
 	//	}
 
-	//	void SetFont(RawFont* font)
+	//	void setFont(RawFont* font)
 	//	{
 	//		m_font = font;
 	//	}
@@ -883,7 +883,7 @@ void TextRenderer::CheckResetCache()
 		// キャッシュ用テクスチャ作成
 		m_glyphCacheTexture.Attach(Texture::create(SizeI(w, w), TextureFormat_R8G8B8A8, 1, m_spriteRenderer->GetManager()));
 		//Device::IGraphicsDevice* device = m_spriteRenderer->getManager()->getGraphicsDevice()->getDeviceObject();
-		//m_glyphCacheTexture.Attach(device->CreateTexture(SizeI(w, w), 1, TextureFormat_R8G8B8A8));
+		//m_glyphCacheTexture.Attach(device->createTexture(SizeI(w, w), 1, TextureFormat_R8G8B8A8));
 
 
 		//Device::IGraphicsDevice::ScopedLockContext lock(m_spriteRenderer->getManager()->getGraphicsDevice()->getDeviceObject());

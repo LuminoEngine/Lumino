@@ -156,7 +156,7 @@ void EffekseerEffectEngine::initialize(EffectManager* manager, int cacheObjectCo
 		m_efkManager = ::Effekseer::Manager::Create(2000, false);
 
 		// 描画用インスタンスの生成
-		m_efkRenderer = ::EffekseerRendererDX9::Renderer::Create(dx9Device->GetIDirect3DDevice9(), maxSpriteCount);
+		m_efkRenderer = ::EffekseerRendererDX9::Renderer::Create(dx9Device->getIDirect3DDevice9(), maxSpriteCount);
 
 	}
 	else

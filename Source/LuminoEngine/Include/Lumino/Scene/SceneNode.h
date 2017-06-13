@@ -37,7 +37,7 @@ public:
 	const String& getName() const { return m_name; }
 
 	/// ワールド変換行列の設定
-	void SetTransform(const AttitudeTransform& transform) { m_transform = transform; }
+	void setTransform(const AttitudeTransform& transform) { m_transform = transform; }
 
 	/// ワールド変換行列の取得
 	//const AttitudeTransform& getTransform() const { return m_transform; }

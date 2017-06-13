@@ -403,7 +403,7 @@ struct LNNVGcontext
 			{ 0, VertexElementType_Float2, VertexElementUsage_Position, 0 },
 			{ 0, VertexElementType_Float2, VertexElementUsage_TexCoord, 0 },
 		};
-		m_vertexDeclaration.attach(device->CreateVertexDeclaration(elements, 2), false);
+		m_vertexDeclaration.attach(device->createVertexDeclaration(elements, 2), false);
 	}
 
 	Driver::IRenderer* getRenderer()
@@ -417,7 +417,7 @@ struct LNNVGcontext
 		size_t bufferSize = nverts * sizeof(NVGvertex);
 		if (m_vertexBuffer == nullptr || bufferSize > m_vertexBuffer->getByteCount())
 		{
-			m_vertexBuffer.attach(device->CreateVertexBuffer(bufferSize, verts, ResourceUsage::Dynamic), false);
+			m_vertexBuffer.attach(device->createVertexBuffer(bufferSize, verts, ResourceUsage::Dynamic), false);
 		}
 		else
 		{
@@ -425,8 +425,8 @@ struct LNNVGcontext
 		}
 
 		Driver::IRenderer* renderer = device->getRenderer();
-		renderer->SetVertexDeclaration(m_vertexDeclaration);
-		renderer->SetVertexBuffer(0, m_vertexBuffer);
+		renderer->setVertexDeclaration(m_vertexDeclaration);
+		renderer->setVertexBuffer(0, m_vertexBuffer);
 	}
 
 private:
@@ -600,12 +600,12 @@ static int lnnvg__renderCreate(void* uptr)
 	code.append((const char*)codeData, codeLen);
 
 	ShaderCompileResult result;
-	lnc->shader.attach(device->CreateShader(code.c_str(), code.getLength(), &result), false);
+	lnc->shader.attach(device->createShader(code.c_str(), code.getLength(), &result), false);
 	LN_THROW(result.Level != ShaderCompileResultLevel_Error, CompilationException, result);
-	lnc->shaderPass = lnc->shader->GetTechnique(0)->getPass(0);
-	lnc->varViewSize = lnc->shader->GetVariableByName(_T("viewSize"));
-	lnc->varFrag = lnc->shader->GetVariableByName(_T("frag"));
-	lnc->varTex = lnc->shader->GetVariableByName(_T("tex"));
+	lnc->shaderPass = lnc->shader->getTechnique(0)->getPass(0);
+	lnc->varViewSize = lnc->shader->getVariableByName(_T("viewSize"));
+	lnc->varFrag = lnc->shader->getVariableByName(_T("frag"));
+	lnc->varTex = lnc->shader->getVariableByName(_T("tex"));
 
 	int align = 4;
 	lnc->fragSize = sizeof(GLNVGfragUniforms) + align - sizeof(GLNVGfragUniforms) % align;

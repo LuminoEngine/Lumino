@@ -22,11 +22,11 @@ FontOutlineTessellator::FontOutlineTessellator()
 	// とりあえず GLU_TESS_WINDING_NONZERO で全部埋めるようにする。
 	gluTessProperty(m_gluTesselator, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO);
 
-	gluTessCallback(m_gluTesselator, GLU_TESS_BEGIN_DATA, (GLUTessCallback)BeginCallback);
-	gluTessCallback(m_gluTesselator, GLU_TESS_END_DATA, (GLUTessCallback)EndCallback);
-	gluTessCallback(m_gluTesselator, GLU_TESS_VERTEX_DATA, (GLUTessCallback)VertexDataCallback);
-	gluTessCallback(m_gluTesselator, GLU_TESS_COMBINE_DATA, (GLUTessCallback)CombineCallback);
-	gluTessCallback(m_gluTesselator, GLU_TESS_ERROR, (GLUTessCallback)ErrorCallback);
+	gluTessCallback(m_gluTesselator, GLU_TESS_BEGIN_DATA, (GLUTessCallback)beginCallback);
+	gluTessCallback(m_gluTesselator, GLU_TESS_END_DATA, (GLUTessCallback)endCallback);
+	gluTessCallback(m_gluTesselator, GLU_TESS_VERTEX_DATA, (GLUTessCallback)vertexDataCallback);
+	gluTessCallback(m_gluTesselator, GLU_TESS_COMBINE_DATA, (GLUTessCallback)combineCallback);
+	gluTessCallback(m_gluTesselator, GLU_TESS_ERROR, (GLUTessCallback)errorCallback);
 }
 
 //------------------------------------------------------------------------------
@@ -36,7 +36,7 @@ FontOutlineTessellator::~FontOutlineTessellator()
 }
 
 //------------------------------------------------------------------------------
-void FontOutlineTessellator::Tessellate(RawFont::VectorGlyphInfo* info)
+void FontOutlineTessellator::tessellate(RawFont::VectorGlyphInfo* info)
 {
 	TessellatingState state;
 	state.thisPtr = this;
@@ -63,7 +63,7 @@ void FontOutlineTessellator::Tessellate(RawFont::VectorGlyphInfo* info)
 }
 
 //------------------------------------------------------------------------------
-void FontOutlineTessellator::BeginCallback(GLenum primitiveType, TessellatingState* state)
+void FontOutlineTessellator::beginCallback(GLenum primitiveType, TessellatingState* state)
 {
 	Contour c;
 	c.primitiveType = primitiveType;
@@ -74,7 +74,7 @@ void FontOutlineTessellator::BeginCallback(GLenum primitiveType, TessellatingSta
 }
 
 //------------------------------------------------------------------------------
-void FontOutlineTessellator::EndCallback(TessellatingState* state)
+void FontOutlineTessellator::endCallback(TessellatingState* state)
 {
 
 }
@@ -82,7 +82,7 @@ void FontOutlineTessellator::EndCallback(TessellatingState* state)
 //------------------------------------------------------------------------------
 // vertex : gluTessVertex() の data
 // 点は時計回りで送られてくるようだ。
-void FontOutlineTessellator::VertexDataCallback(void* vertexData, TessellatingState* state)
+void FontOutlineTessellator::vertexDataCallback(void* vertexData, TessellatingState* state)
 {
 	Contour* contour = &state->contourList.getLast();
 	int vertexIndex = reinterpret_cast<int>(vertexData);
@@ -169,7 +169,7 @@ void FontOutlineTessellator::VertexDataCallback(void* vertexData, TessellatingSt
 }
 
 //------------------------------------------------------------------------------
-void FontOutlineTessellator::CombineCallback(GLfloat coords[3], void* vertex_data[4], GLfloat weight[4], void** out_data, TessellatingState* state)
+void FontOutlineTessellator::combineCallback(GLfloat coords[3], void* vertex_data[4], GLfloat weight[4], void** out_data, TessellatingState* state)
 {
 	RawFont::FontOutlineVertex v(Vector2(coords[0], coords[1]));
 	state->glyphInfo->vertices.add(v);
@@ -177,7 +177,7 @@ void FontOutlineTessellator::CombineCallback(GLfloat coords[3], void* vertex_dat
 }
 
 //------------------------------------------------------------------------------
-void FontOutlineTessellator::ErrorCallback(GLenum error_code)
+void FontOutlineTessellator::errorCallback(GLenum error_code)
 {
 	LN_ASSERT(0);	// TODO:
 }
@@ -187,15 +187,15 @@ void FontOutlineTessellator::ErrorCallback(GLenum error_code)
 // FontOutlineStroker
 //==============================================================================
 //------------------------------------------------------------------------------
-void FontOutlineStroker::MakeStroke(RawFont::VectorGlyphInfo* info)
+void FontOutlineStroker::makeStroke(RawFont::VectorGlyphInfo* info)
 {
 	m_info = info;
-	CalculateExtrusion();
-	MakeAntiAliasStroke();
+	calculateExtrusion();
+	makeAntiAliasStroke();
 }
 
 //------------------------------------------------------------------------------
-void FontOutlineStroker::CalculateExtrusion()
+void FontOutlineStroker::calculateExtrusion()
 {
 	for (auto& v : m_info->vertices)
 	{
@@ -242,7 +242,7 @@ void FontOutlineStroker::CalculateExtrusion()
 }
 
 //------------------------------------------------------------------------------
-void FontOutlineStroker::MakeAntiAliasStroke()
+void FontOutlineStroker::makeAntiAliasStroke()
 {
 	for (const auto& outline : m_info->outlines)
 	{

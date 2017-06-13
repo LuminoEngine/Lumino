@@ -102,9 +102,9 @@ void TextBlock2DComponent::OnRender2(DrawList* renderer)
 
 		virtual void onDrawGlyphRun(const Matrix& transform, Brush* forground, GlyphRun* glyphRun, const PointF& point) override
 		{
-			renderer->SetTransform(transform);
+			renderer->setTransform(transform);
 			renderer->setBrush(forground);
-			renderer->DrawGlyphRun(point, glyphRun);
+			renderer->drawGlyphRun(point, glyphRun);
 		}
 	} r;
 	r.renderer = renderer;

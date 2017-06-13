@@ -295,7 +295,7 @@ void TeapotMeshFactory::initialize(float size, int tessellation, const Color& co
 }
 
 //------------------------------------------------------------------------------
-int TeapotMeshFactory::GetVertexCount() const
+int TeapotMeshFactory::getVertexCount() const
 {
 	int tess = m_tessellation + 1;
 	return GetPatchBaseCalls() * (tess * tess);

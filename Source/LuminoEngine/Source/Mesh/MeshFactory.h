@@ -67,7 +67,7 @@ public:
 		m_size = size;
 	}
 
-	int GetVertexCount() const
+	int getVertexCount() const
 	{
 		return 4;
 	}
@@ -113,7 +113,7 @@ public:
 		, m_front(front)
 	{}
 
-	int GetVertexCount() const { return 4; }
+	int getVertexCount() const { return 4; }
 	int getIndexCount() const { return 6; }
 
 	void Generate(Vertex* outVertices, uint16_t* outIndices)
@@ -189,7 +189,7 @@ public:
 		MeshFactoryBase::initialize(color, transform);
 	}
 
-	int GetVertexCount() const { return (m_sliceX + 1) * (m_sliceZ + 1); }
+	int getVertexCount() const { return (m_sliceX + 1) * (m_sliceZ + 1); }
 	int getIndexCount() const { return (m_sliceX * m_sliceZ * 2) * 3; }
 
 	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
@@ -268,7 +268,7 @@ public:
 		m_size = size;
 	}
 
-	int GetVertexCount() const
+	int getVertexCount() const
 	{
 		return 8;
 	}
@@ -346,7 +346,7 @@ public:
 		MeshFactoryBase::initialize(color, transform);
 	}
 
-	int GetVertexCount() const
+	int getVertexCount() const
 	{
 		return 24;
 	}
@@ -456,7 +456,7 @@ public:
 
 	// Squashed
 
-	int GetVertexCount() const
+	int getVertexCount() const
 	{
 		return (m_slices + 1) * (m_stacks + 1);
 		//return 2 + m_slices * (m_stacks - 1);	// (top と bottom の 2 点) + リングの頂点数 * 重ねる数
@@ -613,7 +613,7 @@ public:
 		MeshFactoryBase::initialize(color, transform);
 	}
 
-	int GetVertexCount() const
+	int getVertexCount() const
 	{
 		return (m_slices + 1) * (m_stacks + 3);
 	}
@@ -728,7 +728,7 @@ public:
 		MeshFactoryBase::initialize(color, transform);
 	}
 
-	int GetVertexCount() const
+	int getVertexCount() const
 	{
 		return (m_slices + 1) * 3;
 	}
@@ -836,7 +836,7 @@ public:
 		MeshFactoryBase::initialize(color, transform);
 	}
 
-	int GetVertexCount() const
+	int getVertexCount() const
 	{
 		return (m_slices + 1) * 2;
 	}
@@ -918,7 +918,7 @@ public:
 
 	void initialize(float size, int tessellation, const Color& color, const Matrix& transform);
 
-	int GetVertexCount() const;
+	int getVertexCount() const;
 
 	int getIndexCount() const;
 

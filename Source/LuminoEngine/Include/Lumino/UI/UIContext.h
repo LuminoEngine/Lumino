@@ -12,7 +12,7 @@ class UIContext
 	: public RefObject
 {
 public:
-	static UIContext* GetMainContext();
+	static UIContext* getMainContext();
 
 public:
 	//UILayoutView* GetMainWindowView() { return m_mainWindowView; }

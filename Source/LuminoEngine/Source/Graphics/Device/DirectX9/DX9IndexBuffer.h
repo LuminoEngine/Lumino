@@ -21,12 +21,12 @@ public:
 	void create(DX9GraphicsDevice* device, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage);
 
 	/// IDirect3DIndexBuffer9 へのポインタ取得
-	IDirect3DIndexBuffer9* GetDxIndexBuffer() const { return m_indexBuffer; }
+	IDirect3DIndexBuffer9* getDxIndexBuffer() const { return m_indexBuffer; }
 
 public:
 	virtual size_t getByteCount() const { return m_indexCount * m_indexStride; }
 	virtual IndexBufferFormat getFormat() const { return m_format; }
-	virtual ResourceUsage GetUsage() const { return m_usage; }
+	virtual ResourceUsage getUsage() const { return m_usage; }
 	virtual void setSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes);
 	virtual void lock(void** lockedBuffer, size_t* lockedSize);
 	virtual void unlock();

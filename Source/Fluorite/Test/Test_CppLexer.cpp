@@ -228,7 +228,7 @@ TEST_F(Test_CppLexer, Diagnostics)
 	// <Test> ブロックコメントの途中でEOF
 	{
 		DO_LEX("/*");
-		ASSERT_EQ(DiagnosticsCode::UnexpectedEOFInBlockComment, file->GetDiag()->GetItems()->getLast().GetCode());
+		ASSERT_EQ(DiagnosticsCode::UnexpectedEOFInBlockComment, file->getDiag()->GetItems()->getLast().GetCode());
 	}
 }
 

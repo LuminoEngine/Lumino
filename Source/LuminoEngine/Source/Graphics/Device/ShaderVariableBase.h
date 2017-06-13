@@ -30,16 +30,16 @@ protected:
 
 protected:
 	void initialize(ShaderVariableTypeDesc desc, const String& name, const String& semanticName);	// TODO: semanticName 消しとく
-	void SetSemanticName(const String& semanticName) { m_semanticName = semanticName; }
-	void MakeInitialValue();
+	void setSemanticName(const String& semanticName) { m_semanticName = semanticName; }
+	void makeInitialValue();
 
 public:
 	// IShaderVariable
 	virtual ShaderVariableType getType() const override { return m_desc.Type; }
 	virtual const String& getName() const override { return m_name; }
 	virtual const String& getSemanticName() const override { return m_semanticName; }
-	virtual int GetMatrixRows() const override { return m_desc.Rows; }
-	virtual int GetMatrixColumns() const override { return m_desc.Columns; }
+	virtual int getMatrixRows() const override { return m_desc.Rows; }
+	virtual int getMatrixColumns() const override { return m_desc.Columns; }
 	virtual int getArrayElements() const override { return m_desc.Elements; }
 	virtual void setBool(bool value) override;
 	virtual void setBoolArray(const bool* values, int count) override;

@@ -34,16 +34,16 @@ public:
 	static ShaderCompileResultLevel create(DX9GraphicsDevice* device, const char* code, size_t codeByteCount, DX9Shader** outShader, StringA* outMessage);
 
 	DX9GraphicsDevice* getGraphicsDevice() { return m_device; }
-	ID3DXEffect* GetID3DXEffect() { return m_dxEffect; }
+	ID3DXEffect* getID3DXEffect() { return m_dxEffect; }
 
 	//const SamplerState* FindSamplerState(IDirect3DBaseTexture9* dxTexture) const;
-	List<TextureVarInfo>* GetTextureVarInfoList() { return &m_textureVariables; }
+	List<TextureVarInfo>* getTextureVarInfoList() { return &m_textureVariables; }
 
 	// override IShader
-	virtual int GetVariableCount() const { return m_variables.getCount(); }
-	virtual IShaderVariable* GetVariable(int index) const;
-	virtual int GetTechniqueCount() const { return m_techniques.getCount(); }
-	virtual IShaderTechnique* GetTechnique(int index) const;
+	virtual int getVariableCount() const { return m_variables.getCount(); }
+	virtual IShaderVariable* getVariable(int index) const;
+	virtual int getTechniqueCount() const { return m_techniques.getCount(); }
+	virtual IShaderTechnique* getTechnique(int index) const;
 	virtual void onLostDevice();
 	virtual void onResetDevice();
 
@@ -64,8 +64,8 @@ public:
 	DX9ShaderVariable(DX9Shader* owner, D3DXHANDLE handle);
 	virtual ~DX9ShaderVariable();
 
-	D3DXHANDLE GetHandle() const { return m_handle; }
-	DX9TextureBase* GetDX9TextureBase() const { return m_texture; }
+	D3DXHANDLE getHandle() const { return m_handle; }
+	DX9TextureBase* getDX9TextureBase() const { return m_texture; }
 
 	/// 初期値の読み取り用
 	static void getValue(ID3DXEffect* dxEffect, D3DXHANDLE handle, ShaderVariableTypeDesc desc, ShaderValue* outValue);
@@ -81,8 +81,8 @@ public:
 	virtual void setMatrix(const Matrix& matrix);
 	virtual void setMatrixArray(const Matrix* matrices, int count);
 	virtual void setTexture(ITexture* texture);
-	virtual int GetAnnotationCount() { return m_annotations.getCount(); }
-	virtual IShaderVariable* GetAnnotation(int index);
+	virtual int getAnnotationCount() { return m_annotations.getCount(); }
+	virtual IShaderVariable* getAnnotation(int index);
 
 private:
 	ID3DXEffect*					m_dxEffect;
@@ -109,8 +109,8 @@ public:
 	virtual void setMatrix(const Matrix& matrix) { LN_THROW(0, InvalidOperationException); }
 	virtual void setMatrixArray(const Matrix* matrices, int count) { LN_THROW(0, InvalidOperationException); }
 	virtual void setTexture(ITexture* texture) { LN_THROW(0, InvalidOperationException); }
-	virtual int GetAnnotationCount() { return 0; }
-	virtual IShaderVariable* GetAnnotation(int index) { return NULL; }
+	virtual int getAnnotationCount() { return 0; }
+	virtual IShaderVariable* getAnnotation(int index) { return NULL; }
 };
 
 /// テクニック
@@ -124,10 +124,10 @@ public:
 public:
 	// override IShaderTechnique
 	virtual const TCHAR* getName() const { return m_name.c_str(); }
-	virtual int GetPassCount() const { return m_passes.getCount(); }
+	virtual int getPassCount() const { return m_passes.getCount(); }
 	virtual IShaderPass* getPass(int index);
-	virtual int GetAnnotationCount() { return m_annotations.getCount(); }
-	virtual IShaderVariable* GetAnnotation(int index) { return m_annotations[index]; }
+	virtual int getAnnotationCount() { return m_annotations.getCount(); }
+	virtual IShaderVariable* getAnnotation(int index) { return m_annotations[index]; }
 
 private:
 	ID3DXEffect*					m_dxEffect;
@@ -148,12 +148,12 @@ public:
 public:
 	// override IShaderPass
 	virtual const TCHAR* getName() const { return m_name.c_str(); }
-	virtual int GetAnnotationCount() { return m_annotations.getCount(); }
-	virtual IShaderVariable* GetAnnotation(int index) { return m_annotations[index]; }
+	virtual int getAnnotationCount() { return m_annotations.getCount(); }
+	virtual IShaderVariable* getAnnotation(int index) { return m_annotations[index]; }
 	virtual void apply();
 
-	void EndPass();		// Renderer から呼ばれる
-	void CommitSamplerStatus();
+	void endPass();		// Renderer から呼ばれる
+	void commitSamplerStatus();
 
 private:
 	struct SamplerLink

@@ -40,13 +40,13 @@ public:
 	Language GetLanguage() const { return m_lang; }
 	InputFileCategory GetCategory() const { return m_category; }
 	const PathNameA& GetRelativeFilePath() const { return m_filePath; }
-	DiagnosticsItemSet* GetDiag() const { return m_diag; }
+	DiagnosticsItemSet* getDiag() const { return m_diag; }
 	const TokenList* GetTokenList() const { return &m_tokenList; }
 
 LN_INTERNAL_ACCESS:
 	ByteBuffer* GetCodeBuffer();
 	TokenList* GetTokenListInternal() { return &m_tokenList; }
-	void SetDiag(DiagnosticsItemSet* diag) { m_diag = diag; }
+	void setDiag(DiagnosticsItemSet* diag) { m_diag = diag; }
 	Token* CreateToken();
 
 private:

@@ -453,7 +453,7 @@ void World3D::renderGridPlane(DrawList* renderer, CameraComponent* camera)
 	if (m_visibleGridPlane)
 	{
 		adjustGridPlane(camera);
-		renderer->SetTransform(Matrix::Identity);
+		renderer->setTransform(Matrix::Identity);
 
 		DrawElementMetadata metadata;
 		metadata.priority = (int)DepthPriority::Foreground;

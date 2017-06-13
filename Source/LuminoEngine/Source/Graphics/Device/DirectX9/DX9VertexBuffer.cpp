@@ -89,7 +89,7 @@ void DX9VertexBuffer::onResetDevice()
 {
 	if (m_vertexBuffer == nullptr)
 	{
-		IDirect3DDevice9* dxDevice = m_graphicsDevice->GetIDirect3DDevice9();
+		IDirect3DDevice9* dxDevice = m_graphicsDevice->getIDirect3DDevice9();
 
 		D3DPOOL pool = D3DPOOL_MANAGED;
 		DWORD dxUsage = D3DUSAGE_WRITEONLY;
@@ -133,7 +133,7 @@ void DX9VertexDeclaration::initialize(DX9GraphicsDevice* device, const VertexEle
 	if (LN_CHECK_ARG(elementsCount >= 0)) return;
 	memset(m_vertexStrides, 0, sizeof(m_vertexStrides));
 
-	IDirect3DDevice9* dxDevice = device->GetIDirect3DDevice9();
+	IDirect3DDevice9* dxDevice = device->getIDirect3DDevice9();
 
 	// D3DVERTEXELEMENT9 を作成して、elements から DirectX用の頂点宣言を作る
 	D3DVERTEXELEMENT9* dxelem = LN_NEW D3DVERTEXELEMENT9[elementsCount + 1];

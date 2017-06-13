@@ -145,9 +145,9 @@ void TextElement::initialize()
 	m_manager = detail::DocumentsManager::getInstance();
 	m_fontData.Family = String::getEmpty();
 	m_fontData.Size = 20;
-	m_fontData.IsBold = false;
-	m_fontData.IsItalic = false;
-	m_fontData.IsAntiAlias = true;
+	m_fontData.isBold = false;
+	m_fontData.isItalic = false;
+	m_fontData.isAntiAlias = true;
 	m_fontDataModified = true;
 
 	m_foreground = Brush::Black;

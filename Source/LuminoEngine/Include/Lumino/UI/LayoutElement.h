@@ -136,7 +136,7 @@ class LayoutHelper
 {
 public:
 
-	// 単純に element のサイズによった Measure を行う。measureOverride() の中で使用することを想定している。
+	// 単純に element のサイズによった measure を行う。measureOverride() の中で使用することを想定している。
 	static Size MeasureElement(ILayoutElement* element, const Size& constraint);
 
 	//static void ForEachVisualChildren(UIElement* element, std::function<void(UIElement* child)> func)

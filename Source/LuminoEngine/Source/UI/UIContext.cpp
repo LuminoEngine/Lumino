@@ -21,7 +21,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-UIContext* UIContext::GetMainContext()
+UIContext* UIContext::getMainContext()
 {
 	return detail::UIManager::getInstance()->getMainWindow()->GetMainUIContext();
 }

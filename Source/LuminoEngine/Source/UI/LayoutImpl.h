@@ -149,7 +149,7 @@ public:
 		{
 			ILayoutElement* child = basePanel->GetLayoutChild(i);
 
-			// まずは子を Measure
+			// まずは子を measure
 			child->measureLayout(constraint);
 
 			// child が配置されるべき column と row を探す

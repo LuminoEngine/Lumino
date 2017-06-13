@@ -155,8 +155,8 @@ void EngineInitalize()
 	// テストしやすいように固定フレームレートにする
 	Engine::setFrameUpdateMode(FrameUpdateMode::Fixed);
 
-	RawFont::RegisterFontFile(LN_LOCALFILE("../../../../Tools/VLGothic/VL-Gothic-Regular.ttf"));
-	RawFont::GetDefaultFont()->setName(_T("VL Gothic"));
+	RawFont::registerFontFile(LN_LOCALFILE("../../../../Tools/VLGothic/VL-Gothic-Regular.ttf"));
+	RawFont::getDefaultFont()->setName(_T("VL Gothic"));
 
 	// 背景はグレーにしておくと加算合成のテストとか、いろいろ都合がよい
 	Engine::getMainViewport()->SetViewBackgroundColor(Color32::Gray);

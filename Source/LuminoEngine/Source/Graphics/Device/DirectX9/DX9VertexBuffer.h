@@ -17,7 +17,7 @@ public:
 	virtual ~DX9VertexBuffer();
 
 	void create(DX9GraphicsDevice* device, size_t bufferSize, const void* initialData, ResourceUsage usage);
-	IDirect3DVertexBuffer9* GetDxVertexBuffer() { return m_vertexBuffer; }
+	IDirect3DVertexBuffer9* getDxVertexBuffer() { return m_vertexBuffer; }
 
 	// IVertexBuffer interface
 	virtual size_t getByteCount() const { return m_bufferSize; }
@@ -43,8 +43,8 @@ public:
 	virtual ~DX9VertexDeclaration();
 	void initialize(DX9GraphicsDevice* device, const VertexElement* elements, int elementsCount);
 
-	IDirect3DVertexDeclaration9* GetDxVertexDeclaration() const { return m_vertexDecl; }
-	int GetVertexStride(int streamIndex) const { return m_vertexStrides[streamIndex]; }
+	IDirect3DVertexDeclaration9* getDxVertexDeclaration() const { return m_vertexDecl; }
+	int getVertexStride(int streamIndex) const { return m_vertexStrides[streamIndex]; }
 
 
 	// IDeviceObject interface

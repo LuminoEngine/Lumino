@@ -47,7 +47,7 @@ public:
 	/** 名前を取得します。*/
 	const String& getName() const { return m_name; }
 
-	int GetVertexCount() const;
+	int getVertexCount() const;
 	int getIndexCount() const;
 	int GetTriangleCount() const;
 
@@ -191,7 +191,7 @@ LN_INTERNAL_ACCESS:
 	void* RequestVertexBufferForAdditional(int additionalVertexCount, VertexBufferType type);
 	uint16_t* RequestIndexBufferForAdditional(int additionalIndexCount);
 
-	VertexBuffer* GetVertexBuffer(VertexBufferType type) const;
+	VertexBuffer* getVertexBuffer(VertexBufferType type) const;
 	VertexBuffer* RequestVertexBuffer(VertexBufferType type);
 	IndexBuffer* RequestIndexBuffer();
 

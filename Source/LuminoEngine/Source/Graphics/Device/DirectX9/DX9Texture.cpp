@@ -56,7 +56,7 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const SizeI& size, TextureForm
 		このため、事前チェックが必要。さらに、本当に使われたフォーマットからもう一度
 		本ライブラリ用のフォーマットを求めなおしている。
 	*/
-	IDirect3DDevice9* d3d9Device = m_graphicsDevice->GetIDirect3DDevice9();
+	IDirect3DDevice9* d3d9Device = m_graphicsDevice->getIDirect3DDevice9();
 	m_size = size;
 
 	// 実際に作成されるべきテクスチャの情報を取得する
@@ -110,7 +110,7 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const void* data, uint32_t siz
 
 	D3DCOLOR ck = D3DCOLOR_ARGB(colorKey.a, colorKey.r, colorKey.g, colorKey.b);
 	LN_COMCALL(DX9Module::D3DXCreateTextureFromFileInMemoryEx(
-		m_graphicsDevice->GetIDirect3DDevice9(),
+		m_graphicsDevice->getIDirect3DDevice9(),
 		data, size,
 		//512, 512, // ノート OK
 		//D3DX_DEFAULT_NONPOW2, // ノート NG  デスクトップ OK
@@ -139,7 +139,7 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const void* data, uint32_t siz
 
 	// 実際のテクスチャの大きさを取得
 	LN_COMCALL(DX9Module::D3DXCheckTextureRequirements(
-		m_graphicsDevice->GetIDirect3DDevice9(),
+		m_graphicsDevice->getIDirect3DDevice9(),
 		&imageInfo.Width, &imageInfo.Height,
 		&miplevels, dxUsage, NULL, D3DPOOL_MANAGED));
 	m_realSize.set(imageInfo.Width, imageInfo.Height);
@@ -234,7 +234,7 @@ void DX9Texture::setSubData(const PointI& point, const void* data, size_t dataBy
 }
 
 //------------------------------------------------------------------------------
-void DX9Texture::SetSubData3D(const Box32& box, const void* data, size_t dataBytes)
+void DX9Texture::setSubData3D(const Box32& box, const void* data, size_t dataBytes)
 {
 	LN_THROW(0, InvalidOperationException);
 }
@@ -322,7 +322,7 @@ DX9Texture3D::~DX9Texture3D()
 //------------------------------------------------------------------------------
 void DX9Texture3D::initialize(int width, int height, int depth, TextureFormat format, uint32_t levels)
 {
-	IDirect3DDevice9* d3d9Device = m_graphicsDevice->GetIDirect3DDevice9();
+	IDirect3DDevice9* d3d9Device = m_graphicsDevice->getIDirect3DDevice9();
 
 	m_size.set(width, height);
 	m_format = format;
@@ -361,7 +361,7 @@ void DX9Texture3D::setSubData(const PointI& point, const void* data, size_t data
 }
 
 //------------------------------------------------------------------------------
-void DX9Texture3D::SetSubData3D(const Box32& box, const void* data, size_t dataBytes)
+void DX9Texture3D::setSubData3D(const Box32& box, const void* data, size_t dataBytes)
 {
 	if (LN_CHECK_ARG(data != nullptr)) return;
 	if (dataBytes == 0) return;
@@ -437,7 +437,7 @@ void DX9RenderTargetTexture::onLostDevice()
 //------------------------------------------------------------------------------
 void DX9RenderTargetTexture::onResetDevice()
 {
-	IDirect3DDevice9* dxDevice = m_graphicsDevice->GetIDirect3DDevice9();
+	IDirect3DDevice9* dxDevice = m_graphicsDevice->getIDirect3DDevice9();
 
 	// レンダーターゲットは GDI 互換フォーマットでなければならない (Radeon HD8490)
 	if (m_format == TextureFormat::R8G8B8A8) {
@@ -511,7 +511,7 @@ void DX9RenderTargetTexture::onResetDevice()
 }
 
 //------------------------------------------------------------------------------
-void DX9RenderTargetTexture::SetSubData3D(const Box32& box, const void* data, size_t dataBytes)
+void DX9RenderTargetTexture::setSubData3D(const Box32& box, const void* data, size_t dataBytes)
 {
 	LN_THROW(0, InvalidOperationException);
 }
@@ -519,19 +519,19 @@ void DX9RenderTargetTexture::SetSubData3D(const Box32& box, const void* data, si
 //------------------------------------------------------------------------------
 Bitmap* DX9RenderTargetTexture::lock()
 {
-	IDirect3DDevice9* dxDevice = m_graphicsDevice->GetIDirect3DDevice9();
-	DX9RenderTargetTexture::LockRenderTarget(dxDevice, m_dxSurface, m_format, m_realSize, &m_lockedSystemSurface, &m_lockedBuffer, &m_lockedBitmap);
+	IDirect3DDevice9* dxDevice = m_graphicsDevice->getIDirect3DDevice9();
+	DX9RenderTargetTexture::lockRenderTarget(dxDevice, m_dxSurface, m_format, m_realSize, &m_lockedSystemSurface, &m_lockedBuffer, &m_lockedBitmap);
 	return m_lockedBitmap;
 }
 
 //------------------------------------------------------------------------------
 void DX9RenderTargetTexture::unlock()
 {
-	DX9RenderTargetTexture::UnlockRenderTarget(&m_lockedSystemSurface, &m_lockedBuffer, &m_lockedBitmap);
+	DX9RenderTargetTexture::unlockRenderTarget(&m_lockedSystemSurface, &m_lockedBuffer, &m_lockedBitmap);
 }
 
 //------------------------------------------------------------------------------
-void DX9RenderTargetTexture::LockRenderTarget(IDirect3DDevice9* dxDevice, IDirect3DSurface9* dxSurface, TextureFormat format, const SizeI& realSize, IDirect3DSurface9** outLockedSystemSurface, ByteBuffer* outLockedBuffer, Bitmap** outLockedBitmap)
+void DX9RenderTargetTexture::lockRenderTarget(IDirect3DDevice9* dxDevice, IDirect3DSurface9* dxSurface, TextureFormat format, const SizeI& realSize, IDirect3DSurface9** outLockedSystemSurface, ByteBuffer* outLockedBuffer, Bitmap** outLockedBitmap)
 {
 	D3DSURFACE_DESC desc;
 	LN_COMCALL(dxSurface->GetDesc(&desc));
@@ -557,7 +557,7 @@ void DX9RenderTargetTexture::LockRenderTarget(IDirect3DDevice9* dxDevice, IDirec
 }
 
 //------------------------------------------------------------------------------
-void DX9RenderTargetTexture::UnlockRenderTarget(IDirect3DSurface9** lockedSystemSurface, ByteBuffer* lockedBuffer, Bitmap** lockedBitmap)
+void DX9RenderTargetTexture::unlockRenderTarget(IDirect3DSurface9** lockedSystemSurface, ByteBuffer* lockedBuffer, Bitmap** lockedBitmap)
 {
 	if ((*lockedSystemSurface) != NULL)
 	{
@@ -584,7 +584,7 @@ DX9DepthBuffer::DX9DepthBuffer(DX9GraphicsDevice* device, const SizeI& size, Tex
 }
 
 //------------------------------------------------------------------------------
-void DX9DepthBuffer::SetSubData3D(const Box32& box, const void* data, size_t dataBytes)
+void DX9DepthBuffer::setSubData3D(const Box32& box, const void* data, size_t dataBytes)
 {
 	LN_THROW(0, InvalidOperationException);
 }
@@ -604,7 +604,7 @@ void DX9DepthBuffer::onLostDevice()
 //------------------------------------------------------------------------------
 void DX9DepthBuffer::onResetDevice()
 {
-	IDirect3DDevice9* dxDevice = m_graphicsDevice->GetIDirect3DDevice9();
+	IDirect3DDevice9* dxDevice = m_graphicsDevice->getIDirect3DDevice9();
 
 	LN_COMCALL(
 		dxDevice->CreateDepthStencilSurface(
@@ -661,7 +661,7 @@ void DX9BackBufferTexture::reset(IDirect3DSurface9* backBufferSurface)
 }
 
 //------------------------------------------------------------------------------
-void DX9BackBufferTexture::SetSubData3D(const Box32& box, const void* data, size_t dataBytes)
+void DX9BackBufferTexture::setSubData3D(const Box32& box, const void* data, size_t dataBytes)
 {
 	LN_THROW(0, InvalidOperationException);
 }
@@ -669,8 +669,8 @@ void DX9BackBufferTexture::SetSubData3D(const Box32& box, const void* data, size
 //------------------------------------------------------------------------------
 Bitmap* DX9BackBufferTexture::lock()
 {
-	IDirect3DDevice9* dxDevice = m_graphicsDevice->GetIDirect3DDevice9();
-	DX9RenderTargetTexture::LockRenderTarget(dxDevice, m_dxSurface, m_format, m_realSize, &m_lockedSystemSurface, &m_lockedBuffer, &m_lockedBitmap);
+	IDirect3DDevice9* dxDevice = m_graphicsDevice->getIDirect3DDevice9();
+	DX9RenderTargetTexture::lockRenderTarget(dxDevice, m_dxSurface, m_format, m_realSize, &m_lockedSystemSurface, &m_lockedBuffer, &m_lockedBitmap);
 
 	//D3DSURFACE_DESC desc;
 	//LN_COMCALL(m_dxSurface->GetDesc(&desc));
@@ -700,7 +700,7 @@ Bitmap* DX9BackBufferTexture::lock()
 //------------------------------------------------------------------------------
 void DX9BackBufferTexture::unlock()
 {
-	DX9RenderTargetTexture::UnlockRenderTarget(&m_lockedSystemSurface, &m_lockedBuffer, &m_lockedBitmap);
+	DX9RenderTargetTexture::unlockRenderTarget(&m_lockedSystemSurface, &m_lockedBuffer, &m_lockedBitmap);
 	//if (m_lockedSystemSurface != NULL)
 	//{
 	//	m_lockedSystemSurface->UnlockRect();

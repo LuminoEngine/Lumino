@@ -49,7 +49,7 @@ void FrameRectRendererCore::initialize(GraphicsManager* manager)
 	//-----------------------------------------------------
 	// Vertex and Index buffers
 	const int DefaultFaceCount = 512;
-	RequestBuffers(512);
+	requestBuffers(512);
 	m_vertexCache.reserve(DefaultFaceCount * 4);
 	m_indexCache.reserve(DefaultFaceCount * 6);
 
@@ -62,24 +62,24 @@ void FrameRectRendererCore::initialize(GraphicsManager* manager)
 	static const size_t g_Painter_fx_Len = LN_ARRAY_SIZE_OF(g_Painter_fx_Data);
 
 	ShaderCompileResult r;
-	m_shader.shader = device->CreateShader(g_Painter_fx_Data, g_Painter_fx_Len, &r);
+	m_shader.shader = device->createShader(g_Painter_fx_Data, g_Painter_fx_Len, &r);
 	LN_THROW(r.Level != ShaderCompileResultLevel_Error, CompilationException, r);
 
-	m_shader.technique = m_shader.shader->GetTechnique(0);
+	m_shader.technique = m_shader.shader->getTechnique(0);
 	m_shader.pass = m_shader.technique->getPass(0);
-	m_shader.varWorldMatrix = m_shader.shader->GetVariableByName(_T("g_worldMatrix"));
-	m_shader.varViewProjMatrix = m_shader.shader->GetVariableByName(_T("g_viewProjMatrix"));
-	m_shader.varTone = m_shader.shader->GetVariableByName(_T("g_tone"));
-	m_shader.varTexture = m_shader.shader->GetVariableByName(_T("g_texture"));
-	m_shader.varGlyphMaskSampler = m_shader.shader->GetVariableByName(_T("g_glyphMaskTexture"));
-	m_shader.varViewportSize = m_shader.shader->GetVariableByName(_T("g_viewportSize"));
+	m_shader.varWorldMatrix = m_shader.shader->getVariableByName(_T("g_worldMatrix"));
+	m_shader.varViewProjMatrix = m_shader.shader->getVariableByName(_T("g_viewProjMatrix"));
+	m_shader.varTone = m_shader.shader->getVariableByName(_T("g_tone"));
+	m_shader.varTexture = m_shader.shader->getVariableByName(_T("g_texture"));
+	m_shader.varGlyphMaskSampler = m_shader.shader->getVariableByName(_T("g_glyphMaskTexture"));
+	m_shader.varViewportSize = m_shader.shader->getVariableByName(_T("g_viewportSize"));
 
 	m_shader.varWorldMatrix->setMatrix(Matrix::Identity);
 	m_shader.varViewProjMatrix->setMatrix(Matrix::Identity);
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRendererCore::SetState(const FrameRectRendererState& state)
+void FrameRectRendererCore::setState(const FrameRectRendererState& state)
 {
 	m_state = state;
 	
@@ -118,7 +118,7 @@ void FrameRectRendererCore::Draw(const Matrix& transform, const Rect& rect)
 		srcRect.width -= m_state.borderThickness.Right + m_state.borderThickness.Left;
 		srcRect.height -= m_state.borderThickness.Bottom + m_state.borderThickness.Top;
 
-		Size texSize((float)srcTexture->GetRealSize().width, (float)srcTexture->GetRealSize().height);
+		Size texSize((float)srcTexture->getRealSize().width, (float)srcTexture->getRealSize().height);
 		texSize.width = 1.0f / texSize.width;
 		texSize.height = 1.0f / texSize.height;
 		Rect uvSrcRect(srcRect.x * texSize.width, srcRect.y * texSize.height, srcRect.width * texSize.width, srcRect.height * texSize.height);
@@ -144,11 +144,11 @@ void FrameRectRendererCore::Draw(const Matrix& transform, const Rect& rect)
 		//m_shader.varTexture->setTexture(srcTexture);
 		//m_shader.varGlyphMaskSampler->setTexture(m_manager->getDummyDeviceTexture());
 		//m_renderer->setShaderPass(m_shader.pass);
-		//m_renderer->SetVertexDeclaration(m_vertexDeclaration);
+		//m_renderer->setVertexDeclaration(m_vertexDeclaration);
 
-		m_renderer->SetVertexDeclaration(m_manager->getDefaultVertexDeclaration()->getDeviceObject());
-		m_renderer->SetVertexBuffer(0, m_vertexBuffer);
-		m_renderer->SetIndexBuffer(m_indexBuffer);
+		m_renderer->setVertexDeclaration(m_manager->getDefaultVertexDeclaration()->getDeviceObject());
+		m_renderer->setVertexBuffer(0, m_vertexBuffer);
+		m_renderer->setIndexBuffer(m_indexBuffer);
 		m_renderer->drawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.getCount() / 3);
 
 		// キャッシュクリア
@@ -158,15 +158,15 @@ void FrameRectRendererCore::Draw(const Matrix& transform, const Rect& rect)
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRendererCore::RequestBuffers(int faceCount)
+void FrameRectRendererCore::requestBuffers(int faceCount)
 {
 	LN_SAFE_RELEASE(m_vertexBuffer);
 	LN_SAFE_RELEASE(m_indexBuffer);
 
 	auto* device = m_manager->getGraphicsDevice();
-	//m_vertexDeclaration.Attach(device->CreateVertexDeclaration(Vertex::Elements(), Vertex::ElementCount), false);
-	m_vertexBuffer = device->CreateVertexBuffer(sizeof(Vertex) * faceCount * 4, nullptr, ResourceUsage::Dynamic);
-	m_indexBuffer = device->CreateIndexBuffer(faceCount * 6, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
+	//m_vertexDeclaration.Attach(device->createVertexDeclaration(Vertex::Elements(), Vertex::ElementCount), false);
+	m_vertexBuffer = device->createVertexBuffer(sizeof(Vertex) * faceCount * 4, nullptr, ResourceUsage::Dynamic);
+	m_indexBuffer = device->createIndexBuffer(faceCount * 6, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 }
 
 #if 0
@@ -355,7 +355,7 @@ void FrameRectRendererCore::PutFrameRectangle(const Rect& rect, const ThicknessF
 	m_vertexCache.clear();
 	m_indexCache.clear();
 
-	Size texSize((float)srcTexture->GetRealSize().width, (float)srcTexture->GetRealSize().height);
+	Size texSize((float)srcTexture->getRealSize().width, (float)srcTexture->getRealSize().height);
 	texSize.width = 1.0f / texSize.width;
 	texSize.height = 1.0f / texSize.height;
 	Rect uvSrcRect(srcRect.x * texSize.width, srcRect.y * texSize.height, srcRect.width * texSize.width, srcRect.height * texSize.height);
@@ -500,19 +500,19 @@ void FrameRectRenderFeature::initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRenderFeature::SetViewInfo(const Matrix& viewProj)
+void FrameRectRenderFeature::setViewInfo(const Matrix& viewProj)
 {
 	m_viewProj = viewProj;
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRenderFeature::SetState(Brush* brush)
+void FrameRectRenderFeature::setState(Brush* brush)
 {
 	m_brush = brush;
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRenderFeature::SetState(Brush* brush, const Matrix& world, const Matrix& viewProj)	// TODO: world いらない
+void FrameRectRenderFeature::setState(Brush* brush, const Matrix& world, const Matrix& viewProj)	// TODO: world いらない
 {
 	if (LN_CHECK_ARG(brush != nullptr)) return;
 
@@ -527,18 +527,18 @@ void FrameRectRenderFeature::SetState(Brush* brush, const Matrix& world, const M
 	if (LN_CHECK_STATE(state.texture != nullptr)) return;
 
 	LN_ENQUEUE_RENDER_COMMAND_2(
-		SetState, m_manager,
+		setState, m_manager,
 		FrameRectRendererCore*, m_core,
 		FrameRectRendererState, state,
 		{
-			m_core->SetState(state);
+			m_core->setState(state);
 		});
 }
 
 //------------------------------------------------------------------------------
 void FrameRectRenderFeature::Draw(const Matrix& transform, const Rect& rect)
 {
-	SetState(m_brush, Matrix::Identity, m_viewProj);
+	setState(m_brush, Matrix::Identity, m_viewProj);
 
 	LN_ENQUEUE_RENDER_COMMAND_3(
 		Draw, m_manager,
@@ -558,7 +558,7 @@ void FrameRectRenderFeature::flush()
 //------------------------------------------------------------------------------
 void FrameRectRenderFeature::onSetState(const DrawElementBatch* state)
 {
-	SetState(state->state.getBrush());
+	setState(state->state.getBrush());
 }
 
 } // namespace detail

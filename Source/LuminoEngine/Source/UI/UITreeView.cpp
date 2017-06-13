@@ -52,11 +52,11 @@ Size UITreeViewItem::measureOverride(const Size& constraint)
 {
 	Size desiredSize(16, 0);	// TODO: Branch の余白は後で考える http://doc.qt.io/qt-4.8/stylesheet-examples.html#customizing-qtreeview
 
-	// Measure Header
+	// measure Header
 	m_header->measureLayout(constraint);
 	Size headerSize = m_header->getDesiredSize();
 
-	// Measure Items
+	// measure Items
 	UILayoutPanel* itemsPanel = GetLayoutPanel();
 	itemsPanel->measureLayout(constraint);
 	Size panelSize = itemsPanel->getDesiredSize();
@@ -70,7 +70,7 @@ Size UITreeViewItem::measureOverride(const Size& constraint)
 
 	return Size::max(desiredSize, thisSize);
 
-	// ※GetLayoutPanel() で得られる UILayoutPanel の Measure をここで行うので 
+	// ※GetLayoutPanel() で得られる UILayoutPanel の measure をここで行うので 
 }
 
 //------------------------------------------------------------------------------

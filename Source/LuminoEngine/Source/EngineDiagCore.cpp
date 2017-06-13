@@ -106,7 +106,7 @@ void EngineDiagViewer::initialize(EngineManager* manager, EngineDiagCore* diagCo
 	m_mainWindow = manager->getPlatformManager()->getMainWindow();
 	m_originalMainWindowTitle = m_mainWindow->GetTitleText();
 
-	m_font = manager->getGraphicsManager()->getFontManager()->GetBuiltinFont(BuiltinFontSize::XXSmall);
+	m_font = manager->getGraphicsManager()->getFontManager()->getBuiltinFont(BuiltinFontSize::XXSmall);
 	//m_windowRect.Set(640 - 8 - 300, 8, 300, 256);	// TODO
 	m_windowRect.set(8, 8, 300, 300);
 }
@@ -155,7 +155,7 @@ void EngineDiagViewer::Render(DrawingContext* g, const Vector2& viewSize)
 	//LocalPainter painter(Size(viewSize.X, viewSize.Y), m_manager);
 	////g->SetProjection(Size(viewSize.X, viewSize.Y), 0, 1000);
 	//g->setOpacity(0.5f);
-	//g->SetFont(m_font);
+	//g->setFont(m_font);
 
 	//// ウィンドウ背景
 	//g->setBrush(ColorBrush::DimGray);
@@ -168,7 +168,7 @@ void EngineDiagViewer::Render(DrawingContext* g, const Vector2& viewSize)
 
 	//g->setBrush(ColorBrush::White);
 	//g->setOpacity(1.0f);
-	//g->DrawString(_T("Statistics"), -1, m_windowRect, StringFormatFlags::CenterAlignment);
+	//g->drawString(_T("Statistics"), -1, m_windowRect, StringFormatFlags::CenterAlignment);
 
 	location.y += 24;
 

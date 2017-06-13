@@ -506,7 +506,7 @@ void Main()
 	particle2->SetBlendMode(BlendMode::Add);
 #endif
 
-	//auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+	//auto uiRoot = UIContext::getMainContext()->GetMainWindowView()->GetLayoutRoot();
 	//auto listBox = tr::UIListBox::create();
 	//listBox->AddTextItem(_T("test"));
 	//listBox->AddTextItem(_T("fff"));
@@ -525,11 +525,11 @@ void Main()
 	//
 	//gizmo->AddOnTargetTransformChanged([sp](tr::GizmoModel* g)
 	//{
-	//	sp->SetTransform(g->GetTargetTransform());
+	//	sp->setTransform(g->GetTargetTransform());
 	//});
 	//gizmo->AddOnSubmitEditing([sp](tr::GizmoModel* g)
 	//{
-	//	//sp->SetTransform(g->GetTargetTransform());
+	//	//sp->setTransform(g->GetTargetTransform());
 	//});
 
 

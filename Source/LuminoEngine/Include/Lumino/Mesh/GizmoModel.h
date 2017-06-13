@@ -29,7 +29,7 @@ public:
 	//void SetTargetTransform(const Matrix& transform);
 	const AttitudeTransform& GetTargetTransform() const;
 	
-	void SetViewInfo(const Vector3& viewPosition, const Matrix& view, const Matrix& proj, const SizeI& viewPixelSize);
+	void setViewInfo(const Vector3& viewPosition, const Matrix& view, const Matrix& proj, const SizeI& viewPixelSize);
 	void SetDisplayScale(float scale);
 	
 	bool InjectMouseDown(int x, int y);

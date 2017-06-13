@@ -41,7 +41,7 @@ public:
 	GraphicsManager* getGraphicsManager() { return m_graphicsManager; }
 	Texture2D* GetMMDDefaultToonTexture(int index);
 
-	RefPtr<Texture> CreateTexture(const PathName& parentDir, const StringRef& filePath, ModelCreationFlag flags);
+	RefPtr<Texture> createTexture(const PathName& parentDir, const StringRef& filePath, ModelCreationFlag flags);
 	
 
 	RefPtr<StaticMeshModel> CreateStaticMeshModel(const PathName& filePath);

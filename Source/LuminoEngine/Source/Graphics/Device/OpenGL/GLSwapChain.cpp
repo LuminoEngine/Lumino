@@ -86,7 +86,7 @@ void GLSwapChain::onResetDevice()
         "	gl_FragColor = texture2D(texture, vTexCoord);\n"
         "}\n";
 	StringA message;
-	ShaderCompileResultLevel r = GLSLUtils::MakeShaderProgram(vsCode, sizeof(vsCode), fsCode, sizeof(fsCode), &m_shaderProgram, &message);
+	ShaderCompileResultLevel r = GLSLUtils::makeShaderProgram(vsCode, sizeof(vsCode), fsCode, sizeof(fsCode), &m_shaderProgram, &message);
 	if (r != ShaderCompileResultLevel_Success) {
 		ShaderCompileResult result;
 		result.Level = r;
@@ -117,27 +117,27 @@ void GLSwapChain::resize(const SizeI& size)
 }
 
 //------------------------------------------------------------------------------
-void GLSwapChain::Present(ITexture* colorBuffer)
+void GLSwapChain::present(ITexture* colorBuffer)
 {
 	assert(colorBuffer == m_renderTarget);
 
 	try
 	{
-		m_device->MakeCurrentContext(m_context);
+		m_device->makeCurrentContext(m_context);
 
 		// colorBuffer をバックバッファに描画する
-		InternalPresent(colorBuffer, static_cast<GLRenderer*>(m_device->getRenderer()));
+		internalPresent(colorBuffer, static_cast<GLRenderer*>(m_device->getRenderer()));
 
 		// バックバッファをフロントバッファに転送する
-		m_context->SwapBuffers();
+		m_context->swapBuffers();
 	}
 	catch (...)
 	{
-		m_device->MakeCurrentContext(m_device->GetMainRenderingContext());
+		m_device->makeCurrentContext(m_device->getMainRenderingContext());
 		throw;
 	}
-	m_device->MakeCurrentContext(m_device->GetMainRenderingContext());
-	m_device->GCDeviceResource();
+	m_device->makeCurrentContext(m_device->getMainRenderingContext());
+	m_device->gcDeviceResource();
 
 
 	if (m_backBufferSize != m_renderTarget->getSize())
@@ -148,7 +148,7 @@ void GLSwapChain::Present(ITexture* colorBuffer)
 }
 
 //------------------------------------------------------------------------------
-void GLSwapChain::InternalPresent(ITexture* colorBuffer, GLRenderer* renderer)
+void GLSwapChain::internalPresent(ITexture* colorBuffer, GLRenderer* renderer)
 {
 	//glEnable(GL_TEXTURE_2D);
 	glDisable(GL_CULL_FACE);	// 両面描画
@@ -189,7 +189,7 @@ void GLSwapChain::InternalPresent(ITexture* colorBuffer, GLRenderer* renderer)
 
 	// テクスチャユニット0に戻す
 	glActiveTexture(GL_TEXTURE0); LN_CHECK_GLERROR();
-	glBindTexture(GL_TEXTURE_2D, static_cast<GLTextureBase*>(colorBuffer)->GetGLTexture()); LN_CHECK_GLERROR();
+	glBindTexture(GL_TEXTURE_2D, static_cast<GLTextureBase*>(colorBuffer)->getGLTexture()); LN_CHECK_GLERROR();
 	glUniform1i(m_textureLoc, 0); LN_CHECK_GLERROR();	// テクスチャユニット 0 を割り当てる
 
 

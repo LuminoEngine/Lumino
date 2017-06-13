@@ -77,7 +77,7 @@ const AttitudeTransform& GizmoModel::GetTargetTransform() const
 }
 
 //------------------------------------------------------------------------------
-void GizmoModel::SetViewInfo(const Vector3& viewPosition, const Matrix& view, const Matrix& proj, const SizeI& viewPixelSize)
+void GizmoModel::setViewInfo(const Vector3& viewPosition, const Matrix& view, const Matrix& proj, const SizeI& viewPixelSize)
 {
 	m_viewPosition = viewPosition;
 	m_view = view;
@@ -257,7 +257,7 @@ void GizmoModel::render(DrawList* context)
 	Matrix gizmoMat;
 	gizmoMat.scale(m_screenFactor);
 	gizmoMat *= m_gizmoTransform;
-	context->SetTransform(gizmoMat);	// TODO: old
+	context->setTransform(gizmoMat);	// TODO: old
 
 
 	Color c;
@@ -331,7 +331,7 @@ void GizmoModel::render(DrawList* context)
 			viewInv.m41 = m_gizmoTransform.m41;
 			viewInv.m42 = m_gizmoTransform.m42; 
 			viewInv.m43 = m_gizmoTransform.m43;
-			context->SetTransform(viewInv);
+			context->setTransform(viewInv);
 
 			c = (m_operationType == OperationType::ViewZ) ? Color::White : Color(1, 1, 0, BaseOpacity);
 			context->DrawArc(0, Math::PI2, RotationViewZRingInner, RotationViewZRingOuter, 32, c, Matrix::makeRotationX(Math::PIDiv2), m_tmat);
@@ -377,7 +377,7 @@ void GizmoModel::render(DrawList* context)
 		}
 	}
 
-	context->SetTransform(Matrix::Identity);
+	context->setTransform(Matrix::Identity);
 
 
 }

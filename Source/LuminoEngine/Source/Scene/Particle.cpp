@@ -589,7 +589,7 @@ void SpriteParticleModel::render(DrawList* context, detail::SpriteParticleModelI
 			transform.m43 = 0.0f;
 
 			// 頂点バッファ・インデックスバッファに反映して描画する
-			Vertex* vb = reinterpret_cast<Vertex*>(m_mesh->GetVertexBuffer(MeshResource::VB_BasicVertices)->getMappedData());
+			Vertex* vb = reinterpret_cast<Vertex*>(m_mesh->getVertexBuffer(MeshResource::VB_BasicVertices)->getMappedData());
 			uint16_t* ib = reinterpret_cast<uint16_t*>(m_mesh->GetIndexBuffer()->getMappedData());
 
 			//SpriteParticleVertex* vb = (SpriteParticleVertex*)m_vertexBuffer->lock()->GetData();	

@@ -122,7 +122,7 @@ public:
 	NanoVGRenderFeature* BeginNanoVGRenderer();
 	FrameRectRenderFeature* BeginFrameRectRenderer();
 
-	void SetViewInfo(const Size& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix);
+	void setViewInfo(const Size& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix);
 	void ApplyStatus(DrawElementBatch* state, const DefaultStatus& defaultStatus);
 	DrawElementBatch* GetCurrentStatus() const { return m_currentStatePtr; }
 	detail::SpriteRenderFeature* GetSpriteRenderer();
@@ -245,8 +245,8 @@ public:
 
 	Pen* GetPen() const { return nullptr; }	// TODO
 
-	void SetFont(Font* font);
-	Font* GetFont() const;		// not null (default font)
+	void setFont(Font* font);
+	Font* getFont() const;		// not null (default font)
 								
 
 LN_INTERNAL_ACCESS:
@@ -400,7 +400,7 @@ public:
 
 protected:
 	virtual void OnPreRender(DrawElementList* elementList);
-	void AddPass(RenderingPass2* pass);
+	void addPass(RenderingPass2* pass);
 
 private:
 	GraphicsManager*				m_manager;
@@ -745,13 +745,13 @@ public:
 
 	/** @} */
 
-	void SetTransform(const Matrix& transform);
+	void setTransform(const Matrix& transform);
 
 
 	void setBrush(Brush* brush);
 	Brush* getBrush() const;
 
-	void SetFont(Font* font);
+	void setFont(Font* font);
 
 	void setShader(Shader* shader);
 	Shader* getShader() const;
@@ -802,12 +802,12 @@ public:
 	void blit(Texture* source, RenderTargetTexture* dest, const Matrix& transform);
 	void blit(Texture* source, RenderTargetTexture* dest, Material* material);
 
-	void DrawGlyphRun(const PointF& position, GlyphRun* glyphRun);
+	void drawGlyphRun(const PointF& position, GlyphRun* glyphRun);
 
 	void DrawText_(const StringRef& text, const PointF& position);
 	void DrawText_(const StringRef& text, const Rect& rect, StringFormatFlags flags);
 
-	void DrawChar(TCHAR ch, const PointF& position);
+	void drawChar(TCHAR ch, const PointF& position);
 	void DrawText2(const StringRef& text, const Rect& rect);
 
 	void DrawSprite(
@@ -836,7 +836,7 @@ LN_INTERNAL_ACCESS:
 	void BeginMakeElements();
 
 	const detail::BatchStateBlock& getState() const { return m_state; }
-	void SetState(const detail::BatchStateBlock& state) { m_state = state; }
+	void setState(const detail::BatchStateBlock& state) { m_state = state; }
 	void AddDynamicLightInfo(detail::DynamicLightInfo* lightInfo);
 	void PushMetadata(const DrawElementMetadata* metadata);
 	const DrawElementMetadata* getMetadata();

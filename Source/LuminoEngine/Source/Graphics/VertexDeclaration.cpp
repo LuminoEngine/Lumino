@@ -76,7 +76,7 @@ void VertexDeclaration::tryUpdateResource()
 {
 	if (m_modified)
 	{
-		m_deviceObj.attach(m_manager->getGraphicsDevice()->CreateVertexDeclaration(&m_vertexElements[0], m_vertexElements.getCount()), false);
+		m_deviceObj.attach(m_manager->getGraphicsDevice()->createVertexDeclaration(&m_vertexElements[0], m_vertexElements.getCount()), false);
 		m_modified = false;
 	}
 }
@@ -101,7 +101,7 @@ void VertexDeclaration::onChangeDevice(Driver::IGraphicsDevice* device)
 		assert(m_deviceObj == NULL);
 
 		// 作り直す
-		m_deviceObj.attach(m_manager->getGraphicsDevice()->CreateVertexDeclaration(&m_vertexElements[0], m_vertexElements.getCount()), false);
+		m_deviceObj.attach(m_manager->getGraphicsDevice()->createVertexDeclaration(&m_vertexElements[0], m_vertexElements.getCount()), false);
 		m_modified = false;
 	}
 }

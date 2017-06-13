@@ -70,7 +70,7 @@ void IndexBuffer::initialize(detail::GraphicsManager* manager, int indexCount, c
 
 	if (sizeConst)
 	{
-		m_rhiObject.attach(m_manager->getGraphicsDevice()->CreateIndexBuffer(indexCount, initialData, m_format, m_usage), false);
+		m_rhiObject.attach(m_manager->getGraphicsDevice()->createIndexBuffer(indexCount, initialData, m_format, m_usage), false);
 	}
 	else
 	{
@@ -189,7 +189,7 @@ Driver::IIndexBuffer* IndexBuffer::resolveRHIObject()
 		{
 			if (m_rhiObject == nullptr || m_rhiObject->getByteCount() != m_buffer.size())
 			{
-				m_rhiObject.attach(m_manager->getGraphicsDevice()->CreateIndexBuffer(getIndexCount(), m_buffer.data(), m_format, m_usage), false);
+				m_rhiObject.attach(m_manager->getGraphicsDevice()->createIndexBuffer(getIndexCount(), m_buffer.data(), m_format, m_usage), false);
 			}
 			else
 			{

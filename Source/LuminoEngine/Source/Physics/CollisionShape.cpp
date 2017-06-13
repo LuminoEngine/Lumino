@@ -207,14 +207,14 @@ void MeshCollisionShape::initialize(MeshResource* mesh)
 
 	IndexBuffer* indexBuffer = mesh->GetIndexBuffer();
 
-	void* vb = mesh->GetVertexBuffer(MeshResource::VB_BasicVertices)->getMappedData();
+	void* vb = mesh->getVertexBuffer(MeshResource::VB_BasicVertices)->getMappedData();
 	void* ib = indexBuffer->getMappedData();
 
 	btIndexedMesh btMesh;
 	btMesh.m_numTriangles = mesh->GetTriangleCount();
 	btMesh.m_triangleIndexBase = (const unsigned char *)ib;
 	btMesh.m_triangleIndexStride = indexBuffer->getIndexStride() * 3;
-	btMesh.m_numVertices = mesh->GetVertexCount();
+	btMesh.m_numVertices = mesh->getVertexCount();
 	btMesh.m_vertexBase = (const unsigned char *)vb;
 	btMesh.m_vertexStride = sizeof(Vertex);
 
@@ -223,7 +223,7 @@ void MeshCollisionShape::initialize(MeshResource* mesh)
 
 	//m_btMeshData = new btTriangleIndexVertexArray(
 	//	mesh->GetTriangleCount(), (int*)ib, mesh->getIndexStride(),
-	//	mesh->GetVertexCount(), (btScalar*)vb, sizeof(Vertex));
+	//	mesh->getVertexCount(), (btScalar*)vb, sizeof(Vertex));
 	
 	CollisionShape::initialize(new btBvhTriangleMeshShape(m_btMeshData, true));
 }

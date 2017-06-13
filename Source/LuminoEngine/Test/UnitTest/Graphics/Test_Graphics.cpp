@@ -162,9 +162,9 @@ TEST_F(Test_Graphics_Rendering, DrawBox)
 		Engine::renderFrame();
 		auto r = Engine::getWorld3D()->getRenderer();
 		r->DrawBox(Box(1));
-		r->SetTransform(Matrix::makeTranslation(3, 0, 0));
+		r->setTransform(Matrix::makeTranslation(3, 0, 0));
 		r->DrawBox(Box(2));
-		r->SetTransform(Matrix::makeRotationY(Math::PI / 4) * Matrix::makeTranslation(-3, 0, 0));
+		r->setTransform(Matrix::makeRotationY(Math::PI / 4) * Matrix::makeTranslation(-3, 0, 0));
 		r->DrawBox(Box(2));
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawBox1.png"), 95));
@@ -290,7 +290,7 @@ TEST_F(Test_Graphics_Rendering, DrawText_)
 	{
 		LN_TEST_BEGIN_FRAME;
 		Engine::renderFrame();
-		Engine::getWorld2D()->getRenderer()->SetFont(font);
+		Engine::getWorld2D()->getRenderer()->setFont(font);
 		Engine::getWorld2D()->getRenderer()->setBrush(Brush::White);
 		Engine::getWorld2D()->getRenderer()->DrawText_(_T("Lumino"), Rect(0, 0, w, 100), StringFormatFlags::LeftAlignment);
 		LN_TEST_END_FRAME;
@@ -299,7 +299,7 @@ TEST_F(Test_Graphics_Rendering, DrawText_)
 	{
 		LN_TEST_BEGIN_FRAME;
 		Engine::renderFrame();
-		Engine::getWorld2D()->getRenderer()->SetFont(font);
+		Engine::getWorld2D()->getRenderer()->setFont(font);
 		Engine::getWorld2D()->getRenderer()->setBrush(Brush::White);
 		Engine::getWorld2D()->getRenderer()->DrawText_(_T("Text1"), Rect(0, 0, w, 100), StringFormatFlags::LeftAlignment);
 		Engine::getWorld2D()->getRenderer()->DrawText_(_T("Text2"), Rect(0, 0, w, 100), StringFormatFlags::CenterAlignment);
@@ -311,9 +311,9 @@ TEST_F(Test_Graphics_Rendering, DrawText_)
 	{
 		LN_TEST_BEGIN_FRAME;
 		Engine::renderFrame();
-		Engine::getWorld2D()->getRenderer()->SetFont(font);
+		Engine::getWorld2D()->getRenderer()->setFont(font);
 		Engine::getWorld2D()->getRenderer()->setBrush(Brush::White);
-		Engine::getWorld2D()->getRenderer()->SetTransform(Matrix::makeTranslation(10, 20, 0));
+		Engine::getWorld2D()->getRenderer()->setTransform(Matrix::makeTranslation(10, 20, 0));
 		Engine::getWorld2D()->getRenderer()->DrawText_(_T("Text1"), PointF());
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawText3.png")));
@@ -535,7 +535,7 @@ protected:
 };
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Graphics_DrawingContext, DrawChar)
+TEST_F(Test_Graphics_DrawingContext, drawChar)
 {
 	{
 		LN_TEST_BEGIN_FRAME;
@@ -544,7 +544,7 @@ TEST_F(Test_Graphics_DrawingContext, DrawChar)
 		//auto* dc = Engine::getMainWindow()->GetDrawingContext();
 		dc->clear(ClearFlags::Color, Color::Blue);
 		dc->setBrush(Brush::Black);
-		dc->DrawChar('g', PointF(100, 100));
+		dc->drawChar('g', PointF(100, 100));
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_DrawingContext.DrawChar1.png"), 90, true));
 	}
@@ -560,7 +560,7 @@ TEST_F(Test_Graphics_DrawingContext, DrawText_)
 		auto* dc = Engine::getMainWindow()->GetDrawingContext();
 		dc->clear(ClearFlags::Color, Color::White);
 		dc->setBrush(Brush::Gray);
-		//dc->SetFont(f);
+		//dc->setFont(f);
 		dc->setBlendMode(BlendMode::Alpha);
 		dc->DrawText2(_T("テッセレーションとアウトラ\nインフォントの描画ができ\nるようになったんだね！\nすごーい！"), Rect(100, 100, 100, 100));
 		LN_TEST_END_FRAME;

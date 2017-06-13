@@ -17,7 +17,7 @@ class WGLContext
 public:
 	WGLContext(WGLGraphicsDevice* device, PlatformWindow* window, WGLContext* parentContext);
 	virtual ~WGLContext();
-	virtual void SwapBuffers() override;
+	virtual void swapBuffers() override;
 
 	HDC GetDC() const { return m_hDC; }
 	HGLRC GetGLRC() const { return m_hGLRC; }
@@ -37,9 +37,9 @@ public:
 	virtual ~WGLGraphicsDevice();
 
 	// GLGraphicsDevice interface
-	virtual RefPtr<GLContext> InitializeMainContext(const ConfigData& configData) override;
-	virtual RefPtr<GLContext> CreateContext(PlatformWindow* window) override;
-	virtual void MakeCurrentContext(GLContext* context) override;
+	virtual RefPtr<GLContext> initializeMainContext(const ConfigData& configData) override;
+	virtual RefPtr<GLContext> createContext(PlatformWindow* window) override;
+	virtual void makeCurrentContext(GLContext* context) override;
 
 	static PFNWGLGETEXTENSIONSSTRINGEXTPROC		GetExtensionsStringEXT;
 	static PFNWGLGETEXTENSIONSSTRINGARBPROC		GetExtensionsStringARB;

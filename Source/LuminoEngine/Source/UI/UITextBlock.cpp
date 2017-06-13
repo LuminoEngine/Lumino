@@ -50,7 +50,7 @@ Size UITextBlock::measureOverride(const Size& availableSize)
 
 	if (m_font != nullptr)
 	{
-		Size textSize = m_font->MeasureRenderSize(m_text);
+		Size textSize = m_font->measureRenderSize(m_text);
 		size.width = std::max(size.width, textSize.width);
 		size.height = std::max(size.height, textSize.height);
 	}
@@ -67,7 +67,7 @@ Size UITextBlock::arrangeOverride(const Size& finalSize)
 //------------------------------------------------------------------------------
 void UITextBlock::onRender(DrawingContext* g)
 {
-	g->SetFont(GetActiveFont());
+	g->setFont(GetActiveFont());
 	g->setBrush(GetForegroundInternal());
 	g->DrawText_(m_text, PointF());
 }

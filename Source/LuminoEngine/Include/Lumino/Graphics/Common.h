@@ -407,9 +407,9 @@ public:
 	String	Family;
 	int		Size;
 	//int		EdgeSize;
-	bool	IsBold;
-	bool	IsItalic;
-	bool	IsAntiAlias;
+	bool	isBold;
+	bool	isItalic;
+	bool	isAntiAlias;
 
 	FontData();
 	bool operator < (const FontData& right);

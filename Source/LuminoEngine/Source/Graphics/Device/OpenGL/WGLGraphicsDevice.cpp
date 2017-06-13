@@ -74,7 +74,7 @@ WGLContext::WGLContext(WGLGraphicsDevice* device, PlatformWindow* window, WGLCon
 	BOOL r = ::SetPixelFormat(m_hDC, pfmt, &pformat);
 	LN_THROW(r, Win32Exception, ::GetLastError());
 
-	if (device->GetOpenGLMajorVersio() != 0)
+	if (device->getOpenGLMajorVersion() != 0)
 	{
 		// 使用する OpenGL のバージョンとプロファイルの指定
 		//	WGL_CONTEXT_FLAGS_ARB
@@ -90,8 +90,8 @@ WGLContext::WGLContext(WGLGraphicsDevice* device, PlatformWindow* window, WGLCon
 		// http://marina.sys.wakayama-u.ac.jp/~tokoi/?date=20120908
 		// https://www.opengl.org/registry/specs/ARB/wgl_create_context.txt
 		int attr[] = {
-			WGL_CONTEXT_MAJOR_VERSION_ARB, device->GetOpenGLMajorVersio(),
-			WGL_CONTEXT_MINOR_VERSION_ARB, device->GetOpenGLMinorVersio(),
+			WGL_CONTEXT_MAJOR_VERSION_ARB, device->getOpenGLMajorVersion(),
+			WGL_CONTEXT_MINOR_VERSION_ARB, device->getOpenGLMinorVersion(),
 			WGL_CONTEXT_FLAGS_ARB, 0,
 			WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB,	// 古い機能と互換性あり (glBegin 使いたい)
 			//WGL_CONTEXT_FLAGS_ARB, 0,//WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,//WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB
@@ -127,7 +127,7 @@ WGLContext::~WGLContext()
 }
 
 //------------------------------------------------------------------------------
-void WGLContext::SwapBuffers()
+void WGLContext::swapBuffers()
 {
 	BOOL r = ::SwapBuffers(m_hDC);
 	LN_THROW(r, Win32Exception, ::GetLastError());
@@ -153,7 +153,7 @@ WGLGraphicsDevice::~WGLGraphicsDevice()
 }
 
 //------------------------------------------------------------------------------
-RefPtr<GLContext> WGLGraphicsDevice::InitializeMainContext(const ConfigData& configData)
+RefPtr<GLContext> WGLGraphicsDevice::initializeMainContext(const ConfigData& configData)
 {
 	HWND hWnd = PlatformSupport::GetWindowHandle(configData.mainWindow);
 	HDC hDC = ::GetDC(hWnd);
@@ -195,7 +195,7 @@ RefPtr<GLContext> WGLGraphicsDevice::InitializeMainContext(const ConfigData& con
 	Logger::writeLine("    GL_SHADING_LANGUAGE_VERSION : %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
 	Logger::writeLine("    Extensions strings          : %s", GetExtensionsStringEXT());
 
-	SelectGLVersion(configData.openGLMajorVersion, configData.openGLMinorVersion);
+	selectGLVersion(configData.openGLMajorVersion, configData.openGLMinorVersion);
 
 	
 	GLenum result = glewInit();
@@ -211,14 +211,14 @@ RefPtr<GLContext> WGLGraphicsDevice::InitializeMainContext(const ConfigData& con
 }
 
 //------------------------------------------------------------------------------
-RefPtr<GLContext> WGLGraphicsDevice::CreateContext(PlatformWindow* window)
+RefPtr<GLContext> WGLGraphicsDevice::createContext(PlatformWindow* window)
 {
-	auto ptr = RefPtr<WGLContext>::makeRef(this, window, static_cast<WGLContext*>(GetMainContext()));
+	auto ptr = RefPtr<WGLContext>::makeRef(this, window, static_cast<WGLContext*>(getMainContext()));
 	return RefPtr<GLContext>::staticCast(ptr);
 }
 
 //------------------------------------------------------------------------------
-void WGLGraphicsDevice::MakeCurrentContext(GLContext* context)
+void WGLGraphicsDevice::makeCurrentContext(GLContext* context)
 {
 	if (context != nullptr)
 	{

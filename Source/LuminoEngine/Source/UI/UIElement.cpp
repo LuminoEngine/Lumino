@@ -624,7 +624,7 @@ void UIElement::OnUpdatingLayout()
 //------------------------------------------------------------------------------
 UIContext* UIElement::GetContext() const
 {
-	return UIContext::GetMainContext();// TODO
+	return UIContext::getMainContext();// TODO
 }
 
 //------------------------------------------------------------------------------
@@ -677,7 +677,7 @@ void UIElement::render(DrawingContext* g)
 
 	Matrix mat;
 	mat.translate(m_finalGlobalRect.x, m_finalGlobalRect.y, 0);
-	g->SetTransform(mat);
+	g->setTransform(mat);
 	g->SetBuiltinEffectData(m_combinedBuiltinEffectData);
 
 	

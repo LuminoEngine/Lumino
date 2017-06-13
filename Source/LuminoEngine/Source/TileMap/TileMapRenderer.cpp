@@ -74,7 +74,7 @@ TileMapRenderer::~TileMapRenderer()
 }
 
 //------------------------------------------------------------------------------
-void TileMapRenderer::SetTransform(const Matrix& world, const Matrix& viewProj)
+void TileMapRenderer::setTransform(const Matrix& world, const Matrix& viewProj)
 {
 	m_shader.varWorldMatrix->setMatrix(world);
 	m_shader.varViewProjMatrix->setMatrix(viewProj);
@@ -203,7 +203,7 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const Rect& boundingRect, Tile
 
 	int tileCount = (renderRange.right - renderRange.left) * (renderRange.bottom - renderRange.top);
 	tileCount = std::min(tileCount, m_maxTileCount);
-	int allocedTileCount = m_mesh->GetVertexCount() / 4;
+	int allocedTileCount = m_mesh->getVertexCount() / 4;
 	if (tileCount > allocedTileCount)
 	{
 		m_mesh->ResizeVertexBuffer(tileCount * 4);
@@ -344,8 +344,8 @@ LOOP_EXIT:
 	m_context->DrawMesh(m_mesh, 0, tileSet->GetMaterial());
 	m_context->PopMetadata();
 	//printf("%p\n", m_shader.pass);
-	//m_renderingContext->SetVertexBuffer(nullptr);
-	//m_renderingContext->SetIndexBuffer(nullptr);
+	//m_renderingContext->setVertexBuffer(nullptr);
+	//m_renderingContext->setIndexBuffer(nullptr);
 	//m_renderingContext->setShaderPass(nullptr);
 
 }
@@ -375,9 +375,9 @@ LOOP_EXIT:
 ////------------------------------------------------------------------------------
 ////
 ////------------------------------------------------------------------------------
-//void SpriteTileMapRenderer::SetTransform(const Matrix& matrix)
+//void SpriteTileMapRenderer::setTransform(const Matrix& matrix)
 //{
-//	m_spriteRenderer->SetTransform(matrix);
+//	m_spriteRenderer->setTransform(matrix);
 //}
 //
 ////------------------------------------------------------------------------------

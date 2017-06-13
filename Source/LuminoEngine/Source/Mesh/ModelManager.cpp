@@ -392,7 +392,7 @@ Animation::AnimationClip* ModelManager::CreateMotion(const PathName& filePath)
 #endif
 
 //------------------------------------------------------------------------------
-RefPtr<Texture> ModelManager::CreateTexture(const PathName& parentDir, const StringRef& filePath, ModelCreationFlag flags)
+RefPtr<Texture> ModelManager::createTexture(const PathName& parentDir, const StringRef& filePath, ModelCreationFlag flags)
 {
 	PathName path(parentDir, filePath.getBegin());	// TODO GetBegin
 

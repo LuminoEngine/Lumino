@@ -15,7 +15,7 @@ ProfilerRenderer::ProfilerRenderer(detail::GraphicsManager* manager, Profiler* p
 	: m_manager(manager)
 	, m_profiler(profiler)
 {
-	m_font = RawFont::CreateBuiltInBitmapFontInternal2(7);
+	m_font = RawFont::createBuiltInBitmapFontInternal2(7);
 	m_windowRect.set(640 - 8 - 300, 8, 300, 256);	// TODO
 }
 

@@ -182,7 +182,7 @@ const PathName* AssetsManager::findLocalFilePath()
 //	RawFontPtr ref;
 //	if (name.IsEmpty())
 //	{
-//		ref = m_engineManager->getGraphicsManager()->getFontManager()->GetDefaultFont()->Copy();
+//		ref = m_engineManager->getGraphicsManager()->getFontManager()->getDefaultFont()->Copy();
 //	}
 //	else
 //	{
@@ -192,9 +192,9 @@ const PathName* AssetsManager::findLocalFilePath()
 //
 //	ref->setName(name);
 //	ref->setSize(size);
-//	ref->SetBold(isBold);
-//	ref->SetItalic(isItalic);
-//	ref->SetAntiAlias(isAntiAlias);
+//	ref->setBold(isBold);
+//	ref->setItalic(isItalic);
+//	ref->setAntiAlias(isAntiAlias);
 //
 //	m_fontCache->RegisterCacheObject(key, ref);
 //	return RawFontPtr::StaticCast(ref);

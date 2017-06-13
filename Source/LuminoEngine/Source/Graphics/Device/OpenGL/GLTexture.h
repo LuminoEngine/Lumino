@@ -20,11 +20,11 @@ public:
 
 public:
 	/// GLテクスチャの取得
-	virtual GLuint GetGLTexture() = 0;
+	virtual GLuint getGLTexture() = 0;
 
 public:
-	static void GetGLTextureFormat(TextureFormat format, GLenum* internalFormat, GLenum* pixelFormat, GLenum* elementType);
-	static void SetGLSamplerState(const SamplerState& state);
+	static void getGLTextureFormat(TextureFormat format, GLenum* internalFormat, GLenum* pixelFormat, GLenum* elementType);
+	static void setGLSamplerState(const SamplerState& state);
 };
 
 /// 普通のテクスチャ
@@ -42,19 +42,19 @@ public:
 	virtual void onResetDevice();
 
 	// override ITexture
-	virtual TextureType GetTextureType() const { return TextureType_Normal; }
-	virtual TextureFormat GetTextureFormat() const { return m_format; }
+	virtual TextureType getTextureType() const { return TextureType_Normal; }
+	virtual TextureFormat getTextureFormat() const { return m_format; }
 	virtual const SizeI& getSize() const { return m_size; }
-	virtual const SizeI& GetRealSize() const { return m_realSize; }
-	virtual void SetSamplerState(const SamplerState& state);
+	virtual const SizeI& getRealSize() const { return m_realSize; }
+	virtual void setSamplerState(const SamplerState& state);
 	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize);
-	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes);
+	virtual void setSubData3D(const Box32& box, const void* data, size_t dataBytes);
 	virtual void getData(const RectI& rect, void* outData) override;
 	virtual Bitmap* lock();
 	virtual void unlock();
 
 	// override GLTextureBase
-	virtual GLuint GetGLTexture() { return m_glTexture; }
+	virtual GLuint getGLTexture() { return m_glTexture; }
 
 private:
 	GLuint				m_glTexture;
@@ -82,19 +82,19 @@ public:
 	virtual void onResetDevice();
 
 	// override ITexture
-	virtual TextureType GetTextureType() const { return TextureType_RenderTarget; }
-	virtual TextureFormat GetTextureFormat() const { return m_format; }
+	virtual TextureType getTextureType() const { return TextureType_RenderTarget; }
+	virtual TextureFormat getTextureFormat() const { return m_format; }
 	virtual const SizeI& getSize() const { return m_size; }
-	virtual const SizeI& GetRealSize() const { return m_realSize; }
-	virtual void SetSamplerState(const SamplerState& state) { LN_THROW(0, InvalidOperationException); }
+	virtual const SizeI& getRealSize() const { return m_realSize; }
+	virtual void setSamplerState(const SamplerState& state) { LN_THROW(0, InvalidOperationException); }
 	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes);
+	virtual void setSubData3D(const Box32& box, const void* data, size_t dataBytes);
 	virtual void getData(const RectI& rect, void* outData) override;
 	virtual Bitmap* lock();
 	virtual void unlock();
 
 	// override GLTextureBase
-	virtual GLuint GetGLTexture() { return m_glTexture; }
+	virtual GLuint getGLTexture() { return m_glTexture; }
 
 private:
 	GLuint				m_glTexture;
@@ -121,19 +121,19 @@ public:
 	virtual void onResetDevice();
 
 	// override ITexture
-	virtual TextureType GetTextureType() const { return TextureType_DepthBuffer; }
-	virtual TextureFormat GetTextureFormat() const { return m_format; }
+	virtual TextureType getTextureType() const { return TextureType_DepthBuffer; }
+	virtual TextureFormat getTextureFormat() const { return m_format; }
 	virtual const SizeI& getSize() const { return m_size; }
-	virtual const SizeI& GetRealSize() const { return m_realSize; }
-	virtual void SetSamplerState(const SamplerState& state) { LN_THROW(0, InvalidOperationException); }
+	virtual const SizeI& getRealSize() const { return m_realSize; }
+	virtual void setSamplerState(const SamplerState& state) { LN_THROW(0, InvalidOperationException); }
 	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes);
+	virtual void setSubData3D(const Box32& box, const void* data, size_t dataBytes);
 	virtual void getData(const RectI& rect, void* outData) override;
 	virtual Bitmap* lock() { LN_THROW(0, InvalidOperationException); return NULL; }
 	virtual void unlock() { LN_THROW(0, InvalidOperationException); }
 
 	// override GLTextureBase
-	virtual GLuint GetGLTexture() { return m_glBuffer; }
+	virtual GLuint getGLTexture() { return m_glBuffer; }
 
 private:
 	GLuint			m_glBuffer;

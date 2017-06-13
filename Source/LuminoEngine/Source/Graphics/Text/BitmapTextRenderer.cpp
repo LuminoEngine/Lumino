@@ -37,14 +37,14 @@ void BitmapTextRenderer::initialize(detail::GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const Color32& fillColor, const Color32& strokeColor, int strokeThickness)
+void BitmapTextRenderer::drawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const Color32& fillColor, const Color32& strokeColor, int strokeThickness)
 {
 	if (LN_CHECK_ARG(target != nullptr)) return;
 	if (LN_CHECK_ARG(glyphRun != nullptr)) return;
 
-	RawFont* font = glyphRun->GetFont();
+	RawFont* font = glyphRun->getFont();
 
-	auto& items = glyphRun->RequestLayoutItems();
+	auto& items = glyphRun->requestLayoutItems();
 	auto& renderSize = glyphRun->getRenderSize();
 
 	PointI offset(0, 0);
@@ -73,7 +73,7 @@ void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const 
 	PointI pos(m_renderArea.x + offset.x, m_renderArea.y + offset.y);
 	for (auto& item : items)
 	{
-		FontGlyphBitmap* gb = font->LookupGlyphBitmap(item.Char, strokeThickness);
+		FontGlyphBitmap* gb = font->lookupGlyphBitmap(item.Char, strokeThickness);
 		RectI dstRect;
 		RectI srcRect;
 

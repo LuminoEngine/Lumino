@@ -763,7 +763,7 @@ int CppLexer::ReadBlockComment(const Range& buffer)
 	{
 		if (notFoundEndToken)
 		{
-			GetDiag()->Report(DiagnosticsCode::UnexpectedEOFInBlockComment);
+			getDiag()->Report(DiagnosticsCode::UnexpectedEOFInBlockComment);
 			return 0;
 		}
 		AddToken(TokenGroup::Comment, buffer.pos, buffer.pos + len);

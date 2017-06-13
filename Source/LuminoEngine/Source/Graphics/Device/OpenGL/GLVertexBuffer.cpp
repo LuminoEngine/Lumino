@@ -118,15 +118,15 @@ void GLVertexDeclaration::initialize(const VertexElement* elements, int elements
 	if (LN_CHECK_ARG(elementsCount >= 0)) return;
 
 	// 頂点宣言作成
-	CreateGLVertexElements(elements, elementsCount, &m_vertexElements);
+	createGLVertexElements(elements, elementsCount, &m_vertexElements);
 }
 
 //------------------------------------------------------------------------------
-void GLVertexDeclaration::CreateGLVertexElements(const VertexElement* vertexElements, int elementsCount, List<LNGLVertexElement>* outList)
+void GLVertexDeclaration::createGLVertexElements(const VertexElement* vertexElements, int elementsCount, List<LNGLVertexElement>* outList)
 {
 	outList->reserve(elementsCount);
 
-	int vertexSize = GetVertexSize(vertexElements, elementsCount, 0);
+	int vertexSize = getVertexSize(vertexElements, elementsCount, 0);
 	int totalSize = 0;
 	for (int i = 0; i < elementsCount; ++i)
 	{
@@ -134,7 +134,7 @@ void GLVertexDeclaration::CreateGLVertexElements(const VertexElement* vertexElem
 		elm.Usage = vertexElements[i].Usage;
 		elm.UsageIndex = vertexElements[i].UsageIndex;
 
-		ConvertDeclTypeLNToGL(
+		convertDeclTypeLNToGL(
 			vertexElements[i].Type,
 			&elm.Type,
 			&elm.Size,
@@ -144,25 +144,25 @@ void GLVertexDeclaration::CreateGLVertexElements(const VertexElement* vertexElem
 		elm.ByteOffset = totalSize;
 		outList->add(elm);
 
-		totalSize += GetVertexElementTypeSize(vertexElements[i].Type);
+		totalSize += getVertexElementTypeSize(vertexElements[i].Type);
 	}
 }
 
 //------------------------------------------------------------------------------
-int GLVertexDeclaration::GetVertexSize(const VertexElement* vertexElements, int elementsCount, int streamIndex)
+int GLVertexDeclaration::getVertexSize(const VertexElement* vertexElements, int elementsCount, int streamIndex)
 {
 	int size = 0;
 	for (int i = 0; i < elementsCount; ++i)
 	{
 		if (vertexElements[i].StreamIndex == streamIndex) {
-			size += GetVertexElementTypeSize(vertexElements[i].Type);
+			size += getVertexElementTypeSize(vertexElements[i].Type);
 		}
 	}
 	return size;
 }
 
 //------------------------------------------------------------------------------
-int GLVertexDeclaration::GetVertexElementTypeSize(VertexElementType type)
+int GLVertexDeclaration::getVertexElementTypeSize(VertexElementType type)
 {
 	switch (type)
 	{
@@ -180,7 +180,7 @@ int GLVertexDeclaration::GetVertexElementTypeSize(VertexElementType type)
 }
 
 //------------------------------------------------------------------------------
-void GLVertexDeclaration::ConvertDeclTypeLNToGL(VertexElementType type, GLenum* gl_type, GLint* size, GLboolean* normalized)
+void GLVertexDeclaration::convertDeclTypeLNToGL(VertexElementType type, GLenum* gl_type, GLint* size, GLboolean* normalized)
 {
 	static const struct _FormatType
 	{

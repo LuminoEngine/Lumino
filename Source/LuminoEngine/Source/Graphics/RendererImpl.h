@@ -88,12 +88,12 @@ public:
 	///**
 	//	@brief	頂点バッファを設定します。
 	//*/
-	//void SetVertexBuffer(VertexBuffer* vertexBuffer);
+	//void setVertexBuffer(VertexBuffer* vertexBuffer);
 
 	///**
 	//	@brief	インデックスバッファを設定します。
 	//*/
-	//void SetIndexBuffer(IndexBuffer* indexBuffer);
+	//void setIndexBuffer(IndexBuffer* indexBuffer);
 	
 	/**
 		@brief	
@@ -153,8 +153,8 @@ LN_INTERNAL_ACCESS:
 //	, public detail::IRendererPloxy
 //{
 //public:
-//	void SetVertexBuffer(VertexBuffer* vertexBuffer);
-//	void SetIndexBuffer(IndexBuffer* indexBuffer);
+//	void setVertexBuffer(VertexBuffer* vertexBuffer);
+//	void setIndexBuffer(IndexBuffer* indexBuffer);
 //	void drawPrimitive(VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount);
 //	void drawPrimitiveIndexed(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount);
 //

@@ -21,12 +21,12 @@ public:
 	void create(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage);
 
 	/// 頂点バッファオブジェクトの取得
-	GLuint GetIndexBufferObject() const { return m_indexBufferObject; }
+	GLuint getIndexBufferObject() const { return m_indexBufferObject; }
 
 public:
 	virtual size_t getByteCount() const { return m_byteCount; }
 	virtual IndexBufferFormat getFormat() const { return m_format; }
-	virtual ResourceUsage GetUsage() const { return m_usage; }
+	virtual ResourceUsage getUsage() const { return m_usage; }
 	virtual void setSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes);
 	virtual void lock(void** lockedBuffer, size_t* lockedSize);
 	virtual void unlock();

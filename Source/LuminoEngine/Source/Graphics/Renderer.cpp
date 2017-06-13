@@ -52,7 +52,7 @@ Renderer::~Renderer()
 {
 	if (m_primaryCommandList != NULL)
 	{
-		m_primaryCommandList->postExecute();	// Present される前に解放されることの対策
+		m_primaryCommandList->postExecute();	// present される前に解放されることの対策
 		LN_SAFE_RELEASE(m_primaryCommandList);
 	}
 
@@ -65,7 +65,7 @@ Renderer::~Renderer()
 //------------------------------------------------------------------------------
 void Renderer::begin()
 {
-	bool isStandalone = m_manager->getGraphicsDevice()->IsStandalone();
+	bool isStandalone = m_manager->getGraphicsDevice()->isStandalone();
 
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		begin, m_manager,
@@ -75,11 +75,11 @@ void Renderer::begin()
 			if (isStandalone)
 			{
 				m_internal->begin();
-				m_internal->EnterRenderState();
+				m_internal->enterRenderState();
 			}
 			else
 			{
-				m_internal->EnterRenderState();
+				m_internal->enterRenderState();
 			}
 		});
 }
@@ -87,7 +87,7 @@ void Renderer::begin()
 //------------------------------------------------------------------------------
 void Renderer::end()
 {
-	bool isStandalone = m_manager->getGraphicsDevice()->IsStandalone();
+	bool isStandalone = m_manager->getGraphicsDevice()->isStandalone();
 
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		end, m_manager,
@@ -96,12 +96,12 @@ void Renderer::end()
 		{
 			if (isStandalone)
 			{
-				m_internal->LeaveRenderState();
+				m_internal->leaveRenderState();
 				m_internal->end();
 			}
 			else
 			{
-				m_internal->LeaveRenderState();
+				m_internal->leaveRenderState();
 			}
 		});
 }
@@ -214,34 +214,34 @@ DepthBuffer* Renderer::getDepthBuffer() const
 ////------------------------------------------------------------------------------
 ////
 ////------------------------------------------------------------------------------
-//void Renderer::SetVertexBuffer(VertexBuffer* vertexBuffer)
+//void Renderer::setVertexBuffer(VertexBuffer* vertexBuffer)
 //{
 //	Driver::IVertexBuffer* t = (vertexBuffer != NULL) ? Helper::getDeviceObject(vertexBuffer) : NULL;
-//	//LN_CALL_RENDERER_COMMAND(SetVertexBuffer, SetVertexBufferCommand, t);
+//	//LN_CALL_RENDERER_COMMAND(setVertexBuffer, SetVertexBufferCommand, t);
 //
 //	LN_ENQUEUE_RENDER_COMMAND_2(
-//		SetVertexBuffer, m_manager,
+//		setVertexBuffer, m_manager,
 //		Driver::IRenderer*, m_internal,
 //		RefPtr<Driver::IVertexBuffer>, t,
 //		{
-//			m_internal->SetVertexBuffer(t);
+//			m_internal->setVertexBuffer(t);
 //		});
 //}
 //
 ////------------------------------------------------------------------------------
 ////
 ////------------------------------------------------------------------------------
-//void Renderer::SetIndexBuffer(IndexBuffer* indexBuffer)
+//void Renderer::setIndexBuffer(IndexBuffer* indexBuffer)
 //{
 //	Driver::IIndexBuffer* t = (indexBuffer != NULL) ? Helper::getDeviceObject(indexBuffer) : NULL;
-//	//LN_CALL_RENDERER_COMMAND(SetIndexBuffer, SetIndexBufferCommand, t);
+//	//LN_CALL_RENDERER_COMMAND(setIndexBuffer, SetIndexBufferCommand, t);
 //
 //	LN_ENQUEUE_RENDER_COMMAND_2(
-//		SetIndexBuffer, m_manager,
+//		setIndexBuffer, m_manager,
 //		Driver::IRenderer*, m_internal,
 //		RefPtr<Driver::IIndexBuffer>, t,
 //		{
-//			m_internal->SetIndexBuffer(t);
+//			m_internal->setIndexBuffer(t);
 //		});
 //}
 
@@ -287,8 +287,8 @@ void Renderer::drawPrimitive(VertexDeclaration* vertexDeclaration, VertexBuffer*
 		int, startVertex,
 		int, primitiveCount,
 		{
-			m_internal->SetVertexDeclaration(decl);
-			m_internal->SetVertexBuffer(0, vb);
+			m_internal->setVertexDeclaration(decl);
+			m_internal->setVertexBuffer(0, vb);
 			m_internal->drawPrimitive(primitive, startVertex, primitiveCount);
 		});
 
@@ -313,9 +313,9 @@ void Renderer::drawPrimitiveIndexed(VertexDeclaration* vertexDeclaration, Vertex
 		int, startIndex,
 		int, primitiveCount,
 		{
-			m_internal->SetVertexDeclaration(decl);
-			m_internal->SetVertexBuffer(0, vb);
-			m_internal->SetIndexBuffer(ib);
+			m_internal->setVertexDeclaration(decl);
+			m_internal->setVertexBuffer(0, vb);
+			m_internal->setIndexBuffer(ib);
 			m_internal->drawPrimitiveIndexed(primitive, startIndex, primitiveCount);
 		});
 	//LN_CALL_RENDERER_COMMAND(drawPrimitiveIndexed, DrawPrimitiveIndexedCommand, primitive, startIndex, primitiveCount);
@@ -334,8 +334,8 @@ void Renderer::flushState(const detail::ContextState& state)
 		}
 		setDepthBuffer(state.depthBuffer);
 		//SetViewport(state.viewport);
-		//SetVertexBuffer(state.vertexBuffer);
-		//SetIndexBuffer(state.indexBuffer);
+		//setVertexBuffer(state.vertexBuffer);
+		//setIndexBuffer(state.indexBuffer);
 	}
 	if (state.modifiedFlags.TestFlag(detail::ContextStateFlags::ShaderPass))
 	{

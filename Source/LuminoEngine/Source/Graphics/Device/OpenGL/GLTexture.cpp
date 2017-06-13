@@ -13,7 +13,7 @@ namespace Driver
 // GLTextureBase
 //==============================================================================
 
-void GLTextureBase::GetGLTextureFormat(TextureFormat format, GLenum* internalFormat, GLenum* pixelFormat, GLenum* elementType)
+void GLTextureBase::getGLTextureFormat(TextureFormat format, GLenum* internalFormat, GLenum* pixelFormat, GLenum* elementType)
 {
 	// http://angra.blog31.fc2.com/blog-entry-11.html
 	static GLenum table[][3] =
@@ -35,7 +35,7 @@ void GLTextureBase::GetGLTextureFormat(TextureFormat format, GLenum* internalFor
 	*elementType = table[(int)format][2];
 }
 
-void GLTextureBase::SetGLSamplerState(const SamplerState& state)
+void GLTextureBase::setGLSamplerState(const SamplerState& state)
 {
 	GLint filter[] =
 	{
@@ -104,7 +104,7 @@ void GLTexture::onResetDevice()
 	
 	// テクスチャフォーマット選択
 	GLenum internalFormat, pixelFormat, elementType;
-	GetGLTextureFormat(m_format, &internalFormat, &pixelFormat, &elementType);
+	getGLTextureFormat(m_format, &internalFormat, &pixelFormat, &elementType);
 
 	// テクスチャ作成
 	glGenTextures(1, &m_glTexture); LN_CHECK_GLERROR();
@@ -112,17 +112,17 @@ void GLTexture::onResetDevice()
 	glTexImage2D(GL_TEXTURE_2D, levels, internalFormat, m_realSize.width, m_realSize.height, 0, pixelFormat, elementType, NULL); LN_CHECK_GLERROR();
 	
 	// デフォルトのサンプラステート (セットしておかないとサンプリングできない)
-	SetGLSamplerState(m_samplerState);
+	setGLSamplerState(m_samplerState);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 //------------------------------------------------------------------------------
-void GLTexture::SetSamplerState(const SamplerState& state)
+void GLTexture::setSamplerState(const SamplerState& state)
 {
 	m_samplerState = state;
 	glGenTextures(1, &m_glTexture); LN_CHECK_GLERROR();
-	SetGLSamplerState(m_samplerState);
+	setGLSamplerState(m_samplerState);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
@@ -138,7 +138,7 @@ void GLTexture::setSubData(const PointI& point, const void* data, size_t dataByt
 	{
 		// テクスチャフォーマット選択
 		GLenum internalFormat, pixelFormat, elementType;
-		GetGLTextureFormat(m_format, &internalFormat, &pixelFormat, &elementType);
+		getGLTextureFormat(m_format, &internalFormat, &pixelFormat, &elementType);
 
 		glBindTexture(GL_TEXTURE_2D, m_glTexture); LN_CHECK_GLERROR();
 		/* テクスチャ画像はバイト単位に詰め込まれている */
@@ -167,7 +167,7 @@ void GLTexture::setSubData(const PointI& point, const void* data, size_t dataByt
 }
 
 //------------------------------------------------------------------------------
-void GLTexture::SetSubData3D(const Box32& box, const void* data, size_t dataBytes)
+void GLTexture::setSubData3D(const Box32& box, const void* data, size_t dataBytes)
 {
 	LN_THROW(0, InvalidOperationException);
 }
@@ -235,7 +235,7 @@ void GLRenderTargetTexture::onResetDevice()
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1); LN_CHECK_GLERROR();
 
 		GLenum internalFormat;
-		GetGLTextureFormat(m_format, &internalFormat, &m_pixelFormat, &m_elementType);
+		getGLTextureFormat(m_format, &internalFormat, &m_pixelFormat, &m_elementType);
 
 		glTexImage2D(
 			GL_TEXTURE_2D,
@@ -261,7 +261,7 @@ void GLRenderTargetTexture::onResetDevice()
 }
 
 //------------------------------------------------------------------------------
-void GLRenderTargetTexture::SetSubData3D(const Box32& box, const void* data, size_t dataBytes)
+void GLRenderTargetTexture::setSubData3D(const Box32& box, const void* data, size_t dataBytes)
 {
 	LN_THROW(0, InvalidOperationException);
 }
@@ -312,7 +312,7 @@ GLDepthBuffer::~GLDepthBuffer()
 }
 
 //------------------------------------------------------------------------------
-void GLDepthBuffer::SetSubData3D(const Box32& box, const void* data, size_t dataBytes)
+void GLDepthBuffer::setSubData3D(const Box32& box, const void* data, size_t dataBytes)
 {
 	LN_THROW(0, InvalidOperationException);
 }
@@ -338,7 +338,7 @@ void GLDepthBuffer::onResetDevice()
 	if (m_glBuffer == 0)
 	{
 		GLenum internalFormat, pixelFormat, elementType;
-		GetGLTextureFormat(m_format, &internalFormat, &pixelFormat, &elementType);
+		getGLTextureFormat(m_format, &internalFormat, &pixelFormat, &elementType);
 
 		glGenRenderbuffers(1, &m_glBuffer); LN_CHECK_GLERROR();
 		glBindRenderbuffer(GL_RENDERBUFFER, m_glBuffer); LN_CHECK_GLERROR();

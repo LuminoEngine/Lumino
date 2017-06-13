@@ -102,7 +102,7 @@ void ShaderAnalyzer::analyzeLNFX(const char* code, int len)
 	fl::InputFile file(PathNameA{}, code, len);
 	fl::CppLexer lexer;
 	fl::DiagnosticsItemSet diag(PathNameA{});
-	file.SetDiag(&diag);	// TODO: InputFile の中でつくるべきな気がする
+	file.setDiag(&diag);	// TODO: InputFile の中でつくるべきな気がする
 	lexer.Tokenize(&file);
 	parseSimpleShaderMacros(file.GetTokenList());
 }

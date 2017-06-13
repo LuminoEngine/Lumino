@@ -141,9 +141,9 @@ void TextElement::initialize()
 	m_manager = ln::detail::DocumentsManager::getInstance();
 	m_fontData.Family = String::getEmpty();
 	m_fontData.Size = 20;
-	m_fontData.IsBold = false;
-	m_fontData.IsItalic = false;
-	m_fontData.IsAntiAlias = true;
+	m_fontData.isBold = false;
+	m_fontData.isItalic = false;
+	m_fontData.isAntiAlias = true;
 	m_fontDataModified = true;
 
 	m_foreground = Brush::Black;
@@ -353,15 +353,15 @@ InternalTextElementType LineBreak::getInternalTextElementType() const
 
 
 /*
-	1. Block::Measure()
-		m_inlines を階層的に Measure する。
-	2. Inline(run)::Measure()
+	1. Block::measure()
+		m_inlines を階層的に measure する。
+	2. Inline(run)::measure()
 		カーニングを考慮して、VisualGlyph をたくさん作る。ここは TextLayoutEngine 使える。
 		ついでにルートの Block の visualGlyph リストへ追加していく。
 		変数の展開やルビの配置はここ。
-	2. Inline(run以外)::Measure()
+	2. Inline(run以外)::measure()
 		画像を示す VisualGlyph を作る。
-	3. Block::Measure() (2. の呼び出しから戻ってきたとき)
+	3. Block::measure() (2. の呼び出しから戻ってきたとき)
 		折り返しは考慮しないサイズで desiardSize を決定する。これの height が行高さとなる。（余白・ルビ考慮）
 	4. Block::Arrange()
 		折り返しが必要ならここで VisualGlyph たちの位置を調整する。（ここまできたらもう Inline は関係ない）
@@ -423,7 +423,7 @@ void VisualTextFragment::render(DrawList* renderer)
 {
 	renderer->setBrush(Brush::Red);
 	//renderer->DrawRectangle(m_localRect);
-	renderer->DrawGlyphRun(PointF(), m_glyphRun);
+	renderer->drawGlyphRun(PointF(), m_glyphRun);
 }
 
 
@@ -495,7 +495,7 @@ void VisualInline::measureLayout(const Size& availableSize, VisualBlock* rootBlo
 
 	//if (m_glyphRun != nullptr)
 	//{
-	//	auto& items = m_glyphRun->RequestLayoutItems();
+	//	auto& items = m_glyphRun->requestLayoutItems();
 	//	for (auto& item : items)
 	//	{
 	//		auto g = newObject<VisualTextFragment>();	// TODO: キャッシュしたい
@@ -630,7 +630,7 @@ void VisualBlock::render(DrawList* renderer)
 // DocumentView
 //------------------------------------------------------------------------------
 /*
-	Visual 側は、Model の参照を持つ。isDeleted() = true だったら、Measure で消す。
+	Visual 側は、Model の参照を持つ。isDeleted() = true だったら、measure で消す。
 */
 //==============================================================================
 

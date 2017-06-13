@@ -16,8 +16,8 @@ protected:
 		auto file = m_context.RegisterInputMemoryCode("test", code);
 		m_context.LexFile(file);
 		auto tokens = file->GetTokenList();
-		m_parser.ParseCppConstExpression2(tokens->begin(), tokens->end(), file->GetDiag());
-		LN_THROW(file->GetDiag()->GetItems()->isEmpty(), InvalidOperationException);
+		m_parser.ParseCppConstExpression2(tokens->begin(), tokens->end(), file->getDiag());
+		LN_THROW(file->getDiag()->GetItems()->isEmpty(), InvalidOperationException);
 		return m_parser.GetTokenList();
 	}
 };
@@ -192,10 +192,10 @@ protected:
 		m_context.LexFile(file);
 		auto tokens = file->GetTokenList();
 		m_parser.ParseCppConstExpression2(tokens->begin(), tokens->end(), &m_diag);
-		if (!file->GetDiag()->GetItems()->isEmpty()) return false;
+		if (!file->getDiag()->GetItems()->isEmpty()) return false;
 		ResultState r = m_eval.TryEval(file, m_parser.GetTokenList(), &m_diag, &m_value);
 		if (r != ResultState::Success) return false;
-		if (!file->GetDiag()->GetItems()->isEmpty()) return false;
+		if (!file->getDiag()->GetItems()->isEmpty()) return false;
 		return true;
 	}
 };

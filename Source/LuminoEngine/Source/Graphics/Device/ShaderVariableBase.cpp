@@ -32,7 +32,7 @@ void ShaderVariableBase::initialize(ShaderVariableTypeDesc desc, const String& n
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableBase::MakeInitialValue()
+void ShaderVariableBase::makeInitialValue()
 {
 	switch (m_desc.Type)
 	{

@@ -70,15 +70,15 @@ public:
 	/**
 		@brief	Lumino に内蔵されているビットマップフォントを取得します。
 	*/
-	static FontPtr GetBuiltin(BuiltinFontSize size);
+	static FontPtr getBuiltin(BuiltinFontSize size);
 
 public:
 
 	/** フォントファミリ名の設定 */
-	void SetFamily(const String& familyName);
+	void setFamily(const String& familyName);
 
 	/** フォントファミリ名の取得 */
-	const String& GetFamily() const;
+	const String& getFamily() const;
 
 	/** フォントサイズの有効設定 */
 	void setSize(int size);
@@ -87,34 +87,34 @@ public:
 	int getSize() const;
 
 	/** 太文字の有効設定 */
-	void SetBold(bool enabled);
+	void setBold(bool enabled);
 
 	/** 太文字の判定 */
-	bool IsBold() const;
+	bool isBold() const;
 
 	/** イタリック体の有効設定 */
-	void SetItalic(bool enabled);
+	void setItalic(bool enabled);
 
 	/** イタリック体の判定 */
-	bool IsItalic() const;
+	bool isItalic() const;
 
 	/** アンチエイリアスの有効設定 */
-	void SetAntiAlias(bool enabled);
+	void setAntiAlias(bool enabled);
 
 	/** アンチエイリアスの有効判定 */
-	bool IsAntiAlias() const;
+	bool isAntiAlias() const;
 
 	/** 指定した文字列を描画する際のサイズを計算します。*/
-	Size MeasureRenderSize(const StringRef& text);
+	Size measureRenderSize(const StringRef& text);
 
 	/** このフォントのコピーを作成します。*/
-	FontPtr Clone() const;
+	FontPtr clone() const;
 
 LN_INTERNAL_ACCESS:
 	Font();
 	virtual ~Font();
 	void initialize(detail::GraphicsManager* manager, RawFont* builtinRawFont);
-	RawFont* ResolveRawFont();
+	RawFont* resolveRawFont();
 
 private:
 	detail::GraphicsManager*	m_manager;
@@ -206,15 +206,15 @@ public:
 		List<uint16_t>			triangleIndices;	// 要素数は3の倍数となる
 	};
 
-	static RawFontPtr GetDefaultFont();
+	static RawFontPtr getDefaultFont();
 
 	static RawFontPtr create();
 
 
-	static RefPtr<RawFont> CreateBuiltInBitmapFontInternal2(int size);
+	static RefPtr<RawFont> createBuiltInBitmapFontInternal2(int size);
 
 
-	static void RegisterFontFile(const StringRef& filePath);
+	static void registerFontFile(const StringRef& filePath);
 
 
 public:
@@ -251,41 +251,41 @@ public:
 	//virtual int GetEdgeSize() const = 0;
 
 	/// 太文字の設定
-	virtual void SetBold(bool enabled) = 0;
+	virtual void setBold(bool enabled) = 0;
 
 	/// 太文字の判定
-	virtual bool IsBold() const = 0;
+	virtual bool isBold() const = 0;
 
 	/// イタリック体の設定
-	virtual void SetItalic(bool enabled) = 0;
+	virtual void setItalic(bool enabled) = 0;
 
 	/// イタリック体の判定
-	virtual bool IsItalic() const = 0;
+	virtual bool isItalic() const = 0;
 
 	/// アンチエイリアスの有効設定
-	virtual void SetAntiAlias(bool enabled) = 0;
+	virtual void setAntiAlias(bool enabled) = 0;
 
 	/// アンチエイリアスの有効判定
-	virtual bool IsAntiAlias() const = 0;
+	virtual bool isAntiAlias() const = 0;
 
 	/// このフォントのコピーを作成する
 	virtual RawFontPtr copy() const = 0;
 
 	/** 次の行のベースラインまでの長さを返します。*/
-	virtual int GetLineSpacing() = 0;
+	virtual int getLineSpacing() = 0;
 
-	virtual SizeI GetGlyphMaxSize() { return SizeI(GetLineSpacing(), GetLineSpacing()); }
+	virtual SizeI getGlyphMaxSize() { return SizeI(getLineSpacing(), getLineSpacing()); }
 
 	/// 文字列を描画したときのサイズ (ピクセル単位) の取得 (length = -1 で \0 まで)
-	//virtual Size GetTextSize(const char* text, int length) = 0;
-	//virtual Size GetTextSize(const wchar_t* text, int length) = 0;
-	//virtual Size GetTextSize(const UTF32* text, int length) = 0;
+	//virtual Size getTextSize(const char* text, int length) = 0;
+	//virtual Size getTextSize(const wchar_t* text, int length) = 0;
+	//virtual Size getTextSize(const UTF32* text, int length) = 0;
 
 	/** (高さは次の行のベースラインまでの長さ) */
-	SizeI GetTextSize(const StringRef& text);
+	SizeI getTextSize(const StringRef& text);
 
-	virtual FontGlyphLocation* AdvanceKerning(UTF32 utf32code, int strokeSize, FontGlyphLocation* prevData) = 0;
-	virtual FontGlyphBitmap* LookupGlyphBitmap(UTF32 utf32code, int strokeSize) = 0;
+	virtual FontGlyphLocation* advanceKerning(UTF32 utf32code, int strokeSize, FontGlyphLocation* prevData) = 0;
+	virtual FontGlyphBitmap* lookupGlyphBitmap(UTF32 utf32code, int strokeSize) = 0;
 
 
 	/// グリフデータの取得 (最初の文字の場合、prevData に NULL を渡す。以降は戻り値を渡し続ける。非スレッドセーフ)
@@ -293,11 +293,11 @@ public:
 	//virtual FontGlyphData* LookupGlyphData(UTF32 utf32code, FontGlyphData* prevData) = 0;
 
 
-	virtual void GetGlobalMetrics(FontGlobalMetrics* outMetrix) = 0;
-	virtual bool IsOutlineSupported() const = 0;
-	virtual void DecomposeOutline(UTF32 utf32code, RawFont::VectorGlyphInfo* outInfo) = 0;
-	virtual Vector2 GetKerning(UTF32 prev, UTF32 next) = 0;
-	virtual void GetGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics) = 0;
+	virtual void getGlobalMetrics(FontGlobalMetrics* outMetrix) = 0;
+	virtual bool isOutlineSupported() const = 0;
+	virtual void decomposeOutline(UTF32 utf32code, RawFont::VectorGlyphInfo* outInfo) = 0;
+	virtual Vector2 getKerning(UTF32 prev, UTF32 next) = 0;
+	virtual void getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics) = 0;
 
 	virtual detail::FontManager* getManager() const = 0;
 

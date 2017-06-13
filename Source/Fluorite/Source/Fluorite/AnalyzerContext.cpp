@@ -175,13 +175,13 @@ void AnalyzerContext::PreprocessFile(InputFile* file)
 //------------------------------------------------------------------------------
 void AnalyzerContext::ResetFileDiagnostics(InputFile* file)
 {
-	if (file->GetDiag() != nullptr)
+	if (file->getDiag() != nullptr)
 	{
-		file->GetDiag()->clearItems();
+		file->getDiag()->clearItems();
 	}
 	else
 	{
-		file->SetDiag(m_diagnosticsManager->CreateItemSet(file->GetRelativeFilePath()));
+		file->setDiag(m_diagnosticsManager->CreateItemSet(file->GetRelativeFilePath()));
 	}
 }
 

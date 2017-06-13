@@ -72,7 +72,7 @@ void VertexBuffer::initialize(detail::GraphicsManager* manager, size_t bufferSiz
 
 	if (sizeConst)
 	{
-		m_rhiObject = m_manager->getGraphicsDevice()->CreateVertexBuffer(bufferSize, data, usage);
+		m_rhiObject = m_manager->getGraphicsDevice()->createVertexBuffer(bufferSize, data, usage);
 	}
 	else
 	{
@@ -169,7 +169,7 @@ Driver::IVertexBuffer* VertexBuffer::resolveRHIObject()
 			if (m_rhiObject == nullptr || m_rhiObject->getByteCount() != m_buffer.size())
 			{
 				LN_SAFE_RELEASE(m_rhiObject);
-				m_rhiObject = m_manager->getGraphicsDevice()->CreateVertexBuffer(m_buffer.size(), m_buffer.data(), m_usage);
+				m_rhiObject = m_manager->getGraphicsDevice()->createVertexBuffer(m_buffer.size(), m_buffer.data(), m_usage);
 			}
 			else
 			{

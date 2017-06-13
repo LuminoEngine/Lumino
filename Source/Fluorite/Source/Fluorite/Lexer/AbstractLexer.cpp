@@ -52,7 +52,7 @@ ResultState AbstractLexer::Tokenize(InputFile* file)
 	m_inputFile = file;
 	const char* code = (const char*)file->GetCodeBuffer()->getConstData();
 	int length = (file->GetCodeBuffer()->getSize() / sizeof(char));
-	return Tokenize(code, length, file->GetTokenListInternal(), file->GetDiag());
+	return Tokenize(code, length, file->GetTokenListInternal(), file->getDiag());
 }
 
 //------------------------------------------------------------------------------

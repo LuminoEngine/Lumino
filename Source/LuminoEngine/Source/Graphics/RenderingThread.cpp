@@ -83,7 +83,7 @@ void RenderingThread::requestResume()
 void RenderingThread::execute()
 {
 	// 描画スレッド初期化
-	m_device->AttachRenderingThread();
+	m_device->attachRenderingThread();
 
 	// 終了要求が来るまでループし続ける。ただし、実行するべきコマンドは全て実行してから終了する。
 	while (true)
@@ -141,7 +141,7 @@ void RenderingThread::execute()
 
 	// 描画スレッドデタッチ (GL は MakeContext(NULL) が必要)
 	// https://sites.google.com/site/monshonosuana/opengl/opengl_005
-	m_device->DetachRenderingThread();
+	m_device->detachRenderingThread();
 }
 
 LN_NAMESPACE_GRAPHICS_END

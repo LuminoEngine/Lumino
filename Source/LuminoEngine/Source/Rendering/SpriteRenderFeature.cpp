@@ -38,19 +38,19 @@ SpriteRenderFeature::~SpriteRenderFeature()
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderFeature::SetTransform(const Matrix& matrix)
+void SpriteRenderFeature::setTransform(const Matrix& matrix)
 {
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		SpriteRenderer_SetTransform, m_manager,
 		SpriteRendererImpl*, m_internal,
 		Matrix, matrix,
 		{
-			m_internal->SetTransform(matrix);
+			m_internal->setTransform(matrix);
 		});
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderFeature::SetState(const RenderState& renderState)
+void SpriteRenderFeature::setState(const RenderState& renderState)
 {
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		SpriteRenderer_SetTransform, m_manager,
@@ -62,7 +62,7 @@ void SpriteRenderFeature::SetState(const RenderState& renderState)
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderFeature::SetViewInfo(const Size& size, const Matrix& view, const Matrix& proj)
+void SpriteRenderFeature::setViewInfo(const Size& size, const Matrix& view, const Matrix& proj)
 {
 	LN_ENQUEUE_RENDER_COMMAND_4(
 		SpriteRenderer_SetTransform, m_manager,
@@ -236,8 +236,8 @@ void SpriteRendererImpl::initialize(GraphicsManager* manager, int maxSpriteCount
 
 	//-----------------------------------------------------
 	// 頂点バッファとインデックスバッファ
-	m_vertexDeclaration.attach(device->CreateVertexDeclaration(BatchSpriteVertex::Elements(), BatchSpriteVertex::ElementCount));
-	m_vertexBuffer.attach(device->CreateVertexBuffer(sizeof(BatchSpriteVertex) * m_maxSprites * 4, NULL, ResourceUsage::Dynamic));
+	m_vertexDeclaration.attach(device->createVertexDeclaration(BatchSpriteVertex::Elements(), BatchSpriteVertex::ElementCount));
+	m_vertexBuffer.attach(device->createVertexBuffer(sizeof(BatchSpriteVertex) * m_maxSprites * 4, NULL, ResourceUsage::Dynamic));
 
 #if 1
 	ByteBuffer indexBuf(sizeof(uint16_t) * m_maxSprites * 6, false);
@@ -255,7 +255,7 @@ void SpriteRendererImpl::initialize(GraphicsManager* manager, int maxSpriteCount
 		ib[i2 + 4] = idx + 1;
 		ib[i2 + 5] = idx + 3;
 	}
-	m_indexBuffer.attach(device->CreateIndexBuffer(
+	m_indexBuffer.attach(device->createIndexBuffer(
 		m_maxSprites * 6, ib, IndexBufferFormat_UInt16, ResourceUsage::Dynamic));
 #else
 	m_indexBuffer.Attach(device->CreateIndexBuffer(
@@ -285,14 +285,14 @@ void SpriteRendererImpl::initialize(GraphicsManager* manager, int maxSpriteCount
 	// シェーダ
 
 	ShaderCompileResult r;
-	m_shader.Shader.attach(device->CreateShader(g_SpriteRenderer_fx_Data, g_SpriteRenderer_fx_Len, &r));
+	m_shader.Shader.attach(device->createShader(g_SpriteRenderer_fx_Data, g_SpriteRenderer_fx_Len, &r));
 	LN_THROW(r.Level != ShaderCompileResultLevel_Error, CompilationException, r);
 
-	m_shader.varTexture = m_shader.Shader->GetVariableByName(_T("gMaterialTexture"));
-	m_shader.varViewProjMatrix = m_shader.Shader->GetVariableByName(_T("gViewProjMatrix"));
-	m_shader.varViewPixelSize = m_shader.Shader->GetVariableByName(_T("gViewportSize"));
-	m_shader.varTexture = m_shader.Shader->GetVariableByName(_T("gMaterialTexture"));
-	m_shader.techMainDraw = m_shader.Shader->GetTechnique(0);
+	m_shader.varTexture = m_shader.Shader->getVariableByName(_T("gMaterialTexture"));
+	m_shader.varViewProjMatrix = m_shader.Shader->getVariableByName(_T("gViewProjMatrix"));
+	m_shader.varViewPixelSize = m_shader.Shader->getVariableByName(_T("gViewportSize"));
+	m_shader.varTexture = m_shader.Shader->getVariableByName(_T("gMaterialTexture"));
+	m_shader.techMainDraw = m_shader.Shader->getTechnique(0);
 
 	//-----------------------------------------------------
 	// メモリ確保と各種初期値
@@ -317,7 +317,7 @@ void SpriteRendererImpl::initialize(GraphicsManager* manager, int maxSpriteCount
 }
 
 //------------------------------------------------------------------------------
-void SpriteRendererImpl::SetTransform(const Matrix& matrix)
+void SpriteRendererImpl::setTransform(const Matrix& matrix)
 {
 	m_transformMatrix = matrix;
 }
@@ -520,7 +520,7 @@ void SpriteRendererImpl::DrawRequestInternal(
 	if (texture != nullptr)
 	{
 		// テクスチャ座標
-		const SizeI& texSize = texture->GetRealSize();
+		const SizeI& texSize = texture->getRealSize();
 		Vector2 texSizeInv(1.0f / texSize.width, 1.0f / texSize.height);
 		Rect sr(srcRect);
 		float l = sr.x * texSizeInv.x;
@@ -826,9 +826,9 @@ void SpriteRendererImpl::flush(SpriteSortMode sortFlags)
 		//r->SetRenderState(m_renderStateList[itr->RenderStateIndex]);
 		m_shader.varTexture->setTexture(itr->Texture);
 		r->setShaderPass(pass);
-		r->SetVertexDeclaration(m_vertexDeclaration);
-		r->SetVertexBuffer(0, m_vertexBuffer);
-		r->SetIndexBuffer(m_indexBuffer);
+		r->setVertexDeclaration(m_vertexDeclaration);
+		r->setVertexBuffer(0, m_vertexBuffer);
+		r->setIndexBuffer(m_indexBuffer);
 		r->drawPrimitiveIndexed(PrimitiveType_TriangleList, itr->StartIndex, itr->PrimitiveNum);
 	}
 

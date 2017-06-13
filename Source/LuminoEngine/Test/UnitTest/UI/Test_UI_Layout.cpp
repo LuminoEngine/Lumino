@@ -264,7 +264,7 @@ TEST_F(Test_UI_GridLayout, DefaultLayout)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_UI_GridLayout, Layout)
+TEST_F(Test_UI_GridLayout, layout)
 {
 	auto uiRoot = Engine::getMainWindow();
 	RefPtr<UILayoutPanel> oldLayot = uiRoot->GetLayoutPanel();

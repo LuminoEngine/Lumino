@@ -113,7 +113,7 @@ LN_INTERNAL_ACCESS:
 	void render(DrawingContext* g);
 	Rect GetGlyphAreaGlobalRect(int column);	// 高さ=行高さ
 	bool TestHitFromGlobalPoint(const PointF& pt, UITextVisualPosition* outPos);
-	int GetTextLength() const { return m_textLength; }
+	int getTextLength() const { return m_textLength; }
 
 private:
 	List<RefPtr<GlyphRun>>	m_glyphRuns;
@@ -193,7 +193,7 @@ public:
 	UITextDocument* GetDocument() const { return m_document; }
 	UITextAreaCaret* GetCaret() const { return m_caret; }
 
-	Size Measure(const Size& availableSize, Font* font);
+	Size measure(const Size& availableSize, Font* font);
 	Size Arrange(const Size& finalSize);
 	void render(DrawingContext* g);
 
@@ -493,7 +493,7 @@ void UITextVisualLine::initialize()
 void UITextVisualLine::AddGlyphRun(GlyphRun* run)
 {
 	m_glyphRuns.add(run);
-	m_textLength += run->GetTextLength();
+	m_textLength += run->getTextLength();
 
 	// ※横書き
 	{
@@ -507,7 +507,7 @@ void UITextVisualLine::render(DrawingContext* g)
 {
 	for (auto& run : m_glyphRuns)
 	{
-		g->DrawGlyphRun(PointF(), run);// TODO:
+		g->drawGlyphRun(PointF(), run);// TODO:
 	}
 }
 
@@ -518,15 +518,15 @@ Rect UITextVisualLine::GetGlyphAreaGlobalRect(int column)
 	int count = 0;
 	for (auto& run : m_glyphRuns)
 	{
-		if (column < (count + run->GetTextLength()))
+		if (column < (count + run->getTextLength()))
 		{
 			int localIndex = column - count;
-			auto& items = run->RequestLayoutItems();
+			auto& items = run->requestLayoutItems();
 			rect.x = items[localIndex].Location.BitmapTopLeftPosition.x;
 			rect.width = items[localIndex].Location.BitmapSize.width;
 			return rect;
 		}
-		count += run->GetTextLength();
+		count += run->getTextLength();
 	}
 	return rect;
 }
@@ -542,7 +542,7 @@ bool UITextVisualLine::TestHitFromGlobalPoint(const PointF& pt, UITextVisualPosi
 		PointF flow(0, 0);
 		for (auto& run : m_glyphRuns)
 		{
-			for (auto& item : run->RequestLayoutItems())
+			for (auto& item : run->requestLayoutItems())
 			{
 				Rect rc(flow, static_cast<float>(item.Location.BitmapSize.width), static_cast<float>(item.Location.BitmapSize.height));
 				if (rc.contains(localPt))
@@ -596,7 +596,7 @@ void UITextVisualLineBlock::BuildVisualLines(Font* font, int startDocumentTextOf
 	//m_renderSize = Size::Zero;
 
 	auto run = newObject<GlyphRun>();	// TODO: cache
-	run->SetFont(font->ResolveRawFont());
+	run->setFont(font->resolveRawFont());
 	run->setText(m_documentLine->getText(), m_documentLine->GetTextLength2());
 
 	auto line = newObject<UITextVisualLine>();	// TODO: cache
@@ -668,7 +668,7 @@ void UITextArea::initialize()
 }
 
 //------------------------------------------------------------------------------
-Size UITextArea::Measure(const Size& availableSize, Font* font)
+Size UITextArea::measure(const Size& availableSize, Font* font)
 {
 	// 物理行リストの更新が必要？
 	if (m_revision != m_document->GetRevision())
@@ -887,12 +887,12 @@ Size UITextBox::measureOverride(const Size& availableSize)
 
 	if (m_font != nullptr)
 	{
-		//Size textSize = m_font->MeasureRenderSize(m_text);
+		//Size textSize = m_font->measureRenderSize(m_text);
 		//size.width = std::max(size.width, textSize.width);
 		//size.height = std::max(size.height, textSize.height);
 	}
 
-	m_textArea->Measure(availableSize, GetActiveFont());
+	m_textArea->measure(availableSize, GetActiveFont());
 
 	return size;
 }
@@ -910,13 +910,13 @@ void UITextBox::onRender(DrawingContext* g)
 {
 	UITextElement::onRender(g);
 
-	g->SetFont(GetActiveFont());	// TODO:
+	g->setFont(GetActiveFont());	// TODO:
 	g->setBrush(Brush::Red);
 	m_textArea->render(g);
-	//g->SetFont(GetActiveFont());
+	//g->setFont(GetActiveFont());
 	//g->setBrush(GetForegroundInternal());
 	//g->DrawText_(m_text, PointF::Zero);
-	//g->DrawChar('g', PointF(0, 0));
+	//g->drawChar('g', PointF(0, 0));
 }
 
 
@@ -954,7 +954,7 @@ public:
 
 	void replace(int offset, int length, const StringRef& text);
 
-	Size Measure(const Size& availableSize, Font* font, detail::UIManager* manager);
+	Size measure(const Size& availableSize, Font* font, detail::UIManager* manager);
 
 protected:
 	virtual void OnMouseDown(UIMouseEventArgs* e) override;
@@ -1050,7 +1050,7 @@ void UISimpleTextArea::OnTextInput(UIKeyEventArgs* e)
 Size UISimpleTextArea::measureOverride(const Size& availableSize)
 {
 	Size ds = UITextElement::measureOverride(availableSize);
-	return Size::max(ds, Measure(availableSize, GetActiveFont(), getManager()));
+	return Size::max(ds, measure(availableSize, GetActiveFont(), getManager()));
 }
 
 //------------------------------------------------------------------------------
@@ -1064,23 +1064,23 @@ void UISimpleTextArea::onRender(DrawingContext* g)
 {
 	UITextElement::onRender(g);
 
-	g->SetFont(GetActiveFont());	// TODO:
+	g->setFont(GetActiveFont());	// TODO:
 	g->setBrush(Brush::Red);
 
-	g->DrawGlyphRun(PointF(0, 0), m_glyphRun);
+	g->drawGlyphRun(PointF(0, 0), m_glyphRun);
 
 	g->setBrush(m_caretBrush);
 	g->DrawRectangle(m_caret->GetRenderRectangle());
-	//g->SetFont(GetActiveFont());
+	//g->setFont(GetActiveFont());
 	//g->setBrush(GetForegroundInternal());
 	//g->DrawText_(m_text, PointF::Zero);
-	//g->DrawChar('g', PointF(0, 0));
+	//g->drawChar('g', PointF(0, 0));
 }
 
 //------------------------------------------------------------------------------
-Size UISimpleTextArea::Measure(const Size& availableSize, Font* font, detail::UIManager* manager)
+Size UISimpleTextArea::measure(const Size& availableSize, Font* font, detail::UIManager* manager)
 {
-	m_glyphRun->SetFont(font->ResolveRawFont());
+	m_glyphRun->setFont(font->resolveRawFont());
 	if (m_invalidateGlyphRun)
 	{
 
@@ -1100,7 +1100,7 @@ void UISimpleTextArea::UpdateCaretRectangle()
 {
 	Rect rect(0, 0, 1, m_glyphRun->getRenderSize().height);
 	PointF pos;
-	if (m_glyphRun->GetDistanceFromCharacterHit(m_caret->GetVisualPosition().column, &pos))
+	if (m_glyphRun->getDistanceFromCharacterHit(m_caret->GetVisualPosition().column, &pos))
 	{
 		pos.x += 1;	// 少しだけ間を空けて見やすくする
 		rect.setLocation(pos);

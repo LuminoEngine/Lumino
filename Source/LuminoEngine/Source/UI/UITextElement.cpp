@@ -49,11 +49,11 @@ Size UITextElement::measureOverride(const Size& constraint)
 			m_font = RefPtr<Font>::makeRef();
 			m_font->initialize(getManager()->getGraphicsManager(), nullptr);
 		}
-		m_font->SetFamily(FontFamily);
+		m_font->setFamily(FontFamily);
 		m_font->setSize(FontSize);
-		m_font->SetBold(isFontBold);
-		m_font->SetItalic(isFontItalic);
-		m_font->SetAntiAlias(true);
+		m_font->setBold(isFontBold);
+		m_font->setItalic(isFontItalic);
+		m_font->setAntiAlias(true);
 		m_invalidateFont = false;
 	}
 

@@ -337,7 +337,7 @@ UILayoutLayer::~UILayoutLayer()
 void UILayoutLayer::initialize()
 {
 	UIViewportLayer::initialize();
-	m_root = newObject<UILayoutView>(UIContext::GetMainContext(), nullptr);	// TODO: コンテキスト変更とか
+	m_root = newObject<UILayoutView>(UIContext::getMainContext(), nullptr);	// TODO: コンテキスト変更とか
 
 	m_drawingContext = newObject<DrawingContext>();
 

@@ -30,12 +30,12 @@ public:
 	/**
 		@brief	バックバッファのレンダリング結果をフロントバッファに転送します。
 	*/
-	void Present();
+	void present();
 
 LN_INTERNAL_ACCESS:
 	SwapChain();
-	void InitializeDefault(detail::GraphicsManager* manager);
-	void InitializeSub(detail::GraphicsManager* manager, PlatformWindow* window);
+	void initializeDefault(detail::GraphicsManager* manager);
+	void initializeSub(detail::GraphicsManager* manager, PlatformWindow* window);
 	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
 
 	void postInitialize();

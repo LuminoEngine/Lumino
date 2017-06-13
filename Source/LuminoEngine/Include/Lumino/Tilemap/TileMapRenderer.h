@@ -13,7 +13,7 @@ class TileMapRenderer
 	: public RefObject
 {
 public:
-	void SetTransform(const Matrix& world, const Matrix& viewProj);
+	void setTransform(const Matrix& world, const Matrix& viewProj);
 	void Draw(DrawList* context, TileMapModel* tileMap, const Rect& boundingRect, const ViewFrustum& cameraFrustum, int priority);
 
 protected:
@@ -80,7 +80,7 @@ private:
 //		@brief		座標変換行列を設定します。
 //		@param[in]	matrix		: 座標変換行列
 //	*/
-//	void SetTransform(const Matrix& matrix);
+//	void setTransform(const Matrix& matrix);
 //
 //	/**
 //		@brief		ビュー及びプロジェクション行列を設定します。

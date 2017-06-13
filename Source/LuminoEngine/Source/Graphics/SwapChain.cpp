@@ -26,21 +26,21 @@ SwapChain::~SwapChain()
 }
 
 //------------------------------------------------------------------------------
-void SwapChain::InitializeDefault(detail::GraphicsManager* manager)
+void SwapChain::initializeDefault(detail::GraphicsManager* manager)
 {
 	GraphicsResourceObject::initialize();
 
-	m_deviceObj = m_manager->getGraphicsDevice()->GetDefaultSwapChain();
+	m_deviceObj = m_manager->getGraphicsDevice()->getDefaultSwapChain();
 	m_deviceObj->addRef();
 	postInitialize();
 }
 
 //------------------------------------------------------------------------------
-void SwapChain::InitializeSub(detail::GraphicsManager* manager, PlatformWindow* window)
+void SwapChain::initializeSub(detail::GraphicsManager* manager, PlatformWindow* window)
 {
 	GraphicsResourceObject::initialize();
 
-	m_deviceObj = m_manager->getGraphicsDevice()->CreateSwapChain(window);
+	m_deviceObj = m_manager->getGraphicsDevice()->createSwapChain(window);
 	postInitialize();
 }
 
@@ -68,11 +68,11 @@ void SwapChain::postInitialize()
 	m_commandList = LN_NEW RenderingCommandList(m_manager);
 
 	// TODO: デフォルトのバックバッファという仕組みは入らない気がする。
-	// こちら側でレンダリングターゲット作って、Present で全体転送してもらえばいいし。
+	// こちら側でレンダリングターゲット作って、present で全体転送してもらえばいいし。
 
 	//Driver::IGraphicsDevice* device = m_manager->getGraphicsDevice();
 	//m_deviceObj->getBackBuffer()->AddRef();	// ↓の set 用に+1しておく (TODO: ↓の中でやるのがいいのかもしれないが・・・。)
-	m_backColorBuffer = LN_NEW RenderTargetTexture();//Texture::CreateRenderTarget(m_manager, backbufferSize, 1, TextureFormat_R8G8B8X8);
+	m_backColorBuffer = LN_NEW RenderTargetTexture();//Texture::createRenderTarget(m_manager, backbufferSize, 1, TextureFormat_R8G8B8X8);
 	m_backColorBuffer->createCore(m_manager, true/*m_deviceObj->getBackBuffer(), NULL*/);
 	m_backColorBuffer->attachDefaultBackBuffer(m_deviceObj->getBackBuffer());
 
@@ -96,7 +96,7 @@ RenderTargetTexture* SwapChain::getBackBuffer()
 }
 
 //------------------------------------------------------------------------------
-void SwapChain::Present()
+void SwapChain::present()
 {
 	m_manager->presentSwapChain(this);
 }
@@ -109,7 +109,7 @@ void SwapChain::MightResizeAndDeviceReset(const SizeI& newSize)
 	{
 		m_deviceObj->resize(newSize);
 		m_backColorBuffer->attachDefaultBackBuffer(m_deviceObj->getBackBuffer());
-		// ※ここではまだ深度バッファはリサイズしない。Present を終えた後に行う。
+		// ※ここではまだ深度バッファはリサイズしない。present を終えた後に行う。
 	}
 
 
@@ -125,13 +125,13 @@ void SwapChain::MightResizeAndDeviceReset(const SizeI& newSize)
 	if (m_manager->getRenderingType() == GraphicsRenderingType::Immediate)
 	{
 		// デバイスロストのチェック
-		if (device->GetDeviceState() == Driver::DeviceState_Lost)
+		if (device->getDeviceState() == Driver::DeviceState_Lost)
 		{
-			device->getRenderer()->LeaveRenderState();
+			device->getRenderer()->leaveRenderState();
 			m_manager->pauseDevice();
-			device->ResetDevice();
+			device->resetDevice();
 			m_manager->resumeDevice();
-			device->getRenderer()->EnterRenderState();
+			device->getRenderer()->enterRenderState();
 
 			// 深度バッファのサイズを新しいバックバッファサイズに合わせる
 			//m_backDepthBuffer->Resize(m_deviceObj->getBackBuffer()->GetSize());
@@ -142,7 +142,7 @@ void SwapChain::MightResizeAndDeviceReset(const SizeI& newSize)
 		RenderingThread* thread = m_manager->getRenderingThread();
 
 		// デバイスロストのチェック
-		if (device->GetDeviceState() == Driver::DeviceState_Lost)
+		if (device->getDeviceState() == Driver::DeviceState_Lost)
 		{
 			// 溜まっているコマンドを全て実行してレンダリングレッドを一時停止する
 			thread->requestPauseAndWait();
@@ -151,7 +151,7 @@ void SwapChain::MightResizeAndDeviceReset(const SizeI& newSize)
 			try
 			{
 				m_manager->pauseDevice();
-				device->ResetDevice();
+				device->resetDevice();
 				m_manager->resumeDevice();
 			}
 			catch (...) {
@@ -176,7 +176,7 @@ void SwapChain::onChangeDevice(Driver::IGraphicsDevice* device)
 	}
 	else
 	{
-		m_deviceObj = m_manager->getGraphicsDevice()->GetDefaultSwapChain();
+		m_deviceObj = m_manager->getGraphicsDevice()->getDefaultSwapChain();
 		m_deviceObj->addRef();
 	}
 }
@@ -184,7 +184,7 @@ void SwapChain::onChangeDevice(Driver::IGraphicsDevice* device)
 //------------------------------------------------------------------------------
 void SwapChain::PresentInternal()
 {
-	m_deviceObj->Present(m_backColorBuffer->resolveDeviceObject());
+	m_deviceObj->present(m_backColorBuffer->resolveDeviceObject());
 
 	// 実行完了。m_waiting を ture にすることで、メインスレッドからはこのスワップチェインをキューに追加できるようになる。
 	// コマンドの成否にかかわらず true にしないと、例外した後にデッドロックが発生する。

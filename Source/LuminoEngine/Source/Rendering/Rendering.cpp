@@ -220,11 +220,11 @@ FrameRectRenderFeature* InternalContext::BeginFrameRectRenderer()
 }
 
 //------------------------------------------------------------------------------
-void InternalContext::SetViewInfo(const Size& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix)
+void InternalContext::setViewInfo(const Size& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix)
 {
-	m_spriteRenderer->SetViewInfo(viewPixelSize, viewMatrix, projMatrix);
-	m_textRenderer->SetViewInfo(viewMatrix * projMatrix, SizeI(viewPixelSize.width, viewPixelSize.height));
-	m_frameRectRenderer->SetViewInfo(viewMatrix * projMatrix);
+	m_spriteRenderer->setViewInfo(viewPixelSize, viewMatrix, projMatrix);
+	m_textRenderer->setViewInfo(viewMatrix * projMatrix, SizeI(viewPixelSize.width, viewPixelSize.height));
+	m_frameRectRenderer->setViewInfo(viewMatrix * projMatrix);
 }
 
 //------------------------------------------------------------------------------
@@ -379,7 +379,7 @@ Brush* BatchState::getBrush() const
 }
 
 //------------------------------------------------------------------------------
-void BatchState::SetFont(Font* font)
+void BatchState::setFont(Font* font)
 {
 	if (m_font != font)
 	{
@@ -389,7 +389,7 @@ void BatchState::SetFont(Font* font)
 }
 
 //------------------------------------------------------------------------------
-Font* BatchState::GetFont() const
+Font* BatchState::getFont() const
 {
 	return m_font;
 }
@@ -433,7 +433,7 @@ void BatchState::ApplyStatus(InternalContext* context, CombinedMaterial* combine
 		stateManager->setRenderState(state);
 
 		// スプライトバッチ化のため (TODO: いらないかも。SpriteRenderer では State でそーとしなくなった)
-		context->GetSpriteRenderer()->SetState(state);
+		context->GetSpriteRenderer()->setState(state);
 	}
 	// DepthStencilState
 	{
@@ -779,7 +779,7 @@ void SceneRenderer::OnPreRender(DrawElementList* elementList)
 }
 
 //------------------------------------------------------------------------------
-void SceneRenderer::AddPass(RenderingPass2* pass)
+void SceneRenderer::addPass(RenderingPass2* pass)
 {
 	m_renderingPassList.add(pass);
 }
@@ -810,7 +810,7 @@ void SceneRenderer::render(
 		OnPreRender(elementList);
 
 		// 視点に関する情報の設定
-		context->SetViewInfo(cameraInfo.viewPixelSize, cameraInfo.viewMatrix, cameraInfo.projMatrix);
+		context->setViewInfo(cameraInfo.viewPixelSize, cameraInfo.viewMatrix, cameraInfo.projMatrix);
 
 		// ライブラリ外部への書き込み対応
 		//context->BeginBaseRenderer()->Clear(ClearFlags::Depth/* | ClearFlags::Stencil*/, Color());
@@ -980,7 +980,7 @@ void NonShadingRenderer::initialize(GraphicsManager* manager)
 
 	auto pass = RefPtr<detail::NonShadingRenderingPass>::makeRef();
 	pass->initialize(manager);
-	AddPass(pass);
+	addPass(pass);
 }
 
 
@@ -1032,7 +1032,7 @@ void ForwardShadingRenderer::initialize(GraphicsManager* manager)
 
 	auto pass = RefPtr<detail::ForwardShadingRenderingPass>::makeRef();
 	pass->initialize(manager);
-	AddPass(pass);
+	addPass(pass);
 }
 
 //------------------------------------------------------------------------------
@@ -1171,7 +1171,7 @@ ScopedStateBlock2::~ScopedStateBlock2()
 //------------------------------------------------------------------------------
 void ScopedStateBlock2::apply()
 {
-	m_renderer->SetState(m_state);
+	m_renderer->setState(m_state);
 }
 
 
@@ -1409,11 +1409,11 @@ Brush* DrawList::getBrush() const
 }
 
 //------------------------------------------------------------------------------
-void DrawList::SetFont(Font* font)
+void DrawList::setFont(Font* font)
 {
-	font = (font != nullptr) ? font : m_manager->getFontManager()->GetDefaultFont();
+	font = (font != nullptr) ? font : m_manager->getFontManager()->getDefaultFont();
 
-	m_state.state.state.SetFont(font);
+	m_state.state.state.setFont(font);
 }
 
 //------------------------------------------------------------------------------
@@ -1477,8 +1477,8 @@ void DrawList::BeginMakeElements()
 	m_drawElementList.clearCommands();
 	m_state.reset();
 	setBrush(nullptr);
-	SetFont(nullptr);
-	//m_state.state.state.SetFont(m_manager->getFontManager()->GetDefaultFont());
+	setFont(nullptr);
+	//m_state.state.state.setFont(m_manager->getFontManager()->getDefaultFont());
 	m_defaultMaterial->reset();
 	m_builtinEffectData.reset();
 	//m_defaultMaterial->cullingMode = CullingMode::None;
@@ -1494,7 +1494,7 @@ void DrawList::BeginMakeElements()
 //}
 
 //------------------------------------------------------------------------------
-void DrawList::SetTransform(const Matrix& transform)
+void DrawList::setTransform(const Matrix& transform)
 {
 	m_state.state.SetTransfrom(transform);
 }
@@ -1735,7 +1735,7 @@ void DrawList::blit(Texture* source, RenderTargetTexture* dest, Material* materi
 }
 
 //------------------------------------------------------------------------------
-void DrawList::DrawGlyphRun(const PointF& position, GlyphRun* glyphRun)
+void DrawList::drawGlyphRun(const PointF& position, GlyphRun* glyphRun)
 {
 	class DrawElement_DrawGlyphRun : public detail::DrawElement
 	{
@@ -1745,7 +1745,7 @@ void DrawList::DrawGlyphRun(const PointF& position, GlyphRun* glyphRun)
 
 		virtual void DrawSubset(const DrawArgs& e) override
 		{
-			e.context->BeginTextRenderer()->DrawGlyphRun(getTransform(e.oenerList), position, glyphRun);
+			e.context->BeginTextRenderer()->drawGlyphRun(getTransform(e.oenerList), position, glyphRun);
 		}
 		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawGlyphRun"); }
 	};
@@ -1774,7 +1774,7 @@ void DrawList::DrawText_(const StringRef& text, const Rect& rect, StringFormatFl
 
 		virtual void DrawSubset(const DrawArgs& e) override
 		{
-			e.context->BeginTextRenderer()->DrawString(getTransform(e.oenerList), text.c_str(), text.getLength(), rect, flags);
+			e.context->BeginTextRenderer()->drawString(getTransform(e.oenerList), text.c_str(), text.getLength(), rect, flags);
 		}
 		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawText"); }
 	};
@@ -1787,7 +1787,7 @@ void DrawList::DrawText_(const StringRef& text, const Rect& rect, StringFormatFl
 }
 
 //------------------------------------------------------------------------------
-void DrawList::DrawChar(TCHAR ch, const PointF& position)
+void DrawList::drawChar(TCHAR ch, const PointF& position)
 {
 	class DrawElement_DrawChar : public detail::DrawElement
 	{
@@ -1797,7 +1797,7 @@ void DrawList::DrawChar(TCHAR ch, const PointF& position)
 
 		virtual void DrawSubset(const DrawArgs& e) override
 		{
-			e.context->BeginVectorTextRenderer()->DrawChar(getTransform(e.oenerList), ch, Rect(position, 0, 0), TextLayoutOptions::None);
+			e.context->BeginVectorTextRenderer()->drawChar(getTransform(e.oenerList), ch, Rect(position, 0, 0), TextLayoutOptions::None);
 		}
 		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawChar"); }
 	};
@@ -1822,7 +1822,7 @@ void DrawList::DrawText2(const StringRef& text, const Rect& rect)
 
 		virtual void DrawSubset(const DrawArgs& e) override
 		{
-			e.context->BeginVectorTextRenderer()->DrawString(
+			e.context->BeginVectorTextRenderer()->drawString(
 				getTransform(e.oenerList), 
 				(const UTF32*)e.oenerList->getExtData(utf32DataHandle),
 				length,
@@ -1870,7 +1870,7 @@ void DrawList::DrawSprite(
 		virtual void DrawSubset(const DrawArgs& e) override
 		{
 			auto* r = e.context->BeginSpriteRenderer();
-			r->SetTransform(getTransform(e.oenerList));
+			r->setTransform(getTransform(e.oenerList));
 			r->DrawRequest(position, size, anchorRatio, texture, srcRect, color, baseDirection, billboardType);
 		}
 		virtual void ReportDiag(RenderDiag* diag) override { diag->CallCommonElement("DrawSprite"); }

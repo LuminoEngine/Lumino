@@ -14,8 +14,8 @@ class DX9SwapChain
 public:
 	DX9SwapChain();
 	virtual ~DX9SwapChain();
-	void InitializeDefault(DX9GraphicsDevice* device, PlatformWindow* window, const SizeI& backBufferSize);
-	void InitializeSub(DX9GraphicsDevice* device, PlatformWindow* window, const SizeI& backBufferSize);
+	void initializeDefault(DX9GraphicsDevice* device, PlatformWindow* window, const SizeI& backBufferSize);
+	void initializeSub(DX9GraphicsDevice* device, PlatformWindow* window, const SizeI& backBufferSize);
 
 public:
 
@@ -23,7 +23,7 @@ public:
 	void postInitialize();
 
 	/// バックバッファサイズの取得
-	const SizeI& GetBackBufferSize() const { return m_backBufferSize; }
+	const SizeI& getBackBufferSize() const { return m_backBufferSize; }
 
 public:
 	// override IDeviceObject
@@ -33,7 +33,7 @@ public:
 	// override ISwapChain
 	virtual ITexture* getBackBuffer() { return m_backBuffer; }
 	virtual void resize(const SizeI& size);
-	virtual void Present(ITexture* colorBuffer);
+	virtual void present(ITexture* colorBuffer);
 
 private:
 	DX9GraphicsDevice*			m_graphicsDevice;

@@ -565,7 +565,7 @@ struct SetSamplerStateCommand : public RenderingCommand
 	}
 	void execute()
 	{
-		m_targetTexture->SetSamplerState(m_state);
+		m_targetTexture->setSamplerState(m_state);
 	}
 };
 

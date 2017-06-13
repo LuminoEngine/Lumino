@@ -44,19 +44,19 @@ void GlyphRun::initialize(detail::GraphicsManager* manager)
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
 	m_layoutEngine = LN_NEW detail::TextLayoutEngine();
-	m_layoutEngine->SetFont(m_manager->getFontManager()->GetDefaultRawFont());
+	m_layoutEngine->setFont(m_manager->getFontManager()->getDefaultRawFont());
 }
 
 //------------------------------------------------------------------------------
-void GlyphRun::SetFont(RawFont* font)
+void GlyphRun::setFont(RawFont* font)
 {
-	if (font != m_layoutEngine->GetFont())
+	if (font != m_layoutEngine->getFont())
 	{
 		if (font == nullptr)
 		{
-			font = m_manager->getFontManager()->GetDefaultRawFont();
+			font = m_manager->getFontManager()->getDefaultRawFont();
 		}
-		m_layoutEngine->SetFont(font);
+		m_layoutEngine->setFont(font);
 		LN_SAFE_RELEASE(m_glyphTextureCache);	// 必要なときにまた取得しなおす
 		m_modifiedRenderSize = true;
 		m_modifiedItems = true;
@@ -64,9 +64,9 @@ void GlyphRun::SetFont(RawFont* font)
 }
 
 //------------------------------------------------------------------------------
-RawFont* GlyphRun::GetFont() const
+RawFont* GlyphRun::getFont() const
 {
-	return m_layoutEngine->GetFont();
+	return m_layoutEngine->getFont();
 }
 
 //------------------------------------------------------------------------------
@@ -89,15 +89,15 @@ void GlyphRun::setText(const StringRef& text)
 }
 
 //------------------------------------------------------------------------------
-void GlyphRun::SetTextAlignment(TextAlignment align)
+void GlyphRun::setTextAlignment(TextAlignment align)
 {
-	m_layoutEngine->SetTextAlignment(align);
+	m_layoutEngine->setTextAlignment(align);
 }
 
 //------------------------------------------------------------------------------
-//int GlyphRun::GetStrokeSize() const
+//int GlyphRun::getStrokeSize() const
 //{
-//	return m_layoutEngine->GetStrokeSize();
+//	return m_layoutEngine->getStrokeSize();
 //}
 
 //------------------------------------------------------------------------------
@@ -106,9 +106,9 @@ const SizeI& GlyphRun::getRenderSize()
 	// RenderSize だけ更新する
 	if (m_modifiedRenderSize)
 	{
-		if (m_layoutEngine->GetFont() != nullptr && m_utf32Text.getLength() > 0)
+		if (m_layoutEngine->getFont() != nullptr && m_utf32Text.getLength() > 0)
 		{
-			m_layoutEngine->LayoutText(m_utf32Text.c_str(), m_utf32Text.getLength(), detail::LayoutTextOptions::RenderSizeOnly, &m_glyphData);
+			m_layoutEngine->layoutText(m_utf32Text.c_str(), m_utf32Text.getLength(), detail::LayoutTextOptions::RenderSizeOnly, &m_glyphData);
 		}
 		m_modifiedRenderSize = false;
 	}
@@ -116,9 +116,9 @@ const SizeI& GlyphRun::getRenderSize()
 }
 
 //------------------------------------------------------------------------------
-bool GlyphRun::GetCharacterHitFromDistance(const PointF& pos, GlyphHit* outResult)
+bool GlyphRun::getCharacterHitFromDistance(const PointF& pos, GlyphHit* outResult)
 {
-	UpdateTextLayoutItem();
+	updateTextLayoutItem();
 
 	Size area = m_glyphData.AreaSize.toFloatSize();
 	if (0.0f <= pos.x && pos.x <= area.width &&		// TODO: Contains とかの関数にしたい
@@ -137,9 +137,9 @@ bool GlyphRun::GetCharacterHitFromDistance(const PointF& pos, GlyphHit* outResul
 }
 
 //------------------------------------------------------------------------------
-bool GlyphRun::GetDistanceFromCharacterHit(int index, PointF* outPos)
+bool GlyphRun::getDistanceFromCharacterHit(int index, PointF* outPos)
 {
-	UpdateTextLayoutItem();
+	updateTextLayoutItem();
 
 	if (index < 0 || m_glyphData.Items.isEmpty())
 	{
@@ -159,15 +159,15 @@ bool GlyphRun::GetDistanceFromCharacterHit(int index, PointF* outPos)
 }
 
 //------------------------------------------------------------------------------
-void GlyphRun::UpdateTextLayoutItem()
+void GlyphRun::updateTextLayoutItem()
 {
 	if (m_modifiedItems)
 	{
 		m_glyphData.AreaSize = SizeI::Zero;
 		m_glyphData.Items.clear();
-		if (m_layoutEngine->GetFont() != nullptr && m_utf32Text.getLength() > 0)
+		if (m_layoutEngine->getFont() != nullptr && m_utf32Text.getLength() > 0)
 		{
-			m_layoutEngine->LayoutText(m_utf32Text.c_str(), m_utf32Text.getLength(), detail::LayoutTextOptions::All, &m_glyphData);
+			m_layoutEngine->layoutText(m_utf32Text.c_str(), m_utf32Text.getLength(), detail::LayoutTextOptions::All, &m_glyphData);
 		}
 		m_modifiedRenderSize = false;
 		m_modifiedItems = false;
@@ -175,16 +175,16 @@ void GlyphRun::UpdateTextLayoutItem()
 }
 
 //------------------------------------------------------------------------------
-const List<TextLayoutResultItem>& GlyphRun::RequestLayoutItems()
+const List<TextLayoutResultItem>& GlyphRun::requestLayoutItems()
 {
-	UpdateTextLayoutItem();
+	updateTextLayoutItem();
 	return m_glyphData.Items;
 }
 
 //------------------------------------------------------------------------------
-detail::FontGlyphTextureCache* GlyphRun::LookupFontGlyphTextureCache()
+detail::FontGlyphTextureCache* GlyphRun::lookupFontGlyphTextureCache()
 {
-	return m_layoutEngine->GetFont()->GetGlyphTextureCache();
+	return m_layoutEngine->getFont()->GetGlyphTextureCache();
 }
 
 LN_NAMESPACE_GRAPHICS_END

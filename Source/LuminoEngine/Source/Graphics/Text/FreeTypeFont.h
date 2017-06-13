@@ -32,10 +32,10 @@ struct FreeTypeGlyphBitmap
 	}
 	~FreeTypeGlyphBitmap()
 	{
-		ReleaseGlyph();
+		releaseGlyph();
 	}
 
-	void ReleaseGlyph();
+	void releaseGlyph();
 };
 
 // [Obsolete]
@@ -49,7 +49,7 @@ struct FreeTypeGlyphData
 	FT_Glyph		CopyGlyph;			///< GlyphBitmap のバッファ本体はこれが持っている
 	FT_Glyph		CopyOutlineGlyph;	///< OutlineBitmap のバッファ本体はこれが持っている
 
-	void ReleaseGlyph();
+	void releaseGlyph();
 };
 
 class FreeTypeFont
@@ -68,42 +68,42 @@ public:
 	virtual int getSize() const  { return m_fontData.Size; }
 	//virtual void SetEdgeSize(int size) { m_fontData.EdgeSize = size; m_modified = true; }
 	//virtual int GetEdgeSize() const  { return m_fontData.EdgeSize; }
-	virtual void SetBold(bool enabled) { m_fontData.IsBold = enabled; m_modified = true; }
-	virtual bool IsBold() const  { return m_fontData.IsBold; }
-	virtual void SetItalic(bool enabled) { m_fontData.IsItalic = enabled; m_modified = true; }
-	virtual bool IsItalic() const { return m_fontData.IsItalic; }
-	virtual void SetAntiAlias(bool enabled) { m_fontData.IsAntiAlias = enabled; m_modified = true; }
-	virtual bool IsAntiAlias() const { return m_fontData.IsAntiAlias; }
+	virtual void setBold(bool enabled) { m_fontData.isBold = enabled; m_modified = true; }
+	virtual bool isBold() const  { return m_fontData.isBold; }
+	virtual void setItalic(bool enabled) { m_fontData.isItalic = enabled; m_modified = true; }
+	virtual bool isItalic() const { return m_fontData.isItalic; }
+	virtual void setAntiAlias(bool enabled) { m_fontData.isAntiAlias = enabled; m_modified = true; }
+	virtual bool isAntiAlias() const { return m_fontData.isAntiAlias; }
 
 	virtual RawFontPtr copy() const;
-	virtual int GetLineSpacing() { UpdateFont(); return m_lineHeight; }	// TODO: [Obsolete]
-	//virtual Size GetTextSize(const char* text, int length);	// TODO: GetTextSize もいらなそう。UTF32 のだけあればいいかも？
-	//virtual Size GetTextSize(const wchar_t* text, int length);
-	//virtual Size GetTextSize(const UTF32* text, int length);
-	virtual FontGlyphLocation* AdvanceKerning(UTF32 utf32code, int strokeSize, FontGlyphLocation* prevData);
-	virtual FontGlyphBitmap* LookupGlyphBitmap(UTF32 utf32code, int strokeSize);
+	virtual int getLineSpacing() { updateFont(); return m_lineHeight; }	// TODO: [Obsolete]
+	//virtual Size getTextSize(const char* text, int length);	// TODO: getTextSize もいらなそう。UTF32 のだけあればいいかも？
+	//virtual Size getTextSize(const wchar_t* text, int length);
+	//virtual Size getTextSize(const UTF32* text, int length);
+	virtual FontGlyphLocation* advanceKerning(UTF32 utf32code, int strokeSize, FontGlyphLocation* prevData);
+	virtual FontGlyphBitmap* lookupGlyphBitmap(UTF32 utf32code, int strokeSize);
 	//virtual FontGlyphData* LookupGlyphData(UTF32 utf32code, FontGlyphData* prevData);
 
-	virtual void GetGlobalMetrics(FontGlobalMetrics* outMetrics) override;
-	virtual bool IsOutlineSupported() const override { return true; }
-	virtual void DecomposeOutline(UTF32 utf32code, RawFont::VectorGlyphInfo* outInfo) override;
-	virtual Vector2 GetKerning(UTF32 prev, UTF32 next) override;
-	virtual void GetGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics) override;
+	virtual void getGlobalMetrics(FontGlobalMetrics* outMetrics) override;
+	virtual bool isOutlineSupported() const override { return true; }
+	virtual void decomposeOutline(UTF32 utf32code, RawFont::VectorGlyphInfo* outInfo) override;
+	virtual Vector2 getKerning(UTF32 prev, UTF32 next) override;
+	virtual void getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics) override;
 
 	virtual FontManager* getManager() const { return m_manager; }
 
-	FTC_FaceID GetFTCFaceId() const { return m_ftFaceID; }
-	FT_Face GetFTFace() const { return m_ftFace; }
-	FT_Int GetFTCacheMapIndex() const { return m_ftCacheMapIndex; }
+	FTC_FaceID getFTCFaceId() const { return m_ftFaceID; }
+	FT_Face getFTFace() const { return m_ftFace; }
+	FT_Int getFTCacheMapIndex() const { return m_ftCacheMapIndex; }
 
 LN_INTERNAL_ACCESS:	// TODO
-	void UpdateFont();
-	void RefreshBitmap(Bitmap* bitmap, FT_Bitmap* ftBitmap);
-	void UpdateImageFlags();
-	void TryUpdateStroke(int newEdgeSize);
-	bool IsOutLineMetrix() const;
-	void GetOutlineTextMetrix();
-	void GetBitmapTextMetrix();
+	void updateFont();
+	void refreshBitmap(Bitmap* bitmap, FT_Bitmap* ftBitmap);
+	void updateImageFlags();
+	void tryUpdateStroke(int newEdgeSize);
+	bool isOutLineMetrix() const;
+	void getOutlineTextMetrix();
+	void getBitmapTextMetrix();
 
 	// FT_Outline_Funcs callbacks
 	struct DecomposingState

@@ -299,7 +299,7 @@ void PmxLoader::LoadTextureTable(BinaryReader* reader, const PathName& baseDir)
 
 		// 作成
 		PathName filePath(baseDir, name);
-		m_textureTable.add(m_manager->CreateTexture(baseDir, filePath, m_flags));
+		m_textureTable.add(m_manager->createTexture(baseDir, filePath, m_flags));
 	}
 }
 

@@ -33,12 +33,12 @@ public:
 	~PrimitiveRendererCore();
 	void initialize(GraphicsManager* manager);
 
-	void SetState(PrimitiveRendererMode mode);
+	void setState(PrimitiveRendererMode mode);
 	void DrawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor);
 	void DrawSquare(const DrawSquareData& data);
 	void flush();
 
-	void RequestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex);
+	void requestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex);
 
 private:
 	void AddVertex(const Vector3& pos, const Vector2& uv, const Color& color);
@@ -87,7 +87,7 @@ public:
 				Vertex* vb;
 				uint16_t* ib;
 				uint16_t beginVertexIndex;
-				m_core->RequestBuffers(factory.GetVertexCount(), factory.getIndexCount(), &vb, &ib, &beginVertexIndex);
+				m_core->requestBuffers(factory.getVertexCount(), factory.getIndexCount(), &vb, &ib, &beginVertexIndex);
 				factory.Generate(vb, ib, beginVertexIndex);
 			});
 

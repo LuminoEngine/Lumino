@@ -106,22 +106,22 @@ public:
 	int getFontSize() const { return m_fontData.Size; }
 
 	/** フォントの太字有無を設定します。*/
-	void setFontBold(bool value) { m_fontData.IsBold = value; m_fontDataModified = true; }
+	void setFontBold(bool value) { m_fontData.isBold = value; m_fontDataModified = true; }
 
 	/** フォントの太字有無を取得します。*/
-	bool isFontBold() const { return m_fontData.IsBold; }
+	bool isFontBold() const { return m_fontData.isBold; }
 
 	/** フォントのイタリック体有無を設定します。*/
-	void setFontItalic(bool value) { m_fontData.IsItalic = value; m_fontDataModified = true; }
+	void setFontItalic(bool value) { m_fontData.isItalic = value; m_fontDataModified = true; }
 
 	/** フォントのイタリック体有無を取得します。*/
-	bool isFontItalic() const { return m_fontData.IsItalic; }
+	bool isFontItalic() const { return m_fontData.isItalic; }
 
 	/** フォントのアンチエイリアス有無を設定します。*/
-	void setFontAntiAlias(bool value) { m_fontData.IsAntiAlias = value; m_fontDataModified = true; }
+	void setFontAntiAlias(bool value) { m_fontData.isAntiAlias = value; m_fontDataModified = true; }
 
 	/** フォントのアンチエイリアス有無を取得します。*/
-	bool isFontAntiAlias() const { return m_fontData.IsAntiAlias; }
+	bool isFontAntiAlias() const { return m_fontData.isAntiAlias; }
 
 	Brush* getForeground() const;
 

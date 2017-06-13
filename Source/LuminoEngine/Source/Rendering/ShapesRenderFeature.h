@@ -99,7 +99,7 @@ private:
 	};
 
 	void releaseCommandList(ShapesRendererCommandList* commandList);
-	void RequestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex);
+	void requestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex);
 	Path* AddPath(PathType type, const Color& color, PathWinding winding = PathWinding::CCW, PathAttribute attribute = PathAttribute::None);
 	void EndPath(Path* path);
 	void ExtractBasePoints(ShapesRendererCommandList* commandList);

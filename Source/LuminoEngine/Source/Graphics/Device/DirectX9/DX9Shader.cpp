@@ -122,13 +122,13 @@ ShaderCompileResultLevel DX9Shader::create(DX9GraphicsDevice* device, const char
 	ID3DXBuffer* buffer = NULL;
 	ID3DXEffect* dxEffect;
 	HRESULT hr = DX9Module::D3DXCreateEffect(
-		device->GetIDirect3DDevice9(),
+		device->getIDirect3DDevice9(),
 		code,
 		codeByteCount,
 		deflist,
 		&dxInclude,
 		D3DXSHADER_ENABLE_BACKWARDS_COMPATIBILITY,	// これがないと古いシェーダをコンパイルしたときにエラーが出る可能性がある (X3025 とか)
-		device->GetD3DXEffectPool(),
+		device->getD3DXEffectPool(),
 		&dxEffect,
 		&buffer);
 
@@ -179,7 +179,7 @@ DX9Shader::DX9Shader(DX9GraphicsDevice* device, ID3DXEffect* dxEffect)
 			m_variables.add(v);
 			if (v->getType() == ShaderVariableType_DeviceTexture)
 			{
-				TextureVarInfo info = { v, device->GetDummyTextures()[m_textureVariables.getCount()], nullptr };
+				TextureVarInfo info = { v, device->getDummyTextures()[m_textureVariables.getCount()], nullptr };
 				m_textureVariables.add(info);
 			}
 		}
@@ -214,13 +214,13 @@ DX9Shader::~DX9Shader()
 }
 
 //------------------------------------------------------------------------------
-IShaderVariable* DX9Shader::GetVariable(int index) const
+IShaderVariable* DX9Shader::getVariable(int index) const
 {
 	return m_variables[index]; 
 }
 
 //------------------------------------------------------------------------------
-IShaderTechnique* DX9Shader::GetTechnique(int index) const
+IShaderTechnique* DX9Shader::getTechnique(int index) const
 {
 	return m_techniques[index];
 }
@@ -243,9 +243,9 @@ void DX9Shader::onResetDevice()
 //	for (DX9ShaderVariable* v : m_textureVariables)
 //	{
 //		DX9TextureBase* tex = static_cast<DX9TextureBase*>(v->getTexture());
-//		if (tex != nullptr && tex->GetIDirect3DBaseTexture9() == dxTexture)
+//		if (tex != nullptr && tex->getIDirect3DBaseTexture9() == dxTexture)
 //		{
-//			return &tex->GetSamplerState();
+//			return &tex->getSamplerState();
 //		}
 //	}
 //	return nullptr;
@@ -390,7 +390,7 @@ void DX9ShaderVariable::getValue(ID3DXEffect* dxEffect, D3DXHANDLE handle, Shade
 
 //------------------------------------------------------------------------------
 DX9ShaderVariable::DX9ShaderVariable(DX9Shader* owner, D3DXHANDLE handle)
-	: m_dxEffect(owner->GetID3DXEffect())
+	: m_dxEffect(owner->getID3DXEffect())
 	, m_handle(handle)
 {
 	// 変数名とセマンティクス名
@@ -530,7 +530,7 @@ void DX9ShaderVariable::setMatrixArray(const Matrix* matrices, int count)
 void DX9ShaderVariable::setTexture(ITexture* texture)
 {
 	if (texture != NULL) {
-		LN_COMCALL(m_dxEffect->SetTexture(m_handle, static_cast<DX9TextureBase*>(texture)->GetIDirect3DBaseTexture9()));
+		LN_COMCALL(m_dxEffect->SetTexture(m_handle, static_cast<DX9TextureBase*>(texture)->getIDirect3DBaseTexture9()));
 	}
 	else {
 		m_dxEffect->SetTexture(m_handle, NULL);
@@ -541,7 +541,7 @@ void DX9ShaderVariable::setTexture(ITexture* texture)
 }
 
 //------------------------------------------------------------------------------
-IShaderVariable* DX9ShaderVariable::GetAnnotation(int index)
+IShaderVariable* DX9ShaderVariable::getAnnotation(int index)
 {
 	return m_annotations[index];
 }
@@ -569,7 +569,7 @@ DX9ShaderAnnotation::~DX9ShaderAnnotation()
 
 //------------------------------------------------------------------------------
 DX9ShaderTechnique::DX9ShaderTechnique(DX9Shader* owner, D3DXHANDLE handle)
-	: m_dxEffect(owner->GetID3DXEffect())
+	: m_dxEffect(owner->getID3DXEffect())
 	, m_handle(handle)
 {
 	D3DXTECHNIQUE_DESC desc;
@@ -619,7 +619,7 @@ IShaderPass* DX9ShaderTechnique::getPass(int index)
 DX9ShaderPass::DX9ShaderPass(DX9Shader* owner, D3DXHANDLE handle, int passIndex, D3DXHANDLE tech)
 	: m_owner(owner)
 	, m_renderer(static_cast<DX9Renderer*>(owner->getGraphicsDevice()->getRenderer()))
-	, m_dxEffect(owner->GetID3DXEffect())
+	, m_dxEffect(owner->getID3DXEffect())
 	, m_handle(handle)
 	, m_technique(tech)
 	, m_passIndex(passIndex)
@@ -671,49 +671,49 @@ DX9ShaderPass::~DX9ShaderPass()
 void DX9ShaderPass::apply()
 {
 //	m_renderer->TryBeginScene();
-	CommitSamplerStatus();
+	commitSamplerStatus();
 
-	auto* current = m_renderer->GetCurrentShaderPass();
+	auto* current = m_renderer->getCurrentShaderPass();
 	if (current == this) {
 		m_dxEffect->CommitChanges();
 	}
 	else 
 	{
 		if (current != nullptr) {
-			current->EndPass();
+			current->endPass();
 		}
 		UINT dummy;
 		LN_COMCALL(m_dxEffect->SetTechnique(m_technique));
 		LN_COMCALL(m_dxEffect->Begin(&dummy, 0));
 		LN_COMCALL(m_dxEffect->BeginPass(m_passIndex));
-		m_renderer->SetCurrentShaderPass(this);
+		m_renderer->setCurrentShaderPass(this);
 	}
 	
 }
 
 //------------------------------------------------------------------------------
-void DX9ShaderPass::EndPass()
+void DX9ShaderPass::endPass()
 {
 	m_dxEffect->EndPass();
 	m_dxEffect->End();
 }
 
 //------------------------------------------------------------------------------
-void DX9ShaderPass::CommitSamplerStatus()
+void DX9ShaderPass::commitSamplerStatus()
 {
-	IDirect3DDevice9* dxDevice = m_owner->getGraphicsDevice()->GetIDirect3DDevice9();
+	IDirect3DDevice9* dxDevice = m_owner->getGraphicsDevice()->getIDirect3DDevice9();
 
 	// 最初の1回だけ、このパス内で、サンプラインデックスに対応する DX9ShaderVariable を探す。
 	// 描画スレッドを使っている場合は初期化時に行うことはできないため、ここで行っている。
 	if (!m_resolvedSamplerLink)
 	{
-		auto* infoList = m_owner->GetTextureVarInfoList();
+		auto* infoList = m_owner->getTextureVarInfoList();
 
 		// 元のテクスチャを覚えておき、検索用のダミーをセット
 		for (auto& info : *infoList)
 		{
-			LN_COMCALL(m_dxEffect->GetTexture(info.variable->GetHandle(), &info.originalTexture));
-			LN_COMCALL(m_dxEffect->SetTexture(info.variable->GetHandle(), info.key));
+			LN_COMCALL(m_dxEffect->GetTexture(info.variable->getHandle(), &info.originalTexture));
+			LN_COMCALL(m_dxEffect->SetTexture(info.variable->getHandle(), info.key));
 		}
 
 		LN_COMCALL(m_dxEffect->SetTechnique(m_technique));
@@ -742,7 +742,7 @@ void DX9ShaderPass::CommitSamplerStatus()
 		// 元のテクスチャに戻す
 		for (auto& info : *infoList)
 		{
-			m_dxEffect->SetTexture(info.variable->GetHandle(), info.originalTexture);
+			m_dxEffect->SetTexture(info.variable->getHandle(), info.originalTexture);
 			LN_COM_SAFE_RELEASE(info.originalTexture);
 		}
 
@@ -754,10 +754,10 @@ void DX9ShaderPass::CommitSamplerStatus()
 	{
 		if (info.variable != nullptr)
 		{
-			DX9TextureBase* tex = info.variable->GetDX9TextureBase();
+			DX9TextureBase* tex = info.variable->getDX9TextureBase();
 			if (tex != nullptr)
 			{
-				const SamplerState& ss = tex->GetSamplerState();
+				const SamplerState& ss = tex->getSamplerState();
 				int index = info.samplerIndex;
 
 				// フィルタモード

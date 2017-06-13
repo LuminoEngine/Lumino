@@ -63,9 +63,9 @@ void UIFrameWindow::initialize()
 	WindowCreationSettings ws;
 	RefPtr<PlatformWindow> window(m_manager->getPlatformManager()->GetWindowManager()->CreateSubWindow(ws), false);
 	auto swapChain = RefPtr<SwapChain>::makeRef();
-	swapChain->InitializeSub(m_manager->getGraphicsManager(), window);
+	swapChain->initializeSub(m_manager->getGraphicsManager(), window);
 
-	initialize(window, swapChain, UIContext::GetMainContext());
+	initialize(window, swapChain, UIContext::getMainContext());
 }
 
 //------------------------------------------------------------------------------
@@ -149,7 +149,7 @@ void UIFrameWindow::PresentRenderingContexts()
 		renderer->end();
 	}
 
-	// Present
+	// present
 	if (m_swapChain != nullptr)
 	{
 		bool skip = false;
@@ -171,7 +171,7 @@ void UIFrameWindow::PresentRenderingContexts()
 
 		if (!skip)
 		{
-			m_swapChain->Present();
+			m_swapChain->present();
 		}
 
 		// ウィンドウサイズとバックバッファサイズを合わせる
@@ -350,7 +350,7 @@ void UIMainWindow::PresentRenderingContexts()
 	UIFrameWindow::PresentRenderingContexts();
 
 	// SwapChain のサイズを Viewport へ通知
-	// ※ SwapChain のサイズが「本当に」変わるタイミングは、描画コマンドが確定する Present の後。
+	// ※ SwapChain のサイズが「本当に」変わるタイミングは、描画コマンドが確定する present の後。
 	//    フレーム更新の最初で行ってもよいが、この時点で行ってもよい。
 	UpdateViewportTransform();
 }
@@ -429,7 +429,7 @@ void UINativeHostWindow::initialize(intptr_t windowHandle)
 	RefPtr<PlatformWindow> window(manager->getPlatformManager()->GetWindowManager()->CreateSubWindow(ws), false);
 
 	auto swap = RefPtr<SwapChain>::makeRef();
-	swap->InitializeSub(manager->getGraphicsManager(), window);
+	swap->initializeSub(manager->getGraphicsManager(), window);
 
 
 	m_mainUIContext = LN_NEW UIContext();

@@ -36,7 +36,7 @@ struct PrimitiveRendererCore_SetStateCommand : public RenderingCommand
 	}
 	void execute()
 	{
-		m_core->SetState(m_mode);
+		m_core->setState(m_mode);
 	}
 };
 
@@ -107,15 +107,15 @@ void PrimitiveRendererCore::initialize(GraphicsManager* manager)
 
 	auto* device = m_manager->getGraphicsDevice();
 	m_renderer = device->getRenderer();
-	m_vertexBuffer = device->CreateVertexBuffer(sizeof(Vertex) * DefaultFaceCount * 4, nullptr, ResourceUsage::Dynamic);
-	m_indexBuffer = device->CreateIndexBuffer(DefaultFaceCount * 6, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
+	m_vertexBuffer = device->createVertexBuffer(sizeof(Vertex) * DefaultFaceCount * 4, nullptr, ResourceUsage::Dynamic);
+	m_indexBuffer = device->createIndexBuffer(DefaultFaceCount * 6, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 
 	m_vertexCache.reserve(DefaultFaceCount * 4);
 	m_indexCache.reserve(DefaultFaceCount * 6);
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRendererCore::SetState(PrimitiveRendererMode mode)
+void PrimitiveRendererCore::setState(PrimitiveRendererMode mode)
 {
 	m_mode = mode;
 }
@@ -152,12 +152,12 @@ void PrimitiveRendererCore::flush()
 	if (m_vertexBuffer->getByteCount() < m_vertexCache.getBufferUsedByteCount())
 	{
 		LN_SAFE_RELEASE(m_vertexBuffer);
-		m_vertexBuffer = device->CreateVertexBuffer(m_vertexCache.getBufferUsedByteCount(), nullptr, ResourceUsage::Dynamic);
+		m_vertexBuffer = device->createVertexBuffer(m_vertexCache.getBufferUsedByteCount(), nullptr, ResourceUsage::Dynamic);
 	}
 	if (m_indexBuffer->getByteCount() < m_indexCache.getBufferUsedByteCount())
 	{
 		LN_SAFE_RELEASE(m_indexBuffer);
-		m_indexBuffer = device->CreateIndexBuffer(m_indexCache.getBufferUsedByteCount(), nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
+		m_indexBuffer = device->createIndexBuffer(m_indexCache.getBufferUsedByteCount(), nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 	}
 
 	// 描画する
@@ -167,15 +167,15 @@ void PrimitiveRendererCore::flush()
 	{
 		if (m_mode == PrimitiveRendererMode::TriangleList)
 		{
-			m_renderer->SetVertexDeclaration(m_manager->getDefaultVertexDeclaration()->getDeviceObject());
-			m_renderer->SetVertexBuffer(0, m_vertexBuffer);
-			m_renderer->SetIndexBuffer(m_indexBuffer);
+			m_renderer->setVertexDeclaration(m_manager->getDefaultVertexDeclaration()->getDeviceObject());
+			m_renderer->setVertexBuffer(0, m_vertexBuffer);
+			m_renderer->setIndexBuffer(m_indexBuffer);
 			m_renderer->drawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.getCount() / 3);
 		}
 		else if (m_mode == PrimitiveRendererMode::LineList)
 		{
-			m_renderer->SetVertexDeclaration(m_manager->getDefaultVertexDeclaration()->getDeviceObject());
-			m_renderer->SetVertexBuffer(0, m_vertexBuffer);
+			m_renderer->setVertexDeclaration(m_manager->getDefaultVertexDeclaration()->getDeviceObject());
+			m_renderer->setVertexBuffer(0, m_vertexBuffer);
 			m_renderer->drawPrimitive(PrimitiveType_LineList, 0, m_vertexCache.getCount() / 2);
 		}
 	}
@@ -186,7 +186,7 @@ void PrimitiveRendererCore::flush()
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRendererCore::RequestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex)
+void PrimitiveRendererCore::requestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex)
 {
 	assert(vb != nullptr);
 	assert(ib != nullptr);
@@ -312,7 +312,7 @@ void PrimitiveRenderFeature::CheckUpdateState()
 	{
 		flush();
 
-		LN_CALL_CORE_COMMAND(SetState, PrimitiveRendererCore_SetStateCommand, m_mode);
+		LN_CALL_CORE_COMMAND(setState, PrimitiveRendererCore_SetStateCommand, m_mode);
 		m_stateModified = false;
 	}
 }
@@ -347,7 +347,7 @@ void BlitRenderer::initialize(GraphicsManager* manager)
 		{ Vector3( 1,  1, 0), Vector2(1, 0), Vector3::Zero, Color::White },
 		{ Vector3( 1, -1, 0), Vector2(1, 1), Vector3::Zero, Color::White },
 	};
-	m_vertexBuffer.attach(device->CreateVertexBuffer(sizeof(vertices), vertices, ResourceUsage::Static), false);
+	m_vertexBuffer.attach(device->createVertexBuffer(sizeof(vertices), vertices, ResourceUsage::Static), false);
 
 	m_commonMaterial = RefPtr<Material>::makeRef();
 	m_commonMaterial->initialize();
@@ -376,8 +376,8 @@ void BlitRenderer::BlitImpl()
 {
 	auto* device = m_manager->getGraphicsDevice();
 	auto* renderer = device->getRenderer();
-	renderer->SetVertexDeclaration(m_manager->getDefaultVertexDeclaration()->getDeviceObject());
-	renderer->SetVertexBuffer(0, m_vertexBuffer);
+	renderer->setVertexDeclaration(m_manager->getDefaultVertexDeclaration()->getDeviceObject());
+	renderer->setVertexBuffer(0, m_vertexBuffer);
 	renderer->drawPrimitive(PrimitiveType_TriangleStrip, 0, 2);
 }
 

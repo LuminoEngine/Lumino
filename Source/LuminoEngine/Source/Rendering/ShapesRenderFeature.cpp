@@ -138,7 +138,7 @@ void ShapesRendererCore::initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void ShapesRendererCore::RequestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex)
+void ShapesRendererCore::requestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex)
 {
 	////assert(vb != nullptr);
 	////assert(ib != nullptr);
@@ -182,11 +182,11 @@ void ShapesRendererCore::RenderCommandList(ShapesRendererCommandList* commandLis
 	//	Vertex* vb;
 	//	uint16_t* ib;
 	//	uint16_t beginVertexIndex;
-	//	RequestBuffers(
-	//		cache->GetVertexCount(dataList[i].cacheGlyphInfoHandle),
+	//	requestBuffers(
+	//		cache->getVertexCount(dataList[i].cacheGlyphInfoHandle),
 	//		cache->getIndexCount(dataList[i].cacheGlyphInfoHandle),
 	//		&vb, &ib, &beginVertexIndex);
-	//	cache->GenerateMesh(
+	//	cache->generateMesh(
 	//		dataList[i].cacheGlyphInfoHandle, Vector3(dataList[i].origin.x, dataList[i].origin.y, 0), dataList[i].transform,
 	//		vb, ib, beginVertexIndex);
 	//}
@@ -200,12 +200,12 @@ void ShapesRendererCore::RenderCommandList(ShapesRendererCommandList* commandLis
 		if (m_vertexBuffer == nullptr || m_vertexBuffer->getByteCount() < m_vertexCache.getBufferUsedByteCount())
 		{
 			LN_SAFE_RELEASE(m_vertexBuffer);
-			m_vertexBuffer = device->CreateVertexBuffer(m_vertexCache.getBufferUsedByteCount(), nullptr, ResourceUsage::Dynamic);
+			m_vertexBuffer = device->createVertexBuffer(m_vertexCache.getBufferUsedByteCount(), nullptr, ResourceUsage::Dynamic);
 		}
 		if (m_indexBuffer == nullptr || m_indexBuffer->getByteCount() < m_indexCache.getBufferUsedByteCount())
 		{
 			LN_SAFE_RELEASE(m_indexBuffer);
-			m_indexBuffer = device->CreateIndexBuffer(m_indexCache.getBufferUsedByteCount(), nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
+			m_indexBuffer = device->createIndexBuffer(m_indexCache.getBufferUsedByteCount(), nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 		}
 
 		// 描画する
@@ -213,9 +213,9 @@ void ShapesRendererCore::RenderCommandList(ShapesRendererCommandList* commandLis
 		m_indexBuffer->setSubData(0, m_indexCache.getBuffer(), m_indexCache.getBufferUsedByteCount());
 
 		{
-			renderer->SetVertexDeclaration(m_manager->getDefaultVertexDeclaration()->getDeviceObject());
-			renderer->SetVertexBuffer(0, m_vertexBuffer);
-			renderer->SetIndexBuffer(m_indexBuffer);
+			renderer->setVertexDeclaration(m_manager->getDefaultVertexDeclaration()->getDeviceObject());
+			renderer->setVertexBuffer(0, m_vertexBuffer);
+			renderer->setIndexBuffer(m_indexBuffer);
 			renderer->drawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.getCount() / 3);
 		}
 	}

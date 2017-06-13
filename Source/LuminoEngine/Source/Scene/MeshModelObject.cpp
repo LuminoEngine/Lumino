@@ -86,8 +86,8 @@ void SkinnedMeshComponent::OnUpdateFrame(float elapsedTime)
 //	v = core->findVariable(_T("lnBoneTextureReciprocalSize"));
 //	if (v) {
 //		Vector4 invSize;
-//		invSize.x = 1.0f / m_meshModel->GetSkinningMatricesTexture()->GetRealSize().width;
-//		invSize.y = 1.0f / m_meshModel->GetSkinningMatricesTexture()->GetRealSize().height;
+//		invSize.x = 1.0f / m_meshModel->GetSkinningMatricesTexture()->getRealSize().width;
+//		invSize.y = 1.0f / m_meshModel->GetSkinningMatricesTexture()->getRealSize().height;
 //		v->setVector(invSize);
 //	}
 //
@@ -199,8 +199,8 @@ LN_NAMESPACE_END
 //	//v = core->findVariable(_T("lnBoneTextureReciprocalSize"));
 //	//if (v) {
 //	//	Vector4 invSize;
-//	//	invSize.X = 1.0f / m_model->GetSkinningMatricesTexture()->GetRealSize().Width;
-//	//	invSize.Y = 1.0f / m_model->GetSkinningMatricesTexture()->GetRealSize().Height;
+//	//	invSize.X = 1.0f / m_model->GetSkinningMatricesTexture()->getRealSize().Width;
+//	//	invSize.Y = 1.0f / m_model->GetSkinningMatricesTexture()->getRealSize().Height;
 //	//	v->setVector(invSize);
 //	//}
 //

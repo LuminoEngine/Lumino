@@ -222,15 +222,15 @@ void GraphicsManager::initialize(const ConfigData& configData)
 #endif
 
 	Driver::IRenderer* renderer = m_graphicsDevice->getRenderer();
-	renderer->SetDiag(configData.diag);
+	renderer->setDiag(configData.diag);
 
 	// Renderer
 	m_renderer = LN_NEW Details::Renderer(this);
 
-	Driver::ISwapChain* deviceSwapChain = m_graphicsDevice->GetDefaultSwapChain();
+	Driver::ISwapChain* deviceSwapChain = m_graphicsDevice->getDefaultSwapChain();
 	if (deviceSwapChain != nullptr) {
 		m_mainSwapChain = LN_NEW SwapChain();
-		m_mainSwapChain->InitializeDefault(this);
+		m_mainSwapChain->initializeDefault(this);
 	}
 
 
@@ -386,7 +386,7 @@ void GraphicsManager::changeDevice(Driver::IGraphicsDevice* device)
 		if (m_graphicsDevice != NULL)
 		{
 			if (m_renderingType == GraphicsRenderingType::Immediate) {
-				m_graphicsDevice->DetachRenderingThread();
+				m_graphicsDevice->detachRenderingThread();
 			}
 
 			m_graphicsDevice->Finalize();
@@ -399,11 +399,11 @@ void GraphicsManager::changeDevice(Driver::IGraphicsDevice* device)
 
 		// Immediate の場合は Initialize したスレッドをレンダリングスレッドとする
 		if (m_renderingType == GraphicsRenderingType::Immediate) {
-			m_graphicsDevice->AttachRenderingThread();
+			m_graphicsDevice->attachRenderingThread();
 		}
 
 		// ダミーテクスチャ
-		m_dummyDeviceTexture = m_graphicsDevice->CreateTexture(SizeI(32, 32), false, TextureFormat::R8G8B8A8, NULL);
+		m_dummyDeviceTexture = m_graphicsDevice->createTexture(SizeI(32, 32), false, TextureFormat::R8G8B8A8, NULL);
 		{
 			BitmapPainter painter(m_dummyDeviceTexture->lock());
 			painter.clear(Color32::White);
@@ -482,15 +482,15 @@ void GraphicsManager::presentSwapChain(SwapChain* swapChain)
 		// 前回この SwapChain から発行したコマンドリストがまだ処理中である。待ち状態になるまで待機する。
 		swapChain->WaitForPresent();
 
-		// 実行状態にする。Present コマンドが実行された後、コマンドリストクラスから True がセットされる。
+		// 実行状態にする。present コマンドが実行された後、コマンドリストクラスから True がセットされる。
 		// ※ presentCommandList() の前に false にしておかないとダメ。
 		//    後で false にすると、presentCommandList() と同時に全部のコマンドが実行されて、描画スレッドから
 		//    true がセットされるのに、その後 false をセットしてしまうことがある。
 		swapChain->m_waiting.setFalse();
 
-		getGraphicsDevice()->FlushResource();
+		getGraphicsDevice()->flushResource();
 
-		// Primary コマンドリストの末尾に Present を追加し、キューへ追加する
+		// Primary コマンドリストの末尾に present を追加し、キューへ追加する
 		getRenderer()->presentCommandList(swapChain);
 	}
 }

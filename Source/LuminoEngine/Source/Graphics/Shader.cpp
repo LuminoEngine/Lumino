@@ -372,7 +372,7 @@ RefPtr<Shader> Shader::create(const char* code, int length)
 //	LN_THROW(manager != NULL, ArgumentException);
 //	ShaderCompileResult result;
 //	RefPtr<Driver::IShader> deviceObj(
-//		manager->getGraphicsDevice()->CreateShader(textData, byteCount, &result), false);
+//		manager->getGraphicsDevice()->createShader(textData, byteCount, &result), false);
 //	LN_THROW(!deviceObj.IsNull(), CompilationException, result);
 //	return LN_NEW Shader(manager, deviceObj, ByteBuffer(textData, byteCount));
 //}
@@ -387,7 +387,7 @@ RefPtr<Shader> Shader::create(const char* code, int length)
 //
 //	*outShader = NULL;
 //	RefPtr<Driver::IShader> deviceObj(
-//		manager->getGraphicsDevice()->CreateShader(textData, byteCount, outResult), false);
+//		manager->getGraphicsDevice()->createShader(textData, byteCount, outResult), false);
 //	if (deviceObj.IsNull()) {
 //		return false;
 //	}
@@ -425,7 +425,7 @@ void Shader::initialize(detail::GraphicsManager* manager, const StringRef& fileP
 	//
 
 	//ShaderCompileResult result;
-	//m_deviceObj = m_manager->getGraphicsDevice()->CreateShader(buf.GetConstData(), buf.GetSize(), &result);
+	//m_deviceObj = m_manager->getGraphicsDevice()->createShader(buf.GetConstData(), buf.GetSize(), &result);
 	//LN_THROW(m_deviceObj != nullptr, CompilationException, result);
 
 	//postInitialize();
@@ -458,7 +458,7 @@ void Shader::initialize(detail::GraphicsManager* manager, const void* code, int 
 	}
 
 	ShaderCompileResult result;
-	m_deviceObj = m_manager->getGraphicsDevice()->CreateShader(newCode.c_str(), newCode.getLength(), &result);
+	m_deviceObj = m_manager->getGraphicsDevice()->createShader(newCode.c_str(), newCode.getLength(), &result);
 	LN_THROW(m_deviceObj != nullptr, CompilationException, result);
 
 	// ライブラリ外部からの DeviceContext 再設定に備えてコードを保存する
@@ -493,17 +493,17 @@ void Shader::postInitialize()
 	m_semanticsManager.initialize(m_manager);
 
 	// 変数を展開
-	for (int i = 0; i < m_deviceObj->GetVariableCount(); ++i)
+	for (int i = 0; i < m_deviceObj->getVariableCount(); ++i)
 	{
-		ShaderVariable* v = LN_NEW ShaderVariable(this, m_deviceObj->GetVariable(i));
+		ShaderVariable* v = LN_NEW ShaderVariable(this, m_deviceObj->getVariable(i));
 		m_variables.add(v);
 		m_semanticsManager.tryPushVariable(v);
 	}
 
 	// テクニックを展開
-	for (int i = 0; i < m_deviceObj->GetTechniqueCount(); ++i)
+	for (int i = 0; i < m_deviceObj->getTechniqueCount(); ++i)
 	{
-		m_techniques.add(LN_NEW ShaderTechnique(this, m_deviceObj->GetTechnique(i)));
+		m_techniques.add(LN_NEW ShaderTechnique(this, m_deviceObj->getTechnique(i)));
 	}
 }
 
@@ -574,23 +574,23 @@ void Shader::onChangeDevice(Driver::IGraphicsDevice* device)
 	else
 	{
 		ShaderCompileResult result;
-		m_deviceObj = m_manager->getGraphicsDevice()->CreateShader(m_sourceCode.getConstData(), m_sourceCode.getSize(), &result);
+		m_deviceObj = m_manager->getGraphicsDevice()->createShader(m_sourceCode.getConstData(), m_sourceCode.getSize(), &result);
 		LN_THROW(result.Level != ShaderCompileResultLevel_Error, InvalidOperationException);	// 一度生成に成功しているので発生はしないはず
 
 		// 変数再割り当て
-		int varCount = m_deviceObj->GetVariableCount();
+		int varCount = m_deviceObj->getVariableCount();
 		for (int i = 0; i < varCount; ++i)
 		{
-			auto* varObj = m_deviceObj->GetVariable(i);
+			auto* varObj = m_deviceObj->getVariable(i);
 			auto* var = findVariable(varObj->getName());
 			var->changeDevice(varObj);
 		}
 
 		// テクニック再割り当て
-		int techCount = m_deviceObj->GetTechniqueCount();
+		int techCount = m_deviceObj->getTechniqueCount();
 		for (int i = 0; i < techCount; ++i)
 		{
-			auto* techObj = m_deviceObj->GetTechnique(i);
+			auto* techObj = m_deviceObj->getTechnique(i);
 			auto* tech = findTechnique(techObj->getName());
 			tech->changeDevice(techObj);
 		}
@@ -926,8 +926,8 @@ ShaderVariable::ShaderVariable(Shader* owner, Driver::IShaderVariable* deviceObj
 	m_value = deviceObj->getValue();
 
 	// アノテーションの展開
-	for (int i = 0; i < m_deviceObj->GetAnnotationCount(); ++i) {
-		m_annotations.add(LN_NEW ShaderVariable(m_owner, m_deviceObj->GetAnnotation(i)));
+	for (int i = 0; i < m_deviceObj->getAnnotationCount(); ++i) {
+		m_annotations.add(LN_NEW ShaderVariable(m_owner, m_deviceObj->getAnnotation(i)));
 	}
 }
 
@@ -961,13 +961,13 @@ const String& ShaderVariable::getSemanticName() const
 //------------------------------------------------------------------------------
 int ShaderVariable::getRows() const
 {
-	return m_deviceObj->GetMatrixRows();
+	return m_deviceObj->getMatrixRows();
 }
 
 //------------------------------------------------------------------------------
 int ShaderVariable::getColumns() const
 {
-	return m_deviceObj->GetMatrixColumns();
+	return m_deviceObj->getMatrixColumns();
 }
 
 //------------------------------------------------------------------------------
@@ -1201,10 +1201,10 @@ void ShaderVariable::changeDevice(Driver::IShaderVariable* obj)
 		m_deviceObj = obj;	// 今は特に参照カウントを操作してはいないのでこれだけ
 
 		// アノテーション再割り当て
-		int annoCount = m_deviceObj->GetAnnotationCount();
+		int annoCount = m_deviceObj->getAnnotationCount();
 		for (int i = 0; i < annoCount; ++i)
 		{
-			auto* annoObj = m_deviceObj->GetAnnotation(i);
+			auto* annoObj = m_deviceObj->getAnnotation(i);
 			auto* anno = findAnnotation(annoObj->getName());
 			anno->changeDevice(annoObj);
 		}
@@ -1247,13 +1247,13 @@ ShaderTechnique::ShaderTechnique(Shader* owner, Driver::IShaderTechnique* device
 	m_name = m_deviceObj->getName();
 
 	// パスの展開
-	for (int i = 0; i < m_deviceObj->GetPassCount(); ++i) {
+	for (int i = 0; i < m_deviceObj->getPassCount(); ++i) {
 		m_passes.add(LN_NEW ShaderPass(m_owner, m_deviceObj->getPass(i)));
 	}
 
 	// アノテーションの展開
-	for (int i = 0; i < m_deviceObj->GetAnnotationCount(); ++i) {
-		m_annotations.add(LN_NEW ShaderVariable(m_owner, m_deviceObj->GetAnnotation(i)));
+	for (int i = 0; i < m_deviceObj->getAnnotationCount(); ++i) {
+		m_annotations.add(LN_NEW ShaderVariable(m_owner, m_deviceObj->getAnnotation(i)));
 	}
 }
 
@@ -1315,7 +1315,7 @@ void ShaderTechnique::changeDevice(Driver::IShaderTechnique* obj)
 		m_deviceObj = obj;	// 今は特に参照カウントを操作してはいないのでこれだけ
 
 		// パス再割り当て
-		int passCount = m_deviceObj->GetPassCount();
+		int passCount = m_deviceObj->getPassCount();
 		for (int i = 0; i < passCount; ++i)
 		{
 			auto* passObj = m_deviceObj->getPass(i);
@@ -1324,10 +1324,10 @@ void ShaderTechnique::changeDevice(Driver::IShaderTechnique* obj)
 		}
 
 		// アノテーション再割り当て
-		int annoCount = m_deviceObj->GetAnnotationCount();
+		int annoCount = m_deviceObj->getAnnotationCount();
 		for (int i = 0; i < annoCount; ++i)
 		{
-			auto* annoObj = m_deviceObj->GetAnnotation(i);
+			auto* annoObj = m_deviceObj->getAnnotation(i);
 			auto* anno = findAnnotation(annoObj->getName());
 			anno->changeDevice(annoObj);
 		}
@@ -1345,8 +1345,8 @@ ShaderPass::ShaderPass(Shader* owner, Driver::IShaderPass* deviceObj)
 	, m_name(m_deviceObj->getName())
 {
 	// アノテーションの展開
-	for (int i = 0; i < m_deviceObj->GetAnnotationCount(); ++i) {
-		m_annotations.add(LN_NEW ShaderVariable(m_owner, m_deviceObj->GetAnnotation(i)));
+	for (int i = 0; i < m_deviceObj->getAnnotationCount(); ++i) {
+		m_annotations.add(LN_NEW ShaderVariable(m_owner, m_deviceObj->getAnnotation(i)));
 	}
 }
 
@@ -1405,10 +1405,10 @@ void ShaderPass::changeDevice(Driver::IShaderPass* obj)
 		m_deviceObj = obj;	// 今は特に参照カウントを操作してはいないのでこれだけ
 
 		// アノテーション再割り当て
-		int annoCount = m_deviceObj->GetAnnotationCount();
+		int annoCount = m_deviceObj->getAnnotationCount();
 		for (int i = 0; i < annoCount; ++i)
 		{
-			auto* annoObj = m_deviceObj->GetAnnotation(i);
+			auto* annoObj = m_deviceObj->getAnnotation(i);
 			auto* anno = findAnnotation(annoObj->getName());
 			anno->changeDevice(annoObj);
 		}

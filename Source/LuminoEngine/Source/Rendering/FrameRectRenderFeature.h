@@ -28,11 +28,11 @@ public:
 	~FrameRectRendererCore();
 	void initialize(GraphicsManager* manager);
 
-	void SetState(const FrameRectRendererState& state);
+	void setState(const FrameRectRendererState& state);
 	void Draw(const Matrix& transform, const Rect& rect);
 
 private:
-	void RequestBuffers(int faceCount);
+	void requestBuffers(int faceCount);
 
 	void PutRectangleStretch(const Rect& rect, const Rect& srcUVRect);
 	void PutRectangleTiling(const Rect& rect, const RectI& srcPixelRect, const Rect& srcUVRect, Driver::ITexture* srcTexture);
@@ -95,8 +95,8 @@ public:
 	~FrameRectRenderFeature();
 	void initialize(GraphicsManager* manager);
 
-	void SetViewInfo(const Matrix& viewProj);
-	void SetState(Brush* brush);
+	void setViewInfo(const Matrix& viewProj);
+	void setState(Brush* brush);
 
 	void Draw(const Matrix& transform, const Rect& rect);
 
@@ -107,7 +107,7 @@ public:
 	virtual void onSetState(const DrawElementBatch* state);
 
 private:
-	void SetState(Brush* brush, const Matrix& world, const Matrix& viewProj);
+	void setState(Brush* brush, const Matrix& world, const Matrix& viewProj);
 
 	GraphicsManager*		m_manager;
 	FrameRectRendererCore*	m_core;
